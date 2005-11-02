@@ -14,7 +14,7 @@
  *
  * This code was developed with the support of IXIA communications.
  *
- * RCSID $Id: pluto_crypt.c,v 1.17 2005/03/13 00:38:08 mcr Exp $
+ * RCSID $Id: pluto_crypt.c,v 1.19 2005/07/13 02:14:08 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -219,6 +219,9 @@ err_t send_crypto_helper_request(struct pluto_crypto_req *r
 	/* call the continuation */
 	(*cn->pcrc_func)(cn, r, NULL);
 
+	/* indicate that we did everything ourselves */
+	*toomuch = TRUE;
+
 	pfree(cn);
 	pfree(r);
 	return NULL;
@@ -287,7 +290,7 @@ err_t send_crypto_helper_request(struct pluto_crypto_req *r
 	DBG(DBG_CONTROL
 	    , DBG_log("critical demand crypto operation queued as item %d"
 		      , backlogqueue_len));
-	*toomuch = TRUE;
+	*toomuch = FALSE;
 	return NULL;
     }
 
@@ -306,6 +309,7 @@ err_t send_crypto_helper_request(struct pluto_crypto_req *r
 	if(w->pcw_pid == -1) {
 	    DBG(DBG_CONTROL
 		, DBG_log("found only a dead helper, and failed to restart it"));
+	    *toomuch = TRUE;
 	    return "failed to start a new helper";
 	}
     }
@@ -331,6 +335,7 @@ err_t send_crypto_helper_request(struct pluto_crypto_req *r
     } 
 
     w->pcw_work++;
+    *toomuch = FALSE;
     return NULL;
 }
 

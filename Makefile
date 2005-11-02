@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.266 2005/03/22 22:16:21 ken Exp $
+# RCSID $Id: Makefile,v 1.273.2.3 2005/08/31 14:03:52 paul Exp $
 
 
 OPENSWANSRCDIR?=$(shell pwd)
@@ -189,17 +189,17 @@ else
 ABSOBJDIR:=$(shell mkdir -p ${OBJDIR}; cd ${OBJDIR} && pwd)
 
 programs install clean checkprograms:: ${OBJDIR}/Makefile
-	echo OBJDIR: ${OBJDIR}
+	@echo OBJDIR: ${OBJDIR}
 	(cd ${ABSOBJDIR} && OBJDIRTOP=${ABSOBJDIR} OBJDIR=${ABSOBJDIR} make $@ )
 
 ${OBJDIR}/Makefile: ${srcdir}/Makefile packaging/utils/makeshadowdir
-	echo Setting up for OBJDIR=${OBJDIR}
-	packaging/utils/makeshadowdir `(cd ${srcdir}; pwd)` ${OBJDIR} "${SUBDIRS}"
+	@echo Setting up for OBJDIR=${OBJDIR}
+	@packaging/utils/makeshadowdir `(cd ${srcdir}; pwd)` ${OBJDIR} "${SUBDIRS}"
 
 endif
 
 checkv199install:
-	@if [ -f ${LIBDIR}/pluto ]; \
+	@if [ "${LIBDIR}" != "${LIBEXECDIR}" ] && [ -f ${LIBDIR}/pluto ]; \
 	then \
 		echo WARNING: Old version of FreeS/WAN Openswan 1.x installed. ;\
 		echo WARNING: moving ${LIBDIR} to ${LIBDIR}.v1 ;\
@@ -360,15 +360,19 @@ ${MODBUILDDIR}/Makefile : ${OPENSWANSRCDIR}/packaging/makefiles/module.make
 	cp ${OPENSWANSRCDIR}/packaging/makefiles/module.make ${MODBUILDDIR}/Makefile
 	echo "# "                        >> ${MODBUILDDIR}/Makefile
 	echo "# Local Variables: "       >> ${MODBUILDDIR}/Makefile
-	echo "# compile-command: \"${MAKE} OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} TOPDIR=${KERNELSRC} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} -f Makefile ipsec.o\""         >> ${MODBUILDDIR}/Makefile
+	echo "# compile-command: \"${MAKE} OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} TOPDIR=${KERNELSRC} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} MODULE_DEFCONFIG=${MODULE_DEFCONFIG} -f Makefile ipsec.o\""         >> ${MODBUILDDIR}/Makefile
 	echo "# End: "       >> ${MODBUILDDIR}/Makefile
 
 module:
 	@if [ -f ${KERNELSRC}/README.openswan-2 ] ; then \
                 echo "WARNING: Kernel source ${KERNELSRC} has already been patched with openswan-2, out of tree build might fail!"; \
         fi;
+	@if [ -f ${KERNELSRC}/README.freeswan ] ; then \
+                echo "ERROR: Kernel source ${KERNELSRC} has already been patched with freeswan, out of tree build will fail!"; \
+        fi;
 	@if [ -f ${KERNELSRC}/Rules.make ] ; then \
-                echo "Building module for a 2.4 kernel"; ${MAKE} module24 ; else echo "Building module for a 2.6 kernel"; ${MAKE} module26; \
+                echo "Building module for a 2.4 kernel"; ${MAKE} module24 ; \
+        else echo "Building module for a 2.6 kernel"; ${MAKE} module26; \
         fi;
 
 module24:
@@ -414,6 +418,7 @@ minstall24:
 	set -x ; \
 	mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
 	cp $(MODBUILDDIR)/ipsec.o $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
+	if [ -f /sbin/depmod ] ; then depmod -a ; fi; \
 	if [ -n "$(OSMOD_DESTDIR)" ] ; then \
         mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
                 if [ -f $$OSMODLIB/kernel/ipsec.o -a -f $$OSMODLIB/kernel/$(OSMOD_DESTDIR)/ipsec.o ] ; then \
@@ -451,7 +456,7 @@ module26:
 	@if [ -f ${KERNELSRC}/Rules.make ] ; then \                 echo "Warning: Building for a 2.6 kernel in what looks like a 2.4 tree"; \
         fi ; \
         ${MAKE}  ${MOD26BUILDDIR}/Makefile
-	${MAKE} -C ${KERNELSRC} ${KERNELBUILDMFLAGS} BUILDDIR=${MOD26BUILDDIR} SUBDIRS=${MOD26BUILDDIR} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} ARCH=${ARCH} modules
+	${MAKE} -C ${KERNELSRC} ${KERNELBUILDMFLAGS} BUILDDIR=${MOD26BUILDDIR} SUBDIRS=${MOD26BUILDDIR} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} MODULE_DEFCONFIG=${MODULE_DEFCONFIG} ARCH=${ARCH} modules
 	@echo 
 	@echo '========================================================='
 	@echo 
@@ -482,6 +487,7 @@ minstall26:
 	set -x ; \
 	mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
 	cp $(MOD26BUILDDIR)/ipsec.ko $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
+	if [ -f /sbin/depmod ] ; then depmod -a ; fi; \
 	if [ -n "$(OSMOD_DESTDIR)" ] ; then \
 	mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
 		if [ -f $$OSMODLIB/kernel/ipsec.ko -a -f $$OSMODLIB/kernel/$(OSMOD_DESTDIR)/ipsec.ko ] ; then \
@@ -525,7 +531,16 @@ kernelpatch2.2:
 kernelpatch2.0:
 	packaging/utils/kernelpatch 2.0
 
-nattpatch2.4 nattpatch:
+nattpatch:
+	if [ -f ${KERNELSRC}/Makefile ]; then \
+		${MAKE} nattpatch${KERNELREL}; \
+	else	echo "Cannot determine Linux kernel version. Perhaps you need to set KERNELSRC? (eg: export KERNELSRC=/usr/src/linux-`uname -r`/)"; exit 1; \
+	fi;
+
+nattpatch2.6:
+	packaging/utils/nattpatch 2.6
+
+nattpatch2.4:
 	packaging/utils/nattpatch 2.4
 
 nattpatch2.2:

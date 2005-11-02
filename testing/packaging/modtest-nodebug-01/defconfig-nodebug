@@ -1,6 +1,6 @@
 
 #
-# RCSID $Id: defconfig-nodebug,v 1.1 2004/12/22 00:31:01 paul Exp $
+# RCSID $Id: defconfig-nodebug,v 1.2 2005/05/12 03:10:53 mcr Exp $
 #
 
 #
@@ -27,33 +27,36 @@ CONFIG_IP_MASQUERADE_IPSEC=n
 #
 
 # To config as static (preferred), 'y'.  To config as module, 'm'.
-CONFIG_IPSEC=m
+CONFIG_KLIPS=m
 
 # To do tunnel mode IPSec, this must be enabled.
-CONFIG_IPSEC_IPIP=y
+CONFIG_KLIPS_IPIP=y
 
 # To enable authentication, say 'y'.   (Highly recommended)
-CONFIG_IPSEC_AH=y
+CONFIG_KLIPS_AH=y
 
 # Authentication algorithm(s):
-CONFIG_IPSEC_AUTH_HMAC_MD5=y
-CONFIG_IPSEC_AUTH_HMAC_SHA1=y
+CONFIG_KLIPS_AUTH_HMAC_MD5=y
+CONFIG_KLIPS_AUTH_HMAC_SHA1=y
 
 # To enable encryption, say 'y'.   (Highly recommended)
-CONFIG_IPSEC_ESP=y
+CONFIG_KLIPS_ESP=y
 
 # Encryption algorithm(s):
-CONFIG_IPSEC_ENC_3DES=y
+CONFIG_KLIPS_ENC_3DES=y
 
 # IP Compression: new, probably still has minor bugs.
-CONFIG_IPSEC_IPCOMP=y
+CONFIG_KLIPS_IPCOMP=y
 
 # To enable userspace-switchable KLIPS debugging, say 'y'.
-CONFIG_IPSEC_DEBUG=n
+CONFIG_KLIPS_DEBUG=n
 
 #
 #
 # $Log: defconfig-nodebug,v $
+# Revision 1.2  2005/05/12 03:10:53  mcr
+# 	adjusted settings for IPSEC->KLIPS change.
+#
 # Revision 1.1  2004/12/22 00:31:01  paul
 # Added testcase for compiling without CONFIG_KLIPS_DEBUG
 #
@@ -81,7 +84,7 @@ CONFIG_IPSEC_DEBUG=n
 # IPCOMP zlib deflate code.
 #
 # Revision 1.16  2000/09/08 19:12:55  rgb
-# Change references from DEBUG_IPSEC to CONFIG_IPSEC_DEBUG.
+# Change references from DEBUG_IPSEC to CONFIG_KLIPS_DEBUG.
 #
 # Revision 1.15  2000/05/24 19:37:13  rgb
 # *** empty log message ***

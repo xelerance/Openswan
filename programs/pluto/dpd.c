@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: dpd.c,v 1.25.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: dpd.c,v 1.29.2.2 2005/08/26 13:40:48 ken Exp $
  */
 
 #include <stdio.h>
@@ -534,15 +534,14 @@ dpd_timeout(struct state *st)
     action = st->st_connection->dpd_action;
     
     /* probably wrong thing to assert here */
-    passert(action == DPD_ACTION_HOLD || action == DPD_ACTION_CLEAR || action == DPD_ACTION_RESTART);
+    passert(action == DPD_ACTION_HOLD
+	    || action == DPD_ACTION_CLEAR
+	    || action == DPD_ACTION_RESTART);
         
     /** delete the state, which is probably in phase 2 */
     set_cur_connection(c);
 
     openswan_log("DPD: No response from peer - declaring peer dead");
-
-    delete_states_by_connection(c, TRUE);  
-    reset_cur_connection();
 
     switch(action) {
     case DPD_ACTION_HOLD:
@@ -550,21 +549,28 @@ dpd_timeout(struct state *st)
 	    leak traffic.  Also, being in %trap means new packets will
 	    force an initiation of the conn again.  */
 	openswan_log("DPD: Putting connection into %%trap");
+	delete_states_by_connection(c, TRUE);  
 	break;
 
     case DPD_ACTION_CLEAR:
         /** dpdaction=clear - Wipe the SA & eroute - everything */
     
         openswan_log("DPD: Clearing Connection");
-        unroute_connection(c);
+	delete_states_by_connection(c, TRUE);
+	DBG(DBG_DPD, DBG_log("unrouting connection"));
+        unroute_connection(c);        /* --unroute */
 	break;
 
     case DPD_ACTION_RESTART:
-	/** dpdactin=restart - immediate renegotiate the connection. */
-        openswan_log("DPD: restarting Connection");
+	/** dpdaction=restart - immediate renegotiate the connection. */
+        openswan_log("DPD: Restarting Connection");
+
+	/* we replace the SA so that we do it in a rational place */
+	delete_event(st);
 	event_schedule(EVENT_SA_REPLACE, 0, st);
 	break;
     }
+    reset_cur_connection();
 }
 
 

@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_debug.c,v 1.10 2004/07/10 07:48:35 mcr Exp $
+ * RCSID $Id: pfkey_v2_debug.c,v 1.11 2005/04/06 17:45:16 mcr Exp $
  *
  */
 
@@ -80,12 +80,11 @@ static char *pfkey_sadb_ext_strings[]={
   "X-source-mask",                /* SADB_X_EXT_ADDRESS_SRC_MASK   23 */
   "X-dest-mask",                  /* SADB_X_EXT_ADDRESS_DST_MASK   24 */
   "X-set-debug",                  /* SADB_X_EXT_DEBUG              25 */
-#ifdef NAT_TRAVERSAL
+  /* NAT_TRAVERSAL */
   "X-NAT-T-type",                 /* SADB_X_EXT_NAT_T_TYPE         26 */
   "X-NAT-T-sport",                /* SADB_X_EXT_NAT_T_SPORT        27 */
   "X-NAT-T-dport",                /* SADB_X_EXT_NAT_T_DPORT        28 */
   "X-NAT-T-OA",                   /* SADB_X_EXT_NAT_T_OA           29 */
-#endif
 };
 
 const char *
@@ -134,6 +133,9 @@ pfkey_v2_sadb_type_string(int sadb_type)
 
 /*
  * $Log: pfkey_v2_debug.c,v $
+ * Revision 1.11  2005/04/06 17:45:16  mcr
+ * 	always include NAT-T names.
+ *
  * Revision 1.10  2004/07/10 07:48:35  mcr
  * Moved from linux/lib/libfreeswan/pfkey_v2_debug.c,v
  *

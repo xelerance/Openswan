@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: datatot.c,v 1.6 2004/07/10 07:43:47 mcr Exp $
+ * RCSID $Id: datatot.c,v 1.7 2005/04/14 20:48:43 mcr Exp $
  */
 #include "openswan.h"
 
@@ -84,9 +84,10 @@ size_t dstlen;
 		return 0;
 		break;
 	}
-	assert(inblocksize < sizeof(inblock));
-	assert(outblocksize < sizeof(outblock));
-	assert(breakevery % outblocksize == 0);
+
+	user_assert(inblocksize < sizeof(inblock));
+	user_assert(outblocksize < sizeof(outblock));
+	user_assert(breakevery % outblocksize == 0);
 
 	if (srclen == 0)
 		return 0;
@@ -107,7 +108,8 @@ size_t dstlen;
 		strcpy(dst, prefix);
 		dst += nreal;
 	}
-	assert(dst <= stop);
+
+	user_assert(dst <= stop);
 	sincebreak = 0;
 
 	while (ntodo > 0) {
@@ -126,7 +128,7 @@ size_t dstlen;
 		sincebreak += outblocksize;
 		if (dst < stop) {
 			if (out != dst) {
-				assert(outblocksize > stop - dst);
+				user_assert(outblocksize > stop - dst);
 				memcpy(dst, out, stop - dst);
 				dst = stop;
 			} else
@@ -143,7 +145,7 @@ size_t dstlen;
 		}
 	}
 
-	assert(dst <= stop);
+	user_assert(dst <= stop);
 	*dst++ = '\0';
 	needed++;
 
@@ -167,10 +169,10 @@ char *out;
 	unsigned char c;
 	unsigned char c1, c2, c3;
 
-	assert(nreal > 0);
+	user_assert(nreal > 0);
 	switch (format) {
 	case 'x':
-		assert(nreal == 1);
+		user_assert(nreal == 1);
 		c = (unsigned char)*src;
 		*out++ = hex[c >> 4];
 		*out++ = hex[c & 0xf];
@@ -196,7 +198,7 @@ char *out;
 			*out++ = base64[c3 & 0x3f];	/* bottom 6 of c3 */
 		break;
 	default:
-		assert(nreal == 0);	/* unknown format */
+		user_assert(nreal == 0);	/* unknown format */
 		break;
 	}
 }

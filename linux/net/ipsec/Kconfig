@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Kconfig,v 1.3 2004/08/17 03:27:23 mcr Exp $
+# RCSID $Id: Kconfig,v 1.6 2005/05/18 20:55:27 mcr Exp $
 
 config KLIPS
 	tristate "Openswan IPsec (KLIPS26)"
@@ -67,6 +67,22 @@ config KLIPS_ALG
 	   This option provides support for loading new algorithms into the 
 	   kernel for use to encrypt.
 
+config KLIPS_ENC_CRYPTOAPI
+	bool 'CryptoAPI algorithm interface'
+	default n
+	help
+	   Enable the algorithm interface to make all CryptoAPI 1.0 algorithms
+	   available to KLIPS.
+
+config KLIPS_ENC_1DES
+	bool 'Include 1DES with CryptoAPI'
+	default n
+	depends on KLIPS_ENC_CRYPTOAPI
+	help
+	   The CryptoAPI interface does not include support for every algorithm
+	   yet, and one that it doesn't support by default is the VERY WEAK
+	   1DES. Select this if you are terminally stupid.
+	
 config KLIPS_ENC_3DES
 	bool '3DES encryption algorithm'
 	default y
@@ -106,6 +122,15 @@ endmenu
 #
 #
 # $Log: Kconfig,v $
+# Revision 1.6  2005/05/18 20:55:27  mcr
+# 	default cryptoapi to n.
+#
+# Revision 1.5  2005/05/11 01:23:25  mcr
+# 	added 1DES option to cryptoapi.
+#
+# Revision 1.4  2005/04/29 05:29:54  mcr
+# 	add option to include cryptoapi algorithms.
+#
 # Revision 1.3  2004/08/17 03:27:23  mcr
 # 	klips 2.6 edits.
 #

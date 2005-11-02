@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 TESTNAME=x509-pluto-05
 
 ipsec setup start

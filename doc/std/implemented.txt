@@ -21,3 +21,8 @@ rfc2412.txt	The OAKLEY Key Determination Protocol
 rfc2451.txt	The ESP CBC-Mode Cipher Algorithms
 rfc2857.txt	The Use of HMAC-RIPEMD-160-96 within ESP and AH
 rfc3456.txt	Dynamic Host Configuration Protocol (DHCPv4) Configuration of IPsec Tunnel Mode
+rfc3706.txt	A Traffic-Based Method of Detecting Dead Internet Key Exchange (IKE) Peers
+rfc3947.txt	Negotiation of NAT-Traversal in the IKE
+rfc3948.txt	UDP Encapsulation of IPsec ESP Packets
+
+

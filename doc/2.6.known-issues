@@ -14,16 +14,23 @@ This is an overview of known issues with Openswan on the 2.6 kernel codebase
   still use the fallback method of using 'setkey' from the ipsec-tools
   package which is available at: http://ipsec-tools.sourceforge.net/
 
+* 'ip xfrm state' has been reported hanging in uninterruptable sleep, 
+  causing Openswan to hang (eg during shutdown)
+
 * Openswan-2 ships with support for NETKEY.
   Many thanks to Herbert Xu for the initial code patches.
 
 * Use the most recent Linux Openswan-2 release from ftp.openswan.org
-  to try our 2.6 kernel support. Currently, this is 2.3.0dr4.
+  to try our 2.6 kernel support. Currently, this is 2.3.1
 
 * If you wish to use KLIPS on 2.6, you need to build the KLIPS kernel
   module:
 
   make KERNELSRC=/usr/src/linux-2.6.x module minstall
+
+On Fedora you can do:
+
+  make KERNELSRC=/lib/modules/`uname -r`/build module minstall
 
 * Preload the ipsec stack you wish to use before starting Openswan.
   Use 'modprobe af_key' for NETKEY and 'modprobe ipsec' for KLIPS.
@@ -32,7 +39,6 @@ This is an overview of known issues with Openswan on the 2.6 kernel codebase
 
 * Please see the dev and users mailing lists for more detail and the latest
   reports.  (http://lists.openswan.org/)
-
 
 
 DESIGN-RELATED ISSUES
@@ -69,19 +75,12 @@ CURRENT ISSUES
 * starting with 2.6.9 NETKEY needs to have xfrm4_tunnel support. You might need
   to modprobe this on older Openswan versions.
 
-* compression seems to be incompatible between KLIPS and NETKEY.
-  Since we believe the NETKEY code is wrong, we cannot fix this. If you
-  get a successful IKE negotiation and can send ESP packets, but never get
-  replies, compile KLIPS without CONFIG_KLIPS_IPCOMP. There is currently no
-  runtime switch to disable compression. Note that setting compress=no is not
-  enough; it just means we do not announce compression, but we'll still do it
-  if the other end requests it.
-
 * Using SNAT and the 2.6 ipsec code apparently doesn't go well together.
   Reported by Alexander Samad. Known issue for the netfilter team. DNAT
   works as usual, meaning you have to exlude DNAT'ing packets meant for
   a tunnel. Suse currently has some patches that fixes the SNAT issue, but
-  this is untested by us so far.
+  this is untested by us so far. Some patches made it into 2.6.11.7 and
+  2.6.12-rc3.
 
 * For the moment, users wishing to run Openswan with NETKEY will require
   the ipsec-tools package "setkey" program. Though Openswan's keying daemon,

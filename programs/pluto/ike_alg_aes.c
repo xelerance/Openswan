@@ -44,9 +44,11 @@ do_aes(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *
 
 struct encrypt_desc algo_aes =
 {
-	common: {algo_type: 	IKE_ALG_ENCRYPT,
-		 algo_id:   	OAKLEY_AES_CBC,
-		 algo_next: 	NULL, },
+	common: {
+	  name: "aes",
+	  algo_type: 	IKE_ALG_ENCRYPT,
+	  algo_id:   	OAKLEY_AES_CBC,
+	  algo_next: 	NULL, },
 	enc_ctxsize: 	sizeof(aes_context),
 	enc_blocksize: 	AES_CBC_BLOCK_SIZE,
 	keyminlen: 	AES_KEY_MIN_LEN,

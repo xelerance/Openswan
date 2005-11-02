@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keys.c,v 1.99.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: keys.c,v 1.102.2.1 2005/08/19 17:52:42 ken Exp $
  */
 
 #include <stddef.h>
@@ -419,8 +419,8 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 	free_public_key(my_public_key);
 	return best;
     }
-
-    if (his_id_was_instantiated(c) && !(c->policy&AGGRESSIVE))
+#if defined(AGGRESSIVE)
+    if (his_id_was_instantiated(c) && !(c->policy & POLICY_AGGRESSIVE))
     {
 	DBG(DBG_CONTROL,
 	    DBG_log("instantiating him to 0.0.0.0"));
@@ -432,6 +432,7 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 	his_id = &rw_id;
 	idtoa(his_id, idhim2, IDTOA_BUF);
     }
+#endif
 #ifdef NAT_TRAVERSAL
     else if ((nat_traversal_enabled)
 	     && (c->policy & POLICY_PSK)
@@ -1207,6 +1208,7 @@ process_secrets_file(const char *file_pat, int whackfd)
     char **fnp;
     glob_t globbuf;
 
+    memset(&globbuf, 0, sizeof(glob_t));
     pos.depth = flp == NULL? 0 : flp->depth + 1;
 
     if (pos.depth > 10)
@@ -1241,7 +1243,7 @@ process_secrets_file(const char *file_pat, int whackfd)
     }
 
     /* for each file... */
-    for (fnp = globbuf.gl_pathv; *fnp != NULL; fnp++)
+    for (fnp = globbuf.gl_pathv; fnp!=NULL && *fnp != NULL; fnp++)
     {
 	if (lexopen(&pos, *fnp, FALSE))
 	{

@@ -1,4 +1,4 @@
-char radij_c_version[] = "RCSID $Id: radij.c,v 1.47 2004/07/10 19:11:18 mcr Exp $";
+char radij_c_version[] = "RCSID $Id: radij.c,v 1.48 2005/04/29 05:10:22 mcr Exp $";
 
 /*
  * This file is defived from ${SRC}/sys/net/radix.c of BSD 4.4lite
@@ -75,10 +75,9 @@ char radij_c_version[] = "RCSID $Id: radij.c,v 1.47 2004/07/10 19:11:18 mcr Exp 
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
 #ifdef NET_21
-# include <asm/uaccess.h>
 # include <linux/in6.h>
 #endif /* NET_21 */
-#include <asm/checksum.h>
+
 #include <net/ip.h>
 
 #include <openswan.h>
@@ -1005,6 +1004,9 @@ radijcleanup(void)
 
 /*
  * $Log: radij.c,v $
+ * Revision 1.48  2005/04/29 05:10:22  mcr
+ * 	removed from extraenous includes to make unit testing easier.
+ *
  * Revision 1.47  2004/07/10 19:11:18  mcr
  * 	CONFIG_IPSEC -> CONFIG_KLIPS.
  *

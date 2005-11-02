@@ -24,7 +24,7 @@
 # the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #
-# $Id: send-pr.in,v 1.10.24.1 2005/05/18 20:55:13 ken Exp $
+# $Id: send-pr.in,v 1.11 2005/04/17 23:04:46 paul Exp $
 #
 
 # The version of this send-pr.
@@ -607,9 +607,6 @@ xs=1; exit;
 
 #
 # $Log: send-pr.in,v $
-# Revision 1.10.24.1  2005/05/18 20:55:13  ken
-# Pull in Kens 2.3.2x branch
-#
 # Revision 1.11  2005/04/17 23:04:46  paul
 # Another 'tr' removal
 #

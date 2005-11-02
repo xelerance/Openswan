@@ -14,13 +14,14 @@
  * for more details.
  */
 
-char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.65 2005/03/22 23:14:54 ken Exp $";
+char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.66.2.1 2005/08/18 14:04:51 ken Exp $";
 
 
 #include <sys/types.h>
 #include <linux/types.h> /* new */
 #include <string.h>
 #include <errno.h>
+#include <sys/wait.h>
 #include <stdlib.h> /* system(), strtoul() */
 
 #include <sys/socket.h>
@@ -459,12 +460,14 @@ main(int argc, char **argv)
                         exit(1);
                 }
                 else {
+			int ret = 1;
 			if ((stat ("/proc/net/ipsec_eroute", &sts)) != 0)  {
 				fprintf(stderr, "%s: No eroute table - no IPsec support in kernel (are the modules loaded?)\n", program_name);
 			} else {
-                        	system("cat /proc/net/ipsec_eroute");
+				int ret = system("cat /proc/net/ipsec_eroute");
+				ret = ret != -1 && WIFEXITED(ret) ? WEXITSTATUS(ret) : 1;
 			}
-                        exit(0);
+			exit(ret);
                 }
         }
 	
@@ -908,6 +911,12 @@ main(int argc, char **argv)
 }
 /*
  * $Log: eroute.c,v $
+ * Revision 1.66.2.1  2005/08/18 14:04:51  ken
+ * Patch from mt@suse.de to avoid GCC warnings with system() calls
+ *
+ * Revision 1.66  2005/07/08 02:56:38  paul
+ * gcc4 fixes that were not commited because vault was down
+ *
  * Revision 1.65  2005/03/22 23:14:54  ken
  * *** empty log message ***
  *

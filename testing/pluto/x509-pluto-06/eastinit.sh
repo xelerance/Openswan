@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 TESTNAME=x509-pluto-06
 source /testing/pluto/bin/eastlocal.sh
 

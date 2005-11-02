@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_radij.c,v 1.72 2004/12/03 21:25:57 mcr Exp $
+ * RCSID $Id: ipsec_radij.c,v 1.73 2005/04/29 05:10:22 mcr Exp $
  */
 
 #include <linux/config.h>
@@ -43,11 +43,7 @@
 #  include <asm/spinlock.h> /* *lock* */
 # endif /* 23_SPINLOCK */
 #endif /* SPINLOCK */
-#ifdef NET_21
-# include <asm/uaccess.h>
-# include <linux/in6.h>
-#endif
-#include <asm/checksum.h>
+
 #include <net/ip.h>
 
 #include "openswan/ipsec_eroute.h"
@@ -554,6 +550,9 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 
 /*
  * $Log: ipsec_radij.c,v $
+ * Revision 1.73  2005/04/29 05:10:22  mcr
+ * 	removed from extraenous includes to make unit testing easier.
+ *
  * Revision 1.72  2004/12/03 21:25:57  mcr
  * 	compile time fixes for running on 2.6.
  * 	still experimental.

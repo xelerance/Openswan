@@ -1,6 +1,9 @@
+: ==== start ====
 # reset network configuration so that west thinks it is on a different
 # subnet than east. Put it on a /27 (32-hosts)
 # we don't screw with east, although we ought to.
+
+named
 
 ifdown eth1
 ifconfig eth1 inet 192.1.2.45 netmask 255.255.255.224 up
@@ -16,16 +19,19 @@ ping -c 1 -n 192.1.2.23
 
 ipsec setup start
 
-: check out if .23 has proper TXT record.
-dig 23.2.1.192.in-addr.arpa. txt
-
-/testing/pluto/bin/wait-until-pluto-started
+/testing/pluto/bin/wait-until-policy-loaded
 
 ipsec auto --add us-to-anyone
 ipsec auto --route us-to-anyone
+ipsec auto --replace clear
+ipsec whack --listen
+ipsec auto --route clear
+
+: check out if .23 has proper TXT record.
+dig 23.2.1.192.in-addr.arpa. txt
+
 
 ipsec look
-ipsec auto --status
 
 echo end
 

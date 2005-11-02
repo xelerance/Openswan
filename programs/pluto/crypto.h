@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: crypto.h,v 1.20 2005/02/15 01:48:58 mcr Exp $
+ * RCSID $Id: crypto.h,v 1.21 2005/07/05 22:05:02 mcr Exp $
  */
 
 #include <gmp.h>    /* GNU MP library */
@@ -69,6 +69,8 @@ void crypto_cbc_encrypt(const struct encrypt_desc *e, bool enc, u_int8_t *buf, s
 union hash_ctx {
 	MD5_CTX ctx_md5;
 	SHA1_CTX ctx_sha1;
+	char ctx_sha256[108];   /* This is _ugly_ [TM], but avoids */
+	char ctx_sha512[212];   /* header coupling (is checked at runtime */
     };
 
 

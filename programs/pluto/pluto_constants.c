@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pluto_constants.c,v 1.13.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: pluto_constants.c,v 1.15.2.3 2005/08/19 17:58:09 ken Exp $
  */
 
 /*
@@ -65,10 +65,11 @@ enum_names kern_interface_names =
 static const char *const dpd_action_name[] = {
   "action:clear",
   "action:hold",
+  "action:restart",
 };
 
 enum_names dpd_action_names =
-    { EVENT_NULL, DPD_ACTION_HOLD, dpd_action_name, NULL };
+    { EVENT_NULL, DPD_ACTION_RESTART, dpd_action_name, NULL };
 
 /* Timer events */
 static const char *const timer_event_name[] = {
@@ -224,8 +225,9 @@ static const char *const routing_story_strings[] = {
 enum_names routing_story =
     { RT_UNROUTED, RT_ROUTED_TUNNEL, routing_story_strings, NULL};
 
-static const char *const stfstatus_names[6] = {
+static const char *const stfstatus_names[] = {
 	"STF_IGNORE",
+	"STF_INLINE",
 	"STF_SUSPEND",
 	"STF_OK",
 	"STF_INTERNAL_ERROR",

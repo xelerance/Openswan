@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 TESTING=${TESTING:-/testing}
 PATH=${TESTING}/pluto/bin:$PATH export PATH
 TESTNAME=aggr-unit-01
@@ -28,6 +30,7 @@ ln -s ${TESTING}/pluto/ipsec.d/east .
 # make sure that we can core dump!
 ulimit -c unlimited
 
+export HELPERS="--nhelpers 0 "
 # start Initiator pluto (daemon forks to return control)
 $DOPLUTO west >$LD/pi-log 2>&1
 # start Responder pluto (daemon forks to return control)
@@ -37,6 +40,7 @@ $DOWHACK listen
 sh $TESTING/pluto/$TESTNAME/dowhack.sh 
 $DOWHACK shutdown
 
+: now try it with helpers enabled
 export HELPERS="--nhelpers 1 "
 
 # start Initiator pluto (daemon forks to return control)
@@ -48,3 +52,4 @@ $DOWHACK listen
 sh $TESTING/pluto/$TESTNAME/dowhack.sh 
 $DOWHACK shutdown
 
+: ==== end ====

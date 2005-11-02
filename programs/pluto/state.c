@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: state.c,v 1.151 2005/03/20 03:00:41 mcr Exp $
+ * RCSID $Id: state.c,v 1.151.4.4 2005/08/12 17:04:08 ken Exp $
  */
 
 #include <stdio.h>
@@ -311,7 +311,7 @@ delete_state(struct state *st)
             delete_dpd_event(st);
 
     /* if there is a suspended state transition, disconnect us */
-    if (st->st_suspended_md != NULL)
+    if (st != NULL && st->st_suspended_md != NULL)
     {
 	passert(st->st_suspended_md->st == st);
 	st->st_suspended_md->st = NULL;
@@ -471,8 +471,8 @@ delete_states_by_connection(struct connection *c, bool relations)
 		    set_cur_state(this);
 		    openswan_log("deleting state (%s)"
 			, enum_show(&state_names, this->st_state));
-		    /* MCR I can't really see a reason for this. */
-		    /* passert(this->st_event != NULL); */
+
+		    if(this->st_event != NULL) delete_event(this);
 		    delete_state(this);
 		    cur_state = old_cur_state;
 #ifdef DEBUG
@@ -587,6 +587,7 @@ duplicate_state(struct state *st)
     nst->st_remoteport = st->st_remoteport;
     nst->st_localaddr  = st->st_localaddr;
     nst->st_localport  = st->st_localport;
+    nst->st_interface  = st->st_interface;
     nst->st_clonedfrom = st->st_serialno;
 
 
@@ -1157,6 +1158,8 @@ void set_state_ike_endpoints(struct state *st
     st->st_localport  = c->spd.this.host_port;
     st->st_remoteaddr = c->spd.that.host_addr;
     st->st_remoteport = c->spd.that.host_port;
+
+    st->st_interface = c->interface;
 }
 
 /*

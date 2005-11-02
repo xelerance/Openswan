@@ -9,3 +9,6 @@ struct ike_info;
 extern char *alg_info_snprint_ike1(struct ike_info *ike_info
 				   , int eklen, int aklen
 				   , char *buf, int buflen);
+
+extern struct alg_info_ike *
+alg_info_ike_create_from_str (const char *alg_str, const char **err_p);

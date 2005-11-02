@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel.c,v 1.224.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: kernel.c,v 1.232 2005/07/13 01:54:14 mcr Exp $
  */
 
 #include <stddef.h>
@@ -72,25 +72,14 @@
 #include "nat_traversal.h"
 #endif
 
-#ifdef NAT_TRAVERSAL
-#include "packet.h"  /* for pb_stream in nat_traversal.h */
-#include "nat_traversal.h"
-#endif
-
 bool can_do_IPcomp = TRUE;  /* can system actually perform IPCOMP? */
 
 /* test if the routes required for two different connections agree
  * It is assumed that the destination subnets agree; we are only
  * testing that the interfaces and nexthops match.
  */
-#define routes_agree(c, d) ((c)->interface == (d)->interface \
+#define routes_agree(c, d) ((c)->interface->ip_dev == (d)->interface->ip_dev \
         && sameaddr(&(c)->spd.this.host_nexthop, &(d)->spd.this.host_nexthop))
-
-#ifndef KLIPS
-
-bool no_klips = TRUE;   /* don't actually use KLIPS */
-
-#else /* !KLIPS */
 
 /* bare (connectionless) shunt (eroute) table
  *
@@ -167,8 +156,6 @@ static void set_text_said(char *text_said
                           , const ip_address *dst
                           , ipsec_spi_t spi
                           , int proto);
-
-bool no_klips = FALSE;  /* don't actually use KLIPS */
 
 static const struct pfkey_proto_info null_proto_info[2] = {
         {
@@ -247,8 +234,6 @@ record_and_initiate_opportunistic(const ip_subnet *ours
         }
     }
 }
-
-#endif /* KLIPS */
 
 static unsigned get_proto_reqid(unsigned base, int proto)
 {
@@ -360,50 +345,12 @@ get_my_cpi(struct spd_route *sr, bool tunnel)
     return htonl((ipsec_spi_t)latest_cpi);
 }
 
-/* invoke the updown script to do the routing and firewall commands required
- *
- * The user-specified updown script is run.  Parameters are fed to it in
- * the form of environment variables.  All such environment variables
- * have names starting with "PLUTO_".
- *
- * The operation to be performed is specified by PLUTO_VERB.  This
- * verb has a suffix "-host" if the client on this end is just the
- * host; otherwise the suffix is "-client".  If the address family
- * of the host is IPv6, an extra suffix of "-v6" is added.
- *
- * "prepare-host" and "prepare-client" are used to delete a route
- * that may exist (due to forces outside of Pluto).  It is used to
- * prepare for pluto creating a route.
- *
- * "route-host" and "route-client" are used to install a route.
- * Since routing is based only on destination, the PLUTO_MY_CLIENT_*
- * values are probably of no use (using them may signify a bug).
- *
- * "unroute-host" and "unroute-client" are used to delete a route.
- * Since routing is based only on destination, the PLUTO_MY_CLIENT_*
- * values are probably of no use (using them may signify a bug).
- *
- * "up-host" and "up-client" are run when an eroute is added (not replaced).
- * They are useful for adjusting a firewall: usually for adding a rule
- * to let processed packets flow between clients.  Note that only
- * one eroute may exist for a pair of client subnets but inbound
- * IPsec SAs may persist without an eroute.
- *
- * "down-host" and "down-client" are run when an eroute is deleted.
- * They are useful for adjusting a firewall.
- */
-
-#ifndef DEFAULT_UPDOWN
-# define DEFAULT_UPDOWN "ipsec _updown"
-#endif
-
 static bool
 do_command(struct connection *c, struct spd_route *sr, const char *verb, struct state *st)
 {
-    char cmd[1536];     /* arbitrary limit on shell command length */
     const char *verb_suffix;
 
-    /* figure out which verb suffix applies */
+    /* figure out which verb suffix applies for logging purposes */
     {
         const char *hs, *cs;
 
@@ -425,253 +372,17 @@ do_command(struct connection *c, struct spd_route *sr, const char *verb, struct 
             ? hs : cs;
     }
 
-    /* form the command string */
-    {
-        char
-            nexthop_str[sizeof("PLUTO_NEXT_HOP='' ")+ADDRTOT_BUF],
-            me_str[ADDRTOT_BUF],
-            myid_str[IDTOA_BUF],
-            srcip_str[ADDRTOT_BUF+sizeof("PLUTO_MY_SOURCEIP=")+4],
-            myclient_str[SUBNETTOT_BUF],
-            myclientnet_str[ADDRTOT_BUF],
-            myclientmask_str[ADDRTOT_BUF],
-            peer_str[ADDRTOT_BUF],
-            peerid_str[IDTOA_BUF],
-            peerclient_str[SUBNETTOT_BUF],
-            peerclientnet_str[ADDRTOT_BUF],
-            peerclientmask_str[ADDRTOT_BUF],
-            secure_myid_str[IDTOA_BUF] = "",
-            secure_peerid_str[IDTOA_BUF] = "",
-            secure_peerca_str[IDTOA_BUF] = "",
-            secure_xauth_username_str[IDTOA_BUF] = "";
-	    
-        ip_address ta;
+    DBG(DBG_CONTROL, DBG_log("command executing %s%s"
+			     , verb, verb_suffix));
 
-	nexthop_str[0]='\0';
-	if(addrbytesptr(&sr->this.host_nexthop, NULL)
-	   && !isanyaddr(&sr->this.host_nexthop))
-	{
-	    char *n;
-	    strcpy(nexthop_str, "PLUTO_NEXT_HOP='");
-	    n = nexthop_str + strlen(nexthop_str);
-	    addrtot(&sr->this.host_nexthop, 0,
-		    n, sizeof(nexthop_str)-strlen(nexthop_str));
-	    strncat(nexthop_str, "' ", sizeof(nexthop_str));
-	}
-
-        addrtot(&sr->this.host_addr, 0, me_str, sizeof(me_str));
-        idtoa(&sr->this.id, myid_str, sizeof(myid_str));
-        escape_metachar(myid_str, secure_myid_str, sizeof(secure_myid_str));
-        subnettot(&sr->this.client, 0, myclient_str, sizeof(myclientnet_str));
-        networkof(&sr->this.client, &ta);
-        addrtot(&ta, 0, myclientnet_str, sizeof(myclientnet_str));
-        maskof(&sr->this.client, &ta);
-        addrtot(&ta, 0, myclientmask_str, sizeof(myclientmask_str));
-
-        addrtot(&sr->that.host_addr, 0, peer_str, sizeof(peer_str));
-        idtoa(&sr->that.id, peerid_str, sizeof(peerid_str));
-        escape_metachar(peerid_str, secure_peerid_str, sizeof(secure_peerid_str));
-        subnettot(&sr->that.client, 0, peerclient_str, sizeof(peerclientnet_str));
-        networkof(&sr->that.client, &ta);
-        addrtot(&ta, 0, peerclientnet_str, sizeof(peerclientnet_str));
-        maskof(&sr->that.client, &ta);
-        addrtot(&ta, 0, peerclientmask_str, sizeof(peerclientmask_str));
-	
-	secure_xauth_username_str[0]='\0';
-	if (st != NULL && st->st_xauth_username) {
-		size_t len;
-	 	strcpy(secure_xauth_username_str, "PLUTO_XAUTH_USERNAME='");
-
-		len = strlen(secure_xauth_username_str);
-		remove_metachar(st->st_xauth_username
-				,secure_xauth_username_str+len
-				,sizeof(secure_xauth_username_str)-(len+2));
-		strncat(st->st_xauth_username, "'", sizeof(secure_xauth_username_str)-1);
-	}
-
-        srcip_str[0]='\0';
-        if(addrbytesptr(&sr->this.host_srcip, NULL) != 0
-           && !isanyaddr(&sr->this.host_srcip))
-        {
-            char *p;
-            int   l;
-            strncat(srcip_str, "PLUTO_MY_SOURCEIP=", sizeof(srcip_str));
-            strncat(srcip_str, "'", sizeof(srcip_str));
-            l = strlen(srcip_str);
-            p = srcip_str + l;
-            
-            addrtot(&sr->this.host_srcip, 0, p, sizeof(srcip_str));
-            strncat(srcip_str, "'", sizeof(srcip_str));
-        }
-
-        {
-            struct pubkey_list *p;
-            char peerca_str[IDTOA_BUF];
-
-            for (p = pubkeys; p != NULL; p = p->next)
-                {
-                    struct pubkey *key = p->key;
-                    int pathlen;
-                    
-                    if (key->alg == PUBKEY_ALG_RSA && same_id(&sr->that.id, &key->id)
-                        && trusted_ca(key->issuer, sr->that.ca, &pathlen))
-                        {
-                            dntoa_or_null(peerca_str, IDTOA_BUF, key->issuer, "");
-                            escape_metachar(peerca_str, secure_peerca_str, sizeof(secure_peerca_str));
-                            break;
-                        }
-                }
-        }
-
-        if (-1 == snprintf(cmd, sizeof(cmd)
-			   , "2>&1 "   /* capture stderr along with stdout */
-			   "PLUTO_VERSION='1.1' "    /* change VERSION when interface spec changes */
-			   "PLUTO_VERB='%s%s' "
-			   "PLUTO_CONNECTION='%s' "
-			   "%s"      /* possible PLUTO_NEXT_HOP */
-			   "PLUTO_INTERFACE='%s' "
-			   "PLUTO_ME='%s' "
-			   "PLUTO_MY_ID='%s' "
-			   "PLUTO_MY_CLIENT='%s' "
-			   "PLUTO_MY_CLIENT_NET='%s' "
-			   "PLUTO_MY_CLIENT_MASK='%s' "
-			   "PLUTO_MY_PORT='%u' "
-			   "PLUTO_MY_PROTOCOL='%u' "
-			   "PLUTO_PEER='%s' "
-			   "PLUTO_PEER_ID='%s' "
-			   "PLUTO_PEER_CLIENT='%s' "
-			   "PLUTO_PEER_CLIENT_NET='%s' "
-			   "PLUTO_PEER_CLIENT_MASK='%s' "
-			   "PLUTO_PEER_PORT='%u' "
-			   "PLUTO_PEER_PROTOCOL='%u' "
-			   "PLUTO_PEER_CA='%s' "
-			   "PLUTO_CONN_POLICY='%s' "
-			   "%s "
-			   "%s "       /* PLUTO_MY_SRCIP */                    
-			   "%s"        /* actual script */
-			   , verb, verb_suffix
-			   , c->name
-			   , nexthop_str
-			   , c->interface->vname
-			   , me_str
-			   , secure_myid_str
-			   , myclient_str
-			   , myclientnet_str
-			   , myclientmask_str
-			   , sr->this.port
-			   , sr->this.protocol
-			   , peer_str
-			   , secure_peerid_str
-			   , peerclient_str
-			   , peerclientnet_str
-			   , peerclientmask_str
-			   , sr->that.port
-			   , sr->that.protocol
-			   , secure_peerca_str
-			   , prettypolicy(c->policy)
-			   , secure_xauth_username_str
-			   , srcip_str
-			   , sr->this.updown == NULL? DEFAULT_UPDOWN : sr->this.updown))
-        {
-            loglog(RC_LOG_SERIOUS, "%s%s command too long!", verb, verb_suffix);
-            return FALSE;
-        }
+    if(kernel_ops->docommand != NULL) {
+	return (*kernel_ops->docommand)(c,sr, verb, st);
+    } else {
+	DBG(DBG_CONTROL, DBG_log("no do_command for method %s", kernel_ops->opname));
     }
-
-    DBG(DBG_CONTROL, DBG_log("executing %s%s: %s"
-        , verb, verb_suffix, cmd));
-
-#ifdef KLIPS
-    if (!no_klips)
-    {
-        /* invoke the script, catching stderr and stdout
-         * It may be of concern that some file descriptors will
-         * be inherited.  For the ones under our control, we
-         * have done fcntl(fd, F_SETFD, FD_CLOEXEC) to prevent this.
-         * Any used by library routines (perhaps the resolver or syslog)
-         * will remain.
-         */
-	__sighandler_t savesig;
-        FILE *f;
-
-	savesig = signal(SIGCHLD, SIG_DFL);
-        f = popen(cmd, "r");
-
-        if (f == NULL)
-        {
-            loglog(RC_LOG_SERIOUS, "unable to popen %s%s command", verb, verb_suffix);
-	    signal(SIGCHLD, savesig);
-            return FALSE;
-        }
-
-        /* log any output */
-        for (;;)
-        {
-            /* if response doesn't fit in this buffer, it will be folded */
-            char resp[256];
-
-            if (fgets(resp, sizeof(resp), f) == NULL)
-            {
-                if (ferror(f))
-                {
-                    log_errno((e, "fgets failed on output of %s%s command"
-                        , verb, verb_suffix));
-		    signal(SIGCHLD, savesig);
-                    return FALSE;
-                }
-                else
-                {
-                    passert(feof(f));
-                    break;
-                }
-            }
-            else
-            {
-                char *e = resp + strlen(resp);
-
-                if (e > resp && e[-1] == '\n')
-                    e[-1] = '\0';       /* trim trailing '\n' */
-                openswan_log("%s%s output: %s", verb, verb_suffix, resp);
-            }
-        }
-
-        /* report on and react to return code */
-        {
-            int r = pclose(f);
-	    signal(SIGCHLD, savesig);
-
-            if (r == -1)
-            {
-                log_errno((e, "pclose failed for %s%s command"
-                    , verb, verb_suffix));
-                return FALSE;
-            }
-            else if (WIFEXITED(r))
-            {
-                if (WEXITSTATUS(r) != 0)
-                {
-                    loglog(RC_LOG_SERIOUS, "%s%s command exited with status %d"
-                        , verb, verb_suffix, WEXITSTATUS(r));
-                    return FALSE;
-                }
-            }
-            else if (WIFSIGNALED(r))
-            {
-                loglog(RC_LOG_SERIOUS, "%s%s command exited with signal %d"
-                    , verb, verb_suffix, WTERMSIG(r));
-                return FALSE;
-            }
-            else
-            {
-                loglog(RC_LOG_SERIOUS, "%s%s command exited with unknown status %d"
-                    , verb, verb_suffix, r);
-                return FALSE;
-            }
-        }
-    }
-#endif /* KLIPS */
     return TRUE;
 }
+
 
 /* Check that we can route (and eroute).  Diagnose if we cannot. */
 
@@ -721,7 +432,7 @@ could_route(struct connection *c)
     }
 
     /* if routing would affect IKE messages, reject */
-    if (!no_klips
+    if (kern_interface != NO_KERNEL
 #ifdef NAT_TRAVERSAL
     && c->spd.this.host_port != NAT_T_IKE_FLOAT_PORT
 #endif
@@ -1291,6 +1002,10 @@ sag_eroute(struct state *st, struct spd_route *sr
     proto_info[i].proto = 0;
     tunnel = FALSE;
 
+    inner_proto = 0;
+    inner_satype= 0;
+    inner_spi = 0;
+
     if (st->st_ah.present)
     {
         inner_spi = st->st_ah.attrs.spi;
@@ -1583,6 +1298,8 @@ scan_proc_shunts(void)
         err_t context = ""
             , ugh = NULL;
 
+	ff = NULL;
+
         cp = fgets(buf, sizeof(buf), f);
         if (cp == NULL)
             break;
@@ -1811,8 +1528,8 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     struct connection *c = st->st_connection;
     ip_subnet src, dst;
     ip_subnet src_client, dst_client;
-    ipsec_spi_t inner_spi;
-    unsigned int proto, satype;
+    ipsec_spi_t inner_spi = 0;
+    unsigned int proto = 0, satype = 0;
     bool replace;
 
     /* SPIs, saved for spigrouping or undoing, if necessary */
@@ -2302,9 +2019,12 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 fail:
     {
         /* undo the done SPIs */
-        while (said_next-- != said)
-            (void) del_spi(said_next->spi, said_next->proto
-                , &src.addr, said_next->dst);
+        while (said_next-- != said) {
+	    if(said_next->proto) {
+		(void) del_spi(said_next->spi, said_next->proto
+			       , &src.addr, said_next->dst);
+	    }
+	}
         return FALSE;
     }
 }
@@ -3094,10 +2814,15 @@ bool was_eroute_idle(struct state *st, time_t idle_max) {
                                 ret = TRUE; /* be paranoid */
                                 break;
                         }
-                        if(sscanf(p, "%d", (int *) &idle_time) <= 0) {
+			{
+			    int idle_time_int;
+
+			    if(sscanf(p, "%d", &idle_time_int) <= 0) {
                                 ret = TRUE;
                                 break;
-                        }
+			    }
+			    idle_time = idle_time_int;
+			}
                         if(idle_time > idle_max) {
                                DBG(DBG_KLIPS,
                                 DBG_log("SA %s found idle for more than %ld sec",

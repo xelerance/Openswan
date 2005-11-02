@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_ipcomp_c_version[] = "RCSID $Id: ipsec_ipcomp.c,v 1.3 2004/07/10 19:11:18 mcr Exp $";
+char ipsec_ipcomp_c_version[] = "RCSID $Id: ipsec_ipcomp.c,v 1.5 2005/04/29 05:10:22 mcr Exp $";
 #include <linux/config.h>
 #include <linux/version.h>
 
@@ -44,12 +44,7 @@ char ipsec_ipcomp_c_version[] = "RCSID $Id: ipsec_ipcomp.c,v 1.3 2004/07/10 19:1
 #  include <asm/spinlock.h> /* *lock* */
 # endif /* SPINLOCK_23 */
 #endif /* SPINLOCK */
-#ifdef NET_21
-# include <asm/uaccess.h>
-# include <linux/in6.h>
-# define proto_priv cb
-#endif /* NET21 */
-#include <asm/checksum.h>
+
 #include <net/ip.h>
 
 #include "openswan/radij.h"
@@ -96,7 +91,7 @@ ipsec_rcv_ipcomp_checks(struct ipsec_rcv_state *irs,
 		return IPSEC_RCV_BADLEN;
 	}
 
-	irs->protostuff.ipcompstuff.compp = (struct ipcomphdr *)(skb->data + irs->iphlen);
+	irs->protostuff.ipcompstuff.compp = (struct ipcomphdr *)skb->h.raw;
 	irs->said.spi = htonl((__u32)ntohs(irs->protostuff.ipcompstuff.compp->ipcomp_cpi));
 	return IPSEC_RCV_OK;
 }
@@ -110,28 +105,11 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 
 	skb=irs->skb;
 
-	ipsec_xmit_dmp("ipcomp", skb->data, skb->len);
+	ipsec_xmit_dmp("ipcomp", skb->h.raw, skb->len);
 
 	if(ipsp == NULL) {
 		return IPSEC_RCV_SAIDNOTFOUND;
 	}
-
-#if 0
-	/* we want to check that this wasn't the first SA on the list, because
-	 * we don't support bare IPCOMP, for unexplained reasons. MCR
-	 */
-	if (ipsp->ips_onext != NULL) {
-		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
-			    "Incoming packet with outer IPCOMP header SA:%s: not yet supported by KLIPS, dropped\n",
-			    irs->sa_len ? irs->sa : " (error)");
-		if(irs->stats) {
-			irs->stats->rx_dropped++;
-		}
-
-		return IPSEC_RCV_IPCOMPALONE;
-	}
-#endif
 
 	if(sysctl_ipsec_inbound_policy_check &&
 	   ((((ntohl(ipsp->ips_said.spi) & 0x0000ffff) != ntohl(irs->said.spi)) &&

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: timer.h,v 1.18 2004/08/25 16:23:41 mcr Exp $
+ * RCSID $Id: timer.h,v 1.19 2005/07/07 04:45:39 mcr Exp $
  */
 
 extern time_t now(void);	/* careful version of time(2) */
@@ -21,7 +21,7 @@ struct state;	/* forward declaration */
 struct event
 {
     time_t          ev_time;
-    int             ev_type;        /* Event type */
+    enum event_type ev_type;        /* Event type */
     struct state   *ev_state;       /* Pointer to relevant state (if any) */
     struct event   *ev_next;        /* Pointer to next event */
 };

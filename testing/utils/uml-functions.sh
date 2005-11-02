@@ -1,7 +1,7 @@
 #! /bin/sh 
 #
 # 
-# $Id: uml-functions.sh,v 1.35 2004/10/17 17:38:35 mcr Exp $
+# $Id: uml-functions.sh,v 1.38 2005/07/14 01:35:54 mcr Exp $
 #
 
 setup_make() {
@@ -163,7 +163,7 @@ setup_host_make() {
 	# install FreeSWAN if appropriate.
         
 	echo "$hostroot/usr/local/sbin/ipsec : ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver"
-	echo "$TAB cd ${OPENSWANSRCDIR} && make DESTDIR=$POOLSPACE/$hostroot install"
+	echo "$TAB cd ${OPENSWANSRCDIR} && make DESTDIR=$POOLSPACE/$hostroot USE_OBJDIR=true install"
 	echo
 	depends="$depends $hostroot/usr/local/sbin/ipsec"
 
@@ -201,6 +201,7 @@ setup_host_make() {
     echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
     echo "$TAB echo ''          >>$startscript"
     echo "$TAB echo '$POOLSPACE/$host/linux root=/dev/root rootfstype=hostfs rootflags=$POOLSPACE/$hostroot rw umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT \$\$*' >>$startscript"
+    echo "$TAB echo 'if [ -n \"$SLEEP\" ]; then eval $SLEEP; fi'  >>$startscript"
     echo "$TAB chmod +x $startscript"
     echo
     depends="$depends $startscript"
@@ -287,8 +288,84 @@ setup_host() {
     fi
 }
 
+applypatches() {
+    if [ ! -d arch/um/.PATCHAPPLIED ] 
+    then
+	echo Applying $UMLPATCH
+
+	if [ "$UMLPATCH" != "none" ] && [ "$UMLPATCH" != /dev/null ]
+	then
+	    if bzcat $UMLPATCH | patch -p1 
+	    then
+		:
+	    else
+		echo "Failed to apply UML patch: $UMLPATCH"
+		exit 1;
+	    fi
+        fi
+
+	if [ -n "$UMLPATCH2" ] && [ -f $UMLPATCH2 ]
+	then
+		echo Applying $UMLPATCH2
+		if bzcat $UMLPATCH2 | patch -p1 
+		then
+		    :
+		else
+		    echo "Failed to apply UML patch: $UMLPATCH2"
+		    exit 1;
+		fi
+	fi
+
+	if [ -n "$NONINTPATCH" ] && [ "$NONINTPATCH" != "none" ]
+	then
+	    if [ -f "$NONINTPATCH" ]
+	    then
+		echo Applying non-interactive config patch
+		cat $NONINTPATCH | patch -p1
+		NONINTCONFIG=oldconfig_nonint
+	    else
+		echo Can not find +$NONINTPATCH+
+		exit 1
+	    fi
+	fi
+
+	if [ -n "$EXTRAPATCH" ]
+	then
+	    echo Applying other version specific stuff
+	    cat $EXTRAPATCH | patch -p1
+	fi
+
+	for patch in ${TESTINGROOT}/kernelconfigs/local_${KERNEL_MAJ_VERSION}_*.patch
+	do
+	    if [ -f $patch ] 
+	    then
+		echo Applying local patch $patch
+		cat $patch | patch -p1
+	    fi
+	done
+	mkdir -p arch/um/.PATCHAPPLIED
+
+	if $NATTPATCH
+	then
+	    echo Applying the NAT-Traversal patch
+	    (cd $OPENSWANSRCDIR && make nattpatch${KERNVERSION} ) | patch -p1
+	else
+            echo Not applying the NAT-Traversal patch
+	fi
+    fi
+}
+
 #
 # $Log: uml-functions.sh,v $
+# Revision 1.38  2005/07/14 01:35:54  mcr
+# 	use USE_OBJDIR.
+#
+# Revision 1.37  2005/05/11 02:17:52  mcr
+# 	add option to sleep at end of UML run.
+#
+# Revision 1.36  2005/04/15 02:16:53  mcr
+# 	re-factored kernel directory creation/patching to routine.
+#
 # Revision 1.35  2004/10/17 17:38:35  mcr
 # 	add /usr/local and /var/tmp mounts to /etc/fstab so that
 # 	they can be umount'ed/mount'ed to flush changes.

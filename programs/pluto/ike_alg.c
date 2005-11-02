@@ -58,6 +58,7 @@ static struct db_attr otempty[] = {
 	{ OAKLEY_HASH_ALGORITHM,       -1 },
 	{ OAKLEY_AUTHENTICATION_METHOD, -1 },
 	{ OAKLEY_GROUP_DESCRIPTION,    -1 },
+	{ OAKLEY_KEY_LENGTH,    -1 },
 	};
 
 static struct db_trans oakley_trans_empty[] = {
@@ -101,7 +102,7 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	goto fail;
     }
 
-    gsp = sa_copy_sa(&oakley_empty, 0);
+    gsp = NULL;
 
     /*
      * for each group, we will create a new proposal item, and then
@@ -113,7 +114,7 @@ oakley_alg_makedb(struct alg_info_ike *ai
     ALG_INFO_IKE_FOREACH(ai, ike_info, i) {
 
 	if(ike_info->ike_default == FALSE) {
-	    struct db_attr  *enc, *hash, *auth, *grp;
+	    struct db_attr  *enc, *hash, *auth, *grp, *enc_keylen, *new_auth;
 	    struct db_trans *trans;
 	    struct db_prop  *prop;
 	    struct db_prop_conj *cprop;
@@ -156,8 +157,23 @@ oakley_alg_makedb(struct alg_info_ike *ai
 		}
 	    
 	    /* okay copy the basic item, and modify it. */
-	    emp_sp = sa_copy_sa_first(base);
-	    
+	    if(eklen > 0)
+	    {
+		emp_sp = sa_copy_sa(&oakley_empty, 0);
+		cprop = &base->prop_conjs[0];
+		prop = &cprop->props[0];
+		trans = &prop->trans[0];
+		new_auth = &trans->attrs[2];
+
+		cprop = &emp_sp->prop_conjs[0];
+		prop = &cprop->props[0];
+		trans = &prop->trans[0];
+		auth = &trans->attrs[2];
+		*auth = *new_auth;
+	    }
+	    else
+		emp_sp = sa_copy_sa_first(base);
+
 	    passert(emp_sp->prop_conj_cnt == 1);
 	    cprop = &emp_sp->prop_conjs[0];
 	    
@@ -167,11 +183,16 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	    passert(prop->trans_cnt == 1);
 	    trans = &prop->trans[0];
 	    
-	    passert(trans->attr_cnt == 4);
+	    passert(trans->attr_cnt == 4 || trans->attr_cnt == 5);
 	    enc  = &trans->attrs[0];
 	    hash = &trans->attrs[1];
 	    auth = &trans->attrs[2];
 	    grp  = &trans->attrs[3];
+
+	    if(eklen > 0) {
+		enc_keylen = &trans->attrs[4];
+		enc_keylen->val = eklen;
+	    }
 
 	    passert(enc->type == OAKLEY_ENCRYPTION_ALGORITHM);
 	    if(ealg > 0) {
@@ -204,7 +225,9 @@ oakley_alg_makedb(struct alg_info_ike *ai
 					 , ike_info->ike_halg
 					 , ike_info->ike_modp
 					 , (long)ike_info->ike_eklen));
-		free_sa(gsp);
+		if(gsp) {
+		    free_sa(gsp);
+		}
 		gsp = emp_sp;
 	    } else {
 		free_sa(emp_sp);
@@ -229,11 +252,15 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	    struct db_sa *new;
 
 	    /* now merge emp_sa and gsp */
-	    new = sa_merge_proposals(gsp, emp_sp);
-	    free_sa(gsp);
-	    free_sa(emp_sp);
-	    emp_sp = NULL;
-	    gsp = new;
+	    if(gsp) {
+		new = sa_merge_proposals(gsp, emp_sp);
+		free_sa(gsp);
+		free_sa(emp_sp);
+		emp_sp = NULL;
+		gsp = new;
+	    } else {
+		gsp = emp_sp;
+	    }
 	}
 	transcnt++;
     }
@@ -608,8 +635,9 @@ return_out:
 int
 ike_alg_register_hash(struct hash_desc *hash_desc)
 {
-	const char *alg_name;
+	const char *alg_name = "<none>";
 	int ret=0;
+
 	if (hash_desc->common.algo_id > OAKLEY_HASH_MAX) {
 		plog ("ike_alg_register_hash(): hash alg=%d < max=%d",
 				hash_desc->common.algo_id, OAKLEY_HASH_MAX);
@@ -629,7 +657,9 @@ ike_alg_register_hash(struct hash_desc *hash_desc)
 				hash_desc->common.algo_id);
 		return_on(ret,-EINVAL);
 	}
+
 	alg_name=enum_name(&oakley_hash_names, hash_desc->common.algo_id);
+
 	if (!alg_name) {
 		plog ("ike_alg_register_hash(): WARNING: hash alg=%d not found in "
 				"constants.c:oakley_hash_names  ",

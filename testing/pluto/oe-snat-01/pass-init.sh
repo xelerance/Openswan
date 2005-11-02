@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 ipsec setup start
 /testing/pluto/basic-pluto-01/eroutewait.sh trap
 ipsec auto --delete packetdefault

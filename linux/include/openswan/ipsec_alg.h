@@ -37,6 +37,8 @@
 #include <linux/types.h>
 #include <linux/list.h>
 #include <asm/atomic.h>
+#include <pfkey.h>
+
 /*	
  *	The following structs are used via pointers in ipsec_alg object to
  *	avoid ipsec_alg.h coupling with freeswan headers, thus simplifying
@@ -67,11 +69,13 @@ struct esp;
  *
  ***************************************************************/
 
-/* 
- * 	common part for every struct ipsec_alg_*	
- * 	(sortof poor's man OOP)
- */
-#define IPSEC_ALG_STRUCT_COMMON \
+#define ixt_alg_type ixt_support.ias_exttype
+#define ixt_alg_id   ixt_support.ias_id
+
+#define IPSEC_ALG_ST_SUPP	0x01
+#define IPSEC_ALG_ST_REGISTERED 0x02
+#define IPSEC_ALG_ST_EXCL	0x04
+struct ipsec_alg {
 	unsigned ixt_version;	/* only allow this version (or 'near')*/ \
 	struct list_head ixt_list;	/* dlinked list */ \
 	struct module *ixt_module;	/* THIS_MODULE */ \
@@ -80,31 +84,15 @@ struct esp;
 	char ixt_name[16];	/* descriptive short name, eg. "3des" */ \
 	void *ixt_data;		/* private for algo implementation */ \
 	uint8_t  ixt_blocksize;	/* blocksize in bytes */ \
-	\
-	/* THIS IS A COPY of struct supported (lib/pfkey.h)        \
-	 * please keep in sync until we migrate 'supported' stuff  \
-	 * to ipsec_alg \
-	 */ \
-	uint16_t ixt_alg_type;	/* correspond to IPSEC_ALG_{ENCRYPT,AUTH} */ \
-	uint8_t  ixt_alg_id;	/* enc. alg. number, eg. ESP_3DES */ \
-	uint8_t  ixt_ivlen;	/* ivlen in bits, expected to be multiple of 8! */ \
-	uint16_t ixt_keyminbits;/* min. keybits (of entropy) */ \
-	uint16_t ixt_keymaxbits;/* max. keybits (of entropy) */
 
-#define ixt_support ixt_alg_type
-	
-#define IPSEC_ALG_ST_SUPP	0x01
-#define IPSEC_ALG_ST_REGISTERED 0x02
-#define IPSEC_ALG_ST_EXCL	0x04
-struct ipsec_alg {
-	IPSEC_ALG_STRUCT_COMMON
+	struct ipsec_alg_supported ixt_support;
 };
 /* 
  * 	Note the const in cbc_encrypt IV arg:
  * 	some ciphers like to toast passed IV (eg. 3DES): make a local IV copy
  */
 struct ipsec_alg_enc {
-	IPSEC_ALG_STRUCT_COMMON
+	struct ipsec_alg ixt_common;
 	unsigned ixt_e_keylen;		/* raw key length in bytes          */
 	unsigned ixt_e_ctx_size;	/* sa_p->key_e_size */
 	int (*ixt_e_set_key)(struct ipsec_alg_enc *alg, __u8 *key_e, const __u8 *key, size_t keysize);
@@ -113,7 +101,7 @@ struct ipsec_alg_enc {
 	int (*ixt_e_cbc_encrypt)(struct ipsec_alg_enc *alg, __u8 *key_e, __u8 *in, int ilen, const __u8 *iv, int encrypt);
 };
 struct ipsec_alg_auth {
-	IPSEC_ALG_STRUCT_COMMON
+	struct ipsec_alg ixt_common;
 	unsigned ixt_a_keylen;		/* raw key length in bytes          */
 	unsigned ixt_a_ctx_size;	/* sa_p->key_a_size */
 	unsigned ixt_a_authlen;		/* 'natural' auth. hash len (bytes) */

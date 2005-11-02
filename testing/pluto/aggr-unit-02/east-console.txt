@@ -1,59 +1,3 @@
-Starting UML PATH/start.sh
-spawn PATH single
-Linux version XXXX
-On node 0 totalpages: 8192
-Kernel command line:
-Calibrating delay loop... XXXX bogomips
-Dentry-cache hash table entries: NUMBERS
-Inode-cache hash table entries: NUMBERS
-Mount-cache hash table entries: NUMBERS
-Buffer-cache hash table entries: NUMBERS
-Page-cache hash table entries: NUMEBRS
-POSIX conformance testing by UNIFIX
-Linux NET4.0 for Linux 2.4
-Based upon Swansea University Computer Society NET3.039
-Initializing RT netlink socket
-Starting kswapd
-VFS: Diskquotas version dquot_6.4.0 initialized
-devfs: VERSION Richard Gooch (rgooch@atnf.csiro.au)
-devfs: boot_options Q
-pty: 256 Unix98 ptys configured
-SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
-loop: loaded (max 8 devices)
-PPP generic driver version VERSION
-Universal TUN/TAP device driver VERSION
-
-NET4: Linux TCP/IP 1.0 for NET4.0
-IP Protocols: ICMP, UDP, TCP
-IP: routing cache hash table of 512 buckets, 4Kbytes
-TCP: Hash tables configured (established 2048 bind 2048)
-IPv4 over IPv4 tunneling driver
-GRE over IPv4 tunneling driver
-NET4: Unix domain sockets 1.0/SMP for Linux NET4.0.
-Mounted devfs on /dev
-INIT: version 2.78 booting
-Activating swap...
-Calculating module dependancies
-done.
-Loading modules: LIST
-
-Checking all file systems...
-Parallelizing fsck version 1.18 (11-Nov-1999)
-Setting kernel variables.
-Mounting local filesystems...
-/dev/shm on /tmp type tmpfs (rw)
-/dev/shm on /var/run type tmpfs (rw)
-devpts on /dev/pts type devpts (rw,mode=0622)
-none on /usr/share type hostfs (ro)
-Enabling packet forwarding: done.
-Configuring network interfaces: done.
-Cleaning: /tmp /var/lock /var/run.
-Initializing random number generator... done.
-Recovering nvi editor sessions... done.
-Give root password for maintenance
-(or type Control-D for normal startup): 
-east:~#
- klogd -c 4 -x -f /tmp/klog.log
 east:~#
  TESTING=${TESTING:-/testing}
 east:~#
@@ -88,11 +32,11 @@ east:/tmp/aggr-unit-02# $DOPLUTO east >$LD/pr-log 2>&1
 east:/tmp/aggr-unit-02# $DOWHACK listen
 whackwest --listen
 002 listening for IKE messages
-002 adding interface virtual127.95.7.1/lo:w 127.95.7.1
+002 adding interface virtual127.95.7.1/lo:w 127.95.7.1:8500
 002 loading secrets from "/tmp/aggr-unit-02/ipsec.secrets/west"
 whackeast --listen
 002 listening for IKE messages
-002 adding interface virtual127.95.7.2/lo:e 127.95.7.2
+002 adding interface virtual127.95.7.2/lo:e 127.95.7.2:8500
 002 loading secrets from "/tmp/aggr-unit-02/ipsec.secrets/east"
 east:/tmp/aggr-unit-02# sh $TESTING/pluto/$TESTNAME/dowhack.sh 
 whackwest --name isakmp-aggr2-psk --psk --aggrmode --ike=3des-sha1 --host 127.95.7.2 --ikeport 8500 --updown silly --to --updown sally --host 127.95.7.1 --ikeport 8500 --rekeymargin 350 --ikelifetime 900 --ipseclifetime 800 --keyingtries 2
@@ -103,12 +47,14 @@ whackwest --name isakmp-aggr2-psk --initiate
 003 "isakmp-aggr2-psk" #1: multiple transforms were set in aggressive mode. Only first one used.
 003 "isakmp-aggr2-psk" #1: transform (5,2,2,0) ignored.
 002 "isakmp-aggr2-psk" #1: initiating Aggressive Mode #1, connection "isakmp-aggr2-psk"
+003 "isakmp-aggr2-psk" #1: multiple transforms were set in aggressive mode. Only first one used.
+003 "isakmp-aggr2-psk" #1: transform (5,2,2,0) ignored.
 112 "isakmp-aggr2-psk" #1: STATE_AGGR_I1: initiate
+003 "isakmp-aggr2-psk" #1: received Vendor ID payload [Dead Peer Detection]
 002 "isakmp-aggr2-psk" #1: Aggressive mode peer ID is ID_IPV4_ADDR: '127.95.7.2'
 002 "isakmp-aggr2-psk" #1: Aggressive mode peer ID is ID_IPV4_ADDR: '127.95.7.2'
 002 "isakmp-aggr2-psk" #1: transition from state STATE_AGGR_I1 to state STATE_AGGR_I2
-002 "isakmp-aggr2-psk" #1: sent AI2, ISAKMP SA established
-004 "isakmp-aggr2-psk" #1: STATE_AGGR_I2: sent AI2, ISAKMP SA established
+004 "isakmp-aggr2-psk" #1: STATE_AGGR_I2: sent AI2, ISAKMP SA established {auth=OAKLEY_PRESHARED_KEY cipher=oakley_3des_cbc_192 prf=oakley_sha group=modp1536}
 whackwest --shutdown
 002 shutting down
 whackeast --shutdown
@@ -119,11 +65,11 @@ east:/tmp/aggr-unit-02# $DOPLUTO east >$LD/pr-log 2>&1
 east:/tmp/aggr-unit-02# $DOWHACK listen
 whackwest --listen
 002 listening for IKE messages
-002 adding interface virtual127.95.7.1/lo:w 127.95.7.1
+002 adding interface virtual127.95.7.1/lo:w 127.95.7.1:8500
 002 loading secrets from "/tmp/aggr-unit-02/ipsec.secrets/west"
 whackeast --listen
 002 listening for IKE messages
-002 adding interface virtual127.95.7.2/lo:e 127.95.7.2
+002 adding interface virtual127.95.7.2/lo:e 127.95.7.2:8500
 002 loading secrets from "/tmp/aggr-unit-02/ipsec.secrets/east"
 east:/tmp/aggr-unit-02# sh $TESTING/pluto/$TESTNAME/dowhack.sh 
 whackwest --name isakmp-aggr2-psk --psk --aggrmode --ike=3des-sha1 --host 127.95.7.2 --ikeport 8500 --updown silly --to --updown sally --host 127.95.7.1 --ikeport 8500 --rekeymargin 350 --ikelifetime 900 --ipseclifetime 800 --keyingtries 2
@@ -134,22 +80,16 @@ whackwest --name isakmp-aggr2-psk --initiate
 003 "isakmp-aggr2-psk" #1: multiple transforms were set in aggressive mode. Only first one used.
 003 "isakmp-aggr2-psk" #1: transform (5,2,2,0) ignored.
 002 "isakmp-aggr2-psk" #1: initiating Aggressive Mode #1, connection "isakmp-aggr2-psk"
+003 "isakmp-aggr2-psk" #1: multiple transforms were set in aggressive mode. Only first one used.
+003 "isakmp-aggr2-psk" #1: transform (5,2,2,0) ignored.
 112 "isakmp-aggr2-psk" #1: STATE_AGGR_I1: initiate
+003 "isakmp-aggr2-psk" #1: received Vendor ID payload [Dead Peer Detection]
 002 "isakmp-aggr2-psk" #1: Aggressive mode peer ID is ID_IPV4_ADDR: '127.95.7.2'
 002 "isakmp-aggr2-psk" #1: Aggressive mode peer ID is ID_IPV4_ADDR: '127.95.7.2'
 002 "isakmp-aggr2-psk" #1: transition from state STATE_AGGR_I1 to state STATE_AGGR_I2
-002 "isakmp-aggr2-psk" #1: sent AI2, ISAKMP SA established
-004 "isakmp-aggr2-psk" #1: STATE_AGGR_I2: sent AI2, ISAKMP SA established
+004 "isakmp-aggr2-psk" #1: STATE_AGGR_I2: sent AI2, ISAKMP SA established {auth=OAKLEY_PRESHARED_KEY cipher=oakley_3des_cbc_192 prf=oakley_sha group=modp1536}
 whackwest --shutdown
 002 shutting down
 whackeast --shutdown
 002 shutting down
-east:/tmp/aggr-unit-02# ipsec setup stop
-ipsec_setup: Stopping Openswan IPsec...
-ipsec_setup: stop ordered, but IPsec does not appear to be running!
-ipsec_setup: doing cleanup anyway...
-east:/tmp/aggr-unit-02# kill `cat /var/run/klogd.pid`; cat /tmp/klog.log
-klogd 1.3-3#33.1, log source = /proc/kmsg started.
-east:/tmp/aggr-unit-02# halt -p -f
-Power down.
 

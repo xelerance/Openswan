@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # 
-# $Id: make-uml.sh,v 1.42 2005/03/20 23:19:07 mcr Exp $
+# $Id: make-uml.sh,v 1.48 2005/07/14 01:35:54 mcr Exp $
 #
 
 # show me
@@ -13,6 +13,16 @@ set -e
 case $# in
     1) OPENSWANSRCDIR=$1; shift;;
 esac
+
+if [ `id -u` = 0 ]
+then
+    echo Do not run this as root.
+    exit
+fi
+
+# we always use OBJ directories for UML builds.
+export USE_OBJDIR=true
+
 
 #
 # configuration for this file has moved to $OPENSWANSRCDIR/umlsetup.sh
@@ -111,67 +121,8 @@ if [ ! -x $UMLPLAIN/linux ]
 then
     cd $UMLPLAIN
     lndir -silent $KERNPOOL .
-    
-    if [ ! -d arch/um/.PATCHAPPLIED ] 
-    then
-	echo Applying $UMLPATCH
-	if bzcat $UMLPATCH | patch -p1 
-	then
-	    :
-	else
-	    echo "Failed to apply UML patch: $UMLPATCH"
-	    exit 1;
-        fi
 
-	if [ -n "$UMLPATCH2" ] && [ -f $UMLPATCH2 ]
-	then
-		echo Applying $UMLPATCH2
-		if bzcat $UMLPATCH2 | patch -p1 
-		then
-		    :
-		else
-		    echo "Failed to apply UML patch: $UMLPATCH2"
-		    exit 1;
-		fi
-	fi
-
-	if [ -n "$NONINTPATCH" ] && [ "$NONINTPATCH" != "none" ]
-	then
-	    if [ -f "$NONINTPATCH" ]
-	    then
-		echo Applying non-interactive config patch
-		cat $NONINTPATCH | patch -p1
-		NONINTCONFIG=oldconfig_nonint
-	    else
-		echo Can not find +$NONINTPATCH+
-		exit 1
-	    fi
-	fi
-
-	if [ -n "$EXTRAPATCH" ]
-	then
-	    echo Applying other version specific stuff
-	    cat $EXTRAPATCH | patch -p1
-	fi
-
-	for patch in ${TESTINGROOT}/kernelconfigs/local_${KERNEL_MAJ_VERSION}_*.patch
-	do
-	    if [ -f $patch ] 
-	    then
-		echo Applying local patch $patch
-		cat $patch | patch -p1
-	    fi
-	done
-	mkdir -p arch/um/.PATCHAPPLIED
-
-	if $NATTPATCH
-	then
-	    echo Applying the NAT-Traversal patch
-	    (cd $OPENSWANSRCDIR && make nattpatch ) | patch -p1
-	else
-            echo Not applying the NAT-Traversal patch
-	fi
-    fi
+    applypatches
 
     echo Copying kernel config ${TESTINGROOT}/kernelconfigs/umlplain${KERNVER}.config 
     rm -f .config
@@ -205,66 +156,8 @@ if [ ! -x $UMLSWAN/linux ]
 then
     cd $UMLSWAN
     lndir -silent $KERNPOOL .
-    
-    if [ ! -d arch/um/.PATCHAPPLIED ] 
-    then
-	if bzcat $UMLPATCH | patch -p1 
-	then
-	    :
-	else
-	    echo "Failed to apply UML patch: $UMLPATCH"
-	    exit 1;
-        fi
 
-	if [ -n "$UMLPATCH2" ] && [ -f $UMLPATCH2 ]
-	then
-		echo Applying $UMLPATCH2
-		if bzcat $UMLPATCH2 | patch -p1 
-		then
-		    :
-		else
-		    echo "Failed to apply UML patch: $UMLPATCH2"
-		    exit 1;
-		fi
-	fi
-
-	if [ -n "$NONINTPATCH" ] && [ "$NONINTPATCH" != "none" ]
-	then
-	    if [ -f "$NONINTPATCH" ]
-	    then
-		echo Applying non-interactive config patch
-		cat $NONINTPATCH | patch -p1
-		NONINTCONFIG=oldconfig_nonint
-	    else
-		echo Can not find +$NONINTPATCH+
-		exit 1
-	    fi
-	fi
-
-	if [ -n "$EXTRAPATCH" ]
-	then
-	    echo Applying other version specific stuff
-	    cat $EXTRAPATCH | patch -p1
-	fi
-
-	for patch in ${TESTINGROOT}/kernelconfigs/local_${KERNEL_MAJ_VERSION}_*.patch
-	do
-	    if [ -f $patch ] 
-	    then
-		echo Applying local patch $patch
-		cat $patch | patch -p1
-	    fi
-	done
-	mkdir -p arch/um/.PATCHAPPLIED
-
-	if $NATTPATCH
-	then
-	    echo Applying the NAT-Traversal patch
-	    (cd $OPENSWANSRCDIR && make nattpatch ) | patch -p1
-	else
-            echo Not applying the NAT-Traversal patch
-	fi
-    fi
+    applypatches
     
     # copy the config file
     rm -f .config
@@ -282,11 +175,14 @@ then
     cd $OPENSWANSRCDIR || exit 1
  
     make KERNMAKEOPTS='ARCH=um' KERNELSRC=$UMLSWAN KERNCLEAN='' KERNDEP=$KERNDEP KERNEL=linux DESTDIR=$DESTDIR NONINTCONFIG=${NONINTCONFIG} verset kpatch rcf kernel || exit 1 </dev/null 
+
+    # mark it as read-only, so that we don't edit the wrong files by mistake!
+    find $UMLSWAN/net/ipsec $UMLSWAN/include/openswan -name '*.[ch]' -type f -print | xargs chmod a-w
 fi
 
 cd $OPENSWANSRCDIR || exit 1
 
-make programs
+make USE_OBJDIR=true programs
 
 # now, setup up root dir
 for host in $OPENSWANHOSTS
@@ -300,6 +196,26 @@ cd $POOLSPACE && make $OPENSWANHOSTS
     
 #
 # $Log: make-uml.sh,v $
+# Revision 1.48  2005/07/14 01:35:54  mcr
+# 	use USE_OBJDIR.
+#
+# Revision 1.47  2005/06/06 19:53:42  mcr
+# 	be a nit, and refuse to run make-uml.sh if the user
+# 	is root.
+# 	document the NONINTPATCH= value.
+#
+# Revision 1.46  2005/04/17 04:38:41  mcr
+# 	mark UML source as read-only to keep us from editing it.
+#
+# Revision 1.45  2005/04/15 02:16:53  mcr
+# 	re-factored kernel directory creation/patching to routine.
+#
+# Revision 1.44  2005/04/07 20:24:52  mcr
+# 	make sure to include NAT-T in 2.6 plain kernel.
+#
+# Revision 1.43  2005/04/06 17:59:26  mcr
+# 	make it easier to set UMLPATCH=none.
+#
 # Revision 1.42  2005/03/20 23:19:07  mcr
 # 	note which thing (NONINTPATCH) it was that wasn't found.
 #

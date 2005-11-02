@@ -14,6 +14,7 @@ VFS: Diskquotas version dquot_6.4.0 initialized
 Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
 devfs: 2004-01-31 Richard Gooch (rgooch@atnf.csiro.au)
 devfs: boot_options Q
+Initializing Cryptographic API
 io scheduler noop registered
 io scheduler anticipatory registered
 io scheduler deadline registered
@@ -30,6 +31,7 @@ TCP established hash table entries: 2048 (order: 2, 16384 bytes)
 TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
 TCP: Hash tables configured (established 2048 bind 2048)
 NET: Registered protocol family 15
+ipsec_3des_init(alg_type=15 alg_id=3 name=3des): ret=0
 IPv4 over IPv4 tunneling driver
 GRE over IPv4 tunneling driver
 NET: Registered protocol family 1
@@ -54,8 +56,7 @@ Cleaning: /tmp /var/lock /var/run.
 Initializing random number generator... done.
 Recovering nvi editor sessions... done.
 Give root password for maintenance
-(or type Control-D for normal startup): root
-
+(or type Control-D for normal startup): 
 west:~#
  klogd -c 4 -x -f /tmp/klog.log
 west:~#
@@ -87,7 +88,7 @@ west:~#
 west:~#
  ipsec auto --up  westnet-eastnet
 104 "westnet-eastnet" #1: STATE_MAIN_I1: initiate
-003 "westnet-eastnet" #1: received Vendor ID payload [Openswan (this version) cvs2005Mar15_14:43:33  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+003 "westnet-eastnet" #1: received Vendor ID payload [Openswan 
 003 "westnet-eastnet" #1: received Vendor ID payload [Dead Peer Detection]
 106 "westnet-eastnet" #1: STATE_MAIN_I2: sent MI2, expecting MR2
 108 "westnet-eastnet" #1: STATE_MAIN_I3: sent MI3, expecting MR3

@@ -12,50 +12,52 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
- * RCSID $Id: config-nodebug.h,v 1.1 2004/12/22 00:31:01 paul Exp $
+ * RCSID $Id: config-nodebug.h,v 1.2 2005/05/12 03:10:53 mcr Exp $
  */
 #define	_CONFIG_ALL_H_	/* seen it, no need to see it again */
 
-#define CONFIG_IPSEC 1
+#define CONFIG_KLIPS 1
 
-#ifndef CONFIG_IPSEC_AH
-#define CONFIG_IPSEC_AH
+#ifndef CONFIG_KLIPS_AH
+#define CONFIG_KLIPS_AH
 #endif
 
-#ifndef CONFIG_IPSEC_DEBUG 
-#undef CONFIG_IPSEC_DEBUG
+#ifndef CONFIG_KLIPS_DEBUG 
+#undef CONFIG_KLIPS_DEBUG
 #endif
 
-#ifndef CONFIG_IPSEC_ESP
-#define CONFIG_IPSEC_ESP
+#define CONFIG_KLIPS_ALG 
+
+#ifndef CONFIG_KLIPS_ESP
+#define CONFIG_KLIPS_ESP
 #endif
 
-#ifdef CONFIG_IPSEC_IPCOMP
-#define CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
+#define CONFIG_KLIPS_IPCOMP
 #endif
 
-#ifndef CONFIG_IPSEC_IPIP
-#define CONFIG_IPSEC_IPIP
+#ifndef CONFIG_KLIPS_IPIP
+#define CONFIG_KLIPS_IPIP
 #endif
 
-#ifndef CONFIG_IPSEC_AUTH_HMAC_MD5
-#define CONFIG_IPSEC_AUTH_HMAC_MD5
+#ifndef CONFIG_KLIPS_AUTH_HMAC_MD5
+#define CONFIG_KLIPS_AUTH_HMAC_MD5
 #endif
 
-#ifndef CONFIG_IPSEC_AUTH_HMAC_SHA1
-#define CONFIG_IPSEC_AUTH_HMAC_SHA1
+#ifndef CONFIG_KLIPS_AUTH_HMAC_SHA1
+#define CONFIG_KLIPS_AUTH_HMAC_SHA1
 #endif 
 
-#ifndef CONFIG_IPSEC_DYNDEV
-#define CONFIG_IPSEC_DYNDEV 1
+#ifndef CONFIG_KLIPS_DYNDEV
+#define CONFIG_KLIPS_DYNDEV 1
 #endif
 
-#ifndef CONFIG_IPSEC_ENC_3DES
-#define CONFIG_IPSEC_ENC_3DES
+#ifndef CONFIG_KLIPS_ENC_3DES
+#define CONFIG_KLIPS_ENC_3DES
 #endif
 
-#ifdef CONFIG_IPSEC_REGRESS
-#undef CONFIG_IPSEC_REGRESS
+#ifdef CONFIG_KLIPS_REGRESS
+#undef CONFIG_KLIPS_REGRESS
 #endif
 
 

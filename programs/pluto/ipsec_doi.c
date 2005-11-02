@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_doi.c,v 1.296 2005/03/27 20:15:09 mcr Exp $
+ * RCSID $Id: ipsec_doi.c,v 1.304.2.5 2005/08/12 17:05:59 ken Exp $
  */
 
 #include <stdio.h>
@@ -31,6 +31,7 @@
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
+#include "pfkeyv2.h"
 
 #include "constants.h"
 #include "defs.h"
@@ -85,15 +86,6 @@
 #endif
 #include "dpd.h"
 #include "x509more.h"
-
-/* OpenPGP Vendor ID needed for interoperability with PGPnet
- *
- * Note: it is a NUL-terminated ASCII string, but NUL won't go on the wire.
- */
-static char pgp_vendorid[] = "OpenPGP10171";
-
-static char dpd_vendorid[] = {0xAF, 0xCA, 0xD7, 0x13, 0x68, 0xA1, 0xF1,
-          0xC9, 0x6B, 0x86, 0x96, 0xFC, 0x77, 0x57, 0x01, 0x00};
 
 /*
 * tools for sending Pluto Vendor ID.
@@ -270,6 +262,9 @@ send_notification(struct state *sndst, u_int16_t type, struct state *encst,
     static time_t last_malformed;
     time_t n = time((time_t)NULL);
 
+    r_hashval = NULL;
+    r_hash_start = NULL;
+
     passert((sndst) && (sndst->st_connection));
     switch(type) {
 
@@ -367,9 +362,11 @@ send_notification(struct state *sndst, u_int16_t type, struct state *encst,
 	    return;
 	}
 
-	if(out_raw(spi, spisize, &not_pbs, "spi")) {
-	    openswan_log("failed to build notification for spisize=%d\n", spisize);
-	    return;
+	if(spisize > 0) {
+	    if(out_raw(spi, spisize, &not_pbs, "spi")) {
+		openswan_log("failed to build notification for spisize=%d\n", (int)spisize);
+		return;
+	    }
 	}
 
 	close_output_pbs(&not_pbs);
@@ -484,8 +481,9 @@ send_notification_from_md(struct msg_digest *md, u_int16_t type)
     st.st_connection = &cnx;
     st.st_remoteaddr = md->sender;
     st.st_remoteport = md->sender_port;
-    st.st_localaddr  = md->iface->addr;
+    st.st_localaddr  = md->iface->ip_addr;
     st.st_localport  = md->iface->port;
+    st.st_interface = md->iface;
     cnx.interface = md->iface;
 
     send_notification(&st, type, NULL, 0,
@@ -974,8 +972,8 @@ main_outI1(int whack_sock
     /* ALWAYS Announce our ability to do Dead Peer Detection to the peer */
     if (!out_modify_previous_np(ISAKMP_NEXT_VID, &rbody))
         return STF_INTERNAL_ERROR;
-    if( !out_generic_raw(ISAKMP_NEXT_NONE, &isakmp_vendor_id_desc,
-                &rbody, dpd_vendorid, sizeof(dpd_vendorid), "V_ID"))
+    if( !out_generic_raw(ISAKMP_NEXT_NONE, &isakmp_vendor_id_desc
+			 , &rbody, dpd_vendorid, dpd_vendorid_len, "V_ID"))
         return STF_INTERNAL_ERROR;
 
 
@@ -1033,270 +1031,6 @@ main_outI1(int whack_sock
     return STF_OK;
 }
 
-
-/*
- * Initiate an Oakley Aggressive Mode exchange.
- * --> HDR, SA, KE, Ni, IDii
- */
-static stf_status
-aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
-		, struct pluto_crypto_req *r);
-
-static void
-aggr_outI1_continue(struct pluto_crypto_req_cont *pcrc
-		    , struct pluto_crypto_req *r
-		    , err_t ugh)
-{
-  struct ke_continuation *ke = (struct ke_continuation *)pcrc;
-  struct msg_digest *md = ke->md;
-  struct state *const st = md->st;
-  stf_status e;
-  
-  DBG(DBG_CONTROLMORE
-      , DBG_log("aggr outI1: calculated ke+nonce, sending I1"));
-  
-  /* XXX should check out ugh */
-  passert(ugh == NULL);
-  passert(cur_state == NULL);
-  passert(st != NULL);
-
-  passert(st->st_suspended_md == ke->md);
-  st->st_suspended_md = NULL;	/* no longer connected or suspended */
-
-  set_cur_state(st);
-  e = aggr_outI1_tail(pcrc, r);
-  
-  if(ke->md != NULL) {
-      complete_state_transition(&ke->md, e);
-      release_md(ke->md);
-  }
-  reset_globals();
-
-  passert(GLOBALS_ARE_RESET());
-}
-
-static stf_status
-aggr_outI1(int whack_sock,
-	   struct connection *c,
-	   struct state *predecessor,
-	   lset_t policy,
-	   unsigned long try
-	   , enum crypto_importance importance)
-{
-    struct state *st;
-
-    /* set up new state */
-    cur_state = st = new_state();
-    st->st_connection = c;
-    set_state_ike_endpoints(st, c);
-
-#ifdef DEBUG
-    extra_debugging(c);
-#endif
-    st->st_policy = policy & ~POLICY_IPSEC_MASK;
-    st->st_whack_sock = whack_sock;
-    st->st_try = try;
-    st->st_state = STATE_AGGR_I1;
-
-    get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
-
-    insert_state(st);	/* needs cookies, connection, and msgid (0) */
-
-    if(init_am_st_oakley(st, policy) == FALSE) {
-	loglog(RC_AGGRALGO, "can not initiate aggressive mode, at most one algorithm may be provided");
-	reset_globals();
-	return STF_FAIL;
-    }
-
-    if (HAS_IPSEC_POLICY(policy))
-	add_pending(dup_any(whack_sock), st, c, policy, 1
-	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno);
-
-    if (predecessor == NULL) {
-	openswan_log("initiating Aggressive Mode #%lu, connection \"%s\""
-		     , st->st_serialno, st->st_connection->name);
-    }
-    else {
-	openswan_log("initiating Aggressive Mode #%lu to replace #%lu, connection \"%s\""
-		     , st->st_serialno, predecessor->st_serialno
-		     , st->st_connection->name);
-    }
-
-    {
-	struct ke_continuation *ke = alloc_thing(struct ke_continuation
-						 , "outI2 KE");
-	stf_status e;
-
-	ke->md = alloc_md();
-	ke->md->st = st;
-	st->st_suspended_md = ke->md;
-
-	if (!st->st_sec_in_use) {
-	    ke->ke_pcrc.pcrc_func = aggr_outI1_continue;
-	    e = build_ke(&ke->ke_pcrc, st, st->st_oakley.group, importance);
-	    if(e != STF_SUSPEND) {
-	      loglog(RC_CRYPTOFAILED, "system too busy");
-	      delete_state(st);
-	    }
-	} else {
-	    e = aggr_outI1_tail((struct pluto_crypto_req_cont *)ke
-					, NULL);
-	}
-	
-	reset_globals();
-
-	return e;
-    }
-}
-
-static stf_status
-aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
-		, struct pluto_crypto_req *r)
-{
-    struct ke_continuation *ke = (struct ke_continuation *)pcrc;
-    struct msg_digest *md = ke->md;
-    struct state *const st = md->st;
-    struct connection *c = st->st_connection;
-    u_char space[8192];	/* NOTE: we assume 8192 is big enough to build the packet */
-    pb_stream reply;	/* not actually a reply, but you know what I mean */
-    pb_stream rbody;
-
-    /* set up reply */
-    init_pbs(&reply, space, sizeof(space), "reply packet");
-
-    /* HDR out */
-    {
-	struct isakmp_hdr hdr;
-
-	memset(&hdr, '\0', sizeof(hdr));	/* default to 0 */
-	hdr.isa_version = ISAKMP_MAJOR_VERSION << ISA_MAJ_SHIFT | ISAKMP_MINOR_VERSION;
-	hdr.isa_np = ISAKMP_NEXT_SA;
-	hdr.isa_xchg = ISAKMP_XCHG_AGGR;
-	memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
-	/* R-cookie, flags and MessageID are left zero */
-
-	if (!out_struct(&hdr, &isakmp_hdr_desc, &reply, &rbody))
-	{
-	    cur_state = NULL;
-	    return STF_INTERNAL_ERROR;
-	}
-    }
-
-    /* SA out */
-    {
-	u_char *sa_start = rbody.cur;
-	int    policy_index = POLICY_ISAKMP(st->st_policy
-					    , c->spd.this.xauth_server
-					    , c->spd.this.xauth_client);
-	
-	if (!out_sa(&rbody
-		    , &oakley_am_sadb[policy_index], st
-		    , TRUE, TRUE, ISAKMP_NEXT_KE))
-	{
-	    return STF_INTERNAL_ERROR;
-	    cur_state = NULL;
-	}
-
-	/* save initiator SA for later HASH */
-	passert(st->st_p1isa.ptr == NULL);	/* no leak! */
-	clonetochunk(st->st_p1isa, sa_start, rbody.cur - sa_start,
-		     "sa in aggr_outI1");
-    }
-
-    /* KE out */
-    if (!ship_KE(st, r, &st->st_gi, 
-			   &rbody, ISAKMP_NEXT_NONCE))
-	return STF_INTERNAL_ERROR;
-
-    /* Ni out */
-    if (!ship_nonce(&st->st_ni, r, &rbody, ISAKMP_NEXT_ID, "Ni"))
-	return STF_INTERNAL_ERROR;
-
-    /* IDii out */
-    {
-	struct isakmp_ipsec_id id_hd;
-	chunk_t id_b;
-	pb_stream id_pbs;
-
-	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this);
-	id_hd.isaiid_np = ISAKMP_NEXT_VID;
-	if (!out_struct(&id_hd, &isakmp_ipsec_identification_desc, &rbody, &id_pbs)
-	|| !out_chunk(id_b, &id_pbs, "my identity"))
-	    return STF_INTERNAL_ERROR;
-	close_output_pbs(&id_pbs);
-    }
-
-    /* ALWAYS Announce our ability to do Dead Peer Detection to the peer */
-    {
-      int np = ISAKMP_NEXT_NONE;
-	
-      if (nat_traversal_enabled
-	  || c->spd.this.xauth_client
-	  || c->spd.this.xauth_server) {
-	
-	/* Add supported NAT-Traversal VID */
-	np = ISAKMP_NEXT_VID;
-      }
-
-      if( !out_generic_raw(np, &isakmp_vendor_id_desc,
-			   &rbody, dpd_vendorid, sizeof(dpd_vendorid), "V_ID"))
-        return STF_INTERNAL_ERROR;
-    }
-
-#ifdef NAT_TRAVERSAL
-    if (nat_traversal_enabled) {
-	/* Add supported NAT-Traversal VID */
-	int np = ISAKMP_NEXT_NONE;
-
-#ifdef XAUTH
-	if(c->spd.this.xauth_client || c->spd.this.xauth_server) {
-	    np = ISAKMP_NEXT_VID;
-	}
-#endif
-	
-	if (!nat_traversal_add_vid(np, &rbody)) {
-	    reset_cur_state();
-	    return STF_INTERNAL_ERROR;
-	}
-    }
-#endif
-
-#ifdef XAUTH
-    if(c->spd.this.xauth_client || c->spd.this.xauth_server)
-    {
-	if(!out_vendorid(ISAKMP_NEXT_NONE, &rbody, VID_MISC_XAUTH))
-	{
-	    return STF_INTERNAL_ERROR;
-	}
-    }
-#endif
-	
-    /* finish message */
-
-    close_message(&rbody);
-    close_output_pbs(&reply);
-
-    clonetochunk(st->st_tpacket, reply.start, pbs_offset(&reply),
-		 "reply packet from aggr_outI1");
-
-    /* Transmit */
-
-    DBG_cond_dump(DBG_RAW, "sending:\n",
-		  st->st_tpacket.ptr, st->st_tpacket.len);
-
-    send_packet(st, "aggr_outI1", TRUE);
-
-    /* Set up a retransmission event, half a minute henceforth */
-    delete_event(st);
-    event_schedule(EVENT_RETRANSMIT, EVENT_RETRANSMIT_DELAY_0, st);
-
-    whack_log(RC_NEW_STATE + STATE_AGGR_I1,
-	      "%s: initiate", enum_name(&state_names, st->st_state));
-    cur_state = NULL;
-    return STF_IGNORE;
-}
-
-
 void
 ipsecdoi_initiate(int whack_sock
 		  , struct connection *c
@@ -1317,8 +1051,13 @@ ipsecdoi_initiate(int whack_sock
 
     if (st == NULL)
     {
-	initiator_function *initiator = c->policy & POLICY_AGGRESSIVE
-					? aggr_outI1 : main_outI1;
+	initiator_function *initiator = c->policy & POLICY_AGGRESSIVE ?
+#if defined(AGGRESSIVE)	    
+	    aggr_outI1
+#else
+	    aggr_not_present
+#endif	    
+	    : main_outI1;
 	(void) initiator(whack_sock, c, NULL, policy, try, importance);
     }
     else if (HAS_IPSEC_POLICY(policy)) {
@@ -1363,8 +1102,13 @@ ipsecdoi_replace(struct state *st, unsigned long try)
 
     if (IS_PHASE1(st->st_state) || IS_PHASE15(st->st_state))
     {
-	initiator_function *initiator = policy & POLICY_AGGRESSIVE
-					? aggr_outI1 : main_outI1;
+	initiator_function *initiator = policy & POLICY_AGGRESSIVE ?
+#if defined(AGGRESSIVE)
+	    aggr_outI1
+#else
+	    aggr_not_present
+#endif	    
+	    : main_outI1;
 	passert(!HAS_IPSEC_POLICY(policy));
 	(void) initiator(whack_sock, st->st_connection, st, policy
 			 , try, st->st_import);
@@ -2290,7 +2034,7 @@ main_inI1_outR1(struct msg_digest *md)
 
     
     /* random source ports are handled by find_host_connection */
-    c = find_host_connection(&md->iface->addr, pluto_port
+    c = find_host_connection(&md->iface->ip_addr, pluto_port
 			     , &md->sender
 			     , md->sender_port);
 
@@ -2308,7 +2052,7 @@ main_inI1_outR1(struct msg_digest *md)
 	 */
 	{
 	    struct connection *d;
-	    d = find_host_connection(&md->iface->addr, pluto_port
+	    d = find_host_connection(&md->iface->ip_addr, pluto_port
 				     , (ip_address*)NULL
 				     , md->sender_port);
 
@@ -2339,7 +2083,7 @@ main_inI1_outR1(struct msg_digest *md)
 	{
 	    loglog(RC_LOG_SERIOUS, "initial Main Mode message received on %s:%u"
 		" but no connection has been authorized"
-		, ip_str(&md->iface->addr), ntohs(portof(&md->iface->addr)));
+		, ip_str(&md->iface->ip_addr), ntohs(portof(&md->iface->ip_addr)));
 	    /* XXX notification is in order! */
 	    return STF_IGNORE;
 	}
@@ -2347,7 +2091,7 @@ main_inI1_outR1(struct msg_digest *md)
 	{
 	    loglog(RC_LOG_SERIOUS, "initial Main Mode message received on %s:%u"
 		" but \"%s\" forbids connection"
-		, ip_str(&md->iface->addr), pluto_port, c->name);
+		, ip_str(&md->iface->ip_addr), pluto_port, c->name);
 	    /* XXX notification is in order! */
 	    return STF_IGNORE;
 	}
@@ -2375,8 +2119,9 @@ main_inI1_outR1(struct msg_digest *md)
     st->st_connection = c;
     st->st_remoteaddr = md->sender;
     st->st_remoteport = md->sender_port;
-    st->st_localaddr  = md->iface->addr;
+    st->st_localaddr  = md->iface->ip_addr;
     st->st_localport  = md->iface->port;
+    st->st_interface  = md->iface;
 
     set_cur_state(st);	/* (caller will reset cur_state) */
     st->st_try = 0;	/* not our job to try again from start */
@@ -2458,8 +2203,9 @@ main_inI1_outR1(struct msg_digest *md)
        
     /* Announce our ability to do RFC 3706 Dead Peer Detection */
     next = --numvidtosend ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
-    if( !out_generic_raw(next, &isakmp_vendor_id_desc,
-			 &md->rbody, dpd_vendorid, sizeof(dpd_vendorid), "DPP Vendor ID"))
+    if( !out_generic_raw(next, &isakmp_vendor_id_desc
+			 , &md->rbody, dpd_vendorid
+			 , dpd_vendorid_len, "DPP Vendor ID"))
       return STF_INTERNAL_ERROR;
 
 #ifdef XAUTH
@@ -2540,6 +2286,9 @@ main_inR1_outI2_continue(struct pluto_crypto_req_cont *pcrc
     st->st_suspended_md = NULL;	/* no longer connected or suspended */
 
     set_cur_state(st);
+
+    st->st_calculating = FALSE;
+
     e = main_inR1_outI2_tail(pcrc, r);
 
     if(ke->md != NULL) {
@@ -2553,12 +2302,7 @@ main_inR1_outI2_continue(struct pluto_crypto_req_cont *pcrc
 stf_status
 main_inR1_outI2(struct msg_digest *md)
 {
-    struct ke_continuation *ke = alloc_thing(struct ke_continuation
-					     , "outI2 KE");
     struct state *const st = md->st;
-
-    ke->md = md;
-    st->st_suspended_md = md;
 
     /* verify echoed SA */
     {
@@ -2581,12 +2325,19 @@ main_inR1_outI2(struct msg_digest *md)
     }
 #endif
 
-    if (!st->st_sec_in_use) {
-	ke->ke_pcrc.pcrc_func = main_inR1_outI2_continue;
-	return build_ke(&ke->ke_pcrc, st, st->st_oakley.group, st->st_import);
-    } else {
-	return main_inR1_outI2_tail((struct pluto_crypto_req_cont *)ke
-				    , NULL);
+    {
+	struct ke_continuation *ke = alloc_thing(struct ke_continuation
+						 , "outI2 KE");
+	ke->md = md;
+	
+	if (!st->st_sec_in_use) {
+	    ke->ke_pcrc.pcrc_func = main_inR1_outI2_continue;
+	    st->st_suspended_md = md;
+	    return build_ke(&ke->ke_pcrc, st, st->st_oakley.group, st->st_import);
+	} else {
+	    return main_inR1_outI2_tail((struct pluto_crypto_req_cont *)ke
+					, NULL);
+	}
     }
 }
 
@@ -2701,6 +2452,8 @@ main_inI2_outR2_continue(struct pluto_crypto_req_cont *pcrc
     st->st_suspended_md = NULL;	/* no longer connected or suspended */
 
     set_cur_state(st);
+
+    st->st_calculating = FALSE;
     e = main_inI2_outR2_tail(pcrc, r);
 
     if(ke->md != NULL) {
@@ -2715,12 +2468,6 @@ main_inI2_outR2(struct msg_digest *md)
 {
     struct state *const st = md->st;
     pb_stream *keyex_pbs = &md->chain[ISAKMP_NEXT_KE]->pbs;
-    struct ke_continuation *ke = alloc_thing(struct ke_continuation
-					     , "inI2_outR2 KE");
-
-    ke->md = md;
-    st->st_suspended_md = md;
-
     /* KE in */
     RETURN_STF_FAILURE(accept_KE(&st->st_gi, "Gi"
 				 , st->st_oakley.group, keyex_pbs));
@@ -2755,12 +2502,21 @@ main_inI2_outR2(struct msg_digest *md)
     }
 #endif
 
-    if (!st->st_sec_in_use) {
-	ke->ke_pcrc.pcrc_func = main_inI2_outR2_continue;
-	return build_ke(&ke->ke_pcrc, st, st->st_oakley.group, st->st_import);
-    } else {
-	return main_inI2_outR2_tail((struct pluto_crypto_req_cont *)ke
-				    , NULL);
+    {
+	struct ke_continuation *ke = alloc_thing(struct ke_continuation
+					     , "inI2_outR2 KE");
+
+	ke->md = md;
+	st->st_suspended_md = md;
+
+	if (!st->st_sec_in_use) {
+	    ke->ke_pcrc.pcrc_func = main_inI2_outR2_continue;
+	    return build_ke(&ke->ke_pcrc, st
+			    , st->st_oakley.group, st->st_import);
+	} else {
+	    return main_inI2_outR2_tail((struct pluto_crypto_req_cont *)ke
+					, NULL);
+	}
     }
 }
 
@@ -3177,7 +2933,7 @@ enum key_oppo_step {
 
 struct key_continuation {
     struct adns_continuation ac;	/* common prefix */
-    struct msg_digest *md;
+    struct msg_digest   *md;
     enum   key_oppo_step step;
     bool                 failure_ok;
     err_t                last_ugh;
@@ -3313,6 +3069,12 @@ oakley_id_and_auth(struct msg_digest *md
 		report_key_dns_failure(&st->st_connection->spd.that.id, ugh);
 		st->st_suspended_md = NULL;
 		r = STF_FAIL + INVALID_KEY_INFORMATION;
+	    } else {
+		/*
+		 * since this state is waiting for a DNS query, delete
+		 * any events that might kill it.
+		 */
+		delete_event(st);
 	    }
 	}
 	break;
@@ -3348,8 +3110,8 @@ oakley_id_and_auth(struct msg_digest *md
  */
 static void
 key_continue(struct adns_continuation *cr
-, err_t ugh
-, key_tail_fn *tail)
+	     , err_t ugh
+	     , key_tail_fn *tail)
 {
     struct key_continuation *kc = (void *)cr;
     struct state *st = kc->md->st;
@@ -3364,6 +3126,9 @@ key_continue(struct adns_continuation *cr
 	passert(st->st_suspended_md == kc->md);
 	st->st_suspended_md = NULL;	/* no longer connected or suspended */
 	cur_state = st;
+
+	/* cancel any DNS event, since we got an anwer */
+	delete_event(st);
 
 	if (!kc->failure_ok && ugh != NULL)
 	{
@@ -3646,7 +3411,7 @@ main_inR3_tail(struct msg_digest *md
     return STF_OK;
 }
 
-
+#if defined(AGGRESSIVE)
 /* STATE_AGGR_R0: HDR, SA, KE, Ni, IDii 
  *           --> HDR, SA, KE, Nr, IDir, HASH_R/SIG_R
  */
@@ -3676,6 +3441,7 @@ aggr_inI1_outR1_continue(struct pluto_crypto_req_cont *pcrc
   st->st_suspended_md = NULL;	/* no longer connected or suspended */
 
   set_cur_state(st);
+  st->st_calculating = FALSE;
   e = aggr_inI1_outR1_tail(pcrc, r);
   
   if(ke->md != NULL) {
@@ -3697,7 +3463,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
     struct state *st;
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_SA];
     pb_stream *keyex_pbs = &md->chain[ISAKMP_NEXT_KE]->pbs;
-    struct connection *c = find_host_connection(&md->iface->addr
+    struct connection *c = find_host_connection(&md->iface->ip_addr
 						, md->iface->port
 						, &md->sender
 						, md->sender_port);
@@ -3716,7 +3482,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
     if (c == NULL)
     {
 	/* see if a wildcarded connection can be found */
-	c = find_host_connection(&md->iface->addr, pluto_port
+	c = find_host_connection(&md->iface->ip_addr, pluto_port
 				 , (ip_address*)NULL, md->sender_port);
 	if (c != NULL && c->policy & POLICY_AGGRESSIVE)
 	{
@@ -3742,6 +3508,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
     st->st_connection = c;
     st->st_remoteaddr = md->sender;
     st->st_remoteport = md->sender_port;
+    st->st_interface  = md->iface;
     st->st_state = STATE_AGGR_R1;
 
     /* until we have clue who this is, then be conservative about allocating
@@ -3979,9 +3746,9 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
       }
 #endif
 
-      if( !out_generic_raw(np, &isakmp_vendor_id_desc,
-			   &md->rbody, dpd_vendorid
-			   , sizeof(dpd_vendorid), "DPP Vendor ID")) {
+      if( !out_generic_raw(np, &isakmp_vendor_id_desc
+			   , &md->rbody, dpd_vendorid
+			   , dpd_vendorid_len, "DPP Vendor ID")) {
 	return STF_INTERNAL_ERROR;
       }
     }
@@ -4290,6 +4057,7 @@ aggr_inI2_tail(struct msg_digest *md
 
     return STF_OK;
 }
+#endif
 
 stf_status
 send_isakmp_notification(struct state *st

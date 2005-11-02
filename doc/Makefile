@@ -48,37 +48,31 @@ separate=intro.html install.html config.html manpages.html \
 	quickstart.html umltesting.html makecheck.html nightly.html \
         upgrading.html policygroups.html
 
-alldocs=${seperate} index.html toc.html
+alldocs=${seperate} index.html 
 
 # where are scripts
-SCRIPTDIR=utils
+SCRIPTDIR=${OPENSWANSRCDIR}/doc/utils
 
 # where
-TESTINGDIR=${srcdir}/testing
+TESTINGDIR=${OPENSWANSRCDIR}/testing
 
 # where do we put HTML manpages?
 HMANDIR=manpage.d
 
-programs: 
+programs: ${alldocs} manpages
 
 all: #$(howto) $(manpages) index.html
 
 # default, build HTML only
 # dependencies build most of it
 # then we add index
-index.html: toc.html manpages src/index.html
-	cp src/index.html index.html
-
-# separate files plus table of contents
-# and then remove HTML formatting added by htmldoc
-toc.html : $(sections)
-	-@htmldoc -t html --path ".;${TESTINGDIR}/doc" -d .  $(sections)
-	@$(SCRIPTDIR)/cleanhtml.sh $(SCRIPTDIR)/cleanhtml.sed $(separate)
+index.html: manpages ${OPENSWANSRCDIR}/doc/src/index.html
+	cp ${OPENSWANSRCDIR}/doc/src/index.html index.html
 
 manpages:	manp
 
 manp:	$(SCRIPTDIR)/mkhtmlman
-	@$(SCRIPTDIR)/mkhtmlman $(HMANDIR) `find ../programs ../lib ../linux -type f -name '*.[1-8]' -print | grep -v lwres | grep -v CVS`
+	-@$(SCRIPTDIR)/mkhtmlman $(HMANDIR) `find ${OPENSWANSRCDIR}/programs ${OPENSWANSRCDIR}/lib ${OPENSWANSRCDIR}/linux -type f -name '*.[1-8]' -print | grep -v lwres | grep -v CVS`
 
 real-all: $(howto) $(manpages) index.html
 remake: $(alldocs) $(manpages) 
@@ -99,7 +93,7 @@ install: ${alldocs} manpages
 	do \
 		$(INSTALL) $$file ${DOCDIR} || exit 1;\
 	done;
-	/bin/bash -c 'MANDIR=${MANTREE}; /usr/bin/find ../programs ../lib ../linux -type f -name "*.[1-8]" -print | grep -v lwres | grep -v CVS | while read f; do if [ -f $$f ]; then  manNo=$${f##*.}; F=$${f##*/}; /bin/mkdir -p  $$MANDIR/man$$manNo; /bin/cp -fp $$f $$MANDIR/man$$manNo/ipsec_$$F; fi; done'
+	/bin/bash -c 'MANDIR=${MANTREE}; /usr/bin/find ${OPENSWANSRCDIR}/programs ${OPENSWANSRCDIR}/lib ${OPENSWANSRCDIR}/linux -type f -name "*.[1-8]" -print | grep -v lwres | grep -v CVS | while read f; do if [ -f $$f ]; then  manNo=$${f##*.}; F=$${f##*/}; /bin/mkdir -p  $$MANDIR/man$$manNo; /bin/cp -fp $$f $$MANDIR/man$$manNo/ipsec_$$F; fi; done'
 
 install_file_list:
 	@$(foreach f, $(alldocs), \

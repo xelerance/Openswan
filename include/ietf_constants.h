@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ietf_constants.h,v 1.13.2.1 2005/05/18 20:55:12 ken Exp $
+ * RCSID $Id: ietf_constants.h,v 1.16 2005/06/23 01:45:55 mcr Exp $
  */
 
 /* Group parameters from draft-ietf-ike-01.txt section 6 */
@@ -579,6 +579,9 @@ extern enum_names oakley_enc_names;
 #define OAKLEY_3DES_CBC         5
 #define OAKLEY_CAST_CBC         6
 #define OAKLEY_AES_CBC          7
+#define OAKLEY_SERPENT_CBC              65004
+#define OAKLEY_TWOFISH_CBC              65005
+#define OAKLEY_TWOFISH_CBC_SSH          65289
 
 #define OAKLEY_ENCRYPT_MAX      65535	/* pretty useless :) */
 

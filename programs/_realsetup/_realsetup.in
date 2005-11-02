@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _realsetup.in,v 1.43.2.1 2005/05/18 20:55:13 ken Exp $
+# RCSID $Id: _realsetup.in,v 1.46.2.2 2005/07/28 00:23:48 ken Exp $
 
 me='ipsec setup'		# for messages
 
@@ -56,7 +56,7 @@ IPSECplutowait=${IPSECplutowait:-no}
 IPSECrp_filter=${IPSECrp_filter:-0}
 IPSECuniqueids=${IPSECuniqueids:-yes}
 IPSECcrlcheckinterval=${IPSECcrlcheckinterval:-0}
-IPSECprotostack=${IPsecprotostack:-auto}
+IPSECprotostack=${IPSECprotostack:-auto}
 # IPSECoverridemtu	""
 
 # which kernel are we using?
@@ -399,8 +399,9 @@ case "$1" in
 			eroutes=`wc -l < /proc/net/ipsec_eroute 2> /dev/null | sed s/\ //g`
 		fi
 	else
-		eroutes=`ipsec eroute 2> /dev/null | wc -l | sed s/\ //g`
+		eroutes=`ipsec auto --status 2> /dev/null | grep -i "ipsec sa established" | wc -l | sed s/\ //g`
 	fi
+
 
 	if test -r $ipsecversion
 	then
@@ -419,7 +420,7 @@ case "$1" in
 
 	if test "$haslock"
 	then
-		echo "IPsec running"
+		echo "IPsec running"  " - pluto pid: `cat $plutopid`"
 		# might not be a subsystem lock dir, ignore that issue
 		if test "$plutokind" = "normal" -a \( "$klips" = "yes" -o "$lk26sec" = "yes" \)  -a "$hasinfo"
 		then
@@ -433,7 +434,7 @@ case "$1" in
 		echo "but..."
 		if test "$plutokind" != "normal"
 		then
-			echo "$plutokind Pluto running!"
+			echo "$plutokind Pluto running" " - pluto pid: `cat $plutopid`"
 		fi
 		if test ! "$hasinfo"
 		then
@@ -450,7 +451,6 @@ case "$1" in
 				echo "some eroutes exist"
 			fi
 		fi
-		exit 1
 	else
 		echo "IPsec stopped"
 		if test ! "$hassublock" -a ! "$hasinfo" -a "$plutokind" = "no" -a "$eroutes" -eq 0
@@ -476,6 +476,9 @@ case "$1" in
 		fi
 		exit 1
 	fi
+	# todo: ipsec verify --quiet that only shows problems
+	/usr/sbin/ipsec verify;
+	exit $?;
 	;;
 
   --version)

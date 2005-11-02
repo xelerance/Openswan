@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: invokepluto.c,v 1.5 2004/04/10 17:15:23 ken Exp $
+ * RCSID $Id: invokepluto.c,v 1.5.16.1 2005/08/18 14:15:57 ken Exp $
  */
 
 #include <sys/types.h>
@@ -165,6 +165,7 @@ int starter_start_pluto (struct starter_config *cfg, int debug)
 		return -1;
 	}
 	else {
+		sigset_t sig;
 		unlink(CTL_FILE);
 		_stop_requested = 0;
 
@@ -181,7 +182,8 @@ int starter_start_pluto (struct starter_config *cfg, int debug)
 				 * Child
 				 */
 				setsid();
-				sigsetmask(0);
+				sigemptyset(&sig);
+				sigprocmask(SIG_SETMASK,&sig,NULL);
 				execv(arg[0], arg);
 				starter_log(LOG_LEVEL_ERR, "can't execv(%s,...): %s", arg[0],
 					strerror(errno));

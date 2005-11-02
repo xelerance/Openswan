@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _plutorun.in,v 1.30.4.1 2005/05/18 20:55:12 ken Exp $
+# RCSID $Id: _plutorun.in,v 1.31 2005/04/21 21:57:16 mcr Exp $
 
 me='ipsec _plutorun'		# for messages
 

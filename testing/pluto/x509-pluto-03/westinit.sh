@@ -1,3 +1,4 @@
+: ==== start ====
 TESTNAME=x509-pluto-03
 source /testing/pluto/bin/westlocal.sh
 

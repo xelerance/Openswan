@@ -1,6 +1,8 @@
 _pluto_adns
 connections.c.diff
 core.east
+core.north
+core.west
 fetch.c.diff
 kernel.c2
 pluto

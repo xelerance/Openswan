@@ -1,4 +1,5 @@
 #!/bin/sh
+: ==== start ====
 TZ=GMT export TZ
 
 ipsec spi --clear
@@ -45,4 +46,5 @@ arp -s 192.1.2.254 10:00:00:64:64:23
 ipsec look
 
 ipsec klipsdebug --all 
+: ==== end ====
 

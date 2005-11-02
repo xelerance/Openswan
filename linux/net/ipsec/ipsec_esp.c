@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.8 2004/09/14 00:22:57 mcr Exp $";
+char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.13 2005/05/21 03:19:57 mcr Exp $";
 #include <linux/config.h>
 #include <linux/version.h>
 
@@ -44,12 +44,7 @@ char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.8 2004/09/14 00:22:57 m
 #  include <asm/spinlock.h> /* *lock* */
 # endif /* SPINLOCK_23 */
 #endif /* SPINLOCK */
-#ifdef NET_21
-# include <asm/uaccess.h>
-# include <linux/in6.h>
-# define proto_priv cb
-#endif /* NET21 */
-#include <asm/checksum.h>
+
 #include <net/ip.h>
 #include <net/protocol.h>
 
@@ -71,6 +66,12 @@ char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.8 2004/09/14 00:22:57 m
 
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
+
+#ifdef CONFIG_KLIPS_DEBUG
+#define ESP_DMP(_x,_y,_z) if(debug_rcv && sysctl_ipsec_debug_verbose) ipsec_dmp_block(_x,_y,_z)
+#else
+#define ESP_DMP(_x,_y,_z)
+#endif
 
 #ifdef CONFIG_KLIPS_ESP
 enum ipsec_rcv_value
@@ -107,7 +108,7 @@ ipsec_rcv_esp_checks(struct ipsec_rcv_state *irs,
 		return IPSEC_RCV_BADLEN;
 	}
 
-	irs->protostuff.espstuff.espp = (struct esphdr *)(skb->data + irs->iphlen);
+	irs->protostuff.espstuff.espp = (struct esphdr *)skb->h.raw;
 	irs->said.spi = irs->protostuff.espstuff.espp->esp_spi;
 
 	return IPSEC_RCV_OK;
@@ -120,6 +121,7 @@ ipsec_rcv_esp_decrypt_setup(struct ipsec_rcv_state *irs,
 			    unsigned char **authenticator)
 {
 	struct esphdr *espp = irs->protostuff.espstuff.espp;
+	//unsigned char *idat = (unsigned char *)espp;
 
 	KLIPS_PRINT(debug_rcv,
 		    "klips_debug:ipsec_rcv: "
@@ -133,7 +135,7 @@ ipsec_rcv_esp_decrypt_setup(struct ipsec_rcv_state *irs,
 		    irs->sa_len ? irs->sa : " (error)");
 
 	*replay = ntohl(espp->esp_rpl);
-	*authenticator = &(skb->data[irs->len - irs->authlen]);
+	*authenticator = &(skb->h.raw[irs->ilen]);
 
 	return IPSEC_RCV_OK;
 }
@@ -169,11 +171,24 @@ ipsec_rcv_esp_authcalc(struct ipsec_rcv_state *irs,
 	/* copy the initialized keying material */
 	memcpy(&tctx, irs->ictx, irs->ictx_len);
 
+#ifdef HASH_DEBUG
+	ESP_DMP("ictx", irs->ictx, irs->ictx_len);
+
+	ESP_DMP("mac_esp", (caddr_t)espp, irs->ilen);
+#endif
 	(*aa->update)((void *)&tctx, (caddr_t)espp, irs->ilen);
 
 	(*aa->final)(irs->hash, (void *)&tctx);
 
+#ifdef HASH_DEBUG
+	ESP_DMP("hash1", irs->hash, aa->hashlen);
+#endif
+
 	memcpy(&tctx, irs->octx, irs->octx_len);
+
+#ifdef HASH_DEBUG
+	ESP_DMP("octx", irs->octx, irs->octx_len);
+#endif
 
 	(*aa->update)((void *)&tctx, irs->hash, aa->hashlen);
 	(*aa->final)(irs->hash, (void *)&tctx);
@@ -187,93 +202,57 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 {
 	struct ipsec_sa *ipsp = irs->ipsp;
 	struct esphdr *espp = irs->protostuff.espstuff.espp;
-	int esphlen = 0;
-	__u8 *idat;	/* pointer to content to be decrypted/authenticated */
-	__u32 iv[2];
+	int i;
 	int pad = 0, padlen;
 	int badpad = 0;
-	int i;
+	int esphlen = 0;
+	__u8 *idat;	/* pointer to content to be decrypted/authenticated */
+	int encaplen = 0;
 	struct sk_buff *skb;
-#ifdef CONFIG_KLIPS_ALG
 	struct ipsec_alg_enc *ixt_e=NULL;
-#endif /* CONFIG_KLIPS_ALG */
 
 	skb=irs->skb;
 
-	idat = skb->data + irs->iphlen;
+	idat = skb->h.raw;
 
-#ifdef CONFIG_KLIPS_ALG
-	if ((ixt_e=ipsp->ips_alg_enc)) {
-		esphlen = ESP_HEADER_LEN + ixt_e->ixt_ivlen/8;
-		KLIPS_PRINT(debug_rcv,
-				"klips_debug:ipsec_rcv: "
-				"encalg=%d esphlen=%d\n",
-				ipsp->ips_encalg, esphlen);
-	} else
-#endif /* CONFIG_KLIPS_ALG */
-	switch(ipsp->ips_encalg) {
-	case ESP_3DES:
-		iv[0] = *((__u32 *)(espp->esp_iv)    );
-		iv[1] = *((__u32 *)(espp->esp_iv) + 1);
-		esphlen = sizeof(struct esphdr);
-		break;
-	default:
-		ipsp->ips_errs.ips_alg_errs += 1;
-		if(irs->stats) {
-			irs->stats->rx_errors++;
-		}
-		return IPSEC_RCV_ESP_BADALG;
-	}
+	/* encaplen is the distance between the end of the IP
+	 * header and the beginning of the ESP header.
+	 * on ESP headers it is zero, but on UDP-encap ESP
+	 * it includes the space for the UDP header.
+	 *
+	 * Note: UDP-encap code has already moved the
+	 *       skb->data forward to accomodate this.
+	 */
+	encaplen = idat - (skb->nh.raw + irs->iphlen);
+
+	ixt_e=ipsp->ips_alg_enc;
+	esphlen = ESP_HEADER_LEN + ixt_e->ixt_common.ixt_support.ias_ivlen/8;
+	KLIPS_PRINT(debug_rcv,
+		    "klips_debug:ipsec_rcv: "
+		    "encalg=%d esphlen=%d\n",
+		    ipsp->ips_encalg, esphlen);
 
 	idat += esphlen;
 	irs->ilen -= esphlen;
 
-#ifdef CONFIG_KLIPS_ALG
-	if (ixt_e)
-	{
-		if (ipsec_alg_esp_encrypt(ipsp, 
-					idat, irs->ilen, espp->esp_iv, 
-					IPSEC_ALG_DECRYPT) <= 0)
-		{
-			printk("klips_error:ipsec_rcv: "
-					"got packet with esplen = %d "
-					"from %s -- should be on "
-					"ENC(%d) octet boundary, "
-					"packet dropped\n",
-					irs->ilen,
-					irs->ipsaddr_txt,
-					ipsp->ips_encalg);
-			if(irs->stats) {
-				irs->stats->rx_errors++;
-			}
-			return IPSEC_RCV_BAD_DECRYPT;
+	if (ipsec_alg_esp_encrypt(ipsp, 
+				  idat, irs->ilen, espp->esp_iv, 
+				  IPSEC_ALG_DECRYPT) <= 0) {
+		printk("klips_error:ipsec_rcv: "
+		       "got packet with esplen = %d "
+		       "from %s -- should be on "
+		       "ENC(%d) octet boundary, "
+		       "packet dropped\n",
+		       irs->ilen,
+		       irs->ipsaddr_txt,
+		       ipsp->ips_encalg);
+		if(irs->stats) {
+			irs->stats->rx_errors++;
 		}
-	} else
-#endif /* CONFIG_KLIPS_ALG */
-	switch(ipsp->ips_encalg) {
-	case ESP_3DES:
-		if ((irs->ilen) % 8) {
-			ipsp->ips_errs.ips_encsize_errs += 1;
-			printk("klips_error:ipsec_rcv: "
-			       "got packet with esplen = %d from %s -- should be on 8 octet boundary, packet dropped\n",
-			       irs->ilen,
-			       irs->ipsaddr_txt);
-			if(irs->stats) {
-				irs->stats->rx_errors++;
-			}
-			return IPSEC_RCV_3DES_BADBLOCKING;
-		}
-		des_ede3_cbc_encrypt((des_cblock *)idat,
-				     (des_cblock *)idat,
-				     irs->ilen,
-				     ((struct des_eks *)(ipsp->ips_key_e))[0].ks,
-				     ((struct des_eks *)(ipsp->ips_key_e))[1].ks,
-				     ((struct des_eks *)(ipsp->ips_key_e))[2].ks,
-				     (des_cblock *)iv, 0);
-		break;
-	}
+		return IPSEC_RCV_BAD_DECRYPT;
+	} 
 
-	ipsec_rcv_dmp("postdecrypt", skb->data, skb->len);
+	ESP_DMP("postdecrypt", idat, irs->ilen);
 
 	irs->next_header = idat[irs->ilen - 1];
 	padlen = idat[irs->ilen - 2];
@@ -328,11 +307,16 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	/*
 	 * move the IP header forward by the size of the ESP header, which
 	 * will remove the the ESP header from the packet.
+	 *
+	 * XXX this is really unnecessary, since odds we are in tunnel
+	 *     mode, and we will be *removing* this IP header.
+	 *
 	 */
-	memmove((void *)(skb->data + esphlen),
-		(void *)(skb->data), irs->iphlen);
+	memmove((void *)(idat - irs->iphlen),
+		(void *)(skb->nh.raw), irs->iphlen);
 
-	ipsec_rcv_dmp("esp postmove", skb->data, skb->len);
+	ESP_DMP("esp postmove", (idat - irs->iphlen),
+		irs->iphlen + irs->ilen);
 
 	/* skb_pull below, will move up by esphlen */
 
@@ -345,10 +329,10 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 		return IPSEC_RCV_ESP_DECAPFAIL;
 	}
 	skb_pull(skb, esphlen);
+	skb->nh.raw = idat - irs->iphlen;
+	irs->ipp = skb->nh.iph;
 
-	irs->ipp = (struct iphdr *)skb->data;
-
-	ipsec_rcv_dmp("esp postpull", skb->data, skb->len);
+	ESP_DMP("esp postpull", skb->data, skb->len);
 
 	/* now, trip off the padding from the end */
 	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
@@ -370,7 +354,9 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 enum ipsec_xmit_value
 ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
 {
+#ifdef CONFIG_KLIPS_ENC_3DES
   __u32 iv[2];
+#endif
   struct esphdr *espp;
   int ilen = 0;
   int padlen = 0, i;
@@ -504,9 +490,8 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
     ixs->stats->tx_errors++;
     return IPSEC_XMIT_AH_BADALG;
   }
-#ifdef NET_21
+
   ixs->skb->h.raw = (unsigned char*)espp;
-#endif /* NET_21 */
 
   return IPSEC_XMIT_OK;
 }
@@ -551,6 +536,21 @@ struct inet_protocol esp_protocol =
 
 /*
  * $Log: ipsec_esp.c,v $
+ * Revision 1.13  2005/05/21 03:19:57  mcr
+ * 	hash ctx is not really that interesting most of the time.
+ *
+ * Revision 1.12  2005/05/11 01:28:49  mcr
+ * 	removed "poor-man"s OOP in favour of proper C structures.
+ *
+ * Revision 1.11  2005/04/29 05:10:22  mcr
+ * 	removed from extraenous includes to make unit testing easier.
+ *
+ * Revision 1.10  2005/04/17 04:36:14  mcr
+ * 	code now deals with ESP and UDP-ESP code.
+ *
+ * Revision 1.9  2005/04/15 19:52:30  mcr
+ * 	adjustments to use proper skb fields for data.
+ *
  * Revision 1.8  2004/09/14 00:22:57  mcr
  * 	adjustment of MD5* functions.
  *

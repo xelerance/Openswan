@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 named
 sleep 2
 

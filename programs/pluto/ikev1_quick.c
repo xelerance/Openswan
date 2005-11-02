@@ -15,7 +15,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikev1_quick.c,v 1.1 2005/03/27 20:15:09 mcr Exp $
+ * RCSID $Id: ikev1_quick.c,v 1.3 2005/05/18 19:29:29 mcr Exp $
  */
 
 #include <stdio.h>
@@ -657,6 +657,8 @@ quick_outI1_continue(struct pluto_crypto_req_cont *pcrc
     DBG(DBG_CONTROLMORE
 	, DBG_log("quick outI1: calculated ke+nonce, sending I1"));
 
+    st->st_calculating = FALSE;
+
     /* XXX should check out ugh */
     passert(ugh == NULL);
     passert(cur_state == NULL);
@@ -684,6 +686,10 @@ quick_outI1(int whack_sock
     st->st_whack_sock = whack_sock;
     st->st_connection = c;
     passert(c != NULL);
+
+    if(st->st_calculating) {
+	return STF_IGNORE;
+    }
 
     set_cur_state(st);	/* we must reset before exit */
     st->st_policy = policy;
@@ -1499,6 +1505,7 @@ quick_inI1_outR1_cryptocontinue(struct pluto_crypto_req_cont *pcrc
     passert(st->st_connection != NULL);
 
     set_cur_state(st);	/* we must reset before exit */
+    st->st_calculating=FALSE;
     e = quick_inI1_outR1_cryptotail(qke, r);
 
     if(qke->md != NULL) {

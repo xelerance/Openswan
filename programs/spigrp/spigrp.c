@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char spigrp_c_version[] = "RCSID $Id: spigrp.c,v 1.49 2004/04/18 23:16:02 ken Exp $";
+char spigrp_c_version[] = "RCSID $Id: spigrp.c,v 1.50.2.1 2005/08/18 14:04:51 ken Exp $";
 
 
 #include <sys/types.h>
@@ -23,6 +23,7 @@ char spigrp_c_version[] = "RCSID $Id: spigrp.c,v 1.49 2004/04/18 23:16:02 ken Ex
 #include <errno.h>
 #include <sys/stat.h> /* open() */
 #include <fcntl.h> /* open() */
+#include <sys/wait.h>
 #include <stdlib.h> /* system(), strtoul() */
 
 #include <sys/socket.h>
@@ -144,8 +145,8 @@ main(int argc, char **argv)
 	}
 
 	if(argc == 1) {
-		system("cat /proc/net/ipsec_spigrp");
-		exit(0);
+		int ret = system("cat /proc/net/ipsec_spigrp");
+		exit(ret != -1 && WIFEXITED(ret) ? WEXITSTATUS(ret) : 1);
 	}
 
 	if(debug) {
@@ -491,6 +492,12 @@ main(int argc, char **argv)
 }
 /*
  * $Log: spigrp.c,v $
+ * Revision 1.50.2.1  2005/08/18 14:04:51  ken
+ * Patch from mt@suse.de to avoid GCC warnings with system() calls
+ *
+ * Revision 1.50  2005/07/08 02:56:38  paul
+ * gcc4 fixes that were not commited because vault was down
+ *
  * Revision 1.49  2004/04/18 23:16:02  ken
  * Change FreeS/WAN -> Openswan
  *

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey.h,v 1.47 2004/08/21 00:44:14 mcr Exp $
+ * RCSID $Id: pfkey.h,v 1.49 2005/05/11 00:57:29 mcr Exp $
  */
 
 #ifndef __NET_IPSEC_PF_KEY_H
@@ -33,25 +33,26 @@ struct socket_list
 extern int pfkey_list_insert_socket(struct socket*, struct socket_list**);
 extern int pfkey_list_remove_socket(struct socket*, struct socket_list**);
 extern struct socket_list *pfkey_open_sockets;
-extern struct socket_list *pfkey_registered_sockets[SADB_SATYPE_MAX+1];
+extern struct socket_list *pfkey_registered_sockets[];
 
-struct supported
+struct ipsec_alg_supported
 {
-	uint16_t supported_alg_exttype;
-	uint8_t supported_alg_id;
-	uint8_t supported_alg_ivlen;
-	uint16_t supported_alg_minbits;
-	uint16_t supported_alg_maxbits;
+	uint16_t ias_exttype;
+	uint8_t  ias_id;
+	uint8_t  ias_ivlen;
+	uint16_t ias_keyminbits;
+	uint16_t ias_keymaxbits;
+        char    *ias_name;
 };
 
-extern struct supported_list *pfkey_supported_list[SADB_SATYPE_MAX+1];
+extern struct supported_list *pfkey_supported_list[];
 struct supported_list
 {
-	struct supported *supportedp;
+	struct ipsec_alg_supported *supportedp;
 	struct supported_list *next;
 };
-extern int pfkey_list_insert_supported(struct supported*, struct supported_list**);
-extern int pfkey_list_remove_supported(struct supported*, struct supported_list**);
+extern int pfkey_list_insert_supported(struct ipsec_alg_supported*, struct supported_list**);
+extern int pfkey_list_remove_supported(struct ipsec_alg_supported*, struct supported_list**);
 
 struct sockaddr_key
 {
@@ -66,6 +67,14 @@ struct pfkey_extracted_data
 	struct ipsec_sa* ips2;
 	struct eroute *eroute;
 };
+
+/* forward reference */
+struct sadb_ext;
+struct sadb_msg;
+struct sockaddr;
+struct sadb_comb;
+struct sadb_sadb;
+struct sadb_alg;
 
 extern int
 pfkey_alloc_eroute(struct eroute** eroute);
@@ -168,14 +177,15 @@ struct pf_key_ext_parsers_def {
 };
 
 
-extern unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX + 1/*ext*/];
+#define SADB_EXTENSIONS_MAX 31
+extern unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_EXTENSIONS_MAX];
 #define EXT_BITS_IN 0
 #define EXT_BITS_OUT 1
 #define EXT_BITS_PERM 0
 #define EXT_BITS_REQ 1
 
-extern void pfkey_extensions_init(struct sadb_ext *extensions[SADB_EXT_MAX + 1]);
-extern void pfkey_extensions_free(struct sadb_ext *extensions[SADB_EXT_MAX + 1]);
+extern void pfkey_extensions_init(struct sadb_ext *extensions[]);
+extern void pfkey_extensions_free(struct sadb_ext *extensions[]);
 extern void pfkey_msg_free(struct sadb_msg **pfkey_msg);
 
 extern int pfkey_msg_parse(struct sadb_msg *pfkey_msg,
@@ -331,6 +341,13 @@ pfkey_v2_sadb_type_string(int sadb_type);
 
 /*
  * $Log: pfkey.h,v $
+ * Revision 1.49  2005/05/11 00:57:29  mcr
+ * 	rename struct supported -> struct ipsec_alg_supported.
+ * 	make pfkey.h more standalone.
+ *
+ * Revision 1.48  2005/05/01 03:12:50  mcr
+ * 	include name of algorithm in datastructure.
+ *
  * Revision 1.47  2004/08/21 00:44:14  mcr
  * 	simplify definition of nat_t related prototypes.
  *

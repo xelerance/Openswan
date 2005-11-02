@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: server.c,v 1.106.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: server.c,v 1.109.2.1 2005/08/18 14:17:38 ken Exp $
  */
 
 #include <stdio.h>
@@ -42,6 +42,7 @@
 #include <sys/queue.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
+#include <sys/queue.h>
 
 #include <openswan.h>
 
@@ -88,6 +89,9 @@ static const int on = TRUE;	/* by-reference parameter; constant, we hope */
 
 bool no_retransmits = FALSE;
 
+/* list of interface devices */
+LIST_HEAD(,iface_dev) interface_dev;
+
 /* control (whack) socket */
 int ctl_fd = NULL_FD;	/* file descriptor of control (whack) socket */
 struct sockaddr_un ctl_addr = { AF_UNIX, DEFAULT_CTLBASE CTL_SUFFIX };
@@ -105,6 +109,8 @@ err_t
 init_ctl_socket(void)
 {
     err_t failed = NULL;
+
+    LIST_INIT(&interface_dev);
 
     delete_ctl_socket();	/* preventative medicine */
     ctl_fd = socket(AF_UNIX, SOCK_STREAM, 0);
@@ -206,23 +212,36 @@ delete_info_socket(void)
 
 bool listening = FALSE;	/* should we pay attention to IKE messages? */
 
-struct iface *interfaces = NULL;	/* public interfaces */
+struct iface_port  *interfaces = NULL;	/* public interfaces */
 
 /* Initialize the interface sockets. */
 
 static void
 mark_ifaces_dead(void)
 {
-    struct iface *p;
+    struct iface_port *p;
 
     for (p = interfaces; p != NULL; p = p->next)
 	p->change = IFN_DELETE;
 }
 
 static void
+free_dead_iface_dev(struct iface_dev *id)
+{
+    if(--id->id_count == 0) {
+	pfree(id->id_vname);
+	pfree(id->id_rname);
+
+	LIST_REMOVE(id, id_entry);
+
+	pfree(id);
+    }
+}
+
+static void
 free_dead_ifaces(void)
 {
-    struct iface *p;
+    struct iface_port *p;
     bool some_dead = FALSE
 	, some_new = FALSE;
 
@@ -231,8 +250,9 @@ free_dead_ifaces(void)
 	if (p->change == IFN_DELETE)
 	{
 	    openswan_log("shutting down interface %s/%s %s:%d"
-			 , p->vname, p->rname
-			 , ip_str(&p->addr), p->port);
+			 , p->ip_dev->id_vname
+			 , p->ip_dev->id_rname
+			 , ip_str(&p->ip_addr), p->port);
 	    some_dead = TRUE;
 	}
 	else if (p->change == IFN_ADD)
@@ -243,18 +263,22 @@ free_dead_ifaces(void)
 
     if (some_dead)
     {
-	struct iface **pp;
+	struct iface_port **pp;
 
 	release_dead_interfaces();
 	for (pp = &interfaces; (p = *pp) != NULL; )
 	{
 	    if (p->change == IFN_DELETE)
 	    {
+		struct iface_dev *id;
+
 		*pp = p->next;	/* advance *pp */
-		pfree(p->vname);
-		pfree(p->rname);
 		close(p->fd);
+
+		id = p->ip_dev;
 		pfree(p);
+
+		free_dead_iface_dev(id);
 	    }
 	    else
 	    {
@@ -384,6 +408,8 @@ find_raw_ifaces4(void)
 		, ri.name));
 	if (!(auxinfo.ifr_flags & IFF_UP))
 	    continue;	/* ignore an interface that isn't UP */
+        if (auxinfo.ifr_flags & IFF_SLAVE)
+            continue;   /* ignore slave interfaces; they share IPs with their master */
 
 	/* ignore unconfigured interfaces */
 	if (rs->sin_addr.s_addr == 0)
@@ -725,11 +751,12 @@ process_raw_ifaces(struct raw_iface *rifaces)
 add_entry:
 #endif
 	{
-	    struct iface **p = &interfaces;
+	    struct iface_port **p = &interfaces;
 
 	    for (;;)
 	    {
-		struct iface *q = *p;
+		struct iface_port *q = *p;
+		struct iface_dev *id = NULL;
 
 		/* search is over if at end of list */
 		if (q == NULL)
@@ -747,10 +774,17 @@ add_entry:
 		    }
 #endif
 
-		    q = alloc_thing(struct iface, "struct iface");
-		    q->rname = clone_str(ifp->name, "real device name");
-		    q->vname = clone_str(v->name, "virtual device name");
-		    q->addr = ifp->addr;
+		    q = alloc_thing(struct iface_port, "struct iface_port");
+		    id = alloc_thing(struct iface_dev, "struct iface_dev");
+
+		    LIST_INSERT_HEAD(&interface_dev, id, id_entry)
+
+		    q->ip_dev = id;
+		    id->id_rname = clone_str(ifp->name, "real device name");
+		    id->id_vname = clone_str(v->name, "virtual device name");
+		    id->id_count++;
+
+		    q->ip_addr = ifp->addr;
 		    q->fd = fd;
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
@@ -760,8 +794,9 @@ add_entry:
 		    interfaces = q;
 
 		    openswan_log("adding interface %s/%s %s:%d"
-				 , q->vname, q->rname
-				 , ip_str(&q->addr)
+				 , q->ip_dev->id_vname
+				 , q->ip_dev->id_rname
+				 , ip_str(&q->ip_addr)
 				 , q->port);
 
 #ifdef NAT_TRAVERSAL
@@ -778,11 +813,12 @@ add_entry:
 			    break;
 			nat_traversal_espinudp_socket(fd, "IPv4"
 						      , ESPINUDP_WITH_NON_ESP);
-			q = alloc_thing(struct iface, "struct iface");
-			q->rname = clone_str(ifp->name, "real device name");
-			q->vname = clone_str(v->name, "virtual device name");
-			q->addr = ifp->addr;
-			setportof(htons(NAT_T_IKE_FLOAT_PORT), &q->addr);
+			q = alloc_thing(struct iface_port, "struct iface_port");
+			q->ip_dev = id;
+			id->id_count++;
+			
+			q->ip_addr = ifp->addr;
+			setportof(htons(NAT_T_IKE_FLOAT_PORT), &q->ip_addr);
 			q->port = NAT_T_IKE_FLOAT_PORT;
 			q->fd = fd;
 			q->next = interfaces;
@@ -790,8 +826,8 @@ add_entry:
 			q->ike_float = TRUE;
 			interfaces = q;
 			openswan_log("adding interface %s/%s %s:%d"
-				     , q->vname, q->rname
-				     , ip_str(&q->addr)
+				     , q->ip_dev->id_vname, q->ip_dev->id_rname
+				     , ip_str(&q->ip_addr)
 				     , q->port);
 		    }
 #endif
@@ -799,18 +835,18 @@ add_entry:
 		}
 
 		/* search over if matching old entry found */
-		if (streq(q->rname, ifp->name)
-		&& streq(q->vname, v->name)
-		&& sameaddr(&q->addr, &ifp->addr))
+		if (streq(q->ip_dev->id_rname, ifp->name)
+		    && streq(q->ip_dev->id_vname, v->name)
+		    && sameaddr(&q->ip_addr, &ifp->addr))
 		{
 		    /* matches -- rejuvinate old entry */
 		    q->change = IFN_KEEP;
 #ifdef NAT_TRAVERSAL
 		    /* look for other interfaces to keep (due to NAT-T) */
 		    for (q = q->next ; q ; q = q->next) {
-			if (streq(q->rname, ifp->name)
-			    && streq(q->vname, v->name)
-			    && sameaddr(&q->addr, &ifp->addr)) {
+			if (streq(q->ip_dev->id_rname, ifp->name)
+			    && streq(q->ip_dev->id_vname, v->name)
+			    && sameaddr(&q->ip_addr, &ifp->addr)) {
 				q->change = IFN_KEEP;
 			}
 		    }
@@ -850,11 +886,11 @@ find_ifaces(void)
 void
 show_ifaces_status(void)
 {
-    struct iface *p;
+    struct iface_port *p;
 
     for (p = interfaces; p != NULL; p = p->next)
 	whack_log(RC_COMMENT, "interface %s/%s %s"
-	    , p->vname, p->rname, ip_str(&p->addr));
+	    , p->ip_dev->id_vname, p->ip_dev->id_rname, ip_str(&p->ip_addr));
 }
 
 void
@@ -921,7 +957,7 @@ reapchildren(void)
 void
 call_server(void)
 {
-    struct iface *ifp;
+    struct iface_port *ifp;
 
     /* catch SIGHUP and SIGTERM */
     {

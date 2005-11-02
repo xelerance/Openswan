@@ -291,6 +291,12 @@ umlplutotest	xauth-pluto-07		good
 #
 umlXhost	xauth-pluto-08		good
 
+
+# 
+# a testcase with pfs=yes connecting to pfs=no
+#
+umlplutotest	basic-pluto-09		good
+
 #
 # a test case of what happens to X.509 based authorization system
 # when a certificate is not sent, because it has expired and can not
@@ -311,4 +317,14 @@ umlXhost	psk-pluto-03		good
 
 # this tests psk with main mode.
 umlXhost	psk-pluto-04		good
+
+#
+# a test of using AES with pluto, twofish for phase2
+#
+umlplutotest	basic-pluto-07		good
+
+#
+# a test of using twofish with pluto, twofish for phase2
+#
+umlplutotest	basic-pluto-08		good
 

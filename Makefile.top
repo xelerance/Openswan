@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.top,v 1.2 2004/12/21 04:24:02 mcr Exp $
+# RCSID $Id: Makefile.top,v 1.4 2005/07/18 03:46:13 mcr Exp $
 
 
 PATCHES=linux
@@ -32,8 +32,7 @@ KVSHORTUTIL=${MAKEUTILS}/kernelversion-short
 SUBDIRS=doc lib programs testing
 
 clean::
-	make modclean
-	make mod26clean
+	-(cd ${OPENSWANSRCDIR} && make modclean && make mod26clean)
 
 distclean:	clean
 	rm -f out.kpatch 
@@ -62,8 +61,8 @@ tags TAGS: dummy
 .PHONY: dummy
 dummy:
 
-uml:	programs checkprograms
-	@echo XXX do some checks to see if all the manual pieces are done.
+uml:	checkprograms
+	testing/utils/verify-uml.sh
 	-chmod +x testing/utils/make-uml.sh
 	testing/utils/make-uml.sh `pwd`
 

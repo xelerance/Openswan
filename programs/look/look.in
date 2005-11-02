@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: look.in,v 1.32.4.1 2005/05/18 20:55:13 ken Exp $
+# RCSID $Id: look.in,v 1.33.2.1 2005/08/18 14:10:09 ken Exp $
 
 info=/var/run/pluto/ipsec.info
 me="ipsec look"
@@ -42,8 +42,9 @@ fi
 echo "`hostname` `date`"
 
 # combine spigrp and eroute
-cat /proc/net/ipsec_spigrp /proc/net/ipsec_eroute |
-	awk '
+for file in /proc/net/ipsec_spigrp /proc/net/ipsec_eroute ; do
+	test -f $file && cat $file
+done | awk '
 		function pad(subnet) {
 			sub("/:", "..", subnet)
 			split(subnet, d, ".")
@@ -66,11 +67,15 @@ cat /proc/net/ipsec_spigrp /proc/net/ipsec_eroute |
 	' | sort | sed 's/^[^~]*~//'
 
 # tncfg (mostly as a divider line)
-egrep -v 'NULL[ \t]+mtu=0\(0\)[ \t]+->[ \t]+0' /proc/net/ipsec_tncfg |
-	paste -d % | sed 's/%/   /g' | sed 's/ -> /->/g'
+if test -f /proc/net/ipsec_tncfg ; then
+	egrep -v 'NULL[ \t]+mtu=0\(0\)[ \t]+->[ \t]+0' /proc/net/ipsec_tncfg |
+		paste -d % | sed 's/%/   /g' | sed 's/ -> /->/g'
+fi
 
 # SAs
-sort /proc/net/ipsec_spi
+if test -f /proc/net/ipsec_spi ; then
+	sort /proc/net/ipsec_spi
+fi
 
 # relevant routing information, including header line (which is good
 # enough as a separator, no need for another bar)

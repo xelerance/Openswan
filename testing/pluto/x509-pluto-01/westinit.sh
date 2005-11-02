@@ -1,3 +1,5 @@
+: ==== start ====
+
 # confirm that the network is alive
 ping -n -c 4 192.0.2.254
 # make sure that clear text does not get through

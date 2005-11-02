@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: spdb.c,v 1.117.8.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: spdb.c,v 1.120 2005/07/05 22:07:06 mcr Exp $
  */
 
 #include <stdio.h>
@@ -24,6 +24,7 @@
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
+#include "pfkeyv2.h"
 
 #include "constants.h"
 #include "oswlog.h"
@@ -763,6 +764,8 @@ void
 free_sa(struct db_sa *f)
 {
     int i;
+    if(f == NULL) return;
+
     for(i=0; i<f->prop_conj_cnt; i++) {
 	free_sa_prop_conj(&f->prop_conjs[i]);
     }

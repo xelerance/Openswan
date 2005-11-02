@@ -15,13 +15,14 @@
  * for more details.
  */
 
-char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.56 2004/07/10 19:12:35 mcr Exp $";
+char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.57.2.1 2005/08/18 14:04:51 ken Exp $";
 
 
 #include <sys/types.h>
 #include <linux/types.h> /* new */
 #include <string.h>
 #include <errno.h>
+#include <sys/wait.h>
 #include <stdlib.h> /* system(), strtoul() */
 #include <sys/stat.h> /* open() */
 #include <fcntl.h> /* open() */
@@ -271,8 +272,8 @@ main(int argc, char **argv)
 	}
 
 	if(argcount == 1) {
-		system("cat /proc/net/ipsec_klipsdebug");
-		exit(0);
+		int ret = system("cat /proc/net/ipsec_klipsdebug");
+		exit(ret != -1 && WIFEXITED(ret) ? WEXITSTATUS(ret) : 1);
 	}
 
 	if(!action) {
@@ -439,6 +440,12 @@ main(int argc, char **argv)
 }
 /*
  * $Log: klipsdebug.c,v $
+ * Revision 1.57.2.1  2005/08/18 14:04:51  ken
+ * Patch from mt@suse.de to avoid GCC warnings with system() calls
+ *
+ * Revision 1.57  2005/07/08 02:56:38  paul
+ * gcc4 fixes that were not commited because vault was down
+ *
  * Revision 1.56  2004/07/10 19:12:35  mcr
  * 	CONFIG_IPSEC -> CONFIG_KLIPS.
  *

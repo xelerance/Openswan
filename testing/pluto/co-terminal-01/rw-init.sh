@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 named
 
 dig 2.2.0.192.in-addr.arpa. txt

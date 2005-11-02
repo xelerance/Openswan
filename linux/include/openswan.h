@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: openswan.h,v 1.92 2004/08/20 21:44:26 mcr Exp $
+ * RCSID $Id: openswan.h,v 1.93 2005/04/14 20:21:51 mcr Exp $
  */
 #define	_OPENSWAN_H	/* seen it, no need to see it again */
 
@@ -40,13 +40,14 @@
 #include <linux/in.h>
 #include <linux/string.h>
 #include <linux/ctype.h>
-#define	assert(foo)	/* nothing */
+#define user_assert(foo)  /*nothing*/
 #else
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
+#define user_assert(foo) assert(foo)
 #include <stdio.h>
 
 #  define uint8_t u_int8_t

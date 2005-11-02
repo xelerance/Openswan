@@ -1,0 +1,20 @@
+Written by Michael Richardson <mcr@xelerance.com> on 2005-09-10.
+
+1)	we are pretty certain that we have not consistently broken SMP
+	support in KLIPS. It compiled, but it almost certainly locks up. This
+	is probably an improvement, since before, it only sometimes locked up,
+	and we didn't really know why.
+
+	We do not have an ETA on a fix, although it is important to us.
+
+2)	We are aware of problems where more than 10 initiations/second may
+	cause the system to fail to negotiate ANY SAs. We are not certain
+	of the cause, but it is not made better by setting nhelpers=0.
+	Note that our previous record for SA setups/second was 11/second, so
+	it may well be availability of entropy.
+	
+3)	We are aware that there may be other problems, as yet not clearly
+	documented.
+	We think that this release is miles above the 2.3.1 release, and
+	it is high time to get something out.
+

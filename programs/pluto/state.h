@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: state.h,v 1.96 2005/03/21 03:45:09 mcr Exp $
+ * RCSID $Id: state.h,v 1.98.2.2 2005/07/26 02:11:23 ken Exp $
  */
 
 #include <sys/types.h>
@@ -140,8 +140,11 @@ struct state
 
     ip_address         st_remoteaddr;          /* where to send packets to */
     u_int16_t          st_remoteport;          /* host byte order */
+    
+    const struct iface_port *st_interface;     /* where to send from */
     ip_address         st_localaddr;           /* where to send them from */
     u_int16_t          st_localport;           
+
     msgid_t            st_msgid;               /* MSG-ID from header.  Network Order! */
 
     msgid_t            st_msgid_phase15;       /* msgid for phase 1.5 */
@@ -205,6 +208,10 @@ struct state
     unsigned long      st_outbound_count;      /* traffic through eroute */
     time_t             st_outbound_time;       /* time of last change to st_outbound_count */
 
+    bool               st_calculating;         /* set to TRUE, if we are performing cryptographic
+						* operations on this state at this time
+						*/
+
     chunk_t            st_p1isa;               /* Phase 1 initiator SA (Payload) for HASH */
     chunk_t            st_skeyid;              /* Key material */
     chunk_t            st_skeyid_d;            /* KM for non-ISAKMP key derivation */
@@ -237,6 +244,7 @@ struct state
 	bool           st_skeyid_calculated;
 	bool           st_dpd;                 /* Peer supports DPD */
 	bool           st_dpd_local;	       /* If we want DPD on this conn */
+	bool           st_logged_p1algos;      /* if we have logged algos */
 	u_int32_t      st_nat_traversal;       /* bit field of permitted
 						* methods. If non-zero, then
 						* NAT-T has been detected, and

@@ -29,6 +29,6 @@ FIXUPDIR=`cd ${FREESWANSRCDIR}/testing/packaging/fixups && pwd`
 
 # kernel source for local UML, configured, against which one can
 # build modules.
-KERNEL_LINUSuml_SRC=${POOLSPACE}/plain export KERNEL_LINUSUML_SRC
+KERNEL_LINUSuml_SRC=${POOLSPACE}/plain${KERNVER} export KERNEL_LINUSUML_SRC
 
 

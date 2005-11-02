@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: connections.h,v 1.102 2005/03/20 03:00:41 mcr Exp $
+ * RCSID $Id: connections.h,v 1.103 2005/06/14 22:38:06 mcr Exp $
  */
 
 /* There are two kinds of connections:
@@ -207,7 +207,7 @@ struct connection {
     policy_prio_t prio;
     bool instance_initiation_ok;	/* this is an instance of a policy that mandates initiate */
     enum connection_kind kind;
-    const struct iface *interface;	/* filled in iff oriented */
+    const struct iface_port *interface;	/* filled in iff oriented */
     bool initiated;
 
     so_serial_t	/* state object serial number */

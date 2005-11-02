@@ -2,7 +2,7 @@
 CONFIG_KLIPS=m
 
 # To enable authentication, say 'y'.   (Highly recommended)
-CONFIG_KLIPS_AH=m
+CONFIG_KLIPS_AH=y
 
 CONFIG_KLIPS_IPIP=y
 
@@ -11,14 +11,14 @@ CONFIG_KLIPS_AUTH_HMAC_MD5=m
 CONFIG_KLIPS_AUTH_HMAC_SHA1=m
 
 # To enable encryption, say 'y'.   (Highly recommended)
-CONFIG_KLIPS_ESP=m
+CONFIG_KLIPS_ESP=y
 
 # modular algo extensions (and new ALGOs)
-CONFIG_KLIPS_ALG=m
+CONFIG_KLIPS_ALG=y
 
 # Encryption algorithm(s):
-CONFIG_KLIPS_ENC_3DES=m
-CONFIG_KLIPS_ENC_AES=m
+CONFIG_KLIPS_ENC_3DES=y
+CONFIG_KLIPS_ENC_AES=y
 
 CONFIG_KLIPS_ALG_TWOFISH=m
 CONFIG_KLIPS_ALG_BLOWFISH=m
@@ -34,17 +34,20 @@ CONFIG_KLIPS_ENC_CRYPTOAPI=n
 
 
 # IP Compression: new, probably still has minor bugs.
-CONFIG_KLIPS_IPCOMP=m
+CONFIG_KLIPS_IPCOMP=y
 
 # To enable userspace-switchable KLIPS debugging, say 'y'.
 CONFIG_KLIPS_DEBUG=y
 
 # NAT Traversal
-CONFIG_KLIPS_NAT_TRAVERSAL=y
+CONFIG_IPSEC_NAT_TRAVERSAL=y
 
 #
 #
 # $Log: module.defs,v $
+# Revision 1.3  2005/05/11 01:53:24  mcr
+# 	adjusted module make file template.
+#
 # Revision 1.2  2004/09/06 18:37:41  mcr
 # 	make sure that IPIP is defined for modules.
 #

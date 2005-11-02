@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: policyquery.c,v 1.2 2003/05/14 02:12:12 mcr Exp $
+ * RCSID $Id: policyquery.c,v 1.2.24.1 2005/07/26 01:51:36 ken Exp $
  */
 
 #include <stddef.h>
@@ -28,8 +28,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <freeswan.h>
-#include <freeswan/ipsec_policy.h>
+#include <openswan.h>
+#include <openswan/ipsec_policy.h>
 
 #include "libipsecpolicy.h"
 

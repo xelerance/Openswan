@@ -14,7 +14,7 @@
  *
  * This code was developed with the support of IXIA communications.
  *
- * RCSID $Id: crypt_ke.c,v 1.8 2005/02/15 01:48:32 mcr Exp $
+ * RCSID $Id: crypt_ke.c,v 1.11.2.2 2005/08/19 17:52:42 ken Exp $
  */
 
 #include <stdlib.h>
@@ -130,10 +130,16 @@ stf_status build_ke(struct pluto_crypto_req_cont *cn
       } else {
 	  return STF_FAIL;
       }
-  } else {
+  } else if(!toomuch) {
+      st->st_calculating = TRUE;
       delete_event(st);
       event_schedule(EVENT_CRYPTO_FAILED, EVENT_CRYPTO_FAILED_DELAY, st);
       return STF_SUSPEND;
+  } else {
+      /* we must have run the continuation directly, so
+       * complete_state_transition already got called. 
+       */
+      return STF_INLINE;
   }
 }
 
@@ -165,10 +171,16 @@ stf_status build_nonce(struct pluto_crypto_req_cont *cn
       } else {
 	  return STF_FAIL;
       }
-  } else {
+  } else if(!toomuch) {
+      st->st_calculating = TRUE;
       delete_event(st);
       event_schedule(EVENT_CRYPTO_FAILED, EVENT_CRYPTO_FAILED_DELAY, st);
       return STF_SUSPEND;
+  } else {
+      /* we must have run the continuation directly, so
+       * complete_state_transition already got called. 
+       */
+      return STF_INLINE;
   }
 }
 

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 TESTNAME=fail-x509-02
 source /testing/pluto/bin/eastlocal.sh
 

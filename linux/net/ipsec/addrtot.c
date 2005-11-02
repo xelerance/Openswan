@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: addrtot.c,v 1.21 2005/03/21 00:35:12 mcr Exp $
+ * RCSID $Id: addrtot.c,v 1.22 2005/05/20 16:47:40 mcr Exp $
  */
 #include "openswan.h"
 
@@ -31,7 +31,7 @@ static size_t reverse6(const unsigned char *s, size_t len, char *b, char **dp);
  * Find the first occurrence of find in s.
  * (from NetBSD 1.6's /src/lib/libc/string/strstr.c)
  */
-char *
+static char *
 strstr(s, find)
 	const char *s, *find;
 {
@@ -333,6 +333,9 @@ regress()
 
 /*
  * $Log: addrtot.c,v $
+ * Revision 1.22  2005/05/20 16:47:40  mcr
+ * 	make strstr static if we need it.
+ *
  * Revision 1.21  2005/03/21 00:35:12  mcr
  *     test for strstr properly
  *
@@ -367,6 +370,9 @@ regress()
  *
  * Revision 1.12  2003/12/30 06:42:48  mcr
  * 	added $Log: addrtot.c,v $
+ * 	added Revision 1.22  2005/05/20 16:47:40  mcr
+ * 	added 	make strstr static if we need it.
+ * 	added
  * 	added Revision 1.21  2005/03/21 00:35:12  mcr
  * 	added     test for strstr properly
  * 	added

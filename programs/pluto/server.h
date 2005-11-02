@@ -11,11 +11,13 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: server.h,v 1.30 2005/02/15 01:54:07 mcr Exp $
+ * RCSID $Id: server.h,v 1.31 2005/06/14 22:38:06 mcr Exp $
  */
 
 #ifndef _SERVER_H
 #define _SERVER_H
+
+#include <sys/queue.h>
 
 extern bool no_retransmits;
 extern int ctl_fd;	/* file descriptor of control (whack) socket */
@@ -37,21 +39,29 @@ extern bool listening;	/* should we pay attention to IKE messages? */
  * - its partner, an ipsec device (eg. ipsec0), and
  * - their shared IP address (eg. 10.7.3.2)
  * Note: the port for IKE is always implicitly UDP/pluto_port.
+ *
+ * The iface is a unique IP address on a system. It may be used
+ * by multiple port numbers. In general, two conns have the same
+ * interface if they have the same iface_port->iface_alias.
  */
-struct iface {
-    char *vname;	/* virtual (ipsec) device name */
-    char *rname;	/* real device name */
-    ip_address addr;	/* interface IP address */
-    u_int16_t  port;    /* host byte order */
-    int fd;	/* file descriptor of socket for IKE UDP messages */
-    struct iface *next;
-#ifdef NAT_TRAVERSAL
-    bool ike_float;
-#endif
-    enum { IFN_ADD, IFN_KEEP, IFN_DELETE } change;
+struct iface_dev {
+    LIST_ENTRY(iface_dev) id_entry;
+    int   id_count;
+    char *id_vname;	/* virtual (ipsec) device name */
+    char *id_rname;	/* real device name */
 };
 
-extern struct iface *interfaces;	/* public interfaces */
+struct iface_port {
+    struct iface_dev   *ip_dev;
+    u_int16_t           port;    /* host byte order */
+    ip_address          ip_addr;   /* interface IP address */
+    int fd;	        /* file descriptor of socket for IKE UDP messages */
+    struct iface_port *next;
+    bool ike_float;
+    enum { IFN_ADD, IFN_KEEP, IFN_DELETE } change;
+};
+  
+extern struct iface_port  *interfaces;	 /* public interfaces */
 
 extern bool use_interface(const char *rifn);
 extern void find_ifaces(void);

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: rcv_whack.c,v 1.115 2005/03/21 03:51:59 mcr Exp $
+ * RCSID $Id: rcv_whack.c,v 1.116 2005/05/19 14:58:55 mcr Exp $
  */
 
 #include <stdio.h>
@@ -31,6 +31,7 @@
 #include <sys/queue.h>
 
 #include <openswan.h>
+#include "pfkeyv2.h"
 
 #include "constants.h"
 #include "defs.h"

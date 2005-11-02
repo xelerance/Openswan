@@ -11,7 +11,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.3 2005/03/13 18:58:27 mcr Exp $
+# RCSID $Id: Makefile,v 1.4 2005/05/12 03:09:33 mcr Exp $
 
 OPENSWANSRCDIR=../../..
 include $(OPENSWANSRCDIR)/Makefile.inc
@@ -22,6 +22,14 @@ export OPENSWANLIB
 export OSWLOGLIB
 export LIBDESLITE
 export LIBAES
+
+TESTS=$(shell awk '{print $$2;}' TESTLIST)
+
+all: ${TESTS}
+	echo ${TESTS}
+
+%: %.c
+	source ${UTILS}/functions.sh; libtest `basename $< .c`
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
@@ -49,6 +57,9 @@ realclean: clean
 
 #
 # $Log: Makefile,v $
+# Revision 1.4  2005/05/12 03:09:33  mcr
+# 	added spdbph1 test case.
+#
 # Revision 1.3  2005/03/13 18:58:27  mcr
 # 	added skeyid calculation test.
 #

@@ -1,5 +1,5 @@
 /*
- * RCSID $Id: ipsec_md5c.c,v 1.9 2004/09/08 17:21:36 ken Exp $
+ * RCSID $Id: ipsec_md5c.c,v 1.10 2005/04/15 01:25:57 mcr Exp $
  */
 
 /*
@@ -149,8 +149,7 @@ void osMD5Init(void *vcontext)
   MD5_CTX *context = vcontext;                                     
 
   context->count[0] = context->count[1] = 0;
-  /* Load magic initialization constants.
-*/
+  /* Load magic initialization constants.*/
   context->state[0] = 0x67452301;
   context->state[1] = 0xefcdab89;
   context->state[2] = 0x98badcfe;
@@ -400,6 +399,9 @@ unsigned int len;
 
 /*
  * $Log: ipsec_md5c.c,v $
+ * Revision 1.10  2005/04/15 01:25:57  mcr
+ * 	minor fix to comments.
+ *
  * Revision 1.9  2004/09/08 17:21:36  ken
  * Rename MD5* -> osMD5 functions to prevent clashes with other symbols exported by kernel modules (CIFS in 2.6 initiated this)
  *

@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_pfkey.c,v 1.18.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: kernel_pfkey.c,v 1.22 2005/07/08 17:55:28 mcr Exp $
  */
 
 #ifdef KLIPS
@@ -604,21 +604,31 @@ finish_pfkey_msg(struct sadb_ext *extensions[SADB_EXT_MAX + 1]
 	    {
 		if (r < 0)
 		{
-#ifdef COMPENSATE_FOR_KLIPS_WEIRDNESS
-		  if(e1 == ENOPROC && pfkey_msg->sadb_msg_type == SADB_DELETE) {
-		    success=TRUE;
-		  } else
-		    
-#endif
-		    {
-		      log_errno_routine(e1, "pfkey write() of %s message %u"
-					" for %s %s failed"
-					, sparse_val_show(pfkey_type_names
-							  , pfkey_msg->sadb_msg_type)
-					, pfkey_msg->sadb_msg_seq
-					, description, text_said);
-		      success = FALSE;
+		  switch(e1) {
+		  case ESRCH:
+		    if(pfkey_msg->sadb_msg_type == SADB_DELETE) {
+		      success=TRUE;
 		    }
+		    else {
+		      goto logerr;
+		    }
+		    break;
+
+		  case ENOENT:
+		    loglog(RC_LOG_SERIOUS, "requested algorithm is not available in the kernel");
+		    success=FALSE;
+		    break;
+		    
+		  default:
+		  logerr:
+		    log_errno_routine(e1, "pfkey write() of %s message %u"
+				      " for %s %s failed"
+				      , sparse_val_show(pfkey_type_names
+							, pfkey_msg->sadb_msg_type)
+				      , pfkey_msg->sadb_msg_seq
+				      , description, text_said);
+		    success = FALSE;
+		  }
 		}
 		else
 		{
@@ -1000,6 +1010,8 @@ const struct kernel_ops klips_kernel_ops = {
 	get_spi: NULL,
         inbound_eroute: FALSE,
 	policy_lifetime: FALSE,
-	init: NULL
+	init: NULL,
+	docommand: do_command_linux,
+	opname: "pfkey"
 };
 #endif /* KLIPS */

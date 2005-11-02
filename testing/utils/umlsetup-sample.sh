@@ -26,6 +26,13 @@ POOLSPACE=$UMLPREFIX/umlbuild
 # or something you downloaded.
 KERNPOOL=$UMLPREFIX/kernel/linux-2.4.19/linux
 
+# NONINTPATCH is a patch that comes from Redhat kernels. It permits
+# "make oldconfig" to complete without interacting with the user.
+# I think that 2.6. kernels have this. This patch is optional, if you
+# do not want it, then set it to "none".  The purpose of the patch is
+# make scripts/cronjobs not hang if you run with too new a kernel.
+NONINTPATCH=none
+
 # For make check's kernel patch tests, virgin kernel sources are needed
 # They will not be modified.
 #KERNEL_LINUS2_0_SRC=
@@ -66,10 +73,13 @@ SHAREDIR=/usr/share
 
 # note that "nic" and "sec" are the same host in different configurations
 REGULARHOSTS='sunrise sunset nic carrot beet sec pole'
-FREESWANHOSTS='east west japan road north'
+OPENSWANHOSTS='east west japan road north'
 
 # tell system location of special tcpdump, if any
 #export TCPDUMP="/usr/local/sbin/tcpdump"
+
+# we always use OBJ directories for UML builds.
+USE_OBJDIR=true export USE_OBJDIR
 
 # comment this out to signify that you've customized this script
 echo "please create a umlsetup.sh" ; exit 99

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: nat_traversal.c,v 1.20.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: nat_traversal.c,v 1.26.2.3 2005/09/07 00:41:12 paul Exp $
  */
 
 #ifdef NAT_TRAVERSAL
@@ -86,11 +86,26 @@ void init_nat_traversal (bool activate, unsigned int keep_alive_period,
 	nat_traversal_support_non_ike = activate;
 #ifdef NAT_T_SUPPORT_LAST_DRAFTS
 	nat_traversal_support_port_floating = activate ? spf : FALSE;
-	openswan_log("Setting port floating to %s"
+	openswan_log("Setting NAT-Traversal port-4500 floating to %s"
 		     , nat_traversal_support_port_floating ? "on" : "off");
-	openswan_log("port floating activate %d/%d"
+	openswan_log("   port floating activation criteria nat_t=%d/port_fload=%d"
 		     , activate, spf);
 #endif
+        {
+          FILE *f = fopen("/proc/net/ipsec/natt", "r");
+          char n;
+          if(f != NULL) {
+            n=getc(f);
+            if(n=='0') {
+              nat_traversal_enabled = FALSE;
+              nat_traversal_support_non_ike=FALSE;
+              nat_traversal_support_port_floating=FALSE;
+              openswan_log("  KLIPS does not have NAT-Traversal built in (see /proc/net/ipsec/natt)\n");
+            }
+            fclose(f);
+          }
+        }
+
 	_force_ka = fka;
 	_kap = keep_alive_period ? keep_alive_period : DEFAULT_KEEP_ALIVE_PERIOD;
 	plog("  including NAT-Traversal patch (Version %s)%s%s%s",
@@ -104,13 +119,13 @@ static void disable_nat_traversal(int type)
 	if (type == ESPINUDP_WITH_NON_IKE)
 		nat_traversal_support_non_ike = FALSE;
 	else {
-	  openswan_log("port floating turned off");
+	  openswan_log("NAT-Traversal port floating turned off");
 	  nat_traversal_support_port_floating = FALSE;
 	}
 
 	if (!nat_traversal_support_non_ike &&
 	    !nat_traversal_support_port_floating) {
-	    openswan_log("NAT-TRAVERSAL is turned OFF due to lack of KERNEL support: %d/%d"
+	    openswan_log("NAT-Traversal is turned OFF due to lack of KERNEL support: %d/%d"
 			 , nat_traversal_support_non_ike
 			 , nat_traversal_support_port_floating);
 	    nat_traversal_enabled = FALSE;
@@ -245,7 +260,7 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 	p = md->chain[ISAKMP_NEXT_NATD_RFC];
 	_natd_hash(st->st_oakley.hasher, hash
 		   , st->st_icookie, st->st_rcookie
-		   , &(md->iface->addr)
+		   , &(md->iface->ip_addr)
 		   , ntohs(st->st_localport));
 
 	if (!( (pbs_left(&p->pbs) == st->st_oakley.hasher->hash_digest_len)
@@ -352,12 +367,12 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	    _natd_hash(st->st_oakley.hasher, hash
 		       , st->st_icookie
 		       , is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie
-		       , &(md->iface->addr),0);
+		       , &(md->iface->ip_addr),0);
 	} else {
 	    _natd_hash(st->st_oakley.hasher, hash
 		       , st->st_icookie
 		       , is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie
-		       , &(md->iface->addr)
+		       , &(md->iface->ip_addr)
 		       , ntohs(st->st_remoteport));
 	}
 	return (out_generic_raw(np, &isakmp_nat_d, outs,
@@ -739,10 +754,9 @@ static int nat_traversal_new_mapping(const ip_address *src, u_int16_t sport,
 
 void nat_traversal_change_port_lookup(struct msg_digest *md, struct state *st)
 {
-	struct connection *c = st ? st->st_connection : NULL;
-	struct iface *i = NULL;
+	struct iface_port *i = NULL;
 
-	if ((st == NULL) || (c == NULL)) {
+	if (st == NULL) {
 		return;
 	}
 
@@ -796,8 +810,8 @@ void nat_traversal_change_port_lookup(struct msg_digest *md, struct state *st)
 	/**
 	 * Find valid interface according to local port (500/4500)
 	 */
-	if (!(sameaddr(&st->st_localaddr, &c->interface->addr)
-	      && st->st_localport == c->interface->port))
+	if (!(sameaddr(&st->st_localaddr, &st->st_interface->ip_addr)
+	      && st->st_localport == st->st_interface->port))
 	    
 	{
 	    char b1[ADDRTOT_BUF], b2[ADDRTOT_BUF];
@@ -806,18 +820,18 @@ void nat_traversal_change_port_lookup(struct msg_digest *md, struct state *st)
 		DBG_log("NAT-T connection has wrong interface definition %s:%u vs %s:%u"
 			, (addrtot(&st->st_localaddr, 0, b1, sizeof(b1)),b1)
 			, st->st_localport
-			, (addrtot(&c->interface->addr, 0, b2, sizeof(b2)),b2)
-			, c->interface->port));
+			, (addrtot(&st->st_interface->ip_addr, 0, b2, sizeof(b2)),b2)
+			, st->st_interface->port));
 
 	    for (i = interfaces; i !=  NULL; i = i->next) {
-		if ((sameaddr(&st->st_localaddr, &i->addr))
+		if ((sameaddr(&st->st_localaddr, &i->ip_addr))
 		    && (st->st_localport == i->port))
 		{
 		    DBG(DBG_NATT,
 			DBG_log("NAT-T: using interface %s:%d"
-				, i->rname
+				, i->ip_dev->id_rname
 				, i->port));
-		    c->interface = i;
+		    st->st_interface = i;
 		    break;
 		}
 	    }
@@ -904,8 +918,25 @@ void process_pfkey_nat_t_new_mapping(
 
 /*
  * $Log: nat_traversal.c,v $
- * Revision 1.20.2.1  2005/05/18 20:55:13  ken
- * Pull in Kens 2.3.2x branch
+ * Revision 1.26.2.3  2005/09/07 00:41:12  paul
+ * Pull up mcr's nat-t detection for klips.
+ *
+ * Revision 1.26.2.2  2005/07/26 02:11:23  ken
+ * Pullin from HEAD:
+ * Split Aggressive mode into ikev1_aggr.c
+ * Fix NAT-T that we broke in dr7
+ * Move dpd/pgp vendor id's to vendor.[ch]
+ *
+ * Revision 1.26.2.1  2005/07/26 01:20:14  ken
+ * Pull in st -> c changes from HEAD
+ *
+ * Revision 1.27  2005/07/26 01:14:58  mcr
+ * 	switch from i->interface to st->st_interface.
+ * 	cleaned up some diagnostic, and canonicalized to "NAT-Traversal"
+ *
+ * Revision 1.26  2005/06/14 22:38:06  mcr
+ * 	changed definition of interface such that we can now compare if
+ * 	a NAT vs non-NAT interface are considered the "same"
  *
  * Revision 1.25  2005/05/08 13:25:48  paul
  * fixed typo
@@ -951,6 +982,6 @@ void process_pfkey_nat_t_new_mapping(
  * 	added log info.
  *
  *
- * $Id: nat_traversal.c,v 1.20.2.1 2005/05/18 20:55:13 ken Exp $
+ * $Id: nat_traversal.c,v 1.26.2.3 2005/09/07 00:41:12 paul Exp $
  *
  */

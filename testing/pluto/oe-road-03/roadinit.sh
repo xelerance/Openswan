@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 ifconfig eth0 inet 192.1.3.211
 route delete -net default 
 route add -net default gw 192.1.3.254

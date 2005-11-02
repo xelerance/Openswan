@@ -14,6 +14,7 @@ VFS: Diskquotas version dquot_6.4.0 initialized
 Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
 devfs: 2004-01-31 Richard Gooch (rgooch@atnf.csiro.au)
 devfs: boot_options Q
+Initializing Cryptographic API
 io scheduler noop registered
 io scheduler anticipatory registered
 io scheduler deadline registered
@@ -30,6 +31,7 @@ TCP established hash table entries: 2048 (order: 2, 16384 bytes)
 TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
 TCP: Hash tables configured (established 2048 bind 2048)
 NET: Registered protocol family 15
+ipsec_3des_init(alg_type=15 alg_id=3 name=3des): ret=0
 IPv4 over IPv4 tunneling driver
 GRE over IPv4 tunneling driver
 NET: Registered protocol family 1

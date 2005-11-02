@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: crypto.c,v 1.35 2005/03/13 18:56:08 mcr Exp $
+ * RCSID $Id: crypto.c,v 1.36 2005/07/05 22:04:13 mcr Exp $
  */
 
 #include <stdio.h>
@@ -54,6 +54,26 @@ static MP_INT
 MP_INT groupgenerator;	/* MODP group generator (2) */
 
 #ifdef IKE_ALG
+
+#ifdef USE_1DES
+static void do_des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc);
+
+static struct encrypt_desc crypto_encrypter_des =
+{
+    common: {name: "oakley_des_cbc",
+             algo_type:         IKE_ALG_ENCRYPT,
+             algo_id:           OAKLEY_DES_CBC,
+             algo_next:         NULL, },
+    enc_ctxsize:        sizeof(des_key_schedule),
+    enc_blocksize:      DES_CBC_BLOCK_SIZE,
+    keydeflen:  DES_CBC_BLOCK_SIZE * BITS_PER_BYTE,
+    keyminlen:  DES_CBC_BLOCK_SIZE * BITS_PER_BYTE,
+    keymaxlen:  DES_CBC_BLOCK_SIZE * BITS_PER_BYTE,
+    do_crypt:   do_des,
+};
+#endif
+
+#ifdef USE_3DES
 static void do_3des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc);
 static struct encrypt_desc crypto_encrypter_3des =
 { 	
@@ -68,6 +88,8 @@ static struct encrypt_desc crypto_encrypter_3des =
     keymaxlen: 	DES_CBC_BLOCK_SIZE * 3 * BITS_PER_BYTE,
     do_crypt: 	do_3des,
 };
+#endif
+
 static struct hash_desc crypto_hasher_md5 =
 { 	
     common: {name: "oakley_md5",
@@ -109,12 +131,57 @@ init_crypto(void)
     || mpz_init_set_str(&modp8192_modulus, MODP8192_MODULUS, 16) != 0)
 	exit_log("mpz_init_set_str() failed in init_crypto()");
 #ifdef IKE_ALG
-	{ 
-		extern int ike_alg_init(void);
+	{
+#ifdef USE_TWOFISH
+	    {
+		extern int ike_alg_twofish_init(void);
+		ike_alg_twofish_init();
+	    }
+#endif
+
+#ifdef USE_SERPENT
+	    {
+		extern int ike_alg_serpent_init(void);
+		ike_alg_serpent_init();
+	    }
+#endif
+
+#ifdef USE_AES
+	    {
+		extern int ike_alg_aes_init(void);
+		ike_alg_aes_init();
+	    }
+#endif
+
+#ifdef USE_3DES
+	    {
 		ike_alg_add((struct ike_alg *) &crypto_encrypter_3des);
-		ike_alg_add((struct ike_alg *) &crypto_hasher_md5);
-		ike_alg_add((struct ike_alg *) &crypto_hasher_sha1);
-		ike_alg_init();
+	    }
+#endif
+	    
+#ifdef USE_BLOWFISH
+	    {
+		extern int ike_alg_blowfish_init(void);
+		ike_alg_blowfish_init();
+	    }
+#endif
+
+#ifdef USE_1DES
+#error YOU HAVE TO EDIT THE SOURCE CODE AND REMOVE THIS LINE
+	    {
+		ike_alg_add((struct ike_alg *) &crypto_encrypter_des);
+	    }
+#endif
+
+#ifdef USE_SHA2
+	    {
+		extern int ike_alg_sha2_init(void);
+		ike_alg_sha2_init();
+	    }
+#endif
+	    
+	    ike_alg_add((struct ike_alg *) &crypto_hasher_sha1);
+	    ike_alg_add((struct ike_alg *) &crypto_hasher_md5);
 	}
 #endif
 }
@@ -158,23 +225,25 @@ lookup_group(u_int16_t group)
  * This must already be initialized.
  */
 
+#ifdef USE_1DES
 /* encrypt or decrypt part of an IKE message using DES
  * See RFC 2409 "IKE" Appendix B
  */
-static void __attribute__ ((unused))
-do_des(bool enc, void *buf, size_t buf_len, struct state *st)
+static void
+do_des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc)
 {
     des_key_schedule ks;
 
-    (void) des_set_key((des_cblock *)st->st_enc_key.ptr, ks);
+    (void) des_set_key((des_cblock *)key, ks);
 
-    passert(st->st_new_iv_len >= DES_CBC_BLOCK_SIZE);
-    st->st_new_iv_len = DES_CBC_BLOCK_SIZE;	/* truncate */
+    passert(key_size >= DES_CBC_BLOCK_SIZE);
+    key_size = DES_CBC_BLOCK_SIZE;     /* truncate */
 
     des_ncbc_encrypt((des_cblock *)buf, (des_cblock *)buf, buf_len,
 	ks,
-	(des_cblock *)st->st_new_iv, enc);
+	(des_cblock *)iv, enc);
 }
+#endif
 
 /* encrypt or decrypt part of an IKE message using 3DES
  * See RFC 2409 "IKE" Appendix B

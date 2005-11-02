@@ -1,0 +1,26 @@
+# set this to space where a linked/configured tree can be created by 
+# preprhkern4module. Only needed if you are going to be created RPMs
+# outside of a distribution (as the FS team does for RedHat).
+#RH_KERNELSRC_POOL=/c2/openswan/rh_kern
+
+KLIPSSRC=${OPENSWANSRCDIR}/linux/net/ipsec
+
+# the following is a list of symbols which will be used to construct
+# the module goo to identify which module goes with each kernel.
+MODULE_GOO_LIST=irq_stat netif_rx register_sysctl_table send_sig
+MODULE_GOO_LIST+=kmalloc __kfree_skb __ip_select_ident alloc_skb
+MODULE_GOO_LIST+=icmp_send ip_fragment sock_register 
+
+MODULE_DEF_INCLUDE=${OPENSWANSRCDIR}/packaging/linus/config-all.h
+MODULE_DEFCONFIG?=${KLIPSSRC}/defconfig
+MODBUILDDIR?=${OPENSWANSRCDIR}/modobj
+MOD26BUILDDIR?=${OPENSWANSRCDIR}/modobj26
+
+MODULE_FLAGS:=KLIPSMODULE=true -f ${MODULE_DEFCONFIG} 
+
+# include KLIPS support
+USE_KLIPS?=true
+
+# build modules, etc. for KLIPS.
+BUILD_KLIPS?=true
+

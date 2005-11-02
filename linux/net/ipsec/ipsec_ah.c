@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.10 2004/09/14 00:22:57 mcr Exp $";
+char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.12 2005/04/29 05:10:22 mcr Exp $";
 #include <linux/config.h>
 #include <linux/version.h>
 
@@ -44,12 +44,7 @@ char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.10 2004/09/14 00:22:57 mc
 #  include <asm/spinlock.h> /* *lock* */
 # endif /* SPINLOCK_23 */
 #endif /* SPINLOCK */
-#ifdef NET_21
-# include <asm/uaccess.h>
-# include <linux/in6.h>
-# define proto_priv cb
-#endif /* NET21 */
-#include <asm/checksum.h>
+
 #include <net/ip.h>
 #include <net/protocol.h>
 
@@ -78,7 +73,7 @@ ipsec_rcv_ah_checks(struct ipsec_rcv_state *irs,
 	ahminlen = irs->hard_header_len + sizeof(struct iphdr);
 
 	/* take care not to deref this pointer until we check the minlen though */
-	irs->protostuff.ahstuff.ahp = (struct ahhdr *) (skb->data + irs->iphlen);
+	irs->protostuff.ahstuff.ahp = (struct ahhdr *)skb->h.raw;
 
 	if((skb->len < ahminlen+sizeof(struct ahhdr)) ||
 	   (skb->len < ahminlen+(irs->protostuff.ahstuff.ahp->ah_hl << 2))) {
@@ -166,7 +161,7 @@ ipsec_rcv_ah_authcalc(struct ipsec_rcv_state *irs,
 
 	/* finally, do the packet contents themselves */
 	(*aa->update)((void*)&tctx,
-		      (caddr_t)skb->data + irs->iphlen + ahhlen,
+		      (caddr_t)skb->h.raw + ahhlen,
 		      skb->len - irs->iphlen - ahhlen);
 
 	(*aa->final)(irs->hash, (void *)&tctx);
@@ -197,8 +192,8 @@ ipsec_rcv_ah_decap(struct ipsec_rcv_state *irs)
 	 * move the IP header forward by the size of the AH header, which
 	 * will remove the the AH header from the packet.
 	 */
-	memmove((void *)(skb->data + ahhlen),
-		(void *)(skb->data), irs->iphlen);
+	memmove((void *)(skb->nh.raw + ahhlen),
+		(void *)(skb->nh.raw), irs->iphlen);
 
 	ipsec_rcv_dmp("ah postmove", skb->data, skb->len);
 
@@ -215,9 +210,9 @@ ipsec_rcv_ah_decap(struct ipsec_rcv_state *irs)
 	}
 	skb_pull(skb, ahhlen);
 
-	irs->ipp = (struct iphdr *)skb->data;
+	irs->ipp = skb->nh.iph;
 
-	ipsec_rcv_dmp("ah postpull", skb->data, skb->len);
+	ipsec_rcv_dmp("ah postpull", (void *)skb->nh.iph, skb->len);
 
 	return IPSEC_RCV_OK;
 }
@@ -353,6 +348,12 @@ struct inet_protocol ah_protocol =
 
 /*
  * $Log: ipsec_ah.c,v $
+ * Revision 1.12  2005/04/29 05:10:22  mcr
+ * 	removed from extraenous includes to make unit testing easier.
+ *
+ * Revision 1.11  2005/04/15 19:50:55  mcr
+ * 	adjustments to use proper skb fields for data.
+ *
  * Revision 1.10  2004/09/14 00:22:57  mcr
  * 	adjustment of MD5* functions.
  *

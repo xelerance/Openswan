@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: plutomain.c,v 1.99.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: plutomain.c,v 1.102.2.4 2005/08/12 01:15:00 ken Exp $
  */
 
 #include <stdio.h>
@@ -358,6 +358,7 @@ main(int argc, char **argv)
 	    { "impair-delay-adns-txt-answer", no_argument, NULL, IMPAIR_DELAY_ADNS_TXT_ANSWER + DBG_OFFSET },
 	    { "impair-bust-mi2", no_argument, NULL, IMPAIR_BUST_MI2 + DBG_OFFSET },
 	    { "impair-bust-mr2", no_argument, NULL, IMPAIR_BUST_MR2 + DBG_OFFSET },
+	    { "impair-jacob-two-two", no_argument, NULL, IMPAIR_JACOB_TWO_TWO + DBG_OFFSET },
 #endif
 	    { 0,0,0,0 }
 	    };
@@ -713,11 +714,22 @@ main(int argc, char **argv)
     {
 #ifdef PLUTO_SENDS_VENDORID
         const char *v = init_pluto_vendorid();
+	const char *vc = ipsec_version_code();
 
         openswan_log("Starting Pluto (Openswan Version %s%s; Vendor ID %s)"
-            , ipsec_version_code()
+            , vc
             , compile_time_interop_options
             , v);
+	if(vc[0]=='c' && vc[1]=='v' && vc[2]=='s') {
+	    /*
+	     * when people build RPMs from CVS, make sure they get blamed
+	     * appropriately, and that we get some way to identify who
+	     * did it, and when they did it. Use string concat, so that
+	     * strings the binary can or classic SCCS "what", will find
+	     * stuff too.
+	     */
+	    openswan_log("@(#) built on "__DATE__":"__TIME__":"BUILDER);
+	}
 #else
         openswan_log("Starting Pluto (Openswan Version %s%s)"
             , ipsec_version_code()

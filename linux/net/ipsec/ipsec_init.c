@@ -18,7 +18,7 @@
  *
  */
 
-char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.98 2004/09/13 02:23:18 mcr Exp $";
+char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.104.2.1 2005/08/12 01:18:20 ken Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -54,12 +54,6 @@ char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.98 2004/09/13 02:23:1
 # endif /* 23_SPINLOCK */
 #endif /* SPINLOCK */
 
-#ifdef NET_21
-# include <asm/uaccess.h>
-# include <linux/in6.h>
-#endif /* NET_21 */
-
-#include <asm/checksum.h>
 #include <net/ip.h>
 
 #ifdef CONFIG_PROC_FS
@@ -97,6 +91,15 @@ char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.98 2004/09/13 02:23:1
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
+#if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
+#include <net/xfrmudp.h>
+#endif
+
+#if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL) && !defined(HAVE_XFRM4_UDP_REGISTER)
+#warning "You are trying to build KLIPS2.6 with NAT-T support, but you did not"
+#error   "properly apply the NAT-T patch to your 2.6 kernel source tree."
+#endif
+
 #if !defined(CONFIG_KLIPS_ESP) && !defined(CONFIG_KLIPS_AH)
 #error "kernel configuration must include ESP or AH"
 #endif
@@ -116,6 +119,11 @@ int debug_netlink = 0;
 #endif /* CONFIG_KLIPS_DEBUG */
 
 struct prng ipsec_prng;
+
+
+#if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
+xfrm4_rcv_encap_t klips_old_encap = NULL;
+#endif
 
 extern int ipsec_device_event(struct notifier_block *dnot, unsigned long event, void *ptr);
 /*
@@ -218,6 +226,14 @@ ipsec_klips_init(void)
 
 	error |= ipsec_tunnel_init_devices();
 
+#if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
+	/* register our ESP-UDP handler */
+	if(udp4_register_esp_rcvencap(klips26_rcv_encap
+				      , &klips_old_encap)!=0) {
+	   printk(KERN_ERR "KLIPS: can not register klips_rcv_encap function\n");
+	}
+#endif	
+
 
 #ifdef CONFIG_SYSCTL
         error |= ipsec_sysctl_register();
@@ -243,6 +259,12 @@ ipsec_cleanup(void)
 #ifdef CONFIG_SYSCTL
         ipsec_sysctl_unregister();
 #endif                                                                          
+#if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
+	if(udp4_unregister_esp_rcvencap(klips_old_encap) < 0) {
+		printk(KERN_ERR "KLIPS: can not unregister klips_rcv_encap function\n");
+	}
+#endif
+
 	KLIPS_PRINT(debug_netlink, /* debug_tunnel & DB_TN_INIT, */
 		    "klips_debug:ipsec_cleanup: "
 		    "calling ipsec_tunnel_cleanup_devices.\n");
@@ -323,6 +345,31 @@ cleanup_module(void)
 
 /*
  * $Log: ipsec_init.c,v $
+ * Revision 1.104.2.1  2005/08/12 01:18:20  ken
+ * Warn people who don't have NAT-T patch applied, but try and compile NAT-T code
+ *
+ * Revision 1.105  2005/08/12 00:56:33  mcr
+ * 	add warning for people who didn't apply nat-t patch.
+ *
+ * Revision 1.104  2005/07/08 15:51:41  mcr
+ * 	removed duplicate NAT-T code.
+ * 	if CONFIG_IPSEC_NAT_TRAVERSAL isn't defined, then there is no issue.
+ *
+ * Revision 1.103  2005/07/08 03:02:05  paul
+ * Fixed garbled define that accidentally got commited to the real tree.
+ *
+ * Revision 1.102  2005/07/08 02:56:37  paul
+ * gcc4 fixes that were not commited because vault was down
+ *
+ * Revision 1.101  2005/04/29 05:10:22  mcr
+ * 	removed from extraenous includes to make unit testing easier.
+ *
+ * Revision 1.100  2005/04/10 22:56:09  mcr
+ * 	change to udp.c registration API.
+ *
+ * Revision 1.99  2005/04/08 18:26:13  mcr
+ * 	register with udp.c, the klips26 encap receive function
+ *
  * Revision 1.98  2004/09/13 02:23:18  mcr
  * 	#define inet_protocol if necessary.
  *

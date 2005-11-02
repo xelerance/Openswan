@@ -2,7 +2,7 @@
  * IPSEC Transmit code.
  * Copyright (C) 1996, 1997  John Ioannidis.
  * Copyright (C) 1998-2003   Richard Guy Briggs.
- * Copyright (C) 2004        Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2004-2005   Michael Richardson <mcr@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,7 +15,7 @@
  * for more details.
  */
 
-char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.11 2005/01/26 00:50:35 mcr Exp $";
+char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.20.2.1 2005/08/27 23:40:00 paul Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -40,15 +40,16 @@ char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.11 2005/01/26 00:50:3
 #include <linux/tcp.h>         /* struct tcphdr */
 #include <linux/udp.h>         /* struct udphdr */
 #include <linux/skbuff.h>
+#include <asm/uaccess.h>
+#include <asm/checksum.h>
 #include <openswan.h>
 #ifdef NET_21
 # define MSS_HACK_		/* experimental */
-# include <asm/uaccess.h>
 # include <linux/in6.h>
 # include <net/dst.h>
 # define proto_priv cb
 #endif /* NET_21 */
-#include <asm/checksum.h>
+
 #include <net/icmp.h>		/* icmp_send() */
 #include <net/ip.h>
 #ifdef NETDEV_23
@@ -113,7 +114,10 @@ char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.11 2005/01/26 00:50:3
 #endif /* SUSE_LINUX_2_4_19_IS_STUPID */
 
 
+
+#if defined(CONFIG_KLIPS_AH)
 static __u32 zeroes[64];
+#endif
 
 #ifdef CONFIG_KLIPS_DEBUG
 int sysctl_ipsec_debug_verbose = 0;
@@ -125,37 +129,20 @@ int ipsec_xmit_trap_sendcount = 0;
 int sysctl_ipsec_icmp = 0;
 int sysctl_ipsec_tos = 0;
 
-#ifdef CONFIG_KLIPS_DEBUG_
-DEBUG_NO_STATIC void
-dmp(char *s, caddr_t bb, int len)
-{
-	int i;
-	unsigned char *b = bb;
-  
-	if (debug_tunnel) {
-		printk(KERN_INFO "klips_debug:ipsec_tunnel_:dmp: "
-		       "at %s, len=%d:",
-		       s,
-		       len);
-		for (i=0; i < len; i++) {
-			if(!(i%16)){
-				printk("\nklips_debug:  ");
-			}
-			printk(" %02x", *b++);
-		}
-		printk("\n");
-	}
-}
+#ifdef CONFIG_KLIPS_DEBUG
+#define dmp(_x,_y,_z) if(debug_tunnel) ipsec_dmp_block(_x,_y,_z)
 #else /* CONFIG_KLIPS_DEBUG */
 #define dmp(_x, _y, _z) 
 #endif /* CONFIG_KLIPS_DEBUG */
 
-#ifndef SKB_COPY_EXPAND
+
+#if !defined(SKB_COPY_EXPAND) || defined(KLIPS_UNIT_TESTS)
 /*
  *	This is mostly skbuff.c:skb_copy().
  */
 struct sk_buff *
-skb_copy_expand(struct sk_buff *skb, int headroom, int tailroom, int priority)
+skb_copy_expand(const struct sk_buff *skb, int headroom,
+		int tailroom, int priority)
 {
 	struct sk_buff *n;
 	unsigned long offset;
@@ -228,7 +215,9 @@ skb_copy_expand(struct sk_buff *skb, int headroom, int tailroom, int priority)
 #endif /* NETDEV_23 */
 	atomic_set(&n->users, 1);
 	n->destructor = NULL;
+#ifdef HAVE_SOCK_SECURITY
 	n->security=skb->security;
+#endif
 #else /* NET_21 */
 	n->link3=NULL;
 	n->when=skb->when;
@@ -319,23 +308,10 @@ ipsec_print_ip(struct iphdr *ip)
 
 	if(sysctl_ipsec_debug_verbose) {
 		__u8 *c;
-		int i;
+		int len = ntohs(ip->tot_len) - ip->ihl*4;
 		
 		c = ((__u8*)ip) + ip->ihl*4;
-		for(i = 0; i < ntohs(ip->tot_len) - ip->ihl*4; i++ /*, c++*/) {
-			if(!(i % 16)) {
-				printk(KERN_INFO
-				       "klips_debug:   @%03x:",
-				       i);
-			}
-			printk(" %02x", /***/c[i]);
-			if(!((i + 1) % 16)) {
-				printk("\n");
-			}
-		}
-		if(i % 16) {
-			printk("\n");
-		}
+		ipsec_dmp_block("ip_print", c, len);
 	}
 }
 #endif /* CONFIG_KLIPS_DEBUG */
@@ -439,7 +415,7 @@ ipsec_xmit_sanity_check_skb(struct ipsec_xmit_state *ixs)
 			    "Nothing to do!\n" );
 		return IPSEC_XMIT_NOSKB;
 	}
-#ifdef NET_21
+
 	/* if skb was cloned (most likely due to a packet sniffer such as
 	   tcpdump being momentarily attached to the interface), make
 	   a copy of our own to modify */
@@ -458,13 +434,8 @@ ipsec_xmit_sanity_check_skb(struct ipsec_xmit_state *ixs)
 			return IPSEC_XMIT_ERRSKBALLOC;
 		}
 	}
-#endif /* NET_21 */
 
-#ifdef NET_21
 	ixs->iph = ixs->skb->nh.iph;
-#else /* NET_21 */
-	ixs->iph = ixs->skb->ip_hdr;
-#endif /* NET_21 */
 
 	/* sanity check for IP version as we can't handle IPv6 right now */
 	if (ixs->iph->version != 4) {
@@ -506,9 +477,6 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 {
 #ifdef CONFIG_KLIPS_ESP
 	struct esphdr *espp;
-#ifdef CONFIG_KLIPS_ENC_3DES
-	__u32 iv[ESP_IV_MAXSZ_INT];
-#endif /* !CONFIG_KLIPS_ENC_3DES */
 	unsigned char *idat, *pad;
 	int authlen = 0, padlen = 0, i;
 #endif /* !CONFIG_KLIPS_ESP */
@@ -526,7 +494,7 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 #endif /* CONFIG_KLIPS_AUTH_HMAC_SHA1 */
 	} tctx;
 	__u8 hash[AH_AMAX];
-#endif /* defined(CONFIG_KLIPS_AUTH_HMAC_MD5) || defined(CONFIG_KLIPS_AUTH_HMAC_SHA1) */
+#endif /* defined(CONFIG_KLIPS_AUTH_HMAC_MD5) || defined(CONFIG_KLIPS_AUTH_HMACn_SHA1) */
 	int headroom = 0, tailroom = 0, ilen = 0, len = 0;
 	unsigned char *dat;
 	int blocksize = 8; /* XXX: should be inside ixs --jjo */
@@ -550,28 +518,23 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 		headroom += sizeof(struct ahhdr);
 		break;
 #endif /* CONFIG_KLIPS_AH */
+
 #ifdef CONFIG_KLIPS_ESP
 	case IPPROTO_ESP:
-#ifdef CONFIG_KLIPS_ALG
-		if ((ixt_e=ixs->ipsp->ips_alg_enc)) {
-			blocksize = ixt_e->ixt_blocksize;
-			headroom += ESP_HEADER_LEN + ixt_e->ixt_ivlen/8;
-		} else
-#endif /* CONFIG_KLIPS_ALG */
-		switch(ixs->ipsp->ips_encalg) {
-#ifdef CONFIG_KLIPS_ENC_3DES
-		case ESP_3DES:
-			headroom += sizeof(struct esphdr);
-			break;
-#endif /* CONFIG_KLIPS_ENC_3DES */
-		default:
+		ixt_e=ixs->ipsp->ips_alg_enc;
+		if (ixt_e) {
+			blocksize = ixt_e->ixt_common.ixt_blocksize;
+			headroom += ESP_HEADER_LEN + ixt_e->ixt_common.ixt_support.ias_ivlen/8;
+		} else {
 			ixs->stats->tx_errors++;
 			return IPSEC_XMIT_ESP_BADALG;
 		}
+
 #ifdef CONFIG_KLIPS_ALG
-		if ((ixt_a=ixs->ipsp->ips_alg_auth)) {
+		ixt_a=ixs->ipsp->ips_alg_auth;
+		if (ixt_a) {
 			tailroom += AHHMAC_HASHLEN;
-		} else
+		} else 
 #endif /* CONFIG_KLIPS_ALG */
 		switch(ixs->ipsp->ips_authalg) {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
@@ -599,17 +562,20 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 #endif /* CONFIG_KLIPS_ALG */
 		tailroom += authlen;
 		break;
-#endif /* !CONFIG_KLIPS_ESP */
+#endif /* CONFIG_KLIPS_ESP */
+
 #ifdef CONFIG_KLIPS_IPIP
 	case IPPROTO_IPIP:
 		headroom += sizeof(struct iphdr);
 		ixs->iphlen = sizeof(struct iphdr);
 		break;
 #endif /* !CONFIG_KLIPS_IPIP */
+
 #ifdef CONFIG_KLIPS_IPCOMP
 	case IPPROTO_COMP:
 		break;
 #endif /* CONFIG_KLIPS_IPCOMP */
+
 	default:
 		ixs->stats->tx_errors++;
 		return IPSEC_XMIT_BADPROTO;
@@ -627,6 +593,7 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 		ixs->stats->tx_errors++;
 		return IPSEC_XMIT_ESP_PUSHPULLERR;
 	}
+
 	dat = skb_push(ixs->skb, headroom);
 	ilen = ixs->skb->len - tailroom;
 	if(skb_tailroom(ixs->skb) < tailroom) {
@@ -653,7 +620,7 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 	memmove((void *)dat, (void *)(dat + headroom), ixs->iphlen);
 	ixs->iph = (struct iphdr *)dat;
 	ixs->iph->tot_len = htons(ixs->skb->len);
-	
+
 	switch(ixs->ipsp->ips_said.proto) {
 #ifdef CONFIG_KLIPS_ESP
 	case IPPROTO_ESP:
@@ -661,21 +628,7 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 		espp->esp_spi = ixs->ipsp->ips_said.spi;
 		espp->esp_rpl = htonl(++(ixs->ipsp->ips_replaywin_lastseq));
 		
-#ifdef CONFIG_KLIPS_ALG
-		if (!ixt_e)
-#endif /* CONFIG_KLIPS_ALG */
-		switch(ixs->ipsp->ips_encalg) {
-#if defined(CONFIG_KLIPS_ENC_3DES)
-#ifdef CONFIG_KLIPS_ENC_3DES
-		case ESP_3DES:
-#endif /* CONFIG_KLIPS_ENC_3DES */
-			iv[0] = *((__u32*)&(espp->esp_iv)    ) =
-				((__u32*)(ixs->ipsp->ips_iv))[0];
-			iv[1] = *((__u32*)&(espp->esp_iv) + 1) =
-				((__u32*)(ixs->ipsp->ips_iv))[1];
-			break;
-#endif /* defined(CONFIG_KLIPS_ENC_3DES) */
-		default:
+		if (!ixt_e) {
 			ixs->stats->tx_errors++;
 			return IPSEC_XMIT_ESP_BADALG;
 		}
@@ -694,63 +647,28 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 		dat[len - authlen - 1] = ixs->iph->protocol;
 		ixs->iph->protocol = IPPROTO_ESP;
 		
-#ifdef CONFIG_KLIPS_ALG
-		/* Do all operations here:
+		if(debug_tunnel & DB_TN_ENCAP) {
+		        dmp("pre-encrypt", dat, len);
+		}
+
+		/*
+		 * Do all operations here:
 		 * copy IV->ESP, encrypt, update ips IV
+		 *
 		 */
-		if (ixt_e) {
+		{
 			int ret;
 			memcpy(espp->esp_iv, 
-					ixs->ipsp->ips_iv, 
-					ixt_e->ixt_ivlen/8);
+			       ixs->ipsp->ips_iv, 
+			       ixs->ipsp->ips_iv_size);
 			ret=ipsec_alg_esp_encrypt(ixs->ipsp, 
-					idat, ilen, espp->esp_iv,
-					IPSEC_ALG_ENCRYPT);
-			memcpy(ixs->ipsp->ips_iv,
-					idat + ilen - ixt_e->ixt_ivlen/8,
-					ixt_e->ixt_ivlen/8);
-		} else
-#endif /* CONFIG_KLIPS_ALG */
-		switch(ixs->ipsp->ips_encalg) {
-#ifdef CONFIG_KLIPS_ENC_3DES
-		case ESP_3DES:
-			des_ede3_cbc_encrypt((des_cblock *)idat,
-					     (des_cblock *)idat,
-					     ilen,
-					     ((struct des_eks *)(ixs->ipsp->ips_key_e))[0].ks,
-					     ((struct des_eks *)(ixs->ipsp->ips_key_e))[1].ks,
-					     ((struct des_eks *)(ixs->ipsp->ips_key_e))[2].ks,
-					     (des_cblock *)iv, 1);
-			break;
-#endif /* CONFIG_KLIPS_ENC_3DES */
-		default:
-			ixs->stats->tx_errors++;
-			return IPSEC_XMIT_ESP_BADALG;
-		}
-		
-#ifdef CONFIG_KLIPS_ALG
-		if (!ixt_e)
-#endif /* CONFIG_KLIPS_ALG */
-		switch(ixs->ipsp->ips_encalg) {
-#if defined(CONFIG_KLIPS_ENC_3DES)
-#ifdef CONFIG_KLIPS_ENC_3DES
-		case ESP_3DES:
-#endif /* CONFIG_KLIPS_ENC_3DES */
-			/* XXX update IV with the last 8 octets of the encryption */
-#if KLIPS_IMPAIRMENT_ESPIV_CBC_ATTACK
-			((__u32*)(ixs->ipsp->ips_iv))[0] =
-				((__u32 *)(idat))[(ilen >> 2) - 2];
-			((__u32*)(ixs->ipsp->ips_iv))[1] =
-				((__u32 *)(idat))[(ilen >> 2) - 1];
-#else /* KLIPS_IMPAIRMENT_ESPIV_CBC_ATTACK */
-			prng_bytes(&ipsec_prng, (char *)ixs->ipsp->ips_iv, EMT_ESPDES_IV_SZ); 
-#endif /* KLIPS_IMPAIRMENT_ESPIV_CBC_ATTACK */
-			break;
-#endif /* defined(CONFIG_KLIPS_ENC_3DES) */
-		default:
-			ixs->stats->tx_errors++;
-			return IPSEC_XMIT_ESP_BADALG;
-		}
+						  idat, ilen, espp->esp_iv,
+						  IPSEC_ALG_ENCRYPT);
+
+			prng_bytes(&ipsec_prng,
+				   (char *)ixs->ipsp->ips_iv,
+				   ixs->ipsp->ips_iv_size);
+		} 
 		
 #ifdef CONFIG_KLIPS_ALG
 		if (ixt_a) {
@@ -901,15 +819,11 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 		default:
 			break;
 		}
-#ifdef NET_21
 #ifdef NETDEV_23
 		ixs->iph->ttl      = sysctl_ip_default_ttl;
 #else /* NETDEV_23 */
 		ixs->iph->ttl      = ip_statistics.IpDefaultTTL;
 #endif /* NETDEV_23 */
-#else /* NET_21 */
-		ixs->iph->ttl      = 64; /* ip_statistics.IpDefaultTTL; */
-#endif /* NET_21 */
 		ixs->iph->frag_off = 0;
 		ixs->iph->saddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_s))->sin_addr.s_addr;
 		ixs->iph->daddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_d))->sin_addr.s_addr;
@@ -1137,6 +1051,15 @@ static int create_hold_eroute(struct eroute *origtrap,
 	return (error == 0);
 }
 
+/*
+ * upon entry to this function, ixs->skb should be setup
+ * as follows:
+ *
+ *   data   = beginning of IP packet   <- differs from ipsec_rcv().
+ *   nh.raw = beginning of IP packet.
+ *   h.raw  = data after the IP packet.
+ *
+ */
 enum ipsec_xmit_value
 ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 {
@@ -1202,6 +1125,8 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 
 			/* Signal all listening KMds with a PF_KEY ACQUIRE */
 
+			memset(&src, 0, sizeof(src));
+			memset(&dst, 0, sizeof(dst));
 			src.sin_family = AF_INET;
 			dst.sin_family = AF_INET;
 			src.sin_addr.s_addr = ixs->iph->saddr;
@@ -1210,16 +1135,6 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 			ixs->ips.ips_transport_protocol = 0;
 			src.sin_port = 0;
 			dst.sin_port = 0;
-			{
-			  int i;
-			  for(i = 0;
-			      i < sizeof(struct sockaddr_in)
-				- offsetof(struct sockaddr_in, sin_zero);
-			      i++) {
-			    src.sin_zero[i] = 0;
-			    dst.sin_zero[i] = 0;
-			  }
-			}
 			
 			if(ixs->eroute->er_eaddr.sen_proto != 0) {
 			  ixs->ips.ips_transport_protocol = ixs->iph->protocol;
@@ -1316,13 +1231,13 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 			    "klips_debug:ipsec_xmit_encap_bundle: "
 			    "no ipsec_sa for SA%s: outgoing packet with no SA, dropped.\n",
 			    ixs->sa_len ? ixs->sa_txt : " (error)");
-		ixs->stats->tx_dropped++;
+		if(ixs->stats) {
+			ixs->stats->tx_dropped++;
+		}
 		bundle_stat = IPSEC_XMIT_SAIDNOTFOUND;
 		goto cleanup;
 	}
 		
-	ipsec_sa_put(ixs->ipsp); /* incomplete */
-
 	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 		    "klips_debug:ipsec_xmit_encap_bundle: "
 		    "found ipsec_sa -- SA:<%s%s%s> %s\n",
@@ -1347,7 +1262,9 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 				    "ipsec_sa in larval state for SA:<%s%s%s> %s, cannot be used yet, dropping packet.\n",
 				    IPS_XFORM_NAME(ixs->ipsp),
 				    ixs->sa_len ? ixs->sa_txt : " (error)");
-			ixs->stats->tx_errors++;
+			if(ixs->stats) {
+				ixs->stats->tx_errors++;
+			}
 			bundle_stat = IPSEC_XMIT_SAIDNOTLIVE;
 			goto cleanup;
 		}
@@ -1420,23 +1337,17 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 #endif /* CONFIG_KLIPS_AH */
 #ifdef CONFIG_KLIPS_ESP
 		case IPPROTO_ESP:
-#ifdef CONFIG_KLIPS_ALG
-			if ((ixt_e=ixs->ipsp->ips_alg_enc)) {
-				blocksize = ixt_e->ixt_blocksize;
-				ixs->headroom += ESP_HEADER_LEN + ixt_e->ixt_ivlen/8;
-			} else
-#endif /* CONFIG_KLIPS_ALG */
-			switch(ixs->ipsp->ips_encalg) {
-#ifdef CONFIG_KLIPS_ENC_3DES
-			case ESP_3DES:
-				ixs->headroom += sizeof(struct esphdr);
-				break;
-#endif /* CONFIG_KLIPS_ENC_3DES */
-			default:
+			ixt_e=ixs->ipsp->ips_alg_enc;
+			if (ixt_e) {
+				blocksize = ixt_e->ixt_common.ixt_blocksize;
+				ixs->headroom += ESP_HEADER_LEN + ixt_e->ixt_common.ixt_support.ias_ivlen/8;
+			}
+			else {
 				ixs->stats->tx_errors++;
 				bundle_stat = IPSEC_XMIT_ESP_BADALG;
 				goto cleanup;
 			}
+
 #ifdef CONFIG_KLIPS_ALG
 			if ((ixt_a=ixs->ipsp->ips_alg_auth)) {
 				ixs->tailroom += AHHMAC_HASHLEN;
@@ -1541,13 +1452,13 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 		
 	ixs->tot_headroom += ixs->max_headroom;
 	ixs->tot_tailroom += ixs->max_tailroom;
-		
-	ixs->mtudiff = ixs->prv->mtu + ixs->tot_headroom + ixs->tot_tailroom - ixs->physmtu;
+
+	ixs->mtudiff = ixs->cur_mtu + ixs->tot_headroom + ixs->tot_tailroom - ixs->physmtu;
 
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
 		    "klips_debug:ipsec_xmit_encap_bundle: "
 		    "mtu:%d physmtu:%d tothr:%d tottr:%d mtudiff:%d ippkttotlen:%d\n",
-		    ixs->prv->mtu, ixs->physmtu,
+		    ixs->cur_mtu, ixs->physmtu,
 		    ixs->tot_headroom, ixs->tot_tailroom, ixs->mtudiff, ntohs(ixs->iph->tot_len));
 	if(ixs->mtudiff > 0) {
 		int newmtu = ixs->physmtu - (ixs->tot_headroom + ((ixs->tot_tailroom + 2) & ~7) + 5);
@@ -1555,20 +1466,16 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 		KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
 			    "klips_info:ipsec_xmit_encap_bundle: "
 			    "dev %s mtu of %d decreased by %d to %d\n",
-			    ixs->dev->name,
-			    ixs->prv->mtu,
-			    ixs->prv->mtu - newmtu,
+			    ixs->dev ? ixs->dev->name : "ifX",
+			    ixs->cur_mtu,
+			    ixs->cur_mtu - newmtu,
 			    newmtu);
-		ixs->prv->mtu = newmtu;
-#ifdef NET_21
+		ixs->cur_mtu = newmtu;
+
+		/* this would seem to adjust the MTU of the route as well */
 #if 0
 		ixs->skb->dst->pmtu = ixs->prv->mtu; /* RGB */
 #endif /* 0 */
-#else /* NET_21 */
-#if 0
-		ixs->dev->mtu = ixs->prv->mtu; /* RGB */
-#endif /* 0 */
-#endif /* NET_21 */
 	}
 
 	/* 
@@ -1581,7 +1488,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 	   ICMP packet from getting back.
 	*/
 	if(sysctl_ipsec_icmp
-	   && ixs->prv->mtu < ntohs(ixs->iph->tot_len)
+	   && ixs->cur_mtu < ntohs(ixs->iph->tot_len)
 	   && (ixs->iph->frag_off & __constant_htons(IP_DF)) ) {
 		int notify = ixs->iph->protocol != IPPROTO_ICMP
 			&& (ixs->iph->frag_off & __constant_htons(IP_OFFSET)) == 0;
@@ -1595,7 +1502,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 			ICMP_SEND(ixs->skb,
 				  ICMP_DEST_UNREACH,
 				  ICMP_FRAG_NEEDED,
-				  ixs->prv->mtu,
+				  ixs->cur_mtu,
 				  ixs->physdev);
 		ixs->stats->tx_errors++;
 		bundle_stat = IPSEC_XMIT_CANNOTFRAG;
@@ -1609,7 +1516,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 			ICMP_SEND(ixs->skb,
 				  ICMP_DEST_UNREACH,
 				  ICMP_FRAG_NEEDED,
-				  ixs->prv->mtu,
+				  ixs->cur_mtu,
 				  ixs->physdev);
 #endif /* IPSEC_obey_DF */
 	}
@@ -1624,7 +1531,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 	    && ixs->outgoing_said.proto != IPPROTO_IPIP) {
 		struct tcphdr *tcph = ixs->skb->h.th;
 		if (tcph->syn && !tcph->ack) {
-			if(!ipsec_adjust_mss(ixs->skb, tcph, ixs->prv->mtu)) {
+			if(!ipsec_adjust_mss(ixs->skb, tcph, ixs->cur_mtu)) {
 				printk(KERN_WARNING
 				       "klips_warning:ipsec_xmit_encap_bundle: "
 				       "ipsec_adjust_mss() failed\n");
@@ -1715,7 +1622,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
       }
 #endif /* CONFIG_IPSEC_NAT_TRAVERSAL */
 
-	if(!ixs->hard_header_stripped) {
+	if(!ixs->hard_header_stripped && ixs->hard_header_len>0) {
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 			    "klips_debug:ipsec_xmit_encap_bundle: "
 			    "allocating %d bytes for hardheader.\n",
@@ -1780,11 +1687,11 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 				       ixs->max_headroom + 2 * ixs->ll_headroom,
 				       ixs->max_tailroom,
 				       GFP_ATOMIC);
-#ifdef NET_21
+
 		if(tskb && ixs->skb->sk) {
 			skb_set_owner_w(tskb, ixs->skb->sk);
 		}
-#endif /* NET_21 */
+
 		if(ixs->skb != ixs->oskb) {
 			ipsec_kfree_skb(ixs->skb);
 		}
@@ -1804,6 +1711,10 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 			    skb_headroom(ixs->skb), skb_tailroom(ixs->skb));
 	}
 		
+	if(debug_tunnel & DB_TN_ENCAP) {
+		ipsec_print_ip(ixs->iph);
+	}
+
 	/*
 	 * Apply grouped transforms to packet
 	 */
@@ -1811,6 +1722,11 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 		enum ipsec_xmit_value encap_stat = IPSEC_XMIT_OK;
 
 		encap_stat = ipsec_xmit_encap_once(ixs);
+
+		if(debug_tunnel & DB_TN_ENCAP) {
+			ipsec_print_ip(ixs->iph);
+		}
+
 		if(encap_stat != IPSEC_XMIT_OK) {
 			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 				    "klips_debug:ipsec_xmit_encap_bundle: encap_once failed: %d\n",
@@ -1820,6 +1736,10 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 			goto cleanup;
 		}
 	}
+
+	/* we are done with this SA */
+	ipsec_sa_put(ixs->ipsp); 
+
 	/* end encapsulation loop here XXX */
  cleanup:
 	spin_unlock(&tdb_lock);
@@ -1828,6 +1748,37 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 
 /*
  * $Log: ipsec_xmit.c,v $
+ * Revision 1.20.2.1  2005/08/27 23:40:00  paul
+ * recommited HAVE_SOCK_SECURITY fixes for linux 2.6.13
+ *
+ * Revision 1.20  2005/07/12 15:39:27  paul
+ * include asm/uaccess.h for VERIFY_WRITE
+ *
+ * Revision 1.19  2005/05/24 01:02:35  mcr
+ * 	some refactoring/simplification of situation where alg
+ * 	is not found.
+ *
+ * Revision 1.18  2005/05/23 23:52:33  mcr
+ * 	adjust comments, add additional debugging.
+ *
+ * Revision 1.17  2005/05/23 22:57:23  mcr
+ * 	removed explicit 3DES support.
+ *
+ * Revision 1.16  2005/05/21 03:29:15  mcr
+ * 	fixed warning about unused zeroes if AH is off.
+ *
+ * Revision 1.15  2005/05/20 16:47:59  mcr
+ * 	include asm/checksum.h to get ip_fast_csum macro.
+ *
+ * Revision 1.14  2005/05/11 01:43:03  mcr
+ * 	removed "poor-man"s OOP in favour of proper C structures.
+ *
+ * Revision 1.13  2005/04/29 05:10:22  mcr
+ * 	removed from extraenous includes to make unit testing easier.
+ *
+ * Revision 1.12  2005/04/15 01:28:34  mcr
+ * 	use ipsec_dmp_block.
+ *
  * Revision 1.11  2005/01/26 00:50:35  mcr
  * 	adjustment of confusion of CONFIG_IPSEC_NAT vs CONFIG_KLIPS_NAT,
  * 	and make sure that NAT_TRAVERSAL is set as well to match
@@ -1876,5 +1827,9 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
  *
  * Revision 1.1  2003/02/12 19:31:23  rgb
  * Refactored from ipsec_tunnel.c
+ *
+ * Local Variables:
+ * c-file-style: "linux"
+ * End:
  *
  */

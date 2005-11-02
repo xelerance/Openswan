@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# $Id: functions.sh,v 1.121 2005/03/20 23:18:46 mcr Exp $
+# $Id: functions.sh,v 1.124 2005/07/09 15:40:30 mcr Exp $
 #
 
 preptest() {
@@ -139,70 +139,120 @@ consolediff() {
 compat_variables() {
     if [ -z "$REF_CONSOLE_OUTPUT" ] && [ -n "$REFCONSOLEOUTPUT" ]
     then
+	echo PLEASE FIX UP TEST CASE FOR COMPAT VARIABLES
+	exit 1
 	REF_CONSOLE_OUTPUT=$REFCONSOLEOUTPUT
     fi
 
     if [ -z "$REF_CONSOLE_FIXUPS" ] && [ -n "$REFCONSOLEFIXUPS" ]
     then
+	echo PLEASE FIX UP TEST CASE FOR COMPAT VARIABLES
+	exit 1
 	REF_CONSOLE_FIXUPS=$REFCONSOLEFIXUPS
     fi
 
     if [ -z "$REF_PUB_OUTPUT" ] && [ -n "$REFPUBOUTPUT" ]
     then
+	echo PLEASE FIX UP TEST CASE FOR COMPAT VARIABLES
+	exit 1
 	REF_PUB_OUTPUT=$REFPUBOUTPUT
     fi
 
     if [ -z "$REF_PRIV_OUTPUT" ] && [ -n "$REFPRIVOUTPUT" ]
     then
+	echo PLEASE FIX UP TEST CASE FOR COMPAT VARIABLES
+	exit 1
 	REF_PRIV_OUTPUT=$REFPRIVOUTPUT
     fi
 
     if [ -z "$PRIV_INPUT" ] && [ -n "$PRIVINPUT" ]
     then
+	echo PLEASE FIX UP TEST CASE FOR COMPAT VARIABLES
+	exit 1
 	PRIV_INPUT=$PRIVINPUT
     fi
 
     if [ -z "$PUB_INPUT" ] && [ -n "$PUBINPUT" ]
     then
+	echo PLEASE FIX UP TEST CASE FOR COMPAT VARIABLES
+	exit 1
 	PUB_INPUT=$PUBINPUT
     fi
 
     if [ -z "$INIT_SCRIPT" ] && [ -n "$SCRIPT" ]
     then
+	echo PLEASE FIX UP TEST CASE FOR COMPAT VARIABLES
+	exit 1
 	INIT_SCRIPT=$SCRIPT
     fi
 
     if [ -z "$EAST_RUN_SCRIPT" ] && [ -n "$RUN_EAST_SCRIPT" ]
     then
+	echo PLEASE FIX UP TEST CASE FOR COMPAT VARIABLES
+	exit 1
 	EAST_RUN_SCRIPT=$RUN_EAST_SCRIPT
     fi
     if [ -z "$WEST_RUN_SCRIPT" ] && [ -n "$RUN_WEST_SCRIPT" ]
     then
+	echo PLEASE FIX UP TEST CASE FOR COMPAT VARIABLES
+	exit 1
 	WEST_RUN_SCRIPT=$RUN_WEST_SCRIPT
     fi
 
     if [ -z "$EAST_FINAL_SCRIPT" ] && [ -n "$FINAL_EAST_SCRIPT" ]
     then
+	echo PLEASE FIX UP TEST CASE FOR COMPAT VARIABLES
+	exit 1
 	EAST_FINAL_SCRIPT=$FINAL_EAST_SCRIPT
     fi
     if [ -z "$WEST_FINAL_SCRIPT" ] && [ -n "$FINAL_WEST_SCRIPT" ]
     then
+	echo PLEASE FIX UP TEST CASE FOR COMPAT VARIABLES
+	exit 1
 	WEST_FINAL_SCRIPT=$FINAL_WEST_SCRIPT
     fi
+
+    # make up variables for 2.6
+    if [ -z "$REF26_CONSOLE_OUTPUT" ] && [ -n "$REF_CONSOLE_OUTPUT" ]
+    then
+	REF26_CONSOLE_OUTPUT=$REF_CONSOLE_OUTPUT
+    fi
+
+    # make up variables for 2.6
+    if [ -z "$REF26_EAST_CONSOLE_OUTPUT" ] && [ -n "$REF_EAST_CONSOLE_OUTPUT" ]
+    then
+	REF26_EAST_CONSOLE_OUTPUT=$REF_EAST_CONSOLE_OUTPUT
+    fi
+    # make up variables for 2.6
+    if [ -z "$REF26_WEST_CONSOLE_OUTPUT" ] && [ -n "$REF_WEST_CONSOLE_OUTPUT" ]
+    then
+	REF26_WEST_CONSOLE_OUTPUT=$REF_WEST_CONSOLE_OUTPUT
+    fi
+    # make up variables for 2.6
+    if [ -z "$REF26_NORTH_CONSOLE_OUTPUT" ] && [ -n "$REF_NORTH_CONSOLE_OUTPUT" ]
+    then
+	REF26_NORTH_CONSOLE_OUTPUT=$REF_NORTH_CONSOLE_OUTPUT
+    fi
+    # make up variables for 2.6
+    if [ -z "$REF26_ROAD_CONSOLE_OUTPUT" ] && [ -n "$REF_ROAD_CONSOLE_OUTPUT" ]
+    then
+	REF26_ROAD_CONSOLE_OUTPUT=$REF_ROAD_CONSOLE_OUTPUT
+    fi
+
 }
 
 # this is called to set additional variables that depend upon testparams.sh
 prerunsetup() {
     if [ -n "$KLIPS_MODULE" ]
     then
-	HOST_START=$POOLSPACE/$TESTHOST/startmodule.sh
-	EAST_START=$POOLSPACE/$EASTHOST/startmodule.sh
-	WEST_START=$POOLSPACE/$WESTHOST/startmodule.sh
+	HOST_START=${HOST_START-$POOLSPACE/$TESTHOST/startmodule.sh}
+	EAST_START=${EAST_START-$POOLSPACE/$EASTHOST/startmodule.sh}
+	WEST_START=${WEST_START-$POOLSPACE/$WESTHOST/startmodule.sh}
 	REPORT_NAME=${TESTNAME}${KLIPS_MODULE}
     else
-	HOST_START=$POOLSPACE/$TESTHOST/start.sh
-	EAST_START=$POOLSPACE/$EASTHOST/start.sh
-	WEST_START=$POOLSPACE/$WESTHOST/start.sh
+	HOST_START=${HOST_START-$POOLSPACE/$TESTHOST/start.sh}
+	EAST_START=${EAST_START-$POOLSPACE/$EASTHOST/start.sh}
+	WEST_START=${WEST_START-$POOLSPACE/$WESTHOST/start.sh}
 	REPORT_NAME=${TESTNAME}
     fi
 
@@ -361,6 +411,12 @@ recordresults() {
     local testexpect="$2"
     local status="$3"
     local REPORT_NAME="$4"
+    local copybadresults="$5"
+
+    if [ -z "$copybadresults" ]
+    then
+	copybadresults=true
+    fi
 
     export REGRESSRESULTS
     roguekill $REPORT_NAME
@@ -431,15 +487,21 @@ recordresults() {
 	    esac
 	)
 
-	case "$success" in
-	false)
-	    # ???? why the heck is this code run only when $success is false?
-	    # NOTE: ${KLIPS_MODULE} is part of $REPORT_NAME
-	    rm -rf $REGRESSRESULTS/$REPORT_NAME/OUTPUT
-	    mkdir -p $REGRESSRESULTS/$REPORT_NAME/OUTPUT
-	    tar -C $testname/OUTPUT${KLIPS_MODULE} -c -f - . | (cd $REGRESSRESULTS/$REPORT_NAME/OUTPUT && tar xf - )
-	    ;;
-	esac
+	if $copybadresults
+	then
+	    case "$success" in
+	    false)
+		# this code is run only when success is false, so that we have
+		# a record of why the test failed. If it succeeded, then the
+		# possibly volumnous output is not interesting.
+		# 
+		# NOTE: ${KLIPS_MODULE} is part of $REPORT_NAME
+		rm -rf $REGRESSRESULTS/$REPORT_NAME/OUTPUT
+		mkdir -p $REGRESSRESULTS/$REPORT_NAME/OUTPUT
+		tar -C $testname/OUTPUT${KLIPS_MODULE} -c -f - . | (cd $REGRESSRESULTS/$REPORT_NAME/OUTPUT && tar xf - )
+		;;
+	    esac
+	fi
     fi
 
     case "$status" in
@@ -522,10 +584,16 @@ netjigtest() {
 	NJARGS="$NJARGS -P $PUB_INPUT"
     fi
 
-    if [ -n "$REF_CONSOLE_OUTPUT" ]
-    then
-	NJARGS="$NJARGS -c OUTPUT${KLIPS_MODULE}/console.txt"
-    fi
+    case $KERNVER in
+	26) if [ -n "$REF26_CONSOLE_OUTPUT" ]
+	    then
+	        NJARGS="$NJARGS -c OUTPUT${KLIPS_MODULE}/26console.txt"
+	    fi;;
+	*) if [ -n "$REF_CONSOLE_OUTPUT" ]
+	   then
+	        NJARGS="$NJARGS -c OUTPUT${KLIPS_MODULE}/console.txt"
+           fi;;
+    esac
 
     if [ -n "$REF_PRIV_OUTPUT" ]
     then
@@ -580,7 +648,7 @@ netjigtest() {
     case $KERNVER in
 	26) if [ -n "$REF26_CONSOLE_OUTPUT" ]
 	    then
-		consolediff "26" OUTPUT${KLIPS_MODULE}/console.txt $REF26_CONSOLE_OUTPUT
+		consolediff "26" OUTPUT${KLIPS_MODULE}/26console.txt $REF26_CONSOLE_OUTPUT
 	    fi;;
 	*) if [ -n "$REF_CONSOLE_OUTPUT" ]
 	   then
@@ -1240,7 +1308,7 @@ do_module_compile_test() {
 
     kernel_var_name=KERNEL_${kernelname}${kernelver}_SRC
     echo Looking for kernel source ${kernel_var_name}
-    KERNEL_SRC=${!kernel_var_name}${KERNVER}
+    KERNEL_SRC=${!kernel_var_name}
 
     if [ -z "${KERNEL_SRC}" ]
     then
@@ -1359,7 +1427,7 @@ module_compile() {
 	stat='missing parts'
     fi
 
-    recordresults $testdir "$testexpect" "$stat" $testdir
+    recordresults $testdir "$testexpect" "$stat" $testdir false
 }
 
 
@@ -1537,9 +1605,20 @@ umlXhost() {
 }
 
 #
-# $Id: functions.sh,v 1.121 2005/03/20 23:18:46 mcr Exp $
+# $Id: functions.sh,v 1.124 2005/07/09 15:40:30 mcr Exp $
 #
 # $Log: functions.sh,v $
+# Revision 1.124  2005/07/09 15:40:30  mcr
+# 	make tests that need compat variables abort.
+#
+# Revision 1.123  2005/05/12 03:11:41  mcr
+# 	permit *_START to be set from testparams.sh for
+# 	east-1des-01 use.
+#
+# Revision 1.122  2005/04/21 02:51:13  mcr
+# 	do not copy results for module test (it's a whole kernel!)
+# 	store kernel console output in console26.txt.
+#
 # Revision 1.121  2005/03/20 23:18:46  mcr
 # 	make sure to export KERNVER to netjig.tcl.
 #

@@ -2,10 +2,8 @@
 
 . CONFIG
 
-both --name isakmp-aggr-psk --psk --aggrmode $EASTHOST $TO $WESTHOST $TIMES2 ;
+both --name isakmp-aggr-psk --psk --aggrmode --ike 3des-sha1-modp1536 $EASTHOST $TO $WESTHOST $TIMES2 ;
 me --name isakmp-aggr-psk --initiate 
-
-$DOWHACK shutdown 
 
 if [ -f pluto/west/core ];
 then

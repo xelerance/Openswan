@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: natt_defines.h,v 1.1.2.1 2005/05/18 21:08:58 ken Exp $
+ * RCSID $Id: natt_defines.h,v 1.1 2005/04/08 18:23:10 mcr Exp $
  */
 
 #ifndef NATT_DEFINES_H

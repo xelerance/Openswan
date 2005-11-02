@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: spdb_struct.c,v 1.10 2005/02/15 01:54:20 mcr Exp $
+ * RCSID $Id: spdb_struct.c,v 1.13.2.6 2005/08/27 00:29:15 paul Exp $
  */
 
 #include <stdio.h>
@@ -24,6 +24,7 @@
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
+#include "pfkeyv2.h"
 
 #include "constants.h"
 #include "oswlog.h"
@@ -133,7 +134,7 @@ out_sa(pb_stream *outs
 				       , sadb
 				       , aggressive_mode ? 1 : -1);
     } else {
-	revised_sadb=kernel_alg_makedb(st->st_connection->alg_info_esp);
+	revised_sadb=kernel_alg_makedb(st->st_connection->alg_info_esp, TRUE);
     }
 
     if(revised_sadb != NULL) {
@@ -258,7 +259,13 @@ out_sa(pb_stream *outs
 	    {
 		ipsec_spi_t *spi_ptr = NULL;
 		int proto = 0;
-		bool *spi_generated;
+		bool *spi_generated = FALSE;
+
+		spi_generated = NULL;
+
+		spi_generated = NULL;
+
+		spi_generated = NULL;
 
 		switch (p->protoid)
 		{
@@ -324,7 +331,7 @@ out_sa(pb_stream *outs
 		
 		if (spi_ptr != NULL)
 		{
-		    if (!*spi_generated)
+		    if (spi_generated != NULL && !*spi_generated)
 		    {
 			*spi_ptr = get_ipsec_spi(0
 			    , proto
@@ -399,7 +406,7 @@ out_sa(pb_stream *outs
 		    {
 #ifdef NAT_TRAVERSAL
 #ifndef I_KNOW_TRANSPORT_MODE_HAS_SECURITY_CONCERN_BUT_I_WANT_IT
-			if ((st->nat_traversal & NAT_T_DETECTED) &&
+			if ((st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
 				(!(st->st_policy & POLICY_TUNNEL))) {
 				/* Inform user that we will not respect policy and only
 				 * propose Tunnel Mode
@@ -539,6 +546,8 @@ parse_isakmp_sa_body(
     bool xauth_init, xauth_resp;
     const char *role;
 
+    role = "";
+
     xauth_init = xauth_resp = FALSE;
 
     /* calculate the per-end policy which might apply */
@@ -669,6 +678,8 @@ parse_isakmp_sa_body(
 	err_t ugh = NULL;	/* set to diagnostic when problem detected */
 	zero(&ta);
 
+	life_type = 0;
+
 	/* initialize only optional field in ta */
 	ta.life_seconds = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;	/* When this SA expires (seconds) */
 
@@ -752,13 +763,17 @@ parse_isakmp_sa_body(
 #endif
 		    switch (val)
 		    {
+#if defined(USE_1DES)
+		    case OAKLEY_DES_CBC:
+#endif
 		    case OAKLEY_3DES_CBC:
 			ta.encrypt = val;
 			ta.encrypter = crypto_get_encrypter(val);
 			break;
 
-   		    /* we don't feel DES is safe */
+#if !defined(USE_1DES)
 		    case OAKLEY_DES_CBC:
+#endif
 		    default:
 			ugh = builddiag("%s is not supported"
 			    , enum_show(&oakley_enc_names, val));
@@ -1292,6 +1307,8 @@ parse_ipsec_transform(struct isakmp_transform *trans
     u_int16_t life_type;
     const struct oakley_group_desc *pfs_group = NULL;
 
+    life_type = 0;
+
     if (!in_struct(trans, trans_desc, prop_pbs, trans_pbs))
 	return FALSE;
 
@@ -1727,6 +1744,10 @@ parse_ipsec_sa_body(
 	pb_stream ah_trans_pbs, esp_trans_pbs, ipcomp_trans_pbs;
 	struct isakmp_transform ah_trans, esp_trans, ipcomp_trans;
 	struct ipsec_trans_attrs ah_attrs, esp_attrs, ipcomp_attrs;
+
+	ipcomp_cpi = 0;
+	esp_spi = 0;
+	ah_spi = 0;
 
 	/* for each proposal in the conjunction */
 	do {

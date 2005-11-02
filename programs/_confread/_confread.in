@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _confread.in,v 1.79.6.1 2005/05/18 20:55:12 ken Exp $
+# RCSID $Id: _confread.in,v 1.81 2005/06/13 23:10:49 mcr Exp $
 #
 # Extract configuration info from /etc/ipsec.conf, repackage as assignments
 # to shell variables or tab-delimited fields.  Success or failure is reported
@@ -182,7 +182,7 @@ awk 'BEGIN {
 	# if searching, seen is set of sectionnames which match
 	# if not searching, seen is set of parameter names found
 	seen[""] = ""
-	default[""] = ""
+	conndefault[""] = ""
 	usesdefault[""] = ""
 	orientation = 1
 }
@@ -287,8 +287,8 @@ function jam(sn, au) {
 			output(o_section, sn)
 
 			# do not accept anything from conn %default
-			for (i in default)
-				delete default[i]
+			for (i in conndefault)
+				delete conndefault[i]
 
 			output(o_parm, orient("left"), "%defaultroute")
 			output(o_parm, orient("leftid"), "%myid")
@@ -426,11 +426,11 @@ searching && $0 ~ searchpat {
 		if (!usesdefault[sectionname])
 			fail("duplicated parameter " bq search eq)
 		usesdefault[sectionname] = 0
-	} else if (search in default)
+	} else if (search in conndefault)
 		fail("duplicated parameter " bq search eq)
 	if (rest in wanted) {	# a hit
 		if (indefault)
-			default[search] = rest
+			conndefault[search] = rest
 		else
 			searchfound(sectionname)
 	} else {
@@ -492,9 +492,9 @@ $0 ~ /^(also|alsoflip)=/ {
 		fail("white space within non-quoted parameter " bq name eq)
 }
 indefault {
-	if (name in default)
+	if (name in conndefault)
 		fail("duplicated default parameter " bq name eq)
-	default[name] = value
+	conndefault[name] = value
 	next
 }
 {
@@ -566,11 +566,11 @@ END {
 	if (!optional && !searching && unseen != "")
 		fail("did not find " type " section(s) " bq substr(unseen, 2) eq)
 	if (!searching) {
-		for (name in default)
+		for (name in conndefault)
 			if (!(name in seen))
-				output(o_parm, name, default[name])
+				output(o_parm, name, conndefault[name])
 	} else {
-		if (default[search] in wanted)
+		if (conndefault[search] in wanted)
 			for (name in usesdefault)
 				if (usesdefault[name])
 					seen[name] = 1

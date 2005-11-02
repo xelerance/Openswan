@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_ipip_c_version[] = "RCSID $Id: ipsec_ipip.c,v 1.2 2004/04/06 02:49:26 mcr Exp $";
+char ipsec_ipip_c_version[] = "RCSID $Id: ipsec_ipip.c,v 1.3 2005/04/29 05:10:22 mcr Exp $";
 #include <linux/config.h>
 #include <linux/version.h>
 
@@ -44,12 +44,7 @@ char ipsec_ipip_c_version[] = "RCSID $Id: ipsec_ipip.c,v 1.2 2004/04/06 02:49:26
 #  include <asm/spinlock.h> /* *lock* */
 # endif /* SPINLOCK_23 */
 #endif /* SPINLOCK */
-#ifdef NET_21
-# include <asm/uaccess.h>
-# include <linux/in6.h>
-# define proto_priv cb
-#endif /* NET21 */
-#include <asm/checksum.h>
+
 #include <net/ip.h>
 
 #include "openswan/radij.h"

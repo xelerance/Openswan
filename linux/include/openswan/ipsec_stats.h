@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_stats.h,v 1.6 2004/04/05 19:55:07 mcr Exp $
+ * RCSID $Id: ipsec_stats.h,v 1.7 2005/04/14 01:17:45 mcr Exp $
  *
  */
 
@@ -32,13 +32,14 @@ struct ipsec_stats {
 	__u32		ips_replaywin_errs;    /* # of pkt sequence errors */
 };
 
-extern int ipsec_snprintf(char * buf, ssize_t size, const char *fmt, ...);
-
 #define _IPSEC_STATS_H_
 #endif /* _IPSEC_STATS_H_ */
 
 /*
  * $Log: ipsec_stats.h,v $
+ * Revision 1.7  2005/04/14 01:17:45  mcr
+ * 	add prototypes for snprintf.
+ *
  * Revision 1.6  2004/04/05 19:55:07  mcr
  * Moved from linux/include/freeswan/ipsec_stats.h,v
  *

@@ -1,4 +1,6 @@
-TESTNAME=dpd-03
+: ==== start ====
+
+TESTNAME=dpd-06
 source /testing/pluto/bin/eastlocal.sh
 
 ipsec setup start

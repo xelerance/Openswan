@@ -8,15 +8,14 @@ TESTNAME=delete-sa-01
 EASTHOST=east
 WESTHOST=west
 
-ARPREPLY=--arpreply
-
-# EAST_INPUT=../../klips/inputs/01-sunrise-sunset-ping.pcap
-# REF_WEST_OUTPUT=../../klips/west-icmp-01/spi1-cleartext.txt
-
 REF_EAST_CONSOLE_OUTPUT=east-console.txt
+REF26_EAST_CONSOLE_OUTPUT=east-console.txt
 REF_WEST_CONSOLE_OUTPUT=west-console.txt
+REF26_WEST_CONSOLE_OUTPUT=west-console.txt
 
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS cutout.sed"
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS script-only.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS east-prompt-splitline.pl"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-look-esp-sanitize.pl"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-debug-sanitize.sed"
@@ -30,8 +29,8 @@ WEST_INIT_SCRIPT=westinit.sh
 # nothing to run on east
 WEST_RUN_SCRIPT=westrun.sh
 
-EAST_FINAL_SCRIPT=eastfinal.sh
-WEST_FINAL_SCRIPT=westfinal.sh
+EAST_FINAL_SCRIPT=final.sh
+WEST_FINAL_SCRIPT=final.sh
 
 NETJIG_EXTRA=debugpublic.txt
 

@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: xauth.c,v 1.41 2005/02/16 17:27:41 mcr Exp $
+ * RCSID $Id: xauth.c,v 1.41.4.3 2005/07/26 02:11:23 ken Exp $
  *
  * This code originally written by Colubris Networks, Inc.
  * Extraction of patch and porting to 1.99 codebases by Xelerance Corporation
@@ -1436,7 +1436,7 @@ modecfg_inI2(struct msg_digest *md)
     int resp = LEMPTY;
     stf_status stat;
     struct payload_digest *p;
-    u_int16_t isama_id;
+    u_int16_t isama_id = 0;
 
     DBG(DBG_CONTROL, DBG_log("modecfg_inI2"));
 
@@ -1897,7 +1897,7 @@ xauth_inI0(struct msg_digest *md)
     int len;
     unsigned type;
     char *dat;
-    int status;
+    int status = 0;
     unsigned val;
     stf_status stat;
     bool gotrequest = FALSE;
@@ -2270,9 +2270,26 @@ xauth_inI1(struct msg_digest *md)
 
 
 /*
- * $Id: xauth.c,v 1.41 2005/02/16 17:27:41 mcr Exp $
+ * $Id: xauth.c,v 1.41.4.3 2005/07/26 02:11:23 ken Exp $
  *
  * $Log: xauth.c,v $
+ * Revision 1.41.4.3  2005/07/26 02:11:23  ken
+ * Pullin from HEAD:
+ * Split Aggressive mode into ikev1_aggr.c
+ * Fix NAT-T that we broke in dr7
+ * Move dpd/pgp vendor id's to vendor.[ch]
+ *
+ * Revision 1.41.4.2  2005/07/25 19:26:34  ken
+ * Pullin fixes for NAT-T from HEAD
+ * Includes IMPAIR_JACOB_TWO_TWO impairment from HEAD
+ * change from c->interface to st->st_interface for sending packets
+ *
+ * Revision 1.43  2005/07/22 14:05:51  mcr
+ * 	fixes for -Werror warnings.
+ *
+ * Revision 1.42  2005/07/22 14:00:19  mcr
+ * 	fixes for -Werror warnings.
+ *
  * Revision 1.41  2005/02/16 17:27:41  mcr
  * 	moved recording of xauth username to after the username
  * 	has actually been authenticated.

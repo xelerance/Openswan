@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: vendor.c,v 1.36.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: vendor.c,v 1.43.2.1 2005/07/26 02:05:10 ken Exp $
  */
 
 #include <stdlib.h>
@@ -75,6 +75,7 @@
  *  6d761ddc26aceca1b0ed11fabbb860c4
  *  5946c258f99a1a57b03eb9d1759e0f24 (From a Cisco VPN 3k)
  *  ebbc5b00141d0c895e11bd395902d690 (From a Cisco VPN 3k)
+ *  3e984048101e66cc659fd002b0ed3655 (From a Cisco 1800 IOS device)
  *
  * Microsoft L2TP (???):
  * (This could be the MSL2TP client, which is a stripped version of SafeNet)
@@ -93,6 +94,14 @@
  *
  * Watchguard FireBox (II ?)
  * da8e937880010000
+ *
+ * Nortel contivity 251 (RAS F/W Version: VA251_2.0.0.0.013 | 12/3/2003  
+ *   DSL FW Version: Alcatel, Version 3.9.122)
+ * 4485152d18b6bbcd0be8a8469579ddcc
+ * 625027749d5ab97f5616c1602765cf480a3b7d0b)
+ *
+ * Zyxel Zywall 2 / Zywall 30w
+ * 625027749d5ab97f5616c1602765cf480a3b7d0b
  */
 
 #define MAX_LOG_VID_LEN            32
@@ -182,6 +191,13 @@ static struct vid_struct _vid_tab[] = {
 
 	{ VID_CISCO3K, VID_KEEP | VID_SUBSTRING_MATCH, 
           NULL, "Cisco VPN 3000 Series" , "\x1f\x07\xf7\x0e\xaa\x65\x14\xd3\xb0\xfa\x96\x54\x2a\x50", 14},
+
+	{ VID_CISCO3K, VID_KEEP | VID_SUBSTRING_MATCH, 
+          NULL, "Cisco VPN 3000 Series" , "\x1f\x07\xf7\x0e\xaa\x65\x14\xd3\xb0\xfa\x96\x54\x2a\x50", 14},
+
+	{ VID_CISCO_IOS, VID_KEEP | VID_SUBSTRING_MATCH, 
+	  NULL, "Cisco IOS Device", "\x3e\x98\x40\x48", 4},
+
 
 	/**
 	 * Timestep VID seen:
@@ -374,51 +390,55 @@ static void handle_known_vendorid (struct msg_digest *md UNUSED
 
 	switch (vid->id) {
 #ifdef NAT_TRAVERSAL
-		/**
-		 * Use most recent supported NAT-Traversal method and ignore
-		 * the other ones (implementations will send all supported
-		 * methods but only one will be used)
-		 *
-		 * Note: most recent == higher id in vendor.h
-		 */
-		case VID_NATT_IETF_00:
-			if (!nat_traversal_support_non_ike)
-			    break;
-			vid_usefull = 1;
-			if ((nat_traversal_enabled) && (!md->quirks.nat_traversal_vid)) {
-				md->quirks.nat_traversal_vid = vid->id;
-			}
-			break;
-		case VID_NATT_IETF_02:
-		case VID_NATT_IETF_02_N:
-		case VID_NATT_IETF_03:
-		case VID_NATT_RFC:
- 		        vid_usefull = 1;
-			if(!nat_traversal_support_port_floating) {
-			  loglog(RC_LOG_SERIOUS
-				 , "received Vendor ID payload [%s] meth=%d, "
-				 "but port floating is off"
-				 , vid->descr, vid->id);
-			  return;
-			} else {
-			  if (md->quirks.nat_traversal_vid < vid->id) {
-			    loglog(RC_LOG_SERIOUS
-				   , "received Vendor ID payload [%s] method set to=%d "
-				   , vid->descr, vid->id);
-			    md->quirks.nat_traversal_vid = vid->id;
-			    return;
-			  } else {
-			    loglog(RC_LOG_SERIOUS
-				   , "received Vendor ID payload [%s] meth=%d, "
-				   "but already using method %d"
-				   , vid->descr, vid->id
-				   , md->quirks.nat_traversal_vid);
-			    return;
-			  }
-			}
-			break;
-#endif
+	    /**
+	     * Use most recent supported NAT-Traversal method and ignore
+	     * the other ones (implementations will send all supported
+	     * methods but only one will be used)
+	     *
+	     * Note: most recent == higher id in vendor.h
+	     */
 
+	    /* PAUL TRY THIS IF BELOW FAILS WITH APPLE */
+	    /*case VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE: */
+	case VID_NATT_IETF_00:
+	    if (!nat_traversal_support_non_ike)
+		break;
+	    vid_usefull = 1;
+	    if ((nat_traversal_enabled) && (!md->quirks.nat_traversal_vid)) {
+		md->quirks.nat_traversal_vid = vid->id;
+	    }
+	    break;
+	case VID_NATT_IETF_02:
+	case VID_NATT_IETF_02_N:
+	case VID_NATT_IETF_03:
+	case VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE:
+	case VID_NATT_RFC:
+	    vid_usefull = 1;
+	    if(!nat_traversal_support_port_floating) {
+		loglog(RC_LOG_SERIOUS
+		       , "received Vendor ID payload [%s] meth=%d, "
+		       "but port floating is off"
+		       , vid->descr, vid->id);
+		return;
+	    } else {
+		if (md->quirks.nat_traversal_vid < vid->id) {
+		    loglog(RC_LOG_SERIOUS
+			   , "received Vendor ID payload [%s] method set to=%d "
+			   , vid->descr, vid->id);
+		    md->quirks.nat_traversal_vid = vid->id;
+		    return;
+		} else {
+		    loglog(RC_LOG_SERIOUS
+			   , "received Vendor ID payload [%s] meth=%d, "
+			   "but already using method %d"
+			   , vid->descr, vid->id
+			   , md->quirks.nat_traversal_vid);
+		    return;
+		}
+	    }
+	    break;
+#endif
+	    
         case VID_MISC_DPD:
 	    /* Remote side would like to do DPD with us on this connection */
 	    md->dpd = 1;
@@ -573,6 +593,19 @@ bool out_vendorid (u_int8_t np, pb_stream *outs, unsigned int vid)
 	return out_generic_raw(np, &isakmp_vendor_id_desc, outs,
 		pvid->vid, pvid->vid_len, "V_ID");
 }
+
+/* OpenPGP Vendor ID needed for interoperability with PGPnet
+ *
+ * Note: it is a NUL-terminated ASCII string, but NUL won't go on the wire.
+ */
+char pgp_vendorid[] = "OpenPGP10171";
+const int pgp_vendorid_len = sizeof(pgp_vendorid);
+
+char dpd_vendorid[] = {0xAF, 0xCA, 0xD7, 0x13, 0x68, 0xA1, 0xF1,
+          0xC9, 0x6B, 0x86, 0x96, 0xFC, 0x77, 0x57, 0x01, 0x00};
+const int dpd_vendorid_len = sizeof(dpd_vendorid);
+
+
 
 /*
  * Local Variables:

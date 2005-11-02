@@ -14,11 +14,12 @@
  * for more details.
  */
 
-char tncfg_c_version[] = "RCSID $Id: tncfg.c,v 1.32 2004/04/06 03:05:06 mcr Exp $";
+char tncfg_c_version[] = "RCSID $Id: tncfg.c,v 1.33.2.1 2005/08/22 22:30:02 ken Exp $";
 
 
 #include <stdio.h>
 #include <string.h>
+#include <sys/wait.h>
 #include <stdlib.h> /* system(), strtoul() */
 #include <unistd.h> /* getuid() */
 #include <linux/types.h>
@@ -155,8 +156,8 @@ main(int argc, char *argv[])
 	}
 
 	if(argcount == 1) {
-		system("cat /proc/net/ipsec_tncfg");
-		exit(0);
+		int ret = system("cat /proc/net/ipsec_tncfg");
+		exit(ret != -1 && WIFEXITED(ret) ? WEXITSTATUS(ret) : 1);
 	}
 
 	switch(shc->cf_cmd) {
@@ -274,6 +275,12 @@ main(int argc, char *argv[])
 	
 /*
  * $Log: tncfg.c,v $
+ * Revision 1.33.2.1  2005/08/22 22:30:02  ken
+ * Fix for GCC 4.0 warnings
+ *
+ * Revision 1.33  2005/07/08 02:56:38  paul
+ * gcc4 fixes that were not commited because vault was down
+ *
  * Revision 1.32  2004/04/06 03:05:06  mcr
  * 	freeswan->openswan changes.
  *

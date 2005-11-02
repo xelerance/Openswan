@@ -1,12 +1,10 @@
 Summary: Openswan IPSEC implementation
 Name: openswan
-%define majver 2
-%define minver 3.1
-Version: %{majver}.%{minver}
+Version: 2.CVSHEAD
 %define opensw_release 1suse9
 %define debug_package %{nil}
 Release: %{opensw_release}
-Source: http://www.openswan.org/code/openswan-%{majver}.%{minver}.tar.gz
+Source: http://www.openswan.org/code/openswan-%{Version}.tar.gz
 BuildPreReq: gmp
 BuildRoot: %{_tmppath}/%{name}-buildroot
 Summary: Openswan IPsec userland tools
@@ -31,7 +29,7 @@ This package contains the daemons and userland tools for setting up
 Openswan on a kernel with either the KLIPS or NETKEY stack.
 
 %prep
-%setup -q -n openswan-%{majver}.%{minver}
+%setup -q -n openswan-%{Version}
 
 %build
 %{__make} \

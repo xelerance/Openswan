@@ -1,9 +1,12 @@
-			Openswan 2.3.1 Release Notes
+    ******* THIS IS A DEVELOPER RELEASE **** NOT FOR PRODUCTION *******
 
-Openswan is based on code from the FreeS/WAN project (www.freeswan.org)
-It has support for most of the extensions (RFC + IETF drafts) related
-to IPsec, including X.509 Digital Certificates, NAT Traversal, and many 
-others.
+    ********* See docs/RELEASE-NOTES.txt for more information *********
+
+			Openswan 2.4.0 Release Notes
+
+Openswan is an IPsec implementation for Linux. It has support for most 
+of the extensions (RFC + IETF drafts) related to IPsec, including 
+X.509 Digital Certificates, NAT Traversal, and many others.
 
 Openswan was originally based on FreeS/WAN 2.04 CVS, along with some
 minor bug fixes from 2.05 and 2.06.  See CREDITS for the history.
@@ -13,33 +16,63 @@ Download it from http://www.openswan.org/code
 
 				REQUIREMENTS
 
-Linux Kernel 2.4.x, or 2.6.x are the currently supported platforms
+A recent Linux distribution based on either Kernel 2.4.x, or 2.6.x are 
+the currently supported platforms
 
 There a few packages required for Openswan to compile:
 
 1. libgmp + libgmp-devel headers.  (GNU Math Precision Library)
 
-2. flex, and bison (usually included in all distributions)
+2. gawk, flex and bison (usually included in all distributions)
 
 #########################################################################
 # HOW TO INSTALL on Kernel 2.6 (And Kernels with 2.6 IPsec backport)
 #########################################################################
 
 For Linux Kernels 2.6.0 and higher, Openswan can use the built in IPsec
-support.  Only the userland component of Openswan is required when using a
-2.6 series kernel.  Please use at least version 2.6.6, as prior versions
-of the kernel have serious bugs in the IPsec stack.
+support, or KLIPS (ipsec0 devices).  
 
-1.0)	From the openswan source directory:
+To use KLIPS:
+
+0)	If you want NAT-T support, you need to patch your kernel and build
+	a new bzImage.  From the Openswan source directory:
+
+	make nattpatch | (cd /usr/src/linux-2.6 && patch -p1 && make bzImage)
+	
+	Note: Build and install kernel as normal, as you have modified
+	the TCP/IP stack in the kernel, so it needs to be recompiled and
+	installed.
+
+        eg: cd /usr/src/linux && make dep bzImage install
+
+	See your distribution documentation on how to install a new kernel
+
+
+1)	From the openswan source directory, build the userland tools, and
+	ipsec.o kernel module:
+
+	make KERNELSRC=/usr/src/linux-2.6 programs module
+
+2)	As root, install the userland tools, and the ipsec.o module:
+
+	make KERNELSRC=/usr/src/linux-2.6 install minstall
+
+
+To use the native (aka, Netkey) stack:
+
+0)	Please use at least version kernel version 2.6.6, as prior 
+	versions of the kernel have serious bugs in the  IPsec stack.
+
+1)	From the openswan source directory:
 
 	make programs
 
-2.0)	As root, install the userland tools:
+2)	As root, install the userland tools:
 
 	make install
 
 Note: The ipsec-tools package is no longer needed. Instead iproute2 >= 2.6.8
-is required. For backport'ed kernels, setkey and thus ipsec-tools might still
+is required. For backported kernels, setkey and thus ipsec-tools might still
 be required. Run 'ipsec verify' to determine if your system has either one
 of the requirements.
 
@@ -144,4 +177,4 @@ currently 40MB)
 The bulk of this software is under the GNU General Public License; see
 LICENSE.  Some parts of it are not; see CREDITS for the details.
 
-$Id: README,v 1.101.2.1 2005/05/18 20:55:12 ken Exp $.
+$Id: README,v 1.102 2005/07/06 22:50:02 ken Exp $.

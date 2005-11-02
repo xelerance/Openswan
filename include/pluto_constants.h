@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pluto_constants.h,v 1.32.2.1 2005/05/18 20:55:12 ken Exp $
+ * RCSID $Id: pluto_constants.h,v 1.33.2.2 2005/08/19 17:53:03 ken Exp $
  */
 
 /* Control and lock pathnames */
@@ -108,6 +108,7 @@ enum crypto_importance {
 
 typedef enum {
     STF_IGNORE,	/* don't respond */
+    STF_INLINE,        /* set to this on second time through complete_state_trans */
     STF_SUSPEND,    /* unfinished -- don't release resources */
     STF_OK,	/* success */
     STF_INTERNAL_ERROR,	/* discard everything, we failed */
@@ -169,6 +170,8 @@ extern const char *const debug_bit_names[];
 #define IMPAIR_BUST_MR2	LELEM(IMPAIR0+3)	/* make MR2 really large */
 #define IMPAIR_SA_CREATION LELEM(IMPAIR0+4)     /* fail all SA creation */
 #define IMPAIR_DIE_ONINFO  LELEM(IMPAIR0+5)     /* cause state to be deleted upon receipt of information payload */
+#define IMPAIR_JACOB_TWO_TWO LELEM(IMPAIR0+6)   /* cause pluto to send all messages twice. */
+                                                /* cause pluto to send all messages twice. */
 
 #define DBG_NONE	0	/* no options on, including impairments */
 #define DBG_ALL		LRANGES(DBG_RAW, DBG_X509)  /* all logging options on EXCEPT DBG_PRIVATE */
@@ -422,7 +425,7 @@ extern const char *prettypolicy(lset_t policy);
 #define HAS_IPSEC_POLICY(p) (((p) & POLICY_IPSEC_MASK) != 0)
 
 /* Don't allow negotiation? */
-#define NEVER_NEGOTIATE(p)  (LDISJOINT((p), POLICY_PSK | POLICY_RSASIG | POLICY_AGGRESSIVE))
+#define NEVER_NEGOTIATE(p)  (LDISJOINT((p), POLICY_PSK | POLICY_RSASIG | POLICY_AGGRESSIVE) || (((p)&POLICY_SHUNT_MASK)!=POLICY_SHUNT_TRAP))
 
 
 /* Oakley transform attributes

@@ -6,10 +6,12 @@ TESTHOST=west
 EXITONEMPTY=--exitonempty
 ARPREPLY=--arpreply 
 
-PUBINPUT=../inputs/02-sunrise-sunset-esp.pcap
+PUB_INPUT=../inputs/02-sunrise-sunset-esp.pcap
 #REFPRIVOUTPUT=spi1-cleartext.txt
-REFCONSOLEOUTPUT=spi1-console.txt
+REF_CONSOLE_OUTPUT=spi1-console.txt
+REF26_CONSOLE_OUTPUT=spi1-console.txt
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS script-only.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-spi-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-look-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS east-prompt-splitline.pl"

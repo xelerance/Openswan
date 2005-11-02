@@ -1,0 +1,2103 @@
+This is a test of pre-shared mode from an unknown IP address.
+It uses main mode, and nat-t support is explicitely disabled.
+
+road connects to east in this test.
+
+This failure was reported by Astaro:
+
+Date: Fri, 17 Jun 2005 12:31:23 +0200
+From: Stephan Scholz <sscholz@astaro.com>
+Subject: PSK and NAT-T option
+
+I have found a bug in Openswan 2.3.1 concerning PSK and the NAT-Traversal
+option.
+If NAT-Traversal is disabled in ipsec.conf, then a roadwarrior PSK connection
+fails to establish - regardless of whether NAT-T is actually needed or not.
+I have attached the pluto log file.
+
+
+
+2005:06:16-13:51:15 (none) pluto[26118]: |  
+2005:06:16-13:51:15 (none) pluto[26118]: | *received 756 bytes from 192.168.2.96:500 on eth0 (port=500)
+2005:06:16-13:51:15 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38  00 00 00 00  00 00 00 00
+2005:06:16-13:51:15 (none) pluto[26118]: |   01 10 02 00  00 00 00 00  00 00 02 f4  0d 00 02 34
+2005:06:16-13:51:15 (none) pluto[26118]: |   00 00 00 01  00 00 00 01  00 00 02 28  01 01 00 0e
+2005:06:16-13:51:15 (none) pluto[26118]: |   03 00 00 28  01 01 00 00  80 01 00 07  80 02 00 02
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 03 00 01  80 04 00 02  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:15 (none) pluto[26118]: |   00 00 70 80  80 0e 00 80  03 00 00 28  02 01 00 00
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 01 00 07  80 02 00 01  80 03 00 01  80 04 00 02
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 00 80
+2005:06:16-13:51:15 (none) pluto[26118]: |   03 00 00 24  03 01 00 00  80 01 00 05  80 02 00 02
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 03 00 01  80 04 00 02  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:15 (none) pluto[26118]: |   00 00 70 80  03 00 00 24  04 01 00 00  80 01 00 05
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 02 00 01  80 03 00 01  80 04 00 02  80 0b 00 01
+2005:06:16-13:51:15 (none) pluto[26118]: |   00 0c 00 04  00 00 70 80  03 00 00 28  05 01 00 00
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 01 00 07  80 02 00 02  80 03 00 01  80 04 00 02
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 01 00
+2005:06:16-13:51:15 (none) pluto[26118]: |   03 00 00 28  06 01 00 00  80 01 00 07  80 02 00 01
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 03 00 01  80 04 00 02  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:15 (none) pluto[26118]: |   00 00 70 80  80 0e 01 00  03 00 00 28  07 01 00 00
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 01 00 07  80 02 00 02  80 03 00 01  80 04 00 05
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 00 80
+2005:06:16-13:51:15 (none) pluto[26118]: |   03 00 00 28  08 01 00 00  80 01 00 07  80 02 00 01
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 03 00 01  80 04 00 05  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:15 (none) pluto[26118]: |   00 00 70 80  80 0e 00 80  03 00 00 24  09 01 00 00
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 01 00 05  80 02 00 02  80 03 00 01  80 04 00 05
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  03 00 00 24
+2005:06:16-13:51:15 (none) pluto[26118]: |   0a 01 00 00  80 01 00 05  80 02 00 01  80 03 00 01
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 04 00 05  80 0b 00 01  00 0c 00 04  00 00 70 80
+2005:06:16-13:51:15 (none) pluto[26118]: |   03 00 00 28  0b 01 00 00  80 01 00 07  80 02 00 02
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 03 00 01  80 04 00 05  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:15 (none) pluto[26118]: |   00 00 70 80  80 0e 01 00  03 00 00 28  0c 01 00 00
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 01 00 07  80 02 00 01  80 03 00 01  80 04 00 05
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 01 00
+2005:06:16-13:51:15 (none) pluto[26118]: |   03 00 00 28  0d 01 00 00  80 01 00 07  80 02 00 02
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 03 00 01  80 04 00 05  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:15 (none) pluto[26118]: |   00 00 70 80  80 0e 00 c0  00 00 00 28  0e 01 00 00
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 01 00 07  80 02 00 01  80 03 00 01  80 04 00 05
+2005:06:16-13:51:15 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 00 c0
+2005:06:16-13:51:15 (none) pluto[26118]: |   0d 00 00 0c  da 8e 93 78  80 01 00 00  0d 00 00 0c
+2005:06:16-13:51:15 (none) pluto[26118]: |   09 00 26 89  df d6 b7 12  0d 00 00 14  7d 94 19 a6
+2005:06:16-13:51:15 (none) pluto[26118]: |   53 10 ca 6f  2c 17 9d 92  15 52 9d 56  0d 00 00 14
+2005:06:16-13:51:15 (none) pluto[26118]: |   90 cb 80 91  3e bb 69 6e  08 63 81 b5  ec 42 7b 1f
+2005:06:16-13:51:15 (none) pluto[26118]: |   0d 00 00 14  44 85 15 2d  18 b6 bb cd  0b e8 a8 46
+2005:06:16-13:51:15 (none) pluto[26118]: |   95 79 dd cc  0d 00 00 14  4a 13 1c 81  07 03 58 45
+2005:06:16-13:51:15 (none) pluto[26118]: |   5c 57 28 f2  0e 95 45 2f  0d 00 00 14  af ca d7 13
+2005:06:16-13:51:15 (none) pluto[26118]: |   68 a1 f1 c9  6b 86 96 fc  77 57 01 00  0d 00 00 14
+2005:06:16-13:51:15 (none) pluto[26118]: |   10 1f b0 b3  5c 5a 4f 4c  08 b9 19 f1  cb 97 77 af
+2005:06:16-13:51:15 (none) pluto[26118]: |   00 00 00 14  12 f5 f2 8c  45 71 68 a9  70 2d 9f e2
+2005:06:16-13:51:15 (none) pluto[26118]: |   74 cc 01 00
+2005:06:16-13:51:15 (none) pluto[26118]: | **parse ISAKMP Message:
+2005:06:16-13:51:15 (none) pluto[26118]: |    initiator cookie:
+2005:06:16-13:51:15 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:15 (none) pluto[26118]: |    responder cookie:
+2005:06:16-13:51:15 (none) pluto[26118]: |   00 00 00 00  00 00 00 00
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_SA
+2005:06:16-13:51:15 (none) pluto[26118]: |    ISAKMP version: ISAKMP Version 1.0
+2005:06:16-13:51:15 (none) pluto[26118]: |    exchange type: ISAKMP_XCHG_IDPROT
+2005:06:16-13:51:15 (none) pluto[26118]: |    flags: none
+2005:06:16-13:51:15 (none) pluto[26118]: |    message ID:  00 00 00 00
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 756
+2005:06:16-13:51:15 (none) pluto[26118]: | ***parse ISAKMP Security Association Payload:
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 564
+2005:06:16-13:51:15 (none) pluto[26118]: |    DOI: ISAKMP_DOI_IPSEC
+2005:06:16-13:51:15 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 12
+2005:06:16-13:51:15 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 12
+2005:06:16-13:51:15 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:15 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:15 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:15 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:15 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:15 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:15 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:15 (none) pluto[26118]: packet from 192.168.2.96:500: ignoring unknown Vendor ID payload [da8e937880010000]
+2005:06:16-13:51:15 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [XAUTH]
+2005:06:16-13:51:15 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-03] meth=108, but port floating is off
+2005:06:16-13:51:15 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02_n] meth=106, but port floating is off
+2005:06:16-13:51:15 (none) pluto[26118]: packet from 192.168.2.96:500: ignoring Vendor ID payload [draft-ietf-ipsec-nat-t-ike-00]
+2005:06:16-13:51:15 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [RFC 3947] meth=109, but port floating is off
+2005:06:16-13:51:15 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [Dead Peer Detection]
+2005:06:16-13:51:15 (none) pluto[26118]: packet from 192.168.2.96:500: ignoring unknown Vendor ID payload [101fb0b35c5a4f4c08b919f1cb9777af]
+2005:06:16-13:51:15 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [Cisco-Unity]
+2005:06:16-13:51:15 (none) pluto[26118]: | find_host_connection called from main_inI1_outR1
+2005:06:16-13:51:15 (none) pluto[26118]: | find_host_pair: comparing to 192.168.6.21:500 0.0.0.0:500 
+2005:06:16-13:51:15 (none) pluto[26118]: | find_host_pair_conn (find_host_connection2): 192.168.6.21:500 192.168.2.96:500 -> hp:none 
+2005:06:16-13:51:15 (none) pluto[26118]: | find_host_connection called from main_inI1_outR1
+2005:06:16-13:51:15 (none) pluto[26118]: | find_host_pair: comparing to 192.168.6.21:500 0.0.0.0:500 
+2005:06:16-13:51:15 (none) pluto[26118]: | find_host_pair_conn (find_host_connection2): 192.168.6.21:500 %any:500 -> hp:S_roadie_0 
+2005:06:16-13:51:15 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=3
+2005:06:16-13:51:15 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=3
+2005:06:16-13:51:15 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=4
+2005:06:16-13:51:15 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=4
+2005:06:16-13:51:15 (none) pluto[26118]: | find_host_pair: comparing to 192.168.6.21:500 0.0.0.0:500 
+2005:06:16-13:51:15 (none) pluto[26118]: | connect_to_host_pair: 192.168.6.21:500 192.168.2.96:500 -> hp:none 
+2005:06:16-13:51:15 (none) pluto[26118]: | instantiated "S_roadie_0" for 192.168.2.96
+2005:06:16-13:51:15 (none) pluto[26118]: | creating state object #1 at 0x8114288
+2005:06:16-13:51:15 (none) pluto[26118]: | processing connection S_roadie_0[1] 192.168.2.96
+2005:06:16-13:51:15 (none) pluto[26118]: | ICOOKIE:  11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:15 (none) pluto[26118]: | RCOOKIE:  d2 2a 6b e0  16 38 c1 2f
+2005:06:16-13:51:15 (none) pluto[26118]: | peer:  c0 a8 02 60
+2005:06:16-13:51:15 (none) pluto[26118]: | state hash entry 4
+2005:06:16-13:51:15 (none) pluto[26118]: | inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: responding to Main Mode from unknown peer 192.168.2.96
+2005:06:16-13:51:15 (none) pluto[26118]: | **emit ISAKMP Message:
+2005:06:16-13:51:15 (none) pluto[26118]: |    initiator cookie:
+2005:06:16-13:51:15 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:15 (none) pluto[26118]: |    responder cookie:
+2005:06:16-13:51:15 (none) pluto[26118]: |   d2 2a 6b e0  16 38 c1 2f
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_SA
+2005:06:16-13:51:15 (none) pluto[26118]: |    ISAKMP version: ISAKMP Version 1.0
+2005:06:16-13:51:15 (none) pluto[26118]: |    exchange type: ISAKMP_XCHG_IDPROT
+2005:06:16-13:51:15 (none) pluto[26118]: |    flags: none
+2005:06:16-13:51:15 (none) pluto[26118]: |    message ID:  00 00 00 00
+2005:06:16-13:51:15 (none) pluto[26118]: | ***emit ISAKMP Security Association Payload:
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:15 (none) pluto[26118]: |    DOI: ISAKMP_DOI_IPSEC
+2005:06:16-13:51:15 (none) pluto[26118]: | ****parse IPsec DOI SIT:
+2005:06:16-13:51:15 (none) pluto[26118]: |    IPsec DOI SIT: SIT_IDENTITY_ONLY
+2005:06:16-13:51:15 (none) pluto[26118]: | ****parse ISAKMP Proposal Payload:
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 552
+2005:06:16-13:51:15 (none) pluto[26118]: |    proposal number: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    protocol ID: PROTO_ISAKMP
+2005:06:16-13:51:15 (none) pluto[26118]: |    SPI size: 0
+2005:06:16-13:51:15 (none) pluto[26118]: |    number of transforms: 14
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:15 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:15 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 2
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:15 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 3
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:15 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:15 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 4
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:15 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 5
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:15 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:15 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 6
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:15 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 7
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:15 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:15 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 8
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:15 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 9
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:15 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:15 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 10
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:15 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 11
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:15 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:15 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 12
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:15 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 13
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:15 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:15 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:15 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform number: 14
+2005:06:16-13:51:15 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:15 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:15 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:15 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:15 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:15 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:15 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:15 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:15 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: no acceptable Oakley Transform
+2005:06:16-13:51:15 (none) pluto[26118]: | complete state transition with (null)
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: sending notification NO_PROPOSAL_CHOSEN to 192.168.2.96:500
+2005:06:16-13:51:15 (none) pluto[26118]: | **emit ISAKMP Message:
+2005:06:16-13:51:15 (none) pluto[26118]: |    initiator cookie:
+2005:06:16-13:51:15 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:15 (none) pluto[26118]: |    responder cookie:
+2005:06:16-13:51:15 (none) pluto[26118]: |   d2 2a 6b e0  16 38 c1 2f
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_N
+2005:06:16-13:51:15 (none) pluto[26118]: |    ISAKMP version: ISAKMP Version 1.0
+2005:06:16-13:51:15 (none) pluto[26118]: |    exchange type: ISAKMP_XCHG_INFO
+2005:06:16-13:51:15 (none) pluto[26118]: |    flags: none
+2005:06:16-13:51:15 (none) pluto[26118]: |    message ID:  00 00 00 00
+2005:06:16-13:51:15 (none) pluto[26118]: | ***emit ISAKMP Notification Payload:
+2005:06:16-13:51:15 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:15 (none) pluto[26118]: |    DOI: ISAKMP_DOI_IPSEC
+2005:06:16-13:51:15 (none) pluto[26118]: |    protocol ID: 1
+2005:06:16-13:51:15 (none) pluto[26118]: |    SPI size: 0
+2005:06:16-13:51:15 (none) pluto[26118]: |    Notify Message Type: NO_PROPOSAL_CHOSEN
+2005:06:16-13:51:15 (none) pluto[26118]: | emitting 0 raw bytes of spi into ISAKMP Notification Payload
+2005:06:16-13:51:15 (none) pluto[26118]: | spi
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96 #1: failed to build notification for spisize=0 
+2005:06:16-13:51:15 (none) pluto[26118]: | state transition function for STATE_MAIN_R0 failed: NO_PROPOSAL_CHOSEN
+2005:06:16-13:51:15 (none) pluto[26118]: | next event EVENT_SO_DISCARD in 0 seconds for #1
+2005:06:16-13:51:15 (none) pluto[26118]: |  
+2005:06:16-13:51:15 (none) pluto[26118]: | *time to handle event
+2005:06:16-13:51:15 (none) pluto[26118]: | handling event EVENT_SO_DISCARD
+2005:06:16-13:51:15 (none) pluto[26118]: | event after this is EVENT_SHUNT_SCAN in 105 seconds
+2005:06:16-13:51:15 (none) pluto[26118]: | processing connection S_roadie_0[1] 192.168.2.96
+2005:06:16-13:51:15 (none) pluto[26118]: | deleting state #1
+2005:06:16-13:51:15 (none) pluto[26118]: | processing connection S_roadie_0[1] 192.168.2.96
+2005:06:16-13:51:15 (none) pluto[26118]: | no suspended cryptographic state for 1 
+2005:06:16-13:51:15 (none) pluto[26118]: | ICOOKIE:  11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:15 (none) pluto[26118]: | RCOOKIE:  d2 2a 6b e0  16 38 c1 2f
+2005:06:16-13:51:15 (none) pluto[26118]: | peer:  c0 a8 02 60
+2005:06:16-13:51:15 (none) pluto[26118]: | state hash entry 4
+2005:06:16-13:51:15 (none) pluto[26118]: | processing connection S_roadie_0[1] 192.168.2.96
+2005:06:16-13:51:15 (none) pluto[26118]: "S_roadie_0"[1] 192.168.2.96: deleting connection "S_roadie_0" instance with peer 192.168.2.96 {isakmp=#0/ipsec=#0}
+2005:06:16-13:51:15 (none) pluto[26118]: | alg_info_delref(0x8112988) alg_info->ref_cnt=4
+2005:06:16-13:51:15 (none) pluto[26118]: | alg_info_delref(0x81121d8) alg_info->ref_cnt=4
+2005:06:16-13:51:15 (none) pluto[26118]: | next event EVENT_SHUNT_SCAN in 105 seconds
+2005:06:16-13:51:17 (none) pluto[26118]: |  
+2005:06:16-13:51:17 (none) pluto[26118]: | *received 756 bytes from 192.168.2.96:500 on eth0 (port=500)
+2005:06:16-13:51:17 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38  00 00 00 00  00 00 00 00
+2005:06:16-13:51:17 (none) pluto[26118]: |   01 10 02 00  00 00 00 00  00 00 02 f4  0d 00 02 34
+2005:06:16-13:51:17 (none) pluto[26118]: |   00 00 00 01  00 00 00 01  00 00 02 28  01 01 00 0e
+2005:06:16-13:51:17 (none) pluto[26118]: |   03 00 00 28  01 01 00 00  80 01 00 07  80 02 00 02
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 03 00 01  80 04 00 02  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:17 (none) pluto[26118]: |   00 00 70 80  80 0e 00 80  03 00 00 28  02 01 00 00
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 01 00 07  80 02 00 01  80 03 00 01  80 04 00 02
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 00 80
+2005:06:16-13:51:17 (none) pluto[26118]: |   03 00 00 24  03 01 00 00  80 01 00 05  80 02 00 02
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 03 00 01  80 04 00 02  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:17 (none) pluto[26118]: |   00 00 70 80  03 00 00 24  04 01 00 00  80 01 00 05
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 02 00 01  80 03 00 01  80 04 00 02  80 0b 00 01
+2005:06:16-13:51:17 (none) pluto[26118]: |   00 0c 00 04  00 00 70 80  03 00 00 28  05 01 00 00
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 01 00 07  80 02 00 02  80 03 00 01  80 04 00 02
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 01 00
+2005:06:16-13:51:17 (none) pluto[26118]: |   03 00 00 28  06 01 00 00  80 01 00 07  80 02 00 01
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 03 00 01  80 04 00 02  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:17 (none) pluto[26118]: |   00 00 70 80  80 0e 01 00  03 00 00 28  07 01 00 00
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 01 00 07  80 02 00 02  80 03 00 01  80 04 00 05
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 00 80
+2005:06:16-13:51:17 (none) pluto[26118]: |   03 00 00 28  08 01 00 00  80 01 00 07  80 02 00 01
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 03 00 01  80 04 00 05  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:17 (none) pluto[26118]: |   00 00 70 80  80 0e 00 80  03 00 00 24  09 01 00 00
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 01 00 05  80 02 00 02  80 03 00 01  80 04 00 05
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  03 00 00 24
+2005:06:16-13:51:17 (none) pluto[26118]: |   0a 01 00 00  80 01 00 05  80 02 00 01  80 03 00 01
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 04 00 05  80 0b 00 01  00 0c 00 04  00 00 70 80
+2005:06:16-13:51:17 (none) pluto[26118]: |   03 00 00 28  0b 01 00 00  80 01 00 07  80 02 00 02
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 03 00 01  80 04 00 05  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:17 (none) pluto[26118]: |   00 00 70 80  80 0e 01 00  03 00 00 28  0c 01 00 00
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 01 00 07  80 02 00 01  80 03 00 01  80 04 00 05
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 01 00
+2005:06:16-13:51:17 (none) pluto[26118]: |   03 00 00 28  0d 01 00 00  80 01 00 07  80 02 00 02
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 03 00 01  80 04 00 05  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:17 (none) pluto[26118]: |   00 00 70 80  80 0e 00 c0  00 00 00 28  0e 01 00 00
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 01 00 07  80 02 00 01  80 03 00 01  80 04 00 05
+2005:06:16-13:51:17 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 00 c0
+2005:06:16-13:51:17 (none) pluto[26118]: |   0d 00 00 0c  da 8e 93 78  80 01 00 00  0d 00 00 0c
+2005:06:16-13:51:17 (none) pluto[26118]: |   09 00 26 89  df d6 b7 12  0d 00 00 14  7d 94 19 a6
+2005:06:16-13:51:17 (none) pluto[26118]: |   53 10 ca 6f  2c 17 9d 92  15 52 9d 56  0d 00 00 14
+2005:06:16-13:51:17 (none) pluto[26118]: |   90 cb 80 91  3e bb 69 6e  08 63 81 b5  ec 42 7b 1f
+2005:06:16-13:51:17 (none) pluto[26118]: |   0d 00 00 14  44 85 15 2d  18 b6 bb cd  0b e8 a8 46
+2005:06:16-13:51:17 (none) pluto[26118]: |   95 79 dd cc  0d 00 00 14  4a 13 1c 81  07 03 58 45
+2005:06:16-13:51:17 (none) pluto[26118]: |   5c 57 28 f2  0e 95 45 2f  0d 00 00 14  af ca d7 13
+2005:06:16-13:51:17 (none) pluto[26118]: |   68 a1 f1 c9  6b 86 96 fc  77 57 01 00  0d 00 00 14
+2005:06:16-13:51:17 (none) pluto[26118]: |   10 1f b0 b3  5c 5a 4f 4c  08 b9 19 f1  cb 97 77 af
+2005:06:16-13:51:17 (none) pluto[26118]: |   00 00 00 14  12 f5 f2 8c  45 71 68 a9  70 2d 9f e2
+2005:06:16-13:51:17 (none) pluto[26118]: |   74 cc 01 00
+2005:06:16-13:51:17 (none) pluto[26118]: | **parse ISAKMP Message:
+2005:06:16-13:51:17 (none) pluto[26118]: |    initiator cookie:
+2005:06:16-13:51:17 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:17 (none) pluto[26118]: |    responder cookie:
+2005:06:16-13:51:17 (none) pluto[26118]: |   00 00 00 00  00 00 00 00
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_SA
+2005:06:16-13:51:17 (none) pluto[26118]: |    ISAKMP version: ISAKMP Version 1.0
+2005:06:16-13:51:17 (none) pluto[26118]: |    exchange type: ISAKMP_XCHG_IDPROT
+2005:06:16-13:51:17 (none) pluto[26118]: |    flags: none
+2005:06:16-13:51:17 (none) pluto[26118]: |    message ID:  00 00 00 00
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 756
+2005:06:16-13:51:17 (none) pluto[26118]: | ***parse ISAKMP Security Association Payload:
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 564
+2005:06:16-13:51:17 (none) pluto[26118]: |    DOI: ISAKMP_DOI_IPSEC
+2005:06:16-13:51:17 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 12
+2005:06:16-13:51:17 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 12
+2005:06:16-13:51:17 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:17 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:17 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:17 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:17 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:17 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:17 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:17 (none) pluto[26118]: packet from 192.168.2.96:500: ignoring unknown Vendor ID payload [da8e937880010000]
+2005:06:16-13:51:17 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [XAUTH]
+2005:06:16-13:51:17 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-03] meth=108, but port floating is off
+2005:06:16-13:51:17 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02_n] meth=106, but port floating is off
+2005:06:16-13:51:17 (none) pluto[26118]: packet from 192.168.2.96:500: ignoring Vendor ID payload [draft-ietf-ipsec-nat-t-ike-00]
+2005:06:16-13:51:17 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [RFC 3947] meth=109, but port floating is off
+2005:06:16-13:51:17 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [Dead Peer Detection]
+2005:06:16-13:51:17 (none) pluto[26118]: packet from 192.168.2.96:500: ignoring unknown Vendor ID payload [101fb0b35c5a4f4c08b919f1cb9777af]
+2005:06:16-13:51:17 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [Cisco-Unity]
+2005:06:16-13:51:17 (none) pluto[26118]: | find_host_connection called from main_inI1_outR1
+2005:06:16-13:51:17 (none) pluto[26118]: | find_host_pair: comparing to 192.168.6.21:500 0.0.0.0:500 
+2005:06:16-13:51:17 (none) pluto[26118]: | find_host_pair_conn (find_host_connection2): 192.168.6.21:500 192.168.2.96:500 -> hp:none 
+2005:06:16-13:51:17 (none) pluto[26118]: | find_host_connection called from main_inI1_outR1
+2005:06:16-13:51:17 (none) pluto[26118]: | find_host_pair: comparing to 192.168.6.21:500 0.0.0.0:500 
+2005:06:16-13:51:17 (none) pluto[26118]: | find_host_pair_conn (find_host_connection2): 192.168.6.21:500 %any:500 -> hp:S_roadie_0 
+2005:06:16-13:51:17 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=4
+2005:06:16-13:51:17 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=4
+2005:06:16-13:51:17 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=5
+2005:06:16-13:51:17 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=5
+2005:06:16-13:51:17 (none) pluto[26118]: | find_host_pair: comparing to 192.168.6.21:500 0.0.0.0:500 
+2005:06:16-13:51:17 (none) pluto[26118]: | connect_to_host_pair: 192.168.6.21:500 192.168.2.96:500 -> hp:none 
+2005:06:16-13:51:17 (none) pluto[26118]: | instantiated "S_roadie_0" for 192.168.2.96
+2005:06:16-13:51:17 (none) pluto[26118]: | creating state object #2 at 0x8114288
+2005:06:16-13:51:17 (none) pluto[26118]: | processing connection S_roadie_0[2] 192.168.2.96
+2005:06:16-13:51:17 (none) pluto[26118]: | ICOOKIE:  11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:17 (none) pluto[26118]: | RCOOKIE:  33 1e e0 6e  57 80 01 ab
+2005:06:16-13:51:17 (none) pluto[26118]: | peer:  c0 a8 02 60
+2005:06:16-13:51:17 (none) pluto[26118]: | state hash entry 11
+2005:06:16-13:51:17 (none) pluto[26118]: | inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #2
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: responding to Main Mode from unknown peer 192.168.2.96
+2005:06:16-13:51:17 (none) pluto[26118]: | **emit ISAKMP Message:
+2005:06:16-13:51:17 (none) pluto[26118]: |    initiator cookie:
+2005:06:16-13:51:17 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:17 (none) pluto[26118]: |    responder cookie:
+2005:06:16-13:51:17 (none) pluto[26118]: |   33 1e e0 6e  57 80 01 ab
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_SA
+2005:06:16-13:51:17 (none) pluto[26118]: |    ISAKMP version: ISAKMP Version 1.0
+2005:06:16-13:51:17 (none) pluto[26118]: |    exchange type: ISAKMP_XCHG_IDPROT
+2005:06:16-13:51:17 (none) pluto[26118]: |    flags: none
+2005:06:16-13:51:17 (none) pluto[26118]: |    message ID:  00 00 00 00
+2005:06:16-13:51:17 (none) pluto[26118]: | ***emit ISAKMP Security Association Payload:
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:17 (none) pluto[26118]: |    DOI: ISAKMP_DOI_IPSEC
+2005:06:16-13:51:17 (none) pluto[26118]: | ****parse IPsec DOI SIT:
+2005:06:16-13:51:17 (none) pluto[26118]: |    IPsec DOI SIT: SIT_IDENTITY_ONLY
+2005:06:16-13:51:17 (none) pluto[26118]: | ****parse ISAKMP Proposal Payload:
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 552
+2005:06:16-13:51:17 (none) pluto[26118]: |    proposal number: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    protocol ID: PROTO_ISAKMP
+2005:06:16-13:51:17 (none) pluto[26118]: |    SPI size: 0
+2005:06:16-13:51:17 (none) pluto[26118]: |    number of transforms: 14
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:17 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:17 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 2
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:17 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 3
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:17 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:17 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 4
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:17 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 5
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:17 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:17 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 6
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:17 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 7
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:17 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:17 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 8
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:17 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 9
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:17 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:17 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 10
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:17 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 11
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:17 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:17 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 12
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:17 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 13
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:17 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:17 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:17 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform number: 14
+2005:06:16-13:51:17 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:17 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:17 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:17 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:17 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:17 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:17 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:17 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:17 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: no acceptable Oakley Transform
+2005:06:16-13:51:17 (none) pluto[26118]: | complete state transition with (null)
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: sending notification NO_PROPOSAL_CHOSEN to 192.168.2.96:500
+2005:06:16-13:51:17 (none) pluto[26118]: | **emit ISAKMP Message:
+2005:06:16-13:51:17 (none) pluto[26118]: |    initiator cookie:
+2005:06:16-13:51:17 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:17 (none) pluto[26118]: |    responder cookie:
+2005:06:16-13:51:17 (none) pluto[26118]: |   33 1e e0 6e  57 80 01 ab
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_N
+2005:06:16-13:51:17 (none) pluto[26118]: |    ISAKMP version: ISAKMP Version 1.0
+2005:06:16-13:51:17 (none) pluto[26118]: |    exchange type: ISAKMP_XCHG_INFO
+2005:06:16-13:51:17 (none) pluto[26118]: |    flags: none
+2005:06:16-13:51:17 (none) pluto[26118]: |    message ID:  00 00 00 00
+2005:06:16-13:51:17 (none) pluto[26118]: | ***emit ISAKMP Notification Payload:
+2005:06:16-13:51:17 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:17 (none) pluto[26118]: |    DOI: ISAKMP_DOI_IPSEC
+2005:06:16-13:51:17 (none) pluto[26118]: |    protocol ID: 1
+2005:06:16-13:51:17 (none) pluto[26118]: |    SPI size: 0
+2005:06:16-13:51:17 (none) pluto[26118]: |    Notify Message Type: NO_PROPOSAL_CHOSEN
+2005:06:16-13:51:17 (none) pluto[26118]: | emitting 0 raw bytes of spi into ISAKMP Notification Payload
+2005:06:16-13:51:17 (none) pluto[26118]: | spi
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96 #2: failed to build notification for spisize=0 
+2005:06:16-13:51:17 (none) pluto[26118]: | state transition function for STATE_MAIN_R0 failed: NO_PROPOSAL_CHOSEN
+2005:06:16-13:51:17 (none) pluto[26118]: | next event EVENT_SO_DISCARD in 0 seconds for #2
+2005:06:16-13:51:17 (none) pluto[26118]: |  
+2005:06:16-13:51:17 (none) pluto[26118]: | *time to handle event
+2005:06:16-13:51:17 (none) pluto[26118]: | handling event EVENT_SO_DISCARD
+2005:06:16-13:51:17 (none) pluto[26118]: | event after this is EVENT_SHUNT_SCAN in 103 seconds
+2005:06:16-13:51:17 (none) pluto[26118]: | processing connection S_roadie_0[2] 192.168.2.96
+2005:06:16-13:51:17 (none) pluto[26118]: | deleting state #2
+2005:06:16-13:51:17 (none) pluto[26118]: | processing connection S_roadie_0[2] 192.168.2.96
+2005:06:16-13:51:17 (none) pluto[26118]: | no suspended cryptographic state for 2 
+2005:06:16-13:51:17 (none) pluto[26118]: | ICOOKIE:  11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:17 (none) pluto[26118]: | RCOOKIE:  33 1e e0 6e  57 80 01 ab
+2005:06:16-13:51:17 (none) pluto[26118]: | peer:  c0 a8 02 60
+2005:06:16-13:51:17 (none) pluto[26118]: | state hash entry 11
+2005:06:16-13:51:17 (none) pluto[26118]: | processing connection S_roadie_0[2] 192.168.2.96
+2005:06:16-13:51:17 (none) pluto[26118]: "S_roadie_0"[2] 192.168.2.96: deleting connection "S_roadie_0" instance with peer 192.168.2.96 {isakmp=#0/ipsec=#0}
+2005:06:16-13:51:17 (none) pluto[26118]: | alg_info_delref(0x8112988) alg_info->ref_cnt=5
+2005:06:16-13:51:17 (none) pluto[26118]: | alg_info_delref(0x81121d8) alg_info->ref_cnt=5
+2005:06:16-13:51:17 (none) pluto[26118]: | next event EVENT_SHUNT_SCAN in 103 seconds
+2005:06:16-13:51:21 (none) pluto[26118]: |  
+2005:06:16-13:51:21 (none) pluto[26118]: | *received 756 bytes from 192.168.2.96:500 on eth0 (port=500)
+2005:06:16-13:51:21 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38  00 00 00 00  00 00 00 00
+2005:06:16-13:51:21 (none) pluto[26118]: |   01 10 02 00  00 00 00 00  00 00 02 f4  0d 00 02 34
+2005:06:16-13:51:21 (none) pluto[26118]: |   00 00 00 01  00 00 00 01  00 00 02 28  01 01 00 0e
+2005:06:16-13:51:21 (none) pluto[26118]: |   03 00 00 28  01 01 00 00  80 01 00 07  80 02 00 02
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 03 00 01  80 04 00 02  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:21 (none) pluto[26118]: |   00 00 70 80  80 0e 00 80  03 00 00 28  02 01 00 00
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 01 00 07  80 02 00 01  80 03 00 01  80 04 00 02
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 00 80
+2005:06:16-13:51:21 (none) pluto[26118]: |   03 00 00 24  03 01 00 00  80 01 00 05  80 02 00 02
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 03 00 01  80 04 00 02  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:21 (none) pluto[26118]: |   00 00 70 80  03 00 00 24  04 01 00 00  80 01 00 05
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 02 00 01  80 03 00 01  80 04 00 02  80 0b 00 01
+2005:06:16-13:51:21 (none) pluto[26118]: |   00 0c 00 04  00 00 70 80  03 00 00 28  05 01 00 00
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 01 00 07  80 02 00 02  80 03 00 01  80 04 00 02
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 01 00
+2005:06:16-13:51:21 (none) pluto[26118]: |   03 00 00 28  06 01 00 00  80 01 00 07  80 02 00 01
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 03 00 01  80 04 00 02  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:21 (none) pluto[26118]: |   00 00 70 80  80 0e 01 00  03 00 00 28  07 01 00 00
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 01 00 07  80 02 00 02  80 03 00 01  80 04 00 05
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 00 80
+2005:06:16-13:51:21 (none) pluto[26118]: |   03 00 00 28  08 01 00 00  80 01 00 07  80 02 00 01
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 03 00 01  80 04 00 05  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:21 (none) pluto[26118]: |   00 00 70 80  80 0e 00 80  03 00 00 24  09 01 00 00
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 01 00 05  80 02 00 02  80 03 00 01  80 04 00 05
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  03 00 00 24
+2005:06:16-13:51:21 (none) pluto[26118]: |   0a 01 00 00  80 01 00 05  80 02 00 01  80 03 00 01
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 04 00 05  80 0b 00 01  00 0c 00 04  00 00 70 80
+2005:06:16-13:51:21 (none) pluto[26118]: |   03 00 00 28  0b 01 00 00  80 01 00 07  80 02 00 02
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 03 00 01  80 04 00 05  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:21 (none) pluto[26118]: |   00 00 70 80  80 0e 01 00  03 00 00 28  0c 01 00 00
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 01 00 07  80 02 00 01  80 03 00 01  80 04 00 05
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 01 00
+2005:06:16-13:51:21 (none) pluto[26118]: |   03 00 00 28  0d 01 00 00  80 01 00 07  80 02 00 02
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 03 00 01  80 04 00 05  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:21 (none) pluto[26118]: |   00 00 70 80  80 0e 00 c0  00 00 00 28  0e 01 00 00
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 01 00 07  80 02 00 01  80 03 00 01  80 04 00 05
+2005:06:16-13:51:21 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 00 c0
+2005:06:16-13:51:21 (none) pluto[26118]: |   0d 00 00 0c  da 8e 93 78  80 01 00 00  0d 00 00 0c
+2005:06:16-13:51:21 (none) pluto[26118]: |   09 00 26 89  df d6 b7 12  0d 00 00 14  7d 94 19 a6
+2005:06:16-13:51:21 (none) pluto[26118]: |   53 10 ca 6f  2c 17 9d 92  15 52 9d 56  0d 00 00 14
+2005:06:16-13:51:21 (none) pluto[26118]: |   90 cb 80 91  3e bb 69 6e  08 63 81 b5  ec 42 7b 1f
+2005:06:16-13:51:21 (none) pluto[26118]: |   0d 00 00 14  44 85 15 2d  18 b6 bb cd  0b e8 a8 46
+2005:06:16-13:51:21 (none) pluto[26118]: |   95 79 dd cc  0d 00 00 14  4a 13 1c 81  07 03 58 45
+2005:06:16-13:51:21 (none) pluto[26118]: |   5c 57 28 f2  0e 95 45 2f  0d 00 00 14  af ca d7 13
+2005:06:16-13:51:21 (none) pluto[26118]: |   68 a1 f1 c9  6b 86 96 fc  77 57 01 00  0d 00 00 14
+2005:06:16-13:51:21 (none) pluto[26118]: |   10 1f b0 b3  5c 5a 4f 4c  08 b9 19 f1  cb 97 77 af
+2005:06:16-13:51:21 (none) pluto[26118]: |   00 00 00 14  12 f5 f2 8c  45 71 68 a9  70 2d 9f e2
+2005:06:16-13:51:21 (none) pluto[26118]: |   74 cc 01 00
+2005:06:16-13:51:21 (none) pluto[26118]: | **parse ISAKMP Message:
+2005:06:16-13:51:21 (none) pluto[26118]: |    initiator cookie:
+2005:06:16-13:51:21 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:21 (none) pluto[26118]: |    responder cookie:
+2005:06:16-13:51:21 (none) pluto[26118]: |   00 00 00 00  00 00 00 00
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_SA
+2005:06:16-13:51:21 (none) pluto[26118]: |    ISAKMP version: ISAKMP Version 1.0
+2005:06:16-13:51:21 (none) pluto[26118]: |    exchange type: ISAKMP_XCHG_IDPROT
+2005:06:16-13:51:21 (none) pluto[26118]: |    flags: none
+2005:06:16-13:51:21 (none) pluto[26118]: |    message ID:  00 00 00 00
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 756
+2005:06:16-13:51:21 (none) pluto[26118]: | ***parse ISAKMP Security Association Payload:
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 564
+2005:06:16-13:51:21 (none) pluto[26118]: |    DOI: ISAKMP_DOI_IPSEC
+2005:06:16-13:51:21 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 12
+2005:06:16-13:51:21 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 12
+2005:06:16-13:51:21 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:21 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:21 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:21 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:21 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:21 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:21 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:21 (none) pluto[26118]: packet from 192.168.2.96:500: ignoring unknown Vendor ID payload [da8e937880010000]
+2005:06:16-13:51:21 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [XAUTH]
+2005:06:16-13:51:21 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-03] meth=108, but port floating is off
+2005:06:16-13:51:21 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02_n] meth=106, but port floating is off
+2005:06:16-13:51:21 (none) pluto[26118]: packet from 192.168.2.96:500: ignoring Vendor ID payload [draft-ietf-ipsec-nat-t-ike-00]
+2005:06:16-13:51:21 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [RFC 3947] meth=109, but port floating is off
+2005:06:16-13:51:21 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [Dead Peer Detection]
+2005:06:16-13:51:21 (none) pluto[26118]: packet from 192.168.2.96:500: ignoring unknown Vendor ID payload [101fb0b35c5a4f4c08b919f1cb9777af]
+2005:06:16-13:51:21 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [Cisco-Unity]
+2005:06:16-13:51:21 (none) pluto[26118]: | find_host_connection called from main_inI1_outR1
+2005:06:16-13:51:21 (none) pluto[26118]: | find_host_pair: comparing to 192.168.6.21:500 0.0.0.0:500 
+2005:06:16-13:51:21 (none) pluto[26118]: | find_host_pair_conn (find_host_connection2): 192.168.6.21:500 192.168.2.96:500 -> hp:none 
+2005:06:16-13:51:21 (none) pluto[26118]: | find_host_connection called from main_inI1_outR1
+2005:06:16-13:51:21 (none) pluto[26118]: | find_host_pair: comparing to 192.168.6.21:500 0.0.0.0:500 
+2005:06:16-13:51:21 (none) pluto[26118]: | find_host_pair_conn (find_host_connection2): 192.168.6.21:500 %any:500 -> hp:S_roadie_0 
+2005:06:16-13:51:21 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=5
+2005:06:16-13:51:21 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=5
+2005:06:16-13:51:21 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=6
+2005:06:16-13:51:21 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=6
+2005:06:16-13:51:21 (none) pluto[26118]: | find_host_pair: comparing to 192.168.6.21:500 0.0.0.0:500 
+2005:06:16-13:51:21 (none) pluto[26118]: | connect_to_host_pair: 192.168.6.21:500 192.168.2.96:500 -> hp:none 
+2005:06:16-13:51:21 (none) pluto[26118]: | instantiated "S_roadie_0" for 192.168.2.96
+2005:06:16-13:51:21 (none) pluto[26118]: | creating state object #3 at 0x8114288
+2005:06:16-13:51:21 (none) pluto[26118]: | processing connection S_roadie_0[3] 192.168.2.96
+2005:06:16-13:51:21 (none) pluto[26118]: | ICOOKIE:  11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:21 (none) pluto[26118]: | RCOOKIE:  b6 ef f7 3f  e6 e3 f9 22
+2005:06:16-13:51:21 (none) pluto[26118]: | peer:  c0 a8 02 60
+2005:06:16-13:51:21 (none) pluto[26118]: | state hash entry 14
+2005:06:16-13:51:21 (none) pluto[26118]: | inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #3
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: responding to Main Mode from unknown peer 192.168.2.96
+2005:06:16-13:51:21 (none) pluto[26118]: | **emit ISAKMP Message:
+2005:06:16-13:51:21 (none) pluto[26118]: |    initiator cookie:
+2005:06:16-13:51:21 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:21 (none) pluto[26118]: |    responder cookie:
+2005:06:16-13:51:21 (none) pluto[26118]: |   b6 ef f7 3f  e6 e3 f9 22
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_SA
+2005:06:16-13:51:21 (none) pluto[26118]: |    ISAKMP version: ISAKMP Version 1.0
+2005:06:16-13:51:21 (none) pluto[26118]: |    exchange type: ISAKMP_XCHG_IDPROT
+2005:06:16-13:51:21 (none) pluto[26118]: |    flags: none
+2005:06:16-13:51:21 (none) pluto[26118]: |    message ID:  00 00 00 00
+2005:06:16-13:51:21 (none) pluto[26118]: | ***emit ISAKMP Security Association Payload:
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:21 (none) pluto[26118]: |    DOI: ISAKMP_DOI_IPSEC
+2005:06:16-13:51:21 (none) pluto[26118]: | ****parse IPsec DOI SIT:
+2005:06:16-13:51:21 (none) pluto[26118]: |    IPsec DOI SIT: SIT_IDENTITY_ONLY
+2005:06:16-13:51:21 (none) pluto[26118]: | ****parse ISAKMP Proposal Payload:
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 552
+2005:06:16-13:51:21 (none) pluto[26118]: |    proposal number: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    protocol ID: PROTO_ISAKMP
+2005:06:16-13:51:21 (none) pluto[26118]: |    SPI size: 0
+2005:06:16-13:51:21 (none) pluto[26118]: |    number of transforms: 14
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:21 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:21 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 2
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:21 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 3
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:21 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:21 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 4
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:21 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 5
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:21 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:21 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 6
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:21 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 7
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:21 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:21 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 8
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:21 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 9
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:21 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:21 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 10
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:21 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 11
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:21 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:21 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 12
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:21 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 13
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:21 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:21 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:21 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform number: 14
+2005:06:16-13:51:21 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:21 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:21 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:21 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:21 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:21 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:21 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:21 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:21 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: no acceptable Oakley Transform
+2005:06:16-13:51:21 (none) pluto[26118]: | complete state transition with (null)
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: sending notification NO_PROPOSAL_CHOSEN to 192.168.2.96:500
+2005:06:16-13:51:21 (none) pluto[26118]: | **emit ISAKMP Message:
+2005:06:16-13:51:21 (none) pluto[26118]: |    initiator cookie:
+2005:06:16-13:51:21 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:21 (none) pluto[26118]: |    responder cookie:
+2005:06:16-13:51:21 (none) pluto[26118]: |   b6 ef f7 3f  e6 e3 f9 22
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_N
+2005:06:16-13:51:21 (none) pluto[26118]: |    ISAKMP version: ISAKMP Version 1.0
+2005:06:16-13:51:21 (none) pluto[26118]: |    exchange type: ISAKMP_XCHG_INFO
+2005:06:16-13:51:21 (none) pluto[26118]: |    flags: none
+2005:06:16-13:51:21 (none) pluto[26118]: |    message ID:  00 00 00 00
+2005:06:16-13:51:21 (none) pluto[26118]: | ***emit ISAKMP Notification Payload:
+2005:06:16-13:51:21 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:21 (none) pluto[26118]: |    DOI: ISAKMP_DOI_IPSEC
+2005:06:16-13:51:21 (none) pluto[26118]: |    protocol ID: 1
+2005:06:16-13:51:21 (none) pluto[26118]: |    SPI size: 0
+2005:06:16-13:51:21 (none) pluto[26118]: |    Notify Message Type: NO_PROPOSAL_CHOSEN
+2005:06:16-13:51:21 (none) pluto[26118]: | emitting 0 raw bytes of spi into ISAKMP Notification Payload
+2005:06:16-13:51:21 (none) pluto[26118]: | spi
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96 #3: failed to build notification for spisize=0 
+2005:06:16-13:51:21 (none) pluto[26118]: | state transition function for STATE_MAIN_R0 failed: NO_PROPOSAL_CHOSEN
+2005:06:16-13:51:21 (none) pluto[26118]: | next event EVENT_SO_DISCARD in 0 seconds for #3
+2005:06:16-13:51:21 (none) pluto[26118]: |  
+2005:06:16-13:51:21 (none) pluto[26118]: | *time to handle event
+2005:06:16-13:51:21 (none) pluto[26118]: | handling event EVENT_SO_DISCARD
+2005:06:16-13:51:21 (none) pluto[26118]: | event after this is EVENT_SHUNT_SCAN in 99 seconds
+2005:06:16-13:51:21 (none) pluto[26118]: | processing connection S_roadie_0[3] 192.168.2.96
+2005:06:16-13:51:21 (none) pluto[26118]: | deleting state #3
+2005:06:16-13:51:21 (none) pluto[26118]: | processing connection S_roadie_0[3] 192.168.2.96
+2005:06:16-13:51:21 (none) pluto[26118]: | no suspended cryptographic state for 3 
+2005:06:16-13:51:21 (none) pluto[26118]: | ICOOKIE:  11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:21 (none) pluto[26118]: | RCOOKIE:  b6 ef f7 3f  e6 e3 f9 22
+2005:06:16-13:51:21 (none) pluto[26118]: | peer:  c0 a8 02 60
+2005:06:16-13:51:21 (none) pluto[26118]: | state hash entry 14
+2005:06:16-13:51:21 (none) pluto[26118]: | processing connection S_roadie_0[3] 192.168.2.96
+2005:06:16-13:51:21 (none) pluto[26118]: "S_roadie_0"[3] 192.168.2.96: deleting connection "S_roadie_0" instance with peer 192.168.2.96 {isakmp=#0/ipsec=#0}
+2005:06:16-13:51:21 (none) pluto[26118]: | alg_info_delref(0x8112988) alg_info->ref_cnt=6
+2005:06:16-13:51:21 (none) pluto[26118]: | alg_info_delref(0x81121d8) alg_info->ref_cnt=6
+2005:06:16-13:51:21 (none) pluto[26118]: | next event EVENT_SHUNT_SCAN in 99 seconds
+2005:06:16-13:51:26 (none) pluto[26118]: |  
+2005:06:16-13:51:26 (none) pluto[26118]: | *received 756 bytes from 192.168.2.96:500 on eth0 (port=500)
+2005:06:16-13:51:26 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38  00 00 00 00  00 00 00 00
+2005:06:16-13:51:26 (none) pluto[26118]: |   01 10 02 00  00 00 00 00  00 00 02 f4  0d 00 02 34
+2005:06:16-13:51:26 (none) pluto[26118]: |   00 00 00 01  00 00 00 01  00 00 02 28  01 01 00 0e
+2005:06:16-13:51:26 (none) pluto[26118]: |   03 00 00 28  01 01 00 00  80 01 00 07  80 02 00 02
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 03 00 01  80 04 00 02  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:26 (none) pluto[26118]: |   00 00 70 80  80 0e 00 80  03 00 00 28  02 01 00 00
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 01 00 07  80 02 00 01  80 03 00 01  80 04 00 02
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 00 80
+2005:06:16-13:51:26 (none) pluto[26118]: |   03 00 00 24  03 01 00 00  80 01 00 05  80 02 00 02
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 03 00 01  80 04 00 02  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:26 (none) pluto[26118]: |   00 00 70 80  03 00 00 24  04 01 00 00  80 01 00 05
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 02 00 01  80 03 00 01  80 04 00 02  80 0b 00 01
+2005:06:16-13:51:26 (none) pluto[26118]: |   00 0c 00 04  00 00 70 80  03 00 00 28  05 01 00 00
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 01 00 07  80 02 00 02  80 03 00 01  80 04 00 02
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 01 00
+2005:06:16-13:51:26 (none) pluto[26118]: |   03 00 00 28  06 01 00 00  80 01 00 07  80 02 00 01
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 03 00 01  80 04 00 02  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:26 (none) pluto[26118]: |   00 00 70 80  80 0e 01 00  03 00 00 28  07 01 00 00
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 01 00 07  80 02 00 02  80 03 00 01  80 04 00 05
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 00 80
+2005:06:16-13:51:26 (none) pluto[26118]: |   03 00 00 28  08 01 00 00  80 01 00 07  80 02 00 01
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 03 00 01  80 04 00 05  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:26 (none) pluto[26118]: |   00 00 70 80  80 0e 00 80  03 00 00 24  09 01 00 00
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 01 00 05  80 02 00 02  80 03 00 01  80 04 00 05
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  03 00 00 24
+2005:06:16-13:51:26 (none) pluto[26118]: |   0a 01 00 00  80 01 00 05  80 02 00 01  80 03 00 01
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 04 00 05  80 0b 00 01  00 0c 00 04  00 00 70 80
+2005:06:16-13:51:26 (none) pluto[26118]: |   03 00 00 28  0b 01 00 00  80 01 00 07  80 02 00 02
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 03 00 01  80 04 00 05  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:26 (none) pluto[26118]: |   00 00 70 80  80 0e 01 00  03 00 00 28  0c 01 00 00
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 01 00 07  80 02 00 01  80 03 00 01  80 04 00 05
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 01 00
+2005:06:16-13:51:26 (none) pluto[26118]: |   03 00 00 28  0d 01 00 00  80 01 00 07  80 02 00 02
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 03 00 01  80 04 00 05  80 0b 00 01  00 0c 00 04
+2005:06:16-13:51:26 (none) pluto[26118]: |   00 00 70 80  80 0e 00 c0  00 00 00 28  0e 01 00 00
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 01 00 07  80 02 00 01  80 03 00 01  80 04 00 05
+2005:06:16-13:51:26 (none) pluto[26118]: |   80 0b 00 01  00 0c 00 04  00 00 70 80  80 0e 00 c0
+2005:06:16-13:51:26 (none) pluto[26118]: |   0d 00 00 0c  da 8e 93 78  80 01 00 00  0d 00 00 0c
+2005:06:16-13:51:26 (none) pluto[26118]: |   09 00 26 89  df d6 b7 12  0d 00 00 14  7d 94 19 a6
+2005:06:16-13:51:26 (none) pluto[26118]: |   53 10 ca 6f  2c 17 9d 92  15 52 9d 56  0d 00 00 14
+2005:06:16-13:51:26 (none) pluto[26118]: |   90 cb 80 91  3e bb 69 6e  08 63 81 b5  ec 42 7b 1f
+2005:06:16-13:51:26 (none) pluto[26118]: |   0d 00 00 14  44 85 15 2d  18 b6 bb cd  0b e8 a8 46
+2005:06:16-13:51:26 (none) pluto[26118]: |   95 79 dd cc  0d 00 00 14  4a 13 1c 81  07 03 58 45
+2005:06:16-13:51:26 (none) pluto[26118]: |   5c 57 28 f2  0e 95 45 2f  0d 00 00 14  af ca d7 13
+2005:06:16-13:51:26 (none) pluto[26118]: |   68 a1 f1 c9  6b 86 96 fc  77 57 01 00  0d 00 00 14
+2005:06:16-13:51:26 (none) pluto[26118]: |   10 1f b0 b3  5c 5a 4f 4c  08 b9 19 f1  cb 97 77 af
+2005:06:16-13:51:26 (none) pluto[26118]: |   00 00 00 14  12 f5 f2 8c  45 71 68 a9  70 2d 9f e2
+2005:06:16-13:51:26 (none) pluto[26118]: |   74 cc 01 00
+2005:06:16-13:51:26 (none) pluto[26118]: | **parse ISAKMP Message:
+2005:06:16-13:51:26 (none) pluto[26118]: |    initiator cookie:
+2005:06:16-13:51:26 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:26 (none) pluto[26118]: |    responder cookie:
+2005:06:16-13:51:26 (none) pluto[26118]: |   00 00 00 00  00 00 00 00
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_SA
+2005:06:16-13:51:26 (none) pluto[26118]: |    ISAKMP version: ISAKMP Version 1.0
+2005:06:16-13:51:26 (none) pluto[26118]: |    exchange type: ISAKMP_XCHG_IDPROT
+2005:06:16-13:51:26 (none) pluto[26118]: |    flags: none
+2005:06:16-13:51:26 (none) pluto[26118]: |    message ID:  00 00 00 00
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 756
+2005:06:16-13:51:26 (none) pluto[26118]: | ***parse ISAKMP Security Association Payload:
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 564
+2005:06:16-13:51:26 (none) pluto[26118]: |    DOI: ISAKMP_DOI_IPSEC
+2005:06:16-13:51:26 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 12
+2005:06:16-13:51:26 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 12
+2005:06:16-13:51:26 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:26 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:26 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:26 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:26 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:26 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:26 (none) pluto[26118]: | ***parse ISAKMP Vendor ID Payload:
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 20
+2005:06:16-13:51:26 (none) pluto[26118]: packet from 192.168.2.96:500: ignoring unknown Vendor ID payload [da8e937880010000]
+2005:06:16-13:51:26 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [XAUTH]
+2005:06:16-13:51:26 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-03] meth=108, but port floating is off
+2005:06:16-13:51:26 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02_n] meth=106, but port floating is off
+2005:06:16-13:51:26 (none) pluto[26118]: packet from 192.168.2.96:500: ignoring Vendor ID payload [draft-ietf-ipsec-nat-t-ike-00]
+2005:06:16-13:51:26 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [RFC 3947] meth=109, but port floating is off
+2005:06:16-13:51:26 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [Dead Peer Detection]
+2005:06:16-13:51:26 (none) pluto[26118]: packet from 192.168.2.96:500: ignoring unknown Vendor ID payload [101fb0b35c5a4f4c08b919f1cb9777af]
+2005:06:16-13:51:26 (none) pluto[26118]: packet from 192.168.2.96:500: received Vendor ID payload [Cisco-Unity]
+2005:06:16-13:51:26 (none) pluto[26118]: | find_host_connection called from main_inI1_outR1
+2005:06:16-13:51:26 (none) pluto[26118]: | find_host_pair: comparing to 192.168.6.21:500 0.0.0.0:500 
+2005:06:16-13:51:26 (none) pluto[26118]: | find_host_pair_conn (find_host_connection2): 192.168.6.21:500 192.168.2.96:500 -> hp:none 
+2005:06:16-13:51:26 (none) pluto[26118]: | find_host_connection called from main_inI1_outR1
+2005:06:16-13:51:26 (none) pluto[26118]: | find_host_pair: comparing to 192.168.6.21:500 0.0.0.0:500 
+2005:06:16-13:51:26 (none) pluto[26118]: | find_host_pair_conn (find_host_connection2): 192.168.6.21:500 %any:500 -> hp:S_roadie_0 
+2005:06:16-13:51:26 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=6
+2005:06:16-13:51:26 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=6
+2005:06:16-13:51:26 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=7
+2005:06:16-13:51:26 (none) pluto[26118]: | alg_info_addref() alg_info->ref_cnt=7
+2005:06:16-13:51:26 (none) pluto[26118]: | find_host_pair: comparing to 192.168.6.21:500 0.0.0.0:500 
+2005:06:16-13:51:26 (none) pluto[26118]: | connect_to_host_pair: 192.168.6.21:500 192.168.2.96:500 -> hp:none 
+2005:06:16-13:51:26 (none) pluto[26118]: | instantiated "S_roadie_0" for 192.168.2.96
+2005:06:16-13:51:26 (none) pluto[26118]: | creating state object #4 at 0x8114288
+2005:06:16-13:51:26 (none) pluto[26118]: | processing connection S_roadie_0[4] 192.168.2.96
+2005:06:16-13:51:26 (none) pluto[26118]: | ICOOKIE:  11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:26 (none) pluto[26118]: | RCOOKIE:  8b 6a e9 00  68 a7 4e d0
+2005:06:16-13:51:26 (none) pluto[26118]: | peer:  c0 a8 02 60
+2005:06:16-13:51:26 (none) pluto[26118]: | state hash entry 14
+2005:06:16-13:51:26 (none) pluto[26118]: | inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #4
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: responding to Main Mode from unknown peer 192.168.2.96
+2005:06:16-13:51:26 (none) pluto[26118]: | **emit ISAKMP Message:
+2005:06:16-13:51:26 (none) pluto[26118]: |    initiator cookie:
+2005:06:16-13:51:26 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:26 (none) pluto[26118]: |    responder cookie:
+2005:06:16-13:51:26 (none) pluto[26118]: |   8b 6a e9 00  68 a7 4e d0
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_SA
+2005:06:16-13:51:26 (none) pluto[26118]: |    ISAKMP version: ISAKMP Version 1.0
+2005:06:16-13:51:26 (none) pluto[26118]: |    exchange type: ISAKMP_XCHG_IDPROT
+2005:06:16-13:51:26 (none) pluto[26118]: |    flags: none
+2005:06:16-13:51:26 (none) pluto[26118]: |    message ID:  00 00 00 00
+2005:06:16-13:51:26 (none) pluto[26118]: | ***emit ISAKMP Security Association Payload:
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_VID
+2005:06:16-13:51:26 (none) pluto[26118]: |    DOI: ISAKMP_DOI_IPSEC
+2005:06:16-13:51:26 (none) pluto[26118]: | ****parse IPsec DOI SIT:
+2005:06:16-13:51:26 (none) pluto[26118]: |    IPsec DOI SIT: SIT_IDENTITY_ONLY
+2005:06:16-13:51:26 (none) pluto[26118]: | ****parse ISAKMP Proposal Payload:
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 552
+2005:06:16-13:51:26 (none) pluto[26118]: |    proposal number: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    protocol ID: PROTO_ISAKMP
+2005:06:16-13:51:26 (none) pluto[26118]: |    SPI size: 0
+2005:06:16-13:51:26 (none) pluto[26118]: |    number of transforms: 14
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:26 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:26 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 2
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:26 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 3
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:26 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:26 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 4
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:26 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 5
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:26 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:26 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 6
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:26 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 7
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:26 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:26 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 8
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:26 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 9
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:26 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:26 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 36
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 10
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 5
+2005:06:16-13:51:26 (none) pluto[26118]: |    [5 is OAKLEY_3DES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=5,key_len=0): blocksize=8, keyminlen=192, keydeflen=192, keymaxlen=192, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 11
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:26 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:26 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 12
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:26 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_T
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 13
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:26 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 2
+2005:06:16-13:51:26 (none) pluto[26118]: |    [2 is OAKLEY_SHA1]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: | *****parse ISAKMP Transform Payload (ISAKMP):
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:26 (none) pluto[26118]: |    length: 40
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform number: 14
+2005:06:16-13:51:26 (none) pluto[26118]: |    transform ID: KEY_IKE
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 7
+2005:06:16-13:51:26 (none) pluto[26118]: |    [7 is OAKLEY_AES_CBC]
+2005:06:16-13:51:26 (none) pluto[26118]: | ike_alg_enc_ok(ealg=7,key_len=0): blocksize=16, keyminlen=128, keydeflen=128, keymaxlen=256, ret=1
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_HASH_ALGORITHM
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_MD5]
+2005:06:16-13:51:26 (none) pluto[26118]: | ******parse ISAKMP Oakley attribute:
+2005:06:16-13:51:26 (none) pluto[26118]: |    af+type: OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: |    length/value: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    [1 is OAKLEY_PRESHARED_KEY]
+2005:06:16-13:51:26 (none) pluto[26118]: | started looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | actually looking for secret for 192.168.6.21->192.168.2.96 of kind PPK_PSK
+2005:06:16-13:51:26 (none) pluto[26118]: | 1: compared PSK 0.0.0.0 to 192.168.6.21 / 192.168.2.96 -> 0
+2005:06:16-13:51:26 (none) pluto[26118]: | 2: compared PSK 192.168.6.21 to 192.168.6.21 / 192.168.2.96 -> 4
+2005:06:16-13:51:26 (none) pluto[26118]: | concluding with best_match=0 best=(nil) (lineno=-1)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: Can't authenticate: no preshared key found for `192.168.6.21' and `%any'.  Attribute OAKLEY_AUTHENTICATION_METHOD
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: no acceptable Oakley Transform
+2005:06:16-13:51:26 (none) pluto[26118]: | complete state transition with (null)
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: sending notification NO_PROPOSAL_CHOSEN to 192.168.2.96:500
+2005:06:16-13:51:26 (none) pluto[26118]: | **emit ISAKMP Message:
+2005:06:16-13:51:26 (none) pluto[26118]: |    initiator cookie:
+2005:06:16-13:51:26 (none) pluto[26118]: |   11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:26 (none) pluto[26118]: |    responder cookie:
+2005:06:16-13:51:26 (none) pluto[26118]: |   8b 6a e9 00  68 a7 4e d0
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_N
+2005:06:16-13:51:26 (none) pluto[26118]: |    ISAKMP version: ISAKMP Version 1.0
+2005:06:16-13:51:26 (none) pluto[26118]: |    exchange type: ISAKMP_XCHG_INFO
+2005:06:16-13:51:26 (none) pluto[26118]: |    flags: none
+2005:06:16-13:51:26 (none) pluto[26118]: |    message ID:  00 00 00 00
+2005:06:16-13:51:26 (none) pluto[26118]: | ***emit ISAKMP Notification Payload:
+2005:06:16-13:51:26 (none) pluto[26118]: |    next payload type: ISAKMP_NEXT_NONE
+2005:06:16-13:51:26 (none) pluto[26118]: |    DOI: ISAKMP_DOI_IPSEC
+2005:06:16-13:51:26 (none) pluto[26118]: |    protocol ID: 1
+2005:06:16-13:51:26 (none) pluto[26118]: |    SPI size: 0
+2005:06:16-13:51:26 (none) pluto[26118]: |    Notify Message Type: NO_PROPOSAL_CHOSEN
+2005:06:16-13:51:26 (none) pluto[26118]: | emitting 0 raw bytes of spi into ISAKMP Notification Payload
+2005:06:16-13:51:26 (none) pluto[26118]: | spi
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96 #4: failed to build notification for spisize=0 
+2005:06:16-13:51:26 (none) pluto[26118]: | state transition function for STATE_MAIN_R0 failed: NO_PROPOSAL_CHOSEN
+2005:06:16-13:51:26 (none) pluto[26118]: | next event EVENT_SO_DISCARD in 0 seconds for #4
+2005:06:16-13:51:26 (none) pluto[26118]: |  
+2005:06:16-13:51:26 (none) pluto[26118]: | *time to handle event
+2005:06:16-13:51:26 (none) pluto[26118]: | handling event EVENT_SO_DISCARD
+2005:06:16-13:51:26 (none) pluto[26118]: | event after this is EVENT_SHUNT_SCAN in 94 seconds
+2005:06:16-13:51:26 (none) pluto[26118]: | processing connection S_roadie_0[4] 192.168.2.96
+2005:06:16-13:51:26 (none) pluto[26118]: | deleting state #4
+2005:06:16-13:51:26 (none) pluto[26118]: | processing connection S_roadie_0[4] 192.168.2.96
+2005:06:16-13:51:26 (none) pluto[26118]: | no suspended cryptographic state for 4 
+2005:06:16-13:51:26 (none) pluto[26118]: | ICOOKIE:  11 ec a0 34  0f 1b 5e 38
+2005:06:16-13:51:26 (none) pluto[26118]: | RCOOKIE:  8b 6a e9 00  68 a7 4e d0
+2005:06:16-13:51:26 (none) pluto[26118]: | peer:  c0 a8 02 60
+2005:06:16-13:51:26 (none) pluto[26118]: | state hash entry 14
+2005:06:16-13:51:26 (none) pluto[26118]: | processing connection S_roadie_0[4] 192.168.2.96
+2005:06:16-13:51:26 (none) pluto[26118]: "S_roadie_0"[4] 192.168.2.96: deleting connection "S_roadie_0" instance with peer 192.168.2.96 {isakmp=#0/ipsec=#0}
+2005:06:16-13:51:26 (none) pluto[26118]: | alg_info_delref(0x8112988) alg_info->ref_cnt=7
+2005:06:16-13:51:26 (none) pluto[26118]: | alg_info_delref(0x81121d8) alg_info->ref_cnt=7
+2005:06:16-13:51:26 (none) pluto[26118]: | next event EVENT_SHUNT_SCAN in 94 seconds

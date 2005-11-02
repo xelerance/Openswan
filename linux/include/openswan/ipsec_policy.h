@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: ipsec_policy.h,v 1.7 2005/01/11 17:52:46 ken Exp $
+ * RCSID $Id: ipsec_policy.h,v 1.7.6.1 2005/07/26 01:53:07 ken Exp $
  */
 #define	_IPSEC_POLICY_H 	/* seen it, no need to see it again */
 
@@ -184,6 +184,7 @@ struct ipsec_policy_cmd_query {
   /* Query section */
   ip_address query_local;     /* us   */
   ip_address query_remote;    /* them */
+  u_int8_t proto;             /* TCP, ICMP, etc. */
   u_short src_port, dst_port;
 
   /* Answer section */

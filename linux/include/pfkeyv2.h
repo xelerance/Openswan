@@ -1,5 +1,5 @@
 /*
- * RCSID $Id: pfkeyv2.h,v 1.30 2004/04/06 02:49:00 mcr Exp $
+ * RCSID $Id: pfkeyv2.h,v 1.31 2005/04/14 01:14:54 mcr Exp $
  */
 
 /*
@@ -301,11 +301,13 @@ struct sadb_protocol {
 #define SADB_X_SATYPE_INT     11
 #define SADB_SATYPE_MAX       11
 
-#define SADB_SASTATE_LARVAL   0
-#define SADB_SASTATE_MATURE   1
-#define SADB_SASTATE_DYING    2
-#define SADB_SASTATE_DEAD     3
-#define SADB_SASTATE_MAX      3
+enum sadb_sastate {
+  SADB_SASTATE_LARVAL=0,
+  SADB_SASTATE_MATURE=1,
+  SADB_SASTATE_DYING=2,
+  SADB_SASTATE_DEAD=3
+};
+#define SADB_SASTATE_MAX 3
 
 #define SADB_SAFLAGS_PFS		1
 #define SADB_X_SAFLAGS_REPLACEFLOW	2
@@ -369,6 +371,9 @@ struct sadb_protocol {
 
 /*
  * $Log: pfkeyv2.h,v $
+ * Revision 1.31  2005/04/14 01:14:54  mcr
+ * 	change sadb_state to an enum.
+ *
  * Revision 1.30  2004/04/06 02:49:00  mcr
  * 	pullup of algo code from alg-branch.
  *

@@ -1,58 +1,3 @@
-Starting UML PATH/start.sh
-spawn PATH single
-Linux version XXXX
-On node 0 totalpages: 8192
-Kernel command line:
-Calibrating delay loop... XXXX bogomips
-Dentry-cache hash table entries: NUMBERS
-Inode-cache hash table entries: NUMBERS
-Mount-cache hash table entries: NUMBERS
-Buffer-cache hash table entries: NUMBERS
-Page-cache hash table entries: NUMEBRS
-POSIX conformance testing by UNIFIX
-Linux NET4.0 for Linux 2.4
-Based upon Swansea University Computer Society NET3.039
-Initializing RT netlink socket
-Starting kswapd
-VFS: Diskquotas version dquot_6.4.0 initialized
-devfs: VERSION Richard Gooch (rgooch@atnf.csiro.au)
-devfs: boot_options Q
-pty: 256 Unix98 ptys configured
-SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
-loop: loaded (max 8 devices)
-PPP generic driver version VERSION
-Universal TUN/TAP device driver VERSION
-
-NET4: Linux TCP/IP 1.0 for NET4.0
-IP Protocols: ICMP, UDP, TCP
-IP: routing cache hash table of 512 buckets, 4Kbytes
-TCP: Hash tables configured (established 2048 bind 2048)
-IPv4 over IPv4 tunneling driver
-GRE over IPv4 tunneling driver
-NET4: Unix domain sockets 1.0/SMP for Linux NET4.0.
-Mounted devfs on /dev
-INIT: version 2.78 booting
-Activating swap...
-Calculating module dependancies
-done.
-Loading modules: LIST
-
-Checking all file systems...
-Parallelizing fsck version 1.18 (11-Nov-1999)
-Setting kernel variables.
-Mounting local filesystems...
-/dev/shm on /tmp type tmpfs (rw)
-/dev/shm on /var/run type tmpfs (rw)
-devpts on /dev/pts type devpts (rw,mode=0622)
-none on /usr/share type hostfs (ro)
-Enabling packet forwarding: done.
-Configuring network interfaces: done.
-Cleaning: /tmp /var/lock /var/run.
-Initializing random number generator... done.
-Recovering nvi editor sessions... done.
-Give root password for maintenance
-(or type Control-D for normal startup): 
-japan:~# klogd -c 4 -x -f /tmp/klog.log
 japan:~# set -x
 japan:~# CFG="--config /testing/pluto/co-terminal-02/japan.conf" export CFG
 + CFG=--config /testing/pluto/co-terminal-02/japan.conf
@@ -61,7 +6,7 @@ japan:~# : just for when we run it interactively
 + : just for when we run it interactively
 japan:~# ipsec setup $CFG stop
 + ipsec setup --config /testing/pluto/co-terminal-02/japan.conf stop
-ipsec_setup: Stopping FreeS/WAN IPsec...
+ipsec_setup: Stopping Openswan IPsec...
 ipsec_setup: stop ordered, but IPsec does not appear to be running!
 ipsec_setup: doing cleanup anyway...
 japan:~# rndc stop >/dev/null 2>&1
@@ -128,7 +73,7 @@ carrot.uml.freeswan.org. 604800	IN	A	192.1.2.130
 
 japan:~# ipsec setup $CFG start
 + ipsec setup --config /testing/pluto/co-terminal-02/japan.conf start
-ipsec_setup: Starting FreeS/WAN IPsec VERSION
+ipsec_setup: Starting Openswan IPsec VERSION
 japan:~# sleep 2
 + sleep 2
 japan:~# ipsec eroute
@@ -160,10 +105,11 @@ japan:~# /testing/pluto/co-terminal-02/eroutewait.sh pass
 japan:~# ipsec auto $CFG --up japan--wavesec
 + ipsec auto --config /testing/pluto/co-terminal-02/japan.conf --up japan--wavesec
 104 "japan--wavesec" #1: STATE_MAIN_I1: initiate
+003 "japan--wavesec" #1: received Vendor ID payload [Openswan 
 003 "japan--wavesec" #1: received Vendor ID payload [Dead Peer Detection]
 106 "japan--wavesec" #1: STATE_MAIN_I2: sent MI2, expecting MR2
 108 "japan--wavesec" #1: STATE_MAIN_I3: sent MI3, expecting MR3
-004 "japan--wavesec" #1: STATE_MAIN_I4: ISAKMP SA established
+004 "japan--wavesec" #1: STATE_MAIN_I4: ISAKMP SA established {auth=OAKLEY_RSA_SIG cipher=oakley_3des_cbc_192 prf=oakley_md5 group=modp1536}
 117 "japan--wavesec" #2: STATE_QUICK_I1: initiate
 004 "japan--wavesec" #2: STATE_QUICK_I2: sent QI2, IPsec SA established
 japan:~# /testing/pluto/co-terminal-02/eroutewait.sh tun0
@@ -203,11 +149,9 @@ n          192.0.1.2/32       -> 192.1.3.254/32     => %pass
 japan:~# ping -c 1 1.2.3.4
 + ping -c 1 1.2.3.4
 PING 1.2.3.4 (1.2.3.4): 56 data bytes
-64 bytes from 1.2.3.4: icmp_seq=0 ttl=257 time=999 ms
 
 --- 1.2.3.4 ping statistics ---
-1 packets transmitted, 1 packets received, 0% packet loss
-round-trip min/avg/max = 3.1/4.5/9.26 ms
+1 packets transmitted, 0 packets received, 100% packet loss
 japan:~# /testing/pluto/co-terminal-02/eroutewait.sh tun0
 + /testing/pluto/co-terminal-02/eroutewait.sh tun0
 japan:~# ipsec eroute | sed -e 's/^[0-9]* /n /' -e 's/tun0x..../tun0xABCD/'
@@ -232,11 +176,9 @@ japan:~# sleep 1
 japan:~# ping -c 1 192.0.2.2
 + ping -c 1 192.0.2.2
 PING 192.0.2.2 (192.0.2.2): 56 data bytes
-64 bytes from 192.0.2.2: icmp_seq=0 ttl=257 time=999 ms
 
 --- 192.0.2.2 ping statistics ---
-1 packets transmitted, 1 packets received, 0% packet loss
-round-trip min/avg/max = 3.1/4.5/9.26 ms
+1 packets transmitted, 0 packets received, 100% packet loss
 japan:~# /testing/pluto/co-terminal-02/eroutewait.sh 192.1.2.23
 + /testing/pluto/co-terminal-02/eroutewait.sh 192.1.2.23
 japan:~# ping -c 1 192.0.2.2
@@ -263,17 +205,4 @@ done
 japan:~# 
 
 + : ==== tuc ==== :
-japan:~# ipsec setup stop
-+ ipsec setup stop
-ipsec_setup: Stopping FreeS/WAN IPsec...
-ipsec_setup: stop ordered, but IPsec does not appear to be running!
-ipsec_setup: doing cleanup anyway...
-japan:~# kill `cat /var/run/klogd.pid`; cat /tmp/klog.log
-++ cat /var/run/klogd.pid
-+ kill 84
-+ cat /tmp/klog.log
-klogd 1.3-3#33.1, log source = /proc/kmsg started.
-japan:~# halt -p -f
-+ halt -p -f
-Power down.
 

@@ -12,15 +12,17 @@ fi
 
 mkdir -p ${OBJDIR}
 OBJDIR=`(cd ${OBJDIR};pwd)`
+OBJDIRTOP=`(cd ${OBJDIR};pwd)`
 
 if [ -f ${OBJDIR}/Makefile ]
 then
     echo "Will not overwrite ${OBJDIR}/Makefile"
-    exit 1
+    exit 0
 fi
 
 echo 'srcdir='${srcdir} 		 >${OBJDIR}/Makefile
 echo 'OBJDIR='${OBJDIR}                 >>${OBJDIR}/Makefile
+echo 'OBJDIRTOP='${OBJDIRTOP}           >>${OBJDIR}/Makefile
 echo 'VPATH+=${srcdir}' 		>>${OBJDIR}/Makefile
 echo 'OPENSWANSRCDIR='${srcdir}         >>${OBJDIR}/Makefile
 echo 'include ${srcdir}/Makefile.top'   >>${OBJDIR}/Makefile
@@ -42,7 +44,7 @@ do
 	if [ -f ${dirname}/Makefile ]
 	then
 	    echo "Will not overwrite ${dirname}/Makefile"
-	    exit 1
+	    exit 0
 	fi
 
 	echo 'srcdir='${dsrcdir}/ 		 >${dirname}/Makefile

@@ -15,16 +15,16 @@ east:~#
 000 %myid = (none)
 000 debug none
 000  
-000 algorithm ESP encrypt: id=3, name=ESP_3DES, ivlen=64, keysizemin=168, keysizemax=168
+000 algorithm ESP encrypt: id=3, name=ESP_3DES, ivlen=64, keysizemin=192, keysizemax=192
 000 algorithm ESP encrypt: id=12, name=ESP_AES, ivlen=128, keysizemin=128, keysizemax=256
 000 algorithm ESP auth attr: id=1, name=AUTH_ALGORITHM_HMAC_MD5, keysizemin=128, keysizemax=128
 000 algorithm ESP auth attr: id=2, name=AUTH_ALGORITHM_HMAC_SHA1, keysizemin=160, keysizemax=160
 000 algorithm ESP auth attr: id=9, name=AUTH_ALGORITHM_AES_CBC, keysizemin=128, keysizemax=128
 000  
-000 algorithm IKE encrypt: id=7, name=OAKLEY_AES_CBC, blocksize=16, keydeflen=128
 000 algorithm IKE encrypt: id=5, name=OAKLEY_3DES_CBC, blocksize=8, keydeflen=192
-000 algorithm IKE hash: id=2, name=OAKLEY_SHA1, hashsize=20
+000 algorithm IKE encrypt: id=7, name=OAKLEY_AES_CBC, blocksize=16, keydeflen=128
 000 algorithm IKE hash: id=1, name=OAKLEY_MD5, hashsize=16
+000 algorithm IKE hash: id=2, name=OAKLEY_SHA1, hashsize=20
 000 algorithm IKE dh group: id=2, name=OAKLEY_GROUP_MODP1024, bits=1024
 000 algorithm IKE dh group: id=5, name=OAKLEY_GROUP_MODP1536, bits=1536
 000 algorithm IKE dh group: id=14, name=OAKLEY_GROUP_MODP2048, bits=2048
@@ -36,37 +36,37 @@ east:~#
 000 stats db_ops.c: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0} 
 000  
 000 "block": 192.1.2.23[%myid]---192.1.2.254...%group; unrouted; eroute owner: #0
-000 "block":     srcip=unset; dstip=unset
+000 "block":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "block":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 000 "block":   policy: TUNNEL+PFS+GROUP+GROUTED+REJECT+NEVER_NEGOTIATE+lKOD+rKOD; prio: 32,0; interface: eth1; 
 000 "block":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 000 "clear": 192.1.2.23[%myid]---192.1.2.254...%group; unrouted; eroute owner: #0
-000 "clear":     srcip=unset; dstip=unset
+000 "clear":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "clear":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 000 "clear":   policy: TUNNEL+PFS+GROUP+GROUTED+PASS+NEVER_NEGOTIATE+lKOD+rKOD; prio: 32,0; interface: eth1; 
 000 "clear":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 000 "clear-or-private": 192.1.2.23[%myid]---192.1.2.254...%opportunisticgroup; unrouted; eroute owner: #0
-000 "clear-or-private":     srcip=unset; dstip=unset
+000 "clear-or-private":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "clear-or-private":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 000 "clear-or-private":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+GROUP+GROUTED+PASS+failurePASS+lKOD+rKOD; prio: 32,0; interface: eth1; 
 000 "clear-or-private":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 000 "packetdefault": 0.0.0.0/0===192.1.2.23[%myid]---192.1.2.254...%opportunistic; prospective erouted; eroute owner: #0
-000 "packetdefault":     srcip=unset; dstip=unset
+000 "packetdefault":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "packetdefault":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 000 "packetdefault":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+failurePASS+lKOD+rKOD; prio: 0,0; interface: eth1; 
 000 "packetdefault":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 000 "private": 192.1.2.23[%myid]---192.1.2.254...%opportunisticgroup; unrouted; eroute owner: #0
-000 "private":     srcip=unset; dstip=unset
+000 "private":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "private":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 000 "private":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+GROUP+GROUTED+failureDROP+lKOD+rKOD; prio: 32,0; interface: eth1; 
 000 "private":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 000 "private-or-clear": 192.1.2.23[%myid]---192.1.2.254...%opportunisticgroup; unrouted; eroute owner: #0
-000 "private-or-clear":     srcip=unset; dstip=unset
+000 "private-or-clear":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "private-or-clear":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 000 "private-or-clear":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+GROUP+GROUTED+failurePASS+lKOD+rKOD; prio: 32,0; interface: eth1; 
 000 "private-or-clear":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 000 "private-or-clear#0.0.0.0/32": 192.1.2.23[%myid]---192.1.2.254...%opportunistic===?; prospective erouted; eroute owner: #0
-000 "private-or-clear#0.0.0.0/32":     srcip=unset; dstip=unset
+000 "private-or-clear#0.0.0.0/32":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "private-or-clear#0.0.0.0/32":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 000 "private-or-clear#0.0.0.0/32":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+failurePASS+lKOD+rKOD; prio: 32,0; interface: eth1; 
 000 "private-or-clear#0.0.0.0/32":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
@@ -76,6 +76,7 @@ east:~#
  ipsec setup stop
 IPSEC EVENT: KLIPS device ipsec0 shut down.
 ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Unknown HZ value! (8) Assume 100.
 east:~#
  ipsec eroute
 east:~#
@@ -93,16 +94,16 @@ east:~#
 000 %myid = @freeswan.org
 000 debug none
 000  
-000 algorithm ESP encrypt: id=3, name=ESP_3DES, ivlen=64, keysizemin=168, keysizemax=168
+000 algorithm ESP encrypt: id=3, name=ESP_3DES, ivlen=64, keysizemin=192, keysizemax=192
 000 algorithm ESP encrypt: id=12, name=ESP_AES, ivlen=128, keysizemin=128, keysizemax=256
 000 algorithm ESP auth attr: id=1, name=AUTH_ALGORITHM_HMAC_MD5, keysizemin=128, keysizemax=128
 000 algorithm ESP auth attr: id=2, name=AUTH_ALGORITHM_HMAC_SHA1, keysizemin=160, keysizemax=160
 000 algorithm ESP auth attr: id=9, name=AUTH_ALGORITHM_AES_CBC, keysizemin=128, keysizemax=128
 000  
-000 algorithm IKE encrypt: id=7, name=OAKLEY_AES_CBC, blocksize=16, keydeflen=128
 000 algorithm IKE encrypt: id=5, name=OAKLEY_3DES_CBC, blocksize=8, keydeflen=192
-000 algorithm IKE hash: id=2, name=OAKLEY_SHA1, hashsize=20
+000 algorithm IKE encrypt: id=7, name=OAKLEY_AES_CBC, blocksize=16, keydeflen=128
 000 algorithm IKE hash: id=1, name=OAKLEY_MD5, hashsize=16
+000 algorithm IKE hash: id=2, name=OAKLEY_SHA1, hashsize=20
 000 algorithm IKE dh group: id=2, name=OAKLEY_GROUP_MODP1024, bits=1024
 000 algorithm IKE dh group: id=5, name=OAKLEY_GROUP_MODP1536, bits=1536
 000 algorithm IKE dh group: id=14, name=OAKLEY_GROUP_MODP2048, bits=2048
@@ -114,37 +115,37 @@ east:~#
 000 stats db_ops.c: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0} 
 000  
 000 "block": 192.1.2.23[%myid]---192.1.2.254...%group; unrouted; eroute owner: #0
-000 "block":     srcip=unset; dstip=unset
+000 "block":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "block":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 000 "block":   policy: TUNNEL+PFS+GROUP+GROUTED+REJECT+NEVER_NEGOTIATE+lKOD+rKOD; prio: 32,0; interface: eth1; 
 000 "block":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 000 "clear": 192.1.2.23[%myid]---192.1.2.254...%group; unrouted; eroute owner: #0
-000 "clear":     srcip=unset; dstip=unset
+000 "clear":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "clear":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 000 "clear":   policy: TUNNEL+PFS+GROUP+GROUTED+PASS+NEVER_NEGOTIATE+lKOD+rKOD; prio: 32,0; interface: eth1; 
 000 "clear":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 000 "clear-or-private": 192.1.2.23[%myid]---192.1.2.254...%opportunisticgroup; unrouted; eroute owner: #0
-000 "clear-or-private":     srcip=unset; dstip=unset
+000 "clear-or-private":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "clear-or-private":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 000 "clear-or-private":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+GROUP+GROUTED+PASS+failurePASS+lKOD+rKOD; prio: 32,0; interface: eth1; 
 000 "clear-or-private":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 000 "packetdefault": 0.0.0.0/0===192.1.2.23[%myid]---192.1.2.254...%opportunistic; prospective erouted; eroute owner: #0
-000 "packetdefault":     srcip=unset; dstip=unset
+000 "packetdefault":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "packetdefault":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 000 "packetdefault":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+failurePASS+lKOD+rKOD; prio: 0,0; interface: eth1; 
 000 "packetdefault":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 000 "private": 192.1.2.23[%myid]---192.1.2.254...%opportunisticgroup; unrouted; eroute owner: #0
-000 "private":     srcip=unset; dstip=unset
+000 "private":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "private":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 000 "private":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+GROUP+GROUTED+failureDROP+lKOD+rKOD; prio: 32,0; interface: eth1; 
 000 "private":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 000 "private-or-clear": 192.1.2.23[%myid]---192.1.2.254...%opportunisticgroup; unrouted; eroute owner: #0
-000 "private-or-clear":     srcip=unset; dstip=unset
+000 "private-or-clear":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "private-or-clear":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 000 "private-or-clear":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+GROUP+GROUTED+failurePASS+lKOD+rKOD; prio: 32,0; interface: eth1; 
 000 "private-or-clear":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 000 "private-or-clear#0.0.0.0/32": 192.1.2.23[%myid]---192.1.2.254...%opportunistic===?; prospective erouted; eroute owner: #0
-000 "private-or-clear#0.0.0.0/32":     srcip=unset; dstip=unset
+000 "private-or-clear#0.0.0.0/32":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
 000 "private-or-clear#0.0.0.0/32":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 000 "private-or-clear#0.0.0.0/32":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+failurePASS+lKOD+rKOD; prio: 32,0; interface: eth1; 
 000 "private-or-clear#0.0.0.0/32":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
@@ -154,4 +155,5 @@ east:~#
  ipsec setup stop
 IPSEC EVENT: KLIPS device ipsec0 shut down.
 ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Unknown HZ value! (9) Assume 100.
 

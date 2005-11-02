@@ -15,7 +15,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.fs2_4,v 1.5 2004/09/14 00:03:47 mcr Exp $
+# RCSID $Id: Makefile.fs2_4,v 1.9 2005/05/20 16:47:26 mcr Exp $
 #
 # Note! Dependencies are done automagically by 'make dep', which also
 # removes any old dependencies. DON'T put your own dependencies here
@@ -70,6 +70,7 @@ obj-y := ipsec_init.o ipsec_sa.o ipsec_radij.o radij.o
 obj-y += ipsec_life.o ipsec_proc.o
 obj-y += ipsec_tunnel.o ipsec_xmit.o ipsec_rcv.o ipsec_ipip.o
 obj-y += sysctl_net_ipsec.o 
+obj-y += ipsec_snprintf.o ipsec_kern24.o
 obj-y += pfkey_v2.o pfkey_v2_parser.o pfkey_v2_ext_process.o 
 obj-y += version.o
 obj-$(CONFIG_KLIPS_ESP)     += ipsec_esp.o
@@ -86,6 +87,7 @@ obj-$(CONFIG_KLIPS_ENC_CRYPTOAPI) += ipsec_alg_cryptoapi.o
 
 VPATH+=${KLIPS_TOP}/net/ipsec/des
 
+obj-$(CONFIG_KLIPS_ENC_3DES) += ipsec_alg_3des.o
 obj-$(CONFIG_KLIPS_ENC_3DES) += cbc_enc.o
 obj-$(CONFIG_KLIPS_ENC_3DES) += ecb_enc.o
 obj-$(CONFIG_KLIPS_ENC_3DES) += set_key.o
@@ -242,6 +244,19 @@ tar:
 
 #
 # $Log: Makefile.fs2_4,v $
+# Revision 1.9  2005/05/20 16:47:26  mcr
+# 	added missing routines for 2.4 compilation.
+#
+# Revision 1.8  2005/05/20 03:19:18  mcr
+# 	modifications for use on 2.4.30 kernel, with backported
+# 	printk_ratelimit(). all warnings removed.
+#
+# Revision 1.7  2005/05/20 02:46:30  mcr
+# 	compatibility for 2.4 kernel.
+#
+# Revision 1.6  2005/04/14 20:48:30  mcr
+# 	added snprintf to build list for 2.4.
+#
 # Revision 1.5  2004/09/14 00:03:47  mcr
 # 	use assembly code on i586/i686 for zlib.
 #

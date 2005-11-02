@@ -52,17 +52,19 @@
 #define CONFIG_KLIPS_ENC_AES_MAC 1
 
 #define AES_CONTEXT_T aes_context
-MODULE_AUTHOR("JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>");
-static int debug=0;
-MODULE_PARM(debug, "i");
-static int test=0;
-MODULE_PARM(test, "i");
-static int excl=0;
-MODULE_PARM(excl, "i");
+static int debug_aes=0;
+static int test_aes=0;
+static int excl_aes=0;
 static int keyminbits=0;
-MODULE_PARM(keyminbits, "i");
 static int keymaxbits=0;
+#if defined(CONFIG_KLIPS_ENC_AES_MODULE)
+MODULE_AUTHOR("JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>");
+MODULE_PARM(debug_aes, "i");
+MODULE_PARM(test_aes, "i");
+MODULE_PARM(excl_aes, "i");
+MODULE_PARM(keyminbits, "i");
 MODULE_PARM(keymaxbits, "i");
+#endif
 
 #if CONFIG_KLIPS_ENC_AES_MAC
 #include "crypto/aes_xcbc_mac.h"
@@ -93,19 +95,26 @@ MODULE_PARM(auth_id, "i");
 #define ESP_AES_MAC_KEY_SZ	16	/* 128 bit MAC key */
 #define ESP_AES_MAC_BLK_LEN	16	/* 128 bit block */
 
-static int _aes_set_key(struct ipsec_alg_enc *alg, __u8 * key_e, const __u8 * key, size_t keysize) {
+static int _aes_set_key(struct ipsec_alg_enc *alg,
+			__u8 * key_e, const __u8 * key,
+			size_t keysize)
+{
 	int ret;
 	AES_CONTEXT_T *ctx=(AES_CONTEXT_T*)key_e;
 	ret=AES_set_key(ctx, key, keysize)!=0? 0: -EINVAL;
-	if (debug > 0)
+	if (debug_aes > 0)
 		printk(KERN_DEBUG "klips_debug:_aes_set_key:"
 				"ret=%d key_e=%p key=%p keysize=%ld\n",
                                 ret, key_e, key, (unsigned long int) keysize);
 	return ret;
 }
-static int _aes_cbc_encrypt(struct ipsec_alg_enc *alg, __u8 * key_e, __u8 * in, int ilen, const __u8 * iv, int encrypt) {
+
+static int _aes_cbc_encrypt(struct ipsec_alg_enc *alg, __u8 * key_e,
+			    __u8 * in, int ilen, const __u8 * iv,
+			    int encrypt)
+{
 	AES_CONTEXT_T *ctx=(AES_CONTEXT_T*)key_e;
-	if (debug > 0)
+	if (debug_aes > 0)
 		printk(KERN_DEBUG "klips_debug:_aes_cbc_encrypt:"
 				"key_e=%p in=%p ilen=%d iv=%p encrypt=%d\n",
 				key_e, in, ilen, iv, encrypt);
@@ -125,15 +134,20 @@ static int _aes_mac_hash(struct ipsec_alg_auth *alg, __u8 * key_a, const __u8 * 
 	return ret;
 }
 static struct ipsec_alg_auth ipsec_alg_AES_MAC = {
-	ixt_version:	IPSEC_ALG_VERSION,
+	ixt_common: { ixt_version:	IPSEC_ALG_VERSION,
+		      ixt_refcnt:	ATOMIC_INIT(0),
+		      ixt_name: 	"aes_mac",
+		      ixt_blocksize:	ESP_AES_MAC_BLK_LEN,
+		      ixt_support: {
+			ias_exttype:	IPSEC_ALG_TYPE_AUTH,
+			ias_id: 	0,
+			ias_keyminbits:	ESP_AES_MAC_KEY_SZ*8,
+			ias_keymaxbits:	ESP_AES_MAC_KEY_SZ*8,
+		},
+	},
+#if defined(MODULE_KLIPS_ENC_AES_MODULE)
 	ixt_module:	THIS_MODULE,
-	ixt_refcnt:	ATOMIC_INIT(0),
-	ixt_alg_type:	IPSEC_ALG_TYPE_AUTH,
-	ixt_alg_id: 	0,
-	ixt_name: 	"aes_mac",
-	ixt_blocksize:	ESP_AES_MAC_BLK_LEN,
-	ixt_keyminbits:	ESP_AES_MAC_KEY_SZ*8,
-	ixt_keymaxbits:	ESP_AES_MAC_KEY_SZ*8,
+#endif
 	ixt_a_keylen:	ESP_AES_MAC_KEY_SZ,
 	ixt_a_ctx_size:	sizeof(aes_context_mac),
 	ixt_a_hmac_set_key:	_aes_mac_set_key,
@@ -141,15 +155,20 @@ static struct ipsec_alg_auth ipsec_alg_AES_MAC = {
 };
 #endif /* CONFIG_KLIPS_ENC_AES_MAC */
 static struct ipsec_alg_enc ipsec_alg_AES = {
-	ixt_version:	IPSEC_ALG_VERSION,
+	ixt_common: { ixt_version:	IPSEC_ALG_VERSION,
+		      ixt_refcnt:	ATOMIC_INIT(0),
+		      ixt_name: 	"aes",
+		      ixt_blocksize:	ESP_AES_CBC_BLK_LEN, 
+		      ixt_support: {
+			ias_exttype:	IPSEC_ALG_TYPE_ENCRYPT,
+			ias_id: 	ESP_AES,
+			ias_keyminbits:	ESP_AES_KEY_SZ_MIN*8,
+			ias_keymaxbits:	ESP_AES_KEY_SZ_MAX*8,
+		},
+	},
+#if defined(MODULE_KLIPS_ENC_AES_MODULE)
 	ixt_module:	THIS_MODULE,
-	ixt_refcnt:	ATOMIC_INIT(0),
-	ixt_alg_type:	IPSEC_ALG_TYPE_ENCRYPT,
-	ixt_alg_id: 	ESP_AES,
-	ixt_name: 	"aes",
-	ixt_blocksize:	ESP_AES_CBC_BLK_LEN, 
-	ixt_keyminbits:	ESP_AES_KEY_SZ_MIN*8,
-	ixt_keymaxbits:	ESP_AES_KEY_SZ_MAX*8,
+#endif
 	ixt_e_keylen:	ESP_AES_KEY_SZ_MAX,
 	ixt_e_ctx_size:	sizeof(AES_CONTEXT_T),
 	ixt_e_set_key:	_aes_set_key,
@@ -165,47 +184,47 @@ IPSEC_ALG_MODULE_INIT_STATIC( ipsec_aes_init )
 	int ret, test_ret;
 
 	if (keyminbits)
-		ipsec_alg_AES.ixt_keyminbits=keyminbits;
+		ipsec_alg_AES.ixt_common.ixt_support.ias_keyminbits=keyminbits;
 	if (keymaxbits) {
-		ipsec_alg_AES.ixt_keymaxbits=keymaxbits;
-		if (keymaxbits*8>ipsec_alg_AES.ixt_keymaxbits)
+		ipsec_alg_AES.ixt_common.ixt_support.ias_keymaxbits=keymaxbits;
+		if (keymaxbits*8>ipsec_alg_AES.ixt_common.ixt_support.ias_keymaxbits)
 			ipsec_alg_AES.ixt_e_keylen=keymaxbits*8;
 	}
-	if (excl) ipsec_alg_AES.ixt_state |= IPSEC_ALG_ST_EXCL;
+	if (excl_aes) ipsec_alg_AES.ixt_common.ixt_state |= IPSEC_ALG_ST_EXCL;
 	ret=register_ipsec_alg_enc(&ipsec_alg_AES);
 	printk("ipsec_aes_init(alg_type=%d alg_id=%d name=%s): ret=%d\n", 
-			ipsec_alg_AES.ixt_alg_type, 
-			ipsec_alg_AES.ixt_alg_id, 
-			ipsec_alg_AES.ixt_name, 
+			ipsec_alg_AES.ixt_common.ixt_support.ias_exttype, 
+			ipsec_alg_AES.ixt_common.ixt_support.ias_id, 
+			ipsec_alg_AES.ixt_common.ixt_name, 
 			ret);
-	if (ret==0 && test) {
+	if (ret==0 && test_aes) {
 		test_ret=ipsec_alg_test(
-				ipsec_alg_AES.ixt_alg_type,
-				ipsec_alg_AES.ixt_alg_id, 
-				test);
+				ipsec_alg_AES.ixt_common.ixt_support.ias_exttype ,
+				ipsec_alg_AES.ixt_common.ixt_support.ias_id, 
+				test_aes);
 		printk("ipsec_aes_init(alg_type=%d alg_id=%d): test_ret=%d\n", 
-				ipsec_alg_AES.ixt_alg_type, 
-				ipsec_alg_AES.ixt_alg_id, 
+				ipsec_alg_AES.ixt_common.ixt_support.ias_exttype , 
+				ipsec_alg_AES.ixt_common.ixt_support.ias_id, 
 				test_ret);
 	}
 #if CONFIG_KLIPS_ENC_AES_MAC
 	if (auth_id!=0){
 		int ret;
-		ipsec_alg_AES_MAC.ixt_alg_id=auth_id;
+		ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_id=auth_id;
 		ret=register_ipsec_alg_auth(&ipsec_alg_AES_MAC);
 		printk("ipsec_aes_init(alg_type=%d alg_id=%d name=%s): ret=%d\n", 
-				ipsec_alg_AES_MAC.ixt_alg_type, 
-				ipsec_alg_AES_MAC.ixt_alg_id, 
-				ipsec_alg_AES_MAC.ixt_name, 
+				ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_exttype, 
+				ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_id, 
+				ipsec_alg_AES_MAC.ixt_common.ixt_name, 
 				ret);
-		if (ret==0 && test) {
+		if (ret==0 && test_aes) {
 			test_ret=ipsec_alg_test(
-					ipsec_alg_AES_MAC.ixt_alg_type,
-					ipsec_alg_AES_MAC.ixt_alg_id, 
-					test);
+					ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_exttype,
+					ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_id, 
+					test_aes);
 			printk("ipsec_aes_init(alg_type=%d alg_id=%d): test_ret=%d\n", 
-					ipsec_alg_AES_MAC.ixt_alg_type, 
-					ipsec_alg_AES_MAC.ixt_alg_id, 
+					ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_exttype, 
+					ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_id, 
 					test_ret);
 		}
 	} else {

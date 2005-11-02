@@ -11,12 +11,12 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.7 2004/12/18 18:13:45 mcr Exp $
+# RCSID $Id: Makefile,v 1.8 2005/04/13 23:07:28 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include $(OPENSWANSRCDIR)/Makefile.inc
 
-SUBDIRS=uml_netjig 
+SUBDIRS=uml_netjig pcap2skb
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"

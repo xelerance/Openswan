@@ -292,4 +292,14 @@ klipstest	east-spi-01	good
 #
 klipstest	west-spi-01	good
 
+#
+# west-natt-01:	receive test case for ESP-3DES-MD5 with UDP encapsulation
+#
+klipstest	west-natt-01	good
+
+#
+# east-natt-01:	receive test case for ESP-3DES-MD5 with UDP encapsulation
+#
+klipstest	east-natt-01	good
+
 

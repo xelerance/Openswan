@@ -8,13 +8,18 @@ TESTNAME=east-icmp-03
 TESTHOST=east
 EXITONEMPTY=--exitonempty
 PRIVINPUT=../inputs/08-sunrise-sunset-ping-big.pcap
-REFPUBOUTPUT=spi1-output.txt
-REFCONSOLEOUTPUT=spi1-console.txt
-REFCONSOLEFIXUPS="kern-list-fixups.sed nocr.sed"
-REFCONSOLEFIXUPS="$REFCONSOLEFIXUPS klips-spi-sanitize.sed"
-REFCONSOLEFIXUPS="$REFCONSOLEFIXUPS klips-debug-sanitize.sed"
-REFCONSOLEFIXUPS="$REFCONSOLEFIXUPS east-prompt-splitline.pl"
-REFCONSOLEFIXUPS="$REFCONSOLEFIXUPS ipsec-look-sanitize.sed"
+
+REF_PUB_OUTPUT=spi1-output.txt
+
+REF_CONSOLE_OUTPUT=spi1-console.txt
+REF26_CONSOLE_OUTPUT=spi1-console26.txt
+
+REF_CONSOLE_FIXUPS="nocr.sed"
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS script-only.sed "
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-spi-sanitize.sed"
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-debug-sanitize.sed"
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS east-prompt-splitline.pl"
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-look-sanitize.sed"
 TCPDUMPFLAGS="-n -E 3des-cbc-hmac96:0x4043434545464649494a4a4c4c4f4f515152525454575758"
 SCRIPT=spi1.sh
 

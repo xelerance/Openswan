@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 ipsec setup stop
 
 # move gateway to the 3 network so that we can get OE to work.

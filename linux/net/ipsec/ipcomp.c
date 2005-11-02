@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.37 2004/07/10 19:11:18 mcr Exp $";
+char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.41.2.1 2005/08/27 23:40:00 paul Exp $";
 
 /* SSS */
 
@@ -42,16 +42,11 @@ char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.37 2004/07/10 19:11:18 mcr Ex
 #include <linux/etherdevice.h> /* eth_type_trans */
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
+#include <asm/uaccess.h>
+#include <asm/checksum.h>
 
 #include <openswan.h>
 
-#ifdef NET_21
-# include <net/dst.h>
-# include <asm/uaccess.h>
-# include <linux/in6.h>
-# define proto_priv cb
-#endif /* NET21 */
-#include <asm/checksum.h>
 #include <net/ip.h>
 
 #include "openswan/radij.h"
@@ -61,6 +56,7 @@ char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.37 2004/07/10 19:11:18 mcr Ex
 #include "openswan/ipsec_xform.h"
 #include "openswan/ipsec_tunnel.h"
 #include "openswan/ipsec_rcv.h" /* sysctl_ipsec_inbound_policy_check */
+#include "openswan/ipsec_proto.h"
 #include "openswan/ipcomp.h"
 #include "zlib/zlib.h"
 #include "zlib/zutil.h"
@@ -220,21 +216,9 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 #ifdef CONFIG_KLIPS_DEBUG
 	if(sysctl_ipsec_debug_ipcomp && sysctl_ipsec_debug_verbose) {
 		__u8 *c;
-		int i;
 
 		c = (__u8*)iph + iphlen;
-		for(i = 0; i < pyldsz; i++, c++) {
-			if(!(i % 16)) {
-				printk(KERN_INFO "skb_compress:   before:");
-			}
-			printk("%02x ", *c);
-			if(!((i + 1) % 16)) {
-				printk("\n");
-			}
-		}
-		if(i % 16) {
-			printk("\n");
-		}
+		ipsec_dmp_block("compress before", c, pyldsz);
 	}
 #endif /* CONFIG_KLIPS_DEBUG */
 
@@ -315,21 +299,9 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 #ifdef CONFIG_KLIPS_DEBUG
 	if(sysctl_ipsec_debug_ipcomp && sysctl_ipsec_debug_verbose) {
 		__u8 *c;
-		int i;
 		
 		c = (__u8*)iph + iphlen + sizeof(struct ipcomphdr);
-		for(i = 0; i < cpyldsz; i++, c++) {
-			if(!(i % 16)) {
-				printk(KERN_INFO "skb_compress:   result:");
-			}
-			printk("%02x ", *c);
-			if(!((i + 1) % 16)) {
-				printk("\n");
-			}
-		}
-		if(i % 16) {
-			printk("\n");
-		}
+		ipsec_dmp_block("compress result", c, cpyldsz);
 	}
 #endif /* CONFIG_KLIPS_DEBUG */
 	
@@ -489,21 +461,9 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 #ifdef CONFIG_KLIPS_DEBUG
 	if(sysctl_ipsec_debug_ipcomp && sysctl_ipsec_debug_verbose) {
 		__u8 *c;
-		int i;
 		
 		c = (__u8*)oiph + iphlen + sizeof(struct ipcomphdr);
-		for(i = 0; i < cpyldsz; i++, c++) {
-			if(!(i % 16)) {
-				printk(KERN_INFO "skb_decompress:   before:");
-			}
-			printk("%02x ", *c);
-			if(!((i + 1) % 16)) {
-				printk("\n");
-			}
-		}
-		if(i % 16) {
-			printk("\n");
-		}
+		ipsec_dmp_block("decompress before", c, cpyldsz);
 	}
 #endif /* CONFIG_KLIPS_DEBUG */
 
@@ -583,21 +543,9 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 #ifdef CONFIG_KLIPS_DEBUG
 	if(sysctl_ipsec_debug_ipcomp && sysctl_ipsec_debug_verbose) {
 		__u8 *c;
-		int i;
 		
 		c = (__u8*)iph + iphlen;
-		for(i = 0; i < pyldsz; i++, c++) {
-			if(!(i % 16)) {
-				printk(KERN_INFO "skb_decompress:   result:");
-			}
-			printk("%02x ", *c);
-			if(!((i + 1) % 16)) {
-				printk("\n");
-			}
-		}
-		if(i % 16) {
-			printk("\n");
-		}
+		ipsec_dmp_block("decompress result", c, pyldsz);
 	}
 #endif /* CONFIG_KLIPS_DEBUG */
 	
@@ -672,7 +620,9 @@ struct sk_buff *skb_copy_ipcomp(struct sk_buff *skb, int data_growth, int gfp_ma
 #endif /* NETDEV_23 */
         atomic_set(&n->users, 1);
         n->destructor = NULL;
+#ifdef HAVE_SOCK_SECURITY
         n->security=skb->security;
+#endif
         memcpy(n->cb, skb->cb, sizeof(skb->cb));
 #ifdef CONFIG_IP_FIREWALL
         n->fwmark = skb->fwmark;

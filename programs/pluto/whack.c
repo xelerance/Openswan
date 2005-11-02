@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: whack.c,v 1.144 2005/03/20 02:27:50 mcr Exp $
+ * RCSID $Id: whack.c,v 1.144.4.3 2005/07/26 02:11:23 ken Exp $
  */
 
 #include <stdio.h>
@@ -469,6 +469,7 @@ enum option_enums {
     DBGOPT_IMPAIR_BUST_MR2,	/* same order as IMPAIR_* */
     DBGOPT_IMPAIR_SA_CREATION,  /* make all SA creation fail */
     DBGOPT_IMPAIR_DIE_ONINFO,   /* cause state to be deleted upon receipt of information payload */
+    DBGOPT_IMPAIR_JACOB_TWO_TWO, /* cause pluto to send all messages twice */
 
 #   define DBGOPT_LAST DBGOPT_IMPAIR_DIE_ONINFO
 #endif
@@ -658,6 +659,7 @@ static const struct option long_opts[] = {
     { "impair-bust-mr2", no_argument, NULL, DBGOPT_IMPAIR_BUST_MR2 + OO },
     { "impair-sa-fail",    no_argument, NULL, DBGOPT_IMPAIR_SA_CREATION + OO },
     { "impair-die-oninfo", no_argument, NULL, DBGOPT_IMPAIR_DIE_ONINFO  + OO },
+    { "impair-jacob-two-two", no_argument, NULL, DBGOPT_IMPAIR_JACOB_TWO_TWO + OO },
 #endif
 #   undef OO
     { 0,0,0,0 }
@@ -859,14 +861,14 @@ main(int argc, char **argv)
         lst_seen = LEMPTY,
         cd_seen = LEMPTY,
         end_seen = LEMPTY,
-        end_seen_before_to;
+        end_seen_before_to = LEMPTY;
     const char
 	*af_used_by = NULL,
 	*tunnel_af_used_by = NULL;
 
     char xauthname[128];
     char xauthpass[128];
-    int xauthnamelen, xauthpasslen;
+    int xauthnamelen = 0, xauthpasslen = 0;
     bool gotxauthname = FALSE, gotxauthpass = FALSE;
 
     /* check division of numbering space */
@@ -908,7 +910,7 @@ main(int argc, char **argv)
     for (;;)
     {
 	int long_index;
-	unsigned long opt_whole;	/* numeric argument for some flags */
+	unsigned long opt_whole=0;	/* numeric argument for some flags */
 
 	/* Note: we don't like the way short options get parsed
 	 * by getopt_long, so we simply pass an empty string as
@@ -1581,6 +1583,7 @@ main(int argc, char **argv)
 	case DBGOPT_IMPAIR_BUST_MR2:	/* --impair_bust_mr2 */
 	case DBGOPT_IMPAIR_SA_CREATION:	/* --impair-sa-creation */
 	case DBGOPT_IMPAIR_DIE_ONINFO:	/* --impair-die-oninfo */
+	case DBGOPT_IMPAIR_JACOB_TWO_TWO: /* --impair-jacob-two-two */
 	    msg.debugging |= LELEM(c-DBGOPT_RAW);
 	    continue;
 #endif
@@ -1695,12 +1698,13 @@ main(int argc, char **argv)
     }
 
     if (!(msg.whack_connection || msg.whack_key || msg.whack_myid
-    || msg.whack_delete || msg.whack_deletestate
-    || msg.whack_initiate || msg.whack_oppo_initiate || msg.whack_terminate
-    || msg.whack_route || msg.whack_unroute || msg.whack_listen
-    || msg.whack_unlisten || msg.whack_list || msg.whack_purgeocsp
+	  || msg.whack_delete || msg.whack_deletestate
+	  || msg.whack_initiate || msg.whack_oppo_initiate
+	  || msg.whack_terminate
+	  || msg.whack_route || msg.whack_unroute || msg.whack_listen
+	  || msg.whack_unlisten || msg.whack_list || msg.whack_purgeocsp
 	  || msg.whack_reread || msg.whack_crash
-    || msg.whack_status || msg.whack_options || msg.whack_shutdown))
+	  || msg.whack_status || msg.whack_options || msg.whack_shutdown))
     {
 	diag("no action specified; try --help for hints");
     }

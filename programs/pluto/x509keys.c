@@ -15,7 +15,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: x509keys.c,v 1.4 2004/06/27 22:42:14 mcr Exp $
+ * RCSID $Id: x509keys.c,v 1.5 2005/06/14 22:38:06 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -264,7 +264,7 @@ build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
 bool
 collect_rw_ca_candidates(struct msg_digest *md, generalName_t **top)
 {
-    struct connection *d = find_host_connection(&md->iface->addr
+    struct connection *d = find_host_connection(&md->iface->ip_addr
 	, pluto_port, (ip_address*)NULL, md->sender_port);
 
     for (; d != NULL; d = d->hp_next)

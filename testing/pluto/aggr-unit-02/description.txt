@@ -5,6 +5,8 @@ and outputs which are local to this directory.
 
 These tests set the mode using algo ike=
 
+It is not clear if this test is still significantly different than
+aggr-unit-01.
 
 
 

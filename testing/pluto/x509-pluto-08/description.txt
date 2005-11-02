@@ -10,3 +10,4 @@ This tests the "cert is blob" code.
 
 Otherwise, identical to x509-pluto-03.
 
+This test will only work with kernel algos and with EXTRA_CRYPTO=true

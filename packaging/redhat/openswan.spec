@@ -1,8 +1,8 @@
 Summary: Openswan IPSEC implementation
 Name: openswan
-Version: 2.3.1
+Version: 2.CVSHEAD
 # build kLIPS kerneo module or not
-%{!?buildklips: %{expand: %%define buildklips 0}}
+%{!?buildklips: %{expand: %%define buildklips 1}}
 
 # annoyingly, one works on an fc3-amd, the other works on an fc3-intel.
 # both have the same version of rom and coreutils ?
@@ -24,7 +24,6 @@ Source: openswan-%{srcpkgver}.tar.gz
 Group: System Environment/Daemons
 BuildRoot: /var/tmp/%{name}-%{PACKAGE_VERSION}-root
 %define __spec_install_post /usr/lib/rpm/brp-compress || :
-#BuildRequires: kernel-source = %{kversion}
 Provides: ipsec-userland
 
 %package userland
@@ -33,6 +32,7 @@ Group: System Environment/Daemons
 Provides: ipsec-userland
 Obsoletes: freeswan superfreeswan super-freeswan
 Requires: ipsec-kernel, iproute >= 2.6.8, gmp
+BuildRequires: gmp-devel bison flex
 Release: %{ourrelease}
 
 %package doc
@@ -47,6 +47,7 @@ Group:  System Environment/Kernel
 Release: %{krelver}_%{ourrelease}
 Provides: ipsec-kernel
 Requires: kernel = %{kversion}
+# only applies to FC3+, not RH7-9 BuildRequires: kernel-devel
 # do not make the dependancy circular for now.
 #Requires: ipsec-userland
 %endif
@@ -99,12 +100,14 @@ do
 # rpm doesn't know we're compiling kernel code. optflags will give us -m64
 %{__make} -C $FS MOD26BUILDDIR=$FS/BUILD.%{_target_cpu}$smp \
     OPENSWANSRCDIR=$FS \
-    KLIPSCOMPILE="%{optflags} -mno-red-zone -mcmodel=kernel" \
+    KLIPSCOMPILE="%{optflags}" \
     KERNELSRC=/lib/modules/%{kversion}/build \
     ARCH=%{_arch} \
     SUBARCH=%{_arch} \
     MODULE_DEF_INCLUDE=$FS/packaging/redhat/config-%{_target_cpu}$smp.h \
-    module26
+    NET_26_12_SKALLOC=1 \
+    HAVE_SOCK_ZAPPED=1 \
+    module
 done
 %endif
 
@@ -118,17 +121,28 @@ done
   install
 FS=$(pwd)
 rm -rf %{buildroot}/usr/share/doc/openswan
+#this needs to be fixed in 'make install'
+rm -rf %{buildroot}/etc/rc.d/rc?.d/*ipsec
 install -d -m 0700 %{buildroot}%{_localstatedir}/run/pluto
 install -d %{buildroot}%{_sbindir}
 
 %if %{buildklips}
 mkdir -p %{buildroot}/lib/modules/%{kversion}/kernel/net/ipsec
-cp $FS/BUILD.%{_target_cpu}/ipsec.ko \
- %{buildroot}/lib/modules/%{kversion}/kernel/net/ipsec
-
 mkdir -p %{buildroot}/lib/modules/%{kversion}smp/kernel/net/ipsec
-cp BUILD.%{_target_cpu}-smp/ipsec.ko \
- %{buildroot}/lib/modules/%{kversion}smp/kernel/net/ipsec
+for i in $FS/BUILD.%{_target_cpu}/ipsec.ko  $FS/modobj/ipsec.o
+do
+  if [ -f $i ]
+  then
+    cp $i %{buildroot}/lib/modules/%{kversion}/kernel/net/ipsec 
+  fi
+done
+for i in BUILD.%{_target_cpu}-smp/ipsec.o BUILD.%{_target_cpu}-smp/ipsec.ko  
+do 
+  if [ -f $i ]
+  then
+    cp $i  %{buildroot}/lib/modules/%{kversion}smp/kernel/net/ipsec
+  fi
+done
 %endif
 
 %clean
@@ -154,7 +168,6 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_sbindir}/ipsec
 %{_libexecdir}/ipsec
 %doc %{_mandir}/*/*
-%{_localstatedir}/run/pluto
 
 %if %{buildklips}
 %files klips
@@ -163,8 +176,8 @@ rm -rf ${RPM_BUILD_ROOT}
 /lib/modules/%{kversion}smp/kernel/net/ipsec
 %endif
 
-%pre userland
-%preun userland
+%pre 
+%preun 
 if [ $1 = 0 ]; then
     /sbin/service ipsec stop || :
     /sbin/chkconfig --del ipsec
@@ -180,8 +193,8 @@ fi
 %post klips
 %endif
 
-%post userland
-chkconfig --add ipsec
+%post 
+/sbin/chkconfig --add ipsec
 
 %changelog
 * Wed Jan  5 2005 Paul Wouters <paul@xelerance.com>

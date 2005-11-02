@@ -54,28 +54,13 @@ ${BUILDDIR}/infcodes.c: ${BUILDDIR}/inffast.h
 ${BUILDDIR}/inftrees.c: ${BUILDDIR}/inffixed.h
 ${BUILDDIR}/trees.c: ${BUILDDIR}/trees.h
 
+MODULE26=true
 include ${OPENSWANSRCDIR}/packaging/makefiles/module.defs 
+ifneq ($(strip $(MODULE_DEFCONFIG)),)
+include ${MODULE_DEFCONFIG}
+endif
 include ${KLIPSSRC}/Makefile.fs2_6
 
-ipsec-obj-$(CONFIG_KLIPS_AH)+= ipsec_ah.o
-ipsec-obj-$(CONFIG_KLIPS_ESP)+= ipsec_esp.o
-ipsec-obj-$(CONFIG_KLIPS_IPCOMP)+= ipsec_ipcomp.o
-ipsec-obj-$(CONFIG_KLIPS_AUTH_HMAC_MD5) += ipsec_md5c.o
-ipsec-obj-$(CONFIG_KLIPS_AUTH_HMAC_SHA1) += ipsec_sha1.o
-
-# AH, if you really think you need it.
-ipsec-obj-$(CONFIG_KLIPS_AH) += ipsec_ah.o
-
-ipsec-obj-$(CONFIG_KLIPS_ALG)  += ipsec_alg.o
-
-#ipsec-obj-$(CONFIG_KLIPS_ENC_3DES) += des/
-#ipsec-obj-$(CONFIG_KLIPS_ENC_AES)  += aes/
-
-ipsec-obj-$(CONFIG_KLIPS_ENC_CRYPTOAPI) += ipsec_alg_cryptoapi.o
-
-obj-m := ipsec.o
-
-ipsec-objs := ${base-klips-objs} ${base-ipcomp-objs} ${ipsec-obj-m} ${ipsec-obj-y}
 
 # XXX and it seems that recursing into subdirs is a PITA for out-of-kernel
 # module builds. At least, it never occurs for me.
@@ -87,28 +72,26 @@ ifeq ($(strip ${SUBARCH}),)
 SUBARCH:=${ARCH}
 endif
 
-ifeq (${SUBARCH},i386)
+# the assembly version expects frame pointers, which are
+# optional in many kernel builds. If you want speed, you should
+# probably use cryptoapi code instead.
+USEASSEMBLY=${SUBARCH}${CONFIG_FRAME_POINTER}
+ifeq (${USEASSEMBLY},i386y)
 aes-obj-${CONFIG_KLIPS_ENC_AES} += aes/aes-i586.o
-else
-aes-obj-${CONFIG_KLIPS_ENC_AES} += aes/aes.o
-endif
-
-des-obj-$(CONFIG_KLIPS_ENC_3DES) += cbc_enc.o
-des-obj-$(CONFIG_KLIPS_ENC_3DES) += ecb_enc.o
-des-obj-$(CONFIG_KLIPS_ENC_3DES) += set_key.o
-
-ifeq ($(strip ${SUBARCH}),)
-SUBARCH:=${ARCH}
-endif
-
-# XXX and I still can't get the assembler to get invoked at the right time.
-ifeq (${SUBARCH},i386)
 des-obj-$(CONFIG_KLIPS_ENC_3DES) += dx86unix.o
 else
+aes-obj-${CONFIG_KLIPS_ENC_AES} += aes/aes.o
 des-obj-$(CONFIG_KLIPS_ENC_3DES) += des_enc.o
 endif
 
-ipsec-objs += ${des-obj-m} ${aes-obj-m}
+des-obj-$(CONFIG_KLIPS_ENC_3DES) += cbc_enc.o
+des-obj-$(CONFIG_KLIPS_ENC_3DES) += ipsec_alg_3des.o
+des-obj-$(CONFIG_KLIPS_ENC_3DES) += ecb_enc.o
+des-obj-$(CONFIG_KLIPS_ENC_3DES) += set_key.o
+
+ipsec-y += ${des-obj-y} ${aes-obj-y} ${des-obj-m} ${aes-obj-m}
+
+
 
 
 

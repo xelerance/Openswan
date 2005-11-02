@@ -14,7 +14,7 @@
  *
  * This code was developed with the support of IXIA communications.
  *
- * RCSID $Id: crypt_dh.c,v 1.6.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: crypt_dh.c,v 1.8 2005/07/05 21:58:14 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -436,7 +436,7 @@ stf_status perform_dh_secretiv(struct state *st
     dhq->hash = st->st_oakley.hash;
     dhq->oakley_group = oakley_group;
     dhq->init = init;
-    dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE;
+    dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 
 
     if(pss) {
 	pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->pss, *pss);
@@ -471,7 +471,7 @@ stf_status perform_dh_secretiv(struct state *st
     clonetochunk(st->st_enc_key, wire_chunk_ptr(dhr, &(dhr->enc_key))
 		 , dhr->enc_key.len, "calculated key for phase 1");
     
-    passert(dhr->new_iv.len < MAX_DIGEST_LEN);
+    passert(dhr->new_iv.len <= MAX_DIGEST_LEN);
     passert(dhr->new_iv.len > 0);
     memcpy(st->st_new_iv, wire_chunk_ptr(dhr, &(dhr->new_iv)),dhr->new_iv.len);
     st->st_new_iv_len = dhr->new_iv.len;
@@ -499,7 +499,7 @@ stf_status perform_dh_secret(struct state *st
     dhq->hash = st->st_oakley.hash;
     dhq->oakley_group = oakley_group;
     dhq->init = init;
-    dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE;
+    dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 
 
     if(pss) {
 	pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->pss, *pss);

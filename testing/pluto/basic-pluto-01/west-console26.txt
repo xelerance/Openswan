@@ -14,6 +14,7 @@ VFS: Diskquotas version dquot_6.4.0 initialized
 Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
 devfs: 2004-01-31 Richard Gooch (rgooch@atnf.csiro.au)
 devfs: boot_options Q
+Initializing Cryptographic API
 io scheduler noop registered
 io scheduler anticipatory registered
 io scheduler deadline registered
@@ -30,6 +31,7 @@ TCP established hash table entries: 2048 (order: 2, 16384 bytes)
 TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
 TCP: Hash tables configured (established 2048 bind 2048)
 NET: Registered protocol family 15
+ipsec_3des_init(alg_type=15 alg_id=3 name=3des): ret=0
 IPv4 over IPv4 tunneling driver
 GRE over IPv4 tunneling driver
 NET: Registered protocol family 1
@@ -95,11 +97,11 @@ done
 west:~#
  ipsec auto --up  westnet-eastnet
 104 "westnet-eastnet" #1: STATE_MAIN_I1: initiate
-003 "westnet-eastnet" #1: received Vendor ID payload [Openswan (this version) cvs2005Mar15_14:43:33  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+003 "westnet-eastnet" #1: received Vendor ID payload [Openswan 
 003 "westnet-eastnet" #1: received Vendor ID payload [Dead Peer Detection]
 106 "westnet-eastnet" #1: STATE_MAIN_I2: sent MI2, expecting MR2
 108 "westnet-eastnet" #1: STATE_MAIN_I3: sent MI3, expecting MR3
-004 "westnet-eastnet" #1: STATE_MAIN_I4: ISAKMP SA established
+004 "westnet-eastnet" #1: STATE_MAIN_I4: ISAKMP SA established{ auth=OAKLEY_RSA_SIG cipher=oakley_3des_cbc_192 prf=oakley_md5 group=modp1536 }
 117 "westnet-eastnet" #2: STATE_QUICK_I1: initiate
 004 "westnet-eastnet" #2: STATE_QUICK_I2: sent QI2, IPsec SA established
 west:~#
@@ -108,15 +110,15 @@ west NOW
 0.0.0.0/0          -> 0.0.0.0/0          => %trap
 192.0.1.0/24       -> 192.0.2.0/24       => tun0xIPIP@192.1.2.23 esp0xESPSPI@192.1.2.23
 ipsec0->eth1 mtu=16260(9999)->1500
-tun0xTUN#@192.1.2.23 IPIP: dir=out src=192.1.2.45  
-esp0xKLIPSPIK@192.1.2.23 ESP_3DES_HMAC_MD5: dir=out src=192.1.2.45 iv_bits=64bits iv=0xIVISFORRANDOM000 ooowin=64 alen=128 aklen=128 eklen=192  
-esp0xKLIPSPIK@192.1.2.45 ESP_3DES_HMAC_MD5: dir=in  src=192.1.2.23 iv_bits=64bits iv=0xIVISFORRANDOM000 ooowin=64 alen=128 aklen=128 eklen=192  
-tun0xTUN#@192.1.2.45 IPIP: dir=in  src=192.1.2.23 policy=192.0.2.0/24->192.0.1.0/24 flags=0x8<>  
+tun0xTUN#@192.1.2.23 IPIP: dir=out src=192.1.2.45 natencap=none natsport=0 natdport=0  
+esp0xKLIPSPIK@192.1.2.23 ESP_3DES_HMAC_MD5: dir=out src=192.1.2.45 iv_bits=64bits iv=0xIVISFORRANDOM000 ooowin=64 alen=128 aklen=128 eklen=192 natencap=none natsport=0 natdport=0  
+esp0xKLIPSPIK@192.1.2.45 ESP_3DES_HMAC_MD5: dir=in  src=192.1.2.23 iv_bits=64bits iv=0xIVISFORRANDOM000 ooowin=64 alen=128 aklen=128 eklen=192 natencap=none natsport=0 natdport=0  
+tun0xTUN#@192.1.2.45 IPIP: dir=in  src=192.1.2.23 policy=192.0.2.0/24->192.0.1.0/24 flags=0x8<> natencap=none natsport=0 natdport=0  
 Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
 0.0.0.0         192.1.2.254     0.0.0.0         UG       99 0          0 eth1
 0.0.0.0         192.1.2.254     128.0.0.0       UG       99 0          0 ipsec0
 128.0.0.0       192.1.2.254     128.0.0.0       UG       99 0          0 ipsec0
-192.0.2.0       192.1.2.23      255.255.255.0   UG       99 0          0 ipsec0
+192.0.2.0       0.0.0.0         255.255.255.0   U        99 0          0 ipsec0
 192.1.2.0       0.0.0.0         255.255.255.0   U        99 0          0 eth1
 192.1.2.0       0.0.0.0         255.255.255.0   U        99 0          0 ipsec0
 west:~#

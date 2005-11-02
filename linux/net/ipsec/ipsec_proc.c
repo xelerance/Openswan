@@ -18,7 +18,7 @@
  * Split out from ipsec_init.c version 1.70.
  */
 
-char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.35 2005/01/26 00:50:35 mcr Exp $";
+char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.39.2.1 2005/09/07 00:45:59 paul Exp $";
 
 
 #include <linux/config.h>
@@ -44,6 +44,7 @@ char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.35 2005/01/26 00:50:3
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/in.h>          /* struct sockaddr_in */
 #include <linux/skbuff.h>
+#include <asm/uaccess.h>       /* copy_from_user */
 #include <openswan.h>
 #ifdef SPINLOCK
 #ifdef SPINLOCK_23
@@ -52,11 +53,7 @@ char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.35 2005/01/26 00:50:3
 #include <asm/spinlock.h> /* *lock* */
 #endif /* SPINLOCK_23 */
 #endif /* SPINLOCK */
-#ifdef NET_21
-#include <asm/uaccess.h>
-#include <linux/in6.h>
-#endif /* NET_21 */
-#include <asm/checksum.h>
+
 #include <net/ip.h>
 #ifdef CONFIG_PROC_FS
 #include <linux/proc_fs.h>
@@ -116,37 +113,6 @@ int debug_ah = 0;
 
 extern int ipsec_xform_get_info(char *buffer, char **start,
 				off_t offset, int length IPSEC_PROC_LAST_ARG);
-
-
-/* ipsec_snprintf: like snprintf except
- * - size is signed and a negative value is treated as if it were 0
- * - the returned result is never negative --
- *   an error generates a "?" or null output (depending on space).
- *   (Our callers are too lazy to check for an error return.)
- * 
- * @param buf String buffer
- * @param size Size of the string
- * @param fmt printf string
- * @param ... Variables to be displayed in fmt
- * @return int Return code
- */
-int ipsec_snprintf(char *buf, ssize_t size, const char *fmt, ...)
-{
-       va_list args;
-       int i;
-       size_t possize = size < 0? 0 : size;
-       va_start(args, fmt);
-       i = vsnprintf(buf,possize,fmt,args);
-       va_end(args);
-       if (i < 0) {
-           /* create empty output in place of error */
-           i = 0;
-           if (size > 0) {
-               *buf = '\0';
-           }
-       }
-       return i;
-}
 
 
 IPSEC_PROCFS_DEBUG_NO_STATIC
@@ -408,6 +374,8 @@ ipsec_spi_get_info(char *buffer,
 				len += ipsec_snprintf(buffer + len,length-len, " natdport=%d",
 					       sa_p->ips_natt_dport);
 			}
+#else
+			len += ipsec_snprintf(buffer + len, length-len, " natencap=na");
 #endif /* CONFIG_IPSEC_NAT_TRAVERSAL */
 				
 			len += ipsec_snprintf(buffer + len,length-len, " refcount=%d",
@@ -639,6 +607,32 @@ ipsec_version_get_info(char *buffer,
 	if (len > length)
 		len = length;
 	return len;
+}
+
+IPSEC_PROCFS_DEBUG_NO_STATIC
+int
+ipsec_natt_get_info(char *buffer,
+                    char **start,
+                    off_t offset,
+                    int length  IPSEC_PROC_LAST_ARG)
+{
+        int len = 0;
+        off_t begin = 0;
+
+        len += ipsec_snprintf(buffer + len,
+                              length-len, "%d\n",
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+                              1
+#else
+                              0
+#endif
+                );
+
+        *start = buffer + (offset - begin);     /* Start of wanted data */
+        len -= (offset - begin);                        /* Start slop */
+        if (len > length)
+                len = length;
+        return len;
 }
 
 IPSEC_PROCFS_DEBUG_NO_STATIC
@@ -1012,6 +1006,22 @@ ipsec_proc_cleanup()
 
 /*
  * $Log: ipsec_proc.c,v $
+ * Revision 1.39.2.1  2005/09/07 00:45:59  paul
+ * pull up of mcr's nat-t klips detection patch from head
+ *
+ * Revision 1.39  2005/05/20 03:19:18  mcr
+ * 	modifications for use on 2.4.30 kernel, with backported
+ * 	printk_ratelimit(). all warnings removed.
+ *
+ * Revision 1.38  2005/04/29 05:10:22  mcr
+ * 	removed from extraenous includes to make unit testing easier.
+ *
+ * Revision 1.37  2005/04/13 22:49:49  mcr
+ * 	moved KLIPS specific snprintf() wrapper to seperate file.
+ *
+ * Revision 1.36  2005/04/06 17:44:36  mcr
+ * 	when NAT-T is compiled out, show encap as "NA"
+ *
  * Revision 1.35  2005/01/26 00:50:35  mcr
  * 	adjustment of confusion of CONFIG_IPSEC_NAT vs CONFIG_KLIPS_NAT,
  * 	and make sure that NAT_TRAVERSAL is set as well to match

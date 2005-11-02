@@ -1,0 +1,9 @@
+
+# this is the debian installed mingw32 package.
+USE_OBJDIR=true
+CC=i586-mingw32msvc-gcc
+USERCOMPILE=-g -O3 -isystem /0g/sandboxes/cygwin/include -I${OPENSWANSRCDIR}/ports/win2k/include -D__CYGWIN__
+
+USE_KLIPS=false
+BUILD_KLIPS=false
+

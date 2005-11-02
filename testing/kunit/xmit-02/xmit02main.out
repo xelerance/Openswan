@@ -1,0 +1,83 @@
+INFO:klips_info:ipsec_alg_init: KLIPS alg v=0.8.1-0 (EALG_MAX=255, AALG_MAX=251)
+INFO:klips_info:ipsec_alg_init: calling ipsec_alg_static_init()
+ERR;pfkey_list_insert_supported returned -1. Loading anyway.
+ipsec_aes_init(alg_type=15 alg_id=12 name=aes): ret=0
+DEBUG:klips_debug: experimental ipsec_alg_AES_MAC not registered [Ok] (auth_id=0)
+ERR;pfkey_list_insert_supported returned -1. Loading anyway.
+ipsec_3des_init(alg_type=15 alg_id=3 name=3des): ret=0
+INFO:klips_debug:ipsec_xmit_encap_bundle: found ipsec_sa -- SA:<ESP_3DES_HMAC_MD5> esp.12345678@192.1.2.45
+INFO:klips_debug:ipsec_xmit_encap_bundle: calling room for <ESP_3DES_HMAC_MD5>, SA:esp.12345678@192.1.2.45
+INFO:klips_debug:ipsec_xmit_encap_bundle: Required head,tailroom: 16,20
+INFO:klips_debug:ipsec_xmit_encap_bundle: existing head,tailroom: 78,64 before applying xforms with head,tailroom: 16,20 .
+INFO:klips_debug:ipsec_xmit_encap_bundle: mtu:1500 physmtu:1500 tothr:16 tottr:20 mtudiff:36 ippkttotlen:84
+INFO:klips_info:ipsec_xmit_encap_bundle: dev ifX mtu of 1500 decreased by 37 to 1463
+INFO:klips_debug:ipsec_tunnel_start_xmit: NAT-T & TRANSPORT: non TCP/UDP packet -- do nothing
+INFO:klips_debug:ipsec_xmit_encap_bundle: hard header already stripped.
+INFO:klips_debug:ipsec_xmit_encap_bundle: data fits in existing skb
+INFO:klips_debug:ipsec_xmit_encap_once: calling output for <ESP_3DES_HMAC_MD5>, SA:esp.12345678@192.1.2.45
+INFO:klips_debug:ipsec_xmit_encap_once: pushing 16 bytes, putting 20, proto 50.
+INFO:klips_debug:ipsec_xmit_encap_once: head,tailroom: 62,44 before xform.
+INFO:klips_debug:ipsec_alg_esp_encrypt: entering with encalg=3, ixt_e=0xDEADF00D
+INFO:klips_debug:ipsec_alg_esp_encrypt: calling cbc_encrypt encalg=3 ips_key_e=0xDEADF00D idat=0xDEADF00D ilen=72 iv=0xDEADF00D, encrypt=1
+INFO:klips_debug:ipsec_alg_esp_encrypt: returned ret=1
+INFO:klips_dmp: at espp, len=88:
+INFO:klips_debug:   @000: 12 34 56 78 00 00 00 01 3c 87 e6 23 90 61 15 f7
+INFO:klips_debug:   @010: IV IV IV IV 56 56 aa 82 e4 46 2c 4b a2 ef 44 6d
+INFO:klips_debug:   @020: 98 1b 0a 24 96 91 e8 78 85 9b c7 cb 55 0a db 28
+INFO:klips_debug:   @030: 8f 0b 2e fa 99 11 f3 fd db ba a9 3e de 0c 02 ba
+INFO:klips_debug:   @040: c8 4c 57 8d 56 4a 24 e8 be a8 68 a6 05 c1 4f 42
+INFO:klips_debug:   @050: 3c 87 e6 23 90 61 15 f7
+INFO:klips_dmp: at ictx, len=88:
+INFO:klips_debug:   @000: 3e e9 ed c3 3f 8e 3b 10 6b a1 a7 2b b1 09 d0 34
+INFO:klips_debug:   @010: IV IV IV IV 00 00 00 00 b1 53 b1 53 b1 53 b1 53
+INFO:klips_debug:   @020: b1 53 b1 53 b1 53 b1 53 36 36 36 36 36 36 36 36
+INFO:klips_debug:   @030: 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36
+INFO:klips_debug:   @040: 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36
+INFO:klips_debug:   @050: 36 36 36 36 36 36 36 36
+INFO:klips_dmp: at ictx+dat, len=88:
+INFO:klips_debug:   @000: 75 fd cc 11 0f 1a 84 6c a8 b6 0f 39 e5 6c 06 27
+INFO:klips_debug:   @010: IV IV IV IV 00 00 00 00 c8 4c 57 8d 56 4a 24 e8
+INFO:klips_debug:   @020: be a8 68 a6 05 c1 4f 42 3c 87 e6 23 90 61 15 f7
+INFO:klips_debug:   @030: e4 46 2c 4b a2 ef 44 6d 98 1b 0a 24 96 91 e8 78
+INFO:klips_debug:   @040: 85 9b c7 cb 55 0a db 28 8f 0b 2e fa 99 11 f3 fd
+INFO:klips_debug:   @050: db ba a9 3e de 0c 02 ba
+INFO:klips_dmp: at ictx hash, len=20:
+INFO:klips_debug:   @000: 58 72 a8 3f f0 93 dc df c2 89 f0 d3 a0 9a 66 1e
+INFO:klips_debug:   @010: IV IV IV IV
+INFO:klips_dmp: at octx, len=88:
+INFO:klips_debug:   @000: df 34 22 04 0b 3c 66 d4 7c 72 c3 77 48 0f 0e 2e
+INFO:klips_debug:   @010: IV IV IV IV 00 00 00 00 db 39 db 39 db 39 db 39
+INFO:klips_debug:   @020: db 39 db 39 db 39 db 39 5c 5c 5c 5c 5c 5c 5c 5c
+INFO:klips_debug:   @030: 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c
+INFO:klips_debug:   @040: 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c
+INFO:klips_debug:   @050: 5c 5c 5c 5c 5c 5c 5c 5c
+INFO:klips_dmp: at octx+hash, len=88:
+INFO:klips_debug:   @000: df 34 22 04 0b 3c 66 d4 7c 72 c3 77 48 0f 0e 2e
+INFO:klips_debug:   @010: IV IV IV IV 00 00 00 00 58 72 a8 3f f0 93 dc df
+INFO:klips_debug:   @020: c2 89 f0 d3 a0 9a 66 1e 5c 5c 5c 5c 5c 5c 5c 5c
+INFO:klips_debug:   @030: 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c
+INFO:klips_debug:   @040: 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c
+INFO:klips_debug:   @050: 5c 5c 5c 5c 5c 5c 5c 5c
+INFO:klips_dmp: at octx hash, len=20:
+INFO:klips_debug:   @000: d3 e5 62 d2 45 cc da ab db e4 1f ec 89 8a 80 18
+INFO:klips_debug:   @010: IV IV IV IV
+INFO:klips_debug:ipsec_xmit_encap_once: after <ESP_3DES_HMAC_MD5>, SA:esp.12345678@192.1.2.45:
+INFO:klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:120 id:0 DF frag_off:0 ttl:62 proto:50 chk:47441 saddr:192.0.2.1 daddr:192.0.1.1
+INFO:klips_dmp: at ip_print, len=100:
+INFO:klips_debug:   @000: 12 34 56 78 00 00 00 01 3c 87 e6 23 90 61 15 f7
+INFO:klips_debug:   @010: IV IV IV IV 56 56 aa 82 e4 46 2c 4b a2 ef 44 6d
+INFO:klips_debug:   @020: 98 1b 0a 24 96 91 e8 78 85 9b c7 cb 55 0a db 28
+INFO:klips_debug:   @030: 8f 0b 2e fa 99 11 f3 fd db ba a9 3e de 0c 02 ba
+INFO:klips_debug:   @040: c8 4c 57 8d 56 4a 24 e8 be a8 68 a6 05 c1 4f 42
+INFO:klips_debug:   @050: 3c 87 e6 23 90 61 15 f7 d3 e5 62 d2 45 cc da ab
+INFO:klips_debug:   @060: db e4 1f ec
+INFO:klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:120 id:0 DF frag_off:0 ttl:62 proto:50 chk:47441 saddr:192.0.2.1 daddr:192.0.1.1
+INFO:klips_dmp: at ip_print, len=100:
+INFO:klips_debug:   @000: 12 34 56 78 00 00 00 01 3c 87 e6 23 90 61 15 f7
+INFO:klips_debug:   @010: IV IV IV IV 56 56 aa 82 e4 46 2c 4b a2 ef 44 6d
+INFO:klips_debug:   @020: 98 1b 0a 24 96 91 e8 78 85 9b c7 cb 55 0a db 28
+INFO:klips_debug:   @030: 8f 0b 2e fa 99 11 f3 fd db ba a9 3e de 0c 02 ba
+INFO:klips_debug:   @040: c8 4c 57 8d 56 4a 24 e8 be a8 68 a6 05 c1 4f 42
+INFO:klips_debug:   @050: 3c 87 e6 23 90 61 15 f7 d3 e5 62 d2 45 cc da ab
+INFO:klips_debug:   @060: db e4 1f ec
+done

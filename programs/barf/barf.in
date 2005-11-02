@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: barf.in,v 1.106 2004/12/29 08:31:52 hugh Exp $
+# RCSID $Id: barf.in,v 1.107 2005/07/15 16:39:25 paul Exp $
 
 LOGS=${LOGS-/var/log}
 CONFS=${IPSEC_CONFS-/etc}
@@ -156,7 +156,7 @@ then
 	sort -sg +3 /proc/net/ipsec_eroute || cat /proc/net/ipsec_eroute
 fi
 _________________________ netstat-rn
-netstat -nr|head -$maxlines
+netstat -nr|head -n $maxlines
 _________________________ /proc/net/ipsec_spi
 if test -r /proc/net/ipsec_spi
 then

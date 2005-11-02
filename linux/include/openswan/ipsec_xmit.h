@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_xmit.h,v 1.12 2004/08/20 21:45:37 mcr Exp $
+ * RCSID $Id: ipsec_xmit.h,v 1.14 2005/05/11 01:00:26 mcr Exp $
  */
 
 #include "openswan/ipsec_sa.h"
@@ -90,6 +90,7 @@ struct ipsec_xmit_state
 	struct net_device *physdev;
 /*	struct device *virtdev; */
 	short physmtu;
+	short cur_mtu;          /* copy of prv->mtu, cause prv may == NULL */
 	short mtudiff;
 #ifdef NET_21
 	struct rtable *route;
@@ -126,19 +127,29 @@ extern int ipsec_xmit_trap_sendcount;
 
 #ifdef CONFIG_KLIPS_DEBUG
 extern int debug_tunnel;
-extern int sysctl_ipsec_debug_verbose;
-#endif /* CONFIG_KLIPS_DEBUG */
 
 #define debug_xmit debug_tunnel
 
-#define ipsec_xmit_dmp(_x,_y, _z) if (debug_xmit && sysctl_ipsec_debug_verbose) ipsec_dmp(_x,_y,_z)
+#define ipsec_xmit_dmp(_x,_y, _z) if (debug_xmit && sysctl_ipsec_debug_verbose) ipsec_dmp_block(_x,_y,_z)
+#else
+#define ipsec_xmit_dmp(_x,_y, _z) do {} while(0)
 
+#endif /* CONFIG_KLIPS_DEBUG */
+
+extern int sysctl_ipsec_debug_verbose;
 extern int sysctl_ipsec_icmp;
 extern int sysctl_ipsec_tos;
 
 
 /*
  * $Log: ipsec_xmit.h,v $
+ * Revision 1.14  2005/05/11 01:00:26  mcr
+ * 	do not call debug routines if !defined KLIPS_DEBUG.
+ *
+ * Revision 1.13  2005/04/29 05:01:38  mcr
+ * 	use ipsec_dmp_block.
+ * 	added cur_mtu to ixs instead of using ixs->dev.
+ *
  * Revision 1.12  2004/08/20 21:45:37  mcr
  * 	CONFIG_KLIPS_NAT_TRAVERSAL is not used in an attempt to
  * 	be 26sec compatible. But, some defines where changed.

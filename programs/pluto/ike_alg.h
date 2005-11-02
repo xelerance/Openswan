@@ -75,5 +75,6 @@ extern struct db_sa *oakley_alg_makedb(struct alg_info_ike *ai
 				       , struct db_sa *basic
 				       , int maxtrans);
 
-extern struct db_sa *kernel_alg_makedb(struct alg_info_esp *ai);
+extern struct db_sa *kernel_alg_makedb(struct alg_info_esp *ai
+				       , bool logit);
 #endif /* _IKE_ALG_H */

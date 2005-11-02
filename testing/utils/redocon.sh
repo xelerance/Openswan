@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# $Id: redocon.sh,v 1.7 2003/05/05 17:59:35 mcr Exp $
+# $Id: redocon.sh,v 1.10 2005/05/01 03:27:29 mcr Exp $
 #
 # use this script to run a single test from within that test directory.
 # note that this assumes a "klipstest" type test.
@@ -24,9 +24,19 @@ then
     consolediff east OUTPUT${KLIPS_MODULE}/eastconsole.txt $REF_EAST_CONSOLE_OUTPUT
 fi
 
+if [ -n "${REF26_EAST_CONSOLE_OUTPUT}" ]
+then
+    KERNVER=26 consolediff east OUTPUT${KLIPS_MODULE}/26eastconsole.txt $REF26_EAST_CONSOLE_OUTPUT
+fi
+
 if [ -n "${REF_WEST_CONSOLE_OUTPUT}" ]
 then
     consolediff west OUTPUT${KLIPS_MODULE}/westconsole.txt $REF_WEST_CONSOLE_OUTPUT
+fi
+
+if [ -n "${REF26_WEST_CONSOLE_OUTPUT}" ]
+then
+    KERNVER=26 consolediff west OUTPUT${KLIPS_MODULE}/26westconsole.txt $REF26_WEST_CONSOLE_OUTPUT
 fi
 
 if [ -n "${REF_ROAD_CONSOLE_OUTPUT}" ]
@@ -34,14 +44,29 @@ then
     consolediff road OUTPUT${KLIPS_MODULE}/roadconsole.txt $REF_ROAD_CONSOLE_OUTPUT
 fi
 
+if [ -n "${REF26_ROAD_CONSOLE_OUTPUT}" ]
+then
+    KERNVER=26 consolediff road OUTPUT${KLIPS_MODULE}/26roadconsole.txt $REF26_ROAD_CONSOLE_OUTPUT
+fi
+
 if [ -n "${REF_JAPAN_CONSOLE_OUTPUT}" ]
 then
     consolediff japan OUTPUT${KLIPS_MODULE}/japanconsole.txt $REF_JAPAN_CONSOLE_OUTPUT
 fi
 
-if [ -n "${REF_CONSOLE_OUTPUT}" ]
+if [ -n "${REF26_JAPAN_CONSOLE_OUTPUT}" ]
+then
+    KERNVER=26 consolediff japan OUTPUT${KLIPS_MODULE}/26japanconsole.txt $REF26_JAPAN_CONSOLE_OUTPUT
+fi
+
+if [ -n "${REF_CONSOLE_OUTPUT}" ] && [ -f OUTPUT${KLIPS_MODULE}/console.txt ]
 then
     consolediff "" OUTPUT${KLIPS_MODULE}/console.txt $REF_CONSOLE_OUTPUT
+fi
+
+if [ -n "${REF26_CONSOLE_OUTPUT}" ] && [ -f OUTPUT${KLIPS_MODULE}/26console.txt ]
+then
+    KERNVER=26 consolediff "" OUTPUT${KLIPS_MODULE}/26console.txt $REF26_CONSOLE_OUTPUT
 fi
 
 if [ -n "${REF_PUB_OUTPUT}" ]
@@ -71,6 +96,15 @@ fi
 
 
 # $Log: redocon.sh,v $
+# Revision 1.10  2005/05/01 03:27:29  mcr
+# 	check for appropriate files before trying to use them.
+#
+# Revision 1.9  2005/04/22 13:30:00  mcr
+# 	try to redo 2.6 kernel console messages as well.
+#
+# Revision 1.8  2005/04/06 17:59:48  mcr
+# 	look at REF26 values too.
+#
 # Revision 1.7  2003/05/05 17:59:35  mcr
 # 	also process the "japan" console.
 #

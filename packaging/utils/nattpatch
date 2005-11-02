@@ -1,19 +1,26 @@
 #!/bin/sh
 
-# wander through a FreeSWAN linux directory, creating a patch file (to stdout)
+# wander through an OpenSWAN nat-t directory, creating a patch file (to stdout)
 # that will apply the code to a kernel source directory.
 #
-# $Id: nattpatch,v 1.1 2004/01/06 05:21:19 mcr Exp $
+# $Id: nattpatch,v 1.2 2005/04/06 17:47:44 mcr Exp $
 #
 
 KERN=$1
 shift
 
+source packaging/utils/kernelpatching.sh
+
+patch20=false
+patch22=false
+patch24=false
+patch26=false
+
 case $KERN in
-    2.0) patchname=fs2_0;;
-    2.2) patchname=fs2_2;;
-    2.4) patchname=fs2_4;;
-    2.5) patchname=fs2_5;;
+    2.0) patchname=os2_0; altname=fs2_0; patch20=true;;
+    2.2) patchname=os2_2; altname=fs2_2; patch22=true;;
+    2.4) patchname=os2_4; altname=fs2_4; patch24=true;;
+    2.6) patchname=os2_6; altname=fs2_6; patch26=true;;
     *) echo "Invalid kernel patch target: $KERN"; exit 1;;
 esac
 
@@ -25,6 +32,8 @@ LC_ALL=C export LC_ALL
 find nat-t -type f -print | grep -v CVS | egrep -v 'linux/Makefile' | sort | while read file 
 do 
   base=`basename $file`
+  pname=`echo $file | sed -e 's,\.fs._.$,,' -e 's,\.os._.$,,'`
+
   case $base in 
     TAGS) ;;
     tags) ;;
@@ -35,6 +44,15 @@ do
     *~) ;;
     tagsfile.mak) ;;
     *.$patchname.patch) cat $file;;
+    *.$altname.patch) cat $file;;
+    *.fs2_0) fakeallpatch $patch20 $file $pname ;;
+    *.fs2_2) fakeallpatch $patch22 $file $pname ;;
+    *.fs2_4) fakeallpatch $patch24 $file $pname ;;
+    *.fs2_6) fakeallpatch $patch26 $file $pname ;;
+    *.os2_0) fakeallpatch $patch20 $file $pname ;;
+    *.os2_2) fakeallpatch $patch22 $file $pname ;;
+    *.os2_4) fakeallpatch $patch24 $file $pname ;;
+    *.os2_6) fakeallpatch $patch26 $file $pname ;;
     *.patch) ;;
     *) diff -u /dev/null $file;;
   esac

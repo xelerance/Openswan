@@ -1,0 +1,6 @@
+This is a test of the NORTH-EAST connection.
+
+It does so with pfs=yes on east, and pfs=no on North.
+
+This is testcase for Mantis #311
+

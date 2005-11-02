@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_xform.c,v 1.64 2004/07/10 19:11:18 mcr Exp $
+ * RCSID $Id: ipsec_xform.c,v 1.65 2005/04/29 05:10:22 mcr Exp $
  */
 
 #include <linux/config.h>
@@ -44,11 +44,7 @@
 #  include <asm/spinlock.h> /* *lock* */
 # endif /* SPINLOCK_23 */
 #endif /* SPINLOCK */
-#ifdef NET_21
-# include <asm/uaccess.h>
-# include <linux/in6.h>
-#endif
-#include <asm/checksum.h>
+
 #include <net/ip.h>
 
 #include "freeswan/radij.h"
@@ -74,6 +70,9 @@ spinlock_t tdb_lock;
 
 /*
  * $Log: ipsec_xform.c,v $
+ * Revision 1.65  2005/04/29 05:10:22  mcr
+ * 	removed from extraenous includes to make unit testing easier.
+ *
  * Revision 1.64  2004/07/10 19:11:18  mcr
  * 	CONFIG_IPSEC -> CONFIG_KLIPS.
  *

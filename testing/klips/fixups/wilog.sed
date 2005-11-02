@@ -10,4 +10,5 @@ s/ {isakmp=#.*\/ipsec=#.*}//
 /transition from state /d
 /stats db_ops.c/d
 /started helper pid=/d
+/calc_dh_shared()/d
 /^!/d

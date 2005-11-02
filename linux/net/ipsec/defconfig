@@ -1,6 +1,6 @@
 
 #
-# RCSID $Id: defconfig,v 1.27 2005/03/20 03:00:05 mcr Exp $
+# RCSID $Id: defconfig,v 1.28 2005/05/11 03:15:42 mcr Exp $
 #
 
 #
@@ -27,7 +27,7 @@ CONFIG_IP_MASQUERADE_IPSEC=n
 #
 
 # To config as static (preferred), 'y'.  To config as module, 'm'.
-CONFIG_KLIPS=y
+CONFIG_KLIPS=m
 
 # To do tunnel mode IPSec, this must be enabled.
 CONFIG_KLIPS_IPIP=y
@@ -49,18 +49,8 @@ CONFIG_KLIPS_ALG=y
 CONFIG_KLIPS_ENC_3DES=y
 CONFIG_KLIPS_ENC_AES=y
 
-CONFIG_KLIPS_ALG_TWOFISH=m
-CONFIG_KLIPS_ALG_BLOWFISH=m
-CONFIG_KLIPS_ALG_SERPENT=m
-CONFIG_KLIPS_ALG_MD5=m
-CONFIG_KLIPS_ALG_SHA1=m
-CONFIG_KLIPS_ALG_SHA2=m
-#CONFIG_KLIPS_ALG_CAST=n
-#CONFIG_KLIPS_ALG_NULL=n
-
 # Use CryptoAPI for ALG? - by default, no.
 CONFIG_KLIPS_ENC_CRYPTOAPI=n
-
 
 # IP Compression: new, probably still has minor bugs.
 CONFIG_KLIPS_IPCOMP=y
@@ -74,6 +64,9 @@ CONFIG_IPSEC_NAT_TRAVERSAL=y
 #
 #
 # $Log: defconfig,v $
+# Revision 1.28  2005/05/11 03:15:42  mcr
+# 	adjusted makefiles to sanely build modules properly.
+#
 # Revision 1.27  2005/03/20 03:00:05  mcr
 # 	default configuration should enable NAT_TRAVERSAL.
 #

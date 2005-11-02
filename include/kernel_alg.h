@@ -17,6 +17,7 @@
 
 #ifndef _KERNEL_ALG_H
 #define _KERNEL_ALG_H
+#include "pfkeyv2.h"
 
 struct sadb_msg; /* forward definition */
 
@@ -46,7 +47,9 @@ extern int kernel_alg_proc_read(void);
 extern const struct sadb_alg * kernel_alg_sadb_alg_get(int satype, int exttype, int alg_id);
 
 struct db_prop;
-extern struct db_context * kernel_alg_db_new(struct alg_info_esp *ai, lset_t policy);
+extern struct db_context * kernel_alg_db_new(struct alg_info_esp *ai
+					     , lset_t policy
+					     , bool logit);
 
 /* returns pointer to static buffer, no reentrant */
 extern struct esp_info *kernel_alg_esp_info(u_int8_t transid

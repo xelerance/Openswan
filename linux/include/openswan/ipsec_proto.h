@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_proto.h,v 1.9 2004/07/10 19:08:41 mcr Exp $
+ * RCSID $Id: ipsec_proto.h,v 1.14 2005/04/29 04:50:03 mcr Exp $
  *
  */
 
@@ -30,6 +30,14 @@
  *
  */
 
+/* forward references */
+enum ipsec_direction;
+enum ipsec_life_type;
+struct ipsec_lifetime64;
+struct ident;
+struct sockaddr_encap;
+struct ipsec_sa;
+
 /* ipsec_init.c */
 extern struct prng ipsec_prng;
 
@@ -37,6 +45,10 @@ extern struct prng ipsec_prng;
 extern struct ipsec_sa *ipsec_sadb_hash[SADB_HASHMOD];
 extern spinlock_t       tdb_lock;
 extern int ipsec_sadb_init(void);
+extern int ipsec_sadb_cleanup(__u8);
+
+extern struct ipsec_sa *ipsec_sa_alloc(int*error); 
+
 
 extern struct ipsec_sa *ipsec_sa_getbyid(ip_said *);
 extern int ipsec_sa_put(struct ipsec_sa *);
@@ -44,14 +56,26 @@ extern /* void */ int ipsec_sa_del(struct ipsec_sa *);
 extern /* void */ int ipsec_sa_delchain(struct ipsec_sa *);
 extern /* void */ int ipsec_sa_add(struct ipsec_sa *);
 
-extern int ipsec_sadb_cleanup(__u8);
-extern int ipsec_sa_wipe(struct ipsec_sa *);
+extern int ipsec_sa_init(struct ipsec_sa *ipsp);
+extern int ipsec_sa_wipe(struct ipsec_sa *ipsp);
 
 /* debug declarations */
 
 /* ipsec_proc.c */
 extern int  ipsec_proc_init(void);
 extern void ipsec_proc_cleanup(void);
+
+/* ipsec_rcv.c */
+extern int ipsec_rcv(struct sk_buff *skb);
+extern int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type);
+
+/* ipsec_xmit.c */
+struct ipsec_xmit_state;
+extern enum ipsec_xmit_value ipsec_xmit_sanity_check_dev(struct ipsec_xmit_state *ixs);
+extern enum ipsec_xmit_value ipsec_xmit_sanity_check_skb(struct ipsec_xmit_state *ixs);
+extern void ipsec_print_ip(struct iphdr *ip);
+
+
 
 /* ipsec_radij.c */
 extern int ipsec_makeroute(struct sockaddr_encap *ea,
@@ -92,7 +116,13 @@ extern void ipsec_lifetime_update_hard(struct ipsec_lifetime64 *lifetime,
 extern void ipsec_lifetime_update_soft(struct ipsec_lifetime64 *lifetime,
 				       __u64 newvalue);
 
+/* ipsec_snprintf.c */
+extern int ipsec_snprintf(char * buf, ssize_t size, const char *fmt, ...);
+extern void ipsec_dmp_block(char *s, caddr_t bb, int len);
 
+
+/* ipsec_alg.c */
+extern int ipsec_alg_init(void);
 
 
 #ifdef CONFIG_KLIPS_DEBUG
@@ -112,6 +142,21 @@ extern int debug_netlink;
 
 /*
  * $Log: ipsec_proto.h,v $
+ * Revision 1.14  2005/04/29 04:50:03  mcr
+ * 	prototypes for xmit and alg code.
+ *
+ * Revision 1.13  2005/04/17 03:46:07  mcr
+ * 	added prototypes for ipsec_rcv() routines.
+ *
+ * Revision 1.12  2005/04/14 20:28:37  mcr
+ * 	added additional prototypes.
+ *
+ * Revision 1.11  2005/04/14 01:16:28  mcr
+ * 	add prototypes for snprintf.
+ *
+ * Revision 1.10  2005/04/13 22:47:28  mcr
+ * 	make sure that forward references are available.
+ *
  * Revision 1.9  2004/07/10 19:08:41  mcr
  * 	CONFIG_IPSEC -> CONFIG_KLIPS.
  *

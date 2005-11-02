@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: spdb_print.c,v 1.1.2.1 2005/05/18 20:55:40 ken Exp $
+ * RCSID $Id: spdb_print.c,v 1.1 2005/05/12 03:03:36 mcr Exp $
  */
 
 #include <stdio.h>

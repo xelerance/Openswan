@@ -13,7 +13,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: setup.in,v 1.122 2005/01/26 01:26:53 mcr Exp $
+# RCSID $Id: setup.in,v 1.122.6.1 2005/07/25 19:17:03 ken Exp $
 #
 # ipsec         init.d script for starting and stopping
 #               the IPsec security subsystem (KLIPS and Pluto).
@@ -88,11 +88,18 @@ done
 # do not know where errors should go, hence the explicit "daemon.error"s.)
 # Note the "--export", which exports the variables created.
 eval `ipsec _confread $config --optional --varprefix IPSEC --export --type config setup`
+
 if test " $IPSEC_confreadstatus" != " "
 then
-	echo "$IPSEC_confreadstatus -- \`$1' aborted" |
-		logger -s -p daemon.error -t ipsec_setup
-	exit 1
+    case $1 in 
+    stop|--stop|_autostop) 
+	echo "$IPSEC_confreadstatus -- \`$1' may not work" |
+		logger -s -p daemon.error -t ipsec_setup;;
+		
+    *) echo "$IPSEC_confreadstatus -- \`$1' aborted" |
+	    logger -s -p daemon.error -t ipsec_setup;
+	exit 1;;
+    esac
 fi
 
 IPSEC_confreadsection=${IPSEC_confreadsection:-setup}

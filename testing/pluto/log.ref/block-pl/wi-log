@@ -4,7 +4,7 @@ whackeast --name block --delete --host 127.95.7.2 --ikeport 8500 --nexthop 127.9
 002 added connection description "block"
 whackwest --listen
 002 listening for IKE messages
-002 adding interface virtual127.95.7.1/lo:w 127.95.7.1:8500:8500
+002 adding interface virtual127.95.7.1/lo:w 127.95.7.1:8500
 002 loading secrets from "/tmp/ipsec.secrets/west"
 002 loading group "/tmp/west/policies/block"
 whackeast --listen
@@ -26,7 +26,7 @@ ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 starting up 1 cryptographic helpers
 added connection description "block"
 listening for IKE messages
-adding interface virtual127.95.7.1/lo:w 127.95.7.1:8500:8500
+adding interface virtual127.95.7.1/lo:w 127.95.7.1:8500
 loading secrets from "/tmp/ipsec.secrets/west"
 loading group "/tmp/west/policies/block"
 shutting down
@@ -36,7 +36,7 @@ forgetting secrets
 "block#9.11.0.0/32" 0.0.0.0: deleting connection "block#9.11.0.0/32" instance with peer 0.0.0.0
 "block#1.2.3.6/31" 0.0.0.0: deleting connection "block#1.2.3.6/31" instance with peer 0.0.0.0
 "block": deleting connection
-shutting down interface virtual127.95.7.1/lo:w 127.95.7.1
+shutting down interface virtual127.95.7.1/lo:w 127.95.7.1:8500
 
 >>>Responder:
 PLUTO --ctlbase pluto.east --interface lo:e --ikeport 8500 --secretsfile /tmp/ipsec.secrets/east --ipsecdir /tmp/east --noklips --uniqueids --stderrlog --debug-all --debug-private
@@ -51,4 +51,4 @@ loading secrets from "/tmp/ipsec.secrets/east"
 shutting down
 forgetting secrets
 "block": deleting connection
-shutting down interface virtual127.95.7.2/lo:e 127.95.7.2
+shutting down interface virtual127.95.7.2/lo:e 127.95.7.2:8500

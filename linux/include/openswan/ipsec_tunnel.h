@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_tunnel.h,v 1.31 2004/08/03 18:18:02 mcr Exp $
+ * RCSID $Id: ipsec_tunnel.h,v 1.33 2005/06/04 16:06:05 mcr Exp $
  */
 
 
@@ -109,6 +109,7 @@ int ipsec_tunnel_init_devices(void);
 extern /* void */ int ipsec_init(void);
 
 extern int ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev);
+extern struct net_device *ipsec_get_device(int inst);
 
 #ifdef CONFIG_KLIPS_DEBUG
 extern int debug_tunnel;
@@ -124,10 +125,17 @@ extern int sysctl_ipsec_debug_verbose;
 #define DB_TN_CROUT	0x0040
 #define DB_TN_OXFS	0x0080
 #define DB_TN_REVEC	0x0100
+#define DB_TN_ENCAP     0x0200
 #endif /* CONFIG_KLIPS_DEBUG */
 
 /*
  * $Log: ipsec_tunnel.h,v $
+ * Revision 1.33  2005/06/04 16:06:05  mcr
+ * 	better patch for nat-t rcv-device code.
+ *
+ * Revision 1.32  2005/05/21 03:18:35  mcr
+ * 	added additional debug flag tunnelling.
+ *
  * Revision 1.31  2004/08/03 18:18:02  mcr
  * 	in 2.6, use "net_device" instead of #define device->net_device.
  * 	this probably breaks 2.0 compiles.

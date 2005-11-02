@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.182.2.1 2005/05/18 20:55:13 ken Exp $
+# RCSID $Id: Makefile,v 1.189.2.3 2005/08/12 01:12:38 ken Exp $
 
 # All of the USE_ and HAVE_ variables are controlled from openswan/Makefile.inc
 
@@ -66,7 +66,7 @@ CFLAGS = -g -Wall -W -Wmissing-prototypes -Wpointer-arith -Wbad-function-cast \
 
 # where to find klips headers and Openswan headers
 # and 2.6 kernel's <rtnetlink.h> and <xfrm.h>
-HDRDIRS = -I${OPENSWANSRCDIR}/programs/pluto/linux26 -I${OPENSWANSRCDIR}/include -I$(KLIPSINC) 
+HDRDIRS = -I${OPENSWANSRCDIR}/programs/pluto/linux26 -I${OPENSWANSRCDIR}/include -I$(OPENSWANSRCDIR)/lib/libcrypto -I$(KLIPSINC) 
 
 # On non-LINUX systems, these one of these may be needed (see endian.h)
 # BYTE_ORDER = -DBIG_ENDIAN=4321 -DLITTLE_ENDIAN=1234 -DBYTE_ORDER=BIG_ENDIAN
@@ -191,6 +191,8 @@ XAUTHPAM_LIBS=-lpam
 endif
 endif
 
+AGGRESSIVE_DIST_OBJS=ikev1_aggr.o
+AGGRESSIVE_DIST_SRCS=${AGGRESSIVE_DIST_OBJS:.o=.c}
 ifeq ($(USE_AGGRESSIVE),true)
 # This compile option activates xauth code and modecfg needed by xauth
 AGGRESSIVE_DEFS=-DAGGRESSIVE
@@ -214,11 +216,21 @@ CURL_LIBS=-lcurl
 endif
 
 ifeq ($(USE_WEAKSTUFF),true)
-WEAK_DEFS=-DUSE_VERYWEAK_DH1=1
+WEAK_DEFS=-DUSE_VERYWEAK_DH1=1 #-DUSE_1DES
 endif
 
+ifeq ($(USE_EXTRACRYPTO),true)
+EXTRA_CRYPTO_DEFS=-DUSE_TWOFISH -DUSE_BLOWFISH -DUSE_SERPENT -DUSE_SHA2
+EXTRA_CRYPTO_SRCS=ike_alg_blowfish.c ike_alg_twofish.c ike_alg_serpent.c ike_alg_sha2.c 
+EXTRA_CRYPTO_OBJS=ike_alg_blowfish.o ike_alg_twofish.o ike_alg_serpent.o ike_alg_sha2.o 
+EXTRA_CRYPTO_LIBS=$(LIBBLOWFISH) $(LIBTWOFISH) $(LIBSERPENT) $(LIBSHA2) 
+endif
 
+OS=$(shell uname -s | tr 'A-Z' 'a-z')
+SYSDEP_SRC=sysdep_${OS}.c
+SYSDEP_OBJ=sysdep_${OS}.o
 
+BUILDER=${shell echo ${USER}@`hostname` }
 # End of configuration coping options.
 
 DEFINES = $(EXTRA_DEFINES) \
@@ -228,12 +240,15 @@ DEFINES = $(EXTRA_DEFINES) \
 	$(LWRESDEF) \
 	$(KERNEL26_DEFS) \
 	$(X509_DEFS) \
+	${EXTRA_CRYPTO_DEFS} \
 	$(HAVE_THREADS_DEFS) \
 	$(SMARTCARD_DEFS) \
 	-DPLUTO \
 	-DKLIPS \
+        -DBUILDER=\"${BUILDER}\" \
 	-DDEBUG \
 	-DGCC_LINT \
+	-DUSE_AES -DUSE_3DES \
 	-DIKE_ALG -DKERNEL_ALG -DDB_CONTEXT \
 	${AGGRESSIVE_DEFS} \
 	${XAUTH_DEFS} ${XAUTHPAM_DEFS} \
@@ -255,6 +270,7 @@ LIBSPLUTO =$(OBJSGCRYPT) $(LIBDESLITE) $(LIBAES) $(OPENSWANLIB)
 LIBSPLUTO+=$(IPSECPOLICY_LIBS) $(X509_LIBS) $(SMARTCARD_LIBS) 
 LIBSPLUTO+=$(HAVE_THREADS_LIBS) ${XAUTHPAM_LIBS}
 LIBSPLUTO+=${CURL_LIBS} 
+LIBSPLUTO+=${EXTRA_CRYPTO_LIBS}
 LIBSPLUTO+= -lgmp -lresolv # -lefence
 
 ifneq ($(LD_LIBRARY_PATH),)
@@ -304,10 +320,11 @@ DISTSRC = \
 	kernel_netlink.c kernel_netlink.h \
 	kernel_pfkey.c kernel_pfkey.h \
 	kernel_noklips.c kernel_noklips.h \
-	ike_alg.c ike_alg.h \
+	ike_alg.c ike_alg.h ikeping.c \
 	ike_alg_aes.c ike_alginit.c \
 	rcv_whack.c rcv_whack.h \
 	$(IPSECPOLICY_DIST_SRCS) \
+	${EXTRA_CRYPTO_SRCS} \
 	log.c log.h \
 	plutomain.c plutoalg.c \
 	md2.c md2.h \
@@ -322,6 +339,8 @@ DISTSRC = \
 	${SMARTCARD_DIST_SRCS} \
 	spdb.c spdb_struct.c spdb_print.c spdb.h \
 	state.c state.h \
+	stubs.c \
+	${SYSDEP_SRC} \
 	timer.c timer.h \
 	$(DISTGCRYPT) \
 	$(X509_DIST_SRCS) \
@@ -351,12 +370,14 @@ OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o lex.o keys.o dnskey.o
 OBJSPLUTO += pluto_crypt.o crypt_utils.o crypt_ke.o crypt_dh.o
 OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_print.o sha1.o md5.o 
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o 
-OBJSPLUTO += ike_alg_aes.o ike_alginit.o 
+OBJSPLUTO += ike_alg_aes.o ike_alginit.o
+OBJSPLUTO += ${EXTRA_CRYPTO_OBJS}
 OBJSPLUTO += ike_alg.o db_ops.o 
 OBJSPLUTO += ${XAUTH_OBJS}
 OBJSPLUTO += ${AGGRESSIVE_OBJS}
 OBJSPLUTO += ${SMARTCARD_OBJS} ${X509_OBJS} ${HAVE_THREADS_OBJS}
 OBJSPLUTO += ${OBJSLIBPLUTO}
+OBJSPLUTO += ${SYSDEP_OBJ} stubs.o
 
 OBJSADNS = adns.o
 
@@ -386,13 +407,13 @@ install: all
 	$(INSTALL) $(INSTBINFLAGS) $(BINNAMEPLUTO) $(BINNAMEWHACK) $(LIBEXECDIR)
 	#$(INSTALL) $(INSTSUIDFLAGS) $(BINNAMEWHACKINIT) $(LIBEXECDIR)
 	if $(USE_ADNS) ; then $(INSTALL) $(INSTBINFLAGS) $(BINNAMEADNS)  $(LIBEXECDIR) ; fi
-	$(INSTALL) $(INSTMANFLAGS) pluto.8 $(PMANDIR)/ipsec_pluto.8
+	$(INSTALL) $(INSTMANFLAGS) ${srcdir}/pluto.8 $(PMANDIR)/ipsec_pluto.8
 	sh ${OPENSWANSRCDIR}/packaging/utils/manlink pluto.8 | \
 		while read from to ; \
 		do \
 			ln -s -f ipsec_$$from $(PMANDIR)/$$to; \
 		done
-	$(INSTALL) $(INSTMANFLAGS) ipsec.secrets.5 $(FMANDIR)
+	$(INSTALL) $(INSTMANFLAGS) ${srcdir}/ipsec.secrets.5 $(FMANDIR)
 	sh ${OPENSWANSRCDIR}/packaging/utils/manlink ipsec.secrets.5 | \
 		while read from to ; \
 		do \
@@ -420,16 +441,16 @@ alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypt
 	$(CC) -o $@ $^ $(LIBSPLUTO)
 
 $(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) $(OPENSWANLIB)
-	$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(OBJSPLUTO) $(LIBSPLUTO)
+	$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(USERLINK) $(OBJSPLUTO) $(LIBSPLUTO) 
 
 $(BINNAMEADNS): $(OBJSADNS)
-	$(CC) -o $(BINNAMEADNS) $(OBJSADNS) $(LIBSADNS)
+	$(CC) -o $(BINNAMEADNS) $(OBJSADNS) $(USERLINK) $(LIBSADNS)
 
 $(BINNAMEWHACK): $(OBJSWHACK)
-	$(CC) -o $(BINNAMEWHACK) $(OBJSWHACK) $(LIBSWHACK)
+	$(CC) -o $(BINNAMEWHACK) $(OBJSWHACK) $(USERLINK) $(LIBSWHACK)
 
 $(BINNAMEWHACKINIT): $(OBJSWHACKINIT)
-	$(CC) -o $(BINNAMEWHACKINIT) $(OBJSWHACKINIT) $(LIBSWHACK)
+	$(CC) -o $(BINNAMEWHACKINIT) $(OBJSWHACKINIT) $(USERLINK) $(LIBSWHACK)
 
 distlist:
 	@echo $(DIST)
@@ -438,11 +459,12 @@ distlist:
 
 CTAGSFLAGS = -N --format=1 # fishy options required for Exuberant Ctags
 
-tags:	$(DISTSRC)
-	LC_ALL=C ctags $(CTAGSFLAGS) $(DISTSRC) $(LIBOPENSWANDIR)/*.[ch]
+TAGSFILES=$(DISTSRC) $(LIBOPENSWANDIR)/*.[ch] ${OPENSWANSRCDIR}/include/*.h ${OPENSWANSRCDIR}/linux/include/*.h ${OPENSWANSRCDIR}/linux/include/openswan/*.h
+tags:	$(TAGSFILES)
+	LC_ALL=C ctags $(CTAGSFLAGS) ${TAGSFILES}
 
-TAGS:	$(DISTSRC)
-	LC_ALL=C etags $(ETAGSFLAGS) $(DISTSRC) $(LIBOPENSWANDIR)/*.[ch]
+TAGS:	$(TAGSFILES)
+	LC_ALL=C etags $(ETAGSFLAGS) ${TAGSFILES}
 
 cleanall: clean
 
@@ -464,7 +486,7 @@ check:
 checkprograms:
 
 .c.o:
-	$(CC) $(COPTS) $(ALLFLAGS) -c $<
+	$(CC) $(COPTS) $(ALLFLAGS) $(USERCOMPILE) -c $<
 
 %.i: %.c
 	$(CC) $(COPTS) $(ALLFLAGS) -E -o $@ $<

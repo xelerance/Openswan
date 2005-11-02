@@ -36,6 +36,7 @@ the end node.
 In this test, we have three nodes involves, plus DNS.
 
 
+(THIS IS A GOAL TEST. It does not operate at present.)
 
 
 

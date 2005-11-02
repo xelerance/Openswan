@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_netlink.c,v 1.21.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: kernel_netlink.c,v 1.30 2005/07/08 19:14:43 ken Exp $
  */
 
 #if defined(linux) && defined(KERNEL26_SUPPORT)
@@ -589,7 +589,7 @@ netlink_add_sa(const struct kernel_sa *sa, bool replace)
     req.p.id.proto = satype2proto(sa->satype);
     req.p.family = sa->src->u.v4.sin_family;
     req.p.mode = (sa->encapsulation == ENCAPSULATION_MODE_TUNNEL);
-    req.p.replay_window = sa->replay_window;
+    req.p.replay_window = sa->replay_window > 32 ? 32 : sa->replay_window; 
     req.p.reqid = sa->reqid;
     req.p.lft.soft_byte_limit = XFRM_INF;
     req.p.lft.soft_packet_limit = XFRM_INF;
@@ -1097,5 +1097,7 @@ const struct kernel_ops linux_kernel_ops = {
 	process_queue: NULL,
 	grp_sa: NULL,
 	get_spi: netlink_get_spi,
+	docommand: do_command_linux,
+	opname: "netkey",
 };
 #endif /* linux && KLIPS */

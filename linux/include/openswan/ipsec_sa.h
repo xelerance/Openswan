@@ -15,7 +15,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_sa.h,v 1.21 2004/08/20 21:45:37 mcr Exp $
+ * RCSID $Id: ipsec_sa.h,v 1.23 2005/05/11 01:18:59 mcr Exp $
  *
  * This file derived from ipsec_xform.h on 2001/9/18 by mcr.
  *
@@ -37,11 +37,13 @@
 #ifndef _IPSEC_SA_H_
 
 #ifdef __KERNEL__
-#include "ipsec_stats.h"
-#include "ipsec_life.h"
-#include "ipsec_eroute.h"
+#include "openswan/ipsec_stats.h"
+#include "openswan/ipsec_life.h"
+#include "openswan/ipsec_eroute.h"
 #endif /* __KERNEL__ */
-#include "ipsec_param.h"
+#include "openswan/ipsec_param.h"
+
+#include "pfkeyv2.h"
 
 
 /* SAs are held in a table.
@@ -140,7 +142,7 @@ struct ipsec_sa
 	struct ipsec_stats ips_errs;
 
 	__u8		ips_replaywin;		/* replay window size */
-	__u8		ips_state;		/* state of SA */
+	enum sadb_sastate ips_state;		/* state of SA */
 	__u32		ips_replaywin_lastseq;	/* last pkt sequence num */
 	__u64		ips_replaywin_bitmap;	/* bitmap of received pkts */
 	__u32		ips_replaywin_maxdiff;	/* max pkt sequence difference */
@@ -178,14 +180,13 @@ struct ipsec_sa
 	struct ident	ips_ident_s;		/* identity src */
 	struct ident	ips_ident_d;		/* identity dst */
 
-#ifdef CONFIG_KLIPS_IPCOMP
+        /* these are included even if CONFIG_KLIPS_IPCOMP is off */
 	__u16		ips_comp_adapt_tries;	/* ipcomp self-adaption tries */
 	__u16		ips_comp_adapt_skip;	/* ipcomp self-adaption to-skip */
 	__u64		ips_comp_ratio_cbytes;	/* compressed bytes */
 	__u64		ips_comp_ratio_dbytes;	/* decompressed (or uncompressed) bytes */
-#endif /* CONFIG_KLIPS_IPCOMP */
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+        /* these are included even if CONFIG_IPSEC_NAT_TRAVERSAL is off */
 	__u8		ips_natt_type;
 	__u8		ips_natt_reserved[3];
 	__u16		ips_natt_sport;
@@ -194,7 +195,6 @@ struct ipsec_sa
 	struct sockaddr *ips_natt_oa;
 	__u16		ips_natt_oa_size;
 	__u16		ips_natt_reserved2;
-#endif
 
 #if 0
 	__u32		ips_sens_dpd;
@@ -253,6 +253,13 @@ enum ipsec_direction {
 
 /*
  * $Log: ipsec_sa.h,v $
+ * Revision 1.23  2005/05/11 01:18:59  mcr
+ * 	do not change structure based upon options, to avoid
+ * 	too many #ifdef.
+ *
+ * Revision 1.22  2005/04/14 01:17:09  mcr
+ * 	change sadb_state to an enum.
+ *
  * Revision 1.21  2004/08/20 21:45:37  mcr
  * 	CONFIG_KLIPS_NAT_TRAVERSAL is not used in an attempt to
  * 	be 26sec compatible. But, some defines where changed.

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 set -x
 CFG="--config /testing/pluto/co-terminal-02/japan.conf" export CFG
 : just for when we run it interactively 

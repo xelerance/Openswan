@@ -40,11 +40,6 @@
 #  include <asm/spinlock.h> /* *lock* */
 # endif /* SPINLOCK_23 */
 #endif /* SPINLOCK */
-#ifdef NET_21
-# include <asm/uaccess.h>
-# include <linux/in6.h>
-# define proto_priv cb
-#endif /* NET21 */
 
 #include "openswan/ipsec_param.h"
 #include <openswan.h>
@@ -69,6 +64,7 @@
 #include <pfkey.h>
 
 #include "openswan/ipsec_alg.h"
+#include "openswan/ipsec_proto.h"
 
 #ifndef CONFIG_KLIPS_ALG
 #error This file _MUST_ be compiled with CONFIG_KLIPS_ALG enabled !
@@ -82,7 +78,7 @@ static rwlock_t ipsec_alg_lock = RW_LOCK_UNLOCKED;
 static struct list_head ipsec_alg_hash_table[IPSEC_ALG_HASHSZ];
 
 /*	Old gcc's will fail here 	*/
-#define barf_out(fmt, args...)  do { printk(KERN_ERR "%s: (%s) " fmt, __FUNCTION__, ixt->ixt_name , ## args)\
+#define barf_out(fmt, args...)  do { struct ipsec_alg *ixtc = (struct ipsec_alg *)ixt; printk(KERN_ERR "%s: (%s) " fmt, __FUNCTION__, ixtc->ixt_name , ## args) \
 	; goto out; } while(0)
 
 #ifdef NET_26
@@ -174,6 +170,7 @@ static int ipsec_alg_insert(struct ipsec_alg *ixt) {
 	unsigned hashval=ipsec_alg_hashfn(ixt->ixt_alg_type, ixt->ixt_alg_id);
 	struct list_head *head= ipsec_alg_hash_table + hashval;
 	struct ipsec_alg *ixt_cur;
+
 	/* 	new element must be virgin ... */
 	if (ixt->ixt_list.next != &ixt->ixt_list || 
 		ixt->ixt_list.prev != &ixt->ixt_list) {
@@ -183,13 +180,17 @@ static int ipsec_alg_insert(struct ipsec_alg *ixt) {
 		return ret;
 	}
 	write_lock_bh(&ipsec_alg_lock);
+
 	ixt_cur = __ipsec_alg_find(ixt->ixt_alg_type, ixt->ixt_alg_id, head);
+
 	/* if previous (current) ipsec_alg found check excl flag of _anyone_ */
-	if (ixt_cur && ((ixt->ixt_state|ixt_cur->ixt_state) & IPSEC_ALG_ST_EXCL))
-		barf_out("ipsec_alg for alg_type=%d, alg_id=%d already exist. "
-				"Not loaded (ret=%d).\n",
-				ixt->ixt_alg_type,
-				ixt->ixt_alg_id, ret=-EEXIST);
+	if (ixt_cur
+	    && ((ixt->ixt_state|ixt_cur->ixt_state) & IPSEC_ALG_ST_EXCL)) {
+	  barf_out("ipsec_alg for alg_type=%d, alg_id=%d already exist. "
+		   "Not loaded (ret=%d).\n",
+		   ixt->ixt_alg_type,
+		   ixt->ixt_alg_id, ret=-EEXIST);
+	}
 	list_add(&ixt->ixt_list, head);
 	ixt->ixt_state |= IPSEC_ALG_ST_REGISTERED;
 	ret=0;
@@ -197,6 +198,7 @@ out:
 	write_unlock_bh(&ipsec_alg_lock);
 	return ret;
 }
+
 /*
  * 	deletes an existing entry in hash table, 
  * 	called from ipsec_alg_unregister() when algorithm is unregistered.
@@ -207,20 +209,24 @@ static int ipsec_alg_delete(struct ipsec_alg *ixt) {
 	write_unlock_bh(&ipsec_alg_lock);
 	return 0;
 }
+
 /*
  * 	here @user context (read-only when @kernel bh context) 
  * 	-> no bh disabling
  *
  * 	called from ipsec_sa_init() -> ipsec_alg_sa_init()
  */
-static struct ipsec_alg *ipsec_alg_get(int alg_type, int alg_id) {
+static struct ipsec_alg *ipsec_alg_get(int alg_type, int alg_id)
+{
 	unsigned hashval=ipsec_alg_hashfn(alg_type, alg_id);
 	struct list_head *head= ipsec_alg_hash_table + hashval;
 	struct ipsec_alg *ixt;
+
 	read_lock(&ipsec_alg_lock);
 	ixt=__ipsec_alg_find(alg_type, alg_id, head);
 	if (ixt) __ipsec_alg_usage_inc(ixt);
 	read_unlock(&ipsec_alg_lock);
+
 	return ixt;
 }
 
@@ -239,32 +245,41 @@ static void ipsec_alg_put(struct ipsec_alg *ixt) {
  * 	called from ipsec_rcv() with encrypt=IPSEC_ALG_DECRYPT and
  * 	ipsec_tunnel_start_xmit with encrypt=IPSEC_ALG_ENCRYPT
  */
-int ipsec_alg_esp_encrypt(struct ipsec_sa *sa_p, __u8 * idat, int ilen, const __u8 * iv, int encrypt) {
+int ipsec_alg_esp_encrypt(struct ipsec_sa *sa_p, __u8 * idat,
+			  int ilen, const __u8 * iv, int encrypt)
+{
 	int ret;
 	struct ipsec_alg_enc *ixt_e=sa_p->ips_alg_enc;
-	KLIPS_PRINT(debug_rcv||debug_tunnel,
+#ifdef CONFIG_KLIPS_DEBUG
+	int debug_flag = (encrypt==IPSEC_ALG_ENCRYPT ?
+			  debug_tunnel : debug_rcv);
+#endif
+
+	KLIPS_PRINT(debug_flag,
 		    "klips_debug:ipsec_alg_esp_encrypt: "
 		    "entering with encalg=%d, ixt_e=%p\n",
 		    sa_p->ips_encalg, ixt_e);
-	if (!ixt_e) {
-		KLIPS_PRINT(debug_rcv||debug_tunnel,
+	if (ixt_e == NULL) {
+	  KLIPS_PRINT(debug_flag,
 			    "klips_debug:ipsec_alg_esp_encrypt: "
 			    "NULL ipsec_alg_enc object\n");
 		return -1;
 	}
-	KLIPS_PRINT(debug_rcv||debug_tunnel,
+	KLIPS_PRINT(debug_flag,
 		    "klips_debug:ipsec_alg_esp_encrypt: "
 		    "calling cbc_encrypt encalg=%d "
 		    "ips_key_e=%p idat=%p ilen=%d iv=%p, encrypt=%d\n",
 			sa_p->ips_encalg, 
 			sa_p->ips_key_e, idat, ilen, iv, encrypt);
-	ret=ixt_e->ixt_e_cbc_encrypt(ixt_e, sa_p->ips_key_e, idat, ilen, iv, encrypt);
-	KLIPS_PRINT(debug_rcv||debug_tunnel,
+	ret=ixt_e->ixt_e_cbc_encrypt(ixt_e, sa_p->ips_key_e, idat,
+				     ilen, iv, encrypt);
+	KLIPS_PRINT(debug_flag,
 		    "klips_debug:ipsec_alg_esp_encrypt: "
 		    "returned ret=%d\n",
 		    ret);
 	return ret;
 }
+
 /*
  * 	encryption key context creation function
  * 	called from pfkey_v2_parser.c:pfkey_ips_init() 
@@ -289,14 +304,14 @@ int ipsec_alg_enc_key_create(struct ipsec_sa *sa_p) {
 	/* 
 	 * grRRR... DES 7bits jurassic stuff ... f*ckk --jjo 
 	 */
-	switch(ixt_e->ixt_alg_id) {
+	switch(ixt_e->ixt_common.ixt_support.ias_id) {
 		case ESP_3DES:
 			keyminbits=keymaxbits=192;break;
 		case ESP_DES:
 			keyminbits=keymaxbits=64;break;
 		default:
-			keyminbits=ixt_e->ixt_keyminbits;
-			keymaxbits=ixt_e->ixt_keymaxbits;
+			keyminbits=ixt_e->ixt_common.ixt_support.ias_keyminbits;
+			keymaxbits=ixt_e->ixt_common.ixt_support.ias_keymaxbits;
 	}
 	if(sa_p->ips_key_bits_e<keyminbits || 
 			sa_p->ips_key_bits_e>keymaxbits) {
@@ -304,7 +319,7 @@ int ipsec_alg_enc_key_create(struct ipsec_sa *sa_p) {
 				"klips_debug:ipsec_alg_enc_key_create: "
 				"incorrect encryption key size for id=%d: %d bits -- "
 				"must be between %d,%d bits\n" /*octets (bytes)\n"*/,
-				ixt_e->ixt_alg_id,
+				ixt_e->ixt_common.ixt_support.ias_id,
 				sa_p->ips_key_bits_e, keyminbits, keymaxbits);
 		ret=-EINVAL;
 		goto ixt_out;
@@ -367,8 +382,8 @@ int ipsec_alg_auth_key_create(struct ipsec_sa *sa_p) {
 			    "NULL ipsec_alg_auth object\n");
 		return -EPROTO;
 	}
-	keyminbits=ixt_a->ixt_keyminbits;
-	keymaxbits=ixt_a->ixt_keymaxbits;
+	keyminbits=ixt_a->ixt_common.ixt_support.ias_keyminbits;
+	keymaxbits=ixt_a->ixt_common.ixt_support.ias_keymaxbits;
 	if(sa_p->ips_key_bits_a<keyminbits || sa_p->ips_key_bits_a>keymaxbits) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:ipsec_alg_auth_key_create: incorrect auth"
@@ -399,7 +414,9 @@ ixt_out:
 }
 
 
-int ipsec_alg_sa_esp_hash(const struct ipsec_sa *sa_p, const __u8 *espp, int len, __u8 *hash, int hashlen) {
+int ipsec_alg_sa_esp_hash(const struct ipsec_sa *sa_p, const __u8 *espp,
+			  int len, __u8 *hash, int hashlen)
+{
 	struct ipsec_alg_auth *ixt_a=sa_p->ips_alg_auth;
 	if (!ixt_a) {
 		KLIPS_PRINT(debug_pfkey,
@@ -426,18 +443,25 @@ int ipsec_alg_sa_esp_hash(const struct ipsec_sa *sa_p, const __u8 *espp, int len
  ***************************************************************/
 
 /* validation for registering (enc) module */
-static int check_enc(struct ipsec_alg_enc *ixt) {
+static int check_enc(struct ipsec_alg_enc *ixt)
+{
 	int ret=-EINVAL;
-	if (ixt->ixt_blocksize==0) /*  || ixt->ixt_blocksize%2) need for ESP_NULL */
-		barf_out(KERN_ERR "invalid blocksize=%d\n", ixt->ixt_blocksize);
-	if (ixt->ixt_keyminbits==0 && ixt->ixt_keymaxbits==0 && ixt->ixt_e_keylen==0)
+	if (ixt->ixt_common.ixt_blocksize==0) /*  || ixt->ixt_common.ixt_blocksize%2) need for ESP_NULL */
+		barf_out(KERN_ERR "invalid blocksize=%d\n", ixt->ixt_common.ixt_blocksize);
+	if (ixt->ixt_common.ixt_support.ias_keyminbits==0
+	    && ixt->ixt_common.ixt_support.ias_keymaxbits==0
+	    && ixt->ixt_e_keylen==0)
 		goto zero_key_ok;
-	if (ixt->ixt_keyminbits==0)
-		barf_out(KERN_ERR "invalid keyminbits=%d\n", ixt->ixt_keyminbits);
-	if (ixt->ixt_keymaxbits==0)
-		barf_out(KERN_ERR "invalid keymaxbits=%d\n", ixt->ixt_keymaxbits);
+	
+	if (ixt->ixt_common.ixt_support.ias_keyminbits==0)
+		barf_out(KERN_ERR "invalid keyminbits=%d\n", ixt->ixt_common.ixt_support.ias_keyminbits);
+	
+	if (ixt->ixt_common.ixt_support.ias_keymaxbits==0)
+		barf_out(KERN_ERR "invalid keymaxbits=%d\n", ixt->ixt_common.ixt_support.ias_keymaxbits);
+	
 	if (ixt->ixt_e_keylen==0)
 		barf_out(KERN_ERR "invalid keysize=%d\n", ixt->ixt_e_keylen);
+	
 zero_key_ok:
 	if (ixt->ixt_e_ctx_size==0 && ixt->ixt_e_new_key == NULL)
 		barf_out(KERN_ERR "invalid key_e_size=%d and ixt_e_new_key=NULL\n", ixt->ixt_e_ctx_size);
@@ -452,22 +476,27 @@ out:
 static int check_auth(struct ipsec_alg_auth *ixt)
 {
 	int ret=-EINVAL;
-	if (ixt->ixt_alg_id==0 || ixt->ixt_alg_id > SADB_AALG_MAX)
-		barf_out("invalid alg_id=%d > %d (SADB_AALG_MAX)\n", ixt->ixt_alg_id, SADB_AALG_MAX);
-	if (ixt->ixt_blocksize==0 || ixt->ixt_blocksize%2)
-		barf_out(KERN_ERR "invalid blocksize=%d\n", ixt->ixt_blocksize);
-	if (ixt->ixt_blocksize>AH_BLKLEN_MAX)
+	if (ixt->ixt_common.ixt_support.ias_id==0 || ixt->ixt_common.ixt_support.ias_id > SADB_AALG_MAX)
+		barf_out("invalid alg_id=%d > %d (SADB_AALG_MAX)\n",
+			 ixt->ixt_common.ixt_support.ias_id, SADB_AALG_MAX);
+
+	if (ixt->ixt_common.ixt_blocksize==0
+	    || ixt->ixt_common.ixt_blocksize%2)
+		barf_out(KERN_ERR "invalid blocksize=%d\n",
+			 ixt->ixt_common.ixt_blocksize);
+
+	if (ixt->ixt_common.ixt_blocksize>AH_BLKLEN_MAX)
 		barf_out(KERN_ERR "sorry blocksize=%d > %d. "
 			"Please increase AH_BLKLEN_MAX and recompile\n", 
-			ixt->ixt_blocksize,
+			ixt->ixt_common.ixt_blocksize,
 			AH_BLKLEN_MAX);
-	if (ixt->ixt_keyminbits==0 && ixt->ixt_keymaxbits==0 && ixt->ixt_a_keylen==0)
+	if (ixt->ixt_common.ixt_support.ias_keyminbits==0 && ixt->ixt_common.ixt_support.ias_keymaxbits==0 && ixt->ixt_a_keylen==0)
 		goto zero_key_ok;
-	if (ixt->ixt_keyminbits==0)
-		barf_out(KERN_ERR "invalid keyminbits=%d\n", ixt->ixt_keyminbits);
-	if (ixt->ixt_keymaxbits==0)
-		barf_out(KERN_ERR "invalid keymaxbits=%d\n", ixt->ixt_keymaxbits);
-	if (ixt->ixt_keymaxbits!=ixt->ixt_keyminbits)
+	if (ixt->ixt_common.ixt_support.ias_keyminbits==0)
+		barf_out(KERN_ERR "invalid keyminbits=%d\n", ixt->ixt_common.ixt_support.ias_keyminbits);
+	if (ixt->ixt_common.ixt_support.ias_keymaxbits==0)
+		barf_out(KERN_ERR "invalid keymaxbits=%d\n", ixt->ixt_common.ixt_support.ias_keymaxbits);
+	if (ixt->ixt_common.ixt_support.ias_keymaxbits!=ixt->ixt_common.ixt_support.ias_keyminbits)
 		barf_out(KERN_ERR "keymaxbits must equal keyminbits (not sure).\n");
 	if (ixt->ixt_a_keylen==0)
 		barf_out(KERN_ERR "invalid keysize=%d\n", ixt->ixt_a_keylen);
@@ -486,7 +515,8 @@ out:
 /* 
  * Generic (enc, auth) registration entry point 
  */
-int register_ipsec_alg(struct ipsec_alg *ixt) {
+int register_ipsec_alg(struct ipsec_alg *ixt)
+{
 	int ret=-EINVAL;
 	/*	Validation 	*/
 	if (ixt==NULL)
@@ -496,6 +526,7 @@ int register_ipsec_alg(struct ipsec_alg *ixt) {
 			"must be %d.%d.%d[-%d]\n",
 				IPSEC_ALG_VERSION_QUAD(ixt->ixt_version), 
 				IPSEC_ALG_VERSION_QUAD(IPSEC_ALG_VERSION));
+
 	switch(ixt->ixt_alg_type) {
 		case IPSEC_ALG_TYPE_AUTH:
 			if ((ret=check_auth((struct ipsec_alg_auth *)ixt)<0))
@@ -510,8 +541,10 @@ int register_ipsec_alg(struct ipsec_alg *ixt) {
 			 *
 			 * fixed NULL support by David De Reu <DeReu@tComLabs.com>
  			 */
-			if (ixt->ixt_ivlen == 0 && ixt->ixt_blocksize > 1)
-				ixt->ixt_ivlen = ixt->ixt_blocksize*8;
+			if (ixt->ixt_support.ias_ivlen == 0
+			    && ixt->ixt_blocksize > 1) {
+				ixt->ixt_support.ias_ivlen = ixt->ixt_blocksize*8;
+			}
 			break;
 		default:
 			barf_out("alg_type=%d not supported\n", ixt->ixt_alg_type);
@@ -521,9 +554,12 @@ int register_ipsec_alg(struct ipsec_alg *ixt) {
 	if (ret<0) 
 		barf_out(KERN_WARNING "ipsec_alg for alg_id=%d failed."
 				"Not loaded (ret=%d).\n",
-				ixt->ixt_alg_id, ret);
+				ixt->ixt_support.ias_id, ret);
 
-	ret = pfkey_list_insert_supported((struct supported *)&ixt->ixt_support, &(pfkey_supported_list[SADB_SATYPE_ESP]));
+
+	ret = pfkey_list_insert_supported((struct ipsec_alg_supported *)&ixt->ixt_support
+					  , &(pfkey_supported_list[SADB_SATYPE_ESP]));
+
 	if (ret==0) {
 		ixt->ixt_state |= IPSEC_ALG_ST_SUPP;
 		/*	send register event to userspace	*/
@@ -555,7 +591,9 @@ int unregister_ipsec_alg(struct ipsec_alg *ixt) {
 	ret=ipsec_alg_delete(ixt);
 	if (ixt->ixt_state&IPSEC_ALG_ST_SUPP) {
 		ixt->ixt_state &= ~IPSEC_ALG_ST_SUPP;
-		pfkey_list_remove_supported((struct supported *)&ixt->ixt_support, &(pfkey_supported_list[SADB_SATYPE_ESP]));
+		pfkey_list_remove_supported((struct ipsec_alg_supported *)&ixt->ixt_support
+					    , &(pfkey_supported_list[SADB_SATYPE_ESP]));
+
 		/*	send register event to userspace	*/
 		pfkey_register_reply(SADB_SATYPE_ESP, NULL);
 	}
@@ -592,7 +630,7 @@ static int ipsec_alg_test_encrypt(int enc_alg, int test) {
 		ret=-EINVAL;
 		goto out;
 	}
-	iv_size=ixt_e->ixt_ivlen / 8;
+	iv_size=ixt_e->ixt_common.ixt_support.ias_ivlen / 8;
 	key_e_size=ixt_e->ixt_e_ctx_size;
 	keysize=ixt_e->ixt_e_keylen;
 	KLIPS_PRINT(1, 
@@ -661,7 +699,7 @@ static int ipsec_alg_test_encrypt(int enc_alg, int test) {
 			printk(KERN_INFO
 				    "klips_info: ipsec_alg_test_encrypt: "
 				    "%s %s speed=%d KB/s\n", 
-				    ixt_e->ixt_name,
+				    ixt_e->ixt_common.ixt_name,
 				    encrypt? "encrypt": "decrypt", speed);
 		}
 	}
@@ -704,7 +742,7 @@ static int ipsec_alg_test_auth(int auth_alg, int test) {
 		ret=-EINVAL;
 		goto out;
 	}
-	blocksize=ixt_a->ixt_blocksize;
+	blocksize=ixt_a->ixt_common.ixt_blocksize;
 	key_a_size=ixt_a->ixt_a_ctx_size;
 	keysize=ixt_a->ixt_a_keylen;
 	KLIPS_PRINT(1, 
@@ -746,7 +784,7 @@ static int ipsec_alg_test_auth(int auth_alg, int test) {
 		printk(KERN_INFO
 				"klips_info: ipsec_alg_test_auth: "
 				"%s hash speed=%d KB/s\n", 
-				ixt_a->ixt_name,
+				ixt_a->ixt_common.ixt_name,
 				speed);
 	}
 out:
@@ -789,11 +827,26 @@ int ipsec_alg_init(void) {
 	KLIPS_PRINT(1, "klips_info:ipsec_alg_init: "
 		"calling ipsec_alg_static_init()\n");
 
-	/* If we are suppose to use our AES, and don't have CryptoAPI enabled... */
-#if defined(CONFIG_KLIPS_ENC_AES) && CONFIG_KLIPS_ENC_AES && !defined(CONFIG_KLIPS_ENC_AES_MODULE) && !CONFIG_KLIPS_ENC_CRYPTOAPI && !defined(CONFIG_KLIPS_ENC_CRYPTOAPI_MODULE)
+	/* If we are suppose to use our AES, and don't have
+	 * CryptoAPI enabled...
+	 */
+#if defined(CONFIG_KLIPS_ENC_AES) && CONFIG_KLIPS_ENC_AES && !defined(CONFIG_KLIPS_ENC_AES_MODULE) 
+#if defined(CONFIG_KLIPS_ENC_CRYPTOAPI) && CONFIG_KLIPS_ENC_CRYPTOAPI
+#warning "Using built-in AES rather than CryptoAPI AES"
+#endif	
 	{
 		extern int ipsec_aes_init(void);
 		ipsec_aes_init();
+	}
+#endif
+
+#if defined(CONFIG_KLIPS_ENC_3DES) && CONFIG_KLIPS_ENC_3DES && !defined(CONFIG_KLIPS_ENC_3DES_MODULE) 
+#if defined(CONFIG_KLIPS_ENC_CRYPTOAPI) && CONFIG_KLIPS_ENC_CRYPTOAPI
+#warning "Using built-in 3des rather than CryptoAPI 3des"
+#endif	
+	{
+		extern int ipsec_3des_init(void);
+		ipsec_3des_init();
 	}
 #endif
 
@@ -825,9 +878,11 @@ int ipsec_alg_sa_init(struct ipsec_sa *sa_p) {
 	/*	Only ESP for now ... */
 	if (sa_p->ips_said.proto != IPPROTO_ESP)
 		return -EPROTONOSUPPORT;
+
 	KLIPS_PRINT(debug_pfkey, "klips_debug: ipsec_alg_sa_init() :"
 			"entering for encalg=%d, authalg=%d\n",
 			    sa_p->ips_encalg, sa_p->ips_authalg);
+
 	if ((ixt_e=(struct ipsec_alg_enc *)
 		ipsec_alg_get(IPSEC_ALG_TYPE_ENCRYPT, sa_p->ips_encalg))) {
 		KLIPS_PRINT(debug_pfkey,
@@ -836,6 +891,7 @@ int ipsec_alg_sa_init(struct ipsec_sa *sa_p) {
 		    ixt_e, sa_p->ips_encalg);
 		sa_p->ips_alg_enc=ixt_e;
 	}
+
 	if ((ixt_a=(struct ipsec_alg_auth *)
 		ipsec_alg_get(IPSEC_ALG_TYPE_AUTH, sa_p->ips_authalg))) {
 		KLIPS_PRINT(debug_pfkey,
@@ -855,13 +911,13 @@ int ipsec_alg_sa_wipe(struct ipsec_sa *sa_p) {
 	if ((ixt=(struct ipsec_alg *)sa_p->ips_alg_enc)) {
 		KLIPS_PRINT(debug_pfkey, "klips_debug: ipsec_alg_sa_wipe() :"
 				"unlinking for encalg=%d\n",
-				ixt->ixt_alg_id);
+				ixt->ixt_support.ias_id);
 		ipsec_alg_put(ixt);
 	}
 	if ((ixt=(struct ipsec_alg *)sa_p->ips_alg_auth)) {
 		KLIPS_PRINT(debug_pfkey, "klips_debug: ipsec_alg_sa_wipe() :"
 				"unlinking for authalg=%d\n",
-				ixt->ixt_alg_id);
+				ixt->ixt_support.ias_id);
 		ipsec_alg_put(ixt);
 	}
 	return 0;
@@ -888,7 +944,9 @@ ipsec_xform_get_info(char *buffer,
 		    (int)offset,
 		    length);
 
-	for(i = 0, head = ipsec_alg_hash_table; i< IPSEC_ALG_HASHSZ; i++, head++)
+	for(i = 0, head = ipsec_alg_hash_table;
+	    i<IPSEC_ALG_HASHSZ;
+	    i++, head++)
 	{
 		struct list_head *p;
 		for (p=head->next; p!=head; p=p->next)
@@ -896,17 +954,17 @@ ipsec_xform_get_info(char *buffer,
 			ixt = list_entry(p, struct ipsec_alg, ixt_list);
 			len += ipsec_snprintf(buffer+len, length-len,
 					      "VERSION=%d TYPE=%d ID=%d NAME=%s REFCNT=%d ",
-					      ixt->ixt_version, ixt->ixt_alg_type, ixt->ixt_alg_id,
+					      ixt->ixt_version, ixt->ixt_alg_type, ixt->ixt_support.ias_id,
 					      ixt->ixt_name, ixt->ixt_refcnt);
 
 			len += ipsec_snprintf(buffer+len, length-len,
 					      "STATE=%08x BLOCKSIZE=%d IVLEN=%d KEYMINBITS=%d KEYMAXBITS=%d ",
 					      ixt->ixt_state, ixt->ixt_blocksize,
-					      ixt->ixt_ivlen, ixt->ixt_keyminbits, ixt->ixt_keymaxbits);
+					      ixt->ixt_support.ias_ivlen, ixt->ixt_support.ias_keyminbits, ixt->ixt_support.ias_keymaxbits);
 
 			len += ipsec_snprintf(buffer+len, length-len,
 					      "IVLEN=%d KEYMINBITS=%d KEYMAXBITS=%d ",
-					      ixt->ixt_ivlen, ixt->ixt_keyminbits, ixt->ixt_keymaxbits);
+					      ixt->ixt_support.ias_ivlen, ixt->ixt_support.ias_keyminbits, ixt->ixt_support.ias_keymaxbits);
 
 			switch(ixt->ixt_alg_type)
 			{

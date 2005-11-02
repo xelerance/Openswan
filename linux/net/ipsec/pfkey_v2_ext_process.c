@@ -13,14 +13,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_ext_process.c,v 1.19 2004/12/04 07:14:18 mcr Exp $
+ * RCSID $Id: pfkey_v2_ext_process.c,v 1.20 2005/04/29 05:10:22 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_netlink.c.
  */
 
-char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.19 2004/12/04 07:14:18 mcr Exp $";
+char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.20 2005/04/29 05:10:22 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -54,12 +54,11 @@ char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.19 2004
 # endif /* SPINLOCK_23 */
 #endif /* SPINLOCK */
 #ifdef NET_21
-# include <asm/uaccess.h>
 # include <linux/in6.h>
 # define ip_chk_addr inet_addr_type
 # define IS_MYADDR RTN_LOCAL
 #endif
-#include <asm/checksum.h>
+
 #include <net/ip.h>
 #ifdef NETLINK_SOCK
 # include <linux/netlink.h>
@@ -859,6 +858,9 @@ errlab:
 
 /*
  * $Log: pfkey_v2_ext_process.c,v $
+ * Revision 1.20  2005/04/29 05:10:22  mcr
+ * 	removed from extraenous includes to make unit testing easier.
+ *
  * Revision 1.19  2004/12/04 07:14:18  mcr
  * 	resolution to gcc3-ism was wrong. fixed to assign correct
  * 	variable.

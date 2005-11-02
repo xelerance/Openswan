@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2.c,v 1.85 2004/12/03 21:25:57 mcr Exp $
+ * RCSID $Id: pfkey_v2.c,v 1.97.2.3 2005/09/06 02:10:03 mcr Exp $
  */
 
 /*
@@ -52,6 +52,7 @@
 #include <linux/skbuff.h>
 #include <linux/netdevice.h>
 #include <net/sock.h> /* struct sock */
+#include <net/protocol.h>
 /* #include <net/tcp.h> */
 #include <net/af_unix.h>
 #ifdef CONFIG_PROC_FS
@@ -61,10 +62,6 @@
 #include <linux/types.h>
  
 #include <openswan.h>
-#ifdef NET_21
-# include <asm/uaccess.h>
-# include <linux/in6.h>
-#endif /* NET_21 */
 
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
@@ -82,10 +79,6 @@ extern int sysctl_ipsec_debug_verbose;
 #endif /* CONFIG_KLIPS_DEBUG */
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
-
-#ifndef SOCKOPS_WRAPPED
-#define SOCKOPS_WRAPPED(name) name
-#endif /* SOCKOPS_WRAPPED */
 
 extern struct proto_ops pfkey_ops;
 
@@ -237,7 +230,7 @@ pfkey_list_insert_socket(struct socket *socketp, struct socket_list **sockets)
 }
   
 int
-pfkey_list_remove_supported(struct supported *supported, struct supported_list **supported_list)
+pfkey_list_remove_supported(struct ipsec_alg_supported *supported, struct supported_list **supported_list)
 {
 	struct supported_list *supported_listp = *supported_list, *prev = NULL;
 	
@@ -280,7 +273,8 @@ pfkey_list_remove_supported(struct supported *supported, struct supported_list *
 }
 
 int
-pfkey_list_insert_supported(struct supported *supported, struct supported_list **supported_list)
+pfkey_list_insert_supported(struct ipsec_alg_supported *supported
+			    , struct supported_list **supported_list)
 {
 	struct supported_list *supported_listp;
 
@@ -306,7 +300,9 @@ pfkey_list_insert_supported(struct supported *supported, struct supported_list *
 		    supported_list);
 	
 	supported_listp = (struct supported_list *)kmalloc(sizeof(struct supported_list), GFP_KERNEL);
-	if(supported_listp == NULL)	{
+
+	if(supported_listp == NULL)
+	{
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_list_insert_supported: "
 			    "memory allocation error.\n");
@@ -364,6 +360,7 @@ pfkey_write_space(struct sock *sk)
 }
 #endif /* !NET_21 */
 
+#ifdef NET_26
 DEBUG_NO_STATIC void
 pfkey_insert_socket(struct sock *sk)
 {
@@ -371,18 +368,35 @@ pfkey_insert_socket(struct sock *sk)
 		    "klips_debug:pfkey_insert_socket: "
 		    "sk=0p%p\n",
 		    sk);
-#ifdef NET_26
 	pfkey_sock_list_grab();
 	sk_add_node(sk, &pfkey_sock_list);
 	pfkey_sock_list_ungrab();
+}
+
+DEBUG_NO_STATIC void
+pfkey_remove_socket(struct sock *sk)
+{
+	KLIPS_PRINT(debug_pfkey,
+		    "klips_debug:pfkey_remove_socket: 0p%p\n", sk);
+	pfkey_sock_list_grab();
+	sk_del_node_init(sk);
+	pfkey_sock_list_ungrab();
+	return;
+}
 #else
+
+DEBUG_NO_STATIC void
+pfkey_insert_socket(struct sock *sk)
+{
+	KLIPS_PRINT(debug_pfkey,
+		    "klips_debug:pfkey_insert_socket: "
+		    "sk=0p%p\n",
+		    sk);
 	cli();
 	sk->next=pfkey_sock_list;
 	pfkey_sock_list=sk;
 	sti();
-#endif
 }
-
 DEBUG_NO_STATIC void
 pfkey_remove_socket(struct sock *sk)
 {
@@ -391,11 +405,7 @@ pfkey_remove_socket(struct sock *sk)
 	s = NULL;
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_remove_socket: .\n");
-#ifdef NET_26
-	pfkey_sock_list_grab();
-	sk_del_node_init(sk);
-	pfkey_sock_list_ungrab();
-#else
+
 	cli();
 	s=&pfkey_sock_list;
 
@@ -412,13 +422,13 @@ pfkey_remove_socket(struct sock *sk)
 		s=&((*s)->next);
 	}
 	sti();
-#endif
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_remove_socket: "
 		    "not found.\n");
 	return;
 }
+#endif
 
 DEBUG_NO_STATIC void
 pfkey_destroy_socket(struct sock *sk)
@@ -426,11 +436,12 @@ pfkey_destroy_socket(struct sock *sk)
 	struct sk_buff *skb;
 
 	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_destroy_socket: .\n");
+		    "klips_debug:pfkey_destroy_socket: 0p%p\n",sk);
 	pfkey_remove_socket(sk);
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_destroy_socket: "
-		    "pfkey_remove_socket called.\n");
+		    "pfkey_remove_socket called, sk=0p%p\n",sk);
 	
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_destroy_socket: "
@@ -487,7 +498,9 @@ pfkey_destroy_socket(struct sock *sk)
 			printk(" ip_summed:%d", skb->ip_summed);
 			printk(" priority:%d", skb->priority);
 			printk(" protocol:%d", skb->protocol);
+#ifdef HAVE_SOCK_SECURITY
 			printk(" security:%d", skb->security);
+#endif
 			printk(" truesize:%d", skb->truesize);
 			printk(" head:0p%p", skb->head);
 			printk(" data:0p%p", skb->data);
@@ -602,6 +615,15 @@ pfkey_upmsg(struct socket *sock, struct sadb_msg *pfkey_msg)
 	return error;
 }
 
+#ifdef NET_26_12_SKALLOC
+static struct proto key_proto = {
+	.name	  = "KEY",
+	.owner	  = THIS_MODULE,
+	.obj_size = sizeof(struct sock),
+	
+};
+#endif
+
 DEBUG_NO_STATIC int
 pfkey_create(struct socket *sock, int protocol)
 {
@@ -651,11 +673,17 @@ pfkey_create(struct socket *sock, int protocol)
 
 #ifdef NET_21
 #ifdef NET_26
-	sk=(struct sock *)sk_alloc(PF_KEY, GFP_KERNEL, 1, NULL);
+#ifdef NET_26_12_SKALLOC
+	sk=(struct sock *)sk_alloc(PF_KEY, GFP_KERNEL, &key_proto, 1);
 #else
+	sk=(struct sock *)sk_alloc(PF_KEY, GFP_KERNEL, 1, NULL);
+#endif
+#else
+	/* 2.4 interface */
 	sk=(struct sock *)sk_alloc(PF_KEY, GFP_KERNEL, 1);
 #endif
 #else /* NET_21 */
+	/* 2.2 interface */
 	sk=(struct sock *)sk_alloc(GFP_KERNEL);
 #endif /* NET_21 */
 
@@ -679,7 +707,6 @@ pfkey_create(struct socket *sock, int protocol)
 	sk->sk_reuse = 1;
 	sock->ops = &pfkey_ops;
 
-	sk->sk_zapped=0;
 	sk->sk_family = PF_KEY;
 /*	sk->num = protocol; */
 	sk->sk_protocol = protocol;
@@ -793,7 +820,9 @@ pfkey_release(struct socket *sock, struct socket *peersock)
 			    "No sk attached to sock=0p%p.\n", sock);
 		return 0; /* -EINVAL; */
 	}
-		
+
+	write_lock_bh(&pfkey_sock_lock);
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_release: "
 		    "sock=0p%p sk=0p%p\n", sock, sk);
@@ -822,6 +851,8 @@ pfkey_release(struct socket *sock, struct socket *peersock)
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_release: "
 		    "succeeded.\n");
+
+	write_unlock_bh(&pfkey_sock_lock);
 
 	return 0;
 }
@@ -1124,14 +1155,14 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, int nonblock, in
 	if(len < sizeof(struct sadb_msg)) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
-			    "bogus msg len of %d, too small.\n", len);
+			    "bogus msg len of %d, too small.\n", (int)len);
 		SENDERR(EMSGSIZE);
 	}
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_sendmsg: "
 		    "allocating %d bytes for downward message.\n",
-		    len);
+		    (int)len);
 	if((pfkey_msg = (struct sadb_msg*)kmalloc(len, GFP_KERNEL)) == NULL) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
@@ -1155,7 +1186,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, int nonblock, in
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
 			    "bogus msg len of %d, not %d byte aligned.\n",
-			    len, (int)IPSEC_PFKEYv2_ALIGN);
+			    (int)len, (int)IPSEC_PFKEYv2_ALIGN);
 		SENDERR(EMSGSIZE);
 	}
 
@@ -1308,7 +1339,7 @@ pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int size, int noblock, in
 
 	KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
 		    "klips_debug:pfkey_recvmsg: sock=0p%p sk=0p%p msg=0p%p size=%d.\n",
-		    sock, sk, msg, size);
+		    sock, sk, msg, (int)size);
 	if(flags & ~MSG_PEEK) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
@@ -1358,8 +1389,7 @@ struct net_proto_family pfkey_family_ops = {
 	pfkey_create
 };
 
-struct proto_ops SOCKOPS_WRAPPED(pfkey_ops) = {
-#ifdef NETDEV_23
+struct proto_ops pfkey_ops = {
 	family:		PF_KEY,
 	release:	pfkey_release,
 	bind:		sock_no_bind,
@@ -1376,31 +1406,7 @@ struct proto_ops SOCKOPS_WRAPPED(pfkey_ops) = {
 	sendmsg:	pfkey_sendmsg,
 	recvmsg:	pfkey_recvmsg,
 	mmap:		sock_no_mmap,
-#else /* NETDEV_23 */
-	PF_KEY,
-	sock_no_dup,
-	pfkey_release,
-	sock_no_bind,
-	sock_no_connect,
-	sock_no_socketpair,
-	sock_no_accept,
-	sock_no_getname,
-	datagram_poll,
-	sock_no_ioctl,
-	sock_no_listen,
-	pfkey_shutdown,
-	sock_no_setsockopt,
-	sock_no_getsockopt,
-	sock_no_fcntl,
-	pfkey_sendmsg,
-	pfkey_recvmsg
-#endif /* NETDEV_23 */
 };
-
-#ifdef NETDEV_23
-#include <linux/smp_lock.h>
-SOCKOPS_WRAP(pfkey, PF_KEY);
-#endif /* NETDEV_23 */
 
 #else /* NET_21 */
 struct proto_ops pfkey_proto_ops = {
@@ -1483,7 +1489,11 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 					sk->sk_socket,
 					sk->sk_err,
 					sk->sk_reuse,
+#ifdef HAVE_SOCK_ZAPPED
+					sock_flag(sk, SOCK_ZAPPED),
+#else
 					sk->sk_zapped,
+#endif					
 					sk->sk_protocol,
 					sk->sk_sndbuf,
 					(unsigned int)sk->sk_stamp.tv_sec,
@@ -1525,26 +1535,32 @@ pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
 #endif /* !PROC_NO_DUMMY */
 )
 {
-	const int max_content = length > 0? length-1 : 0;	/* limit of useful snprintf output */
+	/* limit of useful snprintf output */
+	const int max_content = length > 0? length-1 : 0;	
 	off_t begin=0;
 	int len=0;
 	int satype;
-	struct supported_list *pfkey_supported_p;
+	struct supported_list *ps;
 	
 	len += ipsec_snprintf(buffer, length,
-		      "satype exttype alg_id ivlen minbits maxbits\n");
+		      "satype exttype alg_id ivlen minbits maxbits name\n");
 	
 	for(satype = SADB_SATYPE_UNSPEC; satype <= SADB_SATYPE_MAX; satype++) {
-		pfkey_supported_p = pfkey_supported_list[satype];
-		while(pfkey_supported_p) {
+		ps = pfkey_supported_list[satype];
+		while(ps) {
+			struct ipsec_alg_supported *alg = ps->supportedp;
+			unsigned char *n = alg->ias_name;
+			if(n == NULL) n = "unknown";
+
 			len += ipsec_snprintf(buffer+len, length-len,
-				     "    %2d      %2d     %2d   %3d     %3d     %3d\n",
-				     satype,
-				     pfkey_supported_p->supportedp->supported_alg_exttype,
-				     pfkey_supported_p->supportedp->supported_alg_id,
-				     pfkey_supported_p->supportedp->supported_alg_ivlen,
-				     pfkey_supported_p->supportedp->supported_alg_minbits,
-				     pfkey_supported_p->supportedp->supported_alg_maxbits);
+					      "    %2d      %2d     %2d   %3d     %3d     %3d %20s\n",
+					      satype,
+					      alg->ias_exttype,
+					      alg->ias_id,
+					      alg->ias_ivlen,
+					      alg->ias_keyminbits,
+					      alg->ias_keymaxbits,
+					      n);
 			
 			if (len >= max_content) {
 				/* we've done all that can fit -- stop loop */
@@ -1562,7 +1578,7 @@ pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
 				}
 			}
 
-			pfkey_supported_p = pfkey_supported_p->next;
+			ps = ps->next;
 		}
 	}
 	*start = buffer + (offset - begin);	/* Start of wanted data */
@@ -1661,31 +1677,35 @@ struct proc_dir_entry proc_net_pfkey_registered =
 #endif /* CONFIG_PROC_FS */
 
 DEBUG_NO_STATIC int
-supported_add_all(int satype, struct supported supported[], int size)
+supported_add_all(int satype, struct ipsec_alg_supported supported[], int size)
 {
 	int i;
 	int error = 0;
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:init_pfkey: "
-		    "sizeof(supported_init_<satype=%d>)[%d]/sizeof(struct supported)[%d]=%d.\n",
+		    "sizeof(supported_init_<satype=%d>)[%d]/sizeof(struct ipsec_alg_supported)[%d]=%d.\n",
 		    satype,
 		    size,
-		    (int)sizeof(struct supported),
-		    (int)(size/sizeof(struct supported)));
+		    (int)sizeof(struct ipsec_alg_supported),
+		    (int)(size/sizeof(struct ipsec_alg_supported)));
 
-	for(i = 0; i < size / sizeof(struct supported); i++) {
-		
+	for(i = 0; i < size / sizeof(struct ipsec_alg_supported); i++) {
+
+		unsigned char *n = supported[i].ias_name;
+		if(n == NULL) n="unknown";
+
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:init_pfkey: "
-			    "i=%d inserting satype=%d exttype=%d id=%d ivlen=%d minbits=%d maxbits=%d.\n",
+			    "i=%d inserting satype=%d exttype=%d id=%d ivlen=%d minbits=%d maxbits=%d name=%s.\n",
 			    i,
 			    satype,
-			    supported[i].supported_alg_exttype,
-			    supported[i].supported_alg_id,
-			    supported[i].supported_alg_ivlen,
-			    supported[i].supported_alg_minbits,
-			    supported[i].supported_alg_maxbits);
+			    supported[i].ias_exttype,
+			    supported[i].ias_id,
+			    supported[i].ias_ivlen,
+			    supported[i].ias_keyminbits,
+			    supported[i].ias_keymaxbits,
+			    n);			    
 			    
 		error |= pfkey_list_insert_supported(&(supported[i]),
 					    &(pfkey_supported_list[satype]));
@@ -1697,19 +1717,24 @@ DEBUG_NO_STATIC int
 supported_remove_all(int satype)
 {
 	int error = 0;
-	struct supported*supportedp;
+	struct ipsec_alg_supported*supportedp;
 
 	while(pfkey_supported_list[satype]) {
+		unsigned char *n;
 		supportedp = pfkey_supported_list[satype]->supportedp;
+
+		n = supportedp->ias_name;
+		if(n == NULL) n="unknown";
+
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:init_pfkey: "
-			    "removing satype=%d exttype=%d id=%d ivlen=%d minbits=%d maxbits=%d.\n",
+			    "removing satype=%d exttype=%d id=%d ivlen=%d minbits=%d maxbits=%d name=%s.\n",
 			    satype,
-			    supportedp->supported_alg_exttype,
-			    supportedp->supported_alg_id,
-			    supportedp->supported_alg_ivlen,
-			    supportedp->supported_alg_minbits,
-			    supportedp->supported_alg_maxbits);
+			    supportedp->ias_exttype,
+			    supportedp->ias_id,
+			    supportedp->ias_ivlen,
+			    supportedp->ias_keyminbits,
+			    supportedp->ias_keymaxbits, n);
 			    
 		error |= pfkey_list_remove_supported(supportedp,
 					    &(pfkey_supported_list[satype]));
@@ -1723,7 +1748,7 @@ pfkey_init(void)
 	int error = 0;
 	int i;
 	
-	static struct supported supported_init_ah[] = {
+	static struct ipsec_alg_supported supported_init_ah[] = {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_MD5HMAC, 0, 128, 128},
 #endif /* CONFIG_KLIPS_AUTH_HMAC_MD5 */
@@ -1731,7 +1756,7 @@ pfkey_init(void)
 		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_SHA1HMAC, 0, 160, 160}
 #endif /* CONFIG_KLIPS_AUTH_HMAC_SHA1 */
 	};
-	static struct supported supported_init_esp[] = {
+	static struct ipsec_alg_supported supported_init_esp[] = {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_MD5HMAC, 0, 128, 128},
 #endif /* CONFIG_KLIPS_AUTH_HMAC_MD5 */
@@ -1742,7 +1767,7 @@ pfkey_init(void)
 		{SADB_EXT_SUPPORTED_ENCRYPT, SADB_EALG_3DESCBC, 64, 168, 168},
 #endif /* CONFIG_KLIPS_ENC_3DES */
 	};
-	static struct supported supported_init_ipip[] = {
+	static struct ipsec_alg_supported supported_init_ipip[] = {
 		{SADB_EXT_SUPPORTED_ENCRYPT, SADB_X_TALG_IPv4_in_IPv4, 0, 32, 32}
 #if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
 		, {SADB_EXT_SUPPORTED_ENCRYPT, SADB_X_TALG_IPv6_in_IPv4, 0, 128, 32}
@@ -1751,7 +1776,7 @@ pfkey_init(void)
 #endif /* defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE) */
 	};
 #ifdef CONFIG_KLIPS_IPCOMP
-	static struct supported supported_init_ipcomp[] = {
+	static struct ipsec_alg_supported supported_init_ipcomp[] = {
 		{SADB_EXT_SUPPORTED_ENCRYPT, SADB_X_CALG_DEFLATE, 0, 1, 1}
 	};
 #endif /* CONFIG_KLIPS_IPCOMP */
@@ -1859,8 +1884,7 @@ cleanup_module(void)
 }
 #endif /* 0 */
 #else /* MODULE */
-void
-pfkey_proto_init(struct net_proto *pro)
+void pfkey_proto_init(struct net_protocol *pro)
 {
 	pfkey_init();
 }
@@ -1868,6 +1892,67 @@ pfkey_proto_init(struct net_proto *pro)
 
 /*
  * $Log: pfkey_v2.c,v $
+ * Revision 1.97.2.3  2005/09/06 02:10:03  mcr
+ *    pulled up possible SMP-related compilation fix
+ *
+ * Revision 1.97.2.2  2005/08/28 01:21:12  paul
+ * Undid Ken's gcc4 fix in version 1.94 since it breaks linking KLIPS on
+ * SMP kernels.
+ *
+ * Revision 1.97.2.1  2005/08/27 23:40:00  paul
+ * recommited HAVE_SOCK_SECURITY fixes for linux 2.6.13
+ *
+ * Revision 1.101  2005/09/06 01:42:25  mcr
+ *    removed additional SOCKOPS_WRAPPED code
+ *
+ * Revision 1.100  2005/08/30 18:10:15  mcr
+ * 	remove SOCKOPS_WRAPPED() code, add proper locking to the
+ * 	pfkey code. (cross fingers)
+ *
+ * Revision 1.99  2005/08/28 01:53:37  paul
+ * Undid Ken's gcc4 fix in version 1.94 since it breaks linking KLIPS on SMP kernels.
+ *
+ * Revision 1.98  2005/08/27 23:07:21  paul
+ * Somewhere between 2.6.12 and 2.6.13rc7 the unused security memnber in sk_buff
+ * has been removed. This patch should fix compilation for both cases.
+ *
+ * Revision 1.97  2005/07/20 00:33:36  mcr
+ * 	fixed typo in #ifdef for SKALLOC.
+ *
+ * Revision 1.96  2005/07/19 20:02:15  mcr
+ * 	sk_alloc() interface change.
+ *
+ * Revision 1.95  2005/07/09 00:40:06  ken
+ * Fix for GCC4 - it doesn't like the potential for duplicate declaration
+ *
+ * Revision 1.94  2005/07/09 00:14:04  ken
+ * Casts for 64bit cleanliness
+ *
+ * Revision 1.93  2005/07/08 16:20:05  mcr
+ * 	fix for 2.6.12 disapperance of sk_zapped field -> sock_flags.
+ *
+ * Revision 1.92  2005/05/21 03:29:39  mcr
+ * 	fixed missing prototype definition.
+ *
+ * Revision 1.91  2005/05/11 01:43:45  mcr
+ * 	removed "poor-man"s OOP in favour of proper C structures.
+ *
+ * Revision 1.90  2005/05/02 18:42:47  mcr
+ * 	fix for cut&paste error with pfkey_v2.c "supported_name"
+ *
+ * Revision 1.89  2005/05/01 03:12:31  mcr
+ * 	print name if it is available.
+ *
+ * Revision 1.88  2005/04/29 05:10:22  mcr
+ * 	removed from extraenous includes to make unit testing easier.
+ *
+ * Revision 1.87  2005/04/15 19:57:10  mcr
+ * 	make sure that address has 0p so that it will
+ * 	sanitized.
+ *
+ * Revision 1.86  2005/04/08 18:28:36  mcr
+ * 	some minor #ifdef simplification in pursuit of a possible bug.
+ *
  * Revision 1.85  2004/12/03 21:25:57  mcr
  * 	compile time fixes for running on 2.6.
  * 	still experimental.

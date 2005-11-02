@@ -1,4 +1,6 @@
 #!/bin/sh
+
+: ==== start ====
 # NOTE: this is shared by a number of tests
 
 named

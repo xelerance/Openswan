@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 # nuke special route that may be there.
 route delete -net 192.0.1.0 netmask 255.255.255.0 gw 192.1.2.45
 

@@ -17,9 +17,17 @@ the inner IP address or policy with Mode-Configuration.
 
 There are some limitations at present, whic are beyond our control.
 
-Openswan 2.x does not use aggressive mode, only main mode.
-Aggressive mode is trivially vulnerable to distributed denial of service
-attacks. We will not be implementing aggressive mode.
+Openswan 2.x (as of 2.3.x) supports aggressive mode, using aggrmode=yes
+Special code has been written to avoid a trivial distributed denial
+of service attack on Aggressive Mode to take down the rest of the
+non-aggressive mode tunnels with it, by offloading the aggressive mode
+crypto work into crypto helpers, which can be limitted in resource
+consumption and take a lower priority then other crypto operations.
+It is still strongly recommended to avoid using aggressive mode whenever
+possible.
+
+
+
 
 Due to a design limitation of main made, when using pre-shared keys, 
 (aka "group passwords") one may have only one group password (the default

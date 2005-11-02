@@ -12,14 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_parse.c,v 1.64 2005/01/26 00:50:35 mcr Exp $
+ * RCSID $Id: pfkey_v2_parse.c,v 1.65 2005/04/06 17:46:05 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_parser.c.
  */
 
-char pfkey_v2_parse_c_version[] = "$Id: pfkey_v2_parse.c,v 1.64 2005/01/26 00:50:35 mcr Exp $";
+char pfkey_v2_parse_c_version[] = "$Id: pfkey_v2_parse.c,v 1.65 2005/04/06 17:46:05 mcr Exp $";
 
 /*
  * Some ugly stuff to allow consistent debugging code for use in the
@@ -1385,8 +1385,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 
 		/* Do I even know about this type of extension? */
 		if(ext_parsers[pfkey_ext->sadb_ext_type]==NULL) {
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-				"pfkey_msg_parse: "
+			ERROR("pfkey_msg_parse: "
 				"ext type %d(%s) unknown, ignoring.\n", 
 				pfkey_ext->sadb_ext_type,
 				pfkey_v2_sadb_ext_string(pfkey_ext->sadb_ext_type));
@@ -1595,6 +1594,11 @@ errlab:
 
 /*
  * $Log: pfkey_v2_parse.c,v $
+ * Revision 1.65  2005/04/06 17:46:05  mcr
+ * 	failure to recognize an extension is considered an error.
+ * 	This could be a problem in the future, but we need some kind
+ * 	of logging. This should be rate limited, probably.
+ *
  * Revision 1.64  2005/01/26 00:50:35  mcr
  * 	adjustment of confusion of CONFIG_IPSEC_NAT vs CONFIG_KLIPS_NAT,
  * 	and make sure that NAT_TRAVERSAL is set as well to match

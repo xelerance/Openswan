@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: x509.c,v 1.23 2004/09/08 17:16:52 ken Exp $
+ * RCSID $Id: x509.c,v 1.23.18.3 2005/07/26 02:11:23 ken Exp $
  */
 
 #include <stdlib.h>
@@ -2344,7 +2344,7 @@ parse_x509cert(chunk_t blob, u_int level0, x509cert_t *cert)
     bool critical;
     chunk_t object;
     u_int level;
-    u_int extn_oid;
+    u_int extn_oid = 0;
     int objectID = 0;
 
     asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);

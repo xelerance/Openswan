@@ -1,0 +1,2 @@
+This tests the use of the %reject target.
+It makes sure that it does not apply to IKE packets

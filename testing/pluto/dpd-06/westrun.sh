@@ -15,7 +15,9 @@ ipsec eroute
 sleep 10
 
 : Create the block
-iptables -I INPUT -s 192.1.2.23/32 -d 0/0 -j DROP
+iptables -I INPUT -s 192.1.2.23/32  -d 0/0 -j DROP
+iptables -I OUTPUT -d 192.1.2.23/32 -s 0/0 -j DROP
+sleep 10
 sleep 10
 : ==== cut ====
 ipsec whack --listevents

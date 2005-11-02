@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikeping.c,v 1.7.6.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: ikeping.c,v 1.13 2005/07/08 02:56:38 paul Exp $
  */
 
 #include <stdio.h>
@@ -32,6 +32,7 @@
 #include <poll.h>
 
 #include <openswan.h>
+#include "pfkeyv2.h"
 
 #include "constants.h"
 #include "packet.h"
@@ -189,7 +190,8 @@ receive_ping(int afamily, int s, int reply, int natt)
 	struct isakmp_hdr ih;
 	char   rbuf[256];
 	char   buf[64];
-	int n, rport, sendlen;
+	int n, rport;
+	unsigned int sendlen;
 	const char *xchg_name;
 	int xchg;
 
@@ -197,7 +199,7 @@ receive_ping(int afamily, int s, int reply, int natt)
 	xchg  = 0;
 	sendlen=sizeof(sender);
 	n = recvfrom(s, rbuf, sizeof(rbuf)
-		     , 0, (struct sockaddr *)&sender, &sendlen);
+		     , 0, (struct sockaddr *)&sender, (socklen_t *)&sendlen);
 
 	memcpy(&ih, rbuf, sizeof(ih));
 	if(natt) {

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pluto_crypt.h,v 1.8 2005/03/14 00:10:54 mcr Exp $
+ * RCSID $Id: pluto_crypt.h,v 1.8.4.1 2005/08/08 17:18:58 ken Exp $
  */
 
 /*
@@ -34,7 +34,7 @@ typedef struct wire_chunk {
   size_t       len;
 } wire_chunk_t;
 
-#define KENONCE_SIZE 512
+#define KENONCE_SIZE 1280
 struct pcr_kenonce {
   /* inputs */
   u_int16_t oakley_group;
@@ -48,7 +48,7 @@ struct pcr_kenonce {
   unsigned char space[KENONCE_SIZE];
 };
 
-#define DHCALC_SIZE 2048
+#define DHCALC_SIZE 2560
 struct pcr_skeyid_q {
   /* inputs */
   u_int16_t     oakley_group;

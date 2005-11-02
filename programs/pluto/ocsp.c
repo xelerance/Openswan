@@ -379,7 +379,7 @@ get_ocsp_status(const ocsp_location_t *loc, chunk_t serialNumber
     ,time_t *nextUpdate)
 {
     ocsp_certinfo_t *certinfo, **certinfop;
-    bool cmp;
+    int cmp = 0;
 
     /* find location */
     ocsp_location_t *location = get_ocsp_location(loc, ocsp_cache);
@@ -1271,7 +1271,7 @@ valid_ocsp_response(response_t *res)
 static bool
 parse_basic_ocsp_response(chunk_t blob, int level0, response_t *res)
 {
-    u_int level, version, extn_oid;
+    u_int level, version, extn_oid = 0;
     u_char buf[BUF_LEN];
     asn1_ctx_t ctx;
     bool critical;
@@ -1375,7 +1375,7 @@ parse_ocsp_response(chunk_t blob, response_t * res)
     int objectID = 0;
 
     response_status rStatus = STATUS_INTERNALERROR;
-    u_int ocspResponseType;
+    u_int ocspResponseType = 0;
 
     asn1_init(&ctx, blob, 0, FALSE, DBG_RAW);
 
@@ -1629,7 +1629,7 @@ static void
 process_single_response(ocsp_location_t *location, single_response_t *sres)
 {
     ocsp_certinfo_t *certinfo, **certinfop;
-    bool cmp;
+    int cmp = 0;
 
     if (sres->hash_algorithm != OID_SHA1)
     {

@@ -13,7 +13,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.fs2_6,v 1.1 2004/08/17 03:31:34 mcr Exp $
+# RCSID $Id: Makefile.fs2_6,v 1.1.10.1 2005/08/12 16:10:05 ken Exp $
 #
 # Note! Dependencies are done automagically by 'make dep', which also
 # removes any old dependencies. DON'T put your own dependencies here
@@ -28,7 +28,11 @@ ifeq ($(strip ${SUBARCH}),)
 SUBARCH:=${ARCH}
 endif
 
-ifeq (${SUBARCH},i386)
+# the assembly version expects frame pointers, which are
+# optional in many kernel builds. If you want speed, you should
+# probably use cryptoapi code instead.
+USEASSEMBLY=${SUBARCH}${CONFIG_FRAME_POINTER}
+ifeq (${USEASSEMBLY},i386y)
 obj-$(CONFIG_KLIPS_ENC_AES) += aes-i586.o
 else
 obj-$(CONFIG_KLIPS_ENC_AES) += aes.o
@@ -37,6 +41,13 @@ endif
 
 #
 # $Log: Makefile.fs2_6,v $
+# Revision 1.1.10.1  2005/08/12 16:10:05  ken
+# do not use assembly code with there are no frame pointers
+#
+# Revision 1.2  2005/08/12 14:13:58  mcr
+# 	do not use assembly code with there are no frame pointers,
+# 	as it does not have the right linkages.
+#
 # Revision 1.1  2004/08/17 03:31:34  mcr
 # 	klips 2.6 edits.
 #

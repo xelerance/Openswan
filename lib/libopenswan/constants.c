@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: constants.c,v 1.10 2005/01/23 18:53:35 mcr Exp $
+ * RCSID $Id: constants.c,v 1.11 2005/06/23 01:45:55 mcr Exp $
  */
 
 /*
@@ -580,7 +580,7 @@ static const char *const oakley_enc_name_draft_aes_cbc_02[] = {
 	"OAKLEY_TWOFISH_CBC"	/*	65005	*/,
 };
 static const char *const oakley_enc_name_ssh[] = {
-	"OAKLEY_SSH_PRIVATE_65289",
+	"OAKLEY_TWOFISH_CBC_SSH",
 };
 enum_names oakley_enc_names_ssh =
     { 65289, 65289, oakley_enc_name_ssh, NULL };

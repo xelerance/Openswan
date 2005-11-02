@@ -1,3 +1,4 @@
+: ==== start ====
 TESTNAME=dpd-05
 source /testing/pluto/bin/westlocal.sh
 

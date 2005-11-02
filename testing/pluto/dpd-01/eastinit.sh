@@ -1,3 +1,5 @@
+: ==== start ====
+
 TESTNAME=dpd-01
 
 source /testing/pluto/bin/eastlocal.sh

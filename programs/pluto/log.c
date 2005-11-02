@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: log.c,v 1.92.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: log.c,v 1.95 2005/07/18 19:40:15 mcr Exp $
  */
 
 #include <stdio.h>
@@ -30,6 +30,7 @@
 #include <sys/types.h>
 
 #include <openswan.h>
+#include "pfkeyv2.h"
 
 #include "constants.h"
 #include "oswlog.h"
@@ -228,7 +229,72 @@ perpeer_logfree(struct connection *c)
     }
 }
 
-/* open the per-peer log */
+/* attempt to arrange a writeable parent directory for <path>
+ * Result indicates success.  Failure will be logged.
+ *
+ * NOTE: this routine must not call our own logging facilities to report
+ * an error since those routines are not re-entrant and such a call
+ * would be recursive.
+ */
+static bool
+ensure_writeable_parent_directory(char *path)
+{
+    /* NOTE: a / in the first char of a path is not like any other.
+     * That is why the strchr starts at path + 1.
+     */
+    char *e = strrchr(path + 1, '/');	/* end of directory prefix */
+    bool happy = TRUE;
+
+    if (e != NULL)
+    {
+	/* path has an explicit directory prefix: deal with it */
+
+	/* Treat a run of slashes as one.
+	 * Remember that a / in the first char is different.
+	 */
+	while (e > path+1 && e[-1] == '/')
+	    e--;
+
+	*e = '\0';	/* carve off dirname part of path */
+
+	if (access(path, W_OK) == 0)
+	{
+	    /* mission accomplished, with no work */
+	}
+	else if (errno != ENOENT)
+	{
+	    /* cannot write to this directory for some reason
+	     * other than a missing directory
+	     */
+	    syslog(LOG_CRIT, "can not write to %s: %s", path, strerror(errno));
+	    happy = FALSE;
+	}
+	else
+	{
+	    /* missing directory: try to create one */
+	    happy = ensure_writeable_parent_directory(path);
+	    if (happy)
+	    {
+		if (mkdir(path, 0750) != 0)
+		{
+		    syslog(LOG_CRIT, "can not create dir %s: %s"
+			, path, strerror(errno));
+		    happy = FALSE;
+		}
+	    }
+	}
+
+	*e = '/';	/* restore path to original form */
+    }
+    return happy;
+}
+
+/* open the per-peer log
+ *
+ * NOTE: this routine must not call our own logging facilities to report
+ * an error since those routines are not re-entrant and such a call
+ * would be recursive.
+ */
 static void
 open_peerlog(struct connection *c)
 {
@@ -272,61 +338,9 @@ open_peerlog(struct connection *c)
 
     /* now open the file, creating directories if necessary */
 
-    {  /* create the directory */
-	char *dname;
-	int   bpl_len = strlen(base_perpeer_logdir);
-	char *slashloc;
-
-	dname = clone_str(c->log_file_name, "temp copy of file name");
-	dname = dirname(dname);
-
-	if (access(dname, W_OK) != 0)
-	{
-	    if (errno != ENOENT)
-	    {
-		if (c->log_file_err)
-		{
-		    syslog(LOG_CRIT, "can not write to %s: %s"
-			   , dname, strerror(errno));
-		    c->log_file_err = TRUE;
-		    pfree(dname);
-		    return;
-		}
-	    }
-
-	    /* directory does not exist, walk path creating dirs */
-	    /* start at base_perpeer_logdir */
-	    slashloc = dname + bpl_len;
-	    slashloc++;    /* since, by construction there is a slash
-			      right there */
-
-	    while (*slashloc != '\0')
-	    {
-		char saveslash;
-
-		/* look for next slash */
-		while (*slashloc != '\0' && *slashloc != '/') slashloc++;
-
-		saveslash = *slashloc;
-
-		*slashloc = '\0';
-
-		if (mkdir(dname, 0750) != 0 && errno != EEXIST)
-		{
-		    syslog(LOG_CRIT, "can not create dir %s: %s"
-			   , dname, strerror(errno));
-		    c->log_file_err = TRUE;
-		    pfree(dname);
-		    return;
-		}
-		syslog(LOG_DEBUG, "created new directory %s", dname);
-		*slashloc = saveslash;
-		slashloc++;
-	    }
-	}
-
-	pfree(dname);
-    }
+    c->log_file_err = !ensure_writeable_parent_directory(c->log_file_name);
+    if (c->log_file_err)
+	return;
 
     c->log_file = fopen(c->log_file_name, "a");
     if (c->log_file == NULL)

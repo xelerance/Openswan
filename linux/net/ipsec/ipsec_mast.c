@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.6 2004/12/03 21:25:57 mcr Exp $";
+char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.7 2005/04/29 05:10:22 mcr Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -40,13 +40,11 @@ char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.6 2004/12/03 21:25:57
 #include <linux/udp.h>         /* struct udphdr */
 #include <linux/skbuff.h>
 #include <freeswan.h>
-#include <asm/uaccess.h>
 #include <linux/in6.h>
 #include <net/dst.h>
 #undef dev_kfree_skb
 #define dev_kfree_skb(a,b) kfree_skb(a)
 #define PHYSDEV_TYPE
-#include <asm/checksum.h>
 #include <net/icmp.h>		/* icmp_send() */
 #include <net/ip.h>
 #include <linux/netfilter_ipv4.h>
@@ -1065,6 +1063,9 @@ ipsec_mast_cleanup_devices(void)
 
 /*
  * $Log: ipsec_mast.c,v $
+ * Revision 1.7  2005/04/29 05:10:22  mcr
+ * 	removed from extraenous includes to make unit testing easier.
+ *
  * Revision 1.6  2004/12/03 21:25:57  mcr
  * 	compile time fixes for running on 2.6.
  * 	still experimental.

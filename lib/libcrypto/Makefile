@@ -12,12 +12,16 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.3 2004/12/18 18:13:33 mcr Exp $
+# RCSID $Id: Makefile,v 1.4 2005/06/23 01:45:22 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 SUBDIRS=libaes libdes
+
+ifeq ($(USE_EXTRACRYPTO),true)
+SUBDIRS+=libblowfish libtwofish libserpent libsha2
+endif
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"

@@ -5,15 +5,16 @@ Majors Version	Desired Feature Set			Date
 2.3		Basic support for KLIPS on 2.6.		Q4 2004
 		Aggressive Mode
 		Mode Config
+		
+2.3.1		bug fixes for DPD and ModeCfg.		Q1 2005
 
-2.4		X.509 1.6.x				Q1 2005
-
-2.5		optional 'ipsec starter'		Q4 2005
-		simpleca included
+2.4		optional 'ipsec starter'		Q2 2005
 		KLIPS2.6 test cases run
-		hardware support
 
-2.6		no more scripts				Q1 2005
+2.5		hardware support
+		simpleca included
+
+2.7		no more scripts				Q1 2005
 		26sec test cases
 
 2.7		IKEv2 (???)

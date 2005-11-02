@@ -15,7 +15,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_param.h,v 1.29 2005/01/26 00:50:35 mcr Exp $
+ * RCSID $Id: ipsec_param.h,v 1.29.6.1 2005/08/12 16:24:18 ken Exp $
  *
  */
 
@@ -233,8 +233,13 @@ extern void ipsec_print_ip(struct iphdr *ip);
 #define inet_protocol net_protocol
 #endif
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#if defined(CONFIG_IPSEC_NAT_TRAVERSAL) && CONFIG_IPSEC_NAT_TRAVERSAL
 #define NAT_TRAVERSAL 1
+#else
+/* let people either #undef, or #define = 0 it */
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#undef CONFIG_IPSEC_NAT_TRAVERSAL
+#endif
 #endif
 
 #define _IPSEC_PARAM_H_
@@ -242,6 +247,9 @@ extern void ipsec_print_ip(struct iphdr *ip);
 
 /*
  * $Log: ipsec_param.h,v $
+ * Revision 1.29.6.1  2005/08/12 16:24:18  ken
+ * Pull in NAT-T compile logic from HEAD
+ *
  * Revision 1.29  2005/01/26 00:50:35  mcr
  * 	adjustment of confusion of CONFIG_IPSEC_NAT vs CONFIG_KLIPS_NAT,
  * 	and make sure that NAT_TRAVERSAL is set as well to match

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: connections.c,v 1.243.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: connections.c,v 1.256.2.5 2005/08/25 01:13:48 paul Exp $
  */
 
 #include <string.h>
@@ -30,6 +30,7 @@
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
+#include "pfkeyv2.h"
 #include "kameipsec.h"
 
 #include "constants.h"
@@ -60,6 +61,7 @@
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "whack.h"
 #include "alg_info.h"
+#include "spdb.h"
 #include "ike_alg.h"
 #include "kernel_alg.h"
 #include "plutoalg.h"
@@ -526,7 +528,7 @@ check_orientations(void)
      * In other words, the far side must not match one of our new interfaces.
      */
     {
-	struct iface *i;
+	struct iface_port *i;
 
 	for (i = interfaces; i != NULL; i = i->next)
 	{
@@ -536,7 +538,7 @@ check_orientations(void)
 
 		for (hp = host_pairs; hp != NULL; hp = hp->next)
 		{
-		    if (sameaddr(&hp->him.addr, &i->addr)
+		    if (sameaddr(&hp->him.addr, &i->ip_addr)
 			&& (kern_interface!=NO_KERNEL || hp->him.host_port == pluto_port))
 		    {
 			/* bad news: the whole chain of connections
@@ -763,6 +765,8 @@ format_end(char *buf
 	{
 	    const char *send;
 	    char s[32];
+
+	    send="";
 	    
 	    switch(this->sendcert) {
 	    case cert_neversend:
@@ -1172,6 +1176,8 @@ add_connection(const struct whack_message *wm)
     struct alg_info_ike *alg_info_ike;
     const char *ugh;
 
+    alg_info_ike = NULL;
+
     if (con_by_name(wm->name, FALSE) != NULL)
     {
 	loglog(RC_DUPNAME, "attempt to redefine connection \"%s\"", wm->name);
@@ -1198,7 +1204,8 @@ add_connection(const struct whack_message *wm)
 	       , ugh? ugh : "Unknown");
 	return;
     }
-    else if (check_connection_end(&wm->right, &wm->left, wm)
+    else if ((wm->ike == NULL || alg_info_ike != NULL)
+	     && check_connection_end(&wm->right, &wm->left, wm)
 	     && check_connection_end(&wm->left, &wm->right, wm))
     {
 	bool same_rightca, same_leftca;
@@ -1398,7 +1405,10 @@ add_connection(const struct whack_message *wm)
 		, (unsigned long) c->sa_keying_tries
 		, prettypolicy(c->policy));
 	);
+    } else {
+	loglog(RC_FATAL, "attempt to load incomplete connection");
     }
+
 }
 
 /* Derive a template connection from a group connection and target.
@@ -1762,6 +1772,8 @@ find_connection_for_clients(struct spd_route **srp,
     int our_port  = ntohs(portof(our_client));
     int peer_port = ntohs(portof(peer_client));
 
+    best_sr = NULL;
+
     passert(!isanyaddr(our_client) && !isanyaddr(peer_client));
 #ifdef DEBUG
     if (DBGP(DBG_CONTROL))
@@ -1897,7 +1909,7 @@ build_outgoing_opportunistic_connection(struct gw_info *gw
 					,const ip_address *our_client
 					,const ip_address *peer_client)
 {
-    struct iface *p;
+    struct iface_port *p;
     struct connection *best = NULL;
     struct spd_route *sr, *bestsr;
     char ocb[ADDRTOT_BUF], pcb[ADDRTOT_BUF];
@@ -1918,7 +1930,7 @@ build_outgoing_opportunistic_connection(struct gw_info *gw
 	 * We cannot know what port the peer would use, so we assume
 	 * that it is pluto_port (makes debugging easier).
 	 */
-	struct connection *c = find_host_pair_connections(__FUNCTION__, &p->addr
+	struct connection *c = find_host_pair_connections(__FUNCTION__, &p->ip_addr
 							  , pluto_port
 							  , (ip_address *)NULL
 							  , pluto_port);
@@ -1980,7 +1992,7 @@ orient(struct connection *c)
 
     if (!oriented(*c))
     {
-	struct iface *p;
+	struct iface_port *p;
 
 	for (sr = &c->spd; sr; sr = sr->next)
 	{
@@ -1995,19 +2007,19 @@ orient(struct connection *c)
 		for (;;)
 		{
 		    /* check if this interface matches this end */
-		    if (sameaddr(&sr->this.host_addr, &p->addr)
+		    if (sameaddr(&sr->this.host_addr, &p->ip_addr)
 			&& (kern_interface != NO_KERNEL
 			    || sr->this.host_port == pluto_port))
 		    {
 			if (oriented(*c))
 			{
-			    if (c->interface == p)
+			    if (c->interface->ip_dev == p->ip_dev)
 				loglog(RC_LOG_SERIOUS
 				       , "both sides of \"%s\" are our interface %s!"
-				       , c->name, p->rname);
+				       , c->name, p->ip_dev->id_rname);
 			    else
 				loglog(RC_LOG_SERIOUS, "two interfaces match \"%s\" (%s, %s)"
-				       , c->name, c->interface->rname, p->rname);
+				       , c->name, c->interface->ip_dev->id_rname, p->ip_dev->id_rname);
 			    c->interface = NULL;	/* withdraw orientation */
 			    return FALSE;
 			}
@@ -2015,7 +2027,7 @@ orient(struct connection *c)
 		    }
 
 		    /* done with this interface if it doesn't match that end */
-		    if (!(sameaddr(&sr->that.host_addr, &p->addr)
+		    if (!(sameaddr(&sr->that.host_addr, &p->ip_addr)
 			  && (kern_interface!=NO_KERNEL
 			      || sr->that.host_port == pluto_port)))
 			break;
@@ -2078,6 +2090,19 @@ initiate_connection(const char *name, int whackfd
 	     * If we are to proceed asynchronously, whackfd will be NULL_FD.
 	     */
 	    c->policy |= POLICY_UP;
+
+	    if(c->policy & POLICY_ENCRYPT) {
+		struct alg_info_esp *alg = c->alg_info_esp;
+		struct db_sa *phase2_sa = kernel_alg_makedb(alg, TRUE);
+		
+		if(alg != NULL && phase2_sa == NULL) {
+		    whack_log(RC_NOALGO, "can not initiate: no acceptable kernel algorithms loaded");
+		    reset_cur_connection();
+		    close_any(whackfd);
+		    return;
+		}
+		free_sa(phase2_sa);
+	    }
 
 #ifdef SMARTCARD
 	    /* do we have to prompt for a PIN code? */
@@ -2185,11 +2210,11 @@ cannot_oppo(struct connection *c
     addrtot(&b->peer_client, 0, pcb, sizeof(pcb));
     addrtot(&b->our_client, 0, ocb, sizeof(ocb));
 
-    DBG(DBG_DNS | DBG_OPPO, DBG_log("Can't Opportunistically initiate for %s to %s: %s"
-	, ocb, pcb, ugh));
+    openswan_log("Can not opportunistically initiate for %s to %s: %s"
+                , ocb, pcb, ugh);
 
     whack_log(RC_OPPOFAILURE
-	, "Can't Opportunistically initiate for %s to %s: %s"
+	, "Can not Opportunistically initiate for %s to %s: %s"
 	, ocb, pcb, ugh);
 
     if (c != NULL && c->policy_next != NULL)
@@ -2511,25 +2536,23 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 {
     struct connection *c;
     struct spd_route *sr;
+    char ours[ADDRTOT_BUF];
+    char his[ADDRTOT_BUF];
+    int ourport;
+    int hisport;
 
     /* What connection shall we use?
      * First try for one that explicitly handles the clients.
      */
-    DBG(DBG_CONTROL,
-	{
-	    char ours[ADDRTOT_BUF];
-	    char his[ADDRTOT_BUF];
-	    int ourport;
-	    int hisport;
 
-	    addrtot(&b->our_client, 0, ours, sizeof(ours));
-	    addrtot(&b->peer_client, 0, his, sizeof(his));
-	    ourport = ntohs(portof(&b->our_client));
-	    hisport = ntohs(portof(&b->peer_client));
-	    DBG_log("initiate on demand from %s:%d to %s:%d proto=%d state: %s because: %s"
-		, ours, ourport, his, hisport, b->transport_proto
-		, oppo_step_name[b->step], b->want);
-	});
+    addrtot(&b->our_client, 0, ours, sizeof(ours));
+    addrtot(&b->peer_client, 0, his, sizeof(his));
+    ourport = ntohs(portof(&b->our_client));
+    hisport = ntohs(portof(&b->peer_client));
+    openswan_log("initiate on demand from %s:%d to %s:%d proto=%d state: %s because: %s"
+                , ours, ourport, his, hisport, b->transport_proto
+                , oppo_step_name[b->step], b->want);
+
     if (isanyaddr(&b->our_client) || isanyaddr(&b->peer_client))
     {
 	cannot_oppo(NULL, b, "impossible IP address");
@@ -2543,7 +2566,12 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 	 * are no Opportunistic connections -- whine and give up.
 	 * The failure policy cannot be gotten from a connection; we pick %pass.
 	 */
-	cannot_oppo(NULL, b, "no routed Opportunistic template covers this pair");
+	cannot_oppo(NULL, b, "no routed template covers this pair");
+    }
+    else if (c->kind == CK_TEMPLATE && (c->policy & POLICY_OPPO)==0)
+    {
+       loglog(RC_NOPEERIP, "cannot initiate connection for packet %s:%d -> %s:%d proto=%d - template conn"
+              , ours, ourport, his, hisport, b->transport_proto);
     }
     else if (c->kind != CK_TEMPLATE)
     {
@@ -2561,11 +2589,16 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 	if(c->kind == CK_INSTANCE)
 	{
 	    char cib[CONN_INST_BUF];
-	    /* there is already an instance being negotiated, no nothing */
+	    /* there is already an instance being negotiated, do nothing */
 	    DBG(DBG_CONTROL, DBG_log("found existing instance \"%s\"%s, rekeying it"
 				     , c->name
 				     , (fmt_conn_instance(c, cib), cib)));
-	    /* XXX-mcr - return; */
+
+	    /*
+	     * we used to return here, but rekeying is a better choice. If we got the
+	     * acquire, it is because something turned stuff into a %trap, or something
+	     * got deleted, perhaps due to an expiry.
+	     */
 	}
 
 	/* otherwise, there is some kind of static conn that can handle
@@ -3562,14 +3595,17 @@ refine_host_connection(const struct state *st, const struct id *peer_id
     struct connection *best_found = NULL;
     lset_t auth_policy;
     lset_t p1mode_policy = aggrmode ? POLICY_AGGRESSIVE : LEMPTY;
-    const chunk_t *psk;
     const struct RSA_private_key *my_RSA_pri = NULL;
     bool wcpip;	/* wildcard Peer IP? */
     int wildcards, best_wildcards;
     int our_pathlen, best_our_pathlen, peer_pathlen, best_peer_pathlen;
     chunk_t peer_ca;
+    const chunk_t *psk;
+
+    psk = NULL;
 
     our_pathlen = peer_pathlen = 0;
+    best_our_pathlen  = 0;
     best_peer_pathlen = 0;
     wildcards = best_wildcards = 0;
 
@@ -3593,7 +3629,9 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	return c;	/* peer ID matches current connection -- look no further */
     }
 
+#if defined(XAUTH)
     auth = xauth_calcbaseauth(auth);
+#endif
     switch (auth)
     {
     case OAKLEY_PRESHARED_KEY:
@@ -3605,7 +3643,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	if (psk == NULL)
 	    return NULL;	/* cannot determine PSK! */
 	break;
-
+		
     case OAKLEY_RSA_SIG:
 	auth_policy = POLICY_RSASIG;
 	if (initiator && c->spd.this.sc == NULL)
@@ -3771,8 +3809,9 @@ is_virtual_net_used(const ip_subnet *peer_net, const struct id *peer_id)
     for (d = connections; d != NULL; d = d->ac_next)
     {
 	switch (d->kind) {
+            /* It does NOT make sense to check for CK_TEMPLATE entries here,
+               since they do not contain a currently used virtual IP address */ 
 	    case CK_PERMANENT:
-	    case CK_TEMPLATE:
 	    case CK_INSTANCE:
 		if ((subnetinsubnet(peer_net,&d->spd.that.client) ||
 		     subnetinsubnet(&d->spd.that.client,peer_net)) &&
@@ -4056,9 +4095,12 @@ fc_try_oppo(const struct connection *c
 
 struct connection *
 find_client_connection(struct connection *c
-, const ip_subnet *our_net, const ip_subnet *peer_net
-, const u_int8_t our_protocol, const u_int16_t our_port
-, const u_int8_t peer_protocol, const u_int16_t peer_port)
+		       , const ip_subnet *our_net
+		       , const ip_subnet *peer_net
+		       , const u_int8_t our_protocol
+		       , const u_int16_t our_port
+		       , const u_int8_t peer_protocol
+		       , const u_int16_t peer_port)
 {
     struct connection *d;
     struct spd_route *sr;
@@ -4256,7 +4298,7 @@ show_connections_status(void)
 
 	c = array[i];
 
-	ifn = oriented(*c)? c->interface->rname : "";
+	ifn = oriented(*c)? c->interface->ip_dev->id_rname : "";
 
 	instance[0] = '\0';
 	if (c->kind == CK_INSTANCE && c->instance_serial != 0)
@@ -4271,6 +4313,9 @@ show_connections_status(void)
 	    while (sr != NULL)
 	    {
 		char srcip[ADDRTOT_BUF], dstip[ADDRTOT_BUF];
+		char thissemi[3+sizeof("srcup=")];
+		char thatsemi[3+sizeof("dstup=")];
+		char *thisup, *thatup;
 
 		(void) format_connection(topo, sizeof(topo), c, sr);
 		whack_log(RC_COMMENT, "\"%s\"%s: %s; %s; eroute owner: #%lu"
@@ -4289,8 +4334,31 @@ show_connections_status(void)
 		} else {
 		    addrtot(&sr->that.host_srcip, 0, dstip, sizeof(dstip));
 		}
-		whack_log(RC_COMMENT, "\"%s\"%s:     srcip=%s; dstip=%s"
-			  , c->name, instance, srcip, dstip);
+
+		thissemi[0]='\0';
+		thisup=thissemi;
+		if(sr->this.updown) {
+		    thissemi[0]=';';
+		    thissemi[1]=' ';
+		    thissemi[2]='\0';
+		    strcat(thissemi, "srcup=");
+		    thisup=sr->this.updown;
+		}
+		
+		thatsemi[0]='\0';
+		thatup=thatsemi;
+		if(sr->that.updown) {
+		    thatsemi[0]=';';
+		    thatsemi[1]=' ';
+		    thatsemi[2]='\0';
+		    strcat(thatsemi, "dstup=");
+		    thatup=sr->that.updown;
+		}
+		
+		whack_log(RC_COMMENT, "\"%s\"%s:     srcip=%s; dstip=%s%s%s%s%s;"
+			  , c->name, instance, srcip, dstip
+			  , thissemi, thisup
+			  , thatsemi, thatup);
 		sr = sr->next;
 		num++;
 	    }
@@ -4350,6 +4418,14 @@ show_connections_status(void)
 		      , instance
 		      , enum_name(&dpd_action_names, c->dpd_action)
 		      , c->dpd_delay, c->dpd_timeout);
+	}
+
+	if(c->extra_debugging) {
+	    whack_log(RC_COMMENT, "\"%s\"%s:   debug: %s"
+		      , c->name
+		      , instance
+		      , bitnamesof(debug_bit_names
+				   , c->extra_debugging));
 	}
 
 	whack_log(RC_COMMENT

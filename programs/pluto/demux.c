@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: demux.c,v 1.200.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: demux.c,v 1.210.2.7 2005/08/19 17:52:42 ken Exp $
  */
 
 /* Ordering Constraints on Payloads
@@ -247,6 +247,12 @@ static state_transition_fn	/* forward declaration */
 static const struct state_microcode
     *ike_microcode_index[STATE_IKE_ROOF - STATE_IKE_FLOOR];
 
+#define PHONY_STATE(X) \
+    { X, X \
+    , 0 \
+    , 0, P(VID) | P(CR), PT(NONE) \
+    , 0, NULL} 
+
 static const struct state_microcode state_microcode_table[] = {
 #define PT(n) ISAKMP_NEXT_##n
 #define P(n) LELEM(PT(n))
@@ -400,6 +406,7 @@ static const struct state_microcode state_microcode_table[] = {
 
     /* No state for aggr_outI1: -->HDR, SA, KE, Ni, IDii */
 
+#if defined(AGGRESSIVE)
     /* STATE_AGGR_R0:
      * SMF_PSK_AUTH: HDR, SA, KE, Ni, IDii
      *                -->  HDR, SA, KE, Nr, IDir, HASH_R
@@ -457,6 +464,19 @@ static const struct state_microcode state_microcode_table[] = {
     { STATE_AGGR_R2, STATE_UNDEFINED,
       SMF_ALL_AUTH,
       LEMPTY, LEMPTY, PT(NONE), EVENT_NULL, unexpected },
+#else
+    /*
+     * put in dummy states so that the state numbering does not
+     * change depending upon build options.
+     */
+    PHONY_STATE(STATE_AGGR_I1),
+    PHONY_STATE(STATE_AGGR_I1),
+    PHONY_STATE(STATE_AGGR_R1),
+    PHONY_STATE(STATE_AGGR_R1),
+    PHONY_STATE(STATE_AGGR_I2),
+    PHONY_STATE(STATE_AGGR_R2),
+#endif    
+    
 
 
     /***** Phase 2 Quick Mode *****/
@@ -672,7 +692,7 @@ init_demux(void)
 
 #if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
 static bool
-check_msg_errqueue(const struct iface *ifp, short interest)
+check_msg_errqueue(const struct iface_port *ifp, short interest)
 {
     struct pollfd pfd;
 
@@ -727,7 +747,7 @@ check_msg_errqueue(const struct iface *ifp, short interest)
 	if (packet_len == -1)
 	{
 	    log_errno((e, "recvmsg(,, MSG_ERRQUEUE) on %s failed in comm_handle"
-		, ifp->rname));
+		, ifp->ip_dev->id_rname));
 	    break;
 	}
 	else if (packet_len == sizeof(buffer))
@@ -776,12 +796,11 @@ check_msg_errqueue(const struct iface *ifp, short interest)
 	}
 
 	for (cm = CMSG_FIRSTHDR(&emh)
-	; cm != NULL
-	; cm = CMSG_NXTHDR(&emh,cm))
+		 ; cm != NULL
+		 ; cm = CMSG_NXTHDR(&emh,cm))
 	{
 	    if (cm->cmsg_level == SOL_IP
-	    && cm->cmsg_type == IP_RECVERR)
-	    {
+		&& cm->cmsg_type == IP_RECVERR)	{
 		/* ip(7) and recvmsg(2) specify:
 		 * ee_origin is SO_EE_ORIGIN_ICMP for ICMP
 		 *  or SO_EE_ORIGIN_LOCAL for locally generated errors.
@@ -873,7 +892,7 @@ check_msg_errqueue(const struct iface *ifp, short interest)
 		    else
 #endif
 		    openswan_log((sender != NULL) + "~"
-			"ERROR: asynchronous network error report on %s"
+			"ERROR: asynchronous network error report on %s (sport=%d)"
 			"%s"
 			", complainant %s"
 			": %s"
@@ -881,7 +900,8 @@ check_msg_errqueue(const struct iface *ifp, short interest)
 			/* ", pad %d, info %ld" */
 			/* ", data %ld" */
 			"]"
-			, ifp->rname
+			, ifp->ip_dev->id_rname
+				 , ifp->port
 			, fromstr
 			, offstr
 			, strerror(ee->ee_errno)
@@ -892,6 +912,9 @@ check_msg_errqueue(const struct iface *ifp, short interest)
 			);
 		    cur_state = old_state;
 		}
+	    }
+	    else if (cm->cmsg_level == SOL_IP
+		     && cm->cmsg_type == IP_PKTINFO) {
 	    }
 	    else
 	    {
@@ -911,14 +934,13 @@ check_msg_errqueue(const struct iface *ifp, short interest)
 bool
 send_packet(struct state *st, const char *where, bool verbose)
 {
-    struct connection *c = st->st_connection;
     bool err;
     u_int8_t ike_pkt[MAX_OUTPUT_UDP_SIZE];
     u_int8_t *ptr;
     unsigned long len;
     ssize_t wlen;
 
-    if ((c->interface->ike_float == TRUE) && (st->st_tpacket.len != 1)) {
+    if ((st->st_interface->ike_float == TRUE) && (st->st_tpacket.len != 1)) {
 	if ((unsigned long) st->st_tpacket.len >
 	    (MAX_OUTPUT_UDP_SIZE-sizeof(u_int32_t))) {
 	    DBG_log("send_packet(): really too big");
@@ -940,8 +962,8 @@ send_packet(struct state *st, const char *where, bool verbose)
 	, DBG_log("sending %lu bytes for %s through %s:%d to %s:%u:"
 		  , (unsigned long) st->st_tpacket.len
 		  , where
-		  , c->interface->rname
-		  , c->interface->port
+		  , st->st_interface->ip_dev->id_rname
+		  , st->st_interface->port
 		  , ip_str(&st->st_remoteaddr)
 		  , st->st_remoteport));
     DBG(DBG_RAW
@@ -950,11 +972,11 @@ send_packet(struct state *st, const char *where, bool verbose)
     setportof(htons(st->st_remoteport), &st->st_remoteaddr);
 
 #if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
-    (void) check_msg_errqueue(c->interface, POLLOUT);
+    (void) check_msg_errqueue(st->st_interface, POLLOUT);
 #endif /* defined(IP_RECVERR) && defined(MSG_ERRQUEUE) */
 
 #if 0
-    wlen = sendfromto(c->interface->fd
+    wlen = sendfromto(st->st_interface->fd
 		      , ptr
 		      , len, 0
 		      , sockaddrof(&st->st_remoteaddr)
@@ -962,11 +984,34 @@ send_packet(struct state *st, const char *where, bool verbose)
 		      , sockaddrof(&st->st_localaddr)
 		      , sockaddrlenof(&st->st_localaddr));
 #else
-    wlen = sendto(c->interface->fd
+    wlen = sendto(st->st_interface->fd
 		  , ptr
 		  , len, 0
 		  , sockaddrof(&st->st_remoteaddr)
 		  , sockaddrlenof(&st->st_remoteaddr));
+
+#ifdef DEBUG
+    if(DBGP(IMPAIR_JACOB_TWO_TWO)) {
+	/* sleep for half a second, and second another packet */
+	usleep(500000);
+
+	DBG_log("JACOB 2-2: resending %lu bytes for %s through %s:%d to %s:%u:"
+		, (unsigned long) st->st_tpacket.len
+		, where
+		, st->st_interface->ip_dev->id_rname
+		, st->st_interface->port
+		, ip_str(&st->st_remoteaddr)
+		, st->st_remoteport);
+#endif
+
+	wlen = sendto(st->st_interface->fd
+		      , ptr
+		      , len, 0
+		      , sockaddrof(&st->st_remoteaddr)
+		      , sockaddrlenof(&st->st_remoteaddr));
+    }
+
+	
 #endif
     err = (wlen != (ssize_t)len);
 
@@ -976,7 +1021,7 @@ send_packet(struct state *st, const char *where, bool verbose)
         if (!verbose)
 	    return FALSE; 
 	log_errno((e, "sendto on %s to %s:%u failed in %s"
-		   , c->interface->rname
+		   , st->st_interface->ip_dev->id_rname
 		   , ip_str(&st->st_remoteaddr)
 		   , st->st_remoteport
 		   , where));
@@ -1015,6 +1060,11 @@ informational(struct msg_digest *md)
 	 * once we are at least in R3/I4. 
 	 * and that the handler is expected to treat them suspiciously.
 	 */
+	DBG(DBG_CONTROL, DBG_log("processing informational %s (%d)"
+				 , enum_name(&ipsec_notification_names
+					     ,n->isan_type)
+				 , n->isan_type));
+				 
         switch (n->isan_type)
         {
         case R_U_THERE:
@@ -1073,12 +1123,14 @@ static struct msg_digest *md_pool = NULL;
 void
 free_md_pool(void)
 {
+
     for (;;)
     {
 	struct msg_digest *md = md_pool;
 
 	if (md == NULL)
 	    break;
+	passert(md_pool != md->next);
 	md_pool = md->next;
 	pfree(md);
     }
@@ -1123,6 +1175,9 @@ release_md(struct msg_digest *md)
     passert(looking_for_state == NULL || md->st != looking_for_state);
     freeanychunk(md->raw_packet);
     pfreeany(md->packet_pbs.start);
+
+    /* make sure we are not creating a loop */
+    passert(md != md_pool);
     md->packet_pbs.start = NULL;
     md->next = md_pool;
     md_pool = md;
@@ -1142,7 +1197,7 @@ release_md(struct msg_digest *md)
  * enormous input packet buffer, an auto.
  */
 void
-comm_handle(const struct iface *ifp)
+comm_handle(const struct iface_port *ifp)
 {
     static struct msg_digest *md;
 
@@ -1183,7 +1238,7 @@ comm_handle(const struct iface *ifp)
 static bool
 read_packet(struct msg_digest *md)
 {
-    const struct iface *ifp = md->iface;
+    const struct iface_port *ifp = md->iface;
     int packet_len;
     /* ??? this buffer seems *way* too big */
     u_int8_t bigbuffer[MAX_INPUT_UDP_SIZE];
@@ -1201,7 +1256,7 @@ read_packet(struct msg_digest *md)
     err_t from_ugh = NULL;
     static const char undisclosed[] = "unknown source";
 
-    happy(anyaddr(addrtypeof(&ifp->addr), &md->sender));
+    happy(anyaddr(addrtypeof(&ifp->ip_addr), &md->sender));
     zero(&from.sa);
     packet_len = recvfromto(ifp->fd, bigbuffer
 			    , sizeof(bigbuffer), /*flags*/0
@@ -1274,12 +1329,12 @@ read_packet(struct msg_digest *md)
 	else if (from_ugh != NULL)
 	{
 	    log_errno((e, "recvfrom on %s failed; Pluto cannot decode source sockaddr in rejection: %s"
-		, ifp->rname, from_ugh));
+		, ifp->ip_dev->id_rname, from_ugh));
 	}
 	else
 	{
 	    log_errno((e, "recvfrom on %s from %s:%u failed"
-		, ifp->rname
+		, ifp->ip_dev->id_rname
 		, ip_str(&md->sender), (unsigned)md->sender_port));
 	}
 
@@ -1288,7 +1343,7 @@ read_packet(struct msg_digest *md)
     else if (from_ugh != NULL)
     {
 	openswan_log("recvfrom on %s returned misformed source sockaddr: %s"
-	    , ifp->rname, from_ugh);
+	    , ifp->ip_dev->id_rname, from_ugh);
 	return FALSE;
     }
     cur_from = &md->sender;
@@ -1330,7 +1385,7 @@ read_packet(struct msg_digest *md)
 	    DBG_log("*received %d bytes from %s:%u on %s (port=%d)"
 		    , (int) pbs_room(&md->packet_pbs)
 		    , ip_str(cur_from), (unsigned) cur_from_port
-		    , ifp->rname
+		    , ifp->ip_dev->id_rname
 		    , ifp->port);
 	});
 
@@ -1403,6 +1458,11 @@ process_packet(struct msg_digest **mdp)
 	    , (unsigned) pbs_room(&md->packet_pbs), md->hdr.isa_length);
 	return;
     }
+
+    DBG(DBG_CONTROL
+	, DBG_log(" processing packet with exchange type=%s (%d)"
+		  , enum_name(&exchange_names, md->hdr.isa_xchg)
+		  , md->hdr.isa_xchg));
 
     switch (md->hdr.isa_xchg)
     {
@@ -1816,7 +1876,11 @@ process_packet(struct msg_digest **mdp)
 
     if (st != NULL)
     {
+#if defined(XAUTH)
       oakley_auth_t baseauth = xauth_calcbaseauth(st->st_oakley.auth);
+#else
+      oakley_auth_t baseauth = st->st_oakley.auth;
+#endif
       while (!LHAS(smc->flags, baseauth))
 	{
 	  smc++;
@@ -1833,6 +1897,16 @@ process_packet(struct msg_digest **mdp)
     {
 	loglog(RC_LOG, "discarding packet received during asynchronous work (DNS or crypto) in %s"
 	    , enum_name(&state_names, st->st_state));
+	return;
+    }
+
+    /*
+     * if this state is busy calculating in between state transitions,
+     * (there will be no suspended state), then we silently ignore the
+     * packet, as there is nothing we can do right now.
+     */
+    if(st!=NULL && st->st_calculating) {
+	openswan_log("message received while calculating. Ignored.");
 	return;
     }
 
@@ -1879,9 +1953,13 @@ process_packet(struct msg_digest **mdp)
      * look for encrypt packets. We can not handle them if we have not
      * yet calculated the skeyids. We will just store the packet in
      * the suspended state, since the calculation is likely underway.
+     *
+     * note that this differs from above, because skeyid is calculated
+     * in between states. (or will be, once DH is async)
+     *
      */
     if((md->hdr.isa_flags & ISAKMP_FLAG_ENCRYPTION)
-       && !st->hidden_variables.st_skeyid_calculated )
+       && st!=NULL && !st->hidden_variables.st_skeyid_calculated )
     {
 	DBG(DBG_CRYPT|DBG_CONTROL
 	    , DBG_log("received encrypted packet from %s:%u but exponentiation still in progress"
@@ -1953,11 +2031,16 @@ process_packet(struct msg_digest **mdp)
 	    /* Decrypt everything after header */
 	    if (!new_iv_set)
 	    {
-		/* use old IV */
-		passert(st->st_iv_len <= sizeof(st->st_new_iv));
-		st->st_new_iv_len = st->st_iv_len;
-		init_new_iv(st);
-	    }
+		if(st->st_iv_len == 0) {
+		    init_phase2_iv(st, &md->hdr.isa_msgid);
+		} else {
+		    /* use old IV */
+		    passert(st->st_iv_len <= sizeof(st->st_new_iv));
+		    st->st_new_iv_len = st->st_iv_len;
+		    init_new_iv(st);
+		}
+	    } 
+
 	    crypto_cbc_encrypt(e, FALSE, md->message_pbs.cur, 
 			    pbs_left(&md->message_pbs) , st);
 	}
@@ -2258,6 +2341,32 @@ process_packet(struct msg_digest **mdp)
     complete_state_transition(mdp, smc->processor(md));
 }
 
+
+static void update_retransmit_history(struct state *st, struct msg_digest *md)
+{
+	/*
+	 * replace previous receive packet with latest, to update
+	 * our notion of a retransmitted packet. This is important
+	 * to do, even for failing transitions, and suspended transitions
+	 * because the sender may well retransmit their request.
+	 */
+	pfreeany(st->st_rpacket.ptr);
+	
+	if (md->encrypted)
+	{
+		/* if encrypted, duplication already done */
+		st->st_rpacket = md->raw_packet;
+		md->raw_packet.ptr = NULL;
+	}
+	else
+	{
+		clonetochunk(st->st_rpacket
+			     , md->packet_pbs.start
+			     , pbs_room(&md->packet_pbs), "raw packet");
+	}
+}	
+
+
 /* complete job started by the state-specific state transition function */
 
 void
@@ -2287,12 +2396,29 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 	, DBG_log("complete state transition with %s"
 		  , enum_name(&stfstatus_name, result)));
 
+    /*
+     * we can only be in calculating state if state is ignore,
+     * or suspended.
+     */
+    passert(result == STF_IGNORE || result == STF_SUSPEND || st->st_calculating==FALSE);
+
     switch (result)
     {
 	case STF_IGNORE:
 	    break;
 
+        case STF_INLINE:         /* this is second time through complete
+				  * state transition, so the MD has already
+				  * been freed.
+0				  */
+	    *mdp = NULL;
+	    break;
+
 	case STF_SUSPEND:
+	    /* update the previous packet history */
+	    if(md->packet_pbs.start) {
+                 update_retransmit_history(st, md);
+            }
 	    /* the stf didn't complete its job: don't relase md */
 	    *mdp = NULL;
 	    break;
@@ -2310,22 +2436,8 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 	     */
 	    delete_event(st);
 
-	    /* replace previous receive packet with latest */
-
-	    pfreeany(st->st_rpacket.ptr);
-
-	    if (md->encrypted)
-	    {
-		/* if encrypted, duplication already done */
-		st->st_rpacket = md->raw_packet;
-		md->raw_packet.ptr = NULL;
-	    }
-	    else
-	    {
-		clonetochunk(st->st_rpacket
-		    , md->packet_pbs.start
-		    , pbs_room(&md->packet_pbs), "raw packet");
-	    }
+	    /* update the previous packet history */
+	    update_retransmit_history(st, md);
 
 	    /* free previous transmit packet */
 	    freeanychunk(st->st_tpacket);
@@ -2334,14 +2446,13 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 	    if (smc->flags & SMF_REPLY)
 	    {
 		char buf[ADDRTOT_BUF];
-		struct connection *c = st->st_connection;
 
 		DBG(DBG_CONTROL
 		    , DBG_log("sending reply packet to %s:%u (from port=%d)"
 			      , (addrtot(&st->st_remoteaddr
 					 , 0, buf, sizeof(buf)), buf)
 			      , st->st_remoteport
-			      , c->interface->port));
+			      , st->st_interface->port));
 
 		close_output_pbs(&md->reply);   /* good form, but actually a no-op */
 
@@ -2490,6 +2601,7 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		
 		sadetails[0]='\0';
 
+		/* document IPsec SA details for admin's pleasure */
 		if(IS_IPSEC_SA_ESTABLISHED(st->st_state))
 		{
 		    char *b = sadetails;
@@ -2565,12 +2677,15 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		    }
 
 		    {
-			char oa[ADDRTOT_BUF];
+			char oa[ADDRTOT_BUF+sizeof(":00000")];
 
 			strcpy(oa, "none");
 			if(!isanyaddr(&st->hidden_variables.st_natd)) {
-			  addrtot(&st->hidden_variables.st_natd, 0
-				  , oa, sizeof(oa));
+			    char oa2[ADDRTOT_BUF];
+			    addrtot(&st->hidden_variables.st_natd, 0
+				    , oa2, sizeof(oa2));
+			    snprintf(oa, sizeof(oa)
+				     , "%s:%d", oa2, st->st_remoteport);
 			}
 			snprintf(b, sizeof(sadetails)-(b-sadetails)-1
 				 , "%sNATD=%s"
@@ -2593,18 +2708,34 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		    fin = "}";
 
 		    strcat(b, fin);
+		} else if(IS_ISAKMP_SA_ESTABLISHED(st->st_state)
+			  && !st->hidden_variables.st_logged_p1algos) {
+		    /* document ISAKMP SA details for admin's pleasure */
+		    char *b = sadetails;
+
+		    passert(st->st_oakley.encrypter != NULL);
+		    passert(st->st_oakley.hasher != NULL);
+		    passert(st->st_oakley.group != NULL);
+
+		    snprintf(b, sizeof(sadetails)-(b-sadetails)-1
+			     , " {auth=%s cipher=%s_%d prf=%s group=modp%d}"
+			     , enum_show(&oakley_auth_names, st->st_oakley.auth)
+			     , st->st_oakley.encrypter->common.name
+			     , st->st_oakley.enckeylen
+			     , st->st_oakley.hasher->common.name
+			     , (int)st->st_oakley.group->bytes*8);
+		    st->hidden_variables.st_logged_p1algos = TRUE;
 		}
 
 		if (IS_ISAKMP_SA_ESTABLISHED(st->st_state)
-		|| IS_IPSEC_SA_ESTABLISHED(st->st_state))
+		    || IS_IPSEC_SA_ESTABLISHED(st->st_state))
 		{
 		    /* log our success */
-		    openswan_log("%s%s", story, sadetails);
 		    w = RC_SUCCESS;
 		}
 
-		/* tell whack our progress */
-		whack_log(w
+		/* tell whack and logs our progress */
+		loglog(w
 		    , "%s: %s%s"
 		    , enum_name(&state_names, st->st_state)
 		    , story, sadetails);
@@ -2742,6 +2873,9 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 	    break;
 
 	case STF_INTERNAL_ERROR:
+	    /* update the previous packet history */
+	    update_retransmit_history(st, md);
+
 	    whack_log(RC_INTERNALERR + md->note
 		, "%s: internal error"
 		, enum_name(&state_names, st->st_state));
@@ -2755,11 +2889,16 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 	    /* well, this should never happen during a whack, since
 	     * a whack will always force crypto.
 	     */
+            st->st_suspended_md = NULL;
+
 	    openswan_log("message in state %s ignored due to cryptographic overload"
 			 , enum_name(&state_names, from_state));
 	    break;
 
         case STF_FATAL:
+	    /* update the previous packet history */
+	    update_retransmit_history(st, md);
+
 	    whack_log(RC_FATAL
 		      , "encountered fatal error in state %s"
 		      , enum_name(&state_names, st->st_state));

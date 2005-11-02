@@ -1,13 +1,12 @@
 Summary: Openswan IPsec userland tools
 Name: openswan
-%define majver 2
-%define minver 3.1
-Version: %{majver}.%{minver}
+%define osversion 2.CVSHEAD
+Version: %{osversion}
 %define opensw_release 1
 %define debug_package %{nil}
 Release: %{opensw_release}
 Vendor: Xelerance
-Source: http://www.openswan.org/code/openswan-%{majver}.%{minver}.tar.gz
+Source: http://www.openswan.org/code/openswan-%{osversion}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-buildroot
 Url: http://www.openswan.org/
 License: GPL
@@ -31,7 +30,7 @@ This package contains the daemons and userland tools for setting up
 Openswan on a kernel with either the KLIPS or NETKEY IPsec stack.
 
 %prep
-%setup -q -n openswan-%{majver}.%{minver}
+%setup -q -n openswan-%{osversion}
 
 %build
 %{__make} \

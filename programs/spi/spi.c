@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char spi_c_version[] = "RCSID $Id: spi.c,v 1.109.2.1 2005/05/18 20:55:14 ken Exp $";
+char spi_c_version[] = "RCSID $Id: spi.c,v 1.112.2.2 2005/08/18 14:04:51 ken Exp $";
 
 #include <asm/types.h>
 #include <sys/types.h>
@@ -38,6 +38,7 @@ char spi_c_version[] = "RCSID $Id: spi.c,v 1.109.2.1 2005/05/18 20:55:14 ken Exp
 #include <getopt.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <sys/wait.h>
 #include <stdlib.h>
 #include <openswan.h>
 #if 0
@@ -1048,8 +1049,8 @@ main(int argc, char *argv[])
 	}
 
 	if(argcount == 1) {
-		system("cat /proc/net/ipsec_spi");
-		exit(0);
+		int ret = system("cat /proc/net/ipsec_spi");
+		exit(ret != -1 && WIFEXITED(ret) ? WEXITSTATUS(ret) : 1);
 	}
 
 	switch(alg) {
@@ -1778,8 +1779,14 @@ void exit_tool(int x)
 
 /*
  * $Log: spi.c,v $
- * Revision 1.109.2.1  2005/05/18 20:55:14  ken
- * Pull in Kens 2.3.2x branch
+ * Revision 1.112.2.2  2005/08/18 14:04:51  ken
+ * Patch from mt@suse.de to avoid GCC warnings with system() calls
+ *
+ * Revision 1.112.2.1  2005/08/12 16:30:32  ken
+ * Make tree PG13
+ *
+ * Revision 1.112  2005/07/08 02:55:55  paul
+ * fix gcc warning
  *
  * Revision 1.111  2005/05/12 03:08:23  mcr
  * 	do not mess with keysize for 3des/des.

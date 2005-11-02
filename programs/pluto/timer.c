@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: timer.c,v 1.98 2005/03/20 03:00:41 mcr Exp $
+ * RCSID $Id: timer.c,v 1.99.2.1 2005/08/12 17:03:02 ken Exp $
  */
 
 #include <stdio.h>
@@ -157,7 +157,6 @@ handle_timer_event(void)
     struct event *ev = evlist;
     int type;
     struct state *st;
-    struct connection *c;
     ip_address peer;
 
     if (ev == (struct event *) NULL)    /* Just paranoid */
@@ -210,6 +209,7 @@ handle_timer_event(void)
     passert(GLOBALS_ARE_RESET());
     if (st != NULL)
     {
+	struct connection *c;
 	c = st->st_connection;
         if( type  == EVENT_DPD || type == EVENT_DPD_TIMEOUT)
         {
@@ -268,6 +268,10 @@ handle_timer_event(void)
 	     */
 	    {
 		time_t delay = 0;
+		struct connection *c;
+
+		passert(st != NULL);
+		c = st->st_connection;
 
 		DBG(DBG_CONTROL, DBG_log(
 		    "handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
@@ -363,7 +367,12 @@ handle_timer_event(void)
 	case EVENT_SA_REPLACE:
 	case EVENT_SA_REPLACE_IF_USED:
 	    {
-		so_serial_t newest = IS_PHASE1(st->st_state)
+		struct connection *c;
+		so_serial_t newest;
+
+		passert(st != NULL);
+		c = st->st_connection;
+		newest = IS_PHASE1(st->st_state)
 		    ? c->newest_isakmp_sa : c->newest_ipsec_sa;
 
 		if (newest != st->st_serialno
@@ -416,6 +425,10 @@ handle_timer_event(void)
 	    {
 		const char *satype;
 		so_serial_t latest;
+		struct connection *c;
+
+		passert(st != NULL);
+		c = st->st_connection;
 
 		if (IS_PHASE1(st->st_state))
 		{
@@ -447,6 +460,10 @@ handle_timer_event(void)
 	    /* FALLTHROUGH */
 	case EVENT_SO_DISCARD:
 	    /* Delete this state object.  It must be in the hash table. */
+	    if(st->st_suspended_md) {
+		release_md(st->st_suspended_md);
+		st->st_suspended_md=NULL;
+	    }
 	    delete_state(st);
 	    break;
 

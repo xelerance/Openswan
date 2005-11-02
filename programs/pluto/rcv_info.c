@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: rcv_info.c,v 1.8 2004/05/13 13:38:01 ken Exp $
+ * RCSID $Id: rcv_info.c,v 1.8.24.1 2005/07/26 02:11:23 ken Exp $
  */
 
 #include <stdio.h>
@@ -33,9 +33,6 @@
 #include "constants.h"
 #include "defs.h"
 #include "id.h"
-#ifdef XAUTH
-#include <security/pam_appl.h>
-#endif
 #include "connections.h"	/* needs id.h */
 #include "foodgroups.h"
 #include "whack.h"	/* needs connections.h */
@@ -89,13 +86,15 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
 
     c = find_connection_for_clients(NULL,
 				    &ipcq->query_local,
-				    &ipcq->query_remote);
+				    &ipcq->query_remote,
+				    ipcq->proto);
     if (c == NULL)
     {
 	/* try reversing it */
 	c = find_connection_for_clients(NULL,
 					&ipcq->query_remote,
-					&ipcq->query_local);
+					&ipcq->query_local,
+					ipcq->proto);
 	if (c != NULL)
 	{
 	    ip_address tmp;
@@ -121,7 +120,7 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
 	DBG_log("connection %s found, no ipsec state, looking again", c->name);
 	addrtosubnet(&ipcq->query_local, &us);
 	addrtosubnet(&ipcq->query_remote, &them);
-	c = find_client_connection(c, &us, &them);
+	c = find_client_connection(c, &us, &them, 0, 0, 0, 0);
 
 	if (c == NULL)
 	    return;	/* no crypto */

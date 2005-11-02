@@ -14,7 +14,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.fs2_6,v 1.6 2004/08/22 05:02:03 mcr Exp $
+# RCSID $Id: Makefile.fs2_6,v 1.8 2005/05/11 03:15:42 mcr Exp $
 #
 # Note! Dependencies are done automagically by 'make dep', which also
 # removes any old dependencies. DON'T put your own dependencies here
@@ -31,6 +31,7 @@ base-klips-objs :=
 base-klips-objs+= ipsec_init.o ipsec_sa.o ipsec_radij.o radij.o
 base-klips-objs+= ipsec_life.o ipsec_proc.o
 base-klips-objs+= ipsec_tunnel.o ipsec_xmit.o ipsec_rcv.o ipsec_ipip.o
+base-klips-objs+= ipsec_snprintf.o
 base-klips-objs+= sysctl_net_ipsec.o 
 base-klips-objs+= pfkey_v2.o pfkey_v2_parser.o pfkey_v2_ext_process.o 
 base-klips-objs+= version.o
@@ -54,22 +55,29 @@ base-klips-objs+= pfkey_v2_build.o
 base-klips-objs+= pfkey_v2_debug.o 
 base-klips-objs+= pfkey_v2_ext_bits.o 
 base-klips-objs+= version.o
-obj-$(CONFIG_KLIPS) += ${base-klips-objs}
 
-obj-$(CONFIG_KLIPS_ESP)+= ipsec_esp.o
-obj-$(CONFIG_KLIPS_IPCOMP)+= ipsec_ipcomp.o
-obj-$(CONFIG_KLIPS_AUTH_HMAC_MD5) += ipsec_md5c.o
-obj-$(CONFIG_KLIPS_AUTH_HMAC_SHA1) += ipsec_sha1.o
+obj-${CONFIG_KLIPS} += ipsec.o
+
+ipsec-objs += ${base-klips-objs}
+
+ipsec-$(CONFIG_KLIPS_ESP)     += ipsec_esp.o
+ipsec-$(CONFIG_KLIPS_IPCOMP)  += ipsec_ipcomp.o
+ipsec-$(CONFIG_KLIPS_AUTH_HMAC_MD5)  += ipsec_md5c.o
+ipsec-$(CONFIG_KLIPS_AUTH_HMAC_SHA1) += ipsec_sha1.o
 
 # AH, if you really think you need it.
-obj-$(CONFIG_KLIPS_AH) += ipsec_ah.o
+ipsec-$(CONFIG_KLIPS_AH)   += ipsec_ah.o
 
-obj-$(CONFIG_KLIPS_ALG)  += ipsec_alg.o
+ipsec-$(CONFIG_KLIPS_ALG)  += ipsec_alg.o
 
+# do not include subdir if building as a module outside of the kernel,
+# as it confuses stuff. The outside kernel build process takes care
+# of bringing this code in explicitely.
 obj-$(CONFIG_KLIPS_ENC_3DES) += des/
 obj-$(CONFIG_KLIPS_ENC_AES)  += aes/
 
-obj-$(CONFIG_KLIPS_ENC_CRYPTOAPI) += ipsec_alg_cryptoapi.o
+
+ipsec-$(CONFIG_KLIPS_ENC_CRYPTOAPI) += ipsec_alg_cryptoapi.o
 
 # IPcomp stuff
 base-ipcomp-objs := ipcomp.o 
@@ -97,12 +105,18 @@ asm-ipcomp-obj-$(CONFIG_MWINCHIP2)     += match686.o
 asm-ipcomp-obj-$(CONFIG_MWINCHIP3D)    += match686.o
 base-ipcomp-objs += ${asm-ipcomp-obj-y}
 
-obj-$(CONFIG_KLIPS_IPCOMP) += ${base-ipcomp-objs}
+ipsec-$(CONFIG_KLIPS_IPCOMP) += ${base-ipcomp-objs}
 
 EXTRA_CFLAGS += -DIPCOMP_PREFIX
 
 #
 # $Log: Makefile.fs2_6,v $
+# Revision 1.8  2005/05/11 03:15:42  mcr
+# 	adjusted makefiles to sanely build modules properly.
+#
+# Revision 1.7  2005/04/13 22:52:12  mcr
+# 	moved KLIPS specific snprintf() wrapper to seperate file.
+#
 # Revision 1.6  2004/08/22 05:02:03  mcr
 # 	organized symbols such that it is easier to build modules.
 #

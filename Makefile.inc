@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.inc,v 1.109.2.1 2005/05/18 20:55:12 ken Exp $
+# RCSID $Id: Makefile.inc,v 1.116.2.2 2005/08/25 18:26:06 paul Exp $
 
 
 
@@ -33,29 +33,6 @@
 
 ### boilerplate, do not change
 SHELL=/bin/sh
-
-# where to place the object files which are built (default is in-tree)
-OBJDIR?=.
-OBJDIRTOP?=${OPENSWANSRCDIR}
-
-### paths within the source tree
-
-KLIPSINC=${OPENSWANSRCDIR}/linux/include
-KLIPSSRC=${OPENSWANSRCDIR}/linux/net/ipsec
-
-LIBOPENSWANDIR=${OPENSWANSRCDIR}/lib/libopenswan
-OPENSWANLIB=${OBJDIRTOP}/lib/libopenswan/libopenswan.a
-OSWLOGLIB=${OBJDIRTOP}/lib/libopenswan/liboswlog.a
-
-LWRESDIR=${OPENSWANSRCDIR}/lib/liblwres
-LWRESLIB=${OBJDIRTOP}/lib/liblwres/liblwres.a
-
-LIBDESSRCDIR=${OPENSWANSRCDIR}/linux/crypto/ciphers/des
-LIBDESLITE:=${OBJDIRTOP}/lib/libcrypto/libdes/libdes.a
-LIBAES=${OBJDIRTOP}/lib/libcrypto/libaes/libaes.a
-
-LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
-POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 
 .PHONY:	programs checkprograms clean
 
@@ -310,7 +287,6 @@ USE_KEYRR?=true
 # need to recompile.
 USE_KERNEL26?=true
 
-
 # include support for sending Openswan Vendor IDs
 USE_VENDORID?=true
 
@@ -349,7 +325,7 @@ USE_SMARTCARD?=false
 
 # should opportunistic encryption be turned on by default?
 # Enabled during testing, but probably turned off in shipping versions.
-USE_OE?=false
+USE_OE?=true
 ifeq ($(USE_OE),false)
 # warning: examples subdirectory is statically defined here
 OE_FLAG=\#Disable Opportunistic Encryption\\ninclude ${FINALCONFDDIR}/examples/no_oe.conf
@@ -361,6 +337,11 @@ endif
 # device. Normal use does not need any of this.
 USE_WEAKSTUFF?=false
 
+# should we include additional algorithms? It adds lots of
+# code space increases risk of bad crypto code, but offers possibilities 
+# of switching away from AES/3DES quickly. 
+USE_EXTRACRYPTO?=false
+
 # Do we have pthreads available?  Only yes if you need it for XAUTH+PAM,
 # or if you need it for CRL fetching.
 # 
@@ -370,23 +351,14 @@ HAVE_THREADS?=false
 # if so, then internationalization code is retained in the shell scripts
 USE_BASH?=true
 
-# set this to space where a linked/configured tree can be created by 
-# preprhkern4module. Only needed if you are going to be created RPMs
-# outside of a distribution (as the FS team does for RedHat).
-#RH_KERNELSRC_POOL=/c2/openswan/rh_kern
+X509_VERSION=X.509-1.5.4
+NONINTCONFIG=oldconfig
 
-# the following is a list of symbols which will be used to construct
-# the module goo to identify which module goes with each kernel.
-MODULE_GOO_LIST=irq_stat netif_rx register_sysctl_table send_sig
-MODULE_GOO_LIST+=kmalloc __kfree_skb __ip_select_ident alloc_skb
-MODULE_GOO_LIST+=icmp_send ip_fragment sock_register 
-
-MODULE_DEF_INCLUDE=${OPENSWANSRCDIR}/packaging/linus/config-all.h
-MODULE_DEFCONFIG?=${KLIPSSRC}/defconfig
-MODBUILDDIR?=${OPENSWANSRCDIR}/modobj
-MOD26BUILDDIR?=${OPENSWANSRCDIR}/modobj26
-
-MODULE_FLAGS:=KLIPSMODULE=true -f ${MODULE_DEFCONFIG} 
+# Should we build with object directories?
+# (not really a code option, but a build option)
+ifeq ($(USE_OBJDIR),)
+USE_OBJDIR?=false
+endif
 
 # supply kernel-configuration ARCH defaults
 ifeq ($(ARCH),)
@@ -395,13 +367,50 @@ endif
 # always sanitize $(ARCH)
 ARCH := $(shell echo $(ARCH) | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
 
-# export everything so that scripts can use them.
-export LIBOPENSWANDIR OPENSWANSRCDIR ARCH 
+ifeq ($(OS),)
+OS:=$(shell uname -s | tr 'A-Z' 'a-z')
+endif
 
 -include ${OPENSWANSRCDIR}/Makefile.ver
 
-X509_VERSION=X.509-1.5.4
-NONINTCONFIG=oldconfig
+# include OS/ARCH specific makefiles, if any.
+# OS=linux,bsd,win2k,mingw32,etc.
+#
+-include ${OPENSWANSRCDIR}/packaging/defaults/${OS}
+-include ${OPENSWANSRCDIR}/packaging/defaults/${OS}.${ARCH}
+
+ifeq ($(USE_OBJDIR),true)
+OBJDIR=OBJ.${OS}.${ARCH}
+endif
+
+# export everything so that scripts can use them.
+export LIBOPENSWANDIR OPENSWANSRCDIR ARCH 
+
+# where to place the object files which are built (default is in-tree)
+OBJDIR?=.
+OBJDIRTOP?=${OPENSWANSRCDIR}
+
+### paths within the source tree
+
+KLIPSINC=${OPENSWANSRCDIR}/linux/include
+
+LIBOPENSWANDIR=${OPENSWANSRCDIR}/lib/libopenswan
+OPENSWANLIB=${OBJDIRTOP}/lib/libopenswan/libopenswan.a
+OSWLOGLIB=${OBJDIRTOP}/lib/libopenswan/liboswlog.a
+
+LWRESDIR=${OPENSWANSRCDIR}/lib/liblwres
+LWRESLIB=${OBJDIRTOP}/lib/liblwres/liblwres.a
+
+LIBDESSRCDIR=${OPENSWANSRCDIR}/linux/crypto/ciphers/des
+LIBDESLITE:=${OBJDIRTOP}/lib/libcrypto/libdes/libdes.a
+LIBAES=${OBJDIRTOP}/lib/libcrypto/libaes/libaes.a
+LIBBLOWFISH=${OBJDIRTOP}/lib/libcrypto/libblowfish/libblowfish.a
+LIBTWOFISH=${OBJDIRTOP}/lib/libcrypto/libtwofish/libtwofish.a
+LIBSERPENT=${OBJDIRTOP}/lib/libcrypto/libserpent/libserpent.a
+LIBSHA2=${OBJDIRTOP}/lib/libcrypto/libsha2/libsha2.a
+
+LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
+POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 
 #KERNELBUILDMFLAGS=--debug=biv V=1 
 

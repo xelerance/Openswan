@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 TESTING=${TESTING:-/testing}
 PATH=${TESTING}/pluto/bin:$PATH export PATH
 TESTNAME=aggr-unit-02
@@ -46,3 +48,4 @@ $DOWHACK listen
 
 sh $TESTING/pluto/$TESTNAME/dowhack.sh 
 
+: ==== end ====

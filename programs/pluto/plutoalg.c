@@ -346,15 +346,20 @@ kernel_alg_policy_algorithms(struct esp_info *esp_info)
 static bool 
 kernel_alg_db_add(struct db_context *db_ctx
 		  , struct esp_info *esp_info
-		  , lset_t policy)
+		  , lset_t policy
+		  , bool logit)
 {
 	int ealg_i, aalg_i;
 	ealg_i=esp_info->esp_ealg_id;
 	if (!ESP_EALG_PRESENT(ealg_i)) {
-		DBG_log("kernel_alg_db_add() "
-				"kernel enc ealg_id=%d not present",
-				ealg_i);
-		return FALSE;
+	    if(logit) {
+		openswan_loglog(RC_LOG_SERIOUS
+				, "requested kernel enc ealg_id=%d not present"
+				, ealg_i);
+	    } else {
+		DBG_log("requested kernel enc ealg_id=%d not present", ealg_i);
+	    }
+	    return FALSE;
 	}
 
 	if (!(policy & POLICY_AUTHENTICATE)) {	/* skip ESP auth attrs for AH*/
@@ -394,7 +399,7 @@ kernel_alg_db_add(struct db_context *db_ctx
  *	malloced pointer (this quirk allows easier spdb.c change)
  */
 struct db_context * 
-kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy )
+kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy, bool logit)
 {
 	int ealg_i, aalg_i, tn=0;
 	int i;
@@ -404,6 +409,7 @@ kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy )
 	struct db_trans *t;
 	struct db_prop  *prop;
 	int trans_cnt;
+	bool success = TRUE;
 
 	if (!(policy & POLICY_ENCRYPT))	{     /* possible for AH-only modes */
 	    DBG(DBG_CONTROL
@@ -431,8 +437,14 @@ kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy )
 	/* passert(alg_info!=0); */
 	if (alg_info) {
 		ALG_INFO_ESP_FOREACH(alg_info, esp_info, i) {
-			tmp_esp_info = *esp_info;
-			kernel_alg_db_add(ctx_new, &tmp_esp_info, policy);
+		    bool thistime;
+		    tmp_esp_info = *esp_info;
+		    thistime = kernel_alg_db_add(ctx_new
+						 , &tmp_esp_info
+						 , policy, logit);
+		    if(thistime == FALSE) {
+			success=FALSE;
+		    }
 		}
 	} else {
 		ESP_EALG_FOR_EACH_UPDOWN(ealg_i) {
@@ -441,10 +453,18 @@ kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy )
 			ESP_AALG_FOR_EACH(aalg_i) {
 				tmp_esp_info.esp_aalg_id=alg_info_esp_sadb2aa(aalg_i);
 				tmp_esp_info.esp_aalg_keylen=0;
-				kernel_alg_db_add(ctx_new, &tmp_esp_info, policy);
+				kernel_alg_db_add(ctx_new, &tmp_esp_info
+						  , policy, FALSE);
 			}
 		}
 	}
+
+	if(success == FALSE) {
+	    /* NO algorithms were found. oops */
+	    db_destroy(ctx_new);
+	    return NULL;
+	}
+	    
 
 	prop=db_prop_get(ctx_new);
 
@@ -594,7 +614,7 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
 }
 
 struct db_sa *
-kernel_alg_makedb(struct alg_info_esp *ei)
+kernel_alg_makedb(struct alg_info_esp *ei, bool logit)
 {
     struct db_context *dbnew;
     struct db_prop *p;
@@ -607,7 +627,7 @@ kernel_alg_makedb(struct alg_info_esp *ei)
 	return NULL;
     }
     
-    dbnew=kernel_alg_db_new(ei, policy);
+    dbnew=kernel_alg_db_new(ei, policy, logit);
     if(!dbnew) {
 	DBG(DBG_CONTROL, DBG_log("failed to translate esp_info to proposal, returning empty"));
 	return NULL;

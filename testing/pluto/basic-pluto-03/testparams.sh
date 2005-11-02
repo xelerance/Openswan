@@ -23,12 +23,14 @@ EASTHOST=east
 EAST_INIT_SCRIPT=eastinit.sh
 EAST_FINAL_SCRIPT=final.sh
 REF_EAST_CONSOLE_OUTPUT=east-console.txt
+REF26_EAST_CONSOLE_OUTPUT=east-console26.txt
 
 NORTHHOST=north
 NORTH_INIT_SCRIPT=northinit.sh
 NORTH_RUN_SCRIPT=northrun.sh
 NORTH_FINAL_SCRIPT=final.sh
 REF_NORTH_CONSOLE_OUTPUT=north-console.txt
+REF26_NORTH_CONSOLE_OUTPUT=north-console26.txt
 
 NICHOST=nic
 NIC_INIT_SCRIPT=nicinit.sh

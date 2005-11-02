@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: demux.h,v 1.33.2.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: demux.h,v 1.35 2005/06/14 22:38:06 mcr Exp $
  */
 
 #ifndef _DEMUX_H
@@ -24,7 +24,7 @@
 struct state;	/* forward declaration of tag */
 extern void init_demux(void);
 extern bool send_packet(struct state *st, const char *where, bool verbose);
-extern void comm_handle(const struct iface *ifp);
+extern void comm_handle(const struct iface_port *ifp);
 
 extern u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
@@ -53,7 +53,7 @@ struct payload_digest {
 struct msg_digest {
     struct msg_digest *next;	/* for free list */
     chunk_t raw_packet;		/* if encrypted, received packet before decryption */
-    const struct iface *iface;	/* interface on which message arrived */
+    const struct iface_port *iface;	/* interface on which message arrived */
     ip_address sender;	        /* where message came from (network order) */
     u_int16_t sender_port;	/* host order */
     pb_stream packet_pbs;	/* whole packet */

@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_kern24.h,v 1.3 2004/12/17 16:44:11 mcr Exp $
+ * RCSID $Id: ipsec_kern24.h,v 1.4 2005/05/20 03:19:18 mcr Exp $
  */
 
 #ifndef _IPSEC_KERN24_H
@@ -51,6 +51,8 @@
 #define KLIPS_INC_USE MOD_INC_USE_COUNT
 #define KLIPS_DEC_USE MOD_DEC_USE_COUNT
 #endif
+
+extern int printk_ratelimit(void);
 
 
 #define _IPSEC_KERN24_H 1

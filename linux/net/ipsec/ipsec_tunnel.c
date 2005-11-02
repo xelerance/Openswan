@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.228 2005/01/26 00:50:35 mcr Exp $";
+char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.232 2005/06/04 16:06:06 mcr Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -45,7 +45,6 @@ char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.228 2005/01/26 00
 #include <openswan.h>
 
 #ifdef NET_21
-# include <asm/uaccess.h>
 # include <linux/in6.h>
 # define ip_chk_addr inet_addr_type
 # define IS_MYADDR RTN_LOCAL
@@ -54,7 +53,7 @@ char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.228 2005/01/26 00
 # define dev_kfree_skb(a,b) kfree_skb(a)
 # define PHYSDEV_TYPE
 #endif /* NET_21 */
-#include <asm/checksum.h>
+
 #include <net/icmp.h>		/* icmp_send() */
 #include <net/ip.h>
 #ifdef NETDEV_23
@@ -320,7 +319,8 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 	    && (ixs->eroute==NULL
 		|| ixs->iph->daddr == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr
 		|| INADDR_ANY == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr)
-	    && (ixs->iph->protocol == IPPROTO_UDP && ixs->sport == 500)) {
+	    && (ixs->iph->protocol == IPPROTO_UDP &&
+		(ixs->sport == 500 || ixs->sport == 4500))) {
 		/* Whatever the eroute, this is an IKE message 
 		 * from us (i.e. not being forwarded).
 		 * Furthermore, if there is a tunnel eroute,
@@ -1370,7 +1370,6 @@ ipsec_tunnel_clear(void)
 	int i;
 	struct net_device *ipsecdev = NULL, *prvdev;
 	struct ipsecpriv *prv;
-	char name[9];
 	int ret;
 
 	KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
@@ -1385,12 +1384,12 @@ ipsec_tunnel_clear(void)
 					KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
 						    "klips_debug:ipsec_tunnel_clear: "
 						    "physical device for device %s is %s\n",
-						    name, prvdev->name);
+						    ipsecdev->name, prvdev->name);
 					if((ret = ipsec_tunnel_detach(ipsecdev))) {
 						KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
 							    "klips_debug:ipsec_tunnel_clear: "
 							    "error %d detatching device %s from device %s.\n",
-							    ret, name, prvdev->name);
+							    ret, ipsecdev->name, prvdev->name);
 						return ret;
 					}
 				}
@@ -1494,6 +1493,19 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 			    cmd);
 		return -EOPNOTSUPP;
 	}
+}
+
+struct net_device *ipsec_get_device(int inst)
+{
+  struct net_device *ipsec_dev;
+
+  ipsec_dev = NULL;
+
+  if(inst < IPSEC_NUM_IF) {
+    ipsec_dev = ipsecdevices[inst];
+  }
+
+  return ipsec_dev;
 }
 
 int
@@ -1798,7 +1810,6 @@ ipsec_tunnel_cleanup_devices(void)
 {
 	int error = 0;
 	int i;
-	char name[32];
 	struct net_device *dev_ipsec;
 	
 	for(i = 0; i < IPSEC_NUM_IF; i++) {
@@ -1812,10 +1823,10 @@ ipsec_tunnel_cleanup_devices(void)
 		ipsec_dev_put(dev_ipsec);
 
 		KLIPS_PRINT(debug_tunnel, "Unregistering %s (refcnt=%d)\n",
-			    name,
+			    dev_ipsec->name,
 			    atomic_read(&dev_ipsec->refcnt));
 		unregister_netdev(dev_ipsec);
-		KLIPS_PRINT(debug_tunnel, "Unregisted %s\n", name);
+		KLIPS_PRINT(debug_tunnel, "Unregisted %s\n", dev_ipsec->name);
 #ifndef NETDEV_23
 		kfree(dev_ipsec->name);
 		dev_ipsec->name=NULL;
@@ -1828,6 +1839,18 @@ ipsec_tunnel_cleanup_devices(void)
 
 /*
  * $Log: ipsec_tunnel.c,v $
+ * Revision 1.232  2005/06/04 16:06:06  mcr
+ * 	better patch for nat-t rcv-device code.
+ *
+ * Revision 1.231  2005/05/21 03:28:51  mcr
+ * 	make sure that port-500 hole is used for port-4500 as well.
+ *
+ * Revision 1.230  2005/05/11 01:42:04  mcr
+ * 	removal of debugging showed useless/wrong variables used.
+ *
+ * Revision 1.229  2005/04/29 05:10:22  mcr
+ * 	removed from extraenous includes to make unit testing easier.
+ *
  * Revision 1.228  2005/01/26 00:50:35  mcr
  * 	adjustment of confusion of CONFIG_IPSEC_NAT vs CONFIG_KLIPS_NAT,
  * 	and make sure that NAT_TRAVERSAL is set as well to match

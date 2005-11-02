@@ -13,6 +13,9 @@ s/Linux version .*/Linux version XXXX/
 s/devfs: v.* Richard Gooch (rgooch@atnf.csiro.au)/devfs: VERSION Richard Gooch (rgooch@atnf.csiro.au)/
 s/devfs: boot_options: .*/devfs: boot_options Q/
 s/block: .*/block: slots and queues/
+s,/tmp/.*\.d/private,/tmp/UML.d/private,
+s,/tmp/.*\.d/admin,/tmp/UML.d/admin,
+s,/tmp/.*\.d/public,/tmp/UML.d/public,
 /INIT: can't open(.etc.ioctl.save, O_WRONLY): Permission denied/d
 /VFS: Mounted root (root.hostfs filesystem) readonly./d
 s/^VFS: Disk.*/VFS: Diskquotas version dquot_6.4.0 initialized/
@@ -68,4 +71,3 @@ s/TCP: Hash tables configured (established .* bind .*)/TCP: Hash tables configur
 /^$/d
 /INIT: Switching to runlevel: 0/d
 /INIT: Sending processes the TERM signal/d
-

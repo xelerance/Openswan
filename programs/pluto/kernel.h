@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel.h,v 1.42.22.1 2005/05/18 20:55:13 ken Exp $
+ * RCSID $Id: kernel.h,v 1.46.2.3 2005/07/26 02:11:23 ken Exp $
  */
 
 extern bool can_do_IPcomp;  /* can system actually perform IPCOMP? */
@@ -77,6 +77,7 @@ struct kernel_ops {
 		KERNEL_TYPE_KLIPS,
 		KERNEL_TYPE_LINUX,
 	} type;
+  const char *opname;
 	bool inbound_eroute;
 	bool policy_lifetime;
         int  replay_window;
@@ -111,10 +112,17 @@ struct kernel_ops {
 			       ipsec_spi_t min,
 			       ipsec_spi_t max,
 			       const char *text_said);
+    bool (*docommand)(struct connection *c
+		      , struct spd_route *sr
+		      , const char *verb
+		      , struct state *st);
 };
 
 
 extern const struct kernel_ops *kernel_ops;
+extern bool do_command_linux(struct connection *c, struct spd_route *sr
+			     , const char *verb, struct state *st);
+
 
 /* information from /proc/net/ipsec_eroute */
 

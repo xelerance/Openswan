@@ -70,26 +70,33 @@ install:: $(PROGRAM) $(CONFFILES) $(EXTRA8MAN) $(EXTRA5MAN) $(EXTRA5PROC) $(LIBF
 	@mkdir -p $(PROGRAMDIR) $(MANDIR8) $(MANDIR5) $(LIBDIR) $(CONFDIR) $(CONFDDIR) $(CONFDDIR)/$(CONFDSUBDIR) $(EXAMPLECONFDIR)
 	@if [ -n "$(PROGRAM)" ]; then $(INSTALL) $(INSTBINFLAGS) $(PROGRAM) $(PROGRAMDIR); fi
 	@$(foreach f, $(addsuffix .8, $(PROGRAM)), \
-		$(INSTALL) $(INSTMANFLAGS) $f $(MANDIR8)/$(MANPROGPREFIX)$f || exit 1; \
+		g=`if [ -r $f ]; then echo $f; else echo ${srcdir}/$f; fi`; \
+		$(INSTALL) $(INSTMANFLAGS) $$g $(MANDIR8)/$(MANPROGPREFIX)$f || exit 1; \
 	)
 	@$(foreach f, $(EXTRA8MAN), \
-		$(INSTALL) $(INSTMANFLAGS) $f $(MANDIR8)/ipsec_$f || exit 1; \
+		g=`if [ -r $f ]; then echo $f; else echo ${srcdir}/$f; fi`; \
+		$(INSTALL) $(INSTMANFLAGS) $$g $(MANDIR8)/ipsec_$f || exit 1; \
 	)
 	@$(foreach f, $(EXTRA5MAN), \
-		$(INSTALL) $(INSTMANFLAGS) $f $(MANDIR5)/$f || exit 1 ;\
+		g=`if [ -r $f ]; then echo $f; else echo ${srcdir}/$f; fi`; \
+		$(INSTALL) $(INSTMANFLAGS) $$g $(MANDIR5)/$f || exit 1 ;\
 	)
 	@$(foreach f, $(EXTRA5PROC), \
-		$(INSTALL) $(INSTMANFLAGS) $f $(MANDIR5)/ipsec_$f || exit 1 ;\
+		g=`if [ -r $f ]; then echo $f; else echo ${srcdir}/$f; fi`; \
+		$(INSTALL) $(INSTMANFLAGS) $$g $(MANDIR5)/ipsec_$f || exit 1 ;\
 	)
 	@$(foreach f, $(LIBFILES), \
-		$(INSTALL) $(INSTCONFFLAGS) $f $(LIBDIR)/$f || exit 1 ;\
+		g=`if [ -r $f ]; then echo $f; else echo ${srcdir}/$f; fi`; \
+		$(INSTALL) $(INSTCONFFLAGS) $$g $(LIBDIR)/$f || exit 1 ;\
 	)
 	@$(foreach f, $(CONFFILES), \
-		if [ ! -f $(CONFDIR)/$f ]; then $(INSTALL) $(INSTCONFFLAGS) $f $(CONFDIR)/$f || exit 1; fi;\
-		$(INSTALL) $(INSTCONFFLAGS) $f $(EXAMPLECONFDIR)/$f-sample || exit 1; \
+		g=`if [ -r $f ]; then echo $f; else echo ${srcdir}/$f; fi`; \
+		if [ ! -f $(CONFDIR)/$f ]; then $(INSTALL) $(INSTCONFFLAGS) $$g $(CONFDIR)/$f || exit 1; fi;\
+		$(INSTALL) $(INSTCONFFLAGS) $$g $(EXAMPLECONFDIR)/$f-sample || exit 1; \
 	)
 	@$(foreach f, $(CONFDFILES), \
-		if [ ! -f $(CONFDDIR)/$(CONFDSUBDIR)/$f ]; then $(INSTALL) $(INSTCONFFLAGS) $f $(CONFDDIR)/$(CONFDSUBDIR)/$f || exit 1; fi;\
+		g=`if [ -r $f ]; then echo $f; else echo ${srcdir}/$f; fi`; \
+		if [ ! -f $(CONFDDIR)/$(CONFDSUBDIR)/$f ]; then $(INSTALL) $(INSTCONFFLAGS) $$g $(CONFDDIR)/$(CONFDSUBDIR)/$f || exit 1; fi;\
 	)
 
 install_file_list::
@@ -119,18 +126,20 @@ install_file_list::
 
 endif
 
-# cancel the rule that compiles directly
-%: %.c 
-# cancel explicit rule
-%: %.o
+# set values for implicit rules.
+LOADLIBS=${OBJS} 
+LDLIBS=${LIBS} ${USERLINK}
 
 %: %.o $(OBJS) $(OPENSWANLIB)
-	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LIBS) $(USERLINK)
+
+%.o: ${srcdir}%.c
+	${CC} -c ${CFLAGS} $<
 
 %.i: %.c 
 	$(CC) $(CFLAGS) -E -o $@ $< 
 
-%: %.in ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
+%: ${srcdir}%.in ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
 	@cat $< | sed -e "s/xxx/$(IPSECVERSION)/" \
 			-e "s:@IPSEC_DIR@:$(FINALBINDIR):" \
 			-e "s:@IPSEC_EXECDIR@:$(FINALLIBEXECDIR):" \

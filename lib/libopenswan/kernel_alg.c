@@ -190,6 +190,7 @@ kernel_alg_proc_read(void) {
 	int satype;
 	int supp_exttype;
 	int alg_id, ivlen, minbits, maxbits;
+	char name[20];
 	struct sadb_alg sadb_alg;
 	int ret;
 	char buf[128];
@@ -200,11 +201,10 @@ kernel_alg_proc_read(void) {
 	while (fgets(buf, sizeof(buf), fp)) {
 		if (buf[0] != ' ') /* skip titles */
 			continue;
-		sscanf(buf, "%d %d %d %d %d %d",
-				&satype, &supp_exttype,
-				&alg_id, &ivlen,
-				&minbits, &maxbits
-				);
+		sscanf(buf, "%d %d %d %d %d %d %s",
+		       &satype, &supp_exttype,
+		       &alg_id, &ivlen,
+		       &minbits, &maxbits, name);
 		switch (satype) {
 			case SADB_SATYPE_ESP:
 				switch(supp_exttype) {
