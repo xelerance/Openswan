@@ -13,7 +13,7 @@
 #
 # RCSID $Id: Makefile,v 1.21 2002/11/07 22:17:49 mcr Exp $
 
-FREESWANSRCDIR=../../..
+OPENSWANSRCDIR?=../../..
 OBJS = nethub.o cmdmode.o port.o hash.o tuntap.o
 OBJS+=getopt_long.o
 
@@ -47,7 +47,7 @@ CFLAGS = -g -Wall ${PCAPH} ${NETDISSECTH} ${OPTIONS}
 LIBS = ${NETDISSECTLIB} ${PCAPLIB} ${OPENSSL}
 
 
-include $(FREESWANSRCDIR)/Makefile.inc
+include $(OPENSWANSRCDIR)/Makefile.inc
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"

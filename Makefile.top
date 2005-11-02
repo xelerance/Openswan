@@ -62,9 +62,10 @@ tags TAGS: dummy
 dummy:
 
 uml:	checkprograms
-	testing/utils/verify-uml.sh
-	-chmod +x testing/utils/make-uml.sh
-	testing/utils/make-uml.sh `pwd`
+	-chmod +x packaging/utils/*.sh 
+	-chmod +x testing/utils/make-uml.sh testing/utils/verify-uml.sh
+	./testing/utils/verify-uml.sh
+	./testing/utils/make-uml.sh `pwd`
 
 umluserland:
 	(touch ${OPENSWANSRCDIR}/Makefile.inc && source ${OPENSWANSRCDIR}/umlsetup.sh && cd $$POOLSPACE && make $$OPENSWANHOSTS $$REGULARHOSTS ) 
