@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: log.c,v 1.95 2005/07/18 19:40:15 mcr Exp $
+ * RCSID $Id: log.c,v 1.99 2005/09/18 01:59:52 mcr Exp $
  */
 
 #include <stdio.h>
@@ -24,7 +24,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>	/* used only if MSG_NOSIGNAL not defined */
-#include <sys/queue.h>
 #include <libgen.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -32,6 +31,7 @@
 #include <openswan.h>
 #include "pfkeyv2.h"
 
+#include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
 
@@ -96,7 +96,7 @@ char debug_prefix = '|';
  */
 const char *pluto_ifn_inst = "";  
 
-/* from sys/queue.h */
+/* from sys/queue.h -> NOW private sysdep.h. */
 static CIRCLEQ_HEAD(,connection) perpeer_list;
 
 
@@ -664,8 +664,9 @@ set_debugging(lset_t deb)
 {
     cur_debugging = deb;
 
-    pfkey_lib_debug = (cur_debugging&DBG_PFKEY ?
-		       PF_KEY_DEBUG_PARSE_MAX : PF_KEY_DEBUG_PARSE_NONE);
+    if(kernel_ops!=NULL && kernel_ops->set_debug!=NULL) {
+	(*kernel_ops->set_debug)(cur_debugging, DBG_log, openswan_log);
+    }
 }
 
 /* log a debugging message (prefixed by "| ") */
@@ -704,10 +705,10 @@ openswan_DBG_dump(const char *label, const void *p, size_t len)
 #   define DUMP_LABEL_WIDTH 20	/* arbitrary modest boundary */
 #   define DUMP_WIDTH	(4 * (1 + 4 * 3) + 1)
     char buf[DUMP_LABEL_WIDTH + DUMP_WIDTH];
-    char *bp;
+    char *bp, *bufstart;
     const unsigned char *cp = p;
 
-    bp = buf;
+    bufstart = buf;
 
     if (label != NULL && label[0] != '\0')
     {
@@ -728,7 +729,7 @@ openswan_DBG_dump(const char *label, const void *p, size_t len)
 	    }
 	    else if (llen < DUMP_LABEL_WIDTH)
 	    {
-		bp = buf + llen;
+		bufstart = buf + llen;
 	    }
 	    else
 	    {
@@ -737,6 +738,7 @@ openswan_DBG_dump(const char *label, const void *p, size_t len)
 	}
     }
 
+    bp = bufstart;
     do {
 	int i, j;
 
@@ -755,7 +757,7 @@ openswan_DBG_dump(const char *label, const void *p, size_t len)
 	}
 	*bp = '\0';
 	DBG_log("%s", buf);
-	bp = buf;
+	bp = bufstart;
     } while (len != 0);
 #   undef DUMP_LABEL_WIDTH
 #   undef DUMP_WIDTH

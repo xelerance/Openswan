@@ -1,118 +1,77 @@
-#
-# SSLeay/crypto/blowfish/Makefile
-#
+OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+srcdir?=./
 
-DIR=	bf
-TOP=	../..
-CC=	cc
-CPP=	$(CC) -E
-INC=-I ../include 
-CFLAG=-g -D__KERNEL__ -I/usr/src/linux/include
-INSTALL_PREFIX=
-OPENSSLDIR=     /usr/local/ssl
-INSTALLTOP=/usr/local/ssl
-MAKE=		make -f Makefile.ssl
-MAKEDEPEND=	$(TOP)/util/domd $(TOP)
-MAKEFILE=	Makefile.ssl
-AR=		ar r
-RANLIB=		ranlib
-PERL=		perl
+include ${OPENSWANSRCDIR}/Makefile.inc
+include ${OPENSWANSRCDIR}/Makefile.ver
 
-CFLAGS= $(INC) $(CFLAG)
-
-.c.o:
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(INC) -c $< -o $@
 
 BF_ASM-i586 := bf-586.pl
 BF_ASM-i686 := bf-686.pl
-BF_ENC := bf_enc.o
+BF_CORE_OBJ := bf_enc.o
+BH_CORE_SRC := bf_enc.c
 
-ASM-$(ARCH_ASM):=1
-ASM_X86:=$(ASM-i586)$(ASM-i686)
-ifneq ($(strip $(ASM_X86)),)
-	BF_ENC=	asm/bx86-elf.o
-	BF_ASM= $(BF_ASM-$(ARCH_ASM))
-endif
+#ASM-$(ARCH_ASM):=1
+#ASM_X86:=$(ASM-i586)$(ASM-i686)
+#ifneq ($(strip $(ASM_X86)),)
+#BF_CORE_OBJ:= asm/bx86-elf.o
+#BF_CORE_ASM:= asm/$(BF_ASM-$(ARCH_ASM))
+#BF_CORE_SRC:= 
+#endif
 
+BASE_SRCS=bf_skey.c
+SRCS=${BASE_SRCS} ${BF_CORE_SRC}
 
-GENERAL=Makefile
-TEST=bftest.c
-APPS=
+OBJS=${BASE_SRCS:.c=.o} ${BF_CORE_OBJ}
+
+HDRS=	
+
+VPATH += ${SRCDIR}
 
 LIB=libblowfish.a
-LIBSRC=bf_skey.c bf_enc.c 
-LIBOBJ=bf_skey.o $(BF_ENC)
 
-SRC= $(LIBSRC)
+# Original flags
+CFLAGS=-I. -I${SRCDIR} -I${OPENSWANSRCDIR} ${PORTINCLUDE}
+CFLAGS+=$(USERCOMPILE)
+CFLAGS+=-O3 -fomit-frame-pointer -Wall  -Wcast-qual 
+CFLAGS+= -Wmissing-prototypes
+CFLAGS+= -Wpointer-arith
+CFLAGS+= -Wcast-qual
+#CFLAGS+= -Wmissing-declarations
+CFLAGS+= -Wstrict-prototypes
+#CFLAGS+= -pedantic
+#CFLAGS+= -W
+#CFLAGS+= -Wwrite-strings
+CFLAGS+= -Wbad-function-cast 
 
-EXHEADER= blowfish.h
-HEADER=	bf_pi.h bf_locl.h $(EXHEADER)
+.PHONY:	all install clean check depend checkprograms
 
-ALL=    $(GENERAL) $(SRC) $(HEADER)
-
-#top:
-#	(cd ../..; $(MAKE) DIRS=crypto SDIRS=$(DIR) sub_all)
-
-all:	lib
+all:	$(LIB) 
 programs: $(LIB)
 
-lib:	$(LIB)
-
-$(LIB):	$(LIBOBJ)
-	$(AR) $(LIB) $(LIBOBJ)
-	$(RANLIB) $(LIB)
+asm/bx86unix.cpp: asm/$(BF_ASM) ../perlasm/x86asm.pl ../perlasm/cbc.pl
+	(cd asm; $(PERL) $(BF_ASM) cpp $(PROCESSOR) >bx86unix.cpp)
 
 # elf
 asm/bx86-elf.o: asm/bx86unix.cpp
 	$(CPP) -DELF -x c asm/bx86unix.cpp | as -o asm/bx86-elf.o
 
-# solaris
-asm/bx86-sol.o: asm/bx86unix.cpp
-	$(CC) -E -DSOL asm/bx86unix.cpp | sed 's/^#.*//' > asm/bx86-sol.s
-	as -o asm/bx86-sol.o asm/bx86-sol.s
-	rm -f asm/bx86-sol.s
-
-# a.out
-asm/bx86-out.o: asm/bx86unix.cpp
-	$(CPP) -DOUT asm/bx86unix.cpp | as -o asm/bx86-out.o
-
-# bsdi
-asm/bx86bsdi.o: asm/bx86unix.cpp
-	$(CPP) -DBSDI asm/bx86unix.cpp | sed 's/ :/:/' | as -o asm/bx86bsdi.o
-
-asm/bx86unix.cpp: asm/$(BF_ASM) ../perlasm/x86asm.pl ../perlasm/cbc.pl
-	(cd asm; $(PERL) $(BF_ASM) cpp $(PROCESSOR) >bx86unix.cpp)
-
-files:
-	$(PERL) $(TOP)/util/files.pl Makefile.ssl >> $(TOP)/MINFO
-
-links:
-	@$(TOP)/util/point.sh Makefile.ssl Makefile
-	@$(PERL) $(TOP)/util/mklink.pl ../../include/openssl $(EXHEADER)
-	@$(PERL) $(TOP)/util/mklink.pl ../../test $(TEST)
-	@$(PERL) $(TOP)/util/mklink.pl ../../apps $(APPS)
-
-install: installs
-
-installs:
+install install_file_list:
 	@exit 0
 
-tags:
-	ctags $(SRC)
+$(LIB):	$(OBJS)
+	$(AR) crs $(LIB) $(OBJS)
 
-tests:
-
-lint:
-	lint -DLINT $(INCLUDES) $(SRC)>fluff
-
-depend:
-	$(MAKEDEPEND) $(INCLUDES) $(DEPFLAG) $(PROGS) $(LIBSRC)
-
-dclean:
-	$(PERL) -pe 'if (/^# DO NOT DELETE THIS LINE/) {print; exit(0);}' $(MAKEFILE) >Makefile.new
-	mv -f Makefile.new $(MAKEFILE)
+$(OBJS):	$(HDRS)
 
 clean:
-	rm -f asm/bx86unix.cpp *.o asm/*.o *.obj $(LIB) tags core .pure .nfs* *.old *.bak fluff
+	rm -f $(LIB) *.o try* core *.core $(EXTHDRS) $(EXTLIBS) version.c
+
+check:
+	echo no checks in lib right now.
+
+depend:
+	makedepend -Y -- $(CFLAGS) -- $(SRCS)
+
+checkprograms:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

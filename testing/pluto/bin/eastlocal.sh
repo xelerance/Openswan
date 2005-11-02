@@ -18,6 +18,11 @@ then
     cat ${TESTING}/pluto/$TESTNAME/east.secrets >>/tmp/$TESTNAME/ipsec.secrets
 fi
 
+if [ -f ${TESTING}/pluto/$TESTNAME/east.tpm.tcl ] 
+then
+    cp ${TESTING}/pluto/$TESTNAME/east.tpm.tcl /tmp/$TESTNAME/ipsec.d/tpm.tcl
+fi
+
 mkdir -p /tmp/$TESTNAME/ipsec.d/policies
 cp /etc/ipsec.d/*          /tmp/$TESTNAME/ipsec.d
 cp /etc/ipsec.d/policies/* /tmp/$TESTNAME/ipsec.d/policies

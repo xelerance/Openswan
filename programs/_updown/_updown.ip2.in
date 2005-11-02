@@ -1,9 +1,9 @@
 #! /bin/sh
 # iproute2 version, default updown script
 #
-# Copyright (C) 2003-2004 Nigel Meteringham
-# Copyright (C) 2003-2004 Tuomo Soini
+# Copyright (C) 2003-2004 Nigel Metheringham
 # Copyright (C) 2002-2004 Michael Richardson <mcr@xelerance.com>
+# Copyright (C) 2003-2005 Tuomo Soini <tis@foobar.fi>
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -15,7 +15,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _updown.ip2.in,v 1.12 2004/07/09 03:54:26 ken Exp $
+# RCSID $Id: _updown.ip2.in,v 1.20 2005/09/05 17:11:29 mcr Exp $
 
 
 
@@ -80,6 +80,13 @@ LC_ALL=C export LC_ALL
 #              if non-empty, then the source address for the route will be
 #              set to this IP address.
 #
+#       PLUTO_MY_PROTOCOL
+#              is the protocol  for this  connection.  Useful  for
+#              firewalling.
+#
+#       PLUTO_MY_PORT
+#              is the port. Useful for firewalling.
+#
 #       PLUTO_PEER
 #              is the IP address of our peer.
 #
@@ -99,8 +106,36 @@ LC_ALL=C export LC_ALL
 #              client   is   just   the   peer,   this   will   be
 #              255.255.255.255.
 #
-# PLUTO_CONNECTION_TYPE
+#       PLUTO_PEER_PROTOCOL
+#              is  the  protocol  set  for  remote  end  with port
+#              selector.
 #
+#       PLUTO_PEER_PORT
+#              is the peer's port. Useful for firewalling.
+#
+#       PLUTO_CONNECTION_TYPE
+#
+
+# Import default _updown configs from the /etc/sysconfig/pluto_updown file
+#
+# Two variables can be set in this file:
+#
+#       DEFAULTSOURCE
+#              is the default value for PLUTO_MY_SOURCEIP
+#
+#       IPROUTETABLE
+#              is the default value for IPROUTETABLE
+#
+#       IPROUTEARGS
+#              is the extra argument list for ip route command
+#
+#       IPRULEARGS
+#              is the extra argument list for ip rule command
+#
+if [ -f /etc/sysconfig/pluto_updown ]
+then
+    . /etc/sysconfig/pluto_updown
+fi
 
 # check interface version
 case "$PLUTO_VERSION" in
@@ -134,6 +169,7 @@ uproute() {
 	doroute add
 	ip route flush cache
 }
+
 downroute() {
 	doroute delete
 	ip route flush cache
@@ -141,13 +177,13 @@ downroute() {
 
 uprule() {
 	# policy based advanced routing
-	if [ -n "$PLUTO_IPROUTETABLE" ] && [ "$PLUTO_IPROUTETABLE" != "main" ]
+	if [ -n "$IPROUTETABLE" ]
 	then
 	    dorule delete
 	    dorule add
 	fi
 	# virtual sourceip support
-	if [ -n "$PLUTO_MY_SOURCEIP" ] && ["$PLUTO_MY_SOURCEIP" != "no" ]
+	if [ -n "$PLUTO_MY_SOURCEIP" ]
 	then
 	    addsource
 	    changesource
@@ -156,7 +192,7 @@ uprule() {
 }
 
 downrule() {
-	if [ -n "$PLUTO_MY_SOURCEIP" ] && [ "$PLUTO_IPROUTETABLE" != "main" ]
+	if [ -n "$PLUTO_MY_SOURCEIP" ]
 	then
 	    dorule delete
 	    ip route flush cache
@@ -165,15 +201,39 @@ downrule() {
 
 addsource() {
 	st=0
-	if ! ip -o route get ${PLUTO_MY_SOURCEIP%/*} | grep -q ^local
+	#
+	# Fix for Bug #66215 to solve SNAT/MASQUERADE problems with recent
+	# 2.6.x kernels.
+	# Instead of a /32 it seems better to use the netmask of the remote
+	# (peer) network for the sourceip as suggested by Patrick McHardy.
+	#
+	cidr=${PLUTO_PEER_CLIENT##*/}
+	snet=${PLUTO_MY_SOURCEIP%/*}/32
+	if test "${PLUTO_PEER_CLIENT}" != "${cidr}"
 	then
-	    it="ip addr add ${PLUTO_MY_SOURCEIP%/*}/32 dev $PLUTO_INTERFACE"
+		snet=${PLUTO_MY_SOURCEIP%/*}/${cidr}
+	fi
+	#if ! ip -o route get ${PLUTO_MY_SOURCEIP%/*} | grep -q ^local
+	#then
+	#    it="ip addr add ${PLUTO_MY_SOURCEIP%/*}/32 dev ${PLUTO_INTERFACE%:*}"
+	if ! ip addr show dev ${PLUTO_INTERFACE%:*} | grep -qs "inet ${snet}"
+	then
+		it="ip addr add ${snet} dev ${PLUTO_INTERFACE%:*}"
+
 	    oops="`eval $it 2>&1`"
 	    st=$?
 	    if test " $oops" = " " -a " $st" != " 0"
 	    then
 		oops="silent error, exit status $st"
 	    fi
+	    case "$oops" in
+		'RTNETLINK answers: File exists'*)
+		# should not happen, but ... ignore if the
+		# address was already assigned on interface
+		oops=""
+		st=0
+	    ;;
+	    esac
 	    if test " $oops" != " " -o " $st" != " 0"
 	    then
 		echo "$0: addsource \`$it' failed ($oops)" >&2
@@ -186,13 +246,19 @@ changesource() {
 	st=0
 	parms="$PLUTO_PEER_CLIENT"
 	parms2="dev $PLUTO_INTERFACE"
-	parms3="src ${PLUTO_MY_SOURCEIP%/*}"
-	if [ -n "$PLUTO_IPROUTETABLE" ] && [ "$PLUTO_IPROUTETABLE" != "main" ]
+	parms3="src ${PLUTO_MY_SOURCEIP%/*}" 
+	if [ -n "$IPROUTETABLE" ]
 	then
-	    parms3="$parms3 table '$PLUTO_IPROUTETABLE'"
+	    parms3="$parms3 table $IPROUTETABLE"
 	fi
- 	case "$PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK" in
- 	"0.0.0.0/0.0.0.0")
+	cmd=add
+	if ! ip -o route get ${PLUTO_MY_SOURCEIP%/*} | grep ipsec0
+	then
+	    cmd=change
+	fi
+	it="ip route $cmd $parms $parms2 $parms3"
+ 	case "$PLUTO_PEER_CLIENT" in
+ 	"0.0.0.0/0")
 		# opportunistic encryption work around
 		it=
  		;;
@@ -214,23 +280,29 @@ dorule() {
 	st=0
 	it2=
 	iprule="from $PLUTO_MY_CLIENT"
-	iprule2="to $PLUTO_PEER_CLIENT table $PLUTO_IPROUTETABLE"
-	case "$PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK" in
-	"0.0.0.0/0.0.0.0")
+	iprule2="to $PLUTO_PEER_CLIENT"
+	if [ -n "$IPROUTETABLE" ]
+	then
+	    iprule2="$iprule2 table $IPROUTETABLE"
+	fi
+	iprule2="$iprule2 $IPRULEARGS"
+
+	case "$PLUTO_PEER_CLIENT" in
+	"0.0.0.0/0")
 		# opportunistic encryption work around
 		st=0
 		;;
 	*)
-		if test "$PLUTO_MY_SOURCEIP" = "no"
+		if [ -z "$PLUTO_MY_SOURCEIP" ]
 		then
-		    if test "$PLUTO_ME" = "${PLUTO_MY_CLIENT%/*}"
+		    if [ "$PLUTO_ME" = "${PLUTO_MY_CLIENT%/*}" ]
 		    then
 			it="ip rule $1 iif lo $iprule2"
 		    else
 			it="ip rule $1 $iprule $iprule2"
 		    fi
 		else
-		    if test "${PLUTO_MY_SOURCEIP%/*}" = "${PLUTO_MY_CLIENT%/*}"
+		    if [ "${PLUTO_MY_SOURCEIP%/*}" = "${PLUTO_MY_CLIENT%/*}" ]
 		    then
 			it="ip rule $1 iif lo $iprule2"
 		    else
@@ -287,28 +359,49 @@ doroute() {
 	st=0
 	parms="$PLUTO_PEER_CLIENT"
 	parms2=
-	if [ -n "$PLUTO_NEXT_HOP" ]
+
+	if [ -z "$PLUTO_MY_SOURCEIP" ] && [ -n "$DEFAULTSOURCE" ]
 	then
-	   parms2="via $PLUTO_NEXT_HOP"
-	fi
-	parms2="$parms2 dev $PLUTO_INTERFACE"
-	parms3=
-	if [ -n "$PLUTO_IPROUTETABLE" ] && [ "$PLUTO_IPROUTETABLE" != "main" ]
-	then
-	    parms3="table $PLUTO_IPROUTETABLE"
+	    PLUTO_MY_SOURCEIP="${DEFAULTSOURCE%/*}"
 	fi
 
-	if [ -z "$PLUTO_MY_SOURCEIP" ]
+	# skip creating any routing in case it is a host to host
+	# tunnel and the peer network(=host) is equal to peer ip,
+	# except there is some different source ip to use.
+	if test "$PLUTO_PEER_CLIENT" == "$PLUTO_PEER/32" ; then
+	    test "$PLUTO_ME" != "$PLUTO_MY_SOURCEIP" && \
+	    test -n "$PLUTO_MY_SOURCEIP" || return 0
+	fi
+
+	if [ -n "$PLUTO_NEXT_HOP" ] && [ "$PLUTO_NEXT_HOP" != "$PLUTO_PEER" ]
 	then
-	    if [ -f /etc/sysconfig/defaultsource ]
-	    then
-		. /etc/sysconfig/defaultsource
-		if [ -n "$DEFAULTSOURCE" ]
-		then
-		    PLUTO_MY_SOURCEIP=$DEFAULTSOURCE
-		fi
-	    fi
-        fi
+	   # nexthop is not needed on ppp interfaces. unset it to make cases
+	   # work, where left is set but no leftnexthop (e.g. left=%dynamic)
+	   ip link show "$PLUTO_INTERFACE" | grep -qs POINTOPOINT && \
+		unset PLUTO_NEXT_HOP
+
+	   # skip routing via nexthop if it is not reachable through any
+	   # directly connected network (but via default route only):
+	   ip route list match "$PLUTO_NEXT_HOP" dev "$PLUTO_INTERFACE" | \
+		grep -qs -v default || unset PLUTO_NEXT_HOP
+
+	   if [ -n "$PLUTO_NEXT_HOP" ]
+	   then
+		parms2="via $PLUTO_NEXT_HOP"
+	   fi
+	fi
+
+	parms2="$parms2 dev $PLUTO_INTERFACE"
+	parms3="$IPROUTEARGS"
+	if [ -n "$IPROUTETABLE" ]
+	then
+	    parms3="$parms3 table $IPROUTETABLE"
+	fi
+
+	#if [ -z "$PLUTO_MY_SOURCEIP" ] && [ -n "$DEFAULTSOURCE" ]
+	#then
+	#    PLUTO_MY_SOURCEIP="${DEFAULTSOURCE%/*}"
+        #fi
 
 	if test "$1" = "add" -a -n "$PLUTO_MY_SOURCEIP" 
 	then
@@ -316,8 +409,8 @@ doroute() {
 	    parms3="$parms3 src ${PLUTO_MY_SOURCEIP%/*}"
 	fi
 
-	case "$PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK" in
-	"0.0.0.0/0.0.0.0")
+	case "$PLUTO_PEER_CLIENT" in
+	"0.0.0.0/0")
 		# opportunistic encryption work around
 		# need to provide route that eclipses default, without 
 		# replacing it.
@@ -345,17 +438,21 @@ doroute() {
 case "$PLUTO_VERB:$1" in
 prepare-host:*|prepare-client:*)
 	# delete possibly-existing route (preliminary to adding a route)
-	case "$PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK" in
-	"0.0.0.0/0.0.0.0")
+	case "$PLUTO_PEER_CLIENT" in
+	"0.0.0.0/0")
 		# need to provide route that eclipses default, without 
 		# replacing it.
 		parms1="0.0.0.0/1"
 		parms2="128.0.0.0/1"
-		it="ip route delete $parms1 2>&1 ; ip route delete $parms2 2>&1"
-		oops="`ip route delete $parms1 2>&1 ; ip route delete $parms2 2>&1`"
+		it="ip route delete $parms1 $IPROUTEARGS 2>&1 ; ip route delete $parms2 $IPROUTEARGS 2>&1"
+		oops="`ip route delete $parms1 $IPROUTEARGS 2>&1 ; ip route delete $parms2 $IPROUTEARGS 2>&1`"
 		;;
 	*)
-		parms="$PLUTO_PEER_CLIENT"
+		parms="$PLUTO_PEER_CLIENT $IPROUTEARGS"
+		if [ -n "$IPROUTETABLE" ]
+		then
+		    parms="$parms table $IPROUTETABLE"
+		fi
 		it="ip route delete $parms 2>&1"
 		oops="`ip route delete $parms 2>&1`"
 		;;
@@ -389,22 +486,27 @@ unroute-host:*|unroute-client:*)
 	;;
 up-host:*)
 	# connection to me coming up
+	uprule
 	# If you are doing a custom version, firewall commands go here.
 	;;
 down-host:*)
 	# connection to me going down
+	downrule
 	# If you are doing a custom version, firewall commands go here.
 	;;
 up-client:)
 	# connection to my client subnet coming up
+	uprule
 	# If you are doing a custom version, firewall commands go here.
 	;;
 down-client:)
 	# connection to my client subnet going down
+	downrule
 	# If you are doing a custom version, firewall commands go here.
 	;;
 up-client:ipfwadm)
 	# connection to client subnet, with (left/right)firewall=yes, coming up
+	uprule
 	# This is used only by the default updown script, not by your custom
 	# ones, so do not mess with it; see CAUTION comment up at top.
 	ipfwadm -F -i accept -b -S $PLUTO_MY_CLIENT_NET/$PLUTO_MY_CLIENT_MASK \
@@ -412,6 +514,7 @@ up-client:ipfwadm)
 	;;
 down-client:ipfwadm)
 	# connection to client subnet, with (left/right)firewall=yes, going down
+	downrule
 	# This is used only by the default updown script, not by your custom
 	# ones, so do not mess with it; see CAUTION comment up at top.
 	ipfwadm -F -d accept -b -S $PLUTO_MY_CLIENT_NET/$PLUTO_MY_CLIENT_MASK \

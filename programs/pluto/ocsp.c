@@ -26,6 +26,7 @@
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
 
+#include "sysdep.h"
 #include "constants.h"
 #include "defs.h"
 #include "id.h"

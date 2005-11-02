@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pluto_constants.h,v 1.33.2.2 2005/08/19 17:53:03 ken Exp $
+ * RCSID $Id: pluto_constants.h,v 1.39 2005/10/03 19:58:12 mcr Exp $
  */
 
 /* Control and lock pathnames */
@@ -29,13 +29,10 @@ enum kernel_interface {
   NO_KERNEL = 1,
   AUTO_PICK = 2,
   USE_KLIPS = 3,
-  USE_NETKEY= 4
+  USE_NETKEY= 4,
+  USE_WIN2K = 5,
+  USE_FUNK  = 6,
 };
-extern enum kernel_interface kern_interface;
-extern enum_names kern_interface_names;
-
-
-extern enum_names dpd_action_names;
 
 /* RFC 3706 Dead Peer Detection */
 enum dpd_action {
@@ -46,8 +43,6 @@ enum dpd_action {
 
 
 /* Timer events */
-
-extern enum_names timer_event_names;
 
 enum event_type {
     EVENT_NULL,	/* non-event */
@@ -70,6 +65,7 @@ enum event_type {
 #define EVENT_REINIT_SECRET_DELAY		3600 /* 1 hour */
 #define EVENT_CRYPTO_FAILED_DELAY               300
 #define EVENT_RETRANSMIT_DELAY_0		10   /* 10 seconds */
+#define EVENT_GIVEUP_ON_DNS_DELAY               300  /* 5 minutes for DNS */
 
 /*
  * cryptographic helper operations.
@@ -84,8 +80,6 @@ enum pluto_crypto_requests {
   pcr_compute_dh_iv  = 7,  /* perform phase 1 calculation: DH + prf */
   pcr_compute_dh     = 8,  /* perform phase 2 PFS DH */
 };
-
-extern enum_names pluto_cryptoop_names;
 
 /*
  * operational importance of this cryptographic operation.
@@ -108,7 +102,7 @@ enum crypto_importance {
 
 typedef enum {
     STF_IGNORE,	/* don't respond */
-    STF_INLINE,        /* set to this on second time through complete_state_trans */
+    STF_INLINE,	/* set to this on second time through complete_state_trans */
     STF_SUSPEND,    /* unfinished -- don't release resources */
     STF_OK,	/* success */
     STF_INTERNAL_ERROR,	/* discard everything, we failed */
@@ -116,11 +110,11 @@ typedef enum {
 			 * so just ignore the message, and let them retransmit.
 			 */
     STF_FATAL,          /* just stop. we can't continue. */
+    STF_STOLEN,         /* only used by TaProoM */
     STF_FAIL,	        /* discard everything, something failed.  notification_t added.
 			 * values STF_FAIL + x are notifications.
 			 */
 } stf_status;
-extern enum_names stfstatus_name;
 
 /* Misc. stuff */
 
@@ -143,7 +137,6 @@ extern enum_names stfstatus_name;
  * in whack.c.  A change to WHACK_MAGIC in whack.h will be required too.
  */
 #if !defined(NO_DEBUG)
-extern const char *const debug_bit_names[];
 
 #define DBG_RAW		LELEM(0)	/* raw packet I/O */
 #define DBG_CRYPT	LELEM(1)	/* encryption/decryption of messages */
@@ -204,9 +197,6 @@ extern const char *const debug_bit_names[];
  * other important details.
  */
 
-extern enum_names state_names;
-extern const char *const state_story[];
-
 enum state_kind {
     STATE_UNDEFINED=0,	/* 0 -- most likely accident */
 
@@ -256,8 +246,6 @@ enum state_kind {
     STATE_IKE_ROOF
 
 };
-extern enum_names state_names;
-extern enum_names state_stories;
 
 enum phase1_role {
   INITIATOR=1,
@@ -302,8 +290,6 @@ enum phase1_role {
  * Ordered (mostly) by concreteness.  Order is exploited.
  */
 
-extern enum_names connection_kind_names;
-
 enum connection_kind {
     CK_GROUP,		/* policy group: instantiates to template */
     CK_TEMPLATE,	/* abstract connection, with wildcard */
@@ -318,8 +304,6 @@ enum connection_kind {
  * Note: a connection can only be routed if it is NEVER_NEGOTIATE
  * or HAS_IPSEC_POLICY.
  */
-
-extern enum_names routing_story;
 
 /* note that this is assumed to be ordered! */
 enum routing_t {
@@ -336,8 +320,6 @@ enum routing_t {
 #define routed(rs) ((rs) > RT_UNROUTED_HOLD)
 #define erouted(rs) ((rs) != RT_UNROUTED)
 #define shunt_erouted(rs) (erouted(rs) && (rs) != RT_ROUTED_TUNNEL)
-
-extern enum_names certpolicy_type_names;
 
 enum certpolicy {
   cert_neversend   = 1,
@@ -358,7 +340,6 @@ enum certpolicy {
  * in sync!
  */
 
-extern const char *const sa_policy_bit_names[];
 extern const char *prettypolicy(lset_t policy);
 
 /* ISAKMP auth techniques (none means never negotiate) */
@@ -432,9 +413,6 @@ extern const char *prettypolicy(lset_t policy);
  * draft-ietf-ipsec-ike-01.txt appendix A
  */
 
-extern enum_names oakley_attr_names;
-extern const char *const oakley_attr_bit_names[];
-
 #define OAKLEY_ENCRYPTION_ALGORITHM    1
 #define OAKLEY_HASH_ALGORITHM          2
 #define OAKLEY_AUTHENTICATION_METHOD   3
@@ -453,14 +431,9 @@ extern const char *const oakley_attr_bit_names[];
 #define OAKLEY_GROUP_ORDER            16	/* B/V */
 #define OAKLEY_BLOCK_SIZE             17
 
-/* for each Oakley attribute, which enum_names describes its values? */
-extern enum_names *oakley_attr_val_descs[];
-
 /* IPsec DOI attributes
  * RFC2407 The Internet IP security Domain of Interpretation for ISAKMP 4.5
  */
-
-extern enum_names ipsec_attr_names;
 
 #define SA_LIFE_TYPE             1
 #define SA_LIFE_DURATION         2	/* B/V */
@@ -473,7 +446,6 @@ extern enum_names ipsec_attr_names;
 #define COMPRESS_PRIVATE_ALG     9	/* B/V */
 
 /* for each IPsec attribute, which enum_names describes its values? */
-extern enum_names *ipsec_attr_val_descs[];
 
 /* SA Lifetime Type attribute
  * RFC2407 The Internet IP security Domain of Interpretation for ISAKMP 4.5
@@ -489,8 +461,6 @@ extern enum_names *ipsec_attr_val_descs[];
  * The value of SA_LIFE_DURATION_MAXIMUM is our local policy.
  */
 
-extern enum_names sa_lifetime_names;
-
 #define SA_LIFE_TYPE_SECONDS   1
 #define SA_LIFE_TYPE_KBYTES    2
 
@@ -505,8 +475,6 @@ extern enum_names sa_lifetime_names;
 #define SA_LIFE_DURATION_K_DEFAULT  0xFFFFFFFFlu
 
 /* Encapsulation Mode attribute */
-
-extern enum_names enc_mode_names;
 
 #define ENCAPSULATION_MODE_UNSPECIFIED 0	/* not legal -- used internally */
 #define ENCAPSULATION_MODE_TUNNEL      1
@@ -526,7 +494,6 @@ extern enum_names enc_mode_names;
 
 /* Auth Algorithm attribute */
 
-extern enum_names auth_alg_names, extended_auth_alg_names;
 
 #define AUTH_ALGORITHM_NONE        0	/* our private designation */
 #define AUTH_ALGORITHM_HMAC_MD5    1
@@ -546,7 +513,6 @@ extern enum_names auth_alg_names, extended_auth_alg_names;
  * For no particular reason, we chose one hour.
  * The value of OAKLEY_ISAKMP_SA_LIFETIME_MAXIMUM is our local policy.
  */
-extern enum_names oakley_lifetime_names;
 
 #define OAKLEY_LIFE_SECONDS   1
 #define OAKLEY_LIFE_KILOBYTES 2
@@ -574,39 +540,7 @@ enum keyword_host {
     KH_IPADDR       = LOOSE_ENUM_OTHER,
 };
 
-
-/* socket address family info */
-
-struct af_info
-{
-    int af;
-    const char *name;
-    size_t ia_sz;
-    size_t sa_sz;
-    int mask_cnt;
-    u_int8_t id_addr, id_subnet, id_range;
-    const ip_address *any;
-    const ip_subnet *none;	/* 0.0.0.0/32 or IPv6 equivalent */
-    const ip_subnet *all;	/* 0.0.0.0/0 or IPv6 equivalent */
-};
-
-extern const struct af_info
-    af_inet4_info,
-    af_inet6_info;
-
-extern const struct af_info *aftoinfo(int af);
-
-extern enum_names af_names;
-
-#define subnetisaddr(sn, a) (subnetishost(sn) && addrinsubnet((a), (sn)))
-extern bool subnetisnone(const ip_subnet *sn);
-
 /* BIND enumerated types */
-
-extern enum_names
-    rr_qtype_names,
-    rr_type_names,
-    rr_class_names;
 
 /* How authenticated is info that might have come from DNS?
  * In order of increasing confidence.
@@ -637,10 +571,6 @@ enum PrivateKeyKind {
     PPK_RSA = 3,
     PPK_PIN = 4
 };
-extern enum_names ppk_names;
-
-/* natt traversal types */
-extern const char *const natt_type_bitnames[];
 
 
 

@@ -15,7 +15,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_param.h,v 1.29.6.1 2005/08/12 16:24:18 ken Exp $
+ * RCSID $Id: ipsec_param.h,v 1.31 2005/08/12 15:01:38 mcr Exp $
  *
  */
 
@@ -30,7 +30,8 @@
 #ifndef _IPSEC_PARAM_H_
 
 #ifdef __KERNEL__
-#include "ipsec_kversion.h"
+
+#include "openswan/ipsec_kversion.h"
 
 /* Set number of ipsecX virtual devices here. */
 /* This must be < exp(field width of IPSEC_DEV_FORMAT) */
@@ -61,6 +62,7 @@
 #else /* CONFIG_KLIPS_BIGGATE */
 # define SADB_HASHMOD	257
 #endif /* CONFIG_KLIPS_BIGGATE */
+
 #endif /* __KERNEL__ */
 
 /*
@@ -172,8 +174,6 @@ extern int sysctl_ipsec_regress_pfkey_lossage;
  * debugging routines.
  */
 #ifdef CONFIG_KLIPS_DEBUG
-extern void ipsec_print_ip(struct iphdr *ip);
-
 	#define KLIPS_PRINT(flag, format, args...) \
 		((flag) ? printk(KERN_INFO format , ## args) : 0)
 	#define KLIPS_PRINTMORE(flag, format, args...) \
@@ -247,8 +247,12 @@ extern void ipsec_print_ip(struct iphdr *ip);
 
 /*
  * $Log: ipsec_param.h,v $
- * Revision 1.29.6.1  2005/08/12 16:24:18  ken
- * Pull in NAT-T compile logic from HEAD
+ * Revision 1.31  2005/08/12 15:01:38  mcr
+ * 	attempt to #undef CONFIG_IPSEC_NAT_TRAVERSAL if it is =0.
+ *
+ * Revision 1.30  2005/08/05 08:50:45  mcr
+ * 	move #include of skbuff.h to a place where
+ * 	we know it will be kernel only code.
  *
  * Revision 1.29  2005/01/26 00:50:35  mcr
  * 	adjustment of confusion of CONFIG_IPSEC_NAT vs CONFIG_KLIPS_NAT,

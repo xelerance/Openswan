@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keys.c,v 1.102.2.1 2005/08/19 17:52:42 ken Exp $
+ * RCSID $Id: keys.c,v 1.104 2005/08/19 04:03:02 mcr Exp $
  */
 
 #include <stddef.h>
@@ -24,9 +24,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <resolv.h>
 #include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
-#include <sys/queue.h>
 
 #include <glob.h>
 #ifndef GLOB_ABORTED
@@ -36,6 +34,7 @@
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
 
+#include "sysdep.h"
 #include "constants.h"
 #include "defs.h"
 #include "id.h"
@@ -371,7 +370,7 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 	match_him = 02,
 	match_me = 04
     };
-    unsigned char idstr1[IDTOA_BUF], idme[IDTOA_BUF]
+    char idstr1[IDTOA_BUF], idme[IDTOA_BUF]
 	, idhim[IDTOA_BUF], idhim2[IDTOA_BUF];
     unsigned int best_match = 0;
     struct secret *best = NULL;
@@ -816,7 +815,7 @@ process_psk_secret(chunk_t *psk)
 static err_t
 process_rsa_secret(struct RSA_private_key *rsak)
 {
-    char buf[RSA_MAX_ENCODING_BYTES];	/* limit on size of binary representation of key */
+    unsigned char buf[RSA_MAX_ENCODING_BYTES];	/* limit on size of binary representation of key */
     const struct fld *p;
 
     /* save bytes of Modulus and PublicExponent for keyid calculation */
@@ -845,8 +844,10 @@ process_rsa_secret(struct RSA_private_key *rsak)
 	    return "premature end of RSA key";
 	}
 	else if (NULL != (ugh = ttodatav(tok, flp->cur - tok
-	, 0, buf, sizeof(buf), &sz, diag_space, sizeof(diag_space)
-	, TTODATAV_SPACECOUNTS)))
+					 , 0, (char *)buf
+					 , sizeof(buf), &sz
+					 , diag_space, sizeof(diag_space)
+					 , TTODATAV_SPACECOUNTS)))
 	{
 	    /* in RSA key, ttodata didn't like */
 	    return builddiag("RSA data malformed (%s): %s", ugh, tok);
@@ -1230,9 +1231,11 @@ process_secrets_file(const char *file_pat, int whackfd)
 		break;
 	    case GLOB_ABORTED:
 		break;	/* already logged */
+#if defined(GLOB_NOMATCH)
 	    case GLOB_NOMATCH:
 		loglog(RC_LOG_SERIOUS, "no secrets filename matched \"%s\"", file_pat);
 		break;
+#endif
 	    default:
 		loglog(RC_LOG_SERIOUS, "unknown glob error %d", r);
 		break;

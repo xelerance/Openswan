@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: spdb_struct.c,v 1.13.2.6 2005/08/27 00:29:15 paul Exp $
+ * RCSID $Id: spdb_struct.c,v 1.19 2005/09/26 23:35:28 mcr Exp $
  */
 
 #include <stdio.h>
@@ -20,12 +20,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <sys/queue.h>
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
 #include "pfkeyv2.h"
 
+#include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
 
@@ -259,11 +259,7 @@ out_sa(pb_stream *outs
 	    {
 		ipsec_spi_t *spi_ptr = NULL;
 		int proto = 0;
-		bool *spi_generated = FALSE;
-
-		spi_generated = NULL;
-
-		spi_generated = NULL;
+		bool *spi_generated;
 
 		spi_generated = NULL;
 
@@ -765,6 +761,8 @@ parse_isakmp_sa_body(
 		    {
 #if defined(USE_1DES)
 		    case OAKLEY_DES_CBC:
+			openswan_log("1DES is not encryption");
+			/* FALL THROUGH */
 #endif
 		    case OAKLEY_3DES_CBC:
 			ta.encrypt = val;
@@ -1475,7 +1473,7 @@ parse_ipsec_transform(struct isakmp_transform *trans
 #endif
 
 			case ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS:
-				if (st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES) {
+				if (st->hidden_variables.st_nat_traversal & NAT_T_WITH_ENCAPSULATION_RFC_VALUES) {
 					loglog(RC_LOG_SERIOUS,
 						"%s must only be used with old IETF drafts",
 						enum_name(&enc_mode_names, val));
@@ -1504,7 +1502,7 @@ parse_ipsec_transform(struct isakmp_transform *trans
 
 			case ENCAPSULATION_MODE_UDP_TUNNEL_RFC:
 				if ((st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
-					(st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES)) {
+					(st->hidden_variables.st_nat_traversal & NAT_T_WITH_ENCAPSULATION_RFC_VALUES)) {
 					attrs->encapsulation = val - ENCAPSULATION_MODE_UDP_TUNNEL_RFC + ENCAPSULATION_MODE_TUNNEL;
 				}
 				else if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
@@ -1748,6 +1746,10 @@ parse_ipsec_sa_body(
 	ipcomp_cpi = 0;
 	esp_spi = 0;
 	ah_spi = 0;
+
+	memset(&ah_proposal, 0, sizeof(ah_proposal));
+	memset(&esp_proposal, 0, sizeof(esp_proposal));
+	memset(&ipcomp_proposal, 0, sizeof(ipcomp_proposal));
 
 	/* for each proposal in the conjunction */
 	do {

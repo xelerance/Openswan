@@ -11,8 +11,13 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: dnskey.h,v 1.24 2003/09/18 02:21:21 mcr Exp $
+ * RCSID $Id: dnskey.h,v 1.25 2005/08/05 19:21:38 mcr Exp $
  */
+
+#ifndef _DNSKEY_H_
+
+#include <arpa/nameser.h>
+
 
 extern int
     adns_qfd,	/* file descriptor for sending queries to adns */
@@ -51,7 +56,7 @@ struct adns_continuation {
 #ifdef USE_LWRES
     bool used;	/* have we called the cont_fn yet? */
     struct {
-	u_char name_buf[NS_MAXDNAME + 2];
+	char name_buf[NS_MAXDNAME + 2];
     } query;
 #else /* ! USE_LWRES */
     struct adns_query query;
@@ -81,4 +86,7 @@ extern void gw_addref(struct gw_info *gw)
     , gw_delref(struct gw_info **gwp);
 
 extern void reset_adns_restart_count(void);
+
+#define _DNSKEY_H_
+#endif /* _DNSKEY_H_ */
 

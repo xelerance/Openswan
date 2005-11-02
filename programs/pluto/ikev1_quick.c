@@ -15,7 +15,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikev1_quick.c,v 1.3 2005/05/18 19:29:29 mcr Exp $
+ * RCSID $Id: ikev1_quick.c,v 1.9 2005/10/13 03:27:56 mcr Exp $
  */
 
 #include <stdio.h>
@@ -26,14 +26,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <resolv.h>
 #include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
-#include <sys/queue.h>
 #include <sys/time.h>		/* for gettimeofday */
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
 
+#include "sysdep.h"
 #include "constants.h"
 #include "defs.h"
 #include "state.h"
@@ -89,6 +88,7 @@
 #endif
 #include "dpd.h"
 #include "x509more.h"
+#include "tpm/tpm.h"
 
 /* accept_PFS_KE
  *
@@ -604,7 +604,7 @@ quick_mode_hash3(u_char *dest, struct state *st)
     struct hmac_ctx ctx;
 
     hmac_init_chunk(&ctx, st->st_oakley.hasher, st->st_skeyid_a);
-    hmac_update(&ctx, "\0", 1);
+    hmac_update(&ctx, (const u_char *)"\0", 1);
     hmac_update(&ctx, (u_char *) &st->st_msgid, sizeof(st->st_msgid));
     hmac_update_chunk(&ctx, st->st_ni);
     hmac_update_chunk(&ctx, st->st_nr);
@@ -886,6 +886,16 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
+    }
+#endif
+
+#ifdef TPM
+    {
+	pb_stream *pbs = &rbody;
+	size_t enc_len = pbs_offset(pbs) - sizeof(struct isakmp_hdr);
+
+	TCLCALLOUT_crypt("preHash",st,pbs,sizeof(struct isakmp_hdr),enc_len);
+	r_hashval = tpm_relocateHash(pbs);
     }
 #endif
 
@@ -1249,7 +1259,7 @@ quick_inI1_outR1_start_query(struct verify_oppo_bundle *b
 	vc->b.failure_ok = b->failure_ok = FALSE;
 	ugh = start_adns_query(&id
 	    , our_id
-	    , T_TXT
+	    , ns_t_txt
 	    , quick_inI1_outR1_continue
 	    , &vc->ac);
 	break;
@@ -1258,7 +1268,7 @@ quick_inI1_outR1_start_query(struct verify_oppo_bundle *b
 	vc->b.failure_ok = b->failure_ok = TRUE;
 	ugh = start_adns_query(our_id
 	    , our_id	/* self as SG */
-	    , T_TXT
+	    , ns_t_txt
 	    , quick_inI1_outR1_continue
 	    , &vc->ac);
 	break;
@@ -1268,7 +1278,7 @@ quick_inI1_outR1_start_query(struct verify_oppo_bundle *b
 	vc->b.failure_ok = b->failure_ok = FALSE;
 	ugh = start_adns_query(our_id
 	    , NULL
-	    , T_KEY
+	    , ns_t_key
 	    , quick_inI1_outR1_continue
 	    , &vc->ac);
 	break;
@@ -1280,7 +1290,7 @@ quick_inI1_outR1_start_query(struct verify_oppo_bundle *b
 	vc->b.failure_ok = b->failure_ok = FALSE;
 	ugh = start_adns_query(&id
 	    , &c->spd.that.id
-	    , T_TXT
+	    , ns_t_txt
 	    , quick_inI1_outR1_continue
 	    , &vc->ac);
 	break;
@@ -1292,6 +1302,8 @@ quick_inI1_outR1_start_query(struct verify_oppo_bundle *b
     if (ugh != NULL)
     {
 	/* note: we'd like to use vc->b but vc has been freed
+	 * (it got freed by start_adns_query->release_adns_continuation,
+	 *  noting that &vc->ac == vc)
 	 * so we have to use b.  This is why we plunked next_state
 	 * into b, not just vc->b.
 	 */
@@ -1927,6 +1939,16 @@ quick_inI1_outR1_cryptotail(struct qke_continuation *qke
     }
 #endif
 
+#ifdef TPM
+    {
+	pb_stream *pbs = &md->rbody;
+	size_t enc_len = pbs_offset(pbs) - sizeof(struct isakmp_hdr);
+
+	TCLCALLOUT_crypt("preHash", st,pbs,sizeof(struct isakmp_hdr),enc_len);
+	r_hashval = tpm_relocateHash(pbs);	
+    }
+#endif
+
     /* Compute reply HASH(2) and insert in output */
     (void)quick_mode_hash12(r_hashval, r_hash_start, md->rbody.cur
 			    , st, &st->st_msgid, TRUE);
@@ -1945,7 +1967,10 @@ quick_inI1_outR1_cryptotail(struct qke_continuation *qke
     /* encrypt message, except for fixed part of header */
     
     if (!encrypt_message(&md->rbody, st))
+    {
+	delete_ipsec_sa(st, TRUE);
 	return STF_INTERNAL_ERROR;	/* ??? we may be partly committed */
+    }
 
     DBG(DBG_CONTROLMORE, DBG_log("finished processing quick inI1"));
     return STF_OK;
@@ -2045,6 +2070,16 @@ quick_inR1_outI2(struct msg_digest *md)
 
     /* HDR* out done */
 
+#ifdef TPM
+    {
+	pb_stream *pbs = &md->rbody;
+	size_t enc_len = pbs_offset(pbs) - sizeof(struct isakmp_hdr);
+
+	TCLCALLOUT_crypt("preHash", st,pbs,sizeof(struct isakmp_hdr),enc_len);
+	/* no need to fix up hash */
+    }
+#endif
+
     /* HASH(3) out -- since this is the only content, no passes needed */
     {
 	u_char	/* set by START_HASH_PAYLOAD: */
@@ -2069,7 +2104,10 @@ quick_inR1_outI2(struct msg_digest *md)
     /* encrypt message, except for fixed part of header */
 
     if (!encrypt_message(&md->rbody, st))
+    {
+	delete_ipsec_sa(st, FALSE);
 	return STF_INTERNAL_ERROR;	/* ??? we may be partly committed */
+    }
 
     {
       DBG(DBG_CONTROLMORE, DBG_log("inR1_outI2: instance %s[%ld], setting newest_ipsec_sa to #%ld (was #%ld) (spd.eroute=#%ld)"
@@ -2090,6 +2128,7 @@ quick_inR1_outI2(struct msg_digest *md)
 	on this conn, so initialize it */
     if (st->st_connection->dpd_delay && st->st_connection->dpd_timeout) {
 	if(dpd_init(st) != STF_OK) {
+	    delete_ipsec_sa(st, FALSE);
 	    return STF_FAIL;
 	}
     }
@@ -2145,6 +2184,7 @@ quick_inI2(struct msg_digest *md)
 	on this conn, so initialize it */
     if(st->st_connection->dpd_delay && st->st_connection->dpd_timeout) {
 	if(dpd_init(st) != STF_OK) {
+	    delete_ipsec_sa(st, FALSE);
 	    return STF_FAIL;
 	}
     }

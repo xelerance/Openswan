@@ -3,16 +3,15 @@ Name: openswan
 Version: 2.CVSHEAD
 # build kLIPS kerneo module or not
 %{!?buildklips: %{expand: %%define buildklips 1}}
+%{!?buildxen: %{expand: %%define buildxen 0}}
 
-# annoyingly, one works on an fc3-amd, the other works on an fc3-intel.
-# both have the same version of rom and coreutils ?
-#%define defkv %(rpm -q --qf='%{Version}-%{Release}\ ' kernel | tr ' ' '\n' | tail -1)
-%define defkv %(rpm -q --qf='%{Version}-%{Release}\\n' kernel|tail -1)
 # The default kernel version to build for is the latest of
 # the installed kernel-source RPMs.
 # This can be overridden by "--define 'kversion x.x.x-y.y.y'"
+#%define defkv %(rpm -q --qf='%{Version}-%{Release}\ ' kernel | tr ' ' '\n' | tail -1)
 %{!?kversion: %{expand: %%define kversion %defkv}}
 %define	krelver		%(echo %{kversion} | tr -s '-' '_')
+
 # Openswan -pre/-rc nomenclature has to co-exist with hyphen paranoia
 %define srcpkgver	%(echo %{version} | tr -s '_' '-')
 %define ourrelease 1
@@ -102,12 +101,14 @@ do
     OPENSWANSRCDIR=$FS \
     KLIPSCOMPILE="%{optflags}" \
     KERNELSRC=/lib/modules/%{kversion}/build \
+%if %{buildxen}
+    ARCH=xen \
+%else
     ARCH=%{_arch} \
-    SUBARCH=%{_arch} \
+%endif
     MODULE_DEF_INCLUDE=$FS/packaging/redhat/config-%{_target_cpu}$smp.h \
-    NET_26_12_SKALLOC=1 \
-    HAVE_SOCK_ZAPPED=1 \
-    module
+    MODULE_EXTRA_INCLUDE=$FS/packaging/redhat/extra_%{krelver}.h \
+    include module
 done
 %endif
 
@@ -161,7 +162,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.conf
 %attr(0700,root,root) %dir %{_sysconfdir}/ipsec.d
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.d/policies/*
-%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.d/examples/*
+%attr(0644,root,root) %{_sysconfdir}/ipsec.d/examples/*
 %{_localstatedir}/run/pluto
 %config(noreplace) %{_initrddir}/ipsec
 %{_libdir}/ipsec
@@ -191,12 +192,18 @@ fi
 %if %{buildklips}
 %postun klips
 %post klips
+/sbin/depmod -ae %{kversion}
 %endif
 
 %post 
 /sbin/chkconfig --add ipsec
 
 %changelog
+* Mon Oct 10 2005 Paul Wouters <paul@xelerance.com> 
+- Updated for klips on xen 
+- added ldconfig for %post klips to obtain ipsec module dependancies
+- Run 'make include' since on FC4 kernel source does not have the links yet.
+
 * Wed Jan  5 2005 Paul Wouters <paul@xelerance.com>
 - Updated for x86_64 and klips on 2.6
 

@@ -11,19 +11,24 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.4 2005/05/12 03:09:33 mcr Exp $
+# RCSID $Id: Makefile,v 1.5 2005/08/05 17:04:54 mcr Exp $
 
-OPENSWANSRCDIR=../../..
+OPENSWANSRCDIR?=../../..
+srcdir?=./
 include $(OPENSWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
+SRCDIR=${srcdir}
 UTILS=${OPENSWANSRCDIR}/testing/utils
 export OPENSWANLIB
 export OSWLOGLIB
 export LIBDESLITE
 export LIBAES
+export SRCDIR
+export OBJDIRTOP
+export USERCOMPILE
 
-TESTS=$(shell awk '{print $$2;}' TESTLIST)
+TESTS=$(shell awk '{print $$2;}' ${srcdir}TESTLIST)
 
 all: ${TESTS}
 	echo ${TESTS}
@@ -36,13 +41,13 @@ def:
 	@false
 
 check:
-	REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; source TESTLIST
+	REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; source ${srcdir}TESTLIST
 
 install install_file_list checkprograms programs:
 	@true
 
 clean:
-	cat TESTLIST | while read testtype name status; \
+	cat ${srcdir}TESTLIST | while read testtype name status; \
 	do\
 		rm -rf `basename $$name .c`;\
 	done
@@ -57,6 +62,9 @@ realclean: clean
 
 #
 # $Log: Makefile,v $
+# Revision 1.5  2005/08/05 17:04:54  mcr
+# 	adjustment of test cases to work with object directories.
+#
 # Revision 1.4  2005/05/12 03:09:33  mcr
 # 	added spdbph1 test case.
 #

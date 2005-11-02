@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# this touch program knows how to realize symlink copies.
+# this is for the kernel's benefit.
+
+for i 
+do
+        if [ ! -w $i ] && [ -L $i ]
+        then
+                cp $i $i.symcontents && rm -f $i && mv $i.symcontents $i
+        fi
+        /bin/touch $i
+done

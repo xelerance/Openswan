@@ -12,10 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: ttoaddr.c,v 1.11 2004/04/09 18:00:37 mcr Exp $
+ * RCSID $Id: ttoaddr.c,v 1.13 2005/08/05 17:36:24 mcr Exp $
  */
 #include "internal.h"
 #include "openswan.h"
+
+#if defined(__CYGWIN32__)
+#define gethostbyname2(X,Y) gethostbyname(X)
+#endif
 
 /*
  * Legal ASCII characters in a domain name.  Underscore technically is not,
@@ -182,8 +186,11 @@ ip_address *dst;
 	}
 
 	h = gethostbyname2(cp, af);
+#if !defined(__CYGWIN32__)
+	/* like, windows even has an /etc/networks? */
 	if (h == NULL && af == AF_INET)
 		ne = getnetbyname(cp);
+#endif
 	if (p != namebuf)
 		FREE(p);
 	if (h == NULL && ne == NULL)
@@ -348,6 +355,7 @@ ip_address *dst;
 	}
 
 	gapat = -1;
+	piece=0;
 	for (i = 0; i < NPIECES && src < stop; i++) {
 		oops = getpiece(&src, stop, &piece);
 		if (oops != NULL && *oops == ':') {	/* empty field */

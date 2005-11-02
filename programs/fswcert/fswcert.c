@@ -252,7 +252,7 @@ int read_pkcs12_safebag(PKCS12_SAFEBAG *bag, const char *password)
 			X509_free(x509);
 			break;
 
-		default:
+		/* default: */
 			/* other bag entry */
 	}
 	return error;
@@ -309,9 +309,9 @@ int read_pkcs12_file(BIO *bio_in)
 			if (read_pkcs12_safebag(bag, password))
 				return 1;
 		}
-		sk_pop_free(bags, PKCS12_SAFEBAG_free);
+		sk_pop_free(bags, (void*)PKCS12_SAFEBAG_free);
 	}
-	sk_pop_free(asafes, PKCS7_free);
+	sk_pop_free(asafes, (void*)PKCS7_free);
 	return 0;
 }
 

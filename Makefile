@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.273.2.3 2005/08/31 14:03:52 paul Exp $
+# RCSID $Id: Makefile,v 1.279 2005/09/13 22:08:13 mcr Exp $
 
 
 OPENSWANSRCDIR?=$(shell pwd)
@@ -56,16 +56,27 @@ KERNELREL=$(shell ${KVSHORTUTIL} ${KERNELSRC}/Makefile)
 
 
 kpatch: unapplypatch applypatch klipsdefaults
+npatch: unapplynpatch applynpatch
 
 unapplypatch:
-	-if [ -f ${KERNELSRC}/openswan.patch ]; then \
+	-@if [ -f ${KERNELSRC}/openswan.patch ]; then \
 		echo Undoing previous patches; \
 		cat ${KERNELSRC}/openswan.patch | (cd ${KERNELSRC} && patch -p1 -R --force -E -z .preipsec --reverse --ignore-whitespace ); \
 	fi
 
 applypatch:
-	echo Now performing forward patches; 
+	@echo Now performing forward patches; 
 	make kernelpatch${KERNELREL} | tee ${KERNELSRC}/openswan.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
+
+unapplynpatch:
+	-@if [ -f ${KERNELSRC}/natt.patch ]; then \
+		echo Undoing previous NAT patches; \
+		cat ${KERNELSRC}/natt.patch | (cd ${KERNELSRC} && patch -p1 -R --force -E -z .preipsec --reverse --ignore-whitespace ); \
+	fi
+
+applynpatch:
+	@echo Now performing forward NAT patches; 
+	make nattpatch${KERNELREL} | tee ${KERNELSRC}/natt.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
 
 # patch kernel
 PATCHER=packaging/utils/patcher
@@ -179,7 +190,7 @@ klipsdefaults:
 # programs
 
 ifeq ($(strip $(OBJDIR)),.)
-programs install clean checkprograms:: 
+programs install clean:: 
 	@for d in $(SUBDIRS) ; \
 	do \
 		(cd $$d && $(MAKE) srcdir=${OPENSWANSRCDIR}/$$d/ OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \
@@ -188,7 +199,7 @@ programs install clean checkprograms::
 else
 ABSOBJDIR:=$(shell mkdir -p ${OBJDIR}; cd ${OBJDIR} && pwd)
 
-programs install clean checkprograms:: ${OBJDIR}/Makefile
+programs install clean:: ${OBJDIR}/Makefile
 	@echo OBJDIR: ${OBJDIR}
 	(cd ${ABSOBJDIR} && OBJDIRTOP=${ABSOBJDIR} OBJDIR=${ABSOBJDIR} make $@ )
 
@@ -197,6 +208,12 @@ ${OBJDIR}/Makefile: ${srcdir}/Makefile packaging/utils/makeshadowdir
 	@packaging/utils/makeshadowdir `(cd ${srcdir}; pwd)` ${OBJDIR} "${SUBDIRS}"
 
 endif
+
+checkprograms:: 
+	@for d in $(SUBDIRS) ; \
+	do \
+		(cd $$d && $(MAKE) srcdir=${OPENSWANSRCDIR}/$$d/ OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \
+	done; 
 
 checkv199install:
 	@if [ "${LIBDIR}" != "${LIBEXECDIR}" ] && [ -f ${LIBDIR}/pluto ]; \
@@ -456,7 +473,7 @@ module26:
 	@if [ -f ${KERNELSRC}/Rules.make ] ; then \                 echo "Warning: Building for a 2.6 kernel in what looks like a 2.4 tree"; \
         fi ; \
         ${MAKE}  ${MOD26BUILDDIR}/Makefile
-	${MAKE} -C ${KERNELSRC} ${KERNELBUILDMFLAGS} BUILDDIR=${MOD26BUILDDIR} SUBDIRS=${MOD26BUILDDIR} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} MODULE_DEFCONFIG=${MODULE_DEFCONFIG} ARCH=${ARCH} modules
+	${MAKE} -C ${KERNELSRC} ${KERNELBUILDMFLAGS} BUILDDIR=${MOD26BUILDDIR} SUBDIRS=${MOD26BUILDDIR} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} MODULE_DEFCONFIG=${MODULE_DEFCONFIG}  MODULE_EXTRA_INCLUDE=${MODULE_EXTRA_INCLUDE} ARCH=${ARCH} modules
 	@echo 
 	@echo '========================================================='
 	@echo 
@@ -610,5 +627,7 @@ ipkg: programs install ipkg_strip ipkg_module
 	DESTDIR=${DESTDIR} OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} IPSECVERSION=${IPSECVERSION} ./packaging/ipkg/generate-ipkg
 
 
-
+env:
+	env
+	exit 1
 

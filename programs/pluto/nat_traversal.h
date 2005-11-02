@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: nat_traversal.h,v 1.4 2005/01/23 19:17:25 mcr Exp $
+ * RCSID $Id: nat_traversal.h,v 1.5 2005/09/26 23:35:28 mcr Exp $
  */
 
 #ifndef _NAT_TRAVERSAL_H_
@@ -22,6 +22,7 @@
 #define NAT_TRAVERSAL_IETF_00_01     1
 #define NAT_TRAVERSAL_IETF_02_03     2
 #define NAT_TRAVERSAL_RFC            3
+#define NAT_TRAVERSAL_OSX            4
 
 #define NAT_TRAVERSAL_NAT_BHND_ME    30
 #define NAT_TRAVERSAL_NAT_BHND_PEER  31
@@ -33,7 +34,7 @@
  */
 #define NAT_T_WITH_NATD \
 	( LELEM(NAT_TRAVERSAL_IETF_00_01) | LELEM(NAT_TRAVERSAL_IETF_02_03) | \
-	LELEM(NAT_TRAVERSAL_RFC) )
+	LELEM(NAT_TRAVERSAL_OSX) | LELEM(NAT_TRAVERSAL_RFC) )
 /**
  * NAT-Traversal methods which need NAT-OA
  */
@@ -45,18 +46,32 @@
  */
 #define NAT_T_WITH_KA \
 	( LELEM(NAT_TRAVERSAL_IETF_00_01) | LELEM(NAT_TRAVERSAL_IETF_02_03) | \
-	LELEM(NAT_TRAVERSAL_RFC) )
+	LELEM(NAT_TRAVERSAL_OSX) | LELEM(NAT_TRAVERSAL_RFC) )
 /**
  * NAT-Traversal methods which use floating port
  */
 #define NAT_T_WITH_PORT_FLOATING \
-	( LELEM(NAT_TRAVERSAL_IETF_02_03) | LELEM(NAT_TRAVERSAL_RFC) )
+	( LELEM(NAT_TRAVERSAL_IETF_02_03) | LELEM(NAT_TRAVERSAL_OSX) | \
+	LELEM(NAT_TRAVERSAL_RFC) )
+
+/**
+ * NAT-Traversal methods which use a value for NAT-D from draft versions of the
+ * RFC which conflict with values from RFC 3547
+ */
+#define NAT_T_WITH_NATD_BADDRAFT_VALUES \
+	( LELEM(NAT_TRAVERSAL_OSX) )
 
 /**
  * NAT-Traversal methods which use officials values (RFC)
  */
 #define NAT_T_WITH_RFC_VALUES \
 	( LELEM(NAT_TRAVERSAL_RFC) )
+
+/**
+ * NAT-Traversal methods which use officials values (RFC) for encapsulation
+ */
+#define NAT_T_WITH_ENCAPSULATION_RFC_VALUES \
+	( LELEM(NAT_TRAVERSAL_OSX) | LELEM(NAT_TRAVERSAL_RFC) )
 
 /**
  * NAT-Traversal detected
@@ -137,11 +152,11 @@ nat_traversal_port_float(struct state *st, struct msg_digest *md, bool in);
 #define NAT_T_ENCAPSULATION_MODE(st,nat_t_policy) ( \
 	((st)->hidden_variables.st_nat_traversal & NAT_T_DETECTED) \
 		? ( ((nat_t_policy) & POLICY_TUNNEL) \
-			? ( ((st)->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES) \
+			? ( ((st)->hidden_variables.st_nat_traversal & NAT_T_WITH_ENCAPSULATION_RFC_VALUES) \
 				? (ENCAPSULATION_MODE_UDP_TUNNEL_RFC) \
 				: (ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS) \
 			  ) \
-			: ( ((st)->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES) \
+			: ( ((st)->hidden_variables.st_nat_traversal & NAT_T_WITH_ENCAPSULATION_RFC_VALUES) \
 				? (ENCAPSULATION_MODE_UDP_TRANSPORT_RFC) \
 				: (ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS) \
 			  ) \

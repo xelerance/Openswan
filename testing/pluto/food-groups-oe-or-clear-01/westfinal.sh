@@ -5,6 +5,7 @@ arp -an
 : ==== cut ====
 cat /tmp/pluto.log
 : ==== tuc ====
+: ==== end ====
 
 # these are tcpdumps that were started in *init.sh.
 #kill `cat /tmp/eth1.pid`

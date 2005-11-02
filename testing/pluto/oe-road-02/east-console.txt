@@ -72,6 +72,8 @@ east:~#
 
 east:~#
 east:~#
+ : ==== start ====
+east:~#
  ipsec setup stop
 ipsec_setup: Stopping FreeS/WAN IPsec...
 IPSEC EVENT: KLIPS device ipsec0 shut down.

@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: sysdep_linux.c,v 1.2 2005/07/19 20:34:15 ken Exp $
+ * RCSID $Id: sysdep_linux.c,v 1.3 2005/08/05 19:18:47 mcr Exp $
  */
 
 #include <stddef.h>
@@ -26,7 +26,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/utsname.h>
-#include <sys/queue.h>
 
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -36,6 +35,7 @@
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
 
+#include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
 

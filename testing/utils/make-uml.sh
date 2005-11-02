@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # 
-# $Id: make-uml.sh,v 1.48 2005/07/14 01:35:54 mcr Exp $
+# $Id: make-uml.sh,v 1.50 2005/07/27 15:51:39 mcr Exp $
 #
 
 # show me
@@ -22,6 +22,10 @@ fi
 
 # we always use OBJ directories for UML builds.
 export USE_OBJDIR=true
+
+# include this dir, in particular so that we can get the local "touch"
+# program.
+export PATH=$OPENSWANSRCDIR/testing/utils:$PATH 
 
 
 #
@@ -182,7 +186,7 @@ fi
 
 cd $OPENSWANSRCDIR || exit 1
 
-make USE_OBJDIR=true programs
+make WERROR=-Werror USE_OBJDIR=true programs
 
 # now, setup up root dir
 for host in $OPENSWANHOSTS
@@ -196,6 +200,12 @@ cd $POOLSPACE && make $OPENSWANHOSTS
     
 #
 # $Log: make-uml.sh,v $
+# Revision 1.50  2005/07/27 15:51:39  mcr
+# 	set up $PATH to use local touch program.
+#
+# Revision 1.49  2005/07/22 13:45:49  mcr
+# 	make sure that UML builds are always with -Werror.
+#
 # Revision 1.48  2005/07/14 01:35:54  mcr
 # 	use USE_OBJDIR.
 #

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2.c,v 1.97.2.3 2005/09/06 02:10:03 mcr Exp $
+ * RCSID $Id: pfkey_v2.c,v 1.102 2005/09/14 16:37:23 mcr Exp $
  */
 
 /*
@@ -82,13 +82,12 @@ extern int sysctl_ipsec_debug_verbose;
 
 extern struct proto_ops pfkey_ops;
 
+static rwlock_t pfkey_sock_lock = RW_LOCK_UNLOCKED;
 #ifdef NET_26
 HLIST_HEAD(pfkey_sock_list);
 static DECLARE_WAIT_QUEUE_HEAD(pfkey_sock_wait);
-static rwlock_t pfkey_sock_lock = RW_LOCK_UNLOCKED;
 static atomic_t pfkey_sock_users = ATOMIC_INIT(0);
 #else
-extern struct proto_ops pfkey_ops;
 struct sock *pfkey_sock_list = NULL;
 #endif
 
@@ -1892,15 +1891,8 @@ void pfkey_proto_init(struct net_protocol *pro)
 
 /*
  * $Log: pfkey_v2.c,v $
- * Revision 1.97.2.3  2005/09/06 02:10:03  mcr
- *    pulled up possible SMP-related compilation fix
- *
- * Revision 1.97.2.2  2005/08/28 01:21:12  paul
- * Undid Ken's gcc4 fix in version 1.94 since it breaks linking KLIPS on
- * SMP kernels.
- *
- * Revision 1.97.2.1  2005/08/27 23:40:00  paul
- * recommited HAVE_SOCK_SECURITY fixes for linux 2.6.13
+ * Revision 1.102  2005/09/14 16:37:23  mcr
+ * 	fix to compile on 2.4.
  *
  * Revision 1.101  2005/09/06 01:42:25  mcr
  *    removed additional SOCKOPS_WRAPPED code

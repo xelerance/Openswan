@@ -11,18 +11,16 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_netlink.c,v 1.30 2005/07/08 19:14:43 ken Exp $
+ * RCSID $Id: kernel_netlink.c,v 1.31 2005/08/14 21:58:09 mcr Exp $
  */
 
-#if defined(linux) && defined(KERNEL26_SUPPORT)
+#if defined(linux) && defined(NETKEY_SUPPORT)
 
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
-#include <sys/queue.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <sys/queue.h>
 #include <unistd.h>
 
 #include "kameipsec.h"
@@ -33,6 +31,7 @@
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
+#include "sysdep.h"
 #include "constants.h"
 #include "defs.h"
 #include "id.h"
@@ -178,7 +177,7 @@ static void init_netlink(void)
  */
 static bool
 send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
-, const char *description, const char *text_said)
+		 , const char *description, const char *text_said)
 {
     struct {
 	struct nlmsghdr n;
@@ -382,7 +381,7 @@ netlink_raw_eroute(const ip_address *this_host
 		   , unsigned int satype
 		   , const struct pfkey_proto_info *proto_info
 		   , time_t use_lifetime UNUSED
-		   , unsigned int op
+		   , enum pluto_sadb_operations sadb_op
 		   , const char *text_said)
 {
     struct {
@@ -418,7 +417,7 @@ netlink_raw_eroute(const ip_address *this_host
 	case SPI_TRAP:
 	case SPI_TRAPSUBNET:
 	case SPI_HOLD:
-	    if (op & (SADB_X_SAFLAGS_INFLOW << ERO_FLAG_SHIFT))
+	  if (sadb_op == ERO_ADD_INBOUND || sadb_op == ERO_DEL_INBOUND)
 	    {
 		return TRUE;
 	    }
@@ -444,12 +443,12 @@ netlink_raw_eroute(const ip_address *this_host
     req.u.p.sel.family = family;
 
     dir = XFRM_POLICY_OUT;
-    if (op & (SADB_X_SAFLAGS_INFLOW << ERO_FLAG_SHIFT))
+    if (sadb_op == ERO_ADD_INBOUND || sadb_op == ERO_DEL_INBOUND)
     {
 	dir = XFRM_POLICY_IN;
     }
 
-    if ((op & ERO_MASK) == ERO_DELETE)
+    if (sadb_op == ERO_DELETE || sadb_op == ERO_DEL_INBOUND)
     {
 	req.u.id.dir = dir;
 	req.n.nlmsg_type = XFRM_MSG_DELPOLICY;
@@ -483,14 +482,14 @@ netlink_raw_eroute(const ip_address *this_host
 	req.u.p.lft.hard_packet_limit = XFRM_INF;
 
 	req.n.nlmsg_type = XFRM_MSG_NEWPOLICY;
-	if (op & (SADB_X_SAFLAGS_REPLACEFLOW << ERO_FLAG_SHIFT))
+	if (sadb_op == ERO_REPLACE)
 	{
 	    req.n.nlmsg_type = XFRM_MSG_UPDPOLICY;
 	}
 	req.n.nlmsg_len = NLMSG_ALIGN(NLMSG_LENGTH(sizeof(req.u.p)));
     }
 
-    if (policy == IPSEC_POLICY_IPSEC && (op & ERO_MASK) != ERO_DELETE)
+    if (policy == IPSEC_POLICY_IPSEC && sadb_op != ERO_DELETE)
     {
 	struct rtattr *attr;
 	struct xfrm_user_tmpl tmpl[4];
@@ -525,11 +524,11 @@ netlink_raw_eroute(const ip_address *this_host
     }
 
     enoent_ok = FALSE;
-    if (op == ERO_DEL_INBOUND)
+    if (sadb_op == ERO_DEL_INBOUND)
     {
 	enoent_ok = TRUE;
     }
-    else if (op == ERO_DELETE && ntohl(spi) == SPI_HOLD)
+    else if (sadb_op == ERO_DELETE && ntohl(spi) == SPI_HOLD)
     {
 	enoent_ok = TRUE;
     }
@@ -1080,24 +1079,24 @@ retry:
     return rsp.u.sa.id.spi;
 }
 
-const struct kernel_ops linux_kernel_ops = {
-	type: KERNEL_TYPE_LINUX,
-	inbound_eroute: 1,
-	policy_lifetime: 1,
-	async_fdp: &netlink_bcast_fd,
-	replay_window: 32,
-
-	init: init_netlink,
-	pfkey_register: linux_pfkey_register,
-	pfkey_register_response: linux_pfkey_register_response,
-	process_msg: netlink_process_msg,
-	raw_eroute: netlink_raw_eroute,
-	add_sa: netlink_add_sa,
-	del_sa: netlink_del_sa,
-	process_queue: NULL,
-	grp_sa: NULL,
-	get_spi: netlink_get_spi,
-	docommand: do_command_linux,
-	opname: "netkey",
+const struct kernel_ops netkey_kernel_ops = {
+    type: USE_NETKEY,
+    inbound_eroute: 1,
+    policy_lifetime: 1,
+    async_fdp: &netlink_bcast_fd,
+    replay_window: 32,
+    
+    init: init_netlink,
+    pfkey_register: linux_pfkey_register,
+    pfkey_register_response: linux_pfkey_register_response,
+    process_msg: netlink_process_msg,
+    raw_eroute: netlink_raw_eroute,
+    add_sa: netlink_add_sa,
+    del_sa: netlink_del_sa,
+    process_queue: NULL,
+    grp_sa: NULL,
+    get_spi: netlink_get_spi,
+    docommand: do_command_linux,
+    kern_name: "netkey",
 };
 #endif /* linux && KLIPS */

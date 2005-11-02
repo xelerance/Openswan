@@ -1,0 +1,6 @@
+Only use this for Mandrake version 8.x.
+For version 9.x and higher, use packaging/mandriva
+
+warning: mandrake 8 uses a very old freeswan ipsec.o module, which will
+not work with openswan. Try building with the rpm with buildklips=1, or
+compile your own openswan module.

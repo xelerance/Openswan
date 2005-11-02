@@ -18,13 +18,17 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* $Id: getaddrinfo.c,v 1.2 2004/09/20 18:00:35 mcr Exp $ */
+/* $Id: getaddrinfo.c,v 1.3 2005/08/05 01:18:29 mcr Exp $ */
 
 #include <config.h>
 
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <netdb.h>
+#include <sys/socket.h>
+
+#include <isc/ipv6.h>
 
 #include <lwres/lwres.h>
 #include <lwres/net.h>
@@ -39,7 +43,7 @@ static struct addrinfo
 	*ai_reverse(struct addrinfo *oai),
 	*ai_clone(struct addrinfo *oai, int family),
 	*ai_alloc(int family, int addrlen);
-#ifdef AF_LOCAL
+#if defined(AF_LOCAL) && !defined(__CYGWIN__)
 static int get_local(const char *name, int socktype, struct addrinfo **res);
 #endif
 
@@ -58,7 +62,7 @@ static void set_order(int, int (**)(const char *, int, struct addrinfo **,
 
 int
 lwres_getaddrinfo(const char *hostname, const char *servname,
-	const struct addrinfo *hints, struct addrinfo **res)
+		  const struct addrinfo *hints, struct addrinfo **res)
 {
 	struct servent *sp;
 	const char *proto;
@@ -112,7 +116,7 @@ lwres_getaddrinfo(const char *hostname, const char *servname,
 				return (EAI_SOCKTYPE);
 			}
 			break;
-#ifdef	AF_LOCAL
+#if defined(AF_LOCAL) && !defined(__CYGWIN__)
 		case AF_LOCAL:
 			switch (hints->ai_socktype) {
 			case 0:
@@ -136,7 +140,7 @@ lwres_getaddrinfo(const char *hostname, const char *servname,
 		flags = 0;
 	}
 
-#ifdef	AF_LOCAL
+#if defined(AF_LOCAL) && !defined(__CYGWIN__)
 	/*
 	 * First, deal with AF_LOCAL.  If the family was not set,
 	 * then assume AF_LOCAL if the first character of the
@@ -588,7 +592,7 @@ lwres_freeaddrinfo(struct addrinfo *ai) {
 	}
 }
 
-#ifdef AF_LOCAL
+#if defined(AF_LOCAL) && !defined(__CYGWIN__)
 static int
 get_local(const char *name, int socktype, struct addrinfo **res) {
 	struct addrinfo *ai;

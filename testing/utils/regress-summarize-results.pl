@@ -285,21 +285,23 @@ if(defined($runningtest)) {
 
 @testnames=sort @tests;
 
-#
-# make pass through the tests, categorizing them.
-#
-@regresstests=();
-@goaltests=();
-@exploittests=();
-foreach $testname (@testnames) {
-  if(-f "$testname/regress.txt") {
-    push(@regresstests,$testname);
-  } elsif(-f "$testname/goal.txt") {
-    push(@goaltests, $testname);
-  } elsif(-f "$testname/exploit.txt") {
-    push(@exploittests, $testname);
-  } else {
-    push(@regresstests,$testname);
+if($wanttestcategories) {
+  #
+  # make pass through the tests, categorizing them.
+  #
+  @regresstests=();
+  @goaltests=();
+  @exploittests=();
+  foreach $testname (@testnames) {
+    if(-f "$testname/regress.txt") {
+      push(@regresstests,$testname);
+    } elsif(-f "$testname/goal.txt") {
+      push(@goaltests, $testname);
+    } elsif(-f "$testname/exploit.txt") {
+      push(@exploittests, $testname);
+    } else {
+      push(@regresstests,$testname);
+    }
   }
 }
 
@@ -341,41 +343,52 @@ print HTMLFILE "<TR><TH COLSPAN=3>Regression tests</TH></TR>\n";
 print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
 $linecount=3;
 
-foreach $testname (@regresstests) {
-  next if($testname =~ /^\./);
-  next unless(-d $testname || $testname eq $runningtest);
-
-  &htmlize_test($testname);
+if($wanttestcategories) {
+  foreach $testname (@regresstests) {
+    next if($testname =~ /^\./);
+    next unless(-d $testname || $testname eq $runningtest);
+    
+    &htmlize_test($testname);
+  }
+  
+  $testtypename="Goal";
+  print HTMLFILE "</TABLE>\n";
+  print HTMLFILE "<TABLE>\n";
+  print HTMLFILE "<TR><TH COLSPAN=3>Goal tests</TH></TR>\n";
+  print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
+  $linecount+=3;
+  
+  foreach $testname (@goaltests) {
+    next if($testname =~ /^\./);
+    next unless(-d $testname || $testname eq $runningtest);
+    
+    &htmlize_test($testname);
+  }
+  
+  $testtypename="Exploit ";
+  print HTMLFILE "</TABLE>\n";
+  print HTMLFILE "<TABLE>\n";
+  print HTMLFILE "<TR><TH COLSPAN=3>Exploit tests</TH></TR>\n";
+  print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
+  $linecount+=3;
+  
+  foreach $testname (@exploittests) {
+    next if($testname =~ /^\./);
+    next unless(-d $testname || $testname eq $runningtest);
+    
+    &htmlize_test($testname);
+  }
+} else {
+  foreach $testname (@testnames) {
+    next if($testname =~ /^\./);
+    next unless(-d $testname || $testname eq $runningtest);
+    
+    &htmlize_test($testname);
+  }
 }
-
-$testtypename="Goal";
-print HTMLFILE "</TABLE>\n";
-print HTMLFILE "<TABLE>\n";
-print HTMLFILE "<TR><TH COLSPAN=3>Goal tests</TH></TR>\n";
-print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
-$linecount+=3;
-
-foreach $testname (@goaltests) {
-  next if($testname =~ /^\./);
-  next unless(-d $testname || $testname eq $runningtest);
-
-  &htmlize_test($testname);
-}
-
-$testtypename="Exploit ";
-print HTMLFILE "</TABLE>\n";
-print HTMLFILE "<TABLE>\n";
-print HTMLFILE "<TR><TH COLSPAN=3>Exploit tests</TH></TR>\n";
-print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
-$linecount+=3;
-
-foreach $testname (@exploittests) {
-  next if($testname =~ /^\./);
-  next unless(-d $testname || $testname eq $runningtest);
-
-  &htmlize_test($testname);
-}
-
+  
+  
+  
 $subtotal = $passed + $failed;
 $skipped = $total - $subtotal;
 

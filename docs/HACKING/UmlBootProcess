@@ -1,0 +1,19 @@
+-*- emacs-wiki -*-
+
+Up to kernel 2.6.12, the User-Mode-Linux images have been lazy about /dev.
+We just enabled the crappy "devfs" and let it deal. 
+
+That was important because we use hostfs as /.
+To have /dev on hostfs, would have meant that we would have to have device
+nodes on the host file system, and that would require root on the host to
+create them.
+
+The new system is that we have a shell script for /sbin/init.
+It mounts /proc, then starts udev, then creates /dev/console, and
+then exec's the real /sbin/init.
+
+It seems to work, but in order for the script to start, we have to have
+something as /dev/console, and an empty file will do for now.
+
+
+

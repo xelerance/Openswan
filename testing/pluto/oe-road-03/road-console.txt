@@ -76,6 +76,8 @@ road:~#
 
 road:~#
 road:~#
+ : ==== start ====
+road:~#
  ipsec setup stop
 ipsec_setup: Stopping FreeS/WAN IPsec...
 IPSEC EVENT: KLIPS device ipsec0 shut down.

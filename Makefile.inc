@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.inc,v 1.116.2.2 2005/08/25 18:26:06 paul Exp $
+# RCSID $Id: Makefile.inc,v 1.132 2005/10/20 21:01:47 mcr Exp $
 
 
 
@@ -168,14 +168,14 @@ INSTCONFFLAGS=
 ### have to be changed for common customizations.
 
 # extra compile flags, for userland and kernel stuff, e.g. -g for debug info
-# Do no use this for cross-compiling flags such as -I or -L. Add those to a
-# CC variable
-# (caution, this stuff is still being sorted out, will change in future)
-USERCOMPILE?=-g -O3
+# you can add to this in the defaults file using +=
+USERCOMPILE?=-g -O3 ${WERROR} 
 KLIPSCOMPILE=-O3
 # for AMD64 use 
 #USERCOMPILE?=-g -O3 -m64
 #KLIPSCOMPILE=-O3 -m64 -mno-red-zone
+
+PORTINCLUDE?=
 
 # command used to link/copy KLIPS into kernel source tree
 # There are good reasons why this is "ln -s"; only people like distribution
@@ -225,6 +225,7 @@ RPMBUILD=rpmbuild
 # rpmbuild -bp on the kernel src.rpm and grab the tree from 
 # /usr/src/redhat/BUILD/ or use something like the example below using the
 # module directory.
+# note: there is now a kernel-devel rpm.
 #RH_KERNELSRC?=/usr/src/linux-2.4
 RH_KERNELSRC?=/lib/modules/2.6.9-1.681_FC3/build
 
@@ -239,7 +240,7 @@ RH_KERNELSRC?=/lib/modules/2.6.9-1.681_FC3/build
 # installed one in RH 7.2, won't work - you wind up depending upon
 # openssl.
 
-BIND9STATICLIBDIR?=/usr/local/lib
+BIND9STATICLIBDIR?=/usr/lib
 
 # if you install elsewere, you may need to point the include files to it.
 #BIND9STATICLIBDIR?=/sandel/lib
@@ -255,7 +256,7 @@ BIND9STATICLIBDIR?=/usr/local/lib
 # LWRES is the lightweight resolver, part of BIND9
 # We test with LWRES, but ship with it off, as it requires
 # additional headers not present on most systems.
-USE_LWRES?=false
+USE_LWRES?=true
 
 # Whether or not to use iproute2 based commands.
 # On Kernel 2.0, and early 2.2 systems you may need to either install the
@@ -281,10 +282,10 @@ USE_IKEPING?=true
 # using TXT instead of KEY records.  See references to 'Flag Day'
 USE_KEYRR?=true
 
-# include support for Kernel 2.5/2.6 IPsec in pluto
-# You can safely do this on Kernel 2.6 systems, and it is recommended
-# to leave this enabled so if you do upgrade to a 2.6 Kernel, you don't
-# need to recompile.
+# include support for 2.4 KLIPS and 2.6 KLIPS in pluto
+USE_KLIPS?=true
+
+# include support for NETKEY 2.5/2.6 IPsec in pluto (aka "native", "kame")
 USE_KERNEL26?=true
 
 # include support for sending Openswan Vendor IDs
@@ -337,10 +338,15 @@ endif
 # device. Normal use does not need any of this.
 USE_WEAKSTUFF?=false
 
-# should we include additional algorithms? It adds lots of
-# code space increases risk of bad crypto code, but offers possibilities 
+# include algorithms that don't even encrypt (also must set WEAKSTUFF)
+# unless you are doing negative testing, turning this on is foolish.
+USE_NOCRYPTO?=false
+
+# should we include additional (strong) algorithms?  It adds a measureable
+# amount of code space to pluto, and many of the algorithms have not had
+# the same scrutiny that AES and 3DES have received, but offers possibilities 
 # of switching away from AES/3DES quickly. 
-USE_EXTRACRYPTO?=false
+USE_EXTRACRYPTO?=true
 
 # Do we have pthreads available?  Only yes if you need it for XAUTH+PAM,
 # or if you need it for CRL fetching.
@@ -351,13 +357,18 @@ HAVE_THREADS?=false
 # if so, then internationalization code is retained in the shell scripts
 USE_BASH?=true
 
+# Whether or not to include TaProoM (TCL Pluto Mix) into pluto.
+#
+USE_TAPROOM?=false
+
 X509_VERSION=X.509-1.5.4
 NONINTCONFIG=oldconfig
 
 # Should we build with object directories?
 # (not really a code option, but a build option)
+# by default we will start using object directories.
 ifeq ($(USE_OBJDIR),)
-USE_OBJDIR?=false
+USE_OBJDIR?=true
 endif
 
 # supply kernel-configuration ARCH defaults
@@ -365,28 +376,35 @@ ifeq ($(ARCH),)
 ARCH := $(shell uname -m)
 endif
 # always sanitize $(ARCH)
-ARCH := $(shell echo $(ARCH) | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
+ARCH := $(shell echo $(ARCH) | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ -e 's/ //g')
 
-ifeq ($(OS),)
-OS:=$(shell uname -s | tr 'A-Z' 'a-z')
+ifeq ($(OSDEP),)
+OSDEP:=$(shell uname -s | tr 'A-Z' 'a-z')
 endif
 
 -include ${OPENSWANSRCDIR}/Makefile.ver
 
-# include OS/ARCH specific makefiles, if any.
-# OS=linux,bsd,win2k,mingw32,etc.
-#
--include ${OPENSWANSRCDIR}/packaging/defaults/${OS}
--include ${OPENSWANSRCDIR}/packaging/defaults/${OS}.${ARCH}
+# include OSDEP/ARCH specific makefiles, if any.
+# OSDEP=linux,bsd,cygwin
+# 
+# but, BUILDENV could be mingw32-linux, or mingw32, etc..
+ifeq ($(BUILDENV),)
+BUILDENV=$(shell uname -s | tr 'A-Z' 'a-z' | sed -e 's/\(.*\)-.*/\1/')
+endif
+export BUILDENV
+export OSDEP
+include ${OPENSWANSRCDIR}/packaging/defaults/${BUILDENV}
+-include ${OPENSWANSRCDIR}/packaging/defaults/${BUILDENV}.${ARCH}
 
 ifeq ($(USE_OBJDIR),true)
-OBJDIR=OBJ.${OS}.${ARCH}
+OBJDIR=OBJ.${BUILDENV}.${ARCH}
+OBJDIRTOP=${OPENSWANSRCDIR}/${OBJDIR}
 endif
 
 # export everything so that scripts can use them.
 export LIBOPENSWANDIR OPENSWANSRCDIR ARCH 
 
-# where to place the object files which are built (default is in-tree)
+# where to place the object files which are built 
 OBJDIR?=.
 OBJDIRTOP?=${OPENSWANSRCDIR}
 
@@ -399,7 +417,11 @@ OPENSWANLIB=${OBJDIRTOP}/lib/libopenswan/libopenswan.a
 OSWLOGLIB=${OBJDIRTOP}/lib/libopenswan/liboswlog.a
 
 LWRESDIR=${OPENSWANSRCDIR}/lib/liblwres
-LWRESLIB=${OBJDIRTOP}/lib/liblwres/liblwres.a
+LIBLWRES=${OBJDIRTOP}/lib/liblwres/liblwres.a
+LIBDNS=${OBJDIRTOP}/lib/libdns/libdns.a
+LIBISC=${OBJDIRTOP}/lib/libisc/libisc.a
+ISCARCH?=unix
+ISCHOSTARCH?=unix
 
 LIBDESSRCDIR=${OPENSWANSRCDIR}/linux/crypto/ciphers/des
 LIBDESLITE:=${OBJDIRTOP}/lib/libcrypto/libdes/libdes.a

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: connections.c,v 1.256.2.5 2005/08/25 01:13:48 paul Exp $
+ * RCSID $Id: connections.c,v 1.263 2005/10/13 03:05:18 mcr Exp $
  */
 
 #include <string.h>
@@ -24,15 +24,13 @@
 #include <sys/stat.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <resolv.h>
-#include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
-#include <sys/queue.h>
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
 #include "pfkeyv2.h"
 #include "kameipsec.h"
 
+#include "sysdep.h"
 #include "constants.h"
 #include "defs.h"
 #include "id.h"
@@ -763,7 +761,7 @@ format_end(char *buf
 	}
 
 	{
-	    const char *send;
+	    const char *send = "";
 	    char s[32];
 
 	    send="";
@@ -2211,10 +2209,10 @@ cannot_oppo(struct connection *c
     addrtot(&b->our_client, 0, ocb, sizeof(ocb));
 
     openswan_log("Can not opportunistically initiate for %s to %s: %s"
-                , ocb, pcb, ugh);
+		 , ocb, pcb, ugh);
 
     whack_log(RC_OPPOFAILURE
-	, "Can not Opportunistically initiate for %s to %s: %s"
+	, "Can not opportunistically initiate for %s to %s: %s"
 	, ocb, pcb, ugh);
 
     if (c != NULL && c->policy_next != NULL)
@@ -2540,18 +2538,30 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
     char his[ADDRTOT_BUF];
     int ourport;
     int hisport;
+    char demandbuf[256];
+    bool loggedit = FALSE;
 
+    
     /* What connection shall we use?
      * First try for one that explicitly handles the clients.
      */
-
+    
     addrtot(&b->our_client, 0, ours, sizeof(ours));
     addrtot(&b->peer_client, 0, his, sizeof(his));
     ourport = ntohs(portof(&b->our_client));
     hisport = ntohs(portof(&b->peer_client));
-    openswan_log("initiate on demand from %s:%d to %s:%d proto=%d state: %s because: %s"
-                , ours, ourport, his, hisport, b->transport_proto
-                , oppo_step_name[b->step], b->want);
+
+    snprintf(demandbuf, 256, "initiate on demand from %s:%d to %s:%d proto=%d state: %s because: %s"
+	     , ours, ourport, his, hisport, b->transport_proto
+	     , oppo_step_name[b->step], b->want);
+    
+    if(DBGP(DBG_OPPO)) {
+	DBG_log("%s", demandbuf);
+	loggedit = TRUE;
+    } else if(whack_log_fd != NULL_FD) {
+	whack_log(RC_COMMENT, "%s", demandbuf);
+	loggedit = TRUE;
+    }
 
     if (isanyaddr(&b->our_client) || isanyaddr(&b->peer_client))
     {
@@ -2566,12 +2576,14 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 	 * are no Opportunistic connections -- whine and give up.
 	 * The failure policy cannot be gotten from a connection; we pick %pass.
 	 */
+	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
 	cannot_oppo(NULL, b, "no routed template covers this pair");
     }
     else if (c->kind == CK_TEMPLATE && (c->policy & POLICY_OPPO)==0)
     {
-       loglog(RC_NOPEERIP, "cannot initiate connection for packet %s:%d -> %s:%d proto=%d - template conn"
-              , ours, ourport, his, hisport, b->transport_proto);
+	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
+	loglog(RC_NOPEERIP, "cannot initiate connection for packet %s:%d -> %s:%d proto=%d - template conn"
+	       , ours, ourport, his, hisport, b->transport_proto);
     }
     else if (c->kind != CK_TEMPLATE)
     {
@@ -2590,14 +2602,14 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 	{
 	    char cib[CONN_INST_BUF];
 	    /* there is already an instance being negotiated, do nothing */
-	    DBG(DBG_CONTROL, DBG_log("found existing instance \"%s\"%s, rekeying it"
-				     , c->name
-				     , (fmt_conn_instance(c, cib), cib)));
+	    openswan_log("rekeing existing instance \"%s\"%s, due to acquire"
+			 , c->name
+			 , (fmt_conn_instance(c, cib), cib));
 
 	    /*
-	     * we used to return here, but rekeying is a better choice. If we got the
-	     * acquire, it is because something turned stuff into a %trap, or something
-	     * got deleted, perhaps due to an expiry.
+	     * we used to return here, but rekeying is a better choice. If we
+	     * got the acquire, it is because something turned stuff into a
+	     * %trap, or something got deleted, perhaps due to an expiry.
 	     */
 	}
 
@@ -2611,6 +2623,8 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 	    (void) assign_hold(c, sr, b->transport_proto, &b->our_client, &b->peer_client);
 	}
 #endif
+
+	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
 	ipsecdoi_initiate(b->whackfd, c, c->policy, 1
 			  , SOS_NOBODY, pcim_local_crypto);
 	b->whackfd = NULL_FD;	/* protect from close */
@@ -3029,6 +3043,10 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 		    }
 #endif
 		    c->gw_info->key->last_tried_time = now();
+		    openswan_log("initiate on demand from %s:%d to %s:%d proto=%d state: %s because: %s"
+				 , ours, ourport, his, hisport, b->transport_proto
+				 , oppo_step_name[b->step], b->want);
+
 		    ipsecdoi_initiate(b->whackfd, c, c->policy, 1
 				      , SOS_NOBODY, pcim_local_crypto);
 		    b->whackfd = NULL_FD;	/* protect from close */
@@ -3115,7 +3133,7 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 		    cr->b.want = b->want = "TXT record for IP address as %myid";
 		    ugh = start_adns_query(&myids[MYID_IP]
 			, &myids[MYID_IP]
-			, T_TXT
+			, ns_t_txt
 			, continue_oppo
 			, &cr->ac);
 		    break;
@@ -3135,7 +3153,7 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 		    cr->b.want = b->want = "TXT record for hostname as %myid";
 		    ugh = start_adns_query(&myids[MYID_HOSTNAME]
 			, &myids[MYID_HOSTNAME]
-			, T_TXT
+			, ns_t_txt
 			, continue_oppo
 			, &cr->ac);
 		    break;
@@ -3153,7 +3171,7 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 		    cr->b.want = b->want = "KEY record for IP address as %myid (no good TXT)";
 		    ugh = start_adns_query(&myids[MYID_IP]
 			, (const struct id *) NULL	/* security gateway meaningless */
-			, T_KEY
+			, ns_t_key
 			, continue_oppo
 			, &cr->ac);
 		    break;
@@ -3169,7 +3187,7 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 		    cr->b.want = b->want = "KEY record for hostname as %myid (no good TXT)";
 		    ugh = start_adns_query(&myids[MYID_HOSTNAME]
 			, (const struct id *) NULL	/* security gateway meaningless */
-			, T_KEY
+			, ns_t_key
 			, continue_oppo
 			, &cr->ac);
 		    break;
@@ -3188,7 +3206,7 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 		    iptoid(&b->our_client, &id);
 		    ugh = start_adns_query(&id
 			, &c->spd.this.id	/* we are the security gateway */
-			, T_TXT
+			, ns_t_txt
 			, continue_oppo
 			, &cr->ac);
 		    break;
@@ -3201,7 +3219,7 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 		cr->b.want = b->want = "our TXT record";
 		ugh = start_adns_query(&sr->this.id
 		    , &sr->this.id	/* we are the security gateway XXX - maybe ignore? mcr */
-		    , T_TXT
+		    , ns_t_txt
 		    , continue_oppo
 		    , &cr->ac);
 		break;
@@ -3212,7 +3230,7 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 		cr->b.failure_ok = b->failure_ok = FALSE;
 		ugh = start_adns_query(&sr->this.id
 		    , (const struct id *) NULL	/* security gateway meaningless */
-		    , T_KEY
+		    , ns_t_key
 		    , continue_oppo
 		    , &cr->ac);
 		break;
@@ -3225,7 +3243,7 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 		iptoid(&b->peer_client, &id);
 		ugh = start_adns_query(&id
 		    , (const struct id *) NULL	/* security gateway unconstrained */
-		    , T_TXT
+		    , ns_t_txt
 		    , continue_oppo
 		    , &cr->ac);
 		break;
@@ -3809,9 +3827,8 @@ is_virtual_net_used(const ip_subnet *peer_net, const struct id *peer_id)
     for (d = connections; d != NULL; d = d->ac_next)
     {
 	switch (d->kind) {
-            /* It does NOT make sense to check for CK_TEMPLATE entries here,
-               since they do not contain a currently used virtual IP address */ 
 	    case CK_PERMANENT:
+	    case CK_TEMPLATE:
 	    case CK_INSTANCE:
 		if ((subnetinsubnet(peer_net,&d->spd.that.client) ||
 		     subnetinsubnet(&d->spd.that.client,peer_net)) &&

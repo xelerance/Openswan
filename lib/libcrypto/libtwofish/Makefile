@@ -1,8 +1,11 @@
 OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
-include ${OPENSWANSRCDIR}/Makefile.inc
+srcdir?=./
 
-CFLAGS=-O3 -fomit-frame-pointer -Wall $(EXTRA_CFLAGS)
-INC=-I../include 
+include ${OPENSWANSRCDIR}/Makefile.inc
+include ${OPENSWANSRCDIR}/Makefile.ver
+
+CFLAGS=${USERCOMPILE} $(EXTRA_CFLAGS)
+INC=-I${srcdir}../include ${PORTINCLUDE}
 
 LIBOBJ=twofish.o twofish_cbc.o
 BLIB=libtwofish.a

@@ -71,3 +71,4 @@ s/TCP: Hash tables configured (established .* bind .*)/TCP: Hash tables configur
 /^$/d
 /INIT: Switching to runlevel: 0/d
 /INIT: Sending processes the TERM signal/d
+/Failed to open 'root_fs'/d

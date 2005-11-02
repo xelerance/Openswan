@@ -21,9 +21,10 @@
 #include <stdlib.h>
 #include <openswan.h>
 #include <pfkeyv2.h>
-#include <sys/queue.h>
 #include <openswan/passert.h>
 #include <openswan/ipsec_policy.h>
+
+#include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
 #include "oswalloc.h"

@@ -49,20 +49,16 @@
  */
 
 /*
- *	$Id: nameser.h,v 1.1 2005/07/19 15:26:48 mcr Exp $
+ *	$Id: nameser.h,v 1.2 2005/08/05 08:33:35 mcr Exp $
  */
 
 #ifndef _ARPA_NAMESER_H_
 #define _ARPA_NAMESER_H_
 
-#define BIND_4_COMPAT
+/* #define BIND_4_COMPAT */
 
 #include <sys/param.h>
-#if (!defined(BSD)) || (BSD < 199306)
-# include <sys/bitypes.h>
-#else
-# include <sys/types.h>
-#endif
+#include <sys/types.h>
 #include <sys/cdefs.h>
 
 /*
