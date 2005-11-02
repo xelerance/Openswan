@@ -1,0 +1,2 @@
+IP 192.0.2.1 > 192.1.2.254: icmp 64: echo request seq 1280
+IP 192.0.2.1 > 192.1.2.254: icmp 64: echo request seq 3072
