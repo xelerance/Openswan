@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keys.h,v 1.32 2003/11/26 23:54:04 mcr Exp $
+ * RCSID $Id: keys.h,v 1.34 2004/06/27 22:37:58 mcr Exp $
  */
 #ifndef _KEYS_H
 #define _KEYS_H
@@ -63,6 +63,12 @@ extern err_t unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pu
 
 extern const struct RSA_private_key *get_RSA_private_key(const struct connection *c);
 
+extern const struct RSA_private_key *get_x509_private_key(/*const*/ x509cert_t *cert);
+
+extern void sign_hash(const struct RSA_private_key *k, const u_char *hash_val
+    , size_t hash_len, u_char *sig_val, size_t sig_len);
+
+
 /* public key machinery  */
 
 struct pubkey {
@@ -111,7 +117,7 @@ extern void add_x509_public_key(x509cert_t *cert, time_t until
     , enum dns_auth_level dns_auth_level);
 extern void add_pgp_public_key(pgpcert_t *cert, time_t until
     , enum dns_auth_level dns_auth_level);
-extern void remove_x509_public_key(const x509cert_t *cert);
+extern void remove_x509_public_key(/*const*/ x509cert_t *cert);
 extern void list_public_keys(bool utc);
 
 struct gw_info;	/* forward declaration of tag (defined in dnskey.h) */

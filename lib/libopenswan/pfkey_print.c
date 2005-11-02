@@ -12,10 +12,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_print.c,v 1.1.2.1 2004/03/21 05:23:30 mcr Exp $
+ * RCSID $Id: pfkey_print.c,v 1.2 2004/04/26 05:03:40 ken Exp $
  */
 
-char pfkey_v2_print_c_version[] = "$Id: pfkey_print.c,v 1.1.2.1 2004/03/21 05:23:30 mcr Exp $";
+char pfkey_v2_print_c_version[] = "$Id: pfkey_print.c,v 1.2 2004/04/26 05:03:40 ken Exp $";
 
 #include <sys/types.h>
 
@@ -114,9 +114,9 @@ pfkey_print(struct sadb_msg *msg, FILE *out)
 
 	    fprintf(out, "allocations=%d bytes=%qd addtime=%qd usetime=%qd packets=%d",
 		    life->sadb_lifetime_allocations,
-		    life->sadb_lifetime_bytes,
-		    life->sadb_lifetime_addtime,
-		    life->sadb_lifetime_usetime,
+		    (long long)life->sadb_lifetime_bytes,
+		    (long long)life->sadb_lifetime_addtime,
+		    (long long)life->sadb_lifetime_usetime,
 		    life->sadb_x_lifetime_packets);
 	    fprintf(out, " } ");
 	  }

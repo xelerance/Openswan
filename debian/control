@@ -1,22 +1,22 @@
-Source: freeswan
+Source: openswan
 Section: net
 Priority: optional
 Maintainer: Rene Mayrhofer <rmayr@debian.org>
-Uploaders: Angus Lees <gus@debian.org>
-Standards-Version: 3.2.1
-Build-Depends: debhelper (>= 2.2.0), libgmp3-dev
+Standards-Version: 3.6.0
+Build-Depends: debhelper (>= 4.1.16), libgmp3-dev, libssl-dev, htmldoc, man2html, gawk, libcurl2-dev, libopensc0-dev, libldap2-dev
 
-Package: freeswan
+Package: openswan
 Architecture: any
-Depends: ${shlibs:Depends}, bsdmainutils, makedev | devfsd, debconf, debianutils (>=1.7)
-Suggests: kernel-patch-freeswan
-Description: IPSEC utilities for FreeS/Wan
+Depends: ${shlibs:Depends}, bsdmainutils, makedev | devfsd, ${debconf-depends}, debianutils (>=1.7), ipsec-tools, kernel-image-2.4 (>=2.4.24-3) | kernel-image-2.6, openssl, gawk, host, iproute
+Provides: ike-server
+Conflicts: ike-server, freeswan
+Description: IPSEC utilities for Openswan
  IPSEC is Internet Protocol SECurity. It uses strong cryptography to provide
  both authentication and encryption services. Authentication ensures that
  packets are from the right sender and have not been altered in transit.
  Encryption prevents unauthorised reading of packet contents.
  .
- This version of FreeS/WAN supports Opportunistic Encryption (OE) out of the
+ This version of Openswan supports Opportunistic Encryption (OE) out of the
  box. OE enables you to set up IPsec tunnels to a site without
  co-ordinating with the site administrator, and without hand
  configuring each tunnel. If enough sites support OE, a "FAX effect"
@@ -29,18 +29,6 @@ Description: IPSEC utilities for FreeS/Wan
  is a network which is effectively private even though it includes
  machines at several different sites connected by the insecure Internet.
  .
- Please note that you will need kernel support for using this package. The
- standard Debian kernel does not include support for FreeS/Wan. You can build
- your own kernel by installing the kernel-source package and
- kernel-patch-freeswan, which can be automatically applied when using
- make-kpkg.
-
-Package: kernel-patch-freeswan
-Architecture: all
-Depends: fileutils (>= 4.1-7)
-Recommends: kernel-package (>= 7.04)
-Suggests: freeswan
-Description: IPSEC kernel support for FreeS/Wan
- This package contains the patches for the Linux kernel to get the necessary
- kernel support to use FreeSWan.
-
+ Please note that you will need a recent kernel (>=2.4.24 or 2.6.x)
+ for using this package. The standard Debian kernel includes both IPSEC
+ and crypto support, patching the kernel is no longer necessary!

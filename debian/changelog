@@ -1,0 +1,19 @@
+openswan (2.1.1-2) unstable; urgency=low
+
+  * Took the package as official maintainer.
+  * Updated all relevant packaging stuff to the level of freeswan 2.04-9,
+    including auto-generation of X.509 certificates and insertion in 
+    ipsec.secrets. This also corrects the libexec path in some scripts.
+
+ -- Rene Mayrhofer <rene@mayrhofer.eu.org>  Wed, 31 Mar 2004 11:23:46 +0200
+
+openswan (2.1.1-1) unstable; urgency=low
+
+  * Initial version - packaging based on Rene Mayrhofer's
+    FreeS/WAN packaging
+
+ -- Alexander List <alexlist@sbox.tu-graz.ac.at>  Sun, 21 Mar 2004 21:47:53 +0100
+
+Local variables:
+mode: debian-changelog
+End:

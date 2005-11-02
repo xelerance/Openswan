@@ -1,0 +1,10 @@
+confread1
+foo1.c
+lex.yy.c
+myfoo
+out
+parser.output
+parser.tab.c
+parser.tab.h
+parser2.y
+starter

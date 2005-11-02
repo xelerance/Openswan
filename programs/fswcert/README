@@ -1,0 +1,85 @@
+fswcert Utility
+===============
+
+
+This replaces the grabkey and grabsubject utilities from the
+FreeS/WAN X.509 patch, and supports the new configuration
+options leftcert=... and rightcert=...
+
+Dependencies:
+  fswcert requires the openssl package, version 0.9.5a or newer.
+
+
+These are the options supported:
+--------------------------------
+
+-c --certificate	print certificate data
+
+	Prints the certificate data needed for FreeS/WAN's
+	ipsec.conf. Input can be from an X.509 file in PEM
+	or DER format, or from a PKCS12 (*.p12) file.
+
+-k --key	print private RSA key data
+
+	Prints the private key data needed for FreeS/WAN's
+	ipsec.secrets. Input can be from an RSA private key
+	file, or from a PKCS12 (*.p12) file.
+
+-l --left	left-side parameters for ipsec.conf
+
+	Prefix certificate data with `left'
+
+-r --right	right-side parameters for ipsec.conf
+
+	Prefix certificate data with `left'
+
+--type=[x509|rsa|pkcs12]	select input file type
+
+	Select input file type. Defaults to x509.
+
+--format=[PEM|DER]	select input file format
+
+	Select input file format. Defaults to PEM.
+
+-C --directory=dir	change into dir first
+
+	Change into dir at startup. (Files are then
+	read relative to this directory).
+
+-q --quiet	single line error messages to stdout
+
+	This is a hack to better integrate with _confread.
+	Don't use manually.
+
+-v --version	returns version of fswcert
+
+Either --key or --certificate is required. It makes no sense to
+specify both --left and --right; the last option wins.
+
+
+To use X.509 PEM-encoded certificates with FreeS/WAN directly, do this:
+-----------------------------------------------------------------------
+
+- Adjust the IPSECDIR and SSLDIR in Makefile
+
+- Build fswcert with `make'
+
+- Install fswcert with `make install'
+
+- Patch FreeS/WAN's _confread with the patch provided
+
+- Put all the certificates you want to use with FreeS/WAN
+  in the /etc/ipsec.d/ directory
+
+
+Then you can use these new options in ipsec.conf and includes:
+--------------------------------------------------------------
+
+leftcert=filename.pem
+	Reads the identity and public key from filename.pem
+	(Replaces both leftid=@~... and leftrsasigkex=0x...)
+
+rightcert=filename.pem
+	Reads the identity and public key from filename.pem
+	(Replaces both rightid=@~... and rightrsasigkex=0x...)
+

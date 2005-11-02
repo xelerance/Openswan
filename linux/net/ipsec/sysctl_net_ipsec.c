@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: sysctl_net_ipsec.c,v 1.15 2002/04/24 07:55:32 mcr Exp $
+ * RCSID $Id: sysctl_net_ipsec.c,v 1.16 2004/04/06 02:49:26 mcr Exp $
  */
 
 /* -*- linux-c -*-
@@ -23,7 +23,7 @@
 #include <linux/mm.h>
 #include <linux/sysctl.h>
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef CONFIG_SYSCTL
 
@@ -146,6 +146,9 @@ void ipsec_sysctl_unregister(void)
 
 /*
  * $Log: sysctl_net_ipsec.c,v $
+ * Revision 1.16  2004/04/06 02:49:26  mcr
+ * 	pullup of algo code from alg-branch.
+ *
  * Revision 1.15  2002/04/24 07:55:32  mcr
  * 	#include patches and Makefiles for post-reorg compilation.
  *

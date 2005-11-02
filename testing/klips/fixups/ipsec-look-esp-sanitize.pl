@@ -248,7 +248,7 @@ while(<>) {
 	$spigrp{$key}=$compline;
       }
       
-      elsif(/^Destination/) {
+      elsif(/^Destination/ || ($inspigrp && /^$/)) {
 	$inspigrp=0;
 	$inroute=1;
 	

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!-- lifted from troff+man by doclifter -->
+<refentry>
+<refmeta>
+<refentrytitle>IPSEC</refentrytitle>
+<manvolnum>8</manvolnum>
+<refmiscinfo class='date'>26 March 2002</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>ipsec</refname>
+<refpurpose>invoke IPsec utilities</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>ipsec</command>    
+    <arg choice='plain'><replaceable>command</replaceable></arg>
+    <arg choice='opt' rep='repeat'><replaceable>argument</replaceable></arg>
+    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
+    <arg choice='plain'>--help </arg>
+    <sbr/>
+    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
+    <arg choice='plain'>--version </arg>
+    <sbr/>
+    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
+    <arg choice='plain'>--versioncode </arg>
+    <sbr/>
+    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
+    <arg choice='plain'>--copyright </arg>
+    <sbr/>
+    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
+    <arg choice='plain'>--directory </arg>
+    <sbr/>
+    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
+    <arg choice='plain'>--confdir </arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para><emphasis remap='I'>Ipsec</emphasis>
+invokes any of several utilities involved in controlling the IPsec
+encryption/authentication system,
+running the specified
+<emphasis remap='I'>command</emphasis>
+with the specified
+<emphasis remap='I'>argument</emphasis>s
+as if it had been invoked directly.
+This largely eliminates possible name collisions with other software,
+and also permits some centralized services.</para>
+
+<para>In particular,
+<command>ipsec</command>
+supplies the invoked
+<emphasis remap='I'>command</emphasis>
+with a suitable PATH environment variable,
+and also provides IPSEC_DIR,
+IPSEC_CONFS, and IPSEC_VERSION environment variables,
+containing respectively
+the full pathname of the directory where the IPsec utilities are stored,
+the full pathname of the directory where the configuration files live,
+and the IPsec version number.</para>
+
+<para><userinput>ipsec --help</userinput>
+lists the available commands.
+Most have their own manual pages, e.g.
+<citerefentry><refentrytitle>ipsec_auto</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+for
+<emphasis remap='I'>auto</emphasis>.</para>
+
+<para><userinput>ipsec --version</userinput>
+outputs version information about Linux FreeS/WAN.
+A version code of the form ``U<emphasis remap='I'>xxx</emphasis>/K<emphasis remap='I'>yyy</emphasis>''
+indicates that the user-level utilities are version <emphasis remap='I'>xxx</emphasis>
+but the kernel portion appears to be version <emphasis remap='I'>yyy</emphasis>
+(this form is used only if the two disagree).</para>
+
+<para><userinput>ipsec --versioncode</userinput>
+outputs <emphasis remap='I'>just</emphasis> the version code,
+with none of
+<option>--version</option>'s
+supporting information,
+for use by scripts.</para>
+
+<para><userinput>ipsec --copyright</userinput>
+supplies boring copyright details.</para>
+
+<para><userinput>ipsec --directory</userinput>
+reports where
+<command>ipsec</command>
+thinks the IPsec utilities are stored.</para>
+
+<para><userinput>ipsec --confdir</userinput>
+reports where
+<command>ipsec</command>
+thinks the IPsec configuration files are stored.</para>
+</refsect1>
+
+<refsect1 id='files'><title>FILES</title>
+<para>/usr/local/lib/ipsec	usual utilities directory</para>
+</refsect1>
+
+<refsect1 id='environment'><title>ENVIRONMENT</title>
+<para>The following environment variables control where FreeS/WAN finds its
+components.
+The
+<command>ipsec</command>
+command sets them if they are not already set.</para>
+<literallayout remap='.nf'>
+<!-- .na -->
+IPSEC_EXECDIR	directory containing published commands
+IPSEC_LIBDIR	directory containing internal executables
+IPSEC_SBINDIR	directory containing <command>ipsec</command> command
+IPSEC_CONFS	directory containing configuration files
+<!-- .ad -->
+</literallayout> <!-- .fi -->
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<!-- .hy 0 -->
+<!-- .na -->
+<para>ipsec.<citerefentry><refentrytitle>conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>, ipsec.<citerefentry><refentrytitle>secrets</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>ipsec_auto</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>ipsec_barf</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>ipsec_setup</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>ipsec_showdefaults</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>ipsec_showhostkey</refentrytitle><manvolnum>8</manvolnum></citerefentry></para>
+<!-- .ad -->
+<!-- .hy -->
+
+<para>HTML documentation shipped with the release, starting with
+<emphasis remap='I'>doc/index.html</emphasis>.
+<emphasis remap='I'>&lt;<ulink url='http://www.freeswan.org/doc.html'>http://www.freeswan.org/doc.html</ulink>&gt;</emphasis>
+may also be of use.</para>
+</refsect1>
+
+<refsect1 id='history'><title>HISTORY</title>
+<para>Written for Linux FreeS/WAN
+&lt;<ulink url='http://www.freeswan.org'>http://www.freeswan.org</ulink>&gt;
+by Henry Spencer.</para>
+</refsect1>
+
+<refsect1 id='bugs'><title>BUGS</title>
+<para>The provision of centralized services,
+while convenient,
+does compromise the original concept of making the utilities
+invocable directly as well as via
+<command>ipsec</command>.</para>
+</refsect1>
+</refentry>
+

@@ -16,8 +16,6 @@ obj-y += pfkey_v2_parse.o
 obj-y += pfkey_v2_build.o 
 obj-y += pfkey_v2_debug.o 
 obj-y += pfkey_v2_ext_bits.o 
-obj-y += version.o
 
-
-version.c:	${LIBFREESWANDIR}/version.in.c ${FREESWANSRCDIR}/Makefile.ver
-	sed '/"/s/xxx/$(IPSECVERSION)/' ${LIBFREESWANDIR}/version.in.c >$@
+#version.c:	${LIBFREESWANDIR}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
+#	sed '/"/s/xxx/$(IPSECVERSION)/' ${LIBFREESWANDIR}/version.in.c >$@

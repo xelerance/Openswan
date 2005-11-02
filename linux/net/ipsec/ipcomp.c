@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.35 2003/10/31 02:27:55 mcr Exp $";
+char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.36 2004/04/06 02:49:25 mcr Exp $";
 
 /* SSS */
 
@@ -25,7 +25,7 @@ char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.35 2003/10/31 02:27:55 mcr Ex
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -43,7 +43,7 @@ char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.35 2003/10/31 02:27:55 mcr Ex
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #ifdef NET_21
 # include <net/dst.h>
@@ -54,14 +54,14 @@ char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.35 2003/10/31 02:27:55 mcr Ex
 #include <asm/checksum.h>
 #include <net/ip.h>
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_sa.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_sa.h"
 
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_tunnel.h"
-#include "freeswan/ipsec_rcv.h" /* sysctl_ipsec_inbound_policy_check */
-#include "freeswan/ipcomp.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_rcv.h" /* sysctl_ipsec_inbound_policy_check */
+#include "openswan/ipcomp.h"
 #include "zlib/zlib.h"
 #include "zlib/zutil.h"
 

@@ -9,7 +9,9 @@ TEST_GOAL_ITEM=160
 EXITONEMPTY=--exitonempty
 ARPREPLY=--arpreply 
 
-PUBINPUT=../inputs/08-sunrise-sunset-esp-double.pcap
+THREEEIGHT=true
+
+PUB_INPUT=../inputs/08-sunrise-sunset-esp-double.pcap
 
 REF_PRIV_OUTPUT=spi1-once.txt
 REF_CONSOLE_OUTPUT=spi1-console.txt

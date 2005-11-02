@@ -12,20 +12,26 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.4 2002/06/03 20:25:31 mcr Exp $
+# RCSID $Id: Makefile,v 1.6 2004/04/12 12:02:00 ken Exp $
 
-FREESWANSRCDIR=../..
-include ${FREESWANSRCDIR}/Makefile.inc
+OPENSWANSRCDIR=../..
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM:=eroute
 EXTRA5PROC=eroute.5
 
-LIBS:=${FREESWANLIB}
+LIBS:=${OPENSWANLIB}
 
 include ../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.6  2004/04/12 12:02:00  ken
+# Use OPENSWANLIB
+#
+# Revision 1.5  2004/04/03 19:44:45  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.4  2002/06/03 20:25:31  mcr
 # 	man page for files actually existant in /proc/net changed back to
 # 	ipsec_foo via new EXTRA5PROC process.

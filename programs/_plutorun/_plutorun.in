@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _plutorun.in,v 1.26 2003/12/24 19:47:13 mcr Exp $
+# RCSID $Id: _plutorun.in,v 1.27 2004/06/09 02:58:30 mcr Exp $
 
 me='ipsec _plutorun'		# for messages
 
@@ -28,29 +28,30 @@ verb="Starting"
 for dummy
 do
 	case "$1" in
-	--re)	verb="Restarting"	;;
-	--plutorestartoncrash) plutorestartoncrash="$2"; shift ;;
-	--debug)	plutodebug="$2" ; shift	;;
-	--uniqueids)	uniqueids="$2" ; shift	;;
-	--nat_traversal)    nat_traversal="$2" ; shift  ;;
-	--keep_alive)   keep_alive="$2" ; shift ;;
-	--force_keepalive)   force_keepalive="$2" ; shift ;;
-	--disable_port_floating)    disable_port_floating="$2" ; shift  ;;
-	--virtual_private)  virtual_private="$2" ; shift ;; 	
-	--nocrsend)	nocrsend="$2" ; shift	;;
-	--strictcrlpolicy)	strictcrlpolicy="$2" ; shift	;;
-	--crlcheckinterval)	crlcheckinterval="$2"; shift	;;
-	--dump)	dumpdir="$2" ; shift	;;
-	--opts)	popts="$2" ; shift	;;
-	--stderrlog) stderrlog="$2" ; shift	;;
-	--wait)	plutowait="$2" ; shift	;;
-	--pre)	prepluto="$2" ; shift	;;
-	--post)	postpluto="$2" ; shift	;;
-	--log)	wherelog="$2" ; shift	;;
-	--pid)	pidfile="$2" ; shift	;;
-	--)	shift ; break	;;
-	-*)	echo "$me: unknown option \`$1'" >&2 ; exit 2	;;
-	*)	break	;;
+	--re)	                 verb="Restarting"	;;
+	--plutorestartoncrash)   plutorestartoncrash="$2"; shift ;;
+	--debug)	         plutodebug="$2" ; shift	;;
+	--uniqueids)	         uniqueids="$2" ; shift	;;
+	--nat_traversal)         nat_traversal="$2" ; shift  ;;
+	--keep_alive)            keep_alive="$2" ; shift ;;
+	--force_keepalive)       force_keepalive="$2" ; shift ;;
+	--disable_port_floating) disable_port_floating="$2" ; shift  ;;
+	--virtual_private)       virtual_private="$2" ; shift ;; 	
+	--nocrsend)	         nocrsend="$2" ; shift	;;
+	--strictcrlpolicy)	 strictcrlpolicy="$2" ; shift	;;
+	--crlcheckinterval)	 crlcheckinterval="$2"; shift	;;
+        --ocspuri)               ocspuri="$2"; shift    ;;
+	--dump)	                 dumpdir="$2" ; shift	;;
+	--opts)	                 popts="$2" ; shift	;;
+	--stderrlog)             stderrlog="$2" ; shift	;;
+	--wait)	                 plutowait="$2" ; shift	;;
+	--pre)	                 prepluto="$2" ; shift	;;
+	--post)	                 postpluto="$2" ; shift	;;
+	--log)	                 wherelog="$2" ; shift	;;
+	--pid)	                 pidfile="$2" ; shift	;;
+	--)	                 shift ; break	;;
+	-*)	                 echo "$me: unknown option \`$1'" >&2 ; exit 2	;;
+	*)	                 break	;;
 	esac
 	shift
 done
@@ -112,6 +113,14 @@ if test ${crlcheckinterval:-0} -gt 0
 then
 	popts="$popts --crlcheckinterval $crlcheckinterval"
 fi
+
+# add ocsp uri
+if test -n "$ocspuri"
+then
+        popts="$popts --ocspuri $ocspuri"
+fi
+
+
 
 if test -n "$stderrlog"
 then

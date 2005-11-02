@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: rcv_whack.c,v 1.99.2.1 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: rcv_whack.c,v 1.107 2004/06/14 02:01:32 mcr Exp $
  */
 
 #include <stdio.h>
@@ -38,6 +38,8 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
+#include "paths.h"
+#include "ac.h"
 #include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
@@ -57,28 +59,10 @@
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "server.h"
 #include "fetch.h"
+#include "ocsp.h"
 
-/* helper variables and function to decode strings from whack message */
-
-static char *next_str
-    , *str_roof;
-
-static bool
-unpack_str(char **p)
-{
-    char *end = memchr(next_str, '\0', str_roof - next_str);
-
-    if (end == NULL)
-    {
-	return FALSE;	/* fishy: no end found */
-    }
-    else
-    {
-	*p = next_str == end? NULL : next_str;
-	next_str = end + 1;
-	return TRUE;
-    }
-}
+#include "kernel_alg.h"
+#include "ike_alg.h"
 
 /* bits loading keys from asynchronous DNS */
 
@@ -273,9 +257,12 @@ whack_handle(int whackctlfd)
     /* sanity check message */
     {
 	err_t ugh = NULL;
-
-	next_str = msg.string;
-	str_roof = (char *)&msg + n;
+        struct whackpacker wp;
+        
+        wp.msg = &msg;
+        wp.n   = n;
+        wp.str_next = msg.string;
+        wp.str_roof = (char *)&msg + n;
 
 	if ((size_t)n < offsetof(struct whack_message, whack_shutdown) + sizeof(msg.whack_shutdown))
 	{
@@ -291,7 +278,7 @@ whack_handle(int whackctlfd)
 
 		if (msg.whack_shutdown)
 		{
-		    plog("shutting down");
+		    openswan_log("shutting down");
 		    exit_pluto(0);	/* delete lock and leave, with 0 status */
 		}
 		ugh = "";	/* bail early, but without complaint */
@@ -302,40 +289,18 @@ whack_handle(int whackctlfd)
 		    , msg.magic, WHACK_MAGIC);
 	    }
 	}
-	else if (next_str > str_roof)
-	{
-	    ugh = builddiag("ignoring truncated message from whack: got %d bytes; expected %u"
-		, (int) n, (unsigned) sizeof(msg));
-	}
-	else if (!unpack_str(&msg.name)		/* string  1 */
-	|| !unpack_str(&msg.left.id)		/* string  2 */
-	|| !unpack_str(&msg.left.cert)		/* string  3 */
-	|| !unpack_str(&msg.left.ca)		/* string  4 */
-	|| !unpack_str(&msg.left.updown)	/* string  5 */
-#ifdef VIRTUAL_IP
-	|| !unpack_str(&msg.left.virt)
-#endif
-	|| !unpack_str(&msg.right.id)		/* string  6 */
-	|| !unpack_str(&msg.right.cert)		/* string  7 */
-	|| !unpack_str(&msg.right.ca)		/* string  8 */
-	|| !unpack_str(&msg.right.updown)	/* string  9 */
-#ifdef VIRTUAL_IP
-	|| !unpack_str(&msg.right.virt)
-#endif
-	|| !unpack_str(&msg.keyid)		/* string 10 */
-	|| !unpack_str(&msg.myid)		/* string 11 */
-	|| str_roof - next_str != (ptrdiff_t)msg.keyval.len)	/* check chunk */
-	{
-	    ugh = "message from whack contains bad string";
-	}
-	else
-	{
-	    msg.keyval.ptr = next_str;	/* grab chunk */
-	}
+        else if ((ugh = unpack_whack_msg(&wp)) != NULL)
+        {
+            /* nothing, ugh is already set */
+        }
+        else
+        {
+            msg.keyval.ptr = wp.str_next;       /* grab chunk */
+        }
 
 	if (ugh != NULL)
 	{
-	    if (*ugh != '\0')
+	    if (*ugh != '\0') 
 		loglog(RC_BADWHACKMESSAGE, "%s", ugh);
 	    whack_log_fd = NULL_FD;
 	    close(whackfd);
@@ -409,7 +374,7 @@ whack_handle(int whackctlfd)
     if (msg.whack_listen)
     {
 	close_peerlog();    /* close any open per-peer logs */
-	plog("listening for IKE messages");
+	openswan_log("listening for IKE messages");
 	listening = TRUE;
 	daily_log_reset();
 	reset_adns_restart_count();
@@ -420,7 +385,7 @@ whack_handle(int whackctlfd)
     }
     if (msg.whack_unlisten)
     {
-	plog("no longer listening for IKE messages");
+	openswan_log("no longer listening for IKE messages");
 	listening = FALSE;
     }
 
@@ -429,38 +394,95 @@ whack_handle(int whackctlfd)
 	load_preshared_secrets(whackfd);
     }
 
-   if (msg.whack_list & LIST_PUBKEYS)
+
+    if (msg.whack_list & LIST_PUBKEYS)
     {
 	list_public_keys(msg.whack_utc);
     }
 
-   if (msg.whack_reread & REREAD_CACERTS)
+    if (msg.whack_reread & REREAD_CACERTS)
     {
-	load_cacerts();
+	load_authcerts("CA cert", CA_CERT_PATH, AUTH_CA);
     }
 
-   if (msg.whack_reread & REREAD_CRLS)
+    if (msg.whack_reread & REREAD_AACERTS)
+    {
+       load_authcerts("AA cert", AA_CERT_PATH, AUTH_AA);
+    }
+
+    if (msg.whack_reread & REREAD_OCSPCERTS)
+    {
+       load_authcerts("OCSP cert", OCSP_CERT_PATH, AUTH_OCSP);
+    }
+
+    if (msg.whack_reread & REREAD_ACERTS)
+    {
+       load_acerts();
+    }
+
+    if (msg.whack_reread & REREAD_CRLS)
+
     {
 	load_crls();
     }
+
+#ifdef HAVE_OCSP
+    if (msg.whack_purgeocsp)
+    {
+       free_ocsp_fetch();
+       free_ocsp_cache();
+    }
+#endif
 
     if (msg.whack_list & LIST_CERTS)
     {
 	list_certs(msg.whack_utc);
     }
 
+
+    if (msg.whack_list & LIST_AACERTS)
+    {
+       list_authcerts("AA", AUTH_AA, msg.whack_utc);
+    }
+
+    if (msg.whack_list & LIST_OCSPCERTS)
+    {
+       list_authcerts("OCSP", AUTH_OCSP, msg.whack_utc);
+    }
+
+    if (msg.whack_list & LIST_ACERTS)
+    {
+       list_acerts(msg.whack_utc);
+    }
+
+    if (msg.whack_list & LIST_GROUPS)
+    {
+       list_groups(msg.whack_utc);
+     }
+
+
     if (msg.whack_list & LIST_CACERTS)
     {
-	list_cacerts(msg.whack_utc);
+	list_authcerts("CA", AUTH_CA, msg.whack_utc);
     }
 
     if (msg.whack_list & LIST_CRLS)
     {
 	list_crls(msg.whack_utc, strict_crl_policy);
 #ifdef HAVE_THREADS
-	list_fetch_requests(msg.whack_utc);
+	list_crl_fetch_requests(msg.whack_utc);
 #endif
     }
+
+#ifdef HAVE_OCSP
+    if (msg.whack_list & LIST_OCSP)
+    {
+       list_ocsp_cache(msg.whack_utc, strict_crl_policy);
+       list_ocsp_fetch_requests(msg.whack_utc);
+    }
+#endif
+
+
 
 #ifdef SMARTCARD
     if (msg.whack_list & LIST_CARDS)
@@ -551,7 +573,7 @@ whack_handle(int whackctlfd)
 
     if (msg.whack_shutdown)
     {
-	plog("shutting down");
+	openswan_log("shutting down");
 	exit_pluto(0);	/* delete lock and leave, with 0 status */
     }
 

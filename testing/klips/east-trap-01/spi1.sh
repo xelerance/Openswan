@@ -4,7 +4,7 @@ TZ=GMT export TZ
 ipsec spi --clear
 ipsec eroute --clear
 
-ipsec klipsdebug --set pfkey
+#ipsec klipsdebug --set pfkey
 #ipsec klipsdebug --set verbose
 
 ipsec eroute --add --eraf inet --src 192.0.2.0/24 --dst 192.0.1.0/24 --said %trap

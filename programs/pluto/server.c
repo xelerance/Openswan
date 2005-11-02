@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: server.c,v 1.92.2.4 2004/06/02 12:42:44 ken Exp $
+ * RCSID $Id: server.c,v 1.97.6.2 2004/08/07 01:47:45 ken Exp $
  */
 
 #include <stdio.h>
@@ -208,7 +208,7 @@ free_dead_ifaces(void)
     {
 	if (p->change == IFN_DELETE)
 	{
-	    plog("shutting down interface %s/%s %s"
+	    openswan_log("shutting down interface %s/%s %s"
 		, p->vname, p->rname, ip_str(&p->addr));
 	    some_dead = TRUE;
 	}
@@ -523,6 +523,51 @@ create_socket(struct raw_iface *ifp, const char *v_name, int port)
     }
 #endif
 
+#if defined(linux) && defined(KERNEL26_SUPPORT)
+    if (!no_klips && kernel_ops->type == KERNEL_TYPE_LINUX)
+    {
+	struct sadb_x_policy policy;
+	int level, opt;
+
+	policy.sadb_x_policy_len = sizeof(policy) / IPSEC_PFKEYv2_ALIGN;
+	policy.sadb_x_policy_exttype = SADB_X_EXT_POLICY;
+	policy.sadb_x_policy_type = IPSEC_POLICY_BYPASS;
+	policy.sadb_x_policy_dir = IPSEC_DIR_INBOUND;
+	policy.sadb_x_policy_reserved = 0;
+	policy.sadb_x_policy_id = 0;
+	policy.sadb_x_policy_reserved2 = 0;
+
+	if (addrtypeof(&ifp->addr) == AF_INET6)
+	{
+	    level = IPPROTO_IPV6;
+	    opt = IPV6_IPSEC_POLICY;
+	}
+	else
+	{
+	    level = IPPROTO_IP;
+	    opt = IP_IPSEC_POLICY;
+	}
+
+	if (setsockopt(fd, level, opt
+	  , &policy, sizeof(policy)) < 0)
+	{
+	    log_errno((e, "setsockopt IPSEC_POLICY in process_raw_ifaces()"));
+	    close(fd);
+	    return -1;
+	}
+
+	policy.sadb_x_policy_dir = IPSEC_DIR_OUTBOUND;
+
+	if (setsockopt(fd, level, opt
+	  , &policy, sizeof(policy)) < 0)
+	{
+	    log_errno((e, "setsockopt IPSEC_POLICY in process_raw_ifaces()"));
+	    close(fd);
+	    return -1;
+	}
+    }
+#endif
+
     setportof(htons(port), &ifp->addr);
     if (bind(fd, sockaddrof(&ifp->addr), sockaddrlenof(&ifp->addr)) < 0)
     {
@@ -659,110 +704,17 @@ add_entry:
 		if (q == NULL)
 		{
 		    /* matches nothing -- create a new entry */
-		    int fd = socket(addrtypeof(&ifp->addr), SOCK_DGRAM, IPPROTO_UDP);
+		    int fd = create_socket(ifp, v->name, pluto_port);
 
 		    if (fd < 0)
-		    {
-			log_errno((e, "socket() in process_raw_ifaces()"));
 			break;
-		    }
 
 #ifdef NAT_TRAVERSAL
-		    if (nat_traversal_support_non_ike)
+		    if (nat_traversal_support_non_ike && addrtypeof(&ifp->addr) == AF_INET)
 		    {
 			nat_traversal_espinudp_socket(fd, ESPINUDP_WITH_NON_IKE);
 		    }
 #endif
-		    if (fcntl(fd, F_SETFD, FD_CLOEXEC) == -1)
-		    {
-			log_errno((e, "fcntl(,, FD_CLOEXEC) in process_raw_ifaces()"));
-			break;
-		    }
-
-		    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR
-		    , (const void *)&on, sizeof(on)) < 0)
-		    {
-			log_errno((e, "setsockopt SO_REUSEADDR in process_raw_ifaces()"));
-			break;
-		    }
-
-		    /* To improve error reporting.  See ip(7). */
-#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
-		    if (setsockopt(fd, SOL_IP, IP_RECVERR
-		    , (const void *)&on, sizeof(on)) < 0)
-		    {
-			log_errno((e, "setsockopt IP_RECVERR in process_raw_ifaces()"));
-			break;
-		    }
-#endif
-
-		    /* With IPv6, there is no fragmentation after
-		     * it leaves our interface.  PMTU discovery
-		     * is mandatory but doesn't work well with IKE (why?).
-		     * So we must set the IPV6_USE_MIN_MTU option.
-		     * See draft-ietf-ipngwg-rfc2292bis-01.txt 11.1
-		     */
-#ifdef IPV6_USE_MIN_MTU	/* YUCK: not always defined */
-		    if (addrtypeof(&ifp->addr) == AF_INET6
-		    && setsockopt(fd, SOL_SOCKET, IPV6_USE_MIN_MTU
-		      , (const void *)&on, sizeof(on)) < 0)
-		    {
-			log_errno((e, "setsockopt IPV6_USE_MIN_MTU in process_raw_ifaces()"));
-			break;
-		    }
-#endif
-
-#if defined(linux) && defined(KERNEL26_SUPPORT)
-		    if (!no_klips && kernel_ops->type == KERNEL_TYPE_LINUX)
-		    {
-			struct sadb_x_policy policy;
-			int level, opt;
-
-			policy.sadb_x_policy_len = sizeof(policy) / IPSEC_PFKEYv2_ALIGN;
-			policy.sadb_x_policy_exttype = SADB_X_EXT_POLICY;
-			policy.sadb_x_policy_type = IPSEC_POLICY_BYPASS;
-			policy.sadb_x_policy_dir = IPSEC_DIR_INBOUND;
-			policy.sadb_x_policy_reserved = 0;
-			policy.sadb_x_policy_id = 0;
-			policy.sadb_x_policy_reserved2 = 0;
-
-			if (addrtypeof(&ifp->addr) == AF_INET6)
-			{
-			    level = IPPROTO_IPV6;
-			    opt = IPV6_IPSEC_POLICY;
-			}
-			else
-			{
-			    level = IPPROTO_IP;
-			    opt = IP_IPSEC_POLICY;
-			}
-
-			if (setsockopt(fd, level, opt
-			  , &policy, sizeof(policy)) < 0)
-			{
-			    log_errno((e, "setsockopt IPSEC_POLICY in process_raw_ifaces()"));
-			    break;
-			}
-
-			policy.sadb_x_policy_dir = IPSEC_DIR_OUTBOUND;
-
-			if (setsockopt(fd, level, opt
-			  , &policy, sizeof(policy)) < 0)
-			{
-			    log_errno((e, "setsockopt IPSEC_POLICY in process_raw_ifaces()"));
-			    break;
-			}
-		    }
-#endif
-
-		    setportof(htons(pluto_port), &ifp->addr);
-		    if (bind(fd, sockaddrof(&ifp->addr), sockaddrlenof(&ifp->addr)) < 0)
-		    {
-			log_errno((e, "bind() for %s/%s %s:%u in process_raw_ifaces()"
-			    , ifp->name, v->name
-			    , ip_str(&ifp->addr), (unsigned) pluto_port));
-			break;
-		    }
 
 		    q = alloc_thing(struct iface, "struct iface");
 		    q->rname = clone_str(ifp->name, "real device name");
@@ -772,10 +724,10 @@ add_entry:
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
 		    interfaces = q;
-		    plog("adding interface %s/%s %s"
+		    openswan_log("adding interface %s/%s %s"
 			, q->vname, q->rname, ip_str(&q->addr));
 #ifdef NAT_TRAVERSAL
-		    if (nat_traversal_support_port_floating) {
+		    if (nat_traversal_support_port_floating && addrtypeof(&ifp->addr) == AF_INET) {
 			fd = create_socket(ifp, v->name, NAT_T_IKE_FLOAT_PORT);
 			if (fd < 0)
 			    break;
@@ -791,7 +743,7 @@ add_entry:
 			q->change = IFN_ADD;
 			q->ike_float = TRUE;
 			interfaces = q;
-			plog("adding interface %s/%s %s:%d",
+			openswan_log("adding interface %s/%s %s:%d",
 			q->vname, q->rname, ip_str(&q->addr), NAT_T_IKE_FLOAT_PORT);
 		    }
 #endif
@@ -930,7 +882,7 @@ call_server(void)
 		 * This sticking happens sometimes -- kernel bug?
 		 */
 		sighupflag = FALSE;
-		plog("Pluto ignores SIGHUP -- perhaps you want \"whack --listen\"");
+		openswan_log("Pluto ignores SIGHUP -- perhaps you want \"whack --listen\"");
 	    }
 
 	    FD_ZERO(&readfds);

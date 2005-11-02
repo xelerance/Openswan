@@ -1,7 +1,8 @@
 /*
  * receive code
  * Copyright (C) 1996, 1997  John Ioannidis.
- * Copyright (C) 1998, 1999, 2000, 2001  Richard Guy Briggs.
+ * Copyright (C) 1998-2003   Richard Guy Briggs.
+ * Copyright (C) 2004        Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,7 +15,7 @@
  * for more details.
  */
 
-char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.140 2004/02/03 03:12:53 mcr Exp $";
+char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.143.4.2 2004/08/22 03:29:06 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -23,7 +24,7 @@ char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.140 2004/02/03 03:12:53
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -34,11 +35,13 @@ char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.140 2004/02/03 03:12:53
 #include <linux/types.h>  /* size_t */
 #include <linux/interrupt.h> /* mark_bh */
 
+#include <net/udp.h>
+
 #include <linux/netdevice.h>	/* struct device, and other headers */
 #include <linux/etherdevice.h>	/* eth_type_trans */
 #include <linux/ip.h>		/* struct iphdr */
 #include <linux/skbuff.h>
-#include <freeswan.h>
+#include <openswan.h>
 #ifdef SPINLOCK
 # ifdef SPINLOCK_23
 #  include <linux/spinlock.h> /* *lock* */
@@ -54,31 +57,32 @@ char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.140 2004/02/03 03:12:53
 #include <asm/checksum.h>
 #include <net/ip.h>
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_sa.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_sa.h"
 
-#include "freeswan/ipsec_radij.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_tunnel.h"
-#include "freeswan/ipsec_rcv.h"
+#include "openswan/ipsec_radij.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_rcv.h"
 
-#include "freeswan/ipsec_auth.h"
+#include "openswan/ipsec_auth.h"
 
-#include "freeswan/ipsec_esp.h"
+#include "openswan/ipsec_esp.h"
 
 #ifdef CONFIG_IPSEC_AH
-#include "freeswan/ipsec_ah.h"
+#include "openswan/ipsec_ah.h"
 #endif /* CONFIG_IPSEC_AH */
 
 #ifdef CONFIG_IPSEC_IPCOMP
-#include "freeswan/ipsec_ipcomp.h"
+#include "openswan/ipsec_ipcomp.h"
 #endif /* CONFIG_IPSEC_COMP */
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
+#include "openswan/ipsec_alg.h"
 
 #ifdef CONFIG_IPSEC_DEBUG
 int debug_rcv = 0;
@@ -86,8 +90,11 @@ int debug_rcv = 0;
 
 int sysctl_ipsec_inbound_policy_check = 1;
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
-#include <linux/udp.h>
+/* This is a private use protocol, and AT&T should be ashamed. They should have
+ * used protocol # 59, which is "no next header" instead of 0xFE.
+ */
+#ifndef IPPROTO_ATT_HEARTBEAT
+#define IPPROTO_ATT_HEARTBEAT 0xFE
 #endif
 
 #ifdef CONFIG_IPSEC_DEBUG
@@ -218,6 +225,9 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs, struct xform_functions *proto_
 	struct ipsec_sa *newipsp;
 	struct iphdr *ipp;
 	struct sk_buff *skb;
+#ifdef CONFIG_IPSEC_ALG
+	struct ipsec_alg_auth *ixt_a=NULL;
+#endif /* CONFIG_IPSEC_ALG */
 
 	skb = irs->skb;
 	irs->len = skb->len;
@@ -385,14 +395,18 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs, struct xform_functions *proto_
 
 
 	/* now check the lifetimes */
-	if(ipsec_lifetime_check(&irs->ipsp->ips_life.ipl_bytes,   "bytes",  irs->sa,
-				ipsec_life_countbased, ipsec_incoming, irs->ipsp) == ipsec_life_harddied ||
-	   ipsec_lifetime_check(&irs->ipsp->ips_life.ipl_addtime, "addtime",irs->sa,
-				ipsec_life_timebased,  ipsec_incoming, irs->ipsp) == ipsec_life_harddied ||
-	   ipsec_lifetime_check(&irs->ipsp->ips_life.ipl_addtime, "usetime",irs->sa,
-				ipsec_life_timebased,  ipsec_incoming, irs->ipsp) == ipsec_life_harddied ||
-	   ipsec_lifetime_check(&irs->ipsp->ips_life.ipl_packets, "packets",irs->sa,
-				ipsec_life_countbased, ipsec_incoming, irs->ipsp) == ipsec_life_harddied) {
+	if(ipsec_lifetime_check(&irs->ipsp->ips_life.ipl_bytes,   "bytes",
+				irs->sa, ipsec_life_countbased, ipsec_incoming,
+				irs->ipsp) == ipsec_life_harddied ||
+	   ipsec_lifetime_check(&irs->ipsp->ips_life.ipl_addtime, "addtime",
+				irs->sa, ipsec_life_timebased,  ipsec_incoming,
+				irs->ipsp) == ipsec_life_harddied ||
+	   ipsec_lifetime_check(&irs->ipsp->ips_life.ipl_addtime, "usetime",
+				irs->sa, ipsec_life_timebased,  ipsec_incoming,
+				irs->ipsp) == ipsec_life_harddied ||
+	   ipsec_lifetime_check(&irs->ipsp->ips_life.ipl_packets, "packets",
+				irs->sa, ipsec_life_countbased, ipsec_incoming,
+				irs->ipsp) == ipsec_life_harddied) {
 		ipsec_sa_delchain(irs->ipsp);
 		if(irs->stats) {
 			irs->stats->rx_dropped++;
@@ -442,6 +456,21 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs, struct xform_functions *proto_
 
 	irs->authfuncs=NULL;
 	/* authenticate, if required */
+#ifdef CONFIG_IPSEC_ALG
+	if ((ixt_a=irs->ipsp->ips_alg_auth)) {
+		irs->authlen = AHHMAC_HASHLEN;
+		irs->authfuncs = NULL;
+		irs->ictx = NULL;
+		irs->octx = NULL;
+		irs->ictx_len = 0;
+		irs->octx_len = 0;
+		KLIPS_PRINT(debug_rcv,
+				"klips_debug:ipsec_rcv: "
+				"authalg=%d authlen=%d\n",
+				irs->ipsp->ips_authalg, 
+				irs->authlen);
+	} else
+#endif /* CONFIG_IPSEC_ALG */
 	switch(irs->ipsp->ips_authalg) {
 #ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
 	case AH_MD5:
@@ -465,6 +494,11 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs, struct xform_functions *proto_
 #endif /* CONFIG_IPSEC_AUTH_HMAC_SHA1 */
 	case AH_NONE:
 		irs->authlen = 0;
+		irs->authfuncs = NULL;
+		irs->ictx = NULL;
+		irs->octx = NULL;
+		irs->ictx_len = 0;
+		irs->octx_len = 0;
 		break;
 	default:
 		irs->ipsp->ips_errs.ips_alg_errs += 1;
@@ -474,20 +508,24 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs, struct xform_functions *proto_
 		return IPSEC_RCV_BADAUTH;
 	}
 
-	if(irs->authfuncs) {
-		unsigned char *authenticator = NULL;
+	irs->ilen = irs->len - iphlen - irs->authlen;
+	if(irs->ilen <= 0) {
+	  KLIPS_PRINT(debug_rcv,
+		      "klips_debug:ipsec_rcv: "
+		      "runt %s packet with no data, dropping.\n",
+		      (proto == IPPROTO_ESP ? "esp" : "ah"));
+	  if(irs->stats) {
+	    irs->stats->rx_dropped++;
+	  }
+	  return IPSEC_RCV_BADLEN;
+	}
 
-		irs->ilen = irs->len - iphlen - irs->authlen;
-		if(irs->ilen <= 0) {
-			KLIPS_PRINT(debug_rcv,
-				    "klips_debug:ipsec_rcv: "
-				    "runt %s packet with no data, dropping.\n",
-				    (proto == IPPROTO_ESP ? "esp" : "ah"));
-			if(irs->stats) {
-				irs->stats->rx_dropped++;
-			}
-			return IPSEC_RCV_BADLEN;
-		}
+#ifdef CONFIG_IPSEC_ALG
+	if(irs->authfuncs || ixt_a) {
+#else
+	if(irs->authfuncs) {
+#endif
+		unsigned char *authenticator = NULL;
 
 		if(proto_funcs->rcv_setup_auth) {
 			enum ipsec_rcv_value retval
@@ -651,6 +689,7 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs, struct xform_functions *proto_
 				    || ipsnext->ips_inext)
 #endif /* CONFIG_IPSEC_IPCOMP */
 				&& ipp->protocol != IPPROTO_IPIP
+				&& ipp->protocol != 0xFE  /* added to support heartbeats to AT&T SIG/GIG */
 				) {
 				KLIPS_PRINT(debug_rcv,
 					    "klips_debug:ipsec_rcv: "
@@ -1222,7 +1261,8 @@ ipsec_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 	if(ipsnext) {
 		ipsp = ipsnext;
 		irs.sa_len = satot(&irs.said, 0, irs.sa, sizeof(irs.sa));
-		if(ipp->protocol != IPPROTO_IPIP) {
+		if((ipp->protocol != IPPROTO_IPIP) && 
+                   ( 0xFE != ipp->protocol)) {        /* added to support AT&T heartbeats to SIG/GIG */
 			spin_unlock(&tdb_lock);
 			KLIPS_PRINT(debug_rcv,
 				    "klips_debug:ipsec_rcv: "
@@ -1263,6 +1303,8 @@ ipsec_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 			}
 		}
 
+  if(ipp->protocol == IPPROTO_IPIP)  /* added to support AT&T heartbeats to SIG/GIG */
+  {  
 		/*
 		 * XXX this needs to be locked from when it was first looked
 		 * up in the decapsulation loop.  Perhaps it is better to put
@@ -1309,6 +1351,7 @@ ipsec_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 			    "klips_debug:ipsec_rcv: "
 			    "IPIP tunnel stripped.\n");
 		KLIPS_IP_PRINT(debug_rcv & DB_RX_PKTRX, ipp);
+  }
 
 		if(sysctl_ipsec_inbound_policy_check
 		   /*
@@ -1432,6 +1475,21 @@ ipsec_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 
 /*
  * $Log: ipsec_rcv.c,v $
+ * Revision 1.143.4.2  2004/08/22 03:29:06  mcr
+ * 	include udp.h regardless of nat-t support.
+ *
+ * Revision 1.143.4.1  2004/08/21 02:14:58  ken
+ * Patch from Jochen Eisinger for AT&T MTS Heartbeat packet support
+ *
+ * Revision 1.143  2004/05/10 22:27:00  mcr
+ * 	fix for ESP-3DES-noauth test case.
+ *
+ * Revision 1.142  2004/05/10 22:25:57  mcr
+ * 	reformat of calls to ipsec_lifetime_check().
+ *
+ * Revision 1.141  2004/04/06 02:49:26  mcr
+ * 	pullup of algo code from alg-branch.
+ *
  * Revision 1.140  2004/02/03 03:12:53  mcr
  * 	removed erroneously, double patched code.
  *
@@ -1455,6 +1513,9 @@ ipsec_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
  *
  * Revision 1.135  2003/12/13 19:10:21  mcr
  * 	refactored rcv and xmit code - same as FS 2.05.
+ *
+ * Revision 1.134.2.1  2003/12/22 15:25:52  jjo
+ *      Merged algo-0.8.1-rc11-test1 into alg-branch
  *
  * Revision 1.134  2003/12/10 01:14:27  mcr
  * 	NAT-traversal patches to KLIPS.
@@ -1855,274 +1916,7 @@ ipsec_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
  * Added inbound policy checking code, disabled.
  * Simplified output code by updating ipp to post-IPIP decapsulation.
  *
- * Revision 1.38  1999/12/22 05:08:36  rgb
- * Checked for null skb, skb->dev, skb->data, skb->dev->name, dev->name,
- * protocol and take appropriate action for sanity.
- * Set ipsecdev to NULL if device could not be determined.
- * Fixed NULL stats access bug if device could not be determined.
- *
- * Revision 1.37  1999/12/14 20:07:59  rgb
- * Added a default switch case to catch bogus encalg values.
- *
- * Revision 1.36  1999/12/07 18:57:57  rgb
- * Fix PFKEY symbol compile error (SADB_*) without pfkey enabled.
- *
- * Revision 1.35  1999/12/01 22:15:35  rgb
- * Add checks for LARVAL and DEAD SAs.
- * Change state of SA from MATURE to DYING when a soft lifetime is
- * reached and print debug warning.
- *
- * Revision 1.34  1999/11/23 23:04:03  rgb
- * Use provided macro ADDRTOA_BUF instead of hardcoded value.
- * Sort out pfkey and freeswan headers, putting them in a library path.
- *
- * Revision 1.33  1999/11/19 01:10:06  rgb
- * Enable protocol handler structures for static linking.
- *
- * Revision 1.32  1999/11/18 04:09:19  rgb
- * Replaced all kernel version macros to shorter, readable form.
- *
- * Revision 1.31  1999/11/17 15:53:39  rgb
- * Changed all occurrences of #include "../../../lib/freeswan.h"
- * to #include <freeswan.h> which works due to -Ilibfreeswan in the
- * klips/net/ipsec/Makefile.
- *
- * Revision 1.30  1999/10/26 15:09:07  rgb
- * Used debug compiler directives to shut up compiler for decl/assign
- * statement.
- *
- * Revision 1.29  1999/10/16 18:25:37  rgb
- * Moved SA lifetime expiry checks before packet processing.
- * Expire SA on replay counter rollover.
- *
- * Revision 1.28  1999/10/16 04:23:07  rgb
- * Add stats for replaywin_errs, replaywin_max_sequence_difference,
- * authentication errors, encryption size errors, encryption padding
- * errors, and time since last packet.
- *
- * Revision 1.27  1999/10/16 00:30:47  rgb
- * Added SA lifetime counting.
- *
- * Revision 1.26  1999/10/15 22:14:37  rgb
- * Add debugging.
- *
- * Revision 1.25  1999/10/08 18:37:34  rgb
- * Fix end-of-line spacing to sate whining PHMs.
- *
- * Revision 1.24  1999/10/03 18:54:51  rgb
- * Spinlock support for 2.3.xx.
- * Don't forget to undo spinlocks on error!
- *
- * Revision 1.23  1999/10/01 15:44:53  rgb
- * Move spinlock header include to 2.1> scope.
- *
- * Revision 1.22  1999/10/01 00:01:54  rgb
- * Added tdb structure locking.
- *
- * Revision 1.21  1999/09/18 11:42:12  rgb
- * Add Marc Boucher's tcpdump cloned packet fix.
- *
- * Revision 1.20  1999/09/17 23:50:25  rgb
- * Add Marc Boucher's hard_header_len patches.
- *
- * Revision 1.19  1999/09/10 05:31:36  henry
- * tentative fix for 2.0.38-crash bug (move chunk of new code into 2.2 #ifdef)
- *
- * Revision 1.18  1999/08/28 08:28:06  rgb
- * Delete redundant sanity check.
- *
- * Revision 1.17  1999/08/28 02:00:58  rgb
- * Add an extra sanity check for null skbs.
- *
- * Revision 1.16  1999/08/27 05:21:38  rgb
- * Clean up skb->data/raw/nh/h manipulation.
- * Add Marc Boucher's mods to aid tcpdump.
- *
- * Revision 1.15  1999/08/25 14:22:40  rgb
- * Require 4-octet boundary check only for ESP.
- *
- * Revision 1.14  1999/08/11 08:36:44  rgb
- * Add compiler directives to allow configuring out AH, ESP or transforms.
- *
- * Revision 1.13  1999/08/03 17:10:49  rgb
- * Cosmetic fixes and clarification to debug output.
- *
- * Revision 1.12  1999/05/09 03:25:36  rgb
- * Fix bug introduced by 2.2 quick-and-dirty patch.
- *
- * Revision 1.11  1999/05/08 21:23:57  rgb
- * Add casting to silence the 2.2.x compile.
- *
- * Revision 1.10  1999/05/05 22:02:31  rgb
- * Add a quick and dirty port to 2.2 kernels by Marc Boucher <marc@mbsi.ca>.
- *
- * Revision 1.9  1999/04/29 15:18:01  rgb
- * hange debugging to respond only to debug_rcv.
- * Change gettdb parameter to a pointer to reduce stack loading and
- * facilitate parameter sanity checking.
- *
- * Revision 1.8  1999/04/15 15:37:24  rgb
- * Forward check changes from POST1_00 branch.
- *
- * Revision 1.4.2.2  1999/04/13 20:32:45  rgb
- * Move null skb sanity check.
- * Silence debug a bit more when off.
- * Use stats more effectively.
- *
- * Revision 1.4.2.1  1999/03/30 17:10:32  rgb
- * Update AH+ESP bugfix.
- *
- * Revision 1.7  1999/04/11 00:28:59  henry
- * GPL boilerplate
- *
- * Revision 1.6  1999/04/06 04:54:27  rgb
- * Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
- * patch shell fixes.
- *
- * Revision 1.5  1999/03/17 15:39:23  rgb
- * Code clean-up.
- * Bundling bug fix.
- * ESP_NULL esphlen and IV bug fix.
- *
- * Revision 1.4  1999/02/17 16:51:02  rgb
- * Ditch NET_IPIP dependancy.
- * Decapsulate recursively for an entire bundle.
- *
- * Revision 1.3  1999/02/12 21:22:47  rgb
- * Convert debugging printks to KLIPS_PRINT macro.
- * Clean-up cruft.
- * Process IPIP tunnels internally.
- *
- * Revision 1.2  1999/01/26 02:07:36  rgb
- * Clean up debug code when switched off.
- * Remove references to INET_GET_PROTOCOL.
- *
- * Revision 1.1  1999/01/21 20:29:11  rgb
- * Converted from transform switching to algorithm switching.
- *
- *
- * Id: ipsec_esp.c,v 1.16 1998/12/02 03:08:11 rgb Exp $
- *
- * Log: ipsec_esp.c,v $
- * Revision 1.16  1998/12/02 03:08:11  rgb
- * Fix incoming I/F bug in AH and clean up inconsistencies in the I/F
- * discovery routine in both AH and ESP.
- *
- * Revision 1.15  1998/11/30 13:22:51  rgb
- * Rationalised all the klips kernel file headers.  They are much shorter
- * now and won't conflict under RH5.2.
- *
- * Revision 1.14  1998/11/10 05:55:37  rgb
- * Add even more detail to 'wrong I/F' debug statement.
- *
- * Revision 1.13  1998/11/10 05:01:30  rgb
- * Clean up debug output to be quiet when disabled.
- * Add more detail to 'wrong I/F' debug statement.
- *
- * Revision 1.12  1998/10/31 06:39:32  rgb
- * Fixed up comments in #endif directives.
- * Tidied up debug printk output.
- * Convert to addrtoa and satoa where possible.
- *
- * Revision 1.11  1998/10/27 00:49:30  rgb
- * AH+ESP bundling bug has been squished.
- * Cosmetic brace fixing in code.
- * Newlines added before calls to ipsec_print_ip.
- * Fix debug output function ID's.
- *
- * Revision 1.10  1998/10/22 06:37:22  rgb
- * Fixed run-on error message to fit 80 columns.
- *
- * Revision 1.9  1998/10/20 02:41:04  rgb
- * Fixed a replay window size sanity test bug.
- *
- * Revision 1.8  1998/10/19 18:55:27  rgb
- * Added inclusion of freeswan.h.
- * sa_id structure implemented and used: now includes protocol.
- * \n bugfix to printk debug message.
- *
- * Revision 1.7  1998/10/09 04:23:03  rgb
- * Fixed possible DoS caused by invalid transform called from an ESP
- * packet.  This should not be a problem when protocol is added to the SA.
- * Sanity check added for null xf_input routine.  Sanity check added for null
- * socket buffer returned from xf_input routine.
- * Added 'klips_debug' prefix to all klips printk debug statements.
- *
- * Revision 1.6  1998/07/14 15:56:04  rgb
- * Set sdb->dev to virtual ipsec I/F.
- *
- * Revision 1.5  1998/06/30 18:07:46  rgb
- * Change for ah/esp_protocol stuct visible only if module.
- *
- * Revision 1.4  1998/06/30 00:12:46  rgb
- * Clean up a module compile error.
- *
- * Revision 1.3  1998/06/25 19:28:06  rgb
- * Readjust premature unloading of module on packet receipt.
- * Make protocol structure abailable to rest of kernel.
- * Use macro for protocol number.
- *
- * Revision 1.2  1998/06/23 02:49:34  rgb
- * Fix minor #include bug that prevented compiling without debugging.
- * Added code to check for presence of IPIP protocol if an incoming packet
- * is IPIP encapped.
- *
- * Revision 1.1  1998/06/18 21:27:44  henry
- * move sources from klips/src to klips/net/ipsec, to keep stupid
- * kernel-build scripts happier in the presence of symlinks
- *
- * Revision 1.9  1998/06/14 23:48:42  rgb
- * Fix I/F name comparison oops bug.
- *
- * Revision 1.8  1998/06/11 07:20:04  rgb
- * Stats fixed for rx_packets.
- *
- * Revision 1.7  1998/06/11 05:53:34  rgb
- * Added stats for rx error and good packet reporting.
- *
- * Revision 1.6  1998/06/05 02:27:28  rgb
- * Add rx_errors stats.
- * Fix DoS bug:  skb's not being freed on dropped packets.
- *
- * Revision 1.5  1998/05/27 21:21:29  rgb
- * Fix DoS potential bug.  skb was not being freed if the packet was bad.
- *
- * Revision 1.4  1998/05/18 22:31:37  rgb
- * Minor change in debug output and comments.
- *
- * Revision 1.3  1998/04/21 21:29:02  rgb
- * Rearrange debug switches to change on the fly debug output from user
- * space.  Only kernel changes checked in at this time.  radij.c was also
- * changed to temporarily remove buggy debugging code in rj_delete causing
- * an OOPS and hence, netlink device open errors.
- *
- * Revision 1.2  1998/04/12 22:03:19  rgb
- * Updated ESP-3DES-HMAC-MD5-96,
- * 	ESP-DES-HMAC-MD5-96,
- * 	AH-HMAC-MD5-96,
- * 	AH-HMAC-SHA1-96 since Henry started freeswan cvs repository
- * from old standards (RFC182[5-9] to new (as of March 1998) drafts.
- *
- * Fixed eroute references in /proc/net/ipsec*.
- *
- * Started to patch module unloading memory leaks in ipsec_netlink and
- * radij tree unloading.
- *
- * Revision 1.1  1998/04/09 03:05:59  henry
- * sources moved up from linux/net/ipsec
- *
- * Revision 1.1.1.1  1998/04/08 05:35:04  henry
- * RGB's ipsec-0.8pre2.tar.gz ipsec-0.8
- *
- * Revision 0.4  1997/01/15 01:28:15  ji
- * Minor cosmetic changes.
- *
- * Revision 0.3  1996/11/20 14:35:48  ji
- * Minor Cleanup.
- * Rationalized debugging code.
- *
- * Revision 0.2  1996/11/02 00:18:33  ji
- * First limited release.
+ * elided pre-2000 comments. Use "cvs log"
  *
  *
  */

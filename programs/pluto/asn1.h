@@ -1,5 +1,5 @@
 /* Simple ASN.1 parser
- * Copyright (C) 2000-2003 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2000-2004 Andreas Steffen, Zuercher Hochschule Winterthur
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: asn1.h,v 1.2 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: asn1.h,v 1.4 2004/06/14 01:46:02 mcr Exp $
  */
 
 /* Defines some primitive ASN1 types */
@@ -72,6 +72,10 @@ typedef enum {
 #define ASN1_END	0x08
 #define ASN1_OBJ	0x10
 #define ASN1_BODY	0x20
+#define ASN1_RAW	0x40
+
+#define ASN1_INVALID_LENGTH     0xffffffff
+
 
 /* definition of an ASN.1 object */
 
@@ -82,7 +86,7 @@ typedef struct {
     u_char  flags;
 } asn1Object_t;
 
-#define ASN1_MAX_LEVEL  5
+#define ASN1_MAX_LEVEL	10
 
 typedef struct {
     bool  implicit;
@@ -94,11 +98,15 @@ typedef struct {
 
 extern int known_oid(chunk_t object);
 extern u_int asn1_length(chunk_t *blob);
+extern void code_asn1_length(size_t length, chunk_t *code);
+extern u_char* build_asn1_object(chunk_t *object, asn1_t type, size_t datalen);
+extern u_char* build_asn1_explicit_object(chunk_t *object, asn1_t outer_type
+    , asn1_t inner_type, size_t datalen);
 extern bool is_printablestring(chunk_t str);
 extern time_t asn1totime(const chunk_t *utctime, asn1_t type);
 extern void asn1_init(asn1_ctx_t *ctx, chunk_t blob
     , u_int level0, bool implicit, u_int cond);
 extern bool extract_object(asn1Object_t const *objects
-    , u_int *objectID, chunk_t *object, asn1_ctx_t *ctx);
+    , u_int *objectID, chunk_t *object, u_int *level, asn1_ctx_t *ctx);
 extern bool is_asn1(chunk_t blob);
 

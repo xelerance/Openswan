@@ -2,13 +2,13 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 <?rfc toc="yes"?>
 
-<rfc ipr="full2026" docName="draft-ietf-ipseckey-rr-07.txt">
+<rfc ipr="full2026" docName="draft-ietf-ipseckey-rr-10.txt">
 
 <front>
   <area>Security</area>
   <workgroup>IPSECKEY WG</workgroup>
-  <title abbrev="ipsecrr">
-     A method for storing IPsec keying material in DNS.
+  <title abbrev="Storing IPsec keying material in DNS">
+     A Method for Storing IPsec Keying Material in DNS
   </title>
 
   <author initials="M." surname="Richardson" fullname="Michael C. Richardson">
@@ -26,12 +26,15 @@
     </address>
   </author>
 
-  <date month="September" year="2003" />
+  <date month="April" year="2004" />
 
 <abstract>
   <t>
-This document describes a new resource record for DNS. This record may be
-used to store public keys for use in IPsec systems. 
+This document describes a new resource record for the Domain Name System (DNS).
+This record may be used to store public keys for use in IP security (IPsec)
+systems. The record also includes provisions for indicating what system
+should be contacted when establishing an IPsec tunnel with the entity in
+question. 
 </t>
 
 <t>
@@ -45,6 +48,22 @@ Record, which has been obsoleted by RFC3445.
 <middle>
 
 <section title="Introduction">
+<t>
+   Suppose we have a host which wishes to establish an IPsec tunnel
+   with some remote entity on the network.  In many cases this end
+   system will only know a DNS name for the remote entity (whether
+   that DNS name be the name of the remote node, a DNS reverse tree
+   name corresponding to the IP address of the remote node, or perhaps
+   a the domain name portion of a "user@FQDN" name for a remote
+   entity).  In these cases the host will need to obtain a public key
+   in order to authenticate the remote entity, and may also need some
+   guidance about whether it should contact the entity directly or use
+   another node as a gateway to the target entity.
+</t>
+<t>
+  The IPSECKEY RR provides a storage mechanism for such data as the public
+key and the gateway information.
+</t>
 <t>
    The type number for the IPSECKEY RR is TBD.
 </t>
@@ -62,6 +81,31 @@ Record, which has been obsoleted by RFC3445.
       NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
       "OPTIONAL" in this document are to be interpreted as described in
       RFC2119 <xref target="RFC2119" />.
+</t>
+</section>
+
+<section title="Use of DNS address-to-name maps (IN-ADDR.ARPA and IP6.ARPA)">
+<t>
+   Often a security gateway will only have access to the IP address of
+   the node with which communication is desired, and will not know any
+   other name for the target node.  Because of this, it will
+   frequently be the case that the best way of looking up IPSECKEY RRs
+   will be by using the IP address as an index into one of the reverse
+   mapping trees (IN-ADDR.ARPA for IPv4 or IP6.ARPA for IPv6).
+</t>
+
+<t>
+The lookup is done in the usual fashion as for PTR records. The IP address'
+octets (IPv4) or nibbles (IPv6) are reversed and looked up with the
+appropriate suffix. Any CNAMEs or DNAMEs found MUST be followed.
+</t>
+
+<t>
+Note: even when the IPsec function is the end-host, often only the application 
+will know the forward name used. While the case where the application knows
+the forward name is common, the user could easily have typed in a literal IP
+address. This storage mechanism does not preclude using the forward name
+when it is available, but does not require it.
 </t>
 </section>
 
@@ -90,8 +134,8 @@ is available.
 <section title="IPSECKEY RDATA format">
 
 <t>
-   The RDATA for an IPSECKEY RR consists of a precedence value, a public key,
-   algorithm type, and an optional gateway address.
+   The RDATA for an IPSECKEY RR consists of a precedence value, a gateway type,
+a public key, algorithm type, and an optional gateway address.
 </t>
 
 <artwork><![CDATA[
@@ -122,6 +166,27 @@ should be non-deterministic.
 </t>
 </section>
 
+<section anchor="gatewaytype" title="RDATA format - gateway type">
+<t>
+The gateway type field indicates the format of the information that
+is stored in the gateway field.
+</t>
+
+<t>
+The following values are defined:
+  <list style="hanging">
+  <t hangText="0">No gateway is present</t>
+  <t hangText="1">A 4-byte IPv4 address is present</t>
+  <t hangText="2">A 16-byte IPv6 address is present</t>
+  <t hangText="3">A wire-encoded domain name is present. The wire-encoded
+format is self-describing, so the length is implicit. The domain name
+MUST NOT be compressed. (see section 3.3 of RFC1035 <xref target="RFC1035" />).
+</t>
+  </list>
+</t>
+
+</section>
+
 <section anchor="algotype" title="RDATA format - algorithm type">
 <t>
 The algorithm type field identifies the public key's cryptographic
@@ -137,26 +202,6 @@ The following values are defined:
   <list style="hanging">
   <t hangText="1">A DSA key is present, in the format defined in RFC2536 <xref target="RFC2536" /></t>
   <t hangText="2">A RSA key is present, in the format defined in RFC3110 <xref target="RFC3110" /></t>
-  </list>
-</t>
-
-</section>
-
-<section anchor="gatewaytype" title="RDATA format - gateway type">
-<t>
-The gateway type field indicates the format of the information that
-is stored in the gateway field.
-</t>
-
-<t>
-The following values are defined:
-  <list style="hanging">
-  <t hangText="0">No gateway is present</t>
-  <t hangText="1">A 4-byte IPv4 address is present</t>
-  <t hangText="2">A 16-byte IPv6 address is present</t>
-  <t hangText="3">A wire-encoded domain name is present. The wire-encoded
-format is self-describing, so the length is implicit. The domain name
-MUST NOT be compressed.</t>
   </list>
 </t>
 
@@ -179,7 +224,7 @@ portion is an IPv4 address as described in section 3.4.1 of
 
 <t>A 128-bit IPv6 address is present in the gateway field.
 The data portion is an IPv6 address as described in section 2.2 of
-<xref target="RFC1886">RFC1886</xref>. This is a 128-bit number in network byte order.
+<xref target="RFC3596">RFC3596</xref>. This is a 128-bit number in network byte order. 
 </t>
 
 <t>
@@ -254,7 +299,7 @@ to IPSECKEY and not to KEY RRs.
    The Public Key field is represented as a Base64 encoding of the
    Public Key.  Whitespace is allowed within the Base64 text.  For a
    definition of Base64 encoding, see
-<xref target="RFC1521">RFC1521</xref> Section 5.2.
+<xref target="RFC3548">RFC3548</xref> Section 5.2.
 </t>
 
    
@@ -312,7 +357,7 @@ with the identity "mygateway.example.com".
 An example of a node, 2001:0DB8:0200:1:210:f3ff:fe03:4d0 that has
 delegated authority to the node 2001:0DB8:c000:0200:2::1
 <artwork><![CDATA[
-$ORIGIN 1.0.0.0.0.0.2.8.B.D.0.1.0.0.2.ip6.int.
+$ORIGIN 1.0.0.0.0.0.2.8.B.D.0.1.0.0.2.ip6.arpa.
 0.d.4.0.3.0.e.f.f.f.3.f.0.1.2.0 7200 IN     IPSECKEY ( 10 2 2
                  2001:0DB8:0:8002::2000:1
                  AQNRU3mG7TVTO2BkR47usntb102uFJtugbo6BSGvgqt4AQ== )
@@ -348,57 +393,78 @@ against both active and passive attacks.
 </t>
 
 <t>
-   Any user of this resource record MUST carefully document their trust
+   Any derivative specification that makes use of this resource record MUST
+   carefully document their trust 
    model, and why the trust model of DNSSEC is appropriate, if that is
    the secure channel used.
+</t>
+
+<t>
+An active attack on the DNS that caused the wrong IP address to be retrieved
+(via forged address), and therefore the wrong QNAME to be queried would also
+result in a man-in-the-middle attack. This situation exists independantly
+of whether or not the IPSECKEY RR is used.
 </t>
 
 <section title="Active attacks against unsecured IPSECKEY resource records">
 <t>
 This section deals with active attacks against the DNS. These attacks
 require that DNS requests and responses be intercepted and changed.
-DNSSEC is designed to defend against attacks of this kind.
+DNSSEC is designed to defend against attacks of this kind. This section
+deals with the situation where DNSSEC is not available. This is not the
+recommended deployment scenario.
 </t>
 
+<section title="Active attacks against IPSECKEY keying materials">
 <t>
 The first kind of active attack is when the attacker replaces the
 keying material with either a key under its control or with garbage.
 </t>
 
 <t>
-If the attacker is not able to mount a subsequent 
-man-in-the-middle attack on the IKE negotiation after replacing the
-public key, then this will result in a denial of service, as the
-authenticator used by IKE would fail.  
+The gateway field is either untouched, or is null. The IKE negotiation will
+therefore occur with the original end-system. For this attack to be
+successful, the attacker must be able to perform a man-in-the-middle
+attack on the IKE negotiation. This attack requires that the attacker be in
+the end-to-end forwarding path on which both IKE and data packets will
+transit. 
+</t>
+
+<t>
+If the attacker is not able to perform the man-in-the-middle attack on the
+IKE negotiation, then this will result in a denial of service, as the
+IKE negotiation will fail.
 </t>
 
 <t>
 If the attacker is able to both to mount active attacks against DNS
 and is also in a position to perform a man-in-the-middle attack on IKE and
 IPsec negotiations, then the attacker will be in a position to compromise
-the resulting IPsec channel. Note that an attacker must be able to
+the resulting IPsec channel.  Note that an attacker must be able to
 perform active DNS attacks on both sides of the IKE negotiation in
 order for this to succeed. 
 </t>
+</section>
 
+<section title="Attack attacks against IPSECKEY gateway material">
 <t>
 The second kind of active attack is one in which the attacker replaces
 the the gateway address to point to a node under the attacker's
-control. The attacker can then either replace the public key or remove
-it, thus providing an IPSECKEY record of its own to match the
-gateway address. 
+control.  The attacker can then either replaces the public key or removes
+it.  If they remove it, then they would provide an accurate public
+key of their own in a second record.
 </t>
 
 <t>
-This later form creates a simple man-in-the-middle since the attacker
-can then create a second tunnel to the real destination. Note that, as before,
-this requires that the attacker also mount an active attack against
-the responder. 
+This second form creates a simple man-in-the-middle since the attacker
+can then create a second tunnel to the real destination. 
+Note that, as before, this requires that the attacker also mount an
+active attack against the responder. 
 </t>
 
 <t>
 Note that the man-in-the-middle can not just forward cleartext
-packets to the original destination. While the destination may be
+packets to the original destination.  While the destination may be
 willing to speak in the clear, replying to the original sender,
 the sender will have already created a policy expecting ciphertext.
 Thus, the attacker will need to intercept traffic from both sides. In some
@@ -407,13 +473,41 @@ of Network Addresss/Port Translation (NAT/NAPT) technology.
 </t>
 
 <t>
-Note that the danger here only applies to cases where the gateway
-field of the IPSECKEY RR indicates a different entity than the owner
-name of the IPSECKEY RR.  In cases where the end-to-end integrity of
-the IPSECKEY RR is suspect, the end client MUST restrict its use
-of the IPSECKEY RR to cases where the RR owner name matches the
-content of the gateway field.
+This attack is easier than the first one because the attacker does NOT
+need to be on the end-to-end forwarding path.  The attacker need only
+be able to spoof DNS replies.
 </t>
+
+<t>
+In cases where the end-to-end integrity of
+the IPSECKEY RR is suspect, the end client MUST restrict its use
+of the IPSECKEY RR to cases where the RR owner name matches the 
+content of the gateway field.  
+</t>
+<t>
+Any records obtained under unverified conditions (e.g. no DNSSEC, or
+trusted path to source) that have a non-null gateway field MUST be
+ignored.
+</t>
+
+<t>
+This restriction eliminates attacks against the gateway field, which
+are considered much easier, as the attack does not need to be on the
+forwarding path.
+
+<t>
+In the case of an IPSECKEY RR with a value of three in its gateway
+type field, the gateway field contains a domain name.  
+The subsequent query required to translate that name into an IP address
+or IPSECKEY RR will also be subject to man-in-the-middle attacks. If the
+end-to-end integrity of this second query is suspect, then the provisions
+above also apply. The IPSECKEY RR MUST be ignored whenever the resulting
+gateway does not match the QNAME of the original IPSECKEY RR query.
+</t>
+
+</t>
+</section>
+
 </section>
 
 </section>
@@ -422,6 +516,11 @@ content of the gateway field.
 <t>
 This document updates the IANA Registry for DNS Resource Record Types
 by assigning type X to the IPSECKEY record.  
+</t>
+
+<t>
+This document creates two new IANA registries, both specific to the
+IPSECKEY Resource Record:
 </t>
 
 <t>
@@ -437,13 +536,40 @@ This document creates an IANA registry for the gateway type field.
 </t>
 <t>
 Values 0, 1, 2 and 3 are defined in <xref target="gatewaytype" />.
-Algorithm numbers 4 through 255 can be assigned by
+Gateway type numbers 4 through 255 can be assigned by
 Standards Action (<xref target="RFC2434">see RFC2434</xref>).
 </t>
 
 
 
 </section>
+
+<section title="Intellectual Property Claims">
+<t>
+The IETF takes no position regarding the validity or scope of any
+   intellectual property or other rights that might be claimed to
+   pertain to the implementation or use of the technology described in
+   this document or the extent to which any license under such rights
+   might or might not be available; neither does it represent that it
+   has made any effort to identify any such rights.  Information on the
+   IETF's procedures with respect to rights in standards-track and
+   standards-related documentation can be found in BCP-11.  Copies of
+   claims of rights made available for publication and any assurances of
+   licenses to be made available, or the result of an attempt made to
+   obtain a general license or permission for the use of such
+   proprietary rights by implementors or users of this specification can
+   be obtained from the IETF Secretariat.
+</t>
+
+<t>
+   The IETF invites any interested party to bring to its attention any
+   copyrights, patents or patent applications, or other proprietary
+   rights which may cover technology that may be required to practice
+   this standard.  Please address the information to the IETF Executive
+   Director.
+</t>
+</section>
+
 
 <section title="Acknowledgments">
 <t>
@@ -460,27 +586,33 @@ Additional thanks to Olafur Gurmundsson for a reference implementation.
 <!-- DNSSEC -->
 <?rfc include="reference.RFC.1034" ?>
 <?rfc include="reference.RFC.1035" ?>
-<?rfc include="reference.RFC.1521" ?>
 <?rfc include="reference.RFC.2026" ?>
 <?rfc include="reference.RFC.2065" ?>
 <?rfc include="reference.RFC.2434" ?>
+<?rfc include="reference.RFC.3548" ?>
 </references>
 
 <references title="Non-normative references">
-<?rfc include="reference.RFC.1886" ?>
 <?rfc include="reference.RFC.2119" ?>
 <?rfc include="reference.RFC.2407" ?>
 <?rfc include="reference.RFC.2535" ?>
 <?rfc include="reference.RFC.2536" ?>
 <?rfc include="reference.RFC.3110" ?>
 <?rfc include="reference.RFC.3445" ?>
+<?rfc include="reference.RFC.3596" ?>
 </references>
 </back>
 </rfc>
 <!--
-  $Id: draft-richardson-ipsec-rr.xml,v 1.23 2003/09/04 23:26:09 mcr Exp $
+  $Id: draft-richardson-ipsec-rr.xml,v 1.24 2004/07/02 22:27:05 mcr Exp $
 
   $Log: draft-richardson-ipsec-rr.xml,v $
+  Revision 1.24  2004/07/02 22:27:05  mcr
+  	updates from FS tree
+
+  Revision 1.24  2004/03/25 16:18:34  mcr
+  	new revisions to IPSECKEY.
+
   Revision 1.23  2003/09/04 23:26:09  mcr
   	more nits.
 

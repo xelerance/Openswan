@@ -1,0 +1,35 @@
+These notes apply to Openswan 2.2.0 developer release 2 ("dr2")
+
+Client side XAUTH is broken. There is a bad interaction between XAUTH
+policy and Algorithm policy such that XAUTH is not enabled properly.
+
+These notes apply to Openswan 2.2.0 developer release 1 ("dr1")
+
+The major feature is that JuanJo's "alg" branch has been incorporated into
+the code. This includes both AES and 3DES code at the moment. Other
+modules likely will work, but are not tested.
+
+Note: The AES module has been incorporated into the single ipsec.o module
+for 2.4 kernels.  For 2.6 kernels, CryptoAPI is used, so AES + other ciphers
+are available, provided you compiled them into your 2.6 series kernel.
+
+To enable IKE algo support, add the ike= and esp= parameters to your
+connection definition - eg:
+
+    conn westnet-eastnet-aes
+	 ike=aes256
+	 esp=aes256-sha1
+
+
+There is now a "x509" debug level for pluto. Many error messages have been
+revised in the X.509 code.  To view these messages, add
+
+plutodebug="x509" 
+
+to your ipsec.conf file.
+
+New test cases have been created for sending X.509 certificates via IKE,
+with and without CRLs, and with a variety of CA options. Some bugs were 
+fixed in x509.c relating to what constitutes a root CA. 
+
+Dead Peer Detection (RFC3706) has been included, as well as test cases.

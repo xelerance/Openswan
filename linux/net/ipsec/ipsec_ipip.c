@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_ipip_c_version[] = "RCSID $Id: ipsec_ipip.c,v 1.1 2003/12/13 19:10:21 mcr Exp $";
+char ipsec_ipip_c_version[] = "RCSID $Id: ipsec_ipip.c,v 1.2 2004/04/06 02:49:26 mcr Exp $";
 #include <linux/config.h>
 #include <linux/version.h>
 
@@ -21,7 +21,7 @@ char ipsec_ipip_c_version[] = "RCSID $Id: ipsec_ipip.c,v 1.1 2003/12/13 19:10:21
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -36,7 +36,7 @@ char ipsec_ipip_c_version[] = "RCSID $Id: ipsec_ipip.c,v 1.1 2003/12/13 19:10:21
 #include <linux/etherdevice.h>	/* eth_type_trans */
 #include <linux/ip.h>		/* struct iphdr */
 #include <linux/skbuff.h>
-#include <freeswan.h>
+#include <openswan.h>
 #ifdef SPINLOCK
 # ifdef SPINLOCK_23
 #  include <linux/spinlock.h> /* *lock* */
@@ -52,21 +52,21 @@ char ipsec_ipip_c_version[] = "RCSID $Id: ipsec_ipip.c,v 1.1 2003/12/13 19:10:21
 #include <asm/checksum.h>
 #include <net/ip.h>
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_sa.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_sa.h"
 
-#include "freeswan/ipsec_radij.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_tunnel.h"
-#include "freeswan/ipsec_rcv.h"
-#include "freeswan/ipsec_xmit.h"
+#include "openswan/ipsec_radij.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_rcv.h"
+#include "openswan/ipsec_xmit.h"
 
-#include "freeswan/ipsec_auth.h"
-#include "freeswan/ipsec_ipip.h"
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_auth.h"
+#include "openswan/ipsec_ipip.h"
+#include "openswan/ipsec_param.h"
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
 
 enum ipsec_xmit_value
 ipsec_xmit_ipip_setup(struct ipsec_xmit_state *ixs)

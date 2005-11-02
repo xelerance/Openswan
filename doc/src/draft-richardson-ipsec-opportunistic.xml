@@ -2,15 +2,17 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 <?rfc toc="yes"?>
 <?rfc tocdepth='2' ?>
+<?rfc symrefs="yes" ?>
+<?rfc sortrefs="yes" ?>
 
-<rfc ipr="full2026" docName="draft-richardson-ipsec-opportunistic-12.txt">
+<rfc ipr="full2026" docName="draft-richardson-ipsec-opportunistic-15.txt">
 
 <front>
-  <area>Security</area>
-  <workgroup>Independent submission</workgroup>
   <title abbrev="opportunistic">
      Opportunistic Encryption using The Internet Key Exchange (IKE)
   </title>
+  <area>Security</area>
+  <workgroup>Independent submission</workgroup>
 
   <author initials="M." surname="Richardson" fullname="Michael C. Richardson">
     <organization abbrev="SSW">Sandelman Software Works</organization>
@@ -40,30 +42,24 @@
     </address>
   </author>
 
-  <date month="June" year="2003"></date>
+  <date month="March" year="2004"></date>
 
 <abstract>
   <t>
-This document describes opportunistic encryption (OE) using the Internet Key
-Exchange (IKE) and IPsec.  
-Each system administrator adds new
-resource records to his or her Domain Name System (DNS) to support
-opportunistic encryption. The objective is to allow encryption for secure communication without
+This document describes opportunistic encryption (OE) as designed
+and implemented by the Linux FreeS/WAN project. OE uses the Internet
+Key Exchange (IKE) and IPsec protocols.
+The objective is to allow encryption for secure communication without
 any pre-arrangement specific to the pair of systems involved.
-  </t>
-  <t>
 DNS is used to distribute the public keys of each
 system involved. This is resistant to passive attacks. The use of DNS
 Security (DNSSEC) secures this system against active attackers as well. 
   </t>
   <t>
 As a result, the administrative overhead is reduced
-from the square of the number of systems to a linear dependence, and it becomes  
-possible to make secure communication the default even
+from the square of the number of systems to a linear dependence, and
+it becomes possible to make secure communication the default even
 when the partner is not known in advance.
-  </t>
-  <t>
-This document is offered up as an Informational RFC.
   </t>
 </abstract>
 
@@ -87,8 +83,10 @@ Once this is done, any two such nodes can communicate securely.
 <t>
 This document describes opportunistic encryption as designed and
 implemented by the Linux FreeS/WAN project in revisions up and including 2.00.
-Note that 2.01 and beyond implements RFC3445, in a backward compatible way.
-For project information, see http://www.freeswan.org.
+Note that 2.01 and beyond implements <xref
+target="RFC3445">RFC3445</xref>, in a backward compatible way. A
+future document will detail compliance to RFC3445.
+For project information, see http://www.freeswan.org. 
 </t>
 
   <t>
@@ -140,19 +138,24 @@ by this project.
 
 </section>
 
-<section title="Types of network traffic">
+<section title="Encryption Regimes">
   <t>
-    To aid in understanding the relationship between security processing and IPsec
-    we divide network traffic into four categories:
+    To aid in understanding the relationship between security processing
+    and IPsec we divide policies controlling network traffic into four
+    categories. The traffic is categorized by destination
+    address using longest prefix match. Each category is therefore 
+    enumerated by a set of network prefixes. The categories are mutually
+    exclusive - a particular prefix should only occur in one category.
+
     <list style="hanging">
-      <t hangText="* Deny:"> networks to which traffic is always forbidden.</t>
-      <t hangText="* Permit:"> networks to which traffic in the clear is permitted.</t>
-      <t hangText="* Opportunistic tunnel:"> networks to which traffic is encrypted if possible, but otherwise is in the clear  
-	    or fails depending on the default policy in place.	
+      <t hangText="* Deny:"> network prefixes to which traffic is always forbidden.</t>
+      <t hangText="* Permit:"> network prefixes to which traffic in the clear is permitted.</t>
+      <t hangText="* Opportunistic tunnel:"> network prefixes to which traffic is encrypted if possible, when it otherwise might be sent in the clear. 
       </t>
-      <t hangText="* Configured tunnel:"> networks to which traffic
+      <t hangText="* Configured tunnel:"> networks prefixes which traffic
 must be encrypted, and traffic in the clear is never permitted.
-A Virtual Private Network (VPN) is a form of configured tunnel.
+A traditionally defined Virtual Private Network (VPN) is a form of
+configured tunnel. 
 </t>
     </list>      
   </t>
@@ -169,17 +172,15 @@ proposed as the new default for the Internet.
 </t>
 
 <t>
-  Category four, encrypt traffic or drop it, requires authentication of the
-  end points. As the number of end points is typically bounded and is typically
+  Category four's policy is a very strict, "encrypt it or drop it" policy,
+requires authentication of the end points. As the number of end points is
+typically bounded and is typically 
   under a single authority, arranging for distribution of
   authentication material, while difficult, does not require any new
-  technology. The mechanism described here provides an additional way to
-  distribute the authentication materials, that of a public key method that does not
-  require deployment of an X.509 based infrastructure.  
-</t>
-<t>
-Current Virtual Private Networks can often be replaced by an "OE paranoid"
-policy as described herein. 
+  technology. The mechanism described here, however, does provides an
+additional way to distribute the authentication materials, that of a
+public key method that does not require deployment of an X.509 based
+infrastructure.   
 </t>
 </section>	
 
@@ -205,8 +206,8 @@ policy as described herein.
 Although a useful mode, anonymous encryption is not the goal of this
 project. Simpler methods are available that can achieve anonymous
 encryption only, but authentication of the peer is a desireable goal.
-The latter is achieved through key distribution in DNS, leveraging upon
-the authentication of the DNS in DNSSEC.
+Authentication of the peer is achieved through key distribution in
+DNS, leveraging upon the authentication of the DNS in DNSSEC.
 </t>
 
   <t>
@@ -215,7 +216,7 @@ determines how much trust to extend when DNSSEC is not available.
   </t>
 
   <t>
-  However, an essential premise of building private connections with
+  An essential premise of building private connections with
   strangers is that datagrams received through opportunistic tunnels
   are no more special than datagrams that arrive in the clear.
   Unlike in a VPN, these datagrams should not be given any special
@@ -269,7 +270,7 @@ determines how much trust to extend when DNSSEC is not available.
     SG-D are part 
     of the same administrative authority, AS1. SG-A and SG-D are on two
     different exit
-    paths from organization 1. SG-B/B is an independent organization, AS2.
+    paths from organization 1. SG-B and B are part of an independent organization, AS2.
     Nodes Q and R are nodes on the Internet. PI is the Public
     Internet ("The Wild").
     </t>
@@ -292,8 +293,6 @@ determines how much trust to extend when DNSSEC is not available.
     <t hangText="SG-A:"> Alice's security gateway. Internally it is 192.1.0.1, externally it is 192.1.1.4.</t>
     <t hangText="SG-B:"> Bob's security gateway. Internally it is 192.2.0.1, externally it is 192.1.1.5.</t>
     <t hangText="SG-D:"> Dave's security gateway. Also Alice's backup security gateway. Internally it is 192.3.0.1, externally it is 192.1.1.6.</t>
-    <t hangText="."> A period represents an untrusted network of unknown
-        type.</t> 
     <t hangText="Configured tunnel:"> a tunnel that
 		  is directly and deliberately hand configured on participating gateways.
 		  Configured tunnels are typically given a higher level of
@@ -315,7 +314,7 @@ determines how much trust to extend when DNSSEC is not available.
 
     <t hangText="Lifetime:">
         the period in seconds (bytes or datagrams) for which a security
-	association will remain alive before needing to be re-keyed.</t>
+	association will remain alive before rekeying is needed.</t>
 
     <t hangText="Lifespan:">
         the effective time for which a security association remains useful. A
@@ -390,7 +389,7 @@ resource record for the end point address or name.
 </t>
 <t>
 Origin and integrity protection of the resource records is provided by 
-DNSSEC (<xref target="RFC2535"/>). <xref target="nodnssec"/>
+DNSSEC (see <xref target="RFC2535"/>). <xref target="nodnssec"/>
 documents an optional restriction on the tunnel end point if DNSSEC signatures
 are not available for the relevant records. 
 </t>
@@ -409,9 +408,9 @@ without additional delay.
 <t>
 Successful negotiation of OE instantiates a new security association. 
 Failure to negotiate OE results in creation of a 
-forwarding policy entry either to drop or transmit in the clear future
-datagrams. This negative cache is necessary to avoid the possibly lengthy process of repeatedly looking 
-up the same information.
+forwarding policy entry either to deny or permit transmission in the
+clear future datagrams. This negative cache is necessary to avoid the
+possibly lengthy process of repeatedly looking  up the same information.
 </t>
 
 <t>
@@ -429,8 +428,10 @@ being used and permits the discovery of changes in authorization policy.
 
 <t>
 The OE gateway is modeled to have a forwarding plane and a control
-plane. A control channel, such as PF_KEY, connects the two planes. 
-(See <xref target="RFC2367" />.)
+plane. A control channel, such as PF_KEY <xref target="RFC2367" />,
+connects the two planes.  
+</t>
+<t>
 The forwarding plane performs per datagram operations. The control plane
 contains a keying daemon, such as ISAKMP/IKE, and performs all
 authorization, peer authentication and key derivation functions.   
@@ -471,7 +472,7 @@ The SPD then determines if and how the packet is forwarded.
   SA     |        |                                  
          |         \                                 
          |          \                                
-         V           \ 	deny                         
+         V           \ deny                         
    .---------.        \ msg                          
    | encrypt |         \                             
    | policy  |          \         ,---------.        
@@ -479,7 +480,7 @@ The SPD then determines if and how the packet is forwarded.
                           \       V         | packet 
                            .-------------.  |        
                            | deny policy |--'        
-                           '-------------'          
+                           `-------------'          
 ]]></artwork>
 
 
@@ -506,14 +507,16 @@ for eventual transmission.
 If there is a datagram already so stored, then that already stored datagram is discarded.
 </t>
 <t>
-The rational behind saving the the "first" and "last" datagrams are as follows:
+The rationale behind saving the the "first" and "last" datagrams are
+as follows: 
 The "first" datagram is probably a TCP SYN packet. Once there is keying
-established, the gateway will release this datagram, avoiding the need to 
-for the end-point to retransmit the datagram. In the case where the connection
-was not a TCP connection, buyt was instead a streaming protocol or a DNS request,
-the "last" datagram that was retained is likely the most recent data. The difference
-between "first" and "last" may also help the end-points determine
-which data awas dropped while negotiation took place.  
+established, the gateway will release this datagram, avoiding the need 
+for the end-point to retransmit the datagram. In the case where the
+connection was not a TCP connection, but was instead a streaming
+protocol or a DNS request, the "last" datagram that was retained is
+likely the most recent data. The difference between "first" and "last"
+may also help the end-points determine 
+which data was dropped while negotiation took place.  
 </t>
 </section>
 
@@ -564,8 +567,8 @@ gateway.
 Let the keying daemon maintain a collection of objects. Let them be
 called "connections" or "conn"s. There are two categories of
 connection objects: classes and instances. A class represents an
-abstract policy - what could be. An instance represents an actual connection -  
-what is implemented at the time.
+abstract policy - what could be. An instance represents an actual
+connection - what is running at the time.
 </t>
 
 <t>
@@ -578,8 +581,9 @@ a corresponding SPD and SAD entry maintained by the datagram state machine.
 For the purposes of opportunistic encryption, there MUST, at least, be
 connection classes known as "deny", "always-clear-text", "OE-permissive", and 
 "OE-paranoid".  
-The latter two connection classes define a set of source and/or destination
-addresses for which opportunistic encryption will be attempted.
+
+The latter two connection classes define a set of destination
+prefixes for which opportunistic encryption will be attempted. 
 The administrator MAY set policy options in a number of additional places.
 An implementation MAY create additional connection classes to further refine
 these policies.
@@ -591,22 +595,38 @@ list its own (single) IP address as the source address of this policy and
 the wild-card address 0.0.0.0/0 as the destination IPv4 address. That is, the
 simplest policy is to try opportunistic encryption with all destinations. 
 </t>
+<t>
+This simplest policy SHOULD be offered as a preconfigured default.
+</t>
 
 <t>
-The distinction between permissive and paranoid OE use will become clear 
-in the state transition differences. In general a permissive OE will, on
-failure, install a pass-through policy, while a paranoid OE will, on failure, 
-install a drop policy.
+The distinction between permissive and paranoid Opportunistic
+Encryption ("OE-paranoid" below) use will become clear in the state
+transition differences. 
+</t>
+<t>
+In brief, an OE-permissive policy means to permit traffic to flow in
+the clear, when there is a failure to find and/or use the encryption
+keys. OE-permissive permits the network to function, even if in an
+insecure manner.
+</t>
+
+<t>
+A paranoid OE ("OE-paranoid"") will, on failure, install a drop
+policy. OE-paranoid permits traffic to flow only when appropriate
+security is available.
 </t>
 
 <t>
 In this description of the keying machine's state transitions, the states
-associated with the keying system itself are omitted because they are best documented in the keying system 
+associated with the keying system itself are omitted because they are
+best documented in the keying system 
 (<xref target="RFC2407" />, 
 <xref target="RFC2408" /> and <xref target="RFC2409" /> for ISAKMP/IKE),
 and the details are keying system specific. Opportunistic encryption is not
 dependent upon any specific keying protocol, but this document does provide
-requirements for those using ISAKMP/IKE to assure that implementations inter-operate.
+requirements for those using ISAKMP/IKE to assure that implementations
+inter-operate.
 </t>
 <t>
 The state transitions that may be involved in communicating with the
@@ -621,10 +641,10 @@ not included in this description of the state machine.
 <!-- from file initiatorstate.txt -->
 <artwork><![CDATA[
 
-                       |
-	               | PF_ACQUIRE
-		       |     
-                       V
+                        |
+                        | PF_ACQUIRE
+                        |     
+                        V
                 .---------------.       
                 |  non-existant |
                 |  connection   |
@@ -636,9 +656,9 @@ conn.     msg  /        |        \ deny
   ^           /         |         \ msg
   |          V          | do       \ 		 
 .---------------.       | DNS       \   .---------------.  
-|  clear-text   |	| lookup     `->|     deny      |---> expired
-|  connection   |	| for 	        |  connection   |     connection
-`---------------'	| destination   `---------------'
+|  clear-text   |       | lookup     `->|     deny      |---> expired
+|  connection   |       | for           |  connection   |     connection
+`---------------'       | destination   `---------------'
    ^ ^                  |                   ^
    | | no record        |                   |
    | | OE-permissive    V                   | no record
@@ -661,17 +681,17 @@ conn.     msg  /        |        \ deny
    | phase-2      .---------------.         | failure                       
    | failure      |   pending     |---------'                          
    | (normal      |     OE        |         ^                          
-   |  timeout)    |               |invalid  | phase-2 failure (short-timeout)
-   |              |               |<--.SPI  | ICMP failures (normal timeout)
+   |  timeout)    |               |invalid  | phase-2 fail (normal-timeout)
+   |              |               |<--.SPI  | ICMP failures (short timeout)
    |              |               |   |     |                          
    |              | +=======+     |---'     |                          
    |              | |  IKE  |     |   ^     |                          
-   `--------------| | states|---------------'                          
+   `----------------| states|---------------'                          
                   | +=======+     |   |                                
                   `---------------'   |                                
                         | IPsec SA    | invalid SPI                    
                         | established |                                
-	                V             | rekey time                     
+                        V             | rekey time                     
                   .--------------.    |                                
                   |   keyed      |<---|-------------------------------.
                   |  connection  |----'                               |
@@ -683,7 +703,7 @@ conn.     msg  /        |        \ deny
   clear-text----->|   expired    |------------------------------------'
         deny----->|  connection  |
                   `--------------'
-                        | dead connected - deleted
+                        | dead connection - deleted
                         V
 ]]></artwork>
 
@@ -692,10 +712,10 @@ conn.     msg  /        |        \ deny
 <t>
 There is no connection instance for a given source/destination address pair.
 Upon receipt of a request for keying material for this
-source/destination pair, the initiator searches through the connection classes to
-determine the most appropriate policy. Upon determining an appropriate
-connection class, an instance object is created of that type. 
-Both of the OE types result in a potential OE connection.
+source/destination pair, the initiator searches through the connection
+classes to determine the most appropriate policy. Upon determining an
+appropriate connection class, an instance object is created of that
+type.  Both of the OE types result in a potential OE connection.
 </t>
 <t>Failure to find an appropriate connection class results in an
 administrator defined default. 
@@ -723,8 +743,8 @@ Timing out is the only way to leave this state
 <t>
 The empty connection makes a transition to this state when a
 deny class is instantiated, or when an OE-paranoid connection fails. 
-During the transition, the initiator creates a deny policy object in the forwarding plane 
-for the appropriate flow.  
+During the transition, the initiator creates a deny policy object in
+the forwarding plane  for the appropriate flow.  
 </t>
 <t>
 Timing out is the only way to leave this state 
@@ -732,11 +752,12 @@ Timing out is the only way to leave this state
 </t>
 </section>
 
-<section title="Potential OE connection">
+<section anchor="potentialOE" title="Potential OE connection">
 <t>
-The empty connection makes a transition to this state when one of either OE class is instantiated.
-During the transition to this state, the initiator creates a hold policy object in the 
-forwarding plane for the appropriate flow.  
+The empty connection makes a transition to this state when one of
+either OE class is instantiated. 
+During the transition to this state, the initiator creates a hold
+policy object in the forwarding plane for the appropriate flow.  
 </t>
 <t>
 In addition, when making a transition into this state, DNS lookup is done in
@@ -769,9 +790,10 @@ DNS lookups is considered a success.
 </t>
 <t>
 If DNS lookup does not find a resource record or DNS times out, then the 
-initiator considers the receiver not OE capable. If this is an OE-paranoid instance, 
-then the potential OE connection makes a transition to the deny connection state.
-If this is an OE-permissive instance, then the potential OE connection makes a transition to the
+initiator considers the receiver not OE capable. If this is an
+OE-paranoid instance, then the potential OE connection makes a
+transition to the deny connection state. If this is an OE-permissive
+instance, then the potential OE connection makes a transition to the 
 clear-text connection state.
 </t>
 <t>
@@ -988,7 +1010,7 @@ The responder receives an invitation to create a keying channel from an initiato
     `----------------'  connection found    state machine
          |
          | look for TXT record for initiator
-	 |
+         |
          V  
    .---------------.
    |  authorized   |---------------------> log failure
@@ -1003,22 +1025,23 @@ The responder receives an invitation to create a keying channel from an initiato
 	machine
 
 
-$Id: draft-richardson-ipsec-opportunistic.xml,v 1.33 2003/06/30 03:19:59 mcr Exp $
+$Id: draft-richardson-ipsec-opportunistic.xml,v 1.34 2004/07/02 22:27:05 mcr Exp $
 ]]></artwork>
 
 
 <section title="Unauthenticated OE peer">
 <t>
-Upon entering this state, the responder starts a DNS lookup for a KEY record for the
-initiator. 
-The responder looks in the reverse-map for a KEY record for the initiator if the
-initiator has offered an ID_IPV4_ADDR, and in the forward map if the
-initiator has offered an ID_FQDN type. (See <xref target="RFC2407" /> section 
+Upon entering this state, the responder starts a DNS lookup for a KEY
+record for the initiator. 
+The responder looks in the reverse-map for a KEY record for the
+initiator if the initiator has offered an ID_IPV4_ADDR, and in the
+forward map if the initiator has offered an ID_FQDN type. (See <xref
+target="RFC2407" /> section  
 4.6.2.1.)
 </t>
 <t>
-The responder exits this state upon successful receipt of a KEY from DNS, and use of the key 
-to verify the signature of the initiator.
+The responder exits this state upon successful receipt of a KEY from
+DNS, and use of the key to verify the signature of the initiator.
 </t>
 
 <!--
@@ -1036,28 +1059,37 @@ Successful authentication of the peer results in a transition to the
 authenticated OE Peer state.
 </t>
 <t>
-Note that the unauthenticated OE peer state generally occurs in the middle of the key negotiation
-protocol. It is really a form of pseudo-state.
+Note that the unauthenticated OE peer state generally occurs in the
+middle of the key negotiation protocol. It is really a form of pseudo-state.
 </t>
 </section>
 
 <section title="Authenticated OE Peer">
 <t>
-The peer will eventually propose one or more phase 2 SAs. The responder uses the source and
-destination address in the proposal to 
-finish instantiating the connection state
-using the connection class table.
+The peer will eventually propose one or more phase 2 SAs. The
+responder uses the source and destination address in the proposal to 
+finish instantiating the connection state using the connection class table.
 The responder MUST search for an identical connection object at this point. 
 </t>
 <t> 
-If an identical connection is found, then the responder deletes the old instance, 
-and the new object makes a transition to the pending OE connection state. This means
-that new ISAKMP connections with a given peer will always use the latest
-instance, which is the correct one if the peer has rebooted in the interim.
+If an identical connection is found, then the responder deletes the
+old instance, and the new object makes a transition to the pending OE
+connection state. This means that new ISAKMP connections with a given
+peer will always use the latest instance, which is the correct one if
+the peer has rebooted in the interim. 
 </t>
 <t> 
-If an identical connection is not found, then the responder makes the transition according to the 
-rules given for the initiator.
+If an identical connection is not found, then the responder makes the
+transition according to the rules given for the initiator - it
+installs appropriate policy: clear, drop, or OE. 
+</t>
+<t>
+If OE, and the phase 2 ID (source IP) is different than the phase 1 
+ID, then additional authorization is required. 
+A TXT record associated with the phase 2 source IP proposed is
+requested. This is used to confirm authorization for the phase 1
+identity to encrypt on behalf of the phase 2. Successful retrieval
+results in a transition to "Authorized OE Peer"
 </t>
 <t> 
 Note that if the initiator is in OE-paranoid mode and the responder is in 
@@ -1065,6 +1097,15 @@ either always-clear-text or deny, then no communication is possible according
 to policy. An implementation is permitted to create new types of policies 
 such as "accept OE but do not initiate it". This is a local matter.
  </t>
+</section>
+
+<section title="Authorized OE Peer">
+<t>
+This state is entered from the Authenticated OE Peer state, upon
+successful retrieval of the TXT record. The contents of the record are
+confirmed - any failures lead to errors, as in <xref
+target="potentialOE" />.
+</t>
 </section>
 
 </section> <!-- "Keying state machine - responder" -->
@@ -1095,7 +1136,7 @@ expire normally without attempting to re-key it.
 
 <t>
 Regardless of which method is used to remove tunnels, the implementation MUST
-a method to determine if the tunnel is still in use.  The specifics are a
+use a method to determine if the tunnel is still in use.  The specifics are a
 local matter, but  the FreeS/WAN project uses the following criteria. These
 criteria are currently implemented in the key management daemon, but could
 also be implemented at the SPD layer using an idle timer.
@@ -1307,8 +1348,7 @@ all timeout in series.
       <t>
 	The initiator MUST offer at least one proposal using some combination
 	of: 3DES, HMAC-MD5 or HMAC-SHA1, DH group 2 or 5. Group 5 SHOULD be
-	proposed first.
-	<xref target="RFC3526" />
+	proposed first. (See <xref target="RFC3526" />)
       </t>
       <t>
 	The initiator MAY offer additional proposals, but the cipher MUST not
@@ -1380,7 +1420,7 @@ KEY 0x4200 4 1 AQNJjkKlIk9...nYyUkKK8
   <t hangText="AQNJjkKlIk9...nYyUkKK8:">The public key of the host as described in <xref target="RFC3110" />.</t> 
   </list>
   </t>
-  <t>Use of several KEY records allows for key rollover. The SIG Payload in
+  <t>Use of several KEY records allows for key roll-over. The SIG Payload in
   IKE phase 1 SHOULD be accepted if the public key given by any KEY RR
   validates it.
   </t>
@@ -1476,7 +1516,7 @@ X-IPsec-Server(P)=@FQDN KEY
  
   <section title="Long TXT records">
   <t>
-  When packed into transport format, TXT records which are longer than 255
+  When packed into wire-format, TXT records which are longer than 255
   characters are divided into smaller &lt;character-strings&gt;.
   (See <xref target="RFC1035" /> section 3.3 and 3.3.14.) These MUST
   be reassembled into a single string for processing.
@@ -1630,8 +1670,8 @@ determines which key is to be used.
        another end system to address a packet to this end system.
        Not only is opportunistic encryption
        impossible, but it is also impossible for any communication to
-       be initiate to the end system. It may be possible for this end
-       system to initiate in such communication. This creates an asymmetry, but this is common for 
+       be initiated to the end system. It may be possible for this end
+       system to initiate such communication. This creates an asymmetry, but this is common for 
        NAPT.
     </t>
   </section>
@@ -1815,13 +1855,15 @@ document.
 </t>
 
 <t>
-A deliberate shutdown should include an attempt, using deletes, to notify all other SGs
-currently connected by phase 1 SAs that communication is
-about to fail.  Again, a remote SG will assume this is a teardown.  Attempts by the
-remote SGs to negotiate new tunnels as replacements should be ignored. When possible, 
-SGs should attempt to preserve information about currently-connected SGs in non-volatile storage, so
-that after a crash, an Initial-Contact can be sent to previous partners to
-indicate loss of all previously established connections.
+A deliberate shutdown should include an attempt, using delete
+messagess, to notify all other SGs currently connected by phase 1 SAs
+that communication is about to fail.  Again, a remote SG will assume
+this is a teardown.  Attempts by the remote SGs to negotiate new
+tunnels as replacements should be ignored. When possible,  SGs should
+attempt to preserve information about currently-connected SGs in
+non-volatile storage, so that after a crash, an Initial-Contact can be
+sent to previous partners to indicate loss of all previously
+established connections. 
 </t>
 
   </section>
@@ -1881,25 +1923,26 @@ encryptors, the following events occur:
        <figure anchor="regulartiming" title="Timing of regular transaction">
            <artwork><![CDATA[
   Alice         SG-A       DNS       SG-B           Bob
-   Human or application
-   'clicks' with a name.
-   (1)
-
-    ------(2)-------------->
-    Application looks up
-    name in DNS to get
-    IP address.
-
-    <-----(3)---------------
-    Resolver returns "A" RR
-    to application with IP 
-    address.
-
+   Human or application      
+   'clicks' with a name.     
+   (1)                       
+                             
+    ------(2)--------------> 
+    Application looks up     
+    name in DNS to get       
+    IP address.              
+                             
+    <-----(3)--------------- 
+    Resolver returns "A" RR  
+    to application with IP   
+    address.                  
+                             
    (4)
    Application starts a TCP session
    or UDP session and OS sends
    first datagram
 
+  Alice         SG-A       DNS       SG-B           Bob
        ----(5)----->
        Datagram is seen at first gateway
        from Alice (SG-A). 
@@ -1923,6 +1966,7 @@ encryptors, the following events occur:
     Alice receives
     answer.
 
+  Alice         SG-A       DNS       SG-B           Bob
    (11)----------->
     A second exchange
     occurs.
@@ -1965,75 +2009,29 @@ event list is extended. Only changes are annotated.
     ------(2)-------------->
     <-----(3)---------------
    (4)----(5)----->+
-      SG-A sees datagram 
-      to new target and
-      saves it as "first"
-
                   ----(5B)->
-                  SG-A asks DNS 
-                  for TXT RR.
-
                   <---(5C)--
-                  DNS returns TXT RR.
-
                   ~~~~~~~~~~~~~(5D)~~~>
-                  initial IKE main mode 
-                  packet is sent.       
-
-                  <~~~~~~~~~~~~(5E1)~~~
-                  ~~~~~~~~~~~~~(5E2)~~>
-                  <~~~~~~~~~~~~(5E3)~~~
-                  IKE phase 1 - privacy.
-
-                  #############(5E4)##>
-                  SG-A sends ID to SG-B
-                           <----(5F1)--
-                            SG-B asks DNS
-                            for SG-A's public 
-                            KEY
-                           -----(5F2)->
-                            DNS provides KEY RR.
-                            SG-B authenticates SG-A
-
-                  <############(5E5)###
-                  IKE phase 1 - complete
-                           
-                  #############(5G1)##>
-                  IKE phase 2 - Alice<->Bob
-                  tunnel is proposed.
-
-                           <----(5H1)--
-                            SG-B asks DNS for
-                            Alice's TXT record.
-                           -----(5H2)->
-                            DNS replies with TXT
-                            record. SG-B checks
-                            SG-A's authorization.
-
-                  <############(5G2)###
-                   SG-B accepts proposal.
-
-                  #############(5G3)##>
-                   SG-A confirms.
-
+                  <~~~~~~~~~~~~(5E)~~~~
+                  ~~~~~~~~~~~~~(5F)~~~>
+                  <~~~~~~~~~~~~(5G)~~~~
+                  #############(5H)###>
+                           <----(5I)---
+                           -----(5J)-->
+                  <############(5K)####
+                  #############(5L)###>
+                           <----(5M)---
+                           -----(5N)-->
+                  <############(5O)####
+                  #############(5P)###>
                    ============(6)====>
-                    SG-A sends "first"
-                    packet in new IPsec
-                    SA.
                                        ------(7)----->
-                                        packet is decrypted
-                                        and forward to Bob.
                                       <------(8)------
                   <==========(9)======
-                    return packet also
-                    encrypted.
     <-----(10)----
 
    (11)----------->
-     a second packet
-     is sent by Alice
                    ==========(12)=====>
-                    existing tunnel is used
                                        -------------->
                                       <---------------
                    <===================
@@ -2049,77 +2047,46 @@ event list is extended. Only changes are annotated.
   <xref target="opportunistictiming" />. This corresponds to time points 5, 6, 7, 9 and 10 on the list above. 
   </t>
 
-<list style="symbols">
   <t>
     At point (5), SG-A intercepts the datagram because this source/destination pair lacks a policy 
 (the non-existent policy state). SG-A creates a hold policy, and buffers the datagram. SG-A requests keys from the keying daemon. 
     </t>
 
-    <t>
-    SG-A's IKE daemon, having looked up the source/destination pair in the connection
-    class list, creates a new Potential OE connection instance. SG-A starts DNS
-    queries.
-    </t>
-  </section>
+<list style="hanging">
+<t hangText="(5B)">DNS query for TXT record.</t>
+<t hangText="(5C)">DNS response for TXT record.</t>
+<t hangText="(5D)">Initial IKE message to responder.</t>
 
-  <section title="(5C) DNS returns TXT record(s)">
-
-  <t>
-  DNS returns properly formed TXT delegation records, and SG-A's IKE daemon
-  causes this instance to make a transition from Potential OE connection to Pending OE
-  connection.
-  </t>
-
-    <t>
-      Using the example above, the returned record might contain:
-
-    <figure anchor="txtexample"
-    title="Example of reverse delegation record for Bob">
-           <artwork><![CDATA[
-X-IPsec-Server(10)=192.1.1.5 AQMM...3s1Q==
-          ]]></artwork>
-    </figure>
-    with SG-B's IP address and public key listed.
-    </t>
-
-  </section>
-
-  <section title="(5D) Initial IKE main mode packet goes out">
-  <t>Upon entering Pending OE connection, SG-A sends the initial ISAKMP
-  message with proposals. See <xref target="phase1id" />.
-  </t>
-  </section>
-
-  <section title="(5E1) Message 2 of phase 1 exchange">
+<t hangText="(5E)"> Message 2 of phase 1 exchange.
   <t>
   SG-B receives the message. A new connection instance is created in the
   unauthenticated OE peer state.
   </t>
-  </section>
+</t>
 
-  <section title="(5E2) Message 3 of phase 1 exchange">
+<t hangText="(5F)"> Message 3 of phase 1 exchange.
   <t>
   SG-A sends a Diffie-Hellman exponent. This is an internal state of the
   keying daemon.
   </t>
-  </section>
+</t>
 
-  <section title="(5E3) Message 4 of phase 1 exchange">
+<t hangText="(5G)"> Message 4 of phase 1 exchange.
   <t>
   SG-B responds with a Diffie-Hellman exponent. This is an internal state of the
   keying protocol.
   </t>
-  </section>
+</t>
 
-  <section title="(5E4) Message 5 of phase 1 exchange">
+<t hangText="(5H)"> Message 5 of phase 1 exchange.
   <t>
   SG-A uses the phase 1 SA to send its identity under encryption. 
   The choice of identity is discussed in <xref target="phase1id" />.
   This is an internal state of the keying protocol.
   </t>
-  </section>
+</t>
 
-  <section title="(5F1) Responder lookup of initiator key">
+<t hangText="(5I)">Responder lookup of initiator key.
   <t>
   SG-B asks DNS for the public key of the initiator. 
   DNS looks for a KEY record by IP address in the reverse-map.
@@ -2128,95 +2095,93 @@ X-IPsec-Server(10)=192.1.1.5 AQMM...3s1Q==
   SG-B uses the resulting public key to authenticate the initiator. See <xref
   target="KEY" /> for further details. 
   </t>
-  </section>
+</t>
 
-<section title="(5F2) DNS replies with public key of initiator">
-<t>
+<t hangText="(5J)"> DNS replies with public key of initiator.
+  <t>
 Upon successfully authenticating the peer, the connection instance makes a
 transition to authenticated OE peer on SG-B.
 </t>
+
 <t>
 The format of the TXT record returned is described in
 <xref target="TXT" />. 
 </t>
-</section>
+</t>
 
-  <section title="(5E5) Responder replies with ID and authentication">
+<t hangtext="(5K)">Responder replies with ID and authentication.
   <t>
-    SG-B sends its ID along with authentication material. This is an internal
-    state for the keying protocol.
+    SG-B sends its ID along with authentication material, completing
+    the phase 1 negotiation.
   </t>
-  </section>
+</t>
 
-  <section title="(5G) IKE phase 2">
-    <section title="(5G1) Initiator proposes tunnel">
-    <t>
+<t hangText="(5L)">IKE phase 2 negotiation.
+<t>
     Having established mutually agreeable authentications (via KEY) and
     authorizations (via TXT), SG-A proposes to create an IPsec tunnel for
-    datagrams transiting from Alice to Bob. This tunnel is established only for 
-    the Alice/Bob combination, not for any subnets that may be behind SG-A and SG-B.
-    </t>
-    </section>
+    datagrams transiting from Alice to Bob. This tunnel is established
+    only for the Alice/Bob combination, not for any subnets that may be
+    behind SG-A and SG-B. 
+</t>
+</t>
 
-    <section title="(5H1) Responder determines initiator's authority">
-    <t>
+<t hangText="(5M)">Authorization for SG-A to speak for Alice
+<t>
     While the identity of SG-A has been established, its authority to
     speak for Alice has not yet been confirmed. SG-B does a reverse
     lookup on Alice's address for a TXT record. 
+</t>
+</t>
+
+<t hangText="(5N)">Responder determines initiator's authority.
+    <t>
+    A TXT record is returned. It confirms that SG-A is authorized to
+    speak for Alice.
     </t>
     <t>Upon receiving this specific proposal, SG-B's connection instance
-    makes a transition into the potential OE connection state. SG-B may already have an
-    instance, and the check is made as described above.</t>
-    </section>
+    makes a transition into the potential OE connection state. SG-B
+    may already have an instance, and the check is made as described
+    above.</t> 
+</t>
   
-    <section title="(5H2) DNS replies with TXT record(s)">
+<t hangText="(5O)"> Responder agrees to proposal.
     <t>
-      The returned key and IP address should match that of SG-A.
-    </t>	
-    </section>
-    
-    <section title="(5G2) Responder agrees to proposal">
-    <t>
-    Should additional communication occur between, for instance, Dave and Bob using
-    SG-A and SG-B, a new tunnel (phase 2 SA) would be established. The phase 1 SA
-    may be reusable.
+    SG-B, satisfied that SG-A is authorized, proceeds with the
+    phase 2 exchange.
     </t>
-    <t>SG-A, having successfully keyed the tunnel, now makes a transition from
-    Pending OE connection to Keyed OE connection.
-    </t>
-    <t>The responder MUST setup the inbound IPsec SAs before sending its reply.</t>
-    </section>
+    <t>The responder MUST setup the inbound IPsec SAs before sending
+its reply.</t> 
+</t>
 
-    <section title="(5G3) Final acknowledgment from initiator">
+<t hangText="(5P)"> Final acknowledgment from initiator.
     <t>
-    The initiator agrees with the responder's choice and sets up the tunnel.
+    The initiator agrees with the responder's choice of proposal
+    and sets up the tunnel.
     The initiator sets up the inbound and outbound IPsec SAs.
-    </t>
-    <t>
-    The proper authorization returned with keys prompts SG-B to make a transition
-    to the keyed OE connection state. 
     </t>
     <t>Upon receipt of this message, the responder may now setup the outbound
     IPsec SAs.</t> 
-    </section>
-  </section>
+</t>
 
-  <section title="(6) IPsec succeeds, and sets up tunnel for communication between Alice and Bob">
+<t hangText="(6)"> IPsec succeeds, and sets up tunnel for communication between Alice and Bob.
   <t>
   SG-A sends the datagram saved at step (5) through the newly created
   tunnel to SG-B, where it gets decrypted and forwarded. 
   Bob receives it at (7) and replies at (8). 
   </t>
-  </section>
+</t>
 
-  <section title="(9) SG-B already has tunnel up with G1 and uses it">
+<t hangtext="(9)"> SG-B already has tunnel up with G1 and uses it.
   <t>
   At (9), SG-B has already established an SPD entry mapping Bob->Alice via a
   tunnel, so this tunnel is simply applied. The datagram is encrypted to SG-A,
   decrypted by SG-A and passed to Alice at (10).
   </t>
+</t>
 
-  </section>
+</list>
+
 </section> <!-- OE example -->
 
 </section> <!-- Examples -->
@@ -2289,7 +2254,7 @@ clear SHOULD also be applied to datagrams arriving opportunistically.
   <section title="Denial of service">
 <t>
   There are several different forms of denial of service that an implementor 
-  should concern themselves with. Most of these problems are shared with
+  should be concerned with. Most of these problems are shared with
   security gateways that have large numbers of mobile peers (road warriors). 
 </t>
 <t>
@@ -2308,10 +2273,36 @@ clear SHOULD also be applied to datagrams arriving opportunistically.
 </t>
 </section>
 
+<section title="Intellectual Property Claims">
+<t>
+The IETF takes no position regarding the validity or scope of any
+   intellectual property or other rights that might be claimed to
+   pertain to the implementation or use of the technology described in
+   this document or the extent to which any license under such rights
+   might or might not be available; neither does it represent that it
+   has made any effort to identify any such rights.  Information on the
+   IETF's procedures with respect to rights in standards-track and
+   standards-related documentation can be found in BCP-11.  Copies of
+   claims of rights made available for publication and any assurances of
+   licenses to be made available, or the result of an attempt made to
+   obtain a general license or permission for the use of such
+   proprietary rights by implementors or users of this specification can
+   be obtained from the IETF Secretariat.
+</t>
+
+<t>
+   The IETF invites any interested party to bring to its attention any
+   copyrights, patents or patent applications, or other proprietary
+   rights which may cover technology that may be required to practice
+   this standard.  Please address the information to the IETF Executive
+   Director.
+</t>
+</section>
+
 <section title="Acknowledgments">
 <t>
         Substantive portions of this document are based upon previous work by
-        Henry Spencer.
+        Henry Spencer. <xref target="OEspec" />
 </t>
 <t>
 	Thanks to Tero Kivinen, Sandy Harris, Wes Hardarker, Robert Moskowitz,
@@ -2319,7 +2310,8 @@ clear SHOULD also be applied to datagrams arriving opportunistically.
 	comments and constructive criticism.
 </t>
 <t>
-	Sandra Hoffman and Bill Dickie did the detailed proof reading and editing.
+	Sandra Hoffman and Bill Dickie did the detailed proof reading and
+        editing. 
 </t>
 </section>
 
@@ -2327,43 +2319,47 @@ clear SHOULD also be applied to datagrams arriving opportunistically.
 
 <back>
 <references title="Normative references">
-<?rfc include="reference.OEspec" ?>
 <!-- renumber according to reference order -->
-<?rfc include="reference.RFC.0791" ?>
-<?rfc include="reference.RFC.1009" ?>
-<?rfc include="reference.RFC.1984" ?>
 <?rfc include="reference.RFC.2119" ?>
 <!-- IPsec -->
-<?rfc include="reference.RFC.2367" ?>
+<?rfc include="reference.RFC.1035" ?>
 <?rfc include="reference.RFC.2401" ?>
 <?rfc include="reference.RFC.2407" ?>
 <?rfc include="reference.RFC.2408" ?>
 <?rfc include="reference.RFC.2409" ?>
-<!-- MODPGROUPS -->
-<?rfc include="reference.RFC.3526" ?>
 <!-- DNSSEC -->
-<?rfc include="reference.RFC.1034" ?>
-<?rfc include="reference.RFC.1035" ?>
-<?rfc include="reference.RFC.2671" ?>
-<?rfc include="reference.RFC.1464" ?>
 <?rfc include="reference.RFC.2535" ?>
 <?rfc include="reference.RFC.3110" ?>
-<?rfc include="reference.RFC.2538" ?>
-<!-- COPS -->
-<?rfc include="reference.RFC.2748" ?>
-<!-- NAT -->
-<?rfc include="reference.RFC.2663" ?>
 </references>
-<!-- <references title="Non-normative references"> -->
-<!-- ESPUDP -->
-<!-- <?rfc include="reference.ESPUDP" ?> -->
-<!-- </references> -->
+<references title="Non-normative references"> 
+<?rfc include="reference.OEspec" ?>
+<?rfc include="reference.RFC.1034" ?>
+<?rfc include="reference.RFC.1464" ?>
+<?rfc include="reference.RFC.0791" ?>
+<?rfc include="reference.RFC.1009" ?>
+<?rfc include="reference.RFC.1984" ?>
+<!-- NAT -->
+<?rfc include="reference.RFC.2538" ?>
+<?rfc include="reference.RFC.2367" ?>
+<?rfc include="reference.RFC.2663" ?>
+<?rfc include="reference.RFC.2671" ?>
+<!-- MODPGROUPS -->
+<?rfc include="reference.RFC.3445" ?>
+<?rfc include="reference.RFC.3526" ?>
+</references> 
 </back>
 </rfc>
 <!--
-  $Id: draft-richardson-ipsec-opportunistic.xml,v 1.33 2003/06/30 03:19:59 mcr Exp $
+  $Id: draft-richardson-ipsec-opportunistic.xml,v 1.34 2004/07/02 22:27:05 mcr Exp $
 
   $Log: draft-richardson-ipsec-opportunistic.xml,v $
+  Revision 1.34  2004/07/02 22:27:05  mcr
+  	updates from FS tree
+
+  Revision 1.34  2004/03/25 16:17:32  mcr
+  	adjusted references again.
+  	changed to newer xml2rfc.
+
   Revision 1.33  2003/06/30 03:19:59  mcr
   	timing-diagram with inline explanation.
 

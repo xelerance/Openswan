@@ -1,0 +1,21 @@
+
+The starter code was ported to FreeSWAN 2.05, but the work was not 
+completed. This code depends upon changes to pluto, which are have not
+been done in Openswan.
+
+This needs to be tested, and have scripts for the regression testing
+system written.
+
+2004-04-10 ken
+	* Renamed stuff to Openswan
+	* Makefile updated for new includes, lib locations and proper
+	  NAT-TRAVERSAL detection
+	* Headers all updated
+	* Fixed missing 'break;' in parser.l
+	* Pulled in KH_ and other defines from FreeS/WAN 2.05 pluto/constants.h
+	* Merged pluto/whacklib.c and other defines.
+	* Merges openswan.h changes from FreeS/WAN 2.05's freeswan.h
+	* Merged changes into pluto/constants.c
+	* Removed all X509 #ifdefs
+	* Included into programs/Makefile, so it is build by default.
+

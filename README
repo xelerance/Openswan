@@ -1,33 +1,20 @@
-
-			Openswan 2.1.4 Release Notes
+			Openswan 2.0.0 Release Notes
 
 Openswan is based on code from the FreeS/WAN project (www.freeswan.org)
-It has support for most of the extensions (RFC + IETF drafts) related
-to IPsec, including X.509 Digital Certificates, NAT Traversal, and many 
-others.
+It has support for most of the extensions (RFC + IETF drafts) related to
+IPsec, including X.509 Digital Certificates, NAT Traversal, DPD, and
+many others.
 
-The release was based on FreeS/WAN 2.04 CVS, along with some minor bug
-fixes from 2.05 and 2.06.  
-
-It also includes Andreas Steffan's X.509 Digital Certificate patch,
-NAT-Traversal code (based on Mathieu Lafon's work for Arkoon) and XAUTH
-Server support (based on Columbris's code).
-
-Download it from http://www.openswan.org/code
-
+It is available from http://www.openswan.org/code
 
 				REQUIREMENTS
 
+Linux Kernel 2.4.x, or 2.6.x are the currently supported platforms
 
-Ideally, Linux Kernel 2.4.x, or 2.6.x are the best supported platforms.
-
-We do not support obsolete kernels (e.g. 2.2.xx, xx < 20), and using them 
-is generally a bad idea anyway due to known security holes.
-
-We do not test with 2.0 kernels earlier than 2.0.39.
+We do not support obsolete kernels (e.g. 2.2.xx, xx < 20)
 
 A number of folks have reported problems where pluto and/or whack don't
-compile properly.  As well if you upgraded over top of another FreeS/WAN
+compile.  Also, if you upgraded over top of another FreeS/WAN
 installation, you may see errors like this:
 
 ipsec__plutorun: /usr/local/lib/ipsec/whack: option `--ike' is ambiguous 
@@ -43,7 +30,7 @@ There a few packages required for Openswan to compile:
 2. On RedHat 7.x systems, kernel-headers 2.4.9-34 or higher.  2.4.7-10 is
 broken, and you will see __fswab32 errors during compilation of some of
 the crypto modules.  On non RedHat systems, you'll probably need kernel
-2.4.10 or higher.
+2.4.10 or higher.  2.6.x kernels are fine.
 
 4. A non-corrupt kernel source tree.  This seems to fix many reported
 problems - starting with a fresh tree, either vendor supplied or from
@@ -78,15 +65,16 @@ source tree before patching in Openswan.
         eg: cd /usr/src/linux && make dep bzImage install
 
 
+
 3.0)	From the openswan source directory, build the userland tools, and
 	ipsec.o kernel module:
 
 	make KERNELSRC=/usr/src/linux-2.4 programs module
 
-
 4.0)	As root, install the userland tools, and the ipsec.o module:
 
 	make KERNELSRC=/usr/src/linux-2.4 install minstall
+
 
 
 
@@ -118,9 +106,9 @@ http://ipsec-tools.sourceforge.net
 1. Just install overtop of your old version - it won't replace your 
 /etc/ipsec.* config files 
 
-2. If you are upgrading from a 1.x product to Openswan 2.1.0, you will
+2. If you are upgrading from a 1.x product to Openswan 2.x, you will
 need to adjust your config files.  See doc/upgrading.html for details
-on what's changed.
+on what has changed.
 
 				SUPPORT
 
@@ -129,12 +117,6 @@ Mailing Lists:
 http://lists.openswan.org is home of the mailing lists.  Note: these are 
 closed lists - you must be subscribed to post.  This is different from the
 FreeS/WAN lists which were open.
-
-Documentation:
-
-The legacy FreeS/WAN docs are still in doc/, and included in various 
-forms.  You can also check the Openswan WIKI, @ http://wiki.openswan.org
-for newer documentation.
 
 IRC:
 
@@ -153,6 +135,10 @@ Bugs with the package can be filed into our Mantis system, at
 http://bugs.openswan.org
 
 
+				SECURITY HOLES
+
+None.  If you find one, please email vuln@xelerance.com with details.
+
 				DEVELOPMENT
 
 Those interested in the development, patches, beta releases of Openswan
@@ -168,10 +154,10 @@ format; See doc/index.html for the top level index.
 See doc/README for two methods of getting plain-text versions if needed.  
 See doc/roadmap.html for a guide to what's where in this distribution.
 
-Unpacking the distribution needs about 33MB, and compiling it requires
-another 50MB of space.  For setup procedures, start at doc/intro.html
+To build from source, you will need at least 60MB free (Source tree is 
+currently 40MB)
 
 The bulk of this software is under the GNU General Public License; see
-COPYING.  Some parts of it are not; see CREDITS for the details.
+LICENSE.  Some parts of it are not; see CREDITS for the details.
 
-$Id: README,v 1.93.2.10 2004/06/23 13:18:08 ken Exp $.
+$Id: README,v 1.97.2.2 2004/09/16 01:10:31 ken Exp $.

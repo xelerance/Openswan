@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!-- lifted from troff+man by doclifter -->
+<refentry>
+<!--  \-*\- nroff \-*\- -->
+<!--  \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\- -->
+<!--     man page for send\-pr (by Heinz G. Seidl, hgs@cygnus.com) -->
+<!--     updated Feb 1993 for GNATS 3.00 by Jeffrey Osier, jeffrey@cygnus.com -->
+
+<!--     This file is part of the Problem Report Management System (GNATS) -->
+<!--     Copyright 1992 Cygnus Support -->
+
+<!--     This program is free software; you can redistribute it and/or -->
+<!--     modify it under the terms of the GNU General Public -->
+<!--     License as published by the Free Software Foundation; either -->
+<!--     version 2 of the License, or (at your option) any later version. -->
+
+<!--     This program is distributed in the hope that it will be useful, -->
+<!--     but WITHOUT ANY WARRANTY; without even the implied warranty of -->
+<!--     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU -->
+<!--     General Public License for more details. -->
+
+<!--     You should have received a copy of the GNU Library General Public -->
+<!--     License along with this program; if not, write to the Free -->
+<!--     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA -->
+
+<!--  \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\- -->
+<!-- .nh -->
+<refmeta>
+<refentrytitle>SEND-PR</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='date'>xVERSIONx</refmiscinfo>
+<refmiscinfo class='source'>February 1993</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>ipsec send-pr</refname>
+<refpurpose>send problem report (PR) to a central support site</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>send-pr</replaceable></arg>
+    <arg choice='opt'><replaceable>site</replaceable></arg>
+    <arg choice='opt'><arg choice='plain'>-f </arg><arg choice='plain'><replaceable>problem-report</replaceable></arg></arg>
+    <arg choice='opt'><arg choice='plain'>-t </arg><arg choice='plain'><replaceable>mail-address</replaceable></arg></arg>
+    <sbr/>
+    <arg choice='opt'>-P </arg>
+    <arg choice='opt'>-L </arg>
+    <arg choice='opt'><arg choice='plain'>-s </arg><arg choice='plain'><replaceable>severity</replaceable></arg></arg>
+    <arg choice='opt'><arg choice='plain'>-c </arg><arg choice='plain'><replaceable>address</replaceable></arg></arg>
+    <sbr/>
+    <arg choice='opt'>--request-id </arg>
+    <arg choice='opt'>-V </arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para><emphasis remap='B'>ipsec send-pr</emphasis>
+is a tool used to submit 
+<emphasis remap='I'>problem reports</emphasis>
+<!--  SITE ADMINISTRATORS \- change this if you use a local default -->
+(PRs) to a central support site.  In most cases the correct 
+<emphasis remap='I'>site</emphasis>
+will be the default.  This argument indicates the support site which
+is responsible for the category of problem involved.  Some sites may
+use a local address as a default.  
+<emphasis remap='I'>site</emphasis>
+values are defined by using the 
+<citerefentry><refentrytitle>aliases</refentrytitle><manvolnum>5</manvolnum></citerefentry>.</para>
+
+<para><emphasis remap='B'>ipsec send-pr</emphasis>
+invokes an editor on a problem report template (after trying to fill
+in some fields with reasonable default values).  When you exit the
+editor,
+<emphasis remap='B'>ipsec send-pr</emphasis>
+sends the completed form to the
+<emphasis remap='I'>Problem Report Management System</emphasis>
+(<emphasis remap='B'>GNATS</emphasis>) at a central support site.  At the support site, the PR
+is assigned a unique number and is stored in the <emphasis remap='B'>GNATS</emphasis> database
+according to its category and submitter-id.  <emphasis remap='B'>GNATS</emphasis> automatically
+replies with an acknowledgement, citing the category and the PR
+number.</para>
+
+<para>To ensure that a PR is handled promptly, it should contain your (unique)
+<emphasis remap='I'>submitter-id</emphasis> and one of the available <emphasis remap='I'>categories</emphasis> to identify the
+problem area.  (Use
+<emphasis remap='B'>`ipsec send-pr -L'</emphasis>
+to see a list of categories.)</para>
+
+<para>The
+<emphasis remap='B'>ipsec send-pr</emphasis>
+template at your site should already be customized with your
+submitter-id (running `&thinsp;<emphasis remap='B'>install-sid</emphasis> <emphasis remap='I'>submitter-id</emphasis>&thinsp;' to
+accomplish this is part of the installation procedures for
+<command>ipsec</command>send-pr<emphasis remap='B'>).</emphasis>
+If this hasn't been done, see your system administrator for your
+submitter-id, or request one from your support site by invoking
+<emphasis remap='B'>`ipsec send-pr --request-id'.</emphasis>
+If your site does not distinguish between different user sites, or if
+you are not affiliated with the support site, use
+<emphasis remap='B'>`net'</emphasis>
+for this field.</para>
+
+<para>The more precise your problem description and the more complete your
+information, the faster your support team can solve your problems.</para>
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+  <varlistentry>
+  <term><option>-f</option><replaceable> problem-report</replaceable></term>
+  <listitem>
+<para>specify a file (<emphasis remap='I'>problem-report</emphasis>) which already contains a
+complete problem report.
+<emphasis remap='B'>ipsec send-pr</emphasis>
+sends the contents of the file without invoking the editor.  If 
+the value for 
+<emphasis remap='I'>problem-report</emphasis>
+is
+<emphasis remap='B'>`&thinsp;-&thinsp;'</emphasis>,
+then
+<emphasis remap='B'>ipsec send-pr</emphasis>
+reads from standard input.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-s</option><replaceable> severity</replaceable></term>
+  <listitem>
+<para>Give the problem report the severity
+<emphasis remap='I'>severity</emphasis>.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-t</option><replaceable> mail-address</replaceable></term>
+  <listitem>
+<para>Change mail address at the support site for problem reports.  The
+default 
+<emphasis remap='I'>mail-address</emphasis>
+is the address used for the default 
+<emphasis remap='I'>site</emphasis>.
+Use the
+<emphasis remap='I'>site</emphasis>
+argument rather than this option in nearly all cases.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-c</option><replaceable> address</replaceable></term>
+  <listitem>
+<para>Put
+<emphasis remap='I'>address</emphasis>
+in the 
+<emphasis remap='B'>Cc:</emphasis>
+header of the message.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-P</option></term>
+  <listitem>
+<para>print the form specified by the environment variable 
+<emphasis remap='B'>PR_FORM</emphasis>
+on standard output.  If 
+<emphasis remap='B'>PR_FORM</emphasis>
+is not set, print the standard blank PR template.  No mail is sent.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-L</option></term>
+  <listitem>
+<para>print the list of available categories.  No mail is sent.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--request-id</option></term>
+  <listitem>
+<para>sends mail to the default support site, or
+<emphasis remap='I'>site</emphasis>
+if specified, with a request for your 
+<emphasis remap='I'>submitter-id</emphasis>.
+If you are
+not affiliated with 
+<emphasis remap='I'>site</emphasis>,
+use a
+<emphasis remap='I'>submitter-id</emphasis>
+of
+<emphasis remap='B'>net</emphasis>&thinsp;'.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-V</option></term>
+  <listitem>
+<para>Display the 
+<emphasis remap='B'>ipsec send-pr</emphasis>
+version number.</para>
+  </listitem>
+  </varlistentry>
+</variablelist>
+
+<para>Note: use
+<emphasis remap='B'>ipsec send-pr</emphasis>
+to submit problem reports rather than mailing them directly.  Using
+both the template and
+<emphasis remap='B'>ipsec send-pr</emphasis>
+itself will help ensure all necessary information will reach the
+support site.</para>
+</refsect1>
+
+<refsect1 id='environment'><title>ENVIRONMENT</title>
+<para>The environment variable 
+<emphasis remap='B'>EDITOR</emphasis>
+specifies the editor to invoke on the template.
+<!-- .br -->
+default:
+<emphasis remap='B'>vi</emphasis></para>
+
+<para>If the environment variable 
+<emphasis remap='B'>PR_FORM</emphasis>
+is set, then its value is used as the file name of the template for
+your problem-report editing session.  You can use this to start with a
+partially completed form (for example, a form with the identification
+fields already completed).</para>
+</refsect1>
+
+<refsect1 id='how_to_fill_out_a_problem_report'><title>HOW TO FILL OUT A PROBLEM REPORT</title>
+<para>Problem reports have to be in a particular form so that a program can
+easily manage them.  Please remember the following guidelines:</para>
+<itemizedlist remap='IP+bullet'>
+  <listitem override='bullet'>
+<para>describe only 
+<emphasis remap='B'>one problem</emphasis>
+with each problem report.</para>
+  </listitem>
+</itemizedlist>
+<itemizedlist remap='IP+bullet'>
+  <listitem override='bullet'>
+<para>For follow-up mail, use the same subject line as the one in the automatic
+acknowledgent. It consists of category, PR number and the original synopsis
+line.  This allows the support site to relate several mail messages to a
+particular PR and to record them automatically.</para>
+  </listitem>
+</itemizedlist>
+<itemizedlist remap='IP+bullet'>
+  <listitem override='bullet'>
+<para>Please try to be as accurate as possible in the subject and/or synopsis line.</para>
+  </listitem>
+</itemizedlist>
+<itemizedlist remap='IP+bullet'>
+  <listitem override='bullet'>
+<para>The subject and the synopsis line are not confidential.  This is
+because open-bugs lists are compiled from them.  Avoid confidential
+information there.</para>
+  </listitem>
+</itemizedlist>
+
+<para>See the GNU 
+<emphasis remap='B'>Info</emphasis>
+file
+<emphasis remap='B'>send-pr.info</emphasis>
+or the document <emphasis remap='I'>Reporting Problems With send-pr</emphasis>&nbsp;for detailed
+information on reporting problems</para>
+</refsect1>
+
+<refsect1 id='how_to_submit_test_cases_code_etc'><title>HOW TO SUBMIT TEST CASES, CODE, ETC.</title>
+<para>Submit small code samples with the PR.  Contact the support site for
+instructions on submitting larger test cases and problematic source
+code.</para>
+</refsect1>
+
+<refsect1 id='files'><title>FILES</title>
+<!-- .ta \w'/tmp/pbad$$ 'u -->
+<para>/tmp/p$$	copy of PR used in editing session
+<!-- .br -->
+/tmp/pf$$	copy of empty PR form, for testing purposes
+<!-- .br -->
+/tmp/pbad$$	file for rejected PRs
+<!-- .br -->
+@IPSEC_DIR@/send-pr.conf	script to customize send-pr.</para>
+</refsect1>
+
+<refsect1 id='emacs_user_interface'><title>EMACS USER INTERFACE</title>
+<para>An Emacs user interface for 
+<emphasis remap='B'>send-pr</emphasis>
+with completion of field values is part of the 
+<emphasis remap='B'>send-pr</emphasis>
+distribution (invoked with
+<emphasis remap='B'>M-x send-pr</emphasis>).
+See the file
+<emphasis remap='B'>send-pr.info</emphasis>
+or the ASCII file
+<emphasis remap='B'>INSTALL</emphasis>
+in the top level directory of the distribution for configuration and
+installation information.  The Emacs LISP template file is 
+<emphasis remap='B'>send-pr-el.in</emphasis>
+and is installed as
+<emphasis remap='B'>send-pr.el</emphasis>.</para>
+</refsect1>
+
+<refsect1 id='installation_and_configuration'><title>INSTALLATION AND CONFIGURATION</title>
+<para>See 
+<emphasis remap='B'>send-pr.info</emphasis>
+or
+<emphasis remap='B'>INSTALL</emphasis>
+for installation instructions.</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para><emphasis remap='I'>Reporting Problems Using send-pr</emphasis>
+(also installed as the GNU Info file
+<emphasis remap='B'>send-pr.info</emphasis>).</para>
+
+<para><emphasis remap='B'>gnats</emphasis>(l),
+<citerefentry><refentrytitle>query-pr</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>edit-pr</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>gnats</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>queue-pr</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>at-pr</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>mkcat</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>mkdist</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+</refsect1>
+
+<refsect1 id='authors'><title>AUTHORS</title>
+<para>Jeffrey Osier, Brendan Kehoe, Jason Merrill, Heinz G. Seidl (Cygnus
+Support)</para>
+</refsect1>
+
+<refsect1 id='copying'><title>COPYING</title>
+<para>Copyright (c) 1992, 1993 Free Software Foundation, Inc.</para>
+
+<para>Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.</para>
+
+<para>Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.</para>
+
+<para>Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be included in
+translations approved by the Free Software Foundation instead of in
+the original English.</para>
+</refsect1>
+</refentry>
+

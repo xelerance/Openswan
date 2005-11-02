@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: spdb.c,v 1.98.2.2 2004/04/16 12:33:10 mcr Exp $
+ * RCSID $Id: spdb.c,v 1.108 2004/05/25 22:25:02 mcr Exp $
  */
 
 #include <stdio.h>
@@ -22,10 +22,12 @@
 #include <arpa/inet.h>
 #include <sys/queue.h>
 
-#include <freeswan.h>
-#include <freeswan/ipsec_policy.h>
+#include <openswan.h>
+#include <openswan/ipsec_policy.h>
 
 #include "constants.h"
+#include "oswlog.h"
+
 #include "defs.h"
 #include "id.h"
 #include "x509.h"
@@ -48,6 +50,10 @@
 #include "md5.h"
 #include "crypto.h" /* requires sha1.h and md5.h */
 
+#include "alg_info.h"
+#include "kernel_alg.h"
+#include "ike_alg.h"
+#include "db_ops.h"
 #define AD(x) x, elemsof(x)	/* Array Description */
 #define AD_NULL NULL, 0
 
@@ -57,7 +63,7 @@
 
 /**************** Oakely (main mode) SA database ****************/
 
-/*
+/**
  * the XAUTH server/client stuff is a bit confusing.
  * 
  * XAUTH overloads the RSA/PSK types with four more types which
@@ -599,7 +605,7 @@ struct db_sa ipsec_sadb[1 << 3] = {
 #undef AD
 #undef AD_NULL
 
-/* output an attribute (within an SA) */
+/** output an attribute (within an SA) */
 static bool
 out_attr(int type
 , unsigned long val
@@ -644,21 +650,27 @@ out_attr(int type
     return TRUE;
 }
 
-/* Output an SA, as described by a db_sa.
+#define return_on(var, val) do { var=val;goto return_out; } while(0);
+
+/**
+ * Output an SA, as described by a db_sa.
  * This has the side-effect of allocating SPIs for us.
+ *
  */
 bool
 out_sa(pb_stream *outs
-, struct db_sa *sadb
-, struct state *st
-, bool oakley_mode
-, u_int8_t np)
+       , struct db_sa *sadb
+       , struct state *st
+       , bool oakley_mode
+       , u_int8_t np)
 {
     pb_stream sa_pbs;
     int pcn;
+    bool ret = FALSE;
     bool ah_spi_generated = FALSE
 	, esp_spi_generated = FALSE
 	, ipcomp_cpi_generated = FALSE;
+    struct db_context *db_ctx = NULL;
 
     /* SA header out */
     {
@@ -667,13 +679,13 @@ out_sa(pb_stream *outs
 	sa.isasa_np = np;
 	st->st_doi = sa.isasa_doi = ISAKMP_DOI_IPSEC;	/* all we know */
 	if (!out_struct(&sa, &isakmp_sa_desc, outs, &sa_pbs))
-	    return FALSE;
+	    return_on(ret, FALSE);
     }
 
     /* within SA: situation out */
     st->st_situation = SIT_IDENTITY_ONLY;
     if (!out_struct(&st->st_situation, &ipsec_sit_desc, &sa_pbs, NULL))
-	return FALSE;
+	return_on(ret, FALSE);
 
     /* within SA: Proposal Payloads
      *
@@ -685,14 +697,61 @@ out_sa(pb_stream *outs
      * See RFC 2408 "ISAKMP" 4.2
      */
 
-    for (pcn = 0; pcn != sadb->prop_conj_cnt; pcn++)
+    for (pcn = 0; pcn < sadb->prop_conj_cnt; pcn++)
     {
-	struct db_prop_conj *pc = &sadb->prop_conjs[pcn];
+	struct db_prop_conj *pc;
 	int pn;
+	int valid_prop_cnt;
+	
+	pc = &sadb->prop_conjs[pcn];
 
-	for (pn = 0; pn != pc->prop_cnt; pn++)
+	/*
+	 * figure out how many proposals we are going to make,
+	 * so we'll know when we are finished! This repeats some calculations
+	 * but this seems like the best method to avoid empty proposals.
+	 */
+	valid_prop_cnt = 0;
+	for (pn = 0; pn < pc->prop_cnt; pn++)
 	{
-	    struct db_prop *p = &pc->props[pn];
+	    struct db_prop *p, *p1;
+
+	    p = &pc->props[pn];
+	    p1 = NULL;
+
+#ifdef KERNEL_ALG
+	    if (!oakley_mode && p->protoid==PROTO_IPSEC_ESP) {
+		db_ctx=kernel_alg_db_new(st->st_connection->alg_info_esp,
+					 st->st_policy);
+		p1 = db_prop_get(db_ctx);
+	    }
+#endif
+
+#ifdef IKE_ALG
+	    if (oakley_mode && p->protoid==PROTO_ISAKMP) {
+		db_ctx=ike_alg_db_new(st->st_connection->alg_info_ike,
+				      st->st_policy);
+		p1 = db_prop_get(db_ctx);
+	    }
+#endif
+	    /* there is one, use it. */
+	    if(p1 != NULL && p1->trans_cnt>0) p = p1;
+
+	    valid_prop_cnt++;
+
+	    /* free up any context that we might have created */
+	    if(db_ctx) {
+		db_destroy(db_ctx);
+		db_ctx=NULL;
+	    }
+	}
+	    
+	DBG(DBG_EMITTING, 
+	    DBG_log("out_sa pcn: %d has %d valid proposals",
+		    pcn, valid_prop_cnt));
+
+	for (pn = 0; pn < pc->prop_cnt; pn++)
+	{
+	    struct db_prop *p, *p1;
 	    pb_stream proposal_pbs;
 	    struct isakmp_proposal proposal;
 	    struct_desc *trans_desc;
@@ -701,20 +760,98 @@ out_sa(pb_stream *outs
 	    int tn;
 	    bool tunnel_mode;
 
-	    tunnel_mode = (pn == pc->prop_cnt-1)
+	    /*
+	     * set the tunnel_mode bit on the last proposal only, and
+	     * only if we are trying to negotiate tunnel mode in the first
+	     * place.
+	     */
+	    tunnel_mode = (valid_prop_cnt == 1)
 		&& (st->st_policy & POLICY_TUNNEL);
 
-	    /* Proposal header */
-	    proposal.isap_np = pcn == sadb->prop_conj_cnt-1 && pn == pc->prop_cnt-1
-		? ISAKMP_NEXT_NONE : ISAKMP_NEXT_P;
+	    /*
+	     * pick the part of the proposal we are trying to work on
+	     */
+	    p = &pc->props[pn];
+
 	    proposal.isap_proposal = pcn;
 	    proposal.isap_protoid = p->protoid;
 	    proposal.isap_spisize = oakley_mode ? 0
 		: p->protoid == PROTO_IPCOMP ? IPCOMP_CPI_SIZE
 		: IPSEC_DOI_SPI_SIZE;
+
+	    p1 = NULL;
+
+#ifdef KERNEL_ALG
+	    /*	
+	     *	In quick mode ONLY, create proposal for
+	     *	runtime kernel algos
+	     *
+	     *  replace ESP proposals
+	     *  with runtime created one
+	     */
+	    if (!oakley_mode && p->protoid==PROTO_IPSEC_ESP) {
+		DBG(DBG_CONTROL | DBG_CRYPT, 
+		    if (st->st_connection->alg_info_esp) {
+			static char buf[256]="";
+			alg_info_snprint(buf, sizeof (buf)
+					 , (struct alg_info *)st->st_connection->alg_info_esp
+					 , TRUE);
+			DBG_log(buf);
+		    }
+		    );
+		db_ctx=kernel_alg_db_new(st->st_connection->alg_info_esp,
+					 st->st_policy);
+		p1 = db_prop_get(db_ctx);
+		
+		if(p1 == NULL) {
+		    DBG_log("no IPsec SA algo proposal to send - "
+			    "using dfault 3DES-MD5/SHA1");
+		}
+	    }
+#endif
+
+#ifdef IKE_ALG
+	    if (oakley_mode && p->protoid==PROTO_ISAKMP) {
+		DBG(DBG_CONTROL | DBG_CRYPT, 
+		    if (st->st_connection->alg_info_ike) {
+			static char buf[256]="";
+			alg_info_snprint(buf, sizeof (buf)
+					 , (struct alg_info *)st->st_connection->alg_info_ike
+					 , TRUE);
+			DBG_log(buf);
+		    }
+		    );
+		db_ctx=ike_alg_db_new(st->st_connection->alg_info_ike,
+				      st->st_policy);
+		p1 = db_prop_get(db_ctx);
+		
+		if(p1 == NULL) {
+		    DBG_log("no ISAKMP SA algo proposal to send -"
+			    "using default 3DES-MD5/SHA1");
+		}
+	    }
+#endif
+	    /* there is one, use it. */
+	    if(p1 != NULL && p1->trans_cnt>0) p = p1;
+
+	    DBG(DBG_EMITTING, 
+		DBG_log("out_sa pcn: %d pn: %d<%d valid_count: %d",
+			pcn, pn, pc->prop_cnt, valid_prop_cnt));
+
+	    /* but, skip things if the transform count is zero */
+	    if(p->trans_cnt == 0) continue; 
+
+	    /* Proposal header */
+	    if(--valid_prop_cnt > 0) {
+		proposal.isap_np = ISAKMP_NEXT_P;
+	    } else {
+		proposal.isap_np = ISAKMP_NEXT_NONE;
+	    }
+
 	    proposal.isap_notrans = p->trans_cnt;
-	    if (!out_struct(&proposal, &isakmp_proposal_desc, &sa_pbs, &proposal_pbs))
-		return FALSE;
+	    if (!out_struct(&proposal, &isakmp_proposal_desc
+			    , &sa_pbs, &proposal_pbs))
+		return_on(ret, FALSE);
 
 	    /* Per-protocols stuff:
 	     * Set trans_desc.
@@ -744,6 +881,7 @@ out_sa(pb_stream *outs
 		    attr_val_descs = oakley_attr_val_descs;
 		    /* no SPI needed */
 		    break;
+		    
 		case PROTO_IPSEC_AH:
 		    passert(!oakley_mode);
 		    trans_desc = &isakmp_ah_transform_desc;
@@ -753,6 +891,7 @@ out_sa(pb_stream *outs
 		    spi_generated = &ah_spi_generated;
 		    proto = IPPROTO_AH;
 		    break;
+		    
 		case PROTO_IPSEC_ESP:
 		    passert(!oakley_mode);
 		    trans_desc = &isakmp_esp_transform_desc;
@@ -762,6 +901,7 @@ out_sa(pb_stream *outs
 		    spi_generated = &esp_spi_generated;
 		    proto = IPPROTO_ESP;
 		    break;
+		    
 		case PROTO_IPCOMP:
 		    passert(!oakley_mode);
 		    trans_desc = &isakmp_ipcomp_transform_desc;
@@ -776,7 +916,7 @@ out_sa(pb_stream *outs
 			st->st_ipcomp.our_spi = get_my_cpi(
 			    &st->st_connection->spd, tunnel_mode);
 			if (st->st_ipcomp.our_spi == 0)
-			    return FALSE;	/* problem generating CPI */
+			    return_on(ret, FALSE);	/* problem generating CPI */
 
 			ipcomp_cpi_generated = TRUE;
 		    }
@@ -787,11 +927,13 @@ out_sa(pb_stream *outs
 		     + IPSEC_DOI_SPI_SIZE - IPCOMP_CPI_SIZE
 		    , IPCOMP_CPI_SIZE
 		    , &proposal_pbs, "CPI"))
-			return FALSE;
+			return_on(ret, FALSE);
 		    break;
+		    
 		default:
 		    bad_case(p->protoid);
 		}
+		
 		if (spi_ptr != NULL)
 		{
 		    if (!*spi_generated)
@@ -806,7 +948,7 @@ out_sa(pb_stream *outs
 		    }
 		    if (!out_raw((u_char *)spi_ptr, IPSEC_DOI_SPI_SIZE
 		    , &proposal_pbs, "SPI"))
-			return FALSE;
+			return_on(ret, FALSE);
 		}
 	    }
 
@@ -823,7 +965,7 @@ out_sa(pb_stream *outs
 		trans.isat_transnum = tn;
 		trans.isat_transid = t->transid;
 		if (!out_struct(&trans, trans_desc, &proposal_pbs, &trans_pbs))
-		    return FALSE;
+		    return_on(ret, FALSE);
 
 		/* Within tranform: Attributes. */
 
@@ -876,10 +1018,11 @@ out_sa(pb_stream *outs
 				 */
 				loglog(RC_LOG_SERIOUS, "NAT-Traversal: "
 					"Transport Mode not allowed due to security concerns -- "
-					"using Tunnel mode");
+					"using Tunnel mode.  Rebuild Openswan with USE_NAT_TRAVERSAL_TRANSPORT_MODE=true in Makefile.inc to support transport mode.");
 			}
 #endif
 #endif
+
 			out_attr(ENCAPSULATION_MODE
 #ifdef NAT_TRAVERSAL
 #ifdef I_KNOW_TRANSPORT_MODE_HAS_SECURITY_CONCERN_BUT_I_WANT_IT
@@ -925,12 +1068,23 @@ out_sa(pb_stream *outs
 	/* end of a conjunction of proposals */
     }
     close_output_pbs(&sa_pbs);
-    return TRUE;
+    ret = TRUE;
+
+return_out:
+
+#if defined(KERNEL_ALG) || defined(IKE_ALG)
+    if (db_ctx)
+	    db_destroy(db_ctx);
+#endif
+    return ret;
 }
 
-/* Handle long form of duration attribute.
+/** Handle long form of duration attribute.
  * The code is can only handle values that can fit in unsigned long.
  * "Clamping" is probably an acceptable way to impose this limitation.
+ *
+ * @param pbs PB Stream
+ * @return u_int32_t duration, in seconds.
  */
 static u_int32_t
 decode_long_duration(pb_stream *pbs)
@@ -958,7 +1112,8 @@ decode_long_duration(pb_stream *pbs)
     return val;
 }
 
-/* Parse the body of an ISAKMP SA Payload (i.e. Phase 1 / Main Mode).
+/**
+ * Parse the body of an ISAKMP SA Payload (i.e. Phase 1 / Main Mode).
  * Various shortcuts are taken.  In particular, the policy, such as
  * it is, is hardwired.
  *
@@ -1199,11 +1354,19 @@ parse_isakmp_sa_body(
 	    switch (a.isaat_af_type)
 	    {
 		case OAKLEY_ENCRYPTION_ALGORITHM | ISAKMP_ATTR_AF_TV:
+#ifdef IKE_ALG
+		    if (ike_alg_enc_ok(val, 0, c->alg_info_ike, &ugh)) {
+		    /* if (ike_alg_enc_present(val)) { */
+			ta.encrypt = val;
+			ta.encrypter = crypto_get_encrypter(val);
+			ta.enckeylen = ta.encrypter->keydeflen;
+		    } else 
+#endif
 		    switch (val)
 		    {
 		    case OAKLEY_3DES_CBC:
 			ta.encrypt = val;
-			ta.encrypter = &oakley_encrypter[val];
+			ta.encrypter = crypto_get_encrypter(val);
 			break;
 
    		    /* we don't feel DES is safe */
@@ -1215,17 +1378,25 @@ parse_isakmp_sa_body(
 		    break;
 
 		case OAKLEY_HASH_ALGORITHM | ISAKMP_ATTR_AF_TV:
+#ifdef IKE_ALG
+		    if (ike_alg_hash_present(val)) {
+			ta.hash = val;
+			ta.hasher = crypto_get_hasher(val);
+		    } else 
+#endif
+/* #else */
 		    switch (val)
 		    {
 		    case OAKLEY_MD5:
 		    case OAKLEY_SHA:
 			ta.hash = val;
-			ta.hasher = &oakley_hasher[val];
+			ta.hasher = crypto_get_hasher(val);
 			break;
 		    default:
 			ugh = builddiag("%s is not supported"
 			    , enum_show(&oakley_hash_names, val));
 		    }
+/* #endif */
 		    break;
 
 		case OAKLEY_AUTHENTICATION_METHOD | ISAKMP_ATTR_AF_TV:
@@ -1421,10 +1592,33 @@ parse_isakmp_sa_body(
 		    }
 		    break;
 
+#ifdef IKE_ALG
+		case OAKLEY_KEY_LENGTH | ISAKMP_ATTR_AF_TV:
+		    if ((seen_attrs & LELEM(OAKLEY_ENCRYPTION_ALGORITHM)) == 0)
+		    {
+			ugh = "OAKLEY_KEY_LENGTH attribute not preceded by OAKLEY_ENCRYPTION_ALGORITHM attribute";
+			break;
+		    }
+		    if (ta.encrypter == NULL)
+		    {
+			ugh = "NULL encrypter with seen OAKLEY_ENCRYPTION_ALGORITHM";
+		        break;
+		    }
+		    /*
+		     * check if this keylen is compatible with 
+		     * specified alg_info_ike
+		     */
+		    if (!ike_alg_enc_ok(ta.encrypt, val, c->alg_info_ike, &ugh)) {
+			ugh = "peer proposed key_len not valid for encrypt algo setup specified";
+		    }
+		    ta.enckeylen=val;
+		    break;
+#else
+		case OAKLEY_KEY_LENGTH | ISAKMP_ATTR_AF_TV:
+#endif
 #if 0 /* not yet supported */
 		case OAKLEY_GROUP_TYPE | ISAKMP_ATTR_AF_TV:
 		case OAKLEY_PRF | ISAKMP_ATTR_AF_TV:
-		case OAKLEY_KEY_LENGTH | ISAKMP_ATTR_AF_TV:
 		case OAKLEY_FIELD_SIZE | ISAKMP_ATTR_AF_TV:
 
 		case OAKLEY_GROUP_PRIME | ISAKMP_ATTR_AF_TV:
@@ -1452,6 +1646,20 @@ parse_isakmp_sa_body(
 		break;
 	    }
 	}
+
+#ifdef IKE_ALG
+	/* 
+	 * ML: at last check for allowed transforms in alg_info_ike 
+	 *     (ALG_INFO_F_STRICT flag)
+	 */
+	if (ugh == NULL)
+	{
+		if (!ike_alg_ok_final(ta.encrypt, ta.enckeylen, ta.hash,
+			ta.group ? ta.group->group : -1, c->alg_info_ike)) {
+			ugh = "OAKLEY proposal refused";
+		}
+	}
+#endif
 
 	if (ugh == NULL)
 	{
@@ -1554,7 +1762,8 @@ parse_isakmp_sa_body(
     return NO_PROPOSAL_CHOSEN;
 }
 
-/* Parse the body of an IPsec SA Payload (i.e. Phase 2 / Quick Mode).
+/**
+ * Parse the body of an IPsec SA Payload (i.e. Phase 2 / Quick Mode).
  *
  * The main routine is parse_ipsec_sa_body; other functions defined
  * between here and there are just helpers.
@@ -2132,8 +2341,8 @@ parse_ipsec_sa_body(
 
 	    if (next_proposal.isap_notrans == 0)
 	    {
-		loglog(RC_LOG_SERIOUS, "IPsec Proposal contains no Transforms");
-		return BAD_PROPOSAL_SYNTAX;
+		loglog(RC_LOG_SERIOUS, "IPsec Proposal contains no Transforms (skipped)");
+		continue;
 	    }
 
 	    switch (next_proposal.isap_protoid)
@@ -2296,6 +2505,7 @@ parse_ipsec_sa_body(
 	{
 	    int previous_transnum = -1;
 	    int tn;
+	    err_t ugh;
 
 	    for (tn = 0; tn != esp_proposal.isap_notrans; tn++)
 	    {
@@ -2313,73 +2523,105 @@ parse_ipsec_sa_body(
 
 		previous_transnum = esp_trans.isat_transnum;
 
-		switch (esp_attrs.transid)
-		{
-#if 0	/* we don't feel single DES is safe */
-		    case ESP_DES:
-#endif
-		    case ESP_3DES:
-			break;
+		ugh = "no alg";
 
+#ifdef KERNEL_ALG
+		if(c->alg_info_esp) {
+		    ugh = kernel_alg_esp_enc_ok(esp_attrs.transid, esp_attrs.key_len,
+						c->alg_info_esp);
+		}
+#endif
+
+		if(ugh != NULL) {
+		    switch (esp_attrs.transid)
+			{
+#ifdef KERNEL_ALG	/* strictly use runtime information */
+			case ESP_3DES:
+			    break;
+#endif
+			    
 #ifdef SUPPORT_ESP_NULL	/* should be about as secure as AH-only */
-		    case ESP_NULL:
-			if (esp_attrs.auth == AUTH_ALGORITHM_NONE)
-			{
-			    loglog(RC_LOG_SERIOUS, "ESP_NULL requires auth algorithm");
-			    return BAD_PROPOSAL_SYNTAX;
-			}
-			if (st->st_policy & POLICY_ENCRYPT)
-			{
-			    DBG(DBG_CONTROL | DBG_CRYPT
-				    , DBG_log("ESP_NULL Transform Proposal from %s"
-					" does not satisfy POLICY_ENCRYPT"
-					, ip_str(&c->spd.that.host_addr)));
+#warning "Building with ESP-Null"
+			case ESP_NULL:
+			    if (esp_attrs.auth == AUTH_ALGORITHM_NONE)
+				{
+				    loglog(RC_LOG_SERIOUS, "ESP_NULL requires auth algorithm");
+				    return BAD_PROPOSAL_SYNTAX;
+				}
+
+			    if (st->st_policy & POLICY_ENCRYPT)
+				{
+				    DBG(DBG_CONTROL | DBG_CRYPT
+					, DBG_log("ESP_NULL Transform Proposal from %s"
+						  " does not satisfy POLICY_ENCRYPT"
+						  , ip_str(&c->spd.that.host_addr)));
+				    continue;   /* try another */
+				}
+			    break;
+#endif
+			    
+			case ESP_DES:          /* NOT safe */
+			    loglog(RC_LOG_SERIOUS, "1DES was proposed, it is insecure");
+			default:
+			    loglog(RC_LOG_SERIOUS, "kernel algorithm does not like: %s", ugh);
+			    loglog(RC_LOG_SERIOUS, "unsupported ESP Transform %s from %s"
+				   , enum_show(&esp_transformid_names, esp_attrs.transid)
+				   , ip_str(&c->spd.that.host_addr));
 			    continue;   /* try another */
 			}
-			break;
+		}
+
+#ifdef KERNEL_ALG
+		ugh = kernel_alg_esp_auth_ok(esp_attrs.auth, c->alg_info_esp);
 #endif
 
-		    default:
-			DBG(DBG_CONTROL | DBG_CRYPT
-			    , DBG_log("unsupported ESP Transform %s from %s"
-				, enum_show(&esp_transformid_names, esp_attrs.transid)
-				, ip_str(&c->spd.that.host_addr)));
-			continue;   /* try another */
-		}
-
-		switch (esp_attrs.auth)
-		{
-		    case AUTH_ALGORITHM_NONE:
-			if (!ah_seen)
+		if(ugh != NULL) {
+		    switch (esp_attrs.auth)
 			{
-			    DBG(DBG_CONTROL | DBG_CRYPT
-				, DBG_log("ESP from %s must either have AUTH or be combined with AH"
-				    , ip_str(&c->spd.that.host_addr)));
+			case AUTH_ALGORITHM_NONE:
+			    if (!ah_seen)
+				{
+				    DBG(DBG_CONTROL | DBG_CRYPT
+					, DBG_log("ESP from %s must either have AUTH or be combined with AH"
+						  , ip_str(&c->spd.that.host_addr)));
+				    continue;   /* try another */
+				}
+			    break;
+#ifdef KERNEL_ALG	/* strictly use runtime information */
+			case AUTH_ALGORITHM_HMAC_MD5:
+			case AUTH_ALGORITHM_HMAC_SHA1:
+			    break;
+#endif
+			default:
+			    loglog(RC_LOG_SERIOUS, "unsupported ESP auth alg %s from %s"
+				   , enum_show(&auth_alg_names, esp_attrs.auth)
+				   , ip_str(&c->spd.that.host_addr));
 			    continue;   /* try another */
 			}
-			break;
-		    case AUTH_ALGORITHM_HMAC_MD5:
-		    case AUTH_ALGORITHM_HMAC_SHA1:
-			break;
-		    default:
-			DBG(DBG_CONTROL | DBG_CRYPT
-			    , DBG_log("unsupported ESP auth alg %s from %s"
-				, enum_show(&auth_alg_names, esp_attrs.auth)
-				, ip_str(&c->spd.that.host_addr)));
-			continue;   /* try another */
 		}
-
+		    
 		if (ah_seen && ah_attrs.encapsulation != esp_attrs.encapsulation)
 		{
 		    /* ??? This should be an error, but is it? */
-		    DBG(DBG_CONTROL | DBG_CRYPT
-			, DBG_log("AH and ESP transforms disagree about encapsulation; TUNNEL presumed"));
+		    loglog(RC_LOG_SERIOUS
+			   , "AH and ESP transforms disagree about encapsulation; TUNNEL presumed");
 		}
 
 		break;	/* we seem to be happy */
 	    }
 	    if (tn == esp_proposal.isap_notrans)
 		continue;	/* we didn't find a nice one */
+#ifdef KERNEL_ALG
+	    /* 
+	     * ML: at last check for allowed transforms in alg_info_esp 
+	     *     (ALG_INFO_F_STRICT flag)
+	     *
+	     */
+	    if (c->alg_info_esp!=NULL
+		&& !kernel_alg_esp_ok_final(esp_attrs.transid, esp_attrs.key_len,
+					    esp_attrs.auth, c->alg_info_esp))
+		    continue;
+#endif
 	    esp_attrs.spi = esp_spi;
 	    inner_proto = IPPROTO_ESP;
 	    if (esp_attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
@@ -2419,14 +2661,14 @@ parse_ipsec_sa_body(
 #endif
 	    if (!can_do_IPcomp)
 	    {
-		plog("compression proposed by %s, but KLIPS is not configured with IPCOMP"
+		openswan_log("compression proposed by %s, but KLIPS is not configured with IPCOMP"
 		    , ip_str(&c->spd.that.host_addr));
 		continue;
 	    }
 
 	    if (well_known_cpi != 0 && !ah_seen && !esp_seen)
 	    {
-		plog("illegal proposal: bare IPCOMP used with well-known CPI");
+		openswan_log("illegal proposal: bare IPCOMP used with well-known CPI");
 		return BAD_PROPOSAL_SYNTAX;
 	    }
 
@@ -2448,7 +2690,7 @@ parse_ipsec_sa_body(
 
 		if (well_known_cpi != 0 && ipcomp_attrs.transid != well_known_cpi)
 		{
-		    plog("illegal proposal: IPCOMP well-known CPI disagrees with transform");
+		    openswan_log("illegal proposal: IPCOMP well-known CPI disagrees with transform");
 		    return BAD_PROPOSAL_SYNTAX;
 		}
 
@@ -2556,3 +2798,10 @@ parse_ipsec_sa_body(
     loglog(RC_LOG_SERIOUS, "no acceptable Proposal in IPsec SA");
     return NO_PROPOSAL_CHOSEN;
 }
+
+/*
+ * Local Variables:
+ * c-style: pluto
+ * c-basic-offset: 4
+ * End:
+ */

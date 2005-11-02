@@ -12,9 +12,8 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: satot.c,v 1.10.6.1 2004/03/21 05:23:31 mcr Exp $
+ * RCSID $Id: satot.c,v 1.12 2004/04/11 17:10:21 mcr Exp $
  */
-#include "internal.h"
 #include "openswan.h"
 
 static struct typename {

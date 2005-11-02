@@ -1,6 +1,7 @@
 /* Support of X.509 attribute certificates
  * Copyright (C) 2002 Ueli Gallizzi, Ariane Seiler
  * Copyright (C) 2003 Martin Berner, Lukas Suter
+ 
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,15 +13,42 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ac.h,v 1.2 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: ac.h,v 1.3 2004/06/14 01:46:02 mcr Exp $
  */
+
+/* definition of ietfAttribute kinds */
+
+typedef enum {
+    IETF_ATTRIBUTE_OCTETS =	0,
+    IETF_ATTRIBUTE_OID =	1,
+    IETF_ATTRIBUTE_STRING =	2
+} ietfAttribute_t;
+
+/* access structure for an ietfAttribute */
+
+typedef struct ietfAttr ietfAttr_t;
+
+struct ietfAttr {
+  time_t	   installed;
+  int		   count;
+  ietfAttribute_t  kind;
+  chunk_t	   value;
+};
+
+typedef struct ietfAttrList ietfAttrList_t;
+
+struct ietfAttrList {
+  ietfAttrList_t   *next;
+  ietfAttr_t	   *attr;
+};
+
 
 /* access structure for an X.509 attribute certificate */
 
-typedef struct ac_cert ac_cert_t;
+typedef struct x509acert x509acert_t;
 
-struct ac_cert {
-  ac_cert_t      *next;
+struct x509acert {
+  x509acert_t    *next;
   time_t	 installed;
   chunk_t	 certificate;
   chunk_t	   certificateInfo;
@@ -33,25 +61,31 @@ struct ac_cert {
                 /*   v2Form */
   chunk_t	       issuerName;
                 /*   signature */
-  chunk_t              sigAlg;
+  int                  sigAlg;
   chunk_t	     serialNumber;
                 /*   attrCertValidityPeriod */
   time_t               notBefore;
   time_t               notAfter;
 		/*   attributes */
-  chunk_t              group;
+  ietfAttrList_t       *charging;
+  ietfAttrList_t       *groups;
 		/*   extensions */
   chunk_t              authKeyID;
   chunk_t              authKeySerialNumber;
   bool		       noRevAvail;
 		/* signatureAlgorithm */
-  chunk_t            algorithm;
+  int                algorithm;
   chunk_t          signature;
 };
 
 /* used for initialization */
-extern const ac_cert_t empty_ac;
+extern const x509acert_t empty_ac;
 
+extern void unshare_ietfAttrList(ietfAttrList_t **listp);
+extern void free_ietfAttrList(ietfAttrList_t *list);
+extern void decode_groups(char *groups, ietfAttrList_t **listp);
 extern void load_acerts(void);
-
+extern void free_acerts(void);
+extern void list_acerts(bool utc);
+extern void list_groups(bool utc);
 

@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: _copyright.c,v 1.7 2002/04/24 08:20:49 mcr Exp $
+ * RCSID $Id: _copyright.c,v 1.8 2004/04/04 01:50:55 ken Exp $
  */
 
 #include <sys/types.h>
@@ -22,7 +22,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <getopt.h>
-#include <freeswan.h>
+#include <openswan.h>
 
 char usage[] = "Usage: ipsec _copyright";
 struct option opts[] = {

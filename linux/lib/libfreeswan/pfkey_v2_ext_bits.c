@@ -12,14 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_ext_bits.c,v 1.19.2.2 2004/04/16 12:32:56 mcr Exp $
+ * RCSID $Id: pfkey_v2_ext_bits.c,v 1.20 2004/03/08 01:59:08 ken Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_parse.c.
  */
 
-char pfkey_v2_ext_bits_c_version[] = "$Id: pfkey_v2_ext_bits.c,v 1.19.2.2 2004/04/16 12:32:56 mcr Exp $";
+char pfkey_v2_ext_bits_c_version[] = "$Id: pfkey_v2_ext_bits.c,v 1.20 2004/03/08 01:59:08 ken Exp $";
 
 /*
  * Some ugly stuff to allow consistent debugging code for use in the
@@ -30,7 +30,7 @@ char pfkey_v2_ext_bits_c_version[] = "$Id: pfkey_v2_ext_bits.c,v 1.19.2.2 2004/0
 
 # include <linux/kernel.h>  /* for printk */
 
-# include "freeswan/ipsec_kversion.h" /* for malloc switch */
+# include "openswan/ipsec_kversion.h" /* for malloc switch */
 # ifdef MALLOC_SLAB
 #  include <linux/slab.h> /* kmalloc() */
 # else /* MALLOC_SLAB */
@@ -54,7 +54,7 @@ char pfkey_v2_ext_bits_c_version[] = "$Id: pfkey_v2_ext_bits.c,v 1.19.2.2 2004/0
 # include <linux/errno.h>
 #endif
 
-#include <freeswan.h>
+#include <openswan.h>
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
@@ -735,13 +735,6 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX + 1/*ext*/]
 
 /*
  * $Log: pfkey_v2_ext_bits.c,v $
- * Revision 1.19.2.2  2004/04/16 12:32:56  mcr
- * 	erroneously pullup some freeswan->openswan changes that
- * 	are really for 2.2.
- *
- * Revision 1.19.2.1  2004/03/21 05:23:31  mcr
- *     pullup of freeswan->openswan and CR/CERT patches from HEAD
- *
  * Revision 1.20  2004/03/08 01:59:08  ken
  * freeswan.h -> openswan.h
  *

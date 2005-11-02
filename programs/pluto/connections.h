@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: connections.h,v 1.88.2.1 2004/03/21 05:23:32 mcr Exp $
+ * RCSID $Id: connections.h,v 1.95 2004/06/27 20:46:15 mcr Exp $
  */
 
 /* There are two kinds of connections:
@@ -135,6 +135,8 @@ struct virtual_t;
 struct virtual_t;
 #endif
 
+struct ietfAttr;	/* forward declaration of ietfAttr defined in ac.h */
+
 struct end {
     struct id id;
     ip_address
@@ -146,6 +148,7 @@ struct end {
     bool key_from_DNS_on_demand;
     bool has_client;
     bool has_client_wildcard;
+    bool has_port_wildcard;
     bool has_id_wildcards;
     char *updown;
     u_int16_t host_port;	/* host order */
@@ -153,6 +156,7 @@ struct end {
     u_int8_t protocol;
     cert_t cert;		/* end certificate */
     chunk_t ca;			/* CA distinguished name */
+    struct ietfAttrList *groups;/* access control groups */
     smartcard_t *sc;		/* smartcard reader and key info */
 #ifdef VIRTUAL_IP
     struct virtual_t *virt;
@@ -182,6 +186,13 @@ struct connection {
     unsigned long sa_rekey_fuzz;
     unsigned long sa_keying_tries;
 
+    /* RFC 3706 DPD */
+    time_t dpd_delay;
+    time_t dpd_timeout;
+    int dpd_action;
+
+    bool forceencaps;
+
     char              *log_file_name;       /* name of log file */
     FILE              *log_file;            /* possibly open FILE */
     CIRCLEQ_ENTRY(connection) log_link;     /* linked list of open conns */
@@ -196,6 +207,7 @@ struct connection {
     bool instance_initiation_ok;	/* this is an instance of a policy that mandates initiate */
     enum connection_kind kind;
     const struct iface *interface;	/* filled in iff oriented */
+    bool initiated;
 
     so_serial_t	/* state object serial number */
 	newest_isakmp_sa,
@@ -214,6 +226,8 @@ struct connection {
 				       next one to apply */
 
     struct gw_info *gw_info;
+    struct alg_info_esp *alg_info_esp;
+    struct alg_info_ike *alg_info_ike;
 
     struct host_pair *host_pair;
     struct connection *hp_next;	/* host pair list link */
@@ -247,8 +261,8 @@ extern void initiate_connection(const char *name, int whackfd);
 extern void initiate_opportunistic(const ip_address *our_client
     , const ip_address *peer_client, int transport_proto, bool held, int whackfd, err_t why);
 extern void terminate_connection(const char *nm);
-extern void release_connection(struct connection *c);
-extern void delete_connection(struct connection *c);
+extern void release_connection(struct connection *c, bool relations);
+extern void delete_connection(struct connection *c, bool relations);
 extern void delete_connections_by_name(const char *name, bool strict);
 extern void delete_every_connection(void);
 extern char *add_group_instance(struct connection *group, const ip_subnet *target);
@@ -297,6 +311,7 @@ find_connection_for_clients(struct spd_route **srp
  * is looking through state objects.
  */
 struct gw_info;	/* forward declaration of tag (defined in dnskey.h) */
+struct alg_info;	/* forward declaration of tag (defined in alg_info.h) */
 extern struct connection *rw_instantiate(struct connection *c
 					 , const ip_address *him
 #ifdef NAT_TRAVERSAL
@@ -367,3 +382,10 @@ update_host_pair(const char *why, struct connection *c,
        const ip_address *myaddr, u_int16_t myport ,
        const ip_address *hisaddr, u_int16_t hisport);
 #endif /* NAT_TRAVERSAL */
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

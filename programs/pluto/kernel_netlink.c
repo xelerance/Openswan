@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_netlink.c,v 1.11.2.4 2004/06/01 14:42:36 ken Exp $
+ * RCSID $Id: kernel_netlink.c,v 1.19.6.1 2004/09/07 18:59:35 ken Exp $
  */
 
 #if defined(linux) && defined(KERNEL26_SUPPORT)
@@ -42,6 +42,7 @@
 #include "kernel_pfkey.h"
 #include "log.h"
 #include "whack.h"	/* for RC_LOG_SERIOUS */
+#include "kernel_alg.h"
 
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
@@ -85,6 +86,7 @@ static sparse_names xfrm_type_names = {
 
 #undef NE
 
+/** Authentication Algs */
 static sparse_names aalg_list = {
 	{ SADB_X_AALG_NULL, "digest_null" },
 	{ SADB_AALG_MD5HMAC, "md5" },
@@ -94,6 +96,7 @@ static sparse_names aalg_list = {
 	{ 0, sparse_end }
 };
 
+/** Encryption algs */
 static sparse_names ealg_list = {
 	{ SADB_EALG_NULL, "cipher_null" },
 	{ SADB_EALG_DESCBC, "des" },
@@ -104,6 +107,7 @@ static sparse_names ealg_list = {
 	{ 0, sparse_end }
 };
 
+/** Compress Algs */
 static sparse_names calg_list = {
 	{ SADB_X_CALG_DEFLATE, "deflate" },
 	{ SADB_X_CALG_LZS, "lzs" },
@@ -111,18 +115,27 @@ static sparse_names calg_list = {
 	{ 0, sparse_end }
 };
 
+/** ip2xfrm - Take an IP address and convert to an xfrm.
+ *
+ * @param addr ip_address
+ * @param xaddr xfrm_address_t - IPv[46] Address from addr is copied here.
+ */
 static void ip2xfrm(const ip_address *addr, xfrm_address_t *xaddr)
 {
+    /* If it's an IPv4 address */
     if (addr->u.v4.sin_family == AF_INET)
     {
 	xaddr->a4 = addr->u.v4.sin_addr.s_addr;
     }
-    else
+    else  /* Must be IPv6 */
     {
 	memcpy(xaddr->a6, &addr->u.v6.sin6_addr, sizeof(xaddr->a6));
     }
 }
 
+/** init_netlink - Initialize the netlink inferface.  Opens the sockets and
+ * then binds to the broadcast socket.
+ */
 static void init_netlink(void)
 {
     struct sockaddr_nl addr;
@@ -153,6 +166,16 @@ static void init_netlink(void)
 	exit_log_errno((e, "Failed to bind bcast socket in init_netlink()"));
 }
 
+/** send_netlink_msg
+ *
+ * @param hdr - Data to be sent.
+ * @param rbuf - Return Buffer - contains data returned from the send.
+ * @param rbuf_len - Length of rbuf
+ * @param description - String - user friendly description of what is 
+ *                      being attempted.  Used for diagnostics
+ * @param text_said - String
+ * @return bool True if the message was succesfully sent.
+ */
 static bool
 send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
 , const char *description, const char *text_said)
@@ -218,7 +241,7 @@ send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
 	}
 	else if ((size_t) r < sizeof(rsp.n))
 	{
-	    plog("netlink read truncated message: %ld bytes; ignore message"
+	    openswan_log("netlink read truncated message: %ld bytes; ignore message"
 		, (long) r);
 	    continue;
 	}
@@ -291,6 +314,13 @@ send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
     return TRUE;
 }
 
+/** netlink_policy - 
+ *
+ * @param hdr - Data to check
+ * @param enoent_ok - Boolean - OK or not OK.
+ * @param text_said - String
+ * @return boolean 
+ */
 static bool
 netlink_policy(struct nlmsghdr *hdr, bool enoent_ok, const char *text_said)
 {
@@ -326,6 +356,21 @@ netlink_policy(struct nlmsghdr *hdr, bool enoent_ok, const char *text_said)
     return FALSE;
 }
 
+/** netlink_raw_eroute
+ *
+ * @param this_host ip_address
+ * @param this_client ip_subnet
+ * @param that_host ip_address
+ * @param that_client ip_subnet
+ * @param spi
+ * @param proto int (Currently unused) Contains protocol (u=tcp, 17=udp, etc...)
+ * @param transport_proto int (Currently unused) 0=tunnel, 1=transport
+ * @param satype int
+ * @param proto_info 
+ * @param lifetime (Currently unused)
+ * @param ip int 
+ * @return boolean True if successful 
+ */
 static bool
 netlink_raw_eroute(const ip_address *this_host
 		   , const ip_subnet *this_client
@@ -516,6 +561,12 @@ netlink_raw_eroute(const ip_address *this_host
     return ok;
 }
 
+/** netlink_add_sa - Add an SA into the kernel SPDB via netlink
+ *
+ * @param sa Kernel SA to add/modify
+ * @param replace boolean - true if this replaces an existing SA
+ * @return bool True if successfull
+ */
 static bool
 netlink_add_sa(const struct kernel_sa *sa, bool replace)
 {
@@ -532,15 +583,6 @@ netlink_add_sa(const struct kernel_sa *sa, bool replace)
 
     ip2xfrm(sa->src, &req.p.saddr);
     ip2xfrm(sa->dst, &req.p.id.daddr);
-
-    if (sa->src_client)
-    {
-	ip2xfrm(&sa->src_client->addr, &req.p.sel.saddr);
-	ip2xfrm(&sa->dst_client->addr, &req.p.sel.daddr);
-	req.p.sel.prefixlen_s = sa->src_client->maskbits;
-	req.p.sel.prefixlen_d = sa->dst_client->maskbits;
-        req.p.sel.family = sa->src_client->addr.u.v4.sin_family;
-    }
 
     req.p.id.spi = sa->spi;
     req.p.id.proto = satype2proto(sa->satype);
@@ -656,6 +698,11 @@ netlink_add_sa(const struct kernel_sa *sa, bool replace)
     return send_netlink_msg(&req.n, NULL, 0, "Add SA", sa->text_said);
 }
 
+/** netlink_del_sa - Delete an SA from the Kernel
+ * 
+ * @param sa Kernel SA to be deleted
+ * @return bool True if successfull
+ */
 static bool
 netlink_del_sa(const struct kernel_sa *sa)
 {
@@ -685,6 +732,11 @@ linux_pfkey_register_response(const struct sadb_msg *msg)
 {
     switch (msg->sadb_msg_satype)
     {
+    case SADB_SATYPE_ESP:
+#ifdef KERNEL_ALG
+	    kernel_alg_register_pfkey(msg, msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN);
+#endif
+	    break;
     case SADB_X_SATYPE_IPCOMP:
 	can_do_IPcomp = TRUE;
 	break;
@@ -693,6 +745,9 @@ linux_pfkey_register_response(const struct sadb_msg *msg)
     }
 }
 
+/** linux_pfkey_register - Register via PFKEY our capabilities
+ *
+ */
 static void
 linux_pfkey_register(void)
 {
@@ -702,18 +757,22 @@ linux_pfkey_register(void)
     pfkey_close();
 }
 
-/* Create ip_address out of xfrm_address_t. */
+/** Create ip_address out of xfrm_address_t.
+ * 
+ * @param family 
+ * @param src xfrm formatted IP address
+ * @param dst ip_address formatted destination 
+ * @return err_t NULL if okay, otherwise an error
+ */
 static err_t
-xfrm_to_ip_address(unsigned family
-, const xfrm_address_t *src
-, ip_address *dst)
+xfrm_to_ip_address(unsigned family, const xfrm_address_t *src, ip_address *dst)
 {
     switch (family)
     {
-    case AF_INET:
+    case AF_INET: /* IPv4 */
 	initaddr((const void *) &src->a4, sizeof(src->a4), family, dst);
 	return NULL;
-    case AF_INET6:
+    case AF_INET6: /* IPv6 */
 	initaddr((const void *) &src->a6, sizeof(src->a6), family, dst);
 	return NULL;
     default:
@@ -735,7 +794,7 @@ netlink_acquire(struct nlmsghdr *n)
 
     if (n->nlmsg_len < NLMSG_LENGTH(sizeof(*acquire)))
     {
-	plog("netlink_acquire got message with length %lu < %lu bytes; ignore message"
+	openswan_log("netlink_acquire got message with length %lu < %lu bytes; ignore message"
 	    , (unsigned long) n->nlmsg_len
 	    , (unsigned long) sizeof(*acquire));
 	return;
@@ -764,7 +823,7 @@ netlink_acquire(struct nlmsghdr *n)
 
 
     if (ugh != NULL)
-	plog("XFRM_MSG_ACQUIRE message from kernel malformed: %s", ugh);
+	openswan_log("XFRM_MSG_ACQUIRE message from kernel malformed: %s", ugh);
 }
 
 static void
@@ -784,7 +843,7 @@ netlink_shunt_expire(struct xfrm_userpolicy_info *pol)
     if ((ugh = xfrm_to_ip_address(family, srcx, &src))
     || (ugh = xfrm_to_ip_address(family, dstx, &dst)))
     {
-	plog("XFRM_MSG_POLEXPIRE message from kernel malformed: %s", ugh);
+	openswan_log("XFRM_MSG_POLEXPIRE message from kernel malformed: %s", ugh);
 	return;
     }
 
@@ -812,7 +871,7 @@ netlink_policy_expire(struct nlmsghdr *n)
 
     if (n->nlmsg_len < NLMSG_LENGTH(sizeof(*upe)))
     {
-	plog("netlink_policy_expire got message with length %lu < %lu bytes; ignore message"
+	openswan_log("netlink_policy_expire got message with length %lu < %lu bytes; ignore message"
 	    , (unsigned long) n->nlmsg_len
 	    , (unsigned long) sizeof(*upe));
 	return;
@@ -840,7 +899,7 @@ netlink_policy_expire(struct nlmsghdr *n)
     }
     else if (rsp.n.nlmsg_len < NLMSG_LENGTH(sizeof(rsp.pol)))
     {
-	plog("netlink_policy_expire: XFRM_MSG_GETPOLICY returned message with length %lu < %lu bytes; ignore message"
+	openswan_log("netlink_policy_expire: XFRM_MSG_GETPOLICY returned message with length %lu < %lu bytes; ignore message"
 	    , (unsigned long) rsp.n.nlmsg_len
 	    , (unsigned long) sizeof(rsp.pol));
 	return;
@@ -895,7 +954,7 @@ netlink_get(void)
     }
     else if ((size_t) r < sizeof(rsp.n))
     {
-	plog("netlink_get read truncated message: %ld bytes; ignore message"
+	openswan_log("netlink_get read truncated message: %ld bytes; ignore message"
 	    , (long) r);
 	return TRUE;
     }
@@ -910,7 +969,7 @@ netlink_get(void)
     }
     else if ((size_t) r != rsp.n.nlmsg_len)
     {
-	plog("netlink_get read message with length %ld that doesn't equal nlmsg_len %lu bytes; ignore message"
+	openswan_log("netlink_get read message with length %ld that doesn't equal nlmsg_len %lu bytes; ignore message"
 	    , (long) r
 	    , (unsigned long) rsp.n.nlmsg_len);
 	return TRUE;
@@ -995,7 +1054,7 @@ netlink_get_spi(const ip_address *src
     }
     else if (rsp.n.nlmsg_len < NLMSG_LENGTH(sizeof(rsp.u.sa)))
     {
-	plog("netlink_get_spi: XFRM_MSG_ALLOCSPI returned message with length %lu < %lu bytes; ignore message"
+	openswan_log("netlink_get_spi: XFRM_MSG_ALLOCSPI returned message with length %lu < %lu bytes; ignore message"
 	    , (unsigned long) rsp.n.nlmsg_len
 	    , (unsigned long) sizeof(rsp.u.sa));
 	return 0;

@@ -1,6 +1,9 @@
 #! /bin/sh
 # iproute2 version, default updown script
-# Copyright (C) 2002. Michael Richardson
+#
+# Copyright (C) 2003-2004 Nigel Meteringham
+# Copyright (C) 2003-2004 Tuomo Soini
+# Copyright (C) 2002-2004 Michael Richardson <mcr@xelerance.com>
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -12,7 +15,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _updown.ip2.in,v 1.5.2.2 2004/03/21 05:23:31 mcr Exp $
+# RCSID $Id: _updown.ip2.in,v 1.11 2004/06/01 13:30:57 ken Exp $
 
 
 
@@ -43,6 +46,10 @@ LC_ALL=C export LC_ALL
 #       PLUTO_CONNECTION
 #              is the name of the  connection  for  which  we  are
 #              routing.
+#
+#       PLUTO_CONN_POLICY
+#              the policy of the connection, as in:
+#     RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+failureDROP+lKOD+rKOD  
 #
 #       PLUTO_NEXT_HOP
 #              is the next hop to which packets bound for the peer
@@ -128,7 +135,7 @@ uproute() {
 	ip route flush cache
 }
 downroute() {
-	doroute del
+	doroute delete
 	ip route flush cache
 }
 
@@ -136,7 +143,7 @@ uprule() {
 	# policy based advanced routing
 	if [ -n "$PLUTO_IPROUTETABLE" ] && [ "$PLUTO_IPROUTETABLE" != "main" ]
 	then
-	    dorule del
+	    dorule delete
 	    dorule add
 	fi
 	# virtual sourceip support
@@ -151,7 +158,7 @@ uprule() {
 downrule() {
 	if [ -n "$PLUTO_MY_SOURCEIP" ] && [ "$PLUTO_IPROUTETABLE" != "main" ]
 	then
-	    dorule del
+	    dorule delete
 	    ip route flush cache
 	fi
 }
@@ -344,13 +351,13 @@ prepare-host:*|prepare-client:*)
 		# replacing it.
 		parms1="0.0.0.0/1"
 		parms2="128.0.0.0/1"
-		it="ip route del $parms1 2>&1 ; ip route del $parms2 2>&1"
-		oops="`ip route del $parms1 2>&1 ; ip route del $parms2 2>&1`"
+		it="ip route delete $parms1 2>&1 ; ip route delete $parms2 2>&1"
+		oops="`ip route delete $parms1 2>&1 ; ip route delete $parms2 2>&1`"
 		;;
 	*)
 		parms="$PLUTO_PEER_CLIENT"
-		it="ip route del $parms 2>&1"
-		oops="`ip route del $parms 2>&1`"
+		it="ip route delete $parms 2>&1"
+		oops="`ip route delete $parms 2>&1`"
 		;;
 	esac
 	status="$?"
@@ -409,6 +416,35 @@ down-client:ipfwadm)
 	# ones, so do not mess with it; see CAUTION comment up at top.
 	ipfwadm -F -d accept -b -S $PLUTO_MY_CLIENT_NET/$PLUTO_MY_CLIENT_MASK \
 		-D $PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK
+	;;
+#
+# IPv6
+#
+prepare-host-v6:*|prepare-client-v6:*)
+	;;
+route-host-v6:*|route-client-v6:*)
+	# connection to me or my client subnet being routed
+	#uproute_v6
+	;;
+unroute-host-v6:*|unroute-client-v6:*)
+	# connection to me or my client subnet being unrouted
+	#downroute_v6
+	;;
+up-host-v6:*)
+	# connection to me coming up
+	# If you are doing a custom version, firewall commands go here.
+	;;
+down-host-v6:*)
+	# connection to me going down
+	# If you are doing a custom version, firewall commands go here.
+	;;
+up-client-v6:)
+	# connection to my client subnet coming up
+	# If you are doing a custom version, firewall commands go here.
+	;;
+down-client-v6:)
+	# connection to my client subnet going down
+	# If you are doing a custom version, firewall commands go here.
 	;;
 *)	echo "$0: unknown verb \`$PLUTO_VERB' or parameter \`$1'" >&2
 	exit 1

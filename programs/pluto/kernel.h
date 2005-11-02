@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel.h,v 1.39.4.3 2004/06/01 14:42:36 ken Exp $
+ * RCSID $Id: kernel.h,v 1.42 2004/06/01 14:43:20 ken Exp $
  */
 
 extern bool no_klips;	/* don't actually use KLIPS */
@@ -184,6 +184,9 @@ extern void delete_ipsec_sa(struct state *st, bool inbound_only);
 extern bool route_and_eroute(struct connection *c
 			     , struct spd_route *sr
 			     , struct state *st);
+
+extern bool was_eroute_idle(struct state *st, time_t idle_max);
+
 #ifdef NAT_TRAVERSAL
 extern bool update_ipsec_sa(struct state *st);
 #endif

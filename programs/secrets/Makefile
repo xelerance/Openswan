@@ -11,10 +11,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.2 2003/10/31 02:39:44 mcr Exp $
+# RCSID $Id: Makefile,v 1.3 2004/04/03 19:44:48 ken Exp $
 
-FREESWANSRCDIR=../..
-include ${FREESWANSRCDIR}/Makefile.inc
+OPENSWANSRCDIR=../..
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=secrets
 
@@ -22,6 +22,9 @@ include ../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.3  2004/04/03 19:44:48  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.2  2003/10/31 02:39:44  mcr
 # 	new program "secrets" to reload the secrets.
 #

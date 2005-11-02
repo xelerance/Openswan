@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pf_key.c,v 1.17 2003/11/07 01:36:55 ken Exp $
+ * RCSID $Id: pf_key.c,v 1.18 2004/04/04 01:50:56 ken Exp $
  *
  */
 
@@ -42,7 +42,7 @@
 #include <fcntl.h>
 
 #include <stdint.h>
-#include <freeswan.h>
+#include <openswan.h>
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
@@ -301,6 +301,9 @@ main(int argc, char *argv[])
 	
 /*
  * $Log: pf_key.c,v $
+ * Revision 1.18  2004/04/04 01:50:56  ken
+ * Use openswan includes
+ *
  * Revision 1.17  2003/11/07 01:36:55  ken
  * Cast to (int) for readlen
  *

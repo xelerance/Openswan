@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey.h,v 1.44 2003/12/10 01:20:01 mcr Exp $
+ * RCSID $Id: pfkey.h,v 1.45 2004/04/06 02:49:00 mcr Exp $
  */
 
 #ifndef __NET_IPSEC_PF_KEY_H
@@ -184,6 +184,8 @@ extern int pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 			   struct sadb_ext **extensions,
 			   int dir);
 
+extern int pfkey_register_reply(int satype, struct sadb_msg *sadb_msg);
+
 /*
  * PF_KEYv2 build function prototypes
  */
@@ -332,6 +334,9 @@ pfkey_v2_sadb_type_string(int sadb_type);
 
 /*
  * $Log: pfkey.h,v $
+ * Revision 1.45  2004/04/06 02:49:00  mcr
+ * 	pullup of algo code from alg-branch.
+ *
  * Revision 1.44  2003/12/10 01:20:01  mcr
  * 	NAT-traversal patches to KLIPS.
  *

@@ -11,19 +11,25 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.3 2002/08/02 16:01:07 mcr Exp $
+# RCSID $Id: Makefile,v 1.5 2004/04/12 12:05:52 ken Exp $
 
-FREESWANSRCDIR=../..
-include ${FREESWANSRCDIR}/Makefile.inc
+OPENSWANSRCDIR=../..
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=_copyright
 PROGRAMDIR=${LIBDIR}
-LIBS=${FREESWANLIB}
+LIBS=${OPENSWANLIB}
 
 include ../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.5  2004/04/12 12:05:52  ken
+# Use OPENSWANLIBs
+#
+# Revision 1.4  2004/04/03 19:44:42  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.3  2002/08/02 16:01:07  mcr
 # 	moved user visible programs to $PREFIX/libexec, while moving
 # 	private files to $PREFIX/lib.

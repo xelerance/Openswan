@@ -1,20 +1,9 @@
-# /etc/ipsec.conf - FreeS/WAN IPsec configuration file
-# RCSID $Id: ipsec.conf.in,v 1.12 2004/01/20 19:37:13 sam Exp $
+# /etc/ipsec.conf - Openswan IPsec configuration file
+# RCSID $Id: ipsec.conf.in,v 1.13 2004/03/24 04:14:39 ken Exp $
 
 # This file:  @FINALEXAMPLECONFDIR@/ipsec.conf-sample
 #
 # Manual:     ipsec.conf.5
-#
-# Help: 
-# http://www.freeswan.org/freeswan_trees/freeswan-xxx/doc/quickstart.html
-# http://www.freeswan.org/freeswan_trees/freeswan-xxx/doc/config.html
-# http://www.freeswan.org/freeswan_trees/freeswan-xxx/doc/adv_config.html
-#
-# Policy groups are enabled by default. See:
-# http://www.freeswan.org/freeswan_trees/freeswan-xxx/doc/policygroups.html
-#
-# Examples:
-# http://www.freeswan.org/freeswan_trees/freeswan-xxx/doc/examples   
 
 
 version	2.0	# conforms to second version of ipsec.conf specification
@@ -22,11 +11,10 @@ version	2.0	# conforms to second version of ipsec.conf specification
 # basic configuration
 config setup
 	# Debug-logging controls:  "none" for (almost) none, "all" for lots.
-	# klipsdebug=all
-	# plutodebug=dns
+	# klipsdebug=none
+	# plutodebug="control parsing"
 
-
-# Add connections here.
+# Add connections here
 
 # sample VPN connection
 #sample#	conn sample

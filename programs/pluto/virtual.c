@@ -1,5 +1,6 @@
-/* FreeS/WAN Virtual IP Management
+/* Openswan Virtual IP Management
  * Copyright (C) 2002 Mathieu Lafon - Arkoon Network Security
+ * Copyright (C) 2004 Xelerance Corporation
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: virtual.c,v 1.1.4.1 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: virtual.c,v 1.5 2004/05/08 11:05:38 ken Exp $
  */
 
 #ifdef VIRTUAL_IP
@@ -23,6 +24,8 @@
 #include <sys/queue.h>
 
 #include "constants.h"
+#include "oswlog.h"
+
 #include "defs.h"
 #include "log.h"
 #include "id.h"
@@ -53,9 +56,16 @@ struct virtual_t {
 static ip_subnet *private_net_ok=NULL, *private_net_ko=NULL;
 static unsigned short private_net_ok_len=0, private_net_ko_len=0;
 
-/**
+/** Read a subnet (IPv4/IPv6)
  * read %v4:x.x.x.x/y or %v6:xxxxxxxxx/yy
  * or %v4:!x.x.x.x/y if dstko not NULL
+ *
+ * @param src String in format (see above)
+ * @param len Length of src string
+ * @param dst IP Subnet Destination
+ * @param dstko IP Subnet 
+ * @param isok Boolean
+ * @return bool If the format string is valid.
  */
 static bool
 _read_subnet(const char *src, size_t len, ip_subnet *dst, ip_subnet *dstko,
@@ -90,6 +100,10 @@ _read_subnet(const char *src, size_t len, ip_subnet *dst, ip_subnet *dstko,
     return TRUE;
 }
 
+/** Initialize Virtual IP Support
+ * 
+ * @param private_list String (contents of virtual_private= from ipsec.conf)
+ */
 void
 init_virtual_ip(const char *private_list)
 {
@@ -178,6 +192,10 @@ init_virtual_ip(const char *private_list)
  * %all  = accept all ips                             [only for testing]
  *
  * ex: vhost:%no,%dhcp,%priv,%v4:192.168.1.0/24
+ *
+ * @param c Connection Struct
+ * @param string (virtual_private= from ipsec.conf)
+ * @return virtual_t 
  */
 struct virtual_t
 *create_virtual(const struct connection *c, const char *string)
@@ -256,23 +274,40 @@ struct virtual_t
     return v;
 
 fail:
-    plog("invalid virtual string [%s] - "
+    openswan_log("invalid virtual string [%s] - "
 	"virtual selection disabled for connection '%s'", string, c->name);
     return NULL;
 }
 
+/** is_virtual_end - Do we have a virtual IP on the other end? 
+ *
+ * @param that end structure
+ * @return bool True if we do 
+ */
 bool
 is_virtual_end(const struct end *that)
 {
     return ((that->virt)?TRUE:FALSE);
 }
 
+/** Does this connection have a virtual IP ?
+ *
+ * @param c Active Connection struct
+ * @return bool True if we do 
+ */
 bool
 is_virtual_connection(const struct connection *c)
 {
     return ((c->spd.that.virt)?TRUE:FALSE);
 }
 
+/** net_in_list - Check if a subnet is in a list
+ *
+ * @param peer_net IP Subnet to check
+ * @param list IP Subnet list to search within
+ * @param len # of subnets in list
+ * @return bool True if peer_net is in list
+ */
 static bool
 net_in_list(const ip_subnet *peer_net, const ip_subnet *list,
     unsigned short len)
@@ -286,6 +321,14 @@ net_in_list(const ip_subnet *peer_net, const ip_subnet *list,
     return FALSE;
 }
 
+/** is_virtual_net_allowed - Check if the virtual network the client proposes
+ * is acceptable to us
+ *
+ * @param c Connection structure (active)
+ * @param peer_net IP Subnet the peer proposes
+ * @param his_addr Peers IP Address
+ * @return bool True if allowed
+ */
 bool
 is_virtual_net_allowed(const struct connection *c, const ip_subnet *peer_net,
 	const ip_address *his_addr)

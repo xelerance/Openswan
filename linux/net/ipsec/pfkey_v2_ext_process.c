@@ -1,6 +1,7 @@
 /*
  * @(#) RFC2367 PF_KEYv2 Key management API message parser
- * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs <rgb@freeswan.org>
+ * Copyright (C) 1998-2003   Richard Guy Briggs.
+ * Copyright (C) 2004        Michael Richardson <mcr@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,20 +13,20 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_ext_process.c,v 1.14 2004/02/03 03:13:59 mcr Exp $
+ * RCSID $Id: pfkey_v2_ext_process.c,v 1.15 2004/04/06 02:49:26 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_netlink.c.
  */
 
-char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.14 2004/02/03 03:13:59 mcr Exp $";
+char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.15 2004/04/06 02:49:26 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -41,7 +42,7 @@ char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.14 2004
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include <crypto/des.h>
 
@@ -68,22 +69,23 @@ char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.14 2004
 
 #include <linux/random.h>	/* get_random_bytes() */
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_sa.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_sa.h"
 
-#include "freeswan/ipsec_radij.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_ah.h"
-#include "freeswan/ipsec_esp.h"
-#include "freeswan/ipsec_tunnel.h"
-#include "freeswan/ipsec_rcv.h"
-#include "freeswan/ipcomp.h"
+#include "openswan/ipsec_radij.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_ah.h"
+#include "openswan/ipsec_esp.h"
+#include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_rcv.h"
+#include "openswan/ipcomp.h"
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
+#include "openswan/ipsec_alg.h"
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
@@ -140,6 +142,9 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	case IPPROTO_ESP:
 		ipsp->ips_authalg = pfkey_sa->sadb_sa_auth;
 		ipsp->ips_encalg = pfkey_sa->sadb_sa_encrypt;
+#ifdef CONFIG_IPSEC_ALG
+		ipsec_alg_sa_init(ipsp);
+#endif /* CONFIG_IPSEC_ALG */
 		break;
 	case IPPROTO_IPIP:
 		ipsp->ips_authalg = AH_NONE;
@@ -850,6 +855,9 @@ errlab:
 
 /*
  * $Log: pfkey_v2_ext_process.c,v $
+ * Revision 1.15  2004/04/06 02:49:26  mcr
+ * 	pullup of algo code from alg-branch.
+ *
  * Revision 1.14  2004/02/03 03:13:59  mcr
  * 	no longer #ifdef out NON_ESP mode. That was a mistake.
  *
@@ -857,6 +865,9 @@ errlab:
  * 	when compiling with NAT traversal, don't assume that the
  * 	kernel has been patched, unless CONFIG_IPSEC_NAT_NON_ESP
  * 	is set.
+ *
+ * Revision 1.12.2.1  2003/12/22 15:25:52  jjo
+ *      Merged algo-0.8.1-rc11-test1 into alg-branch
  *
  * Revision 1.12  2003/12/10 01:14:27  mcr
  * 	NAT-traversal patches to KLIPS.

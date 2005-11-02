@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_noklips.c,v 1.5.4.3 2004/06/01 14:42:36 ken Exp $
+ * RCSID $Id: kernel_noklips.c,v 1.8 2004/06/01 14:43:20 ken Exp $
  */
 
 #include <errno.h>

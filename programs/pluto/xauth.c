@@ -1,8 +1,8 @@
 /* XAUTH related functions
  *
  * Copyright (C) 2001-2002 Colubris Networks
- * Copyright (C) 2003 Xelerance Corporation
  * Copyright (C) 2003 Sean Mathews - Nu Tech Software Solutions, inc.
+ * Copyright (C) 2003-2004 Xelerance Corporation
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,11 +14,11 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: xauth.c,v 1.15.2.3 2004/05/11 16:35:30 ken Exp $
+ * RCSID $Id: xauth.c,v 1.24 2004/06/20 12:53:33 ken Exp $
  *
  * This code originally written by Colubris Networks, Inc.
  * Extraction of patch and porting to 1.99 codebases by Xelerance Corporation
- *
+ * Porting to 2.x by Sean Mathews
  */
 
 //#ifdef XAUTH
@@ -34,9 +34,12 @@
 #include <sys/queue.h>
 #include <crypt.h>
 
-#include <freeswan.h>
-#include <freeswan/ipsec_policy.h>
+#include <openswan.h>
+#include <openswan/ipsec_policy.h>
+
 #include "constants.h"
+#include "oswlog.h"
+
 #include "defs.h"
 #include "state.h"
 #include "id.h"
@@ -64,6 +67,7 @@
 #include "md5.h"
 #include "crypto.h" /* requires sha1.h and md5.h */
 #include "paths.h"
+#include "ike_alg.h"
 
 #include "xauth.h"
 #include "virtual.h"
@@ -84,12 +88,16 @@ struct thread_arg
     chunk_t     connname;
 };
 
+/**
+* Addresses assigned (usually via MODE_CONFIG) to the Initiator
+*/
 struct internal_addr
 {
     ip_address    ipaddr;
     ip_address    dns[2];
     ip_address    wins[2];  
 };
+
 
 #ifdef XAUTH_USEPAM
 static
@@ -102,6 +110,14 @@ struct pam_conv conv = {
 	NULL  };
 
 
+/**
+ * Get IP address from a PAM environment variable
+ * 
+ * @param pamh An open PAM filehandle
+ * @param var Environment Variable to get the IP address from.  Usually IPADDR, DNS[12], WINS[12]
+ * @param addr Pointer to var where you want IP address stored
+ * @return int Return code
+ */
 static
 int get_addr(pam_handle_t *pamh,const char *var,ip_address *addr)
 {
@@ -119,6 +135,13 @@ int get_addr(pam_handle_t *pamh,const char *var,ip_address *addr)
 }
 #endif
 
+/**
+ * Get inside IP address for a connection
+ * 
+ * @param con A currently active connection struct
+ * @param ia internal_addr struct
+ * @return int Return Code
+ */
 static
 int get_internal_addresses(struct connection *con,struct internal_addr *ia)
 {
@@ -127,18 +150,20 @@ int get_internal_addresses(struct connection *con,struct internal_addr *ia)
     char str[48];
 #endif
 
+#ifdef NAT_TRAVERSAL /* only NAT-T code lets us do virtual ends */
     if (is_virtual_end(&con->spd.that)) 
     {
-	/* assumes Ipv4, and also that the mask is ignored */
+	/** assumes IPv4, and also that the mask is ignored */
 	ia->ipaddr = con->spd.that.client.addr;
 
-	/* Insert here contants passed by configuration  */
     }
     else
+#endif
     {
 #ifdef XAUTH_USEPAM
 	    if(con->pamh == NULL)
 	    {
+		    /** Start PAM session, using 'pluto' as our PAM name */
 		    retval = pam_start("pluto", "user", &conv, &con->pamh);
 		    memset(ia,0,sizeof(*ia));
 		    if(retval == PAM_SUCCESS)
@@ -148,7 +173,7 @@ int get_internal_addresses(struct connection *con,struct internal_addr *ia)
 			    idtoa(&con->spd.that.id, buf, sizeof(buf));
 			    if (con->spd.that.id.kind == ID_DER_ASN1_DN)
 			    {
-				    /* Keep only the common name, if one exists */
+				    /** Keep only the common name, if one exists */
 				    char *c1, *c2;
 				    c1 = strstr(buf, "CN=");
 				    if (c1) {
@@ -164,6 +189,8 @@ int get_internal_addresses(struct connection *con,struct internal_addr *ia)
 	    }
 	    if(con->pamh != NULL)
 	    {
+		    /** Put IP addresses from various variables into our
+                     *  internal address struct */
 		    get_addr(con->pamh,"IPADDR",&ia->ipaddr);
 		    get_addr(con->pamh,"DNS1",&ia->dns[0]);
 		    get_addr(con->pamh,"DNS2",&ia->dns[1]);
@@ -175,7 +202,14 @@ int get_internal_addresses(struct connection *con,struct internal_addr *ia)
     return 0;
 } 
 
-/* Compute HASH of Mode Config.
+/**
+ * Compute HASH of Mode Config.
+ *
+ * @param dest 
+ * @param start
+ * @param roof
+ * @param st State structure
+ * @return size_t Length of the HASH
  */
 size_t
 xauth_mode_cfg_hash(u_char *dest, const u_char *start, const u_char *roof, 
@@ -194,6 +228,19 @@ const struct state *st)
     return ctx.hmac_digest_len;
 }
 
+
+
+/**
+ * Mode Config Reply
+ *
+ * Generates a reply stream containing Mode Config information (eg: IP, DNS, WINS)
+ *
+ * @param st State structure
+ * @param resp Type of reply (int)
+ * @param rbody Body of the reply (stream)
+ * @param ap_id ISAMA Identifier 
+ * @return stf_status STF_OK or STF_INTERNAL_ERROR
+ */
 stf_status modecfg_resp(struct state *st
 			,unsigned int resp
 			,pb_stream *rbody
@@ -337,7 +384,7 @@ stf_status modecfg_resp(struct state *st
  				break;
 
 		default:
-		    plog("attempt to send unsupported mode cfg attribute %s."
+		    openswan_log("attempt to send unsupported mode cfg attribute %s."
 			 , enum_show(&modecfg_attr_names, attr_type));
 		    break;
 		}
@@ -362,6 +409,11 @@ stf_status modecfg_resp(struct state *st
     return STF_OK;
 }
 
+/** Set MODE_CONFIG data to client.  Pack IP Addresses, DNS, etc... and ship
+ * 
+ * @param st State Structure
+ * @return stf_status
+ */
 stf_status modecfg_send_set(struct state *st)
 {
 	pb_stream reply,rbody;
@@ -414,6 +466,11 @@ stf_status modecfg_send_set(struct state *st)
 	return STF_OK;
 }
 
+
+/** Send XAUTH credential request (username + password request)
+ * @param st State
+ * @return stf_status
+ */
 stf_status xauth_send_request(struct state *st)
 {
     pb_stream reply;
@@ -424,7 +481,7 @@ stf_status xauth_send_request(struct state *st)
     /* set up reply */
     init_pbs(&reply, buf, sizeof(buf), "xauth_buf");
 
-    plog("XAUTH: Sending Username/Password request (XAUTH_R0)");
+    openswan_log("XAUTH: Sending Username/Password request (XAUTH_R0)");
 
 
     /* this is the beginning of a new exchange */
@@ -501,6 +558,12 @@ stf_status xauth_send_request(struct state *st)
     return STF_OK;
 }
 
+/** Send XAUTH status to client
+ *
+ * @param st State
+ * @param status Status code
+ * @return stf_status
+ */
 stf_status xauth_send_status(struct state *st, int status)
 {
     pb_stream reply;
@@ -591,6 +654,14 @@ stf_status xauth_send_status(struct state *st, int status)
 }
 
 #ifdef XAUTH_USEPAM
+/** XAUTH PAM conversation
+ *
+ * @param num_msg Int.
+ * @param msgm Pam Message Struct
+ * @param response Where PAM will put the results
+ * @param appdata_ptr Pointer to data struct (as we are using threads)
+ * @return int Return Code
+ */
 static
 int xauth_pam_conv(int num_msg, const struct pam_message **msgm,
 	       struct pam_response **response, void *appdata_ptr)
@@ -639,6 +710,12 @@ int xauth_pam_conv(int num_msg, const struct pam_message **msgm,
 
 
 #ifdef XAUTH_USEPAM
+/** Do authentication via PAM (Plugable Authentication Modules)
+ *
+ * We open a PAM session via pam_start, and try to authenticate the user
+ *
+ * @return int Return Code
+ */
 static
 int do_pam_authentication(void *varg)
 {
@@ -649,7 +726,9 @@ int do_pam_authentication(void *varg)
     conv.appdata_ptr = varg;
 
     retval = pam_start("pluto", arg->name.ptr, &conv, &pamh);
-               
+
+    /*  Two factor authentication - Check that the user is valid, 
+	and then check if they are permitted access */
     if (retval == PAM_SUCCESS)
         retval = pam_authenticate(pamh, PAM_SILENT);    /* is user really user? */
     if (retval == PAM_SUCCESS)
@@ -664,13 +743,12 @@ int do_pam_authentication(void *varg)
 }
 #else /* XAUTH_USEPAM */
 
-/*
+/** Do authentication via /etc/ipsec.d/passwd file using MD5 passwords
+ *
  * password file structure does not compensate for
  * extra garbage so don't leave any! we do allows for #'s
  * as first char for comments just because I hate conf
  * files like .htaccess that don't support it
- */ 
-/* 
  *
  * /etc/ipsec.d/passwd
  * username:md5sum:connectioname\n
@@ -679,6 +757,7 @@ int do_pam_authentication(void *varg)
  *
  * htpasswd -c -m -b /etc/ipsec.d/passwd road roadpass
  *
+ * @return int Return Code
  */
 static
 int do_md5_authentication(void *varg)
@@ -702,12 +781,12 @@ int do_md5_authentication(void *varg)
     if( fp == (FILE *)0)
     {
         /* unable to open the password file */
-        plog("XAUTH: unable to open (%s) for verification", pwdfile.path);
+        openswan_log("XAUTH: unable to open password file (%s) for verification", pwdfile.path);
         return FALSE;
     }
 
-    plog("XAUTH: password file (%s) open.", pwdfile.path);
-    /* simple stuff read in a line then go through positioning
+    openswan_log("XAUTH: password file (%s) open.", pwdfile.path);
+    /** simple stuff read in a line then go through positioning
      * szuser ,szpass and szconnid at the begining of each of the
      * memory locations of our real data and replace the ':' with '\0'
      */
@@ -767,7 +846,7 @@ int do_md5_authentication(void *varg)
 	    }
 	    else
 	    {
-		plog("XAUTH: checking user(%s:%s) " , szuser, szconnid);
+		openswan_log("XAUTH: checking user(%s:%s) " , szuser, szconnid);
 	    }
 
            /* Ok then now password check */
@@ -777,7 +856,7 @@ int do_md5_authentication(void *varg)
              fclose( fp );
              return TRUE;
            }
-	   plog("XAUTH: nope");
+	   openswan_log("XAUTH: nope");
         }
     }
     fclose( fp );
@@ -786,36 +865,38 @@ int do_md5_authentication(void *varg)
 }
 #endif
 
-/* 
- * main authentication routine will then call the actual
- * compiled in method to verify the user/pass
+/** Main authentication routine will then call the actual compiled in 
+ *  method to verify the user/password
  */
 static void * do_authentication(void *varg)
 {
     struct thread_arg	*arg = varg;
     struct state *st = arg->st;
     int results=FALSE;
+    openswan_log("XAUTH: User %s: Attempting to login" , arg->name.ptr);
     
-    plog("XAUTH: User %s attempting login" , arg->name.ptr);
     
+
 #ifdef XAUTH_USEPAM
-    plog("XAUTH: pam authentication being called");
+    openswan_log("XAUTH: pam authentication being called to authenticate user %s",arg->name.ptr);
     results=do_pam_authentication(varg);
 #else
-    plog("XAUTH: md5 authentication being called");
+    openswan_log("XAUTH: md5 authentication being called to authenticate user %s",arg->name.ptr);
     results=do_md5_authentication(varg);
 #endif
     if(results)
     {
-        plog("XAUTH: User %s login successful", arg->name.ptr);
+        openswan_log("XAUTH: User %s: Authentication Successful", arg->name.ptr);
         xauth_send_status(st,1);
 
         if(st->quirks.xauth_ack_msgid) {
 	  st->st_msgid = 0;
 	}        
-    }else
+    } else
     {
-        plog("XAUTH: User %s: Incorrect Password", arg->name.ptr);
+	/** Login attempt failed, display error, send XAUTH status to client
+         *  and reset state to XAUTH_R0 */
+        openswan_log("XAUTH: User %s: Authentication Failed: Incorrect Username or Password", arg->name.ptr);
         xauth_send_status(st,0);	
         st->st_state = STATE_XAUTH_R0;        
     }   
@@ -828,6 +909,15 @@ static void * do_authentication(void *varg)
     return NULL;
 }
 
+
+/** Launch an authenication prompt
+ *
+ * @param st State Structure
+ * @param name Usernamd
+ * @param password password
+ * @param connname conn name, from ipsec.conf
+ * @return int Return Code - always 0.
+ */
 int xauth_launch_authent(struct state *st
 			 , chunk_t name
 			 , chunk_t password
@@ -854,9 +944,12 @@ int xauth_launch_authent(struct state *st
     return 0;
 }
 
-/* STATE_XAUTH_R0:
+/** STATE_XAUTH_R0:
  *  First REQUEST sent, expect for REPLY
  *  HDR*, HASH, ATTR(REPLY,PASSWORD) --> HDR*, HASH, ATTR(STATUS)
+ *
+ * @param md Message Digest
+ * @return stf_status
  */
 stf_status
 xauth_inR0(struct msg_digest *md)
@@ -877,7 +970,7 @@ xauth_inR0(struct msg_digest *md)
 
 	if (md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type != ISAKMP_CFG_REPLY)
 	{
-	    plog("Expecting MODE_CFG_REPLY, got %s instead."
+	    openswan_log("Expecting MODE_CFG_REPLY, got %s instead."
 		 , enum_name(&attr_msg_type_names, md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type));
 	    return STF_IGNORE;
 	}
@@ -901,7 +994,7 @@ xauth_inR0(struct msg_digest *md)
 
 		if(len < 4)
 		{
-		    plog("Attribute was too short: %d", len);
+		    openswan_log("Attribute was too short: %d", len);
 		    return STF_FAIL;
 		}
 
@@ -938,16 +1031,16 @@ xauth_inR0(struct msg_digest *md)
 		break;
 		
 	    default:
-		plog("got unsupported xauth parameter %s received."
+		openswan_log("XAUTH:  Unsupported XAUTH parameter %s received."
 		     , enum_show(&modecfg_attr_names, attr.isaat_af_type));
 		break;
 	    }
 	}
     }
 
-    /* we must get a username and a password value */
+    /** we must get a username and a password value */
     if(!gotname || !gotpassword) {
-      plog("Expected MODE_CFG_REPLY did not contain %s%s%s attribute"
+      openswan_log("Expected MODE_CFG_REPLY did not contain %s%s%s attribute"
 	   , (!gotname ? "username" : "")
 	   , ((!gotname && !gotpassword) ? " or " : "")
 	   , (!gotpassword ? "password" : ""));
@@ -955,10 +1048,10 @@ xauth_inR0(struct msg_digest *md)
       {
 	  stf_status stat = xauth_send_request(st);
 
-	  plog("XAUTH: User %s login unsuccessful (retry %d)"
+	  openswan_log("XAUTH: User %s: Authentication Failed (retry %d)"
 	       , (!gotname ? "<unknown>" : (char *)name.ptr)
 	       , st->hidden_variables.st_xauth_client_attempt);
-	  /*
+	  /**
 	   * STF_OK means that we transmitted again okay, but actually
 	   * the state transition failed, as we are prompting again.
 	   */
@@ -971,7 +1064,7 @@ xauth_inR0(struct msg_digest *md)
       } else {
 	  stf_status stat = xauth_send_status(st, FALSE);
 
-	  plog("XAUTH: User %s login unsuccessful (too many tries %d)"
+	  openswan_log("XAUTH: User %s: Authentication Failed (Retried %d times)"
 	       , (!gotname ? "<unknown>" : (char *)name.ptr)
 	       , st->hidden_variables.st_xauth_client_attempt);
 
@@ -996,22 +1089,25 @@ xauth_inR0(struct msg_digest *md)
 }
 
 
-/* STATE_XAUTH_R1:
+/** STATE_XAUTH_R1:
  *  STATUS sent, expect for ACK
  *  HDR*, ATTR(STATUS), HASH --> Done
+ *
+ * @param md Message Digest
+ * @return stf_status
  */
 stf_status
 xauth_inR1(struct msg_digest *md)
 {
     struct state *const st = md->st;
-    plog("xauth_inR1(STF_OK)");
+    openswan_log("XAUTH: xauth_inR1(STF_OK)");
     /* Back to where we were */ 
     st->st_oakley.xauth = 0;
     st->st_msgid = 0;
     return STF_OK;
 }
 
-/* 
+/* *
  * STATE_MODE_CFG_R0:
  *  HDR*, HASH, ATTR(REQ=IP) --> HDR*, HASH, ATTR(REPLY=IP)
  *
@@ -1020,6 +1116,8 @@ xauth_inR1(struct msg_digest *md)
  * In the responding server, it occurs when the client asks for an IP
  * address or other information. 
  *
+ * @param md Message Digest
+ * @return stf_status
  */
 stf_status
 modecfg_inR0(struct msg_digest *md)
@@ -1050,7 +1148,7 @@ modecfg_inR0(struct msg_digest *md)
 	switch(p->payload.attribute.isama_type)
 	{
 	default:
-	    plog("Expecting ISAKMP_CFG_REQUEST, got %s instead (ignored)."
+	    openswan_log("Expecting ISAKMP_CFG_REQUEST, got %s instead (ignored)."
 		 , enum_name(&attr_msg_type_names, p->payload.attribute.isama_type));
 
 	    while(pbs_left(attrs) > sizeof(struct isakmp_attribute))
@@ -1066,14 +1164,14 @@ modecfg_inR0(struct msg_digest *md)
 		    
 		    if(len < 4)
 		    {
-			plog("Attribute was too short: %d", len);
+			openswan_log("Attribute was too short: %d", len);
 			return STF_FAIL;
 		    }
 		    
 		    attrs->cur += len;
 		}
 		
-		plog("ignored mode cfg attribute %s."
+		openswan_log("ignored mode cfg attribute %s."
 		     , enum_show(&modecfg_attr_names
 				 , (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )));
 	    }
@@ -1093,7 +1191,7 @@ modecfg_inR0(struct msg_digest *md)
 		    
 		    if(len < 4)
 		    {
-			plog("Attribute was too short: %d", len);
+			openswan_log("Attribute was too short: %d", len);
 			return STF_FAIL;
 		    }
 		    
@@ -1109,7 +1207,7 @@ modecfg_inR0(struct msg_digest *md)
 		    resp |= LELEM(attr.isaat_af_type);
 		    break;
 		default:
-		    plog("unsupported mode cfg attribute %s received."
+		    openswan_log("unsupported mode cfg attribute %s received."
 			 , enum_show(&modecfg_attr_names
 				     , (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )));
 		    break;
@@ -1128,13 +1226,15 @@ modecfg_inR0(struct msg_digest *md)
 	}
     }
 
-    plog("modecfg_inR0(STF_OK)");
+    openswan_log("modecfg_inR0(STF_OK)");
     return STF_OK;
 }
 
-/* STATE_MODE_CFG_R1:
+/** STATE_MODE_CFG_R1:
  *  HDR*, HASH, ATTR(SET=IP) --> HDR*, HASH, ATTR(ACK,OK)
  *	    
+ * @param md Message Digest
+ * @return stf_status
  */
 stf_status
 modecfg_inR1(struct msg_digest *md)
@@ -1142,7 +1242,7 @@ modecfg_inR1(struct msg_digest *md)
     struct state *const st = md->st;
     pb_stream *attrs = &md->chain[ISAKMP_NEXT_ATTR]->pbs;
 
-    plog("modecfg_inR1");
+    openswan_log("modecfg_inR1");
 
     st->st_msgid = md->hdr.isa_msgid;
     CHECK_QUICK_HASH(md,xauth_mode_cfg_hash(hash_val,hash_pbs->roof, md->message_pbs.roof, st)
@@ -1155,7 +1255,7 @@ modecfg_inR1(struct msg_digest *md)
 
 	if (md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type != ISAKMP_CFG_ACK)
 	{
-	    plog("Expecting MODE_CFG_ACK, got %x instead.",md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type);
+	    openswan_log("Expecting MODE_CFG_ACK, got %x instead.",md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type);
 	    return STF_IGNORE;
 	}
 
@@ -1174,7 +1274,7 @@ modecfg_inR1(struct msg_digest *md)
 
 		if(len < 4)
 		{
-		    plog("Attribute was too short: %d", len);
+		    openswan_log("Attribute was too short: %d", len);
 		    return STF_FAIL;
 		}
 
@@ -1190,7 +1290,7 @@ modecfg_inR1(struct msg_digest *md)
 		    resp |= LELEM(attr.isaat_af_type);
 		    break;
 		default:
-		    plog("unsupported mode cfg attribute %s received."
+		    openswan_log("unsupported mode cfg attribute %s received."
 			 , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )));
 		    break;
 	    }
@@ -1201,11 +1301,19 @@ modecfg_inR1(struct msg_digest *md)
     /* we are done with this exchange, clear things so that we can start phase 2 properly */
     st->st_msgid = 0;
 
-    plog("modecfg_inR1(STF_OK)");
+    openswan_log("modecfg_inR1(STF_OK)");
     return STF_OK;
 }
 
-/* XAUTH client code - response to challenge */
+/** XAUTH client code - response to challenge.  May open filehandle to console
+ * in order to prompt user for password
+ *
+ * @param st State
+ * @param xauth_resp XAUTH Reponse
+ * @param rbody Reply Body
+ * @param ap_id
+ * @return stf_status
+ */
 stf_status xauth_client_resp(struct state *st
 			     ,unsigned int xauth_resp
 			     ,pb_stream *rbody
@@ -1310,7 +1418,7 @@ stf_status xauth_client_resp(struct state *st
 		    break;
 		    
 		default:
-		    plog("trying to send XAUTH reply, sending %s instead."
+		    openswan_log("trying to send XAUTH reply, sending %s instead."
 			 , enum_show(&modecfg_attr_names, attr_type));
 		    break;
 		}
@@ -1326,7 +1434,7 @@ stf_status xauth_client_resp(struct state *st
 	close_output_pbs(&strattr);
     }
 
-    plog("answering XAUTH challenge with user='%s'", xauth_username);
+    openswan_log("XAUTH: Answering XAUTH challenge with user='%s'", xauth_username);
 
     xauth_mode_cfg_hash(r_hashval,r_hash_start,rbody->cur,st);
     
@@ -1337,7 +1445,7 @@ stf_status xauth_client_resp(struct state *st
     return STF_OK;
 }
 
-/* 
+/** 
  * STATE_XAUTH_I0
  *  HDR*, HASH, ATTR(REQ=IP) --> HDR*, HASH, ATTR(REPLY=IP)
  *
@@ -1346,6 +1454,8 @@ stf_status xauth_client_resp(struct state *st
  * In the initating client, it occurs in XAUTH, when the responding server
  * demands a password, and we have to supply it.
  *
+ * @param md Message Digest
+ * @return stf_status
  */
 stf_status
 xauth_inI0(struct msg_digest *md)
@@ -1388,7 +1498,7 @@ xauth_inI0(struct msg_digest *md)
 	switch(p->payload.attribute.isama_type)
 	{
 	default:
-	    plog("Expecting ISAKMP_CFG_REQUEST, got %s instead (ignored)."
+	    openswan_log("Expecting ISAKMP_CFG_REQUEST, got %s instead (ignored)."
 		 , enum_name(&attr_msg_type_names, p->payload.attribute.isama_type));
 	case ISAKMP_CFG_SET:
 	    gotset = TRUE;
@@ -1415,7 +1525,7 @@ xauth_inI0(struct msg_digest *md)
 		
 		if(len < 4)
 		{
-		    plog("Attribute was too short: %d", len);
+		    openswan_log("Attribute was too short: %d", len);
 		    return STF_FAIL;
 		}
 		
@@ -1445,14 +1555,14 @@ xauth_inI0(struct msg_digest *md)
 		if(len > 80) len=80;
 		memcpy(msgbuf, dat, len);
 		msgbuf[len]='\0';
-		loglog(RC_LOG_SERIOUS, "XAUTH-Message: %s", msgbuf);
+		loglog(RC_LOG_SERIOUS, "XAUTH: Bad Message: %s", msgbuf);
 		break;
 		
 	    case XAUTH_TYPE:
 		type = val;
 		if(type != XAUTH_TYPE_GENERIC)
 		{
-		    plog("unsupported XAUTH type: %d", type);
+		    openswan_log("XAUTH: Unsupported type: %d", type);
 		    return STF_IGNORE;
 		}
 		xauth_resp |= XAUTHLELEM(attr.isaat_af_type);
@@ -1464,7 +1574,7 @@ xauth_inI0(struct msg_digest *md)
 		break;
 		
 	    default:
-		plog("unsupported xauth attribute %s received."
+		openswan_log("XAUTH: Unsupported attribute: %s"
 		     , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK)));
 		break;
 	    }
@@ -1480,7 +1590,7 @@ xauth_inI0(struct msg_digest *md)
 	    if(status && stat == STF_OK)
 	    {
 		st->hidden_variables.st_xauth_client_done = TRUE;
-		plog("successfully logged in");
+		openswan_log("XAUTH: Successfully Authenticated");
 		st->st_oakley.xauth = 0;
 		
 		return STF_OK;
@@ -1494,7 +1604,7 @@ xauth_inI0(struct msg_digest *md)
 	if(gotrequest)
 	{
 	    if(xauth_resp & (XAUTHLELEM(XAUTH_USER_NAME)|XAUTHLELEM(XAUTH_USER_PASSWORD))) {
-		DBG(DBG_CONTROL, DBG_log("Xauth username/password request received"));
+		DBG(DBG_CONTROL, DBG_log("XAUTH: Username/password request received"));
 	    }
 	    
 	    /* sanitize what we were asked to reply to */
@@ -1502,7 +1612,7 @@ xauth_inI0(struct msg_digest *md)
 	       && (xauth_resp &( XAUTHLELEM(XAUTH_USER_NAME)
 				 | XAUTHLELEM(XAUTH_USER_PASSWORD)))==0)
 	    {
-		plog("No XAUTH username/password request was received.");
+		openswan_log("XAUTH: No username/password request was received.");
 		return STF_IGNORE;
 	    }
 
@@ -1511,7 +1621,7 @@ xauth_inI0(struct msg_digest *md)
 	       && (xauth_resp & (XAUTHLELEM(XAUTH_USER_NAME)
 				 |XAUTHLELEM(XAUTH_USER_PASSWORD)))!=0)
 	    {
-		plog("XAUTH username/password request was received, but XAUTH client mode not enabled.");
+		openswan_log("XAUTH: Username/password request was received, but XAUTH client mode not enabled.");
 		return STF_IGNORE;
 	    }
 	    
@@ -1535,7 +1645,13 @@ xauth_inI0(struct msg_digest *md)
     return STF_OK;
 }
 
-/* XAUTH client code - response to status */
+/** XAUTH client code - Acknowledge status 
+ *
+ * @param st State
+ * @param rbody Response Body
+ * @param ap_id
+ * @return stf_status
+ */
 stf_status xauth_client_ackstatus(struct state *st
 				  ,pb_stream *rbody
 				  ,u_int16_t ap_id)
@@ -1594,9 +1710,11 @@ stf_status xauth_client_ackstatus(struct state *st
     return STF_OK;
 }
 
-/* STATE_XAUTH_I1
+/** STATE_XAUTH_I1
  *  HDR*, HASH, ATTR(SET=IP) --> HDR*, HASH, ATTR(ACK,OK)
  *	    
+ * @param md Message Digest
+ * @return stf_status
  */
 stf_status
 xauth_inI1(struct msg_digest *md)
@@ -1627,7 +1745,7 @@ xauth_inI1(struct msg_digest *md)
 	switch(p->payload.attribute.isama_type)
 	{
 	default:
-	    plog("Expecting MODE_CFG_SET, got %x instead."
+	    openswan_log("Expecting MODE_CFG_SET, got %x instead."
 		 , p->payload.attribute.isama_type);
 	    return STF_IGNORE;
 
@@ -1649,7 +1767,7 @@ xauth_inI1(struct msg_digest *md)
 		    
 		    if(len < 4)
 		    {
-			plog("Attribute was too short: %d", len);
+			openswan_log("Attribute was too short: %d", len);
 			return STF_FAIL;
 		    }
 		    
@@ -1665,7 +1783,7 @@ xauth_inI1(struct msg_digest *md)
 		    break;
 		    
 		default:
-		    plog("while waiting for XAUTH_STATUS, got %s instead."
+		    openswan_log("while waiting for XAUTH_STATUS, got %s instead."
 			 , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK)));
 		    break;
 		}
@@ -1678,7 +1796,7 @@ xauth_inI1(struct msg_digest *md)
     if(!got_status || status==FALSE)
     {
 	/* oops, something seriously wrong */
-	plog("did not get status attribute in xauth_inI1, looking for new challenge.");
+	openswan_log("did not get status attribute in xauth_inI1, looking for new challenge.");
 	st->st_state = STATE_XAUTH_I0;
 	return xauth_inI0(md);
     }
@@ -1691,7 +1809,7 @@ xauth_inI1(struct msg_digest *md)
     if(status && stat == STF_OK)
     {
 	st->hidden_variables.st_xauth_client_done = TRUE;
-	plog("successfully logged in");
+	openswan_log("successfully logged in");
 	st->st_oakley.xauth = 0;
 
 	return STF_OK;

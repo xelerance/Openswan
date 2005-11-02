@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: timer.h,v 1.16 2003/05/30 15:09:29 mcr Exp $
+ * RCSID $Id: timer.h,v 1.17 2004/03/21 17:01:35 ken Exp $
  */
 
 extern time_t now(void);	/* careful version of time(2) */
@@ -30,5 +30,5 @@ extern void event_schedule(enum event_type type, time_t tm, struct state *st);
 extern void handle_timer_event(void);
 extern long next_event(void);
 extern void delete_event(struct state *st);
-
+extern void delete_dpd_event(struct state *st);
 extern void daily_log_event(void);

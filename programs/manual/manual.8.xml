@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!-- lifted from troff+man by doclifter -->
+<refentry>
+<refmeta>
+<refentrytitle>IPSEC_MANUAL</refentrytitle>
+<manvolnum>8</manvolnum>
+<refmiscinfo class='date'>17 July 2001</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>ipsec manual</refname>
+<refpurpose>take manually-keyed IPsec connections up and down</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>ipsec</command>    
+    <arg choice='plain'><replaceable>manual</replaceable></arg>
+    <arg choice='opt'>--show </arg>
+    <arg choice='opt'>--showonly </arg>
+    <arg choice='opt'>--other </arg>
+    <sbr/>
+    <arg choice='opt'><arg choice='plain'>--iam </arg><arg choice='plain'><replaceable>address@interface</replaceable></arg></arg>
+    <arg choice='opt'><arg choice='plain'>--config </arg><arg choice='plain'><replaceable>configfile</replaceable></arg></arg>
+    <sbr/>
+    <arg choice='plain'><replaceable>operationconnectionipsecmanual</replaceable></arg>
+    <arg choice='opt'><replaceable>options</replaceable></arg>
+    <arg choice='plain'>--union </arg>
+    <arg choice='plain' rep='repeat'><replaceable>operationpart</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para><emphasis remap='I'>Manual</emphasis>
+manipulates manually-keyed FreeS/WAN IPsec connections,
+setting them up and shutting them down,
+based on the information in the IPsec configuration file.
+In the normal usage,
+<emphasis remap='I'>connection</emphasis>
+is the name of a connection specification in the configuration file;
+<emphasis remap='I'>operation</emphasis>
+is
+<option>--up</option>,
+<option>--down</option>,
+<option>--route</option>,
+or
+<option>--unroute</option>.
+<emphasis remap='I'>Manual</emphasis>
+generates setup (<option>--route</option>
+or
+<option>--up</option>)
+or
+teardown (<option>--down</option>
+or
+<option>--unroute</option>)
+commands for the connection and feeds them to a shell for execution.</para>
+
+<para>The
+<option>--up</option>
+operation brings the specified connection up, including establishing a
+suitable route for it if necessary.</para>
+
+<para>The
+<option>--route</option>
+operation just establishes the route for a connection.
+Unless and until an
+<option>--up</option>
+operation is done, packets routed by that route will simply be discarded.</para>
+
+<para>The
+<option>--down</option>
+operation tears the specified connection down,
+<emphasis remap='I'>except</emphasis>
+that it leaves the route in place.
+Unless and until an
+<option>--unroute</option>
+operation is done, packets routed by that route will simply be discarded.
+This permits establishing another connection to the same destination
+without any &ldquo;window&rdquo; in which packets can pass without encryption.</para>
+
+<para>The
+<option>--unroute</option>
+operation (and only the
+<option>--unroute</option>
+operation) deletes any route established for a connection.</para>
+
+<para>In the
+<option>--union</option>
+usage, each
+<emphasis remap='I'>part</emphasis>
+is the name of a partial connection specification in the configuration file,
+and the union of all the partial specifications is the
+connection specification used.
+The effect is as if the contents of the partial specifications were
+concatenated together;
+restrictions on duplicate parameters, etc., do apply to the result.
+(The same effect can now be had, more gracefully, using the
+<emphasis remap='B'>also</emphasis>
+parameter in connection descriptions;
+see
+<citerefentry><refentrytitle>ipsec.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+for details.)</para>
+
+<para>The
+<option>--show</option>
+option turns on the
+<option>-x</option>
+option of the shell used to execute the commands,
+so each command is shown as it is executed.</para>
+
+<para>The
+<option>--showonly</option>
+option causes
+<emphasis remap='I'>manual</emphasis>
+to show the commands it would run, on standard output,
+and not run them.</para>
+
+<para>The
+<option>--other</option>
+option causes
+<emphasis remap='I'>manual</emphasis>
+to pretend it is the other end of the connection.
+This is probably not useful except in combination with
+<option>--showonly</option>.</para>
+
+<para>The
+<option>--iam</option>
+option causes
+<emphasis remap='I'>manual</emphasis>
+to believe it is running on the host with the specified IP
+<emphasis remap='I'>address</emphasis>,
+and that it should use the specified
+<emphasis remap='I'>interface</emphasis>
+(normally it determines all this automatically,
+based on what IPsec interfaces are up and how they are configured).</para>
+
+<para>The
+<option>--config</option>
+option specifies a non-standard location for the FreeS/WAN IPsec
+configuration file (default
+<filename>/etc/ipsec.conf</filename>).</para>
+
+<para>See
+<citerefentry><refentrytitle>ipsec.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+for details of the configuration file.
+Apart from the basic parameters which specify the endpoints and routing
+of a connection (<emphasis remap='B'>left</emphasis>
+and
+<emphasis remap='B'>right</emphasis>,
+plus possibly
+<emphasis remap='B'>leftsubnet</emphasis>,
+<emphasis remap='B'>leftnexthop</emphasis>,
+<emphasis remap='B'>leftfirewall</emphasis>,
+their
+<emphasis remap='B'>right</emphasis>
+equivalents,
+and perhaps
+<emphasis remap='B'>type</emphasis>),
+a non-<emphasis remap='B'>passthrough</emphasis>
+<emphasis remap='I'>manual</emphasis>
+connection needs an
+<emphasis remap='B'>spi</emphasis>
+or
+<emphasis remap='B'>spibase</emphasis>
+parameter and some parameters specifying encryption, authentication, or
+both, most simply
+<emphasis remap='B'>esp</emphasis>,
+<emphasis remap='B'>espenckey</emphasis>,
+and
+<emphasis remap='B'>espauthkey</emphasis>.
+Moderately-secure keys can be obtained from
+<citerefentry><refentrytitle>ipsec_ranbits</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+For production use of manually-keyed connections,
+it is strongly recommended that the keys be kept in a separate file
+(with permissions
+<emphasis remap='B'>rw-------</emphasis>)
+using the
+<emphasis remap='B'>include</emphasis>
+and
+<emphasis remap='B'>also</emphasis>
+facilities of the configuration file (see
+<citerefentry><refentrytitle>ipsec.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>).</para>
+
+<para>If an
+<emphasis remap='B'>spi</emphasis>
+parameter is given,
+<emphasis remap='I'>manual</emphasis>
+uses that value as the SPI number for all the SAs
+(which are in separate number spaces anyway).
+If an
+<emphasis remap='B'>spibase</emphasis>
+parameter is given instead,
+<emphasis remap='I'>manual</emphasis>
+assigns SPI values by altering the bottom digit
+of that value;
+SAs going from left to right get even digits starting at 0,
+SAs going from right to left get odd digits starting at 1.
+Either way, it is suggested that manually-keyed connections use
+three-digit SPIs with the first digit non-zero,
+i.e. in the range
+<emphasis remap='B'>0x100</emphasis>
+through
+<emphasis remap='B'>0xfff</emphasis>;
+FreeS/WAN reserves those for manual keying and will not
+attempt to use them for automatic keying (unless requested to,
+presumably by a non-FreeS/WAN other end).</para>
+</refsect1>
+
+<refsect1 id='files'><title>FILES</title>
+<!-- .ta \w'/var/run/ipsec.nexthop'u+4n -->
+<para>/etc/ipsec.conf	default IPsec configuration file
+<!-- .br -->
+/var/run/ipsec.info	<emphasis remap='B'>%defaultroute</emphasis> information</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para><citerefentry><refentrytitle>ipsec</refentrytitle><manvolnum>8</manvolnum></citerefentry>, ipsec.<citerefentry><refentrytitle>conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_spi</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_eroute</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_spigrp</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>route</refentrytitle><manvolnum>8</manvolnum></citerefentry></para>
+</refsect1>
+
+<refsect1 id='history'><title>HISTORY</title>
+<para>Written for the FreeS/WAN project
+&lt;<ulink url='http://www.freeswan.org/'>http://www.freeswan.org/</ulink>&gt;
+by Henry Spencer.</para>
+</refsect1>
+
+<refsect1 id='bugs'><title>BUGS</title>
+<para>It's not nearly as generous about the syntax of subnets,
+addresses, etc. as the usual FreeS/WAN user interfaces.
+Four-component dotted-decimal must be used for all addresses.
+It
+<emphasis remap='I'>is</emphasis>
+smart enough to translate bit-count netmasks to dotted-decimal form.</para>
+
+<para>If the connection specification for a connection is changed between an
+<option>--up</option>
+and the ensuing
+<option>--down</option>,
+chaos may ensue.</para>
+
+<para>The
+<option>--up</option>
+operation is not smart enough to notice whether the connection is already up.</para>
+
+<para><emphasis remap='I'>Manual</emphasis>
+is not smart enough to reject insecure combinations of algorithms,
+e.g. encryption with no authentication at all.</para>
+
+<para>Any non-IPsec route to the other end which is replaced by the
+<option>--up</option>
+or
+<option>--route</option>
+operation will not be re-established by
+<option>--unroute</option>.
+Whether this is a feature or a bug depends on your viewpoint.</para>
+
+<para>The optional parameters which
+override the automatic
+<emphasis remap='B'>spibase</emphasis>-based
+SPI assignment are a messy area of the code and bugs are likely.</para>
+
+<para>&ldquo;Road warrior&rdquo; handling,
+and other special forms of setup which
+require negotiation between the two security gateways,
+inherently cannot be done with
+<emphasis remap='I'>manual</emphasis>.</para>
+
+<para><emphasis remap='I'>Manual</emphasis>
+generally lags behind
+<emphasis remap='I'>auto</emphasis>
+in support of various features,
+even when implementation <emphasis remap='I'>would</emphasis> be possible.
+For example, currently it does not do IPComp content compression.</para>
+</refsect1>
+</refentry>
+

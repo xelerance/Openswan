@@ -11,21 +11,21 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.2 2003/02/17 02:34:10 mcr Exp $
+# RCSID $Id: Makefile,v 1.3 2004/04/03 19:44:50 ken Exp $
 
-FREESWANSRCDIR=../..
-export FREESWANSRCDIR
-include $(FREESWANSRCDIR)/Makefile.inc
+OPENSWANSRCDIR=../..
+export OPENSWANSRCDIR
+include $(OPENSWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
-UTILS=${FREESWANSRCDIR}/testing/utils
+UTILS=${OPENSWANSRCDIR}/testing/utils
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
 	@false
 
-check: 	${FREESWANSRCDIR}/umlsetup.sh
-	source ${FREESWANSRCDIR}/umlsetup.sh; source setup.sh; source ${UTILS}/functions.sh; source TESTLIST
+check: 	${OPENSWANSRCDIR}/umlsetup.sh
+	source ${OPENSWANSRCDIR}/umlsetup.sh; source setup.sh; source ${UTILS}/functions.sh; source TESTLIST
 
 install install_file_list checkprograms programs:
 	@true
@@ -46,6 +46,9 @@ realclean: clean
 
 #
 # $Log: Makefile,v $
+# Revision 1.3  2004/04/03 19:44:50  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.2  2003/02/17 02:34:10  mcr
 # 	adjusted "make clean" target in Makefiles.
 #

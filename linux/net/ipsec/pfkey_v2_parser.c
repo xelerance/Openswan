@@ -12,20 +12,20 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_parser.c,v 1.122 2003/12/10 01:14:27 mcr Exp $
+ * RCSID $Id: pfkey_v2_parser.c,v 1.123 2004/04/06 02:49:26 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_netlink.c.
  */
 
-char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.122 2003/12/10 01:14:27 mcr Exp $";
+char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.123 2004/04/06 02:49:26 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -41,7 +41,7 @@ char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.122 2003/12/10 01
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include <crypto/des.h>
 
@@ -68,22 +68,23 @@ char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.122 2003/12/10 01
 
 #include <linux/random.h>	/* get_random_bytes() */
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_sa.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_sa.h"
 
-#include "freeswan/ipsec_radij.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_ah.h"
-#include "freeswan/ipsec_esp.h"
-#include "freeswan/ipsec_tunnel.h"
-#include "freeswan/ipsec_rcv.h"
-#include "freeswan/ipcomp.h"
+#include "openswan/ipsec_radij.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_ah.h"
+#include "openswan/ipsec_esp.h"
+#include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_rcv.h"
+#include "openswan/ipcomp.h"
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
+#include "openswan/ipsec_alg.h"
 
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
@@ -189,7 +190,13 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 	size_t sa_len;
 	char ipaddr_txt[ADDRTOA_BUF];
 	char ipaddr2_txt[ADDRTOA_BUF];
+#if defined (CONFIG_IPSEC_AUTH_HMAC_MD5) || defined (CONFIG_IPSEC_AUTH_HMAC_SHA1)
 	unsigned char kb[AHMD596_BLKLEN];
+#endif
+#ifdef CONFIG_IPSEC_ALG
+	struct ipsec_alg_enc *ixt_e = NULL;
+	struct ipsec_alg_auth *ixt_a = NULL;
+#endif /* CONFIG_IPSEC_ALG */
 
 	if(ipsp == NULL) {
 		KLIPS_PRINT(debug_pfkey,
@@ -403,9 +410,21 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 #endif /* CONFIG_IPSEC_AH */
 #ifdef CONFIG_IPSEC_ESP
 	case IPPROTO_ESP: {
-		unsigned char *akp, *ekp;
-		unsigned int aks, eks;
-		
+#if defined (CONFIG_IPSEC_AUTH_HMAC_MD5) || defined (CONFIG_IPSEC_AUTH_HMAC_SHA1)
+		unsigned char *akp;
+		unsigned int aks;
+#endif
+#if defined (CONFIG_IPSEC_ENC_3DES)
+		unsigned char *ekp;
+		unsigned int eks;
+#endif
+
+		ipsp->ips_iv_size = 0;
+#ifdef CONFIG_IPSEC_ALG
+		if ((ixt_e=ipsp->ips_alg_enc)) {
+			ipsp->ips_iv_size = ixt_e->ixt_ivlen/8;
+		} else	
+#endif /* CONFIG_IPSEC_ALG */
 		switch(ipsp->ips_encalg) {
 # ifdef CONFIG_IPSEC_ENC_3DES
 		case ESP_3DES:
@@ -421,6 +440,7 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			}
 			prng_bytes(&ipsec_prng, (char *)ipsp->ips_iv, EMT_ESPDES_IV_SZ);
 			ipsp->ips_iv_bits = ipsp->ips_iv_size * 8;
+			ipsp->ips_iv_size = EMT_ESPDES_IV_SZ;
 			break;
 # endif /* defined(CONFIG_IPSEC_ENC_3DES) */
 		case ESP_NONE:
@@ -432,7 +452,23 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 				    ipsp->ips_encalg);
 			SENDERR(EINVAL);
 		}
+
+		/* Create IV */
+		if (ipsp->ips_iv_size) {
+			if((ipsp->ips_iv = (caddr_t)
+			    kmalloc(ipsp->ips_iv_size, GFP_ATOMIC)) == NULL) {
+				SENDERR(ENOMEM);
+			}
+			prng_bytes(&ipsec_prng, (char *)ipsp->ips_iv, ipsp->ips_iv_size);
+			ipsp->ips_iv_bits = ipsp->ips_iv_size * 8;
+		}
 		
+#ifdef CONFIG_IPSEC_ALG
+		if (ixt_e) {
+			if ((error=ipsec_alg_enc_key_create(ipsp)) < 0)
+				SENDERR(-error);
+		} else
+#endif /* CONFIG_IPSEC_ALG */
 		switch(ipsp->ips_encalg) {
 # ifdef CONFIG_IPSEC_ENC_3DES
 		case ESP_3DES:
@@ -493,7 +529,7 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			kfree(ekp);
 			break;
 # endif /* CONFIG_IPSEC_ENC_3DES */
-		case ESP_NONE:
+                case ESP_NONE:
 			break;
 		default:
 			KLIPS_PRINT(debug_pfkey,
@@ -502,6 +538,13 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 				    ipsp->ips_encalg);
 			SENDERR(EINVAL);
 		}
+
+#ifdef CONFIG_IPSEC_ALG
+		if ((ixt_a=ipsp->ips_alg_auth)) {
+			if ((error=ipsec_alg_auth_key_create(ipsp)) < 0)
+				SENDERR(-error);
+		} else	
+#endif /* CONFIG_IPSEC_ALG */
 		
 		switch(ipsp->ips_authalg) {
 # ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
@@ -1739,19 +1782,11 @@ pfkey_acquire_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 DEBUG_NO_STATIC int
 pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extracted_data* extr)
 {
-	unsigned int alg_num_a = 0, alg_num_e = 0;
-	struct sadb_alg *alg_a = NULL, *alg_e = NULL, *alg_ap = NULL, *alg_ep = NULL;
-	struct sadb_ext *extensions_reply[SADB_EXT_MAX+1];
-	struct sadb_msg *pfkey_reply = NULL;
-	struct supported_list *pfkey_supported_listp;
-	struct socket_list *pfkey_socketsp;
 	int error = 0;
 	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_register_parse: .\n");
-
-	pfkey_extensions_init(extensions_reply);
 
 	/* XXX I don't know if we want an upper bound, since userspace may
 	   want to register itself for an satype > SADB_SATYPE_MAX. */
@@ -1774,26 +1809,59 @@ pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey
 	};
 	
 	/* send up register msg with supported SATYPE algos */
+
+	error=pfkey_register_reply(satype, (struct sadb_msg*)extensions[SADB_EXT_RESERVED]);
+ errlab:
+	return error;
+}
+
+int
+pfkey_register_reply(int satype, struct sadb_msg *sadb_msg)
+{
+	struct sadb_ext *extensions_reply[SADB_EXT_MAX+1];
+	struct sadb_msg *pfkey_reply = NULL;
+	struct socket_list *pfkey_socketsp;
+	struct supported_list *pfkey_supported_listp;
+	unsigned int alg_num_a = 0, alg_num_e = 0;
+	struct sadb_alg *alg_a = NULL, *alg_e = NULL, *alg_ap = NULL, *alg_ep = NULL;
+	int error = 0;
+
+	pfkey_extensions_init(extensions_reply);
+
+	if((satype == 0) || (satype > SADB_SATYPE_MAX)) {
+		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_register_reply: "
+			    "SAtype=%d unspecified or unknown.\n",
+			    satype);
+		SENDERR(EINVAL);
+	}
+	if(!(pfkey_registered_sockets[satype])) {
+		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_register_reply: "
+			    "no sockets registered for SAtype=%d(%s).\n",
+			    satype,
+			    satype2name(satype));
+		SENDERR(EPROTONOSUPPORT);
+	}
+	/* send up register msg with supported SATYPE algos */
 	pfkey_supported_listp = pfkey_supported_list[satype];
 	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_register_parse: "
+		    "klips_debug:pfkey_register_reply: "
 		    "pfkey_supported_list[%d]=0p%p\n",
 		    satype,
 		    pfkey_supported_list[satype]);
 	while(pfkey_supported_listp) {
 		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_register_parse: "
+			    "klips_debug:pfkey_register_reply: "
 			    "checking supported=0p%p\n",
 			    pfkey_supported_listp);
 		if(pfkey_supported_listp->supportedp->supported_alg_exttype == SADB_EXT_SUPPORTED_AUTH) {
 			KLIPS_PRINT(debug_pfkey,
-				    "klips_debug:pfkey_register_parse: "
+				    "klips_debug:pfkey_register_reply: "
 				    "adding auth alg.\n");
 			alg_num_a++;
 		}
 		if(pfkey_supported_listp->supportedp->supported_alg_exttype == SADB_EXT_SUPPORTED_ENCRYPT) {
 			KLIPS_PRINT(debug_pfkey,
-				    "klips_debug:pfkey_register_parse: "
+				    "klips_debug:pfkey_register_reply: "
 				    "adding encrypt alg.\n");
 			alg_num_e++;
 		}
@@ -1802,12 +1870,12 @@ pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey
 	
 	if(alg_num_a) {
 		KLIPS_PRINT(debug_pfkey,
-		            "klips_debug:pfkey_register_parse: "
+		            "klips_debug:pfkey_register_reply: "
 		            "allocating %lu bytes for auth algs.\n",
 		            (unsigned long) (alg_num_a * sizeof(struct sadb_alg)));
 		if((alg_a = kmalloc(alg_num_a * sizeof(struct sadb_alg), GFP_ATOMIC) ) == NULL) {
 			KLIPS_PRINT(debug_pfkey,
-				    "klips_debug:pfkey_register_parse: "
+				    "klips_debug:pfkey_register_reply: "
 				    "auth alg memory allocation error\n");
 			SENDERR(ENOMEM);
 		}
@@ -1816,12 +1884,12 @@ pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey
 	
 	if(alg_num_e) {
 		KLIPS_PRINT(debug_pfkey,
-		            "klips_debug:pfkey_register_parse: "
+		            "klips_debug:pfkey_register_reply: "
 		            "allocating %lu bytes for enc algs.\n",
 		            (unsigned long) (alg_num_e * sizeof(struct sadb_alg)));
 		if((alg_e = kmalloc(alg_num_e * sizeof(struct sadb_alg), GFP_ATOMIC) ) == NULL) {
 			KLIPS_PRINT(debug_pfkey,
-				    "klips_debug:pfkey_register_parse: "
+				    "klips_debug:pfkey_register_reply: "
 				    "enc alg memory allocation error\n");
 			SENDERR(ENOMEM);
 		}
@@ -1838,7 +1906,7 @@ pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey
 				alg_ap->sadb_alg_maxbits = pfkey_supported_listp->supportedp->supported_alg_maxbits;
 				alg_ap->sadb_alg_reserved = 0;
 				KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
-					    "klips_debug:pfkey_register_parse: "
+					    "klips_debug:pfkey_register_reply: "
 					    "adding auth=0p%p\n",
 					    alg_ap);
 				alg_ap++;
@@ -1852,14 +1920,14 @@ pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey
 				alg_ep->sadb_alg_maxbits = pfkey_supported_listp->supportedp->supported_alg_maxbits;
 				alg_ep->sadb_alg_reserved = 0;
 				KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
-					    "klips_debug:pfkey_register_parse: "
+					    "klips_debug:pfkey_register_reply: "
 					    "adding encrypt=0p%p\n",
 					    alg_ep);
 				alg_ep++;
 			}
 		}
 		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_register_parse: "
+			    "klips_debug:pfkey_register_reply: "
 			    "found satype=%d(%s) exttype=%d id=%d ivlen=%d minbits=%d maxbits=%d.\n",
 			    satype,
 			    satype2name(satype),
@@ -1870,13 +1938,12 @@ pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey
 			    pfkey_supported_listp->supportedp->supported_alg_maxbits);
 		pfkey_supported_listp = pfkey_supported_listp->next;
 	}
-	
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
 							  SADB_REGISTER,
 							  satype,
 							  0,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_seq,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_pid),
+							  sadb_msg? sadb_msg->sadb_msg_seq : ++pfkey_msg_seq,
+							  sadb_msg? sadb_msg->sadb_msg_pid: current->pid),
 			      extensions_reply) &&
 	     (alg_num_a ? pfkey_safe_build(error = pfkey_supported_build(&extensions_reply[SADB_EXT_SUPPORTED_AUTH],
 									SADB_EXT_SUPPORTED_AUTH,
@@ -1888,30 +1955,31 @@ pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey
 									alg_num_e,
 									alg_e),
 					  extensions_reply) : 1))) {
-		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_register_parse: "
-			    "failed to build the register message extensions\n");
+		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_register_reply: "
+			    "failed to build the register message extensions_reply\n");
 		SENDERR(-error);
 	}
 	
 	if((error = pfkey_msg_build(&pfkey_reply, extensions_reply, EXT_BITS_OUT))) {
-		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_register_parse: "
+		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_register_reply: "
 			    "failed to build the register message\n");
 		SENDERR(-error);
 	}
+	/* this should go to all registered sockets for that satype only */
 	for(pfkey_socketsp = pfkey_registered_sockets[satype];
 	    pfkey_socketsp;
 	    pfkey_socketsp = pfkey_socketsp->next) {
 		if((error = pfkey_upmsg(pfkey_socketsp->socketp, pfkey_reply))) {
-			KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_register_parse: "
-				    "sending up register reply message for satype=%d(%s) to socket=0p%p failed with error=%d.\n",
+			KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_register_reply: "
+				    "sending up acquire message for satype=%d(%s) to socket=0p%p failed with error=%d.\n",
 				    satype,
 				    satype2name(satype),
 				    pfkey_socketsp->socketp,
 				    error);
 			SENDERR(-error);
 		}
-		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_register_parse: "
-			    "sending up register reply message for satype=%d(%s) to socket=0p%p succeeded.\n",
+		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_register_reply: "
+			    "sending up register message for satype=%d(%s) to socket=0p%p succeeded.\n",
 			    satype,
 			    satype2name(satype),
 			    pfkey_socketsp->socketp);
@@ -1924,7 +1992,6 @@ pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey
 	if(alg_e) {
 		kfree(alg_e);
 	}
-
 	if (pfkey_reply) {
 		pfkey_msg_free(&pfkey_reply);
 	}
@@ -2402,14 +2469,14 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 			SENDERR(-error);
 		}
 		if(first != NULL) {
-			KLIPS_PRINT(debug_pfkey,
+			KLIPS_PRINT(debug_eroute,
 				    "klips_debug:pfkey_x_addflow_parse: "
 				    "first=0p%p HOLD packet re-injected.\n",
 				    first);
 			DEV_QUEUE_XMIT(first, first->dev, SOPRI_NORMAL);
 		}
 		if(last != NULL) {
-			KLIPS_PRINT(debug_pfkey,
+			KLIPS_PRINT(debug_eroute,
 				    "klips_debug:pfkey_x_addflow_parse: "
 				    "last=0p%p HOLD packet re-injected.\n",
 				    last);
@@ -3371,6 +3438,15 @@ pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg,
 
 /*
  * $Log: pfkey_v2_parser.c,v $
+ * Revision 1.123  2004/04/06 02:49:26  mcr
+ * 	pullup of algo code from alg-branch.
+ *
+ * Revision 1.122.2.2  2004/04/05 04:30:46  mcr
+ * 	patches for alg-branch to compile/work with 2.x openswan
+ *
+ * Revision 1.122.2.1  2003/12/22 15:25:52  jjo
+ * . Merged algo-0.8.1-rc11-test1 into alg-branch
+ *
  * Revision 1.122  2003/12/10 01:14:27  mcr
  * 	NAT-traversal patches to KLIPS.
  *

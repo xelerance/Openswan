@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.1.2.1 2004/03/21 05:23:30 mcr Exp $
+# RCSID $Id: Makefile,v 1.10 2004/06/09 02:08:00 mcr Exp $
 
 
 OPENSWANSRCDIR=../..
@@ -23,10 +23,13 @@ include ${OPENSWANSRCDIR}/Makefile.ver
 
 MANDIR=$(MANTREE)/man3
 
-SRCS=addrtoa.c addrtot.c addrtypeof.c anyaddr.c atoaddr.c \
-	atoasr.c atosubnet.c atoul.c copyright.c datatot.c \
+SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
+	atoasr.c atosubnet.c atoul.c constants.c copyright.c datatot.c \
+	alloc.c diag.c \
 	goodmask.c initaddr.c initsaid.c initsubnet.c keyblobtoid.c \
-	optionsfrom.c pfkey_v2_build.c pfkey_v2_ext_bits.c pfkey_v2_parse.c \
+	kernel_alg.c \
+	optionsfrom.c oswlog.c \
+	pfkey_v2_build.c pfkey_v2_ext_bits.c pfkey_v2_parse.c \
 	pfkey_v2_debug.c prng.c \
 	portof.c rangetoa.c rangetosubnet.c sameaddr.c \
 	satot.c subnetof.c subnettoa.c subnettot.c \
@@ -38,15 +41,17 @@ SRCS+=sanitizestring.c pfkey_print.c
 OBJS=${SRCS:.c=.o} version.o
 
 KLIPSD=${OPENSWANSRCDIR}/linux/include
-SRCDIR=${OPENSWANSRCDIR}/linux/lib/libopenswan
+SRCDIR=${OPENSWANSRCDIR}/linux/lib/libfreeswan
+MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
 
 VPATH = ${SRCDIR}
 
-HDRS=${KLIPSD}/openswan.h ${SRCDIR}/internal.h
+HDRS=${KLIPSD}/openswan.h internal.h
 
 LIB=libopenswan.a
 # Original flags
-CFLAGS=-I. -I${SRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR} $(USERCOMPILE)
+CFLAGS=-I. -I${SRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}
+CFLAGS+= -I${OPENSWANSRCDIR}/include $(USERCOMPILE)
 CFLAGS+= -Wall
 #CFLAGS+= -Wconversion
 #CFLAGS+= -Wmissing-prototypes
@@ -58,6 +63,7 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -W
 #CFLAGS+= -Wwrite-strings
 CFLAGS+= -Wbad-function-cast 
+CFLAGS+= -DX509_VERSION=\"${X509_VERSION}\"
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
@@ -80,9 +86,9 @@ install:
 	@mkdir -p $(MANDIR)
 	@for f in $(MANS) ; \
 	do \
-		$(INSTALL) $(INSTMANFLAGS) $(SRCDIR)/$$f $(MANDIR)/ipsec_$$f || exit 1 ; \
+		$(INSTALL) $(INSTMANFLAGS) $(MANSRCDIR)/$$f $(MANDIR)/ipsec_$$f || exit 1 ; \
 	done
-	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${SRCDIR}/$(man)) | \
+	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${MANSRCDIR}/$(man)) | \
 	while read from to; \
 	do \
 		ln -s -f ipsec_$$from $(MANDIR)/$$to; \
@@ -94,7 +100,7 @@ install_file_list:
 	do \
 		echo $(MANDIR)/ipsec_$$f;\
 	done;
-	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${SRCDIR}/$(man)) | \
+	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${MANSRCDIR}/$(man)) | \
 	while read from to; \
 	do \
 		echo $(MANDIR)/$$to; \
@@ -106,8 +112,8 @@ $(LIB):	$(OBJS)
 $(OBJS):	$(HDRS)
 
 # build version.c using version number from Makefile.ver
-version.c:	${SRCDIR}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
-	sed '/"/s/xxx/$(IPSECVERSION)/' ${SRCDIR}/version.in.c >$@
+version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
+	sed '/"/s/xxx/$(IPSECVERSION)/' version.in.c >$@
 
 #libdes.a:	../libdes/libdes.a
 #	ln -f -s ../libdes/libdes.a
@@ -119,6 +125,9 @@ version.c:	${SRCDIR}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
 #	then $(MAKE) CC='$(CC)' CFLAG='$(CFLAGS)' TESTING='' x86-elf ; \
 #	else $(MAKE) CC='$(CC)' CFLAG='$(CFLAGS)' libdes.a ; \
 #	fi
+
+test-%: %.c
+	${CC} ${CFLAGS} -D`echo $* | tr 'a-z' 'A-Z'`_MAIN $*.c -o test-$*
 
 clean:
 	rm -f $(LIB) *.o try* core *.core $(EXTHDRS) $(EXTLIBS) version.c

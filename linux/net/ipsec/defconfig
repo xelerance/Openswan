@@ -1,6 +1,6 @@
 
 #
-# RCSID $Id: defconfig,v 1.23 2003/12/10 01:14:27 mcr Exp $
+# RCSID $Id: defconfig,v 1.25 2004/07/05 01:03:53 mcr Exp $
 #
 
 #
@@ -44,6 +44,25 @@ CONFIG_IPSEC_ESP=y
 
 # Encryption algorithm(s):
 CONFIG_IPSEC_ENC_3DES=y
+CONFIG_IPSEC_ENC_AES=y
+
+# modular algo extensions (and new ALGOs)
+CONFIG_IPSEC_ALG=y
+CONFIG_IPSEC_ENC_3DES=y
+CONFIG_IPSEC_ENC_AES=y
+
+CONFIG_IPSEC_ALG_TWOFISH=m
+CONFIG_IPSEC_ALG_BLOWFISH=m
+CONFIG_IPSEC_ALG_SERPENT=m
+CONFIG_IPSEC_ALG_MD5=m
+CONFIG_IPSEC_ALG_SHA1=m
+CONFIG_IPSEC_ALG_SHA2=m
+#CONFIG_IPSEC_ALG_CAST=n
+#CONFIG_IPSEC_ALG_NULL=n
+
+# Use CryptoAPI for ALG? - by default, no.
+CONFIG_IPSEC_ENC_CRYPTOAPI=n
+
 
 # IP Compression: new, probably still has minor bugs.
 CONFIG_IPSEC_IPCOMP=y
@@ -57,6 +76,19 @@ CONFIG_IPSEC_NAT_TRAVERSAL=y
 #
 #
 # $Log: defconfig,v $
+# Revision 1.25  2004/07/05 01:03:53  mcr
+# 	fix for adding cryptoapi code.
+# 	keep it off for now, since UMLs do not have it yet.
+#
+# Revision 1.24  2004/04/06 02:49:25  mcr
+# 	pullup of algo code from alg-branch.
+#
+# Revision 1.23.2.2  2004/04/05 04:30:46  mcr
+# 	patches for alg-branch to compile/work with 2.x openswan
+#
+# Revision 1.23.2.1  2003/12/22 15:25:52  jjo
+# . Merged algo-0.8.1-rc11-test1 into alg-branch
+#
 # Revision 1.23  2003/12/10 01:14:27  mcr
 # 	NAT-traversal patches to KLIPS.
 #

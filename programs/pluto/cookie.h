@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: cookie.h,v 1.13.16.1 2004/03/21 05:23:32 mcr Exp $
+ * RCSID $Id: cookie.h,v 1.14 2004/03/08 01:48:21 ken Exp $
  */
 
 #include <openswan.h>

@@ -1,4 +1,4 @@
-#ifndef _FREESWAN_H
+#ifndef _OPENSWAN_H
 /*
  * header file for FreeS/WAN library functions
  * Copyright (C) 1998, 1999, 2000  Henry Spencer.
@@ -14,9 +14,9 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: openswan.h,v 1.82 2003/12/10 01:20:01 mcr Exp $
+ * RCSID $Id: openswan.h,v 1.89 2004/06/08 00:53:13 mcr Exp $
  */
-#define	_FREESWAN_H	/* seen it, no need to see it again */
+#define	_OPENSWAN_H	/* seen it, no need to see it again */
 
 
 
@@ -24,26 +24,33 @@
  * We've just got to have some datatypes defined...  And annoyingly, just
  * where we get them depends on whether we're in userland or not.
  */
+/* things that need to come from one place or the other, depending */
 #ifdef __KERNEL__
-
-#  include <linux/types.h>
-#  include <linux/in.h>
-
-#else /* __KERNEL__ */
-
-#  include <stdio.h>
-#  include <netinet/in.h>
+#include <linux/types.h>
+#include <linux/socket.h>
+#include <linux/in.h>
+#include <linux/string.h>
+#include <linux/ctype.h>
+#define	assert(foo)	/* nothing */
+#else
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <ctype.h>
+#include <assert.h>
+#include <stdio.h>
 
 #  define uint8_t u_int8_t
 #  define uint16_t u_int16_t 
 #  define uint32_t u_int32_t 
 #  define uint64_t u_int64_t 
 
+
 #  define DEBUG_NO_STATIC static
 
-#endif /* __KERNEL__ */
+#endif
 
-#include <freeswan/ipsec_param.h>
+#include <openswan/ipsec_param.h>
 
 
 /*
@@ -70,9 +77,13 @@
 #endif /* !IPPROTO_INT */
 
 #ifdef CONFIG_IPSEC_DEBUG
+#ifndef DEBUG_NO_STATIC
 #  define DEBUG_NO_STATIC
+#endif
 #else /* CONFIG_IPSEC_DEBUG */
+#ifndef DEBUG_NO_STATIC
 #  define DEBUG_NO_STATIC static
+#endif
 #endif /* CONFIG_IPSEC_DEBUG */
 
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL /* KERNEL ifdef */
@@ -223,7 +234,8 @@ size_t keyblobtoid(const unsigned char *src, size_t srclen, char *dst,
 size_t splitkeytoid(const unsigned char *e, size_t elen, const unsigned char *m,
 					size_t mlen, char *dst, size_t dstlen);
 #define	KEYID_BUF	10	/* up to 9 text digits plus NUL */
-err_t ttoprotoport(char *src, size_t src_len, u_int8_t *proto, u_int16_t *port);
+err_t ttoprotoport(char *src, size_t src_len, u_int8_t *proto, u_int16_t *port,
+                                                       int *has_port_wildcard);
 
 /* initializations */
 void initsaid(const ip_address *addr, ipsec_spi_t spi, int proto, ip_said *dst);
@@ -439,6 +451,29 @@ extern size_t sanitize_string(char *buf, size_t size);
 
 #endif
 
+
+/*
+ * ENUM of klips debugging values. Not currently used in klips.
+ * debug flag is actually 32 -bits, but only one bit is ever used,
+ * so we can actually pack it all into a single 32-bit word.
+ */
+enum klips_debug_flags {
+    KDF_VERBOSE     = 0,
+    KDF_XMIT        = 1,
+    KDF_NETLINK     = 2, /* obsolete */
+    KDF_XFORM       = 3,
+    KDF_EROUTE      = 4,
+    KDF_SPI         = 5,
+    KDF_RADIJ       = 6,
+    KDF_ESP         = 7,
+    KDF_AH          = 8, /* obsolete */
+    KDF_RCV         = 9,
+    KDF_TUNNEL      = 10,
+    KDF_PFKEY       = 11,
+    KDF_COMP        = 12
+};
+
+
 /*
  * Debugging levels for pfkey_lib_debug
  */
@@ -459,4 +494,20 @@ extern unsigned int pfkey_lib_debug;  /* bits selecting what to report */
 #define LWDNSQ_CMDBUF_LEN      1024
 #define LWDNSQ_RESULT_LEN_MAX  4096
 
-#endif /* _FREESWAN_H */
+
+/* syntax for passthrough SA */
+#ifndef PASSTHROUGHNAME
+#define	PASSTHROUGHNAME	"%passthrough"
+#define	PASSTHROUGH4NAME	"%passthrough4"
+#define	PASSTHROUGH6NAME	"%passthrough6"
+#define	PASSTHROUGHIS	"tun0@0.0.0.0"
+#define	PASSTHROUGH4IS	"tun0@0.0.0.0"
+#define	PASSTHROUGH6IS	"tun0@::"
+#define	PASSTHROUGHTYPE	"tun"
+#define	PASSTHROUGHSPI	0
+#define	PASSTHROUGHDST	0
+#endif
+
+
+
+#endif /* _OPENSWAN_H */

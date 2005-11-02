@@ -4,8 +4,10 @@ TEST_TYPE=klipstest
 TESTNAME=east-reject-02
 TESTHOST=east
 EXITONEMPTY=--exitonempty
-PRIVINPUT=../inputs/01-sunrise-sunset-sandwich-nic-ping.pcap
-REFPUBOUTPUT=spi1-output.txt
+
+THREEEIGHT=true
+PRIV_INPUT=../inputs/01-sunrise-sunset-sandwich-nic-ping.pcap
+REF_PUB_OUTPUT=spi1-output.txt
 REF_CONSOLE_OUTPUT=spi1-console.txt
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-spi-sanitize.sed"

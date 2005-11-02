@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.219 2004/02/03 03:13:17 mcr Exp $";
+char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.220 2004/04/06 02:49:26 mcr Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -22,7 +22,7 @@ char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.219 2004/02/03 03
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -39,7 +39,7 @@ char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.219 2004/02/03 03
 #include <linux/tcp.h>         /* struct tcphdr */
 #include <linux/udp.h>         /* struct udphdr */
 #include <linux/skbuff.h>
-#include <freeswan.h>
+#include <openswan.h>
 #ifdef NET_21
 # include <asm/uaccess.h>
 # include <linux/in6.h>
@@ -59,23 +59,23 @@ char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.219 2004/02/03 03
 
 #include <linux/if_arp.h>
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_life.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_eroute.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_radij.h"
-#include "freeswan/ipsec_sa.h"
-#include "freeswan/ipsec_tunnel.h"
-#include "freeswan/ipsec_xmit.h"
-#include "freeswan/ipsec_ipe4.h"
-#include "freeswan/ipsec_ah.h"
-#include "freeswan/ipsec_esp.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_life.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_eroute.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_radij.h"
+#include "openswan/ipsec_sa.h"
+#include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_xmit.h"
+#include "openswan/ipsec_ipe4.h"
+#include "openswan/ipsec_ah.h"
+#include "openswan/ipsec_esp.h"
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 #include <linux/udp.h>
 #endif
@@ -1681,6 +1681,9 @@ ipsec_tunnel_cleanup_devices(void)
 
 /*
  * $Log: ipsec_tunnel.c,v $
+ * Revision 1.220  2004/04/06 02:49:26  mcr
+ * 	pullup of algo code from alg-branch.
+ *
  * Revision 1.219  2004/02/03 03:13:17  mcr
  * 	minor edits for readability, and error reporting.
  *

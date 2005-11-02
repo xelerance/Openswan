@@ -13,14 +13,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_radij.c,v 1.67.6.1 2004/05/01 04:37:32 ken Exp $
+ * RCSID $Id: ipsec_radij.c,v 1.70 2004/04/25 21:10:52 ken Exp $
  */
 
 #include <linux/config.h>
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -35,7 +35,7 @@
 #include <linux/etherdevice.h> /* eth_type_trans */
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
-#include <freeswan.h>
+#include <openswan.h>
 #ifdef SPINLOCK
 # ifdef SPINLOCK_23
 #  include <linux/spinlock.h> /* *lock* */
@@ -50,21 +50,21 @@
 #include <asm/checksum.h>
 #include <net/ip.h>
 
-#include "freeswan/ipsec_eroute.h"
-#include "freeswan/ipsec_sa.h"
+#include "openswan/ipsec_eroute.h"
+#include "openswan/ipsec_sa.h"
  
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_radij.h"
-#include "freeswan/ipsec_tunnel.h"	/* struct ipsecpriv */
-#include "freeswan/ipsec_xform.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_radij.h"
+#include "openswan/ipsec_tunnel.h"	/* struct ipsecpriv */
+#include "openswan/ipsec_xform.h"
  
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
 
 #ifdef CONFIG_IPSEC_DEBUG
 int debug_radij = 0;
@@ -547,9 +547,6 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 
 /*
  * $Log: ipsec_radij.c,v $
- * Revision 1.67.6.1  2004/05/01 04:37:32  ken
- * Pull in snprintf() and proc fixes from HEAD
- *
  * Revision 1.70  2004/04/25 21:10:52  ken
  * Pull in dhr's changes from FreeS/WAN 2.06
  *

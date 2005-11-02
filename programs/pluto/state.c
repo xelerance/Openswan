@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: state.c,v 1.126.2.1 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: state.c,v 1.130.2.1 2004/08/22 03:25:30 mcr Exp $
  */
 
 #include <stdio.h>
@@ -97,7 +97,7 @@ reserve_msgid(struct state *isakmp_sa, msgid_t msgid)
     struct msgid_list *p;
 
     passert(msgid != MAINMODE_MSGID);
-    passert(IS_ISAKMP_SA_ESTABLISHED(isakmp_sa->st_state));
+    passert(IS_ISAKMP_ENCRYPTED(isakmp_sa->st_state));
 
     for (p = isakmp_sa->st_used_msgids; p != NULL; p = p->next)
 	if (p->msgid == msgid)
@@ -116,7 +116,7 @@ generate_msgid(struct state *isakmp_sa)
     int timeout = 100;	/* only try so hard for unique msgid */
     msgid_t msgid;
 
-    passert(IS_ISAKMP_SA_ESTABLISHED(isakmp_sa->st_state));
+    passert(IS_ISAKMP_ENCRYPTED(isakmp_sa->st_state));
 
     for (;;)
     {
@@ -126,7 +126,7 @@ generate_msgid(struct state *isakmp_sa)
 
 	if (--timeout == 0)
 	{
-	    plog("gave up looking for unique msgid; using 0x%08lx"
+	    openswan_log("gave up looking for unique msgid; using 0x%08lx"
 		, (unsigned long) msgid);
 	    break;
 	}
@@ -298,6 +298,10 @@ delete_state(struct state *st)
 
     set_cur_state(st);
 
+    /* If DPD is enabled on this state object, clear any pending events */
+    if(st->st_dpd_event != NULL)
+            delete_dpd_event(st);
+
     /* if there is a suspended state transition, disconnect us */
     if (st->st_suspended_md != NULL)
     {
@@ -399,13 +403,21 @@ states_use_connection(struct connection *c)
     return FALSE;
 }
 
+/*
+ * delete all states that were created for a given connection.
+ * if relations == TRUE, then also delete states that share
+ * the same phase 1 SA.
+ */
 void
-delete_states_by_connection(struct connection *c)
+delete_states_by_connection(struct connection *c, bool relations)
 {
     int pass;
     /* this kludge avoids an n^2 algorithm */
     enum connection_kind ck = c->kind;
     struct spd_route *sr;
+
+    /* save this connection's isakmp SA, since it will get set to later SOS_NOBODY */
+    so_serial_t parent_sa = c->newest_isakmp_sa;
 
     if (ck == CK_INSTANCE)
 	c->kind = CK_GOING_AWAY;
@@ -431,17 +443,20 @@ delete_states_by_connection(struct connection *c)
 
 		st = st->st_hashchain_next;	/* before this is deleted */
 
-		if (this->st_connection == c
-		&& (pass == 1 || !IS_ISAKMP_SA_ESTABLISHED(this->st_state)))
-		{
-		    struct state *old_cur_state
-			= cur_state == this? NULL : cur_state;
+
+                if ((this->st_connection == c
+			|| (relations && parent_sa != SOS_NOBODY 
+			&& this->st_clonedfrom == parent_sa))
+			&& (pass == 1 || !IS_ISAKMP_SA_ESTABLISHED(this->st_state)))
+                {
+                    struct state *old_cur_state
+                        = cur_state == this? NULL : cur_state;
 #ifdef DEBUG
 		    lset_t old_cur_debugging = cur_debugging;
 #endif
 
 		    set_cur_state(this);
-		    plog("deleting state (%s)"
+		    openswan_log("deleting state (%s)"
 			, enum_show(&state_names, this->st_state));
 		    /* MCR I can't really see a reason for this. */
 		    /* passert(this->st_event != NULL); */
@@ -455,9 +470,12 @@ delete_states_by_connection(struct connection *c)
 	}
     }
 
+/*  Seems to dump here because 1 of the states is NULL.  Removing the Assert
+   makes things work.  We should fix this eventually.
+
     passert(c->newest_ipsec_sa == SOS_NOBODY
 	    && c->newest_isakmp_sa == SOS_NOBODY);
-
+*/
 
     sr = &c->spd;
     while (sr != NULL)
@@ -470,7 +488,7 @@ delete_states_by_connection(struct connection *c)
     if (ck == CK_INSTANCE)
     {
 	c->kind = ck;
-	delete_connection(c);
+	delete_connection(c, relations);
     }
 }
 
@@ -504,10 +522,10 @@ delete_states_by_peer(ip_address *peer)
 	    {
 		if (sameaddr(&sr->that.host_addr, peer))
 		{
-		    plog("peer %s for connection %s deleting - claimed to have crashed"
+		    openswan_log("peer %s for connection %s deleting - claimed to have crashed"
 			 , peerstr
 			 , c->name);
-		    delete_states_by_connection(c);
+		    delete_states_by_connection(c, TRUE);
 		    break;	/* can only delete it once */
 		}
 	    }
@@ -541,6 +559,8 @@ duplicate_state(struct state *st)
     nst->st_situation = st->st_situation;
     nst->quirks = st->quirks;
     nst->hidden_variables = st->hidden_variables;
+    nst->st_clonedfrom = st->st_serialno;
+
 
 #   define clone_chunk(ch, name) \
 	clonetochunk(nst->ch, st->ch.ptr, st->ch.len, name)
@@ -602,8 +622,8 @@ find_state(const u_char *icookie
 		u_char tmpiv[MAX_DIGEST_LEN];
 
 		/* oh, damn, life is bad, they reused the old one */
-		plog("find_state: old message id %08x reused, Coping."
-		     , msgid);
+		openswan_log("find_state: old message id %08x reused, Coping."
+			      , msgid);
 		
 		/* swap msgid/msgid2 and the IVs */
 		/* msgid already == st->st_msgid2 */
@@ -1079,6 +1099,29 @@ startover:
 	}
     }
     return cpi;
+}
+
+
+/* 
+ * Immediately schedule a replace event for all states for a peer.
+ */
+void replace_states_by_peer(ip_address *peer)
+{
+    struct state *st = NULL;
+    int i;
+    /* struct event *ev;     currently unused */
+
+    for (i = 0; st == NULL && i < STATE_TABLE_SIZE; i++)
+        for (st = statetable[i]; st != NULL; st = st->st_hashchain_next)
+            /* Only replace if it already has a replace event. */
+            if (sameaddr(&st->st_connection->spd.that.host_addr, peer)
+                    && (IS_ISAKMP_SA_ESTABLISHED(st->st_state) || IS_IPSEC_SA_ESTABLISHED(st->st_state))
+                    && st->st_event->ev_type == EVENT_SA_REPLACE)
+            {
+                delete_event(st);
+                delete_dpd_event(st);
+                event_schedule(EVENT_SA_REPLACE, 0, st);
+            }
 }
 
 /*

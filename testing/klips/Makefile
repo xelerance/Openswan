@@ -11,10 +11,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.17 2003/10/31 02:40:04 mcr Exp $
+# RCSID $Id: Makefile,v 1.19 2004/07/05 05:26:19 mcr Exp $
 
-FREESWANSRCDIR=$(shell cd ../..; pwd)
-include $(FREESWANSRCDIR)/Makefile.inc
+OPENSWANSRCDIR=$(shell cd ../..; pwd)
+include $(OPENSWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
 
@@ -28,8 +28,14 @@ check:
 	unset KLIPS_MODULE; sh ./dotests.sh
 	KLIPS_MODULE=-module ./dotests.sh
 
+checkbase:
+	unset KLIPS_MODULE; sh ./dotests.sh
+
+checkmod:
+	KLIPS_MODULE=-module ./dotests.sh
+
 spotcheck:
-	@source ${FREESWANSRCDIR}/umlsetup.sh; source setup.sh; source $${UTILS}/functions.sh; eval `sed -e '/^#/d' -e '/^$$/d' TESTLIST | perl $${UTILS}/shuffle.pl 1`
+	@source ${OPENSWANSRCDIR}/umlsetup.sh; source setup.sh; source $${UTILS}/functions.sh; eval `sed -e '/^#/d' -e '/^$$/d' TESTLIST | perl $${UTILS}/shuffle.pl 1`
 
 
 checkcon:

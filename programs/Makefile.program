@@ -1,9 +1,8 @@
 
-include ${FREESWANSRCDIR}/Makefile.ver
+include ${OPENSWANSRCDIR}/Makefile.ver
 
-CFLAGS+=$(USERCOMPILE) -I${KLIPSINC}
+CFLAGS+=${USERCOMPILE} -I${OPENSWANSRCDIR} -I${KLIPSINC} -I${OPENSWANSRCDIR}/include
 
-CFLAGS+= $(USERCOMPILE)
 CFLAGS+= -Wall
 #CFLAGS+= -Wconversion
 #CFLAGS+= -Wmissing-prototypes
@@ -15,11 +14,14 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -W
 #CFLAGS+= -Wwrite-strings
 CFLAGS+= -Wbad-function-cast 
-CFLAGS+= -DNAT_TRAVERSAL
+
+LIBS?=${OPENSWANLIB}
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
 endif
+
+CFLAGS+=-DKERNEL_ALG -DIKE_ALG
 
 # die if there are any warnings
 ifndef WERROR
@@ -47,7 +49,7 @@ ifndef CONFDSUBDIR
 CONFDSUBDIR=.
 endif
 
-all: $(PROGRAM)
+all: ${PROGRAM}
 
 programs: all
 
@@ -114,10 +116,10 @@ endif
 # cancel the rule that compiles directly
 %: %.c 
 
-%: %.o $(OBJS)
+%: %.o $(OBJS) $(OPENSWANLIB)
 	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LIBS)
 
-%: %.in ${FREESWANSRCDIR}/Makefile.inc ${FREESWANSRCDIR}/Makefile.ver
+%: %.in ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
 	@cat $< | sed -e "s/xxx/$(IPSECVERSION)/" \
 			-e "s:@IPSEC_DIR@:$(FINALBINDIR):" \
 			-e "s:@IPSEC_EXECDIR@:$(FINALLIBEXECDIR):" \

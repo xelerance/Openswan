@@ -67,6 +67,7 @@ policy		= policy_match
 countryName		= match
 stateOrProvinceName	= match
 organizationName	= match
+localityName		= optional
 organizationalUnitName	= optional
 commonName		= supplied
 emailAddress		= optional

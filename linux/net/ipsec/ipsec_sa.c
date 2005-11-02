@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_sa.c,v 1.22 2003/12/10 01:14:27 mcr Exp $
+ * RCSID $Id: ipsec_sa.c,v 1.23 2004/04/06 02:49:26 mcr Exp $
  *
  * This is the file formerly known as "ipsec_xform.h"
  *
@@ -24,7 +24,7 @@
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -40,7 +40,7 @@
 #include <linux/etherdevice.h> /* eth_type_trans */
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
-#include <freeswan.h>
+#include <openswan.h>
 #ifdef SPINLOCK
 #ifdef SPINLOCK_23
 #include <linux/spinlock.h> /* *lock* */
@@ -55,24 +55,25 @@
 #include <asm/checksum.h>
 #include <net/ip.h>
 
-#include "freeswan/radij.h"
+#include "openswan/radij.h"
 
-#include "freeswan/ipsec_stats.h"
-#include "freeswan/ipsec_life.h"
-#include "freeswan/ipsec_sa.h"
-#include "freeswan/ipsec_xform.h"
+#include "openswan/ipsec_stats.h"
+#include "openswan/ipsec_life.h"
+#include "openswan/ipsec_sa.h"
+#include "openswan/ipsec_xform.h"
 
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_radij.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_ipe4.h"
-#include "freeswan/ipsec_ah.h"
-#include "freeswan/ipsec_esp.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_radij.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_ipe4.h"
+#include "openswan/ipsec_ah.h"
+#include "openswan/ipsec_esp.h"
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
+#include "openswan/ipsec_alg.h"
 
 
 #ifdef CONFIG_IPSEC_DEBUG
@@ -983,8 +984,17 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 	ips->ips_key_a = NULL;
 
 	if(ips->ips_key_e != NULL) {
+#ifdef CONFIG_IPSEC_ALG
+		if (ips->ips_alg_enc&&ips->ips_alg_enc->ixt_e_destroy_key) {
+			ips->ips_alg_enc->ixt_e_destroy_key(ips->ips_alg_enc, 
+					ips->ips_key_e);
+		} else {
+#endif /* CONFIG_IPSEC_ALG */
 		memset((caddr_t)(ips->ips_key_e), 0, ips->ips_key_e_size);
 		kfree(ips->ips_key_e);
+#ifdef CONFIG_IPSEC_ALG
+		}
+#endif /* CONFIG_IPSEC_ALG */
 	}
 	ips->ips_key_e = NULL;
 
@@ -1009,6 +1019,12 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 		kfree(ips->ips_ident_d.data);
         }
 	ips->ips_ident_d.data = NULL;
+
+#ifdef CONFIG_IPSEC_ALG
+	if (ips->ips_alg_enc||ips->ips_alg_auth) {
+		ipsec_alg_sa_wipe(ips);
+	}
+#endif /* CONFIG_IPSEC_ALG */
 	
 	memset((caddr_t)ips, 0, sizeof(*ips));
 	kfree(ips);
@@ -1019,6 +1035,12 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 
 /*
  * $Log: ipsec_sa.c,v $
+ * Revision 1.23  2004/04/06 02:49:26  mcr
+ * 	pullup of algo code from alg-branch.
+ *
+ * Revision 1.22.2.1  2003/12/22 15:25:52  jjo
+ * . Merged algo-0.8.1-rc11-test1 into alg-branch
+ *
  * Revision 1.22  2003/12/10 01:14:27  mcr
  * 	NAT-traversal patches to KLIPS.
  *

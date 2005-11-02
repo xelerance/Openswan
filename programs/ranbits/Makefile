@@ -11,18 +11,24 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.2 2002/06/02 21:51:41 mcr Exp $
+# RCSID $Id: Makefile,v 1.4 2004/04/12 12:05:52 ken Exp $
 
-FREESWANSRCDIR=../..
-include ${FREESWANSRCDIR}/Makefile.inc
+OPENSWANSRCDIR=../..
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=ranbits
-LIBS=${FREESWANLIB}
+LIBS=${OPENSWANLIB}
 
 include ../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.4  2004/04/12 12:05:52  ken
+# Use OPENSWANLIBs
+#
+# Revision 1.3  2004/04/03 19:44:47  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.2  2002/06/02 21:51:41  mcr
 # 	changed TOPDIR->FREESWANSRCDIR in all Makefiles.
 # 	(note that linux/net/ipsec/Makefile uses TOPDIR because this is the

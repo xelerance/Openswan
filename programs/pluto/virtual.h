@@ -1,4 +1,4 @@
-/* FreeS/WAN Virtual IP Management
+/* Openswan Virtual IP Management
  * Copyright (C) 2002 Mathieu Lafon - Arkoon Network Security
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: virtual.h,v 1.1 2003/12/10 01:58:06 mcr Exp $
+ * RCSID $Id: virtual.h,v 1.2 2004/05/08 11:05:38 ken Exp $
  */
 
 #ifndef _VIRTUAL_IP_H

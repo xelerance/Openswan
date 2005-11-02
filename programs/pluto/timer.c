@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: timer.c,v 1.83.4.1 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: timer.c,v 1.86 2004/04/29 03:59:32 mcr Exp $
  */
 
 #include <stdio.h>
@@ -63,7 +63,7 @@ now(void)
     passert(n != (time_t)-1);
     if (last_time > n)
     {
-	plog("time moved backwards %ld seconds", (long)(last_time - n));
+	openswan_log("time moved backwards %ld seconds", (long)(last_time - n));
 	delta += last_time - n;
     }
     last_time = n;
@@ -96,8 +96,14 @@ event_schedule(enum event_type type, time_t tm, struct state *st)
      */
     if (st != NULL)
     {
-	passert(st->st_event == NULL);
-	st->st_event = ev;
+            if(type == EVENT_DPD || type == EVENT_DPD_TIMEOUT)
+            {
+                    passert(st->st_dpd_event == NULL);
+                    st->st_dpd_event = ev;
+            } else {
+        passert(st->st_event == NULL);
+        st->st_event = ev;
+    }
     }
 
     DBG(DBG_CONTROL,
@@ -194,8 +200,14 @@ handle_timer_event(void)
     if (st != NULL)
     {
 	c = st->st_connection;
-	passert(st->st_event == ev);
-	st->st_event = NULL;
+        if( type  == EVENT_DPD || type == EVENT_DPD_TIMEOUT)
+        {
+                passert(st->st_dpd_event == ev);
+                st->st_dpd_event = NULL;
+        } else {
+        passert(st->st_event == ev);
+        st->st_event = NULL;
+        }
 	peer = c->spd.that.host_addr;
 	set_cur_state(st);
     }
@@ -315,7 +327,7 @@ handle_timer_event(void)
 			else
 			{
 			    /* no whack: just log to syslog */
-			    plog("%s", story);
+			    openswan_log("%s", story);
 			}
 			ipsecdoi_replace(st, try);
 		    }
@@ -335,7 +347,7 @@ handle_timer_event(void)
 		{
 		    /* not very interesting: no need to replace */
 		    DBG(DBG_LIFECYCLE
-			, plog("not replacing stale %s SA: #%lu will do"
+			, openswan_log("not replacing stale %s SA: #%lu will do"
 			    , IS_PHASE1(st->st_state)? "ISAKMP" : "IPsec"
 			    , newest));
 		}
@@ -360,17 +372,18 @@ handle_timer_event(void)
 		     * normal log output.
 		     */
 		    DBG(DBG_LIFECYCLE
-			, plog("not replacing stale %s SA: inactive for %lus"
+			, openswan_log("not replacing stale %s SA: inactive for %lus"
 			    , IS_PHASE1(st->st_state)? "ISAKMP" : "IPsec"
 			    , (unsigned long)(tm - st->st_outbound_time)));
 		}
 		else
 		{
 		    DBG(DBG_LIFECYCLE
-			, plog("replacing stale %s SA"
+			, openswan_log("replacing stale %s SA"
 			    , IS_PHASE1(st->st_state)? "ISAKMP" : "IPsec"));
 		    ipsecdoi_replace(st, 1);
 		}
+		delete_dpd_event(st);
 		event_schedule(EVENT_SA_EXPIRE, st->st_margin, st);
 	    }
 	    break;
@@ -395,12 +408,12 @@ handle_timer_event(void)
 		{
 		    /* not very interesting: already superseded */
 		    DBG(DBG_LIFECYCLE
-			, plog("%s SA expired (superseded by #%lu)"
+			, openswan_log("%s SA expired (superseded by #%lu)"
 			    , satype, latest));
 		}
 		else
 		{
-		    plog("%s SA expired (%s)", satype
+		    openswan_log("%s SA expired (%s)", satype
 			, (c->policy & POLICY_DONT_REKEY)
 			    ? "--dontrekey"
 			    : "LATEST!"
@@ -412,6 +425,14 @@ handle_timer_event(void)
 	    /* Delete this state object.  It must be in the hash table. */
 	    delete_state(st);
 	    break;
+
+        case EVENT_DPD:
+            dpd_outI(st);
+            break;
+        case EVENT_DPD_TIMEOUT:
+            dpd_timeout(st);
+            break;
+
 
 #ifdef NAT_TRAVERSAL
 	case EVENT_NAT_T_KEEPALIVE:
@@ -491,3 +512,34 @@ delete_event(struct state *st)
 	}
     }
 }
+
+
+/*
+ * Delete a DPD event.
+ */
+void
+delete_dpd_event(struct state *st)
+{
+    if (st->st_dpd_event != (struct event *) NULL)
+    {
+        struct event **ev;
+
+        for (ev = &evlist; ; ev = &(*ev)->ev_next)
+        {
+            if (*ev == NULL)
+            {
+                DBG(DBG_CONTROL, DBG_log("event %s to be deleted not found",
+                    enum_show(&timer_event_names, st->st_dpd_event->ev_type)));
+                break;
+            }
+            if ((*ev) == st->st_dpd_event)
+            {
+                *ev = (*ev)->ev_next;
+                pfree(st->st_dpd_event);
+                st->st_dpd_event = (struct event *) NULL;
+                break;
+            }
+        }
+    }
+}
+

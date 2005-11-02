@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char spi_c_version[] = "RCSID $Id: spi.c,v 1.101 2003/12/05 16:44:19 mcr Exp $";
+char spi_c_version[] = "RCSID $Id: spi.c,v 1.106 2004/04/29 04:08:28 mcr Exp $";
 
 #include <asm/types.h>
 #include <sys/types.h>
@@ -39,7 +39,7 @@ char spi_c_version[] = "RCSID $Id: spi.c,v 1.101 2003/12/05 16:44:19 mcr Exp $";
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <freeswan.h>
+#include <openswan.h>
 #if 0
 #include <linux/autoconf.h>    /* CONFIG_IPSEC_PFKEYv2 */
 #endif
@@ -48,17 +48,27 @@ char spi_c_version[] = "RCSID $Id: spi.c,v 1.101 2003/12/05 16:44:19 mcr Exp $";
      #include <pfkeyv2.h>
      #include <pfkey.h>
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_ipe4.h"
-#include "freeswan/ipsec_ah.h"
-#include "freeswan/ipsec_esp.h"
-#include "freeswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL */
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_ipe4.h"
+#include "openswan/ipsec_ah.h"
+#include "openswan/ipsec_esp.h"
+#include "openswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL */
+
+#include "constants.h"
+#include "oswlog.h"
+#include "alg_info.h"
+#include "kernel_alg.h"
 
 struct encap_msghdr *em;
 
-char *program_name;
+/* 	
+ * 	Manual conn support for ipsec_alg (modular algos).
+ * 	Rather ugly to include from pluto dir but avoids
+ * 	code duplication.
+ */
+char *progname;
 int debug = 0;
 int saref = 0;
 char *command;
@@ -71,6 +81,20 @@ ip_address edst, dst, src;
 int address_family = 0;
 unsigned char proto = 0;
 int alg = 0;
+
+#ifdef KERNEL_ALG
+/* 
+ * 	Manual connection support for modular algos (ipsec_alg) --Juanjo.
+ */
+#define XF_OTHER_ALG (XF_CLR-1)	/* define magic XF_ symbol for alg_info's */
+#include <assert.h>
+const char *alg_string = NULL;	/* algorithm string */
+struct alg_info_esp *alg_info = NULL;	/* algorithm info got from string */
+struct esp_info *esp_info = NULL;	/* esp info from 1st (only) element */
+const char *alg_err;		/* auxiliar for parsing errors */
+int proc_read_ok = 0;		/* /proc/net/pf_key_support read ok */
+#endif /* KERNEL_ALG */
+
 int replay_window = 0;
 char sa[SATOT_BUF];
 
@@ -107,9 +131,9 @@ spi --del <SA>\n\
 spi --ip4 <SA> --src <encap-src> --dst <encap-dst>\n\
 spi --ip6 <SA> --src <encap-src> --dst <encap-dst>\n\
 spi --ah <algo> <SA> [<life> ][ --replay_window <replay_window> ] --authkey <key>\n\
-	where <algo> is one of:	hmac-md5-96 | hmac-sha1-96\n\
+	where <algo> is one of:	hmac-md5-96 | hmac-sha1-96 | something-loaded \n\
 spi --esp <algo> <SA> [<life> ][ --replay_window <replay-window> ] --enckey <ekey> --authkey <akey>\n\
-	where <algo> is one of:	3des-md5-96 | 3des-sha1-96\n\
+	where <algo> is one of:	3des-md5-96 | 3des-sha1-96\n | something-loaded\
 spi --esp <algo> <SA> [<life> ][ --replay_window <replay-window> ] --enckey <ekey>\n\
 	where <algo> is:	3des\n\
 spi --comp <algo> <SA>\n\
@@ -150,18 +174,18 @@ parse_life_options(uint32_t life[life_maxsever][life_maxtype],
 		} else {
 			fprintf(stderr,
 				"%s: missing lifetime severity in %s, optargt=0p%p, optargp=0p%p, sizeof(\"soft\")=%d\n",
-				program_name,
+				progname,
 				optargt,
 				optargt,
 				optargp,
 				(int)sizeof("soft"));
-			usage(program_name, stderr);
+			usage(progname, stderr);
 			return(1);
 		}
 		if(debug) {
 			fprintf(stdout,
 				"%s: debug: life_severity=%d, optargt=0p%p=\"%s\", optargp=0p%p=\"%s\", sizeof(\"soft\")=%d\n",
-				program_name,
+				progname,
 				life_severity,
 				optargt,
 				optargt,
@@ -172,14 +196,14 @@ parse_life_options(uint32_t life[life_maxsever][life_maxtype],
 		if(*(optargp++) != '-') {
 			fprintf(stderr,
 				"%s: expected '-' after severity of lifetime parameter to --life option.\n",
-				program_name);
-			usage(program_name, stderr);
+				progname);
+			usage(progname, stderr);
 			return(1);
 		}
 		if(debug) {
 			fprintf(stdout,
 				"%s: debug: optargt=0p%p=\"%s\", optargp=0p%p=\"%s\", strlen(optargt)=%d, strlen(optargp)=%d, strncmp(optargp, \"addtime\", sizeof(\"addtime\")-1)=%d\n",
-				program_name,
+				progname,
 				optargt,
 				optargt,
 				optargp,
@@ -206,21 +230,21 @@ parse_life_options(uint32_t life[life_maxsever][life_maxtype],
 		} else {
 			fprintf(stderr,
 				"%s: missing lifetime type after '-' in %s\n",
-				program_name,
+				progname,
 				optargt);
-			usage(program_name, stderr);
+			usage(progname, stderr);
 			return(1);
 		}
 		if(debug) {
 			fprintf(stdout,
 				"%s: debug: life_type=%d\n",
-				program_name,
+				progname,
 				life_type);
 		}
 		if(life_opt[life_severity][life_type] != NULL) {
 			fprintf(stderr,
 				"%s: Error, lifetime parameter redefined:%s, already defined as:0p%p\n",
-				program_name,
+				progname,
 				optargt,
 				life_opt[life_severity][life_type]);
 			return(1);
@@ -228,14 +252,14 @@ parse_life_options(uint32_t life[life_maxsever][life_maxtype],
 		if(*(optargp++) != '=') {
 			fprintf(stderr,
 				"%s: expected '=' after type of lifetime parameter to --life option.\n",
-				program_name);
-			usage(program_name, stderr);
+				progname);
+			usage(progname, stderr);
 			return(1);
 		}
 		if(debug) {
 			fprintf(stdout,
 				"%s: debug: optargt=0p%p, optargt+strlen(optargt)=0p%p, optargp=0p%p, strlen(optargp)=%d\n",
-				program_name,
+				progname,
 				optargt,
 				optargt+strlen(optargt),
 				optargp,
@@ -244,11 +268,11 @@ parse_life_options(uint32_t life[life_maxsever][life_maxtype],
 		if(strlen(optargp) == 0) {
 			fprintf(stderr,
 				"%s: expected value after '=' in --life option. optargt=0p%p, optargt+strlen(optargt)=0p%p, optargp=0p%p\n",
-				program_name,
+				progname,
 				optargt,
 				optargt+strlen(optargt),
 				optargp);
-			usage(program_name, stderr);
+			usage(progname, stderr);
 			return(1);
 		}
 		life[life_severity][life_type] = strtoul(optargp, &endptr, 0);
@@ -256,7 +280,7 @@ parse_life_options(uint32_t life[life_maxsever][life_maxtype],
 		if(!((endptr == optargp + strlen(optargp)) || (endptr == optargp + strcspn(optargp, ", ")))) {
 			fprintf(stderr,
 				"%s: Invalid character='%c' at offset %d in lifetime option parameter: '%s', parameter string is %d characters long, %d valid value characters found.\n",
-				program_name,
+				progname,
 				*endptr,
 				(int)(endptr - optarg),
 				optarg,
@@ -267,7 +291,7 @@ parse_life_options(uint32_t life[life_maxsever][life_maxtype],
 		life_opt[life_severity][life_type] = optargt;
 		if(debug) {
 			fprintf(stdout, "%s lifetime %s set to %d.\n",
-				program_name, optargt, life[life_severity][life_type]);
+				progname, optargt, life[life_severity][life_type]);
 		}
 		optargp=endptr+1;
 	} while(*endptr==',' || isspace(*endptr));
@@ -292,7 +316,7 @@ pfkey_register(uint8_t satype) {
 				    getpid());
 	if(error != 0) {
 		fprintf(stderr, "%s: Trouble building message header, error=%d.\n",
-			program_name, error);
+			progname, error);
 		pfkey_extensions_free(extensions);
 		return(1);
 	}
@@ -300,7 +324,7 @@ pfkey_register(uint8_t satype) {
 	error = pfkey_msg_build(&pfkey_msg, extensions, EXT_BITS_IN);
 	if(error != 0) {
 		fprintf(stderr, "%s: Trouble building pfkey message, error=%d.\n",
-			program_name, error);
+			progname, error);
 		pfkey_extensions_free(extensions);
 		pfkey_msg_free(&pfkey_msg);
 		return(1);
@@ -311,11 +335,11 @@ pfkey_register(uint8_t satype) {
 		/* cleanup code here */
 		if(wlen < 0)
 			fprintf(stderr, "%s: Trouble writing to channel PF_KEY: %s\n",
-				program_name,
+				progname,
 				strerror(errno));
 		else
 			fprintf(stderr, "%s: write to channel PF_KEY truncated.\n",
-				program_name);
+				progname);
 		pfkey_extensions_free(extensions);
 		pfkey_msg_free(&pfkey_msg);
 		return(1);
@@ -359,6 +383,78 @@ static struct option const longopts[] =
 	{0, 0, 0, 0}
 };
 
+
+int decode_esp(char *algname)
+{
+  int esp_alg;
+
+  if(!strcmp(algname, "3des-md5-96")) {
+    esp_alg = XF_ESP3DESMD596;
+  } else if(!strcmp(algname, "3des-sha1-96")) {
+    esp_alg = XF_ESP3DESSHA196;
+  } else if(!strcmp(algname, "3des")) {
+    esp_alg = XF_ESP3DES;
+#ifdef KERNEL_ALG
+  } else if((alg_info=alg_info_esp_create_from_str(algname, &alg_err, FALSE))) {
+    int esp_ealg_id, esp_aalg_id;
+
+    esp_alg = XF_OTHER_ALG;
+    if (alg_info->alg_info_cnt>1) {
+      fprintf(stderr, "%s: Invalid encryption algorithm '%s' "
+	      "follows '--esp' option: lead too many(%d) "
+	      "transforms\n",
+	      progname, algname, alg_info->alg_info_cnt);
+      exit(1);
+    }
+    alg_string=algname;
+    esp_info=&alg_info->esp[0];
+    if (debug) {
+      fprintf(stdout, "%s: alg_info: cnt=%d ealg[0]=%d aalg[0]=%d\n",
+	      progname, 
+	      alg_info->alg_info_cnt,
+	      esp_info->encryptalg,
+	      esp_info->authalg);
+    }
+    esp_ealg_id=esp_info->esp_ealg_id;
+    esp_aalg_id=esp_info->esp_aalg_id;
+    if (kernel_alg_proc_read()==0) {
+      err_t ugh;
+
+      proc_read_ok++;
+
+      ugh = kernel_alg_esp_enc_ok(esp_ealg_id, 0, 0);
+      if (ugh != NULL)
+	{
+	  fprintf(stderr, "%s: ESP encryptalg=%d (\"%s\") "
+		  "not present - %s\n",
+		  progname,
+		  esp_ealg_id,
+		  enum_name(&esp_transformid_names, esp_ealg_id),
+		  ugh);
+	  exit(1);
+	}
+
+      ugh = kernel_alg_esp_auth_ok(esp_aalg_id, 0);
+      if (ugh != NULL)
+	{
+	  fprintf(stderr, "%s: ESP authalg=%d (\"%s\") - %s "
+		  "not present\n",
+		  progname, esp_aalg_id,
+		  enum_name(&auth_alg_names, esp_aalg_id), ugh);
+	  exit(1);
+	}
+    }
+#endif /* KERNEL_ALG */
+  } else {
+    fprintf(stderr, "%s: Invalid encryption algorithm '%s' follows '--esp' option.\n",
+	    progname, algname);
+    exit(1);
+  }
+  return esp_alg;
+}
+
+
+
 int
 main(int argc, char *argv[])
 {
@@ -390,8 +486,10 @@ main(int argc, char *argv[])
 	uint32_t life[life_maxsever][life_maxtype];
 	char *life_opt[life_maxsever][life_maxtype];
 	
-	program_name = argv[0];
+	progname = argv[0];
 	mypid = getpid();
+
+	tool_init_log();
 
 	memset(&said, 0, sizeof(said));
 	iv_opt = akey_opt = ekey_opt = alg_opt = edst_opt = spi_opt = proto_opt = af_opt = said_opt = dst_opt = src_opt = NULL;
@@ -410,6 +508,7 @@ main(int argc, char *argv[])
 		case 'g':
 			debug = 1;
 			pfkey_lib_debug = PF_KEY_DEBUG_PARSE_MAX;
+			cur_debugging = 0xffffffff;
 			argcount--;
 			break;
 
@@ -424,32 +523,35 @@ main(int argc, char *argv[])
 			break;
 
 		case 'l':
-			program_name = malloc(strlen(argv[0])
+			progname = malloc(strlen(argv[0])
 					      + 10 /* update this when changing the sprintf() */
 					      + strlen(optarg));
-			sprintf(program_name, "%s --label %s",
+			sprintf(progname, "%s --label %s",
 				argv[0],
 				optarg);
+			tool_close_log();
+			tool_init_log();
+
 			argcount -= 2;
 			break;
 		case 'H':
 			if(alg) {
 				fprintf(stderr, "%s: Only one of '--ah', '--esp', '--comp', '--ip4', '--ip6', '--del' or '--clear'  options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
-			if       (!strcmp(optarg, "hmac-md5-96")) {
+			if(!strcmp(optarg, "hmac-md5-96")) {
 				alg = XF_AHHMACMD5;
 			} else if(!strcmp(optarg, "hmac-sha1-96")) {
 				alg = XF_AHHMACSHA1;
 			} else {
 				fprintf(stderr, "%s: Unknown authentication algorithm '%s' follows '--ah' option.\n",
-					program_name, optarg);
+					progname, optarg);
 				exit(1);
 			}
 			if(debug) {
 				fprintf(stdout, "%s: Algorithm %d selected.\n",
-					program_name,
+					progname,
 					alg);
 			}
 			alg_opt = optarg;
@@ -457,23 +559,15 @@ main(int argc, char *argv[])
 		case 'P':
 			if(alg) {
 				fprintf(stderr, "%s: Only one of '--ah', '--esp', '--comp', '--ip4', '--ip6', '--del' or '--clear'  options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
-			if       (!strcmp(optarg, "3des-md5-96")) {
-				alg = XF_ESP3DESMD596;
-			} else if(!strcmp(optarg, "3des-sha1-96")) {
-				alg = XF_ESP3DESSHA196;
-			} else if(!strcmp(optarg, "3des")) {
-				alg = XF_ESP3DES;
-			} else {
-				fprintf(stderr, "%s: Invalid encryption algorithm '%s' follows '--esp' option.\n",
-					program_name, optarg);
-				exit(1);
-			}
+
+			alg = decode_esp(optarg);
+
 			if(debug) {
 				fprintf(stdout, "%s: Algorithm %d selected.\n",
-					program_name,
+					progname,
 					alg);
 			}
 			alg_opt = optarg;
@@ -481,19 +575,19 @@ main(int argc, char *argv[])
 		case 'Z':
 			if(alg) {
 				fprintf(stderr, "%s: Only one of '--ah', '--esp', '--comp', '--ip4', '--ip6', '--del' or '--clear'  options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			if       (!strcmp(optarg, "deflate")) {
 				alg = XF_COMPDEFLATE;
 			} else {
 				fprintf(stderr, "%s: Unknown compression algorithm '%s' follows '--comp' option.\n",
-					program_name, optarg);
+					progname, optarg);
 				exit(1);
 			}
 			if(debug) {
 				fprintf(stdout, "%s: Algorithm %d selected.\n",
-					program_name,
+					progname,
 					alg);
 			}
 			alg_opt = optarg;
@@ -501,14 +595,14 @@ main(int argc, char *argv[])
 		case '4':
 			if(alg) {
 				fprintf(stderr, "%s: Only one of '--ah', '--esp', '--comp', '--ip4', '--ip6', '--del' or '--clear' options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 		       	alg = XF_IP4;
 			address_family = AF_INET;
 			if(debug) {
 				fprintf(stdout, "%s: Algorithm %d selected.\n",
-					program_name,
+					progname,
 					alg);
 			}
 			alg_opt = optarg;
@@ -516,14 +610,14 @@ main(int argc, char *argv[])
 		case '6':
 			if(alg) {
 				fprintf(stderr, "%s: Only one of '--ah', '--esp', '--comp', '--ip4', '--ip6', '--del' or '--clear' options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 		       	alg = XF_IP6;
 			address_family = AF_INET6;
 			if(debug) {
 				fprintf(stdout, "%s: Algorithm %d selected.\n",
-					program_name,
+					progname,
 					alg);
 			}
 			alg_opt = optarg;
@@ -531,13 +625,13 @@ main(int argc, char *argv[])
 		case 'd':
 			if(alg) {
 				fprintf(stderr, "%s: Only one of '--ah', '--esp', '--comp', '--ip4', '--ip6', '--del' or '--clear'  options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			alg = XF_DEL;
 			if(debug) {
 				fprintf(stdout, "%s: Algorithm %d selected.\n",
-					program_name,
+					progname,
 					alg);
 			}
 			alg_opt = optarg;
@@ -545,13 +639,13 @@ main(int argc, char *argv[])
 		case 'c':
 			if(alg) {
 				fprintf(stderr, "%s: Only one of '--ah', '--esp', '--comp', '--ip4', '--ip6', '--del' or '--clear'  options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			alg = XF_CLR;
 			if(debug) {
 				fprintf(stdout, "%s: Algorithm %d selected.\n",
-					program_name,
+					progname,
 					alg);
 			}
 			alg_opt = optarg;
@@ -559,19 +653,19 @@ main(int argc, char *argv[])
 		case 'e':
 			if(said_opt) {
 				fprintf(stderr, "%s: Error, EDST parameter redefined:%s, already defined in SA:%s\n",
-					program_name, optarg, said_opt);
+					progname, optarg, said_opt);
 				exit (1);
 			}				
 			if(edst_opt) {
 				fprintf(stderr, "%s: Error, EDST parameter redefined:%s, already defined as:%s\n",
-					program_name, optarg, edst_opt);
+					progname, optarg, edst_opt);
 				exit (1);
 			}
 			error_s = ttoaddr(optarg, 0, address_family, &edst);
 			if(error_s != NULL) {
 				if(error_s) {
 					fprintf(stderr, "%s: Error, %s converting --edst argument:%s\n",
-						program_name, error_s, optarg);
+						progname, error_s, optarg);
 					exit (1);
 				}
 			}
@@ -579,30 +673,30 @@ main(int argc, char *argv[])
 			if(debug) {
 				addrtot(&edst, 0, ipaddr_txt, sizeof(ipaddr_txt));
 				fprintf(stdout, "%s: edst=%s.\n",
-					program_name,
+					progname,
 					ipaddr_txt);
 			}
 			break;
 		case 's':
 			if(said_opt) {
 				fprintf(stderr, "%s: Error, SPI parameter redefined:%s, already defined in SA:%s\n",
-					program_name, optarg, said_opt);
+					progname, optarg, said_opt);
 				exit (1);
 			}				
 			if(spi_opt) {
 				fprintf(stderr, "%s: Error, SPI parameter redefined:%s, already defined as:%s\n",
-					program_name, optarg, spi_opt);
+					progname, optarg, spi_opt);
 				exit (1);
 			}				
 			spi = strtoul(optarg, &endptr, 0);
 			if(!(endptr == optarg + strlen(optarg))) {
 				fprintf(stderr, "%s: Invalid character in SPI parameter: %s\n",
-					program_name, optarg);
+					progname, optarg);
 				exit (1);
 			}
 			if(spi < 0x100) {
 				fprintf(stderr, "%s: Illegal reserved spi: %s => 0x%x Must be larger than 0x100.\n",
-					program_name, optarg, spi);
+					progname, optarg, spi);
 				exit(1);
 			}
 			spi_opt = optarg;
@@ -610,12 +704,12 @@ main(int argc, char *argv[])
 		case 'p':
 			if(said_opt) {
 				fprintf(stderr, "%s: Error, PROTO parameter redefined:%s, already defined in SA:%s\n",
-					program_name, optarg, said_opt);
+					progname, optarg, said_opt);
 				exit (1);
 			}				
 			if(proto_opt) {
 				fprintf(stderr, "%s: Error, PROTO parameter redefined:%s, already defined as:%s\n",
-					program_name, optarg, proto_opt);
+					progname, optarg, proto_opt);
 				exit (1);
 			}
 			if(!strcmp(optarg, "ah"))
@@ -628,7 +722,7 @@ main(int argc, char *argv[])
 				proto = SA_COMP;
 			if(proto == 0) {
 				fprintf(stderr, "%s: Invalid PROTO parameter: %s\n",
-					program_name, optarg);
+					progname, optarg);
 				exit (1);
 			}
 			proto_opt = optarg;
@@ -636,12 +730,12 @@ main(int argc, char *argv[])
 		case 'a':
 			if(said_opt) {
 				fprintf(stderr, "%s: Error, ADDRESS FAMILY parameter redefined:%s, already defined in SA:%s\n",
-					program_name, optarg, said_opt);
+					progname, optarg, said_opt);
 				exit (1);
 			}				
 			if(af_opt) {
 				fprintf(stderr, "%s: Error, ADDRESS FAMILY parameter redefined:%s, already defined as:%s\n",
-					program_name, optarg, af_opt);
+					progname, optarg, af_opt);
 				exit (1);
 			}
 			if(strcmp(optarg, "inet") == 0) {
@@ -660,7 +754,7 @@ main(int argc, char *argv[])
 			}
 			if((strcmp(optarg, "inet") != 0) && (strcmp(optarg, "inet6") != 0)) {
 				fprintf(stderr, "%s: Invalid ADDRESS FAMILY parameter: %s.\n",
-					program_name, optarg);
+					progname, optarg);
 				exit (1);
 			}
 			af_opt = optarg;
@@ -668,34 +762,34 @@ main(int argc, char *argv[])
 		case 'I':
 			if(said_opt) {
 				fprintf(stderr, "%s: Error, SAID parameter redefined:%s, already defined in SA:%s\n",
-					program_name, optarg, said_opt);
+					progname, optarg, said_opt);
 				exit (1);
 			}				
 			if(proto_opt) {
 				fprintf(stderr, "%s: Error, PROTO parameter redefined in SA:%s, already defined as:%s\n",
-					program_name, optarg, proto_opt);
+					progname, optarg, proto_opt);
 				exit (1);
 			}
 			if(edst_opt) {
 				fprintf(stderr, "%s: Error, EDST parameter redefined in SA:%s, already defined as:%s\n",
-					program_name, optarg, edst_opt);
+					progname, optarg, edst_opt);
 				exit (1);
 			}
 			if(spi_opt) {
 				fprintf(stderr, "%s: Error, SPI parameter redefined in SA:%s, already defined as:%s\n",
-					program_name, optarg, spi_opt);
+					progname, optarg, spi_opt);
 				exit (1);
 			}
 			error_s = ttosa(optarg, 0, &said);
 			if(error_s != NULL) {
 				fprintf(stderr, "%s: Error, %s converting --sa argument:%s\n",
-					program_name, error_s, optarg);
+					progname, error_s, optarg);
 				exit (1);
 			}
 			if(debug) {
 				satot(&said, 0, ipsaid_txt, sizeof(ipsaid_txt));
 				fprintf(stdout, "%s: said=%s.\n",
-					program_name,
+					progname,
 					ipsaid_txt);
 			}
 			/* init the src and dst with the same address family */
@@ -703,7 +797,7 @@ main(int argc, char *argv[])
 				address_family = addrtypeof(&said.dst);
 			} else if(address_family != addrtypeof(&said.dst)) {
 				fprintf(stderr, "%s: Error, specified address family (%d) is different that of SAID: %s\n",
-					program_name, address_family, optarg);
+					progname, address_family, optarg);
 				exit (1);
 			}
 			anyaddr(address_family, &dst);
@@ -720,19 +814,19 @@ main(int argc, char *argv[])
 					break;
 				default:
 					fprintf(stderr, "%s: Authentication key must have a '0x', '0t' or '0s' prefix to select the format: %s\n",
-						program_name, optarg);
+						progname, optarg);
 					exit(1);
 				}
 			}
 			authkeylen = atodata(optarg, 0, NULL, 0);
 			if(!authkeylen) {
 				fprintf(stderr, "%s: unknown format or syntax error in authentication key: %s\n",
-					program_name, optarg);
+					progname, optarg);
 				exit (1);
 			}
 			authkey = malloc(authkeylen);
 			if(authkey == NULL) {
-				fprintf(stderr, "%s: Memory allocation error.\n", program_name);
+				fprintf(stderr, "%s: Memory allocation error.\n", progname);
 				exit(1);
 			}
 			memset(authkey, 0, authkeylen);
@@ -748,19 +842,19 @@ main(int argc, char *argv[])
 					break;
 				default:
 					fprintf(stderr, "%s: Encryption key must have a '0x', '0t' or '0s' prefix to select the format: %s\n",
-						program_name, optarg);
+						progname, optarg);
 					exit(1);
 				}
 			}
 			enckeylen = atodata(optarg, 0, NULL, 0);
 			if(!enckeylen) {
 				fprintf(stderr, "%s: unknown format or syntax error in encryption key: %s\n",
-					program_name, optarg);
+					progname, optarg);
 				exit (1);
 			}
 			enckey = malloc(enckeylen);
 			if(enckey == NULL) {
-				fprintf(stderr, "%s: Memory allocation error.\n", program_name);
+				fprintf(stderr, "%s: Memory allocation error.\n", progname);
 				exit(1);
 			}
 			memset(enckey, 0, enckeylen);
@@ -771,12 +865,12 @@ main(int argc, char *argv[])
 			replay_window = strtoul(optarg, &endptr, 0);
 			if(!(endptr == optarg + strlen(optarg))) {
 				fprintf(stderr, "%s: Invalid character in replay_window parameter: %s\n",
-					program_name, optarg);
+					progname, optarg);
 				exit (1);
 			}
 			if((replay_window < 0x1) || (replay_window > 64)) {
 				fprintf(stderr, "%s: Failed -- Illegal window size: arg=%s, replay_window=%d, must be 1 <= size <= 64.\n",
-					program_name, optarg, replay_window);
+					progname, optarg, replay_window);
 				exit(1);
 			}
 			break;
@@ -789,19 +883,19 @@ main(int argc, char *argv[])
 					break;
 				default:
 					fprintf(stderr, "%s: IV must have a '0x', '0t' or '0s' prefix to select the format, found '%c'.\n",
-						program_name, optarg[1]);
+						progname, optarg[1]);
 					exit(1);
 				}
 			}
 			ivlen = atodata(optarg, 0, NULL, 0);
 			if(!ivlen) {
 				fprintf(stderr, "%s: unknown format or syntax error in IV: %s\n",
-					program_name, optarg);
+					progname, optarg);
 				exit (1);
 			}
 			iv = malloc(ivlen);
 			if(iv == NULL) {
-				fprintf(stderr, "%s: Memory allocation error.\n", program_name);
+				fprintf(stderr, "%s: Memory allocation error.\n", progname);
 				exit(1);
 			}
 			memset(iv, 0, ivlen);
@@ -811,51 +905,51 @@ main(int argc, char *argv[])
 		case 'D':
 			if(dst_opt) {
 				fprintf(stderr, "%s: Error, DST parameter redefined:%s, already defined as:%s\n",
-					program_name, optarg, dst_opt);
+					progname, optarg, dst_opt);
 				exit (1);
 			}				
 			error_s = ttoaddr(optarg, 0, address_family, &dst);
 			if(error_s != NULL) {
 				fprintf(stderr, "%s: Error, %s converting --dst argument:%s\n",
-					program_name, error_s, optarg);
+					progname, error_s, optarg);
 				exit (1);
 			}
 			dst_opt = optarg;
 			if(debug) {
 				addrtot(&dst, 0, ipaddr_txt, sizeof(ipaddr_txt));
 				fprintf(stdout, "%s: dst=%s.\n",
-					program_name,
+					progname,
 					ipaddr_txt);
 			}
 			break;
 		case 'S':
 			if(src_opt) {
 				fprintf(stderr, "%s: Error, SRC parameter redefined:%s, already defined as:%s\n",
-					program_name, optarg, src_opt);
+					progname, optarg, src_opt);
 				exit (1);
 			}				
 			error_s = ttoaddr(optarg, 0, address_family, &src);
 			if(error_s != NULL) {
 				fprintf(stderr, "%s: Error, %s converting --src argument:%s\n",
-					program_name, error_s, optarg);
+					progname, error_s, optarg);
 				exit (1);
 			}
 			src_opt = optarg;
 			if(debug) {
 				addrtot(&src, 0, ipaddr_txt, sizeof(ipaddr_txt));
 				fprintf(stdout, "%s: src=%s.\n",
-					program_name,
+					progname,
 					ipaddr_txt);
 			}
 			break;
 		case 'h':
-			usage(program_name, stdout);
+			usage(progname, stdout);
 			exit(0);
 		case '?':
-			usage(program_name, stderr);
+			usage(progname, stderr);
 			exit(1);
 		case 'v':
-			fprintf(stdout, "%s, %s\n", program_name, spi_c_version);
+			fprintf(stdout, "%s, %s\n", progname, spi_c_version);
 			exit(1);
 		case '+': /* optionsfrom */
 			optionsfrom(optarg, &argc, &argv, optind, stderr);
@@ -870,14 +964,14 @@ main(int argc, char *argv[])
 			break;
 		default:
 			fprintf(stderr, "%s: unrecognized option '%c', update option processing.\n",
-				program_name, c);
+				progname, c);
 			exit(1);
 		}
 		previous = c;
 	}
 	if(debug) {
 		fprintf(stdout, "%s: All options processed.\n",
-				program_name);
+				progname);
 	}
 
 	if(argcount == 1) {
@@ -886,6 +980,63 @@ main(int argc, char *argv[])
 	}
 
 	switch(alg) {
+#ifdef KERNEL_ALG
+	case XF_OTHER_ALG: 
+		/* validate keysizes */
+		if (proc_read_ok) {
+		       const struct sadb_alg *alg_p;
+		       int keylen, minbits, maxbits;
+		       alg_p=kernel_alg_sadb_alg_get(SADB_SATYPE_ESP,SADB_EXT_SUPPORTED_ENCRYPT, 
+				       esp_info->encryptalg);
+		       assert(alg_p);
+		       keylen=enckeylen * 8;
+
+		       if (alg_p->sadb_alg_id==ESP_3DES || alg_p->sadb_alg_id==ESP_DES) {
+			       maxbits=minbits=alg_p->sadb_alg_minbits * 8 /7;
+		       } else {
+			       minbits=alg_p->sadb_alg_minbits;
+			       maxbits=alg_p->sadb_alg_maxbits;
+		       }
+		       /* 
+			* if explicit keylen told in encrypt algo, eg "aes128"
+			* check actual keylen "equality"
+			*/
+		       if (esp_info->esp_ealg_keylen &&
+			       esp_info->esp_ealg_keylen!=keylen) {
+			       fprintf(stderr, "%s: invalid encryption keylen=%d, "
+					       "required %d by encrypt algo string=\"%s\"\n",
+				       progname, 
+				       keylen,
+				       (int)esp_info->esp_ealg_keylen,
+				       alg_string);
+			       exit(1);
+
+		       }
+		       /* thanks DES for this sh*t */
+
+		       if (minbits > keylen || maxbits < keylen) {
+			       fprintf(stderr, "%s: invalid encryption keylen=%d, "
+					       "must be between %d and %d bits\n",
+					       progname, 
+					       keylen, minbits, maxbits);
+			       exit(1);
+		       }
+		       alg_p=kernel_alg_sadb_alg_get(SADB_SATYPE_ESP,SADB_EXT_SUPPORTED_AUTH, 
+				       esp_info->authalg);
+		       assert(alg_p);
+		       keylen=authkeylen * 8;
+		       minbits=alg_p->sadb_alg_minbits;
+		       maxbits=alg_p->sadb_alg_maxbits;
+		       if (minbits > keylen || maxbits < keylen) {
+			       fprintf(stderr, "%s: invalid auth keylen=%d, "
+					       "must be between %d and %d bits\n",
+					       progname, 
+					       keylen, minbits, maxbits);
+			       exit(1);
+		       }
+
+		}
+#endif /* KERNEL_ALG */
 	case XF_IP4:
 	case XF_IP6:
 	case XF_DEL:
@@ -898,17 +1049,17 @@ main(int argc, char *argv[])
 		if(!said_opt) {
 			if(isanyaddr(&edst)) {
 				fprintf(stderr, "%s: SA destination not specified.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			if(!spi) {
 				fprintf(stderr, "%s: SA SPI not specified.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			if(!proto) {
 				fprintf(stderr, "%s: SA PROTO not specified.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			initsaid(&edst, htonl(spi), proto, &said);
@@ -919,21 +1070,21 @@ main(int argc, char *argv[])
 		}
 		if((address_family != 0) && (address_family != addrtypeof(&said.dst))) {
 			fprintf(stderr, "%s: Defined address family and address family of SA missmatch.\n",
-				program_name);
+				progname);
 			exit(1);
 		}
 		sa_len = satot(&said, 0, sa, sizeof(sa));
 
 		if(debug) {
 			fprintf(stdout, "%s: SA valid.\n",
-				program_name);
+				progname);
 		}
 		break;
 	case XF_CLR:
 		break;
 	default:
 		fprintf(stderr, "%s: No action chosen.  See '%s --help' for usage.\n",
-			program_name, program_name);
+			progname, progname);
 		exit(1);
 	}
 
@@ -948,20 +1099,23 @@ main(int argc, char *argv[])
 	case XF_ESP3DESSHA196:
 	case XF_ESP3DES:
 	case XF_COMPDEFLATE:
+#ifdef KERNEL_ALG
+	case XF_OTHER_ALG:
+#endif /* NO_KERNEL_ALG */
 		break;
 	default:
 		fprintf(stderr, "%s: No action chosen.  See '%s --help' for usage.\n",
-			program_name, program_name);
+			progname, progname);
 		exit(1);
 	}
 	if(debug) {
 		fprintf(stdout, "%s: Algorithm ok.\n",
-			program_name);
+			progname);
 	}
 
 	if((pfkey_sock = socket(PF_KEY, SOCK_RAW, PF_KEY_V2) ) < 0) {
 		fprintf(stderr, "%s: Trouble opening PF_KEY family socket with error: ",
-			program_name);
+			progname);
 		switch(errno) {
 		case ENOENT:
 			fprintf(stderr, "device does not exist.  See FreeS/WAN installation procedure.\n");
@@ -1029,7 +1183,7 @@ main(int argc, char *argv[])
 	pfkey_extensions_init(extensions);
 	if(debug) {
 		fprintf(stdout, "%s: extensions=0p%p &extensions=0p%p extensions[0]=0p%p &extensions[0]=0p%p cleared.\n",
-			program_name,
+			progname,
 			extensions,
 			&extensions,
 			extensions[0],
@@ -1042,20 +1196,20 @@ main(int argc, char *argv[])
 					++pfkey_seq,
 					mypid))) {
 		fprintf(stderr, "%s: Trouble building message header, error=%d.\n",
-			program_name, error);
+			progname, error);
 		pfkey_extensions_free(extensions);
 		exit(1);
 	}
 	if(debug) {
 		fprintf(stdout, "%s: extensions=0p%p &extensions=0p%p extensions[0]=0p%p &extensions[0]=0p%p set w/msghdr.\n",
-			program_name,
+			progname,
 			extensions,
 			&extensions,
 			extensions[0],
 			&extensions[0]);
 	}
 	if(debug) {
-		fprintf(stdout, "%s: base message assembled.\n", program_name);
+		fprintf(stdout, "%s: base message assembled.\n", progname);
 	}
 	
 	switch(alg) {
@@ -1067,6 +1221,15 @@ main(int argc, char *argv[])
 	case XF_ESP3DESSHA196:
 		authalg = SADB_AALG_SHA1HMAC;
 		break;
+#ifdef KERNEL_ALG
+	case XF_OTHER_ALG:
+		authalg= esp_info->authalg;
+		if(debug) {
+			fprintf(stdout, "%s: debug: authalg=%d\n",
+				progname, authalg);
+		}
+		break;
+#endif /* KERNEL_ALG */
 	case XF_ESP3DESMD5:
 	default:
 		authalg = SADB_AALG_NONE;
@@ -1080,6 +1243,15 @@ main(int argc, char *argv[])
 	case XF_COMPDEFLATE:
 		encryptalg = SADB_X_CALG_DEFLATE;
 		break;
+#ifdef KERNEL_ALG
+	case XF_OTHER_ALG:
+		encryptalg= esp_info->encryptalg;
+		if(debug) {
+			fprintf(stdout, "%s: debug: encryptalg=%d\n",
+				progname, encryptalg);
+		}
+		break;
+#endif /* KERNEL_ALG */
 	default:
 		encryptalg = SADB_EALG_NONE;
 	}
@@ -1093,18 +1265,18 @@ main(int argc, char *argv[])
 					   encryptalg,
 					   0))) {
 			fprintf(stderr, "%s: Trouble building sa extension, error=%d.\n",
-				program_name, error);
+				progname, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
 		if(debug) {
 			fprintf(stdout, "%s: extensions[0]=0p%p previously set with msg_hdr.\n",
-				program_name,
+				progname,
 				extensions[0]);
 		}
 		if(debug) {
 			fprintf(stdout, "%s: assembled SA extension, pfkey msg authalg=%d encalg=%d.\n",
-				program_name,
+				progname,
 				authalg,
 				encryptalg);
 		}
@@ -1114,7 +1286,7 @@ main(int argc, char *argv[])
 			for(i = 0; i < life_maxsever; i++) {
 				for(j = 0; j < life_maxtype; j++) {
 					fprintf(stdout, "%s: i=%d, j=%d, life_opt[%d][%d]=0p%p, life[%d][%d]=%d\n",
-						program_name,
+						progname,
 						i, j, i, j, life_opt[i][j], i, j, life[i][j]);
 				}
 			}
@@ -1132,13 +1304,13 @@ main(int argc, char *argv[])
 							 life[life_soft][life_usetime],/*-1,*/		/*usetime*/
 							 life[life_soft][life_packets]/*-1*/))) {	/*packets*/
 				fprintf(stderr, "%s: Trouble building lifetime_s extension, error=%d.\n",
-					program_name, error);
+					progname, error);
 				pfkey_extensions_free(extensions);
 				exit(1);
 			}
 			if(debug) {
 				fprintf(stdout, "%s: lifetime_s extension assembled.\n",
-					program_name);
+					progname);
 			}
 		}
 
@@ -1155,20 +1327,20 @@ main(int argc, char *argv[])
 							 life[life_hard][life_usetime],/*-1,*/		/*usetime*/
 							 life[life_hard][life_packets]/*-1*/))) {	/*packets*/
 				fprintf(stderr, "%s: Trouble building lifetime_h extension, error=%d.\n",
-					program_name, error);
+					progname, error);
 				pfkey_extensions_free(extensions);
 				exit(1);
 			}
 			if(debug) {
 				fprintf(stdout, "%s: lifetime_h extension assembled.\n",
-					program_name);
+					progname);
 			}
 		}
 		
 		if(debug) {
                 	addrtot(&src, 0, ipaddr_txt, sizeof(ipaddr_txt));
 			fprintf(stdout, "%s: assembling address_s extension (%s).\n",
-				program_name, ipaddr_txt);
+				progname, ipaddr_txt);
 		}
 	
 		if((error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_SRC],
@@ -1178,7 +1350,7 @@ main(int argc, char *argv[])
 						sockaddrof(&src)))) {
                 	addrtot(&src, 0, ipaddr_txt, sizeof(ipaddr_txt));
 			fprintf(stderr, "%s: Trouble building address_s extension (%s), error=%d.\n",
-				program_name, ipaddr_txt, error);
+				progname, ipaddr_txt, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
@@ -1196,18 +1368,18 @@ main(int argc, char *argv[])
 					break;
 				default:
 					fprintf(stdout, "%s: unknown address family (%d).\n",
-						program_name, address_family);
+						progname, address_family);
 					exit(1);
 			}
                 	addrtot(&temp_addr, 0, ipaddr_txt, sizeof(ipaddr_txt));
 			fprintf(stdout, "%s: address_s extension assembled (%s).\n",
-				program_name, ipaddr_txt);
+				progname, ipaddr_txt);
 		}
 	
 		if(debug) {
                 	addrtot(&edst, 0, ipaddr_txt, sizeof(ipaddr_txt));
 			fprintf(stdout, "%s: assembling address_d extension (%s).\n",
-				program_name, ipaddr_txt);
+				progname, ipaddr_txt);
 		}
 	
 		if((error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_DST],
@@ -1217,7 +1389,7 @@ main(int argc, char *argv[])
 						sockaddrof(&edst)))) {
                 	addrtot(&edst, 0, ipaddr_txt, sizeof(ipaddr_txt));
 			fprintf(stderr, "%s: Trouble building address_d extension (%s), error=%d.\n",
-				program_name, ipaddr_txt, error);
+				progname, ipaddr_txt, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
@@ -1234,12 +1406,12 @@ main(int argc, char *argv[])
 					break;
 				default:
 					fprintf(stdout, "%s: unknown address family (%d).\n",
-						program_name, address_family);
+						progname, address_family);
 					exit(1);
 			}
                 	addrtot(&temp_addr, 0, ipaddr_txt, sizeof(ipaddr_txt));
 			fprintf(stdout, "%s: address_d extension assembled (%s).\n",
-				program_name, ipaddr_txt);
+				progname, ipaddr_txt);
 		}
 
 #if PFKEY_PROXY
@@ -1250,16 +1422,22 @@ main(int argc, char *argv[])
 						0,
 						sockaddrof(&pfkey_address_p_ska)))) {
 			fprintf(stderr, "%s: Trouble building address_p extension, error=%d.\n",
-				program_name, error);
+				progname, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
 		if(debug) {
-			fprintf(stdout, "%s: address_p extension assembled.\n", program_name);
+			fprintf(stdout, "%s: address_p extension assembled.\n", progname);
 		}
 #endif /* PFKEY_PROXY */
 		
 		switch(alg) {
+#ifdef KERNEL_ALG
+		/*	Allow no auth ... after all is local root decision 8)  */
+		case XF_OTHER_ALG:
+			if (!authalg)
+				break;
+#endif /* KERNEL_ALG */
 		case XF_AHHMACMD5:
 		case XF_ESP3DESMD596:
 		case XF_AHHMACSHA1:
@@ -1269,13 +1447,13 @@ main(int argc, char *argv[])
 						    authkeylen * 8,
 						    authkey))) {
 				fprintf(stderr, "%s: Trouble building key_a extension, error=%d.\n",
-					program_name, error);
+					progname, error);
 				pfkey_extensions_free(extensions);
 				exit(1);
 			}
 			if(debug) {
 				fprintf(stdout, "%s: key_a extension assembled.\n",
-					program_name);
+					progname);
 			}
 			break;
 		default:
@@ -1286,18 +1464,21 @@ main(int argc, char *argv[])
 		case XF_ESP3DES:
 		case XF_ESP3DESMD596:
 		case XF_ESP3DESSHA196:
+#ifdef KERNEL_ALG
+		case XF_OTHER_ALG:
+#endif /* KERNEL_ALG */
 			if((error = pfkey_key_build(&extensions[SADB_EXT_KEY_ENCRYPT],
 						    SADB_EXT_KEY_ENCRYPT,
 						    enckeylen * 8,
 						    enckey))) {
 				fprintf(stderr, "%s: Trouble building key_e extension, error=%d.\n",
-					program_name, error);
+					progname, error);
 				pfkey_extensions_free(extensions);
 				exit(1);
 			}
 			if(debug) {
 				fprintf(stdout, "%s: key_e extension assembled.\n",
-					program_name);
+					progname);
 			}
 			break;
 		default:
@@ -1312,7 +1493,7 @@ main(int argc, char *argv[])
 				      strlen(pfkey_ident_s_ska),
 				      pfkey_ident_s_ska))) {
 			fprintf(stderr, "%s: Trouble building ident_s extension, error=%d.\n",
-				program_name, error);
+				progname, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
@@ -1329,7 +1510,7 @@ main(int argc, char *argv[])
 					      strlen(pfkey_ident_d_ska),
 					      pfkey_ident_d_ska))) {
 			fprintf(stderr, "%s: Trouble building ident_d extension, error=%d.\n",
-				program_name, error);
+				progname, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
@@ -1341,36 +1522,36 @@ main(int argc, char *argv[])
 
 		if(debug) {
 			fprintf(stdout, "%s: ident extensions assembled.\n",
-				program_name);
+				progname);
 		}
 #endif /* PFKEY_IDENT */
 	}
 	
 	if(debug) {
 		fprintf(stdout, "%s: assembling pfkey msg....\n",
-			program_name);
+			progname);
 	}
 	if((error = pfkey_msg_build(&pfkey_msg, extensions, EXT_BITS_IN))) {
 		fprintf(stderr, "%s: Trouble building pfkey message, error=%d.\n",
-			program_name, error);
+			progname, error);
 		pfkey_extensions_free(extensions);
 		pfkey_msg_free(&pfkey_msg);
 		exit(1);
 	}
 	if(debug) {
 		fprintf(stdout, "%s: assembled.\n",
-			program_name);
+			progname);
 	}
 	if(debug) {
 		fprintf(stdout, "%s: writing pfkey msg.\n",
-			program_name);
+			progname);
 	}
 	io_error = write(pfkey_sock,
 			 pfkey_msg,
 			 pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN);
 	if(io_error < 0) {
 		fprintf(stderr, "%s: pfkey write failed (errno=%d): ",
-			program_name, errno);
+			progname, errno);
 		pfkey_extensions_free(extensions);
 		pfkey_msg_free(&pfkey_msg);
 		switch(errno) {
@@ -1424,7 +1605,7 @@ main(int argc, char *argv[])
 		exit(1);
 	} else if (io_error != (ssize_t)(pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) {
 		fprintf(stderr, "%s: pfkey write truncated to %d bytes\n",
-			program_name, (int)io_error);
+			progname, (int)io_error);
 		pfkey_extensions_free(extensions);
 		pfkey_msg_free(&pfkey_msg);
 		exit(1);
@@ -1432,7 +1613,7 @@ main(int argc, char *argv[])
 
 	if(debug) {
 		fprintf(stdout, "%s: pfkey command written to socket.\n",
-			program_name);
+			progname);
 	}
 
 	if(pfkey_msg) {
@@ -1441,7 +1622,7 @@ main(int argc, char *argv[])
 	}
 	if(debug) {
 		fprintf(stdout, "%s: pfkey message buffer freed.\n",
-			program_name);
+			progname);
 	}
 	if(authkey) {
 		memset((caddr_t)authkey, 0, authkeylen);
@@ -1469,7 +1650,7 @@ main(int argc, char *argv[])
 			if((size_t)readlen < sizeof(struct sadb_msg)) {
 				if(debug) {
 					printf("%s: runt packet of size: %ld (<%lu)\n",
-					       program_name, (long)readlen, (unsigned long)sizeof(struct sadb_msg));
+					       progname, (long)readlen, (unsigned long)sizeof(struct sadb_msg));
 				}
 				continue;
 			}
@@ -1477,7 +1658,7 @@ main(int argc, char *argv[])
 			/* okay, we got enough for a message, print it out */
 			if(debug) {
 				printf("%s: pfkey v%d msg received. type=%d(%s) seq=%d len=%d pid=%d errno=%d satype=%d(%s)\n",
-				       program_name,
+				       progname,
 				       pfkey_msg->sadb_msg_version,
 				       pfkey_msg->sadb_msg_type,
 				       pfkey_v2_sadb_type_string(pfkey_msg->sadb_msg_type),
@@ -1493,7 +1674,7 @@ main(int argc, char *argv[])
 			{
 				if(debug) {
 					printf("%s: packet size read from socket=%d doesn't equal sadb_msg_len %u * %u; message not decoded\n",
-					       program_name,
+					       progname,
 					       (int)readlen, 
 					       (unsigned)pfkey_msg->sadb_msg_len,
 					       (unsigned)IPSEC_PFKEYv2_ALIGN);
@@ -1504,19 +1685,19 @@ main(int argc, char *argv[])
 			if (pfkey_msg_parse(pfkey_msg, NULL, extensions, EXT_BITS_OUT)) {
 				if(debug) {
 					printf("%s: unparseable PF_KEY message.\n",
-					       program_name);
+					       progname);
 				}
 				continue;
 			} else {
 				if(debug) {
 					printf("%s: parseable PF_KEY message.\n",
-					       program_name);
+					       progname);
 				}
 			}
 			if((pid_t)pfkey_msg->sadb_msg_pid == mypid) {
 				if(saref) {
 					printf("%s: saref=%d\n",
-					       program_name,
+					       progname,
 					       (extensions[SADB_EXT_SA] != NULL)
 					       ? ((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_x_sa_ref
 					       : IPSEC_SAREF_NULL);
@@ -1527,13 +1708,40 @@ main(int argc, char *argv[])
 	}
 	(void) close(pfkey_sock);  /* close the socket */
 	if(debug || listenreply) {
-		printf("%s: exited normally\n", program_name);
+		printf("%s: exited normally\n", progname);
 	}
 	exit(0);
 }
 
+void exit_tool(int x)
+{
+  exit(x);
+}
+
 /*
  * $Log: spi.c,v $
+ * Revision 1.106  2004/04/29 04:08:28  mcr
+ * 	broke out decode_esp() function, and use new
+ * 	libopenswan code.
+ *
+ * Revision 1.105  2004/04/26 05:05:04  ken
+ * Cast properly on 64bit platforms
+ *
+ * Revision 1.104  2004/04/18 03:08:02  mcr
+ * 	use common files from libopenswan.
+ *
+ * Revision 1.103  2004/04/06 03:04:54  mcr
+ * 	pullup of algo code from alg-branch.
+ *
+ * Revision 1.102  2004/04/04 01:53:13  ken
+ * Use openswan includes
+ *
+ * Revision 1.101.4.2  2004/04/06 00:53:06  mcr
+ * 	code adjusted to compile on branch
+ *
+ * Revision 1.101.4.1  2003/12/22 15:25:53  jjo
+ *      Merged algo-0.8.1-rc11-test1 into alg-branch
+ *
  * Revision 1.101  2003/12/05 16:44:19  mcr
  * 	patches to avoid ipsec_netlink.h, which has been obsolete for
  * 	some time now.
@@ -1695,255 +1903,6 @@ main(int argc, char *argv[])
  * Blasted any references in usage and code to deleted algos.
  * Removed DES usage.
  * Changed usage of memset on extensions to pfkey_extensions_init().
- *
- * Revision 1.54  1999/12/29 21:17:41  rgb
- * Changed pfkey_msg_build() I/F to include a struct sadb_msg**
- * parameter for cleaner manipulation of extensions[] and to guard
- * against potential memory leaks.
- * Changed the I/F to pfkey_msg_free() for the same reason.
- *
- * Revision 1.53  1999/12/10 17:35:37  rgb
- * Added address debugging.
- * Fixed undetected spi followed by said sanity check bug.
- * Fixed unset spi and edst using said bug.
- *
- * Revision 1.52  1999/12/09 23:13:53  rgb
- * Added argument to pfkey_sa_build() to do eroutes.
- *
- * Revision 1.51  1999/12/07 18:29:13  rgb
- * Converted local functions to static to limit scope.
- * Removed unused cruft.
- * Changed types to unsigned to quiet compiler.
- * Cleaned up compiler directives.
- *
- * Revision 1.50  1999/12/01 22:19:04  rgb
- * Change pfkey_sa_build to accept an SPI in network byte order.
- * Minor reformatting.
- * Close socket after cleanup.
- * Moved pfkey_lib_debug variable into the library.
- *
- * Revision 1.49  1999/11/27 11:53:56  rgb
- * Fix pfkey_v2_parse calls.
- * Add argument to pfkey_msg_parse() for direction.
- * Move parse-after-build check inside pfkey_msg_build().
- *
- * Revision 1.48  1999/11/25 19:05:12  rgb
- * Add parser calls to parse newly built message and disabled signal
- * handler.
- * Zapped all manual pfkey assignment code in favour of build library
- * calls.
- * Clean out other unused code.
- *
- * Revision 1.47  1999/11/25 09:08:46  rgb
- * Turn debug compiler directive into command line switch.
- * Fix unused argument bug in usage.
- * Delete unused variables and code.
- * Add default to alg switch to catch algo not set.
- * Added error return checking from pfkey_build routines.
- * Clarified assignment in conditional with parens.
- * Fixed extension pointer bugs passing args to pfkey_build routines.
- *
- * Revision 1.46  1999/11/24 17:22:25  rgb
- * Fix PFKEY_BUILD_LIB compiler directives.
- * Fix bug in memset(extensions) size argument.
- * Fix bug in extensions type and calling style.
- * Fix PFKEY_BUILD_LIB ifdef boundary bug.
- *
- * Revision 1.45  1999/11/23 23:11:18  rgb
- * Added pfkey_v2_build calls.
- * Sort out pfkey and freeswan headers, putting them in a library path.
- * Corrected a couple of bugs in as-yet-inactive code.
- * Clarified indention of pfkey_msg assembly code.
- *
- * Revision 1.44  1999/11/18 04:56:07  rgb
- * Change expected signal type comment.
- * Add signal handler degugging code.
- * Temporarily remove select() code for signal debugging.
- * Fix minor sequence number bug.
- *
- * Revision 1.43  1999/10/27 20:01:01  rgb
- * Enabled the signal handler.
- * Changed pfkey_seq from post-increment to pre-increment.
- *
- * Revision 1.42  1999/10/16 00:26:34  rgb
- * Add to pfkey lifetime support.
- * Attempt to add pfkey socket receive support.
- * Change to more intuitive name of pfkey socket variable.
- *
- * Revision 1.41  1999/07/08 19:18:33  rgb
- * Shut off debugging by default.
- *
- * Revision 1.40  1999/06/10 16:12:53  rgb
- * Add autoconf to use pfkey.
- * Add error return code description.
- *
- * Revision 1.39  1999/04/29 15:26:54  rgb
- * Debug pfkey support.
- * Add debugging instrumentation.
- * Add error return code checks.
- * Add support for DELETE and CLR messages.
- * Add support for IPPROTO_IPIP.
- * Copy in src address.
- * Set sin_zero properly.
- * Add ident_d support(untested).
- * Fix msg header copy length bug.
- * Add kludge to support FLUSH.
- *
- * Revision 1.38  1999/04/15 15:37:28  rgb
- * Forward check changes from POST1_00 branch.
- *
- * Revision 1.34.2.2  1999/04/13 20:58:10  rgb
- * Add argc==1 --> /proc/net/ipsec_*.
- *
- * Revision 1.34.2.1  1999/03/30 17:07:04  rgb
- * Make main() return type explicit.
- * Add pfkey code.
- * OOO window size htons bugfix.
- *
- * Revision 1.37  1999/04/11 00:12:08  henry
- * GPL boilerplate
- *
- * Revision 1.36  1999/04/06 04:54:38  rgb
- * Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
- * patch shell fixes.
- *
- * Revision 1.35  1999/03/17 15:40:07  rgb
- * Make explicit main() return type of int.
- * Fix memory clear bug in spi.c.
- *
- * Revision 1.34  1999/02/16 05:20:49  rgb
- * Fix memory clear bugs just prior to normal exit that were causing ipsec
- * manual scripts to fail and potentially leaving large core files.
- *
- * Revision 1.33  1999/02/09 00:13:16  rgb
- * Fix replay window htonl bug.
- *
- * Revision 1.32  1999/01/22 06:35:54  rgb
- * 64-bit clean-up.
- * Added algorithm switch code.
- * Removed IV requirement, now an option (kept code for back-compat).
- * Cruft clean-out.
- * Add error-checking.
- * Removed PFKEY code, will re-add later.
- *
- * Revision 1.31  1998/11/12 21:08:04  rgb
- * Add --label option to identify caller from scripts.
- *
- * Revision 1.30  1998/11/11 18:34:12  rgb
- * Fixed #includes for RH5.1.
- *
- * Revision 1.29  1998/11/11 07:14:18  rgb
- * #include cleanup to hopefully compile under RH5.1.
- *
- * Revision 1.28  1998/11/10 05:34:11  rgb
- * Add support for SA direction flag.
- * Add more specific error output messages.
- *
- * Revision 1.27  1998/10/27 00:31:12  rgb
- * Set replay structure flag to 0 (not used).
- *
- * Revision 1.26  1998/10/26 01:28:38  henry
- * use SA_* protocol names, not IPPROTO_*, to avoid compile problems
- *
- * Revision 1.25  1998/10/25 02:45:39  rgb
- * Change program to program_name to bring in line with other utils.
- * Added debugging code to find null proto bug, premature exit on hex info bug.
- * Fixed premature exit on hex info bug.
- *
- * Revision 1.24  1998/10/22 06:34:16  rgb
- * Fixed bad stucture pointer.
- * Fixed unknown var (cut and paste error).
- *
- * Revision 1.23  1998/10/19 18:56:24  rgb
- * Added inclusion of freeswan.h.
- * sa_id structure implemented and used: now includes protocol.
- * Start to add some inactive pfkey2 code.
- *
- * Revision 1.22  1998/10/09 18:47:30  rgb
- * Add 'optionfrom' to get more options from a named file.
- *
- * Revision 1.21  1998/10/09 04:36:03  rgb
- * Standardise on '-96' notation for AH transforms.
- *
- * Revision 1.20  1998/09/03 01:29:32  henry
- * improve atodata()-failed error messages a bit
- *
- * Revision 1.19  1998/09/02 03:14:33  henry
- * no point in printing zero lengths used as error returns
- *
- * Revision 1.18  1998/09/02 03:12:08  henry
- * --help output goes on stdout, not stderr
- *
- * Revision 1.17  1998/09/01 19:50:50  henry
- * fix operator-precedence bug that often messed up --ah SPI creation
- * minor cleanup
- *
- * Revision 1.16  1998/08/28 03:14:12  rgb
- * Simplify/Clarify usage text.
- *
- * Revision 1.15  1998/08/12 00:16:46  rgb
- * Removed a lot of old cruft that was commented out.
- * Updated usage text.
- * Added config options for new xforms.
- *
- * Revision 1.14  1998/08/05 22:24:45  rgb
- * Change includes to accomodate RH5.x
- *
- * Revision 1.13  1998/07/29 21:41:17  rgb
- * Fix spi bug, add hexadecimal value entry debugging.
- *
- * Revision 1.12  1998/07/28 00:14:24  rgb
- * Convert from positional parameters to long options.
- * Add --clean option.
- * Add hostname lookup support.
- *
- * Revision 1.11  1998/07/14 18:15:55  rgb
- * Fix undetected bug using AH-SHA1 with manual keying:  The key was
- * truncated by the data structure used to get it to the kernel.
- *
- * Revision 1.10  1998/07/09 18:14:11  rgb
- * Added error checking to IP's and keys.
- * Made most error messages more specific rather than spamming usage text.
- * Added more descriptive kernel error return codes and messages.
- * Converted all spi translations to unsigned.
- * Removed all invocations of perror.
- *
- * Revision 1.9  1998/06/30 18:04:31  rgb
- * Fix compiler warning: couldn't find 'struct option' prototype.
- *
- * Revision 1.8  1998/06/11 05:40:04  rgb
- * Make usage text more concise WRT replay window sizes and defaults.
- * Make error reporting more concise WRT exact IV and key lengths supported
- * and their units.
- *
- * Revision 1.7  1998/06/08 17:54:58  rgb
- * Fixed string escape code in usage.
- *
- * Revision 1.6  1998/06/05 02:22:49  rgb
- * Clarify usage text and update for key splitting and i/r removal.
- * Require keys of exact length.
- *
- * Revision 1.5  1998/05/27 20:54:11  rgb
- * Added --help and --version directives.  Separated auth and encr keys.
- *
- * Revision 1.4  1998/05/18 21:12:13  rgb
- * Clean up debugging code, clean up after keys, cleaner options setting.
- *
- * Revision 1.3  1998/05/06 03:37:11  rgb
- * Fixed incorrect signed interpretation of command line spi to unsigned long.
- * It prevented deletion of ~spi values generated by pluto.
- *
- * Revision 1.2  1998/05/01 23:34:01  rgb
- * Clarified the usage text.
- *
- * Revision 1.1.1.1  1998/04/08 05:35:10  henry
- * RGB's ipsec-0.8pre2.tar.gz ipsec-0.8
- *
- * Revision 0.5  1997/06/03 04:31:55  ji
- * Added esp 3des-md5-96
- *
- * Revision 0.4  1997/01/15 01:37:54  ji
- * New program in this release, replaces set* programs.
  *
  *
  */

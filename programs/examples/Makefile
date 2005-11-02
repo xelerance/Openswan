@@ -11,10 +11,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.1 2004/01/20 19:24:23 sam Exp $
+# RCSID $Id: Makefile,v 1.2 2004/04/03 19:44:45 ken Exp $
 
-FREESWANSRCDIR=../..
-include ${FREESWANSRCDIR}/Makefile.inc
+OPENSWANSRCDIR=../..
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 CONFDSUBDIR=examples
 CONFDFILES=no_oe.conf
@@ -23,6 +23,9 @@ include ../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.2  2004/04/03 19:44:45  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.1  2004/01/20 19:24:23  sam
 # Adding a template .conf file which will disable OE. Can be "include"d until
 # such time as there is an oe=yes|no parameter.

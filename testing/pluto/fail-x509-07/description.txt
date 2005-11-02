@@ -1,0 +1,12 @@
+Basic pluto X.509 test, with send_cr.
+
+East does *NOT* have West's X.509 Cert locally.
+east is FORCED to send it.
+
+"westnet-eastnet": 192.0.1.0/24===192.1.2.45[CN=west.uml.freeswan.org]...192.1.2.23[CN=east.uml.freeswan.org]===192.0.2.0/24
+
+identical to x509-pluto-03, but the rightca on east is setup wrong.
+The goal of this test case is to adjust the code such that the diagnostic actually makes
+some sense.
+
+

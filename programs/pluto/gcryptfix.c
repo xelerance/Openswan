@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: gcryptfix.c,v 1.5.42.1 2004/03/21 05:23:32 mcr Exp $
+ * RCSID $Id: gcryptfix.c,v 1.6 2004/03/08 01:50:35 ken Exp $
  */
 
 #include <stdlib.h>

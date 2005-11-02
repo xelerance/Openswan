@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.59 2004/02/09 23:07:35 paul Exp $";
+char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.60 2004/04/06 02:58:43 mcr Exp $";
 
 
 #include <sys/types.h>
@@ -32,7 +32,7 @@ char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.59 2004/02/09 23:07:35 paul E
 
 
 #include <unistd.h>
-#include <freeswan.h>
+#include <openswan.h>
 #if 0
 #include <linux/autoconf.h>	/* CONFIG_IPSEC_PFKEYv2 */
 #endif
@@ -42,8 +42,8 @@ char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.59 2004/02/09 23:07:35 paul E
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
 
 #include <stdio.h>
 #include <getopt.h>
@@ -904,6 +904,9 @@ main(int argc, char **argv)
 }
 /*
  * $Log: eroute.c,v $
+ * Revision 1.60  2004/04/06 02:58:43  mcr
+ * 	freeswan->openswan changes.
+ *
  * Revision 1.59  2004/02/09 23:07:35  paul
  * better error for native 2.6 pfk_key for 'ipsec eroute'
  *
@@ -981,155 +984,6 @@ main(int argc, char **argv)
  * of the new SPD and to support opportunistic.
  * Enforced spi > 0x100 requirement, now that pass uses a magic SA.
  *
- * Revision 1.38  2000/09/17 18:56:48  rgb
- * Added IPCOMP support.
- *
- * Revision 1.37  2000/09/12 22:36:08  rgb
- * Gerhard's IPv6 support.
- * Restructured to remove unused extensions from CLEARFLOW messages.
- * Added debugging.
- *
- * Revision 1.36  2000/09/08 19:17:31  rgb
- * Removed all references to CONFIG_IPSEC_PFKEYv2.
- *
- * Revision 1.35  2000/08/27 01:46:52  rgb
- * Update copyright dates and remove no longer used resolve_ip().
- *
- * Revision 1.34  2000/07/26 03:41:45  rgb
- * Changed all printf's to fprintf's.  Fixed tncfg's usage to stderr.
- *
- * Revision 1.33  2000/07/13 21:54:49  rgb
- * Remove old cruft from a time when libfreeswan didn't exist and I checked
- * name lookup errors with the default address.
- *
- * Revision 1.32  2000/06/21 16:51:27  rgb
- * Added no additional argument option to usage text.
- *
- * Revision 1.31  2000/03/16 06:40:49  rgb
- * Hardcode PF_KEYv2 support.
- *
- * Revision 1.30  2000/01/22 23:22:46  rgb
- * Use new function proto2satype().
- *
- * Revision 1.29  2000/01/21 09:42:32  rgb
- * Replace resolve_ip() with atoaddr() from freeswanlib.
- *
- * Revision 1.28  2000/01/21 06:22:28  rgb
- * Changed to AF_ENCAP macro.
- * Added --debug switch to command line.
- * Added pfkeyv2 support to completely avoid netlink.
- *
- * Revision 1.27  1999/12/07 18:27:10  rgb
- * Added headers to silence fussy compilers.
- * Converted local functions to static to limit scope.
- *
- * Revision 1.26  1999/11/25 09:07:44  rgb
- * Fixed printf % escape bug.
- * Clarified assignment in conditional with parens.
- *
- * Revision 1.25  1999/11/23 23:06:26  rgb
- * Sort out pfkey and freeswan headers, putting them in a library path.
- *
- * Revision 1.24  1999/06/10 15:55:14  rgb
- * Add error return code.
- *
- * Revision 1.23  1999/04/15 15:37:27  rgb
- * Forward check changes from POST1_00 branch.
- *
- * Revision 1.19.2.2  1999/04/13 20:58:10  rgb
- * Add argc==1 --> /proc/net/ipsec_*.
- *
- * Revision 1.19.2.1  1999/03/30 17:01:36  rgb
- * Make main() return type explicit.
- *
- * Revision 1.22  1999/04/11 00:12:08  henry
- * GPL boilerplate
- *
- * Revision 1.21  1999/04/06 04:54:37  rgb
- * Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
- * patch shell fixes.
- *
- * Revision 1.20  1999/03/17 15:40:54  rgb
- * Make explicit main() return type of int.
- *
- * Revision 1.19  1999/01/26 05:51:01  rgb
- * Updated to use %passthrough instead of bypass.
- *
- * Revision 1.18  1999/01/22 06:34:52  rgb
- * Update to include SAID command line parameter.
- * Add IPSEC 'bypass' switch.
- * Add error-checking.
- * Cruft clean-out.
- *
- * Revision 1.17  1998/11/29 00:52:26  rgb
- * Add explanation to warning about default source or destination.
- *
- * Revision 1.16  1998/11/12 21:08:03  rgb
- * Add --label option to identify caller from scripts.
- *
- * Revision 1.15  1998/10/27 00:33:27  rgb
- * Make output error text more fatal-sounding.
- *
- * Revision 1.14  1998/10/26 01:28:38  henry
- * use SA_* protocol names, not IPPROTO_*, to avoid compile problems
- *
- * Revision 1.13  1998/10/25 02:44:56  rgb
- * Institute more precise error return codes from eroute commands.
- *
- * Revision 1.12  1998/10/19 18:58:55  rgb
- * Added inclusion of freeswan.h.
- * a_id structure implemented and used: now includes protocol.
- *
- * Revision 1.11  1998/10/09 18:47:29  rgb
- * Add 'optionfrom' to get more options from a named file.
- *
- * Revision 1.10  1998/10/09 04:34:58  rgb
- * Changed help output from stderr to stdout.
- * Changed error messages from stdout to stderr.
- * Added '--replace' option.
- * Deleted old commented out cruft.
- *
- * Revision 1.9  1998/08/18 17:18:13  rgb
- * Delete old commented out cruft.
- * Reduce destination and source default subnet to warning, not fatal.
- *
- * Revision 1.8  1998/08/05 22:24:45  rgb
- * Change includes to accomodate RH5.x
- *
- * Revision 1.7  1998/07/29 20:49:08  rgb
- * Change to use 0x-prefixed hexadecimal for spi's.
- *
- * Revision 1.6  1998/07/28 00:14:24  rgb
- * Convert from positional parameters to long options.
- * Add --clean option.
- * Add hostname lookup support.
- *
- * Revision 1.5  1998/07/14 18:13:28  rgb
- * Restructured for better argument checking.
- * Added command to clear the eroute table.
- *
- * Revision 1.4  1998/07/09 18:14:10  rgb
- * Added error checking to IP's and keys.
- * Made most error messages more specific rather than spamming usage text.
- * Added more descriptive kernel error return codes and messages.
- * Converted all spi translations to unsigned.
- * Removed all invocations of perror.
- *
- * Revision 1.3  1998/05/27 18:48:19  rgb
- * Adding --help and --version directives.
- *
- * Revision 1.2  1998/04/13 03:15:29  rgb
- * Commands are now distinguishable from arguments when invoking usage.
- *
- * Revision 1.1.1.1  1998/04/08 05:35:10  henry
- * RGB's ipsec-0.8pre2.tar.gz ipsec-0.8
- *
- * Revision 0.3  1996/11/20 14:51:32  ji
- * Fixed problems with #include paths.
- * Changed (incorrect) references to ipsp into ipsec.
- *
- * Revision 0.2  1996/11/08 15:45:24  ji
- * First limited release.
  *
  *
  */

@@ -1,5 +1,5 @@
 /*
- * RCSID $Id: pfkeyv2.h,v 1.29 2003/12/22 21:35:58 mcr Exp $
+ * RCSID $Id: pfkeyv2.h,v 1.30 2004/04/06 02:49:00 mcr Exp $
  */
 
 /*
@@ -337,7 +337,7 @@ struct sadb_protocol {
 #define SADB_X_EALG_BLOWFISHCBC		7
 #define SADB_EALG_NULL			11
 #define SADB_X_EALG_AESCBC		12
-#define SADB_EALG_MAX			12
+#define SADB_EALG_MAX			255
 
 #define SADB_X_CALG_NONE          0
 #define SADB_X_CALG_OUI           1
@@ -369,6 +369,9 @@ struct sadb_protocol {
 
 /*
  * $Log: pfkeyv2.h,v $
+ * Revision 1.30  2004/04/06 02:49:00  mcr
+ * 	pullup of algo code from alg-branch.
+ *
  * Revision 1.29  2003/12/22 21:35:58  mcr
  * 	new patches from Dr{Who}.
  *

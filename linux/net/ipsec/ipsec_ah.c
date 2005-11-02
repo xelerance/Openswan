@@ -1,6 +1,6 @@
 /*
  * processing code for AH
- * Copyright (C) 2003 Michael Richardson <mcr@sandelman.ottawa.on.ca>
+ * Copyright (C) 2003-2004   Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.1 2003/12/13 19:10:21 mcr Exp $";
+char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.2 2004/04/06 02:49:25 mcr Exp $";
 #include <linux/config.h>
 #include <linux/version.h>
 
@@ -21,7 +21,7 @@ char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.1 2003/12/13 19:10:21 mcr
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -36,7 +36,7 @@ char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.1 2003/12/13 19:10:21 mcr
 #include <linux/etherdevice.h>	/* eth_type_trans */
 #include <linux/ip.h>		/* struct iphdr */
 #include <linux/skbuff.h>
-#include <freeswan.h>
+#include <openswan.h>
 #ifdef SPINLOCK
 # ifdef SPINLOCK_23
 #  include <linux/spinlock.h> /* *lock* */
@@ -52,23 +52,23 @@ char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.1 2003/12/13 19:10:21 mcr
 #include <asm/checksum.h>
 #include <net/ip.h>
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_sa.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_sa.h"
 
-#include "freeswan/ipsec_radij.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_tunnel.h" 
-#include "freeswan/ipsec_rcv.h"
-#include "freeswan/ipsec_xmit.h"
+#include "openswan/ipsec_radij.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_tunnel.h" 
+#include "openswan/ipsec_rcv.h"
+#include "openswan/ipsec_xmit.h"
 
-#include "freeswan/ipsec_auth.h"
+#include "openswan/ipsec_auth.h"
 
 #ifdef CONFIG_IPSEC_AH
-#include "freeswan/ipsec_ah.h"
+#include "openswan/ipsec_ah.h"
 #endif /* CONFIG_IPSEC_AH */
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
 
 #ifdef CONFIG_IPSEC_DEBUG
 int debug_ah = 0;
@@ -352,3 +352,12 @@ struct inet_protocol ah_protocol =
 };
 
 #endif /* CONFIG_IPSEC_AH */
+
+/*
+ * $Log: ipsec_ah.c,v $
+ * Revision 1.2  2004/04/06 02:49:25  mcr
+ * 	pullup of algo code from alg-branch.
+ *
+ *
+ *
+ */

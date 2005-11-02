@@ -1,6 +1,7 @@
 /* Pluto main program
- * Copyright (C) 1997 Angelos D. Keromytis.
- * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 1997      Angelos D. Keromytis.
+ * Copyright (C) 1998-2001 D. Hugh Redelmeier.
+ * Copyright (C) 2003-2004 Xelerance Corporation
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: plutomain.c,v 1.82.2.2 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: plutomain.c,v 1.93 2004/06/26 23:17:52 ken Exp $
  */
 
 #include <stdio.h>
@@ -40,6 +41,7 @@
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"
+#include "paths.h"
 #include "certs.h"
 #include "ac.h"
 #include "smartcard.h"
@@ -59,11 +61,13 @@
 #include "rnd.h"
 #include "state.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
+#include "ocsp.h"
 #include "fetch.h"
 
 #include "sha1.h"
 #include "md5.h"
 #include "crypto.h"	/* requires sha1.h and md5.h */
+#include "vendor.h"
 
 #ifdef VIRTUAL_IP
 #include "virtual.h"
@@ -79,6 +83,10 @@
 
 const char *ipsec_dir = IPSECDIR;
 
+/** usage - print help messages
+ *
+ * @param mess String - alternate message to print
+ */
 static void
 usage(const char *mess)
 {
@@ -96,6 +104,7 @@ usage(const char *mess)
 	    " [--nocrsend]"
 	    " [--strictcrlpolicy]"
 	    " [--crlcheckinterval]"
+	    " [--ocspuri]"
 	    " [--uniqueids]"
 	    " \\\n\t"
 	    "[--interface <ifname>]"
@@ -130,7 +139,7 @@ usage(const char *mess)
 	    " \\\n\t"
 	    "[--nat_traversal] [--keep_alive <delay_sec>]"
 	    " \\\n\t"
-	        "[--force_keepalive] [--disable_port_floating]"
+            "[--force_keepalive] [--disable_port_floating]"
 #endif
 #ifdef VIRTUAL_IP
 	   " \\\n\t"
@@ -153,7 +162,7 @@ usage(const char *mess)
 static char pluto_lock[sizeof(ctl_addr.sun_path)] = DEFAULT_CTLBASE LOCK_SUFFIX;
 static bool pluto_lock_created = FALSE;
 
-/* create lockfile, or die in the attempt */
+/** create lockfile, or die in the attempt */
 static int
 create_lock(void)
 {
@@ -180,6 +189,12 @@ create_lock(void)
     return fd;
 }
 
+/** fill_lock - Populate the lock file with pluto's PID
+ * 
+ * @param lockfd File Descriptor for the lock file
+ * @param pid PID (pid_t struct) to be put into the lock file
+ * @return bool True if successful
+ */
 static bool
 fill_lock(int lockfd, pid_t pid)
 {
@@ -191,6 +206,9 @@ fill_lock(int lockfd, pid_t pid)
     return ok;
 }
 
+/** delete_lock - Delete the lock file
+ *
+ */ 
 static void
 delete_lock(void)
 {
@@ -201,13 +219,13 @@ delete_lock(void)
     }
 }
 
-/* by default pluto sends certificate requests to its peers */
+/** by default pluto sends certificate requests to its peers */
 bool no_cr_send = FALSE;
 
-/* by default the CRL policy is lenient */
+/** by default the CRL policy is lenient */
 bool strict_crl_policy = FALSE;
 
-/* by default pluto does not fetch crls dynamically */
+/** by default pluto does not check crls dynamically */
 long crl_check_interval = 0;
 
 int
@@ -216,13 +234,17 @@ main(int argc, char **argv)
     bool fork_desired = TRUE;
     bool log_to_stderr_desired = FALSE;
     int lockfd;
+    char* ocspuri = NULL;
+
 #ifdef NAT_TRAVERSAL
+    /** Overridden by nat_traversal= in ipsec.conf */
     bool nat_traversal = FALSE;
     bool nat_t_spf = TRUE;  /* support port floating */
     unsigned int keep_alive = 0;
     bool force_keepalive = FALSE;
 #endif
 #ifdef VIRTUAL_IP
+    /** Overridden by virtual_private= in ipsec.conf */
     char *virtual_private = NULL;
 #endif
 
@@ -241,6 +263,8 @@ main(int argc, char **argv)
 	    { "nocrsend", no_argument, NULL, 'c' },
 	    { "strictcrlpolicy", no_argument, NULL, 'r' },
 	    { "crlcheckinterval", required_argument, NULL, 'x'},
+	    { "ocsprequestcert", required_argument, NULL, 'q'},
+	    { "ocspuri", required_argument, NULL, 'o'},
 	    { "uniqueids", no_argument, NULL, 'u' },
 	    { "interface", required_argument, NULL, 'i' },
 	    { "ikeport", required_argument, NULL, 'p' },
@@ -297,7 +321,7 @@ main(int argc, char **argv)
 	 */
 	int c = getopt_long(argc, argv, "", long_opts, NULL);
 
-	/* Note: "breaking" from case terminates loop */
+	/** Note: "breaking" from case terminates loop */
 	switch (c)
 	{
 	case EOF:	/* end of flags */
@@ -367,12 +391,16 @@ main(int argc, char **argv)
                 long interval = strtol(optarg, &endptr, 0);
 
                 if (*endptr != '\0' || endptr == optarg
-                || interval < 0)
-                    usage("<interval-time> must be a positive number or zero");
+                || interval <= 0)
+                    usage("<interval-time> must be a positive number");
                 crl_check_interval = interval;
             }
 	    continue
 	    ;
+
+	case 'o':	/* --ocspuri */
+	    ocspuri = optarg;
+	    continue;
 
 	case 'u':	/* --uniqueids */
 	    uniqueIDs = TRUE;
@@ -497,7 +525,7 @@ main(int argc, char **argv)
     pfkey_error_func = NULL;
 #endif
 
-    /* create control socket.
+    /** create control socket.
      * We must create it before the parent process returns so that
      * there will be no race condition in using it.  The easiest
      * place to do this is before the daemon fork.
@@ -567,7 +595,7 @@ main(int argc, char **argv)
 	fflush(stdout);
     }
 
-    /* Close everything but ctl_fd and (if needed) stderr.
+    /** Close everything but ctl_fd and (if needed) stderr.
      * There is some danger that a library that we don't know
      * about is using some fd that we don't know about.
      * I guess we'll soon find out.
@@ -593,25 +621,27 @@ main(int argc, char **argv)
     }
 
     init_constants();
-    init_log();
+    pluto_init_log();
 
     /* Note: some scripts may look for this exact message -- don't change
      * ipsec barf was one, but it no longer does.
      */
     {
 #ifdef PLUTO_SENDS_VENDORID
-	const char *v = init_pluto_vendorid();
+        const char *v = init_pluto_vendorid();
 
-	plog("Starting Pluto (Openswan Version %s%s; Vendor ID %s)"
-	    , ipsec_version_code()
-	    , compile_time_interop_options
-	    , v);
+        openswan_log("Starting Pluto (Openswan Version %s%s; Vendor ID %s)"
+            , ipsec_version_code()
+            , compile_time_interop_options
+            , v);
 #else
-	plog("Starting Pluto (Openswan Version %s%s)"
-	    , ipsec_version_code()
-	    , compile_time_interop_options);
+        openswan_log("Starting Pluto (Openswan Version %s%s)"
+            , ipsec_version_code()
+            , compile_time_interop_options);
 #endif
     }
+
+/** Initialize all of the various features */
 
 #ifdef NAT_TRAVERSAL
     init_nat_traversal(nat_traversal, keep_alive, force_keepalive, nat_t_spf);
@@ -630,11 +660,18 @@ main(int argc, char **argv)
     init_id();
 
 #ifdef HAVE_THREADS
-    init_crl_fetch();
+    init_fetch();
 #endif
 
+    ocsp_set_default_uri(ocspuri);
+
     /* loading X.509 CA certificates */
-    load_cacerts();
+    load_authcerts("CA cert", CA_CERT_PATH, AUTH_CA);
+    /* loading X.509 AA certificates */
+    load_authcerts("AA cert", AA_CERT_PATH, AUTH_AA);
+    /* loading X.509 OCSP certificates */
+    load_authcerts("OCSP cert", OCSP_CERT_PATH, AUTH_OCSP);
+
     /* loading X.509 CRLs */
     load_crls();
     /* loading attribute certificates (experimental) */
@@ -660,20 +697,30 @@ exit_pluto(int status)
     free_preshared_secrets();
     free_remembered_public_keys();
     delete_every_connection();
+
+    /* free memory allocated by initialization routines.  Please don't
+       forget to do this. */
+
 #ifdef HAVE_THREADS
-    free_fetch_requests();  /* free chain of fetch requests */
+    free_crl_fetch();          /* free chain of crl fetch requests */
 #endif
-    free_cacerts();	    /* free chain of X.509 CA certificates */
-    free_crls();	    /* free chain of X.509 CRLs */
-    free_ifaces();
-    stop_adns();
-    free_md_pool();
-    delete_lock();
+#ifdef HAVE_OCSP
+    free_ocsp_fetch();         /* free chain of ocsp fetch requests */
+#endif
+    free_authcerts();          /* free chain of X.509 authority certificates */
+    free_crls();               /* free chain of X.509 CRLs */
+    free_acerts();             /* free chain of X.509 attribute certificates */
+    free_ocsp();               /* free ocsp cache */
+
+    free_ifaces();          /* free interface list from memory */
+    stop_adns();            /* Stop async DNS process (if running) */
+    free_md_pool();         /* free the md pool */
+    delete_lock();          /* delete any lock files */
 #ifdef LEAK_DETECTIVE
-    report_leaks();
+    report_leaks();         /* report memory leaks now, after all free()s */
 #endif /* LEAK_DETECTIVE */
-    close_log();
-    exit(status);
+    close_log();            /* close the logfiles */
+    exit(status);           /* exit, with our error code */
 }
 
 /*

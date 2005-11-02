@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: lex.h,v 1.1 2002/10/22 09:07:28 dhr Exp $
+ * RCSID $Id: lex.h,v 1.2 2004/04/27 12:43:27 ken Exp $
  */
 
 #define MAX_TOK_LEN 2048    /* includes terminal '\0' */
@@ -33,16 +33,6 @@ extern struct file_lex_position *flp;
 extern bool lexopen(struct file_lex_position *new_flp, const char *name, bool optional);
 extern void lexclose(void);
 
-
-/* Token decoding: shift() loads the next token into tok.
- * Iff a token starts at the left margin, it is considered
- * to be the first in a record.  We create a special condition,
- * Record Boundary (analogous to EOF), just before such a token.
- * We are unwilling to shift through a record boundary:
- * it must be overridden first.
- * Returns FALSE iff Record Boundary or EOF (i.e. no token);
- * tok will then be NULL.
- */
 
 extern char *tok;
 #define tokeq(s) (streq(tok, (s)))

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keys.c,v 1.88.4.2 2004/04/16 12:33:10 mcr Exp $
+ * RCSID $Id: keys.c,v 1.96 2004/06/27 22:37:58 mcr Exp $
  */
 
 #include <stddef.h>
@@ -33,8 +33,8 @@
 # define GLOB_ABORTED    GLOB_ABEND	/* fix for old versions */
 #endif
 
-#include <freeswan.h>
-#include <freeswan/ipsec_policy.h>
+#include <openswan.h>
+#include <openswan/ipsec_policy.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -56,7 +56,7 @@
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 #include "timer.h"
 
-#include "pkcs.h"
+#include "fetch.h"
 #include "x509more.h"
 
 /* Maximum length of filename and passphrase buffer */
@@ -202,6 +202,62 @@ RSA_private_key_sanity(struct RSA_private_key *k)
     return ugh;
 }
 
+/*
+ * compute an RSA signature with PKCS#1 padding
+ */
+void
+sign_hash(const struct RSA_private_key *k, const u_char *hash_val, size_t hash_len
+    , u_char *sig_val, size_t sig_len)
+{
+    chunk_t ch;
+    mpz_t t1, t2;
+    size_t padlen;
+    u_char *p = sig_val;
+
+    DBG(DBG_CONTROL | DBG_CRYPT,
+	DBG_log("signing hash with RSA Key *%s", k->pub.keyid)
+    )
+    /* PKCS#1 v1.5 8.1 encryption-block formatting */
+    *p++ = 0x00;
+    *p++ = 0x01;	/* BT (block type) 01 */
+    padlen = sig_len - 3 - hash_len;
+    memset(p, 0xFF, padlen);
+    p += padlen;
+    *p++ = 0x00;
+    memcpy(p, hash_val, hash_len);
+    passert(p + hash_len - sig_val == (ptrdiff_t)sig_len);
+
+    /* PKCS#1 v1.5 8.2 octet-string-to-integer conversion */
+    n_to_mpz(t1, sig_val, sig_len);	/* (could skip leading 0x00) */
+
+    /* PKCS#1 v1.5 8.3 RSA computation y = x^c mod n
+     * Better described in PKCS#1 v2.0 5.1 RSADP.
+     * There are two methods, depending on the form of the private key.
+     * We use the one based on the Chinese Remainder Theorem.
+     */
+    mpz_init(t2);
+
+    mpz_powm(t2, t1, &k->dP, &k->p);	/* m1 = c^dP mod p */
+
+    mpz_powm(t1, t1, &k->dQ, &k->q);	/* m2 = c^dQ mod Q */
+
+    mpz_sub(t2, t2, t1);	/* h = qInv (m1 - m2) mod p */
+    mpz_mod(t2, t2, &k->p);
+    mpz_mul(t2, t2, &k->qInv);
+    mpz_mod(t2, t2, &k->p);
+
+    mpz_mul(t2, t2, &k->q);	/* m = m2 + h q */
+    mpz_add(t1, t1, t2);
+
+    /* PKCS#1 v1.5 8.4 integer-to-octet-string conversion */
+    ch = mpz_to_n(t1, sig_len);
+    memcpy(sig_val, ch.ptr, sig_len);
+    pfree(ch.ptr);
+
+    mpz_clear(t1);
+    mpz_clear(t2);
+}
+
 const char *shared_secrets_file = SHARED_SECRETS_FILE;
 
 struct id_list {
@@ -258,7 +314,8 @@ allocate_RSA_public_key(const cert_t cert)
 	n = cert.u.x509->modulus;
 	break;
     default:
-	plog("RSA public key allocation error");
+	openswan_log("RSA public key allocation error");
+	return NULL;
     }
 
     n_to_mpz(&pk->u.rsa.e, e.ptr, e.len);
@@ -328,9 +385,14 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 		idme, idhim, enum_name(&ppk_names, kind)));
 
     /* is there a certificate assigned to this connection? */
-    if (kind == PPK_RSA && c->spd.this.cert.type != CERT_NONE)
+    if (kind == PPK_RSA
+	&& c->spd.this.sendcert != cert_forcedtype
+	&& (c->spd.this.cert.type == CERT_X509_SIGNATURE ||
+	    c->spd.this.cert.type == CERT_PKCS7_WRAPPED_X509 ||
+	    c->spd.this.cert.type == CERT_PGP))
     {
 	struct pubkey *my_public_key = allocate_RSA_public_key(c->spd.this.cert);
+	passert(my_public_key != NULL);
 
 	for (s = secrets; s != NULL; s = s->next)
 	{
@@ -501,7 +563,11 @@ has_private_key(cert_t cert)
 {
     struct secret *s;
     bool has_key = FALSE;
-    struct pubkey *pubkey = allocate_RSA_public_key(cert);
+    struct pubkey *pubkey;
+
+    pubkey = allocate_RSA_public_key(cert);
+
+    if(pubkey == NULL) return FALSE;
 
     for (s = secrets; s != NULL; s = s->next)
     {
@@ -792,6 +858,38 @@ process_rsa_secret(struct RSA_private_key *rsak)
     }
 }
 
+/*
+ * get the matching RSA private key belonging to a given X.509 certificate
+ */
+const struct RSA_private_key*
+get_x509_private_key(x509cert_t *cert)
+{
+    struct secret *s;
+    const struct RSA_private_key *pri = NULL;
+    cert_t c;
+    struct pubkey *pubkey;
+
+    c.forced = FALSE;
+    c.type   = CERT_X509_SIGNATURE;
+    c.u.x509 = cert;
+
+    pubkey = allocate_RSA_public_key(c);
+
+    if(pubkey == NULL) return NULL;
+
+    for (s = secrets; s != NULL; s = s->next)
+    {
+	if (s->kind == PPK_RSA &&
+	    same_RSA_public_key(&s->u.RSA_private_key.pub, &pubkey->u.rsa))
+	{
+	    pri = &s->u.RSA_private_key;
+	    break;
+	}
+    }
+    free_public_key(pubkey);
+    return pri;
+}
+
 #ifdef SMARTCARD
 /*
  * process pin read from ipsec.secrets or prompted for it using whack
@@ -836,9 +934,9 @@ process_pin(struct secret *s, int whackfd)
 	pin_status = scx_verify_pin(sc) ? "valid" : "invalid";
     }
 #ifdef SMARTCARD
-    plog("  %s PIN for reader: %d, id: %s", pin_status, sc->reader, sc->id);
+    openswan_log("  %s PIN for reader: %d, id: %s", pin_status, sc->reader, sc->id);
 #else
-    plog("  warning: SMARTCARD support is deactivated in pluto/Makefile!");
+    openswan_log("  warning: SMARTCARD support is deactivated in pluto/Makefile!");
 #endif
     return NULL;
 }
@@ -908,8 +1006,10 @@ process_secret(struct secret *s, int whackfd)
     else if (flushline("expected record boundary in key"))
     {
 	/* gauntlet has been run: install new secret */
+	lock_certs_and_keys("process_secret");
 	s->next = secrets;
 	secrets = s;
+	unlock_certs_and_keys("process_secrets");
     }
 }
 
@@ -983,13 +1083,7 @@ process_secret_records(int whackfd)
 
 	    for (;;)
 	    {
-		if (tok[0] == '"' || tok[0] == '\'')
-		{
-		    /* found key part */
-		    process_secret(s, whackfd);
-		    break;
-		}
-		else if (tokeq(":"))
+		if (tokeq(":"))
 		{
 		    /* found key part */
 		    shift();	/* discard explicit separator */
@@ -1103,7 +1197,7 @@ process_secrets_file(const char *file_pat, int whackfd)
     {
 	if (lexopen(&pos, *fnp, FALSE))
 	{
-	    plog("loading secrets from \"%s\"", *fnp);
+	    openswan_log("loading secrets from \"%s\"", *fnp);
 	    (void) flushline("file starts with indentation (continuation notation)");
 	    process_secret_records(whackfd);
 	    lexclose();
@@ -1116,11 +1210,13 @@ process_secrets_file(const char *file_pat, int whackfd)
 void
 free_preshared_secrets(void)
 {
+    lock_certs_and_keys("free_preshared_secrets");
+    
     if (secrets != NULL)
     {
 	struct secret *s, *ns;
 
-	plog("forgetting secrets");
+	openswan_log("forgetting secrets");
 
 	for (s = secrets; s != NULL; s = ns)
 	{
@@ -1159,6 +1255,8 @@ free_preshared_secrets(void)
 	}
 	secrets = NULL;
     }
+    
+    unlock_certs_and_keys("free_preshard_secrets");
 }
 
 void
@@ -1466,16 +1564,20 @@ void list_public_keys(bool utc)
 	{
 	    char id_buf[IDTOA_BUF];
 	    char expires_buf[TIMETOA_BUF];
+	    char installed_buf[TIMETOA_BUF];
 
 	    idtoa(&key->id, id_buf, IDTOA_BUF);
-	    strcpy(expires_buf, timetoa(&key->until_time, utc));
-	    whack_log(RC_COMMENT, "%s, %4d RSA Key %s, until %s %s",
-		timetoa(&key->installed_time, utc), 8*key->u.rsa.k
+	    whack_log(RC_COMMENT, "%s, %4d RSA Key %s, until %s %s"
+		      , timetoa(&key->installed_time, utc,
+				installed_buf, sizeof(installed_buf))
+		      , 8*key->u.rsa.k
 		      , key->u.rsa.keyid
-		      , expires_buf
+		      , timetoa(&key->until_time, utc,
+				expires_buf, sizeof(expires_buf))
 		      , check_expiry(key->until_time
 				     , PUBKEY_WARNING_INTERVAL
 				     , TRUE));
+
 	    whack_log(RC_COMMENT,"       %s '%s'",
 		enum_show(&ident_names, key->id.kind), id_buf);
 
@@ -1488,3 +1590,10 @@ void list_public_keys(bool utc)
 	p = p->next;
     }
 }
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

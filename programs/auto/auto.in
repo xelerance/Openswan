@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: auto.in,v 1.90.2.3 2004/05/25 17:09:35 ken Exp $
+# RCSID $Id: auto.in,v 1.98 2004/06/27 20:35:00 mcr Exp $
 
 me='ipsec auto'
 usage="Usage:
@@ -20,9 +20,13 @@ usage="Usage:
 	$me [--showonly] --{add|delete|replace|down} connectionname
 	$me [--showonly] --{route|unroute} connectionname
 	$me [--showonly] --{ready|status|rereadsecrets|rereadgroups}
-	$me [--showonly] --{rereadcacerts|rereadcrls|rereadall}
-	$me [--showonly] [--utc] --{listpubkeys|listcerts|listcacerts}
-	$me [--showonly] --{listcrls|listcards|listall}
+        $me [--showonly] --{rereadcacerts|rereadaacerts|rereadocspcerts}
+        $me [--showonly] --{rereadacerts|rereadcrls|rereadall}
+        $me [--showonly] [--utc] --{listpubkeys|listcerts}
+        $me [--showonly] [--utc] --{listcacerts|listaacerts|listocspcerts}
+        $me [--showonly] [--utc] --{listacerts|listgroups}
+        $me [--showonly] [--utc] --{listcrls|listocsp|listcards|listall}
+        $me [--showonly] --purgeocsp
 
 	other options: [--config ipsecconfigfile] [--verbose] [--show]"
 
@@ -59,8 +63,13 @@ do
 			argc=1
 			;;
 	--ready|--status|--rereadsecrets|--rereadgroups|\
-	--rereadcacerts|--rereadcrls|--rereadall|\
-	--listpubkeys|--listcerts|--listcacerts|--listcrls|--listcards|--listall)
+        --rereadcacerts|--rereadaacerts|--rereadocspcerts|\
+        --rereadacerts|--rereadcrls|--rereadall|\
+        --listpubkeys|--listcerts|\
+        --listcacerts|--listaacerts|--listocspcerts|\
+        --listacerts|--listgroups|\
+        --listcrls|--listocsp|--listcards|--listall|\
+        --purgeocsp)
 			if test " $op" != " "
 			then
 				echo "$usage" >&2
@@ -83,8 +92,13 @@ case "$op$#:$1:$2" in
 		names="$1"
 		op="--$2"
 		;;
-1:ready:|1:status:|1:rereadsecrets:|rereadcacerts|1:rereadcrls|1:rereadall|\
-1:listpubkeys|1:listcerts|1:listcacerts|1:listcrls|1:listcards|1:listall)
+1:ready:|1:status:|1:rereadsecrets:|\
+1:rereadcacerts:|1:rereadaacerts:|1:rereadocspcerts:|\
+1:rereadacerts:|1:rereadcrls:|1:rereadall:\
+1:listpubkeys:|1:listcerts:|\
+1:listcacerts:|1:listaacerts:|1:listocspcerts:|\
+1:listacerts:|1:listgroups:|\
+1:listcrls:|1:listocsp:|1:listcards:|1:listall:|1:purgeocsp:)
 		echo "$me: warning: obsolete command syntax used" >&2
 		op="--$1"
 		;;
@@ -119,24 +133,33 @@ runit() {
 }
 
 case "$op" in
---ready)	echo "ipsec whack --listen"		   | runit ; exit ;;
---rereadsecrets)	echo "ipsec whack --rereadsecrets" | runit ; exit ;;
---rereadgroups)	echo "ipsec whack --listen"		   | runit ; exit ;;
---rereadcacerts)	echo "ipsec whack --rereadcacerts" | runit ; exit ;;
---rereadcrls)	echo "ipsec whack --rereadcrls"		   | runit ; exit ;;
---rereadall)	echo "ipsec whack --rereadall"		   | runit ; exit ;;
---listpubkeys)	echo "ipsec whack $utc --listpubkeys"      | runit ; exit ;;
---listcerts)	echo "ipsec whack $utc --listcerts"        | runit ; exit ;;
---listcacerts)	echo "ipsec whack $utc --listcacerts"      | runit ; exit ;;
---listcrls)	echo "ipsec whack $utc --listcrls"         | runit ; exit ;;
---listcards)	echo "ipsec whack $utc --listcards"        | runit ; exit ;;
---listall)	echo "ipsec whack $utc --listall"          | runit ; exit ;;
---up)	echo "ipsec whack $async --name $names --initiate" | runit ; exit ;;
---down)	echo "ipsec whack --name $names --terminate"	   | runit ; exit ;;
---delete)	echo "ipsec whack --name $names --delete"  | runit ; exit ;;
---route)	echo "ipsec whack --name $names --route"   | runit ; exit ;;
---unroute)	echo "ipsec whack --name $names --unroute" | runit ; exit ;;
---status)	echo "ipsec whack --status"		   | runit ; exit ;;
+--ready)          echo "ipsec whack --listen"                | runit ; exit ;;
+--rereadsecrets)   echo "ipsec whack --rereadsecrets"        | runit ; exit ;;
+--rereadgroups)           echo "ipsec whack --listen"                | runit ; exit ;;
+--rereadcacerts)   echo "ipsec whack --rereadcacerts"         | runit ; exit ;;
+--rereadaacerts)   echo "ipsec whack --rereadaacerts"         | runit ; exit ;;
+--rereadocspcerts) echo "ipsec whack --rereadocspcerts"       | runit ; exit ;;
+--rereadacerts)    echo "ipsec whack --rereadacerts"          | runit ; exit ;;
+--rereadcrls)     echo "ipsec whack --rereadcrls"            | runit ; exit ;;
+--rereadall)      echo "ipsec whack --rereadall"             | runit ; exit ;;
+--listpubkeys)    echo "ipsec whack $utc --listpubkeys"      | runit ; exit ;;
+--listcerts)      echo "ipsec whack $utc --listcerts"        | runit ; exit ;;
+--listcacerts)    echo "ipsec whack $utc --listcacerts"      | runit ; exit ;;
+--listaacerts)    echo "ipsec whack $utc --listaacerts"      | runit ; exit ;;
+--listocspcerts)   echo "ipsec whack $utc --listocspcerts"    | runit ; exit ;;
+--listacerts)     echo "ipsec whack $utc --listacerts"       | runit ; exit ;;
+--listgroups)     echo "ipsec whack $utc --listgroups"       | runit ; exit ;; 
+--listcrls)       echo "ipsec whack $utc --listcrls"         | runit ; exit ;; 
+--listocsp)       echo "ipsec whack $utc --listocsp"         | runit ; exit ;;
+--listcards)      echo "ipsec whack $utc --listcards"        | runit ; exit ;;
+--listall)        echo "ipsec whack $utc --listall"          | runit ; exit ;;
+--purgeocsp)      echo "ipsec whack $utc --purgeocsp"        | runit ; exit ;;
+--up)  echo "ipsec whack $async --name $names --initiate"    | runit ; exit ;;
+--down)        echo "ipsec whack --name $names --terminate"          | runit ; exit ;;
+--delete)         echo "ipsec whack --name $names --delete"  | runit ; exit ;; 
+--route)          echo "ipsec whack --name $names --route"   | runit ; exit ;;
+--unroute)        echo "ipsec whack --name $names --unroute" | runit ; exit ;; 
+--status)         echo "ipsec whack --status"                | runit ; exit ;; 
 esac
 
 if test -s $info
@@ -347,6 +370,16 @@ awk '	BEGIN {
 			fail("only know how to do auth=esp or auth=ah")
 		yesno("pfs")
 		default("pfs", "yes")
+                duration("dpddelay")
+                duration("dpdtimeout")
+                if(("dpddelay" in s) && !("dpdtimeout" in s))
+                        default("dpdtimeout",120)
+                if(!("dpddelay" in s) && ("dpdtimeout" in s))
+                        default("dpddelay",30)
+                default("dpdaction","hold")
+
+		yesno("forceencaps")
+		default("forceencaps", "no")
 		yesno("xauth")
 		default("xauth", "no")
 		yesno("xauthserver")
@@ -357,6 +390,7 @@ awk '	BEGIN {
 		default("modecfgserver", "no")
 		yesno("modecfgclient")
 		default("modecfgclient", "no")
+
 
 		yesno("compress")
 		default("compress", "no")
@@ -446,14 +480,45 @@ awk '	BEGIN {
 		}
 
 		settings = type_flags
+
+                # BEGIN IPv6
+                default("connaddrfamily", "ipv4")
+                if (s["connaddrfamily"] == "ipv6") {
+                        settings = settings " --ipv6"
+                } else if (s["connaddrfamily"] != "ipv4") {
+                        fail("unknown connaddrfamily value " s["connaddrfamily"])
+                }
+                # END IPv6
+
+		default("ike", "3des-md5,3des-sha")
+		if (s["ike"] != "")
+			settings = settings " --ike " qs("ike")
+		default("esp", "3des-md5,3des-sha1")
+		if (s["esp"] != "")
+			settings = settings " --esp " qs("esp")
 		if (s["auth"] == "ah")
 			settings = settings " --authenticate"
-		if (s["pfs"] == "yes") 
+		if (s["pfs"] == "yes") {
 			settings = settings " --pfs"
+			if (s["pfsgroup"] != "")
+				settings = settings " --pfsgroup " qs("pfsgroup")
+		}
+
+		if (s["forceencaps"] == "yes")
+			settings = settings " --forceencaps"
+
 		if (s["xauth"] == "yes")
 			settings = settings " --xauth"
 		if (s["compress"] == "yes")
 			settings = settings " --compress"
+
+                if (s["dpddelay"])
+                        settings = settings " --dpddelay " qs("dpddelay")
+                if (s["dpdtimeout"])
+                        settings = settings " --dpdtimeout " qs("dpdtimeout")
+                if (s["dpdaction"])
+                        settings = settings " --dpdaction " qs("dpdaction")
+
 		if (op == "--replace")
 			settings = settings " --delete"
 		if ("ikelifetime" in s)
@@ -526,12 +591,29 @@ awk '	BEGIN {
 		rcert = ""
 		if ("rightcert" in s)
 			rcert = "--cert " qs("rightcert")
+
+		lcerttype=""
+		if ("leftcerttype" in s) {
+		        lcerttype = "--certtype " qs("leftcerttype")
+                }
+		rcerttype=""
+		if ("rightcerttype" in s) {
+		        rcerttype = "--certtype " qs("rightcerttype")
+                }
+                        
+
 		lca = ""
 		if ("leftca" in s)
 			lca = "--ca " qs("leftca")
 		rca = ""
 		if ("rightca" in s)
 			rca = "--ca " qs("rightca")
+                lgr = ""
+                if ("leftgroups" in s)
+                        lgr = "--groups " qs("leftgroups")
+                rgr = ""
+                if ("rightgroups" in s)
+                        rgr = "--groups " qs("rightgroups")
 		fuzz = ""
 		if ("rekeyfuzz" in s)
 			fuzz = "--rekeyfuzz " qs("rekeyfuzz")
@@ -556,11 +638,11 @@ awk '	BEGIN {
 		}
 		print "ipsec whack --name", name, settings, "\\"
 		print "\t--host", qs("left"), lc, lp, "--nexthop",
-			qs("leftnexthop"), lud, lid, lkod, lcert, lscert,
-			lca, lxauth, lmodecfg, lsip, "\\"
+			qs("leftnexthop"), lud, lid, lkod, lcert, lscert, lcerttype,
+			lca, lxauth, lmodecfg, lsip, lgr, "\\"
 		print "\t--to", "--host", qs("right"), rc, rp, "--nexthop",
-			qs("rightnexthop"), rud, rid, rkod, rcert,rscert,
-			rca, rxauth, rmodecfg, rsip, "\\"
+			qs("rightnexthop"), rud, rid, rkod, rcert,rscert, rcerttype,
+			rca, rxauth, rmodecfg, rsip, rgr, "\\"
 		print "\t--ipseclifetime", qs("keylife"),
 			"--rekeymargin", qs("rekeymargin"), "\\"
 		print "\t--keyingtries", qs("keyingtries"), fuzz, rk, pd, "\\"

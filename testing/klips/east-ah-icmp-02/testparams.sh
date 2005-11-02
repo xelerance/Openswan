@@ -8,6 +8,7 @@ TESTNAME=east-ah-icmp-02
 TESTHOST=east
 EXITONEMPTY=--exitonempty
 PRIVINPUT=../inputs/01-sunrise-sunset-ping.pcap
+THREEEIGHT=true
 REF_PUB_OUTPUT=ah2-output.txt
 REF_CONSOLE_OUTPUT=ah2-console.txt
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"

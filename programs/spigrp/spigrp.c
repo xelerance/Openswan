@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char spigrp_c_version[] = "RCSID $Id: spigrp.c,v 1.47 2003/12/05 16:44:23 mcr Exp $";
+char spigrp_c_version[] = "RCSID $Id: spigrp.c,v 1.49 2004/04/18 23:16:02 ken Exp $";
 
 
 #include <sys/types.h>
@@ -34,7 +34,7 @@ char spigrp_c_version[] = "RCSID $Id: spigrp.c,v 1.47 2003/12/05 16:44:23 mcr Ex
 #include <unistd.h>
 #include <stdio.h>
 #include <netdb.h>
-#include <freeswan.h>
+#include <openswan.h>
 #if 0
 #include <linux/autoconf.h>	/* CONFIG_IPSEC_PFKEYv2 */
 #endif
@@ -43,9 +43,9 @@ char spigrp_c_version[] = "RCSID $Id: spigrp.c,v 1.47 2003/12/05 16:44:23 mcr Ex
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_ah.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_ah.h"
 
 
 char *program_name;
@@ -285,12 +285,12 @@ main(int argc, char **argv)
 			program_name);
 		switch(errno) {
 		case ENOENT:
-			fprintf(stderr, "device does not exist.  See FreeS/WAN installation procedure.\n");
+			fprintf(stderr, "ipsec# device does not exist.  See Openswan installation procedure.\n");
 			break;
 		case EACCES:
 			fprintf(stderr, "access denied.  ");
 			if(getuid() == 0) {
-				fprintf(stderr, "Check permissions.  Should be 600.\n");
+				fprintf(stderr, "Check permissions, they should be set to 600.\n");
 			} else {
 				fprintf(stderr, "You must be root to open this file.\n");
 			}
@@ -491,6 +491,12 @@ main(int argc, char **argv)
 }
 /*
  * $Log: spigrp.c,v $
+ * Revision 1.49  2004/04/18 23:16:02  ken
+ * Change FreeS/WAN -> Openswan
+ *
+ * Revision 1.48  2004/04/06 10:21:29  mcr
+ * 	freeswan->openswan changes
+ *
  * Revision 1.47  2003/12/05 16:44:23  mcr
  * 	patches to avoid ipsec_netlink.h, which has been obsolete for
  * 	some time now.

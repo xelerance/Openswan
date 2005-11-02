@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!-- lifted from troff+man by doclifter -->
+<refentry>
+<refmeta>
+<refentrytitle>IPSEC_PF_KEY</refentrytitle>
+<manvolnum>5</manvolnum>
+<refmiscinfo class='date'>29 Jun 2000</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>ipsec_pf_key</refname>
+<refpurpose>lists PF_KEY sockets registered with KLIPS</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>cat</command>    
+    <arg choice='plain'><replaceable>/proc/net/pf_key</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para><filename>/proc/net/pf_key</filename>
+is a read-only file which lists the presently open PF_KEY sockets on the
+local system and their parameters.</para>
+
+<para>Each line lists one PF_KEY socket.
+A table entry consists of:</para>
+<variablelist remap='IP'>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>sock pointer (sock)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>PID of the socket owner (pid)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>flag to indicate if the socket is dead (d)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>socket wait queue (sleep)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>socket pointer (socket)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>next socket in chain (next)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>previous socket in chain (prev)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>last socket error (e)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>pointer to destruct routine (destruct)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>is this a reused socket (r)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>has this socket been zapped (z)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>socket family to which this socket belongs (fa)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>local port number (n)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>protocol version number (p)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>Receive queue bytes committed (r)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>Transmit queue bytes committed (w)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>option memory allocations (o)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>size of send buffer in bytes (sndbf)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>timestamp in seconds (stamp)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>socket flags (Flags)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>socket type (Type)</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>+</term>
+  <listitem>
+<para>connection state (St)</para>
+<!-- bogus BR elided -->
+  </listitem>
+  </varlistentry>
+</variablelist>
+</refsect1>
+
+<refsect1 id='examples'><title>EXAMPLES</title>
+<variablelist remap='TP'>
+  <varlistentry>
+  <term><emphasis remap='B'>c3b8c140 3553 0 c0599818 c05997fc 0 0 0 0 1 0 15 0 2 0 0 0 65535 0.103232 00000000 00000003 01</emphasis></term>
+  <listitem>
+<para></para> <!-- FIXME: blank list item -->
+  </listitem>
+  </varlistentry>
+</variablelist>
+
+<para>shows that there is one pf_key socket set up that starts at
+<emphasis remap='B'>c3b8c140</emphasis>,
+whose owning process has PID
+<literal>3553</literal>,
+the socket is not dead, its wait queue is at
+<emphasis remap='B'>c0599818</emphasis>,
+whose owning socket is at
+<emphasis remap='B'>c05997fc</emphasis>,
+with no other sockets in the chain, no errors, no destructor, it is a
+reused socket which has not been zapped, from protocol family
+<literal>15</literal>
+(PF_KEY), local port number
+<literal>0</literal>,
+protocol socket version
+<literal>2</literal>,
+no memory allocated to transmit, receive or option queues, a send buffer
+of almost
+<emphasis remap='B'>64kB</emphasis>,
+a timestamp of
+<literal>0.103232</literal>,
+no flags set, type
+<literal>3</literal>,
+in state
+<literal>1</literal>.</para>
+</refsect1>
+
+<refsect1 id='files'><title>FILES</title>
+<para>/proc/net/pf_key</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>ipsec(8), ipsec_manual(8), ipsec_eroute(5), ipsec_spi(5),
+ipsec_spigrp(5), ipsec_klipsdebug(5), ipsec_tncfg(8), ipsec_version(5)</para>
+</refsect1>
+
+<refsect1 id='history'><title>HISTORY</title>
+<para>Written for the Linux FreeS/WAN project
+&lt;<ulink url='http://www.freeswan.org/'>http://www.freeswan.org/</ulink>&gt;
+by Richard Guy Briggs.</para>
+
+<!--  $Log: pf_key.5.xml,v $
+<!--  Revision 1.1  2004/05/26 17:49:48  ken
+<!--  Import XML version
+<!-- -->
+<!--  Revision 1.4  2002/04/24 07:35:39  mcr -->
+<!--  Moved from ./klips/utils/pf_key.5,v -->
+
+<!--  Revision 1.3  2001/01/23 23:51:49  rgb -->
+<!--  Fix outdated references to /proc/net/ipsec_pf_key. -->
+
+<!--  Revision 1.2  2000/06/30 18:21:55  rgb -->
+<!--  Update SEE ALSO sections to include <citerefentry><refentrytitle>ipsec_version</refentrytitle><manvolnum>5</manvolnum></citerefentry> and <citerefentry><refentrytitle>ipsec_pf_key</refentrytitle><manvolnum>5</manvolnum></citerefentry> -->
+<!--  and correct FILES sections to no longer refer to /dev/ipsec which has -->
+<!--  been removed since PF_KEY does not use it. -->
+
+<!--  Revision 1.1  2000/06/30 06:19:27  rgb -->
+<!--  manpages for the last two /proc/net/ipsec* files that don't have a -->
+<!--  corresponding utility. -->
+
+
+
+</refsect1>
+</refentry>
+

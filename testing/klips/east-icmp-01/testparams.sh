@@ -8,6 +8,7 @@ TESTNAME=east-icmp-01
 TESTHOST=east
 EXITONEMPTY=--exitonempty
 PRIV_INPUT=../inputs/01-sunrise-sunset-ping.pcap
+THREEEIGHT=true
 REF_PUB_OUTPUT=spi1-output.txt
 REF_CONSOLE_OUTPUT=spi1-console.txt
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"

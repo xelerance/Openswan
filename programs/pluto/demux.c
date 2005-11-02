@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: demux.c,v 1.159.2.1 2004/03/21 05:23:32 mcr Exp $
+ * RCSID $Id: demux.c,v 1.169 2004/06/20 12:47:41 ken Exp $
  */
 
 /* Ordering Constraints on Payloads
@@ -126,6 +126,8 @@
 #include <openswan.h>
 
 #include "constants.h"
+#include "oswlog.h"
+
 #include "defs.h"
 #include "cookie.h"
 #include "id.h"
@@ -142,6 +144,7 @@
 #include "md5.h"
 #include "sha1.h"
 #include "crypto.h" /* requires sha1.h and md5.h */
+#include "ike_alg.h"
 #include "log.h"
 #include "demux.h"	/* needs packet.h */
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
@@ -381,6 +384,7 @@ static const struct state_microcode state_microcode_table[] = {
     , SMF_ALL_AUTH | SMF_ENCRYPTED | SMF_RETRANSMIT_ON_DUPLICATE
     , LEMPTY, LEMPTY
     , PT(NONE), EVENT_NULL, unexpected },
+
 
     /* STATE_MAIN_I4: can only get here due to packet loss */
     { STATE_MAIN_I4, STATE_UNDEFINED
@@ -643,7 +647,7 @@ check_msg_errqueue(const struct iface *ifp, short interest)
 	}
 	else if (packet_len == sizeof(buffer))
 	{
-	    plog("MSG_ERRQUEUE message longer than %lu bytes; truncated"
+	    openswan_log("MSG_ERRQUEUE message longer than %lu bytes; truncated"
 		, (unsigned long) sizeof(buffer));
 	}
 	else
@@ -783,7 +787,7 @@ check_msg_errqueue(const struct iface *ifp, short interest)
 		    }
 		    else
 #endif
-		    plog((sender != NULL) + "~"
+		    openswan_log((sender != NULL) + "~"
 			"ERROR: asynchronous network error report on %s"
 			"%s"
 			", complainant %s"
@@ -809,7 +813,7 @@ check_msg_errqueue(const struct iface *ifp, short interest)
 		/* .cmsg_len is a kernel_size_t(!), but the value
 		 * certainly ought to fit in an unsigned long.
 		 */
-		plog("unknown cmsg: level %d, type %d, len %lu"
+		openswan_log("unknown cmsg: level %d, type %d, len %lu"
 		    , cm->cmsg_level, cm->cmsg_type
 		    , (unsigned long) cm->cmsg_len);
 	    }
@@ -923,6 +927,37 @@ unexpected(struct msg_digest *md)
 static stf_status
 informational(struct msg_digest *md UNUSED)
 {
+    struct payload_digest *const n_pld = md->chain[ISAKMP_NEXT_N];
+
+    /* If the Notification Payload is not null... */
+    if (n_pld != NULL)
+    {
+        pb_stream *const n_pbs = &n_pld->pbs;
+        struct isakmp_notification *const n = &n_pld->payload.notification;
+        int disp_len;
+        char disp_buf[200];
+
+        /* Switch on Notification Type (enum) */
+        switch (n->isan_type)
+        {
+        case R_U_THERE:
+            return dpd_inI_outR(md->st, n, n_pbs);
+
+        case R_U_THERE_ACK:
+            return dpd_inR(md->st, n, n_pbs);
+        default:
+            if (pbs_left(n_pbs) >= sizeof(disp_buf)-1)
+                disp_len = sizeof(disp_buf)-1;
+            else
+                disp_len = pbs_left(n_pbs);
+            memcpy(disp_buf, n_pbs->cur, disp_len);
+            disp_buf[disp_len] = '\0';
+            break;
+        }
+    }
+
+    loglog(RC_LOG_SERIOUS, "received and ignored informational message");
+
     return STF_IGNORE;
 }
 
@@ -1116,7 +1151,7 @@ read_packet(struct msg_digest *md)
 	     * We get "connection refused" in response to some
 	     * datagram we sent, but we cannot tell which one.
 	     */
-	    plog("some IKE message we sent has been rejected with ECONNREFUSED (kernel supplied no details)");
+	    openswan_log("some IKE message we sent has been rejected with ECONNREFUSED (kernel supplied no details)");
 	}
 	else if (from_ugh != NULL)
 	{
@@ -1134,7 +1169,7 @@ read_packet(struct msg_digest *md)
     }
     else if (from_ugh != NULL)
     {
-	plog("recvfrom on %s returned misformed source sockaddr: %s"
+	openswan_log("recvfrom on %s returned misformed source sockaddr: %s"
 	    , ifp->rname, from_ugh);
 	return FALSE;
     }
@@ -1145,13 +1180,13 @@ read_packet(struct msg_digest *md)
     if (ifp->ike_float == TRUE) {
 	u_int32_t non_esp;
 	if (packet_len < (int)sizeof(u_int32_t)) {
-	    plog("recvfrom %s:%u too small packet (%d)"
+	    openswan_log("recvfrom %s:%u too small packet (%d)"
 		, ip_str(cur_from), (unsigned) cur_from_port, packet_len);
 	    return FALSE;
 	}
 	memcpy(&non_esp, _buffer, sizeof(u_int32_t));
 	if (non_esp != 0) {
-	    plog("recvfrom %s:%u has no Non-ESP marker"
+	    openswan_log("recvfrom %s:%u has no Non-ESP marker"
 		, ip_str(cur_from), (unsigned) cur_from_port);
 	    return FALSE;
 	}
@@ -1216,18 +1251,36 @@ process_packet(struct msg_digest **mdp)
     struct state *st = NULL;
     enum state_kind from_state = STATE_UNDEFINED;	/* state we started in */
 
+#define SEND_NOTIFICATION(t) { \
+    if (st) send_notification_from_state(st, from_state, t); \
+    else send_notification_from_md(md, t); }
+
     if (!in_struct(&md->hdr, &isakmp_hdr_desc, &md->packet_pbs, &md->message_pbs))
     {
-	/* XXX specific failures (special notification?):
+	/* Identify specific failures:
 	 * - bad ISAKMP major/minor version numbers
-	 * - size of packet vs size of message
 	 */
+	if (md->packet_pbs.roof - md->packet_pbs.cur >= (ptrdiff_t)isakmp_hdr_desc.size)
+	{
+	    struct isakmp_hdr *hdr = (struct isakmp_hdr *)md->packet_pbs.cur;
+	    if ((hdr->isa_version >> ISA_MAJ_SHIFT) != ISAKMP_MAJOR_VERSION)
+	    {
+		SEND_NOTIFICATION(INVALID_MAJOR_VERSION);
+		return;
+	    }
+	    else if ((hdr->isa_version & ISA_MIN_MASK) != ISAKMP_MINOR_VERSION)
+	    {
+		SEND_NOTIFICATION(INVALID_MINOR_VERSION);
+		return;
+	    }
+	}
+	SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 	return;
     }
 
     if (md->packet_pbs.roof != md->message_pbs.roof)
     {
-	plog("size (%u) differs from size specified in ISAKMP HDR (%u)"
+	openswan_log("size (%u) differs from size specified in ISAKMP HDR (%u)"
 	    , (unsigned) pbs_room(&md->packet_pbs), md->hdr.isa_length);
 	return;
     }
@@ -1239,19 +1292,22 @@ process_packet(struct msg_digest **mdp)
     case ISAKMP_XCHG_BASE:
 #endif
 
+    case ISAKMP_XCHG_AO:
+    case ISAKMP_XCHG_AGGR:
+
     case ISAKMP_XCHG_IDPROT:	/* part of a Main Mode exchange */
 	if (md->hdr.isa_msgid != MAINMODE_MSGID)
 	{
-	    plog("Message ID was 0x%08lx but should be zero in Main Mode",
+	    openswan_log("Message ID was 0x%08lx but should be zero in Main Mode",
 		(unsigned long) md->hdr.isa_msgid);
-	    /* XXX Could send notification back */
+	    SEND_NOTIFICATION(INVALID_MESSAGE_ID);
 	    return;
 	}
 
 	if (is_zero_cookie(md->hdr.isa_icookie))
 	{
-	    plog("Initiator Cookie must not be zero in Main Mode message");
-	    /* XXX Could send notification back */
+	    openswan_log("Initiator Cookie must not be zero in Main Mode message");
+	    SEND_NOTIFICATION(INVALID_COOKIE);
 	    return;
 	}
 
@@ -1262,8 +1318,9 @@ process_packet(struct msg_digest **mdp)
 	     */
 	    if (md->hdr.isa_flags & ISAKMP_FLAG_ENCRYPTION)
 	    {
-		plog("initial Main Mode message is invalid:"
+		openswan_log("initial Main Mode message is invalid:"
 		    " its Encrypted Flag is on");
+		SEND_NOTIFICATION(INVALID_FLAGS);
 		return;
 	    }
 
@@ -1287,7 +1344,7 @@ process_packet(struct msg_digest **mdp)
 
 		if (st == NULL)
 		{
-		    plog("Main Mode message is part of an unknown exchange");
+		    openswan_log("Main Mode message is part of an unknown exchange");
 		    /* XXX Could send notification back */
 		    return;
 		}
@@ -1296,11 +1353,6 @@ process_packet(struct msg_digest **mdp)
 	    from_state = st->st_state;
 	}
 	break;
-
-#ifdef NOTYET
-    case ISAKMP_XCHG_AO:
-    case ISAKMP_XCHG_AGGR:
-#endif
 
     case ISAKMP_XCHG_INFO:	/* an informational exchange */
 	st = find_info_state(md->hdr.isa_icookie, md->hdr.isa_rcookie
@@ -1313,15 +1365,15 @@ process_packet(struct msg_digest **mdp)
 	{
 	    if (st == NULL)
 	    {
-		plog("Informational Exchange is for an unknown (expired?) SA");
+		openswan_log("Informational Exchange is for an unknown (expired?) SA");
 		/* XXX Could send notification back */
 		return;
 	    }
 
-	    if (!IS_ISAKMP_SA_ESTABLISHED(st->st_state))
+	    if (!IS_ISAKMP_ENCRYPTED(st->st_state))
 	    {
 		loglog(RC_LOG_SERIOUS, "encrypted Informational Exchange message is invalid"
-		    " because it is for incomplete ISAKMP SA");
+		    " because no key is known");
 		/* XXX Could send notification back */
 		return;
 	    }
@@ -1350,10 +1402,10 @@ process_packet(struct msg_digest **mdp)
 	}
 	else
 	{
-	    if (st != NULL && IS_ISAKMP_SA_ESTABLISHED(st->st_state))
+	    if (st != NULL && IS_ISAKMP_ENCRYPTED(st->st_state))
 	    {
-		loglog(RC_LOG_SERIOUS, "Informational Exchange message for"
-		    " an established ISAKMP SA must be encrypted");
+		loglog(RC_LOG_SERIOUS, "Informational Exchange message"
+		    " must be encrypted");
 		/* XXX Could send notification back */
 		return;
 	    }
@@ -1364,25 +1416,25 @@ process_packet(struct msg_digest **mdp)
     case ISAKMP_XCHG_QUICK:	/* part of a Quick Mode exchange */
 	if (is_zero_cookie(md->hdr.isa_icookie))
 	{
-	    plog("Quick Mode message is invalid because"
+	    openswan_log("Quick Mode message is invalid because"
 		" it has an Initiator Cookie of 0");
-	    /* XXX Could send notification back */
+	    SEND_NOTIFICATION(INVALID_COOKIE);
 	    return;
 	}
 
 	if (is_zero_cookie(md->hdr.isa_rcookie))
 	{
-	    plog("Quick Mode message is invalid because"
+	    openswan_log("Quick Mode message is invalid because"
 		" it has a Responder Cookie of 0");
-	    /* XXX Could send notification back */
+	    SEND_NOTIFICATION(INVALID_COOKIE);
 	    return;
 	}
 
 	if (md->hdr.isa_msgid == MAINMODE_MSGID)
 	{
-	    plog("Quick Mode message is invalid because"
+	    openswan_log("Quick Mode message is invalid because"
 		" it has a Message ID of 0");
-	    /* XXX Could send notification back */
+	    SEND_NOTIFICATION(INVALID_MESSAGE_ID);
 	    return;
 	}
 
@@ -1400,7 +1452,7 @@ process_packet(struct msg_digest **mdp)
 
 	    if (st == NULL)
 	    {
-		plog("Quick Mode message is for a non-existent (expired?)"
+		openswan_log("Quick Mode message is for a non-existent (expired?)"
 		    " ISAKMP SA");
 		/* XXX Could send notification back */
 		return;
@@ -1409,7 +1461,7 @@ process_packet(struct msg_digest **mdp)
 #ifdef XAUTH
 	    if(st->st_oakley.xauth != 0)
 	    {
-		plog("Cannot do Quick Mode until XAUTH done.");
+		openswan_log("Cannot do Quick Mode until XAUTH done.");
 		return;
 	    }
 #endif 
@@ -1426,7 +1478,7 @@ process_packet(struct msg_digest **mdp)
 	    {
 		loglog(RC_LOG_SERIOUS, "Quick Mode message is unacceptable because"
 		    " it is for an incomplete ISAKMP SA");
-		/* XXX Could send notification back */
+		SEND_NOTIFICATION(PAYLOAD_MALFORMED /* XXX ? */);
 		return;
 	    }
 
@@ -1437,7 +1489,7 @@ process_packet(struct msg_digest **mdp)
 		    " it uses a previously used Message ID 0x%08lx"
 		    " (perhaps this is a duplicated packet)"
 		    , (unsigned long) md->hdr.isa_msgid);
-		/* XXX Could send notification INVALID_MESSAGE_ID back */
+		SEND_NOTIFICATION(INVALID_MESSAGE_ID);
 		return;
 	    }
 
@@ -1452,7 +1504,7 @@ process_packet(struct msg_digest **mdp)
 #ifdef XAUTH
 	    if(st->st_oakley.xauth != 0)
 	    {
-		plog("Cannot do Quick Mode until XAUTH done.");
+		openswan_log("Cannot do Quick Mode until XAUTH done.");
 		return;
 	    }
 #endif
@@ -1466,7 +1518,7 @@ process_packet(struct msg_digest **mdp)
     case ISAKMP_XCHG_MODE_CFG:
 	if (is_zero_cookie(md->hdr.isa_icookie))
 	{
-	    plog("Mode Config message is invalid because"
+	    openswan_log("Mode Config message is invalid because"
 		" it has an Initiator Cookie of 0");
 	    /* XXX Could send notification back */
 	    return;
@@ -1474,7 +1526,7 @@ process_packet(struct msg_digest **mdp)
 
 	if (is_zero_cookie(md->hdr.isa_rcookie))
 	{
-	    plog("Mode Config message is invalid because"
+	    openswan_log("Mode Config message is invalid because"
 		" it has a Responder Cookie of 0");
 	    /* XXX Could send notification back */
 	    return;
@@ -1482,7 +1534,7 @@ process_packet(struct msg_digest **mdp)
 
 	if (md->hdr.isa_msgid == 0)
 	{
-	    plog("Mode Config message is invalid because"
+	    openswan_log("Mode Config message is invalid because"
 		" it has a Message ID of 0");
 	    /* XXX Could send notification back */
 	    return;
@@ -1502,7 +1554,7 @@ process_packet(struct msg_digest **mdp)
 
 	    if (st == NULL)
 	    {
-		plog("Mode Config message is for a non-existent (expired?)"
+		openswan_log("Mode Config message is for a non-existent (expired?)"
 		    " ISAKMP SA");
 		/* XXX Could send notification back */
 		return;
@@ -1568,7 +1620,7 @@ process_packet(struct msg_digest **mdp)
 	    }
 	    else {
 		/* XXX check if we are being a mode config server here */
-		plog("received MODECFG message when in state %s, and we aren't xauth client"
+		openswan_log("received MODECFG message when in state %s, and we aren't xauth client"
 		     , enum_name(&state_names, st->st_state));
 		return;
 	    }
@@ -1578,7 +1630,7 @@ process_packet(struct msg_digest **mdp)
 	    if(st->st_connection->spd.this.xauth_server
 	       && IS_PHASE1(st->st_state))	/* Switch from Phase1 to Mode Config */
 	    {
-		plog("We were in phase 1, with no state, so we went to XAUTH_R0");
+		openswan_log("We were in phase 1, with no state, so we went to XAUTH_R0");
 		st->st_state = STATE_XAUTH_R0;
 	    }
 
@@ -1596,8 +1648,9 @@ process_packet(struct msg_digest **mdp)
 #endif
 
     default:
-	plog("unsupported exchange type %s in message"
+	openswan_log("unsupported exchange type %s in message"
 	    , enum_show(&exchange_names, md->hdr.isa_xchg));
+	SEND_NOTIFICATION(UNSUPPORTED_EXCHANGE_TYPE);
 	return;
     }
 
@@ -1616,7 +1669,7 @@ process_packet(struct msg_digest **mdp)
      */
     if (md->hdr.isa_flags & ISAKMP_FLAG_COMMIT)
     {
-	plog("IKE message has the Commit Flag set but Pluto doesn't implement this feature; ignoring flag");
+	openswan_log("IKE message has the Commit Flag set but Pluto doesn't implement this feature; ignoring flag");
     }
 
     /* Set smc to describe this state's properties.
@@ -1693,15 +1746,15 @@ process_packet(struct msg_digest **mdp)
 
 	if (st == NULL)
 	{
-	    plog("discarding encrypted message for an unknown ISAKMP SA");
-	    /* XXX Could send notification back */
+	    openswan_log("discarding encrypted message for an unknown ISAKMP SA");
+	    SEND_NOTIFICATION(PAYLOAD_MALFORMED /* XXX ? */);
 	    return;
 	}
 	if (st->st_skeyid_e.ptr == (u_char *) NULL)
 	{
 	    loglog(RC_LOG_SERIOUS, "discarding encrypted message"
 		" because we haven't yet negotiated keying materiel");
-	    /* XXX Could send notification back */
+	    SEND_NOTIFICATION(INVALID_FLAGS);
 	    return;
 	}
 
@@ -1730,10 +1783,10 @@ process_packet(struct msg_digest **mdp)
 	{
 	    const struct encrypt_desc *e = st->st_oakley.encrypter;
 
-	    if (pbs_left(&md->message_pbs) % e->blocksize != 0)
+	    if (pbs_left(&md->message_pbs) % e->enc_blocksize != 0)
 	    {
 		loglog(RC_LOG_SERIOUS, "malformed message: not a multiple of encryption blocksize");
-		/* XXX Could send notification back */
+		SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 		return;
 	    }
 
@@ -1751,8 +1804,8 @@ process_packet(struct msg_digest **mdp)
 		st->st_new_iv_len = st->st_iv_len;
 		init_new_iv(st);
 	    }
-	    e->crypt(FALSE, md->message_pbs.cur, pbs_left(&md->message_pbs)
-		, st);
+	    crypto_cbc_encrypt(e, FALSE, md->message_pbs.cur, 
+			    pbs_left(&md->message_pbs) , st);
 	}
 
 	DBG_cond_dump(DBG_CRYPT, "decrypted:\n", md->message_pbs.cur
@@ -1768,7 +1821,7 @@ process_packet(struct msg_digest **mdp)
 	if (smc->flags & SMF_INPUT_ENCRYPTED)
 	{
 	    loglog(RC_LOG_SERIOUS, "packet rejected: should have been encrypted");
-	    /* XXX Could send notification back */
+	    SEND_NOTIFICATION(INVALID_FLAGS);
 	    return;
 	}
     }
@@ -1795,6 +1848,7 @@ process_packet(struct msg_digest **mdp)
 	    if (pd == &md->digest[PAYLIMIT])
 	    {
 		loglog(RC_LOG_SERIOUS, "more than %d payloads in message; ignored", PAYLIMIT);
+		SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 		return;
 	    }
 
@@ -1837,6 +1891,7 @@ process_packet(struct msg_digest **mdp)
 		    loglog(RC_LOG_SERIOUS, "%smessage ignored because it contains an unknown or"
 			" unexpected payload type (%s) at the outermost level"
 			, excuse, enum_show(&payload_names, np));
+		    SEND_NOTIFICATION(INVALID_PAYLOAD_TYPE);
 		    return;
 		}
 	    }
@@ -1850,6 +1905,7 @@ process_packet(struct msg_digest **mdp)
 		    loglog(RC_LOG_SERIOUS, "%smessage ignored because it "
 			   "contains an unexpected payload type (%s)"
 			, excuse, enum_show(&payload_names, np));
+		    SEND_NOTIFICATION(INVALID_PAYLOAD_TYPE);
 		    return;
 		}
 		needed &= ~s;
@@ -1858,6 +1914,7 @@ process_packet(struct msg_digest **mdp)
 	    if (!in_struct(&pd->payload, sd, &md->message_pbs, &pd->pbs))
 	    {
 		loglog(RC_LOG_SERIOUS, "%smalformed payload in packet", excuse);
+		SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 		return;
 	    }
 
@@ -1897,6 +1954,7 @@ process_packet(struct msg_digest **mdp)
 	    loglog(RC_LOG_SERIOUS, "message for %s is missing payloads %s"
 		, enum_show(&state_names, from_state)
 		, bitnamesof(payload_name, needed));
+	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 	    return;
 	}
     }
@@ -1912,6 +1970,7 @@ process_packet(struct msg_digest **mdp)
 	&& md->hdr.isa_np != ISAKMP_NEXT_SA)
 	{
 	    loglog(RC_LOG_SERIOUS, "malformed Phase 1 message: does not start with an SA payload");
+	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 	    return;
 	}
     }
@@ -1935,6 +1994,7 @@ process_packet(struct msg_digest **mdp)
 	if (md->hdr.isa_np != ISAKMP_NEXT_HASH)
 	{
 	    loglog(RC_LOG_SERIOUS, "malformed Quick Mode message: does not start with a HASH payload");
+	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 	    return;
 	}
 
@@ -1948,6 +2008,7 @@ process_packet(struct msg_digest **mdp)
 		if (p != &md->digest[i])
 		{
 		    loglog(RC_LOG_SERIOUS, "malformed Quick Mode message: SA payload is in wrong position");
+		    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 		    return;
 		}
 	    }
@@ -1968,12 +2029,14 @@ process_packet(struct msg_digest **mdp)
 		    loglog(RC_LOG_SERIOUS, "malformed Quick Mode message:"
 			" if any ID payload is present,"
 			" there must be exactly two");
+		    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 		    return;
 		}
 		if (id+1 != id->next)
 		{
 		    loglog(RC_LOG_SERIOUS, "malformed Quick Mode message:"
 			" the ID payloads are not adjacent");
+		    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 		    return;
 		}
 	    }
@@ -1991,6 +2054,9 @@ process_packet(struct msg_digest **mdp)
 
 	for (p = md->chain[ISAKMP_NEXT_N]; p != NULL; p = p->next)
 	{
+                if(p->payload.notification.isan_type != R_U_THERE
+                && p->payload.notification.isan_type != R_U_THERE_ACK)
+
 	    loglog(RC_LOG_SERIOUS, "ignoring informational payload, type %s"
 		, enum_show(&ipsec_notification_names, p->payload.notification.isan_type));
 	    DBG_cond_dump(DBG_PARSING, "info:", p->pbs.cur, pbs_left(&p->pbs));
@@ -2019,7 +2085,7 @@ process_packet(struct msg_digest **mdp)
 		, vid_string);
 	    DBG_cond_dump(DBG_PARSING, "VID:", p->pbs.cur, pbs_left(&p->pbs));
 #endif
-	    handle_vendorid(md, p->pbs.cur, pbs_left(&p->pbs));
+	    handle_vendorid(md, p->pbs.cur, pbs_left(&p->pbs), st);
 	}
     }
     md->from_state = from_state;
@@ -2046,6 +2112,11 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 
     cur_state = st = md->st;	/* might have changed */
 
+    /* If state has DPD support, import it */
+    if( st && md->dpd)
+	st->st_dpd = md->dpd;
+
+
     switch (result)
     {
 	case STF_IGNORE:
@@ -2058,7 +2129,7 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 
 	case STF_OK:
 	    /* advance the state */
-	    plog("transition from state %s to state %s"
+	    openswan_log("transition from state %s to state %s"
                  , enum_name(&state_names, st->st_state)
                  , enum_name(&state_names, smc->next_state));
 	    
@@ -2281,6 +2352,34 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 			ini = " ";
 			fin = "}";
 		    }
+
+		    /* advance b to end of string */
+		    b = b + strlen(b);
+#ifdef NAT_TRAVERSAL		    
+		    if(st->nat_traversal)
+		    {
+			char oa[ADDRTOT_BUF];
+			addrtot(&st->nat_oa, 0, oa, sizeof(oa));
+			snprintf(b, sizeof(sadetails)-(b-sadetails)-1
+				 , "%sNATOA=%s"
+				 , ini, oa);
+			ini = " ";
+			fin = "}";
+		    }
+#endif
+
+		    /* advance b to end of string */
+		    b = b + strlen(b);
+		    
+		    if(st->st_dpd_local)
+		    {
+			snprintf(b, sizeof(sadetails)-(b-sadetails)-1
+				 , "%sDPD"
+				 , ini);
+			ini = " ";
+			fin = "}";
+		    }
+
 		    strcat(b, fin);
 		}
 
@@ -2288,7 +2387,7 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		|| IS_IPSEC_SA_ESTABLISHED(st->st_state))
 		{
 		    /* log our success */
-		    plog("%s%s", story, sadetails);
+		    openswan_log("%s%s", story, sadetails);
 		    w = RC_SUCCESS;
 		}
 
@@ -2305,7 +2404,7 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 	      if((st->st_oakley.xauth != 0)
 		 && IS_ISAKMP_SA_ESTABLISHED(st->st_state))
 		{
-		  plog("XAUTH: Sending XAUTH Login/Password Request");
+		  openswan_log("XAUTH: Sending XAUTH Login/Password Request");
 		  xauth_send_request(st);
 		  break;
 		}
@@ -2349,7 +2448,7 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		   && IS_ISAKMP_SA_ESTABLISHED(st->st_state)
 	           && (st->st_seen_vendorid & (LELEM(VID_SAFENET)|LELEM(VID_NORTEL))))
 	    {
-		    plog("Sending MODE CONFIG set");
+		    openswan_log("Sending MODE CONFIG set");
 		    modecfg_send_set(st);
 		    break;
 	    }
@@ -2394,13 +2493,14 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 	    /* FALL THROUGH ... */
 
 	case STF_FAIL:
-	    /* XXX Could send notification back
-	     * As it is, we act as if this message never happened:
+	    /* As it is, we act as if this message never happened:
 	     * whatever retrying was in place, remains in place.
 	     */
 	    whack_log(RC_NOTIFICATION + md->note
 		, "%s: %s", enum_name(&state_names, st->st_state)
 		, enum_name(&ipsec_notification_names, md->note));
+
+	    SEND_NOTIFICATION(md->note);
 
 	    DBG(DBG_CONTROL,
 		DBG_log("state transition function for %s failed: %s"
@@ -2409,3 +2509,10 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 	    break;
     }
 }
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

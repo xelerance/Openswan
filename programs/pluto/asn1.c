@@ -1,5 +1,5 @@
 /* Simple ASN.1 parser
- * Copyright (C) 2000-2003 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2000-2004 Andreas Steffen, Zuercher Hochschule Winterthur
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: asn1.c,v 1.3.6.1 2004/03/21 05:23:32 mcr Exp $
+ * RCSID $Id: asn1.c,v 1.9 2004/06/29 22:55:27 ken Exp $
  */
 
 #include <stdlib.h>
@@ -21,6 +21,8 @@
 #include <openswan.h>
 
 #include "constants.h"
+#include "oswlog.h"
+
 #include "defs.h"
 #include "asn1.h"
 #include "oid.h"
@@ -52,7 +54,7 @@ known_oid(chunk_t object)
 	    if (oid_names[oid].next)
 		oid = oid_names[oid].next;
 	    else
-		return -1;
+		return OID_UNKNOWN;
 	}
     }
     return -1;
@@ -64,26 +66,139 @@ known_oid(chunk_t object)
 u_int
 asn1_length(chunk_t *blob)
 {
-    u_int n, len;
+    u_char n;
+    size_t len;
+
+    /* advance from tag field on to length field */
+    blob->ptr++;
+    blob->len--;
+
+    /* read first octet of length field */
+    n = *blob->ptr++;
+    blob->len--;
+
+    if ((n & 0x80) == 0) /* single length octet */
+	return n;
+
+    /* composite length, determine number of length octets */
+    n &= 0x7f;
+
+    if (n > blob->len)
+    {
+	DBG(DBG_PARSING,
+	    DBG_log("number of length octets is larger than ASN.1 object")
+	)
+	return ASN1_INVALID_LENGTH;
+    }
+
+    if (n > sizeof(len))
+    {
+	DBG(DBG_PARSING,
+	    DBG_log("number of length octets is larger than limit of %d octets"
+		, (int) sizeof(len))
+	)
+	return ASN1_INVALID_LENGTH;
+    }
 
     len = 0;
-    blob->ptr++;  blob->len--;
-
-    if ((*blob->ptr & 0x80) == 0x80)  /* composite length */
+    
+    while (n-- > 0)
     {
-	for (n = *blob->ptr++ & 0x7f; n > 0; n--)
-	{
-	    len = 256*len + *blob->ptr++;
-	    blob->len--;
-	}
+	len = 256*len + *blob->ptr++;
+	blob->len--;
+    }
+    return len;
+}
+
+/*
+ * codes ASN.1 lengths up to a size of 16'777'215 bytes
+ */
+void
+code_asn1_length(size_t length, chunk_t *code)
+{
+    if (length < 128)
+    {
+	code->ptr[0] = length;
+	code->len = 1;
+    }
+    else if (length < 256)
+    {
+	code->ptr[0] = 0x81;
+	code->ptr[1] = (u_char) length;
+	code->len = 2;
+    }
+    else if (length < 65536)
+    {
+	code->ptr[0] = 0x82;
+	code->ptr[1] = length >> 8;
+	code->ptr[2] = length & 0x00ff;
+	code->len = 3;
     }
     else
     {
-	len = *blob->ptr++;
+	code->ptr[0] = 0x83;
+	code->ptr[1] = length >> 16;
+	code->ptr[2] = (length >> 8) & 0x00ff;
+	code->ptr[3] = length & 0x0000ff;
+	code->len = 4;
     }
-    blob->len--;
-    return len;
 }
+
+/*
+ * build an empty asn.1 object with tag and length fields already filled in
+ */
+u_char*
+build_asn1_object(chunk_t *object, asn1_t type, size_t datalen)
+{
+    u_char length_buf[4];
+    chunk_t length = { length_buf, 0 };
+    u_char *pos;
+
+    /* code the asn.1 length field */
+    code_asn1_length(datalen, &length);
+
+    /* allocate memory for the asn.1 TLV object */
+    object->len = 1 + length.len + datalen;
+    object->ptr = alloc_bytes(object->len, "asn1 object");
+
+    /* set position pointer at the start of the object */
+    pos = object->ptr;
+
+    /* copy the asn.1 tag field and advance the pointer */
+   *pos++ = type;
+   
+   /* copy the asn.1 length field and advance the pointer */
+   chunkcpy(pos, length);
+
+   return pos;
+}
+
+/*
+ * build an empty asn.1 object with explicit tags and length fields already filled in
+ */
+u_char*
+build_asn1_explicit_object(chunk_t *object, asn1_t outer_type, asn1_t inner_type
+,size_t datalen)
+{
+    u_char length_buf[4];
+    chunk_t length = { length_buf, 0 };
+    u_char *pos;
+
+    /* code the inner asn.1 length field */
+    code_asn1_length(datalen, &length);
+
+    /*create the outer asn.1 object */
+    pos = build_asn1_object(object, outer_type, 1 + length.len + datalen);
+
+    /* copy the inner asn.1 tag field and advance the pointer */
+   *pos++ = inner_type;
+
+   /* copy the inner asn.1 length field and advance the pointer */
+   chunkcpy(pos, length);
+
+   return pos;
+}
+
 
 /*
  *  determines if a character string is of type ASN.1 printableString
@@ -198,7 +313,7 @@ asn1_init(asn1_ctx_t *ctx, chunk_t blob, u_int level0,
  */
 bool
 extract_object(asn1Object_t const *objects,
-	u_int *objectID, chunk_t *object, asn1_ctx_t *ctx)
+	u_int *objectID, chunk_t *object, u_int *level, asn1_ctx_t *ctx)
 {
     asn1Object_t obj = objects[*objectID];
     chunk_t *blob;
@@ -221,18 +336,19 @@ extract_object(asn1Object_t const *objects,
 	}
     }
 
+    *level = ctx->level0 + obj.level;
     blob = ctx->blobs + obj.level;
     blob1 = blob + 1;
     start_ptr = blob->ptr;
 
-    /* handle ASN.1 defaults values */
+   /* handle ASN.1 defaults values */
 
-    if ( (obj.flags & ASN1_DEF) && (*start_ptr != obj.type) )
+    if ((obj.flags & ASN1_DEF)
+    && (blob->len == 0 || *start_ptr != obj.type) )
     {
 	/* field is missing */
-
 	DBG(DBG_PARSING,
-	    DBG_log("L%d - %s:", ctx->level0+obj.level, obj.name);
+	    DBG_log("L%d - %s:", *level, obj.name);
 	)
 	if (obj.type & ASN1_CONSTRUCTED)
 	{
@@ -248,20 +364,32 @@ extract_object(asn1Object_t const *objects,
     {
         /* advance to end of missing option field */
 	do
-        {
+        
 	    (*objectID)++;
-	}  while (!((objects[*objectID].flags & ASN1_END) &&
+	  while (!((objects[*objectID].flags & ASN1_END) &&
 		      (objects[*objectID].level == obj.level )));
 	return TRUE;
     }
 
+     /* an ASN.1 object must possess at least a tag and length field */
+
+     if (blob->len < 2)
+     {
+       DBG(DBG_PARSING,
+           DBG_log("L%d - %s:  ASN.1 object smaller than 2 octets",
+                   ctx->level0+obj.level, obj.name);
+       )
+       return FALSE;
+     }
+
+
     blob1->len = asn1_length(blob);
 
-    if (blob->len < blob1->len)
+    if (blob1->len == ASN1_INVALID_LENGTH || blob->len < blob1->len)
     {
 	DBG(DBG_PARSING,
-	    DBG_log("L%d - %s:  length of ASN1 object too large",
-		    ctx->level0+obj.level, obj.name);
+	    DBG_log("L%d - %s:  length of ASN1 object invalid or too large",
+                   *level, obj.name);
 	)
 	return FALSE;
     }
@@ -270,11 +398,23 @@ extract_object(asn1Object_t const *objects,
     blob->ptr += blob1->len;
     blob->len -= blob1->len;
 
+    /* return raw ASN.1 object without prior type checking */
+
+    if (obj.flags & ASN1_RAW)
+    {
+	DBG(DBG_PARSING,
+	    DBG_log("L%d - %s:", *level, obj.name);
+        )
+	object->ptr = start_ptr;
+	object->len = (size_t)(blob->ptr - start_ptr);
+	return TRUE;
+    }
+
     if (*start_ptr != obj.type && !(ctx->implicit && *objectID == 0))
     {
 	DBG(DBG_PARSING,
 	    DBG_log("L%d - %s: ASN1 tag 0x%02x expected, but is 0x%02x",
-		ctx->level0+obj.level, obj.name, obj.type, *start_ptr);
+		*level, obj.name, obj.type, *start_ptr);
 	    DBG_dump("", start_ptr, (u_int)(blob->ptr - start_ptr));
 	)
 	return FALSE;
@@ -286,12 +426,29 @@ extract_object(asn1Object_t const *objects,
 
     /* In case of "SEQUENCE OF" or "SET OF" start a loop */
 
-    if (obj.flags & ASN1_LOOP) ctx->loopAddr[obj.level] = *objectID + 1;
+    if (obj.flags & ASN1_LOOP)
+    {
+	if (blob1->len > 0)
+	{
+	    /* at least one item, start the loop */
+	    ctx->loopAddr[obj.level] = *objectID + 1;
+	}
+	else
+	{
+	    /* no items, advance directly to end of loop */
+	    do
+		(*objectID)++;
+	    while (!((objects[*objectID].flags & ASN1_END)
+		  && (objects[*objectID].level == obj.level)));
+	    return TRUE;
+	}
+    }
+
 
     if (obj.flags & ASN1_OBJ)
     {
 	object->ptr = start_ptr;
-	object->len = (u_int)(blob->ptr - start_ptr);
+	object->len = (size_t)(blob->ptr - start_ptr);
 	DBG(ctx->cond,
 	    DBG_dump_chunk("", *object);
 	)
@@ -305,7 +462,7 @@ extract_object(asn1Object_t const *objects,
 	{
 	case ASN1_OID:
 	    oid = known_oid(*object);
-	    if (oid != -1)
+	    if (oid != OID_UNKNOWN)
 	    {
 		DBG(DBG_PARSING,
 		   DBG_log("  '%s'",oid_names[oid].name);
@@ -326,7 +483,8 @@ extract_object(asn1Object_t const *objects,
 	case ASN1_GENERALIZEDTIME:
 	    DBG(DBG_PARSING,
 		time_t time = asn1totime(object, obj.type);
-		DBG_log("  '%s'", timetoa(&time, TRUE));
+		char tbuf[TIMETOA_BUF];
+		DBG_log("  '%s'", timetoa(&time, TRUE, tbuf, sizeof(tbuf)));
 	    )
 	    return TRUE;
 

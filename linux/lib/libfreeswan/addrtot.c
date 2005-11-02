@@ -12,9 +12,8 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: addrtot.c,v 1.13.2.1 2004/03/21 05:23:31 mcr Exp $
+ * RCSID $Id: addrtot.c,v 1.15 2004/04/11 17:39:25 mcr Exp $
  */
-#include "internal.h"
 #include "openswan.h"
 
 #define	IP4BYTES	4	/* bytes in an IPv4 address */
@@ -307,8 +306,8 @@ regress()
 
 /*
  * $Log: addrtot.c,v $
- * Revision 1.13.2.1  2004/03/21 05:23:31  mcr
- *     pullup of freeswan->openswan and CR/CERT patches from HEAD
+ * Revision 1.15  2004/04/11 17:39:25  mcr
+ * 	removed internal.h requirements.
  *
  * Revision 1.14  2004/03/08 01:59:08  ken
  * freeswan.h -> openswan.h
@@ -319,8 +318,8 @@ regress()
  *
  * Revision 1.12  2003/12/30 06:42:48  mcr
  * 	added $Log: addrtot.c,v $
- * 	added Revision 1.13.2.1  2004/03/21 05:23:31  mcr
- * 	added     pullup of freeswan->openswan and CR/CERT patches from HEAD
+ * 	added Revision 1.15  2004/04/11 17:39:25  mcr
+ * 	added 	removed internal.h requirements.
  * 	added
  * 	added Revision 1.14  2004/03/08 01:59:08  ken
  * 	added freeswan.h -> openswan.h

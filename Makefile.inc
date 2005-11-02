@@ -1,5 +1,6 @@
-# FreeS/WAN pathnames and other master configuration
+# Openswan pathnames and other master configuration
 # Copyright (C) 2001, 2002  Henry Spencer.
+# Copyright (C) 2003, 2004  Xelerance Corporation
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -11,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.inc,v 1.68.2.6 2004/06/23 12:44:59 ken Exp $
+# RCSID $Id: Makefile.inc,v 1.89.2.5 2004/07/20 02:06:32 ken Exp $
 
 
 
@@ -35,20 +36,21 @@ SHELL=/bin/sh
 
 ### paths within the source tree
 
-KLIPSINC=${FREESWANSRCDIR}/linux/include
-KLIPSSRC=${FREESWANSRCDIR}/linux/net/ipsec
+KLIPSINC=${OPENSWANSRCDIR}/linux/include
+KLIPSSRC=${OPENSWANSRCDIR}/linux/net/ipsec
 
-LIBFREESWANDIR=${FREESWANSRCDIR}/linux/lib/libfreeswan
-FREESWANLIB=${FREESWANSRCDIR}/lib/libfreeswan/libfreeswan.a
+LIBOPENSWANDIR=${OPENSWANSRCDIR}/lib/libopenswan
+OPENSWANLIB=${OPENSWANSRCDIR}/lib/libopenswan/libopenswan.a
 
-LWRESDIR=${FREESWANSRCDIR}/lib/liblwres
+LWRESDIR=${OPENSWANSRCDIR}/lib/liblwres
 LWRESLIB=${LWRESDIR}/liblwres.a
 
-LIBDESSRCDIR=${FREESWANSRCDIR}/linux/crypto/ciphers/des
-LIBDESLITE=${FREESWANSRCDIR}/lib/libdes/libdes.a
+LIBDESSRCDIR=${OPENSWANSRCDIR}/linux/crypto/ciphers/des
+LIBDESLITE=${OPENSWANSRCDIR}/lib/libdes/libdes.a
+LIBAES=${OPENSWANSRCDIR}/lib/libcrypto/libaes/libaes.a
 
-LIBPOLICYDIR=${FREESWANSRCDIR}/linux/lib/libipsecpolicy
-POLICYLIB=${FREESWANSRCDIR}/lib/libipsecpolicy/libipsecpolicy.a
+LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
+POLICYLIB=${OPENSWANSRCDIR}/lib/libipsecpolicy/libipsecpolicy.a
 
 .PHONY:	programs checkprograms clean
 
@@ -107,10 +109,10 @@ CONFDDIR=$(DESTDIR)$(FINALCONFDDIR)
 
 # sample configuration files go into
 INC_DOCDIR?=share/doc
-FINALEXAMPLECONFDIR=${INC_USRLOCAL}/${INC_DOCDIR}/freeswan
+FINALEXAMPLECONFDIR=${INC_USRLOCAL}/${INC_DOCDIR}/openswan
 EXAMPLECONFDIR=${DESTDIR}${FINALEXAMPLECONFDIR}
 
-FINALDOCDIR?=${INC_USRLOCAL}/${INC_DOCDIR}/freeswan
+FINALDOCDIR?=${INC_USRLOCAL}/${INC_DOCDIR}/openswan
 DOCDIR=${DESTDIR}${FINALDOCDIR}
 
 # where per-conn pluto logs go
@@ -177,6 +179,8 @@ INSTCONFFLAGS=
 ### have to be changed for common customizations.
 
 # extra compile flags, for userland and kernel stuff, e.g. -g for debug info
+# Do no use this for cross-compiling flags such as -I or -L. Add those to a
+# CC variable
 # (caution, this stuff is still being sorted out, will change in future)
 USERCOMPILE?=-g -O3
 KLIPSCOMPILE=-O3
@@ -245,52 +249,79 @@ BIND9STATICLIBDIR?=/usr/local/lib
 #BIND9STATICLIBDIR?=/sandel/lib
 #BIND9INCDIR?=/sandel/include
 
-# FreeSWAN 3.x will require bind9. 
+
+#
+# USE_ variables determine if features are compiled into Openswan.
+#       these let you turn on/off specific features
+# HAVE_ variables let you tell Openswan what system related libraries
+#       you may or maynot have
+
+# LWRES is the lightweight resolver, part of BIND9
+# We test with LWRES, but ship with it off, as it requires
+# additional headers not present on most systems.
 USE_LWRES?=false
 
-# whether or not to use iproute2 based commands.
-#
+# Whether or not to use iproute2 based commands.
+# On Kernel 2.0, and early 2.2 systems you may need to either install the
+# iproute2 package, or set this to false
 USE_IPROUTE2?=true
 
 # what kind of firewalling to use:
 #  2.0 	- ipfwadm
 #  2.2  - ipchains
-#  2.4  - iptables
+#  2.4  - iptables or ipchains
 #  2.6  - iptables
 IPSEC_FIREWALLTYPE=iptables
 
 # whether or not to include ipsec policy code into pluto.
 # false for now, since it is still experimental.
+# This has nothing to do with /etc/ipsec.d/policies 
 USE_IPSECPOLICY?=false
 
-# include IKEPING in the distribution
-USE_IKEPING?=true
+# include IKEPING (a utility for testing IKE daemons) in the distribution
+USE_IKEPING?=false
 
 # include support for KEY RR 
-# this will become false in late 2003.
+# this will become false in the future, as all OE sites transition to
+# using TXT instead of KEY records.  See references to 'Flag Day'
 USE_KEYRR?=true
 
-# include support for KERNEL 2.5/2.6 IPsec in pluto
+# include support for Kernel 2.5/2.6 IPsec in pluto
+# You can safely do this on Kernel 2.6 systems, and it is recommended
+# to leave this enabled so if you do upgrade to a 2.6 Kernel, you don't
+# need to recompile.
 USE_KERNEL26?=true
 
-# do we have pthreads available?  Ususally yes, but on some embedded
-# systems, we don't.
-HAVE_THREADS?=true
 
-# include XAUTH authentication system.
-# off by default, since XAUTH is tricky, and you can get into security trouble
+# include support for sending Openswan Vendor IDs
+USE_VENDORID?=false
+
+
+# include XAUTH authentication system code - both Server and Client.
+# This off by default, since XAUTH is tricky, and you can get into 
+# security trouble unless you do additional configuration.
+# THIS IS TURNED OFF BECAUSE IT BROKE. SEE docs/RELEASE NOTES
 USE_XAUTH?=false
 
-# when doing XAUTH, include PAM support as well, requires threads.
+# When doing XAUTH, include PAM support as well, requires HAVE_THREADS be
+# true as well
 USE_XAUTHPAM?=false
 
-# whether to support NAT traversal (in pluto!)
+# whether to support NAT Traversal (aka NAT-T)
 USE_NAT_TRAVERSAL?=true
 
 # where to support NAT-T in transport mode (needed for Win2K NAT-T Interop)
 USE_NAT_TRAVERSAL_TRANSPORT_MODE?=true
 
+# Include LDAP support (currently used for fetching CRLs)
+USE_LDAP?=false
+
+# Include Smartcard support (disabled by default, as most users don't
+# have the required hardware and drivers/software installed)
+USE_SMARTCARD?=false
+
 # should opportunistic encryption be turned on by default?
+# Enabled during testing, but probably turned off in shipping versions.
 USE_OE?=no
 ifeq ($(USE_OE),no)
 # warning: examples subdirectory is statically defined here
@@ -298,10 +329,15 @@ OE_FLAG=\#Disable Opportunistic Encryption\\ninclude ${FINALCONFDDIR}/examples/n
 else
 endif
 
+# Do we have pthreads available?  Only yes if you need it for XAUTH+PAM,
+# or if you need it for CRL fetching.
+# 
+HAVE_THREADS?=false
+
 # set this to space where a linked/configured tree can be created by 
 # preprhkern4module. Only needed if you are going to be created RPMs
 # outside of a distribution (as the FS team does for RedHat).
-#RH_KERNELSRC_POOL=/c2/freeswan/rh_kern
+#RH_KERNELSRC_POOL=/c2/openswan/rh_kern
 
 # the following is a list of symbols which will be used to construct
 # the module goo to identify which module goes with each kernel.
@@ -309,8 +345,9 @@ MODULE_GOO_LIST=irq_stat netif_rx register_sysctl_table send_sig
 MODULE_GOO_LIST+=kmalloc __kfree_skb __ip_select_ident alloc_skb
 MODULE_GOO_LIST+=icmp_send ip_fragment sock_register 
 
-MODULE_DEF_INCLUDE=${FREESWANSRCDIR}/packaging/linus/config-all.h
+MODULE_DEF_INCLUDE=${OPENSWANSRCDIR}/packaging/linus/config-all.h
 MODULE_DEFCONFIG?=${KLIPSSRC}/defconfig
+MODBUILDDIR?=${OPENSWANSRCDIR}/modobj
 
 MODULE_FLAGS:=KLIPSMODULE=true TOPDIR=${KERNELSRC} -f ${MODULE_DEFCONFIG} -f Makefile
 
@@ -322,9 +359,11 @@ endif
 ARCH := $(shell echo $(ARCH) | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
 
 # export everything so that scripts can use them.
-export LIBFREESWANDIR FREESWANSRCDIR FREESWANLIB
+export LIBOPENSWANDIR OPENSWANSRCDIR OPENSWANLIB ARCH
 
--include ${FREESWANSRCDIR}/Makefile.ver
+-include ${OPENSWANSRCDIR}/Makefile.ver
+
+X509_VERSION=X.509-1.5.4
 
 # for emacs
 #

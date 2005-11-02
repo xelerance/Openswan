@@ -1,0 +1,266 @@
+#! /bin/bash
+# postinst script for openswan
+#
+# see: dh_installdeb(1)
+
+set -e
+
+# summary of how this script can be called:
+#        * <postinst> `configure' <most-recently-configured-version>
+#        * <old-postinst> `abort-upgrade' <new version>
+#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#          <new-version>
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see /usr/share/doc/packaging-manual/
+#
+# quoting from the policy:
+#     Any necessary prompting should almost always be confined to the
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see /usr/share/doc/packaging-manual/
+#
+# quoting from the policy:
+#     Any necessary prompting should almost always be confined to the
+#     post-installation script, and should be protected with a conditional
+#     so that unnecessary prompting doesn't happen if a package's
+#     installation fails and the `postinst' is called with `abort-upgrade',
+#     `abort-remove' or `abort-deconfigure'.
+
+insert_private_key() {
+       	cat <<EOF >> /etc/ipsec.secrets
+: RSA	{
+$1
+	}
+EOF
+}
+
+insert_private_key_filename() {
+	if ! grep -q ": RSA $1" /etc/ipsec.secrets; then
+            echo ": RSA $1" >> /etc/ipsec.secrets
+        fi
+}
+
+IPSEC_SECRETS_PATTERN_1=': RSA	{'
+IPSEC_SECRETS_PATTERN_2='	# yyy'
+IPSEC_SECRETS_PATTERN_3='	}'
+IPSEC_SECRETS_PATTERN_4='# do not change the indenting of that "}"'
+
+# remove old, misguided attempts at a default ipsec.secrets files
+repair_legacy_secrets() {
+    if grep -A 2 "$IPSEC_SECRETS_PATTERN_1" /etc/ipsec.secrets |
+       tail --lines=2 |
+       grep -A 1 "$IPSEC_SECRETS_PATTERN_2" |
+       tail --lines=1 |
+       grep "$IPSEC_SECRETS_PATTERN_3" >/dev/null; then
+        echo "Old default config file detected, removing the old defaults now."
+        umask 077 ; (
+            # this is ugly, and someone maybe can formulate this in sed, but
+            # this was the quickest way for me
+            line=`grep -n "$IPSEC_SECRETS_PATTERN_2" /etc/ipsec.secrets | cut -d':' -f1`
+            until=`expr $line - 1`
+            head -n $until /etc/ipsec.secrets
+            sum=`wc -l /etc/ipsec.secrets | cut -d ' ' -f1`
+            from=`expr $sum - $line -1`
+            tail -n $from /etc/ipsec.secrets
+        ) > /etc/ipsec.secrets.tmp
+        mv /etc/ipsec.secrets.tmp /etc/ipsec.secrets
+        grep -v "$IPSEC_SECRETS_PATTERN_4" /etc/ipsec.secrets > /etc/ipsec.secrets.tmp
+        mv /etc/ipsec.secrets.tmp /etc/ipsec.secrets
+    fi
+}
+
+make-x509-cert() {
+    if [ $# -ne 12 ]; then
+        echo "Error in creating X.509 certificate"
+        exit 1
+    fi
+
+    case $5 in
+        false)
+            certreq=$4.req
+            selfsigned=""
+        ;;
+        true)
+            certreq=$4
+            selfsigned="-x509"
+        ;;
+        *)
+            echo "Error in creating X.509 certificate"
+            exit 1
+        ;;
+    esac
+
+    echo -e "$6\n$7\n$8\n$9\n${10}\n${11}\n${12}\n\n\n" | \
+      /usr/bin/openssl req -new -outform PEM -out $certreq \
+                       -newkey rsa:$1 -nodes -keyout $3 -keyform PEM \
+                       -days $2 $selfsigned >/dev/null
+}
+
+. /usr/share/debconf/confmodule
+
+case "$1" in
+    configure)
+	db_get openswan/create_rsa_key
+	if [ "$RET" = "true" ]; then
+            repair_legacy_secrets
+ 	    # OK, ipsec.secrets should now be correct
+	    db_get openswan/rsa_key_type
+	    if [ "$RET" = "plain" ]; then
+	        # a RSA keypair should be created - check if there is one already
+		if egrep ": RSA[:space:]*" /etc/ipsec.secrets; then
+                    echo "Warning: there is already a RSA key in /etc/ipsec.secrets."
+                    echo "Creating an additional one."
+                fi
+                # create a plain openswan keypair
+      	        db_get openswan/rsa_key_length
+                umask 077
+                keylength=$RET
+                privkey=`mktemp /tmp/ipsec-postinst.XXXXXX`
+                /usr/lib/ipsec/rsasigkey $keylength > $privkey
+		insert_private_key "$privkey"
+                rm $privkey
+		echo "Successfully created a plain openswan RSA keypair."
+	    else
+		host=`hostname`
+		newkeyfile="/etc/ipsec.d/private/${host}Key.pem"
+			newcertfile="/etc/ipsec.d/certs/${host}Cert.pem"
+		    # extract the key from a x509 certificate
+		    db_get openswan/existing_x509_certificate
+		    if [ "$RET" = "true" ]; then
+                        if [ -e $newcertfile -o -e $newkeyfile ]; then
+                            echo "Error: $newcertfile or $newkeyfile already exists."
+                            echo "Please remove them first an re-run dpkg-reconfigure to create a new keypair."
+                        else
+				# existing certificate - use it
+				db_get openswan/existing_x509_certificate_filename
+				certfile=$RET
+				db_get openswan/existing_x509_key_filename
+				keyfile=$RET
+				if [ ! -r $certfile ] || [ ! -r $keyfile ]; then
+				    echo "Either the certificate or the key file could not be read !"
+				else
+                                        cp "$certfile" /etc/ipsec.d/certs
+					umask 077
+					cp "$keyfile" "/etc/ipsec.d/private"
+                                        newkeyfile="/etc/ipsec.d/private/`basename $keyfile`"
+					chmod 0600 "$newkeyfile"
+					insert_private_key_filename "$newkeyfile"
+					echo "Successfully extracted RSA key from existing x509 certificate."
+				fi
+			fi
+		    else
+                        if [ -e $newcertfile -o -e $newkeyfile ]; then
+                            echo "Error: $newcertfile or $newkeyfile already exists."
+                            echo "Please remove them first an re-run dpkg-reconfigure to create a new keypair."
+                        else
+				# create a new certificate
+				db_get openswan/rsa_key_length
+				keylength=$RET
+				db_get openswan/x509_self_signed
+				selfsigned=$RET
+				db_get openswan/x509_country_code
+				countrycode=$RET
+				if [ -z "$countrycode" ]; then countrycode="."; fi
+				db_get openswan/x509_state_name
+				statename=$RET
+				if [ -z "$statename" ]; then statename="."; fi
+				db_get openswan/x509_locality_name
+				localityname=$RET
+				if [ -z "$localityname" ]; then localityname="."; fi
+				db_get openswan/x509_organization_name
+				orgname=$RET
+				if [ -z "$orgname" ]; then orgname="."; fi
+				db_get openswan/x509_organizational_unit
+				orgunit=$RET
+				if [ -z "$orgunit" ]; then orgunit="."; fi
+				db_get openswan/x509_common_name
+				commonname=$RET
+				if [ -z "$commonname" ]; then commonname="."; fi
+				db_get openswan/x509_email_address
+				email=$RET
+				if [ -z "$email" ]; then email="."; fi
+				make-x509-cert $keylength 1500 "$newkeyfile" "$newcertfile" "$selfsigned" "$countrycode" "$statename" "$localityname" "$orgname" "$orgunit" "$commonname" "$email"
+				chmod 0600 "$newkeyfile"
+				umask 077
+				insert_private_key_filename "$newkeyfile"
+				echo "Successfully created x509 certificate."
+			fi
+		    fi
+		fi
+	fi
+
+        # figure out the correct start time
+        db_get openswan/start_level
+	if [ "$RET" = "earliest" ]; then
+	    LEVELS="start 41 S . stop 34 0 6 ."
+	elif [ "$RET" = "after NFS" ]; then
+	    LEVELS="start 15 2 3 4 5 . stop 30 0 1 6 ."
+	else
+	    LEVELS="start 21 2 3 4 5 . stop 19 0 1 6 ."
+	fi
+	update-rc.d ipsec $LEVELS > /dev/null
+
+        db_get openswan/enable-oe
+        if [ "$RET" != "true" ]; then
+            echo -n "Disabling opportunistic encryption (OE) in config file ... "
+            if grep -A 1 "conn packetdefault" /etc/ipsec.conf | grep -q "auto=ignore"; then
+                echo "already disabled"
+            else
+                cat <<EOF >> /etc/ipsec.conf
+
+conn block
+    auto=ignore
+
+conn private
+    auto=ignore
+
+conn private-or-clear
+    auto=ignore
+
+conn clear-or-private
+    auto=ignore
+
+conn clear
+    auto=ignore
+
+conn packetdefault
+    auto=ignore
+
+EOF
+              echo "done"
+            fi
+        fi
+
+	if [ -z "$2" ]; then
+	    # no old configured version - start openswan now
+            invoke-rc.d ipsec start || true
+        else
+  	    # does the user wish openswan to restart?
+	    db_get openswan/restart
+	    if [ "$RET" = "true" ]; then
+	         invoke-rc.d ipsec restart || true # sure, we'll restart it for you
+	    fi
+	fi
+
+        db_stop
+
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+
+    ;;
+
+    *)
+        echo "postinst called with unknown argument '$1'" >&2
+        exit 0
+    ;;
+esac
+
+# dh_installdeb will replace this with shell code automatically
+
+#DEBHELPER#
+
+exit 0

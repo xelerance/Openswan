@@ -1,5 +1,5 @@
 /* Support of OpenPGP certificates
- * Copyright (C) 2002-2003 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2002-2004 Andreas Steffen, Zuercher Hochschule Winterthur
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,17 +11,19 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pgp.c,v 1.3.6.2 2004/04/16 12:33:10 mcr Exp $
+ * RCSID $Id: pgp.c,v 1.7 2004/06/14 01:46:03 mcr Exp $
  */
 
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-#include <freeswan.h>
-#include <freeswan/ipsec_policy.h>
+#include <openswan.h>
+#include <openswan/ipsec_policy.h>
 
 #include "constants.h"
+#include "oswlog.h"
+
 #include "defs.h"
 #include "log.h"
 #include "id.h"
@@ -197,15 +199,16 @@ parse_pgp_pubkey_packet(chunk_t *packet, pgpcert_t *cert)
 
     if (version < 3 || version > 4)
     {
-	plog("PGP packet version V%d not supported", version);
+	openswan_log("PGP packet version V%d not supported", version);
 	return FALSE;
     }
 
     /* creation date - 4 bytes */
     cert->created = (time_t)pgp_size(packet, 4);
     DBG(DBG_PARSING,
+	char tbuf[TIMETOA_BUF];
 	DBG_log("L3 - created:");
-	DBG_log("  %s", timetoa(&cert->created, TRUE))
+	DBG_log("  %s", timetoa(&cert->created, TRUE, tbuf, sizeof(tbuf)))
     )
 
     if (version == 3)
@@ -218,8 +221,9 @@ parse_pgp_pubkey_packet(chunk_t *packet, pgpcert_t *cert)
 	    cert->until = cert->created + 24*3600*cert->until;
 
 	DBG(DBG_PARSING,
+	    char tbuf[TIMETOA_BUF];
 	    DBG_log("L3 - until:");
-	    DBG_log("  %s", timetoa(&cert->until, TRUE));
+	    DBG_log("  %s", timetoa(&cert->until, TRUE, tbuf, sizeof(tbuf)))
 	)
     }
 
@@ -267,7 +271,7 @@ parse_pgp_pubkey_packet(chunk_t *packet, pgpcert_t *cert)
 	}
 	else
 	{
-	    plog("  computation of V4 key ID not implemented yet");
+	    openswan_log("  computation of V4 key ID not implemented yet");
 	}
 	break;
     case PGP_PUBKEY_ALG_DSA:
@@ -275,14 +279,14 @@ parse_pgp_pubkey_packet(chunk_t *packet, pgpcert_t *cert)
 	DBG(DBG_PARSING,
 	    DBG_log("  DSA")
 	)
-	plog("  DSA public keys not supported");
+	openswan_log("  DSA public keys not supported");
 	return FALSE;
      default:
 	cert->pubkeyAlg = 0;
 	DBG(DBG_PARSING,
 	    DBG_log("  other")
 	)
-	plog(" exotic not RSA public keys not supported");
+	openswan_log(" exotic not RSA public keys not supported");
 	return FALSE;
     }
     return TRUE;
@@ -314,13 +318,13 @@ parse_pgp_secretkey_packet(chunk_t *packet, rsa_privkey_t *key)
 
     if (s2k == 255)
     {
-	plog("  string-to-key specifiers not supported");
+	openswan_log("  string-to-key specifiers not supported");
 	return FALSE;
     }
 
     if (s2k >= PGP_SYM_ALG_ROOF)
     {
-	plog("  undefined symmetric key algorithm");
+	openswan_log("  undefined symmetric key algorithm");
 	return FALSE;
     }
 
@@ -347,7 +351,7 @@ parse_pgp_secretkey_packet(chunk_t *packet, rsa_privkey_t *key)
 	return TRUE;
     }
 
-    plog("  %s encryption not supported",  pgp_sym_alg_name[s2k]);
+    openswan_log("  %s encryption not supported",  pgp_sym_alg_name[s2k]);
     return FALSE;
 }
 
@@ -369,7 +373,7 @@ parse_pgp_signature_packet(chunk_t *packet, pgpcert_t *cert)
     /* size byte must have the value 5 */
     if (pgp_size(packet, 1) != 5)
     {
-	plog(" size must be 5");
+	openswan_log(" size must be 5");
 	return FALSE;
     }
 
@@ -382,8 +386,9 @@ parse_pgp_signature_packet(chunk_t *packet, pgpcert_t *cert)
     /* creation date - 4 bytes */
     created = (time_t)pgp_size(packet, 4);
     DBG(DBG_PARSING,
+	char tbuf[TIMETOA_BUF];
 	DBG_log("L3 - created:");
-	DBG_log("  %s", timetoa(&cert->created, TRUE))
+	DBG_log("  %s", timetoa(&cert->created, TRUE, tbuf, sizeof(tbuf)))
     )
 
     /* key ID of signer - 8 bytes */
@@ -427,14 +432,14 @@ parse_pgp(chunk_t blob, pgpcert_t *cert, rsa_privkey_t *key)
 	/* bit 7 must be set */
 	if (!(packet_tag & 0x80))
 	{
-	    plog("  incorrect Packet Tag");
+	    openswan_log("  incorrect Packet Tag");
 	    return FALSE;
 	}
 
 	/* bit 6 set defines new packet format */
 	if (packet_tag & 0x40)
 	{
-	    plog("  new PGP packet format not supported");
+	    openswan_log("  new PGP packet format not supported");
 	    return FALSE;
 	}
 	else
@@ -605,19 +610,24 @@ list_pgp_end_certs(bool utc)
     {
 	unsigned keysize;
 	char buf[BUF_LEN];
+	char tbuf[TIMETOA_BUF];
 	cert_t c;
 
 	c.type = CERT_PGP;
 	c.u.pgp = cert;
 
-	whack_log(RC_COMMENT, "%s, count: %d", timetoa(&cert->installed, utc), cert->count);
+	whack_log(RC_COMMENT, "%s, count: %d"
+		  , timetoa(&cert->installed, utc, tbuf, sizeof(tbuf))
+		  , cert->count);
 	datatot(cert->fingerprint, PGP_FINGERPRINT_SIZE, 'x', buf, BUF_LEN);
 	whack_log(RC_COMMENT, "       fingerprint:  %s", buf);
 	form_keyid(cert->publicExponent, cert->modulus, buf, &keysize);
 	whack_log(RC_COMMENT, "       pubkey:   %4d RSA Key %s%s", 8*keysize, buf,
 		(has_private_key(c))? ", has private key" : "");
-	whack_log(RC_COMMENT, "       created:  %s", timetoa(&cert->created, utc));
-	whack_log(RC_COMMENT, "       until:    %s %s", timetoa(&cert->until, utc),
+	whack_log(RC_COMMENT, "       created:  %s"
+		  , timetoa(&cert->created, utc, tbuf, sizeof(tbuf)));
+	whack_log(RC_COMMENT, "       until:    %s %s"
+		  , timetoa(&cert->until, utc, tbuf, sizeof(tbuf)),
 		check_expiry(cert->until, CA_CERT_WARNING_INTERVAL, TRUE));
 	cert = cert->next;
     }
@@ -639,7 +649,7 @@ add_pgp_public_key(pgpcert_t *cert , time_t until
     /* we support RSA only */
     if (cert->pubkeyAlg != PUBKEY_ALG_RSA)
     {
-	plog("  RSA public keys supported only");
+	openswan_log("  RSA public keys supported only");
 	return;
     }
 

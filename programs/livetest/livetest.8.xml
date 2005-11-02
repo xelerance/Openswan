@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!-- lifted from troff+man by doclifter -->
+<refentry>
+<refmeta>
+<refentrytitle>IPSEC_LIVETEST</refentrytitle>
+<manvolnum>8</manvolnum>
+<refmiscinfo class='date'>13 July 2004</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>ipsec livetest</refname>
+<refpurpose>see if Openswan has been installed correctly, interacting with a test target</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>ipsec</command>    
+    <arg choice='plain'><replaceable>livetest</replaceable></arg>
+    <arg choice='opt'><arg choice='plain'>--force </arg></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>Invoked without argument,
+<emphasis remap='I'>livetest</emphasis>
+attempts to connect to livetest.xelerance.com in multiple secure fashions.
+It first attempts ping, then ikeping on udp port 500, ikeping on udp port 4500, 
+then configures a connection using a random ID, using a HTTP to exchange 
+public rsa keys to setup a 30 second ipsec tunnel.
+
+<refsect1 id='files'><title>FILES</title>
+<literallayout remap='.nf'>
+/usr/libexec/ipsec/livetest
+</literallayout> <!-- .fi -->
+</refsect1>
+
+<refsect1 id='history'><title>HISTORY</title>
+<para>Written by Xelerance Corporation for the Openswan project
+&lt;<ulink url='http://www.openswan.org'>http://www.openswan.org</ulink>&gt;
+by Paul Wouters.</para>
+</refsect1>
+
+<refsect1 id='bugs'><title>BUGS</title>
+<para> </para>
+
+<para>
+</para>
+</refsect1>
+</refentry>
+

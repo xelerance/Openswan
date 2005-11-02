@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: paths.h,v 1.1 2003/12/24 19:51:21 mcr Exp $
+ * RCSID $Id: paths.h,v 1.2 2004/06/14 01:46:03 mcr Exp $
  */
 
 #ifndef _PATHS_H_
@@ -28,6 +28,8 @@ struct pluto_paths {
   struct paththing crls;
   struct paththing private;
   struct paththing certs;
+  struct paththing aacerts;
+  struct paththing ocspcerts;
 };
 
 /* defined in log.c */

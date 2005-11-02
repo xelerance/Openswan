@@ -1,3 +1,8 @@
 V	041118011518Z		01	unknown	/C=CA/ST=Ontario/O=Openswan/CN=east.uml.freeswan.org/Email=east@openswan.org
 V	041118011556Z		02	unknown	/C=CA/ST=Ontario/O=Openswan/CN=west.uml.freeswan.org/Email=west@openswan.org
 V	041118011743Z		03	unknown	/C=CA/ST=Ontario/O=Openswan/CN=north.uml.freeswan.org/Email=north@openswan.org
+R	140526133802Z	140527133802Z	04	unknown	/C=CA/ST=Ontario/O=Openswan/CN=ca.openswan.org/emailAddress=ca@openswan.org
+V	140526164842Z		05	unknown	/C=CA/ST=Ontario/O=Openswan/CN=ca.openswan.org/emailAddress=ca@openswan.org
+V	050528165229Z		06	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=east.uml.freeswan.org/emailAddress=east@openswan.org
+V	050528165253Z		07	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=west.uml.freeswan.org/emailAddress=west@openswan.org
+V	050528165301Z		08	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=north.uml.freeswan.org/emailAddress=north@openswan.org

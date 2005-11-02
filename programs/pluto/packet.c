@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: packet.c,v 1.43.2.1 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: packet.c,v 1.45 2004/04/29 03:54:12 mcr Exp $
  */
 
 #include <stdio.h>
@@ -24,6 +24,8 @@
 #include <openswan.h>
 
 #include "constants.h"
+#include "oswlog.h"
+
 #include "defs.h"
 #include "log.h"
 #include "packet.h"

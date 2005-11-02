@@ -1,5 +1,6 @@
-# FreeS/WAN master makefile
+# Openswan master makefile
 # Copyright (C) 1998-2002  Henry Spencer.
+# Copyright (C) 2003-2004  Xelerance Corporation
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -11,11 +12,11 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.238.2.1 2004/03/19 03:29:36 ken Exp $
+# RCSID $Id: Makefile,v 1.247 2004/06/09 02:09:10 mcr Exp $
 
 
-FREESWANSRCDIR=$(shell pwd)
-export FREESWANSRCDIR
+OPENSWANSRCDIR=$(shell pwd)
+export OPENSWANSRCDIR
 
 include Makefile.inc
 
@@ -40,7 +41,9 @@ KVSHORTUTIL=${MAKEUTILS}/kernelversion-short
 KERNELREL=$(shell ${KVSHORTUTIL} ${KERNELSRC}/Makefile)
 
 # directories visited by all recursion
+
 SUBDIRS=doc lib programs linux testing
+
 
 # declaration for make's benefit
 .PHONY:	def insert kpatch klink patches _patches _patches2.2 _patches2.4 \
@@ -56,8 +59,15 @@ SUBDIRS=doc lib programs linux testing
 
 # dummy default rule
 def:
-	@echo "Please read doc/intro.html or INSTALL before running make"
-	@false
+	@echo "Please read the README for detailed build instructions including how"
+	@echo "to enable NAT-T support for your kernel, if desired"
+	@echo
+	@echo "Commonly used build commands:"
+	@echo
+	@echo "Kernel 2.4: make KERNELSRC=/usr/src/linux-2.4 module minstall programs install"
+	@echo "Kernel 2.6: make programs install"
+	@echo
+	@echo
 
 # everything that's necessary to put Klips into the kernel
 insert:	patches klink klipsdefaults
@@ -65,17 +75,17 @@ insert:	patches klink klipsdefaults
 kpatch: unapplypatch applypatch klipsdefaults
 
 unapplypatch:
-	-if [ -f ${KERNELSRC}/freeswan.patch ]; then \
+	-if [ -f ${KERNELSRC}/openswan.patch ]; then \
 		echo Undoing previous patches; \
-		cat ${KERNELSRC}/freeswan.patch | (cd ${KERNELSRC} && patch -p1 -R --force -E -z .preipsec --reverse --ignore-whitespace ); \
+		cat ${KERNELSRC}/openswan.patch | (cd ${KERNELSRC} && patch -p1 -R --force -E -z .preipsec --reverse --ignore-whitespace ); \
 	fi
 
 applypatch:
 	echo Now performing forward patches; 
-	make kernelpatch${KERNELREL} | tee ${KERNELSRC}/freeswan.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
+	make kernelpatch${KERNELREL} | tee ${KERNELSRC}/openswan.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
 
 kdiff:
-	echo Comparing ${KERNELSRC} to ${FREESWANSRCDIR}/linux.
+	echo Comparing ${KERNELSRC} to ${OPENSWANSRCDIR}/linux.
 	packaging/utils/kerneldiff ${KERNELSRC}
 
 # create KERNELKLIPS and populate it with symlinks to the sources
@@ -84,7 +94,7 @@ klink:
 	-[ -L $(KERNELCRYPTODES)/cbc_enc.c ] && rm -rf ${KERNELCRYPTODES}
 	-[ -L $(KERNELLIBFREESWAN)/subnettoa.c ] && rm -rf ${KERNELLIBFREESWAN}
 	-[ -L ${KERNELLIBZLIB}/deflate.c   ] && rm -rf ${KERNELLIBZLIB}
-	-[ -L ${KERNELINCLUDE}/freeswan.h  ] && for i in linux/include/*; do rm -f ${KERNELINCLUDE}/$$i; done
+	-[ -L ${KERNELINCLUDE}/openswan.h  ] && for i in linux/include/*; do rm -f ${KERNELINCLUDE}/$$i; done
 	mkdir -p $(KERNELKLIPS)
 	mkdir -p $(KERNELCRYPTODES)
 	mkdir -p $(KERNELLIBFREESWAN)
@@ -215,9 +225,9 @@ klipsdefaults:
 # programs
 
 checkv199install:
-	if [ -f ${LIBDIR}/pluto ]; \
+	@if [ -f ${LIBDIR}/pluto ]; \
 	then \
-		echo WARNING: FreeS/WAN 1.x or Openswan 1.x still installed. ;\
+		echo WARNING: Old version of FreeS/WAN Openswan 1.x installed. ;\
 		echo WARNING: moving ${LIBDIR} to ${LIBDIR}.v1 ;\
 		mv ${LIBDIR} ${LIBDIR}.v1 ;\
 	fi
@@ -227,7 +237,7 @@ install:: checkv199install
 programs install clean checkprograms::
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) FREESWANSRCDIR=.. $@ ) || exit 1; \
+		(cd $$d && $(MAKE) OPENSWANSRCDIR=.. $@ ) || exit 1; \
 	done; \
 
 clean::
@@ -376,21 +386,34 @@ preprhkern4module:
 
 # module-only building, with error checks
 ifneq ($(strip $(MODBUILDDIR)),)
-${MODBUILDDIR}/Makefile : ${FREESWANSRCDIR}/packaging/makefiles/module.make
+${MODBUILDDIR}/Makefile : ${OPENSWANSRCDIR}/packaging/makefiles/module.make
 	mkdir -p ${MODBUILDDIR}
-	cp ${FREESWANSRCDIR}/packaging/makefiles/module.make ${MODBUILDDIR}/Makefile
-	echo "# "                        >>${MODBUILDDIR}/Makefile
-	echo "# Local Variables: "       >>${MODBUILDDIR}/Makefile
-	echo "# compile-command: \"${MAKE} FREESWANSRCDIR=${FREESWANSRCDIR} ARCH=${ARCH} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} ipsec.o\""         >>${MODBUILDDIR}/Makefile
-	echo "# End: "       >>${MODBUILDDIR}/Makefile
+	cp ${OPENSWANSRCDIR}/packaging/makefiles/module.make ${MODBUILDDIR}/Makefile
+	echo "# "                        >> ${MODBUILDDIR}/Makefile
+	echo "# Local Variables: "       >> ${MODBUILDDIR}/Makefile
+	echo "# compile-command: \"${MAKE} OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH}  TOPDIR=${KERNELSRC} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} -f Makefile ipsec.o\""         >> ${MODBUILDDIR}/Makefile
+	echo "# End: "       >> ${MODBUILDDIR}/Makefile
 
 # clean out the linux/net/ipsec directory so that VPATH will work properly
 module: ${MODBUILDDIR}/Makefile
-	${MAKE} -C linux/net/ipsec ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} clean
-	${MAKE} -C ${MODBUILDDIR}  ARCH=${ARCH} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} ipsec.o
+	-${MAKE} -C linux/net/ipsec  TOPDIR=${KERNELSRC} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} -f Makefile clean
+	${MAKE} -C ${MODBUILDDIR}  OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} TOPDIR=${KERNELSRC} -f Makefile ipsec.o
+	@echo 
+	@echo '========================================================='
+	@echo 
+	@echo 'KLIPS module built successfully. '
+	@echo ipsec.o is in ${MODBUILDDIR}
+	@echo 
+	@(cd ${MODBUILDDIR}; ls -l ipsec.o)
+	@(cd ${MODBUILDDIR}; size ipsec.o)
+	@echo 
+	@echo 'use make minstall as root to install it'
+	@echo 
+	@echo '========================================================='
+	@echo 
 
-modclean: ${MODBUILDDIR}/Makefile
-	${MAKE} -C ${MODBUILDDIR} clean
+modclean: 
+	rm -rf ${MODBUILDDIR}
 
 # module-only install, with error checks
 minstall:
@@ -408,24 +431,8 @@ minstall:
 
 else
 module: 
-	${MAKE} -C linux/net/ipsec ARCH=${ARCH} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} ipsec.o
-
-modclean:
-	${MAKE} -C linux/net/ipsec ARCH=${ARCH} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} clean
-
-# module-only install, with error checks
-minstall:
-	( FSMODLIB=`make -C $(KERNELSRC) -p dummy | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
-	if [ -z "$$FSMODLIB" ] ; then \
-		FSMODLIB=`make -C $(KERNELSRC) -n -p modules_install | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
-	fi ; \
-	if [ -z "$$FSMODLIB" ] ; then \
-		echo "No known place to install module. Aborting." ; \
-		exit 93 ; \
-	fi ; \
-	set -x ; \
-	mkdir -p $$FSMODLIB/kernel/$(FSMOD_DESTDIR) ; \
-	cp linux/net/ipsec/ipsec.o $$FSMODLIB/kernel/$(FSMOD_DESTDIR) )
+	echo 'Building in place is no longer supported. Please set MODBUILDDIR='
+	exit 1
 
 endif
 
@@ -463,7 +470,7 @@ nattpatch2.2:
 install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) --no-print-directory FREESWANSRCDIR=.. install_file_list ) || exit 1; \
+		(cd $$d && $(MAKE) --no-print-directory OPENSWANSRCDIR=.. install_file_list ) || exit 1; \
 	done; 
 
 # take all the patches out of the kernel
@@ -559,21 +566,21 @@ ipkg_strip:
 ipkg_module:
 	@echo "Moving ipsec.o into temporary location..."
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile) && \
-	mkdir -p $(FREESWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec
+	mkdir -p $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile) && \
-	cp linux/net/ipsec/ipsec.o $(FREESWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec/
+	cp linux/net/ipsec/ipsec.o $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec/
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile)
 
 ipkg_clean:
-	rm -rf $(FREESWANSRCDIR)/packaging/ipkg/kernel-module/
-	rm -rf $(FREESWANSRCDIR)/packaging/ipkg/ipkg/
-	rm -f $(FREESWANSRCDIR)/packaging/ipkg/control-freeswan
-	rm -f $(FREESWANSRCDIR)/packaging/ipkg/control-freeswan-module
+	rm -rf $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/
+	rm -rf $(OPENSWANSRCDIR)/packaging/ipkg/ipkg/
+	rm -f $(OPENSWANSRCDIR)/packaging/ipkg/control-freeswan
+	rm -f $(OPENSWANSRCDIR)/packaging/ipkg/control-freeswan-module
 
 
 ipkg: programs install ipkg_strip ipkg_module
 	@echo "Generating ipkg..."; 
-	DESTDIR=${DESTDIR} FREESWANSRCDIR=${FREESWANSRCDIR} ARCH=${ARCH} IPSECVERSION=${IPSECVERSION} ./packaging/ipkg/generate-ipkg
+	DESTDIR=${DESTDIR} OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} IPSECVERSION=${IPSECVERSION} ./packaging/ipkg/generate-ipkg
 
 
 

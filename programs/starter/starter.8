@@ -1,0 +1,83 @@
+.TH IPSEC_STARTER 8 "23 Oct 2001"
+.\"
+.\" RCSID $Id: starter.8,v 1.2 2004/04/10 17:24:27 ken Exp $
+.\"
+.SH NAME
+ipsec starter \- crank up the IPsec keying daemon and environment
+.SH SYNOPSIS
+.B ipsec
+.B starter
+[
+.B \-\-debug
+]
+[
+.B \-\-auto_reload
+seconds ]
+.PP
+Openswan Starter is aimed to replace all the scripts which are used to
+start and stop Openswan and to do that in a quicker and a smarter way.
+.PP
+It can also reload the configuration file (kill --HUP or periodicaly) and
+apply the changes.
+.PP
+What it will do:
+.PP
+Load and unload klips (ipsec kernel module)
+.PP
+Launch and monitor pluto.
+.PP
+Add, initiate, route and delete connections
+.PP
+Attach and detach interfaces according to config file
+.PP
+kill -HUP can be used to reload the config file. New connections will be
+added, old ones will be removed and modified ones will be reloaded.
+Interfaces/Klips/Pluto will be reloaded if necessary.
+.PP
+Upon startup, starter will save its pid to the file /var/run/starter.pid
+.PP
+Upon reloading, dynamic DNS addr will be resolved and reloaded. 
+Use --auto_reload to periodicaly check dynamic DNS changes.
+.PP
+kill -USR1 can be used to reload all connections (delete then add and
+route/initiate).
+.PP
+/var/run/dynip/xxxx can be used to use a virtual interface name in
+ipsec.conf. By example, when adsl can be ppp0, ppp1, or some such, one
+can do
+.B ipsec.conf:             interfaces="ipsec0=adsl"
+And use /etc/ppp/ip-up to create /var/run/dynip/adsl
+    /var/run/dynip/adsl:    IP_PHYS=ppp0
+.PP
+%auto can be used to automaticaly name the connections
+.PP
+kill -TERM can be used to stop FS. pluto will be stopped and klips unloaded
+(if it has been loaded). 
+.PP Can be used to start FreeS/WAN and load lots of connections in a few
+  seconds.
+
+.SH FILES
+/etc/ipsec.conf
+.SH "SEE ALSO"
+ipsec(8), ipsec_tncfg(8), ipsec_pluto(8)
+.SH HISTORY
+Original by mlafon@arkoon.net for Arkoon Network Security. Updated for
+FreeS/WAN version 2 by Michael Richardson <mcr@sandelman.ottawa.on.ca>.
+Merged into Openswan 2.2 by Xelerance Corporation
+.SH TODO/BUGS
+.PP
+handle wildcards in include lines -- use glob() fct ex: include /etc/ipsec.*.conf
+.PP 
+handle duplicates keywords and sections
+.PP 
+'also' keyword not supported
+.PP 
+add unsupported keywords
+.PP 
+manually keyed connections
+.PP 
+%defaultroute
+.PP 
+IPv6
+.PP
+

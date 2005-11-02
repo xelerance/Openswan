@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: vendor.h,v 1.2 2003/12/29 22:49:54 mcr Exp $
+ * RCSID $Id: vendor.h,v 1.5 2004/05/03 14:29:37 ken Exp $
  */
 
 #ifndef _VENDOR_H_
@@ -50,6 +50,8 @@ enum known_vendorid {
   VID_FSWAN_2_00_X509_1_3_1_LDAP_VID =29,
   VID_SAFENET		    =30,
   VID_NORTEL		    =31,
+  VID_OPENSWAN1		    =32,
+  VID_OPENSWAN2		    =33,
 
   /* 101 - 200 : NAT-Traversal */
   VID_NATT_STENBERG_01       =101,
@@ -72,9 +74,11 @@ enum known_vendorid {
 void init_vendorid(void);
 
 struct msg_digest;
-void handle_vendorid (struct msg_digest *md, const char *vid, size_t len);
+void handle_vendorid (struct msg_digest *md, const char *vid, size_t len, struct state *st);
 
 bool out_vendorid (u_int8_t np, pb_stream *outs, enum known_vendorid vid);
+
+extern const char compile_time_interop_options[];
 
 #endif /* _VENDOR_H_ */
 

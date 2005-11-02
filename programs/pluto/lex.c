@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: lex.c,v 1.1.36.1 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: lex.c,v 1.3 2004/04/27 12:43:27 ken Exp $
  */
 
 #include <stdio.h>
@@ -32,9 +32,14 @@
 
 struct file_lex_position *flp = NULL;
 
-/* Open a file for lexical processing.
- * new_flp and name must point into storage with will live
+/** Open a file for lexical processing.
+ * new_flp and name must point into storage and will live
  * at least until the file is closed.
+ *
+ * @param new_flp file position
+ * @param name filename
+ * @param bool optional
+ * @return bool True if successful
  */
 bool
 lexopen(struct file_lex_position *new_flp, const char *name, bool optional)
@@ -64,6 +69,9 @@ lexopen(struct file_lex_position *new_flp, const char *name, bool optional)
     }
 }
 
+/** Close filehandle
+ *
+ */
 void
 lexclose(void)
 {
@@ -71,20 +79,23 @@ lexclose(void)
     flp = flp->previous;
 }
 
-/* Token decoding: shift() loads the next token into tok.
- * Iff a token starts at the left margin, it is considered
+/** Token decoding: shift() loads the next token into tok.
+ * If a token starts at the left margin, it is considered
  * to be the first in a record.  We create a special condition,
  * Record Boundary (analogous to EOF), just before such a token.
  * We are unwilling to shift through a record boundary:
  * it must be overridden first.
- * Returns FALSE iff Record Boundary or EOF (i.e. no token);
+ * Returns FALSE if Record Boundary or EOF (i.e. no token);
  * tok will then be NULL.
  */
-
 char *tok;
 #define tokeq(s) (streq(tok, (s)))
 #define tokeqword(s) (strcasecmp(tok, (s)) == 0)
 
+/** shift - load next token into tok
+ *
+ * @return bool True if successful
+ */
 bool
 shift(void)
 {
@@ -194,8 +205,11 @@ shift(void)
     }
 }
 
-/* ensures we are at a Record (or File) boundary, optionally warning if not */
-
+/** ensures we are at a Record (or File) boundary, optionally warning if not 
+ *
+ * @param m string
+ * @return bool True if everything is ok
+ */
 bool
 flushline(const char *m)
 {

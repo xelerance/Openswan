@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
- * RCSID $Id: config-all.h,v 1.5 2003/12/15 18:13:16 mcr Exp $
+ * RCSID $Id: config-all.h,v 1.8 2004/07/05 01:04:00 mcr Exp $
  */
 #define	_CONFIG_ALL_H_	/* seen it, no need to see it again */
 
@@ -58,9 +58,36 @@
 #define CONFIG_IPSEC_NAT_TRAVERSAL 1
 #endif
 
+#ifndef CONFIG_IPSEC_ENC_AES
+#define CONFIG_IPSEC_ENC_AES 1
+#endif
+
+/* off by default for now */
+#ifndef CONFIG_IPSEC_ENC_CRYPTOAPI
+#define CONFIG_IPSEC_ENC_CRYPTOAPI 0
+#endif
+
+#define CONFIG_IPSEC_ALG_CRYPTOAPI #error
+#define CONFIG_IPSEC_ALG_AES #error
+
+#ifndef CONFIG_IPSEC_ALG_AES_MAC
+#define CONFIG_IPSEC_ALG_AES_MAC 1
+#endif
+
 #ifndef CONFIG_IPSEC_REGRESS
 #define CONFIG_IPSEC_REGRESS 0
 #endif
 
+/* ALGO: */
+#if 0
+/* goal: cleanup KLIPS code from hardcoded algos :} */
+#undef CONFIG_IPSEC_AUTH_HMAC_MD5
+#undef CONFIG_IPSEC_AUTH_HMAC_SHA1
+#undef CONFIG_IPSEC_ENC_3DES
+#endif
+
+#ifndef CONFIG_IPSEC_ALG
+#define CONFIG_IPSEC_ALG 1
+#endif
 
 #endif /* _CONFIG_ALL_H */

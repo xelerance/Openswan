@@ -8,3 +8,4 @@ s/ {isakmp=#.*\/ipsec=#.*}//
 /Changing to directory /d
 /  Warning: empty directory/d
 /transition from state /d
+/stats db_ops.c/d

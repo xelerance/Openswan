@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_life.c,v 1.9.6.2 2004/05/01 04:36:05 ken Exp $
+ * RCSID $Id: ipsec_life.c,v 1.12 2004/04/23 20:44:35 ken Exp $
  *
  */
 
@@ -35,34 +35,34 @@
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #include <linux/netdevice.h>   /* struct device, struct net_device_stats and other headers */
 #include <linux/etherdevice.h> /* eth_type_trans */
 #include <linux/skbuff.h>
-#include <freeswan.h>
+#include <openswan.h>
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_life.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_eroute.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_radij.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_life.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_eroute.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_radij.h"
 
-#include "freeswan/ipsec_sa.h"
-#include "freeswan/ipsec_tunnel.h"
-#include "freeswan/ipsec_ipe4.h"
-#include "freeswan/ipsec_ah.h"
-#include "freeswan/ipsec_esp.h"
+#include "openswan/ipsec_sa.h"
+#include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_ipe4.h"
+#include "openswan/ipsec_ah.h"
+#include "openswan/ipsec_esp.h"
 
 #ifdef CONFIG_IPSEC_IPCOMP
-#include "freeswan/ipcomp.h"
+#include "openswan/ipcomp.h"
 #endif /* CONFIG_IPSEC_IPCOMP */
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
 
 
 enum ipsec_life_alive
@@ -212,11 +212,8 @@ ipsec_lifetime_update_soft(struct ipsec_lifetime64 *lifetime,
 	
 /*
  * $Log: ipsec_life.c,v $
- * Revision 1.9.6.2  2004/05/01 04:36:05  ken
- * Pulling minor comment change from HEAD
- *
- * Revision 1.9.6.1  2004/04/09 16:04:48  ken
- * Pullin snprintf fixes from HEAD
+ * Revision 1.12  2004/04/23 20:44:35  ken
+ * Update comments
  *
  * Revision 1.11  2004/04/06 02:49:26  mcr
  * 	pullup of algo code from alg-branch.

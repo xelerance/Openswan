@@ -7,8 +7,8 @@
 
 .SUFFIXES: .png .fig
 
-FREESWANSRCDIR=..
-include ${FREESWANSRCDIR}/Makefile.inc
+OPENSWANSRCDIR=..
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 # Format arguments for htmldoc
 F="--toclevels 4 --header 1cd"
@@ -72,22 +72,22 @@ index.html: toc.html HowTo.html manpages src/index.html
 # separate files plus table of contents
 # and then remove HTML formatting added by htmldoc
 toc.html : $(sections)
-	@htmldoc -t html --path ".;${TESTINGDIR}/doc" -d .  $(sections)
+	-@htmldoc -t html --path ".;${TESTINGDIR}/doc" -d .  $(sections)
 	@$(SCRIPTDIR)/cleanhtml.sh $(SCRIPTDIR)/cleanhtml.sed $(separate)
 
 # one big HTML file
 HowTo.html : $(sections)
-	@htmldoc -t html --toclevels 4 --header ' cf' -f $@ $(sections)
+	-@htmldoc -t html --toclevels 4 --header ' cf' -f $@ $(sections)
 
 # other HowTo formats
 HowTo.txt: HowTo.html
 	lynx -dump $< > $@
 
 HowTo.ps : $(sections)
-	htmldoc -f $@ $(sections)
+	-@htmldoc -f $@ $(sections)
 
 HowTo.pdf : $(sections)
-	@htmldoc -f $@ $(sections)
+	-@htmldoc -f $@ $(sections)
 
 manpages:	manp
 
@@ -97,6 +97,7 @@ manp:	$(SCRIPTDIR)/mkhtmlman
 programs: 
 
 all: #$(howto) $(manpages) index.html
+real-all: $(howto) $(manpages) index.html
 remake: $(alldocs) $(manpages) 
 
 realclean:
@@ -161,7 +162,7 @@ makecheck.html: single_netjig.png multi_netjig.png
 # DocBook based documentation
 #
 xmldocs: mast.html klips/mast.4
-	
+
 mast.html: klips/mast.xml
 	xmlto html klips/mast.xml
 

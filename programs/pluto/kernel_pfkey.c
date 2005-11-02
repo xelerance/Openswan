@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_pfkey.c,v 1.8.2.3 2004/06/01 14:42:36 ken Exp $
+ * RCSID $Id: kernel_pfkey.c,v 1.14 2004/06/01 14:43:20 ken Exp $
  */
 
 #ifdef KLIPS
@@ -36,6 +36,8 @@
 #include <pfkey.h>
 
 #include "constants.h"
+#include "oswlog.h"
+
 #include "defs.h"
 #include "id.h"
 #include "connections.h"
@@ -47,6 +49,10 @@
 #include "packet.h"  /* for pb_stream in nat_traversal.h */
 #include "nat_traversal.h"
 #endif
+
+#include "alg_info.h"
+#include "kernel_alg.h"
+
 
 static int pfkeyfd = NULL_FD;
 
@@ -246,7 +252,13 @@ pfkey_get(pfkey_buf *buf)
 		, (unsigned) IPSEC_PFKEYv2_ALIGN);
 	}
 	else if (!(buf->msg.sadb_msg_pid == (unsigned)pid
+	/*	for now, unsolicited messages can be: 
+	 *	SADB_ACQUIRE, SADB_REGISTER, SADB_X_NAT_T_NEW_MAPPING
+	 */
 	|| (buf->msg.sadb_msg_pid == 0 && buf->msg.sadb_msg_type == SADB_ACQUIRE)
+#ifdef KERNEL_ALG
+	|| (buf->msg.sadb_msg_type == SADB_REGISTER)
+#endif
 #ifdef NAT_TRAVERSAL
 	|| (buf->msg.sadb_msg_pid == 0 && buf->msg.sadb_msg_type == SADB_X_NAT_T_NEW_MAPPING)
 #endif
@@ -323,6 +335,9 @@ klips_pfkey_register_response(const struct sadb_msg *msg)
     case SADB_SATYPE_AH:
 	break;
     case SADB_SATYPE_ESP:
+#ifdef KERNEL_ALG
+	kernel_alg_register_pfkey(msg, sizeof (pfkey_buf));
+#endif
 	break;
     case SADB_X_SATYPE_COMP:
 	/* ??? There ought to be an extension to list the

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: rsasigkey.c,v 1.25 2003/09/10 00:01:34 mcr Exp $
+ * RCSID $Id: rsasigkey.c,v 1.27 2004/05/23 21:32:03 paul Exp $
  */
 
 #include <sys/types.h>
@@ -27,8 +27,8 @@
 #include <string.h>
 #include <assert.h>
 #include <getopt.h>
-#include <freeswan.h>
-#include "gmp.h"
+#include <openswan.h>
+#include <gmp.h>
 
 #ifndef DEVICE
 #define	DEVICE	"/dev/random"

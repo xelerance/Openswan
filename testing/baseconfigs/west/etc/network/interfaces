@@ -51,10 +51,10 @@ iface eth1 inet static
 	up route add -net 192.0.2.0 netmask 255.255.255.0 gw 192.1.2.23
 
 iface eth2 inet static
-     address 192.9.2.45
-     network 192.9.2.0
+     address 192.9.4.45
+     network 192.9.4.0
      netmask 255.255.255.0
-     broadcast 192.9.2.255
+     broadcast 192.9.4.255
 
 # A more complicated ethernet setup: (the "up" lines are executed verbatim
 # when the interface is brought up, the "down" lines when it's brought down)

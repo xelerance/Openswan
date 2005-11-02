@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: sanitizestring.c,v 1.1.2.1 2004/03/21 05:23:30 mcr Exp $
+ * RCSID $Id: sanitizestring.c,v 1.1 2004/03/08 01:55:15 ken Exp $
  */
 
 #include <ctype.h>

@@ -5,10 +5,8 @@ The Debian package was created from scratch with some hints taken from
 previous freeswan packages by Tommi Virtanen and Aaron Johnson.
 The upstream software was downloaded from http://www.freeswan.org/
 
-The x509 patches have been downloaded from http://www.strongsec.com/freeswan/
-
-The encryption and authentication extension patches have been downloaded from 
-http://www.irrigacion.gov.ar/juanjo/ipsec/
+After the FreeS/WAN folks decided to cease development, we used the forked
+code base at http://www.openswan.org/.
 
 This project has multiple authors, please see the file CREDITS for details. 
 However, all of the code is DFSG-free and, since 2002-09-16,

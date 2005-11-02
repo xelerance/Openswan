@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_doi.c,v 1.230.2.5 2004/05/07 03:07:22 ken Exp $
+ * RCSID $Id: ipsec_doi.c,v 1.247.2.2 2004/09/02 01:24:23 mcr Exp $
  */
 
 #include <stdio.h>
@@ -27,9 +27,10 @@
 #include <resolv.h>
 #include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
 #include <sys/queue.h>
+#include <sys/time.h>		/* for gettimeofday */
 
-#include <freeswan.h>
-#include <freeswan/ipsec_policy.h>
+#include <openswan.h>
+#include <openswan/ipsec_policy.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -57,11 +58,18 @@
 #include "rnd.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "whack.h"
+#include "fetch.h"
 #include "pkcs.h"
+#include "asn1.h"
 
 #include "sha1.h"
 #include "md5.h"
 #include "crypto.h" /* requires sha1.h and md5.h */
+
+#include "ike_alg.h"
+#include "kernel_alg.h"
+#include "plutoalg.h"
+
 #ifdef XAUTH
 #include "xauth.h"
 #endif
@@ -74,11 +82,18 @@
 #endif
 #include "x509more.h"
 
+
+static void dpd_init(struct state *st);
+
 /* OpenPGP Vendor ID needed for interoperability with PGPnet
  *
  * Note: it is a NUL-terminated ASCII string, but NUL won't go on the wire.
  */
 static char pgp_vendorid[] = "OpenPGP10171";
+
+static char dpd_vendorid[] = {0xAF, 0xCA, 0xD7, 0x13, 0x68, 0xA1, 0xF1,
+          0xC9, 0x6B, 0x86, 0x96, 0xFC, 0x77, 0x57, 0x01, 0x00};
+
 
 /*
 * tools for sending Pluto Vendor ID.
@@ -160,7 +175,7 @@ echo_hdr(struct msg_digest *md, bool enc, u_int8_t np)
 	impossible();	/* surely must have room and be well-formed */
 }
 
-/* Compute DH shared secret from our local secret and the peer's public value.
+/** Compute DH shared secret from our local secret and the peer's public value.
  * We make the leap that the length should be that of the group
  * (see quoted passage at start of ACCEPT_KE).
  */
@@ -169,7 +184,10 @@ compute_dh_shared(struct state *st, const chunk_t g
 , const struct oakley_group_desc *group)
 {
     MP_INT mp_g, mp_shared;
+    struct timeval tv0, tv1;
+    unsigned long tv_diff;
 
+    gettimeofday(&tv0, NULL);
     passert(st->st_sec_in_use);
     n_to_mpz(&mp_g, g.ptr, g.len);
     mpz_init(&mp_shared);
@@ -178,10 +196,25 @@ compute_dh_shared(struct state *st, const chunk_t g
     freeanychunk(st->st_shared);	/* happens in odd error cases */
     st->st_shared = mpz_to_n(&mp_shared, group->bytes);
     mpz_clear(&mp_shared);
+    gettimeofday(&tv1, NULL);
+    tv_diff=(tv1.tv_sec  - tv0.tv_sec) * 1000000 + (tv1.tv_usec - tv0.tv_usec);
+    DBG(DBG_CRYPT, 
+    	DBG_log("compute_dh_shared(): time elapsed (%s): %ld usec"
+		, enum_show(&oakley_group_names, st->st_oakley.group->group)
+		, tv_diff);
+       );
+    /* if took more than 200 msec ... */
+    if (tv_diff > 200000) {
+	loglog(RC_LOG_SERIOUS, "WARNING: compute_dh_shared(): for %s took "
+			"%ld usec"
+		, enum_show(&oakley_group_names, st->st_oakley.group->group)
+		, tv_diff);
+    }
+
     DBG_cond_dump_chunk(DBG_CRYPT, "DH shared secret:\n", st->st_shared);
 }
 
-/* if we haven't already done so, compute a local DH secret (st->st_sec) and
+/** if we haven't already done so, compute a local DH secret (st->st_sec) and
  * the corresponding public value (g).  This is emitted as a KE payload.
  */
 static bool
@@ -286,72 +319,197 @@ build_and_ship_nonce(chunk_t *n, pb_stream *outs, u_int8_t np
 /* Send a notification to the peer.  We could decide
  * whether to send the notification, based on the type and the
  * destination, if we care to.
- * XXX It doesn't handle DELETE notifications (which are also
- * XXX informational exchanges).
- * XXX Not modified to support ip_address and related (IPv4+IPv6) functions.
  */
-#if 0 /* not currently used */
-//static void
-//send_notification(int sock,
-//    u_int16_t type,
-//    u_char *spi,
-//    u_char spilen,
-//    u_char protoid,
-//    u_char *icookie,
-//    u_char *rcookie,
-//    msgid_t /*network order*/ msgid,
-//    struct sockaddr sa)
-//{
-//    u_char buffer[sizeof(struct isakmp_hdr) +
-//		 sizeof(struct isakmp_notification)];
-//    struct isakmp_hdr *isa = (struct isakmp_hdr *) buffer;
-//    struct isakmp_notification *isan = (struct isakmp_notification *)
-//				       (buffer + sizeof(struct isakmp_hdr));
-//
-//    memset(buffer, '\0', sizeof(struct isakmp_hdr) +
-//	  sizeof(struct isakmp_notification));
-//
-//    if (icookie != (u_char *) NULL)
-//	memcpy(isa->isa_icookie, icookie, COOKIE_SIZE);
-//
-//    if (rcookie != (u_char *) NULL)
-//	memcpy(isa->isa_rcookie, rcookie, COOKIE_SIZE);
-//
-//    /* Standard header */
-//    isa->isa_np = ISAKMP_NEXT_N;
-//    isa->isa_version = ISAKMP_MAJOR_VERSION << ISA_MAJ_SHIFT | ISAKMP_MINOR_VERSION;
-//    isa->isa_xchg = ISAKMP_XCHG_INFO;
-//    isa->isa_msgid = msgid;
-//    isa->isa_length = htonl(sizeof(struct isakmp_hdr) +
-//			    sizeof(struct isakmp_notification) +
-//			    spilen);
-//
-//    /* Notification header */
-//    isan->isan_type = htons(type);
-//    isan->isan_doi = htonl(ISAKMP_DOI_IPSEC);
-//    isan->isan_length = htons(sizeof(struct isakmp_notification) + spilen);
-//    isan->isan_spisize = spilen;
-//    memcpy((u_char *)isan + sizeof(struct isakmp_notification), spi, spilen);
-//    isan->isan_protoid = protoid;
-//
-//    DBG(DBG_CONTROL, DBG_log("sending INFO type %s to %s",
-//	enum_show(&notification_names, type),
-//	show_sa(&sa)));
-//
-//    if (sendto(sock, buffer, ntohl(isa->isa_length), 0, &sa,
-//	       sizeof(sa)) != ntohl(isa->isa_length))
-//	log_errno((e, "sendto() failed in send_notification() to %s",
-//	    show_sa(&sa)));
-//    else
-//    {
-//	DBG(DBG_CONTROL, DBG_log("transmitted %d bytes", ntohl(isa->isa_length)));
-//    }
-//}
-#endif /* not currently used */
+static void
+send_notification(struct state *sndst, u_int16_t type, struct state *encst,
+    msgid_t msgid, u_char *icookie, u_char *rcookie,
+    u_char *spi, size_t spisize, u_char protoid)
+{
+    u_char buffer[1024];
+    pb_stream pbs, r_hdr_pbs;
+    u_char *r_hashval, *r_hash_start;
 
-/* Send a Delete Notification to announce deletion of ISAKMP SA or
+    passert((sndst) && (sndst->st_connection));
+
+    openswan_log("sending %snotification %s to %s:%u"
+	, encst ? "encrypted " : ""
+	, enum_name(&ipsec_notification_names, type)
+	, ip_str(&sndst->st_connection->spd.that.host_addr)
+	, (unsigned)sndst->st_connection->spd.that.host_port);
+
+    memset(buffer, 0, sizeof(buffer));
+    init_pbs(&pbs, buffer, sizeof(buffer), "notification msg");
+
+    /* HDR* */
+    {
+	struct isakmp_hdr hdr;
+
+	hdr.isa_version = ISAKMP_MAJOR_VERSION << ISA_MAJ_SHIFT | ISAKMP_MINOR_VERSION;
+	hdr.isa_np = encst ? ISAKMP_NEXT_HASH : ISAKMP_NEXT_N;
+	hdr.isa_xchg = ISAKMP_XCHG_INFO;
+	hdr.isa_msgid = msgid;
+	hdr.isa_flags = encst ? ISAKMP_FLAG_ENCRYPTION : 0;
+	if (icookie)
+	    memcpy(hdr.isa_icookie, icookie, COOKIE_SIZE);
+	if (rcookie)
+	    memcpy(hdr.isa_rcookie, rcookie, COOKIE_SIZE);
+	if (!out_struct(&hdr, &isakmp_hdr_desc, &pbs, &r_hdr_pbs))
+	    impossible();
+    }
+
+    /* HASH -- value to be filled later */
+    if (encst)
+    {
+	pb_stream hash_pbs;
+	if (!out_generic(ISAKMP_NEXT_N, &isakmp_hash_desc, &r_hdr_pbs,
+	    &hash_pbs))
+	    impossible();
+	r_hashval = hash_pbs.cur;  /* remember where to plant value */
+	if (!out_zero(
+	    encst->st_oakley.hasher->hash_digest_len,
+	    &hash_pbs, "HASH(1)"))
+	    impossible();
+	close_output_pbs(&hash_pbs);
+	r_hash_start = r_hdr_pbs.cur; /* hash from after HASH(1) */
+    }
+
+    /* Notification Payload */
+    {
+	pb_stream not_pbs;
+	struct isakmp_notification isan;
+
+	isan.isan_doi = ISAKMP_DOI_IPSEC;
+	isan.isan_np = ISAKMP_NEXT_NONE;
+	isan.isan_type = type;
+	isan.isan_spisize = spisize;
+	isan.isan_protoid = protoid;
+
+	if (!out_struct(&isan, &isakmp_notification_desc, &r_hdr_pbs, &not_pbs)
+	    || !out_raw(spi, spisize, &not_pbs, "spi"))
+	    impossible();
+	close_output_pbs(&not_pbs);
+    }
+
+    /* calculate hash value and patch into Hash Payload */
+    if (encst)
+    {
+	struct hmac_ctx ctx;
+	hmac_init_chunk(&ctx, encst->st_oakley.hasher, encst->st_skeyid_a);
+	hmac_update(&ctx, (u_char *) &msgid, sizeof(msgid_t));
+	hmac_update(&ctx, r_hash_start, r_hdr_pbs.cur-r_hash_start);
+	hmac_final(r_hashval, &ctx);
+
+	DBG(DBG_CRYPT,
+	    DBG_log("HASH(1) computed:");
+	    DBG_dump("", r_hashval, ctx.hmac_digest_len);
+	)
+    }
+
+    /* Encrypt message (preserve st_iv) */
+    if (encst)
+    {
+	u_char old_iv[MAX_DIGEST_LEN];
+	u_int old_iv_len = encst->st_iv_len;
+
+	if (old_iv_len > MAX_DIGEST_LEN)
+	    impossible();
+	memcpy(old_iv, encst->st_iv, old_iv_len);
+	
+	if (!IS_ISAKMP_SA_ESTABLISHED(encst->st_state))
+	{
+	    if (encst->st_new_iv_len > MAX_DIGEST_LEN)
+		impossible();
+	    memcpy(encst->st_iv, encst->st_new_iv, encst->st_new_iv_len);
+	    encst->st_iv_len = encst->st_new_iv_len;
+	}
+	init_phase2_iv(encst, &msgid);
+	if (!encrypt_message(&r_hdr_pbs, encst))
+	    impossible();
+	    
+	/* restore preserved st_iv*/
+	memcpy(encst->st_iv, old_iv, old_iv_len);
+	encst->st_iv_len = old_iv_len;
+    }
+    else
+    {
+	close_output_pbs(&r_hdr_pbs);
+    }
+
+    /* Send packet (preserve st_tpacket) */
+    {
+	chunk_t saved_tpacket = sndst->st_tpacket;
+
+	setchunk(sndst->st_tpacket, pbs.start, pbs_offset(&pbs));
+	send_packet(sndst, "notification packet");
+	sndst->st_tpacket = saved_tpacket;
+    }
+}
+
+void
+send_notification_from_state(struct state *st, enum state_kind state,
+    u_int16_t type)
+{
+    struct state *p1st;
+
+    passert(st);
+
+    if (state == STATE_UNDEFINED)
+	state = st->st_state;
+
+    if (IS_QUICK(state)) {
+	p1st = find_phase1_state(st->st_connection, ISAKMP_SA_ESTABLISHED_STATES);
+	if ((p1st == NULL) || (!IS_ISAKMP_SA_ESTABLISHED(p1st->st_state))) {
+	    loglog(RC_LOG_SERIOUS,
+		"no Phase1 state for Quick mode notification");
+	    return;
+	}
+	send_notification(st, type, p1st, generate_msgid(p1st),
+	    st->st_icookie, st->st_rcookie, NULL, 0, PROTO_ISAKMP);
+    }
+    else if (IS_ISAKMP_ENCRYPTED(state)) {
+	send_notification(st, type, st, generate_msgid(st),
+	    st->st_icookie, st->st_rcookie, NULL, 0, PROTO_ISAKMP);
+    }
+    else {
+	/* no ISAKMP SA established - don't encrypt notification */
+	send_notification(st, type, NULL, 0,
+	    st->st_icookie, st->st_rcookie, NULL, 0, PROTO_ISAKMP);
+    }
+}
+
+void
+send_notification_from_md(struct msg_digest *md, u_int16_t type)
+{
+    /**
+     * Create a dummy state to be able to use send_packet in
+     * send_notification
+     *
+     * we need to set:
+     *   st_connection->that.host_addr
+     *   st_connection->that.host_port
+     *   st_connection->interface
+     */
+    struct state st;
+    struct connection cnx;
+
+    passert(md);
+
+    memset(&st, 0, sizeof(st));
+    memset(&cnx, 0, sizeof(cnx));
+    st.st_connection = &cnx;
+    cnx.spd.that.host_addr = md->sender;
+    cnx.spd.that.host_port = md->sender_port;
+    cnx.interface = md->iface;
+
+    send_notification(&st, type, NULL, 0,
+	md->hdr.isa_icookie, md->hdr.isa_rcookie, NULL, 0, PROTO_ISAKMP);
+}
+
+/** Send a Delete Notification to announce deletion of ISAKMP SA or
  * inbound IPSEC SAs.  Does nothing if no such SAs are being deleted.
  * Delete Notifications cannot announce deletion of outbound IPSEC/ISAKMP SAs.
+ * 
+ * @param st State struct (hopefully has some SA's related to it) 
  */
 void
 send_delete(struct state *st)
@@ -368,8 +526,10 @@ send_delete(struct state *st)
 	*r_hash_start;	/* start of what is to be hashed */
     bool isakmp_sa = FALSE;
 
+    /* If there are IPsec SA's related to this state struct... */
     if (IS_IPSEC_SA_ESTABLISHED(st->st_state))
     {
+        /* Find their phase1 state object */
 	p1st = find_phase1_state(st->st_connection, ISAKMP_SA_ESTABLISHED_STATES);
 	if (p1st == NULL)
 	{
@@ -394,6 +554,7 @@ send_delete(struct state *st)
 
 	passert(ns != said);    /* there must be some SAs to delete */
     }
+    /* or ISAKMP SA's... */
     else if (IS_ISAKMP_SA_ESTABLISHED(st->st_state))
     {
 	p1st = st;
@@ -520,6 +681,12 @@ send_delete(struct state *st)
     }
 }
 
+/** Accept a Delete SA notification, and process it if valid.
+ * 
+ * @param st State structure
+ * @param md Message Digest
+ * @param p Payload digest
+ */
 void
 accept_delete(struct state *st, struct msg_digest *md, struct payload_digest *p)
 {
@@ -527,12 +694,14 @@ accept_delete(struct state *st, struct msg_digest *md, struct payload_digest *p)
     size_t sizespi;
     int i;
 
+    /* We only listen to encrypted notifications */
     if (!md->encrypted)
     {
 	loglog(RC_LOG_SERIOUS, "ignoring Delete SA payload: not encrypted");
 	return;
     }
 
+    /* If there is no SA related to this request, but it was encrypted */
     if (!IS_ISAKMP_SA_ESTABLISHED(st->st_state))
     {
 	/* can't happen (if msg is encrypt), but just to be sure */
@@ -701,10 +870,12 @@ accept_delete(struct state *st, struct msg_digest *md, struct payload_digest *p)
     }
 }
 
-/* The whole message must be a multiple of 4 octets.
+/** The whole message must be a multiple of 4 octets.
  * I'm not sure where this is spelled out, but look at
  * rfc2408 3.6 Transform Payload.
  * Note: it talks about 4 BYTE boundaries!
+ *
+ * @param pbs PB Stream
  */
 void
 close_message(pb_stream *pbs)
@@ -748,9 +919,9 @@ main_outI1(int whack_sock
 	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno);
 
     if (predecessor == NULL)
-	plog("initiating Main Mode");
+	openswan_log("initiating Main Mode");
     else
-	plog("initiating Main Mode to replace #%lu", predecessor->st_serialno);
+	openswan_log("initiating Main Mode to replace #%lu", predecessor->st_serialno);
 
     /* set up reply */
     init_pbs(&reply, reply_buffer, sizeof(reply_buffer), "reply packet");
@@ -788,7 +959,7 @@ main_outI1(int whack_sock
 	if (!out_sa(&rbody
 		    , &oakley_sadb[policy_index], st, TRUE, np))
 	{
-	    plog("outsa fail");
+	    openswan_log("outsa fail");
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
@@ -807,6 +978,18 @@ main_outI1(int whack_sock
 	    return STF_INTERNAL_ERROR;
     }
 
+   /* Announce our ability to do Dead Peer Detection to the peer */
+    if(st->st_connection->dpd_delay && st->st_connection->dpd_timeout) {
+	/* Set local policy for DPD to be on */
+	st->st_dpd_local = 1;
+        if (!out_modify_previous_np(ISAKMP_NEXT_VID, &rbody))
+            return STF_INTERNAL_ERROR;
+        if( !out_generic_raw(ISAKMP_NEXT_NONE, &isakmp_vendor_id_desc,
+                    &rbody, dpd_vendorid, sizeof(dpd_vendorid), "V_ID"))
+            return STF_INTERNAL_ERROR;
+    }
+
+
 #ifdef NAT_TRAVERSAL
     if (nat_traversal_enabled) {
 	/* Add supported NAT-Traversal VID */
@@ -816,6 +999,7 @@ main_outI1(int whack_sock
 	}
     }
 #endif
+
 
 #ifdef XAUTH
     if(c->spd.this.xauth_client || c->spd.this.xauth_server)
@@ -1072,6 +1256,10 @@ generate_skeyids_iv(struct state *st)
 	st->st_new_iv_len = h->hash_digest_len;
 	passert(st->st_new_iv_len <= sizeof(st->st_new_iv));
 
+        DBG(DBG_CRYPT,
+            DBG_dump_chunk("DH_i:", st->st_gi);
+            DBG_dump_chunk("DH_r:", st->st_gr);
+        );
 	h->hash_init(&hash_ctx);
 	h->hash_update(&hash_ctx, st->st_gi.ptr, st->st_gi.len);
 	h->hash_update(&hash_ctx, st->st_gr.ptr, st->st_gr.len);
@@ -1084,7 +1272,8 @@ generate_skeyids_iv(struct state *st)
      * See RFC 2409 "IKE" Appendix B
      */
     {
-	const size_t keysize = st->st_oakley.encrypter->keysize;
+	/* const size_t keysize = st->st_oakley.encrypter->keydeflen/BITS_PER_BYTE; */
+	const size_t keysize = st->st_oakley.enckeylen/BITS_PER_BYTE;
 	u_char keytemp[MAX_OAKLEY_KEY_LEN + MAX_DIGEST_LEN];
 	u_char *k = st->st_skeyid_e.ptr;
 
@@ -1132,13 +1321,16 @@ generate_skeyids_iv(struct state *st)
  * See draft-ietf-ipsec-ike-01.txt 4.1 and 6.1.1.2
  */
 
+typedef void (*hash_update_t)(union hash_ctx *, const u_char *, size_t) ;
 static void
 main_mode_hash_body(struct state *st
 , bool hashi	/* Initiator? */
 , const pb_stream *idpl	/* ID payload, as PBS */
 , union hash_ctx *ctx
-, void (*hash_update)(union hash_ctx *, const u_char *input, unsigned int len))
+, void (*hash_update_void)(void *, const u_char *input, size_t))
 {
+#define HASH_UPDATE_T (union hash_ctx *, const u_char *input, unsigned int len)
+    hash_update_t hash_update=(hash_update_t)  hash_update_void;
 #if 0	/* if desperate to debug hashing */
 #   define hash_update(ctx, input, len) { \
 	DBG_dump("hash input", input, len); \
@@ -1231,10 +1423,6 @@ RSA_sign_hash(struct connection *c
 
     if (sc == NULL)		/* no smartcard */
     {
-	u_char *p = sig_val;
-	size_t padlen;
-	chunk_t ch;
-	mpz_t t1, t2;
 	const struct RSA_private_key *k = get_RSA_private_key(c);
 
 	if (k == NULL)
@@ -1242,63 +1430,24 @@ RSA_sign_hash(struct connection *c
 
 	sz = k->pub.k;
 	passert(RSA_MIN_OCTETS <= sz && 4 + hash_len < sz && sz <= RSA_MAX_OCTETS);
-
-	DBG(DBG_CONTROL | DBG_CRYPT,
-	    DBG_log("signing hash with RSA Key *%s", k->pub.keyid)
-	)
-	/* PKCS#1 v1.5 8.1 encryption-block formatting */
-	*p++ = 0x00;
-	*p++ = 0x01;	/* BT (block type) 01 */
-	padlen = sz - 3 - hash_len;
-	memset(p, 0xFF, padlen);
-	p += padlen;
-	*p++ = 0x00;
-	memcpy(p, hash_val, hash_len);
-	passert(p + hash_len - sig_val == (ptrdiff_t)sz);
-
-	/* PKCS#1 v1.5 8.2 octet-string-to-integer conversion */
-	n_to_mpz(t1, sig_val, sz);	/* (could skip leading 0x00) */
-
-	/* PKCS#1 v1.5 8.3 RSA computation y = x^c mod n
-	 * Better described in PKCS#1 v2.0 5.1 RSADP.
-	 * There are two methods, depending on the form of the private key.
-	 * We use the one based on the Chinese Remainder Theorem.
-	 */
-	mpz_init(t2);
-
-	mpz_powm(t2, t1, &k->dP, &k->p);	/* m1 = c^dP mod p */
-
-	mpz_powm(t1, t1, &k->dQ, &k->q);	/* m2 = c^dQ mod Q */
-
-	mpz_sub(t2, t2, t1);	/* h = qInv (m1 - m2) mod p */
-	mpz_mod(t2, t2, &k->p);
-	mpz_mul(t2, t2, &k->qInv);
-	mpz_mod(t2, t2, &k->p);
-
-	mpz_mul(t2, t2, &k->q);	/* m = m2 + h q */
-	mpz_add(t1, t1, t2);
-
-	/* PKCS#1 v1.5 8.4 integer-to-octet-string conversion */
-	ch = mpz_to_n(t1, sz);
-	memcpy(sig_val, ch.ptr, sz);
-	pfree(ch.ptr);
-
-	mpz_clear(t1);
-	mpz_clear(t2);
+	sign_hash(k, hash_val, hash_len, sig_val, sz);
     }
     else if (sc->valid) /* if valid pin then sign hash on the smartcard */
     {
 #ifdef SMARTCARD
+ 	lock_certs_and_keys("RSA_sign_hash");
 	if (!scx_establish_context(sc->reader))
 	{
 	    scx_release_context();
+	    unlock_certs_and_keys("RSA_sign_hash");
+	    unlock_certs_and_keys("RSA_sign_hash");
 	    return 0;
 	}
 
 	sz = scx_get_keylength(sc) / BITS_PER_BYTE;
 	if (sz == 0)
 	{
-	    plog("failed to get keylength from smartcard");
+	    openswan_log("failed to get keylength from smartcard");
 	    scx_release_context();
 	    return 0;
 	}
@@ -1309,8 +1458,9 @@ RSA_sign_hash(struct connection *c
 	)
 	sz = scx_sign_hash(sc, hash_val, hash_len, sig_val, sz) ? sz : 0;
 	scx_release_context();
+        unlock_certs_and_keys("RSA_sign_hash");
 #else
-	plog("smartcard not configured");
+	openswan_log("smartcard not configured");
 #endif	
     }
     return sz;
@@ -1722,7 +1872,7 @@ encrypt_message(pb_stream *pbs, struct state *st)
      * struct isakmp_hdr in packet.h.
      */
     {
-	size_t padding = pad_up(enc_len, e->blocksize);
+	size_t padding = pad_up(enc_len, e->enc_blocksize);
 
 	if (padding != 0)
 	{
@@ -1734,7 +1884,8 @@ encrypt_message(pb_stream *pbs, struct state *st)
 
     DBG(DBG_CRYPT, DBG_log("encrypting using %s", enum_show(&oakley_enc_names, st->st_oakley.encrypt)));
 
-    e->crypt(TRUE, enc_start, enc_len, st);
+    /* e->crypt(TRUE, enc_start, enc_len, st); */
+    crypto_cbc_encrypt(e, TRUE, enc_start, enc_len, st);
 
     update_iv(st);
     DBG_cond_dump(DBG_CRYPT, "next IV:", st->st_iv, st->st_iv_len);
@@ -1810,6 +1961,9 @@ init_phase2_iv(struct state *st, const msgid_t *msgid)
   
     st->st_new_iv_len = h->hash_digest_len;
     passert(st->st_new_iv_len <= sizeof(st->st_new_iv));
+
+    DBG_cond_dump(DBG_CRYPT, "last Phase 1 IV:"
+	, st->st_iv, st->st_iv_len);
 
     h->hash_init(&ctx);
     h->hash_update(&ctx, st->st_ph1_iv, st->st_ph1_iv_len);
@@ -1914,11 +2068,11 @@ quick_outI1(int whack_sock
     insert_state(st);	/* needs cookies, connection, and msgid */
 
     if (replacing == SOS_NOBODY)
-	plog("initiating Quick Mode %s {using isakmp#%lu}"
+	openswan_log("initiating Quick Mode %s {using isakmp#%lu}"
 	     , prettypolicy(policy)
 	     , isakmp_sa->st_serialno);
     else
-	plog("initiating Quick Mode %s to replace #%lu {using isakmp#%lu}"
+	openswan_log("initiating Quick Mode %s to replace #%lu {using isakmp#%lu}"
 	     , prettypolicy(policy)
 	     , replacing
 	     , isakmp_sa->st_serialno);
@@ -1963,11 +2117,20 @@ quick_outI1(int whack_sock
 
     /* SA out */
 
+    /* 
+     * See if pfs_group has been specified for this conn,
+     * if not, fallback to old use-same-as-P1 behaviour
+     */
+#ifdef IKE_ALG
+    if (st->st_connection)
+	    st->st_pfs_group = ike_alg_pfsgroup(st->st_connection, policy);
+    if (!st->st_pfs_group)
+#endif
     /* If PFS specified, use the same group as during Phase 1:
      * since no negotiation is possible, we pick one that is
      * very likely supported.
      */
-    st->st_pfs_group = policy & POLICY_PFS? isakmp_sa->st_oakley.group : NULL;
+	    st->st_pfs_group = policy & POLICY_PFS? isakmp_sa->st_oakley.group : NULL;
 
     /* Emit SA payload based on a subset of the policy bits.
      * POLICY_COMPRESS is considered iff we can do IPcomp.
@@ -2183,7 +2346,7 @@ decode_peer_id(struct msg_digest *md, bool initiator)
 	char buf[IDTOA_BUF];
 
 	idtoa(&peer, buf, sizeof(buf));
-	plog("Peer ID is %s: '%s'",
+	openswan_log("Peer ID is %s: '%s'",
 	    enum_show(&ident_names, id->isaid_idtype), buf);
     }
 
@@ -2536,8 +2699,23 @@ compute_proto_keymat(struct state *st
 		needed_len = DES_CBC_BLOCK_SIZE * 3;
 		break;
 	    default:
+#ifdef KERNEL_ALG
+		if((needed_len=kernel_alg_esp_enc_keylen(pi->attrs.transid))>0) {
+			/* XXX: check key_len "coupling with kernel.c's */
+			if (pi->attrs.key_len) {
+				needed_len=pi->attrs.key_len/8;
+				DBG(DBG_PARSING, DBG_log("compute_proto_keymat:"
+						"key_len=%d from peer",
+						(int)needed_len));
+			}
+			break;
+		}
+#endif
 		bad_case(pi->attrs.transid);
 	    }
+	    DBG(DBG_PARSING, DBG_log("compute_proto_keymat:"
+				     "needed_len (after ESP enc)=%d",
+				     (int)needed_len));
 
 	    switch (pi->attrs.auth)
 	    {
@@ -2549,10 +2727,21 @@ compute_proto_keymat(struct state *st
 	    case AUTH_ALGORITHM_HMAC_SHA1:
 		needed_len += HMAC_SHA1_KEY_LEN;
 		break;
-	    case AUTH_ALGORITHM_DES_MAC:
 	    default:
+#ifdef KERNEL_ALG
+	      if (kernel_alg_esp_auth_ok(pi->attrs.auth, NULL)) {
+		needed_len += kernel_alg_esp_auth_keylen(pi->attrs.auth);
+		break;
+	      } 
+#endif
+	    case AUTH_ALGORITHM_DES_MAC:
 		bad_case(pi->attrs.auth);
+		break;
+	      
 	    }
+	    DBG(DBG_PARSING, DBG_log("compute_proto_keymat:"
+				    "needed_len (after ESP auth)=%d",
+				    (int)needed_len));
 	    break;
 
     case PROTO_IPSEC_AH:
@@ -2783,7 +2972,6 @@ main_inI1_outR1(struct msg_digest *md)
         numvidtosend++;
     }
 #endif
-
     /* Set up state */
     md->st = st = new_state();
 #ifdef XAUTH
@@ -2805,19 +2993,24 @@ main_inI1_outR1(struct msg_digest *md)
     /* copy the quirks we might have accumulated */
     st->quirks = md->quirks;
 
+    /* see if we are doing DPD, and if so, note another vid to send */
+    if(st->st_connection->dpd_delay && st->st_connection->dpd_timeout) {
+	numvidtosend++;
+    }
+
     if ((c->kind == CK_INSTANCE) && (c->spd.that.host_port != pluto_port))
     {
-       plog("responding to Main Mode from unknown peer %s:%u"
+       openswan_log("responding to Main Mode from unknown peer %s:%u"
 	    , ip_str(&c->spd.that.host_addr), c->spd.that.host_port);
     }
     else if (c->kind == CK_INSTANCE)
     {
-	plog("responding to Main Mode from unknown peer %s"
+	openswan_log("responding to Main Mode from unknown peer %s"
 	    , ip_str(&c->spd.that.host_addr));
     }
     else
     {
-	plog("responding to Main Mode");
+	openswan_log("responding to Main Mode");
     }
 
     /* parse_isakmp_sa also spits out a winning SA into our reply,
@@ -2859,9 +3052,27 @@ main_inI1_outR1(struct msg_digest *md)
 
 	next = --numvidtosend ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 	if (!out_generic_raw(next, &isakmp_vendor_id_desc, &md->rbody
-	, vendorid, strlen(vendorid), "Vendor ID"))
+			     , vendorid, strlen(vendorid), "Vendor ID"))
 	    return STF_INTERNAL_ERROR;
     }
+
+    /*
+     * NOW SEND VENDOR ID payloads 
+     */
+       
+    /* Announce our ability to do RFC 3706 Dead Peer Detection to the peer
+        if we have it enabled on this conn */
+    if(st->st_connection->dpd_delay && st->st_connection->dpd_timeout) {
+	/* Set local policy for DPD to be on */
+	st->st_dpd_local = 1;
+
+	next = --numvidtosend ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
+        if( !out_generic_raw(next, &isakmp_vendor_id_desc,
+			     &md->rbody, dpd_vendorid, sizeof(dpd_vendorid), "DPP Vendor ID"))
+            return STF_INTERNAL_ERROR;
+    }   
+
+
 
 #ifdef XAUTH
     /* If XAUTH is required, insert here Vendor ID */
@@ -2888,9 +3099,12 @@ main_inI1_outR1(struct msg_digest *md)
     }
 #endif
 
-/* if we are not 0 then something wend very wrong above */    
+
+#ifdef DEBUG
+    /* if we are not 0 then something went very wrong above */    
     if(numvidtosend != 0)
-      plog("payload payload alignment problem please check the code in main_inI1_outR1");
+      openswan_log("payload payload alignment problem please check the code in main_inI1_outR1");
+#endif
 
     close_message(&md->rbody);
 
@@ -2930,7 +3144,7 @@ main_inR1_outI2(struct msg_digest *md)
 
     if (nat_traversal_enabled && md->quirks.nat_traversal_vid) {
 	st->nat_traversal = nat_traversal_vid_to_method(md->quirks.nat_traversal_vid);
-	plog("enabling possible NAT-traversal with method %s"
+	openswan_log("enabling possible NAT-traversal with method %s"
 	     , bitnamesof(natt_type_bitnames, st->nat_traversal));
     }
 #endif
@@ -3166,15 +3380,25 @@ doi_log_cert_thinking(struct msg_digest *md UNUSED
 	, DBG_log("thinking about whether to send my certificate:"));
     
     DBG(DBG_CONTROL
-	, DBG_log("  I have RSA key: %s cert.type: %s sendcert: %s"
+	, DBG_log("  I have RSA key: %s cert.type: %s "
 		  , enum_show(&oakley_auth_names, auth)
-		  , enum_show(&cert_type_names, certtype)
-		  , enum_show(&certpolicy_type_names, policy)));
+		  , enum_show(&cert_type_names, certtype)));
 
     DBG(DBG_CONTROL
-	, DBG_log("  and I did%s get a certificate request, so %ssend cert."
-		  , gotcertrequest ? "" : " not"
-		  , send_cert ? "" : "do not "));
+	, DBG_log("  sendcert: %s and I did%s get a certificate request "
+		  , enum_show(&certpolicy_type_names, policy)
+		  , gotcertrequest ? "" : " not"));
+
+    DBG(DBG_CONTROL
+	, DBG_log("  so %ssend cert.", send_cert ? "" : "do not "));
+
+    if(!send_cert) {
+      if(certtype == CERT_NONE) {
+	openswan_log("I did not send a certificate because I do not have one.");
+      } else if(policy == cert_sendifasked) {
+	openswan_log("I did not send my certificate because I was not asked to.");
+      }
+    }
 }
 
 /* STATE_MAIN_I2:
@@ -3224,7 +3448,8 @@ main_inR2_outI3(struct msg_digest *md)
 	&& mycert.type != CERT_NONE
 	&& ((st->st_connection->spd.this.sendcert == cert_sendifasked
 	     && st->hidden_variables.st_got_certrequest)
-	    || st->st_connection->spd.this.sendcert==cert_alwayssend);
+	    || st->st_connection->spd.this.sendcert==cert_alwayssend
+	    || st->st_connection->spd.this.sendcert==cert_forcedtype);
 
     doi_log_cert_thinking(md
 			  , st->st_oakley.auth
@@ -3294,20 +3519,28 @@ main_inR2_outI3(struct msg_digest *md)
 	cert_hd.isacert_np = (send_cr)? ISAKMP_NEXT_CR : ISAKMP_NEXT_SIG;
 	cert_hd.isacert_type = mycert.type;
 
+	openswan_log("I am sending my cert");
+
 	if (!out_struct(&cert_hd
 			, &isakmp_ipsec_certificate_desc
 			, &md->rbody
 			, &cert_pbs))
 	    return STF_INTERNAL_ERROR;
 
-	if (!out_chunk(get_mycert(mycert), &cert_pbs, "CERT"))
+	if(mycert.forced) {
+	  if (!out_chunk(mycert.u.blob, &cert_pbs, "forced CERT"))
 	    return STF_INTERNAL_ERROR;
+	} else {
+	  if (!out_chunk(get_mycert(mycert), &cert_pbs, "CERT"))
+	    return STF_INTERNAL_ERROR;
+	}
 	close_output_pbs(&cert_pbs);
     }
 
     /* CR out */
     if (send_cr)
     {
+	openswan_log("I am sending a certificate request");
 	if (!build_and_ship_CR(mycert.type
 			       , st->st_connection->spd.that.ca
 			       , &md->rbody, ISAKMP_NEXT_SIG))
@@ -3688,6 +3921,8 @@ main_inI3_outR3_tail(struct msg_digest *md
 	struct isakmp_cert cert_hd;
 	cert_hd.isacert_np = ISAKMP_NEXT_SIG;
 	cert_hd.isacert_type = mycert.type;
+
+	openswan_log("I am sending my cert");
 
 	if (!out_struct(&cert_hd, &isakmp_ipsec_certificate_desc, &md->rbody, &cert_pbs))
 	return STF_INTERNAL_ERROR;
@@ -4415,7 +4650,7 @@ quick_inI1_outR1_tail(struct verify_oppo_bundle *b
 	    l = format_end(buf, sizeof(buf), &me, NULL, TRUE, LEMPTY);
 	    l += snprintf(buf + l, sizeof(buf) - l, "...");
 	    (void)format_end(buf + l, sizeof(buf) - l, &he, NULL, FALSE, LEMPTY);
-	    plog("cannot respond to IPsec SA request"
+	    openswan_log("cannot respond to IPsec SA request"
 		" because no connection is known for %s"
 		, buf);
 	    return STF_FAIL + INVALID_ID_INFORMATION;
@@ -4517,6 +4752,21 @@ quick_inI1_outR1_tail(struct verify_oppo_bundle *b
 	    p->spd.that.client = *his_net;
 	    p->spd.that.has_client_wildcard = FALSE;
 	}
+
+        /* fill in the client's true port */
+        if (p->spd.that.has_port_wildcard)
+        {
+            int port = htons(b->his.port);
+ 
+            setportof(port, &p->spd.that.host_addr);
+            setportof(port, &p->spd.that.client.addr);
+ 
+            p->spd.that.port = b->his.port;
+            p->spd.that.has_port_wildcard = FALSE;
+        }
+
+
+
 #ifdef VIRTUAL_IP
 	else if (is_virtual_connection(c))
 	{
@@ -4634,7 +4884,7 @@ quick_inI1_outR1_tail(struct verify_oppo_bundle *b
 	/* [ KE ] in (for PFS) */
 	RETURN_STF_FAILURE(accept_PFS_KE(md, &st->st_gi, "Gi", "Quick Mode I1"));
 
-	plog("responding to Quick Mode");
+	openswan_log("responding to Quick Mode");
 
 	/**** finish reply packet: Nr [, KE ] [, IDci, IDcr ] ****/
 
@@ -4843,6 +5093,11 @@ quick_inR1_outI2(struct msg_digest *md)
     if (c->gw_info != NULL)
 	c->gw_info->key->last_worked_time = now();
 
+    /* If we have dpd delay and dpdtimeout set, then we are doing DPD
+	on this conn, so initialize it */
+    if (st->st_connection->dpd_delay && st->st_connection->dpd_timeout)
+            dpd_init(st);
+
     return STF_OK;
 }
 
@@ -4890,5 +5145,414 @@ quick_inI2(struct msg_digest *md)
 	    gw->key->last_worked_time = now();
     }
 
+    /* If we have dpd delay and dpdtimeout set, then we are doing DPD
+	on this conn, so initialize it */
+    if(st->st_connection->dpd_delay && st->st_connection->dpd_timeout)
+            dpd_init(st);
+
     return STF_OK;
 }
+
+
+static stf_status
+send_isakmp_notification(struct state *st,
+        u_int16_t type, const void *data, size_t len)
+{
+    msgid_t msgid;
+    pb_stream reply;
+    pb_stream rbody;
+    u_char old_new_iv[MAX_DIGEST_LEN];
+    u_char old_iv[MAX_DIGEST_LEN];
+    u_char
+        *r_hashval,     /* where in reply to jam hash value */
+        *r_hash_start;  /* start of what is to be hashed */
+        
+    msgid = generate_msgid(st);
+    
+    init_pbs(&reply, reply_buffer, sizeof(reply_buffer), "ISAKMP notify");
+    
+    /* HDR* */
+    {
+        struct isakmp_hdr hdr;
+        hdr.isa_version = ISAKMP_MAJOR_VERSION << ISA_MAJ_SHIFT | ISAKMP_MINOR_VERSION;
+        hdr.isa_np = ISAKMP_NEXT_HASH;
+        hdr.isa_xchg = ISAKMP_XCHG_INFO;
+        hdr.isa_msgid = msgid;
+        hdr.isa_flags = ISAKMP_FLAG_ENCRYPTION;
+        memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
+        memcpy(hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
+        if (!out_struct(&hdr, &isakmp_hdr_desc, &reply, &rbody))
+            impossible();
+    }
+    /* HASH -- create and note space to be filled later */
+    START_HASH_PAYLOAD(rbody, ISAKMP_NEXT_N);
+
+    /* NOTIFY */
+    {
+        pb_stream notify_pbs;
+        struct isakmp_notification isan;
+
+        isan.isan_np = ISAKMP_NEXT_NONE;
+        isan.isan_doi = ISAKMP_DOI_IPSEC;
+        isan.isan_protoid = PROTO_ISAKMP;
+        isan.isan_spisize = COOKIE_SIZE * 2;  
+        isan.isan_type = type;
+        if (!out_struct(&isan, &isakmp_notification_desc, &rbody, &notify_pbs))
+            return STF_INTERNAL_ERROR;
+        if (!out_raw(st->st_icookie, COOKIE_SIZE, &notify_pbs, "notify icookie"))
+            return STF_INTERNAL_ERROR;  
+        if (!out_raw(st->st_rcookie, COOKIE_SIZE, &notify_pbs, "notify rcookie"))
+            return STF_INTERNAL_ERROR;  
+        if (data != NULL && len > 0)
+            if (!out_raw(data, len, &notify_pbs, "notify data"))
+                return STF_INTERNAL_ERROR;    
+        close_output_pbs(&notify_pbs);
+    }
+            
+    {
+        /* finish computing HASH */     
+        struct hmac_ctx ctx;
+        hmac_init_chunk(&ctx, st->st_oakley.hasher, st->st_skeyid_a);
+        hmac_update(&ctx, (const u_char *) &msgid, sizeof(msgid_t));
+        hmac_update(&ctx, r_hash_start, rbody.cur-r_hash_start);
+        hmac_final(r_hashval, &ctx);  
+     
+        DBG(DBG_CRYPT,
+                DBG_log("HASH computed:");
+                DBG_dump("", r_hashval, ctx.hmac_digest_len));
+    }
+    /* save old IV (this prevents from copying a whole new state object
+     * for NOTIFICATION / DELETE messages we don't need to maintain a state
+     * because there are no retransmissions...
+     */
+     
+    save_iv(st, old_iv);
+    save_new_iv(st, old_new_iv);
+                
+    init_phase2_iv(st, &msgid);
+    if (!encrypt_message(&rbody, st))
+        return STF_INTERNAL_ERROR;
+     
+    {  
+        chunk_t saved_tpacket = st->st_tpacket;
+
+        setchunk(st->st_tpacket, reply.start, pbs_offset(&reply));
+        send_packet(st, "ISAKMP notify");
+        st->st_tpacket = saved_tpacket;
+    }       
+    /* get back old IV for this state */
+    set_iv(st, old_iv);
+    set_new_iv(st, old_new_iv);
+     
+    return STF_IGNORE;
+}
+
+/**
+ * Initialize RFC 3706 Dead Peer Detection
+ *
+ * @param st An initialized state structure
+ * @return void
+ */ 
+static void
+dpd_init(struct state *st)
+{
+    /**
+    * Used to store the 1st state 
+    */
+    struct state *p1st;
+
+    /* find the related Phase 1 state */
+    p1st = find_state(st->st_icookie, st->st_rcookie,
+            &st->st_connection->spd.that.host_addr, 0);
+    if (p1st == NULL)
+        loglog(RC_LOG_SERIOUS, "could not find phase 1 state for DPD");
+    else if (p1st->st_dpd) {
+            openswan_log("Dead Peer Detection (RFC 3706) enabled");
+        event_schedule(EVENT_DPD, st->st_connection->dpd_delay, st);
+    }
+}
+
+bool was_eroute_idle(struct state *st, time_t since_when);
+
+/**
+ * DPD Out Initiator
+ *
+ * @param p2st A state struct that is already in phase2 
+ * @return void
+ */
+void
+dpd_outI(struct state *p2st)
+{
+    struct state *st;
+    time_t tm;
+    u_int32_t seqno;
+    time_t delay = p2st->st_connection->dpd_delay;
+    time_t timeout = p2st->st_connection->dpd_timeout;
+    bool   eroute_idle;
+
+    /* find the related Phase 1 state */
+    st = find_phase1_state(p2st->st_connection, ISAKMP_SA_ESTABLISHED_STATES);
+
+    if (st == NULL)
+    {
+        loglog(RC_LOG_SERIOUS, "DPD Error: could not find newest phase 1 state");
+        return;
+    }
+
+    /* If an R_U_THERE has been sent or received recently, then
+     * base the resend time on that. */
+    tm = now();
+
+    /* If no DPD, then get out of here */
+    if (!st->st_dpd)
+        return;
+
+    /* If there is no state, there can be no DPD */         
+    if (!IS_ISAKMP_SA_ESTABLISHED(st->st_state))
+        return;
+        
+    /* if there is no reason to do anything, then just reschedule things */
+    if((eroute_idle = was_eroute_idle(p2st, delay)) == FALSE ||
+       (tm < st->st_last_dpd + delay))
+    {
+	time_t nextdelay = st->st_last_dpd + delay - tm;
+
+	/* log reason */
+	if(eroute_idle == FALSE) {
+	    DBG(DBG_CONTROL, DBG_log("dpd out event not sent, phase 2 active"));
+	}
+
+	if (tm < st->st_last_dpd + delay) {
+	    DBG(DBG_CONTROL, DBG_log("not yet time for dpd event: %lu < %lu"
+				 , tm, (st->st_last_dpd + delay)));
+	}
+
+	if(nextdelay < 1) {
+	    nextdelay = delay;
+	}
+	event_schedule(EVENT_DPD, nextdelay, p2st);
+
+	/* If there is still a timeout for the last R_U_THERE sent,
+	 * and the timeout is greater than ours, then reduce it. */
+	if (st->st_dpd_event != NULL
+	    && st->st_dpd_event->ev_time > st->st_last_dpd + timeout)
+	    {
+		delete_dpd_event(st);
+		event_schedule(EVENT_DPD_TIMEOUT
+			       , st->st_last_dpd + timeout - tm, st);
+	    }
+	return;
+    }
+        
+    event_schedule(EVENT_DPD, delay, p2st);
+        
+    if (!st->st_dpd_seqno)
+    {   
+        /* Get a non-zero random value that has room to grow */
+        get_rnd_bytes((u_char *)&st->st_dpd_seqno, sizeof(st->st_dpd_seqno));
+        st->st_dpd_seqno &= 0x7fff;
+        st->st_dpd_seqno++;
+    }    
+    seqno = htonl(st->st_dpd_seqno);
+
+    if (send_isakmp_notification(st, R_U_THERE, &seqno, sizeof(seqno)) != STF_IGNORE)
+    {   
+        loglog(RC_LOG_SERIOUS, "DPD Error: could not send R_U_THERE");
+        return;
+    }
+        
+    st->st_dpd_expectseqno = st->st_dpd_seqno++;
+    st->st_last_dpd = tm;  
+
+    /* Only schedule a new timeout if there isn't one currently,
+     * or if it would be sooner than the current timeout. */
+    if (st->st_dpd_event == NULL
+    || st->st_dpd_event->ev_time > tm + timeout)
+    {
+        delete_dpd_event(st);
+        event_schedule(EVENT_DPD_TIMEOUT, timeout, st);
+    }   
+}
+
+/**
+ * DPD in Initiator, out Responder
+ *
+ * @param st A state structure
+ * @param n A notification (isakmp_notification)
+ * @param pbs A PB Stream
+ * @return stf_status 
+ */
+stf_status
+dpd_inI_outR(struct state *st, struct isakmp_notification *const n, pb_stream *pbs)
+{
+    time_t tm = now();
+    u_int32_t seqno;
+        
+    if (!IS_ISAKMP_SA_ESTABLISHED(st->st_state))
+    {   
+        loglog(RC_LOG_SERIOUS, "DPD Error: received R_U_THERE for unestablished ISKAMP SA");
+        return STF_IGNORE;
+    }
+    if (n->isan_spisize != COOKIE_SIZE * 2 || pbs_left(pbs) < COOKIE_SIZE * 2)
+    {
+        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE has invalid SPI length (%d)", n->isan_spisize);
+        return STF_FAIL + PAYLOAD_MALFORMED;
+    }
+        
+    if (memcmp(pbs->cur, st->st_icookie, COOKIE_SIZE) != 0)
+    {
+#ifdef APPLY_CRISCO
+        /* Ignore it, cisco sends odd icookies */
+#else
+        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE has invalid icookie (broken Cisco?)");
+        return STF_FAIL + INVALID_COOKIE;
+#endif
+    }
+    pbs->cur += COOKIE_SIZE;
+    
+    if (memcmp(pbs->cur, st->st_rcookie, COOKIE_SIZE) != 0)
+    {
+        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE has invalid rcookie (broken Cisco?)");      
+	return STF_FAIL + INVALID_COOKIE;
+    }
+    pbs->cur += COOKIE_SIZE;
+
+    if (pbs_left(pbs) != sizeof(seqno))
+    {
+        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE has invalid data length (%d)", (int) pbs_left(pbs));
+        return STF_FAIL + PAYLOAD_MALFORMED;
+    }
+
+    seqno = ntohl(*(u_int32_t *)pbs->cur);
+    DBG(DBG_CONTROL, DBG_log("R_U_THERE_ACK, seqno received: %u expected: %u",
+			     seqno, st->st_dpd_expectseqno));
+    if (st->st_dpd_peerseqno && seqno <= st->st_dpd_peerseqno) {
+        loglog(RC_LOG_SERIOUS, "DPD Info: received old or duplicate R_U_THERE");
+        return STF_IGNORE;
+    }
+     
+    st->st_dpd_peerseqno = seqno;
+    delete_dpd_event(st);
+     
+
+    if (send_isakmp_notification(st, R_U_THERE_ACK, pbs->cur, pbs_left(pbs)) != STF_IGNORE)
+    {
+        loglog(RC_LOG_SERIOUS, "DPD Info: could not send R_U_THERE_ACK"); 
+        return STF_IGNORE;
+    }
+     
+    st->st_last_dpd = tm;
+    return STF_IGNORE;
+}
+
+/**
+ * DPD out Responder
+ *
+ * @param st A state structure
+ * @param n A notification (isakmp_notification)
+ * @param pbs A PB Stream
+ * @return stf_status 
+ */
+stf_status
+dpd_inR(struct state *st, struct isakmp_notification *const n, pb_stream *pbs)
+{
+    u_int32_t seqno;
+     
+    if (!IS_ISAKMP_SA_ESTABLISHED(st->st_state))
+    {
+        loglog(RC_LOG_SERIOUS, "recevied R_U_THERE_ACK for unestablished ISKAMP SA");
+        return STF_FAIL;
+    }
+
+   if (n->isan_spisize != COOKIE_SIZE * 2 || pbs_left(pbs) < COOKIE_SIZE * 2)
+    {
+        loglog(RC_LOG_SERIOUS, "R_U_THERE_ACK has invalid SPI length (%d)", n->isan_spisize);
+        return STF_FAIL + PAYLOAD_MALFORMED;
+    }
+     
+    if (memcmp(pbs->cur, st->st_icookie, COOKIE_SIZE) != 0)
+    {
+#ifdef APPLY_CRISCO
+        /* Ignore it, cisco sends odd icookies */
+#else
+        loglog(RC_LOG_SERIOUS, "R_U_THERE_ACK has invalid icookie");
+        return STF_FAIL + INVALID_COOKIE;
+#endif
+    }
+    pbs->cur += COOKIE_SIZE;
+    
+    if (memcmp(pbs->cur, st->st_rcookie, COOKIE_SIZE) != 0)
+    {
+#ifdef APPLY_CRISCO
+        /* Ignore it, cisco sends odd icookies */
+#else
+        loglog(RC_LOG_SERIOUS, "R_U_THERE_ACK has invalid rcookie");
+        return STF_FAIL + INVALID_COOKIE;
+#endif
+    }
+    pbs->cur += COOKIE_SIZE;
+    
+    if (pbs_left(pbs) != sizeof(seqno))
+    {
+        loglog(RC_LOG_SERIOUS, "R_U_THERE_ACK has invalid data length (%d)", (int) pbs_left(pbs));
+        return STF_FAIL + PAYLOAD_MALFORMED;
+    }
+        
+    seqno = ntohl(*(u_int32_t *)pbs->cur);
+    if (!st->st_dpd_expectseqno && seqno != st->st_dpd_expectseqno) {
+        loglog(RC_LOG_SERIOUS, "R_U_THERE_ACK has unexpected sequence number");
+        return STF_FAIL + PAYLOAD_MALFORMED;
+    }
+     
+    st->st_dpd_expectseqno = 0;
+    delete_dpd_event(st);
+    return STF_IGNORE;
+}       
+    
+/**
+ * DPD Timeout Function
+ *
+ * This function is called when a timeout DPD_EVENT occurs.  We set clear/trap
+ * both the SA and the eroutes, depending on what the connection definition
+ * tells us (either 'hold' or 'clear')
+ *
+ * @param st A state structure that is fully negotiated
+ * @return void
+ */
+void
+dpd_timeout(struct state *st)
+{
+    int action;
+    struct connection *c = st->st_connection;
+    action = st->st_connection->dpd_action;
+    
+    passert(action == DPD_ACTION_HOLD || action == DPD_ACTION_CLEAR);
+    
+    loglog(RC_LOG_SERIOUS, "DPD: Info: No response from peer - declaring peer dead");
+
+    /** delete the state, which is probably in phase 2 */
+    set_cur_connection(c);
+    openswan_log("terminating SAs using this connection");
+    delete_states_by_connection(c, TRUE);  
+    reset_cur_connection();
+    
+    if(action == DPD_ACTION_HOLD) {
+        /** dpdaction=hold - Wipe the SA's but %trap the eroute so we don't
+           leak traffic.  Also, being in %trap means new packets will
+           force an initiation of the conn again.  */
+        loglog(RC_LOG_SERIOUS, "DPD: Info: Putting connection into %%trap");
+    
+    } else {
+        /** dpdaction=clear - Wipe the SA & eroute - everything */
+    
+        loglog(RC_LOG_SERIOUS, "DPD: Info: Clearing Connection");
+        unroute_connection(c);
+    }
+}
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: connections.c,v 1.213.2.3 2004/05/08 20:23:22 ken Exp $
+ * RCSID $Id: connections.c,v 1.227 2004/06/27 20:46:15 mcr Exp $
  */
 
 #include <string.h>
@@ -28,8 +28,8 @@
 #include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
 #include <sys/queue.h>
 
-#include <freeswan.h>
-#include <freeswan/ipsec_policy.h>
+#include <openswan.h>
+#include <openswan/ipsec_policy.h>
 #include "kameipsec.h"
 
 #include "constants.h"
@@ -38,6 +38,7 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
+#include "ac.h"
 #include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
@@ -56,6 +57,10 @@
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "whack.h"
+#include "alg_info.h"
+#include "ike_alg.h"
+#include "kernel_alg.h"
+#include "plutoalg.h"
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
 #endif
@@ -238,7 +243,7 @@ con_by_name(const char *nm, bool strict)
 }
 
 void
-release_connection(struct connection *c)
+release_connection(struct connection *c, bool relations)
 {
     if (c->kind == CK_INSTANCE)
     {
@@ -246,12 +251,12 @@ release_connection(struct connection *c)
 	 * Note that we will be called recursively by delete_connection,
 	 * but kind will be CK_GOING_AWAY.
 	 */
-	delete_connection(c);
+	delete_connection(c, relations);
     }
     else
     {
 	flush_pending_by_connection(c);
-	delete_states_by_connection(c);
+	delete_states_by_connection(c, relations);
 	unroute_connection(c);
     }
 }
@@ -265,10 +270,31 @@ release_connection(struct connection *c)
 	*ep = (e)->enext; \
     }
 
+static void
+delete_end(struct connection *c UNUSED, struct spd_route *sr UNUSED, struct end *e)
+{
+    free_id_content(&e->id);
+    pfreeany(e->updown);
+    freeanychunk(e->ca);
+#ifdef SMARTCARD
+    scx_release(e->sc);
+#endif
+    release_cert(e->cert);
+    free_ietfAttrList(e->groups);
+}
+
+static void
+delete_sr(struct connection *c, struct spd_route *sr)
+{
+    delete_end(c, sr, &sr->this);
+    delete_end(c, sr, &sr->that);
+}
+
 
 void
-delete_connection(struct connection *c)
+delete_connection(struct connection *c, bool relations)
 {
+    struct spd_route *sr;
     struct connection *old_cur_connection
 	= cur_connection == c? NULL : cur_connection;
 #ifdef DEBUG
@@ -283,7 +309,7 @@ delete_connection(struct connection *c)
     passert(c->kind != CK_GOING_AWAY);
     if (c->kind == CK_INSTANCE)
     {
-	plog("deleting connection \"%s\" instance with peer %s {isakmp=#%lu/ipsec=#%lu}"
+	openswan_log("deleting connection \"%s\" instance with peer %s {isakmp=#%lu/ipsec=#%lu}"
 	     , c->name
 	     , ip_str(&c->spd.that.host_addr)
 	     , c->newest_isakmp_sa, c->newest_ipsec_sa);
@@ -291,9 +317,9 @@ delete_connection(struct connection *c)
     }
     else
     {
-	plog("deleting connection");
+	openswan_log("deleting connection");
     }
-    release_connection(c);	/* won't delete c */
+    release_connection(c, relations);	/* won't delete c */
 
     if (c->kind == CK_GROUP)
 	delete_group(c);
@@ -338,24 +364,22 @@ delete_connection(struct connection *c)
     set_debugging(old_cur_debugging);
 #endif
     pfreeany(c->name);
-    free_id_content(&c->spd.this.id);
-    pfreeany(c->spd.this.updown);
-    freeanychunk(c->spd.this.ca);
-#ifdef SMARTCARD
-    scx_release(c->spd.this.sc);
-#endif
-    release_cert(c->spd.this.cert);
-    free_id_content(&c->spd.that.id);
-    pfreeany(c->spd.that.updown);
 
-    freeanychunk(c->spd.that.ca);
-#ifdef SMARTCARD
-    scx_release(c->spd.that.sc);
-#endif
-    release_cert(c->spd.that.cert);
+    sr = &c->spd;
+    while(sr) {
+	delete_sr(c, sr);
+	sr = sr->next;
+    }
+
     free_generalNames(c->requested_ca, TRUE);
 
     gw_delref(&c->gw_info);
+#ifdef KERNEL_ALG
+    alg_info_delref((struct alg_info **)&c->alg_info_esp);
+#endif
+#ifdef IKE_ALG
+    alg_info_delref((struct alg_info **)&c->alg_info_ike);
+#endif
     pfree(c);
 }
 
@@ -366,14 +390,14 @@ delete_connections_by_name(const char *name, bool strict)
     struct connection *c = con_by_name(name, strict);
 
     for (; c != NULL; c = con_by_name(name, FALSE))
-	delete_connection(c);
+	delete_connection(c, FALSE);
 }
 
 void
 delete_every_connection(void)
 {
     while (connections != NULL)
-	delete_connection(connections);
+	delete_connection(connections, TRUE);
 }
 
 void
@@ -393,7 +417,7 @@ release_dead_interfaces(void)
 		/* this connection's interface is going away */
 		enum connection_kind k = p->kind;
 
-		release_connection(p);
+		release_connection(p, TRUE);
 
 		if (k <= CK_PERMANENT)
 		{
@@ -622,9 +646,11 @@ format_end(char *buf
 
     /* payload portocol and port */
     protoport[0] = '\0';
-    if (this->port || this->protocol)
-	snprintf(protoport, sizeof(protoport), ":%u/%u",
-	    this->protocol, this->port);
+    if (this->has_port_wildcard)
+	snprintf(protoport, sizeof(protoport), ":%u/%%any", this->protocol);
+    else if (this->port || this->protocol)
+	snprintf(protoport, sizeof(protoport), ":%u/%u", this->protocol
+	    , this->port);
 
     /* id, if different from host */
     host_id[0] = '\0';
@@ -644,7 +670,7 @@ format_end(char *buf
 
     if(this->modecfg_server || this->modecfg_client
        || this->xauth_server || this->xauth_client
-       || this->sendcert != cert_sendifasked)
+       || this->sendcert != cert_defaultcertpolicy)
     {
 	const char *plus = "";
 	endopts[0]='\0';
@@ -683,6 +709,7 @@ format_end(char *buf
 
 	{
 	    const char *send;
+	    char s[32];
 	    
 	    switch(this->sendcert) {
 	    case cert_neversend:
@@ -693,6 +720,10 @@ format_end(char *buf
 		break;
 	    case cert_alwayssend:
 		send="S=C";
+		break;
+	    case cert_forcedtype:
+		sprintf(s, "S%d", this->cert.type);
+		send=s;
 		break;
 	    }
 	    strncat(endopts, plus, sizeof(endopts));
@@ -765,6 +796,16 @@ unshare_connection_strings(struct connection *c)
     share_cert(c->spd.that.cert);
     if (c->spd.that.ca.ptr != NULL)
 	clonetochunk(c->spd.that.ca, c->spd.that.ca.ptr, c->spd.that.ca.len, "ca string");
+
+    /* increment references to algo's, if any */
+    if(c->alg_info_ike) {
+	alg_info_addref(IKETOINFO(c->alg_info_ike));
+    }
+
+    if(c->alg_info_esp) {
+	alg_info_addref(ESPTOINFO(c->alg_info_esp));
+    }
+
 }
 
 static void
@@ -775,9 +816,10 @@ load_end_certificate(const char *filename, struct end *dst)
     bool valid_cert = FALSE;
     bool cached_cert = FALSE;
 
+    memset(&dst->cert, 0, sizeof(dst->cert));
+
     /* initialize end certificate */
     dst->cert.type = CERT_NONE;
-    dst->cert.u.x509 = NULL;
 
     /* initialize smartcard info record */
     dst->sc = NULL;
@@ -792,12 +834,12 @@ load_end_certificate(const char *filename, struct end *dst)
 	    dst->sc = scx_add(sc);
 
 	    /* is there a cached smartcard certificate? */
-	    cached_cert = dst->sc->last_cert != NULL
+	    cached_cert = dst->sc->last_cert.type != CERT_NONE
 		&& (time(NULL) - dst->sc->last_load) < SCX_CERT_CACHE_INTERVAL;
 
 	    if (cached_cert)
 	    {
-		cert = *dst->sc->last_cert;
+		cert = dst->sc->last_cert;
 		valid_cert = TRUE;
 	    }
 	    else
@@ -807,7 +849,7 @@ load_end_certificate(const char *filename, struct end *dst)
 #endif
 	{
 	    /* load cert from file */
-	    valid_cert = load_host_cert(filename, &cert);
+	    valid_cert = load_host_cert(FALSE, filename, &cert);
 	}
     }
 
@@ -830,6 +872,7 @@ load_end_certificate(const char *filename, struct end *dst)
 		dst->cert.u.pgp = add_pgpcert(cert.u.pgp);
 	    }
 	    break;
+
 	case CERT_X509_SIGNATURE:
 	    select_x509cert_id(cert.u.x509, &dst->id);
 
@@ -841,11 +884,14 @@ load_end_certificate(const char *filename, struct end *dst)
 	    }
 	    if (ugh != NULL)
 	    {
-		plog("  %s", ugh);
+		openswan_log("  %s", ugh);
 		free_x509cert(cert.u.x509);
 	    }
 	    else
 	    {
+	    	DBG(DBG_CONTROL,
+		    DBG_log("certificate is valid")
+		)
 		if (cached_cert)
 		    dst->cert = cert;
 		else
@@ -866,10 +912,12 @@ load_end_certificate(const char *filename, struct end *dst)
 	/* cache the certificate that was last retrieved from the smartcard */
 	if (dst->sc != NULL)
 	{
-	    if (dst->sc->last_cert != NULL)
-		release_cert(*dst->sc->last_cert);
-	    dst->sc->last_cert = &dst->cert;
-	    share_cert(dst->cert);
+	    if (!same_cert(&dst->sc->last_cert, &dst->cert))
+	    {
+		release_cert(dst->sc->last_cert);
+		dst->sc->last_cert = dst->cert;
+		share_cert(dst->cert);
+	    }
 	    time(&dst->sc->last_load);
 	}
     }
@@ -911,17 +959,27 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
 	    ugh = atodn(src->ca, &dst->ca);
 	    if (ugh != NULL)
 	    {
-		plog("bad CA string '%s': %s (ignored)", src->ca, ugh);
+		openswan_log("bad CA string '%s': %s (ignored)", src->ca, ugh);
 		dst->ca = empty_chunk;
 	    }
 	}
     }
 
-    /* load local end certificate and extract ID, if any */
-    load_end_certificate(src->cert, dst);
+    if(src->sendcert == cert_forcedtype) {
+	/* certificate is a blob */
+	dst->cert.forced = TRUE;
+	dst->cert.type = src->certtype;
+	load_cert(TRUE, src->cert, "forced cert", &dst->cert);
+    } else {
+	/* load local end certificate and extract ID, if any */
+	load_end_certificate(src->cert, dst);
+    }
 
     /* does id has wildcards? */
     dst->has_id_wildcards = id_count_wildcards(&dst->id) > 0;
+
+    /* decode group attributes, if any */
+    decode_groups(src->groups, &dst->groups);
 
     /* the rest is simple copying of corresponding fields */
     dst->host_addr = src->host_addr;
@@ -936,8 +994,9 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
     dst->xauth_server = src->xauth_server;
     dst->xauth_client = src->xauth_client;
 #endif
-    dst->port = src->port;
     dst->protocol = src->protocol;
+    dst->port = src->port;
+    dst->has_port_wildcard = src->has_port_wildcard;
     dst->key_from_DNS_on_demand = src->key_from_DNS_on_demand;
     dst->has_client = src->has_client;
     dst->has_client_wildcard = src->has_client_wildcard;
@@ -1079,11 +1138,74 @@ add_connection(const struct whack_message *wm)
 		, "ignoring --compress in \"%s\" because KLIPS is not configured to do IPCOMP"
 		, c->name);
 
+	c->alg_info_esp = NULL;
+#ifdef KERNEL_ALG
+	if (wm->esp)  
+	{
+		const char *ugh;
+		DBG(DBG_CONTROL, DBG_log("from whack: got --esp=%s", wm->esp ? wm->esp: "NULL"));
+		c->alg_info_esp = alg_info_esp_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
+
+		DBG(DBG_CRYPT|DBG_CONTROL, 
+			static char buf[256]="<NULL>";
+			if (c->alg_info_esp)
+				alg_info_snprint(buf, sizeof(buf), 
+						 (struct alg_info *)c->alg_info_esp, TRUE);
+			DBG_log("esp string values: %s", buf);
+		);
+		if (c->alg_info_esp) {
+			if (c->alg_info_esp->alg_info_cnt==0) {
+				loglog(RC_LOG_SERIOUS
+					, "got 0 transforms for esp=\"%s\""
+					, wm->esp);
+			}
+		} else {
+			loglog(RC_LOG_SERIOUS
+				, "esp string error: %s"
+				, ugh? ugh : "Unknown");
+		}
+	}
+#endif	
+
+	c->alg_info_ike = NULL;
+#ifdef IKE_ALG
+	if (wm->ike)
+	{
+		const char *ugh;
+		DBG(DBG_CONTROL, DBG_log("from whack: got --ike=%s", wm->ike ? wm->ike: "NULL"));
+		c->alg_info_ike= alg_info_ike_create_from_str(wm->ike? wm->ike : "", &ugh);
+		DBG(DBG_CRYPT|DBG_CONTROL, 
+				static char buf[256]="<NULL>";
+				if (c->alg_info_ike)
+					alg_info_snprint(buf, sizeof(buf),
+							 (struct alg_info *)c->alg_info_ike, TRUE);
+				DBG_log("ike string values: %s", buf);
+				);
+		if (c->alg_info_ike) {
+			if (c->alg_info_ike->alg_info_cnt==0) {
+				loglog(RC_LOG_SERIOUS
+					, "got 0 transforms for ike=\"%s\""
+					, wm->ike);
+			}
+		} else {
+			loglog(RC_LOG_SERIOUS
+				, "ike string error: %s"
+				, ugh? ugh : "Unknown");
+		}
+	}
+#endif
 	c->sa_ike_life_seconds = wm->sa_ike_life_seconds;
 	c->sa_ipsec_life_seconds = wm->sa_ipsec_life_seconds;
 	c->sa_rekey_margin = wm->sa_rekey_margin;
 	c->sa_rekey_fuzz = wm->sa_rekey_fuzz;
 	c->sa_keying_tries = wm->sa_keying_tries;
+
+	/* RFC 3706 DPD */
+        c->dpd_delay = wm->dpd_delay;
+        c->dpd_timeout = wm->dpd_timeout;
+        c->dpd_action = wm->dpd_action;
+
+	c->forceencaps = wm->forceencaps;
 
 	c->addr_family = wm->addr_family;
 	c->tunnel_addr_family = wm->tunnel_addr_family;
@@ -1105,7 +1227,7 @@ add_connection(const struct whack_message *wm)
 	 * or any wildcard ID to that end
 	 */
 	if (isanyaddr(&c->spd.this.host_addr) || c->spd.this.has_client_wildcard
-	|| c->spd.this.has_id_wildcards)
+	|| c->spd.this.has_port_wildcard || c->spd.this.has_id_wildcards)
 	{
 	    struct end t = c->spd.this;
 
@@ -1132,9 +1254,8 @@ add_connection(const struct whack_message *wm)
 	    add_group(c);
 	}
 	else if ((isanyaddr(&c->spd.that.host_addr) && !NEVER_NEGOTIATE(c->policy))
-		 || c->spd.that.has_client_wildcard
-		 || ((c->policy & POLICY_SHUNT_MASK) == 0
-		     &&	c->spd.that.has_id_wildcards))
+		|| c->spd.that.has_client_wildcard || c->spd.that.has_port_wildcard  
+		|| ((c->policy & POLICY_SHUNT_MASK) == 0  && c->spd.that.has_id_wildcards ))
 	{
 	    DBG(DBG_CONTROL, DBG_log("based upon policy, the connection is a template."));
 
@@ -1166,12 +1287,18 @@ add_connection(const struct whack_message *wm)
 #endif
 
 	unshare_connection_strings(c);
+#ifdef KERNEL_ALG
+	alg_info_addref((struct alg_info *)c->alg_info_esp);
+#endif
+#ifdef IKE_ALG
+	alg_info_addref((struct alg_info *)c->alg_info_ike);
+#endif
 
 	(void)orient(c);
 	connect_to_host_pair(c);
 
 	/* log all about this connection */
-	plog("added connection description \"%s\"", c->name);
+	openswan_log("added connection description \"%s\"", c->name);
 	DBG(DBG_CONTROL,
 	    char topo[CONNECTION_BUF];
 
@@ -1314,6 +1441,16 @@ instantiate(struct connection *c, const ip_address *him
 	d->spd.that.has_id_wildcards = FALSE;
     }
     unshare_connection_strings(d);
+    unshare_ietfAttrList(&d->spd.this.groups);
+    unshare_ietfAttrList(&d->spd.that.groups);
+
+
+#ifdef KERNEL_ALG
+    alg_info_addref((struct alg_info *)d->alg_info_esp);
+#endif
+#ifdef IKE_ALG
+    alg_info_addref((struct alg_info *)d->alg_info_ike);
+#endif
 
     d->kind = CK_INSTANCE;
 
@@ -3031,10 +3168,10 @@ terminate_connection(const char *nm)
 	&& !NEVER_NEGOTIATE(c->policy))
 	{
 	    set_cur_connection(c);
-	    plog("terminating SAs using this connection");
+	    openswan_log("terminating SAs using this connection");
 	    c->policy &= ~POLICY_UP;
 	    flush_pending_by_connection(c);
-	    delete_states_by_connection(c);
+	    delete_states_by_connection(c, FALSE);
 	    reset_cur_connection();
 	}
     }
@@ -3122,7 +3259,7 @@ ISAKMP_SA_established(struct connection *c, so_serial_t serial)
 	    && !sameaddr(&c->spd.that.host_addr, &d->spd.that.host_addr))
 #endif
 	    {
-		release_connection(d);
+		release_connection(d, FALSE);
 	    }
 	    d = next;
 	}
@@ -3280,6 +3417,28 @@ find_host_connection(const ip_address *me, u_int16_t my_port
     return find_host_pair_connections(me, my_port, him, his_port);
 }
 
+/*
+ * extracts the peer's ca from the chained list of public keys
+ */
+static chunk_t
+get_peer_ca(const struct id *peer_id)
+{
+    struct pubkey_list *p;
+
+    for (p = pubkeys; p != NULL; p = p->next)
+    {
+       struct pubkey *key = p->key;
+
+       if (key->alg == PUBKEY_ALG_RSA && same_id(peer_id, &key->id))
+       {
+           return key->issuer;
+       }
+    }
+    return empty_chunk;
+}
+
+
+
 /* given an up-until-now satisfactory connection, find the best connection
  * now that we just got the Phase 1 Id Payload from the peer.
  *
@@ -3351,10 +3510,9 @@ refine_host_connection(const struct state *st, const struct id *peer_id
     const chunk_t *psk;
     const struct RSA_private_key *my_RSA_pri = NULL;
     bool wcpip;	/* wildcard Peer IP? */
-    struct pubkey_list *p;
-    chunk_t peer_ca = empty_chunk;
     int wildcards, best_wildcards;
     int our_pathlen, best_our_pathlen, peer_pathlen, best_peer_pathlen;
+    chunk_t peer_ca;
 
     our_pathlen = peer_pathlen = 0;
     best_peer_pathlen = 0;
@@ -3364,25 +3522,21 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	 , DBG_log("refine_connection: starting with %s"
 		   , c->name));
 
-    /* retrieve the CA of the peer's key */
-    for (p = pubkeys; p != NULL; p = p->next)
-    {
-	struct pubkey *key = p->key;
-
-	if (key->alg == PUBKEY_ALG_RSA && same_id(peer_id, &key->id))
-	{
-	    peer_ca = key->issuer;
-	    break;
-	}
-    }
+    peer_ca = get_peer_ca(peer_id);
 
     if (same_id(&c->spd.that.id, peer_id)
-    && trusted_ca(peer_ca, c->spd.that.ca, &peer_pathlen)
-    && peer_pathlen == 0
-    && match_requested_ca(c->requested_ca, c->spd.this.ca, &our_pathlen)
-    && our_pathlen == 0
-	)
+	&& trusted_ca(peer_ca, c->spd.that.ca, &peer_pathlen)
+	&& peer_pathlen == 0
+	&& match_requested_ca(c->requested_ca, c->spd.this.ca, &our_pathlen)
+	&& our_pathlen == 0
+	) {
+
+	DBG(DBG_CONTROLMORE
+	    , DBG_log("refine_connection: happy with starting point: %s"
+		      , c->name));
+
 	return c;	/* peer ID matches current connection -- look no further */
+    }
 
     switch (auth)
     {
@@ -3430,10 +3584,15 @@ refine_host_connection(const struct state *st, const struct id *peer_id
     {
 	for (; d != NULL; d = d->hp_next)
 	{
-	    bool match = match_id(peer_id, &d->spd.that.id, &wildcards)
-		&& trusted_ca(peer_ca, d->spd.that.ca, &peer_pathlen)
-		&& match_requested_ca(c->requested_ca, d->spd.this.ca, &our_pathlen)
-		;
+	    bool match1 = match_id(peer_id, &d->spd.that.id, &wildcards);
+	    bool match2 = trusted_ca(peer_ca, d->spd.that.ca, &peer_pathlen);
+	    bool match3 = match_requested_ca(c->requested_ca, d->spd.this.ca, &our_pathlen);
+	    bool match = match1 && match2 && match3;
+
+	    DBG(DBG_CONTROLMORE
+		, DBG_log("refine_connection: checking %s against %s, best=%s with match=%d(id=%d/ca=%d/reqca=%d)"
+			  , c->name, d->name, best_found ? best_found->name : "(none)"
+			  , match, match1, match2, match3));
 
 	    /* ignore group connections */
 	    if (d->policy & POLICY_GROUP)
@@ -3463,6 +3622,11 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	    if (d->spd.this.xauth_client != c->spd.this.xauth_client)
 		continue;	/* disallow xauth/no xauth mismatch */
 #endif
+
+	    DBG(DBG_CONTROLMORE
+		, DBG_log("refine_connection: checked %s against %s, now for see if best"
+			  , c->name, d->name));
+
 	    switch (auth)
 	    {
 	    case OAKLEY_PRESHARED_KEY:
@@ -3561,10 +3725,10 @@ is_virtual_net_used(const ip_subnet *peer_net, const struct id *peer_id)
 		    char client[SUBNETTOT_BUF];
 		    subnettot(peer_net, 0, client, sizeof(client));
 		    idtoa(&d->spd.that.id, buf, sizeof(buf));
-		    plog("Virtual IP %s is already used by '%s'",
+		    openswan_log("Virtual IP %s is already used by '%s'",
 			client, buf);
 		    idtoa(peer_id, buf, sizeof(buf));
-			plog("Your ID is '%s'", buf);
+			openswan_log("Your ID is '%s'", buf);
 		    return TRUE; /* already used by another one */
 		}
 		break;
@@ -3640,7 +3804,7 @@ fc_try(const struct connection *c
 	if (d->spd.this.protocol != our_protocol
 	    ||  (d->spd.this.port && d->spd.this.port != our_port)
 	    ||  d->spd.that.protocol != peer_protocol
-	    ||  (d->spd.that.port && d->spd.that.port != peer_port))
+            || (d->spd.that.port != peer_port && !d->spd.that.has_port_wildcard))
 	    continue;
 
 	/* non-Opportunistic case:
@@ -3712,12 +3876,12 @@ fc_try(const struct connection *c
 	     * The highest priority wins, implementing eroute-like rule.
 	     * - a routed connection is preferrred
 	     * - given that, the smallest number of ID wildcards are preferred
-	     * - given that, the shortest CA pathlenght is preferred
+	     * - given that, the shortest CA pathlength is preferred
 	     */
 	    prio = PRIO_WEIGHT * routed(sr->routing)
 		 + WILD_WEIGHT * (MAX_WILDCARDS - wildcards)
 		 + PATH_WEIGHT * (MAX_CA_PATH_LEN - pathlen)
-		 + 1; 
+		 + 1;
 	    if (prio > best_prio)
 	    {
 		best = d;
@@ -3768,7 +3932,7 @@ fc_try_oppo(const struct connection *c
 	if (d->spd.this.protocol != our_protocol
 	    ||  (d->spd.this.port && d->spd.this.port != our_port)
 	    ||  d->spd.that.protocol != peer_protocol
-	    ||  (d->spd.that.port && d->spd.that.port != peer_port))
+            || (d->spd.that.port != peer_port && !d->spd.that.has_port_wildcard))
 	    continue;
 
 	/* Opportunistic case:
@@ -3805,7 +3969,7 @@ fc_try_oppo(const struct connection *c
 	     * - given that, his smallest client subnet is preferred
 	     * - given that, a routed connection is preferrred
 	     * - given that, the smallest number of ID wildcards are preferred
-	     * - given
+	     * - given that, the shortest CA pathlength is preferred
 	     */
 	    prio = PRIO_WEIGHT * (d->prio + routed(sr->routing))
 	    	 + WILD_WEIGHT * (MAX_WILDCARDS - wildcards)
@@ -4112,6 +4276,12 @@ show_connections_status(void)
 	    , instance
 	    , c->newest_isakmp_sa
 	    , c->newest_ipsec_sa);
+#ifdef IKE_ALG
+	ike_alg_show_connection(c, instance);
+#endif
+#ifdef KERNEL_ALG
+	kernel_alg_show_connection(c, instance);
+#endif
     }
     pfree(array);
 }
@@ -4333,7 +4503,7 @@ connection_discard(struct connection *c)
 		return;	/* in use, so we're done */
 
 	if (!states_use_connection(c))
-	    delete_connection(c);
+	    delete_connection(c, FALSE);
     }
 }
 

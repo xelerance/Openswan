@@ -1,0 +1,13 @@
+
+ASM-$(ARCH_ASM):=1
+ASM_X86:=$(ASM-i586)$(ASM-i686)
+
+ifneq ($(strip $(ASM_X86)),)
+obj-$(CONFIG_IPSEC_ENC_AES) += aes-i586.o
+else
+obj-$(CONFIG_IPSEC_ENC_AES) += aes.o
+endif
+
+obj-$(CONFIG_IPSEC_ENC_AES) += aes_cbc.o
+obj-$(CONFIG_IPSEC_ENC_AES) += aes_xcbc_mac.o
+

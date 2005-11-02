@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: nat_traversal.c,v 1.3.2.4 2004/06/01 14:42:36 ken Exp $
+ * RCSID $Id: nat_traversal.c,v 1.11 2004/06/27 09:43:59 ken Exp $
  */
 
 #ifdef NAT_TRAVERSAL
@@ -27,11 +27,14 @@
 #include <signal.h>     /* used only if MSG_NOSIGNAL not defined */
 #include <sys/queue.h>
 
-#include <freeswan.h>
-#include <freeswan/ipsec_policy.h>
+#include <openswan.h>
+#include <openswan/ipsec_policy.h>
 #include <pfkeyv2.h>
 #include <pfkey.h>
+
 #include "constants.h"
+#include "oswlog.h"
+
 #include "defs.h"
 #include "log.h"
 #include "server.h"
@@ -50,7 +53,7 @@
 #include "kernel.h"
 #include "whack.h"
 #include "timer.h"
-
+#include "ike_alg.h"
 
 #include "cookie.h"
 #include "sha1.h"
@@ -73,11 +76,6 @@
 #endif
 
 #define DEFAULT_KEEP_ALIVE_PERIOD  20
-
-#ifdef _IKE_ALG_H
-/* Alg patch: hash_digest_len -> hash_digest_size */
-#define hash_digest_len hash_digest_size
-#endif
 
 bool nat_traversal_enabled = FALSE;
 bool nat_traversal_support_non_ike = FALSE;
@@ -154,7 +152,7 @@ static void _natd_hash(const struct hash_desc *hasher, char *hash,
 	hasher->hash_final(hash, &ctx);
 #ifdef NAT_D_DEBUG
 	DBG(DBG_NATT,
-		DBG_log("_natd_hash: hasher=%p(%d)", hasher, hasher->hash_digest_len);
+		DBG_log("_natd_hash: hasher=%p(%d)", hasher, (int)hasher->hash_digest_len);
 		DBG_dump("_natd_hash: icookie=", icookie, COOKIE_SIZE);
 		DBG_dump("_natd_hash: rcookie=", rcookie, COOKIE_SIZE);
 		switch (addrtypeof(ip)) {
@@ -280,6 +278,12 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 #endif
 		st->nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_PEER);
 	}
+
+	if(st->st_connection->forceencaps) {
+		st->nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_PEER);
+		st->nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_ME);
+	}
+
 #ifdef FORCE_NAT_TRAVERSAL
 	st->nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_PEER);
 	st->nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_ME);
@@ -308,15 +312,23 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	/**
 	 * First one with sender IP & port
 	 */
-	_natd_hash(st->st_oakley.hasher, hash, st->st_icookie,
+	if(st->st_connection->forceencaps) {
+		_natd_hash(st->st_oakley.hasher, hash, st->st_icookie,
 		is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie,
-		&(md->sender),
+		&(md->sender),0);
+	} else {
+		_natd_hash(st->st_oakley.hasher, hash, st->st_icookie,
+			is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie,
+			&(md->sender),
 #ifdef FORCE_NAT_TRAVERSAL
-		0
+			0
 #else
-		ntohs(md->sender_port)
+			ntohs(md->sender_port)
 #endif
-	);
+		);
+	}
+
+
 	if (!out_generic_raw((st->nat_traversal & NAT_T_WITH_RFC_VALUES
 		? ISAKMP_NEXT_NATD_RFC : ISAKMP_NEXT_NATD_DRAFTS), &isakmp_nat_d, outs,
 		hash, st->st_oakley.hasher->hash_digest_len, "NAT-D")) {
@@ -326,15 +338,21 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	/**
 	 * Second one with my IP & port
 	 */
-	_natd_hash(st->st_oakley.hasher, hash, st->st_icookie,
-		is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie,
-		&(md->iface->addr),
+	if(st->st_connection->forceencaps) {
+		_natd_hash(st->st_oakley.hasher, hash, st->st_icookie,
+			is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie,
+			&(md->iface->addr),0);
+	} else {
+		_natd_hash(st->st_oakley.hasher, hash, st->st_icookie,
+			is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie,
+			&(md->iface->addr),
 #ifdef FORCE_NAT_TRAVERSAL
-		0
+			0
 #else
-		ntohs(st->st_connection->spd.this.host_port)
+			ntohs(st->st_connection->spd.this.host_port)
 #endif
-	);
+		);
+	}
 	return (out_generic_raw(np, &isakmp_nat_d, outs,
 		hash, st->st_oakley.hasher->hash_digest_len, "NAT-D"));
 }
@@ -394,7 +412,7 @@ void nat_traversal_natoa_lookup(struct msg_digest *md)
 			}
 			else {
 				loglog(RC_LOG_SERIOUS, "NAT-Traversal: received IPv4 NAT-OA "
-					"with invalid IP size (%d)", pbs_left(&p->pbs));
+					"with invalid IP size (%d)", (int)pbs_left(&p->pbs));
 				return;
 			}
 			break;
@@ -404,7 +422,7 @@ void nat_traversal_natoa_lookup(struct msg_digest *md)
 			}
 			else {
 				loglog(RC_LOG_SERIOUS, "NAT-Traversal: received IPv6 NAT-OA "
-					"with invalid IP size (%d)", pbs_left(&p->pbs));
+					"with invalid IP size (%d)", (int)pbs_left(&p->pbs));
 				return;
 			}
 			break;
@@ -799,7 +817,7 @@ void process_pfkey_nat_t_new_mapping(
 	nfo.sa = (void *) extensions[SADB_EXT_SA];
 
 	if ((!nfo.sa) || (!srcx) || (!dstx)) {
-		plog("SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: "
+		openswan_log("SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: "
 			"got NULL params");
 		return;
 	}
@@ -837,7 +855,7 @@ void process_pfkey_nat_t_new_mapping(
 	}
 
 	if (ugh != NULL)
-		plog("SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: %s", ugh);
+		openswan_log("SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: %s", ugh);
 }
 
 #endif

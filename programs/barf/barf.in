@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: barf.in,v 1.92.2.2 2004/04/15 03:46:50 ken Exp $
+# RCSID $Id: barf.in,v 1.95 2004/06/08 01:02:11 mcr Exp $
 
 LOGS=${LOGS-/var/log}
 CONFS=${IPSEC_CONFS-/etc}
@@ -219,6 +219,8 @@ _________________________ ipsec/conf
 ipsec _include $CONFS/ipsec.conf | ipsec _keycensor
 _________________________ ipsec/secrets
 ipsec _include $CONFS/ipsec.secrets | ipsec _secretcensor
+_________________________ ipsec/listall
+ipsec auto --listall
 if [ $POLICIES ]
 then
 	for policy in $POLICIES/*; do base=`basename $policy`;

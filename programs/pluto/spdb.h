@@ -11,8 +11,13 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: spdb.h,v 1.13 2003/12/29 22:46:08 mcr Exp $
+ * RCSID $Id: spdb.h,v 1.14 2004/04/18 03:06:46 mcr Exp $
  */
+
+#ifndef _SPDB_H_
+#define _SPDB_H_
+
+#include "packet.h"
 
 /* database of SA properties */
 
@@ -85,3 +90,5 @@ extern notification_t parse_ipsec_sa_body(
     pb_stream *r_sa_pbs,	/* if non-NULL, where to emit winning SA */
     bool selection,	/* if this SA is a selection, only one tranform can appear */
     struct state *st);	/* current state object */
+
+#endif /*  _SPDB_H_ */

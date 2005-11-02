@@ -186,18 +186,18 @@ conn westnet-eastnet-x509
 	also=west-east-x509
 
 conn west-east-x509
-	# Left security gateway, subnet behind it, next hop toward right.
-	left=192.1.2.45
+        # Left security gateway, subnet behind it, next hop toward right.
+        left=192.1.2.45
         leftrsasigkey=%cert
         leftcert=west.uml.freeswan.org.cert  
-	leftnexthop=192.1.2.23
-	leftid="C=CA/ST=Ontario/O=Openswan/CN=west.uml.freeswan.org/Email=west@openswan.org"
-	# Right security gateway, subnet behind it, next hop toward left.
-	right=192.1.2.23
-	rightid="C=CA/ST=Ontario/O=Openswan/CN=east.uml.freeswan.org/Email=east@openswan.org"
+        leftnexthop=192.1.2.23
+        leftid="C=CA, ST=Ontario, O=Openswan, L=Toronto, CN=west.uml.freeswan.org, E=west@openswan.org"
+        # Right security gateway, subnet behind it, next hop toward left.
+        right=192.1.2.23
+        rightid="C=CA, ST=Ontario, O=Openswan, L=Toronto, CN=east.uml.openswan.org, E=east@openswan.org"
         rightrsasigkey=%cert
-	rightcert=east.uml.freeswan.org.cert
-	rightnexthop=192.1.2.45
+        rightcert=east.uml.freeswan.org.cert
+        rightnexthop=192.1.2.45
 
 conn north-east-x509
 	# Left security gateway, subnet behind it, next hop toward right.

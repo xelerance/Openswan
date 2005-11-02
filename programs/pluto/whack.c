@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: whack.c,v 1.120.2.2 2004/06/01 14:42:36 ken Exp $
+ * RCSID $Id: whack.c,v 1.133 2004/06/27 22:40:25 mcr Exp $
  */
 
 #include <stdio.h>
@@ -34,9 +34,14 @@
 #include <openswan.h>
 
 #include "constants.h"
+#include "oswlog.h"
+
 #include "defs.h"
 #include "whack.h"
 
+/** 
+ * Print the 'ipsec --whack help' message
+ */
 static void
 help(void)
 {
@@ -69,21 +74,25 @@ help(void)
 	    " [--dnskeyondemand]"
 	    " \\\n   "
 	    " [--updown <updown>]"
-	    " \\\n   "
 	    " --to"
-	    " (--host <ip-address> | --id <identity> | --cert <path>)"
+	    " (--host <ip-address> | --id <identity>)"
+            " \\\n   "
+            " [--cert <path>]"
+            " [--groups <access control groups>]"
 	    " [--ca <distinguished name>]"
-	    " [--sendcert yes|always|no|never|ifasked]"
+	    " [--sendcert]"
+	    " [--sendcerttype number]"
+	    " \\\n   "
 	    " [--ikeport <port-number>]"
 	    " \\\n   "
 	    " [--nexthop <ip-address>]"
+	    " \\\n   "
 	    " [--client <subnet> | --clientwithin <address range>]"
 	    " \\\n   "
 	    " [--clientprotoport <protocol>/<port>]"
+	    " \\\n   "
 	    " [--dnskeyondemand]"
-	    " \\\n   "
 	    " [--updown <updown>]"
-	    " \\\n   "
 	    " [--psk]"
 	    " [--rsasig]"
 	    " \\\n   "
@@ -100,7 +109,17 @@ help(void)
 	    " [--reykeyfuzz <percentage>]"
 	    " \\\n   "
 	    " [--keyingtries <count>]"
+	    " \\\n   "
+	    " [--esp <esp-algos>]"
+	    " \\\n   "
 	    " [--dontrekey]"
+
+            " [--dpddelay <seconds> --dpdtimeout <seconds>]"
+            " \\\n   "
+            " [--dpdaction (clear|hold)]"
+	    " [--forceencaps]"
+
+
 #ifdef XAUTH
 	    " [--xauth]"
 	    " [--xauthserver]"
@@ -162,6 +181,9 @@ help(void)
 	    " [--debug-dns]"
 	    " [--debug-pfkey]"
 	    " \\\n   "
+	    " [--debug-natt]"
+	    " [--debug-x509]"
+	    " \\\n   "
 	    " [--debug-private]"
 	    "\n\n"
 #endif
@@ -172,13 +194,30 @@ help(void)
 	    " [--listpubkeys]"
 	    " [--listcerts]"
 	    " [--listcacerts]"
+            " \\\n   "
+            " [--listacerts]"
+            " [--listaacerts]"
+            " [--listocspcerts]"
+            " \\\n   "
+            " [--listgroups]"
 	    " [--listcrls]"
+            " [--listocsp]"
+
 	    " [--listcards]"
 	    " [--listall]"
 	    "\n\n"
+        "purge: whack"
+            " [--purgeocsp]"
+            "\n\n"
+
 	"reread: whack"
 	    " [--rereadsecrets]"
 	    " [--rereadcacerts]"
+            " [--rereadaacerts]"
+            " [--rereadocspcerts]"
+            " \\\n   "
+            " [--rereadacerts]"
+
 	    " [--rereadcrls]"
 	    " [--rereadall]"
 	    "\n\n"
@@ -196,7 +235,11 @@ static const char *label = NULL;	/* --label operand, saved for diagnostics */
 
 static const char *name = NULL;	/* --name operand, saved for diagnostics */
 
-/* print a string as a diagnostic, then exit whack unhappily */
+/** Print a string as a diagnostic, then exit whack unhappily 
+ *
+ * @param mess The error message to print when exiting
+ * @return void
+ */
 static void
 diag(const char *mess)
 {
@@ -213,7 +256,14 @@ diag(const char *mess)
     exit(RC_WHACK_PROBLEM);
 }
 
-/* conditially calls diag; prints second arg, if non-NULL, as quoted string */
+/** 
+ * Conditially calls diag if ugh is set.
+ * Prints second arg, if non-NULL, as quoted string
+ *
+ * @param ugh Error message
+ * @param this Optional 2nd part of error message
+ * @return void
+ */
 static void
 diagq(err_t ugh, const char *this)
 {
@@ -233,11 +283,14 @@ diagq(err_t ugh, const char *this)
     }
 }
 
-/* complex combined operands return one of these enumerated values
+/**
+ * complex combined operands return one of these enumerated values
  * Note: these become flags in an lset_t.  Since there are more than
  * 32, we partition them into:
  * - OPT_* options (most random options)
+ * - LST_* options (list various internal data)
  * - DBGOPT_* option (DEBUG options)
+ * - END_* options (End description options)
  * - CD_* options (Connection Description options)
  */
 enum option_enums {
@@ -263,16 +316,13 @@ enum option_enums {
     OPT_LISTEN,
     OPT_UNLISTEN,
 
-    OPT_UTC,
-    OPT_LISTPUBKEYS,
-    OPT_LISTCERTS,
-    OPT_LISTCACERTS,
-    OPT_LISTCRLS,
-    OPT_LISTCARDS,
-    OPT_LISTALL,
+    OPT_PURGEOCSP,
 
     OPT_REREADSECRETS,
     OPT_REREADCACERTS,
+    OPT_REREADAACERTS,
+    OPT_REREADOCSPCERTS,
+    OPT_REREADACERTS,
     OPT_REREADCRLS,
     OPT_REREADALL,
 
@@ -290,6 +340,25 @@ enum option_enums {
 
 #   define OPT_LAST OPT_ASYNC	/* last "normal" option */
 
+/* List options */
+
+#   define LST_FIRST LST_UTC   /* first list option */
+    LST_UTC,
+    LST_PUBKEYS,
+    LST_CERTS,
+    LST_CACERTS,
+    LST_ACERTS,
+    LST_AACERTS,
+    LST_OCSPCERTS,
+    LST_GROUPS,
+    LST_CRLS,
+    LST_OCSP,
+    LST_CARDS,
+    LST_ALL,
+
+#   define LST_LAST LST_ALL    /* last list option */
+
+
 /* Connection End Description options */
 
 #   define END_FIRST END_HOST	/* first end description */
@@ -297,6 +366,7 @@ enum option_enums {
     END_ID,
     END_CERT,
     END_CA,
+    END_GROUPS,
     END_IKEPORT,
     END_NEXTHOP,
     END_CLIENT,
@@ -308,6 +378,7 @@ enum option_enums {
     END_MODECFGCLIENT,
     END_MODECFGSERVER,
     END_SENDCERT,
+    END_CERTTYPE,
     END_SRCIP,
     END_UPDOWN,
     	
@@ -347,9 +418,15 @@ enum option_enums {
     CD_IPSECLIFETIME,
     CD_RKMARGIN,
     CD_RKFUZZ,
-    CD_KTRIES
-
-#   define CD_LAST CD_KTRIES	/* last connection description */
+    CD_KTRIES,
+    CD_DPDDELAY,
+    CD_DPDTIMEOUT,
+    CD_DPDACTION,
+    CD_FORCEENCAPS,
+    CD_IKE,
+    CD_PFSGROUP,
+    CD_ESP	
+#   define CD_LAST CD_ESP	/* last connection description */
 
 #ifdef DEBUG	/* must be last so others are less than 32 to fit in lset_t */
 #   define DBGOPT_FIRST DBGOPT_NONE
@@ -369,7 +446,15 @@ enum option_enums {
     DBGOPT_OPPO,	/* same order as DBG_* */
     DBGOPT_CONTROLMORE,	/* same order as DBG_* */
     DBGOPT_PFKEY,	/* same order as DBG_* */
-    DBGOPT_NATTRAVERSAL, /* same order as DBG_* */
+    DBGOPT_NATT,        /* same order as DBG_* */
+    DBGOPT_X509,        /* same order as DBG_* */
+    DBGOPT_RES13,
+    DBGOPT_RES14,
+    DBGOPT_RES15,
+    DBGOPT_RES16,
+    DBGOPT_RES17,
+    DBGOPT_RES18,
+    DBGOPT_RES19,
 
     DBGOPT_PRIVATE,	/* same order as DBG_* */
 
@@ -420,15 +505,14 @@ static const struct option long_opts[] = {
     { "crash", required_argument, NULL, OPT_DELETECRASH + OO },
     { "listen", no_argument, NULL, OPT_LISTEN + OO },
     { "unlisten", no_argument, NULL, OPT_UNLISTEN + OO },
-    { "utc", no_argument, NULL, OPT_UTC + OO },
-    { "listpubkeys", no_argument, NULL, OPT_LISTPUBKEYS + OO },
-    { "listcerts", no_argument, NULL, OPT_LISTCERTS + OO },
-    { "listcacerts", no_argument, NULL, OPT_LISTCACERTS + OO },
-    { "listcrls", no_argument, NULL, OPT_LISTCRLS + OO },
-    { "listcards", no_argument, NULL, OPT_LISTCARDS + OO },
-    { "listall", no_argument, NULL, OPT_LISTALL + OO },
+    { "purgeocsp", no_argument, NULL, OPT_PURGEOCSP + OO },
+
     { "rereadsecrets", no_argument, NULL, OPT_REREADSECRETS + OO },
     { "rereadcacerts", no_argument, NULL, OPT_REREADCACERTS + OO },
+    { "rereadaacerts", no_argument, NULL, OPT_REREADAACERTS + OO },
+    { "rereadocspcerts", no_argument, NULL, OPT_REREADOCSPCERTS + OO },
+    { "rereadacerts", no_argument, NULL, OPT_REREADACERTS + OO },
+
     { "rereadcrls", no_argument, NULL, OPT_REREADCRLS + OO },
     { "rereadall", no_argument, NULL, OPT_REREADALL + OO },
     { "status", no_argument, NULL, OPT_STATUS + OO },
@@ -442,6 +526,21 @@ static const struct option long_opts[] = {
 
     { "asynchronous", no_argument, NULL, OPT_ASYNC + OO },
 
+    /* list options */
+
+    { "utc", no_argument, NULL, LST_UTC + OO },
+    { "listpubkeys", no_argument, NULL, LST_PUBKEYS + OO },
+    { "listcerts", no_argument, NULL, LST_CERTS + OO },
+    { "listcacerts", no_argument, NULL, LST_CACERTS + OO },
+    { "listacerts", no_argument, NULL, LST_ACERTS + OO },
+    { "listaacerts", no_argument, NULL, LST_AACERTS + OO },
+    { "listocspcerts", no_argument, NULL, LST_OCSPCERTS + OO },
+    { "listgroups", no_argument, NULL, LST_GROUPS + OO },
+    { "listcrls", no_argument, NULL, LST_CRLS + OO },
+    { "listocsp", no_argument, NULL, LST_OCSP + OO },
+    { "listcards", no_argument, NULL, LST_CARDS + OO },
+    { "listall", no_argument, NULL, LST_ALL + OO },
+                                                                                                        
 
     /* options for an end description */
 
@@ -449,6 +548,7 @@ static const struct option long_opts[] = {
     { "id", required_argument, NULL, END_ID + OO },
     { "cert", required_argument, NULL, END_CERT + OO },
     { "ca", required_argument, NULL, END_CA + OO },
+    { "groups", required_argument, NULL, END_GROUPS + OO },
     { "ikeport", required_argument, NULL, END_IKEPORT + OO + NUMERIC_ARG },
     { "nexthop", required_argument, NULL, END_NEXTHOP + OO },
     { "client", required_argument, NULL, END_CLIENT + OO },
@@ -491,6 +591,10 @@ static const struct option long_opts[] = {
     { "failreject", no_argument, NULL
 	, CD_FAIL0 + (POLICY_FAIL_REJECT >> POLICY_FAIL_SHIFT << AUX_SHIFT) + OO },
     { "dontrekey", no_argument, NULL, CD_DONT_REKEY + OO },
+    { "forceencaps", no_argument, NULL, CD_FORCEENCAPS + OO },
+    { "dpddelay", required_argument, NULL, CD_DPDDELAY + OO + NUMERIC_ARG },
+    { "dpdtimeout", required_argument, NULL, CD_DPDTIMEOUT + OO + NUMERIC_ARG },
+    { "dpdaction", required_argument, NULL, CD_DPDACTION + OO },
 #ifdef XAUTH
     { "xauth", no_argument, NULL, END_XAUTHSERVER + OO },
     { "xauthserver", no_argument, NULL, END_XAUTHSERVER + OO },
@@ -503,6 +607,7 @@ static const struct option long_opts[] = {
     { "modeconfigclient", no_argument, NULL, END_MODECFGCLIENT + OO },
 #endif
     { "sendcert", required_argument, NULL, END_SENDCERT + OO },
+    { "certtype", required_argument, NULL, END_CERTTYPE + OO + NUMERIC_ARG },
     { "ipv4", no_argument, NULL, CD_CONNIPV4 + OO },
     { "ipv6", no_argument, NULL, CD_CONNIPV6 + OO },
 
@@ -512,6 +617,9 @@ static const struct option long_opts[] = {
     { "rekeywindow", required_argument, NULL, CD_RKMARGIN + OO + NUMERIC_ARG },	/* OBSOLETE */
     { "rekeyfuzz", required_argument, NULL, CD_RKFUZZ + OO + NUMERIC_ARG },
     { "keyingtries", required_argument, NULL, CD_KTRIES + OO + NUMERIC_ARG },
+    { "ike", required_argument, NULL, CD_IKE + OO },
+    { "pfsgroup", required_argument, NULL, CD_PFSGROUP + OO },
+    { "esp", required_argument, NULL, CD_ESP + OO },
 #ifdef DEBUG
     { "debug-none", no_argument, NULL, DBGOPT_NONE + OO },
     { "debug-all]", no_argument, NULL, DBGOPT_ALL + OO },
@@ -526,7 +634,8 @@ static const struct option long_opts[] = {
     { "debug-oppo", no_argument, NULL, DBGOPT_OPPO + OO },
     { "debug-controlmore", no_argument, NULL, DBGOPT_CONTROLMORE + OO },
     { "debug-pfkey",   no_argument, NULL, DBGOPT_PFKEY + OO },
-    { "debug-nattraversal", no_argument, NULL, DBGOPT_NATTRAVERSAL + OO },
+    { "debug-nattraversal", no_argument, NULL, DBGOPT_NATT + OO },
+    { "debug-x509",    no_argument, NULL, DBGOPT_X509 + OO },
     { "debug-private", no_argument, NULL, DBGOPT_PRIVATE + OO },
 
     { "impair-delay-adns-key-answer", no_argument, NULL, DBGOPT_IMPAIR_DELAY_ADNS_KEY_ANSWER + OO },
@@ -671,7 +780,6 @@ get_secret(char *buf, size_t bufsize)
     secret = getpass("Enter secret: ");
     secret = (secret == NULL) ? "" : secret;
 
-
     strncpy(buf, secret, bufsize);
 
     len = strlen(buf) + 1;
@@ -740,11 +848,13 @@ int
 main(int argc, char **argv)
 {
     struct whack_message msg;
+    char esp_buf[256];	/* uses snprintf */
     lset_t
-	opts_seen = LEMPTY,
-	cd_seen = LEMPTY,
-	end_seen = LEMPTY,
-	end_seen_before_to;
+        opts_seen = LEMPTY,
+        lst_seen = LEMPTY,
+        cd_seen = LEMPTY,
+        end_seen = LEMPTY,
+        end_seen_before_to;
     const char
 	*af_used_by = NULL,
 	*tunnel_af_used_by = NULL;
@@ -760,11 +870,12 @@ main(int argc, char **argv)
 #else
     assert(OPTION_OFFSET + CD_LAST < NUMERIC_ARG);
 #endif
-    assert(OPT_LAST - OPT_FIRST < 32);
-    assert(END_LAST - END_FIRST < 32);
-    assert(CD_LAST - CD_FIRST < 32);
-#ifdef DEBUG	/* must be last so others are less than 32 to fit in lset_t */
-    assert(DBGOPT_LAST - DBGOPT_FIRST < 32);
+    assert(OPT_LAST - OPT_FIRST < (sizeof cd_seen * BITS_PER_BYTE));
+    assert(LST_LAST - LST_FIRST < (sizeof cd_seen * BITS_PER_BYTE));
+    assert(END_LAST - END_FIRST < (sizeof cd_seen * BITS_PER_BYTE));
+    assert(CD_LAST - CD_FIRST < (sizeof cd_seen * BITS_PER_BYTE));
+#ifdef DEBUG	/* must be last so others are less than (sizeof cd_seen * BITS_PER_BYTE) to fit in lset_t */
+    assert(DBGOPT_LAST - DBGOPT_FIRST < (sizeof cd_seen * BITS_PER_BYTE));
 #endif
     /* check that POLICY bit assignment matches with CD_ */
     assert(LELEM(CD_DONT_REKEY - CD_POLICY_FIRST) == POLICY_DONT_REKEY);
@@ -776,6 +887,9 @@ main(int argc, char **argv)
     msg.name = NULL;
     msg.keyid = NULL;
     msg.keyval.ptr = NULL;
+    msg.esp = NULL;
+    msg.ike = NULL;
+    msg.pfsgroup = NULL;
 
     msg.sa_ike_life_seconds = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
     msg.sa_ipsec_life_seconds = PLUTO_SA_LIFE_DURATION_DEFAULT;
@@ -830,6 +944,17 @@ main(int argc, char **argv)
 		diagq("duplicated flag", long_opts[long_index].name);
 	    opts_seen |= f;
 	}
+        else if (LST_FIRST <= c && c <= LST_LAST)
+        {
+            /* LST_* options get added lst_seen.
+             * Reject repeated options (unless later code intervenes).
+             */
+            lset_t f = LELEM(c - LST_FIRST);
+ 
+            if (lst_seen & f)
+                diagq("duplicated flag", long_opts[long_index].name);
+            lst_seen |= f;
+        }
 #ifdef DEBUG
 	else if (DBGOPT_FIRST <= c && c <= DBGOPT_LAST)
 	{
@@ -992,25 +1117,16 @@ main(int argc, char **argv)
 	    msg.whack_unlisten = TRUE;
 	    continue;
 
-        case OPT_UTC:   	/* --utc */
-            msg.whack_utc = TRUE;
+        case OPT_PURGEOCSP:     /* --purgeocsp */
+            msg.whack_purgeocsp = TRUE;
             continue;
 
-	case OPT_LISTPUBKEYS:	/* --listpubkeys */
-	case OPT_LISTCERTS:	/* --listcerts */
-	case OPT_LISTCACERTS:	/* --listcacerts */
-	case OPT_LISTCRLS:	/* --listcrls */
-	case OPT_LISTCARDS:	/* --listcards */
-	    msg.whack_list |= LELEM(c-OPT_LISTPUBKEYS);
-	    continue;
-
-	case OPT_LISTALL:	/* --listall */
-	    msg.whack_list = LIST_ALL;
-	    continue;
-
-	case OPT_REREADSECRETS:	/* --rereadsecrets */
-	case OPT_REREADCACERTS:	/* --rereadcacerts */
-	case OPT_REREADCRLS:	/* --rereadcrls */
+        case OPT_REREADSECRETS:   /* --rereadsecrets */
+        case OPT_REREADCACERTS:   /* --rereadcacerts */
+        case OPT_REREADAACERTS:   /* --rereadaacerts */
+        case OPT_REREADOCSPCERTS: /* --rereadocspcerts */
+        case OPT_REREADACERTS:    /* --rereadacerts */
+        case OPT_REREADCRLS:      /* --rereadcrls */
 	    msg.whack_reread |= LELEM(c-OPT_REREADSECRETS);
 	    continue;
 
@@ -1044,6 +1160,28 @@ main(int argc, char **argv)
 	    msg.whack_async = TRUE;
 	    continue;
 
+        /* List options */
+ 
+         case LST_UTC:          /* --utc */
+            msg.whack_utc = TRUE;
+             continue; 
+
+        case LST_PUBKEYS:       /* --listpubkeys */
+        case LST_CERTS:         /* --listcerts */
+        case LST_CACERTS:       /* --listcacerts */
+        case LST_ACERTS:        /* --listacerts */
+        case LST_AACERTS:       /* --listaacerts */
+        case LST_OCSPCERTS:     /* --listocspcerts */
+        case LST_GROUPS:        /* --listgroups */
+        case LST_CRLS:          /* --listcrls */
+        case LST_OCSP:          /* --listocsp */
+        case LST_CARDS:         /* --listcards */
+            msg.whack_list |= LELEM(c - LST_PUBKEYS);
+            continue;
+
+        case LST_ALL:   /* --listall */
+            msg.whack_list = LIST_ALL;
+            continue;
 
 	/* Connection Description options */
 
@@ -1150,6 +1288,19 @@ main(int argc, char **argv)
 	    {
 		msg.right.sendcert = cert_sendifasked;
 	    }
+	    else if(streq(optarg, "forced"))
+	    {
+		msg.right.sendcert = cert_forcedtype;
+	    }
+	    else
+	    {
+		diagq("whack sendcert value is not legal", optarg);
+		continue;
+	    }
+	    continue;
+
+	case END_CERTTYPE:
+	    msg.right.certtype = opt_whole;
 	    continue;
 
 	case END_CERT:	/* --cert <path> */
@@ -1159,6 +1310,11 @@ main(int argc, char **argv)
 	case END_CA:	/* --ca <distinguished name> */
 	    msg.right.ca = optarg;	/* decoded by Pluto */
 	    continue;
+
+        case END_GROUPS:/* --groups <access control groups> */
+            msg.right.groups = optarg;  /* decoded by Pluto */
+            continue;
+
 
 	case END_IKEPORT:	/* --ikeport <port-number> */
 	    if (opt_whole<=0 || opt_whole >= 0x10000)
@@ -1213,8 +1369,8 @@ main(int argc, char **argv)
 	    continue;
 
 	case END_CLIENTPROTOPORT: /* --clientprotoport <protocol>/<port> */
-	    diagq(ttoprotoport(optarg, 0, &msg.right.protocol,
-		&msg.right.port), optarg);
+	    diagq(ttoprotoport(optarg, 0, &msg.right.protocol, &msg.right.port
+	    	, &msg.right.has_port_wildcard), optarg);
 	    continue;
 
 	case END_DNSKEYONDEMAND:	/* --dnskeyondemand */
@@ -1224,7 +1380,6 @@ main(int argc, char **argv)
 	case END_UPDOWN:	/* --updown <updown> */
 	    msg.right.updown = optarg;
 	    continue;
-
 
 	case CD_TO:		/* --to */
 	    /* process right end, move it to left, reset it */
@@ -1286,6 +1441,40 @@ main(int argc, char **argv)
 
 	case CD_KTRIES:	/* --keyingtries <count> */
 	    msg.sa_keying_tries = opt_whole;
+	    continue;
+
+	case CD_FORCEENCAPS:
+            msg.forceencaps = TRUE;
+            continue;
+
+        case CD_DPDDELAY:
+            msg.dpd_delay = opt_whole;
+            continue;
+
+        case CD_DPDTIMEOUT:
+            msg.dpd_timeout = opt_whole;
+            continue;
+
+        case CD_DPDACTION:
+            msg.dpd_action = 255;
+            if( strcmp(optarg, "clear") == 0) {
+                    msg.dpd_action = DPD_ACTION_CLEAR;
+            }
+            if( strcmp(optarg, "hold") == 0) {
+                    msg.dpd_action = DPD_ACTION_HOLD;
+            }
+            continue;
+
+	case CD_IKE:	/* --ike <ike_alg1,ike_alg2,...> */
+	    msg.ike = optarg;
+	    continue;
+	    
+	case CD_PFSGROUP:	/* --pfsgroup modpXXXX */
+	    msg.pfsgroup = optarg;
+	    continue;
+
+	case CD_ESP:	/* --esp <esp_alg1,esp_alg2,...> */
+	    msg.esp = optarg;
 	    continue;
 
 	case CD_CONNIPV4:
@@ -1371,6 +1560,8 @@ main(int argc, char **argv)
 	case DBGOPT_OPPO:	/* --debug-oppo */
 	case DBGOPT_CONTROLMORE: /* --debug-controlmore */
 	case DBGOPT_PFKEY:      /* --debug-pfkey */
+	case DBGOPT_NATT:       /* --debug-pfkey */
+	case DBGOPT_X509:       /* --debug-pfkey */
 	case DBGOPT_PRIVATE:	/* --debug-private */
 	case DBGOPT_IMPAIR_DELAY_ADNS_KEY_ANSWER:	/* --impair-delay-adns-key-answer */
 	case DBGOPT_IMPAIR_DELAY_ADNS_TXT_ANSWER:	/* --impair-delay-adns-txt-answer */
@@ -1493,7 +1684,7 @@ main(int argc, char **argv)
     || msg.whack_delete || msg.whack_deletestate
     || msg.whack_initiate || msg.whack_oppo_initiate || msg.whack_terminate
     || msg.whack_route || msg.whack_unroute || msg.whack_listen
-    || msg.whack_unlisten || msg.whack_list || msg.whack_reread
+    || msg.whack_unlisten || msg.whack_list || msg.whack_purgeocsp || msg.whack_reread
     || msg.whack_status || msg.whack_options || msg.whack_shutdown))
     {
 	diag("no action specified; try --help for hints");
@@ -1513,27 +1704,48 @@ main(int argc, char **argv)
     check_life_time(msg.sa_ipsec_life_seconds, SA_LIFE_DURATION_MAXIMUM
 	, "ipseclifetime", &msg);
 
+    if(msg.dpd_delay && !msg.dpd_timeout)
+            diag("dpddelay specified, but dpdtimeout is zero, both should be specified");
+    if(!msg.dpd_delay && msg.dpd_timeout)
+            diag("dpdtimeout specified, but dpddelay is zero, both should be specified");
+    if(msg.dpd_action != DPD_ACTION_CLEAR && msg.dpd_action != DPD_ACTION_HOLD) {
+            diag("dpdaction can only be \"clear\" or \"hold\", defaulting to \"hold\"");
+            msg.dpd_action = DPD_ACTION_HOLD;
+    }
+
+
     /* pack strings for inclusion in message */
     next_str = msg.string;
     str_roof = &msg.string[sizeof(msg.string)];
 
+    /* build esp message as esp="<esp>;<pfsgroup>" */
+    if (msg.pfsgroup) {
+	    snprintf(esp_buf, sizeof (esp_buf), "%s;%s", 
+		    msg.esp ? msg.esp : "",
+		    msg.pfsgroup ? msg.pfsgroup : "");
+	    msg.esp=esp_buf;
+    }
     if (!pack_str(&msg.name)		/* string  1 */
     || !pack_str(&msg.left.id)		/* string  2 */
     || !pack_str(&msg.left.cert)	/* string  3 */
     || !pack_str(&msg.left.ca)		/* string  4 */
-    || !pack_str(&msg.left.updown)	/* string  5 */
+    || !pack_str(&msg.left.groups)	/* string  5 */
+    || !pack_str(&msg.left.updown)	/* string  6 */
 #ifdef VIRTUAL_IP
     || !pack_str(&msg.left.virt)
 #endif
-    || !pack_str(&msg.right.id)		/* string  6 */
-    || !pack_str(&msg.right.cert)	/* string  7 */
-    || !pack_str(&msg.right.ca)		/* string  8 */
-    || !pack_str(&msg.right.updown)	/* string  9 */
+    || !pack_str(&msg.right.id)		/* string  7 */
+    || !pack_str(&msg.right.cert)	/* string  8 */
+    || !pack_str(&msg.right.ca)		/* string  9 */
+    || !pack_str(&msg.right.groups)	/* string  10 */
+    || !pack_str(&msg.right.updown)	/* string  11 */
 #ifdef VIRTUAL_IP
     || !pack_str(&msg.right.virt)
 #endif
-    || !pack_str(&msg.keyid)		/* string 10 */
-    || !pack_str(&msg.myid)		/* string 11 */
+    || !pack_str(&msg.keyid)		/* string 12 */
+    || !pack_str(&msg.myid)		/* string 13 */
+    || !pack_str(&msg.ike)		/* string 14 */
+    || !pack_str(&msg.esp)		/* string 15 */
     || str_roof - next_str < (ptrdiff_t)msg.keyval.len)    /* chunk (sort of string 5) */
 	diag("too many bytes of strings to fit in message to pluto");
 
@@ -1542,7 +1754,7 @@ main(int argc, char **argv)
     next_str += msg.keyval.len;
 
     msg.magic = ((opts_seen & ~(LELEM(OPT_SHUTDOWN) | LELEM(OPT_STATUS)))
-		| cd_seen) != LEMPTY
+		| lst_seen | cd_seen) != LEMPTY
 	    || msg.whack_options
 	? WHACK_MAGIC : WHACK_BASIC_MAGIC;
 
@@ -1664,7 +1876,8 @@ main(int argc, char **argv)
 			case RC_ENTERSECRET:
 			    if(!gotxauthpass)
 			    {
-				xauthpasslen = get_secret(xauthpass, 128);
+				xauthpasslen = get_secret(xauthpass
+							  , sizeof(xauthpass));
 			    }
 			    send_reply(sock, xauthpass, xauthpasslen);
 			    break;
@@ -1692,3 +1905,10 @@ main(int argc, char **argv)
 	return exit_status;
     }
 }
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

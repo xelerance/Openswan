@@ -258,7 +258,7 @@ specific to the type.
 <para>
 The replies are limited to 4096 bytes, a value defined as
 <constant>LWDNSQ_RESULT_LEN_MAX</constant>. This is defined in
-<filename>freeswan.h</filename>.
+<filename>openswan.h</filename>.
 </para>
 
 <para>All of the replies which include resource records use the

@@ -87,17 +87,7 @@ extern "C" {
 #endif
 
 typedef unsigned char des_cblock[8];
-typedef struct des_ks_struct
-	{
-	union	{
-		des_cblock _;
-		/* make sure things are correct size on machines with
-		 * 8 byte longs */
-		DES_LONG pad[2];
-		} ks;
-#undef _
-#define _	ks._
-	} des_key_schedule[16];
+typedef struct { des_cblock ks; } des_key_schedule[16];
 
 #define DES_KEY_SZ 	(sizeof(des_cblock))
 #define DES_SCHEDULE_SZ (sizeof(des_key_schedule))

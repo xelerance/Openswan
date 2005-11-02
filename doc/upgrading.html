@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML>
 <HEAD>
-<TITLE>Introduction to Openswan</TITLE>
+<TITLE>Introduction to FreeS/WAN</TITLE>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-8859-1">
 <STYLE TYPE="text/css"><!--
 BODY { font-family: serif }
@@ -22,28 +22,25 @@ PRE { font-family: monospace }
 <A HREF="quickstart.html">Next</A>
 <HR>
 <A NAME="upgrading"></A>
-<H1><A NAME="2">Upgrading to Openswan 2.x</A></H1>
+<H1><A NAME="2">Upgrading to FreeS/WAN 2.x</A></H1>
 <H2><A NAME="2_1">New! Built in Opportunistic connections</A></H2>
-<P>Out of the box, Openswan 2.x will attempt to encrypt all your IP
+<P>Out of the box, FreeS/WAN 2.x will attempt to encrypt all your IP
  traffic. It will try to establish IPsec connections for:</P>
 <UL>
 <LI> IP traffic from the Linux box on which you have installed
- Openswan, and</LI>
+ FreeS/WAN, and</LI>
 <LI> outbound IP traffic routed through that Linux box (eg. from a
  protected subnet).</LI>
 </UL>
- <P>Openswan uses<STRONG> hidden, automatically enabled<VAR>
+<P>FreeS/WAN 2.x uses<STRONG> hidden, automatically enabled<VAR>
  ipsec.conf</VAR> connections</STRONG> to do this.</P>
- <P>Many users will want to disable this, please see <A 
- HREF="policygroups.html#disable_policygroups">how to disable the policy 
- groups</A>.
- <P>This behaviour is part of our campaign to get Opportunistic
+<P>This behaviour is part of our campaign to get Opportunistic
  Encryption (OE) widespread in the Linux world, so that any two Linux
  boxes can encrypt to one another without prearrangement. There's one
  catch, however: you must<A HREF="quickstart.html#quickstart"> set up a
  few DNS records</A> to distribute RSA public keys and (if applicable)
  IPsec gateway information.</P>
-<P>If you start Openswan before you have set up these DNS records, your
+<P>If you start FreeS/WAN before you have set up these DNS records, your
  connectivity will be slow, and messages relating to the built in
  connections will clutter your logs. If you are unable to set up DNS for
  OE, you will wish to<A HREF="policygroups.html#disable_policygroups">
@@ -51,9 +48,9 @@ PRE { font-family: monospace }
 <A NAME="upgrading.flagday"></A>
 <H3><A NAME="2_1_1">Upgrading Opportunistic Encryption to 2.01 (or
  later)</A></H3>
-<P>As of Openswan 2.0, Opportunistic Encryption (OE) uses DNS TXT
+<P>As of FreeS/WAN 2.01, Opportunistic Encryption (OE) uses DNS TXT
  resource records (RRs) only (rather than TXT with KEY). This change
- causes a &quot;flag day&quot;. Users of Openswan 2.00 (or earlier) OE who are
+ causes a &quot;flag day&quot;. Users of FreeS/WAN 2.00 (or earlier) OE who are
  upgrading may need to post additional resource records.</P>
 <P>If you are running<A HREF="glossary.html#initiate-only">
  initiate-only OE</A>, you<EM> must</EM> put up a TXT record in any
@@ -90,38 +87,38 @@ OE</A>.
 <LI>For any other communication, try to encrypt, but it's okay if we
  can't.</LI>
 </UL>
-<P>Openswan then implements these policies, creating OE connections if
+<P>FreeS/WAN then implements these policies, creating OE connections if
  and when needed. You can use Policy Groups along with connections you
  explicitly define in ipsec.conf.</P>
 <P>For more information, see our<A HREF="policygroups.html"> Policy
  Group HOWTO</A>.</P>
 <H2><A NAME="2_3">New! Packetdefault Connection</A></H2>
-<P>Openswan 2.0 ships with the<STRONG> automatically enabled, hidden
+<P>Free/SWAN 2.x ships with the<STRONG> automatically enabled, hidden
  connection</STRONG><VAR> packetdefault</VAR>. This configures a
- Openswan box as an OE gateway for any hosts located behind it. As
+ FreeS/WAN box as an OE gateway for any hosts located behind it. As
  mentioned above, you must configure some<A HREF="quickstart.html"> DNS
  records</A> for OE to work.</P>
 <P>As the name implies, this connection functions as a default. If you
  have more specific connections, such as policy groups which configure
- your Openswan box as an OE gateway for a local subnet, these will
+ your FreeS/WAN box as an OE gateway for a local subnet, these will
  apply before<VAR> packetdefault</VAR>. You can view<VAR> packetdefault</VAR>
 's specifics in<A HREF="manpage.d/ipsec.conf.5.html"> man ipsec.conf</A>
 .</P>
-<H2><A NAME="2_4">Openswan now disables Reverse Path Filtering</A></H2>
-<P>Openswan often doesn't work with reverse path filtering. At start
- time, Openswan now turns rp_filter off, and logs a warning.</P>
-<P>Openswan does not turn it back on again. You can do this yourself
+<H2><A NAME="2_4">FreeS/WAN now disables Reverse Path Filtering</A></H2>
+<P>FreeS/WAN often doesn't work with reverse path filtering. At start
+ time, FreeS/WAN now turns rp_filter off, and logs a warning.</P>
+<P>FreeS/WAN does not turn it back on again. You can do this yourself
  with a command like:</P>
 <PRE>   echo 1 &gt; /proc/sys/net/ipv4/conf/eth0/rp_filter</PRE>
-<P>For eth0, substitute the interface which Openswan was affecting.</P>
+<P>For eth0, substitute the interface which FreeS/WAN was affecting.</P>
 <A NAME="ipsec.conf_v2"></A>
 <H2><A NAME="2_5">Revised<VAR> ipsec.conf</VAR></A></H2>
 <H3><A NAME="2_5_1">No promise of compatibility</A></H3>
-<P>The Openswan team promised config-file compatibility throughout the
- 1.x series. That means a FreeS/WAN 1.5 config file can be directly 
-imported into a fresh Openswan 1.0 install with no problems.</P>
-<P>With Openswan 2.x, we've given ourselves permission to make the
- config file easier to use. The cost: some Openswan 1.x configurations
+<P>The FreeS/WAN team promised config-file compatibility throughout the
+ 1.x series. That means a 1.5 config file can be directly imported into
+ a fresh 1.99 install with no problems.</P>
+<P>With FreeS/WAN 2.x, we've given ourselves permission to make the
+ config file easier to use. The cost: some FreeS/WAN 1.x configurations
  will not work properly. Many of the new features are, however, backward
  compatible.</P>
 <H3><A NAME="2_5_2">Most<VAR> ipsec.conf</VAR> files will work fine</A></H3>

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: id.c,v 1.41.2.2 2004/04/16 12:33:10 mcr Exp $
+ * RCSID $Id: id.c,v 1.44 2004/06/17 07:27:16 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -27,8 +27,8 @@
 #endif
 #include <sys/queue.h>
 
-#include <freeswan.h>
-#include <freeswan/ipsec_policy.h>
+#include <openswan.h>
+#include <openswan/ipsec_policy.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -481,11 +481,26 @@ same_id(const struct id *a, const struct id *b)
 bool
 match_id(const struct id *a, const struct id *b, int *wildcards)
 {
+    
+    char abuf[IDTOA_BUF];
+    char bbuf[IDTOA_BUF];
+
+    DBG(DBG_CONTROLMORE,
+	idtoa(a, abuf, IDTOA_BUF);
+	idtoa(b, bbuf, IDTOA_BUF);
+	DBG_log("   match_id a=%s b=%s", abuf, bbuf);
+	);
+    
     if (b->kind == ID_NONE)
     {
 	*wildcards = MAX_WILDCARDS;
 	return TRUE;
     }
+
+    DBG(DBG_CONTROLMORE
+	, DBG_log("  match_id called with a=%s b=%s"
+		  , abuf, bbuf));
+
     if (a->kind != b->kind)
 	return FALSE;
 

@@ -12,14 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_build.c,v 1.46.4.2 2004/04/16 12:32:56 mcr Exp $
+ * RCSID $Id: pfkey_v2_build.c,v 1.49 2004/04/12 02:59:06 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_parser.c.
  */
 
-char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.46.4.2 2004/04/16 12:32:56 mcr Exp $";
+char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.49 2004/04/12 02:59:06 mcr Exp $";
 
 /*
  * Some ugly stuff to allow consistent debugging code for use in the
@@ -30,7 +30,7 @@ char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.46.4.2 2004/04/16 1
 
 # include <linux/kernel.h>  /* for printk */
 
-# include "freeswan/ipsec_kversion.h" /* for malloc switch */
+# include "openswan/ipsec_kversion.h" /* for malloc switch */
 # ifdef MALLOC_SLAB
 #  include <linux/slab.h> /* kmalloc() */
 # else /* MALLOC_SLAB */
@@ -49,7 +49,7 @@ char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.46.4.2 2004/04/16 1
 
 # define MALLOC(size) kmalloc(size, GFP_ATOMIC)
 # define FREE(obj) kfree(obj)
-# include <freeswan.h>
+# include <openswan.h>
 #else /* __KERNEL__ */
 
 # include <sys/types.h>
@@ -58,7 +58,7 @@ char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.46.4.2 2004/04/16 1
 # include <malloc.h>
 # include <string.h> /* memset */
 
-# include <freeswan.h>
+# include <openswan.h>
 
 #endif /* __KERNEL__ */
 
@@ -66,13 +66,13 @@ char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.46.4.2 2004/04/16 1
 #include <pfkey.h>
 
 #ifdef __KERNEL__
-#include "freeswan/radij.h"  /* rd_nodes */
-#include "freeswan/ipsec_encap.h"  /* sockaddr_encap */
+#include "openswan/radij.h"  /* rd_nodes */
+#include "openswan/ipsec_encap.h"  /* sockaddr_encap */
 #endif /* __KERNEL__ */
 
 
-#include "freeswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL, IPSEC_SA_REF_TABLE_IDX_WIDTH */
-#include "freeswan/pfkey_debug.h"
+#include "openswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL, IPSEC_SA_REF_TABLE_IDX_WIDTH */
+#include "openswan/pfkey_debug.h"
 
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
@@ -1375,12 +1375,11 @@ errlab:
 
 /*
  * $Log: pfkey_v2_build.c,v $
- * Revision 1.46.4.2  2004/04/16 12:32:56  mcr
- * 	erroneously pullup some freeswan->openswan changes that
- * 	are really for 2.2.
+ * Revision 1.49  2004/04/12 02:59:06  mcr
+ *     erroneously moved pfkey_v2_build.c
  *
- * Revision 1.46.4.1  2004/03/21 05:23:31  mcr
- *     pullup of freeswan->openswan and CR/CERT patches from HEAD
+ * Revision 1.48  2004/04/09 18:00:40  mcr
+ * Moved from linux/lib/libfreeswan/pfkey_v2_build.c,v
  *
  * Revision 1.47  2004/03/08 01:59:08  ken
  * freeswan.h -> openswan.h

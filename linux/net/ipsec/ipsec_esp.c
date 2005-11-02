@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.1 2003/12/13 19:10:21 mcr Exp $";
+char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.2 2004/04/06 02:49:25 mcr Exp $";
 #include <linux/config.h>
 #include <linux/version.h>
 
@@ -21,7 +21,7 @@ char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.1 2003/12/13 19:10:21 m
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -36,7 +36,7 @@ char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.1 2003/12/13 19:10:21 m
 #include <linux/etherdevice.h>	/* eth_type_trans */
 #include <linux/ip.h>		/* struct iphdr */
 #include <linux/skbuff.h>
-#include <freeswan.h>
+#include <openswan.h>
 #ifdef SPINLOCK
 # ifdef SPINLOCK_23
 #  include <linux/spinlock.h> /* *lock* */
@@ -52,23 +52,24 @@ char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.1 2003/12/13 19:10:21 m
 #include <asm/checksum.h>
 #include <net/ip.h>
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_sa.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_sa.h"
 
-#include "freeswan/ipsec_radij.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_tunnel.h"
-#include "freeswan/ipsec_rcv.h"
-#include "freeswan/ipsec_xmit.h"
+#include "openswan/ipsec_radij.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_rcv.h"
+#include "openswan/ipsec_xmit.h"
 
-#include "freeswan/ipsec_auth.h"
+#include "openswan/ipsec_auth.h"
 
 #ifdef CONFIG_IPSEC_ESP
-#include "freeswan/ipsec_esp.h"
+#include "openswan/ipsec_esp.h"
 #endif /* CONFIG_IPSEC_ESP */
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
+#include "openswan/ipsec_alg.h"
 
 #ifdef CONFIG_IPSEC_DEBUG
 int debug_esp = 0;
@@ -152,6 +153,21 @@ ipsec_rcv_esp_authcalc(struct ipsec_rcv_state *irs,
 		SHA1_CTX	sha1;
 	} tctx;
 
+#ifdef CONFIG_IPSEC_ALG
+	if (irs->ipsp->ips_alg_auth) {
+		KLIPS_PRINT(debug_rcv,
+				"klips_debug:ipsec_rcv: "
+				"ipsec_alg hashing proto=%d... ",
+				irs->said.proto);
+		if(irs->said.proto == IPPROTO_ESP) {
+			ipsec_alg_sa_esp_hash(irs->ipsp,
+					(caddr_t)espp, irs->ilen,
+					irs->hash, AHHMAC_HASHLEN);
+			return IPSEC_RCV_OK;
+		}
+		return IPSEC_RCV_BADPROTO;
+	}
+#endif
 	aa = irs->authfuncs;
 
 	/* copy the initialized keying material */
@@ -182,11 +198,23 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	int badpad = 0;
 	int i;
 	struct sk_buff *skb;
+#ifdef CONFIG_IPSEC_ALG
+	struct ipsec_alg_enc *ixt_e=NULL;
+#endif /* CONFIG_IPSEC_ALG */
 
 	skb=irs->skb;
 
 	idat = skb->data + irs->iphlen;
 
+#ifdef CONFIG_IPSEC_ALG
+	if ((ixt_e=ipsp->ips_alg_enc)) {
+		esphlen = ESP_HEADER_LEN + ixt_e->ixt_ivlen/8;
+		KLIPS_PRINT(debug_rcv,
+				"klips_debug:ipsec_rcv: "
+				"encalg=%d esphlen=%d\n",
+				ipsp->ips_encalg, esphlen);
+	} else
+#endif /* CONFIG_IPSEC_ALG */
 	switch(ipsp->ips_encalg) {
 	case ESP_3DES:
 		iv[0] = *((__u32 *)(espp->esp_iv)    );
@@ -204,6 +232,28 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	idat += esphlen;
 	irs->ilen -= esphlen;
 
+#ifdef CONFIG_IPSEC_ALG
+	if (ixt_e)
+	{
+		if (ipsec_alg_esp_encrypt(ipsp, 
+					idat, irs->ilen, espp->esp_iv, 
+					IPSEC_ALG_DECRYPT) <= 0)
+		{
+			printk("klips_error:ipsec_rcv: "
+					"got packet with esplen = %d "
+					"from %s -- should be on "
+					"ENC(%d) octet boundary, "
+					"packet dropped\n",
+					irs->ilen,
+					irs->ipsaddr_txt,
+					ipsp->ips_encalg);
+			if(irs->stats) {
+				irs->stats->rx_errors++;
+			}
+			return IPSEC_RCV_BAD_DECRYPT;
+		}
+	} else
+#endif /* CONFIG_IPSEC_ALG */
 	switch(ipsp->ips_encalg) {
 	case ESP_3DES:
 		if ((irs->ilen) % 8) {
@@ -498,3 +548,11 @@ struct inet_protocol esp_protocol =
 #endif /* !CONFIG_IPSEC_ESP */
 
 
+/*
+ * $Log: ipsec_esp.c,v $
+ * Revision 1.2  2004/04/06 02:49:25  mcr
+ * 	pullup of algo code from alg-branch.
+ *
+ *
+ *
+ */

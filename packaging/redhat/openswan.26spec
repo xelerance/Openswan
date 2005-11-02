@@ -1,9 +1,9 @@
 Summary: Openswan IPSEC implementation
 Name: openswan
 %define majver 2
-%define minver 1.2
+%define minver 2.0
 Version: %{majver}.%{minver}
-%define opensw_release 1fc2
+%define opensw_release 1
 %define debug_package %{nil}
 Release: %{opensw_release}
 Source: http://www.openswan.org/code/openswan-%{majver}.%{minver}.tar.gz
@@ -17,9 +17,9 @@ Requires: iproute ipsec-tools
 %define __spec_install_post /usr/lib/rpm/brp-compress || :
 
 %description
-Openswan is a free implementation of IPSEC & IKE for Linux.
+Openswan is a free implementation of the IPsec & IKE protocols for Linux.
 
-IPsec is Internet Protocol Security and uses strong cryptography to 
+IPsec is the IP Security protocol, and uses strong cryptography to 
 provide both authentication and encryption services.  These services 
 allow you to build secure tunnels through untrusted networks.  
 Everything passing through the untrusted net is encrypted by the ipsec 
@@ -27,7 +27,7 @@ gateway machine and decrypted by the gateway at the other end of the
 tunnel.  The resulting tunnel is a virtual private network or VPN.
 
 This package contains the daemons and userland tools for setting up
-Openswan on a kernel with either the 2.6 native IPsec code.
+Openswan on a kernel with the 2.6 native IPsec code.
 
 %prep
 %setup -q -n openswan-%{majver}.%{minver}
@@ -50,10 +50,10 @@ rm -rf ${RPM_BUILD_ROOT}
   MANTREE=%{buildroot}%{_mandir} \
   install
 rm -rf %{buildroot}/usr/share/doc/freeswan
+rm -rf %{buildroot}/usr/share/doc/openswan
 rm -rf %{buildroot}/usr/share/man
 install -d -m700 %{buildroot}%{_localstatedir}/run/pluto
 install -d %{buildroot}%{_sbindir}
-# Kill freeswan docs.
 
 %clean
 rm -rf ${RPM_BUILD_ROOT}
@@ -87,6 +87,7 @@ fi
 chkconfig --add ipsec
 mkdir -p -m 755 /etc/ipsec.d
 mkdir -p -m 755 /etc/ipsec.d/cacerts
+mkdir -p -m 755 /etc/ipsec.d/ocspcerts
 mkdir -p -m 755 /etc/ipsec.d/crls
 mkdir -p -m 700 /etc/ipsec.d/private
 

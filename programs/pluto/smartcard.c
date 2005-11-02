@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: smartcard.c,v 1.3.6.1 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: smartcard.c,v 1.5 2004/06/14 01:46:03 mcr Exp $
  */
 
 #include <stdio.h>
@@ -38,6 +38,7 @@
 #include "certs.h"
 #include "smartcard.h"
 #include "whack.h"
+#include "fetch.h"
 
 #define BUF_LEN	      512	/* buffer size */
 
@@ -250,7 +251,7 @@ scx_parse_reader_id(const char *reader_id)
     sc->id        = default_id;
     sc->pin       = empty_chunk;
     sc->valid     = FALSE;
-    sc->last_cert = NULL;
+    sc->last_cert = empty_cert;
     sc->last_load = 0;
     sc->count     = 0;
     sc->next      = NULL;
@@ -554,9 +555,10 @@ scx_release(smartcard_t *sc)
 	smartcard_t **pp = &smartcards;
 	while (*pp != sc)
 	    pp = &(*pp)->next;
+	lock_certs_and_keys("scx_release");
         *pp = sc->next;
-	if (sc->last_cert != NULL)
-	    release_cert(*sc->last_cert);
+	unlock_certs_and_keys("scx_release");
+	release_cert(sc->last_cert);
 	scx_free(sc);
     }
 }
@@ -599,9 +601,28 @@ scx_add(smartcard_t *smartcard)
     }
 
     /* insert new smartcard record at the root of the chain */
+    lock_certs_and_keys("scx_add");
     smartcard->next = smartcards;
     smartcards = smartcard;
+    unlock_certs_and_keys("scx_add");
     return smartcard;
+}
+
+/*
+ * get the smartcard that belongs to an X.509 certificate
+ */
+smartcard_t*
+scx_get(x509cert_t *cert)
+{
+    smartcard_t *sc = smartcards;
+
+    while (sc != NULL)
+    {
+	if (sc->last_cert.u.x509 == cert)
+	    return sc;
+	sc = sc->next;
+    }
+    return NULL;
 }
 
 /*
@@ -615,7 +636,7 @@ scx_list(bool utc)
     if (sc != NULL)
     {
 	whack_log(RC_COMMENT, " ");
-	whack_log(RC_COMMENT, "List of Smartcard Records");
+	whack_log(RC_COMMENT, "List of Smartcard Records:");
 	whack_log(RC_COMMENT, " ");
     }
 

@@ -1,32 +1,20 @@
-The following people have contributed patches to OpenSWAN 2.xx.
+The following people have contributed patches to Openswan 2.x
+
+	Andreas Steffen <andreas.steffen@strongsec.com> - X.509 Digital Certificates
+	Dr{Who} on Freenode - Porting NAT-T + XAUTH to Openswan 2.x 
+	Herbert Xu - Support for 26sec, NAT-T on 26sec, etc...
+	Jacco de Leeuw <jacco2@dds.nl> - Fixes for MS Interop
+	Ken Bantoft <ken@xelerance.com> - RFC3706 DPD, cross compiling, etc...
+	Mathieu Lafon <mlafon@arkoon.net> - NAT-T Support
+	Michael Richardson <mcr@xelerance.com> - testing, integration.
+	Nate Carlson - Force NAT-T framework, KLIPS for 2.6, etc...
+	Paul Wouters <paul@xelerance.com> - documentation.
+	Stephen Bevan <stephen@dino.dnsalias.com> - RFC2409 port selectors
+	Tuomo Soini <tis@foobar.fi>
 	willy@w.ods.org
-	Jacco de Leeuw <jacco2@dds.nl>
-	ken@xelerance.com (Ken Bantoft)
-	tis@foobar.fi (Tuomo Soini)
-	andreas.steffan@strongsec.com (X.509 Digital Certificates)
-	stephen@dino.dnsalias.com (Stephen Bevan) - RFC2409 port selectors patch
-	mlafon@arkoon.net - NAT-T Patches (Mathieu Lafon)
-	Dr{Who} on Freenode - Porting NAT-T + XAUTH to 2.x 
 
-OpenSWAN is a fork of the 2.04 code from the FreeS/WAN tree. www.freeswan.org. 
-Please see the doc/freeswan.CREDITS file from FreeS/WAN for details on
-original work. The following people worked on it, or contributed code:
+Openswan is a fork of the FreeS/WAN 2.04 codebase.
+Please see the doc/CREDITS.freeswan file from FreeS/WAN for details on
+original work.
 
-	John Ioannidis <ji@hol.gr>
-	Richard Guy Briggs <rgb@tricolour.net>
-	D. Hugh Redelmeier <hugh@mimosa.com>
-	Henry Spencer <henry@spsystems.com>
-	Michael Richardson <mcr@sandelman.ottawa.on.ca>
-	Sandy Harris <sandy@storm.ca>
-	Sam Sgro <sam@spidersilk.net>
-	Peter Onion
-	Svenning Soerensen
-	Angelos D. Keromytis <angelos@dsl.cis.upenn.edu>.
-        Eric Young 
-	Steve Reid
-	Mathieu Lafon
-	Rob Hatfield 
-	John S. Denker 
-	Marc Boucher <marc@mbsi.ca> 
-
-This file is RCSID $Id: CREDITS,v 1.31 2004/01/23 00:53:30 mcr Exp $
+This file is RCSID $Id: CREDITS,v 1.34 2004/06/28 22:07:57 mcr Exp $

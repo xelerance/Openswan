@@ -12,10 +12,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.5 2003/06/20 02:56:20 mcr Exp $
+# RCSID $Id: Makefile,v 1.6 2004/04/03 19:44:47 ken Exp $
 
-FREESWANSRCDIR=../..
-include ${FREESWANSRCDIR}/Makefile.inc
+OPENSWANSRCDIR=../..
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 EXTRA5PROC:=version.5 trap_count.5 trap_sendcount.5
 
@@ -25,6 +25,9 @@ include ../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.6  2004/04/03 19:44:47  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.5  2003/06/20 02:56:20  mcr
 # 	added documentation for /proc/net/ipsec/stats/trap_* and
 # 	amendments to test cases.

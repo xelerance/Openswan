@@ -14,15 +14,15 @@
  * for more details.
  */
 
-char showpolicy_version[] = "RCSID $Id: showpolicy.c,v 1.4 2003/05/14 15:46:44 mcr Exp $";
+char showpolicy_version[] = "RCSID $Id: showpolicy.c,v 1.5 2004/04/04 01:50:56 ken Exp $";
 
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <getopt.h>
-#include "freeswan.h"
-#include "freeswan/ipsec_policy.h"
+#include "openswan.h"
+#include "openswan/ipsec_policy.h"
 
 char *program_name;
 
@@ -230,6 +230,9 @@ int main(int argc, char *argv[])
 
 /*
  * $Log: showpolicy.c,v $
+ * Revision 1.5  2004/04/04 01:50:56  ken
+ * Use openswan includes
+ *
  * Revision 1.4  2003/05/14 15:46:44  mcr
  * 	switch statement was missing break statements and was running on.
  *

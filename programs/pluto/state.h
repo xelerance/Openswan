@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: state.h,v 1.76.2.1 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: state.h,v 1.82 2004/05/05 03:00:39 ken Exp $
  */
 
 #include <sys/types.h>
@@ -54,6 +54,7 @@ extern msgid_t generate_msgid(struct state *isakmp_sa);
  */
 struct oakley_trans_attrs {
     u_int16_t encrypt;		/* Encryption algorithm */
+    u_int16_t enckeylen;	/* encryption key len (bits) */
     const struct encrypt_desc *encrypter;	/* package of encryption routines */
     u_int16_t hash;		/* Hash algorithm */
     const struct hash_desc *hasher;	/* package of hashing routines */
@@ -80,7 +81,7 @@ struct ipsec_trans_attrs {
     time_t life_seconds;		/* When this SA expires */
     u_int32_t life_kilobytes;	/* When this SA expires */
     u_int16_t encapsulation;
-    u_int16_t auth;
+    u_int16_t auth;             /* of type oakley_auth_names */
     u_int16_t key_len;
     u_int16_t key_rounds;
 #if 0 /* not implemented yet */
@@ -109,6 +110,8 @@ struct ipsec_proto_info {
 struct state
 {
     so_serial_t        st_serialno;            /* serial number (for seniority) */
+    so_serial_t        st_clonedfrom;          /* serial number of parent */
+    int                st_usage;
 
     struct connection *st_connection;          /* connection for this SA */
 
@@ -228,6 +231,17 @@ struct state
     u_int32_t         nat_traversal;
     ip_address        nat_oa;
 #endif
+
+    /* RFC 3706 Dead Peer Detection */
+    bool                st_dpd;                 /* Peer supports DPD */
+    bool                st_dpd_local;		/* If we want DPD on this conn */
+    time_t              st_last_dpd;            /* Time of last DPD transmit */
+    u_int32_t           st_dpd_seqno;           /* Next R_U_THERE to send */
+    u_int32_t           st_dpd_expectseqno;     /* Next R_U_THERE_ACK to receive */
+    u_int32_t           st_dpd_peerseqno;       /* global variables */
+    struct event        *st_dpd_event;          /* backpointer for DPD events */
+
+
     u_int32_t	      st_seen_vendorid;	  /* Bit field about recognized Vendor ID */
     struct isakmp_quirks quirks;          /* work arounds for faults in other
  					   * products */
@@ -251,7 +265,7 @@ extern void state_eroute_usage(ip_subnet *ours, ip_subnet *his
     , unsigned long count, time_t nw);
 extern void delete_state(struct state *st);
 struct connection;	/* forward declaration of tag */
-extern void delete_states_by_connection(struct connection *c);
+extern void delete_states_by_connection(struct connection *c, bool relations);
 
 extern struct state
     *duplicate_state(struct state *st),
@@ -286,3 +300,5 @@ extern void fmt_state(struct state *st, time_t n
 		     , char *state_buf, size_t state_buf_len
 		     , char *state_buf2, size_t state_buf_len2);
 extern void delete_states_by_peer(ip_address *peer);
+extern void replace_states_by_peer(ip_address *peer);
+

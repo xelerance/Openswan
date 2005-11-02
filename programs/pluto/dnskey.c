@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: dnskey.c,v 1.78.2.3 2004/04/16 12:33:10 mcr Exp $
+ * RCSID $Id: dnskey.c,v 1.81 2004/04/29 03:59:32 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -29,8 +29,8 @@
 #include <netdb.h>	/* ??? for h_errno */
 #include <sys/queue.h>
 
-#include <freeswan.h>
-#include <freeswan/ipsec_policy.h>
+#include <openswan.h>
+#include <openswan/ipsec_policy.h>
 
 #include "constants.h"
 #include "adns.h"	/* needs <resolv.h> */
@@ -190,16 +190,16 @@ stop_adns(void)
 	else if (WIFEXITED(status))
 	{
 	    if (WEXITSTATUS(status) != 0)
-		plog("ADNS process exited with status %d"
+		openswan_log("ADNS process exited with status %d"
 		    , (int) WEXITSTATUS(status));
 	}
 	else if (WIFSIGNALED(status))
 	{
-	    plog("ADNS process terminated by signal %d", (int)WTERMSIG(status));
+	    openswan_log("ADNS process terminated by signal %d", (int)WTERMSIG(status));
 	}
 	else
 	{
-	    plog("wait for end of ADNS process returned odd status 0x%x\n"
+	    openswan_log("wait for end of ADNS process returned odd status 0x%x\n"
 		, status);
 	}
     }
@@ -1437,7 +1437,7 @@ start_adns_query(const struct id *id	/* domain to query */
     if(adns_pid == 0
     && adns_restart_count < ADNS_RESTART_MAX)
     {
-	plog("ADNS helper was not running. Restarting attempt %d",adns_restart_count);
+	openswan_log("ADNS helper was not running. Restarting attempt %d",adns_restart_count);
 	init_adns();
     }
 
@@ -1856,13 +1856,13 @@ handle_adns_answer(void)
 	/* EOF */
 	if (adns_in_flight != 0)
 	{
-	    plog("EOF from ADNS with %d queries outstanding (restarts %d)"
+	    openswan_log("EOF from ADNS with %d queries outstanding (restarts %d)"
 		 , adns_in_flight, adns_restart_count);
 	    recover_adns_die();
 	}
 	if (buflen != 0)
 	{
-	    plog("EOF from ADNS with %lu bytes of a partial answer outstanding"
+	    openswan_log("EOF from ADNS with %lu bytes of a partial answer outstanding"
 		 "(restarts %d)"
 		 , (unsigned long)buflen
 		 ,  adns_restart_count);
@@ -1963,7 +1963,7 @@ handle_adns_answer(void)
 
 	ugh = process_lwdnsq_answer(buf_copy);
 	if (ugh != NULL)
-	    plog("failure processing lwdnsq output: %s; record: %s"
+	    openswan_log("failure processing lwdnsq output: %s; record: %s"
 		 , ugh, buf);
 
 	passert(GLOBALS_ARE_RESET());

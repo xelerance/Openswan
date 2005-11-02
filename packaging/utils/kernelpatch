@@ -3,17 +3,64 @@
 # wander through a FreeSWAN linux directory, creating a patch file (to stdout)
 # that will apply the code to a kernel source directory.
 #
-# $Id: kernelpatch,v 1.11 2003/06/27 18:06:45 mcr Exp $
+# $Id: kernelpatch,v 1.12 2004/04/11 14:14:19 mcr Exp $
 #
 
 KERN=$1
 shift
 
+patch20=false
+patch22=false
+patch24=false
+patch26=false
+
+fakeallpatch() {
+    # $1 true/false as to whether to continue
+    # $2 file contents
+    # $3 target name
+
+    doit=$1
+    content=$2
+    target=$3
+
+    if $doit
+    then
+	:
+    else
+	return
+    fi
+
+    set -- `wc -l $content `
+    lines=$1
+
+    echo '--- /dev/null   Tue Mar 11 13:02:56 2003'
+    echo "+++ $target     Mon Feb  9 13:51:03 2004"
+    echo "@@ -0,0 +1,$lines @@"
+    sed -e 's/^/+/' $content 
+}
+
+doversion() {
+    content=$1
+
+    target=`echo $content | sed -e 's/.in.c/.c/'`
+
+    set -- `wc -l $content `
+    lines=$1
+    
+    # get IPSECVERSION
+    source Makefile.ver
+
+    echo '--- /dev/null   Tue Mar 11 13:02:56 2003'
+    echo "+++ $target     Mon Feb  9 13:51:03 2004"
+    echo "@@ -0,0 +1,$lines @@"
+    sed -e 's/^/+/' -e '/"/s/xxx/'${IPSECVERSION}'/' $content 
+}
+
 case $KERN in
-    2.0) patchname=fs2_0;;
-    2.2) patchname=fs2_2;;
-    2.4) patchname=fs2_4;;
-    2.5) patchname=fs2_5;;
+    2.0) patchname=fs2_0; patch20=true ;;
+    2.2) patchname=fs2_2; patch22=true ;;
+    2.4) patchname=fs2_4; patch24=true ;;
+    2.6) patchname=fs2_6; patch26=true ;;
     *) echo "Invalid kernel patch target: $KERN"; exit 1;;
 esac
 
@@ -25,6 +72,8 @@ LC_ALL=C export LC_ALL
 find linux -type f -print | grep -v CVS | egrep -v 'linux/Makefile' | sort | while read file 
 do 
   base=`basename $file`
+  pname=`echo $file | sed -e 's,\.fs._.$,,'`
+
   case $base in 
     TAGS) ;;
     tags) ;;
@@ -33,10 +82,15 @@ do
     .\#*);;
     *.o) ;;
     *~) ;;
+    version.in.c) doversion $file ;;
     tagsfile.mak) ;;
     *.$patchname.patch) cat $file;;
     *.patch) ;;
-    *) diff -u /dev/null $file;;
+    *.fs2_0) fakeallpatch $patch20 $file $pname ;;
+    *.fs2_2) fakeallpatch $patch22 $file $pname ;;
+    *.fs2_4) fakeallpatch $patch24 $file $pname ;;
+    *.fs2_6) fakeallpatch $patch26 $file $pname ;;
+    *) fakeallpatch true $file $file ;;
   esac
 done
 

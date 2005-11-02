@@ -267,3 +267,29 @@ klipstest east-icmp-02	good
 #
 klipstest west-icmp-02	good
 
+#
+# ah-esp-01: check an automatically keyed conn using ah+esp
+# 
+umlplutotest	ah-esp-01	good
+
+#
+# east-icmp-05:	tests for AES256
+klipstest	east-icmp-05	good
+
+#
+# west-icmp-05:	tests for AES256
+klipstest	west-icmp-05	good
+
+#
+# east-spi-01:  send test case for ESP-3DES with no authentication
+#		also tests having same SPI# for incoming and
+#		and outgoing.
+#
+klipstest	east-spi-01	good
+
+#
+# west-spi-01:	receive test case for ESP-3DES with no authentication.
+#
+klipstest	west-spi-01	good
+
+

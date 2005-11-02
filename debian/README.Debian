@@ -1,4 +1,4 @@
-freeswan for Debian
+openswan for Debian
 ----------------------
 
 This package has been created from scratch with some ideas from the
@@ -8,31 +8,15 @@ kernel-patch-freeswan package has been taken directly from Tommi Virtanen's
 package, but has been mostly rewritten to fit the needs of newer kernel
 versions (since version 1.9-1).
 
-If you want to use the freeswan utilities, you will need a patched kernel.
-When you install the kernel-patch-freeswan package and use make-kpkg to build
-your kernel, it should be patched automatically when you set the environment
-variable PATCH_THE_KERNEL=YES
-Usually you can then create a kernel package with
-make-kpkg --config=menuconfig --revision=<revision number> kernel_image
-The "--config=menuconfig" parameter forces make-kpkg to call "make menuconfig"
-after patching the kernel source, so that you have the possibility to
-configure compile-time options for freeswan.
+After the decision of the FreeS/WAN project to cease the development of
+FreeS/WAN, we decided to switch over to the Openswan fork. This code base
+includes all the patches that had to be applied manually before, which makes
+packaging simple. Alexander List prepared the first preliminary openswan
+package based on my freeswan packaging, which I updated to the relevant parts
+of the current freeswan package.
 
-If you really want to compile your kernel without the help of kernel-package,
-you can patch it by going to your kernel source tree directory and entering
-'make -C /usr/src/kernel-patches/all/freeswan -f Makefile insert
-	KERNELSRC=<path of your kernel source>
-	PATCHER=/usr/src/kernel-patches/all/freeswan/patcher'
+Note: This package depends on the in-kernel IPsec stack, which is available
+in the stock Debian kernel images (>=2.4.24 and 2.6.x). Additional kernel
+patches or kernel modules for older kernels are currently not supported.
 
-The pluto daemon included in this package has been patched to provide support
-for X.509 certificates. Please refer to the file README.x509 for details. The
-_confread patch has also been applied so that the options 'leftcert' and
-'rightcert' can be used in ipsec.conf.
-
-Since version 1.95-2, this package comes with the patches from 
-http://www.irrigacion.gov.ar/juanjo/ipsec/ applied. Therefore there is now
-support for additional ciphers (such as AES) that are not supported by the
-upstream freeswan. Please look at /usr/share/doc/freeswan/ext-patches/ for
-example configurations using these extended patches.
-
- -- Rene Mayrhofer <rene.mayrhofer@gibraltar.at>, Thu, 10 Aug 2000 10:50:33 +0200
+ -- Rene Mayrhofer <rmayr@debian.org>, Sun Mar 31 11:22:04 2004

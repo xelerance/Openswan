@@ -1,8 +1,8 @@
 /*
  * @(#) pfkey version 2 debugging messages
  *
- * Copyright (C) 2001  Richard Guy Briggs  <rgb@freeswan.org>
- *                 and Michael Richardson  <mcr@freeswan.org>
+ * Copyright (C) 2001  Richard Guy Briggs  <rgb@openswan.org>
+ *                 and Michael Richardson  <mcr@openswan.org>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_debug.c,v 1.8.4.2 2004/04/16 12:32:56 mcr Exp $
+ * RCSID $Id: pfkey_v2_debug.c,v 1.9 2004/03/08 01:59:08 ken Exp $
  *
  */
 
@@ -22,7 +22,7 @@
 
 # include <linux/kernel.h>  /* for printk */
 
-# include "freeswan/ipsec_kversion.h" /* for malloc switch */
+# include "openswan/ipsec_kversion.h" /* for malloc switch */
 # ifdef MALLOC_SLAB
 #  include <linux/slab.h> /* kmalloc() */
 # else /* MALLOC_SLAB */
@@ -44,7 +44,7 @@ extern int debug_pfkey;
 
 #endif /* __KERNEL__ */
 
-#include "freeswan.h"
+#include "openswan.h"
 #include "pfkeyv2.h"
 #include "pfkey.h"
 
@@ -134,13 +134,6 @@ pfkey_v2_sadb_type_string(int sadb_type)
 
 /*
  * $Log: pfkey_v2_debug.c,v $
- * Revision 1.8.4.2  2004/04/16 12:32:56  mcr
- * 	erroneously pullup some freeswan->openswan changes that
- * 	are really for 2.2.
- *
- * Revision 1.8.4.1  2004/03/21 05:23:31  mcr
- *     pullup of freeswan->openswan and CR/CERT patches from HEAD
- *
  * Revision 1.9  2004/03/08 01:59:08  ken
  * freeswan.h -> openswan.h
  *

@@ -1,5 +1,6 @@
 /* logging definitions
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 2004       Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,19 +12,19 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: log.h,v 1.47.2.2 2004/04/16 12:33:10 mcr Exp $
+ * RCSID $Id: log.h,v 1.51 2004/04/29 04:06:06 mcr Exp $
  */
 
-#include <freeswan.h>
+#include <openswan.h>
 
-#define LOG_WIDTH   1024    /* roof of number of chars in log line */
+#include "oswlog.h"
 
 #ifndef PERPERRLOGDIR
 #define PERPERRLOGDIR "/var/log/pluto/peer"
 #endif
 
 /* moved common code to library file */
-#include "freeswan/passert.h"
+#include "openswan/passert.h"
 
 extern bool
     log_to_stderr,	/* should log go to stderr? */
@@ -57,8 +58,6 @@ extern bool whack_prompt_for(int whackfd
 
 
 #ifdef DEBUG
-
-  extern lset_t cur_debugging;	/* current debugging level */
 
   extern void extra_debugging(const struct connection *c);
   extern void set_debugging(lset_t debugging);
@@ -113,7 +112,7 @@ extern bool whack_prompt_for(int whackfd
     reset_debugging(); \
     }
 
-extern void init_log(void);
+extern void pluto_init_log(void);
 extern void close_log(void);
 extern void plog(const char *message, ...) PRINTF_LIKE(1);
 extern void exit_log(const char *message, ...) PRINTF_LIKE(1) NEVER_RETURNS;
@@ -144,40 +143,6 @@ extern void loglog(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 
 /* show status, usually on whack log */
 extern void show_status(void);
-
-/* Build up a diagnostic in a static buffer.
- * Although this would be a generally useful function, it is very
- * hard to come up with a discipline that prevents different uses
- * from interfering.  It is intended that by limiting it to building
- * diagnostics, we will avoid this problem.
- * Juggling is performed to allow an argument to be a previous
- * result: the new string may safely depend on the old one.  This
- * restriction is not checked in any way: violators will produce
- * confusing results (without crashing!).
- */
-extern char diag_space[LOG_WIDTH];	/* output buffer, but can be occupied at call */
-extern err_t builddiag(const char *fmt, ...) PRINTF_LIKE(1);
-
-#ifdef DEBUG
-
-extern lset_t base_debugging;	/* bits selecting what to report */
-
-#define DBGP(cond)         (cur_debugging & (cond))
-#define DBG(cond, action)   { if (DBGP(cond)) { action ; } }
-
-extern void DBG_log(const char *message, ...) PRINTF_LIKE(1);
-extern void DBG_dump(const char *label, const void *p, size_t len);
-#define DBG_dump_chunk(label, ch) DBG_dump(label, (ch).ptr, (ch).len)
-
-#else /*!DEBUG*/
-
-#define DBG(cond, action)	{ }	/* do nothing */
-
-#endif /*!DEBUG*/
-
-#define DBG_cond_dump(cond, label, p, len) DBG(cond, DBG_dump(label, p, len))
-#define DBG_cond_dump_chunk(cond, label, ch) DBG(cond, DBG_dump_chunk(label, ch))
-
 
 /* ip_str: a simple to use variant of addrtot.
  * It stores its result in a static buffer.

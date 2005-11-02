@@ -1,4 +1,4 @@
-/* FreeS/WAN ISAKMP Quirks handling
+/* Openswan ISAKMP Quirks handling
  * Copyright (C) 2003 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -11,16 +11,20 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: quirks.h,v 1.2 2003/12/24 19:51:21 mcr Exp $
+ * RCSID $Id: quirks.h,v 1.3 2004/04/11 03:08:46 ken Exp $
  */
 
 #ifndef _QUIRKS_H_
 #define _QUIRKS_H_
 
+/**
+ * Where to store various quirks (ususally encountered during interop) 
+ *
+ */
 struct isakmp_quirks {
-  bool xauth_ack_msgid;         /* whether to reset the msgid after an
+  bool xauth_ack_msgid;         /**< Whether to reset the msgid after an
 				 * xauth set, such as for SSH Sentinel. */
-  unsigned short nat_traversal_vid;  /* which NAT-type vendor IDs we got */
+  unsigned short nat_traversal_vid;  /**< which NAT-type vendor IDs we got */
 };
 
 #endif

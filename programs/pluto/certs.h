@@ -1,5 +1,5 @@
 /* Certificate support for IKE authentication
- * Copyright (C) 2002-2003 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2002-2004 Andreas Steffen, Zuercher Hochschule Winterthur
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,11 +11,13 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: certs.h,v 1.3 2003/12/24 19:51:20 mcr Exp $
+ * RCSID $Id: certs.h,v 1.6 2004/06/27 20:43:41 mcr Exp $
  */
 
 #ifndef _CERTS_H
 #define _CERTS_H
+
+#include "openswan/ipsec_policy.h"
 
 /* path definitions for private keys, end certs,
  * cacerts, attribute certs and crls
@@ -25,13 +27,19 @@
 #define CRL_PATH	  plutopaths.crls.path
 #define PRIVATE_KEY_PATH  plutopaths.private.path
 #define HOST_CERT_PATH    plutopaths.certs.path
+#define AA_CERT_PATH      plutopaths.aacerts.path
+#define OCSP_CERT_PATH    plutopaths.ocspcerts.path
+
 
 /* advance warning of imminent expiry of
  * cacerts, public keys, and crls
  */
 #define CA_CERT_WARNING_INTERVAL	30 /* days */
+#define OCSP_CERT_WARNING_INTERVAL      30 /* days */
 #define PUBKEY_WARNING_INTERVAL		 7 /* days */
 #define CRL_WARNING_INTERVAL		 7 /* days */
+#define ACERT_WARNING_INTERVAL           1 /* day */
+
 
 /* access structure for RSA private keys */
 
@@ -49,12 +57,17 @@ extern const rsa_privkey_t empty_rsa_privkey;
  * currently X.509 and OpenPGP certificates are supported
  */
 typedef struct {
-    u_char type;
+    bool                 forced;
+    enum ipsec_cert_type type;       
     union {
-	x509cert_t *x509;
-	pgpcert_t  *pgp;
+      x509cert_t *x509;
+      pgpcert_t  *pgp;
+      chunk_t    blob;
     } u;
 } cert_t;
+
+/* used for initialization */
+extern const cert_t empty_cert;
 
 /*  do not send certificate requests
  *  flag set in plutomain.c and used in ipsec_doi.c
@@ -66,9 +79,11 @@ extern rsa_privkey_t* load_rsa_private_key(const char* filename
 extern chunk_t get_mycert(cert_t cert);
 extern bool load_coded_file(const char *filename, prompt_pass_t *pass
     , const char *type, chunk_t *blob, bool *pgp);
-extern bool load_cert(const char *filename, const char *label
-    , cert_t *cert);
-extern bool load_host_cert(const char *filename, cert_t *cert);
+extern bool load_cert(bool forcedtype
+		      , const char *filename
+		      , const char *label, cert_t *cert);
+extern bool load_host_cert(enum ipsec_cert_type certtype, const char *filename, cert_t *cert);
+extern bool same_cert(const cert_t *a, const cert_t *b);
 extern void share_cert(cert_t cert);
 extern void release_cert(cert_t cert);
 extern void list_certs(bool utc);
@@ -77,3 +92,10 @@ extern void list_certs(bool utc);
 
 
 #endif /* _CERTS_H */
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

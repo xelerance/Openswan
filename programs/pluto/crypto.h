@@ -11,10 +11,13 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: crypto.h,v 1.16.2.1 2004/05/17 03:25:03 ken Exp $
+ * RCSID $Id: crypto.h,v 1.18 2004/04/18 03:06:46 mcr Exp $
  */
 
 #include <gmp.h>    /* GNU MP library */
+
+#include "sha1.h"
+#include "md5.h"
 
 extern void init_crypto(void);
 
@@ -30,6 +33,8 @@ struct oakley_group_desc {
 
 extern const struct oakley_group_desc unset_group;	/* magic signifier */
 extern const struct oakley_group_desc *lookup_group(u_int16_t group);
+#define OAKLEY_GROUP_SIZE 7
+extern const struct oakley_group_desc oakley_group[OAKLEY_GROUP_SIZE];
 
 /* unification of cryptographic encoding/decoding algorithms
  * The IV is taken from and returned to st->st_new_iv.
@@ -38,17 +43,16 @@ extern const struct oakley_group_desc *lookup_group(u_int16_t group);
  * been validated).
  */
 
-#define MAX_OAKLEY_KEY_LEN  (3 * DES_CBC_BLOCK_SIZE)
+#define MAX_OAKLEY_KEY_LEN_OLD  (3 * DES_CBC_BLOCK_SIZE)
+#define MAX_OAKLEY_KEY_LEN  (256/BITS_PER_BYTE)
 
 struct state;	/* forward declaration, dammit */
 
-struct encrypt_desc {
-    size_t blocksize;
-    size_t keysize;
-    void (*crypt)(bool enc, void *buf, size_t buf_len, struct state *st);
-};
-
-extern const struct encrypt_desc oakley_encrypter[OAKLEY_CAST_CBC + 1];
+struct encrypt_desc;
+struct hash_desc;
+struct encrypt_desc *crypto_get_encrypter(int alg);
+struct hash_desc *crypto_get_hasher(int alg);
+void crypto_cbc_encrypt(const struct encrypt_desc *e, bool enc, u_int8_t *buf, size_t size, struct state *st);
 
 #define update_iv(st)	passert(st->st_new_iv_len <= sizeof(st->st_iv)); memcpy((st)->st_iv, (st)->st_new_iv \
     , (st)->st_iv_len = (st)->st_new_iv_len)
@@ -67,26 +71,20 @@ union hash_ctx {
 	SHA1_CTX ctx_sha1;
     };
 
-struct hash_desc {
-    size_t hash_digest_len; /* length of digest */
-    void (*hash_init)(union hash_ctx *);	/* initialize context */
-    void (*hash_update)(union hash_ctx *, const u_char *input, unsigned int len);   /* add input to hash */
-    void (*hash_final)(u_char *output, union hash_ctx *);   /* finalize hash */
-};
-
-extern const struct hash_desc oakley_hasher[OAKLEY_TIGER+1];
-
 
 /* HMAC package
  * Note that hmac_ctx can be (and is) copied since there are
  * no persistent pointers into it.
  */
 
+#ifndef NO_HASH_CTX
 struct hmac_ctx {
     const struct hash_desc *h;	/* underlying hash function */
     size_t hmac_digest_len;	/* copy of h->hash_digest_len */
     union hash_ctx hash_ctx;	/* ctx for hash function */
     u_char buf1[HMAC_BUFSIZE], buf2[HMAC_BUFSIZE];
+    char ctx_sha256[108];	/* This is _ugly_ [TM], but avoids */
+    char ctx_sha512[212];	/* header coupling (is checked at runtime */
     };
 
 extern void hmac_init(
@@ -114,3 +112,4 @@ extern void hmac_final(u_char *output, struct hmac_ctx *ctx);
 	(ch).ptr = alloc_bytes((ch).len, name); \
 	hmac_final((ch).ptr, (ctx)); \
     }
+#endif

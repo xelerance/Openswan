@@ -92,8 +92,8 @@ west:~#
 pfkey v2 msg. type=7(register) seq=1 len=5 pid=987 errno=0 satype=2(AH)
 version=2 type=7 errno=0 satype=2 len=5 seq=1 pid=987 {ext=14 len=3 bytes=0x000000000300a000a00000000200800080000000 } 
 
-pfkey v2 msg. type=7(register) seq=2 len=7 pid=987 errno=0 satype=3(ESP)
-version=2 type=7 errno=0 satype=3 len=7 seq=2 pid=987 {ext=14 len=3 bytes=0x000000000300a000a00000000200800080000000 } {ext=15 len=2 bytes=0x000000000380a800a8000000 } 
+pfkey v2 msg. type=7(register) seq=2 len=9 pid=987 errno=0 satype=3(ESP)
+version=2 type=7 errno=0 satype=3 len=9 seq=2 pid=987 {ext=14 len=4 bytes=0x0000000009008000800000000300a000a00000000200800080000000 } {ext=15 len=3 bytes=0x000000000c808000000100000340a800a8000000 } 
 
 pfkey v2 msg. type=7(register) seq=3 len=4 pid=987 errno=0 satype=9(IPIP)
 version=2 type=7 errno=0 satype=9 len=4 seq=3 pid=987 {ext=15 len=2 bytes=0x000000000100200020000000 } 
@@ -107,10 +107,10 @@ west:~#
 0          192.0.1.0/24       -> 192.0.2.0/24       => %trapsubnet
 west:~#
  ipsec setup stop
+IPSEC EVENT: KLIPS device ipsec0 shut down.
 ipsec_setup: Stopping Openswan IPsec...
 ipsec_setup: stop ordered, but IPsec does not appear to be running!
 ipsec_setup: doing cleanup anyway...
-IPSEC EVENT: KLIPS device ipsec0 shut down.
 west:~#
  kill `cat /var/run/klogd.pid`; cat /tmp/klog.log
 klogd 1.3-3#33.1, log source = /proc/kmsg started.
@@ -336,14 +336,14 @@ klips_debug:pfkey_msg_interp: parsing message type 7(register) with msg_parser 0
 klips_debug:pfkey_register_parse: .
 klips_debug:pfkey_list_insert_socket: allocating 8 bytes for socketp=0pDEADF00D
 klips_debug:pfkey_register_parse: SATYPE=02(AH) successfully registered by KMd (pid=987).
-klips_debug:pfkey_register_parse: pfkey_supported_list[2]=0pDEADF00D
-klips_debug:pfkey_register_parse: checking supported=0pDEADF00D
-klips_debug:pfkey_register_parse: adding auth alg.
-klips_debug:pfkey_register_parse: checking supported=0pDEADF00D
-klips_debug:pfkey_register_parse: adding auth alg.
-klips_debug:pfkey_register_parse: allocating 16 bytes for auth algs.
-klips_debug:pfkey_register_parse: found satype=2(AH) exttype=14 id=3 ivlen=0 minbits=160 maxbits=160.
-klips_debug:pfkey_register_parse: found satype=2(AH) exttype=14 id=2 ivlen=0 minbits=128 maxbits=128.
+klips_debug:pfkey_register_reply: pfkey_supported_list[2]=0pDEADF00D
+klips_debug:pfkey_register_reply: checking supported=0pDEADF00D
+klips_debug:pfkey_register_reply: adding auth alg.
+klips_debug:pfkey_register_reply: checking supported=0pDEADF00D
+klips_debug:pfkey_register_reply: adding auth alg.
+klips_debug:pfkey_register_reply: allocating 16 bytes for auth algs.
+klips_debug:pfkey_register_reply: found satype=2(AH) exttype=14 id=3 ivlen=0 minbits=160 maxbits=160.
+klips_debug:pfkey_register_reply: found satype=2(AH) exttype=14 id=2 ivlen=0 minbits=128 maxbits=128.
 klips_debug:pfkey_msg_hdr_build:
 klips_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0pDEADF00D pfkey_ext=0pDEADF00D *pfkey_ext=0pDEADF00D.
 klips_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0pDEADF00D pfkey_ext=0pDEADF00D *pfkey_ext=0pDEADF00D.
@@ -356,7 +356,7 @@ klips_debug:pfkey_msg_build: copying 24 bytes from extensions[14] (type=14)
 klips_debug:pfkey_msg_build: extensions permitted=0000c001, seen=00004001, required=00000001.
 klips_debug:pfkey_upmsg: allocating 40 bytes...
 klips_debug:pfkey_upmsg: ...allocated at 0pDEADF00D.
-klips_debug:pfkey_register_parse: sending up register reply message for satype=2(AH) to socket=0pDEADF00D succeeded.
+klips_debug:pfkey_register_reply: sending up register message for satype=2(AH) to socket=0pDEADF00D succeeded.
 klips_debug:pfkey_sendmsg: .
 klips_debug:pfkey_sendmsg: allocating 16 bytes for downward message.
 klips_debug:pfkey_sendmsg: msg sent for parsing.
@@ -370,18 +370,24 @@ klips_debug:pfkey_msg_interp: parsing message type 7(register) with msg_parser 0
 klips_debug:pfkey_register_parse: .
 klips_debug:pfkey_list_insert_socket: allocating 8 bytes for socketp=0pDEADF00D
 klips_debug:pfkey_register_parse: SATYPE=03(ESP) successfully registered by KMd (pid=987).
-klips_debug:pfkey_register_parse: pfkey_supported_list[3]=0pDEADF00D
-klips_debug:pfkey_register_parse: checking supported=0pDEADF00D
-klips_debug:pfkey_register_parse: adding encrypt alg.
-klips_debug:pfkey_register_parse: checking supported=0pDEADF00D
-klips_debug:pfkey_register_parse: adding auth alg.
-klips_debug:pfkey_register_parse: checking supported=0pDEADF00D
-klips_debug:pfkey_register_parse: adding auth alg.
-klips_debug:pfkey_register_parse: allocating 16 bytes for auth algs.
-klips_debug:pfkey_register_parse: allocating 8 bytes for enc algs.
-klips_debug:pfkey_register_parse: found satype=3(ESP) exttype=15 id=3 ivlen=128 minbits=168 maxbits=168.
-klips_debug:pfkey_register_parse: found satype=3(ESP) exttype=14 id=3 ivlen=0 minbits=160 maxbits=160.
-klips_debug:pfkey_register_parse: found satype=3(ESP) exttype=14 id=2 ivlen=0 minbits=128 maxbits=128.
+klips_debug:pfkey_register_reply: pfkey_supported_list[3]=0pDEADF00D
+klips_debug:pfkey_register_reply: checking supported=0pDEADF00D
+klips_debug:pfkey_register_reply: adding auth alg.
+klips_debug:pfkey_register_reply: checking supported=0pDEADF00D
+klips_debug:pfkey_register_reply: adding encrypt alg.
+klips_debug:pfkey_register_reply: checking supported=0pDEADF00D
+klips_debug:pfkey_register_reply: adding encrypt alg.
+klips_debug:pfkey_register_reply: checking supported=0pDEADF00D
+klips_debug:pfkey_register_reply: adding auth alg.
+klips_debug:pfkey_register_reply: checking supported=0pDEADF00D
+klips_debug:pfkey_register_reply: adding auth alg.
+klips_debug:pfkey_register_reply: allocating 24 bytes for auth algs.
+klips_debug:pfkey_register_reply: allocating 16 bytes for enc algs.
+klips_debug:pfkey_register_reply: found satype=3(ESP) exttype=14 id=9 ivlen=0 minbits=128 maxbits=128.
+klips_debug:pfkey_register_reply: found satype=3(ESP) exttype=15 id=12 ivlen=128 minbits=128 maxbits=256.
+klips_debug:pfkey_register_reply: found satype=3(ESP) exttype=15 id=3 ivlen=64 minbits=168 maxbits=168.
+klips_debug:pfkey_register_reply: found satype=3(ESP) exttype=14 id=3 ivlen=0 minbits=160 maxbits=160.
+klips_debug:pfkey_register_reply: found satype=3(ESP) exttype=14 id=2 ivlen=0 minbits=128 maxbits=128.
 klips_debug:pfkey_msg_hdr_build:
 klips_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0pDEADF00D pfkey_ext=0pDEADF00D *pfkey_ext=0pDEADF00D.
 klips_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0pDEADF00D pfkey_ext=0pDEADF00D *pfkey_ext=0pDEADF00D.
@@ -391,13 +397,13 @@ klips_debug:pfkey_safe_build: error=0
 klips_debug:pfkey_safe_build:success.
 klips_debug:pfkey_safe_build: error=0
 klips_debug:pfkey_safe_build:success.
-klips_debug:pfkey_msg_build: pfkey_msg=0pDEADF00D allocated 56 bytes, &(extensions[0])=0pDEADF00D
-klips_debug:pfkey_msg_build: copying 24 bytes from extensions[14] (type=14)
-klips_debug:pfkey_msg_build: copying 16 bytes from extensions[15] (type=15)
+klips_debug:pfkey_msg_build: pfkey_msg=0pDEADF00D allocated 72 bytes, &(extensions[0])=0pDEADF00D
+klips_debug:pfkey_msg_build: copying 32 bytes from extensions[14] (type=14)
+klips_debug:pfkey_msg_build: copying 24 bytes from extensions[15] (type=15)
 klips_debug:pfkey_msg_build: extensions permitted=0000c001, seen=0000c001, required=00000001.
-klips_debug:pfkey_upmsg: allocating 56 bytes...
+klips_debug:pfkey_upmsg: allocating 72 bytes...
 klips_debug:pfkey_upmsg: ...allocated at 0pDEADF00D.
-klips_debug:pfkey_register_parse: sending up register reply message for satype=3(ESP) to socket=0pDEADF00D succeeded.
+klips_debug:pfkey_register_reply: sending up register message for satype=3(ESP) to socket=0pDEADF00D succeeded.
 klips_debug:pfkey_sendmsg: .
 klips_debug:pfkey_sendmsg: allocating 16 bytes for downward message.
 klips_debug:pfkey_sendmsg: msg sent for parsing.
@@ -411,11 +417,11 @@ klips_debug:pfkey_msg_interp: parsing message type 7(register) with msg_parser 0
 klips_debug:pfkey_register_parse: .
 klips_debug:pfkey_list_insert_socket: allocating 8 bytes for socketp=0pDEADF00D
 klips_debug:pfkey_register_parse: SATYPE=09(IPIP) successfully registered by KMd (pid=987).
-klips_debug:pfkey_register_parse: pfkey_supported_list[9]=0pDEADF00D
-klips_debug:pfkey_register_parse: checking supported=0pDEADF00D
-klips_debug:pfkey_register_parse: adding encrypt alg.
-klips_debug:pfkey_register_parse: allocating 8 bytes for enc algs.
-klips_debug:pfkey_register_parse: found satype=9(IPIP) exttype=15 id=1 ivlen=0 minbits=32 maxbits=32.
+klips_debug:pfkey_register_reply: pfkey_supported_list[9]=0pDEADF00D
+klips_debug:pfkey_register_reply: checking supported=0pDEADF00D
+klips_debug:pfkey_register_reply: adding encrypt alg.
+klips_debug:pfkey_register_reply: allocating 8 bytes for enc algs.
+klips_debug:pfkey_register_reply: found satype=9(IPIP) exttype=15 id=1 ivlen=0 minbits=32 maxbits=32.
 klips_debug:pfkey_msg_hdr_build:
 klips_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0pDEADF00D pfkey_ext=0pDEADF00D *pfkey_ext=0pDEADF00D.
 klips_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0pDEADF00D pfkey_ext=0pDEADF00D *pfkey_ext=0pDEADF00D.
@@ -428,7 +434,7 @@ klips_debug:pfkey_msg_build: copying 16 bytes from extensions[15] (type=15)
 klips_debug:pfkey_msg_build: extensions permitted=0000c001, seen=00008001, required=00000001.
 klips_debug:pfkey_upmsg: allocating 32 bytes...
 klips_debug:pfkey_upmsg: ...allocated at 0pDEADF00D.
-klips_debug:pfkey_register_parse: sending up register reply message for satype=9(IPIP) to socket=0pDEADF00D succeeded.
+klips_debug:pfkey_register_reply: sending up register message for satype=9(IPIP) to socket=0pDEADF00D succeeded.
 klips_debug:pfkey_sendmsg: .
 klips_debug:pfkey_sendmsg: allocating 16 bytes for downward message.
 klips_debug:pfkey_sendmsg: msg sent for parsing.
@@ -442,11 +448,11 @@ klips_debug:pfkey_msg_interp: parsing message type 7(register) with msg_parser 0
 klips_debug:pfkey_register_parse: .
 klips_debug:pfkey_list_insert_socket: allocating 8 bytes for socketp=0pDEADF00D
 klips_debug:pfkey_register_parse: SATYPE=10(COMP) successfully registered by KMd (pid=987).
-klips_debug:pfkey_register_parse: pfkey_supported_list[10]=0pDEADF00D
-klips_debug:pfkey_register_parse: checking supported=0pDEADF00D
-klips_debug:pfkey_register_parse: adding encrypt alg.
-klips_debug:pfkey_register_parse: allocating 8 bytes for enc algs.
-klips_debug:pfkey_register_parse: found satype=10(COMP) exttype=15 id=2 ivlen=0 minbits=1 maxbits=1.
+klips_debug:pfkey_register_reply: pfkey_supported_list[10]=0pDEADF00D
+klips_debug:pfkey_register_reply: checking supported=0pDEADF00D
+klips_debug:pfkey_register_reply: adding encrypt alg.
+klips_debug:pfkey_register_reply: allocating 8 bytes for enc algs.
+klips_debug:pfkey_register_reply: found satype=10(COMP) exttype=15 id=2 ivlen=0 minbits=1 maxbits=1.
 klips_debug:pfkey_msg_hdr_build:
 klips_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0pDEADF00D pfkey_ext=0pDEADF00D *pfkey_ext=0pDEADF00D.
 klips_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0pDEADF00D pfkey_ext=0pDEADF00D *pfkey_ext=0pDEADF00D.
@@ -459,7 +465,7 @@ klips_debug:pfkey_msg_build: copying 16 bytes from extensions[15] (type=15)
 klips_debug:pfkey_msg_build: extensions permitted=0000c001, seen=00008001, required=00000001.
 klips_debug:pfkey_upmsg: allocating 32 bytes...
 klips_debug:pfkey_upmsg: ...allocated at 0pDEADF00D.
-klips_debug:pfkey_register_parse: sending up register reply message for satype=10(COMP) to socket=0pDEADF00D succeeded.
+klips_debug:pfkey_register_reply: sending up register message for satype=10(COMP) to socket=0pDEADF00D succeeded.
 klips_debug:pfkey_release: sock=0pDEADF00D sk=0pDEADF00D
 klips_debug:pfkey_destroy_socket: .
 klips_debug:pfkey_remove_socket: .

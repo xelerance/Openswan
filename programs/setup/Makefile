@@ -11,10 +11,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.10 2003/12/02 02:35:46 ken Exp $
+# RCSID $Id: Makefile,v 1.11 2004/04/03 19:44:48 ken Exp $
 
-FREESWANSRCDIR=../..
-include ${FREESWANSRCDIR}/Makefile.inc
+OPENSWANSRCDIR=../..
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 # this dance is because setup has to get installed as /etc/rc.d/init.d/ipsec
 # not as /etc/rc.d/init.d/setup.
@@ -58,6 +58,9 @@ clean::
 
 #
 # $Log: Makefile,v $
+# Revision 1.11  2004/04/03 19:44:48  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.10  2003/12/02 02:35:46  ken
 # Stop IPsec *after* NFS, so we don't hang on NFS over IPsec mounts
 #

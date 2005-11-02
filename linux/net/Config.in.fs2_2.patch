@@ -1,11 +1,11 @@
-RCSID $Id: Config.in.fs2_2.patch,v 1.4 2002/07/28 23:12:39 mcr Exp $
+RCSID $Id: Config.in.fs2_2.patch,v 1.7 2004/06/24 12:12:52 ken Exp $
 --- linux/net/Config.in.preipsec	Thu Feb 25 13:46:47 1999
 +++ linux/net/Config.in	Sat Aug 28 02:24:59 1999
 @@ -63,4 +63,8 @@
    endmenu
    fi
  fi
-+tristate 'IP Security Protocol (FreeS/WAN IPSEC)' CONFIG_IPSEC
++tristate 'IP Security Protocol (Openswan IPsec)' CONFIG_IPSEC
 +if [ "$CONFIG_IPSEC" != "n" ]; then
 +  source net/ipsec/Config.in
 +fi

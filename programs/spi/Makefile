@@ -12,20 +12,33 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.4 2002/06/03 20:25:31 mcr Exp $
+# RCSID $Id: Makefile,v 1.8 2004/04/18 03:08:02 mcr Exp $
 
-FREESWANSRCDIR=../..
-include ${FREESWANSRCDIR}/Makefile.inc
+OPENSWANSRCDIR=../..
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=spi
 EXTRA5PROC=${PROGRAM}.5
-
-LIBS=${FREESWANLIB}
 
 include ../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.8  2004/04/18 03:08:02  mcr
+# 	use common files from libopenswan.
+#
+# Revision 1.7  2004/04/06 10:49:20  mcr
+# 	more freeswan->openswan changes.
+#
+# Revision 1.6  2004/04/06 03:04:53  mcr
+# 	pullup of algo code from alg-branch.
+#
+# Revision 1.5  2004/04/03 19:44:49  ken
+#       FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
+# Revision 1.4.32.1  2003/12/22 15:25:53  jjo
+# . Merged algo-0.8.1-rc11-test1 into alg-branch
+#
 # Revision 1.4  2002/06/03 20:25:31  mcr
 # 	man page for files actually existant in /proc/net changed back to
 # 	ipsec_foo via new EXTRA5PROC process.

@@ -13,9 +13,8 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: prng.c,v 1.4.36.1 2004/03/21 05:23:31 mcr Exp $
+ * RCSID $Id: prng.c,v 1.6 2004/04/11 17:39:25 mcr Exp $
  */
-#include "internal.h"
 #include "openswan.h"
 
 /*

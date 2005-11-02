@@ -11,12 +11,12 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.1 2002/06/08 17:41:22 mcr Exp $
+# RCSID $Id: Makefile,v 1.3 2004/04/09 18:28:19 mcr Exp $
 
-FREESWANSRCDIR=../..
-include $(FREESWANSRCDIR)/Makefile.inc
+OPENSWANSRCDIR=../..
+include $(OPENSWANSRCDIR)/Makefile.inc
 
-SUBDIRS=libfreeswan
+SUBDIRS=libopenswan
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
@@ -27,6 +27,6 @@ def:
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) FREESWANSRCDIR=$(FREESWANSRCDIR)/.. $@ ) || exit 1; \
+		(cd $$d && $(MAKE) OPENSWANSRCDIR=$(OPENSWANSRCDIR)/.. $@ ) || exit 1; \
 	done; \
 

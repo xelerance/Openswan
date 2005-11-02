@@ -1,6 +1,6 @@
 /* 
  * Copyright (C) 2001-2002 Colubris Networks
- * Copyright (C) 2003 Xelerance Corporation
+ * Copyright (C) 2003-2004 Xelerance Corporation
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,25 +12,32 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: xauth.h,v 1.4 2004/01/27 23:26:21 mcr Exp $
+ * RCSID $Id: xauth.h,v 1.6 2004/05/08 11:05:48 ken Exp $
  */
 
 struct state;
 
 stf_status modecfg_resp(struct state *st,unsigned int resp
-			,pb_stream *s,u_int16_t id);
+                             ,pb_stream *s,u_int16_t id);
+
 stf_status xauth_client_resp(struct state *st
-			     ,unsigned int xauth_resp
-			     ,pb_stream *rbody
-			     ,u_int16_t ap_id);
+                             ,unsigned int xauth
+                             ,pb_stream *rbody
+                             ,u_int16_t ap_id);
+
 stf_status xauth_client_ackstatus(struct state *st
-				  ,pb_stream *rbody
-				  ,u_int16_t ap_id);
+                             ,pb_stream *rbody
+                             ,u_int16_t ap_id);
+
 stf_status modecfg_send_set(struct state *st);
-size_t xauth_mode_cfg_hash(u_char *dest, const u_char *start, const u_char *roof
-, const struct state *st);
+
+size_t xauth_mode_cfg_hash(u_char *dest
+                             ,const u_char *start
+                             ,const u_char *roof
+                             ,const struct state *st);
 
 stf_status xauth_send_request(struct state *st);
+
 stf_status xauth_send_status(struct state *st,int status);
 
 int xauth_launch_authent(struct state *st,chunk_t name
@@ -44,5 +51,6 @@ extern stf_status modecfg_inR1(struct msg_digest *md);
 extern stf_status xauth_inI0(struct msg_digest *md);
 extern stf_status xauth_inI1(struct msg_digest *md);
 
+/* How many times can remote users try to login ? */
 #define XAUTH_PROMPT_TRIES 3
 

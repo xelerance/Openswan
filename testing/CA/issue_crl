@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# (c) 2003 Xelerance Corporation
+# Ken Bantoft <ken@xelerance.com>
+# Because I never remember all of these options.
+
+echo "Password is 'openswan'"
+
+openssl ca -config ./openssl.cnf -gencrl -crldays 3650 >crls/nic.crl
+

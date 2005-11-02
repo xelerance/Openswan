@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: packet.h,v 1.27 2004/01/09 04:40:20 mcr Exp $
+ * RCSID $Id: packet.h,v 1.28 2004/04/18 03:06:46 mcr Exp $
  */
 
 #ifndef _PACKET_H
@@ -167,8 +167,6 @@ struct isakmp_hdr
     u_int8_t    isa_rcookie[COOKIE_SIZE];
     u_int8_t    isa_np;                 /* Next payload */
     u_int8_t	isa_version;	/* high-order 4 bits: Major; low order 4: Minor */
-#define ISA_MAJ_SHIFT	4
-#define ISA_MIN_MASK	(~((~0u) << ISA_MAJ_SHIFT))
     u_int8_t    isa_xchg;		/* Exchange type */
     u_int8_t    isa_flags;
     u_int32_t   isa_msgid;		/* Message ID (RAW) */
@@ -224,12 +222,6 @@ struct isakmp_attribute
     u_int16_t isaat_af_type;   /* high order bit: AF; lower 15: rtype */
     u_int16_t isaat_lv;			/* Length or value */
 };
-
-#define ISAKMP_ATTR_AF_MASK 0x8000
-#define ISAKMP_ATTR_AF_TV ISAKMP_ATTR_AF_MASK /* value in lv */
-#define ISAKMP_ATTR_AF_TLV 0 /* length in lv; value follows */
-
-#define ISAKMP_ATTR_RTYPE_MASK 0x7FFF
 
 extern struct_desc
     isakmp_oakley_attribute_desc,

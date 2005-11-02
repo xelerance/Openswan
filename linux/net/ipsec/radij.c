@@ -1,4 +1,4 @@
-char radij_c_version[] = "RCSID $Id: radij.c,v 1.45 2003/10/31 02:27:55 mcr Exp $";
+char radij_c_version[] = "RCSID $Id: radij.c,v 1.46 2004/04/06 02:49:26 mcr Exp $";
 
 /*
  * This file is defived from ${SRC}/sys/net/radix.c of BSD 4.4lite
@@ -59,7 +59,7 @@ char radij_c_version[] = "RCSID $Id: radij.c,v 1.45 2003/10/31 02:27:55 mcr Exp 
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -81,11 +81,11 @@ char radij_c_version[] = "RCSID $Id: radij.c,v 1.45 2003/10/31 02:27:55 mcr Exp 
 #include <asm/checksum.h>
 #include <net/ip.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_radij.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_radij.h"
 
 int	maj_keylen;
 struct radij_mask *rj_mkfreelist;
@@ -1005,6 +1005,9 @@ radijcleanup(void)
 
 /*
  * $Log: radij.c,v $
+ * Revision 1.46  2004/04/06 02:49:26  mcr
+ * 	pullup of algo code from alg-branch.
+ *
  * Revision 1.45  2003/10/31 02:27:55  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *

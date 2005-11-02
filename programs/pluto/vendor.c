@@ -1,4 +1,4 @@
-/* FreeS/WAN ISAKMP VendorID
+/* Openswan ISAKMP VendorID Handling
  * Copyright (C) 2002-2003 Mathieu Lafon - Arkoon Network Security
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: vendor.c,v 1.5.2.3 2004/06/01 14:42:36 ken Exp $
+ * RCSID $Id: vendor.c,v 1.18 2004/06/10 13:17:39 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -39,6 +39,7 @@
 #include "vendor.h"
 #include "quirks.h"
 #include "kernel.h"
+#include "state.h"
 
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
@@ -75,10 +76,15 @@
  *  3025dbd21062b9e53dc441c6aab5293600000000
  *  da8e937880010000
  *
+ * 3COM-superstack
+ *    da8e937880010000
+ *    404bf439522ca3f6
+ *
+ *
  * If someone know what they mean, mail me.
  */
 
-#define MAX_LOG_VID_LEN    8
+#define MAX_LOG_VID_LEN            32
 
 #define VID_KEEP                   0x0000
 #define VID_MD5HASH                0x0001
@@ -177,6 +183,9 @@ static struct vid_struct _vid_tab[] = {
 	DEC_FSWAN_VID(FSWAN_2_00_X509_1_3_1_LDAP_VID,
 		"Linux FreeS/WAN 2.00 X.509-1.3.1 LDAP PLUTO_SENDS_VENDORID",
 		"FreeS/WAN 2.00 (X.509-1.3.1 + LDAP)")
+	DEC_FSWAN_VID(OPENSWAN2,
+		"Openswan 2.2.0",
+		"Openswan 2.2.0")
 
 	/* NAT-Traversal */
 
@@ -218,6 +227,10 @@ static const char _hexdig[] = "0123456789abcdef";
 
 static int _vid_struct_init = 0;
 
+/** 
+ * Setup VendorID structs, and populate them
+ *
+ */
 void init_vendorid(void)
 {
 	struct vid_struct *vid;
@@ -284,8 +297,25 @@ void init_vendorid(void)
 	_vid_struct_init = 1;
 }
 
-static void handle_known_vendorid (struct msg_digest *md UNUSED,
-	const char *vidstr, size_t len, struct vid_struct *vid)
+
+/**
+ * Handle Known VendorID's.  This function parses what the remote peer 
+ * sends us, and enables/disables features based on it.  As we go along, 
+ * we set vid_usefull =1 if we did something based on this VendorID.  This
+ * supresses the 'Ignored VendorID ...' log message.
+ *
+ * @param md UNUSED - Deprecated
+ * @param vidstr VendorID String
+ * @param len Length of vidstr
+ * @param vid VendorID Struct (see vendor.h)
+ * @param st State Structure (Hopefully initialized)
+ * @return void
+ */
+static void handle_known_vendorid (struct msg_digest *md UNUSED
+				   , const char *vidstr
+				   , size_t len
+				   , struct vid_struct *vid
+				   , struct state *st UNUSED)
 {
 	char vid_dump[128];
 	int vid_usefull = 0;
@@ -293,10 +323,10 @@ static void handle_known_vendorid (struct msg_digest *md UNUSED,
 
 	switch (vid->id) {
 #ifdef NAT_TRAVERSAL
-		/*
-		 * Use most recent supported NAT-Traversal method and ignore the
-		 * other ones (implementations will send all supported methods but
-		 * only one will be used)
+		/**
+		 * Use most recent supported NAT-Traversal method and ignore
+		 * the other ones (implementations will send all supported
+		 * methods but only one will be used)
 		 *
 		 * Note: most recent == higher id in vendor.h
 		 */
@@ -318,21 +348,33 @@ static void handle_known_vendorid (struct msg_digest *md UNUSED,
 				md->quirks.nat_traversal_vid = vid->id;
 			} else {
 			  loglog(RC_LOG_SERIOUS
-				 , "received Vendor ID payload [%s] meth=%d, but already using method %d"
-				 , vid->descr, vid->id, md->quirks.nat_traversal_vid);
+				 , "received Vendor ID payload [%s] meth=%d, "
+				 "but already using method %d"
+				 , vid->descr, vid->id
+				 , md->quirks.nat_traversal_vid);
 			  return;
 			}
 			break;
 #endif
+
+        case VID_MISC_DPD:
+	    /* Remote side would like to do DPD with us on this connection */
+	    md->dpd = 1;
+	    vid_usefull = 1;
+            break;
+
+/* We only need these when dealing with XAUTH */
+#ifdef XAUTH
 	case VID_SSH_SENTINEL_1_4_1:
-	  loglog(RC_LOG_SERIOUS, "SSH Sentinel 1.4.1 found, setting XAUTH_ACK quirk");
-	  md->quirks.xauth_ack_msgid = TRUE;
-	  vid_usefull = 1;
-	  break;
+            loglog(RC_LOG_SERIOUS, "SSH Sentinel 1.4.1 found, setting XAUTH_ACK quirk");
+            md->quirks.xauth_ack_msgid = TRUE;
+            vid_usefull = 1;
+            break;
 
 	case VID_MISC_XAUTH:
 	    vid_usefull=1;
 	    break;
+#endif
 	    
 	default:
 	    break;
@@ -367,7 +409,21 @@ static void handle_known_vendorid (struct msg_digest *md UNUSED,
 		vid_usefull ? "received" : "ignoring", vid_dump);
 }
 
-void handle_vendorid (struct msg_digest *md, const char *vid, size_t len)
+
+/**
+ * Handle VendorID's.  This function parses what the remote peer 
+ * sends us, calls handle_known_vendorid on each VID we received
+ *
+ * Known VendorID's are defined in vendor.h
+ *
+ * @param md Message Digest from remote peer
+ * @param vid String of VendorIDs
+ * @param len Length of vid
+ * @param vid VendorID Struct (see vendor.h)
+ * @param st State Structure (Hopefully initialized)
+ * @return void
+ */
+void handle_vendorid (struct msg_digest *md, const char *vid, size_t len, struct state *st)
 {
 	struct vid_struct *pvid;
 
@@ -382,13 +438,13 @@ void handle_vendorid (struct msg_digest *md, const char *vid, size_t len)
 		if (pvid->vid && vid && pvid->vid_len && len) {
 			if (pvid->vid_len == len) {
 				if (memcmp(pvid->vid, vid, len)==0) {
-					handle_known_vendorid(md, vid, len, pvid);
+					handle_known_vendorid(md, vid, len, pvid, st);
 					return;
 				}
 			}
 			else if ((pvid->vid_len < len) && (pvid->flags & VID_SUBSTRING)) {
 				if (memcmp(pvid->vid, vid, pvid->vid_len)==0) {
-					handle_known_vendorid(md, vid, len, pvid);
+					handle_known_vendorid(md, vid, len, pvid, st);
 					return;
 				}
 			}
@@ -413,6 +469,11 @@ void handle_vendorid (struct msg_digest *md, const char *vid, size_t len)
 
 /**
  * Add a vendor id payload to the msg
+ *
+ * @param np
+ * @param outs PB stream
+ * @param vid Int of VendorID to be sent (see vendor.h for the list)
+ * @return bool True if successful
  */
 bool out_vendorid (u_int8_t np, pb_stream *outs, unsigned int vid)
 {

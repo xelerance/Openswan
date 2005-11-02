@@ -1,0 +1,4 @@
+: check status
+ipsec eroute
+
+

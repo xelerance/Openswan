@@ -11,10 +11,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.4 2002/08/02 15:51:28 mcr Exp $
+# RCSID $Id: Makefile,v 1.5 2004/04/03 19:44:46 ken Exp $
 
-FREESWANSRCDIR=../..
-include ${FREESWANSRCDIR}/Makefile.inc
+OPENSWANSRCDIR=../..
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=ipsec
 PROGRAMDIR=${SBINDIR}
@@ -25,6 +25,9 @@ include ../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.5  2004/04/03 19:44:46  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.4  2002/08/02 15:51:28  mcr
 # 	if the file "distro.txt" exists in this directory, then it
 # 	will be installed into the LIBDIR. The ipsec --version

@@ -12,10 +12,13 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: goodmask.c,v 1.8.36.1 2004/03/21 05:23:31 mcr Exp $
+ * RCSID $Id: goodmask.c,v 1.11 2004/04/11 19:43:48 mcr Exp $
  */
-#include "internal.h"
 #include "openswan.h"
+
+#ifndef ABITS
+#define	ABITS	32	/* bits in an IPv4 address */
+#endif
 
 /*
  - goodmask - is this a good (^1*0*$) subnet mask?

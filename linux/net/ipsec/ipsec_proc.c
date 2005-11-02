@@ -18,7 +18,8 @@
  * Split out from ipsec_init.c version 1.70.
  */
 
-char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.26.2.3 2004/05/01 04:46:26 ken Exp $";
+char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.30 2004/04/25 21:23:11 ken Exp $";
+
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -26,7 +27,7 @@ char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.26.2.3 2004/05/01 04:
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -42,7 +43,7 @@ char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.26.2.3 2004/05/01 04:
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/in.h>          /* struct sockaddr_in */
 #include <linux/skbuff.h>
-#include <freeswan.h>
+#include <openswan.h>
 #ifdef SPINLOCK
 #ifdef SPINLOCK_23
 #include <linux/spinlock.h> /* *lock* */
@@ -65,27 +66,27 @@ char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.26.2.3 2004/05/01 04:
 #include <net/netlink.h>
 #endif
 
-#include "freeswan/radij.h"
+#include "openswan/radij.h"
 
-#include "freeswan/ipsec_life.h"
-#include "freeswan/ipsec_stats.h"
-#include "freeswan/ipsec_sa.h"
+#include "openswan/ipsec_life.h"
+#include "openswan/ipsec_stats.h"
+#include "openswan/ipsec_sa.h"
 
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_radij.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_tunnel.h"
-#include "freeswan/ipsec_xmit.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_radij.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_xmit.h"
 
-#include "freeswan/ipsec_rcv.h"
-#include "freeswan/ipsec_ah.h"
-#include "freeswan/ipsec_esp.h"
+#include "openswan/ipsec_rcv.h"
+#include "openswan/ipsec_ah.h"
+#include "openswan/ipsec_esp.h"
 
 #ifdef CONFIG_IPSEC_IPCOMP
-#include "freeswan/ipcomp.h"
+#include "openswan/ipcomp.h"
 #endif /* CONFIG_IPSEC_IPCOMP */
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
@@ -106,6 +107,8 @@ struct ipsec_birth_reply ipsec_ipv6_birth_packet;
 
 #define DECREMENT_UNSIGNED(X, amount) ((amount < (X)) ? (X)-amount : 0)
 
+extern int ipsec_xform_get_info(char *buffer, char **start,
+				off_t offset, int length IPSEC_PROC_LAST_ARG);
 
 
 /* ipsec_snprintf: like snprintf except
@@ -835,6 +838,7 @@ static struct ipsec_proc_list proc_items[]={
 	{"ipv4",       &proc_birth_dir,     NULL,             ipsec_birth_info, ipsec_birth_set, (void *)&ipsec_ipv4_birth_packet},
 	{"ipv6",       &proc_birth_dir,     NULL,             ipsec_birth_info, ipsec_birth_set, (void *)&ipsec_ipv6_birth_packet},
 	{"tncfg",      &proc_net_ipsec_dir, NULL,             ipsec_tncfg_get_info,      NULL, NULL},
+	{"xforms",     &proc_net_ipsec_dir, NULL,             ipsec_xform_get_info,      NULL, NULL},
 	{"stats",      &proc_net_ipsec_dir, &proc_stats_dir,  NULL,      NULL, NULL},
 	{"trap_count", &proc_stats_dir,     NULL,             ipsec_stats_get_int_info, NULL, &ipsec_xmit_trap_count},
 	{"trap_sendcount", &proc_stats_dir, NULL,             ipsec_stats_get_int_info, NULL, &ipsec_xmit_trap_sendcount},
@@ -998,11 +1002,6 @@ ipsec_proc_cleanup()
 
 /*
  * $Log: ipsec_proc.c,v $
- * Revision 1.26.2.3  2004/05/01 04:46:26  ken
- * Pull in snprintf() and proc fixes from HEAD.
- * Remove old cvs comments
- *
- *
  * Revision 1.30  2004/04/25 21:23:11  ken
  * Pull in dhr's changes from FreeS/WAN 2.06
  *
@@ -1036,6 +1035,90 @@ ipsec_proc_cleanup()
  *
  * Revision 1.23  2003/04/03 17:38:09  rgb
  * Centralised ipsec_kfree_skb and ipsec_dev_{get,put}.
+ *
+ * Revision 1.22  2002/09/20 15:40:57  rgb
+ * Renamed saref macros for consistency and brevity.
+ *
+ * Revision 1.21  2002/09/20 05:01:35  rgb
+ * Print ref and  reftable, refentry seperately.
+ *
+ * Revision 1.20  2002/09/19 02:35:39  mcr
+ * 	do not define structures needed by /proc/net/ipsec/ if we
+ * 	aren't going create that directory.
+ *
+ * Revision 1.19  2002/09/10 01:43:25  mcr
+ * 	fixed problem in /-* comment.
+ *
+ * Revision 1.18  2002/09/03 16:22:11  mcr
+ * 	fixed initialization of birth/stuff values - some simple
+ * 	screw ups in the code.
+ * 	removed debugging that was left in by mistake.
+ *
+ * Revision 1.17  2002/09/02 17:54:53  mcr
+ * 	changed how the table driven /proc entries are created so that
+ * 	making subdirs is now explicit rather than implicit.
+ *
+ * Revision 1.16  2002/08/30 01:23:37  mcr
+ * 	reorganized /proc creating code to clear up ifdefs,
+ * 	make the 2.4 code table driven, and put things into
+ * 	/proc/net/ipsec subdir. Symlinks are left for compatibility.
+ *
+ * Revision 1.15  2002/08/13 19:01:25  mcr
+ * 	patches from kenb to permit compilation of FreeSWAN on ia64.
+ * 	des library patched to use proper DES_LONG type for ia64.
+ *
+ * Revision 1.14  2002/07/26 08:48:31  rgb
+ * Added SA ref table code.
+ *
+ * Revision 1.13  2002/07/24 18:44:54  rgb
+ * Type fiddling to tame ia64 compiler.
+ *
+ * Revision 1.12  2002/05/27 18:56:07  rgb
+ * Convert to dynamic ipsec device allocation.
+ *
+ * Revision 1.11  2002/05/23 07:14:50  rgb
+ * Added refcount code.
+ * Cleaned up %p variants to 0p%p for test suite cleanup.
+ * Convert "usecount" to "refcount" to remove ambiguity.
+ *
+ * Revision 1.10  2002/04/24 07:55:32  mcr
+ * 	#include patches and Makefiles for post-reorg compilation.
+ *
+ * Revision 1.9  2002/04/24 07:36:28  mcr
+ * Moved from ./klips/net/ipsec/ipsec_proc.c,v
+ *
+ * Revision 1.8  2002/01/29 17:17:55  mcr
+ * 	moved include of ipsec_param.h to after include of linux/kernel.h
+ * 	otherwise, it seems that some option that is set in ipsec_param.h
+ * 	screws up something subtle in the include path to kernel.h, and
+ * 	it complains on the snprintf() prototype.
+ *
+ * Revision 1.7  2002/01/29 04:00:52  mcr
+ * 	more excise of kversions.h header.
+ *
+ * Revision 1.6  2002/01/29 02:13:17  mcr
+ * 	introduction of ipsec_kversion.h means that include of
+ * 	ipsec_param.h must preceed any decisions about what files to
+ * 	include to deal with differences in kernel source.
+ *
+ * Revision 1.5  2002/01/12 02:54:30  mcr
+ * 	beginnings of /proc/net/ipsec dir.
+ *
+ * Revision 1.4  2001/12/11 02:21:05  rgb
+ * Don't include module version here, fixing 2.2 compile bug.
+ *
+ * Revision 1.3  2001/12/05 07:19:44  rgb
+ * Fixed extraneous #include "version.c" bug causing modular KLIPS failure.
+ *
+ * Revision 1.2  2001/11/26 09:16:14  rgb
+ * Merge MCR's ipsec_sa, eroute, proc and struct lifetime changes.
+ *
+ * Revision 1.74  2001/11/22 05:44:11  henry
+ * new version stuff
+ *
+ * Revision 1.1.2.1  2001/09/25 02:19:40  mcr
+ * 	/proc manipulation code moved to new ipsec_proc.c
+ *
  *
  * Local variables:
  * c-file-style: "linux"

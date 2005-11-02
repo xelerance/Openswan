@@ -1,5 +1,5 @@
 /*
- * RCSID $Id: ipsec_md5c.c,v 1.7 2002/09/10 01:45:14 mcr Exp $
+ * RCSID $Id: ipsec_md5c.c,v 1.8 2004/04/06 02:49:26 mcr Exp $
  */
 
 /*
@@ -10,7 +10,7 @@
 #include <asm/byteorder.h>
 #include <linux/string.h>
 
-#include "freeswan/ipsec_md5h.h"
+#include "openswan/ipsec_md5h.h"
 
 /* MD5C.C - RSA Data Security, Inc., MD5 message-digest algorithm
  */
@@ -400,6 +400,9 @@ unsigned int len;
 
 /*
  * $Log: ipsec_md5c.c,v $
+ * Revision 1.8  2004/04/06 02:49:26  mcr
+ * 	pullup of algo code from alg-branch.
+ *
  * Revision 1.7  2002/09/10 01:45:14  mcr
  * 	changed type of MD5_CTX and SHA1_CTX to void * so that
  * 	the function prototypes would match, and could be placed

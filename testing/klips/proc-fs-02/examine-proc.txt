@@ -65,8 +65,12 @@ lrwxrwxrwx    1 root     root           11 Aug 29 22:57 /proc/net/ipsec_tncfg ->
 lrwxrwxrwx    1 root     root           13 Aug 29 22:57 /proc/net/ipsec_version -> ipsec/version
 east:~#
  find /proc/net/ipsec -ls
- inode    0 dr-xr-xr-x   6 root     root            0 Aug 29 22:34 /proc/net/ipsec
+ inode    0 dr-xr-xr-x   7 root     root            0 Aug 29 22:34 /proc/net/ipsec
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/version
+ inode    0 dr-xr-xr-x   2 root     root            0 Aug 29 22:34 /proc/net/ipsec/stats
+ inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/stats/trap_sendcount
+ inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/stats/trap_count
+ inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/xforms
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/tncfg
  inode    0 dr-xr-xr-x   2 root     root            0 Aug 29 22:34 /proc/net/ipsec/birth
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/birth/ipv6
@@ -98,8 +102,12 @@ lrwxrwxrwx    1 root     root           11 Aug 29 22:57 /proc/net/ipsec_tncfg ->
 lrwxrwxrwx    1 root     root           13 Aug 29 22:57 /proc/net/ipsec_version -> ipsec/version
 east:~#
  find /proc/net/ipsec -ls
- inode    0 dr-xr-xr-x   6 root     root            0 Aug 29 22:34 /proc/net/ipsec
+ inode    0 dr-xr-xr-x   7 root     root            0 Aug 29 22:34 /proc/net/ipsec
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/version
+ inode    0 dr-xr-xr-x   2 root     root            0 Aug 29 22:34 /proc/net/ipsec/stats
+ inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/stats/trap_sendcount
+ inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/stats/trap_count
+ inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/xforms
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/tncfg
  inode    0 dr-xr-xr-x   2 root     root            0 Aug 29 22:34 /proc/net/ipsec/birth
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/birth/ipv6
@@ -131,8 +139,12 @@ lrwxrwxrwx    1 root     root           11 Aug 29 22:57 /proc/net/ipsec_tncfg ->
 lrwxrwxrwx    1 root     root           13 Aug 29 22:57 /proc/net/ipsec_version -> ipsec/version
 east:~#
  find /proc/net/ipsec -ls
- inode    0 dr-xr-xr-x   6 root     root            0 Aug 29 22:34 /proc/net/ipsec
+ inode    0 dr-xr-xr-x   7 root     root            0 Aug 29 22:34 /proc/net/ipsec
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/version
+ inode    0 dr-xr-xr-x   2 root     root            0 Aug 29 22:34 /proc/net/ipsec/stats
+ inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/stats/trap_sendcount
+ inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/stats/trap_count
+ inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/xforms
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/tncfg
  inode    0 dr-xr-xr-x   2 root     root            0 Aug 29 22:34 /proc/net/ipsec/birth
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/birth/ipv6
@@ -144,28 +156,18 @@ east:~#
  inode    0 dr-xr-xr-x   2 root     root            0 Aug 29 22:34 /proc/net/ipsec/eroute
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/eroute/all
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/klipsdebug
+east:~#
+ ipsec setup stop
+ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: stop ordered, but IPsec does not appear to be running!
+ipsec_setup: doing cleanup anyway...
 east:~#
  kill `cat /var/run/klogd.pid`; cat /tmp/klog.log
 klogd 1.3-3#33.1, log source = /proc/kmsg started.
 east:~#
- halt
-INIT: Switching to runlevel: 0
-INIT: Sending processes the TERM signal
-east:~#
- INIT: Sending processes the KILL signal
-Stopping domain name service: named.
-Stopping internet superserver: inetd.
-Stopping portmap daemon: portmap.
-ipsec_setup: Stopping FreeS/WAN IPsec...
-ipsec_setup: stop ordered, but IPsec does not appear to be running!
-ipsec_setup: doing cleanup anyway...
-
-
-Stopping system log daemon: klogd syslogd.
-Sending all processes the TERM signal... done.
-Sending all processes the KILL signal... done.
-Unmounting remote filesystems... done.
-Deactivating swap... done.
-Unmounting local filesystems... done.
+ halt -p -f
 Power down.
+klips_debug: experimental ipsec_alg_AES_MAC not registered [Ok] (auth_id=0)
+klips_debug: experimental ipsec_alg_AES_MAC not registered [Ok] (auth_id=0)
+klips_debug: experimental ipsec_alg_AES_MAC not registered [Ok] (auth_id=0)
 

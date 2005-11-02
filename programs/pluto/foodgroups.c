@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: foodgroups.c,v 1.17.2.1 2004/03/21 05:23:32 mcr Exp $
+ * RCSID $Id: foodgroups.c,v 1.20 2004/04/29 03:59:32 mcr Exp $
  */
 
 #include <unistd.h>
@@ -153,7 +153,7 @@ read_foodgroup(struct fg_groups *g)
     }
     else
     {
-	plog("loading group \"%s\"", fg_path);
+	openswan_log("loading group \"%s\"", fg_path);
 	for (;;)
 	{
 	    switch (flp->bdry)

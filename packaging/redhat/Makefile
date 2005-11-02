@@ -11,11 +11,11 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.9 2003/06/13 00:33:54 mcr Exp $
+# RCSID $Id: Makefile,v 1.10 2004/04/03 19:44:42 ken Exp $
 
-FREESWANSRCDIR=$(shell cd ../.. && pwd)
-include ${FREESWANSRCDIR}/Makefile.inc
-include ${FREESWANSRCDIR}/Makefile.ver
+OPENSWANSRCDIR=$(shell cd ../.. && pwd)
+include ${OPENSWANSRCDIR}/Makefile.inc
+include ${OPENSWANSRCDIR}/Makefile.ver
 
 
 # temporary directory to be used when building RPMs, and where to put the
@@ -32,7 +32,7 @@ KERNELLIBFREESWAN=$(KERNELSRC)/lib/libfreeswan
 KERNELLIBZLIB=$(KERNELSRC)/lib/zlib
 KERNELINCLUDE=$(KERNELSRC)/include
 
-MAKEUTILS=${FREESWANSRCDIR}/packaging/utils
+MAKEUTILS=${OPENSWANSRCDIR}/packaging/utils
 ERRCHECK=${MAKEUTILS}/errcheck
 KVUTIL=${MAKEUTILS}/kernelversion
 KVSHORTUTIL=${MAKEUTILS}/kernelversion-short
@@ -49,9 +49,9 @@ rpm:	rpm_userland rpm_modules rpm.spec final_rpm
 # RPM-build userland install in temporary directory
 rpm_userland: clean
 	mkdir -p $(RPMTMPDIR)
-	(cd ${FREESWANSRCDIR} && $(MAKE) programs install DESTDIR=$(RPMTMPDIR) && cd `pwd`)
+	(cd ${OPENSWANSRCDIR} && $(MAKE) programs install DESTDIR=$(RPMTMPDIR) && cd `pwd`)
 	for extras in README CHANGES ; do \
-		cp -f $(FREESWANSRCDIR)/$$extras $(RPMTMPDIR)$(FINALEXAMPLECONFDIR)/ ; \
+		cp -f $(OPENSWANSRCDIR)/$$extras $(RPMTMPDIR)$(FINALEXAMPLECONFDIR)/ ; \
 	done
 
 rpm_modules:
@@ -67,9 +67,9 @@ rpm_modules:
 	    BUILDDIR=`pwd`/BUILD.$$kerneltype; \
 	    HERE=`pwd` ;\
 	    echo Building $$KV-$$kerneltype in $$BUILDDIR; \
-	    ${MAKE} -C ${FREESWANSRCDIR} MODBUILDDIR=$$BUILDDIR KERNELSRC=${RH_KERNELSRC} ARCH=$$arch SUBARCH=$$subarch MODULE_DEF_INCLUDE=$$HERE/config-$$kerneltype.h module;\
+	    ${MAKE} -C ${OPENSWANSRCDIR} MODBUILDDIR=$$BUILDDIR KERNELSRC=${RH_KERNELSRC} ARCH=$$arch SUBARCH=$$subarch MODULE_DEF_INCLUDE=$$HERE/config-$$kerneltype.h module;\
 	    cp $$BUILDDIR/ipsec.o $$MD/ipsec.o-$$kerneltype; \
-	    goo="`nm -ao $$BUILDDIR/ipsec.o | ${FREESWANSRCDIR}/programs/calcgoo/calcgoo`"; \
+	    goo="`nm -ao $$BUILDDIR/ipsec.o | ${OPENSWANSRCDIR}/programs/calcgoo/calcgoo`"; \
 	    (cd $$MD && ln -f ipsec.o-$$kerneltype $$goo); \
 	done
 

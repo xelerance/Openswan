@@ -15,7 +15,7 @@
  * for more details.
  */
 
-char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.54 2003/12/05 16:44:16 mcr Exp $";
+char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.55 2004/04/04 01:50:56 ken Exp $";
 
 
 #include <sys/types.h>
@@ -34,7 +34,7 @@ char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.54 2003/12/05 16:44:1
 
 
 #include <unistd.h>
-#include <freeswan.h>
+#include <openswan.h>
 #if 0
 #include <linux/autoconf.h>	/* CONFIG_IPSEC_PFKEYv2 */
 #endif
@@ -44,12 +44,12 @@ char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.54 2003/12/05 16:44:1
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_encap.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_encap.h"
 #ifndef CONFIG_IPSEC_DEBUG
 #define CONFIG_IPSEC_DEBUG
 #endif /* CONFIG_IPSEC_DEBUG */
-#include "freeswan/ipsec_tunnel.h"
+#include "openswan/ipsec_tunnel.h"
 
 #include <stdio.h>
 #include <getopt.h>
@@ -436,6 +436,9 @@ main(int argc, char **argv)
 }
 /*
  * $Log: klipsdebug.c,v $
+ * Revision 1.55  2004/04/04 01:50:56  ken
+ * Use openswan includes
+ *
  * Revision 1.54  2003/12/05 16:44:16  mcr
  * 	patches to avoid ipsec_netlink.h, which has been obsolete for
  * 	some time now.

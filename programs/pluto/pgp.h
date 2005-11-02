@@ -1,5 +1,5 @@
 /* Support of OpenPGP certificates
- * Copyright (C) 2002-2003 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2002-2004 Andreas Steffen, Zuercher Hochschule Winterthur
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pgp.h,v 1.2 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: pgp.h,v 1.3 2004/06/14 01:46:03 mcr Exp $
  */
 
 #ifndef _PGP_H

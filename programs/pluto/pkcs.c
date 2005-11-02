@@ -1,5 +1,5 @@
 /* Support of PKCS#1 and PKCS#7 data structures
- * Copyright (C) 2002-2003 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2002-2004 Andreas Steffen, Zuercher Hochschule Winterthur
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pkcs.c,v 1.2.6.1 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: pkcs.c,v 1.5 2004/06/14 01:46:03 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -20,6 +20,8 @@
 #include <openswan.h>
 
 #include "constants.h"
+#include "oswlog.h"
+
 #include "defs.h"
 #include "asn1.h"
 #include "oid.h"
@@ -101,13 +103,14 @@ parse_pkcs1_private_key(chunk_t blob, rsa_privkey_t *key)
 {
     asn1_ctx_t ctx;
     chunk_t object;
+    u_int level;
     int objectID = 0;
 
     asn1_init(&ctx, blob, 0, FALSE, DBG_PRIVATE);
 
     while (objectID < PKCS1_PRIV_KEY_ROOF) {
 
-	if (!extract_object(privkeyObjects, &objectID, &object, &ctx))
+	if (!extract_object(privkeyObjects, &objectID, &object, &level, &ctx))
 	     return FALSE;
 
 	if (objectID == PKCS1_PRIV_KEY_OBJECT)
@@ -118,7 +121,7 @@ parse_pkcs1_private_key(chunk_t blob, rsa_privkey_t *key)
 	{
 	    if (*object.ptr != 0)
 	    {
-		plog("  wrong PKCS#1 private key version");
+		openswan_log("  wrong PKCS#1 private key version");
 		return FALSE;
 	    }
 	}
@@ -140,18 +143,18 @@ parse_pkcs7_signedData(chunk_t blob, int level0, x509cert_t **cert)
 {
     asn1_ctx_t ctx;
     chunk_t object;
+    u_int level;
     int objectID = 0;
 
     asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
 
     while (objectID < PKCS7_SIGNED_ROOF) {
 
-	if (!extract_object(signedDataObjects, &objectID, &object, &ctx))
+	if (!extract_object(signedDataObjects, &objectID, &object, &level, &ctx))
 	     return FALSE;
 
 	if (objectID == PKCS7_SIGNED_CERT)
 	{
-	    u_int level = level0 + signedDataObjects[objectID].level;
 	    chunk_t cert_blob;
 	    x509cert_t *newcert = alloc_thing(x509cert_t,
 					"pkcs7 wrapped x509cert");
@@ -159,7 +162,7 @@ parse_pkcs7_signedData(chunk_t blob, int level0, x509cert_t **cert)
 	    clonetochunk(cert_blob, object.ptr, object.len, "pkcs7 cert blob");
 	    *newcert = empty_x509cert;
 
-	    if (parse_x509cert(cert_blob, level, newcert))
+	    if (parse_x509cert(cert_blob, level+1, newcert))
 	    {
 		newcert->next = *cert;
 		*cert = newcert;
@@ -182,28 +185,27 @@ parse_pkcs7_cert(chunk_t blob, x509cert_t **cert)
 {
     asn1_ctx_t ctx;
     chunk_t object;
+    u_int level;
     int objectID = 0;
 
     asn1_init(&ctx, blob, 0, FALSE, DBG_RAW);
 
     while (objectID < PKCS7_INFO_ROOF) {
 
-	if (!extract_object(contentInfoObjects, &objectID, &object, &ctx))
+	if (!extract_object(contentInfoObjects, &objectID, &object, &level, &ctx))
 	     return FALSE;
 
 	if (objectID == PKCS7_INFO_TYPE)
 	{
 	    if (known_oid(object) != OID_PKCS7_SIGNED_DATA)
 	    {
-		plog("PKCS#7 content type is not signedData");
+		openswan_log("PKCS#7 content type is not signedData");
 		return FALSE;
 	    }
 	}
 	else if (objectID == PKCS7_INFO_CONTENT)
 	{
-	    u_int level = contentInfoObjects[objectID].level + 1;
-
-	    parse_pkcs7_signedData(object, level, cert);
+	    parse_pkcs7_signedData(object, level+1, cert);
 	}
 	objectID++;
     }

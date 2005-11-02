@@ -12,13 +12,13 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.4 2003/06/29 21:34:49 mcr Exp $
+# RCSID $Id: Makefile,v 1.6 2004/04/12 12:05:52 ken Exp $
 
-FREESWANSRCDIR=../..
-include ${FREESWANSRCDIR}/Makefile.inc
+OPENSWANSRCDIR=../..
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=ikeping
-LIBS=${FREESWANLIB}
+LIBS=${OPENSWANLIB}
 
 ifeq ($(USE_IKEPING),false)
 NOINSTALL=true
@@ -34,6 +34,12 @@ include ../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.6  2004/04/12 12:05:52  ken
+# Use OPENSWANLIBs
+#
+# Revision 1.5  2004/04/03 19:44:45  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.4  2003/06/29 21:34:49  mcr
 # 	added "NOINSTALL" to omit install: target from common
 # 	Makefile so that it can be overridden

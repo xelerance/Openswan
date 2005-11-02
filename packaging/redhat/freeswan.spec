@@ -82,7 +82,7 @@ cd packaging/redhat
 for smp in -smp ""
 do
 %{__make} -C $FS MODBUILDDIR=$FS/BUILD.%{_target_cpu}$smp \
-    FREESWANSRCDIR=$FS \
+    OPENSWANSRCDIR=$FS \
     KERNELSRC=/usr/src/linux-%{kversion} \
     ARCH=%{_arch} \
     SUBARCH=%{_arch} \

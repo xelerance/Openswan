@@ -12,9 +12,8 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: addrtypeof.c,v 1.7.36.1 2004/03/21 05:23:31 mcr Exp $
+ * RCSID $Id: addrtypeof.c,v 1.9 2004/04/11 17:39:25 mcr Exp $
  */
-#include "internal.h"
 #include "openswan.h"
 
 /*

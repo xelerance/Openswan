@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: showhostkey.in,v 1.19 2003/07/14 12:35:57 mcr Exp $
+# RCSID $Id: showhostkey.in,v 1.22 2004/03/24 21:08:22 hugh Exp $
 
 me="ipsec showhostkey"
 usage="Usage: $me [--file secrets] [--left] [--right] [--txt gateway] [--id id]
@@ -100,8 +100,10 @@ awk '	BEGIN {
 	}
 	inkey && $0 ~ /^[ \t]+# RSA [0-9]+ bits/ {
 		comment = $0
-		if (fmt == "dns" || fmt == "txt" || fmt == "dhclient")
+		if (fmt == "dhclient")
 			sub(/^[ \t]+#/, "#", comment)
+		else if (fmt == "dns" || fmt == "txt")
+			sub(/^[ \t]+#/, ";", comment)
 		host = $5
 	}
 	inkey && $0 ~ /^[ \t]+#pubkey=0s/ {

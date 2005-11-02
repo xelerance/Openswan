@@ -1,7 +1,8 @@
 /*
  * IPSEC Transmit code.
  * Copyright (C) 1996, 1997  John Ioannidis.
- * Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003  Richard Guy Briggs.
+ * Copyright (C) 1998-2003   Richard Guy Briggs.
+ * Copyright (C) 2004        Michael Richardson <mcr@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,7 +15,7 @@
  * for more details.
  */
 
-char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.7 2004/02/03 03:13:41 mcr Exp $";
+char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.8 2004/04/06 02:49:26 mcr Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -22,7 +23,7 @@ char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.7 2004/02/03 03:13:41
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -39,7 +40,7 @@ char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.7 2004/02/03 03:13:41
 #include <linux/tcp.h>         /* struct tcphdr */
 #include <linux/udp.h>         /* struct udphdr */
 #include <linux/skbuff.h>
-#include <freeswan.h>
+#include <openswan.h>
 #ifdef NET_21
 # define MSS_HACK_		/* experimental */
 # include <asm/uaccess.h>
@@ -59,27 +60,28 @@ char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.7 2004/02/03 03:13:41
 # include <net/tcp.h>		/* TCP options */
 #endif	/* MSS_HACK */
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_life.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_eroute.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_radij.h"
-#include "freeswan/ipsec_xmit.h"
-#include "freeswan/ipsec_sa.h"
-#include "freeswan/ipsec_tunnel.h"
-#include "freeswan/ipsec_ipe4.h"
-#include "freeswan/ipsec_ah.h"
-#include "freeswan/ipsec_esp.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_life.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_eroute.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_radij.h"
+#include "openswan/ipsec_xmit.h"
+#include "openswan/ipsec_sa.h"
+#include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_ipe4.h"
+#include "openswan/ipsec_ah.h"
+#include "openswan/ipsec_esp.h"
 
 #ifdef CONFIG_IPSEC_IPCOMP
-#include "freeswan/ipcomp.h"
+#include "openswan/ipcomp.h"
 #endif /* CONFIG_IPSEC_IPCOMP */
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
+#include "openswan/ipsec_alg.h"
 
 
 /* 
@@ -504,7 +506,9 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 {
 #ifdef CONFIG_IPSEC_ESP
 	struct esphdr *espp;
-	__u32 iv[2];
+#ifdef CONFIG_IPSEC_ENC_3DES
+	__u32 iv[ESP_IV_MAXSZ_INT];
+#endif /* !CONFIG_IPSEC_ENC_3DES */
 	unsigned char *idat, *pad;
 	int authlen = 0, padlen = 0, i;
 #endif /* !CONFIG_IPSEC_ESP */
@@ -525,6 +529,11 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 #endif /* defined(CONFIG_IPSEC_AUTH_HMAC_MD5) || defined(CONFIG_IPSEC_AUTH_HMAC_SHA1) */
 	int headroom = 0, tailroom = 0, ilen = 0, len = 0;
 	unsigned char *dat;
+	int blocksize = 8; /* XXX: should be inside ixs --jjo */
+#ifdef CONFIG_IPSEC_ALG
+	struct ipsec_alg_enc *ixt_e = NULL;
+	struct ipsec_alg_auth *ixt_a = NULL;
+#endif /* CONFIG_IPSEC_ALG */
 	
 	ixs->iphlen = ixs->iph->ihl << 2;
 	ixs->pyldsz = ntohs(ixs->iph->tot_len) - ixs->iphlen;
@@ -543,6 +552,12 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 #endif /* CONFIG_IPSEC_AH */
 #ifdef CONFIG_IPSEC_ESP
 	case IPPROTO_ESP:
+#ifdef CONFIG_IPSEC_ALG
+		if ((ixt_e=ixs->ipsp->ips_alg_enc)) {
+			blocksize = ixt_e->ixt_blocksize;
+			headroom += ESP_HEADER_LEN + ixt_e->ixt_ivlen/8;
+		} else
+#endif /* CONFIG_IPSEC_ALG */
 		switch(ixs->ipsp->ips_encalg) {
 #ifdef CONFIG_IPSEC_ENC_3DES
 		case ESP_3DES:
@@ -553,6 +568,11 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 			ixs->stats->tx_errors++;
 			return IPSEC_XMIT_ESP_BADALG;
 		}
+#ifdef CONFIG_IPSEC_ALG
+		if ((ixt_a=ixs->ipsp->ips_alg_auth)) {
+			tailroom += AHHMAC_HASHLEN;
+		} else
+#endif /* CONFIG_IPSEC_ALG */
 		switch(ixs->ipsp->ips_authalg) {
 #ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
 		case AH_MD5:
@@ -570,7 +590,13 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 			ixs->stats->tx_errors++;
 			return IPSEC_XMIT_ESP_BADALG;
 		}		
+#ifdef CONFIG_IPSEC_ALG
+		tailroom += blocksize != 1 ?
+			((blocksize - ((ixs->pyldsz + 2) % blocksize)) % blocksize) + 2 :
+			((4 - ((ixs->pyldsz + 2) % 4)) % 4) + 2;
+#else
 		tailroom += ((8 - ((ixs->pyldsz + 2 * sizeof(unsigned char)) % 8)) % 8) + 2;
+#endif /* CONFIG_IPSEC_ALG */
 		tailroom += authlen;
 		break;
 #endif /* !CONFIG_IPSEC_ESP */
@@ -635,6 +661,9 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 		espp->esp_spi = ixs->ipsp->ips_said.spi;
 		espp->esp_rpl = htonl(++(ixs->ipsp->ips_replaywin_lastseq));
 		
+#ifdef CONFIG_IPSEC_ALG
+		if (!ixt_e)
+#endif /* CONFIG_IPSEC_ALG */
 		switch(ixs->ipsp->ips_encalg) {
 #if defined(CONFIG_IPSEC_ENC_3DES)
 #ifdef CONFIG_IPSEC_ENC_3DES
@@ -665,6 +694,23 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 		dat[len - authlen - 1] = ixs->iph->protocol;
 		ixs->iph->protocol = IPPROTO_ESP;
 		
+#ifdef CONFIG_IPSEC_ALG
+		/* Do all operations here:
+		 * copy IV->ESP, encrypt, update ips IV
+		 */
+		if (ixt_e) {
+			int ret;
+			memcpy(espp->esp_iv, 
+					ixs->ipsp->ips_iv, 
+					ixt_e->ixt_ivlen/8);
+			ret=ipsec_alg_esp_encrypt(ixs->ipsp, 
+					idat, ilen, espp->esp_iv,
+					IPSEC_ALG_ENCRYPT);
+			memcpy(ixs->ipsp->ips_iv,
+					idat + ilen - ixt_e->ixt_ivlen/8,
+					ixt_e->ixt_ivlen/8);
+		} else
+#endif /* CONFIG_IPSEC_ALG */
 		switch(ixs->ipsp->ips_encalg) {
 #ifdef CONFIG_IPSEC_ENC_3DES
 		case ESP_3DES:
@@ -682,6 +728,9 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 			return IPSEC_XMIT_ESP_BADALG;
 		}
 		
+#ifdef CONFIG_IPSEC_ALG
+		if (!ixt_e)
+#endif /* CONFIG_IPSEC_ALG */
 		switch(ixs->ipsp->ips_encalg) {
 #if defined(CONFIG_IPSEC_ENC_3DES)
 #ifdef CONFIG_IPSEC_ENC_3DES
@@ -703,6 +752,14 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 			return IPSEC_XMIT_ESP_BADALG;
 		}
 		
+#ifdef CONFIG_IPSEC_ALG
+		if (ixt_a) {
+			ipsec_alg_sa_esp_hash(ixs->ipsp,
+					(caddr_t)espp, len - ixs->iphlen - authlen,
+					&(dat[len - authlen]), authlen);
+
+		} else
+#endif /* CONFIG_IPSEC_ALG */
 		switch(ixs->ipsp->ips_authalg) {
 #ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
 		case AH_MD5:
@@ -1083,6 +1140,11 @@ static int create_hold_eroute(struct eroute *origtrap,
 enum ipsec_xmit_value
 ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 {
+#ifdef CONFIG_IPSEC_ALG
+	struct ipsec_alg_enc *ixt_e = NULL;
+	struct ipsec_alg_auth *ixt_a = NULL;
+	int blocksize = 8;
+#endif /* CONFIG_IPSEC_ALG */
 	enum ipsec_xmit_value bundle_stat = IPSEC_XMIT_OK;
  
 	ixs->newdst = ixs->orgdst = ixs->iph->daddr;
@@ -1358,6 +1420,12 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 #endif /* CONFIG_IPSEC_AH */
 #ifdef CONFIG_IPSEC_ESP
 		case IPPROTO_ESP:
+#ifdef CONFIG_IPSEC_ALG
+			if ((ixt_e=ixs->ipsp->ips_alg_enc)) {
+				blocksize = ixt_e->ixt_blocksize;
+				ixs->headroom += ESP_HEADER_LEN + ixt_e->ixt_ivlen/8;
+			} else
+#endif /* CONFIG_IPSEC_ALG */
 			switch(ixs->ipsp->ips_encalg) {
 #ifdef CONFIG_IPSEC_ENC_3DES
 			case ESP_3DES:
@@ -1369,6 +1437,11 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 				bundle_stat = IPSEC_XMIT_ESP_BADALG;
 				goto cleanup;
 			}
+#ifdef CONFIG_IPSEC_ALG
+			if ((ixt_a=ixs->ipsp->ips_alg_auth)) {
+				ixs->tailroom += AHHMAC_HASHLEN;
+			} else
+#endif /* CONFIG_IPSEC_ALG */
 			switch(ixs->ipsp->ips_authalg) {
 #ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
 			case AH_MD5:
@@ -1387,7 +1460,13 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 				bundle_stat = IPSEC_XMIT_AH_BADALG;
 				goto cleanup;
 			}			
+#ifdef CONFIG_IPSEC_ALG
+			ixs->tailroom += blocksize != 1 ?
+				((blocksize - ((ixs->pyldsz + 2) % blocksize)) % blocksize) + 2 :
+				((4 - ((ixs->pyldsz + 2) % 4)) % 4) + 2;
+#else
 			ixs->tailroom += ((8 - ((ixs->pyldsz + 2 * sizeof(unsigned char)) % 8)) % 8) + 2;
+#endif /* CONFIG_IPSEC_ALG */
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 		if ((ixs->ipsp->ips_natt_type) && (!ixs->natt_type)) {
 			ixs->natt_type = ixs->ipsp->ips_natt_type;
@@ -1749,8 +1828,14 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 
 /*
  * $Log: ipsec_xmit.c,v $
+ * Revision 1.8  2004/04/06 02:49:26  mcr
+ * 	pullup of algo code from alg-branch.
+ *
  * Revision 1.7  2004/02/03 03:13:41  mcr
  * 	mark invalid encapsulation states.
+ *
+ * Revision 1.6.2.1  2003/12/22 15:25:52  jjo
+ *      Merged algo-0.8.1-rc11-test1 into alg-branch
  *
  * Revision 1.6  2003/12/10 01:14:27  mcr
  * 	NAT-traversal patches to KLIPS.

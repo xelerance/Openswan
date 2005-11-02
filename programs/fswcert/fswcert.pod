@@ -1,0 +1,101 @@
+=head1 NAME
+
+fswcert - manipulate raw RSA keys and PKIX certificates
+
+=head1 SYNOPSIS
+
+fswcert [B<--certificate>] [B<--key>]
+[B<--left>>] [B<--raw>] [B<--right>]
+[B<--type>=I<input>] [B<--format>=I<stuff>]
+[B<--quiet>] [B<--directory>=<dir>] [B<--version>]
+
+fswcert B<--help>
+
+=head1 DESCRIPTION
+
+B<fswcert> is a program to convert X.509/PKIX format certificates and
+private key files to Openswan ipsec.secrets files and DNS records. 
+It can also read Openswan ipsec.secrets files and (interactively) produce
+certificate requests and self-signed certificates.
+
+WRITE MORE
+
+I<input> is the file to read for POD source (the POD can be embedded in
+code).  If I<input> isn't given, it defaults to STDIN.  I<output>, if given,
+is the file to which to write the formatted output.  If I<output> isn't
+given, the formatted output is written to STDOUT.  Several POD files can be
+processed in the same B<pod2man> invocation (saving module load and compile
+times) by providing multiple pairs of I<input> and I<output> files on the
+command line.
+
+B<--section>, B<--release>, B<--center>, B<--date>, and B<--official> can be
+used to set the headers and footers to use; if not given, Pod::Man will
+assume various defaults.  See below or L<Pod::Man> for details.
+
+B<pod2man> assumes that your *roff formatters have a fixed-width font named
+CW.  If yours is called something else (like CR), use B<--fixed> to specify
+it.  This generally only matters for troff output for printing.  Similarly,
+you can set the fonts used for bold, italic, and bold italic fixed-width
+output.
+
+Besides the obvious pod conversions, Pod::Man, and therefore pod2man also
+takes care of formatting func(), func(n), and simple variable references
+like $foo or @bar so you don't have to use code escapes for them; complex
+expressions like C<$fred{'stuff'}> will still need to be escaped, though.
+It also translates dashes that aren't used as hyphens into en dashes, makes
+long dashes--like this--into proper em dashes, fixes "paired quotes," and
+takes care of several other troff-specific tweaks.  See L<Pod::Man> for
+complete information.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<-c> I<string>, B<--center>=I<string>
+
+Sets the centered page header to I<string>.  The default is "User
+Contributed Perl Documentation", but also see B<--official> below.
+
+=item B<-d> I<string>, B<--date>=I<string>
+
+Set the left-hand footer string to this value.  By default, the modification
+date of the input file will be used, or the current date if input comes from
+STDIN.
+
+=item B<--fixed>=I<font>
+
+The fixed-width font to use for vertabim text and code.  Defaults to CW.
+Some systems may want CR instead.  Only matters for troff(1) output.
+
+=item B<--fixedbold>=I<font>
+
+Bold version of the fixed-width font.  Defaults to CB.  Only matters for
+troff(1) output.
+
+=item B<--fixeditalic>=I<font>
+
+Italic version of the fixed-width font (actually, something of a misnomer,
+since most fixed-width fonts only have an oblique version, not an italic
+version).  Defaults to CI.  Only matters for troff(1) output.
+
+=item B<--fixedbolditalic>=I<font>
+
+Bold italic (probably actually oblique) version of the fixed-width font.
+Pod::Man doesn't assume you have this, and defaults to CB.  Some systems
+(such as Solaris) have this font available as CX.  Only matters for troff(1)
+output.
+
+=item B<-h>, B<--help>
+
+Print out usage information.
+
+=item B<-l>, B<--lax>
+
+Don't complain when required sections are missing.  Not currently used, as
+POD checking functionality is not yet implemented in Pod::Man.
+
+=item B<-o>, B<--official>
+
+Set the default header to indicate that this page is part of the standard
+Perl release, if B<--center> is not also given.
+

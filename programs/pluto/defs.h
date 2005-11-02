@@ -12,8 +12,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: defs.h,v 1.34 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: defs.h,v 1.36 2004/05/27 00:39:59 mcr Exp $
  */
+
+#include "oswalloc.h"
 
 #ifdef KLIPS
 # define USED_BY_KLIPS	/* ignore */
@@ -40,48 +42,8 @@ typedef unsigned long so_serial_t;
 #define SOS_NOBODY	0	/* null serial number */
 #define SOS_FIRST	1	/* first normal serial number */
 
-/* memory allocation */
-
-extern void *alloc_bytes(size_t size, const char *name);
-#define alloc_thing(thing, name) (alloc_bytes(sizeof(thing), (name)))
-
-extern void *clone_bytes(const void *orig, size_t size, const char *name);
-#define clone_thing(orig, name) clone_bytes((const void *)&(orig), sizeof(orig), (name))
-#define clone_str(str, name) \
-    ((str) == NULL? NULL : clone_bytes((str), strlen((str))+1, (name)))
-
-#ifdef LEAK_DETECTIVE
-  extern void pfree(void *ptr);
-  extern void report_leaks(void);
-#else
-# define pfree(ptr) free(ptr)	/* ordinary stdc free */
-#endif
-#define pfreeany(p) { if ((p) != NULL) pfree(p); }
-#define replace(p, q) { pfreeany(p); (p) = (q); }
-
-
-/* chunk is a simple pointer-and-size abstraction */
-
-struct chunk {
-    u_char *ptr;
-    size_t len;
-    };
-typedef struct chunk chunk_t;
-
-#define setchunk(ch, addr, size) { (ch).ptr = (addr); (ch).len = (size); }
-/* NOTE: freeanychunk, unlike pfreeany, NULLs .ptr */
-#define freeanychunk(ch) { pfreeany((ch).ptr); (ch).ptr = NULL; }
-#define clonetochunk(ch, addr, size, name) \
-    { (ch).ptr = clone_bytes((addr), (ch).len = (size), name); }
-#define clonereplacechunk(ch, addr, size, name) \
-    { pfreeany((ch).ptr); clonetochunk(ch, addr, size, name); }
-#define chunkcpy(dst, chunk) \
-    { memcpy(dst, chunk.ptr, chunk.len); dst += chunk.len;}
-
-extern const chunk_t empty_chunk;
-
 /* display a date either in local or UTC time */
-extern char* timetoa(const time_t *time, bool utc);
+extern char* timetoa(const time_t *time, bool utc, char *buf, size_t blen);
 
 /* warns a predefined interval before expiry */
 extern const char* check_expiry(time_t expiration_date,

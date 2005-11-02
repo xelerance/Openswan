@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _startklips.in,v 1.23.2.2 2004/04/09 15:58:09 ken Exp $
+# RCSID $Id: _startklips.in,v 1.26.4.2 2004/07/15 02:34:42 paul Exp $
 
 me='ipsec _startklips'		# for messages
 
@@ -248,9 +248,15 @@ setmodule() {
 # main line
 
 # load module if possible
+if test -f $ipsecversion && test -f $kamepfkey
+then
+    # both KLIPS and native code detected, bail out
+    echo "FATAL ERROR: Both KLIPS and native IPsec code is present in kernel"
+    exit
+fi
 if test ! -f $ipsecversion && test ! -f $kamepfkey
 then
-    # statically compiled KLIPS not found; try to load the module
+    # statically compiled KLIPS/native not found; try to load the module
     insmod ipsec
 fi
 
@@ -336,12 +342,25 @@ if $klips; then
 	ipsec eroute --clear
 	ipsec spi --clear
 else
-	if type setkey > /dev/null 2>&1; then
-		setkey -F
-		setkey -FP
-	else
-		echo "WARNING: setkey not found."
-	fi
+# Check that the setkey command is available.
+setkeycmd=
+PATH=$PATH:/usr/local/sbin
+for dir in `echo $PATH | tr ':' ' '`
+do
+        if test -f $dir/setkey -a -x $dir/setkey
+        then
+                setkeycmd=$dir/setkey
+                break                   # NOTE BREAK OUT
+        fi
+done
+if ! test "$setkeycmd"
+then
+        echo "WARNING: cannot find setkey command -- \`$1'" |
+                logger -s -p daemon.error -t ipsec_setup
+else
+        $setkeycmd -F
+        $setkeycmd -FP
+fi
 fi
 
 # figure out interfaces

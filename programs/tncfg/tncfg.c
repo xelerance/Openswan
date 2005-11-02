@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char tncfg_c_version[] = "RCSID $Id: tncfg.c,v 1.30 2002/04/24 07:55:32 mcr Exp $";
+char tncfg_c_version[] = "RCSID $Id: tncfg.c,v 1.32 2004/04/06 03:05:06 mcr Exp $";
 
 
 #include <stdio.h>
@@ -24,11 +24,11 @@ char tncfg_c_version[] = "RCSID $Id: tncfg.c,v 1.30 2002/04/24 07:55:32 mcr Exp 
 #include <linux/types.h>
 #include <sys/ioctl.h> /* ioctl() */
 
-#include <freeswan.h>
-#ifdef NET_21 /* from freeswan.h */
+#include <openswan.h>
+#ifdef NET_21 /* from openswan.h */
 #include <linux/sockios.h>
 #include <sys/socket.h>
-#endif /* NET_21 */ /* from freeswan.h */
+#endif /* NET_21 */ /* from openswan.h */
 
 #if 0
 #include <linux/if.h>
@@ -39,7 +39,7 @@ char tncfg_c_version[] = "RCSID $Id: tncfg.c,v 1.30 2002/04/24 07:55:32 mcr Exp 
 #include <errno.h>
 #include <getopt.h>
 
-#include "freeswan/ipsec_tunnel.h"
+#include "openswan/ipsec_tunnel.h"
 
 static void
 usage(char *name)
@@ -274,6 +274,12 @@ main(int argc, char *argv[])
 	
 /*
  * $Log: tncfg.c,v $
+ * Revision 1.32  2004/04/06 03:05:06  mcr
+ * 	freeswan->openswan changes.
+ *
+ * Revision 1.31  2004/04/04 01:53:50  ken
+ * Use openswan includes
+ *
  * Revision 1.30  2002/04/24 07:55:32  mcr
  * 	#include patches and Makefiles for post-reorg compilation.
  *

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!-- lifted from troff+man by doclifter -->
+<refentry>
+<refmeta>
+<refentrytitle>_KEYCENSOR</refentrytitle>
+<manvolnum>8</manvolnum>
+<refmiscinfo class='date'>25 Apr 2002</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>ipsec _keycensor</refname>
+<refpurpose>internal routine to remove sensitive information</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para><emphasis remap='I'>_keycensor</emphasis>
+is used by 
+<emphasis remap='B'>ipsec barf</emphasis>
+to process the /etc/ipsec.secrets file, removing private key info.</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para><citerefentry><refentrytitle>ipsec</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_barf</refentrytitle><manvolnum>8</manvolnum></citerefentry></para>
+</refsect1>
+
+<refsect1 id='history'><title>HISTORY</title>
+<para>Man page written for the Linux FreeS/WAN project &lt;<ulink url='http://www.freeswan.org/'>http://www.freeswan.org/</ulink>&gt;
+by Michael Richardson. Original program by Henry Spencer.</para>
+
+<!--  $Log: _keycensor.8.xml,v $
+<!--  Revision 1.1  2004/05/26 17:48:05  ken
+<!--  Import XML version
+<!-- -->
+<!--  Revision 1.2  2002/04/29 22:39:31  mcr -->
+<!--  	added basic man page for all internal commands. -->
+
+<!--  Revision 1.1  2002/04/26 01:21:43  mcr -->
+<!--  	while tracking down a missing (not installed) /etc/ipsec.conf, -->
+<!--  	MCR has decided that it is not okay for each program subdir to have -->
+<!--  	some subset (determined with \-f) of possible files. -->
+<!--  	Each subdir that defines $PROGRAM, MUST have a PROGRAM.8 file as well as a PROGRAM file. -->
+<!--  	Optional PROGRAM.5 files have been added to the makefiles. -->
+
+
+
+</refsect1>
+</refentry>
+

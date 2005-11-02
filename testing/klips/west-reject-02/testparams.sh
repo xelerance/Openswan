@@ -10,6 +10,8 @@ EXITONEMPTY=--exitonempty
 PRIVINPUT=../inputs/ikeinit-japan-sunrise.pcap
 REF_PUB_OUTPUT=spi1-output.txt
 
+THREEEIGHT=true
+
 REF_PRIV_OUTPUT=icmp-output.txt
 REF_PRIV_FILTER=../../klips/fixups/one-to-eight-icmp.pl
 

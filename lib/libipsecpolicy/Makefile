@@ -11,13 +11,13 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.2 2003/05/14 02:12:12 mcr Exp $
+# RCSID $Id: Makefile,v 1.3 2004/04/03 19:44:41 ken Exp $
 
 
-FREESWANSRCDIR=../..
+OPENSWANSRCDIR=../..
 
-include ${FREESWANSRCDIR}/Makefile.inc
-include ${FREESWANSRCDIR}/Makefile.ver
+include ${OPENSWANSRCDIR}/Makefile.inc
+include ${OPENSWANSRCDIR}/Makefile.ver
 
 
 MANDIR=$(MANTREE)/man3
@@ -26,11 +26,11 @@ SRCS=policyquery.c cgipolicy.c
 
 OBJS=${SRCS:.c=.o} version.o
 
-KLIPSD=${FREESWANSRCDIR}/linux/include
+KLIPSD=${OPENSWANSRCDIR}/linux/include
 
 LIB=libipsecpolicy.a
 # Original flags
-CFLAGS=-I. -I${KLIPSD} -I${FREESWANSRCDIR} $(USERCOMPILE)
+CFLAGS=-I. -I${KLIPSD} -I${OPENSWANSRCDIR} $(USERCOMPILE)
 CFLAGS+= -Wall
 CFLAGS+= -Wpointer-arith
 CFLAGS+= -Wcast-qual
@@ -50,7 +50,7 @@ install:
 	do \
 		$(INSTALL) $(INSTMANFLAGS) $(SRCDIR)/$$f $(MANDIR)/ipsec_$$f || exit 1 ; \
 	done
-	@$(FREESWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${SRCDIR}/$(man)) | \
+	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${SRCDIR}/$(man)) | \
 	while read from to; \
 	do \
 		ln -s -f ipsec_$$from $(MANDIR)/$$to; \
@@ -62,7 +62,7 @@ install_file_list:
 	do \
 		echo $(MANDIR)/ipsec_$$f;\
 	done;
-	@$(FREESWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${SRCDIR}/$(man)) | \
+	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${SRCDIR}/$(man)) | \
 	while read from to; \
 	do \
 		echo $(MANDIR)/$$to; \
@@ -74,7 +74,7 @@ $(LIB):	$(OBJS)
 $(OBJS):	$(HDRS)
 
 # build version.c using version number from Makefile.ver
-version.c:	version.in.c ${FREESWANSRCDIR}/Makefile.ver
+version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
 	sed '/"/s/xxx/$(IPSECVERSION)/' version.in.c >$@
 
 clean:

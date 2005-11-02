@@ -11,10 +11,11 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: whack.h,v 1.57.2.1 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: whack.h,v 1.66 2004/06/27 22:36:14 mcr Exp $
  */
 
 #include <openswan.h>
+#include <openswan/ipsec_policy.h>
 
 /* Since the message remains on one host, native representation is used.
  * Think of this as horizontal microcode: all selected operations are
@@ -33,7 +34,7 @@
  */
 
 #define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 24)
-#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 28)
+#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 32)
 
 /* struct whack_end is a lot like connection.h's struct end
  * It differs because it is going to be shipped down a socket
@@ -43,7 +44,8 @@ struct whack_end {
     char *id;		/* id string (if any) -- decoded by pluto */
     char *cert;		/* path string (if any) -- loaded by pluto  */
     char *ca;		/* distinguished name string (if any) -- parsed by pluto */
-    
+    char *groups;       /* access control groups (if any) -- parsed by pluto */
+
     ip_address host_addr,
 	host_nexthop,
 	host_srcip;
@@ -52,7 +54,8 @@ struct whack_end {
     bool key_from_DNS_on_demand;
     bool has_client;
     bool has_client_wildcard;
-    char *updown;	/* string */
+    bool has_port_wildcard;
+    char *updown;		/* string */
     u_int16_t host_port;	/* host order */
     u_int16_t port;		/* host order */
     u_int8_t protocol;
@@ -63,8 +66,9 @@ struct whack_end {
     bool xauth_client;
     bool modecfg_server;        /* for MODECFG */
     bool modecfg_client;
-    enum certpolicy sendcert;
- };
+    enum certpolicy      sendcert;
+    enum ipsec_cert_type certtype;
+};
 
 struct whack_message {
     unsigned int magic;
@@ -101,6 +105,15 @@ struct whack_message {
     unsigned long sa_rekey_fuzz;
     unsigned long sa_keying_tries;
 
+    /* For DPD 3706 - Dead Peer Detection */
+    time_t dpd_delay;
+    time_t dpd_timeout;
+    int dpd_action;
+    int dpd_count;
+
+    /* Force the use of NAT-T on a connection */
+    bool forceencaps;
+
     /*  note that each end contains string 2/5.id, string 3/6 cert,
      *  and string 4/7 updown
      */
@@ -110,6 +123,10 @@ struct whack_message {
     /* note: if the client is the gateway, the following must be equal */
     sa_family_t addr_family;	/* between gateways */
     sa_family_t tunnel_addr_family;	/* between clients */
+
+    char *ike;		/* ike algo string (separated by commas) */
+    char *pfsgroup;	/* pfsgroup will be "encapsulated" in esp string for pluto */
+    char *esp;		/* esp algo string (separated by commas) */
 
     /* for WHACK_KEY: */
     bool whack_key;
@@ -154,8 +171,11 @@ struct whack_message {
 
     /* for WHACK_LIST */
     bool whack_utc;
-    u_char whack_list;
+    lset_t whack_list;
 
+    /* for WHACK_PURGEOCSP */
+    bool whack_purgeocsp;
+    
     /* for WHACK_REREAD */
     u_char whack_reread;
 
@@ -165,91 +185,63 @@ struct whack_message {
      *  2 left's name [left.host.name.len]
      *  3 left's cert
      *  4 left's ca
-     *  5 left's updown
-     *  6 right's name [left.host.name.len]
-     *  7 right's cert
-     *  8 right's ca
-     *  9 right's updown
-     * 10 keyid
+     *  5 left's groups
+     *  6 left's updown
+     *  7 right's name [left.host.name.len]
+     *  8 right's cert
+     *  9 right's ca
+     * 10 right's groups
+     * 11 right's updown
+     * 12 keyid
+     * 13 myid
      * plus keyval (limit: 8K bits + overhead), a chunk.
      */
     size_t str_size;
     char string[2048];
 };
 
-/* Codes for status messages returned to whack.
- * These are 3 digit decimal numerals.  The structure
- * is inspired by section 4.2 of RFC959 (FTP).
- * Since these will end up as the exit status of whack, they
- * must be less than 256.
- * NOTE: ipsec_auto(8) knows about some of these numbers -- change carefully.
- */
-enum rc_type {
-    RC_COMMENT,		/* non-commital utterance (does not affect exit status) */
-    RC_WHACK_PROBLEM,	/* whack-detected problem */
-    RC_LOG,		/* message aimed at log (does not affect exit status) */
-    RC_LOG_SERIOUS,	/* serious message aimed at log (does not affect exit status) */
-    RC_SUCCESS,		/* success (exit status 0) */
-
-    /* failure, but not definitive */
-
-    RC_RETRANSMISSION = 10,
-
-    /* improper request */
-
-    RC_DUPNAME = 20,	/* attempt to reuse a connection name */
-    RC_UNKNOWN_NAME,	/* connection name unknown or state number */
-    RC_ORIENT,	/* cannot orient connection: neither end is us */
-    RC_CLASH,	/* clash between two Road Warrior connections OVERLOADED */
-    RC_DEAF,	/* need --listen before --initiate */
-    RC_ROUTE,	/* cannot route */
-    RC_RTBUSY,	/* cannot unroute: route busy */
-    RC_BADID,	/* malformed --id */
-    RC_NOKEY,	/* no key found through DNS */
-    RC_NOPEERIP,	/* cannot initiate when peer IP is unknown */
-    RC_INITSHUNT,	/* cannot initiate a shunt-oly connection */
-    RC_WILDCARD,	/* cannot initiate when ID has wildcards */
-    RC_NOVALIDPIN,	/* cannot initiate without valid PIN */
-
-    /* permanent failure */
-
-    RC_BADWHACKMESSAGE = 30,
-    RC_NORETRANSMISSION,
-    RC_INTERNALERR,
-    RC_OPPOFAILURE,	/* Opportunism failed */
-
-    /* entry of secrets */
-    RC_ENTERSECRET = 40,
-    RC_XAUTHPROMPT = 41,
-    
-    /* progress: start of range for successful state transition.
-     * Actual value is RC_NEW_STATE plus the new state code.
-     */
-    RC_NEW_STATE = 100,
-
-    /* start of range for notification.
-     * Actual value is RC_NOTIFICATION plus code for notification
-     * that should be generated by this Pluto.
-     */
-    RC_NOTIFICATION = 200	/* as per IKE notification messages */
-};
-
 /* options of whack --list*** command */
 
-#define LIST_NONE	0x00	/* don't list anything */
-#define LIST_PUBKEYS	0x01	/* list all public keys */
-#define LIST_CERTS	0x02	/* list all host/user certs */
-#define LIST_CACERTS	0x04	/* list all ca certs */
-#define LIST_CRLS	0x08	/* list all crls */
-#define LIST_CARDS	0x10	/* list all smartcard records */
+#define LIST_NONE	0x0000	/* don't list anything */
+#define LIST_PUBKEYS	0x0001	/* list all public keys */
+#define LIST_CERTS	0x0002	/* list all host/user certs */
+#define LIST_CACERTS	0x0004	/* list all ca certs */
+#define LIST_ACERTS	0x0008	/* list all attribute certs */
+#define LIST_AACERTS	0x0010	/* list all aa certs */
+#define LIST_OCSPCERTS	0x0020	/* list all ocsp certs */
+#define LIST_GROUPS	0x0040	/* list all access control groups */
+#define LIST_CRLS	0x0080	/* list all crls */
+#define LIST_OCSP	0x0100	/* list all ocsp cache entries */
+#define LIST_CARDS	0x0200	/* list all smartcard records */
 
 #define LIST_ALL	LRANGES(LIST_PUBKEYS, LIST_CARDS)  /* all list options */
 
 /* options of whack --reread*** command */
 
-#define REREAD_NONE	0x00	/* don't reread anything */
-#define REREAD_SECRETS	0x01	/* reread /etc/ipsec.secrets */
-#define REREAD_CACERTS	0x02	/* reread certs in /etc/ipsec.d/cacerts */
-#define REREAD_CRLS	0x04	/* reread crls in /etc/ipsec.d/crls */
+#define REREAD_NONE	  0x00	/* don't reread anything */
+#define REREAD_SECRETS	  0x01	/* reread /etc/ipsec.secrets */
+#define REREAD_CACERTS	  0x02	/* reread certs in /etc/ipsec.d/cacerts */
+#define REREAD_AACERTS	  0x04	/* reread certs in /etc/ipsec.d/aacerts */
+#define REREAD_OCSPCERTS  0x08	/* reread certs in /etc/ipsec.d/ocspcerts */
+#define REREAD_ACERTS     0x10	/* reread certs in /etc/ipsec.d/acerts */
+#define REREAD_CRLS	  0x20	/* reread crls in /etc/ipsec.d/crls */
 
 #define REREAD_ALL	LRANGES(REREAD_SECRETS, REREAD_CRLS)  /* all reread options */
+
+
+struct whackpacker {
+    struct whack_message *msg;
+    char                 *str_roof;
+    char                 *str_next;
+    int                   n;
+};
+
+extern err_t pack_whack_msg(struct whackpacker *wp);
+extern err_t unpack_whack_msg (struct whackpacker *wp);
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

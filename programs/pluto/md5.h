@@ -35,6 +35,8 @@ typedef u_int32_t UINT4;
 
 #endif
 
+#ifndef _MD5_H_
+
 /* MD5.H - header file for MD5C.C
  */
 
@@ -73,3 +75,4 @@ void MD5Update PROTO_LIST
 void MD5Final PROTO_LIST ((unsigned char [16], MD5_CTX *));
 
 #define _MD5_H_
+#endif /* _MD5_H_ */

@@ -1,5 +1,5 @@
 /* Loading of PEM encoded files with optional encryption
- * Copyright (C) 2001-2003 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2001-2004 Andreas Steffen, Zuercher Hochschule Winterthur
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pem.h,v 1.2 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: pem.h,v 1.3 2004/06/14 01:46:03 mcr Exp $
  */
 
 extern err_t pemtobin(chunk_t *blob, prompt_pass_t *pass, const char* label

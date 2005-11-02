@@ -1,8 +1,8 @@
 /*
  * @(#) Initialization code.
- * Copyright (C) 1996, 1997  John Ioannidis.
- * Copyright (C) 1998, 1999, 2000, 2001, 2002  Richard Guy Briggs <rgb@freeswan.org>
- *                                 2001  Michael Richardson <mcr@freeswan.org>
+ * Copyright (C) 1996, 1997   John Ioannidis.
+ * Copyright (C) 1998 - 2002  Richard Guy Briggs <rgb@freeswan.org>
+ *               2001 - 2004  Michael Richardson <mcr@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -18,14 +18,14 @@
  *
  */
 
-char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.90.6.1 2004/04/18 23:00:23 ken Exp $";
+char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.93 2004/04/06 02:49:26 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -42,7 +42,7 @@ char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.90.6.1 2004/04/18 23:
 #include <linux/in.h>          /* struct sockaddr_in */
 #include <linux/skbuff.h>
 #include <linux/random.h>       /* get_random_bytes() */
-#include <freeswan.h>
+#include <openswan.h>
 
 #ifdef SPINLOCK
 # ifdef SPINLOCK_23
@@ -70,26 +70,27 @@ char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.90.6.1 2004/04/18 23:
 # include <net/netlink.h>
 #endif
 
-#include "freeswan/radij.h"
+#include "openswan/radij.h"
 
-#include "freeswan/ipsec_life.h"
-#include "freeswan/ipsec_stats.h"
-#include "freeswan/ipsec_sa.h"
+#include "openswan/ipsec_life.h"
+#include "openswan/ipsec_stats.h"
+#include "openswan/ipsec_sa.h"
 
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_radij.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_tunnel.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_radij.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_tunnel.h"
 
-#include "freeswan/ipsec_rcv.h"
-#include "freeswan/ipsec_ah.h"
-#include "freeswan/ipsec_esp.h"
+#include "openswan/ipsec_rcv.h"
+#include "openswan/ipsec_ah.h"
+#include "openswan/ipsec_esp.h"
 
 #ifdef CONFIG_IPSEC_IPCOMP
-# include "freeswan/ipcomp.h"
+# include "openswan/ipcomp.h"
 #endif /* CONFIG_IPSEC_IPCOMP */
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
+#include "openswan/ipsec_alg.h"
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
@@ -132,7 +133,7 @@ extern void ipsec_sysctl_unregister(void);
 #endif
 
 static inline int
-freeswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol)
+openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol)
 {
 #ifdef NETDEV_25
 	return inet_add_protocol(prot, protocol);
@@ -143,7 +144,7 @@ freeswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol)
 }
 
 static inline int
-freeswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
+openswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
 {
 #ifdef NETDEV_25
 	return inet_del_protocol(prot, protocol);
@@ -158,14 +159,16 @@ int
 ipsec_init(void)
 {
 	int error = 0;
-	extern int des_check_key;
 	unsigned char seed[256];
+#ifdef CONFIG_IPSEC_ENC_3DES
+	extern int des_check_key;
 
 	/* turn off checking of keys */
 	des_check_key=0;
+#endif /* CONFIG_IPSEC_ENC_3DES */
 
 	KLIPS_PRINT(1, "klips_info:ipsec_init: "
-		    "KLIPS startup, Openswan IPsec version: %s\n",
+		    "KLIPS startup, Openswan KLIPS IPsec stack version: %s\n",
 		    ipsec_version_code());
 
 	error |= ipsec_proc_init();
@@ -189,17 +192,17 @@ ipsec_init(void)
 	error |= register_netdevice_notifier(&ipsec_dev_notifier);
 
 #ifdef CONFIG_IPSEC_ESP
-	freeswan_inet_add_protocol(&esp_protocol, IPPROTO_ESP);
+	openswan_inet_add_protocol(&esp_protocol, IPPROTO_ESP);
 #endif /* CONFIG_IPSEC_ESP */
 
 #ifdef CONFIG_IPSEC_AH
-	freeswan_inet_add_protocol(&ah_protocol, IPPROTO_AH);
+	openswan_inet_add_protocol(&ah_protocol, IPPROTO_AH);
 #endif /* CONFIG_IPSEC_AH */
 
 /* we never actually link IPCOMP to the stack */
 #ifdef IPCOMP_USED_ALONE
 #ifdef CONFIG_IPSEC_IPCOMP
- 	freeswan_inet_add_protocol(&comp_protocol, IPPROTO_COMP);
+ 	openswan_inet_add_protocol(&comp_protocol, IPPROTO_COMP);
 #endif /* CONFIG_IPSEC_IPCOMP */
 #endif
 
@@ -209,6 +212,10 @@ ipsec_init(void)
 #ifdef CONFIG_SYSCTL
         error |= ipsec_sysctl_register();
 #endif                                                                          
+
+#ifdef CONFIG_IPSEC_ALG
+	ipsec_alg_init();
+#endif
 
 	get_random_bytes((void *)seed, sizeof(seed));
 	prng_init(&ipsec_prng, seed, sizeof(seed));
@@ -236,20 +243,20 @@ ipsec_cleanup(void)
 /* we never actually link IPCOMP to the stack */
 #ifdef IPCOMP_USED_ALONE
 #ifdef CONFIG_IPSEC_IPCOMP
- 	if (freeswan_inet_del_protocol(&comp_protocol, IPPROTO_COMP) < 0)
+ 	if (openswan_inet_del_protocol(&comp_protocol, IPPROTO_COMP) < 0)
 		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 		       "comp close: can't remove protocol\n");
 #endif /* CONFIG_IPSEC_IPCOMP */
 #endif /* IPCOMP_USED_ALONE */
 
 #ifdef CONFIG_IPSEC_AH
- 	if (freeswan_inet_del_protocol(&ah_protocol, IPPROTO_AH) < 0)
+ 	if (openswan_inet_del_protocol(&ah_protocol, IPPROTO_AH) < 0)
 		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 		       "ah close: can't remove protocol\n");
 #endif /* CONFIG_IPSEC_AH */
 
 #ifdef CONFIG_IPSEC_ESP
- 	if (freeswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP) < 0)
+ 	if (openswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP) < 0)
 		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 		       "esp close: can't remove protocol\n");
 #endif /* CONFIG_IPSEC_ESP */
@@ -310,8 +317,20 @@ cleanup_module(void)
 
 /*
  * $Log: ipsec_init.c,v $
- * Revision 1.90.6.1  2004/04/18 23:00:23  ken
- * Change some remenents of FreeS/WAN -> Openswan
+ * Revision 1.93  2004/04/06 02:49:26  mcr
+ * 	pullup of algo code from alg-branch.
+ *
+ * Revision 1.92  2004/03/30 15:30:39  ken
+ * Proper Capitalization
+ *
+ * Revision 1.91  2004/03/22 01:51:51  ken
+ * We are open
+ *
+ * Revision 1.90.4.2  2004/04/05 04:30:46  mcr
+ * 	patches for alg-branch to compile/work with 2.x openswan
+ *
+ * Revision 1.90.4.1  2003/12/22 15:25:52  jjo
+ *      Merged algo-0.8.1-rc11-test1 into alg-branch
  *
  * Revision 1.90  2003/10/31 02:27:55  mcr
  * 	pulled up port-selector patches and sa_id elimination.
@@ -504,239 +523,6 @@ cleanup_module(void)
  * Revision 1.42  1999/12/31 14:57:19  rgb
  * MB fix for new dummy-less proc_get_info in 2.3.35.
  *
- * Revision 1.41  1999/11/23 23:04:03  rgb
- * Use provided macro ADDRTOA_BUF instead of hardcoded value.
- * Sort out pfkey and freeswan headers, putting them in a library path.
- *
- * Revision 1.40  1999/11/18 18:47:01  rgb
- * Added dynamic proc registration for 2.3.25+.
- * Changed all device registrations for static linking to
- * dynamic to reduce the number and size of patches.
- * Changed all protocol registrations for static linking to
- * dynamic to reduce the number and size of patches.
- *
- * Revision 1.39  1999/11/18 04:12:07  rgb
- * Replaced all kernel version macros to shorter, readable form.
- * Added Marc Boucher's 2.3.25 proc patches.
- * Converted all PROC_FS entries to dynamic to reduce kernel patching.
- * Added CONFIG_PROC_FS compiler directives in case it is shut off.
- *
- * Revision 1.38  1999/11/17 15:53:38  rgb
- * Changed all occurrences of #include "../../../lib/freeswan.h"
- * to #include <freeswan.h> which works due to -Ilibfreeswan in the
- * klips/net/ipsec/Makefile.
- *
- * Revision 1.37  1999/10/16 04:23:06  rgb
- * Add stats for replaywin_errs, replaywin_max_sequence_difference,
- * authentication errors, encryption size errors, encryption padding
- * errors, and time since last packet.
- *
- * Revision 1.36  1999/10/16 00:30:47  rgb
- * Added SA lifetime counting.
- *
- * Revision 1.35  1999/10/15 22:14:00  rgb
- * Clean out cruft.
- *
- * Revision 1.34  1999/10/03 18:46:28  rgb
- * Spinlock fixes for 2.0.xx and 2.3.xx.
- *
- * Revision 1.33  1999/10/01 17:08:10  rgb
- * Disable spinlock init.
- *
- * Revision 1.32  1999/10/01 16:22:24  rgb
- * Switch from assignment init. to functional init. of spinlocks.
- *
- * Revision 1.31  1999/10/01 15:44:52  rgb
- * Move spinlock header include to 2.1> scope.
- *
- * Revision 1.30  1999/10/01 00:00:16  rgb
- * Added eroute structure locking.
- * Added tdb structure locking.
- * Minor formatting changes.
- * Add call to initialize tdb hash table.
- *
- * Revision 1.29  1999/09/23 20:22:40  rgb
- * Enable, tidy and fix network notifier code.
- *
- * Revision 1.28  1999/09/18 11:39:56  rgb
- * Start to add (disabled) netdevice notifier code.
- *
- * Revision 1.27  1999/08/28 08:24:47  rgb
- * Add compiler directives to compile cleanly without debugging.
- *
- * Revision 1.26  1999/08/06 16:03:22  rgb
- * Correct error messages on failure to unload /proc entries.
- *
- * Revision 1.25  1999/08/03 17:07:25  rgb
- * Report device MTU, not private MTU.
- *
- * Revision 1.24  1999/05/25 22:24:37  rgb
- * /PROC/NET/ipsec* init problem fix.
- *
- * Revision 1.23  1999/05/25 02:16:38  rgb
- * Make modular proc_fs entries dynamic and fix for 2.2.x.
- *
- * Revision 1.22  1999/05/09 03:25:35  rgb
- * Fix bug introduced by 2.2 quick-and-dirty patch.
- *
- * Revision 1.21  1999/05/05 22:02:30  rgb
- * Add a quick and dirty port to 2.2 kernels by Marc Boucher <marc@mbsi.ca>.
- *
- * Revision 1.20  1999/04/29 15:15:50  rgb
- * Fix undetected iv_len reporting bug.
- * Add sanity checking for null pointer to private data space.
- * Add return values to init and cleanup functions.
- *
- * Revision 1.19  1999/04/27 19:24:44  rgb
- * Added /proc/net/ipsec_klipsdebug support for reading the current debug
- * settings.
- * Instrument module load/init/unload.
- *
- * Revision 1.18  1999/04/15 15:37:24  rgb
- * Forward check changes from POST1_00 branch.
- *
- * Revision 1.15.2.3  1999/04/13 20:29:19  rgb
- * /proc/net/ipsec_* cleanup.
- *
- * Revision 1.15.2.2  1999/04/02 04:28:23  rgb
- * /proc/net/ipsec_* formatting enhancements.
- *
- * Revision 1.15.2.1  1999/03/30 17:08:33  rgb
- * Add pfkey initialisation.
- *
- * Revision 1.17  1999/04/11 00:28:57  henry
- * GPL boilerplate
- *
- * Revision 1.16  1999/04/06 04:54:25  rgb
- * Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
- * patch shell fixes.
- *
- * Revision 1.15  1999/02/24 20:15:07  rgb
- * Update output format.
- *
- * Revision 1.14  1999/02/17 16:49:39  rgb
- * Convert DEBUG_IPSEC to KLIPS_PRINT
- * Ditch NET_IPIP dependancy.
- *
- * Revision 1.13  1999/01/26 02:06:37  rgb
- * Remove ah/esp switching on include files.
- * Removed CONFIG_IPSEC_ALGO_SWITCH macro.
- * Removed dead code.
- * Remove references to INET_GET_PROTOCOL.
- *
- * Revision 1.12  1999/01/22 06:19:18  rgb
- * Cruft clean-out.
- * 64-bit clean-up.
- * Added algorithm switch code.
- *
- * Revision 1.11  1998/12/01 05:54:53  rgb
- * Cleanup and order debug version output.
- *
- * Revision 1.10  1998/11/30 13:22:54  rgb
- * Rationalised all the klips kernel file headers.  They are much shorter
- * now and won't conflict under RH5.2.
- *
- * Revision 1.9  1998/11/10 05:35:13  rgb
- * Print direction in/out flag from /proc/net/ipsec_spi.
- *
- * Revision 1.8  1998/10/27 13:48:10  rgb
- * Cleaned up /proc/net/ipsec_* filesystem for easy parsing by scripts.
- * Fixed less(1) truncated output bug.
- * Code clean-up.
- *
- * Revision 1.7  1998/10/22 06:43:16  rgb
- * Convert to use satoa for printk.
- *
- * Revision 1.6  1998/10/19 14:24:35  rgb
- * Added inclusion of freeswan.h.
- *
- * Revision 1.5  1998/10/09 04:43:35  rgb
- * Added 'klips_debug' prefix to all klips printk debug statements.
- *
- * Revision 1.4  1998/07/27 21:50:22  rgb
- * Not necessary to traverse mask tree for /proc/net/ipsec_eroute.
- *
- * Revision 1.3  1998/06/25 19:51:20  rgb
- * Clean up #endif comments.
- * Shift debugging comment control for procfs to debug_tunnel.
- * Make proc_dir_entries visible to rest of kernel for static link.
- * Replace hardwired fileperms with macros.
- * Use macros for procfs inode numbers.
- * Rearrange initialisations between ipsec_init and module_init as appropriate
- * for static loading.
- *
- * Revision 1.2  1998/06/23 02:55:43  rgb
- * Slightly quieted init-time messages.
- * Re-introduced inet_add_protocol after it mysteriously disappeared...
- * Check for and warn of absence of IPIP protocol on install of module.
- * Move tdbcleanup to ipsec_xform.c.
- *
- * Revision 1.10  1998/06/18 21:29:04  henry
- * move sources from klips/src to klips/net/ipsec, to keep stupid kernel
- * build scripts happier in presence of symbolic links
- *
- * Revision 1.9  1998/06/14 23:49:40  rgb
- * Clarify version reporting on module loading.
- *
- * Revision 1.8  1998/06/11 05:54:23  rgb
- * Added /proc/net/ipsec_version to report freeswan and transform versions.
- * Added /proc/net/ipsec_spinew to generate new and unique spi's..
- * Fixed /proc/net/ipsec_tncfg bug.
- *
- * Revision 1.7  1998/05/25 20:23:13  rgb
- * proc_register changed to dynamic registration to avoid arbitrary inode
- * numbers.
- *
- * Implement memory recovery from tdb and eroute tables.
- *
- * Revision 1.6  1998/05/21 13:08:58  rgb
- * Rewrote procinfo subroutines to avoid *bad things* when more that 3k of
- * information is available for printout.
- *
- * Revision 1.5  1998/05/18 21:29:48  rgb
- * Cleaned up /proc/net/ipsec_* output, including a title line, algorithm
- * names instead of numbers, standard format for numerical output base,
- * whitespace for legibility, and the names themselves for consistency.
- *
- * Added /proc/net/ipsec_spigrp and /proc/net/ipsec_tncfg.
- *
- * Revision 1.4  1998/04/30 15:42:24  rgb
- * Silencing attach for normal operations with #ifdef IPSEC_DEBUG.
- *
- * Revision 1.3  1998/04/21 21:28:58  rgb
- * Rearrange debug switches to change on the fly debug output from user
- * space.  Only kernel changes checked in at this time.  radij.c was also
- * changed to temporarily remove buggy debugging code in rj_delete causing
- * an OOPS and hence, netlink device open errors.
- *
- * Revision 1.2  1998/04/12 22:03:22  rgb
- * Updated ESP-3DES-HMAC-MD5-96,
- * 	ESP-DES-HMAC-MD5-96,
- * 	AH-HMAC-MD5-96,
- * 	AH-HMAC-SHA1-96 since Henry started freeswan cvs repository
- * from old standards (RFC182[5-9] to new (as of March 1998) drafts.
- *
- * Fixed eroute references in /proc/net/ipsec*.
- *
- * Started to patch module unloading memory leaks in ipsec_netlink and
- * radij tree unloading.
- *
- * Revision 1.1  1998/04/09 03:06:05  henry
- * sources moved up from linux/net/ipsec
- *
- * Revision 1.1.1.1  1998/04/08 05:35:02  henry
- * RGB's ipsec-0.8pre2.tar.gz ipsec-0.8
- *
- * Revision 0.4  1997/01/15 01:28:15  ji
- * No changes.
- *
- * Revision 0.3  1996/11/20 14:39:04  ji
- * Fixed problem with node names of /proc/net entries.
- * Other minor cleanups.
- * Rationalized debugging code.
- *
- * Revision 0.2  1996/11/02 00:18:33  ji
- * First limited release.
  *
  * Local variables:
  * c-file-style: "linux"

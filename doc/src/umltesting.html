@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>FreeS/WAN User-Mode-Linux testing guide</title>
-<!-- Changed by: Michael Richardson, 05-Mar-2003 -->
+<!-- Changed by: Michael Richardson, 04-May-2004 -->
 <meta name="keywords" content="Linux, IPsec, VPN, security, FreeSWAN, testing, User-Mode-Linux, UML">
 
 <!--
@@ -12,9 +12,12 @@ Freely distributable under the GNU General Public License
 More information at www.freeswan.org
 Feedback to users@lists.freeswan.org
 
-$Id: umltesting.html,v 1.23 2003/09/18 15:12:11 dhr Exp $
+$Id: umltesting.html,v 1.24 2004/05/04 18:10:00 mcr Exp $
 
 $Log: umltesting.html,v $
+Revision 1.24  2004/05/04 18:10:00  mcr
+	added docs about UML_GETTY
+
 Revision 1.23  2003/09/18 15:12:11  dhr
 
 fix link to kernel.org mirrors page
@@ -441,6 +444,10 @@ are debugging.
 The environment variable <CODE>NETJIGWAITUSER</CODE> can be set to "waituser".
 If so, then the testing system will prompt before exiting the test.
 </P>
+
+<P>
+The environment variable <CODE>UML_GETTY</CODE> if set, will cause each UML
+to spawn a getty on /dev/tty1, and will wait for it to exit before continuing.
 
 <H1>User-Mode-Linux mysteries</H1>
 

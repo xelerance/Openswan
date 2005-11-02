@@ -12,9 +12,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Config.in,v 1.28 2004/02/03 03:12:26 mcr Exp $
+# RCSID $Id: Config.in,v 1.30 2004/06/23 09:49:37 ken Exp $
 
-comment 'IPSec options (FreeS/WAN)'
+comment 'IPSec options (Openswan)'
 
 bool '   IPSEC: IP-in-IP encapsulation (tunnel mode)' CONFIG_IPSEC_IPIP
 
@@ -27,6 +27,12 @@ fi
 bool '   IPSEC: Encapsulating Security Payload' CONFIG_IPSEC_ESP
 if [ "$CONFIG_IPSEC_ESP" = "y" ]; then
   bool '      3DES encryption algorithm' CONFIG_IPSEC_ENC_3DES
+  bool '      AES encryption algorithm' CONFIG_IPSEC_ENC_AES
+fi
+
+bool '   IPSEC Modular Extensions' CONFIG_IPSEC_ALG
+if [ "$CONFIG_IPSEC_ALG" != "n" ]; then
+	source net/ipsec/alg/Config.in
 fi
 
 bool '   IPSEC: IP Compression' CONFIG_IPSEC_IPCOMP
@@ -36,10 +42,22 @@ bool '   IPSEC Debugging Option' CONFIG_IPSEC_DEBUG
 #
 #
 # $Log: Config.in,v $
+# Revision 1.30  2004/06/23 09:49:37  ken
+# Free -> Open
+#
+# Revision 1.29  2004/04/06 02:49:25  mcr
+# 	pullup of algo code from alg-branch.
+#
 # Revision 1.28  2004/02/03 03:12:26  mcr
 # 	remove NAT-traversal option from IPsec config,
 # 	as it should be in the kernel configuration if
 # 	the NAT-T patch is installed.
+#
+# Revision 1.27.2.2  2004/04/05 04:30:46  mcr
+# 	patches for alg-branch to compile/work with 2.x openswan
+#
+# Revision 1.27.2.1  2003/12/23 12:48:25  jjo
+#       Added missing alg part to linux/net/ipsec/Config.in
 #
 # Revision 1.27  2003/12/10 01:14:27  mcr
 # 	NAT-traversal patches to KLIPS.

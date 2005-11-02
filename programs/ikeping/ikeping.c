@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikeping.c,v 1.4 2002/04/24 07:55:32 mcr Exp $
+ * RCSID $Id: ikeping.c,v 1.6 2004/04/18 03:05:10 mcr Exp $
  */
 
 #include <stdio.h>
@@ -31,9 +31,9 @@
 #include <assert.h>
 #include <poll.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
-#include "../pluto/constants.h"
+#include "constants.h"
 #include "../pluto/packet.h"
 
 #ifndef ISAKMP_XCHG_ECHOREQUEST

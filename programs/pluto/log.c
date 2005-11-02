@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: log.c,v 1.81.2.1 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: log.c,v 1.87 2004/06/14 01:46:03 mcr Exp $
  */
 
 #include <stdio.h>
@@ -32,6 +32,8 @@
 #include <openswan.h>
 
 #include "constants.h"
+#include "oswlog.h"
+
 #include "defs.h"
 #include "log.h"
 #include "server.h"
@@ -49,6 +51,14 @@
 #include "whack.h"	/* needs connections.h */
 #include "timer.h"
 #include "paths.h"
+#include "kernel_alg.h"
+#include "ike_alg.h"
+#include "plutoalg.h"
+
+#ifndef NO_DB_OPS_STATS
+#define NO_DB_CONTEXT
+#include "db_ops.h"
+#endif
 
 /* close one per-peer log */
 static void perpeer_logclose(struct connection *c);	/* forward */
@@ -90,8 +100,9 @@ const ip_address *cur_from = NULL;	/* source of current current message */
 u_int16_t cur_from_port;	/* host order */
 
 void
-init_log(void)
+pluto_init_log(void)
 {
+    set_exit_log_func(exit_log);
     set_paths(ipsec_dir);
     if (log_to_stderr)
 	setbuf(stderr, NULL);
@@ -99,27 +110,6 @@ init_log(void)
 	openlog("pluto", LOG_CONS | LOG_NDELAY | LOG_PID, LOG_AUTHPRIV);
 
     CIRCLEQ_INIT(&perpeer_list);
-}
-
-void
-close_peerlog(void)
-{
-    /* exit if the circular queue has not been initialized */
-    if (perpeer_list.cqh_first == NULL)
-        return;
-
-    /* end of circular queue is given by pointer to "HEAD" */
-    while (perpeer_list.cqh_first != (void *)&perpeer_list)
-	perpeer_logclose(perpeer_list.cqh_first);
-}
-
-void
-close_log(void)
-{
-    if (log_to_syslog)
-	closelog();
-
-    close_peerlog();
 }
 
 /* format a string for the log, with suitable prefixes.
@@ -176,6 +166,27 @@ fmt_log(char *buf, size_t buf_len, const char *fmt, va_list ap)
     vsnprintf(buf + ps, buf_len - ps, fmt, ap);
     if (!reproc)
 	(void)sanitize_string(buf, buf_len);
+}
+
+void
+close_peerlog(void)
+{
+    /* exit if the circular queue has not been initialized */
+    if (perpeer_list.cqh_first == NULL)
+        return;
+
+    /* end of circular queue is given by pointer to "HEAD" */
+    while (perpeer_list.cqh_first != (void *)&perpeer_list)
+	perpeer_logclose(perpeer_list.cqh_first);
+}
+
+void
+close_log(void)
+{
+    if (log_to_syslog)
+	closelog();
+
+    close_peerlog();
 }
 
 static void
@@ -366,8 +377,9 @@ peerlog(const char *prefix, const char *m)
     }
 }
 
+
 void
-plog(const char *message, ...)
+openswan_log(const char *message, ...)
 {
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
@@ -547,33 +559,6 @@ whack_log(int mess_no, const char *message, ...)
     }
 }
 
-/* Build up a diagnostic in a static buffer.
- * Although this would be a generally useful function, it is very
- * hard to come up with a discipline that prevents different uses
- * from interfering.  It is intended that by limiting it to building
- * diagnostics, we will avoid this problem.
- * Juggling is performed to allow an argument to be a previous
- * result: the new string may safely depend on the old one.  This
- * restriction is not checked in any way: violators will produce
- * confusing results (without crashing!).
- */
-char diag_space[sizeof(diag_space)];
-
-err_t
-builddiag(const char *fmt, ...)
-{
-    static char diag_space[LOG_WIDTH];	/* longer messages will be truncated */
-    char t[sizeof(diag_space)];	/* build result here first */
-    va_list args;
-
-    va_start(args, fmt);
-    t[0] = '\0';	/* in case nothing terminates string */
-    vsnprintf(t, sizeof(t), fmt, args);
-    va_end(args);
-    strcpy(diag_space, t);
-    return diag_space;
-}
-
 /* Debugging message support */
 
 #ifdef DEBUG
@@ -622,7 +607,7 @@ extra_debugging(const struct connection *c)
 
     if (c!= NULL && c->extra_debugging != 0)
     {
-	plog("enabling for connection: %s"
+	openswan_log("enabling for connection: %s"
 	    , bitnamesof(debug_bit_names, c->extra_debugging & ~cur_debugging));
 	set_debugging(cur_debugging | c->extra_debugging);
     }
@@ -663,7 +648,7 @@ DBG_log(const char *message, ...)
 /* dump raw bytes in hex to stderr (for lack of any better destination) */
 
 void
-DBG_dump(const char *label, const void *p, size_t len)
+openswan_DBG_dump(const char *label, const void *p, size_t len)
 {
 #   define DUMP_LABEL_WIDTH 20	/* arbitrary modest boundary */
 #   define DUMP_WIDTH	(4 * (1 + 4 * 3) + 1)
@@ -734,6 +719,18 @@ show_status(void)
     show_myid_status();
     show_debug_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
+#ifdef KERNEL_ALG
+    kernel_alg_show_status();
+    whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
+#endif
+#ifdef IKE_ALG
+    ike_alg_show_status();
+    whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
+#endif
+#ifndef NO_DB_OPS_STATS
+    db_ops_show_status();
+    whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
+#endif
     show_connections_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
     show_states_status();
@@ -831,6 +828,12 @@ void set_paths(const char *basedir)
 
     verify_path_space(&plutopaths.certs, baselen + sizeof("certs"), "certs path");
     snprintf(plutopaths.certs.path, plutopaths.certs.path_space, "%s/certs", basedir);
+
+    verify_path_space(&plutopaths.aacerts, baselen + sizeof("aacerts"), "aacerts path");
+    snprintf(plutopaths.aacerts.path, plutopaths.certs.path_space, "%s/aacerts", basedir);
+
+    verify_path_space(&plutopaths.ocspcerts, baselen + sizeof("ocspcerts"), "ocspcerts path");
+    snprintf(plutopaths.ocspcerts.path, plutopaths.certs.path_space, "%s/ocspcerts", basedir);
 }
 
 /*

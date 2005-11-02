@@ -1,10 +1,10 @@
-ifndef FREESWANSRCDIR
-FREESWANSRCDIR=../..
+ifndef OPENSWANSRCDIR
+OPENSWANSRCDIR=../..
 endif
 
-include ${FREESWANSRCDIR}/Makefile.inc
+include ${OPENSWANSRCDIR}/Makefile.inc
 
-KLIPSD=${FREESWANSRCDIR}/linux
+KLIPSD=${OPENSWANSRCDIR}/linux
 SRCDIR=${KLIPSD}/crypto/ciphers/des
 
 VPATH =${SRCDIR}

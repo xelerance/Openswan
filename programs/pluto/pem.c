@@ -1,5 +1,5 @@
 /* Loading of PEM encoded files with optional encryption
- * Copyright (C) 2001-2003 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2001-2004 Andreas Steffen, Zuercher Hochschule Winterthur
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pem.c,v 1.2.6.1 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: pem.c,v 1.5 2004/06/14 01:46:03 mcr Exp $
  */
 
 /* decrypt a PEM encoded data block using DES-EDE3-CBC
@@ -389,7 +389,7 @@ pemtobin(chunk_t *blob, prompt_pass_t *pass, const char* label, bool *pgp)
 		else if (match("DEK-Info", &name))
 		{
 		    const char *ugh = NULL;
-		    int len = 0;
+		    size_t len = 0;
 		    chunk_t dek;
 
 		    if (!extract_token(&dek, ',', &value))

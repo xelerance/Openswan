@@ -1,0 +1,11 @@
+This tests the RFC3706 DPD implementation, ensuring we only enable it
+when both sides support it.
+
+Order of Operations:
+
+1) East sets up for tunnel with DPD support.
+2) West initiates tunnel to east, but west does not have DPD support.
+3) West sends icmp packets to east, which should work.
+
+
+

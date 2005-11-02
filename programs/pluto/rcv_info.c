@@ -1,6 +1,6 @@
 /* info/policy communicating routines
  * Copyright (C) 2003       Michael Richardson <mcr@freeswan.org>
- *
+ * Copyright (C) 2004       Xelerance Corporation
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: rcv_info.c,v 1.6.4.1 2004/03/21 05:23:34 mcr Exp $
+ * RCSID $Id: rcv_info.c,v 1.8 2004/05/13 13:38:01 ken Exp $
  */
 
 #include <stdio.h>
@@ -57,6 +57,12 @@
 /* global */
 int info_fd = -1;
 
+/** Lookup information about the hostpair, and set things like bandwidth
+ * relative crypto strength, compression and credentials.
+ * 
+ * @param IPsec Policy Query
+ * @return void
+ */
 static void
 info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
 {
@@ -93,6 +99,7 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
 	if (c != NULL)
 	{
 	    ip_address tmp;
+	    /* If it is reversed, swap it */
 	    tmp = ipcq->query_local;
 	    ipcq->query_local = ipcq->query_remote;
 	    ipcq->query_remote = tmp;
@@ -260,11 +267,11 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
     }
 }
 
-/*
+/**
  * Handle an info/policy request. 
  *
  * For now, we close the socket after answering the request.
- *
+ * @param infoctlfd File Descriptor for socket communication
  */
 void
 info_handle(int infoctlfd)

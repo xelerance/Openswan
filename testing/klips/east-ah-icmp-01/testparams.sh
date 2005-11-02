@@ -7,6 +7,7 @@ TEST_TYPE=klipstest
 TESTNAME=east-ah-icmp-01
 TESTHOST=east
 EXITONEMPTY=--exitonempty
+THREEEIGHT=true
 PRIVINPUT=../inputs/01-sunrise-sunset-ping.pcap
 REF_PUB_OUTPUT=ah1-output.txt
 REF_CONSOLE_OUTPUT=ah1-console.txt

@@ -12,9 +12,8 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: datatot.c,v 1.3.8.1 2004/03/21 05:23:31 mcr Exp $
+ * RCSID $Id: datatot.c,v 1.5 2004/04/11 17:39:25 mcr Exp $
  */
-#include "internal.h"
 #include "openswan.h"
 
 static void convert(const char *src, size_t nreal, int format, char *out);

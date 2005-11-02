@@ -12,14 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_parse.c,v 1.57.4.2 2004/04/16 12:32:56 mcr Exp $
+ * RCSID $Id: pfkey_v2_parse.c,v 1.59 2004/04/18 03:03:49 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_parser.c.
  */
 
-char pfkey_v2_parse_c_version[] = "$Id: pfkey_v2_parse.c,v 1.57.4.2 2004/04/16 12:32:56 mcr Exp $";
+char pfkey_v2_parse_c_version[] = "$Id: pfkey_v2_parse.c,v 1.59 2004/04/18 03:03:49 mcr Exp $";
 
 /*
  * Some ugly stuff to allow consistent debugging code for use in the
@@ -30,7 +30,7 @@ char pfkey_v2_parse_c_version[] = "$Id: pfkey_v2_parse.c,v 1.57.4.2 2004/04/16 1
 
 # include <linux/kernel.h>  /* for printk */
 
-#include "freeswan/ipsec_kversion.h" /* for malloc switch */
+#include "openswan/ipsec_kversion.h" /* for malloc switch */
 
 # ifdef MALLOC_SLAB
 #  include <linux/slab.h> /* kmalloc() */
@@ -49,9 +49,9 @@ char pfkey_v2_parse_c_version[] = "$Id: pfkey_v2_parse.c,v 1.57.4.2 2004/04/16 1
 # endif /* if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE) */
 extern int debug_pfkey;
 
-# include <freeswan.h>
+# include <openswan.h>
 
-#include "freeswan/ipsec_encap.h"
+#include "openswan/ipsec_encap.h"
 
 #else /* __KERNEL__ */
 
@@ -59,10 +59,9 @@ extern int debug_pfkey;
 # include <linux/types.h>
 # include <linux/errno.h>
 
-# include <freeswan.h>
-# include "programs/pluto/constants.h" 
+# include <openswan.h>
+# include "constants.h" 
 # include "programs/pluto/defs.h"  /* for PRINTF_LIKE */
-# include "programs/pluto/log.h"  /* for debugging and DBG_log */
 
 #endif /* __KERNEL__ */
 
@@ -70,12 +69,12 @@ extern int debug_pfkey;
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#include "freeswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL, IPSEC_SA_REF_TABLE_IDX_WIDTH */
+#include "openswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL, IPSEC_SA_REF_TABLE_IDX_WIDTH */
 
 /* 
  * how to handle debugging for pfkey.
  */
-#include <freeswan/pfkey_debug.h>
+#include <openswan/pfkey_debug.h>
 
 unsigned int pfkey_lib_debug = PF_KEY_DEBUG_PARSE_NONE;
 void (*pfkey_debug_func)(const char *message, ...) PRINTF_LIKE(1);
@@ -1588,12 +1587,8 @@ errlab:
 
 /*
  * $Log: pfkey_v2_parse.c,v $
- * Revision 1.57.4.2  2004/04/16 12:32:56  mcr
- * 	erroneously pullup some freeswan->openswan changes that
- * 	are really for 2.2.
- *
- * Revision 1.57.4.1  2004/03/21 05:23:31  mcr
- *     pullup of freeswan->openswan and CR/CERT patches from HEAD
+ * Revision 1.59  2004/04/18 03:03:49  mcr
+ * 	renamed common include files from pluto directory.
  *
  * Revision 1.58  2004/03/08 01:59:08  ken
  * freeswan.h -> openswan.h

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ranbits.c,v 1.11 2002/04/24 07:55:32 mcr Exp $
+ * RCSID $Id: ranbits.c,v 1.12 2004/04/04 01:50:56 ken Exp $
  */
 
 #include <sys/types.h>
@@ -26,7 +26,7 @@
 #include <getopt.h>
 #include <fcntl.h>
 #include <netinet/in.h>
-#include <freeswan.h>
+#include <openswan.h>
 
 #ifndef DEVICE
 #define	DEVICE	"/dev/random"

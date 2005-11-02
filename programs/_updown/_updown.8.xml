@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!-- lifted from troff+man by doclifter -->
+<refentry>
+<refmeta>
+<refentrytitle>_UPDOWN</refentrytitle>
+<manvolnum>8</manvolnum>
+<refmiscinfo class='date'>25 Apr 2002</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>ipsec _updown</refname>
+<refpurpose>klips manipulation script</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+<refsynopsisdiv id='synopsis'>
+<para><emphasis remap='I'>_updown</emphasis>
+is invoked by pluto when it has brought up a new connection. This script
+is used to insert the appropriate routing entries for IPsec operation.
+The interface to the script is documented in the pluto man page.</para>
+</refsynopsisdiv>
+
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para><citerefentry><refentrytitle>ipsec</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_pluto</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+</refsect1>
+
+<refsect1 id='history'><title>HISTORY</title>
+<para>Man page written for the Linux FreeS/WAN project &lt;<ulink url='http://www.freeswan.org/'>http://www.freeswan.org/</ulink>&gt;
+by Michael Richardson. Original program written by Henry Spencer.</para>
+
+<!--  $Log: _updown.8.xml,v $
+<!--  Revision 1.1  2004/05/26 17:48:33  ken
+<!--  Import XML version
+<!-- -->
+<!--  Revision 1.2  2002/04/29 22:39:31  mcr -->
+<!--  	added basic man page for all internal commands. -->
+
+<!--  Revision 1.1  2002/04/26 01:21:43  mcr -->
+<!--  	while tracking down a missing (not installed) /etc/ipsec.conf, -->
+<!--  	MCR has decided that it is not okay for each program subdir to have -->
+<!--  	some subset (determined with \-f) of possible files. -->
+<!--  	Each subdir that defines $PROGRAM, MUST have a PROGRAM.8 file as well as a PROGRAM file. -->
+<!--  	Optional PROGRAM.5 files have been added to the makefiles. -->
+
+
+
+</refsect1>
+</refentry>
+

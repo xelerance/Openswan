@@ -13,7 +13,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: setup.in,v 1.119 2003/12/02 02:35:46 ken Exp $
+# RCSID $Id: setup.in,v 1.120.4.3 2004/07/16 12:57:08 ken Exp $
 #
 # ipsec         init.d script for starting and stopping
 #               the IPsec security subsystem (KLIPS and Pluto).
@@ -33,7 +33,6 @@
 
 me='ipsec setup'		# for messages
 
-
 # where the private directory and the config files are
 IPSEC_EXECDIR="${IPSEC_EXECDIR-@IPSEC_EXECDIR@}"
 IPSEC_LIBDIR="${IPSEC_LIBDIR-@IPSEC_LIBDIR@}"
@@ -43,7 +42,7 @@ IPSEC_CONFS="${IPSEC_CONFS-@IPSEC_CONFS@}"
 if test " $IPSEC_DIR" = " "	# if we were not called by the ipsec command
 then
     # we must establish a suitable PATH ourselves
-    PATH="${IPSEC_SBINDIR}":/sbin:/usr/sbin:/usr/local/bin:/bin:/usr/bin
+    PATH="${IPSEC_SBINDIR}":/sbin:/usr/sbin:/usr/local/sbin:/usr/local/bin:/bin:/usr/bin
     export PATH
 
     IPSEC_DIR="$IPSEC_LIBDIR"
@@ -66,6 +65,7 @@ then
 		logger -s -p daemon.error -t ipsec_setup
 	exit 1
 fi
+
 
 # accept a few flags
 
@@ -116,15 +116,20 @@ case "$1" in
 		exit 1
 	fi
 	tmp=/var/run/ipsec_setup.st
+	outtmp=/var/run/ipsec_setup.out
 	(
 		ipsec _realsetup $1
 		echo "$?" >$tmp
-	) 2>&1 | logger -s -p $IPSECsyslog -t ipsec_setup 2>&1
+	) > ${outtmp} 2>&1
 	st=$?
 	if test -f $tmp
 	then
 		st=`cat $tmp`
 		rm -f $tmp
+	fi
+	if [ -f ${outtmp} ]; then
+		cat ${outtmp} | logger -s -p $IPSECsyslog -t ipsec_setup 2>&1
+		rm -f ${outtmp}
 	fi
 	exit $st
 	;;

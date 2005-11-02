@@ -11,10 +11,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.1 2003/02/22 03:26:55 sam Exp $
+# RCSID $Id: Makefile,v 1.2 2004/04/03 19:44:46 ken Exp $
 
-FREESWANSRCDIR=../..
-include ${FREESWANSRCDIR}/Makefile.inc
+OPENSWANSRCDIR=../..
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=mailkey
 
@@ -22,6 +22,9 @@ include ../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.2  2004/04/03 19:44:46  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.1  2003/02/22 03:26:55  sam
 # remaining pieces of mailkey
 #

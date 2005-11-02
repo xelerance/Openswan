@@ -46,7 +46,7 @@
     0x1F                     "crlDistributionPoints"	OID_CRL_DISTRIBUTION_POINTS
     0x20                     "certificatePolicies"
     0x23                     "authorityKeyIdentifier"	OID_AUTHORITY_KEY_ID
-    0x25                     "extendedKeyUsage"
+    0x25                     "extendedKeyUsage"		OID_EXTENDED_KEY_USAGE
     0x37                     "targetInformation"	OID_TARGET_INFORMATION
     0x38                     "noRevAvail"		OID_NO_REV_AVAIL
 0x2A                         ""
@@ -92,15 +92,37 @@
       0x05                   "security"
         0x05                 "mechanisms"
           0x07               "id-pkix"
+            0x01             "id-pe"
+              0x01           "authorityInfoAccess"	OID_AUTHORITY_INFO_ACCESS
+            0x03             "id-kp"
+              0x01           "serverAuth"
+              0x02           "clientAuth"
+              0x03           "codeSigning"
+              0x04           "emailProtection"
+              0x05           "ipsecEndSystem"
+              0x06           "ipsecTunnel"
+              0x07           "ipsecUser"
+              0x08           "timeStamping"
+              0x09           "ocspSigning"		OID_OCSP_SIGNING
             0x0A             "id-aca"
               0x01           "authenticationInfo"	OID_AUTHENTICATION_INFO
               0x02           "accessIdentity"		OID_ACCESS_IDENTITY
               0x03           "chargingIdentity"		OID_CHARGING_IDENTITY
               0x04           "group"			OID_GROUP
+            0x30             "id-ad"
+              0x01           "ocsp"			OID_OCSP
+                0x01         "basic"			OID_BASIC
+                0x02         "nonce"			OID_NONCE
+                0x03         "crl"			OID_CRL
+                0x04         "response"			OID_RESPONSE
+                0x05         "noCheck"			OID_NO_CHECK
+                0x06         "archiveCutoff"		OID_ARCHIVE_CUTOFF
+                0x07         "serviceLocator"		OID_SERVICE_LOCATOR
   0x0E                       "oiw"
     0x03                     "secsig"
       0x02                   "algorithms"
-        0x1A                 "id-SHA-1"			OID_SHA1
+        0x1A                 "sha-1"			OID_SHA1
+        0x1D                 "sha-1WithRSASignature"	OID_SHA1_WITH_RSA_OIW
   0x24                       "TeleTrusT"
     0x03                     "algorithm"
       0x03                   "signatureAlgorithm"

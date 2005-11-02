@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: smartcard.h,v 1.2 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: smartcard.h,v 1.3 2004/06/14 01:46:03 mcr Exp $
  */
 
 #ifndef _SMARTCARD_H
@@ -30,7 +30,7 @@ typedef struct smartcard smartcard_t;
 struct smartcard{
     smartcard_t *next;
     time_t      last_load;
-    cert_t	*last_cert;
+    cert_t	last_cert;
     int		count;
     u_int	reader;
     char        *id;
@@ -48,6 +48,7 @@ extern bool scx_sign_hash(smartcard_t *sc, const u_char *in, size_t inlen
 extern bool scx_get_pin(smartcard_t *sc, int whackfd);
 extern size_t scx_get_keylength(smartcard_t *sc);
 extern smartcard_t* scx_add(smartcard_t *smartcard);
+extern smartcard_t* scx_get(x509cert_t *cert);
 extern void scx_release(smartcard_t *sc);
 extern void scx_release_context(void);
 extern void scx_free_pin(chunk_t *pin);

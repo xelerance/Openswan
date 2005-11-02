@@ -1,5 +1,5 @@
 .TH IPSEC.CONF 5 "26 Nov 2001"
-.\" RCSID $Id: ipsec.conf.5,v 1.102.2.1 2004/05/14 15:38:15 ken Exp $
+.\" RCSID $Id: ipsec.conf.5,v 1.104 2004/05/14 15:37:26 ken Exp $
 .SH NAME
 ipsec.conf \- IPsec configuration and connections
 .SH DESCRIPTION
@@ -595,6 +595,29 @@ currently, and it not well documented.  Use the source :)  Acceptable values are
 or 
 .B no
 (the default).
+.TP
+.B dpddelay
+Set the delay (in seconds) between Dead Peer Dectection
+(draft-ietf-ipsec-dpd-02) keepalives (R_U_THERE, R_U_THERE_ACK)
+that are sent for this connection (default
+.B 30
+seconds).  If dpdtimeout is set, but not dpddelay, dpddelay will be set
+to the default.
+.TP
+.B dpdtimeout 
+Set the length of time (in seconds) we will idle without hearing either an
+R_U_THERE poll from our peer, or an R_U_THERE_ACK reply.  After this period
+has elapsed with no response and no traffic, we will declare the peer dead,
+and remove the SA (default
+.B 120
+seconds).  If dpddelay is set, but not dpdtimeout, dpdtimeout will be set
+to the default.
+.TP
+.B dpdaction
+When a DPD enabled peer is declared dead, what action should be taken.
+.B hold (default) means the eroute will be put into %hold status, while   
+.B clear means the eroute and SA with both be cleared.  dpdaction=clear is 
+really only usefull on the server of a Road Warrior config.
 .TP
 .B pfs
 whether Perfect Forward Secrecy of keys is desired on the connection's

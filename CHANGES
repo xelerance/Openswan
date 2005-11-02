@@ -1,27 +1,29 @@
-v2.1.4
-* Untweak makefile for building KLIPS modules - this works again
-
-v2.1.3
-* Merge X.509 1.5.4 security fix
-* Makefile tweaks for cross compiling
+v2.2.0
+* Added RFC 3706 DPD support (see README.DPD)
+* Added AES from JuanJo's ALG patches
+* Fixes for /proc filesystem issues that started to appear in 2.4.25
+* Merge X.509 1.5.4 + latest security fixes (CAN-2004-0590)
+* Updated .spec for building RPMS compatible with Kernel 2.6
+* Merge X.509 security fixes from 1.6.3
+* Fixes for NAT-T on 2.6 pulled up from 2.1.x (Herbert Xu)
+* Fixes for SA Selectors on 2.6 pulled up from 2.1.x (Herbert Xu)
 
 v2.1.2
 * Fix loading of 2.6 modules 
 * Fix for snprintfs() in /proc, new for 2.4.25 kernels (dhr/pw)
 * Fix checks for some log files/dirs in case they are sockets or pipes (pw)
 * Fix for crl.pem crash/core (dhr/as/kb)
-* Fix corruption of some /proc files (dhr/kb)
 * Fix leftsendcert= flag.  You probably want this =always if you are doing
   X.509 connections and having problems with no ID/Key found errors.
   Values: 
-	* yes|always (default) 
-		Send cert, even if not requested.  
-	* ifasked
-		If the other side requests it.  Some vendors (Cisco, SafeNet) 
-		don't seem to request it, but expect it, so you'll need to 
-		set this to yes if you are doing interop.
-	* no|never 
-		Do not send it my cert, no matter what.
+        * yes|always (default) 
+                Send cert, even if not requested.  
+        * ifasked
+                If the other side requests it.  Some vendors (Cisco, SafeNet) 
+                don't seem to request it, but expect it, so you'll need to 
+                set this to yes if you are doing interop.
+        * no|never 
+                Do not send it my cert, no matter what.
 
 v2.1.1
 * Fix _pluto_adns installation path (kb)
@@ -36,5 +38,4 @@ v2.1.0
   while travelling.  This is based on Tuomo Soini's Advanced Routing 
   patch.
 
-
-RCSID $Id: CHANGES,v 1.315.2.11 2004/06/23 13:18:08 ken Exp $
+RCSID $Id: CHANGES,v 1.317.4.4 2004/09/07 18:59:35 ken Exp $
