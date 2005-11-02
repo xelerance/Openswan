@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_radij.c,v 1.67 2003/10/31 02:27:55 mcr Exp $
+ * RCSID $Id: ipsec_radij.c,v 1.67.6.1 2004/05/01 04:37:32 ken Exp $
  */
 
 #include <linux/config.h>
@@ -106,7 +106,7 @@ ipsec_radijcleanup(void)
 int
 ipsec_cleareroutes(void)
 {
-	int error = 0;
+	int error;
 
 	spin_lock_bh(&eroute_lock);
 
@@ -125,11 +125,11 @@ ipsec_breakroute(struct sockaddr_encap *eaddr,
 {
 	struct eroute *ro;
 	struct radij_node *rn;
-	int error = 0;
+	int error;
 #ifdef CONFIG_IPSEC_DEBUG
-	char buf1[64], buf2[64];
 	
 	if (debug_eroute) {
+                char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
 		subnettoa(eaddr->sen_ip_src, emask->sen_ip_src, 0, buf1, sizeof(buf1));
 		subnettoa(eaddr->sen_ip_dst, emask->sen_ip_dst, 0, buf2, sizeof(buf2));
 		KLIPS_PRINT(debug_eroute,
@@ -202,43 +202,51 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 		struct ident *ident_d)
 {
 	struct eroute *retrt;
-	int error = 0;
+	int error;
 	char sa[SATOT_BUF];
 	size_t sa_len;
+
 #ifdef CONFIG_IPSEC_DEBUG
-#define ENBUFSIZE (sizeof(struct sockaddr_encap)*2 + 64)
-	char buf1[ENBUFSIZE], buf2[ENBUFSIZE];
 	
 	if (debug_eroute) {
-	        int i;
-		unsigned char *b1,*b2, *ea, *em;
 
-		subnettoa(eaddr->sen_ip_src, emask->sen_ip_src, 0, buf1, sizeof(buf1));
-		subnettoa(eaddr->sen_ip_dst, emask->sen_ip_dst, 0, buf2, sizeof(buf2));
-		sa_len = satot(&said, 0, sa, sizeof(sa));
-		KLIPS_PRINT(debug_eroute, 
-			    "klips_debug:ipsec_makeroute: "
-			    "attempting to allocate %lu bytes to insert eroute for %s:%d->%s:%d %d, SA: %s, PID:%d, skb=0p%p, ident:%s->%s\n",
-			    (unsigned long) sizeof(struct eroute),
-			    buf1, ntohs(eaddr->sen_sport),
-			    buf2, ntohs(eaddr->sen_dport),
-			    eaddr->sen_proto,
- 			    sa_len ? sa : " (error)",
-			    pid,
-			    skb,
-			    (ident_s ? (ident_s->data ? ident_s->data : "NULL") : "NULL"),
-			    (ident_d ? (ident_d->data ? ident_d->data : "NULL") : "NULL"));
+		{
+                       char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
 
-		b1 = buf1; b2=buf2;
-		ea = (unsigned char *)eaddr;
-		em = (unsigned char *)emask;
-		for(i=0; i<sizeof(struct sockaddr_encap); i++) {
-		  sprintf(b1, "%02x", ea[i]);
-		  sprintf(b2, "%02x", em[i]);
-		  b1+=2;
-		  b2+=2;
-		}
-		KLIPS_PRINT(debug_eroute, "klips_debug:ipsec_makeroute: %s / %s \n", buf1, buf2);
+                       subnettoa(eaddr->sen_ip_src, emask->sen_ip_src, 0, buf1, sizeof(buf1));
+                       subnettoa(eaddr->sen_ip_dst, emask->sen_ip_dst, 0, buf2, sizeof(buf2));
+                       sa_len = satot(&said, 0, sa, sizeof(sa));
+                       KLIPS_PRINT(debug_eroute,
+                                   "klips_debug:ipsec_makeroute: "
+                                   "attempting to allocate %lu bytes to insert eroute for %s->%s, SA: %s, PID:%d, skb=0p%p, ident:%s->%s\n",
+                                   (unsigned long) sizeof(struct eroute),
+                                   buf1,
+                                   buf2,
+                                   sa_len ? sa : " (error)",
+                                   pid,
+                                   skb,
+                                   (ident_s ? (ident_s->data ? ident_s->data : "NULL") : "NULL"),
+                                   (ident_d ? (ident_d->data ? ident_d->data : "NULL") : "NULL"));
+               }
+               {
+                       char buf1[sizeof(struct sockaddr_encap)*2 + 1],   
+                               buf2[sizeof(struct sockaddr_encap)*2 + 1];
+                       int i;
+                       unsigned char *b1 = buf1,
+                               *b2 = buf2,
+                               *ea = (unsigned char *)eaddr,
+                               *em = (unsigned char *)emask;
+                                   
+                                   
+                       for (i=0; i<sizeof(struct sockaddr_encap); i++) {
+                               sprintf(b1, "%02x", ea[i]);
+                               sprintf(b2, "%02x", em[i]);
+                               b1+=2;
+                               b2+=2;
+                       }
+                       KLIPS_PRINT(debug_eroute, "klips_debug:ipsec_makeroute: %s / %s \n", buf1, buf2);
+                }
+
 	}
 #endif /* CONFIG_IPSEC_DEBUG */
 
@@ -335,6 +343,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 
 #ifdef CONFIG_IPSEC_DEBUG
 	if (debug_eroute) {
+		char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
 /*
 		subnettoa(eaddr->sen_ip_src, emask->sen_ip_src, 0, buf1, sizeof(buf1));
 		subnettoa(eaddr->sen_ip_dst, emask->sen_ip_dst, 0, buf2, sizeof(buf2));
@@ -394,13 +403,21 @@ ipsec_findroute(struct sockaddr_encap *eaddr)
 }
 		
 #ifdef CONFIG_PROC_FS
+/** ipsec_rj_walker_procprint: print one line of eroute table output.
+ *
+ * Theoretical BUG: if w->length is less than the length
+ * of some line we should produce, that line will never
+ * be finished.  In effect, the "file" will stop part way 
+ * through that line.
+ */
 int
 ipsec_rj_walker_procprint(struct radij_node *rn, void *w0)
 {
 	struct eroute *ro = (struct eroute *)rn;
 	struct rjtentry *rd = (struct rjtentry *)rn;
 	struct wsbuf *w = (struct wsbuf *)w0;
-	char buf1[64], buf2[64], buf3[16];
+	char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
+	char buf3[16];
 	char sa[SATOT_BUF];
 	size_t sa_len, buf_len;
 	struct sockaddr_encap *key, *mask;
@@ -410,20 +427,16 @@ ipsec_rj_walker_procprint(struct radij_node *rn, void *w0)
 		    "rn=0p%p, w0=0p%p\n",
 		    rn,
 		    w0);
-	if (rn == NULL)	{
-		return 120;
-	}
-	
 	if (rn->rj_b >= 0) {
 		return 0;
 	}
 	
 	key = rd_key(rd);
 	mask = rd_mask(rd);
-	
-	if ((key == 0) || (mask == 0)) {
-		return 0;
-	}
+
+	if (key == NULL || mask == NULL) {
+                return 0;
+        }
 
 	buf_len = subnettoa(key->sen_ip_src, mask->sen_ip_src, 0, buf1, sizeof(buf1));
 	if(key->sen_sport != 0) {
@@ -441,24 +454,41 @@ ipsec_rj_walker_procprint(struct radij_node *rn, void *w0)
 	}
 
 	sa_len = satot(&ro->er_said, 'x', sa, sizeof(sa));
-	w->len += sprintf(w->buffer + w->len,
-			  "%-10d "
-			  "%-18s -> %-18s => %s%s\n",
-			  ro->er_count,
-			  buf1,
-			  buf2,
-			  sa_len ? sa : " (error)",
-			  buf3);
+	w->len += ipsec_snprintf(w->buffer + w->len,
+				 w->length - w->len,
+				 "%-10d "
+				 "%-18s -> %-18s => %s%s\n",
+				 ro->er_count,
+				 buf1,
+				 buf2,
+				 sa_len ? sa : " (error)",
+				 buf3);
 	
-	w->pos = w->begin + w->len;
-	if(w->pos < w->offset) {
-		w->len = 0;
-		w->begin = w->pos;
-	}
-	if (w->pos > w->offset + w->length) {
-		return -ENOBUFS;
-	}
-	return 0;
+       {
+               /* snprintf can only fill the last character with NUL
+                * so the maximum useful character is w->length-1.
+                * However, if w->length == 0, we cannot go back.
+                * (w->length surely cannot be negative.)
+                */
+               int max_content = w->length > 0? w->length-1 : 0;
+
+               if (w->len >= max_content) {
+                       /* we've done all that can fit -- stop treewalking */
+                       w->len = max_content;   /* truncate crap */
+                       return -ENOBUFS;
+               } else {
+                       const off_t pos = w->begin + w->len;    /* file position of end of what we've generated */
+                
+                       if (pos <= w->offset) {
+                               /* all is before first interesting character:
+                                * discard, but note where we are.
+                                */
+                               w->len = 0;
+                               w->begin = pos;
+                       }
+                       return 0;
+               }
+        }        
 }
 #endif          /* CONFIG_PROC_FS */
 
@@ -468,15 +498,8 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 	struct eroute *ro;
 	struct rjtentry *rd = (struct rjtentry *)rn;
 	struct radij_node *rn2;
-	int error = 0;
+	int error;
 	struct sockaddr_encap *key, *mask;
-#ifdef CONFIG_IPSEC_DEBUG
-	char buf1[64] = { 0 }, buf2[64] = { 0 };
-#endif /* CONFIG_IPSEC_DEBUG */
-
-	if (rn == NULL)	{
-		return 120;
-	}
 	
 	key = rd_key(rd);
 	mask = rd_mask(rd);
@@ -486,6 +509,7 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 	}
 #ifdef CONFIG_IPSEC_DEBUG
 	if(debug_radij)	{
+		char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
 		subnettoa(key->sen_ip_src, mask->sen_ip_src, 0, buf1, sizeof(buf1));
 		subnettoa(key->sen_ip_dst, mask->sen_ip_dst, 0, buf2, sizeof(buf2));
 		KLIPS_PRINT(debug_radij, 
@@ -523,6 +547,24 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 
 /*
  * $Log: ipsec_radij.c,v $
+ * Revision 1.67.6.1  2004/05/01 04:37:32  ken
+ * Pull in snprintf() and proc fixes from HEAD
+ *
+ * Revision 1.70  2004/04/25 21:10:52  ken
+ * Pull in dhr's changes from FreeS/WAN 2.06
+ *
+ * Revision 1.69  2004/04/06 02:49:26  mcr
+ * 	pullup of algo code from alg-branch.
+ *
+ * Revision 1.68  2004/03/28 20:27:20  paul
+ * Included tested and confirmed fixes mcr made and dhr verified for
+ * snprint statements. Changed one other snprintf to use ipsec_snprintf
+ * so it wouldnt break compatibility with 2.0/2.2 kernels. Verified with
+ * dhr. (thanks dhr!)
+ *
+ * Revision 1.67.4.1  2004/04/05 04:30:46  mcr
+ * 	patches for alg-branch to compile/work with 2.x openswan
+ *
  * Revision 1.67  2003/10/31 02:27:55  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: dnskey.c,v 1.74 2003/12/04 16:19:55 ken Exp $
+ * RCSID $Id: dnskey.c,v 1.78.2.3 2004/04/16 12:33:10 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -41,11 +41,17 @@
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "keys.h"	    /* needs connections.h */
 #include "dnskey.h"
 #include "packet.h"
 #include "timer.h"
+
+/* somebody has to decide */
+#define MAX_TXT_RDATA	((MAX_KEY_BYTES * 8 / 6) + 40)	/* somewhat arbitrary overkill */
 
 /* ADNS stuff */
 
@@ -61,12 +67,11 @@ void
 init_adns(void)
 {
     const char *adns_path = pluto_adns_option;
+    const char *helper_bin_dir = getenv("IPSEC_EXECDIR");
 #ifndef USE_LWRES
     static const char adns_name[] = "_pluto_adns";
-    const char *helper_bin_dir = getenv("IPSEC_LIBDIR");
 #else /* USE_LWRES */
     static const char adns_name[] = "lwdnsq";
-    const char *helper_bin_dir = getenv("IPSEC_EXECDIR");
 #endif /* USE_LWRES */
     char adns_path_space[4096];	/* plenty long? */
     int qfds[2];
@@ -239,7 +244,7 @@ decode_iii(u_char **pp, struct id *gw_id)
 
 	if (ugh != NULL)
 	    return builddiag("malformed FQDN in TXT " our_TXT_attr_string ": %s"
-		, ugh);
+			     , ugh);
     }
     else
     {
@@ -386,7 +391,7 @@ process_txt_rr_body(u_char *str
 	    /* Decode base 64 encoding of key.
 	     * Similar code is in process_lwdnsq_key.
 	     */
-	    u_char kb[RSA_MAX_ENCODING_BYTES];
+	    u_char kb[RSA_MAX_ENCODING_BYTES];	/* plenty of space for binary form of public key */
 	    chunk_t kbc;
 	    struct RSA_public_key r;
 
@@ -520,7 +525,7 @@ process_lwdnsq_key(u_char *str
 	/* Decode base 64 encoding of key.
 	 * Similar code is in process_txt_rr_body.
 	 */
-	u_char kb[RSA_MAX_ENCODING_BYTES];
+	u_char kb[RSA_MAX_ENCODING_BYTES];	/* plenty of space for binary form of public key */
 	chunk_t kbc;
 	err_t ugh = ttodatav(rest, 0, 64, kb, sizeof(kb), &kbc.len
 	    , diag_space, sizeof(diag_space), TTODATAV_IGNORESPACE);
@@ -1678,6 +1683,17 @@ process_lwdnsq_answer(char *ts)
 	    cr->used = TRUE;
 	}
     }
+    else if (strcaseeq(atype, "TIMEOUT"))
+    {   /* for now, treat as if it was a fatal error, and run failure
+	 * shunt. Later, we will consider a valid answer and re-evaluate
+	 * life, the universe and everything
+	 */
+	if (!cr->used)
+	{
+	    cr->cont_fn(cr, rest);
+	    cr->used = TRUE;
+	}
+    }
     else if (strcaseeq(atype, "FATAL"))
     {
 	if (!cr->used)
@@ -1818,6 +1834,7 @@ handle_adns_answer(void)
     static struct adns_answer buf;
 #else /* USE_LWRES */
     static char buf[LWDNSQ_RESULT_LEN_MAX];
+    static char buf_copy[LWDNSQ_RESULT_LEN_MAX];
 #endif /* USE_LWRES */
 
     ssize_t n;
@@ -1931,7 +1948,6 @@ handle_adns_answer(void)
     {
 	err_t ugh;
 	char *nlp = memchr(buf, '\n', buflen);
-	char buf_copy[LWDNSQ_RESULT_LEN_MAX];
 
 	if (nlp == NULL)
 	    break;

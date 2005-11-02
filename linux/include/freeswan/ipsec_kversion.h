@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: ipsec_kversion.h,v 1.7 2003/07/31 22:48:08 mcr Exp $
+ * RCSID $Id: ipsec_kversion.h,v 1.8 2003/12/13 19:10:16 mcr Exp $
  */
 #define	_FREESWAN_KVERSIONS_H	/* seen it, no need to see it again */
 
@@ -106,6 +106,10 @@
 #define LINUX_KERNEL_HAS_SNPRINTF
 #endif                                                                         
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,0)
+#define HAVE_NETDEV_PRINTK 1
+#endif
+
 #ifdef NET_21
 #  include <linux/in6.h>
 #else
@@ -188,10 +192,18 @@
 #  define write_unlock_bh(x)  write_unlock_irq(x)
 #endif /* !SPINLOCK_23 */
 
+#ifndef HAVE_NETDEV_PRINTK
+#define netdev_printk(sevlevel, netdev, msglevel, format, arg...) \
+	printk(sevlevel "%s: " format , netdev->name , ## arg)
+#endif
+
 #endif /* _FREESWAN_KVERSIONS_H */
 
 /*
  * $Log: ipsec_kversion.h,v $
+ * Revision 1.8  2003/12/13 19:10:16  mcr
+ * 	refactored rcv and xmit code - same as FS 2.05.
+ *
  * Revision 1.7  2003/07/31 22:48:08  mcr
  * 	derive NET25-ness from presence of NETLINK_XFRM macro.
  *

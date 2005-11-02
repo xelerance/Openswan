@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: constants.c,v 1.84 2003/11/26 23:52:32 mcr Exp $
+ * RCSID $Id: constants.c,v 1.93.2.3 2004/05/07 03:17:06 ken Exp $
  */
 
 /*
@@ -35,9 +35,7 @@
 /* string naming compile-time options that have interop implications */
 
 const char compile_time_interop_options[] = ""
-#ifdef X509
 	" " X509_VERSION
-#endif
 #ifdef LDAP_VER
 #if LDAP_VER == 2
 	" LDAP_V2"
@@ -85,10 +83,11 @@ static const char *const timer_event_name[] = {
 	"EVENT_SA_REPLACE",
 	"EVENT_SA_REPLACE_IF_USED",
 	"EVENT_SA_EXPIRE",
+	"EVENT_NAT_T_KEEPALIVE",
     };
 
 enum_names timer_event_names =
-    { EVENT_NULL, EVENT_SA_EXPIRE, timer_event_name, NULL };
+    { EVENT_NULL, EVENT_NAT_T_KEEPALIVE, timer_event_name, NULL };
 
 /* Domain of Interpretation */
 
@@ -118,6 +117,7 @@ const char *const debug_bit_names[] = {
 	"oppo",
 	"controlmore",
 	"pfkey",
+	"nattraversal",
 
 	"private",
 
@@ -150,10 +150,21 @@ static const char *const state_name[] = {
 
 	"STATE_INFO",
 	"STATE_INFO_PROTECTED",
+
+	"STATE_XAUTH_R0",
+	"STATE_XAUTH_R1",
+	"STATE_MODE_CFG_R0",
+	"STATE_MODE_CFG_R1",
+	"STATE_MODE_CFG_R2",
+
+	"STATE_XAUTH_I0",
+	"STATE_XAUTH_I1",
+
+	"STATE_IKE_ROOF"  /* one */
     };
 
 enum_names state_names =
-    { STATE_MAIN_R0, STATE_INFO_PROTECTED, state_name, NULL };
+    { STATE_MAIN_R0, STATE_IKE_ROOF-1, state_name, NULL };
 
 /* story for state */
 
@@ -175,6 +186,14 @@ const char *const state_story[] = {
 
 	"got Informational Message in clear",	/* STATE_INFO */
 	"got encrypted Informational Message",	/* STATE_INFO_PROTECTED */
+
+	"XAUTH server - CFG_request sent, expecting CFG_reply",
+	"XAUTH status send, expecting Ack",
+	"ModeCfg Reply sent",			/* STATE_MODE_CFG_R0 */
+	"ModeCfg Set sent, expecting Ack",	/* STATE_MODE_CFG_R1 */
+	"ModeCfg R2",				/* STATE_MODE_CFG_R2 */
+	"XAUTH client - awaiting CFG_request",  /* MODE_XAUTH_I0 */
+	"XAUTH client - awaiting CFG_set"       /* MODE_XAUTH_I1 */
     };
 
 /* kind of struct connection */
@@ -210,24 +229,31 @@ enum_names routing_story =
 
 const char *const payload_name[] = {
 	"ISAKMP_NEXT_NONE",
-	"ISAKMP_NEXT_SA",
+	"ISAKMP_NEXT_SA",       /* 1 */
 	"ISAKMP_NEXT_P",
 	"ISAKMP_NEXT_T",
 	"ISAKMP_NEXT_KE",
-	"ISAKMP_NEXT_ID",
+	"ISAKMP_NEXT_ID",       /* 5 */
 	"ISAKMP_NEXT_CERT",
 	"ISAKMP_NEXT_CR",
 	"ISAKMP_NEXT_HASH",
 	"ISAKMP_NEXT_SIG",
-	"ISAKMP_NEXT_NONCE",
+	"ISAKMP_NEXT_NONCE",    /* 10 */
 	"ISAKMP_NEXT_N",
 	"ISAKMP_NEXT_D",
 	"ISAKMP_NEXT_VID",
+	"ISAKMP_NEXT_MODECFG",  /* 14 */
+	"ISAKMP_NEXT_NAT-D",
+	"ISAKMP_NEXT_NAT-OA",
 	NULL
     };
 
+const char *const payload_name_nat_d[] = { "ISAKMP_NEXT_NAT-D",
+	"ISAKMP_NEXT_NAT-OA", NULL };
+static enum_names payload_names_nat_d =
+	{ ISAKMP_NEXT_NATD_DRAFTS, ISAKMP_NEXT_NATOA_DRAFTS, payload_name_nat_d, NULL };
 enum_names payload_names =
-    { ISAKMP_NEXT_NONE, ISAKMP_NEXT_VID, payload_name, NULL };
+    { ISAKMP_NEXT_NONE, ISAKMP_NEXT_NATOA_RFC, payload_name, &payload_names_nat_d };
 
 
 /* Exchange types (note: two discontinuous ranges) */
@@ -239,6 +265,7 @@ static const char *const exchange_name[] = {
 	"ISAKMP_XCHG_AO",
 	"ISAKMP_XCHG_AGGR",
 	"ISAKMP_XCHG_INFO",
+	"ISAKMP_XCHG_MODE_CFG",
     };
 
 static const char *const exchange_name2[] = {
@@ -251,8 +278,7 @@ static enum_names exchange_desc2 =
     { ISAKMP_XCHG_QUICK, ISAKMP_XCHG_ACK_INFO, exchange_name2, NULL };
 
 enum_names exchange_names =
-    { ISAKMP_XCHG_NONE, ISAKMP_XCHG_INFO, exchange_name, &exchange_desc2 };
-
+    { ISAKMP_XCHG_NONE, ISAKMP_XCHG_MODE_CFG, exchange_name, &exchange_desc2 };
 /* Flag BITS */
 const char *const flag_bit_names[] = {
 	"ISAKMP_FLAG_ENCRYPTION",
@@ -374,6 +400,19 @@ static const char *const cert_type_name[] = {
 enum_names cert_type_names =
     { CERT_NONE, CERT_X509_ATTRIBUTE, cert_type_name, NULL };
 
+/*
+ * certificate request payload policy
+ */
+static const char *const certpolicy_type_name[] = {
+     "CERT_NEVERSEND",
+     "CERT_SENDIFASKED",
+     "CERT_ALWAYSSEND"
+};
+  	 
+enum_names certpolicy_type_names =
+     { cert_neversend, cert_alwayssend, certpolicy_type_name, NULL };
+  	 
+
 /* Goal BITs for establishing an SA
  * Note: we drop the POLICY_ prefix so that logs are more concise.
  */
@@ -396,6 +435,8 @@ const char *const sa_policy_bit_names[] = {
 	"GROUP",
 	"GROUTED",
 	"UP",
+	"XAUTH",
+	"MODECFG",
 	NULL
     };
 
@@ -545,10 +586,19 @@ enum_names sa_lifetime_names =
 static const char *const enc_mode_name[] = {
 	"ENCAPSULATION_MODE_TUNNEL",
 	"ENCAPSULATION_MODE_TRANSPORT",
+	"ENCAPSULATION_MODE_UDP_TUNNEL",
+	"ENCAPSULATION_MODE_UDP_TRANSPORT",
     };
 
+static const char *const enc_udp_mode_name[] = {
+	"ENCAPSULATION_MODE_UDP_TUNNEL",
+	"ENCAPSULATION_MODE_UDP_TRANSPORT",
+    };
+
+static enum_names enc_udp_mode_names =
+    { ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS, ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS, enc_udp_mode_name, NULL };
 enum_names enc_mode_names =
-    { ENCAPSULATION_MODE_TUNNEL, ENCAPSULATION_MODE_TRANSPORT, enc_mode_name, NULL };
+    { ENCAPSULATION_MODE_TUNNEL, ENCAPSULATION_MODE_UDP_TRANSPORT_RFC, enc_mode_name, &enc_udp_mode_names };
 
 /* Auth Algorithm attribute */
 
@@ -565,6 +615,63 @@ enum_names
 	{ AUTH_ALGORITHM_HMAC_MD5, AUTH_ALGORITHM_KPDK, auth_alg_name + 1, NULL },
     extended_auth_alg_names =
 	{ AUTH_ALGORITHM_NONE, AUTH_ALGORITHM_KPDK, auth_alg_name, NULL };
+
+/* From draft-beaulieu-ike-xauth */
+const char *const xauth_attr_name[] = {
+	"XAUTH-TYPE",
+	"XAUTH-USER-NAME",
+	"XAUTH-USER-PASSWORD",
+	"XAUTH-PASSCODE",
+	"XAUTH-MESSAGE",
+	"XAUTH-CHALLENGE",
+	"XAUTH-DOMAIN",
+	"XAUTH-STATUS",
+	"XAUTH-NEXT-PIN",
+	"XAUTH-ANSWER",
+	NULL
+    };
+
+enum_names xauth_attr_names_tv =
+    { XAUTH_TYPE + ISAKMP_ATTR_AF_TV , XAUTH_ANSWER + ISAKMP_ATTR_AF_TV, xauth_attr_name , NULL };
+
+enum_names xauth_attr_names =
+    { XAUTH_TYPE , XAUTH_ANSWER, xauth_attr_name , &xauth_attr_names_tv };
+
+/* for XAUTH-TYPE attribute */
+const char *const xauth_type_name[] = {
+  "Generic",
+  "RADIUS-CHAP",
+  "OTP",
+  "S/KEY",
+  NULL
+};
+enum_names xauth_type_names =
+  { XAUTH_TYPE_GENERIC, XAUTH_TYPE_SKEY, xauth_type_name, NULL};
+
+const char *const modecfg_attr_name[] = {
+	"INTERNAL_IP4_ADDRESS",
+	"INTERNAL_IP4_NETMASK",
+	"INTERNAL_IP4_DNS",
+	"INTERNAL_IP4_NBNS",
+	"INTERNAL_ADDRESS_EXPIRY",
+	"INTERNAL_IP4_DHCP",
+	"APPLICATION_VERSION",
+	"INTERNAL_IP6_ADDRESS",
+	"INTERNAL_IP6_NETMASK",
+	"INTERNAL_IP6_DNS",
+	"INTERNAL_IP6_NBNS",
+	"INTERNAL_IP6_DHCP",
+	"INTERNAL_IP4_SUBNET",
+	"SUPPORTED_ATTRIBUTES",
+	"INTERNAL_IP6_SUBNET",
+	NULL
+    };
+
+enum_names modecfg_attr_names_tv =
+    { INTERNAL_IP4_ADDRESS + ISAKMP_ATTR_AF_TV , INTERNAL_IP6_SUBNET + ISAKMP_ATTR_AF_TV, modecfg_attr_name , &xauth_attr_names };
+
+enum_names modecfg_attr_names =
+    { INTERNAL_IP4_ADDRESS , INTERNAL_IP6_SUBNET, modecfg_attr_name , &modecfg_attr_names_tv };
 
 /* Oakley Lifetime Type attribute */
 
@@ -736,6 +843,21 @@ enum_names ipsec_notification_names =
     { IPSEC_RESPONDER_LIFETIME, IPSEC_INITIAL_CONTACT,
 	ipsec_notification_name, &notification_status_names };
 
+/* MODECFG */
+/*
+ * From draft-dukes-ike-mode-cfg
+*/
+const char *const attr_msg_type_name[] = {
+	"ISAKMP_CFG_RESERVED",
+	"ISAKMP_CFG_REQUEST",
+	"ISAKMP_CFG_REPLY",
+	"ISAKMP_CFG_SET",
+	"ISAKMP_CFG_ACK",
+	NULL
+    };
+
+enum_names attr_msg_type_names =
+    { 0 , ISAKMP_CFG_ACK, attr_msg_type_name , NULL };
 
 /* socket address family info */
 
@@ -872,7 +994,25 @@ static const char *const ppk_name[] = {
 
 enum_names ppk_names = { PPK_PSK, PPK_PIN, ppk_name, NULL };
 
-
+/*
+ * NAT-Traversal defines for nat_traveral type from nat_traversal.h
+ *
+ */
+const char *const natt_type_bitnames[] = {
+  "draft-ietf-ipsec-nat-t-ike-00/01",    /* 0 */
+  "draft-ietf-ipsec-nat-t-ike-02/03",
+  "RFC XXXX (NAT-Traversal)",
+  "3",                                   /* 3 */
+  "4",   "5",   "6",   "7", 
+  "8",   "9",   "10",  "11",
+  "12",  "13",  "14",  "15",
+  "16",  "17",  "18",  "19", 
+  "20",  "21",  "22",  "23", 
+  "24",  "25",  "26",  "27", 
+  "28",  "29",  
+  "nat is behind me",
+  "nat is behind peer"
+};
 
 /* look up enum names in an enum_names */
 

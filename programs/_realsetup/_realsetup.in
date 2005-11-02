@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _realsetup.in,v 1.23 2003/10/31 02:31:10 mcr Exp $
+# RCSID $Id: _realsetup.in,v 1.24.4.2 2004/04/26 03:45:47 ken Exp $
 
 me='ipsec setup'		# for messages
 
@@ -145,7 +145,7 @@ case "$1" in
   start|--start|_autostart)
 	# First, does it seem to be going already?
 	perform test ! -f $lock "||" "{" \
-		echo "\"FreeS/WAN IPsec apparently already running, start aborted\"" ";" \
+		echo "\"Openswan IPsec apparently already running, start aborted\"" ";" \
 		exit 1 ";" \
 		"}"
 
@@ -153,8 +153,8 @@ case "$1" in
 	# (Warning, changes to this log message may affect barf.)
 	version="`ipsec --version | awk 'NR == 1 { print $(3) }' | sed -e 's/^U\(.*\)\/K(.*/\1/'`"
 	case "$1" in
-	start|--start)	perform echo "\"Starting FreeS/WAN IPsec $version...\""	;;
-	_autostart)	perform echo "\"Restarting FreeS/WAN IPsec $version...\""	;;
+	start|--start)	perform echo "\"Starting Openswan IPsec $version...\""	;;
+	_autostart)	perform echo "\"Restarting Openswan IPsec $version...\""	;;
 	esac
 
 	# preliminaries
@@ -163,7 +163,7 @@ case "$1" in
 	for f in /dev/random /dev/urandom
 	do
 		perform test -r $f "||" "{" \
-			echo "\"...unable to start FreeS/WAN IPsec, no $f!\"" ";" \
+			echo "\"...unable to start Openswan IPsec, no $f!\"" ";" \
 			exit 1 ";" \
 			"}"
 	    done
@@ -228,6 +228,11 @@ case "$1" in
 			--uniqueids "\"$IPSECuniqueids\"" \
 			--nocrsend "\"$IPSECnocrsend\"" \
 			--strictcrlpolicy "\"$IPSECstrictcrlpolicy\"" \
+			--nat_traversal "\"$IPSECnat_traversal\"" \
+			--keep_alive "\"$IPSECkeep_alive\"" \
+			--force_keepalive "\"$IPSECforce_keepalive\"" \
+			--disable_port_floating "\"$IPSECdisable_port_floating\"" \
+			--virtual_private "\"$IPSECvirtual_private\"" \
 			--crlcheckinterval "\"$IPSECcrlcheckinterval\"" \
 			--dump "\"$IPSECdumpdir\"" \
 			--opts "\"$IPSECplutoopts\"" \
@@ -244,12 +249,12 @@ case "$1" in
 	fi
 
 	# done!
-	perform echo "\"...FreeS/WAN IPsec started\"" "|" $LOGONLY
+	perform echo "\"...Openswan IPsec started\"" "|" $LOGONLY
 	;;
 
   stop|--stop|_autostop)		# _autostop is same as stop
 	# Shut things down.
-	perform echo "\"Stopping FreeS/WAN IPsec...\""
+	perform echo "\"Stopping Openswan IPsec...\""
 	perform \
 		if test -r $lock ";" \
 		then \
@@ -290,7 +295,7 @@ case "$1" in
 	perform test -d `dirname $subsyslock` "&&" rm -f $subsyslock
 
 	perform rm -f $info $lock
-	perform echo "...FreeS/WAN IPsec stopped" "|" $LOGONLY
+	perform echo "...Openswan IPsec stopped" "|" $LOGONLY
 	perform exit \$status
 	;;
 
@@ -336,7 +341,7 @@ case "$1" in
 	then
 		if test " `wc -l </proc/net/ipsec_eroute`" -gt 0
 		then
-			eroutes=yes
+			eroutes=`wc -l </proc/net/ipsec_eroute|sed s/\ //g`
 		fi
 	fi
 
@@ -357,6 +362,10 @@ case "$1" in
 		if test "$plutokind" = "normal" -a "$klips" = "yes" -a "$hasinfo"
 		then
 			echo "pluto pid `cat $plutopid`"
+                        case "$eroutes" in
+                        0)      echo "No tunnels up"    ;;
+                        *)      echo "$eroutes tunnels up"      ;;
+                        esac
 			exit 0
 		fi
 		echo "but..."
@@ -372,7 +381,7 @@ case "$1" in
 		maybe)	echo "KLIPS module is not loaded!"	;;
 		none)	echo "no KLIPS in kernel!"		;;
 		esac
-		if test "$eroutes"
+		if test "$eroutes" -gt 0
 		then
 			echo "some eroutes exist"
 		fi

@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.9 2003/09/03 01:13:24 mcr Exp $
+# RCSID $Id: Makefile,v 1.10 2003/12/10 03:09:55 mcr Exp $
 
 FREESWANSRCDIR=../..
 include ${FREESWANSRCDIR}/Makefile.inc
@@ -24,7 +24,13 @@ OBJS:=cmds.o lookup.o
 LWRESINCL=${LWRESDIR}/include
 
 LIBS:=${FREESWANLIB} ${LWRESLIB} ${BIND9STATICLIBDIR}/libdns.a ${BIND9STATICLIBDIR}/libisc.a
+
+ifdef BIND9INCDIR
+CFLAGS+=-I${BIND9INCDIR}
+endif
+
 CFLAGS+=-I${LWRESINCL}
+
 #USERCOMPILE=-g
 
 
@@ -46,6 +52,9 @@ lookup.o:	lookup.c lwdnsq.h
 
 #
 # $Log: Makefile,v $
+# Revision 1.10  2003/12/10 03:09:55  mcr
+# 	only include -I$BIND9INCDIR if it is set.
+#
 # Revision 1.9  2003/09/03 01:13:24  mcr
 # 	first attempt at async capable lwdnsq.
 #

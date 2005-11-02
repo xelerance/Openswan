@@ -13,11 +13,11 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ttoprotoport.c,v 1.1 2003/09/18 22:09:34 mcr Exp $
+ * RCSID $Id: ttoprotoport.c,v 1.1.8.1 2004/03/21 05:23:31 mcr Exp $
  */
 
 #include "internal.h"
-#include "freeswan.h"
+#include "openswan.h"
 
 /*
  * ttoprotoport - converts from protocol/port string to protocol and port

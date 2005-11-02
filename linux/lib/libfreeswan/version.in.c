@@ -12,18 +12,18 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: version.in.c,v 1.3 2002/04/24 07:55:32 mcr Exp $
+ * RCSID $Id: version.in.c,v 1.3.36.1 2004/03/21 05:23:31 mcr Exp $
  */
 
 #ifdef __KERNEL__
 #include <linux/netdevice.h>
 #endif
 
-#include "freeswan.h"
+#include "openswan.h"
 
 #define	V	"xxx"		/* substituted in by Makefile */
-static const char freeswan_number[] = V;
-static const char freeswan_string[] = "Linux FreeS/WAN " V;
+static const char openswan_number[] = V;
+static const char openswan_string[] = "Linux FreeS/WAN " V;
 
 /*
  - ipsec_version_code - return IPsec version number/code, as string
@@ -31,7 +31,7 @@ static const char freeswan_string[] = "Linux FreeS/WAN " V;
 const char *
 ipsec_version_code()
 {
-	return freeswan_number;
+	return openswan_number;
 }
 
 /*
@@ -40,5 +40,5 @@ ipsec_version_code()
 const char *
 ipsec_version_string()
 {
-	return freeswan_string;
+	return openswan_string;
 }

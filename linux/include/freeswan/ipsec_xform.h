@@ -2,6 +2,7 @@
  * Definitions relevant to IPSEC transformations
  * Copyright (C) 1996, 1997  John Ioannidis.
  * Copyright (C) 1998, 1999, 2000, 2001  Richard Guy Briggs.
+ * COpyright (C) 2003  Michael Richardson <mcr@sandelman.ottawa.on.ca>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -13,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_xform.h,v 1.36 2002/04/24 07:36:48 mcr Exp $
+ * RCSID $Id: ipsec_xform.h,v 1.37 2003/12/13 19:10:16 mcr Exp $
  */
 
 #ifndef _IPSEC_XFORM_H_
@@ -93,11 +94,52 @@
 	(x)->ips_authalg == AH_SHA ? "_HMAC_SHA1" : \
 	"_UNKNOWN_auth" \
 
+#ifdef __KERNEL__
+struct ipsec_rcv_state;
+struct ipsec_xmit_state;
+
+struct xform_functions {
+	enum ipsec_rcv_value (*rcv_checks)(struct ipsec_rcv_state *irs,
+				       struct sk_buff *skb);
+        enum ipsec_rcv_value (*rcv_decrypt)(struct ipsec_rcv_state *irs);
+
+	enum ipsec_rcv_value (*rcv_setup_auth)(struct ipsec_rcv_state *irs,
+					   struct sk_buff *skb,
+					   __u32          *replay,
+					   unsigned char **authenticator);
+	enum ipsec_rcv_value (*rcv_calc_auth)(struct ipsec_rcv_state *irs,
+					struct sk_buff *skb);
+
+  	enum ipsec_xmit_value (*xmit_setup)(struct ipsec_xmit_state *ixs);
+        enum ipsec_xmit_value (*xmit_encrypt)(struct ipsec_xmit_state *ixs);
+
+	enum ipsec_xmit_value (*xmit_setup_auth)(struct ipsec_xmit_state *ixs,
+					   struct sk_buff *skb,
+					   __u32          *replay,
+					   unsigned char **authenticator);
+	enum ipsec_xmit_value (*xmit_calc_auth)(struct ipsec_xmit_state *ixs,
+					struct sk_buff *skb);
+        int  xmit_headroom;
+	int  xmit_needtailroom;
+};
+
+#endif /* __KERNEL__ */
+
+#ifdef CONFIG_IPSEC_DEBUG
+extern void ipsec_dmp(char *s, caddr_t bb, int len);
+#else /* CONFIG_IPSEC_DEBUG */
+#define ipsec_dmp(_x, _y, _z) 
+#endif /* CONFIG_IPSEC_DEBUG */
+
+
 #define _IPSEC_XFORM_H_
 #endif /* _IPSEC_XFORM_H_ */
 
 /*
  * $Log: ipsec_xform.h,v $
+ * Revision 1.37  2003/12/13 19:10:16  mcr
+ * 	refactored rcv and xmit code - same as FS 2.05.
+ *
  * Revision 1.36  2002/04/24 07:36:48  mcr
  * Moved from ./klips/net/ipsec/ipsec_xform.h,v
  *

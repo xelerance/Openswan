@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_ah.h,v 1.20 2003/02/06 02:21:34 rgb Exp $
+ * RCSID $Id: ipsec_ah.h,v 1.21 2003/12/13 19:10:16 mcr Exp $
  */
 
 #include "ipsec_md5h.h"
@@ -23,68 +23,13 @@
 #define IPPROTO_AH 51
 #endif /* IPPROTO_AH */
 
-#define AH_FLENGTH		12		/* size of fixed part */
-#define AHMD5_KMAX		64		/* MD5 max 512 bits key */
-#define AHMD5_AMAX		12		/* MD5 96 bits of authenticator */
-
-#define AHMD596_KLEN		16		/* MD5 128 bits key */
-#define AHSHA196_KLEN		20		/* SHA1 160 bits key */
-
-#define AHMD596_ALEN    	16		/* MD5 128 bits authentication length */
-#define AHSHA196_ALEN		20		/* SHA1 160 bits authentication length */
-
-#define AHMD596_BLKLEN  	64		/* MD5 block length */
-#define AHSHA196_BLKLEN 	64		/* SHA1 block length */
-
-#define AH_AMAX         	AHSHA196_ALEN   /* keep up to date! */
-#define AHHMAC_HASHLEN  	12              /* authenticator length of 96bits */
-#define AHHMAC_RPLLEN   	4               /* 32 bit replay counter */
-
-#define DB_AH_PKTRX		0x0001
-#define DB_AH_PKTRX2		0x0002
-#define DB_AH_DMP		0x0004
-#define DB_AH_IPSA		0x0010
-#define DB_AH_XF		0x0020
-#define DB_AH_INAU		0x0040
-#define DB_AH_REPLAY		0x0100
+#include "ipsec_auth.h"
 
 #ifdef __KERNEL__
-
-/* General HMAC algorithm is described in RFC 2104 */
-
-#define		HMAC_IPAD	0x36
-#define		HMAC_OPAD	0x5C
-
-struct md5_ctx {
-	MD5_CTX ictx;		/* context after H(K XOR ipad) */
-	MD5_CTX	octx;		/* context after H(K XOR opad) */
-};
-
-struct sha1_ctx {
-	SHA1_CTX ictx;		/* context after H(K XOR ipad) */
-	SHA1_CTX octx;		/* context after H(K XOR opad) */
-};
-
-struct auth_alg {
-	void (*init)(void *ctx);
-	void (*update)(void *ctx, unsigned char *bytes, __u32 len);
-	void (*final)(unsigned char *hash, void *ctx);
-	int hashlen;
-};
 
 extern struct inet_protocol ah_protocol;
 
 struct options;
-
-extern int 
-ah_rcv(struct sk_buff *skb,
-       struct device *dev,
-       struct options *opt, 
-       __u32 daddr,
-       unsigned short len,
-       __u32 saddr,
-       int redo,
-       struct inet_protocol *protocol);
 
 struct ahhdr				/* Generic AH header */
 {
@@ -99,6 +44,7 @@ struct ahhdr				/* Generic AH header */
 			     * and the ah_hl, says how many bytes after that
 			     * to cover. */
 
+extern struct xform_functions ah_xform_funcs[];
 
 #ifdef CONFIG_IPSEC_DEBUG
 extern int debug_ah;
@@ -107,6 +53,20 @@ extern int debug_ah;
 
 /*
  * $Log: ipsec_ah.h,v $
+ * Revision 1.21  2003/12/13 19:10:16  mcr
+ * 	refactored rcv and xmit code - same as FS 2.05.
+ *
+ * Revision 1.22  2003/12/11 20:14:58  mcr
+ * 	refactored the xmit code, to move all encapsulation
+ * 	code into protocol functions. Note that all functions
+ * 	are essentially done by a single function, which is probably
+ * 	wrong.
+ * 	the rcv_functions structures are renamed xform_functions.
+ *
+ * Revision 1.21  2003/12/06 21:21:19  mcr
+ * 	split up receive path into per-transform files, for
+ * 	easier later removal.
+ *
  * Revision 1.20  2003/02/06 02:21:34  rgb
  *
  * Moved "struct auth_alg" from ipsec_rcv.c to ipsec_ah.h .

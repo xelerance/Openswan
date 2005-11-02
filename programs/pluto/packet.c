@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: packet.c,v 1.36 2003/05/25 02:35:51 dhr Exp $
+ * RCSID $Id: packet.c,v 1.43.2.1 2004/03/21 05:23:34 mcr Exp $
  */
 
 #include <stdio.h>
@@ -21,7 +21,7 @@
 #include <netinet/in.h>
 #include <string.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -119,6 +119,17 @@ static field_desc isaat_fields_ipsec[] = {
 struct_desc isakmp_ipsec_attribute_desc = {
     "ISAKMP IPsec DOI attribute",
     isaat_fields_ipsec, sizeof(struct isakmp_attribute) };
+
+/* XAUTH Attributes */
+static field_desc isaat_fields_xauth[] = {
+    { ft_af_loose_enum, 16/BITS_PER_BYTE, "ModeCfg attr type", &modecfg_attr_names },
+    { ft_lv, 16/BITS_PER_BYTE, "length/value", NULL },
+    { ft_end, 0, NULL, NULL }
+};
+
+struct_desc isakmp_xauth_attribute_desc = {
+    "ISAKMP ModeCfg attribute",
+    isaat_fields_xauth, sizeof(struct isakmp_attribute) };
 
 /* ISAKMP Security Association Payload
  * layout from RFC 2408 "ISAKMP" section 3.4
@@ -517,6 +528,85 @@ struct_desc isakmp_delete_desc = { "ISAKMP Delete Payload", isad_fields, sizeof(
  */
 struct_desc isakmp_vendor_id_desc = { "ISAKMP Vendor ID Payload", isag_fields, sizeof(struct isakmp_generic) };
 
+/* MODECFG */
+/*
+ * From draft-dukes-ike-mode-cfg
+3.2. Attribute Payload 
+                           1                   2                   3 
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+     ! Next Payload  !   RESERVED    !         Payload Length        ! 
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+     !     Type      !   RESERVED    !           Identifier          ! 
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+     !                                                               ! 
+     ~                           Attributes                          ~ 
+     !                                                               ! 
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+*/    
+static field_desc isaattr_fields[] = {
+    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_enum, 8/BITS_PER_BYTE, "Attr Msg Type", &attr_msg_type_names },
+    { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
+    { ft_nat, 16/BITS_PER_BYTE, "Identifier", NULL },
+    { ft_end, 0, NULL, NULL }
+};
+
+/* MODECFG */
+/* From draft-dukes-ike-mode-cfg
+3.2. Attribute Payload
+                           1                   2                   3  
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     ! Next Payload  !   RESERVED    !         Payload Length        !
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     !     Type      !   RESERVED    !           Identifier          !
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     !                                                               !
+     !                                                               !
+     ~                           Attributes                          ~
+     !                                                               !
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+*/
+
+struct_desc isakmp_attr_desc = { "ISAKMP Mode Attribute", isaattr_fields, sizeof(struct isakmp_mode_attr) };
+
+/* ISAKMP NAT-Traversal NAT-D
+ * layout from draft-ietf-ipsec-nat-t-ike-01.txt section 3.2
+ *
+ *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * ! Next Payload  !   RESERVED    !         Payload Length        !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * !                 HASH of the address and port                  !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+struct_desc isakmp_nat_d = { "ISAKMP NAT-D Payload", isag_fields, sizeof(struct isakmp_generic) };
+
+/* ISAKMP NAT-Traversal NAT-OA
+ * layout from draft-ietf-ipsec-nat-t-ike-01.txt section 4.2
+ *
+ *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * ! Next Payload  !   RESERVED    !         Payload Length        !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * !   ID Type     !   RESERVED    !            RESERVED           !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * !         IPv4 (4 octets) or IPv6 address (16 octets)           !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+static field_desc isanat_oa_fields[] = {
+    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_enum, 8/BITS_PER_BYTE, "ID type", &ident_names },
+    { ft_mbz, 24/BITS_PER_BYTE, NULL, NULL },
+    { ft_end, 0, NULL, NULL }
+};
+
+struct_desc isakmp_nat_oa = { "ISAKMP NAT-OA Payload", isanat_oa_fields, sizeof(struct isakmp_nat_oa) };
 
 /* descriptor for each payload type
  *
@@ -541,6 +631,9 @@ struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
     &isakmp_notification_desc,		/* 11 ISAKMP_NEXT_N (Notification) */
     &isakmp_delete_desc,		/* 12 ISAKMP_NEXT_D (Delete) */
     &isakmp_vendor_id_desc,		/* 13 ISAKMP_NEXT_VID (Vendor ID) */
+    &isakmp_attr_desc,                  /* 14 ISAKMP_NEXT_ATTR (ModeCfg)  */    
+    &isakmp_nat_d,              	/* 15=130 ISAKMP_NEXT_NATD (NAT-D) */
+    &isakmp_nat_oa,             	/* 16=131 ISAKMP_NEXT_NATOA (NAT-OA) */
 };
 
 void
@@ -589,6 +682,7 @@ DBG_print_struct(const char *label, const void *struct_ptr
 	case ft_enum:	/* value from an enumeration */
 	case ft_loose_enum:	/* value from an enumeration with only some names known */
 	case ft_af_enum:	/* Attribute Format + value from an enumeration */
+	case ft_af_loose_enum:	/* Attribute Format + value from an enumeration */
 	case ft_set:	/* bits representing set */
 	    switch (i)
 	    {
@@ -614,6 +708,8 @@ DBG_print_struct(const char *label, const void *struct_ptr
 	    case ft_nat:	/* natural number (may be 0) */
 		DBG_log("   %s: %lu", fp->name, (unsigned long)n);
 		break;
+
+	    case ft_af_loose_enum: /* Attribute Format + value from an enumeration */
 	    case ft_af_enum:	/* Attribute Format + value from an enumeration */
 		if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV)
 		    immediate = TRUE;
@@ -749,6 +845,7 @@ in_struct(void *struct_ptr, struct_desc *sd
 	    case ft_enum:	/* value from an enumeration */
 	    case ft_loose_enum:	/* value from an enumeration with only some names known */
 	    case ft_af_enum:	/* Attribute Format + value from an enumeration */
+	    case ft_af_loose_enum:	/* Attribute Format + value from an enumeration */
 	    case ft_set:	/* bits representing set */
 	    {
 		u_int32_t n = 0;
@@ -780,6 +877,11 @@ in_struct(void *struct_ptr, struct_desc *sd
 		    }
 		    break;
 		}
+		case ft_af_loose_enum:	/* Attribute Format + value from an enumeration */
+		    if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV)
+			immediate = TRUE;
+		    break;
+
 		case ft_af_enum:	/* Attribute Format + value from an enumeration */
 		    if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV)
 			immediate = TRUE;
@@ -904,7 +1006,7 @@ in_raw(void *bytes, size_t len, pb_stream *ins, const char *name)
 
 bool
 out_struct(const void *struct_ptr, struct_desc *sd
-, pb_stream *outs, pb_stream *obj_pbs)
+	   , pb_stream *outs, pb_stream *obj_pbs)
 {
     err_t ugh = NULL;
     const u_int8_t *inp = struct_ptr;
@@ -952,6 +1054,7 @@ out_struct(const void *struct_ptr, struct_desc *sd
 	    case ft_enum:	/* value from an enumeration */
 	    case ft_loose_enum:	/* value from an enumeration with only some names known */
 	    case ft_af_enum:	/* Attribute Format + value from an enumeration */
+	    case ft_af_loose_enum: /* Attribute Format + value from an enumeration */
 	    case ft_set:	/* bits representing set */
 	    {
 		u_int32_t n = 0;
@@ -986,6 +1089,11 @@ out_struct(const void *struct_ptr, struct_desc *sd
 		    obj.lenfld = cur;
 		    obj.lenfld_desc = fp;
 		    break;
+		case ft_af_loose_enum: /* Attribute Format + value from an enumeration */
+		    if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV)
+			immediate = TRUE;
+		    break;
+
 		case ft_af_enum:	/* Attribute Format + value from an enumeration */
 		    if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV)
 			immediate = TRUE;
@@ -1062,6 +1170,36 @@ out_struct(const void *struct_ptr, struct_desc *sd
 }
 
 bool
+out_modify_previous_np(u_int8_t np, pb_stream *outs)
+{
+	size_t len = (outs->cur - outs->start), offset;
+	if (len < sizeof(struct isakmp_hdr)) {
+		return FALSE;
+	}
+	else if (len == sizeof(struct isakmp_hdr)) {
+		struct isakmp_hdr *hdr = (struct isakmp_hdr *)outs->start;
+		hdr->isa_np = np;
+		return TRUE;
+	}
+	else {
+		struct isakmp_generic *hdr;
+		for (offset = sizeof(struct isakmp_hdr); offset < len ;
+			offset += ntohs(hdr->isag_length)) {
+			if ((len - offset) < sizeof(struct isakmp_generic))
+				return FALSE;
+			hdr = (struct isakmp_generic *)(outs->start+offset);
+			if ((len - offset) < ntohs(hdr->isag_length))
+				return FALSE;
+			if ((len - offset) == ntohs(hdr->isag_length)) {
+				hdr->isag_np = np;
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
+}
+
+bool
 out_generic(u_int8_t np, struct_desc *sd
 , pb_stream *outs, pb_stream *obj_pbs)
 {
@@ -1074,7 +1212,7 @@ out_generic(u_int8_t np, struct_desc *sd
 
 bool
 out_generic_raw(u_int8_t np, struct_desc *sd
-, pb_stream *outs, void *bytes, size_t len, const char *name)
+, pb_stream *outs, const void *bytes, size_t len, const char *name)
 {
     pb_stream pbs;
 

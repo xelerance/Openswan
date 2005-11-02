@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: state.h,v 1.70 2003/09/24 07:30:40 mcr Exp $
+ * RCSID $Id: state.h,v 1.76.2.1 2004/03/21 05:23:34 mcr Exp $
  */
 
 #include <sys/types.h>
@@ -20,6 +20,7 @@
 #include <netinet/in.h>
 #include <time.h>
 #include <gmp.h>    /* GNU MP library */
+#include "quirks.h"
 
 /* Message ID mechanism.
  *
@@ -57,6 +58,9 @@ struct oakley_trans_attrs {
     u_int16_t hash;		/* Hash algorithm */
     const struct hash_desc *hasher;	/* package of hashing routines */
     u_int16_t auth;		/* Authentication method */
+#ifdef XAUTH
+    u_int16_t xauth;            /* did we negotiate Extended Authentication? */
+#endif
     const struct oakley_group_desc *group;	/* Oakley group */
     time_t life_seconds;	/* When this SA expires (seconds) */
     u_int32_t life_kilobytes;	/* When this SA is exhausted (kilobytes) */
@@ -132,6 +136,10 @@ struct state
     lset_t             st_policy;              /* policy for IPsec SA */
 
     msgid_t            st_msgid;               /* MSG-ID from header.  Network Order! */
+    msgid_t            st_msgid2;              /* MSG-ID from header.  Network Order! */
+
+#define MAX_INFO_EXG 16
+    msgid_t            st_infoid[MAX_INFO_EXG];/* space for possible informational exchanges */
 
     /* only for a state representing an ISAKMP SA */
     struct msgid_list  *st_used_msgids;        /* used-up msgids */
@@ -192,9 +200,11 @@ struct state
     chunk_t            st_skeyid_a;            /* KM for ISAKMP authentication */
     chunk_t            st_skeyid_e;            /* KM for ISAKMP encryption */
     u_char             st_iv[MAX_DIGEST_LEN];  /* IV for encryption */
+    u_char             st_old_iv[MAX_DIGEST_LEN];  /* IV for encryption */
     u_char             st_new_iv[MAX_DIGEST_LEN];
     u_char             st_ph1_iv[MAX_DIGEST_LEN]; /* IV at end if phase 1 */
     unsigned int       st_iv_len;
+    unsigned int       st_old_iv_len;
     unsigned int       st_new_iv_len;
     unsigned int       st_ph1_iv_len;
 
@@ -203,6 +213,25 @@ struct state
     struct event      *st_event;               /* backpointer for certain events */
     struct state      *st_hashchain_next;      /* Next in list */
     struct state      *st_hashchain_prev;      /* Previous in list */
+
+    struct {
+	bool           st_xauth_client_done;
+	int            st_xauth_client_attempt;
+	bool           st_got_certrequest;
+    } hidden_variables;                        /* internal state that
+						* should get copied by god
+						* Eistein would be proud
+						*/
+
+
+#ifdef NAT_TRAVERSAL
+    u_int32_t         nat_traversal;
+    ip_address        nat_oa;
+#endif
+    u_int32_t	      st_seen_vendorid;	  /* Bit field about recognized Vendor ID */
+    struct isakmp_quirks quirks;          /* work arounds for faults in other
+ 					   * products */
+    
 };
 
 /* global variables */
@@ -236,7 +265,20 @@ extern struct state
     *find_phase1_state(const struct connection *c, lset_t ok_states),
     *find_sender(size_t packet_len, u_char *packet);
 
+extern struct state *find_info_state(const u_char *icookie
+				     , const u_char *rcookie
+				     , const ip_address *peer
+				     , msgid_t msgid);
+
 extern void show_states_status(void);
+
+#if 1
+void for_each_state(void *(f)(struct state *, void *data), void *data);
+#endif
+
+#if 1
+void for_each_state(void *(f)(struct state *, void *data), void *data);
+#endif
 
 extern void find_my_cpi_gap(cpi_t *latest_cpi, cpi_t *first_busy_cpi);
 extern ipsec_spi_t uniquify_his_cpi(ipsec_spi_t cpi, struct state *st);

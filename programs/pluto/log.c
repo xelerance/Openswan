@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: log.c,v 1.79 2003/11/13 23:21:20 ken Exp $
+ * RCSID $Id: log.c,v 1.81.2.1 2004/03/21 05:23:34 mcr Exp $
  */
 
 #include <stdio.h>
@@ -29,7 +29,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -41,10 +41,14 @@
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "kernel.h"	/* needs connections.h */
 #include "whack.h"	/* needs connections.h */
 #include "timer.h"
+#include "paths.h"
 
 /* close one per-peer log */
 static void perpeer_logclose(struct connection *c);	/* forward */
@@ -88,6 +92,7 @@ u_int16_t cur_from_port;	/* host order */
 void
 init_log(void)
 {
+    set_paths(ipsec_dir);
     if (log_to_stderr)
 	setbuf(stderr, NULL);
     if (log_to_syslog)
@@ -790,6 +795,42 @@ daily_log_event(void)
     event_schedule(EVENT_LOG_DAILY, interval, NULL);
 
     daily_log_reset();
+}
+
+/* for paths.h */
+/*
+ * decode the paths
+ */
+struct pluto_paths plutopaths;
+
+void verify_path_space(struct paththing *p, size_t min, const char *why)
+{
+    if (min > p->path_space)
+    {
+	pfreeany(p->path);
+	p->path_space = min + 10;
+	p->path = alloc_bytes(p->path_space, why);
+    }
+}
+
+void set_paths(const char *basedir)
+{
+    size_t baselen = strlen(basedir) + 2;
+
+    verify_path_space(&plutopaths.acerts, baselen + sizeof("acerts"), "acert path");
+    snprintf(plutopaths.acerts.path, plutopaths.acerts.path_space, "%s/acerts", basedir);
+
+    verify_path_space(&plutopaths.cacerts, baselen + sizeof("cacerts"), "cacert path");
+    snprintf(plutopaths.cacerts.path, plutopaths.cacerts.path_space, "%s/cacerts", basedir);
+
+    verify_path_space(&plutopaths.crls, baselen + sizeof("crls"), "crls path");
+    snprintf(plutopaths.crls.path, plutopaths.crls.path_space, "%s/crls", basedir);
+
+    verify_path_space(&plutopaths.private, baselen + sizeof("private"), "private path");
+    snprintf(plutopaths.private.path, plutopaths.private.path_space, "%s/private", basedir);
+
+    verify_path_space(&plutopaths.certs, baselen + sizeof("certs"), "certs path");
+    snprintf(plutopaths.certs.path, plutopaths.certs.path_space, "%s/certs", basedir);
 }
 
 /*

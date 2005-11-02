@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_debug.c,v 1.7 2002/09/20 05:01:26 rgb Exp $
+ * RCSID $Id: pfkey_v2_debug.c,v 1.8.4.2 2004/04/16 12:32:56 mcr Exp $
  *
  */
 
@@ -80,6 +80,12 @@ static char *pfkey_sadb_ext_strings[]={
   "X-source-mask",                /* SADB_X_EXT_ADDRESS_SRC_MASK   23 */
   "X-dest-mask",                  /* SADB_X_EXT_ADDRESS_DST_MASK   24 */
   "X-set-debug",                  /* SADB_X_EXT_DEBUG              25 */
+#ifdef NAT_TRAVERSAL
+  "X-NAT-T-type",                 /* SADB_X_EXT_NAT_T_TYPE         26 */
+  "X-NAT-T-sport",                /* SADB_X_EXT_NAT_T_SPORT        27 */
+  "X-NAT-T-dport",                /* SADB_X_EXT_NAT_T_DPORT        28 */
+  "X-NAT-T-OA",                   /* SADB_X_EXT_NAT_T_OA           29 */
+#endif
 };
 
 const char *
@@ -128,6 +134,19 @@ pfkey_v2_sadb_type_string(int sadb_type)
 
 /*
  * $Log: pfkey_v2_debug.c,v $
+ * Revision 1.8.4.2  2004/04/16 12:32:56  mcr
+ * 	erroneously pullup some freeswan->openswan changes that
+ * 	are really for 2.2.
+ *
+ * Revision 1.8.4.1  2004/03/21 05:23:31  mcr
+ *     pullup of freeswan->openswan and CR/CERT patches from HEAD
+ *
+ * Revision 1.9  2004/03/08 01:59:08  ken
+ * freeswan.h -> openswan.h
+ *
+ * Revision 1.8  2003/12/10 01:20:19  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.7  2002/09/20 05:01:26  rgb
  * Fixed limit inclusion error in both type and ext string conversion.
  *
@@ -143,7 +162,7 @@ pfkey_v2_sadb_type_string(int sadb_type)
  * Revision 1.3  2002/01/29 01:59:09  mcr
  * 	removal of kversions.h - sources that needed it now use ipsec_param.h.
  * 	updating of IPv6 structures to match latest in6.h version.
- * 	removed dead code from freeswan.h that also duplicated kversions.h
+ * 	removed dead code from openswan.h that also duplicated kversions.h
  * 	code.
  *
  * Revision 1.2  2002/01/20 20:34:50  mcr

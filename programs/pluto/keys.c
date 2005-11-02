@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keys.c,v 1.87 2003/12/06 16:34:32 mcr Exp $
+ * RCSID $Id: keys.c,v 1.88.4.2 2004/04/16 12:33:10 mcr Exp $
  */
 
 #include <stddef.h>
@@ -43,6 +43,9 @@
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "state.h"
 #include "lex.h"
@@ -58,6 +61,11 @@
 
 /* Maximum length of filename and passphrase buffer */
 #define BUF_LEN		256
+
+#ifdef NAT_TRAVERSAL
+#define PB_STREAM_UNDEFINED
+#include "nat_traversal.h"
+#endif
 
 struct fld {
     const char *name;
@@ -352,6 +360,18 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 	happy(anyaddr(addrtypeof(&c->spd.that.host_addr), &rw_id.ip_addr));
 	his_id = &rw_id;
     }
+#ifdef NAT_TRAVERSAL
+    else if ((nat_traversal_enabled) && (c->policy & POLICY_PSK) &&
+       (kind == PPK_PSK) && (
+	((c->kind == CK_TEMPLATE) && (c->spd.that.id.kind == ID_NONE)) ||
+	((c->kind == CK_INSTANCE) && (id_is_ipaddr(&c->spd.that.id)))))
+    {
+	    /* roadwarrior: replace him with 0.0.0.0 */
+	    rw_id.kind = ID_IPV4_ADDR;
+	    happy(anyaddr(addrtypeof(&c->spd.that.host_addr), &rw_id.ip_addr));
+	    his_id = &rw_id;
+    }
+#endif
 
     for (s = secrets; s != NULL; s = s->next)
     {
@@ -546,7 +566,6 @@ get_RSA_private_key(const struct connection *c)
  * same names.
  */
 
-#ifdef X509
 /* process rsa key file protected with optional passphrase which can either be
  * read from ipsec.secrets or prompted for by using whack
  */
@@ -642,7 +661,6 @@ process_rsa_keyfile(struct RSA_private_key *rsak, int whackfd)
     }
     return ugh;
 }
-#endif
 
 /* parse PSK from file */
 static err_t
@@ -861,11 +879,7 @@ process_secret(struct secret *s, int whackfd)
 	}
 	else
 	{
-#ifdef X509
 	   ugh = process_rsa_keyfile(&s->u.RSA_private_key, whackfd);
-#else
-	   ugh = "X509 support not supported";
-#endif
 	}
 	DBG(DBG_CONTROL,
 	    DBG_log("loaded private key for keyid: %s:%s",
@@ -1465,13 +1479,11 @@ void list_public_keys(bool utc)
 	    whack_log(RC_COMMENT,"       %s '%s'",
 		enum_show(&ident_names, key->id.kind), id_buf);
 
-#ifdef X509
 	    if (key->issuer.len > 0)
 	    {
 		dntoa(id_buf, IDTOA_BUF, key->issuer);
 		whack_log(RC_COMMENT,"       Issuer '%s'", id_buf);
 	    }
-#endif
 	}
 	p = p->next;
     }

@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_pfkey.c,v 1.4 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: kernel_pfkey.c,v 1.8.2.3 2004/06/01 14:42:36 ken Exp $
  */
 
 #ifdef KLIPS
@@ -31,7 +31,7 @@
 #include <sys/types.h>
 #include <sys/queue.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
@@ -43,6 +43,10 @@
 #include "kernel_pfkey.h"
 #include "log.h"
 #include "whack.h"	/* for RC_LOG_SERIOUS */
+#ifdef NAT_TRAVERSAL
+#include "packet.h"  /* for pb_stream in nat_traversal.h */
+#include "nat_traversal.h"
+#endif
 
 static int pfkeyfd = NULL_FD;
 
@@ -71,7 +75,10 @@ static sparse_names pfkey_type_names = {
 	NE(SADB_X_ADDFLOW),
 	NE(SADB_X_DELFLOW),
 	NE(SADB_X_DEBUG),
-	NE(SADB_MAX),
+#ifdef NAT_TRAVERSAL
+	NE(SADB_X_NAT_T_NEW_MAPPING),
+#endif
+	NE(SADB_MAX),	
 	{ 0, sparse_end }
 };
 
@@ -239,7 +246,11 @@ pfkey_get(pfkey_buf *buf)
 		, (unsigned) IPSEC_PFKEYv2_ALIGN);
 	}
 	else if (!(buf->msg.sadb_msg_pid == (unsigned)pid
-	|| (buf->msg.sadb_msg_pid == 0 && buf->msg.sadb_msg_type == SADB_ACQUIRE)))
+	|| (buf->msg.sadb_msg_pid == 0 && buf->msg.sadb_msg_type == SADB_ACQUIRE)
+#ifdef NAT_TRAVERSAL
+	|| (buf->msg.sadb_msg_pid == 0 && buf->msg.sadb_msg_type == SADB_X_NAT_T_NEW_MAPPING)
+#endif
+	))
 	{
 	    /* not for us: ignore */
 	    DBG(DBG_KLIPS,
@@ -419,6 +430,11 @@ pfkey_async(pfkey_buf *buf)
 	    /* to simulate loss of ACQUIRE, delete this call */
 	    process_pfkey_acquire(buf, extensions);
 	    break;
+#ifdef NAT_TRAVERSAL
+	case SADB_X_NAT_T_NEW_MAPPING:
+	    process_pfkey_nat_t_new_mapping(&(buf->msg), extensions);
+	    break;
+#endif
 	default:
 	    /* ignored */
 	    break;
@@ -804,7 +820,29 @@ pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 		, sa->enckey)
 	    , "pfkey_key_e Add SA", sa->text_said, extensions))
 
+#ifdef NAT_TRAVERSAL
+    && (sa->natt_type == 0
+	|| pfkey_build(pfkey_x_nat_t_type_build(
+		&extensions[SADB_X_EXT_NAT_T_TYPE], sa->natt_type),
+		"pfkey_nat_t_type Add ESP SA",  sa->text_said, extensions))
+    && (sa->natt_sport == 0
+	|| pfkey_build(pfkey_x_nat_t_port_build(
+			&extensions[SADB_X_EXT_NAT_T_SPORT], SADB_X_EXT_NAT_T_SPORT,
+			sa->natt_sport), "pfkey_nat_t_sport Add ESP SA", sa->text_said,
+			extensions))
+    && (sa->natt_dport == 0
+	|| pfkey_build(pfkey_x_nat_t_port_build(
+			&extensions[SADB_X_EXT_NAT_T_DPORT], SADB_X_EXT_NAT_T_DPORT,
+			sa->natt_dport), "pfkey_nat_t_dport Add ESP SA", sa->text_said,
+			extensions))
+
+    && (sa->natt_type ==0 || isanyaddr(sa->natt_oa)
+	|| pfkeyext_address(SADB_X_EXT_NAT_T_OA, sa->natt_oa
+	    , "pfkey_nat_t_oa Add ESP SA", sa->text_said, extensions))
+#endif
+
     && finish_pfkey_msg(extensions, "Add SA", sa->text_said, NULL);
+
 }
 
 static bool

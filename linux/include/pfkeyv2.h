@@ -1,5 +1,5 @@
 /*
- * RCSID $Id: pfkeyv2.h,v 1.26 2003/10/31 02:26:44 mcr Exp $
+ * RCSID $Id: pfkeyv2.h,v 1.29 2003/12/22 21:35:58 mcr Exp $
  */
 
 /*
@@ -36,7 +36,8 @@ you leave this credit intact on any copies of this file.
 #define SADB_X_ADDFLOW	14
 #define SADB_X_DELFLOW	15
 #define SADB_X_DEBUG	16
-#define SADB_MAX        16
+#define SADB_X_NAT_T_NEW_MAPPING  17
+#define SADB_MAX                  17
 
 struct sadb_msg {
   uint8_t sadb_msg_version;
@@ -213,7 +214,20 @@ struct sadb_x_debug {
   uint32_t sadb_x_debug_verbose;
   uint8_t sadb_x_debug_reserved[4];
 };
-  
+
+struct sadb_x_nat_t_type {
+  uint16_t sadb_x_nat_t_type_len;
+  uint16_t sadb_x_nat_t_type_exttype;
+  uint8_t sadb_x_nat_t_type_type;
+  uint8_t sadb_x_nat_t_type_reserved[3];
+};
+struct sadb_x_nat_t_port {
+  uint16_t sadb_x_nat_t_port_len;
+  uint16_t sadb_x_nat_t_port_exttype;
+  uint16_t sadb_x_nat_t_port_port;
+  uint16_t sadb_x_nat_t_port_reserved;
+};
+
 /*
  * A protocol structure for passing through the transport level
  * protocol.  It contains more fields than are actually used/needed
@@ -259,7 +273,11 @@ struct sadb_protocol {
 #define SADB_X_EXT_ADDRESS_DST_MASK   24
 #define SADB_X_EXT_DEBUG              25
 #define SADB_X_EXT_PROTOCOL           26
-#define SADB_EXT_MAX                  26
+#define SADB_X_EXT_NAT_T_TYPE         27
+#define SADB_X_EXT_NAT_T_SPORT        28
+#define SADB_X_EXT_NAT_T_DPORT        29
+#define SADB_X_EXT_NAT_T_OA           30
+#define SADB_EXT_MAX                  30
 
 /* SADB_X_DELFLOW required over and above SADB_X_SAFLAGS_CLEARFLOW */
 #define SADB_X_EXT_ADDRESS_DELFLOW \
@@ -351,6 +369,15 @@ struct sadb_protocol {
 
 /*
  * $Log: pfkeyv2.h,v $
+ * Revision 1.29  2003/12/22 21:35:58  mcr
+ * 	new patches from Dr{Who}.
+ *
+ * Revision 1.28  2003/12/22 19:33:15  mcr
+ * 	added 0.6c NAT-T patch.
+ *
+ * Revision 1.27  2003/12/10 01:20:01  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.26  2003/10/31 02:26:44  mcr
  * 	pulled up port-selector patches.
  *

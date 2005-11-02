@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: rcv_whack.c,v 1.95 2003/11/07 01:38:22 ken Exp $
+ * RCSID $Id: rcv_whack.c,v 1.99.2.1 2004/03/21 05:23:34 mcr Exp $
  */
 
 #include <stdio.h>
@@ -30,7 +30,7 @@
 #include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
 #include <sys/queue.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -39,6 +39,9 @@
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "foodgroups.h"
 #include "whack.h"	/* needs connections.h */
@@ -309,10 +312,16 @@ whack_handle(int whackctlfd)
 	|| !unpack_str(&msg.left.cert)		/* string  3 */
 	|| !unpack_str(&msg.left.ca)		/* string  4 */
 	|| !unpack_str(&msg.left.updown)	/* string  5 */
+#ifdef VIRTUAL_IP
+	|| !unpack_str(&msg.left.virt)
+#endif
 	|| !unpack_str(&msg.right.id)		/* string  6 */
 	|| !unpack_str(&msg.right.cert)		/* string  7 */
 	|| !unpack_str(&msg.right.ca)		/* string  8 */
 	|| !unpack_str(&msg.right.updown)	/* string  9 */
+#ifdef VIRTUAL_IP
+	|| !unpack_str(&msg.right.virt)
+#endif
 	|| !unpack_str(&msg.keyid)		/* string 10 */
 	|| !unpack_str(&msg.myid)		/* string 11 */
 	|| str_roof - next_str != (ptrdiff_t)msg.keyval.len)	/* check chunk */
@@ -425,7 +434,6 @@ whack_handle(int whackctlfd)
 	list_public_keys(msg.whack_utc);
     }
 
-#ifdef X509
    if (msg.whack_reread & REREAD_CACERTS)
     {
 	load_cacerts();
@@ -449,11 +457,10 @@ whack_handle(int whackctlfd)
     if (msg.whack_list & LIST_CRLS)
     {
 	list_crls(msg.whack_utc, strict_crl_policy);
-#ifdef X509_FETCH
+#ifdef HAVE_THREADS
 	list_fetch_requests(msg.whack_utc);
 #endif
     }
-#endif
 
 #ifdef SMARTCARD
     if (msg.whack_list & LIST_CARDS)
@@ -481,7 +488,7 @@ whack_handle(int whackctlfd)
 		set_cur_connection(c);
 		if (!oriented(*c))
 		    whack_log(RC_ORIENT
-			, "we have no ipsecN interface for either end of this connection");
+			, "we cannot identify ourselves with either end of this connection");
 		else if (c->policy & POLICY_GROUP)
 		    route_group(c);
 		else if (!trap_connection(c))
@@ -551,6 +558,45 @@ whack_handle(int whackctlfd)
     whack_log_fd = NULL_FD;
     close(whackfd);
 }
+
+/*
+ * interactive input from the whack user, using current whack_fd
+ */
+bool whack_prompt_for(int whackfd
+		      , const char *prompt1
+		      , const char *prompt2
+		      , bool echo
+		      , char *ansbuf, size_t ansbuf_len)
+{
+    int savewfd = whack_log_fd;
+    ssize_t n;
+
+    whack_log_fd = whackfd;
+
+    DBG(DBG_CONTROLMORE, DBG_log("prompting for %s:", prompt2));
+
+    whack_log(echo ? RC_XAUTHPROMPT : RC_ENTERSECRET
+	      , "%s prompt for %s:"
+	      , prompt1, prompt2);
+
+    whack_log_fd = savewfd;
+    
+    n = read(whackfd, ansbuf, ansbuf_len);
+    
+    if(n == -1) {
+	whack_log(RC_LOG_SERIOUS, "read(whackfd) failed: %s", strerror(errno));
+	return FALSE;
+    }
+    
+    if(strlen(ansbuf) == 0) {
+	whack_log(RC_LOG_SERIOUS, "no %s entered, aborted", prompt2);
+	return FALSE;
+    }
+	
+    return TRUE;
+}
+
+
 
 /*
  * Local Variables:

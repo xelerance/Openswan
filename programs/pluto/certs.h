@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: certs.h,v 1.2 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: certs.h,v 1.3 2003/12/24 19:51:20 mcr Exp $
  */
 
 #ifndef _CERTS_H
@@ -20,11 +20,11 @@
 /* path definitions for private keys, end certs,
  * cacerts, attribute certs and crls
  */
-#define PRIVATE_KEY_PATH  "/etc/ipsec.d/private"
-#define HOST_CERT_PATH    "/etc/ipsec.d/certs"
-#define CA_CERT_PATH	  "/etc/ipsec.d/cacerts"
-#define A_CERT_PATH	  "/etc/ipsec.d/acerts"
-#define CRL_PATH	  "/etc/ipsec.d/crls"
+#define A_CERT_PATH	  plutopaths.acerts.path
+#define CA_CERT_PATH	  plutopaths.cacerts.path
+#define CRL_PATH	  plutopaths.crls.path
+#define PRIVATE_KEY_PATH  plutopaths.private.path
+#define HOST_CERT_PATH    plutopaths.certs.path
 
 /* advance warning of imminent expiry of
  * cacerts, public keys, and crls

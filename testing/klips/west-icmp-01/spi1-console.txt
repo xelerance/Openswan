@@ -84,7 +84,7 @@ west:~#
  route add -host 192.0.2.1 gw 192.1.2.23 dev ipsec0
 west:~#
  ipsec setup stop
-ipsec_setup: Stopping FreeS/WAN IPsec...
+ipsec_setup: Stopping Openswan IPsec...
 ipsec_setup: stop ordered, but IPsec does not appear to be running!
 ipsec_setup: doing cleanup anyway...
 IPSEC EVENT: KLIPS device ipsec0 shut down.
@@ -132,7 +132,7 @@ klips_debug:pfkey_msg_interp: satype 3 lookups to proto=50.
 klips_debug:pfkey_msg_parse: parsing message ver=2, type=3(add), errno=0, satype=3(ESP), len=18, res=0, seq=1, pid=987.
 klips_debug:pfkey_msg_parse: satype 3(ESP) conversion to proto gives 50 for msg_type 3(add).
 klips_debug:pfkey_msg_parse: remain=16, ext_type=1(security-association), ext_len=3.
-klips_debug:pfkey_msg_parse: extensions permitted=00001ffb, required=00000063.
+klips_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063.
 klips_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=16.
 klips_debug:pfkey_msg_parse: remain=16 ext_type=1(security-association) ext_len=3 parsing ext 0pDEADF00D with parser pfkey_sa_parse.
 klips_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=12345678 replay=0 state=1 auth=2 encrypt=3 flags=0 ref=-1.
@@ -155,7 +155,7 @@ klips_debug:pfkey_msg_parse: parsing ext type=9(cipher-key) remain=4.
 klips_debug:pfkey_msg_parse: remain=4 ext_type=9(cipher-key) ext_len=4 parsing ext 0pDEADF00D with parser pfkey_key_parse.
 klips_debug:pfkey_key_parse: success, found len=4 exttype=9(cipher-key) bits=192 reserved=0.
 klips_debug:pfkey_msg_parse: Extension 9(cipher-key) parsed.
-klips_debug:pfkey_msg_parse: extensions permitted=00001ffb, seen=00000363, required=00000063.
+klips_debug:pfkey_msg_parse: extensions permitted=78001ffb, seen=00000363, required=00000063.
 klips_debug:pfkey_msg_interp: processing ext 1 0pDEADF00D with processor 0pDEADF00D.
 klips_debug:pfkey_sa_process: .
 klips_debug:pfkey_msg_interp: processing ext 5 0pDEADF00D with processor 0pDEADF00D.
@@ -208,7 +208,7 @@ klips_debug:pfkey_msg_build: pfkey_msg=0pDEADF00D allocated 88 bytes, &(extensio
 klips_debug:pfkey_msg_build: copying 24 bytes from extensions[1] (type=1)
 klips_debug:pfkey_msg_build: copying 24 bytes from extensions[5] (type=5)
 klips_debug:pfkey_msg_build: copying 24 bytes from extensions[6] (type=6)
-klips_debug:pfkey_msg_build: extensions permitted=00001c7b, seen=00000063, required=00000063.
+klips_debug:pfkey_msg_build: extensions permitted=78001c7b, seen=00000063, required=00000063.
 klips_debug:pfkey_upmsg: allocating 88 bytes...
 klips_debug:pfkey_upmsg: ...allocated at 0pDEADF00D.
 klips_debug:pfkey_add_parse: sending up add reply message for satype=3(ESP) to socket=0pDEADF00D succeeded.
@@ -249,7 +249,7 @@ klips_debug:pfkey_msg_interp: satype 9 lookups to proto=4.
 klips_debug:pfkey_msg_parse: parsing message ver=2, type=3(add), errno=0, satype=9(IPIP), len=11, res=0, seq=1, pid=987.
 klips_debug:pfkey_msg_parse: satype 9(IPIP) conversion to proto gives 4 for msg_type 3(add).
 klips_debug:pfkey_msg_parse: remain=9, ext_type=1(security-association), ext_len=3.
-klips_debug:pfkey_msg_parse: extensions permitted=00001ffb, required=00000063.
+klips_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063.
 klips_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=9.
 klips_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0pDEADF00D with parser pfkey_sa_parse.
 klips_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=12345678 replay=0 state=1 auth=0 encrypt=0 flags=0 ref=-1.
@@ -264,7 +264,7 @@ klips_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 
 klips_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.45 proto=0 port=0.
 klips_debug:pfkey_address_parse: successful.
 klips_debug:pfkey_msg_parse: Extension 6(destination-address) parsed.
-klips_debug:pfkey_msg_parse: extensions permitted=00001ffb, seen=00000063, required=00000063.
+klips_debug:pfkey_msg_parse: extensions permitted=78001ffb, seen=00000063, required=00000063.
 klips_debug:pfkey_msg_interp: processing ext 1 0pDEADF00D with processor 0pDEADF00D.
 klips_debug:pfkey_sa_process: .
 klips_debug:pfkey_msg_interp: processing ext 5 0pDEADF00D with processor 0pDEADF00D.
@@ -310,7 +310,7 @@ klips_debug:pfkey_msg_build: pfkey_msg=0pDEADF00D allocated 88 bytes, &(extensio
 klips_debug:pfkey_msg_build: copying 24 bytes from extensions[1] (type=1)
 klips_debug:pfkey_msg_build: copying 24 bytes from extensions[5] (type=5)
 klips_debug:pfkey_msg_build: copying 24 bytes from extensions[6] (type=6)
-klips_debug:pfkey_msg_build: extensions permitted=00001c7b, seen=00000063, required=00000063.
+klips_debug:pfkey_msg_build: extensions permitted=78001c7b, seen=00000063, required=00000063.
 klips_debug:pfkey_upmsg: allocating 88 bytes...
 klips_debug:pfkey_upmsg: ...allocated at 0pDEADF00D.
 klips_debug:pfkey_add_parse: sending up add reply message for satype=9(IPIP) to socket=0pDEADF00D succeeded.

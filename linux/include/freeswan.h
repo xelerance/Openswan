@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: freeswan.h,v 1.81 2003/11/24 23:45:38 mcr Exp $
+ * RCSID $Id: freeswan.h,v 1.82 2003/12/10 01:20:01 mcr Exp $
  */
 #define	_FREESWAN_H	/* seen it, no need to see it again */
 
@@ -74,6 +74,16 @@
 #else /* CONFIG_IPSEC_DEBUG */
 #  define DEBUG_NO_STATIC static
 #endif /* CONFIG_IPSEC_DEBUG */
+
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL /* KERNEL ifdef */
+#ifndef NAT_TRAVERSAL
+#define NAT_TRAVERSAL
+#endif
+#endif
+#ifdef NAT_TRAVERSAL
+#define ESPINUDP_WITH_NON_IKE   1  /* draft-ietf-ipsec-nat-t-ike-00/01 */
+#define ESPINUDP_WITH_NON_ESP   2  /* draft-ietf-ipsec-nat-t-ike-02    */
+#endif
 
 /*
  * Basic data types for the address-handling functions.

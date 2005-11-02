@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: rcv_info.h,v 1.3 2003/05/17 20:51:03 dhr Exp $
+ * RCSID $Id: rcv_info.h,v 1.3.14.2 2004/04/16 12:33:10 mcr Exp $
  */
 
 #include "freeswan/ipsec_policy.h"

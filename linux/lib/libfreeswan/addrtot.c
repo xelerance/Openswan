@@ -12,10 +12,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: addrtot.c,v 1.11 2003/10/31 02:27:12 mcr Exp $
+ * RCSID $Id: addrtot.c,v 1.13.2.1 2004/03/21 05:23:31 mcr Exp $
  */
 #include "internal.h"
-#include "freeswan.h"
+#include "openswan.h"
 
 #define	IP4BYTES	4	/* bytes in an IPv4 address */
 #define	PERBYTE		4	/* three digits plus a dot or NUL */
@@ -49,7 +49,7 @@ size_t dstlen;
 	bad:
 	  dst[0]='\0';
 	  strncat(dst, "<invalid>", dstlen);
-	  return 0;
+	  return sizeof("<invalid>");
 	}
 
 	switch (TF(t, format)) {
@@ -304,3 +304,32 @@ regress()
 }
 
 #endif /* ADDRTOT_MAIN */
+
+/*
+ * $Log: addrtot.c,v $
+ * Revision 1.13.2.1  2004/03/21 05:23:31  mcr
+ *     pullup of freeswan->openswan and CR/CERT patches from HEAD
+ *
+ * Revision 1.14  2004/03/08 01:59:08  ken
+ * freeswan.h -> openswan.h
+ *
+ * Revision 1.13  2004/01/05 23:21:05  mcr
+ * 	if the address type is invalid, then return length of <invalid>
+ * 	string!
+ *
+ * Revision 1.12  2003/12/30 06:42:48  mcr
+ * 	added $Log: addrtot.c,v $
+ * 	added Revision 1.13.2.1  2004/03/21 05:23:31  mcr
+ * 	added     pullup of freeswan->openswan and CR/CERT patches from HEAD
+ * 	added
+ * 	added Revision 1.14  2004/03/08 01:59:08  ken
+ * 	added freeswan.h -> openswan.h
+ * 	added
+ * 	added Revision 1.13  2004/01/05 23:21:05  mcr
+ * 	added 	if the address type is invalid, then return length of <invalid>
+ * 	added 	string!
+ * 	added
+ *
+ *
+ */
+

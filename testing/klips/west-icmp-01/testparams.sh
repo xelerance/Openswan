@@ -4,10 +4,13 @@ TEST_TYPE=klipstest
 TESTNAME=west-icmp-01
 TESTHOST=west
 EXITONEMPTY=--exitonempty
+
 ARPREPLY=--arpreply 
 
-PUBINPUT=../inputs/02-sunrise-sunset-esp.pcap
-REFPRIVOUTPUT=spi1-cleartext.txt
+PUB_INPUT=../inputs/02-sunrise-sunset-esp.pcap
+REF_PRIV_OUTPUT=spi1-cleartext.txt
+
+
 REFCONSOLEOUTPUT=spi1-console.txt
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-spi-sanitize.sed"

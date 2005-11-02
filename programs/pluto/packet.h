@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: packet.h,v 1.24 2003/10/31 02:45:23 mcr Exp $
+ * RCSID $Id: packet.h,v 1.27 2004/01/09 04:40:20 mcr Exp $
  */
 
 #ifndef _PACKET_H
@@ -40,8 +40,9 @@ enum field_type {
     ft_len,	/* length of this struct and any following crud */
     ft_lv,	/* length/value field of attribute */
     ft_enum,	/* value from an enumeration */
-    ft_loose_enum,	/* value from an enumeration with only some names known */
+    ft_loose_enum, /* value from an enumeration with only some names known */
     ft_af_enum,	/* Attribute Format + value from an enumeration */
+    ft_af_loose_enum, /* Attribute Format + enumeration, some names known */
     ft_set,	/* bits representing set */
     ft_raw,	/* bytes to be left in network-order */
     ft_end,	/* end of field list */
@@ -95,7 +96,10 @@ extern bool out_struct(const void *struct_ptr, struct_desc *sd,
 extern bool out_generic(u_int8_t np, struct_desc *sd,
     pb_stream *outs, pb_stream *obj_pbs);
 extern bool out_generic_raw(u_int8_t np, struct_desc *sd,
-    pb_stream *outs, void *bytes, size_t len, const char *name);
+    pb_stream *outs, const void *bytes, size_t len, const char *name);
+#if 1
+extern bool out_modify_previous_np(u_int8_t np, pb_stream *outs);
+#endif
 #define out_generic_chunk(np, sd, outs, ch, name) \
 	out_generic_raw(np, sd, outs, (ch).ptr, (ch).len, name)
 extern bool out_zero(size_t len, pb_stream *outs, const char *name);
@@ -523,6 +527,61 @@ extern struct_desc isakmp_nonce_desc;
  * !                                                               !
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
+ 
+extern struct_desc isakmp_attr_desc;
+ 
+/* From draft-dukes-ike-mode-cfg
+3.2. Attribute Payload
+                           1                   2                   3  
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     ! Next Payload  !   RESERVED    !         Payload Length        !
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     !     Type      !   RESERVED    !           Identifier          !
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     !                                                               !
+     !                                                               !
+     ~                           Attributes                          ~
+     !                                                               !
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+*/
+struct isakmp_mode_attr
+{
+    u_int8_t    isama_np;
+    u_int8_t    isama_reserved;
+    u_int16_t   isama_length;
+    u_int8_t    isama_type;
+    u_int8_t    isama_reserved2;
+    u_int16_t   isama_identifier;
+};
+
+extern struct_desc isakmp_attr_desc;
+extern struct_desc isakmp_xauth_attribute_desc;
+
+
+/* ISAKMP Notification Payload
+ * layout from RFC 2408 "ISAKMP" section 3.14
+ * This is followed by a variable length SPI
+ * and then possibly by variable length Notification Data.
+ * Previous next payload: ISAKMP_NEXT_N
+ *                      1                   2                   3
+ *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * ! Next Payload  !   RESERVED    !         Payload Length        !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * !              Domain of Interpretation  (DOI)                  !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * !  Protocol-ID  !   SPI Size    !      Notify Message Type      !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * !                                                               !
+ * ~                Security Parameter Index (SPI)                 ~
+ * !                                                               !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * !                                                               !
+ * ~                       Notification Data                       ~
+ * !                                                               !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
 struct isakmp_notification
 {
     u_int8_t    isan_np;
@@ -583,6 +642,19 @@ extern struct_desc isakmp_delete_desc;
  */
 extern struct_desc isakmp_vendor_id_desc;
 
+struct isakmp_nat_oa
+{
+    u_int8_t    isanoa_np;
+    u_int8_t    isanoa_reserved_1;
+    u_int16_t   isanoa_length;
+    u_int8_t    isanoa_idtype;
+    u_int8_t    isanoa_reserved_2;
+    u_int16_t   isanoa_reserved_3;
+};
+
+extern struct_desc isakmp_nat_d;
+extern struct_desc isakmp_nat_oa;
+
 /* union of all payloads */
 
 union payload {
@@ -596,6 +668,8 @@ union payload {
     struct isakmp_ipsec_id ipsec_id;	/* Quick Mode */
     struct isakmp_notification notification;
     struct isakmp_delete delete;
+    struct isakmp_nat_oa nat_oa;
+    struct isakmp_mode_attr attribute;
 };
 
 /* descriptor for each payload type

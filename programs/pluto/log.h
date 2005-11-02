@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: log.h,v 1.46 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: log.h,v 1.47.2.2 2004/04/16 12:33:10 mcr Exp $
  */
 
 #include <freeswan.h>
@@ -48,6 +48,13 @@ extern struct state *cur_state;	/* current state, for diagnostics */
 extern struct connection *cur_connection;	/* current connection, for diagnostics */
 extern const ip_address *cur_from;	/* source of current current message */
 extern u_int16_t cur_from_port;	/* host order */
+
+extern bool whack_prompt_for(int whackfd
+			     , const char *prompt1
+			     , const char *prompt2
+			     , bool echo
+			     , char *ansbuf, size_t ansbuf_len);
+
 
 #ifdef DEBUG
 

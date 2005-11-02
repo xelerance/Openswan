@@ -11,7 +11,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.234 2003/09/05 17:28:11 mcr Exp $
+# RCSID $Id: Makefile,v 1.238.2.1 2004/03/19 03:29:36 ken Exp $
 
 
 FREESWANSRCDIR=$(shell pwd)
@@ -46,7 +46,7 @@ SUBDIRS=doc lib programs linux testing
 .PHONY:	def insert kpatch klink patches _patches _patches2.2 _patches2.4 \
 	klipsdefaults programs install clean distclean \
 	ogo oldgo menugo xgo \
-	omod oldmod menumod xmod \
+	omod menumod xmod \
 	pcf ocf mcf xcf rcf nopromptgo \
 	precheck verset confcheck kernel module kinstall minstall \
 	backup unpatch uinstall install_file_list \
@@ -144,6 +144,10 @@ __patches2.2:
 		'CONFIG_IPSEC' $(PATCHES)/net/Makefile.fs2_2.patch
 	@$(PATCHER) -v $(KERNELSRC) net/ipv4/af_inet.c \
 		'CONFIG_IPSEC' $(PATCHES)/net/ipv4/af_inet.c.fs2_2.patch
+	@$(PATCHER) -v $(KERNELSRC) net/ipv4/udp.c \
+		'CONFIG_IPSEC' $(PATCHES)/net/ipv4/udp.c.fs2_2.patch
+	@$(PATCHER) -v $(KERNELSRC) include/net/sock.h \
+		'CONFIG_IPSEC' $(PATCHES)/include/net/sock.h.fs2_2.patch
 # Removed patches, will unpatch automatically.
 	@$(PATCHER) -v $(KERNELSRC) include/linux/proc_fs.h
 	@$(PATCHER) -v $(KERNELSRC) net/core/dev.c
@@ -166,6 +170,10 @@ __patches2.3 __patches2.4:
 		'CONFIG_IPSEC' $(PATCHES)/net/Makefile.fs2_4.patch
 	@$(PATCHER) -v $(KERNELSRC) net/ipv4/af_inet.c \
 		'CONFIG_IPSEC' $(PATCHES)/net/ipv4/af_inet.c.fs2_4.patch
+	@$(PATCHER) -v $(KERNELSRC) net/ipv4/udp.c \
+		'CONFIG_IPSEC' $(PATCHES)/net/ipv4/udp.c.fs2_4.patch
+	@$(PATCHER) -v $(KERNELSRC) include/net/sock.h \
+		'CONFIG_IPSEC' $(PATCHES)/include/net/sock.h.fs2_4.patch
 # Removed patches, will unpatch automatically.
 	@$(PATCHER) -v $(KERNELSRC) include/linux/proc_fs.h
 	@$(PATCHER) -v $(KERNELSRC) net/core/dev.c
@@ -209,7 +217,7 @@ klipsdefaults:
 checkv199install:
 	if [ -f ${LIBDIR}/pluto ]; \
 	then \
-		echo WARNING: FreeS/WAN 1.99 still installed. ;\
+		echo WARNING: FreeS/WAN 1.x or Openswan 1.x still installed. ;\
 		echo WARNING: moving ${LIBDIR} to ${LIBDIR}.v1 ;\
 		mv ${LIBDIR} ${LIBDIR}.v1 ;\
 	fi
@@ -226,6 +234,7 @@ clean::
 	rm -rf $(RPMTMPDIR) $(RPMDEST)
 	rm -f out.*build out.*install	# but leave out.kpatch
 	rm -f rpm.spec
+	make modclean
 
 distclean:	clean
 	rm -f out.kpatch 
@@ -245,10 +254,6 @@ oldgo:		$(PRE) ocf $(POST)
 nopromptgo:	$(PRE) rcf $(POST)
 menugo:		$(PRE) mcf $(POST)
 xgo:		$(PRE) xcf $(POST)
-omod:		$(PRE) pcf $(MPOST)
-oldmod:		$(PRE) ocf $(MPOST)
-menumod:	$(PRE) mcf $(MPOST)
-xmod:		$(PRE) xcf $(MPOST) 
 
 # preliminaries
 precheck:
@@ -305,6 +310,9 @@ ocf:
 rcf:
 	cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) oldconfig_nonint </dev/null
 	cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) dep >/dev/null
+
+kclean:
+	-cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) clean
 
 confcheck:
 	@if test ! -f $(KCFILE) ; \
@@ -445,6 +453,12 @@ kernelpatch2.2:
 
 kernelpatch2.0:
 	packaging/utils/kernelpatch 2.0
+
+nattpatch2.4 nattpatch:
+	packaging/utils/nattpatch 2.4
+
+nattpatch2.2:
+	packaging/utils/nattpatch 2.2
 
 install_file_list:
 	@for d in $(SUBDIRS) ; \

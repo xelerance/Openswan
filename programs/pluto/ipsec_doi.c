@@ -1,6 +1,7 @@
 /* IPsec DOI and Oakley resolution routines
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 2003 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_doi.c,v 1.219 2003/11/26 23:53:08 mcr Exp $
+ * RCSID $Id: ipsec_doi.c,v 1.230.2.5 2004/05/07 03:07:22 ken Exp $
  */
 
 #include <stdio.h>
@@ -38,6 +39,9 @@
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "keys.h"
 #include "packet.h"
@@ -58,9 +62,17 @@
 #include "sha1.h"
 #include "md5.h"
 #include "crypto.h" /* requires sha1.h and md5.h */
+#ifdef XAUTH
+#include "xauth.h"
+#endif
+#include "vendor.h"
+#ifdef NAT_TRAVERSAL
+#include "nat_traversal.h"
+#endif
+#ifdef VIRTUAL_IP
+#include "virtual.h"
+#endif
 #include "x509more.h"
-
-static bool encrypt_message(pb_stream *pbs, struct state *st);	/* forward declaration */
 
 /* OpenPGP Vendor ID needed for interoperability with PGPnet
  *
@@ -600,6 +612,11 @@ accept_delete(struct state *st, struct msg_digest *md, struct payload_digest *p)
 		
 		oldc = cur_connection;
 		set_cur_connection(dst->st_connection);
+#ifdef NAT_TRAVERSAL
+		if (nat_traversal_enabled) {
+		    nat_traversal_change_port_lookup(md, dst);
+		}
+#endif
 		loglog(RC_LOG_SERIOUS, "received Delete SA payload: "
 		    "deleting ISAKMP State #%lu", dst->st_serialno);
 		delete_state(dst);
@@ -633,6 +650,11 @@ accept_delete(struct state *st, struct msg_digest *md, struct payload_digest *p)
 		oldc = cur_connection;
 		set_cur_connection(rc);
 
+#ifdef NAT_TRAVERSAL
+		if (nat_traversal_enabled) {
+		    nat_traversal_change_port_lookup(md, dst);
+		}
+#endif
 		if (rc->newest_ipsec_sa == dst->st_serialno
 		&& (rc->policy & POLICY_UP))
 		    {
@@ -684,7 +706,7 @@ accept_delete(struct state *st, struct msg_digest *md, struct payload_digest *p)
  * rfc2408 3.6 Transform Payload.
  * Note: it talks about 4 BYTE boundaries!
  */
-static void
+void
 close_message(pb_stream *pbs)
 {
     size_t padding =  pad_up(pbs_offset(pbs), 4);
@@ -754,27 +776,27 @@ main_outI1(int whack_sock
     /* SA out */
     {
 	u_char *sa_start = rbody.cur;
-	lset_t auth_policy = policy & POLICY_ID_AUTH_MASK;
+	int    policy_index = POLICY_ISAKMP(policy
+					    , c->spd.this.xauth_server
+					    , c->spd.this.xauth_client);
 
 	/* if we  have an OpenPGP certificate we assume an
 	 * OpenPGP peer and have to send the Vendor ID
 	 */
 	int np = (SEND_PLUTO_VID || c->spd.this.cert.type == CERT_PGP) ?
 	    ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
-
 	if (!out_sa(&rbody
-	, &oakley_sadb[auth_policy >> POLICY_ISAKMP_SHIFT], st, TRUE, np))
+		    , &oakley_sadb[policy_index], st, TRUE, np))
 	{
+	    plog("outsa fail");
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
-
 	/* save initiator SA for later HASH */
 	passert(st->st_p1isa.ptr == NULL);	/* no leak!  (MUST be first time) */
 	clonetochunk(st->st_p1isa, sa_start, rbody.cur - sa_start
 	    , "sa in main_outI1");
     }
-
     if (SEND_PLUTO_VID || c->spd.this.cert.type == CERT_PGP)
     {
 	char *vendorid = (c->spd.this.cert.type == CERT_PGP) ?
@@ -784,6 +806,27 @@ main_outI1(int whack_sock
 	, vendorid, strlen(vendorid), "Vendor ID"))
 	    return STF_INTERNAL_ERROR;
     }
+
+#ifdef NAT_TRAVERSAL
+    if (nat_traversal_enabled) {
+	/* Add supported NAT-Traversal VID */
+	if (!nat_traversal_add_vid(ISAKMP_NEXT_NONE, &rbody)) {
+	    reset_cur_state();
+	    return STF_INTERNAL_ERROR;
+	}
+    }
+#endif
+
+#ifdef XAUTH
+    if(c->spd.this.xauth_client || c->spd.this.xauth_server)
+    {
+	if(!out_vendorid(ISAKMP_NEXT_NONE, &rbody, VID_MISC_XAUTH))
+	{
+	    return STF_INTERNAL_ERROR;
+	}
+    }
+#endif
+	
 
     close_message(&rbody);
     close_output_pbs(&reply);
@@ -1511,7 +1554,6 @@ RSA_check_signature(struct state *st
 	pp = &pubkeys;
 	pathlen = pathlen;      /* make sure it used even with !X509 */
 
-#ifdef X509
 	{
 	  char buf[IDTOA_BUF];
 	  
@@ -1519,7 +1561,6 @@ RSA_check_signature(struct state *st
 	      dntoa_or_null(buf, IDTOA_BUF, c->spd.that.ca, "%any");
 	      DBG_log("required CA is '%s'", buf));
 	}
-#endif
   
 	for (p = pubkeys; p != NULL; p = *pp)
 	{
@@ -1530,7 +1571,6 @@ RSA_check_signature(struct state *st
 	    {
 		time_t now;
 
-#ifdef X509
 		{
 		  char buf[IDTOA_BUF];
 		  
@@ -1538,7 +1578,6 @@ RSA_check_signature(struct state *st
 		      dntoa_or_null(buf, IDTOA_BUF, key->issuer, "%any");
 		      DBG_log("key issuer CA is '%s'", buf));
 		}
-#endif
 
 		/* check if found public key has expired */
 		time(&now);
@@ -1646,26 +1685,6 @@ RSA_check_signature(struct state *st
     }
 }
 
-/* CHECK_QUICK_HASH
- *
- * This macro is magic -- it cannot be expressed as a function.
- * - it causes the caller to return!
- * - it declares local variables and expects the "do_hash" argument
- *   expression to reference them (hash_val, hash_pbs)
- */
-#define CHECK_QUICK_HASH(md, do_hash, hash_name, msg_name) { \
-	pb_stream *const hash_pbs = &md->chain[ISAKMP_NEXT_HASH]->pbs; \
-	u_char hash_val[MAX_DIGEST_LEN]; \
-	size_t hash_len = do_hash; \
-	if (pbs_left(hash_pbs) != hash_len \
-	|| memcmp(hash_pbs->cur, hash_val, hash_len) != 0) \
-	{ \
-	    DBG_cond_dump(DBG_CRYPT, "received " hash_name ":", hash_pbs->cur, pbs_left(hash_pbs)); \
-	    loglog(RC_LOG_SERIOUS, "received " hash_name " does not match computed value in " msg_name); \
-	    /* XXX Could send notification back */ \
-	    return STF_FAIL + INVALID_HASH_INFORMATION; \
-	} \
-    }
 
 static notification_t
 accept_nonce(struct msg_digest *md, chunk_t *dest, const char *name)
@@ -1683,31 +1702,13 @@ accept_nonce(struct msg_digest *md, chunk_t *dest, const char *name)
     return NOTHING_WRONG;
 }
 
-/* START_HASH_PAYLOAD
- *
- * Emit a to-be-filled-in hash payload, noting the field start (r_hashval)
- * and the start of the part of the message to be hashed (r_hash_start).
- * This macro is magic.
- * - it can cause the caller to return
- * - it references variables local to the caller (r_hashval, r_hash_start, st)
- */
-#define START_HASH_PAYLOAD(rbody, np) { \
-    pb_stream hash_pbs; \
-    if (!out_generic(np, &isakmp_hash_desc, &(rbody), &hash_pbs)) \
-	return STF_INTERNAL_ERROR; \
-    r_hashval = hash_pbs.cur;	/* remember where to plant value */ \
-    if (!out_zero(st->st_oakley.hasher->hash_digest_len, &hash_pbs, "HASH")) \
-	return STF_INTERNAL_ERROR; \
-    close_output_pbs(&hash_pbs); \
-    r_hash_start = (rbody).cur;	/* hash from after HASH payload */ \
-}
 
 /* encrypt message, sans fixed part of header
  * IV is fetched from st->st_new_iv and stored into st->st_iv.
  * The theory is that there will be no "backing out", so we commit to IV.
  * We also close the pbs.
  */
-static bool
+bool
 encrypt_message(pb_stream *pbs, struct state *st)
 {
     const struct encrypt_desc *e = st->st_oakley.encrypter;
@@ -1828,16 +1829,33 @@ init_phase2_iv(struct state *st, const msgid_t *msgid)
 
 static bool
 emit_subnet_id(ip_subnet *net
-, u_int8_t np, u_int8_t protoid, u_int16_t port, pb_stream *outs)
+	       , u_int8_t np
+	       , u_int8_t protoid
+	       , u_int16_t port
+	       , pb_stream *outs)
 {
     struct isakmp_ipsec_id id;
     pb_stream id_pbs;
     ip_address ta;
     const unsigned char *tbp;
     size_t tal;
+    const struct af_info *ai;
+    bool usehost = FALSE;
+    int masklen;
+
+    ai = aftoinfo(subnettypeof(net));
+
+    maskof(net, &ta);
+    masklen = masktocount(&ta);
+#if 0
+    if(masklen == ai->mask_cnt)
+    {
+	usehost = TRUE;
+    }
+#endif
 
     id.isaiid_np = np;
-    id.isaiid_idtype = aftoinfo(subnettypeof(net))->id_subnet;
+    id.isaiid_idtype = (usehost ? ai->id_addr : ai->id_subnet);
     id.isaiid_protoid = protoid;
     id.isaiid_port = port;
 
@@ -1849,10 +1867,13 @@ emit_subnet_id(ip_subnet *net
     if (!out_raw(tbp, tal, &id_pbs, "client network"))
 	return FALSE;
 
-    maskof(net, &ta);
-    tal = addrbytesptr(&ta, &tbp);
-    if (!out_raw(tbp, tal, &id_pbs, "client mask"))
-	return FALSE;
+    if(!usehost)
+    {
+	maskof(net, &ta);
+	tal = addrbytesptr(&ta, &tbp);
+	if (!out_raw(tbp, tal, &id_pbs, "client mask"))
+	    return FALSE;
+    }
 
     close_output_pbs(&id_pbs);
     return TRUE;
@@ -1901,6 +1922,20 @@ quick_outI1(int whack_sock
 	     , prettypolicy(policy)
 	     , replacing
 	     , isakmp_sa->st_serialno);
+
+#ifdef NAT_TRAVERSAL
+    if (isakmp_sa->nat_traversal & NAT_T_DETECTED) {
+       /* Duplicate nat_traversal status in new state */
+       st->nat_traversal = isakmp_sa->nat_traversal;
+       if (isakmp_sa->nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_ME)) {	    
+ 	  has_client = TRUE;
+       }
+       nat_traversal_change_port_lookup(NULL, st);
+    }
+    else {
+       st->nat_traversal = 0;
+    }
+#endif
 
     /* set up reply */
     init_pbs(&reply, reply_buffer, sizeof(reply_buffer), "reply packet");
@@ -1987,6 +2022,18 @@ quick_outI1(int whack_sock
 	}
     }
 
+#ifdef NAT_TRAVERSAL
+    if ((st->nat_traversal & NAT_T_WITH_NATOA) &&
+	(!(st->st_policy & POLICY_TUNNEL)) &&
+	(st->nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_ME))) {
+	/** Send NAT-OA if our address is NATed */
+	if (!nat_traversal_add_natoa(ISAKMP_NEXT_NONE, &rbody, st)) {
+        reset_cur_state();
+	    return STF_INTERNAL_ERROR;
+	}
+    }
+#endif
+
     /* finish computing  HASH(1), inserting it in output */
     (void) quick_mode_hash12(r_hashval, r_hash_start, rbody.cur
 	, st, &st->st_msgid, FALSE);
@@ -2051,6 +2098,16 @@ decode_peer_id(struct msg_digest *md, bool initiator)
      * Besides, there is no good reason for allowing these to be
      * other than 0 in Phase 1.
      */
+#ifdef NAT_TRAVERSAL
+    if ((st->nat_traversal & NAT_T_WITH_PORT_FLOATING) &&
+	(id->isaid_doi_specific_a == IPPROTO_UDP) &&
+	((id->isaid_doi_specific_b == 0) || (id->isaid_doi_specific_b == NAT_T_IKE_FLOAT_PORT))) {
+	    DBG_log("protocol/port in Phase 1 ID Payload is %d/%d. "
+		"accepted with port_floating NAT-T",
+		id->isaid_doi_specific_a, id->isaid_doi_specific_b);
+    }
+    else
+#endif
     if (!(id->isaid_doi_specific_a == 0 && id->isaid_doi_specific_b == 0)
     && !(id->isaid_doi_specific_a == IPPROTO_UDP && id->isaid_doi_specific_b == IKE_UDP_PORT))
     {
@@ -2130,10 +2187,8 @@ decode_peer_id(struct msg_digest *md, bool initiator)
 	    enum_show(&ident_names, id->isaid_idtype), buf);
     }
 
-#ifdef X509
      /* check for certificates */
      decode_cert(md);
-#endif
 
     /* Now that we've decoded the ID payload, let's see if we
      * need to switch connections.
@@ -2161,36 +2216,32 @@ decode_peer_id(struct msg_digest *md, bool initiator)
 	struct connection *c = st->st_connection;
 	struct connection *r;
 
-#ifdef X509
 	/* check for certificate requests */
 	decode_cr(md, &c->requested_ca);
-#endif
 
 	r = refine_host_connection(st, &peer, initiator);
 
-#ifdef X509
 	/* delete the collected certificate requests */
 	free_generalNames(c->requested_ca, TRUE);
 	c->requested_ca = NULL;
-#endif
 
 	if (r == NULL)
 	{
 	    char buf[IDTOA_BUF];
 
 	    idtoa(&peer, buf, sizeof(buf));
-	    loglog(RC_LOG_SERIOUS, "no suitable connection for peer '%s'", buf);
+	    loglog(RC_LOG_SERIOUS
+		   , "no suitable connection for peer '%s'"
+		   , buf);
 	    return FALSE;
 	}
 
-#ifdef X509
 	DBG(DBG_CONTROL,
 	    char buf[IDTOA_BUF];
 
 	    dntoa_or_null(buf, IDTOA_BUF, r->spd.this.ca, "%none");
 	    DBG_log("offered CA: '%s'", buf);
 	)
-#endif
 
 	if (r != c)
 	{
@@ -2201,7 +2252,14 @@ decode_peer_id(struct msg_digest *md, bool initiator)
 	    if (r->kind == CK_TEMPLATE)
 	    {
 		/* instantiate it, filling in peer's ID */
-		r = rw_instantiate(r, &c->spd.that.host_addr, &peer);
+		r = rw_instantiate(r, &c->spd.that.host_addr,
+#ifdef NAT_TRAVERSAL
+			c->spd.that.host_port,
+#endif
+#ifdef VIRTUAL_IP
+			NULL,
+#endif
+			&peer);
 	    }
 
 	    st->st_connection = r;	/* kill reference to c */
@@ -2251,7 +2309,8 @@ decode_net_id(struct isakmp_ipsec_id *id
 	case ID_IPV6_ADDR_RANGE:
 	    afi = &af_inet6_info;
 	    break;
-
+	case ID_FQDN:
+		return TRUE;
 	default:
 	    /* XXX support more */
 	    loglog(RC_LOG_SERIOUS, "unsupported ID type %s"
@@ -2622,6 +2681,17 @@ main_inI1_outR1(struct msg_digest *md)
 
     struct payload_digest *p;
 
+/* Determin how many Vendor ID payloads we will be sending */
+    int next;
+    int numvidtosend = 0;
+#ifdef NAT_TRAVERSAL
+    if (md->quirks.nat_traversal_vid && nat_traversal_enabled) {
+      numvidtosend++;
+    }
+#endif
+#if defined(SEND_PLUTO_VID) || defined(openpgp_peer)
+    numvidtosend++;
+#endif
     for (p = md->chain[ISAKMP_NEXT_VID]; p != NULL; p = p->next)
     {
 	int vid_len = sizeof(pgp_vendorid) - 1 < pbs_left(&p->pbs)
@@ -2679,7 +2749,7 @@ main_inI1_outR1(struct msg_digest *md)
 	{
 	    loglog(RC_LOG_SERIOUS, "initial Main Mode message received on %s:%u"
 		" but no connection has been authorized"
-		, ip_str(&md->iface->addr), pluto_port);
+		, ip_str(&md->iface->addr), ntohs(portof(&md->iface->addr)));
 	    /* XXX notification is in order! */
 	    return STF_IGNORE;
 	}
@@ -2696,12 +2766,29 @@ main_inI1_outR1(struct msg_digest *md)
 	    /* Create a temporary connection that is a copy of this one.
 	     * His ID isn't declared yet.
 	     */
-	    c = rw_instantiate(c, &md->sender, NULL);
+	    c = rw_instantiate(c, &md->sender,
+#ifdef NAT_TRAVERSAL
+			md->sender_port,
+#endif
+#ifdef VIRTUAL_IP
+			NULL,
+#endif
+			NULL);
 	}
     }
 
+#ifdef XAUTH
+    if(c->spd.this.xauth_server || c->spd.this.xauth_client)
+    {
+        numvidtosend++;
+    }
+#endif
+
     /* Set up state */
     md->st = st = new_state();
+#ifdef XAUTH
+    passert(st->st_oakley.xauth == 0);
+#endif
     st->st_connection = c;
     set_cur_state(st);	/* (caller will reset cur_state) */
     st->st_try = 0;	/* not our job to try again from start */
@@ -2715,7 +2802,15 @@ main_inI1_outR1(struct msg_digest *md)
     st->st_doi = ISAKMP_DOI_IPSEC;
     st->st_situation = SIT_IDENTITY_ONLY; /* We only support this */
 
-    if (c->kind == CK_INSTANCE)
+    /* copy the quirks we might have accumulated */
+    st->quirks = md->quirks;
+
+    if ((c->kind == CK_INSTANCE) && (c->spd.that.host_port != pluto_port))
+    {
+       plog("responding to Main Mode from unknown peer %s:%u"
+	    , ip_str(&c->spd.that.host_addr), c->spd.that.host_port);
+    }
+    else if (c->kind == CK_INSTANCE)
     {
 	plog("responding to Main Mode from unknown peer %s"
 	    , ip_str(&c->spd.that.host_addr));
@@ -2748,9 +2843,7 @@ main_inI1_outR1(struct msg_digest *md)
 	struct isakmp_sa r_sa = sa_pd->payload.sa;
 
 	/* if we  have an OpenPGP peer or if Pluto sends a Vendor's ID */
-	r_sa.isasa_np = (SEND_PLUTO_VID || openpgp_peer) ?
-	    ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
-
+	r_sa.isasa_np = --numvidtosend ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 	if (!out_struct(&r_sa, &isakmp_sa_desc, &md->rbody, &r_sa_pbs))
 	    return STF_INTERNAL_ERROR;
     }
@@ -2764,10 +2857,40 @@ main_inI1_outR1(struct msg_digest *md)
 	char *vendorid = (openpgp_peer) ?
 	    pgp_vendorid : pluto_vendorid;
 
-	if (!out_generic_raw(ISAKMP_NEXT_NONE, &isakmp_vendor_id_desc, &md->rbody
+	next = --numvidtosend ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
+	if (!out_generic_raw(next, &isakmp_vendor_id_desc, &md->rbody
 	, vendorid, strlen(vendorid), "Vendor ID"))
 	    return STF_INTERNAL_ERROR;
     }
+
+#ifdef XAUTH
+    /* If XAUTH is required, insert here Vendor ID */
+    if(c->spd.this.xauth_server || c->spd.this.xauth_client)
+    {
+	    next = --numvidtosend ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
+	    if (!out_vendorid(next, &md->rbody, VID_MISC_XAUTH))
+	       return STF_INTERNAL_ERROR;
+    }
+#endif
+#ifdef NAT_TRAVERSAL
+    DBG(DBG_CONTROLMORE, DBG_log("sender checking NAT-t: %d and %d"
+				, nat_traversal_enabled
+				, md->quirks.nat_traversal_vid));
+
+    if (md->quirks.nat_traversal_vid && nat_traversal_enabled) {
+        next = --numvidtosend ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
+	/* reply if NAT-Traversal draft is supported */
+	st->nat_traversal = nat_traversal_vid_to_method(md->quirks.nat_traversal_vid);
+	if ((st->nat_traversal) && (!out_vendorid(next,
+	    &md->rbody, md->quirks.nat_traversal_vid))) {
+	    return STF_INTERNAL_ERROR;
+	}
+    }
+#endif
+
+/* if we are not 0 then something wend very wrong above */    
+    if(numvidtosend != 0)
+      plog("payload payload alignment problem please check the code in main_inI1_outR1");
 
     close_message(&md->rbody);
 
@@ -2799,6 +2922,18 @@ main_inR1_outI2(struct msg_digest *md)
 	RETURN_STF_FAILURE(parse_isakmp_sa_body(&sapd->pbs
 	    , &sapd->payload.sa, NULL, TRUE, st));
     }
+
+#ifdef NAT_TRAVERSAL
+    DBG(DBG_CONTROLMORE, DBG_log("sender checking NAT-t: %d and %d"
+				 , nat_traversal_enabled
+				 , md->quirks.nat_traversal_vid))
+
+    if (nat_traversal_enabled && md->quirks.nat_traversal_vid) {
+	st->nat_traversal = nat_traversal_vid_to_method(md->quirks.nat_traversal_vid);
+	plog("enabling possible NAT-traversal with method %s"
+	     , bitnamesof(natt_type_bitnames, st->nat_traversal));
+    }
+#endif
 
     /**************** build output packet HDR;KE;Ni ****************/
 
@@ -2837,6 +2972,14 @@ main_inR1_outI2(struct msg_digest *md)
     if (!build_and_ship_nonce(&st->st_ni, &md->rbody, ISAKMP_NEXT_NONE, "Ni"))
 	return STF_INTERNAL_ERROR;
 #endif
+
+#ifdef NAT_TRAVERSAL
+    if (st->nat_traversal & NAT_T_WITH_NATD) {
+	if (!nat_traversal_add_natd(ISAKMP_NEXT_NONE, &md->rbody, md))
+	    return STF_INTERNAL_ERROR;
+    }
+#endif
+
     /* finish message */
     close_message(&md->rbody);
 
@@ -2863,9 +3006,12 @@ main_inI2_outR2(struct msg_digest *md)
 {
     struct state *const st = md->st;
     pb_stream *keyex_pbs = &md->chain[ISAKMP_NEXT_KE]->pbs;
+    int next_payload;
 
     /* send CR if auth is RSA and no preloaded RSA public key exists*/
     bool send_cr = FALSE;
+
+    next_payload = ISAKMP_NEXT_NONE;
 
     /* KE in */
     RETURN_STF_FAILURE(accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs));
@@ -2873,12 +3019,34 @@ main_inI2_outR2(struct msg_digest *md)
     /* Ni in */
     RETURN_STF_FAILURE(accept_nonce(md, &st->st_ni, "Ni"));
 
-#ifdef X509
-    send_cr = !no_cr_send && (st->st_oakley.auth == OAKLEY_RSA_SIG) &&
-      !has_preloaded_public_key(st) && st->st_connection->spd.that.ca.ptr != NULL;
+    send_cr = !no_cr_send
+	&& (st->st_oakley.auth == OAKLEY_RSA_SIG)
+	&& !has_preloaded_public_key(st)
+	&& st->st_connection->spd.that.ca.ptr != NULL;
 
     /* decode certificate requests */
     decode_cr(md, &st->st_connection->requested_ca);
+
+    if(st->st_connection->requested_ca != NULL)
+    {
+	st->hidden_variables.st_got_certrequest = TRUE;
+    }
+
+
+#ifdef NAT_TRAVERSAL
+    DBG(DBG_CONTROLMORE, DBG_log("inI2: checking NAT-t: %d and %d"
+				, nat_traversal_enabled
+				, st->nat_traversal));
+
+    if (st->nat_traversal & NAT_T_WITH_NATD) {
+       nat_traversal_natd_lookup(md);
+    }
+    if (st->nat_traversal) {
+       nat_traversal_show_result(st->nat_traversal, md->sender_port);
+    }
+    if (st->nat_traversal & NAT_T_WITH_KA) {
+       nat_traversal_new_ka_event();
+    }
 #endif
 
     /**************** build output packet HDR;KE;Nr ****************/
@@ -2892,9 +3060,20 @@ main_inI2_outR2(struct msg_digest *md)
 
 #ifdef DEBUG
     /* Nr out */
-    if (!build_and_ship_nonce(&st->st_nr, &md->rbody
-    , (cur_debugging & IMPAIR_BUST_MR2)? ISAKMP_NEXT_VID
-	: (send_cr? ISAKMP_NEXT_CR : ISAKMP_NEXT_NONE), "Nr"))
+    next_payload = ISAKMP_NEXT_NONE;
+
+    if(cur_debugging & IMPAIR_BUST_MR2)
+    {
+	next_payload = ISAKMP_NEXT_VID;
+    }
+    if(send_cr)
+    {
+        next_payload = ISAKMP_NEXT_CR;
+    }
+    if (!build_and_ship_nonce(&st->st_nr
+			      , &md->rbody
+			      , next_payload
+			      , "Nr")) 
 	return STF_INTERNAL_ERROR;
 
     if (cur_debugging & IMPAIR_BUST_MR2)
@@ -2911,20 +3090,21 @@ main_inI2_outR2(struct msg_digest *md)
     }
 #else
     /* Nr out */
-    if (!build_and_ship_nonce(&st->st_nr, &md->rbody,
-	(send_cr)? ISAKMP_NEXT_CR : ISAKMP_NEXT_NONE, "Nr"))
+    if (!build_and_ship_nonce(&st->st_nr
+			      , &md->rbody
+			      , (send_cr)? ISAKMP_NEXT_CR : ISAKMP_NEXT_NONE
+			      , "Nr"))
 	return STF_INTERNAL_ERROR;
 #endif
 
-#ifdef X509
     /* CR out */
     if (send_cr)
     {
 	if (st->st_connection->kind == CK_PERMANENT)
 	{
 	    if (!build_and_ship_CR(CERT_X509_SIGNATURE
-	    , st->st_connection->spd.that.ca
-	    , &md->rbody, ISAKMP_NEXT_NONE))
+				   , st->st_connection->spd.that.ca
+				   , &md->rbody, ISAKMP_NEXT_NONE))
 		return STF_INTERNAL_ERROR;
 	}
 	else
@@ -2952,6 +3132,12 @@ main_inI2_outR2(struct msg_digest *md)
 	    }
 	}
     }
+
+#ifdef NAT_TRAVERSAL
+    if (st->nat_traversal & NAT_T_WITH_NATD) {
+	if (!nat_traversal_add_natd(ISAKMP_NEXT_NONE, &md->rbody, md))
+	    return STF_INTERNAL_ERROR;
+    }
 #endif
 
     /* finish message */
@@ -2966,6 +3152,29 @@ main_inI2_outR2(struct msg_digest *md)
     update_iv(st);
 
     return STF_OK;
+}
+
+static void
+doi_log_cert_thinking(struct msg_digest *md UNUSED
+		      , u_int16_t auth
+		      , enum ipsec_cert_type certtype
+		      , enum certpolicy policy
+		      , bool gotcertrequest
+		      , bool send_cert)
+{
+    DBG(DBG_CONTROL
+	, DBG_log("thinking about whether to send my certificate:"));
+    
+    DBG(DBG_CONTROL
+	, DBG_log("  I have RSA key: %s cert.type: %s sendcert: %s"
+		  , enum_show(&oakley_auth_names, auth)
+		  , enum_show(&cert_type_names, certtype)
+		  , enum_show(&certpolicy_type_names, policy)));
+
+    DBG(DBG_CONTROL
+	, DBG_log("  and I did%s get a certificate request, so %ssend cert."
+		  , gotcertrequest ? "" : " not"
+		  , send_cert ? "" : "do not "));
 }
 
 /* STATE_MAIN_I2:
@@ -2988,33 +3197,54 @@ main_inR2_outI3(struct msg_digest *md)
     pb_stream id_pbs;	/* ID Payload; also used for hash calculation */
     bool send_cert = FALSE;
     bool send_cr = FALSE;
-#ifdef X509
     generalName_t *requested_ca = NULL;
     cert_t mycert = st->st_connection->spd.this.cert;
 
-    /* send certificate if we have one and auth is RSA */
-    send_cert = (st->st_oakley.auth == OAKLEY_RSA_SIG &&
-		 mycert.type != CERT_NONE);
-#endif
-
-    /* send certificate request, if we don't have a preloaded RSA public key */
-    send_cr = !no_cr_send && send_cert && !has_preloaded_public_key(st);
-
     /* KE in */
-    RETURN_STF_FAILURE(accept_KE(&st->st_gr, "Gr", st->st_oakley.group, keyex_pbs));
+    RETURN_STF_FAILURE(accept_KE(&st->st_gr, "Gr"
+				 , st->st_oakley.group, keyex_pbs));
 
     /* Nr in */
     RETURN_STF_FAILURE(accept_nonce(md, &st->st_nr, "Nr"));
 
-#ifdef X509
     /* decode certificate requests */
     decode_cr(md, &requested_ca);
 
-    /* free collected certificate requests since as initiator
+    if(requested_ca != NULL)
+    {
+	st->hidden_variables.st_got_certrequest = TRUE;
+    }
+
+    /*
+     * send certificate if we have one and auth is RSA, and we were
+     * told we can send one if asked, and we were asked, or we were told
+     * to always send one.
+     */
+    send_cert = st->st_oakley.auth == OAKLEY_RSA_SIG
+	&& mycert.type != CERT_NONE
+	&& ((st->st_connection->spd.this.sendcert == cert_sendifasked
+	     && st->hidden_variables.st_got_certrequest)
+	    || st->st_connection->spd.this.sendcert==cert_alwayssend);
+
+    doi_log_cert_thinking(md
+			  , st->st_oakley.auth
+			  , mycert.type
+			  , st->st_connection->spd.this.sendcert
+			  , st->hidden_variables.st_got_certrequest 
+			  , send_cert);
+		  
+    /* send certificate request, if we don't have a preloaded RSA public key */
+    send_cr = !no_cr_send && send_cert && !has_preloaded_public_key(st);
+
+    DBG(DBG_CONTROL
+	, DBG_log(" I am %ssending a certificate request"
+		  , send_cr ? "" : "not "));
+		  
+    /*
+     * free collected certificate requests since as initiator
      * we don't heed them anyway
      */
     free_generalNames(requested_ca, TRUE);
-#endif
 
     /* done parsing; initialize crypto  */
 
@@ -3022,6 +3252,18 @@ main_inR2_outI3(struct msg_digest *md)
     if (!generate_skeyids_iv(st))
 	return STF_FAIL + AUTHENTICATION_FAILED;
 
+#ifdef NAT_TRAVERSAL
+    if (st->nat_traversal & NAT_T_WITH_NATD) {
+      nat_traversal_natd_lookup(md);
+    }
+    if (st->nat_traversal) {
+      nat_traversal_show_result(st->nat_traversal, md->sender_port);
+    }
+    if (st->nat_traversal & NAT_T_WITH_KA) {
+      nat_traversal_new_ka_event();
+    }
+#endif
+ 
     /*************** build output packet HDR*;IDii;HASH/SIG_I ***************/
     /* ??? NOTE: this is almost the same as main_inI3_outR3's code */
 
@@ -3034,13 +3276,15 @@ main_inR2_outI3(struct msg_digest *md)
 
 	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this);
 	id_hd.isaiid_np = (send_cert)? ISAKMP_NEXT_CERT : auth_payload;
-	if (!out_struct(&id_hd, &isakmp_ipsec_identification_desc, &md->rbody, &id_pbs)
-	|| !out_chunk(id_b, &id_pbs, "my identity"))
+	if (!out_struct(&id_hd
+			, &isakmp_ipsec_identification_desc
+			, &md->rbody
+			, &id_pbs)
+	    || !out_chunk(id_b, &id_pbs, "my identity"))
 	    return STF_INTERNAL_ERROR;
 	close_output_pbs(&id_pbs);
     }
-
-#ifdef X509
+    
     /* CERT out */
     if (send_cert)
     {
@@ -3050,8 +3294,12 @@ main_inR2_outI3(struct msg_digest *md)
 	cert_hd.isacert_np = (send_cr)? ISAKMP_NEXT_CR : ISAKMP_NEXT_SIG;
 	cert_hd.isacert_type = mycert.type;
 
-	if (!out_struct(&cert_hd, &isakmp_ipsec_certificate_desc, &md->rbody, &cert_pbs))
+	if (!out_struct(&cert_hd
+			, &isakmp_ipsec_certificate_desc
+			, &md->rbody
+			, &cert_pbs))
 	    return STF_INTERNAL_ERROR;
+
 	if (!out_chunk(get_mycert(mycert), &cert_pbs, "CERT"))
 	    return STF_INTERNAL_ERROR;
 	close_output_pbs(&cert_pbs);
@@ -3060,13 +3308,13 @@ main_inR2_outI3(struct msg_digest *md)
     /* CR out */
     if (send_cr)
     {
-	if (!build_and_ship_CR(mycert.type, st->st_connection->spd.that.ca
-	, &md->rbody, ISAKMP_NEXT_SIG))
+	if (!build_and_ship_CR(mycert.type
+			       , st->st_connection->spd.that.ca
+			       , &md->rbody, ISAKMP_NEXT_SIG))
 	    return STF_INTERNAL_ERROR;
     }
-#endif
 
-   /* HASH_I or SIG_I out */
+    /* HASH_I or SIG_I out */
     {
 	u_char hash_val[MAX_DIGEST_LEN];
 	size_t hash_len = main_mode_hash(st, hash_val, TRUE, &id_pbs);
@@ -3074,8 +3322,10 @@ main_inR2_outI3(struct msg_digest *md)
 	if (auth_payload == ISAKMP_NEXT_HASH)
 	{
 	    /* HASH_I out */
-	    if (!out_generic_raw(ISAKMP_NEXT_NONE, &isakmp_hash_desc, &md->rbody
-	    , hash_val, hash_len, "HASH_I"))
+	    if (!out_generic_raw(ISAKMP_NEXT_NONE
+				 , &isakmp_hash_desc
+				 , &md->rbody
+				 , hash_val, hash_len, "HASH_I"))
 		return STF_INTERNAL_ERROR;
 	}
 	else
@@ -3091,8 +3341,12 @@ main_inR2_outI3(struct msg_digest *md)
 		return STF_FAIL + AUTHENTICATION_FAILED;
 	    }
 
-	    if (!out_generic_raw(ISAKMP_NEXT_NONE, &isakmp_signature_desc
-	    , &md->rbody, sig_val, sig_len, "SIG_I"))
+	    if (!out_generic_raw(ISAKMP_NEXT_NONE
+				 , &isakmp_signature_desc
+				 , &md->rbody
+				 , sig_val
+				 , sig_len
+				 , "SIG_I"))
 		return STF_INTERNAL_ERROR;
 	}
     }
@@ -3379,9 +3633,20 @@ main_inI3_outR3_tail(struct msg_digest *md
 
     /* send certificate if we have one and auth is RSA */
     mycert = st->st_connection->spd.this.cert;
-    send_cert = (st->st_oakley.auth == OAKLEY_RSA_SIG &&
-		mycert.type != CERT_NONE);
 
+    send_cert = st->st_oakley.auth == OAKLEY_RSA_SIG
+	&& mycert.type != CERT_NONE
+	&& ((st->st_connection->spd.this.sendcert == cert_sendifasked
+	     && st->hidden_variables.st_got_certrequest)
+	    || st->st_connection->spd.this.sendcert==cert_alwayssend);
+
+    doi_log_cert_thinking(md
+			  , st->st_oakley.auth
+			  , mycert.type
+			  , st->st_connection->spd.this.sendcert
+			  , st->hidden_variables.st_got_certrequest 
+			  , send_cert);
+		  
     /*************** build output packet HDR*;IDir;HASH/SIG_R ***************/
     /* proccess_packet() would automatically generate the HDR*
      * payload if smc->first_out_payload is not ISAKMP_NEXT_NONE.
@@ -3415,7 +3680,6 @@ main_inI3_outR3_tail(struct msg_digest *md
 	close_output_pbs(&r_id_pbs);
     }
 
-#ifdef X509
     /* CERT out, if we have one */
     if (send_cert)
     {
@@ -3431,7 +3695,6 @@ main_inI3_outR3_tail(struct msg_digest *md
 	    return STF_INTERNAL_ERROR;
 	close_output_pbs(&cert_pbs);
     }
-#endif
 
     /* HASH_R or SIG_R out */
     {
@@ -3527,6 +3790,13 @@ main_inR3_tail(struct msg_digest *md
 
     /**************** done input ****************/
 
+    /* save last IV from phase 1 so it can be restored later so anything 
+     * between the end of phase 1 and the start of phase 2 ie mode config
+     * payloads etc will not loose our IV
+     */
+    memcpy(st->st_ph1_iv, st->st_new_iv, st->st_new_iv_len);
+    st->st_ph1_iv_len = st->st_new_iv_len;
+    
     ISAKMP_SA_established(st->st_connection, st->st_serialno);
 
     /* ??? If c->gw_info != NULL,
@@ -3536,6 +3806,13 @@ main_inR3_tail(struct msg_digest *md
     st->st_ph1_iv_len = st->st_new_iv_len;
     set_ph1_iv(st, st->st_new_iv);
 
+    /* save last IV from phase 1 so it can be restored later so anything 
+     * between the end of phase 1 and the start of phase 2 ie mode config
+     * payloads etc will not loose our IV
+     */
+    memcpy(st->st_ph1_iv, st->st_new_iv, st->st_new_iv_len);
+    st->st_ph1_iv_len = st->st_new_iv_len;
+    
     update_iv(st);	/* finalize our Phase 1 IV */
 
     
@@ -3686,6 +3963,15 @@ quick_inI1_outR1(struct msg_digest *md)
 	if (!decode_net_id(&id_pd->payload.ipsec_id, &id_pd->pbs
 	, &b.his.net, "peer client"))
 	    return STF_FAIL + INVALID_ID_INFORMATION;
+
+        /* Hack for MS 818043 NAT-T Update */
+        if (id_pd->payload.ipsec_id.isaiid_idtype == ID_FQDN)
+           memset(&b.his.net, 0, sizeof(ip_subnet));
+
+        if (id_pd->payload.ipsec_id.isaiid_idtype == ID_FQDN)
+           happy(addrtosubnet(&c->spd.that.host_addr, &b.his.net));
+
+	/* End Hack for MS 818043 NAT-T Update */
 
 	b.his.proto = id_pd->payload.ipsec_id.isaiid_protoid;
 	b.his.port = id_pd->payload.ipsec_id.isaiid_port;
@@ -4201,7 +4487,14 @@ quick_inI1_outR1_tail(struct verify_oppo_bundle *b
 		    /* Plain Road Warrior:
 		     * instantiate, carrying over authenticated peer ID
 		     */
-		    p = rw_instantiate(p, &c->spd.that.host_addr, &c->spd.that.id);
+		    p = rw_instantiate(p, &c->spd.that.host_addr,
+#ifdef NAT_TRAVERSAL
+			        md->sender_port,
+#endif
+#ifdef VIRTUAL_IP
+				his_net, 
+#endif
+				&c->spd.that.id);
 		}
 	    }
 #ifdef DEBUG
@@ -4224,6 +4517,15 @@ quick_inI1_outR1_tail(struct verify_oppo_bundle *b
 	    p->spd.that.client = *his_net;
 	    p->spd.that.has_client_wildcard = FALSE;
 	}
+#ifdef VIRTUAL_IP
+	else if (is_virtual_connection(c))
+	{
+	    c->spd.that.client = *his_net;
+	    c->spd.that.virt = NULL;
+	    if (subnetishost(his_net) && addrinsubnet(&c->spd.that.host_addr, his_net))
+		c->spd.that.has_client = FALSE;
+	}
+#endif
     }
 
     /* now that we are sure of our connection, create our new state */
@@ -4267,9 +4569,22 @@ quick_inI1_outR1_tail(struct verify_oppo_bundle *b
 	 * the bridge, I think.  It will reflect the ISAKMP SA that we
 	 * are using.
 	 */
-	st->st_policy = (p1st->st_policy & POLICY_ISAKMP_MASK)
-	    | (c->policy & ~POLICY_ISAKMP_MASK);
+	st->st_policy = (p1st->st_policy & POLICY_ID_AUTH_MASK)
+	    | (c->policy & ~POLICY_ID_AUTH_MASK);
 
+#ifdef NAT_TRAVERSAL
+	if (p1st->nat_traversal & NAT_T_DETECTED) {
+	    st->nat_traversal = p1st->nat_traversal;
+	    nat_traversal_change_port_lookup(md, md->st);
+	}
+	else {
+	    st->nat_traversal = 0;
+	}
+	if ((st->nat_traversal & NAT_T_DETECTED) &&
+	    (st->nat_traversal & NAT_T_WITH_NATOA)) {
+	    nat_traversal_natoa_lookup(md);
+	}
+#endif
 
 	/* Start the output packet.
 	 *
@@ -4356,6 +4671,24 @@ quick_inI1_outR1_tail(struct verify_oppo_bundle *b
 		return STF_INTERNAL_ERROR;
 	    p->isaiid_np = ISAKMP_NEXT_NONE;
 	}
+
+#ifdef NAT_TRAVERSAL
+	if ((st->nat_traversal & NAT_T_WITH_NATOA) &&
+	    (st->nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_ME)) &&
+	    (st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT)) {
+	    /** Send NAT-OA if our address is NATed and if we use Transport Mode */
+	    if (!nat_traversal_add_natoa(ISAKMP_NEXT_NONE, &md->rbody, md->st)) {
+		return STF_INTERNAL_ERROR;
+	    }
+	}
+	if ((st->nat_traversal & NAT_T_DETECTED) &&
+	    (st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT) &&
+	    (c->spd.that.has_client)) {
+	    /** Remove client **/
+	    addrtosubnet(&c->spd.that.host_addr, &c->spd.that.client);
+	    c->spd.that.has_client = FALSE;
+	}
+#endif
 
 	/* Compute reply HASH(2) and insert in output */
 	(void)quick_mode_hash12(r_hashval, r_hash_start, md->rbody.cur
@@ -4453,6 +4786,13 @@ quick_inR1_outI2(struct msg_digest *md)
 	    }
 	}
     }
+
+#ifdef NAT_TRAVERSAL
+	if ((st->nat_traversal & NAT_T_DETECTED) &&
+	    (st->nat_traversal & NAT_T_WITH_NATOA)) {
+	    nat_traversal_natoa_lookup(md);
+	}
+#endif
 
     /* ??? We used to copy the accepted proposal into the state, but it was
      * never used.  From sa_pd->pbs.start, length pbs_room(&sa_pd->pbs).

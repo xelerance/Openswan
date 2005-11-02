@@ -18,25 +18,28 @@ pre=PRE$tr
 base=BASE$pre
 
 echo "generating key for branch"
-SNAPGPG=$SNAPSHOTSIGDIR/$base 
+SNAPPGP=$SNAPSHOTSIGDIR/$base 
 # Note: PGPPATH is limited to 50 characters.
-GNUPGHOME=$SNAPGPP export GNUPGHOME
-mkdir -p $GNUPGHOME
+PGPPATH=$SNAPPGP export PGPPATH
+mkdir -p $PGPPATH
+touch $PGPPATH/pgpdoc1.txt
+touch $PGPPATH/pgpdoc2.txt
 
-if [ ! -f $GNUPGHOME/secring.gpp ]
+if [ ! -f $PGPPATH/secring.pgp ]
 then
-	echo "Please set userid to '<build+snap$tr@openswan.org>' $GNUPGHOME"
-	gpg --gen-key
+	echo "Please set userid to '<build+snap$tr@freeswan.org>'$PGPPATH"
+	pgp -kg
 
 	echo -n "Please insert release key floppy for signature"
 	read ans
 	mount /mnt/build
-	GNUPGHOME=/mnt/build/openswan export GNUPGHOME
+	PGPPATH=/mnt/build/freeswan export PGPPATH
 
-	echo "Now signing key - please answer yes to signature."
-	gpg --import $SNAPPGP/pubring.gpg
-	gpg --sign-key "build+snap$tr@openswan.org"
-	gpg --armor --export build+snap$tr@freeswan.org >$SNAPPGP/signedkey.asc
+	echo "Now signing key - please answer yes."
+	pgp $SNAPPGP/pubring.pgp
+
+	echo Please put key in $SNAPPGP/signedkey.asc
+	pgp -kxa build+snap$tr@freeswan.org
  
 	umount /mnt/build
 

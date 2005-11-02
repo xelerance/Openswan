@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _updown.ip2.in,v 1.3 2003/10/28 21:36:17 dhr Exp $
+# RCSID $Id: _updown.ip2.in,v 1.5.2.2 2004/03/21 05:23:31 mcr Exp $
 
 
 
@@ -22,6 +22,7 @@
 # that, and use the (left/right)updown parameters in ipsec.conf to make
 # FreeS/WAN use yours instead of this default one.
 
+LC_ALL=C export LC_ALL
 
 # things that this script gets (from ipsec_pluto(8) man page)
 #
@@ -68,6 +69,10 @@
 #              is  the  mask for our client net.  If the client is
 #              just the host, this will be 255.255.255.255.
 #
+#       PLUTO_MY_SOURCEIP
+#              if non-empty, then the source address for the route will be
+#              set to this IP address.
+#
 #       PLUTO_PEER
 #              is the IP address of our peer.
 #
@@ -87,7 +92,6 @@
 #              client   is   just   the   peer,   this   will   be
 #              255.255.255.255.
 #
-# PLUTO_PEER_SOURCEIP
 # PLUTO_CONNECTION_TYPE
 #
 
@@ -121,65 +125,214 @@ esac
 # Meddling with this stuff should not be necessary and requires great care.
 uproute() {
 	doroute add
+	ip route flush cache
 }
 downroute() {
 	doroute del
+	ip route flush cache
 }
-doroute() {
+
+uprule() {
+	# policy based advanced routing
+	if [ -n "$PLUTO_IPROUTETABLE" ] && [ "$PLUTO_IPROUTETABLE" != "main" ]
+	then
+	    dorule del
+	    dorule add
+	fi
+	# virtual sourceip support
+	if [ -n "$PLUTO_MY_SOURCEIP" ] && ["$PLUTO_MY_SOURCEIP" != "no" ]
+	then
+	    addsource
+	    changesource
+	fi
+	ip route flush cache
+}
+
+downrule() {
+	if [ -n "$PLUTO_MY_SOURCEIP" ] && [ "$PLUTO_IPROUTETABLE" != "main" ]
+	then
+	    dorule del
+	    ip route flush cache
+	fi
+}
+
+addsource() {
+	st=0
+	if ! ip -o route get ${PLUTO_MY_SOURCEIP%/*} | grep -q ^local
+	then
+	    it="ip addr add ${PLUTO_MY_SOURCEIP%/*}/32 dev $PLUTO_INTERFACE"
+	    oops="`eval $it 2>&1`"
+	    st=$?
+	    if test " $oops" = " " -a " $st" != " 0"
+	    then
+		oops="silent error, exit status $st"
+	    fi
+	    if test " $oops" != " " -o " $st" != " 0"
+	    then
+		echo "$0: addsource \`$it' failed ($oops)" >&2
+	    fi
+	fi
+	return $st
+}
+
+changesource() {
+	st=0
 	parms="$PLUTO_PEER_CLIENT"
-	parms2=""
+	parms2="dev $PLUTO_INTERFACE"
+	parms3="src ${PLUTO_MY_SOURCEIP%/*}"
+	if [ -n "$PLUTO_IPROUTETABLE" ] && [ "$PLUTO_IPROUTETABLE" != "main" ]
+	then
+	    parms3="$parms3 table '$PLUTO_IPROUTETABLE'"
+	fi
+ 	case "$PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK" in
+ 	"0.0.0.0/0.0.0.0")
+		# opportunistic encryption work around
+		it=
+ 		;;
+ 	esac
+	oops="`eval $it 2>&1`"
+ 	st=$?
+	if test " $oops" = " " -a " $st" != " 0"
+ 	then
+	    oops="silent error, exit status $st"
+	fi
+	if test " $oops" != " " -o " $st" != " 0"
+	then
+	    echo "$0: changesource \`$it' failed ($oops)" >&2
+ 	fi
+ 	return $st
+}
+
+dorule() {
+	st=0
+	it2=
+	iprule="from $PLUTO_MY_CLIENT"
+	iprule2="to $PLUTO_PEER_CLIENT table $PLUTO_IPROUTETABLE"
+	case "$PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK" in
+	"0.0.0.0/0.0.0.0")
+		# opportunistic encryption work around
+		st=0
+		;;
+	*)
+		if test "$PLUTO_MY_SOURCEIP" = "no"
+		then
+		    if test "$PLUTO_ME" = "${PLUTO_MY_CLIENT%/*}"
+		    then
+			it="ip rule $1 iif lo $iprule2"
+		    else
+			it="ip rule $1 $iprule $iprule2"
+		    fi
+		else
+		    if test "${PLUTO_MY_SOURCEIP%/*}" = "${PLUTO_MY_CLIENT%/*}"
+		    then
+			it="ip rule $1 iif lo $iprule2"
+		    else
+			it="ip rule $1 $iprule $iprule2"
+			it2="ip rule $1 iif lo $iprule2"
+		    fi
+		fi
+		oops="`eval $it 2>&1`"
+		st=$?
+		if test " $oops" = " " -a " $st" != " 0"
+		then
+		    oops="silent error, exit status $st"
+		fi
+		case "$oops" in
+		'RTNETLINK answers: No such process'*)
+			# This is what ip rule gives
+			# for "could not find such a rule"
+			oops=
+			st=0
+			;;
+		esac
+		if test " $oops" != " " -o " $st" != " 0"
+		then
+		    echo "$0: dorule \`$it' failed ($oops)" >&2
+		fi
+		if test "$st" = "0" -a -n "$it2"
+		then
+		    oops="`eval $it2 2>&1`"
+		    st=$?
+		    if test " $oops" = " " -a " $st" != " 0"
+		    then
+			oops="silent error, exit status $st"
+		    fi
+		    case "$oops" in
+		    'RTNETLINK answers: No such process'*)
+			    # This is what ip rule gives
+			    # for "could not find such a rule"
+			    oops=
+			    st=0
+			    ;;
+		    esac
+		    if test " $oops" != " " -o " $st" != " 0"
+		    then
+			echo "$0: dorule \`$it2' failed ($oops)" >&2
+		    fi
+		fi
+		;;
+	    esac
+	return $st
+}
+
+
+doroute() {
+	st=0
+	parms="$PLUTO_PEER_CLIENT"
+	parms2=
 	if [ -n "$PLUTO_NEXT_HOP" ]
 	then
-	    parms2="via $PLUTO_NEXT_HOP"
+	   parms2="via $PLUTO_NEXT_HOP"
 	fi
 	parms2="$parms2 dev $PLUTO_INTERFACE"
+	parms3=
+	if [ -n "$PLUTO_IPROUTETABLE" ] && [ "$PLUTO_IPROUTETABLE" != "main" ]
+	then
+	    parms3="table $PLUTO_IPROUTETABLE"
+	fi
 
-	if [ -z "$PLUTO_PEER_SOURCEIP" ]
+	if [ -z "$PLUTO_MY_SOURCEIP" ]
 	then
 	    if [ -f /etc/sysconfig/defaultsource ]
 	    then
 		. /etc/sysconfig/defaultsource
 		if [ -n "$DEFAULTSOURCE" ]
 		then
-		    PLUTO_PEER_SOURCEIP=$DEFAULTSOURCE
+		    PLUTO_MY_SOURCEIP=$DEFAULTSOURCE
 		fi
 	    fi
         fi
 
-	if [ -n "$PLUTO_PEER_SOURCEIP" ]
+	if test "$1" = "add" -a -n "$PLUTO_MY_SOURCEIP" 
 	then
-	    parms2="$parms2 src $DEFAULTSOURCE"
+	    addsource
+	    parms3="$parms3 src ${PLUTO_MY_SOURCEIP%/*}"
 	fi
+
 	case "$PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK" in
 	"0.0.0.0/0.0.0.0")
+		# opportunistic encryption work around
 		# need to provide route that eclipses default, without 
 		# replacing it.
-		it="ip route $1 0.0.0.0/1 $parms2 &&"
-		it="$it ip route $1 128.0.0.0/1 $parms2"
-		ip route $1 0.0.0.0/1 $parms2 &&
-		    ip route $1 128.0.0.0/1 $parms2
+		it="ip route $1 0.0.0.0/1 $parms2 &&
+			ip route $1 128.0.0.0/1 $parms2"
 		;;
-	*)	it="ip route $1 $parms $parms2"
-		ip route $1 $parms $parms2
+	*)	it="ip route $1 $parms $parms2 $parms3"
 		;;
 	esac
+	oops="`eval $it 2>&1`"
 	st=$?
-	if test $st -ne 0
+	if test " $oops" = " " -a " $st" != " 0"
 	then
-		# route has already given its own cryptic message
-		echo "$0: \`$it' failed" >&2
-		if test " $1 $st" = " add 7"
-		then
-			# another totally undocumented interface -- 7 and
-			# "SIOCADDRT: Network is unreachable" means that
-			# the gateway isn't reachable.
-			echo "$0: (incorrect or missing nexthop setting??)" >&2
-		fi
+	    oops="silent error, exit status $st"
+	fi
+	if test " $oops" != " " -o " $st" != " 0"
+	then
+	    echo "$0: doroute \`$it' failed ($oops)" >&2
 	fi
 	return $st
 }
-
-
+ 
 
 # the big choice
 case "$PLUTO_VERB:$1" in
@@ -206,7 +359,7 @@ prepare-host:*|prepare-client:*)
 		oops="silent error, exit status $status"
 	fi
 	case "$oops" in
-	'RTNETLINK answers: No such process'*)
+	*'RTNETLINK answers: No such process'*)	
 		# This is what route (currently -- not documented!) gives
 		# for "could not find such a route".
 		oops=

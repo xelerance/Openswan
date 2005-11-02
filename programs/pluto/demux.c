@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: demux.c,v 1.150 2003/11/26 23:53:08 mcr Exp $
+ * RCSID $Id: demux.c,v 1.159.2.1 2004/03/21 05:23:32 mcr Exp $
  */
 
 /* Ordering Constraints on Payloads
@@ -123,7 +123,7 @@
 #  include <sys/uio.h>	/* struct iovec */
 #endif
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -133,6 +133,9 @@
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "state.h"
 #include "packet.h"
@@ -145,6 +148,13 @@
 #include "timer.h"
 #include "whack.h"	/* requires connections.h */
 #include "server.h"
+#ifdef XAUTH
+#include "xauth.h"
+#endif
+#ifdef NAT_TRAVERSAL
+#include "nat_traversal.h"
+#endif
+#include "vendor.h"
 
 /* This file does basic header checking and demux of
  * incoming packets.
@@ -271,7 +281,11 @@ static const struct state_microcode state_microcode_table[] = {
      */
     { STATE_MAIN_R1, STATE_MAIN_R2
     , SMF_PSK_AUTH | SMF_DS_AUTH | SMF_REPLY
+#ifdef NAT_TRAVERSAL
+    , P(KE) | P(NONCE), P(VID) | P(CR) | P(NATD_RFC), PT(KE)
+#else
     , P(KE) | P(NONCE), P(VID) | P(CR), PT(KE)
+#endif
     , EVENT_RETRANSMIT, main_inI2_outR2 },
 
     { STATE_MAIN_R1, STATE_UNDEFINED
@@ -296,7 +310,11 @@ static const struct state_microcode state_microcode_table[] = {
      */
     { STATE_MAIN_I2, STATE_MAIN_I3
     , SMF_PSK_AUTH | SMF_DS_AUTH | SMF_INITIATOR | SMF_OUTPUT_ENCRYPTED | SMF_REPLY
+#ifdef NAT_TRAVERSAL
+    , P(KE) | P(NONCE), P(VID) | P(CR) | P(NATD_RFC), PT(ID)
+#else
     , P(KE) | P(NONCE), P(VID) | P(CR), PT(ID)
+#endif
     , EVENT_RETRANSMIT, main_inR2_outI3 },
 
     { STATE_MAIN_I2, STATE_UNDEFINED
@@ -370,7 +388,6 @@ static const struct state_microcode state_microcode_table[] = {
     , LEMPTY, LEMPTY
     , PT(NONE), EVENT_NULL, unexpected },
 
-
     /***** Phase 2 Quick Mode *****/
 
     /* No state for quick_outI1:
@@ -387,7 +404,11 @@ static const struct state_microcode state_microcode_table[] = {
      */
     { STATE_QUICK_R0, STATE_QUICK_R1
     , SMF_ALL_AUTH | SMF_ENCRYPTED | SMF_REPLY
+#ifdef NAT_TRAVERSAL
+    , P(HASH) | P(SA) | P(NONCE), /* P(SA) | */ P(KE) | P(ID) | P(NATOA_RFC), PT(NONE)
+#else
     , P(HASH) | P(SA) | P(NONCE), /* P(SA) | */ P(KE) | P(ID), PT(NONE)
+#endif
     , EVENT_RETRANSMIT, quick_inI1_outR1 },
 
     /* STATE_QUICK_I1:
@@ -398,7 +419,11 @@ static const struct state_microcode state_microcode_table[] = {
      */
     { STATE_QUICK_I1, STATE_QUICK_I2
     , SMF_ALL_AUTH | SMF_INITIATOR | SMF_ENCRYPTED | SMF_REPLY
+#ifdef NAT_TRAVERSAL
+    , P(HASH) | P(SA) | P(NONCE), /* P(SA) | */ P(KE) | P(ID) | P(NATOA_RFC), PT(HASH)
+#else
     , P(HASH) | P(SA) | P(NONCE), /* P(SA) | */ P(KE) | P(ID), PT(HASH)
+#endif
     , EVENT_SA_REPLACE, quick_inR1_outI2 },
 
     /* STATE_QUICK_R1: HDR*, HASH(3) --> done
@@ -421,7 +446,6 @@ static const struct state_microcode state_microcode_table[] = {
     , LEMPTY, LEMPTY, PT(NONE)
     , EVENT_NULL, unexpected },
 
-
     /***** informational messages *****/
 
     /* STATE_INFO: */
@@ -435,6 +459,56 @@ static const struct state_microcode state_microcode_table[] = {
     , SMF_ALL_AUTH | SMF_ENCRYPTED
     , P(HASH), LEMPTY, PT(NONE)
     , EVENT_NULL, informational },
+
+#ifdef XAUTH
+    { STATE_XAUTH_R0, STATE_XAUTH_R1
+    , SMF_ALL_AUTH | SMF_ENCRYPTED 
+    , P(ATTR) | P(HASH), P(VID), PT(NONE)
+    , EVENT_NULL, xauth_inR0 },  /*Re-transmit may be done by previous state*/
+
+    { STATE_XAUTH_R1, STATE_MAIN_R3
+    , SMF_ALL_AUTH | SMF_ENCRYPTED 
+    , P(ATTR) | P(HASH), P(VID), PT(NONE)
+    , EVENT_SA_REPLACE, xauth_inR1 },
+#endif
+
+#ifdef MODECFG
+/* MODE_CFG_x:
+ * Case R0:  Responder	->	Initiator
+ *			<-	Req(addr=0)
+ *	    Reply(ad=x)	->
+ *	    
+ * Case R1: Set(addr=x)	->
+ *			<-	Ack(ok)
+ */
+
+    { STATE_MODE_CFG_R0, STATE_MODE_CFG_R1
+    , SMF_ALL_AUTH | SMF_ENCRYPTED | SMF_REPLY
+    , P(ATTR) | P(HASH), P(VID), PT(HASH)
+    , EVENT_SA_REPLACE, modecfg_inR0 },
+
+    { STATE_MODE_CFG_R1, STATE_MODE_CFG_R2
+    , SMF_ALL_AUTH | SMF_ENCRYPTED
+    , P(ATTR) | P(HASH), P(VID), PT(HASH)
+    , EVENT_SA_REPLACE, modecfg_inR1 },
+
+    { STATE_MODE_CFG_R2, STATE_UNDEFINED
+    , SMF_ALL_AUTH | SMF_ENCRYPTED
+    , LEMPTY, LEMPTY, PT(NONE)
+    , EVENT_NULL, unexpected },
+#endif
+
+#ifdef XAUTH
+    { STATE_XAUTH_I0, STATE_XAUTH_I1
+    , SMF_ALL_AUTH | SMF_ENCRYPTED | SMF_REPLY | SMF_RELEASE_PENDING_P2
+    , P(ATTR) | P(HASH), P(VID), PT(HASH)
+    , EVENT_SA_REPLACE, xauth_inI0 },
+
+    { STATE_XAUTH_I1, STATE_MAIN_I4
+    , SMF_ALL_AUTH | SMF_ENCRYPTED | SMF_REPLY | SMF_RELEASE_PENDING_P2
+    , P(ATTR) | P(HASH), P(VID), PT(HASH)
+    , EVENT_SA_REPLACE, xauth_inI1 },
+#endif
 
 #undef P
 #undef PT
@@ -697,6 +771,18 @@ check_msg_errqueue(const struct iface *ifp, short interest)
 		    /* note dirty trick to suppress ~ at start of format
 		     * if we know what state to blame.
 		     */
+#ifdef NAT_TRAVERSAL
+		    if ((packet_len == 1) && (buffer[0] = 0xff)
+#ifdef DEBUG
+			&& ((cur_debugging & DBG_NATT) == 0)
+#endif
+			) {
+			    /* don't log NAT-T keepalive related errors unless NATT debug is
+			     * enabled
+			     */
+		    }
+		    else
+#endif
 		    plog((sender != NULL) + "~"
 			"ERROR: asynchronous network error report on %s"
 			"%s"
@@ -734,11 +820,39 @@ check_msg_errqueue(const struct iface *ifp, short interest)
 #endif /* defined(IP_RECVERR) && defined(MSG_ERRQUEUE) */
 
 bool
+#ifdef NAT_TRAVERSAL
+_send_packet(struct state *st, const char *where, bool verbose)
+#else
 send_packet(struct state *st, const char *where)
+#endif
 {
     struct connection *c = st->st_connection;
     int port_buf;
     bool err;
+
+#ifdef NAT_TRAVERSAL
+    u_int8_t ike_pkt[MAX_OUTPUT_UDP_SIZE];
+    u_int8_t *ptr;
+    unsigned long len;
+
+    if ((c->interface->ike_float == TRUE) && (st->st_tpacket.len != 1)) {
+	if ((unsigned long) st->st_tpacket.len >
+	    (MAX_OUTPUT_UDP_SIZE-sizeof(u_int32_t))) {
+	    DBG_log("send_packet(): really too big");
+	    return FALSE;
+	}
+	ptr = ike_pkt;
+	/** Add Non-ESP marker **/
+	memset(ike_pkt, 0, sizeof(u_int32_t));
+	memcpy(ike_pkt + sizeof(u_int32_t), st->st_tpacket.ptr,
+	    (unsigned long)st->st_tpacket.len);
+	len = (unsigned long) st->st_tpacket.len + sizeof(u_int32_t);
+    }
+    else {
+	ptr = st->st_tpacket.ptr;
+	len = (unsigned long) st->st_tpacket.len;
+    }
+#endif
 
     DBG(DBG_RAW,
 	{
@@ -763,16 +877,28 @@ send_packet(struct state *st, const char *where)
     (void) check_msg_errqueue(c->interface, POLLOUT);
 #endif /* defined(IP_RECVERR) && defined(MSG_ERRQUEUE) */
 
+#ifdef NAT_TRAVERSAL
     err = sendto(c->interface->fd
-    , st->st_tpacket.ptr, st->st_tpacket.len, 0
-    , sockaddrof(&c->spd.that.host_addr)
-    , sockaddrlenof(&c->spd.that.host_addr)) != (ssize_t)st->st_tpacket.len;
-    
+    	, ptr, len, 0
+    	, sockaddrof(&c->spd.that.host_addr)
+    	, sockaddrlenof(&c->spd.that.host_addr)) != (ssize_t)len;
+#else
+    err = sendto(c->interface->fd
+    	, st->st_tpacket.ptr, st->st_tpacket.len, 0
+    	, sockaddrof(&c->spd.that.host_addr)
+    	, sockaddrlenof(&c->spd.that.host_addr)) != (ssize_t)st->st_tpacket.len;
+#endif
+
     /* restore port */
     setportof(port_buf, &c->spd.that.host_addr);
 
     if (err)
     {
+#ifdef NAT_TRAVERSAL
+        /* do not log NAT-T Keep Alive packets */
+        if (!verbose)
+	    return FALSE; 
+#endif
 	log_errno((e, "sendto on %s to %s:%u failed in %s"
 	    , c->interface->rname
 	    , ip_str(&c->spd.that.host_addr)
@@ -917,6 +1043,9 @@ read_packet(struct msg_digest *md)
     int packet_len;
     /* ??? this buffer seems *way* too big */
     u_int8_t bigbuffer[MAX_INPUT_UDP_SIZE];
+#ifdef NAT_TRAVERSAL
+    u_int8_t *_buffer = bigbuffer;
+#endif
     union
     {
 	struct sockaddr sa;
@@ -1012,11 +1141,34 @@ read_packet(struct msg_digest *md)
     cur_from = &md->sender;
     cur_from_port = md->sender_port;
 
+#ifdef NAT_TRAVERSAL
+    if (ifp->ike_float == TRUE) {
+	u_int32_t non_esp;
+	if (packet_len < (int)sizeof(u_int32_t)) {
+	    plog("recvfrom %s:%u too small packet (%d)"
+		, ip_str(cur_from), (unsigned) cur_from_port, packet_len);
+	    return FALSE;
+	}
+	memcpy(&non_esp, _buffer, sizeof(u_int32_t));
+	if (non_esp != 0) {
+	    plog("recvfrom %s:%u has no Non-ESP marker"
+		, ip_str(cur_from), (unsigned) cur_from_port);
+	    return FALSE;
+	}
+	_buffer += sizeof(u_int32_t);
+	packet_len -= sizeof(u_int32_t);
+    }
+#endif
+
     /* Clone actual message contents
      * and set up md->packet_pbs to describe it.
      */
     init_pbs(&md->packet_pbs
+#ifdef NAT_TRAVERSAL
+	, clone_bytes(_buffer, packet_len, "message buffer in comm_handle()")
+#else
 	, clone_bytes(bigbuffer, packet_len, "message buffer in comm_handle()")
+#endif
 	, packet_len, "packet");
 
     DBG(DBG_RAW | DBG_CRYPT | DBG_PARSING | DBG_CONTROL,
@@ -1030,6 +1182,22 @@ read_packet(struct msg_digest *md)
 
     DBG(DBG_RAW,
 	DBG_dump("", md->packet_pbs.start, pbs_room(&md->packet_pbs)));
+
+#ifdef NAT_TRAVERSAL
+	if ((pbs_room(&md->packet_pbs)==1) && (md->packet_pbs.start[0]==0xff)) {
+		/**
+		 * NAT-T Keep-alive packets should be discared by kernel ESPinUDP
+		 * layer. But boggus keep-alive packets (sent with a non-esp marker)
+		 * can reach this point. Complain and discard them.
+		 */
+		DBG(DBG_NATT,
+			DBG_log("NAT-T keep-alive (boggus ?) should not reach this point. "
+				"Ignored. Sender: %s:%u", ip_str(cur_from),
+				(unsigned) cur_from_port);
+			);
+		return FALSE;
+	}
+#endif
 
     return TRUE;
 }
@@ -1135,8 +1303,8 @@ process_packet(struct msg_digest **mdp)
 #endif
 
     case ISAKMP_XCHG_INFO:	/* an informational exchange */
-	st = find_state(md->hdr.isa_icookie, md->hdr.isa_rcookie
-	    , &md->sender, MAINMODE_MSGID);
+	st = find_info_state(md->hdr.isa_icookie, md->hdr.isa_rcookie
+			     , &md->sender, MAINMODE_MSGID);
 
 	if (st != NULL)
 	    set_cur_state(st);
@@ -1238,6 +1406,20 @@ process_packet(struct msg_digest **mdp)
 		return;
 	    }
 
+#ifdef XAUTH
+	    if(st->st_oakley.xauth != 0)
+	    {
+		plog("Cannot do Quick Mode until XAUTH done.");
+		return;
+	    }
+#endif 
+#ifdef MODECFG	
+	    if(st->st_state == STATE_MODE_CFG_R2)   /* Have we just give an IP address to peer? */
+	    {
+		st->st_state = STATE_MAIN_R3;	    /* ISAKMP is up... */
+	    }
+#endif
+
 	    set_cur_state(st);
 
 	    if (!IS_ISAKMP_SA_ESTABLISHED(st->st_state))
@@ -1267,11 +1449,146 @@ process_packet(struct msg_digest **mdp)
 	}
 	else
 	{
+#ifdef XAUTH
+	    if(st->st_oakley.xauth != 0)
+	    {
+		plog("Cannot do Quick Mode until XAUTH done.");
+		return;
+	    }
+#endif
 	    set_cur_state(st);
 	    from_state = st->st_state;
 	}
 
 	break;
+
+#ifdef MODECFG
+    case ISAKMP_XCHG_MODE_CFG:
+	if (is_zero_cookie(md->hdr.isa_icookie))
+	{
+	    plog("Mode Config message is invalid because"
+		" it has an Initiator Cookie of 0");
+	    /* XXX Could send notification back */
+	    return;
+	}
+
+	if (is_zero_cookie(md->hdr.isa_rcookie))
+	{
+	    plog("Mode Config message is invalid because"
+		" it has a Responder Cookie of 0");
+	    /* XXX Could send notification back */
+	    return;
+	}
+
+	if (md->hdr.isa_msgid == 0)
+	{
+	    plog("Mode Config message is invalid because"
+		" it has a Message ID of 0");
+	    /* XXX Could send notification back */
+	    return;
+	}
+
+	st = find_state(md->hdr.isa_icookie, md->hdr.isa_rcookie
+			, &md->sender, md->hdr.isa_msgid);
+
+	if (st == NULL)
+	{
+	    /* No appropriate Mode Config state.
+	     * See if we have a Main Mode state.
+	     * ??? what if this is a duplicate of another message?
+	     */
+	    st = find_state(md->hdr.isa_icookie, md->hdr.isa_rcookie
+			    , &md->sender, 0);
+
+	    if (st == NULL)
+	    {
+		plog("Mode Config message is for a non-existent (expired?)"
+		    " ISAKMP SA");
+		/* XXX Could send notification back */
+		return;
+	    }
+
+	    set_cur_state(st);
+
+	    if (!IS_ISAKMP_SA_ESTABLISHED(st->st_state))
+	    {
+		loglog(RC_LOG_SERIOUS, "Mode Config message is unacceptable because"
+	       		" it is for an incomplete ISAKMP SA (state=%s)"
+	       		, enum_name(&state_names, st->st_state));
+		/* XXX Could send notification back */
+		return;
+	    }
+	    init_phase2_iv(st, &md->hdr.isa_msgid);
+	    new_iv_set = TRUE;
+
+	    /*
+	     * okay, now we have to figure out if we are receiving a bogus
+	     * new message in an oustanding XAUTH server conservation
+	     * (i.e. a reply to our challenge)
+	     * (this occurs with some broken other implementations).
+	     *
+	     * or if receiving for the first time, an XAUTH challenge.
+	     *
+	     * or if we are getting a MODECFG request.
+	     *
+	     * we distinguish these states because we can not both be an
+	     * XAUTH server and client, and our policy tells us which
+	     * one we are.
+	     *
+	     * to complicate further, it is normal to start a new msgid
+	     * when going from one state to another, or when restarting
+	     * the challenge.
+	     *
+	     */
+
+	    if(st->st_connection->spd.this.xauth_server
+	       && st->st_state == STATE_XAUTH_R1
+	       && st->quirks.xauth_ack_msgid)
+	    {
+		from_state = STATE_XAUTH_R1;
+	    }
+	    else if(st->st_connection->spd.this.xauth_client
+		    && IS_PHASE1(st->st_state))
+	    {
+		from_state = STATE_XAUTH_I0;
+	    }
+	    else if(st->st_connection->spd.this.xauth_client
+		    && st->st_state == STATE_XAUTH_I1)
+	    {
+	        /*
+		 * in this case, we got a new MODECFG message after I0, maybe
+		 * because it wants to start over again.
+		 */
+		from_state = STATE_XAUTH_I0;
+	    }
+	    else if(st->st_connection->spd.this.modecfg_server
+		    && IS_PHASE1(st->st_state))
+	    {
+		from_state = STATE_MODE_CFG_R0;
+	    }
+	    else {
+		/* XXX check if we are being a mode config server here */
+		plog("received MODECFG message when in state %s, and we aren't xauth client"
+		     , enum_name(&state_names, st->st_state));
+		return;
+	    }
+	}
+	else
+	{
+	    if(st->st_connection->spd.this.xauth_server
+	       && IS_PHASE1(st->st_state))	/* Switch from Phase1 to Mode Config */
+	    {
+		plog("We were in phase 1, with no state, so we went to XAUTH_R0");
+		st->st_state = STATE_XAUTH_R0;
+	    }
+
+	    /* otherweise, this is fine, we continue in the state we are in */
+	    set_cur_state(st);
+	    from_state = st->st_state;
+	}
+
+	break;
+#endif
 
 #ifdef NOTYET
     case ISAKMP_XCHG_NGRP:
@@ -1481,6 +1798,22 @@ process_packet(struct msg_digest **mdp)
 		return;
 	    }
 
+#ifdef NAT_TRAVERSAL
+	    switch (np)
+	    {
+		case ISAKMP_NEXT_NATD_RFC:
+		case ISAKMP_NEXT_NATOA_RFC:
+		    if ((!st) || (!(st->nat_traversal & NAT_T_WITH_RFC_VALUES))) {
+			/*
+			 * don't accept NAT-D/NAT-OA reloc directly in message, unless
+			 * we're using NAT-T RFC
+			 */
+			sd = NULL;
+		    }
+		    break;
+	    }
+#endif
+
 	    if (sd == NULL)
 	    {
 		/* payload type is out of range or requires special handling */
@@ -1490,6 +1823,16 @@ process_packet(struct msg_digest **mdp)
 		    sd = IS_PHASE1(from_state)
 			? &isakmp_identification_desc : &isakmp_ipsec_identification_desc;
 		    break;
+#ifdef NAT_TRAVERSAL
+		case ISAKMP_NEXT_NATD_DRAFTS:
+		    np = ISAKMP_NEXT_NATD_RFC;  /* NAT-D relocated */
+		    sd = payload_descs[np];
+		    break;
+		case ISAKMP_NEXT_NATOA_DRAFTS:
+		    np = ISAKMP_NEXT_NATOA_RFC;  /* NAT-OA relocated */
+		    sd = payload_descs[np];
+		    break;
+#endif
 		default:
 		    loglog(RC_LOG_SERIOUS, "%smessage ignored because it contains an unknown or"
 			" unexpected payload type (%s) at the outermost level"
@@ -1661,6 +2004,7 @@ process_packet(struct msg_digest **mdp)
 
 	for (p = md->chain[ISAKMP_NEXT_VID]; p != NULL; p = p->next)
 	{
+#if 0
 	    char vid_string[48];
 	    size_t vid_len = sizeof(vid_string) - 1 < pbs_left(&p->pbs)
 		? sizeof(vid_string) - 1 : pbs_left(&p->pbs);
@@ -1674,6 +2018,8 @@ process_packet(struct msg_digest **mdp)
 	    loglog(RC_LOG, "received Vendor ID Payload; ASCII hash: %s"
 		, vid_string);
 	    DBG_cond_dump(DBG_PARSING, "VID:", p->pbs.cur, pbs_left(&p->pbs));
+#endif
+	    handle_vendorid(md, p->pbs.cur, pbs_left(&p->pbs));
 	}
     }
     md->from_state = from_state;
@@ -1712,6 +2058,10 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 
 	case STF_OK:
 	    /* advance the state */
+	    plog("transition from state %s to state %s"
+                 , enum_name(&state_names, st->st_state)
+                 , enum_name(&state_names, smc->next_state));
+	    
 	    st->st_state = smc->next_state;
 
 	    /* Delete previous retransmission event.
@@ -1746,6 +2096,12 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 
 		clonetochunk(st->st_tpacket, md->reply.start
 		    , pbs_offset(&md->reply), "reply packet");
+
+#ifdef NAT_TRAVERSAL
+		if (nat_traversal_enabled) {
+		    nat_traversal_change_port_lookup(md, md->st);
+		}
+#endif
 
 		/* actually send the packet
 		 * Note: this is a great place to implement "impairments"
@@ -1943,6 +2299,30 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		    , story, sadetails);
 	    }
 
+#ifdef XAUTH
+	    /* Special case for XAUTH server */
+	    if(st->st_connection->spd.this.xauth_server) {
+	      if((st->st_oakley.xauth != 0)
+		 && IS_ISAKMP_SA_ESTABLISHED(st->st_state))
+		{
+		  plog("XAUTH: Sending XAUTH Login/Password Request");
+		  xauth_send_request(st);
+		  break;
+		}
+	    }
+
+	    /*
+	     * for XAUTH client, we are also done, because we need to
+	     * stay in this state, and let the server query us
+	     */
+	    if(!IS_QUICK(st->st_state)
+	       && st->st_connection->spd.this.xauth_client
+	       && !st->hidden_variables.st_xauth_client_done) {
+		DBG(DBG_CONTROL, DBG_log("XAUTH client is not yet authenticated"));
+	      break;
+	    }
+#endif
+
 	    if (smc->flags & SMF_RELEASE_PENDING_P2)
 	    {
 		/* Initiate any Quick Mode negotiations that
@@ -1959,6 +2339,34 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 	    if (IS_ISAKMP_SA_ESTABLISHED(st->st_state)
 	    || IS_IPSEC_SA_ESTABLISHED(st->st_state))
 		release_whack(st);
+
+	    if (IS_QUICK(st->st_state))
+	      break;
+
+#ifdef MODECFG
+	    /* Should we set the peer's IP address regardless? */
+	    if(st->st_connection->spd.that.modecfg_server
+		   && IS_ISAKMP_SA_ESTABLISHED(st->st_state)
+	           && (st->st_seen_vendorid & (LELEM(VID_SAFENET)|LELEM(VID_NORTEL))))
+	    {
+		    plog("Sending MODE CONFIG set");
+		    modecfg_send_set(st);
+		    break;
+	    }
+
+	    /* If we are the responder and the client is in "Contivity mode",
+	       we need to initiate Quick mode */
+	    if (!(smc->flags & SMF_INITIATOR)
+		&& IS_MODE_CFG_ESTABLISHED(st->st_state)
+		&& (st->st_seen_vendorid & LELEM(VID_NORTEL))) 
+	    {
+		st->st_state = STATE_MAIN_R3;	    /* ISAKMP is up... */
+	        set_cur_state(st);
+	        quick_outI1(st->st_whack_sock, st, st->st_connection, st->st_connection->policy, 1, SOS_NOBODY);
+		break;
+	    }	    
+#endif
+
 	    break;
 
 	case STF_INTERNAL_ERROR:
@@ -1971,11 +2379,20 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		    , enum_name(&state_names, from_state)));
 	    break;
 
+        case STF_FATAL:
+	    whack_log(RC_NOTIFICATION + md->note
+		      , "%s: %s", enum_name(&state_names, st->st_state)
+		      , enum_name(&ipsec_notification_names, md->note));
+	    delete_event(st);
+	    release_whack(st);
+	    break;
+
 	default:	/* a shortcut to STF_FAIL, setting md->note */
 	    passert(result > STF_FAIL);
 	    md->note = result - STF_FAIL;
 	    result = STF_FAIL;
 	    /* FALL THROUGH ... */
+
 	case STF_FAIL:
 	    /* XXX Could send notification back
 	     * As it is, we act as if this message never happened:

@@ -11,10 +11,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: whack.h,v 1.52 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: whack.h,v 1.57.2.1 2004/03/21 05:23:34 mcr Exp $
  */
 
-#include <freeswan.h>
+#include <openswan.h>
 
 /* Since the message remains on one host, native representation is used.
  * Think of this as horizontal microcode: all selected operations are
@@ -33,7 +33,7 @@
  */
 
 #define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 24)
-#define WHACK_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 26)
+#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 28)
 
 /* struct whack_end is a lot like connection.h's struct end
  * It differs because it is going to be shipped down a socket
@@ -43,9 +43,10 @@ struct whack_end {
     char *id;		/* id string (if any) -- decoded by pluto */
     char *cert;		/* path string (if any) -- loaded by pluto  */
     char *ca;		/* distinguished name string (if any) -- parsed by pluto */
-    ip_address
-	host_addr,
-	host_nexthop;
+    
+    ip_address host_addr,
+	host_nexthop,
+	host_srcip;
     ip_subnet client;
 
     bool key_from_DNS_on_demand;
@@ -55,6 +56,14 @@ struct whack_end {
     u_int16_t host_port;	/* host order */
     u_int16_t port;		/* host order */
     u_int8_t protocol;
+#ifdef VIRTUAL_IP
+    char *virt;
+#endif
+    bool xauth_server;          /* for XAUTH */
+    bool xauth_client;
+    bool modecfg_server;        /* for MODECFG */
+    bool modecfg_client;
+    enum certpolicy sendcert;
  };
 
 struct whack_message {
@@ -211,6 +220,7 @@ enum rc_type {
 
     /* entry of secrets */
     RC_ENTERSECRET = 40,
+    RC_XAUTHPROMPT = 41,
     
     /* progress: start of range for successful state transition.
      * Actual value is RC_NEW_STATE plus the new state code.

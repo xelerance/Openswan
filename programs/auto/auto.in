@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: auto.in,v 1.85 2003/10/31 02:31:15 mcr Exp $
+# RCSID $Id: auto.in,v 1.90.2.3 2004/05/25 17:09:35 ken Exp $
 
 me='ipsec auto'
 usage="Usage:
@@ -98,7 +98,9 @@ case "$op$#:$1:$2" in
 *)		echo "$usage" >&2 ; exit 2	;;
 esac
 
-
+# before we go any further, duplicate stdin/stdout to fds 3/4
+exec 3<&0
+exec 4>&1
 
 runit() {
 	if test "$showonly"
@@ -106,10 +108,11 @@ runit() {
 		cat
 	else
 		(
-			echo '('
-			cat
-			echo ')'
-			echo 'echo = $?'
+		    echo '('
+		    echo 'exec <&3'     # regain stdin
+		    cat
+		    echo ');'
+		    echo 'echo = $?'
 		) | sh $shopts |
 			awk "/^= / { exit \$2 } $logfilter { print }"
 	fi
@@ -344,6 +347,17 @@ awk '	BEGIN {
 			fail("only know how to do auth=esp or auth=ah")
 		yesno("pfs")
 		default("pfs", "yes")
+		yesno("xauth")
+		default("xauth", "no")
+		yesno("xauthserver")
+		default("xauthserver", "no")
+		yesno("xauthclient")
+		default("xauthclient", "no")
+		yesno("modecfgserver")
+		default("modecfgserver", "no")
+		yesno("modecfgclient")
+		default("modecfgclient", "no")
+
 		yesno("compress")
 		default("compress", "no")
 		default("keylife", "8h")
@@ -365,6 +379,9 @@ awk '	BEGIN {
 		}
 		duration("ikelifetime")
 		default("disablearrivalcheck", "no")
+
+		default("leftsendcert", "always")
+		default("rightsendcert", "always")
 
 		default("leftnexthop", "%direct")
 		default("rightnexthop", "%direct")
@@ -431,8 +448,10 @@ awk '	BEGIN {
 		settings = type_flags
 		if (s["auth"] == "ah")
 			settings = settings " --authenticate"
-		if (s["pfs"] == "yes")
+		if (s["pfs"] == "yes") 
 			settings = settings " --pfs"
+		if (s["xauth"] == "yes")
+			settings = settings " --xauth"
 		if (s["compress"] == "yes")
 			settings = settings " --compress"
 		if (op == "--replace")
@@ -467,6 +486,40 @@ awk '	BEGIN {
 		rid = ""
 		if ("rightid" in s)
 			rid = "--id " qs("rightid")
+
+		lsip = ""
+		if ("leftsourceip" in s)
+		        lsip= "--srcip " qs("leftsourceip")
+
+		rsip = ""
+                if ("rightsourceip" in s)
+                        rsip= "--srcip " qs("rightsourceip")
+
+		if ("leftxauthserver" in s)
+			lxauth = "--xauthserver" 
+		if ("leftxauthclient" in s)
+			lxauth = "--xauthclient" 
+
+		if ("rightxauthserver" in s)
+			rxauth = "--xauthserver" 
+		if ("rightxauthclient" in s)
+			rxauth = "--xauthclient" 
+
+		if ("leftmodecfgserver" in s)
+			lmodecfg = "--modecfgserver" 
+		if ("leftmodecfgclient" in s)
+			lmodecfg = "--modecfgclient" 
+
+		if ("rightmodecfgserver" in s)
+			rmodecfg = "--modecfgserver" 
+		if ("rightmodecfgclient" in s)
+			rmodecfg = "--modecfgclient" 
+
+		if ("leftsendcert" in s)
+			lscert = "--sendcert " qs("leftsendcert")
+		if ("rightsendcert" in s)
+			rscert = "--sendcert " qs("rightsendcert")
+
 		lcert = ""
 		if ("leftcert" in s)
 			lcert = "--cert " qs("leftcert")
@@ -503,9 +556,11 @@ awk '	BEGIN {
 		}
 		print "ipsec whack --name", name, settings, "\\"
 		print "\t--host", qs("left"), lc, lp, "--nexthop",
-			qs("leftnexthop"), lud, lid, lkod, lcert, lca, "\\"
+			qs("leftnexthop"), lud, lid, lkod, lcert, lscert,
+			lca, lxauth, lmodecfg, lsip, "\\"
 		print "\t--to", "--host", qs("right"), rc, rp, "--nexthop",
-			qs("rightnexthop"), rud, rid, rkod, rcert, rca, "\\"
+			qs("rightnexthop"), rud, rid, rkod, rcert,rscert,
+			rca, rxauth, rmodecfg, rsip, "\\"
 		print "\t--ipseclifetime", qs("keylife"),
 			"--rekeymargin", qs("rekeymargin"), "\\"
 		print "\t--keyingtries", qs("keyingtries"), fuzz, rk, pd, "\\"

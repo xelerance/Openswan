@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey.h,v 1.43 2003/10/31 02:26:44 mcr Exp $
+ * RCSID $Id: pfkey.h,v 1.44 2003/12/10 01:20:01 mcr Exp $
  */
 
 #ifndef __NET_IPSEC_PF_KEY_H
@@ -247,6 +247,21 @@ pfkey_ident_build(struct sadb_ext**	pfkey_ext,
 		  uint8_t               ident_len,
 		  char*			ident_string);
 
+#ifdef NAT_TRAVERSAL
+#ifdef __KERNEL__
+extern int pfkey_nat_t_new_mapping(struct ipsec_sa *, struct sockaddr *, __u16);
+extern int pfkey_x_nat_t_type_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr);
+extern int pfkey_x_nat_t_port_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr);
+#endif /* __KERNEL__ */
+int
+pfkey_x_nat_t_type_build(struct sadb_ext**  pfkey_ext,
+            uint8_t         type);
+int
+pfkey_x_nat_t_port_build(struct sadb_ext**  pfkey_ext,
+            uint16_t         exttype,
+            uint16_t         port);
+#endif
+
 int
 pfkey_sens_build(struct sadb_ext**	pfkey_ext,
 		 uint32_t		dpd,
@@ -317,6 +332,9 @@ pfkey_v2_sadb_type_string(int sadb_type);
 
 /*
  * $Log: pfkey.h,v $
+ * Revision 1.44  2003/12/10 01:20:01  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.43  2003/10/31 02:26:44  mcr
  * 	pulled up port-selector patches.
  *

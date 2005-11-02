@@ -12,10 +12,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: optionsfrom.c,v 1.5 2002/04/24 07:36:40 mcr Exp $
+ * RCSID $Id: optionsfrom.c,v 1.5.36.1 2004/03/21 05:23:31 mcr Exp $
  */
 #include "internal.h"
-#include "freeswan.h"
+#include "openswan.h"
 
 #include <stdio.h>
 

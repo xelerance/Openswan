@@ -12,14 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_parser.c,v 1.121 2003/10/31 02:27:55 mcr Exp $
+ * RCSID $Id: pfkey_v2_parser.c,v 1.122 2003/12/10 01:14:27 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_netlink.c.
  */
 
-char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.121 2003/10/31 02:27:55 mcr Exp $";
+char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.122 2003/12/10 01:14:27 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -901,7 +901,9 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
 	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
-
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	struct ipsec_sa *nat_t_ips_saved = NULL;
+#endif
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_update_parse: .\n");
 
@@ -946,6 +948,34 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		    "existing ipsec_sa found (this is good) for SA: %s, %s-bound, updating.\n",
 		    sa_len ? sa : " (error)",
 		    extr->ips->ips_flags & EMT_INBOUND ? "in" : "out");
+
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	if (extr->ips->ips_natt_sport || extr->ips->ips_natt_dport) {
+		KLIPS_PRINT(debug_pfkey,
+			"klips_debug:pfkey_update_parse: only updating NAT-T ports "
+			"(%u:%u -> %u:%u)\n", 
+			ipsq->ips_natt_sport, ipsq->ips_natt_dport,
+			extr->ips->ips_natt_sport, extr->ips->ips_natt_dport);
+
+		if (extr->ips->ips_natt_sport) {
+			ipsq->ips_natt_sport = extr->ips->ips_natt_sport;
+			if (ipsq->ips_addr_s->sa_family == AF_INET) {
+				((struct sockaddr_in *)(ipsq->ips_addr_s))->sin_port = htons(extr->ips->ips_natt_sport);
+			}
+		}
+
+		if (extr->ips->ips_natt_dport) {
+			ipsq->ips_natt_dport = extr->ips->ips_natt_dport;
+			if (ipsq->ips_addr_d->sa_family == AF_INET) {
+				((struct sockaddr_in *)(ipsq->ips_addr_d))->sin_port = htons(extr->ips->ips_natt_dport);
+			}
+		}
+
+		nat_t_ips_saved = extr->ips;
+		extr->ips = ipsq;
+	}
+	else {
+#endif
 	
 	/* XXX extr->ips->ips_rcvif = &(enc_softc[em->em_if].enc_if);*/
 	extr->ips->ips_rcvif = NULL;
@@ -970,6 +1000,9 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 			    sa_len ? sa : " (error)");
 		SENDERR(-error);
 	}
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	}
+#endif
 
 	spin_unlock_bh(&tdb_lock);
 	
@@ -1094,6 +1127,27 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 			    satype2name(satype),
 			    pfkey_socketsp->socketp);
 	}
+
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	if (nat_t_ips_saved) {
+		/**
+		 * As we _really_ update existing SA, we keep tdbq and need to delete
+		 * parsed ips (nat_t_ips_saved, was extr->ips).
+		 *
+		 * goto errlab with extr->ips = nat_t_ips_saved will free it.
+		 */
+
+		extr->ips = nat_t_ips_saved;
+
+		error = 0;
+		KLIPS_PRINT(debug_pfkey,
+		    "klips_debug:pfkey_update_parse (NAT-T ports): "
+		    "successful for SA: %s\n",
+		    sa_len ? sa : " (error)");
+
+		goto errlab;
+	}
+#endif
 
 	if((error = ipsec_sa_add(extr->ips))) {
 		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_update_parse: "
@@ -2929,6 +2983,107 @@ pfkey_acquire(struct ipsec_sa *ipsp)
 	return error;
 }
 
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+int
+pfkey_nat_t_new_mapping(struct ipsec_sa *ipsp, struct sockaddr *ipaddr,
+	__u16 sport)
+{
+	struct sadb_ext *extensions[SADB_EXT_MAX+1];
+	struct sadb_msg *pfkey_msg = NULL;
+	struct socket_list *pfkey_socketsp;
+	int error = 0;
+	uint8_t satype = (ipsp->ips_said.proto==IPPROTO_ESP) ? SADB_SATYPE_ESP : 0;
+
+	/* Construct SADB_X_NAT_T_NEW_MAPPING message */
+
+	pfkey_extensions_init(extensions);
+
+	if((satype == 0) || (satype > SADB_SATYPE_MAX)) {
+		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_nat_t_new_mapping: "
+			    "SAtype=%d unspecified or unknown.\n",
+			    satype);
+		SENDERR(EINVAL);
+	}
+
+	if(!(pfkey_registered_sockets[satype])) {
+		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_nat_t_new_mapping: "
+			    "no sockets registered for SAtype=%d(%s).\n",
+			    satype,
+			    satype2name(satype));
+		SENDERR(EPROTONOSUPPORT);
+	}
+
+	if (!(pfkey_safe_build
+		(error = pfkey_msg_hdr_build(&extensions[0], SADB_X_NAT_T_NEW_MAPPING,
+			satype, 0, ++pfkey_msg_seq, 0), extensions)
+		/* SA */
+		&& pfkey_safe_build
+		(error = pfkey_sa_build(&extensions[SADB_EXT_SA],
+			SADB_EXT_SA, ipsp->ips_said.spi, 0, 0, 0, 0, 0), extensions)
+		/* ADDRESS_SRC = old addr */
+		&& pfkey_safe_build
+		(error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_SRC],
+			SADB_EXT_ADDRESS_SRC, ipsp->ips_said.proto, 0, ipsp->ips_addr_s),
+			extensions)
+		/* NAT_T_SPORT = old port */
+	    && pfkey_safe_build
+		(error = pfkey_x_nat_t_port_build(&extensions[SADB_X_EXT_NAT_T_SPORT],
+			SADB_X_EXT_NAT_T_SPORT, ipsp->ips_natt_sport), extensions)
+		/* ADDRESS_DST = new addr */
+		&& pfkey_safe_build
+		(error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_DST],
+			SADB_EXT_ADDRESS_DST, ipsp->ips_said.proto, 0, ipaddr), extensions)
+		/* NAT_T_DPORT = new port */
+	    && pfkey_safe_build
+		(error = pfkey_x_nat_t_port_build(&extensions[SADB_X_EXT_NAT_T_DPORT],
+			SADB_X_EXT_NAT_T_DPORT, sport), extensions)
+		)) {
+		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_nat_t_new_mapping: "
+			    "failed to build the nat_t_new_mapping message extensions\n");
+		SENDERR(-error);
+	}
+	
+	if ((error = pfkey_msg_build(&pfkey_msg, extensions, EXT_BITS_OUT))) {
+		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_nat_t_new_mapping: "
+			    "failed to build the nat_t_new_mapping message\n");
+		SENDERR(-error);
+	}
+
+	/* this should go to all registered sockets for that satype only */
+	for(pfkey_socketsp = pfkey_registered_sockets[satype];
+	    pfkey_socketsp;
+	    pfkey_socketsp = pfkey_socketsp->next) {
+		if((error = pfkey_upmsg(pfkey_socketsp->socketp, pfkey_msg))) {
+			KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_nat_t_new_mapping: "
+				    "sending up nat_t_new_mapping message for satype=%d(%s) to socket=%p failed with error=%d.\n",
+				    satype,
+				    satype2name(satype),
+				    pfkey_socketsp->socketp,
+				    error);
+			SENDERR(-error);
+		}
+		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_nat_t_new_mapping: "
+			    "sending up nat_t_new_mapping message for satype=%d(%s) to socket=%p succeeded.\n",
+			    satype,
+			    satype2name(satype),
+			    pfkey_socketsp->socketp);
+	}
+	
+ errlab:
+	if (pfkey_msg) {
+		pfkey_msg_free(&pfkey_msg);
+	}
+	pfkey_extensions_free(extensions);
+	return error;
+}
+
+DEBUG_NO_STATIC int
+pfkey_x_nat_t_new_mapping_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extracted_data* extr)
+{
+	/* SADB_X_NAT_T_NEW_MAPPING not used in kernel */
+	return -EINVAL;
+}
+#endif
 
 DEBUG_NO_STATIC int (*ext_processors[SADB_EXT_MAX+1])(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr) =
 {
@@ -2959,6 +3114,13 @@ DEBUG_NO_STATIC int (*ext_processors[SADB_EXT_MAX+1])(struct sadb_ext *pfkey_ext
         pfkey_address_process,
 	pfkey_x_debug_process,
 	pfkey_x_protocol_process
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	,
+	pfkey_x_nat_t_type_process,
+	pfkey_x_nat_t_port_process,
+	pfkey_x_nat_t_port_process,
+	pfkey_address_process
+#endif	
 };
 
 
@@ -2982,6 +3144,9 @@ DEBUG_NO_STATIC int (*msg_parsers[SADB_MAX +1])(struct sock *sk, struct sadb_ext
 	pfkey_x_addflow_parse,
 	pfkey_x_delflow_parse,
 	pfkey_x_msg_debug_parse
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	, pfkey_x_nat_t_new_mapping_parse
+#endif	
 };
 
 int
@@ -3206,6 +3371,9 @@ pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg,
 
 /*
  * $Log: pfkey_v2_parser.c,v $
+ * Revision 1.122  2003/12/10 01:14:27  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.121  2003/10/31 02:27:55  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *

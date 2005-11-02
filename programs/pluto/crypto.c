@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: crypto.c,v 1.26 2003/10/30 19:12:36 dhr Exp $
+ * RCSID $Id: crypto.c,v 1.26.6.1 2004/03/21 05:23:32 mcr Exp $
  */
 
 #include <stdio.h>
@@ -19,7 +19,7 @@
 #include <stddef.h>
 #include <sys/types.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 #define HEADER_DES_LOCL_H   /* stupid trick to force prototype decl in <des.h> */
 #include <crypto/des.h>
 

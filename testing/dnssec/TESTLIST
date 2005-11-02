@@ -9,7 +9,7 @@
 #
 # This runs in a single UML, so ctltest is appropriate
 #
-ctltest	dns-key-01	good 
+ctltest	dns-key-01	skip
 
 
 # lwdns-01

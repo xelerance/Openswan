@@ -32,7 +32,7 @@ s/^VFS: Disk.*/VFS: Diskquotas version dquot_6.4.0 initialized/
 /^zone(.): .* pages./d
 /^Initializing stdio console driver/d
 /^cp: .etc.nologin: No such file or directory/d
-/FreeS\/WAN IPSec version: .*/d
+/Openswan KLIPS IPsec stack version: .*/d
 /Kernel logging (proc) stopped/d
 /Kernel log daemon terminating/d
 s/\(Dentry\).\(cache hash table entries:\).*/\1-\2 NUMBERS/
@@ -54,3 +54,9 @@ s/TCP: Hash tables configured (established .* bind .*)/TCP: Hash tables configur
 /VFS: Mounted root /d
 /blkmtd: .*/d
 /ipt_recent /d
+/klips_info:pfkey_cleanup: shutting down PF_KEY domain sockets./d
+/klips_info:cleanup_module: ipsec module unloaded./d
+/klips_info:ipsec_alg_init: KLIPS alg v=0.8.1-0.*/d
+/klips_info:ipsec_alg_init: calling ipsec_alg_static_init.*/d
+/ipsec_aes_init(alg_type=15 alg_id=12 name=aes): ret=0/d
+/ipsec_aes_init(alg_type=14 alg_id=9 name=aes_mac): ret=0/d

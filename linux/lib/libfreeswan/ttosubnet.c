@@ -12,10 +12,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: ttosubnet.c,v 1.10 2003/11/24 23:45:41 mcr Exp $
+ * RCSID $Id: ttosubnet.c,v 1.10.6.2 2004/05/12 15:59:53 ken Exp $
  */
 #include "internal.h"
-#include "freeswan.h"
+#include "openswan.h"
 
 #ifndef DEFAULTSUBNET
 #define	DEFAULTSUBNET	"%default"
@@ -82,7 +82,7 @@ ip_subnet *dst;
 		return oops;
 
 	/* extract port, as last : */
-	colon = strrchr(mask, ':');
+	colon = memchr(mask, ':', mlen);
 	if (colon == 0)
 	{
 		setportof(0, &addrtmp);

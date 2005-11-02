@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_doi.h,v 1.31 2003/06/27 00:57:35 dhr Exp $
+ * RCSID $Id: ipsec_doi.h,v 1.32 2003/12/10 01:58:06 mcr Exp $
  */
 
 extern void echo_hdr(struct msg_digest *md, bool enc, u_int8_t np);
@@ -47,3 +47,49 @@ extern void accept_delete(struct state *st, struct msg_digest *md
 
 
 extern const char *init_pluto_vendorid(void);
+
+/*
+ * some additional functions are exported for xauth.c
+ */
+extern void close_message(pb_stream *pbs); /* forward declaration */
+extern bool encrypt_message(pb_stream *pbs, struct state *st); /* forward declaration */
+
+/* START_HASH_PAYLOAD
+ *
+ * Emit a to-be-filled-in hash payload, noting the field start (r_hashval)
+ * and the start of the part of the message to be hashed (r_hash_start).
+ * This macro is magic.
+ * - it can cause the caller to return
+ * - it references variables local to the caller (r_hashval, r_hash_start, st)
+ */
+#define START_HASH_PAYLOAD(rbody, np) { \
+    pb_stream hash_pbs; \
+    if (!out_generic(np, &isakmp_hash_desc, &(rbody), &hash_pbs)) \
+	return STF_INTERNAL_ERROR; \
+    r_hashval = hash_pbs.cur;	/* remember where to plant value */ \
+    if (!out_zero(st->st_oakley.hasher->hash_digest_len, &hash_pbs, "HASH")) \
+	return STF_INTERNAL_ERROR; \
+    close_output_pbs(&hash_pbs); \
+    r_hash_start = (rbody).cur;	/* hash from after HASH payload */ \
+}
+
+/* CHECK_QUICK_HASH
+ *
+ * This macro is magic -- it cannot be expressed as a function.
+ * - it causes the caller to return!
+ * - it declares local variables and expects the "do_hash" argument
+ *   expression to reference them (hash_val, hash_pbs)
+ */
+#define CHECK_QUICK_HASH(md, do_hash, hash_name, msg_name) { \
+	pb_stream *const hash_pbs = &md->chain[ISAKMP_NEXT_HASH]->pbs; \
+	u_char hash_val[MAX_DIGEST_LEN]; \
+	size_t hash_len = do_hash; \
+	if (pbs_left(hash_pbs) != hash_len \
+	|| memcmp(hash_pbs->cur, hash_val, hash_len) != 0) \
+	{ \
+	    DBG_cond_dump(DBG_CRYPT, "received " hash_name ":", hash_pbs->cur, pbs_left(hash_pbs)); \
+	    loglog(RC_LOG_SERIOUS, "received " hash_name " does not match computed value in " msg_name); \
+	    /* XXX Could send notification back */ \
+	    return STF_FAIL + INVALID_HASH_INFORMATION; \
+	} \
+    }

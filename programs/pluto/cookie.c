@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: cookie.c,v 1.17 2002/04/24 07:35:46 mcr Exp $
+ * RCSID $Id: cookie.c,v 1.17.42.1 2004/03/21 05:23:32 mcr Exp $
  */
 
 #include <stdio.h>
@@ -21,7 +21,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"

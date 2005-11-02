@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.58 2003/12/05 16:44:12 mcr Exp $";
+char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.59 2004/02/09 23:07:35 paul Exp $";
 
 
 #include <sys/types.h>
@@ -451,10 +451,19 @@ main(int argc, char **argv)
 		fprintf(stdout, "%s: DEBUG: argc=%d\n", program_name, argc);
 	}
 	
-	if(argcount == 1) {
-		system("cat /proc/net/ipsec_eroute");
-		exit(0);
-	}
+        if(argcount == 1) {
+                struct stat sts;
+                if ( ((stat ("/proc/net/pfkey", &sts)) == 0) )  {
+                         fprintf(stderr, "%s: 2.6 native pf_key does not support eroute table.\n",program_name);
+
+                        exit(1);
+                }
+                else {
+                        system("cat /proc/net/ipsec_eroute");
+                        exit(0);
+                }
+        }
+	
 
 	/* Sanity checks */
 
@@ -895,6 +904,9 @@ main(int argc, char **argv)
 }
 /*
  * $Log: eroute.c,v $
+ * Revision 1.59  2004/02/09 23:07:35  paul
+ * better error for native 2.6 pfk_key for 'ipsec eroute'
+ *
  * Revision 1.58  2003/12/05 16:44:12  mcr
  * 	patches to avoid ipsec_netlink.h, which has been obsolete for
  * 	some time now.

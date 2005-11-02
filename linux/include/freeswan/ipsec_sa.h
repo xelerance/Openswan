@@ -15,7 +15,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_sa.h,v 1.16 2003/10/31 02:27:05 mcr Exp $
+ * RCSID $Id: ipsec_sa.h,v 1.17 2003/12/10 01:20:06 mcr Exp $
  *
  * This file derived from ipsec_xform.h on 2001/9/18 by mcr.
  *
@@ -185,6 +185,17 @@ struct ipsec_sa
 	__u64		ips_comp_ratio_dbytes;	/* decompressed (or uncompressed) bytes */
 #endif /* CONFIG_IPSEC_IPCOMP */
 
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	__u8		ips_natt_type;
+	__u8		ips_natt_reserved[3];
+	__u16		ips_natt_sport;
+	__u16		ips_natt_dport;
+
+	struct sockaddr *ips_natt_oa;
+	__u16		ips_natt_oa_size;
+	__u16		ips_natt_reserved2;
+#endif
+
 #if 0
 	__u32		ips_sens_dpd;
 	__u8		ips_sens_sens_level;
@@ -240,6 +251,9 @@ enum ipsec_direction {
 
 /*
  * $Log: ipsec_sa.h,v $
+ * Revision 1.17  2003/12/10 01:20:06  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.16  2003/10/31 02:27:05  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *

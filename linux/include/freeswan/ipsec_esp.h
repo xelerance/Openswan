@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_esp.h,v 1.21 2003/02/06 02:21:34 rgb Exp $
+ * RCSID $Id: ipsec_esp.h,v 1.22 2003/12/13 19:10:16 mcr Exp $
  */
 
 #include "freeswan/ipsec_md5h.h"
@@ -51,22 +51,14 @@ extern struct inet_protocol esp_protocol;
 
 struct options;
 
-extern int
-esp_rcv(struct sk_buff *skb,
-	struct device *dev,
-	struct options *opt, 
-	__u32 daddr,
-	unsigned short len,
-	__u32 saddr,
-	int redo,
-	struct inet_protocol *protocol);
-
 struct esphdr
 {
 	__u32	esp_spi;		/* Security Parameters Index */
         __u32   esp_rpl;                /* Replay counter */
 	__u8	esp_iv[8];		/* iv */
 };
+
+extern struct xform_functions esp_xform_funcs[];
 
 #ifdef CONFIG_IPSEC_DEBUG
 extern int debug_esp;
@@ -75,6 +67,20 @@ extern int debug_esp;
 
 /*
  * $Log: ipsec_esp.h,v $
+ * Revision 1.22  2003/12/13 19:10:16  mcr
+ * 	refactored rcv and xmit code - same as FS 2.05.
+ *
+ * Revision 1.23  2003/12/11 20:14:58  mcr
+ * 	refactored the xmit code, to move all encapsulation
+ * 	code into protocol functions. Note that all functions
+ * 	are essentially done by a single function, which is probably
+ * 	wrong.
+ * 	the rcv_functions structures are renamed xform_functions.
+ *
+ * Revision 1.22  2003/12/06 21:21:19  mcr
+ * 	split up receive path into per-transform files, for
+ * 	easier later removal.
+ *
  * Revision 1.21  2003/02/06 02:21:34  rgb
  *
  * Moved "struct auth_alg" from ipsec_rcv.c to ipsec_ah.h .

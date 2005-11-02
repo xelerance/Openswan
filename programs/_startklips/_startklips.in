@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _startklips.in,v 1.22 2003/12/02 02:39:45 ken Exp $
+# RCSID $Id: _startklips.in,v 1.23.2.2 2004/04/09 15:58:09 ken Exp $
 
 me='ipsec _startklips'		# for messages
 
@@ -215,7 +215,14 @@ logonly() {
 
 # sort out which module is appropriate, changing it if necessary
 setmodule() {
-        wantgoo="`ipsec calcgoo /proc/ksyms`"
+	if [ -e /proc/kallsyms ]
+	then
+		kernelsymbols="/proc/kallsyms";
+		echo "calcgoo: warning: 2.6 kernel with kallsyms not supported yet"
+	else
+		kernelsymbols="/proc/ksyms";
+	fi	
+        wantgoo="`ipsec calcgoo $kernelsymbols`"
         module=$moduleplace/$modulename
         if test -f $module
         then
@@ -255,7 +262,7 @@ fi
 if test -f $kamepfkey
 then
 	klips=false
-	if test -d $modules
+	if test -f $modules
 	then
 	modprobe -qv ah4
 	modprobe -qv esp4
@@ -268,7 +275,12 @@ if test ! -f $ipsecversion && $klips
 then
         if test -r $modules             # kernel does have modules
         then
-                setmodule
+		if [ ! -e /proc/ksyms -a ! -e /proc/kallsyms ]
+		then
+			echo "Broken 2.6 kernel without kallsyms, skipping calcgoo (Fedora rpm?)"
+		else
+                	setmodule
+		fi
                 unset MODPATH MODULECONF        # no user overrides!
                 depmod -a >/dev/null 2>&1
                 modprobe -v ipsec

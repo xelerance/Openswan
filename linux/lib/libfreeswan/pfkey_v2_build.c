@@ -12,14 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_build.c,v 1.45 2003/12/04 23:01:12 mcr Exp $
+ * RCSID $Id: pfkey_v2_build.c,v 1.46.4.2 2004/04/16 12:32:56 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_parser.c.
  */
 
-char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.45 2003/12/04 23:01:12 mcr Exp $";
+char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.46.4.2 2004/04/16 12:32:56 mcr Exp $";
 
 /*
  * Some ugly stuff to allow consistent debugging code for use in the
@@ -435,6 +435,9 @@ pfkey_address_build(struct sadb_ext**	pfkey_ext,
 	case SADB_X_EXT_ADDRESS_DST_FLOW:
 	case SADB_X_EXT_ADDRESS_SRC_MASK:
 	case SADB_X_EXT_ADDRESS_DST_MASK:
+#ifdef NAT_TRAVERSAL
+	case SADB_X_EXT_NAT_T_OA:
+#endif	
 		break;
 	default:
 		ERROR("pfkey_address_build: "
@@ -1097,6 +1100,97 @@ errlab:
 	return error;
 }
 
+int
+pfkey_x_nat_t_type_build(struct sadb_ext**	pfkey_ext,
+			 uint8_t         type)
+{
+	int error = 0;
+	int i;
+	struct sadb_x_nat_t_type *pfkey_x_nat_t_type = (struct sadb_x_nat_t_type *)*pfkey_ext;
+
+	DEBUGGING(PF_KEY_DEBUG_BUILD,
+		"pfkey_x_nat_t_type_build:\n");
+	/* sanity checks... */
+	if(pfkey_x_nat_t_type) {
+		DEBUGGING(PF_KEY_DEBUG_BUILD,
+			"pfkey_x_nat_t_type_build: "
+			"why is pfkey_x_nat_t_type already pointing to something?\n");
+		SENDERR(EINVAL);
+	}
+	
+	DEBUGGING(PF_KEY_DEBUG_BUILD,
+		"pfkey_x_nat_t_type_build: "
+		"type=%d\n", type);
+
+	if(!(*pfkey_ext = (struct sadb_ext*)pfkey_x_nat_t_type = (struct sadb_x_nat_t_type*)
+	     MALLOC(sizeof(struct sadb_x_nat_t_type)))) {
+		DEBUGGING(PF_KEY_DEBUG_BUILD,
+			"pfkey_x_nat_t_type_build: "
+			"memory allocation failed\n");
+		SENDERR(ENOMEM);
+	}
+	
+	pfkey_x_nat_t_type->sadb_x_nat_t_type_len = sizeof(struct sadb_x_nat_t_type) / IPSEC_PFKEYv2_ALIGN;
+	pfkey_x_nat_t_type->sadb_x_nat_t_type_exttype = SADB_X_EXT_NAT_T_TYPE;
+	pfkey_x_nat_t_type->sadb_x_nat_t_type_type = type;
+	for(i=0; i<3; i++) {
+		pfkey_x_nat_t_type->sadb_x_nat_t_type_reserved[i] = 0;
+	}
+
+errlab:
+	return error;
+}
+int
+pfkey_x_nat_t_port_build(struct sadb_ext**	pfkey_ext,
+		    uint16_t         exttype,
+		    uint16_t         port)
+{
+	int error = 0;
+	struct sadb_x_nat_t_port *pfkey_x_nat_t_port = (struct sadb_x_nat_t_port *)*pfkey_ext;
+
+	DEBUGGING(PF_KEY_DEBUG_BUILD,
+		"pfkey_x_nat_t_port_build:\n");
+	/* sanity checks... */
+	if(pfkey_x_nat_t_port) {
+		DEBUGGING(PF_KEY_DEBUG_BUILD,
+			"pfkey_x_nat_t_port_build: "
+			"why is pfkey_x_nat_t_port already pointing to something?\n");
+		SENDERR(EINVAL);
+	}
+	
+	switch(exttype) {	
+	case SADB_X_EXT_NAT_T_SPORT:
+	case SADB_X_EXT_NAT_T_DPORT:
+		break;
+	default:
+		DEBUGGING(PF_KEY_DEBUG_BUILD,
+			"pfkey_nat_t_port_build: "
+			"unrecognised ext_type=%d.\n", 
+			exttype); 
+		SENDERR(EINVAL); 
+	}
+
+	DEBUGGING(PF_KEY_DEBUG_BUILD,
+		"pfkey_x_nat_t_port_build: "
+		"ext=%d, port=%d\n", exttype, port);
+
+	if(!(*pfkey_ext = (struct sadb_ext*)pfkey_x_nat_t_port = (struct sadb_x_nat_t_port*)
+	     MALLOC(sizeof(struct sadb_x_nat_t_port)))) {
+		DEBUGGING(PF_KEY_DEBUG_BUILD,
+			"pfkey_x_nat_t_port_build: "
+			"memory allocation failed\n");
+		SENDERR(ENOMEM);
+	}
+	
+	pfkey_x_nat_t_port->sadb_x_nat_t_port_len = sizeof(struct sadb_x_nat_t_port) / IPSEC_PFKEYv2_ALIGN;
+	pfkey_x_nat_t_port->sadb_x_nat_t_port_exttype = exttype;
+	pfkey_x_nat_t_port->sadb_x_nat_t_port_port = port;
+	pfkey_x_nat_t_port->sadb_x_nat_t_port_reserved = 0;
+
+errlab:
+	return error;
+}
+
 int pfkey_x_protocol_build(struct sadb_ext **pfkey_ext,
 			   uint8_t protocol)
 {
@@ -1281,6 +1375,19 @@ errlab:
 
 /*
  * $Log: pfkey_v2_build.c,v $
+ * Revision 1.46.4.2  2004/04/16 12:32:56  mcr
+ * 	erroneously pullup some freeswan->openswan changes that
+ * 	are really for 2.2.
+ *
+ * Revision 1.46.4.1  2004/03/21 05:23:31  mcr
+ *     pullup of freeswan->openswan and CR/CERT patches from HEAD
+ *
+ * Revision 1.47  2004/03/08 01:59:08  ken
+ * freeswan.h -> openswan.h
+ *
+ * Revision 1.46  2003/12/10 01:20:19  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.45  2003/12/04 23:01:12  mcr
  * 	removed ipsec_netlink.h
  *
@@ -1339,7 +1446,7 @@ errlab:
  * Revision 1.30  2002/01/29 01:59:09  mcr
  * 	removal of kversions.h - sources that needed it now use ipsec_param.h.
  * 	updating of IPv6 structures to match latest in6.h version.
- * 	removed dead code from freeswan.h that also duplicated kversions.h
+ * 	removed dead code from openswan.h that also duplicated kversions.h
  * 	code.
  *
  * Revision 1.29  2001/12/19 21:06:09  rgb
@@ -1350,7 +1457,7 @@ errlab:
  *
  * Revision 1.27  2001/10/18 04:45:24  rgb
  * 2.4.9 kernel deprecates linux/malloc.h in favour of linux/slab.h,
- * lib/freeswan.h version macros moved to lib/kversions.h.
+ * lib/openswan.h version macros moved to lib/kversions.h.
  * Other compiler directive cleanups.
  *
  * Revision 1.26  2001/09/08 21:13:34  rgb
@@ -1361,10 +1468,10 @@ errlab:
  *
  * Revision 1.24  2001/03/20 03:49:45  rgb
  * Ditch superfluous debug_pfkey declaration.
- * Move misplaced freeswan.h inclusion for kernel case.
+ * Move misplaced openswan.h inclusion for kernel case.
  *
  * Revision 1.23  2001/03/16 07:41:50  rgb
- * Put freeswan.h include before pluto includes.
+ * Put openswan.h include before pluto includes.
  *
  * Revision 1.22  2001/02/27 22:24:56  rgb
  * Re-formatting debug output (line-splitting, joining, 1arg/line).
@@ -1381,7 +1488,7 @@ errlab:
  * Added support for debug_ipcomp and debug_verbose to klipsdebug.
  *
  * Revision 1.18  2000/09/12 18:59:54  rgb
- * Added Gerhard's IPv6 support to pfkey parts of libfreeswan.
+ * Added Gerhard's IPv6 support to pfkey parts of libopenswan.
  *
  * Revision 1.17  2000/09/12 03:27:00  rgb
  * Moved DEBUGGING definition to compile kernel with debug off.

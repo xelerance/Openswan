@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_sa.c,v 1.21 2003/10/31 02:27:55 mcr Exp $
+ * RCSID $Id: ipsec_sa.c,v 1.22 2003/12/10 01:14:27 mcr Exp $
  *
  * This is the file formerly known as "ipsec_xform.h"
  *
@@ -968,6 +968,14 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 	}
 	ips->ips_addr_p = NULL;
 
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	if(ips->ips_natt_oa) {
+		memset((caddr_t)(ips->ips_natt_oa), 0, ips->ips_natt_oa_size);
+		kfree(ips->ips_natt_oa);
+	}
+	ips->ips_natt_oa = NULL;
+#endif
+
 	if(ips->ips_key_a != NULL) {
 		memset((caddr_t)(ips->ips_key_a), 0, ips->ips_key_a_size);
 		kfree(ips->ips_key_a);
@@ -1011,6 +1019,9 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 
 /*
  * $Log: ipsec_sa.c,v $
+ * Revision 1.22  2003/12/10 01:14:27  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.21  2003/10/31 02:27:55  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *

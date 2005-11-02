@@ -44,6 +44,22 @@ DESIGN-RELATED ISSUES
 
 CURRENT ISSUES
 
+* There are crashers in xfrm_user in kernels < 2.6.3-rc1. These will happen
+  after the connection goes up and down a few times in quick succession.
+  [ There is currently a bug in the rekeying code that triggers this ]
+
+* compression seems to be incompatible between KLIPS and the 2.6 ipsec code.
+  Since we believe the 2.6 ipsec code is wrong, we cannot fix this. If you
+  get a successful IKE negotiation and can send ESP packets, but never get
+  replies, compile KLIPS without CONFIG_IPSEC_IPCOMP. There is currently no
+  runtime switch to disable compression. Note that setting compress=no is not
+  enough; it just means we do not announce compression, but we'll still do it
+  if the other end requests it.
+
+* Using SNAT and the 2.6 ipsec code apparently doesn't go well together.
+  Reported by Alexander Samad. Known issue for the netfilter team. DNAT
+  works as usual, meaning you have to exlude DNAT'ing packets meant for
+  a tunnel.
 
 * For the moment, users wishing to test FreeS/WAN with 2.6 will require
   ipsec-tools' "setkey" program. Though FreeS/WAN's keying daemon, Pluto,

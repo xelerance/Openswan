@@ -11,10 +11,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: cookie.h,v 1.13 2003/04/26 06:22:16 dhr Exp $
+ * RCSID $Id: cookie.h,v 1.13.16.1 2004/03/21 05:23:32 mcr Exp $
  */
 
-#include <freeswan.h>
+#include <openswan.h>
 
 extern const u_char zero_cookie[COOKIE_SIZE];	/* guaranteed 0 */
 

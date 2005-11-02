@@ -11,16 +11,17 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: foodgroups.c,v 1.15 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: foodgroups.c,v 1.17.2.1 2004/03/21 05:23:32 mcr Exp $
  */
 
+#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <sys/queue.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -29,21 +30,19 @@
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "foodgroups.h"
 #include "kernel.h"	/* needs connections.h */
 #include "lex.h"
 #include "log.h"
 #include "whack.h"
+#include "paths.h"
 
 
 /* Food group config files are found in directory fg_path */
-
-#ifndef POLICYGROUPSDIR
-#define POLICYGROUPSDIR "/etc/ipsec.d/policies"
-#endif
-
-const char *policygroups_dir = POLICYGROUPSDIR;
 
 static char *fg_path = NULL;
 static size_t fg_path_space = 0;
@@ -133,7 +132,7 @@ read_foodgroup(struct fg_groups *g)
 {
     const char *fgn = g->connection->name;
     const ip_subnet *lsn = &g->connection->spd.this.client;
-    size_t plen = strlen(policygroups_dir) + 1 + strlen(fgn) + 1;
+    size_t plen = strlen(ipsec_dir) + sizeof("/policies/") + 1 + strlen(fgn) + 1;
     struct file_lex_position flp_space;
 
     if (plen > fg_path_space)
@@ -142,10 +141,15 @@ read_foodgroup(struct fg_groups *g)
 	fg_path_space = plen + 10;
 	fg_path = alloc_bytes(fg_path_space, "policy group path");
     }
-    snprintf(fg_path, fg_path_space, "%s/%s", policygroups_dir, fgn);
+    snprintf(fg_path, fg_path_space, "%s/policies/%s", ipsec_dir, fgn);
     if (!lexopen(&flp_space, fg_path, TRUE))
     {
-	DBG(DBG_CONTROL, DBG_log("no group file \"%s\"", fg_path));
+	char cwd[PATH_MAX];
+
+	DBG(DBG_CONTROL
+	    , DBG_log("no group file \"%s\" (pwd:%s)"
+		      , fg_path
+		      , getcwd(cwd, sizeof(cwd))));
     }
     else
     {
@@ -465,3 +469,11 @@ delete_group(const struct connection *c)
 
     pfree(g);
 }
+
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

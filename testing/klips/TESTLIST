@@ -259,11 +259,11 @@ ctltest	saref-alloc-01	good
 #
 # east-icmp-02: test if we can double encrypt packets - spi group
 #
-klipstest east-icmp-02	bad
+klipstest east-icmp-02	good
 
 #
 # west-icmp-02: test if we can double decrypt packets
 #		and confirm decryption
 #
-klipstest west-icmp-02	bad
+klipstest west-icmp-02	good
 

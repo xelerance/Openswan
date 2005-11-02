@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: certs.c,v 1.3 2003/11/04 07:58:58 dhr Exp $
+ * RCSID $Id: certs.c,v 1.4.2.2 2004/04/16 12:33:10 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -31,6 +31,7 @@
 #include "pem.h"
 #include "certs.h"
 #include "pkcs.h"
+#include "paths.h"
 
 #define BUF_LEN		256
 

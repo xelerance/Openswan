@@ -18,7 +18,7 @@
  *
  */
 
-char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.90 2003/10/31 02:27:55 mcr Exp $";
+char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.90.6.1 2004/04/18 23:00:23 ken Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -165,7 +165,7 @@ ipsec_init(void)
 	des_check_key=0;
 
 	KLIPS_PRINT(1, "klips_info:ipsec_init: "
-		    "KLIPS startup, FreeS/WAN IPSec version: %s\n",
+		    "KLIPS startup, Openswan IPsec version: %s\n",
 		    ipsec_version_code());
 
 	error |= ipsec_proc_init();
@@ -310,6 +310,9 @@ cleanup_module(void)
 
 /*
  * $Log: ipsec_init.c,v $
+ * Revision 1.90.6.1  2004/04/18 23:00:23  ken
+ * Change some remenents of FreeS/WAN -> Openswan
+ *
  * Revision 1.90  2003/10/31 02:27:55  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *

@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.15 2003/10/31 02:31:57 mcr Exp $
+# RCSID $Id: Makefile,v 1.16 2004/01/20 19:25:05 sam Exp $
 
 FREESWANSRCDIR=..
 include ${FREESWANSRCDIR}/Makefile.inc
@@ -22,7 +22,7 @@ SUBDIRS+=_confread _copyright _include _keycensor _plutoload _plutorun
 SUBDIRS+=_realsetup _secretcensor _startklips _updown _updown_x509
 SUBDIRS+=auto barf verify ipsec look manual newhostkey ranbits secrets
 SUBDIRS+=rsasigkey send-pr setup showdefaults showhostkey calcgoo mailkey
-SUBDIRS+=ikeping
+SUBDIRS+=ikeping examples
 
 ifeq ($(USE_LWRES),true)
 SUBDIRS+=lwdnsq

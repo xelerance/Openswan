@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: crypto.h,v 1.15 2003/11/26 23:53:08 mcr Exp $
+ * RCSID $Id: crypto.h,v 1.16.2.1 2004/05/17 03:25:03 ken Exp $
  */
 
 #include <gmp.h>    /* GNU MP library */
@@ -48,17 +48,17 @@ struct encrypt_desc {
     void (*crypt)(bool enc, void *buf, size_t buf_len, struct state *st);
 };
 
-const struct encrypt_desc oakley_encrypter[OAKLEY_CAST_CBC + 1];
+extern const struct encrypt_desc oakley_encrypter[OAKLEY_CAST_CBC + 1];
 
-#define update_iv(st)	passert(st->st_new_iv_len < sizeof(st->st_iv)); memcpy((st)->st_iv, (st)->st_new_iv \
+#define update_iv(st)	passert(st->st_new_iv_len <= sizeof(st->st_iv)); memcpy((st)->st_iv, (st)->st_new_iv \
     , (st)->st_iv_len = (st)->st_new_iv_len)
 
-#define init_new_iv(st)     passert(st->st_new_iv_len < sizeof(st->st_new_iv)); memcpy((st)->st_new_iv, (st)->st_iv, (st)->st_new_iv_len);
-#define save_iv(st, tmp)    passert((st)->st_iv_len < sizeof((tmp))); memcpy((tmp), (st)->st_iv, (st)->st_iv_len);
-#define save_new_iv(st, tmp)  passert((st)->st_new_iv_len < sizeof((tmp))); memcpy((tmp), (st)->st_new_iv, (st)->st_new_iv_len);
-#define set_iv(st, tmp)     passert((st)->st_iv_len < sizeof((st)->st_iv)); memcpy((st)->st_iv, (tmp), (st)->st_iv_len);
-#define set_new_iv(st, iv)  passert((st)->st_new_iv_len < sizeof((st)->st_new_iv)); memcpy((st)->st_new_iv, (iv), (st)->st_new_iv_len);
-#define set_ph1_iv(st, iv)  passert((st)->st_ph1_iv_len < sizeof((st)->st_ph1_iv)); memcpy((st)->st_ph1_iv, (iv), (st)->st_ph1_iv_len);
+#define init_new_iv(st)     passert(st->st_new_iv_len <= sizeof(st->st_new_iv)); memcpy((st)->st_new_iv, (st)->st_iv, (st)->st_new_iv_len);
+#define save_iv(st, tmp)    passert((st)->st_iv_len <= sizeof((tmp))); memcpy((tmp), (st)->st_iv, (st)->st_iv_len);
+#define save_new_iv(st, tmp)  passert((st)->st_new_iv_len <= sizeof((tmp))); memcpy((tmp), (st)->st_new_iv, (st)->st_new_iv_len);
+#define set_iv(st, tmp)     passert((st)->st_iv_len <= sizeof((st)->st_iv)); memcpy((st)->st_iv, (tmp), (st)->st_iv_len);
+#define set_new_iv(st, iv)  passert((st)->st_new_iv_len <= sizeof((st)->st_new_iv)); memcpy((st)->st_new_iv, (iv), (st)->st_new_iv_len);
+#define set_ph1_iv(st, iv)  passert((st)->st_ph1_iv_len <= sizeof((st)->st_ph1_iv)); memcpy((st)->st_ph1_iv, (iv), (st)->st_ph1_iv_len);
 
 /* unification of cryptographic hashing mechanisms */
 

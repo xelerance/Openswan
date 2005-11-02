@@ -86,7 +86,7 @@ west:~#
  route add -host 192.0.2.1 gw 192.1.2.23 dev ipsec0
 west:~#
  ipsec setup stop
-ipsec_setup: Stopping FreeS/WAN IPsec...
+ipsec_setup: Stopping Openswan IPsec...
 ipsec_setup: stop ordered, but IPsec does not appear to be running!
 ipsec_setup: doing cleanup anyway...
 IPSEC EVENT: KLIPS device ipsec0 shut down.
@@ -178,7 +178,7 @@ klips_debug:pfkey_msg_interp: satype 3 lookups to proto=50.
 klips_debug:pfkey_msg_parse: parsing message ver=2, type=3(add), errno=0, satype=3(ESP), len=18, res=0, seq=1, pid=987.
 klips_debug:pfkey_msg_parse: satype 3(ESP) conversion to proto gives 50 for msg_type 3(add).
 klips_debug:pfkey_msg_parse: remain=16, ext_type=1(security-association), ext_len=3.
-klips_debug:pfkey_msg_parse: extensions permitted=00001ffb, required=00000063.
+klips_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063.
 klips_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=16.
 klips_debug:pfkey_msg_parse: remain=16 ext_type=1(security-association) ext_len=3 parsing ext 0pDEADF00D with parser pfkey_sa_parse.
 klips_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=12345678 replay=0 state=1 auth=2 encrypt=3 flags=0 ref=-1.
@@ -201,7 +201,7 @@ klips_debug:pfkey_msg_parse: parsing ext type=9(cipher-key) remain=4.
 klips_debug:pfkey_msg_parse: remain=4 ext_type=9(cipher-key) ext_len=4 parsing ext 0pDEADF00D with parser pfkey_key_parse.
 klips_debug:pfkey_key_parse: success, found len=4 exttype=9(cipher-key) bits=192 reserved=0.
 klips_debug:pfkey_msg_parse: Extension 9(cipher-key) parsed.
-klips_debug:pfkey_msg_parse: extensions permitted=00001ffb, seen=00000363, required=00000063.
+klips_debug:pfkey_msg_parse: extensions permitted=78001ffb, seen=00000363, required=00000063.
 klips_debug:pfkey_msg_interp: processing ext 1 0pDEADF00D with processor 0pDEADF00D.
 klips_debug:pfkey_sa_process: .
 klips_debug:pfkey_msg_interp: processing ext 5 0pDEADF00D with processor 0pDEADF00D.
@@ -254,7 +254,7 @@ klips_debug:pfkey_msg_build: pfkey_msg=0pDEADF00D allocated 88 bytes, &(extensio
 klips_debug:pfkey_msg_build: copying 24 bytes from extensions[1] (type=1)
 klips_debug:pfkey_msg_build: copying 24 bytes from extensions[5] (type=5)
 klips_debug:pfkey_msg_build: copying 24 bytes from extensions[6] (type=6)
-klips_debug:pfkey_msg_build: extensions permitted=00001c7b, seen=00000063, required=00000063.
+klips_debug:pfkey_msg_build: extensions permitted=78001c7b, seen=00000063, required=00000063.
 klips_debug:pfkey_upmsg: allocating 88 bytes...
 klips_debug:pfkey_upmsg: ...allocated at 0pDEADF00D.
 klips_debug:pfkey_add_parse: sending up add reply message for satype=3(ESP) to socket=0pDEADF00D succeeded.
@@ -295,7 +295,7 @@ klips_debug:pfkey_msg_interp: satype 9 lookups to proto=4.
 klips_debug:pfkey_msg_parse: parsing message ver=2, type=3(add), errno=0, satype=9(IPIP), len=11, res=0, seq=1, pid=987.
 klips_debug:pfkey_msg_parse: satype 9(IPIP) conversion to proto gives 4 for msg_type 3(add).
 klips_debug:pfkey_msg_parse: remain=9, ext_type=1(security-association), ext_len=3.
-klips_debug:pfkey_msg_parse: extensions permitted=00001ffb, required=00000063.
+klips_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063.
 klips_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=9.
 klips_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0pDEADF00D with parser pfkey_sa_parse.
 klips_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=12345678 replay=0 state=1 auth=0 encrypt=0 flags=0 ref=-1.
@@ -310,7 +310,7 @@ klips_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 
 klips_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.45 proto=0 port=0.
 klips_debug:pfkey_address_parse: successful.
 klips_debug:pfkey_msg_parse: Extension 6(destination-address) parsed.
-klips_debug:pfkey_msg_parse: extensions permitted=00001ffb, seen=00000063, required=00000063.
+klips_debug:pfkey_msg_parse: extensions permitted=78001ffb, seen=00000063, required=00000063.
 klips_debug:pfkey_msg_interp: processing ext 1 0pDEADF00D with processor 0pDEADF00D.
 klips_debug:pfkey_sa_process: .
 klips_debug:pfkey_msg_interp: processing ext 5 0pDEADF00D with processor 0pDEADF00D.
@@ -356,7 +356,7 @@ klips_debug:pfkey_msg_build: pfkey_msg=0pDEADF00D allocated 88 bytes, &(extensio
 klips_debug:pfkey_msg_build: copying 24 bytes from extensions[1] (type=1)
 klips_debug:pfkey_msg_build: copying 24 bytes from extensions[5] (type=5)
 klips_debug:pfkey_msg_build: copying 24 bytes from extensions[6] (type=6)
-klips_debug:pfkey_msg_build: extensions permitted=00001c7b, seen=00000063, required=00000063.
+klips_debug:pfkey_msg_build: extensions permitted=78001c7b, seen=00000063, required=00000063.
 klips_debug:pfkey_upmsg: allocating 88 bytes...
 klips_debug:pfkey_upmsg: ...allocated at 0pDEADF00D.
 klips_debug:pfkey_add_parse: sending up add reply message for satype=9(IPIP) to socket=0pDEADF00D succeeded.
@@ -509,18 +509,19 @@ klips_debug:ipsec_rcv: <<< Info -- skb->dev=eth1 dev=eth1
 klips_debug:ipsec_rcv: assigning packet ownership to virtual device ipsec0 from physical device eth1.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:136 id:65383 frag_off:0 ttl:64 proto:50 chk:63125 saddr:192.1.2.23 daddr:192.1.2.45
 klips_debug:ipsec_rcv_decap_once: decap (50) from 192.1.2.23 -> 192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, src=192.1.2.23 of pkt agrees with expected SA source address policy.
-klips_debug:ipsec_rcv: SA:esp:12345678@ First SA in group.
-klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=1 (iv)=0x4c20452f3cb09211 iplen=136 esplen=104 sa=esp:12345678@
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, src=192.1.2.23 of pkt agrees with expected SA source address policy.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45 First SA in group.
+klips_debug:ipsec_rcv: natt_type=0 tdbp->ips_natt_type=0 : ok
+klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=1 (iv)=0x4c20452f3cb09211 iplen=136 esplen=104 sa=esp.12345678@192.1.2.45
 klips_debug:ipsec_rcv: encalg = 3, authalg = 2.
 klips_debug:ipsec_rcv: authentication successful.
 klips_debug:ipsec_rcv: padlen=2, contents: 0x<offset>: 0x<value> 0x<value> ...
 klips_debug:           00: 01 02
 klips_debug:ipsec_rcv: packet decrypted from 192.1.2.23: next_header = 4, padding = 2
 klips_debug:ipsec_rcv: trimming to 104.
-klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp:12345678@:
+klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp.12345678@192.1.2.45:
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:104 id:65383 frag_off:0 ttl:64 proto:4 chk:63203 saddr:192.1.2.23 daddr:192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, Another IPSEC header to process.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, Another IPSEC header to process.
 klips_debug:ipsec_rcv: ESP SA sets skb->nfmark=0x40000.
 klips_debug:ipsec_rcv: IPIP tunnel stripped.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:84 id:0 DF frag_off:0 ttl:63 proto:1 (ICMP) chk:47270 saddr:192.0.2.1 daddr:192.0.1.1 type:code=8:0
@@ -530,18 +531,19 @@ klips_debug:ipsec_rcv: <<< Info -- skb->dev=eth1 dev=eth1
 klips_debug:ipsec_rcv: assigning packet ownership to virtual device ipsec0 from physical device eth1.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:136 id:65384 frag_off:0 ttl:64 proto:50 chk:63124 saddr:192.1.2.23 daddr:192.1.2.45
 klips_debug:ipsec_rcv_decap_once: decap (50) from 192.1.2.23 -> 192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, src=192.1.2.23 of pkt agrees with expected SA source address policy.
-klips_debug:ipsec_rcv: SA:esp:12345678@ First SA in group.
-klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=2 (iv)=0x1a7041e3dc9176e8 iplen=136 esplen=104 sa=esp:12345678@
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, src=192.1.2.23 of pkt agrees with expected SA source address policy.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45 First SA in group.
+klips_debug:ipsec_rcv: natt_type=0 tdbp->ips_natt_type=0 : ok
+klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=2 (iv)=0x1a7041e3dc9176e8 iplen=136 esplen=104 sa=esp.12345678@192.1.2.45
 klips_debug:ipsec_rcv: encalg = 3, authalg = 2.
 klips_debug:ipsec_rcv: authentication successful.
 klips_debug:ipsec_rcv: padlen=2, contents: 0x<offset>: 0x<value> 0x<value> ...
 klips_debug:           00: 01 02
 klips_debug:ipsec_rcv: packet decrypted from 192.1.2.23: next_header = 4, padding = 2
 klips_debug:ipsec_rcv: trimming to 104.
-klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp:12345678@:
+klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp.12345678@192.1.2.45:
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:104 id:65384 frag_off:0 ttl:64 proto:4 chk:63202 saddr:192.1.2.23 daddr:192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, Another IPSEC header to process.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, Another IPSEC header to process.
 klips_debug:ipsec_rcv: ESP SA sets skb->nfmark=0x40000.
 klips_debug:ipsec_rcv: IPIP tunnel stripped.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:84 id:0 DF frag_off:0 ttl:63 proto:1 (ICMP) chk:47270 saddr:192.0.2.1 daddr:192.0.1.1 type:code=8:0
@@ -551,18 +553,19 @@ klips_debug:ipsec_rcv: <<< Info -- skb->dev=eth1 dev=eth1
 klips_debug:ipsec_rcv: assigning packet ownership to virtual device ipsec0 from physical device eth1.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:136 id:65385 frag_off:0 ttl:64 proto:50 chk:63123 saddr:192.1.2.23 daddr:192.1.2.45
 klips_debug:ipsec_rcv_decap_once: decap (50) from 192.1.2.23 -> 192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, src=192.1.2.23 of pkt agrees with expected SA source address policy.
-klips_debug:ipsec_rcv: SA:esp:12345678@ First SA in group.
-klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=3 (iv)=0x5df8cd51ba5e0c01 iplen=136 esplen=104 sa=esp:12345678@
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, src=192.1.2.23 of pkt agrees with expected SA source address policy.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45 First SA in group.
+klips_debug:ipsec_rcv: natt_type=0 tdbp->ips_natt_type=0 : ok
+klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=3 (iv)=0x5df8cd51ba5e0c01 iplen=136 esplen=104 sa=esp.12345678@192.1.2.45
 klips_debug:ipsec_rcv: encalg = 3, authalg = 2.
 klips_debug:ipsec_rcv: authentication successful.
 klips_debug:ipsec_rcv: padlen=2, contents: 0x<offset>: 0x<value> 0x<value> ...
 klips_debug:           00: 01 02
 klips_debug:ipsec_rcv: packet decrypted from 192.1.2.23: next_header = 4, padding = 2
 klips_debug:ipsec_rcv: trimming to 104.
-klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp:12345678@:
+klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp.12345678@192.1.2.45:
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:104 id:65385 frag_off:0 ttl:64 proto:4 chk:63201 saddr:192.1.2.23 daddr:192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, Another IPSEC header to process.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, Another IPSEC header to process.
 klips_debug:ipsec_rcv: ESP SA sets skb->nfmark=0x40000.
 klips_debug:ipsec_rcv: IPIP tunnel stripped.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:84 id:0 DF frag_off:0 ttl:63 proto:1 (ICMP) chk:47270 saddr:192.0.2.1 daddr:192.0.1.1 type:code=8:0
@@ -572,18 +575,19 @@ klips_debug:ipsec_rcv: <<< Info -- skb->dev=eth1 dev=eth1
 klips_debug:ipsec_rcv: assigning packet ownership to virtual device ipsec0 from physical device eth1.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:136 id:65386 frag_off:0 ttl:64 proto:50 chk:63122 saddr:192.1.2.23 daddr:192.1.2.45
 klips_debug:ipsec_rcv_decap_once: decap (50) from 192.1.2.23 -> 192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, src=192.1.2.23 of pkt agrees with expected SA source address policy.
-klips_debug:ipsec_rcv: SA:esp:12345678@ First SA in group.
-klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=4 (iv)=0xab6606983f572fbd iplen=136 esplen=104 sa=esp:12345678@
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, src=192.1.2.23 of pkt agrees with expected SA source address policy.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45 First SA in group.
+klips_debug:ipsec_rcv: natt_type=0 tdbp->ips_natt_type=0 : ok
+klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=4 (iv)=0xab6606983f572fbd iplen=136 esplen=104 sa=esp.12345678@192.1.2.45
 klips_debug:ipsec_rcv: encalg = 3, authalg = 2.
 klips_debug:ipsec_rcv: authentication successful.
 klips_debug:ipsec_rcv: padlen=2, contents: 0x<offset>: 0x<value> 0x<value> ...
 klips_debug:           00: 01 02
 klips_debug:ipsec_rcv: packet decrypted from 192.1.2.23: next_header = 4, padding = 2
 klips_debug:ipsec_rcv: trimming to 104.
-klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp:12345678@:
+klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp.12345678@192.1.2.45:
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:104 id:65386 frag_off:0 ttl:64 proto:4 chk:63200 saddr:192.1.2.23 daddr:192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, Another IPSEC header to process.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, Another IPSEC header to process.
 klips_debug:ipsec_rcv: ESP SA sets skb->nfmark=0x40000.
 klips_debug:ipsec_rcv: IPIP tunnel stripped.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:84 id:0 DF frag_off:0 ttl:63 proto:1 (ICMP) chk:47270 saddr:192.0.2.1 daddr:192.0.1.1 type:code=8:0
@@ -593,18 +597,19 @@ klips_debug:ipsec_rcv: <<< Info -- skb->dev=eth1 dev=eth1
 klips_debug:ipsec_rcv: assigning packet ownership to virtual device ipsec0 from physical device eth1.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:136 id:65387 frag_off:0 ttl:64 proto:50 chk:63121 saddr:192.1.2.23 daddr:192.1.2.45
 klips_debug:ipsec_rcv_decap_once: decap (50) from 192.1.2.23 -> 192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, src=192.1.2.23 of pkt agrees with expected SA source address policy.
-klips_debug:ipsec_rcv: SA:esp:12345678@ First SA in group.
-klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=5 (iv)=0x6eeafbc6f1a5c54a iplen=136 esplen=104 sa=esp:12345678@
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, src=192.1.2.23 of pkt agrees with expected SA source address policy.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45 First SA in group.
+klips_debug:ipsec_rcv: natt_type=0 tdbp->ips_natt_type=0 : ok
+klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=5 (iv)=0x6eeafbc6f1a5c54a iplen=136 esplen=104 sa=esp.12345678@192.1.2.45
 klips_debug:ipsec_rcv: encalg = 3, authalg = 2.
 klips_debug:ipsec_rcv: authentication successful.
 klips_debug:ipsec_rcv: padlen=2, contents: 0x<offset>: 0x<value> 0x<value> ...
 klips_debug:           00: 01 02
 klips_debug:ipsec_rcv: packet decrypted from 192.1.2.23: next_header = 4, padding = 2
 klips_debug:ipsec_rcv: trimming to 104.
-klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp:12345678@:
+klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp.12345678@192.1.2.45:
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:104 id:65387 frag_off:0 ttl:64 proto:4 chk:63199 saddr:192.1.2.23 daddr:192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, Another IPSEC header to process.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, Another IPSEC header to process.
 klips_debug:ipsec_rcv: ESP SA sets skb->nfmark=0x40000.
 klips_debug:ipsec_rcv: IPIP tunnel stripped.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:84 id:0 DF frag_off:0 ttl:63 proto:1 (ICMP) chk:47270 saddr:192.0.2.1 daddr:192.0.1.1 type:code=8:0
@@ -614,18 +619,19 @@ klips_debug:ipsec_rcv: <<< Info -- skb->dev=eth1 dev=eth1
 klips_debug:ipsec_rcv: assigning packet ownership to virtual device ipsec0 from physical device eth1.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:136 id:65388 frag_off:0 ttl:64 proto:50 chk:63120 saddr:192.1.2.23 daddr:192.1.2.45
 klips_debug:ipsec_rcv_decap_once: decap (50) from 192.1.2.23 -> 192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, src=192.1.2.23 of pkt agrees with expected SA source address policy.
-klips_debug:ipsec_rcv: SA:esp:12345678@ First SA in group.
-klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=6 (iv)=0xb4cfb47d779633a7 iplen=136 esplen=104 sa=esp:12345678@
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, src=192.1.2.23 of pkt agrees with expected SA source address policy.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45 First SA in group.
+klips_debug:ipsec_rcv: natt_type=0 tdbp->ips_natt_type=0 : ok
+klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=6 (iv)=0xb4cfb47d779633a7 iplen=136 esplen=104 sa=esp.12345678@192.1.2.45
 klips_debug:ipsec_rcv: encalg = 3, authalg = 2.
 klips_debug:ipsec_rcv: authentication successful.
 klips_debug:ipsec_rcv: padlen=2, contents: 0x<offset>: 0x<value> 0x<value> ...
 klips_debug:           00: 01 02
 klips_debug:ipsec_rcv: packet decrypted from 192.1.2.23: next_header = 4, padding = 2
 klips_debug:ipsec_rcv: trimming to 104.
-klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp:12345678@:
+klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp.12345678@192.1.2.45:
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:104 id:65388 frag_off:0 ttl:64 proto:4 chk:63198 saddr:192.1.2.23 daddr:192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, Another IPSEC header to process.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, Another IPSEC header to process.
 klips_debug:ipsec_rcv: ESP SA sets skb->nfmark=0x40000.
 klips_debug:ipsec_rcv: IPIP tunnel stripped.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:84 id:0 DF frag_off:0 ttl:63 proto:1 (ICMP) chk:47270 saddr:192.0.2.1 daddr:192.0.1.1 type:code=8:0
@@ -635,18 +641,19 @@ klips_debug:ipsec_rcv: <<< Info -- skb->dev=eth1 dev=eth1
 klips_debug:ipsec_rcv: assigning packet ownership to virtual device ipsec0 from physical device eth1.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:136 id:65389 frag_off:0 ttl:64 proto:50 chk:63119 saddr:192.1.2.23 daddr:192.1.2.45
 klips_debug:ipsec_rcv_decap_once: decap (50) from 192.1.2.23 -> 192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, src=192.1.2.23 of pkt agrees with expected SA source address policy.
-klips_debug:ipsec_rcv: SA:esp:12345678@ First SA in group.
-klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=7 (iv)=0xe5af03df09bb1909 iplen=136 esplen=104 sa=esp:12345678@
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, src=192.1.2.23 of pkt agrees with expected SA source address policy.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45 First SA in group.
+klips_debug:ipsec_rcv: natt_type=0 tdbp->ips_natt_type=0 : ok
+klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=7 (iv)=0xe5af03df09bb1909 iplen=136 esplen=104 sa=esp.12345678@192.1.2.45
 klips_debug:ipsec_rcv: encalg = 3, authalg = 2.
 klips_debug:ipsec_rcv: authentication successful.
 klips_debug:ipsec_rcv: padlen=2, contents: 0x<offset>: 0x<value> 0x<value> ...
 klips_debug:           00: 01 02
 klips_debug:ipsec_rcv: packet decrypted from 192.1.2.23: next_header = 4, padding = 2
 klips_debug:ipsec_rcv: trimming to 104.
-klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp:12345678@:
+klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp.12345678@192.1.2.45:
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:104 id:65389 frag_off:0 ttl:64 proto:4 chk:63197 saddr:192.1.2.23 daddr:192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, Another IPSEC header to process.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, Another IPSEC header to process.
 klips_debug:ipsec_rcv: ESP SA sets skb->nfmark=0x40000.
 klips_debug:ipsec_rcv: IPIP tunnel stripped.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:84 id:0 DF frag_off:0 ttl:63 proto:1 (ICMP) chk:47270 saddr:192.0.2.1 daddr:192.0.1.1 type:code=8:0
@@ -656,18 +663,19 @@ klips_debug:ipsec_rcv: <<< Info -- skb->dev=eth1 dev=eth1
 klips_debug:ipsec_rcv: assigning packet ownership to virtual device ipsec0 from physical device eth1.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:136 id:65390 frag_off:0 ttl:64 proto:50 chk:63118 saddr:192.1.2.23 daddr:192.1.2.45
 klips_debug:ipsec_rcv_decap_once: decap (50) from 192.1.2.23 -> 192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, src=192.1.2.23 of pkt agrees with expected SA source address policy.
-klips_debug:ipsec_rcv: SA:esp:12345678@ First SA in group.
-klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=8 (iv)=0xd3a77702bc8788c0 iplen=136 esplen=104 sa=esp:12345678@
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, src=192.1.2.23 of pkt agrees with expected SA source address policy.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45 First SA in group.
+klips_debug:ipsec_rcv: natt_type=0 tdbp->ips_natt_type=0 : ok
+klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=8 (iv)=0xd3a77702bc8788c0 iplen=136 esplen=104 sa=esp.12345678@192.1.2.45
 klips_debug:ipsec_rcv: encalg = 3, authalg = 2.
 klips_debug:ipsec_rcv: authentication successful.
 klips_debug:ipsec_rcv: padlen=2, contents: 0x<offset>: 0x<value> 0x<value> ...
 klips_debug:           00: 01 02
 klips_debug:ipsec_rcv: packet decrypted from 192.1.2.23: next_header = 4, padding = 2
 klips_debug:ipsec_rcv: trimming to 104.
-klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp:12345678@:
+klips_debug:ipsec_rcv: after <ESP_3DES_HMAC_MD5>, SA:esp.12345678@192.1.2.45:
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:104 id:65390 frag_off:0 ttl:64 proto:4 chk:63196 saddr:192.1.2.23 daddr:192.1.2.45
-klips_debug:ipsec_rcv: SA:esp:12345678@, Another IPSEC header to process.
+klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, Another IPSEC header to process.
 klips_debug:ipsec_rcv: ESP SA sets skb->nfmark=0x40000.
 klips_debug:ipsec_rcv: IPIP tunnel stripped.
 klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:84 id:0 DF frag_off:0 ttl:63 proto:1 (ICMP) chk:47270 saddr:192.0.2.1 daddr:192.0.1.1 type:code=8:0

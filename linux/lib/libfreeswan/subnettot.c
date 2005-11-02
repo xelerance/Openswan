@@ -12,10 +12,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: subnettot.c,v 1.4 2003/11/24 23:45:41 mcr Exp $
+ * RCSID $Id: subnettot.c,v 1.4.6.1 2004/03/21 05:23:31 mcr Exp $
  */
 #include "internal.h"
-#include "freeswan.h"
+#include "openswan.h"
 
 /*
  - subnettot - convert subnet to text "addr/bitcount"

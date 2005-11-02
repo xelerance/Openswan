@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.140 2003/12/06 16:44:29 mcr Exp $
+# RCSID $Id: Makefile,v 1.146.2.3 2004/06/17 00:35:21 ken Exp $
 
 # Uncomment this line to enable dynamic CRL fetching using LDAP V3
 #LDAP_VERSION=3
@@ -22,7 +22,14 @@
 #Uncomment this line to enable smartcard support
 #SMARTCARD=1
 
-# relative path to top directory of FreeS/WAN source
+# Uncomment this line if you want XAUTH
+#XAUTH=1
+# compile with PAM support will increase the size of the distribution
+# and thus it may not be the best solution for embeded systems. XAUTH
+# will use MD5/DES crypt() lib and a password file by default.
+#XAUTH_USEPAM=1
+
+# relative path to top directory of Openswan source
 # Note: referenced in ${FREESWANSRCDIR}/Makefile.inc
 FREESWANSRCDIR=../..
 
@@ -37,7 +44,7 @@ CFLAGS = -g -Wall -W -Wmissing-prototypes -Wpointer-arith -Wbad-function-cast \
 	-Wcast-qual -Wmissing-declarations -Wwrite-strings \
 	-Wstrict-prototypes # -Wundef
 
-# where to find klips headers and FreeS/WAN headers
+# where to find klips headers and Openswan headers
 # and 2.6 kernel's <rtnetlink.h> and <xfrm.h>
 HDRDIRS = -I$(KLIPSINC) -I${FREESWANSRCDIR}/programs/pluto/linux26
 
@@ -74,10 +81,14 @@ HDRDIRS = -I$(KLIPSINC) -I${FREESWANSRCDIR}/programs/pluto/linux26
 #    and basename for pluto's lockfile (.pid) and control socket (.ctl).
 #    Double quoting may be needed.
 
+BINNAMEPLUTO = pluto
+BINNAMEWHACK = whack
+BINNAMEADNS = _pluto_adns
+
 ifeq ($(USE_LWRES),true)
 LWRESDEF=-DUSE_LWRES
 USE_ADNS=false
-BINNAMEADNSIFNEEDE=
+BINNAMEADNSIFNEEDED=
 else
 USE_ADNS=true
 BINNAMEADNSIFNEEDED=$(BINNAMEADNS)
@@ -111,12 +122,11 @@ endif
 X509_DIST_OBJS=ac.o asn1.o oid.o pem.o pgp.o pkcs.o x509.o certs.o md2.o
 X509_DIST_SRCS=oid.txt oid.pl ${X509_DIST_OBJS:.o=.c}
 X509_DIST_SRCS+=ac.h asn1.h certs.h fetch.h oid.h pem.h pgp.h pkcs.h x509.h
-X509FETCH_DIST_OBJS=fetch.o 
-X509FETCH_DIST_SRCS=${X509FETCH_DIST_OBJS:.o=.c}
+HAVE_THREADS_DIST_OBJS=fetch.o 
+HAVE_THREADS_DIST_SRCS=${HAVE_THREADS_DIST_OBJS:.o=.c}
 SMARTCARD_DIST_OBJS=smartcard.o
 SMARTCARD_DIST_SRCS=smartcard.c smartcard.h 
-ifeq ($(USE_X509),true)
-X509_VERSION=X.509-1.4.8
+X509_VERSION=X.509-1.4.8-1
 X509_OBJS=${X509_DIST_OBJS}
 X509_SRCS=${X509_DIST_SRCS}
 X509_DEFS=-DX509 -DX509_VERSION=\"${X509_VERSION}\"
@@ -125,13 +135,12 @@ X509_DEFS=-DX509 -DX509_VERSION=\"${X509_VERSION}\"
 ifeq ($(USE_LDAP),true)
 X509_LIBS+= -lldap
 endif
-endif
 
-ifeq ($(USE_X509FETCH),true)
-X509FETCH_DEFS=-DX509_FETCH
-X509FETCH_OBJS=${X509FETCH_DIST_OBJS}
-X509FETCH_SRCS=${X509FETCH_DIST_SRCS}
-X509FETCH_LIBS=-lpthreads
+ifeq ($(USE_THREADS),true)
+HAVE_THREADS_DEFS=-DHAVE_THREADS
+HAVE_THREADS_OBJS=${HAVE_THREADS_DIST_OBJS}
+HAVE_THREADS_SRCS=${HAVE_THREADS_DIST_SRCS}
+HAVE_THREADS_LIBS=-lpthread
 endif
 
 ifeq ($(USE_SMARTCARD),true)
@@ -143,6 +152,30 @@ SMARTCARD_OBJS=${SMARTCARD_DIST_OBJS}
 SMARTCARD_LIBS=-lopensc
 endif
 
+XAUTH_DIST_SRCS=xauth.c xauth.h
+XAUTH_DIST_OBJS=xauth.o
+ifeq ($(USE_XAUTH),true)
+# This compile option activates xauth code and modecfg needed by xauth
+XAUTH_DEFS=-DXAUTH -DMODECFG
+XAUTH_OBJS=${XAUTH_DIST_OBJS}
+XAUTH_SRCS=${XAUTH_DIST_SRCS}
+# if we use pam for password checking then add it too
+ifeq ($(USE_XAUTHPAM),true)
+XAUTHPAM_DEFS=-DXAUTH_USEPAM
+XAUTHPAM_LIBS=-lpam
+endif
+endif
+
+ifeq ($(USE_NAT_TRAVERSAL),true)
+NAT_DEFS=-DNAT_TRAVERSAL -DVIRTUAL_IP 
+endif
+
+ifeq ($(USE_NAT_TRAVERSAL_TRANSPORT_MODE),true)
+NAT_DEFS+=-DI_KNOW_TRANSPORT_MODE_HAS_SECURITY_CONCERN_BUT_I_WANT_IT
+endif
+
+# End of configuration coping options.
+
 DEFINES = $(EXTRA_DEFINES) \
 	$(IPSECPOLICY_DEFINES) ${VENDORID} \
 	$(KEYRR_DEFINES) \
@@ -150,12 +183,14 @@ DEFINES = $(EXTRA_DEFINES) \
 	$(LWRESDEF) \
 	$(KERNEL26_DEFS) \
 	$(X509_DEFS) \
-	$(X509FETCH_DEFS) \
+	$(HAVE_THREADS_DEFS) \
 	$(SMARTCARD_DEFS) \
 	-DPLUTO \
 	-DKLIPS \
 	-DDEBUG \
 	-DGCC_LINT \
+	${XAUTH_DEFS} ${XAUTHPAM_DEFS} \
+	${NAT_DEFS}\
 	# -DLEAK_DETECTIVE
 
 # This compile option activates dynamic LDAP CRL fetching in the source code
@@ -178,8 +213,13 @@ ALLFLAGS = $(CPPFLAGS) $(CFLAGS)
 # libefence is a free memory allocation debugger
 # Solaris 2 needs -lsocket -lnsl
 LIBSPLUTO = $(OBJSGCRYPT) $(LIBDESLITE) $(FREESWANLIB) $(IPSECPOLICY_LIBS)
-LIBSPLUTO+= $(X509_LIBS) $(SMARTCARD_LIBS) $(X509FETCH_LIBS)
+LIBSPLUTO+= $(X509_LIBS) $(SMARTCARD_LIBS) $(HAVE_THREADS_LIBS) ${XAUTHPAM_LIBS}
 LIBSPLUTO+= -lgmp -lresolv # -lefence
+
+# XAUTH_USEPAM add support for PAM lib
+ifdef XAUTH_USEPAM
+LIBSPLUTO+= -lpam
+endif
 
 ifneq ($(LD_LIBRARY_PATH),)
 LDFLAGS=-L$(LD_LIBRARY_PATH)
@@ -191,9 +231,6 @@ LIBSADNS += -lresolv # -lefence
 # Solaris needs -lsocket -lnsl
 LIBSWHACK = ${FREESWANLIB}
 
-BINNAMEPLUTO = pluto
-BINNAMEWHACK = whack
-BINNAMEADNS = _pluto_adns
 
 RM = /bin/rm
 RMFLAGS = -f
@@ -247,9 +284,11 @@ DISTSRC = \
 	timer.c timer.h \
 	$(DISTGCRYPT) \
 	$(X509_DIST_SRCS) \
-	$(X509FETCH_DIST_SRCS) \
+	$(HAVE_THREADS_DIST_SRCS) \
+	vendor.c nat_traversal.c virtual.c \
 	adns.c adns.h \
-	whack.c whack.h
+	whack.c whack.h \
+	${XAUTH_DIST_SRCS}
 
 DIST = $(DISTMISC) $(DISTSRC)
 
@@ -258,11 +297,16 @@ DIST = $(DISTMISC) $(DISTSRC)
 # OBJSGCRYPT =  gcryptfix.o dsa.o elgamal.o primegen.o smallprime.o
 OBJSGCRYPT =
 
-OBJSPLUTO = connections.o constants.o cookie.o crypto.o defs.o foodgroups.o log.o \
-	state.o plutomain.o server.o timer.o id.o ipsec_doi.o kernel.o \
-	$(KERNEL26_OBJS) kernel_pfkey.o kernel_noklips.o \
-	rcv_whack.o ${IPSECPOLICY_OBJS} demux.o packet.o lex.o keys.o dnskey.o\
-	rnd.o spdb.o sha1.o md5.o ${SMARTCARD_OBJS} ${X509_OBJS} ${X509FETCH_OBJS}
+OBJSPLUTO  = connections.o constants.o cookie.o crypto.o defs.o 
+OBJSPLUTO += foodgroups.o log.o state.o plutomain.o server.o timer.o 
+OBJSPLUTO += id.o ipsec_doi.o kernel.o 
+OBJSPLUTO += $(KERNEL26_OBJS) 
+OBJSPLUTO += kernel_pfkey.o kernel_noklips.o rcv_whack.o 
+OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o packet.o lex.o keys.o dnskey.o
+OBJSPLUTO += rnd.o spdb.o sha1.o md5.o 
+OBJSPLUTO += vendor.o nat_traversal.o virtual.o 
+OBJSPLUTO += ${XAUTH_OBJS}
+OBJSPLUTO += ${SMARTCARD_OBJS} ${X509_OBJS} ${HAVE_THREADS_OBJS}
 
 OBJSADNS = adns.o
 
@@ -285,7 +329,7 @@ install: all
 	mkdir -p -m 755 $(CONFDIR)/ipsec.d/crls
 	mkdir -p -m 700 $(CONFDIR)/ipsec.d/private
 	$(INSTALL) $(INSTBINFLAGS) $(BINNAMEPLUTO) $(BINNAMEWHACK) $(LIBEXECDIR)
-	if $(USE_ADNS) ; then $(INSTALL) $(INSTBINFLAGS) $(BINNAMEADNS)                  $(LIBDIR) ; fi
+	if $(USE_ADNS) ; then $(INSTALL) $(INSTBINFLAGS) $(BINNAMEADNS)  $(LIBEXECDIR) ; fi
 	$(INSTALL) $(INSTMANFLAGS) pluto.8 $(PMANDIR)/ipsec_pluto.8
 	sh ${FREESWANSRCDIR}/packaging/utils/manlink pluto.8 | \
 		while read from to ; \
@@ -405,6 +449,7 @@ lex.o: lex.c
 log.o: log.c
 md2.o: md2.c
 md5.o: md5.c
+nat_traversal.o: nat_traversal.c
 oid.o: oid.c
 packet.o: packet.c
 pem.o: pem.c
@@ -421,8 +466,11 @@ smartcard.o: smartcard.c
 spdb.o: spdb.c
 state.o: state.c
 timer.o: timer.c
+vendor.o: vendor.c
+virtual.o: virtual.c
 whack.o: whack.c
 x509.o: x509.c
+xauth.o: xauth.c
 
 ac.o: constants.h
 ac.o: defs.h
@@ -472,10 +520,13 @@ connections.o: keys.h
 connections.o: adns.h
 connections.o: dnskey.h
 connections.o: whack.h
+connections.o: nat_traversal.h
+connections.o: virtual.h
 constants.o: constants.h
 constants.o: defs.h
 constants.o: log.h
 constants.o: packet.h
+constants.o: xauth.h
 cookie.o: constants.h
 cookie.o: defs.h
 cookie.o: sha1.h
@@ -512,6 +563,9 @@ demux.o: ipsec_doi.h
 demux.o: timer.h
 demux.o: whack.h
 demux.o: server.h
+demux.o: nat_traversal.h
+demux.o: vendor.h
+demux.o: xauth.h
 dnskey.o: constants.h
 dnskey.o: adns.h
 dnskey.o: defs.h
@@ -603,6 +657,10 @@ ipsec_doi.o: pkcs.h
 ipsec_doi.o: sha1.h
 ipsec_doi.o: md5.h
 ipsec_doi.o: crypto.h
+ipsec_doi.o: vendor.h
+ipsec_doi.o: nat_traversal.h
+ipsec_doi.o: virtual.h
+ipsec_doi.o: xauth.h
 kernel.o: kameipsec.h
 kernel.o: constants.h
 kernel.o: defs.h
@@ -622,6 +680,9 @@ kernel.o: kernel_noklips.h
 kernel.o: log.h
 kernel.o: server.h
 kernel.o: whack.h
+kernel.o: keys.h
+kernel.o: packet.h
+kernel.o: nat_traversal.h
 kernel_netlink.o: kameipsec.h
 kernel_netlink.o: constants.h
 kernel_netlink.o: defs.h
@@ -661,6 +722,7 @@ keys.o: log.h
 keys.o: whack.h
 keys.o: timer.h
 keys.o: pkcs.h
+keys.o: nat_traversal.h
 lex.o: constants.h
 lex.o: defs.h
 lex.o: log.h
@@ -683,6 +745,27 @@ log.o: timer.h
 md2.o: md2.h
 md5.o: md5.h
 md5.o: endian.h
+nat_traversal.o: constants.h
+nat_traversal.o: defs.h
+nat_traversal.o: log.h
+nat_traversal.o: id.h
+nat_traversal.o: x509.h
+nat_traversal.o: pgp.h
+nat_traversal.o: certs.h
+nat_traversal.o: connections.h
+nat_traversal.o: packet.h
+nat_traversal.o: demux.h
+nat_traversal.o: whack.h
+nat_traversal.o: state.h
+nat_traversal.o: server.h
+nat_traversal.o: timer.h
+nat_traversal.o: sha1.h
+nat_traversal.o: md5.h
+nat_traversal.o: crypto.h
+nat_traversal.o: vendor.h
+nat_traversal.o: cookie.h
+nat_traversal.o: kernel.h
+nat_traversal.o: nat_traversal.h
 oid.o: oid.h
 packet.o: constants.h
 packet.o: defs.h
@@ -740,6 +823,8 @@ plutomain.o: fetch.h
 plutomain.o: sha1.h
 plutomain.o: md5.h
 plutomain.o: crypto.h
+plutomain.o: virtual.h
+plutomain.o: nat_traversal.h
 primegen.o: constants.h
 primegen.o: defs.h
 primegen.o: log.h
@@ -795,6 +880,7 @@ server.o: adns.h
 server.o: dnskey.h
 server.o: whack.h
 server.o: kameipsec.h
+server.o: nat_traversal.h
 sha1.o: sha1.h
 sha1.o: endian.h
 smallprime.o: constants.h
@@ -827,6 +913,7 @@ spdb.o: whack.h
 spdb.o: sha1.h
 spdb.o: md5.h
 spdb.o: crypto.h
+spdb.o: nat_traversal.h
 state.o: constants.h
 state.o: defs.h
 state.o: id.h
@@ -866,6 +953,31 @@ timer.o: log.h
 timer.o: rnd.h
 timer.o: timer.h
 timer.o: whack.h
+timer.o: nat_traversal.h
+vendor.o: constants.h
+vendor.o: defs.h
+vendor.o: log.h
+vendor.o: md5.h
+vendor.o: id.h
+vendor.o: x509.h
+vendor.o: pgp.h
+vendor.o: certs.h
+vendor.o: connections.h
+vendor.o: packet.h
+vendor.o: demux.h
+vendor.o: whack.h
+vendor.o: vendor.h
+vendor.o: nat_traversal.h
+virtual.o: constants.h
+virtual.o: defs.h
+virtual.o: log.h
+virtual.o: id.h
+virtual.o: x509.h
+virtual.o: pgp.h
+virtual.o: certs.h
+virtual.o: connections.h
+virtual.o: whack.h
+virtual.o: virtual.h
 whack.o: constants.h
 whack.o: defs.h
 whack.o: whack.h
@@ -884,4 +996,23 @@ x509.o: md5.h
 x509.o: sha1.h
 x509.o: whack.h
 x509.o: fetch.h
+xauth.o: constants.h
+xauth.o: defs.h
+xauth.o: state.h
+xauth.o: id.h
+xauth.o: x509.h
+xauth.o: connections.h
+xauth.o: packet.h
+xauth.o: demux.h
+xauth.o: kernel.h
+xauth.o: log.h
+xauth.o: cookie.h
+xauth.o: server.h
+xauth.o: spdb.h
+xauth.o: timer.h
+xauth.o: rnd.h
+xauth.o: ipsec_doi.h
+xauth.o: whack.h
+xauth.o: crypto.h
+xauth.o: xauth.h
 

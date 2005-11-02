@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: state.c,v 1.119 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: state.c,v 1.126.2.1 2004/03/21 05:23:34 mcr Exp $
  */
 
 #include <stdio.h>
@@ -26,7 +26,7 @@
 #include <fcntl.h>
 #include <sys/queue.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -35,6 +35,9 @@
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "state.h"
 #include "kernel.h"	/* needs connections.h */
@@ -179,6 +182,9 @@ new_state(void)
     st = clone_thing(blank_state, "struct state in new_state()");
     st->st_serialno = next_so++;
     passert(next_so > SOS_FIRST);	/* overflow can't happen! */
+#ifdef XAUTH
+    passert(st->st_oakley.xauth == 0);
+#endif    
     st->st_whack_sock = NULL_FD;
     DBG(DBG_CONTROL, DBG_log("creating state object #%lu at %p",
 	st->st_serialno, (void *) st));
@@ -437,7 +443,8 @@ delete_states_by_connection(struct connection *c)
 		    set_cur_state(this);
 		    plog("deleting state (%s)"
 			, enum_show(&state_names, this->st_state));
-		    passert(this->st_event != NULL);
+		    /* MCR I can't really see a reason for this. */
+		    /* passert(this->st_event != NULL); */
 		    delete_state(this);
 		    cur_state = old_cur_state;
 #ifdef DEBUG
@@ -532,6 +539,8 @@ duplicate_state(struct state *st)
 
     nst->st_doi = st->st_doi;
     nst->st_situation = st->st_situation;
+    nst->quirks = st->quirks;
+    nst->hidden_variables = st->hidden_variables;
 
 #   define clone_chunk(ch, name) \
 	clonetochunk(nst->ch, st->ch.ptr, st->ch.len, name)
@@ -547,6 +556,21 @@ duplicate_state(struct state *st)
 
     return nst;
 }
+
+#if 1
+void for_each_state(void *(f)(struct state *, void *data), void *data)
+{
+	struct state *st, *ocs = cur_state;
+	int i;
+	for (i=0; i<STATE_TABLE_SIZE; i++) {
+		for (st = statetable[i]; st != NULL; st = st->st_hashchain_next) {
+			set_cur_state(st);
+			f(st, data);
+		}
+	}
+	cur_state = ocs;
+}
+#endif
 
 /*
  * Find a state object.
@@ -566,10 +590,33 @@ find_state(const u_char *icookie
 	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0)
 	{
 	    DBG(DBG_CONTROL,
-		DBG_log("peer and cookies match, provided msgid %08x vs %08x",
-			ntohl(msgid), ntohl(st->st_msgid)));
+		DBG_log("peer and cookies match on #%ld, provided msgid %08x vs %08x"
+			, st->st_serialno
+			, ntohl(msgid), ntohl(st->st_msgid)));
 	    if(msgid == st->st_msgid)
 		break;
+
+#if 0
+	    if(msgid == st->st_msgid2)
+	    {
+		u_char tmpiv[MAX_DIGEST_LEN];
+
+		/* oh, damn, life is bad, they reused the old one */
+		plog("find_state: old message id %08x reused, Coping."
+		     , msgid);
+		
+		/* swap msgid/msgid2 and the IVs */
+		/* msgid already == st->st_msgid2 */
+		st->st_msgid2 = st->st_msgid;
+		st->st_msgid = msgid;
+		
+		save_iv(st, tmpiv);
+		set_iv(st, st->st_old_iv);
+		memcpy(st->st_old_iv, tmpiv, MAX_DIGEST_LEN);
+
+		break;
+	    }
+#endif
 	}
 	st = st->st_hashchain_next;
     }
@@ -583,6 +630,64 @@ find_state(const u_char *icookie
 		, enum_show(&state_names, st->st_state)));
 
     return st;
+}
+
+/*
+ * Find a state object.
+ */
+struct state *
+find_info_state(const u_char *icookie
+		, const u_char *rcookie
+		, const ip_address *peer
+		, msgid_t /*network order*/ msgid)
+{
+    struct state *st = *state_hash(icookie, rcookie, peer);
+    int i;
+    bool found = FALSE;
+    struct state *best = NULL;
+
+    for(;st != (struct state *) NULL;
+	st = st->st_hashchain_next)
+    {
+	if (sameaddr(peer, &st->st_connection->spd.that.host_addr)
+	    && memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
+	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0)
+	{
+
+	    DBG(DBG_CONTROL,
+		DBG_log("peer and cookies match on #%ld, provided msgid %08x vs %08x"
+			, st->st_serialno
+			, ntohl(msgid), ntohl(st->st_msgid)));
+
+	    if(msgid == st->st_msgid)
+		best = st;                 /* perfect match is best */
+	    else
+	    {
+		found = FALSE;
+		for(i=0; i < MAX_INFO_EXG && !found; i++)
+		{
+		    if(msgid == st->st_infoid[i]) found=TRUE;
+		    /* need to do something with the IVs, I think */
+		    /* XXX but not yet */
+		}
+
+		/* only pick this one if there is no better one */
+		if(found) {
+		    if(best == NULL) best = st;
+		}
+	    }
+	}
+    }
+
+    DBG(DBG_CONTROL,
+	if (best == NULL)
+	    DBG_log("state object not found");
+	else
+	    DBG_log("state object #%lu found, in %s"
+		, best->st_serialno
+		, enum_show(&state_names, best->st_state)));
+
+    return best;
 }
 
 /* Find the state that sent a packet

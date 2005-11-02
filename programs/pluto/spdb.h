@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: spdb.h,v 1.12 2002/04/24 07:36:00 mcr Exp $
+ * RCSID $Id: spdb.h,v 1.13 2003/12/29 22:46:08 mcr Exp $
  */
 
 /* database of SA properties */
@@ -58,7 +58,7 @@ struct db_sa {
 /* The oakley sadb is subscripted by a bitset with members
  * from POLICY_PSK and POLICY_RSASIG.
  */
-extern struct db_sa oakley_sadb[1 << 2];
+extern struct db_sa oakley_sadb[1 << 4];
 
 /* The ipsec sadb is subscripted by a bitset with members
  * from POLICY_ENCRYPT, POLICY_AUTHENTICATE, POLICY_COMPRESS

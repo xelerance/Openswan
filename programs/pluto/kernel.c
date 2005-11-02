@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel.c,v 1.193.2.1 2003/12/10 00:58:46 ken Exp $
+ * RCSID $Id: kernel.c,v 1.198.2.3 2004/04/16 12:33:10 mcr Exp $
  */
 
 #include <stddef.h>
@@ -59,6 +59,20 @@
 #include "server.h"
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 #include "keys.h"
+
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
+
+#ifdef NAT_TRAVERSAL
+#include "packet.h"  /* for pb_stream in nat_traversal.h */
+#include "nat_traversal.h"
+#endif
+
+#ifdef NAT_TRAVERSAL
+#include "packet.h"  /* for pb_stream in nat_traversal.h */
+#include "nat_traversal.h"
+#endif
 
 bool can_do_IPcomp = TRUE;  /* can system actually perform IPCOMP? */
 
@@ -419,6 +433,7 @@ do_command(struct connection *c, struct spd_route *sr, const char *verb)
 	    nexthop_str[ADDRTOT_BUF],
 	    me_str[ADDRTOT_BUF],
 	    myid_str[IDTOA_BUF],
+	    srcip_str[ADDRTOT_BUF+sizeof("PLUTO_MY_SOURCEIP=")+4],
 	    myclient_str[SUBNETTOT_BUF],
 	    myclientnet_str[ADDRTOT_BUF],
 	    myclientmask_str[ADDRTOT_BUF],
@@ -452,7 +467,21 @@ do_command(struct connection *c, struct spd_route *sr, const char *verb)
 	maskof(&sr->that.client, &ta);
 	addrtot(&ta, 0, peerclientmask_str, sizeof(peerclientmask_str));
 
-#ifdef X509
+	srcip_str[0]='\0';
+	if(addrbytesptr(&sr->this.host_srcip, NULL) != 0
+	   && !isanyaddr(&sr->this.host_srcip))
+	{
+	    char *p;
+	    int   l;
+	    strncat(srcip_str, "PLUTO_MY_SOURCEIP=", sizeof(srcip_str));
+	    strncat(srcip_str, "'", sizeof(srcip_str));
+	    l = strlen(srcip_str);
+	    p = srcip_str + l;
+	    
+	    addrtot(&sr->this.host_srcip, 0, p, sizeof(srcip_str));
+	    strncat(srcip_str, "'", sizeof(srcip_str));
+	}
+
 	{
 	    struct pubkey_list *p;
 	    char peerca_str[IDTOA_BUF];
@@ -471,7 +500,6 @@ do_command(struct connection *c, struct spd_route *sr, const char *verb)
 			}
 		}
 	}
-#endif
 
 	if (-1 == snprintf(cmd, sizeof(cmd)
 	    , "2>&1 "	/* capture stderr along with stdout */
@@ -495,6 +523,7 @@ do_command(struct connection *c, struct spd_route *sr, const char *verb)
 	    "PLUTO_PEER_PORT='%u' "
 	    "PLUTO_PEER_PROTOCOL='%u' "
 	    "PLUTO_PEER_CA='%s' "
+	    "%s "       /* PLUTO_MY_SRCIP */ 			   
 	    "%s"	/* actual script */
 	    , verb, verb_suffix
 	    , c->name
@@ -515,6 +544,7 @@ do_command(struct connection *c, struct spd_route *sr, const char *verb)
 	    , sr->that.port
 	    , sr->that.protocol
 	    , secure_peerca_str
+	    , srcip_str
 	    , sr->this.updown == NULL? DEFAULT_UPDOWN : sr->this.updown))
 	{
 	    loglog(RC_LOG_SERIOUS, "%s%s command too long!", verb, verb_suffix);
@@ -657,6 +687,9 @@ could_route(struct connection *c)
 
     /* if routing would affect IKE messages, reject */
     if (!no_klips
+#ifdef NAT_TRAVERSAL
+    && c->spd.this.host_port != NAT_T_IKE_FLOAT_PORT
+#endif
     && c->spd.this.host_port != IKE_UDP_PORT
     && addrinsubnet(&c->spd.that.host_addr, &c->spd.that.client))
     {
@@ -1922,6 +1955,20 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 		SADB_EALG_3DESCBC, SADB_AALG_SHA1HMAC },
 	};
 
+#ifdef NAT_TRAVERSAL
+	u_int8_t natt_type = 0;
+	u_int16_t natt_sport = 0, natt_dport = 0;
+	ip_address natt_oa;
+
+	if (st->nat_traversal & NAT_T_DETECTED) {
+	    natt_type = (st->nat_traversal & NAT_T_WITH_PORT_FLOATING) ?
+		ESPINUDP_WITH_NON_ESP : ESPINUDP_WITH_NON_IKE;
+	    natt_sport = inbound? c->spd.that.host_port : c->spd.this.host_port;
+	    natt_dport = inbound? c->spd.this.host_port : c->spd.that.host_port;
+	    natt_oa = st->nat_oa;
+	}
+#endif
+
 	for (ei = esp_info; ; ei++)
 	{
 	    if (ei == &esp_info[elemsof(esp_info)])
@@ -1962,6 +2009,13 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	said_next->enckey = esp_dst_keymat;
 	said_next->encapsulation = encapsulation;
 	said_next->reqid = c->spd.reqid + 1;
+#ifdef NAT_TRAVERSAL
+	said_next->natt_sport = natt_sport;
+	said_next->natt_dport = natt_dport;
+	said_next->transid = st->st_esp.attrs.transid;
+	said_next->natt_type = natt_type;
+	said_next->natt_oa = &natt_oa;
+#endif	
 	said_next->text_said = text_said;
 
 	if (!kernel_ops->add_sa(said_next, replace))
@@ -2764,7 +2818,68 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
     DBG(DBG_CONTROL, DBG_log("if I knew how, I'd eroute() and teardown_ipsec_sa()"));
 #endif /* !KLIPS */
 }
+#ifdef NAT_TRAVERSAL
+#ifdef KLIPS
+static bool update_nat_t_ipsec_esp_sa (struct state *st, bool inbound)
+{
+	struct connection *c = st->st_connection;
+	char text_said[SATOT_BUF];
+	struct kernel_sa sa;
+	ip_address
+		src = inbound? c->spd.that.host_addr : c->spd.this.host_addr,
+		dst = inbound? c->spd.this.host_addr : c->spd.that.host_addr;
 
+
+	ipsec_spi_t esp_spi = inbound? st->st_esp.our_spi : st->st_esp.attrs.spi;
+
+	u_int16_t
+		natt_sport = inbound? c->spd.that.host_port : c->spd.this.host_port,
+		natt_dport = inbound? c->spd.this.host_port : c->spd.that.host_port;
+
+	set_text_said(text_said, &dst, esp_spi, SA_ESP);
+
+	memset(&sa, 0, sizeof(sa));
+	sa.spi = esp_spi;
+	sa.src = &src;
+	sa.dst = &dst;
+	sa.text_said = text_said;
+	sa.authalg = st->st_esp.attrs.auth;
+	sa.natt_sport = natt_sport;
+	sa.natt_dport = natt_dport;
+	sa.transid = st->st_esp.attrs.transid;
+
+        return kernel_ops->add_sa(&sa, TRUE);
+
+}
+#endif
+
+bool update_ipsec_sa (struct state *st USED_BY_KLIPS)
+{
+#ifdef KLIPS
+	if (IS_IPSEC_SA_ESTABLISHED(st->st_state)) {
+		if ((st->st_esp.present) && (
+			(!update_nat_t_ipsec_esp_sa (st, TRUE)) ||
+			(!update_nat_t_ipsec_esp_sa (st, FALSE)))) {
+			return FALSE;
+		}
+	}
+	else if (IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(st->st_state)) {
+		if ((st->st_esp.present) && (!update_nat_t_ipsec_esp_sa (st, FALSE))) {
+			return FALSE;
+		}
+	}
+	else {
+		DBG_log("assert failed at %s:%d st_state=%d", __FILE__, __LINE__,
+			st->st_state);
+		return FALSE;
+	}
+	return TRUE;
+#else /* !KLIPS */
+    DBG(DBG_CONTROL, DBG_log("if I knew how, I'd update_ipsec_sa()"));
+    return TRUE;
+#endif /* !KLIPS */
+}
+#endif
 
 /*
  * Local Variables:

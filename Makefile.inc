@@ -11,7 +11,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.inc,v 1.61.2.1 2003/12/09 06:50:51 ken Exp $
+# RCSID $Id: Makefile.inc,v 1.68.2.6 2004/06/23 12:44:59 ken Exp $
 
 
 
@@ -115,8 +115,8 @@ DOCDIR=${DESTDIR}${FINALDOCDIR}
 
 # where per-conn pluto logs go
 VARDIR?=/var
-LOGDIR?=${VARDIR}/log
-FINALLOGDIR?=${DESTDIR}${LOGDIR}
+FINALLOGDIR?=${VARDIR}/log
+LOGDIR?=${DESTDIR}${FINALLOGDIR}
 
 
 # An attempt is made to automatically figure out where boot/shutdown scripts 
@@ -239,8 +239,11 @@ RH_KERNELSRC?=/usr/src/linux-2.4
 # installed one in RH 7.2, won't work - you wind up depending upon
 # openssl.
 
-#BIND9STATICLIBDIR?=/sandel/lib
 BIND9STATICLIBDIR?=/usr/local/lib
+
+# if you install elsewere, you may need to point the include files to it.
+#BIND9STATICLIBDIR?=/sandel/lib
+#BIND9INCDIR?=/sandel/include
 
 # FreeSWAN 3.x will require bind9. 
 USE_LWRES?=false
@@ -253,6 +256,7 @@ USE_IPROUTE2?=true
 #  2.0 	- ipfwadm
 #  2.2  - ipchains
 #  2.4  - iptables
+#  2.6  - iptables
 IPSEC_FIREWALLTYPE=iptables
 
 # whether or not to include ipsec policy code into pluto.
@@ -269,12 +273,30 @@ USE_KEYRR?=true
 # include support for KERNEL 2.5/2.6 IPsec in pluto
 USE_KERNEL26?=true
 
-# include X.509 code from Andreas Steffen.
-# note that it is turned on by default for nightly builds of HEAD
-# but turned off in regular FreeS/WAN distributions.
-#
-#USE_X509?=false
-USE_X509?=true
+# do we have pthreads available?  Ususally yes, but on some embedded
+# systems, we don't.
+HAVE_THREADS?=true
+
+# include XAUTH authentication system.
+# off by default, since XAUTH is tricky, and you can get into security trouble
+USE_XAUTH?=false
+
+# when doing XAUTH, include PAM support as well, requires threads.
+USE_XAUTHPAM?=false
+
+# whether to support NAT traversal (in pluto!)
+USE_NAT_TRAVERSAL?=true
+
+# where to support NAT-T in transport mode (needed for Win2K NAT-T Interop)
+USE_NAT_TRAVERSAL_TRANSPORT_MODE?=true
+
+# should opportunistic encryption be turned on by default?
+USE_OE?=no
+ifeq ($(USE_OE),no)
+# warning: examples subdirectory is statically defined here
+OE_FLAG=\#Disable Opportunistic Encryption\\ninclude ${FINALCONFDDIR}/examples/no_oe.conf
+else
+endif
 
 # set this to space where a linked/configured tree can be created by 
 # preprhkern4module. Only needed if you are going to be created RPMs

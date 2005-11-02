@@ -12,14 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_ext_process.c,v 1.11 2003/10/31 02:27:55 mcr Exp $
+ * RCSID $Id: pfkey_v2_ext_process.c,v 1.14 2004/02/03 03:13:59 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_netlink.c.
  */
 
-char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.11 2003/10/31 02:27:55 mcr Exp $";
+char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.14 2004/02/03 03:13:59 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -353,6 +353,15 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		sap = (unsigned char **)&(extr->eroute->er_emask.sen_ip_dst);
 		portp = &(extr->eroute->er_emask.sen_dport);
 		break;
+#ifdef NAT_TRAVERSAL
+	case SADB_X_EXT_NAT_T_OA:
+		KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:pfkey_address_process: "
+			    "found NAT-OA address.\n");
+		sap = (unsigned char **)&(extr->ips->ips_natt_oa);
+		extr->ips->ips_natt_oa_size = saddr_len;
+		break;
+#endif
 	default:
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
@@ -366,6 +375,9 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 	case SADB_EXT_ADDRESS_DST:
 	case SADB_EXT_ADDRESS_PROXY:
 	case SADB_X_EXT_ADDRESS_DST2:
+#ifdef NAT_TRAVERSAL
+	case SADB_X_EXT_NAT_T_OA:
+#endif
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
 			    "allocating %d bytes for saddr.\n",
@@ -681,6 +693,95 @@ errlab:
 	return error;
 }
 
+
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+int
+pfkey_x_nat_t_type_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
+{
+	int error = 0;
+	struct sadb_x_nat_t_type *pfkey_x_nat_t_type = (struct sadb_x_nat_t_type *)pfkey_ext;
+
+	if(!pfkey_x_nat_t_type) {
+		printk("klips_debug:pfkey_x_nat_t_type_process: "
+		       "null pointer passed in\n");
+		SENDERR(EINVAL);
+	}
+
+	KLIPS_PRINT(debug_pfkey,
+		    "klips_debug:pfkey_x_nat_t_type_process: %d.\n",
+			pfkey_x_nat_t_type->sadb_x_nat_t_type_type);
+
+	if(!extr || !extr->ips) {
+		KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:pfkey_nat_t_type_process: "
+			    "extr or extr->ips is NULL, fatal\n");
+		SENDERR(EINVAL);
+	}
+
+	switch(pfkey_x_nat_t_type->sadb_x_nat_t_type_type) {
+		case ESPINUDP_WITH_NON_IKE: /* with Non-IKE (older version) */
+		case ESPINUDP_WITH_NON_ESP: /* with Non-ESP */
+
+			extr->ips->ips_natt_type = pfkey_x_nat_t_type->sadb_x_nat_t_type_type;
+			break;
+		default:
+			KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:pfkey_x_nat_t_type_process: "
+			    "unknown type %d.\n",
+			    pfkey_x_nat_t_type->sadb_x_nat_t_type_type);
+			SENDERR(EINVAL);
+			break;
+	}
+
+errlab:
+	return error;
+}
+
+int
+pfkey_x_nat_t_port_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
+{
+	int error = 0;
+	struct sadb_x_nat_t_port *pfkey_x_nat_t_port = (struct sadb_x_nat_t_port *)pfkey_ext;
+
+	if(!pfkey_x_nat_t_port) {
+		printk("klips_debug:pfkey_x_nat_t_port_process: "
+		       "null pointer passed in\n");
+		SENDERR(EINVAL);
+	}
+
+	KLIPS_PRINT(debug_pfkey,
+		    "klips_debug:pfkey_x_nat_t_port_process: %d/%d.\n",
+			pfkey_x_nat_t_port->sadb_x_nat_t_port_exttype,
+			pfkey_x_nat_t_port->sadb_x_nat_t_port_port);
+
+	if(!extr || !extr->ips) {
+		KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:pfkey_nat_t_type_process: "
+			    "extr or extr->ips is NULL, fatal\n");
+		SENDERR(EINVAL);
+	}
+
+	switch(pfkey_x_nat_t_port->sadb_x_nat_t_port_exttype) {
+		case SADB_X_EXT_NAT_T_SPORT:
+			extr->ips->ips_natt_sport = pfkey_x_nat_t_port->sadb_x_nat_t_port_port;
+			break;
+		case SADB_X_EXT_NAT_T_DPORT:
+			extr->ips->ips_natt_dport = pfkey_x_nat_t_port->sadb_x_nat_t_port_port;
+			break;
+		default:
+			KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:pfkey_x_nat_t_port_process: "
+			    "unknown exttype %d.\n",
+			    pfkey_x_nat_t_port->sadb_x_nat_t_port_exttype);
+			SENDERR(EINVAL);
+			break;
+	}
+
+errlab:
+	return error;
+}
+#endif
+
 int
 pfkey_x_debug_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 {
@@ -749,6 +850,17 @@ errlab:
 
 /*
  * $Log: pfkey_v2_ext_process.c,v $
+ * Revision 1.14  2004/02/03 03:13:59  mcr
+ * 	no longer #ifdef out NON_ESP mode. That was a mistake.
+ *
+ * Revision 1.13  2003/12/15 18:13:12  mcr
+ * 	when compiling with NAT traversal, don't assume that the
+ * 	kernel has been patched, unless CONFIG_IPSEC_NAT_NON_ESP
+ * 	is set.
+ *
+ * Revision 1.12  2003/12/10 01:14:27  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.11  2003/10/31 02:27:55  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *

@@ -1,5 +1,5 @@
 # /etc/ipsec.conf - FreeS/WAN IPsec configuration file
-# RCSID $Id: ipsec.conf.in,v 1.11 2003/06/13 23:28:41 sam Exp $
+# RCSID $Id: ipsec.conf.in,v 1.12 2004/01/20 19:37:13 sam Exp $
 
 # This file:  @FINALEXAMPLECONFDIR@/ipsec.conf-sample
 #
@@ -41,3 +41,5 @@ config setup
 #sample#		# To authorize this connection, but not actually start it, at startup,
 #sample#		# uncomment this.
 #sample#		#auto=start
+
+@OE_FLAG@

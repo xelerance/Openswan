@@ -11,12 +11,13 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: server.h,v 1.25 2003/10/31 02:45:23 mcr Exp $
+ * RCSID $Id: server.h,v 1.27 2003/12/30 06:54:03 mcr Exp $
  */
 
 #ifndef _SERVER_H
 #define _SERVER_H
 
+extern bool no_retransmits;
 extern int ctl_fd;	/* file descriptor of control (whack) socket */
 extern struct sockaddr_un ctl_addr;	/* address of control (whack) socket */
 
@@ -43,6 +44,9 @@ struct iface {
     ip_address addr;	/* interface IP address */
     int fd;	/* file descriptor of socket for IKE UDP messages */
     struct iface *next;
+#ifdef NAT_TRAVERSAL
+    bool ike_float;
+#endif
     enum { IFN_ADD, IFN_KEEP, IFN_DELETE } change;
 };
 

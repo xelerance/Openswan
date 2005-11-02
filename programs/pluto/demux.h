@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: demux.h,v 1.24 2003/10/31 02:45:23 mcr Exp $
+ * RCSID $Id: demux.h,v 1.27 2004/01/27 23:24:51 mcr Exp $
  */
 
 #ifndef _DEMUX_H
@@ -19,9 +19,16 @@
 
 #include "server.h"
 
+#include "quirks.h"
+
 struct state;	/* forward declaration of tag */
 extern void init_demux(void);
+#ifdef NAT_TRAVERSAL
+#define send_packet(st,wh) _send_packet(st,wh,TRUE)
+extern bool _send_packet(struct state *st, const char *where, bool verbose);
+#else
 extern bool send_packet(struct state *st, const char *where);
+#endif
 extern void comm_handle(const struct iface *ifp);
 
 extern u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
@@ -70,6 +77,7 @@ struct msg_digest {
 	digest[PAYLIMIT],
 	*digest_roof,
 	*chain[ISAKMP_NEXT_ROOF];
+    struct isakmp_quirks quirks;
 };
 
 extern void release_md(struct msg_digest *md);
@@ -83,7 +91,8 @@ typedef enum {
     STF_SUSPEND,    /* unfinished -- don't release resources */
     STF_OK,	/* success */
     STF_INTERNAL_ERROR,	/* discard everything, we failed */
-    STF_FAIL	/* discard everything, something failed.  notification_t added. */
+    STF_FAIL,	/* discard everything, something failed.  notification_t added. */
+    STF_FATAL,  /* just stop. we can't continue */
 } stf_status;
 
 typedef stf_status state_transition_fn(struct msg_digest *md);

@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: x509.c,v 1.5 2003/11/07 02:09:29 mcr Exp $
+ * RCSID $Id: x509.c,v 1.6.2.4 2004/06/17 00:35:21 ken Exp $
  */
 
 #include <stdlib.h>
@@ -51,6 +51,7 @@
 #include "fetch.h"
 #include "pkcs.h"
 #include "x509more.h"
+#include "paths.h"
 
 /* chained lists of X.509 host/user and ca certificates and crls */
 
@@ -1691,7 +1692,7 @@ insert_crl(chunk_t blob, chunk_t crl_uri)
 	{
 	    if (crl->thisUpdate > oldcrl->thisUpdate)
 	    {
-#ifdef X509_FETCH
+#ifdef HAVE_THREADS
 		/* keep any known CRL distribution points */
 		add_distribution_points(oldcrl->distributionPoints
 		    , &crl->distributionPoints);
@@ -1766,12 +1767,10 @@ load_crls(void)
 		if (load_coded_file(filename, NULL, "crl", &blob, &pgp))
 		{
 		    chunk_t crl_uri;
-		    crl_uri.len = 7 + sizeof(CRL_PATH) + strlen(filename);
+                    crl_uri.len = 8 + strlen(CRL_PATH) + strlen(filename);
 		    crl_uri.ptr = alloc_bytes(crl_uri.len + 1, "crl uri");
-
 		    /* build CRL file URI */
-		    sprintf(crl_uri.ptr, "file://%s/%s", CRL_PATH, filename);
-
+		    snprintf(crl_uri.ptr, crl_uri.len +1, "file://%s/%s", CRL_PATH, filename);
 		    insert_crl(blob, crl_uri);
 		}
 		free(filelist[n]);
@@ -2339,7 +2338,7 @@ check_revocation(const x509crl_t *crl, chunk_t serial)
 void
 check_crls(void)
 {
-#ifdef X509_FETCH
+#ifdef HAVE_THREADS
     x509crl_t *crl;
     time_t current_time = time(NULL);
 
@@ -2376,6 +2375,13 @@ verify_x509cert(const x509cert_t *cert, bool strict, time_t *until)
     bool rootCA;
 
     *until = cert->notAfter;
+
+if (same_dn(cert->issuer, cert->subject))
+    {
+	plog("end certificate with identical subject and issuer not accepted");
+	return FALSE;
+    }
+
 
     do
     {
@@ -2433,7 +2439,7 @@ verify_x509cert(const x509cert_t *cert, bool strict, time_t *until)
 	    unlock_crl_list("verify_x509cert");
 	    plog("issuer crl not found");
 
-#ifdef X509_FETCH
+#ifdef HAVE_THREADS
 	    if (cert->crlDistributionPoints != NULL)
 	    {
 		add_fetch_request(cert->issuer, cert->crlDistributionPoints);
@@ -2448,7 +2454,7 @@ verify_x509cert(const x509cert_t *cert, bool strict, time_t *until)
 		DBG_log("issuer crl found")
 	    )
 
-#ifdef X509_FETCH
+#ifdef HAVE_THREADS
 	    add_distribution_points(cert->crlDistributionPoints
 	    	, &crl->distributionPoints);
 #endif
@@ -2480,7 +2486,7 @@ verify_x509cert(const x509cert_t *cert, bool strict, time_t *until)
 		    plog("crl update is overdue since %s",
 			timetoa(&crl->nextUpdate, TRUE));
 
-#ifdef X509_FETCH
+#ifdef HAVE_THREADS
 		    /* try to fetch a crl update */
 		    if (cert->crlDistributionPoints != NULL)
 		    {
@@ -2645,7 +2651,7 @@ list_crls(bool utc, bool strict)
 	dntoa(buf, BUF_LEN, crl->issuer);
 	whack_log(RC_COMMENT, "       issuer:  '%s'", buf);
 
-#ifdef X509_FETCH
+#ifdef HAVE_THREADS
 	/* list all distribution points */
 	list_distribution_points(crl->distributionPoints);
 #endif
@@ -2768,11 +2774,11 @@ decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 {
     struct payload_digest *p;
 
-     for (p = md->chain[ISAKMP_NEXT_CR]; p != NULL; p = p->next)
+    for (p = md->chain[ISAKMP_NEXT_CR]; p != NULL; p = p->next)
     {
 	struct isakmp_cr *const cr = &p->payload.cr;
 	chunk_t ca_name;
-	
+	    
 	ca_name.len = pbs_left(&p->pbs);
 	ca_name.ptr = (ca_name.len > 0)? p->pbs.cur : NULL;
 
@@ -2780,12 +2786,12 @@ decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 
 	if (cr->isacr_type == CERT_X509_SIGNATURE)
 	{
-	    char buf[IDTOA_BUF];
+	    char requested_ca_name[IDTOA_BUF];
 
 	    DBG(DBG_PARSING | DBG_CONTROL,
-		dntoa_or_null(buf, IDTOA_BUF, ca_name, "%any");
-		DBG_log("requested CA: '%s'", buf);
-	    )
+		dntoa_or_null(requested_ca_name, IDTOA_BUF, ca_name, "%any");
+		DBG_log("requested CA: '%s'", requested_ca_name);
+		)
 	    
 	    if (ca_name.len > 0)
 	    {
@@ -2799,8 +2805,9 @@ decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 	    }
 	}
 	else
-	    loglog(RC_LOG_SERIOUS, "ignoring %s certificate request payload",
-		   enum_show(&cert_type_names, cr->isacr_type));
+	    loglog(RC_LOG_SERIOUS
+		   , "ignoring %s certificate request payload"
+		   , enum_show(&cert_type_names, cr->isacr_type));
     }
 }
 
@@ -2858,8 +2865,8 @@ build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
       if (!out_chunk(ca, &cr_pbs, "CA"))
 	return FALSE;
       
-      close_output_pbs(&cr_pbs);
     }
+    close_output_pbs(&cr_pbs);
     return TRUE;
 }
 
@@ -2911,3 +2918,9 @@ add_x509_public_key(x509cert_t *cert , time_t until
     }
 }
 
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

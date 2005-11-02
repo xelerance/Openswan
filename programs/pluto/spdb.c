@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: spdb.c,v 1.89 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: spdb.c,v 1.98.2.2 2004/04/16 12:33:10 mcr Exp $
  */
 
 #include <stdio.h>
@@ -32,6 +32,9 @@
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "state.h"
 #include "packet.h"
@@ -48,7 +51,31 @@
 #define AD(x) x, elemsof(x)	/* Array Description */
 #define AD_NULL NULL, 0
 
+#ifdef NAT_TRAVERSAL
+#include "nat_traversal.h"
+#endif
+
 /**************** Oakely (main mode) SA database ****************/
+
+/*
+ * the XAUTH server/client stuff is a bit confusing.
+ * 
+ * XAUTH overloads the RSA/PSK types with four more types which
+ * mean RSA or PSK, but also include whether one is negotiating
+ * that the inititator with be the XAUTH client, or the responder will be
+ * XAUTH client. It seems unusual that the responder would be the one
+ * to undergo XAUTH, since usually it is a roadwarrior to a gateway,
+ *
+ * however, the gateway may decide it needs to do a new phase 1, for
+ * instance.
+ *
+ * So, when reading this, say "I'm an XAUTH client and I'm initiating",
+ * or "I'm an XAUTH server and I'm initiating". Responses for the responder
+ * (and validation of the response by the initiator) are determined by the
+ * parse_sa_isakmp() part, which folds the XAUTH types into their native
+ * types to figure out if it is acceptable to us.
+ *
+ */
 
 /* arrays of attributes for transforms, preshared key */
 
@@ -80,6 +107,66 @@ static struct db_attr otpsk1536des3sha[] = {
 	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1536 },
 	};
 
+/* arrays of attributes for transforms, preshared key, Xauth version */
+
+#ifdef XAUTH
+static struct db_attr otpsk1024des3md5_xauthc[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_MD5 },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHInitPreShared },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1024 },
+	};
+
+static struct db_attr otpsk1536des3md5_xauthc[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_MD5 },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHInitPreShared },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1536 },
+	};
+
+static struct db_attr otpsk1024des3sha_xauthc[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_SHA },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHInitPreShared },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1024 },
+	};
+
+static struct db_attr otpsk1536des3sha_xauthc[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_SHA },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHInitPreShared },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1536 },
+	};
+
+static struct db_attr otpsk1024des3md5_xauths[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_MD5 },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHRespPreShared },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1024 },
+	};
+
+static struct db_attr otpsk1536des3md5_xauths[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_MD5 },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHRespPreShared },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1536 },
+	};
+
+static struct db_attr otpsk1024des3sha_xauths[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_SHA },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHRespPreShared },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1024 },
+	};
+
+static struct db_attr otpsk1536des3sha_xauths[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_SHA },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHRespPreShared },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1536 },
+	};
+#endif
+
 /* arrays of attributes for transforms, RSA signatures */
 
 static struct db_attr otrsasig1024des3md5[] = {
@@ -110,6 +197,72 @@ static struct db_attr otrsasig1536des3sha[] = {
 	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1536 },
 	};
 
+#ifdef XAUTH
+/* arrays of attributes for transforms, RSA signatures, with/Xauth */
+/* xauth c is when Initiator will be the xauth client */
+static struct db_attr otrsasig1024des3md5_xauthc[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_MD5 },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHInitRSA },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1024 },
+	};
+
+static struct db_attr otrsasig1536des3md5_xauthc[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_MD5 },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHInitRSA },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1536 },
+	};
+
+static struct db_attr otrsasig1024des3sha_xauthc[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_SHA },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHInitRSA },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1024 },
+	};
+
+static struct db_attr otrsasig1536des3sha_xauthc[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_SHA },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHInitRSA },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1536 },
+	};
+
+/* arrays of attributes for transforms, RSA signatures, with/Xauth */
+/*
+ * xauth s is when the Responder will be the xauth client
+ * the only time we do this is when we are initiating to a client
+ * that we lost contact with. this is rare.
+ */
+static struct db_attr otrsasig1024des3md5_xauths[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_MD5 },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHRespRSA },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1024 },
+	};
+
+static struct db_attr otrsasig1536des3md5_xauths[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_MD5 },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHInitRSA },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1536 },
+	};
+
+static struct db_attr otrsasig1024des3sha_xauths[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_SHA },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHRespRSA },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1024 },
+	};
+
+static struct db_attr otrsasig1536des3sha_xauths[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, OAKLEY_3DES_CBC },
+	{ OAKLEY_HASH_ALGORITHM, OAKLEY_SHA },
+	{ OAKLEY_AUTHENTICATION_METHOD, XAUTHRespRSA },
+	{ OAKLEY_GROUP_DESCRIPTION, OAKLEY_GROUP_MODP1536 },
+	};
+#endif
+
 /* We won't accept this, but by proposing it, we get to test
  * our rejection.  We better not propose it to an IKE daemon
  * that will accept it!
@@ -135,12 +288,42 @@ static struct db_trans oakley_trans_psk[] = {
 	{ KEY_IKE, AD(otpsk1024des3md5) },
     };
 
+#ifdef XAUTH
+static struct db_trans oakley_trans_psk_xauthc[] = {
+	{ KEY_IKE, AD(otpsk1536des3md5_xauthc) },
+	{ KEY_IKE, AD(otpsk1536des3sha_xauthc) },
+	{ KEY_IKE, AD(otpsk1024des3sha_xauthc) },
+	{ KEY_IKE, AD(otpsk1024des3md5_xauthc) },
+    };
+static struct db_trans oakley_trans_psk_xauths[] = {
+	{ KEY_IKE, AD(otpsk1536des3md5_xauths) },
+	{ KEY_IKE, AD(otpsk1536des3sha_xauths) },
+	{ KEY_IKE, AD(otpsk1024des3sha_xauths) },
+	{ KEY_IKE, AD(otpsk1024des3md5_xauths) },
+    };
+#endif
+
 static struct db_trans oakley_trans_rsasig[] = {
 	{ KEY_IKE, AD(otrsasig1536des3md5) },
 	{ KEY_IKE, AD(otrsasig1536des3sha) },
 	{ KEY_IKE, AD(otrsasig1024des3sha) },
 	{ KEY_IKE, AD(otrsasig1024des3md5) },
     };
+
+#ifdef XAUTH
+static struct db_trans oakley_trans_rsasig_xauthc[] = {
+	{ KEY_IKE, AD(otrsasig1536des3md5_xauthc) },
+	{ KEY_IKE, AD(otrsasig1536des3sha_xauthc) },
+	{ KEY_IKE, AD(otrsasig1024des3sha_xauthc) },
+	{ KEY_IKE, AD(otrsasig1024des3md5_xauthc) },
+    };
+static struct db_trans oakley_trans_rsasig_xauths[] = {
+	{ KEY_IKE, AD(otrsasig1536des3md5_xauths) },
+	{ KEY_IKE, AD(otrsasig1536des3sha_xauths) },
+	{ KEY_IKE, AD(otrsasig1024des3sha_xauths) },
+	{ KEY_IKE, AD(otrsasig1024des3md5_xauths) },
+    };
+#endif
 
 /* In this table, either PSK or RSA sig is accepted.
  * The order matters, but I don't know what would be best.
@@ -159,6 +342,30 @@ static struct db_trans oakley_trans_pskrsasig[] = {
 	{ KEY_IKE, AD(otpsk1024des3md5) },
     };
 
+#ifdef XAUTH
+static struct db_trans oakley_trans_pskrsasig_xauthc[] = {
+	{ KEY_IKE, AD(otrsasig1536des3md5_xauthc) },
+	{ KEY_IKE, AD(otpsk1536des3md5_xauthc) },
+	{ KEY_IKE, AD(otrsasig1536des3sha_xauthc) },
+	{ KEY_IKE, AD(otpsk1536des3sha_xauthc) },
+	{ KEY_IKE, AD(otrsasig1024des3sha_xauthc) },
+	{ KEY_IKE, AD(otpsk1024des3sha_xauthc) },
+	{ KEY_IKE, AD(otrsasig1024des3md5_xauthc) },
+	{ KEY_IKE, AD(otpsk1024des3md5_xauthc) },
+    };
+
+static struct db_trans oakley_trans_pskrsasig_xauths[] = {
+	{ KEY_IKE, AD(otrsasig1536des3md5_xauths) },
+	{ KEY_IKE, AD(otpsk1536des3md5_xauths) },
+	{ KEY_IKE, AD(otrsasig1536des3sha_xauths) },
+	{ KEY_IKE, AD(otpsk1536des3sha_xauths) },
+	{ KEY_IKE, AD(otrsasig1024des3sha_xauths) },
+	{ KEY_IKE, AD(otpsk1024des3sha_xauths) },
+	{ KEY_IKE, AD(otrsasig1024des3md5_xauths) },
+	{ KEY_IKE, AD(otpsk1024des3md5_xauths) },
+    };
+#endif
+
 /* array of proposals to be conjoined (can only be one for Oakley) */
 
 static struct db_prop oakley_pc_psk[] =
@@ -170,6 +377,26 @@ static struct db_prop oakley_pc_rsasig[] =
 static struct db_prop oakley_pc_pskrsasig[] =
     { { PROTO_ISAKMP, AD(oakley_trans_pskrsasig) } };
 
+#ifdef XAUTH
+static struct db_prop oakley_pc_psk_xauths[] =
+    { { PROTO_ISAKMP, AD(oakley_trans_psk_xauths) } };
+
+static struct db_prop oakley_pc_rsasig_xauths[] =
+    { { PROTO_ISAKMP, AD(oakley_trans_rsasig_xauths) } };
+
+static struct db_prop oakley_pc_pskrsasig_xauths[] =
+    { { PROTO_ISAKMP, AD(oakley_trans_pskrsasig_xauths) } };
+
+static struct db_prop oakley_pc_psk_xauthc[] =
+    { { PROTO_ISAKMP, AD(oakley_trans_psk_xauthc) } };
+
+static struct db_prop oakley_pc_rsasig_xauthc[] =
+    { { PROTO_ISAKMP, AD(oakley_trans_rsasig_xauthc) } };
+
+static struct db_prop oakley_pc_pskrsasig_xauthc[] =
+    { { PROTO_ISAKMP, AD(oakley_trans_pskrsasig_xauthc) } };
+#endif
+
 /* array of proposal conjuncts (can only be one) */
 
 static struct db_prop_conj oakley_props_psk[] = { { AD(oakley_pc_psk) } };
@@ -178,12 +405,53 @@ static struct db_prop_conj oakley_props_rsasig[] = { { AD(oakley_pc_rsasig) } };
 
 static struct db_prop_conj oakley_props_pskrsasig[] = { { AD(oakley_pc_pskrsasig) } };
 
+#ifdef XAUTH
+static struct db_prop_conj oakley_props_psk_xauthc[] = { { AD(oakley_pc_psk_xauthc) } };
+
+static struct db_prop_conj oakley_props_rsasig_xauthc[] = { { AD(oakley_pc_rsasig_xauthc) } };
+
+static struct db_prop_conj oakley_props_pskrsasig_xauthc[] = { { AD(oakley_pc_pskrsasig_xauthc) } };
+
+static struct db_prop_conj oakley_props_psk_xauths[] = { { AD(oakley_pc_psk_xauths) } };
+
+static struct db_prop_conj oakley_props_rsasig_xauths[] = { { AD(oakley_pc_rsasig_xauths) } };
+
+static struct db_prop_conj oakley_props_pskrsasig_xauths[] = { { AD(oakley_pc_pskrsasig_xauths) } };
+#endif
+
 /* the sadb entry, subscripted by POLICY_PSK and POLICY_RSASIG bits */
 struct db_sa oakley_sadb[] = {
-    { AD_NULL },	/* none */
-    { AD(oakley_props_psk) },	/* POLICY_PSK */
+    { AD_NULL },	                /* none */
+    { AD(oakley_props_psk) },	        /* POLICY_PSK */
     { AD(oakley_props_rsasig) },	/* POLICY_RSASIG */
     { AD(oakley_props_pskrsasig) },	/* POLICY_PSK + POLICY_RSASIG */
+#ifdef XAUTH
+    { AD_NULL },                        /* POLICY_XAUTHSERVER + none */
+    { AD(oakley_props_psk_xauths) },    /* POLICY_XAUTHSERVER + PSK */
+    { AD(oakley_props_rsasig_xauths) }, /* POLICY_XAUTHSERVER + RSA */
+    { AD(oakley_props_pskrsasig_xauths)},/* POLICY_XAUTHSERVER + RSA+PSK */
+    { AD_NULL },                        /* POLICY_XAUTHCLIENT + none */
+    { AD(oakley_props_psk_xauthc) },    /* POLICY_XAUTHCLIENT + PSK */
+    { AD(oakley_props_rsasig_xauthc)},  /* POLICY_XAUTHCLIENT + RSA */
+    { AD(oakley_props_pskrsasig_xauthc)},/* POLICY_XAUTHCLIENT + RSA+PSK */
+    { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + none */
+    { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + PSK */
+    { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + RSA */
+    { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + RSA+PSK */
+#else /* XAUTH */
+    { AD_NULL },                        /* POLICY_XAUTHSERVER + none */
+    { AD_NULL },                        /* POLICY_XAUTHSERVER + PSK */
+    { AD_NULL },                        /* POLICY_XAUTHSERVER + RSA */
+    { AD_NULL },                        /* POLICY_XAUTHSERVER + RSA+PSK */
+    { AD_NULL },                        /* POLICY_XAUTHCLIENT + none */
+    { AD_NULL },                        /* POLICY_XAUTHCLIENT + PSK */
+    { AD_NULL },                        /* POLICY_XAUTHCLIENT + RSA */
+    { AD_NULL },                        /* POLICY_XAUTHCLIENT + RSA+PSK */
+    { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + none */
+    { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + PSK */
+    { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + RSA */
+    { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + RSA+PSK */
+#endif /* XAUTH */
     };
 
 /**************** IPsec (quick mode) SA database ****************/
@@ -599,9 +867,35 @@ out_sa(pb_stream *outs
 		    if (p->protoid != PROTO_IPCOMP
 		    || st->st_policy & POLICY_TUNNEL)
 		    {
+#ifdef NAT_TRAVERSAL
+#ifndef I_KNOW_TRANSPORT_MODE_HAS_SECURITY_CONCERN_BUT_I_WANT_IT
+			if ((st->nat_traversal & NAT_T_DETECTED) &&
+				(!(st->st_policy & POLICY_TUNNEL))) {
+				/* Inform user that we will not respect policy and only
+				 * propose Tunnel Mode
+				 */
+				loglog(RC_LOG_SERIOUS, "NAT-Traversal: "
+					"Transport Mode not allowed due to security concerns -- "
+					"using Tunnel mode");
+			}
+#endif
+#endif
 			out_attr(ENCAPSULATION_MODE
+#ifdef NAT_TRAVERSAL
+#ifdef I_KNOW_TRANSPORT_MODE_HAS_SECURITY_CONCERN_BUT_I_WANT_IT
+			    , NAT_T_ENCAPSULATION_MODE(st,st->st_policy)
+#else
+				/* If NAT-T is detected, use UDP_TUNNEL as long as Transport
+				 * Mode has security concerns.
+				 *
+				 * User has been informed of that
+				 */
+			    , NAT_T_ENCAPSULATION_MODE(st,POLICY_TUNNEL)
+#endif
+#else /* ! NAT_TRAVERSAL */
 			    , st->st_policy & POLICY_TUNNEL
 			      ? ENCAPSULATION_MODE_TUNNEL : ENCAPSULATION_MODE_TRANSPORT
+#endif
 			    , attr_desc, attr_val_descs
 			    , &trans_pbs);
 		    }
@@ -675,6 +969,9 @@ decode_long_duration(pb_stream *pbs)
  * single tranform that the peer has accepted.
  * ??? We only check that it is acceptable, not that it is one that we offered!
  *
+ * It also means that we are inR1, and this as implications when we are
+ * doing XAUTH, as it changes the meaning of the XAUTHInit/XAUTHResp.
+ *
  * Only IPsec DOI is accepted (what is the ISAKMP DOI?).
  * Error response is rudimentary.
  *
@@ -685,7 +982,8 @@ parse_isakmp_sa_body(
     pb_stream *sa_pbs,	/* body of input SA Payload */
     const struct isakmp_sa *sa,	/* header of input SA Payload */
     pb_stream *r_sa_pbs,	/* if non-NULL, where to emit winning SA */
-    bool selection,	/* if this SA is a selection, only one tranform can appear */
+    bool selection,	/* if this SA is a selection, only one tranform
+			 * can appear. */
     struct state *st)	/* current state object */
 {
     u_int32_t ipsecdoisit;
@@ -693,6 +991,32 @@ parse_isakmp_sa_body(
     struct isakmp_proposal proposal;
     unsigned no_trans_left;
     int last_transnum;
+    struct connection *c = st->st_connection;
+    struct spd_route *spd, *me = &c->spd;
+    bool xauth_init, xauth_resp;
+    const char *role;
+
+    xauth_init = xauth_resp = FALSE;
+
+    /* calculate the per-end policy which might apply */
+    for(spd = me; spd; spd = spd->next) {
+	if(selection)
+	{ /* this is the initiator, we have proposed, they have answered,
+	   * and we must decide if they proposed what we wanted.
+	   */
+	    role = "initiator";
+	    xauth_init = xauth_init | spd->this.xauth_client;
+	    xauth_resp = xauth_resp | spd->this.xauth_server;
+	}
+	else
+	{ /* this is the responder, they have proposed to us, what
+	   * are we willing to be?
+	   */
+	    role = "responder";
+	    xauth_init = xauth_init | spd->this.xauth_server;
+	    xauth_resp = xauth_resp | spd->this.xauth_client;
+	}
+    }
 
     /* DOI */
     if (sa->isasa_doi != ISAKMP_DOI_IPSEC)
@@ -800,6 +1124,7 @@ parse_isakmp_sa_body(
 	u_int16_t life_type;
 	struct oakley_trans_attrs ta;
 	err_t ugh = NULL;	/* set to diagnostic when problem detected */
+	zero(&ta);
 
 	/* initialize only optional field in ta */
 	ta.life_seconds = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;	/* When this SA expires (seconds) */
@@ -876,13 +1201,13 @@ parse_isakmp_sa_body(
 		case OAKLEY_ENCRYPTION_ALGORITHM | ISAKMP_ATTR_AF_TV:
 		    switch (val)
 		    {
-#if 0	/* we don't feel DES is safe */
-		    case OAKLEY_DES_CBC:
-#endif
 		    case OAKLEY_3DES_CBC:
 			ta.encrypt = val;
 			ta.encrypter = &oakley_encrypter[val];
 			break;
+
+   		    /* we don't feel DES is safe */
+		    case OAKLEY_DES_CBC:
 		    default:
 			ugh = builddiag("%s is not supported"
 			    , enum_show(&oakley_enc_names, val));
@@ -905,12 +1230,49 @@ parse_isakmp_sa_body(
 
 		case OAKLEY_AUTHENTICATION_METHOD | ISAKMP_ATTR_AF_TV:
 		    {
-		    /* check that authentication method is acceptable */
-		    lset_t iap = st->st_policy & POLICY_ID_AUTH_MASK;
+	            lset_t iap = st->st_policy & POLICY_ID_AUTH_MASK;
 
+ 		    /* check that authentication method is acceptable */
 		    switch (val)
 		    {
+#ifdef XAUTH
+		    case XAUTHInitPreShared:
+			if(!xauth_init)
+			{
+			    ugh = builddiag("policy does not allow Extended Authentication (XAUTH) of initiator (we are %s)", role);
+			    break;
+			}
+			ta.xauth = val;
+			val = OAKLEY_PRESHARED_KEY;
+			goto psk;
+
+		    case XAUTHRespPreShared:
+			if(!xauth_resp)
+			{
+			    ugh = builddiag("policy does not allow Extended Authentication (XAUTH) of responder (we are %s)", role);
+			    break;
+			}
+			ta.xauth = val;
+			val = OAKLEY_PRESHARED_KEY;
+			/* No break; */
+#endif
+
+
 		    case OAKLEY_PRESHARED_KEY:
+#ifdef XAUTH
+		    psk:
+			if(xauth_init && ta.xauth == 0)
+			{
+			    ugh = builddiag("policy mandates Extended Authentication (XAUTH) with PSK of initiator (we are %s)", role);
+			    break;
+			}
+			if(xauth_resp && ta.xauth == 0)
+			{
+			    ugh = builddiag("policy mandates Extended Authentication (XAUTH) with PSK of responder (we are %s)", role);
+			    break;
+			}
+#endif
+
 			if ((iap & POLICY_PSK) == LEMPTY)
 			{
 			    ugh = "policy does not allow OAKLEY_PRESHARED_KEY authentication";
@@ -936,7 +1298,42 @@ parse_isakmp_sa_body(
 			    ta.auth = val;
 			}
 			break;
+#ifdef XAUTH
+		    case XAUTHInitRSA:
+			if(!xauth_init)
+			{
+			    ugh = builddiag("policy does not allow Extended Authentication (XAUTH) with RSA of initiator (we are %s)", role);
+			    break;
+			}
+			ta.xauth = val;
+			val = OAKLEY_RSA_SIG;
+			goto rsasig;
+
+		    case XAUTHRespRSA:
+			if(!xauth_resp)
+			{
+			    ugh = builddiag("policy does not allow Extended Authentication (XAUTH) with RSA of responder (we are %s)", role);
+			    break;
+			}
+			ta.xauth = val;
+			val = OAKLEY_RSA_SIG;
+			/* No break; */
+#endif			
+
 		    case OAKLEY_RSA_SIG:
+#ifdef XAUTH
+		    rsasig:
+			if(xauth_init && ta.xauth == 0)
+			{
+			    ugh = builddiag("policy mandates Extended Authentication (XAUTH) with RSA of initiator (we are %s)", role);
+			    break;
+			}
+			if(xauth_resp && ta.xauth == 0)
+			{
+			    ugh = builddiag("policy mandates Extended Authentication (XAUTH) with RSA of responder (we are %s)", role);
+			    break;
+			}
+#endif
 			/* Accept if policy specifies RSASIG or is default */
 			if ((iap & POLICY_RSASIG) == LEMPTY)
 			{
@@ -1343,7 +1740,89 @@ parse_ipsec_transform(struct isakmp_transform *trans
 		break;
 	    case ENCAPSULATION_MODE | ISAKMP_ATTR_AF_TV:
 		ipcomp_inappropriate = FALSE;
+#ifdef NAT_TRAVERSAL
+		switch (val) {
+			case ENCAPSULATION_MODE_TUNNEL:
+			case ENCAPSULATION_MODE_TRANSPORT:
+				if (st->nat_traversal & NAT_T_DETECTED) {
+					loglog(RC_LOG_SERIOUS,
+						"%s must only be used if "
+						"NAT-Traversal is not detected",
+						enum_name(&enc_mode_names, val));
+					/*
+					 * Accept it anyway because SSH-Sentinel does not
+					 * use UDP_TUNNEL or UDP_TRANSPORT for the diagnostic.
+					 *
+					 * remove when SSH-Sentinel is fixed
+					 */
+#ifdef I_DONT_CARE_OF_SSH_SENTINEL
+					return FALSE;
+#endif
+				}
+				attrs->encapsulation = val;
+				break;
+			case ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS:
+#ifndef I_KNOW_TRANSPORT_MODE_HAS_SECURITY_CONCERN_BUT_I_WANT_IT
+				loglog(RC_LOG_SERIOUS,
+					"NAT-Traversal: Transport mode disabled due "
+					"to security concerns");
+				return FALSE;
+				break;
+#endif
+			case ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS:
+				if (st->nat_traversal & NAT_T_WITH_RFC_VALUES) {
+					loglog(RC_LOG_SERIOUS,
+						"%s must only be used with old IETF drafts",
+						enum_name(&enc_mode_names, val));
+					return FALSE;
+				}
+				else if (st->nat_traversal & NAT_T_DETECTED) {
+					attrs->encapsulation = val - ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS + ENCAPSULATION_MODE_TUNNEL;
+				}
+				else {
+					loglog(RC_LOG_SERIOUS,
+						"%s must only be used if "
+						"NAT-Traversal is detected",
+						enum_name(&enc_mode_names, val));
+					return FALSE;
+				}
+				break;
+			case ENCAPSULATION_MODE_UDP_TRANSPORT_RFC:
+#ifndef I_KNOW_TRANSPORT_MODE_HAS_SECURITY_CONCERN_BUT_I_WANT_IT
+				loglog(RC_LOG_SERIOUS,
+					"NAT-Traversal: Transport mode disabled due "
+					"to security concerns");
+				return FALSE;
+				break;
+#endif
+			case ENCAPSULATION_MODE_UDP_TUNNEL_RFC:
+				if ((st->nat_traversal & NAT_T_DETECTED) &&
+					(st->nat_traversal & NAT_T_WITH_RFC_VALUES)) {
+					attrs->encapsulation = val - ENCAPSULATION_MODE_UDP_TUNNEL_RFC + ENCAPSULATION_MODE_TUNNEL;
+				}
+				else if (st->nat_traversal & NAT_T_DETECTED) {
+					loglog(RC_LOG_SERIOUS,
+						"%s must only be used with NAT-T RFC",
+						enum_name(&enc_mode_names, val));
+					return FALSE;
+				}
+				else {
+					loglog(RC_LOG_SERIOUS,
+						"%s must only be used if "
+						"NAT-Traversal is detected",
+						enum_name(&enc_mode_names, val));
+					return FALSE;
+				}
+				break;
+			default:
+				loglog(RC_LOG_SERIOUS,
+					"unknown ENCAPSULATION_MODE %d in IPSec SA", val);
+				return FALSE;
+				break;
+		}
+#else
 		attrs->encapsulation = val;
+#endif
 		break;
 	    case AUTH_ALGORITHM | ISAKMP_ATTR_AF_TV:
 		attrs->auth = val;

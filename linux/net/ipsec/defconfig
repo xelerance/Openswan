@@ -1,6 +1,6 @@
 
 #
-# RCSID $Id: defconfig,v 1.22 2003/02/24 19:37:27 mcr Exp $
+# RCSID $Id: defconfig,v 1.23 2003/12/10 01:14:27 mcr Exp $
 #
 
 #
@@ -51,9 +51,15 @@ CONFIG_IPSEC_IPCOMP=y
 # To enable userspace-switchable KLIPS debugging, say 'y'.
 CONFIG_IPSEC_DEBUG=y
 
+# NAT Traversal
+CONFIG_IPSEC_NAT_TRAVERSAL=y
+
 #
 #
 # $Log: defconfig,v $
+# Revision 1.23  2003/12/10 01:14:27  mcr
+# 	NAT-traversal patches to KLIPS.
+#
 # Revision 1.22  2003/02/24 19:37:27  mcr
 # 	changed default compilation mode to static.
 #

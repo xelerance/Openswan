@@ -12,10 +12,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: anyaddr.c,v 1.7 2003/10/31 02:27:12 mcr Exp $
+ * RCSID $Id: anyaddr.c,v 1.7.6.1 2004/03/21 05:23:31 mcr Exp $
  */
 #include "internal.h"
-#include "freeswan.h"
+#include "openswan.h"
 
 /* these are mostly fallbacks for the no-IPv6-support-in-library case */
 #ifndef IN6ADDR_ANY_INIT

@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char lookup_c_version[] = "@(#) RCSID $Id: lookup.c,v 1.6 2003/12/02 04:34:09 mcr Exp $";
+char lookup_c_version[] = "@(#) RCSID $Id: lookup.c,v 1.7 2003/12/24 19:47:30 mcr Exp $";
 
 
 #include <stdio.h>
@@ -598,7 +598,7 @@ void dns_rexmit(dnskey_glob *gs, dnskey_lookup *dl, int force)
 		ret = lwres_getrrsetbyname_xmit(gs->lwctx, &dl->las);
 
 		if(ret != ERRSET_SUCCESS) {
-			output_transaction_line(gs, dl->tracking_id, 0, "write failed", "");
+			output_transaction_line(gs, dl->tracking_id, 0, "FATAL write failed", "");
 		}
 			
 	} else {
@@ -639,6 +639,9 @@ void process_dns_reply(dnskey_glob *gs)
 	
 /*
  * $Log: lookup.c,v $
+ * Revision 1.7  2003/12/24 19:47:30  mcr
+ * 	added "FATAL" prefix for the failure to write.
+ *
  * Revision 1.6  2003/12/02 04:34:09  mcr
  * 	if lwresd does not start early enough, then the request is
  * 	lost and never retransmitted. This version can now deal with

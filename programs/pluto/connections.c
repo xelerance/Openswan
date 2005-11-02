@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: connections.c,v 1.204 2003/12/06 16:34:32 mcr Exp $
+ * RCSID $Id: connections.c,v 1.213.2.3 2004/05/08 20:23:22 ken Exp $
  */
 
 #include <string.h>
@@ -39,6 +39,9 @@
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "foodgroups.h"
 #include "packet.h"
@@ -53,6 +56,13 @@
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "whack.h"
+#ifdef NAT_TRAVERSAL
+#include "nat_traversal.h"
+#endif
+
+#ifdef VIRTUAL_IP
+#include "virtual.h"
+#endif
 
 static void flush_pending_by_connection(struct connection *c);	/* forward */
 
@@ -102,6 +112,17 @@ find_host_pair(const ip_address *myaddr, u_int16_t myport
     if (hisaddr == NULL)
 	hisaddr = aftoinfo(addrtypeof(myaddr))->any;
 
+#ifdef NAT_TRAVERSAL
+    if (nat_traversal_enabled) {
+	/**
+	 * port is not relevant in host_pair. with nat_traversal we
+	 * always use pluto_port (500)
+	 */
+	myport = pluto_port;
+	hisport = pluto_port;
+    }
+#endif
+
     for (prev = NULL, p = host_pairs; p != NULL; prev = p, p = p->next)
     {
 	if (sameaddr(&p->me.addr, myaddr) && p->me.port == myport
@@ -126,6 +147,17 @@ find_host_pair_connections(const ip_address *myaddr, u_int16_t myport
 {
     struct host_pair *hp = find_host_pair(myaddr, myport, hisaddr, hisport);
 
+#ifdef NAT_TRAVERSAL
+    if (nat_traversal_enabled && hp && hisaddr) {
+	struct connection *c;
+	for (c = hp->connections; c != NULL; c = c->hp_next) {
+	    if ((c->spd.this.host_port==myport) && (c->spd.that.host_port==hisport))
+		return c;
+	}
+	return NULL;
+    }
+#endif
+
     return hp == NULL? NULL : hp->connections;
 }
 
@@ -142,9 +174,14 @@ connect_to_host_pair(struct connection *c)
 	    /* no suitable host_pair -- build one */
 	    hp = alloc_thing(struct host_pair, "host_pair");
 	    hp->me.addr = c->spd.this.host_addr;
-	    hp->me.port = c->spd.this.host_port;
 	    hp->him.addr = c->spd.that.host_addr;
-	    hp->him.port = c->spd.that.host_port;
+#ifdef NAT_TRAVERSAL
+	    hp->me.port = nat_traversal_enabled ? pluto_port : c->spd.this.host_port;
+	    hp->him.port = nat_traversal_enabled ? pluto_port : c->spd.that.host_port;
+#else
+	    hp->me.port = c->spd.this.host_port;
+ 	    hp->him.port = c->spd.that.host_port;
+#endif
 	    hp->initial_connection_sent = FALSE;
 	    hp->connections = NULL;
 	    hp->pending = NULL;
@@ -293,30 +330,30 @@ delete_connection(struct connection *c)
 	}
     }
 
+#ifdef VIRTUAL_IP
+    if (c->kind != CK_GOING_AWAY) pfreeany(c->spd.that.virt);
+#endif
+
 #ifdef DEBUG
     set_debugging(old_cur_debugging);
 #endif
     pfreeany(c->name);
     free_id_content(&c->spd.this.id);
     pfreeany(c->spd.this.updown);
-#ifdef X509
     freeanychunk(c->spd.this.ca);
-# ifdef SMARTCARD
+#ifdef SMARTCARD
     scx_release(c->spd.this.sc);
-# endif
-    release_cert(c->spd.this.cert);
 #endif
+    release_cert(c->spd.this.cert);
     free_id_content(&c->spd.that.id);
     pfreeany(c->spd.that.updown);
 
-#ifdef X509
     freeanychunk(c->spd.that.ca);
-# ifdef SMARTCARD
+#ifdef SMARTCARD
     scx_release(c->spd.that.sc);
-# endif
+#endif
     release_cert(c->spd.that.cert);
     free_generalNames(c->requested_ca, TRUE);
-#endif
 
     gw_delref(&c->gw_info);
     pfree(c);
@@ -481,6 +518,10 @@ default_end(struct end *e, ip_address *dflt_nexthop)
     if (!e->has_client)
 	ugh = addrtosubnet(&e->host_addr, &e->client);
 
+    if(e->sendcert == 0) {
+	e->sendcert = cert_sendifasked;
+    }
+
     return ugh;
 }
 
@@ -491,11 +532,11 @@ default_end(struct end *e, ip_address *dflt_nexthop)
  */
 size_t
 format_end(char *buf
-, size_t buf_len
-, const struct end *this
-, const struct end *that
-, bool is_left
-, lset_t policy)
+	   , size_t buf_len
+	   , const struct end *this
+	   , const struct end *that
+	   , bool is_left
+	   , lset_t policy)
 {
     char client[SUBNETTOT_BUF];
     const char *client_sep = "";
@@ -505,9 +546,15 @@ format_end(char *buf
     char host_port[sizeof(":65535")];
     char host_id[IDTOA_BUF + 2];
     char hop[ADDRTOT_BUF];
+    char endopts[sizeof("MS+MC+XS+XC")+1];
     const char *hop_sep = "";
     const char *open_brackets  = "";
     const char *close_brackets = "";
+    const char *id_obrackets = "";
+    const char *id_cbrackets = "";
+    const char *id_comma = "";
+
+    memset(endopts, 0, sizeof(endopts));
 
     if (isanyaddr(&this->host_addr))
     {
@@ -529,6 +576,12 @@ format_end(char *buf
     }
 
     client[0] = '\0';
+
+#ifdef VIRTUAL_IP
+    if (is_virtual_end(this) && isanyaddr(&this->host_addr)) {
+	host = "%virtual";
+    }
+#endif
 
     /* [client===] */
     if (this->has_client)
@@ -577,17 +630,77 @@ format_end(char *buf
     host_id[0] = '\0';
     if (this->id.kind == ID_MYID)
     {
-	strcpy(host_id, "[%myid]");
+	id_obrackets = "[";
+	id_cbrackets = "]";
+	strcpy(host_id, "%myid");
     }
     else if (!(this->id.kind == ID_NONE
     || (id_is_ipaddr(&this->id) && sameaddr(&this->id.ip_addr, &this->host_addr))))
     {
-	int len = idtoa(&this->id, host_id+1, sizeof(host_id)-2);
-
-	host_id[0] = '[';
-	strcpy(&host_id[len < 0? (ptrdiff_t)sizeof(host_id)-2 : 1 + len], "]");
+	id_obrackets = "[";
+	id_cbrackets = "]";
+	idtoa(&this->id, host_id, sizeof(host_id));
     }
 
+    if(this->modecfg_server || this->modecfg_client
+       || this->xauth_server || this->xauth_client
+       || this->sendcert != cert_sendifasked)
+    {
+	const char *plus = "";
+	endopts[0]='\0';
+
+	if(id_obrackets && id_obrackets[0]=='[')
+	{
+	    id_comma=",";
+	} else {
+	    id_obrackets = "[";
+	    id_cbrackets = "]";
+	}
+
+	if(this->modecfg_server) {
+	    strncat(endopts, plus, sizeof(endopts));
+	    strncat(endopts, "MS", sizeof(endopts));
+	    plus="+";
+	}
+
+	if(this->modecfg_client) {
+	    strncat(endopts, plus, sizeof(endopts));
+	    strncat(endopts, "MC", sizeof(endopts));
+	    plus="+";
+	}
+
+	if(this->xauth_server) {
+	    strncat(endopts, plus, sizeof(endopts));
+	    strncat(endopts, "XS", sizeof(endopts));
+	    plus="+";
+	}
+	    
+	if(this->xauth_client) {
+	    strncat(endopts, plus, sizeof(endopts));
+	    strncat(endopts, "XC", sizeof(endopts));
+	    plus="+";
+	}
+
+	{
+	    const char *send;
+	    
+	    switch(this->sendcert) {
+	    case cert_neversend:
+		send="S-C";
+		break;
+	    case cert_sendifasked:
+		send="S?C";
+		break;
+	    case cert_alwayssend:
+		send="S=C";
+		break;
+	    }
+	    strncat(endopts, plus, sizeof(endopts));
+	    strncat(endopts, send, sizeof(endopts));
+	    plus="+";
+	}
+    }
+	    
     /* [---hop] */
     hop[0] = '\0';
     hop_sep = "";
@@ -598,13 +711,15 @@ format_end(char *buf
     }
 
     if (is_left)
-	snprintf(buf, buf_len, "%s%s%s%s%s%s%s%s%s%s"
+	snprintf(buf, buf_len, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s"
 	    , open_brackets, client, close_brackets
-	    , client_sep, host, host_port, host_id
+	    , client_sep, host, host_port
+		 , id_obrackets, host_id, id_comma, endopts, id_cbrackets
 	    , protoport, hop_sep, hop);
     else
-	snprintf(buf, buf_len, "%s%s%s%s%s%s%s%s%s%s"
-	    , hop, hop_sep, host, host_port, host_id
+	snprintf(buf, buf_len, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s"
+	    , hop, hop_sep, host, host_port
+		 , id_obrackets, host_id, id_comma, endopts, id_cbrackets
 	    , protoport, client_sep
 	    , open_brackets, client, close_brackets);
     return strlen(buf);
@@ -634,29 +749,24 @@ unshare_connection_strings(struct connection *c)
     unshare_id_content(&c->spd.this.id);
     c->spd.this.updown = clone_str(c->spd.this.updown, "updown");
 
-#ifdef X509
-# ifdef SMARTCARD
+#ifdef SMARTCARD
     scx_share(c->spd.this.sc);
-# endif
+#endif
     share_cert(c->spd.this.cert);
     if (c->spd.this.ca.ptr != NULL)
 	clonetochunk(c->spd.this.ca, c->spd.this.ca.ptr, c->spd.this.ca.len, "ca string");
-#endif
 
     unshare_id_content(&c->spd.that.id);
     c->spd.that.updown = clone_str(c->spd.that.updown, "updown");
 
-#ifdef X509
-# ifdef SMARTCARD
+#ifdef SMARTCARD
     scx_share(c->spd.that.sc);
-# endif
+#endif
     share_cert(c->spd.that.cert);
     if (c->spd.that.ca.ptr != NULL)
 	clonetochunk(c->spd.that.ca, c->spd.that.ca.ptr, c->spd.that.ca.len, "ca string");
-#endif
 }
 
-#ifdef X509
 static void
 load_end_certificate(const char *filename, struct end *dst)
 {
@@ -674,7 +784,7 @@ load_end_certificate(const char *filename, struct end *dst)
 
     if (filename != NULL)
     {
-# ifdef SMARTCARD
+#ifdef SMARTCARD
 	if (strncmp(filename, SCX_TOKEN, strlen(SCX_TOKEN)) == 0)
 	{
 	    /* we have a smartcard */
@@ -694,7 +804,7 @@ load_end_certificate(const char *filename, struct end *dst)
 	    	valid_cert = scx_load_cert(dst->sc, &cert);
 	}
 	else
-# endif
+#endif
 	{
 	    /* load cert from file */
 	    valid_cert = load_host_cert(filename, &cert);
@@ -764,7 +874,6 @@ load_end_certificate(const char *filename, struct end *dst)
 	}
     }
 }
-#endif
 
 static bool
 extract_end(struct end *dst, const struct whack_end *src, const char *which)
@@ -789,7 +898,6 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
 
     dst->ca = empty_chunk;
 
-#ifdef X509
     /* decode CA distinguished name, if any */
     if (src->ca != NULL)
     {
@@ -811,7 +919,6 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
 
     /* load local end certificate and extract ID, if any */
     load_end_certificate(src->cert, dst);
-#endif
 
     /* does id has wildcards? */
     dst->has_id_wildcards = id_count_wildcards(&dst->id) > 0;
@@ -819,7 +926,16 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
     /* the rest is simple copying of corresponding fields */
     dst->host_addr = src->host_addr;
     dst->host_nexthop = src->host_nexthop;
+    dst->host_srcip = src->host_srcip;
     dst->client = src->client;
+#ifdef MODECFG
+    dst->modecfg_server = src->modecfg_server;
+    dst->modecfg_client = src->modecfg_client;
+#endif
+#ifdef XAUTH
+    dst->xauth_server = src->xauth_server;
+    dst->xauth_client = src->xauth_client;
+#endif
     dst->port = src->port;
     dst->protocol = src->protocol;
     dst->key_from_DNS_on_demand = src->key_from_DNS_on_demand;
@@ -827,6 +943,9 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
     dst->has_client_wildcard = src->has_client_wildcard;
     dst->updown = src->updown;
     dst->host_port = src->host_port;
+
+    DBG(DBG_CONTROL, DBG_log("sendcert is %d", src->sendcert));
+    dst->sendcert =  src->sendcert;
     
     return same_ca;
 }
@@ -882,6 +1001,13 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	    }
 	}
     }
+#ifdef VIRTUAL_IP
+    if ((this->virt) && (!isanyaddr(&this->host_addr) || this->has_client)) {
+	loglog(RC_CLASH,
+	    "virtual IP must only be used with %%any and without client");
+	return FALSE;
+    }
+#endif    
     return TRUE;	/* happy */
 }
 
@@ -1028,6 +1154,17 @@ add_connection(const struct whack_message *wm)
 
 	c->gw_info = NULL;
 
+#ifdef VIRTUAL_IP
+	passert(!(wm->left.virt && wm->right.virt));
+	if (wm->left.virt || wm->right.virt) {
+	    passert(isanyaddr(&c->spd.that.host_addr));
+	    c->spd.that.virt = create_virtual(c,
+		wm->left.virt ? wm->left.virt : wm->right.virt);
+	    if (c->spd.that.virt)
+		c->spd.that.has_client = TRUE;
+	}
+#endif
+
 	unshare_connection_strings(c);
 
 	(void)orient(c);
@@ -1110,6 +1247,13 @@ add_group_instance(struct connection *group, const ip_subnet *target)
 
 	t->spd.reqid = gen_reqid();
 
+#ifdef VIRTUAL_IP
+	if (t->spd.that.virt) {
+	        DBG_log("virtual_ip not supported in group instance");
+		t->spd.that.virt = NULL;	
+	}
+#endif
+
 	/* add to connections list */
 	t->ac_next = connections;
 	connections = t;
@@ -1150,6 +1294,9 @@ remove_group_instance(const struct connection *group USED_BY_DEBUG
  */
 static struct connection *
 instantiate(struct connection *c, const ip_address *him
+#ifdef NAT_TRAVERSAL
+, u_int16_t his_port
+#endif
 , const struct id *his_id)
 {
     struct connection *d;
@@ -1173,6 +1320,9 @@ instantiate(struct connection *c, const ip_address *him
     passert(oriented(*d));
     d->spd.that.host_addr = *him;
     setportof(htons(c->spd.that.port), &d->spd.that.host_addr);
+#ifdef NAT_TRAVERSAL
+    if (his_port) d->spd.that.host_port = his_port;
+#endif    
     default_end(&d->spd.that, &d->spd.this.host_addr);
 
     /* We cannot guess what our next_hop should be, but if it was
@@ -1204,9 +1354,28 @@ instantiate(struct connection *c, const ip_address *him
 struct connection *
 rw_instantiate(struct connection *c
 , const ip_address *him
+#ifdef NAT_TRAVERSAL
+, u_int16_t his_port
+#endif
+#ifdef VIRTUAL_IP
+, const ip_subnet *his_net
+#endif
 , const struct id *his_id)
 {
+#ifdef NAT_TRAVERSAL
+    struct connection *d = instantiate(c, him, his_port, his_id);
+#else
     struct connection *d = instantiate(c, him, his_id);
+#endif
+
+#ifdef VIRTUAL_IP
+    if (d && his_net && is_virtual_connection(c)) {
+	d->spd.that.client = *his_net;
+	d->spd.that.virt = NULL;
+	if (subnetishost(his_net) && addrinsubnet(him, his_net))
+	    d->spd.that.has_client = FALSE;
+    }
+#endif
 
     if (d->policy & POLICY_OPPO)
     {
@@ -1229,7 +1398,11 @@ oppo_instantiate(struct connection *c
 , const ip_address *our_client USED_BY_DEBUG
 , const ip_address *peer_client)
 {
+#ifdef NAT_TRAVERSAL
+    struct connection *d = instantiate(c, him, 0, his_id);
+#else
     struct connection *d = instantiate(c, him, his_id);
+#endif
 
     DBG(DBG_CONTROL,
 	DBG_log("oppo instantiate d=%s from c=%s with c->routing %s, d->routing %s"
@@ -1369,6 +1542,12 @@ fmt_conn_instance(const struct connection *c, char buf[CONN_INST_BUF])
 	{
 	    *p++ = ' ';
 	    addrtot(&c->spd.that.host_addr, 0, p, ADDRTOT_BUF);
+#ifdef NAT_TRAVERSAL
+	    if (c->spd.that.host_port != pluto_port) {
+		p += strlen(p);
+		sprintf(p, ":%d", c->spd.that.host_port);
+	    }
+#endif
 	}
     }
 }
@@ -1626,6 +1805,9 @@ orient(struct connection *c)
 	     */
 	    for (p = interfaces; p != NULL; p = p->next)
 	    {
+#ifdef NAT_TRAVERSAL
+		if (p->ike_float) continue;
+#endif
 		for (;;)
 		{
 		    /* check if this interface matches this end */
@@ -1680,7 +1862,7 @@ initiate_connection(const char *name, int whackfd)
 	set_cur_connection(c);
 	if (!oriented(*c))
 	{
-	    loglog(RC_ORIENT, "we have no ipsecN interface for either end of this connection");
+	    loglog(RC_ORIENT, "We cannot identify ourselves with either end of this connection.");
 	}
 	else if (NEVER_NEGOTIATE(c->policy))
 	{
@@ -2542,7 +2724,7 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 			    if (!logged_txt_warning)
 			    {
 				loglog(RC_LOG_SERIOUS
-				       , "found KEY RR but not TXT RR for %s. See http://www.freeswan.org/err/txt-change.html."
+				       , "found KEY RR but not TXT RR for %s."
 				       , mycredentialstr);
 				logged_txt_warning = TRUE;
 			    }
@@ -2914,8 +3096,12 @@ ISAKMP_SA_established(struct connection *c, so_serial_t serial)
 {
     c->newest_isakmp_sa = serial;
 
-    if (uniqueIDs)
-    {
+    if (uniqueIDs
+#ifdef XAUTH
+	 && (!c->spd.this.xauth_server)
+#endif
+	)
+{
 	/* for all connections: if the same Phase 1 peer ID is used
 	 * for a different IP address, unorient that connection.
 	 */
@@ -2925,9 +3111,16 @@ ISAKMP_SA_established(struct connection *c, so_serial_t serial)
 	{
 	    struct connection *next = d->ac_next;	/* might move underneath us */
 
+#ifdef NAT_TRAVERSAL
+	    if (d->kind >= CK_PERMANENT 
+	    && same_id(&c->spd.that.id, &d->spd.that.id)
+	    && (!sameaddr(&c->spd.that.host_addr, &d->spd.that.host_addr) ||
+	    (c->spd.that.host_port != d->spd.that.host_port)))
+#else
 	    if (d->kind >= CK_PERMANENT
 	    && same_id(&c->spd.that.id, &d->spd.that.id)
 	    && !sameaddr(&c->spd.that.host_addr, &d->spd.that.host_addr))
+#endif
 	    {
 		release_connection(d);
 	    }
@@ -3158,10 +3351,8 @@ refine_host_connection(const struct state *st, const struct id *peer_id
     const chunk_t *psk;
     const struct RSA_private_key *my_RSA_pri = NULL;
     bool wcpip;	/* wildcard Peer IP? */
-#ifdef X509
     struct pubkey_list *p;
     chunk_t peer_ca = empty_chunk;
-#endif
     int wildcards, best_wildcards;
     int our_pathlen, best_our_pathlen, peer_pathlen, best_peer_pathlen;
 
@@ -3173,7 +3364,6 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	 , DBG_log("refine_connection: starting with %s"
 		   , c->name));
 
-#ifdef X509
     /* retrieve the CA of the peer's key */
     for (p = pubkeys; p != NULL; p = p->next)
     {
@@ -3185,15 +3375,12 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	    break;
 	}
     }
-#endif
 
     if (same_id(&c->spd.that.id, peer_id)
-#ifdef X509
     && trusted_ca(peer_ca, c->spd.that.ca, &peer_pathlen)
     && peer_pathlen == 0
     && match_requested_ca(c->requested_ca, c->spd.this.ca, &our_pathlen)
     && our_pathlen == 0
-#endif
 	)
 	return c;	/* peer ID matches current connection -- look no further */
 
@@ -3244,15 +3431,19 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	for (; d != NULL; d = d->hp_next)
 	{
 	    bool match = match_id(peer_id, &d->spd.that.id, &wildcards)
-#ifdef X509	    
 		&& trusted_ca(peer_ca, d->spd.that.ca, &peer_pathlen)
 		&& match_requested_ca(c->requested_ca, d->spd.this.ca, &our_pathlen)
-#endif
 		;
 
 	    /* ignore group connections */
 	    if (d->policy & POLICY_GROUP)
 		continue;
+
+#ifdef NAT_TRAVERSAL
+	    if ((c->spd.that.host_port != d->spd.that.host_port) &&
+		(d->kind == CK_INSTANCE))
+		continue;
+#endif
 
 	    /* check if peer_id matches, exactly or after instantiation */
 	    if (!match)
@@ -3265,7 +3456,13 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	    /* authentication used must fit policy of this connection */
 	    if ((d->policy & auth_policy) == LEMPTY)
 		continue;	/* our auth isn't OK for this connection */
-	    
+#ifdef XAUTH
+	    if (d->spd.this.xauth_server != c->spd.this.xauth_server)
+		continue;	/* disallow xauth/no xauth mismatch */
+
+	    if (d->spd.this.xauth_client != c->spd.this.xauth_client)
+		continue;	/* disallow xauth/no xauth mismatch */
+#endif
 	    switch (auth)
 	    {
 	    case OAKLEY_PRESHARED_KEY:
@@ -3342,6 +3539,44 @@ refine_host_connection(const struct state *st, const struct id *peer_id
     }
 }
 
+#ifdef VIRTUAL_IP
+/**
+ * With virtual addressing, we must not allow someone to use an already
+ * used (by another id) addr/net.
+ */
+static bool
+is_virtual_net_used(const ip_subnet *peer_net, const struct id *peer_id)
+{
+    struct connection *d;
+    for (d = connections; d != NULL; d = d->ac_next)
+    {
+	switch (d->kind) {
+	    case CK_PERMANENT:
+	    case CK_TEMPLATE:
+	    case CK_INSTANCE:
+		if ((subnetinsubnet(peer_net,&d->spd.that.client) ||
+		     subnetinsubnet(&d->spd.that.client,peer_net)) &&
+		     !same_id(&d->spd.that.id, peer_id)) {
+		    char buf[IDTOA_BUF];
+		    char client[SUBNETTOT_BUF];
+		    subnettot(peer_net, 0, client, sizeof(client));
+		    idtoa(&d->spd.that.id, buf, sizeof(buf));
+		    plog("Virtual IP %s is already used by '%s'",
+			client, buf);
+		    idtoa(peer_id, buf, sizeof(buf));
+			plog("Your ID is '%s'", buf);
+		    return TRUE; /* already used by another one */
+		}
+		break;
+	    case CK_GOING_AWAY:
+	    default:
+		break;
+	}
+    }
+    return FALSE; /* you can safely use it */
+}
+#endif
+
 /* find_client_connection: given a connection suitable for ISAKMP
  * (i.e. the hosts match), find a one suitable for IPSEC
  * (i.e. with matching clients).
@@ -3375,6 +3610,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 static struct connection *
 fc_try(const struct connection *c
 , struct host_pair *hp
+, const struct id *peer_id UNUSED
 , const ip_subnet *our_net
 , const ip_subnet *peer_net
 , const u_int8_t our_protocol
@@ -3402,9 +3638,9 @@ fc_try(const struct connection *c
 
     	/* compare protocol and ports */
 	if (d->spd.this.protocol != our_protocol
-	||  d->spd.this.port != our_port
-	||  d->spd.that.protocol != peer_protocol
-	||  d->spd.that.port != peer_port)
+	    ||  (d->spd.this.port && d->spd.this.port != our_port)
+	    ||  d->spd.that.protocol != peer_protocol
+	    ||  (d->spd.that.port && d->spd.that.port != peer_port))
 	    continue;
 
 	/* non-Opportunistic case:
@@ -3450,8 +3686,18 @@ fc_try(const struct connection *c
 		    if (!subnetinsubnet(peer_net, &sr->that.client))
 			continue;
 		} else {
+#ifdef VIRTUAL_IP
+		    if ((!samesubnet(&sr->that.client, peer_net)) && (!is_virtual_connection(d)))
+#else
 		    if (!samesubnet(&sr->that.client, peer_net))
+#endif
 			continue;
+#ifdef VIRTUAL_IP
+		    if ((is_virtual_connection(d)) &&
+			( (!is_virtual_net_allowed(d, peer_net, &c->spd.that.host_addr)) ||
+			(is_virtual_net_used(peer_net, peer_id?peer_id:&c->spd.that.id)) ))
+			    continue;
+#endif
 		}
 	    }
 	    else
@@ -3520,9 +3766,9 @@ fc_try_oppo(const struct connection *c
 
 	/* compare protocol and ports */
 	if (d->spd.this.protocol != our_protocol
-	||  d->spd.this.port != our_port
-	||  d->spd.that.protocol != peer_protocol
-	||  d->spd.that.port != peer_port)
+	    ||  (d->spd.this.port && d->spd.this.port != our_port)
+	    ||  d->spd.that.protocol != peer_protocol
+	    ||  (d->spd.that.port && d->spd.that.port != peer_port))
 	    continue;
 
 	/* Opportunistic case:
@@ -3637,11 +3883,11 @@ find_client_connection(struct connection *c
 #endif /* DEBUG */
 
 	    if (samesubnet(&sr->this.client, our_net)
-	    && samesubnet(&sr->that.client, peer_net)
-	    && (sr->this.protocol == our_protocol)
-	    && (sr->this.port == our_port)
-	    && (sr->that.protocol == peer_protocol)
-	    && (sr->that.port == peer_port))
+		&& samesubnet(&sr->that.client, peer_net)
+		&& (sr->this.protocol == our_protocol)
+		&& (!sr->this.port || (sr->this.port == our_port))
+		&& (sr->that.protocol == peer_protocol)
+		&& (!sr->that.port || (sr->that.port == peer_port)))
 	    {
 		passert(oriented(*c));
 		if (routed(sr->routing))
@@ -3652,7 +3898,7 @@ find_client_connection(struct connection *c
 	}
 
 	/* exact match? */
-	d = fc_try(c, c->host_pair, our_net, peer_net
+	d = fc_try(c, c->host_pair, NULL, our_net, peer_net
 	    , our_protocol, our_port, peer_protocol, peer_port);
 
 	DBG(DBG_CONTROLMORE,
@@ -3695,7 +3941,7 @@ find_client_connection(struct connection *c
 	if (hp != NULL)
 	{
 	    /* RW match with actual peer_id or abstract peer_id? */
-	    d = fc_try(c, hp, our_net, peer_net
+	    d = fc_try(c, hp, NULL, our_net, peer_net
 		, our_protocol, our_port, peer_protocol, peer_port);
 
 	    if (d == NULL
@@ -3814,7 +4060,6 @@ show_connections_status(void)
 	    }
 	}
 
-#ifdef X509
 	/* show CAs */
 	if (c->spd.this.ca.ptr != NULL || c->spd.that.ca.ptr != NULL)
 	{
@@ -3830,7 +4075,6 @@ show_connections_status(void)
 		, this_ca
 		, that_ca);
 	}
-#endif
 
 	whack_log(RC_COMMENT
 	    , "\"%s\"%s:   ike_life: %lus; ipsec_life: %lus;"
@@ -3993,9 +4237,16 @@ update_pending(struct state *os, struct state *ns)
 {
     struct pending *p;
 
-    for (p = os->st_connection->host_pair->pending; p != NULL; p = p->next)
+    for (p = os->st_connection->host_pair->pending; p != NULL; p = p->next) {
 	if (p->isakmp_sa == os)
 	    p->isakmp_sa = ns;
+#ifdef NAT_TRAVERSAL
+	if (p->connection->spd.this.host_port != ns->st_connection->spd.this.host_port) {
+	    p->connection->spd.this.host_port = ns->st_connection->spd.this.host_port;
+	    p->connection->spd.that.host_port = ns->st_connection->spd.that.host_port;
+	}
+#endif
+    }	    
 }
 
 /* a Main Mode negotiation has failed; discard any pending */

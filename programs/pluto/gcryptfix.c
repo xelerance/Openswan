@@ -11,13 +11,13 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: gcryptfix.c,v 1.5 2002/04/24 07:35:49 mcr Exp $
+ * RCSID $Id: gcryptfix.c,v 1.5.42.1 2004/03/21 05:23:32 mcr Exp $
  */
 
 #include <stdlib.h>
 
 #include <gmp.h>
-#include <freeswan.h>
+#include <openswan.h>
 #include "constants.h"
 #include "defs.h"
 #include "log.h"

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: constants.h,v 1.113 2003/11/26 23:52:32 mcr Exp $
+ * RCSID $Id: constants.h,v 1.120.2.2 2004/05/07 03:17:06 ken Exp $
  */
 
 extern const char compile_time_interop_options[];
@@ -32,7 +32,7 @@ extern void init_constants(void);
  * The fact that the string is a constant is limiting, but it
  * avoids storage management issues: the recipient is allowed to assume
  * that the string will live "long enough" (usually forever).
- * <freeswan.h> defines err_t for this return type.
+ * <openswan.h> defines err_t for this return type.
  */
 
 typedef int bool;
@@ -181,6 +181,7 @@ enum event_type {
     EVENT_SA_REPLACE,	/* SA replacement event */
     EVENT_SA_REPLACE_IF_USED,	/* SA replacement event */
     EVENT_SA_EXPIRE,	/* SA expiration event */
+    EVENT_NAT_T_KEEPALIVE,
     EVENT_LOG_DAILY     /* reset certain log events/stats */
 };
 
@@ -219,7 +220,7 @@ extern enum_names doi_names;
  * ESP: RFC 2402 2.4; AH: RFC 2406 2.1
  * IPComp RFC 2393 substitutes a CPI in the place of an SPI.
  * see also draft-shacham-ippcp-rfc2393bis-05.txt.
- * We (FreeS/WAN) reserve 0x100 to 0xFFF for manual keying, so
+ * We (Openswan) reserve 0x100 to 0xFFF for manual keying, so
  * Pluto won't generate these values.
  */
 #define IPSEC_DOI_SPI_MIN          0x100
@@ -249,9 +250,10 @@ extern const char *const debug_bit_names[];
 #define DBG_CONTROLMORE LELEM(9)	/* more detailed debugging */
 
 #define DBG_PFKEY	LELEM(10)	/*turn on the pfkey library debugging*/
-#define DBG_PRIVATE	LELEM(11)	/* private information: DANGER! */
+#define DBG_NATT        LELEM(11)       /* debugging of NAT-traversal */
+#define DBG_PRIVATE	LELEM(12)	/* private information: DANGER! */
 
-#define IMPAIR0	12	/* first bit for IMPAIR_* */
+#define IMPAIR0	13	/* first bit for IMPAIR_* */
 
 #define IMPAIR_DELAY_ADNS_KEY_ANSWER	LELEM(IMPAIR0+0)	/* sleep before answering */
 #define IMPAIR_DELAY_ADNS_TXT_ANSWER	LELEM(IMPAIR0+1)	/* sleep before answering */
@@ -259,7 +261,7 @@ extern const char *const debug_bit_names[];
 #define IMPAIR_BUST_MR2	LELEM(IMPAIR0+3)	/* make MI2 really large */
 
 #define DBG_NONE	0	/* no options on, including impairments */
-#define DBG_ALL		LRANGES(DBG_RAW, DBG_PFKEY)  /* all logging options on EXCEPT DBG_PRIVATE */
+#define DBG_ALL		LRANGES(DBG_RAW, DBG_NATT)  /* all logging options on EXCEPT DBG_PRIVATE */
 #endif
 
 /* State of exchanges
@@ -318,11 +320,23 @@ enum state_kind {
     STATE_QUICK_R2,
 
     STATE_INFO,
-    STATE_INFO_PROTECTED
+    STATE_INFO_PROTECTED,
+
+    /* Xauth states */
+    STATE_XAUTH_R0,              /* server state has sent request, awaiting reply */
+    STATE_XAUTH_R1,              /* server state has sent success/fail, awaiting reply */
+    STATE_MODE_CFG_R0,
+    STATE_MODE_CFG_R1,
+    STATE_MODE_CFG_R2,
+
+    STATE_XAUTH_I0,              /* client state is awaiting request */
+    STATE_XAUTH_I1,              /* client state is awaiting result code */
+
+    STATE_IKE_ROOF
+
 };
 
 #define STATE_IKE_FLOOR	STATE_MAIN_R0
-#define STATE_IKE_ROOF	(STATE_INFO_PROTECTED + 1)
 
 #define PHASE1_INITIATOR_STATES	 (LELEM(STATE_MAIN_I1) | LELEM(STATE_MAIN_I2) \
     | LELEM(STATE_MAIN_I3) | LELEM(STATE_MAIN_I4))
@@ -330,9 +344,14 @@ enum state_kind {
 
 #define IS_PHASE1(s) (STATE_MAIN_R0 <= (s) && (s) <= STATE_MAIN_I4)
 #define IS_QUICK(s) (STATE_QUICK_R0 <= (s) && (s) <= STATE_QUICK_R2)
-#define IS_ISAKMP_SA_ESTABLISHED(s) ((s) == STATE_MAIN_R3 || (s) == STATE_MAIN_I4)
+#define IS_ISAKMP_SA_ESTABLISHED(s) ((s) == STATE_MAIN_R3 || (s) == STATE_MAIN_I4 \
+				  || (s) == STATE_XAUTH_R0 || (s) == STATE_XAUTH_R1 \
+                                  || (s) == STATE_XAUTH_I0 || (s) == STATE_XAUTH_I1)
 #define IS_IPSEC_SA_ESTABLISHED(s) ((s) == STATE_QUICK_I2 || (s) == STATE_QUICK_R2)
 #define IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(s) ((s) == STATE_QUICK_R1)
+#ifdef MODECFG
+#define IS_MODE_CFG_ESTABLISHED(s) ((s) == STATE_MODE_CFG_R2)
+#endif
 
 /* kind of struct connection
  * Ordered (mostly) by concreteness.  Order is exploited.
@@ -373,6 +392,17 @@ enum routing_t {
 #define erouted(rs) ((rs) != RT_UNROUTED)
 #define shunt_erouted(rs) (erouted(rs) && (rs) != RT_ROUTED_TUNNEL)
 
+extern enum_names certpolicy_type_names;
+
+enum certpolicy {
+  cert_neversend   = 1,
+  cert_sendifasked = 2,    /* the default */
+  cert_alwayssend  = 3,
+};
+
+
+
+
 /* Payload types
  * RFC2408 Internet Security Association and Key Management Protocol (ISAKMP)
  * section 3.1
@@ -398,8 +428,58 @@ extern const char *const payload_name[];
 #define ISAKMP_NEXT_N          11	/* Notification */
 #define ISAKMP_NEXT_D          12	/* Delete */
 #define ISAKMP_NEXT_VID        13	/* Vendor ID */
+#define ISAKMP_NEXT_ATTR       14       /* Mode config Attribute */
+#define ISAKMP_NEXT_NATD_RFC   15       /* NAT-Traversal: NAT-D (rfc) */
+#define ISAKMP_NEXT_NATOA_RFC  16       /* NAT-Traversal: NAT-OA (rfc) */
+#define ISAKMP_NEXT_ROOF       17	/* roof on payload types */
+#define ISAKMP_NEXT_NATD_DRAFTS   130   /* NAT-Traversal: NAT-D (drafts) */
+#define ISAKMP_NEXT_NATOA_DRAFTS  131   /* NAT-Traversal: NAT-OA (drafts) */
 
-#define ISAKMP_NEXT_ROOF       14	/* roof on payload types */
+/* These values are to be used within the Type field of an Attribute (14) 
+ *    ISAKMP payload.  */
+#define ISAKMP_CFG_REQUEST         1
+#define ISAKMP_CFG_REPLY           2
+#define ISAKMP_CFG_SET             3
+#define ISAKMP_CFG_ACK             4
+
+extern enum_names attr_msg_type_names;
+
+/* Mode Config attribute values */
+#define    INTERNAL_IP4_ADDRESS        1
+#define    INTERNAL_IP4_NETMASK        2
+#define    INTERNAL_IP4_DNS            3
+#define    INTERNAL_IP4_NBNS           4
+#define    INTERNAL_ADDRESS_EXPIRY     5
+#define    INTERNAL_IP4_DHCP           6
+#define    APPLICATION_VERSION         7
+#define    INTERNAL_IP6_ADDRESS        8
+#define    INTERNAL_IP6_NETMASK        9
+#define    INTERNAL_IP6_DNS           10
+#define    INTERNAL_IP6_NBNS          11
+#define    INTERNAL_IP6_DHCP          12
+#define    INTERNAL_IP4_SUBNET        13
+#define    SUPPORTED_ATTRIBUTES       14
+#define    INTERNAL_IP6_SUBNET        15
+
+/* XAUTH attribute values */
+#define    XAUTH_TYPE                16520
+#define    XAUTH_USER_NAME           16521
+#define    XAUTH_USER_PASSWORD       16522
+#define    XAUTH_PASSCODE            16523
+#define    XAUTH_MESSAGE             16524
+#define    XAUTH_CHALLENGE           16525
+#define    XAUTH_DOMAIN              16526
+#define    XAUTH_STATUS              16527
+#define    XAUTH_NEXT_PIN            16528
+#define    XAUTH_ANSWER              16529
+
+#define XAUTH_TYPE_GENERIC 0
+#define XAUTH_TYPE_CHAP    1
+#define XAUTH_TYPE_OTP     2
+#define XAUTH_TYPE_SKEY    3
+
+extern enum_names modecfg_attr_names;
+extern enum_names xauth_type_names;
 
 /* Exchange types
  * RFC2408 "Internet Security Association and Key Management Protocol (ISAKMP)"
@@ -421,6 +501,7 @@ extern enum_names exchange_names;
 #define ISAKMP_XCHG_AO         3	/* Authentication Only */
 #define ISAKMP_XCHG_AGGR       4	/* Aggressive */
 #define ISAKMP_XCHG_INFO       5	/* Informational */
+#define ISAKMP_XCHG_MODE_CFG   6        /* Mode Config */
 
 /* Extra exchange types, defined by Oakley
  * RFC2409 "The Internet Key Exchange (IKE)", near end of Appendix A
@@ -463,7 +544,7 @@ extern enum_names protocol_names;
     : (p)==PROTO_IPCOMP ? enum_show(&ipcomp_transformid_names, (t)) \
     : "??")
 
-/* many transform values are moved to freeswan/ipsec_policy.h */
+/* many transform values are moved to openswan/ipsec_policy.h */
 
 extern enum_names isakmp_transformid_names;
 
@@ -502,8 +583,13 @@ extern const char *prettypolicy(lset_t policy);
 #define POLICY_RSASIG        LELEM(1)
 
 #define POLICY_ISAKMP_SHIFT	0	/* log2(POLICY_PSK) */
-#define POLICY_ID_AUTH_MASK	LRANGES(POLICY_PSK, POLICY_RSASIG)
-#define POLICY_ISAKMP_MASK	POLICY_ID_AUTH_MASK	/* all so far */
+
+/* policies that affect ID types that are acceptable - RSA, PSK, XAUTH */
+#define POLICY_ID_AUTH_MASK	LRANGES(POLICY_PSK, POLICY_RSASIG) 
+
+/* policies that affect choices of proposal, note, does not include XAUTH */
+#define POLICY_ISAKMP(x,xs,xc)	(((x) & LRANGES(POLICY_PSK, POLICY_RSASIG)) + \
+                                 ((xs)*4) + ((xc)*8))
 
 /* Quick Mode (IPSEC) attributes */
 #define POLICY_ENCRYPT       LELEM(2)	/* must be first of IPSEC policies */
@@ -543,6 +629,8 @@ extern const char *prettypolicy(lset_t policy);
 #define POLICY_GROUP	LELEM(14)	/* is this a group template? */
 #define POLICY_GROUTED	LELEM(15)	/* do we want this group routed? */
 #define POLICY_UP	LELEM(16)	/* do we want this up? */
+#define POLICY_XAUTH        LELEM(17)  /* do we offer XAUTH? */
+#define POLICY_MODE_CFG	    LELEM(18)  /* do we offer mode configuration? */
 
 
 /* Any IPsec policy?  If not, a connection description
@@ -640,6 +728,18 @@ extern enum_names enc_mode_names;
 #define ENCAPSULATION_MODE_TUNNEL      1
 #define ENCAPSULATION_MODE_TRANSPORT   2
 
+#define ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS       61443
+#define ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS    61444
+#define ENCAPSULATION_MODE_UDP_TUNNEL_RFC          3
+#define ENCAPSULATION_MODE_UDP_TRANSPORT_RFC       4
+
+#ifdef NAT_TRAVERSAL
+#define ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS       61443
+#define ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS    61444
+#define ENCAPSULATION_MODE_UDP_TUNNEL_RFC          3
+#define ENCAPSULATION_MODE_UDP_TRANSPORT_RFC       4
+#endif
+
 /* Auth Algorithm attribute */
 
 extern enum_names auth_alg_names, extended_auth_alg_names;
@@ -728,6 +828,7 @@ extern enum_names oakley_auth_names;
 #define HybridInitDSS                                     64223
 #define HybridRespDSS                                     64224
 
+/* For XAUTH, store in st->xauth, and set equivalent in st->auth */
 #define XAUTHInitPreShared                                65001
 #define XAUTHRespPreShared                                65002
 #define XAUTHInitDSS                                      65003
@@ -738,6 +839,8 @@ extern enum_names oakley_auth_names;
 #define XAUTHRespRSAEncryption                            65008
 #define XAUTHInitRSARevisedEncryption                     65009
 #define XAUTHRespRSARevisedEncryption                     65010
+
+
 
 /* Oakley Group Description attribute
  * draft-ietf-ipsec-ike-01.txt appendix A
@@ -908,3 +1011,6 @@ enum PrivateKeyKind {
     PPK_PIN = 4
 };
 extern enum_names ppk_names;
+
+/* natt traversal types */
+extern const char *const natt_type_bitnames[];

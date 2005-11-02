@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: ipsec.in,v 1.33 2003/04/23 14:56:23 dhr Exp $
+# RCSID $Id: ipsec.in,v 1.35.2.1 2004/05/01 04:33:17 ken Exp $
 
 # where the private directory and the config files are
 IPSEC_EXECDIR="${IPSEC_EXECDIR-@IPSEC_EXECDIR@}"
@@ -43,23 +43,31 @@ export IPSEC_VERSION
 fixversion() {
 	if test -f /proc/net/ipsec_version
 	then
+	stack=" (klips)"
 	kv="`awk '{print $NF}' /proc/net/ipsec_version`"
 	else
-	kv="(no kernel code presently loaded)"
+                if test -f /proc/net/pfkey
+                then
+			stack=" (native)"
+                        kv="`uname -r` (native)"
+                else
+                        kv="(no kernel code presently loaded)"
+                fi
 	fi
 	if test " $kv" != " $version"
 	then
 	version="U$version/K$kv"
 	fi
+	version="$version$stack"
 }
 
 case "$1" in
 '')
 	echo "Usage: ipsec command argument ..."
 	echo "Use --help for list of commands, or see ipsec(8) manual page"
-	echo "or the FreeS/WAN documentation for names of the common ones."
+	echo "or the Openswan documentation for names of the common ones."
 	echo "Most have their own manual pages, e.g. ipsec_auto(8)."
-	echo "See <http://www.freeswan.org> for more general info."
+	echo "See <http://www.openswan.org> for more general info."
 	exit 0
 	;;
 --help)
@@ -79,7 +87,7 @@ case "$1" in
 	;;
 version|--version)
 	fixversion
-	echo "Linux FreeS/WAN $version"
+	echo "Linux Openswan $version"
 	echo "See \`ipsec --copyright' for copyright information."
 	if [ -f $IPSEC_LIBDIR/distro.txt ]
 	then

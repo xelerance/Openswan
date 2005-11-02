@@ -11,13 +11,13 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pkcs.c,v 1.2 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: pkcs.c,v 1.2.6.1 2004/03/21 05:23:34 mcr Exp $
  */
 
 #include <stdlib.h>
 #include <string.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"

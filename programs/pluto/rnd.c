@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: rnd.c,v 1.19 2003/05/11 01:52:56 dhr Exp $
+ * RCSID $Id: rnd.c,v 1.19.16.1 2004/03/21 05:23:34 mcr Exp $
  */
 
 /* A true random number generator (we hope)
@@ -58,7 +58,7 @@
 #include <sys/time.h>
 #include <fcntl.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "sha1.h"
 #include "constants.h"

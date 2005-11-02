@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: rcv_info.c,v 1.5 2003/07/16 19:35:49 mcr Exp $
+ * RCSID $Id: rcv_info.c,v 1.6.4.1 2004/03/21 05:23:34 mcr Exp $
  */
 
 #include <stdio.h>
@@ -28,11 +28,14 @@
 #include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
 #include <sys/queue.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"
 #include "id.h"
+#ifdef XAUTH
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "foodgroups.h"
 #include "whack.h"	/* needs connections.h */
@@ -48,7 +51,7 @@
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "server.h"
 
-#include "freeswan/ipsec_policy.h"
+#include "openswan/ipsec_policy.h"
 #include "rcv_info.h"
 
 /* global */

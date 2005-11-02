@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: timer.c,v 1.82 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: timer.c,v 1.83.4.1 2004/03/21 05:23:34 mcr Exp $
  */
 
 #include <stdio.h>
@@ -24,7 +24,7 @@
 #include <arpa/inet.h>
 #include <sys/queue.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -33,6 +33,9 @@
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "state.h"
 #include "packet.h"
@@ -44,6 +47,10 @@
 #include "rnd.h"
 #include "timer.h"
 #include "whack.h"
+
+#ifdef NAT_TRAVERSAL
+#include "nat_traversal.h"
+#endif
 
 /* monotonic version of time(3) */
 time_t
@@ -405,6 +412,12 @@ handle_timer_event(void)
 	    /* Delete this state object.  It must be in the hash table. */
 	    delete_state(st);
 	    break;
+
+#ifdef NAT_TRAVERSAL
+	case EVENT_NAT_T_KEEPALIVE:
+	    nat_traversal_ka_event();
+	    break;
+#endif
 
 	default:
 	    loglog(RC_LOG_SERIOUS, "INTERNAL ERROR: ignoring unknown expiring event %s"

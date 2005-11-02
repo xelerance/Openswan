@@ -29,6 +29,9 @@ ipsec pluto
 [\-\-perpeerlog]
 [\-\-perpeerlogbase\ \c
 \fIdirname\fP]
+[\-\-ipsecdir\ \c
+\fIdirname\fP]
+[\-\-noretransmits]
 [\-\-debug\(hynone]
 [\-\-debug\(hyall]
 [\-\-debug\(hyraw]
@@ -159,6 +162,8 @@ ipsec whack
 \-\-initiate|\-\-terminate
 \-\-name\ \c
 \fIconnection-name\fP
+[\-\-xauthuser user]
+[\-\-xauthpass pass]
 [\-\-asynchronous]
 [\-\-ctlbase\ \c
 \fIpath\fP]
@@ -345,7 +350,7 @@ When \fBpluto\fP shuts down, it closes all Security Associations.
 \fBpluto\fP runs as a daemon with userid root.  Before running it, a few
 things must be set up.
 .LP
-\fBpluto\fP requires \fBKLIPS\fP, the FreeS/WAN implementation of IPsec.
+\fBpluto\fP requires \fBKLIPS\fP, the Openswan implementation of IPsec.
 All of the components of \fBKLIPS\fP and \fBpluto\fP should be installed.
 .LP
 \fBpluto\fP supports multiple public networks (that is, networks
@@ -450,6 +455,12 @@ Once \fBpluto\fP is started, it waits for requests from \fBwhack\fP.
 To understand how to use \fBpluto\fP, it is helpful to understand a little
 about its internal state.  Furthermore, the terminology is needed to decipher
 some of the diagnostic messages.
+.LP
+Pluto supports \fBfood groups\fP, and certificates. These are located in
+/etc/ipsec.d, or another directory as specified by \fB\-\-ipsecdir\fP.
+.LP
+At times it may be desireable to turn off all timed events in \fBpluto\fP,
+this can be done with \fB\-\-noretransmits\fP.
 .LP
 The \fI(potential) connection\fP database describes attributes of a
 connection.  These include the IP addresses of the hosts and client
@@ -998,6 +1009,19 @@ all SAs that it has negotiated.
 Notification of any IPSEC SA deletion, but not ISAKMP SA deletion
 is sent to the peer.  Unfortunately, such Notification is not reliable.
 Furthermore, \fBpluto\fP itself ignores Notifications.
+.SS XAUTH
+.LP
+If \fBpluto\fP needs additional authentication, such as defined by the XAUTH
+specifications, then it may ask \fBwhack\fP to prompt the operator for
+username or passwords. Typically, these will be entered interactively. A GUI
+that wraps around \fBwhack\fP may look for the 041 (username) or 040
+(password) prompts, and display them to the user.
+.LP
+For testing purposes, the options
+\fB\-\-xauthuser\ \fP\fIuser\fP
+\fB\-\-xauthpass\ \fP\fIpass\fP
+may be be given prior to the \fB\-\-initiate\ \fP
+to provide responses to the username and password prompts.
 .SS The updown command
 .LP
 Whenever \fBpluto\fP brings a connection up or down, it invokes
@@ -1533,7 +1557,7 @@ Otherwise, the exit status is 0.
 \fIIPSECmyid\fP
 .SH SEE ALSO
 .LP
-The rest of the FreeS/WAN distribution, in particular \fIipsec\fP(8).
+The rest of the Openswan distribution, in particular \fIipsec\fP(8).
 .LP
 \fIipsec_auto\fP(8) is designed to make using \fBpluto\fP more pleasant.
 Use it!
@@ -1541,9 +1565,9 @@ Use it!
 .IR ipsec.secrets (5)
 describes the format of the secrets file.
 .LP
-\fIipsec_atoaddr\fP(3), part of the FreeS/WAN distribution, describes the
+\fIipsec_atoaddr\fP(3), part of the Openswan distribution, describes the
 forms that IP addresses may take.
-\fIipsec_atosubnet\fP(3), part of the FreeS/WAN distribution, describes the
+\fIipsec_atosubnet\fP(3), part of the Openswan distribution, describes the
 forms that subnet specifications.
 .LP
 For more information on IPsec, the mailing list, and the relevant
@@ -1561,7 +1585,7 @@ RFC2408 Internet Security Association and Key Management Protocol (ISAKMP)
 .IP
 RFC2407 The Internet IP Security Domain of Interpretation for ISAKMP
 .LP
-The FreeS/WAN web site <htp://www.freeswan.org>
+The Openswan web site <htp://www.openswan.org>
 and the mailing lists described there.
 .SH HISTORY
 This code is released under the GPL terms.
@@ -1577,10 +1601,11 @@ by Angelos D. Keromytis
 (angelos@dsl.cis.upenn.edu), in May/June 1997, in Athens, Greece.
 Thanks go to John Ioannidis for his help.
 .LP
-It is currently (2000)
-being developed and maintained by D. Hugh Redelmeier
+It was developed/maintained from 2000-2004 by by D. Hugh Redelmeier
 (hugh@mimosa.com), in Canada.  The regulations of Greece and Canada
 allow us to make the code freely redistributable.
+.LP
+It is currently maintained by Xelerance Corporation, in Canada.
 .LP
 Kai Martius (admin@imib.med.tu-dresden.de) contributed the initial
 version of the code supporting PFS.
@@ -1637,13 +1662,4 @@ and the method for IPsec is negotiated as an AH SA or part of an ESP SA.
 Unfortunately, the protocol has no mechanism for authenticating the Phase 2
 identities.
 .LP
-Bugs should be reported to the <users@lists.freeswan.org> mailing list.
-Caution: we cannot accept
-actual code from US residents, or even US citizens living outside the
-US, because that would bring FreeS/WAN under US export law.  Some
-other countries cause similar problems.  In general, we would prefer
-that you send detailed problem reports rather than code:  we want
-FreeS/WAN to be unquestionably freely exportable, which means being
-very careful about where the code comes from, and for a small bug fix,
-that is often more time-consuming than just reinventing the fix
-ourselves.
+Bugs should be reported to the <users@lists.openswan.org> mailing list.

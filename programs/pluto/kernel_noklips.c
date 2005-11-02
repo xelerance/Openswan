@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_noklips.c,v 1.4 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: kernel_noklips.c,v 1.5.4.3 2004/06/01 14:42:36 ken Exp $
  */
 
 #include <errno.h>
@@ -30,7 +30,7 @@
 #include <sys/types.h>
 #include <sys/queue.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
@@ -124,5 +124,5 @@ const struct kernel_ops noklips_kernel_ops = {
 	del_sa: noklips_del_sa,
 	get_spi: NULL,
         inbound_eroute: FALSE,
-	policy_lifetime: FALSE
+	policy_lifetime: FALSE,
 };

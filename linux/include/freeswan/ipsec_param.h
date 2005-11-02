@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_param.h,v 1.22 2003/10/31 02:27:05 mcr Exp $
+ * RCSID $Id: ipsec_param.h,v 1.23 2003/12/13 19:10:16 mcr Exp $
  *
  */
 
@@ -181,7 +181,33 @@ extern void ipsec_print_ip(struct iphdr *ip);
 #endif /* CONFIG_IPSEC_DEBUG */
 
 
+/* 
+ * Stupid kernel API differences in APIs. Not only do some
+ * kernels not have ip_select_ident, but some have differing APIs,
+ * and SuSE has one with one parameter, but no way of checking to
+ * see what is really what.
+ */
 
+#ifdef SUSE_LINUX_2_4_19_IS_STUPID
+#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph)
+#else
+
+/* simplest case, nothing */
+#if !defined(IP_SELECT_IDENT)
+#define KLIPS_IP_SELECT_IDENT(iph, skb)  do { iph->id = htons(ip_id_count++); } while(0)
+#endif
+
+/* kernels > 2.3.37-ish */
+#if defined(IP_SELECT_IDENT) && !defined(IP_SELECT_IDENT_NEW)
+#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb->dst)
+#endif
+
+/* kernels > 2.4.2 */
+#if defined(IP_SELECT_IDENT) && defined(IP_SELECT_IDENT_NEW)
+#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb->dst, NULL)
+#endif
+
+#endif /* SUSE_LINUX_2_4_19_IS_STUPID */
 
 /*
  * make klips fail test:east-espiv-01.
@@ -202,6 +228,9 @@ extern void ipsec_print_ip(struct iphdr *ip);
 
 /*
  * $Log: ipsec_param.h,v $
+ * Revision 1.23  2003/12/13 19:10:16  mcr
+ * 	refactored rcv and xmit code - same as FS 2.05.
+ *
  * Revision 1.22  2003/10/31 02:27:05  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *

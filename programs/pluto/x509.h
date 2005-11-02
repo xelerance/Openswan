@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: x509.h,v 1.2 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: x509.h,v 1.2.6.1 2004/03/21 05:23:35 mcr Exp $
  */
 
 #ifndef _X509_H
@@ -145,11 +145,7 @@ extern const x509cert_t empty_x509cert;
 
 extern bool same_dn(chunk_t a, chunk_t b);
 #define MAX_CA_PATH_LEN		7
-#ifdef X509
 extern bool trusted_ca(chunk_t a, chunk_t b, int *pathlen);
-#else
-#define trusted_ca(a,b,c) 1
-#endif
 extern bool match_requested_ca(generalName_t *requested_ca
     , chunk_t our_ca, int *our_pathlen);
 extern bool match_dn(chunk_t a, chunk_t b, int *wildcards);

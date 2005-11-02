@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: server.c,v 1.90 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: server.c,v 1.92.2.4 2004/06/02 12:42:44 ken Exp $
  */
 
 #include <stdio.h>
@@ -41,7 +41,7 @@
 #include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
 #include <sys/queue.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -51,6 +51,9 @@
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "kernel.h"  /* for no_klips; needs connections.h */
 #include "log.h"
@@ -69,11 +72,17 @@
 #include <pfkey.h>
 #include "kameipsec.h"
 
+#ifdef NAT_TRAVERSAL
+#include "nat_traversal.h"
+#endif
+
 /*
  *  Server main loop and socket initialization routines.
  */
 
 static const int on = TRUE;	/* by-reference parameter; constant, we hope */
+
+bool no_retransmits = FALSE;
 
 /* control (whack) socket */
 int ctl_fd = NULL_FD;	/* file descriptor of control (whack) socket */
@@ -451,6 +460,82 @@ find_raw_ifaces6(void)
     return rifaces;
 }
 
+static int
+create_socket(struct raw_iface *ifp, const char *v_name, int port)
+{
+    int fd = socket(addrtypeof(&ifp->addr), SOCK_DGRAM, IPPROTO_UDP);
+    int fcntl_flags;
+
+    if (fd < 0)
+    {
+	log_errno((e, "socket() in process_raw_ifaces()"));
+	return -1;
+    }
+
+    /* Set socket Nonblocking */
+    if ((fcntl_flags=fcntl(fd, F_GETFL)) >= 0) {
+	if (!(fcntl_flags & O_NONBLOCK)) {
+	    fcntl_flags |= O_NONBLOCK;
+	    fcntl(fd, F_SETFL, fcntl_flags);
+	}
+    }
+
+    if (fcntl(fd, F_SETFD, FD_CLOEXEC) == -1)
+    {
+	log_errno((e, "fcntl(,, FD_CLOEXEC) in process_raw_ifaces()"));
+	close(fd);
+	return -1;
+    }
+
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR
+    , (const void *)&on, sizeof(on)) < 0)
+    {
+	log_errno((e, "setsockopt SO_REUSEADDR in process_raw_ifaces()"));
+	close(fd);
+	return -1;
+    }
+
+    /* To improve error reporting.  See ip(7). */
+#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
+    if (setsockopt(fd, SOL_IP, IP_RECVERR
+    , (const void *)&on, sizeof(on)) < 0)
+    {
+	log_errno((e, "setsockopt IP_RECVERR in process_raw_ifaces()"));
+	close(fd);
+	return -1;
+    }
+#endif
+
+    /* With IPv6, there is no fragmentation after
+     * it leaves our interface.  PMTU discovery
+     * is mandatory but doesn't work well with IKE (why?).
+     * So we must set the IPV6_USE_MIN_MTU option.
+     * See draft-ietf-ipngwg-rfc2292bis-01.txt 11.1
+     */
+#ifdef IPV6_USE_MIN_MTU	/* YUCK: not always defined */
+    if (addrtypeof(&ifp->addr) == AF_INET6
+    && setsockopt(fd, SOL_SOCKET, IPV6_USE_MIN_MTU
+      , (const void *)&on, sizeof(on)) < 0)
+    {
+	log_errno((e, "setsockopt IPV6_USE_MIN_MTU in process_raw_ifaces()"));
+	close(fd);
+	return -1;
+    }
+#endif
+
+    setportof(htons(port), &ifp->addr);
+    if (bind(fd, sockaddrof(&ifp->addr), sockaddrlenof(&ifp->addr)) < 0)
+    {
+	log_errno((e, "bind() for %s/%s %s:%u in process_raw_ifaces()"
+	    , ifp->name, v_name
+	    , ip_str(&ifp->addr), (unsigned) port));
+	close(fd);
+	return -1;
+    }
+    setportof(htons(pluto_port), &ifp->addr);
+    return fd;
+}
+
 static void
 process_raw_ifaces(struct raw_iface *rifaces)
 {
@@ -582,6 +667,12 @@ add_entry:
 			break;
 		    }
 
+#ifdef NAT_TRAVERSAL
+		    if (nat_traversal_support_non_ike)
+		    {
+			nat_traversal_espinudp_socket(fd, ESPINUDP_WITH_NON_IKE);
+		    }
+#endif
 		    if (fcntl(fd, F_SETFD, FD_CLOEXEC) == -1)
 		    {
 			log_errno((e, "fcntl(,, FD_CLOEXEC) in process_raw_ifaces()"));
@@ -683,6 +774,27 @@ add_entry:
 		    interfaces = q;
 		    plog("adding interface %s/%s %s"
 			, q->vname, q->rname, ip_str(&q->addr));
+#ifdef NAT_TRAVERSAL
+		    if (nat_traversal_support_port_floating) {
+			fd = create_socket(ifp, v->name, NAT_T_IKE_FLOAT_PORT);
+			if (fd < 0)
+			    break;
+			nat_traversal_espinudp_socket(fd,
+			    ESPINUDP_WITH_NON_ESP);
+			q = alloc_thing(struct iface, "struct iface");
+			q->rname = clone_str(ifp->name, "real device name");
+			q->vname = clone_str(v->name, "virtual device name");
+			q->addr = ifp->addr;
+			setportof(htons(NAT_T_IKE_FLOAT_PORT), &q->addr);
+			q->fd = fd;
+			q->next = interfaces;
+			q->change = IFN_ADD;
+			q->ike_float = TRUE;
+			interfaces = q;
+			plog("adding interface %s/%s %s:%d",
+			q->vname, q->rname, ip_str(&q->addr), NAT_T_IKE_FLOAT_PORT);
+		    }
+#endif
 		    break;
 		}
 
@@ -693,6 +805,16 @@ add_entry:
 		{
 		    /* matches -- rejuvinate old entry */
 		    q->change = IFN_KEEP;
+#ifdef NAT_TRAVERSAL
+		    /* look for other interfaces to keep (due to NAT-T) */
+		    for (q = q->next ; q ; q = q->next) {
+			if (streq(q->rname, ifp->name)
+			    && streq(q->vname, v->name)
+			    && sameaddr(&q->addr, &ifp->addr)) {
+				q->change = IFN_KEEP;
+			}
+		    }
+#endif
 		    break;
 		}
 
@@ -860,7 +982,7 @@ call_server(void)
 		}
 	    }
 
-	    if (next_time == -1)
+	    if (no_retransmits || next_time < 0)
 	    {
 		/* select without timer */
 
@@ -899,12 +1021,15 @@ call_server(void)
 	{
 	    /* timer event */
 
-	    DBG(DBG_CONTROL,
-		DBG_log(BLANK_FORMAT);
-		DBG_log("*time to handle event"));
-
-	    handle_timer_event();
-	    passert(GLOBALS_ARE_RESET());
+	    if(!no_retransmits)
+	    {
+		DBG(DBG_CONTROL,
+		    DBG_log(BLANK_FORMAT);
+		    DBG_log("*time to handle event"));
+		
+		handle_timer_event();
+		passert(GLOBALS_ARE_RESET());
+	    }
 	}
 	else
 	{

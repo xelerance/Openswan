@@ -1,5 +1,5 @@
 .TH IPSEC.CONF 5 "26 Nov 2001"
-.\" RCSID $Id: ipsec.conf.5,v 1.100 2003/09/04 06:35:19 sam Exp $
+.\" RCSID $Id: ipsec.conf.5,v 1.102.2.1 2004/05/14 15:38:15 ken Exp $
 .SH NAME
 ipsec.conf \- IPsec configuration and connections
 .SH DESCRIPTION
@@ -550,6 +550,11 @@ The identity used for the left participant
 must be a specific host, not
 .B %any
 or another magic value.
+The value 
+.B %cert
+will load the information required from a certificate defined in
+.B %leftcert
+and automatically define leftid for you.
 .B Caution:
 if two connection descriptions
 specify different public keys for the same
@@ -559,6 +564,37 @@ confusion and madness will ensue.
 .B leftrsasigkey2
 if present, a second public key.
 Either key can authenticate the signature, allowing for key rollover.
+.TP
+.BR leftcert
+If you are using 
+.B leftrsasigkey=%cert
+this defines the certificate you would like to use. It should point to a X.509
+encoded certificate file. If you do not specify a full pathname, by default it
+will look in /etc/ipsec.d/certs.
+.TP
+.BR leftsendcert
+This option configures when Openswan will send X.509 certificates to the remote
+host. Acceptable values are 
+.B yes|always
+(signifying that we should always send a certificate),
+.B ifasked
+(signifying that we should send a certificate if the remote end asks for it), and
+.B no|never
+(signifying that we will never send a X.509 certificate).
+The default for this option is 
+.B ifasked
+which may break compatibility with other vendor's IPSec implementations, such as
+Cisco and SafeNet. If you find that you are getting errors about no ID/Key found,
+you likely need to set this to
+.B always.
+.TP
+.B xauth
+Use XAUTH / Mode Config for this connection.  This uses PAM for authentication
+currently, and it not well documented.  Use the source :)  Acceptable values are
+.B yes
+or 
+.B no
+(the default).
 .TP
 .B pfs
 whether Perfect Forward Secrecy of keys is desired on the connection's
@@ -878,12 +914,14 @@ config setup
 .fi
 .PP
 Parameters are optional unless marked ``(required)''.
+
 The currently-accepted
 .I parameter
 names in a
 .B config
 .B setup
 section are:
+
 .TP 14
 .B myid
 the identity to be used for
@@ -896,6 +934,7 @@ If unspecified,
 is set to the IP address in \fB%defaultroute\fP (if that is supported by a TXT record in its reverse domain), or otherwise
 the system's hostname (if that is supported by a TXT record in its forward domain), or otherwise it is undefined.
 An explicit value generally starts with ``\fB@\fP''.
+
 .TP
 .B interfaces
 virtual and physical interfaces for IPsec to use:
@@ -937,6 +976,7 @@ up (e.g.,
 in Red Hat 6.x
 .IR /etc/sysctl.conf ),
 because IPsec doesn't get control early enough to do that.
+
 .TP
 .B rp_filter
 whether and how
@@ -949,6 +989,7 @@ or \fB0\fP, \fB1\fP, \fB2\fP (values to set it to).
 is badly documented; it must be \fB0\fP in many cases
 for ipsec to function.
 The default value for the parameter is \fB0\fP.
+
 .TP
 .B syslog
 the
@@ -957,6 +998,7 @@ the
 startup/shutdown log messages,
 default
 .BR daemon.error .
+
 .TP
 .B klipsdebug
 how much KLIPS debugging output should be logged.
@@ -971,6 +1013,7 @@ Otherwise only the specified types of output
 (a quoted list, names separated by white space) are enabled;
 for details on available debugging types, see
 .IR ipsec_klipsdebug (8).
+
 .TP
 .B plutodebug
 how much Pluto debugging output should be logged.
@@ -988,6 +1031,7 @@ prefix,
 separated by white space) are enabled;
 for details on available debugging types, see
 .IR ipsec_pluto (8).
+
 .TP
 .B plutoopts
 additional options to pass to pluto upon startup. See
@@ -996,6 +1040,7 @@ additional options to pass to pluto upon startup. See
 .B plutostderrlog
 do not use syslog, but rather log to stderr, and direct stderr to the
 argument file.
+
 .TP
 .B dumpdir
 in what directory should things started by
@@ -1004,6 +1049,7 @@ in what directory should things started by
 dump core?
 The empty value (the default) means they are not
 allowed to.
+
 .TP
 .B manualstart
 which manually-keyed connections to set up at startup
@@ -1011,6 +1057,7 @@ which manually-keyed connections to set up at startup
 see
 .IR ipsec_manual (8).
 Default is none.
+
 .TP
 .B pluto
 whether to start Pluto or not;
@@ -1020,6 +1067,7 @@ Values are
 or
 .B no
 (useful only in special circumstances).
+
 .TP
 .B plutowait
 should Pluto wait for each
@@ -1030,6 +1078,7 @@ Values are
 or
 .BR no
 (the default).
+
 .TP
 .B prepluto
 shell command to run before starting Pluto
@@ -1043,6 +1092,7 @@ so running interactive commands is difficult unless they use
 .I /dev/tty
 or equivalent for their interaction.
 Default is none.
+
 .TP
 .B postpluto
 shell command to run after starting Pluto
@@ -1056,6 +1106,7 @@ so running interactive commands is difficult unless they use
 .I /dev/tty
 or equivalent for their interaction.
 Default is none.
+
 .TP
 .B fragicmp
 whether a tunnel's need to fragment a packet should be reported
@@ -1066,6 +1117,7 @@ acceptable values are
 (the default)
 and
 .BR no .
+
 .TP
 .B hidetos
 whether a tunnel packet's TOS field should be set to
@@ -1076,6 +1128,7 @@ acceptable values are
 (the default)
 and
 .BR no .
+
 .TP
 .B uniqueids
 whether a particular participant ID should be kept unique,
@@ -1090,11 +1143,23 @@ and
 Participant IDs normally \fIare\fR unique,
 so a new (automatically-keyed) connection using the same ID is
 almost invariably intended to replace an old one.
+
 .TP
 .B overridemtu
 value that the MTU of the ipsec\fIn\fR interface(s) should be set to,
 overriding IPsec's (large) default.
 This parameter is needed only in special situations.
+
+.TP
+.B nat_traversal
+whether to accept/offer to support NAT (NAPT, also known as "IP Masqurade")
+workaround for IPsec. Acceptable values are:
+.B yes
+and
+.BR no 
+(the default).
+This parameter may eventually become per-connection.
+
 .SH "IMPLICIT CONNS"
 .PP
 The system automatically defines several conns to implement

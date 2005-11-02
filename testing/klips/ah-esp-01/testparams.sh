@@ -8,8 +8,6 @@ TESTNAME=ah-esp-01
 EASTHOST=east
 WESTHOST=west
 
-ARPREPLY=--arpreply
-
 # EAST_INPUT=../../klips/inputs/01-sunrise-sunset-ping.pcap
 # REF_WEST_OUTPUT=../../klips/west-icmp-01/spi1-cleartext.txt
 

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ac.c,v 1.3 2003/11/04 07:58:58 dhr Exp $
+ * RCSID $Id: ac.c,v 1.4.2.1 2004/03/21 05:23:32 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -23,7 +23,7 @@
 #include <time.h>
 #include <sys/types.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -35,6 +35,7 @@
 #include "pgp.h"
 #include "certs.h"
 #include "log.h"
+#include "paths.h"
 
 /* ASN.1 definition of ietfAttrSyntax */
 

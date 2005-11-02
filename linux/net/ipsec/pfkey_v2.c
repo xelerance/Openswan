@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2.c,v 1.79 2003/10/31 02:27:55 mcr Exp $
+ * RCSID $Id: pfkey_v2.c,v 1.79.6.2 2004/05/01 04:42:00 ken Exp $
  */
 
 /*
@@ -1335,7 +1335,7 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 #endif /* !PROC_NO_DUMMY */
 )
 {
-	off_t pos=0;
+	const int max_content = length > 0? length-1 : 0;
 	off_t begin=0;
 	int len=0;
 	struct sock *sk=pfkey_sock_list;
@@ -1343,11 +1343,11 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 #ifdef CONFIG_IPSEC_DEBUG
 	if(!sysctl_ipsec_debug_verbose) {
 #endif /* CONFIG_IPSEC_DEBUG */
-	len+= sprintf(buffer,
+	len+= snprintf(buffer,length,
 		      "    sock   pid   socket     next     prev e n p sndbf    Flags     Type St\n");
 #ifdef CONFIG_IPSEC_DEBUG
 	} else {
-	len+= sprintf(buffer,
+	len+= snprintf(buffer,length,
 		      "    sock   pid d    sleep   socket     next     prev e r z n p sndbf    stamp    Flags     Type St\n");
 	}
 #endif /* CONFIG_IPSEC_DEBUG */
@@ -1356,7 +1356,7 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 #ifdef CONFIG_IPSEC_DEBUG
 		if(!sysctl_ipsec_debug_verbose) {
 #endif /* CONFIG_IPSEC_DEBUG */
-		len+=sprintf(buffer+len,
+		len += ipsec_snprintf(buffer+len, length-len,
 			     "%8p %5d %8p %8p %8p %d %d %d %5d %08lX %8X %2X\n",
 			     sk,
 			     key_pid(sk),
@@ -1372,7 +1372,7 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 			     sk->socket->state);
 #ifdef CONFIG_IPSEC_DEBUG
 		} else {
-		len+=sprintf(buffer+len,
+			len += ipsec_snprintf(buffer+len, length-len,
 			     "%8p %5d %d %8p %8p %8p %8p %d %d %d %d %d %5d %d.%06d %08lX %8X %2X\n",
 			     sk,
 			     key_pid(sk),
@@ -1395,21 +1395,29 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 		}
 #endif /* CONFIG_IPSEC_DEBUG */
 		
-		pos=begin+len;
-		if(pos<offset)
-		{
-			len=0;
-			begin=pos;
-		}
-		if(pos>offset+length)
-			break;
+		if (len >= max_content) {
+                       /* we've done all that can fit -- stop loop */
+                       len = max_content;      /* truncate crap */
+                        break;
+                } else {
+
+                       const off_t pos = begin + len;  /* file position of end of what we've generated */
+
+                       if (pos <= offset) {
+                               /* all is before first interesting character:
+                                * discard, but note where we are.
+                                */
+                               len = 0;
+                               begin = pos;
+                       }
+                } 
 		sk=sk->next;
-	}
-	*start=buffer+(offset-begin);
-	len-=(offset-begin);
-	if(len>length)
-		len=length;
-	return len;
+
+        }
+
+	*start = buffer + (offset - begin);     /* Start of wanted data */
+	return len - (offset - begin);
+
 }
 
 #ifndef PROC_FS_2325
@@ -1422,19 +1430,19 @@ pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
 #endif /* !PROC_NO_DUMMY */
 )
 {
-	off_t pos=0;
+	const int max_content = length > 0? length-1 : 0;
 	off_t begin=0;
 	int len=0;
 	int satype;
 	struct supported_list *pfkey_supported_p;
 	
-	len+= sprintf(buffer,
+	len += ipsec_snprintf(buffer, length,
 		      "satype exttype alg_id ivlen minbits maxbits\n");
 	
 	for(satype = SADB_SATYPE_UNSPEC; satype <= SADB_SATYPE_MAX; satype++) {
 		pfkey_supported_p = pfkey_supported_list[satype];
 		while(pfkey_supported_p) {
-			len+=sprintf(buffer+len,
+			len += ipsec_snprintf(buffer+len, length-len,
 				     "    %2d      %2d     %2d   %3d     %3d     %3d\n",
 				     satype,
 				     pfkey_supported_p->supportedp->supported_alg_exttype,
@@ -1443,21 +1451,29 @@ pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
 				     pfkey_supported_p->supportedp->supported_alg_minbits,
 				     pfkey_supported_p->supportedp->supported_alg_maxbits);
 			
-			pos=begin+len;
-			if(pos<offset) {
-				len=0;
-				begin=pos;
-			}
-			if(pos>offset+length)
-				break;
+                        if (len >= max_content) {
+                                /* we've done all that can fit -- stop loop */
+                                len = max_content;      /* truncate crap */
+                                break;
+                        } else {
+                               const off_t pos = begin + len;  /* file position of end of what we've generated */
+
+                               if (pos <= offset) {
+                                       /* all is before first interesting character:
+                                        * discard, but note where we are.
+                                        */
+                                       len = 0;
+                                       begin = pos;
+                               }
+                        } 
+
 			pfkey_supported_p = pfkey_supported_p->next;
 		}
 	}
-	*start=buffer+(offset-begin);
-	len-=(offset-begin);
-	if(len>length)
-		len=length;
-	return len;
+
+	*start = buffer + (offset - begin);     /* Start of wanted data */
+	return len - (offset - begin);
+
 }
 
 #ifndef PROC_FS_2325
@@ -1470,27 +1486,27 @@ pfkey_registered_get_info(char *buffer, char **start, off_t offset, int length
 #endif /* !PROC_NO_DUMMY */
 )
 {
-	off_t pos=0;
+	const int max_content = length > 0? length-1 : 0;
 	off_t begin=0;
 	int len=0;
 	int satype;
 	struct socket_list *pfkey_sockets;
 	
-	len+= sprintf(buffer,
+	len += ipsec_snprintf(buffer, length,
 		      "satype   socket   pid       sk\n");
 	
 	for(satype = SADB_SATYPE_UNSPEC; satype <= SADB_SATYPE_MAX; satype++) {
 		pfkey_sockets = pfkey_registered_sockets[satype];
 		while(pfkey_sockets) {
 #ifdef NET_21
-			len+=sprintf(buffer+len,
+			len += ipsec_snprintf(buffer+len, length-len,
 				     "    %2d %8p %5d %8p\n",
 				     satype,
 				     pfkey_sockets->socketp,
 				     key_pid(pfkey_sockets->socketp->sk),
 				     pfkey_sockets->socketp->sk);
 #else /* NET_21 */
-			len+=sprintf(buffer+len,
+			len += ipsec_snprintf(buffer+len, length-len,
 				     "    %2d %8p   N/A %8p\n",
 				     satype,
 				     pfkey_sockets->socketp,
@@ -1499,22 +1515,29 @@ pfkey_registered_get_info(char *buffer, char **start, off_t offset, int length
 #endif
 				     (pfkey_sockets->socketp)->data);
 #endif /* NET_21 */
-			
-			pos=begin+len;
-			if(pos<offset) {
-				len=0;
-				begin=pos;
-			}
-			if(pos>offset+length)
-				break;
+
+                        if (len >= max_content) {
+                                /* we've done all that can fit -- stop loop (could stop two) */
+                                len = max_content;      /* truncate crap */
+                                break;
+                        } else {
+                                const off_t pos = begin + len;  /* file position of end of what we've generated */
+
+                                if (pos <= offset) {
+                                        /* all is before first interesting character:
+                                         * discard, but note where we are.
+                                         */
+                                        len = 0;
+                                        begin = pos;
+                                }
+                        } 
+                            			
+
 			pfkey_sockets = pfkey_sockets->next;
 		}
 	}
-	*start=buffer+(offset-begin);
-	len-=(offset-begin);
-	if(len>length)
-		len=length;
-	return len;
+	*start = buffer + (offset - begin);     /* Start of wanted data */
+	return len - (offset - begin);
 }
 
 #ifndef PROC_FS_2325
@@ -1609,13 +1632,23 @@ pfkey_init(void)
 	int i;
 	
 	static struct supported supported_init_ah[] = {
+#ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
 		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_MD5HMAC, 0, 128, 128},
+#endif /* CONFIG_IPSEC_AUTH_HMAC_MD5 */
+#ifdef CONFIG_IPSEC_AUTH_HMAC_SHA1
 		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_SHA1HMAC, 0, 160, 160}
+#endif /* CONFIG_IPSEC_AUTH_HMAC_SHA1 */
 	};
 	static struct supported supported_init_esp[] = {
+#ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
 		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_MD5HMAC, 0, 128, 128},
+#endif /* CONFIG_IPSEC_AUTH_HMAC_MD5 */
+#ifdef CONFIG_IPSEC_AUTH_HMAC_SHA1
 		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_SHA1HMAC, 0, 160, 160},
-		{SADB_EXT_SUPPORTED_ENCRYPT, SADB_EALG_3DESCBC, 128, 168, 168}
+#endif /* CONFIG_IPSEC_AUTH_HMAC_SHA1 */
+#ifdef CONFIG_IPSEC_ENC_3DES
+		{SADB_EXT_SUPPORTED_ENCRYPT, SADB_EALG_3DESCBC, 64, 168, 168},
+#endif /* CONFIG_IPSEC_ENC_3DES */
 	};
 	static struct supported supported_init_ipip[] = {
 		{SADB_EXT_SUPPORTED_ENCRYPT, SADB_X_TALG_IPv4_in_IPv4, 0, 32, 32}
@@ -1634,7 +1667,7 @@ pfkey_init(void)
 #if 0
         printk(KERN_INFO
 	       "klips_info:pfkey_init: "
-	       "FreeS/WAN: initialising PF_KEYv2 domain sockets.\n");
+	       "Openswan: initialising PF_KEYv2 domain sockets.\n");
 #endif
 
 	for(i = SADB_SATYPE_UNSPEC; i <= SADB_SATYPE_MAX; i++) {
@@ -1743,6 +1776,19 @@ pfkey_proto_init(struct net_proto *pro)
 
 /*
  * $Log: pfkey_v2.c,v $
+ * Revision 1.79.6.2  2004/05/01 04:42:00  ken
+ * Pull in snprintf() and proc fixes from HEAD.
+ * Remove old cvs comments
+ *
+ * Revision 1.81  2004/04/25 21:23:11  ken
+ * Pull in dhr's changes from FreeS/WAN 2.06
+ *
+ * Revision 1.80  2004/04/06 02:49:26  mcr
+ * 	pullup of algo code from alg-branch.
+ *
+ * Revision 1.79.4.1  2003/12/22 15:25:52  jjo
+ * . Merged algo-0.8.1-rc11-test1 into alg-branch
+ *
  * Revision 1.79  2003/10/31 02:27:55  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *
@@ -1762,321 +1808,6 @@ pfkey_proto_init(struct net_proto *pro)
  *
  * Revision 1.75  2002/09/20 05:01:57  rgb
  * Added memory allocation debugging.
- *
- * Revision 1.74  2002/09/19 02:42:50  mcr
- * 	do not define the pfkey_ops function for now.
- *
- * Revision 1.73  2002/09/17 17:29:23  mcr
- * 	#if 0 out some dead code - pfkey_ops is never used as written.
- *
- * Revision 1.72  2002/07/24 18:44:54  rgb
- * Type fiddling to tame ia64 compiler.
- *
- * Revision 1.71  2002/05/23 07:14:11  rgb
- * Cleaned up %p variants to 0p%p for test suite cleanup.
- *
- * Revision 1.70  2002/04/24 07:55:32  mcr
- * 	#include patches and Makefiles for post-reorg compilation.
- *
- * Revision 1.69  2002/04/24 07:36:33  mcr
- * Moved from ./klips/net/ipsec/pfkey_v2.c,v
- *
- * Revision 1.68  2002/03/08 01:15:17  mcr
- * 	put some internal structure only debug messages behind
- * 	&& sysctl_ipsec_debug_verbose.
- *
- * Revision 1.67  2002/01/29 17:17:57  mcr
- * 	moved include of ipsec_param.h to after include of linux/kernel.h
- * 	otherwise, it seems that some option that is set in ipsec_param.h
- * 	screws up something subtle in the include path to kernel.h, and
- * 	it complains on the snprintf() prototype.
- *
- * Revision 1.66  2002/01/29 04:00:54  mcr
- * 	more excise of kversions.h header.
- *
- * Revision 1.65  2002/01/29 02:13:18  mcr
- * 	introduction of ipsec_kversion.h means that include of
- * 	ipsec_param.h must preceed any decisions about what files to
- * 	include to deal with differences in kernel source.
- *
- * Revision 1.64  2001/11/26 09:23:51  rgb
- * Merge MCR's ipsec_sa, eroute, proc and struct lifetime changes.
- *
- * Revision 1.61.2.1  2001/09/25 02:28:44  mcr
- * 	cleaned up includes.
- *
- * Revision 1.63  2001/11/12 19:38:00  rgb
- * Continue trying other sockets even if one fails and return only original
- * error.
- *
- * Revision 1.62  2001/10/18 04:45:22  rgb
- * 2.4.9 kernel deprecates linux/malloc.h in favour of linux/slab.h,
- * lib/freeswan.h version macros moved to lib/kversions.h.
- * Other compiler directive cleanups.
- *
- * Revision 1.61  2001/09/20 15:32:59  rgb
- * Min/max cleanup.
- *
- * Revision 1.60  2001/06/14 19:35:12  rgb
- * Update copyright date.
- *
- * Revision 1.59  2001/06/13 15:35:48  rgb
- * Fixed #endif comments.
- *
- * Revision 1.58  2001/05/04 16:37:24  rgb
- * Remove erroneous checking of return codes for proc_net_* in 2.4.
- *
- * Revision 1.57  2001/05/03 19:43:36  rgb
- * Initialise error return variable.
- * Check error return codes in startup and shutdown.
- * Standardise on SENDERR() macro.
- *
- * Revision 1.56  2001/04/21 23:05:07  rgb
- * Define out skb->used for 2.4 kernels.
- *
- * Revision 1.55  2001/02/28 05:03:28  rgb
- * Clean up and rationalise startup messages.
- *
- * Revision 1.54  2001/02/27 22:24:55  rgb
- * Re-formatting debug output (line-splitting, joining, 1arg/line).
- * Check for satoa() return codes.
- *
- * Revision 1.53  2001/02/27 06:48:18  rgb
- * Fixed pfkey socket unregister log message to reflect type and function.
- *
- * Revision 1.52  2001/02/26 22:34:38  rgb
- * Fix error return code that was getting overwritten by the error return
- * code of an upmsg.
- *
- * Revision 1.51  2001/01/30 23:42:47  rgb
- * Allow pfkey msgs from pid other than user context required for ACQUIRE
- * and subsequent ADD or UDATE.
- *
- * Revision 1.50  2001/01/23 20:22:59  rgb
- * 2.4 fix to remove removed is_clone member.
- *
- * Revision 1.49  2000/11/06 04:33:47  rgb
- * Changed non-exported functions to DEBUG_NO_STATIC.
- *
- * Revision 1.48  2000/09/29 19:47:41  rgb
- * Update copyright.
- *
- * Revision 1.47  2000/09/22 04:23:04  rgb
- * Added more debugging to pfkey_upmsg() call from pfkey_sendmsg() error.
- *
- * Revision 1.46  2000/09/21 04:20:44  rgb
- * Fixed array size off-by-one error.  (Thanks Svenning!)
- *
- * Revision 1.45  2000/09/20 04:01:26  rgb
- * Changed static functions to DEBUG_NO_STATIC for revealing function names
- * in oopsen.
- *
- * Revision 1.44  2000/09/19 00:33:17  rgb
- * 2.0 fixes.
- *
- * Revision 1.43  2000/09/16 01:28:13  rgb
- * Fixed use of 0 in p format warning.
- *
- * Revision 1.42  2000/09/16 01:09:41  rgb
- * Fixed debug format warning for pointers that was expecting ints.
- *
- * Revision 1.41  2000/09/13 15:54:00  rgb
- * Rewrote pfkey_get_info(), added pfkey_{supported,registered}_get_info().
- * Moved supported algos add and remove to functions.
- *
- * Revision 1.40  2000/09/12 18:49:28  rgb
- * Added IPIP tunnel and IPCOMP register support.
- *
- * Revision 1.39  2000/09/12 03:23:49  rgb
- * Converted #if0 debugs to sysctl.
- * Removed debug_pfkey initialisations that prevented no_debug loading or
- * linking.
- *
- * Revision 1.38  2000/09/09 06:38:02  rgb
- * Return positive errno in pfkey_reply error message.
- *
- * Revision 1.37  2000/09/08 19:19:09  rgb
- * Change references from DEBUG_IPSEC to CONFIG_IPSEC_DEBUG.
- * Clean-up of long-unused crud...
- * Create pfkey error message on on failure.
- * Give pfkey_list_{insert,remove}_{socket,supported}() some error
- * checking.
- *
- * Revision 1.36  2000/09/01 18:49:38  rgb
- * Reap experimental NET_21_ bits.
- * Turned registered sockets list into an array of one list per satype.
- * Remove references to deprecated sklist_{insert,remove}_socket.
- * Removed leaking socket debugging code.
- * Removed duplicate pfkey_insert_socket in pfkey_create.
- * Removed all references to pfkey msg->msg_name, since it is not used for
- * pfkey.
- * Added a supported algorithms array lists, one per satype and registered
- * existing algorithms.
- * Fixed pfkey_list_{insert,remove}_{socket,support}() to allow change to
- * list.
- * Only send pfkey_expire() messages to sockets registered for that satype.
- *
- * Revision 1.35  2000/08/24 17:03:00  rgb
- * Corrected message size error return code for PF_KEYv2.
- * Removed downward error prohibition.
- *
- * Revision 1.34  2000/08/21 16:32:26  rgb
- * Re-formatted for cosmetic consistency and readability.
- *
- * Revision 1.33  2000/08/20 21:38:24  rgb
- * Added a pfkey_reply parameter to pfkey_msg_interp(). (Momchil)
- * Extended the upward message initiation of pfkey_sendmsg(). (Momchil)
- *
- * Revision 1.32  2000/07/28 14:58:31  rgb
- * Changed kfree_s to kfree, eliminating extra arg to fix 2.4.0-test5.
- *
- * Revision 1.31  2000/05/16 03:04:00  rgb
- * Updates for 2.3.99pre8 from MB.
- *
- * Revision 1.30  2000/05/10 19:22:21  rgb
- * Use sklist private functions for 2.3.xx compatibility.
- *
- * Revision 1.29  2000/03/22 16:17:03  rgb
- * Fixed SOCKOPS_WRAPPED macro for SMP (MB).
- *
- * Revision 1.28  2000/02/21 19:30:45  rgb
- * Removed references to pkt_bridged for 2.3.47 compatibility.
- *
- * Revision 1.27  2000/02/14 21:07:00  rgb
- * Fixed /proc/net/pf-key legend spacing.
- *
- * Revision 1.26  2000/01/22 03:46:59  rgb
- * Fixed pfkey error return mechanism so that we are able to free the
- * local copy of the pfkey_msg, plugging a memory leak and silencing
- * the bad object free complaints.
- *
- * Revision 1.25  2000/01/21 06:19:44  rgb
- * Moved pfkey_list_remove_socket() calls to before MOD_USE_DEC_COUNT.
- * Added debugging to pfkey_upmsg.
- *
- * Revision 1.24  2000/01/10 16:38:23  rgb
- * MB fixups for 2.3.x.
- *
- * Revision 1.23  1999/12/09 23:22:16  rgb
- * Added more instrumentation for debugging 2.0 socket
- * selection/reading.
- * Removed erroneous 2.0 wait==NULL check bug in select.
- *
- * Revision 1.22  1999/12/08 20:32:16  rgb
- * Tidied up 2.0.xx support, after major pfkey work, eliminating
- * msg->msg_name twiddling in the process, since it is not defined
- * for PF_KEYv2.
- *
- * Revision 1.21  1999/12/01 22:17:19  rgb
- * Set skb->dev to zero on new skb in case it is a reused skb.
- * Added check for skb_put overflow and freeing to avoid upmsg on error.
- * Added check for wrong pfkey version and freeing to avoid upmsg on
- * error.
- * Shut off content dumping in pfkey_destroy.
- * Added debugging message for size of buffer allocated for upmsg.
- *
- * Revision 1.20  1999/11/27 12:11:00  rgb
- * Minor clean-up, enabling quiet operation of pfkey if desired.
- *
- * Revision 1.19  1999/11/25 19:04:21  rgb
- * Update proc_fs code for pfkey to use dynamic registration.
- *
- * Revision 1.18  1999/11/25 09:07:17  rgb
- * Implemented SENDERR macro for propagating error codes.
- * Fixed error return code bug.
- *
- * Revision 1.17  1999/11/23 23:07:20  rgb
- * Change name of pfkey_msg_parser to pfkey_msg_interp since it no longer
- * parses. (PJO)
- * Sort out pfkey and freeswan headers, putting them in a library path.
- *
- * Revision 1.16  1999/11/20 22:00:22  rgb
- * Moved socketlist type declarations and prototypes for shared use.
- * Renamed reformatted and generically extended for use by other socket
- * lists pfkey_{del,add}_open_socket to pfkey_list_{remove,insert}_socket.
- *
- * Revision 1.15  1999/11/18 04:15:09  rgb
- * Make pfkey_data_ready temporarily available for 2.2.x testing.
- * Clean up pfkey_destroy_socket() debugging statements.
- * Add Peter Onion's code to send messages up to all listening sockets.
- * Changed all occurrences of #include "../../../lib/freeswan.h"
- * to #include <freeswan.h> which works due to -Ilibfreeswan in the
- * klips/net/ipsec/Makefile.
- * Replaced all kernel version macros to shorter, readable form.
- * Added CONFIG_PROC_FS compiler directives in case it is shut off.
- *
- * Revision 1.14  1999/11/17 16:01:00  rgb
- * Make pfkey_data_ready temporarily available for 2.2.x testing.
- * Clean up pfkey_destroy_socket() debugging statements.
- * Add Peter Onion's code to send messages up to all listening sockets.
- * Changed #include "../../../lib/freeswan.h" to #include <freeswan.h>
- * which works due to -Ilibfreeswan in the klips/net/ipsec/Makefile.
- *
- * Revision 1.13  1999/10/27 19:59:51  rgb
- * Removed af_unix comments that are no longer relevant.
- * Added debug prink statements.
- * Added to the /proc output in pfkey_get_info.
- * Made most functions non-static to enable oops tracing.
- * Re-enable skb dequeueing and freeing.
- * Fix skb_alloc() and skb_put() size bug in pfkey_upmsg().
- *
- * Revision 1.12  1999/10/26 17:05:42  rgb
- * Complete re-ordering based on proto_ops structure order.
- * Separated out proto_ops structures for 2.0.x and 2.2.x for clarity.
- * Simplification to use built-in socket ops where possible for 2.2.x.
- * Add shorter macros for compiler directives to visually clean-up.
- * Add lots of sk skb dequeueing debugging statements.
- * Added to the /proc output in pfkey_get_info.
- *
- * Revision 1.11  1999/09/30 02:55:10  rgb
- * Bogus skb detection.
- * Fix incorrect /proc/net/ipsec-eroute printk message.
- *
- * Revision 1.10  1999/09/21 15:22:13  rgb
- * Temporary fix while I figure out the right way to destroy sockets.
- *
- * Revision 1.9  1999/07/08 19:19:44  rgb
- * Fix pointer format warning.
- * Fix missing member error under 2.0.xx kernels.
- *
- * Revision 1.8  1999/06/13 07:24:04  rgb
- * Add more debugging.
- *
- * Revision 1.7  1999/06/10 05:24:17  rgb
- * Clarified compiler directives.
- * Renamed variables to reduce confusion.
- * Used sklist_*_socket() kernel functions to simplify 2.2.x socket support.
- * Added lots of sanity checking.
- *
- * Revision 1.6  1999/06/03 18:59:50  rgb
- * More updates to 2.2.x socket support.  Almost works, oops at end of call.
- *
- * Revision 1.5  1999/05/25 22:44:05  rgb
- * Start fixing 2.2 sockets.
- *
- * Revision 1.4  1999/04/29 15:21:34  rgb
- * Move log to the end of the file.
- * Eliminate min/max redefinition in #include <net/tcp.h>.
- * Correct path for pfkey #includes
- * Standardise an error return method.
- * Add debugging instrumentation.
- * Move message type checking to pfkey_msg_parse().
- * Add check for errno incorrectly set.
- * Add check for valid PID.
- * Add check for reserved illegally set.
- * Add check for message out of bounds.
- *
- * Revision 1.3  1999/04/15 17:58:07  rgb
- * Add RCSID labels.
- *
- * Revision 1.2  1999/04/15 15:37:26  rgb
- * Forward check changes from POST1_00 branch.
- *
- * Revision 1.1.2.2  1999/04/13 20:37:12  rgb
- * Header Title correction.
- *
- * Revision 1.1.2.1  1999/03/26 20:58:55  rgb
- * Add pfkeyv2 support to KLIPS.
  *
  *
  * RFC 2367

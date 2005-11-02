@@ -11,14 +11,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: asn1.c,v 1.3 2003/11/05 07:51:42 dhr Exp $
+ * RCSID $Id: asn1.c,v 1.3.6.1 2004/03/21 05:23:32 mcr Exp $
  */
 
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"

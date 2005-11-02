@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.62 2003/10/31 02:27:55 mcr Exp $
+# RCSID $Id: Makefile,v 1.65 2004/02/09 16:22:07 paul Exp $
 #
 # Note! Dependencies are done automagically by 'make dep', which also
 # removes any old dependencies. DON'T put your own dependencies here
@@ -68,10 +68,13 @@ ipsec.o: foo
 O_TARGET := ipsec.o
 obj-y := ipsec_init.o ipsec_sa.o ipsec_radij.o radij.o
 obj-y += ipsec_life.o ipsec_proc.o
-obj-y += ipsec_tunnel.o ipsec_xmit.o ipsec_rcv.o
+obj-y += ipsec_tunnel.o ipsec_xmit.o ipsec_rcv.o ipsec_ipip.o
 obj-y += sysctl_net_ipsec.o 
 obj-y += pfkey_v2.o pfkey_v2_parser.o pfkey_v2_ext_process.o 
 obj-y += version.o
+obj-$(CONFIG_IPSEC_AH)  += ipsec_ah.o
+obj-$(CONFIG_IPSEC_ESP) += ipsec_esp.o
+obj-$(CONFIG_IPSEC_IPCOMP)+= ipsec_ipcomp.o
 
 LIBDESDIR=${KLIPS_TOP}/crypto/ciphers/des
 VPATH+= ${LIBDESDIR}
@@ -187,7 +190,7 @@ USE_STANDARD_AS_RULE=true
 clean:
 	-rm -f *.o
 	-rm -f .*.o.flags
-	-rm version.c
+	-rm -f version.c
 
 tags TAGS: *.c *.h libfreeswan/*.c libfreeswan/*.h
 	etags *.c ../../include/*.h ../../include/freeswan/*.h
@@ -198,6 +201,15 @@ tar:
 
 #
 # $Log: Makefile,v $
+# Revision 1.65  2004/02/09 16:22:07  paul
+# Added -f to rm version.c in clean target to prevent bogus error
+#
+# Revision 1.64  2003/12/22 19:40:57  mcr
+# 	NAT-T patches 0.6c.
+#
+# Revision 1.63  2003/12/13 19:10:21  mcr
+# 	refactored rcv and xmit code - same as FS 2.05.
+#
 # Revision 1.62  2003/10/31 02:27:55  mcr
 # 	pulled up port-selector patches and sa_id elimination.
 #

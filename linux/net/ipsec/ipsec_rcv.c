@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.133 2003/10/31 02:27:55 mcr Exp $";
+char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.140 2004/02/03 03:12:53 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -63,16 +63,16 @@ char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.133 2003/10/31 02:27:55
 #include "freeswan/ipsec_tunnel.h"
 #include "freeswan/ipsec_rcv.h"
 
-#if defined(CONFIG_IPSEC_ESP) || defined(CONFIG_IPSEC_AH)
-#include "freeswan/ipsec_ah.h"
-#endif /* defined(CONFIG_IPSEC_ESP) || defined(CONFIG_IPSEC_AH) */
+#include "freeswan/ipsec_auth.h"
 
-#ifdef CONFIG_IPSEC_ESP
 #include "freeswan/ipsec_esp.h"
-#endif /* !CONFIG_IPSEC_ESP */
+
+#ifdef CONFIG_IPSEC_AH
+#include "freeswan/ipsec_ah.h"
+#endif /* CONFIG_IPSEC_AH */
 
 #ifdef CONFIG_IPSEC_IPCOMP
-#include "freeswan/ipcomp.h"
+#include "freeswan/ipsec_ipcomp.h"
 #endif /* CONFIG_IPSEC_COMP */
 
 #include <pfkeyv2.h>
@@ -81,21 +81,23 @@ char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.133 2003/10/31 02:27:55
 #include "freeswan/ipsec_proto.h"
 
 #ifdef CONFIG_IPSEC_DEBUG
-int debug_ah = 0;
-int debug_esp = 0;
 int debug_rcv = 0;
 #endif /* CONFIG_IPSEC_DEBUG */
 
 int sysctl_ipsec_inbound_policy_check = 1;
 
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#include <linux/udp.h>
+#endif
+
 #ifdef CONFIG_IPSEC_DEBUG
-static void
-rcv_dmp(char *s, caddr_t bb, int len)
+void
+ipsec_dmp(char *s, caddr_t bb, int len)
 {
 	int i;
 	unsigned char *b = bb;
   
-	if (debug_rcv && sysctl_ipsec_debug_verbose) {
+
 		printk(KERN_INFO "klips_debug:ipsec_tunnel_:dmp: "
 		       "at %s, len=%d:",
 		       s,
@@ -107,16 +109,8 @@ rcv_dmp(char *s, caddr_t bb, int len)
 			printk(" %02x", *b++);
 		}
 		printk("\n");
-	}
 }
-#else /* CONFIG_IPSEC_DEBUG */
-#define rcv_dmp(_x, _y, _z) 
 #endif /* CONFIG_IPSEC_DEBUG */
-
-
-#if defined(CONFIG_IPSEC_ESP) || defined(CONFIG_IPSEC_AH)
-__u32 zeroes[AH_AMAX];
-#endif /* defined(CONFIG_IPSEC_ESP) || defined(CONFIG_IPSEC_AH) */
 
 /*
  * Check-replay-window routine, adapted from the original
@@ -211,632 +205,8 @@ struct auth_alg ipsec_rcv_sha1[]={
 };
 #endif /* CONFIG_IPSEC_AUTH_HMAC_MD5 */
 
-enum ipsec_rcv_value {
-	IPSEC_RCV_LASTPROTO=1,
-	IPSEC_RCV_OK=0,
-	IPSEC_RCV_BADPROTO=-1,
-	IPSEC_RCV_BADLEN=-2,
-	IPSEC_RCV_ESP_BADALG=-3,
-	IPSEC_RCV_3DES_BADBLOCKING=-4,
-	IPSEC_RCV_ESP_DECAPFAIL=-5,
-	IPSEC_RCV_DECAPFAIL=-6,
-	IPSEC_RCV_SAIDNOTFOUND=-7,
-	IPSEC_RCV_IPCOMPALONE=-8,
-	IPSEC_RCV_IPCOMPFAILED=-10,
-	IPSEC_RCV_SAIDNOTLIVE=-11,
-	IPSEC_RCV_FAILEDINBOUND=-12,
-	IPSEC_RCV_LIFETIMEFAILED=-13,
-	IPSEC_RCV_BADAUTH=-14,
-	IPSEC_RCV_REPLAYFAILED=-15,
-	IPSEC_RCV_AUTHFAILED=-16,
-	IPSEC_RCV_REPLAYROLLED=-17
-};
-
-struct ipsec_rcv_state {
-	struct sk_buff *skb;
-	struct net_device_stats *stats;
-	struct iphdr *ipp;
-	struct ipsec_sa *ipsp;
-	int len;
-	int ilen;
-	int authlen;
-	int hard_header_len;
-	int iphlen;
-	struct auth_alg *authfuncs;
-	ip_said said;
-	char   sa[SATOT_BUF];
-	size_t sa_len;
-	__u8 next_header;
-	__u8 hash[AH_AMAX];
-	char ipsaddr_txt[ADDRTOA_BUF];
-	char ipdaddr_txt[ADDRTOA_BUF];
-	__u8 *octx;
-	__u8 *ictx;
-	int ictx_len;
-	int octx_len;
-	union {
-		struct {
-			struct esphdr *espp;
-		} espstuff;
-		struct {
-			struct ahhdr *ahp;
-		} ahstuff;
-		struct {
-			struct ipcomphdr *compp;
-		} ipcompstuff;
-	} protostuff;
-};
-
-struct xform_functions {
-	enum ipsec_rcv_value (*checks)(struct ipsec_rcv_state *irs,
-				       struct sk_buff *skb);
-        enum ipsec_rcv_value (*decrypt)(struct ipsec_rcv_state *irs);
-
-	enum ipsec_rcv_value (*setup_auth)(struct ipsec_rcv_state *irs,
-					   struct sk_buff *skb,
-					   __u32          *replay,
-					   unsigned char **authenticator);
-	enum ipsec_rcv_value (*calc_auth)(struct ipsec_rcv_state *irs,
-					struct sk_buff *skb);
-};
-
-#ifdef CONFIG_IPSEC_ESP
 enum ipsec_rcv_value
-ipsec_rcv_esp_checks(struct ipsec_rcv_state *irs,
-		     struct sk_buff *skb)
-{
-	__u8 proto;
-	int len;	/* packet length */
-
-	len = skb->len;
-	proto = irs->ipp->protocol;
-
-	/* XXX this will need to be 8 for IPv6 */
-	if ((proto == IPPROTO_ESP) && ((len - irs->iphlen) % 4)) {
-		printk("klips_error:ipsec_rcv: "
-		       "got packet with content length = %d from %s -- should be on 4 octet boundary, packet dropped\n",
-		       len - irs->iphlen,
-		       irs->ipsaddr_txt);
-		if(irs->stats) {
-			irs->stats->rx_errors++;
-		}
-		return IPSEC_RCV_BADLEN;
-	}
-
-	if(skb->len < (irs->hard_header_len + sizeof(struct iphdr) + sizeof(struct esphdr))) {
-		KLIPS_PRINT(debug_rcv & DB_RX_INAU,
-			    "klips_debug:ipsec_rcv: "
-			    "runt esp packet of skb->len=%d received from %s, dropped.\n",
-			    skb->len,
-			    irs->ipsaddr_txt);
-		if(irs->stats) {
-			irs->stats->rx_errors++;
-		}
-		return IPSEC_RCV_BADLEN;
-	}
-
-	irs->protostuff.espstuff.espp = (struct esphdr *)(skb->data + irs->iphlen);
-	irs->said.spi = irs->protostuff.espstuff.espp->esp_spi;
-
-	return IPSEC_RCV_OK;
-}
-
-enum ipsec_rcv_value
-ipsec_rcv_esp_decrypt_setup(struct ipsec_rcv_state *irs,
-			    struct sk_buff *skb,
-			    __u32          *replay,
-			    unsigned char **authenticator)
-{
-	struct esphdr *espp = irs->protostuff.espstuff.espp;
-
-	KLIPS_PRINT(debug_rcv,
-		    "klips_debug:ipsec_rcv: "
-		    "packet from %s received with seq=%d (iv)=0x%08x%08x iplen=%d esplen=%d sa=%s\n",
-		    irs->ipsaddr_txt,
-		    (__u32)ntohl(espp->esp_rpl),
-		    (__u32)ntohl(*((__u32 *)(espp->esp_iv)    )),
-		    (__u32)ntohl(*((__u32 *)(espp->esp_iv) + 1)),
-		    irs->len,
-		    irs->ilen,
-		    irs->sa_len ? irs->sa : " (error)");
-
-	*replay = ntohl(espp->esp_rpl);
-	*authenticator = &(skb->data[irs->len - irs->authlen]);
-
-	return IPSEC_RCV_OK;
-}
-
-enum ipsec_rcv_value
-ipsec_rcv_esp_authcalc(struct ipsec_rcv_state *irs,
-		       struct sk_buff *skb)
-{
-	struct auth_alg *aa;
-	struct esphdr *espp = irs->protostuff.espstuff.espp;
-	union {
-		MD5_CTX		md5;
-		SHA1_CTX	sha1;
-	} tctx;
-
-	aa = irs->authfuncs;
-
-	/* copy the initialized keying material */
-	memcpy(&tctx, irs->ictx, irs->ictx_len);
-
-	(*aa->update)((void *)&tctx, (caddr_t)espp, irs->ilen);
-
-	(*aa->final)(irs->hash, (void *)&tctx);
-
-	memcpy(&tctx, irs->octx, irs->octx_len);
-
-	(*aa->update)((void *)&tctx, irs->hash, aa->hashlen);
-	(*aa->final)(irs->hash, (void *)&tctx);
-
-	return IPSEC_RCV_OK;
-}
-
-
-enum ipsec_rcv_value
-ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
-{
-	struct ipsec_sa *ipsp = irs->ipsp;
-	struct esphdr *espp = irs->protostuff.espstuff.espp;
-	int esphlen = 0;
-	__u8 *idat;	/* pointer to content to be decrypted/authenticated */
-	__u32 iv[2];
-	int pad = 0, padlen;
-	int badpad = 0;
-	int i;
-	struct sk_buff *skb;
-
-	skb=irs->skb;
-
-	idat = skb->data + irs->iphlen;
-
-	switch(ipsp->ips_encalg) {
-	case ESP_3DES:
-		iv[0] = *((__u32 *)(espp->esp_iv)    );
-		iv[1] = *((__u32 *)(espp->esp_iv) + 1);
-		esphlen = sizeof(struct esphdr);
-		break;
-	default:
-		ipsp->ips_errs.ips_alg_errs += 1;
-		if(irs->stats) {
-			irs->stats->rx_errors++;
-		}
-		return IPSEC_RCV_ESP_BADALG;
-	}
-
-	idat += esphlen;
-	irs->ilen -= esphlen;
-
-	switch(ipsp->ips_encalg) {
-	case ESP_3DES:
-		if ((irs->ilen) % 8) {
-			ipsp->ips_errs.ips_encsize_errs += 1;
-			printk("klips_error:ipsec_rcv: "
-			       "got packet with esplen = %d from %s -- should be on 8 octet boundary, packet dropped\n",
-			       irs->ilen,
-			       irs->ipsaddr_txt);
-			if(irs->stats) {
-				irs->stats->rx_errors++;
-			}
-			return IPSEC_RCV_3DES_BADBLOCKING;
-		}
-		des_ede3_cbc_encrypt((des_cblock *)idat,
-				     (des_cblock *)idat,
-				     irs->ilen,
-				     ((struct des_eks *)(ipsp->ips_key_e))[0].ks,
-				     ((struct des_eks *)(ipsp->ips_key_e))[1].ks,
-				     ((struct des_eks *)(ipsp->ips_key_e))[2].ks,
-				     (des_cblock *)iv, 0);
-		break;
-	}
-
-	rcv_dmp("postdecrypt", skb->data, skb->len);
-
-	irs->next_header = idat[irs->ilen - 1];
-	padlen = idat[irs->ilen - 2];
-	pad = padlen + 2 + irs->authlen;
-
-	KLIPS_PRINT(debug_rcv & DB_RX_IPAD,
-		    "klips_debug:ipsec_rcv: "
-		    "padlen=%d, contents: 0x<offset>: 0x<value> 0x<value> ...\n",
-		    padlen);
-
-	for (i = 1; i <= padlen; i++) {
-		if((i % 16) == 1) {
-			KLIPS_PRINT(debug_rcv & DB_RX_IPAD,
-				    "klips_debug:           %02x:",
-				    i - 1);
-		}
-		KLIPS_PRINTMORE(debug_rcv & DB_RX_IPAD,
-				" %02x",
-				idat[irs->ilen - 2 - padlen + i - 1]);
-		if(i != idat[irs->ilen - 2 - padlen + i - 1]) {
-			badpad = 1;
-		}
-		if((i % 16) == 0) {
-			KLIPS_PRINTMORE(debug_rcv & DB_RX_IPAD,
-					"\n");
-		}
-	}
-	if((i % 16) != 1) {
-		KLIPS_PRINTMORE(debug_rcv & DB_RX_IPAD,
-						"\n");
-	}
-	if(badpad) {
-		KLIPS_PRINT(debug_rcv & DB_RX_IPAD,
-			    "klips_debug:ipsec_rcv: "
-			    "warning, decrypted packet from %s has bad padding\n",
-			    irs->ipsaddr_txt);
-		KLIPS_PRINT(debug_rcv & DB_RX_IPAD,
-			    "klips_debug:ipsec_rcv: "
-			    "...may be bad decryption -- not dropped\n");
-		ipsp->ips_errs.ips_encpad_errs += 1;
-	}
-
-	KLIPS_PRINT(debug_rcv & DB_RX_IPAD,
-		    "klips_debug:ipsec_rcv: "
-		    "packet decrypted from %s: next_header = %d, padding = %d\n",
-		    irs->ipsaddr_txt,
-		    irs->next_header,
-		    pad - 2 - irs->authlen);
-
-	irs->ipp->tot_len = htons(ntohs(irs->ipp->tot_len) - (esphlen + pad));
-
-	/*
-	 * move the IP header forward by the size of the ESP header, which
-	 * will remove the the ESP header from the packet.
-	 */
-	memmove((void *)(skb->data + esphlen),
-		(void *)(skb->data), irs->iphlen);
-
-	rcv_dmp("esp postmove", skb->data, skb->len);
-
-	/* skb_pull below, will move up by esphlen */
-
-	/* XXX not clear how this can happen, as the message indicates */
-	if(skb->len < esphlen) {
-		printk(KERN_WARNING
-		       "klips_error:ipsec_rcv: "
-		       "tried to skb_pull esphlen=%d, %d available.  This should never happen, please report.\n",
-		       esphlen, (int)(skb->len));
-		return IPSEC_RCV_ESP_DECAPFAIL;
-	}
-	skb_pull(skb, esphlen);
-
-	irs->ipp = (struct iphdr *)skb->data;
-
-	rcv_dmp("esp postpull", skb->data, skb->len);
-
-	/* now, trip off the padding from the end */
-	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-		    "klips_debug:ipsec_rcv: "
-		    "trimming to %d.\n",
-		    irs->len - esphlen - pad);
-	if(pad + esphlen <= irs->len) {
-		skb_trim(skb, irs->len - esphlen - pad);
-	} else {
-		KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-			    "klips_debug:ipsec_rcv: "
-			    "bogus packet, size is zero or negative, dropping.\n");
-		return IPSEC_RCV_DECAPFAIL;
-	}
-
-	return IPSEC_RCV_OK;
-}
-
-
-struct xform_functions esp_rcv_funcs[]={
-	{	checks:         ipsec_rcv_esp_checks,
-		setup_auth:     ipsec_rcv_esp_decrypt_setup,
-		calc_auth:      ipsec_rcv_esp_authcalc,
-		decrypt:        ipsec_rcv_esp_decrypt,
-	},
-};
-#endif /* !CONFIG_IPSEC_ESP */
-
-#ifdef CONFIG_IPSEC_AH
-enum ipsec_rcv_value
-ipsec_rcv_ah_checks(struct ipsec_rcv_state *irs,
-		    struct sk_buff *skb)
-{
-	int ahminlen;
-
-	ahminlen = irs->hard_header_len + sizeof(struct iphdr);
-
-	/* take care not to deref this pointer until we check the minlen though */
-	irs->protostuff.ahstuff.ahp = (struct ahhdr *) (skb->data + irs->iphlen);
-
-	if((skb->len < ahminlen+sizeof(struct ahhdr)) ||
-	   (skb->len < ahminlen+(irs->protostuff.ahstuff.ahp->ah_hl << 2))) {
-		KLIPS_PRINT(debug_rcv & DB_RX_INAU,
-			    "klips_debug:ipsec_rcv: "
-			    "runt ah packet of skb->len=%d received from %s, dropped.\n",
-			    skb->len,
-			    irs->ipsaddr_txt);
-		if(irs->stats) {
-			irs->stats->rx_errors++;
-		}
-		return IPSEC_RCV_BADLEN;
-	}
-
-	irs->said.spi = irs->protostuff.ahstuff.ahp->ah_spi;
-
-	/* XXX we only support the one 12-byte authenticator for now */
-	if(irs->protostuff.ahstuff.ahp->ah_hl != ((AHHMAC_HASHLEN+AHHMAC_RPLLEN) >> 2)) {
-		KLIPS_PRINT(debug_rcv & DB_RX_INAU,
-			    "klips_debug:ipsec_rcv: "
-			    "bad authenticator length %ld, expected %lu from %s.\n",
-			    (long)(irs->protostuff.ahstuff.ahp->ah_hl << 2),
-			    (unsigned long) sizeof(struct ahhdr),
-			    irs->ipsaddr_txt);
-		if(irs->stats) {
-			irs->stats->rx_errors++;
-		}
-		return IPSEC_RCV_BADLEN;
-	}
-
-	return IPSEC_RCV_OK;
-}
-
-
-enum ipsec_rcv_value
-ipsec_rcv_ah_setup_auth(struct ipsec_rcv_state *irs,
-			struct sk_buff *skb,
-			__u32          *replay,
-			unsigned char **authenticator)
-{
-	struct ahhdr *ahp = irs->protostuff.ahstuff.ahp;
-
-	*replay = ntohl(ahp->ah_rpl);
-	*authenticator = ahp->ah_data;
-
-	return IPSEC_RCV_OK;
-}
-
-enum ipsec_rcv_value
-ipsec_rcv_ah_authcalc(struct ipsec_rcv_state *irs,
-		      struct sk_buff *skb)
-{
-	struct auth_alg *aa;
-	struct ahhdr *ahp = irs->protostuff.ahstuff.ahp;
-	union {
-		MD5_CTX		md5;
-		SHA1_CTX	sha1;
-	} tctx;
-	struct iphdr ipo;
-	int ahhlen;
-
-	aa = irs->authfuncs;
-
-	/* copy the initialized keying material */
-	memcpy(&tctx, irs->ictx, irs->ictx_len);
-
-	ipo = *irs->ipp;
-	ipo.tos = 0;	/* mutable RFC 2402 3.3.3.1.1.1 */
-	ipo.frag_off = 0;
-	ipo.ttl = 0;
-	ipo.check = 0;
-
-
-	/* do the sanitized header */
-	(*aa->update)((void*)&tctx, (caddr_t)&ipo, sizeof(struct iphdr));
-
-	/* XXX we didn't do the options here! */
-
-	/* now do the AH header itself */
-	ahhlen = AH_BASIC_LEN + (ahp->ah_hl << 2);
-	(*aa->update)((void*)&tctx, (caddr_t)ahp,  ahhlen - AHHMAC_HASHLEN);
-
-	/* now, do some zeroes */
-	(*aa->update)((void*)&tctx, (caddr_t)zeroes,  AHHMAC_HASHLEN);
-
-	/* finally, do the packet contents themselves */
-	(*aa->update)((void*)&tctx,
-		      (caddr_t)skb->data + irs->iphlen + ahhlen,
-		      skb->len - irs->iphlen - ahhlen);
-
-	(*aa->final)(irs->hash, (void *)&tctx);
-
-	memcpy(&tctx, irs->octx, irs->octx_len);
-
-	(*aa->update)((void *)&tctx, irs->hash, aa->hashlen);
-	(*aa->final)(irs->hash, (void *)&tctx);
-
-	return IPSEC_RCV_OK;
-}
-
-enum ipsec_rcv_value
-ipsec_rcv_ah_decap(struct ipsec_rcv_state *irs)
-{
-	struct ahhdr *ahp = irs->protostuff.ahstuff.ahp;
-	struct sk_buff *skb;
-	int ahhlen;
-
-	skb=irs->skb;
-
-	ahhlen = AH_BASIC_LEN + (ahp->ah_hl << 2);
-
-	irs->ipp->tot_len = htons(ntohs(irs->ipp->tot_len) - ahhlen);
-	irs->next_header  = ahp->ah_nh;
-
-	/*
-	 * move the IP header forward by the size of the AH header, which
-	 * will remove the the AH header from the packet.
-	 */
-	memmove((void *)(skb->data + ahhlen),
-		(void *)(skb->data), irs->iphlen);
-
-	rcv_dmp("ah postmove", skb->data, skb->len);
-
-	/* skb_pull below, will move up by ahhlen */
-
-	/* XXX not clear how this can happen, as the message indicates */
-	if(skb->len < ahhlen) {
-		printk(KERN_WARNING
-		       "klips_error:ipsec_rcv: "
-		       "tried to skb_pull ahhlen=%d, %d available.  This should never happen, please report.\n",
-		       ahhlen,
-		       (int)(skb->len));
-		return IPSEC_RCV_DECAPFAIL;
-	}
-	skb_pull(skb, ahhlen);
-
-	irs->ipp = (struct iphdr *)skb->data;
-
-	rcv_dmp("ah postpull", skb->data, skb->len);
-
-	return IPSEC_RCV_OK;
-}
-
-
-struct xform_functions ah_rcv_funcs[]={
-	{	checks:         ipsec_rcv_ah_checks,
-		setup_auth:     ipsec_rcv_ah_setup_auth,
-		calc_auth:      ipsec_rcv_ah_authcalc,
-		decrypt:        ipsec_rcv_ah_decap,
-	},
-};
-
-#endif /* CONFIG_IPSEC_AH */
-
-#ifdef CONFIG_IPSEC_IPCOMP
-enum ipsec_rcv_value
-ipsec_rcv_ipcomp_checks(struct ipsec_rcv_state *irs,
-			struct sk_buff *skb)
-{
-	int ipcompminlen;
-
-	ipcompminlen = irs->hard_header_len + sizeof(struct iphdr);
-
-	if(skb->len < (ipcompminlen + sizeof(struct ipcomphdr))) {
-		KLIPS_PRINT(debug_rcv & DB_RX_INAU,
-			    "klips_debug:ipsec_rcv: "
-			    "runt comp packet of skb->len=%d received from %s, dropped.\n",
-			    skb->len,
-			    irs->ipsaddr_txt);
-		if(irs->stats) {
-			irs->stats->rx_errors++;
-		}
-		return IPSEC_RCV_BADLEN;
-	}
-
-	irs->protostuff.ipcompstuff.compp = (struct ipcomphdr *)(skb->data + irs->iphlen);
-	irs->said.spi = htonl((__u32)ntohs(irs->protostuff.ipcompstuff.compp->ipcomp_cpi));
-	return IPSEC_RCV_OK;
-}
-
-enum ipsec_rcv_value
-ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
-{
-	unsigned int flags = 0;
-	struct ipsec_sa *ipsp = irs->ipsp;
-	struct sk_buff *skb;
-
-	skb=irs->skb;
-
-	rcv_dmp("ipcomp", skb->data, skb->len);
-
-	if(ipsp == NULL) {
-		return IPSEC_RCV_SAIDNOTFOUND;
-	}
-
-#if 0
-	/* we want to check that this wasn't the first SA on the list, because
-	 * we don't support bare IPCOMP, for unexplained reasons. MCR
-	 */
-	if (ipsp->ips_onext != NULL) {
-		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
-			    "Incoming packet with outer IPCOMP header SA:%s: not yet supported by KLIPS, dropped\n",
-			    irs->sa_len ? irs->sa : " (error)");
-		if(irs->stats) {
-			irs->stats->rx_dropped++;
-		}
-
-		return IPSEC_RCV_IPCOMPALONE;
-	}
-#endif
-
-	if(sysctl_ipsec_inbound_policy_check &&
-	   ((((ntohl(ipsp->ips_said.spi) & 0x0000ffff) != ntohl(irs->said.spi)) &&
-	     (ipsp->ips_encalg != ntohl(irs->said.spi))   /* this is a workaround for peer non-compliance with rfc2393 */
-		    ))) {
-		char sa2[SATOT_BUF];
-		size_t sa_len2 = 0;
-
-		sa_len2 = satot(&ipsp->ips_said, 0, sa2, sizeof(sa2));
-
-		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
-			    "Incoming packet with SA(IPCA):%s does not match policy SA(IPCA):%s cpi=%04x cpi->spi=%08x spi=%08x, spi->cpi=%04x for SA grouping, dropped.\n",
-			    irs->sa_len ? irs->sa : " (error)",
-			    ipsp != NULL ? (sa_len2 ? sa2 : " (error)") : "NULL",
-			    ntohs(irs->protostuff.ipcompstuff.compp->ipcomp_cpi),
-			    (__u32)ntohl(irs->said.spi),
-			    ipsp != NULL ? (__u32)ntohl((ipsp->ips_said.spi)) : 0,
-			    ipsp != NULL ? (__u16)(ntohl(ipsp->ips_said.spi) & 0x0000ffff) : 0);
-		if(irs->stats) {
-			irs->stats->rx_dropped++;
-		}
-		return IPSEC_RCV_SAIDNOTFOUND;
-	}
-
-	ipsp->ips_comp_ratio_cbytes += ntohs(irs->ipp->tot_len);
-	irs->next_header = irs->protostuff.ipcompstuff.compp->ipcomp_nh;
-
-	skb = skb_decompress(skb, ipsp, &flags);
-	if (!skb || flags) {
-		spin_unlock(&tdb_lock);
-		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
-			    "skb_decompress() returned error flags=%x, dropped.\n",
-			    flags);
-		if (irs->stats) {
-			if (flags)
-				irs->stats->rx_errors++;
-			else
-				irs->stats->rx_dropped++;
-		}
-		return IPSEC_RCV_IPCOMPFAILED;
-	}
-
-	/* make sure we update the pointer */
-	irs->skb = skb;
-	
-#ifdef NET_21
-	irs->ipp = skb->nh.iph;
-#else /* NET_21 */
-	irs->ipp = skb->ip_hdr;
-#endif /* NET_21 */
-
-	ipsp->ips_comp_ratio_dbytes += ntohs(irs->ipp->tot_len);
-
-	KLIPS_PRINT(debug_rcv,
-		    "klips_debug:ipsec_rcv: "
-		    "packet decompressed SA(IPCA):%s cpi->spi=%08x spi=%08x, spi->cpi=%04x, nh=%d.\n",
-		    irs->sa_len ? irs->sa : " (error)",
-		    (__u32)ntohl(irs->said.spi),
-		    ipsp != NULL ? (__u32)ntohl((ipsp->ips_said.spi)) : 0,
-		    ipsp != NULL ? (__u16)(ntohl(ipsp->ips_said.spi) & 0x0000ffff) : 0,
-		    irs->next_header);
-	KLIPS_IP_PRINT(debug_rcv & DB_RX_PKTRX, irs->ipp);
-
-	return IPSEC_RCV_OK;
-}
-
-
-struct xform_functions ipcomp_rcv_funcs[]={
-	{checks:  ipsec_rcv_ipcomp_checks,
-	 decrypt: ipsec_rcv_ipcomp_decomp,
-	},
-};
-
-#endif /* CONFIG_IPSEC_IPCOMP */
-
-enum ipsec_rcv_value
-ipsec_rcv_decap_once(struct ipsec_rcv_state *irs)
+ipsec_rcv_decap_once(struct ipsec_rcv_state *irs, struct xform_functions *proto_funcs)
 {
 	int iphlen;
 	unsigned char *dat;
@@ -845,7 +215,6 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs)
 	struct in_addr ipdaddr;
 	int replay = 0;	/* replay value in AH or ESP packet */
 	struct ipsec_sa* ipsnext = NULL;	/* next SA towards inside of packet */
-	struct xform_functions *proto_funcs;
 	struct ipsec_sa *newipsp;
 	struct iphdr *ipp;
 	struct sk_buff *skb;
@@ -869,31 +238,6 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs)
 		    "decap (%d) from %s -> %s\n",
 		    proto, irs->ipsaddr_txt, irs->ipdaddr_txt);
 
-	switch(proto) {
-#ifdef CONFIG_IPSEC_ESP
-	case IPPROTO_ESP:
-		proto_funcs = esp_rcv_funcs;
-		break;
-#endif /* !CONFIG_IPSEC_ESP */
-
-#ifdef CONFIG_IPSEC_AH
-	case IPPROTO_AH:
-		proto_funcs = ah_rcv_funcs;
-		break;
-#endif /* !CONFIG_IPSEC_AH */
-
-#ifdef CONFIG_IPSEC_IPCOMP
-	case IPPROTO_COMP:
-		proto_funcs = ipcomp_rcv_funcs;
-		break;
-#endif /* !CONFIG_IPSEC_IPCOMP */
-	default:
-		if(irs->stats) {
-			irs->stats->rx_errors++;
-		}
-		return IPSEC_RCV_BADPROTO;
-	}
-
 	/*
 	 * Find tunnel control block and (indirectly) call the
 	 * appropriate tranform routine. The resulting sk_buf
@@ -901,9 +245,11 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs)
 	 */
 
 	irs->said.dst.u.v4.sin_addr.s_addr = ipp->daddr;
+	irs->said.dst.u.v4.sin_family = AF_INET;
 
-	if(proto_funcs->checks) {
-		enum ipsec_rcv_value retval = (*proto_funcs->checks)(irs, skb);
+	if(proto_funcs->rcv_checks) {
+		enum ipsec_rcv_value retval =
+		  (*proto_funcs->rcv_checks)(irs, skb);
 
 		if(retval < 0) {
 			return retval;
@@ -1008,6 +354,24 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs)
 		 * we just found matched the back pointer. But, we won't do this check anymore,
 		 * because we want to be able to nest SAs
 		 */
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+		KLIPS_PRINT(debug_rcv,
+			"klips_debug:ipsec_rcv: "
+			"natt_type=%u tdbp->ips_natt_type=%u : %s\n",
+			irs->natt_type, newipsp->ips_natt_type,
+			(irs->natt_type==newipsp->ips_natt_type)?"ok":"bad");
+		if (irs->natt_type != newipsp->ips_natt_type) {
+			KLIPS_PRINT(debug_rcv,
+				    "klips_debug:ipsec_rcv: "
+				    "SA:%s does not agree with expected NAT-T policy.\n",
+				    irs->sa_len ? irs->sa : " (error)");
+			if(irs->stats) {
+				irs->stats->rx_dropped++;
+			}
+			ipsec_sa_put(newipsp);
+			return IPSEC_RCV_FAILEDINBOUND;
+		}
+#endif		 
 	}
 
 	/* okay, SA checks out, so free any previous SA, and record a new one */
@@ -1041,6 +405,40 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs)
 
 		return IPSEC_RCV_LIFETIMEFAILED;
 	}
+
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	if ((irs->natt_type) &&
+		( (irs->ipp->saddr != (((struct sockaddr_in*)(newipsp->ips_addr_s))->sin_addr.s_addr)) ||
+		  (irs->natt_sport != newipsp->ips_natt_sport)
+		)) {
+		struct sockaddr sipaddr;
+		/** Advertise NAT-T addr change to pluto **/
+		sipaddr.sa_family = AF_INET;
+		((struct sockaddr_in*)&sipaddr)->sin_addr.s_addr = irs->ipp->saddr;
+		((struct sockaddr_in*)&sipaddr)->sin_port = htons(irs->natt_sport);
+		pfkey_nat_t_new_mapping(newipsp, &sipaddr, irs->natt_sport);
+		/**
+		 * Then allow or block packet depending on
+		 * sysctl_ipsec_inbound_policy_check.
+		 *
+		 * In all cases, pluto will update SA if new mapping is
+		 * accepted.
+		 */
+		if (sysctl_ipsec_inbound_policy_check) {
+			KLIPS_PRINT(debug_rcv,
+				"klips_debug:ipsec_rcv: "
+				"SA:%s, src=%s:%u of pkt does not agree with expected "
+				"SA source address policy (pluto has been informed).\n",
+				irs->sa_len ? irs->sa : " (error)",
+				irs->ipsaddr_txt, irs->natt_sport);
+			if(irs->stats) {
+				irs->stats->rx_dropped++;
+			}
+			ipsec_sa_put(newipsp);
+			return IPSEC_RCV_FAILEDINBOUND;
+		}
+	}
+#endif
 
 	irs->authfuncs=NULL;
 	/* authenticate, if required */
@@ -1091,9 +489,9 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs)
 			return IPSEC_RCV_BADLEN;
 		}
 
-		if(proto_funcs->setup_auth) {
+		if(proto_funcs->rcv_setup_auth) {
 			enum ipsec_rcv_value retval
-			    = (*proto_funcs->setup_auth)(irs, skb,
+			    = (*proto_funcs->rcv_setup_auth)(irs, skb,
 							 &replay,
 							 &authenticator);
 			if(retval < 0) {
@@ -1132,10 +530,10 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs)
 			    irs->ipsp->ips_authalg);
 
 		/* calculate authenticator */
-		if(proto_funcs->calc_auth == NULL) {
+		if(proto_funcs->rcv_calc_auth == NULL) {
 			return IPSEC_RCV_BADAUTH;
 		}
-		(*proto_funcs->calc_auth)(irs, skb);
+		(*proto_funcs->rcv_calc_auth)(irs, skb);
 
 		if (memcmp(irs->hash, authenticator, irs->authlen)) {
 			irs->ipsp->ips_errs.ips_auth_errs += 1;
@@ -1190,9 +588,9 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs)
 		}
 	}
 
-	if(proto_funcs->decrypt) {
+	if(proto_funcs->rcv_decrypt) {
 		enum ipsec_rcv_value retval =
-		  (*proto_funcs->decrypt)(irs);
+		  (*proto_funcs->rcv_decrypt)(irs);
 
 		if(retval != IPSEC_RCV_OK) {
 			return retval;
@@ -1330,9 +728,6 @@ ipsec_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 #endif /* NET_21 */
 	unsigned char protoc;
 	struct iphdr *ipp;
-#if defined(CONFIG_IPSEC_ESP) || defined(CONFIG_IPSEC_AH)
-#endif /* defined(CONFIG_IPSEC_ESP) || defined(CONFIG_IPSEC_AH) */
-
 	struct ipsec_sa *ipsp = NULL;
 	struct net_device_stats *stats = NULL;		/* This device's statistics */
 	struct device *ipsecdev = NULL, *prvdev;
@@ -1363,6 +758,83 @@ ipsec_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 			    "NULL skb->data passed in, packet is bogus, dropping.\n");
 		goto rcvleave;
 	}
+
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	if (skb->sk && skb->nh.iph && skb->nh.iph->protocol==IPPROTO_UDP) {
+		/**
+		 * Packet comes from udp_queue_rcv_skb so it is already defrag,
+		 * checksum verified, ... (ie safe to use)
+		 *
+		 * If the packet is not for us, return -1 and udp_queue_rcv_skb
+		 * will continue to handle it (do not kfree skb !!).
+		 */
+#ifndef UDP_OPT_IN_SOCK
+	  struct udp_opt {
+	    __u32 esp_in_udp;
+	  };
+		struct udp_opt *tp =  (struct udp_opt *)&(skb->sk->tp_pinfo.af_tcp);
+#else
+		struct udp_opt *tp =  &(skb->sk->tp_pinfo.af_udp);
+#endif
+		struct iphdr *ip = (struct iphdr *)skb->nh.iph;
+		struct udphdr *udp = (struct udphdr *)((__u32 *)ip+ip->ihl);
+		__u8 *udpdata = (__u8 *)udp + sizeof(struct udphdr);
+		__u32 *udpdata32 = (__u32 *)udpdata;
+
+		irs.natt_sport = ntohs(udp->source);
+		irs.natt_dport = ntohs(udp->dest);
+
+		KLIPS_PRINT(debug_rcv,
+		    "klips_debug:ipsec_rcv: "
+		    "suspected ESPinUDP packet (NAT-Traversal) [%d].\n",
+			tp->esp_in_udp);
+		KLIPS_IP_PRINT(debug_rcv, ip);
+
+		if (udpdata < skb->tail) {
+			unsigned int len = skb->tail - udpdata;
+			if ((len==1) && (udpdata[0]==0xff)) {
+				KLIPS_PRINT(debug_rcv,
+				    "klips_debug:ipsec_rcv: "
+					/* not IPv6 compliant message */
+				    "NAT-keepalive from %d.%d.%d.%d.\n", NIPQUAD(ip->saddr));
+				goto rcvleave;
+			}
+			else if ( (tp->esp_in_udp == ESPINUDP_WITH_NON_IKE) &&
+				(len > (2*sizeof(__u32) + sizeof(struct esphdr))) &&
+				(udpdata32[0]==0) && (udpdata32[1]==0) ) {
+				/* ESP Packet with Non-IKE header */
+				KLIPS_PRINT(debug_rcv, 
+					"klips_debug:ipsec_rcv: "
+					"ESPinUDP pkt with Non-IKE - spi=0x%x\n",
+					ntohl(udpdata32[2]));
+				irs.natt_type = ESPINUDP_WITH_NON_IKE;
+				irs.natt_len = sizeof(struct udphdr)+(2*sizeof(__u32));
+			}
+			else if ( (tp->esp_in_udp == ESPINUDP_WITH_NON_ESP) &&
+				(len > sizeof(struct esphdr)) &&
+				(udpdata32[0]!=0) ) {
+				/* ESP Packet without Non-ESP header */
+				irs.natt_type = ESPINUDP_WITH_NON_ESP;
+				irs.natt_len = sizeof(struct udphdr);
+				KLIPS_PRINT(debug_rcv, 
+					"klips_debug:ipsec_rcv: "
+					"ESPinUDP pkt without Non-ESP - spi=0x%x\n",
+					ntohl(udpdata32[0]));
+			}
+			else {
+				KLIPS_PRINT(debug_rcv,
+				    "klips_debug:ipsec_rcv: "
+					"IKE packet - not handled here\n");
+				MOD_DEC_USE_COUNT;
+				return -1;
+			}
+		}
+		else {
+			MOD_DEC_USE_COUNT;
+			return -1;
+		}
+	}
+#endif
 
 #ifdef IPH_is_SKB_PULLED
 	/* In Linux 2.4.4, the IP header has been skb_pull()ed before the
@@ -1423,6 +895,50 @@ ipsec_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 		}
 	}
 #endif /* IP_FRAGMENT_LINEARIZE */
+
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	if (irs.natt_len) {
+		/**
+		 * Now, we are sure packet is ESPinUDP. Remove natt_len bytes from
+		 * packet and modify protocol to ESP.
+		 */
+		if (((unsigned char *)skb->data > (unsigned char *)skb->nh.iph) &&
+			((unsigned char *)skb->nh.iph > (unsigned char *)skb->head)) {
+			unsigned int _len = (unsigned char *)skb->data -
+				(unsigned char *)skb->nh.iph;
+			KLIPS_PRINT(debug_rcv,
+				"klips_debug:ipsec_rcv: adjusting skb: skb_push(%u)\n",
+				_len);
+			skb_push(skb, _len);
+		}
+		KLIPS_PRINT(debug_rcv,
+		    "klips_debug:ipsec_rcv: "
+			"removing %d bytes from ESPinUDP packet\n", irs.natt_len);
+		ipp = (struct iphdr *)skb->data;
+		irs.iphlen = ipp->ihl << 2;
+		ipp->tot_len = htons(ntohs(ipp->tot_len) - irs.natt_len);
+		if (skb->len < irs.iphlen + irs.natt_len) {
+			printk(KERN_WARNING
+		       "klips_error:ipsec_rcv: "
+		       "ESPinUDP packet is too small (%d < %d+%d). "
+			   "This should never happen, please report.\n",
+		       (int)(skb->len), irs.iphlen, irs.natt_len);
+			goto rcvleave;
+		}
+		memmove(skb->data + irs.natt_len, skb->data, irs.iphlen);
+		skb_pull(skb, irs.natt_len);
+
+		/* update nh.iph */
+		ipp = skb->nh.iph = (struct iphdr *)skb->data;
+
+		/* modify protocol */
+		ipp->protocol = IPPROTO_ESP;
+
+		skb->sk = NULL;
+
+		KLIPS_IP_PRINT(debug_rcv, skb->nh.iph);
+	}
+#endif
 
 	ipp = skb->nh.iph;
 	ipsaddr.s_addr = ipp->saddr;
@@ -1553,8 +1069,33 @@ ipsec_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 
 	do {
 	        int decap_stat;
+		struct xform_functions *proto_funcs;
 
-	        decap_stat = ipsec_rcv_decap_once(&irs);
+		switch(irs.ipp->protocol) {
+		case IPPROTO_ESP:
+		  proto_funcs = esp_xform_funcs;
+		  break;
+		  
+#ifdef CONFIG_IPSEC_AH
+		case IPPROTO_AH:
+		  proto_funcs = ah_xform_funcs;
+		  break;
+#endif /* !CONFIG_IPSEC_AH */
+		  
+#ifdef CONFIG_IPSEC_IPCOMP
+		case IPPROTO_COMP:
+		  proto_funcs = ipcomp_xform_funcs;
+		  break;
+#endif /* !CONFIG_IPSEC_IPCOMP */
+		default:
+		  if(irs.stats) {
+		    irs.stats->rx_errors++;
+		  }
+		  decap_stat = IPSEC_RCV_BADPROTO;
+		  goto rcvleave;
+		}
+
+	        decap_stat = ipsec_rcv_decap_once(&irs, proto_funcs);
 
 		if(decap_stat != IPSEC_RCV_OK) {
 			spin_unlock(&tdb_lock);
@@ -1587,6 +1128,91 @@ ipsec_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 		ipsnext = ipsp->ips_inext;
 	}
 #endif /* CONFIG_IPSEC_IPCOMP */
+
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	if ((irs.natt_type) && (ipp->protocol != IPPROTO_IPIP)) {
+		/**
+		 * NAT-Traversal and Transport Mode:
+		 *   we need to correct TCP/UDP checksum
+		 *
+		 * If we've got NAT-OA, we can fix checksum without recalculation.
+		 */
+		__u32 natt_oa = ipsp->ips_natt_oa ?
+			((struct sockaddr_in*)(ipsp->ips_natt_oa))->sin_addr.s_addr : 0;
+		__u16 pkt_len = skb->tail - (unsigned char *)ipp;
+		__u16 data_len = pkt_len - (ipp->ihl << 2);
+
+		switch (ipp->protocol) {
+			case IPPROTO_TCP:
+				if (data_len >= sizeof(struct tcphdr)) {
+					struct tcphdr *tcp = (struct tcphdr *)((__u32 *)ipp+ipp->ihl);
+					if (natt_oa) {
+						__u32 buff[2] = { ~natt_oa, ipp->saddr };
+						KLIPS_PRINT(debug_rcv,
+				    		"klips_debug:ipsec_rcv: "
+							"NAT-T & TRANSPORT: "
+							"fix TCP checksum using NAT-OA\n");
+						tcp->check = csum_fold(
+							csum_partial((unsigned char *)buff, sizeof(buff),
+							tcp->check^0xffff));
+					}
+					else {
+						KLIPS_PRINT(debug_rcv,
+			    			"klips_debug:ipsec_rcv: "
+							"NAT-T & TRANSPORT: recalc TCP checksum\n");
+						if (pkt_len > (ntohs(ipp->tot_len)))
+							data_len -= (pkt_len - ntohs(ipp->tot_len));
+						tcp->check = 0;
+						tcp->check = csum_tcpudp_magic(ipp->saddr, ipp->daddr,
+							data_len, IPPROTO_TCP,
+							csum_partial((unsigned char *)tcp, data_len, 0));
+					}
+				}
+				else {
+					KLIPS_PRINT(debug_rcv,
+			    		"klips_debug:ipsec_rcv: "
+						"NAT-T & TRANSPORT: can't fix TCP checksum\n");
+				}
+				break;
+			case IPPROTO_UDP:
+				if (data_len >= sizeof(struct udphdr)) {
+					struct udphdr *udp = (struct udphdr *)((__u32 *)ipp+ipp->ihl);
+					if (udp->check == 0) {
+						KLIPS_PRINT(debug_rcv,
+				    		"klips_debug:ipsec_rcv: "
+							"NAT-T & TRANSPORT: UDP checksum already 0\n");
+					}
+					else if (natt_oa) {
+						__u32 buff[2] = { ~natt_oa, ipp->saddr };
+						KLIPS_PRINT(debug_rcv,
+				    		"klips_debug:ipsec_rcv: "
+							"NAT-T & TRANSPORT: "
+							"fix UDP checksum using NAT-OA\n");
+						udp->check = csum_fold(
+							csum_partial((unsigned char *)buff, sizeof(buff),
+							udp->check^0xffff));
+					}
+					else {
+						KLIPS_PRINT(debug_rcv,
+				    		"klips_debug:ipsec_rcv: "
+							"NAT-T & TRANSPORT: zero UDP checksum\n");
+						udp->check = 0;
+					}
+				}
+				else {
+					KLIPS_PRINT(debug_rcv,
+			    		"klips_debug:ipsec_rcv: "
+						"NAT-T & TRANSPORT: can't fix UDP checksum\n");
+				}
+				break;
+			default:
+				KLIPS_PRINT(debug_rcv,
+			    	"klips_debug:ipsec_rcv: "
+					"NAT-T & TRANSPORT: non TCP/UDP packet -- do nothing\n");
+				break;
+		}
+	}
+#endif
 
 	/*
 	 * XXX this needs to be locked from when it was first looked
@@ -1804,60 +1430,35 @@ ipsec_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 	return(0);
 }
 
-struct inet_protocol ah_protocol =
-{
-	ipsec_rcv,				/* AH handler */
-	NULL,				/* TUNNEL error control */
-#ifdef NETDEV_25
-	1,				/* no policy */
-#else
-	0,				/* next */
-	IPPROTO_AH,			/* protocol ID */
-	0,				/* copy */
-	NULL,				/* data */
-	"AH"				/* name */
-#endif
-};
-
-struct inet_protocol esp_protocol =
-{
-	ipsec_rcv,			/* ESP handler		*/
-	NULL,				/* TUNNEL error control */
-#ifdef NETDEV_25
-	1,				/* no policy */
-#else
-	0,				/* next */
-	IPPROTO_ESP,			/* protocol ID */
-	0,				/* copy */
-	NULL,				/* data */
-	"ESP"				/* name */
-#endif
-};
-
-#if 0
-/* We probably don't want to install a pure IPCOMP protocol handler, but
-   only want to handle IPCOMP if it is encapsulated inside an ESP payload
-   (which is already handled) */
-#ifdef CONFIG_IPSEC_IPCOMP
-struct inet_protocol comp_protocol =
-{
-	ipsec_rcv,			/* COMP handler		*/
-	NULL,				/* COMP error control	*/
-#ifdef NETDEV_25
-	1,				/* no policy */
-#else
-	0,				/* next */
-	IPPROTO_COMP,			/* protocol ID */
-	0,				/* copy */
-	NULL,				/* data */
-	"COMP"				/* name */
-#endif
-};
-#endif /* CONFIG_IPSEC_IPCOMP */
-#endif
-
 /*
  * $Log: ipsec_rcv.c,v $
+ * Revision 1.140  2004/02/03 03:12:53  mcr
+ * 	removed erroneously, double patched code.
+ *
+ * Revision 1.139  2004/01/05 23:21:29  mcr
+ * 	initialize sin_family in ipsec_rcv.c
+ *
+ * Revision 1.138  2003/12/24 19:46:52  mcr
+ * 	if sock.h patch has not been applied, then define appropriate
+ * 	structure so we can use it. This is serious inferior, and
+ * 	depends upon the concept that the structure in question is
+ * 	smaller than the other members of that union.
+ * 	getting rid of differing methods is a better solution.
+ *
+ * Revision 1.137  2003/12/22 19:40:57  mcr
+ * 	NAT-T patches 0.6c.
+ *
+ * Revision 1.136  2003/12/15 18:13:12  mcr
+ * 	when compiling with NAT traversal, don't assume that the
+ * 	kernel has been patched, unless CONFIG_IPSEC_NAT_NON_ESP
+ * 	is set.
+ *
+ * Revision 1.135  2003/12/13 19:10:21  mcr
+ * 	refactored rcv and xmit code - same as FS 2.05.
+ *
+ * Revision 1.134  2003/12/10 01:14:27  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.133  2003/10/31 02:27:55  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *

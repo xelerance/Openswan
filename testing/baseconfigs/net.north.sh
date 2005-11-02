@@ -1,10 +1,10 @@
 #
-# $Id: net.north.sh,v 1.2 2003/11/28 19:32:05 mcr Exp $
+# $Id: net.north.sh,v 1.3 2004/02/03 20:14:01 mcr Exp $
 #
 
-if [ -n "$UML_private_CTL" ]
+if [ -n "$UML_north_CTL" ]
 then
-    net_eth0="eth0=daemon,10:00:00:de:cd:49,unix,$UML_private_CTL,$UML_private_DATA";
+    net_eth0="eth0=daemon,10:00:00:de:cd:49,unix,$UML_north_CTL,$UML_north_DATA";
 else
     net_eth0="eth0=mcast,10:00:00:de:cd:49,239.192.0.3,40810";
 fi

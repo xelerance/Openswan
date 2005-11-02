@@ -12,10 +12,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: sameaddr.c,v 1.8 2002/04/24 07:36:41 mcr Exp $
+ * RCSID $Id: sameaddr.c,v 1.8.36.1 2004/03/21 05:23:31 mcr Exp $
  */
 #include "internal.h"
-#include "freeswan.h"
+#include "openswan.h"
 
 static int samenbits(const ip_address *a, const ip_address *b, int n);
 

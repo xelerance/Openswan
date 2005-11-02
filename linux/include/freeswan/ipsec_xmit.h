@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_xmit.h,v 1.4 2003/12/06 16:37:04 mcr Exp $
+ * RCSID $Id: ipsec_xmit.h,v 1.7 2004/02/03 03:11:40 mcr Exp $
  */
 
 #include "freeswan/ipsec_sa.h"
@@ -49,6 +49,8 @@ enum ipsec_xmit_value
 	IPSEC_XMIT_ROUTEERR=-24,
 	IPSEC_XMIT_RECURSDETECT=-25,
 	IPSEC_XMIT_IPSENDFAILURE=-26,
+	IPSEC_XMIT_ESPUDP=-27,
+	IPSEC_XMIT_ESPUDP_BADTYPE=-28,
 };
 
 struct ipsec_xmit_state
@@ -69,6 +71,7 @@ struct ipsec_xmit_state
 	int	pyldsz;			/* upper protocol payload size */
 	int	headroom;
 	int	tailroom;
+        int     authlen;
 	int     max_headroom;		/* The extra header space needed */
 	int	max_tailroom;		/* The extra stuffing needed */
 	int     ll_headroom;		/* The extra link layer hard_header space needed */
@@ -98,23 +101,13 @@ struct ipsec_xmit_state
 	int error;
 	uint32_t eroute_pid;
 	struct ipsec_sa ips;
-};
-
-#if 0 /* save for alg refactorisation */
-struct xform_functions
-{
-	enum ipsec_xmit_value (*checks)(struct ipsec_xmit_state *ixs,
-				       struct sk_buff *skb);
-        enum ipsec_xmit_value (*encrypt)(struct ipsec_xmit_state *ixs);
-
-	enum ipsec_xmit_value (*setup_auth)(struct ipsec_xmit_state *ixs,
-					   struct sk_buff *skb,
-					   __u32          *replay,
-					   unsigned char **authenticator);
-	enum ipsec_xmit_value (*calc_auth)(struct ipsec_xmit_state *ixs,
-					struct sk_buff *skb);
-};
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	uint8_t natt_type;
+	uint8_t natt_head;
+	uint16_t natt_sport;
+	uint16_t natt_dport;
 #endif
+};
 
 enum ipsec_xmit_value
 ipsec_xmit_sanity_check_dev(struct ipsec_xmit_state *ixs);
@@ -125,16 +118,36 @@ ipsec_xmit_sanity_check_skb(struct ipsec_xmit_state *ixs);
 enum ipsec_xmit_value
 ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs);
 
-void ipsec_extract_ports(struct iphdr * iph, struct sockaddr_encap * er);
+extern void ipsec_extract_ports(struct iphdr * iph, struct sockaddr_encap * er);
 
 
 extern int ipsec_xmit_trap_count;
 extern int ipsec_xmit_trap_sendcount;
 
-extern void ipsec_extract_ports(struct iphdr * iph, struct sockaddr_encap * er);
+#ifdef CONFIG_IPSEC_DEBUG
+extern int debug_tunnel;
+extern int sysctl_ipsec_debug_verbose;
+#endif /* CONFIG_IPSEC_DEBUG */
+
+#define debug_xmit debug_tunnel
+
+#define ipsec_xmit_dmp(_x,_y, _z) if (debug_xmit && sysctl_ipsec_debug_verbose) ipsec_dmp(_x,_y,_z)
+
+extern int sysctl_ipsec_icmp;
+extern int sysctl_ipsec_tos;
+
 
 /*
  * $Log: ipsec_xmit.h,v $
+ * Revision 1.7  2004/02/03 03:11:40  mcr
+ * 	new xmit type if the UDP encapsulation is wrong.
+ *
+ * Revision 1.6  2003/12/13 19:10:16  mcr
+ * 	refactored rcv and xmit code - same as FS 2.05.
+ *
+ * Revision 1.5  2003/12/10 01:20:06  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.4  2003/12/06 16:37:04  mcr
  * 	1.4.7a X.509 patch applied.
  *

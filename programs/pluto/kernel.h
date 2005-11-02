@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel.h,v 1.38 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: kernel.h,v 1.39.4.3 2004/06/01 14:42:36 ken Exp $
  */
 
 extern bool no_klips;	/* don't actually use KLIPS */
@@ -64,7 +64,11 @@ struct kernel_sa {
 	char *enckey;
 
 	int encapsulation;
-
+#ifdef NAT_TRAVERSAL
+	u_int16_t natt_sport, natt_dport;
+	u_int8_t transid, natt_type;
+	ip_address *natt_oa;
+#endif
 	const char *text_said;
 };
 
@@ -180,3 +184,6 @@ extern void delete_ipsec_sa(struct state *st, bool inbound_only);
 extern bool route_and_eroute(struct connection *c
 			     , struct spd_route *sr
 			     , struct state *st);
+#ifdef NAT_TRAVERSAL
+extern bool update_ipsec_sa(struct state *st);
+#endif

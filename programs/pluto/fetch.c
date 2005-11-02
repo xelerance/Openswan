@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: fetch.c,v 1.2 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: fetch.c,v 1.2.6.1 2004/03/21 05:23:32 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -21,7 +21,7 @@
 #include <pthread.h>
 #include <string.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #ifdef LDAP_VER
 #include <ldap.h>

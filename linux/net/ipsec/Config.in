@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Config.in,v 1.26 2002/04/24 07:36:26 mcr Exp $
+# RCSID $Id: Config.in,v 1.28 2004/02/03 03:12:26 mcr Exp $
 
 comment 'IPSec options (FreeS/WAN)'
 
@@ -36,6 +36,14 @@ bool '   IPSEC Debugging Option' CONFIG_IPSEC_DEBUG
 #
 #
 # $Log: Config.in,v $
+# Revision 1.28  2004/02/03 03:12:26  mcr
+# 	remove NAT-traversal option from IPsec config,
+# 	as it should be in the kernel configuration if
+# 	the NAT-T patch is installed.
+#
+# Revision 1.27  2003/12/10 01:14:27  mcr
+# 	NAT-traversal patches to KLIPS.
+#
 # Revision 1.26  2002/04/24 07:36:26  mcr
 # Moved from ./klips/net/ipsec/Config.in,v
 #

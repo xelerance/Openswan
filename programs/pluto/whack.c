@@ -1,6 +1,7 @@
 /* command interface to Pluto
  * Copyright (C) 1997 Angelos D. Keromytis.
- * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 1998-2003  D. Hugh Redelmeier.
+ * Copyright (C) 2004 Michael Richardson <mcr@sandelman.ottawa.on.ca>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: whack.c,v 1.110 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: whack.c,v 1.120.2.2 2004/06/01 14:42:36 ken Exp $
  */
 
 #include <stdio.h>
@@ -30,7 +31,7 @@
 #include <getopt.h>
 #include <assert.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -62,6 +63,7 @@ help(void)
 	    " \\\n   "
 	    " [--nexthop <ip-address>]"
 	    " [--client <subnet> | --clientwithin <address range>]"
+	    " [--srcip <ip-address>]"
 	    " \\\n   "
 	    " [--clientprotoport <protocol>/<port>]"
 	    " [--dnskeyondemand]"
@@ -71,6 +73,7 @@ help(void)
 	    " --to"
 	    " (--host <ip-address> | --id <identity> | --cert <path>)"
 	    " [--ca <distinguished name>]"
+	    " [--sendcert yes|always|no|never|ifasked]"
 	    " [--ikeport <port-number>]"
 	    " \\\n   "
 	    " [--nexthop <ip-address>]"
@@ -98,6 +101,11 @@ help(void)
 	    " \\\n   "
 	    " [--keyingtries <count>]"
 	    " [--dontrekey]"
+#ifdef XAUTH
+	    " [--xauth]"
+	    " [--xauthserver]"
+	    " [--xauthclient]"
+#endif
 	    " \\\n   "
 	    " [--initiateontraffic|--pass|--drop|--reject]"
 	    " \\\n   "
@@ -113,6 +121,8 @@ help(void)
 	    " (--initiate | --terminate)"
 	    " --name <connection_name>"
 	    " [--asynchronous]"
+	    " [--xauthname name]"
+	    " [--xauthpass pass]"
 	    "\n\n"
 	"opportunistic initiation: whack"
 	    " [--tunnelipv4 | --tunnelipv6]"
@@ -230,7 +240,7 @@ diagq(err_t ugh, const char *this)
  * - DBGOPT_* option (DEBUG options)
  * - CD_* options (Connection Description options)
  */
-enum {
+enum option_enums {
 #   define OPT_FIRST	OPT_CTLBASE
     OPT_CTLBASE,
     OPT_NAME,
@@ -273,7 +283,10 @@ enum {
     OPT_OPPO_THERE,
 
     OPT_ASYNC,
+
     OPT_DELETECRASH,
+    OPT_XAUTHNAME,
+    OPT_XAUTHPASS,
 
 #   define OPT_LAST OPT_ASYNC	/* last "normal" option */
 
@@ -290,6 +303,12 @@ enum {
     END_CLIENTWITHIN,
     END_CLIENTPROTOPORT,
     END_DNSKEYONDEMAND,
+    END_XAUTHSERVER,
+    END_XAUTHCLIENT,
+    END_MODECFGCLIENT,
+    END_MODECFGSERVER,
+    END_SENDCERT,
+    END_SRCIP,
     END_UPDOWN,
     	
 #define END_LAST  END_UPDOWN	/* last end description*/
@@ -313,7 +332,12 @@ enum {
     CD_FAIL0,	/* same order as POLICY_* */
     CD_FAIL1,	/* same order as POLICY_* */
     CD_DONT_REKEY,	/* same order as POLICY_* */
-
+    CD_OPP0,	        /* same order as POLICY_* */
+    CD_GROUP,           /* same order as POLICY_* */
+    CD_GROUPED,         /* same order as POLICY_* */
+    CD_UP,              /* same order as POLICY_* */
+    CD_DUMMY,           /* same order as POLICY_* */
+    CD_MODECFG,         /* same order as POLICY_* */
     CD_TUNNELIPV4,
     CD_TUNNELIPV6,
     CD_CONNIPV4,
@@ -345,6 +369,7 @@ enum {
     DBGOPT_OPPO,	/* same order as DBG_* */
     DBGOPT_CONTROLMORE,	/* same order as DBG_* */
     DBGOPT_PFKEY,	/* same order as DBG_* */
+    DBGOPT_NATTRAVERSAL, /* same order as DBG_* */
 
     DBGOPT_PRIVATE,	/* same order as DBG_* */
 
@@ -408,6 +433,9 @@ static const struct option long_opts[] = {
     { "rereadall", no_argument, NULL, OPT_REREADALL + OO },
     { "status", no_argument, NULL, OPT_STATUS + OO },
     { "shutdown", no_argument, NULL, OPT_SHUTDOWN + OO },
+    { "xauthname", required_argument, NULL, OPT_XAUTHNAME + OO },
+    { "xauthuser", required_argument, NULL, OPT_XAUTHNAME + OO },
+    { "xauthpass", required_argument, NULL, OPT_XAUTHPASS + OO },
 
     { "oppohere", required_argument, NULL, OPT_OPPO_HERE + OO },
     { "oppothere", required_argument, NULL, OPT_OPPO_THERE + OO },
@@ -427,6 +455,7 @@ static const struct option long_opts[] = {
     { "clientwithin", required_argument, NULL, END_CLIENTWITHIN + OO },
     { "clientprotoport", required_argument, NULL, END_CLIENTPROTOPORT + OO },
     { "dnskeyondemand", no_argument, NULL, END_DNSKEYONDEMAND + OO },
+    { "srcip",  required_argument, NULL, END_SRCIP + OO },
     { "updown", required_argument, NULL, END_UPDOWN + OO },
 
 
@@ -462,6 +491,18 @@ static const struct option long_opts[] = {
     { "failreject", no_argument, NULL
 	, CD_FAIL0 + (POLICY_FAIL_REJECT >> POLICY_FAIL_SHIFT << AUX_SHIFT) + OO },
     { "dontrekey", no_argument, NULL, CD_DONT_REKEY + OO },
+#ifdef XAUTH
+    { "xauth", no_argument, NULL, END_XAUTHSERVER + OO },
+    { "xauthserver", no_argument, NULL, END_XAUTHSERVER + OO },
+    { "xauthclient", no_argument, NULL, END_XAUTHCLIENT + OO },
+#endif
+#ifdef MODECFG
+    { "modecfgserver", no_argument, NULL, END_MODECFGSERVER + OO },
+    { "modecfgclient", no_argument, NULL, END_MODECFGCLIENT + OO },
+    { "modeconfigserver", no_argument, NULL, END_MODECFGSERVER + OO },
+    { "modeconfigclient", no_argument, NULL, END_MODECFGCLIENT + OO },
+#endif
+    { "sendcert", required_argument, NULL, END_SENDCERT + OO },
     { "ipv4", no_argument, NULL, CD_CONNIPV4 + OO },
     { "ipv6", no_argument, NULL, CD_CONNIPV6 + OO },
 
@@ -471,7 +512,6 @@ static const struct option long_opts[] = {
     { "rekeywindow", required_argument, NULL, CD_RKMARGIN + OO + NUMERIC_ARG },	/* OBSOLETE */
     { "rekeyfuzz", required_argument, NULL, CD_RKFUZZ + OO + NUMERIC_ARG },
     { "keyingtries", required_argument, NULL, CD_KTRIES + OO + NUMERIC_ARG },
-
 #ifdef DEBUG
     { "debug-none", no_argument, NULL, DBGOPT_NONE + OO },
     { "debug-all]", no_argument, NULL, DBGOPT_ALL + OO },
@@ -486,6 +526,7 @@ static const struct option long_opts[] = {
     { "debug-oppo", no_argument, NULL, DBGOPT_OPPO + OO },
     { "debug-controlmore", no_argument, NULL, DBGOPT_CONTROLMORE + OO },
     { "debug-pfkey",   no_argument, NULL, DBGOPT_PFKEY + OO },
+    { "debug-nattraversal", no_argument, NULL, DBGOPT_NATTRAVERSAL + OO },
     { "debug-private", no_argument, NULL, DBGOPT_PRIVATE + OO },
 
     { "impair-delay-adns-key-answer", no_argument, NULL, DBGOPT_IMPAIR_DELAY_ADNS_KEY_ANSWER + OO },
@@ -619,20 +660,72 @@ check_end(struct whack_end *this, struct whack_end *that
 	diagq("the protocol for leftprotoport and rightprotoport must be the same", NULL);
 }
 
-static void
-get_secret(int sock)
+static size_t
+get_secret(char *buf, size_t bufsize)
 {
-    const char *buf, *secret;
+    const char *secret;
     int len;
 
     fflush(stdout);
     usleep(20000); /* give fflush time for flushing */
-    buf = getpass("Enter: ");
-    secret = (buf == NULL)? "" : buf;
+    secret = getpass("Enter secret: ");
+    secret = (secret == NULL) ? "" : secret;
 
+
+    strncpy(buf, secret, bufsize);
+
+    len = strlen(buf) + 1;
+    
+    return len;
+}
+
+static int
+get_value(char *buf, size_t bufsize)
+{
+    int len;
+    int try;
+
+    fflush(stdout);
+    usleep(20000); /* give fflush time for flushing - has to go through awk */
+
+    try = 3;
+    len = 0;
+    while(try > 0 && len==0)
+    {
+	fprintf(stderr, "Name enter:   ");
+	
+	memset(buf, 0, bufsize);
+	
+	if(fgets(buf, bufsize, stdin) != buf) {
+	    if(errno == 0) {
+		fprintf(stderr, "Can not read password from standard in\n");
+		exit(RC_WHACK_PROBLEM);
+	    } else {
+		perror("fgets value");
+		exit(RC_WHACK_PROBLEM);
+	    }
+	}
+	
+	/* send the value to pluto, including \0, but fgets adds \n */
+	len = strlen(buf);
+	if(len == 0)
+	{
+	    fprintf(stderr, "answer was empty, retry\n");
+	}
+    }
+    if(len ==  0)
+    {
+	exit(RC_WHACK_PROBLEM);
+    }
+
+    return len;
+}
+
+static void
+send_reply(int sock, char *buf, ssize_t len)
+{
     /* send the secret to pluto */
-    len = strlen(secret) + 1;
-    if (write(sock, secret, len) != len)
+    if (write(sock, buf, len) != len)
     {
 	int e = errno;
 
@@ -655,6 +748,11 @@ main(int argc, char **argv)
     const char
 	*af_used_by = NULL,
 	*tunnel_af_used_by = NULL;
+
+    char xauthname[128];
+    char xauthpass[128];
+    int xauthnamelen, xauthpasslen;
+    bool gotxauthname = FALSE, gotxauthpass = FALSE;
 
     /* check division of numbering space */
 #ifdef DEBUG
@@ -881,7 +979,6 @@ main(int argc, char **argv)
 
 	case OPT_DELETECRASH:   /* --crash <ip-address> */
 	    msg.whack_crash = TRUE;
-	    tunnel_af_used_by = long_opts[long_index].name;
 	    diagq(ttoaddr(optarg, 0, msg.tunnel_addr_family, &msg.whack_crash_peer), optarg);
 	    if (isanyaddr(&msg.whack_crash_peer))
 		diagq("0.0.0.0 or 0::0 isn't a valid client address", optarg);
@@ -1011,8 +1108,48 @@ main(int argc, char **argv)
 		msg.right.key_from_DNS_on_demand = TRUE;
 	    continue;
 	}
+
 	case END_ID:	/* --id <identity> */
 	    msg.right.id = optarg;	/* decoded by Pluto */
+	    continue;
+
+#ifdef XAUTH
+	case END_XAUTHSERVER:	/* --xauthserver */
+	    msg.right.xauth_server = TRUE;
+	    continue;
+
+	case END_XAUTHCLIENT:	/* --xauthclient */
+	    msg.right.xauth_client = TRUE;
+	    continue;
+#else
+	case END_XAUTHSERVER:
+	case END_XAUTHCLIENT:
+	  diag("pluto is not built with XAUTH support");
+	  continue;
+#endif
+#ifdef MODECFG
+	case END_MODECFGCLIENT:
+	    msg.right.modecfg_client = TRUE;
+	    continue;
+
+	case END_MODECFGSERVER:
+	    msg.right.modecfg_server = TRUE;
+	    continue;
+#endif
+
+	case END_SENDCERT:
+   	    if(streq(optarg, "yes") || streq(optarg, "always"))
+	    {
+		msg.right.sendcert = cert_alwayssend;
+	    }
+	    else if(streq(optarg, "no") || streq(optarg, "never"))
+	    {
+		msg.right.sendcert = cert_neversend;
+	    }
+	    else if(streq(optarg, "ifasked"))
+	    {
+		msg.right.sendcert = cert_sendifasked;
+	    }
 	    continue;
 
 	case END_CERT:	/* --cert <path> */
@@ -1039,12 +1176,29 @@ main(int argc, char **argv)
 		    , &msg.right.host_nexthop), optarg);
 	    continue;
 
+	case END_SRCIP:	       /* --srcip <ip-address> */
+	    af_used_by = long_opts[long_index].name;
+	    diagq(ttoaddr(optarg, 0, msg.addr_family
+			  , &msg.right.host_srcip), optarg);
+	    continue;
+
 	case END_CLIENT:	/* --client <subnet> */
 	    if (end_seen & LELEM(END_CLIENTWITHIN - END_FIRST))
 		diag("--client conflicts with --clientwithin");
 	    tunnel_af_used_by = long_opts[long_index].name;
+#ifdef VIRTUAL_IP
+	    if ( ((strlen(optarg)>=6) && (strncmp(optarg,"vhost:",6)==0)) ||
+		((strlen(optarg)>=5) && (strncmp(optarg,"vnet:",5)==0)) ) {
+		msg.right.virt = optarg;
+	    }
+	    else {
+		diagq(ttosubnet(optarg, 0, msg.tunnel_addr_family, &msg.right.client), optarg);
+		msg.right.has_client = TRUE;
+	    }
+#else
 	    diagq(ttosubnet(optarg, 0, msg.tunnel_addr_family, &msg.right.client), optarg);
 	    msg.right.has_client = TRUE;
+#endif
 	    msg.policy |= POLICY_TUNNEL;	/* client => tunnel */
 	    continue;
 
@@ -1182,6 +1336,20 @@ main(int argc, char **argv)
 
 	    msg.tunnel_addr_family = AF_INET6;
 	    continue;
+
+	case OPT_XAUTHNAME:
+	  gotxauthname = TRUE;
+	  xauthname[0]='\0';
+	  strncat(xauthname, optarg, sizeof(xauthname));
+	  xauthnamelen = strlen(xauthname)+1;
+	  continue;
+
+	case OPT_XAUTHPASS:
+	  gotxauthpass = TRUE;
+	  xauthpass[0]='\0';
+	  strncat(xauthpass, optarg, sizeof(xauthpass));
+	  xauthpasslen = strlen(xauthpass)+1;
+	  continue;
 
 #ifdef DEBUG
 	case DBGOPT_NONE:	/* --debug-none */
@@ -1354,10 +1522,16 @@ main(int argc, char **argv)
     || !pack_str(&msg.left.cert)	/* string  3 */
     || !pack_str(&msg.left.ca)		/* string  4 */
     || !pack_str(&msg.left.updown)	/* string  5 */
+#ifdef VIRTUAL_IP
+    || !pack_str(&msg.left.virt)
+#endif
     || !pack_str(&msg.right.id)		/* string  6 */
     || !pack_str(&msg.right.cert)	/* string  7 */
     || !pack_str(&msg.right.ca)		/* string  8 */
     || !pack_str(&msg.right.updown)	/* string  9 */
+#ifdef VIRTUAL_IP
+    || !pack_str(&msg.right.virt)
+#endif
     || !pack_str(&msg.keyid)		/* string 10 */
     || !pack_str(&msg.myid)		/* string 11 */
     || str_roof - next_str < (ptrdiff_t)msg.keyval.len)    /* chunk (sort of string 5) */
@@ -1486,9 +1660,24 @@ main(int argc, char **argv)
 			    /* be happy */
 			    exit_status = 0;
 			    break;
+
 			case RC_ENTERSECRET:
-			    get_secret(sock);
+			    if(!gotxauthpass)
+			    {
+				xauthpasslen = get_secret(xauthpass, 128);
+			    }
+			    send_reply(sock, xauthpass, xauthpasslen);
 			    break;
+
+			case RC_XAUTHPROMPT:
+			    if(!gotxauthname)
+			    {
+				xauthnamelen = get_value(xauthname
+							 , sizeof(xauthname));
+			    }
+			    send_reply(sock, xauthname, xauthnamelen);
+			    break;
+
 			/* case RC_LOG_SERIOUS: */
 			default:
 			    /* pass through */

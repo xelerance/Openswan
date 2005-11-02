@@ -13,8 +13,13 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_rcv.h,v 1.17 2002/09/03 16:32:32 mcr Exp $
+ * RCSID $Id: ipsec_rcv.h,v 1.19 2003/12/15 18:13:09 mcr Exp $
  */
+
+#ifndef IPSEC_RCV_H
+#define IPSEC_RCV_H
+
+#include "freeswan/ipsec_auth.h"
 
 #define DB_RX_PKTRX	0x0001
 #define DB_RX_PKTRX2	0x0002
@@ -47,6 +52,68 @@ struct ipsec_birth_reply {
 extern struct ipsec_birth_reply ipsec_ipv4_birth_packet;
 extern struct ipsec_birth_reply ipsec_ipv6_birth_packet;
 
+enum ipsec_rcv_value {
+	IPSEC_RCV_LASTPROTO=1,
+	IPSEC_RCV_OK=0,
+	IPSEC_RCV_BADPROTO=-1,
+	IPSEC_RCV_BADLEN=-2,
+	IPSEC_RCV_ESP_BADALG=-3,
+	IPSEC_RCV_3DES_BADBLOCKING=-4,
+	IPSEC_RCV_ESP_DECAPFAIL=-5,
+	IPSEC_RCV_DECAPFAIL=-6,
+	IPSEC_RCV_SAIDNOTFOUND=-7,
+	IPSEC_RCV_IPCOMPALONE=-8,
+	IPSEC_RCV_IPCOMPFAILED=-10,
+	IPSEC_RCV_SAIDNOTLIVE=-11,
+	IPSEC_RCV_FAILEDINBOUND=-12,
+	IPSEC_RCV_LIFETIMEFAILED=-13,
+	IPSEC_RCV_BADAUTH=-14,
+	IPSEC_RCV_REPLAYFAILED=-15,
+	IPSEC_RCV_AUTHFAILED=-16,
+	IPSEC_RCV_REPLAYROLLED=-17
+};
+
+struct ipsec_rcv_state {
+	struct sk_buff *skb;
+	struct net_device_stats *stats;
+	struct iphdr *ipp;
+	struct ipsec_sa *ipsp;
+	int len;
+	int ilen;
+	int authlen;
+	int hard_header_len;
+	int iphlen;
+	struct auth_alg *authfuncs;
+	ip_said said;
+	char   sa[SATOT_BUF];
+	size_t sa_len;
+	__u8 next_header;
+	__u8 hash[AH_AMAX];
+	char ipsaddr_txt[ADDRTOA_BUF];
+	char ipdaddr_txt[ADDRTOA_BUF];
+	__u8 *octx;
+	__u8 *ictx;
+	int ictx_len;
+	int octx_len;
+	union {
+		struct {
+			struct esphdr *espp;
+		} espstuff;
+		struct {
+			struct ahhdr *ahp;
+		} ahstuff;
+		struct {
+			struct ipcomphdr *compp;
+		} ipcompstuff;
+	} protostuff;
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	__u8		natt_type;
+	__u16		natt_sport;
+	__u16		natt_dport;
+	int             natt_len; 
+#endif  
+};
+
 extern int
 #ifdef PROTO_HANDLER_SINGLE_PARM
 ipsec_rcv(struct sk_buff *skb);
@@ -68,11 +135,23 @@ ipsec_rcv(struct sk_buff *skb,
 #ifdef CONFIG_IPSEC_DEBUG
 extern int debug_rcv;
 #endif /* CONFIG_IPSEC_DEBUG */
+#define ipsec_rcv_dmp(_x,_y, _z) if (debug_rcv && sysctl_ipsec_debug_verbose) ipsec_dmp(_x,_y,_z)
+
 extern int sysctl_ipsec_inbound_policy_check;
 #endif /* __KERNEL__ */
 
+#endif /* IPSEC_RCV_H */
+
 /*
  * $Log: ipsec_rcv.h,v $
+ * Revision 1.19  2003/12/15 18:13:09  mcr
+ * 	when compiling with NAT traversal, don't assume that the
+ * 	kernel has been patched, unless CONFIG_IPSEC_NAT_NON_ESP
+ * 	is set.
+ *
+ * Revision 1.18  2003/12/13 19:10:16  mcr
+ * 	refactored rcv and xmit code - same as FS 2.05.
+ *
  * Revision 1.17  2002/09/03 16:32:32  mcr
  * 	definitions of ipsec_birth_reply.
  *

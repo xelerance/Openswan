@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_netlink.c,v 1.9 2003/12/06 16:44:29 mcr Exp $
+ * RCSID $Id: kernel_netlink.c,v 1.11.2.4 2004/06/01 14:42:36 ken Exp $
  */
 
 #if defined(linux) && defined(KERNEL26_SUPPORT)
@@ -29,7 +29,7 @@
 #include <rtnetlink.h>
 #include <xfrm.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
@@ -42,6 +42,10 @@
 #include "kernel_pfkey.h"
 #include "log.h"
 #include "whack.h"	/* for RC_LOG_SERIOUS */
+
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 
 /* Minimum priority number in SPD used by pluto. */
 #define MIN_SPD_PRIORITY 1024
@@ -535,12 +539,12 @@ netlink_add_sa(const struct kernel_sa *sa, bool replace)
 	ip2xfrm(&sa->dst_client->addr, &req.p.sel.daddr);
 	req.p.sel.prefixlen_s = sa->src_client->maskbits;
 	req.p.sel.prefixlen_d = sa->dst_client->maskbits;
+        req.p.sel.family = sa->src_client->addr.u.v4.sin_family;
     }
 
     req.p.id.spi = sa->spi;
     req.p.id.proto = satype2proto(sa->satype);
     req.p.family = sa->src->u.v4.sin_family;
-    req.p.sel.family = sa->src_client->addr.u.v4.sin_family;
     req.p.mode = (sa->encapsulation == ENCAPSULATION_MODE_TUNNEL);
     req.p.replay_window = sa->replay_window;
     req.p.reqid = sa->reqid;
@@ -628,6 +632,26 @@ netlink_add_sa(const struct kernel_sa *sa, bool replace)
 	req.n.nlmsg_len += attr->rta_len;
 	attr = (struct rtattr *)((char *)attr + attr->rta_len);
     }
+
+#ifdef NAT_TRAVERSAL
+    if (sa->natt_type)
+    {
+	struct xfrm_encap_tmpl natt;
+
+	natt.encap_type = sa->natt_type;
+	natt.encap_sport = ntohs(sa->natt_sport);
+	natt.encap_dport = ntohs(sa->natt_dport);
+	memset (&natt.encap_oa, 0, sizeof (natt.encap_oa));
+
+	attr->rta_type = XFRMA_ENCAP;
+	attr->rta_len = RTA_LENGTH(sizeof(natt));
+
+	memcpy(RTA_DATA(attr), &natt, sizeof(natt));
+
+	req.n.nlmsg_len += attr->rta_len;
+	attr = (struct rtattr *)((char *)attr + attr->rta_len);
+    }
+#endif
 
     return send_netlink_msg(&req.n, NULL, 0, "Add SA", sa->text_said);
 }

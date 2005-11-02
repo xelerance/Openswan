@@ -12,10 +12,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: atoasr.c,v 1.8 2003/07/10 02:39:46 mcr Exp $
+ * RCSID $Id: atoasr.c,v 1.8.10.1 2004/03/21 05:23:31 mcr Exp $
  */
 #include "internal.h"
-#include "freeswan.h"
+#include "openswan.h"
 
 /*
  - atoasr - convert ASCII to address, subnet, or range

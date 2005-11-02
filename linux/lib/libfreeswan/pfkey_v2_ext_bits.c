@@ -12,14 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_ext_bits.c,v 1.16 2003/10/31 02:27:12 mcr Exp $
+ * RCSID $Id: pfkey_v2_ext_bits.c,v 1.19.2.2 2004/04/16 12:32:56 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_parse.c.
  */
 
-char pfkey_v2_ext_bits_c_version[] = "$Id: pfkey_v2_ext_bits.c,v 1.16 2003/10/31 02:27:12 mcr Exp $";
+char pfkey_v2_ext_bits_c_version[] = "$Id: pfkey_v2_ext_bits.c,v 1.19.2.2 2004/04/16 12:32:56 mcr Exp $";
 
 /*
  * Some ugly stuff to allow consistent debugging code for use in the
@@ -89,6 +89,8 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX + 1/*ext*/]
 | 1<<SADB_EXT_IDENTITY_SRC
 | 1<<SADB_EXT_IDENTITY_DST
 | 1<<SADB_EXT_SENSITIVITY
+| 1<<SADB_X_EXT_NAT_T_SPORT
+| 1<<SADB_X_EXT_NAT_T_DPORT
 ,
 /* SADB_ADD */
 1<<SADB_EXT_RESERVED
@@ -103,6 +105,10 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX + 1/*ext*/]
 | 1<<SADB_EXT_IDENTITY_SRC
 | 1<<SADB_EXT_IDENTITY_DST
 | 1<<SADB_EXT_SENSITIVITY
+| 1<<SADB_X_EXT_NAT_T_TYPE
+| 1<<SADB_X_EXT_NAT_T_SPORT
+| 1<<SADB_X_EXT_NAT_T_DPORT
+| 1<<SADB_X_EXT_NAT_T_OA
 ,
 /* SADB_DELETE */
 1<<SADB_EXT_RESERVED
@@ -219,6 +225,14 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX + 1/*ext*/]
 /* SADB_X_DEBUG */
 1<<SADB_EXT_RESERVED
 | 1<<SADB_X_EXT_DEBUG
+,
+/* SADB_X_NAT_T_NEW_MAPPING */
+1<<SADB_EXT_RESERVED
+| 1<<SADB_EXT_SA
+| 1<<SADB_EXT_ADDRESS_SRC
+| 1<<SADB_EXT_ADDRESS_DST
+| 1<<SADB_X_EXT_NAT_T_SPORT
+| 1<<SADB_X_EXT_NAT_T_DPORT
 },
 
 /* REQUIRED IN */
@@ -354,6 +368,14 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX + 1/*ext*/]
 /* SADB_X_DEBUG */
 1<<SADB_EXT_RESERVED
 | 1<<SADB_X_EXT_DEBUG
+,
+/* SADB_X_NAT_T_NEW_MAPPING */
+1<<SADB_EXT_RESERVED
+| 1<<SADB_EXT_SA
+| 1<<SADB_EXT_ADDRESS_SRC
+| 1<<SADB_EXT_ADDRESS_DST
+| 1<<SADB_X_EXT_NAT_T_SPORT
+| 1<<SADB_X_EXT_NAT_T_DPORT
 }
 
 },
@@ -384,6 +406,8 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX + 1/*ext*/]
 | 1<<SADB_EXT_IDENTITY_SRC
 | 1<<SADB_EXT_IDENTITY_DST
 | 1<<SADB_EXT_SENSITIVITY
+| 1<<SADB_X_EXT_NAT_T_SPORT
+| 1<<SADB_X_EXT_NAT_T_DPORT
 ,
 /* SADB_ADD */
 1<<SADB_EXT_RESERVED
@@ -395,6 +419,10 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX + 1/*ext*/]
 | 1<<SADB_EXT_IDENTITY_SRC
 | 1<<SADB_EXT_IDENTITY_DST
 | 1<<SADB_EXT_SENSITIVITY
+| 1<<SADB_X_EXT_NAT_T_TYPE
+| 1<<SADB_X_EXT_NAT_T_SPORT
+| 1<<SADB_X_EXT_NAT_T_DPORT
+| 1<<SADB_X_EXT_NAT_T_OA
 ,
 /* SADB_DELETE */
 1<<SADB_EXT_RESERVED
@@ -416,6 +444,10 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX + 1/*ext*/]
 | 1<<SADB_EXT_IDENTITY_SRC
 | 1<<SADB_EXT_IDENTITY_DST
 | 1<<SADB_EXT_SENSITIVITY
+| 1<<SADB_X_EXT_NAT_T_TYPE
+| 1<<SADB_X_EXT_NAT_T_SPORT
+| 1<<SADB_X_EXT_NAT_T_DPORT
+| 1<<SADB_X_EXT_NAT_T_OA
 ,
 /* SADB_ACQUIRE */
 1<<SADB_EXT_RESERVED
@@ -458,6 +490,10 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX + 1/*ext*/]
 | 1<<SADB_EXT_IDENTITY_SRC
 | 1<<SADB_EXT_IDENTITY_DST
 | 1<<SADB_EXT_SENSITIVITY
+| 1<<SADB_X_EXT_NAT_T_TYPE
+| 1<<SADB_X_EXT_NAT_T_SPORT
+| 1<<SADB_X_EXT_NAT_T_DPORT
+| 1<<SADB_X_EXT_NAT_T_OA
 ,
 /* SADB_X_PROMISC */
 1<<SADB_EXT_RESERVED
@@ -536,6 +572,14 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX + 1/*ext*/]
 /* SADB_X_DEBUG */
 1<<SADB_EXT_RESERVED
 | 1<<SADB_X_EXT_DEBUG
+,
+/* SADB_X_NAT_T_NEW_MAPPING */
+1<<SADB_EXT_RESERVED
+| 1<<SADB_EXT_SA
+| 1<<SADB_EXT_ADDRESS_SRC
+| 1<<SADB_EXT_ADDRESS_DST
+| 1<<SADB_X_EXT_NAT_T_SPORT
+| 1<<SADB_X_EXT_NAT_T_DPORT
 },
 
 /* REQUIRED OUT */
@@ -677,12 +721,39 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX + 1/*ext*/]
 /* SADB_X_DEBUG */
 1<<SADB_EXT_RESERVED
 | 1<<SADB_X_EXT_DEBUG
+,
+/* SADB_X_NAT_T_NEW_MAPPING */
+1<<SADB_EXT_RESERVED
+| 1<<SADB_EXT_SA
+| 1<<SADB_EXT_ADDRESS_SRC
+| 1<<SADB_EXT_ADDRESS_DST
+| 1<<SADB_X_EXT_NAT_T_SPORT
+| 1<<SADB_X_EXT_NAT_T_DPORT
 }
 }
 };
 
 /*
  * $Log: pfkey_v2_ext_bits.c,v $
+ * Revision 1.19.2.2  2004/04/16 12:32:56  mcr
+ * 	erroneously pullup some freeswan->openswan changes that
+ * 	are really for 2.2.
+ *
+ * Revision 1.19.2.1  2004/03/21 05:23:31  mcr
+ *     pullup of freeswan->openswan and CR/CERT patches from HEAD
+ *
+ * Revision 1.20  2004/03/08 01:59:08  ken
+ * freeswan.h -> openswan.h
+ *
+ * Revision 1.19  2003/12/22 21:38:13  mcr
+ * 	removed extraenous #endif.
+ *
+ * Revision 1.18  2003/12/22 19:34:41  mcr
+ * 	added 0.6c NAT-T patch.
+ *
+ * Revision 1.17  2003/12/10 01:20:19  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.16  2003/10/31 02:27:12  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *
@@ -701,12 +772,12 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX + 1/*ext*/]
  * Revision 1.12  2002/01/29 01:59:10  mcr
  * 	removal of kversions.h - sources that needed it now use ipsec_param.h.
  * 	updating of IPv6 structures to match latest in6.h version.
- * 	removed dead code from freeswan.h that also duplicated kversions.h
+ * 	removed dead code from openswan.h that also duplicated kversions.h
  * 	code.
  *
  * Revision 1.11  2001/10/18 04:45:24  rgb
  * 2.4.9 kernel deprecates linux/malloc.h in favour of linux/slab.h,
- * lib/freeswan.h version macros moved to lib/kversions.h.
+ * lib/openswan.h version macros moved to lib/kversions.h.
  * Other compiler directive cleanups.
  *
  * Revision 1.10  2001/09/08 21:13:35  rgb

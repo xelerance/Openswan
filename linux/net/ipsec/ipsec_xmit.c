@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.5 2003/10/31 02:27:55 mcr Exp $";
+char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.7 2004/02/03 03:13:41 mcr Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -1388,6 +1388,32 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 				goto cleanup;
 			}			
 			ixs->tailroom += ((8 - ((ixs->pyldsz + 2 * sizeof(unsigned char)) % 8)) % 8) + 2;
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+		if ((ixs->ipsp->ips_natt_type) && (!ixs->natt_type)) {
+			ixs->natt_type = ixs->ipsp->ips_natt_type;
+			ixs->natt_sport = ixs->ipsp->ips_natt_sport;
+			ixs->natt_dport = ixs->ipsp->ips_natt_dport;
+			switch (ixs->natt_type) {
+				case ESPINUDP_WITH_NON_IKE:
+					ixs->natt_head = sizeof(struct udphdr)+(2*sizeof(__u32));
+					break;
+					
+				case ESPINUDP_WITH_NON_ESP:
+					ixs->natt_head = sizeof(struct udphdr);
+					break;
+					
+				default:
+				  KLIPS_PRINT(debug_tunnel & DB_TN_CROUT
+					      , "klips_xmit: invalid nat-t type %d"
+					      , ixs->natt_type);
+				  bundle_stat = IPSEC_XMIT_ESPUDP_BADTYPE;
+				  goto cleanup;
+					      
+					break;
+			}
+			ixs->tailroom += ixs->natt_head;
+		}
+#endif
 			break;
 #endif /* !CONFIG_IPSEC_ESP */
 #ifdef CONFIG_IPSEC_IPIP
@@ -1531,6 +1557,85 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 	}
 #endif /* MSS_HACK */
 
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+      if ((ixs->natt_type) && (ixs->outgoing_said.proto != IPPROTO_IPIP)) {
+	      /**
+	       * NAT-Traversal and Transport Mode:
+	       *   we need to correct TCP/UDP checksum
+	       *
+	       * If we've got NAT-OA, we can fix checksum without recalculation.
+	       * If we don't we can zero udp checksum.
+	       */
+	      __u32 natt_oa = ixs->ipsp->ips_natt_oa ?
+		      ((struct sockaddr_in*)(ixs->ipsp->ips_natt_oa))->sin_addr.s_addr : 0;
+	      __u16 pkt_len = ixs->skb->tail - (unsigned char *)ixs->iph;
+	      __u16 data_len = pkt_len - (ixs->iph->ihl << 2);
+	      switch (ixs->iph->protocol) {
+		      case IPPROTO_TCP:
+			      if (data_len >= sizeof(struct tcphdr)) {
+				      struct tcphdr *tcp = (struct tcphdr *)((__u32 *)ixs->iph+ixs->iph->ihl);
+				      if (natt_oa) {
+					      __u32 buff[2] = { ~ixs->iph->daddr, natt_oa };
+					      KLIPS_PRINT(debug_tunnel,
+						      "klips_debug:ipsec_tunnel_start_xmit: "
+						      "NAT-T & TRANSPORT: "
+						      "fix TCP checksum using NAT-OA\n");
+					      tcp->check = csum_fold(
+						      csum_partial((unsigned char *)buff, sizeof(buff),
+						      tcp->check^0xffff));
+				      }
+				      else {
+					      KLIPS_PRINT(debug_tunnel,
+						      "klips_debug:ipsec_tunnel_start_xmit: "
+						      "NAT-T & TRANSPORT: do not recalc TCP checksum\n");
+				      }
+			      }
+			      else {
+				      KLIPS_PRINT(debug_tunnel,
+					      "klips_debug:ipsec_tunnel_start_xmit: "
+					      "NAT-T & TRANSPORT: can't fix TCP checksum\n");
+			      }
+			      break;
+		      case IPPROTO_UDP:
+			      if (data_len >= sizeof(struct udphdr)) {
+				      struct udphdr *udp = (struct udphdr *)((__u32 *)ixs->iph+ixs->iph->ihl);
+				      if (udp->check == 0) {
+					      KLIPS_PRINT(debug_tunnel,
+						      "klips_debug:ipsec_tunnel_start_xmit: "
+						      "NAT-T & TRANSPORT: UDP checksum already 0\n");
+				      }
+				      else if (natt_oa) {
+					      __u32 buff[2] = { ~ixs->iph->daddr, natt_oa };
+					      KLIPS_PRINT(debug_tunnel,
+						      "klips_debug:ipsec_tunnel_start_xmit: "
+						      "NAT-T & TRANSPORT: "
+						      "fix UDP checksum using NAT-OA\n");
+					      udp->check = csum_fold(
+						      csum_partial((unsigned char *)buff, sizeof(buff),
+						      udp->check^0xffff));
+				      }
+				      else {
+					      KLIPS_PRINT(debug_tunnel,
+						      "klips_debug:ipsec_tunnel_start_xmit: "
+						      "NAT-T & TRANSPORT: zero UDP checksum\n");
+					      udp->check = 0;
+				      }
+			      }
+			      else {
+				      KLIPS_PRINT(debug_tunnel,
+					      "klips_debug:ipsec_tunnel_start_xmit: "
+					      "NAT-T & TRANSPORT: can't fix UDP checksum\n");
+			      }
+			      break;
+		      default:
+			      KLIPS_PRINT(debug_tunnel,
+				      "klips_debug:ipsec_tunnel_start_xmit: "
+				      "NAT-T & TRANSPORT: non TCP/UDP packet -- do nothing\n");
+			      break;
+	      }
+      }
+#endif /* CONFIG_IPSEC_NAT_TRAVERSAL */
+
 	if(!ixs->hard_header_stripped) {
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 			    "klips_debug:ipsec_xmit_encap_bundle: "
@@ -1644,6 +1749,12 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 
 /*
  * $Log: ipsec_xmit.c,v $
+ * Revision 1.7  2004/02/03 03:13:41  mcr
+ * 	mark invalid encapsulation states.
+ *
+ * Revision 1.6  2003/12/10 01:14:27  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.5  2003/10/31 02:27:55  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: smartcard.c,v 1.3 2003/12/06 16:34:32 mcr Exp $
+ * RCSID $Id: smartcard.c,v 1.3.6.1 2004/03/21 05:23:34 mcr Exp $
  */
 
 #include <stdio.h>
@@ -26,8 +26,8 @@
 #include <opensc/pkcs15.h>
 #endif
 
-#include <freeswan.h>
-#include <freeswan/ipsec_policy.h>
+#include <openswan.h>
+#include <openswan/ipsec_policy.h>
 
 #include "constants.h"
 #include "defs.h"

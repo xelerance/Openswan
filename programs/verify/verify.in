@@ -20,6 +20,8 @@ $me="ipsec verify";
 $ENV{'PATH'}="/sbin:/usr/bin:/usr/local/sbin:@IPSEC_SBINDIR@:$ENV{'PATH'}";
 if($ENV{'IPSEC_CONFS'}) { $conf=$ENV{'IPSEC_CONFS'} } else { $conf= `ipsec --confdir`; chomp($conf); }
 
+$print_depricacted=0;
+
 # Should we print in colour by default?
 $ctype=`/sbin/consoletype`;
 if ( $ctype && !($ctype eq "serial"))
@@ -93,13 +95,7 @@ sub deprecated {
     if($colour) { print "\e[1;33m"; } 
     print "DEPRECATED";
     if($colour) { print "\e[0;39m"; } 
-    print "]\n
-RFC 3445 restricts the use of the KEY RR to DNSSEC applications. The use of 
-a KEY record sub-type for Opporunistic Encryption (OE) has been deprecated.
-TXT records are used to provide all OE functionality.
-
-For more information on these changes, see:
-http://www.freeswan.org/freeswan_snaps/CURRENT-SNAP/doc/upgrading.html\n\n";
+    print "]\n";
 }
 
 # Verification routines begin here...
@@ -112,12 +108,12 @@ sub checkdnshost {
     ($keypresent)=grep /(0x4200|16896)/, @out;
     if($keypresent) 
     { 
-	printfun "Looking for KEY in forward map: $_[0]";
+	printfun "   Looking for KEY in forward dns zone: $_[0]";
 	deprecated; 
     }
 
 
-    printfun "Looking for TXT in forward map: $_[0]";
+    printfun "   Looking for TXT in forward dns zone: $_[0]";
     run "host -t txt $_[0]";
     ($txtpresent)=grep /X-IPsec-Server/,@out;
     errchk "$txtpresent", "MISSING";
@@ -129,7 +125,7 @@ sub checkdnshost {
 sub checkdnsip {
     $fortxt=$_[0];
     $revtxt=join('.',reverse(split(/\./, $fortxt))).".in-addr.arpa.";
-    printfun "Looking for TXT in reverse map: $revtxt";
+    printfun "   Looking for TXT in reverse dns zone: $revtxt";
     run "host -t txt $revtxt";
     ($txtpresent)=grep /X-IPsec-Server/,@out;
     errchk "$txtpresent", "MISSING";
@@ -144,12 +140,14 @@ sub checkdnsip {
 	($keypresent)=grep /(0x4200|16896)/, @out;
 	if($keypresent) 
 	{ 
-	    printfun "Looking for KEY in reverse map: $gwrev";
+	    printfun "   Looking for KEY in reverse dns zone: $gwrev";
 	    deprecated; 
+	    $print_deprecated = 1; 
+
 	}
 	# If the host is its own gateway, then we know we've got a TXT record.
 	if($gwip ne $fortxt) {	
-	    printfun "Looking for TXT in reverse map: $gwrev";
+	    printfun "Looking for TXT in reverse dns zone: $gwrev";
 	    run "host -t txt $gwrev";
 	    ($txtpresent)=grep /X-IPsec-Server/,@out;
 	    errchk "$txtpresent", "MISSING";
@@ -219,8 +217,8 @@ sub installstartcheck {
 	errchk "@out";
 	print grep /Linux/, @out;
 
-        printfun "Checking for KLIPS support in kernel";
-	if ( -e "/proc/net/ipsec_eroute" ) { $test="1" }
+        printfun "Checking for IPsec support in kernel";
+	if ( -e "/proc/net/ipsec_eroute" || -e "/proc/net/pfkey" ) { $test="1" }
 	errchk "$test";
 
 	printfun "Checking for RSA private key ($conf/ipsec.secrets)";
@@ -277,6 +275,31 @@ sub tunnelchecks {
     }
 }
 
+sub cmdchecks {
+    # check for vital commands
+    printfun "Checking for 'ip' command";
+    run "which ip";
+    errchk "@out";
+    printfun "Checking for 'iptables' command";
+    run "which iptables";
+    errchk "@out";
+    open("cat","/etc/ipsec.conf");
+    foreach(grep /crlcheckinterval/,<cat>)
+     {
+      if(!$curlcheckdone) {
+              $curlcheckdone=1;
+              printfun "Checking for 'curl' command for CRL fetching";
+              run "which curl";
+              errchk "@out";
+             }
+     }
+    if ( -e "/proc/net/pfkey") {
+       printfun "Checking for 'setkey' command for native IPsec stack support";
+       run "which setkey";
+       errchk "@out";
+    }
+}
+    
 sub dnschecks {
     # Check the running hostname.
     printf "\nOpportunistic Encryption DNS checks:\n";
@@ -294,7 +317,7 @@ sub dnschecks {
     }
     # Purge all non-routeable IPs...
     @address=grep !/^(127.*|10.*|172.1[6789]+.*.*|172.2+.*.*|172.3[01]+.*.*|192.168.*.*|169.254.*.*)/,@address;
-    printfun "Does the machine have at least one non-private address?";
+    printfun "   Does the machine have at least one non-private address?";
     errchk @address;
     foreach(@address=grep !$check{$_}++,@address)
     {
@@ -351,7 +374,19 @@ else
     {
 	installstartcheck;
 	tunnelchecks;
+	cmdchecks;
 	dnschecks;
+        if($print_deprecated)
+        {
+        print "
+
+   RFC 3445 restricts the use of the KEY RR to DNSSEC applications. The use of 
+   a KEY record sub-type for Opporunistic Encryption (OE) has been deprecated.
+   TXT records are used to provide all OE functionality.
+
+   For more information on these changes, see:
+   http://www.freeswan.org/freeswan_snaps/CURRENT-SNAP/doc/upgrading.html\n\n";
+        }
     }
 }
 

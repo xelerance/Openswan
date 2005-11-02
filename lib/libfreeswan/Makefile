@@ -11,7 +11,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.10 2003/11/24 19:32:50 mcr Exp $
+# RCSID $Id: Makefile,v 1.11 2003/12/10 01:57:31 mcr Exp $
 
 
 FREESWANSRCDIR=../..
@@ -58,6 +58,9 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -Wwrite-strings
 CFLAGS+= -Wbad-function-cast 
 
+ifeq ($(USE_NAT_TRAVERSAL),true)
+CFLAGS+= -DNAT_TRAVERSAL
+endif
 
 
 ARFLAGS=crvs

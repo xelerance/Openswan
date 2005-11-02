@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: id.c,v 1.38 2003/11/04 07:52:32 dhr Exp $
+ * RCSID $Id: id.c,v 1.41.2.2 2004/04/16 12:33:10 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -38,6 +38,9 @@
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "packet.h"
 #include "whack.h"
@@ -183,7 +186,6 @@ atoid(char *src, struct id *id, bool myid_ok)
     }
     else if (strchr(src, '=') != NULL)
     {
-#ifdef X509
 	/* we interpret this as an ASCII X.501 ID_DER_ASN1_DN */
 	id->kind = ID_DER_ASN1_DN;
 	id->name.ptr = temporary_cyclic_buffer(); /* assign temporary buffer */
@@ -192,9 +194,6 @@ atoid(char *src, struct id *id, bool myid_ok)
 	 * discard optional @ character in front of DN
 	 */
 	ugh = atodn((*src == '@')?src+1:src, &id->name);
-#else
-	ugh = "X509 not built in to this pluto";
-#endif
     }
     else if (strchr(src, '@') == NULL)
     {
@@ -238,6 +237,24 @@ atoid(char *src, struct id *id, bool myid_ok)
 		id->name.ptr = src;
 		/* discard @~, convert from hex to bin */
 		ugh = ttodata(src+2, 0, 16, id->name.ptr, strlen(src), &id->name.len);
+	    }
+	    else if (*(src+1) == '[')
+	    {
+		/* if there is a second specifier ([) on the line
+		 * we interprete this as a text ID_KEY_ID, and we remove
+		 * a trailing ", if there is one.
+		 */
+		int len = strlen(src+2);
+
+		id->kind = ID_KEY_ID;
+		id->name.ptr = src+2;
+
+		if(src[len+2]==']')
+		{
+		    src[len+2-1]='\0';
+		    len--;
+		}
+		id->name.len = len;
 	    }
 	    else
 	    {
@@ -311,14 +328,15 @@ idtoa(const struct id *id, char *dst, size_t dstlen)
 	n = snprintf(dst, dstlen, "%.*s", (int)id->name.len, id->name.ptr);
 	break;
     case ID_DER_ASN1_DN:
-#ifdef X509
 	n = dntoa(dst, dstlen, id->name);
-#else
-	n = snprintf(dst, dstlen, "X509 not built");
-#endif
 	break;
     case ID_KEY_ID:
+	passert(dstlen > 4);
+	dst[0]='@';
+	dst[1]='#';
+	dstlen-=2; dst+=2;
 	n = keyidtoa(dst, dstlen, id->name);
+	n+= 2;
 	break;
     default:
 	n = snprintf(dst, dstlen, "unknown id kind %d", id->kind);
@@ -448,11 +466,7 @@ same_id(const struct id *a, const struct id *b)
 	}
 
     case ID_DER_ASN1_DN:
-#ifdef X509
 	return same_dn(a->name, b->name);
-#else
-	return FALSE;
-#endif
 
     case ID_KEY_ID:
 	return a->name.len == b->name.len
@@ -475,11 +489,9 @@ match_id(const struct id *a, const struct id *b, int *wildcards)
     if (a->kind != b->kind)
 	return FALSE;
 
-#ifdef X509
     if (a->kind == ID_DER_ASN1_DN)
 	return match_dn(a->name, b->name, wildcards);
     else
-#endif
     {
 	*wildcards = 0;
 	return same_id(a, b);
@@ -500,11 +512,9 @@ id_count_wildcards(const struct id *id)
     case ID_NONE:
 	count = MAX_WILDCARDS;
 	break;
-#ifdef X509
     case ID_DER_ASN1_DN:
 	count = dn_count_wildcards(id->name);
 	break;
-#endif
     default:
 	count = 0;
 	break;

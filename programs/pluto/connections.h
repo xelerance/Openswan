@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: connections.h,v 1.81 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: connections.h,v 1.88.2.1 2004/03/21 05:23:32 mcr Exp $
  */
 
 /* There are two kinds of connections:
@@ -123,13 +123,26 @@ extern void fmt_policy_prio(policy_prio_t pp, char buf[POLICY_PRIO_BUF]);
 #include "certs.h"
 #include "smartcard.h"
 
+#ifdef VIRTUAL_IP
+struct virtual_t;
+#endif
+
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
+
+#ifdef VIRTUAL_IP
+struct virtual_t;
+#endif
+
 struct end {
     struct id id;
     ip_address
 	host_addr,
-	host_nexthop;
+	host_nexthop,
+	host_srcip;
     ip_subnet client;
-
+    
     bool key_from_DNS_on_demand;
     bool has_client;
     bool has_client_wildcard;
@@ -141,6 +154,14 @@ struct end {
     cert_t cert;		/* end certificate */
     chunk_t ca;			/* CA distinguished name */
     smartcard_t *sc;		/* smartcard reader and key info */
+#ifdef VIRTUAL_IP
+    struct virtual_t *virt;
+#endif
+    bool xauth_server;
+    bool xauth_client;
+    bool modecfg_server;        /* Give local addresses to tunnel's end */
+    bool modecfg_client;        /* request address for local end */
+    enum certpolicy sendcert;   /* whether or not to send the certificate */
 };
 
 struct spd_route {
@@ -200,6 +221,9 @@ struct connection {
     struct connection *ac_next;	/* all connections list link */
     
     generalName_t *requested_ca;	/* collected certificate requests */
+#ifdef XAUTH_USEPAM
+    pam_handle_t  *pamh;		/*  PAM handle for that connection  */
+#endif
 };
 
 #define oriented(c) ((c).interface != NULL)
@@ -275,6 +299,12 @@ find_connection_for_clients(struct spd_route **srp
 struct gw_info;	/* forward declaration of tag (defined in dnskey.h) */
 extern struct connection *rw_instantiate(struct connection *c
 					 , const ip_address *him
+#ifdef NAT_TRAVERSAL
+					 , u_int16_t his_port
+#endif
+#ifdef VIRTUAL_IP
+					 , const ip_subnet *his_net
+#endif					 
 					 , const struct id *his_id);
 
 extern struct connection *oppo_instantiate(struct connection *c
@@ -331,3 +361,9 @@ extern struct connection *eclipsed(struct connection *c, struct spd_route **);
 extern void show_connections_status(void);
 extern int  connection_compare(const struct connection *ca
 			       , const struct connection *cb);
+#ifdef NAT_TRAVERSAL
+void
+update_host_pair(const char *why, struct connection *c,
+       const ip_address *myaddr, u_int16_t myport ,
+       const ip_address *hisaddr, u_int16_t hisport);
+#endif /* NAT_TRAVERSAL */

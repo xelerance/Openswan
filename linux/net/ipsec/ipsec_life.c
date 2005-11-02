@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_life.c,v 1.9 2003/10/31 02:27:55 mcr Exp $
+ * RCSID $Id: ipsec_life.c,v 1.9.6.2 2004/05/01 04:36:05 ken Exp $
  *
  */
 
@@ -134,7 +134,8 @@ ipsec_lifetime_check(struct ipsec_lifetime64 *il64,
  * This function takes a buffer (with length), a lifetime name and type,
  * and formats a string to represent the current values of the lifetime.
  * 
- * It returns the number of bytes that the format took.
+ * It returns the number of bytes that the format took (or would take,
+ * if the buffer were large enough: snprintf semantics).
  * This is used in /proc routines and in debug output.
  */
 int
@@ -157,14 +158,14 @@ ipsec_lifetime_format(char *buffer,
 	   lifetime->ipl_soft      ||
 	   lifetime->ipl_hard) {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,0)) 
-		len = snprintf(buffer, buflen,
+		len = ipsec_snprintf(buffer, buflen,
 			       "%s(%Lu,%Lu,%Lu)",
 			       lifename,
 			       count,
 			       lifetime->ipl_soft,
 			       lifetime->ipl_hard);
 #else /* XXX high 32 bits are not displayed */
-		len = snprintf(buffer, buflen,
+		len = ipsec_snprintf(buffer, buflen,
 				"%s(%lu,%lu,%lu)",
 				lifename,
 				(unsigned long)count,
@@ -211,6 +212,18 @@ ipsec_lifetime_update_soft(struct ipsec_lifetime64 *lifetime,
 	
 /*
  * $Log: ipsec_life.c,v $
+ * Revision 1.9.6.2  2004/05/01 04:36:05  ken
+ * Pulling minor comment change from HEAD
+ *
+ * Revision 1.9.6.1  2004/04/09 16:04:48  ken
+ * Pullin snprintf fixes from HEAD
+ *
+ * Revision 1.11  2004/04/06 02:49:26  mcr
+ * 	pullup of algo code from alg-branch.
+ *
+ * Revision 1.10  2004/03/30 11:03:10  paul
+ * two more occurances of snprintf, found by Sam from a users oops msg.
+ *
  * Revision 1.9  2003/10/31 02:27:55  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *

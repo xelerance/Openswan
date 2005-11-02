@@ -12,14 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_parse.c,v 1.56 2003/12/04 23:01:12 mcr Exp $
+ * RCSID $Id: pfkey_v2_parse.c,v 1.57.4.2 2004/04/16 12:32:56 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_parser.c.
  */
 
-char pfkey_v2_parse_c_version[] = "$Id: pfkey_v2_parse.c,v 1.56 2003/12/04 23:01:12 mcr Exp $";
+char pfkey_v2_parse_c_version[] = "$Id: pfkey_v2_parse.c,v 1.57.4.2 2004/04/16 12:32:56 mcr Exp $";
 
 /*
  * Some ugly stuff to allow consistent debugging code for use in the
@@ -373,6 +373,9 @@ pfkey_address_parse(struct sadb_ext *pfkey_ext)
 	case SADB_X_EXT_ADDRESS_DST_FLOW:
 	case SADB_X_EXT_ADDRESS_SRC_MASK:
 	case SADB_X_EXT_ADDRESS_DST_MASK:
+#ifdef NAT_TRAVERSAL
+	case SADB_X_EXT_NAT_T_OA:
+#endif
 		break;
 	default:
 		ERROR(
@@ -1137,6 +1140,19 @@ pfkey_x_ext_protocol_parse(struct sadb_ext *pfkey_ext)
 	return error;
 }
 
+#ifdef NAT_TRAVERSAL
+DEBUG_NO_STATIC int
+pfkey_x_ext_nat_t_type_parse(struct sadb_ext *pfkey_ext)
+{
+	return 0;
+}
+DEBUG_NO_STATIC int
+pfkey_x_ext_nat_t_port_parse(struct sadb_ext *pfkey_ext)
+{
+	return 0;
+}
+#endif
+
 #define DEFINEPARSER(NAME) static struct pf_key_ext_parsers_def NAME##_def={NAME, #NAME};
 
 DEFINEPARSER(pfkey_sa_parse);
@@ -1152,6 +1168,10 @@ DEFINEPARSER(pfkey_x_kmprivate_parse);
 DEFINEPARSER(pfkey_x_satype_parse);
 DEFINEPARSER(pfkey_x_ext_debug_parse);
 DEFINEPARSER(pfkey_x_ext_protocol_parse);
+#ifdef NAT_TRAVERSAL
+DEFINEPARSER(pfkey_x_ext_nat_t_type_parse);
+DEFINEPARSER(pfkey_x_ext_nat_t_port_parse);
+#endif
 
 struct pf_key_ext_parsers_def *ext_default_parsers[]=
 {
@@ -1182,6 +1202,13 @@ struct pf_key_ext_parsers_def *ext_default_parsers[]=
 	&pfkey_address_parse_def,
 	&pfkey_x_ext_debug_parse_def,
 	&pfkey_x_ext_protocol_parse_def
+#ifdef NAT_TRAVERSAL
+	,
+	&pfkey_x_ext_nat_t_type_parse_def,
+	&pfkey_x_ext_nat_t_port_parse_def,
+	&pfkey_x_ext_nat_t_port_parse_def,
+	&pfkey_address_parse_def
+#endif
 };
 
 int
@@ -1561,6 +1588,19 @@ errlab:
 
 /*
  * $Log: pfkey_v2_parse.c,v $
+ * Revision 1.57.4.2  2004/04/16 12:32:56  mcr
+ * 	erroneously pullup some freeswan->openswan changes that
+ * 	are really for 2.2.
+ *
+ * Revision 1.57.4.1  2004/03/21 05:23:31  mcr
+ *     pullup of freeswan->openswan and CR/CERT patches from HEAD
+ *
+ * Revision 1.58  2004/03/08 01:59:08  ken
+ * freeswan.h -> openswan.h
+ *
+ * Revision 1.57  2003/12/10 01:20:19  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.56  2003/12/04 23:01:12  mcr
  * 	removed ipsec_netlink.h
  *
@@ -1622,7 +1662,7 @@ errlab:
  * Revision 1.41  2002/01/29 01:59:10  mcr
  * 	removal of kversions.h - sources that needed it now use ipsec_param.h.
  * 	updating of IPv6 structures to match latest in6.h version.
- * 	removed dead code from freeswan.h that also duplicated kversions.h
+ * 	removed dead code from openswan.h that also duplicated kversions.h
  * 	code.
  *
  * Revision 1.40  2002/01/20 20:34:50  mcr
@@ -1641,7 +1681,7 @@ errlab:
  *
  * Revision 1.37  2001/10/18 04:45:24  rgb
  * 2.4.9 kernel deprecates linux/malloc.h in favour of linux/slab.h,
- * lib/freeswan.h version macros moved to lib/kversions.h.
+ * lib/openswan.h version macros moved to lib/kversions.h.
  * Other compiler directive cleanups.
  *
  * Revision 1.36  2001/06/14 19:35:16  rgb
@@ -1651,7 +1691,7 @@ errlab:
  * Standardise on SENDERR() macro.
  *
  * Revision 1.34  2001/03/16 07:41:51  rgb
- * Put freeswan.h include before pluto includes.
+ * Put openswan.h include before pluto includes.
  *
  * Revision 1.33  2001/02/27 07:13:51  rgb
  * Added satype2name() function.
@@ -1693,7 +1733,7 @@ errlab:
  * Restructured to remove unused extensions from CLEARFLOW messages.
  *
  * Revision 1.24  2000/09/12 18:59:54  rgb
- * Added Gerhard's IPv6 support to pfkey parts of libfreeswan.
+ * Added Gerhard's IPv6 support to pfkey parts of libopenswan.
  *
  * Revision 1.23  2000/09/12 03:27:00  rgb
  * Moved DEBUGGING definition to compile kernel with debug off.

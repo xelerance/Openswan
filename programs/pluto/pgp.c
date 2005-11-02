@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pgp.c,v 1.3 2003/11/04 07:58:59 dhr Exp $
+ * RCSID $Id: pgp.c,v 1.3.6.2 2004/04/16 12:33:10 mcr Exp $
  */
 
 #include <stdlib.h>

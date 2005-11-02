@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_stats.h,v 1.3 2002/04/24 07:36:47 mcr Exp $
+ * RCSID $Id: ipsec_stats.h,v 1.3.36.1 2004/04/09 16:10:56 ken Exp $
  *
  */
 
@@ -32,11 +32,16 @@ struct ipsec_stats {
 	__u32		ips_replaywin_errs;    /* # of pkt sequence errors */
 };
 
+extern int ipsec_snprintf(char * buf, ssize_t size, const char *fmt, ...);
+
 #define _IPSEC_STATS_H_
 #endif /* _IPSEC_STATS_H_ */
 
 /*
  * $Log: ipsec_stats.h,v $
+ * Revision 1.3.36.1  2004/04/09 16:10:56  ken
+ * New function to deal with 2.4.25 proc printf()s
+ *
  * Revision 1.3  2002/04/24 07:36:47  mcr
  * Moved from ./klips/net/ipsec/ipsec_stats.h,v
  *

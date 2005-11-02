@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: defs.c,v 1.24 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: defs.c,v 1.24.6.1 2004/03/21 05:23:32 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -21,7 +21,7 @@
 #include <time.h>
 #include <sys/types.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -308,13 +308,23 @@ check_expiry(time_t expiration_date, int warning_interval, bool strict)
 
 
 /*
- *  Filter eliminating the directory entries '.' and '..'
+ * Filter eliminating the directory entries starting with .,
+ * and also "CVS" (thus eliminating '.' and '..')
  */
 int
 file_select(const struct dirent *entry)
 {
-    return strcmp(entry->d_name, "." ) &&
-	   strcmp(entry->d_name, "..");
+  return (entry->d_name[0] != '.' &&
+	  strcmp(entry->d_name, "CVS")!=0 &&
+	  strcmp(entry->d_name, "RCS")!=0);
+	  
 }
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */
 
 

@@ -22,7 +22,6 @@ SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
 loop: loaded (max 8 devices)
 PPP generic driver version VERSION
 Universal TUN/TAP device driver VERSION
-
 NET4: Linux TCP/IP 1.0 for NET4.0
 IP Protocols: ICMP, UDP, TCP
 IP: routing cache hash table of 512 buckets, 4Kbytes
@@ -106,7 +105,7 @@ east:~#
  route add -host 192.0.1.1 gw 192.1.2.45 dev ipsec0
 east:~#
  ipsec setup stop
-ipsec_setup: Stopping FreeS/WAN IPsec...
+ipsec_setup: Stopping Openswan IPsec...
 ipsec_setup: stop ordered, but IPsec does not appear to be running!
 ipsec_setup: doing cleanup anyway...
 IPSEC EVENT: KLIPS device ipsec0 shut down.

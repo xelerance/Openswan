@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _confread.in,v 1.64 2003/10/31 02:31:04 mcr Exp $
+# RCSID $Id: _confread.in,v 1.69.2.2 2004/05/14 15:39:52 ken Exp $
 #
 # Extract configuration info from /etc/ipsec.conf, repackage as assignments
 # to shell variables or tab-delimited fields.  Success or failure is reported
@@ -133,12 +133,16 @@ awk 'BEGIN {
 	good = "also alsoflip type auto authby _plutodevel"
 	left = " left leftsubnet leftnexthop leftfirewall leftupdown"
 	akey = " keyexchange auth pfs keylife rekey rekeymargin rekeyfuzz"
+	akey = akey " xauth"
 	akey = akey " compress"
 	akey = akey " keyingtries ikelifetime disablearrivalcheck failureshunt"
 	mkey = " spibase spi esp espenckey espauthkey espreplay_window"
 	left = left " leftespenckey leftespauthkey leftahkey"
 	left = left " leftespspi leftahspi leftid leftrsasigkey leftrsasigkey2"
 	left = left " leftcert leftca leftsubnetwithin leftprotoport"
+	left = left " leftxauthclient leftxauthserver leftsendcert"
+	left = left " leftmodecfgclient leftmodecfgserver"
+	left = left " leftsourceip"
 	mkey = mkey " ah ahkey ahreplay_window"
 	right = left
 	gsub(/left/, "right", right)
@@ -154,6 +158,8 @@ awk 'BEGIN {
 	good = good " fragicmp hidetos rp_filter uniqueids"
 	good = good " overridemtu"
 	good = good " nocrsend strictcrlpolicy crlcheckinterval"
+	good = good " nat_traversal keep_alive force_keepalive"
+	good = good " disable_port_floating virtual_private"	
 	n = split(good, g)
 	for (i = 1; i <= n; i++)
 		goodnames["config:" g[i]] = 1

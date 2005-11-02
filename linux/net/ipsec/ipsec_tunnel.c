@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.216 2003/12/04 23:01:17 mcr Exp $";
+char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.219 2004/02/03 03:13:17 mcr Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -76,6 +76,9 @@ char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.216 2003/12/04 23
 #include <pfkey.h>
 
 #include "freeswan/ipsec_proto.h"
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#include <linux/udp.h>
+#endif
 
 static __u32 zeroes[64];
 
@@ -234,7 +237,8 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 	    && (!ixs->eroute
 		|| ixs->iph->daddr == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr
 		|| INADDR_ANY == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr)
-	    && (ixs->sport == 500)) {
+
+	    && ((ixs->sport == 500) || (ixs->sport == 4500))) {
 		/* Whatever the eroute, this is an IKE message
 		 * from us (i.e. not being forwarded).
 		 * Furthermore, if there is a tunnel eroute,
@@ -345,6 +349,52 @@ ipsec_tunnel_restore_hard_header(struct ipsec_xmit_state*ixs)
 			}
 		}
 	}
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	if (ixs->natt_type && ixs->natt_head) {
+		struct iphdr *ipp = ixs->skb->nh.iph;
+		struct udphdr *udp;
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+			    "klips_debug:ipsec_tunnel_start_xmit: "
+			    "encapsuling packet into UDP (NAT-Traversal) (%d %d)\n",
+			    ixs->natt_type, ixs->natt_head);
+
+		ixs->iphlen = ipp->ihl << 2;
+		ipp->tot_len =
+			htons(ntohs(ipp->tot_len) + ixs->natt_head);
+		if(skb_tailroom(ixs->skb) < ixs->natt_head) {
+			printk(KERN_WARNING "klips_error:ipsec_tunnel_start_xmit: "
+				"tried to skb_put %d, %d available. "
+				"This should never happen, please report.\n",
+				ixs->natt_head,
+				skb_tailroom(ixs->skb));
+			ixs->stats->tx_errors++;
+			return IPSEC_XMIT_ESPUDP;
+		}
+		skb_put(ixs->skb, ixs->natt_head);
+
+		udp = (struct udphdr *)((char *)ipp + ixs->iphlen);
+
+		/* move ESP hdr after UDP hdr */
+		memmove((void *)((char *)udp + ixs->natt_head),
+			(void *)(udp),
+			ntohs(ipp->tot_len) - ixs->iphlen - ixs->natt_head);
+
+		/* clear UDP & Non-IKE Markers (if any) */
+		memset(udp, 0, ixs->natt_head);
+
+		/* fill UDP with usefull informations ;-) */
+		udp->source = htons(ixs->natt_sport);
+		udp->dest = htons(ixs->natt_dport);
+		udp->len = htons(ntohs(ipp->tot_len) - ixs->iphlen);
+
+		/* set protocol */
+		ipp->protocol = IPPROTO_UDP;
+
+		/* fix IP checksum */
+		ipp->check = 0;
+		ipp->check = ip_fast_csum((unsigned char *)ipp, ipp->ihl);
+	}
+#endif	
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
 		    "klips_debug:ipsec_xmit_restore_hard_header: "
 		    "With hard_header, final head,tailroom: %d,%d\n",
@@ -497,6 +547,11 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct device *dev)
 	struct ipsec_xmit_state ixs_mem;
 	struct ipsec_xmit_state *ixs = &ixs_mem;
 	enum ipsec_xmit_value stat;
+
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	ixs->natt_type = 0, ixs->natt_head = 0;
+	ixs->natt_sport = 0, ixs->natt_dport = 0;
+#endif
 
 	memset((caddr_t)ixs, 0, sizeof(*ixs));
 	ixs->oskb = NULL;
@@ -1107,6 +1162,7 @@ ipsec_tunnel_detach(struct device *dev)
 		    prv->dev ? prv->dev->name : "NULL",
 		    dev->name);
 
+	ipsec_dev_put(prv->dev);
 	prv->dev = NULL;
 	prv->hard_start_xmit = NULL;
 	prv->get_stats = NULL;
@@ -1176,8 +1232,8 @@ ipsec_tunnel_clear(void)
 		    "klips_debug:ipsec_tunnel_clear: .\n");
 
 	for(i = 0; i < IPSEC_NUM_IF; i++) {
-		sprintf(name, IPSEC_DEV_FORMAT, i);
-		if((ipsecdev = ipsec_dev_get(name)) != NULL) {
+   	        ipsecdev = ipsecdevices[i];
+		if(ipsecdev != NULL) {
 			if((prv = (struct ipsecpriv *)(ipsecdev->priv))) {
 				prvdev = (struct device *)(prv->dev);
 				if(prvdev) {
@@ -1244,6 +1300,7 @@ ipsec_tunnel_ioctl(struct device *dev, struct ifreq *ifr, int cmd)
 				    "klips_debug:ipsec_tunnel_ioctl: "
 				    "physical device %s requested is null\n",
 				    cf->cf_name);
+			ipsec_dev_put(them);
 			return -ENXIO;
 		}
 		
@@ -1253,6 +1310,7 @@ ipsec_tunnel_ioctl(struct device *dev, struct ifreq *ifr, int cmd)
 				    "klips_debug:ipsec_tunnel_ioctl: "
 				    "physical device %s requested is not up.\n",
 				    cf->cf_name);
+			ipsec_dev_put(them);
 			return -ENXIO;
 		}
 #endif
@@ -1262,6 +1320,7 @@ ipsec_tunnel_ioctl(struct device *dev, struct ifreq *ifr, int cmd)
 				    "klips_debug:ipsec_tunnel_ioctl: "
 				    "virtual device is already connected to %s.\n",
 				    prv->dev->name ? prv->dev->name : "NULL");
+			ipsec_dev_put(them);
 			return -EBUSY;
 		}
 		return ipsec_tunnel_attach(dev, them);
@@ -1622,6 +1681,15 @@ ipsec_tunnel_cleanup_devices(void)
 
 /*
  * $Log: ipsec_tunnel.c,v $
+ * Revision 1.219  2004/02/03 03:13:17  mcr
+ * 	minor edits for readability, and error reporting.
+ *
+ * Revision 1.218  2004/01/27 20:29:20  mcr
+ * 	fix for unregister_netdev() problem for underlying eth0.
+ *
+ * Revision 1.217  2003/12/10 01:14:27  mcr
+ * 	NAT-traversal patches to KLIPS.
+ *
  * Revision 1.216  2003/12/04 23:01:17  mcr
  * 	removed ipsec_netlink.h
  *

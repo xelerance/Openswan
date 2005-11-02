@@ -15,6 +15,11 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -W
 #CFLAGS+= -Wwrite-strings
 CFLAGS+= -Wbad-function-cast 
+CFLAGS+= -DNAT_TRAVERSAL
+
+ifeq ($(USE_NAT_TRAVERSAL),true)
+CFLAGS+= -DNAT_TRAVERSAL
+endif
 
 # die if there are any warnings
 ifndef WERROR
@@ -113,7 +118,7 @@ endif
 	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LIBS)
 
 %: %.in ${FREESWANSRCDIR}/Makefile.inc ${FREESWANSRCDIR}/Makefile.ver
-	cat $< | sed -e "s/xxx/$(IPSECVERSION)/" \
+	@cat $< | sed -e "s/xxx/$(IPSECVERSION)/" \
 			-e "s:@IPSEC_DIR@:$(FINALBINDIR):" \
 			-e "s:@IPSEC_EXECDIR@:$(FINALLIBEXECDIR):" \
 			-e "s:@IPSEC_SBINDIR@:$(FINALSBINDIR):" \
@@ -128,9 +133,10 @@ endif
 			-e "s:@IPSEC_CONFDDIR@:$(FINALCONFDDIR):" \
 			-e "s:@USE_IPROUTE2@:$(USE_IPROUTE2):" \
 			-e "s:@IPSEC_FIREWALLTYPE@:$(IPSEC_FIREWALLTYPE):" \
+			-e "s:@OE_FLAG@:$(OE_FLAG):" \
 	| cat >$@
-	if [ -x $< ]; then chmod +x $@; fi
-	if [ "${PROGRAM}.in" = $< ]; then chmod +x $@; fi
+	@if [ -x $< ]; then chmod +x $@; fi
+	@if [ "${PROGRAM}.in" = $< ]; then chmod +x $@; fi
 
 cleanall: clean
 

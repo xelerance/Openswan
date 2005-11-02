@@ -12,10 +12,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: atoul.c,v 1.7 2002/04/24 07:36:39 mcr Exp $
+ * RCSID $Id: atoul.c,v 1.7.36.1 2004/03/21 05:23:31 mcr Exp $
  */
 #include "internal.h"
-#include "freeswan.h"
+#include "openswan.h"
 
 /*
  - atoul - convert ASCII substring to unsigned long number

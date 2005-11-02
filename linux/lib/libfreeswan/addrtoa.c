@@ -12,17 +12,17 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: addrtoa.c,v 1.7 2002/04/24 07:36:38 mcr Exp $
+ * RCSID $Id: addrtoa.c,v 1.7.36.1 2004/03/21 05:23:31 mcr Exp $
  */
 #include "internal.h"
-#include "freeswan.h"
+#include "openswan.h"
 
 #define	NBYTES	4		/* bytes in an address */
 #define	PERBYTE	4		/* three digits plus a dot or NUL */
 #define	BUFLEN	(NBYTES*PERBYTE)
 
 #if BUFLEN != ADDRTOA_BUF
-#error	"ADDRTOA_BUF in freeswan.h inconsistent with addrtoa() code"
+#error	"ADDRTOA_BUF in openswan.h inconsistent with addrtoa() code"
 #endif
 
 /*

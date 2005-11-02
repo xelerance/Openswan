@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: fetch.h,v 1.2 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: fetch.h,v 1.2.6.1 2004/03/21 05:23:32 mcr Exp $
  */
 
 extern void wake_fetch_thread(const char *who);
@@ -24,7 +24,7 @@ extern void free_fetch_requests(void);
 extern void list_distribution_points(const generalName_t *gn);
 extern void list_fetch_requests(bool utc);
 
-#ifdef X509_FETCH
+#ifdef HAVE_THREADS
 extern void lock_crl_list(const char *who);
 extern void unlock_crl_list(const char *who);
 extern void lock_cacert_list(const char *who);

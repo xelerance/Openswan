@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: plutomain.c,v 1.79 2003/10/31 02:37:51 mcr Exp $
+ * RCSID $Id: plutomain.c,v 1.82.2.2 2004/03/21 05:23:34 mcr Exp $
  */
 
 #include <stdio.h>
@@ -30,7 +30,7 @@
 #include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
 #include <sys/queue.h>
 
-#include <freeswan.h>
+#include <openswan.h>
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
@@ -43,6 +43,9 @@
 #include "certs.h"
 #include "ac.h"
 #include "smartcard.h"
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
 #include "connections.h"	/* needs id.h */
 #include "foodgroups.h"
 #include "packet.h"
@@ -61,6 +64,20 @@
 #include "sha1.h"
 #include "md5.h"
 #include "crypto.h"	/* requires sha1.h and md5.h */
+
+#ifdef VIRTUAL_IP
+#include "virtual.h"
+#endif
+
+#ifdef NAT_TRAVERSAL
+#include "nat_traversal.h"
+#endif
+
+#ifndef IPSECDIR
+#define IPSECDIR "/etc/ipsec.d"
+#endif
+
+const char *ipsec_dir = IPSECDIR;
 
 static void
 usage(const char *mess)
@@ -89,7 +106,7 @@ usage(const char *mess)
 	    "[--perpeerlogbase <path>] [--perpeerlog]"
 	    " \\\n\t"
 	    "[--secretsfile <secrets-file>]"
-	    " [--policygroupsdir <policygroups-dir>]"
+	    " [--ipsecdir <ipsec-dir>]"
 	    " \\\n\t"
 	    "[--adns <pathname>]"
 #ifdef DEBUG
@@ -108,8 +125,19 @@ usage(const char *mess)
 	    " [ --debug-private]"
 	    " [ --debug-pfkey]"
 #endif
+#ifdef NAT_TRAVERSAL
+	    " [ --debug-nat_t]"
+	    " \\\n\t"
+	    "[--nat_traversal] [--keep_alive <delay_sec>]"
+	    " \\\n\t"
+	        "[--force_keepalive] [--disable_port_floating]"
+#endif
+#ifdef VIRTUAL_IP
+	   " \\\n\t"
+	   "[--virtual_private <network_list>]"
+#endif
 	    "\n"
-	"FreeS/WAN %s\n"
+	"Openswan %s\n"
 	, ipsec_version_code());
     exit(mess == NULL? 0 : 1);	/* not exit_pluto because we are not initialized yet */
 }
@@ -188,6 +216,15 @@ main(int argc, char **argv)
     bool fork_desired = TRUE;
     bool log_to_stderr_desired = FALSE;
     int lockfd;
+#ifdef NAT_TRAVERSAL
+    bool nat_traversal = FALSE;
+    bool nat_t_spf = TRUE;  /* support port floating */
+    unsigned int keep_alive = 0;
+    bool force_keepalive = FALSE;
+#endif
+#ifdef VIRTUAL_IP
+    char *virtual_private = NULL;
+#endif
 
     /* handle arguments */
     for (;;)
@@ -212,12 +249,24 @@ main(int argc, char **argv)
 	    { "foodgroupsdir", required_argument, NULL, 'f' },
 	    { "perpeerlogbase", required_argument, NULL, 'P' },
 	    { "perpeerlog", no_argument, NULL, 'l' },
-	    { "policygroupsdir", required_argument, NULL, 'f' },
+	    { "noretransmits", no_argument, NULL, 'R' },
+	    { "ipsecdir", required_argument, NULL, 'f' },
+	    { "ipsec_dir", required_argument, NULL, 'f' },
 #ifdef USE_LWRES
 	    { "lwdnsq", required_argument, NULL, 'a' },
 #else /* !USE_LWRES */
 	    { "adns", required_argument, NULL, 'a' },
 #endif /* !USE_LWRES */
+#ifdef NAT_TRAVERSAL
+	    { "nat_traversal", no_argument, NULL, '1' },
+	    { "keep_alive", required_argument, NULL, '2' },
+	    { "force_keepalive", no_argument, NULL, '3' },
+	    { "disable_port_floating", no_argument, NULL, '4' },
+	    { "debug-nat_t", no_argument, NULL, '5' },
+#endif
+#ifdef VIRTUAL_IP
+	    { "virtual_private", required_argument, NULL, '6' },
+#endif
 #ifdef DEBUG
 	    { "debug-none", no_argument, NULL, 'N' },
 	    { "debug-all]", no_argument, NULL, 'A' },
@@ -305,6 +354,10 @@ main(int argc, char **argv)
 	    continue
 	    ;
 
+	case 'R':
+	    no_retransmits = TRUE;
+	    continue;
+
 	case 'x':	/* --crlcheckinterval <time>*/
             if (optarg == NULL || !isdigit(optarg[0]))
                 usage("missing interval time");
@@ -361,8 +414,8 @@ main(int argc, char **argv)
 	    shared_secrets_file = optarg;
 	    continue;
 
-	case 'f':	/* --policygroupsdir <policygroups-dir> */
-	    policygroups_dir = optarg;
+	case 'f':	/* --ipsecdir <ipsec-dir> */
+	    ipsec_dir = optarg;
 	    continue;
 
 	case 'a':	/* --adns <pathname> */
@@ -386,6 +439,29 @@ main(int argc, char **argv)
 	case 'l':
 	    log_to_perpeer = TRUE;
 	    continue;
+
+#ifdef NAT_TRAVERSAL
+	case '1':	/* --nat_traversal */
+	    nat_traversal = TRUE;
+	    continue;
+	case '2':	/* --keep_alive */
+	    keep_alive = atoi(optarg);
+	    continue;
+	case '3':	/* --force_keepalive */
+	    force_keepalive = TRUE;
+	    continue;
+	case '4':	/* --disable_port_floating */
+	    nat_t_spf = FALSE;
+	    continue;
+	case '5':	/* --debug-nat_t */
+	    base_debugging |= DBG_NATT;
+	    continue;
+#endif
+#ifdef VIRTUAL_IP
+	case '6':	/* --virtual_private */
+	    virtual_private = optarg;
+	    continue;
+#endif
 
 	default:
 #ifdef DEBUG
@@ -526,17 +602,24 @@ main(int argc, char **argv)
 #ifdef PLUTO_SENDS_VENDORID
 	const char *v = init_pluto_vendorid();
 
-	plog("Starting Pluto (FreeS/WAN Version %s%s; Vendor ID %s)"
+	plog("Starting Pluto (Openswan Version %s%s; Vendor ID %s)"
 	    , ipsec_version_code()
 	    , compile_time_interop_options
 	    , v);
 #else
-	plog("Starting Pluto (FreeS/WAN Version %s%s)"
+	plog("Starting Pluto (Openswan Version %s%s)"
 	    , ipsec_version_code()
 	    , compile_time_interop_options);
 #endif
     }
 
+#ifdef NAT_TRAVERSAL
+    init_nat_traversal(nat_traversal, keep_alive, force_keepalive, nat_t_spf);
+#endif
+
+#ifdef VIRTUAL_IP
+    init_virtual_ip(virtual_private);
+#endif
     init_rnd_pool();
     init_secret();
     init_states();
@@ -546,18 +629,16 @@ main(int argc, char **argv)
     init_adns();
     init_id();
 
-#ifdef X509_FETCH
+#ifdef HAVE_THREADS
     init_crl_fetch();
 #endif
 
-#ifdef X509
     /* loading X.509 CA certificates */
     load_cacerts();
     /* loading X.509 CRLs */
     load_crls();
     /* loading attribute certificates (experimental) */
     load_acerts();
-#endif
 
     daily_log_event();
     call_server();
@@ -579,13 +660,11 @@ exit_pluto(int status)
     free_preshared_secrets();
     free_remembered_public_keys();
     delete_every_connection();
-#ifdef X509_FETCH
+#ifdef HAVE_THREADS
     free_fetch_requests();  /* free chain of fetch requests */
 #endif
-#ifdef X509
     free_cacerts();	    /* free chain of X.509 CA certificates */
     free_crls();	    /* free chain of X.509 CRLs */
-#endif
     free_ifaces();
     stop_adns();
     free_md_pool();

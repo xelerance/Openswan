@@ -1,18 +1,25 @@
 
-			Openswan 2.0.0 Release Notes
+			Openswan 2.1.4 Release Notes
 
 Openswan is based on code from the FreeS/WAN project (www.freeswan.org)
 It has support for most of the extensions (RFC + IETF drafts) related
-to IPsec, and includes X.509 Digital Certificates
+to IPsec, including X.509 Digital Certificates, NAT Traversal, and many 
+others.
 
-The release was based on FreeS/WAN 2.04 CVS, along with some minor bug fixes, 
-it also includes Andreas Steffan's X.509 Digital Certificate patch.
+The release was based on FreeS/WAN 2.04 CVS, along with some minor bug
+fixes from 2.05 and 2.06.  
+
+It also includes Andreas Steffan's X.509 Digital Certificate patch,
+NAT-Traversal code (based on Mathieu Lafon's work for Arkoon) and XAUTH
+Server support (based on Columbris's code).
 
 Download it from http://www.openswan.org/code
 
 
 				REQUIREMENTS
 
+
+Ideally, Linux Kernel 2.4.x, or 2.6.x are the best supported platforms.
 
 We do not support obsolete kernels (e.g. 2.2.xx, xx < 20), and using them 
 is generally a bad idea anyway due to known security holes.
@@ -26,7 +33,8 @@ installation, you may see errors like this:
 ipsec__plutorun: /usr/local/lib/ipsec/whack: option `--ike' is ambiguous 
 
 Or pfkey read/write errors.  These indicate mismatched versions of the 
-Openswan userland tool, and the kernel module.
+Openswan userland tools, and the kernel module(s).  To resolve this, 
+ensure you have all of the dependancies installed and recompile.
 
 There a few packages required for Openswan to compile:
 
@@ -42,33 +50,64 @@ problems - starting with a fresh tree, either vendor supplied or from
 http://www.kernel.org.  The best test is to build a kernel from your
 source tree before patching in Openswan.
 
-				HOW TO INSTALL on Kernel 2.4
+#########################################################################
+# HOW TO INSTALL on Linux Kernel 2.4 systems
+#########################################################################
 
-1. It's best if you're already installed FreeS/WAN or Super FreeS/WAN 
-before, so you'll be familiar with the steps outlined below.
+0.0)	The following instructions assume the kernel source tree is in 
+	/usr/src/linux-2.4.  If this isn't the case, simply change the 
+	parameters in the instructions below.
 
-2. For those interested in exactly how we build/install it, the steps are:
- i) 	Uncompress linux-2.4.#.tar.bz2 in /usr/src/linux, build a normal
-	working kernel. With recent RedHat kernels (2.4.18+) you will 
-	probably need to run "make mrproper" immediately after installing
-	the source rpm.
- ii) 	Ensure that your new kernel works before proceeding
- iii) 	In the Openswan source dir:
- 	Quick way: "make menugo && make minstall"
- 	Step by step way: 
-	"make insert && make oldmod && make programs && make minstall" 
+1.0)	It's best if you're already installed FreeS/WAN or Super FreeS/WAN 
+	before, so you'll be familiar with the steps outlined below.
 
-				HOW TO INSTALL on Kernel 2.6
+2.0) 	Uncompress linux-2.#.#.tar.bz2 in /usr/src (or elsewhere), build a 
+	normal working kernel.  This ensures any compiliation problems 
+	that occur are isolated and resolved *before* any Openswan patches 
+	are applied to the kernel.
 
-For Kernel's 2.6.0 and higher, Openswan uses the built in IPsec support.  Only
-the userland component of Openswan is required to use Openswan with a 2.6 series
-kernel.
+2.1)	If you want NAT-T support, you need to patch your kernel and build
+	a new bzImage.  From the Openswan source directory:
+
+	make nattpatch | (cd /usr/src/linux-2.4 && patch -p1 && make bzImage)
+	
+	Note: Build and install kernel as normal, as you have modified
+	the TCP/IP stack in the kernel, so it needs to be recompiled and
+	installed.
+
+        eg: cd /usr/src/linux && make dep bzImage install
 
 
-1.	Uncompress openswan-2.0.0.tar.gz
-2.	cd openswan-2.0.0
-3.	make programs
-4.	make install
+3.0)	From the openswan source directory, build the userland tools, and
+	ipsec.o kernel module:
+
+	make KERNELSRC=/usr/src/linux-2.4 programs module
+
+
+4.0)	As root, install the userland tools, and the ipsec.o module:
+
+	make KERNELSRC=/usr/src/linux-2.4 install minstall
+
+
+
+#########################################################################
+# HOW TO INSTALL on Kernel 2.6
+#########################################################################
+
+For Linux Kernels 2.6.0 and higher, Openswan uses the built in IPsec
+support.  Only the userland component of Openswan is required to use
+Openswan with a 2.6 series kernel.  Please use at least version 2.6.4, 
+as prior versions have bugs in the IPsec stack, causing complete machine
+crashes.
+
+
+1.0)	From the openswan source directory:
+
+	make programs
+
+2.0)	As root, install the userland tools:
+
+	make install
 
 Note: you will need setkey from the ipsec-tools package, available from 
 http://ipsec-tools.sourceforge.net 
@@ -76,7 +115,12 @@ http://ipsec-tools.sourceforge.net
 
 				UPGRADING
 
-1. Just install overtop - it won't replace your /etc/ipsec.* config files 
+1. Just install overtop of your old version - it won't replace your 
+/etc/ipsec.* config files 
+
+2. If you are upgrading from a 1.x product to Openswan 2.1.0, you will
+need to adjust your config files.  See doc/upgrading.html for details
+on what's changed.
 
 				SUPPORT
 
@@ -85,6 +129,12 @@ Mailing Lists:
 http://lists.openswan.org is home of the mailing lists.  Note: these are 
 closed lists - you must be subscribed to post.  This is different from the
 FreeS/WAN lists which were open.
+
+Documentation:
+
+The legacy FreeS/WAN docs are still in doc/, and included in various 
+forms.  You can also check the Openswan WIKI, @ http://wiki.openswan.org
+for newer documentation.
 
 IRC:
 
@@ -118,10 +168,10 @@ format; See doc/index.html for the top level index.
 See doc/README for two methods of getting plain-text versions if needed.  
 See doc/roadmap.html for a guide to what's where in this distribution.
 
-Unpacking the distribution needs about 12MB, and compiling it requires
+Unpacking the distribution needs about 33MB, and compiling it requires
 another 50MB of space.  For setup procedures, start at doc/intro.html
 
 The bulk of this software is under the GNU General Public License; see
 COPYING.  Some parts of it are not; see CREDITS for the details.
 
-$Id: README,v 1.88.12.1 2004/01/18 22:11:36 ken Exp $.
+$Id: README,v 1.93.2.10 2004/06/23 13:18:08 ken Exp $.

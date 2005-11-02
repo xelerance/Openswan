@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: adns.c,v 1.10 2003/05/24 23:14:22 dhr Exp $
+ * RCSID $Id: adns.c,v 1.10.12.1 2004/03/21 05:23:32 mcr Exp $
  */
 
 #ifndef USE_LWRES	/* whole file! */
@@ -60,7 +60,7 @@
 #include <resolv.h>
 #include <netdb.h>	/* ??? for h_errno */
 
-#include <freeswan.h>
+#include <openswan.h>
 
 /* GCC magic! */
 #ifdef GCC_LINT
