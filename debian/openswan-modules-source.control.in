@@ -1,0 +1,13 @@
+Section: net
+Priority: optional
+Maintainer: $KMAINT <$KEMAIL>
+Build-Depends: debhelper (>= 4)
+Standards-Version: 3.6.0
+Source: openswan
+
+Package: openswan-modules-$KVERS
+Architecture: any
+Recommends: kernel-image-$KVERS (= $KDREV)
+Description:  IPSEC kernel modules for Openswan (binary kernel modules)
+ This package contains the openswan binary kernel modules for linux
+ version $KVERS.    

@@ -12,19 +12,22 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.6 2004/04/03 19:44:47 ken Exp $
+# RCSID $Id: Makefile,v 1.7 2004/12/18 18:13:42 mcr Exp $
 
-OPENSWANSRCDIR=../..
+OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 EXTRA5PROC:=version.5 trap_count.5 trap_sendcount.5
 
 LIBS:=${FREESWANLIB}
 
-include ../Makefile.program
+include ${srcdir}../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.7  2004/12/18 18:13:42  mcr
+# 	adjusted Makefiles so that ${OBJDIR} builds work.
+#
 # Revision 1.6  2004/04/03 19:44:47  ken
 # FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
 #
@@ -45,7 +48,7 @@ include ../Makefile.program
 # 	EXTRA35MAN should have the extensions on it.
 #
 # Revision 1.1  2002/04/24 07:55:32  mcr
-# 	#include patches and Makefiles for post-reorg compilation.
+# 	#include ${srcdir}..tches and Makefiles for post-reorg compilation.
 #
 #
 #

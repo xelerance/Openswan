@@ -12,18 +12,18 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _plutorun.in,v 1.27 2004/06/09 02:58:30 mcr Exp $
+# RCSID $Id: _plutorun.in,v 1.30.4.1 2005/05/18 20:55:12 ken Exp $
 
 me='ipsec _plutorun'		# for messages
 
-info=/var/run/ipsec.info
+info=/var/run/pluto/ipsec.info
 
 popts=
 stderrlog=
 plutorestartoncrash=true
 
 wherelog=daemon.error
-pidfile=/var/run/pluto.pid
+pidfile=/var/run/pluto/pluto.pid
 verb="Starting"
 for dummy
 do
@@ -31,6 +31,7 @@ do
 	--re)	                 verb="Restarting"	;;
 	--plutorestartoncrash)   plutorestartoncrash="$2"; shift ;;
 	--debug)	         plutodebug="$2" ; shift	;;
+	--protostack)            protostack="$2" ; shift ;;
 	--uniqueids)	         uniqueids="$2" ; shift	;;
 	--nat_traversal)         nat_traversal="$2" ; shift  ;;
 	--keep_alive)            keep_alive="$2" ; shift ;;
@@ -49,6 +50,7 @@ do
 	--post)	                 postpluto="$2" ; shift	;;
 	--log)	                 wherelog="$2" ; shift	;;
 	--pid)	                 pidfile="$2" ; shift	;;
+	--nhelpers)              nhelpers="$2"; shift   ;;
 	--)	                 shift ; break	;;
 	-*)	                 echo "$me: unknown option \`$1'" >&2 ; exit 2	;;
 	*)	                 break	;;
@@ -75,6 +77,12 @@ for d in $plutodebug
 do
 	popts="$popts --debug-$d"
 done
+
+if [ -n "$protostack" ]
+then
+    popts="$popts --use-$protostack"
+fi
+
 case "$uniqueids" in
 yes)	popts="$popts --uniqueids"	;;
 no|'')				;;
@@ -118,6 +126,11 @@ fi
 if test -n "$ocspuri"
 then
         popts="$popts --ocspuri $ocspuri"
+fi
+
+if test -n "$nhelpers"
+then
+        popts="$popts --nhelpers $nhelpers"
 fi
 
 

@@ -78,31 +78,44 @@ west:~#
 106 "west-east" #1: STATE_MAIN_I2: sent MI2, expecting MR2
 108 "west-east" #1: STATE_MAIN_I3: sent MI3, expecting MR3
 004 "west-east" #1: STATE_MAIN_I4: ISAKMP SA established
-112 "west-east" #2: STATE_QUICK_I1: initiate
+117 "west-east" #2: STATE_QUICK_I1: initiate
 004 "west-east" #2: STATE_QUICK_I2: sent QI2, IPsec SA established
 west:~#
- ping -q -c 8 -n 192.1.2.23
-PING 192.1.2.23 (192.1.2.23): 56 data bytes
-
---- 192.1.2.23 ping statistics ---
-8 packets transmitted, 8 packets received, 0% packet loss
-round-trip min/avg/max = 3.1/4.5/9.26 ms
+ echo "Tunnel should be up"
+Tunnel should be up
 west:~#
  ipsec eroute
-0          0.0.0.0/0          -> 0.0.0.0/0          => %trap
-12         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1002@192.1.2.23
+0          192.1.2.45/32      -> 192.1.2.23/32      => tun0x1002@192.1.2.23
 west:~#
  sleep 15
+west:~#
+ echo "Setting up block"
+Setting up block
 west:~#
  iptables -I INPUT -s 192.1.2.23/32 -d 0/0 -j DROP
 west:~#
  iptables -I OUTPUT -d 192.1.2.23/32 -s 0/0 -j DROP
 west:~#
- sleep 20
+ sleep 10
 west:~#
  ipsec eroute
-0          0.0.0.0/0          -> 0.0.0.0/0          => %trap
+0          192.1.2.45/32      -> 192.1.2.23/32      => tun0x1002@192.1.2.23
+west:~#
+ sleep 10
+west:~#
+ ipsec eroute
 0          192.1.2.45/32      -> 192.1.2.23/32      => %trap
+west:~#
+ sleep 10
+west:~#
+ echo "Tunnel should be down"
+Tunnel should be down
+west:~#
+ ipsec eroute
+0          192.1.2.45/32      -> 192.1.2.23/32      => %trap
+west:~#
+ echo "Removing block"
+Removing block
 west:~#
  iptables -D INPUT -s 192.1.2.23/32 -d 0/0 -j DROP
 west:~#
@@ -115,8 +128,10 @@ PING 192.1.2.23 (192.1.2.23): 56 data bytes
 8 packets transmitted, 8 packets received, 0% packet loss
 round-trip min/avg/max = 3.1/4.5/9.26 ms
 west:~#
+ echo "Tunnel should be up"
+Tunnel should be up
+west:~#
  ipsec eroute
-0          0.0.0.0/0          -> 0.0.0.0/0          => %trap
 16         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1004@192.1.2.23
 west:~#
  echo end

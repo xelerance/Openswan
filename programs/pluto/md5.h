@@ -69,10 +69,10 @@ typedef struct {
   unsigned char buffer[64];                         /* input buffer */
 } MD5_CTX;
 
-void MD5Init PROTO_LIST ((MD5_CTX *));
-void MD5Update PROTO_LIST
+void osMD5Init PROTO_LIST ((MD5_CTX *));
+void osMD5Update PROTO_LIST
   ((MD5_CTX *, const unsigned char *, UINT4));
-void MD5Final PROTO_LIST ((unsigned char [16], MD5_CTX *));
+void osMD5Final PROTO_LIST ((unsigned char [16], MD5_CTX *));
 
 #define _MD5_H_
 #endif /* _MD5_H_ */

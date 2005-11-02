@@ -4,8 +4,8 @@
  #bool 'Network code profiler' CONFIG_NET_PROFILE
  endmenu
  
-+tristate 'IP Security Protocol (FreeS/WAN IPSEC)' CONFIG_IPSEC
-+if [ "$CONFIG_IPSEC" != "n" ]; then
++tristate 'IP Security Protocol (Openswan IPSEC)' CONFIG_KLIPS
++if [ "$CONFIG_KLIPS" != "n" ]; then
 +  source net/ipsec/Config.in
 +fi
 +

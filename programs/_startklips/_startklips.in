@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _startklips.in,v 1.26.4.2 2004/07/15 02:34:42 paul Exp $
+# RCSID $Id: _startklips.in,v 1.43 2005/03/31 21:07:27 ken Exp $
 
 me='ipsec _startklips'		# for messages
 
@@ -26,11 +26,19 @@ rpfilter2=rp_filter
 rpfiltercontrol=0
 ipsecversion=/proc/net/ipsec_version
 moduleplace=/lib/modules/`uname -r`/kernel/net/ipsec
-bareversion=`uname -r | sed -e 's/^\(2\.[0-9]\.[1-9][0-9]*-[1-9][0-9]*\(\.[0-9][0-9]*\)*\(\.x\)*\).*$/\1/'`
+bareversion=`uname -r | sed -e 's/\.nptl//' | sed -e 's/^\(2\.[0-9]\.[1-9][0-9]*-[1-9][0-9]*\(\.[0-9][0-9]*\)*\(\.x\)*\).*$/\1/'`
 moduleinstplace=/lib/modules/$bareversion/kernel/net/ipsec
-modulename=ipsec.o
+case $bareversion in
+	2.6*)
+		modulename=ipsec.ko
+		;;
+	*)
+		modulename=ipsec.o
+		;;
+esac
+
 klips=true
-kamepfkey=/proc/net/pfkey
+netkey=/proc/net/pfkey
 
 info=/dev/null
 log=daemon.error
@@ -234,7 +242,7 @@ setmodule() {
         fi
         if test -f $moduleinstplace/$wantgoo
         then
-                echo "insmod failed, but found matching template module $wantgoo."
+                echo "modprobe failed, but found matching template module $wantgoo."
                 echo "Copying $moduleinstplace/$wantgoo to $module."
                 rm -f $module
                 mkdir -p $moduleplace
@@ -248,32 +256,40 @@ setmodule() {
 # main line
 
 # load module if possible
-if test -f $ipsecversion && test -f $kamepfkey
+if test -f $ipsecversion && test -f $netkey
 then
-    # both KLIPS and native code detected, bail out
-    echo "FATAL ERROR: Both KLIPS and native IPsec code is present in kernel"
+    # both KLIPS and NETKEY code detected, bail out
+    echo "FATAL ERROR: Both KLIPS and NETKEY IPsec code is present in kernel"
     exit
 fi
-if test ! -f $ipsecversion && test ! -f $kamepfkey
+if test ! -f $ipsecversion && test ! -f $netkey && modprobe -qn ipsec
 then
-    # statically compiled KLIPS/native not found; try to load the module
-    insmod ipsec
+    # statically compiled KLIPS/NETKEY not found; try to load the module
+    modprobe ipsec
 fi
 
-if test ! -f $ipsecversion && test ! -f $kamepfkey
+if test ! -f $ipsecversion && test ! -f $netkey
 then
 	modprobe -v af_key
 fi
 
-if test -f $kamepfkey
+if test -f $netkey
 then
 	klips=false
 	if test -f $modules
 	then
-	modprobe -qv ah4
-	modprobe -qv esp4
-	modprobe -qv ipcomp
-	modprobe -qv xfrm_user
+		modprobe -qv ah4
+		modprobe -qv esp4
+		modprobe -qv ipcomp
+		#  xfrm4_tunnel is needed by ipip and ipcomp
+		modprobe -qv xfrm4_tunnel
+		# xfrm_user contains netlink support for IPsec 
+		modprobe -qv xfrm_user
+		# load the most common ciphers/algo's
+		modprobe -qv sha1
+		modprobe -qv md5
+		modprobe -qv des
+		modprobe -qv aes
 	fi
 fi
 
@@ -293,7 +309,7 @@ then
         fi
         if test ! -f $ipsecversion
         then
-                echo "kernel appears to lack KLIPS"
+                echo "kernel appears to lack IPsec support (neither CONFIG_KLIPS or CONFIG_NET_KEY are set)"
                 exit 1
         fi
 fi
@@ -337,30 +353,37 @@ then
 	# carry on
 fi
 
-if $klips; then
+if $klips
+then
 	# clear tables out in case dregs have been left over
 	ipsec eroute --clear
 	ipsec spi --clear
-else
-# Check that the setkey command is available.
-setkeycmd=
-PATH=$PATH:/usr/local/sbin
-for dir in `echo $PATH | tr ':' ' '`
-do
-        if test -f $dir/setkey -a -x $dir/setkey
-        then
-                setkeycmd=$dir/setkey
-                break                   # NOTE BREAK OUT
-        fi
-done
-if ! test "$setkeycmd"
+elif test $netkey
 then
-        echo "WARNING: cannot find setkey command -- \`$1'" |
-                logger -s -p daemon.error -t ipsec_setup
-else
-        $setkeycmd -F
-        $setkeycmd -FP
-fi
+	if ip xfrm state > /dev/null 2>&1
+	then
+		ip xfrm state flush
+		ip xfrm policy flush
+	elif type setkey > /dev/null 2>&1
+	then
+	 	# Check that the setkey command is available.
+         	setkeycmd= 	 
+         	PATH=$PATH:/usr/local/sbin 	 
+         	for dir in `echo $PATH | tr ':' ' '` 	 
+         	do 	 
+                	if test -f $dir/setkey -a -x $dir/setkey 	 
+                 	then
+                         	setkeycmd=$dir/setkey
+                         	break                   # NOTE BREAK OUT 
+                	fi
+         	done
+        	$setkeycmd -F
+        	$setkeycmd -FP
+	else
+	
+        	echo "WARNING: cannot flush state/policy database -- \`$1'. Install a newer version of iproute/iproute2 or install the ipsec-tools package to obtain the setkey command." |
+                	logger -s -p daemon.error -t ipsec_setup
+	fi
 fi
 
 # figure out interfaces

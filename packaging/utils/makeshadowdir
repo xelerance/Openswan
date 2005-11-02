@@ -1,0 +1,58 @@
+#!/bin/sh
+
+srcdir=$1
+OBJDIR=$2
+dirs=$3
+
+if [ "${OBJDIR}/Makefile" == "${srcdir}/Makefile" ]
+then
+	echo "failed. ${OBJDIR} == ${srcdir}"
+	exit 1
+fi
+
+mkdir -p ${OBJDIR}
+OBJDIR=`(cd ${OBJDIR};pwd)`
+
+if [ -f ${OBJDIR}/Makefile ]
+then
+    echo "Will not overwrite ${OBJDIR}/Makefile"
+    exit 1
+fi
+
+echo 'srcdir='${srcdir} 		 >${OBJDIR}/Makefile
+echo 'OBJDIR='${OBJDIR}                 >>${OBJDIR}/Makefile
+echo 'VPATH+=${srcdir}' 		>>${OBJDIR}/Makefile
+echo 'OPENSWANSRCDIR='${srcdir}         >>${OBJDIR}/Makefile
+echo 'include ${srcdir}/Makefile.top'   >>${OBJDIR}/Makefile
+
+echo 'programs install clean checkprograms:: ' >>${OBJDIR}/Makefile
+echo '	@for d in $(SUBDIRS) ; \'                                >>${OBJDIR}/Makefile
+echo '	do \'                                                    >>${OBJDIR}/Makefile
+echo '		(cd $$d && $(MAKE) OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \'  >>${OBJDIR}/Makefile
+echo '	done; '                                                  >>${OBJDIR}/Makefile
+
+
+
+find $dirs -name Makefile -print | (cd ${OBJDIR}; while read file
+do
+	dirname=`dirname $file`
+	dsrcdir=${srcdir}/${dirname}
+	mkdir -p $dirname
+
+	if [ -f ${dirname}/Makefile ]
+	then
+	    echo "Will not overwrite ${dirname}/Makefile"
+	    exit 1
+	fi
+
+	echo 'srcdir='${dsrcdir}/ 		 >${dirname}/Makefile
+	echo 'OBJDIR='${OBJDIR}                 >>${dirname}/Makefile
+	echo 'VPATH+=${srcdir}' 		>>${dirname}/Makefile
+	echo 'OPENSWANSRCDIR='${srcdir}         >>${dirname}/Makefile
+	echo 'include ${srcdir}/Makefile'       >>${dirname}/Makefile
+done
+)
+
+
+
+

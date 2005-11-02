@@ -1,5 +1,5 @@
 /*
- * RCSID $Id: ipsec_md5h.h,v 1.9 2004/04/05 19:55:05 mcr Exp $
+ * RCSID $Id: ipsec_md5h.h,v 1.10 2004/09/08 17:21:35 ken Exp $
  */
 
 /*
@@ -75,15 +75,18 @@ typedef struct {
   unsigned char buffer[64];                         /* input buffer */
 } MD5_CTX;
 
-void MD5Init PROTO_LIST ((void *));
-void MD5Update PROTO_LIST
+void osMD5Init PROTO_LIST ((void *));
+void osMD5Update PROTO_LIST
   ((void *, unsigned char *, __u32));
-void MD5Final PROTO_LIST ((unsigned char [16], void *));
+void osMD5Final PROTO_LIST ((unsigned char [16], void *));
  
 #endif /* _IPSEC_MD5H_H_ */
 
 /*
  * $Log: ipsec_md5h.h,v $
+ * Revision 1.10  2004/09/08 17:21:35  ken
+ * Rename MD5* -> osMD5 functions to prevent clashes with other symbols exported by kernel modules (CIFS in 2.6 initiated this)
+ *
  * Revision 1.9  2004/04/05 19:55:05  mcr
  * Moved from linux/include/freeswan/ipsec_md5h.h,v
  *

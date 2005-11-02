@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: files.h,v 1.2 2004/01/19 17:55:45 mcr Exp $
+ * RCSID $Id: files.h,v 1.5 2005/01/11 17:52:51 ken Exp $
  */
 
 #ifndef _STARTER_FILES_H_
@@ -30,16 +30,17 @@
 #define IPSEC_CONFDDIR   "/etc/ipsec.d"
 #endif
 
-#define DEFAULT_CTLBASE "/var/run/pluto"
+#define DEFAULT_CTLBASE "/var/run/pluto/pluto"
 #define CTL_SUFFIX      ".ctl"
 #define PID_SUFFIX      ".pid"
 
-#define MY_PID_FILE     "/var/run/starter.pid"
+#define MY_PID_FILE     "/var/run/pluto/ipsec-starter.pid"
 
 #define DEV_RANDOM      "/dev/random"
 #define DEV_URANDOM     "/dev/urandom"
 
 #define PROC_IPSECVERSION   "/proc/net/ipsec_version"
+#define PROC_NETKEY         "/proc/net/pfkey"
 #define PROC_MODULES        "/proc/modules"
 #define PROC_SYSFLAGS       "/proc/sys/net/ipsec"
 
@@ -47,7 +48,7 @@
 #define CTL_FILE        DEFAULT_CTLBASE CTL_SUFFIX
 #define PID_FILE        DEFAULT_CTLBASE PID_SUFFIX
 
-#define DYNIP_DIR       "/var/run/dynip"
+#define DYNIP_DIR       "/var/run/pluto/dynip"
 
 #endif /* _STARTER_FILES_H_ */
 

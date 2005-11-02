@@ -11,24 +11,24 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.5 2003/02/17 02:34:38 mcr Exp $
+# RCSID $Id: Makefile,v 1.7 2004/12/18 18:13:45 mcr Exp $
 
-FREESWANSRCDIR=../..
-export FREESWANSRCDIR
-include $(FREESWANSRCDIR)/Makefile.inc
+OPENSWANSRCDIR?=$(shell cd ../..; pwd)
+export OPENSWANSRCDIR
+include $(OPENSWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
-UTILS=${FREESWANSRCDIR}/testing/utils
+UTILS=${OPENSWANSRCDIR}/testing/utils
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
 	@false
 
-check: 	${FREESWANSRCDIR}/umlsetup.sh
-	source ${FREESWANSRCDIR}/umlsetup.sh; source setup.sh; source ${UTILS}/functions.sh; source TESTLIST
+check: 	${OPENSWANSRCDIR}/umlsetup.sh
+	source ${OPENSWANSRCDIR}/umlsetup.sh; source setup.sh; source ${UTILS}/functions.sh; source TESTLIST
 
 spotcheck:
-	@source ${FREESWANSRCDIR}/umlsetup.sh; source setup.sh; source $${UTILS}/functions.sh; eval `sed -e '/^#/d' TESTLIST | perl $${UTILS}/shuffle.pl 1`
+	@source ${OPENSWANSRCDIR}/umlsetup.sh; source setup.sh; source $${UTILS}/functions.sh; eval `sed -e '/^#/d' TESTLIST | perl $${UTILS}/shuffle.pl 1`
 
 install install_file_list checkprograms programs:
 	@true
@@ -49,6 +49,12 @@ realclean: clean
 
 #
 # $Log: Makefile,v $
+# Revision 1.7  2004/12/18 18:13:45  mcr
+# 	adjusted Makefiles so that ${OBJDIR} builds work.
+#
+# Revision 1.6  2004/04/03 19:44:51  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.5  2003/02/17 02:34:38  mcr
 # 	adjusted "make clean" target in Makefiles.
 #

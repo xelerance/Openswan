@@ -7,7 +7,7 @@
 
 .SUFFIXES: .png .fig
 
-OPENSWANSRCDIR=..
+OPENSWANSRCDIR?=$(shell cd .. && pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 # Format arguments for htmldoc
@@ -48,12 +48,8 @@ separate=intro.html install.html config.html manpages.html \
 	quickstart.html umltesting.html makecheck.html nightly.html \
         upgrading.html policygroups.html
 
-# various one-big-file formats
-howto=HowTo.html HowTo.ps HowTo.pdf HowTo.txt
+alldocs=${seperate} index.html toc.html
 
-alldocs=${seperate} ${howto} index.html toc.html
-
-srcdir=..
 # where are scripts
 SCRIPTDIR=utils
 
@@ -63,10 +59,14 @@ TESTINGDIR=${srcdir}/testing
 # where do we put HTML manpages?
 HMANDIR=manpage.d
 
+programs: 
+
+all: #$(howto) $(manpages) index.html
+
 # default, build HTML only
 # dependencies build most of it
 # then we add index
-index.html: toc.html HowTo.html manpages src/index.html
+index.html: toc.html manpages src/index.html
 	cp src/index.html index.html
 
 # separate files plus table of contents
@@ -75,28 +75,11 @@ toc.html : $(sections)
 	-@htmldoc -t html --path ".;${TESTINGDIR}/doc" -d .  $(sections)
 	@$(SCRIPTDIR)/cleanhtml.sh $(SCRIPTDIR)/cleanhtml.sed $(separate)
 
-# one big HTML file
-HowTo.html : $(sections)
-	-@htmldoc -t html --toclevels 4 --header ' cf' -f $@ $(sections)
-
-# other HowTo formats
-HowTo.txt: HowTo.html
-	lynx -dump $< > $@
-
-HowTo.ps : $(sections)
-	-@htmldoc -f $@ $(sections)
-
-HowTo.pdf : $(sections)
-	-@htmldoc -f $@ $(sections)
-
 manpages:	manp
 
 manp:	$(SCRIPTDIR)/mkhtmlman
 	@$(SCRIPTDIR)/mkhtmlman $(HMANDIR) `find ../programs ../lib ../linux -type f -name '*.[1-8]' -print | grep -v lwres | grep -v CVS`
 
-programs: 
-
-all: #$(howto) $(manpages) index.html
 real-all: $(howto) $(manpages) index.html
 remake: $(alldocs) $(manpages) 
 
@@ -116,6 +99,7 @@ install: ${alldocs} manpages
 	do \
 		$(INSTALL) $$file ${DOCDIR} || exit 1;\
 	done;
+	/bin/bash -c 'MANDIR=${MANTREE}; /usr/bin/find ../programs ../lib ../linux -type f -name "*.[1-8]" -print | grep -v lwres | grep -v CVS | while read f; do if [ -f $$f ]; then  manNo=$${f##*.}; F=$${f##*/}; /bin/mkdir -p  $$MANDIR/man$$manNo; /bin/cp -fp $$f $$MANDIR/man$$manNo/ipsec_$$F; fi; done'
 
 install_file_list:
 	@$(foreach f, $(alldocs), \
@@ -131,13 +115,9 @@ checkprograms: ;
 check: ;
 
 # not enabled by default, because xml2rfc must be installed first.
-drafts: draft-richardson-ipsec-opportunistic.txt src/draft-richardson-ipsec-opportunistic.html \
-	draft-richardson-ipsec-rr.txt src/draft-richardson-ipsec-rr.html
+drafts: draft-richardson-ipsec-opportunistic.txt src/draft-richardson-ipsec-opportunistic.html 
 
 draft-richardson-ipsec-opportunistic.txt: src/draft-richardson-ipsec-opportunistic.xml
-	XML_LIBRARY=$(XML_LIBRARY):./src xml2rfc xml2rfc $? $@
-
-draft-richardson-ipsec-rr.txt: src/draft-richardson-ipsec-rr.xml
 	XML_LIBRARY=$(XML_LIBRARY):./src xml2rfc xml2rfc $? $@
 
 draft-%.nr: src/draft-%.xml

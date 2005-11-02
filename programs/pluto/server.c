@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: server.c,v 1.97.6.2 2004/08/07 01:47:45 ken Exp $
+ * RCSID $Id: server.c,v 1.106.2.1 2005/05/18 20:55:13 ken Exp $
  */
 
 #include <stdio.h>
@@ -40,6 +40,8 @@
 #include <resolv.h>
 #include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
 #include <sys/queue.h>
+#include <sys/resource.h>
+#include <sys/wait.h>
 
 #include <openswan.h>
 
@@ -67,6 +69,8 @@
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "whack.h"	/* for RC_LOG_SERIOUS */
+#include "pluto_crypt.h" /* cryptographic helper functions */
+#include "udpfromto.h"
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
@@ -113,13 +117,31 @@ init_ctl_socket(void)
     else
     {
 	/* to keep control socket secure, use umask */
+#ifdef PLUTO_GROUP_CTL
+	mode_t ou = umask(~(S_IRWXU|S_IRWXG));
+#else
 	mode_t ou = umask(~S_IRWXU);
+#endif
 
 	if (bind(ctl_fd, (struct sockaddr *)&ctl_addr
 	, offsetof(struct sockaddr_un, sun_path) + strlen(ctl_addr.sun_path)) < 0)
 	    failed = "bind";
 	umask(ou);
     }
+
+#ifdef PLUTO_GROUP_CTL
+    {
+	struct group *g;
+
+	g = getgrnam("pluto");
+	if(g != NULL) {
+	    if(fchown(ctl_fd, -1, g->gr_gid) != 0) {
+		loglog(RC_LOG_SERIOUS, "Can not chgrp ctl fd(%d) to gid=%d: %s\n"
+		       , ctl_fd, g->gr_gid, strerror(errno));
+	    }
+	}
+    }
+#endif
 
     /* 5 is a haphazardly chosen limit for the backlog.
      * Rumour has it that this is the max on BSD systems.
@@ -208,8 +230,9 @@ free_dead_ifaces(void)
     {
 	if (p->change == IFN_DELETE)
 	{
-	    openswan_log("shutting down interface %s/%s %s"
-		, p->vname, p->rname, ip_str(&p->addr));
+	    openswan_log("shutting down interface %s/%s %s:%d"
+			 , p->vname, p->rname
+			 , ip_str(&p->addr), p->port);
 	    some_dead = TRUE;
 	}
 	else if (p->change == IFN_ADD)
@@ -270,6 +293,10 @@ static int pluto_ifn_roof = 0;
 bool
 use_interface(const char *rifn)
 {
+    if(pluto_ifn_inst[0]=='\0') {
+	pluto_ifn_inst = clone_str(rifn, "genifn");
+    }
+
     if (pluto_ifn_roof >= (int)elemsof(pluto_ifn))
     {
 	return FALSE;
@@ -524,7 +551,7 @@ create_socket(struct raw_iface *ifp, const char *v_name, int port)
 #endif
 
 #if defined(linux) && defined(KERNEL26_SUPPORT)
-    if (!no_klips && kernel_ops->type == KERNEL_TYPE_LINUX)
+    if (kern_interface == USE_NETKEY)
     {
 	struct sadb_x_policy policy;
 	int level, opt;
@@ -578,6 +605,10 @@ create_socket(struct raw_iface *ifp, const char *v_name, int port)
 	return -1;
     }
     setportof(htons(pluto_port), &ifp->addr);
+
+    /* we are going to use udpfromto.c, so initialize it */
+    udpfromto_init(fd);
+
     return fd;
 }
 
@@ -632,7 +663,7 @@ process_raw_ifaces(struct raw_iface *rifaces)
 		     * "after" allows us to avoid double reporting.
 		     */
 #if defined(linux) && defined(KERNEL26_SUPPORT)
-		    if (!no_klips && kernel_ops->type == KERNEL_TYPE_LINUX)
+		    if (kern_interface == USE_NETKEY)
 		    {
 			if (after)
 			{
@@ -657,7 +688,7 @@ process_raw_ifaces(struct raw_iface *rifaces)
 	    continue;
 
 #if defined(linux) && defined(KERNEL26_SUPPORT)
-	if (!no_klips && kernel_ops->type == KERNEL_TYPE_LINUX)
+	if (kern_interface == USE_NETKEY)
 	{
 	    v = ifp;
 	    goto add_entry;
@@ -667,7 +698,7 @@ process_raw_ifaces(struct raw_iface *rifaces)
 	/* what if we didn't find a virtual interface? */
 	if (v == NULL)
 	{
-	    if (no_klips)
+	    if (kern_interface == NO_KERNEL)
 	    {
 		/* kludge for testing: invent a virtual device */
 		static const char fvp[] = "virtual";
@@ -712,7 +743,7 @@ add_entry:
 #ifdef NAT_TRAVERSAL
 		    if (nat_traversal_support_non_ike && addrtypeof(&ifp->addr) == AF_INET)
 		    {
-			nat_traversal_espinudp_socket(fd, ESPINUDP_WITH_NON_IKE);
+			nat_traversal_espinudp_socket(fd, "IPv4", ESPINUDP_WITH_NON_IKE);
 		    }
 #endif
 
@@ -723,28 +754,45 @@ add_entry:
 		    q->fd = fd;
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
+		    q->port = pluto_port;
+		    q->ike_float = FALSE;
+
 		    interfaces = q;
-		    openswan_log("adding interface %s/%s %s"
-			, q->vname, q->rname, ip_str(&q->addr));
+
+		    openswan_log("adding interface %s/%s %s:%d"
+				 , q->vname, q->rname
+				 , ip_str(&q->addr)
+				 , q->port);
+
 #ifdef NAT_TRAVERSAL
-		    if (nat_traversal_support_port_floating && addrtypeof(&ifp->addr) == AF_INET) {
+		    /*
+		     * right now, we do not support NAT-T on IPv6, because
+		     * the kernel did not support it, and gave an error
+		     * it one tried to turn it on.
+		     */
+		    if (nat_traversal_support_port_floating
+			&& addrtypeof(&ifp->addr) == AF_INET)
+		    {
 			fd = create_socket(ifp, v->name, NAT_T_IKE_FLOAT_PORT);
-			if (fd < 0)
+			if (fd < 0) 
 			    break;
-			nat_traversal_espinudp_socket(fd,
-			    ESPINUDP_WITH_NON_ESP);
+			nat_traversal_espinudp_socket(fd, "IPv4"
+						      , ESPINUDP_WITH_NON_ESP);
 			q = alloc_thing(struct iface, "struct iface");
 			q->rname = clone_str(ifp->name, "real device name");
 			q->vname = clone_str(v->name, "virtual device name");
 			q->addr = ifp->addr;
 			setportof(htons(NAT_T_IKE_FLOAT_PORT), &q->addr);
+			q->port = NAT_T_IKE_FLOAT_PORT;
 			q->fd = fd;
 			q->next = interfaces;
 			q->change = IFN_ADD;
 			q->ike_float = TRUE;
 			interfaces = q;
-			openswan_log("adding interface %s/%s %s:%d",
-			q->vname, q->rname, ip_str(&q->addr), NAT_T_IKE_FLOAT_PORT);
+			openswan_log("adding interface %s/%s %s:%d"
+				     , q->vname, q->rname
+				     , ip_str(&q->addr)
+				     , q->port);
 		    }
 #endif
 		    break;
@@ -834,6 +882,39 @@ termhandler(int sig UNUSED)
     sigtermflag = TRUE;
 }
 
+static volatile sig_atomic_t sigchildflag = FALSE;
+
+static void
+childhandler(int sig UNUSED)
+{
+    sigchildflag = TRUE;
+}
+
+/* perform wait4() on all children */
+static void
+reapchildren(void)
+{
+    pid_t child;
+    int status;
+    struct rusage r;
+
+    sigchildflag = FALSE;
+    errno=0;
+
+    while((child = wait3(&status, WNOHANG, &r)) > 0) {
+	/* got a child to reap */
+	if(adns_reapchild(child, status)) continue;
+	if(pluto_crypt_handle_dead_child(child, status)) continue;
+	
+	openswan_log("child pid=%d (status=%d) is not my child!", child, status);
+    }
+    
+    if(child == -1) {
+	openswan_log("reapchild failed with errno=%d %s",
+		     errno, strerror(errno));
+    }
+}
+
 /* call_server listens for incoming ISAKMP packets and Whack messages,
  * and handles timer events.
  */
@@ -855,6 +936,11 @@ call_server(void)
 
 	act.sa_handler = &termhandler;
 	r = sigaction(SIGTERM, &act, NULL);
+	passert(r == 0);
+
+	act.sa_handler = &childhandler;
+	act.sa_flags   = SA_RESTART;
+	r = sigaction(SIGCHLD, &act, NULL);
 	passert(r == 0);
     }
 
@@ -885,6 +971,10 @@ call_server(void)
 		openswan_log("Pluto ignores SIGHUP -- perhaps you want \"whack --listen\"");
 	    }
 
+	    if(sigchildflag) {
+		reapchildren();
+	    }
+
 	    FD_ZERO(&readfds);
 	    FD_ZERO(&writefds);
 	    FD_SET(ctl_fd, &readfds);
@@ -910,7 +1000,7 @@ call_server(void)
 	    }
 
 #ifdef KLIPS
-	    if (!no_klips)
+	    if (kern_interface != NO_KERNEL)
 	    {
 		int fd = *kernel_ops->async_fdp;
 
@@ -933,6 +1023,9 @@ call_server(void)
 		    FD_SET(ifp->fd, &readfds);
 		}
 	    }
+
+	    /* see if helpers need attention */
+	    pluto_crypto_helper_sockets(&readfds);
 
 	    if (no_retransmits || next_time < 0)
 	    {
@@ -1007,7 +1100,8 @@ call_server(void)
 	    }
 
 #ifdef KLIPS
-	    if (!no_klips && FD_ISSET(*kernel_ops->async_fdp, &readfds))
+	    if (kern_interface != NO_KERNEL
+		&& FD_ISSET(*kernel_ops->async_fdp, &readfds))
 	    {
 		passert(ndes > 0);
 		DBG(DBG_CONTROL,
@@ -1057,6 +1151,9 @@ call_server(void)
 		ndes--;
 	    }
 #endif
+
+	    /* note we process helper things last on purpose */
+	    ndes -= pluto_crypto_helper_ready(&readfds);
 
 	    passert(ndes == 0);
 	}

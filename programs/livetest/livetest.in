@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: livetest.in,v 1.1.2.1 2004/07/15 03:54:13 paul Exp $
+# RCSID $Id: livetest.in,v 1.1 2004/07/13 22:31:38 mcr Exp $
 
 if test " `id -u`" != " 0"
 then
@@ -30,24 +30,22 @@ fi
 
 
 version="`ipsec --version| head -1`"
-leftid=`dd if=/dev/urandom  count=32 bs=1 2> /dev/null | md5sum| head -c 32`
+#leftid=`dd if=/dev/urandom  count=32 bs=1 2> /dev/null | md5sum| head -c 32`
+leftid='@paul'
 leftrsasigkey=`ipsec showhostkey --left | tail -1 | sed "s/^.*left/left/"`
 
 #echo wget  http://192.168.0.1/olts/?leftid=$leftid\&$leftrsasigkey&$version
 
-wget -o /dev/null  -O /tmp/ipseclive.conn "http://livetest.xelerance.com/?leftid=$leftid&$leftrsasigkey&version=$version"
+wget -o /dev/null  -O /tmp/ipseclive.conn "http://192.168.0.1/olts/?leftid=$leftid&$leftrsasigkey&version=$version"
 
 sh < /tmp/ipseclive.conn
 ipsec eroute.pl
 leftid=`echo $leftid | sed "s/@//"`
 ipsec whack --delete --name olts-$leftid >> /tmp/ipsec.olts.local.log
-wget -o /dev/null -O /tmp/ipsec.olts.remote.log "http://livetest.xelerance.com/log.php?leftid=$leftid"
+wget -o /dev/null -O /tmp/ipsec.olts.remote.log "http://192.168.0.1/olts/log.php?leftid=$leftid"
 
 #
 # $Log: livetest.in,v $
-# Revision 1.1.2.1  2004/07/15 03:54:13  paul
-# added livetest clientsite test.
-#
 # Revision 1.1  2004/07/13 22:31:38  mcr
 #    live test template
 #

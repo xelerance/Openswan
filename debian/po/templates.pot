@@ -15,7 +15,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2003-04-04 22:46-0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-01-13 11:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,49 +24,55 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#. Type: select
 #. Choices
-#: ../openswan.templates:3
+#: ../openswan.templates.master:3
 msgid "earliest, \"after NFS\", \"after PCMCIA\""
 msgstr ""
 
+#. Type: select
 #. Description
-#: ../openswan.templates:5
-msgid "At which level do you wish to start FreeS/WAN ?"
+#: ../openswan.templates.master:5
+msgid "At which level do you wish to start Openswan ?"
 msgstr ""
 
+#. Type: select
 #. Description
-#: ../openswan.templates:5
+#: ../openswan.templates.master:5
 msgid ""
 "With the current Debian startup levels (nearly everything starting in level "
-"20), it is impossible for FreeS/WAN to always start at the correct time. "
-"There are three possibilities when FreeS/WAN can start: before or after the "
+"20), it is impossible for Openswan to always start at the correct time. "
+"There are three possibilities when Openswan can start: before or after the "
 "NFS services and after the PCMCIA services. The correct answer depends on "
 "your specific setup."
 msgstr ""
 
+#. Type: select
 #. Description
-#: ../openswan.templates:5
+#: ../openswan.templates.master:5
 msgid ""
 "If you do not have your /usr tree mounted via NFS (either you only mount "
 "other, less vital trees via NFS or don't use NFS mounted trees at all) and "
-"don't use a PCMCIA network card, then it is the best to start FreeS/WAN at "
+"don't use a PCMCIA network card, then it is the best to start Openswan at "
 "the earliest possible time, thus allowing the NFS mounts  to be secured by "
 "IPSec. In this case (or if you don't understand or care  about this issue), "
 "answer \"earliest\" to this question (the default)."
 msgstr ""
 
+#. Type: select
 #. Description
-#: ../openswan.templates:5
+#: ../openswan.templates.master:5
 msgid ""
 "If you have your /usr tree mounted via NFS and don't use a PCMCIA network "
-"card, then you will need to start FreeS/WAN after NFS so that all necessary "
+"card, then you will need to start Openswan after NFS so that all necessary "
 "files are available. In this case, answer \"after NFS\" to this question. "
 "Please note that the NFS mount of /usr can  not be secured by IPSec in this "
 "case."
 msgstr ""
 
+#. Type: select
 #. Description
-#: ../openswan.templates:5
+#: ../openswan.templates.master:5
 msgid ""
 "If you use a PCMCIA network card for your IPSec connections, then you only "
 "have to choice to start it after the PCMCIA services. Answer \"after PCMCIA"
@@ -73,27 +80,31 @@ msgid ""
 "from a locally running DNS server with DNSSec support."
 msgstr ""
 
+#. Type: boolean
 #. Description
-#: ../openswan.templates:33
-msgid "Do you wish to restart FreeS/WAN?"
+#: ../openswan.templates.master:33
+msgid "Do you wish to restart Openswan?"
 msgstr ""
 
+#. Type: boolean
 #. Description
-#: ../openswan.templates:33
+#: ../openswan.templates.master:33
 msgid ""
-"Restarting FreeS/WAN is a good idea, since if there is a security fix, it "
+"Restarting Openswan is a good idea, since if there is a security fix, it "
 "will not be fixed until the daemon restarts. Most people expect the daemon "
 "to restart, so this is generally a good idea. However this might take down "
 "existing connections and then bring them back up."
 msgstr ""
 
+#. Type: boolean
 #. Description
-#: ../openswan.templates:42
+#: ../openswan.templates.master:42
 msgid "Do you want to create a RSA public/private keypair for this host ?"
 msgstr ""
 
+#. Type: boolean
 #. Description
-#: ../openswan.templates:42
+#: ../openswan.templates.master:42
 msgid ""
 "This installer can automatically create a RSA public/private keypair for "
 "this host. This keypair can be used to authenticate IPSec connections to "
@@ -104,52 +115,59 @@ msgid ""
 "easier to administrate and more secure."
 msgstr ""
 
+#. Type: select
 #. Choices
-#: ../openswan.templates:53
+#: ../openswan.templates.master:53
 msgid "x509, plain"
 msgstr ""
 
+#. Type: select
 #. Description
-#: ../openswan.templates:55
+#: ../openswan.templates.master:55
 msgid "Which type of RSA keypair do you want to create ?"
 msgstr ""
 
+#. Type: select
 #. Description
-#: ../openswan.templates:55
+#: ../openswan.templates.master:55
 msgid ""
 "It is possible to create a plain RSA public/private keypair for the use with "
-"FreeS/WAN or to create a X509 certificate file which contains the RSA public "
+"Openswan or to create a X509 certificate file which contains the RSA public "
 "key and additionally store the corresponding private key."
 msgstr ""
 
+#. Type: select
 #. Description
-#: ../openswan.templates:55
+#: ../openswan.templates.master:55
 msgid ""
-"If you only want to build up IPSec connections to hosts also running FreeS/"
-"WAN, it might be a bit easier using plain RSA keypairs. But if you want to "
-"connect to other IPSec implementations, you will need a X509 certificate. It "
-"is also possible to create a X509 certificate here and extract the RSA "
-"public key in plain format if the other side runs FreeS/WAN without X509 "
+"If you only want to build up IPSec connections to hosts also running "
+"Openswan, it might be a bit easier using plain RSA keypairs. But if you want "
+"to connect to other IPSec implementations, you will need a X509 certificate. "
+"It is also possible to create a X509 certificate here and extract the RSA "
+"public key in plain format if the other side runs Openswan without X509 "
 "certificate support."
 msgstr ""
 
+#. Type: select
 #. Description
-#: ../openswan.templates:55
+#: ../openswan.templates.master:55
 msgid ""
 "Therefore a X509 certificate is recommended since it is more flexible and "
 "this installer should be able to hide the complex creation of the X509 "
-"certificate and its use in FreeS/WAN anyway."
+"certificate and its use in Openswan anyway."
 msgstr ""
 
+#. Type: boolean
 #. Description
-#: ../openswan.templates:74
+#: ../openswan.templates.master:74
 msgid ""
-"Do you have an existing X509 certificate file that you want to use for FreeS/"
-"WAN ?"
+"Do you have an existing X509 certificate file that you want to use for "
+"Openswan ?"
 msgstr ""
 
+#. Type: boolean
 #. Description
-#: ../openswan.templates:74
+#: ../openswan.templates.master:74
 msgid ""
 "This installer can automatically extract the needed information from an "
 "existing X509 certificate with a matching RSA private key. Both parts can be "
@@ -158,43 +176,44 @@ msgid ""
 "connections ?"
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:83
+#: ../openswan.templates.master:83
 msgid "Please enter the location of your X509 certificate in PEM format."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:83
+#: ../openswan.templates.master:83
 msgid ""
 "Please enter the location of the file containing your X509 certificate in "
 "PEM format."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:89
+#: ../openswan.templates.master:89
 msgid "Please enter the location of your X509 private key in PEM format."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:89
+#: ../openswan.templates.master:89
 msgid ""
 "Please enter the location of the file containing the private RSA key "
 "matching your X509 certificate in PEM format. This can be the same file that "
 "contains the X509 certificate."
 msgstr ""
 
-#. Default
-#: ../openswan.templates:96
-msgid "2048"
-msgstr ""
-
+#. Type: string
 #. Description
-#: ../openswan.templates:97
+#: ../openswan.templates.master:97
 msgid "Which length should the created RSA key have ?"
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:97
+#: ../openswan.templates.master:97
 msgid ""
 "Please enter the length of the created RSA key. it should not be less than "
 "1024 bits because this should be considered unsecure and you will probably "
@@ -202,145 +221,204 @@ msgid ""
 "authentication process down and is not needed at the moment."
 msgstr ""
 
+#. Type: boolean
 #. Description
-#: ../openswan.templates:106
+#: ../openswan.templates.master:106
 msgid "Do you want to create a self-signed X509 certificate ?"
 msgstr ""
 
+#. Type: boolean
 #. Description
-#: ../openswan.templates:106
+#: ../openswan.templates.master:106
 msgid ""
 "This installer can only create self-signed X509 certificates automatically, "
 "because otherwise a certificate authority is needed to sign the certificate "
 "request. If you want to create a self-signed certificate, you can use it "
 "immediately to connect to other IPSec hosts that support X509 certificate "
 "for authentication of IPSec connections. However, if you want to use the new "
-"PKI features of FreeS/WAN >= 1.91, you will need to have all X509 "
+"PKI features of Openswan >= 1.91, you will need to have all X509 "
 "certificates signed by a single certificate authority to create a trust path."
 msgstr ""
 
+#. Type: boolean
 #. Description
-#: ../openswan.templates:106
+#: ../openswan.templates.master:106
 msgid ""
 "If you do not want to create a self-signed certificate, then this installer "
 "will only create the RSA private key and the certificate request and you "
 "will have to sign the certificate request with your certificate authority."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:124
+#: ../openswan.templates.master:124
 msgid "Please enter the country code for the X509 certificate request."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:124
+#: ../openswan.templates.master:124
 msgid ""
 "Please enter the 2 letter country code for your country. This code will be "
 "placed in the certificate request."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:124
+#: ../openswan.templates.master:124
+msgid ""
+"You really need to enter a valid country code here, because openssl will "
+"refuse to generate certificates without one. An empty field is allowed for "
+"any other field of the X.509 certificate, but not for this one."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../openswan.templates.master:124
 msgid "Example: AT"
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:133
+#: ../openswan.templates.master:137
 msgid ""
 "Please enter the state or province name for the X509 certificate request."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:133
+#: ../openswan.templates.master:137
 msgid ""
 "Please enter the full name of the state or province you live in. This name "
 "will be placed in the certificate request."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:133
+#: ../openswan.templates.master:137
 msgid "Example: Upper Austria"
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:142
+#: ../openswan.templates.master:146
 msgid "Please enter the locality name for the X509 certificate request."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:142
+#: ../openswan.templates.master:146
 msgid ""
 "Please enter the locality (e.g. city) where you live. This name will be "
 "placed in the certificate request."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:142
+#: ../openswan.templates.master:146
 msgid "Example: Vienna"
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:151
+#: ../openswan.templates.master:155
 msgid "Please enter the organization name for the X509 certificate request."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:151
+#: ../openswan.templates.master:155
 msgid ""
 "Please enter the organization (e.g. company) that the X509 certificate "
 "should be created for. This name will be placed in the certificate request."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:151
+#: ../openswan.templates.master:155
 msgid "Example: Debian"
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:161
+#: ../openswan.templates.master:165
 msgid "Please enter the organizational unit for the X509 certificate request."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:161
+#: ../openswan.templates.master:165
 msgid ""
 "Please enter the organizational unit (e.g. section) that the X509 "
 "certificate should be created for. This name will be placed in the "
 "certificate request."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:161
+#: ../openswan.templates.master:165
 msgid "Example: security group"
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:171
+#: ../openswan.templates.master:175
 msgid "Please enter the common name for the X509 certificate request."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:171
+#: ../openswan.templates.master:175
 msgid ""
 "Please enter the common name (e.g. the host name of this machine) for which "
 "the X509 certificate should be created for. This name will be placed in the "
 "certificate request."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:171
+#: ../openswan.templates.master:175
 msgid "Example: gateway.debian.org"
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:181
+#: ../openswan.templates.master:185
 msgid "Please enter the email address for the X509 certificate request."
 msgstr ""
 
+#. Type: string
 #. Description
-#: ../openswan.templates:181
+#: ../openswan.templates.master:185
 msgid ""
 "Please enter the email address of the person or organization who is "
 "responsible for the X509 certificate, This address will be placed in the "
 "certificate request."
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates.master:193
+msgid "Do you wish to enable opportunistic encryption in Openswan?"
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates.master:193
+msgid ""
+"Openswan comes with support for opportunistic encryption (OE), which stores "
+"IPSec authentication information (i.e. RSA public keys) in (preferably "
+"secure) DNS records. Until this is widely deployed, activating it will cause "
+"a significant slow-down for every new, outgoing connection. Since version "
+"2.0, Openswan upstream comes with OE enabled by default and is thus likely "
+"to break you existing connection to the Internet (i.e. your default route) "
+"as soon as pluto (the Openswan keying daemon) is started."
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates.master:193
+msgid ""
+"Please choose whether you want to enable support for OE. If unsure, do not "
+"enable it."
 msgstr ""

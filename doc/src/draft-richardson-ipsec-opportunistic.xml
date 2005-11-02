@@ -5,7 +5,7 @@
 <?rfc symrefs="yes" ?>
 <?rfc sortrefs="yes" ?>
 
-<rfc ipr="full2026" docName="draft-richardson-ipsec-opportunistic-15.txt">
+<rfc ipr="full3667" docName="draft-richardson-ipsec-opportunistic-17.txt">
 
 <front>
   <title abbrev="opportunistic">
@@ -42,7 +42,7 @@
     </address>
   </author>
 
-  <date month="March" year="2004"></date>
+  <date month="January" year="2005"></date>
 
 <abstract>
   <t>
@@ -84,8 +84,9 @@ Once this is done, any two such nodes can communicate securely.
 This document describes opportunistic encryption as designed and
 implemented by the Linux FreeS/WAN project in revisions up and including 2.00.
 Note that 2.01 and beyond implements <xref
-target="RFC3445">RFC3445</xref>, in a backward compatible way. A
-future document will detail compliance to RFC3445.
+target="RFC3445" /> in a backward compatible way.
+A future document <xref target="IPSECKEY" />
+will describe a variation that complies with RFC3445.
 For project information, see http://www.freeswan.org. 
 </t>
 
@@ -280,6 +281,12 @@ determines how much trust to extend when DNSSEC is not available.
   <section title="Terminology">
 
   <t>
+Note: The network numbers used in this document are for illustrative
+purposes only.  This document could not use the reserved example
+network numbers of <xref target="RFC3330" /> because multiple 
+address ranges were needed.
+  </t>
+  <t>
   The following terminology is used in this document:
   </t>
 
@@ -294,7 +301,8 @@ determines how much trust to extend when DNSSEC is not available.
     <t hangText="SG-B:"> Bob's security gateway. Internally it is 192.2.0.1, externally it is 192.1.1.5.</t>
     <t hangText="SG-D:"> Dave's security gateway. Also Alice's backup security gateway. Internally it is 192.3.0.1, externally it is 192.1.1.6.</t>
     <t hangText="Configured tunnel:"> a tunnel that
-		  is directly and deliberately hand configured on participating gateways.
+		  is directly and deliberately hand configured on participating 
+		  gateways.
 		  Configured tunnels are typically given a higher level of
 		  trust than opportunistic tunnels.</t> 
 
@@ -1025,7 +1033,7 @@ The responder receives an invitation to create a keying channel from an initiato
 	machine
 
 
-$Id: draft-richardson-ipsec-opportunistic.xml,v 1.34 2004/07/02 22:27:05 mcr Exp $
+$Id: draft-richardson-ipsec-opportunistic.xml,v 1.37 2005/01/20 21:39:27 mcr Exp $
 ]]></artwork>
 
 
@@ -2333,6 +2341,7 @@ The IETF takes no position regarding the validity or scope of any
 </references>
 <references title="Non-normative references"> 
 <?rfc include="reference.OEspec" ?>
+<?rfc include="reference.IPSECKEY" ?>
 <?rfc include="reference.RFC.1034" ?>
 <?rfc include="reference.RFC.1464" ?>
 <?rfc include="reference.RFC.0791" ?>
@@ -2343,6 +2352,7 @@ The IETF takes no position regarding the validity or scope of any
 <?rfc include="reference.RFC.2367" ?>
 <?rfc include="reference.RFC.2663" ?>
 <?rfc include="reference.RFC.2671" ?>
+<?rfc include="reference.RFC.3330" ?>
 <!-- MODPGROUPS -->
 <?rfc include="reference.RFC.3445" ?>
 <?rfc include="reference.RFC.3526" ?>
@@ -2350,9 +2360,19 @@ The IETF takes no position regarding the validity or scope of any
 </back>
 </rfc>
 <!--
-  $Id: draft-richardson-ipsec-opportunistic.xml,v 1.34 2004/07/02 22:27:05 mcr Exp $
+  $Id: draft-richardson-ipsec-opportunistic.xml,v 1.37 2005/01/20 21:39:27 mcr Exp $
 
   $Log: draft-richardson-ipsec-opportunistic.xml,v $
+  Revision 1.37  2005/01/20 21:39:27  mcr
+  	revision -17 of document
+
+  Revision 1.36  2004/07/23 01:08:36  mcr
+  	adjusted some references such they aren't duplicated in the
+  	text.
+
+  Revision 1.35  2004/07/23 01:02:46  mcr
+  	possible revision 17.
+
   Revision 1.34  2004/07/02 22:27:05  mcr
   	updates from FS tree
 

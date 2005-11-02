@@ -125,7 +125,7 @@ klips_debug:pfkey_sendmsg: msg sent for parsing.
 klips_debug:pfkey_msg_interp: parsing message ver=2, type=16, errno=0, satype=0(UNKNOWN), len=9, res=0, seq=1, pid=987.
 klips_debug:pfkey_msg_interp: allocated extr->ips=0pDEADF00D.
 klips_debug:pfkey_msg_parse: parsing message ver=2, type=16(x-debug), errno=0, satype=0(UNKNOWN), len=9, res=0, seq=1, pid=987.
-klips_debug:pfkey_msg_parse: remain=7, ext_type=25(X-set-debug), ext_len=7.
+klips_debug:pfkey_msg_parse: remain=7
 klips_debug:pfkey_msg_parse: extensions permitted=02000001, required=02000001.
 klips_debug:pfkey_msg_parse: parsing ext type=25(X-set-debug) remain=7.
 klips_debug:pfkey_msg_parse: remain=7 ext_type=25(X-set-debug) ext_len=7 parsing ext 0pDEADF00D with parser pfkey_x_ext_debug_parse.
@@ -169,7 +169,7 @@ klips_debug:pfkey_sendmsg: msg sent for parsing.
 klips_debug:pfkey_msg_interp: parsing message ver=2, type=16, errno=0, satype=0(UNKNOWN), len=9, res=0, seq=1, pid=987.
 klips_debug:pfkey_msg_interp: allocated extr->ips=0pDEADF00D.
 klips_debug:pfkey_msg_parse: parsing message ver=2, type=16(x-debug), errno=0, satype=0(UNKNOWN), len=9, res=0, seq=1, pid=987.
-klips_debug:pfkey_msg_parse: remain=7, ext_type=25(X-set-debug), ext_len=7.
+klips_debug:pfkey_msg_parse: remain=7
 klips_debug:pfkey_msg_parse: extensions permitted=02000001, required=02000001.
 klips_debug:pfkey_msg_parse: parsing ext type=25(X-set-debug) remain=7.
 klips_debug:pfkey_msg_parse: remain=7 ext_type=25(X-set-debug) ext_len=7 parsing ext 0pDEADF00D with parser pfkey_x_ext_debug_parse.

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keywords.h,v 1.10 2004/04/18 03:09:27 mcr Exp $
+ * RCSID $Id: keywords.h,v 1.16 2004/12/02 16:26:02 ken Exp $
  */
 
 #ifndef _KEYWORDS_H_
@@ -27,15 +27,12 @@ enum keyword_string_config_field {
     KSF_PREPLUTO   = 3,
     KSF_POSTPLUTO  = 4,
     /* KSF_PACKETDEFAULT = 5, */
-/*    KSF_VIRTUALPRIVATE= 6, */
+    KSF_VIRTUALPRIVATE= 6, 
     KSF_SYSLOG     = 7,
     KSF_DUMPDIR    = 8,
     KSF_MANUALSTART= 9,
     KSF_PLUTOLOAD  = 10,
     KSF_PLUTOSTART = 11,
-#ifdef VIRTUAL_IP
-    KSF_VIRTUALPRIVATE = 12,
-#endif
     KSF_MYID       = 13,
     KSF_PLUTO      = 14,
     KSF_PLUTOOPTS  = 15,
@@ -70,13 +67,14 @@ enum keyword_numeric_config_field {
     KBF_REKEYMARGIN= 21,
     KBF_REKEYFUZZ  = 22,
     KBF_COMPRESS   = 23,
-    KBF_KEYINGTRIES = 24,
-    KBF_ARRIVALCHECK =25,
-    KBF_FAILURESHUNT =26,
-    KBF_IKELIFETIME  =27,
-    KBF_KLIPSDEBUG   =28,
-    KBF_PLUTODEBUG   =29,
-    KBF_MAX = 30
+    KBF_KEYINGTRIES  = 24,
+    KBF_ARRIVALCHECK = 25,
+    KBF_FAILURESHUNT = 26,
+    KBF_IKELIFETIME  = 27,
+    KBF_KLIPSDEBUG   = 28,
+    KBF_PLUTODEBUG   = 29,
+    KBF_NHELPERS     = 30,
+    KBF_MAX          = 31
 };
 
 /*
@@ -86,32 +84,43 @@ enum keyword_numeric_config_field {
  */
 
 enum keyword_string_conn_field {
-    KSCF_IP     = 0,
-    KSCF_SUBNET = 1,
-    KSCF_NEXTHOP= 2,
-    KSCF_UPDOWN = 3,
-    KSCF_ID     = 4,
-    KSCF_RSAKEY1= 5,
-    KSCF_RSAKEY2= 6,
-    KSCF_CERT   = 7,
-    KSCF_CA     = 8,
+    KSCF_IP           = 0,
+    KSCF_SUBNET       = 1,
+    KSCF_NEXTHOP      = 2,
+    KSCF_UPDOWN       = 3,
+    KSCF_ID           = 4,
+    KSCF_RSAKEY1      = 5,
+    KSCF_RSAKEY2      = 6,
+    KSCF_CERT         = 7,
+    KSCF_CA           = 8,
     KSCF_SUBNETWITHIN = 9,
-    KSCF_PROTOPORT = 10,
-    KSCF_ESP    = 11,
-    KSCF_ESPENCKEY = 12,
-    KSCF_ESPAUTHKEY= 13,
-    KSCF_MAX    = 20
+    KSCF_PROTOPORT    = 10,
+    KSCF_IKE          = 11,
+    KSCF_ESP          = 12,
+    KSCF_ESPENCKEY    = 13,
+    KSCF_ESPAUTHKEY   = 14,
+    KSCF_DPDACTION    = 15,
+    KSCF_SOURCEIP     = 16,
+    KSCF_MAX          = 20
 };
 
 
 enum keyword_numeric_conn_field {
-    KNCF_IP       = 0,
-    KNCF_FIREWALL = 1,
-    KNCF_IDTYPE   = 2,
-    KNCF_SPIBASE  = 3,
-    KNCF_SPI      = 4,
-    KNCF_ESPREPLAYWINDOW = 5,
-    KNCF_MAX      = 30,
+    KNCF_IP               = 0,
+    KNCF_FIREWALL         = 1,
+    KNCF_IDTYPE           = 2,
+    KNCF_SPIBASE          = 3,
+    KNCF_SPI              = 4,
+    KNCF_ESPREPLAYWINDOW  = 5,
+    KNCF_DPDDELAY         = 6,
+    KNCF_DPDTIMEOUT       = 7,
+    KNCF_AGGRMODE         = 8,
+    KNCF_XAUTHSERVER      = 9,
+    KNCF_XAUTHCLIENT      = 10,
+    KNCF_MODECONFIGSERVER = 11,
+    KNCF_MODECONFIGCLIENT = 12,
+    KNCF_MODECONFIGPULL   = 13,
+    KNCF_MAX              = 30
 };
 
 #define KEY_STRINGS_MAX (KSF_MAX > KSCF_MAX ? KSF_MAX : KSCF_MAX)
@@ -207,7 +216,13 @@ struct config_parsed {
 
     TAILQ_HEAD(sectionhead, section_list) sections;
     int ipsec_conf_version;
+
+    struct section_list conn_default;
+    bool                got_default;
 };
+
+extern struct keyword_def ipsec_conf_keywords_v2[];
+extern const int ipsec_conf_keywords_v2_count;
 
 extern unsigned int parser_enum_list(struct keyword_def *kd, const char *s, bool list);
 extern unsigned int parser_loose_enum(struct keyword *k, const char *s);

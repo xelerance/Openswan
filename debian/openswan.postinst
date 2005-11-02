@@ -110,7 +110,7 @@ case "$1" in
 	    db_get openswan/rsa_key_type
 	    if [ "$RET" = "plain" ]; then
 	        # a RSA keypair should be created - check if there is one already
-		if egrep ": RSA[:space:]*" /etc/ipsec.secrets; then
+		if egrep -q ": RSA[:space:]*" /etc/ipsec.secrets; then
                     echo "Warning: there is already a RSA key in /etc/ipsec.secrets."
                     echo "Creating an additional one."
                 fi
@@ -120,7 +120,7 @@ case "$1" in
                 keylength=$RET
                 privkey=`mktemp /tmp/ipsec-postinst.XXXXXX`
                 /usr/lib/ipsec/rsasigkey $keylength > $privkey
-		insert_private_key "$privkey"
+		insert_private_key "`cat $privkey`"
                 rm $privkey
 		echo "Successfully created a plain openswan RSA keypair."
 	    else
@@ -206,31 +206,23 @@ case "$1" in
         db_get openswan/enable-oe
         if [ "$RET" != "true" ]; then
             echo -n "Disabling opportunistic encryption (OE) in config file ... "
-            if grep -A 1 "conn packetdefault" /etc/ipsec.conf | grep -q "auto=ignore"; then
+            if egrep -q "^include /etc/ipsec.d/examples/no_oe.conf$" /etc/ipsec.conf; then
                 echo "already disabled"
             else
                 cat <<EOF >> /etc/ipsec.conf
-
-conn block
-    auto=ignore
-
-conn private
-    auto=ignore
-
-conn private-or-clear
-    auto=ignore
-
-conn clear-or-private
-    auto=ignore
-
-conn clear
-    auto=ignore
-
-conn packetdefault
-    auto=ignore
-
+#Disable Opportunistic Encryption
+include /etc/ipsec.d/examples/no_oe.conf
 EOF
               echo "done"
+            fi
+	else
+            echo -n "Enabling opportunistic encryption (OE) in config file ... "
+            if egrep -q "^include /etc/ipsec.d/examples/no_oe.conf$" /etc/ipsec.conf; then
+            	sed 's/include \/etc\/ipsec.d\/examples\/no_oe.conf/#include \/etc\/ipsec.d\/examples\/no_oe.conf/' < /etc/ipsec.conf > /etc/ipsec.conf.tmp
+                mv /etc/ipsec.conf.tmp /etc/ipsec.conf
+                echo "done"
+            else
+                echo "already enabled"
             fi
         fi
 

@@ -181,7 +181,13 @@ db_trans_expand(struct db_context *ctx, int delta_trans)
 	ctx->trans0 = ctx->prop.trans = new_trans;
 	/* update trans_cur (by offset) */
 	offset = (char *)(new_trans) - (char *)(old_trans);
-	(char *)(ctx->trans_cur) += offset;
+
+	{
+	  char *cctx = (char *)(ctx->trans_cur);
+	  
+	  cctx += offset;
+	  ctx->trans_cur = (struct db_trans *)cctx;
+	}
 	/* update elem count */
 	ctx->max_trans = max_trans;
 	PFREE_ST(old_trans, db_trans_st);
@@ -213,11 +219,26 @@ db_attrs_expand(struct db_context *ctx, int delta_attrs)
 	
 	/* update attrs0 and attrs_cur (obviously) */
 	offset = (char *)(new_attrs) - (char *)(old_attrs);
-	(char *)ctx->attrs0 += offset;
-	(char *)ctx->attrs_cur += offset;
+	
+	{
+	  char *actx = (char *)(ctx->attrs0);
+	  
+	  actx += offset;
+	  ctx->attrs0 = (struct db_attr *)actx;
+	  
+	  actx = (char *)ctx->attrs_cur;
+	  actx += offset;
+	  ctx->attrs_cur = (struct db_attr *)actx;
+	}
+
 	/* for each transform, rewrite attrs pointer by offsetting it */
 	for (t=ctx->prop.trans, ti=0; ti < ctx->prop.trans_cnt; t++, ti++) {
-		(char *)(t->attrs) += offset;
+	  {
+	    char *actx = (char *)(t->attrs);
+	  
+	    actx += offset;
+	    t->attrs = (struct db_attr *)actx;
+	  }
 	}
 	/* update elem count */
 	ctx->max_attrs = max_attrs;

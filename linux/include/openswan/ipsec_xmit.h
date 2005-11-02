@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_xmit.h,v 1.9 2004/04/06 02:49:08 mcr Exp $
+ * RCSID $Id: ipsec_xmit.h,v 1.12 2004/08/20 21:45:37 mcr Exp $
  */
 
 #include "openswan/ipsec_sa.h"
@@ -56,7 +56,7 @@ enum ipsec_xmit_value
 struct ipsec_xmit_state
 {
 	struct sk_buff *skb;		/* working skb pointer */
-	struct device *dev;		/* working dev pointer */
+	struct net_device *dev;		/* working dev pointer */
 	struct ipsecpriv *prv;		/* Our device' private space */
 	struct sk_buff *oskb;		/* Original skb pointer */
 	struct net_device_stats *stats;	/* This device's statistics */
@@ -87,7 +87,7 @@ struct ipsec_xmit_state
 	size_t sa_len;
 	int hard_header_stripped;	/* has the hard header been removed yet? */
 	int hard_header_len;
-	struct device *physdev;
+	struct net_device *physdev;
 /*	struct device *virtdev; */
 	short physmtu;
 	short mtudiff;
@@ -124,10 +124,10 @@ extern void ipsec_extract_ports(struct iphdr * iph, struct sockaddr_encap * er);
 extern int ipsec_xmit_trap_count;
 extern int ipsec_xmit_trap_sendcount;
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 extern int debug_tunnel;
 extern int sysctl_ipsec_debug_verbose;
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 #define debug_xmit debug_tunnel
 
@@ -139,6 +139,17 @@ extern int sysctl_ipsec_tos;
 
 /*
  * $Log: ipsec_xmit.h,v $
+ * Revision 1.12  2004/08/20 21:45:37  mcr
+ * 	CONFIG_KLIPS_NAT_TRAVERSAL is not used in an attempt to
+ * 	be 26sec compatible. But, some defines where changed.
+ *
+ * Revision 1.11  2004/08/03 18:18:21  mcr
+ * 	in 2.6, use "net_device" instead of #define device->net_device.
+ * 	this probably breaks 2.0 compiles.
+ *
+ * Revision 1.10  2004/07/10 19:08:41  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.9  2004/04/06 02:49:08  mcr
  * 	pullup of algo code from alg-branch.
  *

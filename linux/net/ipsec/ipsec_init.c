@@ -18,7 +18,7 @@
  *
  */
 
-char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.93 2004/04/06 02:49:26 mcr Exp $";
+char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.98 2004/09/13 02:23:18 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -42,6 +42,8 @@ char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.93 2004/04/06 02:49:2
 #include <linux/in.h>          /* struct sockaddr_in */
 #include <linux/skbuff.h>
 #include <linux/random.h>       /* get_random_bytes() */
+#include <net/protocol.h>
+
 #include <openswan.h>
 
 #ifdef SPINLOCK
@@ -85,9 +87,9 @@ char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.93 2004/04/06 02:49:2
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_esp.h"
 
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 # include "openswan/ipcomp.h"
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
@@ -95,7 +97,7 @@ char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.93 2004/04/06 02:49:2
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#if !defined(CONFIG_IPSEC_ESP) && !defined(CONFIG_IPSEC_AH)
+#if !defined(CONFIG_KLIPS_ESP) && !defined(CONFIG_KLIPS_AH)
 #error "kernel configuration must include ESP or AH"
 #endif
 
@@ -107,11 +109,11 @@ char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.93 2004/04/06 02:49:2
 MODULE_LICENSE("GPL");
 #endif
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 int debug_eroute = 0;
 int debug_spi = 0;
 int debug_netlink = 0;
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 struct prng ipsec_prng;
 
@@ -132,40 +134,48 @@ extern int ipsec_sysctl_register(void);
 extern void ipsec_sysctl_unregister(void);
 #endif
 
+#ifdef NET_26
 static inline int
 openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol)
 {
-#ifdef NETDEV_25
 	return inet_add_protocol(prot, protocol);
-#else
-	inet_add_protocol(prot);
-	return 0;
-#endif
 }
 
 static inline int
 openswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
 {
-#ifdef NETDEV_25
 	return inet_del_protocol(prot, protocol);
+}
+
 #else
+static inline int
+openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol)
+{
+	inet_add_protocol(prot);
+	return 0;
+}
+
+static inline int
+openswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
+{
 	inet_del_protocol(prot);
 	return 0;
-#endif
 }
+
+#endif
 
 /* void */
 int
-ipsec_init(void)
+ipsec_klips_init(void)
 {
 	int error = 0;
 	unsigned char seed[256];
-#ifdef CONFIG_IPSEC_ENC_3DES
+#ifdef CONFIG_KLIPS_ENC_3DES
 	extern int des_check_key;
 
 	/* turn off checking of keys */
 	des_check_key=0;
-#endif /* CONFIG_IPSEC_ENC_3DES */
+#endif /* CONFIG_KLIPS_ENC_3DES */
 
 	KLIPS_PRINT(1, "klips_info:ipsec_init: "
 		    "KLIPS startup, Openswan KLIPS IPsec stack version: %s\n",
@@ -191,19 +201,19 @@ ipsec_init(void)
 
 	error |= register_netdevice_notifier(&ipsec_dev_notifier);
 
-#ifdef CONFIG_IPSEC_ESP
+#ifdef CONFIG_KLIPS_ESP
 	openswan_inet_add_protocol(&esp_protocol, IPPROTO_ESP);
-#endif /* CONFIG_IPSEC_ESP */
+#endif /* CONFIG_KLIPS_ESP */
 
-#ifdef CONFIG_IPSEC_AH
+#ifdef CONFIG_KLIPS_AH
 	openswan_inet_add_protocol(&ah_protocol, IPPROTO_AH);
-#endif /* CONFIG_IPSEC_AH */
+#endif /* CONFIG_KLIPS_AH */
 
 /* we never actually link IPCOMP to the stack */
 #ifdef IPCOMP_USED_ALONE
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
  	openswan_inet_add_protocol(&comp_protocol, IPPROTO_COMP);
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 #endif
 
 	error |= ipsec_tunnel_init_devices();
@@ -213,7 +223,7 @@ ipsec_init(void)
         error |= ipsec_sysctl_register();
 #endif                                                                          
 
-#ifdef CONFIG_IPSEC_ALG
+#ifdef CONFIG_KLIPS_ALG
 	ipsec_alg_init();
 #endif
 
@@ -242,24 +252,24 @@ ipsec_cleanup(void)
 
 /* we never actually link IPCOMP to the stack */
 #ifdef IPCOMP_USED_ALONE
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
  	if (openswan_inet_del_protocol(&comp_protocol, IPPROTO_COMP) < 0)
 		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 		       "comp close: can't remove protocol\n");
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 #endif /* IPCOMP_USED_ALONE */
 
-#ifdef CONFIG_IPSEC_AH
+#ifdef CONFIG_KLIPS_AH
  	if (openswan_inet_del_protocol(&ah_protocol, IPPROTO_AH) < 0)
 		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 		       "ah close: can't remove protocol\n");
-#endif /* CONFIG_IPSEC_AH */
+#endif /* CONFIG_KLIPS_AH */
 
-#ifdef CONFIG_IPSEC_ESP
+#ifdef CONFIG_KLIPS_ESP
  	if (openswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP) < 0)
 		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 		       "esp close: can't remove protocol\n");
-#endif /* CONFIG_IPSEC_ESP */
+#endif /* CONFIG_KLIPS_ESP */
 
 	error |= unregister_netdevice_notifier(&ipsec_dev_notifier);
 
@@ -292,31 +302,44 @@ init_module(void)
 {
 	int error = 0;
 
-	error |= ipsec_init();
+	error |= ipsec_klips_init();
 
 	return error;
 }
 
-int
+void
 cleanup_module(void)
 {
-	int error = 0;
-
 	KLIPS_PRINT(debug_netlink, /* debug_tunnel & DB_TN_INIT, */
 		    "klips_debug:cleanup_module: "
 		    "calling ipsec_cleanup.\n");
 
-	error |= ipsec_cleanup();
+	ipsec_cleanup();
 
 	KLIPS_PRINT(1, "klips_info:cleanup_module: "
 		    "ipsec module unloaded.\n");
-
-	return error;
 }
 #endif /* MODULE */
 
 /*
  * $Log: ipsec_init.c,v $
+ * Revision 1.98  2004/09/13 02:23:18  mcr
+ * 	#define inet_protocol if necessary.
+ *
+ * Revision 1.97  2004/09/06 18:35:49  mcr
+ * 	2.6.8.1 gets rid of inet_protocol->net_protocol compatibility,
+ * 	so adjust for that.
+ *
+ * Revision 1.96  2004/08/17 03:27:23  mcr
+ * 	klips 2.6 edits.
+ *
+ * Revision 1.95  2004/08/03 18:19:08  mcr
+ * 	in 2.6, use "net_device" instead of #define device->net_device.
+ * 	this probably breaks 2.0 compiles.
+ *
+ * Revision 1.94  2004/07/10 19:11:18  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.93  2004/04/06 02:49:26  mcr
  * 	pullup of algo code from alg-branch.
  *

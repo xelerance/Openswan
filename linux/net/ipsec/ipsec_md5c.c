@@ -1,5 +1,5 @@
 /*
- * RCSID $Id: ipsec_md5c.c,v 1.8 2004/04/06 02:49:26 mcr Exp $
+ * RCSID $Id: ipsec_md5c.c,v 1.9 2004/09/08 17:21:36 ken Exp $
  */
 
 /*
@@ -144,7 +144,7 @@ Rotation is separate from addition to prevent recomputation.
 /*
  * MD5 initialization. Begins an MD5 operation, writing a new context.
  */
-void MD5Init(void *vcontext)
+void osMD5Init(void *vcontext)
 {
   MD5_CTX *context = vcontext;                                     
 
@@ -161,7 +161,7 @@ void MD5Init(void *vcontext)
   operation, processing another message block, and updating the
   context.
  */
-void MD5Update (vcontext, input, inputLen)
+void osMD5Update (vcontext, input, inputLen)
      void *vcontext;
      unsigned char *input;                                /* input block */
      __u32 inputLen;                     /* length of input block */
@@ -205,7 +205,7 @@ void MD5Update (vcontext, input, inputLen)
 /* MD5 finalization. Ends an MD5 message-digest operation, writing the
   the message digest and zeroizing the context.
  */
-void MD5Final (digest, vcontext)
+void osMD5Final (digest, vcontext)
 unsigned char digest[16];                         /* message digest */
 void *vcontext;                                       /* context */
 {
@@ -220,10 +220,10 @@ void *vcontext;                                       /* context */
 */
   index = (unsigned int)((context->count[0] >> 3) & 0x3f);
   padLen = (index < 56) ? (56 - index) : (120 - index);
-  MD5Update (context, PADDING, padLen);
+  osMD5Update (context, PADDING, padLen);
 
   /* Append length (before padding) */
-  MD5Update (context, bits, 8);
+  osMD5Update (context, bits, 8);
 
   if (digest != NULL)			/* Bill Simpson's padding */
   {
@@ -400,6 +400,9 @@ unsigned int len;
 
 /*
  * $Log: ipsec_md5c.c,v $
+ * Revision 1.9  2004/09/08 17:21:36  ken
+ * Rename MD5* -> osMD5 functions to prevent clashes with other symbols exported by kernel modules (CIFS in 2.6 initiated this)
+ *
  * Revision 1.8  2004/04/06 02:49:26  mcr
  * 	pullup of algo code from alg-branch.
  *

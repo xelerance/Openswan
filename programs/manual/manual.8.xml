@@ -209,10 +209,10 @@ presumably by a non-FreeS/WAN other end).</para>
 </refsect1>
 
 <refsect1 id='files'><title>FILES</title>
-<!-- .ta \w'/var/run/ipsec.nexthop'u+4n -->
+<!-- .ta \w'/var/run/pluto/ipsec.nexthop'u+4n -->
 <para>/etc/ipsec.conf	default IPsec configuration file
 <!-- .br -->
-/var/run/ipsec.info	<emphasis remap='B'>%defaultroute</emphasis> information</para>
+/var/run/pluto/ipsec.info	<emphasis remap='B'>%defaultroute</emphasis> information</para>
 </refsect1>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>

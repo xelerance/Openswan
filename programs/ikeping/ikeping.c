@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikeping.c,v 1.6 2004/04/18 03:05:10 mcr Exp $
+ * RCSID $Id: ikeping.c,v 1.7.6.1 2005/05/18 20:55:13 ken Exp $
  */
 
 #include <stdio.h>
@@ -34,18 +34,9 @@
 #include <openswan.h>
 
 #include "constants.h"
-#include "../pluto/packet.h"
+#include "packet.h"
 
-#ifndef ISAKMP_XCHG_ECHOREQUEST
-#define ISAKMP_XCHG_ECHOREQUEST 30      /* Echo Request */
-#define ISAKMP_XCHG_ECHOREPLY   31      /* Echo Reply   */
-#endif
-
-#ifndef ISAKMP_XCGH_ECHOREQUEST_PRIV
-#define ISAKMP_XCHG_ECHOREQUEST_PRIV 244     /* Private Echo Request */
-#define ISAKMP_XCHG_ECHOREPLY_PRIV   245     /* Private Echo Reply   */
-#endif
-
+#include "natt_defines.h"
 
 /* what exchange number to use for outgoing requests */
 static int exchange_number;
@@ -63,10 +54,11 @@ help(void)
 	    " [--inet]       just send/listen on IPv4 socket\n"
 	    " [--inet6]      just send/listen on IPv6 socket\n"
 	    " [--version]    just dump version number and exit\n"
+	    " [--nat-t]      enabled NONESP encapsulation on port\n"
 	    " [--exchangenum num]    use num instead of 244 for the exchange type.\n"
 	    " [--wait seconds]    time to wait for replies, defaults to 10 seconds.\n"
 	    " host/port ...\n\n"
-	"FreeS/WAN %s\n",
+	"Openswan %s\n",
 	ipsec_version_code());
 }
 
@@ -125,7 +117,7 @@ send_ping(int afamily,
 	ih.isa_np    = NOTHING_WRONG;
 	ih.isa_version = (1 << ISA_MAJ_SHIFT) | 0;
 	ih.isa_xchg  = (exchange_number ?
-			exchange_number : ISAKMP_XCHG_ECHOREQUEST_PRIV);
+			exchange_number : ISAKMP_XCHG_ECHOREQUEST_PRIVATE);
 	ih.isa_flags =0;
 	ih.isa_msgid =rand();
 	ih.isa_length=0;
@@ -191,10 +183,11 @@ reply_packet(int afamily,
  *
  */
 static void
-receive_ping(int afamily, int s, int reply)
+receive_ping(int afamily, int s, int reply, int natt)
 {
 	ip_address sender;
 	struct isakmp_hdr ih;
+	char   rbuf[256];
 	char   buf[64];
 	int n, rport, sendlen;
 	const char *xchg_name;
@@ -203,8 +196,24 @@ receive_ping(int afamily, int s, int reply)
 	rport = 500;
 	xchg  = 0;
 	sendlen=sizeof(sender);
-	n = recvfrom(s, &ih, sizeof(ih), 0, (struct sockaddr *)&sender, &sendlen);
+	n = recvfrom(s, rbuf, sizeof(rbuf)
+		     , 0, (struct sockaddr *)&sender, &sendlen);
 
+	memcpy(&ih, rbuf, sizeof(ih));
+	if(natt) {
+	    /* need to skip 4 bytes! */
+	    if(rbuf[0]!=0x0 || rbuf[1]!=0x0 ||
+	       rbuf[2]!=0x0 || rbuf[3]!=0x0) {
+		printf("kernel failed to steal ESP packet (SPI=0x%02x%02x%02x%02x) of length %d\n"
+		       , rbuf[0], rbuf[1], rbuf[2], rbuf[3]
+		       , n);
+		return;
+	    }
+	    
+	    /* otherwise, skip 4 bytes */
+	    memcpy(&ih, rbuf+4, sizeof(ih));
+	}
+	    
 	addrtot(&sender, 0, buf, sizeof(buf));
 	switch(afamily) {
 	case AF_INET:
@@ -227,12 +236,12 @@ receive_ping(int afamily, int s, int reply)
 
 
 	if(ih.isa_xchg == ISAKMP_XCHG_ECHOREQUEST       ||
-	   ih.isa_xchg == ISAKMP_XCHG_ECHOREQUEST_PRIV  ||
+	   ih.isa_xchg == ISAKMP_XCHG_ECHOREQUEST_PRIVATE  ||
 	   (exchange_number!=0 && ih.isa_xchg == exchange_number)) {
 		xchg_name="echo-request";
 		xchg=ISAKMP_XCHG_ECHOREQUEST;
 	} else if(ih.isa_xchg == ISAKMP_XCHG_ECHOREPLY ||
-		  ih.isa_xchg == ISAKMP_XCHG_ECHOREPLY_PRIV ||
+		  ih.isa_xchg == ISAKMP_XCHG_ECHOREPLY_PRIVATE ||
 		  (exchange_number!=0 && ih.isa_xchg == exchange_number+1)) {
 		xchg_name="echo-reply";
 	} else {
@@ -241,6 +250,7 @@ receive_ping(int afamily, int s, int reply)
 
 	printf("received %d(%s) packet from %s/%d of len: %d\n",
 	       ih.isa_xchg, xchg_name, buf, ntohs(rport), n);
+
 	printf("\trcookie=%08x_%08x icookie=%08x_%08x msgid=%08x\n",
 	       *(u_int32_t *)(ih.isa_icookie), 
 	       *(u_int32_t *)(ih.isa_icookie+4), 
@@ -269,6 +279,8 @@ static const struct option long_opts[] = {
     { "ikeaddress",  required_argument, NULL, 'b' },
     { "inet",        no_argument, NULL, '4' },
     { "inet6",       no_argument, NULL, '6' },
+    { "nat-t",       no_argument, NULL, 'T' },
+    { "natt",        no_argument, NULL, 'T' },
     { "exchangenum", required_argument, NULL, 'n' },
     { "wait",        required_argument, NULL, 'w' },
     { 0,0,0,0 }
@@ -286,9 +298,11 @@ main(int argc, char **argv)
   int   pfamily;
   int   c;
   int   numSenders, numReceived, noDNS;
+  int   natt;
   int   waitTime;
   int   verbose, timedOut;
   ip_address laddr, raddr;
+  char *afam = "";
 
   afamily=AF_INET;
   pfamily=PF_INET;
@@ -296,82 +310,89 @@ main(int argc, char **argv)
   dport=500;
   waitTime=10;
   verbose=0;
+  natt=0;
   listen_only=0;
   noDNS=0;
   bzero(&laddr, sizeof(laddr));
 
   while((c = getopt_long(argc, argv, "hVnvsp:b:46E:w:", long_opts, 0))!=EOF) {
-    switch (c) {
+      switch (c) {
       case 'h':	        /* --help */
-	help();
-	return 0;	/* GNU coding standards say to stop here */
-	
+	  help();
+	  return 0;	/* GNU coding standards say to stop here */
+	  
       case 'V':               /* --version */
-	fprintf(stderr, "FreeS/WAN %s\n", ipsec_version_code());
-	return 0;	/* GNU coding standards say to stop here */
-	
+	  fprintf(stderr, "FreeS/WAN %s\n", ipsec_version_code());
+	  return 0;	/* GNU coding standards say to stop here */
+	  
       case 'v':	/* --label <string> */
-	verbose++;
-	continue;
-	
+	  verbose++;
+	  continue;
+	  
       case 'n':
-	      noDNS=1;
-	      break;
-	
+	  noDNS=1;
+	  break;
+	  
+      case 'T':
+	  natt++;
+	  break;
+	  
       case 'E':
-	exchange_number=strtol(optarg, &foo, 0);
-	if(optarg==foo || exchange_number < 1 || exchange_number>255) {
-	  fprintf(stderr, "Invalid exchange number '%s' (should be 1<=x<255)\n",
-		  optarg);
-	  exit(1);
-	}
-	continue;
-	
-	
+	  exchange_number=strtol(optarg, &foo, 0);
+	  if(optarg==foo || exchange_number < 1 || exchange_number>255) {
+	      fprintf(stderr, "Invalid exchange number '%s' (should be 1<=x<255)\n",
+		      optarg);
+	      exit(1);
+	  }
+	  continue;
+	  
+	  
       case 's':
-	listen_only++;
-	continue;
-	
+	  listen_only++;
+	  continue;
+	  
       case 'p':
-	lport=strtol(optarg, &foo, 0);
-	if(optarg==foo || lport <0 || lport>65535) {
-	  fprintf(stderr, "Invalid port number '%s' (should be 0<=x<65536)\n",
-		  optarg);
-	  exit(1);
-	}
-	continue;
-	
+	  lport=strtol(optarg, &foo, 0);
+	  if(optarg==foo || lport <0 || lport>65535) {
+	      fprintf(stderr, "Invalid port number '%s' (should be 0<=x<65536)\n",
+		      optarg);
+	      exit(1);
+	  }
+	  continue;
+	  
       case 'w':
-	waitTime=strtol(optarg, &foo, 0);
-	if(optarg==foo || waitTime < 0) {
-	  fprintf(stderr, "Invalid waittime number '%s' (should be 0<=x)\n",
-		  optarg);
-	  exit(1);
-	}
-	continue;
-	
+	  waitTime=strtol(optarg, &foo, 0);
+	  if(optarg==foo || waitTime < 0) {
+	      fprintf(stderr, "Invalid waittime number '%s' (should be 0<=x)\n",
+		      optarg);
+	      exit(1);
+	  }
+	  continue;
+	  
       case 'b':
-	errstr = ttoaddr(optarg, strlen(optarg), afamily, &laddr);
-	if(errstr!=NULL) {
-	  fprintf(stderr, "Invalid local address '%s': %s\n",
-		  optarg, errstr);
-	  exit(1);
-	}
-	continue;
-	
+	  errstr = ttoaddr(optarg, strlen(optarg), afamily, &laddr);
+	  if(errstr!=NULL) {
+	      fprintf(stderr, "Invalid local address '%s': %s\n",
+		      optarg, errstr);
+	      exit(1);
+	  }
+	  continue;
+	  
       case '4':
-	afamily=AF_INET;
-	pfamily=PF_INET;
-	continue;
-	
+	  afamily=AF_INET;
+	  pfamily=PF_INET;
+	  afam = "IPv4";
+	  continue;
+	  
       case '6':
-	afamily=AF_INET6;
-	pfamily=PF_INET6;
-	continue;
-	
+	  afamily=AF_INET6;
+	  pfamily=PF_INET6;
+	  afam = "IPv6";
+	  continue;
+	  
       default:
-	assert(FALSE);	/* unknown return value */
-    }
+	  assert(FALSE);	/* unknown return value */
+      }
   }
 
   s=socket(pfamily, SOCK_DGRAM, IPPROTO_UDP);
@@ -396,6 +417,19 @@ main(int argc, char **argv)
 		  exit(5);
 	  }
 	  break;
+  }
+
+  if(natt) {
+      int r;
+      
+      /* only support RFC method */
+      int type = ESPINUDP_WITH_NON_ESP;
+      r = setsockopt(s, SOL_UDP, UDP_ESPINUDP, &type, sizeof(type));
+      if ((r<0) && (errno == ENOPROTOOPT)) {
+	  fprintf(stderr, 
+		 "NAT-Traversal: ESPINUDP(%d) not supported by kernel for family %s"
+		 , type, afam);
+      }
   }
 
   numSenders = 0;
@@ -453,8 +487,10 @@ main(int argc, char **argv)
 
 	  n = poll(&ready, 1, waitTime);
 	  if(n < 0) {
+	      if(errno != EINTR) {
 		  perror("poll");
 		  exit(1);
+	      }
 	  }
 	  
 	  if(n == 0 && !listen_only) {
@@ -463,7 +499,7 @@ main(int argc, char **argv)
 
 	  if(n == 1) {
 		  numReceived++;
-		  receive_ping(afamily, s, listen_only);
+		  receive_ping(afamily, s, listen_only, natt);
 	  }
   }
 
@@ -476,7 +512,7 @@ main(int argc, char **argv)
 
 /*
  * Local variables:
- * c-file-style: "linux"
+ * c-file-style: "pluto"
  * c-basic-offset: 4
  * End:
  *

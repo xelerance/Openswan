@@ -14,13 +14,15 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: sanitizestring.c,v 1.1 2004/03/08 01:55:15 ken Exp $
+ * RCSID $Id: sanitizestring.c,v 1.3 2004/10/17 23:57:06 mcr Exp $
  */
 
 #include <ctype.h>
 #include <string.h>
 #include "openswan.h"
 #include "openswan/passert.h"
+#include "constants.h"
+#include "oswlog.h"
 
 /* Sanitize character string in situ: turns dangerous characters into \OOO.
  * With a bit of work, we could use simpler reps for \\, \r, etc.,
@@ -96,7 +98,7 @@ sanitize_string(char *buf, size_t size)
 
 void regress(void);
 
-void passert_fail(const char *pred_str
+void openswan_passert_fail(const char *pred_str
 	     , const char *file_str
 	     , unsigned long line_no)
 {

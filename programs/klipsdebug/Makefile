@@ -12,9 +12,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.6 2004/04/12 12:05:52 ken Exp $
+# RCSID $Id: Makefile,v 1.7 2004/12/18 18:13:40 mcr Exp $
 
-OPENSWANSRCDIR=../..
+OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM:=klipsdebug
@@ -22,10 +22,13 @@ EXTRA5PROC=${PROGRAM}.5
 
 LIBS:=${OPENSWANLIB}
 
-include ../Makefile.program
+include ${srcdir}../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.7  2004/12/18 18:13:40  mcr
+# 	adjusted Makefiles so that ${OBJDIR} builds work.
+#
 # Revision 1.6  2004/04/12 12:05:52  ken
 # Use OPENSWANLIBs
 #
@@ -49,7 +52,7 @@ include ../Makefile.program
 # 	Optional PROGRAM.5 files have been added to the makefiles.
 #
 # Revision 1.1  2002/04/24 07:55:32  mcr
-# 	#include patches and Makefiles for post-reorg compilation.
+# 	#include ${srcdir}..tches and Makefiles for post-reorg compilation.
 #
 #
 #
@@ -57,6 +60,9 @@ include ../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.7  2004/12/18 18:13:40  mcr
+# 	adjusted Makefiles so that ${OBJDIR} builds work.
+#
 # Revision 1.6  2004/04/12 12:05:52  ken
 # Use OPENSWANLIBs
 #
@@ -80,7 +86,7 @@ include ../Makefile.program
 # 	Optional PROGRAM.5 files have been added to the makefiles.
 #
 # Revision 1.1  2002/04/24 07:55:32  mcr
-# 	#include patches and Makefiles for post-reorg compilation.
+# 	#include ${srcdir}..tches and Makefiles for post-reorg compilation.
 #
 #
 #

@@ -18,6 +18,8 @@
 #ifndef _KERNEL_ALG_H
 #define _KERNEL_ALG_H
 
+struct sadb_msg; /* forward definition */
+
 /* Registration messages from pluto */
 extern void kernel_alg_register_pfkey(const struct sadb_msg *msg, int buflen);
 
@@ -45,8 +47,11 @@ extern const struct sadb_alg * kernel_alg_sadb_alg_get(int satype, int exttype, 
 
 struct db_prop;
 extern struct db_context * kernel_alg_db_new(struct alg_info_esp *ai, lset_t policy);
+
 /* returns pointer to static buffer, no reentrant */
-struct esp_info * kernel_alg_esp_info(int esp_id, int auth_id);
+extern struct esp_info *kernel_alg_esp_info(u_int8_t transid
+					    , u_int16_t keylen
+					    , u_int16_t auth);
 
 extern struct sadb_alg esp_aalg[];
 extern struct sadb_alg esp_ealg[];

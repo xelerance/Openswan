@@ -6,7 +6,7 @@
 # ARCH
 # IPSECVERSION
 
-#set -e
+# set -x
 
 cd $DESTDIR 
 rm -f *.tar.gz 
@@ -15,29 +15,29 @@ mkdir -p $OPENSWANSRCDIR/packaging/ipkg/ipkg
 cp $OPENSWANSRCDIR/packaging/ipkg/debian-binary . 
 cp $OPENSWANSRCDIR/packaging/ipkg/conffiles . 
 
-cat $OPENSWANSRCDIR/packaging/ipkg/control-freeswan.dist | sed s/VERSION/$IPSECVERSION/ |sed s/ARCH/$ARCH/ > $OPENSWANSRCDIR/packaging/ipkg/control-freeswan 
+cat $OPENSWANSRCDIR/packaging/ipkg/control-openswan.dist | sed s/VERSION/$IPSECVERSION/ |sed s/ARCH/$ARCH/ > $OPENSWANSRCDIR/packaging/ipkg/control-openswan 
 
-cp $OPENSWANSRCDIR/packaging/ipkg/control-freeswan control 
+cp $OPENSWANSRCDIR/packaging/ipkg/control-openswan control 
 
 tar -czf ./control.tar.gz ./conffiles ./control --owner=root --group=root 
 
 tar -czf ./data.tar.gz ./* --owner=root --group=root --exclude=control.tar.gz --exclude=conffiles --exclude=control --exclude=debian-binary 
 
-tar -czf $OPENSWANSRCDIR/packaging/ipkg/ipkg/freeswan-utils-$IPSECVERSION.arm.ipk ./debian-binary ./control.tar.gz ./data.tar.gz --owner=root --group=root 
+tar -czf $OPENSWANSRCDIR/packaging/ipkg/ipkg/openswan-utils-$IPSECVERSION.$ARCH.ipk ./debian-binary ./control.tar.gz ./data.tar.gz --owner=root --group=root 
 mkdir -p $OPENSWANSRCDIR/packaging/ipkg/kernel-module 
 cd $OPENSWANSRCDIR/packaging/ipkg/kernel-module 
 
 rm -f *.tar.gz 
 cp $OPENSWANSRCDIR/packaging/ipkg/debian-binary . 
 
-cat $OPENSWANSRCDIR/packaging/ipkg/control-freeswan-module.dist | sed s/VERSION/$IPSECVERSION/ |sed s/ARCH/$ARCH/ > $OPENSWANSRCDIR/packaging/ipkg/control-freeswan-module 
+cat $OPENSWANSRCDIR/packaging/ipkg/control-openswan-module.dist | sed s/VERSION/$IPSECVERSION/ |sed s/ARCH/$ARCH/ > $OPENSWANSRCDIR/packaging/ipkg/control-openswan-module 
 
-cp $OPENSWANSRCDIR/packaging/ipkg/control-freeswan-module control 
+cp $OPENSWANSRCDIR/packaging/ipkg/control-openswan-module control 
 
 tar czf ./control.tar.gz ./control --owner=root --group=root 
 
 tar czf ./data.tar.gz * --owner=root --group=root --exclude=control.tar.gz --exclude=control --exclude=debian-binary 
 
-tar czf $OPENSWANSRCDIR/packaging/ipkg/ipkg/freeswan-module-$IPSECVERSION.arm.ipk ./debian-binary ./control.tar.gz ./data.tar.gz --owner=root --group=root 
+tar czf $OPENSWANSRCDIR/packaging/ipkg/ipkg/openswan-module-$IPSECVERSION.$ARCH.ipk ./debian-binary ./control.tar.gz ./data.tar.gz --owner=root --group=root 
 rm -rf $OPENSWANSRCDIR/packaging/ipkg/ipkg/binaries/* 
 rm -rf $OPENSWANSRCDIR/packaging/ipkg/ipkg/kernel-module/*

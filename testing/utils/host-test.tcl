@@ -1,11 +1,11 @@
 #!/usr/bin/expect --
 
 #
-# $Id: host-test.tcl,v 1.35 2003/10/31 02:43:34 mcr Exp $
+# $Id: host-test.tcl,v 1.38 2004/09/15 21:50:32 mcr Exp $
 #
 
-source $env(FREESWANSRCDIR)/testing/utils/GetOpts.tcl
-source $env(FREESWANSRCDIR)/testing/utils/netjig.tcl
+source $env(OPENSWANSRCDIR)/testing/utils/GetOpts.tcl
+source $env(OPENSWANSRCDIR)/testing/utils/netjig.tcl
 
 proc usage {} {
     global argv0
@@ -144,6 +144,9 @@ netjigsetup $netjig1
 newswitch $netjig1 "$arpreply public"
 newswitch $netjig1 "$arpreply private"
 
+# this just gets rid of issues with running without a mcast address
+newswitch $netjig1 "$arpreply admin"
+
 trace variable expect_out(buffer) w log_by_tracing
 
 # start up auxiliary hosts first
@@ -211,8 +214,20 @@ expect {
 	eof
 }
 
+system "sleep 4"
+
 # 
 # $Log: host-test.tcl,v $
+# Revision 1.38  2004/09/15 21:50:32  mcr
+# 	sleep after the test case finishes to give the UML time
+# 	to exit cleanly.
+#
+# Revision 1.37  2004/04/16 19:55:45  mcr
+# 	create "admin" network for "eth2" use.
+#
+# Revision 1.36  2004/04/03 19:44:52  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.35  2003/10/31 02:43:34  mcr
 # 	pull up of port-selector tests
 #

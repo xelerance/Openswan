@@ -3,9 +3,11 @@
 s/ [({]using isakmp#.*[})]//
 s/IPsec SA established {.*}/IPsec SA established/
 /^\=\=\= /d
-/Peer ID is ID_IPV4_ADDR/d  
+/eer ID is ID_IPV4_ADDR/d  
 s/ {isakmp=#.*\/ipsec=#.*}//
 /Changing to directory /d
 /  Warning: empty directory/d
 /transition from state /d
 /stats db_ops.c/d
+/started helper pid=/d
+/^!/d

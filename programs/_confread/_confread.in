@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _confread.in,v 1.75 2004/06/27 20:32:53 mcr Exp $
+# RCSID $Id: _confread.in,v 1.79.6.1 2005/05/18 20:55:12 ken Exp $
 #
 # Extract configuration info from /etc/ipsec.conf, repackage as assignments
 # to shell variables or tab-delimited fields.  Success or failure is reported
@@ -130,11 +130,14 @@ awk 'BEGIN {
 			fail("invalid section name " bq na[i] eq)
 	}
 
-	good = "also alsoflip type auto authby _plutodevel connaddrfamily forceencaps"
-	left = " left leftsubnet leftnexthop leftfirewall leftupdown"
+	good = "also alsoflip type auto authby _plutodevel"
+	good = good " connaddrfamily forceencaps"
+	good = good " modecfgpull"
+	left = " left leftsubnet leftnexthop leftupdown"
 	akey = " keyexchange auth pfs keylife rekey rekeymargin rekeyfuzz"
         akey = akey " dpddelay dpdtimeout dpdaction"
 	akey = akey " xauth"
+	akey = akey " aggrmode"
 	akey = akey " compress"
 	akey = akey " keyingtries ikelifetime disablearrivalcheck failureshunt ike"
 	mkey = " spibase spi esp espenckey espauthkey espreplay_window"
@@ -155,7 +158,8 @@ awk 'BEGIN {
 	good = good " syslog klipsdebug plutodebug plutoopts plutostderrlog"
 	good = good " plutorestartoncrash"
 	good = good " dumpdir manualstart pluto"
-	good = good " plutowait prepluto postpluto"
+	good = good " protostack"
+	good = good " plutowait prepluto postpluto nhelpers"
 	good = good " fragicmp hidetos rp_filter uniqueids"
 	good = good " overridemtu"
 	good = good " nocrsend strictcrlpolicy crlcheckinterval ocspuri"

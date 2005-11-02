@@ -1,16 +1,16 @@
 #!/usr/bin/expect --
 
 #
-# $Id: Xhost-test.tcl,v 1.11 2003/10/31 02:43:33 mcr Exp $
+# $Id: Xhost-test.tcl,v 1.18 2005/02/11 01:31:19 mcr Exp $
 #
 
-if {! [info exists env(FREESWANSRCDIR)]} {
-    puts stderr "Please point \$FREESWANSRCDIR to ../testing/utils/"
+if {! [info exists env(OPENSWANSRCDIR)]} {
+    puts stderr "Please point \$OPENSWANSRCDIR to ../testing/utils/"
     exit 24
 }
 
-source $env(FREESWANSRCDIR)/testing/utils/GetOpts.tcl
-source $env(FREESWANSRCDIR)/testing/utils/netjig.tcl
+source $env(OPENSWANSRCDIR)/testing/utils/GetOpts.tcl
+source $env(OPENSWANSRCDIR)/testing/utils/netjig.tcl
 
 proc usage {} {
     puts stderr "Usage: Xhost-test "
@@ -36,16 +36,20 @@ proc usage {} {
     puts stderr "\${HOST}_START\tthe program to invoke the UML"
     puts stderr "REF_\${HOST}_CONSOLE_OUTPUT\twhere to redirect the console output to"
     puts stderr "PACKETRATE\tthe rate at which packets will be replayed"
+    puts stderr "{NORTH,SOUTH,EAST,WEST}_PLAY denotes a pcap file to play on that network"
+    puts stderr "{NORTH,SOUTH,EAST,WEST}_REC  denotes a pcap file to reocrd into from that network"
     exit 22
 }
 
-set do_playeast      0
-set do_playwest      0
-set do_playpublic    0
-set do_recordeast    0
-set do_recordwest    0
-set do_recordpublic  0
+set umlid(neteast,setplay)      0
+set umlid(netwest,setplay)      0
+set umlid(netpublic,setplay)    0
+set umlid(neteast,setrecord)    0
+set umlid(netwest,setrecord)    0
+set umlid(netpublic,setrecord)  0
+set umlid(someplay) 0
 set do_dns           0
+
 set timeout 100
 log_user 0
 if {[info exists env(HOSTTESTDEBUG)]} {
@@ -57,6 +61,10 @@ if {[info exists env(HOSTTESTDEBUG)]} {
 netjigdebug "Program invoked with $argv"
 set arpreply ""
 set umlid(extra_hosts) ""
+
+foreach net $managednets {
+    process_net $net
+}
 
 while { [ set err [ getopt $argv "D:H:n:N:ae:E:w:W:p:P:" opt optarg]] } {
     if { $err < 0 } then {
@@ -82,28 +90,31 @@ while { [ set err [ getopt $argv "D:H:n:N:ae:E:w:W:p:P:" opt optarg]] } {
 		set arpreply "--arpreply"
 	    }
 	    e {
-		set playeast $optarg
-		set do_playeast 1
+		set umlid(neteast,play) $optarg
+		set umlid(neteast,setplay) 1
+		set umlid(someplay) 1
 	    }
 	    w {
-		set playwest $optarg
-		set do_playwest 1
+		set umlid(netwest,play) $optarg
+		set umlid(netwest,setplay) 1
+		set umlid(someplay) 1
 	    }
 	    p {
-		set playpublic $optarg
-		set do_playpublic 1
+		set umlid(netpublic,play) $optarg
+		set umlid(netpublic,setplay) 1
+		set umlid(someplay) 1
 	    }
 	    E {
-		set recordeast $optarg
-		set do_recordeast 1
+		set umlid(neteast,record) $optarg
+		set umlid(neteast,setrecord) 1
 	    }
 	    W {
-		set recordwest $optarg
-		set do_recordwest 1
+		set umlid(netwest,record) $optarg
+		set umlid(netwest,setrecord) 1
 	    }
 	    P {
-		set recordpublic $optarg
-		set do_recordpublic 1
+		set umlid(netpublic,record) $optarg
+		set umlid(netpublic,setrecord) 1
 	    }
 	}
     }
@@ -112,6 +123,10 @@ while { [ set err [ getopt $argv "D:H:n:N:ae:E:w:W:p:P:" opt optarg]] } {
 if {! [info exists env(XHOST_LIST)]} {
     puts stderr "You must specify at least one host to manage in \$XHOST_LIST"
     exit 23
+}
+
+foreach net $managednets {
+    calc_net $net
 }
 
 set managed_hosts [split $env(XHOST_LIST) ", "]
@@ -145,11 +160,13 @@ set netjig1 $spawn_id
 
 netjigsetup $netjig1
 
-newswitch $netjig1 "$arpreply east"
-newswitch $netjig1 "public"
-newswitch $netjig1 "$arpreply west"
-newswitch $netjig1 "$arpreply northpublic"
-newswitch $netjig1 "$arpreply southpublic"
+foreach net $managednets {
+    if { $umlid(net$net,arp) } {
+	newswitch $netjig1 "--arpreply $net"
+    } {
+	newswitch $netjig1 "$net"
+    }
+}
 
 if {[info exists netjig_extra]} {
     playnjscript $netjig1 $netjig_extra
@@ -183,34 +200,18 @@ foreach host $managed_hosts {
     inituml $host
 }
 
-if { $do_recordeast == 1 } {
-    netjigdebug "Will record network 'east' to $recordeast"
-    record $netjig1 east $recordeast
+foreach net $managednets {
+    if {[info exists umlid(net$net,record)] } {
+	netjigdebug "Will record network '$net' to $umlid(net$net,record)"
+	record $netjig1 $net $umlid(net$net,record)
+    }
 }
 
-if { $do_recordwest == 1 } {
-    netjigdebug "Will record network 'west' to $recordwest"
-    record $netjig1 west $recordwest
-}
-
-if { $do_recordpublic == 1 } {
-    netjigdebug "Will record network 'public' to $recordpublic"
-    record $netjig1 public $recordpublic
-}
-
-if { $do_playeast == 1 } {
-    netjigdebug "Will play pcap file $playeast to network 'east'"
-    setupplay $netjig1 east $playeast
-}
-
-if { $do_playwest == 1 } {
-    netjigdebug "Will play pcap file $playwest to network 'west'"
-    setupplay $netjig1 west $playwest
-}
-
-if { $do_playpublic == 1 } {
-    netjigdebug "Will play pcap file $playpublic to network 'public'"
-    setupplay $netjig1 public $playpublic
+foreach net $managednets {
+    if {[info exists umlid(net$net,play)] } {
+	netjigdebug "Will play pcap file $umlid(net$net,play) to network '$net'"
+	setupplay $netjig1 $net $umlid(net$net,play)
+    }
 }
 
 # let things settle.
@@ -222,7 +223,7 @@ foreach host $managed_hosts {
 }
 
 # XXX the other blank line comes out during waitplay.
-if { $do_playeast == 0 && $do_playwest == 0 && $do_playpublic == 0 } {
+if { $umlid(someplay) == 0 } {
     netjigdebug "WARNING: There are NO PACKET input sources, not waiting for data injection"
 } else {
     waitplay $netjig1
@@ -268,12 +269,12 @@ foreach host $managed_hosts {
     netjigdebug "Shutting down $host"
     killuml $host
 }
+sleep 5
 
 foreach host $umlid(extra_hosts) {
     netjigdebug "Shutting down extra host: $host"
     shutdown $host
 }
-
 
 log_user 1
 expect -i $netjig1 -gl "*"
@@ -287,6 +288,32 @@ expect {
 
 # 
 # $Log: Xhost-test.tcl,v $
+# Revision 1.18  2005/02/11 01:31:19  mcr
+# 	added a sleep to permit UMLs to finish and drain.
+#
+# Revision 1.17  2004/04/03 19:44:52  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
+# Revision 1.16  2004/03/21 04:36:16  mcr
+# 	1) local switches now reads testparams.sh file.
+# 	2) $arpreply is totally deprecated.
+#
+# Revision 1.15  2004/02/15 00:12:00  mcr
+# 	--arpreply calculation was failing for situation
+# 	where the options were specified as arguments.
+# 	split process_net -> process_net/calc_net.
+#
+# Revision 1.14  2004/02/05 02:14:34  mcr
+# 	guess which switches need --arpreply by whether or not they
+# 	are getting recorded or not.
+#
+# Revision 1.13  2004/02/03 20:14:39  mcr
+# 	networks are now managed as a list rather than explicitely.
+#
+# Revision 1.12  2004/02/03 04:46:32  mcr
+# 	refactored some code.
+# 	added north/south network play/record via environment variables.
+#
 # Revision 1.11  2003/10/31 02:43:33  mcr
 # 	pull up of port-selector tests
 #

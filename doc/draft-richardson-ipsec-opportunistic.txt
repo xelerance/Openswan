@@ -1,121 +1,177 @@
 
 
+
 Independent submission                                     M. Richardson
 Internet-Draft                                                       SSW
-Expires: November 19, 2003                                 D. Redelmeier
+Expires: July 5, 2005                                      D. Redelmeier
                                                                   Mimosa
-                                                            May 21, 2003
+                                                            January 2005
 
 
      Opportunistic Encryption using The Internet Key Exchange (IKE)
-              draft-richardson-ipsec-opportunistic-11.txt
+              draft-richardson-ipsec-opportunistic-17.txt
 
 Status of this Memo
 
-   This document is an Internet-Draft and is in full conformance with
-   all provisions of Section 10 of RFC2026.
+   This document is an Internet-Draft and is subject to all provisions
+   of Section 3 of RFC 3667.  By submitting this Internet-Draft, each
+   author represents that any applicable patent or other IPR claims of
+   which he or she is aware have been or will be disclosed, and any of
+   which he or she become aware will be disclosed, in accordance with
+   RFC 3668.
 
    Internet-Drafts are working documents of the Internet Engineering
    Task Force (IETF), its areas, and its working groups.  Note that
-   other groups may also distribute working documents as Internet-
-   Drafts.
+   other groups may also distribute working documents as
+   Internet-Drafts.
 
    Internet-Drafts are draft documents valid for a maximum of six months
    and may be updated, replaced, or obsoleted by other documents at any
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   The list of current Internet-Drafts can be accessed at http://
-   www.ietf.org/ietf/1id-abstracts.txt.
+   The list of current Internet-Drafts can be accessed at
+   http://www.ietf.org/ietf/1id-abstracts.txt.
 
    The list of Internet-Draft Shadow Directories can be accessed at
    http://www.ietf.org/shadow.html.
 
-   This Internet-Draft will expire on November 19, 2003.
+   This Internet-Draft will expire on July 5, 2005.
 
 Copyright Notice
 
-   Copyright (C) The Internet Society (2003).  All Rights Reserved.
+   Copyright (C) The Internet Society (2005).
 
 Abstract
 
-   This document describes opportunistic encryption (OE) using the
-   Internet Key Exchange (IKE) and IPsec.  Each system administrator
-   adds new resource records to his or her Domain Name System (DNS) to
-   support opportunistic encryption.  The objective is to allow
+   This document describes opportunistic encryption (OE) as designed and
+   implemented by the Linux FreeS/WAN project.  OE uses the Internet Key
+   Exchange (IKE) and IPsec protocols.  The objective is to allow
    encryption for secure communication without any pre-arrangement
-   specific to the pair of systems involved.
-
-   DNS is used to distribute the public keys of each system involved.
-   This is resistant to passive attacks.  The use of DNS Security
-   (DNSSEC) secures this system against active attackers as well.
+   specific to the pair of systems involved.  DNS is used to distribute
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003            [Page 1]
+Richardson & Redelmeier    Expires July 5, 2005                 [Page 1]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
+
+   the public keys of each system involved.  This is resistant to
+   passive attacks.  The use of DNS Security (DNSSEC) secures this
+   system against active attackers as well.
 
    As a result, the administrative overhead is reduced from the square
    of the number of systems to a linear dependence, and it becomes
    possible to make secure communication the default even when the
    partner is not known in advance.
 
-   This document is offered up as an Informational RFC.
-
 Table of Contents
 
-   1.  Introduction . . . . . . . . . . . . . . . . . . . . . . . . .  3
-   2.  Overview . . . . . . . . . . . . . . . . . . . . . . . . . . .  6
-   3.  Specification  . . . . . . . . . . . . . . . . . . . . . . . . 10
-   4.  Impacts on IKE . . . . . . . . . . . . . . . . . . . . . . . . 21
-   5.  DNS issues . . . . . . . . . . . . . . . . . . . . . . . . . . 24
-   6.  Network address translation interaction  . . . . . . . . . . . 28
-   7.  Host implementations . . . . . . . . . . . . . . . . . . . . . 29
-   8.  Multi-homing . . . . . . . . . . . . . . . . . . . . . . . . . 30
-   9.  Failure modes  . . . . . . . . . . . . . . . . . . . . . . . . 32
-   10. Unresolved issues  . . . . . . . . . . . . . . . . . . . . . . 34
-   11. Examples . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
-   12. Security considerations  . . . . . . . . . . . . . . . . . . . 42
-   13. IANA Considerations  . . . . . . . . . . . . . . . . . . . . . 44
-   14. Acknowledgments  . . . . . . . . . . . . . . . . . . . . . . . 45
-       Normative references . . . . . . . . . . . . . . . . . . . . . 46
-       Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . 47
-       Full Copyright Statement . . . . . . . . . . . . . . . . . . . 48
+   1.   Introduction . . . . . . . . . . . . . . . . . . . . . . . .   4
+     1.1  Motivation . . . . . . . . . . . . . . . . . . . . . . . .   4
+     1.2  Encryption Regimes . . . . . . . . . . . . . . . . . . . .   5
+     1.3  Peer authentication in opportunistic encryption  . . . . .   5
+     1.4  Use of RFC2119 terms . . . . . . . . . . . . . . . . . . .   6
+   2.   Overview . . . . . . . . . . . . . . . . . . . . . . . . . .   7
+     2.1  Reference diagram  . . . . . . . . . . . . . . . . . . . .   7
+     2.2  Terminology  . . . . . . . . . . . . . . . . . . . . . . .   7
+     2.3  Model of operation . . . . . . . . . . . . . . . . . . . .   8
+   3.   Protocol Specification . . . . . . . . . . . . . . . . . . .  10
+     3.1  Forwarding plane state machine . . . . . . . . . . . . . .  10
+     3.2  Keying Daemon -- initiator . . . . . . . . . . . . . . . .  12
+     3.3  Keying Daemon - responder  . . . . . . . . . . . . . . . .  19
+     3.4  Renewal and teardown . . . . . . . . . . . . . . . . . . .  21
+   4.   Impacts on IKE . . . . . . . . . . . . . . . . . . . . . . .  24
+     4.1  ISAKMP/IKE protocol  . . . . . . . . . . . . . . . . . . .  24
+     4.2  Gateway discovery process  . . . . . . . . . . . . . . . .  24
+     4.3  Self identification  . . . . . . . . . . . . . . . . . . .  24
+     4.4  Public key retrieval process . . . . . . . . . . . . . . .  25
+     4.5  Interactions with DNSSEC . . . . . . . . . . . . . . . . .  25
+     4.6  Required proposal types  . . . . . . . . . . . . . . . . .  25
+   5.   DNS issues . . . . . . . . . . . . . . . . . . . . . . . . .  27
+     5.1  Use of KEY record  . . . . . . . . . . . . . . . . . . . .  27
+     5.2  Use of TXT delegation record . . . . . . . . . . . . . . .  27
+     5.3  Use of FQDN IDs  . . . . . . . . . . . . . . . . . . . . .  29
+     5.4  Key roll-over  . . . . . . . . . . . . . . . . . . . . . .  30
+   6.   Network address translation interaction  . . . . . . . . . .  31
+     6.1  Co-located NAT/NAPT  . . . . . . . . . . . . . . . . . . .  31
+     6.2  Security Gateway behind NAT/NAPT . . . . . . . . . . . . .  31
+     6.3  End System is behind a NAT/NAPT  . . . . . . . . . . . . .  31
+   7.   Host implementations . . . . . . . . . . . . . . . . . . . .  33
+   8.   Multi-homing . . . . . . . . . . . . . . . . . . . . . . . .  34
+   9.   Failure modes  . . . . . . . . . . . . . . . . . . . . . . .  36
+     9.1  DNS failures . . . . . . . . . . . . . . . . . . . . . . .  36
+     9.2  DNS configured, IKE failures . . . . . . . . . . . . . . .  36
+     9.3  System reboots . . . . . . . . . . . . . . . . . . . . . .  36
+   10.  Unresolved issues  . . . . . . . . . . . . . . . . . . . . .  38
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003            [Page 2]
+Richardson & Redelmeier    Expires July 5, 2005                 [Page 2]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-1. Introduction
+     10.1   Control of reverse DNS . . . . . . . . . . . . . . . . .  38
+   11.  Examples . . . . . . . . . . . . . . . . . . . . . . . . . .  39
+     11.1   Clear-text usage (permit policy) . . . . . . . . . . . .  39
+     11.2   Opportunistic encryption . . . . . . . . . . . . . . . .  40
+   12.  Security considerations  . . . . . . . . . . . . . . . . . .  44
+     12.1   Configured vs opportunistic tunnels  . . . . . . . . . .  44
+     12.2   Firewalls versus Opportunistic Tunnels . . . . . . . . .  45
+     12.3   Denial of service  . . . . . . . . . . . . . . . . . . .  45
+   13.  IANA Considerations  . . . . . . . . . . . . . . . . . . . .  46
+   14.  Intellectual Property Claims . . . . . . . . . . . . . . . .  47
+   15.  Acknowledgments  . . . . . . . . . . . . . . . . . . . . . .  48
+   16.  References . . . . . . . . . . . . . . . . . . . . . . . . .  49
+     16.1   Normative references . . . . . . . . . . . . . . . . . .  49
+     16.2   Non-normative references . . . . . . . . . . . . . . . .  49
+        Authors' Addresses . . . . . . . . . . . . . . . . . . . . .  50
+        Intellectual Property and Copyright Statements . . . . . . .  52
 
-1.1 Motivation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                 [Page 3]
+
+Internet-Draft                opportunistic                 January 2005
+
+
+1.  Introduction
+
+1.1  Motivation
 
    The objective of opportunistic encryption is to allow encryption
    without any pre-arrangement specific to the pair of systems involved.
@@ -125,14 +181,17 @@ Internet-Draft                opportunistic                     May 2003
    communicate securely.
 
    This document describes opportunistic encryption as designed and
-   mostly implemented by the Linux FreeS/WAN project.  For project
-   information, see http://www.freeswan.org.
+   implemented by the Linux FreeS/WAN project in revisions up and
+   including 2.00.  Note that 2.01 and beyond implements [RFC3445] in a
+   backward compatible way.  A future document [IPSECKEY] will describe
+   a variation that complies with RFC3445.  For project information, see
+   http://www.freeswan.org.
 
    The Internet Architecture Board (IAB) and Internet Engineering
    Steering Group (IESG) have taken a strong stand that the Internet
-   should use powerful encryption to provide security and privacy [4].
-   The Linux FreeS/WAN project attempts to provide a practical means to
-   implement this policy.
+   should use powerful encryption to provide security and privacy
+   [RFC1984].  The Linux FreeS/WAN project attempts to provide a
+   practical means to implement this policy.
 
    The project uses the IPsec, ISAKMP/IKE, DNS and DNSSEC protocols
    because they are standardized, widely available and can often be
@@ -158,32 +217,35 @@ Internet-Draft                opportunistic                     May 2003
    This document describes the infrastructure to permit deployment of
    Opportunistic Encryption.
 
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                 [Page 4]
+
+Internet-Draft                opportunistic                 January 2005
+
+
    The term S/WAN is a trademark of RSA Data Systems, and is used with
    permission by this project.
 
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003            [Page 3]
-
-Internet-Draft                opportunistic                     May 2003
-
-
-1.2 Types of network traffic
+1.2  Encryption Regimes
 
    To aid in understanding the relationship between security processing
-   and IPsec we divide network traffic into four categories:
-
-   * Deny: networks to which traffic is always forbidden.
-
-   * Permit: networks to which traffic in the clear is permitted.
-
-   * Opportunistic tunnel: networks to which traffic is encrypted if
-      possible, but otherwise is in the clear or fails depending on the
-      default policy in place.
-
-   * Configured tunnel: networks to which traffic must be encrypted, and
-      traffic in the clear is never permitted.
+   and IPsec we divide policies controlling network traffic into four
+   categories.  The traffic is categorized by destination address using
+   longest prefix match.  Each category is therefore enumerated by a set
+   of network prefixes.  The categories are mutually exclusive - a
+   particular prefix should only occur in one category.
+   * Deny: network prefixes to which traffic is always forbidden.
+   * Permit: network prefixes to which traffic in the clear is
+      permitted.
+   * Opportunistic tunnel: network prefixes to which traffic is
+      encrypted if possible, when it otherwise might be sent in the
+      clear.
+   * Configured tunnel: networks prefixes which traffic must be
+      encrypted, and traffic in the clear is never permitted.  A
+      traditionally defined Virtual Private Network (VPN) is a form of
+      configured tunnel.
 
    Traditional firewall devices handle the first two categories.  No
    authentication is required.  The permit policy is currently the
@@ -192,19 +254,16 @@ Internet-Draft                opportunistic                     May 2003
    This document describes the third category - opportunistic tunnel,
    which is proposed as the new default for the Internet.
 
-   Category four, encrypt traffic or drop it, requires authentication of
-   the end points.  As the number of end points is typically bounded and
-   is typically under a single authority, arranging for distribution of
-   authentication material, while difficult, does not require any new
-   technology.  The mechanism described here provides an additional way
-   to distribute the authentication materials, that of a public key
-   method that does not require deployment of an X.509 based
-   infrastructure.
+   Category four's policy is a very strict, "encrypt it or drop it"
+   policy, requires authentication of the end points.  As the number of
+   end points is typically bounded and is typically under a single
+   authority, arranging for distribution of authentication material,
+   while difficult, does not require any new technology.  The mechanism
+   described here, however, does provides an additional way to
+   distribute the authentication materials, that of a public key method
+   that does not require deployment of an X.509 based infrastructure.
 
-   Current Virtual Private Networks can often be replaced by an "OE
-   paranoid" policy as described herein.
-
-1.3 Peer authentication in opportunistic encryption
+1.3  Peer authentication in opportunistic encryption
 
    Opportunistic encryption creates tunnels between nodes that are
    essentially strangers.  This is done without any prior bilateral
@@ -214,42 +273,42 @@ Internet-Draft                opportunistic                     May 2003
    One possible answer is that since no useful authentication can be
    done, none should be tried.  This mode of operation is named
    "anonymous encryption".  An active man-in-the-middle attack can be
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                 [Page 5]
+
+Internet-Draft                opportunistic                 January 2005
+
+
    used to thwart the privacy of this type of communication.  Without
    peer authentication, there is no way to prevent this kind of attack.
-
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003            [Page 4]
-
-Internet-Draft                opportunistic                     May 2003
-
 
    Although a useful mode, anonymous encryption is not the goal of this
    project.  Simpler methods are available that can achieve anonymous
    encryption only, but authentication of the peer is a desireable goal.
-   The latter is achieved through key distribution in DNS, leveraging
-   upon the authentication of the DNS in DNSSEC.
+   Authentication of the peer is achieved through key distribution in
+   DNS, leveraging upon the authentication of the DNS in DNSSEC.
 
    Peers are, therefore, authenticated with DNSSEC when available.
    Local policy determines how much trust to extend when DNSSEC is not
    available.
 
-   However, an essential premise of building private connections with
-   strangers is that datagrams received through opportunistic tunnels
-   are no more special than datagrams that arrive in the clear.  Unlike
-   in a VPN, these datagrams should not be given any special exceptions
-   when it comes to auditing, further authentication or firewalling.
+   An essential premise of building private connections with strangers
+   is that datagrams received through opportunistic tunnels are no more
+   special than datagrams that arrive in the clear.  Unlike in a VPN,
+   these datagrams should not be given any special exceptions when it
+   comes to auditing, further authentication or firewalling.
 
    When initiating outbound opportunistic encryption, local
    configuration determines what happens if tunnel setup fails.  It may
    be that the packet goes out in the clear, or it may be dropped.
 
-1.4 Use of RFC2119 terms
+1.4  Use of RFC2119 terms
 
    The keywords MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD,
    SHOULD NOT, RECOMMENDED, MAY, and OPTIONAL, when they appear in this
-   document, are to be interpreted as described in [5]
+   document, are to be interpreted as described in [RFC2119]
 
 
 
@@ -273,19 +332,14 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003            [Page 5]
+Richardson & Redelmeier    Expires July 5, 2005                 [Page 6]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-2. Overview
+2.  Overview
 
-2.1 Reference diagram
-
-   ---------------------------------------------------------------------
+2.1  Reference diagram
 
    The following network diagram is used in the rest of this document as
    the canonical diagram:
@@ -302,129 +356,102 @@ Internet-Draft                opportunistic                     May 2003
 
                   Figure 1: Reference Network Diagram
 
-   ---------------------------------------------------------------------
-
    In this diagram, there are four end-nodes: A, B, C and D.  There are
-   three gateways, SG-A, SG-B, SG-D.  A, D, SG-A and SG-D are part of
-   the same administrative authority, AS1.  SG-A and SG-D are on two
-   different exit paths from organization 1.  SG-B/B is an independent
-   organization, AS2.  Nodes Q and R are nodes on the Internet.  PI is
-   the Public Internet ("The Wild").
+   three security gateways, SG-A, SG-B, SG-D.  A, D, SG-A and SG-D are
+   part of the same administrative authority, AS1.  SG-A and SG-D are on
+   two different exit paths from organization 1.  SG-B and B are part of
+   an independent organization, AS2.  Nodes Q and R are nodes on the
+   Internet.  PI is the Public Internet ("The Wild").
 
-2.2 Terminology
+2.2  Terminology
+
+   Note: The network numbers used in this document are for illustrative
+   purposes only.  This document could not use the reserved example
+   network numbers of [RFC3330] because multiple address ranges were
+   needed.
 
    The following terminology is used in this document:
-
-   Security gateway: a system that performs IPsec tunnel mode
-      encapsulation/decapsulation.  [SG-x] in the diagram.
-
+   Security gateway (or simply gateway): a system that performs IPsec
+      tunnel mode encapsulation/decapsulation.  [SG-x] in the diagram.
    Alice: node [A] in the diagram.  When an IP address is needed, this
       is 192.1.0.65.
-
    Bob: node [B] in the diagram.  When an IP address is needed, this is
       192.2.0.66.
-
    Carol: node [C] in the diagram.  When an IP address is needed, this
       is 192.1.1.67.
-
    Dave: node [D] in the diagram.  When an IP address is needed, this is
       192.3.0.68.
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003            [Page 6]
-
-Internet-Draft                opportunistic                     May 2003
-
-
    SG-A: Alice's security gateway.  Internally it is 192.1.0.1,
       externally it is 192.1.1.4.
 
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                 [Page 7]
+
+Internet-Draft                opportunistic                 January 2005
+
+
    SG-B: Bob's security gateway.  Internally it is 192.2.0.1, externally
       it is 192.1.1.5.
-
    SG-D: Dave's security gateway.  Also Alice's backup security gateway.
       Internally it is 192.3.0.1, externally it is 192.1.1.6.
-
-   -  A single dash represents clear-text datagrams.
-
-   =  An equals sign represents phase 2 (IPsec) cipher-text datagrams.
-
-   ~  A single tilde represents clear-text phase 1 datagrams.
-
-   #  A hash sign represents phase 1 (IKE) cipher-text datagrams.
-
-   .  A period represents an untrusted network of unknown type.
-
    Configured tunnel: a tunnel that is directly and deliberately hand
       configured on participating gateways.  Configured tunnels are
       typically given a higher level of trust than opportunistic
       tunnels.
-
    Road warrior tunnel: a configured tunnel connecting one node with a
       fixed IP address and one node with a variable IP address.  A road
       warrior (RW) connection must be initiated by the variable node,
       since the fixed node cannot know the current address for the road
       warrior.
-
    Anonymous encryption: the process of encrypting a session without any
       knowledge of who the other parties are.  No authentication of
       identities is done.
-
    Opportunistic encryption: the process of encrypting a session with
-      authenticated knowledge of who the other parties are.
-
+      authenticated knowledge of who the other party is.
    Lifetime: the period in seconds (bytes or datagrams) for which a
-      security association will remain alive before needing to be re-
-      keyed.
-
+      security association will remain alive before rekeying is needed.
    Lifespan: the effective time for which a security association remains
       useful.  A security association with a lifespan shorter than its
       lifetime would be removed when no longer needed.  A security
       association with a lifespan longer than its lifetime would need to
       be re-keyed one or more times.
-
    Phase 1 SA: an ISAKMP/IKE security association sometimes referred to
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003            [Page 7]
-
-Internet-Draft                opportunistic                     May 2003
-
-
       as a keying channel.
-
    Phase 2 SA: an IPsec security association.
-
    Tunnel: another term for a set of phase 2 SA (one in each direction).
-
-   NAT: Network Address Translation (see [20]).
-
-   NAPT: Network Address and Port Translation (see [20]).
-
-   AS: an autonomous system (AS) is a group of systems (a network) that
-      are under the administrative control of a single organization.
-
+   NAT: Network Address Translation (see [RFC2663]).
+   NAPT: Network Address and Port Translation (see [RFC2663]).
+   AS: an autonomous system
+   FQDN: Fully-Qualified Domain Name
    Default-free zone: a set of routers that maintain a complete set of
       routes to all currently reachable destinations.  Having such a
       list, these routers never make use of a default route.  A datagram
       with a destination address not matching any route will be dropped
       by such a router.
 
-
-2.3 Model of operation
+2.3  Model of operation
 
    The opportunistic encryption security gateway (OE gateway) is a
-   regular gateway node as described in [2] section 2.4 and [3] with the
-   additional capabilities described here and in [7].  The algorithm
-   described here provides a way to determine, for each datagram,
-   whether or not to encrypt and tunnel the datagram.  Two important
-   things that must be determined are whether or not to encrypt and
-   tunnel and, if so, the destination address or name of the tunnel end
-   point which should be used.
+   regular gateway node as described in [RFC0791] section 2.4 and
+   [RFC1009] with the additional capabilities described here and in
+   [RFC2401].  The algorithm described here provides a way to determine,
+   for each datagram, whether or not to encrypt and tunnel the datagram.
+   Two important things that must be determined are whether or not to
+   encrypt and tunnel and, if so, the destination address or name of the
 
-2.3.1 Tunnel authorization
+
+
+Richardson & Redelmeier    Expires July 5, 2005                 [Page 8]
+
+Internet-Draft                opportunistic                 January 2005
+
+
+   tunnel end point which should be used.
+
+2.3.1  Tunnel authorization
 
    The OE gateway determines whether or not to create a tunnel based on
    the destination address of each packet.  Upon receiving a packet with
@@ -435,42 +462,34 @@ Internet-Draft                opportunistic                     May 2003
    record is found, the OE gateway interprets this as a request for a
    tunnel to be formed.
 
-2.3.2 Tunnel end-point discovery
+2.3.2  Tunnel end-point discovery
 
    The authorization resource record also provides the address or name
    of the tunnel end point which should be used.
 
    The record may also provide the public RSA key of the tunnel end
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003            [Page 8]
-
-Internet-Draft                opportunistic                     May 2003
-
-
    point itself.  This is provided for efficiency only.  If the public
    RSA key is not present, the OE gateway performs a second lookup to
    find a KEY resource record for the end point address or name.
 
    Origin and integrity protection of the resource records is provided
-   by DNSSEC ([16]).  Section 3.2.4.1 documents an optional restriction
-   on the tunnel end point if DNSSEC signatures are not available for
-   the relevant records.
+   by DNSSEC (see [RFC2535]).  Section 3.2.4.1 documents an optional
+   restriction on the tunnel end point if DNSSEC signatures are not
+   available for the relevant records.
 
-2.3.3 Caching of authorization results
+2.3.3  Caching of authorization results
 
-   The OE gateway maintains a cache, in the forwarding plane, of source/
-   destination pairs for which opportunistic encryption has been
+   The OE gateway maintains a cache, in the forwarding plane, of
+   source/destination pairs for which opportunistic encryption has been
    attempted.  This cache maintains a record of whether or not OE was
    successful so that subsequent datagrams can be forwarded properly
    without additional delay.
 
    Successful negotiation of OE instantiates a new security association.
    Failure to negotiate OE results in creation of a forwarding policy
-   entry either to drop or transmit in the clear future datagrams.  This
-   negative cache is necessary to avoid the possibly lengthy process of
-   repeatedly looking up the same information.
+   entry either to deny or permit transmission in the clear future
+   datagrams.  This negative cache is necessary to avoid the possibly
+   lengthy process of repeatedly looking  up the same information.
 
    The cache is timed out periodically, as described in Section 3.4.
    This removes entries that are no longer being used and permits the
@@ -481,107 +500,131 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003            [Page 9]
+Richardson & Redelmeier    Expires July 5, 2005                 [Page 9]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-3. Specification
+3.  Protocol Specification
 
    The OE gateway is modeled to have a forwarding plane and a control
-   plane.  A control channel, such as PF_KEY, connects the two planes.
-   (See [6].) The forwarding plane performs per datagram operations.
-   The control plane contains a keying daemon, such as ISAKMP/IKE, and
-   performs all authorization, peer authentication and key derivation
-   functions.
+   plane.  A control channel, such as PF_KEY [RFC2367], connects the two
+   planes.
 
-3.1 Datagram state machine
+   The forwarding plane performs per datagram operations.  The control
+   plane contains a keying daemon, such as ISAKMP/IKE, and performs all
+   authorization, peer authentication and key derivation functions.
+
+3.1  Forwarding plane state machine
 
    Let the OE gateway maintain a collection of objects -- a superset of
-   the security policy database (SPD) specified in [7].  For each
+   the security policy database (SPD) specified in [RFC2401].  For each
    combination of source and destination address, an SPD object exists
    in one of five following states.  Prior to forwarding each datagram,
    the responder uses the source and destination addresses to pick an
    entry from the SPD.  The SPD then determines if and how the packet is
    forwarded.
 
-3.1.1 Non-existent policy
+         .--------------.
+         | non-existant |
+         |    policy    |
+         `--------------'
+                |
+                | PF_ACQUIRE
+                |
+                |<---------.
+                V          | new packet
+         .--------------.  | (maybe resend PF_ACQUIRE)
+         |  hold policy |--'
+         |              |--.
+         `--------------'   \  pass
+            |        |       \ msg    .---------.
+            |        |        \       V         | forward
+            |        |         .-------------.  | packet
+     create |        |         | pass policy |--'
+     IPsec  |        |         `-------------'
+     SA     |        |
+            |         \
+            |          \
+            V           \ deny
+      .---------.        \ msg
+      | encrypt |         \
+      | policy  |          \         ,---------.
+      `---------'           \        |         | discard
+                             \       V         | packet
+                              .-------------.  |
 
-   If the responder does not find an entry, then this policy applies.
-   The responder creates an entry with an initial state of "hold policy"
-   and requests keying material from the keying daemon.  The responder
-   does not forward the datagram, rather it attaches the datagram to the
-   SPD entry as the  "first" datagram and retains it for eventual
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 10]
+
+Internet-Draft                opportunistic                 January 2005
+
+
+                              | deny policy |--'
+                              `-------------'
+
+
+3.1.1  Non-existent policy
+
+   If the gateway does not find an entry, then this policy applies.  The
+   gateway creates an entry with an initial state of "hold policy" and
+   requests keying material from the keying daemon.  The gateway does
+   not forward the datagram, rather it SHOULD attach the datagram to the
+   SPD entry as the  "first" datagram and retain it for eventual
    transmission in a new state.
 
-3.1.2 Hold policy
+3.1.2  Hold policy
 
-   The responder requests keying material.  If the interface to the
-   keying system is lossy (PF_KEY, for instance, can be), the
-   implementation SHOULD include a mechanism to retransmit the keying
-   request at a rate limited to less than 1 request per second.  The
-   responder does not forward the datagram.  It attaches the datagram to
-   the SPD entry as the "last" datagram where it is retained for
-   eventual transmission.  If there is a datagram already so stored,
-   then that already stored datagram is discarded.
+   The gateway requests keying material.  If the interface to the keying
+   system is lossy (PF_KEY, for instance, can be), the implementation
+   SHOULD include a mechanism to retransmit the keying request at a rate
+   limited to less than 1 request per second.  The gateway does not
+   forward the datagram.  The gateway SHOULD attach the datagram to the
+   SPD entry as the "last" datagram where it is retained for eventual
+   transmission.  If there is a datagram already so stored, then that
+   already stored datagram is discarded.
 
-   Because the "first" datagram is probably a TCP SYN packet, the
-   responder retains the "first" datagram in an attempt to avoid waiting
-   for a TCP retransmit.  The responder retains the "last" datagram in
-   deference to streaming protocols that find it useful to know how much
-   data has been lost.  These are recommendations to decrease latency.
-   There are no operational requirements for this.
+   The rationale behind saving the the "first" and "last" datagrams are
+   as follows: The "first" datagram is probably a TCP SYN packet.  Once
+   there is keying established, the gateway will release this datagram,
+   avoiding the need for the end-point to retransmit the datagram.  In
+   the case where the connection was not a TCP connection, but was
+   instead a streaming protocol or a DNS request, the "last" datagram
+   that was retained is likely the most recent data.  The difference
+   between "first" and "last" may also help the end-points determine
+   which data was dropped while negotiation took place.
+
+3.1.3  Pass-through policy
+
+   The gateway forwards the datagram using the normal forwarding table.
+   The gateway enters this state only by command from the keying daemon,
+   and upon entering this state, also forwards the "first" and "last"
+   datagrams.
+
+3.1.4  Deny policy
+
+   The gateway discards the datagram.  The gateway enters this state
+   only by command from the keying daemon, and upon entering this state,
+   discards the "first" and "last" datagrams.  An implementation MAY
+   provide the administator with a control to determine if further
+   datagrams cause ICMP messages to be generated (i.e.  ICMP Destination
 
 
 
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 10]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 11]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-3.1.3 Pass-through policy
+   Unreachable, Communication Administratively Prohibited.  type=3,
+   code=13).
 
-   The responder forwards the datagram using the normal forwarding
-   table.  The responder enters this state only by command from the
-   keying daemon, and upon entering this state, also forwards the
-   "first" and "last" datagrams.
+3.1.5  Encrypt policy
 
-3.1.4 Deny policy
-
-   The responder discards the datagram.  The responder enters this state
-   only by command from the keying daemon, and upon entering this state,
-   discards the "first" and "last" datagrams.  Local administration
-   decides if further datagrams cause ICMP messages to be generated
-   (i.e.  ICMP Destination Unreachable, Communication Administratively
-   Prohibited.  type=3, code=13).
-
-3.1.5 Encrypt policy
-
-   The responder encrypts the datagram using the indicated security
-   association database (SAD) entry.  The responder enters this state
-   only by command from the keying daemon, and upon entering this state,
+   The gateway encrypts the datagram using the indicated security
+   association database (SAD) entry.  The gateway enters this state only
+   by command from the keying daemon, and upon entering this state,
    releases and forwards the "first" and "last" datagrams using the new
    encrypt policy.
 
@@ -590,15 +633,15 @@ Internet-Draft                opportunistic                     May 2003
    message is sent to the keying daemon.
 
    All states may be created directly by the keying daemon while acting
-   as a responder.
+   as a gateway.
 
-3.2 Keying state machine - initiator
+3.2  Keying Daemon -- initiator
 
    Let the keying daemon maintain a collection of objects.  Let them be
    called "connections" or "conn"s.  There are two categories of
    connection objects: classes and instances.  A class represents an
    abstract policy - what could be.  An instance represents an actual
-   connection - what is implemented at the time.
+   connection - what is running at the time.
 
    Let there be two further subtypes of connections: keying channels
    (Phase 1 SAs) and data channels (Phase 2 SAs).  Each data channel
@@ -606,21 +649,13 @@ Internet-Draft                opportunistic                     May 2003
    datagram state machine.
 
    For the purposes of opportunistic encryption, there MUST, at least,
-   be connection classes known as "deny", "always-clear-text", "OE-
-   permissive", and "OE-paranoid".  The latter two connection classes
-   define a set of source and/or destination addresses for which
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 11]
-
-Internet-Draft                opportunistic                     May 2003
-
-
-   opportunistic encryption will be attempted.  The administrator MAY
-   set policy options in a number of additional places.  An
-   implementation MAY create additional connection classes to further
-   refine these policies.
+   be connection classes known as "deny", "always-clear-text",
+   "OE-permissive", and "OE-paranoid".  The latter two connection
+   classes define a set of destination prefixes for which opportunistic
+   encryption will be attempted.  The administrator MAY set policy
+   options in a number of additional places.  An implementation MAY
+   create additional connection classes to further refine these
+   policies.
 
    The simplest system may need only the "OE-permissive" connection, and
    would list its own (single) IP address as the source address of this
@@ -628,18 +663,37 @@ Internet-Draft                opportunistic                     May 2003
    address.  That is, the simplest policy is to try opportunistic
    encryption with all destinations.
 
-   The distinction between permissive and paranoid OE use will become
-   clear in the state transition differences.  In general a permissive
-   OE will, on failure, install a pass-through policy, while a paranoid
-   OE will, on failure, install a drop policy.
+   This simplest policy SHOULD be offered as a preconfigured default.
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 12]
+
+Internet-Draft                opportunistic                 January 2005
+
+
+   The distinction between permissive and paranoid Opportunistic
+   Encryption ("OE-paranoid" below) use will become clear in the state
+   transition differences.
+
+   In brief, an OE-permissive policy means to permit traffic to flow in
+   the clear, when there is a failure to find and/or use the encryption
+   keys.  OE-permissive permits the network to function, even if in an
+   insecure manner.
+
+   A paranoid OE ("OE-paranoid"") will, on failure, install a drop
+   policy.  OE-paranoid permits traffic to flow only when appropriate
+   security is available.
 
    In this description of the keying machine's state transitions, the
    states associated with the keying system itself are omitted because
-   they are best documented in the keying system ([8], [9] and [10] for
-   ISAKMP/IKE), and the details are keying system specific.
-   Opportunistic encryption is not dependent upon any specific keying
-   protocol, but this document does provide requirements for those using
-   ISAKMP/IKE to assure that implementations inter-operate.
+   they are best documented in the keying system ([RFC2407], [RFC2408]
+   and [RFC2409] for ISAKMP/IKE), and the details are keying system
+   specific.  Opportunistic encryption is not dependent upon any
+   specific keying protocol, but this document does provide requirements
+   for those using ISAKMP/IKE to assure that implementations
+   inter-operate.
 
    The state transitions that may be involved in communicating with the
    forwarding plane are omitted.  PF_KEY and similar protocols have
@@ -649,7 +703,89 @@ Internet-Draft                opportunistic                     May 2003
    Finally, the retransmits and recursive lookups that are normal for
    DNS are not included in this description of the state machine.
 
-3.2.1 Nonexistent connection
+
+                           |
+                           | PF_ACQUIRE
+                           |
+                           V
+                   .---------------.
+                   |  non-existant |
+                   |  connection   |
+                   `---------------'
+                    |      |      |
+             send   ,      |      \
+   expired   pass  /       |       \ send
+   conn.     msg  /        |        \ deny
+     ^           /         |         \ msg
+     |          V          | do       \
+   .---------------.       | DNS       \   .---------------.
+   |  clear-text   |       | lookup     `->|     deny      |---> expired
+   |  connection   |       | for           |  connection   |     connection
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 13]
+
+Internet-Draft                opportunistic                 January 2005
+
+
+   `---------------'       | destination   `---------------'
+      ^ ^                  |                   ^
+      | | no record        |                   |
+      | | OE-permissive    V                   | no record
+      | |            .---------------.         | OE-paranoid
+      | `------------|  potential OE |---------'
+      |              |  connection   |         ^
+      |              `---------------'         |
+      |                    |                   |
+      |                    | got TXT record    | DNSSEC failure
+      |                    | reply             |
+      |                    V                   | wrong
+      |              .---------------.         | failure
+      |              |  authenticate |---------'
+      |              | & parse TXT RR|         ^
+      | repeated     `---------------'         |
+      | ICMP               |                   |
+      | failures           | initiate IKE to   |
+      | (short-timeout)    | responder         |
+      |                    V                   |
+      | phase-2      .---------------.         | failure
+      | failure      |   pending     |---------'
+      | (normal      |     OE        |         ^
+      |  timeout)    |               |invalid  | phase-2 fail (normal-timeout)
+      |              |               |<--.SPI  | ICMP failures (short timeout)
+      |              |               |   |     |
+      |              | +=======+     |---'     |
+      |              | |  IKE  |     |   ^     |
+      `----------------| states|---------------'
+                     | +=======+     |   |
+                     `---------------'   |
+                           | IPsec SA    | invalid SPI
+                           | established |
+                           V             | rekey time
+                     .--------------.    |
+                     |   keyed      |<---|-------------------------------.
+                     |  connection  |----'                               |
+                     `--------------'                                    |
+                           | timer                                       |
+                           |                                             |
+                           V                                             |
+                     .--------------.     connection still active        |
+     clear-text----->|   expired    |------------------------------------'
+           deny----->|  connection  |
+                     `--------------'
+                           | dead connection - deleted
+                           V
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 14]
+
+Internet-Draft                opportunistic                 January 2005
+
+
+3.2.1  Nonexistent connection
 
    There is no connection instance for a given source/destination
    address pair.  Upon receipt of a request for keying material for this
@@ -665,15 +801,7 @@ Internet-Draft                opportunistic                     May 2003
    In each case, when the initiator finds an appropriate class for the
    new flow, an instance connection is made of the class which matched.
 
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 12]
-
-Internet-Draft                opportunistic                     May 2003
-
-
-3.2.2 Clear-text connection
+3.2.2  Clear-text connection
 
    The non-existent connection makes a transition to this state when an
    always-clear-text class is instantiated, or when an OE-permissive
@@ -683,16 +811,16 @@ Internet-Draft                opportunistic                     May 2003
 
    Timing out is the only way to leave this state (see Section 3.2.7).
 
-3.2.3 Deny connection
+3.2.3  Deny connection
 
    The empty connection makes a transition to this state when a deny
    class is instantiated, or when an OE-paranoid connection fails.
    During the transition, the initiator creates a deny policy object in
-   the forwarding plane for the appropriate flow.
+   the forwarding plane  for the appropriate flow.
 
    Timing out is the only way to leave this state (see Section 3.2.7).
 
-3.2.4 Potential OE connection
+3.2.4  Potential OE connection
 
    The empty connection makes a transition to this state when one of
    either OE class is instantiated.  During the transition to this
@@ -701,34 +829,28 @@ Internet-Draft                opportunistic                     May 2003
 
    In addition, when making a transition into this state, DNS lookup is
    done in the reverse-map for a TXT delegation resource record (see
-   Section 5.2).  The lookup key is the destination address of the flow.
+   Section 5.2). The lookup key is the destination address of the flow
+   .
 
    There are three ways to exit this state:
 
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 15]
+
+Internet-Draft                opportunistic                 January 2005
+
+
    1.  DNS lookup finds a TXT delegation resource record.
-
    2.  DNS lookup does not find a TXT delegation resource record.
-
    3.  DNS lookup times out.
 
    Based upon the results of the DNS lookup, the potential OE connection
    makes a transition to the pending OE connection state.  The
    conditions for a successful DNS look are:
-
    1.  DNS finds an appropriate resource record
-
    2.  It is properly formatted according to Section 5.2
-
    3.  if DNSSEC is enabled, then the signature has been vouched for.
-
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 13]
-
-Internet-Draft                opportunistic                     May 2003
-
-
    Note that if the initiator does not find the public key present in
    the TXT delegation record, then the public key must be looked up as a
    sub-state.  Only successful completion of all the DNS lookups is
@@ -743,13 +865,13 @@ Internet-Draft                opportunistic                     May 2003
 
    If the initiator finds a resource record but it is not properly
    formatted, or if DNSSEC is enabled and reports a failure to
-   authenticate, then the potential OE connection should make a
-   transition to the deny connection state.  This action SHOULD be
-   logged.  If the administrator wishes to override this transition
-   between states, then an always-clear class can be installed for this
-   flow.  An implementation MAY make this situation a new class.
+   authenticate, then the potential OE connection makes a transition to
+   the deny connection state.  This action SHOULD be logged.  If the
+   administrator wishes to override this transition between states, then
+   an always-clear class can be installed for this flow.  An
+   implementation MAY make this situation a new class.
 
-3.2.4.1 Restriction on unauthenticated TXT delegation records
+3.2.4.1  Restriction on unauthenticated TXT delegation records
 
    An implementation SHOULD also provide an additional administrative
    control on delegation records and DNSSEC.  This control would apply
@@ -759,7 +881,7 @@ Internet-Draft                opportunistic                     May 2003
    enabled, an active attack on DNS will be unable to redirect packets
    to other than the original destination.
 
-3.2.5 Pending OE connection
+3.2.5  Pending OE connection
 
    The potential OE connection makes a transition to this state when the
    initiator determines that all the information required from the DNS
@@ -767,6 +889,14 @@ Internet-Draft                opportunistic                     May 2003
    to initiate keying to the gateway provided.
 
    Exit from this state occurs either with a successfully created IPsec
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 16]
+
+Internet-Draft                opportunistic                 January 2005
+
+
    SA, or with a failure of some kind.  Successful SA creation results
    in a transition to the key connection state.
 
@@ -777,14 +907,6 @@ Internet-Draft                opportunistic                     May 2003
    delegation records, then a failure can only be declared after all
    have been tried.  Further, creation of a phase 1 SA does not
    constitute success.  A set of phase 2 SAs (a tunnel) is considered
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 14]
-
-Internet-Draft                opportunistic                     May 2003
-
-
    success.
 
    The first failure occurs when an ICMP port unreachable is
@@ -818,10 +940,20 @@ Internet-Draft                opportunistic                     May 2003
    the initiator makes a transition to the clear-text or the deny
    connection based upon the connection class.  However, the lifespan
    depends upon the remaining time to live in the DNS.  (Note that
-   DNSSEC signed resource records have a different expiry time than non-
-   signed records.)
+   DNSSEC signed resource records have a different expiry time than
+   non-signed records.)
 
-3.2.6 Keyed connection
+
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 17]
+
+Internet-Draft                opportunistic                 January 2005
+
+
+3.2.6  Keyed connection
 
    The pending OE connection makes a transition to this state when
    session keying material (the phase 2 SAs) is derived.  The initiator
@@ -833,14 +965,6 @@ Internet-Draft                opportunistic                     May 2003
    expired connection state.
 
    The second exit is by expiry of the forwarding plane keying material.
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 15]
-
-Internet-Draft                opportunistic                     May 2003
-
-
    This starts a re-key operation with a transition back to pending OE
    connection.  In general, the soft expiry occurs with sufficient time
    left to continue to use the keys.  A re-key can fail, which may
@@ -858,7 +982,7 @@ Internet-Draft                opportunistic                     May 2003
    implementation must exercise care.  The initiator should make a
    cautious (rate-limited) attempt to re-key the connection.
 
-3.2.7 Expiring connection
+3.2.7  Expiring connection
 
    The initiator will periodically place each of the deny, clear-text,
    and keyed connections into this sub-state.  See Section 3.4 for more
@@ -871,32 +995,32 @@ Internet-Draft                opportunistic                     May 2003
    The DNS query and answer that lead to the expiring connection state
    are also examined.  The DNS query may become stale.  (A negative,
    i.e.  no such record, answer is valid for the period of time given by
-   the MINIMUM field in an attached SOA record.  See [12] section
+   the MINIMUM field in an attached SOA record.  See [RFC1034] section
    4.3.4.) If the DNS query is stale, then a new query is made.  If the
    results change, then the connection makes a transition to a new state
    as described in potential OE connection state.
 
    Note that when considering how stale a connection is, both outgoing
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 18]
+
+Internet-Draft                opportunistic                 January 2005
+
+
    SPD and incoming SAD must be queried as some flows may be
    unidirectional for some time.
 
    Also note that the policy at the forwarding plane is not updated
    unless there is a conclusion that there should be a change.
 
-3.2.8 Expired connection
+3.2.8  Expired connection
 
    Entry to this state occurs when no datagrams have been forwarded
    recently via the appropriate SPD and SAD objects.  The objects in the
    forwarding plane are removed (logging any final byte and packet
    counts if appropriate) and the connection instance in the keying
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 16]
-
-Internet-Draft                opportunistic                     May 2003
-
-
    plane is deleted.
 
    The initiator sends an ISAKMP/IKE delete to clean up the phase 2 SAs
@@ -908,7 +1032,7 @@ Internet-Draft                opportunistic                     May 2003
    are doing so.  There is an advantage to keeping the phase 1 SAs until
    they expire - they may prove useful again in the near future.
 
-3.3 Keying state machine - responder
+3.3  Keying Daemon - responder
 
    The responder has a set of objects identical to those of the
    initiator.
@@ -916,13 +1040,66 @@ Internet-Draft                opportunistic                     May 2003
    The responder receives an invitation to create a keying channel from
    an initiator.
 
-3.3.1 Unauthenticated OE peer
+                   |
+                   | IKE main mode
+                   |  phase 1
+                   V
+           .-----------------.
+           | unauthenticated |
+           |     OE peer     |
+           `-----------------'
+                   |
+                   | lookup KEY RR in in-addr.arpa
+                   |             (if ID_IPV4_ADDR)
+                   | lookup KEY RR in forward
+                   |             (if ID_FQDN)
+                   V
+           .-----------------.  RR not found
+           |   received DNS  |---------------> log failure
+           |     reply       |
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 19]
+
+Internet-Draft                opportunistic                 January 2005
+
+
+           `----+--------+---'
+        phase 2 |        \      misformatted
+       proposal |         `------------------> log failure
+                V
+       .----------------.
+       |  authenticated |  identical initiator
+       |     OE peer    |--------------------> initiator
+       `----------------'  connection found    state machine
+            |
+            | look for TXT record for initiator
+            |
+            V
+      .---------------.
+      |  authorized   |---------------------> log failure
+      |    OE peer    |
+      `---------------'
+            |
+            |
+            V
+       potential OE
+       connection in
+       initiator state
+   	machine
+
+
+   $Id: draft-richardson-ipsec-opportunistic.txt,v 1.25 2005/02/15 20:18:46 mcr Exp $
+
+
+3.3.1  Unauthenticated OE peer
 
    Upon entering this state, the responder starts a DNS lookup for a KEY
    record for the initiator.  The responder looks in the reverse-map for
    a KEY record for the initiator if the initiator has offered an
    ID_IPV4_ADDR, and in the forward map if the initiator has offered an
-   ID_FQDN type.  (See [8] section 4.6.2.1.)
+   ID_FQDN type.  (See [RFC2407] section 4.6.2.1.)
 
    The responder exits this state upon successful receipt of a KEY from
    DNS, and use of the key to verify the signature of the initiator.
@@ -934,7 +1111,17 @@ Internet-Draft                opportunistic                     May 2003
    middle of the key negotiation protocol.  It is really a form of
    pseudo-state.
 
-3.3.2 Authenticated OE Peer
+
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 20]
+
+Internet-Draft                opportunistic                 January 2005
+
+
+3.3.2  Authenticated OE Peer
 
    The peer will eventually propose one or more phase 2 SAs.  The
    responder uses the source and destination address in the proposal to
@@ -945,19 +1132,19 @@ Internet-Draft                opportunistic                     May 2003
    If an identical connection is found, then the responder deletes the
    old instance, and the new object makes a transition to the pending OE
    connection state.  This means that new ISAKMP connections with a
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 17]
-
-Internet-Draft                opportunistic                     May 2003
-
-
    given peer will always use the latest instance, which is the correct
    one if the peer has rebooted in the interim.
 
    If an identical connection is not found, then the responder makes the
-   transition according to the rules given for the initiator.
+   transition according to the rules given for the initiator - it
+   installs appropriate policy: clear, drop, or OE.
+
+   If OE, and the phase 2 ID (source IP) is different than the phase 1
+   ID, then additional authorization is required.  A TXT record
+   associated with the phase 2 source IP proposed is requested.  This is
+   used to confirm authorization for the phase 1 identity to encrypt on
+   behalf of the phase 2.  Successful retrieval results in a transition
+   to "Authorized OE Peer"
 
    Note that if the initiator is in OE-paranoid mode and the responder
    is in either always-clear-text or deny, then no communication is
@@ -965,9 +1152,15 @@ Internet-Draft                opportunistic                     May 2003
    create new types of policies such as "accept OE but do not initiate
    it".  This is a local matter.
 
-3.4 Renewal and teardown
+3.3.3  Authorized OE Peer
 
-3.4.1 Aging
+   This state is entered from the Authenticated OE Peer state, upon
+   successful retrieval of the TXT record.  The contents of the record
+   are confirmed - any failures lead to errors, as in Section 3.2.4.
+
+3.4  Renewal and teardown
+
+3.4.1  Aging
 
    A potentially unlimited number of tunnels may exist.  In practice,
    only a few tunnels are used during a period of time.  Unused tunnels
@@ -977,17 +1170,24 @@ Internet-Draft                opportunistic                     May 2003
    There are two methods for removing tunnels: explicit deletion or
    expiry.
 
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 21]
+
+Internet-Draft                opportunistic                 January 2005
+
+
    Explicit deletion requires an IKE delete message.  As the deletes
    MUST be authenticated, both ends of the tunnel must maintain the key
    channel (phase 1 ISAKMP SA).  An implementation which refuses to
    either maintain or recreate the keying channel SA will be unable to
    use this method.
 
-   The tunnel expiry method, simply allows the IKE daemon to expire
+   The tunnel expiry method simply allows the IKE daemon to expire
    normally without attempting to re-key it.
 
    Regardless of which method is used to remove tunnels, the
-   implementation requires a method to determine if the tunnel is still
+   implementation MUST use a method to determine if the tunnel is still
    in use.  The specifics are a local matter, but  the FreeS/WAN project
    uses the following criteria.  These criteria are currently
    implemented in the key management daemon, but could also be
@@ -1000,14 +1200,6 @@ Internet-Draft                opportunistic                     May 2003
    traffic in either direction during the last 30 seconds.  If so,
    assign a longer tentative lifespan of 20 minutes after which, look
    again.  If the tunnel is not in use, then close the tunnel.
-
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 18]
-
-Internet-Draft                opportunistic                     May 2003
-
 
    The expiring state in the key management system (see Section 3.2.7)
    implements these timeouts.  The timer above may be in the forwarding
@@ -1030,9 +1222,17 @@ Internet-Draft                opportunistic                     May 2003
    connection through a tunnel is a strong hint that no more traffic is
    expected.
 
-3.4.2 Teardown and cleanup
+3.4.2  Teardown and cleanup
 
    Teardown should always be coordinated between the two ends of the
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 22]
+
+Internet-Draft                opportunistic                 January 2005
+
+
    tunnel by interpreting and sending delete notifications.  There is a
    detailed sub-state in the expired connection state of the key manager
    that relates to retransmits of the delete notifications, but this is
@@ -1057,13 +1257,6 @@ Internet-Draft                opportunistic                     May 2003
    the possibility of further communication is unlikely.  Remove the
    outgoing SAs.  (The remote system may be a mobile node that is no
    longer present or powered on.)
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 19]
-
-Internet-Draft                opportunistic                     May 2003
-
 
    After re-keying, transmission should switch to using the new outgoing
    SAs (ISAKMP or IPsec) immediately, and the old leftover outgoing SAs
@@ -1091,39 +1284,14 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 20]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 23]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-4. Impacts on IKE
+4.  Impacts on IKE
 
-4.1 ISAKMP/IKE protocol
+4.1  ISAKMP/IKE protocol
 
    The IKE wire protocol needs no modifications.  The major changes are
    implementation issues relating to how the proposals are interpreted,
@@ -1141,7 +1309,7 @@ Internet-Draft                opportunistic                     May 2003
    with firewalls and other security facilities that may be co-resident
    on the same gateway.
 
-4.2 Gateway discovery process
+4.2  Gateway discovery process
 
    In a typical configured tunnel, the address of SG-B is provided via
    configuration.  Furthermore, the mapping of an SPD entry to a gateway
@@ -1158,28 +1326,28 @@ Internet-Draft                opportunistic                     May 2003
    Use of an asynchronous DNS lookup will also permit overlap of DNS
    lookups with some of the protocol steps.
 
-4.3 Self identification
+4.3  Self identification
 
    SG-A will have to establish its identity.  Use an IPv4 ID in phase 1.
 
    There are many situations where the administrator of SG-A may not be
    able to control the reverse DNS records for SG-A's public IP address.
-   Typical situations include dialup connections and most residential-
-   type broadband Internet access (ADSL, cable-modem) connections.  In
-   these situations, a fully qualified domain name that is under the
-   control of SG-A's administrator may be used when acting as an
-   initiator only.  The FQDN ID should be used in phase 1.  See Section
+   Typical situations include dialup connections and most
+   residential-type broadband Internet access (ADSL, cable-modem)
+   connections.  In these situations, a fully qualified domain name that
+   is under the control of SG-A's administrator may be used when acting
+   as an initiator only.  The FQDN ID should be used in phase 1.  See
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 21]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 24]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-   5.3 for more details and restrictions.
+   Section 5.3 for more details and restrictions.
 
-4.4 Public key retrieval process
+4.4  Public key retrieval process
 
    Upon receipt of a phase 1 SA proposal with either an IPv4 (IPv6) ID
    or an FQDN ID, an IKE daemon needs to examine local caches and
@@ -1195,7 +1363,7 @@ Internet-Draft                opportunistic                     May 2003
    implementations must wait for positive or negative replies from all
    sources of policy before making any decisions.
 
-4.5 Interactions with DNSSEC
+4.5  Interactions with DNSSEC
 
    The implementation described (1.98) neither uses DNSSEC directly to
    explicitly verify the authenticity of zone information, nor uses the
@@ -1207,15 +1375,15 @@ Internet-Draft                opportunistic                     May 2003
    resource record, a stub resolver capable of returning DNSSEC
    information MUST be used.
 
-4.6 Required proposal types
+4.6  Required proposal types
 
-4.6.1 Phase 1 parameters
+4.6.1  Phase 1 parameters
 
    Main mode MUST be used.
 
    The initiator MUST offer at least one proposal using some combination
    of: 3DES, HMAC-MD5 or HMAC-SHA1, DH group 2 or 5.  Group 5 SHOULD be
-   proposed first.  [11]
+   proposed first.  (See [RFC3526])
 
    The initiator MAY offer additional proposals, but the cipher MUST not
    be weaker than 3DES.  The initiator SHOULD limit the number of
@@ -1228,20 +1396,22 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 22]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 25]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-   SG-A SHOULD use an ID_IPV4_ADDR (ID_IPV6_ADDR for IPv6) of the
-   external interface of SG-A for phase 1.  (There is an exception, see
-   Section 5.3.) The authentication method MUST be RSA public key
-   signatures.  The RSA key for SG-A SHOULD be placed into a DNS KEY
-   record in the reverse space of SG-A (i.e.  using in-addr.arpa).
+   The initiator SHOULD use an ID_IPV4_ADDR (ID_IPV6_ADDR for IPv6) of
+   the external interface of the initiator for phase 1.  (There is an
+   exception, see Section 5.3.) The authentication method MUST be RSA
+   public key signatures.  The RSA key for the initiator SHOULD be
+   placed into a DNS KEY record in the reverse space of the initiator
+   (i.e.  using in-addr.arpa or ip6.arpa).
 
-4.6.2 Phase 2 parameters
+4.6.2  Phase 2 parameters
 
-   SG-A MUST propose a tunnel between Alice and Bob, using 3DES-CBC
+   The initiator MUST propose a tunnel between the ultimate sender
+   ("Alice" or "A") and ultimate recipient ("Bob" or "B") using 3DES-CBC
    mode, MD5 or SHA1 authentication.  Perfect Forward Secrecy MUST be
    specified.
 
@@ -1249,13 +1419,11 @@ Internet-Draft                opportunistic                     May 2003
 
    Identities MUST be ID_IPV4_ADDR_SUBNET with the mask being /32.
 
-   Authorization for SG-A to act on Alice's behalf is determined by
-   looking for a TXT record in the reverse-map at Alice's address.
+   Authorization for the initiator to act on Alice's behalf is
+   determined by looking for a TXT record in the reverse-map at Alice's
+   IP address.
 
-   Compression SHOULD NOT be mandatory.  It may be offered as an option.
-
-
-
+   Compression SHOULD NOT be mandatory.  It MAY be offered as an option.
 
 
 
@@ -1284,18 +1452,18 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 23]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 26]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-5. DNS issues
+5.  DNS issues
 
-5.1 Use of KEY record
+5.1  Use of KEY record
 
-   In order to establish their own identities, SG-A and SG-B SHOULD
+   In order to establish their own identities, security gateways SHOULD
    publish their public keys in their reverse DNS via DNSSEC's KEY
-   record.  See section 3 of RFC 2535 [16].
+   record.  See section 3 of RFC 2535 [RFC2535].
 
    For example:
 
@@ -1306,26 +1474,25 @@ Internet-Draft                opportunistic                     May 2003
       Diffie-Hellman exchange is used for confidentiality), and that
       this key is associated with the non-zone entity whose name is the
       RR owner name.  No other flags are set.
-
    4: This indicates that this key is for use by IPsec.
-
    1: An RSA key is present.
-
    AQNJjkKlIk9...nYyUkKK8: The public key of the host as described in
-      [17].
+      [RFC3110].
 
-   Use of several KEY records allows for key rollover.  The SIG Payload
+   Use of several KEY records allows for key roll-over.  The SIG Payload
    in IKE phase 1 SHOULD be accepted if the public key given by any KEY
    RR validates it.
 
-5.2 Use of TXT delegation record
+5.2  Use of TXT delegation record
 
-   Alice publishes a TXT record to provide authorization for SG-A to act
-   on Alice's behalf.  Bob publishes a TXT record to provide
-   authorization for SG-B to act on Bob's behalf.  These records are
-   located in the reverse DNS (in-addr.arpa) for their respective IP
-   addresses.  The reverse DNS SHOULD be secured by DNSSEC, when it is
-   deployed.  DNSSEC is required to defend against active attacks.
+   If, for example, machine Alice wishes SG-A to act on her behalf, then
+   she publishes a TXT record to provide authorization for SG-A to act
+   on Alice's behalf.  Similarly for Bob and SG-B.
+
+   These records are located in the reverse DNS (in-addr.arpa or
+   ip6.arpa) for their respective IP addresses.  The reverse DNS SHOULD
+   be secured by DNSSEC.  DNSSEC is required to defend against active
+   attacks.
 
    If Alice's address is P.Q.R.S, then she can authorize another node to
    act on her behalf by publishing records at:
@@ -1333,99 +1500,85 @@ Internet-Draft                opportunistic                     May 2003
    S.R.Q.P.in-addr.arpa
 
    The contents of the resource record are expected to be a string that
-   uses the following syntax, as suggested in [15].  (Note that the
-   reply to query may include other TXT resource records used by other
-   applications.)
+   uses the following syntax, as suggested in RFC1464 [RFC1464].  (Note
+   that the reply to query may include other TXT resource records used
+   by other applications.)
 
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 24]
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 27]
 
-Internet-Draft                opportunistic                     May 2003
-
-
-   ---------------------------------------------------------------------
+Internet-Draft                opportunistic                 January 2005
 
 
    X-IPsec-Server(P)=A.B.C.D KEY
 
              Figure 2: Format of reverse delegation record
 
-   ---------------------------------------------------------------------
-
    P: Specifies a precedence for this record.  This is similar to MX
       record preferences.  Lower numbers have stronger preference.
-
    A.B.C.D: Specifies the IP address of the Security Gateway for this
       client machine.
-
    KEY: Is the encoded RSA Public key of the Security Gateway.  The key
       is provided here to avoid a second DNS lookup.  If this field is
       absent, then a KEY resource record should be looked up in the
       reverse-map of A.B.C.D.  The key is transmitted in base64 format.
 
-   The pieces of the record are separated by any whitespace (space, tab,
-   newline, carriage return).  An ASCII space SHOULD be used.
+   The fields of the record MUST be separated by whitespace.  This MAY
+   be: space, tab, newline, or carriage return.  A space is preferred.
 
    In the case where Alice is located at a public address behind a
    security gateway that has no fixed address (or no control over its
    reverse-map), then Alice may delegate to a public key by domain name.
 
-   ---------------------------------------------------------------------
-
-
    X-IPsec-Server(P)=@FQDN KEY
 
       Figure 3: Format of reverse delegation record (FQDN version)
 
-   ---------------------------------------------------------------------
-
    P: Is as above.
-
    FQDN: Specifies the FQDN that the Security Gateway will identify
       itself with.
-
    KEY: Is the encoded RSA Public key of the Security Gateway.
 
    If there is more than one such TXT record with strongest (lowest
    numbered) precedence, one Security Gateway is picked arbitrarily from
    those specified in the strongest-preference records.
 
+5.2.1  Long TXT records
 
+   When packed into wire-format, TXT records which are longer than 255
+   characters are divided into smaller <character-strings>.  (See
+   [RFC1035] section 3.3 and 3.3.14.) These MUST be reassembled into a
+   single string for processing.  Whitespace characters in the base64
+   encoding are to be ignored.
 
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 25]
-
-Internet-Draft                opportunistic                     May 2003
-
-
-5.2.1 Long TXT records
-
-   When packed into transport format, TXT records which are longer than
-   255 characters are divided into smaller <character-strings>.  (See
-   [13] section 3.3 and 3.3.14.) These MUST be reassembled into a single
-   string for processing.  Whitespace characters in the base64 encoding
-   are to be ignored.
-
-5.2.2 Choice of TXT record
+5.2.2  Choice of TXT record
 
    It has been suggested to use the KEY, OPT, CERT, or KX records
    instead of a TXT record.  None is satisfactory.
 
    The KEY RR has a protocol field which could be used to indicate a new
    protocol, and an algorithm field which could be used to indicate
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 28]
+
+Internet-Draft                opportunistic                 January 2005
+
+
    different contents in the key data.  However, the KEY record is
    clearly not intended for storing what are really authorizations, it
    is just for identities.  Other uses have been discouraged.
 
-   OPT resource records, as defined in [14] are not intended to be used
-   for storage of information.  They are not to be loaded, cached or
-   forwarded.  They are, therefore, inappropriate for use here.
+   OPT resource records, as defined in [RFC2671] are not intended to be
+   used for storage of information.  They are not to be loaded, cached
+   or forwarded.  They are, therefore, inappropriate for use here.
 
-   CERT records [18] can encode almost any set of information.  A custom
-   type code could be used permitting any suitable encoding to be
+   CERT records [RFC2538] can encode almost any set of information.  A
+   custom type code could be used permitting any suitable encoding to be
    stored, not just X.509.  According to the RFC, the certificate RRs
    are to be signed internally which may add undesirable and unnecessary
    bulk.  Larger DNS records may require TCP instead of UDP transfers.
@@ -1438,7 +1591,7 @@ Internet-Draft                opportunistic                     May 2003
    KX records are ideally suited for use instead of TXT records, but had
    not been deployed at the time of implementation.
 
-5.3 Use of FQDN IDs
+5.3  Use of FQDN IDs
 
    Unfortunately, not every administrator has control over the contents
    of the reverse-map.  Where the initiator (SG-A) has no suitable
@@ -1449,14 +1602,6 @@ Internet-Draft                opportunistic                     May 2003
    domain name (FQDN) in place of its security gateway's IP address.
    The initiator should use the ID_FQDN ID-payload in phase 1.  A
    forward lookup for a KEY record on the FQDN must yield the
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 26]
-
-Internet-Draft                opportunistic                     May 2003
-
-
    initiator's public key.
 
    This method can also be used when the external address of SG-A is
@@ -1470,11 +1615,21 @@ Internet-Draft                opportunistic                     May 2003
    However, Alice must still delegate to  herself if she wishes others
    to initiate OE to her.  See Figure 3.
 
-5.4 Key roll-over
 
-   Good cryptographic hygiene says that one should replace public/
-   private key pairs periodically.  Some administrators may wish to do
-   this as often as daily.  Typical DNS propagation delays are
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 29]
+
+Internet-Draft                opportunistic                 January 2005
+
+
+5.4  Key roll-over
+
+   Good cryptographic hygiene says that one should replace
+   public/private key pairs periodically.  Some administrators may wish
+   to do this as often as daily.  Typical DNS propagation delays are
    determined by the SOA Resource Record MINIMUM parameter, which
    controls how long DNS replies may be cached.  For reasonable
    operation of DNS servers, administrators usually want this value to
@@ -1508,12 +1663,25 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 27]
+
+
+
+
+
+
+
+
+
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 30]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-6. Network address translation interaction
+6.  Network address translation interaction
 
    There are no fundamentally new issues for implementing opportunistic
    encryption in the presence of network address translation.  Rather
@@ -1521,55 +1689,111 @@ Internet-Draft                opportunistic                     May 2003
 
    There are several situations to consider for NAT.
 
-6.1 Co-located NAT/NAPT
+6.1  Co-located NAT/NAPT
 
-   If SG-A is also performing network address translation on behalf of
-   Alice, then the packet should be translated prior to being subjected
-   to opportunistic encryption.  This is in contrast to typically
-   configured tunnels which often exist to bridge islands of private
-   network address space.  SG-A will use the translated source address
-   for phase 2, and so SG-B will look up that address to confirm SG-A's
+   If a security gateway is also performing network address translation
+   on behalf of an end-system, then the packet should be translated
+   prior to being subjected to opportunistic encryption.  This is in
+   contrast to typically configured tunnels which often exist to bridge
+   islands of private network address space.  The security gateway will
+   use the translated source address for phase 2, and so the responding
+   security gateway will look up that address to confirm SG-A's
    authorization.
 
    In the case of NAT (1:1), the address space into which the
    translation is done MUST be globally unique, and control over the
    reverse-map is assumed.  Placing of TXT records is possible.
 
-   In the case of NAPT (m:1), the address will be SG-A.  The ability to
-   get KEY and TXT records in place will again depend upon whether or
-   not there is administrative control over the reverse-map.  This is
-   identical to situations involving a single host acting on behalf of
-   itself.  FQDN style can be used to get around a lack of a reverse-map
-   for initiators only.
+   In the case of NAPT (m:1), the address will be the security gateway
+   itself.  The ability to get KEY and TXT records in place will again
+   depend upon whether or not there is administrative control over the
+   reverse-map.  This is identical to situations involving a single host
+   acting on behalf of itself.  FQDN style can be used to get around a
+   lack of a reverse-map for initiators only.
 
-6.2 SG-A behind NAT/NAPT
+6.2  Security Gateway behind NAT/NAPT
 
-   If there is a NAT or NAPT between SG-A and SG-B, then normal IPsec
-   NAT traversal rules apply.  In addition to the transport problem
-   which may be solved by other mechanisms, there is the issue of what
-   phase 1 and phase 2 IDs to use.  While FQDN could be used during
-   phase 1 for SG-A, there is no appropriate ID for phase 2 that permits
-   SG-B to determine that SG-A is in fact authorized to speak for Alice.
+   If there is a NAT or NAPT between the security gateways, then normal
+   IPsec NAT traversal problems occur.  In addition to the transport
+   problem which may be solved by other mechanisms, there is the issue
+   of what phase 1 and phase 2 IDs to use.  While FQDN could be used
+   during phase 1 for the security gateway, there is no appropriate ID
+   for phase 2.  Due to the NAT, the end systems live in different IP
+   address spaces.
 
-6.3 Bob is behind a NAT/NAPT
+6.3  End System is behind a NAT/NAPT
 
-   If Bob is behind a NAT (perhaps SG-B), then there is, in fact, no way
-   for Alice to address a packet to Bob.  Not only is opportunistic
-   encryption impossible, but it is also impossible for Alice to
-   initiate any communication to Bob.  It may be possible for Bob to
-   initiate in such a situation.  This creates an asymmetry, but this is
-   common for NAPT.
-
-
-
+   If the end system is behind a NAT (perhaps SG-B), then there is, in
+   fact, no way for another end system to address a packet to this end
+   system.  Not only is opportunistic encryption impossible, but it is
+   also impossible for any communication to be initiated to the end
+   system.  It may be possible for this end system to initiate such
+   communication.  This creates an asymmetry, but this is common for
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 28]
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 31]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-7. Host implementations
+   NAPT.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 32]
+
+Internet-Draft                opportunistic                 January 2005
+
+
+7.  Host implementations
 
    When Alice and SG-A are components of the same system, they are
    considered to be a host implementation.  The packet sequence scenario
@@ -1583,8 +1807,8 @@ Internet-Draft                opportunistic                     May 2003
    As Alice and SG-A are acting on behalf of themselves, no TXT based
    delegation record is necessary for Alice to initiate.  She can rely
    on FQDN in a forward map.  This is particularly attractive to mobile
-   nodes such as notebook computers at conferences.  To respond, Alice/
-   SG-A will still need an entry in Alice's reverse-map.
+   nodes such as notebook computers at conferences.  To respond,
+   Alice/SG-A will still need an entry in Alice's reverse-map.
 
 
 
@@ -1620,12 +1844,12 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 29]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 33]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-8. Multi-homing
+8.  Multi-homing
 
    If there are multiple paths between Alice and Bob (as illustrated in
    the diagram with SG-D), then additional DNS records are required to
@@ -1647,18 +1871,13 @@ Internet-Draft                opportunistic                     May 2003
    speak for Alice, because Alice has published two equally weighted TXT
    delegation records:
 
-   ---------------------------------------------------------------------
-
-
    X-IPsec-Server(10)=192.1.1.5 AQMM...3s1Q==
    X-IPsec-Server(10)=192.1.1.6 AAJN...j8r9==
 
         Figure 4: Multiple gateway delegation example for Alice
 
-   ---------------------------------------------------------------------
-
-   Alice's routers can now do any kind of load sharing needed.  Both SG-
-   A and SG-D send datagrams addressed to Bob through their tunnel to
+   Alice's routers can now do any kind of load sharing needed.  Both
+   SG-A and SG-D send datagrams addressed to Bob through their tunnel to
    SG-B.
 
    Alice's use of non-equal weight delegation records to show preference
@@ -1673,36 +1892,31 @@ Internet-Draft                opportunistic                     May 2003
 
    The Public Internet's default-free zone may well know a good route to
    Alice, but the datagrams that SG-B creates must be addressed to
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 30]
-
-Internet-Draft                opportunistic                     May 2003
-
-
    either SG-A or SG-D; they can not be addressed to Alice directly.
 
    SG-B may make a number of choices:
-
    1.  It can ignore the problem and round robin among the tunnels.
        This causes losses during times when one or the other security
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 34]
+
+Internet-Draft                opportunistic                 January 2005
+
+
        gateway is unreachable.  If this worries Alice, she can change
        the weights in her TXT delegation records.
-
    2.  It can send to the gateway from which it most recently received
        datagrams.  This assumes that routing and reachability are
        symmetrical.
-
    3.  It can listen to BGP information from the Internet to decide
        which system is currently up.  This is clearly much more
        complicated, but if SG-B is already participating in the BGP
        peering system to announce Bob, the results data may already be
        available to it.
-
    4.  It can refuse to negotiate the second tunnel.  (It is unclear
        whether or not this is even an option.)
-
    5.  It can silently replace the outgoing portion of the first tunnel
        with the second one while still retaining the incoming portions
        of both.  SG-B can, thus, accept datagrams from either SG-A or
@@ -1732,14 +1946,24 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 31]
+
+
+
+
+
+
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 35]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-9. Failure modes
+9.  Failure modes
 
-9.1 DNS failures
+9.1  DNS failures
 
    If a DNS server fails to respond, local policy decides whether or not
    to permit communication in the clear as embodied in the connection
@@ -1756,7 +1980,7 @@ Internet-Draft                opportunistic                     May 2003
    Therefore, the decision of whether or not to permit communication in
    the clear MUST be a matter of local policy.
 
-9.2 DNS configured, IKE failures
+9.2  DNS configured, IKE failures
 
    DNS records claim that opportunistic encryption should occur, but the
    target gateway either does not respond on port 500, or refuses the
@@ -1773,7 +1997,7 @@ Internet-Draft                opportunistic                     May 2003
    In these situations a clear log should be produced and local policy
    should dictate if communication is then permitted in the clear.
 
-9.3 System reboots
+9.3  System reboots
 
    Tunnels sometimes go down because the remote end crashes,
    disconnects, or has a network link break.  In general there is no
@@ -1788,9 +2012,9 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 32]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 36]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
    is appropriate even at the cost of occasional false alarms.
@@ -1798,15 +2022,15 @@ Internet-Draft                opportunistic                     May 2003
    A mechanism for recovery after reboot is a topic of current research
    and is not specified in this document.
 
-   A deliberate shutdown should include an attempt, using deletes, to
-   notify all other SGs currently connected by phase 1 SAs that
-   communication is about to fail.  Again, a remote SG will assume this
-   is a teardown.  Attempts by the remote SGs to negotiate new tunnels
-   as replacements should be ignored.  When possible, SGs should attempt
-   to preserve information about currently-connected SGs in non-volatile
-   storage, so that after a crash, an Initial-Contact can be sent to
-   previous partners to indicate loss of all previously established
-   connections.
+   A deliberate shutdown should include an attempt, using delete
+   messagess, to notify all other SGs currently connected by phase 1 SAs
+   that communication is about to fail.  Again, a remote SG will assume
+   this is a teardown.  Attempts by the remote SGs to negotiate new
+   tunnels as replacements should be ignored.  When possible,  SGs
+   should attempt to preserve information about currently-connected SGs
+   in non-volatile storage, so that after a crash, an Initial-Contact
+   can be sent to previous partners to indicate loss of all previously
+   established connections.
 
 
 
@@ -1844,14 +2068,14 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 33]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 37]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-10. Unresolved issues
+10.  Unresolved issues
 
-10.1 Control of reverse DNS
+10.1  Control of reverse DNS
 
    The method of obtaining information by reverse DNS lookup causes
    problems for people who cannot control their reverse DNS bindings.
@@ -1900,33 +2124,81 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 34]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 38]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-11. Examples
+11.  Examples
 
-11.1 Clear-text usage (permit policy)
+11.1  Clear-text usage (permit policy)
 
    Two example scenarios follow.  In the first example GW-A (Gateway A)
    and GW-B (Gateway B) have always-clear-text policies, and in the
-   second example they have an OE policy.
+   second example they have an OE policy.  The clear-text policy serves
+   as a reference for what occurs in TCP/IP in the absence of
+   Opportunistic Encryption.
 
-   ---------------------------------------------------------------------
-
+   Alice wants to communicate with Bob.  Perhaps she wants to retrieve a
+   web page from Bob's web server.  In the absence of opportunistic
+   encryptors, the following events occur:
 
      Alice         SG-A       DNS       SG-B           Bob
+      Human or application
+      'clicks' with a name.
       (1)
+
        ------(2)-------------->
+       Application looks up
+       name in DNS to get
+       IP address.
+
        <-----(3)---------------
-      (4)----(5)----->
+       Resolver returns "A" RR
+       to application with IP
+       address.
+
+      (4)
+      Application starts a TCP session
+      or UDP session and OS sends
+      first datagram
+
+     Alice         SG-A       DNS       SG-B           Bob
+          ----(5)----->
+          Datagram is seen at first gateway
+          from Alice (SG-A).
+
                       ----------(6)------>
+                      Datagram traverses
+                      network.
+
                                           ------(7)----->
+                                          Datagram arrives
+                                          at Bob, is provided
+                                          to TCP.
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 39]
+
+Internet-Draft                opportunistic                 January 2005
+
+
                                          <------(8)------
+                                          A reply is sent.
+
                       <----------(9)------
+                      Datagram traverses
+                      network.
        <----(10)-----
+       Alice receives
+       answer.
+
+     Alice         SG-A       DNS       SG-B           Bob
       (11)----------->
+       A second exchange
+       occurs.
                       ----------(12)----->
                                           -------------->
                                          <---------------
@@ -1935,55 +2207,18 @@ Internet-Draft                opportunistic                     May 2003
 
                 Figure 5: Timing of regular transaction
 
-   ---------------------------------------------------------------------
 
-   Alice wants to communicate with Bob.  Perhaps she wants to retrieve a
-   web page from Bob's web server.  In the absence of opportunistic
-   encryptors, the following events occur:
-
-   (1) Human or application 'clicks' with a name.
-
-   (2) Application looks up name in DNS to get IP address.
-
-   (3) Resolver returns A record to application.
-
-   (4) Application starts a TCP session or UDP session and OS sends
-      datagram.
-
-   (5) Datagram is seen at first gateway from Alice (SG-A).  (SG-A makes
-      a transition through Empty connection to always-clear connection
-      and instantiates a pass-through policy at the forwarding plane.)
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 35]
-
-Internet-Draft                opportunistic                     May 2003
-
-
-   (6) Datagram is seen at last gateway before Bob (SG-B).
-
-   (7) First datagram from Alice is seen by Bob.
-
-   (8) First return datagram is sent by Bob.
-
-   (9) Datagram is seen at Bob's gateway.  (SG-B makes a transition
-      through Empty connection to always-clear connection and
-      instantiates a pass-through policy at the forwarding plane.)
-
-   (10) Datagram is seen at Alice's gateway.
-
-   (11) OS hands datagram to application.  Alice sends another datagram.
-
-   (12) A second datagram traverses the Internet.
-
-
-11.2 Opportunistic encryption
+11.2  Opportunistic encryption
 
    In the presence of properly configured opportunistic encryptors, the
-   event list is extended.
+   event list is extended.  Only changes are annotated.
 
-   ---------------------------------------------------------------------
+   The following symbols are used in the time-sequence diagram
+
+   -  A single dash represents clear-text datagrams.
+   =  An equals sign represents phase 2 (IPsec) cipher-text datagrams.
+   ~  A single tilde represents clear-text phase 1 datagrams.
+   #  A hash sign represents phase 1 (IKE) cipher-text datagrams.
 
 
      Alice          SG-A      DNS       SG-B           Bob
@@ -1994,31 +2229,32 @@ Internet-Draft                opportunistic                     May 2003
                      ----(5B)->
                      <---(5C)--
                      ~~~~~~~~~~~~~(5D)~~~>
-                     <~~~~~~~~~~~~(5E1)~~~
-                     ~~~~~~~~~~~~~(5E2)~~>
-                     <~~~~~~~~~~~~(5E3)~~~
-                     #############(5E4)##>
-                     <############(5E5)###
-                              <----(5F1)--
-                              -----(5F2)->
-                     #############(5G1)##>
-                              <----(5H1)--
-                              -----(5H2)->
-                     <############(5G2)###
-                     #############(5G3)##>
-                      ============(6)====>
-   		                       ------(7)----->
-                                         <------(8)------
+                     <~~~~~~~~~~~~(5E)~~~~
+                     ~~~~~~~~~~~~~(5F)~~~>
+                     <~~~~~~~~~~~~(5G)~~~~
+                     #############(5H)###>
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 36]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 40]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
+                              <----(5I)---
+                              -----(5J)-->
+                     <############(5K)####
+                     #############(5L)###>
+                              <----(5M)---
+                              -----(5N)-->
+                     <############(5O)####
+                     #############(5P)###>
+                      ============(6)====>
+                                          ------(7)----->
+                                         <------(8)------
                      <==========(9)======
        <-----(10)----
+
       (11)----------->
                       ==========(12)=====>
                                           -------------->
@@ -2028,278 +2264,154 @@ Internet-Draft                opportunistic                     May 2003
 
         Figure 6: Timing of opportunistic encryption transaction
 
-   ---------------------------------------------------------------------
-
-   (1) Human or application clicks with a name.
-
-   (2) Application initiates DNS mapping.
-
-   (3) Resolver returns A record to application.
-
-   (4) Application starts a TCP session or UDP.
-
-   (5) SG-A (host or SG) sees datagram to target, and buffers it.
-
-   (5B) SG-A asks DNS for TXT record.
-
-   (5C) DNS returns TXT record(s).
-
-   (5D) Initial IKE Main Mode Packet goes out.
-
-   (5E) IKE ISAKMP phase 1 succeeds.
-
-   (5F) SG-B asks DNS for TXT record to prove SG-A is an agent for
-      Alice.
-
-   (5G) IKE phase 2 negotiation.
-
-   (5H) DNS lookup by responder (SG-B).
-
-   (6) Buffered datagram is sent by SG-A.
-
-   (7) Datagram is received by SG-B, decrypted, and sent to Bob.
-
-   (8) Bob replies, and datagram is seen by SG-B.
-
-   (9) SG-B already has tunnel up with SG-A, and uses it.
-
-   (10) SG-A decrypts datagram and gives it to Alice.
-
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 37]
-
-Internet-Draft                opportunistic                     May 2003
-
-
-   (11) Alice receives datagram.  Sends new packet to Bob.
-
-   (12) SG-A gets second datagram, sees that tunnel is up, and uses it.
-
    For the purposes of this section, we will describe only the changes
    that occur between Figure 5 and Figure 6.  This corresponds to time
    points 5, 6, 7, 9 and 10 on the list above.
 
-11.2.1 (5) IPsec datagram interception
-
-   At point (5), SG-A intercepts the datagram because this source/
-   destination pair lacks a policy (the non-existent policy state).  SG-
-   A creates a hold policy, and buffers the datagram.  SG-A requests
-   keys from the keying daemon.
-
-11.2.2 (5B) DNS lookup for TXT record
-
-   SG-A's IKE daemon, having looked up the source/destination pair in
-   the connection class list, creates a new Potential OE connection
-   instance.  SG-A starts DNS queries.
-
-11.2.3 (5C) DNS returns TXT record(s)
-
-   DNS returns properly formed TXT delegation records, and SG-A's IKE
-   daemon causes this instance to make a transition from Potential OE
-   connection to Pending OE connection.
-
-   Using the example above, the returned record might contain:
-
-   ---------------------------------------------------------------------
-
-
-   X-IPsec-Server(10)=192.1.1.5 AQMM...3s1Q==
-
-         Figure 7: Example of reverse delegation record for Bob
-
-   ---------------------------------------------------------------------
-
-    with SG-B's IP address and public key listed.
-
-11.2.4 (5D) Initial IKE main mode packet goes out
-
-   Upon entering Pending OE connection, SG-A sends the initial ISAKMP
-   message with proposals.  See Section 4.6.1.
-
-11.2.5 (5E1) Message 2 of phase 1 exchange
-
-   SG-B receives the message.  A new connection instance is created in
+   At point (5), SG-A intercepts the datagram because this
+   source/destination pair lacks a policy (the non-existent policy
+   state).  SG-A creates a hold policy, and buffers the datagram.  SG-A
+   requests keys from the keying daemon.
+   (5B) DNS query for TXT record.
+   (5C) DNS response for TXT record.
+   (5D) Initial IKE message to responder.
+   (5E) Message 2 of phase 1 exchange.
+      SG-B receives the message.  A new connection instance is created
+      in the unauthenticated OE peer state.
+   (5F) Message 3 of phase 1 exchange.
+      SG-A sends a Diffie-Hellman exponent.  This is an internal state
+      of the keying daemon.
+   (5G) Message 4 of phase 1 exchange.
+      SG-B responds with a Diffie-Hellman exponent.  This is an internal
+      state of the keying protocol.
+   (5H) Message 5 of phase 1 exchange.
+      SG-A uses the phase 1 SA to send its identity under encryption.
+      The choice of identity is discussed in Section 4.6.1.  This is an
+      internal state of the keying protocol.
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 38]
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 41]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-   the unauthenticated OE peer state.
-
-11.2.6 (5E2) Message 3 of phase 1 exchange
-
-   SG-A sends a Diffie-Hellman exponent.  This is an internal state of
-   the keying daemon.
-
-11.2.7 (5E3) Message 4 of phase 1 exchange
-
-   SG-B responds with a Diffie-Hellman exponent.  This is an internal
-   state of the keying protocol.
-
-11.2.8 (5E4) Message 5 of phase 1 exchange
-
-   SG-A uses the phase 1 SA to send its identity under encryption.  The
-   choice of identity is discussed in Section 4.6.1.  This is an
-   internal state of the keying protocol.
-
-11.2.9 (5F1) Responder lookup of initiator key
-
-   SG-B asks DNS for the public key of the initiator.  DNS looks for a
-   KEY record by IP address in the reverse-map.  That is, a KEY resource
-   record is queried for 4.1.1.192.in-addr.arpa (recall that SG-A's
-   external address is 192.1.1.4).  SG-B uses the resulting public key
-   to authenticate the initiator.  See Section 5.1 for further details.
-
-11.2.10 (5F2) DNS replies with public key of initiator
-
-   Upon successfully authenticating the peer, the connection instance
-   makes a transition to authenticated OE peer on SG-B.
-
-   The format of the TXT record returned is described in Section 5.2.
-
-11.2.11 (5E5) Responder replies with ID and authentication
-
-   SG-B sends its ID along with authentication material.  This is an
-   internal state for the keying protocol.
-
-11.2.12 (5G) IKE phase 2
-
-11.2.12.1 (5G1) Initiator proposes tunnel
-
-   Having established mutually agreeable authentications (via KEY) and
-   authorizations (via TXT), SG-A proposes to create an IPsec tunnel for
-   datagrams transiting from Alice to Bob.  This tunnel is established
-   only for the Alice/Bob combination, not for any subnets that may be
-   behind SG-A and SG-B.
-
+   (5I) Responder lookup of initiator key.
+      SG-B asks DNS for the public key of the initiator.  DNS looks for
+      a KEY record by IP address in the reverse-map.  That is, a KEY
+      resource record is queried for 4.1.1.192.in-addr.arpa (recall that
+      SG-A's external address is 192.1.1.4).  SG-B uses the resulting
+      public key to authenticate the initiator.  See Section 5.1 for
+      further details.
+   (5J) DNS replies with public key of initiator.
+      Upon successfully authenticating the peer, the connection instance
+      makes a transition to authenticated OE peer on SG-B.
+      The format of the TXT record returned is described in
+      Section 5.2.
+      Responder replies with ID and authentication.
+      SG-B sends its ID along with authentication material, completing
+      the phase 1 negotiation.
+   (5L) IKE phase 2 negotiation.
+      Having established mutually agreeable authentications (via KEY)
+      and authorizations (via TXT), SG-A proposes to create an IPsec
+      tunnel for datagrams transiting from Alice to Bob.  This tunnel is
+      established only for the Alice/Bob combination, not for any
+      subnets that may be behind SG-A and SG-B.
+   (5M) Authorization for SG-A to speak for Alice
+      While the identity of SG-A has been established, its authority to
+      speak for Alice has not yet been confirmed.  SG-B does a reverse
+      lookup on Alice's address for a TXT record.
+   (5N) Responder determines initiator's authority.
+      A TXT record is returned.  It confirms that SG-A is authorized to
+      speak for Alice.
+      Upon receiving this specific proposal, SG-B's connection instance
+      makes a transition into the potential OE connection state.  SG-B
+      may already have an instance, and the check is made as described
+      above.
+   (5O) Responder agrees to proposal.
+      SG-B, satisfied that SG-A is authorized, proceeds with the phase 2
+      exchange.
+      The responder MUST setup the inbound IPsec SAs before sending its
+      reply.
+   (5P) Final acknowledgment from initiator.
+      The initiator agrees with the responder's choice of proposal and
+      sets up the tunnel.  The initiator sets up the inbound and
+      outbound IPsec SAs.
+      Upon receipt of this message, the responder may now setup the
+      outbound IPsec SAs.
+   (6) IPsec succeeds, and sets up tunnel for communication between
+      Alice and Bob.
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 39]
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 42]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-11.2.12.2 (5H1) Responder determines initiator's authority
-
-   While the identity of SG-A has been established, its authority to
-   speak for Alice has not yet been confirmed.  SG-B does a reverse
-   lookup on Alice's address for a TXT record.
-
-   Upon receiving this specific proposal, SG-B's connection instance
-   makes a transition into the potential OE connection state.  SG-B may
-   already have an instance, and the check is made as described above.
-
-11.2.12.3 (5H2) DNS replies with TXT record(s)
-
-   The returned key and IP address should match that of SG-A.
-
-11.2.12.4 (5G2) Responder agrees to proposal
-
-   Should additional communication occur between, for instance, Dave and
-   Bob using SG-A and SG-B, a new tunnel (phase 2 SA) would be
-   established.  The phase 1 SA may be reusable.
-
-   SG-A, having successfully keyed the tunnel, now makes a transition
-   from Pending OE connection to Keyed OE connection.
-
-   The responder MUST setup the inbound IPsec SAs before sending its
-   reply.
-
-11.2.12.5 (5G3) Final acknowledgment from initiator
-
-   The initiator agrees with the responder's choice and sets up the
-   tunnel.  The initiator sets up the inbound and outbound IPsec SAs.
-
-   The proper authorization returned with keys prompts SG-B to make a
-   transition to the keyed OE connection state.
-
-   Upon receipt of this message, the responder may now setup the
-   outbound IPsec SAs.
-
-11.2.13 (6) IPsec succeeds, and sets up tunnel for communication between
-        Alice and Bob
-
-   SG-A sends the datagram saved at step (5) through the newly created
-   tunnel to SG-B, where it gets decrypted and forwarded.  Bob receives
-   it at (7) and replies at (8).
-
-11.2.14 (9) SG-B already has tunnel up with G1 and uses it
-
-   At (9), SG-B has already established an SPD entry mapping Bob->Alice
-   via a tunnel, so this tunnel is simply applied.  The datagram is
+      SG-A sends the datagram saved at step (5) through the newly
+      created tunnel to SG-B, where it gets decrypted and forwarded.
+      Bob receives it at (7) and replies at (8).
+      SG-B already has tunnel up with G1 and uses it.
+      At (9), SG-B has already established an SPD entry mapping
+      Bob->Alice via a tunnel, so this tunnel is simply applied.  The
+      datagram is encrypted to SG-A, decrypted by SG-A and passed to
+      Alice at (10).
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 40]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 43]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-   encrypted to SG-A, decrypted by SG-A and passed to Alice at (10).
+12.  Security considerations
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 41]
-
-Internet-Draft                opportunistic                     May 2003
-
-
-12. Security considerations
-
-12.1 Configured vs opportunistic tunnels
+12.1  Configured vs opportunistic tunnels
 
    Configured tunnels are those which are setup using bilateral
    mechanisms: exchanging public keys (raw RSA, DSA, PKIX), pre-shared
@@ -2348,12 +2460,12 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 42]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 44]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-12.2 Firewalls versus Opportunistic Tunnels
+12.2  Firewalls versus Opportunistic Tunnels
 
    Typical usage of per datagram access control lists is to implement
    various kinds of security gateways.  These are typically called
@@ -2369,12 +2481,12 @@ Internet-Draft                opportunistic                     May 2003
    arriving in the clear SHOULD also be applied to datagrams arriving
    opportunistically.
 
-12.3 Denial of service
+12.3  Denial of service
 
    There are several different forms of denial of service that an
-   implementor should concern themselves with.  Most of these problems
-   are shared with security gateways that have large numbers of mobile
-   peers (road warriors).
+   implementor should be concerned with.  Most of these problems are
+   shared with security gateways that have large numbers of mobile peers
+   (road warriors).
 
    The design of ISAKMP/IKE, and its use of cookies, defend against many
    kinds of denial of service.  Opportunism changes the assumption that
@@ -2404,12 +2516,12 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 43]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 45]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-13. IANA Considerations
+13.  IANA Considerations
 
    There are no known numbers which IANA will need to manage.
 
@@ -2460,15 +2572,71 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 44]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 46]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-14. Acknowledgments
+14.  Intellectual Property Claims
+
+   The IETF takes no position regarding the validity or scope of any
+   intellectual property or other rights that might be claimed to
+   pertain to the implementation or use of the technology described in
+   this document or the extent to which any license under such rights
+   might or might not be available; neither does it represent that it
+   has made any effort to identify any such rights.  Information on the
+   IETF's procedures with respect to rights in standards-track and
+   standards-related documentation can be found in BCP-11.  Copies of
+   claims of rights made available for publication and any assurances of
+   licenses to be made available, or the result of an attempt made to
+   obtain a general license or permission for the use of such
+   proprietary rights by implementors or users of this specification can
+   be obtained from the IETF Secretariat.
+
+   The IETF invites any interested party to bring to its attention any
+   copyrights, patents or patent applications, or other proprietary
+   rights which may cover technology that may be required to practice
+   this standard.  Please address the information to the IETF Executive
+   Director.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 47]
+
+Internet-Draft                opportunistic                 January 2005
+
+
+15.  Acknowledgments
 
    Substantive portions of this document are based upon previous work by
-   Henry Spencer.
+   Henry Spencer.  [OEspec]
 
    Thanks to Tero Kivinen, Sandy Harris, Wes Hardarker, Robert
    Moskowitz, Jakob Schlyter, Bill Sommerfeld, John Gilmore and John
@@ -2516,85 +2684,96 @@ Internet-Draft                opportunistic                     May 2003
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 45]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 48]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-Normative references
+16.  References
 
-   [1]   Redelmeier, D. and H. Spencer, "Opportunistic Encryption",
-         paper http://www.freeswan.org/freeswan_trees/freeswan-1.91/doc/
-         opportunism.spec, May 2001.
+16.1  Normative references
 
-   [2]   Defense Advanced Research Projects Agency (DARPA), Information
-         Processing Techniques Office and University of Southern
-         California (USC)/Information Sciences Institute, "Internet
-         Protocol", STD 5, RFC 791, September 1981.
+   [RFC1035]  Mockapetris, P., "Domain names - implementation and
+              specification", STD 13, RFC 1035, November 1987.
 
-   [3]   Braden, R. and J. Postel, "Requirements for Internet gateways",
-         RFC 1009, June 1987.
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119, March 1997.
 
-   [4]   IAB, IESG, Carpenter, B. and F. Baker, "IAB and IESG Statement
-         on Cryptographic Technology and the Internet", RFC 1984, August
-         1996.
+   [RFC2401]  Kent, S. and R. Atkinson, "Security Architecture for the
+              Internet Protocol", RFC 2401, November 1998.
 
-   [5]   Bradner, S., "Key words for use in RFCs to Indicate Requirement
-         Levels", BCP 14, RFC 2119, March 1997.
+   [RFC2407]  Piper, D., "The Internet IP Security Domain of
+              Interpretation for ISAKMP", RFC 2407, November 1998.
 
-   [6]   McDonald, D., Metz, C. and B. Phan, "PF_KEY Key Management API,
-         Version 2", RFC 2367, July 1998.
+   [RFC2408]  Maughan, D., Schneider, M. and M. Schertler, "Internet
+              Security Association and Key Management Protocol
+              (ISAKMP)", RFC 2408, November 1998.
 
-   [7]   Kent, S. and R. Atkinson, "Security Architecture for the
-         Internet Protocol", RFC 2401, November 1998.
+   [RFC2409]  Harkins, D. and D. Carrel, "The Internet Key Exchange
+              (IKE)", RFC 2409, November 1998.
 
-   [8]   Piper, D., "The Internet IP Security Domain of Interpretation
-         for ISAKMP", RFC 2407, November 1998.
+   [RFC2535]  Eastlake, D., "Domain Name System Security Extensions",
+              RFC 2535, March 1999.
 
-   [9]   Maughan, D., Schneider, M. and M. Schertler, "Internet Security
-         Association and Key Management Protocol (ISAKMP)", RFC 2408,
-         November 1998.
+   [RFC3110]  Eastlake, D., "RSA/SHA-1 SIGs and RSA KEYs in the Domain
+              Name System (DNS)", RFC 3110, May 2001.
 
-   [10]  Harkins, D. and D. Carrel, "The Internet Key Exchange (IKE)",
-         RFC 2409, November 1998.
+16.2  Non-normative references
 
-   [11]  Kivinen, T. and M. Kojo, "More MODP Diffie-Hellman groups for
-         IKE", RFC 3526, March 2003.
+   [IPSECKEY]
+              Richardson, M., "A Method for Storing IPsec Keying
+              Material in DNS", July 2004.
 
-   [12]  Mockapetris, P., "Domain names - concepts and facilities", STD
-         13, RFC 1034, November 1987.
+   [OEspec]   Redelmeier, D. and H. Spencer, "Opportunistic Encryption",
+              paper http://www.freeswan.org/freeswan_trees/freeswan-1.91
+              /doc/opportunism.spec, May 2001.
 
-   [13]  Mockapetris, P., "Domain names - implementation and
-         specification", STD 13, RFC 1035, November 1987.
+   [RFC0791]  Postel, J., "Internet Protocol", STD 5, RFC 791, September
+              1981.
 
-   [14]  Vixie, P., "Extension Mechanisms for DNS (EDNS0)", RFC 2671,
-         August 1999.
+   [RFC1009]  Braden, R. and J. Postel, "Requirements for Internet
+              gateways", RFC 1009, June 1987.
 
+   [RFC1034]  Mockapetris, P., "Domain names - concepts and facilities",
+              STD 13, RFC 1034, November 1987.
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 46]
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 49]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-   [15]  Rosenbaum, R., "Using the Domain Name System To Store Arbitrary
-         String Attributes", RFC 1464, May 1993.
+   [RFC1464]  Rosenbaum, R., "Using the Domain Name System To Store
+              Arbitrary String Attributes", RFC 1464, May 1993.
 
-   [16]  Eastlake, D., "Domain Name System Security Extensions", RFC
-         2535, March 1999.
+   [RFC1984]  IAB, IESG, Carpenter, B. and F. Baker, "IAB and IESG
+              Statement on Cryptographic Technology and the Internet",
+              RFC 1984, August 1996.
 
-   [17]  Eastlake, D., "RSA/SHA-1 SIGs and RSA KEYs in the Domain Name
-         System (DNS)", RFC 3110, May 2001.
+   [RFC2367]  McDonald, D., Metz, C. and B. Phan, "PF_KEY Key Management
+              API, Version 2", RFC 2367, July 1998.
 
-   [18]  Eastlake, D. and O. Gudmundsson, "Storing Certificates in the
-         Domain Name System (DNS)", RFC 2538, March 1999.
+   [RFC2538]  Eastlake, D. and O. Gudmundsson, "Storing Certificates in
+              the Domain Name System (DNS)", RFC 2538, March 1999.
 
-   [19]  Durham, D., Boyle, J., Cohen, R., Herzog, S., Rajan, R. and A.
-         Sastry, "The COPS (Common Open Policy Service) Protocol", RFC
-         2748, January 2000.
+   [RFC2663]  Srisuresh, P. and M. Holdrege, "IP Network Address
+              Translator (NAT) Terminology and Considerations",
+              RFC 2663, August 1999.
 
-   [20]  Srisuresh, P. and M. Holdrege, "IP Network Address Translator
-         (NAT) Terminology and Considerations", RFC 2663, August 1999.
+   [RFC2671]  Vixie, P., "Extension Mechanisms for DNS (EDNS0)",
+              RFC 2671, August 1999.
+
+   [RFC3330]  IANA, "Special-Use IPv4 Addresses", RFC 3330, September
+              2002.
+
+   [RFC3445]  Massey, D. and S. Rose, "Limiting the Scope of the KEY
+              Resource Record (RR)", RFC 3445, December 2002.
+
+   [RFC3526]  Kivinen, T. and M. Kojo, "More Modular Exponential (MODP)
+              Diffie-Hellman groups for Internet Key Exchange (IKE)",
+              RFC 3526, May 2003.
 
 
 Authors' Addresses
@@ -2605,8 +2784,21 @@ Authors' Addresses
    Ottawa, ON  K1Z 5V7
    CA
 
-   EMail: mcr@sandelman.ottawa.on.ca
+   Email: mcr@sandelman.ottawa.on.ca
    URI:   http://www.sandelman.ottawa.on.ca/
+
+
+
+
+
+
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 50]
+
+Internet-Draft                opportunistic                 January 2005
 
 
    D. Hugh Redelmeier
@@ -2614,7 +2806,7 @@ Authors' Addresses
    Toronto, ON
    CA
 
-   EMail: hugh@mimosa.com
+   Email: hugh@mimosa.com
 
 
 
@@ -2628,40 +2820,87 @@ Authors' Addresses
 
 
 
-Richardson & Redelmeier    Expires November 19, 2003           [Page 47]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Richardson & Redelmeier    Expires July 5, 2005                [Page 51]
 
-Internet-Draft                opportunistic                     May 2003
+Internet-Draft                opportunistic                 January 2005
 
 
-Full Copyright Statement
+Intellectual Property Statement
 
-   Copyright (C) The Internet Society (2003).  All Rights Reserved.
+   The IETF takes no position regarding the validity or scope of any
+   Intellectual Property Rights or other rights that might be claimed to
+   pertain to the implementation or use of the technology described in
+   this document or the extent to which any license under such rights
+   might or might not be available; nor does it represent that it has
+   made any independent effort to identify any such rights.  Information
+   on the procedures with respect to rights in RFC documents can be
+   found in BCP 78 and BCP 79.
 
-   This document and translations of it may be copied and furnished to
-   others, and derivative works that comment on or otherwise explain it
-   or assist in its implementation may be prepared, copied, published
-   and distributed, in whole or in part, without restriction of any
-   kind, provided that the above copyright notice and this paragraph are
-   included on all such copies and derivative works.  However, this
-   document itself may not be modified in any way, such as by removing
-   the copyright notice or references to the Internet Society or other
-   Internet organizations, except as needed for the purpose of
-   developing Internet standards in which case the procedures for
-   copyrights defined in the Internet Standards process must be
-   followed, or as required to translate it into languages other than
-   English.
+   Copies of IPR disclosures made to the IETF Secretariat and any
+   assurances of licenses to be made available, or the result of an
+   attempt made to obtain a general license or permission for the use of
+   such proprietary rights by implementers or users of this
+   specification can be obtained from the IETF on-line IPR repository at
+   http://www.ietf.org/ipr.
 
-   The limited permissions granted above are perpetual and will not be
-   revoked by the Internet Society or its successors or assigns.
+   The IETF invites any interested party to bring to its attention any
+   copyrights, patents or patent applications, or other proprietary
+   rights that may cover technology that may be required to implement
+   this standard.  Please address the information to the IETF at
+   ietf-ipr@ietf.org.
 
-   This document and the information contained herein is provided on an
-   "AS IS" basis and THE INTERNET SOCIETY AND THE INTERNET ENGINEERING
-   TASK FORCE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
-   BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
-   HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
-   MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
-Acknowledgement
+Disclaimer of Validity
+
+   This document and the information contained herein are provided on an
+   "AS IS" basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE REPRESENTS
+   OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY AND THE INTERNET
+   ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED,
+   INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE
+   INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED
+   WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+
+Copyright Statement
+
+   Copyright (C) The Internet Society (2005).  This document is subject
+   to the rights, licenses and restrictions contained in BCP 78, and
+   except as set forth therein, the authors retain all their rights.
+
+
+Acknowledgment
 
    Funding for the RFC Editor function is currently provided by the
    Internet Society.
@@ -2669,20 +2908,5 @@ Acknowledgement
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Richardson & Redelmeier    Expires November 19, 2003           [Page 48]
+Richardson & Redelmeier    Expires July 5, 2005                [Page 52]
 

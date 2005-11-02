@@ -12,9 +12,11 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.18 2004/04/10 17:16:10 ken Exp $
+# RCSID $Id: Makefile,v 1.21 2004/12/18 18:13:35 mcr Exp $
 
-OPENSWANSRCDIR=..
+OPENSWANSRCDIR?=$(shell cd ..; pwd)
+srcdir?=${OPENSWANSRCDIR}/programs/
+
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 SUBDIRS=spi eroute spigrp tncfg klipsdebug pf_key proc pluto 
@@ -22,7 +24,7 @@ SUBDIRS+=_confread _copyright _include _keycensor _plutoload _plutorun
 SUBDIRS+=_realsetup _secretcensor _startklips _updown _updown_x509
 SUBDIRS+=auto barf verify ipsec look manual newhostkey ranbits secrets
 SUBDIRS+=rsasigkey send-pr setup showdefaults showhostkey calcgoo mailkey
-SUBDIRS+=ikeping examples starter
+SUBDIRS+=ikeping examples livetest
 
 ifeq ($(USE_LWRES),true)
 SUBDIRS+=lwdnsq
@@ -41,6 +43,6 @@ def:
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) OPENSWANSRCDIR=$(OPENSWANSRCDIR)/.. $@ ) || exit 1;\
+		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1;\
 	done; \
 

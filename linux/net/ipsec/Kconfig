@@ -1,0 +1,129 @@
+#
+# IPSEC configuration
+# Copyright (C) 2004 Michael Richardson <mcr@freeswan.org>
+# 
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# RCSID $Id: Kconfig,v 1.3 2004/08/17 03:27:23 mcr Exp $
+
+config KLIPS
+	tristate "Openswan IPsec (KLIPS26)"
+	default n
+	help
+  	  KLIPS is the Openswan (www.openswan.org) Kernel Level IP Security
+	  system. It is extensively tested, and has interoperated with
+	  many other systems. 
+          It provides "ipsecX" devices on which one can do firewalling.
+          The userland, is compatible with both KLIPS and 26sec.
+
+menu "KLIPS options"
+	depends on KLIPS
+
+config KLIPS_ESP
+	bool 'Encapsulating Security Payload - ESP ("VPN")'
+	default y
+	help
+	   This option provides support for the IPSEC Encapsulation Security
+	   Payload (IP protocol 50) which provides packet layer content
+           hiding, and content authentication.
+	   It is recommended to enable this.  RFC2406
+
+config KLIPS_AH
+	bool 'Authentication Header - AH'
+	default n
+	help
+           This option provides support for the IPSEC Authentication Header
+           (IP protocol 51) which provides packet layer sender and content
+           authentication. It does not provide for confidentiality.
+	   It is not recommended to enable this.  RFC2402
+
+config KLIPS_AUTH_HMAC_MD5
+	bool 'HMAC-MD5 authentication algorithm' 
+	default y
+	help
+           The HMAC-MD5 algorithm is used by ESP (and AH) to guarantee packet
+	   integrity. There is little reason not to include it.
+
+config KLIPS_AUTH_HMAC_SHA1
+	bool 'HMAC-SHA1 authentication algorithm' 
+	default y
+	help
+           The HMAC-SHA1 algorithm is used by ESP (and AH) to guarantee packet
+	   integrity. SHA1 is a little slower than MD5, but is said to be 
+	   a bit more secure. There is little reason not to include it.
+
+config KLIPS_ALG
+	bool 'Enable algorithm plug-ins for encryption'
+	default y
+	help
+	   This option provides support for loading new algorithms into the 
+	   kernel for use to encrypt.
+
+config KLIPS_ENC_3DES
+	bool '3DES encryption algorithm'
+	default y
+	help
+           The 3DES algorithm is used by ESP to provide for packet privacy.
+	   3DES is 3-repeats of the DES algorithm. 3DES is widely supported,
+	   and analyzed and is considered very secure. 1DES is not supported.
+
+config KLIPS_ENC_AES
+	bool 'AES encryption algorithm'
+	default y
+	depends on KLIPS_ALG
+	help
+           The AES algorithm is used by ESP to provide for packet privacy.
+	   AES the NIST replacement for DES. AES is being widely analyzed,
+           and is very fast.
+
+config KLIPS_IPCOMP
+	bool 'IP compression'
+	default y
+	help
+           The IPcomp protocol is used prior to ESP to make the packet
+	   smaller. Once encrypted, compression will fail, so any link
+	   layer efforts (e.g. PPP) will not work. 
+
+config KLIPS_DEBUG
+	bool 'IPsec debugging'
+	default y 
+	help
+           KLIPS includes a lot of debugging code. Unless there is a real
+	   tangible benefit to removing this code, it should be left in place.
+	   Debugging connections without access to kernel level debugging is
+	   essentially impossible. Leave this on.
+
+endmenu
+
+#
+#
+# $Log: Kconfig,v $
+# Revision 1.3  2004/08/17 03:27:23  mcr
+# 	klips 2.6 edits.
+#
+# Revision 1.2  2004/08/14 03:27:39  mcr
+# 	2.6 kernel build/configuration files.
+#
+# Revision 1.1  2004/08/14 02:47:55  mcr
+# 	kernel build/config patches
+#
+# Revision 1.3  2004/02/24 17:17:04  mcr
+# 	s/CONFIG_IPSEC/CONFIG_KLIPS/ as 26sec uses "CONFIG_IPSEC" to
+# 	turn it on/off as well.
+#
+# Revision 1.2  2004/02/22 06:50:42  mcr
+# 	kernel 2.6 port - merged with 2.4 code.
+#
+# Revision 1.1.2.1  2004/02/20 02:07:53  mcr
+# 	module configuration for KLIPS 2.6
+#
+#
+

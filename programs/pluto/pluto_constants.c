@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pluto_constants.c,v 1.1 2004/05/29 03:06:24 mcr Exp $
+ * RCSID $Id: pluto_constants.c,v 1.13.2.1 2005/05/18 20:55:13 ken Exp $
  */
 
 /*
@@ -52,6 +52,24 @@ const char compile_time_interop_options[] = ""
 #endif
     ;
 
+static const char *const kern_interface_name[] = {
+  "none",
+  "auto-pick",
+  "klips",
+  "netkey"
+};
+enum_names kern_interface_names = 
+  { NO_KERNEL, USE_NETKEY, kern_interface_name, NULL };
+
+/* DPD actions */
+static const char *const dpd_action_name[] = {
+  "action:clear",
+  "action:hold",
+};
+
+enum_names dpd_action_names =
+    { EVENT_NULL, DPD_ACTION_HOLD, dpd_action_name, NULL };
+
 /* Timer events */
 static const char *const timer_event_name[] = {
 	"EVENT_NULL",
@@ -63,13 +81,17 @@ static const char *const timer_event_name[] = {
 	"EVENT_SA_REPLACE_IF_USED",
 	"EVENT_SA_EXPIRE",
 	"EVENT_NAT_T_KEEPALIVE",
+	"EVENT_DPD",
+	"EVENT_DPD_TIMEOUT",
+	"EVENT_LOG_DAILY",
+	"EVENT_CRYPTO_FAILED",
+	"EVENT_PENDING_PHASE2"
     };
 
 enum_names timer_event_names =
-    { EVENT_NULL, EVENT_NAT_T_KEEPALIVE, timer_event_name, NULL };
+    { EVENT_NULL, EVENT_PENDING_PHASE2, timer_event_name, NULL };
 
 /* State of exchanges */
-
 static const char *const state_name[] = {
 	"STATE_MAIN_R0",
 	"STATE_MAIN_I1",
@@ -80,6 +102,12 @@ static const char *const state_name[] = {
 	"STATE_MAIN_R3",
 	"STATE_MAIN_I4",
 
+	"STATE_AGGR_R0",
+	"STATE_AGGR_I1",
+	"STATE_AGGR_R1",
+	"STATE_AGGR_I2",
+	"STATE_AGGR_R2",
+	
 	"STATE_QUICK_R0",
 	"STATE_QUICK_I1",
 	"STATE_QUICK_R1",
@@ -95,16 +123,12 @@ static const char *const state_name[] = {
 	"STATE_MODE_CFG_R1",
 	"STATE_MODE_CFG_R2",
 
+	"STATE_MODE_CFG_I1",
+
 	"STATE_XAUTH_I0",
 	"STATE_XAUTH_I1",
 
-        "STATE_AGGR_R0",
-        "STATE_AGGR_I1",
-        "STATE_AGGR_R1",
-        "STATE_AGGR_I2",
-        "STATE_AGGR_R2",
-
-	"STATE_IKE_ROOF"  /* one */
+	"STATE_IKE_ROOF"  
     };
 
 enum_names state_names =
@@ -122,6 +146,12 @@ const char *const state_story[] = {
 	"sent MR3, ISAKMP SA established",	/* STATE_MAIN_R3 */
 	"ISAKMP SA established",	/* STATE_MAIN_I4 */
 
+	"expecting AI1",			/* STATE_AGGR_R0 */
+	"sent AI1, expecting AR1",		/* STATE_AGGR_I1 */
+	"sent AR1, expecting AI2",		/* STATE_AGGR_R1 */
+	"sent AI2, ISAKMP SA established",	/* STATE_AGGR_I2 */
+	"ISAKMP SA established",		/* STATE_AGGR_R2 */
+
 	"expecting QI1",	/* STATE_QUICK_R0 */
 	"sent QI1, expecting QR1",	/* STATE_QUICK_I1 */
 	"sent QR1, inbound IPsec SA installed, expecting QI2",	/* STATE_QUICK_R1 */
@@ -131,20 +161,52 @@ const char *const state_story[] = {
 	"got Informational Message in clear",	/* STATE_INFO */
 	"got encrypted Informational Message",	/* STATE_INFO_PROTECTED */
 
+
 	"XAUTH server - CFG_request sent, expecting CFG_reply",
 	"XAUTH status send, expecting Ack",
 	"ModeCfg Reply sent",			/* STATE_MODE_CFG_R0 */
 	"ModeCfg Set sent, expecting Ack",	/* STATE_MODE_CFG_R1 */
 	"ModeCfg R2",				/* STATE_MODE_CFG_R2 */
-	"XAUTH client - awaiting CFG_request",  /* MODE_XAUTH_I0 */
-	"XAUTH client - awaiting CFG_set"       /* MODE_XAUTH_I1 */
 
-        "expecting AI1",                        /* STATE_AGGR_R0 */
-        "sent AI1, expecting AR1",              /* STATE_AGGR_I1 */
-        "sent AR1, expecting AI2",              /* STATE_AGGR_R1 */
-        "sent AI2, ISAKMP SA established",      /* STATE_AGGR_I2 */
-        "ISAKMP SA established",                /* STATE_AGGR_R2 */
+	"ModeCfg inititator - awaiting CFG_reply", /* STATE_MODE_CFG_I1 */
+
+	"XAUTH client - awaiting CFG_request",  /* MODE_XAUTH_I0 */
+	"XAUTH client - awaiting CFG_set",      /* MODE_XAUTH_I1 */
+	"invalid state - IKE roof"
     };
+
+enum_names state_stories =
+    { STATE_MAIN_R0, STATE_IKE_ROOF-1, state_story, NULL };
+
+/* pluto crypto operations */
+static const char *const pluto_cryptoop_strings[] = {
+  "build_kenonce",	/* calculate g^i and nonce */
+  "rsa_sign",	        /* do rsa signature operation */
+  "rsa_check",	        /* do rsa signature check */
+  "x509cert_fetch",     /* X.509 fetch operation */
+  "x509crl_fetch",      /* X.509 crl fetch operation */
+  "build_nonce",        /* just fetch a new nonce */
+  "compute dh+iv",      /* perform (g^x)(g^y) and calculate skeyids */
+  "compute dh(p2)",     /* perform (g^x)(g^y) */
+};
+
+enum_names pluto_cryptoop_names =
+    { pcr_build_kenonce, pcr_build_nonce, pluto_cryptoop_strings, NULL};
+
+
+/* pluto crypto importance */
+static const char *const pluto_cryptoimportance_strings[] = {
+  "stranger asked for crypto",	
+  "a known node asked for crypto",
+  "an ongoing calculation needs crypto",
+  "a local process initiated crypto",
+  "a local administrator initiated crypto"
+};
+
+enum_names pluto_cryptoimportance_names =
+    { pcim_stranger_crypto, pcim_demand_crypto
+      , pluto_cryptoimportance_strings, NULL};
+
 
 /* routing status names */
 
@@ -161,6 +223,17 @@ static const char *const routing_story_strings[] = {
 
 enum_names routing_story =
     { RT_UNROUTED, RT_ROUTED_TUNNEL, routing_story_strings, NULL};
+
+static const char *const stfstatus_names[6] = {
+	"STF_IGNORE",
+	"STF_SUSPEND",
+	"STF_OK",
+	"STF_INTERNAL_ERROR",
+	"STF_FAIL",
+	"STF_FATAL"
+};
+enum_names stfstatus_name =
+  {STF_IGNORE, STF_FATAL, stfstatus_names, NULL};
 
 /* Goal BITs for establishing an SA
  * Note: we drop the POLICY_ prefix so that logs are more concise.
@@ -184,8 +257,8 @@ const char *const sa_policy_bit_names[] = {
 	"GROUP",
 	"GROUTED",
 	"UP",
-	"XAUTH",
-	"MODECFG",
+	"dummy1(XAUTH)",
+	"MODECFGPULL",
 	"AGGRESSIVE",
 	NULL
     };

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: cookie.c,v 1.18 2004/03/08 01:50:34 ken Exp $
+ * RCSID $Id: cookie.c,v 1.19 2004/12/17 09:58:53 hugh Exp $
  */
 
 #include <stdio.h>
@@ -52,7 +52,7 @@ get_cookie(bool initiator, u_int8_t *cookie, int length, const ip_address *addr)
 	    size_t addr_length;
 	    static u_int32_t counter = 0;
 	    unsigned char addr_buff[
-		sizeof(union {struct in_addr; struct in6_addr;})];
+		sizeof(union {struct in_addr A; struct in6_addr B;})];
 
 	    addr_length = addrbytesof(addr, addr_buff, sizeof(addr_buff));
 	    SHA1Init(&ctx);

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # 
-# $Id: make-uml.sh,v 1.31 2003/04/10 02:41:15 mcr Exp $
+# $Id: make-uml.sh,v 1.42 2005/03/20 23:19:07 mcr Exp $
 #
 
 # show me
@@ -11,51 +11,72 @@
 set -e
 
 case $# in
-    1) FREESWANSRCDIR=$1; shift;;
+    1) OPENSWANSRCDIR=$1; shift;;
 esac
-    
+
 #
-# configuration for this file has moved to $FREESWANSRCDIR/umlsetup.sh
+# configuration for this file has moved to $OPENSWANSRCDIR/umlsetup.sh
 # By default, that file does not exist. A sample is at umlsetup-sample.sh
-# in this directory. Copy it to $FREESWANSRCDIR and edit it.
+# in this directory. Copy it to $OPENSWANSRCDIR and edit it.
 #
-FREESWANSRCDIR=${FREESWANSRCDIR-../..}
-if [ ! -f ${FREESWANSRCDIR}/umlsetup.sh ]
+OPENSWANSRCDIR=${OPENSWANSRCDIR-../..}
+if [ ! -f ${OPENSWANSRCDIR}/umlsetup.sh ]
 then
     echo No umlsetup.sh. Please read instructions in doc/umltesting.html and testing/utils/umlsetup-sample.sh.
     exit 1
 fi
 
-. ${FREESWANSRCDIR}/umlsetup.sh
-. ${FREESWANSRCDIR}/testing/utils/uml-functions.sh
+. ${OPENSWANSRCDIR}/umlsetup.sh
+. ${OPENSWANSRCDIR}/testing/utils/uml-functions.sh
+
+KERNVER=${KERNVER-}    
+
+case $KERNVER in 
+	26) KERNVERSION=2.6;;
+	*) KERNVERSION=2.4;;
+esac
+
+echo Setting up for kernel KERNVER=$KERNVER and KERNVERSION=$KERNVERSION
+
+
+# set the default for this
+NATTPATCH=${NATTPATCH-true}
 
 # make absolute so that we can reference it from POOLSPACE
-FREESWANSRCDIR=`cd $FREESWANSRCDIR && pwd`;export FREESWANSRCDIR
+OPENSWANSRCDIR=`cd $OPENSWANSRCDIR && pwd`;export OPENSWANSRCDIR
 
 # what this script does is create some Makefile
 #  (if they do not already exist)
 # that will copy everything where it needs to go.
 
-if [ -d $FREESWANSRCDIR/testing/kernelconfigs ]
+if [ -d $OPENSWANSRCDIR/testing/kernelconfigs ]
 then
-    TESTINGROOT=$FREESWANSRCDIR/testing
+    TESTINGROOT=$OPENSWANSRCDIR/testing
 fi
 TESTINGROOT=${TESTINGROOT-/c2/freeswan/sandbox/testing}
 
 if [ -z "$NONINTPATCH" ]
 then
-    if [ -f ${TESTINGROOT}/kernelconfigs/linux-2.4.0-nonintconfig.patch ]
+    if [ -f ${TESTINGROOT}/kernelconfigs/linux-${KERNVERSION}.0-nonintconfig.patch ]
     then
-	NONINTPATCH=${TESTINGROOT}/kernelconfigs/linux-2.4.0-nonintconfig.patch
+	NONINTPATCH=${TESTINGROOT}/kernelconfigs/linux-${KERNVERSION}.0-nonintconfig.patch
+	echo "Found non-int patch $NONINTPATCH"
+    else
+	echo "Can not find NONINTPATCH: +$NONINTPATCH+"
+	echo "Set to 'none' if it is not relevant"
+	exit 1
     fi
 fi
+
+# more defaults
+NONINTCONFIG=oldconfig
 
 # hack for version specific stuff
 UMLVERSION=`basename $UMLPATCH .bz2 | sed -e 's/uml-patch-//'`
 EXTRAPATCH=${TESTINGROOT}/kernelconfigs/extras.$UMLVERSION.patch
 
 # dig the kernel revision out.
-KERNEL_MAJ_VERSION=`${FREESWANSRCDIR}/packaging/utils/kernelversion-short $KERNPOOL/Makefile`
+KERNEL_MAJ_VERSION=`${OPENSWANSRCDIR}/packaging/utils/kernelversion-short $KERNPOOL/Makefile`
 
 
 echo -n Looking for Extra patch at $EXTRAPATCH..
@@ -74,40 +95,65 @@ USER=${USER-`id -un`}
 echo '#' built by $0 on $NOW by $USER >|$UMLMAKE
 echo '#' >>$UMLMAKE
 
+# okay, copy the kernel, apply the UML patches, and build a plain kernel.
+UMLPLAIN=$POOLSPACE/plain${KERNVER}
+mkdir -p $UMLPLAIN
+
 setup_make >>$UMLMAKE
 
 # now, setup up root dir
 for host in $REGULARHOSTS
 do
-    setup_host_make $host plain/linux regular >>$UMLMAKE
+    setup_host_make $host $UMLPLAIN/linux regular ${KERNVER} >>$UMLMAKE
 done
-
-
-# okay, copy the kernel, apply the UML patches, and build a plain kernel.
-UMLPLAIN=$POOLSPACE/plain
-mkdir -p $UMLPLAIN
 
 if [ ! -x $UMLPLAIN/linux ]
 then
     cd $UMLPLAIN
     lndir -silent $KERNPOOL .
     
-    if [ ! -d arch/um ] 
+    if [ ! -d arch/um/.PATCHAPPLIED ] 
     then
-	bzcat $UMLPATCH | patch -p1 
-	if [ -n "$NONINTPATCH" ]
+	echo Applying $UMLPATCH
+	if bzcat $UMLPATCH | patch -p1 
 	then
-	    echo Applying non-interactive config patch
-	    cat $NONINTPATCH | patch -p1
+	    :
 	else
-		echo Can not find +$NONINTPATCH+
-	exit 1
+	    echo "Failed to apply UML patch: $UMLPATCH"
+	    exit 1;
+        fi
+
+	if [ -n "$UMLPATCH2" ] && [ -f $UMLPATCH2 ]
+	then
+		echo Applying $UMLPATCH2
+		if bzcat $UMLPATCH2 | patch -p1 
+		then
+		    :
+		else
+		    echo "Failed to apply UML patch: $UMLPATCH2"
+		    exit 1;
+		fi
 	fi
+
+	if [ -n "$NONINTPATCH" ] && [ "$NONINTPATCH" != "none" ]
+	then
+	    if [ -f "$NONINTPATCH" ]
+	    then
+		echo Applying non-interactive config patch
+		cat $NONINTPATCH | patch -p1
+		NONINTCONFIG=oldconfig_nonint
+	    else
+		echo Can not find +$NONINTPATCH+
+		exit 1
+	    fi
+	fi
+
 	if [ -n "$EXTRAPATCH" ]
 	then
 	    echo Applying other version specific stuff
 	    cat $EXTRAPATCH | patch -p1
 	fi
+
 	for patch in ${TESTINGROOT}/kernelconfigs/local_${KERNEL_MAJ_VERSION}_*.patch
 	do
 	    if [ -f $patch ] 
@@ -116,13 +162,22 @@ then
 		cat $patch | patch -p1
 	    fi
 	done
+	mkdir -p arch/um/.PATCHAPPLIED
+
+	if $NATTPATCH
+	then
+	    echo Applying the NAT-Traversal patch
+	    (cd $OPENSWANSRCDIR && make nattpatch ) | patch -p1
+	else
+            echo Not applying the NAT-Traversal patch
+	fi
     fi
 
-    if [ ! -f .config ] 
-    then
-	cp ${TESTINGROOT}/kernelconfigs/umlplain.config .config
-    fi
-    (make ARCH=um oldconfig_nonint && make ARCH=um dep && make ARCH=um linux ) || exit 1 </dev/null 
+    echo Copying kernel config ${TESTINGROOT}/kernelconfigs/umlplain${KERNVER}.config 
+    rm -f .config
+    cp ${TESTINGROOT}/kernelconfigs/umlplain${KERNVER}.config .config
+    
+    (make ARCH=um $NONINTCONFIG && make ARCH=um dep && make ARCH=um linux ) || exit 1 </dev/null 
 fi
 
 # now, execute the Makefile that we have created!
@@ -131,7 +186,7 @@ cd $POOLSPACE && make $REGULARHOSTS
 # now, copy the kernel, apply the UML patches.
 # then, make FreeSWAN patches as well.
 #
-UMLSWAN=$POOLSPACE/swan
+UMLSWAN=$POOLSPACE/swan${KERNVER}
 
 # we could copy the UMLPLAIN to make this tree. This would be faster, as we
 # already built most everything. We could also just use a FreeSWAN-enabled
@@ -151,21 +206,47 @@ then
     cd $UMLSWAN
     lndir -silent $KERNPOOL .
     
-    if [ ! -d arch/um ] 
+    if [ ! -d arch/um/.PATCHAPPLIED ] 
     then
-	bzcat $UMLPATCH | patch -p1 
-	if [ -n "$NONINTPATCH" ]
+	if bzcat $UMLPATCH | patch -p1 
 	then
-	    echo Applying non-interactive config patch
-	    cat $NONINTPATCH | patch -p1
+	    :
 	else
-		echo Can not find +$NONINTPATCH+
+	    echo "Failed to apply UML patch: $UMLPATCH"
+	    exit 1;
+        fi
+
+	if [ -n "$UMLPATCH2" ] && [ -f $UMLPATCH2 ]
+	then
+		echo Applying $UMLPATCH2
+		if bzcat $UMLPATCH2 | patch -p1 
+		then
+		    :
+		else
+		    echo "Failed to apply UML patch: $UMLPATCH2"
+		    exit 1;
+		fi
 	fi
+
+	if [ -n "$NONINTPATCH" ] && [ "$NONINTPATCH" != "none" ]
+	then
+	    if [ -f "$NONINTPATCH" ]
+	    then
+		echo Applying non-interactive config patch
+		cat $NONINTPATCH | patch -p1
+		NONINTCONFIG=oldconfig_nonint
+	    else
+		echo Can not find +$NONINTPATCH+
+		exit 1
+	    fi
+	fi
+
 	if [ -n "$EXTRAPATCH" ]
 	then
 	    echo Applying other version specific stuff
 	    cat $EXTRAPATCH | patch -p1
 	fi
+
 	for patch in ${TESTINGROOT}/kernelconfigs/local_${KERNEL_MAJ_VERSION}_*.patch
 	do
 	    if [ -f $patch ] 
@@ -174,55 +255,85 @@ then
 		cat $patch | patch -p1
 	    fi
 	done
+	mkdir -p arch/um/.PATCHAPPLIED
+
+	if $NATTPATCH
+	then
+	    echo Applying the NAT-Traversal patch
+	    (cd $OPENSWANSRCDIR && make nattpatch ) | patch -p1
+	else
+            echo Not applying the NAT-Traversal patch
+	fi
     fi
     
     # copy the config file
     rm -f .config
-    cp ${TESTINGROOT}/kernelconfigs/umlswan.config .config
-
-    # make the kernel here for good luck
-    make ARCH=um oldconfig_nonint
-    if [ ! -f .depend ]
-    then
-      make ARCH=um dep >umlswan.make.dep.out
-    fi 
-    #make ARCH=um linux >umlswan.make.plain.out
-
-    # we have to copy it again, because "make oldconfig" above, blew
-    # away options that it didn't know about.
-
-    cp ${TESTINGROOT}/kernelconfigs/umlswan.config .config
+    cp ${TESTINGROOT}/kernelconfigs/umlswan${KERNVER}.config .config
 
     # nuke final executable here since we will do FreeSWAN in a moment.
     rm -f linux .depend
     KERNDEP=dep
 fi
 
-grep CONFIG_IPSEC $UMLSWAN/.config || exit 1
+grep CONFIG_KLIPS $UMLSWAN/.config || exit 1
 
 if [ ! -x $UMLSWAN/linux ]
 then
-    cd $FREESWANSRCDIR || exit 1
-
-    make KERNMAKEOPTS='ARCH=um' KERNELSRC=$UMLSWAN KERNCLEAN='' KERNDEP=$KERNDEP KERNEL=linux DESTDIR=$DESTDIR nopromptgo || exit 1 </dev/null 
+    cd $OPENSWANSRCDIR || exit 1
+ 
+    make KERNMAKEOPTS='ARCH=um' KERNELSRC=$UMLSWAN KERNCLEAN='' KERNDEP=$KERNDEP KERNEL=linux DESTDIR=$DESTDIR NONINTCONFIG=${NONINTCONFIG} verset kpatch rcf kernel || exit 1 </dev/null 
 fi
 
-cd $FREESWANSRCDIR || exit 1
+cd $OPENSWANSRCDIR || exit 1
 
 make programs
 
 # now, setup up root dir
-for host in $FREESWANHOSTS
+for host in $OPENSWANHOSTS
 do
-    setup_host_make $host $UMLSWAN/linux freeswan >>$UMLMAKE
+    setup_host_make $host $UMLSWAN/linux openswan ${KERNVER} >>$UMLMAKE
 done
 
 # now, execute the Makefile that we have created!
-cd $POOLSPACE && make $FREESWANHOSTS 
+cd $POOLSPACE && make $OPENSWANHOSTS 
 
     
 #
 # $Log: make-uml.sh,v $
+# Revision 1.42  2005/03/20 23:19:07  mcr
+# 	note which thing (NONINTPATCH) it was that wasn't found.
+#
+# Revision 1.41  2005/02/11 01:32:23  mcr
+# 	added code for a second UML patch.
+#
+# Revision 1.40  2004/09/06 04:47:05  mcr
+# 	make sure to pass $KERNVER into setup_host_make.
+#
+# Revision 1.39  2004/08/22 03:31:29  mcr
+# 	added -p to PATCHAPPLIED mkdir.
+#
+# Revision 1.38  2004/08/18 02:10:49  mcr
+# 	kernel 2.6 changes.
+#
+# Revision 1.37  2004/08/14 03:30:15  mcr
+# 	make sure to set KERNVER/KERNVERSION after umlsetup.sh.
+#
+# Revision 1.36  2004/08/03 23:25:34  mcr
+# 	find noninteraction patch properly.
+#
+# Revision 1.35  2004/08/03 23:23:55  mcr
+# 	set default value for NONINTCONFIG.
+#
+# Revision 1.34  2004/07/26 15:05:34  mcr
+# 	introduce kernel versioning to the UML setup script.
+#
+# Revision 1.33  2004/04/03 19:44:52  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
+# Revision 1.32  2004/02/03 03:33:08  mcr
+# 	apply NAT-T patch unless we are told not to (maybe it is
+# 	already applied)
+#
 # Revision 1.31  2003/04/10 02:41:15  mcr
 # 	fix location of </dev/null redirects.
 #

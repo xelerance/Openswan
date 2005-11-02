@@ -1,0 +1,2 @@
+RECORDFILE --recordfile=OUTPUT/public.pcap --switchname=public
+RECORDFILE --recordfile=OUTPUT/northpublic.pcap --switchname=northpublic

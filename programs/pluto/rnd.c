@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: rnd.c,v 1.20 2004/03/08 01:50:35 ken Exp $
+ * RCSID $Id: rnd.c,v 1.22 2005/01/18 02:49:40 ken Exp $
  */
 
 /* A true random number generator (we hope)
@@ -69,7 +69,12 @@
 
 #ifdef linux
 # define USE_DEV_RANDOM	1
+#ifdef HWRANDOM
+# define RANDOM_PATH    "/dev/hwrandom"
+# define RANDOM_PATH_BACKUP "/dev/urandom"
+#else
 # define RANDOM_PATH    "/dev/urandom"
+#endif
 #else
 # ifdef __OpenBSD__
 #  define USE_ARC4RANDOM
@@ -77,6 +82,7 @@
 #   define USE_CLOCK_SLEW
 # endif
 #endif
+
 
 #ifdef USE_ARC4RANDOM
 
@@ -212,11 +218,24 @@ init_rnd_pool(void)
 {
 #ifndef USE_ARC4RANDOM
 # ifdef USE_DEV_RANDOM
-    DBG(DBG_KLIPS, DBG_log("opening %s", RANDOM_PATH));
+    DBG(DBG_CONTROL, DBG_log("opening %s", RANDOM_PATH));
     random_fd = open(RANDOM_PATH, O_RDONLY);
-    if (random_fd == -1)
-	exit_log_errno((e, "open of %s failed in init_rnd_pool()", RANDOM_PATH));
+    if (random_fd == -1) {
+# ifdef RANDOM_PATH_BACKUP
+	openswan_log("WARNING: Open of %s failed in init_rnd_pool(), trying alternate sources of random", RANDOM_PATH);
+        DBG(DBG_CONTROL, DBG_log("opening %s", RANDOM_PATH_BACKUP));
+	random_fd = open(RANDOM_PATH_BACKUP, O_RDONLY);
+	if (random_fd == -1) {
+        	exit_log_errno((e, "open of %s failed in init_rnd_pool()", RANDOM_PATH_BACKUP));
+	} else {
+		openswan_log("WARNING: Using %s as the source of random", RANDOM_PATH_BACKUP);
+	}
+# else
+        exit_log_errno((e, "open of %s failed in init_rnd_pool()", RANDOM_PATH));
 # endif
+    }
+# endif
+
 
     get_rnd_bytes(random_pool, RANDOM_POOL_SIZE);
     mix_pool();

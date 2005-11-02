@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: connections.c,v 1.227 2004/06/27 20:46:15 mcr Exp $
+ * RCSID $Id: connections.c,v 1.243.2.1 2005/05/18 20:55:13 ken Exp $
  */
 
 #include <string.h>
@@ -44,6 +44,7 @@
 #include <security/pam_appl.h>
 #endif
 #include "connections.h"	/* needs id.h */
+#include "pending.h"
 #include "foodgroups.h"
 #include "packet.h"
 #include "demux.h"	/* needs packet.h */
@@ -54,6 +55,7 @@
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "keys.h"
+#include "secrets.h"
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "whack.h"
@@ -61,6 +63,7 @@
 #include "ike_alg.h"
 #include "kernel_alg.h"
 #include "plutoalg.h"
+#include "xauth.h"
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
 #endif
@@ -68,8 +71,6 @@
 #ifdef VIRTUAL_IP
 #include "virtual.h"
 #endif
-
-static void flush_pending_by_connection(struct connection *c);	/* forward */
 
 static struct connection *connections = NULL;
 
@@ -86,7 +87,8 @@ static struct connection *connections = NULL;
 struct host_pair {
     struct {
 	ip_address addr;
-	u_int16_t port;	/* host order */
+	u_int16_t  host_port;	        /* IKE port */
+	bool       host_port_specific;	/* if above is interesting */
     } me, him;
     bool initial_connection_sent;
     struct connection *connections;	/* connections with this pair */
@@ -98,6 +100,22 @@ static struct host_pair *host_pairs = NULL;
 
 static struct connection *unoriented_connections = NULL;
 
+void host_pair_enqueue_pending(const struct connection *c
+			       , struct pending *p
+			       , struct pending **pnext)
+{
+    *pnext = c->host_pair->pending;
+    c->host_pair->pending = p;
+}
+
+struct pending **host_pair_first_pending(const struct connection *c)
+{
+    if(c->host_pair == NULL) return NULL;
+
+    return &c->host_pair->pending;
+}
+
+    
 /* check to see that Ids of peers match */
 bool
 same_peer_ids(const struct connection *c, const struct connection *d
@@ -107,31 +125,54 @@ same_peer_ids(const struct connection *c, const struct connection *d
 	&& same_id(his_id == NULL? &c->spd.that.id : his_id, &d->spd.that.id);
 }
 
+/** returns a host pair based upon addresses.
+ * 
+ * find_host_pair is given a pair of addresses, plus UDP ports, and
+ * returns a host_pair entry that covers it. It also moves the relevant
+ * pair description to the beginning of the list, so that it can be
+ * found faster next time.
+ * 
+ */
 static struct host_pair *
-find_host_pair(const ip_address *myaddr, u_int16_t myport
-, const ip_address *hisaddr, u_int16_t hisport)
+find_host_pair(const ip_address *myaddr
+	       , u_int16_t myport
+	       , const ip_address *hisaddr
+	       , u_int16_t hisport)
 {
     struct host_pair *p, *prev;
+    char b1[ADDRTOT_BUF],b2[ADDRTOT_BUF];
 
     /* default hisaddr to an appropriate any */
     if (hisaddr == NULL)
 	hisaddr = aftoinfo(addrtypeof(myaddr))->any;
 
-#ifdef NAT_TRAVERSAL
-    if (nat_traversal_enabled) {
-	/**
-	 * port is not relevant in host_pair. with nat_traversal we
-	 * always use pluto_port (500)
-	 */
-	myport = pluto_port;
-	hisport = pluto_port;
-    }
-#endif
+    /*
+     * look for a host-pair that has the right set of ports/address.
+     *
+     */
+    
+    /*
+     * for the purposes of comparison, port 500 and 4500 are identical,
+     * but other ports are not.
+     * So if any port==4500, then set it to 500.
+     */
+    if(myport == 4500) myport=500;
+    if(hisport== 4500) hisport=500;
 
     for (prev = NULL, p = host_pairs; p != NULL; prev = p, p = p->next)
     {
-	if (sameaddr(&p->me.addr, myaddr) && p->me.port == myport
-	&& sameaddr(&p->him.addr, hisaddr) && p->him.port == hisport)
+	DBG(DBG_CONTROLMORE
+	    , DBG_log("find_host_pair: comparing to %s:%d %s:%d\n"
+		      , (addrtot(&p->me.addr, 0, b1, sizeof(b1)), b1)
+		      , p->me.host_port
+		      , (addrtot(&p->him.addr, 0, b2, sizeof(b2)), b2)
+		      , p->him.host_port));
+		   
+	if (sameaddr(&p->me.addr, myaddr)
+	    && (!p->me.host_port_specific || p->me.host_port == myport)
+	    && sameaddr(&p->him.addr, hisaddr)
+	    && (!p->him.host_port_specific || p->him.host_port == hisport)
+	    )
 	{
 	    if (prev != NULL)
 	    {
@@ -147,22 +188,22 @@ find_host_pair(const ip_address *myaddr, u_int16_t myport
 
 /* find head of list of connections with this pair of hosts */
 static struct connection *
-find_host_pair_connections(const ip_address *myaddr, u_int16_t myport
-, const ip_address *hisaddr, u_int16_t hisport)
+find_host_pair_connections(const char *func
+			   , const ip_address *myaddr, u_int16_t myport			   
+			   , const ip_address *hisaddr, u_int16_t hisport)
 {
+    char b1[ADDRTOT_BUF],b2[ADDRTOT_BUF];
     struct host_pair *hp = find_host_pair(myaddr, myport, hisaddr, hisport);
 
-#ifdef NAT_TRAVERSAL
-    if (nat_traversal_enabled && hp && hisaddr) {
-	struct connection *c;
-	for (c = hp->connections; c != NULL; c = c->hp_next) {
-	    if ((c->spd.this.host_port==myport) && (c->spd.that.host_port==hisport))
-		return c;
-	}
-	return NULL;
-    }
-#endif
-
+    DBG(DBG_CONTROLMORE
+	, DBG_log("find_host_pair_conn (%s): %s:%d %s:%d -> hp:%s\n"
+		  , func
+		  , (addrtot(myaddr,  0, b1, sizeof(b1)), b1)
+		  , myport
+		  , hisaddr ? (addrtot(hisaddr, 0, b2, sizeof(b2)), b2) : "%any"
+		  , hisport
+		  , (hp && hp->connections) ? hp->connections->name : "none"));
+		   
     return hp == NULL? NULL : hp->connections;
 }
 
@@ -171,9 +212,21 @@ connect_to_host_pair(struct connection *c)
 {
     if (oriented(*c))
     {
-	struct host_pair *hp = find_host_pair(&c->spd.this.host_addr, c->spd.this.host_port
-	    , &c->spd.that.host_addr, c->spd.that.host_port);
+	struct host_pair *hp = find_host_pair(&c->spd.this.host_addr
+					      , c->spd.this.host_port
+					      , &c->spd.that.host_addr
+					      , c->spd.that.host_port);
 
+	char b1[ADDRTOT_BUF],b2[ADDRTOT_BUF];
+
+	DBG(DBG_CONTROLMORE
+	    , DBG_log("connect_to_host_pair: %s:%d %s:%d -> hp:%s\n"
+		      , (addrtot(&c->spd.this.host_addr, 0, b1,sizeof(b1)), b1)
+		      , c->spd.this.host_port
+		      , (addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2)), b2)
+		      , c->spd.that.host_port
+		      , (hp && hp->connections) ? hp->connections->name : "none"));
+		   
 	if (hp == NULL)
 	{
 	    /* no suitable host_pair -- build one */
@@ -181,11 +234,11 @@ connect_to_host_pair(struct connection *c)
 	    hp->me.addr = c->spd.this.host_addr;
 	    hp->him.addr = c->spd.that.host_addr;
 #ifdef NAT_TRAVERSAL
-	    hp->me.port = nat_traversal_enabled ? pluto_port : c->spd.this.host_port;
-	    hp->him.port = nat_traversal_enabled ? pluto_port : c->spd.that.host_port;
+	    hp->me.host_port = nat_traversal_enabled ? pluto_port : c->spd.this.host_port;
+	    hp->him.host_port = nat_traversal_enabled ? pluto_port : c->spd.that.host_port;
 #else
-	    hp->me.port = c->spd.this.host_port;
- 	    hp->him.port = c->spd.that.host_port;
+	    hp->me.host_port = c->spd.this.host_port;
+ 	    hp->him.host_port = c->spd.that.host_port;
 #endif
 	    hp->initial_connection_sent = FALSE;
 	    hp->connections = NULL;
@@ -484,7 +537,7 @@ check_orientations(void)
 		for (hp = host_pairs; hp != NULL; hp = hp->next)
 		{
 		    if (sameaddr(&hp->him.addr, &i->addr)
-		    && (!no_klips || hp->him.port == pluto_port))
+			&& (kern_interface!=NO_KERNEL || hp->him.host_port == pluto_port))
 		    {
 			/* bad news: the whole chain of connections
 			 * hanging off this host pair has both sides
@@ -640,7 +693,7 @@ format_end(char *buf
     }
 
     host_port[0] = '\0';
-    if (this->host_port != IKE_UDP_PORT)
+    if (this->host_port_specific)
 	snprintf(host_port, sizeof(host_port), ":%u"
 	    , this->host_port);
 
@@ -1001,9 +1054,12 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
     dst->has_client = src->has_client;
     dst->has_client_wildcard = src->has_client_wildcard;
     dst->updown = src->updown;
-    dst->host_port = src->host_port;
+    dst->host_port = IKE_UDP_PORT;
+    if(src->host_port != IKE_UDP_PORT) {
+	dst->host_port = src->host_port;
+	dst->host_port_specific = TRUE;
+    }
 
-    DBG(DBG_CONTROL, DBG_log("sendcert is %d", src->sendcert));
     dst->sendcert =  src->sendcert;
     
     return same_ca;
@@ -1036,19 +1092,26 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	}
 	else if (!NEVER_NEGOTIATE(wm->policy))
 	{
-	    /* check that all RW IKE policies agree because we must implement
-	     * them before the correct connection is known.
+	    /* check that all main mode RW IKE policies agree because we must
+	     * implement them before the correct connection is known.
 	     * We cannot enforce this for other non-RW connections because
 	     * differentiation is possible when a command specifies which
 	     * to initiate.
+	     * aggressive mode IKE policies do not have to agree amongst
+	     * themselves as the ID is known from the outset.
 	     */
 	    const struct connection *c = NULL;
 
-	    c = find_host_pair_connections(&this->host_addr
-		, this->host_port, (const ip_address *)NULL, that->host_port);
+	    c = find_host_pair_connections(__FUNCTION__
+					   , &this->host_addr
+					   , this->host_port
+					   , (const ip_address *)NULL
+					   , that->host_port);
 
 	    for (; c != NULL; c = c->hp_next)
 	    {
+		if (c->policy & POLICY_AGGRESSIVE)
+			continue;
 		if (!NEVER_NEGOTIATE(c->policy)
 		&& ((c->policy ^ wm->policy) & (POLICY_PSK | POLICY_RSASIG)))
 		{
@@ -1106,6 +1169,9 @@ gen_reqid(void)
 void
 add_connection(const struct whack_message *wm)
 {
+    struct alg_info_ike *alg_info_ike;
+    const char *ugh;
+
     if (con_by_name(wm->name, FALSE) != NULL)
     {
 	loglog(RC_DUPNAME, "attempt to redefine connection \"%s\"", wm->name);
@@ -1117,8 +1183,23 @@ add_connection(const struct whack_message *wm)
 	 */
 	loglog(RC_CLASH, "the protocol must be the same for leftport and rightport");
     }
+    else if(wm->ike != NULL
+	    && ((alg_info_ike = alg_info_ike_create_from_str(wm->ike, &ugh))==NULL
+		|| alg_info_ike->alg_info_cnt==0)) {
+	if (alg_info_ike!= NULL && alg_info_ike->alg_info_cnt==0) {
+	    loglog(RC_NOALGO
+		   , "got 0 transforms for esp=\"%s\""
+		   , wm->esp);
+	    return;
+	} 
+
+	loglog(RC_NOALGO
+	       , "esp string error: %s"
+	       , ugh? ugh : "Unknown");
+	return;
+    }
     else if (check_connection_end(&wm->right, &wm->left, wm)
-    && check_connection_end(&wm->left, &wm->right, wm))
+	     && check_connection_end(&wm->left, &wm->right, wm))
     {
 	bool same_rightca, same_leftca;
 	struct connection *c = alloc_thing(struct connection, "struct connection");
@@ -1142,7 +1223,6 @@ add_connection(const struct whack_message *wm)
 #ifdef KERNEL_ALG
 	if (wm->esp)  
 	{
-		const char *ugh;
 		DBG(DBG_CONTROL, DBG_log("from whack: got --esp=%s", wm->esp ? wm->esp: "NULL"));
 		c->alg_info_esp = alg_info_esp_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
 
@@ -1155,14 +1235,16 @@ add_connection(const struct whack_message *wm)
 		);
 		if (c->alg_info_esp) {
 			if (c->alg_info_esp->alg_info_cnt==0) {
-				loglog(RC_LOG_SERIOUS
+				loglog(RC_NOALGO
 					, "got 0 transforms for esp=\"%s\""
 					, wm->esp);
+				return;
 			}
 		} else {
-			loglog(RC_LOG_SERIOUS
+			loglog(RC_NOALGO
 				, "esp string error: %s"
 				, ugh? ugh : "Unknown");
+			return;
 		}
 	}
 #endif	
@@ -1171,27 +1253,15 @@ add_connection(const struct whack_message *wm)
 #ifdef IKE_ALG
 	if (wm->ike)
 	{
-		const char *ugh;
-		DBG(DBG_CONTROL, DBG_log("from whack: got --ike=%s", wm->ike ? wm->ike: "NULL"));
-		c->alg_info_ike= alg_info_ike_create_from_str(wm->ike? wm->ike : "", &ugh);
-		DBG(DBG_CRYPT|DBG_CONTROL, 
-				static char buf[256]="<NULL>";
-				if (c->alg_info_ike)
-					alg_info_snprint(buf, sizeof(buf),
-							 (struct alg_info *)c->alg_info_ike, TRUE);
-				DBG_log("ike string values: %s", buf);
-				);
-		if (c->alg_info_ike) {
-			if (c->alg_info_ike->alg_info_cnt==0) {
-				loglog(RC_LOG_SERIOUS
-					, "got 0 transforms for ike=\"%s\""
-					, wm->ike);
-			}
-		} else {
-			loglog(RC_LOG_SERIOUS
-				, "ike string error: %s"
-				, ugh? ugh : "Unknown");
-		}
+	    c->alg_info_ike = alg_info_ike;
+
+	    DBG(DBG_CONTROL, DBG_log("from whack: got --ike=%s", wm->ike));
+	    DBG(DBG_CRYPT|DBG_CONTROL, 
+		char buf[256];
+		alg_info_snprint(buf, sizeof(buf),
+				 (struct alg_info *)c->alg_info_ike, TRUE);
+		DBG_log("ike string values: %s", buf);
+		);
 	}
 #endif
 	c->sa_ike_life_seconds = wm->sa_ike_life_seconds;
@@ -1421,10 +1491,7 @@ remove_group_instance(const struct connection *group USED_BY_DEBUG
  */
 static struct connection *
 instantiate(struct connection *c, const ip_address *him
-#ifdef NAT_TRAVERSAL
-, u_int16_t his_port
-#endif
-, const struct id *his_id)
+	    , const struct id *his_id)
 {
     struct connection *d;
     int wildcards;
@@ -1457,9 +1524,6 @@ instantiate(struct connection *c, const ip_address *him
     passert(oriented(*d));
     d->spd.that.host_addr = *him;
     setportof(htons(c->spd.that.port), &d->spd.that.host_addr);
-#ifdef NAT_TRAVERSAL
-    if (his_port) d->spd.that.host_port = his_port;
-#endif    
     default_end(&d->spd.that, &d->spd.this.host_addr);
 
     /* We cannot guess what our next_hop should be, but if it was
@@ -1491,19 +1555,10 @@ instantiate(struct connection *c, const ip_address *him
 struct connection *
 rw_instantiate(struct connection *c
 , const ip_address *him
-#ifdef NAT_TRAVERSAL
-, u_int16_t his_port
-#endif
-#ifdef VIRTUAL_IP
 , const ip_subnet *his_net
-#endif
 , const struct id *his_id)
 {
-#ifdef NAT_TRAVERSAL
-    struct connection *d = instantiate(c, him, his_port, his_id);
-#else
     struct connection *d = instantiate(c, him, his_id);
-#endif
 
 #ifdef VIRTUAL_IP
     if (d && his_net && is_virtual_connection(c)) {
@@ -1529,17 +1584,13 @@ rw_instantiate(struct connection *c
 
 struct connection *
 oppo_instantiate(struct connection *c
-, const ip_address *him
-, const struct id *his_id
-, struct gw_info *gw
-, const ip_address *our_client USED_BY_DEBUG
-, const ip_address *peer_client)
+		 , const ip_address *him
+		 , const struct id *his_id
+		 , struct gw_info *gw
+		 , const ip_address *our_client USED_BY_DEBUG
+		 , const ip_address *peer_client)
 {
-#ifdef NAT_TRAVERSAL
-    struct connection *d = instantiate(c, him, 0, his_id);
-#else
     struct connection *d = instantiate(c, him, his_id);
-#endif
 
     DBG(DBG_CONTROL,
 	DBG_log("oppo instantiate d=%s from c=%s with c->routing %s, d->routing %s"
@@ -1679,12 +1730,6 @@ fmt_conn_instance(const struct connection *c, char buf[CONN_INST_BUF])
 	{
 	    *p++ = ' ';
 	    addrtot(&c->spd.that.host_addr, 0, p, ADDRTOT_BUF);
-#ifdef NAT_TRAVERSAL
-	    if (c->spd.that.host_port != pluto_port) {
-		p += strlen(p);
-		sprintf(p, ":%d", c->spd.that.host_port);
-	    }
-#endif
 	}
     }
 }
@@ -1873,8 +1918,10 @@ build_outgoing_opportunistic_connection(struct gw_info *gw
 	 * We cannot know what port the peer would use, so we assume
 	 * that it is pluto_port (makes debugging easier).
 	 */
-	struct connection *c = find_host_pair_connections(&p->addr
-	    , pluto_port, (ip_address *)NULL, pluto_port);
+	struct connection *c = find_host_pair_connections(__FUNCTION__, &p->addr
+							  , pluto_port
+							  , (ip_address *)NULL
+							  , pluto_port);
 
 	for (; c != NULL; c = c->hp_next)
 	{
@@ -1949,7 +1996,8 @@ orient(struct connection *c)
 		{
 		    /* check if this interface matches this end */
 		    if (sameaddr(&sr->this.host_addr, &p->addr)
-		    && (!no_klips || sr->this.host_port == pluto_port))
+			&& (kern_interface != NO_KERNEL
+			    || sr->this.host_port == pluto_port))
 		    {
 			if (oriented(*c))
 			{
@@ -1968,7 +2016,8 @@ orient(struct connection *c)
 
 		    /* done with this interface if it doesn't match that end */
 		    if (!(sameaddr(&sr->that.host_addr, &p->addr)
-		    && (!no_klips || sr->that.host_port == pluto_port)))
+			  && (kern_interface!=NO_KERNEL
+			      || sr->that.host_port == pluto_port)))
 			break;
 
 		    /* swap ends and try again.
@@ -1990,13 +2039,19 @@ orient(struct connection *c)
 }
 
 void
-initiate_connection(const char *name, int whackfd)
+initiate_connection(const char *name, int whackfd
+		    , lset_t moredebug
+		    , enum crypto_importance importance)
 {
     struct connection *c = con_by_name(name, TRUE);
 
     if (c != NULL)
     {
 	set_cur_connection(c);
+
+	/* turn on any extra debugging asked for */
+	c->extra_debugging |= moredebug;
+
 	if (!oriented(*c))
 	{
 	    loglog(RC_ORIENT, "We cannot identify ourselves with either end of this connection.");
@@ -2036,7 +2091,8 @@ initiate_connection(const char *name, int whackfd)
 	    else
 #endif
 	    {
-		ipsecdoi_initiate(whackfd, c, c->policy, 1, SOS_NOBODY);
+		ipsecdoi_initiate(whackfd, c, c->policy, 1
+				  , SOS_NOBODY, importance);
 		whackfd = NULL_FD;	/* protect from close */
 	    }
 	}
@@ -2522,7 +2578,8 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 	    (void) assign_hold(c, sr, b->transport_proto, &b->our_client, &b->peer_client);
 	}
 #endif
-	ipsecdoi_initiate(b->whackfd, c, c->policy, 1, SOS_NOBODY);
+	ipsecdoi_initiate(b->whackfd, c, c->policy, 1
+			  , SOS_NOBODY, pcim_local_crypto);
 	b->whackfd = NULL_FD;	/* protect from close */
     }
     else
@@ -2939,7 +2996,8 @@ initiate_opportunistic_body(struct find_oppo_bundle *b
 		    }
 #endif
 		    c->gw_info->key->last_tried_time = now();
-		    ipsecdoi_initiate(b->whackfd, c, c->policy, 1, SOS_NOBODY);
+		    ipsecdoi_initiate(b->whackfd, c, c->policy, 1
+				      , SOS_NOBODY, pcim_local_crypto);
 		    b->whackfd = NULL_FD;	/* protect from close */
 		}
 	    }
@@ -3248,16 +3306,9 @@ ISAKMP_SA_established(struct connection *c, so_serial_t serial)
 	{
 	    struct connection *next = d->ac_next;	/* might move underneath us */
 
-#ifdef NAT_TRAVERSAL
-	    if (d->kind >= CK_PERMANENT 
-	    && same_id(&c->spd.that.id, &d->spd.that.id)
-	    && (!sameaddr(&c->spd.that.host_addr, &d->spd.that.host_addr) ||
-	    (c->spd.that.host_port != d->spd.that.host_port)))
-#else
 	    if (d->kind >= CK_PERMANENT
 	    && same_id(&c->spd.that.id, &d->spd.that.id)
 	    && !sameaddr(&c->spd.that.host_addr, &d->spd.that.host_addr))
-#endif
 	    {
 		release_connection(d, FALSE);
 	    }
@@ -3411,10 +3462,13 @@ shunt_owner(const ip_subnet *ours, const ip_subnet *his)
  * ??? no longer usefully different from find_host_pair_connections
  */
 struct connection *
-find_host_connection(const ip_address *me, u_int16_t my_port
-, const ip_address *him, u_int16_t his_port)
+find_host_connection2(const char *func
+		     , const ip_address *me, u_int16_t my_port
+		     , const ip_address *him, u_int16_t his_port)
 {
-    return find_host_pair_connections(me, my_port, him, his_port);
+    DBG(DBG_CONTROLMORE,
+	DBG_log("find_host_connection called from %s", func));
+    return find_host_pair_connections(__FUNCTION__, me, my_port, him, his_port);
 }
 
 /*
@@ -3500,13 +3554,14 @@ get_peer_ca(const struct id *peer_id)
  */
 struct connection *
 refine_host_connection(const struct state *st, const struct id *peer_id
-, bool initiator)
+, bool initiator, bool aggrmode)
 {
     struct connection *c = st->st_connection;
     u_int16_t auth = st->st_oakley.auth;
     struct connection *d;
     struct connection *best_found = NULL;
     lset_t auth_policy;
+    lset_t p1mode_policy = aggrmode ? POLICY_AGGRESSIVE : LEMPTY;
     const chunk_t *psk;
     const struct RSA_private_key *my_RSA_pri = NULL;
     bool wcpip;	/* wildcard Peer IP? */
@@ -3538,6 +3593,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	return c;	/* peer ID matches current connection -- look no further */
     }
 
+    auth = xauth_calcbaseauth(auth);
     switch (auth)
     {
     case OAKLEY_PRESHARED_KEY:
@@ -3598,12 +3654,6 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	    if (d->policy & POLICY_GROUP)
 		continue;
 
-#ifdef NAT_TRAVERSAL
-	    if ((c->spd.that.host_port != d->spd.that.host_port) &&
-		(d->kind == CK_INSTANCE))
-		continue;
-#endif
-
 	    /* check if peer_id matches, exactly or after instantiation */
 	    if (!match)
 		continue;
@@ -3615,6 +3665,10 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	    /* authentication used must fit policy of this connection */
 	    if ((d->policy & auth_policy) == LEMPTY)
 		continue;	/* our auth isn't OK for this connection */
+
+	    if ((d->policy & POLICY_AGGRESSIVE) ^ p1mode_policy)
+		continue;   /* disallow phase1 main/aggressive mode mismatch */
+
 #ifdef XAUTH
 	    if (d->spd.this.xauth_server != c->spd.this.xauth_server)
 		continue;	/* disallow xauth/no xauth mismatch */
@@ -3698,8 +3752,10 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	 * instantiated: Road Warrior or Opportunistic.
 	 * Look on list of connections for host pair with wildcard Peer IP
 	 */
-	d = find_host_pair_connections(&c->spd.this.host_addr, c->spd.this.host_port
-	    , (ip_address *)NULL, c->spd.that.host_port);
+	d = find_host_pair_connections(__FUNCTION__, &c->spd.this.host_addr
+				       , c->spd.this.host_port
+				       , (ip_address *)NULL
+				       , c->spd.that.host_port);
     }
 }
 
@@ -4214,11 +4270,27 @@ show_connections_status(void)
 
 	    while (sr != NULL)
 	    {
+		char srcip[ADDRTOT_BUF], dstip[ADDRTOT_BUF];
+
 		(void) format_connection(topo, sizeof(topo), c, sr);
 		whack_log(RC_COMMENT, "\"%s\"%s: %s; %s; eroute owner: #%lu"
 			  , c->name, instance, topo
 			  , enum_name(&routing_story, sr->routing)
 			  , sr->eroute_owner);
+		if(addrbytesptr(&c->spd.this.host_srcip, NULL) == 0
+		   || isanyaddr(&c->spd.this.host_srcip)) {
+		    strcpy(srcip, "unset");
+		} else {
+		    addrtot(&sr->this.host_srcip, 0, srcip, sizeof(srcip));
+		}
+		if(addrbytesptr(&c->spd.that.host_srcip, NULL) == 0
+		   || isanyaddr(&c->spd.that.host_srcip)) {
+		    strcpy(dstip, "unset");
+		} else {
+		    addrtot(&sr->that.host_srcip, 0, dstip, sizeof(dstip));
+		}
+		whack_log(RC_COMMENT, "\"%s\"%s:     srcip=%s; dstip=%s"
+			  , c->name, instance, srcip, dstip);
 		sr = sr->next;
 		num++;
 	    }
@@ -4270,6 +4342,16 @@ show_connections_status(void)
 	    , prio
 	    , ifn);
 
+	/* slightly complicated stuff to avoid extra crap */
+	if(c->dpd_timeout > 0 || DBGP(DBG_DPD)) {
+	    whack_log(RC_COMMENT
+		      , "\"%s\"%s:   dpd: %s; delay:%lu; timeout:%lu; "
+		      , c->name
+		      , instance
+		      , enum_name(&dpd_action_names, c->dpd_action)
+		      , c->dpd_delay, c->dpd_timeout);
+	}
+
 	whack_log(RC_COMMENT
 	    , "\"%s\"%s:   newest ISAKMP SA: #%ld; newest IPsec SA: #%ld; "
 	    , c->name
@@ -4286,206 +4368,6 @@ show_connections_status(void)
     pfree(array);
 }
 
-/* struct pending, the structure representing Quick Mode
- * negotiations delayed until a Keying Channel has been negotiated.
- * Essentially, a pending call to quick_outI1.
- */
-
-struct pending {
-    int whack_sock;
-    struct state *isakmp_sa;
-    struct connection *connection;
-    lset_t policy;
-    unsigned long try;
-    so_serial_t replacing;
-
-    struct pending *next;
-};
-
-/* queue a Quick Mode negotiation pending completion of a suitable Main Mode */
-void
-add_pending(int whack_sock
-, struct state *isakmp_sa
-, struct connection *c
-, lset_t policy
-, unsigned long try
-, so_serial_t replacing)
-{
-    struct pending *p = alloc_thing(struct pending, "struct pending");
-
-    DBG(DBG_CONTROL, DBG_log("Queuing pending Quick Mode with %s \"%s\""
-	, ip_str(&c->spd.that.host_addr)
-	, c->name));
-    p->whack_sock = whack_sock;
-    p->isakmp_sa = isakmp_sa;
-    p->connection = c;
-    p->policy = policy;
-    p->try = try;
-    p->replacing = replacing;
-    p->next = c->host_pair->pending;
-    c->host_pair->pending = p;
-}
-
-/* Release all the whacks awaiting the completion of this state.
- * This is accomplished by closing all the whack socket file descriptors.
- * We go to a lot of trouble to tell each whack, but to not tell it twice.
- */
-void
-release_pending_whacks(struct state *st, err_t story)
-{
-    struct pending *p;
-    struct stat stst;
-
-    if (st->st_whack_sock == NULL_FD || fstat(st->st_whack_sock, &stst) != 0)
-	zero(&stst);	/* resulting st_dev/st_ino ought to be distinct */
-
-    release_whack(st);
-
-    for (p = st->st_connection->host_pair->pending; p != NULL; p = p->next)
-    {
-	if (p->isakmp_sa == st && p->whack_sock != NULL_FD)
-	{
-	    struct stat pst;
-
-	    if (fstat(p->whack_sock, &pst) == 0
-	    && (stst.st_dev != pst.st_dev || stst.st_ino != pst.st_ino))
-	    {
-		passert(whack_log_fd == NULL_FD);
-		whack_log_fd = p->whack_sock;
-		whack_log(RC_COMMENT
-		    , "%s for ISAKMP SA, but releasing whack for pending IPSEC SA"
-		    , story);
-		whack_log_fd = NULL_FD;
-	    }
-	    close(p->whack_sock);
-	    p->whack_sock = NULL_FD;
-	}
-    }
-}
-
-static void
-delete_pending(struct pending **pp)
-{
-    struct pending *p = *pp;
-
-    *pp = p->next;
-    if (p->connection != NULL)
-	connection_discard(p->connection);
-    close_any(p->whack_sock);
-    pfree(p);
-}
-
-void
-unpend(struct state *st)
-{
-    struct pending **pp
-	, *p;
-
-    for (pp = &st->st_connection->host_pair->pending; (p = *pp) != NULL; )
-    {
-	if (p->isakmp_sa == st)
-	{
-	    DBG(DBG_CONTROL, DBG_log("unqueuing pending Quick Mode with %s \"%s\""
-		, ip_str(&p->connection->spd.that.host_addr)
-		, p->connection->name));
-	    (void) quick_outI1(p->whack_sock, st, p->connection, p->policy
-		, p->try, p->replacing);
-	    p->whack_sock = NULL_FD;	/* ownership transferred */
-	    p->connection = NULL;	/* ownership transferred */
-	    delete_pending(pp);
-	}
-	else
-	{
-	    pp = &p->next;
-	}
-    }
-}
-
-/* a Main Mode negotiation has been replaced; update any pending */
-void
-update_pending(struct state *os, struct state *ns)
-{
-    struct pending *p;
-
-    for (p = os->st_connection->host_pair->pending; p != NULL; p = p->next) {
-	if (p->isakmp_sa == os)
-	    p->isakmp_sa = ns;
-#ifdef NAT_TRAVERSAL
-	if (p->connection->spd.this.host_port != ns->st_connection->spd.this.host_port) {
-	    p->connection->spd.this.host_port = ns->st_connection->spd.this.host_port;
-	    p->connection->spd.that.host_port = ns->st_connection->spd.that.host_port;
-	}
-#endif
-    }	    
-}
-
-/* a Main Mode negotiation has failed; discard any pending */
-void
-flush_pending_by_state(struct state *st)
-{
-    struct host_pair *hp = st->st_connection->host_pair;
-
-    if (hp != NULL)
-    {
-	struct pending **pp
-	    , *p;
-
-	for (pp = &hp->pending; (p = *pp) != NULL; )
-	{
-	    if (p->isakmp_sa == st)
-		delete_pending(pp);
-	    else
-		pp = &p->next;
-	}
-    }
-}
-
-/* a connection has been deleted; discard any related pending */
-static void
-flush_pending_by_connection(struct connection *c)
-{
-    if (c->host_pair != NULL)
-    {
-	struct pending **pp
-	    , *p;
-
-	for (pp = &c->host_pair->pending; (p = *pp) != NULL; )
-	{
-	    if (p->connection == c)
-	    {
-		p->connection = NULL;	/* prevent delete_pending from releasing */
-		delete_pending(pp);
-	    }
-	    else
-	    {
-		pp = &p->next;
-	    }
-	}
-    }
-}
-
-void
-show_pending_phase2(const struct host_pair *hp, const struct state *st)
-{
-    const struct pending *p;
-
-    for (p = hp->pending; p != NULL; p = p->next)
-    {
-	if (p->isakmp_sa == st)
-	{
-	    /* connection-name state-number [replacing state-number] */
-	    char cip[CONN_INST_BUF];
-
-	    fmt_conn_instance(p->connection, cip);
-	    whack_log(RC_COMMENT, "#%lu: pending Phase 2 for \"%s\"%s replacing #%lu"
-		, p->isakmp_sa->st_serialno
-		, p->connection->name
-		, cip
-		, p->replacing);
-	}
-    }
-}
-
 /* Delete a connection if it is an instance and it is no longer in use.
  * We must be careful to avoid circularity:
  * we don't touch it if it is CK_GOING_AWAY.
@@ -4495,12 +4377,9 @@ connection_discard(struct connection *c)
 {
     if (c->kind == CK_INSTANCE)
     {
-	/* see if it is being used by a pending */
-	struct pending *p;
-
-	for (p = c->host_pair->pending; p != NULL; p = p->next)
-	    if (p->connection == c)
-		return;	/* in use, so we're done */
+	if(in_pending_use(c)) {
+	    return;
+	}
 
 	if (!states_use_connection(c))
 	    delete_connection(c, FALSE);
@@ -4544,6 +4423,60 @@ eclipsed(struct connection *c, struct spd_route **esrp)
 	}
     }
     return ue;
+}
+
+#define PENDING_PHASE2_INTERVAL (60*2) /*time between scans of pending phase2*/
+
+/*
+ * call me periodically to check to see if pending phase2s ever got
+ * unstuck, and if not, perform DPD action.
+ */
+void connection_check_phase2(void)
+{
+    struct connection *c, *cnext;
+    
+    /* reschedule */
+    event_schedule(EVENT_PENDING_PHASE2, PENDING_PHASE2_INTERVAL, NULL);
+
+    for (c = connections; c!=NULL; c = cnext) {
+	cnext = c->ac_next;
+
+	if(NEVER_NEGOTIATE(c->policy)) {
+	    DBG(DBG_CONTROL,
+		DBG_log("pending review: connection \"%s\" has no negotiated policy, skipped", c->name));
+	    continue;
+	}
+
+	if(!(c->policy & POLICY_UP)) {
+	    DBG(DBG_CONTROL,
+		DBG_log("pending review: connection \"%s\" was not up, skipped", c->name));
+	    continue;
+	}
+
+	DBG(DBG_CONTROL,
+	    DBG_log("pending review: connection \"%s\" checked", c->name));
+	
+	if(pending_check_timeout(c)) {
+	    struct state *p1st;
+	    enum connection_kind kind;
+	    openswan_log("pending Quick Mode with %s \"%s\" took too long -- replacing phase 1" 
+			 , ip_str(&c->spd.that.host_addr)
+			 , c->name);
+
+	    kind = c->kind;
+
+	    p1st = find_phase1_state(c, ISAKMP_SA_ESTABLISHED_STATES|PHASE1_INITIATOR_STATES);
+	    
+	    /* arrange to rekey the phase 1 */
+	    delete_event(p1st);
+	    event_schedule(EVENT_SA_REPLACE, 0, p1st);
+	}
+    }
+}
+
+void init_connections(void)
+{
+    event_schedule(EVENT_PENDING_PHASE2, PENDING_PHASE2_INTERVAL, NULL);
 }
 
 /*

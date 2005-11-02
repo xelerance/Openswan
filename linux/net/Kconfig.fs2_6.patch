@@ -1,0 +1,11 @@
+--- swan26/net/Kconfig.orig	Wed Jun 16 01:18:57 2004
++++ swan26/net/Kconfig	Fri Aug 13 22:41:15 2004
+@@ -105,6 +105,8 @@
+ 
+ source "net/ipv4/Kconfig"
+ 
++source "net/ipsec/Kconfig"
++
+ #   IPv6 as module will cause a CRASH if you try to unload it
+ config IPV6
+ 	tristate "The IPv6 protocol (EXPERIMENTAL)"

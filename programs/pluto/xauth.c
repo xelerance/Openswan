@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: xauth.c,v 1.24 2004/06/20 12:53:33 ken Exp $
+ * RCSID $Id: xauth.c,v 1.41 2005/02/16 17:27:41 mcr Exp $
  *
  * This code originally written by Colubris Networks, Inc.
  * Extraction of patch and porting to 1.99 codebases by Xelerance Corporation
@@ -76,6 +76,9 @@
 #include <pthread.h>
 #endif
 
+static stf_status
+modecfg_inI2(struct msg_digest *md);
+
 struct paththing pwdfile;
 
 extern bool encrypt_message(pb_stream *pbs, struct state *st); /* forward declaration */
@@ -109,7 +112,6 @@ struct pam_conv conv = {
 	xauth_pam_conv,
 	NULL  };
 
-
 /**
  * Get IP address from a PAM environment variable
  * 
@@ -135,6 +137,44 @@ int get_addr(pam_handle_t *pamh,const char *var,ip_address *addr)
 }
 #endif
 
+oakley_auth_t xauth_calcbaseauth(oakley_auth_t baseauth)
+{
+  switch(baseauth) {
+  case HybridInitRSA:
+  case HybridRespRSA: 
+  case XAUTHInitRSA:      
+  case XAUTHRespRSA:      
+    baseauth = OAKLEY_RSA_SIG;
+    break;
+    
+  case XAUTHInitDSS:      
+  case XAUTHRespDSS:      
+  case HybridInitDSS: 
+  case HybridRespDSS: 
+    baseauth = OAKLEY_DSS_SIG;
+    break;
+    
+  case XAUTHInitPreShared:
+  case XAUTHRespPreShared:
+    baseauth = OAKLEY_PRESHARED_KEY;
+    break;
+    
+  case XAUTHInitRSAEncryption:                     
+  case XAUTHRespRSAEncryption:
+    baseauth = OAKLEY_RSA_ENC;
+    break;
+    
+  case XAUTHInitRSARevisedEncryption:             
+  case XAUTHRespRSARevisedEncryption:
+    baseauth = OAKLEY_RSA_ENC_REV;
+    break;
+  }
+  
+  return baseauth;
+}
+      
+
+
 /**
  * Get inside IP address for a connection
  * 
@@ -147,11 +187,11 @@ int get_internal_addresses(struct connection *con,struct internal_addr *ia)
 {
 #ifdef XAUTH_USEPAM
     int retval;
-    char str[48];
+    char str[IDTOA_BUF+sizeof("ID=")+2];
 #endif
 
 #ifdef NAT_TRAVERSAL /* only NAT-T code lets us do virtual ends */
-    if (is_virtual_end(&con->spd.that)) 
+    if (!isanyaddr(&con->spd.that.client.addr))
     {
 	/** assumes IPv4, and also that the mask is ignored */
 	ia->ipaddr = con->spd.that.client.addr;
@@ -182,7 +222,7 @@ int get_internal_addresses(struct connection *con,struct internal_addr *ia)
 					    memmove(buf, c1+3, strlen(c1) + 1 - 3);
 				    }
 			    }
-			    sprintf(str,"ID=%s", buf);
+			    snprintf(str, sizeof(str), "ID=%s", buf);
 			    pam_putenv(con->pamh,str);
 			    pam_open_session(con->pamh,0);
 		    }
@@ -212,13 +252,16 @@ int get_internal_addresses(struct connection *con,struct internal_addr *ia)
  * @return size_t Length of the HASH
  */
 size_t
-xauth_mode_cfg_hash(u_char *dest, const u_char *start, const u_char *roof, 
-const struct state *st)
+xauth_mode_cfg_hash(u_char *dest
+		    , const u_char *start
+		    , const u_char *roof
+		    , const struct state *st)
 {
     struct hmac_ctx ctx;
 
     hmac_init_chunk(&ctx, st->st_oakley.hasher, st->st_skeyid_a);
-    hmac_update(&ctx, (const u_char *) &st->st_msgid, sizeof(st->st_msgid));
+    hmac_update(&ctx, (const u_char *) &st->st_msgid_phase15
+		, sizeof(st->st_msgid_phase15));
     hmac_update(&ctx, start, roof-start);
     hmac_final(dest, &ctx);
 
@@ -244,6 +287,8 @@ const struct state *st)
 stf_status modecfg_resp(struct state *st
 			,unsigned int resp
 			,pb_stream *rbody
+			,u_int16_t replytype
+			,bool hackthat
 			,u_int16_t ap_id)
 {
     unsigned char *r_hash_start,*r_hashval;
@@ -274,7 +319,7 @@ stf_status modecfg_resp(struct state *st
 	bool dont_advance;
 
 	attrh.isama_np = ISAKMP_NEXT_NONE;
-	attrh.isama_type = st->st_state == STATE_MODE_CFG_R1?ISAKMP_CFG_SET:ISAKMP_CFG_REPLY;
+	attrh.isama_type = replytype;
 
 	attrh.isama_identifier = ap_id;
 	if(!out_struct(&attrh, &isakmp_attr_desc, rbody, &strattr))
@@ -293,12 +338,17 @@ stf_status modecfg_resp(struct state *st
 	else
 		resp &= ~LELEM(INTERNAL_IP4_NBNS);
 
-	if(memcmp(&st->st_connection->spd.that.client.addr,&ia.ipaddr,sizeof(ia.ipaddr)) != 0)
-	{
-		/* Make the Internal IP address and Netmask as that client address */
-		st->st_connection->spd.that.client.addr = ia.ipaddr;
-		st->st_connection->spd.that.client.maskbits = 32;
-		st->st_connection->spd.that.has_client = TRUE;
+	if(hackthat) {
+	    if(memcmp(&st->st_connection->spd.that.client.addr
+		      ,&ia.ipaddr
+		      ,sizeof(ia.ipaddr)) != 0)
+		{
+		    /* Make the Internal IP address and Netmask as
+		     * that client address */
+		    st->st_connection->spd.that.client.addr = ia.ipaddr;
+		    st->st_connection->spd.that.client.maskbits = 32;
+		    st->st_connection->spd.that.has_client = TRUE;
+		}
 	}
 
 	attr_type = 0;
@@ -434,7 +484,7 @@ stf_status modecfg_send_set(struct state *st)
 		hdr.isa_flags = ISAKMP_FLAG_ENCRYPTION;
 		memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
 		memcpy(hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
-		hdr.isa_msgid = st->st_msgid;
+		hdr.isa_msgid = st->st_msgid_phase15;
 
 		if (!out_struct(&hdr, &isakmp_hdr_desc, &reply, &rbody))
 		{
@@ -446,14 +496,17 @@ stf_status modecfg_send_set(struct state *st)
 
 	modecfg_resp(st
 		     ,MODECFG_SET_ITEM
-		     ,&rbody,0/* XXX ID */);
+		     ,&rbody
+ 		     ,ISAKMP_CFG_SET
+		     ,TRUE
+		     ,0/* XXX ID */);
 #undef MODECFG_SET_ITEM
 
 	clonetochunk(st->st_tpacket, reply.start, pbs_offset(&reply)
 			, "ModeCfg set");
 
 	/* Transmit */
-	send_packet(st, "ModeCfg set");
+	send_packet(st, "ModeCfg set", TRUE);
 
 	/* RETRANSMIT if Main, SA_REPLACE if Aggressive */
 	if(st->st_event->ev_type != EVENT_RETRANSMIT
@@ -466,6 +519,21 @@ stf_status modecfg_send_set(struct state *st)
 	return STF_OK;
 }
 
+/** Set MODE_CONFIG data to client.  Pack IP Addresses, DNS, etc... and ship
+ * 
+ * @param st State Structure
+ * @return stf_status
+ */
+stf_status modecfg_start_set(struct state *st)
+{
+    if(st->st_msgid_phase15 == 0) {
+	/* pick a new message id */
+	st->st_msgid_phase15 = generate_msgid(st);
+    }
+    st->hidden_variables.st_modecfg_vars_set = TRUE;
+
+    return modecfg_send_set(st);
+}
 
 /** Send XAUTH credential request (username + password request)
  * @param st State
@@ -485,7 +553,7 @@ stf_status xauth_send_request(struct state *st)
 
 
     /* this is the beginning of a new exchange */
-    st->st_msgid = generate_msgid(st);
+    st->st_msgid_phase15 = generate_msgid(st);
     st->st_state = STATE_XAUTH_R0;
 
     /* HDR out */
@@ -499,7 +567,7 @@ stf_status xauth_send_request(struct state *st)
 	hdr.isa_flags = ISAKMP_FLAG_ENCRYPTION;
 	memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
 	memcpy(hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
-	hdr.isa_msgid = st->st_msgid;
+	hdr.isa_msgid = st->st_msgid_phase15;
 
 	if (!out_struct(&hdr, &isakmp_hdr_desc, &reply, &rbody))
 	{
@@ -538,7 +606,7 @@ stf_status xauth_send_request(struct state *st)
     close_message(&rbody);
     close_output_pbs(&reply);
 
-    init_phase2_iv(st, &st->st_msgid);
+    init_phase2_iv(st, &st->st_msgid_phase15);
     encrypt_message(&rbody, st);
 
     clonetochunk(st->st_tpacket, reply.start, pbs_offset(&reply)
@@ -546,7 +614,7 @@ stf_status xauth_send_request(struct state *st)
 
     /* Transmit */
 
-    send_packet(st, "XAUTH: req");
+    send_packet(st, "XAUTH: req", TRUE);
 
     /* RETRANSMIT if Main, SA_REPLACE if Aggressive */
     if(st->st_event->ev_type != EVENT_RETRANSMIT)
@@ -554,6 +622,97 @@ stf_status xauth_send_request(struct state *st)
 	delete_event(st);
 	event_schedule(EVENT_RETRANSMIT,EVENT_RETRANSMIT_DELAY_0 * 3,st);
     }
+
+    return STF_OK;
+}
+
+/** Send modecfg IP address request (IP4 address)
+ * @param st State
+ * @return stf_status
+ */
+stf_status modecfg_send_request(struct state *st)
+{
+    pb_stream reply;
+    pb_stream rbody;
+    char buf[256];
+    u_char *r_hash_start,*r_hashval;
+
+    /* set up reply */
+    init_pbs(&reply, buf, sizeof(buf), "xauth_buf");
+
+    openswan_log("modecfg: Sending IP request (MODECFG_I1)");
+
+    /* this is the beginning of a new exchange */
+    st->st_msgid_phase15 = generate_msgid(st);
+    st->st_state = STATE_MODE_CFG_I1;
+
+    /* HDR out */
+    {
+	struct isakmp_hdr hdr;
+
+	zero(&hdr);	/* default to 0 */
+	hdr.isa_version = ISAKMP_MAJOR_VERSION << ISA_MAJ_SHIFT | ISAKMP_MINOR_VERSION;
+	hdr.isa_np = ISAKMP_NEXT_HASH;
+	hdr.isa_xchg = ISAKMP_XCHG_MODE_CFG;
+	hdr.isa_flags = ISAKMP_FLAG_ENCRYPTION;
+	memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
+	memcpy(hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
+	hdr.isa_msgid = st->st_msgid_phase15;
+
+	if (!out_struct(&hdr, &isakmp_hdr_desc, &reply, &rbody))
+	{
+	    return STF_INTERNAL_ERROR;
+	}
+    }
+
+    START_HASH_PAYLOAD(rbody, ISAKMP_NEXT_ATTR);
+
+    /* ATTR out */
+    {
+	struct  isakmp_mode_attr attrh;
+	struct isakmp_attribute attr;
+	pb_stream strattr;
+
+	attrh.isama_np = ISAKMP_NEXT_NONE;
+	attrh.isama_type = ISAKMP_CFG_REQUEST;
+	attrh.isama_identifier = 0;
+	if(!out_struct(&attrh, &isakmp_attr_desc, &rbody, &strattr))
+	    return STF_INTERNAL_ERROR;
+	/* ISAKMP attr out (ipv4) */
+	attr.isaat_af_type = INTERNAL_IP4_ADDRESS;
+	attr.isaat_lv = 0;
+	out_struct(&attr, &isakmp_xauth_attribute_desc, &strattr, NULL);
+	
+	/* ISAKMP attr out (netmask) */
+	attr.isaat_af_type = INTERNAL_IP4_NETMASK;
+	attr.isaat_lv = 0;
+	out_struct(&attr, &isakmp_xauth_attribute_desc, &strattr, NULL);
+
+	close_message(&strattr);
+    }
+
+    xauth_mode_cfg_hash(r_hashval,r_hash_start,rbody.cur,st);
+    
+    close_message(&rbody);
+    close_output_pbs(&reply);
+
+    init_phase2_iv(st, &st->st_msgid_phase15);
+    encrypt_message(&rbody, st);
+
+    clonetochunk(st->st_tpacket, reply.start, pbs_offset(&reply)
+	, "modecfg: req");
+
+    /* Transmit */
+
+    send_packet(st, "modecfg: req", TRUE);
+
+    /* RETRANSMIT if Main, SA_REPLACE if Aggressive */
+    if(st->st_event->ev_type != EVENT_RETRANSMIT)
+    {	
+	delete_event(st);
+	event_schedule(EVENT_RETRANSMIT,EVENT_RETRANSMIT_DELAY_0 * 3,st);
+    }
+    st->hidden_variables.st_modecfg_started = TRUE;
 
     return STF_OK;
 }
@@ -575,7 +734,7 @@ stf_status xauth_send_status(struct state *st, int status)
     init_pbs(&reply, buf, sizeof(buf), "xauth_buf");
 
     /* pick a new message id */
-    st->st_msgid = generate_msgid(st);
+    st->st_msgid_phase15 = generate_msgid(st);
 
     /* HDR out */
     {
@@ -588,7 +747,7 @@ stf_status xauth_send_status(struct state *st, int status)
 	hdr.isa_flags = ISAKMP_FLAG_ENCRYPTION;
 	memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
 	memcpy(hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
-	hdr.isa_msgid = st->st_msgid;
+	hdr.isa_msgid = st->st_msgid_phase15;
 
 	if (!out_struct(&hdr, &isakmp_hdr_desc, &reply, &rbody))
 	{
@@ -629,7 +788,7 @@ stf_status xauth_send_status(struct state *st, int status)
     close_message(&rbody);
     close_output_pbs(&reply);
 
-    init_phase2_iv(st, &st->st_msgid);
+    init_phase2_iv(st, &st->st_msgid_phase15);
     encrypt_message(&rbody, st);
 
     /* free previous transmit packet */
@@ -646,7 +805,7 @@ stf_status xauth_send_status(struct state *st, int status)
 
     /* Transmit */
 
-    send_packet(st, "XAUTH: status");
+    send_packet(st, "XAUTH: status", TRUE);
 
     st->st_state = STATE_XAUTH_R1;
 
@@ -890,8 +1049,10 @@ static void * do_authentication(void *varg)
         xauth_send_status(st,1);
 
         if(st->quirks.xauth_ack_msgid) {
-	  st->st_msgid = 0;
-	}        
+	  st->st_msgid_phase15 = 0;
+	}
+	pfreeany(st->st_xauth_username);
+	st->st_xauth_username = clone_str(arg->name.ptr,"XAUTH Username");
     } else
     {
 	/** Login attempt failed, display error, send XAUTH status to client
@@ -1103,7 +1264,26 @@ xauth_inR1(struct msg_digest *md)
     openswan_log("XAUTH: xauth_inR1(STF_OK)");
     /* Back to where we were */ 
     st->st_oakley.xauth = 0;
-    st->st_msgid = 0;
+
+    if(!st->st_connection->spd.this.modecfg_server) {
+	DBG(DBG_CONTROL
+	    , DBG_log("Not server, starting new exchange"));
+	st->st_msgid_phase15 = 0;
+    }
+
+    if(st->st_connection->spd.this.modecfg_server 
+       && st->hidden_variables.st_modecfg_vars_set) {
+	DBG(DBG_CONTROL
+	    , DBG_log("modecfg server, vars are set. Starting new exchange."));
+	st->st_msgid_phase15 = 0;
+    }
+
+    if(st->st_connection->spd.this.modecfg_server 
+       && st->st_connection->policy & POLICY_MODECFG_PULL) {
+	DBG(DBG_CONTROL
+	    , DBG_log("modecfg server, pull mode. Starting new exchange."));
+	st->st_msgid_phase15 = 0;
+    }
     return STF_OK;
 }
 
@@ -1111,10 +1291,13 @@ xauth_inR1(struct msg_digest *md)
  * STATE_MODE_CFG_R0:
  *  HDR*, HASH, ATTR(REQ=IP) --> HDR*, HASH, ATTR(REPLY=IP)
  *
- * This state occurs both in the responder.
+ * This state occurs both in the responder and in the initiator.
  *
- * In the responding server, it occurs when the client asks for an IP
+ * In the responding server, it occurs when the client *asks* for an IP
  * address or other information. 
+ *
+ * Otherwise, it occurs in the initiator when the server sends a challenge
+ * a set, or has a reply to our request.
  *
  * @param md Message Digest
  * @return stf_status
@@ -1129,7 +1312,7 @@ modecfg_inR0(struct msg_digest *md)
 
     DBG(DBG_CONTROLMORE, DBG_log("arrived in modecfg_inR0"));
 
-    st->st_msgid = md->hdr.isa_msgid;
+    st->st_msgid_phase15 = md->hdr.isa_msgid;
     CHECK_QUICK_HASH(md
 		     ,xauth_mode_cfg_hash(hash_val
 					  ,hash_pbs->roof
@@ -1149,7 +1332,8 @@ modecfg_inR0(struct msg_digest *md)
 	{
 	default:
 	    openswan_log("Expecting ISAKMP_CFG_REQUEST, got %s instead (ignored)."
-		 , enum_name(&attr_msg_type_names, p->payload.attribute.isama_type));
+			 , enum_name(&attr_msg_type_names
+				     , p->payload.attribute.isama_type));
 
 	    while(pbs_left(attrs) > sizeof(struct isakmp_attribute))
 	    {
@@ -1206,6 +1390,7 @@ modecfg_inR0(struct msg_digest *md)
 		case INTERNAL_IP4_NBNS:
 		    resp |= LELEM(attr.isaat_af_type);
 		    break;
+
 		default:
 		    openswan_log("unsupported mode cfg attribute %s received."
 			 , enum_show(&modecfg_attr_names
@@ -1216,6 +1401,8 @@ modecfg_inR0(struct msg_digest *md)
 	    
 	    stat = modecfg_resp(st, resp
 				,&md->rbody
+				,ISAKMP_CFG_REPLY
+				,TRUE
 				,p->payload.attribute.isama_identifier);
 	    
 	    if(stat != STF_OK) {
@@ -1223,6 +1410,9 @@ modecfg_inR0(struct msg_digest *md)
 		md->note = CERTIFICATE_UNAVAILABLE;
 		return stat;
 	    }
+
+	    /* they asked us, we reponsed, msgid is done */
+	    st->st_msgid_phase15 = 0;
 	}
     }
 
@@ -1230,40 +1420,54 @@ modecfg_inR0(struct msg_digest *md)
     return STF_OK;
 }
 
-/** STATE_MODE_CFG_R1:
+/** STATE_MODE_CFG_R2:
  *  HDR*, HASH, ATTR(SET=IP) --> HDR*, HASH, ATTR(ACK,OK)
+ *
+ * used in server push mode, on the client (initiator).
  *	    
  * @param md Message Digest
  * @return stf_status
  */
-stf_status
-modecfg_inR1(struct msg_digest *md)
+static stf_status
+modecfg_inI2(struct msg_digest *md)
 {
     struct state *const st = md->st;
     pb_stream *attrs = &md->chain[ISAKMP_NEXT_ATTR]->pbs;
+    int resp = LEMPTY;
+    stf_status stat;
+    struct payload_digest *p;
+    u_int16_t isama_id;
 
-    openswan_log("modecfg_inR1");
+    DBG(DBG_CONTROL, DBG_log("modecfg_inI2"));
 
-    st->st_msgid = md->hdr.isa_msgid;
-    CHECK_QUICK_HASH(md,xauth_mode_cfg_hash(hash_val,hash_pbs->roof, md->message_pbs.roof, st)
-	, "MODECFG-HASH", "MODE R1");
+    st->st_msgid_phase15 = md->hdr.isa_msgid;
+    CHECK_QUICK_HASH(md
+		     , xauth_mode_cfg_hash(hash_val
+					  ,hash_pbs->roof
+					  , md->message_pbs.roof
+					  , st)
+		     , "MODECFG-HASH", "MODE R1");
 
+    for(p = md->chain[ISAKMP_NEXT_ATTR]; p != NULL; p = p->next)
     {
         struct isakmp_attribute attr;
         pb_stream strattr;
-	int resp = LEMPTY;
 
-	if (md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type != ISAKMP_CFG_ACK)
+	isama_id = p->payload.attribute.isama_identifier;
+
+	if (p->payload.attribute.isama_type != ISAKMP_CFG_SET)
 	{
-	    openswan_log("Expecting MODE_CFG_ACK, got %x instead.",md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type);
+	    openswan_log("Expecting MODE_CFG_SET, got %x instead."
+			 ,md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type);
 	    return STF_IGNORE;
 	}
 
-	/* CHECK that ACK has been received. */
+	/* CHECK that SET has been received. */
 
 	while(pbs_left(attrs) > sizeof(struct isakmp_attribute))
 	{
-            if (!in_struct(&attr, &isakmp_xauth_attribute_desc, attrs, &strattr))
+            if (!in_struct(&attr, &isakmp_xauth_attribute_desc
+			   , attrs, &strattr))
 	    {
 		/* Skip unknown */
 		int len;
@@ -1280,8 +1484,145 @@ modecfg_inR1(struct msg_digest *md)
 
 		attrs->cur += len;
 	    }
+
 	    switch(attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )
 	    {
+		case INTERNAL_IP4_ADDRESS:
+		    {
+			struct connection *c = st->st_connection;
+			ip_address a;
+			char caddr[SUBNETTOT_BUF];
+
+			u_int32_t *ap = (u_int32_t *)(strattr.cur);
+			a.u.v4.sin_family = AF_INET;
+			memcpy(&a.u.v4.sin_addr.s_addr, ap
+			       , sizeof(a.u.v4.sin_addr.s_addr));
+			addrtosubnet(&a, &c->spd.this.client);
+
+			/* make sure that the port info is zeroed */
+			setportof(0, &c->spd.this.client.addr);
+
+			c->spd.this.has_client = TRUE;
+			subnettot(&c->spd.this.client, 0
+				  , caddr, sizeof(caddr));
+			openswan_log("setting client address to %s", caddr);
+			
+			if(addrbytesptr(&c->spd.this.host_srcip, NULL) == 0
+			   || isanyaddr(&c->spd.this.host_srcip)) {
+			  openswan_log("setting ip source address to %s"
+				       , caddr);
+			  c->spd.this.host_srcip = a;
+			}
+		    }
+		    resp |= LELEM(attr.isaat_af_type);
+		    break;
+
+		case INTERNAL_IP4_NETMASK:
+		case INTERNAL_IP4_DNS:
+		case INTERNAL_IP4_SUBNET:
+		case INTERNAL_IP4_NBNS:
+		    resp |= LELEM(attr.isaat_af_type);
+		    break;
+		default:
+		    openswan_log("unsupported mode cfg attribute %s received."
+				 , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )));
+		    break;
+	    }
+	}
+	/* loglog(LOG_DEBUG,"ModeCfg ACK: %x",resp); */
+    }
+
+    /* ack things */
+    stat = modecfg_resp(st, resp
+			,&md->rbody
+			,ISAKMP_CFG_ACK
+			,FALSE
+			,isama_id);
+
+    if(stat != STF_OK) {
+	/* notification payload - not exactly the right choice, but okay */
+	md->note = CERTIFICATE_UNAVAILABLE;
+	return stat;
+    }
+
+    /*
+     * we are done with this exchange, clear things so
+     * that we can start phase 2 properly
+     */
+    st->st_msgid_phase15 = 0;
+    if(resp) {
+	st->hidden_variables.st_modecfg_vars_set = TRUE;
+    }
+
+    DBG(DBG_CONTROL, DBG_log("modecfg_inI2(STF_OK)"));
+    return STF_OK;
+}
+
+/** STATE_MODE_CFG_R1:
+ *  HDR*, HASH, ATTR(SET=IP) --> HDR*, HASH, ATTR(ACK,OK)
+ *	    
+ * @param md Message Digest
+ * @return stf_status
+ */
+stf_status
+modecfg_inR1(struct msg_digest *md)
+{
+    struct state *const st = md->st;
+    pb_stream *attrs = &md->chain[ISAKMP_NEXT_ATTR]->pbs;
+    int resp = LEMPTY;
+    struct payload_digest *p;
+
+    DBG(DBG_CONTROL, DBG_log("modecfg_inR1"));
+    openswan_log("received mode cfg reply");
+
+    st->st_msgid_phase15 = md->hdr.isa_msgid;
+    CHECK_QUICK_HASH(md,xauth_mode_cfg_hash(hash_val,hash_pbs->roof, md->message_pbs.roof, st)
+	, "MODECFG-HASH", "MODE R1");
+
+
+    /* process the MODECFG payloads therein */
+    for(p = md->chain[ISAKMP_NEXT_ATTR]; p != NULL; p = p->next)
+    {
+        struct isakmp_attribute attr;
+        pb_stream strattr;
+	
+	attrs = &p->pbs;
+	
+	switch(p->payload.attribute.isama_type)
+	{
+	default:
+	{
+	    openswan_log("Expecting MODE_CFG_ACK, got %x instead.",md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type);
+	    return STF_IGNORE;
+	}
+	break;
+	
+	case ISAKMP_CFG_ACK:
+	    
+	    /* CHECK that ACK has been received. */
+	    while(pbs_left(attrs) > sizeof(struct isakmp_attribute))
+	    {
+		if (!in_struct(&attr, &isakmp_xauth_attribute_desc
+			       , attrs, &strattr))
+		{
+		    /* Skip unknown */
+		    int len;
+		    if (attr.isaat_af_type & 0x8000)
+			len = 4;
+		    else
+			len = attr.isaat_lv;
+		    
+		    if(len < 4)
+		    {
+			openswan_log("Attribute was too short: %d", len);
+			return STF_FAIL;
+		    }
+		    
+		    attrs->cur += len;
+		}
+		
+		switch(attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )
+		{
 		case INTERNAL_IP4_ADDRESS:
 		case INTERNAL_IP4_NETMASK:
 		case INTERNAL_IP4_DNS:
@@ -1291,17 +1632,92 @@ modecfg_inR1(struct msg_digest *md)
 		    break;
 		default:
 		    openswan_log("unsupported mode cfg attribute %s received."
-			 , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )));
+				 , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )));
 		    break;
+		}
 	    }
+	    break;
+	    
+	case ISAKMP_CFG_REPLY:
+	    while(pbs_left(attrs) > sizeof(struct isakmp_attribute))
+	    {
+		if (!in_struct(&attr, &isakmp_xauth_attribute_desc
+			       , attrs, &strattr))
+		{
+		    /* Skip unknown */
+		    int len;
+		    if (attr.isaat_af_type & 0x8000)
+			len = 4;
+		    else
+			len = attr.isaat_lv;
+		    
+		    if(len < 4)
+		    {
+			openswan_log("Attribute was too short: %d", len);
+			return STF_FAIL;
+		    }
+		    
+		    attrs->cur += len;
+		}
+		
+		switch(attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )
+		{
+		case INTERNAL_IP4_ADDRESS:
+		{
+		    struct connection *c = st->st_connection;
+		    ip_address a;
+		    char caddr[SUBNETTOT_BUF];
+		    
+		    u_int32_t *ap = (u_int32_t *)(strattr.cur);
+		    a.u.v4.sin_family = AF_INET;
+		    memcpy(&a.u.v4.sin_addr.s_addr, ap
+			   , sizeof(a.u.v4.sin_addr.s_addr));
+		    addrtosubnet(&a, &c->spd.this.client);
+
+		    /* make sure that the port info is zeroed */
+		    setportof(0, &c->spd.this.client.addr);
+
+		    c->spd.this.has_client = TRUE;
+		    subnettot(&c->spd.this.client, 0
+			      , caddr, sizeof(caddr));
+		    openswan_log("setting client address to %s"
+				 , caddr);
+		    
+		    if(addrbytesptr(&c->spd.this.host_srcip, NULL) == 0
+		       || isanyaddr(&c->spd.this.host_srcip)) {
+			openswan_log("setting ip source address to %s"
+				     , caddr);
+			c->spd.this.host_srcip = a;
+		    }
+		}
+		resp |= LELEM(attr.isaat_af_type);
+		break;
+		
+		case INTERNAL_IP4_NETMASK:
+		case INTERNAL_IP4_DNS:
+		case INTERNAL_IP4_SUBNET:
+		case INTERNAL_IP4_NBNS:
+		    resp |= LELEM(attr.isaat_af_type);
+		    break;
+		default:
+		    openswan_log("unsupported mode cfg attribute %s received."
+				 , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )));
+		    break;
+		}
+	    }
+	    /* loglog(LOG_DEBUG,"ModeCfg ACK: %x",resp); */
+	    break;
+	    /* loglog(LOG_DEBUG,"ModeCfg ACK: %x",resp); */
 	}
-	/* loglog(LOG_DEBUG,"ModeCfg ACK: %x",resp); */
     }
 
     /* we are done with this exchange, clear things so that we can start phase 2 properly */
-    st->st_msgid = 0;
+    st->st_msgid_phase15 = 0;
+    if(resp) {
+	st->hidden_variables.st_modecfg_vars_set = TRUE;
+    }
 
-    openswan_log("modecfg_inR1(STF_OK)");
+    DBG(DBG_CONTROL, DBG_log("modecfg_inR1(STF_OK)"));
     return STF_OK;
 }
 
@@ -1390,9 +1806,15 @@ stf_status xauth_client_resp(struct state *st
 			loglog(RC_LOG_SERIOUS, "XAUTH username prompt failed.");
 			return STF_FAIL;
 		    }
+		    /* trip any trailing white space */
+		    {
+		      char *u = xauth_username;
+		      strsep(&u, " \n\t");
+		    }
 		    out_raw(xauth_username, strlen(xauth_username)
 			    ,&attrval, "XAUTH username");
 		    close_output_pbs(&attrval);
+
 		    break;
 		    
 		case XAUTH_USER_PASSWORD:
@@ -1411,6 +1833,13 @@ stf_status xauth_client_resp(struct state *st
 		    {
 			loglog(RC_LOG_SERIOUS, "XAUTH password prompt failed.");
 			return STF_FAIL;
+		    }
+
+		    /* trip any trailing white space */
+		    {
+		      char *u = xauth_password;
+
+		      strsep(&u, " \n\t");
 		    }
 		    out_raw(xauth_password, strlen(xauth_password)
 			    ,&attrval, "XAUTH password");
@@ -1434,9 +1863,10 @@ stf_status xauth_client_resp(struct state *st
 	close_output_pbs(&strattr);
     }
 
-    openswan_log("XAUTH: Answering XAUTH challenge with user='%s'", xauth_username);
+    openswan_log("XAUTH: Answering XAUTH challenge with user='%s'"
+		 , xauth_username);
 
-    xauth_mode_cfg_hash(r_hashval,r_hash_start,rbody->cur,st);
+    xauth_mode_cfg_hash(r_hashval, r_hash_start, rbody->cur, st);
     
     close_message(rbody);
 
@@ -1474,9 +1904,13 @@ xauth_inI0(struct msg_digest *md)
     bool gotset = FALSE;
     bool got_status = FALSE;
 
+    if(st->hidden_variables.st_xauth_client_done) {
+	return modecfg_inI2(md);
+    }
+
     DBG(DBG_CONTROLMORE, DBG_log("arrived in xauth_inI0"));
 
-    st->st_msgid = md->hdr.isa_msgid;
+    st->st_msgid_phase15 = md->hdr.isa_msgid;
     CHECK_QUICK_HASH(md, xauth_mode_cfg_hash(hash_val
 					     ,hash_pbs->roof
 					     , md->message_pbs.roof, st)
@@ -1499,7 +1933,8 @@ xauth_inI0(struct msg_digest *md)
 	{
 	default:
 	    openswan_log("Expecting ISAKMP_CFG_REQUEST, got %s instead (ignored)."
-		 , enum_name(&attr_msg_type_names, p->payload.attribute.isama_type));
+			 , enum_name(&attr_msg_type_names
+				     , p->payload.attribute.isama_type));
 	case ISAKMP_CFG_SET:
 	    gotset = TRUE;
 	    break;
@@ -1573,6 +2008,14 @@ xauth_inI0(struct msg_digest *md)
 		xauth_resp |= XAUTHLELEM(attr.isaat_af_type);
 		break;
 		
+	    case INTERNAL_IP4_ADDRESS:
+	    case INTERNAL_IP4_NETMASK:
+	    case INTERNAL_IP4_DNS:
+	    case INTERNAL_IP4_SUBNET:
+	    case INTERNAL_IP4_NBNS:
+		xauth_resp |= LELEM(attr.isaat_af_type);
+		break;
+
 	    default:
 		openswan_log("XAUTH: Unsupported attribute: %s"
 		     , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK)));
@@ -1592,7 +2035,7 @@ xauth_inI0(struct msg_digest *md)
 		st->hidden_variables.st_xauth_client_done = TRUE;
 		openswan_log("XAUTH: Successfully Authenticated");
 		st->st_oakley.xauth = 0;
-		
+
 		return STF_OK;
 	    }
 	    else
@@ -1637,9 +2080,9 @@ xauth_inI0(struct msg_digest *md)
 	}
     }
 
-    /* reset the message ID, tentatively */
-    st->st_msgid2 = st->st_msgid;
-    st->st_msgid = 0;
+    /* reset the message ID */
+    st->st_msgid_phase15b = st->st_msgid_phase15;
+    st->st_msgid_phase15 = 0;
 
     DBG(DBG_CONTROLMORE, DBG_log("xauth_inI0(STF_OK)"));
     return STF_OK;
@@ -1726,11 +2169,18 @@ xauth_inI1(struct msg_digest *md)
     struct payload_digest *p;
     unsigned int xauth_resp = LEMPTY;
 
+    if(st->hidden_variables.st_xauth_client_done) {
+	return modecfg_inI2(md);
+    }
+
     DBG(DBG_CONTROLMORE, DBG_log("xauth_inI1"));
 
-    st->st_msgid = md->hdr.isa_msgid;
-    CHECK_QUICK_HASH(md,xauth_mode_cfg_hash(hash_val,hash_pbs->roof, md->message_pbs.roof, st)
-	, "MODECFG-HASH", "XAUTH I1");
+    st->st_msgid_phase15 = md->hdr.isa_msgid;
+    CHECK_QUICK_HASH(md
+		     , xauth_mode_cfg_hash(hash_val
+					   ,hash_pbs->roof
+					   , md->message_pbs.roof, st)
+		     , "MODECFG-HASH", "XAUTH I1");
 
     got_status = FALSE;
     status = FALSE;
@@ -1739,16 +2189,15 @@ xauth_inI1(struct msg_digest *md)
     {
         struct isakmp_attribute attr;
         pb_stream strattr;
-
+	
 	attrs = &p->pbs;
-
-	switch(p->payload.attribute.isama_type)
-	{
+	
+	switch(p->payload.attribute.isama_type)	{
 	default:
 	    openswan_log("Expecting MODE_CFG_SET, got %x instead."
-		 , p->payload.attribute.isama_type);
+			 , p->payload.attribute.isama_type);
 	    return STF_IGNORE;
-
+	    
 	case ISAKMP_CFG_SET:
 	    /* CHECK that SET has been received. */
 	    while(attrs->cur < attrs->roof)
@@ -1821,6 +2270,23 @@ xauth_inI1(struct msg_digest *md)
 
 
 /*
+ * $Id: xauth.c,v 1.41 2005/02/16 17:27:41 mcr Exp $
+ *
+ * $Log: xauth.c,v $
+ * Revision 1.41  2005/02/16 17:27:41  mcr
+ * 	moved recording of xauth username to after the username
+ * 	has actually been authenticated.
+ * 	Do not record username on client -- I don't think that this
+ * 	makes any sense. If it is important, it should be recorded
+ * 	(and expressed in do_command()) in a different way.
+ *
+ * Revision 1.40  2005/02/14 05:58:46  ken
+ * Add support for saving the XAUTH username, and then passing it to _updown as PLUTO_XAUTH_USERNAME environment variable
+ *
+ * Revision 1.39  2005/01/26 07:01:55  mcr
+ * 	use phase1.5 msgid instead of msgid.
+ *
+ *
  * Local Variables:
  * c-basic-offset:4
  * c-style: pluto

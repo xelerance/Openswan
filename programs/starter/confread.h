@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: confread.h,v 1.12 2004/04/10 17:15:23 ken Exp $
+ * RCSID $Id: confread.h,v 1.14 2004/12/01 07:33:14 ken Exp $
  */
 
 #ifndef _IPSEC_CONFREAD_H_

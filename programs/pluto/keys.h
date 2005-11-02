@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keys.h,v 1.34 2004/06/27 22:37:58 mcr Exp $
+ * RCSID $Id: keys.h,v 1.35 2005/02/15 01:52:30 mcr Exp $
  */
 #ifndef _KEYS_H
 #define _KEYS_H
@@ -22,14 +22,9 @@
 # define SHARED_SECRETS_FILE  "/etc/ipsec.secrets"
 #endif
 
-const char *shared_secrets_file;
-
-extern void load_preshared_secrets(int whackfd);
-extern void free_preshared_secrets(void);
-
 struct state;	/* forward declaration */
 
-extern const chunk_t *get_preshared_secret(const struct connection *c);
+const char *shared_secrets_file;
 
 struct RSA_public_key
 {

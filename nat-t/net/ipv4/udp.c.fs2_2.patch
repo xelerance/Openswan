@@ -1,5 +1,5 @@
---- ./net/ipv4/udp.c	Sun Mar 25 18:37:41 2001
-+++ ./net/ipv4/udp.c	Mon Jun 10 19:53:18 2002
+--- linux/net/ipv4/udp.c	Sun Mar 25 18:37:41 2001
++++ linux/net/ipv4/udp.c	Mon Jun 10 19:53:18 2002
 @@ -965,6 +965,9 @@
  
  static int udp_queue_rcv_skb(struct sock * sk, struct sk_buff *skb)
@@ -24,7 +24,7 @@
 +		 */
 +		struct inet_protocol *esp = NULL;
 +
-+#if defined(CONFIG_IPSEC) && !defined(CONFIG_IPSEC_MODULE)
++#if defined(CONFIG_KLIPS) && !defined(CONFIG_KLIPS_MODULE)
 *               /* optomize only when we know it is statically linked */
 +		extern struct inet_protocol esp_protocol;
 +		esp = &esp_protocol;

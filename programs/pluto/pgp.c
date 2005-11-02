@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pgp.c,v 1.7 2004/06/14 01:46:03 mcr Exp $
+ * RCSID $Id: pgp.c,v 1.8 2004/09/08 17:16:52 ken Exp $
  */
 
 #include <stdlib.h>
@@ -264,10 +264,10 @@ parse_pgp_pubkey_packet(chunk_t *packet, pgpcert_t *cert)
 	{
 	    /* a V3 fingerprint is the MD5 hash of modulus and public exponent */
             MD5_CTX context;
-            MD5Init(&context);
-            MD5Update(&context, cert->modulus.ptr, cert->modulus.len);
-	    MD5Update(&context, cert->publicExponent.ptr, cert->publicExponent.len);
-            MD5Final(cert->fingerprint, &context);
+            osMD5Init(&context);
+            osMD5Update(&context, cert->modulus.ptr, cert->modulus.len);
+	    osMD5Update(&context, cert->publicExponent.ptr, cert->publicExponent.len);
+            osMD5Final(cert->fingerprint, &context);
 	}
 	else
 	{

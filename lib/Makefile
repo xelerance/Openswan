@@ -12,12 +12,12 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.57 2004/04/06 10:48:56 mcr Exp $
+# RCSID $Id: Makefile,v 1.60 2004/12/21 04:24:11 mcr Exp $
 
-OPENSWANSRCDIR=..
+OPENSWANSRCDIR?=$(shell cd ..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-SUBDIRS=libopenswan libdes libcrypto
+SUBDIRS=libopenswan libcrypto
 
 ifeq ($(USE_LWRES),true)
 SUBDIRS+=liblwres
@@ -36,6 +36,6 @@ def:
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) OPENSWANSRCDIR=$(OPENSWANSRCDIR)/.. $@ ) || exit 1; \
-	done; \
+		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1;\
+	done; 
 

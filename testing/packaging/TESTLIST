@@ -34,6 +34,9 @@ mkinsttest	overwrite-install-01	good
 # for RH7.3 kernel
 rpm_build_install_test	rpm-rh73-install-01	good
 
+# for IPKG
+ipkg_build_install_test	ipkg-install-01		good
+
 
 #
 # kernel patch tests
@@ -58,6 +61,9 @@ module_compile		modtest-suse-two-four	good
 
 # test for building without ipcomp.
 module_compile		modtest-noipcomp-01	good
+
+# test for building without debug.
+module_compile		modtest-nodebug-01	good
 
 # test for building on Alpha (only works on Alpha)
 module_compile		modtest-rh-alpha-01	good

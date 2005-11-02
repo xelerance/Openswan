@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: dnskey.c,v 1.81 2004/04/29 03:59:32 mcr Exp $
+ * RCSID $Id: dnskey.c,v 1.84 2004/11/30 16:34:08 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -49,6 +49,7 @@
 #include "dnskey.h"
 #include "packet.h"
 #include "timer.h"
+#include "server.h"
 
 /* somebody has to decide */
 #define MAX_TXT_RDATA	((MAX_KEY_BYTES * 8 / 6) + 40)	/* somewhat arbitrary overkill */
@@ -60,8 +61,32 @@ int adns_qfd = NULL_FD,	/* file descriptor for sending queries to adns (O_NONBLO
 static pid_t adns_pid = 0;
 const char *pluto_adns_option = NULL;	/* path from --pluto_adns */
 
+static int adns_in_flight = 0;	/* queries outstanding */
 int adns_restart_count;
 #define ADNS_RESTART_MAX 20
+
+static void release_all_continuations(void);
+
+bool adns_reapchild(pid_t pid, int status UNUSED)
+{
+  if(pid == adns_pid) {
+    close_any(adns_qfd);
+    adns_qfd = NULL_FD;
+    close_any(adns_afd);
+    adns_afd = NULL_FD;
+
+    adns_pid = 0;
+
+    if(adns_in_flight > 0) {
+	release_all_continuations();
+    }
+    passert(adns_in_flight == 0);
+
+    return TRUE;
+  }
+  return FALSE;
+}
+
 
 void
 init_adns(void)
@@ -192,15 +217,18 @@ stop_adns(void)
 	    if (WEXITSTATUS(status) != 0)
 		openswan_log("ADNS process exited with status %d"
 		    , (int) WEXITSTATUS(status));
+	    adns_pid = 0;
 	}
 	else if (WIFSIGNALED(status))
 	{
 	    openswan_log("ADNS process terminated by signal %d", (int)WTERMSIG(status));
+	    adns_pid = 0;
 	}
 	else
 	{
 	    openswan_log("wait for end of ADNS process returned odd status 0x%x\n"
 		, status);
+	    adns_pid = 0;
 	}
     }
 }
@@ -1337,8 +1365,6 @@ gw_delref(struct gw_info **gwp)
     }
 }
 
-static int adns_in_flight = 0;	/* queries outstanding */
-
 /* Start an asynchronous DNS query.
  *
  * For KEY record, the result will be a list in cr->keys_from_dns.
@@ -1393,7 +1419,6 @@ continuation_for_qtid(unsigned long qtid)
 static void
 release_adns_continuation(struct adns_continuation *cr)
 {
-    passert(cr != next_query);
     gw_delref(&cr->gateways_from_dns);
 #ifdef USE_KEYRR
     free_public_keys(&cr->keys_from_dns);
@@ -1421,6 +1446,24 @@ release_adns_continuation(struct adns_continuation *cr)
     }
 
     pfree(cr);
+}
+
+static void
+release_all_continuations()
+{
+    struct adns_continuation *cr = NULL;
+    struct adns_continuation *crnext;
+
+    for(cr = continuations; cr != NULL; cr = crnext) {
+	crnext = cr->previous;
+
+	cr->cont_fn(cr, "no results returned by lwdnsq");
+#ifdef USE_LWRES
+	cr->used = TRUE;
+#endif
+	release_adns_continuation(cr);
+	adns_in_flight--;
+    }
 }
 
 err_t

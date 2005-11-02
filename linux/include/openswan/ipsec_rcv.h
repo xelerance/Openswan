@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_rcv.h,v 1.21 2004/04/06 02:49:08 mcr Exp $
+ * RCSID $Id: ipsec_rcv.h,v 1.24 2004/08/20 21:45:37 mcr Exp $
  */
 
 #ifndef IPSEC_RCV_H
@@ -123,7 +123,7 @@ ipsec_rcv(struct sk_buff *skb,
 #ifdef NET_21
 	  unsigned short xlen);
 #else /* NET_21 */
-	  struct device *dev,
+	  struct net_device *dev,
 	  struct options *opt, 
 	  __u32 daddr,
 	  unsigned short len,
@@ -133,9 +133,9 @@ ipsec_rcv(struct sk_buff *skb,
 #endif /* NET_21 */
 #endif /* PROTO_HANDLER_SINGLE_PARM */
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 extern int debug_rcv;
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 #define ipsec_rcv_dmp(_x,_y, _z) if (debug_rcv && sysctl_ipsec_debug_verbose) ipsec_dmp(_x,_y,_z)
 
 extern int sysctl_ipsec_inbound_policy_check;
@@ -145,6 +145,17 @@ extern int sysctl_ipsec_inbound_policy_check;
 
 /*
  * $Log: ipsec_rcv.h,v $
+ * Revision 1.24  2004/08/20 21:45:37  mcr
+ * 	CONFIG_KLIPS_NAT_TRAVERSAL is not used in an attempt to
+ * 	be 26sec compatible. But, some defines where changed.
+ *
+ * Revision 1.23  2004/08/03 18:17:40  mcr
+ * 	in 2.6, use "net_device" instead of #define device->net_device.
+ * 	this probably breaks 2.0 compiles.
+ *
+ * Revision 1.22  2004/07/10 19:08:41  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.21  2004/04/06 02:49:08  mcr
  * 	pullup of algo code from alg-branch.
  *

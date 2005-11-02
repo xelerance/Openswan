@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: constants.c,v 1.5 2004/06/27 20:30:00 mcr Exp $
+ * RCSID $Id: constants.c,v 1.10 2005/01/23 18:53:35 mcr Exp $
  */
 
 /*
@@ -30,6 +30,7 @@
 
 #include "constants.h"
 #include "enum_names.h"
+#include "oswlog.h"
 
 /* version */
 
@@ -71,7 +72,7 @@ const char *const debug_bit_names[] = {
 	"pfkey",
 	"nattraversal",
 	"x509",               /* 12 */
-	"res13",
+	"dpd",
 	"res14",
 	"res15",
 	"res16",
@@ -85,6 +86,8 @@ const char *const debug_bit_names[] = {
 	"impair-delay-adns-txt-answer",
 	"impair-bust-mi2",
 	"impair-bust-mr2",
+	"impair-sa-creation",
+	"impair-die-oninfo",
 
 	NULL
     };
@@ -120,6 +123,11 @@ const char *const payload_name[] = {
 	"ISAKMP_NEXT_D",
 	"ISAKMP_NEXT_VID",
 	"ISAKMP_NEXT_MODECFG",  /* 14 */
+	"ISAKMP_NEXT_15",
+	"ISAKMP_NEXT_16",
+	"ISAKMP_NEXT_17",
+	"ISAKMP_NEXT_18",
+	"ISAKMP_NEXT_19",
 	"ISAKMP_NEXT_NAT-D",
 	"ISAKMP_NEXT_NAT-OA",
 	NULL
@@ -461,7 +469,7 @@ static const char *const auth_alg_name[] = {
 	"AUTH_ALGORITHM_HMAC_SHA2_384",
 	"AUTH_ALGORITHM_HMAC_SHA2_512",
 	"AUTH_ALGORITHM_HMAC_RIPEMD",
-	"AUTH_ALGORITHM_ID9",
+	"AUTH_ALGORITHM_AES_CBC",
 	"AUTH_ALGORITHM_ID10",
 	"AUTH_ALGORITHM_ID11",
 	"AUTH_ALGORITHM_ID12",
@@ -584,9 +592,16 @@ enum_names oakley_enc_names =
 
 /* Oakley Hash Algorithm attribute */
 
+static const char *const oakley_hash_name2[] = {
+	"OAKLEY_SHA",
+    };
+
+enum_names oakley_hash_names2 =
+    { OAKLEY_SHA, OAKLEY_SHA, oakley_hash_name2, NULL };
+
 static const char *const oakley_hash_name[] = {
 	"OAKLEY_MD5",
-	"OAKLEY_SHA",
+	"OAKLEY_SHA1",
 	"OAKLEY_TIGER",
 	"OAKLEY_SHA2_256",
 	"OAKLEY_SHA2_384",
@@ -594,7 +609,7 @@ static const char *const oakley_hash_name[] = {
     };
 
 enum_names oakley_hash_names =
-    { OAKLEY_MD5, OAKLEY_SHA2_512, oakley_hash_name, NULL };
+    { OAKLEY_MD5, OAKLEY_SHA2_512, oakley_hash_name, &oakley_hash_names2};
 
 /* Oakley Authentication Method attribute */
 
@@ -901,7 +916,7 @@ enum_names ppk_names = { PPK_PSK, PPK_PIN, ppk_name, NULL };
 const char *const natt_type_bitnames[] = {
   "draft-ietf-ipsec-nat-t-ike-00/01",    /* 0 */
   "draft-ietf-ipsec-nat-t-ike-02/03",
-  "RFC XXXX (NAT-Traversal)",
+  "RFC 3947 (NAT-Traversal)",
   "3",                                   /* 3 */
   "4",   "5",   "6",   "7", 
   "8",   "9",   "10",  "11",
@@ -993,7 +1008,7 @@ enum_search(enum_names *ed, const char *str)
     unsigned en;
 
     for (p = ed; p != NULL; p = p->en_next_range)
-	for (en=p->en_first;en<=p->en_last;en++) {
+	for (en=p->en_first; en<=p->en_last; en++) {
 	    ptr=p->en_names[en - p->en_first];
 	    if (ptr==0) continue;
 	    /* if (strncmp(ptr, str, strlen(ptr))==0) */
@@ -1002,6 +1017,7 @@ enum_search(enum_names *ed, const char *str)
 	}
     return -1;
 }
+
 /* construct a string to name the bits on in a set
  * Result may be in STATIC buffer!
  * Note: prettypolicy depends on internal details.

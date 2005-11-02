@@ -12,10 +12,17 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.161.2.1 2004/07/20 02:05:23 ken Exp $
+# RCSID $Id: Makefile,v 1.182.2.1 2005/05/18 20:55:13 ken Exp $
 
 # All of the USE_ and HAVE_ variables are controlled from openswan/Makefile.inc
 
+
+# relative path to top directory of Openswan source
+# Note: referenced in ${OPENSWANSRCDIR}/Makefile.inc
+OPENSWANSRCDIR?=$(shell cd ../..; pwd)
+srcdir?=.
+
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 ifeq ($(USE_LDAP),true)
 # Everyone (should) be using LDAPv3, however LDAP_VERSION=2 is an option
@@ -29,6 +36,15 @@ SMARTCARD=1
 endif
 
 
+# whether or not to enable aggressive mode exchanges.
+ifeq ($(USE_AGGRESSIVE),true)
+AGGRESSIVE=1
+endif
+
+ifeq ($(USE_HWRANDOM),true)
+HW_DEFS+=-DHWRANDOM
+endif
+
 ifeq ($(USE_XAUTH),true)
 XAUTH=1
 # compile with PAM support will increase the size of the distribution
@@ -38,12 +54,6 @@ ifeq ($(USE_XAUTHPAM),true)
 XAUTH_USEPAM=1
 endif
 endif
-
-# relative path to top directory of Openswan source
-# Note: referenced in ${OPENSWANSRCDIR}/Makefile.inc
-OPENSWANSRCDIR=../..
-
-include ${OPENSWANSRCDIR}/Makefile.inc
 
 FMANDIR=$(MANTREE)/man5
 PMANDIR=$(MANTREE)/man8
@@ -90,12 +100,11 @@ HDRDIRS = -I${OPENSWANSRCDIR}/programs/pluto/linux26 -I${OPENSWANSRCDIR}/include
 # -DDEFAULT_CTLBASE=string overrides /var/run/pluto as default directory
 #    and basename for pluto's lockfile (.pid) and control socket (.ctl).
 #    Double quoting may be needed.
-# -DAPPLY_CRISCO enables some workarounds for interop with broken Cisco
-#    routers.  Currently, it disables cookie checks on DPD packets
 
 
 BINNAMEPLUTO = pluto
 BINNAMEWHACK = whack
+BINNAMEWHACKINIT = whackinit
 BINNAMEADNS = _pluto_adns
 
 ifeq ($(USE_LWRES),true)
@@ -182,6 +191,13 @@ XAUTHPAM_LIBS=-lpam
 endif
 endif
 
+ifeq ($(USE_AGGRESSIVE),true)
+# This compile option activates xauth code and modecfg needed by xauth
+AGGRESSIVE_DEFS=-DAGGRESSIVE
+AGGRESSIVE_OBJS=${AGGRESSIVE_DIST_OBJS}
+AGGRESSIVE_SRCS=${AGGRESSIVE_DIST_SRCS}
+endif
+
 ifeq ($(USE_NAT_TRAVERSAL),true)
 NAT_DEFS=-DNAT_TRAVERSAL -DVIRTUAL_IP 
 endif
@@ -195,6 +211,10 @@ ifeq ($(USE_LIBCURL),true)
 # with libcurl in the source code
 CURL_DEFS=-DLIBCURL
 CURL_LIBS=-lcurl
+endif
+
+ifeq ($(USE_WEAKSTUFF),true)
+WEAK_DEFS=-DUSE_VERYWEAK_DH1=1
 endif
 
 
@@ -215,8 +235,11 @@ DEFINES = $(EXTRA_DEFINES) \
 	-DDEBUG \
 	-DGCC_LINT \
 	-DIKE_ALG -DKERNEL_ALG -DDB_CONTEXT \
+	${AGGRESSIVE_DEFS} \
 	${XAUTH_DEFS} ${XAUTHPAM_DEFS} \
 	${NAT_DEFS} ${CURL_DEFS}\
+	${WEAK_DEFS} \
+	${HW_DEFS} \
 	# -DLEAK_DETECTIVE
 
 CPPFLAGS = $(HDRDIRS) $(DEFINES) \
@@ -242,7 +265,7 @@ LIBSADNS = $(OPENSWANLIB)
 LIBSADNS += -lresolv # -lefence
 
 # Solaris needs -lsocket -lnsl
-LIBSWHACK = ${OPENSWANLIB}
+LIBSWHACK = whacklib.o ${OPENSWANLIB} 
 
 
 RM = /bin/rm
@@ -265,6 +288,7 @@ DISTGCRYPT = \
 
 DISTSRC = \
 	connections.c connections.h \
+	pending.c pending.h \
 	foodgroups.c foodgroups.h \
 	cookie.c cookie.h \
 	pluto_constants.c \
@@ -273,9 +297,9 @@ DISTSRC = \
 	defs.h defs.c \
 	demux.c demux.h \
 	dnskey.c dnskey.h \
-	endian.h \
+	dpd.c dpd.h \
 	id.c id.h \
-	ipsec_doi.c ipsec_doi.h \
+	ipsec_doi.c ipsec_doi.h ikev1_quick.c ikev1_continuations.h \
 	kernel.c kernel.h \
 	kernel_netlink.c kernel_netlink.h \
 	kernel_pfkey.c kernel_pfkey.h \
@@ -289,14 +313,14 @@ DISTSRC = \
 	md2.c md2.h \
 	md5.c md5.h \
 	ocsp.c ocsp.h \
-	packet.c packet.h \
+	pluto_crypt.c crypt_utils.c pluto_crypt.h crypt_ke.c crypt_dh.c \
 	lex.c lex.h \
-	keys.c keys.h \
+	keys.c keys.h secrets.h \
 	rnd.c rnd.h \
 	server.c server.h \
 	sha1.c sha1.h \
 	${SMARTCARD_DIST_SRCS} \
-	spdb.c spdb.h \
+	spdb.c spdb_struct.c spdb_print.c spdb.h \
 	state.c state.h \
 	timer.c timer.h \
 	$(DISTGCRYPT) \
@@ -304,8 +328,9 @@ DISTSRC = \
 	$(HAVE_THREADS_DIST_SRCS) \
 	vendor.c nat_traversal.c virtual.c \
 	adns.c adns.h \
-	whack.c whack.h whacklib.c\
-	${XAUTH_DIST_SRCS}
+	whack.c whack.h whackinit.c whacklib.c\
+	${XAUTH_DIST_SRCS} \
+	${AGGRESSIVE_DIST_SRCS} 
 
 DIST = $(DISTMISC) $(DISTSRC)
 
@@ -316,27 +341,31 @@ OBJSGCRYPT =
 
 OBJSLIBPLUTO = whacklib.o
 
-OBJSPLUTO  = connections.o cookie.o crypto.o defs.o 
+OBJSPLUTO  = connections.o pending.o cookie.o crypto.o defs.o dpd.o
 OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
 OBJSPLUTO += timer.o pluto_constants.o
-OBJSPLUTO += id.o ipsec_doi.o kernel.o 
+OBJSPLUTO += id.o ipsec_doi.o ikev1_quick.o ikeping.o kernel.o 
 OBJSPLUTO += $(KERNEL26_OBJS) 
 OBJSPLUTO += kernel_pfkey.o kernel_noklips.o rcv_whack.o 
-OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o packet.o lex.o keys.o dnskey.o
-OBJSPLUTO += rnd.o spdb.o sha1.o md5.o 
+OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o lex.o keys.o dnskey.o
+OBJSPLUTO += pluto_crypt.o crypt_utils.o crypt_ke.o crypt_dh.o
+OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_print.o sha1.o md5.o 
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o 
 OBJSPLUTO += ike_alg_aes.o ike_alginit.o 
+OBJSPLUTO += ike_alg.o db_ops.o 
 OBJSPLUTO += ${XAUTH_OBJS}
+OBJSPLUTO += ${AGGRESSIVE_OBJS}
 OBJSPLUTO += ${SMARTCARD_OBJS} ${X509_OBJS} ${HAVE_THREADS_OBJS}
 OBJSPLUTO += ${OBJSLIBPLUTO}
 
 OBJSADNS = adns.o
 
 OBJSWHACK = whack.o
+OBJSWHACKINIT = whackinit.o
 
 
-all: $(BINNAMEPLUTO) $(BINNAMEADNSIFNEEDED) $(BINNAMEWHACK)
-programs: $(BINNAMEPLUTO) $(BINNAMEADNSIFNEEDED) $(BINNAMEWHACK)
+all: $(BINNAMEPLUTO) $(BINNAMEADNSIFNEEDED) $(BINNAMEWHACK) #$(BINNAMEWHACKINIT) 
+programs: $(BINNAMEPLUTO) $(BINNAMEADNSIFNEEDED) $(BINNAMEWHACK) #$(BINNAMEWHACKINIT)
 
 oid.c: oid.txt oid.pl
 	perl oid.pl
@@ -348,11 +377,14 @@ install: all
 	mkdir -p ${LIBEXECDIR} ${LIBDIR}
 	mkdir -p -m 755 $(CONFDIR)/ipsec.d
 	mkdir -p -m 755 $(CONFDIR)/ipsec.d/cacerts
+	mkdir -p -m 755 $(CONFDIR)/ipsec.d/aacerts
 	mkdir -p -m 755 $(CONFDIR)/ipsec.d/ocspcerts
 	mkdir -p -m 755 $(CONFDIR)/ipsec.d/certs
 	mkdir -p -m 755 $(CONFDIR)/ipsec.d/crls
 	mkdir -p -m 700 $(CONFDIR)/ipsec.d/private
+	mkdir -p -m 700 $(VARDIR)/run/pluto
 	$(INSTALL) $(INSTBINFLAGS) $(BINNAMEPLUTO) $(BINNAMEWHACK) $(LIBEXECDIR)
+	#$(INSTALL) $(INSTSUIDFLAGS) $(BINNAMEWHACKINIT) $(LIBEXECDIR)
 	if $(USE_ADNS) ; then $(INSTALL) $(INSTBINFLAGS) $(BINNAMEADNS)  $(LIBEXECDIR) ; fi
 	$(INSTALL) $(INSTMANFLAGS) pluto.8 $(PMANDIR)/ipsec_pluto.8
 	sh ${OPENSWANSRCDIR}/packaging/utils/manlink pluto.8 | \
@@ -387,10 +419,6 @@ install_file_list:
 alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypto.o $(LIBDESLITE) $(OPENSWANLIB)
 	$(CC) -o $@ $^ $(LIBSPLUTO)
 
-# alg/libalg.o contains an already resolved object built with
-# additional crypto algos inside.
-OBJSPLUTO:= ike_alg.o db_ops.o $(OBJSPLUTO) 
-
 $(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) $(OPENSWANLIB)
 	$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(OBJSPLUTO) $(LIBSPLUTO)
 
@@ -399,6 +427,9 @@ $(BINNAMEADNS): $(OBJSADNS)
 
 $(BINNAMEWHACK): $(OBJSWHACK)
 	$(CC) -o $(BINNAMEWHACK) $(OBJSWHACK) $(LIBSWHACK)
+
+$(BINNAMEWHACKINIT): $(OBJSWHACKINIT)
+	$(CC) -o $(BINNAMEWHACKINIT) $(OBJSWHACKINIT) $(LIBSWHACK)
 
 distlist:
 	@echo $(DIST)
@@ -435,684 +466,15 @@ checkprograms:
 .c.o:
 	$(CC) $(COPTS) $(ALLFLAGS) -c $<
 
+%.i: %.c
+	$(CC) $(COPTS) $(ALLFLAGS) -E -o $@ $<
+
+
 # Gather dependencies caused by explicit #includes within .c files
-#
-# Each .c is assumed to compile into a .o with the corresponding name.
-# Only dependencies on based on "" includes are considered, not <>.
-# Dependencies caused by includes within headers are not noticed.
-# Unlike dependencies generated by the compiler, these include dependencies
-# suppressed by conditional compilation (good, we think).
-# This code can be tricked by embeding #include in comments or
-# vice-versa, but we're among friends.
+depend:
+	@(ls $(DISTSRC) | grep '\.c' | xargs gcc -MM ${COPTS} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
 
-gatherdeps:
-	@ls $(DISTSRC) | grep '\.c' | sed -e 's/\(.*\)\.c$$/\1.o: \1.c/'
-	@echo
-	@ls $(DISTSRC) | grep '\.c' | xargs grep '^#[ 	]*include[ 	]*"' | \
-		sed -e 's/\.c:#[ 	]*include[ 	]*"/.o: /' -e 's/".*//'
+-include ${srcdir}/Makefile.depend
 
-# Dependencies generated by "make gatherdeps":
+# DO NOT DELETE
 
-ac.o: ac.c
-adns.o: adns.c
-asn1.o: asn1.c
-certs.o: certs.c
-connections.o: connections.c
-constants.o: constants.c
-cookie.o: cookie.c
-crypto.o: crypto.c
-defs.o: defs.c
-demux.o: demux.c
-dnskey.o: dnskey.c
-dsa.o: dsa.c
-elgamal.o: elgamal.c
-fetch.o: fetch.c
-foodgroups.o: foodgroups.c
-gcryptfix.o: gcryptfix.c
-id.o: id.c
-ike_alg.o: ike_alg.c
-ipsec_doi.o: ipsec_doi.c
-kernel_alg.o: kernel_alg.c
-kernel.o: kernel.c
-kernel_netlink.o: kernel_netlink.c
-kernel_noklips.o: kernel_noklips.c
-kernel_pfkey.o: kernel_pfkey.c
-keys.o: keys.c
-lex.o: lex.c
-log.o: log.c
-md2.o: md2.c
-md2.o: md2.c
-md5.o: md5.c
-ocsp.o: ocsp.c
-nat_traversal.o: nat_traversal.c
-oid.o: oid.c
-packet.o: packet.c
-pem.o: pem.c
-pgp.o: pgp.c
-pkcs.o: pkcs.c
-plutomain.o: plutomain.c
-primegen.o: primegen.c
-rcv_info.o: rcv_info.c
-rcv_whack.o: rcv_whack.c
-rnd.o: rnd.c
-server.o: server.c
-sha1.o: sha1.c
-smallprime.o: smallprime.c
-smartcard.o: smartcard.c
-spdb.o: spdb.c
-state.o: state.c
-timer.o: timer.c
-vendor.o: vendor.c
-virtual.o: virtual.c
-whack.o: whack.c
-whacklib.o: whacklib.c
-x509.o: x509.c
-xauth.o: xauth.c
-
-ac.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-ac.o: defs.h
-ac.o: asn1.h
-ac.o: oid.h
-ac.o: ac.h
-ac.o: id.h
-ac.o: x509.h
-ac.o: pgp.h
-ac.o: certs.h
-ac.o: log.h
-ac.o: whack.h
-ac.o: fetch.h
-adns.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-adns.o: adns.h
-asn1.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-asn1.o: defs.h
-asn1.o: asn1.h
-asn1.o: oid.h
-asn1.o: log.h
-certs.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-certs.o: defs.h
-certs.o: log.h
-certs.o: asn1.h
-certs.o: id.h
-certs.o: x509.h
-certs.o: pgp.h
-certs.o: pem.h
-certs.o: certs.h
-certs.o: pkcs.h
-connections.o: kameipsec.h
-connections.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-connections.o: defs.h
-connections.o: id.h
-connections.o: x509.h
-connections.o: pgp.h
-connections.o: certs.h
-connections.o: ac.h
-connections.o: smartcard.h
-connections.o: connections.h
-connections.o: foodgroups.h
-connections.o: packet.h
-connections.o: demux.h
-connections.o: state.h
-connections.o: timer.h
-connections.o: ipsec_doi.h
-connections.o: server.h
-connections.o: kernel.h
-connections.o: log.h
-connections.o: keys.h
-connections.o: adns.h
-connections.o: dnskey.h
-connections.o: whack.h
-connections.o: nat_traversal.h
-connections.o: virtual.h
-constants.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-constants.o: defs.h
-constants.o: log.h
-constants.o: packet.h
-constants.o: xauth.h
-cookie.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-cookie.o: defs.h
-cookie.o: sha1.h
-cookie.o: rnd.h
-cookie.o: cookie.h
-crypto.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-crypto.o: defs.h
-crypto.o: state.h
-crypto.o: log.h
-crypto.o: md5.h
-crypto.o: sha1.h
-crypto.o: crypto.h
-crypto.o: ike_alg.h
-defs.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-defs.o: defs.h
-defs.o: log.h
-defs.o: whack.h
-demux.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-demux.o: defs.h
-demux.o: cookie.h
-demux.o: id.h
-demux.o: x509.h
-demux.o: pgp.h
-demux.o: certs.h
-demux.o: smartcard.h
-demux.o: connections.h
-demux.o: state.h
-demux.o: packet.h
-demux.o: md5.h
-demux.o: sha1.h
-demux.o: crypto.h
-demux.o: ike_alg.h
-demux.o: log.h
-demux.o: demux.h
-demux.o: ipsec_doi.h
-demux.o: timer.h
-demux.o: whack.h
-demux.o: server.h
-demux.o: xauth.h
-demux.o: nat_traversal.h
-demux.o: vendor.h
-dnskey.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-dnskey.o: adns.h
-dnskey.o: defs.h
-dnskey.o: id.h
-dnskey.o: log.h
-dnskey.o: x509.h
-dnskey.o: pgp.h
-dnskey.o: certs.h
-dnskey.o: smartcard.h
-dnskey.o: connections.h
-dnskey.o: keys.h
-dnskey.o: dnskey.h
-dnskey.o: packet.h
-dnskey.o: timer.h
-dsa.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-dsa.o: defs.h
-dsa.o: log.h
-dsa.o: rnd.h
-dsa.o: gcryptfix.h
-dsa.o: dsa.h
-elgamal.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-elgamal.o: defs.h
-elgamal.o: log.h
-elgamal.o: rnd.h
-elgamal.o: gcryptfix.h
-elgamal.o: elgamal.h
-fetch.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-fetch.o: defs.h
-fetch.o: log.h
-fetch.o: id.h
-fetch.o: asn1.h
-fetch.o: pem.h
-fetch.o: x509.h
-fetch.o: whack.h
-fetch.o: ocsp.h
-fetch.o: fetch.h
-foodgroups.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-foodgroups.o: defs.h
-foodgroups.o: id.h
-foodgroups.o: x509.h
-foodgroups.o: pgp.h
-foodgroups.o: certs.h
-foodgroups.o: smartcard.h
-foodgroups.o: connections.h
-foodgroups.o: foodgroups.h
-foodgroups.o: kernel.h
-foodgroups.o: lex.h
-foodgroups.o: log.h
-foodgroups.o: whack.h
-gcryptfix.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-gcryptfix.o: defs.h
-gcryptfix.o: log.h
-gcryptfix.o: rnd.h
-gcryptfix.o: gcryptfix.h
-id.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-id.o: defs.h
-id.o: id.h
-id.o: log.h
-id.o: x509.h
-id.o: pgp.h
-id.o: certs.h
-id.o: smartcard.h
-id.o: connections.h
-id.o: packet.h
-id.o: whack.h
-ike_alg.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-ike_alg.o: defs.h
-ike_alg.o: sha1.h
-ike_alg.o: md5.h
-ike_alg.o: crypto.h
-ike_alg.o: state.h
-ike_alg.o: packet.h
-ike_alg.o: log.h
-ike_alg.o: whack.h
-ike_alg.o: spdb.h
-ike_alg.o: ike_alg.h
-ike_alg.o: db_ops.h
-ike_alg.o: id.h
-ike_alg.o: connections.h
-ike_alg.o: kernel.h
-ipsec_doi.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-ipsec_doi.o: defs.h
-ipsec_doi.o: state.h
-ipsec_doi.o: id.h
-ipsec_doi.o: x509.h
-ipsec_doi.o: pgp.h
-ipsec_doi.o: certs.h
-ipsec_doi.o: smartcard.h
-ipsec_doi.o: connections.h
-ipsec_doi.o: keys.h
-ipsec_doi.o: packet.h
-ipsec_doi.o: demux.h
-ipsec_doi.o: adns.h
-ipsec_doi.o: dnskey.h
-ipsec_doi.o: kernel.h
-ipsec_doi.o: log.h
-ipsec_doi.o: cookie.h
-ipsec_doi.o: server.h
-ipsec_doi.o: spdb.h
-ipsec_doi.o: timer.h
-ipsec_doi.o: rnd.h
-ipsec_doi.o: ipsec_doi.h
-ipsec_doi.o: whack.h
-ipsec_doi.o: fetch.h
-ipsec_doi.o: pkcs.h
-ipsec_doi.o: asn1.h
-ipsec_doi.o: sha1.h
-ipsec_doi.o: md5.h
-ipsec_doi.o: crypto.h
-ipsec_doi.o: xauth.h
-ipsec_doi.o: vendor.h
-ipsec_doi.o: nat_traversal.h
-ipsec_doi.o: virtual.h
-ipsec_doi.o: x509more.h
-kernel.o: kameipsec.h
-kernel.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-kernel.o: defs.h
-kernel.o: rnd.h
-kernel.o: id.h
-kernel.o: connections.h
-kernel.o: state.h
-kernel.o: timer.h
-kernel.o: kernel.h
-kernel.o: kernel_netlink.h
-kernel.o: kernel_pfkey.h
-kernel.o: kernel_noklips.h
-kernel.o: packet.h
-kernel.o: x509.h
-kernel.o: log.h
-kernel.o: server.h
-kernel.o: whack.h
-kernel.o: keys.h
-kernel.o: packet.h
-kernel.o: nat_traversal.h
-kernel_netlink.o: kameipsec.h
-kernel_netlink.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-kernel_netlink.o: defs.h
-kernel_netlink.o: id.h
-kernel_netlink.o: connections.h
-kernel_netlink.o: kernel.h
-kernel_netlink.o: kernel_netlink.h
-kernel_netlink.o: kernel_pfkey.h
-kernel_netlink.o: log.h
-kernel_netlink.o: whack.h
-kernel_noklips.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-kernel_noklips.o: defs.h
-kernel_noklips.o: id.h
-kernel_noklips.o: connections.h
-kernel_noklips.o: kernel.h
-kernel_noklips.o: kernel_noklips.h
-kernel_noklips.o: log.h
-kernel_noklips.o: whack.h
-kernel_pfkey.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-kernel_pfkey.o: defs.h
-kernel_pfkey.o: id.h
-kernel_pfkey.o: connections.h
-kernel_pfkey.o: kernel.h
-kernel_pfkey.o: kernel_pfkey.h
-kernel_pfkey.o: log.h
-kernel_pfkey.o: whack.h
-kernel_pfkey.o: packet.h
-kernel_pfkey.o: nat_traversal.h
-keys.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-keys.o: defs.h
-keys.o: id.h
-keys.o: x509.h
-keys.o: pgp.h
-keys.o: certs.h
-keys.o: smartcard.h
-keys.o: connections.h
-keys.o: state.h
-keys.o: lex.h
-keys.o: keys.h
-keys.o: adns.h
-keys.o: dnskey.h
-keys.o: log.h
-keys.o: whack.h
-keys.o: timer.h
-keys.o: fetch.h
-keys.o: x509more.h
-keys.o: nat_traversal.h
-lex.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-lex.o: defs.h
-lex.o: log.h
-lex.o: whack.h
-lex.o: lex.h
-log.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-log.o: defs.h
-log.o: log.h
-log.o: server.h
-log.o: state.h
-log.o: id.h
-log.o: x509.h
-log.o: pgp.h
-log.o: certs.h
-log.o: smartcard.h
-log.o: connections.h
-log.o: kernel.h
-log.o: whack.h
-log.o: timer.h
-log.o: ike_alg.h
-log.o: db_ops.h
-md2.o: md2.h
-md2.o: md2.h
-md5.o: md5.h
-md5.o: endian.h
-ocsp.o: defs.h
-ocsp.o: id.h
-ocsp.o: log.h
-ocsp.o: x509.h
-ocsp.o: rnd.h
-ocsp.o: asn1.h
-ocsp.o: pgp.h
-ocsp.o: certs.h
-ocsp.o: smartcard.h
-ocsp.o: oid.h
-ocsp.o: whack.h
-ocsp.o: keys.h
-ocsp.o: fetch.h
-ocsp.o: ocsp.h
-nat_traversal.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-nat_traversal.o: defs.h
-nat_traversal.o: log.h
-nat_traversal.o: server.h
-nat_traversal.o: state.h
-nat_traversal.o: id.h
-nat_traversal.o: x509.h
-nat_traversal.o: pgp.h
-nat_traversal.o: certs.h
-nat_traversal.o: smartcard.h
-nat_traversal.o: connections.h
-nat_traversal.o: packet.h
-nat_traversal.o: demux.h
-nat_traversal.o: kernel.h
-nat_traversal.o: whack.h
-nat_traversal.o: timer.h
-nat_traversal.o: cookie.h
-nat_traversal.o: sha1.h
-nat_traversal.o: md5.h
-nat_traversal.o: crypto.h
-nat_traversal.o: vendor.h
-nat_traversal.o: nat_traversal.h
-oid.o: oid.h
-packet.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-packet.o: defs.h
-packet.o: log.h
-packet.o: packet.h
-packet.o: whack.h
-pem.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-pem.o: defs.h
-pem.o: log.h
-pem.o: md5.h
-pem.o: whack.h
-pem.o: pem.h
-pgp.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-pgp.o: defs.h
-pgp.o: log.h
-pgp.o: id.h
-pgp.o: pgp.h
-pgp.o: x509.h
-pgp.o: certs.h
-pgp.o: md5.h
-pgp.o: whack.h
-pgp.o: keys.h
-pkcs.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-pkcs.o: defs.h
-pkcs.o: asn1.h
-pkcs.o: oid.h
-pkcs.o: log.h
-pkcs.o: id.h
-pkcs.o: x509.h
-pkcs.o: pgp.h
-pkcs.o: certs.h
-pkcs.o: pkcs.h
-plutomain.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-plutomain.o: defs.h
-plutomain.o: id.h
-plutomain.o: x509.h
-plutomain.o: pgp.h
-plutomain.o: certs.h
-plutomain.o: ac.h
-plutomain.o: smartcard.h
-plutomain.o: connections.h
-plutomain.o: foodgroups.h
-plutomain.o: packet.h
-plutomain.o: demux.h
-plutomain.o: server.h
-plutomain.o: kernel.h
-plutomain.o: log.h
-plutomain.o: keys.h
-plutomain.o: adns.h
-plutomain.o: dnskey.h
-plutomain.o: rnd.h
-plutomain.o: state.h
-plutomain.o: ipsec_doi.h
-plutomain.o: ocsp.h
-plutomain.o: fetch.h
-plutomain.o: sha1.h
-plutomain.o: md5.h
-plutomain.o: crypto.h
-plutomain.o: virtual.h
-plutomain.o: nat_traversal.h
-primegen.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-primegen.o: defs.h
-primegen.o: log.h
-primegen.o: rnd.h
-primegen.o: gcryptfix.h
-rcv_info.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-rcv_info.o: defs.h
-rcv_info.o: id.h
-rcv_info.o: connections.h
-rcv_info.o: foodgroups.h
-rcv_info.o: whack.h
-rcv_info.o: packet.h
-rcv_info.o: demux.h
-rcv_info.o: state.h
-rcv_info.o: ipsec_doi.h
-rcv_info.o: kernel.h
-rcv_info.o: rcv_whack.h
-rcv_info.o: log.h
-rcv_info.o: keys.h
-rcv_info.o: adns.h
-rcv_info.o: dnskey.h
-rcv_info.o: server.h
-rcv_info.o: ../../linux/include/openswan/ipsec_policy.h
-rcv_info.o: rcv_info.h
-rcv_whack.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-rcv_whack.o: defs.h
-rcv_whack.o: id.h
-rcv_whack.o: x509.h
-rcv_whack.o: pgp.h
-rcv_whack.o: certs.h
-rcv_whack.o: ac.h
-rcv_whack.o: smartcard.h
-rcv_whack.o: connections.h
-rcv_whack.o: foodgroups.h
-rcv_whack.o: whack.h
-rcv_whack.o: packet.h
-rcv_whack.o: demux.h
-rcv_whack.o: state.h
-rcv_whack.o: ipsec_doi.h
-rcv_whack.o: kernel.h
-rcv_whack.o: rcv_whack.h
-rcv_whack.o: log.h
-rcv_whack.o: keys.h
-rcv_whack.o: adns.h
-rcv_whack.o: dnskey.h
-rcv_whack.o: server.h
-rcv_whack.o: fetch.h
-rcv_whack.o: ike_alg.h
-rcv_whack.o: ocsp.h
-rnd.o: sha1.h
-rnd.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-rnd.o: defs.h
-rnd.o: rnd.h
-rnd.o: log.h
-rnd.o: timer.h
-server.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-server.o: defs.h
-server.o: state.h
-server.o: id.h
-server.o: x509.h
-server.o: pgp.h
-server.o: certs.h
-server.o: smartcard.h
-server.o: connections.h
-server.o: kernel.h
-server.o: log.h
-server.o: server.h
-server.o: timer.h
-server.o: packet.h
-server.o: demux.h
-server.o: rcv_whack.h
-server.o: rcv_info.h
-server.o: keys.h
-server.o: adns.h
-server.o: dnskey.h
-server.o: whack.h
-server.o: kameipsec.h
-server.o: nat_traversal.h
-sha1.o: sha1.h
-sha1.o: endian.h
-smallprime.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-smallprime.o: defs.h
-smallprime.o: gcryptfix.h
-smartcard.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-smartcard.o: defs.h
-smartcard.o: id.h
-smartcard.o: log.h
-smartcard.o: x509.h
-smartcard.o: pgp.h
-smartcard.o: certs.h
-smartcard.o: smartcard.h
-smartcard.o: whack.h
-smartcard.o: fetch.h
-spdb.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-spdb.o: defs.h
-spdb.o: id.h
-spdb.o: x509.h
-spdb.o: pgp.h
-spdb.o: certs.h
-spdb.o: smartcard.h
-spdb.o: connections.h
-spdb.o: state.h
-spdb.o: packet.h
-spdb.o: keys.h
-spdb.o: kernel.h
-spdb.o: log.h
-spdb.o: spdb.h
-spdb.o: whack.h
-spdb.o: sha1.h
-spdb.o: md5.h
-spdb.o: crypto.h
-spdb.o: ike_alg.h
-spdb.o: db_ops.h
-spdb.o: nat_traversal.h
-state.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-state.o: defs.h
-state.o: id.h
-state.o: x509.h
-state.o: pgp.h
-state.o: certs.h
-state.o: smartcard.h
-state.o: connections.h
-state.o: state.h
-state.o: kernel.h
-state.o: log.h
-state.o: packet.h
-state.o: keys.h
-state.o: rnd.h
-state.o: timer.h
-state.o: whack.h
-state.o: demux.h
-state.o: ipsec_doi.h
-state.o: sha1.h
-state.o: md5.h
-state.o: crypto.h
-timer.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-timer.o: defs.h
-timer.o: id.h
-timer.o: x509.h
-timer.o: pgp.h
-timer.o: certs.h
-timer.o: smartcard.h
-timer.o: connections.h
-timer.o: state.h
-timer.o: packet.h
-timer.o: demux.h
-timer.o: ipsec_doi.h
-timer.o: kernel.h
-timer.o: server.h
-timer.o: log.h
-timer.o: rnd.h
-timer.o: timer.h
-timer.o: whack.h
-timer.o: nat_traversal.h
-vendor.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-vendor.o: defs.h
-vendor.o: log.h
-vendor.o: md5.h
-vendor.o: id.h
-vendor.o: x509.h
-vendor.o: pgp.h
-vendor.o: certs.h
-vendor.o: smartcard.h
-vendor.o: connections.h
-vendor.o: packet.h
-vendor.o: demux.h
-vendor.o: whack.h
-vendor.o: vendor.h
-vendor.o: nat_traversal.h
-virtual.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-virtual.o: defs.h
-virtual.o: log.h
-virtual.o: id.h
-virtual.o: x509.h
-virtual.o: pgp.h
-virtual.o: certs.h
-virtual.o: smartcard.h
-virtual.o: connections.h
-virtual.o: whack.h
-virtual.o: virtual.h
-whack.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-whack.o: defs.h
-whack.o: whack.h
-x509.o: ../../include/constants.h ../../include/ietf_constants.h ../../include/pluto_constants.h
-x509.o: defs.h
-x509.o: log.h
-x509.o: id.h
-x509.o: asn1.h
-x509.o: oid.h
-x509.o: x509.h
-x509.o: pgp.h
-x509.o: certs.h
-x509.o: keys.h
-x509.o: packet.h
-x509.o: demux.h
-x509.o: connections.h
-x509.o: state.h
-x509.o: md2.h
-x509.o: md5.h
-x509.o: sha1.h
-x509.o: whack.h
-x509.o: fetch.h
-x509.o: pkcs.h
-x509.o: x509more.h
-x509.o: ocsp.h

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: quirks.h,v 1.3 2004/04/11 03:08:46 ken Exp $
+ * RCSID $Id: quirks.h,v 1.4 2004/10/22 19:34:43 mcr Exp $
  */
 
 #ifndef _QUIRKS_H_
@@ -24,7 +24,12 @@
 struct isakmp_quirks {
   bool xauth_ack_msgid;         /**< Whether to reset the msgid after an
 				 * xauth set, such as for SSH Sentinel. */
+  bool modecfg_pull_mode;       /* if the client should request his IP */
   unsigned short nat_traversal_vid;  /**< which NAT-type vendor IDs we got */
 };
+
+extern void copy_quirks(struct isakmp_quirks *dq
+			, struct isakmp_quirks *sq);
+
 
 #endif

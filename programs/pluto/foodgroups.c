@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: foodgroups.c,v 1.20 2004/04/29 03:59:32 mcr Exp $
+ * RCSID $Id: foodgroups.c,v 1.20.22.1 2005/05/18 20:55:13 ken Exp $
  */
 
 #include <unistd.h>
@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <limits.h> /* PATH_MAX */
 #include <sys/queue.h>
 
 #include <openswan.h>

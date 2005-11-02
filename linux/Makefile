@@ -11,9 +11,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.8 2004/04/03 19:44:41 ken Exp $
+# RCSID $Id: Makefile,v 1.9 2004/12/18 18:13:35 mcr Exp $
 
-OPENSWANSRCDIR=..
+OPENSWANSRCDIR?=$(shell cd .. && pwd)
 #SUBDIRS=net/ipsec
 
 include $(OPENSWANSRCDIR)/Makefile.inc

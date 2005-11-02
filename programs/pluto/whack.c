@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: whack.c,v 1.133 2004/06/27 22:40:25 mcr Exp $
+ * RCSID $Id: whack.c,v 1.144 2005/03/20 02:27:50 mcr Exp $
  */
 
 #include <stdio.h>
@@ -113,15 +113,14 @@ help(void)
 	    " [--esp <esp-algos>]"
 	    " \\\n   "
 	    " [--dontrekey]"
-
+	    " [--aggrmode]"
             " [--dpddelay <seconds> --dpdtimeout <seconds>]"
             " \\\n   "
-            " [--dpdaction (clear|hold)]"
+            " [--dpdaction (clear|hold|restart)]"
 	    " [--forceencaps]"
 
 
 #ifdef XAUTH
-	    " [--xauth]"
 	    " [--xauthserver]"
 	    " [--xauthclient]"
 #endif
@@ -210,6 +209,10 @@ help(void)
             " [--purgeocsp]"
             "\n\n"
 
+        "purge: whack"
+            " [--listevents]"
+            "\n\n"
+
 	"reread: whack"
 	    " [--rereadsecrets]"
 	    " [--rereadcacerts]"
@@ -227,7 +230,7 @@ help(void)
 	"shutdown: whack"
 	    " --shutdown"
 	    "\n\n"
-	"FreeS/WAN %s\n"
+	"Openswan %s\n"
 	, ipsec_version_code());
 }
 
@@ -354,6 +357,7 @@ enum option_enums {
     LST_CRLS,
     LST_OCSP,
     LST_CARDS,
+    LST_EVENTS,
     LST_ALL,
 
 #   define LST_LAST LST_ALL    /* last list option */
@@ -390,25 +394,26 @@ enum option_enums {
     CD_TO,
 
 #   define CD_POLICY_FIRST  CD_PSK
-    CD_PSK,	/* same order as POLICY_* */
-    CD_RSASIG,	/* same order as POLICY_* */
-    CD_ENCRYPT,	/* same order as POLICY_* */
-    CD_AUTHENTICATE,	/* same order as POLICY_* */
-    CD_COMPRESS,	/* same order as POLICY_* */
-    CD_TUNNEL,	/* same order as POLICY_* */
-    CD_PFS,	/* same order as POLICY_* */
-    CD_DISABLEARRIVALCHECK,	/* same order as POLICY_* */
-    CD_SHUNT0,	/* same order as POLICY_* */
-    CD_SHUNT1,	/* same order as POLICY_* */
-    CD_FAIL0,	/* same order as POLICY_* */
-    CD_FAIL1,	/* same order as POLICY_* */
-    CD_DONT_REKEY,	/* same order as POLICY_* */
-    CD_OPP0,	        /* same order as POLICY_* */
-    CD_GROUP,           /* same order as POLICY_* */
-    CD_GROUPED,         /* same order as POLICY_* */
-    CD_UP,              /* same order as POLICY_* */
-    CD_DUMMY,           /* same order as POLICY_* */
-    CD_MODECFG,         /* same order as POLICY_* */
+    CD_PSK,	/* same order as POLICY_* 0 */
+    CD_RSASIG,	/* same order as POLICY_* 1 */
+    CD_ENCRYPT,	/* same order as POLICY_* 2 */
+    CD_AUTHENTICATE,	/* same order as POLICY_* 3 */
+    CD_COMPRESS,	/* same order as POLICY_* 4 */
+    CD_TUNNEL,	/* same order as POLICY_* 5 */
+    CD_PFS,	/* same order as POLICY_* 6 */
+    CD_DISABLEARRIVALCHECK,	/* same order as POLICY_* 7 */
+    CD_SHUNT0,	/* same order as POLICY_* 8 */
+    CD_SHUNT1,	/* same order as POLICY_* 9 */
+    CD_FAIL0,	/* same order as POLICY_* 10 */
+    CD_FAIL1,	/* same order as POLICY_* 11 */
+    CD_DONT_REKEY,	/* same order as POLICY_* 12 */
+    CD_OPP0,	        /* same order as POLICY_* 13 */
+    CD_GROUP,           /* same order as POLICY_* 14 */
+    CD_GROUPED,         /* same order as POLICY_* 15 */
+    CD_UP,              /* same order as POLICY_* 16 */
+    CD_DUMMY,           /* same order as POLICY_* 17 -- was XAUTH */
+    CD_MODECFGPULL,     /* same order as POLICY_* 18 */
+    CD_AGGRESSIVE,      /* same order as POLICY_* 19 */
     CD_TUNNELIPV4,
     CD_TUNNELIPV6,
     CD_CONNIPV4,
@@ -448,7 +453,7 @@ enum option_enums {
     DBGOPT_PFKEY,	/* same order as DBG_* */
     DBGOPT_NATT,        /* same order as DBG_* */
     DBGOPT_X509,        /* same order as DBG_* */
-    DBGOPT_RES13,
+    DBGOPT_DPD,         /* same order as DBG_* */
     DBGOPT_RES14,
     DBGOPT_RES15,
     DBGOPT_RES16,
@@ -461,9 +466,11 @@ enum option_enums {
     DBGOPT_IMPAIR_DELAY_ADNS_KEY_ANSWER,	/* same order as IMPAIR_* */
     DBGOPT_IMPAIR_DELAY_ADNS_TXT_ANSWER,	/* same order as IMPAIR_* */
     DBGOPT_IMPAIR_BUST_MI2,	/* same order as IMPAIR_* */
-    DBGOPT_IMPAIR_BUST_MR2	/* same order as IMPAIR_* */
+    DBGOPT_IMPAIR_BUST_MR2,	/* same order as IMPAIR_* */
+    DBGOPT_IMPAIR_SA_CREATION,  /* make all SA creation fail */
+    DBGOPT_IMPAIR_DIE_ONINFO,   /* cause state to be deleted upon receipt of information payload */
 
-#   define DBGOPT_LAST DBGOPT_IMPAIR_BUST_MR2
+#   define DBGOPT_LAST DBGOPT_IMPAIR_DIE_ONINFO
 #endif
 
 };
@@ -539,6 +546,7 @@ static const struct option long_opts[] = {
     { "listcrls", no_argument, NULL, LST_CRLS + OO },
     { "listocsp", no_argument, NULL, LST_OCSP + OO },
     { "listcards", no_argument, NULL, LST_CARDS + OO },
+    { "listevents", no_argument, NULL, LST_EVENTS + OO },
     { "listall", no_argument, NULL, LST_ALL + OO },
                                                                                                         
 
@@ -573,6 +581,7 @@ static const struct option long_opts[] = {
     { "tunnelipv4", no_argument, NULL, CD_TUNNELIPV4 + OO },
     { "tunnelipv6", no_argument, NULL, CD_TUNNELIPV6 + OO },
     { "pfs", no_argument, NULL, CD_PFS + OO },
+    { "aggrmode", no_argument, NULL, CD_AGGRESSIVE + OO },
     { "disablearrivalcheck", no_argument, NULL, CD_DISABLEARRIVALCHECK + OO },
     { "initiateontraffic", no_argument, NULL
 	, CD_SHUNT0 + (POLICY_SHUNT_TRAP >> POLICY_SHUNT_SHIFT << AUX_SHIFT) + OO },
@@ -601,6 +610,7 @@ static const struct option long_opts[] = {
     { "xauthclient", no_argument, NULL, END_XAUTHCLIENT + OO },
 #endif
 #ifdef MODECFG
+    { "modecfgpull",   no_argument, NULL, CD_MODECFGPULL + OO },
     { "modecfgserver", no_argument, NULL, END_MODECFGSERVER + OO },
     { "modecfgclient", no_argument, NULL, END_MODECFGCLIENT + OO },
     { "modeconfigserver", no_argument, NULL, END_MODECFGSERVER + OO },
@@ -635,13 +645,19 @@ static const struct option long_opts[] = {
     { "debug-controlmore", no_argument, NULL, DBGOPT_CONTROLMORE + OO },
     { "debug-pfkey",   no_argument, NULL, DBGOPT_PFKEY + OO },
     { "debug-nattraversal", no_argument, NULL, DBGOPT_NATT + OO },
+    { "debug-natt",    no_argument, NULL, DBGOPT_NATT + OO },
+    { "debug-nat_t",   no_argument, NULL, DBGOPT_NATT + OO },
+    { "debug-nat-t",   no_argument, NULL, DBGOPT_NATT + OO },
     { "debug-x509",    no_argument, NULL, DBGOPT_X509 + OO },
+    { "debug-dpd",     no_argument, NULL, DBGOPT_DPD + OO },
     { "debug-private", no_argument, NULL, DBGOPT_PRIVATE + OO },
 
     { "impair-delay-adns-key-answer", no_argument, NULL, DBGOPT_IMPAIR_DELAY_ADNS_KEY_ANSWER + OO },
     { "impair-delay-adns-txt-answer", no_argument, NULL, DBGOPT_IMPAIR_DELAY_ADNS_TXT_ANSWER + OO },
     { "impair-bust-mi2", no_argument, NULL, DBGOPT_IMPAIR_BUST_MI2 + OO },
     { "impair-bust-mr2", no_argument, NULL, DBGOPT_IMPAIR_BUST_MR2 + OO },
+    { "impair-sa-fail",    no_argument, NULL, DBGOPT_IMPAIR_SA_CREATION + OO },
+    { "impair-die-oninfo", no_argument, NULL, DBGOPT_IMPAIR_DIE_ONINFO  + OO },
 #endif
 #   undef OO
     { 0,0,0,0 }
@@ -703,17 +719,6 @@ check_life_time(time_t life, time_t limit, const char *which
 	    , (unsigned long)mint);
 	diag(buf);
     }
-}
-
-static void
-clear_end(struct whack_end *e)
-{
-    zero(e);
-    e->id = NULL;
-    e->cert = NULL;
-    e->ca = NULL;
-    e->updown = NULL;
-    e->host_port = IKE_UDP_PORT;
 }
 
 static void
@@ -1141,7 +1146,7 @@ main(int argc, char **argv)
 	case OPT_SHUTDOWN:	/* --shutdown */
 	    msg.whack_shutdown = TRUE;
 	    continue;
-
+	    
 	case OPT_OPPO_HERE:	/* --oppohere <ip-address> */
 	    tunnel_af_used_by = long_opts[long_index].name;
 	    diagq(ttoaddr(optarg, 0, msg.tunnel_addr_family, &msg.oppo_my_client), optarg);
@@ -1176,6 +1181,7 @@ main(int argc, char **argv)
         case LST_CRLS:          /* --listcrls */
         case LST_OCSP:          /* --listocsp */
         case LST_CARDS:         /* --listcards */
+        case LST_EVENTS:         /* --listcards */
             msg.whack_list |= LELEM(c - LST_PUBKEYS);
             continue;
 
@@ -1398,8 +1404,10 @@ main(int argc, char **argv)
 	case CD_COMPRESS:	/* --compress */
 	case CD_TUNNEL:		/* --tunnel */
 	case CD_PFS:		/* --pfs */
+	case CD_AGGRESSIVE:	/* --aggrmode */
 	case CD_DISABLEARRIVALCHECK:	/* --disablearrivalcheck */
 	case CD_DONT_REKEY:	/* --donotrekey */
+	case CD_MODECFGPULL:    /* --modecfgpull */
 	    msg.policy |= LELEM(c - CD_POLICY_FIRST);
 	    continue;
 
@@ -1462,6 +1470,9 @@ main(int argc, char **argv)
             }
             if( strcmp(optarg, "hold") == 0) {
                     msg.dpd_action = DPD_ACTION_HOLD;
+            }
+            if( strcmp(optarg, "restart") == 0) {
+                    msg.dpd_action = DPD_ACTION_RESTART;
             }
             continue;
 
@@ -1562,11 +1573,14 @@ main(int argc, char **argv)
 	case DBGOPT_PFKEY:      /* --debug-pfkey */
 	case DBGOPT_NATT:       /* --debug-pfkey */
 	case DBGOPT_X509:       /* --debug-pfkey */
+	case DBGOPT_DPD:        /* --debug-dpd */
 	case DBGOPT_PRIVATE:	/* --debug-private */
 	case DBGOPT_IMPAIR_DELAY_ADNS_KEY_ANSWER:	/* --impair-delay-adns-key-answer */
 	case DBGOPT_IMPAIR_DELAY_ADNS_TXT_ANSWER:	/* --impair-delay-adns-txt-answer */
 	case DBGOPT_IMPAIR_BUST_MI2:	/* --impair_bust_mi2 */
 	case DBGOPT_IMPAIR_BUST_MR2:	/* --impair_bust_mr2 */
+	case DBGOPT_IMPAIR_SA_CREATION:	/* --impair-sa-creation */
+	case DBGOPT_IMPAIR_DIE_ONINFO:	/* --impair-die-oninfo */
 	    msg.debugging |= LELEM(c-DBGOPT_RAW);
 	    continue;
 #endif
@@ -1684,10 +1698,17 @@ main(int argc, char **argv)
     || msg.whack_delete || msg.whack_deletestate
     || msg.whack_initiate || msg.whack_oppo_initiate || msg.whack_terminate
     || msg.whack_route || msg.whack_unroute || msg.whack_listen
-    || msg.whack_unlisten || msg.whack_list || msg.whack_purgeocsp || msg.whack_reread
+    || msg.whack_unlisten || msg.whack_list || msg.whack_purgeocsp
+	  || msg.whack_reread || msg.whack_crash
     || msg.whack_status || msg.whack_options || msg.whack_shutdown))
     {
 	diag("no action specified; try --help for hints");
+    }
+
+    if(msg.policy & POLICY_AGGRESSIVE) {
+	if(msg.ike == NULL) {
+	    diag("can not specify aggressive mode without ike= to set algorithm");
+	}
     }
 
     update_ports(&msg);
@@ -1708,8 +1729,8 @@ main(int argc, char **argv)
             diag("dpddelay specified, but dpdtimeout is zero, both should be specified");
     if(!msg.dpd_delay && msg.dpd_timeout)
             diag("dpdtimeout specified, but dpddelay is zero, both should be specified");
-    if(msg.dpd_action != DPD_ACTION_CLEAR && msg.dpd_action != DPD_ACTION_HOLD) {
-            diag("dpdaction can only be \"clear\" or \"hold\", defaulting to \"hold\"");
+    if(msg.dpd_action != DPD_ACTION_CLEAR && msg.dpd_action != DPD_ACTION_HOLD && msg.dpd_action != DPD_ACTION_RESTART) {
+            diag("dpdaction can only be \"clear\", \"hold\" or \"restart\", defaulting to \"hold\"");
             msg.dpd_action = DPD_ACTION_HOLD;
     }
 
@@ -1855,6 +1876,7 @@ main(int argc, char **argv)
 
 		    le++;	/* include NL in line */
 		    write(1, ls, le - ls);
+		    fsync(1);
 
 		    /* figure out prefix number
 		     * and how it should affect our exit status

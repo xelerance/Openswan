@@ -47,6 +47,7 @@ Processing manpage.d/ipsec_isunspecaddr.3
 Processing manpage.d/ipsec_keyblobtoid.3
 Processing manpage.d/ipsec_klipsdebug.5
 Processing manpage.d/ipsec_klipsdebug.8
+Processing manpage.d/ipsec_livetest.8
 Processing manpage.d/ipsec_look.8
 Processing manpage.d/ipsec_loopbackaddr.3
 Processing manpage.d/ipsec_lwdnsq.8

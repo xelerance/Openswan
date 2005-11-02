@@ -1,7 +1,7 @@
 Summary: Openswan IPSEC implementation
 Name: openswan
 %define majver 2
-%define minver 2.0
+%define minver 3.1
 Version: %{majver}.%{minver}
 %define opensw_release 1suse9
 %define debug_package %{nil}
@@ -14,7 +14,7 @@ Url: http://www.openswan.org/
 License: GPL
 Group: System Environment/Daemons
 Provides: ipsec-userland
-Requires: iproute ipsec-tools
+Requires: iproute >= 2.6.8 
 %define __spec_install_post /usr/lib/rpm/brp-compress || :
 
 %description
@@ -28,7 +28,7 @@ gateway machine and decrypted by the gateway at the other end of the
 tunnel.  The resulting tunnel is a virtual private network or VPN.
 
 This package contains the daemons and userland tools for setting up
-Openswan on a kernel with either the 2.6 native IPsec code.
+Openswan on a kernel with either the KLIPS or NETKEY stack.
 
 %prep
 %setup -q -n openswan-%{majver}.%{minver}
@@ -50,11 +50,11 @@ rm -rf ${RPM_BUILD_ROOT}
   INC_RCDEFAULT=%{_initrddir} \
   MANTREE=%{buildroot}%{_mandir} \
   install
-rm -rf %{buildroot}/usr/share/doc/freeswan
+rm -rf %{buildroot}/usr/share/doc/openswan
 rm -rf %{buildroot}/usr/share/man
-install -d -m700 %{buildroot}%{_localstatedir}/run/pluto
+install -d -m 0700 %{buildroot}%{_localstatedir}/run/pluto
 install -d %{buildroot}%{_sbindir}
-# Kill freeswan docs.
+# Kill openswan docs.
 
 %clean
 rm -rf ${RPM_BUILD_ROOT}
@@ -67,6 +67,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.conf
 %attr(0700,root,root) %dir %{_sysconfdir}/ipsec.d
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.d/*
+%{_localstatedir}/run/pluto
 %config(noreplace) %{_initrddir}/ipsec
 %{_libdir}/ipsec
 %{_sbindir}/ipsec
@@ -90,7 +91,10 @@ mkdir -p -m 755 /etc/ipsec.d
 mkdir -p -m 755 /etc/ipsec.d/cacerts
 mkdir -p -m 755 /etc/ipsec.d/crls
 mkdir -p -m 700 /etc/ipsec.d/private
-ln -s /etc/init.d/ipsec /sbin/rcipsec
+if [ ! -e /sbin/rcipsec ]
+then
+	ln -s /etc/init.d/ipsec /sbin/rcipsec
+fi
 %changelog
 * Tue Aug 31 2004 Paul Wouters <paul@xelerance.com>
 - ported redhat spec file to suse.

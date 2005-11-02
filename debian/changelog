@@ -1,3 +1,206 @@
+openswan (2.3.0-1) unstable; urgency=low
+
+  * New upstream release.
+    Important change: aes-sha1 is now the default proposal (but 3des-md5 is
+    still supported if the other side requests it). Please look at 
+    /usr/share/doc/openswan/docs/RELEASE-NOTES for details.
+  * Includes KLIPS support for kernel 2.6 for the first time, but I have not
+    yet modified openswan-modules-source to cope with that. If somebody wants
+    to lend me a hand to address #273443, it would be more than welcome.
+  * This release includes a fix for the reported snmpd crash
+    (in ipsec_tunnel.c). Many thanks to Nate Carlson for pointing this out.
+    Closes: #261892: openswan: System crashes when snmpd runs at the same time
+  * Update Build-Depends from libopensc0-dev to libopensc1-dev.
+    Closes: #289600: openswan: can't fulfill the build dependencies
+  * Update Build-Depends from libcurl2-dev to libcurl3-dev.
+  * Include Japanese debconf translation and fix a typo in the master.
+    Closes: #288996: openswan: Japanese po-debconf template translation 
+            (ja.po) and typo in template.pot
+  * Auto-apply the NAT Traversal patch with kernel-patch-openswan again. This
+    was changed by openswan (the freeswan version included the NAT-T patch
+    automatically). Thus, the patch is now applied before inserting the KLIPS
+    part.
+  * Include a ready-to-use NAT-T diff in the openswan-modules-source package
+    so that anybody who uses this package still has the option of using NAT
+    Traversal (though this means patching the kernel anyway, and kind of
+    makes the out-of-tree compilation senseless). However, Debian 2.4 series
+    kernels should already have NAT-T applied.
+  * Document the above two changes in the package descriptions and 
+    README.Debian.
+
+ -- Rene Mayrhofer <rmayr@debian.org>  Thu, 13 Jan 2005 09:30:45 +0100
+
+openswan (2.2.0-5) unstable; urgency=low
+
+  * Added more explanations to README.Debian on how to build the kernel
+    modules with either openswan-modules-source or kernel-patch-openswan.
+
+ -- Rene Mayrhofer <rmayr@debian.org>  Sat, 16 Oct 2004 13:11:48 +0200
+
+openswan (2.2.0-4) unstable; urgency=medium
+
+  Urgency medium to get this version into sarge - it fixes a bug that turned
+  up on some machines and prevented openswan from starting.
+  * no_oe.conf will work when there are spaces at the end, many thanks to
+    Hans Fugal for figuring that out!
+    Closes: #270012: openswan: Fails to start after Installation
+            (/etc/ipsec.d/examples/no_oe.conf problem?)
+    I am now sending this towards upstream so that it should hopefully get
+    fixed for the next release - it's a bit awkward for a config file.
+  * Fixed a minor aesthetical issue in openswan.postinst: when a plain RSA key
+    is already present in ipsec.secrets and a new one is being created, a
+    needless line was printed. Silenced by adding -q to egrep.
+
+ -- Rene Mayrhofer <rmayr@debian.org>  Sun,  3 Oct 2004 20:57:22 +0200
+
+openswan (2.2.0-3) unstable; urgency=low
+
+  * Also added flex to Build-Depends, the new starter (replacement for
+    the init scripts, but not yet active) needs it to build.
+    Closes: #272935: openswan_2.2.0-1(ia64/unstable): FTBFS: missing 
+                     build-depends
+    Closes: #273241: openswan: FTBFS: Missing Build-Depends on 'flex'
+  * Adapted the rules file of openswan-modules-source to cope with the new
+    upstream source code - need to generate a C file from a template before
+    the ipsec module can be built.
+    Closes: #273144: openswan-modules-source: linux/net/ipsec/version.c 
+                     neither created nor compiled
+  * Enabled the building of modular extensions (AES and cryptoapi) by default
+    for openswan-modules-source. Also enabled the AES cipher in addition to
+    3DES (this is directly in the ipsec.o kernel module, the modular 
+    extensions version is an alternative to this).
+
+ -- Rene Mayrhofer <rmayr@debian.org>  Fri, 24 Sep 2004 12:38:47 +0200
+
+openswan (2.2.0-2) unstable; urgency=low
+
+  * Added bison to Build-Depends.
+
+ -- Rene Mayrhofer <rmayr@debian.org>  Thu, 23 Sep 2004 15:18:51 +0200
+
+openswan (2.2.0-1) unstable; urgency=medium
+
+  * New upstream version:
+    - Introduces AES support, which is the reason for urgency medium. AES 
+      should definitly go into sarge.
+    - Adds RFC 3706 DPD (dead peer detection) support, see 
+      /usr/share/doc/openswan/docs/README.DPD for details.
+    This adds the last missing piece (AES) to replace the freeswan package
+    completely. As of now, freeswan is officially unsupported and will soon
+    be removed from Debian. Please upgrade to openswan, which should not cause
+    any issues. Configuration files and certificates are completely compatible.
+    Closes: #270012: openswan: Fails to start after Installation 
+                     (/etc/ipsec.d/examples/no_oe.conf problem?)
+            I can no longer reproduce this problem on a fresh install of 
+            2.2.0-1.
+    Closes: #260120: openswan: Patch fixing #256391 breaks the autogenerated 
+                     certificate
+            The new X.509 patch included in this upstream release (no longer
+            patched by the Debian package) should fix this too.
+    Closes: #246828: /etc/ipsec.conf refers to invalid URLs
+            The default ipsec.conf file distributed by upstream no longer 
+            refers to an URL.
+  * Fixed a thinko in the postinst script that prevented the correct insertion
+    of plain RSA keys into /etc/ipsec.secrets (i.e. not using X.509 
+    certificates). Fixed now.
+    Closes: #268742: openswan: Plain RSA key not successfully written to 
+                     ipsec.secrets
+  * Adapt to the new way of openswan handling the disabling of opportunistic
+    encryption. In the default ipsec.conf distributed with upstream openswan,
+    OE is now disabled (which changes the previous default). Adapted the 
+    postinst script so that it can now enable and disable OE support based on
+    the debconf option.
+    Closes: #268743: openswan: fails to respect debconf OE setting
+  * Updated the French and Brazilian Portugese debconf translations.
+    Closes: #256457: openswan: [INTL:fr] French debconf templates translation
+    Closes: #264246: openswan: [INTL:pt_BR] Please use the attached Brazilian 
+                     Portuguese debconf template translation
+  * Patched debian/fswcert/fswcert.c to compile cleanly with gcc-3.4. Thanks 
+    to Andreas Jochens for the patch!
+    Closes: #262663: openswan: FTBFS with gcc-3.4: label at end of compound 
+                     statement
+  * Documented how to build the KLIPS kernel part with either the 
+    kernel-patch-openswan or the openswan-modules-source packages.
+    Closes: #246819: Needs documentation on how to build the kernel modules
+  * Bump Standards-Version to 3.6.1.0, no changes necessary.
+
+ -- Rene Mayrhofer <rmayr@debian.org>  Tue, 21 Sep 2004 18:13:52 +0200
+
+openswan (2.1.5-1) unstable; urgency=medium
+
+  * New upstream release, which fixes another potential security issue.
+
+ -- Rene Mayrhofer <rene@mayrhofer.eu.org>  Sun,  5 Sep 2004 18:00:40 +0200
+
+openswan (2.1.3-1) unstable; urgency=HIGH
+
+  Urgency high because of a possibly security issue.
+  * New upstream version. This includes the CRL fix form 2.1.1-5 and the
+    proper activation of NAT traversal in Makefile.inc.
+    Closes: #253457: Openswan: new upstream available that includes xauth 
+    Closes: #253458: Openswan: new upstream available that includes xauth
+    Closes: #253461: Openswan: new upstream available
+    Closes: #253782: openswan: Should automatically load kernel module 
+                     xfrm_user
+    But I have currently not explicitly enabled xaut support in Makefile.inc,
+    quoting from there: "off by default, since XAUTH is tricky, and you can 
+    get into security trouble". If it needs to be enabled to work, please tell
+    me and I will need to take a far closer look on it (and the involved
+    problems).
+    This new upstream version also fixes a possible security issue in the
+    X.509 certificate authentication.
+  * The last upload didn't seem to have hit the archives, strange... 
+    However, the bugs are still fixed, closing them now.
+    Closes: #245450: openswan should not depend on 
+            kernel-image-2.4 || kernel-image-2.6
+    Closes: #246847: openswan: shouldn't conflict with ike-server
+    Closes: #246373: openswan: [INTL:fr] French debconf templates translation
+
+ -- Rene Mayrhofer <rene@mayrhofer.eu.org>  Thu, 17 June 2004 12:22:45 +0200
+
+openswan (2.1.1-5) unstable; urgency=low
+
+  * Applied a patch from openswan CVS to fix CRL related crashes.
+  * Drop the dependency on kernels it works with - the package description
+    already says that it will need kernel support to work. This allows people
+    to easily use self-compiled kernels with the right support (e.g. 2.6.5).
+    Closes: #245450: openswan should not depend on 
+            kernel-image-2.4 || kernel-image-2.6
+  * While I'm at it, also replace the various Suggests: *freeswan* with
+    openswan. Oops.
+  * openswan conflicts with ike-server because only one ike-server can be
+    active at any given time (it will listen on UDP port 500). This policy
+    has been agreed to by all Debian IPSec package maintainers and implemented
+    in all ike-server providing packages.
+    Closes: #246847: openswan: shouldn't conflict with ike-server
+  * Took the debconf translations from the freeswan package and "ported" them
+    via debconf-updatepo. Thanks to Christian Perrier for mentioning that it
+    was this easy.
+    The templates should now be correct (all instances of FreeS/wan replaced
+    by Openswan).
+    Closes: #246373: openswan: [INTL:fr] French debconf templates translation
+
+ -- Rene Mayrhofer <rene@mayrhofer.eu.org>  Tue, 18 May 2004 19:46:24 +0200
+
+openswan (2.1.1-4) unstable; urgency=low
+
+  * Fixed the kernel-patch-openswan apply script.
+  * Warning: Due to an upstream bug, pluto from this version will dump core 
+    on certain CRLs. If you are hit by this bug, please report it directly to 
+    upstream, they are still tracking the issue down.
+
+
+ -- Rene Mayrhofer <rene@mayrhofer.eu.org>  Thu, 15 Apr 2004 09:50:32 +0200
+
+openswan (2.1.1-3) unstable; urgency=low
+
+  * Also build the openswan-modules-source and kernel-patch-openswan
+    packages now.
+  * Fixed _startklips in combination with the native IPSec stack - many thanks
+    to Nate Carlson for the patch.
+
+ -- Rene Mayrhofer <rene@mayrhofer.eu.org>  Wed, 31 Mar 2004 19:33:49 +0200
+
 openswan (2.1.1-2) unstable; urgency=low
 
   * Took the package as official maintainer.

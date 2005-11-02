@@ -58,7 +58,7 @@ fi
 
 echo "FREESWANDIR=\$BUILDTOP"                                      >>$umlsetup
 echo "REGULARHOSTS='sunrise sunset nic sec beet carrot'"           >>$umlsetup
-echo "FREESWANHOSTS='east west japan road'"                        >>$umlsetup
+echo "OPENSWANHOSTS='east west japan road north'"                  >>$umlsetup
 
 # setup regression test recording area.
 REGRESSRESULTS=${REGRESSTREE}/${BRANCH}/${YEAR}/${MONTH}/${TODAY} export REGRESSRESULTS
@@ -71,7 +71,7 @@ perl -e 'print time()."\n";' >${REGRESSRESULTS}/datestamp
 
 cd $BUILDSPOOL/${TOPMODULE} && make check
 
-perl $BUILDSPOOL/${TOPMODULE}/testing/utils/regress-summarize-results.pl $REGRESSRESULTS
+perl $BUILDSPOOL/${TOPMODULE}/testing/utils/regress-summarize-results.pl $REGRESSRESULTS notest
 
 
 

@@ -1,57 +1,105 @@
-<html><head><title>Opportunistic Encryption using The Internet Key Exchange (IKE)</title>
-<STYLE type='text/css'>
-    .title { color: #990000; font-size: 22px; line-height: 22px; font-weight: bold; text-align: right;
-             font-family: helvetica, arial, sans-serif }
-    .filename { color: #666666; font-size: 18px; line-height: 28px; font-weight: bold; text-align: right;
-                  font-family: helvetica, arial, sans-serif }
-    p.copyright { color: #000000; font-size: 10px;
-                  font-family: verdana, charcoal, helvetica, arial, sans-serif }
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en"><head><title>Opportunistic Encryption using The Internet Key Exchange (IKE)</title>
+<meta name="description" content="Opportunistic Encryption using The Internet Key Exchange (IKE)">
+<meta name="generator" content="xml2rfc v1.22 (http://xml.resource.org/)">
+<style type='text/css'>
+<!--
+    body {
+        font-family: verdana, charcoal, helvetica, arial, sans-serif;
+        font-size: small ; color: #000000 ; background-color: #ffffff ; }
+    .title { color: #990000; font-size: x-large ;
+        font-weight: bold; text-align: right;
+        font-family: helvetica, monaco, "MS Sans Serif", arial, sans-serif;
+        background-color: transparent; }
+    .filename { color: #666666; font-size: 18px; line-height: 28px;
+        font-weight: bold; text-align: right;
+        font-family: helvetica, arial, sans-serif;
+        background-color: transparent; }
+    td.rfcbug { background-color: #000000 ; width: 30px ; height: 30px ; 
+        text-align: justify; vertical-align: middle ; padding-top: 2px ; }
+    td.rfcbug span.RFC { color: #666666; font-weight: bold; text-decoration: none;
+        background-color: #000000 ;
+        font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+        font-size: x-small ; }
+    td.rfcbug span.hotText { color: #ffffff; font-weight: normal; text-decoration: none;
+        text-align: center ;
+        font-family: charcoal, monaco, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+        font-size: x-small ; background-color: #000000; }
+
+     A { font-weight: bold; }
+     A:link { color: #990000; background-color: transparent ; }
+     A:visited { color: #333333; background-color: transparent ; }
+     A:active { color: #333333; background-color: transparent ; }
+
     p { margin-left: 2em; margin-right: 2em; }
-    li { margin-left: 3em;  }
-    ol { margin-left: 2em; margin-right: 2em; }
+    p.copyright { font-size: x-small ; }
+    p.toc { font-size: small ; font-weight: bold ; margin-left: 3em ;}
+
+    span.emph { font-style: italic; }
+    span.strong { font-weight: bold; }
+    span.verb { font-family: "Courier New", Courier, monospace ; }
+
+    ol.text { margin-left: 2em; margin-right: 2em; }
     ul.text { margin-left: 2em; margin-right: 2em; }
-    pre { margin-left: 3em; color: #333333 }
-    ul.toc { color: #000000; line-height: 16px;
-             font-family: verdana, charcoal, helvetica, arial, sans-serif }
-    H3 { color: #333333; font-size: 16px; line-height: 16px; font-family: helvetica, arial, sans-serif }
-    H4 { color: #000000; font-size: 14px; font-family: helvetica, arial, sans-serif }
-    TD.header { color: #ffffff; font-size: 10px; font-family: arial, helvetica, san-serif; valign: top }
-    TD.author-text { color: #000000; font-size: 10px;
-                     font-family: verdana, charcoal, helvetica, arial, sans-serif }
-    TD.author { color: #000000; font-weight: bold; margin-left: 4em; font-size: 10px; font-family: verdana, charcoal, helvetica, arial, sans-serif }
-     A:link { color: #990000; font-weight: bold;
-              font-family: MS Sans Serif, verdana, charcoal, helvetica, arial, sans-serif }
-     A:visited { color: #333333; font-weight: bold;
-                 font-family: MS Sans Serif, verdana, charcoal, helvetica, arial, sans-serif }
-     A:name { color: #333333; font-weight: bold;
-              font-family: MS Sans Serif, verdana, charcoal, helvetica, arial, sans-serif }
-    .link2 { color:#ffffff; font-weight: bold; text-decoration: none;
-             font-family: monaco, charcoal, geneva, MS Sans Serif, helvetica, monotype, verdana, sans-serif;
-             font-size: 9px }
-    .RFC { color:#666666; font-weight: bold; text-decoration: none;
-           font-family: monaco, charcoal, geneva, MS Sans Serif, helvetica, monotype, verdana, sans-serif;
-           font-size: 9px }
-    .hotText { color:#ffffff; font-weight: normal; text-decoration: none;
-               font-family: charcoal, monaco, geneva, MS Sans Serif, helvetica, monotype, verdana, sans-serif;
-               font-size: 9px }
+    li { margin-left: 3em;  }
+
+    pre { margin-left: 3em; color: #333333;  background-color: transparent;
+        font-family: "Courier New", Courier, monospace ; font-size: small ;
+        }
+
+    h3 { color: #333333; font-size: medium ;
+        font-family: helvetica, arial, sans-serif ;
+        background-color: transparent; }
+    h4 { font-size: small; font-family: helvetica, arial, sans-serif ; }
+
+    table.bug { width: 30px ; height: 15px ; }
+    td.bug { color: #ffffff ; background-color: #990000 ;
+        text-align: center ; width: 30px ; height: 15px ;
+         }
+    td.bug A.link2 { color: #ffffff ; font-weight: bold;
+        text-decoration: none;
+        font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, sans-serif;
+        font-size: x-small ; background-color: transparent }
+
+    td.header { color: #ffffff; font-size: x-small ;
+        font-family: arial, helvetica, sans-serif; vertical-align: top;
+        background-color: #666666 ; width: 33% ; }
+    td.author { font-weight: bold; margin-left: 4em; font-size: x-small ; }
+    td.author-text { font-size: x-small; }
+    table.data { vertical-align: top ; border-collapse: collapse ;
+        border-style: solid solid solid solid ;
+        border-color: black black black black ;
+        font-size: small ; text-align: center ; }
+    table.data th { font-weight: bold ;
+        border-style: solid solid solid solid ;
+        border-color: black black black black ; }
+    table.data td {
+        border-style: solid solid solid solid ;
+        border-color: #333333 #333333 #333333 #333333 ; }
+
+    hr { height: 1px }
+-->
 </style>
 </head>
-<body bgcolor="#ffffff" text="#000000" alink="#000000" vlink="#666666" link="#990000">
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
-<table width="66%" border="0" cellpadding="0" cellspacing="0"><tr><td><table width="100%" border="0" cellpadding="2" cellspacing="1">
-<tr valign="top"><td width="33%" bgcolor="#666666" class="header">Independent submission</td><td width="33%" bgcolor="#666666" class="header">M. Richardson</td></tr>
-<tr valign="top"><td width="33%" bgcolor="#666666" class="header">Internet-Draft</td><td width="33%" bgcolor="#666666" class="header">SSW</td></tr>
-<tr valign="top"><td width="33%" bgcolor="#666666" class="header">Expires: November 19, 2003</td><td width="33%" bgcolor="#666666" class="header">D. Redelmeier</td></tr>
-<tr valign="top"><td width="33%" bgcolor="#666666" class="header">&nbsp;</td><td width="33%" bgcolor="#666666" class="header">Mimosa</td></tr>
-<tr valign="top"><td width="33%" bgcolor="#666666" class="header">&nbsp;</td><td width="33%" bgcolor="#666666" class="header">May 21, 2003</td></tr>
+<body>
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
+<table summary="layout" width="66%" border="0" cellpadding="0" cellspacing="0"><tr><td><table summary="layout" width="100%" border="0" cellpadding="2" cellspacing="1">
+<tr><td class="header">Independent submission</td><td class="header">M. Richardson</td></tr>
+<tr><td class="header">Internet-Draft</td><td class="header">SSW</td></tr>
+<tr><td class="header">Expires: July 21, 2005</td><td class="header">D. Redelmeier</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">Mimosa</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">January 20, 2005</td></tr>
 </table></td></tr></table>
-<div align="right"><font face="monaco, MS Sans Serif" color="#990000" size="+3"><b><br><span class="title">Opportunistic Encryption using The Internet Key Exchange (IKE)</span></b></font></div>
-<div align="right"><font face="monaco, MS Sans Serif" color="#666666" size="+2"><b><span class="filename">draft-richardson-ipsec-opportunistic-11.txt</span></b></font></div>
-<font face="verdana, helvetica, arial, sans-serif" size="2">
+<div align="right"><span class="title"><br />Opportunistic Encryption using The Internet Key Exchange (IKE)</span></div>
+<div align="right"><span class="title"><br />draft-richardson-ipsec-opportunistic-17.txt</span></div>
 
 <h3>Status of this Memo</h3>
 <p>
-This document is an Internet-Draft and is in full conformance with all provisions of Section 10 of RFC2026.</p>
+By submitting this Internet-Draft,
+I certify that any applicable patent or other IPR claims of which
+I am aware have been disclosed,
+and any of which I become aware will be disclosed,
+in accordance with RFC 3667.</p>
 <p>
 Internet-Drafts are working documents of the Internet Engineering
 Task Force (IETF), its areas, and its working groups.
@@ -69,24 +117,20 @@ The list of current Internet-Drafts can be accessed at
 The list of Internet-Draft Shadow Directories can be accessed at
 <a href='http://www.ietf.org/shadow.html'>http://www.ietf.org/shadow.html</a>.</p>
 <p>
-This Internet-Draft will expire on November 19, 2003.</p>
+This Internet-Draft will expire on July 21, 2005.</p>
 
 <h3>Copyright Notice</h3>
 <p>
-Copyright (C) The Internet Society (2003). All Rights Reserved.</p>
+Copyright (C) The Internet Society (2005). All Rights Reserved.</p>
 
 <h3>Abstract</h3>
 
 <p>
-This document describes opportunistic encryption (OE) using the Internet Key
-Exchange (IKE) and IPsec.  
-Each system administrator adds new
-resource records to his or her Domain Name System (DNS) to support
-opportunistic encryption. The objective is to allow encryption for secure communication without
+This document describes opportunistic encryption (OE) as designed
+and implemented by the Linux FreeS/WAN project. OE uses the Internet
+Key Exchange (IKE) and IPsec protocols.
+The objective is to allow encryption for secure communication without
 any pre-arrangement specific to the pair of systems involved.
-  
-</p>
-<p>
 DNS is used to distribute the public keys of each
 system involved. This is resistant to passive attacks. The use of DNS
 Security (DNSSEC) secures this system against active attackers as well. 
@@ -94,57 +138,122 @@ Security (DNSSEC) secures this system against active attackers as well.
 </p>
 <p>
 As a result, the administrative overhead is reduced
-from the square of the number of systems to a linear dependence, and it becomes  
-possible to make secure communication the default even
+from the square of the number of systems to a linear dependence, and
+it becomes possible to make secure communication the default even
 when the partner is not known in advance.
   
-</p>
-<p>
-This document is offered up as an Informational RFC.
-  
-</p><a name="toc"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+</p><a name="toc"></a><br /><hr />
 <h3>Table of Contents</h3>
-<ul compact class="toc">
-<b><a href="#anchor1">1.</a>&nbsp;
-Introduction<br></b>
-<b><a href="#anchor6">2.</a>&nbsp;
-Overview<br></b>
-<b><a href="#anchor13">3.</a>&nbsp;
-Specification<br></b>
-<b><a href="#anchor31">4.</a>&nbsp;
-Impacts on IKE<br></b>
-<b><a href="#anchor38">5.</a>&nbsp;
-DNS issues<br></b>
-<b><a href="#anchor42">6.</a>&nbsp;
-Network address translation interaction<br></b>
-<b><a href="#anchor46">7.</a>&nbsp;
-Host implementations<br></b>
-<b><a href="#anchor47">8.</a>&nbsp;
-Multi-homing<br></b>
-<b><a href="#anchor48">9.</a>&nbsp;
-Failure modes<br></b>
-<b><a href="#anchor52">10.</a>&nbsp;
-Unresolved issues<br></b>
-<b><a href="#anchor54">11.</a>&nbsp;
-Examples<br></b>
-<b><a href="#securityconsiderations">12.</a>&nbsp;
-Security considerations<br></b>
-<b><a href="#anchor79">13.</a>&nbsp;
-IANA Considerations<br></b>
-<b><a href="#anchor80">14.</a>&nbsp;
-Acknowledgments<br></b>
-<b><a href="#rfc.references1">&#167;</a>&nbsp;
-Normative references<br></b>
-<b><a href="#rfc.authors">&#167;</a>&nbsp;
-Authors' Addresses<br></b>
-<b><a href="#rfc.copyright">&#167;</a>&nbsp;
-Full Copyright Statement<br></b>
-</ul>
-<br clear="all">
+<p class="toc">
+<a href="#anchor1">1.</a>&nbsp;
+Introduction<br />
+<a href="#anchor2">1.1</a>&nbsp;
+Motivation<br />
+<a href="#anchor3">1.2</a>&nbsp;
+Encryption Regimes<br />
+<a href="#anchor4">1.3</a>&nbsp;
+Peer authentication in opportunistic encryption<br />
+<a href="#anchor5">1.4</a>&nbsp;
+Use of RFC2119 terms<br />
+<a href="#anchor6">2.</a>&nbsp;
+Overview<br />
+<a href="#anchor7">2.1</a>&nbsp;
+Reference diagram<br />
+<a href="#anchor8">2.2</a>&nbsp;
+Terminology<br />
+<a href="#anchor9">2.3</a>&nbsp;
+Model of operation<br />
+<a href="#anchor13">3.</a>&nbsp;
+Protocol Specification<br />
+<a href="#anchor14">3.1</a>&nbsp;
+Forwarding plane state machine<br />
+<a href="#initclasses">3.2</a>&nbsp;
+Keying Daemon -- initiator<br />
+<a href="#anchor25">3.3</a>&nbsp;
+Keying Daemon - responder<br />
+<a href="#teardown">3.4</a>&nbsp;
+Renewal and teardown<br />
+<a href="#anchor31">4.</a>&nbsp;
+Impacts on IKE<br />
+<a href="#anchor32">4.1</a>&nbsp;
+ISAKMP/IKE protocol<br />
+<a href="#anchor33">4.2</a>&nbsp;
+Gateway discovery process<br />
+<a href="#anchor34">4.3</a>&nbsp;
+Self identification<br />
+<a href="#anchor35">4.4</a>&nbsp;
+Public key retrieval process<br />
+<a href="#anchor36">4.5</a>&nbsp;
+Interactions with DNSSEC<br />
+<a href="#anchor37">4.6</a>&nbsp;
+Required proposal types<br />
+<a href="#anchor38">5.</a>&nbsp;
+DNS issues<br />
+<a href="#KEY">5.1</a>&nbsp;
+Use of KEY record<br />
+<a href="#TXT">5.2</a>&nbsp;
+Use of TXT delegation record<br />
+<a href="#fqdn">5.3</a>&nbsp;
+Use of FQDN IDs<br />
+<a href="#anchor41">5.4</a>&nbsp;
+Key roll-over<br />
+<a href="#anchor42">6.</a>&nbsp;
+Network address translation interaction<br />
+<a href="#anchor43">6.1</a>&nbsp;
+Co-located NAT/NAPT<br />
+<a href="#anchor44">6.2</a>&nbsp;
+Security Gateway behind NAT/NAPT<br />
+<a href="#anchor45">6.3</a>&nbsp;
+End System is behind a NAT/NAPT<br />
+<a href="#anchor46">7.</a>&nbsp;
+Host implementations<br />
+<a href="#anchor47">8.</a>&nbsp;
+Multi-homing<br />
+<a href="#anchor48">9.</a>&nbsp;
+Failure modes<br />
+<a href="#anchor49">9.1</a>&nbsp;
+DNS failures<br />
+<a href="#anchor50">9.2</a>&nbsp;
+DNS configured, IKE failures<br />
+<a href="#anchor51">9.3</a>&nbsp;
+System reboots<br />
+<a href="#anchor52">10.</a>&nbsp;
+Unresolved issues<br />
+<a href="#anchor53">10.1</a>&nbsp;
+Control of reverse DNS<br />
+<a href="#anchor54">11.</a>&nbsp;
+Examples<br />
+<a href="#anchor55">11.1</a>&nbsp;
+Clear-text usage (permit policy)<br />
+<a href="#anchor56">11.2</a>&nbsp;
+Opportunistic encryption<br />
+<a href="#securityconsiderations">12.</a>&nbsp;
+Security considerations<br />
+<a href="#anchor57">12.1</a>&nbsp;
+Configured vs opportunistic tunnels<br />
+<a href="#anchor58">12.2</a>&nbsp;
+Firewalls versus Opportunistic Tunnels<br />
+<a href="#anchor59">12.3</a>&nbsp;
+Denial of service<br />
+<a href="#anchor60">13.</a>&nbsp;
+IANA Considerations<br />
+<a href="#anchor61">14.</a>&nbsp;
+Intellectual Property Claims<br />
+<a href="#anchor62">15.</a>&nbsp;
+Acknowledgments<br />
+<a href="#rfc.references1">&#167;</a>&nbsp;
+Normative references<br />
+<a href="#rfc.references2">&#167;</a>&nbsp;
+Non-normative references<br />
+<a href="#rfc.authors">&#167;</a>&nbsp;
+Authors' Addresses<br />
+<a href="#rfc.copyright">&#167;</a>&nbsp;
+Intellectual Property and Copyright Statements<br />
+</p>
+<br clear="all" />
 
-<a name="anchor1"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+<a name="anchor1"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.1"></a><h3>1.&nbsp;Introduction</h3>
 
 <a name="rfc.section.1.1"></a><h4><a name="anchor2">1.1</a>&nbsp;Motivation</h4>
@@ -160,15 +269,18 @@ Once this is done, any two such nodes can communicate securely.
 </p>
 <p>
 This document describes opportunistic encryption as designed and
-mostly implemented by the Linux FreeS/WAN project.
-For project information, see http://www.freeswan.org.
+implemented by the Linux FreeS/WAN project in revisions up and including 2.00.
+Note that 2.01 and beyond implements <a href="#RFC3445" title="Massey, D. and S. Rose, Limiting the Scope of the KEY Resource Record (RR), December 2002."quot;">[RFC3445]</a> in a backward compatible way.
+A future document <a href="#IPSECKEY" title="Richardson, M., A Method for Storing IPsec Keying Material in DNS, July 2004."quot;">[IPSECKEY]</a>
+will describe a variation that complies with RFC3445.
+For project information, see http://www.freeswan.org. 
 
 </p>
 <p>
 The Internet Architecture Board (IAB) and Internet Engineering
 Steering Group (IESG) have taken a strong stand that the Internet
 should use powerful encryption to provide security and
-privacy <a href="#RFC1984">[4]</a>.
+privacy <a href="#RFC1984" title="IAB, IESG, Carpenter, B. and F. Baker, IAB and IESG Statement on Cryptographic Technology and the Internet, August 1996."quot;">[RFC1984]</a>.
 The Linux FreeS/WAN project attempts to provide a practical means to implement this policy. 
   
 </p>
@@ -211,31 +323,40 @@ The term S/WAN is a trademark of RSA Data Systems, and is used with permission
 by this project.
   
 </p>
-<a name="rfc.section.1.2"></a><h4><a name="anchor3">1.2</a>&nbsp;Types of network traffic</h4>
+<a name="rfc.section.1.2"></a><h4><a name="anchor3">1.2</a>&nbsp;Encryption Regimes</h4>
 
 <p>
-    To aid in understanding the relationship between security processing and IPsec
-    we divide network traffic into four categories:
-    
+    To aid in understanding the relationship between security processing
+    and IPsec we divide policies controlling network traffic into four
+    categories. The traffic is categorized by destination
+    address using longest prefix match. Each category is therefore 
+    enumerated by a set of network prefixes. The categories are mutually
+    exclusive - a particular prefix should only occur in one category.
+
+    </p>
 <blockquote class="text"><dl>
 <dt>* Deny:</dt>
-<dd> networks to which traffic is always forbidden.
+<dd> network prefixes to which traffic is always forbidden.
 </dd>
 <dt>* Permit:</dt>
-<dd> networks to which traffic in the clear is permitted.
+<dd> network prefixes to which traffic in the clear is permitted.
 </dd>
 <dt>* Opportunistic tunnel:</dt>
-<dd> networks to which traffic is encrypted if possible, but otherwise is in the clear  
-	    or fails depending on the default policy in place.	
+<dd> network prefixes to which traffic is encrypted if possible, when it otherwise might be sent in the clear. 
       
 </dd>
 <dt>* Configured tunnel:</dt>
-<dd> networks to which traffic must be encrypted, and traffic in the clear is never permitted.
+<dd> networks prefixes which traffic
+must be encrypted, and traffic in the clear is never permitted.
+A traditionally defined Virtual Private Network (VPN) is a form of
+configured tunnel. 
+
 </dd>
-</dl></blockquote><p>
-</p>
+</dl></blockquote>
+
 <p>
-Traditional firewall devices handle the first two categories. No authentication is required.
+Traditional firewall devices handle the first two categories.
+No authentication is required.  
 The permit policy is currently the default on the Internet. 
 
 </p>
@@ -245,18 +366,15 @@ proposed as the new default for the Internet.
 
 </p>
 <p>
-  Category four, encrypt traffic or drop it, requires authentication of the
-  end points. As the number of end points is typically bounded and is typically
+  Category four's policy is a very strict, "encrypt it or drop it" policy,
+requires authentication of the end points. As the number of end points is
+typically bounded and is typically 
   under a single authority, arranging for distribution of
   authentication material, while difficult, does not require any new
-  technology. The mechanism described here provides an additional way to
-  distribute the authentication materials, that of a public key method that does not
-  require deployment of an X.509 based infrastructure.  
-
-</p>
-<p>
-Current Virtual Private Networks can often be replaced by an "OE paranoid"
-policy as described herein. 
+  technology. The mechanism described here, however, does provides an
+additional way to distribute the authentication materials, that of a
+public key method that does not require deployment of an X.509 based
+infrastructure.   
 
 </p>
 <a name="rfc.section.1.3"></a><h4><a name="anchor4">1.3</a>&nbsp;Peer authentication in opportunistic encryption</h4>
@@ -281,8 +399,8 @@ policy as described herein.
 Although a useful mode, anonymous encryption is not the goal of this
 project. Simpler methods are available that can achieve anonymous
 encryption only, but authentication of the peer is a desireable goal.
-The latter is achieved through key distribution in DNS, leveraging upon
-the authentication of the DNS in DNSSEC.
+Authentication of the peer is achieved through key distribution in
+DNS, leveraging upon the authentication of the DNS in DNSSEC.
 
 </p>
 <p>
@@ -291,7 +409,7 @@ determines how much trust to extend when DNSSEC is not available.
   
 </p>
 <p>
-  However, an essential premise of building private connections with
+  An essential premise of building private connections with
   strangers is that datagrams received through opportunistic tunnels
   are no more special than datagrams that arrive in the clear.
   Unlike in a VPN, these datagrams should not be given any special
@@ -310,19 +428,19 @@ determines how much trust to extend when DNSSEC is not available.
 <p>
    The keywords MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD,
    SHOULD NOT, RECOMMENDED, MAY, and OPTIONAL, when they appear in this
-   document, are to be interpreted as described in <a href="#RFC2119">[5]</a>
+   document, are to be interpreted as described in <a href="#RFC2119" title="Bradner, S., Key words for use in RFCs to Indicate Requirement Levels, March 1997."quot;">[RFC2119]</a>
 </p>
-<a name="anchor6"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+<a name="anchor6"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.2"></a><h3>2.&nbsp;Overview</h3>
 
 <a name="rfc.section.2.1"></a><h4><a name="anchor7">2.1</a>&nbsp;Reference diagram</h4>
-<br><hr size="1" shade="0">
+<br /><hr />
 <a name="networkdiagram"></a>
 
 <p>The following network diagram is used in the rest of
 		this document as the canonical diagram:
-</p></font><pre>
+</p><pre>
                           [Q]  [R]          
                            .    .              AS2                 
   [A]----+----[SG-A].......+....+.......[SG-B]-------[B]
@@ -332,16 +450,18 @@ determines how much trust to extend when DNSSEC is not available.
   [D]----+----[SG-D].......+....+.......[C] AS3
              
 
-           </pre><font face="verdana, helvetica, arial, sans-serif" size="2">
+           </pre>
 
 <p>
-</p><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Reference Network Diagram&nbsp;</b></font><br></td></tr></table><hr size="1" shade="0">
+</p><table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Reference Network Diagram&nbsp;</b></font><br /></td></tr></table><hr size="1" shade="0">
 
 <p>
     In this diagram, there are four end-nodes: A, B, C and D. 
-    There are three gateways, SG-A, SG-B, SG-D. A, D, SG-A and SG-D are part
-    of the same administrative authority, AS1. SG-A and SG-D are on two different exit
-    paths from organization 1. SG-B/B is an independent organization, AS2.
+    There are three security gateways, SG-A, SG-B, SG-D. A, D, SG-A and
+    SG-D are part 
+    of the same administrative authority, AS1. SG-A and SG-D are on two
+    different exit
+    paths from organization 1. SG-B and B are part of an independent organization, AS2.
     Nodes Q and R are nodes on the Internet. PI is the Public
     Internet ("The Wild").
     
@@ -349,11 +469,18 @@ determines how much trust to extend when DNSSEC is not available.
 <a name="rfc.section.2.2"></a><h4><a name="anchor8">2.2</a>&nbsp;Terminology</h4>
 
 <p>
+Note: The network numbers used in this document are for illustrative
+purposes only.  This document could not use the reserved example
+network numbers of <a href="#RFC3330" title="IANA, Special-Use IPv4 Addresses, September 2002."quot;">[RFC3330]</a> because multiple 
+address ranges were needed.
+  
+</p>
+<p>
   The following terminology is used in this document:
   
 </p>
 <blockquote class="text"><dl>
-<dt>Security gateway:</dt>
+<dt>Security gateway (or simply gateway):</dt>
 <dd> a system that performs IPsec tunnel
     mode encapsulation/decapsulation. [SG-x] in the diagram.
 </dd>
@@ -378,27 +505,10 @@ determines how much trust to extend when DNSSEC is not available.
 <dt>SG-D:</dt>
 <dd> Dave's security gateway. Also Alice's backup security gateway. Internally it is 192.3.0.1, externally it is 192.1.1.6.
 </dd>
-<dt>-</dt>
-<dd> A single dash represents clear-text datagrams.
-</dd>
-<dt>=</dt>
-<dd> An equals sign represents phase 2 (IPsec) cipher-text
-        datagrams.
-</dd>
-<dt>~</dt>
-<dd> A single tilde represents clear-text phase 1 datagrams.
-</dd>
-<dt>#</dt>
-<dd> A hash sign represents phase 1 (IKE) cipher-text
-        datagrams.
-</dd>
-<dt>.</dt>
-<dd> A period represents an untrusted network of unknown
-        type.
-</dd>
 <dt>Configured tunnel:</dt>
 <dd> a tunnel that
-		  is directly and deliberately hand configured on participating gateways.
+		  is directly and deliberately hand configured on participating 
+		  gateways.
 		  Configured tunnels are typically given a higher level of
 		  trust than opportunistic tunnels.
 </dd>
@@ -417,12 +527,12 @@ determines how much trust to extend when DNSSEC is not available.
 <dt>Opportunistic encryption:</dt>
 <dd>
 	the process of encrypting a session with authenticated knowledge of
-	who the other parties are.
+	who the other party is.
 </dd>
 <dt>Lifetime:</dt>
 <dd>
         the period in seconds (bytes or datagrams) for which a security
-	association will remain alive before needing to be re-keyed.
+	association will remain alive before rekeying is needed.
 </dd>
 <dt>Lifespan:</dt>
 <dd>
@@ -444,15 +554,17 @@ determines how much trust to extend when DNSSEC is not available.
 </dd>
 <dt>NAT:</dt>
 <dd> Network Address Translation
-    (see <a href="#RFC2663">[20]</a>).
+    (see <a href="#RFC2663" title="Srisuresh, P. and M. Holdrege, IP Network Address Translator (NAT) Terminology and Considerations, August 1999."quot;">[RFC2663]</a>).
 </dd>
 <dt>NAPT:</dt>
 <dd> Network Address and Port Translation
-    (see <a href="#RFC2663">[20]</a>).
+    (see <a href="#RFC2663" title="Srisuresh, P. and M. Holdrege, IP Network Address Translator (NAT) Terminology and Considerations, August 1999."quot;">[RFC2663]</a>).
 </dd>
 <dt>AS:</dt>
-<dd> an autonomous system (AS) is a group of systems (a network) that
-		are under the administrative control of a single organization.
+<dd> an autonomous system 
+</dd>
+<dt>FQDN:</dt>
+<dd> Fully-Qualified Domain Name 
 </dd>
 <dt>Default-free zone:</dt>
 <dd> 
@@ -462,14 +574,14 @@ determines how much trust to extend when DNSSEC is not available.
     not matching any route will be dropped by such a router.
     
 </dd>
-</dl></blockquote><p>
+</dl></blockquote>
 <a name="rfc.section.2.3"></a><h4><a name="anchor9">2.3</a>&nbsp;Model of operation</h4>
 
 <p>
 The opportunistic encryption security gateway (OE gateway) is a regular
-gateway node as described in <a href="#RFC0791">[2]</a> section 2.4 and  
-<a href="#RFC1009">[3]</a> with the additional capabilities described here and
-in <a href="#RFC2401">[7]</a>.  
+gateway node as described in <a href="#RFC0791" title="Postel, J., Internet Protocol, September 1981."quot;">[RFC0791]</a> section 2.4 and  
+<a href="#RFC1009" title="Braden, R. and J. Postel, Requirements for Internet gateways, June 1987."quot;">[RFC1009]</a> with the additional capabilities described here and
+in <a href="#RFC2401" title="Kent, S. and R. Atkinson, Security Architecture for the Internet Protocol, November 1998."quot;">[RFC2401]</a>.  
 The algorithm described here provides a way to determine, for each datagram,
 whether or not to encrypt and tunnel the datagram. Two important things
 that must be determined are whether or not to encrypt and tunnel and, if
@@ -482,7 +594,7 @@ so, the destination address or name of the tunnel end point which should be used
 The OE gateway determines whether or not to create a tunnel based on 
 the destination address of each packet. Upon receiving a packet with a destination
 address not recently seen, the OE gateway performs a lookup in DNS for an
-authorization resource record (see <a href="#TXT">Use of TXT delegation record</a>). The record is located using
+authorization resource record (see <a href="#TXT">Section 5.2</a>). The record is located using
 the IP address to perform a search in the in-addr.arpa (IPv4) or ip6.arpa
 (IPv6) maps. If an authorization record is found, the OE gateway 
 interprets this as a request for a tunnel to be formed.
@@ -504,7 +616,7 @@ resource record for the end point address or name.
 </p>
 <p>
 Origin and integrity protection of the resource records is provided by 
-DNSSEC (<a href="#RFC2535">[16]</a>). <a href="#nodnssec">Restriction on unauthenticated TXT delegation records</a>
+DNSSEC (see <a href="#RFC2535" title="Eastlake, D., Domain Name System Security Extensions, March 1999."quot;">[RFC2535]</a>). <a href="#nodnssec">Section 3.2.4.1</a>
 documents an optional restriction on the tunnel end point if DNSSEC signatures
 are not available for the relevant records. 
 
@@ -522,50 +634,84 @@ without additional delay.
 <p>
 Successful negotiation of OE instantiates a new security association. 
 Failure to negotiate OE results in creation of a 
-forwarding policy entry either to drop or transmit in the clear future
-datagrams. This negative cache is necessary to avoid the possibly lengthy process of repeatedly looking 
-up the same information.
+forwarding policy entry either to deny or permit transmission in the
+clear future datagrams. This negative cache is necessary to avoid the
+possibly lengthy process of repeatedly looking  up the same information.
 
 </p>
 <p>
-The cache is timed out periodically, as described in <a href="#teardown">Renewal and teardown</a>.
+The cache is timed out periodically, as described in <a href="#teardown">Section 3.4</a>.
 This removes entries that are no longer
 being used and permits the discovery of changes in authorization policy.
 
 </p>
-<a name="anchor13"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
-<a name="rfc.section.3"></a><h3>3.&nbsp;Specification</h3>
+<a name="anchor13"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.3"></a><h3>3.&nbsp;Protocol Specification</h3>
 
 <p>
 The OE gateway is modeled to have a forwarding plane and a control
-plane. A control channel, such as PF_KEY, connects the two planes. 
-(See <a href="#RFC2367">[6]</a>.)
-The forwarding plane performs per datagram operations. The control plane
-contains a keying 
-daemon, such as ISAKMP/IKE, and performs all authorization, peer authentication and
-key derivation functions.  
+plane. A control channel, such as PF_KEY <a href="#RFC2367" title="McDonald, D., Metz, C. and B. Phan, PF_KEY Key Management API, Version 2, July 1998."quot;">[RFC2367]</a>,
+connects the two planes.  
 
 </p>
-<a name="rfc.section.3.1"></a><h4><a name="anchor14">3.1</a>&nbsp;Datagram state machine</h4>
+<p>
+The forwarding plane performs per datagram operations. The control plane
+contains a keying daemon, such as ISAKMP/IKE, and performs all
+authorization, peer authentication and key derivation functions.   
+
+</p>
+<a name="rfc.section.3.1"></a><h4><a name="anchor14">3.1</a>&nbsp;Forwarding plane state machine</h4>
 
 <p>
 Let the OE gateway maintain a collection of objects -- a superset of the
-security policy database (SPD) specified in <a href="#RFC2401">[7]</a>. For
+security policy database (SPD) specified in <a href="#RFC2401" title="Kent, S. and R. Atkinson, Security Architecture for the Internet Protocol, November 1998."quot;">[RFC2401]</a>. For
 each combination of source and destination address, an SPD
 object exists in one of five following states.
-Prior to forwarding each datagram, the
-responder uses the source and destination addresses to pick an entry from the SPD.
+Prior to forwarding each datagram, the responder uses the source and
+destination addresses to pick an entry from the SPD. 
 The SPD then determines if and how the packet is forwarded.
 
-</p>
+</p><pre>
+      .--------------. 	 
+      | non-existant |
+      |    policy    |
+      `--------------'
+             |        
+             | PF_ACQUIRE
+             |           
+             |&lt;---------.
+             V          | new packet
+      .--------------.  | (maybe resend PF_ACQUIRE)
+      |  hold policy |--'                          
+      |              |--.                          
+      `--------------'   \  pass                   
+         |        |       \ msg    .---------.     
+         |        |        \       V         | forward
+         |        |         .-------------.  | packet 
+  create |        |         | pass policy |--'       
+  IPsec  |        |         `-------------'          
+  SA     |        |                                  
+         |         \                                 
+         |          \                                
+         V           \ deny                         
+   .---------.        \ msg                          
+   | encrypt |         \                             
+   | policy  |          \         ,---------.        
+   `---------'           \        |         | discard
+                          \       V         | packet 
+                           .-------------.  |        
+                           | deny policy |--'        
+                           `-------------'          
+</pre>
+
 <a name="rfc.section.3.1.1"></a><h4><a name="anchor15">3.1.1</a>&nbsp;Non-existent policy</h4>
 
 <p>
-If the responder does not find an entry, then this policy applies.
-The responder creates an entry with an initial state of "hold policy" and requests 
-keying material from the keying daemon. The responder does not forward the datagram,
-rather it attaches the datagram to the SPD entry as the  "first" datagram and retains it
+If the gateway does not find an entry, then this policy applies.
+The gateway creates an entry with an initial state of "hold policy" and requests 
+keying material from the keying daemon. The gateway does not forward the datagram,
+rather it SHOULD attach the datagram to the SPD entry as the  "first" datagram and retain it 
 for eventual transmission in a new state. 
 
 
@@ -573,41 +719,46 @@ for eventual transmission in a new state.
 <a name="rfc.section.3.1.2"></a><h4><a name="anchor16">3.1.2</a>&nbsp;Hold policy</h4>
 
 <p>
-The responder requests keying material. If the interface to the keying
+The gateway requests keying material. If the interface to the keying
 system is lossy (PF_KEY, for instance, can be), the implementation 
 SHOULD include a mechanism to retransmit the
 keying request at a rate limited to less than 1 request per second.
-The responder does not forward the datagram. It attaches the 
+The gateway does not forward the datagram. The gateway SHOULD attach the 
 datagram to the SPD entry as the "last" datagram where it is retained 
-for eventual transmission. If there is
-a datagram already so stored, then that already stored datagram is discarded.
+for eventual transmission.
+If there is a datagram already so stored, then that already stored datagram is discarded.
 
 </p>
 <p>
-Because the "first" datagram is probably a TCP SYN packet, the 
-responder retains the "first" datagram in an attempt to avoid waiting for a
-TCP retransmit. The responder retains the "last"
-datagram in deference to streaming protocols that find it useful to know
-how much data has been lost. These are recommendations to 
-decrease latency. There are no operational requirements for this.
+The rationale behind saving the the "first" and "last" datagrams are
+as follows: 
+The "first" datagram is probably a TCP SYN packet. Once there is keying
+established, the gateway will release this datagram, avoiding the need 
+for the end-point to retransmit the datagram. In the case where the
+connection was not a TCP connection, but was instead a streaming
+protocol or a DNS request, the "last" datagram that was retained is
+likely the most recent data. The difference between "first" and "last"
+may also help the end-points determine 
+which data was dropped while negotiation took place.  
 
 </p>
 <a name="rfc.section.3.1.3"></a><h4><a name="anchor17">3.1.3</a>&nbsp;Pass-through policy</h4>
 
 <p>
-The responder forwards the datagram using the normal forwarding table. 
-The responder enters this state only by command from the keying daemon, 
+The gateway forwards the datagram using the normal forwarding table. 
+The gateway enters this state only by command from the keying daemon, 
 and upon entering this state, also forwards the "first" and "last" datagrams.
 
 </p>
 <a name="rfc.section.3.1.4"></a><h4><a name="anchor18">3.1.4</a>&nbsp;Deny policy</h4>
 
 <p>
-The responder discards the datagram. The responder enters this state only by
+The gateway discards the datagram. The gateway enters this state only by
 command  
 from the keying daemon, and upon entering this state, discards the "first"
-and "last" datagrams.  
-Local administration decides if further datagrams cause ICMP messages
+and "last" datagrams.
+An implementation MAY provide the administator with a control to determine
+if further datagrams cause ICMP messages
 to be generated (i.e. ICMP Destination Unreachable, Communication
 Administratively Prohibited. type=3, code=13). 
 
@@ -615,8 +766,8 @@ Administratively Prohibited. type=3, code=13).
 <a name="rfc.section.3.1.5"></a><h4><a name="anchor19">3.1.5</a>&nbsp;Encrypt policy</h4>
 
 <p>
-The responder encrypts the datagram using the indicated security association database
-(SAD) entry.  The responder enters this state only by command from the keying daemon, and upon entering
+The gateway encrypts the datagram using the indicated security association database
+(SAD) entry.  The gateway enters this state only by command from the keying daemon, and upon entering
 this state, releases and forwards the "first" and "last" datagrams using the
 new encrypt policy.  
 
@@ -628,17 +779,17 @@ the entry returns to the Hold policy, and an expire message is sent to the keyin
 </p>
 <p>
 All states may be created directly by the keying daemon while acting as a
-responder. 
+gateway. 
 
 </p>
-<a name="rfc.section.3.2"></a><h4><a name="initclasses">3.2</a>&nbsp;Keying state machine - initiator</h4>
+<a name="rfc.section.3.2"></a><h4><a name="initclasses">3.2</a>&nbsp;Keying Daemon -- initiator</h4>
 
 <p>
 Let the keying daemon maintain a collection of objects. Let them be
 called "connections" or "conn"s. There are two categories of
 connection objects: classes and instances. A class represents an
-abstract policy - what could be. An instance represents an actual connection -  
-what is implemented at the time.
+abstract policy - what could be. An instance represents an actual
+connection - what is running at the time.
 
 </p>
 <p>
@@ -651,9 +802,11 @@ a corresponding SPD and SAD entry maintained by the datagram state machine.
 For the purposes of opportunistic encryption, there MUST, at least, be
 connection classes known as "deny", "always-clear-text", "OE-permissive", and 
 "OE-paranoid".  
-The latter two connection classes define a set of source and/or destination
-addresses for which opportunistic encryption will be attempted. The administrator MAY set policy
-options in a number of additional places.  An implementation MAY create additional connection classes to further refine
+
+The latter two connection classes define a set of destination
+prefixes for which opportunistic encryption will be attempted. 
+The administrator MAY set policy options in a number of additional places.
+An implementation MAY create additional connection classes to further refine
 these policies.
 
 </p>
@@ -665,20 +818,38 @@ simplest policy is to try opportunistic encryption with all destinations.
 
 </p>
 <p>
-The distinction between permissive and paranoid OE use will become clear 
-in the state transition differences. In general a permissive OE will, on
-failure, install a pass-through policy, while a paranoid OE will, on failure, 
-install a drop policy.
+This simplest policy SHOULD be offered as a preconfigured default.
+
+</p>
+<p>
+The distinction between permissive and paranoid Opportunistic
+Encryption ("OE-paranoid" below) use will become clear in the state
+transition differences. 
+
+</p>
+<p>
+In brief, an OE-permissive policy means to permit traffic to flow in
+the clear, when there is a failure to find and/or use the encryption
+keys. OE-permissive permits the network to function, even if in an
+insecure manner.
+
+</p>
+<p>
+A paranoid OE ("OE-paranoid"") will, on failure, install a drop
+policy. OE-paranoid permits traffic to flow only when appropriate
+security is available.
 
 </p>
 <p>
 In this description of the keying machine's state transitions, the states
-associated with the keying system itself are omitted because they are best documented in the keying system 
-(<a href="#RFC2407">[8]</a>, 
-<a href="#RFC2408">[9]</a> and <a href="#RFC2409">[10]</a> for ISAKMP/IKE),
+associated with the keying system itself are omitted because they are
+best documented in the keying system 
+(<a href="#RFC2407" title="Piper, D., The Internet IP Security Domain of Interpretation for ISAKMP, November 1998."quot;">[RFC2407]</a>, 
+<a href="#RFC2408" title="Maughan, D., Schneider, M. and M. Schertler, Internet Security Association and Key Management Protocol (ISAKMP), November 1998."quot;">[RFC2408]</a> and <a href="#RFC2409" title="Harkins, D. and D. Carrel, The Internet Key Exchange (IKE), November 1998."quot;">[RFC2409]</a> for ISAKMP/IKE),
 and the details are keying system specific. Opportunistic encryption is not
 dependent upon any specific keying protocol, but this document does provide
-requirements for those using ISAKMP/IKE to assure that implementations inter-operate.
+requirements for those using ISAKMP/IKE to assure that implementations
+inter-operate.
 
 </p>
 <p>
@@ -691,16 +862,83 @@ set of states required for message sends and completion notifications.
 Finally, the retransmits and recursive lookups that are normal for DNS are 
 not included in this description of the state machine.
 
-</p>
+</p><pre>
+
+                        |
+                        | PF_ACQUIRE
+                        |     
+                        V
+                .---------------.       
+                |  non-existant |
+                |  connection   |
+                `---------------'
+                 |      |      |
+          send   ,      |      \
+expired   pass  /       |       \ send
+conn.     msg  /        |        \ deny
+  ^           /         |         \ msg
+  |          V          | do       \ 		 
+.---------------.       | DNS       \   .---------------.  
+|  clear-text   |       | lookup     `-&gt;|     deny      |---&gt; expired
+|  connection   |       | for           |  connection   |     connection
+`---------------'       | destination   `---------------'
+   ^ ^                  |                   ^
+   | | no record        |                   |
+   | | OE-permissive    V                   | no record
+   | |            .---------------.         | OE-paranoid
+   | `------------|  potential OE |---------'
+   |              |  connection   |         ^
+   |              `---------------'         |
+   |                    |                   |
+   |                    | got TXT record    | DNSSEC failure
+   |                    | reply             |
+   |                    V                   | wrong 
+   |              .---------------.         | failure
+   |              |  authenticate |---------'
+   |              | &amp; parse TXT RR|         ^
+   | repeated     `---------------'         |
+   | ICMP               |                   |
+   | failures           | initiate IKE to   |                         
+   | (short-timeout)    | responder         |                         
+   |                    V                   |                          
+   | phase-2      .---------------.         | failure                       
+   | failure      |   pending     |---------'                          
+   | (normal      |     OE        |         ^                          
+   |  timeout)    |               |invalid  | phase-2 fail (normal-timeout)
+   |              |               |&lt;--.SPI  | ICMP failures (short timeout)
+   |              |               |   |     |                          
+   |              | +=======+     |---'     |                          
+   |              | |  IKE  |     |   ^     |                          
+   `----------------| states|---------------'                          
+                  | +=======+     |   |                                
+                  `---------------'   |                                
+                        | IPsec SA    | invalid SPI                    
+                        | established |                                
+                        V             | rekey time                     
+                  .--------------.    |                                
+                  |   keyed      |&lt;---|-------------------------------.
+                  |  connection  |----'                               |
+                  `--------------'                                    |
+                        | timer                                       |
+                        |                                             |
+                        V                                             |
+                  .--------------.     connection still active        |
+  clear-text-----&gt;|   expired    |------------------------------------'
+        deny-----&gt;|  connection  |
+                  `--------------'
+                        | dead connection - deleted
+                        V
+</pre>
+
 <a name="rfc.section.3.2.1"></a><h4><a name="anchor20">3.2.1</a>&nbsp;Nonexistent connection</h4>
 
 <p>
 There is no connection instance for a given source/destination address pair.
 Upon receipt of a request for keying material for this
-source/destination pair, the initiator searches through the connection classes to
-determine the most appropriate policy. Upon determining an appropriate
-connection class, an instance object is created of that type. 
-Both of the OE types result in a potential OE connection.
+source/destination pair, the initiator searches through the connection
+classes to determine the most appropriate policy. Upon determining an
+appropriate connection class, an instance object is created of that
+type.  Both of the OE types result in a potential OE connection.
 
 </p>
 <p>Failure to find an appropriate connection class results in an
@@ -723,7 +961,7 @@ policy object in the forwarding plane for the appropriate flow.
 </p>
 <p>
 Timing out is the only way to leave this state
-(see <a href="#expiring">Expiring connection</a>).
+(see <a href="#expiring">Section 3.2.7</a>).
 
 </p>
 <a name="rfc.section.3.2.3"></a><h4><a name="anchor22">3.2.3</a>&nbsp;Deny connection</h4>
@@ -731,32 +969,33 @@ Timing out is the only way to leave this state
 <p>
 The empty connection makes a transition to this state when a
 deny class is instantiated, or when an OE-paranoid connection fails. 
-During the transition, the initiator creates a deny policy object in the forwarding plane 
-for the appropriate flow.  
+During the transition, the initiator creates a deny policy object in
+the forwarding plane  for the appropriate flow.  
 
 </p>
 <p>
 Timing out is the only way to leave this state 
-(see <a href="#expiring">Expiring connection</a>).
+(see <a href="#expiring">Section 3.2.7</a>).
 
 </p>
-<a name="rfc.section.3.2.4"></a><h4><a name="anchor23">3.2.4</a>&nbsp;Potential OE connection</h4>
+<a name="rfc.section.3.2.4"></a><h4><a name="potentialOE">3.2.4</a>&nbsp;Potential OE connection</h4>
 
 <p>
-The empty connection makes a transition to this state when one of either OE class is instantiated.
-During the transition to this state, the initiator creates a hold policy object in the 
-forwarding plane for the appropriate flow.  
+The empty connection makes a transition to this state when one of
+either OE class is instantiated. 
+During the transition to this state, the initiator creates a hold
+policy object in the forwarding plane for the appropriate flow.  
 
 </p>
 <p>
 In addition, when making a transition into this state, DNS lookup is done in
-the reverse-map for a TXT delegation resource record (see <a href="#TXT">Use of TXT delegation record</a>).
+the reverse-map for a TXT delegation resource record (see <a href="#TXT">Section 5.2</a>).
 The lookup key is the destination address of the flow.
 
 </p>
 <p>
 There are three ways to exit this state: 
-
+</p>
 <ol class="text">
 <li>DNS lookup finds a TXT delegation resource record.
 </li>
@@ -764,17 +1003,17 @@ There are three ways to exit this state:
 </li>
 <li>DNS lookup times out.
 </li>
-</ol><p>
-</p>
+</ol>
+
 <p>
 Based upon the results of the DNS lookup, the potential OE connection makes a
 transition to the pending OE connection state.  The conditions for a
 successful DNS look are:
-
+</p>
 <ol class="text">
 <li>DNS finds an appropriate resource record
 </li>
-<li>It is properly formatted according to <a href="#TXT">Use of TXT delegation record</a>
+<li>It is properly formatted according to <a href="#TXT">Section 5.2</a>
 </li>
 <li> if DNSSEC is enabled, then the signature has been vouched for.
 </li>
@@ -788,9 +1027,10 @@ DNS lookups is considered a success.
 </p>
 <p>
 If DNS lookup does not find a resource record or DNS times out, then the 
-initiator considers the receiver not OE capable. If this is an OE-paranoid instance, 
-then the potential OE connection makes a transition to the deny connection state.
-If this is an OE-permissive instance, then the potential OE connection makes a transition to the
+initiator considers the receiver not OE capable. If this is an
+OE-paranoid instance, then the potential OE connection makes a
+transition to the deny connection state. If this is an OE-permissive
+instance, then the potential OE connection makes a transition to the 
 clear-text connection state.
 
 </p>
@@ -798,7 +1038,7 @@ clear-text connection state.
 If the initiator finds a resource record but it is not properly formatted, or
 if DNSSEC is 
 enabled and reports a failure to authenticate, then the potential OE
-connection should make a 
+connection makes a 
 transition to the deny connection state. This action SHOULD be logged. If the
 administrator wishes to override this transition between states, then an
 always-clear class can be installed for this flow. An implementation MAY make
@@ -817,7 +1057,7 @@ a gateway. When this option is enabled, an active attack on DNS will be
 unable to redirect packets to other than the original destination.
 
 </p>
-<a name="rfc.section.3.2.5"></a><h4><a name="anchor24">3.2.5</a>&nbsp;Pending OE connection</h4>
+<a name="rfc.section.3.2.5"></a><h4><a name="anchor23">3.2.5</a>&nbsp;Pending OE connection</h4>
 
 <p>
 The potential OE connection makes a transition to this state when 
@@ -850,14 +1090,16 @@ without any other communication, or when there is silence from the remote
 end. This usually means that either the gateway is not alive, or the
 keying daemon is not functional. For an OE-permissive connection, the initiator makes a transition
 to the clear-text connection but with a low lifespan. For an OE-pessimistic connection,
-the initiator makes a transition to the deny connection again with a low lifespan. The lifespan in both 
+the initiator makes a transition to the deny connection again with a low lifespan. The
+lifespan in both 
 cases is kept low because the remote gateway may
 be in the process of rebooting or be otherwise temporarily unavailable. 
 
 </p>
 <p>
 The length of time to wait for the remote keying daemon to wake up is
-a matter of some debate. If there is a routing failure, 5 minutes is usually long enough for the network to
+a matter of some debate. If there is a routing failure, 5 minutes is usually long
+enough for the network to
 re-converge. Many systems can reboot in that amount of
 time as well. However, 5 minutes is far too long for most users to wait to
 hear that they can not connect using OE. Implementations SHOULD make this a
@@ -925,7 +1167,7 @@ exercise care.  The initiator should make a cautious
 <p>
 The initiator will periodically place each of the deny, clear-text, and keyed
 connections into this  
-sub-state. See <a href="#teardown">Renewal and teardown</a> for more details of how often this
+sub-state. See <a href="#teardown">Section 3.4</a> for more details of how often this
 occurs. 
 The initiator queries the forwarding plane for last use time of the
 appropriate 
@@ -940,7 +1182,7 @@ the expired connection state.
 The DNS query and answer that lead to the expiring connection state are also
 examined. The DNS query may become stale. (A negative, i.e. no such record, answer
 is valid for the period of time given by the MINIMUM field in an attached SOA 
-record. See <a href="#RFC1034">[12]</a> section 4.3.4.)
+record. See <a href="#RFC1034" title="Mockapetris, P., Domain names - concepts and facilities, November 1987."quot;">[RFC1034]</a> section 4.3.4.)
 If the DNS query is stale, then a new query is made. If the results change, then the connection 
 makes a transition to a new state as described in potential OE connection state.
 
@@ -955,7 +1197,7 @@ Also note that the policy at the forwarding plane is not updated unless there
 is a conclusion that there should be a change.
 
 </p>
-<a name="rfc.section.3.2.8"></a><h4><a name="anchor25">3.2.8</a>&nbsp;Expired connection</h4>
+<a name="rfc.section.3.2.8"></a><h4><a name="anchor24">3.2.8</a>&nbsp;Expired connection</h4>
 
 <p>
 Entry to this state occurs when no datagrams have been forwarded recently via the
@@ -966,7 +1208,7 @@ connection instance in the keying plane is deleted.
 </p>
 <p>
 The initiator sends an ISAKMP/IKE delete to clean up the phase 2 SAs as described in
-<a href="#teardown">Renewal and teardown</a>. 
+<a href="#teardown">Section 3.4</a>. 
 
 </p>
 <p>
@@ -978,7 +1220,7 @@ the phase 1 SAs until they expire - they may prove useful again in the
 near future.
 
 </p>
-<a name="rfc.section.3.3"></a><h4><a name="anchor26">3.3</a>&nbsp;Keying state machine - responder</h4>
+<a name="rfc.section.3.3"></a><h4><a name="anchor25">3.3</a>&nbsp;Keying Daemon - responder</h4>
 
 <p>
 The responder has a set of objects identical to those of the initiator.
@@ -987,21 +1229,66 @@ The responder has a set of objects identical to those of the initiator.
 <p>
 The responder receives an invitation to create a keying channel from an initiator. 
 
-</p>
-<a name="rfc.section.3.3.1"></a><h4><a name="anchor27">3.3.1</a>&nbsp;Unauthenticated OE peer</h4>
+</p><pre>
+                |
+                | IKE main mode 
+                |  phase 1
+                V
+        .-----------------.  
+        | unauthenticated | 
+        |     OE peer     |
+        `-----------------'
+                |
+                | lookup KEY RR in in-addr.arpa 
+                |             (if ID_IPV4_ADDR)
+                | lookup KEY RR in forward
+                |             (if ID_FQDN)
+                V
+        .-----------------.  RR not found
+        |   received DNS  |---------------&gt; log failure
+        |     reply       | 
+        `----+--------+---'
+     phase 2 |        \      misformatted 
+    proposal |         `------------------&gt; log failure
+             V
+    .----------------.
+    |  authenticated |  identical initiator 
+    |     OE peer    |--------------------&gt; initiator 
+    `----------------'  connection found    state machine
+         |
+         | look for TXT record for initiator
+         |
+         V  
+   .---------------.
+   |  authorized   |---------------------&gt; log failure
+   |    OE peer    |
+   `---------------'
+         |
+         |
+         V
+    potential OE
+    connection in
+    initiator state
+	machine
+
+
+$Id: draft-richardson-ipsec-opportunistic.html,v 1.24 2005/01/20 21:39:27 mcr Exp $
+</pre>
+
+<a name="rfc.section.3.3.1"></a><h4><a name="anchor26">3.3.1</a>&nbsp;Unauthenticated OE peer</h4>
 
 <p>
-Upon entering this state, the responder starts a DNS lookup for a KEY record for the
-initiator. 
-The responder looks in the reverse-map for a KEY record for the initiator if the
-initiator has offered an ID_IPV4_ADDR, and in the forward map if the
-initiator has offered an ID_FQDN type. (See <a href="#RFC2407">[8]</a> section 
+Upon entering this state, the responder starts a DNS lookup for a KEY
+record for the initiator. 
+The responder looks in the reverse-map for a KEY record for the
+initiator if the initiator has offered an ID_IPV4_ADDR, and in the
+forward map if the initiator has offered an ID_FQDN type. (See <a href="#RFC2407" title="Piper, D., The Internet IP Security Domain of Interpretation for ISAKMP, November 1998."quot;">[RFC2407]</a> section  
 4.6.2.1.)
 
 </p>
 <p>
-The responder exits this state upon successful receipt of a KEY from DNS, and use of the key 
-to verify the signature of the initiator.
+The responder exits this state upon successful receipt of a KEY from
+DNS, and use of the key to verify the signature of the initiator.
 
 </p>
 <p>
@@ -1010,30 +1297,40 @@ authenticated OE Peer state.
 
 </p>
 <p>
-Note that the unauthenticated OE peer state generally occurs in the middle of the key negotiation
-protocol. It is really a form of pseudo-state.
+Note that the unauthenticated OE peer state generally occurs in the
+middle of the key negotiation protocol. It is really a form of pseudo-state.
 
 </p>
-<a name="rfc.section.3.3.2"></a><h4><a name="anchor28">3.3.2</a>&nbsp;Authenticated OE Peer</h4>
+<a name="rfc.section.3.3.2"></a><h4><a name="anchor27">3.3.2</a>&nbsp;Authenticated OE Peer</h4>
 
 <p>
-The peer will eventually propose one or more phase 2 SAs. The responder uses the source and
-destination address in the proposal to 
-finish instantiating the connection state
-using the connection class table.
+The peer will eventually propose one or more phase 2 SAs. The
+responder uses the source and destination address in the proposal to 
+finish instantiating the connection state using the connection class table.
 The responder MUST search for an identical connection object at this point. 
 
 </p>
 <p> 
-If an identical connection is found, then the responder deletes the old instance, 
-and the new object makes a transition to the pending OE connection state. This means
-that new ISAKMP connections with a given peer will always use the latest
-instance, which is the correct one if the peer has rebooted in the interim.
+If an identical connection is found, then the responder deletes the
+old instance, and the new object makes a transition to the pending OE
+connection state. This means that new ISAKMP connections with a given
+peer will always use the latest instance, which is the correct one if
+the peer has rebooted in the interim. 
 
 </p>
 <p> 
-If an identical connection is not found, then the responder makes the transition according to the 
-rules given for the initiator.
+If an identical connection is not found, then the responder makes the
+transition according to the rules given for the initiator - it
+installs appropriate policy: clear, drop, or OE. 
+
+</p>
+<p>
+If OE, and the phase 2 ID (source IP) is different than the phase 1 
+ID, then additional authorization is required. 
+A TXT record associated with the phase 2 source IP proposed is
+requested. This is used to confirm authorization for the phase 1
+identity to encrypt on behalf of the phase 2. Successful retrieval
+results in a transition to "Authorized OE Peer"
 
 </p>
 <p> 
@@ -1042,6 +1339,14 @@ either always-clear-text or deny, then no communication is possible according
 to policy. An implementation is permitted to create new types of policies 
 such as "accept OE but do not initiate it". This is a local matter.
  
+</p>
+<a name="rfc.section.3.3.3"></a><h4><a name="anchor28">3.3.3</a>&nbsp;Authorized OE Peer</h4>
+
+<p>
+This state is entered from the Authenticated OE Peer state, upon
+successful retrieval of the TXT record. The contents of the record are
+confirmed - any failures lead to errors, as in <a href="#potentialOE">Section 3.2.4</a>.
+
 </p>
 <a name="rfc.section.3.4"></a><h4><a name="teardown">3.4</a>&nbsp;Renewal and teardown</h4>
 
@@ -1065,13 +1370,13 @@ recreate the keying channel SA will be unable to use this method.
 
 </p>
 <p>
-The tunnel expiry method, simply allows the IKE daemon to
+The tunnel expiry method simply allows the IKE daemon to
 expire normally without attempting to re-key it.
 
 </p>
 <p>
-Regardless of which method is used to remove tunnels, the implementation requires 
-a method to determine if the tunnel is still in use.  The specifics are a
+Regardless of which method is used to remove tunnels, the implementation MUST
+use a method to determine if the tunnel is still in use.  The specifics are a
 local matter, but  the FreeS/WAN project uses the following criteria. These
 criteria are currently implemented in the key management daemon, but could
 also be implemented at the SPD layer using an idle timer.
@@ -1091,7 +1396,7 @@ tunnel is not in use, then close the tunnel.
 </p>
 <p>
 The expiring state in the key management
-system (see <a href="#expiring">Expiring connection</a>) implements these timeouts.
+system (see <a href="#expiring">Section 3.2.7</a>) implements these timeouts.
 The timer above may be in the forwarding plane, 
 but then it must be re-settable. 
 
@@ -1160,8 +1465,8 @@ for the outgoing SAs) rather than waiting for them to expire. This
 reduces clutter and minimizes confusion for the operator doing diagnostics.
 
 </p>
-<a name="anchor31"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+<a name="anchor31"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.4"></a><h3>4.&nbsp;Impacts on IKE</h3>
 
 <a name="rfc.section.4.1"></a><h4><a name="anchor32">4.1</a>&nbsp;ISAKMP/IKE protocol</h4>
@@ -1222,7 +1527,7 @@ all timeout in series.
       (ADSL, cable-modem) connections. In these situations, a fully qualified domain
       name that is under the control of SG-A's administrator may be used
       when acting as an initiator only.
-      The FQDN ID should be used in phase 1. See <a href="#fqdn">Use of FQDN IDs</a>
+      The FQDN ID should be used in phase 1. See <a href="#fqdn">Section 5.3</a>
       for more details and restrictions.
   
 </p>
@@ -1272,8 +1577,8 @@ all timeout in series.
 <p>
 	The initiator MUST offer at least one proposal using some combination
 	of: 3DES, HMAC-MD5 or HMAC-SHA1, DH group 2 or 5. Group 5 SHOULD be
-	proposed first.
-	<a href="#RFC3526">[11]</a>
+	proposed first. (See <a href="#RFC3526" title="Kivinen, T. and M. Kojo, More Modular Exponential (MODP) Diffie-Hellman groups for Internet Key Exchange (IKE), May 2003."quot;">[RFC3526]</a>)
+      
 </p>
 <p>
 	The initiator MAY offer additional proposals, but the cipher MUST not
@@ -1288,16 +1593,19 @@ all timeout in series.
       
 </p>
 <p>
-        SG-A SHOULD use an ID_IPV4_ADDR (ID_IPV6_ADDR for IPv6) of the external
-        interface of SG-A for phase 1. (There is an exception, see <a href="#fqdn">Use of FQDN IDs</a>.) The authentication method MUST be RSA public key signatures. 
-        The RSA key for SG-A SHOULD be placed into a DNS KEY record in
-	the reverse space of SG-A (i.e. using in-addr.arpa).
+        The initiator SHOULD use an ID_IPV4_ADDR (ID_IPV6_ADDR for IPv6) of the external
+        interface of the initiator for phase 1. (There is an exception, see <a href="#fqdn">Section 5.3</a>.) The authentication method MUST be RSA public key signatures. 
+        The RSA key for the initiator SHOULD be placed into a DNS KEY record in
+	the reverse space of the initiator (i.e. using in-addr.arpa or
+        ip6.arpa).
       
 </p>
 <a name="rfc.section.4.6.2"></a><h4><a name="phase2id">4.6.2</a>&nbsp;Phase 2 parameters</h4>
 
 <p>
-        SG-A MUST propose a tunnel between Alice and Bob, using 3DES-CBC
+        The initiator MUST propose a tunnel between the ultimate
+        sender ("Alice" or "A") and ultimate recipient ("Bob" or "B")
+        using 3DES-CBC
         mode, MD5 or SHA1 authentication. Perfect Forward Secrecy MUST be specified.
       
 </p>
@@ -1310,32 +1618,32 @@ all timeout in series.
       
 </p>
 <p>
-        Authorization for SG-A to act on Alice's behalf is determined by
-        looking for a TXT record in the reverse-map at Alice's address.
+        Authorization for the initiator to act on Alice's behalf is determined by
+        looking for a TXT record in the reverse-map at Alice's IP address.
       
 </p>
 <p>
-        Compression SHOULD NOT be mandatory. It may be offered as an option.
+        Compression SHOULD NOT be mandatory. It MAY be offered as an option.
       
 </p>
-<a name="anchor38"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+<a name="anchor38"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.5"></a><h3>5.&nbsp;DNS issues</h3>
 
 <a name="rfc.section.5.1"></a><h4><a name="KEY">5.1</a>&nbsp;Use of KEY record</h4>
 
 <p>
-    In order to establish their own identities, SG-A and SG-B SHOULD publish
+    In order to establish their own identities, security gateways SHOULD publish
     their public keys in their reverse DNS via 
     DNSSEC's KEY record.
-    See section 3 of <a href="#RFC2535">RFC 2535</a>[16].
+    See section 3 of <a href="#RFC2535" title="Eastlake, D., Domain Name System Security Extensions, March 1999."quot;">RFC 2535</a>[RFC2535].
   
 </p>
 <p>
 <p>For example:
-</p></font><pre>
+</p><pre>
 KEY 0x4200 4 1 AQNJjkKlIk9...nYyUkKK8
-</pre><font face="verdana, helvetica, arial, sans-serif" size="2">
+</pre>
 
 <blockquote class="text"><dl>
 <dt>0x4200:</dt>
@@ -1352,11 +1660,11 @@ KEY 0x4200 4 1 AQNJjkKlIk9...nYyUkKK8
 <dd>An RSA key is present.
 </dd>
 <dt>AQNJjkKlIk9...nYyUkKK8:</dt>
-<dd>The public key of the host as described in <a href="#RFC3110">[17]</a>.
+<dd>The public key of the host as described in <a href="#RFC3110" title="Eastlake, D., RSA/SHA-1 SIGs and RSA KEYs in the Domain Name System (DNS), May 2001."quot;">[RFC3110]</a>.
 </dd>
-</dl></blockquote><p>
-</p>
-<p>Use of several KEY records allows for key rollover. The SIG Payload in
+</dl></blockquote>
+
+<p>Use of several KEY records allows for key roll-over. The SIG Payload in
   IKE phase 1 SHOULD be accepted if the public key given by any KEY RR
   validates it.
   
@@ -1364,41 +1672,41 @@ KEY 0x4200 4 1 AQNJjkKlIk9...nYyUkKK8
 <a name="rfc.section.5.2"></a><h4><a name="TXT">5.2</a>&nbsp;Use of TXT delegation record</h4>
 
 <p>
-Alice publishes a TXT record to provide authorization for SG-A to act on
-Alice's behalf. 
+If, for example, machine Alice wishes SG-A to act on her behalf, then
+she publishes a TXT record to provide authorization for SG-A to act on
+Alice's behalf. Similarly for Bob and SG-B.
 
-Bob publishes a TXT record to provide authorization for SG-B to act on Bob's
-behalf.  
-
-These records are located in the reverse DNS (in-addr.arpa) for their
-respective IP addresses.  The reverse DNS SHOULD be secured by DNSSEC, when
-it is deployed. DNSSEC is required to defend against active attacks.
+</p>
+<p>
+These records are located in the reverse DNS (in-addr.arpa or ip6.arpa) for their
+respective IP addresses.  The reverse DNS SHOULD be secured by DNSSEC.
+DNSSEC is required to defend against active attacks.
     
 </p>
 <p>
       If Alice's address is P.Q.R.S, then she can authorize another node to
       act on her behalf by publishing records at:
            </p>
-</font><pre>
+<pre>
 S.R.Q.P.in-addr.arpa
-          </pre><font face="verdana, helvetica, arial, sans-serif" size="2">
+          </pre>
 <p>
 
 </p>
 <p>
     The contents of the resource record are expected to be a string that
-    uses the following syntax, as suggested in <a href="#RFC1464">[15]</a>.
+    uses the following syntax, as suggested in <a href="#RFC1464" title="Rosenbaum, R., Using the Domain Name System To Store Arbitrary String Attributes, May 1993."quot;">RFC1464</a>[RFC1464].
     (Note that the reply to query may include other TXT resource
     records used by other applications.)
 
-    <br><hr size="1" shade="0">
+    <br /><hr />
 <a name="txtformat"></a>
 </p>
-</font><pre>
+<pre>
 X-IPsec-Server(P)=A.B.C.D KEY
-          </pre><font face="verdana, helvetica, arial, sans-serif" size="2">
+          </pre>
 <p>
-<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Format of reverse delegation record&nbsp;</b></font><br></td></tr></table><hr size="1" shade="0">
+<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Format of reverse delegation record&nbsp;</b></font><br /></td></tr></table><hr size="1" shade="0">
 
 </p>
 <blockquote class="text"><dl>
@@ -1420,11 +1728,10 @@ X-IPsec-Server(P)=A.B.C.D KEY
       reverse-map of A.B.C.D. The key is transmitted in base64 format.
       
 </dd>
-</dl></blockquote><p>
+</dl></blockquote>
 <p>
-  	The pieces of the record are separated by any whitespace
-	(space, tab, newline, carriage return). An ASCII space SHOULD
-	be used.
+  	The fields of the record MUST be separated by whitespace. This
+        MAY be: space, tab, newline, or carriage return. A space is preferred.
     
 </p>
 <p>
@@ -1432,14 +1739,14 @@ X-IPsec-Server(P)=A.B.C.D KEY
 	security gateway that has no fixed address (or no control over its
 	reverse-map), then Alice may delegate to a public key by domain name.
 
-    <br><hr size="1" shade="0">
+    <br /><hr />
 <a name="txtfqdnformat"></a>
 </p>
-</font><pre>
+<pre>
 X-IPsec-Server(P)=@FQDN KEY
-          </pre><font face="verdana, helvetica, arial, sans-serif" size="2">
+          </pre>
 <p>
-<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Format of reverse delegation record (FQDN version)&nbsp;</b></font><br></td></tr></table><hr size="1" shade="0">
+<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Format of reverse delegation record (FQDN version)&nbsp;</b></font><br /></td></tr></table><hr size="1" shade="0">
 
 </p>
 <blockquote class="text"><dl>
@@ -1456,7 +1763,7 @@ X-IPsec-Server(P)=@FQDN KEY
 <dd> Is the encoded RSA Public key of the Security
       Gateway. 
 </dd>
-</dl></blockquote><p>
+</dl></blockquote>
 <p>
 	If there is more than one such TXT record with strongest (lowest
 	numbered) precedence, one Security Gateway is picked arbitrarily from
@@ -1466,9 +1773,9 @@ X-IPsec-Server(P)=@FQDN KEY
 <a name="rfc.section.5.2.1"></a><h4><a name="anchor39">5.2.1</a>&nbsp;Long TXT records</h4>
 
 <p>
-  When packed into transport format, TXT records which are longer than 255
+  When packed into wire-format, TXT records which are longer than 255
   characters are divided into smaller &lt;character-strings&gt;.
-  (See <a href="#RFC1035">[13]</a> section 3.3 and 3.3.14.) These MUST
+  (See <a href="#RFC1035" title="Mockapetris, P., Domain names - implementation and specification, November 1987."quot;">[RFC1035]</a> section 3.3 and 3.3.14.) These MUST
   be reassembled into a single string for processing.
   Whitespace characters in the base64 encoding are to be ignored.
   
@@ -1487,13 +1794,13 @@ and an algorithm field which could be used to
 	it is just for identities. Other uses have been discouraged.
   
 </p>
-<p> OPT resource records, as defined in <a href="#RFC2671">[14]</a> are not 
+<p> OPT resource records, as defined in <a href="#RFC2671" title="Vixie, P., Extension Mechanisms for DNS (EDNS0), August 1999."quot;">[RFC2671]</a> are not 
   intended to be used for storage of information. They are not to be loaded, 
 	cached or forwarded.  They are, therefore, inappropriate for use here.
   
 </p>
 <p>
-    CERT records <a href="#RFC2538">[18]</a> can encode almost any set of
+    CERT records <a href="#RFC2538" title="Eastlake, D. and O. Gudmundsson, Storing Certificates in the Domain Name System (DNS), March 1999."quot;">[RFC2538]</a> can encode almost any set of
     information. A custom type code could be used permitting any suitable
     encoding to be stored, not just X.509.  According to
     the RFC, the certificate RRs are to be signed internally which may add undesirable 
@@ -1540,7 +1847,7 @@ and unnecessary bulk. Larger DNS records may require TCP instead of UDP transfer
       is no need for this when initiating only. 
 </p>
 <p>However, Alice must still delegate to  herself if she wishes others to
-       initiate OE to her.  See <a href="#txtfqdnformat">Format of reverse delegation record (FQDN version)</a>.
+       initiate OE to her.  See <a href="#txtfqdnformat">Figure 3</a>.
     
 </p>
 <a name="rfc.section.5.4"></a><h4><a name="anchor41">5.4</a>&nbsp;Key roll-over</h4>
@@ -1571,8 +1878,8 @@ the end which is creating the signature (possesses the private key) that
 determines which key is to be used.
 
 </p>
-<a name="anchor42"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+<a name="anchor42"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.6"></a><h3>6.&nbsp;Network address translation interaction</h3>
 
 <p>
@@ -1588,12 +1895,12 @@ determines which key is to be used.
 <a name="rfc.section.6.1"></a><h4><a name="anchor43">6.1</a>&nbsp;Co-located NAT/NAPT</h4>
 
 <p>
-       If SG-A is also performing network address translation on
-       behalf of Alice, then the packet should be translated prior to
+       If a security gateway is also performing network address translation on
+       behalf of an end-system, then the packet should be translated prior to
        being subjected to opportunistic encryption. This is in contrast to
        typically configured tunnels which often exist to bridge islands of 
-       private network address space. SG-A will use the translated source
-       address for phase 2, and so SG-B will look up that address to
+       private network address space. The security gateway will use the translated source
+       address for phase 2, and so the responding security gateway will look up that address to
        confirm SG-A's authorization. 
     
 </p>
@@ -1603,7 +1910,8 @@ determines which key is to be used.
         Placing of TXT records is possible.
     
 </p>
-<p> In the case of NAPT (m:1), the address will be SG-A. The ability to get
+<p> In the case of NAPT (m:1), the address will be the security
+        gateway itself. The ability to get
         KEY and TXT records in place will again depend upon whether or not
 	there is administrative control over the reverse-map. This is
 	identical to situations involving a single host acting on behalf of
@@ -1613,30 +1921,31 @@ determines which key is to be used.
 	initiators only.
     
 </p>
-<a name="rfc.section.6.2"></a><h4><a name="anchor44">6.2</a>&nbsp;SG-A behind NAT/NAPT</h4>
+<a name="rfc.section.6.2"></a><h4><a name="anchor44">6.2</a>&nbsp;Security Gateway behind NAT/NAPT</h4>
 
 <p>
-       If there is a NAT or NAPT between SG-A and SG-B, then normal IPsec
-       NAT traversal rules apply. In addition to the transport problem
-       which may be solved by other mechanisms, there
-       is the issue of what phase 1 and phase 2 IDs to use. While FQDN could
-       be used during phase 1 for SG-A, there is no appropriate ID for phase 2
-	that permits SG-B to determine that SG-A is in fact authorized to speak for Alice. 
+       If there is a NAT or NAPT between the security gateways, then normal IPsec
+       NAT traversal problems occur. In addition to the transport problem
+       which may be solved by other mechanisms, there is the issue of
+       what phase 1 and phase 2 IDs to use. While FQDN could
+       be used during phase 1 for the security gateway, there is no appropriate ID for phase 2.
+       Due to the NAT, the end systems live in different IP address spaces.
     
 </p>
-<a name="rfc.section.6.3"></a><h4><a name="anchor45">6.3</a>&nbsp;Bob is behind a NAT/NAPT</h4>
+<a name="rfc.section.6.3"></a><h4><a name="anchor45">6.3</a>&nbsp;End System is behind a NAT/NAPT</h4>
 
 <p>
-       If Bob is behind a NAT (perhaps SG-B), then there is, in fact, no way for
-       Alice to address a packet to Bob. Not only is opportunistic encryption
-       impossible, but it is also impossible for Alice to initiate any
-       communication to Bob. It may be possible for Bob to initiate in such
-       a situation. This creates an asymmetry, but this is common for 
+       If the end system is behind a NAT (perhaps SG-B), then there is, in fact, no way for
+       another end system to address a packet to this end system.
+       Not only is opportunistic encryption
+       impossible, but it is also impossible for any communication to
+       be initiated to the end system. It may be possible for this end
+       system to initiate such communication. This creates an asymmetry, but this is common for 
        NAPT.
     
 </p>
-<a name="anchor46"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+<a name="anchor46"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.7"></a><h3>7.&nbsp;Host implementations</h3>
 
 <p>
@@ -1661,8 +1970,8 @@ determines which key is to be used.
   To respond, Alice/SG-A will still need an entry in Alice's reverse-map.
 
 </p>
-<a name="anchor47"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+<a name="anchor47"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.8"></a><h3>8.&nbsp;Multi-homing</h3>
 
 <p> 
@@ -1672,7 +1981,7 @@ authorization.
 
 </p>
 <p>
-In <a href="#networkdiagram">Reference Network Diagram</a>, Alice has two ways to
+In <a href="#networkdiagram">Figure 1</a>, Alice has two ways to
 exit her network: SG-A and SG-D. Previously SG-D has been ignored. Postulate
 that there are routers between Alice and her set of security gateways
 (denoted by the + signs and the marking of an autonomous system number for
@@ -1690,15 +1999,15 @@ and establish an SA with SG-B.
 <p>
 SG-B has no problem establishing that either of SG-A or SG-D may speak for
 Alice, because Alice has published two equally weighted TXT delegation records:
-    <br><hr size="1" shade="0">
+    <br /><hr />
 <a name="txtmultiexample"></a>
 </p>
-</font><pre>
+<pre>
 X-IPsec-Server(10)=192.1.1.5 AQMM...3s1Q==
 X-IPsec-Server(10)=192.1.1.6 AAJN...j8r9==
-          </pre><font face="verdana, helvetica, arial, sans-serif" size="2">
+          </pre>
 <p>
-<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Multiple gateway delegation example for Alice&nbsp;</b></font><br></td></tr></table><hr size="1" shade="0">
+<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Multiple gateway delegation example for Alice&nbsp;</b></font><br /></td></tr></table><hr size="1" shade="0">
 
 </p>
 <p>
@@ -1727,7 +2036,7 @@ they can not be addressed to Alice directly.
 </p>
 <p>
 SG-B may make a number of choices:
-
+</p>
 <ol class="text">
 <li>It can ignore the problem and round robin among the tunnels. This
       causes losses during times when one or the other security gateway is
@@ -1750,8 +2059,8 @@ second one while still retaining the incoming portions of both. SG-B can,
 thus, accept datagrams from either SG-A or SG-D, but
 send only to the gateway that most recently re-keyed with it.
 </li>
-</ol><p>
-</p>
+</ol>
+
 <p>
 Local policy determines which choice SG-B makes. Note that even if SG-B has perfect
 knowledge about the reachability of SG-A and SG-D, Alice may not be reachable
@@ -1765,8 +2074,8 @@ being considered. The multi-homing aspects of OE are not well developed and may
 be the subject of a future document.
 
 </p>
-<a name="anchor48"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+<a name="anchor48"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.9"></a><h3>9.&nbsp;Failure modes</h3>
 
 <a name="rfc.section.9.1"></a><h4><a name="anchor49">9.1</a>&nbsp;DNS failures</h4>
@@ -1774,7 +2083,7 @@ be the subject of a future document.
 <p>
   If a DNS server fails to respond, local policy decides
   whether or not to permit communication in the clear as embodied in
-  the connection classes in <a href="#initclasses">Keying state machine - initiator</a>.
+  the connection classes in <a href="#initclasses">Section 3.2</a>.
   It is easy to mount a denial of service attack on the DNS server
   responsible for a particular network's reverse-map.
   Such an attack may cause all communication with that network to go in
@@ -1837,17 +2146,19 @@ document.
 
 </p>
 <p>
-A deliberate shutdown should include an attempt, using deletes, to notify all other SGs
-currently connected by phase 1 SAs that communication is
-about to fail.  Again, a remote SG will assume this is a teardown.  Attempts by the
-remote SGs to negotiate new tunnels as replacements should be ignored. When possible, 
-SGs should attempt to preserve information about currently-connected SGs in non-volatile storage, so
-that after a crash, an Initial-Contact can be sent to previous partners to
-indicate loss of all previously established connections.
+A deliberate shutdown should include an attempt, using delete
+messagess, to notify all other SGs currently connected by phase 1 SAs
+that communication is about to fail.  Again, a remote SG will assume
+this is a teardown.  Attempts by the remote SGs to negotiate new
+tunnels as replacements should be ignored. When possible,  SGs should
+attempt to preserve information about currently-connected SGs in
+non-volatile storage, so that after a crash, an Initial-Contact can be
+sent to previous partners to indicate loss of all previously
+established connections. 
 
 </p>
-<a name="anchor52"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+<a name="anchor52"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.10"></a><h3>10.&nbsp;Unresolved issues</h3>
 
 <a name="rfc.section.10.1"></a><h4><a name="anchor53">10.1</a>&nbsp;Control of reverse DNS</h4>
@@ -1859,8 +2170,8 @@ indicate loss of all previously established connections.
   of scope.
   
 </p>
-<a name="anchor54"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+<a name="anchor54"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.11"></a><h3>11.&nbsp;Examples</h3>
 
 <a name="rfc.section.11.1"></a><h4><a name="anchor55">11.1</a>&nbsp;Clear-text usage (permit policy)</h4>
@@ -1868,370 +2179,341 @@ indicate loss of all previously established connections.
 <p>
 Two example scenarios follow. In the first example GW-A
 (Gateway A) and GW-B (Gateway B) have always-clear-text policies, and in the second example they have an OE
-policy.
+policy. The clear-text policy serves as a reference for what occurs in
+TCP/IP in the absence of Opportunistic Encryption.
 
-</p><br><hr size="1" shade="0">
-<a name="regulartiming"></a>
-</font><pre>
-  Alice         SG-A       DNS       SG-B           Bob
-   (1)
-    ------(2)-------------->
-    &lt;-----(3)---------------
-   (4)----(5)----->
-                   ----------(6)------>
-                                       ------(7)----->
-                                      &lt;------(8)------
-                   &lt;----------(9)------
-    &lt;----(10)-----
-   (11)----------->
-                   ----------(12)----->
-                                       -------------->
-                                      &lt;---------------
-                   &lt;-------------------
-    &lt;-------------
-          </pre><font face="verdana, helvetica, arial, sans-serif" size="2">
-<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Timing of regular transaction&nbsp;</b></font><br></td></tr></table><hr size="1" shade="0">
 
 <p>
 Alice wants to communicate with Bob. Perhaps she wants to retrieve a
 web page from Bob's web server. In the absence of opportunistic
 encryptors, the following events occur: 
 
-<blockquote class="text"><dl>
-<dt>(1)</dt>
-<dd>Human or application 'clicks' with a name.
-</dd>
-<dt>(2)</dt>
-<dd>Application looks up name in DNS to get IP address.
-</dd>
-<dt>(3)</dt>
-<dd>Resolver returns A record to application.
-</dd>
-<dt>(4)</dt>
-<dd>Application starts a TCP session or UDP session and OS sends datagram.
-</dd>
-<dt>(5)</dt>
-<dd>Datagram is seen at first gateway from Alice (SG-A). (SG-A
-makes a transition through Empty connection to always-clear connection and
-instantiates a pass-through policy at the forwarding plane.)
-</dd>
-<dt>(6)</dt>
-<dd>Datagram is seen at last gateway before Bob (SG-B).
-</dd>
-<dt>(7)</dt>
-<dd>First datagram from Alice is seen by Bob.
-</dd>
-<dt>(8)</dt>
-<dd>First return datagram is sent by Bob.
-</dd>
-<dt>(9)</dt>
-<dd>Datagram is seen at Bob's gateway. (SG-B makes a transition through
-Empty connection to always-clear connection and instantiates a pass-through
-policy at the forwarding plane.)
-</dd>
-<dt>(10)</dt>
-<dd>Datagram is seen at Alice's gateway.
-</dd>
-<dt>(11)</dt>
-<dd>OS hands datagram to application. Alice sends another datagram.
-</dd>
-<dt>(12)</dt>
-<dd>A second datagram traverses the Internet.
-</dd>
-</dl></blockquote><p>
-</p>
+</p><br /><hr />
+<a name="regulartiming"></a>
+<pre>
+  Alice         SG-A       DNS       SG-B           Bob
+   Human or application      
+   'clicks' with a name.     
+   (1)                       
+                             
+    ------(2)--------------&gt; 
+    Application looks up     
+    name in DNS to get       
+    IP address.              
+                             
+    &lt;-----(3)--------------- 
+    Resolver returns "A" RR  
+    to application with IP   
+    address.                  
+                             
+   (4)
+   Application starts a TCP session
+   or UDP session and OS sends
+   first datagram
+
+  Alice         SG-A       DNS       SG-B           Bob
+       ----(5)-----&gt;
+       Datagram is seen at first gateway
+       from Alice (SG-A). 
+
+                   ----------(6)------&gt;
+                   Datagram traverses
+                   network.
+
+                                       ------(7)-----&gt;
+                                       Datagram arrives
+                                       at Bob, is provided
+                                       to TCP.
+
+                                      &lt;------(8)------
+                                       A reply is sent.
+
+                   &lt;----------(9)------
+                   Datagram traverses
+                   network.
+    &lt;----(10)-----
+    Alice receives
+    answer.
+
+  Alice         SG-A       DNS       SG-B           Bob
+   (11)-----------&gt;
+    A second exchange
+    occurs.
+                   ----------(12)-----&gt;
+                                       --------------&gt;
+                                      &lt;---------------
+                   &lt;-------------------
+    &lt;-------------
+          </pre>
+<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Timing of regular transaction&nbsp;</b></font><br /></td></tr></table><hr size="1" shade="0">
+
+
 <a name="rfc.section.11.2"></a><h4><a name="anchor56">11.2</a>&nbsp;Opportunistic encryption</h4>
 
 <p>
 In the presence of properly configured opportunistic encryptors, the
-event list is extended.
+event list is extended. Only changes are annotated.
 
-<br><hr size="1" shade="0">
+</p>
+<p>The following symbols are used in the time-sequence diagram
+</p>
+<p></p>
+<blockquote class="text"><dl>
+<dt>-</dt>
+<dd> A single dash represents clear-text datagrams.
+</dd>
+<dt>=</dt>
+<dd> An equals sign represents phase 2 (IPsec) cipher-text
+        datagrams.
+</dd>
+<dt>~</dt>
+<dd> A single tilde represents clear-text phase 1 datagrams.
+</dd>
+<dt>#</dt>
+<dd> A hash sign represents phase 1 (IKE) cipher-text
+        datagrams.
+</dd>
+</dl></blockquote>
+
+<p><br /><hr />
 <a name="opportunistictiming"></a>
 </p>
-</font><pre>
+<pre>
   Alice          SG-A      DNS       SG-B           Bob
    (1)
-    ------(2)-------------->
+    ------(2)--------------&gt;
     &lt;-----(3)---------------
-   (4)----(5)----->+
-                  ----(5B)->
+   (4)----(5)-----&gt;+
+                  ----(5B)-&gt;
                   &lt;---(5C)--
-                  ~~~~~~~~~~~~~(5D)~~~>
-                  &lt;~~~~~~~~~~~~(5E1)~~~
-                  ~~~~~~~~~~~~~(5E2)~~>
-                  &lt;~~~~~~~~~~~~(5E3)~~~
-                  #############(5E4)##>
-                  &lt;############(5E5)###
-                           &lt;----(5F1)--
-                           -----(5F2)->
-                  #############(5G1)##>
-                           &lt;----(5H1)--
-                           -----(5H2)->
-                  &lt;############(5G2)###
-                  #############(5G3)##>
-                   ============(6)====>
-		                       ------(7)----->
+                  ~~~~~~~~~~~~~(5D)~~~&gt;
+                  &lt;~~~~~~~~~~~~(5E)~~~~
+                  ~~~~~~~~~~~~~(5F)~~~&gt;
+                  &lt;~~~~~~~~~~~~(5G)~~~~
+                  #############(5H)###&gt;
+                           &lt;----(5I)---
+                           -----(5J)--&gt;
+                  &lt;############(5K)####
+                  #############(5L)###&gt;
+                           &lt;----(5M)---
+                           -----(5N)--&gt;
+                  &lt;############(5O)####
+                  #############(5P)###&gt;
+                   ============(6)====&gt;
+                                       ------(7)-----&gt;
                                       &lt;------(8)------
                   &lt;==========(9)======
     &lt;-----(10)----
-   (11)----------->
-                   ==========(12)=====>
-                                       -------------->
+
+   (11)-----------&gt;
+                   ==========(12)=====&gt;
+                                       --------------&gt;
                                       &lt;---------------
                    &lt;===================
     &lt;-------------
-          </pre><font face="verdana, helvetica, arial, sans-serif" size="2">
+          </pre>
 <p>
-<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Timing of opportunistic encryption transaction&nbsp;</b></font><br></td></tr></table><hr size="1" shade="0">
+<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Timing of opportunistic encryption transaction&nbsp;</b></font><br /></td></tr></table><hr size="1" shade="0">
 
-<blockquote class="text"><dl>
-<dt>(1)</dt>
-<dd>Human or application clicks with a name.
-</dd>
-<dt>(2)</dt>
-<dd>Application initiates DNS mapping.
-</dd>
-<dt>(3)</dt>
-<dd>Resolver returns A record to application.
-</dd>
-<dt>(4)</dt>
-<dd>Application starts a TCP session or UDP.
-</dd>
-<dt>(5)</dt>
-<dd>SG-A (host or SG) sees datagram to target, and buffers it.
-</dd>
-<dt>(5B)</dt>
-<dd>SG-A asks DNS for TXT record.
-</dd>
-<dt>(5C)</dt>
-<dd>DNS returns TXT record(s).
-</dd>
-<dt>(5D)</dt>
-<dd>Initial IKE Main Mode Packet goes out.
-</dd>
-<dt>(5E)</dt>
-<dd>IKE ISAKMP phase 1 succeeds.
-</dd>
-<dt>(5F)</dt>
-<dd>SG-B asks DNS for TXT record to prove SG-A is an agent for Alice.
-</dd>
-<dt>(5G)</dt>
-<dd>IKE phase 2 negotiation.
-</dd>
-<dt>(5H)</dt>
-<dd>DNS lookup by responder (SG-B).
-</dd>
-<dt>(6)</dt>
-<dd>Buffered datagram is sent by SG-A.
-</dd>
-<dt>(7)</dt>
-<dd>Datagram is received by SG-B, decrypted, and sent to Bob.
-</dd>
-<dt>(8)</dt>
-<dd>Bob replies, and datagram is seen by SG-B.
-</dd>
-<dt>(9)</dt>
-<dd>SG-B already has tunnel up with SG-A, and uses it.
-</dd>
-<dt>(10)</dt>
-<dd>SG-A decrypts datagram and gives it to Alice.
-</dd>
-<dt>(11)</dt>
-<dd>Alice receives datagram. Sends new packet to Bob.
-</dd>
-<dt>(12)</dt>
-<dd>SG-A gets second datagram, sees that tunnel is up, and uses it.
-</dd>
-</dl></blockquote><p>
 </p>
 <p>
   For the purposes of this section, we will describe only the changes that
-  occur between <a href="#regulartiming">Timing of regular transaction</a> and
-  <a href="#opportunistictiming">Timing of opportunistic encryption transaction</a>. This corresponds to time points 5, 6, 7, 9 and 10 on the list above. 
+  occur between <a href="#regulartiming">Figure 5</a> and
+  <a href="#opportunistictiming">Figure 6</a>. This corresponds to time points 5, 6, 7, 9 and 10 on the list above. 
   
 </p>
-<a name="rfc.section.11.2.1"></a><h4><a name="anchor57">11.2.1</a>&nbsp;(5) IPsec datagram interception</h4>
-
 <p>
     At point (5), SG-A intercepts the datagram because this source/destination pair lacks a policy 
 (the non-existent policy state). SG-A creates a hold policy, and buffers the datagram. SG-A requests keys from the keying daemon. 
     
 </p>
-<a name="rfc.section.11.2.2"></a><h4><a name="anchor58">11.2.2</a>&nbsp;(5B) DNS lookup for TXT record</h4>
-
-<p>
-    SG-A's IKE daemon, having looked up the source/destination pair in the connection
-    class list, creates a new Potential OE connection instance. SG-A starts DNS
-    queries.
-    
-</p>
-<a name="rfc.section.11.2.3"></a><h4><a name="anchor59">11.2.3</a>&nbsp;(5C) DNS returns TXT record(s)</h4>
-
-<p>
-  DNS returns properly formed TXT delegation records, and SG-A's IKE daemon
-  causes this instance to make a transition from Potential OE connection to Pending OE
-  connection.
+<blockquote class="text"><dl>
+<dt>(5B)</dt>
+<dd>DNS query for TXT record.
+</dd>
+<dt>(5C)</dt>
+<dd>DNS response for TXT record.
+</dd>
+<dt>(5D)</dt>
+<dd>Initial IKE message to responder.
+</dd>
+<dt>(5E)</dt>
+<dd> Message 2 of phase 1 exchange.
   
-</p>
-<p>
-      Using the example above, the returned record might contain:
-
-    <br><hr size="1" shade="0">
-<a name="txtexample"></a>
-</p>
-</font><pre>
-X-IPsec-Server(10)=192.1.1.5 AQMM...3s1Q==
-          </pre><font face="verdana, helvetica, arial, sans-serif" size="2">
-<p>
-<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Example of reverse delegation record for Bob&nbsp;</b></font><br></td></tr></table><hr size="1" shade="0">
-
-    with SG-B's IP address and public key listed.
-    
-</p>
-<a name="rfc.section.11.2.4"></a><h4><a name="anchor60">11.2.4</a>&nbsp;(5D) Initial IKE main mode packet goes out</h4>
-
-<p>Upon entering Pending OE connection, SG-A sends the initial ISAKMP
-  message with proposals. See <a href="#phase1id">Phase 1 parameters</a>.
-  
-</p>
-<a name="rfc.section.11.2.5"></a><h4><a name="anchor61">11.2.5</a>&nbsp;(5E1) Message 2 of phase 1 exchange</h4>
-
-<p>
+<dt></dt>
+<dd>
   SG-B receives the message. A new connection instance is created in the
   unauthenticated OE peer state.
   
-</p>
-<a name="rfc.section.11.2.6"></a><h4><a name="anchor62">11.2.6</a>&nbsp;(5E2) Message 3 of phase 1 exchange</h4>
-
-<p>
+</dd>
+</dd>
+<dt>(5F)</dt>
+<dd> Message 3 of phase 1 exchange.
+  
+<dt></dt>
+<dd>
   SG-A sends a Diffie-Hellman exponent. This is an internal state of the
   keying daemon.
   
-</p>
-<a name="rfc.section.11.2.7"></a><h4><a name="anchor63">11.2.7</a>&nbsp;(5E3) Message 4 of phase 1 exchange</h4>
-
-<p>
+</dd>
+</dd>
+<dt>(5G)</dt>
+<dd> Message 4 of phase 1 exchange.
+  
+<dt></dt>
+<dd>
   SG-B responds with a Diffie-Hellman exponent. This is an internal state of the
   keying protocol.
   
-</p>
-<a name="rfc.section.11.2.8"></a><h4><a name="anchor64">11.2.8</a>&nbsp;(5E4) Message 5 of phase 1 exchange</h4>
-
-<p>
+</dd>
+</dd>
+<dt>(5H)</dt>
+<dd> Message 5 of phase 1 exchange.
+  
+<dt></dt>
+<dd>
   SG-A uses the phase 1 SA to send its identity under encryption. 
-  The choice of identity is discussed in <a href="#phase1id">Phase 1 parameters</a>.
+  The choice of identity is discussed in <a href="#phase1id">Section 4.6.1</a>.
   This is an internal state of the keying protocol.
   
-</p>
-<a name="rfc.section.11.2.9"></a><h4><a name="anchor65">11.2.9</a>&nbsp;(5F1) Responder lookup of initiator key</h4>
-
-<p>
+</dd>
+</dd>
+<dt>(5I)</dt>
+<dd>Responder lookup of initiator key.
+  
+<dt></dt>
+<dd>
   SG-B asks DNS for the public key of the initiator. 
   DNS looks for a KEY record by IP address in the reverse-map.
   That is, a KEY resource record is queried for 4.1.1.192.in-addr.arpa
   (recall that SG-A's external address is 192.1.1.4).
-  SG-B uses the resulting public key to authenticate the initiator. See <a href="#KEY">Use of KEY record</a> for further details. 
+  SG-B uses the resulting public key to authenticate the initiator. See <a href="#KEY">Section 5.1</a> for further details. 
   
-</p>
-<a name="rfc.section.11.2.10"></a><h4><a name="anchor66">11.2.10</a>&nbsp;(5F2) DNS replies with public key of initiator</h4>
-
-<p>
+</dd>
+</dd>
+<dt>(5J)</dt>
+<dd> DNS replies with public key of initiator.
+  
+<dt></dt>
+<dd>
 Upon successfully authenticating the peer, the connection instance makes a
 transition to authenticated OE peer on SG-B.
 
-</p>
-<p>
+</dd>
+<dt></dt>
+<dd>
 The format of the TXT record returned is described in
-<a href="#TXT">Use of TXT delegation record</a>. 
+<a href="#TXT">Section 5.2</a>. 
 
-</p>
-<a name="rfc.section.11.2.11"></a><h4><a name="anchor67">11.2.11</a>&nbsp;(5E5) Responder replies with ID and authentication</h4>
-
-<p>
-    SG-B sends its ID along with authentication material. This is an internal
-    state for the keying protocol.
+</dd>
+</dd>
+<dt></dt>
+<dd>Responder replies with ID and authentication.
   
-</p>
-<a name="rfc.section.11.2.12"></a><h4><a name="anchor68">11.2.12</a>&nbsp;(5G) IKE phase 2</h4>
+<dt></dt>
+<dd>
+    SG-B sends its ID along with authentication material, completing
+    the phase 1 negotiation.
+  
+</dd>
+</dd>
+<dt>(5L)</dt>
+<dd>IKE phase 2 negotiation.
 
-<a name="rfc.section.11.2.12.1"></a><h4><a name="anchor69">11.2.12.1</a>&nbsp;(5G1) Initiator proposes tunnel</h4>
-
-<p>
+<dt></dt>
+<dd>
     Having established mutually agreeable authentications (via KEY) and
     authorizations (via TXT), SG-A proposes to create an IPsec tunnel for
-    datagrams transiting from Alice to Bob. This tunnel is established only for 
-    the Alice/Bob combination, not for any subnets that may be behind SG-A and SG-B.
-    
-</p>
-<a name="rfc.section.11.2.12.2"></a><h4><a name="anchor70">11.2.12.2</a>&nbsp;(5H1) Responder determines initiator's authority</h4>
+    datagrams transiting from Alice to Bob. This tunnel is established
+    only for the Alice/Bob combination, not for any subnets that may be
+    behind SG-A and SG-B. 
 
-<p>
+</dd>
+</dd>
+<dt>(5M)</dt>
+<dd>Authorization for SG-A to speak for Alice
+
+<dt></dt>
+<dd>
     While the identity of SG-A has been established, its authority to
     speak for Alice has not yet been confirmed. SG-B does a reverse
     lookup on Alice's address for a TXT record. 
-    
-</p>
-<p>Upon receiving this specific proposal, SG-B's connection instance
-    makes a transition into the potential OE connection state. SG-B may already have an
-    instance, and the check is made as described above.
-</p>
-<a name="rfc.section.11.2.12.3"></a><h4><a name="anchor71">11.2.12.3</a>&nbsp;(5H2) DNS replies with TXT record(s)</h4>
 
-<p>
-      The returned key and IP address should match that of SG-A.
+</dd>
+</dd>
+<dt>(5N)</dt>
+<dd>Responder determines initiator's authority.
     
-</p>
-<a name="rfc.section.11.2.12.4"></a><h4><a name="anchor72">11.2.12.4</a>&nbsp;(5G2) Responder agrees to proposal</h4>
-
-<p>
-    Should additional communication occur between, for instance, Dave and Bob using
-    SG-A and SG-B, a new tunnel (phase 2 SA) would be established. The phase 1 SA
-    may be reusable.
+<dt></dt>
+<dd>
+    A TXT record is returned. It confirms that SG-A is authorized to
+    speak for Alice.
     
-</p>
-<p>SG-A, having successfully keyed the tunnel, now makes a transition from
-    Pending OE connection to Keyed OE connection.
+</dd>
+<dt></dt>
+<dd>Upon receiving this specific proposal, SG-B's connection instance
+    makes a transition into the potential OE connection state. SG-B
+    may already have an instance, and the check is made as described
+    above.
+</dd>
+</dd>
+<dt>(5O)</dt>
+<dd> Responder agrees to proposal.
     
-</p>
-<p>The responder MUST setup the inbound IPsec SAs before sending its reply.
-</p>
-<a name="rfc.section.11.2.12.5"></a><h4><a name="anchor73">11.2.12.5</a>&nbsp;(5G3) Final acknowledgment from initiator</h4>
-
-<p>
-    The initiator agrees with the responder's choice and sets up the tunnel.
+<dt></dt>
+<dd>
+    SG-B, satisfied that SG-A is authorized, proceeds with the
+    phase 2 exchange.
+    
+</dd>
+<dt></dt>
+<dd>The responder MUST setup the inbound IPsec SAs before sending
+its reply.
+</dd>
+</dd>
+<dt>(5P)</dt>
+<dd> Final acknowledgment from initiator.
+    
+<dt></dt>
+<dd>
+    The initiator agrees with the responder's choice of proposal
+    and sets up the tunnel.
     The initiator sets up the inbound and outbound IPsec SAs.
     
-</p>
-<p>
-    The proper authorization returned with keys prompts SG-B to make a transition
-    to the keyed OE connection state. 
-    
-</p>
-<p>Upon receipt of this message, the responder may now setup the outbound
+</dd>
+<dt></dt>
+<dd>Upon receipt of this message, the responder may now setup the outbound
     IPsec SAs.
-</p>
-<a name="rfc.section.11.2.13"></a><h4><a name="anchor74">11.2.13</a>&nbsp;(6) IPsec succeeds, and sets up tunnel for communication between Alice and Bob</h4>
-
-<p>
+</dd>
+</dd>
+<dt>(6)</dt>
+<dd> IPsec succeeds, and sets up tunnel for communication between Alice and Bob.
+  
+<dt></dt>
+<dd>
   SG-A sends the datagram saved at step (5) through the newly created
   tunnel to SG-B, where it gets decrypted and forwarded. 
   Bob receives it at (7) and replies at (8). 
   
-</p>
-<a name="rfc.section.11.2.14"></a><h4><a name="anchor75">11.2.14</a>&nbsp;(9) SG-B already has tunnel up with G1 and uses it</h4>
-
-<p>
+</dd>
+</dd>
+<dt></dt>
+<dd> SG-B already has tunnel up with G1 and uses it.
+  
+<dt></dt>
+<dd>
   At (9), SG-B has already established an SPD entry mapping Bob->Alice via a
   tunnel, so this tunnel is simply applied. The datagram is encrypted to SG-A,
   decrypted by SG-A and passed to Alice at (10).
   
-</p>
-<a name="securityconsiderations"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+</dd>
+</dd>
+</dl></blockquote>
+<a name="securityconsiderations"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.12"></a><h3>12.&nbsp;Security considerations</h3>
 
-<a name="rfc.section.12.1"></a><h4><a name="anchor76">12.1</a>&nbsp;Configured vs opportunistic tunnels</h4>
+<a name="rfc.section.12.1"></a><h4><a name="anchor57">12.1</a>&nbsp;Configured vs opportunistic tunnels</h4>
 
 <p>
     Configured tunnels are those which are setup using bilateral mechanisms: exchanging 
@@ -2282,7 +2564,7 @@ a secure DNS. Without secure DNS, opportunistic encryption can protect against p
 eavesdropping but not against active man-in-the-middle attacks.
 
 </p>
-<a name="rfc.section.12.2"></a><h4><a name="anchor77">12.2</a>&nbsp;Firewalls versus Opportunistic Tunnels</h4>
+<a name="rfc.section.12.2"></a><h4><a name="anchor58">12.2</a>&nbsp;Firewalls versus Opportunistic Tunnels</h4>
 
 <p>
   Typical usage of per datagram access control lists is to implement various
@@ -2302,11 +2584,11 @@ trusted. Any security policy that would apply to a datagram arriving in the
 clear SHOULD also be applied to datagrams arriving opportunistically.
 
 </p>
-<a name="rfc.section.12.3"></a><h4><a name="anchor78">12.3</a>&nbsp;Denial of service</h4>
+<a name="rfc.section.12.3"></a><h4><a name="anchor59">12.3</a>&nbsp;Denial of service</h4>
 
 <p>
   There are several different forms of denial of service that an implementor 
-  should concern themselves with. Most of these problems are shared with
+  should be concerned with. Most of these problems are shared with
   security gateways that have large numbers of mobile peers (road warriors). 
 
 </p>
@@ -2317,22 +2599,49 @@ clear SHOULD also be applied to datagrams arriving opportunistically.
   possible to form phase 1 SAs with any machine on the Internet. 
 
 </p>
-<a name="anchor79"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+<a name="anchor60"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.13"></a><h3>13.&nbsp;IANA Considerations</h3>
 
 <p>
     There are no known numbers which IANA will need to manage.
 
 </p>
-<a name="anchor80"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
-<a name="rfc.section.14"></a><h3>14.&nbsp;Acknowledgments</h3>
+<a name="anchor61"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.14"></a><h3>14.&nbsp;Intellectual Property Claims</h3>
+
+<p>
+The IETF takes no position regarding the validity or scope of any
+   intellectual property or other rights that might be claimed to
+   pertain to the implementation or use of the technology described in
+   this document or the extent to which any license under such rights
+   might or might not be available; neither does it represent that it
+   has made any effort to identify any such rights.  Information on the
+   IETF's procedures with respect to rights in standards-track and
+   standards-related documentation can be found in BCP-11.  Copies of
+   claims of rights made available for publication and any assurances of
+   licenses to be made available, or the result of an attempt made to
+   obtain a general license or permission for the use of such
+   proprietary rights by implementors or users of this specification can
+   be obtained from the IETF Secretariat.
+
+</p>
+<p>
+   The IETF invites any interested party to bring to its attention any
+   copyrights, patents or patent applications, or other proprietary
+   rights which may cover technology that may be required to practice
+   this standard.  Please address the information to the IETF Executive
+   Director.
+
+</p>
+<a name="anchor62"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.15"></a><h3>15.&nbsp;Acknowledgments</h3>
 
 <p>
         Substantive portions of this document are based upon previous work by
-        Henry Spencer.
-
+        Henry Spencer. <a href="#OEspec" title="Redelmeier, D. and H. Spencer, Opportunistic Encryption, May 2001."quot;">[OEspec]</a>
 </p>
 <p>
 	Thanks to Tero Kivinen, Sandy Harris, Wes Hardarker, Robert Moskowitz,
@@ -2341,57 +2650,68 @@ clear SHOULD also be applied to datagrams arriving opportunistically.
 
 </p>
 <p>
-	Sandra Hoffman and Bill Dickie did the detailed proof reading and editing.
+	Sandra Hoffman and Bill Dickie did the detailed proof reading and
+        editing. 
 
 </p>
-<a name="rfc.references1"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+<a name="rfc.references1"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <h3>Normative references</h3>
 <table width="99%" border="0">
-<tr><td class="author-text" valign="top"><b><a name="OEspec">[1]</a></b></td>
-<td class="author-text"><a href="mailto:hugh@mimosa.com">Redelmeier, D.</a> and <a href="mailto:henry@spsystems.net">H. Spencer</a>, "Opportunistic Encryption", paper http://www.freeswan.org/freeswan_trees/freeswan-1.91/doc/opportunism.spec, May 2001.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC0791">[2]</a></b></td>
-<td class="author-text">Defense Advanced Research Projects Agency (DARPA), Information Processing Techniques Office and University of Southern California (USC)/Information Sciences Institute, "<a href="ftp://ftp.isi.edu/in-notes/rfc791.txt">Internet Protocol</a>", STD 5, RFC 791, September 1981.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC1009">[3]</a></b></td>
-<td class="author-text"><a href="mailto:">Braden, R.</a> and <a href="mailto:">J. Postel</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc1009.txt">Requirements for Internet gateways</a>", RFC 1009, June 1987.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC1984">[4]</a></b></td>
-<td class="author-text">IAB, IESG, <a href="mailto:brian@dxcoms.cern.ch">Carpenter, B.</a> and <a href="mailto:fred@cisco.com">F. Baker</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc1984.txt">IAB and IESG Statement on Cryptographic Technology and the Internet</a>", RFC 1984, August 1996.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC2119">[5]</a></b></td>
-<td class="author-text"><a href="mailto:-">Bradner, S.</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2119.txt">Key words for use in RFCs to Indicate Requirement Levels</a>", BCP 14, RFC 2119, March 1997.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC2367">[6]</a></b></td>
-<td class="author-text"><a href="mailto:danmcd@eng.sun.com">McDonald, D.</a>, <a href="mailto:cmetz@inner.net">Metz, C.</a> and <a href="mailto:phan@itd.nrl.navy.mil">B. Phan</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2367.txt">PF_KEY Key Management API, Version 2</a>", RFC 2367, July 1998.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC2401">[7]</a></b></td>
-<td class="author-text"><a href="mailto:kent@bbn.com">Kent, S.</a> and <a href="mailto:rja@corp.home.net">R. Atkinson</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2401.txt">Security Architecture for the Internet Protocol</a>", RFC 2401, November 1998.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC2407">[8]</a></b></td>
-<td class="author-text"><a href="mailto:ddp@network-alchemy.com">Piper, D.</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2407.txt">The Internet IP Security Domain of Interpretation for ISAKMP</a>", RFC 2407, November 1998.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC2408">[9]</a></b></td>
-<td class="author-text"><a href="mailto:wdm@tycho.ncsc.mil">Maughan, D.</a>, <a href="mailto:mss@tycho.ncsc.mil">Schneider, M.</a> and <a href="er@raba.com">M. Schertler</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2408.txt">Internet Security Association and Key Management Protocol (ISAKMP)</a>", RFC 2408, November 1998.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC2409">[10]</a></b></td>
-<td class="author-text"><a href="mailto:dharkins@cisco.com">Harkins, D.</a> and <a href="mailto:carrel@ipsec.org">D. Carrel</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2409.txt">The Internet Key Exchange (IKE)</a>", RFC 2409, November 1998.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC3526">[11]</a></b></td>
-<td class="author-text"><a href="mailto:kivinen@ssh.fi">Kivinen, T.</a> and <a href="mailto:mrskojo@cc.helsinki.fi">M. Kojo</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc3526.txt">More MODP Diffie-Hellman groups for IKE</a>", RFC 3526, March 2003.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC1034">[12]</a></b></td>
-<td class="author-text">Mockapetris, P., "<a href="ftp://ftp.isi.edu/in-notes/rfc1034.txt">Domain names - concepts and facilities</a>", STD 13, RFC 1034, November 1987.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC1035">[13]</a></b></td>
-<td class="author-text"><a href="mailto:">Mockapetris, P.</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc1035.txt">Domain names - implementation and specification</a>", STD 13, RFC 1035, November 1987.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC2671">[14]</a></b></td>
-<td class="author-text"><a href="mailto:vixie@isc.org">Vixie, P.</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2671.txt">Extension Mechanisms for DNS (EDNS0)</a>", RFC 2671, August 1999.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC1464">[15]</a></b></td>
-<td class="author-text"><a href="mailto:rosenbaum@lkg.dec.com">Rosenbaum, R.</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc1464.txt">Using the Domain Name System To Store Arbitrary String Attributes</a>", RFC 1464, May 1993.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC2535">[16]</a></b></td>
+<tr><td class="author-text" valign="top"><a name="RFC1035">[RFC1035]</a></td>
+<td class="author-text">Mockapetris, P., "<a href="ftp://ftp.isi.edu/in-notes/rfc1035.txt">Domain names - implementation and specification</a>", STD 13, RFC 1035, November 1987.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2119">[RFC2119]</a></td>
+<td class="author-text"><a href="mailto:sob@harvard.edu">Bradner, S.</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2119.txt">Key words for use in RFCs to Indicate Requirement Levels</a>", BCP 14, RFC 2119, March 1997 (<a href="http://xml.resource.org/public/rfc/html/rfc2119.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2119.xml">XML</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2401">[RFC2401]</a></td>
+<td class="author-text"><a href="mailto:kent@bbn.com">Kent, S.</a> and <a href="mailto:rja@corp.home.net">R. Atkinson</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2401.txt">Security Architecture for the Internet Protocol</a>", RFC 2401, November 1998 (<a href="http://xml.resource.org/public/rfc/html/rfc2401.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2401.xml">XML</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2407">[RFC2407]</a></td>
+<td class="author-text"><a href="mailto:ddp@network-alchemy.com">Piper, D.</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2407.txt">The Internet IP Security Domain of Interpretation for ISAKMP</a>", RFC 2407, November 1998 (<a href="http://xml.resource.org/public/rfc/html/rfc2407.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2407.xml">XML</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2408">[RFC2408]</a></td>
+<td class="author-text"><a href="mailto:wdm@tycho.ncsc.mil">Maughan, D.</a>, <a href="mailto:mss@tycho.ncsc.mil">Schneider, M.</a> and <a href="er@raba.com">M. Schertler</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2408.txt">Internet Security Association and Key Management Protocol (ISAKMP)</a>", RFC 2408, November 1998 (<a href="http://xml.resource.org/public/rfc/html/rfc2408.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2408.xml">XML</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2409">[RFC2409]</a></td>
+<td class="author-text"><a href="mailto:dharkins@cisco.com">Harkins, D.</a> and <a href="mailto:carrel@ipsec.org">D. Carrel</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2409.txt">The Internet Key Exchange (IKE)</a>", RFC 2409, November 1998 (<a href="http://xml.resource.org/public/rfc/html/rfc2409.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2409.xml">XML</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2535">[RFC2535]</a></td>
 <td class="author-text"><a href="mailto:dee3@us.ibm.com">Eastlake, D.</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2535.txt">Domain Name System Security Extensions</a>", RFC 2535, March 1999.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC3110">[17]</a></b></td>
+<tr><td class="author-text" valign="top"><a name="RFC3110">[RFC3110]</a></td>
 <td class="author-text">Eastlake, D., "<a href="ftp://ftp.isi.edu/in-notes/rfc3110.txt">RSA/SHA-1 SIGs and RSA KEYs in the Domain Name System (DNS)</a>", RFC 3110, May 2001.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC2538">[18]</a></b></td>
-<td class="author-text"><a href="mailto:dee3@us.ibm.com">Eastlake, D.</a> and <a href="mailto:ogud@tislabs.com">O. Gudmundsson</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2538.txt">Storing Certificates in the Domain Name System (DNS)</a>", RFC 2538, March 1999.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC2748">[19]</a></b></td>
-<td class="author-text"><a href="mailto:David.Durham@intel.com">Durham, D.</a>, <a href="mailto:jboyle@Level3.net">Boyle, J.</a>, <a href="mailto:ronc@cisco.com">Cohen, R.</a>, <a href="mailto:herzog@iphighway.com">Herzog, S.</a>, <a href="mailto:rajan@research.att.com">Rajan, R.</a> and <a href="mailto:asastry@cisco.com">A. Sastry</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2748.txt">The COPS (Common Open Policy Service) Protocol</a>", RFC 2748, January 2000.</td></tr>
-<tr><td class="author-text" valign="top"><b><a name="RFC2663">[20]</a></b></td>
-<td class="author-text"><a href="mailto:srisuresh@lucent.com">Srisuresh, P.</a> and <a href="mailto:holdrege@lucent.com">M. Holdrege</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2663.txt">IP Network Address Translator (NAT) Terminology and Considerations</a>", RFC 2663, August 1999.</td></tr>
 </table>
 
-<a name="rfc.authors"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
+<a name="rfc.references2"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
+<h3>Non-normative references</h3>
+<table width="99%" border="0">
+<tr><td class="author-text" valign="top"><a name="IPSECKEY">[IPSECKEY]</a></td>
+<td class="author-text"><a href="mailto:mcr@sandelman.ottawa.on.ca">Richardson, M.</a>, "A Method for Storing IPsec Keying Material in DNS", July 2004.</td></tr>
+<tr><td class="author-text" valign="top"><a name="OEspec">[OEspec]</a></td>
+<td class="author-text"><a href="mailto:hugh@mimosa.com">Redelmeier, D.</a> and <a href="mailto:henry@spsystems.net">H. Spencer</a>, "Opportunistic Encryption", paper http://www.freeswan.org/freeswan_trees/freeswan-1.91/doc/opportunism.spec, May 2001.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC0791">[RFC0791]</a></td>
+<td class="author-text">Postel, J., "<a href="ftp://ftp.isi.edu/in-notes/rfc791.txt">Internet Protocol</a>", STD 5, RFC 791, September 1981.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC1009">[RFC1009]</a></td>
+<td class="author-text">Braden, R. and J. Postel, "<a href="ftp://ftp.isi.edu/in-notes/rfc1009.txt">Requirements for Internet gateways</a>", RFC 1009, June 1987.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC1034">[RFC1034]</a></td>
+<td class="author-text">Mockapetris, P., "<a href="ftp://ftp.isi.edu/in-notes/rfc1034.txt">Domain names - concepts and facilities</a>", STD 13, RFC 1034, November 1987.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC1464">[RFC1464]</a></td>
+<td class="author-text"><a href="mailto:rosenbaum@lkg.dec.com">Rosenbaum, R.</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc1464.txt">Using the Domain Name System To Store Arbitrary String Attributes</a>", RFC 1464, May 1993.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC1984">[RFC1984]</a></td>
+<td class="author-text">IAB, IESG, <a href="mailto:brian@dxcoms.cern.ch">Carpenter, B.</a> and <a href="mailto:fred@cisco.com">F. Baker</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc1984.txt">IAB and IESG Statement on Cryptographic Technology and the Internet</a>", RFC 1984, August 1996.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2367">[RFC2367]</a></td>
+<td class="author-text"><a href="mailto:danmcd@eng.sun.com">McDonald, D.</a>, <a href="mailto:cmetz@inner.net">Metz, C.</a> and <a href="mailto:phan@itd.nrl.navy.mil">B. Phan</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2367.txt">PF_KEY Key Management API, Version 2</a>", RFC 2367, July 1998 (<a href="http://xml.resource.org/public/rfc/html/rfc2367.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2367.xml">XML</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2538">[RFC2538]</a></td>
+<td class="author-text"><a href="mailto:dee3@us.ibm.com">Eastlake, D.</a> and <a href="mailto:ogud@tislabs.com">O. Gudmundsson</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2538.txt">Storing Certificates in the Domain Name System (DNS)</a>", RFC 2538, March 1999.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2663">[RFC2663]</a></td>
+<td class="author-text"><a href="mailto:srisuresh@lucent.com">Srisuresh, P.</a> and <a href="mailto:holdrege@lucent.com">M. Holdrege</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2663.txt">IP Network Address Translator (NAT) Terminology and Considerations</a>", RFC 2663, August 1999.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2671">[RFC2671]</a></td>
+<td class="author-text"><a href="mailto:vixie@isc.org">Vixie, P.</a>, "<a href="ftp://ftp.isi.edu/in-notes/rfc2671.txt">Extension Mechanisms for DNS (EDNS0)</a>", RFC 2671, August 1999.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3330">[RFC3330]</a></td>
+<td class="author-text">IANA, "<a href="ftp://ftp.isi.edu/in-notes/rfc3330.txt">Special-Use IPv4 Addresses</a>", RFC 3330, September 2002.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3445">[RFC3445]</a></td>
+<td class="author-text">Massey, D. and S. Rose, "<a href="ftp://ftp.isi.edu/in-notes/rfc3445.txt">Limiting the Scope of the KEY Resource Record (RR)</a>", RFC 3445, December 2002.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3526">[RFC3526]</a></td>
+<td class="author-text">Kivinen, T. and M. Kojo, "<a href="ftp://ftp.isi.edu/in-notes/rfc3526.txt">More Modular Exponential (MODP) Diffie-Hellman groups for Internet Key Exchange (IKE)</a>", RFC 3526, May 2003.</td></tr>
+</table>
+
+<a name="rfc.authors"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
 <h3>Authors' Addresses</h3>
 <table width="99%" border="0" cellpadding="0" cellspacing="0">
 <tr><td class="author-text">&nbsp;</td>
@@ -2420,37 +2740,54 @@ clear SHOULD also be applied to datagrams arriving opportunistically.
 <tr><td class="author" align="right">EMail:&nbsp;</td>
 <td class="author-text"><a href="mailto:hugh@mimosa.com">hugh@mimosa.com</a></td></tr>
 </table>
-<a name="rfc.copyright"><br><hr size="1" shade="0"></a>
-<table border="0" cellpadding="0" cellspacing="2" width="30" height="15" align="right"><tr><td bgcolor="#990000" align="center" width="30" height="15"><a href="#toc" CLASS="link2"><font face="monaco, MS Sans Serif" color="#ffffff" size="1"><b>&nbsp;TOC&nbsp;</b></font></a><br></td></tr></table>
-<h3>Full Copyright Statement</h3>
+<a name="rfc.copyright"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="bug" align="right"><tr><td class="bug"><a href="#toc" class="link2">&nbsp;TOC&nbsp;</a></td></tr></table>
+<h3>Intellectual Property Statement</h3>
 <p class='copyright'>
-Copyright (C) The Internet Society (2003). All Rights Reserved.</p>
+The IETF takes no position regarding the validity or scope of any
+Intellectual Property Rights or other rights that might be claimed
+to pertain to the implementation or use of the technology 
+described in this document or the extent to which any license 
+under such rights might or might not be available; nor does it
+represent that it has made any independent effort to identify any
+such rights.
+Information on the IETF's procedures with respect to
+rights in IETF Documents can be found in BCP 78 and BCP 79.</p>
 <p class='copyright'>
-This document and translations of it may be copied and furnished to
-others, and derivative works that comment on or otherwise explain it
-or assist in its implementation may be prepared, copied, published and
-distributed, in whole or in part, without restriction of any kind,
-provided that the above copyright notice and this paragraph are
-included on all such copies and derivative works. However, this
-document itself may not be modified in any way, such as by removing
-the copyright notice or references to the Internet Society or other
-Internet organizations, except as needed for the purpose of
-developing Internet standards in which case the procedures for
-copyrights defined in the Internet Standards process must be
-followed, or as required to translate it into languages other than
-English.</p>
+Copies of IPR disclosures made to the IETF Secretariat and any
+assurances of licenses to be made available,
+or the result of an attempt made to obtain a general license or
+permission for the use of such proprietary rights by implementers or
+users of this specification can be obtained from the IETF on-line IPR
+repository at http://www.ietf.org/ipr.</p>
 <p class='copyright'>
-The limited permissions granted above are perpetual and will not be
-revoked by the Internet Society or its successors or assigns.</p>
+The IETF invites any interested party to bring to its attention
+any copyrights,
+patents or patent applications,
+or other
+proprietary rights that may cover technology that may be required
+to implement this standard.
+Please address the information to the IETF at ietf-ipr@ietf.org.</p>
+<h3>Disclaimer of Validity</h3>
 <p class='copyright'>
-This document and the information contained herein is provided on an
-&quot;AS IS&quot; basis and THE INTERNET SOCIETY AND THE INTERNET ENGINEERING
-TASK FORCE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
-BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
-HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
-MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.</p>
-<h3>Acknowledgement</h3>
+This document and the information contained herein are provided
+on an &quot;AS IS&quot; basis and THE CONTRIBUTOR,
+THE ORGANIZATION HE/SHE REPRESENTS OR IS SPONSORED BY (IF ANY),
+THE INTERNET SOCIETY AND THE INTERNET ENGINEERING TASK FORCE DISCLAIM
+ALL WARRANTIES, 
+EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE
+INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED
+WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.</p>
+<h3>Copyright Statement</h3>
+<p class='copyright'>
+Copyright (C) The Internet Society (2005).
+This document is subject to the rights,
+licenses and restrictions contained in BCP 78,
+and except as set forth therein,
+the authors retain all their rights.</p>
+<h3>Acknowledgment</h3>
 <p class='copyright'>
 Funding for the RFC Editor function is currently provided by the
 Internet Society.</p>
-</font></body></html>
+</body></html>

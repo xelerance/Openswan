@@ -1,5 +1,5 @@
 .TH IPSEC.CONF 5 "26 Nov 2001"
-.\" RCSID $Id: ipsec.conf.5,v 1.104 2004/05/14 15:37:26 ken Exp $
+.\" RCSID $Id: ipsec.conf.5,v 1.108.6.1 2005/05/18 20:55:12 ken Exp $
 .SH NAME
 ipsec.conf \- IPsec configuration and connections
 .SH DESCRIPTION
@@ -7,7 +7,7 @@ The optional
 .I ipsec.conf
 file
 specifies most configuration and control information for the
-FreeS/WAN IPsec subsystem.
+Openswan IPsec subsystem.
 (The major exception is secrets for authentication;
 see
 .IR ipsec.secrets (5).)
@@ -289,6 +289,15 @@ signifying that packets should be discarded; and
 .BR reject ,
 signifying that packets should be discarded and a diagnostic ICMP returned.
 .TP
+.B connaddrfamily
+(optional)
+Either 
+.B ipv4
+(the default)
+or 
+.B ipv6
+to support IPv6 connections
+.TP
 .B left
 (required)
 the IP address of the left participant's public-network interface,
@@ -391,22 +400,6 @@ See
 for details.
 Relevant only locally, other end need not agree on it.
 .TP
-.B leftfirewall
-whether the left participant is doing forwarding-firewalling
-(including masquerading) for traffic from \fIleftsubnet\fR,
-which should be turned off (for traffic to the other subnet)
-once the connection is established;
-acceptable values are
-.B yes
-and (the default)
-.BR no .
-May not be used in the same connection description with
-.BR leftupdown .
-Implemented as a parameter to the default
-.I updown
-script.
-See notes below.
-Relevant only locally, other end need not agree on it.
 .PP
 If one or both security gateways are doing forwarding firewalling
 (possibly including masquerading),
@@ -420,15 +413,6 @@ This is done by the default
 script (see
 .IR ipsec_pluto (8)).
 .PP
-The implementation of this makes certain assumptions about firewall setup,
-notably the use of the old
-.I ipfwadm
-interface to the firewall.
-In situations calling for more control,
-it may be preferable for the user to supply his own
-.I updown
-script,
-which makes the appropriate adjustments for his system.
 .SS "CONN PARAMETERS:  AUTOMATIC KEYING"
 The following parameters are relevant only to automatic keying,
 and are ignored in manual keying.
@@ -588,6 +572,13 @@ Cisco and SafeNet. If you find that you are getting errors about no ID/Key found
 you likely need to set this to
 .B always.
 .TP
+.B aggrmode
+Use aggressive mode ISAKMP negotiation. The default is
+main mode. Aggressive mode is less secure than main mode as it reveals
+your identity to an eavesdropper, but is needed to support road warriors
+using PSK keys or to interoperate with other buggy implementations insisting
+on using aggressive mode.
+.TP
 .B xauth
 Use XAUTH / Mode Config for this connection.  This uses PAM for authentication
 currently, and it not well documented.  Use the source :)  Acceptable values are
@@ -598,7 +589,7 @@ or
 .TP
 .B dpddelay
 Set the delay (in seconds) between Dead Peer Dectection
-(draft-ietf-ipsec-dpd-02) keepalives (R_U_THERE, R_U_THERE_ACK)
+(RFC 3706) keepalives (R_U_THERE, R_U_THERE_ACK)
 that are sent for this connection (default
 .B 30
 seconds).  If dpdtimeout is set, but not dpddelay, dpddelay will be set
@@ -1323,7 +1314,7 @@ This connection inherits all details from
 except that its right client is 192.0.2.3.
 .SH DEFAULT POLICY GROUPS
 .PP
-The standard FreeS/WAN install includes several policy groups
+The standard Openswan install includes several policy groups
 which provide a way of classifying possible peers into IPsec security classes:
 .B private
 (talk encrypted only),
@@ -1378,8 +1369,8 @@ is set to
 .B drop
 or
 .BR reject,
-FreeS/WAN blocks outbound packets using eroutes, but assumes inbound
-blocking is handled by the firewall. FreeS/WAN offers firewall hooks 
+Openswan blocks outbound packets using eroutes, but assumes inbound
+blocking is handled by the firewall. Openswan offers firewall hooks 
 via an ``updown'' script.  However, the default 
 .B ipsec _updown
 provides no help in controlling a modern firewall.
@@ -1393,7 +1384,7 @@ rather than of a participant pair, is dubious and incurs limitations.
 .PP
 .IR Ipsec_manual
 is not nearly as generous about the syntax of subnets,
-addresses, etc. as the usual FreeS/WAN user interfaces.
+addresses, etc. as the usual Openswan user interfaces.
 Four-component dotted-decimal must be used for all addresses.
 It
 .I is

@@ -183,10 +183,11 @@ n          192.0.1.2/32       -> 192.1.3.254/32     => %pass
 japan:~# ipsec auto $CFG --up japan--wavesec
 + ipsec auto --config /testing/pluto/co-terminal-02/japan.conf --up japan--wavesec
 104 "japan--wavesec" #1: STATE_MAIN_I1: initiate
+003 "japan--wavesec" #1: received Vendor ID payload [Dead Peer Detection]
 106 "japan--wavesec" #1: STATE_MAIN_I2: sent MI2, expecting MR2
 108 "japan--wavesec" #1: STATE_MAIN_I3: sent MI3, expecting MR3
 004 "japan--wavesec" #1: STATE_MAIN_I4: ISAKMP SA established
-112 "japan--wavesec" #2: STATE_QUICK_I1: initiate
+117 "japan--wavesec" #2: STATE_QUICK_I1: initiate
 003 "japan--wavesec" #2: conflict on eroute (), switching eroute to private-or-clear#0.0.0.0/0 and linking japan--wavesec
 004 "japan--wavesec" #2: STATE_QUICK_I2: sent QI2, IPsec SA established
 japan:~# ipsec eroute | sed -e 's/^[0-9]* /n /' -e 's/tun0x..../tun0xABCD/'

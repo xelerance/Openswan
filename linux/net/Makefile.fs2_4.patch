@@ -1,11 +1,11 @@
-RCSID $Id: Makefile.fs2_4.patch,v 1.7 2002/07/28 23:12:39 mcr Exp $
+RCSID $Id: Makefile.fs2_4.patch,v 1.8 2004/07/10 19:10:30 mcr Exp $
 --- linux/net/Makefile.preipsec	Mon Jun 11 22:15:27 2001
 +++ linux/net/Makefile	Tue Nov  6 21:07:43 2001
 @@ -17,6 +17,7 @@
  subdir-$(CONFIG_NET)		+= 802 sched
  subdir-$(CONFIG_INET)		+= ipv4
  subdir-$(CONFIG_NETFILTER)	+= ipv4/netfilter
-+subdir-$(CONFIG_IPSEC)		+= ipsec
++subdir-$(CONFIG_KLIPS)		+= ipsec
  subdir-$(CONFIG_UNIX)		+= unix
  subdir-$(CONFIG_IPV6)		+= ipv6
  

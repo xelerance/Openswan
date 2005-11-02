@@ -90,4 +90,8 @@ release, the following are considered *serious* bugs:
   in the early months of 2003, we are not going to pursue this at this time.
   Our test case, module-memory-01 therefore fails.
 
-This file is RCSID $Id: BUGS,v 1.54 2003/09/18 17:03:25 sam Exp $
+* For various reasons, KLIPS will soon *DROP* any DF-marked packet that
+  is more than "IPsec-overhead" larger than the MTU. This is to compatible
+  with plpmtud (i.e. "PMTUbis") being proposed in the pmtud WG.
+
+This file is RCSID $Id: BUGS,v 1.55 2005/01/11 22:26:25 paul Exp $

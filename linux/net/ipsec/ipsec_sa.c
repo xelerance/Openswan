@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_sa.c,v 1.23 2004/04/06 02:49:26 mcr Exp $
+ * RCSID $Id: ipsec_sa.c,v 1.25 2004/08/22 20:12:16 mcr Exp $
  *
  * This is the file formerly known as "ipsec_xform.h"
  *
@@ -76,9 +76,9 @@
 #include "openswan/ipsec_alg.h"
 
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 int debug_xform = 0;
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
@@ -984,17 +984,17 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 	ips->ips_key_a = NULL;
 
 	if(ips->ips_key_e != NULL) {
-#ifdef CONFIG_IPSEC_ALG
+#ifdef CONFIG_KLIPS_ALG
 		if (ips->ips_alg_enc&&ips->ips_alg_enc->ixt_e_destroy_key) {
 			ips->ips_alg_enc->ixt_e_destroy_key(ips->ips_alg_enc, 
 					ips->ips_key_e);
 		} else {
-#endif /* CONFIG_IPSEC_ALG */
+#endif /* CONFIG_KLIPS_ALG */
 		memset((caddr_t)(ips->ips_key_e), 0, ips->ips_key_e_size);
 		kfree(ips->ips_key_e);
-#ifdef CONFIG_IPSEC_ALG
+#ifdef CONFIG_KLIPS_ALG
 		}
-#endif /* CONFIG_IPSEC_ALG */
+#endif /* CONFIG_KLIPS_ALG */
 	}
 	ips->ips_key_e = NULL;
 
@@ -1020,11 +1020,11 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
         }
 	ips->ips_ident_d.data = NULL;
 
-#ifdef CONFIG_IPSEC_ALG
+#ifdef CONFIG_KLIPS_ALG
 	if (ips->ips_alg_enc||ips->ips_alg_auth) {
 		ipsec_alg_sa_wipe(ips);
 	}
-#endif /* CONFIG_IPSEC_ALG */
+#endif /* CONFIG_KLIPS_ALG */
 	
 	memset((caddr_t)ips, 0, sizeof(*ips));
 	kfree(ips);
@@ -1035,6 +1035,12 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 
 /*
  * $Log: ipsec_sa.c,v $
+ * Revision 1.25  2004/08/22 20:12:16  mcr
+ * 	one more KLIPS_NAT->IPSEC_NAT.
+ *
+ * Revision 1.24  2004/07/10 19:11:18  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.23  2004/04/06 02:49:26  mcr
  * 	pullup of algo code from alg-branch.
  *

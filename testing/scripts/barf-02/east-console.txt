@@ -1,17 +1,19 @@
 east:~#
  ipsec barf | grep '^\+ _____________________'
 + _________________________ version
-+ _________________________ proc/version
-+ _________________________ proc/net/ipsec_eroute
++ _________________________ /proc/version
++ _________________________ /proc/net/ipsec_eroute
 + _________________________ netstat-rn
-+ _________________________ proc/net/ipsec_spi
-+ _________________________ proc/net/ipsec_spigrp
-+ _________________________ proc/net/ipsec_tncfg
-+ _________________________ proc/net/pf_key
-+ _________________________ proc/net/pf_key-star
-+ _________________________ proc/sys/net/ipsec-star
++ _________________________ /proc/net/ipsec_spi
++ _________________________ /proc/net/ipsec_spigrp
++ _________________________ /proc/net/ipsec_tncfg
++ _________________________ /proc/net/pfkey
++ _________________________ /proc/sys/net/ipsec-star
 + _________________________ ipsec/status
 + _________________________ ifconfig-a
++ _________________________ ip-addr-list
++ _________________________ ip-route-list
++ _________________________ ip-rule-list
 + _________________________ ipsec_verify
 + _________________________ mii-tool
 + _________________________ ipsec/directory
@@ -22,6 +24,7 @@ east:~#
 + _________________________ ipsec/showdefaults
 + _________________________ ipsec/conf
 + _________________________ ipsec/secrets
++ _________________________ ipsec/listall
 + _________________________ ipsec/policies/%KEEPME
 + _________________________ ipsec/policies/block
 + _________________________ ipsec/policies/clear
@@ -40,31 +43,29 @@ east:~#
 + _________________________ ipsec/ls-libdir
 + _________________________ ipsec/ls-execdir
 + _________________________ ipsec/updowns
-+ _________________________ proc/net/dev
-+ _________________________ proc/net/route
-+ _________________________ proc/sys/net/ipv4/ip_forward
-+ _________________________ proc/sys/net/ipv4/conf/star-rp_filter
++ _________________________ /proc/net/dev
++ _________________________ /proc/net/route
++ _________________________ /proc/sys/net/ipv4/ip_forward
++ _________________________ /proc/sys/net/ipv4/conf/star-rp_filter
 + _________________________ uname-a
++ _________________________ config-built-with
 + _________________________ redhat-release
-+ _________________________ proc/net/ipsec_version
-+ _________________________ iptables/list
-+ _________________________ ipchains/list
-+ _________________________ ipfwadm/forward
-+ _________________________ ipfwadm/input
-+ _________________________ ipfwadm/output
-+ _________________________ iptables/nat
-+ _________________________ ipchains/masq
-+ _________________________ ipfwadm/masq
-+ _________________________ iptables/mangle
-+ _________________________ proc/modules
-+ _________________________ proc/meminfo
-+ _________________________ dev/ipsec-ls
-+ _________________________ proc/net/ipsec-ls
++ _________________________ /proc/net/ipsec_version
++ _________________________ ipfwadm
++ _________________________
++ _________________________
++ _________________________
++ _________________________ ipchains
++ _________________________
++ _________________________ iptables
++ _________________________ /proc/modules
++ _________________________ /proc/meminfo
++ _________________________ /proc/net/ipsec-ls
 + _________________________ usr/src/linux/.config
 + _________________________ etc/syslog.conf
 + _________________________ etc/resolv.conf
 + _________________________ lib/modules-ls
-+ _________________________ proc/ksyms-netif_rx
++ _________________________ /proc/ksyms-netif_rx
 + _________________________ lib/modules-netif_rx
 + _________________________ kern.debug
 + _________________________ klog

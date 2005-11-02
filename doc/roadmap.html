@@ -60,48 +60,6 @@ PRE { font-family: monospace }
 <P><A href="glossary.html#KLIPS"> KLIPS</A> is<STRONG> K</STRONG>erne<STRONG>
 L</STRONG><STRONG> IP</STRONG><STRONG> S</STRONG>ecurity. It lives in
  the klips directory, of course.</P>
-<DL>
-<DT>klips/doc</DT>
-<DD>documentation</DD>
-<DT>klips/patches</DT>
-<DD>patches for existing kernel files</DD>
-<DT>klips/test</DT>
-<DD>test stuff</DD>
-<DT>klips/utils</DT>
-<DD>low-level user utilities</DD>
-<DT>klips/net/ipsec</DT>
-<DD>actual klips kernel files</DD>
-<DT>klips/src</DT>
-<DD>symbolic link to klips/net/ipsec
-<P>The &quot;make insert&quot; step of installation installs the patches and makes
- a symbolic link from the kernel tree to klips/net/ipsec. The odd name
- of klips/net/ipsec is dictated by some annoying limitations of the
- scripts which build the Linux kernel. The symbolic-link business is a
- bit messy, but all the alternatives are worse.</P>
-<P></P>
-</DD>
-<DT>klips/utils</DT>
-<DD>Utility programs:
-<P></P>
-<DL>
-<DT>eroute</DT>
-<DD>manipulate IPsec extended routing tables</DD>
-<DT>klipsdebug</DT>
-<DD>set Klips (kernel IPsec support) debug features and level</DD>
-<DT>spi</DT>
-<DD>manage IPsec Security Associations</DD>
-<DT>spigrp</DT>
-<DD>group/ungroup IPsec Security Associations</DD>
-<DT>tncfg</DT>
-<DD>associate IPsec virtual interface with real interface</DD>
-</DL>
-<P>These are all normally invoked by ipsec(8) with commands such as</P>
-<PRE>        ipsec tncfg <VAR>arguments</VAR></PRE>
- There are section 8 man pages for all of these; the names have &quot;ipsec_&quot;
- as a prefix, so your man command should be something like:
-<PRE>        man 8 ipsec_tncfg</PRE>
-</DD>
-</DL>
 <H2><A name="pluto.roadmap">Pluto key and connection management daemon</A>
 </H2>
 <P><A href="glossary.html#Pluto"> Pluto</A> is our key management and

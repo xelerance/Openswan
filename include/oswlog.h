@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: oswlog.h,v 1.2 2004/04/29 03:47:52 mcr Exp $
+ * RCSID $Id: oswlog.h,v 1.11 2005/01/26 00:52:16 mcr Exp $
  */
 
 #ifndef _OSWLOG_H_
@@ -26,6 +26,8 @@
 
 #if !defined(NO_DEBUG)
 
+#include "constants.h"
+
 extern lset_t base_debugging;	/* bits selecting what to report */
 extern lset_t cur_debugging;	/* current debugging level */
 
@@ -38,7 +40,10 @@ extern lset_t cur_debugging;	/* current debugging level */
 #define DBG_dump openswan_DBG_dump
 extern void openswan_DBG_log(const char *message, ...) PRINTF_LIKE(1);
 extern void openswan_DBG_dump(const char *label, const void *p, size_t len);
-extern void openswan_plog(const char *message, ...) PRINTF_LIKE(1);
+extern void openswan_log(const char *message, ...) PRINTF_LIKE(1);
+extern void openswan_loglog(int mess_no, const char *message, ...) PRINTF_LIKE(2);
+extern void openswan_exit_log(const char *message, ...) PRINTF_LIKE(1);
+
 #define DBG_dump_chunk(label, ch) DBG_dump(label, (ch).ptr, (ch).len)
 
 extern void exit_tool(int);
@@ -68,10 +73,6 @@ extern void tool_close_log(void);
 
 extern char diag_space[LOG_WIDTH];	/* output buffer, but can be occupied at call */
 extern err_t builddiag(const char *fmt, ...) PRINTF_LIKE(1);
-
-extern void openswan_passert_fail(const char *pred_str,
-				  const char *file_str,
-				  unsigned long line_no);
 
 extern char *progname;
 
@@ -115,11 +116,16 @@ enum rc_type {
     RC_NORETRANSMISSION,
     RC_INTERNALERR,
     RC_OPPOFAILURE,	/* Opportunism failed */
+    RC_NOALGO,          /* algorithm not supported */
+    RC_CRYPTOFAILED,    /* system too busy to perform required
+			 * cryptographic operations */
+    RC_AGGRALGO,        /* multiple algorithms requested in phase 1 aggressive */
+    RC_FATAL,           /* fatal error encountered, and negotiation aborted */
 
     /* entry of secrets */
     RC_ENTERSECRET = 40,
     RC_XAUTHPROMPT = 41,
-    
+
     /* progress: start of range for successful state transition.
      * Actual value is RC_NEW_STATE plus the new state code.
      */

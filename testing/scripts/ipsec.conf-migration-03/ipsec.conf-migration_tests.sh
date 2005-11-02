@@ -10,7 +10,7 @@ cd $ICP
 
 ipsec setup start
 
-cat /var/run/ipsec.info
+cat /var/run/pluto/ipsec.info
 
 ( cd ignat ; drill ; differ+ ; cd .. ; )
 

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: oswlog.c,v 1.1 2004/04/29 03:50:08 mcr Exp $
+ * RCSID $Id: oswlog.c,v 1.3 2004/10/16 23:42:13 mcr Exp $
  */
 
 #include <stdio.h>
@@ -40,6 +40,10 @@ bool
 
 bool
     logged_txt_warning = FALSE;  /* should we complain about finding KEY? */
+
+void openswanlib_passert_fail(const char *pred_str, const char *file_str,
+			      unsigned long line_no);
+openswan_passert_fail_t openswan_passert_fail = openswanlib_passert_fail;
 
 void
 tool_init_log(void)
@@ -85,7 +89,7 @@ fmt_log(char *buf, size_t buf_len,
 }
 
 void
-openswan_plog(const char *message, ...)
+openswan_log(const char *message, ...)
 {
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
@@ -182,7 +186,7 @@ openswan_switch_fail(int n, const char *file_str, unsigned long line_no)
 }
 
 void
-openswan_passert_fail(const char *pred_str, const char *file_str,
+openswanlib_passert_fail(const char *pred_str, const char *file_str,
 		      unsigned long line_no)
 {
     /* we will get a possibly unplanned prefix.  Hope it works */

@@ -11,10 +11,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.4 2002/06/02 21:51:56 mcr Exp $
+# RCSID $Id: Makefile,v 1.6 2004/12/18 18:13:45 mcr Exp $
 
-FREESWANSRCDIR=../..
-include $(FREESWANSRCDIR)/Makefile.inc
+OPENSWANSRCDIR?=$(shell cd .. && pwd)
+include $(OPENSWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
 
@@ -44,6 +44,12 @@ realclean: clean
 
 #
 # $Log: Makefile,v $
+# Revision 1.6  2004/12/18 18:13:45  mcr
+# 	adjusted Makefiles so that ${OBJDIR} builds work.
+#
+# Revision 1.5  2004/04/03 19:44:51  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.4  2002/06/02 21:51:56  mcr
 # 	changed TOPDIR->FREESWANSRCDIR in all Makefiles.
 # 	(note that linux/net/ipsec/Makefile uses TOPDIR because this is the

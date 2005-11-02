@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel.c,v 1.210 2004/06/14 01:46:02 mcr Exp $
+ * RCSID $Id: kernel.c,v 1.224.2.1 2005/05/18 20:55:13 ken Exp $
  */
 
 #include <stddef.h>
@@ -23,6 +23,7 @@
 #include <wait.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/utsname.h>
 #include <sys/queue.h>
 
 #include <sys/stat.h>
@@ -77,11 +78,6 @@
 #endif
 
 bool can_do_IPcomp = TRUE;  /* can system actually perform IPCOMP? */
-
-/* How far can IPsec messages arrive out of order before the anti-replay
- * logic loses track and swats them?  64 is the best KLIPS can do.
- */
-#define REPLAY_WINDOW   64
 
 /* test if the routes required for two different connections agree
  * It is assumed that the destination subnets agree; we are only
@@ -402,7 +398,7 @@ get_my_cpi(struct spd_route *sr, bool tunnel)
 #endif
 
 static bool
-do_command(struct connection *c, struct spd_route *sr, const char *verb)
+do_command(struct connection *c, struct spd_route *sr, const char *verb, struct state *st)
 {
     char cmd[1536];     /* arbitrary limit on shell command length */
     const char *verb_suffix;
@@ -446,7 +442,8 @@ do_command(struct connection *c, struct spd_route *sr, const char *verb)
             peerclientmask_str[ADDRTOT_BUF],
             secure_myid_str[IDTOA_BUF] = "",
             secure_peerid_str[IDTOA_BUF] = "",
-            secure_peerca_str[IDTOA_BUF] = "";
+            secure_peerca_str[IDTOA_BUF] = "",
+            secure_xauth_username_str[IDTOA_BUF] = "";
 	    
         ip_address ta;
 
@@ -479,6 +476,18 @@ do_command(struct connection *c, struct spd_route *sr, const char *verb)
         addrtot(&ta, 0, peerclientnet_str, sizeof(peerclientnet_str));
         maskof(&sr->that.client, &ta);
         addrtot(&ta, 0, peerclientmask_str, sizeof(peerclientmask_str));
+	
+	secure_xauth_username_str[0]='\0';
+	if (st != NULL && st->st_xauth_username) {
+		size_t len;
+	 	strcpy(secure_xauth_username_str, "PLUTO_XAUTH_USERNAME='");
+
+		len = strlen(secure_xauth_username_str);
+		remove_metachar(st->st_xauth_username
+				,secure_xauth_username_str+len
+				,sizeof(secure_xauth_username_str)-(len+2));
+		strncat(st->st_xauth_username, "'", sizeof(secure_xauth_username_str)-1);
+	}
 
         srcip_str[0]='\0';
         if(addrbytesptr(&sr->this.host_srcip, NULL) != 0
@@ -537,6 +546,7 @@ do_command(struct connection *c, struct spd_route *sr, const char *verb)
 			   "PLUTO_PEER_PROTOCOL='%u' "
 			   "PLUTO_PEER_CA='%s' "
 			   "PLUTO_CONN_POLICY='%s' "
+			   "%s "
 			   "%s "       /* PLUTO_MY_SRCIP */                    
 			   "%s"        /* actual script */
 			   , verb, verb_suffix
@@ -559,6 +569,7 @@ do_command(struct connection *c, struct spd_route *sr, const char *verb)
 			   , sr->that.protocol
 			   , secure_peerca_str
 			   , prettypolicy(c->policy)
+			   , secure_xauth_username_str
 			   , srcip_str
 			   , sr->this.updown == NULL? DEFAULT_UPDOWN : sr->this.updown))
         {
@@ -580,11 +591,16 @@ do_command(struct connection *c, struct spd_route *sr, const char *verb)
          * Any used by library routines (perhaps the resolver or syslog)
          * will remain.
          */
-        FILE *f = popen(cmd, "r");
+	__sighandler_t savesig;
+        FILE *f;
+
+	savesig = signal(SIGCHLD, SIG_DFL);
+        f = popen(cmd, "r");
 
         if (f == NULL)
         {
             loglog(RC_LOG_SERIOUS, "unable to popen %s%s command", verb, verb_suffix);
+	    signal(SIGCHLD, savesig);
             return FALSE;
         }
 
@@ -600,6 +616,7 @@ do_command(struct connection *c, struct spd_route *sr, const char *verb)
                 {
                     log_errno((e, "fgets failed on output of %s%s command"
                         , verb, verb_suffix));
+		    signal(SIGCHLD, savesig);
                     return FALSE;
                 }
                 else
@@ -621,6 +638,7 @@ do_command(struct connection *c, struct spd_route *sr, const char *verb)
         /* report on and react to return code */
         {
             int r = pclose(f);
+	    signal(SIGCHLD, savesig);
 
             if (r == -1)
             {
@@ -686,7 +704,9 @@ could_route(struct connection *c)
     /* if this is a Road Warrior template, we cannot route.
      * Opportunistic template is OK.
      */
-    if (c->kind == CK_TEMPLATE && !(c->policy & POLICY_OPPO))
+    if (!c->spd.that.has_client
+	&& c->kind == CK_TEMPLATE
+	&& !(c->policy & POLICY_OPPO))
     {
         loglog(RC_ROUTE, "cannot route template policy of %s",
                prettypolicy(c->policy));
@@ -867,7 +887,7 @@ unroute_connection(struct connection *c)
 
         /* only unroute if no other connection shares it */
         if (routed(cr) && route_owner(c, NULL, NULL, NULL) == NULL)
-            (void) do_command(c, sr, "unroute");
+            (void) do_command(c, sr, "unroute", NULL);
     }
 }
 
@@ -1875,8 +1895,10 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->satype = SADB_X_SATYPE_IPIP;
         said_next->text_said = text_said;
 
-        if (!kernel_ops->add_sa(said_next, replace))
+        if (!kernel_ops->add_sa(said_next, replace)) {
+	    DBG_log("add_sa tunnel failed");
             goto fail;
+	}
 
         said_next++;
 
@@ -1917,8 +1939,10 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->reqid = c->spd.reqid + 2;
         said_next->text_said = text_said;
 
-        if (!kernel_ops->add_sa(said_next, replace))
+        if (!kernel_ops->add_sa(said_next, replace)) {
+	    DBG_log("add_sa ipcomp failed");
             goto fail;
+	}
 
         said_next++;
 
@@ -1935,56 +1959,87 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         u_int16_t key_len;
 
         static const struct esp_info esp_info[] = {
-            { ESP_NULL, AUTH_ALGORITHM_HMAC_MD5,
+            { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_MD5,
                 0, HMAC_MD5_KEY_LEN,
                 SADB_EALG_NULL, SADB_AALG_MD5HMAC },
-            { ESP_NULL, AUTH_ALGORITHM_HMAC_SHA1,
+            { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_SHA1,
                 0, HMAC_SHA1_KEY_LEN,
                 SADB_EALG_NULL, SADB_AALG_SHA1HMAC },
 
-            { ESP_DES, AUTH_ALGORITHM_NONE,
+            { FALSE, ESP_DES, AUTH_ALGORITHM_NONE,
                 DES_CBC_BLOCK_SIZE, 0,
                 SADB_EALG_DESCBC, SADB_AALG_NONE },
-            { ESP_DES, AUTH_ALGORITHM_HMAC_MD5,
+            { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_MD5,
                 DES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
                 SADB_EALG_DESCBC, SADB_AALG_MD5HMAC },
-            { ESP_DES, AUTH_ALGORITHM_HMAC_SHA1,
+            { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_SHA1,
                 DES_CBC_BLOCK_SIZE,
                 HMAC_SHA1_KEY_LEN, SADB_EALG_DESCBC, SADB_AALG_SHA1HMAC },
 
-            { ESP_3DES, AUTH_ALGORITHM_NONE,
+            { FALSE, ESP_3DES, AUTH_ALGORITHM_NONE,
                 DES_CBC_BLOCK_SIZE * 3, 0,
                 SADB_EALG_3DESCBC, SADB_AALG_NONE },
-            { ESP_3DES, AUTH_ALGORITHM_HMAC_MD5,
+            { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_MD5,
                 DES_CBC_BLOCK_SIZE * 3, HMAC_MD5_KEY_LEN,
                 SADB_EALG_3DESCBC, SADB_AALG_MD5HMAC },
-            { ESP_3DES, AUTH_ALGORITHM_HMAC_SHA1,
+            { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_SHA1,
                 DES_CBC_BLOCK_SIZE * 3, HMAC_SHA1_KEY_LEN,
                 SADB_EALG_3DESCBC, SADB_AALG_SHA1HMAC },
+
+            { FALSE, ESP_AES, AUTH_ALGORITHM_NONE,
+                AES_CBC_BLOCK_SIZE, 0,
+                SADB_X_EALG_AESCBC, SADB_AALG_NONE },
+            { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_MD5,
+                AES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
+                SADB_X_EALG_AESCBC, SADB_AALG_MD5HMAC },
+            { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_SHA1,
+                AES_CBC_BLOCK_SIZE, HMAC_SHA1_KEY_LEN,
+                SADB_X_EALG_AESCBC, SADB_AALG_SHA1HMAC },
         };
+	//static const int esp_max = elemsof(esp_info);
+	//int esp_count;
 
 #ifdef NAT_TRAVERSAL
         u_int8_t natt_type = 0;
         u_int16_t natt_sport = 0, natt_dport = 0;
         ip_address natt_oa;
 
-        if (st->nat_traversal & NAT_T_DETECTED) {
-            natt_type = (st->nat_traversal & NAT_T_WITH_PORT_FLOATING) ?
-                ESPINUDP_WITH_NON_ESP : ESPINUDP_WITH_NON_IKE;
-            natt_sport = inbound? c->spd.that.host_port : c->spd.this.host_port;
-            natt_dport = inbound? c->spd.this.host_port : c->spd.that.host_port;
-            natt_oa = st->nat_oa;
+        if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
+	    if(st->hidden_variables.st_nat_traversal & NAT_T_WITH_PORT_FLOATING) {
+		natt_type = ESPINUDP_WITH_NON_ESP;
+	    } else {
+		natt_type = ESPINUDP_WITH_NON_IKE;
+	    }
+	       
+	    if(inbound) {
+		natt_sport = st->st_remoteport;
+		natt_dport = st->st_localport;
+	    } else {
+		natt_sport = st->st_localport;
+		natt_dport = st->st_remoteport;
+	    }
+		
+            natt_oa = st->hidden_variables.st_nat_oa;
         }
 #endif
 
+	DBG(DBG_CRYPT
+	    , DBG_log("looking for alg with transid: %d keylen: %d auth: %d\n"
+		      , st->st_esp.attrs.transid
+		      , st->st_esp.attrs.key_len
+		      , st->st_esp.attrs.auth));
+		    
         for (ei = esp_info; ; ei++)
         {
+	    
+	    /* if it is the last key entry, then ask algo */
             if (ei == &esp_info[elemsof(esp_info)])
             {
                 /* Check for additional kernel alg */
 #ifdef KERNEL_ALG
-                if ((ei=kernel_alg_esp_info(st->st_esp.attrs.transid, 
-                                        st->st_esp.attrs.auth))!=NULL) {
+                if ((ei=kernel_alg_esp_info(st->st_esp.attrs.transid,
+					    st->st_esp.attrs.key_len,
+					    st->st_esp.attrs.auth))!=NULL) {
                         break;
                 }
 #endif
@@ -1994,16 +2049,31 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
                  * enum_name does the same job, without a static buffer,
                  * assuming the name will be found.
                  */
-                loglog(RC_LOG_SERIOUS, "ESP transform %s / auth %s not implemented yet"
+                loglog(RC_LOG_SERIOUS, "ESP transform %s(%d) / auth %s not implemented yet"
                     , enum_name(&esp_transformid_names, st->st_esp.attrs.transid)
+		       , st->st_esp.attrs.key_len
                     , enum_name(&auth_alg_names, st->st_esp.attrs.auth));
                 goto fail;
             }
 
+	    DBG(DBG_CRYPT
+		, DBG_log("checking transid: %d keylen: %d auth: %d\n"
+			  , ei->transid, ei->enckeylen, ei->auth));
+		    
             if (st->st_esp.attrs.transid == ei->transid
-            && st->st_esp.attrs.auth == ei->auth)
+		&& (st->st_esp.attrs.key_len ==0 || st->st_esp.attrs.key_len == ei->enckeylen*8)
+		&& st->st_esp.attrs.auth == ei->auth)
                 break;
         }
+
+	if (st->st_esp.attrs.transid != ei->transid
+	    && st->st_esp.attrs.key_len != ei->enckeylen*8  
+	    && st->st_esp.attrs.auth != ei->auth) {
+	    loglog(RC_LOG_SERIOUS, "failed to find key info for %s/%s"
+		   , enum_name(&esp_transformid_names, st->st_esp.attrs.transid)
+		   , enum_name(&auth_alg_names, st->st_esp.attrs.auth));
+	    goto fail;
+	}
 
         key_len = st->st_esp.attrs.key_len/8;
         if (key_len) {
@@ -2029,11 +2099,9 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
         /* divide up keying material */
         /* passert(st->st_esp.keymat_len == ei->enckeylen + ei->authkeylen); */
-        DBG(DBG_KLIPS|DBG_CONTROL|DBG_PARSING, 
-                if(st->st_esp.keymat_len != key_len + ei->authkeylen)
-                        DBG_log("keymat_len=%d key_len=%d authkeylen=%d",
-                                st->st_esp.keymat_len, (int)key_len, (int)ei->authkeylen);
-        );
+	if(st->st_esp.keymat_len != key_len + ei->authkeylen)
+	    DBG_log("keymat_len=%d key_len=%d authkeylen=%d",
+		    st->st_esp.keymat_len, (int)key_len, (int)ei->authkeylen);
         passert(st->st_esp.keymat_len == (key_len + ei->authkeylen));
 
         set_text_said(text_said, &dst.addr, esp_spi, SA_ESP);
@@ -2044,7 +2112,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->dst_client = &dst_client;
         said_next->spi = esp_spi;
         said_next->satype = SADB_SATYPE_ESP;
-        said_next->replay_window = REPLAY_WINDOW;
+        said_next->replay_window = kernel_ops->replay_window;
         said_next->authalg = ei->authalg;
         said_next->authkeylen = ei->authkeylen;
         /* said_next->authkey = esp_dst_keymat + ei->enckeylen; */
@@ -2107,7 +2175,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->dst_client = &dst_client;
         said_next->spi = ah_spi;
         said_next->satype = SADB_SATYPE_AH;
-        said_next->replay_window = REPLAY_WINDOW;
+        said_next->replay_window = kernel_ops->replay_window;
         said_next->authalg = authalg;
         said_next->authkeylen = st->st_ah.keymat_len;
         said_next->authkey = ah_dst_keymat;
@@ -2222,6 +2290,13 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         /* could update said, but it will not be used */
     }
 
+#ifdef DEBUG
+    /* if the impaired is set, pretend this fails */
+    if(st->st_connection->extra_debugging & IMPAIR_SA_CREATION) {
+	DBG_log("Impair SA creation is set, pretending to fail");
+	goto fail;
+    }
+#endif
     return TRUE;
 
 fail:
@@ -2335,12 +2410,19 @@ const struct kernel_ops *kernel_ops;
 
 #endif /* KLIPS */
 
+/* keep track of kernel version */
+char kversion[256];
+
 void
 init_kernel(void)
 {
-#ifdef KLIPS
+    struct utsname un;
 
-    if (no_klips)
+    /* get kernel version */
+    uname(&un);
+    strncpy(kversion, un.release, sizeof(kversion));
+
+    if (kern_interface == NO_KERNEL)
     {
         kernel_ops = &noklips_kernel_ops;
         return;
@@ -2348,9 +2430,8 @@ init_kernel(void)
 
     init_pfkey();
 
-    kernel_ops = &klips_kernel_ops;
-
-#if defined(linux) && defined(KERNEL26_SUPPORT)
+#if defined(KLIPS) && defined(KERNEL26_SUPPORT)
+    if(kern_interface == AUTO_PICK)
     {
         bool linux_ipsec = 0;
         struct stat buf;
@@ -2358,15 +2439,37 @@ init_kernel(void)
         linux_ipsec = (stat("/proc/net/pfkey", &buf) == 0);
         if (linux_ipsec)
             {
-                openswan_log("Using Linux 2.6 IPsec interface code");
-                kernel_ops = &linux_kernel_ops;
+		kern_interface = USE_NETKEY;
             }
         else
             {
-                openswan_log("Using KLIPS IPsec interface code");
+                kern_interface = USE_KLIPS;
             }
     }
 #endif
+
+    switch(kern_interface) {
+#if defined(KERNEL26_SUPPORT)
+    case USE_NETKEY:
+	openswan_log("Using Linux 2.6 IPsec interface code on %s"
+		     , kversion);
+	kernel_ops = &linux_kernel_ops;
+	break;
+#endif
+
+#if defined(KLIPS) 
+    case USE_KLIPS:
+	openswan_log("Using KLIPS IPsec interface code on %s"
+		     , kversion);
+	kernel_ops = &klips_kernel_ops;
+	break;
+#endif
+
+    default:
+	openswan_log("kernel interface '%s' not available"
+		     , enum_name(&kern_interface_names, kern_interface));
+	exit(5);
+    }
 
     if (kernel_ops->init)
     {
@@ -2381,7 +2484,6 @@ init_kernel(void)
     {
         event_schedule(EVENT_SHUNT_SCAN, SHUNT_SCAN_INTERVAL, NULL);
     }
-#endif
 }
 
 /* Note: install_inbound_ipsec_sa is only used by the Responder.
@@ -2549,7 +2651,7 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
          */
         firewall_notified = st == NULL  /* not a tunnel eroute */
             || sr->eroute_owner != SOS_NOBODY   /* already notified */
-            || do_command(c, sr, "up"); /* go ahead and notify */
+            || do_command(c, sr, "up", st); /* go ahead and notify */
     }
 
     /* install the route */
@@ -2564,8 +2666,8 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
     else if (ro == NULL)
     {
         /* a new route: no deletion required, but preparation is */
-        (void) do_command(c, sr, "prepare");    /* just in case; ignore failure */
-        route_installed = do_command(c, sr, "route");
+        (void) do_command(c, sr, "prepare", st);    /* just in case; ignore failure */
+        route_installed = do_command(c, sr, "route", st);
     }
     else if (routed(sr->routing)
     || routes_agree(ro, c))
@@ -2585,13 +2687,13 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
          */
         if (sameaddr(&sr->this.host_nexthop, &esr->this.host_nexthop))
         {
-            (void) do_command(ro, sr, "unroute");
-            route_installed = do_command(c, sr, "route");
+            (void) do_command(ro, sr, "unroute", st);
+            route_installed = do_command(c, sr, "route", st);
         }
         else
         {
-            route_installed = do_command(c, sr, "route");
-            (void) do_command(ro, sr, "unroute");
+            route_installed = do_command(c, sr, "route", st);
+            (void) do_command(ro, sr, "unroute", st);
         }
 
         /* record unrouting */
@@ -2662,7 +2764,7 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
     {
         /* Failure!  Unwind our work. */
         if (firewall_notified && sr->eroute_owner == SOS_NOBODY)
-            (void) do_command(c, sr, "down");
+            (void) do_command(c, sr, "down", st);
 
         if (eroute_installed)
         {
@@ -2838,7 +2940,7 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
                 sr->routing = (c->policy & POLICY_FAIL_MASK) == POLICY_FAIL_NONE
                     ? RT_ROUTED_PROSPECTIVE : RT_ROUTED_FAILURE;
 
-                (void) do_command(c, sr, "down");
+                (void) do_command(c, sr, "down", st);
                 if ((c->policy & POLICY_DONT_REKEY)
                 && c->kind == CK_INSTANCE)
                 {

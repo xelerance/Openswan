@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: server.h,v 1.27 2003/12/30 06:54:03 mcr Exp $
+ * RCSID $Id: server.h,v 1.30 2005/02/15 01:54:07 mcr Exp $
  */
 
 #ifndef _SERVER_H
@@ -42,6 +42,7 @@ struct iface {
     char *vname;	/* virtual (ipsec) device name */
     char *rname;	/* real device name */
     ip_address addr;	/* interface IP address */
+    u_int16_t  port;    /* host byte order */
     int fd;	/* file descriptor of socket for IKE UDP messages */
     struct iface *next;
 #ifdef NAT_TRAVERSAL
@@ -62,5 +63,11 @@ extern void call_server(void);
 /* in rcv_info.c */
 extern err_t init_info_socket(void);
 extern void delete_info_socket(void);
+
+extern bool pluto_crypt_handle_dead_child(int pid, int status);
+extern bool adns_reapchild(pid_t pid, int status);
+
+extern const char *init_pluto_vendorid(void);
+
 
 #endif /* _SERVER_H */

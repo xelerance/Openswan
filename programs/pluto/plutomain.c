@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: plutomain.c,v 1.93 2004/06/26 23:17:52 ken Exp $
+ * RCSID $Id: plutomain.c,v 1.99.2.1 2005/05/18 20:55:13 ken Exp $
  */
 
 #include <stdio.h>
@@ -56,6 +56,7 @@
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "keys.h"
+#include "secrets.h"
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "rnd.h"
@@ -68,6 +69,7 @@
 #include "md5.h"
 #include "crypto.h"	/* requires sha1.h and md5.h */
 #include "vendor.h"
+#include "pluto_crypt.h"
 
 #ifdef VIRTUAL_IP
 #include "virtual.h"
@@ -82,6 +84,9 @@
 #endif
 
 const char *ipsec_dir = IPSECDIR;
+const char *ctlbase = "/var/run/pluto";
+
+openswan_passert_fail_t openswan_passert_fail = passert_fail;
 
 /** usage - print help messages
  *
@@ -100,12 +105,15 @@ usage(const char *mess)
 	    " \\\n\t"
 	    "[--nofork]"
 	    " [--stderrlog]"
-	    " [--noklips]"
+	    " [--use-nostack]"         /* old --no_klips */
 	    " [--nocrsend]"
 	    " [--strictcrlpolicy]"
 	    " [--crlcheckinterval]"
 	    " [--ocspuri]"
 	    " [--uniqueids]"
+	    " [--use-auto]"
+	    " [--use-klips]"
+	    " [--use-netkey]"
 	    " \\\n\t"
 	    "[--interface <ifname>]"
 	    " [--ikeport <port-number>]"
@@ -118,6 +126,7 @@ usage(const char *mess)
 	    " [--ipsecdir <ipsec-dir>]"
 	    " \\\n\t"
 	    "[--adns <pathname>]"
+	    "[--nhelpers <number>]"
 #ifdef DEBUG
 	    " \\\n\t"
 	    "[--debug-none]"
@@ -131,11 +140,12 @@ usage(const char *mess)
 	    "[--debug-control]"
 	    " [--debug-klips]"
 	    " [--debug-dns]"
+	    " [--debug-dpd]"
 	    " [ --debug-private]"
 	    " [ --debug-pfkey]"
 #endif
 #ifdef NAT_TRAVERSAL
-	    " [ --debug-nat_t]"
+	    " [ --debug-nat-t]"
 	    " \\\n\t"
 	    "[--nat_traversal] [--keep_alive <delay_sec>]"
 	    " \\\n\t"
@@ -166,8 +176,18 @@ static bool pluto_lock_created = FALSE;
 static int
 create_lock(void)
 {
-    int fd = open(pluto_lock, O_WRONLY | O_CREAT | O_EXCL | O_TRUNC
-	, S_IRUSR | S_IRGRP | S_IROTH);
+    int fd;
+
+    if(mkdir(ctlbase, 0755) != 0) {
+	if(errno != EEXIST) {
+	    fprintf(stderr, "pluto: unable to create lock dir: \"%s\": %s\n"
+		    , ctlbase, strerror(errno));
+	    exit_pluto(10);
+	}
+    }
+	    
+    fd = open(pluto_lock, O_WRONLY | O_CREAT | O_EXCL | O_TRUNC
+	      , S_IRUSR | S_IRGRP | S_IROTH);
 
     if (fd < 0)
     {
@@ -228,6 +248,12 @@ bool strict_crl_policy = FALSE;
 /** by default pluto does not check crls dynamically */
 long crl_check_interval = 0;
 
+/* whether or not to use klips */
+enum kernel_interface kern_interface = AUTO_PICK;
+
+char **global_argv;
+int    global_argc;
+
 int
 main(int argc, char **argv)
 {
@@ -235,6 +261,8 @@ main(int argc, char **argv)
     bool log_to_stderr_desired = FALSE;
     int lockfd;
     char* ocspuri = NULL;
+    int nhelpers = -1;
+    char *coredir;
 
 #ifdef NAT_TRAVERSAL
     /** Overridden by nat_traversal= in ipsec.conf */
@@ -248,6 +276,13 @@ main(int argc, char **argv)
     char *virtual_private = NULL;
 #endif
 
+    global_argv = argv;
+    global_argc = argc;
+    openswan_passert_fail = passert_fail;
+
+    /* see if there is an environment variable */
+    coredir = getenv("PLUTO_CORE_DIR");
+
     /* handle arguments */
     for (;;)
     {
@@ -260,12 +295,18 @@ main(int argc, char **argv)
 	    { "nofork", no_argument, NULL, 'd' },
 	    { "stderrlog", no_argument, NULL, 'e' },
 	    { "noklips", no_argument, NULL, 'n' },
+	    { "use-nostack",  no_argument, NULL, 'n' },
 	    { "nocrsend", no_argument, NULL, 'c' },
 	    { "strictcrlpolicy", no_argument, NULL, 'r' },
 	    { "crlcheckinterval", required_argument, NULL, 'x'},
 	    { "ocsprequestcert", required_argument, NULL, 'q'},
 	    { "ocspuri", required_argument, NULL, 'o'},
 	    { "uniqueids", no_argument, NULL, 'u' },
+	    { "useklips",  no_argument, NULL, 'k' },
+	    { "use-klips",  no_argument, NULL, 'k' },
+	    { "use-auto",  no_argument, NULL, 'G' },
+	    { "usenetkey", no_argument, NULL, 'K' },
+	    { "use-netkey", no_argument, NULL, 'K' },
 	    { "interface", required_argument, NULL, 'i' },
 	    { "ikeport", required_argument, NULL, 'p' },
 	    { "ctlbase", required_argument, NULL, 'b' },
@@ -274,6 +315,7 @@ main(int argc, char **argv)
 	    { "perpeerlogbase", required_argument, NULL, 'P' },
 	    { "perpeerlog", no_argument, NULL, 'l' },
 	    { "noretransmits", no_argument, NULL, 'R' },
+	    { "coredir", required_argument, NULL, 'C' },
 	    { "ipsecdir", required_argument, NULL, 'f' },
 	    { "ipsec_dir", required_argument, NULL, 'f' },
 #ifdef USE_LWRES
@@ -287,10 +329,13 @@ main(int argc, char **argv)
 	    { "force_keepalive", no_argument, NULL, '3' },
 	    { "disable_port_floating", no_argument, NULL, '4' },
 	    { "debug-nat_t", no_argument, NULL, '5' },
+	    { "debug-nattraversal", no_argument, NULL, '5' },
+	    { "debug-nat-t", no_argument, NULL, '5' },
 #endif
 #ifdef VIRTUAL_IP
 	    { "virtual_private", required_argument, NULL, '6' },
 #endif
+	    { "nhelpers", required_argument, NULL, 'j' },
 #ifdef DEBUG
 	    { "debug-none", no_argument, NULL, 'N' },
 	    { "debug-all]", no_argument, NULL, 'A' },
@@ -305,6 +350,7 @@ main(int argc, char **argv)
 	    { "debug-dns", no_argument, NULL, DBG_DNS + DBG_OFFSET },
 	    { "debug-oppo", no_argument, NULL, DBG_OPPO + DBG_OFFSET },
 	    { "debug-controlmore", no_argument, NULL, DBG_CONTROLMORE + DBG_OFFSET },
+	    { "debug-dpd", no_argument, NULL, DBG_DPD + DBG_OFFSET },
 	    { "debug-private", no_argument, NULL, DBG_PRIVATE + DBG_OFFSET },
 	    { "debug-pfkey", no_argument, NULL, DBG_PFKEY + DBG_OFFSET },
 
@@ -339,6 +385,10 @@ main(int argc, char **argv)
 	    usage(NULL);
 	    break;	/* not actually reached */
 
+	case 'C':
+	    coredir = clone_str(optarg, "coredir");
+	    break;
+
 	case 'v':	/* --version */
 	    {
 		const char **sp = ipsec_copyright_notice();
@@ -356,6 +406,21 @@ main(int argc, char **argv)
 	    /* does not return on error */
 	    continue;
 
+	case 'j':	/* --nhelpers */
+            if (optarg == NULL || !isdigit(optarg[0]))
+                usage("missing number of pluto helpers");
+
+            {
+                char *endptr;
+                long count = strtol(optarg, &endptr, 0);
+
+                if (*endptr != '\0' || endptr == optarg
+		    || count < -1)
+                    usage("<interval-time> must be a positive number, 0 or -1");
+                nhelpers = count;
+            }
+	    continue;
+
 	case 'd':	/* --nofork*/
 	    fork_desired = FALSE;
 	    continue;
@@ -364,8 +429,20 @@ main(int argc, char **argv)
 	    log_to_stderr_desired = TRUE;
 	    continue;
 
-	case 'n':	/* --noklips */
-	    no_klips = TRUE;
+	case 'G':       /* --use-auto */
+	    kern_interface = AUTO_PICK;
+	    continue;
+
+	case 'k':       /* --use-klips */
+	    kern_interface = USE_KLIPS;
+	    continue;
+
+	case 'K':       /* --use-netkey */
+	    kern_interface = USE_NETKEY;
+	    continue;
+
+	case 'n':	/* --use-nostack */
+	    kern_interface = NO_KERNEL;
 	    continue;
 
 	case 'c':	/* --nocrsend */
@@ -427,14 +504,15 @@ main(int argc, char **argv)
 	    continue;
 
 	case 'b':	/* --ctlbase <path> */
+	    ctlbase = optarg;
 	    if (snprintf(ctl_addr.sun_path, sizeof(ctl_addr.sun_path)
-	    , "%s%s", optarg, CTL_SUFFIX) == -1)
+			 , "%s%s", ctlbase, CTL_SUFFIX) == -1)
 		usage("<path>" CTL_SUFFIX " too long for sun_path");
 	    if (snprintf(info_addr.sun_path, sizeof(info_addr.sun_path)
-	    , "%s%s", optarg, INFO_SUFFIX) == -1)
+			 , "%s%s", ctlbase, INFO_SUFFIX) == -1)
 		usage("<path>" INFO_SUFFIX " too long for sun_path");
 	    if (snprintf(pluto_lock, sizeof(pluto_lock)
-	    , "%s%s", optarg, LOCK_SUFFIX) == -1)
+			 , "%s%s", ctlbase, LOCK_SUFFIX) == -1)
 		usage("<path>" LOCK_SUFFIX " must fit");
 	    continue;
 
@@ -507,6 +585,12 @@ main(int argc, char **argv)
     if (optind != argc)
 	usage("unexpected argument");
     reset_debugging();
+
+    /* if a core dir was set, chdir there */
+    if(coredir) {
+	chdir(coredir);
+    }
+
     lockfd = create_lock();
 
     /* select between logging methods */
@@ -641,6 +725,10 @@ main(int argc, char **argv)
 #endif
     }
 
+    if(coredir) {
+	openswan_log("core dump dir: %s", coredir);
+    }
+
 /** Initialize all of the various features */
 
 #ifdef NAT_TRAVERSAL
@@ -653,7 +741,9 @@ main(int argc, char **argv)
     init_rnd_pool();
     init_secret();
     init_states();
+    init_connections();
     init_crypto();
+    init_crypto_helpers(nhelpers);
     init_demux();
     init_kernel();
     init_adns();

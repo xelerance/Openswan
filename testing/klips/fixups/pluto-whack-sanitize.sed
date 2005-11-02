@@ -5,3 +5,5 @@ s/IPsec SA established {.*}/IPsec SA established/
 s,\(instance with peer .*\) {isakmp=#.*/ipsec=#.*},\1,
 s,\(initiating Quick Mode .*\) {using isakmp#.*},\1,
 s,\(initiating Quick Mode .* to replace #.*\) {using isakmp#.*},\1,
+s,{msgid.*},,
+

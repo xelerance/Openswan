@@ -1,0 +1,5 @@
+This tests the RFC3706 DPD implementation, with dpdaction=clear on east,
+and no dpd configuration on west.
+
+This test is like dpd-01, except that it uses aggressive mode.
+

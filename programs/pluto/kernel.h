@@ -11,10 +11,9 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel.h,v 1.42 2004/06/01 14:43:20 ken Exp $
+ * RCSID $Id: kernel.h,v 1.42.22.1 2005/05/18 20:55:13 ken Exp $
  */
 
-extern bool no_klips;	/* don't actually use KLIPS */
 extern bool can_do_IPcomp;  /* can system actually perform IPCOMP? */
 
 #ifdef KLIPS
@@ -80,6 +79,7 @@ struct kernel_ops {
 	} type;
 	bool inbound_eroute;
 	bool policy_lifetime;
+        int  replay_window;
 	int *async_fdp;
 
 	void (*init)(void);

@@ -1,7 +1,7 @@
 #! /bin/sh 
 #
 # 
-# $Id: uml-functions.sh,v 1.29 2003/10/31 02:43:34 mcr Exp $
+# $Id: uml-functions.sh,v 1.35 2004/10/17 17:38:35 mcr Exp $
 #
 
 setup_make() {
@@ -16,11 +16,23 @@ setup_make() {
 	i?86) SUBARCH=i386;;
     esac
 
-    echo "IPSECDIR=${FREESWANSRCDIR}/linux/net/ipsec"
-    echo "include ${FREESWANSRCDIR}/Makefile.ver"
-    echo "module/ipsec.o: ${FREESWANSRCDIR}/packaging/makefiles/module.make \${IPSECDIR}/*.c"
+    echo "IPSECDIR=${OPENSWANSRCDIR}/linux/net/ipsec"
+    echo "include ${OPENSWANSRCDIR}/Makefile.ver"
+    echo 
+    
+    echo "all: "
+    echo "$TAB echo Default make called"
+    echo "$TAB exit 1"
+    echo
+
+    echo "module/ipsec.o: ${OPENSWANSRCDIR}/packaging/makefiles/module.make \${IPSECDIR}/*.c"
     echo "$TAB mkdir -p module"
-    echo "$TAB make -C ${FREESWANSRCDIR} FREESWANSRCDIR=${FREESWANSRCDIR} MODBUILDDIR=$POOLSPACE/module KERNELSRC=$POOLSPACE/plain ARCH=um SUBARCH=${SUBARCH} module "
+    echo "$TAB make -C ${OPENSWANSRCDIR} OPENSWANSRCDIR=${OPENSWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MODBUILDDIR=$POOLSPACE/module KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module "
+    echo
+
+    echo "module26/ipsec.ko: ${OPENSWANSRCDIR}/packaging/makefiles/module26.make \${IPSECDIR}/*.c"
+    echo "$TAB mkdir -p module26"
+    echo "$TAB make -C ${OPENSWANSRCDIR} OPENSWANSRCDIR=${OPENSWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MOD26BUILDDIR=$POOLSPACE/module26 KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module26 "
     echo
 }
 
@@ -29,6 +41,7 @@ setup_host_make() {
     host=$1
     KERNEL=$2
     HOSTTYPE=$3
+    KERNVER=$4
     KERNDIR=`dirname $KERNEL`
     TAB="	@"
     hostroot=$host/root
@@ -133,7 +146,9 @@ setup_host_make() {
     echo "$TAB cp ${TESTINGROOT}/baseconfigs/$host/etc/fstab $hostroot/etc/fstab"
     echo "$TAB echo none	   /usr/share		     hostfs   defaults,ro,$SHAREROOT 0 0 >>$hostroot/etc/fstab"
     echo "$TAB echo none	   /testing		     hostfs   defaults,ro,${TESTINGROOT} 0 0 >>$hostroot/etc/fstab"
-    echo "$TAB echo none	   /usr/src		     hostfs   defaults,ro,${FREESWANSRCDIR} 0 0 >>$hostroot/etc/fstab"
+    echo "$TAB echo none	   /usr/src		     hostfs   defaults,ro,${OPENSWANSRCDIR} 0 0 >>$hostroot/etc/fstab"
+    echo "$TAB echo none	   /usr/local		     hostfs   defaults,rw,${POOLSPACE}/${hostroot}/usr/local 0 0 >>$hostroot/etc/fstab"
+    echo "$TAB echo none	   /var/tmp		     hostfs   defaults,rw,${POOLSPACE}/${hostroot}/var/tmp 0 0 >>$hostroot/etc/fstab"
     depends="$depends $hostroot/etc/fstab"
 
     # split Debian "interfaces" file into RH ifcfg-* file
@@ -143,30 +158,35 @@ setup_host_make() {
     echo
     depends="$depends $hostroot/etc/sysconfig/network-scripts/ifcfg-eth0"
 
-    if [ "X$HOSTTYPE" == "Xfreeswan" ]
+    if [ "X$HOSTTYPE" == "Xopenswan" ]
     then
 	# install FreeSWAN if appropriate.
         
-	echo "$hostroot/usr/local/sbin/ipsec : ${FREESWANSRCDIR}/Makefile.inc ${FREESWANSRCDIR}/Makefile.ver"
-	echo "$TAB cd ${FREESWANSRCDIR} && make DESTDIR=$POOLSPACE/$hostroot install"
+	echo "$hostroot/usr/local/sbin/ipsec : ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver"
+	echo "$TAB cd ${OPENSWANSRCDIR} && make DESTDIR=$POOLSPACE/$hostroot install"
 	echo
 	depends="$depends $hostroot/usr/local/sbin/ipsec"
 
+	case ${KERNVER} in
+	    26) DOTO=".ko";;
+	    *) DOTO=".o";;
+	esac
+
 	# update the module, if any.
-	echo "$hostroot/ipsec.o : module/ipsec.o $hostroot"
-	echo "$TAB -cp module/ipsec.o $hostroot/ipsec.o"
+	echo "$hostroot/ipsec.o : module${KERNVER}/ipsec${DOTO} $hostroot"
+	echo "$TAB -cp module${KERNVER}/ipsec${DOTO} $hostroot/ipsec.o"
 	echo
 	depends="$depends $hostroot/ipsec.o"
 
 	# make module startup script
 	startscript=$POOLSPACE/$host/startmodule.sh
-	echo "$startscript : $FREESWANSRCDIR/umlsetup.sh $hostroot/ipsec.o"
+	echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh $hostroot/ipsec.o"
 	echo "$TAB echo '#!/bin/sh' >$startscript"
 	echo "$TAB echo ''          >>$startscript"
 	echo "$TAB echo '# get $net value from baseconfig'          >>$startscript"
 	echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
 	echo "$TAB echo ''          >>$startscript"
-	echo "$TAB echo '$POOLSPACE/plain/linux root=/dev/root rootfstype=hostfs rootflags=$POOLSPACE/$hostroot rw umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT \$\$*' >>$startscript"
+	echo "$TAB echo '$POOLSPACE/plain${KERNVER}/linux root=/dev/root rootfstype=hostfs rootflags=$POOLSPACE/$hostroot rw umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT \$\$*' >>$startscript"
 	echo "$TAB chmod +x $startscript"
 	echo
 	depends="$depends $startscript"
@@ -174,7 +194,7 @@ setup_host_make() {
 
     # make startup script
     startscript=$POOLSPACE/$host/start.sh
-    echo "$startscript : $FREESWANSRCDIR/umlsetup.sh"
+    echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh"
     echo "$TAB echo '#!/bin/sh' >$startscript"
     echo "$TAB echo ''          >>$startscript"
     echo "$TAB echo '# get $net value from baseconfig'          >>$startscript"
@@ -246,17 +266,11 @@ setup_host() {
     mkdir -p $hostroot/etc/sysconfig/network-scripts
     ${TESTINGROOT}/utils/interfaces2ifcfg.pl $hostroot/etc/network/interfaces $hostroot/etc/sysconfig/network-scripts
 
-    # copy kernel.
+    # hard link the kernel to save space.
     if [ ! -f $POOLSPACE/$host/linux ]
     then
 	rm -f $POOLSPACE/$host/linux
-	cp $KERNEL $POOLSPACE/$host/linux
-    fi
-
-    # update the module, if any.
-    if [ -f $KERNDIR/net/ipsec/ipsec.o ]
-    then
-	cp $KERNDIR/net/ipsec/ipsec.o $POOLSPACE/$host/root/ipsec.o
+	ln $KERNEL $POOLSPACE/$host/linux
     fi
 
     # make startup script
@@ -275,6 +289,25 @@ setup_host() {
 
 #
 # $Log: uml-functions.sh,v $
+# Revision 1.35  2004/10/17 17:38:35  mcr
+# 	add /usr/local and /var/tmp mounts to /etc/fstab so that
+# 	they can be umount'ed/mount'ed to flush changes.
+#
+# Revision 1.34  2004/09/13 02:27:42  mcr
+# 	install klips26 module as ipsec.o, not ipsec.ko.
+#
+# Revision 1.33  2004/09/06 18:39:45  mcr
+# 	copy/rename the .ko file to ipsec.o.
+#
+# Revision 1.32  2004/09/06 04:49:42  mcr
+# 	make sure to copy the right module into the UML root.
+#
+# Revision 1.31  2004/08/18 02:11:08  mcr
+# 	kernel 2.6 changes.
+#
+# Revision 1.30  2004/04/03 19:44:52  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
 # Revision 1.29  2003/10/31 02:43:34  mcr
 # 	pull up of port-selector tests
 #
@@ -330,8 +363,8 @@ setup_host() {
 # 	ipsec.o depends upon the KLIPS source code
 #
 # Revision 1.15  2002/08/08 01:53:36  mcr
-# 	when building the UML environment, make the $FREESWANSRCDIR
-# 	available as /usr/src, and the $FREESWANSRCDIR/testing as /testing.
+# 	when building the UML environment, make the $OPENSWANSRCDIR
+# 	available as /usr/src, and the $OPENSWANSRCDIR/testing as /testing.
 #
 # Revision 1.14  2002/08/05 00:17:45  mcr
 # 	do not install FreeSWAN for "regular hosts"

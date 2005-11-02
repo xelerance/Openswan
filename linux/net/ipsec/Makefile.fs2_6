@@ -1,0 +1,140 @@
+# Makefile for KLIPS kernel code as a module    for 2.6 kernels
+#
+# Makefile for KLIPS kernel code as a module
+# Copyright (C) 1998, 1999, 2000,2001  Richard Guy Briggs.
+# Copyright (C) 2002-2004	Michael Richardson <mcr@freeswan.org>
+# 
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# RCSID $Id: Makefile.fs2_6,v 1.6 2004/08/22 05:02:03 mcr Exp $
+#
+# Note! Dependencies are done automagically by 'make dep', which also
+# removes any old dependencies. DON'T put your own dependencies here
+# unless it's something special (ie not a .c file).
+#
+
+OPENSWANSRCDIR?=.
+KLIPS_TOP?=.
+
+-include ${OPENSWANSRCDIR}/Makefile.ver
+
+base-klips-objs := 
+
+base-klips-objs+= ipsec_init.o ipsec_sa.o ipsec_radij.o radij.o
+base-klips-objs+= ipsec_life.o ipsec_proc.o
+base-klips-objs+= ipsec_tunnel.o ipsec_xmit.o ipsec_rcv.o ipsec_ipip.o
+base-klips-objs+= sysctl_net_ipsec.o 
+base-klips-objs+= pfkey_v2.o pfkey_v2_parser.o pfkey_v2_ext_process.o 
+base-klips-objs+= version.o
+
+base-klips-objs+= satot.o
+base-klips-objs+= addrtot.o
+base-klips-objs+= ultot.o 
+base-klips-objs+= addrtypeof.o
+base-klips-objs+= anyaddr.o
+base-klips-objs+= initaddr.o
+base-klips-objs+= ultoa.o 
+base-klips-objs+= addrtoa.o 
+base-klips-objs+= subnettoa.o 
+base-klips-objs+= subnetof.o 
+base-klips-objs+= goodmask.o 
+base-klips-objs+= datatot.o 
+base-klips-objs+= rangetoa.o 
+base-klips-objs+= prng.o 
+base-klips-objs+= pfkey_v2_parse.o 
+base-klips-objs+= pfkey_v2_build.o 
+base-klips-objs+= pfkey_v2_debug.o 
+base-klips-objs+= pfkey_v2_ext_bits.o 
+base-klips-objs+= version.o
+obj-$(CONFIG_KLIPS) += ${base-klips-objs}
+
+obj-$(CONFIG_KLIPS_ESP)+= ipsec_esp.o
+obj-$(CONFIG_KLIPS_IPCOMP)+= ipsec_ipcomp.o
+obj-$(CONFIG_KLIPS_AUTH_HMAC_MD5) += ipsec_md5c.o
+obj-$(CONFIG_KLIPS_AUTH_HMAC_SHA1) += ipsec_sha1.o
+
+# AH, if you really think you need it.
+obj-$(CONFIG_KLIPS_AH) += ipsec_ah.o
+
+obj-$(CONFIG_KLIPS_ALG)  += ipsec_alg.o
+
+obj-$(CONFIG_KLIPS_ENC_3DES) += des/
+obj-$(CONFIG_KLIPS_ENC_AES)  += aes/
+
+obj-$(CONFIG_KLIPS_ENC_CRYPTOAPI) += ipsec_alg_cryptoapi.o
+
+# IPcomp stuff
+base-ipcomp-objs := ipcomp.o 
+base-ipcomp-objs += adler32.o
+base-ipcomp-objs += deflate.o
+base-ipcomp-objs += infblock.o
+base-ipcomp-objs += infcodes.o
+base-ipcomp-objs += inffast.o
+base-ipcomp-objs += inflate.o
+base-ipcomp-objs += inftrees.o
+base-ipcomp-objs += infutil.o
+base-ipcomp-objs += trees.o
+base-ipcomp-objs += zutil.o
+asm-ipcomp-obj-$(CONFIG_M586)          += match586.o
+asm-ipcomp-obj-$(CONFIG_M586TSC)       += match586.o
+asm-ipcomp-obj-$(CONFIG_M586MMX)       += match586.o
+asm-ipcomp-obj-$(CONFIG_M686)          += match686.o
+asm-ipcomp-obj-$(CONFIG_MPENTIUMIII)   += match686.o
+asm-ipcomp-obj-$(CONFIG_MPENTIUM4)     += match686.o
+asm-ipcomp-obj-$(CONFIG_MK6)           += match586.o
+asm-ipcomp-obj-$(CONFIG_MK7)           += match686.o
+asm-ipcomp-obj-$(CONFIG_MCRUSOE)       += match586.o
+asm-ipcomp-obj-$(CONFIG_MWINCHIPC6)    += match586.o
+asm-ipcomp-obj-$(CONFIG_MWINCHIP2)     += match686.o
+asm-ipcomp-obj-$(CONFIG_MWINCHIP3D)    += match686.o
+base-ipcomp-objs += ${asm-ipcomp-obj-y}
+
+obj-$(CONFIG_KLIPS_IPCOMP) += ${base-ipcomp-objs}
+
+EXTRA_CFLAGS += -DIPCOMP_PREFIX
+
+#
+# $Log: Makefile.fs2_6,v $
+# Revision 1.6  2004/08/22 05:02:03  mcr
+# 	organized symbols such that it is easier to build modules.
+#
+# Revision 1.5  2004/08/18 01:43:56  mcr
+# 	adjusted makefile enumation so that it can be used by module
+# 	wrapper.
+#
+# Revision 1.4  2004/08/17 03:27:23  mcr
+# 	klips 2.6 edits.
+#
+# Revision 1.3  2004/08/04 16:50:13  mcr
+# 	removed duplicate definition of dx86unix.o
+#
+# Revision 1.2  2004/08/03 18:21:09  mcr
+# 	only set KLIPS_TOP and OPENSWANSRCDIR if not already set.
+#
+# Revision 1.1  2004/07/26 15:02:22  mcr
+# 	makefile for KLIPS module for 2.6.
+#
+# Revision 1.3  2004/02/24 17:17:04  mcr
+# 	s/CONFIG_IPSEC/CONFIG_KLIPS/ as 26sec uses "CONFIG_IPSEC" to
+# 	turn it on/off as well.
+#
+# Revision 1.2  2004/02/22 06:50:42  mcr
+# 	kernel 2.6 port - merged with 2.4 code.
+#
+# Revision 1.1.2.1  2004/02/20 02:07:53  mcr
+# 	module configuration for KLIPS 2.6
+#
+#
+# Local Variables:
+# compile-command: "(cd ../../.. && source umlsetup.sh && make -C ${POOLSPACE} module/ipsec.o)"
+# End Variables:
+#
+

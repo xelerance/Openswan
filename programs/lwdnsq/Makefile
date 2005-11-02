@@ -12,9 +12,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.11 2004/04/03 19:44:46 ken Exp $
+# RCSID $Id: Makefile,v 1.14 2004/12/18 18:13:40 mcr Exp $
 
-OPENSWANSRCDIR=../..
+OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM:=lwdnsq
@@ -23,7 +23,7 @@ OBJS:=cmds.o lookup.o
 
 LWRESINCL=${LWRESDIR}/include
 
-LIBS:=${FREESWANLIB} ${LWRESLIB} ${BIND9STATICLIBDIR}/libdns.a ${BIND9STATICLIBDIR}/libisc.a
+LIBS:=${FREESWANLIB} ${LWRESLIB} ${BIND9STATICLIBDIR}/libdns.a ${BIND9STATICLIBDIR}/libisc.a 
 
 ifdef BIND9INCDIR
 CFLAGS+=-I${BIND9INCDIR}
@@ -31,10 +31,14 @@ endif
 
 CFLAGS+=-I${LWRESINCL}
 
+# for debugging
+#CFLAGS+=-DEFENCE
+#LIBS+=-lefence
+
 #USERCOMPILE=-g
 
 
-include ../Makefile.program
+include ${srcdir}../Makefile.program
 
 lwdnsq.8: lwdnsq.xml
 	xmlto man lwdnsq.xml
@@ -52,17 +56,27 @@ lookup.o:	lookup.c lwdnsq.h
 
 #
 # $Log: Makefile,v $
+# Revision 1.14  2004/12/18 18:13:40  mcr
+# 	adjusted Makefiles so that ${OBJDIR} builds work.
+#
+# Revision 1.13  2004/12/02 06:20:06  mcr
+# 	turn off linking against efence.
+#
+# Revision 1.12  2004/12/02 06:16:19  mcr
+# 	fixed long standing bug with async resolver when there was
+# 	more than one outstanding request.
+#
 # Revision 1.11  2004/04/03 19:44:46  ken
 # FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
 #
 # Revision 1.10  2003/12/10 03:09:55  mcr
-# 	only include -I$BIND9INCDIR if it is set.
+# 	only include ${srcdir}..$BIND9INCDIR if it is set.
 #
 # Revision 1.9  2003/09/03 01:13:24  mcr
 # 	first attempt at async capable lwdnsq.
 #
 # Revision 1.8  2003/02/27 09:29:02  mcr
-# 	moved targets to after include file so that XML-conversion
+# 	moved targets to after include ${srcdir}..le so that XML-conversion
 # 	does not occur by default.
 #
 # Revision 1.7  2003/02/01 01:36:53  mcr
@@ -93,7 +107,7 @@ lookup.o:	lookup.c lwdnsq.h
 # 	where we will find these only-slightly standard libraries yet.
 #
 # Revision 1.3  2002/10/09 20:13:10  mcr
-# 	get appropriate LWRES include directory.
+# 	get appropriate LWRES include ${srcdir}..rectory.
 #
 # Revision 1.2  2002/09/30 18:55:54  mcr
 # 	skeleton for dnskey helper program.

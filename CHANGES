@@ -1,29 +1,39 @@
+v2.3.2
+* NAT-T fixes (udp/500/4500 rekeying bug)
+* IKE Ping support (ipsec ikeping ...)
+* DPD fixes
+* Better KLIPS vs. Netkey detection 
+* Several pluto crashers
+
+v2.3.1
+* NAT-T RFC support (mlafon/mcr)
+* NAT-T Server Side rewrite - handles rekeying alot better
+* NAT-T Client Side rekey bug fixed
+* Removed HowTo (obselete)
+* IPKG packaging updates
+* Log message updates
+* dpdaction=restart support 
+
+v2.3.0
+* KLIPS for 2.6 support (Experimental)
+  [ good results on FC3-AMD and vanilla/debian kernel source, but not
+    FC3-intel. Might be the grsecurity patch  ]
+* Aggressive Mode Support (client and server)
+* IKE Mode Config support (Experimental)
+* Cisco VPN 3xxx client Interop (Experimental)
+* Cryptographic helpers framework
+* Fixes for NAT-T on 2.4.28+ kernels.
+
 v2.2.0
 * Added RFC 3706 DPD support (see README.DPD)
 * Added AES from JuanJo's ALG patches
 * Fixes for /proc filesystem issues that started to appear in 2.4.25
-* Merge X.509 1.5.4 + latest security fixes (CAN-2004-0590)
-* Updated .spec for building RPMS compatible with Kernel 2.6
-* Merge X.509 security fixes from 1.6.3
-* Fixes for NAT-T on 2.6 pulled up from 2.1.x (Herbert Xu)
-* Fixes for SA Selectors on 2.6 pulled up from 2.1.x (Herbert Xu)
 
 v2.1.2
 * Fix loading of 2.6 modules 
 * Fix for snprintfs() in /proc, new for 2.4.25 kernels (dhr/pw)
 * Fix checks for some log files/dirs in case they are sockets or pipes (pw)
 * Fix for crl.pem crash/core (dhr/as/kb)
-* Fix leftsendcert= flag.  You probably want this =always if you are doing
-  X.509 connections and having problems with no ID/Key found errors.
-  Values: 
-        * yes|always (default) 
-                Send cert, even if not requested.  
-        * ifasked
-                If the other side requests it.  Some vendors (Cisco, SafeNet) 
-                don't seem to request it, but expect it, so you'll need to 
-                set this to yes if you are doing interop.
-        * no|never 
-                Do not send it my cert, no matter what.
 
 v2.1.1
 * Fix _pluto_adns installation path (kb)
@@ -38,4 +48,4 @@ v2.1.0
   while travelling.  This is based on Tuomo Soini's Advanced Routing 
   patch.
 
-RCSID $Id: CHANGES,v 1.317.4.4 2004/09/07 18:59:35 ken Exp $
+RCSID $Id: CHANGES,v 1.321.2.1 2005/05/18 20:55:12 ken Exp $

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pem.c,v 1.5 2004/06/14 01:46:03 mcr Exp $
+ * RCSID $Id: pem.c,v 1.8 2005/02/28 22:16:59 mcr Exp $
  */
 
 /* decrypt a PEM encoded data block using DES-EDE3-CBC
@@ -193,18 +193,18 @@ pem_decrypt_3des(chunk_t *blob, chunk_t *iv, const char *passphrase)
     u_char padding, *last_padding_pos, *first_padding_pos;
 
     /* Convert passphrase to 3des key */
-    MD5Init(&context);
-    MD5Update(&context, passphrase, strlen(passphrase));
-    MD5Update(&context, iv->ptr, iv->len);
-    MD5Final(digest, &context);
+    osMD5Init(&context);
+    osMD5Update(&context, passphrase, strlen(passphrase));
+    osMD5Update(&context, iv->ptr, iv->len);
+    osMD5Final(digest, &context);
 
     memcpy(key, digest, MD5_DIGEST_SIZE);
 
-    MD5Init(&context);
-    MD5Update(&context, digest, MD5_DIGEST_SIZE);
-    MD5Update(&context, passphrase, strlen(passphrase));
-    MD5Update(&context, iv->ptr, iv->len);
-    MD5Final(digest, &context);
+    osMD5Init(&context);
+    osMD5Update(&context, digest, MD5_DIGEST_SIZE);
+    osMD5Update(&context, passphrase, strlen(passphrase));
+    osMD5Update(&context, iv->ptr, iv->len);
+    osMD5Final(digest, &context);
 
     memcpy(key + MD5_DIGEST_SIZE, digest, 24 - MD5_DIGEST_SIZE);
 
@@ -289,7 +289,7 @@ pem_decrypt(chunk_t *blob, chunk_t *iv, prompt_pass_t *pass, const char* label)
 
 	    if (pem_decrypt_3des(blob, iv, pass->secret))
 	    {
-		whack_log(RC_SUCCESS, "valid passphrase");
+		whack_log(RC_SUCCESS, "valid passphrase, private key loaded successfully");
 		pfree(blob_copy.ptr);
 		return NULL;
 	    }
@@ -411,7 +411,7 @@ pemtobin(chunk_t *blob, prompt_pass_t *pass, const char* label, bool *pgp)
 	    else /* state is PEM_BODY */
 	    {
 		const char *ugh = NULL;
-		int len = 0;
+		size_t len = 0;
 		chunk_t data;
 
 		/* remove any trailing whitespace */

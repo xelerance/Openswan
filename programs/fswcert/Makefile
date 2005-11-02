@@ -11,7 +11,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.2 2004/04/10 03:36:10 mcr Exp $
+# RCSID $Id: Makefile,v 1.3 2004/12/18 18:13:39 mcr Exp $
 
 ###################################################
 # Adjust SSLDIR before make ...
@@ -19,7 +19,7 @@ SSLDIR=/usr
 
 ###################################################
 
-OPENSWANSRCDIR=../..
+OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=fswcert
@@ -30,10 +30,13 @@ LDLIBS = -lcrypto
 fswcert.8: fswcert.pod
 	pod2man fswcert.pod >fswcert.8
 
-include ../Makefile.program
+include ${srcdir}../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.3  2004/12/18 18:13:39  mcr
+# 	adjusted Makefiles so that ${OBJDIR} builds work.
+#
 # Revision 1.2  2004/04/10 03:36:10  mcr
 # 	merged in BSD-compat changes.
 #

@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_radij.h,v 1.21 2004/04/29 11:06:42 ken Exp $
+ * RCSID $Id: ipsec_radij.h,v 1.22 2004/07/10 19:08:41 mcr Exp $
  */
 
 #ifndef _IPSEC_RADIJ_H
@@ -50,19 +50,22 @@ struct eroute * ipsec_findroute(struct sockaddr_encap *);
 #define O3(x) (int)(((x)>>8)&0xff)
 #define O4(x) (int)(((x))&0xff)
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 extern int debug_radij;
 void rj_dumptrees(void);
 
 #define DB_RJ_DUMPTREES	0x0001
 #define DB_RJ_FINDROUTE 0x0002
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 #define _IPSEC_RADIJ_H
 #endif
 
 /*
  * $Log: ipsec_radij.h,v $
+ * Revision 1.22  2004/07/10 19:08:41  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.21  2004/04/29 11:06:42  ken
  * Last bits from 2.06 procfs updates
  *

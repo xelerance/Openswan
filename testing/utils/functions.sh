@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# $Id: functions.sh,v 1.101 2003/11/25 00:22:53 mcr Exp $
+# $Id: functions.sh,v 1.121 2005/03/20 23:18:46 mcr Exp $
 #
 
 preptest() {
@@ -209,7 +209,9 @@ prerunsetup() {
     compat_variables;
 
     # export variables that are common.
-    export PACKETRATE
+    export PACKETRATE KERNVER
+
+    perl ${OPENSWANSRCDIR}/testing/utils/regress-summarize-results.pl ${REGRESSRESULTS} ${TESTNAME}${KLIPS_MODULE}
 }
 
 
@@ -330,7 +332,7 @@ roguekill() {
     if [ -n "$other_rogues" ]
     then
 	echo "ROGUES without brand $UML_BRAND:"
-	ps -f -p -w $other_rogues
+	ps -f -w -p $other_rogues
     fi
     stat="$stat$rogue_sighted"
 }
@@ -468,13 +470,17 @@ pcap_filter() {
 	FILTER=cat
     fi
 
-    FILTER="$FILTER | sed -f $FIXUPDIR/tcpdump-three-eight.sed"
+    # refilter 3.8 output for 3.7 files unless the case has been updated
+    if [ -z "$THREEEIGHT" ] && $THREEEIGHT
+    then
+	FILTER="$FILTER | sed -f $FIXUPDIR/tcpdump-three-eight.sed"
+    fi
 
     if [ -n "$OUTPUT" ]
     then
 	rm -f OUTPUT${KLIPS_MODULE}/${OUTPUT}.txt
-	verboseecho $TCPDUMP -t $TCPDUMPFLAGS '|' "$FILTER" '>' OUTPUT${KLIPS_MODULE}/${OUTPUT}.txt
-	eval "$TCPDUMP -t $TCPDUMPFLAGS -r OUTPUT${KLIPS_MODULE}/$OUTPUT.pcap | $FILTER >|OUTPUT${KLIPS_MODULE}/$OUTPUT.txt"
+	verboseecho $TCPDUMP -n -t $TCPDUMPFLAGS '|' "$FILTER" '>' OUTPUT${KLIPS_MODULE}/${OUTPUT}.txt
+	eval "$TCPDUMP -n -t $TCPDUMPFLAGS -r OUTPUT${KLIPS_MODULE}/$OUTPUT.pcap | $FILTER >|OUTPUT${KLIPS_MODULE}/$OUTPUT.txt"
 
 	rm -f OUTPUT${KLIPS_MODULE}/$OUTPUT.diff
 	if diff -u -w -b -B $REF_OUTPUT OUTPUT${KLIPS_MODULE}/$OUTPUT.txt >OUTPUT${KLIPS_MODULE}/$OUTPUT.diff
@@ -571,10 +577,16 @@ netjigtest() {
     pcap_filter private "$REF_PRIV_OUTPUT" "$PRIVOUTPUT" "$REF_PRIV_FILTER"
     pcap_filter public  "$REF_PUB_OUTPUT"  "$PUBOUTPUT"  "$REF_PUB_FILTER"
 
-    if [ -n "$REF_CONSOLE_OUTPUT" ]
-    then
-	consolediff "" OUTPUT${KLIPS_MODULE}/console.txt $REF_CONSOLE_OUTPUT
-    fi
+    case $KERNVER in
+	26) if [ -n "$REF26_CONSOLE_OUTPUT" ]
+	    then
+		consolediff "26" OUTPUT${KLIPS_MODULE}/console.txt $REF26_CONSOLE_OUTPUT
+	    fi;;
+	*) if [ -n "$REF_CONSOLE_OUTPUT" ]
+	   then
+	        consolediff "" OUTPUT${KLIPS_MODULE}/console.txt $REF_CONSOLE_OUTPUT
+           fi;;
+    esac
 
     case "$success" in
     true)	exit 0 ;;
@@ -695,31 +707,31 @@ do_make_install_test() {
     if [ -n "$INSTALL_FLAGS" ]
     then
 	$MAKE_INSTALL_TEST_DEBUG && echo make --no-print-directory DESTDIR=$instdir $INSTALL_FLAGS
-	(cd $FREESWANSRCDIR && eval make FREESWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $INSTALL_FLAGS ) >OUTPUT${KLIPS_MODULE}/install1.txt 2>&1 || exit 1
+	(cd $OPENSWANSRCDIR && eval make OPENSWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $INSTALL_FLAGS ) >OUTPUT${KLIPS_MODULE}/install1.txt 2>&1 || exit 1
     fi
 
     if [ -n "$POSTINSTALL_SCRIPT" ]
     then
-	$POSTINSTALL_SCRIPT $FREESWANSRCDIR $instdir || exit 1
+	$POSTINSTALL_SCRIPT $OPENSWANSRCDIR $instdir || exit 1
     fi
 
     if [ -n "$INSTALL2_FLAGS" ]
     then
 	$MAKE_INSTALL_TEST_DEBUG && echo make --no-print-directory DESTDIR=$instdir $INSTALL2_FLAGS
-	(cd $FREESWANSRCDIR && eval make FREESWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $INSTALL2_FLAGS ) >OUTPUT${KLIPS_MODULE}/install2.txt 2>&1 || exit 1
+	(cd $OPENSWANSRCDIR && eval make OPENSWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $INSTALL2_FLAGS ) >OUTPUT${KLIPS_MODULE}/install2.txt 2>&1 || exit 1
     fi
 
     if [ -n "$UNINSTALL_FLAGS" ]
     then
 	$MAKE_INSTALL_TEST_DEBUG && echo make --no-print-directory DESTDIR=$instdir $UNINSTALL_FLAGS
-	(cd $FREESWANSRCDIR && eval make FREESWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $UNINSTALL_FLAGS ) >OUTPUT${KLIPS_MODULE}/uninstall.txt 2>&1 || exit 1
+	(cd $OPENSWANSRCDIR && eval make OPENSWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $UNINSTALL_FLAGS ) >OUTPUT${KLIPS_MODULE}/uninstall.txt 2>&1 || exit 1
     fi
 
     if [ -n "$REF_MAKE_DOC_OUTPUT" ]
     then
       rm -f OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.txt
 
-      (cd $FREESWANSRCDIR/doc && eval make FREESWANSRCDIR=$FREESWANSRCDIR clean --no-print-directory && eval make FREESWANSRCDIR=$FREESWANSRCDIR --no-print-directory ) | sort >OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.txt
+      (cd $OPENSWANSRCDIR/doc && eval make OPENSWANSRCDIR=$OPENSWANSRCDIR clean --no-print-directory && eval make OPENSWANSRCDIR=$OPENSWANSRCDIR --no-print-directory ) | sort >OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.txt
       if diff -u -w -b -B $REF_MAKE_DOC_OUTPUT.txt OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.txt >OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.diff
       then
 	 echo "make doc output matched"
@@ -772,7 +784,7 @@ mkinsttest() {
 
     echo '**** Make Install RUNNING' $testdir${KLIPS_MODULE} '****'
 
-    FREESWANSRCDIR=`cd $FREESWANSRCDIR && pwd` export FREESWANSRCDIR
+    OPENSWANSRCDIR=`cd $OPENSWANSRCDIR && pwd` export OPENSWANSRCDIR
 
     export UML_BRAND="$$"
     ( preptest $testdir mkinsttest && do_make_install_test )
@@ -809,11 +821,11 @@ do_rpm_install_test() {
     then
 	echo "Building with kernel source $RPM_KERNEL_SOURCE";
 
-	(cd $FREESWANSRCDIR/packaging/redhat && make clean --no-print-directory && make --no-print-directory RH_KERNELSRC=$RPM_KERNEL_SOURCE FREESWANSRCDIR=$FREESWANSRCDIR rpm )
+	(cd $OPENSWANSRCDIR/packaging/redhat && make clean --no-print-directory && make --no-print-directory RH_KERNELSRC=$RPM_KERNEL_SOURCE OPENSWANSRCDIR=$OPENSWANSRCDIR rpm )
     fi
 
     mkdir OUTPUT${KLIPS_MODULE}/rpm
-    cp $FREESWANSRCDIR/packaging/redhat/rpms/RPMS/i386/*.rpm OUTPUT${KLIPS_MODULE}/rpm
+    cp $OPENSWANSRCDIR/packaging/redhat/rpms/RPMS/i386/*.rpm OUTPUT${KLIPS_MODULE}/rpm
 
     # while loop below winds up in sub-shell. Argh.
     successfile=OUTPUT${KLIPS_MODULE}/success
@@ -861,7 +873,7 @@ rpm_build_install_test() {
 
     echo '**** Make Install RUNNING' $testdir${KLIPS_MODULE} '****'
 
-    FREESWANSRCDIR=`cd $FREESWANSRCDIR && pwd` export FREESWANSRCDIR
+    OPENSWANSRCDIR=`cd $OPENSWANSRCDIR && pwd` export OPENSWANSRCDIR
 
     export UML_BRAND="$$"
     ( preptest $testdir rpm_build_install_test && do_rpm_install_test )
@@ -877,6 +889,105 @@ rpm_build_install_test() {
 
 ###################################
 #
+#  test type: ipkg_build_install_test
+#
+###################################
+
+
+do_ipkg_install_test() {
+
+    rm -rf OUTPUT${KLIPS_MODULE}/root
+    mkdir -p OUTPUT${KLIPS_MODULE}/root
+
+    success=true
+    instdir=`cd OUTPUT${KLIPS_MODULE}/root && pwd`
+
+    prerunsetup
+
+    KERNEL_SOURCE=`eval echo $KERNEL_SOURCE`
+    if [ -z "$KERNEL_SOURCE" ]
+    then
+	echo "Test must define \$KERNEL_SOURCE ($KERNEL_SOURCE)"
+	success='missing $KERNEL_SOURCE'
+	exit 99
+    fi
+
+    if [ -z "$OMIT_BUILD" ]
+    then
+	echo "Building with kernel source $KERNEL_SOURCE";
+
+	(cd $OPENSWANSRCDIR && make clean --no-print-directory && make --no-print-directory KERNELSRC=$KERNEL_SOURCE OPENSWANSRCDIR=$OPENSWANSRCDIR DESTDIR=/tmp/ipkg ipkg )
+    fi
+
+    mkdir OUTPUT${KLIPS_MODULE}/ipkg
+    cp $OPENSWANSRCDIR/packaging/ipkg/ipkg/*.ipk  OUTPUT${KLIPS_MODULE}/ipkg
+
+    # while loop below winds up in sub-shell. Argh.
+    successfile=OUTPUT${KLIPS_MODULE}/success
+    echo "$success" >$successfile
+
+    if [ -n "$REF_IPKG_CONTENTS" ]
+    then
+      cat $REF_IPKG_CONTENTS | while read ipkgfile ipkgcontents
+      do
+        if [ -z "$ipkgfile" ]
+	then
+	    continue;
+	fi
+        # expand $ipkgfile, which may have wildcards!
+	realfile=`eval echo OUTPUT${KLIPS_MODULE}/ipkg/${ipkgfile}`
+	if [ ! -f $realfile ]
+	then
+	    echo "IPKG production failed to build anything to match $ipkgfile"
+	    echo false >$successfile
+	fi
+        tar -tzvf  $realfile >OUTPUT${KLIPS_MODULE}/$ipkgcontents.txt
+	if diff -u -w -b -B $ipkgcontents.txt OUTPUT${KLIPS_MODULE}/$ipkgcontents.txt >OUTPUT${KLIPS_MODULE}/$ipkgcontents.diff
+	then
+	    echo "Reffile ($ipkgcontents) for $realfile matched"
+	else
+	    echo "Reffile ($ipkgcontents) for $realfile differed"
+	    echo false >$successfile
+	fi
+      done
+    fi
+
+    success=`cat $successfile`
+
+    case "$success" in
+    true)	exit 0 ;;
+    *)		exit 1 ;;
+    esac
+}
+
+
+
+# test entry point:
+ipkg_build_install_test() {
+    testdir=$1
+    testexpect=$2
+
+    echo '**** Make Install RUNNING' $testdir${KLIPS_MODULE} '****'
+
+    OPENSWANSRCDIR=`cd $OPENSWANSRCDIR && pwd` export OPENSWANSRCDIR
+
+    export UML_BRAND="$$"
+    ( preptest $testdir ipkg_build_install_test && do_ipkg_install_test )
+    stat=$?
+    if [ $stat = 99 ]
+    then
+        echo Test missing parts.
+	stat='missing parts'
+    fi
+
+    recordresults $testdir "$testexpect" "$stat" $testdir${KLIPS_MODULE}
+}
+
+
+
+
+###################################
+#
 #  test type: libtest
 #
 ###################################
@@ -887,22 +998,77 @@ libtest() {
     testexpect=$2
     testsrc=$testobj.c
 
+    CC=${CC-cc}
+
     echo '**** make libtest RUNNING' $testsrc '****'
 
     symbol=`echo $testobj | tr 'a-z' 'A-Z'`_MAIN
 
-    cc -g -o $testobj -D$symbol -I${LIBFREESWANDIR} -I${FREESWANSRCDIR}/linux/include -I${FREESWANSRCDIR} ${LIBFREESWANDIR}/$testsrc ${FREESWANLIB}
-    rm -rf lib-$testobj/OUTPUT
-    mkdir -p lib-$testobj/OUTPUT
+    unset FILE
 
-    export TEST_PURPOSE=regress
-
-    ( ./$testobj -r >lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.txt )
-
-    stat=$?
-    if [ $stat -gt 128 ]
+    if [ -f ./$testsrc ] 
     then
-	stat="$stat core"
+	FILE=./$testsrc
+    elif [ -f ${OPENSWANSRCDIR}/lib/libopenwan/$testsrc ]
+    then
+	FILE=${OPENSWANSRCDIR}/lib/libopenswan/$testsrc
+    elif [ -f ${OPENSWANSRCDIR}/lib/libopenwan/$testsrc ]
+    then
+        FILE=${OPENSWANSRCDIR}/lib/libopenswan/$testsrc
+    elif [ -f ${OPENSWANSRCDIR}/linux/net/klips/$testsrc ]
+    then
+        FILE=${OPENSWANSRCDIR}/linux/net/klips/$testsrc
+    elif [ -f ${OPENSWANSRCDIR}/linux/lib/libopenswan/$testsrc ]
+    then
+        FILE=${OPENSWANSRCDIR}/linux/lib/libopenswan/$testsrc
+    elif [ -f ${OPENSWANSRCDIR}/linux/lib/libfreeswan/$testsrc ]
+    then
+        FILE=${OPENSWANSRCDIR}/linux/lib/libfreeswan/$testsrc
+    elif [ -f ${OPENSWANSRCDIR}/linux/net/ipsec/$testsrc ]
+    then
+        FILE=${OPENSWANSRCDIR}/linux/net/ipsec/$testsrc
+    fi
+
+    #echo "LOOKING for " ./FLAGS.$testobj
+
+    EXTRAFLAGS=
+    EXTRALIBS=
+    if [ -f ./FLAGS.$testobj ]
+    then
+	source ./FLAGS.$testobj
+    fi
+
+    stat=99
+    if [ -n "$FILE" -a -r "$FILE" ]
+    then
+	    echo ${CC} -g -o $testobj -D$symbol ${EXTRAFLAGS} -I${OPENSWANSRCDIR}/linux/include -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include ${FILE} ${OPENSWANLIB} ${EXTRALIBS}
+	    ${CC} -g -o $testobj -D$symbol ${EXTRAFLAGS} -I${OPENSWANSRCDIR}/linux/include -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include ${FILE} ${OPENSWANLIB} ${EXTRALIBS}
+	    rm -rf lib-$testobj/OUTPUT
+	    mkdir -p lib-$testobj/OUTPUT
+
+	    export TEST_PURPOSE=regress
+
+	    echo Running $testobj
+	    ( ulimit -c unlimited; cd lib-$testobj && ../$testobj -r >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
+
+	    stat=$?
+	    echo Exit code $stat
+	    if [ $stat -gt 128 ]
+	    then
+		stat="$stat core"
+	    else
+		if [ -r OUTPUT.$testobj.txt ]
+		then
+		    if diff -N -u -w -b -B lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.txt OUTPUT.$testobj.txt > lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.output.diff
+		    then
+			echo "output matched"
+			stat="0"
+		    else
+			echo "output differed"
+			stat="1"
+		    fi
+		fi
+            fi
     fi
 
     TEST_PURPOSE=regress  UML_BRAND=0 recordresults lib-$testobj "$testexpect" $stat lib-$testobj
@@ -1000,9 +1166,9 @@ do_kernel_patch_test() {
     # now patch it. (set +x turns off any debugging there might have been)
     set -x
     set -v
-    # the environment variable FREESWANSRCDIR should be correct
-    # but the make macro FREESWANSRCDIR may be relative, and hence wrong
-    (cd ${FREESWANSRCDIR} && make FREESWANSRCDIR=`pwd` kernelpatch${KERNEL_VERSION} ) | tee OUTPUT${KLIPS_MODULE}/patchfile.patch | (cd OUTPUT${KLIPS_MODULE}/$kernel_var_name && patch -p1 2>&1 ) >OUTPUT${KLIPS_MODULE}/patch-output.txt
+    # the environment variable OPENSWANSRCDIR should be correct
+    # but the make macro OPENSWANSRCDIR may be relative, and hence wrong
+    (cd ${OPENSWANSRCDIR} && make OPENSWANSRCDIR=`pwd` kernelpatch${KERNEL_VERSION} ) | tee OUTPUT${KLIPS_MODULE}/patchfile.patch | (cd OUTPUT${KLIPS_MODULE}/$kernel_var_name && patch -p1 2>&1 ) >OUTPUT${KLIPS_MODULE}/patch-output.txt
 
     # compare the patch.
     if [ -n "${REF_PATCH_OUTPUT}" ]
@@ -1074,7 +1240,7 @@ do_module_compile_test() {
 
     kernel_var_name=KERNEL_${kernelname}${kernelver}_SRC
     echo Looking for kernel source ${kernel_var_name}
-    KERNEL_SRC=${!kernel_var_name}
+    KERNEL_SRC=${!kernel_var_name}${KERNVER}
 
     if [ -z "${KERNEL_SRC}" ]
     then
@@ -1149,12 +1315,16 @@ do_module_compile_test() {
 
     rm -f OUTPUT${KLIPS_MODULE}/module/ipsec.o
 
-    cmd="(cd $FREESWANSRCDIR && make KERNELSRC=$KERNEL_SRC MODBUILDDIR=$moddir FREESWANSRCDIR=$FREESWANSRCDIR MODULE_DEFCONFIG=${MODULE_DEFCONFIG} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} ARCH=${ARCH} SUBARCH=${SUBARCH} module )"
+    cmd="(cd $OPENSWANSRCDIR && make KERNELSRC=$KERNEL_SRC MOD${KERNVER}BUILDDIR=$moddir OPENSWANSRCDIR=$OPENSWANSRCDIR MODULE_DEFCONFIG=${MODULE_DEFCONFIG} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} ARCH=${ARCH} SUBARCH=${SUBARCH} module${KERNVER} )"
     echo "# run as" >OUTPUT${KLIPS_MODULE}/doit.sh
     echo "$cmd" >>OUTPUT${KLIPS_MODULE}/doit.sh
     . OUTPUT${KLIPS_MODULE}/doit.sh
 
-    if [ -r OUTPUT${KLIPS_MODULE}/module/ipsec.o ]
+    if [ -n "${KERNEL_PROCESS_FILE}" ]
+    then
+      source ${KERNEL_PROCESS_FILE} 
+
+    elif [ -r OUTPUT${KLIPS_MODULE}/module/ipsec.o ]
     then
 	success=true
     fi
@@ -1215,13 +1385,15 @@ do_umlX_test() {
 
     if [ -n "$EAST_INPUT" ]
     then
-	EXP2_ARGS="$EXP2_ARGS -e $EAST_INPUT"
+	EAST_PLAY=$EAST_INPUT export EAST_PLAY
     fi
 
     if [ -n "$WEST_INPUT" ]
     then
-	EXP2_ARGS="$EXP2_ARGS -w $WEST_INPUT"
+	WEST_PLAY=$WEST_INPUT export WEST_PLAY
     fi
+    export NORTH_PLAY
+    export SOUTH_PLAY
 
     if [ -n "$PUB_INPUT" ]
     then
@@ -1259,8 +1431,8 @@ do_umlX_test() {
        fi
        export ${host}_START
 
-       eval "REF_${host}_CONSOLE_RAW=OUTPUT${KLIPS_MODULE}/${lhost}console.txt"
-       export REF_${host}_CONSOLE_RAW
+       eval "REF${KERNVER}_${host}_CONSOLE_RAW=OUTPUT${KLIPS_MODULE}/${KERNVER}${lhost}console.txt"
+       export REF${KERNVER}_${host}_CONSOLE_RAW
        export ${host}_INIT_SCRIPT
        export ${host}_RUN_SCRIPT
        export ${host}_RUN2_SCRIPT
@@ -1268,6 +1440,13 @@ do_umlX_test() {
        export ${host}_RUN4_SCRIPT
        export ${host}_RUN5_SCRIPT
        export ${host}_FINAL_SCRIPT
+    done
+
+    for net in NORTH SOUTH NORTHPUBLIC SOUTHPUBLIC EAST WEST PUBLIC ADMIN
+    do
+	export ${net}_PLAY
+	export ${net}_REC
+	export ${net}_ARPREPLY
     done
 
     if [ -n "$REF_EAST_OUTPUT" ]
@@ -1280,6 +1459,18 @@ do_umlX_test() {
     then
 	WESTOUTPUT=`basename $REF_WEST_OUTPUT .txt `
 	EXP2_ARGS="$EXP2_ARGS -W OUTPUT${KLIPS_MODULE}/$WESTOUTPUT.pcap"
+    fi
+
+    if [ -n "$REF_NORTH_OUTPUT" ]
+    then
+	NORTHOUTPUT=`basename $REF_NORTH_OUTPUT .txt `
+	NORTH_REC=OUTPUT${KLIPS_MODULE}/$EASTOUTPUT.pcap export NORTH_REC
+    fi
+
+    if [ -n "$REF_SOUTH_OUTPUT" ]
+    then
+	SOUTHOUTPUT=`basename $REF_SOUTH_OUTPUT .txt `
+	SOUTH_REC=OUTPUT${KLIPS_MODULE}/$WESTOUTPUT.pcap export SOUTH_REC
     fi
 
     if [ -n "$REF_PUB_OUTPUT" ]
@@ -1315,12 +1506,12 @@ do_umlX_test() {
     for host in $XHOST_LIST
     do
        local consoleref
-       consoleref=REF_${host}_CONSOLE_OUTPUT
+       consoleref=REF${KERNVER}_${host}_CONSOLE_OUTPUT
        lhost=`echo $host | tr 'A-Z' 'a-z'`
 
 	if [ -n "${!consoleref}" ]
 	then
-	    consolediff $lhost OUTPUT${KLIPS_MODULE}/${lhost}console.txt ${!consoleref}
+	    consolediff ${KERNVER}$lhost OUTPUT${KLIPS_MODULE}/${KERNVER}${lhost}console.txt ${!consoleref}
 	fi
     done
 
@@ -1346,9 +1537,76 @@ umlXhost() {
 }
 
 #
-# $Id: functions.sh,v 1.101 2003/11/25 00:22:53 mcr Exp $
+# $Id: functions.sh,v 1.121 2005/03/20 23:18:46 mcr Exp $
 #
 # $Log: functions.sh,v $
+# Revision 1.121  2005/03/20 23:18:46  mcr
+# 	make sure to export KERNVER to netjig.tcl.
+#
+# Revision 1.120  2005/03/13 19:15:02  mcr
+# 	make sure to record libtest diff output result.
+#
+# Revision 1.119  2005/01/24 01:12:12  mcr
+# 	adjusted include directories and library definitions so
+# 	that test cases continue to compile.
+#
+# Revision 1.118  2004/12/30 07:07:14  mcr
+# 	when marking which test is running, make sure to include -module
+#
+# Revision 1.117  2004/11/09 18:36:35  ken
+# rpm -> ipkg
+#
+# Revision 1.116  2004/11/09 18:30:24  ken
+# Add functions for ipkg_build_install_test
+#
+# Revision 1.115  2004/10/20 01:43:58  mcr
+# 	redirected stderr to capture file as well.
+#
+# Revision 1.114  2004/10/19 22:10:54  mcr
+# 	capture and compare the output as well.
+#
+# Revision 1.113  2004/10/17 17:37:45  mcr
+# 	run library tests in the subdir (so core will go there),
+# 	and make sure that core dumps are enabled.
+#
+# Revision 1.112  2004/10/16 22:53:22  mcr
+# 	added EXTRAFLAGS and EXTRALIBS variable to library test
+# 	process, and provide FLAGS.testobj file to configure
+# 	test case.
+#
+# Revision 1.111  2004/09/21 01:20:09  mcr
+# 	support per-kernel console output
+#
+# Revision 1.110  2004/09/13 02:26:48  mcr
+# 	use appropriate console comparison file.
+#
+# Revision 1.109  2004/08/22 04:59:59  mcr
+# 	fix up module compile test to work with 2.6.
+# 	added post-build complicated check.
+#
+# Revision 1.108  2004/05/19 14:53:31  mcr
+# 	call summarize results just before each test case.
+#
+# Revision 1.107  2004/04/16 19:57:29  mcr
+# 	if THREEEIGHT is set to true, then do not run the
+# 	three-eight filter.
+#
+# Revision 1.106  2004/04/09 18:30:05  mcr
+# 	look in all sorts of places for the library code.
+#
+# Revision 1.105  2004/04/04 03:57:58  ken
+# Change order of options to ps, as newer versions are more strict about order
+#
+# Revision 1.104  2004/04/03 19:44:52  ken
+# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+#
+# Revision 1.103  2004/02/16 04:13:37  mcr
+# 	use new NETWORK_ARPREPLY= to decide how/when to answer arp
+# 	requests.
+#
+# Revision 1.102  2004/02/03 20:14:39  mcr
+# 	networks are now managed as a list rather than explicitely.
+#
 # Revision 1.101  2003/11/25 00:22:53  mcr
 # 	have skiptest make up a fake TEST_PURPOSE, so there are
 # 	no complaints from regressrecord.

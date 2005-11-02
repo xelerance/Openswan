@@ -4,7 +4,7 @@
 # Only argument is east or west
 # Actually, extra args are passed on to pluto, so --nofork might be useful
 #
-# RCSID $Id: dopluto,v 1.11 2003/05/12 19:50:41 mcr Exp $
+# RCSID $Id: dopluto,v 1.14 2004/10/17 23:59:57 mcr Exp $
 
 . CONFIG
 
@@ -26,7 +26,8 @@ shift
 function performpluto() {
 	mkdir -p pluto/$SIDE && cd pluto/$SIDE
 	ln -s -f ../../ipsec.secrets .
-	ln -s -f ../../ipsec.d .
+	ln -s -f ${TESTING}/pluto/ipsec.d/west .
+	ln -s -f ${TESTING}/pluto/ipsec.d/east .
 	echo "PLUTO" "$@"
 	$MYPLUTO ${LWDNSQOPTION:-} "$@" || echo RC: $?
 	}
@@ -39,12 +40,15 @@ then
 	rm -f $LOCK
 fi
 
+# make sure it is set to something
+HELPERS=${HELPERS-}
+
 performpluto \
 	--ctlbase pluto.$SIDE \
 	--interface $INTERFACE \
-	--ikeport $IKEPORT \
-	--secretsfile ./ipsec.secrets/$SIDE \
-	--foodgroupsdir ./ipsec.d/$SIDE \
+	--ikeport $IKEPORT $HELPERS \
+	--secretsfile `pwd`/ipsec.secrets/$SIDE \
+	--ipsecdir `pwd`/$SIDE \
 	--noklips --uniqueids --stderrlog \
 	--debug-all --debug-private \
 	"$@"

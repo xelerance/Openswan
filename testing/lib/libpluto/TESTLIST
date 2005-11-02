@@ -1,0 +1,10 @@
+libtest	spdbtest good
+
+
+libtest spdbmerge good
+
+
+libtest spdbfirst good
+
+
+libtest skeyidcalc good

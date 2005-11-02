@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: parser.y,v 1.7 2004/01/21 12:50:41 mcr Exp $
+ * RCSID $Id: parser.y,v 1.8 2004/12/02 07:55:36 mcr Exp $
  */
 
 #include <sys/queue.h>
@@ -112,6 +112,17 @@ section_or_include:
 		_parser_kw_last = NULL;
 		if(yydebug) fprintf(stderr, "\nconfig setup read\n");
 
+	} kw_sections
+	| CONN DEFAULT EOL {
+		struct section_list *section = &_parser_cfg->conn_default;
+		section->name = "%default";
+		section->kw = NULL;
+
+                /* setup keyword section to record values */
+		_parser_kw = &(section->kw);
+		_parser_kw_last = NULL;
+	
+		if(yydebug) fprintf(stderr, "\nread conn %s\n", section->name);
 	} kw_sections
 	| CONN STRING EOL {
 		struct section_list *section;

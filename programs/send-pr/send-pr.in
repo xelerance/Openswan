@@ -24,7 +24,7 @@
 # the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #
-# $Id: send-pr.in,v 1.10 2003/07/14 12:26:17 mcr Exp $
+# $Id: send-pr.in,v 1.10.24.1 2005/05/18 20:55:13 ken Exp $
 #
 
 # The version of this send-pr.
@@ -402,7 +402,7 @@ __EOF__
 		    else
 			if [ "$fieldname" != "Category" ]
 			then
-			    values=`${BINDIR}/query-pr --valid-values $fieldname | tr '\n' ' ' | sed 's/ *$//g;s/ / | /g;s/^/[ /;s/$/ ]/;'`
+			    values=`${BINDIR}/query-pr --valid-values $fieldname | sed ':a;N;$!ba;s/\n/ /g' | sed 's/ *$//g;s/ / | /g;s/^/[ /;s/$/ ]/;'`
 			    valslen=`echo "$values" | wc -c`
 			else
 			    values="choose from a category listed above"
@@ -414,7 +414,7 @@ __EOF__
 			else
 				desc="<${values} (one line)>";
 			fi
-			dpat=`echo "$desc" | tr '\]\[*+^$|\()&/' '............'`
+			dpat=`echo "$desc" | sed 's/[][*+^$|\()&/]/./g'`
 			echo "/^>${fieldname}:/ s/${dpat}//" >> $FIXFIL
 		    fi
 		    echo "${fmtname}${desc}" >> $file
@@ -425,7 +425,7 @@ __EOF__
 			desc="	$default_val";
 		    else
 		        desc="	<`${BINDIR}/query-pr --field-description $fieldname` (multiple lines)>";
-			dpat=`echo "$desc" | tr '\]\[*+^$|\()&/' '............'`
+			dpat=`echo "$desc" | sed 's/[][*+^$|\()&/]/./g'`
 			echo "s/^${dpat}//" >> $FIXFIL
 		    fi
 		    echo "${fmtname}" >> $file;
@@ -437,7 +437,7 @@ __EOF__
 			desc="${default_val}"
 		    else
 			desc="<`${BINDIR}/query-pr --field-description $fieldname` (one line)>"
-			dpat=`echo "$desc" | tr '\]\[*+^$|\()&/' '............'`
+			dpat=`echo "$desc" | sed 's/[][*+^$|\()&/]/./g'`
 			echo "/^>${fieldname}:/ s/${dpat}//" >> $FIXFIL
 		    fi
 		    echo "${fmtname}${desc}" >> $file
@@ -607,6 +607,12 @@ xs=1; exit;
 
 #
 # $Log: send-pr.in,v $
+# Revision 1.10.24.1  2005/05/18 20:55:13  ken
+# Pull in Kens 2.3.2x branch
+#
+# Revision 1.11  2005/04/17 23:04:46  paul
+# Another 'tr' removal
+#
 # Revision 1.10  2003/07/14 12:26:17  mcr
 # 	use | as delimitor for $DEFAULT_ENVIRONMENT.
 # 	switch | to \\| when in $DEFAULT_ENVIRONMENT.

@@ -11,24 +11,21 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_doi.h,v 1.35 2004/06/14 01:46:02 mcr Exp $
+ * RCSID $Id: ipsec_doi.h,v 1.41 2005/03/20 02:27:50 mcr Exp $
  */
 
 extern void echo_hdr(struct msg_digest *md, bool enc, u_int8_t np);
 
 extern void ipsecdoi_initiate(int whack_sock, struct connection *c
-    , lset_t policy, unsigned long try, so_serial_t replacing);
+			      , lset_t policy, unsigned long try
+			      , so_serial_t replacing
+			      , enum crypto_importance importance);
 
 extern void ipsecdoi_replace(struct state *st, unsigned long try);
 
 extern void init_phase2_iv(struct state *st, const msgid_t *msgid);
 
-extern stf_status quick_outI1(int whack_sock
-    , struct state *isakmp_sa
-    , struct connection *c
-    , lset_t policy
-    , unsigned long try
-    , so_serial_t replacing);
+#include "ikev1_quick.h"
 
 extern state_transition_fn
     main_inI1_outR1,
@@ -37,12 +34,10 @@ extern state_transition_fn
     main_inR2_outI3,
     main_inI3_outR3,
     main_inR3,
-    aggr_inI1_outR1,
+    aggr_inI1_outR1_psk,
+    aggr_inI1_outR1_rsasig,
     aggr_inR1_outI2,
-    aggr_inI2,
-    quick_inI1_outR1,
-    quick_inR1_outI2,
-    quick_inI2;
+    aggr_inI2;
 
 extern void send_delete(struct state *st);
 extern void accept_delete(struct state *st, struct msg_digest *md
@@ -52,15 +47,12 @@ extern void send_notification_from_state(struct state *st,
     enum state_kind state, u_int16_t type);
 extern void send_notification_from_md(struct msg_digest *md, u_int16_t type);
 
-extern const char *init_pluto_vendorid(void);
-
 /*
  * some additional functions are exported for xauth.c
  */
 extern void close_message(pb_stream *pbs); /* forward declaration */
 extern bool encrypt_message(pb_stream *pbs, struct state *st); /* forward declaration */
 
-extern void dpd_outI(struct state *st);
 extern stf_status dpd_inI_outR(struct state *st
             , struct isakmp_notification *const n, pb_stream *n_pbs);
 extern stf_status dpd_inR(struct state *st
@@ -106,3 +98,8 @@ extern void dpd_timeout(struct state *st);
 	    return STF_FAIL + INVALID_HASH_INFORMATION; \
 	} \
     }
+
+extern stf_status
+send_isakmp_notification(struct state *st
+			 , u_int16_t type, const void *data, size_t len);
+

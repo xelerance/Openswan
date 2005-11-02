@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: ipsec_kversion.h,v 1.9 2004/04/05 19:55:05 mcr Exp $
+ * RCSID $Id: ipsec_kversion.h,v 1.11 2004/09/13 02:22:26 mcr Exp $
  */
 #define	_FREESWAN_KVERSIONS_H	/* seen it, no need to see it again */
 
@@ -108,6 +108,11 @@
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,0)
 #define HAVE_NETDEV_PRINTK 1
+#define NET_26
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,8)
+#define NEED_INET_PROTOCOL
 #endif
 
 #ifdef NET_21
@@ -129,7 +134,11 @@
 #endif /* NET_21 */
 
 #ifdef NETDEV_23
-# define device net_device
+#if 0
+#ifndef NETDEV_25
+#define device net_device
+#endif
+#endif
 # define ipsec_dev_get dev_get_by_name
 # define __ipsec_dev_get __dev_get_by_name
 # define ipsec_dev_put(x) dev_put(x)
@@ -201,6 +210,13 @@
 
 /*
  * $Log: ipsec_kversion.h,v $
+ * Revision 1.11  2004/09/13 02:22:26  mcr
+ * 	#define inet_protocol if necessary.
+ *
+ * Revision 1.10  2004/08/03 18:17:15  mcr
+ * 	in 2.6, use "net_device" instead of #define device->net_device.
+ * 	this probably breaks 2.0 compiles.
+ *
  * Revision 1.9  2004/04/05 19:55:05  mcr
  * Moved from linux/include/freeswan/ipsec_kversion.h,v
  *

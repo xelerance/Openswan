@@ -47,7 +47,7 @@ produces a message on standard error and exits with status 1.</para>
 </refsect1>
 
 <refsect1 id='files'><title>FILES</title>
-<para>/var/run/ipsec.info</para>
+<para>/var/run/pluto/ipsec.info</para>
 </refsect1>
 
 <refsect1 id='history'><title>HISTORY</title>

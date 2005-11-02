@@ -1,0 +1,8 @@
+northbad.uml.freeswan.org.cert
+
+	This is signed by an invalid CA.
+
+northbad2.uml.freeswan.org.cert
+
+	This is an expired certificate.
+

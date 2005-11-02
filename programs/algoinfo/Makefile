@@ -11,17 +11,20 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.1 2004/04/29 04:13:02 mcr Exp $
+# RCSID $Id: Makefile,v 1.2 2004/12/18 18:13:38 mcr Exp $
 
-OPENSWANSRCDIR=../..
+OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=algoinfo
 
-include ../Makefile.program
+include ${srcdir}../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.2  2004/12/18 18:13:38  mcr
+# 	adjusted Makefiles so that ${OBJDIR} builds work.
+#
 # Revision 1.1  2004/04/29 04:13:02  mcr
 # 	diagnostic program for algorithm code.
 #

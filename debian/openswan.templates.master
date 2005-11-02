@@ -192,7 +192,7 @@ Type: boolean
 Default: false
 _Description: Do you wish to enable opportunistic encryption in Openswan?
  Openswan comes with support for opportunistic encryption (OE), which stores
- IPSec authentication information (i.e. RSA public keys) in (preferrably
+ IPSec authentication information (i.e. RSA public keys) in (preferably
  secure) DNS records. Until this is widely deployed, activating it will
  cause a significant slow-down for every new, outgoing connection. Since
  version 2.0, Openswan upstream comes with OE enabled by default and is thus

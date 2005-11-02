@@ -21,7 +21,7 @@ A million repetitions of "a"
 #include <sys/types.h>	/* for u_int*_t */
 
 #include "sha1.h"
-#include "endian.h"   /* sets BYTE_ORDER, LITTLE_ENDIAN, and BIG_ENDIAN */
+#include "pluto_endian.h" /* sets BYTE_ORDER, LITTLE_ENDIAN, and BIG_ENDIAN */
 
 #define rol(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))
 

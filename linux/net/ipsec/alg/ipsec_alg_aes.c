@@ -46,8 +46,8 @@
 #endif
 
 /*	Low freeswan header coupling	*/
-#include "freeswan/ipsec_alg.h"
-#include "libaes/aes_cbc.h"
+#include "openswan/ipsec_alg.h"
+#include "crypto/aes_cbc.h"
 
 #define CONFIG_IPSEC_ALG_AES_MAC 1
 
@@ -65,7 +65,7 @@ static int keymaxbits=0;
 MODULE_PARM(keymaxbits, "i");
 
 #if CONFIG_IPSEC_ALG_AES_MAC
-#include "libaes/aes_xcbc_mac.h"
+#include "crypto/aes_xcbc_mac.h"
 
 /*	
  *	Not IANA number yet (draft-ietf-ipsec-ciph-aes-xcbc-mac-00.txt).

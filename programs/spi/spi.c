@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char spi_c_version[] = "RCSID $Id: spi.c,v 1.106 2004/04/29 04:08:28 mcr Exp $";
+char spi_c_version[] = "RCSID $Id: spi.c,v 1.109.2.1 2005/05/18 20:55:14 ken Exp $";
 
 #include <asm/types.h>
 #include <sys/types.h>
@@ -134,6 +134,8 @@ spi --ah <algo> <SA> [<life> ][ --replay_window <replay_window> ] --authkey <key
 	where <algo> is one of:	hmac-md5-96 | hmac-sha1-96 | something-loaded \n\
 spi --esp <algo> <SA> [<life> ][ --replay_window <replay-window> ] --enckey <ekey> --authkey <akey>\n\
 	where <algo> is one of:	3des-md5-96 | 3des-sha1-96\n | something-loaded\
+	also, --natt will enable UDP encapsulation, and --sport/--dport will set\n\
+        the source/destination UDP ports.\n\
 spi --esp <algo> <SA> [<life> ][ --replay_window <replay-window> ] --enckey <ekey>\n\
 	where <algo> is:	3des\n\
 spi --comp <algo> <SA>\n\
@@ -369,6 +371,9 @@ static struct option const longopts[] =
 	{"iv", 1, 0, 'i'},
 	{"dst", 1, 0, 'D'},
 	{"src", 1, 0, 'S'},
+	{"natt",  1, 0, 'N'},
+	{"dport", 1, 0, 'F'},
+	{"sport", 1, 0, 'G'},
 	{"said", 1, 0, 'I'},
 
 	{"help", 0, 0, 'h'},
@@ -383,6 +388,25 @@ static struct option const longopts[] =
 	{0, 0, 0, 0}
 };
 
+
+static bool
+pfkey_build(int error
+	    , const char *description
+	    , const char *text_said
+	    , struct sadb_ext *extensions[SADB_EXT_MAX + 1])
+{
+    if (error == 0)
+    {
+	return TRUE;
+    }
+    else
+    {
+	loglog(RC_LOG_SERIOUS, "building of %s %s failed, code %d"
+	    , description, text_said, error);
+	pfkey_extensions_free(extensions);
+	return FALSE;
+    }
+}
 
 int decode_esp(char *algname)
 {
@@ -483,11 +507,16 @@ main(int argc, char *argv[])
 	ip_address pfkey_ident_s_ska;
 	ip_address pfkey_ident_d_ska;
 #endif
+	u_int32_t natt;
+	u_int16_t sport, dport;
 	uint32_t life[life_maxsever][life_maxtype];
 	char *life_opt[life_maxsever][life_maxtype];
 	
 	progname = argv[0];
 	mypid = getpid();
+	natt = 0;
+	sport=0;
+	dport=0;
 
 	tool_init_log();
 
@@ -922,6 +951,50 @@ main(int argc, char *argv[])
 					ipaddr_txt);
 			}
 			break;
+
+#ifdef NAT_TRAVERSAL		  
+		case 'F':  /* src port */
+			sport = strtoul(optarg, &endptr, 0);
+			if(!(endptr == optarg + strlen(optarg))) {
+				fprintf(stderr, "%s: Invalid character in source parameter: %s\n",
+					progname, optarg);
+				exit (1);
+			}
+			break;
+		  
+		case 'G':  /* dst port */
+			dport = strtoul(optarg, &endptr, 0);
+			if(!(endptr == optarg + strlen(optarg))) {
+				fprintf(stderr, "%s: Invalid character in source parameter: %s\n",
+					progname, optarg);
+				exit (1);
+			}
+			break;
+
+		case 'N':  /* nat-type */
+		  if(strcasecmp(optarg, "nonesp")==0) {
+		    natt = ESPINUDP_WITH_NON_ESP;
+		  } else if(strcasecmp(optarg, "nonike")==0) {
+		    natt = ESPINUDP_WITH_NON_IKE;
+		  } else if(strcasecmp(optarg, "none")==0) {
+		    natt = 0;
+		  } else {
+		    natt = strtoul(optarg, &endptr, 0);
+		    if(!(endptr == optarg + strlen(optarg))) {
+		      fprintf(stderr, "%s: Invalid character in source parameter: %s\n",
+			      progname, optarg);
+		      exit (1);
+		    }
+		  }
+		  break;
+#else
+		case 'F':
+		case 'G':
+		case 'N':
+		  fprintf(stderr, "NAT-Traversal is not enabled in build\n");
+		  exit(50);
+#endif
+
 		case 'S':
 			if(src_opt) {
 				fprintf(stderr, "%s: Error, SRC parameter redefined:%s, already defined as:%s\n",
@@ -985,18 +1058,15 @@ main(int argc, char *argv[])
 		/* validate keysizes */
 		if (proc_read_ok) {
 		       const struct sadb_alg *alg_p;
-		       int keylen, minbits, maxbits;
-		       alg_p=kernel_alg_sadb_alg_get(SADB_SATYPE_ESP,SADB_EXT_SUPPORTED_ENCRYPT, 
-				       esp_info->encryptalg);
-		       assert(alg_p);
+		       size_t keylen, minbits, maxbits;
+		       alg_p=kernel_alg_sadb_alg_get(SADB_SATYPE_ESP
+						     ,SADB_EXT_SUPPORTED_ENCRYPT
+						     ,esp_info->encryptalg);
+		       assert(alg_p != NULL);
 		       keylen=enckeylen * 8;
 
-		       if (alg_p->sadb_alg_id==ESP_3DES || alg_p->sadb_alg_id==ESP_DES) {
-			       maxbits=minbits=alg_p->sadb_alg_minbits * 8 /7;
-		       } else {
-			       minbits=alg_p->sadb_alg_minbits;
-			       maxbits=alg_p->sadb_alg_maxbits;
-		       }
+		       minbits=alg_p->sadb_alg_minbits;
+		       maxbits=alg_p->sadb_alg_maxbits;
 		       /* 
 			* if explicit keylen told in encrypt algo, eg "aes128"
 			* check actual keylen "equality"
@@ -1006,7 +1076,7 @@ main(int argc, char *argv[])
 			       fprintf(stderr, "%s: invalid encryption keylen=%d, "
 					       "required %d by encrypt algo string=\"%s\"\n",
 				       progname, 
-				       keylen,
+				       (int)keylen,
 				       (int)esp_info->esp_ealg_keylen,
 				       alg_string);
 			       exit(1);
@@ -1018,7 +1088,9 @@ main(int argc, char *argv[])
 			       fprintf(stderr, "%s: invalid encryption keylen=%d, "
 					       "must be between %d and %d bits\n",
 					       progname, 
-					       keylen, minbits, maxbits);
+					       (int)keylen, 
+					       (int)minbits,
+					       (int)maxbits);
 			       exit(1);
 		       }
 		       alg_p=kernel_alg_sadb_alg_get(SADB_SATYPE_ESP,SADB_EXT_SUPPORTED_AUTH, 
@@ -1031,7 +1103,9 @@ main(int argc, char *argv[])
 			       fprintf(stderr, "%s: invalid auth keylen=%d, "
 					       "must be between %d and %d bits\n",
 					       progname, 
-					       keylen, minbits, maxbits);
+					       (int)keylen, 
+					       (int)minbits, 
+					       (int)maxbits);
 			       exit(1);
 		       }
 
@@ -1181,14 +1255,7 @@ main(int argc, char *argv[])
 	/* It needs <base, SA, address(SD), key(AE)> minimum. */
 	/*   Lifetime(HS) could be added before addresses. */
 	pfkey_extensions_init(extensions);
-	if(debug) {
-		fprintf(stdout, "%s: extensions=0p%p &extensions=0p%p extensions[0]=0p%p &extensions[0]=0p%p cleared.\n",
-			progname,
-			extensions,
-			&extensions,
-			extensions[0],
-			&extensions[0]);
-	}
+
 	if((error = pfkey_msg_hdr_build(&extensions[0],
 					(alg == XF_DEL ? SADB_DELETE : alg == XF_CLR ? SADB_FLUSH : SADB_ADD),
 					proto2satype(proto),
@@ -1199,17 +1266,6 @@ main(int argc, char *argv[])
 			progname, error);
 		pfkey_extensions_free(extensions);
 		exit(1);
-	}
-	if(debug) {
-		fprintf(stdout, "%s: extensions=0p%p &extensions=0p%p extensions[0]=0p%p &extensions[0]=0p%p set w/msghdr.\n",
-			progname,
-			extensions,
-			&extensions,
-			extensions[0],
-			&extensions[0]);
-	}
-	if(debug) {
-		fprintf(stdout, "%s: base message assembled.\n", progname);
 	}
 	
 	switch(alg) {
@@ -1354,33 +1410,6 @@ main(int argc, char *argv[])
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
-		if(debug) {
-			ip_address temp_addr;
-			
-			switch(address_family) {
-				case AF_INET:
-					initaddr((const unsigned char *)&(((struct sockaddr_in*)( ((struct sadb_address*)(extensions[SADB_EXT_ADDRESS_SRC])) + 1))->sin_addr),
-						sockaddrlenof(&src), address_family, &temp_addr);
-					break;
-				case AF_INET6:
-					initaddr((const unsigned char *)&(((struct sockaddr_in6*)( ((struct sadb_address*)(extensions[SADB_EXT_ADDRESS_SRC])) + 1))->sin6_addr),
-						sockaddrlenof(&src), address_family, &temp_addr);
-					break;
-				default:
-					fprintf(stdout, "%s: unknown address family (%d).\n",
-						progname, address_family);
-					exit(1);
-			}
-                	addrtot(&temp_addr, 0, ipaddr_txt, sizeof(ipaddr_txt));
-			fprintf(stdout, "%s: address_s extension assembled (%s).\n",
-				progname, ipaddr_txt);
-		}
-	
-		if(debug) {
-                	addrtot(&edst, 0, ipaddr_txt, sizeof(ipaddr_txt));
-			fprintf(stdout, "%s: assembling address_d extension (%s).\n",
-				progname, ipaddr_txt);
-		}
 	
 		if((error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_DST],
 						SADB_EXT_ADDRESS_DST,
@@ -1393,26 +1422,7 @@ main(int argc, char *argv[])
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
-		if(debug) {
-			ip_address temp_addr;
-			switch(address_family) {
-				case AF_INET:
-					initaddr((const unsigned char *)&(((struct sockaddr_in*)( ((struct sadb_address*)(extensions[SADB_EXT_ADDRESS_DST])) + 1))->sin_addr),
-						4, address_family, &temp_addr);
-					break;
-				case AF_INET6:
-					initaddr((const unsigned char *)&(((struct sockaddr_in6*)( ((struct sadb_address*)(extensions[SADB_EXT_ADDRESS_DST])) + 1))->sin6_addr),
-						16, address_family, &temp_addr);
-					break;
-				default:
-					fprintf(stdout, "%s: unknown address family (%d).\n",
-						progname, address_family);
-					exit(1);
-			}
-                	addrtot(&temp_addr, 0, ipaddr_txt, sizeof(ipaddr_txt));
-			fprintf(stdout, "%s: address_d extension assembled (%s).\n",
-				progname, ipaddr_txt);
-		}
+
 
 #if PFKEY_PROXY
 		anyaddr(address_family, &pfkey_address_p_ska);
@@ -1425,9 +1435,6 @@ main(int argc, char *argv[])
 				progname, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
-		}
-		if(debug) {
-			fprintf(stdout, "%s: address_p extension assembled.\n", progname);
 		}
 #endif /* PFKEY_PROXY */
 		
@@ -1527,6 +1534,57 @@ main(int argc, char *argv[])
 #endif /* PFKEY_IDENT */
 	}
 	
+#ifdef NAT_TRAVERSAL
+	if(natt != 0) {
+	  bool success;
+
+	  int err;
+
+	  err = pfkey_x_nat_t_type_build(&extensions[SADB_X_EXT_NAT_T_TYPE]
+					 , natt);
+	  success = pfkey_build(err
+				, "pfkey_nat_t_type Add ESP SA"
+				, ipsaid_txt, extensions);
+	  if(!success) return FALSE;
+	  if(debug) fprintf(stderr, "setting natt_type to %d\n", natt);
+	  
+	  if(sport != 0) {
+	    err = pfkey_x_nat_t_port_build(&extensions[SADB_X_EXT_NAT_T_SPORT]
+					   , SADB_X_EXT_NAT_T_SPORT
+					   , sport);
+	    success = pfkey_build(err
+				  , "pfkey_nat_t_sport Add ESP SA"
+				  , ipsaid_txt, extensions);
+	    if(debug) fprintf(stderr, "setting natt_sport to %d\n", sport);
+	    if(!success) return FALSE;
+	  }
+	  
+	  if(dport != 0) {
+	    err = pfkey_x_nat_t_port_build(&extensions[SADB_X_EXT_NAT_T_DPORT]
+					   , SADB_X_EXT_NAT_T_DPORT
+					   , dport);
+	    success = pfkey_build(err
+				  , "pfkey_nat_t_dport Add ESP SA"
+				  , ipsaid_txt, extensions);
+	    if(debug) fprintf(stderr, "setting natt_dport to %d\n", dport);
+	    if(!success) return FALSE;
+	  }
+	  
+
+#if 0
+	  /* not yet implemented */
+	  if(natt!=0 && !isanyaddr(&natt_oa)) {
+	    success = pfkeyext_address(SADB_X_EXT_NAT_T_OA, &natt_oa
+				       , "pfkey_nat_t_oa Add ESP SA"
+				       , ipsaid_txt, extensions);
+	    if(debug) fprintf(stderr, "setting nat_oa to %s\n"
+			      , ip_str(&natt_oa));
+	    if(!success) return FALSE;
+	  }
+#endif
+	}
+#endif /* NAT_TRAVERSAL */
+
 	if(debug) {
 		fprintf(stdout, "%s: assembling pfkey msg....\n",
 			progname);
@@ -1720,6 +1778,24 @@ void exit_tool(int x)
 
 /*
  * $Log: spi.c,v $
+ * Revision 1.109.2.1  2005/05/18 20:55:14  ken
+ * Pull in Kens 2.3.2x branch
+ *
+ * Revision 1.111  2005/05/12 03:08:23  mcr
+ * 	do not mess with keysize for 3des/des.
+ *
+ * Revision 1.110  2005/04/06 17:56:24  mcr
+ * 	document the --natt options.
+ *
+ * Revision 1.109  2005/03/29 03:49:36  ken
+ * Cast to int to make x86_64 happy
+ *
+ * Revision 1.108  2005/02/14 04:45:46  ken
+ * int -> size_t compile fix for SuSE 8.x
+ *
+ * Revision 1.107  2005/01/26 01:27:33  mcr
+ * 	added nat-t parameters to manual keying.
+ *
  * Revision 1.106  2004/04/29 04:08:28  mcr
  * 	broke out decode_esp() function, and use new
  * 	libopenswan code.

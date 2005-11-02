@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey.h,v 1.45 2004/04/06 02:49:00 mcr Exp $
+ * RCSID $Id: pfkey.h,v 1.47 2004/08/21 00:44:14 mcr Exp $
  */
 
 #ifndef __NET_IPSEC_PF_KEY_H
@@ -25,7 +25,6 @@ extern int debug_pfkey;
 extern /* void */ int pfkey_init(void);
 extern /* void */ int pfkey_cleanup(void);
 
-extern struct sock *pfkey_sock_list;
 struct socket_list
 {
 	struct socket *socketp;
@@ -142,7 +141,7 @@ struct key_opt
 	struct sock	*sk;
 };
 
-#define key_pid(sk) ((struct key_opt*)&((sk)->protinfo))->key_pid
+#define key_pid(sk) ((struct key_opt*)&((sk)->sk_protinfo))->key_pid
 
 /* XXX-mcr this is not an alignment, this is because the count is in 64-bit
  * words.
@@ -249,7 +248,6 @@ pfkey_ident_build(struct sadb_ext**	pfkey_ext,
 		  uint8_t               ident_len,
 		  char*			ident_string);
 
-#ifdef NAT_TRAVERSAL
 #ifdef __KERNEL__
 extern int pfkey_nat_t_new_mapping(struct ipsec_sa *, struct sockaddr *, __u16);
 extern int pfkey_x_nat_t_type_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr);
@@ -262,7 +260,6 @@ int
 pfkey_x_nat_t_port_build(struct sadb_ext**  pfkey_ext,
             uint16_t         exttype,
             uint16_t         port);
-#endif
 
 int
 pfkey_sens_build(struct sadb_ext**	pfkey_ext,
@@ -334,6 +331,12 @@ pfkey_v2_sadb_type_string(int sadb_type);
 
 /*
  * $Log: pfkey.h,v $
+ * Revision 1.47  2004/08/21 00:44:14  mcr
+ * 	simplify definition of nat_t related prototypes.
+ *
+ * Revision 1.46  2004/08/04 16:27:22  mcr
+ * 	2.6 sk_ options.
+ *
  * Revision 1.45  2004/04/06 02:49:00  mcr
  * 	pullup of algo code from alg-branch.
  *

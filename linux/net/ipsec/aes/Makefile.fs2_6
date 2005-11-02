@@ -1,0 +1,48 @@
+# Makefile for KLIPS 3DES kernel code as a module    for 2.6 kernels
+#
+# Makefile for KLIPS kernel code as a module
+# Copyright (C) 2002-2004	Michael Richardson <mcr@xelerance.com>
+# 
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# RCSID $Id: Makefile.fs2_6,v 1.1 2004/08/17 03:31:34 mcr Exp $
+#
+# Note! Dependencies are done automagically by 'make dep', which also
+# removes any old dependencies. DON'T put your own dependencies here
+# unless it's something special (ie not a .c file).
+#
+
+obj-$(CONFIG_KLIPS_ENC_AES) += ipsec_alg_aes.o
+obj-$(CONFIG_KLIPS_ENC_AES) += aes_xcbc_mac.o
+obj-$(CONFIG_KLIPS_ENC_AES) += aes_cbc.o
+
+ifeq ($(strip ${SUBARCH}),)
+SUBARCH:=${ARCH}
+endif
+
+ifeq (${SUBARCH},i386)
+obj-$(CONFIG_KLIPS_ENC_AES) += aes-i586.o
+else
+obj-$(CONFIG_KLIPS_ENC_AES) += aes.o
+endif
+
+
+#
+# $Log: Makefile.fs2_6,v $
+# Revision 1.1  2004/08/17 03:31:34  mcr
+# 	klips 2.6 edits.
+#
+#
+# Local Variables:
+# compile-command: "(cd ../../.. && source umlsetup.sh && make -C ${POOLSPACE} module/ipsec.o)"
+# End Variables:
+#
+

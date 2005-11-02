@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.inc,v 1.89.2.5 2004/07/20 02:06:32 ken Exp $
+# RCSID $Id: Makefile.inc,v 1.109.2.1 2005/05/18 20:55:12 ken Exp $
 
 
 
@@ -34,23 +34,28 @@
 ### boilerplate, do not change
 SHELL=/bin/sh
 
+# where to place the object files which are built (default is in-tree)
+OBJDIR?=.
+OBJDIRTOP?=${OPENSWANSRCDIR}
+
 ### paths within the source tree
 
 KLIPSINC=${OPENSWANSRCDIR}/linux/include
 KLIPSSRC=${OPENSWANSRCDIR}/linux/net/ipsec
 
 LIBOPENSWANDIR=${OPENSWANSRCDIR}/lib/libopenswan
-OPENSWANLIB=${OPENSWANSRCDIR}/lib/libopenswan/libopenswan.a
+OPENSWANLIB=${OBJDIRTOP}/lib/libopenswan/libopenswan.a
+OSWLOGLIB=${OBJDIRTOP}/lib/libopenswan/liboswlog.a
 
 LWRESDIR=${OPENSWANSRCDIR}/lib/liblwres
-LWRESLIB=${LWRESDIR}/liblwres.a
+LWRESLIB=${OBJDIRTOP}/lib/liblwres/liblwres.a
 
 LIBDESSRCDIR=${OPENSWANSRCDIR}/linux/crypto/ciphers/des
-LIBDESLITE=${OPENSWANSRCDIR}/lib/libdes/libdes.a
-LIBAES=${OPENSWANSRCDIR}/lib/libcrypto/libaes/libaes.a
+LIBDESLITE:=${OBJDIRTOP}/lib/libcrypto/libdes/libdes.a
+LIBAES=${OBJDIRTOP}/lib/libcrypto/libaes/libaes.a
 
 LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
-POLICYLIB=${OPENSWANSRCDIR}/lib/libipsecpolicy/libipsecpolicy.a
+POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 
 .PHONY:	programs checkprograms clean
 
@@ -116,8 +121,9 @@ FINALDOCDIR?=${INC_USRLOCAL}/${INC_DOCDIR}/openswan
 DOCDIR=${DESTDIR}${FINALDOCDIR}
 
 # where per-conn pluto logs go
-VARDIR?=/var
-FINALLOGDIR?=${VARDIR}/log
+FINALVARDIR?=/var
+VARDIR?=${DESTDIR}${FINALVARDIR}
+FINALLOGDIR?=${FINALVARDIR}/log
 LOGDIR?=${DESTDIR}${FINALLOGDIR}
 
 
@@ -146,18 +152,23 @@ RCDIR=$(DESTDIR)$(FINALRCDIR)
 # Kernel location:  where patches are inserted, where kernel builds are done.
 
 # this is a hack using the wildcard to look for existence of a file/dir
+ifneq ($(wildcard /usr/src/linux-2.6),)
+KERNELSRC?=/usr/src/linux-2.6
+else
 ifneq ($(wildcard /usr/src/linux-2.4),)
 KERNELSRC?=/usr/src/linux-2.4
 else
 KERNELSRC?=/usr/src/linux
 endif
-
+endif
 
 # where kernel configuration outputs are located
 KCFILE=$(KERNELSRC)/.config
 ACFILE=$(KERNELSRC)/include/linux/autoconf.h
 VERFILE=$(KERNELSRC)/include/linux/version.h
 
+# where KLIPS kernel module is install
+OSMOD_DESTDIR?=net/ipsec
 
 
 ### misc installation stuff
@@ -171,6 +182,7 @@ INSTALL=install
 # Note that the install procedures will never overwrite an existing config
 # file, which is why -b is not specified for them.
 INSTBINFLAGS=-b --suffix=.old
+INSTSUIDFLAGS=--mode=u+rxs,g+rx,o+rx --group=root -b --suffix=.old
 INSTMANFLAGS=
 INSTCONFFLAGS=
 
@@ -184,6 +196,9 @@ INSTCONFFLAGS=
 # (caution, this stuff is still being sorted out, will change in future)
 USERCOMPILE?=-g -O3
 KLIPSCOMPILE=-O3
+# for AMD64 use 
+#USERCOMPILE?=-g -O3 -m64
+#KLIPSCOMPILE=-O3 -m64 -mno-red-zone
 
 # command used to link/copy KLIPS into kernel source tree
 # There are good reasons why this is "ln -s"; only people like distribution
@@ -229,8 +244,12 @@ RPMBUILD=rpmbuild
 # Set this to a RedHat kernel-sources RPM. This normally extracts into
 # /usr/src/linux-2.4, but you might have extracted it elsewhere with
 # rpm2cpio.
-#
-RH_KERNELSRC?=/usr/src/linux-2.4
+# Note: there is no kernel-source rpm anymore for Fedora. Either run
+# rpmbuild -bp on the kernel src.rpm and grab the tree from 
+# /usr/src/redhat/BUILD/ or use something like the example below using the
+# module directory.
+#RH_KERNELSRC?=/usr/src/linux-2.4
+RH_KERNELSRC?=/lib/modules/2.6.9-1.681_FC3/build
 
 #RH_KERNELSRC=/c2/kernel/rh/linux-2.4.9-13
 
@@ -275,11 +294,10 @@ IPSEC_FIREWALLTYPE=iptables
 
 # whether or not to include ipsec policy code into pluto.
 # false for now, since it is still experimental.
-# This has nothing to do with /etc/ipsec.d/policies 
 USE_IPSECPOLICY?=false
 
 # include IKEPING (a utility for testing IKE daemons) in the distribution
-USE_IKEPING?=false
+USE_IKEPING?=true
 
 # include support for KEY RR 
 # this will become false in the future, as all OE sites transition to
@@ -294,14 +312,20 @@ USE_KERNEL26?=true
 
 
 # include support for sending Openswan Vendor IDs
-USE_VENDORID?=false
+USE_VENDORID?=true
 
+# Use /dev/hwrandom if available (EG: VIA Padlock)
+USE_HWRANDOM?=false
+
+# include aggressive mode authentication system code - both Server and Client.
+# This is off by default, since aggressive mode leads to denial of service
+# attacks.
+USE_AGGRESSIVE?=true
 
 # include XAUTH authentication system code - both Server and Client.
-# This off by default, since XAUTH is tricky, and you can get into 
+# This is off by default, since XAUTH is tricky, and you can get into 
 # security trouble unless you do additional configuration.
-# THIS IS TURNED OFF BECAUSE IT BROKE. SEE docs/RELEASE NOTES
-USE_XAUTH?=false
+USE_XAUTH?=true
 
 # When doing XAUTH, include PAM support as well, requires HAVE_THREADS be
 # true as well
@@ -316,23 +340,35 @@ USE_NAT_TRAVERSAL_TRANSPORT_MODE?=true
 # Include LDAP support (currently used for fetching CRLs)
 USE_LDAP?=false
 
+# Include libcurl support (currently used for fetching CRLs)
+USE_LIBCURL?=false
+
 # Include Smartcard support (disabled by default, as most users don't
 # have the required hardware and drivers/software installed)
 USE_SMARTCARD?=false
 
 # should opportunistic encryption be turned on by default?
 # Enabled during testing, but probably turned off in shipping versions.
-USE_OE?=no
-ifeq ($(USE_OE),no)
+USE_OE?=false
+ifeq ($(USE_OE),false)
 # warning: examples subdirectory is statically defined here
 OE_FLAG=\#Disable Opportunistic Encryption\\ninclude ${FINALCONFDDIR}/examples/no_oe.conf
 else
 endif
 
+# should we include all manner of known to be broken/weak?
+# use this only if you are building some kind of a testing
+# device. Normal use does not need any of this.
+USE_WEAKSTUFF?=false
+
 # Do we have pthreads available?  Only yes if you need it for XAUTH+PAM,
 # or if you need it for CRL fetching.
 # 
 HAVE_THREADS?=false
+
+# Do we assume that the /bin/sh is BASH?
+# if so, then internationalization code is retained in the shell scripts
+USE_BASH?=true
 
 # set this to space where a linked/configured tree can be created by 
 # preprhkern4module. Only needed if you are going to be created RPMs
@@ -348,8 +384,9 @@ MODULE_GOO_LIST+=icmp_send ip_fragment sock_register
 MODULE_DEF_INCLUDE=${OPENSWANSRCDIR}/packaging/linus/config-all.h
 MODULE_DEFCONFIG?=${KLIPSSRC}/defconfig
 MODBUILDDIR?=${OPENSWANSRCDIR}/modobj
+MOD26BUILDDIR?=${OPENSWANSRCDIR}/modobj26
 
-MODULE_FLAGS:=KLIPSMODULE=true TOPDIR=${KERNELSRC} -f ${MODULE_DEFCONFIG} -f Makefile
+MODULE_FLAGS:=KLIPSMODULE=true -f ${MODULE_DEFCONFIG} 
 
 # supply kernel-configuration ARCH defaults
 ifeq ($(ARCH),)
@@ -359,11 +396,14 @@ endif
 ARCH := $(shell echo $(ARCH) | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
 
 # export everything so that scripts can use them.
-export LIBOPENSWANDIR OPENSWANSRCDIR OPENSWANLIB ARCH
+export LIBOPENSWANDIR OPENSWANSRCDIR ARCH 
 
 -include ${OPENSWANSRCDIR}/Makefile.ver
 
 X509_VERSION=X.509-1.5.4
+NONINTCONFIG=oldconfig
+
+#KERNELBUILDMFLAGS=--debug=biv V=1 
 
 # for emacs
 #

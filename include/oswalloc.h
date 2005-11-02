@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: oswalloc.h,v 1.2 2004/06/09 02:06:01 mcr Exp $
+ * RCSID $Id: oswalloc.h,v 1.3 2004/10/16 23:42:13 mcr Exp $
  */
 
 #ifndef _OSW_ALLOC_H_
@@ -20,20 +20,27 @@
 
 /* memory allocation */
 
-extern void *alloc_bytes(size_t size, const char *name);
+extern void leak_pfree(void *ptr, int leak);
+extern void *alloc_bytes2(size_t size, const char *name, int leak_detective);
+extern void *clone_bytes2(const void *orig, size_t size
+			  , const char *name, int leak_detective);
+#ifdef LEAK_DETECTIVE
+  extern void report_leaks(void);
+# define pfree(ptr) leak_pfree(ptr, 1)
+# define alloc_bytes(size, name) (alloc_bytes2(size, name, 1))
+# define clone_bytes(orig, size, name) (clone_bytes2(orig,size,name,1))
+#else
+# define pfree(ptr) leak_pfree(ptr, 0)	
+# define alloc_bytes(size, name) (alloc_bytes2(size, name, 0))
+# define clone_bytes(orig, size, name) (clone_bytes2(orig,size,name,0))
+#endif
+
 #define alloc_thing(thing, name) (alloc_bytes(sizeof(thing), (name)))
 
-extern void *clone_bytes(const void *orig, size_t size, const char *name);
 #define clone_thing(orig, name) clone_bytes((const void *)&(orig), sizeof(orig), (name))
 #define clone_str(str, name) \
     ((str) == NULL? NULL : clone_bytes((str), strlen((str))+1, (name)))
 
-#ifdef LEAK_DETECTIVE
-  extern void pfree(void *ptr);
-  extern void report_leaks(void);
-#else
-# define pfree(ptr) free(ptr)	/* ordinary stdc free */
-#endif
 #define pfreeany(p) { if ((p) != NULL) pfree(p); }
 #define replace(p, q) { pfreeany(p); (p) = (q); }
 

@@ -140,11 +140,11 @@ commands recognize these flags.</para>
 <!-- .br -->
 /proc/sys/net/ipv4/ip_forward	forwarding control
 <!-- .br -->
-/var/run/ipsec.info	saved information
+/var/run/pluto/ipsec.info	saved information
 <!-- .br -->
-/var/run/pluto.pid	Pluto lock file
+/var/run/pluto/pluto.pid	Pluto lock file
 <!-- .br -->
-/var/run/ipsec_setup.pid	IPsec lock file</para>
+/var/run/pluto/ipsec_setup.pid	IPsec lock file</para>
 </refsect1>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>

@@ -1,0 +1,46 @@
+#! /bin/sh
+#
+# (C) 1998 Manoj Srivastava & Eric Delaunay.
+
+set -e
+
+ARCHITECTURE=all
+PATCHNAME=openswan
+PATCHDIR=/usr/src/kernel-patches/$ARCHITECTURE/openswan
+#PATCHDIR=`dirname $0`/../$PATCHNAME
+
+if ! test -d kernel -a -d Documentation ; then
+    echo "Not in kernel top level directory. Exiting" >&2
+    exit 1
+fi
+
+if test -f debian/APPLIED_${ARCHITECTURE}_$PATCHNAME ; then
+   exit 0               # patch already applied
+fi
+
+rm -rf net/ipsec
+KERNELDIR=`pwd`
+
+# apply the NAT-T patch first (if it applies...)
+echo "Applying NAT Traversal patch to networking subsystem."
+if make -C "$PATCHDIR" -f Makefile nattpatch \
+	| patch -p1 --dry-run >/dev/null; then
+  make -C "$PATCHDIR" -f Makefile nattpatch \
+          | patch -p1
+else
+  echo "The patch does not apply cleanly, skipping it. Please check manually"
+  echo "if your kernel already supports NAT Traversal (Debian kernel sources"
+  echo "might already be patched to do so)."
+fi
+
+echo "Inserting KLIPS into kernel."
+make -C "$PATCHDIR" -f Makefile kpatch \
+	KERNELSRC="$KERNELDIR"\
+	PATCHER="./patcher"
+make -C "$PATCHDIR" -f Makefile klink \
+	KERNELSRC="$KERNELDIR"\
+        KLIPSLINK="cp -a"
+make -C "$PATCHDIR" -f Makefile klipsdefaults \
+	KERNELSRC="$KERNELDIR"
+
+mkdir -p debian && touch debian/APPLIED_${ARCHITECTURE}_$PATCHNAME

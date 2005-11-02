@@ -1,8 +1,9 @@
 /*
- * @(#) FreeSWAN tunable paramaters
+ * @(#) Openswan tunable paramaters
  *
  * Copyright (C) 2001  Richard Guy Briggs  <rgb@freeswan.org>
  *                 and Michael Richardson  <mcr@freeswan.org>
+ * Copyright (C) 2004  Michael Richardson  <mcr@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,7 +15,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_param.h,v 1.24 2004/04/05 19:55:06 mcr Exp $
+ * RCSID $Id: ipsec_param.h,v 1.29 2005/01/26 00:50:35 mcr Exp $
  *
  */
 
@@ -50,16 +51,16 @@
 /* Note that the "interfaces=" line in /etc/ipsec.conf would be, um, challenging. */
 
 /* use dynamic ipsecX device allocation */
-#ifndef CONFIG_IPSEC_DYNDEV
-#define CONFIG_IPSEC_DYNDEV 1
-#endif /* CONFIG_IPSEC_DYNDEV */
+#ifndef CONFIG_KLIPS_DYNDEV
+#define CONFIG_KLIPS_DYNDEV 1
+#endif /* CONFIG_KLIPS_DYNDEV */
 
 
-#ifdef CONFIG_IPSEC_BIGGATE
+#ifdef CONFIG_KLIPS_BIGGATE
 # define SADB_HASHMOD   8069
-#else /* CONFIG_IPSEC_BIGGATE */
+#else /* CONFIG_KLIPS_BIGGATE */
 # define SADB_HASHMOD	257
-#endif /* CONFIG_IPSEC_BIGGATE */
+#endif /* CONFIG_KLIPS_BIGGATE */
 #endif /* __KERNEL__ */
 
 /*
@@ -91,6 +92,11 @@
 /* This is defined for 2.4, but not 2.2.... */
 #ifndef ARPHRD_VOID
 # define ARPHRD_VOID 0xFFFF
+#endif
+
+/* always turn on IPIP mode */
+#ifndef CONFIG_KLIPS_IPIP 
+#define CONFIG_KLIPS_IPIP 1
 #endif
 
 /*
@@ -143,7 +149,7 @@
 #endif /* !KLIPS_DIVULGE_HMAC_KEY */
 
 /* extra toggles for regression testing */
-#ifdef CONFIG_IPSEC_REGRESS
+#ifdef CONFIG_KLIPS_REGRESS
 
 /* 
  * should pfkey_acquire() become 100% lossy?
@@ -151,21 +157,21 @@
  */
 extern int sysctl_ipsec_regress_pfkey_lossage;
 #ifndef KLIPS_PFKEY_ACQUIRE_LOSSAGE
-# ifdef CONFIG_IPSEC_PFKEY_ACQUIRE_LOSSAGE
+# ifdef CONFIG_KLIPS_PFKEY_ACQUIRE_LOSSAGE
 #  define KLIPS_PFKEY_ACQUIRE_LOSSAGE 100
-# else /* CONFIG_IPSEC_PFKEY_ACQUIRE_LOSSAGE */
+# else /* CONFIG_KLIPS_PFKEY_ACQUIRE_LOSSAGE */
 /* not by default! */
 #  define KLIPS_PFKEY_ACQUIRE_LOSSAGE 0
-# endif /* CONFIG_IPSEC_PFKEY_ACQUIRE_LOSSAGE */
+# endif /* CONFIG_KLIPS_PFKEY_ACQUIRE_LOSSAGE */
 #endif /* KLIPS_PFKEY_ACQUIRE_LOSSAGE */
 
-#endif /* CONFIG_IPSEC_REGRESS */
+#endif /* CONFIG_KLIPS_REGRESS */
 
 
 /*
  * debugging routines.
  */
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 extern void ipsec_print_ip(struct iphdr *ip);
 
 	#define KLIPS_PRINT(flag, format, args...) \
@@ -174,11 +180,11 @@ extern void ipsec_print_ip(struct iphdr *ip);
 		((flag) ? printk(format , ## args) : 0)
 	#define KLIPS_IP_PRINT(flag, ip) \
 		((flag) ? ipsec_print_ip(ip) : 0)
-#else /* CONFIG_IPSEC_DEBUG */
+#else /* CONFIG_KLIPS_DEBUG */
 	#define KLIPS_PRINT(flag, format, args...) do ; while(0)
 	#define KLIPS_PRINTMORE(flag, format, args...) do ; while(0)
 	#define KLIPS_IP_PRINT(flag, ip) do ; while(0)
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 
 /* 
@@ -223,11 +229,37 @@ extern void ipsec_print_ip(struct iphdr *ip);
 #endif /* IP_FRAGMENT_LINEARIZE */
 #endif /* __KERNEL__ */
 
+#ifdef NEED_INET_PROTOCOL
+#define inet_protocol net_protocol
+#endif
+
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#define NAT_TRAVERSAL 1
+#endif
+
 #define _IPSEC_PARAM_H_
 #endif /* _IPSEC_PARAM_H_ */
 
 /*
  * $Log: ipsec_param.h,v $
+ * Revision 1.29  2005/01/26 00:50:35  mcr
+ * 	adjustment of confusion of CONFIG_IPSEC_NAT vs CONFIG_KLIPS_NAT,
+ * 	and make sure that NAT_TRAVERSAL is set as well to match
+ * 	userspace compiles of code.
+ *
+ * Revision 1.28  2004/09/13 15:50:15  mcr
+ * 	spell NEED_INET properly, not NET_INET.
+ *
+ * Revision 1.27  2004/09/13 02:21:45  mcr
+ * 	always turn on IPIP mode.
+ * 	#define inet_protocol if necessary.
+ *
+ * Revision 1.26  2004/08/17 03:25:43  mcr
+ * 	freeswan->openswan.
+ *
+ * Revision 1.25  2004/07/10 19:08:41  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.24  2004/04/05 19:55:06  mcr
  * Moved from linux/include/freeswan/ipsec_param.h,v
  *

@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_ipcomp_c_version[] = "RCSID $Id: ipsec_ipcomp.c,v 1.2 2004/04/06 02:49:26 mcr Exp $";
+char ipsec_ipcomp_c_version[] = "RCSID $Id: ipsec_ipcomp.c,v 1.3 2004/07/10 19:11:18 mcr Exp $";
 #include <linux/config.h>
 #include <linux/version.h>
 
@@ -64,18 +64,18 @@ char ipsec_ipcomp_c_version[] = "RCSID $Id: ipsec_ipcomp.c,v 1.2 2004/04/06 02:4
 
 #include "openswan/ipsec_auth.h"
 
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 #include "openswan/ipsec_ipcomp.h"
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 
 #include "openswan/ipsec_proto.h"
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 int debug_ipcomp = 0;
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 enum ipsec_rcv_value
 ipsec_rcv_ipcomp_checks(struct ipsec_rcv_state *irs,
 			struct sk_buff *skb)
@@ -204,9 +204,9 @@ enum ipsec_xmit_value
 ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
 {
   unsigned int flags = 0;
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
   unsigned int old_tot_len = ntohs(ixs->iph->tot_len);
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
   ixs->ipsp->ips_comp_ratio_dbytes += ntohs(ixs->iph->tot_len);
 
@@ -220,7 +220,7 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
   
   ixs->ipsp->ips_comp_ratio_cbytes += ntohs(ixs->iph->tot_len);
   
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
   if (debug_tunnel & DB_TN_CROUT)
     {
       if (old_tot_len > ntohs(ixs->iph->tot_len))
@@ -237,7 +237,7 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
 		    "packet did not compress (flags = %d).\n",
 		    flags);
     }
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
   return IPSEC_XMIT_OK;
 }
@@ -255,7 +255,7 @@ struct xform_functions ipcomp_xform_funcs[]={
 /* We probably don't want to install a pure IPCOMP protocol handler, but
    only want to handle IPCOMP if it is encapsulated inside an ESP payload
    (which is already handled) */
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 struct inet_protocol comp_protocol =
 {
 	ipsec_rcv,			/* COMP handler		*/
@@ -270,7 +270,7 @@ struct inet_protocol comp_protocol =
 	"COMP"				/* name */
 #endif
 };
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 #endif
 
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */

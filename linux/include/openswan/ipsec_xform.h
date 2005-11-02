@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_xform.h,v 1.40 2004/04/06 02:49:08 mcr Exp $
+ * RCSID $Id: ipsec_xform.h,v 1.41 2004/07/10 19:08:41 mcr Exp $
  */
 
 #ifndef _IPSEC_XFORM_H_
@@ -85,7 +85,7 @@
 #define XFT_AUTH		0x0001
 #define XFT_CONF		0x0100
 
-/* available if CONFIG_IPSEC_DEBUG is defined */
+/* available if CONFIG_KLIPS_DEBUG is defined */
 #define DB_XF_INIT		0x0001
 
 #define PROTO2TXT(x) \
@@ -154,11 +154,11 @@ struct xform_functions {
 
 #endif /* __KERNEL__ */
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 extern void ipsec_dmp(char *s, caddr_t bb, int len);
-#else /* CONFIG_IPSEC_DEBUG */
+#else /* CONFIG_KLIPS_DEBUG */
 #define ipsec_dmp(_x, _y, _z) 
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 
 #define _IPSEC_XFORM_H_
@@ -166,6 +166,9 @@ extern void ipsec_dmp(char *s, caddr_t bb, int len);
 
 /*
  * $Log: ipsec_xform.h,v $
+ * Revision 1.41  2004/07/10 19:08:41  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.40  2004/04/06 02:49:08  mcr
  * 	pullup of algo code from alg-branch.
  *

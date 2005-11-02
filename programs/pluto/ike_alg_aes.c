@@ -11,7 +11,6 @@
 #include "alg_info.h"
 #include "ike_alg.h"
 
-#define  AES_CBC_BLOCK_SIZE	(128/BITS_PER_BYTE)
 #define  AES_KEY_MIN_LEN	128
 #define  AES_KEY_DEF_LEN	128
 #define  AES_KEY_MAX_LEN	256

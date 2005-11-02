@@ -1,6 +1,8 @@
 openswan for Debian
 ----------------------
 
+1) General Remarks
+
 This package has been created from scratch with some ideas from the
 freeswan 1.3 package by Tommi Virtanen and the freeswan 1.5 package by
 Aaron Johnson merged in. Most of the code in debian/rules for creating the
@@ -15,8 +17,105 @@ packaging simple. Alexander List prepared the first preliminary openswan
 package based on my freeswan packaging, which I updated to the relevant parts
 of the current freeswan package.
 
-Note: This package depends on the in-kernel IPsec stack, which is available
-in the stock Debian kernel images (>=2.4.24 and 2.6.x). Additional kernel
-patches or kernel modules for older kernels are currently not supported.
+2) Kernel Support
 
- -- Rene Mayrhofer <rmayr@debian.org>, Sun Mar 31 11:22:04 2004
+Note: This package can make use of the in-kernel IPSec stack, which is
+available in the stock Debian kernel images (>=2.4.24 and 2.6.x). 
+
+If you want to use the openswan utilities, you will need the appropriate
+kernel modules. The Debian default kernel native IPSec stack (which is 
+included in Linux 2.6 kernels and has been backported to Debian's 2.4 kernels) 
+can be used out-of-the-box with opeswan pluto, the key management daemon. 
+This native Linux IPSec stack is of high quality, has all of the features of 
+the latest Debian freeswan and openswan packages (i.e. support for other
+ciphers like AES and NAT Traversal support) and is well integrated into the
+kernel networking subsystem (which is not true for the freeswan kernel
+modules). However, it is not as well tested as the freeswan kernel modules
+simply because the code base is younger. But nonetheless, the easiest way to
+get IPSec support in Debian is to use the default kernels (or recompile from
+the Debian kernel sources) and install the mature freeswan pluto key management
+daemon.
+
+If you do not want to use the in-kernel IPSec stack of newer 2.6 kernels or 
+are building a custom 2.4 kernel, then the KLIPS kernel part is available in
+two forms: the kernel tree can be patched using the kernel-patch-openswan
+package, which will be applied automatically by make-kpkg, or stand-alone
+modules can be built using the openswan-modules-source package. Please note
+that, for building the modules, you need the _complete_, built kernel tree
+for invoking "make-kpkg modules_install", only having the kernel headers is
+not enough. NAT Traversal can not be used at the moment with the stand-alone
+modules, it still needs a small kernel patch applied to the kernel tree. If
+you need NAT Traversal, please use either the in-kernel IPSec stack (which is
+preferred), the kernel-patch-openswan package, or patch the kernel tree with
+the (small) NAT Traversal patch before compiling it.
+
+For using the openswan (KLIPS) kernel modules, there are now two different 
+methods:
+
+2.1) openswan-modules-source:
+When you install the openswan-modules-source package and use
+make-kpkg to build your kernel, make-kpkg modules_image will automatically
+create a kernel module package. However, since the openswan-modules-source
+package follows other modules source packages, you will first have to extract
+the source tree:
+    $ cd /usr/src
+    $ tar xvzf openswan-modules.tar.gz
+Again, please note that only the kernel headers are not enough to build these 
+modules! You really need to have the kernel source tree, configured for your
+running kernel (or the one you will run the openswan module with). If you did
+not build your own kernel, the following trick might help (thanks to Olaf
+Lundqvist for documenting this in the BTS):
+    a) unpack the kernel source:
+       $ apt-get install kernel-source-<debian version>
+       $ cd /usr/src
+       $ tar xvfj kernel-source-<debian version>.tar.bz2
+       $ cd kernel-source-<upstream version>
+    b) copy kernel-headers information to that directory:
+       $ apt-get install kernel-headers-<debian version>
+       $ cp -r ../kernel-headers-<debian-version>/* .
+    c) build the openswan kernel modules:
+       $ cd /usr/src/modules/openswan
+       $ debian/rules binary-modules \
+        KVERS="<debian version>" \
+        KSRC="/usr/src/kernel-source-<debian version>" 2>&1
+Where upstream version is e.g. 2.4.20 and debian-version is e.g. 2.4.20-2 (it
+should match the Debian package version).
+
+If you want to use NAT Traversal but still want to use openswan-modules-source
+(since you need to patch the kernel anyway, using kernel-patch-openswan is
+easier), you can find the necessary patch under 
+/usr/src/modules/openswan/debian/nat-t.diff
+It should apply cleanly to almost any vanilla 2.4 series kernel. Debian 
+kernels usually have that patch already applied, so you will not need to patch
+a Debian kernel to use openswan. 
+For 2.6 series, it is generally no longer necessary, as it is already included 
+upstream (the vanilla kernel).
+
+openswan 2.3.0 supports KLIPS for kernel series 2.6, but this support is marked
+experimental and has not yet been integrated into the openswan-modules-source
+package. Therefore, it will only work for a 2.4 series kernel.
+
+2) kernel-patch-openswan:
+By installing the kernel-patch-openswan package and using make-kpkg to build
+your kernel, it automatically gets patched to include the freeswan IPSec kernel
+support in the kernel tree. This allows to enable NAT Traversal (which is not
+possible with building the openswan modules outside the kernel tree with the
+openswan-modules-source package without the additional patch). Please note 
+that the environment variable PATCH_THE_KERNEL=YES has to be set for make-kpkg 
+to apply the kernel patches.
+
+This will only work for 2.4 series kernels! Patching 2.6 series kernels is not
+supported.
+
+3) Miscellaneous
+
+Warning: Due to an upstream bug, pluto from this version will dump core on
+certain CRLs. If you are hit by this bug, please report it directly to 
+upstream, they are still tracking the issue down.
+
+For support, please use the mailing list debian-openswan@gibraltar.at, which
+is now the official support address for the Debian package of openswan. You
+can subscribe to the list and view its archives at
+https://www.gibraltar.at/mailman/listinfo/debian-openswan
+
+ -- Rene Mayrhofer <rmayr@debian.org>, Wed Oct 16 13:08:20 2004

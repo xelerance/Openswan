@@ -29,5 +29,6 @@ ipsec look
 # magic route command
 route add -host 192.0.1.1 gw 192.1.2.45 dev ipsec0
 
-ipsec pf_key --daemon /var/run/pf_key.pid >/tmp/pfkey.txt
+mkdir -p /var/run/pluto
+ipsec pf_key --daemon /var/run/pluto/pf_key.pid >/tmp/pfkey.txt
 echo send packets

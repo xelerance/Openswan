@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: connections.h,v 1.95 2004/06/27 20:46:15 mcr Exp $
+ * RCSID $Id: connections.h,v 1.102 2005/03/20 03:00:41 mcr Exp $
  */
 
 /* There are two kinds of connections:
@@ -151,9 +151,10 @@ struct end {
     bool has_port_wildcard;
     bool has_id_wildcards;
     char *updown;
-    u_int16_t host_port;	/* host order */
-    u_int16_t port;		/* host order */
-    u_int8_t protocol;
+    u_int16_t host_port;	/* where the IKE port is */
+    bool      host_port_specific; /* if TRUE, then IKE ports are tested for*/
+    u_int16_t port;		/* port number, if per-port keying. */
+    u_int8_t protocol;          /* protocol number, if per-per keying. */
     cert_t cert;		/* end certificate */
     chunk_t ca;			/* CA distinguished name */
     struct ietfAttrList *groups;/* access control groups */
@@ -187,11 +188,11 @@ struct connection {
     unsigned long sa_keying_tries;
 
     /* RFC 3706 DPD */
-    time_t dpd_delay;
-    time_t dpd_timeout;
-    int dpd_action;
+    time_t          dpd_delay;              /* time between checks */
+    time_t          dpd_timeout;            /* time after which we are dead */
+    enum dpd_action dpd_action;             /* what to do when we die */
 
-    bool forceencaps;
+    bool               forceencaps;         /* always use NAT-T encap */
 
     char              *log_file_name;       /* name of log file */
     FILE              *log_file;            /* possibly open FILE */
@@ -257,7 +258,10 @@ extern size_t format_end(char *buf, size_t buf_len
 
 struct whack_message;	/* forward declaration of tag whack_msg */
 extern void add_connection(const struct whack_message *wm);
-extern void initiate_connection(const char *name, int whackfd);
+extern void initiate_connection(const char *name
+				, int whackfd
+				, lset_t moredebug
+				, enum crypto_importance importance);
 extern void initiate_opportunistic(const ip_address *our_client
     , const ip_address *peer_client, int transport_proto, bool held, int whackfd, err_t why);
 extern void terminate_connection(const char *nm);
@@ -285,11 +289,15 @@ extern void ISAKMP_SA_established(struct connection *c, so_serial_t serial);
 
 struct state;	/* forward declaration of tag (defined in state.h) */
 extern struct connection
-    *con_by_name(const char *nm, bool strict),
-    *find_host_connection(const ip_address *me, u_int16_t my_port
+*con_by_name(const char *nm, bool strict);
+
+#define find_host_connection(me, my_port, him, his_port) find_host_connection2(__FUNCTION__, me, my_port, him, his_port)
+extern struct connection 
+*find_host_connection2(const char *func
+		       , const ip_address *me, u_int16_t my_port
 	, const ip_address *him, u_int16_t his_port),
     *refine_host_connection(const struct state *st, const struct id *id
-	, bool initiator),
+	, bool initiator, bool aggrmode),
     *find_client_connection(struct connection *c
 			    , const ip_subnet *our_net
 			    , const ip_subnet *peer_net
@@ -314,12 +322,7 @@ struct gw_info;	/* forward declaration of tag (defined in dnskey.h) */
 struct alg_info;	/* forward declaration of tag (defined in alg_info.h) */
 extern struct connection *rw_instantiate(struct connection *c
 					 , const ip_address *him
-#ifdef NAT_TRAVERSAL
-					 , u_int16_t his_port
-#endif
-#ifdef VIRTUAL_IP
 					 , const ip_subnet *his_net
-#endif					 
 					 , const struct id *his_id);
 
 extern struct connection *oppo_instantiate(struct connection *c
@@ -358,8 +361,6 @@ extern void release_pending_whacks(struct state *st, err_t story);
 extern void unpend(struct state *st);
 extern void update_pending(struct state *os, struct state *ns);
 extern void flush_pending_by_state(struct state *st);
-extern void show_pending_phase2(const struct host_pair *hp, const struct state *st);
-
 extern void connection_discard(struct connection *c);
 
 /* A template connection's eroute can be eclipsed by
@@ -382,6 +383,17 @@ update_host_pair(const char *why, struct connection *c,
        const ip_address *myaddr, u_int16_t myport ,
        const ip_address *hisaddr, u_int16_t hisport);
 #endif /* NAT_TRAVERSAL */
+
+/* export to pending.c */
+void host_pair_enqueue_pending(const struct connection *c
+			       , struct pending *p
+			       , struct pending **pnext);
+struct pending **host_pair_first_pending(const struct connection *c);
+
+void connection_check_phase2(void);
+void init_connections(void);
+
+
 
 /*
  * Local Variables:

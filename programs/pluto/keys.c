@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keys.c,v 1.96 2004/06/27 22:37:58 mcr Exp $
+ * RCSID $Id: keys.c,v 1.99.2.1 2005/05/18 20:55:13 ken Exp $
  */
 
 #include <stddef.h>
@@ -50,6 +50,7 @@
 #include "state.h"
 #include "lex.h"
 #include "keys.h"
+#include "secrets.h"
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "log.h"
@@ -267,6 +268,7 @@ struct id_list {
 
 struct secret {
     struct id_list *ids;
+    int             secretlineno;
     enum PrivateKeyKind kind;
     union {
 	chunk_t preshared_secret;
@@ -369,7 +371,8 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 	match_him = 02,
 	match_me = 04
     };
-    unsigned char idstr1[IDTOA_BUF], idme[IDTOA_BUF], idhim[IDTOA_BUF];
+    unsigned char idstr1[IDTOA_BUF], idme[IDTOA_BUF]
+	, idhim[IDTOA_BUF], idhim2[IDTOA_BUF];
     unsigned int best_match = 0;
     struct secret *best = NULL;
     struct secret *s;
@@ -379,10 +382,12 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 
     idtoa(my_id,  idme,  IDTOA_BUF);
     idtoa(his_id, idhim, IDTOA_BUF);
+    strcpy(idhim2, idhim);
 
     DBG(DBG_CONTROL,
-	DBG_log("looking for secret for %s->%s of kind %s",
-		idme, idhim, enum_name(&ppk_names, kind)));
+	DBG_log("started looking for secret for %s->%s of kind %s"
+		, idme, idhim
+		, enum_name(&ppk_names, kind)));
 
     /* is there a certificate assigned to this connection? */
     if (kind == PPK_RSA
@@ -396,15 +401,16 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 
 	for (s = secrets; s != NULL; s = s->next)
 	{
-	  DBG(DBG_CONTROL,
-	      DBG_log("searching for certificate %s:%s vs %s:%s",
-		      enum_name(&ppk_names, s->kind),
-		      s->u.RSA_private_key.pub.keyid,
-		      enum_name(&ppk_names, kind),
-		      my_public_key->u.rsa.keyid)
+	    DBG(DBG_CONTROL,
+		DBG_log("searching for certificate %s:%s vs %s:%s"
+			, enum_name(&ppk_names, s->kind)
+			, (s->kind==PPK_RSA ? s->u.RSA_private_key.pub.keyid : "N/A")
+			, enum_name(&ppk_names, kind)
+			, my_public_key->u.rsa.keyid)
 	      );
 	    if (s->kind == kind &&
-		same_RSA_public_key(&s->u.RSA_private_key.pub, &my_public_key->u.rsa))
+		same_RSA_public_key(&s->u.RSA_private_key.pub
+				    , &my_public_key->u.rsa))
 	    {
 		best = s;
 		break; /* we have found the private key - no sense in searching further */
@@ -414,30 +420,45 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 	return best;
     }
 
-    if (his_id_was_instantiated(c))
+    if (his_id_was_instantiated(c) && !(c->policy&AGGRESSIVE))
     {
+	DBG(DBG_CONTROL,
+	    DBG_log("instantiating him to 0.0.0.0"));
+
 	/* roadwarrior: replace him with 0.0.0.0 */
 	rw_id.kind = addrtypeof(&c->spd.that.host_addr) == AF_INET ?
 	    ID_IPV4_ADDR : ID_IPV6_ADDR;
 	happy(anyaddr(addrtypeof(&c->spd.that.host_addr), &rw_id.ip_addr));
 	his_id = &rw_id;
+	idtoa(his_id, idhim2, IDTOA_BUF);
     }
 #ifdef NAT_TRAVERSAL
-    else if ((nat_traversal_enabled) && (c->policy & POLICY_PSK) &&
-       (kind == PPK_PSK) && (
-	((c->kind == CK_TEMPLATE) && (c->spd.that.id.kind == ID_NONE)) ||
-	((c->kind == CK_INSTANCE) && (id_is_ipaddr(&c->spd.that.id)))))
+    else if ((nat_traversal_enabled)
+	     && (c->policy & POLICY_PSK)
+	     && (kind == PPK_PSK)
+	     && (((c->kind == CK_TEMPLATE)
+		  && (c->spd.that.id.kind == ID_NONE))
+		 || ((c->kind == CK_INSTANCE)
+		     && (id_is_ipaddr(&c->spd.that.id)))))
     {
-	    /* roadwarrior: replace him with 0.0.0.0 */
-	    rw_id.kind = ID_IPV4_ADDR;
-	    happy(anyaddr(addrtypeof(&c->spd.that.host_addr), &rw_id.ip_addr));
-	    his_id = &rw_id;
+	DBG(DBG_CONTROL,
+	    DBG_log("replace him to 0.0.0.0"));
+
+	/* roadwarrior: replace him with 0.0.0.0 */
+	rw_id.kind = ID_IPV4_ADDR;
+	happy(anyaddr(addrtypeof(&c->spd.that.host_addr), &rw_id.ip_addr));
+	his_id = &rw_id;
+	idtoa(his_id, idhim2, IDTOA_BUF);
     }
 #endif
 
+    DBG(DBG_CONTROL,
+	DBG_log("actually looking for secret for %s->%s of kind %s"
+		, idme, idhim2
+		, enum_name(&ppk_names, kind)));
+
     for (s = secrets; s != NULL; s = s->next)
     {
-
 	if (s->kind == kind)
 	{
 	    unsigned int match = 0;
@@ -453,20 +474,23 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 	    {
 		/* check if both ends match ids */
 		struct id_list *i;
+		int idnum = 0;
 
 		for (i = s->ids; i != NULL; i = i->next)
 		{
+		    idnum++;
 		    idtoa(&i->id, idstr1, IDTOA_BUF);
-
-		    DBG(DBG_PRIVATE,
-			DBG_log("comparing PSK %s to %s / %s",
-				idstr1, idme, idhim));
 
 		    if (same_id(my_id, &i->id))
 			match |= match_me;
 
 		    if (same_id(his_id, &i->id))
 			match |= match_him;
+
+		    DBG(DBG_CONTROL,
+			DBG_log("%d: compared PSK %s to %s / %s -> %d",
+				idnum, idstr1, idme, idhim, match));
+
 		}
 
 		/* If our end matched the only id in the list,
@@ -474,7 +498,7 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 		 * A more specific match will trump this.
 		 */
 		if (match == match_me
-		&& s->ids->next == NULL)
+		    && s->ids->next == NULL)
 		    match |= match_default;
 	    }
 
@@ -502,7 +526,9 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 		    {
 		    case PPK_PSK:
 			same = s->u.preshared_secret.len == best->u.preshared_secret.len
-			    && memcmp(s->u.preshared_secret.ptr, best->u.preshared_secret.ptr, s->u.preshared_secret.len) == 0;
+			    && memcmp(s->u.preshared_secret.ptr
+				      , best->u.preshared_secret.ptr
+				      , s->u.preshared_secret.len) == 0;
 			break;
 		    case PPK_RSA:
 			/* Dirty trick: since we have code to compare
@@ -511,7 +537,7 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 			 * mean equal private keys.  This ought to work.
 			 */
 			same = same_RSA_public_key(&s->u.RSA_private_key.pub
-			    , &best->u.RSA_private_key.pub);
+						   , &best->u.RSA_private_key.pub);
 			break;
 		    default:
 			bad_case(kind);
@@ -525,13 +551,26 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
 		}
 		else if (match > best_match)
 		{
+		    DBG(DBG_CONTROL,
+			DBG_log("best_match %d>%d best=%p (line=%d)"
+				, best_match, match
+				, s, s->secretlineno));
+		    
 		    /* this is the best match so far */
 		    best_match = match;
 		    best = s;
+		} else {
+		    DBG(DBG_CONTROL,
+			DBG_log("match(%d) was not best_match(%d)"
+				, match, best_match));
 		}
 	    }
 	}
     }
+    DBG(DBG_CONTROL,
+	DBG_log("concluding with best_match=%d best=%p (lineno=%d)"
+		, best_match, best, best? best->secretlineno : -1));
+		    
     return best;
 }
 
@@ -590,6 +629,14 @@ get_RSA_private_key(const struct connection *c)
 {
     const struct secret *s = get_secret(c, PPK_RSA, TRUE);
 
+#ifdef DEBUG
+    DBG(DBG_PRIVATE,
+	if (s == NULL)
+	    DBG_log("no RSA key Found");
+	else
+	    DBG_log("rsa key %s found", s->u.RSA_private_key.pub.keyid);
+	);
+#endif
     return s == NULL? NULL : &s->u.RSA_private_key;
 }
 
@@ -1079,6 +1126,7 @@ process_secret_records(int whackfd)
 	    s->ids = NULL;
 	    s->kind = PPK_PSK;	/* default */
 	    setchunk(s->u.preshared_secret, NULL, 0);
+	    s->secretlineno=flp->lino;
 	    s->next = NULL;
 
 	    for (;;)

@@ -13,11 +13,7 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# $Id: Makefile,v 1.5 2003/04/11 17:15:40 mcr Exp $
-
-srcdir =	.
-VPATH =		.
-top_srcdir =	.
+# $Id: Makefile,v 1.8 2004/12/18 18:13:34 mcr Exp $
 
 CINCLUDES =	-I${srcdir}/unix/include \
 		-I. -I./include -I${srcdir}/include 
@@ -26,7 +22,7 @@ CWARNINGS = -Werror
 
 CFLAGS=${CINCLUDES} ${CDEFINES} ${CWARNINGS}
 
-VERSION="@(\#) freeswan-hacking-9.2.1-for-fs2"
+VERSION="@(\#) openswan-hacking-9.3-for-osw2"
 LIBINTERFACE=2
 LIBREVISION=0
 LIBAGE=1
@@ -37,7 +33,7 @@ OBJS =		async.o context.o gai_strerror.o getaddrinfo.o gethost.o \
 		getipnode.o getnameinfo.o getrrset.o getrrset2.o herror.o \
 		lwbuffer.o lwconfig.o lwpacket.o lwresutil.o \
 		lwres_gabn.o lwres_gnba.o lwres_grbn.o lwres_noop.o \
-		lwinetaton.o lwinetpton.o lwinetntop.o
+		lwinetaton.o lwinetpton.o lwinetntop.o 
 
 # Alphabetically
 SRCS =		async.c context.c gai_strerror.c getaddrinfo.c gethost.c \
@@ -54,6 +50,7 @@ version.o: version.c
 		-DLIBINTERFACE=${LIBINTERFACE} \
 		-DLIBREVISION=${LIBREVISION} \
 		-DLIBAGE=${LIBAGE} \
+		${CINCLUDES} ${CDEFINES} ${CWARNINGS} \
 		-c ${srcdir}/version.c
 
 liblwres.a: ${OBJS} version.o
@@ -64,7 +61,7 @@ timestamp: liblwres.a
 	touch timestamp
 
 clean distclean mostlyclean realclean cleanall spotless::
-	rm -f liblwres.a liblwres.la timestamp $(OBJS)
+	rm -f liblwres.a liblwres.la timestamp $(OBJS) version.o
 
 install checkprograms check install_file_list:
 	@true

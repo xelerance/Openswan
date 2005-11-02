@@ -21,6 +21,7 @@ ipsec look
 route add -host 192.0.2.1 gw 192.1.2.23 dev ipsec0
 
 # monitor upbound ACQUIRE messages
-ipsec pf_key --daemon /var/run/pf_key.pid >/tmp/pfkey.txt
+mkdir -p /var/run/pluto
+ipsec pf_key --daemon /var/run/pluto/pf_key.pid >/tmp/pfkey.txt
 echo start now
 

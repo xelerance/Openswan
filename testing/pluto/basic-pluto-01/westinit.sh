@@ -1,3 +1,6 @@
+TESTNAME=basic-pluto-01
+source /testing/pluto/bin/westlocal.sh
+
 # confirm that the network is alive
 ping -n -c 4 192.0.2.254
 # make sure that clear text does not get through
@@ -7,8 +10,8 @@ ping -n -c 4 192.0.2.254
 
 ipsec setup start
 ipsec auto --add westnet-eastnet
+ipsec whack --debug-control --debug-controlmore --debug-parsing --debug-crypt
 /testing/pluto/basic-pluto-01/eroutewait.sh trap
-ipsec auto --up  westnet-eastnet
 
 echo done
 

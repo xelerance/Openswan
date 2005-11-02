@@ -1,7 +1,6 @@
 /*
  * return IPsec copyright notice
  * Copyright (C) 2001, 2002  Henry Spencer.
- *               2003, 2004 Xelerance Corporation
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
@@ -13,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: copyright.c,v 1.5.4.1 2004/07/20 02:13:58 ken Exp $
+ * RCSID $Id: copyright.c,v 1.5 2004/04/09 18:00:39 mcr Exp $
  */
 #include "internal.h"
 #include "openswan.h"
@@ -24,7 +23,6 @@ static const char *co[] = {
  "    D. Hugh Redelmeier, Sandy Harris, Claudia Schmeing,",
  "    Michael C. Richardson, Angelos D. Keromytis, John Ioannidis.",
  "    Ken Bantoft, Andreas Steffan, Mathieu Lafon, Tuomo Soini",
- "    Paul Wouters, Hugh Daniel, Xelerance Corporation.",
  "",
  "This program is free software; you can redistribute it and/or modify it",
  "under the terms of the GNU General Public License as published by the",

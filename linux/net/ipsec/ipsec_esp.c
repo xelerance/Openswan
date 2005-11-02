@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.2 2004/04/06 02:49:25 mcr Exp $";
+char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.8 2004/09/14 00:22:57 mcr Exp $";
 #include <linux/config.h>
 #include <linux/version.h>
 
@@ -51,6 +51,7 @@ char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.2 2004/04/06 02:49:25 m
 #endif /* NET21 */
 #include <asm/checksum.h>
 #include <net/ip.h>
+#include <net/protocol.h>
 
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
@@ -64,19 +65,14 @@ char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.2 2004/04/06 02:49:25 m
 
 #include "openswan/ipsec_auth.h"
 
-#ifdef CONFIG_IPSEC_ESP
+#ifdef CONFIG_KLIPS_ESP
 #include "openswan/ipsec_esp.h"
-#endif /* CONFIG_IPSEC_ESP */
+#endif /* CONFIG_KLIPS_ESP */
 
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
 
-#ifdef CONFIG_IPSEC_DEBUG
-int debug_esp = 0;
-#endif /* CONFIG_IPSEC_DEBUG */
-
-
-#ifdef CONFIG_IPSEC_ESP
+#ifdef CONFIG_KLIPS_ESP
 enum ipsec_rcv_value
 ipsec_rcv_esp_checks(struct ipsec_rcv_state *irs,
 		     struct sk_buff *skb)
@@ -153,7 +149,7 @@ ipsec_rcv_esp_authcalc(struct ipsec_rcv_state *irs,
 		SHA1_CTX	sha1;
 	} tctx;
 
-#ifdef CONFIG_IPSEC_ALG
+#ifdef CONFIG_KLIPS_ALG
 	if (irs->ipsp->ips_alg_auth) {
 		KLIPS_PRINT(debug_rcv,
 				"klips_debug:ipsec_rcv: "
@@ -198,15 +194,15 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	int badpad = 0;
 	int i;
 	struct sk_buff *skb;
-#ifdef CONFIG_IPSEC_ALG
+#ifdef CONFIG_KLIPS_ALG
 	struct ipsec_alg_enc *ixt_e=NULL;
-#endif /* CONFIG_IPSEC_ALG */
+#endif /* CONFIG_KLIPS_ALG */
 
 	skb=irs->skb;
 
 	idat = skb->data + irs->iphlen;
 
-#ifdef CONFIG_IPSEC_ALG
+#ifdef CONFIG_KLIPS_ALG
 	if ((ixt_e=ipsp->ips_alg_enc)) {
 		esphlen = ESP_HEADER_LEN + ixt_e->ixt_ivlen/8;
 		KLIPS_PRINT(debug_rcv,
@@ -214,7 +210,7 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 				"encalg=%d esphlen=%d\n",
 				ipsp->ips_encalg, esphlen);
 	} else
-#endif /* CONFIG_IPSEC_ALG */
+#endif /* CONFIG_KLIPS_ALG */
 	switch(ipsp->ips_encalg) {
 	case ESP_3DES:
 		iv[0] = *((__u32 *)(espp->esp_iv)    );
@@ -232,7 +228,7 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	idat += esphlen;
 	irs->ilen -= esphlen;
 
-#ifdef CONFIG_IPSEC_ALG
+#ifdef CONFIG_KLIPS_ALG
 	if (ixt_e)
 	{
 		if (ipsec_alg_esp_encrypt(ipsp, 
@@ -253,7 +249,7 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 			return IPSEC_RCV_BAD_DECRYPT;
 		}
 	} else
-#endif /* CONFIG_IPSEC_ALG */
+#endif /* CONFIG_KLIPS_ALG */
 	switch(ipsp->ips_encalg) {
 	case ESP_3DES:
 		if ((irs->ilen) % 8) {
@@ -382,12 +378,12 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
   unsigned char *idat, *pad;
   __u8 hash[AH_AMAX];
   union {
-#ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
+#ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
     MD5_CTX md5;
-#endif /* CONFIG_IPSEC_AUTH_HMAC_MD5 */
-#ifdef CONFIG_IPSEC_AUTH_HMAC_SHA1
+#endif /* CONFIG_KLIPS_AUTH_HMAC_MD5 */
+#ifdef CONFIG_KLIPS_AUTH_HMAC_SHA1
     SHA1_CTX sha1;
-#endif /* CONFIG_IPSEC_AUTH_HMAC_SHA1 */
+#endif /* CONFIG_KLIPS_AUTH_HMAC_SHA1 */
   } tctx;
 
   dat = (unsigned char *)ixs->iph;
@@ -397,16 +393,16 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
   espp->esp_rpl = htonl(++(ixs->ipsp->ips_replaywin_lastseq));
   
   switch(ixs->ipsp->ips_encalg) {
-#if defined(CONFIG_IPSEC_ENC_3DES)
-#ifdef CONFIG_IPSEC_ENC_3DES
+#if defined(CONFIG_KLIPS_ENC_3DES)
+#ifdef CONFIG_KLIPS_ENC_3DES
   case ESP_3DES:
-#endif /* CONFIG_IPSEC_ENC_3DES */
+#endif /* CONFIG_KLIPS_ENC_3DES */
     iv[0] = *((__u32*)&(espp->esp_iv)    ) =
       ((__u32*)(ixs->ipsp->ips_iv))[0];
     iv[1] = *((__u32*)&(espp->esp_iv) + 1) =
       ((__u32*)(ixs->ipsp->ips_iv))[1];
     break;
-#endif /* defined(CONFIG_IPSEC_ENC_3DES) */
+#endif /* defined(CONFIG_KLIPS_ENC_3DES) */
   default:
     ixs->stats->tx_errors++;
     return IPSEC_XMIT_ESP_BADALG;
@@ -427,7 +423,7 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
   ixs->iph->protocol = IPPROTO_ESP;
   
   switch(ixs->ipsp->ips_encalg) {
-#ifdef CONFIG_IPSEC_ENC_3DES
+#ifdef CONFIG_KLIPS_ENC_3DES
   case ESP_3DES:
     des_ede3_cbc_encrypt((des_cblock *)idat,
 			 (des_cblock *)idat,
@@ -437,17 +433,17 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
 			 ((struct des_eks *)(ixs->ipsp->ips_key_e))[2].ks,
 			 (des_cblock *)iv, 1);
     break;
-#endif /* CONFIG_IPSEC_ENC_3DES */
+#endif /* CONFIG_KLIPS_ENC_3DES */
   default:
     ixs->stats->tx_errors++;
     return IPSEC_XMIT_ESP_BADALG;
   }
   
   switch(ixs->ipsp->ips_encalg) {
-#if defined(CONFIG_IPSEC_ENC_3DES)
-#ifdef CONFIG_IPSEC_ENC_3DES
+#if defined(CONFIG_KLIPS_ENC_3DES)
+#ifdef CONFIG_KLIPS_ENC_3DES
   case ESP_3DES:
-#endif /* CONFIG_IPSEC_ENC_3DES */
+#endif /* CONFIG_KLIPS_ENC_3DES */
     /* XXX update IV with the last 8 octets of the encryption */
 #if KLIPS_IMPAIRMENT_ESPIV_CBC_ATTACK
     ((__u32*)(ixs->ipsp->ips_iv))[0] =
@@ -458,27 +454,27 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
     prng_bytes(&ipsec_prng, (char *)ixs->ipsp->ips_iv, EMT_ESPDES_IV_SZ); 
 #endif /* KLIPS_IMPAIRMENT_ESPIV_CBC_ATTACK */
     break;
-#endif /* defined(CONFIG_IPSEC_ENC_3DES) */
+#endif /* defined(CONFIG_KLIPS_ENC_3DES) */
   default:
     ixs->stats->tx_errors++;
     return IPSEC_XMIT_ESP_BADALG;
   }
   
   switch(ixs->ipsp->ips_authalg) {
-#ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
+#ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
   case AH_MD5:
     ipsec_xmit_dmp("espp", (char*)espp, ixs->skb->len - ixs->iphlen - ixs->authlen);
     tctx.md5 = ((struct md5_ctx*)(ixs->ipsp->ips_key_a))->ictx;
     ipsec_xmit_dmp("ictx", (char*)&tctx.md5, sizeof(tctx.md5));
-    MD5Update(&tctx.md5, (caddr_t)espp, ixs->skb->len - ixs->iphlen - ixs->authlen);
+    osMD5Update(&tctx.md5, (caddr_t)espp, ixs->skb->len - ixs->iphlen - ixs->authlen);
     ipsec_xmit_dmp("ictx+dat", (char*)&tctx.md5, sizeof(tctx.md5));
-    MD5Final(hash, &tctx.md5);
+    osMD5Final(hash, &tctx.md5);
     ipsec_xmit_dmp("ictx hash", (char*)&hash, sizeof(hash));
     tctx.md5 = ((struct md5_ctx*)(ixs->ipsp->ips_key_a))->octx;
     ipsec_xmit_dmp("octx", (char*)&tctx.md5, sizeof(tctx.md5));
-    MD5Update(&tctx.md5, hash, AHMD596_ALEN);
+    osMD5Update(&tctx.md5, hash, AHMD596_ALEN);
     ipsec_xmit_dmp("octx+hash", (char*)&tctx.md5, sizeof(tctx.md5));
-    MD5Final(hash, &tctx.md5);
+    osMD5Final(hash, &tctx.md5);
     ipsec_xmit_dmp("octx hash", (char*)&hash, sizeof(hash));
     memcpy(&(dat[ixs->skb->len - ixs->authlen]), hash, ixs->authlen);
     
@@ -486,8 +482,8 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
     memset((caddr_t)&tctx.md5, 0, sizeof(tctx.md5));
     memset((caddr_t)hash, 0, sizeof(*hash));
     break;
-#endif /* CONFIG_IPSEC_AUTH_HMAC_MD5 */
-#ifdef CONFIG_IPSEC_AUTH_HMAC_SHA1
+#endif /* CONFIG_KLIPS_AUTH_HMAC_MD5 */
+#ifdef CONFIG_KLIPS_AUTH_HMAC_SHA1
   case AH_SHA:
     tctx.sha1 = ((struct sha1_ctx*)(ixs->ipsp->ips_key_a))->ictx;
     SHA1Update(&tctx.sha1, (caddr_t)espp, ixs->skb->len - ixs->iphlen - ixs->authlen);
@@ -501,7 +497,7 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
     memset((caddr_t)&tctx.sha1, 0, sizeof(tctx.sha1));
     memset((caddr_t)hash, 0, sizeof(*hash));
     break;
-#endif /* CONFIG_IPSEC_AUTH_HMAC_SHA1 */
+#endif /* CONFIG_KLIPS_AUTH_HMAC_SHA1 */
   case AH_NONE:
     break;
   default:
@@ -528,6 +524,12 @@ struct xform_functions esp_xform_funcs[]={
 	},
 };
 
+#ifdef NET_26
+struct inet_protocol esp_protocol = {
+  .handler = ipsec_rcv,
+  .no_policy = 1,
+};
+#else
 struct inet_protocol esp_protocol =
 {
 	ipsec_rcv,			/* ESP handler		*/
@@ -542,14 +544,34 @@ struct inet_protocol esp_protocol =
 	"ESP"				/* name */
 #endif
 };
+#endif /* NET_26 */
 
-
-
-#endif /* !CONFIG_IPSEC_ESP */
+#endif /* !CONFIG_KLIPS_ESP */
 
 
 /*
  * $Log: ipsec_esp.c,v $
+ * Revision 1.8  2004/09/14 00:22:57  mcr
+ * 	adjustment of MD5* functions.
+ *
+ * Revision 1.7  2004/09/13 02:23:01  mcr
+ * 	#define inet_protocol if necessary.
+ *
+ * Revision 1.6  2004/09/06 18:35:49  mcr
+ * 	2.6.8.1 gets rid of inet_protocol->net_protocol compatibility,
+ * 	so adjust for that.
+ *
+ * Revision 1.5  2004/08/17 03:27:23  mcr
+ * 	klips 2.6 edits.
+ *
+ * Revision 1.4  2004/08/04 15:57:07  mcr
+ * 	moved des .h files to include/des/ *
+ * 	included 2.6 protocol specific things
+ * 	started at NAT-T support, but it will require a kernel patch.
+ *
+ * Revision 1.3  2004/07/10 19:11:18  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.2  2004/04/06 02:49:25  mcr
  * 	pullup of algo code from alg-branch.
  *

@@ -18,7 +18,7 @@
  * Split out from ipsec_init.c version 1.70.
  */
 
-char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.30 2004/04/25 21:23:11 ken Exp $";
+char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.35 2005/01/26 00:50:35 mcr Exp $";
 
 
 #include <linux/config.h>
@@ -27,6 +27,7 @@ char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.30 2004/04/25 21:23:1
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
 
+#include "openswan/ipsec_kversion.h"
 #include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
@@ -81,10 +82,11 @@ char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.30 2004/04/25 21:23:1
 #include "openswan/ipsec_rcv.h"
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_esp.h"
+#include "openswan/ipsec_kern24.h"
 
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 #include "openswan/ipcomp.h"
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 
 #include "openswan/ipsec_proto.h"
 
@@ -104,6 +106,11 @@ static struct proc_dir_entry *proc_stats_dir     = NULL;
 
 struct ipsec_birth_reply ipsec_ipv4_birth_packet;
 struct ipsec_birth_reply ipsec_ipv6_birth_packet;
+
+#ifdef CONFIG_KLIPS_DEBUG
+int debug_esp = 0;
+int debug_ah = 0;
+#endif /* CONFIG_KLIPS_DEBUG */
 
 #define DECREMENT_UNSIGNED(X, amount) ((amount < (X)) ? (X)-amount : 0)
 
@@ -151,10 +158,10 @@ ipsec_eroute_get_info(char *buffer,
 {
 	struct wsbuf w = {buffer, length, offset, 0, 0};
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	if (debug_radij & DB_RJ_DUMPTREES)
 	  rj_dumptrees();			/* XXXXXXXXX */
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 	KLIPS_PRINT(debug_tunnel & DB_TN_PROCFS,
 		    "klips_debug:ipsec_eroute_get_info: "
@@ -356,7 +363,7 @@ ipsec_spi_get_info(char *buffer,
 #endif
 			}
 
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 			if(sa_p->ips_said.proto == IPPROTO_COMP &&
 			   (sa_p->ips_comp_ratio_dbytes ||
 			    sa_p->ips_comp_ratio_cbytes)) {
@@ -370,14 +377,17 @@ ipsec_spi_get_info(char *buffer,
 					       (unsigned long)sa_p->ips_comp_ratio_cbytes);
 #endif
 			}
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
-			if(sa_p->ips_natt_type != 0) {
+			{
 				char *natttype_name;
 
 				switch(sa_p->ips_natt_type)
 				{
+				case 0:
+					natttype_name="none";
+					break;
 				case ESPINUDP_WITH_NON_IKE:
 					natttype_name="nonike";
 					break;
@@ -405,13 +415,13 @@ ipsec_spi_get_info(char *buffer,
 
 			len += ipsec_snprintf(buffer+len, length-len, " ref=%d",
 				       sa_p->ips_ref);
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 			if(debug_xform) {
 			len += ipsec_snprintf(buffer+len, length-len, " reftable=%lu refentry=%lu",
 				       (unsigned long)IPsecSAref2table(sa_p->ips_ref),
 				       (unsigned long)IPsecSAref2entry(sa_p->ips_ref));
 			}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 			len += ipsec_snprintf(buffer+len, length-len, "\n");
 
@@ -531,7 +541,7 @@ ipsec_tncfg_get_info(char *buffer,
 	off_t begin = 0;
 	int i;
 	char name[9];
-	struct device *dev, *privdev;
+	struct net_device *dev, *privdev;
 	struct ipsecpriv *priv;
 
 	KLIPS_PRINT(debug_tunnel & DB_TN_PROCFS,
@@ -550,7 +560,7 @@ ipsec_tncfg_get_info(char *buffer,
 			len += ipsec_snprintf(buffer+len, length-len, "%s",
 				       dev->name);
 			if(priv) {
-				privdev = (struct device *)(priv->dev);
+				privdev = (struct net_device *)(priv->dev);
 				len += ipsec_snprintf(buffer+len, length-len, " -> %s",
 					       privdev ? privdev->name : "NULL");
 				len += ipsec_snprintf(buffer+len, length-len, " mtu=%d(%d) -> %d",
@@ -668,7 +678,7 @@ ipsec_birth_set(struct file *file, const char *buffer,
 	struct ipsec_birth_reply *ibr = (struct ipsec_birth_reply *)data;
 	int len;
 
-	MOD_INC_USE_COUNT;
+	KLIPS_INC_USE;
         if(count > IPSEC_BIRTH_TEMPLATE_MAXLEN) {
                 len = IPSEC_BIRTH_TEMPLATE_MAXLEN;
 	} else {
@@ -676,18 +686,18 @@ ipsec_birth_set(struct file *file, const char *buffer,
 	}
 
         if(copy_from_user(ibr->packet_template, buffer, len)) {
-                MOD_DEC_USE_COUNT;
+                KLIPS_DEC_USE;
                 return -EFAULT;
         }
 	ibr->packet_template_len = len;
 
-        MOD_DEC_USE_COUNT;
+        KLIPS_DEC_USE;
 
         return len;
 }
 
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 IPSEC_PROCFS_DEBUG_NO_STATIC
 int
 ipsec_klipsdebug_get_info(char *buffer,
@@ -722,7 +732,7 @@ ipsec_klipsdebug_get_info(char *buffer,
 		len = length;
 	return len;
 }
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 IPSEC_PROCFS_DEBUG_NO_STATIC
 int
@@ -801,7 +811,7 @@ struct proc_dir_entry ipsec_version =
 	NULL, NULL, NULL, NULL, NULL
 };
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 struct proc_dir_entry ipsec_klipsdebug =
 {
 	0,
@@ -811,7 +821,7 @@ struct proc_dir_entry ipsec_klipsdebug =
 	ipsec_klipsdebug_get_info,
 	NULL, NULL, NULL, NULL, NULL
 };
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 #endif /* !PROC_FS_2325 */
 #endif /* CONFIG_PROC_FS */
 
@@ -825,7 +835,7 @@ struct ipsec_proc_list {
 	void                   *data;
 };
 static struct ipsec_proc_list proc_items[]={
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	{"klipsdebug", &proc_net_ipsec_dir, NULL,             ipsec_klipsdebug_get_info, NULL, NULL},
 #endif
 	{"eroute",     &proc_net_ipsec_dir, &proc_eroute_dir, NULL, NULL, NULL},
@@ -869,9 +879,9 @@ ipsec_proc_init()
 	error |= proc_register_dynamic(&proc_net, &ipsec_spigrp);
 	error |= proc_register_dynamic(&proc_net, &ipsec_tncfg);
 	error |= proc_register_dynamic(&proc_net, &ipsec_version);
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	error |= proc_register_dynamic(&proc_net, &ipsec_klipsdebug);
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 #endif
 
 	/* for 2.2 kernels */
@@ -881,9 +891,9 @@ ipsec_proc_init()
 	error |= proc_register(proc_net, &ipsec_spigrp);
 	error |= proc_register(proc_net, &ipsec_tncfg);
 	error |= proc_register(proc_net, &ipsec_version);
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	error |= proc_register(proc_net, &ipsec_klipsdebug);
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 #endif
 
 	/* for 2.4 kernels */
@@ -946,11 +956,11 @@ ipsec_proc_cleanup()
 	/* for 2.0 and 2.2 kernels */
 #if !defined(PROC_FS_2325) 
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	if (proc_net_unregister(ipsec_klipsdebug.low_ino) != 0)
 		printk("klips_debug:ipsec_cleanup: "
 		       "cannot unregister /proc/net/ipsec_klipsdebug\n");
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 	if (proc_net_unregister(ipsec_version.low_ino) != 0)
 		printk("klips_debug:ipsec_cleanup: "
@@ -988,9 +998,9 @@ ipsec_proc_cleanup()
 	}
 
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	remove_proc_entry("ipsec_klipsdebug", proc_net);
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 	remove_proc_entry("ipsec_eroute",     proc_net);
 	remove_proc_entry("ipsec_spi",        proc_net);
 	remove_proc_entry("ipsec_spigrp",     proc_net);
@@ -1002,6 +1012,25 @@ ipsec_proc_cleanup()
 
 /*
  * $Log: ipsec_proc.c,v $
+ * Revision 1.35  2005/01/26 00:50:35  mcr
+ * 	adjustment of confusion of CONFIG_IPSEC_NAT vs CONFIG_KLIPS_NAT,
+ * 	and make sure that NAT_TRAVERSAL is set as well to match
+ * 	userspace compiles of code.
+ *
+ * Revision 1.34  2004/12/03 21:25:57  mcr
+ * 	compile time fixes for running on 2.6.
+ * 	still experimental.
+ *
+ * Revision 1.33  2004/08/17 03:27:23  mcr
+ * 	klips 2.6 edits.
+ *
+ * Revision 1.32  2004/08/03 18:19:08  mcr
+ * 	in 2.6, use "net_device" instead of #define device->net_device.
+ * 	this probably breaks 2.0 compiles.
+ *
+ * Revision 1.31  2004/07/10 19:11:18  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.30  2004/04/25 21:23:11  ken
  * Pull in dhr's changes from FreeS/WAN 2.06
  *

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: id.c,v 1.44 2004/06/17 07:27:16 mcr Exp $
+ * RCSID $Id: id.c,v 1.46 2005/02/14 05:56:02 ken Exp $
  */
 
 #include <stdlib.h>
@@ -384,6 +384,26 @@ escape_metachar(const char *src, char *dst, size_t dstlen)
     *dst = '\0';
 }
 
+/*
+ * Remove all shell metacharacters ', \, ", `, and $ in a character string
+ */
+void
+remove_metachar(const char *src, char *dst, size_t dstlen)
+{
+    while (*src != '\0' && dstlen > 1)
+    {
+	if((*src >= '0' && *src <= '9')
+	   || (*src >= 'a' && *src <= 'z')
+	   || (*src >= 'A' && *src <= 'Z')
+	   || *src == '_') {
+	    *dst++ = *src;
+	    dstlen--;
+	} 
+	src++;
+    }
+    *dst = '\0';
+}
+
 
 /* Make private copy of string in struct id.
  * This is needed if the result of atoid is to be kept.
@@ -484,33 +504,39 @@ match_id(const struct id *a, const struct id *b, int *wildcards)
     
     char abuf[IDTOA_BUF];
     char bbuf[IDTOA_BUF];
+    bool match;
 
-    DBG(DBG_CONTROLMORE,
-	idtoa(a, abuf, IDTOA_BUF);
-	idtoa(b, bbuf, IDTOA_BUF);
-	DBG_log("   match_id a=%s b=%s", abuf, bbuf);
-	);
-    
     if (b->kind == ID_NONE)
     {
 	*wildcards = MAX_WILDCARDS;
-	return TRUE;
+	match = TRUE;
+	goto done;
     }
 
-    DBG(DBG_CONTROLMORE
-	, DBG_log("  match_id called with a=%s b=%s"
-		  , abuf, bbuf));
+    if (a->kind != b->kind) {
+	match = FALSE;
+	goto done;
+    }
 
-    if (a->kind != b->kind)
-	return FALSE;
-
-    if (a->kind == ID_DER_ASN1_DN)
-	return match_dn(a->name, b->name, wildcards);
+    if (a->kind == ID_DER_ASN1_DN) {
+	match = match_dn(a->name, b->name, wildcards);
+    }
     else
     {
 	*wildcards = 0;
-	return same_id(a, b);
+	match = same_id(a, b);
     }
+
+ done:
+    DBG(DBG_CONTROLMORE,
+	idtoa(a, abuf, IDTOA_BUF);
+	idtoa(b, bbuf, IDTOA_BUF);
+	DBG_log("   match_id a=%s", abuf);
+	DBG_log("            b=%s", bbuf);
+	DBG_log("   results  %s", match ? "matched" : "fail");
+	);
+    
+    return match;
 }
 
 /* count the numer of wildcards in an id */

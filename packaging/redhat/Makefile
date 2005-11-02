@@ -11,7 +11,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.10 2004/04/03 19:44:42 ken Exp $
+# RCSID $Id: Makefile,v 1.11 2004/09/13 09:52:34 paul Exp $
 
 OPENSWANSRCDIR=$(shell cd ../.. && pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
@@ -67,10 +67,10 @@ rpm_modules:
 	    BUILDDIR=`pwd`/BUILD.$$kerneltype; \
 	    HERE=`pwd` ;\
 	    echo Building $$KV-$$kerneltype in $$BUILDDIR; \
-	    ${MAKE} -C ${OPENSWANSRCDIR} MODBUILDDIR=$$BUILDDIR KERNELSRC=${RH_KERNELSRC} ARCH=$$arch SUBARCH=$$subarch MODULE_DEF_INCLUDE=$$HERE/config-$$kerneltype.h module;\
-	    cp $$BUILDDIR/ipsec.o $$MD/ipsec.o-$$kerneltype; \
-	    goo="`nm -ao $$BUILDDIR/ipsec.o | ${OPENSWANSRCDIR}/programs/calcgoo/calcgoo`"; \
-	    (cd $$MD && ln -f ipsec.o-$$kerneltype $$goo); \
+	    ${MAKE} -C ${OPENSWANSRCDIR} MODBUILDDIR=$$BUILDDIR KERNELSRC=${RH_KERNELSRC} ARCH=$$arch SUBARCH=$$subarch MODULE_DEF_INCLUDE=$$HERE/config-$$kerneltype.h module26;\
+	    cp $$BUILDDIR/ipsec.ko $$MD/ipsec.ko-$$kerneltype; \
+	    goo="`nm -ao $$BUILDDIR/ipsec.ko | ${OPENSWANSRCDIR}/programs/calcgoo/calcgoo`"; \
+	    (cd $$MD && ln -f ipsec.ko-$$kerneltype $$goo); \
 	done
 
 # build spec file for building RPMs

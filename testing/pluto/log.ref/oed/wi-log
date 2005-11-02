@@ -4,17 +4,17 @@ whackeast --name oe --delete --rsa --pfs --host 127.95.7.2 --ikeport 8500 --next
 002 added connection description "oe"
 whackwest --listen
 002 listening for IKE messages
-002 adding interface virtual127.95.7.1/lo:w 127.95.7.1
-002 loading secrets from "./ipsec.secrets/west"
+002 adding interface virtual127.95.7.1/lo:w 127.95.7.1:8500
+002 loading secrets from "/tmp/ipsec.secrets/west"
 002 loading group "./ipsec.d/west/oe"
 whackeast --listen
 002 listening for IKE messages
 002 adding interface virtual127.95.7.2/lo:e 127.95.7.2
-002 loading secrets from "./ipsec.secrets/east"
+002 loading secrets from "/tmp/ipsec.secrets/east"
 whackwest --route --name oe
 whackeast --route --name oe
 whackwest --status
-000 interface virtual127.95.7.1/lo:w 127.95.7.1
+000 interface virtual127.95.7.1/lo:w 127.95.7.1:8500
 000  
 000 "oe": 127.95.7.1:8500---127.95.7.254...%opportunisticgroup:8500
 000 "oe":   ike_life: 900s; ipsec_life: 800s; rekey_margin: 350s; rekey_fuzz: 100%; keyingtries: 2

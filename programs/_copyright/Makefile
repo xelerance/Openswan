@@ -11,19 +11,22 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.5 2004/04/12 12:05:52 ken Exp $
+# RCSID $Id: Makefile,v 1.6 2004/12/18 18:13:37 mcr Exp $
 
-OPENSWANSRCDIR=../..
+OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=_copyright
 PROGRAMDIR=${LIBDIR}
 LIBS=${OPENSWANLIB}
 
-include ../Makefile.program
+include ${srcdir}../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.6  2004/12/18 18:13:37  mcr
+# 	adjusted Makefiles so that ${OBJDIR} builds work.
+#
 # Revision 1.5  2004/04/12 12:05:52  ken
 # Use OPENSWANLIBs
 #
@@ -40,7 +43,7 @@ include ../Makefile.program
 # 	kernel sense.)
 #
 # Revision 1.1  2002/04/24 07:55:32  mcr
-# 	#include patches and Makefiles for post-reorg compilation.
+# 	#include ${srcdir}..tches and Makefiles for post-reorg compilation.
 #
 #
 #

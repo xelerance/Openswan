@@ -1,3 +1,3 @@
 if [ "$CONFIG_IPSEC_ALG" = "y" ]; then
-  tristate '        AES encryption algorithm' CONFIG_IPSEC_ALG_AES
+  tristate '        AES encryption algorithm' CONFIG_IPSEC_ENC_AES
 fi

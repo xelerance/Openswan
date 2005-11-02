@@ -1,5 +1,5 @@
 .TH IPSEC_MANUAL 8 "17 July 2001"
-.\" RCSID $Id: manual.8,v 1.53 2002/04/24 07:36:09 mcr Exp $
+.\" RCSID $Id: manual.8,v 1.54 2005/01/11 17:52:49 ken Exp $
 .SH NAME
 ipsec manual \- take manually-keyed IPsec connections up and down
 .SH SYNOPSIS
@@ -207,10 +207,10 @@ FreeS/WAN reserves those for manual keying and will not
 attempt to use them for automatic keying (unless requested to,
 presumably by a non-FreeS/WAN other end).
 .SH FILES
-.ta \w'/var/run/ipsec.nexthop'u+4n
+.ta \w'/var/run/pluto/ipsec.nexthop'u+4n
 /etc/ipsec.conf	default IPsec configuration file
 .br
-/var/run/ipsec.info	\fB%defaultroute\fR information
+/var/run/pluto/ipsec.info	\fB%defaultroute\fR information
 .SH SEE ALSO
 ipsec(8), ipsec.conf(5), ipsec_spi(8), ipsec_eroute(8), ipsec_spigrp(8),
 route(8)

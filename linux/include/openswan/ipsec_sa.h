@@ -15,7 +15,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_sa.h,v 1.19 2004/04/05 19:55:06 mcr Exp $
+ * RCSID $Id: ipsec_sa.h,v 1.21 2004/08/20 21:45:37 mcr Exp $
  *
  * This file derived from ipsec_xform.h on 2001/9/18 by mcr.
  *
@@ -178,12 +178,12 @@ struct ipsec_sa
 	struct ident	ips_ident_s;		/* identity src */
 	struct ident	ips_ident_d;		/* identity dst */
 
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 	__u16		ips_comp_adapt_tries;	/* ipcomp self-adaption tries */
 	__u16		ips_comp_adapt_skip;	/* ipcomp self-adaption to-skip */
 	__u64		ips_comp_ratio_cbytes;	/* compressed bytes */
 	__u64		ips_comp_ratio_dbytes;	/* decompressed (or uncompressed) bytes */
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 	__u8		ips_natt_type;
@@ -253,6 +253,13 @@ enum ipsec_direction {
 
 /*
  * $Log: ipsec_sa.h,v $
+ * Revision 1.21  2004/08/20 21:45:37  mcr
+ * 	CONFIG_KLIPS_NAT_TRAVERSAL is not used in an attempt to
+ * 	be 26sec compatible. But, some defines where changed.
+ *
+ * Revision 1.20  2004/07/10 19:08:41  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.19  2004/04/05 19:55:06  mcr
  * Moved from linux/include/freeswan/ipsec_sa.h,v
  *

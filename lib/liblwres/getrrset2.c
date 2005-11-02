@@ -15,7 +15,7 @@
  * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* $Id: getrrset2.c,v 1.1 2003/04/11 17:15:40 mcr Exp $ */
+/* $Id: getrrset2.c,v 1.2 2004/09/20 18:00:35 mcr Exp $ */
 
 #include <config.h>
 
@@ -88,7 +88,6 @@ lwres_getrrsetbyname_async(const char *hostname, unsigned int rdclass,
  out3:
 	/* clean stuff up */
 
- out:
 	if (ctx != NULL)
 		lwres_context_destroy(&ctx);
 	

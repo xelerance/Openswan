@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_radij.c,v 1.70 2004/04/25 21:10:52 ken Exp $
+ * RCSID $Id: ipsec_radij.c,v 1.72 2004/12/03 21:25:57 mcr Exp $
  */
 
 #include <linux/config.h>
@@ -66,9 +66,9 @@
 
 #include "openswan/ipsec_proto.h"
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 int debug_radij = 0;
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 struct radij_node_head *rnh = NULL;
 #ifdef SPINLOCK
@@ -126,7 +126,7 @@ ipsec_breakroute(struct sockaddr_encap *eaddr,
 	struct eroute *ro;
 	struct radij_node *rn;
 	int error;
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	
 	if (debug_eroute) {
                 char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
@@ -138,7 +138,7 @@ ipsec_breakroute(struct sockaddr_encap *eaddr,
 			    buf1, ntohs(eaddr->sen_sport),
 			    buf2, ntohs(eaddr->sen_dport), eaddr->sen_proto);
 	}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 	spin_lock_bh(&eroute_lock);
 
@@ -206,7 +206,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 	char sa[SATOT_BUF];
 	size_t sa_len;
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	
 	if (debug_eroute) {
 
@@ -248,7 +248,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
                 }
 
 	}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 	retrt = (struct eroute *)kmalloc(sizeof (struct eroute), GFP_ATOMIC);
 	if (retrt == NULL) {
@@ -264,7 +264,14 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 	retrt->er_pid = pid;
 	retrt->er_count = 0;
 	retrt->er_lasttime = jiffies/HZ;
-	rd_key((&(retrt->er_rjt))) = &(retrt->er_eaddr);
+
+	{
+	  /* this is because gcc 3. doesn't like cast's as lvalues */
+	  struct rjtentry *rje = (struct rjtentry *)&(retrt->er_rjt);
+	  caddr_t er = (caddr_t)&(retrt->er_eaddr);
+	  
+	  rje->rd_nodes->rj_key= er;
+	}
 	
 	if (ident_s && ident_s->type != SADB_IDENTTYPE_RESERVED) {
 		int data_len = ident_s->len * IPSEC_PFKEYv2_ALIGN - sizeof(struct sadb_ident);
@@ -341,7 +348,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 		return error;
 	}
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	if (debug_eroute) {
 		char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
 /*
@@ -365,7 +372,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 			    buf2,
 			    sa_len ? sa : " (error)");
 	}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 	KLIPS_PRINT(debug_eroute,
 		    "klips_debug:ipsec_makeroute: "
 		    "succeeded.\n");
@@ -376,7 +383,7 @@ struct eroute *
 ipsec_findroute(struct sockaddr_encap *eaddr)
 {
 	struct radij_node *rn;
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	char buf1[ADDRTOA_BUF], buf2[ADDRTOA_BUF];
 	
 	if (debug_radij & DB_RJ_FINDROUTE) {
@@ -389,7 +396,7 @@ ipsec_findroute(struct sockaddr_encap *eaddr)
 			    buf2, ntohs(eaddr->sen_dport),
 			    eaddr->sen_proto);
 	}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 	rn = rj_match((caddr_t)eaddr, rnh);
 	if(rn) {
 		KLIPS_PRINT(debug_eroute && sysctl_ipsec_debug_verbose,
@@ -507,7 +514,7 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 	if(!key || !mask) {
 		return -ENODATA;
 	}
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	if(debug_radij)	{
 		char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
 		subnettoa(key->sen_ip_src, mask->sen_ip_src, 0, buf1, sizeof(buf1));
@@ -518,7 +525,7 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 			    buf1,
 			    buf2);
 	}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 	if((error = rj_delete(key, mask, rnh, &rn2))) {
 		KLIPS_PRINT(debug_radij,
@@ -547,6 +554,13 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 
 /*
  * $Log: ipsec_radij.c,v $
+ * Revision 1.72  2004/12/03 21:25:57  mcr
+ * 	compile time fixes for running on 2.6.
+ * 	still experimental.
+ *
+ * Revision 1.71  2004/07/10 19:11:18  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.70  2004/04/25 21:10:52  ken
  * Pull in dhr's changes from FreeS/WAN 2.06
  *

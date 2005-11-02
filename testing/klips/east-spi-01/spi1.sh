@@ -41,5 +41,3 @@ arp -s 192.1.2.254 10:00:00:64:64:45
 
 route add -net 192.0.1.0 netmask 255.255.255.0 gw 192.1.2.45 dev ipsec0
 
-ipsec look
-

@@ -19,7 +19,7 @@
 <emphasis remap='I'>ipsec.conf</emphasis>
 file
 specifies most configuration and control information for the
-FreeS/WAN IPsec subsystem.
+Openswan IPsec subsystem.
 (The major exception is secrets for authentication;
 see
 <citerefentry><refentrytitle>ipsec.secrets</refentrytitle><manvolnum>5</manvolnum></citerefentry>.)
@@ -674,7 +674,7 @@ or
   <term><emphasis remap='B'>dpddelay</emphasis></term>
   <listitem>
 <para>Set the delay (in seconds) between Dead Peer Dectection
-(draft-ietf-ipsec-dpd-02) keepalives (R_U_THERE, R_U_THERE_ACK)
+(RFC 3706) keepalives (R_U_THERE, R_U_THERE_ACK)
 that are sent for this connection (default
 <literal>30</literal>
 seconds).  If dpdtimeout is set, but not dpddelay, dpddelay will be set
@@ -1543,7 +1543,7 @@ except that its right client is 192.0.2.3.</para>
 </refsect1>
 
 <refsect1 id='default_policy_groups'><title>DEFAULT POLICY GROUPS</title>
-<para>The standard FreeS/WAN install includes several policy groups
+<para>The standard Openswan install includes several policy groups
 which provide a way of classifying possible peers into IPsec security classes:
 <emphasis remap='B'>private</emphasis>
 (talk encrypted only),
@@ -1606,8 +1606,8 @@ is set to
 <emphasis remap='B'>drop</emphasis>
 or
 <emphasis remap='B'>reject,</emphasis>
-FreeS/WAN blocks outbound packets using eroutes, but assumes inbound
-blocking is handled by the firewall. FreeS/WAN offers firewall hooks 
+Openswan blocks outbound packets using eroutes, but assumes inbound
+blocking is handled by the firewall. Openswan offers firewall hooks 
 via an &ldquo;updown&rdquo; script.  However, the default 
 <emphasis remap='B'>ipsec _updown</emphasis>
 provides no help in controlling a modern firewall.</para>
@@ -1621,7 +1621,7 @@ rather than of a participant pair, is dubious and incurs limitations.</para>
 
 <para><emphasis remap='I'>Ipsec_manual</emphasis>
 is not nearly as generous about the syntax of subnets,
-addresses, etc. as the usual FreeS/WAN user interfaces.
+addresses, etc. as the usual Openswan user interfaces.
 Four-component dotted-decimal must be used for all addresses.
 It
 <emphasis remap='I'>is</emphasis>

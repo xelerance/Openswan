@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_xform.c,v 1.63 2003/10/31 02:27:55 mcr Exp $
+ * RCSID $Id: ipsec_xform.c,v 1.64 2004/07/10 19:11:18 mcr Exp $
  */
 
 #include <linux/config.h>
@@ -62,9 +62,9 @@
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 int debug_xform = 0;
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 #ifdef SPINLOCK
 spinlock_t tdb_lock = SPIN_LOCK_UNLOCKED;
@@ -74,6 +74,9 @@ spinlock_t tdb_lock;
 
 /*
  * $Log: ipsec_xform.c,v $
+ * Revision 1.64  2004/07/10 19:11:18  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.63  2003/10/31 02:27:55  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *

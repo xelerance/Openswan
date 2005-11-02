@@ -63,8 +63,6 @@ ipsec_setup: Starting Openswan IPsec VERSION
 east:~#
  ipsec auto --add west-east
 east:~#
- /testing/pluto/basic-pluto-01/eroutewait.sh trap
-east:~#
  
 
 east:~#

@@ -11,10 +11,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.4 2004/05/28 02:01:33 mcr Exp $
+# RCSID $Id: Makefile,v 1.6 2004/12/18 18:13:33 mcr Exp $
 
 
-OPENSWANSRCDIR=../../..
+OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 include ${OPENSWANSRCDIR}/Makefile.ver
@@ -37,7 +37,7 @@ OBJS=${BASE_SRCS:.c=.o} ${AES_CORE_OBJ}
 HDRS=	
 
 KLIPSD=${OPENSWANSRCDIR}/linux/include
-SRCDIR=${OPENSWANSRCDIR}/linux/crypto/ciphers/aes
+SRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec/aes
 
 VPATH += ${SRCDIR}
 

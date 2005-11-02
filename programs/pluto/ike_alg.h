@@ -5,6 +5,7 @@
 struct connection;
 
 struct ike_alg {
+  const char *name;
   u_int16_t algo_type;	
   u_int16_t algo_id;	
   struct ike_alg *algo_next;
@@ -28,6 +29,9 @@ struct hash_desc {
   void (*hash_update)(void *ctx, const u_int8_t *in, size_t datasize);
   void (*hash_final)(u_int8_t *out, void *ctx);
 };
+
+struct alg_info_ike; /* forward reference */
+struct alg_info_esp;
 
 struct db_context * ike_alg_db_new(struct alg_info_ike *ai, lset_t policy);
 void ike_alg_show_status(void);
@@ -66,4 +70,10 @@ static __inline__ struct encrypt_desc *ike_alg_get_encrypter(int alg)
 	return (struct encrypt_desc *) ike_alg_find(IKE_ALG_ENCRYPT, alg, 0);
 }
 const struct oakley_group_desc * ike_alg_pfsgroup(struct connection *c, lset_t policy);
+
+extern struct db_sa *oakley_alg_makedb(struct alg_info_ike *ai
+				       , struct db_sa *basic
+				       , int maxtrans);
+
+extern struct db_sa *kernel_alg_makedb(struct alg_info_esp *ai);
 #endif /* _IKE_ALG_H */

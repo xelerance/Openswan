@@ -1,5 +1,5 @@
 .TH IPSEC_BARF 8 "17 March 2002"
-.\" RCSID $Id: barf.8,v 1.22 2003/05/21 14:07:20 mcr Exp $
+.\" RCSID $Id: barf.8,v 1.23 2004/12/04 16:34:57 ken Exp $
 .SH NAME
 ipsec barf \- spew out collected IPsec debugging information
 .SH SYNOPSIS
@@ -7,6 +7,7 @@ ipsec barf \- spew out collected IPsec debugging information
 .B barf
 [
 .B \-\-short
+.B \-\-maxlines <100>
 ]
 .sp
 .SH DESCRIPTION
@@ -26,6 +27,11 @@ the log portion of
 .IR barf 's
 output, which can otherwise be extremely voluminous
 if debug logging is turned on.
+.PP
+.B \-\-maxlines <100>
+option sets the length of some bits of information, 
+currently netstat -rn.  Usefull on boxes where the routing
+table is thousands of lines long.  Default is 100.
 .PP
 .I Barf
 censors its output,

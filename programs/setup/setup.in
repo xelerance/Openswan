@@ -13,7 +13,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: setup.in,v 1.120.4.3 2004/07/16 12:57:08 ken Exp $
+# RCSID $Id: setup.in,v 1.122 2005/01/26 01:26:53 mcr Exp $
 #
 # ipsec         init.d script for starting and stopping
 #               the IPsec security subsystem (KLIPS and Pluto).
@@ -42,7 +42,7 @@ IPSEC_CONFS="${IPSEC_CONFS-@IPSEC_CONFS@}"
 if test " $IPSEC_DIR" = " "	# if we were not called by the ipsec command
 then
     # we must establish a suitable PATH ourselves
-    PATH="${IPSEC_SBINDIR}":/sbin:/usr/sbin:/usr/local/sbin:/usr/local/bin:/bin:/usr/bin
+    PATH="${IPSEC_SBINDIR}":/sbin:/usr/sbin:/usr/local/bin:/bin:/usr/bin
     export PATH
 
     IPSEC_DIR="$IPSEC_LIBDIR"
@@ -65,7 +65,6 @@ then
 		logger -s -p daemon.error -t ipsec_setup
 	exit 1
 fi
-
 
 # accept a few flags
 
@@ -105,6 +104,8 @@ export IPSECsyslog
 # misc setup
 umask 022
 
+mkdir -p /var/run/pluto
+
 
 # do it
 case "$1" in
@@ -115,8 +116,8 @@ case "$1" in
 			logger -s -p $IPSECsyslog -t ipsec_setup 2>&1
 		exit 1
 	fi
-	tmp=/var/run/ipsec_setup.st
-	outtmp=/var/run/ipsec_setup.out
+	tmp=/var/run/pluto/ipsec_setup.st
+	outtmp=/var/run/pluto/ipsec_setup.out
 	(
 		ipsec _realsetup $1
 		echo "$?" >$tmp

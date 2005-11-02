@@ -15,7 +15,7 @@
  * for more details.
  */
 
-char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.55 2004/04/04 01:50:56 ken Exp $";
+char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.56 2004/07/10 19:12:35 mcr Exp $";
 
 
 #include <sys/types.h>
@@ -46,9 +46,9 @@ char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.55 2004/04/04 01:50:5
 
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
-#ifndef CONFIG_IPSEC_DEBUG
-#define CONFIG_IPSEC_DEBUG
-#endif /* CONFIG_IPSEC_DEBUG */
+#ifndef CONFIG_KLIPS_DEBUG
+#define CONFIG_KLIPS_DEBUG
+#endif /* CONFIG_KLIPS_DEBUG */
 #include "openswan/ipsec_tunnel.h"
 
 #include <stdio.h>
@@ -145,6 +145,8 @@ main(int argc, char **argv)
 			em_db_gz=em_db_vb=0;
 			if(strcmp(optarg, "tunnel") == 0) {
 				em_db_tn = -1L;
+			} else if(strcmp(optarg, "tncfg") == 0) {
+			        em_db_tn = DB_TN_REVEC;
 			} else if(strcmp(optarg, "tunnel-xmit") == 0) {
 				em_db_tn = DB_TN_XMIT;
 			} else if(strcmp(optarg, "netlink") == 0) {
@@ -187,7 +189,8 @@ main(int argc, char **argv)
 			action = 'c';
 			if(strcmp(optarg, "tunnel") == 0) {
 				em_db_tn = 0;
-			} else if(strcmp(optarg, "tunnel-xmit") == 0) {
+			} else if(strcmp(optarg, "tunnel-xmit") == 0
+				  || strcmp(optarg, "xmit") == 0) {
 				em_db_tn = ~DB_TN_XMIT;
 			} else if(strcmp(optarg, "netlink") == 0) {
 				em_db_nl = 0;
@@ -436,8 +439,18 @@ main(int argc, char **argv)
 }
 /*
  * $Log: klipsdebug.c,v $
- * Revision 1.55  2004/04/04 01:50:56  ken
- * Use openswan includes
+ * Revision 1.56  2004/07/10 19:12:35  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
+ * Revision 1.57  2004/02/24 18:20:31  mcr
+ * 	s/CONFIG_IPSEC/CONFIG_KLIPS/
+ *
+ * Revision 1.56  2004/01/27 16:32:15  mcr
+ * 	added debugging option for "tncfg" only.
+ *
+ * Revision 1.55  2004/01/18 18:04:44  mcr
+ * 	changed "tunnel-xmit" debug flag to just be "xmit".
+ * 	(also setting is accepted as an aka)
  *
  * Revision 1.54  2003/12/05 16:44:16  mcr
  * 	patches to avoid ipsec_netlink.h, which has been obsolete for

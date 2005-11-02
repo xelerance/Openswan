@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: errcheck,v 1.15 2002/09/19 02:43:10 mcr Exp $
+# RCSID $Id: errcheck,v 1.16 2004/10/18 17:08:48 ken Exp $
 
 # the errors.[och] stuff is for math emulation
 # the HiSax nonsense is due to a Red Hat 5.2 botch
@@ -20,6 +20,7 @@
 # Red Hat's 2.2.19 whines about function read_rx_long_length_errors in e100.c
 # 2.4.18: 53c700.h:40:2: #error "Config.in must define either CONFIG_53C700_IO_MAPPED or CONFIG_53C700_MEM_MAPPED to use this scsi core."
 oops="`sed -e 's/-Werror/-Weror/g' \
+ 	   -e 's/xfs_error/xfs_eror/g' \
 	   -e '/errors*\.[och]/s/errors*\./eror./g' \
 	   -e '/scsi_error/s//scsi_eror/' \
            -e '/KBUILD_BASENAME=errors/s/errors/eror/g' \

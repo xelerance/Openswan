@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: manual.in,v 1.81 2002/10/22 09:07:27 dhr Exp $
+# RCSID $Id: manual.in,v 1.83.4.1 2005/05/18 20:55:13 ken Exp $
 
 me='ipsec manual'
 usage="Usage:
@@ -27,7 +27,7 @@ unset LANG LANGUAGE LC_ALL LC_MESSAGES
 
 showonly=
 config=
-info=/var/run/ipsec.info
+info=/var/run/pluto/ipsec.info
 shopts=
 other=0
 union=0
@@ -104,7 +104,7 @@ case "$interfs" in
 				sub(/:/, " ", $0)
 				if (interf != "")
 					print $3 "@" interf
-			 }' | tr '\n' ' '`"
+			 }' | sed ':a;N;$!ba;s/\n/ /g'`"
 	;;
 esac
 
@@ -314,12 +314,8 @@ awk '	BEGIN {
 	function updown(verb, suffix,   cmd) {
 		if ("leftupdown" in s) {
 			cmd = s["leftupdown"]
-			if (s["leftfirewall"] == "yes")
-				fail("cannot specify both updown and firewall")
 		} else {
 			cmd = "ipsec _updown"
-			if (s["leftfirewall"] == "yes")
-				cmd = cmd " ipfwadm"
 		}
 		print "PLUTO_VERB=" verb verbsuf " " cmd " " suffix
 	}
@@ -371,10 +367,6 @@ awk '	BEGIN {
 	default("leftsubnet", s["left"] "/32")
 	rightsub = ("rightsubnet" in s) ? 1 : 0
 	default("rightsubnet", s["right"] "/32")
-	default("leftfirewall", "no")
-	default("rightfirewall", "no")
-	yesno("leftfirewall")
-	yesno("rightfirewall")
 	integer("espreplay_window")
 	if (("espreplay_window" in s) && s["espreplay_window"] == 0)
 		delete s["espreplay_window"]

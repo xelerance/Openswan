@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.60 2004/04/06 02:58:43 mcr Exp $";
+char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.65 2005/03/22 23:14:54 ken Exp $";
 
 
 #include <sys/types.h>
@@ -454,12 +454,16 @@ main(int argc, char **argv)
         if(argcount == 1) {
                 struct stat sts;
                 if ( ((stat ("/proc/net/pfkey", &sts)) == 0) )  {
-                         fprintf(stderr, "%s: 2.6 native pf_key does not support eroute table.\n",program_name);
+                         fprintf(stderr, "%s: NETKEY does not support eroute table.\n",program_name);
 
                         exit(1);
                 }
                 else {
-                        system("cat /proc/net/ipsec_eroute");
+			if ((stat ("/proc/net/ipsec_eroute", &sts)) != 0)  {
+				fprintf(stderr, "%s: No eroute table - no IPsec support in kernel (are the modules loaded?)\n", program_name);
+			} else {
+                        	system("cat /proc/net/ipsec_eroute");
+			}
                         exit(0);
                 }
         }
@@ -904,6 +908,21 @@ main(int argc, char **argv)
 }
 /*
  * $Log: eroute.c,v $
+ * Revision 1.65  2005/03/22 23:14:54  ken
+ * *** empty log message ***
+ *
+ * Revision 1.64  2005/03/22 23:14:06  ken
+ * Fix logic
+ *
+ * Revision 1.63  2005/03/22 23:06:13  ken
+ * Fix sloppy typo
+ *
+ * Revision 1.62  2005/03/22 23:02:37  ken
+ * Nicer error messages - #234
+ *
+ * Revision 1.61  2004/12/10 12:38:29  paul
+ * Renamed the stack names consistently to KLIPS and NETKEY
+ *
  * Revision 1.60  2004/04/06 02:58:43  mcr
  * 	freeswan->openswan changes.
  *

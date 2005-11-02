@@ -22,6 +22,7 @@ SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
 loop: loaded (max 8 devices)
 PPP generic driver version VERSION
 Universal TUN/TAP device driver VERSION
+
 NET4: Linux TCP/IP 1.0 for NET4.0
 IP Protocols: ICMP, UDP, TCP
 IP: routing cache hash table of 512 buckets, 4Kbytes
@@ -84,8 +85,8 @@ east:~#
 east NOW
 192.0.2.0/24       -> 192.0.1.0/24       => tun0xd1234567@192.1.2.45 esp0xd1234567@192.1.2.45  (0)
 ipsec0->eth1 mtu=16260(1500)->1500
-esp0xd1234567@192.1.2.45 ESP_AES_HMAC_SHA1: dir=out src=192.1.2.23 iv_bits=128bits iv=0xDEADF00DDEADF00DDEADF00DDEADF00D alen=160 aklen=160 eklen=256 life(c,s,h)= refcount=4 ref=2
-tun0xd1234567@192.1.2.45 IPIP: dir=out src=192.1.2.23 life(c,s,h)= refcount=4 ref=3
+esp0xd1234567@192.1.2.45 ESP_AES_HMAC_SHA1: dir=out src=192.1.2.23 iv_bits=128bits iv=0xDEADF00DDEADF00DDEADF00DDEADF00D alen=160 aklen=160 eklen=256 life(c,s,h)= natencap=none natsport=0 natdport=0 refcount=4 ref=2
+tun0xd1234567@192.1.2.45 IPIP: dir=out src=192.1.2.23 life(c,s,h)= natencap=none natsport=0 natdport=0 refcount=4 ref=3
 Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
 east:~#
  route add -host 192.0.1.1 gw 192.1.2.45 dev ipsec0

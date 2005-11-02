@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: log.h,v 1.51 2004/04/29 04:06:06 mcr Exp $
+ * RCSID $Id: log.h,v 1.54 2004/10/21 19:13:37 mcr Exp $
  */
 
 #include <openswan.h>
@@ -32,6 +32,18 @@ extern bool
     log_to_perpeer;     /* should log go to per-IP file? */
 
 extern const char *base_perpeer_logdir;
+
+extern char **global_argv; /* pointer to first arguments,
+			    * for setproctitle()-like usage */
+extern int    global_argc;
+extern char debug_prefix;
+
+/* used in some messages to distiguish
+ * which pluto is which, when doing
+ * unit testing
+ */
+extern const char *pluto_ifn_inst;   
+
 
 /* maximum number of files to keep open for per-peer log files */
 #define MAX_PEERLOG_COUNT 16
@@ -56,6 +68,9 @@ extern bool whack_prompt_for(int whackfd
 			     , bool echo
 			     , char *ansbuf, size_t ansbuf_len);
 
+extern void passert_fail(const char *pred_str
+			 , const char *file_str
+			 , unsigned long line_no) NEVER_RETURNS;
 
 #ifdef DEBUG
 

@@ -140,7 +140,7 @@ klips_debug:pfkey_msg_interp: allocated extr->ips=0pDEADF00D.
 klips_debug:pfkey_msg_interp: satype 3 lookups to proto=50.
 klips_debug:pfkey_msg_parse: parsing message ver=2, type=3(add), errno=0, satype=3(ESP), len=18, res=0, seq=1, pid=987.
 klips_debug:pfkey_msg_parse: satype 3(ESP) conversion to proto gives 50 for msg_type 3(add).
-klips_debug:pfkey_msg_parse: remain=16, ext_type=1(security-association), ext_len=3.
+klips_debug:pfkey_msg_parse: remain=16
 klips_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063.
 klips_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=16.
 klips_debug:pfkey_msg_parse: remain=16 ext_type=1(security-association) ext_len=3 parsing ext 0pDEADF00D with parser pfkey_sa_parse.
@@ -257,7 +257,7 @@ klips_debug:pfkey_msg_interp: allocated extr->ips=0pDEADF00D.
 klips_debug:pfkey_msg_interp: satype 9 lookups to proto=4.
 klips_debug:pfkey_msg_parse: parsing message ver=2, type=3(add), errno=0, satype=9(IPIP), len=11, res=0, seq=1, pid=987.
 klips_debug:pfkey_msg_parse: satype 9(IPIP) conversion to proto gives 4 for msg_type 3(add).
-klips_debug:pfkey_msg_parse: remain=9, ext_type=1(security-association), ext_len=3.
+klips_debug:pfkey_msg_parse: remain=9
 klips_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063.
 klips_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=9.
 klips_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0pDEADF00D with parser pfkey_sa_parse.
@@ -359,7 +359,7 @@ klips_debug:pfkey_msg_interp: allocated extr->ips=0pDEADF00D.
 klips_debug:pfkey_msg_interp: satype 9 lookups to proto=4.
 klips_debug:pfkey_msg_parse: parsing message ver=2, type=13(x-groupsa), errno=0, satype=9(IPIP), len=15, res=0, seq=1, pid=987.
 klips_debug:pfkey_msg_parse: satype 9(IPIP) conversion to proto gives 4 for msg_type 13(x-groupsa).
-klips_debug:pfkey_msg_parse: remain=13, ext_type=1(security-association), ext_len=3.
+klips_debug:pfkey_msg_parse: remain=13
 klips_debug:pfkey_msg_parse: extensions permitted=001c0043, required=00000043.
 klips_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=13.
 klips_debug:pfkey_msg_parse: remain=13 ext_type=1(security-association) ext_len=3 parsing ext 0pDEADF00D with parser pfkey_sa_parse.
@@ -481,7 +481,7 @@ klips_debug:pfkey_msg_interp: allocated extr->ips=0pDEADF00D.
 klips_debug:pfkey_msg_interp: satype 9 lookups to proto=4.
 klips_debug:pfkey_msg_parse: parsing message ver=2, type=14(x-addflow(eroute)), errno=0, satype=9(IPIP), len=23, res=0, seq=1, pid=987.
 klips_debug:pfkey_msg_parse: satype 9(IPIP) conversion to proto gives 4 for msg_type 14(x-addflow(eroute)).
-klips_debug:pfkey_msg_parse: remain=21, ext_type=1(security-association), ext_len=3.
+klips_debug:pfkey_msg_parse: remain=21
 klips_debug:pfkey_msg_parse: extensions permitted=05e00c63, required=01e00043.
 klips_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=21.
 klips_debug:pfkey_msg_parse: remain=21 ext_type=1(security-association) ext_len=3 parsing ext 0pDEADF00D with parser pfkey_sa_parse.
@@ -656,7 +656,7 @@ klips_debug:pfkey_sendmsg: msg sent for parsing.
 klips_debug:pfkey_msg_interp: parsing message ver=2, type=16, errno=0, satype=0(UNKNOWN), len=9, res=0, seq=1, pid=987.
 klips_debug:pfkey_msg_interp: allocated extr->ips=0pDEADF00D.
 klips_debug:pfkey_msg_parse: parsing message ver=2, type=16(x-debug), errno=0, satype=0(UNKNOWN), len=9, res=0, seq=1, pid=987.
-klips_debug:pfkey_msg_parse: remain=7, ext_type=25(X-set-debug), ext_len=7.
+klips_debug:pfkey_msg_parse: remain=7
 klips_debug:pfkey_msg_parse: extensions permitted=02000001, required=02000001.
 klips_debug:pfkey_msg_parse: parsing ext type=25(X-set-debug) remain=7.
 klips_debug:pfkey_msg_parse: remain=7 ext_type=25(X-set-debug) ext_len=7 parsing ext 0pDEADF00D with parser pfkey_x_ext_debug_parse.

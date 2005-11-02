@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: whack.h,v 1.66 2004/06/27 22:36:14 mcr Exp $
+ * RCSID $Id: whack.h,v 1.68 2004/12/16 01:22:44 mcr Exp $
  */
 
 #include <openswan.h>
@@ -213,7 +213,9 @@ struct whack_message {
 #define LIST_CRLS	0x0080	/* list all crls */
 #define LIST_OCSP	0x0100	/* list all ocsp cache entries */
 #define LIST_CARDS	0x0200	/* list all smartcard records */
+#define LIST_EVENTS     0x0400  /* list all queued events */
 
+/* omit events from listing options */
 #define LIST_ALL	LRANGES(LIST_PUBKEYS, LIST_CARDS)  /* all list options */
 
 /* options of whack --reread*** command */
@@ -238,6 +240,7 @@ struct whackpacker {
 
 extern err_t pack_whack_msg(struct whackpacker *wp);
 extern err_t unpack_whack_msg (struct whackpacker *wp);
+extern void clear_end(struct whack_end *e);
 
 /*
  * Local Variables:

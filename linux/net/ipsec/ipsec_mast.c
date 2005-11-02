@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.3 2003/10/31 02:27:55 mcr Exp $";
+char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.6 2004/12/03 21:25:57 mcr Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -74,7 +74,7 @@ char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.3 2003/10/31 02:27:55
 int ipsec_maxdevice_count = -1;
 
 DEBUG_NO_STATIC int
-ipsec_mast_open(struct device *dev)
+ipsec_mast_open(struct net_device *dev)
 {
 	struct ipsecpriv *prv = dev->priv;
 	
@@ -90,14 +90,14 @@ ipsec_mast_open(struct device *dev)
 	if (prv->dev == NULL)
 		return -ENODEV;
 	
-	MOD_INC_USE_COUNT;
+	KLIPS_INC_USE;
 	return 0;
 }
 
 DEBUG_NO_STATIC int
-ipsec_mast_close(struct device *dev)
+ipsec_mast_close(struct net_device *dev)
 {
-	MOD_DEC_USE_COUNT;
+	KLIPS_DEC_USE;
 	return 0;
 }
 
@@ -215,7 +215,7 @@ ipsec_mast_cleanup(struct ipsec_xmit_state*ixs)
  *	and that skb is filled properly by that function.
  */
 int
-ipsec_mast_start_xmit(struct sk_buff *skb, struct device *dev, IPsecSAref_t SAref)
+ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev, IPsecSAref_t SAref)
 {
 	struct ipsec_xmit_state ixs_mem;
 	struct ipsec_xmit_state *ixs = &ixs_mem;
@@ -241,7 +241,7 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct device *dev, IPsecSAref_t SAre
 #endif
 
 DEBUG_NO_STATIC struct net_device_stats *
-ipsec_mast_get_stats(struct device *dev)
+ipsec_mast_get_stats(struct net_device *dev)
 {
 	return &(((struct ipsecpriv *)(dev->priv))->mystats);
 }
@@ -252,11 +252,11 @@ ipsec_mast_get_stats(struct device *dev)
  */
 
 DEBUG_NO_STATIC int
-ipsec_mast_hard_header(struct sk_buff *skb, struct device *dev,
+ipsec_mast_hard_header(struct sk_buff *skb, struct net_device *dev,
 	unsigned short type, void *daddr, void *saddr, unsigned len)
 {
 	struct ipsecpriv *prv = dev->priv;
-	struct device *tmp;
+	struct net_device *tmp;
 	int ret;
 	struct net_device_stats *stats;	/* This device's statistics */
 	
@@ -329,7 +329,7 @@ ipsec_mast_hard_header(struct sk_buff *skb, struct device *dev,
 			return -ENODEV;
 		}
 		
-#define da ((struct device *)(prv->dev))->dev_addr
+#define da ((struct net_device *)(prv->dev))->dev_addr
 		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
 			    "klips_debug:ipsec_mast_hard_header: "
 			    "Revectored 0p%p->0p%p len=%d type=%d dev=%s->%s dev_addr=%02x:%02x:%02x:%02x:%02x:%02x ",
@@ -360,7 +360,7 @@ DEBUG_NO_STATIC int
 ipsec_mast_rebuild_header(struct sk_buff *skb)
 {
 	struct ipsecpriv *prv = skb->dev->priv;
-	struct device *tmp;
+	struct net_device *tmp;
 	int ret;
 	struct net_device_stats *stats;	/* This device's statistics */
 	
@@ -420,7 +420,7 @@ ipsec_mast_rebuild_header(struct sk_buff *skb)
 }
 
 DEBUG_NO_STATIC int
-ipsec_mast_set_mac_address(struct device *dev, void *addr)
+ipsec_mast_set_mac_address(struct net_device *dev, void *addr)
 {
 	struct ipsecpriv *prv = dev->priv;
 	
@@ -469,7 +469,7 @@ ipsec_mast_set_mac_address(struct device *dev, void *addr)
 }
 
 DEBUG_NO_STATIC void
-ipsec_mast_cache_update(struct hh_cache *hh, struct device *dev, unsigned char *  haddr)
+ipsec_mast_cache_update(struct hh_cache *hh, struct net_device *dev, unsigned char *  haddr)
 {
 	struct ipsecpriv *prv = dev->priv;
 	
@@ -530,7 +530,7 @@ ipsec_mast_neigh_setup(struct neighbour *n)
 }
 
 DEBUG_NO_STATIC int
-ipsec_mast_neigh_setup_dev(struct device *dev, struct neigh_parms *p)
+ipsec_mast_neigh_setup_dev(struct net_device *dev, struct neigh_parms *p)
 {
 	KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
 		    "klips_debug:ipsec_mast_neigh_setup_dev: "
@@ -550,7 +550,7 @@ ipsec_mast_neigh_setup_dev(struct device *dev, struct neigh_parms *p)
  */
 
 DEBUG_NO_STATIC int
-ipsec_mast_attach(struct device *dev, struct device *physdev)
+ipsec_mast_attach(struct net_device *dev, struct net_device *physdev)
 {
         int i;
 	struct ipsecpriv *prv = dev->priv;
@@ -613,7 +613,7 @@ ipsec_mast_attach(struct device *dev, struct device *physdev)
 	for (i=0; i<dev->addr_len; i++) {
 		dev->dev_addr[i] = physdev->dev_addr[i];
 	}
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	if(debug_mast & DB_MAST_INIT) {
 		printk(KERN_INFO "klips_debug:ipsec_mast_attach: "
 		       "physical device %s being attached has HW address: %2x",
@@ -623,7 +623,7 @@ ipsec_mast_attach(struct device *dev, struct device *physdev)
 		}
 		printk("\n");
 	}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 	return 0;
 }
@@ -633,7 +633,7 @@ ipsec_mast_attach(struct device *dev, struct device *physdev)
  */
 
 DEBUG_NO_STATIC int
-ipsec_mast_detach(struct device *dev)
+ipsec_mast_detach(struct net_device *dev)
 {
         int i;
 	struct ipsecpriv *prv = dev->priv;
@@ -710,7 +710,7 @@ DEBUG_NO_STATIC int
 ipsec_mast_clear(void)
 {
 	int i;
-	struct device *ipsecdev = NULL, *prvdev;
+	struct net_device *ipsecdev = NULL, *prvdev;
 	struct ipsecpriv *prv;
 	char name[9];
 	int ret;
@@ -722,7 +722,7 @@ ipsec_mast_clear(void)
 		sprintf(name, IPSEC_DEV_FORMAT, i);
 		if((ipsecdev = ipsec_dev_get(name)) != NULL) {
 			if((prv = (struct ipsecpriv *)(ipsecdev->priv))) {
-				prvdev = (struct device *)(prv->dev);
+				prvdev = (struct net_device *)(prv->dev);
 				if(prvdev) {
 					KLIPS_PRINT(debug_mast & DB_MAST_INIT,
 						    "klips_debug:ipsec_mast_clear: "
@@ -743,11 +743,11 @@ ipsec_mast_clear(void)
 }
 
 DEBUG_NO_STATIC int
-ipsec_mast_ioctl(struct device *dev, struct ifreq *ifr, int cmd)
+ipsec_mast_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
 	struct ipsecmastconf *cf = (struct ipsecmastconf *)&ifr->ifr_data;
 	struct ipsecpriv *prv = dev->priv;
-	struct device *them; /* physical device */
+	struct net_device *them; /* physical device */
 #ifdef CONFIG_IP_ALIAS
 	char *colon;
 	char realphysname[IFNAMSIZ];
@@ -839,8 +839,8 @@ ipsec_mast_ioctl(struct device *dev, struct ifreq *ifr, int cmd)
 int
 ipsec_mast_device_event(struct notifier_block *unused, unsigned long event, void *ptr)
 {
-	struct device *dev = ptr;
-	struct device *ipsec_dev;
+	struct net_device *dev = ptr;
+	struct net_device *ipsec_dev;
 	struct ipsecpriv *priv;
 	char name[9];
 	int i;
@@ -893,7 +893,7 @@ ipsec_mast_device_event(struct notifier_block *unused, unsigned long event, void
 				priv = (struct ipsecpriv *)(ipsec_dev->priv);
 				if(priv) {
 					;
-					if(((struct device *)(priv->dev)) == dev) {
+					if(((struct net_device *)(priv->dev)) == dev) {
 						/* dev_close(ipsec_dev); */
 						/* return */ ipsec_mast_detach(ipsec_dev);
 						KLIPS_PRINT(debug_mast & DB_MAST_INIT,
@@ -978,7 +978,7 @@ ipsec_mast_device_event(struct notifier_block *unused, unsigned long event, void
  */
  
 int
-ipsec_mast_init(struct device *dev)
+ipsec_mast_init(struct net_device *dev)
 {
 	int i;
 
@@ -1030,7 +1030,7 @@ ipsec_mast_init(struct device *dev)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 int
-ipsec_mast_probe(struct device *dev)
+ipsec_mast_probe(struct net_device *dev)
 {
 	ipsec_mast_init(dev); 
 	return 0;
@@ -1049,7 +1049,7 @@ ipsec_mast_cleanup_devices(void)
 	int error = 0;
 	int i;
 	char name[10];
-	struct device *dev_mast;
+	struct net_device *dev_mast;
 	
 	for(i = 0; i < ipsec_mastdevice_count; i++) {
 		sprintf(name, MAST_DEV_FORMAT, i);
@@ -1065,6 +1065,17 @@ ipsec_mast_cleanup_devices(void)
 
 /*
  * $Log: ipsec_mast.c,v $
+ * Revision 1.6  2004/12/03 21:25:57  mcr
+ * 	compile time fixes for running on 2.6.
+ * 	still experimental.
+ *
+ * Revision 1.5  2004/08/03 18:19:08  mcr
+ * 	in 2.6, use "net_device" instead of #define device->net_device.
+ * 	this probably breaks 2.0 compiles.
+ *
+ * Revision 1.4  2004/07/10 19:11:18  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.3  2003/10/31 02:27:55  mcr
  * 	pulled up port-selector patches and sa_id elimination.
  *

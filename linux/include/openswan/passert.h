@@ -14,43 +14,53 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: passert.h,v 1.4 2004/04/06 02:49:08 mcr Exp $
+ * RCSID $Id: passert.h,v 1.7 2004/10/21 18:44:42 mcr Exp $
  */
 
 #include "openswan.h"
 
+#ifndef _OPENSWAN_PASSERT_H
+#define _OPENSWAN_PASSERT_H
 /* our versions of assert: log result */
 
 #ifdef DEBUG
 
-extern void passert_fail(const char *pred_str
-    , const char *file_str, unsigned long line_no) NEVER_RETURNS;
+typedef void (*openswan_passert_fail_t)(const char *pred_str,
+					const char *file_str,
+					unsigned long line_no) NEVER_RETURNS;
+
+openswan_passert_fail_t openswan_passert_fail;
 
 extern void pexpect_log(const char *pred_str
 			, const char *file_str, unsigned long line_no);
 
-# define impossible() passert_fail("impossible", __FILE__, __LINE__)
+# define impossible() do { \
+    if(openswan_passert_fail) {					\
+      (*openswan_passert_fail)("impossible", __FILE__, __LINE__); \
+    }} while(0)
 
 extern void switch_fail(int n
     , const char *file_str, unsigned long line_no) NEVER_RETURNS;
 
 # define bad_case(n) switch_fail((int) n, __FILE__, __LINE__)
 
-# define passert(pred) { \
+# define passert(pred) do { \
 	if (!(pred)) \
-	    passert_fail(#pred, __FILE__, __LINE__); \
-    }
+	  if(openswan_passert_fail) { \
+	    (*openswan_passert_fail)(#pred, __FILE__, __LINE__);	\
+	  } \
+  } while(0)
 
-# define pexpect(pred) { \
+# define pexpect(pred) do { \
 	if (!(pred)) \
 	    pexpect_log(#pred, __FILE__, __LINE__); \
-    }
+  } while(0)
 
 /* assert that an err_t is NULL; evaluate exactly once */
 # define happy(x) { \
 	err_t ugh = x; \
 	if (ugh != NULL) \
-	    passert_fail(ugh, __FILE__, __LINE__); \
+	  if(openswan_passert_fail) { (*openswan_passert_fail)(ugh, __FILE__, __LINE__); }  \
     }
 
 #else /*!DEBUG*/
@@ -62,3 +72,4 @@ extern void switch_fail(int n
 
 #endif /*!DEBUG*/
 
+#endif /* _OPENSWAN_PASSERT_H */

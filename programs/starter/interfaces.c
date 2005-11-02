@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: interfaces.c,v 1.4 2004/04/10 16:37:37 ken Exp $
+ * RCSID $Id: interfaces.c,v 1.5 2005/01/11 17:52:51 ken Exp $
  */
 
 #include <sys/socket.h>
@@ -59,7 +59,7 @@ static char *_find_physical_iface(int sock, char *iface)
 	}
 	else {
 		/**
-		 * If there is a file named /var/run/dynip/<iface>, look if we
+		 * If there is a file named /var/run/pluto/dynip/<iface>, look if we
 		 * can get interface name from there (IP_PHYS)
 		 */
 		b = (char *)malloc(strlen(DYNIP_DIR)+strlen(iface)+10);

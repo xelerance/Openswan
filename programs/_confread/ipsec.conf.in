@@ -1,5 +1,5 @@
 # /etc/ipsec.conf - Openswan IPsec configuration file
-# RCSID $Id: ipsec.conf.in,v 1.13 2004/03/24 04:14:39 ken Exp $
+# RCSID $Id: ipsec.conf.in,v 1.13.14.1 2005/05/18 20:55:12 ken Exp $
 
 # This file:  @FINALEXAMPLECONFDIR@/ipsec.conf-sample
 #
@@ -10,24 +10,31 @@ version	2.0	# conforms to second version of ipsec.conf specification
 
 # basic configuration
 config setup
-	# Debug-logging controls:  "none" for (almost) none, "all" for lots.
-	# klipsdebug=none
+	# plutodebug / klipsdebug = "all", "none" or a combation from below:
+	# "raw crypt parsing emitting control klips pfkey natt x509 private"
+	# eg:
 	# plutodebug="control parsing"
+
+	# Only enable klipsdebug=all if you are a developer
+	#
+	# NAT-TRAVERSAL support, see README.NAT-Traversal
+	# nat_traversal=yes
+	# virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%4:172.16.0.0/12
 
 # Add connections here
 
 # sample VPN connection
-#sample#	conn sample
-#sample#		# Left security gateway, subnet behind it, next hop toward right.
-#sample#		left=10.0.0.1
-#sample#		leftsubnet=172.16.0.0/24
-#sample#		leftnexthop=10.22.33.44
-#sample#		# Right security gateway, subnet behind it, next hop toward left.
-#sample#		right=10.12.12.1
-#sample#		rightsubnet=192.168.0.0/24
-#sample#		rightnexthop=10.101.102.103
-#sample#		# To authorize this connection, but not actually start it, at startup,
-#sample#		# uncomment this.
-#sample#		#auto=start
+#	conn sample
+#		# Left security gateway, subnet behind it, nexthop toward right.
+#		left=10.0.0.1
+#		leftsubnet=172.16.0.0/24
+#		leftnexthop=10.22.33.44
+#		# Right security gateway, subnet behind it, nexthop toward left.
+#		right=10.12.12.1
+#		rightsubnet=192.168.0.0/24
+#		rightnexthop=10.101.102.103
+#		# To authorize this connection, but not actually start it, 
+#		# at startup, uncomment this.
+#		#auto=start
 
 @OE_FLAG@

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_esp.h,v 1.25 2004/04/06 02:49:08 mcr Exp $
+ * RCSID $Id: ipsec_esp.h,v 1.28 2004/09/13 02:22:10 mcr Exp $
  */
 
 #include "openswan/ipsec_md5h.h"
@@ -65,13 +65,23 @@ struct esphdr
 
 extern struct xform_functions esp_xform_funcs[];
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 extern int debug_esp;
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 #endif /* __KERNEL__ */
 
 /*
  * $Log: ipsec_esp.h,v $
+ * Revision 1.28  2004/09/13 02:22:10  mcr
+ * 	#define inet_protocol if necessary.
+ *
+ * Revision 1.27  2004/09/06 18:35:41  mcr
+ * 	2.6.8.1 gets rid of inet_protocol->net_protocol compatibility,
+ * 	so adjust for that.
+ *
+ * Revision 1.26  2004/07/10 19:08:41  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.25  2004/04/06 02:49:08  mcr
  * 	pullup of algo code from alg-branch.
  *

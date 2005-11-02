@@ -11,7 +11,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.4 2004/04/09 18:09:41 mcr Exp $
+# RCSID $Id: Makefile,v 1.5 2005/01/24 01:13:13 mcr Exp $
 
 OPENSWANSRCDIR=../../..
 include $(OPENSWANSRCDIR)/Makefile.inc
@@ -24,7 +24,7 @@ def:
 	@false
 
 check:
-	REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; source TESTLIST
+	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; source TESTLIST
 
 install install_file_list checkprograms programs:
 	@true
@@ -45,6 +45,9 @@ realclean: clean
 
 #
 # $Log: Makefile,v $
+# Revision 1.5  2005/01/24 01:13:13  mcr
+# 	make sure that OPENSWANLIB is setup for tests.
+#
 # Revision 1.4  2004/04/09 18:09:41  mcr
 # Moved from testing/lib/libfreeswan/Makefile,v
 #

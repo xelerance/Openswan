@@ -2,7 +2,8 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                    "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <!-- lifted from troff+man by doclifter -->
-<refentry>
+<refentry id='barf8'>
+<refentryinfo><date>17 March 2002</date></refentryinfo>
 <refmeta>
 <refentrytitle>IPSEC_BARF</refentrytitle>
 <manvolnum>8</manvolnum>
@@ -17,7 +18,7 @@
 <cmdsynopsis>
   <command>ipsec</command>    
     <arg choice='plain'><replaceable>barf</replaceable></arg>
-    <arg choice='opt'>--short </arg>
+    <arg choice='opt'><arg choice='plain'>--short </arg><arg choice='plain'>--maxlines <replaceable>&lt;100&gt;</replaceable></arg></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -39,6 +40,11 @@ the log portion of
 <emphasis remap='I'>barf</emphasis>'s
 output, which can otherwise be extremely voluminous
 if debug logging is turned on.</para>
+
+<para><option>--maxlines &lt;100&gt;</option>
+option sets the length of some bits of information, 
+currently netstat -rn.  Usefull on boxes where the routing
+table is thousands of lines long.  Default is 100.</para>
 
 <para><emphasis remap='I'>Barf</emphasis>
 censors its output,

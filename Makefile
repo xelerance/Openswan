@@ -12,50 +12,15 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.247 2004/06/09 02:09:10 mcr Exp $
+# RCSID $Id: Makefile,v 1.266 2005/03/22 22:16:21 ken Exp $
 
 
-OPENSWANSRCDIR=$(shell pwd)
+OPENSWANSRCDIR?=$(shell pwd)
 export OPENSWANSRCDIR
 
-include Makefile.inc
+include ${OPENSWANSRCDIR}/Makefile.inc
 
-
-
-PATCHES=linux
-# where KLIPS goes in the kernel
-# note, some of the patches know the last part of this path
-KERNELKLIPS=$(KERNELSRC)/net/ipsec
-KERNELCRYPTODES=$(KERNELSRC)/crypto/ciphers/des
-KERNELLIBFREESWAN=$(KERNELSRC)/lib/libfreeswan
-KERNELLIBZLIB=$(KERNELSRC)/lib/zlib
-KERNELINCLUDE=$(KERNELSRC)/include
-
-MAKEUTILS=packaging/utils
-ERRCHECK=${MAKEUTILS}/errcheck
-KVUTIL=${MAKEUTILS}/kernelversion
-KVSHORTUTIL=${MAKEUTILS}/kernelversion-short
-
-# kernel details
-# what variant of our patches should we use, and where is it
-KERNELREL=$(shell ${KVSHORTUTIL} ${KERNELSRC}/Makefile)
-
-# directories visited by all recursion
-
-SUBDIRS=doc lib programs linux testing
-
-
-# declaration for make's benefit
-.PHONY:	def insert kpatch klink patches _patches _patches2.2 _patches2.4 \
-	klipsdefaults programs install clean distclean \
-	ogo oldgo menugo xgo \
-	omod menumod xmod \
-	pcf ocf mcf xcf rcf nopromptgo \
-	precheck verset confcheck kernel module kinstall minstall \
-	backup unpatch uinstall install_file_list \
-	snapready relready ready buildready devready uml check taroldinstall \
-	umluserland
-
+srcdir?=$(shell pwd)
 
 # dummy default rule
 def:
@@ -69,8 +34,26 @@ def:
 	@echo
 	@echo
 
-# everything that's necessary to put Klips into the kernel
-insert:	patches klink klipsdefaults
+include ${OPENSWANSRCDIR}/Makefile.top
+
+# kernel details
+# what variant of our patches should we use, and where is it
+KERNELREL=$(shell ${KVSHORTUTIL} ${KERNELSRC}/Makefile)
+
+# directories visited by all recursion
+
+# declaration for make's benefit
+.PHONY:	def insert kpatch klink patches _patches _patches2.2 _patches2.4 \
+	klipsdefaults programs install clean distclean \
+	ogo oldgo menugo xgo \
+	omod menumod xmod \
+	pcf ocf mcf xcf rcf nopromptgo \
+	precheck verset confcheck kernel \
+	module module24 module26 kinstall minstall minstall24 minstall26 \
+	backup unpatch uinstall install_file_list \
+	snapready relready ready buildready devready uml check taroldinstall \
+	umluserland
+
 
 kpatch: unapplypatch applypatch klipsdefaults
 
@@ -83,35 +66,6 @@ unapplypatch:
 applypatch:
 	echo Now performing forward patches; 
 	make kernelpatch${KERNELREL} | tee ${KERNELSRC}/openswan.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
-
-kdiff:
-	echo Comparing ${KERNELSRC} to ${OPENSWANSRCDIR}/linux.
-	packaging/utils/kerneldiff ${KERNELSRC}
-
-# create KERNELKLIPS and populate it with symlinks to the sources
-klink:
-	-[ -L $(KERNELKLIPS)/ipsec_init.c  ] && rm -rf ${KERNELKLIPS}
-	-[ -L $(KERNELCRYPTODES)/cbc_enc.c ] && rm -rf ${KERNELCRYPTODES}
-	-[ -L $(KERNELLIBFREESWAN)/subnettoa.c ] && rm -rf ${KERNELLIBFREESWAN}
-	-[ -L ${KERNELLIBZLIB}/deflate.c   ] && rm -rf ${KERNELLIBZLIB}
-	-[ -L ${KERNELINCLUDE}/openswan.h  ] && for i in linux/include/*; do rm -f ${KERNELINCLUDE}/$$i; done
-	mkdir -p $(KERNELKLIPS)
-	mkdir -p $(KERNELCRYPTODES)
-	mkdir -p $(KERNELLIBFREESWAN)
-	mkdir -p $(KERNELLIBZLIB)
-	$(KLIPSLINK) `pwd`/Makefile.ver 	     $(KERNELKLIPS)
-	$(KLIPSLINK) `pwd`/linux/include/*	     $(KERNELINCLUDE)
-	$(KLIPSLINK) `pwd`/linux/net/ipsec/Makefile* $(KERNELKLIPS)
-	$(KLIPSLINK) `pwd`/linux/net/ipsec/Config.in $(KERNELKLIPS)
-	$(KLIPSLINK) `pwd`/linux/net/ipsec/defconfig $(KERNELKLIPS)
-	$(KLIPSLINK) `pwd`/linux/net/ipsec/*.[ch]    $(KERNELKLIPS)
-	$(KLIPSLINK) `pwd`/linux/lib/zlib/*.[ch]     $(KERNELLIBZLIB)
-	$(KLIPSLINK) `pwd`/linux/lib/zlib/Makefile*  $(KERNELLIBZLIB)
-	$(KLIPSLINK) `pwd`/linux/lib/libfreeswan/*.[ch]    $(KERNELLIBFREESWAN)
-	$(KLIPSLINK) `pwd`/linux/lib/libfreeswan/Makefile* $(KERNELLIBFREESWAN)
-	$(KLIPSLINK) `pwd`/linux/crypto/ciphers/des/*.[chsS] $(KERNELCRYPTODES)
-	$(KLIPSLINK) `pwd`/linux/crypto/ciphers/des/Makefile* $(KERNELCRYPTODES)
-	sed '/"/s/xxx/$(IPSECVERSION)/' linux/lib/libfreeswan/version.in.c >$(KERNELKLIPS)/version.c
 
 # patch kernel
 PATCHER=packaging/utils/patcher
@@ -128,13 +82,13 @@ _patches:
 # Linux-2.0.x version
 __patches __patches2.0:
 	@$(PATCHER) -v $(KERNELSRC) Documentation/Configure.help \
-	  'CONFIG_IPSEC' $(PATCHES)/Documentation/Configure.help.fs2_0.patch
+	  'CONFIG_KLIPS' $(PATCHES)/Documentation/Configure.help.fs2_0.patch
 	@$(PATCHER) -v $(KERNELSRC) net/Config.in \
-	  'CONFIG_IPSEC' $(PATCHES)/net/Config.in.fs2_0.patch
+	  'CONFIG_KLIPS' $(PATCHES)/net/Config.in.fs2_0.patch
 	@$(PATCHER) -v $(KERNELSRC) net/Makefile \
-	  'CONFIG_IPSEC' $(PATCHES)/net/Makefile.fs2_0.patch
+	  'CONFIG_KLIPS' $(PATCHES)/net/Makefile.fs2_0.patch
 	@$(PATCHER) -v $(KERNELSRC) net/ipv4/af_inet.c \
-	  'CONFIG_IPSEC' $(PATCHES)/net/ipv4/af_inet.c.fs2_0.patch
+	  'CONFIG_KLIPS' $(PATCHES)/net/ipv4/af_inet.c.fs2_0.patch
 # Removed patches, will unpatch automatically.
 	@$(PATCHER) -v $(KERNELSRC) include/linux/proc_fs.h
 	@$(PATCHER) -v $(KERNELSRC) net/core/dev.c
@@ -147,17 +101,17 @@ __patches __patches2.0:
 PATCHES24=klips/patches2.3
 __patches2.2:
 	@$(PATCHER) -v -c $(KERNELSRC) Documentation/Configure.help \
-	  'CONFIG_IPSEC' $(PATCHES)/Documentation/Configure.help.fs2_2.patch
+	  'CONFIG_KLIPS' $(PATCHES)/Documentation/Configure.help.fs2_2.patch
 	@$(PATCHER) -v $(KERNELSRC) net/Config.in \
-		'CONFIG_IPSEC' $(PATCHES)/net/Config.in.fs2_2.patch
+		'CONFIG_KLIPS' $(PATCHES)/net/Config.in.fs2_2.patch
 	@$(PATCHER) -v $(KERNELSRC) net/Makefile \
-		'CONFIG_IPSEC' $(PATCHES)/net/Makefile.fs2_2.patch
+		'CONFIG_KLIPS' $(PATCHES)/net/Makefile.fs2_2.patch
 	@$(PATCHER) -v $(KERNELSRC) net/ipv4/af_inet.c \
-		'CONFIG_IPSEC' $(PATCHES)/net/ipv4/af_inet.c.fs2_2.patch
+		'CONFIG_KLIPS' $(PATCHES)/net/ipv4/af_inet.c.fs2_2.patch
 	@$(PATCHER) -v $(KERNELSRC) net/ipv4/udp.c \
-		'CONFIG_IPSEC' $(PATCHES)/net/ipv4/udp.c.fs2_2.patch
+		'CONFIG_KLIPS' $(PATCHES)/net/ipv4/udp.c.fs2_2.patch
 	@$(PATCHER) -v $(KERNELSRC) include/net/sock.h \
-		'CONFIG_IPSEC' $(PATCHES)/include/net/sock.h.fs2_2.patch
+		'CONFIG_KLIPS' $(PATCHES)/include/net/sock.h.fs2_2.patch
 # Removed patches, will unpatch automatically.
 	@$(PATCHER) -v $(KERNELSRC) include/linux/proc_fs.h
 	@$(PATCHER) -v $(KERNELSRC) net/core/dev.c
@@ -173,17 +127,17 @@ __patches2.2:
 PATCHES22=klips/patches2.2
 __patches2.3 __patches2.4:
 	@$(PATCHER) -v -c $(KERNELSRC) Documentation/Configure.help \
-		'CONFIG_IPSEC' $(PATCHES)/Documentation/Configure.help.fs2_2.patch
+		'CONFIG_KLIPS' $(PATCHES)/Documentation/Configure.help.fs2_2.patch
 	@$(PATCHER) -v $(KERNELSRC) net/Config.in \
-		'CONFIG_IPSEC' $(PATCHES)/net/Config.in.fs2_4.patch
+		'CONFIG_KLIPS' $(PATCHES)/net/Config.in.fs2_4.patch
 	@$(PATCHER) -v $(KERNELSRC) net/Makefile \
-		'CONFIG_IPSEC' $(PATCHES)/net/Makefile.fs2_4.patch
+		'CONFIG_KLIPS' $(PATCHES)/net/Makefile.fs2_4.patch
 	@$(PATCHER) -v $(KERNELSRC) net/ipv4/af_inet.c \
-		'CONFIG_IPSEC' $(PATCHES)/net/ipv4/af_inet.c.fs2_4.patch
+		'CONFIG_KLIPS' $(PATCHES)/net/ipv4/af_inet.c.fs2_4.patch
 	@$(PATCHER) -v $(KERNELSRC) net/ipv4/udp.c \
-		'CONFIG_IPSEC' $(PATCHES)/net/ipv4/udp.c.fs2_4.patch
+		'CONFIG_KLIPS' $(PATCHES)/net/ipv4/udp.c.fs2_4.patch
 	@$(PATCHER) -v $(KERNELSRC) include/net/sock.h \
-		'CONFIG_IPSEC' $(PATCHES)/include/net/sock.h.fs2_4.patch
+		'CONFIG_KLIPS' $(PATCHES)/include/net/sock.h.fs2_4.patch
 # Removed patches, will unpatch automatically.
 	@$(PATCHER) -v $(KERNELSRC) include/linux/proc_fs.h
 	@$(PATCHER) -v $(KERNELSRC) net/core/dev.c
@@ -197,7 +151,7 @@ __patches2.3 __patches2.4:
 klipsdefaults:
 	@KERNELDEFCONFIG=$(KERNELSRC)/arch/$(ARCH)/defconfig ; \
 	KERNELCONFIG=$(KCFILE) ; \
-	if ! egrep -q 'CONFIG_IPSEC' $$KERNELDEFCONFIG ; \
+	if ! egrep -q 'CONFIG_KLIPS' $$KERNELDEFCONFIG ; \
 	then \
 		set -x ; \
 		cp -a $$KERNELDEFCONFIG $$KERNELDEFCONFIG.orig ; \
@@ -208,7 +162,7 @@ klipsdefaults:
 		cp -a $$KERNELDEFCONFIG.tmp $$KERNELDEFCONFIG ; \
 		rm -f $$KERNELDEFCONFIG.tmp ; \
 	fi ; \
-	if ! egrep -q 'CONFIG_IPSEC' $$KERNELCONFIG ; \
+	if ! egrep -q 'CONFIG_KLIPS' $$KERNELCONFIG ; \
 	then \
 		set -x ; \
 		cp -a $$KERNELCONFIG $$KERNELCONFIG.orig ; \
@@ -224,6 +178,26 @@ klipsdefaults:
 
 # programs
 
+ifeq ($(strip $(OBJDIR)),.)
+programs install clean checkprograms:: 
+	@for d in $(SUBDIRS) ; \
+	do \
+		(cd $$d && $(MAKE) srcdir=${OPENSWANSRCDIR}/$$d/ OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \
+	done; 
+
+else
+ABSOBJDIR:=$(shell mkdir -p ${OBJDIR}; cd ${OBJDIR} && pwd)
+
+programs install clean checkprograms:: ${OBJDIR}/Makefile
+	echo OBJDIR: ${OBJDIR}
+	(cd ${ABSOBJDIR} && OBJDIRTOP=${ABSOBJDIR} OBJDIR=${ABSOBJDIR} make $@ )
+
+${OBJDIR}/Makefile: ${srcdir}/Makefile packaging/utils/makeshadowdir
+	echo Setting up for OBJDIR=${OBJDIR}
+	packaging/utils/makeshadowdir `(cd ${srcdir}; pwd)` ${OBJDIR} "${SUBDIRS}"
+
+endif
+
 checkv199install:
 	@if [ -f ${LIBDIR}/pluto ]; \
 	then \
@@ -234,23 +208,10 @@ checkv199install:
 
 install:: checkv199install
 
-programs install clean checkprograms::
-	@for d in $(SUBDIRS) ; \
-	do \
-		(cd $$d && $(MAKE) OPENSWANSRCDIR=.. $@ ) || exit 1; \
-	done; \
-
 clean::
 	rm -rf $(RPMTMPDIR) $(RPMDEST)
 	rm -f out.*build out.*install	# but leave out.kpatch
 	rm -f rpm.spec
-	make modclean
-
-distclean:	clean
-	rm -f out.kpatch 
-	if [ -f umlsetup.sh ]; then source umlsetup.sh; if [ -d "$$POOLSPACE" ]; then rm -rf $$POOLSPACE; fi; fi
-
-
 
 # proxies for major kernel make operations
 
@@ -259,11 +220,19 @@ KINSERT_PRE=precheck verset insert
 PRE=precheck verset kpatch
 POST=confcheck programs kernel install 
 MPOST=confcheck programs module install 
-ogo:		$(PRE) pcf $(POST)
-oldgo:		$(PRE) ocf $(POST)
-nopromptgo:	$(PRE) rcf $(POST)
-menugo:		$(PRE) mcf $(POST)
-xgo:		$(PRE) xcf $(POST)
+#ogo:		$(PRE) pcf $(POST)
+#oldgo:		$(PRE) ocf $(POST)
+#nopromptgo:	$(PRE) rcf $(POST)
+#menugo:		$(PRE) mcf $(POST)
+#xgo:		$(PRE) xcf $(POST)
+
+ogo: obsolete_target
+oldgo: obsolete_target
+nopromptgo: obsolete_target
+menugo: obsolete_target
+xgo: obsolete_target
+obsolete_target:
+	@echo "The targets ogo, oldgo, menugo, nopromptgo and xgo are obsolete. Please read INSTALL"
 
 # preliminaries
 precheck:
@@ -318,7 +287,7 @@ ocf:
 	-cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) oldconfig 
 
 rcf:
-	cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) oldconfig_nonint </dev/null
+	cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) ${NONINTCONFIG} </dev/null
 	cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) dep >/dev/null
 
 kclean:
@@ -328,21 +297,21 @@ confcheck:
 	@if test ! -f $(KCFILE) ; \
 	then echo '*** no kernel configuration file written!!' ; exit 1 ; \
 	fi
-	@if ! egrep -q '^CONFIG_IPSEC=[my]' $(KCFILE) ; \
+	@if ! egrep -q '^CONFIG_KLIPS=[my]' $(KCFILE) ; \
 	then echo '*** IPsec not in kernel config ($(KCFILE))!!' ; exit 1 ; \
 	fi
-	@if ! egrep -q 'CONFIG_IPSEC[ 	]+1' $(ACFILE) && \
-		! egrep -q 'CONFIG_IPSEC_MODULE[ 	]+1' $(ACFILE) ; \
+	@if ! egrep -q 'CONFIG_KLIPS[ 	]+1' $(ACFILE) && \
+		! egrep -q 'CONFIG_KLIPS_MODULE[ 	]+1' $(ACFILE) ; \
 	then echo '*** IPsec in kernel config ($(KCFILE)),' ; \
 		echo '***	but not in config header file ($(ACFILE))!!' ; \
 		exit 1 ; \
 	fi
-	@if egrep -q '^CONFIG_IPSEC=m' $(KCFILE) && \
+	@if egrep -q '^CONFIG_KLIPS=m' $(KCFILE) && \
 		! egrep -q '^CONFIG_MODULES=y' $(KCFILE) ; \
 	then echo '*** IPsec configured as module in kernel with no module support!!' ; exit 1 ; \
 	fi
-	@if ! egrep -q 'CONFIG_IPSEC_AH[ 	]+1' $(ACFILE) && \
-		! egrep -q 'CONFIG_IPSEC_ESP[ 	]+1' $(ACFILE) ; \
+	@if ! egrep -q 'CONFIG_KLIPS_AH[ 	]+1' $(ACFILE) && \
+		! egrep -q 'CONFIG_KLIPS_ESP[ 	]+1' $(ACFILE) ; \
 	then echo '*** IPsec configuration must include AH or ESP!!' ; exit 1 ; \
 	fi
 
@@ -391,12 +360,22 @@ ${MODBUILDDIR}/Makefile : ${OPENSWANSRCDIR}/packaging/makefiles/module.make
 	cp ${OPENSWANSRCDIR}/packaging/makefiles/module.make ${MODBUILDDIR}/Makefile
 	echo "# "                        >> ${MODBUILDDIR}/Makefile
 	echo "# Local Variables: "       >> ${MODBUILDDIR}/Makefile
-	echo "# compile-command: \"${MAKE} OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH}  TOPDIR=${KERNELSRC} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} -f Makefile ipsec.o\""         >> ${MODBUILDDIR}/Makefile
+	echo "# compile-command: \"${MAKE} OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} TOPDIR=${KERNELSRC} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} -f Makefile ipsec.o\""         >> ${MODBUILDDIR}/Makefile
 	echo "# End: "       >> ${MODBUILDDIR}/Makefile
 
-# clean out the linux/net/ipsec directory so that VPATH will work properly
-module: ${MODBUILDDIR}/Makefile
-	-${MAKE} -C linux/net/ipsec  TOPDIR=${KERNELSRC} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} -f Makefile clean
+module:
+	@if [ -f ${KERNELSRC}/README.openswan-2 ] ; then \
+                echo "WARNING: Kernel source ${KERNELSRC} has already been patched with openswan-2, out of tree build might fail!"; \
+        fi;
+	@if [ -f ${KERNELSRC}/Rules.make ] ; then \
+                echo "Building module for a 2.4 kernel"; ${MAKE} module24 ; else echo "Building module for a 2.6 kernel"; ${MAKE} module26; \
+        fi;
+
+module24:
+	@if [ ! -f ${KERNELSRC}/Rules.make ] ; then \
+                echo "Warning: Building for a 2.4 kernel in what looks like a 2.6 tree"; \
+        fi ; \
+        ${MAKE} ${MODBUILDDIR}/Makefile
 	${MAKE} -C ${MODBUILDDIR}  OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} TOPDIR=${KERNELSRC} -f Makefile ipsec.o
 	@echo 
 	@echo '========================================================='
@@ -415,23 +394,108 @@ module: ${MODBUILDDIR}/Makefile
 modclean: 
 	rm -rf ${MODBUILDDIR}
 
-# module-only install, with error checks
+#autoodetect 2.4 and 2.6
+module_install: minstall
 minstall:
-	( FSMODLIB=`make -C $(KERNELSRC) -p dummy | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
-	if [ -z "$$FSMODLIB" ] ; then \
-		FSMODLIB=`make -C $(KERNELSRC) -n -p modules_install | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
+	@if [ -f ${KERNELSRC}/Rules.make ] ; then \
+                ${MAKE} minstall24 ; else ${MAKE} minstall26; \
+        fi;
+
+# module-only install, with error checks
+minstall24:
+	( OSMODLIB=`make -C $(KERNELSRC) -p dummy | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
+	if [ -z "$$OSMODLIB" ] ; then \
+		OSMODLIB=`make -C $(KERNELSRC) -n -p modules_install | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
 	fi ; \
-	if [ -z "$$FSMODLIB" ] ; then \
+	if [ -z "$$OSMODLIB" ] ; then \
 		echo "No known place to install module. Aborting." ; \
 		exit 93 ; \
 	fi ; \
 	set -x ; \
-	mkdir -p $$FSMODLIB/kernel/$(FSMOD_DESTDIR) ; \
-	cp $(MODBUILDDIR)/ipsec.o $$FSMODLIB/kernel/$(FSMOD_DESTDIR) )
+	mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
+	cp $(MODBUILDDIR)/ipsec.o $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
+	if [ -n "$(OSMOD_DESTDIR)" ] ; then \
+        mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
+                if [ -f $$OSMODLIB/kernel/ipsec.o -a -f $$OSMODLIB/kernel/$(OSMOD_DESTDIR)/ipsec.o ] ; then \
+                        echo "WARNING: two ipsec.o modules found in $$OSMODLIB/kernel:" ; \
+                        ls -l $$OSMODLIB/kernel/ipsec.o $$OSMODLIB/kernel/$(OSMOD_DESTDIR)/ipsec.o ; \
+                        exit 1; \
+                fi ; \
+        fi ; \
+        set -x ) ;
+
 
 else
 module: 
 	echo 'Building in place is no longer supported. Please set MODBUILDDIR='
+	exit 1
+
+endif
+
+# module-only building, with error checks
+ifneq ($(strip $(MOD26BUILDDIR)),)
+${MOD26BUILDDIR}/Makefile : ${OPENSWANSRCDIR}/packaging/makefiles/module26.make
+	mkdir -p ${MOD26BUILDDIR}
+	echo ln -s -f ${OPENSWANSRCDIR}/linux/net/ipsec/des/*.S ${MOD26BUILDDIR}
+	(rm -f ${MOD26BUILDDIR}/des; mkdir -p ${MOD26BUILDDIR}/des && cd ${MOD26BUILDDIR}/des && ln -s -f ${OPENSWANSRCDIR}/linux/net/ipsec/des/* . && ln -s -f Makefile.fs2_6 Makefile)
+	(rm -f ${MOD26BUILDDIR}/aes; mkdir -p ${MOD26BUILDDIR}/aes && cd ${MOD26BUILDDIR}/aes && ln -s -f ${OPENSWANSRCDIR}/linux/net/ipsec/aes/* . && ln -s -f Makefile.fs2_6 Makefile)
+	mkdir -p ${MOD26BUILDDIR}/aes
+	cp ${OPENSWANSRCDIR}/packaging/makefiles/module26.make ${MOD26BUILDDIR}/Makefile
+	echo "# "                        >> ${MOD26BUILDDIR}/Makefile
+	echo "# Local Variables: "       >> ${MOD26BUILDDIR}/Makefile
+	echo "# compile-command: \"${MAKE} -C ${OPENSWANSRCDIR} ARCH=${ARCH} KERNELSRC=${KERNELSRC} MOD26BUILDDIR=${MOD26BUILDDIR} module26\""         >> ${MOD26BUILDDIR}/Makefile
+	echo "# End: "       >> ${MOD26BUILDDIR}/Makefile
+	ln -s -f ${OPENSWANSRCDIR}/linux/net/ipsec/match*.S ${MOD26BUILDDIR}
+
+module26:
+	@if [ -f ${KERNELSRC}/Rules.make ] ; then \                 echo "Warning: Building for a 2.6 kernel in what looks like a 2.4 tree"; \
+        fi ; \
+        ${MAKE}  ${MOD26BUILDDIR}/Makefile
+	${MAKE} -C ${KERNELSRC} ${KERNELBUILDMFLAGS} BUILDDIR=${MOD26BUILDDIR} SUBDIRS=${MOD26BUILDDIR} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} ARCH=${ARCH} modules
+	@echo 
+	@echo '========================================================='
+	@echo 
+	@echo 'KLIPS26 module built successfully. '
+	@echo ipsec.ko is in ${MOD26BUILDDIR}
+	@echo 
+	@(cd ${MOD26BUILDDIR}; ls -l ipsec.ko)
+	@(cd ${MOD26BUILDDIR}; size ipsec.ko)
+	@echo 
+	@echo 'use make minstall as root to install it'
+	@echo 
+	@echo '========================================================='
+	@echo 
+
+mod26clean module26clean: 
+	rm -rf ${MOD26BUILDDIR}
+
+# module-only install, with error checks
+minstall26:
+	( OSMODLIB=`make -C $(KERNELSRC) -p help | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
+	if [ -z "$$OSMODLIB" ] ; then \
+		OSMODLIB=`make -C $(KERNELSRC) -n -p modules_install | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
+	fi ; \
+	if [ -z "$$OSMODLIB" ] ; then \
+		echo "No known place to install module. Aborting." ; \
+		exit 93 ; \
+	fi ; \
+	set -x ; \
+	mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
+	cp $(MOD26BUILDDIR)/ipsec.ko $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
+	if [ -n "$(OSMOD_DESTDIR)" ] ; then \
+	mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
+		if [ -f $$OSMODLIB/kernel/ipsec.ko -a -f $$OSMODLIB/kernel/$(OSMOD_DESTDIR)/ipsec.ko ] ; then \
+			echo "WARNING: two ipsec.ko modules found in $$OSMODLIB/kernel:" ; \
+			ls -l $$OSMODLIB/kernel/ipsec.ko $$OSMODLIB/kernel/$(OSMOD_DESTDIR)/ipsec.ko ; \
+			exit 1; \
+		fi ; \
+	fi ; \
+	set -x ) ;
+
+
+else
+module26: 
+	echo 'Building in place is no longer supported. Please set MOD26BUILDDIR='
 	exit 1
 
 endif
@@ -449,8 +513,8 @@ kinstall:
 	( cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) install ) 2>&1 | tee -a out.kinstall
 	${ERRCHECK} out.kinstall
 
-kernelpatch2.5:
-	packaging/utils/kernelpatch 2.5
+kernelpatch2.6:
+	packaging/utils/kernelpatch 2.6
 
 kernelpatch2.4 kernelpatch:
 	packaging/utils/kernelpatch 2.4
@@ -466,12 +530,6 @@ nattpatch2.4 nattpatch:
 
 nattpatch2.2:
 	packaging/utils/nattpatch 2.2
-
-install_file_list:
-	@for d in $(SUBDIRS) ; \
-	do \
-		(cd $$d && $(MAKE) --no-print-directory OPENSWANSRCDIR=.. install_file_list ) || exit 1; \
-	done; 
 
 # take all the patches out of the kernel
 # (Note, a couple of files are modified by non-patch means; they are
@@ -491,22 +549,6 @@ _unpatch:
 		rm -f $$core.wipsec $$core.ipsecmd5 ; \
 	done
 
-# uninstall, as much as possible
-uninstall:
-	$(MAKE) --no-print-directory install_file_list | egrep -v '(/ipsec.conf$$|/ipsec.d/)' | xargs rm -f
-
-taroldinstall:
-	tar --ignore-failed-read -c -z -f oldFreeSWAN.tar.gz `$(MAKE) --no-print-directory install_file_list`
-
-# some oddities meant for the developers, probably of no use to users
-
-# make tags and TAGS files from ctags and etags for vi and emacs, respectively.
-tags TAGS: dummy
-	etags `find lib programs linux -name '*.[ch]'`
-	ctags `find lib programs linux -name '*.[ch]'`
-
-dummy:
-
 # at the moment there is no difference between snapshot and release build
 snapready:	buildready
 relready:	buildready
@@ -516,38 +558,6 @@ ready:		devready
 buildready:
 	rm -f dtrmakefile cvs.datemark
 	cd doc ; $(MAKE) -s
-
-uml:	programs checkprograms
-	@echo XXX do some checks to see if all the manual pieces are done.
-	-chmod +x testing/utils/make-uml.sh
-	testing/utils/make-uml.sh `pwd`
-
-umluserland:
-	(touch Makefile.inc && source umlsetup.sh && cd $$POOLSPACE && make $$FREESWANHOSTS $$REGULARHOSTS ) 
-
-
-# DESTDIR is normally set in Makefile.inc
-# These recipes explicitly pass it to the second-level makes so that
-# DESTDIR can be adjusted for building for UML without changing Makefile.inc
-# See	testing/utils/functions.sh
-#	testing/utils/make-uml.sh
-#	testing/utils/uml-functions.sh
-check:	uml Makefile.ver
-ifneq ($(strip(${REGRESSRESULTS})),)
-	mkdir -p ${REGRESSRESULTS}
-endif
-	@for d in $(SUBDIRS); do (cd $$d && $(MAKE) DESTDIR=${DESTDIR} checkprograms || exit 1); done
-	@for d in $(SUBDIRS); \
-	do \
-		echo ===================================; \
-		echo Now making check in $$d; \
-		echo ===================================; \
-		(cd $$d && $(MAKE) DESTDIR=${DESTDIR} check || exit 1);\
-	done
-ifneq ($(strip(${REGRESSRESULTS})),)
-	-perl testing/utils/regress-summarize-results.pl ${REGRESSRESULTS}
-endif
-
 
 rpm:
 	@echo please cd packaging/redhat and
@@ -562,20 +572,22 @@ ipkg_strip:
 	@rm -f $(DESTDIR)$(INC_USRLOCAL)/lib/ipsec/*.old
 	@rm -f $(DESTDIR)$(INC_USRLOCAL)/libexec/ipsec/*.old
 	@rm -f $(DESTDIR)$(INC_USRLOCAL)/sbin/*.old
+	@rm -f $(DESTDIR)$(INC_USRLOCAL)/share/doc/openswan/*
+
 
 ipkg_module:
 	@echo "Moving ipsec.o into temporary location..."
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile) && \
 	mkdir -p $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile) && \
-	cp linux/net/ipsec/ipsec.o $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec/
+	cp ${OPENSWANSRCDIR}/modobj/ipsec.o $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec/
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile)
 
 ipkg_clean:
 	rm -rf $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/
 	rm -rf $(OPENSWANSRCDIR)/packaging/ipkg/ipkg/
-	rm -f $(OPENSWANSRCDIR)/packaging/ipkg/control-freeswan
-	rm -f $(OPENSWANSRCDIR)/packaging/ipkg/control-freeswan-module
+	rm -f $(OPENSWANSRCDIR)/packaging/ipkg/control-oprnswan
+	rm -f $(OPENSWANSRCDIR)/packaging/ipkg/control-openswan-module
 
 
 ipkg: programs install ipkg_strip ipkg_module

@@ -80,7 +80,7 @@ static_init_mod.o: $(obj-y)
 	rm -f $@
 	$(LD) $(LD_EXTRAFLAGS) $(obj-y) -r -o $@
 
-perlasm: $(LIBCRYPTO)/perlasm
+perlasm: ../../../crypto/ciphers/des/asm/perlasm
 	ln -sf $? $@
 
 $(obj-y) $(obj-m): $(TOPDIR)/include/linux/config.h $(TOPDIR)/include/linux/autoconf.h $(KLIPS_TOP)/include/freeswan/ipsec_alg.h

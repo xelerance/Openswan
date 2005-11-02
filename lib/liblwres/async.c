@@ -16,7 +16,7 @@
  * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* $Id: async.c,v 1.4 2003/12/01 21:45:07 mcr Exp $ */
+/* $Id: async.c,v 1.7 2005/03/30 16:49:18 ken Exp $ */
 
 #include <config.h>
 
@@ -78,8 +78,6 @@ lwres_getrrsetbyname_init(const char *hostname, unsigned int rdclass,
 			  lwres_context_t *ctx,
 			  struct lwres_async_state *las)
 {
-	lwres_result_t lwresult;
-	unsigned int i;
 	unsigned int lwflags;
 	unsigned int result;
 
@@ -88,8 +86,6 @@ lwres_getrrsetbyname_init(const char *hostname, unsigned int rdclass,
 	lwres_grbnrequest_t request;
 	char target_name[1024];
 	unsigned int target_length;
-
-	int ret2;
 
 	if (rdclass > 0xffff || rdtype > 0xffff) {
 		result = ERRSET_INVAL;
@@ -147,7 +143,6 @@ lwres_getrrsetbyname_xmit(lwres_context_t *ctx,
 			  struct lwres_async_state *las)
 {
 	lwres_result_t lwresult;
-	int ret;
 
 	if(!las->inqueue) {
 	  las->next = ctx->pending;
@@ -160,6 +155,18 @@ lwres_getrrsetbyname_xmit(lwres_context_t *ctx,
 	return(lwresult_to_result(lwresult));
 }
 
+void
+lwres_sanitize_list(lwres_context_t *ctx)
+{
+	volatile struct lwres_async_state *las;
+
+	las = ctx->pending;
+	while(las != NULL) {
+	  REQUIRE(las != (volatile struct lwres_async_state *)0xa5a5a5a5);
+	  REQUIRE(las != (volatile struct lwres_async_state *)0x5a5a5a5a);
+	  las=las->next;
+	}
+}
 
 
 unsigned long
@@ -171,7 +178,7 @@ lwres_async_timeout(lwres_context_t *ctx)
 	 * Type of tv_sec is long, so make sure the unsigned long timeout
 	 * does not overflow it.
 	 */
-	if (ctx->timeout <= LONG_MAX)
+	if (ctx->timeout <= (unsigned int)LONG_MAX)
 		tv_sec = (long)ctx->timeout;
 	else
 		tv_sec = LONG_MAX;
@@ -201,7 +208,8 @@ lwres_getrrsetbyname_read(struct lwres_async_state **plas,
 	char *buffer;
 	struct rrsetinfo *rrset = NULL;
 	int recvlen;
-	int ret, result, i;
+	int ret, result;
+	unsigned int i;
 	lwres_buffer_t            b_in;
 	struct lwres_async_state *las;
 	struct lwres_async_state **las_prev;

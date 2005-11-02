@@ -211,7 +211,7 @@ The default IKE port number is 500, the UDP port assigned by IANA for IKE Daemon
 \fBpluto\fP must be run by the superuser to be able to use the UDP 500 port.
 .LP
 \fBpluto\fP attempts to create a lockfile with the name
-\fI/var/run/pluto.pid\fP.  If the lockfile cannot be created,
+\fI/var/run/pluto/pluto.pid\fP.  If the lockfile cannot be created,
 \fBpluto\fP exits \- this prevents multiple \fBpluto\fPs from
 competing  Any ``leftover'' lockfile must be removed before
 \fBpluto\fP will run.  \fBpluto\fP writes its pid into this file so
@@ -1020,7 +1020,7 @@ basename for control files.
 \fIpath\fP.ctl is the socket through which \fBwhack\fP communicates with
 \fBpluto\fP.
 \fIpath\fP.pid is the lockfile to prevent multiple \fBpluto\fP instances.
-The default is \fI/var/run/pluto\fP).
+The default is \fI/var/run/pluto/pluto\fP).
 .TP
 \fB\-\-secretsfile\fP \fIfile\fP
 specifies the file for authentication secrets
@@ -1247,9 +1247,9 @@ that was not a message sent to syslog or a comment
 (but the prefix for success is treated as 0).
 Otherwise, the exit status is 0.
 .SH FILES
-\fI/var/run/pluto.pid\fP
+\fI/var/run/pluto/pluto.pid\fP
 .br
-\fI/var/run/pluto.ctl\fP
+\fI/var/run/pluto/pluto.ctl\fP
 .br
 \fI/etc/ipsec.secrets\fP
 .br

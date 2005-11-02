@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: state.h,v 1.82 2004/05/05 03:00:39 ken Exp $
+ * RCSID $Id: state.h,v 1.96 2005/03/21 03:45:09 mcr Exp $
  */
 
 #include <sys/types.h>
@@ -56,9 +56,9 @@ struct oakley_trans_attrs {
     u_int16_t encrypt;		/* Encryption algorithm */
     u_int16_t enckeylen;	/* encryption key len (bits) */
     const struct encrypt_desc *encrypter;	/* package of encryption routines */
-    u_int16_t hash;		/* Hash algorithm */
+    oakley_hash_t hash;		/* Hash algorithm */
     const struct hash_desc *hasher;	/* package of hashing routines */
-    u_int16_t auth;		/* Authentication method */
+    oakley_auth_t auth;		/* Authentication method */
 #ifdef XAUTH
     u_int16_t xauth;            /* did we negotiate Extended Authentication? */
 #endif
@@ -81,7 +81,7 @@ struct ipsec_trans_attrs {
     time_t life_seconds;		/* When this SA expires */
     u_int32_t life_kilobytes;	/* When this SA expires */
     u_int16_t encapsulation;
-    u_int16_t auth;             /* of type oakley_auth_names */
+    ipsec_auth_t auth;            
     u_int16_t key_len;
     u_int16_t key_rounds;
 #if 0 /* not implemented yet */
@@ -109,14 +109,14 @@ struct ipsec_proto_info {
  */
 struct state
 {
-    so_serial_t        st_serialno;            /* serial number (for seniority) */
-    so_serial_t        st_clonedfrom;          /* serial number of parent */
+    so_serial_t        st_serialno;          /*serial number (for seniority) */
+    so_serial_t        st_clonedfrom;        /* serial number of parent */
     int                st_usage;
 
     struct connection *st_connection;          /* connection for this SA */
-
     int                st_whack_sock;          /* fd for our Whack TCP socket.
-                                                * Single copy: close when freeing struct.
+                                                * Single copy: close when
+						* freeing struct.
                                                 */
 
     struct msg_digest *st_suspended_md;        /* suspended state-transition */
@@ -131,18 +131,21 @@ struct state
     ipsec_spi_t        st_tunnel_out_spi;         /* KLUDGE */
 #endif
 
-    const struct oakley_group_desc *st_pfs_group;	/* group for Phase 2 PFS */
+    const struct oakley_group_desc *st_pfs_group; /*group for Phase 2 PFS */
 
     u_int32_t          st_doi;                 /* Domain of Interpretation */
     u_int32_t          st_situation;
 
     lset_t             st_policy;              /* policy for IPsec SA */
 
+    ip_address         st_remoteaddr;          /* where to send packets to */
+    u_int16_t          st_remoteport;          /* host byte order */
+    ip_address         st_localaddr;           /* where to send them from */
+    u_int16_t          st_localport;           
     msgid_t            st_msgid;               /* MSG-ID from header.  Network Order! */
-    msgid_t            st_msgid2;              /* MSG-ID from header.  Network Order! */
 
-#define MAX_INFO_EXG 16
-    msgid_t            st_infoid[MAX_INFO_EXG];/* space for possible informational exchanges */
+    msgid_t            st_msgid_phase15;       /* msgid for phase 1.5 */
+    msgid_t            st_msgid_phase15b;      /* msgid for phase 1.5 */
 
     /* only for a state representing an ISAKMP SA */
     struct msgid_list  *st_used_msgids;        /* used-up msgids */
@@ -178,14 +181,18 @@ struct state
 
 /* end of symmetric stuff */
 
-    u_int8_t           st_sec_in_use;          /* bool: does st_sec hold a value */
-    MP_INT             st_sec;                 /* Our local secret value */
+    u_int8_t           st_sec_in_use;      /* bool: does st_sec hold a value */
+    MP_INT             st_sec;             /* Our local secret value */
+    chunk_t            st_sec_chunk;       /* copy of above */
 
     chunk_t            st_shared;              /* Derived shared secret
                                                 * Note: during Quick Mode,
                                                 * presence indicates PFS
                                                 * selected.
                                                 */
+    enum crypto_importance st_import;          /* relative priority of crypto
+						* operations
+						*/
 
     /* In a Phase 1 state, preserve peer's public key after authentication */
     struct pubkey     *st_peer_pubkey;
@@ -197,6 +204,7 @@ struct state
     time_t             st_margin;              /* life after EVENT_SA_REPLACE */
     unsigned long      st_outbound_count;      /* traffic through eroute */
     time_t             st_outbound_time;       /* time of last change to st_outbound_count */
+
     chunk_t            st_p1isa;               /* Phase 1 initiator SA (Payload) for HASH */
     chunk_t            st_skeyid;              /* Key material */
     chunk_t            st_skeyid_d;            /* KM for non-ISAKMP key derivation */
@@ -218,23 +226,32 @@ struct state
     struct state      *st_hashchain_prev;      /* Previous in list */
 
     struct {
+        unsigned int   st_malformed_received;
+        unsigned int   st_malformed_sent;
 	bool           st_xauth_client_done;
 	int            st_xauth_client_attempt;
+        bool           st_modecfg_server_done;
+        bool           st_modecfg_vars_set;
 	bool           st_got_certrequest;
+        bool           st_modecfg_started;
+	bool           st_skeyid_calculated;
+	bool           st_dpd;                 /* Peer supports DPD */
+	bool           st_dpd_local;	       /* If we want DPD on this conn */
+	u_int32_t      st_nat_traversal;       /* bit field of permitted
+						* methods. If non-zero, then
+						* NAT-T has been detected, and
+						* should be used. */
+	ip_address     st_nat_oa;
+	ip_address     st_natd;
     } hidden_variables;                        /* internal state that
 						* should get copied by god
 						* Eistein would be proud
 						*/
 
 
-#ifdef NAT_TRAVERSAL
-    u_int32_t         nat_traversal;
-    ip_address        nat_oa;
-#endif
+    unsigned char *st_xauth_username;
 
     /* RFC 3706 Dead Peer Detection */
-    bool                st_dpd;                 /* Peer supports DPD */
-    bool                st_dpd_local;		/* If we want DPD on this conn */
     time_t              st_last_dpd;            /* Time of last DPD transmit */
     u_int32_t           st_dpd_seqno;           /* Next R_U_THERE to send */
     u_int32_t           st_dpd_expectseqno;     /* Next R_U_THERE_ACK to receive */
@@ -302,3 +319,14 @@ extern void fmt_state(struct state *st, time_t n
 extern void delete_states_by_peer(ip_address *peer);
 extern void replace_states_by_peer(ip_address *peer);
 
+extern void set_state_ike_endpoints(struct state *st
+				    , struct connection *c);
+
+extern void delete_cryptographic_continuation(struct state *st);
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

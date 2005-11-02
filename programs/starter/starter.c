@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: starter.c,v 1.9 2004/04/10 17:08:05 ken Exp $
+ * RCSID $Id: starter.c,v 1.12 2005/01/11 17:52:51 ken Exp $
  */
 
 #include <sys/types.h>
@@ -30,11 +30,13 @@
 #include <fcntl.h>
 
 #include "confread.h"
+#include "confwrite.h"
 #include "starterlog.h"
 #include "files.h"
 #include "starterwhack.h"
 #include "pluto.h"
 #include "klips.h"
+#include "netkey.h"
 #include "cmp.h"
 #include "interfaces.h"
 #include "keywords.h"
@@ -243,16 +245,18 @@ int main (int argc, char **argv)
 		exit(1);
 	}
 	if (err) free(err);
-/*
+
 	if(justdump)
 	{
-	    confwrite(cfg);
+	    confwrite(cfg,stdout);
 	    exit(0);
 	}
-*/
+
+	/* Need to determine which stack to use here, and if() it */
 	if ((starter_klips_init()!=0) || (starter_klips_set_config(cfg)!=0)) {
 		exit(1);
 	}
+
 	starter_ifaces_init();
 	starter_ifaces_clear();
 
@@ -289,7 +293,7 @@ int main (int argc, char **argv)
 	}
 
 	/**
-	 * Save pid file in /var/run/starter.pid
+	 * Save pid file in /var/run/pluto/starter.pid
 	 */
 	{
 		FILE *f = fopen(MY_PID_FILE, "w");
@@ -319,7 +323,10 @@ int main (int argc, char **argv)
 				starter_stop_pluto();
 			}
 			starter_ifaces_clear();
+			/* Need to determine which stack here... */
 			starter_klips_cleanup();
+			starter_netkey_cleanup();
+
 			confread_free(cfg);
 			starter_log(LOG_LEVEL_DEBUG, "ipsec starter stopped");
 			unlink(MY_PID_FILE);
@@ -353,6 +360,7 @@ int main (int argc, char **argv)
 				/**
 				 * Switch to new config. New conn will be loaded below
 				 */
+				/* Check stacks here too */
 				if (starter_cmp_klips(cfg, new_cfg)) {
 					starter_log(LOG_LEVEL_DEBUG, "Klips has changed");
 					starter_klips_set_config(new_cfg);
@@ -431,7 +439,9 @@ int main (int argc, char **argv)
 		if (_action_ & FLAG_ACTION_START_PLUTO) {
 			if (starter_pluto_pid()==0) {
 				starter_log(LOG_LEVEL_INFO, "Attempting to start pluto...");
+				/* Again, check stacks here and if() */
 				starter_klips_clear();
+				starter_netkey_clear();
 				if (starter_start_pluto(cfg,debug)==0) {
 					starter_whack_listen();
 				}

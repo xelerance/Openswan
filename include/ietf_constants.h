@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ietf_constants.h,v 1.4.2.1 2004/07/22 18:24:39 ken Exp $
+ * RCSID $Id: ietf_constants.h,v 1.13.2.1 2005/05/18 20:55:12 ken Exp $
  */
 
 /* Group parameters from draft-ietf-ike-01.txt section 6 */
@@ -193,6 +193,7 @@
 #define SHA1_DIGEST_SIZE	BYTES_FOR_BITS(160)	/* ought to be supplied by sha1.h */
 
 #define DES_CBC_BLOCK_SIZE	BYTES_FOR_BITS(64)
+#define AES_CBC_BLOCK_SIZE      BYTES_FOR_BITS(128)
 
 #define DSS_QBITS	160	/* bits in DSS's "q" (FIPS 186-1) */
 
@@ -269,9 +270,9 @@ extern const char *const payload_name[];
 #define ISAKMP_NEXT_D          12	/* Delete */
 #define ISAKMP_NEXT_VID        13	/* Vendor ID */
 #define ISAKMP_NEXT_ATTR       14       /* Mode config Attribute */
-#define ISAKMP_NEXT_NATD_RFC   15       /* NAT-Traversal: NAT-D (rfc) */
-#define ISAKMP_NEXT_NATOA_RFC  16       /* NAT-Traversal: NAT-OA (rfc) */
-#define ISAKMP_NEXT_ROOF       17	/* roof on payload types */
+#define ISAKMP_NEXT_NATD_RFC   20       /* NAT-Traversal: NAT-D (rfc) */
+#define ISAKMP_NEXT_NATOA_RFC  21       /* NAT-Traversal: NAT-OA (rfc) */
+#define ISAKMP_NEXT_ROOF       22	/* roof on payload types */
 #define ISAKMP_NEXT_NATD_DRAFTS   130   /* NAT-Traversal: NAT-D (drafts) */
 #define ISAKMP_NEXT_NATOA_DRAFTS  131   /* NAT-Traversal: NAT-OA (drafts) */
 
@@ -350,6 +351,14 @@ extern enum_names exchange_names;
 #define ISAKMP_XCHG_NGRP       33	/* Oakley New Group Mode */
 /* added in draft-ietf-ipsec-ike-01.txt, near end of Appendix A */
 #define ISAKMP_XCHG_ACK_INFO   34	/* Oakley Acknowledged Informational */
+
+
+/* Private exchanges to pluto */
+#define ISAKMP_XCHG_ECHOREQUEST 30      /* Echo Request */
+#define ISAKMP_XCHG_ECHOREPLY   31      /* Echo Reply   */
+
+#define ISAKMP_XCHG_ECHOREQUEST_PRIVATE 244     /* Private Echo Request */
+#define ISAKMP_XCHG_ECHOREPLY_PRIVATE   245     /* Private Echo Reply   */
 
 /* Flag bits */
 
@@ -528,6 +537,7 @@ extern enum_names auth_alg_names, extended_auth_alg_names;
 #define AUTH_ALGORITHM_HMAC_SHA2_512   7
 #define AUTH_ALGORITHM_HMAC_RIPEMD     8
 
+typedef u_int16_t ipsec_auth_t;
 
 /* Oakley Lifetime Type attribute
  * draft-ietf-ipsec-ike-01.txt appendix A
@@ -577,6 +587,7 @@ extern enum_names oakley_enc_names;
  * and from http://www.isi.edu/in-notes/iana/assignments/ipsec-registry
  */
 
+typedef u_int16_t oakley_hash_t;
 extern enum_names oakley_hash_names;
 
 #define OAKLEY_MD5      1
@@ -604,7 +615,7 @@ extern enum_names oakley_auth_names;
 #define OAKLEY_ELGAMAL_ENC         6
 #define OAKLEY_ELGAMAL_ENC_REV     7
 
-#define OAKLEY_AUTH_ROOF           8	/* roof on auth values THAT WE SUPPORT */
+#define OAKLEY_AUTH_ROOF           8  /*roof on auth values THAT WE SUPPORT */
 
 #define HybridInitRSA                                     64221
 #define HybridRespRSA                                     64222
@@ -623,6 +634,8 @@ extern enum_names oakley_auth_names;
 #define XAUTHInitRSARevisedEncryption                     65009
 #define XAUTHRespRSARevisedEncryption                     65010
 
+/* typedef to make our life easier */
+typedef u_int16_t oakley_auth_t;
 
 
 /* Oakley Group Description attribute
@@ -630,6 +643,7 @@ extern enum_names oakley_auth_names;
  */
 extern enum_names oakley_group_names;
 
+typedef u_int16_t oakley_group_t;
 #define OAKLEY_GROUP_MODP768       1
 #define OAKLEY_GROUP_MODP1024      2
 #define OAKLEY_GROUP_GP155         3
@@ -734,7 +748,6 @@ enum pubkey_alg
 
 #define RSA_MIN_OCTETS	BYTES_FOR_BITS(512)
 #define RSA_MIN_OCTETS_UGH	"RSA modulus too small for security: less than 512 bits"
-
 
 #define RSA_MAX_OCTETS	BYTES_FOR_BITS(8192)
 #define RSA_MAX_OCTETS_UGH	"RSA modulus too large: more than 8192 bits"

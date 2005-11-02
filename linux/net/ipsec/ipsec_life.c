@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_life.c,v 1.12 2004/04/23 20:44:35 ken Exp $
+ * RCSID $Id: ipsec_life.c,v 1.13 2004/07/10 19:11:18 mcr Exp $
  *
  */
 
@@ -55,9 +55,9 @@
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_esp.h"
 
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 #include "openswan/ipcomp.h"
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
@@ -212,6 +212,9 @@ ipsec_lifetime_update_soft(struct ipsec_lifetime64 *lifetime,
 	
 /*
  * $Log: ipsec_life.c,v $
+ * Revision 1.13  2004/07/10 19:11:18  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.12  2004/04/23 20:44:35  ken
  * Update comments
  *

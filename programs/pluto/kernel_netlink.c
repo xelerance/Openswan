@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_netlink.c,v 1.19.6.1 2004/09/07 18:59:35 ken Exp $
+ * RCSID $Id: kernel_netlink.c,v 1.21.2.1 2005/05/18 20:55:13 ken Exp $
  */
 
 #if defined(linux) && defined(KERNEL26_SUPPORT)
@@ -190,7 +190,7 @@ send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
     struct sockaddr_nl addr;
     static uint32_t seq;
 
-    if (no_klips)
+    if (kern_interface == NO_KERNEL)
     {
 	return TRUE;
     }
@@ -501,7 +501,8 @@ netlink_raw_eroute(const ip_address *this_host
 	{
 	    tmpl[i].reqid = proto_info[i].reqid;
 	    tmpl[i].id.proto = proto_info[i].proto;
-	    tmpl[i].optional = proto_info[i].proto == IPPROTO_COMP;
+	    tmpl[i].optional =
+		proto_info[i].proto == IPPROTO_COMP && dir != XFRM_POLICY_OUT;
 	    tmpl[i].aalgos = tmpl[i].ealgos = tmpl[i].calgos = ~0;
 	    tmpl[i].mode =
 		proto_info[i].encapsulation == ENCAPSULATION_MODE_TUNNEL;
@@ -1024,6 +1025,7 @@ netlink_get_spi(const ip_address *src
 	} u;
 	char data[1024];
     } rsp;
+    static int get_cpi_bug;
 
     memset(&req, 0, sizeof(req));
     req.n.nlmsg_flags = NLM_F_REQUEST;
@@ -1035,16 +1037,28 @@ netlink_get_spi(const ip_address *src
     req.spi.info.reqid = reqid;
     req.spi.info.id.proto = proto;
     req.spi.info.family = src->u.v4.sin_family;
-    req.spi.min = min;
-    req.spi.max = max;
 
     req.n.nlmsg_len = NLMSG_ALIGN(NLMSG_LENGTH(sizeof(req.spi)));
 
     rsp.n.nlmsg_type = XFRM_MSG_NEWSA;
+
+retry:
+    req.spi.min = get_cpi_bug ? htonl(min) : min;
+    req.spi.max = get_cpi_bug ? htonl(max) : max;
+
+
     if (!send_netlink_msg(&req.n, &rsp.n, sizeof(rsp), "Get SPI", text_said))
 	return 0;
     else if (rsp.n.nlmsg_type == NLMSG_ERROR)
     {
+	if (rsp.u.e.error == -EINVAL && proto == IPPROTO_COMP && !get_cpi_bug)
+	{
+	    get_cpi_bug = 1;
+	    openswan_log("netlink_get_spi: Enabling workaround for"
+			 " kernel CPI allocation bug");
+	    goto retry;
+	}
+
 	loglog(RC_LOG_SERIOUS
 	    , "ERROR: netlink_get_spi for %s failed with errno %d: %s"
 	    , text_said
@@ -1071,6 +1085,7 @@ const struct kernel_ops linux_kernel_ops = {
 	inbound_eroute: 1,
 	policy_lifetime: 1,
 	async_fdp: &netlink_bcast_fd,
+	replay_window: 32,
 
 	init: init_netlink,
 	pfkey_register: linux_pfkey_register,

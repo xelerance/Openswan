@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_proto.h,v 1.8 2004/04/05 19:55:06 mcr Exp $
+ * RCSID $Id: ipsec_proto.h,v 1.9 2004/07/10 19:08:41 mcr Exp $
  *
  */
 
@@ -95,14 +95,14 @@ extern void ipsec_lifetime_update_soft(struct ipsec_lifetime64 *lifetime,
 
 
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 
 extern int debug_xform;
 extern int debug_eroute;
 extern int debug_spi;
 extern int debug_netlink;
 
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 
 
@@ -112,6 +112,9 @@ extern int debug_netlink;
 
 /*
  * $Log: ipsec_proto.h,v $
+ * Revision 1.9  2004/07/10 19:08:41  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.8  2004/04/05 19:55:06  mcr
  * Moved from linux/include/freeswan/ipsec_proto.h,v
  *

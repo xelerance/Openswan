@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: ipsec.in,v 1.36.4.2 2004/08/22 15:41:28 ken Exp $
+# RCSID $Id: ipsec.in,v 1.38 2004/12/10 12:38:29 paul Exp $
 
 # where the private directory and the config files are
 IPSEC_EXECDIR="${IPSEC_EXECDIR-@IPSEC_EXECDIR@}"
@@ -24,7 +24,7 @@ IPSEC_DIR="$IPSEC_LIBDIR"
 export IPSEC_DIR IPSEC_CONFS IPSEC_LIBDIR IPSEC_EXECDIR
 
 # standardize PATH, and export it for everything else's benefit
-PATH="${IPSEC_SBINDIR}":/sbin:/usr/sbin:/usr/local/sbin:/usr/local/bin:/bin:/usr/bin
+PATH="${IPSEC_SBINDIR}":/sbin:/usr/sbin:/usr/local/bin:/bin:/usr/bin
 export PATH
 
 # things not to be listed in --help command list
@@ -48,7 +48,7 @@ fixversion() {
 	else
                 if test -f /proc/net/pfkey
                 then
-			stack=" (native)"
+			stack=" (netkey)"
                         kv="`uname -r`"
                 else
                         kv="(no kernel code presently loaded)"

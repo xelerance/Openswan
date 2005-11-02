@@ -21,12 +21,12 @@ whackwest --keyid @west.example.com --pubkeyrsa 0sAQOFtqrs57eghHmYREoCu1iGn4kXd+
 whackeast --keyid @west.example.com --pubkeyrsa 0sAQOFtqrs57eghHmYREoCu1iGn4kXd+a6yT7wCFUk54d9i08mR4h5uFKPhc9fq78XNqz1AhrBH3SRcWAfJ8DaeGvZ0ZvCrTQZn+RJzX1FQ4fjuGBO0eup2XUMsYDw01PFzQ9O4qlwly6niOcMTxvbWgGcl+3DYfRvHgxet8kNtfqzHQ==
 whackwest --listen
 002 listening for IKE messages
-002 adding interface virtual127.95.7.1/lo:w 127.95.7.1
-002 loading secrets from "./ipsec.secrets/west"
+002 adding interface virtual127.95.7.1/lo:w 127.95.7.1:8500
+002 loading secrets from "/tmp/ipsec.secrets/west"
 whackeast --listen
 002 listening for IKE messages
 002 adding interface virtual127.95.7.2/lo:e 127.95.7.2
-002 loading secrets from "./ipsec.secrets/east"
+002 loading secrets from "/tmp/ipsec.secrets/east"
 whackwest --keyid 127.95.7.2 --pubkeyrsa 0sAQOKe6+kbDtp4PB8NZshjCBw8z5wuGCAddokgSDATW47tNmQhUvzlnT1ia1ZsyiRFph1LJkz+A0bkbOhPr1vWUJHK6/s+Y8Rf7GSZC0Fi5Fr4DgpWwswzFaLl4baRfeu8z4k147dtSoG4K/6UfQ+IbqML5lwm92uRqONszbn/PDDPQ==
 whackwest --keyid @east.example.com --pubkeyrsa 0sAQOKe6+kbDtp4PB8NZshjCBw8z5wuGCAddokgSDATW47tNmQhUvzlnT1ia1ZsyiRFph1LJkz+A0bkbOhPr1vWUJHK6/s+Y8Rf7GSZC0Fi5Fr4DgpWwswzFaLl4baRfeu8z4k147dtSoG4K/6UfQ+IbqML5lwm92uRqONszbn/PDDPQ==
 whackwest --name ipsec-rsa --initiate

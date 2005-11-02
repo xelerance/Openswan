@@ -371,7 +371,7 @@ kernel_alg_esp_auth_keylen(int auth)
 }
 
 struct esp_info *
-kernel_alg_esp_info(int transid, int auth)
+kernel_alg_esp_info(u_int8_t transid, u_int16_t keylen, u_int16_t auth)
 {
 	int sadb_aalg, sadb_ealg;
 	static struct esp_info ei_buf;
@@ -385,11 +385,20 @@ kernel_alg_esp_info(int transid, int auth)
 	memset(&ei_buf, 0, sizeof (ei_buf));
 	ei_buf.transid=transid;
 	ei_buf.auth=auth;
+
 	/* don't return "default" keylen because this value is used from
 	 * setup_half_ipsec_sa() to "validate" keylen
 	 * In effect,  enckeylen will be used as "max" value
 	 */
-	ei_buf.enckeylen=esp_ealg[sadb_ealg].sadb_alg_maxbits/BITS_PER_BYTE;
+
+	/* if no key length is given, return default */
+	if(keylen == 0) {
+	    ei_buf.enckeylen = esp_ealg[sadb_ealg].sadb_alg_minbits/BITS_PER_BYTE;
+	} else if(keylen <= esp_ealg[sadb_ealg].sadb_alg_maxbits &&
+		  keylen >= esp_ealg[sadb_ealg].sadb_alg_minbits) {
+	    ei_buf.enckeylen = keylen/BITS_PER_BYTE;
+	}
+
 	ei_buf.authkeylen=esp_aalg[sadb_aalg].sadb_alg_maxbits/BITS_PER_BYTE;
 	ei_buf.encryptalg=sadb_ealg;
 	ei_buf.authalg=sadb_aalg;

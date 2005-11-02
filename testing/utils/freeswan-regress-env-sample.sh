@@ -4,7 +4,7 @@ BASICROOT=/abigail/user-mode-linux/root-6.0
 SHAREDIR=${BASICROOT}/usr/share
 
 REGRESSTREE=/freeswan/mgmt/regress
-TCPDUMP=tcpdump-3.7.1 export TCPDUMP
+TCPDUMP=tcpdump-3.8.3 export TCPDUMP
 
 KERNEL_LINUS2_0_SRC=
 KERNEL_LINUS2_2_SRC=

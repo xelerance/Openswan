@@ -18,8 +18,8 @@
  * for more details.
  *
  */
-#ifdef CONFIG_IPSEC_ALG
 #define __NO_VERSION__
+
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
 
@@ -45,6 +45,7 @@
 # include <linux/in6.h>
 # define proto_priv cb
 #endif /* NET21 */
+
 #include "openswan/ipsec_param.h"
 #include <openswan.h>
 #include "openswan/ipsec_sa.h"
@@ -54,23 +55,23 @@
 #include "openswan/ipsec_xform.h"
 #include "openswan/ipsec_tunnel.h"
 #include "openswan/ipsec_rcv.h"
-#if defined(CONFIG_IPSEC_ESP) || defined(CONFIG_IPSEC_AH)
+#if defined(CONFIG_KLIPS_ESP) || defined(CONFIG_KLIPS_AH)
 # include "openswan/ipsec_ah.h"
-#endif /* defined(CONFIG_IPSEC_ESP) || defined(CONFIG_IPSEC_AH) */
-#ifdef CONFIG_IPSEC_ESP
+#endif /* defined(CONFIG_KLIPS_ESP) || defined(CONFIG_KLIPS_AH) */
+#ifdef CONFIG_KLIPS_ESP
 # include "openswan/ipsec_esp.h"
-#endif /* !CONFIG_IPSEC_ESP */
-#ifdef CONFIG_IPSEC_IPCOMP
+#endif /* !CONFIG_KLIPS_ESP */
+#ifdef CONFIG_KLIPS_IPCOMP
 # include "openswan/ipcomp.h"
-#endif /* CONFIG_IPSEC_COMP */
+#endif /* CONFIG_KLIPS_COMP */
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
 #include "openswan/ipsec_alg.h"
 
-#ifndef CONFIG_IPSEC_ALG
-#error This file _MUST_ be compiled with CONFIG_IPSEC_ALG enabled !
+#ifndef CONFIG_KLIPS_ALG
+#error This file _MUST_ be compiled with CONFIG_KLIPS_ALG enabled !
 #endif
 #if SADB_EALG_MAX < 255
 #warning Compiling with limited ESP support ( SADB_EALG_MAX < 256 )
@@ -84,12 +85,30 @@ static struct list_head ipsec_alg_hash_table[IPSEC_ALG_HASHSZ];
 #define barf_out(fmt, args...)  do { printk(KERN_ERR "%s: (%s) " fmt, __FUNCTION__, ixt->ixt_name , ## args)\
 	; goto out; } while(0)
 
+#ifdef NET_26
 /* 
  * 	Must be already protected by lock 
  */
 static void __ipsec_alg_usage_inc(struct ipsec_alg *ixt) {
 	if (ixt->ixt_module)
+		try_module_get(ixt->ixt_module);
+	atomic_inc(&ixt->ixt_refcnt);
+}
+static void __ipsec_alg_usage_dec(struct ipsec_alg *ixt) {
+	atomic_dec(&ixt->ixt_refcnt);
+	if (ixt->ixt_module)
+		module_put(ixt->ixt_module);
+}
+
+#else
+
+/* 
+ * 	Must be already protected by lock 
+ */
+static void __ipsec_alg_usage_inc(struct ipsec_alg *ixt) {
+	if (ixt->ixt_module) {
 		__MOD_INC_USE_COUNT(ixt->ixt_module);
+	}
 	atomic_inc(&ixt->ixt_refcnt);
 }
 static void __ipsec_alg_usage_dec(struct ipsec_alg *ixt) {
@@ -97,6 +116,8 @@ static void __ipsec_alg_usage_dec(struct ipsec_alg *ixt) {
 	if (ixt->ixt_module)
 		__MOD_DEC_USE_COUNT(ixt->ixt_module);
 }
+#endif
+
 /*
  * 	simple hash function, optimized for 0-hash (1 list) special
  * 	case
@@ -407,8 +428,6 @@ int ipsec_alg_sa_esp_hash(const struct ipsec_sa *sa_p, const __u8 *espp, int len
 /* validation for registering (enc) module */
 static int check_enc(struct ipsec_alg_enc *ixt) {
 	int ret=-EINVAL;
-	if (ixt->ixt_alg_id==0 || ixt->ixt_alg_id > SADB_EALG_MAX)
-		barf_out("invalid alg_id=%d >= %d\n", ixt->ixt_alg_id, SADB_EALG_MAX);
 	if (ixt->ixt_blocksize==0) /*  || ixt->ixt_blocksize%2) need for ESP_NULL */
 		barf_out(KERN_ERR "invalid blocksize=%d\n", ixt->ixt_blocksize);
 	if (ixt->ixt_keyminbits==0 && ixt->ixt_keymaxbits==0 && ixt->ixt_e_keylen==0)
@@ -771,7 +790,7 @@ int ipsec_alg_init(void) {
 		"calling ipsec_alg_static_init()\n");
 
 	/* If we are suppose to use our AES, and don't have CryptoAPI enabled... */
-#if defined(CONFIG_IPSEC_ENC_AES) && CONFIG_IPSEC_ENC_AES && !defined(CONFIG_IPSEC_ENC_AES_MODULE) && !CONFIG_IPSEC_ENC_CRYPTOAPI && !defined(CONFIG_IPSEC_ENC_CRYPTOAPI_MODULE)
+#if defined(CONFIG_KLIPS_ENC_AES) && CONFIG_KLIPS_ENC_AES && !defined(CONFIG_KLIPS_ENC_AES_MODULE) && !CONFIG_KLIPS_ENC_CRYPTOAPI && !defined(CONFIG_KLIPS_ENC_CRYPTOAPI_MODULE)
 	{
 		extern int ipsec_aes_init(void);
 		ipsec_aes_init();
@@ -779,7 +798,7 @@ int ipsec_alg_init(void) {
 #endif
 
 	/* If we are doing CryptoAPI, then init */
-#if defined(CONFIG_IPSEC_ENC_CRYPTOAPI) && CONFIG_IPSEC_ENC_CRYPTOAPI && !defined(CONFIG_IPSEC_ENC_CRYPTOAPI_MODULE)
+#if defined(CONFIG_KLIPS_ENC_CRYPTOAPI) && CONFIG_KLIPS_ENC_CRYPTOAPI && !defined(CONFIG_KLIPS_ENC_CRYPTOAPI_MODULE)
 	{
                 extern int ipsec_cryptoapi_init(void);
                 ipsec_cryptoapi_init();
@@ -943,11 +962,14 @@ ipsec_xform_get_info(char *buffer,
  *	symbol problems for old modutils.
  */
 
-/* #ifndef EXPORT_SYMBOL_GPL */
+#ifndef NET_26
+#if 0
+#ifndef EXPORT_SYMBOL_GPL 
 #undef EXPORT_SYMBOL_GPL
 #define EXPORT_SYMBOL_GPL EXPORT_SYMBOL
-/* #endif */
-EXPORT_SYMBOL_GPL(register_ipsec_alg);
-EXPORT_SYMBOL_GPL(unregister_ipsec_alg);
-EXPORT_SYMBOL_GPL(ipsec_alg_test);
-#endif /* CONFIG_IPSEC_ALG */
+#endif 
+#endif
+EXPORT_SYMBOL(register_ipsec_alg);
+EXPORT_SYMBOL(unregister_ipsec_alg);
+EXPORT_SYMBOL(ipsec_alg_test);
+#endif

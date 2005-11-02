@@ -1,0 +1,3 @@
+This test case confirms what happens when a tncfg command
+is issued for a non-existant device.
+

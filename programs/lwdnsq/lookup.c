@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char lookup_c_version[] = "@(#) RCSID $Id: lookup.c,v 1.7 2003/12/24 19:47:30 mcr Exp $";
+char lookup_c_version[] = "@(#) RCSID $Id: lookup.c,v 1.8 2004/12/02 06:16:19 mcr Exp $";
 
 
 #include <stdio.h>
@@ -101,6 +101,7 @@ void lookup_thing(dnskey_glob *gs,
 	isc_buffer_t *iscbuf;
 	int success;
 	dnskey_lookup *dl;
+	extern void lwres_sanitize_list(lwres_context_t *ctx);
 
 	iscmem=NULL;
 	iscbuf=NULL;
@@ -122,7 +123,11 @@ void lookup_thing(dnskey_glob *gs,
 		return;
 	}
 
+	lwres_sanitize_list(gs->lwctx);
+
 	lwres_getrrsetbyname_xmit(gs->lwctx, &dl->las);
+
+	lwres_sanitize_list(gs->lwctx);
 
 	dl->step = dkl_first;
 	dl->wantedtype = wantedtype;
@@ -639,6 +644,10 @@ void process_dns_reply(dnskey_glob *gs)
 	
 /*
  * $Log: lookup.c,v $
+ * Revision 1.8  2004/12/02 06:16:19  mcr
+ * 	fixed long standing bug with async resolver when there was
+ * 	more than one outstanding request.
+ *
  * Revision 1.7  2003/12/24 19:47:30  mcr
  * 	added "FATAL" prefix for the failure to write.
  *

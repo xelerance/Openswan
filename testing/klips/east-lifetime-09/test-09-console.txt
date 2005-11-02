@@ -99,7 +99,7 @@ east:~# ipsec pf_key
 
 pfkey v2 msg. type=7 seq=1 len=5 pid=132 errno=0 satype=2
 pfkey_lib_debug:pfkey_msg_parse: parsing message ver=2, type=7(register), errno=0, satype=2(AH), len=5, res=0, seq=1, pid=987.
-pfkey_lib_debug:pfkey_msg_parse: remain=3, ext_type=14(supported-auth), ext_len=3.
+pfkey_lib_debug:pfkey_msg_parse: remain=3
 pfkey_lib_debug:pfkey_msg_parse: extensions permitted=0000c001, required=00000001.
 pfkey_lib_debug:pfkey_msg_parse: parsing ext type=14 remain=3.
 pfkey_lib_debug:pfkey_msg_parse: About to parse extension 14 0xABCDABCD with parser pfkey_supported_parse.
@@ -109,7 +109,7 @@ pf_key: parseable PF_KEY message.
 
 pfkey v2 msg. type=7 seq=2 len=7 pid=132 errno=0 satype=3
 pfkey_lib_debug:pfkey_msg_parse: parsing message ver=2, type=7(register), errno=0, satype=3(ESP), len=7, res=0, seq=2, pid=987.
-pfkey_lib_debug:pfkey_msg_parse: remain=5, ext_type=14(supported-auth), ext_len=3.
+pfkey_lib_debug:pfkey_msg_parse: remain=5
 pfkey_lib_debug:pfkey_msg_parse: extensions permitted=0000c001, required=00000001.
 pfkey_lib_debug:pfkey_msg_parse: parsing ext type=14 remain=5.
 pfkey_lib_debug:pfkey_msg_parse: About to parse extension 14 0xABCDABCD with parser pfkey_supported_parse.
@@ -122,7 +122,7 @@ pf_key: parseable PF_KEY message.
 
 pfkey v2 msg. type=7 seq=3 len=4 pid=132 errno=0 satype=9
 pfkey_lib_debug:pfkey_msg_parse: parsing message ver=2, type=7(register), errno=0, satype=9(IPIP), len=4, res=0, seq=3, pid=987.
-pfkey_lib_debug:pfkey_msg_parse: remain=2, ext_type=15(supported-cipher), ext_len=2.
+pfkey_lib_debug:pfkey_msg_parse: remain=2
 pfkey_lib_debug:pfkey_msg_parse: extensions permitted=0000c001, required=00000001.
 pfkey_lib_debug:pfkey_msg_parse: parsing ext type=15 remain=2.
 pfkey_lib_debug:pfkey_msg_parse: About to parse extension 15 0xABCDABCD with parser pfkey_supported_parse.
@@ -132,7 +132,7 @@ pf_key: parseable PF_KEY message.
 
 pfkey v2 msg. type=7 seq=4 len=4 pid=132 errno=0 satype=10
 pfkey_lib_debug:pfkey_msg_parse: parsing message ver=2, type=7(register), errno=0, satype=10(COMP), len=4, res=0, seq=4, pid=987.
-pfkey_lib_debug:pfkey_msg_parse: remain=2, ext_type=15(supported-cipher), ext_len=2.
+pfkey_lib_debug:pfkey_msg_parse: remain=2
 pfkey_lib_debug:pfkey_msg_parse: extensions permitted=0000c001, required=00000001.
 pfkey_lib_debug:pfkey_msg_parse: parsing ext type=15 remain=2.
 pfkey_lib_debug:pfkey_msg_parse: About to parse extension 15 0xABCDABCD with parser pfkey_supported_parse.

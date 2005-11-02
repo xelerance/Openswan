@@ -11,9 +11,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.11 2004/04/18 03:09:27 mcr Exp $
+# RCSID $Id: Makefile,v 1.15 2004/12/18 18:13:44 mcr Exp $
 
-OPENSWANSRCDIR=../..
+OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 LD=$(CC)
@@ -28,16 +28,15 @@ ifeq ($(USE_NAT_TRAVERSAL),true)
 DEFINES+=-DNAT_TRAVERSAL -DVIRTUAL_IP 
 endif
 
-#DEFINES+=-DALG_PATCH 
-INCLUDES=-I${OPENSWANDIR}/linux/include -I$(OPENSWANDIR)/lib -I.. -I../..
+INCLUDES=-I${OPENSWANDIR}/linux/include ${srcdir}..$(OPENSWANDIR)/lib -I.. -I../..
 CFLAGS=$(DEFINES) $(INCLUDES)
 CFLAGS+=-DIPSEC_EXECDIR=\"${FINALLIBEXECDIR}\" -DIPSEC_CONFDDIR=\"${FINALCONFDDIR}\"
 CFLAGS+=-DIPSEC_CONFDIR=\"${FINALCONFDIR}\"
 LDFLAGS=
-OBJS=starter.o parser.tab.o lex.yy.o confread.o invokepluto.o starterwhack.o starterlog.o klips.o \
+OBJS=starter.o parser.tab.o lex.yy.o confread.o confwrite.o invokepluto.o starterwhack.o starterlog.o klips.o netkey.o \
 	interfaces.o exec.o cmp.o keywords.o alloc.o
 DISTSRC=$(OBJS:.o=.c)
-DISTSRC+=cmp.h confread.h exec.h files.h interfaces.h klips.h starterlog.h
+DISTSRC+=cmp.h confread.h confwrite.h exec.h files.h interfaces.h klips.h netkey.h starterlog.h
 DISTSRC+=parser.h pluto.h starterwhack.h keywords.h
 LIBS=../pluto/whacklib.o $(OPENSWANLIB)
 
@@ -67,7 +66,7 @@ gatherdeps:
 	@ls | grep '\.c$$' | xargs grep '^#[ 	]*include[ 	]*"' | \
 		sed -e 's/\.c:#[ 	]*include[ 	]*"/.o: /' -e 's/".*//'
 
-include ../Makefile.program
+include ${srcdir}../Makefile.program
 
 TAGS:	$(DISTSRC)
 	LC_ALL=C etags $(ETAGSFLAGS) $(DISTSRC) $(LIBOPENSWANDIR)/*.[ch]
@@ -82,6 +81,7 @@ interfaces.o: interfaces.c
 invokepluto.o: invokepluto.c
 keywords.o: keywords.c
 klips.o: klips.c
+netkey.o: netkey.c
 lex.yy.o: lex.yy.c
 starterlog.o: starterlog.c
 parser.tab.o: parser.tab.c
@@ -95,6 +95,10 @@ confread.o: parser.h
 confread.o: confread.h
 confread.o: interfaces.h
 confread.o: starterlog.h
+confwrite.o: parser.h
+confwrite.o: confread.h
+confwrite.o: confwrite.h
+confwrite.o: keywords.h
 exec.o: exec.h
 exec.o: starterlog.h
 interfaces.o: interfaces.h
@@ -115,6 +119,11 @@ klips.o: klips.h
 klips.o: files.h
 klips.o: starterlog.h
 klips.o: exec.h
+netkey.o: confread.h
+netkey.o: klips.h
+netkey.o: files.h
+netkey.o: starterlog.h
+netkey.o: exec.h
 lex.yy.o: keywords.h
 lex.yy.o: parser.h
 lex.yy.o: parser.tab.h
@@ -128,6 +137,7 @@ starter.o: files.h
 starter.o: starterwhack.h
 starter.o: pluto.h
 starter.o: klips.h
+starter.o: netkey.h
 starter.o: cmp.h
 starter.o: interfaces.h
 starter.o: keywords.h

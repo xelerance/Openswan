@@ -14,7 +14,9 @@ EAST_INPUT=../../klips/inputs/01-sunrise-sunset-ping.pcap
 REF_WEST_OUTPUT=../../klips/west-icmp-01/spi1-cleartext.txt
 
 REF_EAST_CONSOLE_OUTPUT=east-console.txt
+REF26_EAST_CONSOLE_OUTPUT=east-console26.txt
 REF_WEST_CONSOLE_OUTPUT=west-console.txt
+REF26_WEST_CONSOLE_OUTPUT=west-console26.txt
 
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS east-prompt-splitline.pl"

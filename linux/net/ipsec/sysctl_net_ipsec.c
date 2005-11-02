@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: sysctl_net_ipsec.c,v 1.16 2004/04/06 02:49:26 mcr Exp $
+ * RCSID $Id: sysctl_net_ipsec.c,v 1.17 2004/07/10 19:11:18 mcr Exp $
  */
 
 /* -*- linux-c -*-
@@ -28,7 +28,7 @@
 #ifdef CONFIG_SYSCTL
 
 #define NET_IPSEC 2112 /* Random number */                                        
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 extern int       debug_ah;
 extern int       debug_esp;
 extern int       debug_tunnel;
@@ -40,10 +40,10 @@ extern int       debug_xform;
 extern int       debug_rcv;
 extern int       debug_pfkey;
 extern int sysctl_ipsec_debug_verbose;
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 extern int sysctl_ipsec_debug_ipcomp;
-#endif /* CONFIG_IPSEC_IPCOMP */
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_IPCOMP */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 extern int sysctl_ipsec_icmp;
 extern int sysctl_ipsec_inbound_policy_check;
@@ -51,7 +51,7 @@ extern int sysctl_ipsec_tos;
 int sysctl_ipsec_regress_pfkey_lossage;
 
 enum {
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	NET_IPSEC_DEBUG_AH=1,
 	NET_IPSEC_DEBUG_ESP=2,
 	NET_IPSEC_DEBUG_TUNNEL=3,
@@ -64,7 +64,7 @@ enum {
 	NET_IPSEC_DEBUG_PFKEY=10,
 	NET_IPSEC_DEBUG_VERBOSE=11,
 	NET_IPSEC_DEBUG_IPCOMP=12,
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 	NET_IPSEC_ICMP=13,
 	NET_IPSEC_INBOUND_POLICY_CHECK=14,
 	NET_IPSEC_TOS=15,
@@ -72,7 +72,7 @@ enum {
 };
 
 static ctl_table ipsec_table[] = {
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	{ NET_IPSEC_DEBUG_AH, "debug_ah", &debug_ah,
 	  sizeof(int), 0644, NULL, &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_ESP, "debug_esp", &debug_esp,
@@ -95,18 +95,18 @@ static ctl_table ipsec_table[] = {
 	  sizeof(int), 0644, NULL, &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_VERBOSE, "debug_verbose",&sysctl_ipsec_debug_verbose,
 	  sizeof(int), 0644, NULL, &proc_dointvec},    
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 	{ NET_IPSEC_DEBUG_IPCOMP, "debug_ipcomp", &sysctl_ipsec_debug_ipcomp,
 	  sizeof(int), 0644, NULL, &proc_dointvec},    
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 
-#ifdef CONFIG_IPSEC_REGRESS
+#ifdef CONFIG_KLIPS_REGRESS
 	{ NET_IPSEC_REGRESS_PFKEY_LOSSAGE, "pfkey_lossage",
 	  &sysctl_ipsec_regress_pfkey_lossage,
 	  sizeof(int), 0644, NULL, &proc_dointvec},
-#endif /* CONFIG_IPSEC_REGRESS */
+#endif /* CONFIG_KLIPS_REGRESS */
 
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 	{ NET_IPSEC_ICMP, "icmp", &sysctl_ipsec_icmp,
 	  sizeof(int), 0644, NULL, &proc_dointvec},    
 	{ NET_IPSEC_INBOUND_POLICY_CHECK, "inbound_policy_check", &sysctl_ipsec_inbound_policy_check,
@@ -146,6 +146,9 @@ void ipsec_sysctl_unregister(void)
 
 /*
  * $Log: sysctl_net_ipsec.c,v $
+ * Revision 1.17  2004/07/10 19:11:18  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.16  2004/04/06 02:49:26  mcr
  * 	pullup of algo code from alg-branch.
  *

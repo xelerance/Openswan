@@ -6,6 +6,17 @@ been done in Openswan.
 This needs to be tested, and have scripts for the regression testing
 system written.
 
+2004-11-30 ken
+	* Added support for xauth, aggr mode, mode config and dpd parameters
+	* Added confwrite.h, so we can call the confwrite() function
+		Still won't link due to the way stuffin keywords.h is declared.
+		There has to be a better way of doing the declarations, but I
+		haven't figured it out yet.
+	* Added netkey (26 native stack) support for modules.  We currently
+	  don't have an simple KLIPS vs. NETKEY test in starter, so it attempts
+	  to do both in several places.
+
+
 2004-04-10 ken
 	* Renamed stuff to Openswan
 	* Makefile updated for new includes, lib locations and proper

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: crypto.h,v 1.18 2004/04/18 03:06:46 mcr Exp $
+ * RCSID $Id: crypto.h,v 1.20 2005/02/15 01:48:58 mcr Exp $
  */
 
 #include <gmp.h>    /* GNU MP library */
@@ -33,8 +33,8 @@ struct oakley_group_desc {
 
 extern const struct oakley_group_desc unset_group;	/* magic signifier */
 extern const struct oakley_group_desc *lookup_group(u_int16_t group);
-#define OAKLEY_GROUP_SIZE 7
-extern const struct oakley_group_desc oakley_group[OAKLEY_GROUP_SIZE];
+extern const struct oakley_group_desc oakley_group[];
+extern const unsigned int oakley_group_size;
 
 /* unification of cryptographic encoding/decoding algorithms
  * The IV is taken from and returned to st->st_new_iv.
@@ -51,7 +51,7 @@ struct state;	/* forward declaration, dammit */
 struct encrypt_desc;
 struct hash_desc;
 struct encrypt_desc *crypto_get_encrypter(int alg);
-struct hash_desc *crypto_get_hasher(int alg);
+struct hash_desc *crypto_get_hasher(oakley_hash_t alg);
 void crypto_cbc_encrypt(const struct encrypt_desc *e, bool enc, u_int8_t *buf, size_t size, struct state *st);
 
 #define update_iv(st)	passert(st->st_new_iv_len <= sizeof(st->st_iv)); memcpy((st)->st_iv, (st)->st_new_iv \

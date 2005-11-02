@@ -21,6 +21,6 @@ ipsec spi --saref --af inet --edst 192.1.2.45 --spi 0x12345678 --proto tun --src
 #ipsec look
 
 # monitor upbound reply messages
-#ipsec pf_key --debug --daemon /var/run/pf_key.pid >/tmp/pfkey.txt
+#ipsec pf_key --debug --daemon /var/run/pluto/pf_key.pid >/tmp/pfkey.txt
 echo start now
 

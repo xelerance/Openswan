@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: state.c,v 1.130.2.1 2004/08/22 03:25:30 mcr Exp $
+ * RCSID $Id: state.c,v 1.151 2005/03/20 03:00:41 mcr Exp $
  */
 
 #include <stdio.h>
@@ -48,6 +48,7 @@
 #include "timer.h"
 #include "whack.h"
 #include "demux.h"	/* needs packet.h */
+#include "pending.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 
 #include "sha1.h"
@@ -184,8 +185,13 @@ new_state(void)
     passert(next_so > SOS_FIRST);	/* overflow can't happen! */
 #ifdef XAUTH
     passert(st->st_oakley.xauth == 0);
+    passert(st->st_xauth_username == NULL);
 #endif    
     st->st_whack_sock = NULL_FD;
+    
+    anyaddr(AF_INET, &st->hidden_variables.st_nat_oa);
+    anyaddr(AF_INET, &st->hidden_variables.st_natd);
+
     DBG(DBG_CONTROL, DBG_log("creating state object #%lu at %p",
 	st->st_serialno, (void *) st));
     return st;
@@ -296,6 +302,8 @@ delete_state(struct state *st)
     struct connection *const c = st->st_connection;
     struct state *old_cur_state = cur_state == st? NULL : cur_state;
 
+    DBG(DBG_CONTROL, DBG_log("deleting state #%lu", st->st_serialno));
+
     set_cur_state(st);
 
     /* If DPD is enabled on this state object, clear any pending events */
@@ -322,6 +330,11 @@ delete_state(struct state *st)
      * deleting our connection.
      */
     flush_pending_by_state(st);
+
+    /* if there is anything in the cryptographic queue, then remove this
+     * state from it.
+     */
+    delete_cryptographic_continuation(st);
 
     /* effectively, this deletes any ISAKMP SA that this state represents */
     unhash_state(st);
@@ -381,7 +394,7 @@ delete_state(struct state *st)
     pfreeany(st->st_ah.peer_keymat);
     pfreeany(st->st_esp.our_keymat);
     pfreeany(st->st_esp.peer_keymat);
-
+    pfreeany(st->st_xauth_username);
     pfree(st);
 }
 
@@ -470,12 +483,12 @@ delete_states_by_connection(struct connection *c, bool relations)
 	}
     }
 
-/*  Seems to dump here because 1 of the states is NULL.  Removing the Assert
-   makes things work.  We should fix this eventually.
+ /*  Seems to dump here because 1 of the states is NULL.  Removing the Assert
+     makes things work.  We should fix this eventually.
 
     passert(c->newest_ipsec_sa == SOS_NOBODY
 	    && c->newest_isakmp_sa == SOS_NOBODY);
-*/
+ */
 
     sr = &c->spd;
     while (sr != NULL)
@@ -499,34 +512,41 @@ void
 delete_states_by_peer(ip_address *peer)
 {
     char peerstr[ADDRTOT_BUF];
-    int i;
+    int i, ph1;
 
     addrtot(peer, 0, peerstr, sizeof(peerstr));
 
-    /* For each hash chain... */
-    for (i = 0; i < STATE_TABLE_SIZE; i++)
-    {
-	struct state *st;
+    whack_log(RC_COMMENT, "restarting peer %s\n", peerstr);
 
-	/* For each state in the hash chain... */
-	for (st = statetable[i]; st != NULL; )
-	{
-	    struct state *this = st;
-	    struct spd_route *sr;
-	    struct connection *c = this->st_connection;
+    /* first restart the phase1s */
+    for(ph1=0; ph1 < 2; ph1++) {
+	/* For each hash chain... */
+	for (i = 0; i < STATE_TABLE_SIZE; i++) {
+	    struct state *st;
+		
+	    /* For each state in the hash chain... */
+	    for (st = statetable[i]; st != NULL; ) {
+		struct state *this = st;
+		struct connection *c = this->st_connection;
+		char ra[ADDRTOT_BUF];
+		
+		st = st->st_hashchain_next;	/* before this is deleted */
+		
+		addrtot(&st->st_remoteaddr, 0, ra, sizeof(ra));
+		DBG_log("comparing %s to %s\n", ra, peerstr);
 
-	    st = st->st_hashchain_next;	/* before this is deleted */
-
-	    /* ??? Is it not the case that the peer is the same for all spds? */
-	    for (sr = &c->spd; sr != NULL; sr = sr->next)
-	    {
-		if (sameaddr(&sr->that.host_addr, peer))
-		{
-		    openswan_log("peer %s for connection %s deleting - claimed to have crashed"
-			 , peerstr
-			 , c->name);
-		    delete_states_by_connection(c, TRUE);
-		    break;	/* can only delete it once */
+		if(sameaddr(&st->st_remoteaddr, peer)) {
+		    if(ph1==0 && IS_PHASE1(st->st_state)) {
+			
+			whack_log(RC_COMMENT
+				  , "peer %s for connection %s crashed, replacing"
+				  , peerstr
+				  , c->name);
+			ipsecdoi_replace(st, 1);
+		    } else {
+			delete_event(st);
+			event_schedule(EVENT_SA_REPLACE, 0, st);
+		    }
 		}
 	    }
 	}
@@ -550,7 +570,7 @@ duplicate_state(struct state *st)
     st->st_outbound_time = now();
 
     nst = new_state();
-
+    
     memcpy(nst->st_icookie, st->st_icookie, COOKIE_SIZE);
     memcpy(nst->st_rcookie, st->st_rcookie, COOKIE_SIZE);
     nst->st_connection = st->st_connection;
@@ -559,6 +579,14 @@ duplicate_state(struct state *st)
     nst->st_situation = st->st_situation;
     nst->quirks = st->quirks;
     nst->hidden_variables = st->hidden_variables;
+    if(st->st_xauth_username) {
+	nst->st_xauth_username = clone_str(st->st_xauth_username
+					   , "xauth username");
+    }
+    nst->st_remoteaddr = st->st_remoteaddr;
+    nst->st_remoteport = st->st_remoteport;
+    nst->st_localaddr  = st->st_localaddr;
+    nst->st_localport  = st->st_localport;
     nst->st_clonedfrom = st->st_serialno;
 
 
@@ -615,28 +643,6 @@ find_state(const u_char *icookie
 			, ntohl(msgid), ntohl(st->st_msgid)));
 	    if(msgid == st->st_msgid)
 		break;
-
-#if 0
-	    if(msgid == st->st_msgid2)
-	    {
-		u_char tmpiv[MAX_DIGEST_LEN];
-
-		/* oh, damn, life is bad, they reused the old one */
-		openswan_log("find_state: old message id %08x reused, Coping."
-			      , msgid);
-		
-		/* swap msgid/msgid2 and the IVs */
-		/* msgid already == st->st_msgid2 */
-		st->st_msgid2 = st->st_msgid;
-		st->st_msgid = msgid;
-		
-		save_iv(st, tmpiv);
-		set_iv(st, st->st_old_iv);
-		memcpy(st->st_old_iv, tmpiv, MAX_DIGEST_LEN);
-
-		break;
-	    }
-#endif
 	}
 	st = st->st_hashchain_next;
     }
@@ -662,53 +668,37 @@ find_info_state(const u_char *icookie
 		, msgid_t /*network order*/ msgid)
 {
     struct state *st = *state_hash(icookie, rcookie, peer);
-    int i;
-    bool found = FALSE;
-    struct state *best = NULL;
 
-    for(;st != (struct state *) NULL;
-	st = st->st_hashchain_next)
+    while (st != (struct state *) NULL)
     {
 	if (sameaddr(peer, &st->st_connection->spd.that.host_addr)
 	    && memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
 	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0)
 	{
-
 	    DBG(DBG_CONTROL,
-		DBG_log("peer and cookies match on #%ld, provided msgid %08x vs %08x"
+		DBG_log("peer and cookies match on #%ld, provided msgid %08x vs %08x/%08x"
 			, st->st_serialno
-			, ntohl(msgid), ntohl(st->st_msgid)));
-
-	    if(msgid == st->st_msgid)
-		best = st;                 /* perfect match is best */
-	    else
-	    {
-		found = FALSE;
-		for(i=0; i < MAX_INFO_EXG && !found; i++)
-		{
-		    if(msgid == st->st_infoid[i]) found=TRUE;
-		    /* need to do something with the IVs, I think */
-		    /* XXX but not yet */
-		}
-
-		/* only pick this one if there is no better one */
-		if(found) {
-		    if(best == NULL) best = st;
-		}
-	    }
+			, ntohl(msgid)
+			, ntohl(st->st_msgid)
+			, ntohl(st->st_msgid_phase15)));
+	    if((st->st_msgid_phase15!=0 && msgid == st->st_msgid_phase15)
+	       || msgid == st->st_msgid)
+		break;
 	}
+	st = st->st_hashchain_next;
     }
 
     DBG(DBG_CONTROL,
-	if (best == NULL)
-	    DBG_log("state object not found");
+	if (st == NULL)
+	    DBG_log("p15 state object not found");
 	else
-	    DBG_log("state object #%lu found, in %s"
-		, best->st_serialno
-		, enum_show(&state_names, best->st_state)));
+	    DBG_log("p15 state object #%lu found, in %s"
+		, st->st_serialno
+		, enum_show(&state_names, st->st_state)));
 
-    return best;
+    return st;
 }
+
 
 /* Find the state that sent a packet
  * ??? this could be expensive -- it should be rate-limited to avoid DoS
@@ -774,13 +764,18 @@ find_phase1_state(const struct connection *c, lset_t ok_states)
 	*best = NULL;
     int i;
 
-    for (i = 0; i < STATE_TABLE_SIZE; i++)
-	for (st = statetable[i]; st != NULL; st = st->st_hashchain_next)
-	    if (LHAS(ok_states, st->st_state)
-	    && c->host_pair == st->st_connection->host_pair
-	    && same_peer_ids(c, st->st_connection, NULL)
-	    && (best == NULL || best->st_serialno < st->st_serialno))
-		best = st;
+    for (i = 0; i < STATE_TABLE_SIZE; i++) {
+	for (st = statetable[i]; st != NULL; st = st->st_hashchain_next) {
+	    if (LHAS(ok_states, st->st_state) 
+		&& c->host_pair == st->st_connection->host_pair
+		&& same_peer_ids(c, st->st_connection, NULL)
+		&& (best == NULL
+		    || best->st_serialno < st->st_serialno))
+		{
+		    best = st;
+		}
+	}
+    }
 
     return best;
 }
@@ -832,12 +827,9 @@ void fmt_state(struct state *st, time_t n
 {
     /* what the heck is interesting about a state? */
     const struct connection *c = st->st_connection;
-
-    long delta = st->st_event->ev_time >= n
-	? (long)(st->st_event->ev_time - n)
-	: -(long)(n - st->st_event->ev_time);
-
+    long delta;
     char inst[CONN_INST_BUF];
+    char dpdbuf[128];
     const char *np1 = c->newest_isakmp_sa == st->st_serialno
 	? "; newest ISAKMP" : "";
     const char *np2 = c->newest_ipsec_sa == st->st_serialno
@@ -846,19 +838,41 @@ void fmt_state(struct state *st, time_t n
     const char *eo = c->spd.eroute_owner == st->st_serialno
 	? "; eroute owner" : "";
 
-    passert(st->st_event != 0);
-
     fmt_conn_instance(c, inst);
 
+    if(st->st_event) {
+	delta = st->st_event->ev_time >= n
+	    ? (long)(st->st_event->ev_time - n)
+	    : -(long)(n - st->st_event->ev_time);
+    } else {
+	delta = -1;
+    }
+
+    if (IS_IPSEC_SA_ESTABLISHED(st->st_state))
+    {
+	dpdbuf[0]='\0';
+    } else {
+	if(st->hidden_variables.st_dpd) {
+	    time_t n = time(NULL);
+	    snprintf(dpdbuf, sizeof(dpdbuf), "; lastdpd=%lds(seq in:%u out:%u)"
+		     , st->st_last_dpd !=0 ? n - st->st_last_dpd : -1
+		     , st->st_dpd_seqno
+		     , st->st_dpd_expectseqno);
+	} else {
+	    snprintf(dpdbuf, sizeof(dpdbuf), "; nodpd");
+	}
+    }
+	
     snprintf(state_buf, state_buf_len
-	, "#%lu: \"%s\"%s %s (%s); %s in %lds%s%s%s"
-	, st->st_serialno
-	, c->name, inst
-	, enum_name(&state_names, st->st_state)
-	, state_story[st->st_state - STATE_MAIN_R0]
-	, enum_name(&timer_event_names, st->st_event->ev_type)
-	, delta
-	, np1, np2, eo);
+	     , "#%lu: \"%s\"%s:%u %s (%s); %s in %lds%s%s%s%s"
+	     , st->st_serialno
+	     , c->name, inst
+	     , st->st_remoteport
+	     , enum_name(&state_names, st->st_state)
+	     , state_story[st->st_state - STATE_MAIN_R0]
+	     , st->st_event ? enum_name(&timer_event_names, st->st_event->ev_type) : "none"
+	     , delta
+	     , np1, np2, eo, dpdbuf);
 
     /* print out SPIs if SAs are established */
     if (state_buf2_len != 0)
@@ -1001,7 +1015,7 @@ show_states_status(void)
 
 	/* show any associated pending Phase 2s */
 	if (IS_PHASE1(st->st_state))
-	    show_pending_phase2(st->st_connection->host_pair, st);
+	    show_pending_phase2(st->st_connection, st);
     }
 
     /* free the array */
@@ -1122,6 +1136,27 @@ void replace_states_by_peer(ip_address *peer)
                 delete_dpd_event(st);
                 event_schedule(EVENT_SA_REPLACE, 0, st);
             }
+}
+
+void copy_quirks(struct isakmp_quirks *dq
+		 , struct isakmp_quirks *sq)
+{
+    dq->xauth_ack_msgid   |= sq->xauth_ack_msgid;
+    dq->modecfg_pull_mode |= sq->modecfg_pull_mode;
+    dq->nat_traversal_vid |= sq->nat_traversal_vid;
+}
+
+void set_state_ike_endpoints(struct state *st
+			     , struct connection *c)
+{
+    /* reset our choice of interface */
+    c->interface = NULL;
+    orient(c);
+
+    st->st_localaddr  = c->spd.this.host_addr;
+    st->st_localport  = c->spd.this.host_port;
+    st->st_remoteaddr = c->spd.that.host_addr;
+    st->st_remoteport = c->spd.that.host_port;
 }
 
 /*

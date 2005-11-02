@@ -11,13 +11,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: cmp.c,v 1.4 2004/04/10 17:15:23 ken Exp $
+ * RCSID $Id: cmp.c,v 1.7 2004/12/01 07:33:14 ken Exp $
  */
 
 #include <sys/queue.h>
 #include <string.h>
 
 #include "keywords.h"
+
 #include "confread.h"
 #include "cmp.h"
 
@@ -65,10 +66,8 @@ int starter_cmp_conn (struct starter_conn *c1, struct starter_conn *c2)
 	if (starter_cmp_end(&c1->left,&c2->left)) return -1;
 	if (starter_cmp_end(&c1->right,&c2->right)) return -1;
 	VARCMP(options[KBF_AUTO]);
-#ifdef ALG_PATCH
 	STRCMP(esp);
 	STRCMP(ike);
-#endif
 	return 0;
 }
 
@@ -90,6 +89,7 @@ int starter_cmp_pluto (struct starter_config *c1, struct starter_config *c2)
 	VARCMP(setup.options[KBF_UNIQUEIDS]);
 	VARCMP(setup.options[KBF_STRICTCRLPOLICY]);
 	VARCMP(setup.options[KBF_NOCRSEND]);
+	VARCMP(setup.options[KBF_NHELPERS]);
 #ifdef NAT_TRAVERSAL
 	VARCMP(setup.options[KBF_NATTRAVERSAL]);
 	VARCMP(setup.options[KBF_KEEPALIVE]);

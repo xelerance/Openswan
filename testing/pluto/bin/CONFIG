@@ -1,41 +1,97 @@
 # set various configuration parameters
 # Use  shell "." command to load these into the environment
-set -u
-
 # Where to find programs to test.
 # These can be overridden by environment.
 # Note: {WEST,EAST}PLUTO and {WEST,EAST,NORTH,SOUTH}WHACK
 # allow more specific control
 # Note: paths must be absolute because dopluto does a cd.
 
-export PLUTO="${PLUTO:-`pwd`/../../programs/pluto/pluto}"
-export WHACK="${WHACK:-`pwd`/../../programs/pluto/whack}"
+if [ -z "${TESTING:-}" ]
+then
+	if [ -d testing ]; then
+		TESTING=`pwd`/testing
+	elif [ -d ${MYBOX}/testing ]; then
+		TESTING=$MYBOX/testing
+	else
+		echo "Please set \$TESTING "
+	fi
+fi
+
+export PATH=$TESTING/pluto/bin:$PATH 
+
+if [ -z "${PLUTO:-}" ]
+then
+	if [ -x ${MYBOX:-}/programs/pluto/pluto ]
+	then
+		PLUTO=$MYBOX/programs/pluto/pluto
+		WHACK=$MYBOX/programs/pluto/whack
+	elif [ -x programs/pluto/pluto ]
+	then
+		PLUTO=`pwd`/programs/pluto/pluto
+		WHACK=`pwd`/programs/pluto/whack
+	elif [ -x ../../../programs/pluto/pluto ]
+	then
+		PLUTO=`pwd`/../../../programs/pluto/pluto
+		WHACK=`pwd`/../../../programs/pluto/whack
+	fi
+fi
+export PLUTO
+export WHACK
+
+if [ -z "${TESTING:-}" ]
+then
+	if [ -d ${MYBOX:-}/testing ]
+	then
+		TESTING=$MYBOX/testing
+	elif [ -d testing ]
+	then
+		TESTING=`pwd`/testing
+	fi
+	
+fi
+export TESTING
 
 if [ ! -x "$PLUTO" -a "$PLUTO" != "ipsec pluto" ] ; then
 	echo "ERROR: Where is Pluto?  Not in \"$PLUTO\"; set \$PLUTO correctly." >&2
-	exit 1
+	#exit 1
 fi
 
 if [ ! -x "$WHACK" -a "$WHACK" != "ipsec whack" ] ; then
 	echo "ERROR: Where is whack?  Not in \"$WHACK\"; set \$WHACK correctly." >&2
-	exit 1
+	#exit 1
 fi
 
 export LWDNSQOPTION=""
-case "${USE_LWRES:-}" in
+case "${USE_LWRES:-true}" in
 true)
-	LWDNSQ=${LWDNSQ:-`pwd`/../../programs/lwdnsq/lwdnsq}
-	if [ ! -x $LWDNSQ ] ; then
-		if [ -x `dirname "$PLUTO"`/lwdnsq ] ; then
+	if [ -z "${LWDNSQ:-}" ]
+	then
+		if [ -x ${MYBOX:-}/programs/lwdnsq/lwdnsq ]
+		then
+			LWDNSQ=$MYBOX/programs/lwdnsq/lwdnsq
+		elif [ -x programs/lwdnsq/lwdnsq ]
+		then
+			LWDNSQ=`pwd`/programs/lwdnsq/lwdnsq
+		elif [ -x `pwd`/../../programs/lwdnsq/lwdnsq ]
+		then
+			LWDNSQ=`pwd`/../../programs/lwdnsq/lwdnsq
+		elif [ -x `dirname "$PLUTO"`/lwdnsq ] ; then
 			LWDNSQ=`dirname "$PLUTO"`/lwdnsq
+                elif [ "$PLUTO" = "ipsec pluto" ]; then
+			LWDNSQ=""
 		else
 			echo "ERROR: Where is lwdnsq?  Not in \"$LWDNSQ\"; set \$LWDNSQ correctly." >&2
 			exit 1
 		fi
 	fi
-	LWDNSQOPTION="--lwdnsq $LWDNSQ"
+	if [ -n "${LWDNSQ}" ];	then
+	   LWDNSQOPTION="--lwdnsq $LWDNSQ"
+	   export LWDNSQ LWDNSQOPTION
+        fi
 	;;
 esac
+
+set -u
 
 export IKEPORT=8500
 export DOMAIN=example
@@ -128,11 +184,11 @@ LIST="1 2 3 4 5"
 TO="--updown silly --to --updown sally"
 
 function whackwest() {
-	$WHACKWEST "$@"
+	eval $WHACKWEST "$@"
 	}
 
 function whackeast() {
-	$WHACKEAST "$@"
+	eval $WHACKEAST "$@"
 	}
 
 function perform() {
@@ -179,6 +235,14 @@ function grab_lifetimes() {
 			p
 			}'
 	}
+
+ut() {
+	mount -o rw,remount /testing
+	for f 
+	do
+		cp log/$f/wi-log log.ref/$f/wi-log
+	done
+}
 
 # Check if lifetime is close to predicted time
 # Can't be more, but might be a bit less.

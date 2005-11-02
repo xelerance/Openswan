@@ -1,6 +1,6 @@
 
 #
-# RCSID $Id: defconfig,v 1.25 2004/07/05 01:03:53 mcr Exp $
+# RCSID $Id: defconfig,v 1.27 2005/03/20 03:00:05 mcr Exp $
 #
 
 #
@@ -27,48 +27,46 @@ CONFIG_IP_MASQUERADE_IPSEC=n
 #
 
 # To config as static (preferred), 'y'.  To config as module, 'm'.
-CONFIG_IPSEC=y
+CONFIG_KLIPS=y
 
 # To do tunnel mode IPSec, this must be enabled.
-CONFIG_IPSEC_IPIP=y
+CONFIG_KLIPS_IPIP=y
 
 # To enable authentication, say 'y'.   (Highly recommended)
-CONFIG_IPSEC_AH=y
+CONFIG_KLIPS_AH=y
 
 # Authentication algorithm(s):
-CONFIG_IPSEC_AUTH_HMAC_MD5=y
-CONFIG_IPSEC_AUTH_HMAC_SHA1=y
+CONFIG_KLIPS_AUTH_HMAC_MD5=y
+CONFIG_KLIPS_AUTH_HMAC_SHA1=y
 
 # To enable encryption, say 'y'.   (Highly recommended)
-CONFIG_IPSEC_ESP=y
-
-# Encryption algorithm(s):
-CONFIG_IPSEC_ENC_3DES=y
-CONFIG_IPSEC_ENC_AES=y
+CONFIG_KLIPS_ESP=y
 
 # modular algo extensions (and new ALGOs)
-CONFIG_IPSEC_ALG=y
-CONFIG_IPSEC_ENC_3DES=y
-CONFIG_IPSEC_ENC_AES=y
+CONFIG_KLIPS_ALG=y
 
-CONFIG_IPSEC_ALG_TWOFISH=m
-CONFIG_IPSEC_ALG_BLOWFISH=m
-CONFIG_IPSEC_ALG_SERPENT=m
-CONFIG_IPSEC_ALG_MD5=m
-CONFIG_IPSEC_ALG_SHA1=m
-CONFIG_IPSEC_ALG_SHA2=m
-#CONFIG_IPSEC_ALG_CAST=n
-#CONFIG_IPSEC_ALG_NULL=n
+# Encryption algorithm(s):
+CONFIG_KLIPS_ENC_3DES=y
+CONFIG_KLIPS_ENC_AES=y
+
+CONFIG_KLIPS_ALG_TWOFISH=m
+CONFIG_KLIPS_ALG_BLOWFISH=m
+CONFIG_KLIPS_ALG_SERPENT=m
+CONFIG_KLIPS_ALG_MD5=m
+CONFIG_KLIPS_ALG_SHA1=m
+CONFIG_KLIPS_ALG_SHA2=m
+#CONFIG_KLIPS_ALG_CAST=n
+#CONFIG_KLIPS_ALG_NULL=n
 
 # Use CryptoAPI for ALG? - by default, no.
-CONFIG_IPSEC_ENC_CRYPTOAPI=n
+CONFIG_KLIPS_ENC_CRYPTOAPI=n
 
 
 # IP Compression: new, probably still has minor bugs.
-CONFIG_IPSEC_IPCOMP=y
+CONFIG_KLIPS_IPCOMP=y
 
 # To enable userspace-switchable KLIPS debugging, say 'y'.
-CONFIG_IPSEC_DEBUG=y
+CONFIG_KLIPS_DEBUG=y
 
 # NAT Traversal
 CONFIG_IPSEC_NAT_TRAVERSAL=y
@@ -76,6 +74,12 @@ CONFIG_IPSEC_NAT_TRAVERSAL=y
 #
 #
 # $Log: defconfig,v $
+# Revision 1.27  2005/03/20 03:00:05  mcr
+# 	default configuration should enable NAT_TRAVERSAL.
+#
+# Revision 1.26  2004/07/10 19:11:18  mcr
+# 	CONFIG_IPSEC -> CONFIG_KLIPS.
+#
 # Revision 1.25  2004/07/05 01:03:53  mcr
 # 	fix for adding cryptoapi code.
 # 	keep it off for now, since UMLs do not have it yet.

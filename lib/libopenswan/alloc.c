@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: alloc.c,v 1.1 2004/04/18 03:03:28 mcr Exp $
+ * RCSID $Id: alloc.c,v 1.2 2004/10/16 23:42:13 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -24,6 +24,9 @@
 #include <openswan.h>
 
 #include "constants.h"
+#include "oswlog.h"
+
+#define LEAK_DETECTIVE
 #include "oswalloc.h"
 
 const chunk_t empty_chunk = { NULL, 0 };
@@ -61,8 +64,6 @@ all_zero(const unsigned char *m, size_t len)
  * - "Pluto lock name" (one only, needed until end -- why bother?)
  */
 
-#ifdef LEAK_DETECTIVE
-
 /* this magic number is 3671129837 decimal (623837458 complemented) */
 #define LEAK_MAGIC 0xDAD0FEEDul
 
@@ -77,61 +78,70 @@ union mhdr {
 
 static union mhdr *allocs = NULL;
 
-void *alloc_bytes(size_t size, const char *name)
-{
-    union mhdr *p = malloc(sizeof(union mhdr) + size);
-
-    if (p == NULL)
-	exit_log("unable to malloc %lu bytes for %s"
-	    , (unsigned long) size, name);
-    p->i.name = name;
-    p->i.older = allocs;
-    if (allocs != NULL)
-	allocs->i.newer = p;
-    allocs = p;
-    p->i.newer = NULL;
-    p->i.magic = LEAK_MAGIC;
-
-    memset(p+1, '\0', size);
-    return p+1;
-}
-
-void *
-clone_bytes(const void *orig, size_t size, const char *name)
-{
-    void *p = alloc_bytes(size, name);
-
-    memcpy(p, orig, size);
-    return p;
-}
-
-void
-pfree(void *ptr)
+void *alloc_bytes1(size_t size, const char *name, int leak_detective)
 {
     union mhdr *p;
 
-    passert(ptr != NULL);
-    p = ((union mhdr *)ptr) - 1;
-    passert(p->i.magic == LEAK_MAGIC);
-    if (p->i.older != NULL)
-    {
-	passert(p->i.older->i.newer == p);
-	p->i.older->i.newer = p->i.newer;
+    if(leak_detective) {
+	p = malloc(sizeof(union mhdr) + size);
+    } else {
+	p = malloc(size);
     }
-    if (p->i.newer == NULL)
-    {
-	passert(p == allocs);
-	allocs = p->i.older;
+
+    if (p == NULL) {
+	if(exit_log_func) {
+	    (*exit_log_func)("unable to malloc %lu bytes for %s"
+			     , (unsigned long) size, name);
+	}
     }
-    else
-    {
-	passert(p->i.newer->i.older == p);
-	p->i.newer->i.older = p->i.older;
+
+    if(leak_detective) {
+	p->i.name = name;
+	p->i.older = allocs;
+	if (allocs != NULL)
+	    allocs->i.newer = p;
+	allocs = p;
+	p->i.newer = NULL;
+	p->i.magic = LEAK_MAGIC;
+	return p+1;
+    } else {
+	return p;
     }
-    p->i.magic = ~LEAK_MAGIC;
-    free(p);
+	
 }
 
+void
+leak_pfree(void *ptr, int leak)
+{
+    union mhdr *p;
+
+    if(leak) {
+	passert(ptr != NULL);
+	p = ((union mhdr *)ptr) - 1;
+	passert(p->i.magic == LEAK_MAGIC);
+	if (p->i.older != NULL)
+	    {
+		passert(p->i.older->i.newer == p);
+		p->i.older->i.newer = p->i.newer;
+	    }
+	if (p->i.newer == NULL)
+	    {
+		passert(p == allocs);
+		allocs = p->i.older;
+	    }
+	else
+	    {
+		passert(p->i.newer->i.older == p);
+		p->i.newer->i.older = p->i.older;
+	    }
+	p->i.magic = ~LEAK_MAGIC;
+	free(p);
+    } else {
+	free(ptr);
+    }
+}
+
+#ifdef LEAK_DETECTIVE
 void
 report_leaks(void)
 {
@@ -150,19 +160,19 @@ report_leaks(void)
 	if (p == NULL || pprev->i.name != p->i.name)
 	{
 	    if (n != 1)
-		plog("leak: %lu * %s", n, pprev->i.name);
+		openswan_log("leak: %lu * %s", n, pprev->i.name);
 	    else
-		plog("leak: %s", pprev->i.name);
+		openswan_log("leak: %s", pprev->i.name);
 	    n = 0;
 	}
     }
 }
 
-#else /* !LEAK_DETECTIVE */
+#endif /* !LEAK_DETECTIVE */
 
-void *alloc_bytes(size_t size, const char *name)
+void *alloc_bytes2(size_t size, const char *name, int leak_detective)
 {
-    void *p = malloc(size);
+    void *p = alloc_bytes1(size, name, leak_detective);
 
     if (p == NULL) {
 	if(exit_log_func) {
@@ -174,9 +184,9 @@ void *alloc_bytes(size_t size, const char *name)
     return p;
 }
 
-void *clone_bytes(const void *orig, size_t size, const char *name)
+void *clone_bytes2(const void *orig, size_t size, const char *name, int leak_detective)
 {
-    void *p = malloc(size);
+    void *p = alloc_bytes1(size, name, leak_detective);
 
     if (p == NULL) {
 	if(exit_log_func) {
@@ -187,7 +197,6 @@ void *clone_bytes(const void *orig, size_t size, const char *name)
     memcpy(p, orig, size);
     return p;
 }
-#endif /* !LEAK_DETECTIVE */
 
 /*
  * Local Variables:

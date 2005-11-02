@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: id.h,v 1.22 2003/11/04 07:52:32 dhr Exp $
+ * RCSID $Id: id.h,v 1.23 2005/02/14 05:56:02 ken Exp $
  */
 
 struct id {
@@ -46,6 +46,7 @@ extern char* temporary_cyclic_buffer(void);
 extern int idtoa(const struct id *id, char *dst, size_t dstlen);
 #define IDTOA_BUF	512
 extern void escape_metachar(const char *src, char *dst, size_t dstlen);
+extern void remove_metachar(const char *src, char *dst, size_t dstlen);
 struct end;	/* forward declaration of tag (defined in connections.h) */
 extern void unshare_id_content(struct id *id);
 extern void free_id_content(struct id *id);

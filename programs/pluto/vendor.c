@@ -1,5 +1,6 @@
 /* Openswan ISAKMP VendorID Handling
  * Copyright (C) 2002-2003 Mathieu Lafon - Arkoon Network Security
+ * Copyright (C) 2004 Xelerance Corporation
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: vendor.c,v 1.18 2004/06/10 13:17:39 mcr Exp $
+ * RCSID $Id: vendor.c,v 1.36.2.1 2005/05/18 20:55:13 ken Exp $
  */
 
 #include <stdlib.h>
@@ -35,6 +36,7 @@
 #include "connections.h"
 #include "packet.h"
 #include "demux.h"
+#include "server.h"
 #include "whack.h"
 #include "vendor.h"
 #include "quirks.h"
@@ -46,7 +48,7 @@
 #endif
 
 /**
- * Unknown/Special VID:
+ * Listing of interesting but details unknown Vendor IDs:
  *
  * SafeNet SoftRemote 8.0.0:
  *  47bbe7c993f1fc13b4e6d0db565c68e5010201010201010310382e302e3020284275696c6420313029000000
@@ -63,14 +65,20 @@
  *  cf49908791073fb46439790fdeb6aeed981101ab0000000500000300
  *
  * Cisco:
+ *  1f07f70eaa6514d3b0fa96542a500300 (VPN 3000 version 3.0.0)
+ *  1f07f70eaa6514d3b0fa96542a500301 (VPN 3000 version 3.0.1)
+ *  1f07f70eaa6514d3b0fa96542a500305 (VPN 3000 version 3.0.5)
+ *  1f07f70eaa6514d3b0fa96542a500407 (VPN 3000 version 4.0.7)
+ *  (Can you see the pattern?)
+ *  afcad71368a1f1c96b8696fc77570100 (Non-RFC Dead Peer Detection ?)
  *  c32364b3b4f447eb17c488ab2a480a57
- *  1f07f70eaa6514d3b0fa96542a500305
- *  1f07f70eaa6514d3b0fa96542a500300
- *  1f07f70eaa6514d3b0fa96542a500301 (VPN 3000 version 3.1 ??)
- *  afcad71368a1f1c96b8696fc77570100 (Dead Peer Detection ?)
  *  6d761ddc26aceca1b0ed11fabbb860c4
+ *  5946c258f99a1a57b03eb9d1759e0f24 (From a Cisco VPN 3k)
+ *  ebbc5b00141d0c895e11bd395902d690 (From a Cisco VPN 3k)
  *
  * Microsoft L2TP (???):
+ * (This could be the MSL2TP client, which is a stripped version of SafeNet)
+ *
  *  47bbe7c993f1fc13b4e6d0db565c68e5010201010201010310382e312e3020284275696c6420313029000000
  *  >> 382e312e3020284275696c6420313029 = '8.1.0 (Build 10)'
  *  3025dbd21062b9e53dc441c6aab5293600000000
@@ -80,20 +88,25 @@
  *    da8e937880010000
  *    404bf439522ca3f6
  *
+ * NCP.de
+ *    101fb0b35c5a4f4c08b919f1cb9777b0
  *
- * If someone know what they mean, mail me.
+ * Watchguard FireBox (II ?)
+ * da8e937880010000
  */
 
 #define MAX_LOG_VID_LEN            32
 
-#define VID_KEEP                   0x0000
+#define VID_KEEP                   0x0000  
 #define VID_MD5HASH                0x0001
 #define VID_STRING                 0x0002
 #define VID_FSWAN_HASH             0x0004
+#define VID_SELF                   0x0008
 
 #define VID_SUBSTRING_DUMPHEXA     0x0100
 #define VID_SUBSTRING_DUMPASCII    0x0200
-#define VID_SUBSTRING  (VID_SUBSTRING_DUMPHEXA | VID_SUBSTRING_DUMPASCII)
+#define VID_SUBSTRING_MATCH        0x0400
+#define VID_SUBSTRING  (VID_SUBSTRING_DUMPHEXA | VID_SUBSTRING_DUMPASCII | VID_SUBSTRING_MATCH)
 
 struct vid_struct {
 	enum known_vendorid id;
@@ -161,10 +174,14 @@ static struct vid_struct _vid_tab[] = {
 	DEC_MD5_VID(SSH_IPSEC_4_2_0,
 		"SSH Communications Security IPSEC Express version 4.2.0")
 
+
 	/* note: md5('CISCO-UNITY') = 12f5f28c457168a9702d9fe274cc02d4 */
 	{ VID_CISCO_UNITY, VID_KEEP, NULL, "Cisco-Unity",
 		"\x12\xf5\xf2\x8c\x45\x71\x68\xa9\x70\x2d\x9f\xe2\x74\xcc\x01\x00",
 		16 },
+
+	{ VID_CISCO3K, VID_KEEP | VID_SUBSTRING_MATCH, 
+          NULL, "Cisco VPN 3000 Series" , "\x1f\x07\xf7\x0e\xaa\x65\x14\xd3\xb0\xfa\x96\x54\x2a\x50", 14},
 
 	/**
 	 * Timestep VID seen:
@@ -187,6 +204,10 @@ static struct vid_struct _vid_tab[] = {
 		"Openswan 2.2.0",
 		"Openswan 2.2.0")
 
+	/* always make sure to include ourself! */
+	{ VID_OPENSWANSELF,VID_SELF, "","Openswan (this version)", NULL,0},
+	
+
 	/* NAT-Traversal */
 
 	DEC_MD5_VID(NATT_STENBERG_01, "draft-stenberg-ipsec-nat-traversal-01")
@@ -198,9 +219,12 @@ static struct vid_struct _vid_tab[] = {
 	/* hash in draft-ietf-ipsec-nat-t-ike-02 contains '\n'... Accept both */
 	DEC_MD5_VID_D(NATT_IETF_02_N, "draft-ietf-ipsec-nat-t-ike-02\n", "draft-ietf-ipsec-nat-t-ike-02_n")
 	DEC_MD5_VID(NATT_IETF_03, "draft-ietf-ipsec-nat-t-ike-03")
-	DEC_MD5_VID(NATT_RFC, "Testing NAT-T RFC")
+	DEC_MD5_VID(NATT_RFC, "RFC 3947")
+
+	DEC_MD5_VID(NATT_DRAFT_IETF_IPSEC_NAT_T_IKE,"draft-ietf-ipsec-nat-t-ike")
 
 	/* misc */
+
 	
 	{ VID_MISC_XAUTH, VID_KEEP, NULL, "XAUTH",
 		"\x09\x00\x26\x89\xdf\xd6\xb7\x12", 8 },
@@ -216,7 +240,21 @@ static struct vid_struct _vid_tab[] = {
 	{ VID_MISC_HEARTBEAT_NOTIFY, VID_STRING | VID_SUBSTRING_DUMPHEXA,
 		"HeartBeat_Notify", "HeartBeat Notify", NULL, 0 },
 
+	/**
+	 * MacOS X
+	 */
+	{ VID_MACOSX, VID_STRING|VID_SUBSTRING_DUMPHEXA, "Mac OSX 10.x",
+	  "\x4d\xf3\x79\x28\xe9\xfc\x4f\xd1\xb3\x26\x21\x70\xd5\x15\xc6\x62", NULL, 0},
+
 	DEC_MD5_VID(MISC_FRAGMENTATION, "FRAGMENTATION")
+	DEC_MD5_VID(INITIAL_CONTACT, "Vid-Initial-Contact")
+
+	/*
+	 * NCP.de
+	 */
+	{ VID_NCP, VID_KEEP, "NCP client", NULL, 
+	  "\x10\x1f\xb0\xb3\x5c\x5a\x4f\x4c\x08\xb9\x19\xf1\xcb\x97\x77\xb0", 16 },
+	
 
 	/* -- */
 	{ 0, 0, NULL, NULL, NULL, 0 }
@@ -238,60 +276,73 @@ void init_vendorid(void)
 	int i;
 
 	for (vid = _vid_tab; vid->id; vid++) {
-		if (vid->flags & VID_STRING) {
-			/** VendorID is a string **/
-			vid->vid = strdup(vid->data);
-			vid->vid_len = strlen(vid->data);
+	    if(vid->flags & VID_SELF) {
+		char *d;
+		vid->vid = strdup(init_pluto_vendorid());
+		vid->vid_len = strlen(vid->vid);
+		d = alloc_bytes(strlen(vid->descr)+4
+				+strlen(ipsec_version_code())
+				+strlen(compile_time_interop_options)
+				, "self-vendor ID");
+		sprintf(d, "%s %s %s"
+			, vid->descr, ipsec_version_code()
+			, compile_time_interop_options);
+		vid->descr = (const char *)d;
+	    }
+	    else if (vid->flags & VID_STRING) {
+		/** VendorID is a string **/
+		vid->vid = strdup(vid->data);
+		vid->vid_len = strlen(vid->data);
+	    }
+	    else if (vid->flags & VID_MD5HASH) {
+		/** VendorID is a string to hash with MD5 **/
+		char *vidm =  malloc(MD5_DIGEST_SIZE);
+		vid->vid = vidm;
+		if (vidm) {
+		    unsigned const char *d = vid->data;
+		    osMD5Init(&ctx);
+		    osMD5Update(&ctx, d, strlen(vid->data));
+		    osMD5Final(vidm, &ctx);
+		    vid->vid_len = MD5_DIGEST_SIZE;
 		}
-		else if (vid->flags & VID_MD5HASH) {
-			/** VendorID is a string to hash with MD5 **/
-			char *vidm =  malloc(MD5_DIGEST_SIZE);
-			vid->vid = vidm;
-			if (vidm) {
-			        unsigned const char *d = vid->data;
-				MD5Init(&ctx);
-				MD5Update(&ctx, d, strlen(vid->data));
-				MD5Final(vidm, &ctx);
-				vid->vid_len = MD5_DIGEST_SIZE;
-			}
-		}
-		else if (vid->flags & VID_FSWAN_HASH) {
-			/** FreeS/WAN 2.00+ specific hash **/
+	    }
+	    else if (vid->flags & VID_FSWAN_HASH) {
+		/** FreeS/WAN 2.00+ specific hash **/
 #define FSWAN_VID_SIZE 12
-			unsigned char hash[MD5_DIGEST_SIZE];
-			char *vidm =  malloc(FSWAN_VID_SIZE);
-			vid->vid = vidm;
-			if (vidm) {
-				MD5Init(&ctx);
-				MD5Update(&ctx, vid->data, strlen(vid->data));
-				MD5Final(hash, &ctx);
-				vidm[0] = 'O';
-				vidm[1] = 'E';
+		unsigned char hash[MD5_DIGEST_SIZE];
+		char *vidm =  malloc(FSWAN_VID_SIZE);
+		vid->vid = vidm;
+		if (vidm) {
+		    osMD5Init(&ctx);
+		    osMD5Update(&ctx, vid->data, strlen(vid->data));
+		    osMD5Final(hash, &ctx);
+		    vidm[0] = 'O';
+		    vidm[1] = 'E';
 #if FSWAN_VID_SIZE - 2 <= MD5_DIGEST_SIZE
-				memcpy(vidm + 2, hash, FSWAN_VID_SIZE - 2);
+		    memcpy(vidm + 2, hash, FSWAN_VID_SIZE - 2);
 #else
-				memcpy(vidm + 2, hash, MD5_DIGEST_SIZE);
-				memset(vidm + 2 + MD5_DIGEST_SIZE, '\0',
-					FSWAN_VID_SIZE - 2 - MD5_DIGEST_SIZE);
+		    memcpy(vidm + 2, hash, MD5_DIGEST_SIZE);
+		    memset(vidm + 2 + MD5_DIGEST_SIZE, '\0',
+			   FSWAN_VID_SIZE - 2 - MD5_DIGEST_SIZE);
 #endif
-				for (i = 2; i < FSWAN_VID_SIZE; i++) {
-					vidm[i] &= 0x7f;
-					vidm[i] |= 0x40;
-				}
-				vid->vid_len = FSWAN_VID_SIZE;
-			}
+		    for (i = 2; i < FSWAN_VID_SIZE; i++) {
+			vidm[i] &= 0x7f;
+			vidm[i] |= 0x40;
+		    }
+		    vid->vid_len = FSWAN_VID_SIZE;
 		}
-
-		if (vid->descr == NULL) {
-			/** Find something to display **/
-			vid->descr = vid->data;
-		}
+	    }
+	    
+	    if (vid->descr == NULL) {
+		/** Find something to display **/
+		vid->descr = vid->data;
+	    }
 #if 0
-		DBG_log("vendorid_init: %d [%s]",
-			vid->id,
-			vid->descr ? vid->descr : ""
-			);
-		if (vid->vid) DBG_dump("VID:", vid->vid, vid->vid_len);
+	    DBG_log("vendorid_init: %d [%s]",
+		    vid->id,
+		    vid->descr ? vid->descr : ""
+		);
+	    if (vid->vid) DBG_dump("VID:", vid->vid, vid->vid_len);
 #endif
 	}
 	_vid_struct_init = 1;
@@ -343,16 +394,27 @@ static void handle_known_vendorid (struct msg_digest *md UNUSED
 		case VID_NATT_IETF_03:
 		case VID_NATT_RFC:
  		        vid_usefull = 1;
-			if ((nat_traversal_support_port_floating) &&
-				(md->quirks.nat_traversal_vid < vid->id)) {
-				md->quirks.nat_traversal_vid = vid->id;
-			} else {
+			if(!nat_traversal_support_port_floating) {
 			  loglog(RC_LOG_SERIOUS
 				 , "received Vendor ID payload [%s] meth=%d, "
-				 "but already using method %d"
-				 , vid->descr, vid->id
-				 , md->quirks.nat_traversal_vid);
+				 "but port floating is off"
+				 , vid->descr, vid->id);
 			  return;
+			} else {
+			  if (md->quirks.nat_traversal_vid < vid->id) {
+			    loglog(RC_LOG_SERIOUS
+				   , "received Vendor ID payload [%s] method set to=%d "
+				   , vid->descr, vid->id);
+			    md->quirks.nat_traversal_vid = vid->id;
+			    return;
+			  } else {
+			    loglog(RC_LOG_SERIOUS
+				   , "received Vendor ID payload [%s] meth=%d, "
+				   "but already using method %d"
+				   , vid->descr, vid->id
+				   , md->quirks.nat_traversal_vid);
+			    return;
+			  }
 			}
 			break;
 #endif
@@ -366,15 +428,25 @@ static void handle_known_vendorid (struct msg_digest *md UNUSED
 /* We only need these when dealing with XAUTH */
 #ifdef XAUTH
 	case VID_SSH_SENTINEL_1_4_1:
-            loglog(RC_LOG_SERIOUS, "SSH Sentinel 1.4.1 found, setting XAUTH_ACK quirk");
-            md->quirks.xauth_ack_msgid = TRUE;
-            vid_usefull = 1;
-            break;
+	  loglog(RC_LOG_SERIOUS
+		 , "SSH Sentinel 1.4.1 found, setting XAUTH_ACK quirk");
+	  md->quirks.xauth_ack_msgid = TRUE;
+	  vid_usefull = 1;
+	  break;
+
+	case VID_CISCO_UNITY:
+	  md->quirks.modecfg_pull_mode= TRUE;
+	  vid_usefull = 1;
+	  break;
 
 	case VID_MISC_XAUTH:
 	    vid_usefull=1;
 	    break;
 #endif
+	    
+	case VID_OPENSWANSELF:
+	    vid_usefull=1;
+	    break;
 	    
 	default:
 	    break;
@@ -438,13 +510,16 @@ void handle_vendorid (struct msg_digest *md, const char *vid, size_t len, struct
 		if (pvid->vid && vid && pvid->vid_len && len) {
 			if (pvid->vid_len == len) {
 				if (memcmp(pvid->vid, vid, len)==0) {
-					handle_known_vendorid(md, vid, len, pvid, st);
+					handle_known_vendorid(md, vid
+							      , len, pvid, st);
 					return;
 				}
 			}
-			else if ((pvid->vid_len < len) && (pvid->flags & VID_SUBSTRING)) {
+			else if ((pvid->vid_len < len)
+				 && (pvid->flags & VID_SUBSTRING)) {
 				if (memcmp(pvid->vid, vid, pvid->vid_len)==0) {
-					handle_known_vendorid(md, vid, len, pvid, st);
+					handle_known_vendorid(md, vid, len
+							      , pvid, st);
 					return;
 				}
 			}
@@ -462,7 +537,7 @@ void handle_vendorid (struct msg_digest *md, const char *vid, size_t len, struct
 			log_vid[2*i] = _hexdig[(vid[i] >> 4) & 0xF];
 			log_vid[2*i+1] = _hexdig[vid[i] & 0xF];
 		}
-		loglog(RC_LOG_SERIOUS, "ignoring Vendor ID payload [%s%s]",
+		loglog(RC_LOG_SERIOUS, "ignoring unknown Vendor ID payload [%s%s]",
 			log_vid, (len>MAX_LOG_VID_LEN) ? "..." : "");
 	}
 }
@@ -499,3 +574,9 @@ bool out_vendorid (u_int8_t np, pb_stream *outs, unsigned int vid)
 		pvid->vid, pvid->vid_len, "V_ID");
 }
 
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

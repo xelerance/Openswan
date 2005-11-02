@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: crypto.c,v 1.29 2004/04/18 03:06:46 mcr Exp $
+ * RCSID $Id: crypto.c,v 1.35 2005/03/13 18:56:08 mcr Exp $
  */
 
 #include <stdio.h>
@@ -40,7 +40,7 @@
 
 
 static MP_INT
-#if 0	/* modp768 not sufficiently strong */
+#if defined(USE_VERYWEAK_DH1) 	/* modp768 not sufficiently strong */
     modp768_modulus,
 #endif
     modp1024_modulus,
@@ -57,44 +57,47 @@ MP_INT groupgenerator;	/* MODP group generator (2) */
 static void do_3des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc);
 static struct encrypt_desc crypto_encrypter_3des =
 { 	
-	common: {algo_type: 	IKE_ALG_ENCRYPT,
-		 algo_id:   	OAKLEY_3DES_CBC, 
-		 algo_next: 	NULL, },
-	enc_ctxsize: 	sizeof(des_key_schedule) * 3,
-	enc_blocksize: 	DES_CBC_BLOCK_SIZE, 
-	keydeflen: 	DES_CBC_BLOCK_SIZE * 3 * BITS_PER_BYTE,
-	keyminlen: 	DES_CBC_BLOCK_SIZE * 3 * BITS_PER_BYTE,
-	keymaxlen: 	DES_CBC_BLOCK_SIZE * 3 * BITS_PER_BYTE,
-	do_crypt: 	do_3des,
+    common: {name: "oakley_3des_cbc",
+	     algo_type: 	IKE_ALG_ENCRYPT,
+	     algo_id:   	OAKLEY_3DES_CBC, 
+	     algo_next: 	NULL, },
+    enc_ctxsize: 	sizeof(des_key_schedule) * 3,
+    enc_blocksize: 	DES_CBC_BLOCK_SIZE, 
+    keydeflen: 	DES_CBC_BLOCK_SIZE * 3 * BITS_PER_BYTE,
+    keyminlen: 	DES_CBC_BLOCK_SIZE * 3 * BITS_PER_BYTE,
+    keymaxlen: 	DES_CBC_BLOCK_SIZE * 3 * BITS_PER_BYTE,
+    do_crypt: 	do_3des,
 };
 static struct hash_desc crypto_hasher_md5 =
 { 	
-	common: {algo_type: IKE_ALG_HASH,
-		 algo_id:   OAKLEY_MD5,
-		 algo_next: NULL, },
-	hash_ctx_size: sizeof(MD5_CTX),
-	hash_digest_len: MD5_DIGEST_SIZE,
-	hash_init: (void (*)(void *)) MD5Init,
-	hash_update: (void (*)(void *, const u_int8_t *, size_t)) MD5Update,
-	hash_final: (void (*)(u_char *, void *)) MD5Final,
+    common: {name: "oakley_md5",
+	     algo_type: IKE_ALG_HASH,
+	     algo_id:   OAKLEY_MD5,
+	     algo_next: NULL, },
+    hash_ctx_size: sizeof(MD5_CTX),
+    hash_digest_len: MD5_DIGEST_SIZE,
+    hash_init: (void (*)(void *)) osMD5Init,
+    hash_update: (void (*)(void *, const u_int8_t *, size_t)) osMD5Update,
+    hash_final: (void (*)(u_char *, void *)) osMD5Final,
 };
 static struct hash_desc crypto_hasher_sha1 =
 { 	
-	common: {algo_type: IKE_ALG_HASH,
-		 algo_id:   OAKLEY_SHA,
-		 algo_next: NULL, },
-	hash_ctx_size: sizeof(SHA1_CTX),
-	hash_digest_len: SHA1_DIGEST_SIZE,
-	hash_init: (void (*)(void *)) SHA1Init,
-	hash_update: (void (*)(void *, const u_int8_t *, size_t)) SHA1Update,
-	hash_final: (void (*)(u_char *, void *)) SHA1Final,
+    common: {name: "oakley_sha",
+	     algo_type: IKE_ALG_HASH,
+	     algo_id:   OAKLEY_SHA,
+	     algo_next: NULL, },
+    hash_ctx_size: sizeof(SHA1_CTX),
+    hash_digest_len: SHA1_DIGEST_SIZE,
+    hash_init: (void (*)(void *)) SHA1Init,
+    hash_update: (void (*)(void *, const u_int8_t *, size_t)) SHA1Update,
+    hash_final: (void (*)(u_char *, void *)) SHA1Final,
 };
 #endif
 void
 init_crypto(void)
 {
     if (mpz_init_set_str(&groupgenerator, MODP_GENERATOR, 10) != 0
-#if 0	/* modp768 not sufficiently strong */
+#if defined(USE_VERYWEAK_DH1)	                        /* modp768 not sufficiently strong */
     || mpz_init_set_str(&modp768_modulus, MODP768_MODULUS, 16) != 0
 #endif
     || mpz_init_set_str(&modp1024_modulus, MODP1024_MODULUS, 16) != 0
@@ -123,8 +126,8 @@ init_crypto(void)
 
 const struct oakley_group_desc unset_group = {0, NULL, 0};	/* magic signifier */
 
-const struct oakley_group_desc oakley_group[OAKLEY_GROUP_SIZE] = {
-#if 0	/* modp768 not sufficiently strong */
+const struct oakley_group_desc oakley_group[] = {
+#if defined(USE_VERYWEAK_DH1)    	/* modp768 not sufficiently strong */
     { OAKLEY_GROUP_MODP768, &modp768_modulus, BYTES_FOR_BITS(768) },
 #endif
     { OAKLEY_GROUP_MODP1024, &modp1024_modulus, BYTES_FOR_BITS(1024) },
@@ -135,6 +138,8 @@ const struct oakley_group_desc oakley_group[OAKLEY_GROUP_SIZE] = {
     { OAKLEY_GROUP_MODP6144, &modp6144_modulus, BYTES_FOR_BITS(6144) },
     { OAKLEY_GROUP_MODP8192, &modp8192_modulus, BYTES_FOR_BITS(8192) },
 };
+
+const unsigned int oakley_group_size = elemsof(oakley_group);
 
 const struct oakley_group_desc *
 lookup_group(u_int16_t group)
@@ -175,19 +180,22 @@ do_des(bool enc, void *buf, size_t buf_len, struct state *st)
  * See RFC 2409 "IKE" Appendix B
  */
 static void
-do_3des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc)
+do_3des(u_int8_t *buf, size_t buf_len
+	, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc)
 {
     des_key_schedule ks[3];
 
-    passert (!key_size || (key_size==(DES_CBC_BLOCK_SIZE * 3)))
+    passert(key != NULL);
+    passert(key_size==(DES_CBC_BLOCK_SIZE * 3));
     (void) des_set_key((des_cblock *)key + 0, ks[0]);
     (void) des_set_key((des_cblock *)key + 1, ks[1]);
     (void) des_set_key((des_cblock *)key + 2, ks[2]);
 
     des_ede3_cbc_encrypt((des_cblock *)buf, (des_cblock *)buf, buf_len,
-	ks[0], ks[1], ks[2],
-	(des_cblock *)iv, enc);
+			 ks[0], ks[1], ks[2],
+			 (des_cblock *)iv, enc);
 }
+
 /* hash and prf routines */
 /*========================================================== 
  *
@@ -195,7 +203,7 @@ do_3des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t 
  *
  *==========================================================
  */
-struct hash_desc *crypto_get_hasher(int alg)
+struct hash_desc *crypto_get_hasher(oakley_hash_t alg)
 {
 	return (struct hash_desc *) ike_alg_find(IKE_ALG_HASH, alg, 0);
 }
@@ -203,18 +211,29 @@ struct encrypt_desc *crypto_get_encrypter(int alg)
 {
 	return (struct encrypt_desc *) ike_alg_find(IKE_ALG_ENCRYPT, alg, 0);
 }
+
 void 
-crypto_cbc_encrypt(const struct encrypt_desc *e, bool enc, u_int8_t *buf, size_t size, struct state *st)
+crypto_cbc_encrypt(const struct encrypt_desc *e, bool enc
+		   , u_int8_t *buf, size_t size, struct state *st)
 {
     passert(st->st_new_iv_len >= e->enc_blocksize);
     st->st_new_iv_len = e->enc_blocksize;	/* truncate */
 
-    e->do_crypt(buf, size, st->st_enc_key.ptr, st->st_enc_key.len, st->st_new_iv, enc);
+#if 0
+    DBG(DBG_CRYPT
+	, DBG_log("encrypting buf=%p size=%d keyptr: %p keysize: %d, iv: %p enc: %d"
+		  , buf, size, st->st_enc_key.ptr
+		  , st->st_enc_key.len, st->st_new_iv, enc));
+#endif
+
+    e->do_crypt(buf, size, st->st_enc_key.ptr
+		, st->st_enc_key.len, st->st_new_iv, enc);
     /*
-    e->set_key(&ctx, st->st_enc_key.ptr, st->st_enc_key.len);
-    e->cbc_crypt(&ctx, buf, size, st->st_new_iv, enc);
+      e->set_key(&ctx, st->st_enc_key.ptr, st->st_enc_key.len);
+      e->cbc_crypt(&ctx, buf, size, st->st_new_iv, enc);
     */
 }
+
 /* HMAC package
  * rfc2104.txt specifies how HMAC works.
  */
@@ -281,3 +300,12 @@ hmac_final(u_char *output, struct hmac_ctx *ctx)
     h->hash_update(&ctx->hash_ctx, output, h->hash_digest_len);
     h->hash_final(output, &ctx->hash_ctx);
 }
+
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */
+

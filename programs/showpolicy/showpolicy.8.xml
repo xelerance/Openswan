@@ -42,7 +42,7 @@ function on the file description which is its stdin.</para>
 </refsect1>
 
 <refsect1 id='files'><title>FILES</title>
-<para>/var/run/ipsecpolicy.ctl</para>
+<para>/var/run/pluto/ipsecpolicy.ctl</para>
 </refsect1>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>

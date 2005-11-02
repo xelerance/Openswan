@@ -13,14 +13,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_ext_process.c,v 1.15 2004/04/06 02:49:26 mcr Exp $
+ * RCSID $Id: pfkey_v2_ext_process.c,v 1.19 2004/12/04 07:14:18 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_netlink.c.
  */
 
-char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.15 2004/04/06 02:49:26 mcr Exp $";
+char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.19 2004/12/04 07:14:18 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -142,20 +142,20 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	case IPPROTO_ESP:
 		ipsp->ips_authalg = pfkey_sa->sadb_sa_auth;
 		ipsp->ips_encalg = pfkey_sa->sadb_sa_encrypt;
-#ifdef CONFIG_IPSEC_ALG
+#ifdef CONFIG_KLIPS_ALG
 		ipsec_alg_sa_init(ipsp);
-#endif /* CONFIG_IPSEC_ALG */
+#endif /* CONFIG_KLIPS_ALG */
 		break;
 	case IPPROTO_IPIP:
 		ipsp->ips_authalg = AH_NONE;
 		ipsp->ips_encalg = ESP_NONE;
 		break;
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 	case IPPROTO_COMP:
 		ipsp->ips_authalg = AH_NONE;
 		ipsp->ips_encalg = pfkey_sa->sadb_sa_encrypt;
 		break;
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 	case IPPROTO_INT:
 		ipsp->ips_authalg = AH_NONE;
 		ipsp->ips_encalg = ESP_NONE;
@@ -400,10 +400,14 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 				    s->sa_family);
 			SENDERR(EPFNOSUPPORT);
 		}
-		(unsigned long)(*sap) = ((struct sockaddr_in*)s)->sin_addr.s_addr;
+		{
+			unsigned long *ulsap = (unsigned long *)sap;
+			*ulsap = ((struct sockaddr_in*)s)->sin_addr.s_addr;
+		}
+
 		if (portp != 0)
 			*portp = ((struct sockaddr_in*)s)->sin_port;
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 		if(extr->eroute) {
 			char buf1[64], buf2[64];
 			if (debug_pfkey) {
@@ -420,7 +424,7 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 					    ntohs(extr->eroute->er_eaddr.sen_dport));
 			}
 		}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 	}
 
 	ipsp = extr->ips;
@@ -802,7 +806,7 @@ pfkey_x_debug_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_x_debug_process: .\n");
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 		if(pfkey_x_debug->sadb_x_debug_netlink >>
 		   (sizeof(pfkey_x_debug->sadb_x_debug_netlink) * 8 - 1)) {
 			pfkey_x_debug->sadb_x_debug_netlink &=
@@ -817,9 +821,9 @@ pfkey_x_debug_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 			debug_ah      |= pfkey_x_debug->sadb_x_debug_ah;
 			debug_rcv     |= pfkey_x_debug->sadb_x_debug_rcv;
 			debug_pfkey   |= pfkey_x_debug->sadb_x_debug_pfkey;
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 			sysctl_ipsec_debug_ipcomp  |= pfkey_x_debug->sadb_x_debug_ipcomp;
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 			sysctl_ipsec_debug_verbose |= pfkey_x_debug->sadb_x_debug_verbose;
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_x_debug_process: "
@@ -838,16 +842,16 @@ pfkey_x_debug_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 			debug_ah      &= pfkey_x_debug->sadb_x_debug_ah;
 			debug_rcv     &= pfkey_x_debug->sadb_x_debug_rcv;
 			debug_pfkey   &= pfkey_x_debug->sadb_x_debug_pfkey;
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 			sysctl_ipsec_debug_ipcomp  &= pfkey_x_debug->sadb_x_debug_ipcomp;
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 			sysctl_ipsec_debug_verbose &= pfkey_x_debug->sadb_x_debug_verbose;
 		}
-#else /* CONFIG_IPSEC_DEBUG */
+#else /* CONFIG_KLIPS_DEBUG */
 		printk("klips_debug:pfkey_x_debug_process: "
 		       "debugging not enabled\n");
 		SENDERR(EINVAL);
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 	
 errlab:
 	return error;
@@ -855,6 +859,20 @@ errlab:
 
 /*
  * $Log: pfkey_v2_ext_process.c,v $
+ * Revision 1.19  2004/12/04 07:14:18  mcr
+ * 	resolution to gcc3-ism was wrong. fixed to assign correct
+ * 	variable.
+ *
+ * Revision 1.18  2004/12/03 21:25:57  mcr
+ * 	compile time fixes for running on 2.6.
+ * 	still experimental.
+ *
+ * Revision 1.17  2004/08/21 00:45:04  mcr
+ * 	CONFIG_KLIPS_NAT was wrong, also need to include udp.h.
+ *
+ * Revision 1.16  2004/07/10 19:11:18  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.15  2004/04/06 02:49:26  mcr
  * 	pullup of algo code from alg-branch.
  *

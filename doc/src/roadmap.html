@@ -1,6 +1,7 @@
 <html>
 <head>
 <title>FreeS/WAN roadmap</title>
+<!-- Changed by: Michael Richardson, 16-Nov-2004 -->
 <meta name="keywords" content="Linux, IPsec, VPN, security, FreeSWAN">
 
 <!--
@@ -12,9 +13,9 @@ More information at www.freeswan.org
 Feedback to users@lists.freeswan.org
 
 CVS information:
-RCS ID:          $Id: roadmap.html,v 1.7 2001/12/29 17:06:09 sandy Exp $
-Last changed:    $Date: 2001/12/29 17:06:09 $
-Revision number: $Revision: 1.7 $
+RCS ID:          $Id: roadmap.html,v 1.8 2004/11/16 14:33:49 mcr Exp $
+Last changed:    $Date: 2004/11/16 14:33:49 $
+Revision number: $Revision: 1.8 $
 
 CVS revision numbers do not correspond to FreeS/WAN release numbers.
 -->
@@ -74,48 +75,6 @@ HTML format. See the <a href="index.html">index file</a> for details.
 <strong>IP</strong> <strong>S</strong>ecurity. It lives in the klips
 directory, of course.
 </p>
-<dl>
-  <dt>klips/doc</dt>
-    <dd>documentation</dd>
-  <dt>klips/patches</dt>
-    <dd>patches for existing kernel files</dd>
-  <dt>klips/test</dt>
-    <dd>test stuff</dd>
-  <dt>klips/utils</dt>
-    <dd>low-level user utilities</dd>
-  <dt>klips/net/ipsec</dt>
-    <dd>actual klips kernel files</dd>
-  <dt>klips/src</dt>
-    <dd>symbolic link to klips/net/ipsec
-      <p>The "make insert" step of installation installs the patches and makes
-      a symbolic link from the kernel tree to klips/net/ipsec. The odd name of
-      klips/net/ipsec is dictated by some annoying limitations of the scripts
-      which build the Linux kernel.  The symbolic-link business is a bit
-      messy, but all the alternatives are worse.</p>
-      <p></p>
-    </dd>
-  <dt>klips/utils</dt>
-    <dd>Utility programs:
-      <p></p>
-      <dl>
-        <dt>eroute</dt>
-          <dd>manipulate IPsec extended routing tables</dd>
-        <dt>klipsdebug</dt>
-          <dd>set Klips (kernel IPsec support) debug features and level</dd>
-        <dt>spi</dt>
-          <dd>manage IPsec Security Associations</dd>
-        <dt>spigrp</dt>
-          <dd>group/ungroup IPsec Security Associations</dd>
-        <dt>tncfg</dt>
-          <dd>associate IPsec virtual interface with real interface</dd>
-      </dl>
-      <p>These are all normally invoked by ipsec(8) with commands such as</p>
-      <pre>        ipsec tncfg <var>arguments</var></pre>
-      There are section 8 man pages for all of these; the names have "ipsec_"
-      as a prefix, so your man command should be something like:
-      <pre>        man 8 ipsec_tncfg</pre>
-    </dd>
-</dl>
 
 <h2><a name="pluto.roadmap">Pluto key and connection management daemon</a></h2>
 

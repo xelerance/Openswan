@@ -39,8 +39,10 @@ packets are intended for diagnostics purposes, in a manner similar to
 <citerefentry><refentrytitle>ping</refentrytitle><manvolnum>8</manvolnum></citerefentry>
 does for ICMP echo request/reply packets.</para>
 
-<para>At the time of this writing, the ISAKMP echo request/reply exchange is still
-an internet-draft, and is therefore completely non-standard.</para>
+<para>
+At the time of this writing, the ISAKMP echo request/reply exchange is still
+an internet-draft, and is therefore completely non-standard.
+</para>
 
 <para><emphasis remap='I'>Ikeping</emphasis>
 will bind to the local address given by 
@@ -70,6 +72,14 @@ option is given, then
 <emphasis remap='I'>ikeping</emphasis>
 will not send any packets. Instead, it will listen for them and reply to
 each request received.</para>
+
+<para>If the 
+<option>--natt</option>
+option is given, then 
+<emphasis remap='I'>ikeping</emphasis>
+will set the socket to permit UDP encapsulated ESP packets.
+This is only useful in listen mode.</para>
+
 </refsect1>
 
 <refsect1 id='files'><title>FILES</title>

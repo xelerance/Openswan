@@ -60,3 +60,12 @@ s/TCP: Hash tables configured (established .* bind .*)/TCP: Hash tables configur
 /klips_info:ipsec_alg_init: calling ipsec_alg_static_init.*/d
 /ipsec_aes_init(alg_type=15 alg_id=12 name=aes): ret=0/d
 /ipsec_aes_init(alg_type=14 alg_id=9 name=aes_mac): ret=0/d
+/aio_thread failed to initialize context/d
+/2.6 AIO not supported/d
+/Disabling 2.6 AIO in tt mode/d
+/none on \/usr\/local/d
+/none on \/var\/tmp/d
+/^$/d
+/INIT: Switching to runlevel: 0/d
+/INIT: Sending processes the TERM signal/d
+

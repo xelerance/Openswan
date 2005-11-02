@@ -1,19 +1,20 @@
-Summary: Openswan IPSEC implementation
+Summary: Openswan IPsec userland tools
 Name: openswan
 %define majver 2
-%define minver 2.0
+%define minver 3.1
 Version: %{majver}.%{minver}
 %define opensw_release 1
 %define debug_package %{nil}
 Release: %{opensw_release}
+Vendor: Xelerance
 Source: http://www.openswan.org/code/openswan-%{majver}.%{minver}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-buildroot
-Summary: Openswan IPsec userland tools
 Url: http://www.openswan.org/
 License: GPL
 Group: System Environment/Daemons
 Provides: ipsec-userland
-Requires: iproute ipsec-tools
+BuildRequires: gmp-devel bison flex
+Requires: iproute >= 2.6.8 , gmp
 %define __spec_install_post /usr/lib/rpm/brp-compress || :
 
 %description
@@ -27,7 +28,7 @@ gateway machine and decrypted by the gateway at the other end of the
 tunnel.  The resulting tunnel is a virtual private network or VPN.
 
 This package contains the daemons and userland tools for setting up
-Openswan on a kernel with the 2.6 native IPsec code.
+Openswan on a kernel with either the KLIPS or NETKEY IPsec stack.
 
 %prep
 %setup -q -n openswan-%{majver}.%{minver}
@@ -38,6 +39,7 @@ Openswan on a kernel with the 2.6 native IPsec code.
   INC_USRLOCAL=%{_prefix} \
   MANTREE=%{_mandir} \
   INC_RCDEFAULT=%{_initrddir} \
+  FINALLIBDIR=%{_libdir}/ipsec \
   programs
 FS=$(pwd)
 
@@ -48,11 +50,11 @@ rm -rf ${RPM_BUILD_ROOT}
   INC_USRLOCAL=%{_prefix} \
   INC_RCDEFAULT=%{_initrddir} \
   MANTREE=%{buildroot}%{_mandir} \
+  FINALLIBDIR=%{_libdir}/ipsec \
   install
-rm -rf %{buildroot}/usr/share/doc/freeswan
 rm -rf %{buildroot}/usr/share/doc/openswan
 rm -rf %{buildroot}/usr/share/man
-install -d -m700 %{buildroot}%{_localstatedir}/run/pluto
+install -d -m 0700 %{buildroot}%{_localstatedir}/run/pluto
 install -d %{buildroot}%{_sbindir}
 
 %clean
@@ -60,12 +62,12 @@ rm -rf ${RPM_BUILD_ROOT}
 
 %files
 %defattr(-,root,root)
-%doc BUGS CHANGES COPYING
-%doc CREDITS README
+%doc BUGS CHANGES COPYING CREDITS README LICENSE ROADMAP.txt
 %doc doc/manpage.d/*
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.conf
 %attr(0700,root,root) %dir %{_sysconfdir}/ipsec.d
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.d/*
+%{_localstatedir}/run/pluto
 %config(noreplace) %{_initrddir}/ipsec
 %{_libdir}/ipsec
 %{_sbindir}/ipsec

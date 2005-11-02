@@ -11,9 +11,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.3 2004/04/09 18:28:19 mcr Exp $
+# RCSID $Id: Makefile,v 1.4 2004/12/18 18:13:45 mcr Exp $
 
-OPENSWANSRCDIR=../..
+OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include $(OPENSWANSRCDIR)/Makefile.inc
 
 SUBDIRS=libopenswan
@@ -27,6 +27,6 @@ def:
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) OPENSWANSRCDIR=$(OPENSWANSRCDIR)/.. $@ ) || exit 1; \
+		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1; \
 	done; \
 

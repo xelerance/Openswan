@@ -12,14 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_parser.c,v 1.123 2004/04/06 02:49:26 mcr Exp $
+ * RCSID $Id: pfkey_v2_parser.c,v 1.131 2005/01/26 00:50:35 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_netlink.c.
  */
 
-char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.123 2004/04/06 02:49:26 mcr Exp $";
+char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.131 2005/01/26 00:50:35 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -86,6 +86,7 @@ char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.123 2004/04/06 02
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
 
+#include "openswan/ipsec_kern24.h"
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
@@ -190,13 +191,13 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 	size_t sa_len;
 	char ipaddr_txt[ADDRTOA_BUF];
 	char ipaddr2_txt[ADDRTOA_BUF];
-#if defined (CONFIG_IPSEC_AUTH_HMAC_MD5) || defined (CONFIG_IPSEC_AUTH_HMAC_SHA1)
+#if defined (CONFIG_KLIPS_AUTH_HMAC_MD5) || defined (CONFIG_KLIPS_AUTH_HMAC_SHA1)
 	unsigned char kb[AHMD596_BLKLEN];
 #endif
-#ifdef CONFIG_IPSEC_ALG
+#ifdef CONFIG_KLIPS_ALG
 	struct ipsec_alg_enc *ixt_e = NULL;
 	struct ipsec_alg_auth *ixt_a = NULL;
-#endif /* CONFIG_IPSEC_ALG */
+#endif /* CONFIG_KLIPS_ALG */
 
 	if(ipsp == NULL) {
 		KLIPS_PRINT(debug_pfkey,
@@ -219,7 +220,7 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 	
 	switch(ipsp->ips_said.proto) {
 		
-#ifdef CONFIG_IPSEC_IPIP
+#ifdef CONFIG_KLIPS_IPIP
 	case IPPROTO_IPIP: {
 		addrtoa(((struct sockaddr_in*)(ipsp->ips_addr_s))->sin_addr,
 			0,
@@ -234,11 +235,11 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			    ipaddr2_txt);
 	}
 	break;
-#endif /* !CONFIG_IPSEC_IPIP */
-#ifdef CONFIG_IPSEC_AH
+#endif /* !CONFIG_KLIPS_IPIP */
+#ifdef CONFIG_KLIPS_AH
 	case IPPROTO_AH:
 		switch(ipsp->ips_authalg) {
-# ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
+# ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 		case AH_MD5: {
 			unsigned char *akp;
 			unsigned int aks;
@@ -288,16 +289,16 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			}
 
 			ictx = &(((struct md5_ctx*)(ipsp->ips_key_a))->ictx);
-			MD5Init(ictx);
-			MD5Update(ictx, kb, AHMD596_BLKLEN);
+			osMD5Init(ictx);
+			osMD5Update(ictx, kb, AHMD596_BLKLEN);
 
 			for (i = 0; i < AHMD596_BLKLEN; i++) {
 				kb[i] ^= (HMAC_IPAD ^ HMAC_OPAD);
 			}
 
 			octx = &(((struct md5_ctx*)(ipsp->ips_key_a))->octx);
-			MD5Init(octx);
-			MD5Update(octx, kb, AHMD596_BLKLEN);
+			osMD5Init(octx);
+			osMD5Update(octx, kb, AHMD596_BLKLEN);
 			
 #  if KLIPS_DIVULGE_HMAC_KEY
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
@@ -318,8 +319,8 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			kfree(akp);
 		}
 		break;
-# endif /* CONFIG_IPSEC_AUTH_HMAC_MD5 */
-# ifdef CONFIG_IPSEC_AUTH_HMAC_SHA1
+# endif /* CONFIG_KLIPS_AUTH_HMAC_MD5 */
+# ifdef CONFIG_KLIPS_AUTH_HMAC_SHA1
 		case AH_SHA: {
 			unsigned char *akp;
 			unsigned int aks;
@@ -398,7 +399,7 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			kfree(akp);
 		}
 		break;
-# endif /* CONFIG_IPSEC_AUTH_HMAC_SHA1 */
+# endif /* CONFIG_KLIPS_AUTH_HMAC_SHA1 */
 		default:
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_ipsec_sa_init: "
@@ -407,29 +408,29 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			SENDERR(EINVAL);
 		}
 	break;
-#endif /* CONFIG_IPSEC_AH */
-#ifdef CONFIG_IPSEC_ESP
+#endif /* CONFIG_KLIPS_AH */
+#ifdef CONFIG_KLIPS_ESP
 	case IPPROTO_ESP: {
-#if defined (CONFIG_IPSEC_AUTH_HMAC_MD5) || defined (CONFIG_IPSEC_AUTH_HMAC_SHA1)
+#if defined (CONFIG_KLIPS_AUTH_HMAC_MD5) || defined (CONFIG_KLIPS_AUTH_HMAC_SHA1)
 		unsigned char *akp;
 		unsigned int aks;
 #endif
-#if defined (CONFIG_IPSEC_ENC_3DES)
+#if defined (CONFIG_KLIPS_ENC_3DES)
 		unsigned char *ekp;
 		unsigned int eks;
 #endif
 
 		ipsp->ips_iv_size = 0;
-#ifdef CONFIG_IPSEC_ALG
+#ifdef CONFIG_KLIPS_ALG
 		if ((ixt_e=ipsp->ips_alg_enc)) {
 			ipsp->ips_iv_size = ixt_e->ixt_ivlen/8;
 		} else	
-#endif /* CONFIG_IPSEC_ALG */
+#endif /* CONFIG_KLIPS_ALG */
 		switch(ipsp->ips_encalg) {
-# ifdef CONFIG_IPSEC_ENC_3DES
+# ifdef CONFIG_KLIPS_ENC_3DES
 		case ESP_3DES:
-# endif /* CONFIG_IPSEC_ENC_3DES */
-# if defined(CONFIG_IPSEC_ENC_3DES)
+# endif /* CONFIG_KLIPS_ENC_3DES */
+# if defined(CONFIG_KLIPS_ENC_3DES)
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
 			            "klips_debug:pfkey_ipsec_sa_init: "
 			            "allocating %u bytes for iv.\n",
@@ -442,7 +443,7 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			ipsp->ips_iv_bits = ipsp->ips_iv_size * 8;
 			ipsp->ips_iv_size = EMT_ESPDES_IV_SZ;
 			break;
-# endif /* defined(CONFIG_IPSEC_ENC_3DES) */
+# endif /* defined(CONFIG_KLIPS_ENC_3DES) */
 		case ESP_NONE:
 			break;
 		default:
@@ -463,14 +464,14 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			ipsp->ips_iv_bits = ipsp->ips_iv_size * 8;
 		}
 		
-#ifdef CONFIG_IPSEC_ALG
+#ifdef CONFIG_KLIPS_ALG
 		if (ixt_e) {
 			if ((error=ipsec_alg_enc_key_create(ipsp)) < 0)
 				SENDERR(-error);
 		} else
-#endif /* CONFIG_IPSEC_ALG */
+#endif /* CONFIG_KLIPS_ALG */
 		switch(ipsp->ips_encalg) {
-# ifdef CONFIG_IPSEC_ENC_3DES
+# ifdef CONFIG_KLIPS_ENC_3DES
 		case ESP_3DES:
 			if(ipsp->ips_key_bits_e != (EMT_ESP3DES_KEY_SZ * 8)) {
 				KLIPS_PRINT(debug_pfkey,
@@ -528,7 +529,7 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			memset(ekp, 0, eks);
 			kfree(ekp);
 			break;
-# endif /* CONFIG_IPSEC_ENC_3DES */
+# endif /* CONFIG_KLIPS_ENC_3DES */
                 case ESP_NONE:
 			break;
 		default:
@@ -539,15 +540,15 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			SENDERR(EINVAL);
 		}
 
-#ifdef CONFIG_IPSEC_ALG
+#ifdef CONFIG_KLIPS_ALG
 		if ((ixt_a=ipsp->ips_alg_auth)) {
 			if ((error=ipsec_alg_auth_key_create(ipsp)) < 0)
 				SENDERR(-error);
 		} else	
-#endif /* CONFIG_IPSEC_ALG */
+#endif /* CONFIG_KLIPS_ALG */
 		
 		switch(ipsp->ips_authalg) {
-# ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
+# ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 		case AH_MD5: {
 			MD5_CTX *ictx;
 			MD5_CTX *octx;
@@ -595,16 +596,16 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			}
 
 			ictx = &(((struct md5_ctx*)(ipsp->ips_key_a))->ictx);
-			MD5Init(ictx);
-			MD5Update(ictx, kb, AHMD596_BLKLEN);
+			osMD5Init(ictx);
+			osMD5Update(ictx, kb, AHMD596_BLKLEN);
 
 			for (i = 0; i < AHMD596_BLKLEN; i++) {
 				kb[i] ^= (HMAC_IPAD ^ HMAC_OPAD);
 			}
 
 			octx = &(((struct md5_ctx*)(ipsp->ips_key_a))->octx);
-			MD5Init(octx);
-			MD5Update(octx, kb, AHMD596_BLKLEN);
+			osMD5Init(octx);
+			osMD5Update(octx, kb, AHMD596_BLKLEN);
 			
 #  if KLIPS_DIVULGE_HMAC_KEY
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
@@ -624,8 +625,8 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			kfree(akp);
 			break;
 		}
-# endif /* CONFIG_IPSEC_AUTH_HMAC_MD5 */
-# ifdef CONFIG_IPSEC_AUTH_HMAC_SHA1
+# endif /* CONFIG_KLIPS_AUTH_HMAC_MD5 */
+# ifdef CONFIG_KLIPS_AUTH_HMAC_SHA1
 		case AH_SHA: {
 			SHA1_CTX *ictx;
 			SHA1_CTX *octx;
@@ -701,7 +702,7 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 			kfree(akp);
 			break;
 		}
-# endif /* CONFIG_IPSEC_AUTH_HMAC_SHA1 */
+# endif /* CONFIG_KLIPS_AUTH_HMAC_SHA1 */
 		case AH_NONE:
 			break;
 		default:
@@ -713,20 +714,19 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp, struct sadb_ext **extensions)
 		}
 	}
 			break;
-#endif /* !CONFIG_IPSEC_ESP */
-#ifdef CONFIG_IPSEC_IPCOMP
+#endif /* !CONFIG_KLIPS_ESP */
+#ifdef CONFIG_KLIPS_IPCOMP
 	case IPPROTO_COMP:
 		ipsp->ips_comp_adapt_tries = 0;
 		ipsp->ips_comp_adapt_skip = 0;
 		ipsp->ips_comp_ratio_cbytes = 0;
 		ipsp->ips_comp_ratio_dbytes = 0;
 		break;
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 	default:
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_ipsec_sa_init: "
-			    "proto=%d unknown.\n",
-			    ipsp->ips_said.proto);
+		printk(KERN_ERR "KLIPS sa initialization: "
+		       "proto=%d unknown.\n",
+		       ipsp->ips_said.proto);
 		SENDERR(EINVAL);
 	}
 	
@@ -1710,7 +1710,7 @@ pfkey_get_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 		SENDERR(-error);
 	}
 	
-	if((error = pfkey_upmsg(sk->socket, pfkey_reply))) {
+	if((error = pfkey_upmsg(sk->sk_socket, pfkey_reply))) {
 		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_get_parse: "
 			    "failed to send the get reply message\n");
 		SENDERR(-error);
@@ -1798,7 +1798,7 @@ pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey
 		SENDERR(EINVAL);
 	}
 
-	if(!pfkey_list_insert_socket(sk->socket,
+	if(!pfkey_list_insert_socket(sk->sk_socket,
 				 &(pfkey_registered_sockets[satype]))) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_register_parse: "
@@ -1938,6 +1938,7 @@ pfkey_register_reply(int satype, struct sadb_msg *sadb_msg)
 			    pfkey_supported_listp->supportedp->supported_alg_maxbits);
 		pfkey_supported_listp = pfkey_supported_listp->next;
 	}
+	
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
 							  SADB_REGISTER,
 							  satype,
@@ -1992,6 +1993,7 @@ pfkey_register_reply(int satype, struct sadb_msg *sadb_msg)
 	if(alg_e) {
 		kfree(alg_e);
 	}
+
 	if (pfkey_reply) {
 		pfkey_msg_free(&pfkey_reply);
 	}
@@ -2004,9 +2006,9 @@ pfkey_expire_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 {
 	int error = 0;
 	struct socket_list *pfkey_socketsp;
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_expire_parse: .\n");
@@ -2338,9 +2340,9 @@ DEBUG_NO_STATIC int
 pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extracted_data* extr)
 {
 	int error = 0;
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	char buf1[64], buf2[64];
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 	struct sadb_ext *extensions_reply[SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
@@ -2373,7 +2375,7 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 	srcmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_src;
 	dstmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_dst;
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	if (debug_pfkey) {
 		subnettoa(extr->eroute->er_eaddr.sen_ip_src,
 			  extr->eroute->er_emask.sen_ip_src, 0, buf1, sizeof(buf1));
@@ -2384,7 +2386,7 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 			    "calling breakeroute and/or makeroute for %s->%s\n",
 			    buf1, buf2);
 	}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 	if(extr->ips->ips_flags & SADB_X_SAFLAGS_INFLOW) {
 /*	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) */ 
 		struct ipsec_sa *ipsp, *ipsq;
@@ -2591,9 +2593,9 @@ DEBUG_NO_STATIC int
 pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extracted_data* extr)
 {
 	int error = 0;
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	char buf1[64], buf2[64];
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 	struct sadb_ext *extensions_reply[SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
@@ -2645,7 +2647,7 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		srcmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_src;
 		dstmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_dst;
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 		if (debug_pfkey) {
 			subnettoa(extr->eroute->er_eaddr.sen_ip_src,
 				  extr->eroute->er_emask.sen_ip_src, 0, buf1, sizeof(buf1));
@@ -2656,7 +2658,7 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 				    "calling breakeroute for %s->%s\n",
 				    buf1, buf2);
 		}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 		error = ipsec_breakroute(&(extr->eroute->er_eaddr),
 					     &(extr->eroute->er_emask),
 					     &first, &last);
@@ -3352,7 +3354,6 @@ pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg,
 	case SADB_DELETE:
 	case SADB_X_GRPSA:
 	case SADB_X_ADDFLOW:
-
 		if(!(extr.ips->ips_said.proto = satype2proto(pfkey_msg->sadb_msg_satype))) {
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_msg_interp: "
@@ -3438,6 +3439,36 @@ pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg,
 
 /*
  * $Log: pfkey_v2_parser.c,v $
+ * Revision 1.131  2005/01/26 00:50:35  mcr
+ * 	adjustment of confusion of CONFIG_IPSEC_NAT vs CONFIG_KLIPS_NAT,
+ * 	and make sure that NAT_TRAVERSAL is set as well to match
+ * 	userspace compiles of code.
+ *
+ * Revision 1.130  2004/09/08 17:21:36  ken
+ * Rename MD5* -> osMD5 functions to prevent clashes with other symbols exported by kernel modules (CIFS in 2.6 initiated this)
+ *
+ * Revision 1.129  2004/09/06 18:36:30  mcr
+ * 	if a protocol can not be found, then log it. This is not
+ * 	debugging.
+ *
+ * Revision 1.128  2004/08/21 00:45:19  mcr
+ * 	CONFIG_KLIPS_NAT was wrong, also need to include udp.h.
+ *
+ * Revision 1.127  2004/08/20 21:45:45  mcr
+ * 	CONFIG_KLIPS_NAT_TRAVERSAL is not used in an attempt to
+ * 	be 26sec compatible. But, some defines where changed.
+ *
+ * Revision 1.126  2004/08/17 03:27:23  mcr
+ * 	klips 2.6 edits.
+ *
+ * Revision 1.125  2004/08/04 15:57:07  mcr
+ * 	moved des .h files to include/des/ *
+ * 	included 2.6 protocol specific things
+ * 	started at NAT-T support, but it will require a kernel patch.
+ *
+ * Revision 1.124  2004/07/10 19:11:18  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.123  2004/04/06 02:49:26  mcr
  * 	pullup of algo code from alg-branch.
  *

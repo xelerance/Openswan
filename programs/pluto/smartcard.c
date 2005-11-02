@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: smartcard.c,v 1.5 2004/06/14 01:46:03 mcr Exp $
+ * RCSID $Id: smartcard.c,v 1.6 2004/09/22 15:47:07 paul Exp $
  */
 
 #include <stdio.h>
@@ -632,6 +632,7 @@ void
 scx_list(bool utc)
 {
     smartcard_t *sc = smartcards;
+    char tbuf[TIMETOA_BUF];
 
     if (sc != NULL)
     {
@@ -642,7 +643,7 @@ scx_list(bool utc)
 
     while (sc != NULL)
     {
-	whack_log(RC_COMMENT, "%s, count: %d", timetoa(&sc->last_load, utc)
+	whack_log(RC_COMMENT, "%s, count: %d", timetoa(&sc->last_load, utc, tbuf, sizeof(tbuf))
 	    , sc->count);
 	whack_log(RC_COMMENT, "       reader: %d, id: %s, has %s pin", sc->reader, sc->id
 	    , (sc->pin.ptr == NULL)? "no" : ((sc->valid)? "valid" : "invalid"));

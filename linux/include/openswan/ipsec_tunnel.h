@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_tunnel.h,v 1.29 2004/04/05 19:55:07 mcr Exp $
+ * RCSID $Id: ipsec_tunnel.h,v 1.31 2004/08/03 18:18:02 mcr Exp $
  */
 
 
@@ -70,13 +70,13 @@ struct ipsectunnelconf
 struct ipsecpriv
 {
 	struct sk_buff_head sendq;
-	struct device *dev;
+	struct net_device *dev;
 	struct wait_queue *wait_queue;
 	char locked;
 	int  (*hard_start_xmit) (struct sk_buff *skb,
-		struct device *dev);
+		struct net_device *dev);
 	int  (*hard_header) (struct sk_buff *skb,
-		struct device *dev,
+		struct net_device *dev,
 		unsigned short type,
 		void *daddr,
 		void *saddr,
@@ -84,23 +84,23 @@ struct ipsecpriv
 #ifdef NET_21
 	int  (*rebuild_header)(struct sk_buff *skb);
 #else /* NET_21 */
-	int  (*rebuild_header)(void *buff, struct device *dev,
+	int  (*rebuild_header)(void *buff, struct net_device *dev,
 			unsigned long raddr, struct sk_buff *skb);
 #endif /* NET_21 */
-	int  (*set_mac_address)(struct device *dev, void *addr);
+	int  (*set_mac_address)(struct net_device *dev, void *addr);
 #ifndef NET_21
-	void (*header_cache_bind)(struct hh_cache **hhp, struct device *dev,
+	void (*header_cache_bind)(struct hh_cache **hhp, struct net_device *dev,
 				 unsigned short htype, __u32 daddr);
 #endif /* !NET_21 */
-	void (*header_cache_update)(struct hh_cache *hh, struct device *dev, unsigned char *  haddr);
-	struct net_device_stats *(*get_stats)(struct device *dev);
+	void (*header_cache_update)(struct hh_cache *hh, struct net_device *dev, unsigned char *  haddr);
+	struct net_device_stats *(*get_stats)(struct net_device *dev);
 	struct net_device_stats mystats;
 	int mtu;	/* What is the desired MTU? */
 };
 
 extern char ipsec_tunnel_c_version[];
 
-extern struct device *ipsecdevices[IPSEC_NUM_IF];
+extern struct net_device *ipsecdevices[IPSEC_NUM_IF];
 
 int ipsec_tunnel_init_devices(void);
 
@@ -108,15 +108,15 @@ int ipsec_tunnel_init_devices(void);
 
 extern /* void */ int ipsec_init(void);
 
-extern int ipsec_tunnel_start_xmit(struct sk_buff *skb, struct device *dev);
+extern int ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev);
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 extern int debug_tunnel;
 extern int sysctl_ipsec_debug_verbose;
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 #endif /* __KERNEL__ */
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 #define DB_TN_INIT	0x0001
 #define DB_TN_PROCFS	0x0002
 #define DB_TN_XMIT	0x0010
@@ -124,10 +124,17 @@ extern int sysctl_ipsec_debug_verbose;
 #define DB_TN_CROUT	0x0040
 #define DB_TN_OXFS	0x0080
 #define DB_TN_REVEC	0x0100
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 /*
  * $Log: ipsec_tunnel.h,v $
+ * Revision 1.31  2004/08/03 18:18:02  mcr
+ * 	in 2.6, use "net_device" instead of #define device->net_device.
+ * 	this probably breaks 2.0 compiles.
+ *
+ * Revision 1.30  2004/07/10 19:08:41  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.29  2004/04/05 19:55:07  mcr
  * Moved from linux/include/freeswan/ipsec_tunnel.h,v
  *

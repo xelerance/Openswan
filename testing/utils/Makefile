@@ -11,10 +11,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.5 2002/06/02 21:51:56 mcr Exp $
+# RCSID $Id: Makefile,v 1.7 2004/12/18 18:13:45 mcr Exp $
 
-FREESWANSRCDIR=../..
-include $(FREESWANSRCDIR)/Makefile.inc
+OPENSWANSRCDIR?=$(shell cd ../..; pwd)
+include $(OPENSWANSRCDIR)/Makefile.inc
 
 SUBDIRS=uml_netjig 
 
@@ -27,6 +27,6 @@ def:
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) FREESWANSRCDIR=$(FREESWANSRCDIR)/.. $@ ) || exit 1;\
-	done; \
+		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1;\
+	done; 
 

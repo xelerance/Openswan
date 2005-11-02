@@ -214,6 +214,20 @@ alg_info_snprint_esp(char *buf, int buflen, struct alg_info_esp *alg_info)
 	return ptr-buf;
 }
 
+char *alg_info_snprint_ike1(struct ike_info *ike_info
+			    , int eklen, int aklen
+			    , char *buf
+			    , int buflen)
+{
+    snprintf(buf, buflen-1, "%d_%03d-%d_%03d-%d",
+	     ike_info->ike_ealg,
+	     eklen,
+	     ike_info->ike_halg,
+	     aklen,
+	     ike_info->ike_modp);
+    return buf;
+}
+
 int
 alg_info_snprint_ike(char *buf, int buflen, struct alg_info_ike *alg_info)
 {
@@ -392,6 +406,8 @@ kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy )
 	int trans_cnt;
 
 	if (!(policy & POLICY_ENCRYPT))	{     /* possible for AH-only modes */
+	    DBG(DBG_CONTROL
+		, DBG_log("algo code only works for encryption modes"));
 		return NULL;
 	}
 
@@ -577,6 +593,48 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
 	);
 }
 
+struct db_sa *
+kernel_alg_makedb(struct alg_info_esp *ei)
+{
+    struct db_context *dbnew;
+    struct db_prop *p;
+    struct db_prop_conj pc;
+    struct db_sa t, *n;
+    lset_t policy = POLICY_ENCRYPT;  /* hack for now */
+
+    if(ei == NULL) {
+	DBG(DBG_CONTROL, DBG_log("empty esp_info, returning empty"));
+	return NULL;
+    }
+    
+    dbnew=kernel_alg_db_new(ei, policy);
+    if(!dbnew) {
+	DBG(DBG_CONTROL, DBG_log("failed to translate esp_info to proposal, returning empty"));
+	return NULL;
+    }
+    
+    p = db_prop_get(dbnew);
+
+    if(!p) {
+	DBG(DBG_CONTROL, DBG_log("failed to get proposal from context, returning empty"));
+	db_destroy(dbnew);
+	return NULL;
+    }
+    
+    pc.prop_cnt = 1;
+    pc.props = p;
+    t.prop_conj_cnt = 1;
+    t.prop_conjs = &pc;
+
+    /* make a fresh copy */
+    n = sa_copy_sa(&t, 0);
+    
+    db_destroy(dbnew);
+
+    DBG(DBG_CONTROL
+	, DBG_log("returning new proposal from esp_info"));
+    return n;
+}
 
 /*
  * Local Variables:

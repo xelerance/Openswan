@@ -14,9 +14,18 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: openswan.h,v 1.89 2004/06/08 00:53:13 mcr Exp $
+ * RCSID $Id: openswan.h,v 1.92 2004/08/20 21:44:26 mcr Exp $
  */
 #define	_OPENSWAN_H	/* seen it, no need to see it again */
+
+/* you'd think this should be builtin to compiler... */
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
+#endif
 
 
 
@@ -76,22 +85,17 @@
 #  define IPPROTO_INT 61
 #endif /* !IPPROTO_INT */
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 #ifndef DEBUG_NO_STATIC
 #  define DEBUG_NO_STATIC
 #endif
-#else /* CONFIG_IPSEC_DEBUG */
+#else /* CONFIG_KLIPS_DEBUG */
 #ifndef DEBUG_NO_STATIC
 #  define DEBUG_NO_STATIC static
 #endif
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL /* KERNEL ifdef */
-#ifndef NAT_TRAVERSAL
-#define NAT_TRAVERSAL
-#endif
-#endif
-#ifdef NAT_TRAVERSAL
+#if !defined(ESPINUDP_WITH_NON_IKE)
 #define ESPINUDP_WITH_NON_IKE   1  /* draft-ietf-ipsec-nat-t-ike-00/01 */
 #define ESPINUDP_WITH_NON_ESP   2  /* draft-ietf-ipsec-nat-t-ike-02    */
 #endif

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: demux.h,v 1.28 2004/03/21 17:01:35 ken Exp $
+ * RCSID $Id: demux.h,v 1.33.2.1 2005/05/18 20:55:13 ken Exp $
  */
 
 #ifndef _DEMUX_H
@@ -23,12 +23,7 @@
 
 struct state;	/* forward declaration of tag */
 extern void init_demux(void);
-#ifdef NAT_TRAVERSAL
-#define send_packet(st,wh) _send_packet(st,wh,TRUE)
-extern bool _send_packet(struct state *st, const char *where, bool verbose);
-#else
-extern bool send_packet(struct state *st, const char *where);
-#endif
+extern bool send_packet(struct state *st, const char *where, bool verbose);
 extern void comm_handle(const struct iface *ifp);
 
 extern u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
@@ -59,7 +54,7 @@ struct msg_digest {
     struct msg_digest *next;	/* for free list */
     chunk_t raw_packet;		/* if encrypted, received packet before decryption */
     const struct iface *iface;	/* interface on which message arrived */
-    ip_address sender;	/* where message came from */
+    ip_address sender;	        /* where message came from (network order) */
     u_int16_t sender_port;	/* host order */
     pb_stream packet_pbs;	/* whole packet */
     pb_stream message_pbs;	/* message to be processed */
@@ -81,25 +76,18 @@ struct msg_digest {
     struct isakmp_quirks quirks;
 };
 
+extern struct msg_digest *alloc_md(void);
 extern void release_md(struct msg_digest *md);
-
-/* status for state-transition-function
- * Note: STF_FAIL + notification_t means fail with that notification
- */
-
-typedef enum {
-    STF_IGNORE,	/* don't respond */
-    STF_SUSPEND,    /* unfinished -- don't release resources */
-    STF_OK,	/* success */
-    STF_INTERNAL_ERROR,	/* discard everything, we failed */
-    STF_FAIL,	/* discard everything, something failed.  notification_t added. */
-    STF_FATAL,  /* just stop. we can't continue */
-} stf_status;
 
 typedef stf_status state_transition_fn(struct msg_digest *md);
 
 extern void complete_state_transition(struct msg_digest **mdp, stf_status result);
+extern void process_packet(struct msg_digest **mdp);
 
 extern void free_md_pool(void);
+
+/* deal with echo request/reply */
+extern void receive_ike_echo_request(struct msg_digest *md);
+extern void receive_ike_echo_reply(struct msg_digest *md);
 
 #endif /* _DEMUX_H */

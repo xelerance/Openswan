@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: nat_traversal.h,v 1.2 2004/06/01 14:43:20 ken Exp $
+ * RCSID $Id: nat_traversal.h,v 1.4 2005/01/23 19:17:25 mcr Exp $
  */
 
 #ifndef _NAT_TRAVERSAL_H_
@@ -102,7 +102,9 @@ void nat_traversal_ka_event (void);
 
 void nat_traversal_show_result (u_int32_t nt, u_int16_t sport);
 
-int nat_traversal_espinudp_socket (int sk, u_int32_t type);
+extern int nat_traversal_espinudp_socket (int sk
+					  , const char *fam
+					  , u_int32_t type);
 
 /**
  * Vendor ID
@@ -133,13 +135,13 @@ nat_traversal_port_float(struct state *st, struct msg_digest *md, bool in);
  * Encapsulation mode macro (see demux.c)
  */
 #define NAT_T_ENCAPSULATION_MODE(st,nat_t_policy) ( \
-	((st)->nat_traversal & NAT_T_DETECTED) \
+	((st)->hidden_variables.st_nat_traversal & NAT_T_DETECTED) \
 		? ( ((nat_t_policy) & POLICY_TUNNEL) \
-			? ( ((st)->nat_traversal & NAT_T_WITH_RFC_VALUES) \
+			? ( ((st)->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES) \
 				? (ENCAPSULATION_MODE_UDP_TUNNEL_RFC) \
 				: (ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS) \
 			  ) \
-			: ( ((st)->nat_traversal & NAT_T_WITH_RFC_VALUES) \
+			: ( ((st)->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES) \
 				? (ENCAPSULATION_MODE_UDP_TRANSPORT_RFC) \
 				: (ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS) \
 			  ) \

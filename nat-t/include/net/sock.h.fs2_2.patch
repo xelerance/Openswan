@@ -1,5 +1,5 @@
---- ./include/net/sock.h	Fri Nov  2 17:39:16 2001
-+++ ./include/net/sock.h	Mon Jun 10 19:44:55 2002
+--- linux/include/net/sock.h	Fri Nov  2 17:39:16 2001
++++ linux/include/net/sock.h	Mon Jun 10 19:44:55 2002
 @@ -201,6 +201,12 @@
  	__u32	end_seq;
  };

@@ -1,0 +1,97 @@
+# Openswan master makefile
+# Copyright (C) 1998-2002  Henry Spencer.
+# Copyright (C) 2003-2004  Xelerance Corporation
+# 
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# RCSID $Id: Makefile.top,v 1.2 2004/12/21 04:24:02 mcr Exp $
+
+
+PATCHES=linux
+# where KLIPS goes in the kernel
+# note, some of the patches know the last part of this path
+KERNELKLIPS=$(KERNELSRC)/net/ipsec
+KERNELCRYPTODES=$(KERNELSRC)/crypto/ciphers/des
+KERNELLIBFREESWAN=$(KERNELSRC)/lib/libfreeswan
+KERNELLIBZLIB=$(KERNELSRC)/lib/zlib
+KERNELINCLUDE=$(KERNELSRC)/include
+
+MAKEUTILS=packaging/utils
+ERRCHECK=${MAKEUTILS}/errcheck
+KVUTIL=${MAKEUTILS}/kernelversion
+KVSHORTUTIL=${MAKEUTILS}/kernelversion-short
+
+SUBDIRS=doc lib programs testing
+
+clean::
+	make modclean
+	make mod26clean
+
+distclean:	clean
+	rm -f out.kpatch 
+	if [ -f umlsetup.sh ]; then source umlsetup.sh; if [ -d "$$POOLSPACE" ]; then rm -rf $$POOLSPACE; fi; fi
+
+install_file_list:
+	@for d in $(SUBDIRS) ; \
+	do \
+		(cd $$d && $(MAKE) --no-print-directory srcdir=${OPENSWANSRCDIR}/$$d/ OPENSWANSRCDIR=${OPENSWANSRCDIR} install_file_list ) || exit 1; \
+	done; 
+
+# uninstall, as much as possible
+uninstall:
+	$(MAKE) --no-print-directory install_file_list | egrep -v '(/ipsec.conf$$|/ipsec.d/)' | xargs rm -f
+
+taroldinstall:
+	tar --ignore-failed-read -c -z -f oldFreeSWAN.tar.gz `$(MAKE) --no-print-directory install_file_list`
+
+# some oddities meant for the developers, probably of no use to users
+
+# make tags and TAGS files from ctags and etags for vi and emacs, respectively.
+tags TAGS: dummy
+	etags `find lib programs linux -name '*.[ch]'`
+	ctags `find lib programs linux -name '*.[ch]'`
+
+.PHONY: dummy
+dummy:
+
+uml:	programs checkprograms
+	@echo XXX do some checks to see if all the manual pieces are done.
+	-chmod +x testing/utils/make-uml.sh
+	testing/utils/make-uml.sh `pwd`
+
+umluserland:
+	(touch ${OPENSWANSRCDIR}/Makefile.inc && source ${OPENSWANSRCDIR}/umlsetup.sh && cd $$POOLSPACE && make $$OPENSWANHOSTS $$REGULARHOSTS ) 
+
+
+# DESTDIR is normally set in Makefile.inc
+# These recipes explicitly pass it to the second-level makes so that
+# DESTDIR can be adjusted for building for UML without changing Makefile.inc
+# See	testing/utils/functions.sh
+#	testing/utils/make-uml.sh
+#	testing/utils/uml-functions.sh
+check:	uml Makefile.ver
+ifneq ($(strip(${REGRESSRESULTS})),)
+	mkdir -p ${REGRESSRESULTS}
+endif
+	@for d in $(SUBDIRS); do (cd $$d && $(MAKE) DESTDIR=${DESTDIR} checkprograms || exit 1); done
+	@for d in $(SUBDIRS); \
+	do \
+		echo ===================================; \
+		echo Now making check in $$d; \
+		echo ===================================; \
+		(cd $$d && $(MAKE) DESTDIR=${DESTDIR} check || exit 1);\
+	done
+ifneq ($(strip(${REGRESSRESULTS})),)
+	-perl testing/utils/regress-summarize-results.pl ${REGRESSRESULTS}
+endif
+
+
+

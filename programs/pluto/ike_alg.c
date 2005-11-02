@@ -46,12 +46,201 @@
 #include "id.h"
 #include "connections.h"
 #include "kernel.h"
+#include "plutoalg.h"
+
+#define AD(x) x, elemsof(x)	/* Array Description */
+#define AD_NULL NULL, 0
+/*
+ * empty structure, for clone use.
+ */
+static struct db_attr otempty[] = {
+	{ OAKLEY_ENCRYPTION_ALGORITHM, -1 },
+	{ OAKLEY_HASH_ALGORITHM,       -1 },
+	{ OAKLEY_AUTHENTICATION_METHOD, -1 },
+	{ OAKLEY_GROUP_DESCRIPTION,    -1 },
+	};
+
+static struct db_trans oakley_trans_empty[] = {
+	{ KEY_IKE, AD(otempty) },
+    };
+
+static struct db_prop oakley_pc_empty[] =
+    { { PROTO_ISAKMP, AD(oakley_trans_empty) } };
+
+static struct db_prop_conj oakley_props_empty[] = { { AD(oakley_pc_empty) } };
+
+struct db_sa oakley_empty = { AD(oakley_props_empty) };
 
 #define return_on(var, val) do { var=val;goto return_out; } while(0);
 
 /*
  * 	Create an OAKLEY proposal based on alg_info and policy
  */
+struct db_sa *
+oakley_alg_makedb(struct alg_info_ike *ai
+		  , struct db_sa *base
+		  , int maxtrans)
+{
+    struct db_context inprog UNUSED;
+    struct db_sa *gsp = NULL;
+    struct db_sa *emp_sp = NULL;
+    struct ike_info *ike_info;
+    unsigned ealg, halg, modp, eklen=0;
+    struct encrypt_desc *enc_desc;
+    int transcnt = 0;
+    int i;
+
+    /*
+     * start by copying the proposal that would have been picked by
+     * standard defaults.
+     */
+
+    if (!ai) {
+	DBG(DBG_CRYPT,DBG_log("no IKE algorithms for this connection "));
+	
+	goto fail;
+    }
+
+    gsp = sa_copy_sa(&oakley_empty, 0);
+
+    /*
+     * for each group, we will create a new proposal item, and then
+     * append it to the list of transforms in the conjoint point.
+     *
+     * when creating each item, we will use the first transform
+     * from the base item as the template.
+     */
+    ALG_INFO_IKE_FOREACH(ai, ike_info, i) {
+
+	if(ike_info->ike_default == FALSE) {
+	    struct db_attr  *enc, *hash, *auth, *grp;
+	    struct db_trans *trans;
+	    struct db_prop  *prop;
+	    struct db_prop_conj *cprop;
+	    
+	    ealg = ike_info->ike_ealg;
+	    halg = ike_info->ike_halg;
+	    modp = ike_info->ike_modp;
+	    eklen= ike_info->ike_eklen;
+	    
+	    if (!ike_alg_enc_present(ealg)) {
+		DBG_log("ike_alg_db_new() "
+			"ike enc ealg=%d not present",
+			ealg);
+		continue;
+	    }
+	    if (!ike_alg_hash_present(halg)) {
+		DBG_log("ike_alg_db_new() "
+			"ike hash halg=%d not present",
+			halg);
+		continue;
+	    }
+	    enc_desc = ike_alg_get_encrypter(ealg);
+	    
+	    passert(enc_desc != NULL);
+	    if (eklen 
+		&& (eklen < enc_desc->keyminlen
+		    || eklen >  enc_desc->keymaxlen))
+		
+		{
+		    DBG_log("ike_alg_db_new() "
+			    "ealg=%d (specified) keylen:%d, "
+			    "not valid "
+			    "min=%d, max=%d"
+			    , ealg
+			    , eklen
+			    , enc_desc->keyminlen
+			    , enc_desc->keymaxlen
+			    );
+		    continue;
+		}
+	    
+	    /* okay copy the basic item, and modify it. */
+	    emp_sp = sa_copy_sa_first(base);
+	    
+	    passert(emp_sp->prop_conj_cnt == 1);
+	    cprop = &emp_sp->prop_conjs[0];
+	    
+	    passert(cprop->prop_cnt == 1);
+	    prop = &cprop->props[0];
+	    
+	    passert(prop->trans_cnt == 1);
+	    trans = &prop->trans[0];
+	    
+	    passert(trans->attr_cnt == 4);
+	    enc  = &trans->attrs[0];
+	    hash = &trans->attrs[1];
+	    auth = &trans->attrs[2];
+	    grp  = &trans->attrs[3];
+
+	    passert(enc->type == OAKLEY_ENCRYPTION_ALGORITHM);
+	    if(ealg > 0) {
+		enc->val = ealg;
+	    }
+	    
+	    modp = ike_info->ike_modp;
+	    eklen= ike_info->ike_eklen;
+	    
+	    passert(hash->type == OAKLEY_HASH_ALGORITHM);
+	    if(halg > 0) {
+		hash->val = halg;
+	    }
+	    
+	    passert(auth->type == OAKLEY_AUTHENTICATION_METHOD);
+	    /* no setting for auth type for IKE */
+	    
+	    passert(grp->type == OAKLEY_GROUP_DESCRIPTION);
+	    if(modp > 0) {
+		grp->val = modp;
+	    }
+	} else {
+	    emp_sp = sa_copy_sa(base, 0);
+	}
+
+	if(maxtrans == 1) {
+	    if(transcnt == 0) {
+		DBG(DBG_CONTROL, DBG_log("using transform (%d,%d,%d,%ld)"
+					 , ike_info->ike_ealg
+					 , ike_info->ike_halg
+					 , ike_info->ike_modp
+					 , (long)ike_info->ike_eklen));
+		free_sa(gsp);
+		gsp = emp_sp;
+	    } else {
+		free_sa(emp_sp);
+	    }
+
+	    if(transcnt > 0) {
+		if(transcnt == 1) {
+		    loglog(RC_LOG_SERIOUS
+			   
+			   , "multiple transforms were set in aggressive mode. Only first one used.");
+		}
+
+		loglog(RC_LOG_SERIOUS
+		       , "transform (%d,%d,%d,%ld) ignored."
+		       , ike_info->ike_ealg
+		       , ike_info->ike_halg
+		       , ike_info->ike_modp
+		       , (long)ike_info->ike_eklen);
+	    } 
+
+	} else {
+	    struct db_sa *new;
+
+	    /* now merge emp_sa and gsp */
+	    new = sa_merge_proposals(gsp, emp_sp);
+	    free_sa(gsp);
+	    free_sa(emp_sp);
+	    emp_sp = NULL;
+	    gsp = new;
+	}
+	transcnt++;
+    }
+fail:
+    return gsp;
+}
+
 struct db_context *
 ike_alg_db_new(struct alg_info_ike *ai , lset_t policy)
 {
@@ -62,14 +251,24 @@ ike_alg_db_new(struct alg_info_ike *ai , lset_t policy)
 	int i;
 
 	if (!ai) {
-		DBG_log("no IKE algorithms for this connection ");
+		DBG(DBG_CRYPT,DBG_log("no IKE algorithms for this connection "));
 
 		goto fail;
 	}
 	policy &= POLICY_ID_AUTH_MASK;
 	db_ctx = db_prop_new(PROTO_ISAKMP, 8, 8 * 5);
+
 	/* for each group */
 	ALG_INFO_IKE_FOREACH(ai, ike_info, i) {
+	        char ikebuf[IKEALGBUF_LEN];
+
+		DBG(DBG_CONTROLMORE
+		    , DBG_log("examining ike policy of %s"
+			      , alg_info_snprint_ike1(ike_info
+						      , 0, 0
+						      , ikebuf
+						      , sizeof(ikebuf))));
+
 		ealg = ike_info->ike_ealg;
 		halg = ike_info->ike_halg;
 		modp = ike_info->ike_modp;
@@ -171,7 +370,7 @@ ike_alg_show_status(void)
 			, (int)((struct hash_desc *)algo)->hash_digest_len
 			);
 	}
-#define IKE_DH_ALG_FOR_EACH(idx) for(idx = 0; idx != elemsof(oakley_group); idx++)
+#define IKE_DH_ALG_FOR_EACH(idx) for(idx = 0; idx != oakley_group_size; idx++)
 	IKE_DH_ALG_FOR_EACH(i) {
 		const struct oakley_group_desc *gdesc=oakley_group+i;
 		whack_log(RC_COMMENT, "algorithm IKE dh group: id=%d, name=%s, bits=%d"
@@ -437,6 +636,10 @@ ike_alg_register_hash(struct hash_desc *hash_desc)
 				hash_desc->common.algo_id);
 		alg_name="<NULL>";
 	}
+	
+	if(hash_desc->common.name == NULL) {
+	    hash_desc->common.name = clone_str(alg_name, "hasher name");
+	}
 
 return_out:
 	if (ret==0)
@@ -454,11 +657,15 @@ ike_alg_register_enc(struct encrypt_desc *enc_desc)
 {
 	const char *alg_name;
 	int ret=0;
+
+#if OAKLEY_ENCRYPT_MAX < 255
 	if (enc_desc->common.algo_id > OAKLEY_ENCRYPT_MAX) {
 		plog ("ike_alg_register_enc(): enc alg=%d < max=%d\n",
 				enc_desc->common.algo_id, OAKLEY_ENCRYPT_MAX);
 		return_on(ret, -EINVAL);
 	}
+#endif
+
 	alg_name=enum_name(&oakley_enc_names, enc_desc->common.algo_id);
 	if (!alg_name) {
 		plog ("ike_alg_register_enc(): WARNING: enc alg=%d not found in "
@@ -466,7 +673,10 @@ ike_alg_register_enc(struct encrypt_desc *enc_desc)
 				enc_desc->common.algo_id);
 		alg_name="<NULL>";
 	}
+#if OAKLEY_ENCRYPT_MAX < 255
 return_out:
+#endif
+
 	if (ret==0)
 		ret=ike_alg_add((struct ike_alg *)enc_desc);
 	openswan_log("ike_alg_register_enc(): Activating %s: %s (ret=%d)", 
@@ -483,3 +693,10 @@ ike_alg_pfsgroup(struct connection *c, lset_t policy)
 		ret = lookup_group(c->alg_info_esp->esp_pfsgroup);
 	return ret;
 }
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

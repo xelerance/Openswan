@@ -12,23 +12,36 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pluto_constants.h,v 1.10 2004/06/17 04:23:09 mcr Exp $
+ * RCSID $Id: pluto_constants.h,v 1.32.2.1 2005/05/18 20:55:12 ken Exp $
  */
 
 /* Control and lock pathnames */
 
 #ifndef DEFAULT_CTLBASE
-# define DEFAULT_CTLBASE "/var/run/pluto"
+# define DEFAULT_CTLBASE "/var/run/pluto/pluto"
 #endif
 
 #define CTL_SUFFIX ".ctl"	/* for UNIX domain socket pathname */
 #define LOCK_SUFFIX ".pid"	/* for pluto's lock */
 #define INFO_SUFFIX ".info"     /* for UNIX domain socket for apps */
 
+enum kernel_interface {
+  NO_KERNEL = 1,
+  AUTO_PICK = 2,
+  USE_KLIPS = 3,
+  USE_NETKEY= 4
+};
+extern enum kernel_interface kern_interface;
+extern enum_names kern_interface_names;
+
+
+extern enum_names dpd_action_names;
+
 /* RFC 3706 Dead Peer Detection */
 enum dpd_action {
   DPD_ACTION_CLEAR = 0,
-  DPD_ACTION_HOLD  = 1
+  DPD_ACTION_HOLD  = 1,
+  DPD_ACTION_RESTART =2
 };
 
 
@@ -39,9 +52,7 @@ extern enum_names timer_event_names;
 enum event_type {
     EVENT_NULL,	/* non-event */
     EVENT_REINIT_SECRET,	/* Refresh cookie secret */
-#ifdef KLIPS
     EVENT_SHUNT_SCAN,	/* scan shunt eroutes known to kernel */
-#endif
     EVENT_SO_DISCARD,	/* discard unfinished state object */
     EVENT_RETRANSMIT,	/* Retransmit packet */
     EVENT_SA_REPLACE,	/* SA replacement event */
@@ -51,16 +62,72 @@ enum event_type {
     EVENT_DPD,		 /* dead peer detection */
     EVENT_DPD_TIMEOUT,	/* dead peer detection timeout */
 
-    EVENT_LOG_DAILY     /* reset certain log events/stats */
+    EVENT_LOG_DAILY,    /* reset certain log events/stats */
+    EVENT_CRYPTO_FAILED,/* after some time, give up on crypto helper */
+    EVENT_PENDING_PHASE2,  /* do not make pending phase2 wait forever */
 };
 
 #define EVENT_REINIT_SECRET_DELAY		3600 /* 1 hour */
+#define EVENT_CRYPTO_FAILED_DELAY               300
 #define EVENT_RETRANSMIT_DELAY_0		10   /* 10 seconds */
+
+/*
+ * cryptographic helper operations.
+ */
+enum pluto_crypto_requests {
+  pcr_build_kenonce  = 1,
+  pcr_rsa_sign       = 2,
+  pcr_rsa_check      = 3,
+  pcr_x509cert_fetch = 4,
+  pcr_x509crl_fetch  = 5,
+  pcr_build_nonce    = 6,
+  pcr_compute_dh_iv  = 7,  /* perform phase 1 calculation: DH + prf */
+  pcr_compute_dh     = 8,  /* perform phase 2 PFS DH */
+};
+
+extern enum_names pluto_cryptoop_names;
+
+/*
+ * operational importance of this cryptographic operation.
+ * this determines if the operation will be dropped (because the other
+ * end will retransmit, if they are legit), if it pertains to an on-going
+ * connection, or if it is something that we initiated, and therefore
+ * we should do it all costs.
+ */
+enum crypto_importance {
+  pcim_stranger_crypto = 1,
+  pcim_known_crypto    = 2,
+  pcim_ongoing_crypto  = 3,
+  pcim_local_crypto    = 4,
+  pcim_demand_crypto   = 5
+};
+
+/* status for state-transition-function
+ * Note: STF_FAIL + notification_t means fail with that notification
+ */
+
+typedef enum {
+    STF_IGNORE,	/* don't respond */
+    STF_SUSPEND,    /* unfinished -- don't release resources */
+    STF_OK,	/* success */
+    STF_INTERNAL_ERROR,	/* discard everything, we failed */
+    STF_TOOMUCHCRYPTO,  /* at this time, we can't do any more crypto,
+			 * so just ignore the message, and let them retransmit.
+			 */
+    STF_FATAL,          /* just stop. we can't continue. */
+    STF_FAIL,	        /* discard everything, something failed.  notification_t added.
+			 * values STF_FAIL + x are notifications.
+			 */
+} stf_status;
+extern enum_names stfstatus_name;
 
 /* Misc. stuff */
 
 #define MAXIMUM_RETRANSMISSIONS              2
 #define MAXIMUM_RETRANSMISSIONS_INITIAL      20
+#define MAXIMUM_RETRANSMISSIONS_QUICK_R1     20
+
+#define MAXIMUM_MALFORMED_NOTIFY             16
 
 #define MAX_INPUT_UDP_SIZE             65536
 #define MAX_OUTPUT_UDP_SIZE            65536
@@ -91,6 +158,7 @@ extern const char *const debug_bit_names[];
 #define DBG_PFKEY	LELEM(10)	/*turn on the pfkey library debugging*/
 #define DBG_NATT        LELEM(11)       /* debugging of NAT-traversal */
 #define DBG_X509        LELEM(12)       /* X.509/pkix verify, cert retrival */
+#define DBG_DPD         LELEM(13)       /* DPD items */
 #define DBG_PRIVATE	LELEM(20)	/* private information: DANGER! */
 
 #define IMPAIR0	21	/* first bit for IMPAIR_* */
@@ -98,7 +166,9 @@ extern const char *const debug_bit_names[];
 #define IMPAIR_DELAY_ADNS_KEY_ANSWER	LELEM(IMPAIR0+0)	/* sleep before answering */
 #define IMPAIR_DELAY_ADNS_TXT_ANSWER	LELEM(IMPAIR0+1)	/* sleep before answering */
 #define IMPAIR_BUST_MI2	LELEM(IMPAIR0+2)	/* make MI2 really large */
-#define IMPAIR_BUST_MR2	LELEM(IMPAIR0+3)	/* make MI2 really large */
+#define IMPAIR_BUST_MR2	LELEM(IMPAIR0+3)	/* make MR2 really large */
+#define IMPAIR_SA_CREATION LELEM(IMPAIR0+4)     /* fail all SA creation */
+#define IMPAIR_DIE_ONINFO  LELEM(IMPAIR0+5)     /* cause state to be deleted upon receipt of information payload */
 
 #define DBG_NONE	0	/* no options on, including impairments */
 #define DBG_ALL		LRANGES(DBG_RAW, DBG_X509)  /* all logging options on EXCEPT DBG_PRIVATE */
@@ -135,7 +205,7 @@ extern enum_names state_names;
 extern const char *const state_story[];
 
 enum state_kind {
-    STATE_UNDEFINED,	/* 0 -- most likely accident */
+    STATE_UNDEFINED=0,	/* 0 -- most likely accident */
 
     /*  Opportunism states: see "Opportunistic Encryption" 2.2 */
 
@@ -153,6 +223,12 @@ enum state_kind {
     STATE_MAIN_R3,
     STATE_MAIN_I4,
 
+    STATE_AGGR_R0,
+    STATE_AGGR_I1,
+    STATE_AGGR_R1,
+    STATE_AGGR_I2,
+    STATE_AGGR_R2,
+
     STATE_QUICK_R0,
     STATE_QUICK_I1,
     STATE_QUICK_R1,
@@ -163,36 +239,55 @@ enum state_kind {
     STATE_INFO_PROTECTED,
 
     /* Xauth states */
-    STATE_XAUTH_R0,              /* server state has sent request, awaiting reply */
-    STATE_XAUTH_R1,              /* server state has sent success/fail, awaiting reply */
-    STATE_MODE_CFG_R0,
+    STATE_XAUTH_R0,    /* server state has sent request, awaiting reply */
+    STATE_XAUTH_R1,    /* server state has sent success/fail, awaiting reply */
+    STATE_MODE_CFG_R0,           /* these states are used on the responder */
     STATE_MODE_CFG_R1,
     STATE_MODE_CFG_R2,
+
+    STATE_MODE_CFG_I1,           /* this is used on the initiator */
 
     STATE_XAUTH_I0,              /* client state is awaiting request */
     STATE_XAUTH_I1,              /* client state is awaiting result code */
 
-    STATE_AGGR_R0,
-    STATE_AGGR_I1,
-    STATE_AGGR_R1,
-    STATE_AGGR_I2,
-    STATE_AGGR_R2,
-
     STATE_IKE_ROOF
 
 };
+extern enum_names state_names;
+extern enum_names state_stories;
+
+enum phase1_role {
+  INITIATOR=1,
+  RESPONDER=2
+};
+
 
 #define STATE_IKE_FLOOR	STATE_MAIN_R0
 
 #define PHASE1_INITIATOR_STATES	 (LELEM(STATE_MAIN_I1) | LELEM(STATE_MAIN_I2) \
-    | LELEM(STATE_MAIN_I3) | LELEM(STATE_MAIN_I4))
-#define ISAKMP_SA_ESTABLISHED_STATES  (LELEM(STATE_MAIN_R3) | LELEM(STATE_MAIN_I4))
+				  |LELEM(STATE_MAIN_I3) | LELEM(STATE_MAIN_I4)\
+				  |LELEM(STATE_AGGR_I1) | LELEM(STATE_AGGR_I2))
+#define ISAKMP_SA_ESTABLISHED_STATES  (LELEM(STATE_MAIN_R3) | \
+				       LELEM(STATE_MAIN_I4) | \
+				       LELEM(STATE_AGGR_I2))
 
-#define IS_PHASE1(s) (STATE_MAIN_R0 <= (s) && (s) <= STATE_MAIN_I4)
+#define IS_PHASE1_INIT(s)         ((s) == STATE_MAIN_I1 \
+				   || (s) == STATE_MAIN_I2 \
+				   || (s) == STATE_MAIN_I3 \
+				   || (s) == STATE_MAIN_I4 \
+				   || (s) == STATE_AGGR_I1 \
+				   || (s) == STATE_AGGR_I2 \
+				   || (s) == STATE_AGGR_R2)
+#define IS_PHASE1(s) (STATE_MAIN_R0 <= (s) && (s) <= STATE_AGGR_R2)
+#define IS_PHASE15(s) (STATE_XAUTH_R0 <= (s) && (s) <= STATE_XAUTH_I1)
 #define IS_QUICK(s) (STATE_QUICK_R0 <= (s) && (s) <= STATE_QUICK_R2)
-#define IS_ISAKMP_ENCRYPTED(s) (STATE_MAIN_R2 <= (s))
+#define IS_ISAKMP_ENCRYPTED(s)     (STATE_MAIN_R2 <= (s) && STATE_AGGR_R0!=(s) && STATE_AGGR_I1 != (s))
+#define IS_ISAKMP_AUTHENTICATED(s) (STATE_MAIN_R3 <= (s))
 #define IS_ISAKMP_SA_ESTABLISHED(s) ((s) == STATE_MAIN_R3 || (s) == STATE_MAIN_I4 \
+				  || (s) == STATE_AGGR_I2 || (s) == STATE_AGGR_R2 \
 				  || (s) == STATE_XAUTH_R0 || (s) == STATE_XAUTH_R1 \
+				  || (s) == STATE_MODE_CFG_R0 || (s) == STATE_MODE_CFG_R1 \
+				  || (s) == STATE_MODE_CFG_R2 \
                                   || (s) == STATE_XAUTH_I0 || (s) == STATE_XAUTH_I1)
 #define IS_IPSEC_SA_ESTABLISHED(s) ((s) == STATE_QUICK_I2 || (s) == STATE_QUICK_R2)
 #define IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(s) ((s) == STATE_QUICK_R1)
@@ -270,7 +365,7 @@ extern const char *prettypolicy(lset_t policy);
 #define POLICY_ISAKMP_SHIFT	0	/* log2(POLICY_PSK) */
 
 /* policies that affect ID types that are acceptable - RSA, PSK, XAUTH */
-#define POLICY_ID_AUTH_MASK	LRANGES(POLICY_PSK, POLICY_RSASIG) 
+#define POLICY_ID_AUTH_MASK	LRANGES(POLICY_PSK, POLICY_RSASIG)
 
 /* policies that affect choices of proposal, note, does not include XAUTH */
 #define POLICY_ISAKMP(x,xs,xc)	(((x) & LRANGES(POLICY_PSK, POLICY_RSASIG)) + \
@@ -315,7 +410,7 @@ extern const char *prettypolicy(lset_t policy);
 #define POLICY_GROUTED      LELEM(15)   /* do we want this group routed? */
 #define POLICY_UP           LELEM(16)   /* do we want this up? */
 #define POLICY_XAUTH        LELEM(17)   /* do we offer XAUTH? */
-#define POLICY_MODE_CFG	    LELEM(18)   /* do we offer mode configuration? */
+#define POLICY_MODECFG_PULL LELEM(18)   /* is modecfg pulled by client? */
 #define POLICY_AGGRESSIVE   LELEM(19)   /* do we do aggressive mode? */
 
 
@@ -327,7 +422,7 @@ extern const char *prettypolicy(lset_t policy);
 #define HAS_IPSEC_POLICY(p) (((p) & POLICY_IPSEC_MASK) != 0)
 
 /* Don't allow negotiation? */
-#define NEVER_NEGOTIATE(p)  (LDISJOINT((p), POLICY_PSK | POLICY_RSASIG))
+#define NEVER_NEGOTIATE(p)  (LDISJOINT((p), POLICY_PSK | POLICY_RSASIG | POLICY_AGGRESSIVE))
 
 
 /* Oakley transform attributes

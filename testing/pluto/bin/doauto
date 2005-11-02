@@ -5,7 +5,7 @@
 #  *-rsa|*-rsa-*: keys get loaded
 #  *-pl|*-pl-*: extracts of Pluto Logs are added to the whack log
 #
-# RCSID $Id: doauto,v 1.32 2003/10/31 04:50:40 dhr Exp $
+# RCSID $Id: doauto,v 1.35 2004/10/07 04:22:21 mcr Exp $
 
 . CONFIG
 
@@ -20,6 +20,9 @@
 #	ipsec-oppo-race-iinr-net
 # oddballs:
 #	stipple-parallel stipple-serial
+
+NOEXIT=false
+SETUPONLY=false
 
 case "$#" in
 0)	set - 	isakmp-psk isakmp-rsa isakmp-rsa-case isakmp-rsa-dot \
@@ -48,6 +51,17 @@ do
     --diff)
     	CMP="diff -w -u"
 	;;
+
+    --noexit)
+        NOEXIT=true;
+	;;
+
+    --setup|--setuponly)
+        SETUPONLY=true;
+	;;
+
+    --*|-*) echo "Invalid option $t"; exit 99;;
+
     *)
 	echo $t:
 	LD=log/$t
@@ -75,7 +89,18 @@ do
 
 	    $DOWHACK listen
 
+	    if $SETUPONLY 
+	    then
+		echo "Now do $DOWHACK x$t" >&2
+		exit 2
+	    fi
+
 	    $DOWHACK x$t || XFAIL="$XFAIL $t $?"
+
+	    if $NOEXIT
+	    then
+		exit 1
+	    fi
 
 	    $DOWHACK shutdown || SFAIL="$SFAIL $t $?"
 
@@ -115,7 +140,7 @@ do
 
 	if [ -f log.ref/$t/wi-log ]
 	then
-		sed -f /testing/klips/fixups/wilog.sed <$LD/wi-log >$LD/TMP
+		sed -f ${TESTING}/klips/fixups/wilog.sed <$LD/wi-log >$LD/TMP
 		mv $LD/TMP $LD/wi-log
 		$CMP log.ref/$t/wi-log $LD/wi-log || CFAIL="$CFAIL $t $?"
 	else

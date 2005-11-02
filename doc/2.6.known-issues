@@ -1,32 +1,37 @@
-Known issues with FreeS/WAN on a 2.6 kernel                   Claudia Schmeing
+Known issues with Openswan on a 2.6 kernel
 -------------------------------------------
 
+The Openswan userland can now use either KLIPS or NETKEY as the kernel
+level IPsec stack.
 
-This is an overview of known issues with FreeS/WAN on the 2.6 kernel codebase
-(also 2.5.x), which includes native Linux IPsec code.
+This is an overview of known issues with Openswan on the 2.6 kernel codebase
+(also 2.5.x), which includes NETKEY (CONFIG_NET_KEY).
 
-More information on the native IPsec code is available here:
+* The iproute2 (sometimes called iproute) package, as of version 2.6.8, 
+  contains XFRM support (ip xfrm), obsoleting the use of the 'setkey' command
+  from the ipsec-tools package. 
+  If for some reason you cannot use iproute >= 2.6.8 on your kernel, you can
+  still use the fallback method of using 'setkey' from the ipsec-tools
+  package which is available at: http://ipsec-tools.sourceforge.net/
 
-    http://lartc.org/howto/lartc.ipsec.html 
+* Openswan-2 ships with support for NETKEY.
+  Many thanks to Herbert Xu for the initial code patches.
 
-Tools for use with that code are here:
+* Use the most recent Linux Openswan-2 release from ftp.openswan.org
+  to try our 2.6 kernel support. Currently, this is 2.3.0dr4.
 
-    http://ipsec-tools.sourceforge.net/
+* If you wish to use KLIPS on 2.6, you need to build the KLIPS kernel
+  module:
 
+  make KERNELSRC=/usr/src/linux-2.6.x module minstall
 
-* As of FreeS/WAN 2.03, FreeS/WAN ships with some support for the 2.6 kernel
-  IPsec code. In 2.03, this support is preliminary, but we expect to develop
-  it fully. Many thanks to Herbert Xu for the initial code patches.
+* Preload the ipsec stack you wish to use before starting Openswan.
+  Use 'modprobe af_key' for NETKEY and 'modprobe ipsec' for KLIPS.
 
-* Use the most recent Linux FreeS/WAN 2.x release from ftp.xs4all.nl 
-  to try our 2.6 kernel support.
+* To install the userland: make programs install
 
-* The installation procedure for use with 2.6 kernel IPsec is a little 
-  different from a traditional FreeS/WAN installation. Please see
-  the latest doc/install.html.
-
-* Please see the design and users' mailing lists 
-  (http://www.freeswan.org/mail.html) for more detail and the latest reports.
+* Please see the dev and users mailing lists for more detail and the latest
+  reports.  (http://lists.openswan.org/)
 
 
 
@@ -44,14 +49,30 @@ DESIGN-RELATED ISSUES
 
 CURRENT ISSUES
 
+* There are versioning problems with the current klips module on 2.6.9,
+  kernel: ipsec: no version for "struct_module" found: kernel tainted.
+
+* Fedora Core 2/3's gcc and 2.3.0dr4 KLIPS causes crashers and lock ups.
+
+* OE with the NETKEY stack is broken. You will notice errors like:
+  pluto[11081]: %hold otherwise handled during DNS lookup for Opportunistic
+  Initiation for 193.110.157.17 to 208.245.212.67
+  while your command that triggered the OE connection shows:
+  connect: Resource temporarily unavailable
+
+* DPD restarts might cause packet loss (see previous item)
+
 * There are crashers in xfrm_user in kernels < 2.6.3-rc1. These will happen
   after the connection goes up and down a few times in quick succession.
   [ There is currently a bug in the rekeying code that triggers this ]
 
-* compression seems to be incompatible between KLIPS and the 2.6 ipsec code.
-  Since we believe the 2.6 ipsec code is wrong, we cannot fix this. If you
+* starting with 2.6.9 NETKEY needs to have xfrm4_tunnel support. You might need
+  to modprobe this on older Openswan versions.
+
+* compression seems to be incompatible between KLIPS and NETKEY.
+  Since we believe the NETKEY code is wrong, we cannot fix this. If you
   get a successful IKE negotiation and can send ESP packets, but never get
-  replies, compile KLIPS without CONFIG_IPSEC_IPCOMP. There is currently no
+  replies, compile KLIPS without CONFIG_KLIPS_IPCOMP. There is currently no
   runtime switch to disable compression. Note that setting compress=no is not
   enough; it just means we do not announce compression, but we'll still do it
   if the other end requests it.
@@ -59,40 +80,43 @@ CURRENT ISSUES
 * Using SNAT and the 2.6 ipsec code apparently doesn't go well together.
   Reported by Alexander Samad. Known issue for the netfilter team. DNAT
   works as usual, meaning you have to exlude DNAT'ing packets meant for
-  a tunnel.
+  a tunnel. Suse currently has some patches that fixes the SNAT issue, but
+  this is untested by us so far.
 
-* For the moment, users wishing to test FreeS/WAN with 2.6 will require
-  ipsec-tools' "setkey" program. Though FreeS/WAN's keying daemon, Pluto,
-  directly sets IPsec policy, setkey is currently required to reset kernel SPD 
-  (Security Policy Database) states when Pluto restarts. We will likely add 
-  this basic functionality to an upcoming FreeS/WAN release.
+* For the moment, users wishing to run Openswan with NETKEY will require
+  the ipsec-tools package "setkey" program. Though Openswan's keying daemon,
+  Pluto, directly sets IPsec policy, setkey is currently required to view and
+  reset kernel SPD (Security Policy Database) states when Pluto restarts. We
+  will likely add this basic functionality to an upcoming Openswan release.
 
-* State information is not available to the user, eg. ipsec 
-  eroute/ipsec spi/ipsec look do not work. The exception: ipsec auto --status 
+* State information is not available to the user, eg. ipsec eroute, ipsec spi
+  and ipsec look do not fully work. The exception: ipsec auto --status
   This will be fixed in a future release.
+  A quickly hacked perl script by Ken Bantoft, can emulate the 'eroute' command
+  behaviour under NETKEY, see: http://www.xtdnet.nl/paul/eroute
 
 * If you're running Opportunistic Encryption, connectivity to new hosts will
   immediately fail. You may receive a message similar to this:
-  
+
      connect: Resource temporarily unavailable
 
   The reason for this lies in the kernel code. Fairly complex discussion:
 
       http://lists.freeswan.org/archives/design/2003-September/msg00073.html
 
-  As of 2.6.0-test6, this has not been fixed.
+  As of 2.6.9, this has not been fixed.
 
-* This initial connectivity failure has an unintended side effect on DNS queries. 
-  This will result in a rekey failure for OE connections; a %pass will be 
-  installed for your destination IP before a %pass is re-instituted to your 
-  DNS server. As a workaround, please add your DNS servers to 
-  /etc/ipsec.d/policies/clear. 
+* This initial connectivity failure has an unintended side effect on DNS
+  queries. This will result in a rekey failure for OE connections; a %pass
+  will be installed for your destination IP before a %pass is re-instituted
+  to your DNS server. As a workaround, please add your DNS servers to
+  /etc/ipsec.d/policies/clear.
 
-* Packets on all interfaces are considered for OE, including loopback. If you're 
-  running a local nameserver, you'll still need to exempt localhost DNS traffic
-  as per the previous point. Since this traffic has a source of 127.0.0.1/32,
-  the "clear" policy group will not suffice; you'll need to add the following 
-  %passthrough conn to ipsec.conf:
+* Packets on all interfaces are considered for OE, including loopback. If you
+  are running a local nameserver, you'll still need to exempt localhost DNS
+  traffic as per the previous point. Since this traffic has a source of
+  127.0.0.1/32, the "clear" policy group will not suffice; you'll need to add
+  the following %passthrough conn to ipsec.conf:
 
   conn exclude-lo
           authby=never
@@ -115,14 +139,15 @@ None, yet.
 RELATED DOCUMENTS
 
 
-FreeS/WAN Install web page        doc/install.html
+Openswan Install page        doc/install.html
 
-FreeS/WAN Install guide           INSTALL
+Openswan Install guide           INSTALL
 
-FreeS/WAN mailing list posts, including:
+Openswan and FreeS/WAN mailing list posts, including:
 
     http://lists.freeswan.org/archives/design/2003-September/msg00057.html
+    http://lists.openswan.org/
 
-To sign up for our mailing lists, see http://www.freeswan.org/mail.html
+To sign up for our mailing lists, see http://lists.openswan.org/
 
 

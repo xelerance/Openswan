@@ -15,6 +15,9 @@ UMLPREFIX=?/uml
 # set this to someplace with at least 100Mb free.
 POOLSPACE=$UMLPREFIX/umlbuild
 
+# if you are using a 2.6 kernel,
+#KERNVER=26
+
 # Set this to original kernel source.
 # It will not be modified.
 # Could be native build:

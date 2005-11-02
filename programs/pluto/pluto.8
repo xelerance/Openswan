@@ -31,6 +31,8 @@ ipsec pluto
 \fIdirname\fP]
 [\-\-ipsecdir\ \c
 \fIdirname\fP]
+[\-\-coredir\ \c
+\fIdirname\fP]
 [\-\-noretransmits]
 [\-\-debug\(hynone]
 [\-\-debug\(hyall]
@@ -85,6 +87,7 @@ ipsec whack
 [\-\-updown\ \c
 \fIupdown\fP]
 .br
+[\-\-aggrmode]
 [\-\-psk]
 [\-\-rsasig]
 [\-\-encrypt]
@@ -423,7 +426,7 @@ The default IKE port number is 500, the UDP port assigned by IANA for IKE Daemon
 \fBpluto\fP must be run by the superuser to be able to use the UDP 500 port.
 .LP
 \fBpluto\fP attempts to create a lockfile with the name
-\fI/var/run/pluto.pid\fP.  If the lockfile cannot be created,
+\fI/var/run/pluto/pluto.pid\fP.  If the lockfile cannot be created,
 \fBpluto\fP exits \- this prevents multiple \fBpluto\fPs from
 competing  Any ``leftover'' lockfile must be removed before
 \fBpluto\fP will run.  \fBpluto\fP writes its pid into this file so
@@ -458,6 +461,13 @@ some of the diagnostic messages.
 .LP
 Pluto supports \fBfood groups\fP, and certificates. These are located in
 /etc/ipsec.d, or another directory as specified by \fB\-\-ipsecdir\fP.
+.LP
+Pluto may core dump. It will normally do so into the current working
+directory. The standard scripts have an option dumpdir=, which can set the
+current directory to determine where the core dump will go. In some cases, it
+may be more convenient to specify it on the command line using --coredir.
+A third method is to set the environment variable PLUTO_CORE_DIR. The command
+line argument takes precedence over the environment variable.
 .LP
 At times it may be desireable to turn off all timed events in \fBpluto\fP,
 this can be done with \fB\-\-noretransmits\fP.
@@ -678,6 +688,13 @@ separates the specification of the left and right ends of the connection.
 .LP
 The potential connection description also specifies characteristics of
 rekeying and security.
+.TP
+\fB\-\-aggrmode\fP
+This tunnel is using aggressive mode ISAKMP negotiation. The default is
+main mode. Aggressive mode is less secure than main mode as it reveals
+your identity to an eavesdropper, but is needed to support road warriors
+using PSK keys or to interoperate with other buggy implementations insisting
+on using aggressive mode.
 .TP
 \fB\-\-psk\fP
 Propose and allow preshared secret authentication for IKE peers.  This authentication
@@ -1304,7 +1321,7 @@ basename for control files.
 \fIpath\fP.ctl is the socket through which \fBwhack\fP communicates with
 \fBpluto\fP.
 \fIpath\fP.pid is the lockfile to prevent multiple \fBpluto\fP instances.
-The default is \fI/var/run/pluto\fP).
+The default is \fI/var/run/pluto/pluto\fP).
 .TP
 \fB\-\-secretsfile\fP \fIfile\fP
 specifies the file for authentication secrets
@@ -1538,9 +1555,9 @@ that was not a message sent to syslog or a comment
 (but the prefix for success is treated as 0).
 Otherwise, the exit status is 0.
 .SH FILES
-\fI/var/run/pluto.pid\fP
+\fI/var/run/pluto/pluto.pid\fP
 .br
-\fI/var/run/pluto.ctl\fP
+\fI/var/run/pluto/pluto.ctl\fP
 .br
 \fI/etc/ipsec.secrets\fP
 .br
@@ -1555,6 +1572,8 @@ Otherwise, the exit status is 0.
 \fIIPSEC_EXECDIR\fP
 .br
 \fIIPSECmyid\fP
+.br
+\fIPLUTO_CORE_DIR\fP
 .SH SEE ALSO
 .LP
 The rest of the Openswan distribution, in particular \fIipsec\fP(8).

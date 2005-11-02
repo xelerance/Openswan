@@ -1,5 +1,11 @@
+# $Id: netjig.tcl,v 1.53 2005/03/20 23:20:10 mcr Exp $
+
 global theprompt
 set theprompt {([a-zA-Z0-9]*):.*# }
+
+global managednets
+set managednets {north south northpublic southpublic east west public admin}
+
 
 proc netjigdebug {msg} {
     global env
@@ -266,6 +272,10 @@ proc inituml {umlname} {
 
     send -i $umlid($umlname,spawnid) -- "exec bash --noediting\r"
 
+    expectprompt $umlid($umlname,spawnid) "for ulimit ($umlname)"
+
+    send -i $umlid($umlname,spawnid) -- "ulimit -c unlimited\r"
+
     if {[info exists env(KLIPS_MODULE)]} {
 	puts stderr "Loading module into $umlname"
 
@@ -310,6 +320,15 @@ proc runXuml {umlname pass} {
     set_from_env $umlname $scriptname $varname
 
     if {[info exists umlid($umlname,$scriptname)]} {
+	if {[info exists env(UML_GETTY)]} {
+	    send -i $umlid($umlname,spawnid) -- "echo You have 3600 seconds. >/dev/ttys/1\r"
+	    send -i $umlid($umlname,spawnid) -- "echo I would run $umlid($umlname,$scriptname) now >/dev/ttys/1\r"
+	    send -i $umlid($umlname,spawnid) -- "rm /etc/nologin\r"
+	    send -i $umlid($umlname,spawnid) -- "/sbin/getty ttys/1 38400\r"
+	    set timeout 3600
+	    expectprompt $umlid($umlname,spawnid) "UML_getty for $umlname"
+	} 
+
 	if {[file exists $umlid($umlname,$scriptname)]} {
 	    playscript $umlid($umlname,spawnid) $umlid($umlname,$scriptname)
 	    netjigdebug "$umlname run script($pass) $umlid($umlname,$scriptname) done"
@@ -435,12 +454,11 @@ proc set_from_env {host param varname} {
     global umlid
     global env
     
-    #puts -nonewline stderr "Looking for $varname..."
+    netjigdebug "Looking for $varname..."
     if {[info exists env($varname)]} {
-	#puts -nonewline stderr "found it: $env($varname)"
+	netjigdebug "found it: $env($varname)"
 	set umlid($host,$param) $env($varname)
     }
-    #netjigdebug ""
 }
 
 
@@ -457,6 +475,10 @@ proc process_host {host} {
 
     # upcase me
     set uphost [string toupper $host]
+    set kernver ""
+    if {[info exists env(KERNVER)]} {
+	set kernver $env(KERNVER)
+    }
 
     set varname $uphost
     append varname _INIT_SCRIPT
@@ -478,12 +500,109 @@ proc process_host {host} {
     append varname _START
     set_from_env $host program $varname
     
-    set varname REF_
+    set varname REF${kernver}
+    append varname _
     append varname $uphost
     append varname _CONSOLE_RAW
     set_from_env $host consolefile $varname
 }
     
+# {NORTH,SOUTH,EAST,WEST}_PLAY denotes a pcap file to play on that network
+# {NORTH,SOUTH,EAST,WEST}_REC  denotes a pcap file to reocrd into from that network
+#
+# sets umlid(net$net,play) and umlid(net$net,record)
+#
 
+proc calc_net {net} {
+    global umlid
+    global env
+
+    if {[info exists umlid(net$net,play)]} {
+	set umlid(someplay) 1
+    }
+}
+
+proc process_net {net} {
+    global umlid
+    global env
+
+    # upcase me
+    set upnet [string toupper $net]
+
+    set umlid(net$net,arp) 0
+
+    set varname $upnet
+    append varname _PLAY
+    set_from_env net$net play $varname
+	
+    set varname $upnet
+    append varname _REC
+    set_from_env net$net record $varname
+
+    set varname $upnet
+    append varname _ARPREPLY
+    set_from_env net$net arp $varname
+
+    calc_net $net
+}
 
 match_max -d 10000
+
+# $Id: netjig.tcl,v 1.53 2005/03/20 23:20:10 mcr Exp $
+#
+# $Log: netjig.tcl,v $
+# Revision 1.53  2005/03/20 23:20:10  mcr
+# 	when looking for an output file for console output,
+# 	include the kernel version in the variable that we will
+# 	look for.
+#
+# Revision 1.52  2005/02/11 01:33:46  mcr
+# 	added newline to end of file.
+#
+# Revision 1.51  2005/01/19 00:01:07  ken
+# Fix location of klogd.pid - broke due to blind find . patch for moving pluto files to /var/run/pluto
+#
+# Revision 1.50  2005/01/11 17:54:09  ken
+# Move plutos runtime files from /var/run/pluto.* to /var/run/pluto/pluto.*
+#
+# This was done with find . -type f -print0 | xargs -0 perl -pi -e 's#/var/run/#/var/run/pluto/#g'
+#
+# Revision 1.49  2004/10/12 03:51:47  mcr
+# 	make sure that UMLs run with core dumping enabled.
+#
+# Revision 1.48  2004/05/05 17:55:20  mcr
+# 	fixed problem with getty not licking multiuser boot.
+#
+# Revision 1.47  2004/05/04 20:05:35  mcr
+# 	use ttys/1 rather than tty1.
+#
+# Revision 1.46  2004/05/04 19:51:46  mcr
+# 	make sure to send \r after each command.
+#
+# Revision 1.45  2004/05/04 19:17:59  mcr
+# 	don't try getty unless we have a run command.
+#
+# Revision 1.44  2004/05/04 18:06:04  mcr
+# 	if UML_GETTY is set, then start a getty before running each
+# 	runuml command.
+#
+# Revision 1.43  2004/03/21 04:36:16  mcr
+# 	1) local switches now reads testparams.sh file.
+# 	2) $arpreply is totally deprecated.
+#
+# Revision 1.42  2004/02/15 20:37:08  mcr
+# 	changed method by which we ask for --arpreply. We can't guess
+# 	it, as it doesn't work in all cases like that.
+#
+# Revision 1.41  2004/02/15 00:12:00  mcr
+# 	--arpreply calculation was failing for situation
+# 	where the options were specified as arguments.
+# 	split process_net -> process_net/calc_net.
+#
+# Revision 1.40  2004/02/15 00:02:06  mcr
+# 	debugging for ARPreply settings.
+#
+# Revision 1.39  2004/02/05 02:15:51  mcr
+# 	added RCS ids.
+#
+#

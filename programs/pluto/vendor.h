@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: vendor.h,v 1.5 2004/05/03 14:29:37 ken Exp $
+ * RCSID $Id: vendor.h,v 1.11.2.1 2005/05/18 20:55:13 ken Exp $
  */
 
 #ifndef _VENDOR_H_
@@ -52,6 +52,11 @@ enum known_vendorid {
   VID_NORTEL		    =31,
   VID_OPENSWAN1		    =32,
   VID_OPENSWAN2		    =33,
+  VID_MACOSX                =34,
+  VID_CISCO3K               =35,
+  VID_OPENSWANSELF	    =36,
+  VID_NCP                   =37,
+
 
   /* 101 - 200 : NAT-Traversal */
   VID_NATT_STENBERG_01       =101,
@@ -63,12 +68,23 @@ enum known_vendorid {
   VID_NATT_IETF_02           =107,
   VID_NATT_IETF_03           =108,
   VID_NATT_RFC               =109,
-  
+  VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE	=110,
+
+/* 
+  While searching (strings) in /usr/sbin/racoon on Max OS X 10.3.3, I found it :
+  # echo -n "draft-ietf-ipsec-nat-t-ike" | md5sum
+  4df37928e9fc4fd1b3262170d515c662
+  But this VID has not been seen in any IETF drafts. (mlafon)
+
+*/
+
   /* 201 - 300 : Misc */
   VID_MISC_XAUTH             =201,
   VID_MISC_DPD               =202,
   VID_MISC_HEARTBEAT_NOTIFY  =203,
-  VID_MISC_FRAGMENTATION     =204
+  VID_MISC_FRAGMENTATION     =204,
+  VID_INITIAL_CONTACT        =205
+
 };
 
 void init_vendorid(void);

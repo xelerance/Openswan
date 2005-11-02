@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_pfkey.c,v 1.14 2004/06/01 14:43:20 ken Exp $
+ * RCSID $Id: kernel_pfkey.c,v 1.18.2.1 2005/05/18 20:55:13 ken Exp $
  */
 
 #ifdef KLIPS
@@ -595,21 +595,30 @@ finish_pfkey_msg(struct sadb_ext *extensions[SADB_EXT_MAX + 1]
 		, description, text_said);
 	    DBG_dump(NULL, (void *) pfkey_msg, len));
 
-	if (!no_klips)
+	if (kern_interface != NO_KERNEL)
 	{
 	    ssize_t r = write(pfkeyfd, pfkey_msg, len);
+	    int e1 = errno;
 
 	    if (r != (ssize_t)len)
 	    {
 		if (r < 0)
 		{
-		    log_errno((e
-			, "pfkey write() of %s message %u"
-			  " for %s %s failed"
-			, sparse_val_show(pfkey_type_names
-			    , pfkey_msg->sadb_msg_type)
-			, pfkey_msg->sadb_msg_seq
-			, description, text_said));
+#ifdef COMPENSATE_FOR_KLIPS_WEIRDNESS
+		  if(e1 == ENOPROC && pfkey_msg->sadb_msg_type == SADB_DELETE) {
+		    success=TRUE;
+		  } else
+		    
+#endif
+		    {
+		      log_errno_routine(e1, "pfkey write() of %s message %u"
+					" for %s %s failed"
+					, sparse_val_show(pfkey_type_names
+							  , pfkey_msg->sadb_msg_type)
+					, pfkey_msg->sadb_msg_seq
+					, description, text_said);
+		      success = FALSE;
+		    }
 		}
 		else
 		{
@@ -621,8 +630,8 @@ finish_pfkey_msg(struct sadb_ext *extensions[SADB_EXT_MAX + 1]
 			, pfkey_msg->sadb_msg_seq
 			, description, text_said
 			, (long)r, (long)len);
+		    success = FALSE;
 		}
-		success = FALSE;
 
 		/* if we were compiled with debugging, but we haven't already
 		 * dumped the KLIPS command, do so.
@@ -652,7 +661,7 @@ finish_pfkey_msg(struct sadb_ext *extensions[SADB_EXT_MAX + 1]
 		else if (pfkey_msg->sadb_msg_type != bp->msg.sadb_msg_type)
 		{
 		    loglog(RC_LOG_SERIOUS
-			, "FreeS/WAN ERROR: response to our PF_KEY %s message for %s %s was of wrong type (%s)"
+			, "Openswan ERROR: response to our PF_KEY %s message for %s %s was of wrong type (%s)"
 			, sparse_name(pfkey_type_names, pfkey_msg->sadb_msg_type)
 			, description, text_said
 			, sparse_val_show(pfkey_type_names, bp->msg.sadb_msg_type));
@@ -806,59 +815,103 @@ static bool
 pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 {
     struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+    bool success = FALSE;
 
-    return pfkey_msg_start(replace ? SADB_UPDATE : SADB_ADD, sa->satype
-	, "pfkey_msg_hdr Add SA", sa->text_said, extensions)
+    success = pfkey_msg_start(replace ? SADB_UPDATE : SADB_ADD, sa->satype
+			      , "pfkey_msg_hdr Add SA"
+			      , sa->text_said, extensions);
 
-    && pfkey_build(pfkey_sa_build(&extensions[SADB_EXT_SA]
-	    , SADB_EXT_SA
-	    , sa->spi	/* in network order */
-	    , sa->replay_window, SADB_SASTATE_MATURE
-	    , sa->authalg, sa->encalg, 0)
-	, "pfkey_sa Add SA", sa->text_said, extensions)
+    if(!success) return FALSE;
 
-    && pfkeyext_address(SADB_EXT_ADDRESS_SRC, sa->src
-	, "pfkey_addr_s Add SA", sa->text_said, extensions)
+    success = pfkey_build(pfkey_sa_build(&extensions[SADB_EXT_SA]
+					 , SADB_EXT_SA
+					 , sa->spi	/* in network order */
+					 , sa->replay_window, SADB_SASTATE_MATURE
+					 , sa->authalg, sa->encalg, 0)
+			  , "pfkey_sa Add SA", sa->text_said, extensions);
+    if(!success) return FALSE;
 
-    && pfkeyext_address(SADB_EXT_ADDRESS_DST, sa->dst
-	, "pfkey_addr_d Add SA", sa->text_said, extensions)
+    success = pfkeyext_address(SADB_EXT_ADDRESS_SRC, sa->src
+			       , "pfkey_addr_s Add SA"
+			       , sa->text_said, extensions);
+    if(!success) return FALSE;
 
-    && (sa->authkeylen == 0
-	|| pfkey_build(pfkey_key_build(&extensions[SADB_EXT_KEY_AUTH]
-		, SADB_EXT_KEY_AUTH, sa->authkeylen * BITS_PER_BYTE
-		, sa->authkey)
-	    , "pfkey_key_a Add SA", sa->text_said, extensions))
+    success = pfkeyext_address(SADB_EXT_ADDRESS_DST, sa->dst
+			       , "pfkey_addr_d Add SA", sa->text_said
+			       , extensions);
+    if(!success) return FALSE;
 
-    && (sa->enckeylen == 0
-	|| pfkey_build(pfkey_key_build(&extensions[SADB_EXT_KEY_ENCRYPT]
-		, SADB_EXT_KEY_ENCRYPT, sa->enckeylen * BITS_PER_BYTE
-		, sa->enckey)
-	    , "pfkey_key_e Add SA", sa->text_said, extensions))
+    if(sa->authkeylen != 0) {
+	success = pfkey_build(pfkey_key_build(&extensions[SADB_EXT_KEY_AUTH]
+					      , SADB_EXT_KEY_AUTH
+					      , sa->authkeylen * BITS_PER_BYTE
+					      , sa->authkey)
+			      , "pfkey_key_a Add SA"
+			      , sa->text_said, extensions);
+	if(!success) return FALSE;
+    }
+	
+    if(sa->enckeylen != 0) {
+	success = pfkey_build(pfkey_key_build(&extensions[SADB_EXT_KEY_ENCRYPT]
+					      , SADB_EXT_KEY_ENCRYPT
+					      , sa->enckeylen * BITS_PER_BYTE
+					      , sa->enckey)
+			      , "pfkey_key_e Add SA"
+			      , sa->text_said, extensions);
+	if(!success) return FALSE;
+    }
+	
 
 #ifdef NAT_TRAVERSAL
-    && (sa->natt_type == 0
-	|| pfkey_build(pfkey_x_nat_t_type_build(
-		&extensions[SADB_X_EXT_NAT_T_TYPE], sa->natt_type),
-		"pfkey_nat_t_type Add ESP SA",  sa->text_said, extensions))
-    && (sa->natt_sport == 0
-	|| pfkey_build(pfkey_x_nat_t_port_build(
-			&extensions[SADB_X_EXT_NAT_T_SPORT], SADB_X_EXT_NAT_T_SPORT,
-			sa->natt_sport), "pfkey_nat_t_sport Add ESP SA", sa->text_said,
-			extensions))
-    && (sa->natt_dport == 0
-	|| pfkey_build(pfkey_x_nat_t_port_build(
-			&extensions[SADB_X_EXT_NAT_T_DPORT], SADB_X_EXT_NAT_T_DPORT,
-			sa->natt_dport), "pfkey_nat_t_dport Add ESP SA", sa->text_said,
-			extensions))
+    if(sa->natt_type != 0) {
+	success = pfkey_build(pfkey_x_nat_t_type_build(
+				  &extensions[SADB_X_EXT_NAT_T_TYPE]
+				  , sa->natt_type),
+			      "pfkey_nat_t_type Add ESP SA"
+			      ,  sa->text_said, extensions);
+	DBG(DBG_KLIPS
+	    , DBG_log("setting natt_type to %d\n", sa->natt_type));
+	if(!success) return FALSE;
 
-    && (sa->natt_type ==0 || isanyaddr(sa->natt_oa)
-	|| pfkeyext_address(SADB_X_EXT_NAT_T_OA, sa->natt_oa
-	    , "pfkey_nat_t_oa Add ESP SA", sa->text_said, extensions))
+	if(sa->natt_sport != 0) {
+	  success = pfkey_build(pfkey_x_nat_t_port_build(
+				  &extensions[SADB_X_EXT_NAT_T_SPORT]
+				  , SADB_X_EXT_NAT_T_SPORT,
+				  sa->natt_sport)
+			      , "pfkey_nat_t_sport Add ESP SA"
+			      , sa->text_said, extensions);
+	  DBG(DBG_KLIPS
+	      , DBG_log("setting natt_sport to %d\n", sa->natt_sport));
+	  if(!success) return FALSE;
+	}
+	
+	if(sa->natt_dport != 0) {
+	  success = pfkey_build(pfkey_x_nat_t_port_build(
+				  &extensions[SADB_X_EXT_NAT_T_DPORT]
+				  , SADB_X_EXT_NAT_T_DPORT
+				  , sa->natt_dport)
+			      , "pfkey_nat_t_dport Add ESP SA"
+			      , sa->text_said, extensions);
+	  DBG(DBG_KLIPS
+	      , DBG_log("setting natt_dport to %d\n", sa->natt_dport));
+	  if(!success) return FALSE;
+	}
+	
+
+	if(sa->natt_type!=0 && !isanyaddr(sa->natt_oa)) {
+	  success = pfkeyext_address(SADB_X_EXT_NAT_T_OA, sa->natt_oa
+				     , "pfkey_nat_t_oa Add ESP SA"
+				     , sa->text_said, extensions);
+	  DBG(DBG_KLIPS
+	      , DBG_log("setting nat_oa to %s\n", ip_str(sa->natt_oa)));
+	  if(!success) return FALSE;
+	}
+    }
 #endif
 
-    && finish_pfkey_msg(extensions, "Add SA", sa->text_said, NULL);
-
+    return finish_pfkey_msg(extensions, "Add SA", sa->text_said, NULL);
 }
+
 
 static bool
 pfkey_grp_sa(const struct kernel_sa *sa0, const struct kernel_sa *sa1)
@@ -934,6 +987,7 @@ pfkey_close(void)
 const struct kernel_ops klips_kernel_ops = {
 	type: KERNEL_TYPE_KLIPS,
 	async_fdp: &pfkeyfd,
+	replay_window: 64,
 
 	pfkey_register: klips_pfkey_register,
 	pfkey_register_response: klips_pfkey_register_response,

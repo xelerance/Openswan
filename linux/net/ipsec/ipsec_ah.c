@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.2 2004/04/06 02:49:25 mcr Exp $";
+char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.10 2004/09/14 00:22:57 mcr Exp $";
 #include <linux/config.h>
 #include <linux/version.h>
 
@@ -51,6 +51,7 @@ char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.2 2004/04/06 02:49:25 mcr
 #endif /* NET21 */
 #include <asm/checksum.h>
 #include <net/ip.h>
+#include <net/protocol.h>
 
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
@@ -63,20 +64,11 @@ char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.2 2004/04/06 02:49:25 mcr
 #include "openswan/ipsec_xmit.h"
 
 #include "openswan/ipsec_auth.h"
-
-#ifdef CONFIG_IPSEC_AH
 #include "openswan/ipsec_ah.h"
-#endif /* CONFIG_IPSEC_AH */
-
 #include "openswan/ipsec_proto.h"
-
-#ifdef CONFIG_IPSEC_DEBUG
-int debug_ah = 0;
-#endif /* CONFIG_IPSEC_DEBUG */
 
 __u32 zeroes[AH_AMAX];
 
-#ifdef CONFIG_IPSEC_AH
 enum ipsec_rcv_value
 ipsec_rcv_ah_checks(struct ipsec_rcv_state *irs,
 		    struct sk_buff *skb)
@@ -237,12 +229,12 @@ ipsec_xmit_ah_setup(struct ipsec_xmit_state *ixs)
   struct ahhdr *ahp;
   __u8 hash[AH_AMAX];
   union {
-#ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
+#ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
     MD5_CTX md5;
-#endif /* CONFIG_IPSEC_AUTH_HMAC_MD5 */
-#ifdef CONFIG_IPSEC_AUTH_HMAC_SHA1
+#endif /* CONFIG_KLIPS_AUTH_HMAC_MD5 */
+#ifdef CONFIG_KLIPS_AUTH_HMAC_SHA1
     SHA1_CTX sha1;
-#endif /* CONFIG_IPSEC_AUTH_HMAC_SHA1 */
+#endif /* CONFIG_KLIPS_AUTH_HMAC_SHA1 */
   } tctx;
   unsigned char *dat = (unsigned char *)ixs->iph;
 
@@ -263,27 +255,27 @@ ipsec_xmit_ah_setup(struct ipsec_xmit_state *ixs)
   ipsec_xmit_dmp("ipo", (char*)&ipo, sizeof(ipo));
   
   switch(ixs->ipsp->ips_authalg) {
-#ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
+#ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
   case AH_MD5:
     tctx.md5 = ((struct md5_ctx*)(ixs->ipsp->ips_key_a))->ictx;
     ipsec_xmit_dmp("ictx", (char*)&tctx.md5, sizeof(tctx.md5));
-    MD5Update(&tctx.md5, (unsigned char *)&ipo, sizeof (struct iphdr));
+    osMD5Update(&tctx.md5, (unsigned char *)&ipo, sizeof (struct iphdr));
     ipsec_xmit_dmp("ictx+ipo", (char*)&tctx.md5, sizeof(tctx.md5));
-    MD5Update(&tctx.md5, (unsigned char *)ahp,
+    osMD5Update(&tctx.md5, (unsigned char *)ahp,
 	      sizeof(struct ahhdr) - sizeof(ahp->ah_data));
     ipsec_xmit_dmp("ictx+ahp", (char*)&tctx.md5, sizeof(tctx.md5));
-    MD5Update(&tctx.md5, (unsigned char *)zeroes, AHHMAC_HASHLEN);
+    osMD5Update(&tctx.md5, (unsigned char *)zeroes, AHHMAC_HASHLEN);
     ipsec_xmit_dmp("ictx+zeroes", (char*)&tctx.md5, sizeof(tctx.md5));
-    MD5Update(&tctx.md5,  dat + ixs->iphlen + sizeof(struct ahhdr),
+    osMD5Update(&tctx.md5,  dat + ixs->iphlen + sizeof(struct ahhdr),
 	      ixs->skb->len - ixs->iphlen - sizeof(struct ahhdr));
     ipsec_xmit_dmp("ictx+dat", (char*)&tctx.md5, sizeof(tctx.md5));
-    MD5Final(hash, &tctx.md5);
+    osMD5Final(hash, &tctx.md5);
     ipsec_xmit_dmp("ictx hash", (char*)&hash, sizeof(hash));
     tctx.md5 = ((struct md5_ctx*)(ixs->ipsp->ips_key_a))->octx;
     ipsec_xmit_dmp("octx", (char*)&tctx.md5, sizeof(tctx.md5));
-    MD5Update(&tctx.md5, hash, AHMD596_ALEN);
+    osMD5Update(&tctx.md5, hash, AHMD596_ALEN);
     ipsec_xmit_dmp("octx+hash", (char*)&tctx.md5, sizeof(tctx.md5));
-    MD5Final(hash, &tctx.md5);
+    osMD5Final(hash, &tctx.md5);
     ipsec_xmit_dmp("octx hash", (char*)&hash, sizeof(hash));
     
     memcpy(ahp->ah_data, hash, AHHMAC_HASHLEN);
@@ -292,8 +284,8 @@ ipsec_xmit_ah_setup(struct ipsec_xmit_state *ixs)
     memset((caddr_t)&tctx.md5, 0, sizeof(tctx.md5));
     memset((caddr_t)hash, 0, sizeof(*hash));
     break;
-#endif /* CONFIG_IPSEC_AUTH_HMAC_MD5 */
-#ifdef CONFIG_IPSEC_AUTH_HMAC_SHA1
+#endif /* CONFIG_KLIPS_AUTH_HMAC_MD5 */
+#ifdef CONFIG_KLIPS_AUTH_HMAC_SHA1
   case AH_SHA:
     tctx.sha1 = ((struct sha1_ctx*)(ixs->ipsp->ips_key_a))->ictx;
     SHA1Update(&tctx.sha1, (unsigned char *)&ipo, sizeof (struct iphdr));
@@ -312,7 +304,7 @@ ipsec_xmit_ah_setup(struct ipsec_xmit_state *ixs)
     memset((caddr_t)&tctx.sha1, 0, sizeof(tctx.sha1));
     memset((caddr_t)hash, 0, sizeof(*hash));
     break;
-#endif /* CONFIG_IPSEC_AUTH_HMAC_SHA1 */
+#endif /* CONFIG_KLIPS_AUTH_HMAC_SHA1 */
   default:
     ixs->stats->tx_errors++;
     return IPSEC_XMIT_AH_BADALG;
@@ -336,6 +328,13 @@ struct xform_functions ah_xform_funcs[]={
 	},
 };
 
+
+#ifdef NET_26
+struct inet_protocol ah_protocol = {
+  .handler = ipsec_rcv,
+  .no_policy = 1,
+};
+#else
 struct inet_protocol ah_protocol =
 {
 	ipsec_rcv,				/* AH handler */
@@ -350,11 +349,38 @@ struct inet_protocol ah_protocol =
 	"AH"				/* name */
 #endif
 };
-
-#endif /* CONFIG_IPSEC_AH */
+#endif /* NET_26 */
 
 /*
  * $Log: ipsec_ah.c,v $
+ * Revision 1.10  2004/09/14 00:22:57  mcr
+ * 	adjustment of MD5* functions.
+ *
+ * Revision 1.9  2004/09/13 02:22:47  mcr
+ * 	#define inet_protocol if necessary.
+ *
+ * Revision 1.8  2004/09/06 18:35:48  mcr
+ * 	2.6.8.1 gets rid of inet_protocol->net_protocol compatibility,
+ * 	so adjust for that.
+ *
+ * Revision 1.7  2004/08/22 05:00:48  mcr
+ * 	if we choose to compile the file, we want the contents,
+ * 	so don't pull any punches.
+ *
+ * Revision 1.6  2004/08/17 03:27:23  mcr
+ * 	klips 2.6 edits.
+ *
+ * Revision 1.5  2004/08/14 03:28:24  mcr
+ * 	fixed log comment to remove warning about embedded comment.
+ *
+ * Revision 1.4  2004/08/04 15:57:07  mcr
+ * 	moved des .h files to include/des/ *
+ * 	included 2.6 protocol specific things
+ * 	started at NAT-T support, but it will require a kernel patch.
+ *
+ * Revision 1.3  2004/07/10 19:11:18  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.2  2004/04/06 02:49:25  mcr
  * 	pullup of algo code from alg-branch.
  *

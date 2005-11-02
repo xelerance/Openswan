@@ -12,15 +12,16 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _realsetup.in,v 1.29 2004/06/09 03:00:41 mcr Exp $
+# RCSID $Id: _realsetup.in,v 1.43.2.1 2005/05/18 20:55:13 ken Exp $
 
 me='ipsec setup'		# for messages
 
 # Misc. paths (some of this should perhaps be overrideable from ipsec.conf).
-plutopid=/var/run/pluto.pid
+plutopid=/var/run/pluto/pluto.pid
+plutoctl=/var/run/pluto/pluto.ctl
 subsyslock=/var/lock/subsys/ipsec
-lock=/var/run/ipsec_setup.pid
-info=/var/run/ipsec.info
+lock=/var/run/pluto/ipsec_setup.pid
+info=/var/run/pluto/ipsec.info
 sysflags=/proc/sys/net/ipsec
 modules=/proc/modules
 ipforward=/proc/sys/net/ipv4/ip_forward
@@ -55,7 +56,24 @@ IPSECplutowait=${IPSECplutowait:-no}
 IPSECrp_filter=${IPSECrp_filter:-0}
 IPSECuniqueids=${IPSECuniqueids:-yes}
 IPSECcrlcheckinterval=${IPSECcrlcheckinterval:-0}
+IPSECprotostack=${IPsecprotostack:-auto}
 # IPSECoverridemtu	""
+
+# which kernel are we using?
+case $IPSECprotostack in
+auto)
+    if test -f $kamepfkey
+	then
+	    netkey=true; klips=false;
+	else
+	    netkey=false; klips=true;
+    fi;;
+    
+klips)  netkey=false; klips=true;;
+netkey) netkey=true;  klips=false;;
+none)   netkey=false; klips=false;;
+esac
+
 
 # Shall we trace?
 execute="true"
@@ -117,7 +135,10 @@ LOGONLY="logger -p $IPSECsyslog -t ipsec_setup"
 # Must be a string, not a function, because it is nested
 # within another sequence (for plutorun).
 # Luckily there are NO substitutions in it.
-KILLKLIPS='ifl=` ifconfig | sed -n -e "/^ipsec/s/ .*//p" ` ;
+
+if $klips
+then
+    KILLKLIPS='ifl=` ifconfig | sed -n -e "/^ipsec/s/ .*//p" ` ;
 	test "X$ifl" != "X" &&
 	for i in  $ifl ;
 	do
@@ -125,13 +146,19 @@ KILLKLIPS='ifl=` ifconfig | sed -n -e "/^ipsec/s/ .*//p" ` ;
 		ipsec tncfg --detach --virtual $i ;
 	done ;
 	test -r /proc/net/ipsec_klipsdebug && ipsec klipsdebug --none ;
-	ipsec eroute --clear ;
-	ipsec spi --clear ;
-	lsmod 2>&1 | grep "^ipsec" > /dev/null && rmmod ipsec'
+	test -d /proc/net/ipsec/eroute && ipsec eroute --clear ;
+	test -d /proc/net/ipsec/spi && ipsec spi --clear'
+	#lsmod 2>&1 | grep "^ipsec" > /dev/null && rmmod ipsec'
+fi
 
-if test -f $kamepfkey
+if $netkey
 then
-	KILLKLIPS='if type setkey > /dev/null 2>&1 ;
+	KILLKLIPS='
+		if ip xfrm state > /dev/null 2>&1 ;
+		then
+			ip xfrm state flush ;
+			ip xfrm policy flush ;
+		elif type setkey > /dev/null 2>&1 ;
 		then
 			setkey -F ;
 			setkey -FP ;
@@ -177,6 +204,16 @@ case "$1" in
 		"}"
 
 	perform ">" $info
+
+	# overridemtu is ignored on 2.6, so warn the user.
+	if $netkey
+	then
+        	if test $IPSECoverridemtu
+        	then
+                	echo "WARNING: overridemtu= is ignored when using the NETKEY stack"
+        	fi
+	fi
+
 
 	# here we go
 	perform ipsec _startklips \
@@ -230,11 +267,13 @@ case "$1" in
 			--strictcrlpolicy "\"$IPSECstrictcrlpolicy\"" \
 			--nat_traversal "\"$IPSECnat_traversal\"" \
 			--keep_alive "\"$IPSECkeep_alive\"" \
+			--protostack "\"$IPSECprotostack\"" \
 			--force_keepalive "\"$IPSECforce_keepalive\"" \
 			--disable_port_floating "\"$IPSECdisable_port_floating\"" \
 			--virtual_private "\"$IPSECvirtual_private\"" \
 			--crlcheckinterval "\"$IPSECcrlcheckinterval\"" \
                         --ocspuri "\"$IPSECocspuri\"" \
+			--nhelpers "\"$IPSECnhelpers\"" \
 			--dump "\"$IPSECdumpdir\"" \
 			--opts "\"$IPSECplutoopts\"" \
 			--stderrlog "\"$IPSECplutostderrlog\"" \
@@ -274,6 +313,12 @@ case "$1" in
 			"}"
 	fi
 
+	if [ -f /var/run/pluto.pid -a ! -f /var/run/pluto/pluto.pid ]
+	then
+	    mkdir -p /var/run/pluto
+	    mv /var/run/pluto.pid /var/run/pluto/pluto.pid
+	fi
+
 	perform test -f $plutopid "&&" "{" \
 		if ps -p '`' cat $plutopid '`' ">" /dev/null ";" \
 		then \
@@ -292,10 +337,19 @@ case "$1" in
 		"}"
 
 	perform $KILLKLIPS
+	rm -f /var/run/pluto.pid
+
+	# When we exit we clean up (remove) the modules we are using, even the kame'ish ones
+	if test -e ${kamepfkey}; then
+		lsmod 2>&1 | grep "^xfrm4_tunnel" > /dev/null && rmmod -s xfrm4_tunnel
+		lsmod 2>&1 | grep "^af_key" > /dev/null && rmmod -s af_key
+		# old name for xfrm4_tunnel
+		lsmod 2>&1 | grep "^xfrm_user" > /dev/null && rmmod -s xfrm_user
+	fi 
 
 	perform test -d `dirname $subsyslock` "&&" rm -f $subsyslock
 
-	perform rm -f $info $lock
+	perform rm -f $info $lock $plutopid
 	perform echo "...Openswan IPsec stopped" "|" $LOGONLY
 	perform exit \$status
 	;;
@@ -340,10 +394,12 @@ case "$1" in
 
 	if test -r /proc/net/ipsec_eroute
 	then
-		if test " `wc -l </proc/net/ipsec_eroute`" -gt 0
+		if test " `wc -l < /proc/net/ipsec_eroute 2> /dev/null `" -gt 0
 		then
-			eroutes=`wc -l </proc/net/ipsec_eroute|sed s/\ //g`
+			eroutes=`wc -l < /proc/net/ipsec_eroute 2> /dev/null | sed s/\ //g`
 		fi
+	else
+		eroutes=`ipsec eroute 2> /dev/null | wc -l | sed s/\ //g`
 	fi
 
 	if test -r $ipsecversion
@@ -356,11 +412,16 @@ case "$1" in
 		klips=none
 	fi
 		
+	if test -r $kamepfkey
+	then
+		lk26sec=yes
+	fi
+
 	if test "$haslock"
 	then
 		echo "IPsec running"
 		# might not be a subsystem lock dir, ignore that issue
-		if test "$plutokind" = "normal" -a "$klips" = "yes" -a "$hasinfo"
+		if test "$plutokind" = "normal" -a \( "$klips" = "yes" -o "$lk26sec" = "yes" \)  -a "$hasinfo"
 		then
 			echo "pluto pid `cat $plutopid`"
                         case "$eroutes" in
@@ -392,8 +453,7 @@ case "$1" in
 		exit 1
 	else
 		echo "IPsec stopped"
-		if test ! "$hassublock" -a ! "$hasinfo" -a "$plutokind" = "no" \
-								-a ! "$eroutes"
+		if test ! "$hassublock" -a ! "$hasinfo" -a "$plutokind" = "no" -a "$eroutes" -eq 0
 		then
 			exit 0
 		fi
@@ -406,13 +466,13 @@ case "$1" in
 		then
 			echo "has $info file!"
 		fi
-		if test "$plutokind" != "normal"
+		if test "$plutokind" != "no"
 		then
-			echo "$plutokind Pluto is running!"
+			echo "An ${plutokind} Pluto is running?"
 		fi
-		if test "$eroutes"
+		if test "$eroutes" -gt 0
 		then
-			echo "some eroutes exist!"
+			echo "some (${eroutes}) eroutes exist!"
 		fi
 		exit 1
 	fi

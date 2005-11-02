@@ -1,11 +1,11 @@
 whackwest --listen
 002 listening for IKE messages
-002 adding interface virtual127.95.7.1/lo:w 127.95.7.1
-002 loading secrets from "./ipsec.secrets/west"
+002 adding interface virtual127.95.7.1/lo:w 127.95.7.1:8500
+002 loading secrets from "/tmp/ipsec.secrets/west"
 whackeast --listen
 002 listening for IKE messages
 002 adding interface virtual127.95.7.2/lo:e 127.95.7.2
-002 loading secrets from "./ipsec.secrets/east"
+002 loading secrets from "/tmp/ipsec.secrets/east"
 whackwest --keyid @k4096.example.com
 whackwest --shutdown
 002 shutting down

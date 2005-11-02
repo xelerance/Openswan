@@ -1,0 +1,6 @@
+Basic pluto test - just like basic-pluto-06
+
+
+initiator wants AES128.
+Responder wants AES256.
+

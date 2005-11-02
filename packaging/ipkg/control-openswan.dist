@@ -1,0 +1,8 @@
+Package: openswan
+Priority: optional
+Section: Communications
+Version: VERSION
+Architecture: ARCH
+Maintainer: Openswan <users@lists.openswan.org>
+Depends: gawk libgmp
+Description: Openswan IPsec IKE daemon and related tools

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: rcv_whack.c,v 1.107 2004/06/14 02:01:32 mcr Exp $
+ * RCSID $Id: rcv_whack.c,v 1.115 2005/03/21 03:51:59 mcr Exp $
  */
 
 #include <stdio.h>
@@ -55,11 +55,13 @@
 #include "rcv_whack.h"
 #include "log.h"
 #include "keys.h"
+#include "secrets.h"
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "server.h"
 #include "fetch.h"
 #include "ocsp.h"
+#include "timer.h"
 
 #include "kernel_alg.h"
 #include "ike_alg.h"
@@ -239,6 +241,8 @@ whack_handle(int whackctlfd)
     /* Note: actual value in n should fit in int.  To print, cast to int. */
     ssize_t n;
 
+    //DBG_log("whack_crash %d\n", msg.whack_crash);
+
     if (whackfd < 0)
     {
 	log_errno((e, "accept() failed in whack_handle()"));
@@ -285,7 +289,7 @@ whack_handle(int whackctlfd)
 	    }
 	    else
 	    {
-		ugh = builddiag("ignoring message from whack with bad magic %d; should be %d; probably wrong version"
+		ugh = builddiag("ignoring message from whack with bad magic %d; should be %d; Mismatched versions of userland tools and KLIPS code."
 		    , msg.magic, WHACK_MAGIC);
 	    }
 	}
@@ -307,6 +311,8 @@ whack_handle(int whackctlfd)
 	    return;
 	}
     }
+
+    //DBG_log("whack_crash %d\n", msg.whack_crash);
 
     if (msg.whack_options)
     {
@@ -491,6 +497,11 @@ whack_handle(int whackctlfd)
     }
 #endif
 
+    if (msg.whack_list & LIST_EVENTS)
+    {
+	timer_list();
+    }
+
     if (msg.whack_key)
     {
 	/* add a public key */
@@ -552,7 +563,9 @@ whack_handle(int whackctlfd)
 	    whack_log(RC_DEAF, "need --listen before --initiate");
 	else
 	    initiate_connection(msg.name
-		, msg.whack_async? NULL_FD : dup_any(whackfd));
+				, msg.whack_async? NULL_FD : dup_any(whackfd)
+				, msg.debugging
+				, pcim_demand_crypto);
     }
 
     if (msg.whack_oppo_initiate)

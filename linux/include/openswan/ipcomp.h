@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
 
- RCSID $Id: ipcomp.h,v 1.13 2004/04/05 19:55:04 mcr Exp $
+ RCSID $Id: ipcomp.h,v 1.14 2004/07/10 19:08:41 mcr Exp $
 
  */
 
@@ -31,9 +31,9 @@
 #define IPPROTO_COMP 108
 #endif /* IPPROTO_COMP */
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 extern int sysctl_ipsec_debug_ipcomp;
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 struct ipcomphdr {			/* IPCOMP header */
     __u8    ipcomp_nh;		/* Next header (protocol) */

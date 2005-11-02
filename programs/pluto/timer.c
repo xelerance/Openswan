@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: timer.c,v 1.86 2004/04/29 03:59:32 mcr Exp $
+ * RCSID $Id: timer.c,v 1.98 2005/03/20 03:00:41 mcr Exp $
  */
 
 #include <stdio.h>
@@ -47,6 +47,7 @@
 #include "rnd.h"
 #include "timer.h"
 #include "whack.h"
+#include "dpd.h"
 
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
@@ -86,6 +87,7 @@ event_schedule(enum event_type type, time_t tm, struct state *st)
 {
     struct event *ev = alloc_thing(struct event, "struct event in event_schedule()");
 
+    passert(tm >= 0);
     ev->ev_type = type;
     ev->ev_time = tm + now();
     ev->ev_state = st;
@@ -186,11 +188,20 @@ handle_timer_event(void)
 
     evlist = evlist->ev_next;		/* Ok, we'll handle this event */
 
-    DBG(DBG_CONTROL,
-	if (evlist != (struct event *) NULL)
+    DBG(DBG_CONTROL, DBG_log("handling event %s"
+			     , enum_show(&timer_event_names, type)));
+
+    if(DBGP(DBG_CONTROL)) {
+	if (evlist != (struct event *) NULL) {
 	    DBG_log("event after this is %s in %ld seconds"
-		, enum_show(&timer_event_names, evlist->ev_type)
-		, (long) (evlist->ev_time - tm)));
+		    , enum_show(&timer_event_names, evlist->ev_type)
+		    , (long) (evlist->ev_time - tm));
+	}
+	else {
+	    DBG_log("no more events are scheduled");
+	}
+	    
+    }
 
     /* for state-associated events, pick up the state pointer
      * and remove the backpointer from the state object.
@@ -205,8 +216,8 @@ handle_timer_event(void)
                 passert(st->st_dpd_event == ev);
                 st->st_dpd_event = NULL;
         } else {
-        passert(st->st_event == ev);
-        st->st_event = NULL;
+	    passert(st->st_event == ev);
+	    st->st_event = NULL;
         }
 	peer = c->spd.that.host_addr;
 	set_cur_state(st);
@@ -227,6 +238,12 @@ handle_timer_event(void)
 	    break;
 #endif
 
+        case EVENT_PENDING_PHASE2:
+	    passert(st == NULL);
+	    connection_check_phase2();
+	    break;
+	
+
 	case EVENT_LOG_DAILY:
 	    daily_log_event();
 	    break;
@@ -244,6 +261,10 @@ handle_timer_event(void)
 	     * MAXIMUM_RETRANSMISSIONS_INITIAL times, with all these
 	     * extended attempts having the same patience.  The intention
 	     * is to reduce the bother when nobody is home.
+	     *
+	     * Since IKEv1 is not reliable for the Quick Mode responder,
+	     * we'll extend the number of retransmissions as well to
+	     * improve the reliability.
 	     */
 	    {
 		time_t delay = 0;
@@ -254,9 +275,12 @@ handle_timer_event(void)
 
 		if (st->st_retransmit < MAXIMUM_RETRANSMISSIONS)
 		    delay = EVENT_RETRANSMIT_DELAY_0 << (st->st_retransmit + 1);
-		else if (st->st_state == STATE_MAIN_I1
+		else if ((st->st_state == STATE_MAIN_I1 || st->st_state == STATE_AGGR_I1)
 		&& c->sa_keying_tries == 0
 		&& st->st_retransmit < MAXIMUM_RETRANSMISSIONS_INITIAL)
+		    delay = EVENT_RETRANSMIT_DELAY_0 << MAXIMUM_RETRANSMISSIONS;
+		else if (st->st_state == STATE_QUICK_R1
+		&& st->st_retransmit < MAXIMUM_RETRANSMISSIONS_QUICK_R1)
 		    delay = EVENT_RETRANSMIT_DELAY_0 << MAXIMUM_RETRANSMISSIONS;
 
 		if (delay != 0)
@@ -266,7 +290,7 @@ handle_timer_event(void)
 			, "%s: retransmission; will wait %lus for response"
 			, enum_name(&state_names, st->st_state)
 			, (unsigned long)delay);
-		    send_packet(st, "EVENT_RETRANSMIT");
+		    send_packet(st, "EVENT_RETRANSMIT", TRUE);
 		    event_schedule(EVENT_RETRANSMIT, delay, st);
 		}
 		else
@@ -427,8 +451,9 @@ handle_timer_event(void)
 	    break;
 
         case EVENT_DPD:
-            dpd_outI(st);
+            dpd_event(st);
             break;
+	    
         case EVENT_DPD_TIMEOUT:
             dpd_timeout(st);
             break;
@@ -439,6 +464,14 @@ handle_timer_event(void)
 	    nat_traversal_ka_event();
 	    break;
 #endif
+	    
+        case EVENT_CRYPTO_FAILED:
+	    DBG(DBG_CONTROL
+		, DBG_log("event crypto_failed on state #%lu, aborting"
+			  , st->st_serialno));
+	    delete_state(st);
+	    break;
+	    
 
 	default:
 	    loglog(RC_LOG_SERIOUS, "INTERNAL ERROR: ignoring unknown expiring event %s"
@@ -518,8 +551,16 @@ delete_event(struct state *st)
  * Delete a DPD event.
  */
 void
-delete_dpd_event(struct state *st)
+_delete_dpd_event(struct state *st, const char *file, int lineno)
 {
+    DBG(DBG_DPD|DBG_CONTROL
+	, DBG_log("state: %ld requesting event %s to be deleted by %s:%d"
+		  , st->st_serialno
+		  , (st->st_dpd_event!=NULL
+		   ? enum_show(&timer_event_names, st->st_dpd_event->ev_type)
+		   : "none")
+		  , file, lineno));
+  
     if (st->st_dpd_event != (struct event *) NULL)
     {
         struct event **ev;
@@ -528,8 +569,10 @@ delete_dpd_event(struct state *st)
         {
             if (*ev == NULL)
             {
-                DBG(DBG_CONTROL, DBG_log("event %s to be deleted not found",
-                    enum_show(&timer_event_names, st->st_dpd_event->ev_type)));
+                DBG(DBG_DPD|DBG_CONTROL
+		    , DBG_log("event %s to be deleted not found",
+			      enum_show(&timer_event_names
+					, st->st_dpd_event->ev_type)));
                 break;
             }
             if ((*ev) == st->st_dpd_event)
@@ -543,3 +586,49 @@ delete_dpd_event(struct state *st)
     }
 }
 
+/*
+ * dump list of events to whacklog
+ */
+void
+timer_list(void)
+{
+    time_t tm;
+    struct event *ev = evlist;
+    int type;
+    struct state *st;
+
+    if (ev == (struct event *) NULL)    /* Just paranoid */
+    {
+	whack_log(RC_LOG, "no events are queued");
+	return;
+    }
+
+    tm = now();
+
+    whack_log(RC_LOG, "It is now: %ld seconds since epoch", (unsigned long)tm);
+
+    while(ev) {
+	type = ev->ev_type;
+	st = ev->ev_state;
+
+	whack_log(RC_LOG, "event %s is schd: %ld (in %lds) state:%ld"
+		  , enum_show(&timer_event_names, type)
+		  , (unsigned long)ev->ev_time
+		  , (unsigned long)(ev->ev_time - tm)
+		  , st != NULL ? (long signed)st->st_serialno : -1);
+
+	if(st && st->st_connection) {
+	    whack_log(RC_LOG, "    connection: \"%s\"", st->st_connection->name);
+	}
+
+	ev = ev->ev_next;
+    }
+}
+
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

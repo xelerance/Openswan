@@ -12,13 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: xauth.h,v 1.6 2004/05/08 11:05:48 ken Exp $
+ * RCSID $Id: xauth.h,v 1.8 2004/10/22 19:34:43 mcr Exp $
  */
 
 struct state;
 
 stf_status modecfg_resp(struct state *st,unsigned int resp
-                             ,pb_stream *s,u_int16_t id);
+			, pb_stream *s, u_int16_t cmd
+			, bool hackthat, u_int16_t id);
 
 stf_status xauth_client_resp(struct state *st
                              ,unsigned int xauth
@@ -43,6 +44,9 @@ stf_status xauth_send_status(struct state *st,int status);
 int xauth_launch_authent(struct state *st,chunk_t name
 			 ,chunk_t password, chunk_t connname); 
 
+extern stf_status modecfg_start_set(struct state *st);
+
+
 /* XAUTH States */
 extern stf_status xauth_inR0(struct msg_digest *md);
 extern stf_status xauth_inR1(struct msg_digest *md);
@@ -50,6 +54,8 @@ extern stf_status modecfg_inR0(struct msg_digest *md);
 extern stf_status modecfg_inR1(struct msg_digest *md);
 extern stf_status xauth_inI0(struct msg_digest *md);
 extern stf_status xauth_inI1(struct msg_digest *md);
+extern oakley_auth_t xauth_calcbaseauth(oakley_auth_t baseauth);
+extern stf_status modecfg_send_request(struct state *st);
 
 /* How many times can remote users try to login ? */
 #define XAUTH_PROMPT_TRIES 3

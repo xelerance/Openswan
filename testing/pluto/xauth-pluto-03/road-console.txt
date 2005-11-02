@@ -22,6 +22,7 @@ SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
 loop: loaded (max 8 devices)
 PPP generic driver version VERSION
 Universal TUN/TAP device driver VERSION
+
 NET4: Linux TCP/IP 1.0 for NET4.0
 IP Protocols: ICMP, UDP, TCP
 IP: routing cache hash table of 512 buckets, 4Kbytes
@@ -66,8 +67,8 @@ road:~#
  netstat -rn
 Kernel IP routing table
 Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
-192.1.3.0       0.0.0.0         255.255.255.0   U        40 0          0 eth0
-0.0.0.0         192.1.3.254     0.0.0.0         UG       40 0          0 eth0
+192.1.3.0       0.0.0.0         255.255.255.0   U         0 0          0 eth0
+0.0.0.0         192.1.3.254     0.0.0.0         UG        0 0          0 eth0
 road:~#
  TESTNAME=xauth-pluto-03
 road:~#
@@ -82,27 +83,29 @@ road:~#
  ipsec whack --xauthname 'use1' --xauthpass 'use1pass' --name xauth-road--eastnet --initiate 
 002 "xauth-road--eastnet" #1: initiating Main Mode
 104 "xauth-road--eastnet" #1: STATE_MAIN_I1: initiate
+003 "xauth-road--eastnet" #1: received Vendor ID payload [Dead Peer Detection]
 003 "xauth-road--eastnet" #1: received Vendor ID payload [XAUTH]
 002 "xauth-road--eastnet" #1: transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 106 "xauth-road--eastnet" #1: STATE_MAIN_I2: sent MI2, expecting MR2
+002 "xauth-road--eastnet" #1: I did not send a certificate because I do not have one.
 002 "xauth-road--eastnet" #1: transition from state STATE_MAIN_I2 to state STATE_MAIN_I3
 108 "xauth-road--eastnet" #1: STATE_MAIN_I3: sent MI3, expecting MR3
-002 "xauth-road--eastnet" #1: Peer ID is ID_FQDN: '@east'
+002 "xauth-road--eastnet" #1: Main mode peer ID is ID_FQDN: '@east'
 002 "xauth-road--eastnet" #1: transition from state STATE_MAIN_I3 to state STATE_MAIN_I4
 002 "xauth-road--eastnet" #1: ISAKMP SA established
 004 "xauth-road--eastnet" #1: STATE_MAIN_I4: ISAKMP SA established
 041 "xauth-road--eastnet" #1: xauth-road--eastnet prompt for Username:
 040 "xauth-road--eastnet" #1: xauth-road--eastnet prompt for Password:
-002 "xauth-road--eastnet" #1: answering XAUTH challenge with user='use1'
-002 "xauth-road--eastnet" #1: transition from state STATE_MAIN_I4 to state STATE_XAUTH_I1
+002 "xauth-road--eastnet" #1: XAUTH: Answering XAUTH challenge with user='use1'
+002 "xauth-road--eastnet" #1: transition from state STATE_XAUTH_I0 to state STATE_XAUTH_I1
 002 "xauth-road--eastnet" #1: XAUTH client - awaiting CFG_set
 004 "xauth-road--eastnet" #1: STATE_XAUTH_I1: XAUTH client - awaiting CFG_set
-002 "xauth-road--eastnet" #1: successfully logged in
-002 "xauth-road--eastnet" #1: transition from state STATE_XAUTH_I1 to state STATE_XAUTH_I1
+002 "xauth-road--eastnet" #1: XAUTH: Successfully Authenticated
+002 "xauth-road--eastnet" #1: transition from state STATE_XAUTH_I0 to state STATE_XAUTH_I1
 002 "xauth-road--eastnet" #1: XAUTH client - awaiting CFG_set
 004 "xauth-road--eastnet" #1: STATE_XAUTH_I1: XAUTH client - awaiting CFG_set
 002 "xauth-road--eastnet" #2: initiating Quick Mode RSASIG+ENCRYPT+TUNNEL+PFS+UP
-112 "xauth-road--eastnet" #2: STATE_QUICK_I1: initiate
+117 "xauth-road--eastnet" #2: STATE_QUICK_I1: initiate
 002 "xauth-road--eastnet" #2: transition from state STATE_QUICK_I1 to state STATE_QUICK_I2
 002 "xauth-road--eastnet" #2: sent QI2, IPsec SA established
 004 "xauth-road--eastnet" #2: STATE_QUICK_I2: sent QI2, IPsec SA established
@@ -113,9 +116,14 @@ road:~#
  
 
 road:~#
+road:~#
+ halt
+INIT: Switching to runlevel: 0
+INIT: Sending processes the TERM signal
+road:~#
  ipsec setup stop
-ipsec_setup: Stopping Openswan IPsec...
 IPSEC EVENT: KLIPS device ipsec0 shut down.
+ipsec_setup: Stopping Openswan IPsec...
 road:~#
  kill `cat /var/run/klogd.pid`; cat /tmp/klog.log
 klogd 1.3-3#33.1, log source = /proc/kmsg started.

@@ -30,7 +30,7 @@ if ( $ctype && !($ctype eq "serial"))
 }
 
 sub printfun {
-  print sprintf("%-65s",@_);
+  print sprintf("%-60s",@_);
 }
 
 # capture STDOUT as @out, STDERR as @err with no temp files.
@@ -294,7 +294,7 @@ sub cmdchecks {
              }
      }
     if ( -e "/proc/net/pfkey") {
-       printfun "Checking for 'setkey' command for native IPsec stack support";
+       printfun "Checking for 'setkey' command for NETKEY IPsec stack support";
        run "which setkey";
        errchk "@out";
     }
@@ -375,17 +375,34 @@ else
 	installstartcheck;
 	tunnelchecks;
 	cmdchecks;
-	dnschecks;
+	# Go find include files and put them all into an array.
+	@configfiles[0] = "/etc/ipsec.conf";
+	$n=1;
+	open(OE,"grep ^include /etc/ipsec.conf|");
+	while(<OE>) {
+		($include_temp,$configfiles[$n]) = split(" ",$_);
+		$n++;
+	}
+	$oe_disabled = 0;
+	for ($n2 = 0;$n2 < $n; $n2++) {
+		$oe_disabled_temp = `cat $configfiles[$n2]| grep -A3 private-or-clear | grep -c auto=ignore`;
+		if($oe_disabled_temp == 1) {
+			$oe_disabled = 1;
+		}
+	}
+	if( $oe_disabled) {
+		printfun "Opportunistic Encryption Support";
+		errchk "", "DISABLED";
+	} else {
+		dnschecks;
+	}
         if($print_deprecated)
         {
         print "
 
    RFC 3445 restricts the use of the KEY RR to DNSSEC applications. The use of 
    a KEY record sub-type for Opporunistic Encryption (OE) has been deprecated.
-   TXT records are used to provide all OE functionality.
-
-   For more information on these changes, see:
-   http://www.freeswan.org/freeswan_snaps/CURRENT-SNAP/doc/upgrading.html\n\n";
+   TXT records are used to provide all OE functionality.";
         }
     }
 }

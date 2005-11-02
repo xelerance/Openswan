@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.36 2004/04/06 02:49:25 mcr Exp $";
+char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.37 2004/07/10 19:11:18 mcr Exp $";
 
 /* SSS */
 
@@ -67,9 +67,9 @@ char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.36 2004/04/06 02:49:25 mcr Ex
 
 #include <pfkeyv2.h> /* SADB_X_CALG_DEFLATE */
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 int sysctl_ipsec_debug_ipcomp = 0;
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 static
 struct sk_buff *skb_copy_ipcomp(struct sk_buff *skb, int data_growth, int gfp_mask);
@@ -217,7 +217,7 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 		return skb;
 	}
 	
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	if(sysctl_ipsec_debug_ipcomp && sysctl_ipsec_debug_verbose) {
 		__u8 *c;
 		int i;
@@ -236,7 +236,7 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 			printk("\n");
 		}
 	}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 	zs.next_in = (char *) iph + iphlen; /* start of payload */
 	zs.avail_in = pyldsz;
@@ -312,7 +312,7 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 	skb_put(skb,
 		cpyldsz + sizeof(struct ipcomphdr) - pyldsz);
 	
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	if(sysctl_ipsec_debug_ipcomp && sysctl_ipsec_debug_verbose) {
 		__u8 *c;
 		int i;
@@ -331,7 +331,7 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 			printk("\n");
 		}
 	}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 	
 	ips->ips_comp_adapt_skip = 0;
 	ips->ips_comp_adapt_tries = 0;
@@ -486,7 +486,7 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 		return skb;
 	}
 	
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	if(sysctl_ipsec_debug_ipcomp && sysctl_ipsec_debug_verbose) {
 		__u8 *c;
 		int i;
@@ -505,7 +505,7 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 			printk("\n");
 		}
 	}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 #ifdef NET_21
 	iph = nskb->nh.iph;
@@ -569,18 +569,18 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 	
 	if (iph->protocol == IPPROTO_COMP)
 	{
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 		if(sysctl_ipsec_debug_ipcomp)
 		KLIPS_PRINT(sysctl_ipsec_debug_ipcomp,
 			    "klips_debug:skb_decompress: "
 			    "Eh? inner packet is also compressed, dropping.\n");
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 		
 		ipsec_kfree_skb(nskb);
 		return NULL;
 	}
 	
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	if(sysctl_ipsec_debug_ipcomp && sysctl_ipsec_debug_verbose) {
 		__u8 *c;
 		int i;
@@ -599,7 +599,7 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 			printk("\n");
 		}
 	}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 	
 	return nskb;
 }

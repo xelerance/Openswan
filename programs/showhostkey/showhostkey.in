@@ -12,11 +12,11 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: showhostkey.in,v 1.22 2004/03/24 21:08:22 hugh Exp $
+# RCSID $Id: showhostkey.in,v 1.23 2004/11/14 13:40:41 paul Exp $
 
 me="ipsec showhostkey"
 usage="Usage: $me [--file secrets] [--left] [--right] [--txt gateway] [--id id]
-                  [--dhclient]"
+                  [--dhclient] [--ipseckey]"
 
 file=/etc/ipsec.secrets
 fmt=""
@@ -25,7 +25,8 @@ id=
 for dummy
 do
 	case "$1" in
-	--key)	fmt="dns"		;;
+	--key)	fmt="key"		;;
+	--ipseckey) fmt="ipseckey" ;gw="$2" ; shift		;;
 	--file)	file="$2" ; shift	;;
 	--left)	fmt="left"		;;
 	--right)	fmt="right"	;;
@@ -88,7 +89,7 @@ awk '	BEGIN {
 			pat = "^(" x s ")*" id "(" s x ")*" os suffix
 			printid = quote(id)
 		}
-		paydirt = "^[ \t]+#pubkey=0s"
+		if(fmt!= "ipseckey") paydirt = "^[ \t]+#pubkey=0s"
 		status = 0
 	}
 	$0 ~ pat {
@@ -102,16 +103,26 @@ awk '	BEGIN {
 		comment = $0
 		if (fmt == "dhclient")
 			sub(/^[ \t]+#/, "#", comment)
-		else if (fmt == "dns" || fmt == "txt")
+		else if (fmt == "key" || fmt == "txt")
 			sub(/^[ \t]+#/, ";", comment)
 		host = $5
 	}
 	inkey && $0 ~ /^[ \t]+#pubkey=0s/ {
 		
 	}
-	inkey && fmt == "dns" && $0 ~ paydirt {
+	inkey && fmt == "key" && $0 ~ paydirt {
 		out = $0
 		sub(paydirt, (host ".\tIN\tKEY\t0x4200 4 1 "), out)
+		nfound++
+	}
+	inkey && fmt == "ipseckey" && $0 ~ paydirt {
+		if (gw !~ /^@/ && gw !~ /^[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$/ )
+		{
+			grump("gateway must be @FQDN or IPv4 address, not " quote(gw))
+			exit(status)
+		}
+		out = $0
+		sub(paydirt, (host ".\tIN\tIPSECKEY (\t20 0 2 "), out)
 		nfound++
 	}
 	inkey && fmt == "dhclient" && $0 ~ paydirt {

@@ -1,21 +1,21 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2004  Internet Systems Consortium, Inc. ("ISC")
+ * Copyright (C) 2000-2003  Internet Software Consortium.
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
  *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ * REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ * LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ * OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* $Id: getrrset.c,v 1.3 2003/04/11 16:56:34 mcr Exp $ */
+/* $Id: getrrset.c,v 1.4 2004/09/20 18:00:35 mcr Exp $ */
 
 #include <config.h>
 
@@ -36,7 +36,6 @@ lwresult_to_result(lwres_result_t lwresult) {
 	case LWRES_R_NOMEMORY:	return (ERRSET_NOMEMORY);
 	case LWRES_R_NOTFOUND:	return (ERRSET_NONAME);
 	case LWRES_R_TYPENOTFOUND: return (ERRSET_NODATA);
-	case LWRES_R_RETRY:     return (ERRSET_RETRY);
 	default:		return (ERRSET_FAIL);
 	}
 }
@@ -49,7 +48,7 @@ lwresult_to_result(lwres_result_t lwresult) {
 
 static void *
 sane_malloc(size_t size) {
-	if (size == 0)
+	if (size == 0U)
 		size = 1;
 	return (malloc(size));
 }
@@ -176,6 +175,7 @@ lwres_getrrsetbyname(const char *hostname, unsigned int rdclass,
 	}
 
 	lwres_grbnresponse_free(lwrctx, &response);
+	lwres_conf_clear(lwrctx);
 	lwres_context_destroy(&lwrctx);
 	*res = rrset;
 	return (ERRSET_SUCCESS);
@@ -184,10 +184,11 @@ lwres_getrrsetbyname(const char *hostname, unsigned int rdclass,
 		lwres_freerrset(rrset);
 	if (response != NULL)
 		lwres_grbnresponse_free(lwrctx, &response);
-	if (lwrctx != NULL)
+	if (lwrctx != NULL) {
+		lwres_conf_clear(lwrctx);
 		lwres_context_destroy(&lwrctx);
+	}
 	return (result);
-
 }
 
 void
@@ -208,4 +209,3 @@ lwres_freerrset(struct rrsetinfo *rrset) {
 	free(rrset->rri_name);
 	free(rrset);
 }
-

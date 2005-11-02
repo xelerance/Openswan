@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: log.c,v 1.87 2004/06/14 01:46:03 mcr Exp $
+ * RCSID $Id: log.c,v 1.92.2.1 2005/05/18 20:55:13 ken Exp $
  */
 
 #include <stdio.h>
@@ -82,6 +82,18 @@ bool
 /* may include trailing / */
 const char *base_perpeer_logdir = PERPEERLOGDIR;
 static int perpeer_count = 0;
+
+/* what to put in front of debug output */
+char debug_prefix = '|';
+
+/*
+ * used in some messages to distiguish
+ * which pluto is which, when doing unit testing
+ * gets set by "use_interface" in server.c, if it is going to be changed.
+ * Is used by pluto_helpers in their process-title.
+ * could be used by debug routines as well, but is not yet.
+ */
+const char *pluto_ifn_inst = "";  
 
 /* from sys/queue.h */
 static CIRCLEQ_HEAD(,connection) perpeer_list;
@@ -220,7 +232,7 @@ perpeer_logfree(struct connection *c)
 static void
 open_peerlog(struct connection *c)
 {
-    syslog(LOG_INFO, "opening log file for conn %s", c->name);
+    //syslog(LOG_INFO, "opening log file for conn %s", c->name);
 
     if (c->log_file_name == NULL)
     {
@@ -250,12 +262,12 @@ open_peerlog(struct connection *c)
 	    + 1;
 	c->log_file_name = alloc_bytes(lf_len, "per-peer log file name");
 
-	fprintf(stderr, "base dir |%s| dname |%s| peername |%s|"
-		, base_perpeer_logdir, dname, peername);
+	//fprintf(stderr, "base dir |%s| dname |%s| peername |%s|"
+	//	, base_perpeer_logdir, dname, peername);
 	snprintf(c->log_file_name, lf_len, "%s/%s/%s.log"
 		 , base_perpeer_logdir, dname, peername);
 
-	syslog(LOG_DEBUG, "conn %s logfile is %s", c->name, c->log_file_name);
+	//syslog(LOG_DEBUG, "conn %s logfile is %s", c->name, c->log_file_name);
     }
 
     /* now open the file, creating directories if necessary */
@@ -570,6 +582,7 @@ switch_fail(int n, const char *file_str, unsigned long line_no)
 
     snprintf(buf, sizeof(buf), "case %d unexpected", n);
     passert_fail(buf, file_str, line_no);
+    /* NOTREACHED */
 }
 
 void
@@ -596,6 +609,8 @@ lset_t
     base_debugging = DBG_NONE,	/* default to reporting nothing */
     cur_debugging =  DBG_NONE;
 
+static const struct connection *lastc = NULL;
+
 void
 extra_debugging(const struct connection *c)
 {
@@ -607,10 +622,27 @@ extra_debugging(const struct connection *c)
 
     if (c!= NULL && c->extra_debugging != 0)
     {
-	openswan_log("enabling for connection: %s"
+	openswan_log("extra debugging enabled for connection: %s"
 	    , bitnamesof(debug_bit_names, c->extra_debugging & ~cur_debugging));
 	set_debugging(cur_debugging | c->extra_debugging);
     }
+
+    /*
+     * if any debugging is no, make sure that we log the connection
+     * we are processing, because it may not be clear in later debugging.
+     */
+    if(cur_debugging) {
+	if(lastc != c) {
+	    char b1[CONN_INST_BUF];
+	    
+	    fmt_conn_instance(c, b1);
+	    DBG_log("processing connection %s%s"
+		    , c->name, b1);
+	} else {
+	    lastc = c;
+	}
+    }
+    
 }
 
 void
@@ -638,11 +670,16 @@ DBG_log(const char *message, ...)
     (void)sanitize_string(m, sizeof(m));
 
     if (log_to_stderr)
-	fprintf(stderr, "| %s\n", m);
+	fprintf(stderr, "%c %s\n", debug_prefix, m);
     if (log_to_syslog)
-	syslog(LOG_DEBUG, "| %s", m);
-    if (log_to_perpeer)
-	peerlog("| ", m);
+	syslog(LOG_DEBUG, "%c %s", debug_prefix, m);
+    if (log_to_perpeer) {
+	char prefix[3];
+	prefix[0]=debug_prefix;
+	prefix[1]=' ';
+	prefix[2]='\n';
+	peerlog(prefix, m);
+    }
 }
 
 /* dump raw bytes in hex to stderr (for lack of any better destination) */

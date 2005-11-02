@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: ipsec_policy.h,v 1.5 2004/06/17 04:23:33 mcr Exp $
+ * RCSID $Id: ipsec_policy.h,v 1.7 2005/01/11 17:52:46 ken Exp $
  */
 #define	_IPSEC_POLICY_H 	/* seen it, no need to see it again */
 
@@ -101,7 +101,7 @@ enum ipsec_cipher_algo {
   ESP_DES_IV32=9,
   ESP_RC4=10,
   ESP_NULL=11,
-  ESP_AES=12,
+  ESP_AES=12,         /* 128 bit AES */
 };
 
 /* IPCOMP transform values
@@ -198,7 +198,7 @@ struct ipsec_policy_cmd_query {
   struct ipsec_identity credentials[IPSEC_MAX_CREDENTIALS];
 };
 
-#define IPSEC_POLICY_SOCKET "/var/run/pluto.info"
+#define IPSEC_POLICY_SOCKET "/var/run/pluto/pluto.info"
 
 /* prototypes */
 extern err_t ipsec_policy_lookup(int fd, struct ipsec_policy_cmd_query *result);

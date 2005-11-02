@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: x509.c,v 1.21.2.1 2004/07/22 18:24:39 ken Exp $
+ * RCSID $Id: x509.c,v 1.23 2004/09/08 17:16:52 ken Exp $
  */
 
 #include <stdlib.h>
@@ -1627,9 +1627,9 @@ compute_digest(chunk_t tbs, int alg, chunk_t *digest)
 	case OID_MD5_WITH_RSA:
 	{
 	    MD5_CTX context;
-	    MD5Init(&context);
-	    MD5Update(&context, tbs.ptr, tbs.len);
-	    MD5Final(digest->ptr, &context);
+	    osMD5Init(&context);
+	    osMD5Update(&context, tbs.ptr, tbs.len);
+	    osMD5Final(digest->ptr, &context);
 	    digest->len = MD5_DIGEST_SIZE;
 	    return TRUE;
 	}

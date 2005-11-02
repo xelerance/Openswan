@@ -12,6 +12,7 @@ REF_PRIV_OUTPUT=spi1-cleartext.txt
 THREEEIGHT=true
 
 REF_CONSOLE_OUTPUT=spi1-console.txt
+REF26_CONSOLE_OUTPUT=spi1-console26.txt
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-spi-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-look-sanitize.sed"

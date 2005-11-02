@@ -1,6 +1,6 @@
 .TH IPSEC_SHOWPOLICY 8 "7 May 2003"
 .\"
-.\" RCSID $Id: showpolicy.8,v 1.1 2003/05/11 00:45:08 mcr Exp $
+.\" RCSID $Id: showpolicy.8,v 1.2 2005/01/11 17:52:50 ken Exp $
 .\"
 .SH NAME
 ipsec showpolicy \- dump policy of socket found as stdin
@@ -21,7 +21,7 @@ This is a test program. One might run it from inetd, via:
 .TP
 discard stream tcp nowait nobody /usr/local/libexec/ipsec/showpolicy showpolicy
 .SH FILES
-/var/run/ipsecpolicy.ctl
+/var/run/pluto/ipsecpolicy.ctl
 .SH "SEE ALSO"
 ipsec(8), ipsec_policy_query(3), ipsec_pluto(8)
 .SH HISTORY
@@ -31,6 +31,11 @@ by Michael Richardson
 .SH BUGS
 .\"
 .\" $Log: showpolicy.8,v $
+.\" Revision 1.2  2005/01/11 17:52:50  ken
+.\" Move plutos runtime files from /var/run/pluto.* to /var/run/pluto/pluto.*
+.\"
+.\" This was done with find . -type f -print0 | xargs -0 perl -pi -e 's#/var/run/#/var/run/pluto/#g'
+.\"
 .\" Revision 1.1  2003/05/11 00:45:08  mcr
 .\" 	program to interogate ipsec policy of stdin.
 .\" 	run this from inetd.

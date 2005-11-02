@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: confwrite.c,v 1.1 2004/02/05 17:23:30 mcr Exp $
+ * RCSID $Id: confwrite.c,v 1.5 2004/12/07 00:28:18 ken Exp $
  */
 
 #include <stdlib.h>
@@ -22,13 +22,14 @@
 
 #include "parser.h"
 #include "confread.h"
-#include "interfaces.h"
-#include "starterlog.h"
+#include "confwrite.h"
+#include "keywords.h"
 
 void confwrite(struct starter_config *cfg, FILE *out)
 {
 	struct starter_conn *conn;
-
+/*	int i;
+*/
 	/* output version number */
 	fprintf(out, "version 2.0\n");
 
@@ -37,7 +38,9 @@ void confwrite(struct starter_config *cfg, FILE *out)
 	/* output connections */
 	for(conn = cfg->conns.tqh_first; conn != NULL; conn = conn->link.tqe_next)
 	{
-	    struct keyword_def *kd;
+	    struct keyword_def *k;
+
+            fprintf(out,"# begin conn %s\n",conn->name);
 
 	    fprintf(out, "conn %s\n", conn->name);
 
@@ -50,17 +53,20 @@ void confwrite(struct starter_config *cfg, FILE *out)
 		      && alsoplace < ALSO_LIMIT)
 		{
 		    fprintf(out, "%s ", conn->alsos[alsoplace]);
+		    alsoplace++;
 		}
 		fprintf(out, "\n");
 	    }
-
-	    kd = ipsec_conf_keywords_v2;
-	    while(kd->keyname != NULL)
+	    fprintf(out,"# Completed alsos\n");
+	    k = ipsec_conf_keywords_v2;
+	    while(k->keyname != NULL)
 	    {
-		/* skip keywords that do not apply to conns */
-		if(!(kd->validity & kv_conn)) continue;
+		fprintf(out,"keyname = %s\n",k->keyname);
 
-		switch(kd->type)
+		/* skip keywords that do not apply to conns */
+/*		if(!(k->validity & kv_conn)) continue; */
+
+		switch(k->type)
 		{
 		case kt_string:
 		case kt_appendstring:
@@ -79,17 +85,19 @@ void confwrite(struct starter_config *cfg, FILE *out)
 		case kt_subnet:
 		case kt_idtype:
 		case kt_bitstring:
+		break;
 		}
 
-
-	    for(i=0; i<sizeof(ipsec_conf_keywords_v2)/sizeof(struct keyword_def); i++)
-	    {
-		
-		
-		
-
-
+/*	        for(i=0; i< ipsec_conf_keywords_v2_count; i++)
+	        {
+			fprintf(out,"%d of %d\n",i, ipsec_conf_keywords_v2_count);
+                }
+*/
+	    k++; 
+            }
+            fprintf(out,"# end conn %s\n",conn->name);
 	}
+	fprintf(out,"# end of config\n");
 }
 
 /*

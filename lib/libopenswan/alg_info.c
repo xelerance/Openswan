@@ -94,11 +94,15 @@ alg_enum_search_prefix (enum_names *ed, const char *prefix, const char *str, int
 	char *ptr;
 	int ret;
 	int len=sizeof(buf)-1;	/* reserve space for final \0 */
+
 	for (ptr=buf; *prefix; *ptr++=*prefix++, len--);
+
 	while (strlen--&&len--&&*str) *ptr++=toupper(*str++);
 	*ptr=0;
+
 	DBG(DBG_CRYPT, DBG_log("enum_search_prefix () "
 				"calling enum_search(%p, \"%s\")", ed, buf));
+
 	ret=enum_search(ed, buf);
 	return ret;
 }
@@ -706,8 +710,12 @@ void
 alg_info_delref(struct alg_info **alg_info_p)
 {
     struct alg_info *alg_info=*alg_info_p;
+
+#if 0
     DBG(DBG_CONTROL, DBG_log("alg_info_delref(%p) "
 			   , alg_info));
+#endif
+
     if (alg_info != NULL) {
 	DBG(DBG_CONTROL, DBG_log("alg_info_delref(%p) "
 			       "alg_info->ref_cnt=%d"

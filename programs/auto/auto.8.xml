@@ -236,10 +236,10 @@ default is poorly chosen).</para>
 </refsect1>
 
 <refsect1 id='files'><title>FILES</title>
-<!-- .ta \w'/var/run/ipsec.info'u+4n -->
+<!-- .ta \w'/var/run/pluto/ipsec.info'u+4n -->
 <para>/etc/ipsec.conf	default IPSEC configuration file
 <!-- .br -->
-/var/run/ipsec.info	<emphasis remap='B'>%defaultroute</emphasis> information</para>
+/var/run/pluto/ipsec.info	<emphasis remap='B'>%defaultroute</emphasis> information</para>
 </refsect1>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>

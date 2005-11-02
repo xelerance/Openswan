@@ -48,8 +48,8 @@ We recommend that "hold" be used for statically defined tunnels, and
 
 DPD support in Openswan is based on Philip Craig [1]'s work for
 Snapgear's ucLinux [2] and Srinivasan Venkataraman's [3] implementation, 
-which were ported to Super FreeS/WAN by Pawe³ Krawczyk, and then hacked 
-on by Pawe³, JuanJo Ciarlante and Ken Bantoft. Thanks to Daniel 
+which were ported to Super FreeS/WAN by Pawel Krawczyk, and then hacked 
+on by Pawel, JuanJo Ciarlante and Ken Bantoft. Thanks to Daniel 
 Djamaludin [4] and Srinivasan Venkataraman for their support and 
 advice.
 
@@ -68,30 +68,12 @@ Openswan 1.x
 Openswan 2.2.x
 Cisco Systems: VPN 3000 Concentrator Version 3.6.7.C
 Cisco Systems: IOS 12.2.8T 
-(Cisco interop testing done by Minsu - thanks!)
 
+Note: Previous versions had -DAPPLY_CRISCO as a compile time option to deal
+with Cisco devices that sent invalid cookies.  According to the RFC, we 
+SHOULD check them, not MUST.  Thus, we have to accept invalid cookies.  So
+now we do, however we still log it.
 
-Fail: 12.2(15)T1
-Cisco Systems: IOS *unknown version*
+Thanks to Geoffrey Huang <ghuang@cisco.com> for debating this with me.
 
-If you see something like:
-
-May  8 02:43:02 dev pluto[1888]: "to-cisco" #23: R_U_THERE_ACK has invalid rcookie
-May  8 02:43:02 dev pluto[1888]: "to-cisco" #23: sending notification INVALID_COOKIE to 1.2.3.4:500
-May  8 02:43:05 dev pluto[1888]: "to-cisco" #23: R_U_THERE_ACK has invalid rcookie
-May  8 02:43:05 dev pluto[1888]: "to-cisco" #23: sending notification INVALID_COOKIE to 1.2.3.4:500
-May  8 02:43:07 dev pluto[1888]: "to-cisco" #23: DPD: No response from peer - declaring peer dead
-May  8 02:43:07 dev pluto[1888]: "to-cisco" #27: deleting state (STATE_QUICK_I2)
-May  8 02:43:07 dev pluto[1888]: "to-cisco" #26: deleting state (STATE_QUICK_I1)
-May  8 02:43:07 dev pluto[1888]: "to-cisco" #23: deleting state (STATE_MAIN_I4)
-
-in the logfiles, the other end has broken R_U_THERE* cookie code.  Since
-the IETF draft has not been finalized into an RFC yet, there have been
-some liberties taken with implementations, causing inter-op problems.  To
-fix this case, edit programs/pluto/Makefile, and uncomment out the
--DAPPLY_CRISCO option and rebuild pluto (from programs/pluto, "make
-programs && make install" will suffice).  This will make Openswan ignore
-the value of the cookies.
-
-
-# RCSID $Id: README.DPD,v 1.1 2004/05/03 20:45:44 ken Exp $
+# RCSID $Id: README.DPD,v 1.3 2004/12/04 04:36:46 ken Exp $

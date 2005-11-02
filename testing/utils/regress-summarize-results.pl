@@ -29,12 +29,25 @@ $passed=0;
 $missed=0;
 $total=0;
 
+#$gnatsurl="http://gnats.freeswan.org/bugs/gnatsweb.pl?database=freeswan&amp;cmd=view+audit-trail&amp;pr=";
+$gnatsurl=undef;
+
 @faillist=();
 
 sub htmlize_test {
   local($testname)=@_;
 
   my($expected, $verdict, $packetstat, $consolestat, $file);
+
+  if(++$linecount > 40) {
+	print HTMLFILE "</TABLE>\n";
+	print HTMLFILE "<TD>";
+	print HTMLFILE "<TABLE>\n";
+
+	print HTMLFILE "<TR><TH COLSPAN=3>$testtypename tests</TH></TR>\n";
+	print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
+ 	$linecount=4;
+  }	
 
   print HTMLFILE "<TR><TD>";
 
@@ -46,10 +59,21 @@ sub htmlize_test {
 
   print HTMLFILE "</TD>";
 
+  if($testname eq $runningtest) {
+      $verdict="<BLINK>**RUNNING**</BLINK>";
+      print HTMLFILE "<TD>$verdict</TD></TR>";
+      return;
+  } 
+
   if(-f "$testname/expected" &&
      open(EXPECTED, "$testname/expected")) {
     chop($expected=<EXPECTED>);
     close(EXPECTED);
+  }
+
+  $old ="";
+  if(-M "$testname/status" > -M "datestamp") {
+      $old = "(old) ";
   }
 
   if(open(STATUS,"$testname/status")) {
@@ -63,7 +87,7 @@ sub htmlize_test {
       $story=$2;
     }
     if($result =~ /^(yes|true|1|succeed|passed)$/i) {
-      $verdict="<FONT COLOR=\"$succeedcolour\">passed</FONT>";
+      $verdict="$old<FONT COLOR=\"$succeedcolour\">passed</FONT>";
       if(defined($expected) &&
          $expected ne 'good') {
 	$verdict .= " <FONT COLOR=\"$unexpectedcolour\">unexpected</FONT>";
@@ -71,7 +95,7 @@ sub htmlize_test {
       $passed++;
 
     } elsif($result =~ /^missing$/i) {
-      $verdict="<FONT COLOR=\"$missingcolour\">missing</FONT>";
+      $verdict="$old<FONT COLOR=\"$missingcolour\">missing</FONT>";
       if(defined($expected) &&
          $expected ne 'missing' &&
 	 $expected ne 'incomplete') {
@@ -80,23 +104,23 @@ sub htmlize_test {
       $missed++;
 
     } elsif($result =~ /^skipped$/i) {
-      $verdict="<FONT COLOR=\"$missingcolour\">skipped</FONT>";
+      $verdict="$old<FONT COLOR=\"$missingcolour\">skipped</FONT>";
       if(defined($expected) &&
         $expected ne 'missing') {
 	$verdict .= " <FONT COLOR=\"$unexpectedcolour\">AWOL</FONT>";
       }	
     } else {
-      $verdict = "FAILED";
+      $verdict = "${old}FAILED";
       if(!defined($expected) ||
          $expected eq 'good') {
-	$verdict="<FONT COLOR=\"$failedcolour\">FAILED {$story}</FONT>";
+	$verdict=$old."<FONT COLOR=\"$failedcolour\">FAILED {$story}</FONT>";
       }
       if($expected eq 'missing' ||
 	$expected eq 'incomplete') {
-	$verdict="<FONT COLOR=\"$unexpectedcolour\">FAILED</FONT>";
+	$verdict=$old."<FONT COLOR=\"$unexpectedcolour\">FAILED</FONT>";
       }
       if($expected eq 'bad') {
-	$verdict="<FONT COLOR=\"$expectedcolour\">FAILED</FONT> (expected)";
+	$verdict=$old."<FONT COLOR=\"$expectedcolour\">FAILED</FONT> (expected)";
       }
 	
       if(-d "$testname/OUTPUT") {
@@ -206,8 +230,8 @@ sub htmlize_test {
     chop($prnum=<PROBREPORT>);
     close(PROBREPORT);
 
-    if($prnum > 0) {
-	    print HTMLFILE "<TD><A HREF=\"http://gnats.freeswan.org/bugs/gnatsweb.pl?database=freeswan&amp;cmd=view+audit-trail&amp;pr=$prnum\">PR#$prnum</A></TD>";
+    if($prnum > 0 && defined($gnatsurl)) {
+	    print HTMLFILE "<TD><A HREF=\"$gnatsurl$prnum\">PR#$prnum</A></TD>";
     }
 
   } elsif(-f "$testname/goal.txt") {
@@ -216,7 +240,7 @@ sub htmlize_test {
     close(GOALREQ);
 
     $goalnum=sprintf("%03d", $goalnum);
-    print HTMLFILE "<TD><A HREF=\"http://www.freeswan.org/freeswan_snaps/CURRENT-SNAP/klips/doc/klipsNGreq/requirements/$goalnum\">Requirement $goalnum</A></TD>";
+    #print HTMLFILE "<TD><A HREF=\"http://www.freeswan.org/freeswan_snaps/CURRENT-SNAP/klips/doc/klipsNGreq/requirements/$goalnum\">Requirement $goalnum</A></TD>";
 
   } elsif(-f "$testname/exploit.txt") {
     open(EXPLOIT, "$testname/exploit.txt") || die "$testname/exploit.txt: $!\n";
@@ -238,6 +262,10 @@ if(defined($ARGV[0])) {
   $REGRESSRESULTS=$ARGV[0];
 }
 
+if(defined($ARGV[1]) && $ARGV[1] ne "notest") {
+  $runningtest=$ARGV[1];
+}
+
 if( ! -d $REGRESSRESULTS ) {
   die "No such directory $REGRESSRESULTS.";
 }
@@ -247,6 +275,13 @@ chdir($REGRESSRESULTS) || die "Can not chdir to $REGRESSRESULTS: $!\n";
 opendir(TESTS,".") || die "opendir $REGRESSRESULTS: $!\n";
 @tests=readdir(TESTS);
 closedir(TESTS);
+
+if(defined($runningtest)) {
+	if(!grep /${runningtest}/, @tests) {
+		#print "Adding running test: $runningtest\n";
+		push(@tests, "${runningtest}");
+	}
+}
 
 @testnames=sort @tests;
 
@@ -268,6 +303,7 @@ foreach $testname (@testnames) {
   }
 }
 
+
 if(open(DATE, "datestamp")) {
   chop($timestamp=<DATE>);
   close(DATE);
@@ -282,59 +318,91 @@ open(HTMLFILE, ">testresults.html") || die "Can not open testresults.html: $!\n"
 print HTMLFILE "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n";
 print HTMLFILE "<HTML>  <HEAD>\n";
 print HTMLFILE "<META http-equiv=\"content-type\" content=\"text/html; charset=ISO-8859-1\">\n";
-print HTMLFILE "<TITLE>FreeSWAN nightly testing results for $runtime</TITLE>\n";
-print HTMLFILE "</HEAD>  <BODY>\n";
-print HTMLFILE "<H1>FreeSWAN nightly testing results for $runtime on $hostname</H1>\n";
-print HTMLFILE "<TABLE>\n";
 
+if(defined($runningtest)) {
+  print HTMLFILE "<META http-equiv=\"Refresh\" content=\"15,testresults.html\">\n";
+}
+
+print HTMLFILE "<TITLE>Openswan nightly testing results for $runtime</TITLE>\n";
+print HTMLFILE "</HEAD>  <BODY>\n";
+print HTMLFILE "<H1>Openswan nightly testing results for $runtime on $hostname</H1>\n";
+
+if(defined($runningtest)) {
+  print HTMLFILE "Currently running $runningtest<P>\n";
+}
+
+
+print HTMLFILE "<TABLE border>\n";
+print HTMLFILE "<TD>";
+
+$testtypename="Regression";
+print HTMLFILE "<TABLE>\n";
 print HTMLFILE "<TR><TH COLSPAN=3>Regression tests</TH></TR>\n";
 print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
+$linecount=3;
 
 foreach $testname (@regresstests) {
   next if($testname =~ /^\./);
-  next unless(-d $testname);
+  next unless(-d $testname || $testname eq $runningtest);
 
   &htmlize_test($testname);
 }
 
+$testtypename="Goal";
+print HTMLFILE "</TABLE>\n";
+print HTMLFILE "<TABLE>\n";
 print HTMLFILE "<TR><TH COLSPAN=3>Goal tests</TH></TR>\n";
 print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
+$linecount+=3;
 
 foreach $testname (@goaltests) {
   next if($testname =~ /^\./);
-  next unless(-d $testname);
+  next unless(-d $testname || $testname eq $runningtest);
 
   &htmlize_test($testname);
 }
 
-print HTMLFILE "<TR><TH COLSPAN=3>Exploits</TH></TR>\n";
+$testtypename="Exploit ";
+print HTMLFILE "</TABLE>\n";
+print HTMLFILE "<TABLE>\n";
+print HTMLFILE "<TR><TH COLSPAN=3>Exploit tests</TH></TR>\n";
 print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
+$linecount+=3;
 
 foreach $testname (@exploittests) {
   next if($testname =~ /^\./);
-  next unless(-d $testname);
+  next unless(-d $testname || $testname eq $runningtest);
 
   &htmlize_test($testname);
 }
 
-if($total > 0) {
-  $testrate=sprintf("%2.1d",(($passed*100)/$total));
+$subtotal = $passed + $failed;
+$skipped = $total - $subtotal;
+
+if($subtotal > 0) {
+  $testrate=sprintf("%2.1d",(($passed*100)/$subtotal));
 } else {
   $testrate="inf";
 }
 
 print HTMLFILE "</TABLE>  \n";
-print HTMLFILE "\n<BR><PRE>TOTAL tests: $total   PASSED: $passed   FAILED: $failed   MISSED: $missed  SUCCESS RATE: $testrate%</PRE><BR>\n";
+print HTMLFILE "</TABLE>  \n";
+print HTMLFILE "\n<BR><PRE>TOTAL tests: $total SKIPPED: $skipped   PASSED: $passed   FAILED: $failed   MISSED: $missed  SUCCESS RATE: $testrate%</PRE><BR>\n";
 print HTMLFILE "<A HREF=\"stdout.txt\">stdout</A><BR>\n";
 print HTMLFILE "<A HREF=\"stderr.txt\">stderr</A><BR>\n";
 print HTMLFILE "</BODY></HTML>\n";
 close(HTMLFILE);
 
-open(FAILLIST, ">faillist.txt") || die "failed to write to faillist.txt: $!\n";
-print FAILLIST join('\n', @faillist)."\n";
-close(FAILLIST);
+if(!defined($runningtest)) {
+  open(FAILLIST, ">faillist.txt") || die "failed to write to faillist.txt: $!\n";
+  print FAILLIST join('
+		      ', @faillist)."\n";
+  close(FAILLIST);
 
-open(STATS, ">stats.txt") || die "failed to write to stats.txt: $!\n";
-print STATS "$timestamp $total $passed $failed $missed\n";
-close(STATS);
+  open(STATS, ">stats.txt") || die "failed to write to stats.txt: $!\n";
+  print STATS "$timestamp $total $passed $failed $missed\n";
+  close(STATS);
+}
+
+
 

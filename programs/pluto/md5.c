@@ -44,7 +44,7 @@ documentation and/or software.
 #include <sys/types.h>	/* for u_int*_t */
 
 #include "md5.h"
-#include "endian.h"   /* sets BYTE_ORDER, LITTLE_ENDIAN, and BIG_ENDIAN */
+#include "pluto_endian.h" /* sets BYTE_ORDER, LITTLE_ENDIAN, and BIG_ENDIAN */
 
 #define HAVEMEMCOPY 1	/* use ISO C's memcpy and memset */
 
@@ -79,7 +79,7 @@ static void MD5Transform PROTO_LIST ((UINT4 [4], const unsigned char [64]));
 static void Encode PROTO_LIST
   ((unsigned char *, UINT4 *, unsigned int));
 static void Decode PROTO_LIST
-  ((UINT4 *, unsigned char *, unsigned int));
+  ((UINT4 *, const unsigned char *, unsigned int));
 #endif
 
 #ifdef HAVEMEMCOPY
@@ -138,7 +138,7 @@ Rotation is separate from addition to prevent recomputation.
 
 /* MD5 initialization. Begins an MD5 operation, writing a new context.
  */
-void MD5Init (context)
+void osMD5Init (context)
 MD5_CTX *context;                                        /* context */
 {
   context->count[0] = context->count[1] = 0;
@@ -154,7 +154,7 @@ MD5_CTX *context;                                        /* context */
   operation, processing another message block, and updating the
   context.
  */
-void MD5Update (context, input, inputLen)
+void osMD5Update (context, input, inputLen)
 MD5_CTX *context;                                        /* context */
 const unsigned char *input;                          /* input block */
 UINT4 inputLen;                            /* length of input block */
@@ -192,7 +192,7 @@ UINT4 inputLen;                            /* length of input block */
 /* MD5 finalization. Ends an MD5 message-digest operation, writing the
   the message digest and zeroizing the context.
  */
-void MD5Final (digest, context)
+void osMD5Final (digest, context)
 unsigned char digest[16];                         /* message digest */
 MD5_CTX *context;                                       /* context */
 {
@@ -206,10 +206,10 @@ MD5_CTX *context;                                       /* context */
 */
   index = (unsigned int)((context->count[0] >> 3) & 0x3f);
   padLen = (index < 56) ? (56 - index) : (120 - index);
-  MD5Update (context, PADDING, padLen);
+  osMD5Update (context, PADDING, padLen);
 
   /* Append length (before padding) */
-  MD5Update (context, bits, 8);
+  osMD5Update (context, bits, 8);
 
   if (digest != NULL)			/* Bill Simpson's padding */
   {
@@ -339,7 +339,7 @@ unsigned int len;
  */
 static void Decode (output, input, len)
 UINT4 *output;
-unsigned char *input;
+const unsigned char *input;
 unsigned int len;
 {
   unsigned int i, j;

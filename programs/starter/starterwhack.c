@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: starterwhack.c,v 1.7 2004/04/10 17:15:23 ken Exp $
+ * RCSID $Id: starterwhack.c,v 1.8 2004/12/01 07:33:14 ken Exp $
  */
 
 #include <sys/types.h>
@@ -29,7 +29,7 @@
 
 #ifndef _OPENSWAN_H
 #include <openswan.h>  /** FIXME: ugly include lines **/
-#include "../pluto/constants.h"
+#include "constants.h"
 #endif
 
 #include "../pluto/defs.h"

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keywords.c,v 1.8 2004/04/18 03:09:27 mcr Exp $
+ * RCSID $Id: keywords.c,v 1.12 2004/12/02 16:26:02 ken Exp $
  */
 
 #define DEBUG
@@ -31,6 +31,138 @@
 #include "keywords.h"
 #include "parser.tab.h"
 #include "parserlast.h"
+
+
+/*
+ * Values for failureshunt={passthrough, drop, reject, none}
+ */
+struct keyword_enum_value kw_failureshunt_values[]={
+    { "none",        POLICY_FAIL_NONE },
+    { "passthrough", POLICY_FAIL_PASS },
+    { "drop",        POLICY_FAIL_DROP },
+    { "reject",      POLICY_FAIL_REJECT },
+};
+
+struct keyword_enum_values kw_failureshunt_list=
+    { kw_failureshunt_values, sizeof(kw_failureshunt_values)/sizeof(struct keyword_enum_value)};
+
+
+
+/*
+ * Values for keyexchange=
+ */
+struct keyword_enum_value kw_keyexchange_values[]={
+    { "ike",  KH_IKE },
+};
+
+struct keyword_enum_values kw_keyexchange_list=
+    { kw_keyexchange_values, sizeof(kw_keyexchange_values)/sizeof(struct keyword_enum_value)};
+
+
+/*
+ * Values for authby={rsasig, secret}
+ */
+struct keyword_enum_value kw_authby_values[]={
+    { "rsasig",    POLICY_RSASIG},
+    { "secret",    POLICY_PSK},
+};
+
+struct keyword_enum_values kw_authby_list=
+    { kw_authby_values, sizeof(kw_authby_values)/sizeof(struct keyword_enum_value)};
+
+/*
+ * Values for dpdaction={hold,clear}
+ */
+struct keyword_enum_value kw_dpdaction_values[]={
+    { "hold",    DPD_ACTION_HOLD},
+    { "clear",   DPD_ACTION_CLEAR},
+};
+
+struct keyword_enum_values kw_dpdaction_list=
+    { kw_dpdaction_values, sizeof(kw_dpdaction_values)/sizeof(struct keyword_enum_value)};
+
+
+/*
+ * Values for auto={add,start,route,ignore}
+ */
+struct keyword_enum_value kw_auto_values[]={
+    { "ignore", STARTUP_NO },
+    { "add",    STARTUP_ADD },
+    { "route",  STARTUP_ROUTE },
+    { "start",  STARTUP_START },
+};
+
+struct keyword_enum_values kw_auto_list=
+    { kw_auto_values, sizeof(kw_auto_values)/sizeof(struct keyword_enum_value)};
+
+/*
+ * Values for type={tunnel,transport,udpencap}
+ */
+struct keyword_enum_value kw_type_values[]={
+    { "tunnel",    KS_TUNNEL },
+    { "transport", KS_TRANSPORT },
+    { "udpencap",  KS_UDPENCAP },
+    { "passthrough", KS_PASSTHROUGH },
+    { "udp",       KS_UDPENCAP },
+    { "pass",      KS_PASSTHROUGH },
+    { "reject",    KS_REJECT },
+    { "drop",      KS_DROP },
+};
+
+struct keyword_enum_values kw_type_list=
+    { kw_type_values, sizeof(kw_type_values)/sizeof(struct keyword_enum_value)};
+
+
+
+/*
+ * Values for rsasigkey={%dnsondemand, %dns, literal }
+ */
+struct keyword_enum_value kw_rsasigkey_values[]={
+    { "",             PUBKEY_PREEXCHANGED },
+    { "%dns",         PUBKEY_DNS },
+    { "%dnsondemand", PUBKEY_DNSONDEMAND },
+};
+
+struct keyword_enum_values kw_rsasigkey_list=
+    { kw_rsasigkey_values, sizeof(kw_rsasigkey_values)/sizeof(struct keyword_enum_value)};
+
+
+
+
+
+/*
+ * Values for right= and left=
+ */
+extern struct keyword_enum_values kw_host_list;
+
+
+
+struct keyword_enum_value kw_plutodebug_values[]={
+    { "none",     DBG_NONE },
+    { "all",      DBG_ALL },
+    { "raw",      DBG_RAW },
+    { "crypt",    DBG_CRYPT },
+    { "parsing",  DBG_PARSING },
+    { "emitting", DBG_EMITTING },
+    { "control",  DBG_CONTROL },
+    { "lifecycle", DBG_LIFECYCLE },
+    { "klips",    DBG_KLIPS },
+    { "dns",      DBG_DNS },
+    { "oppo",     DBG_OPPO },
+    { "controlmore", DBG_CONTROLMORE },
+    { "private",  DBG_PRIVATE },
+    { "x509",  DBG_X509 },
+
+    { "impair-delay-adns-key-answer", IMPAIR_DELAY_ADNS_KEY_ANSWER },
+    { "impair-delay-adns-txt-answer", IMPAIR_DELAY_ADNS_TXT_ANSWER },
+    { "impair-bust-mi2", IMPAIR_BUST_MI2 },
+    { "impair-bust-mr2", IMPAIR_BUST_MR2 },
+};
+
+
+struct keyword_enum_values kw_plutodebug_list=
+    { kw_plutodebug_values, sizeof(kw_plutodebug_values)/sizeof(struct keyword_enum_value)};
+
 
 struct keyword_enum_value kw_klipsdebug_values[]={
     { "all",      LRANGE(KDF_XMIT, KDF_COMP) },
@@ -51,115 +183,9 @@ struct keyword_enum_value kw_klipsdebug_values[]={
     { "comp",     LELEM(KDF_COMP) },
 };
 
+
 struct keyword_enum_values kw_klipsdebug_list=
     { kw_klipsdebug_values, sizeof(kw_klipsdebug_values)/sizeof(struct keyword_enum_value)};
-    
-
-struct keyword_enum_value kw_plutodebug_values[]={
-    { "none",     DBG_NONE },
-    { "all",      DBG_ALL },
-    { "raw",      DBG_RAW },
-    { "crypt",    DBG_CRYPT },
-    { "parsing",  DBG_PARSING },
-    { "emitting", DBG_EMITTING },
-    { "control",  DBG_CONTROL },
-    { "lifecycle", DBG_LIFECYCLE },
-    { "klips",    DBG_KLIPS },
-    { "dns",      DBG_DNS },
-    { "oppo",     DBG_OPPO },
-    { "controlmore", DBG_CONTROLMORE },
-    { "private",  DBG_PRIVATE },
-
-    { "impair-delay-adns-key-answer", IMPAIR_DELAY_ADNS_KEY_ANSWER },
-    { "impair-delay-adns-txt-answer", IMPAIR_DELAY_ADNS_TXT_ANSWER },
-    { "impair-bust-mi2", IMPAIR_BUST_MI2 },
-    { "impair-bust-mr2", IMPAIR_BUST_MR2 },
-};
-
-
-struct keyword_enum_values kw_plutodebug_list=
-    { kw_plutodebug_values, sizeof(kw_plutodebug_values)/sizeof(struct keyword_enum_value)};
-
-/*
- * Values for right= and left=
- */
-extern struct keyword_enum_values kw_host_list;
-
-/*
- * Values for keyexchange=
- */
-struct keyword_enum_value kw_keyexchange_values[]={
-    { "ike",  KH_IKE },
-};
-
-struct keyword_enum_values kw_keyexchange_list=
-    { kw_keyexchange_values, sizeof(kw_keyexchange_values)/sizeof(struct keyword_enum_value)};
-    
-/*
- * Values for auth={add,start,route,ignore}
- */
-struct keyword_enum_value kw_auto_values[]={
-    { "ignore", STARTUP_NO },
-    { "add",    STARTUP_ADD },
-    { "route",  STARTUP_ROUTE },
-    { "start",  STARTUP_START },
-};
-
-struct keyword_enum_values kw_auto_list=
-    { kw_auto_values, sizeof(kw_auto_values)/sizeof(struct keyword_enum_value)};
-    
-/*
- * Values for type={tunnel,transport,udpencap}
- */
-struct keyword_enum_value kw_type_values[]={
-    { "tunnel",    KS_TUNNEL },
-    { "transport", KS_TRANSPORT },
-    { "udpencap",  KS_UDPENCAP },
-    { "passthrough", KS_PASSTHROUGH },
-    { "udp",       KS_UDPENCAP },
-    { "pass",      KS_PASSTHROUGH },
-    { "reject",    KS_REJECT },
-    { "drop",      KS_DROP },
-};
-
-struct keyword_enum_values kw_type_list=
-    { kw_type_values, sizeof(kw_type_values)/sizeof(struct keyword_enum_value)};
-    
-/*
- * Values for authby={rsasig, secret}
- */
-struct keyword_enum_value kw_authby_values[]={
-    { "rsasig",    POLICY_RSASIG},
-    { "secret",    POLICY_PSK},
-};
-
-struct keyword_enum_values kw_authby_list=
-    { kw_authby_values, sizeof(kw_authby_values)/sizeof(struct keyword_enum_value)};
-    
-/*
- * Values for failureshunt={passthrough, drop, reject, none}
- */
-struct keyword_enum_value kw_failureshunt_values[]={
-    { "none",        POLICY_FAIL_NONE },
-    { "passthrough", POLICY_FAIL_PASS },
-    { "drop",        POLICY_FAIL_DROP },
-    { "reject",      POLICY_FAIL_REJECT },
-};
-
-struct keyword_enum_values kw_failureshunt_list=
-    { kw_failureshunt_values, sizeof(kw_failureshunt_values)/sizeof(struct keyword_enum_value)};
-    
-/*
- * Values for rsasigkey={%dnsondemand, %dns, literal }
- */
-struct keyword_enum_value kw_rsasigkey_values[]={
-    { "",             PUBKEY_PREEXCHANGED },
-    { "%dns",         PUBKEY_DNS },
-    { "%dnsondemand", PUBKEY_DNSONDEMAND },
-};
-
-struct keyword_enum_values kw_rsasigkey_list=
-    { kw_rsasigkey_values, sizeof(kw_rsasigkey_values)/sizeof(struct keyword_enum_value)};
     
 struct keyword_def ipsec_conf_keywords_v2[]={
     {"interfaces",     kv_config, kt_string,    KSF_INTERFACES,NOT_ENUM},
@@ -185,10 +211,19 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"nocrsend",       kv_config, kt_bool,      KBF_NOCRSEND,NOT_ENUM},
     {"strictcrlpolicy",kv_config, kt_enum,      KBF_STRICTCRLPOLICY,NOT_ENUM},
     {"crlcheckinterval",kv_config,kt_time,      KBF_CRLCHECKINTERVAL,NOT_ENUM},
+#ifdef NAT_TRAVERSAL
+    {"virtual_private",kv_config,kt_string,     KSF_VIRTUALPRIVATE,NOT_ENUM},
+    {"nat_traversal", kv_config,kt_bool,        KBF_NATTRAVERSAL, NOT_ENUM},
+#endif
+    {"nhelpers",kv_config,kt_number, KBF_NHELPERS, NOT_ENUM},
 
     /* this is "left=" and "right=" */
     {"",               kv_conn|kv_leftright, kt_loose_enum, KSCF_IP, &kw_host_list},  
+    {"esp",            kv_conn|kv_leftright|kv_manual, kt_string, KSCF_ESP,NOT_ENUM},
+    {"ike",            kv_conn|kv_auto, kt_string, KSCF_IKE,NOT_ENUM},
+
     {"subnet",         kv_conn|kv_leftright, kt_subnet, KSCF_SUBNET,NOT_ENUM}, 
+    {"sourceip",       kv_conn|kv_leftright, kt_ipaddr, KSCF_SOURCEIP,NOT_ENUM}, 
     {"nexthop",        kv_conn|kv_leftright, kt_ipaddr, KSCF_NEXTHOP,NOT_ENUM},
     {"firewall",       kv_conn|kv_leftright, kt_bool,   KNCF_FIREWALL,NOT_ENUM},
     {"updown",         kv_conn|kv_leftright, kt_filename, KSCF_UPDOWN,NOT_ENUM},
@@ -220,14 +255,31 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"disablearrivalcheck", kv_conn|kv_auto, kt_invertbool, KBF_ARRIVALCHECK,NOT_ENUM},
     {"failureshunt",   kv_conn|kv_auto, kt_enum,   KBF_FAILURESHUNT, &kw_failureshunt_list},
 
+
+    /* DPD */ 
+    {"dpddelay", kv_conn|kv_auto,kt_number, KNCF_DPDDELAY, NOT_ENUM},
+    {"dpdtimeout", kv_conn|kv_auto,kt_number,KNCF_DPDTIMEOUT , NOT_ENUM},
+    {"dpdaction", kv_conn|kv_auto,kt_enum, KSCF_DPDACTION , &kw_dpdaction_list},
+
+
+    /* aggr/xauth/modeconfig */ 
+    {"aggrmode", kv_conn|kv_auto, kt_invertbool, KNCF_AGGRMODE , NOT_ENUM},
+    {"xauthserver", kv_conn|kv_leftright, kt_invertbool, KNCF_XAUTHSERVER , NOT_ENUM},
+    {"xauthclient", kv_conn|kv_leftright, kt_invertbool, KNCF_XAUTHCLIENT, NOT_ENUM},
+    {"modecfgserver", kv_conn|kv_leftright, kt_invertbool, KNCF_MODECONFIGSERVER, NOT_ENUM},
+    {"modecfgclient", kv_conn|kv_leftright, kt_invertbool, KNCF_MODECONFIGCLIENT, NOT_ENUM},
+    {"modecfgpull", kv_conn|kv_auto, kt_invertbool, KNCF_MODECONFIGPULL , NOT_ENUM},
+
+
     /* things for manual keying only */
     {"spi",            kv_conn|kv_leftright|kv_manual, kt_number, KNCF_SPI,NOT_ENUM},
-    {"esp",            kv_conn|kv_leftright|kv_manual, kt_string, KSCF_ESP,NOT_ENUM},
     {"espenckey",      kv_conn|kv_leftright|kv_manual, kt_bitstring, KSCF_ESPENCKEY,NOT_ENUM},
     {"espauthkey",     kv_conn|kv_leftright|kv_manual, kt_bitstring, KSCF_ESPAUTHKEY,NOT_ENUM},
     {"espreplay_window",kv_conn|kv_leftright|kv_manual, kt_number, KNCF_ESPREPLAYWINDOW,NOT_ENUM}, 
     {NULL, 0, 0, 0, NOT_ENUM}
 };
+
+const int ipsec_conf_keywords_v2_count = sizeof(ipsec_conf_keywords_v2)/sizeof(struct keyword_def);
 
 /*
  * look for one of the above tokens, and set the value up right.

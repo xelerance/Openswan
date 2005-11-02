@@ -60,20 +60,22 @@ struct parser_context {
 };
 
 struct esp_info {
+        bool     esp_default; 
 	u_int8_t transid;	/* ESP transform */
 	u_int16_t auth;		/* AUTH */
-	size_t enckeylen;	/* keylength for ESP transform */
-	size_t authkeylen;	/* keylength for AUTH */
+	u_int32_t enckeylen;	/* keylength for ESP transform (bytes)*/
+	u_int32_t authkeylen;	/* keylength for AUTH (bytes)*/
 	u_int8_t encryptalg;	/* normally  encryptalg=transid */
 	u_int8_t authalg;	/* normally  authalg=auth+1 */
 };
 
 struct ike_info {
-	u_int16_t ike_ealg;	/* high 16 bit nums for reserved */
-	u_int8_t ike_halg;
-	size_t ike_eklen;
-	size_t ike_hklen;
-	u_int16_t ike_modp;
+    bool      ike_default;
+    u_int16_t ike_ealg;	  /* encrytion algorithm - bit 15set for reserved*/
+    u_int8_t  ike_halg;   /* hash algorithm */
+    size_t    ike_eklen;     /* how many bits required by encryption algo */
+    size_t    ike_hklen;     /* how many bits required by hash algo */
+    oakley_group_t ike_modp;  /* which modp group to use */
 };
 
 #define ALG_INFO_COMMON \
@@ -152,3 +154,10 @@ extern int alg_info_parse_str (struct alg_info *alg_info
 			       , bool permitmann);
 
 #endif /* ALG_INFO_H */
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

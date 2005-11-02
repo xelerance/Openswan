@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: whacklib.c,v 1.6 2004/06/14 01:46:03 mcr Exp $
+ * RCSID $Id: whacklib.c,v 1.7 2004/12/16 01:21:59 mcr Exp $
  */
 
 #include <stdio.h>
@@ -189,5 +189,17 @@ err_t unpack_whack_msg (struct whackpacker *wp)
 
     return ugh;
 }
+
+void
+clear_end(struct whack_end *e)
+{
+    zero(e);
+    e->id = NULL;
+    e->cert = NULL;
+    e->ca = NULL;
+    e->updown = NULL;
+    e->host_port = IKE_UDP_PORT;
+}
+
 
 

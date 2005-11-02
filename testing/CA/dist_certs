@@ -4,7 +4,7 @@
 source ../../umlsetup.sh
 
 # first, move the private keys to the right place
-for host in $FREESWANHOSTS
+for host in $OPENSWANHOSTS
 do
 	if [ -f $host.uml.freeswan.org/$host.uml.freeswan.org.key ]
 	then
@@ -15,7 +15,7 @@ done
 
 mkdir -p ../baseconfigs/all/etc/ipsec.d/certs
 # now, copy all certificates to "all" directory.
-for host in $FREESWANHOSTS
+for host in $OPENSWANHOSTS
 do
 	if [ -f $host.uml.freeswan.org/$host.uml.freeswan.org.key ]
 	then

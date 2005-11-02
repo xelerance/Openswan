@@ -34,7 +34,7 @@
  *	special case: ipsec core modular with this static algo inside:
  *	must avoid MODULE magic for this file
  */
-#if CONFIG_IPSEC_MODULE && CONFIG_IPSEC_ALG_CRYPTOAPI
+#if CONFIG_KLIPS_MODULE && CONFIG_KLIPS_ENC_CRYPTOAPI
 #undef MODULE
 #endif
 

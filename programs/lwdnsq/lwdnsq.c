@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char tncfg_c_version[] = "RCSID $Id: lwdnsq.c,v 1.16 2003/12/02 04:34:09 mcr Exp $";
+char tncfg_c_version[] = "RCSID $Id: lwdnsq.c,v 1.19 2004/12/02 06:16:19 mcr Exp $";
 
 
 #include <stdio.h>
@@ -26,6 +26,7 @@ char tncfg_c_version[] = "RCSID $Id: lwdnsq.c,v 1.16 2003/12/02 04:34:09 mcr Exp
 #include <setjmp.h>
 #include <ctype.h>
 #include <signal.h>
+#include <time.h>
 
 #include <isc/lang.h>
 #include <isc/magic.h>
@@ -42,11 +43,20 @@ char tncfg_c_version[] = "RCSID $Id: lwdnsq.c,v 1.16 2003/12/02 04:34:09 mcr Exp
 
 #include "lwdnsq.h"
 
+FILE *cmdlog = NULL;
+
+extern int EF_DISABLE_BANNER;
+extern int EF_ALIGNMENT;
+extern int EF_PROTECT_BELOW;
+extern int EF_PROTECT_FREE;
+extern int EF_ALLOW_MALLOC_0;
+extern int EF_FREE_WIPES;
+
+
 static void
 usage(char *name)
 {	
-	fprintf(stdout,"%s --attach --virtual <virtual-device> --physical <physical-device>\n",
-		name);
+	fprintf(stdout,"%s\n", name);
 	exit(1);
 }
 
@@ -55,6 +65,7 @@ static struct option const longopts[] =
 	{"prompt", 0, 0, 'i'},
 	{"serial", 0, 0, 's'},
 	{"debug",  0, 0, 'g'},
+	{"log",    1, 0, 'l'},
 	{"regress",0, 0, 'X'},
 	{"ignoreeof",0, 0, 'Z'},
 	{0, 0, 0, 0}
@@ -126,6 +137,11 @@ static int cmdparse(dnskey_glob *gs,
 		{"debug",     setdebug},
 		{NULL,        NULL}};
 	const struct cmd_entry *ce = cmds;
+
+	if(cmdlog != NULL) {
+		fprintf(cmdlog, "%lu|%s\n", time(NULL), cmdline);
+		fflush(cmdlog);
+	}
 
 	argc=0;
 	
@@ -222,6 +238,7 @@ main(int argc, char *argv[])
 	int c;
 	static int ignoreeof=0;  /* static to avoid longjmp clobber */
 	int ineof;
+	char *logfilename=NULL;
 
 	memset(&gs, 0, sizeof(dnskey_glob));
 
@@ -229,6 +246,28 @@ main(int argc, char *argv[])
 	printf("PID: %d\n", getpid());
 	sleep(60);
 #endif
+
+#ifdef EFENCE
+	EF_DISABLE_BANNER=1;
+	/* EF_ALIGNMENT=4; */
+	EF_PROTECT_BELOW=1;
+	EF_PROTECT_FREE=1;
+	/* EF_ALLOW_MALLOC_0; */
+	EF_FREE_WIPES=1;
+#endif
+
+	{ 
+			FILE *newerr;
+			newerr = fopen("/var/tmp/lwdnsq.log", "a+");
+			if(newerr) {
+				close(2);
+				dup2(fileno(newerr), 2);
+				fclose(newerr);
+			}
+			fprintf(stderr, "stderr capture started\n");
+			setbuf(stderr, NULL);
+	}
+
 
 	program_name = argv[0];
 	gs.concurrent = 1;
@@ -248,15 +287,17 @@ main(int argc, char *argv[])
 		exit(5);
 	}
 
-	while((c = getopt_long_only(argc, argv, "dgsiXZ", longopts, 0)) != EOF) {
+	while((c = getopt_long_only(argc, argv, "dgl:siXZ", longopts, 0)) != EOF) {
 		switch(c) {
 		case 'd':
 			gs.debug+=2;
+			logfilename="/var/tmp/lwdns.req.log";
 			break;
 
 		case 'g':
 			gs.debug++;
 			break;
+
 		case 's':
 			gs.concurrent=0;
 			break;
@@ -265,6 +306,10 @@ main(int argc, char *argv[])
 			break;
 		case 'X':
 			gs.regress++;
+			break;
+
+		case 'l':
+			logfilename=optarg;
 			break;
 
 		case 'Z':
@@ -283,6 +328,13 @@ main(int argc, char *argv[])
 
 	if(isatty(0)) {
 		gs.prompt=1;
+	}
+
+	if(logfilename != NULL) {
+	  cmdlog = fopen(logfilename, "w");
+	  if(cmdlog == NULL) {
+	    fprintf(stderr, "Can not open %s: %s\n", logfilename, strerror(errno));
+	  }
 	}
 
 	/* do various bits of setup */
@@ -492,6 +544,17 @@ main(int argc, char *argv[])
 	
 /*
  * $Log: lwdnsq.c,v $
+ * Revision 1.19  2004/12/02 06:16:19  mcr
+ * 	fixed long standing bug with async resolver when there was
+ * 	more than one outstanding request.
+ *
+ * Revision 1.18  2004/11/25 18:16:47  mcr
+ * 	make sure to actually open the log file.
+ *
+ * Revision 1.17  2004/11/24 01:36:10  mcr
+ * 	if debugging is on, then log all requests that are sent,
+ * 	so that we can later replay, looking for bugs.
+ *
  * Revision 1.16  2003/12/02 04:34:09  mcr
  * 	if lwresd does not start early enough, then the request is
  * 	lost and never retransmitted. This version can now deal with

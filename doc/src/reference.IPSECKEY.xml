@@ -1,0 +1,32 @@
+<?xml version='1.0'?>
+<!DOCTYPE reference SYSTEM 'rfc2629.dtd'>
+
+<reference anchor='IPSECKEY'>
+
+<front>
+  <area>Security</area>
+  <workgroup>IPSECKEY WG</workgroup>
+  <title abbrev="Storing IPsec keying material in DNS">
+     A Method for Storing IPsec Keying Material in DNS
+  </title>
+
+  <author initials="M." surname="Richardson" fullname="Michael C. Richardson">
+    <organization abbrev="SSW">Sandelman Software Works</organization>
+    <address>
+      <postal>   
+        <street>470 Dawson Avenue</street>
+        <city>Ottawa</city>
+        <region>ON</region>
+        <code>K1Z 5V7</code>
+        <country>CA</country>
+      </postal>
+      <email>mcr@sandelman.ottawa.on.ca</email>
+      <uri>http://www.sandelman.ottawa.on.ca/</uri>
+    </address>
+  </author>
+
+  <date month="July" year="2004" />
+
+<seriesInfo name='ID' value='internet-draft (draft-ietf-ipseckey-rr-00) (informative)' />
+</front>
+</reference>

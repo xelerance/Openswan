@@ -1,5 +1,6 @@
 
 include ${OPENSWANSRCDIR}/Makefile.ver
+include ${OPENSWANSRCDIR}/Makefile.inc
 
 CFLAGS+=${USERCOMPILE} -I${OPENSWANSRCDIR} -I${KLIPSINC} -I${OPENSWANSRCDIR}/include
 
@@ -15,7 +16,12 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -Wwrite-strings
 CFLAGS+= -Wbad-function-cast 
 
-LIBS?=${OPENSWANLIB}
+ifeq ($(USE_NAT_TRAVERSAL),true)
+NAT_DEFS=-DNAT_TRAVERSAL -DVIRTUAL_IP 
+endif
+CFLAGS+= ${NAT_DEFS}
+
+LIBS?=${OSWLOGLIB} ${OPENSWANLIB} 
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
@@ -115,9 +121,14 @@ endif
 
 # cancel the rule that compiles directly
 %: %.c 
+# cancel explicit rule
+%: %.o
 
 %: %.o $(OBJS) $(OPENSWANLIB)
 	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LIBS)
+
+%.i: %.c 
+	$(CC) $(CFLAGS) -E -o $@ $< 
 
 %: %.in ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
 	@cat $< | sed -e "s/xxx/$(IPSECVERSION)/" \
@@ -136,9 +147,24 @@ endif
 			-e "s:@USE_IPROUTE2@:$(USE_IPROUTE2):" \
 			-e "s:@IPSEC_FIREWALLTYPE@:$(IPSEC_FIREWALLTYPE):" \
 			-e "s:@OE_FLAG@:$(OE_FLAG):" \
-	| cat >$@
+			| cat >$@
 	@if [ -x $< ]; then chmod +x $@; fi
 	@if [ "${PROGRAM}.in" = $< ]; then chmod +x $@; fi
+
+# xmlto is from http://cyberelk.net/tim/xmlto/
+ifneq ($(strip $(XMLTO)),)
+%.8: %.8.xml
+	${XMLTO} man $< 
+	mv "ipsec_$@" $@
+
+%.5: %.5.xml
+	${XMLTO} man $< 
+	mv "ipsec_$@" $@
+
+%.1: %.1.xml
+	${XMLTO} man $< 
+	mv "ipsec_$@" $@
+endif
 
 cleanall: clean
 

@@ -1,6 +1,7 @@
 #
 # IPSEC configuration
 # Copyright (C) 1998, 1999, 2000,2001  Richard Guy Briggs.
+# Copyright (C) 2004 Michael Richardson <mcr@xelerance.com>
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -12,36 +13,46 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Config.in,v 1.30 2004/06/23 09:49:37 ken Exp $
+# RCSID $Id: Config.in,v 1.32 2004/07/15 01:22:19 mcr Exp $
 
-comment 'IPSec options (Openswan)'
+comment 'IPsec options (Openswan)'
 
-bool '   IPSEC: IP-in-IP encapsulation (tunnel mode)' CONFIG_IPSEC_IPIP
+bool '   IPsec: IP-in-IP encapsulation (tunnel mode)' CONFIG_KLIPS_IPIP
 
-bool '   IPSEC: Authentication Header' CONFIG_IPSEC_AH
-if [ "$CONFIG_IPSEC_AH" = "y" -o "$CONFIG_IPSEC_ESP" = "y" ]; then
-  bool '      HMAC-MD5 authentication algorithm' CONFIG_IPSEC_AUTH_HMAC_MD5
-  bool '      HMAC-SHA1 authentication algorithm' CONFIG_IPSEC_AUTH_HMAC_SHA1
+bool '   IPsec: Authentication Header' CONFIG_KLIPS_AH
+
+bool '   IPsec: Encapsulating Security Payload' CONFIG_KLIPS_ESP
+
+comment '   IPsec algorithms to include'
+if [ "$CONFIG_KLIPS_ESP" = "y" ]; then
+  bool '      3DES encryption algorithm' CONFIG_KLIPS_ENC_3DES
+  bool '       AES encryption algorithm' CONFIG_KLIPS_ENC_AES
 fi
 
-bool '   IPSEC: Encapsulating Security Payload' CONFIG_IPSEC_ESP
-if [ "$CONFIG_IPSEC_ESP" = "y" ]; then
-  bool '      3DES encryption algorithm' CONFIG_IPSEC_ENC_3DES
-  bool '      AES encryption algorithm' CONFIG_IPSEC_ENC_AES
+if [ "$CONFIG_KLIPS_AH" = "y" -o "$CONFIG_KLIPS_ESP" = "y" ]; then
+  bool '      HMAC-MD5 authentication algorithm' CONFIG_KLIPS_AUTH_HMAC_MD5
+  bool '      HMAC-SHA1 authentication algorithm' CONFIG_KLIPS_AUTH_HMAC_SHA1
 fi
 
-bool '   IPSEC Modular Extensions' CONFIG_IPSEC_ALG
-if [ "$CONFIG_IPSEC_ALG" != "n" ]; then
+
+bool '   IPsec Modular Extensions' CONFIG_KLIPS_ALG
+if [ "$CONFIG_KLIPS_ALG" != "n" ]; then
 	source net/ipsec/alg/Config.in
 fi
 
-bool '   IPSEC: IP Compression' CONFIG_IPSEC_IPCOMP
+bool '   IPsec: IP Compression' CONFIG_KLIPS_IPCOMP
 
-bool '   IPSEC Debugging Option' CONFIG_IPSEC_DEBUG
+bool '   IPsec Debugging Option' CONFIG_KLIPS_DEBUG
 
 #
 #
 # $Log: Config.in,v $
+# Revision 1.32  2004/07/15 01:22:19  mcr
+# 	adjustment of AES options for klips24 prep.
+#
+# Revision 1.31  2004/07/10 19:11:18  mcr
+# 	CONFIG_IPSEC -> CONFIG_KLIPS.
+#
 # Revision 1.30  2004/06/23 09:49:37  ken
 # Free -> Open
 #

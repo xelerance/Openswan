@@ -1,0 +1,54 @@
+# To config as static (preferred), 'y'.  To config as module, 'm'.
+CONFIG_KLIPS=m
+
+# To enable authentication, say 'y'.   (Highly recommended)
+CONFIG_KLIPS_AH=m
+
+CONFIG_KLIPS_IPIP=y
+
+# Authentication algorithm(s):
+CONFIG_KLIPS_AUTH_HMAC_MD5=m
+CONFIG_KLIPS_AUTH_HMAC_SHA1=m
+
+# To enable encryption, say 'y'.   (Highly recommended)
+CONFIG_KLIPS_ESP=m
+
+# modular algo extensions (and new ALGOs)
+CONFIG_KLIPS_ALG=m
+
+# Encryption algorithm(s):
+CONFIG_KLIPS_ENC_3DES=m
+CONFIG_KLIPS_ENC_AES=m
+
+CONFIG_KLIPS_ALG_TWOFISH=m
+CONFIG_KLIPS_ALG_BLOWFISH=m
+CONFIG_KLIPS_ALG_SERPENT=m
+CONFIG_KLIPS_ALG_MD5=m
+CONFIG_KLIPS_ALG_SHA1=m
+CONFIG_KLIPS_ALG_SHA2=m
+#CONFIG_KLIPS_ALG_CAST=n
+#CONFIG_KLIPS_ALG_NULL=n
+
+# Use CryptoAPI for ALG? - by default, no.
+CONFIG_KLIPS_ENC_CRYPTOAPI=n
+
+
+# IP Compression: new, probably still has minor bugs.
+CONFIG_KLIPS_IPCOMP=m
+
+# To enable userspace-switchable KLIPS debugging, say 'y'.
+CONFIG_KLIPS_DEBUG=y
+
+# NAT Traversal
+CONFIG_KLIPS_NAT_TRAVERSAL=y
+
+#
+#
+# $Log: module.defs,v $
+# Revision 1.2  2004/09/06 18:37:41  mcr
+# 	make sure that IPIP is defined for modules.
+#
+# Revision 1.1  2004/08/03 18:20:12  mcr
+# 	makefile templates and settings for 2.6 compilation.
+#
+#

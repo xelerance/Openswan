@@ -4,11 +4,11 @@ whackeast --name clear-west --delete --host 127.95.7.2 --ikeport 8500 --nexthop 
 002 added connection description "clear-west"
 whackwest --listen
 002 listening for IKE messages
-002 adding interface virtual127.95.7.1/lo:w 127.95.7.1
+002 adding interface virtual127.95.7.1/lo:w 127.95.7.1:8500
 002 loading secrets from "./ipsec.secrets/west"
 whackeast --listen
 002 listening for IKE messages
-002 adding interface virtual127.95.7.2/lo:e 127.95.7.2
+002 adding interface virtual127.95.7.2/lo:e 127.95.7.2:8500
 002 loading secrets from "./ipsec.secrets/east"
 002 loading group "./ipsec.d/east/clear-west"
 whackwest --initiate --name isakmp-rsa
@@ -31,7 +31,7 @@ whackeast --shutdown
 PLUTO --ctlbase pluto.west --interface lo:w --ikeport 8500 --secretsfile ./ipsec.secrets/west --foodgroupsdir ./ipsec.d/west --noklips --uniqueids --stderrlog --debug-all --debug-private
 added connection description "isakmp-rsa"
 listening for IKE messages
-adding interface virtual127.95.7.1/lo:w 127.95.7.1
+adding interface virtual127.95.7.1/lo:w 127.95.7.1:8500:8500
 loading secrets from "./ipsec.secrets/west"
 "isakmp-rsa" #1: initiating Main Mode
 "isakmp-rsa" #1: max number of retransmissions (2) reached STATE_MAIN_I1.  No response (or no acceptable response) to our first IKE message
@@ -41,7 +41,7 @@ shutting down
 forgetting secrets
 "isakmp-rsa": deleting connection
 "isakmp-rsa" #2: deleting state (STATE_MAIN_I1)
-shutting down interface virtual127.95.7.1/lo:w 127.95.7.1
+shutting down interface virtual127.95.7.1/lo:w 127.95.7.1:8500
 
 >>>Responder:
 PLUTO --ctlbase pluto.east --interface lo:e --ikeport 8500 --secretsfile ./ipsec.secrets/east --foodgroupsdir ./ipsec.d/east --noklips --uniqueids --stderrlog --debug-all --debug-private

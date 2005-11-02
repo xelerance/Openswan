@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2.c,v 1.81 2004/04/25 21:23:11 ken Exp $
+ * RCSID $Id: pfkey_v2.c,v 1.85 2004/12/03 21:25:57 mcr Exp $
  */
 
 /*
@@ -74,11 +74,12 @@
 #include <pfkey.h>
 
 #include "openswan/ipsec_proto.h"
+#include "openswan/ipsec_kern24.h"
 
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 int debug_pfkey = 0;
 extern int sysctl_ipsec_debug_verbose;
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
@@ -87,13 +88,68 @@ extern int sysctl_ipsec_debug_verbose;
 #endif /* SOCKOPS_WRAPPED */
 
 extern struct proto_ops pfkey_ops;
+
+#ifdef NET_26
+HLIST_HEAD(pfkey_sock_list);
+static DECLARE_WAIT_QUEUE_HEAD(pfkey_sock_wait);
+static rwlock_t pfkey_sock_lock = RW_LOCK_UNLOCKED;
+static atomic_t pfkey_sock_users = ATOMIC_INIT(0);
+#else
+extern struct proto_ops pfkey_ops;
 struct sock *pfkey_sock_list = NULL;
+#endif
+
 struct supported_list *pfkey_supported_list[SADB_SATYPE_MAX+1];
 
 struct socket_list *pfkey_open_sockets = NULL;
 struct socket_list *pfkey_registered_sockets[SADB_SATYPE_MAX+1];
 
 int pfkey_msg_interp(struct sock *, struct sadb_msg *, struct sadb_msg **);
+
+#ifdef NET_26
+static void pfkey_sock_list_grab(void)
+{
+	write_lock_bh(&pfkey_sock_lock);
+
+	if (atomic_read(&pfkey_sock_users)) {
+		DECLARE_WAITQUEUE(wait, current);
+
+		add_wait_queue_exclusive(&pfkey_sock_wait, &wait);
+		for(;;) {
+			set_current_state(TASK_UNINTERRUPTIBLE);
+			if (atomic_read(&pfkey_sock_users) == 0)
+				break;
+			write_unlock_bh(&pfkey_sock_lock);
+			schedule();
+			write_lock_bh(&pfkey_sock_lock);
+		}
+
+		__set_current_state(TASK_RUNNING);
+		remove_wait_queue(&pfkey_sock_wait, &wait);
+	}
+}
+
+static __inline__ void pfkey_sock_list_ungrab(void)
+{
+	write_unlock_bh(&pfkey_sock_lock);
+	wake_up(&pfkey_sock_wait);
+}
+
+static __inline__ void pfkey_lock_sock_list(void)
+{
+	/* read_lock() synchronizes us to pfkey_table_grab */
+
+	read_lock(&pfkey_sock_lock);
+	atomic_inc(&pfkey_sock_users);
+	read_unlock(&pfkey_sock_lock);
+}
+
+static __inline__ void pfkey_unlock_sock_list(void)
+{
+	if (atomic_dec_and_test(&pfkey_sock_users))
+		wake_up(&pfkey_sock_wait);
+}
+#endif
 
 int
 pfkey_list_remove_socket(struct socket *socketp, struct socket_list **sockets)
@@ -315,19 +371,31 @@ pfkey_insert_socket(struct sock *sk)
 		    "klips_debug:pfkey_insert_socket: "
 		    "sk=0p%p\n",
 		    sk);
+#ifdef NET_26
+	pfkey_sock_list_grab();
+	sk_add_node(sk, &pfkey_sock_list);
+	pfkey_sock_list_ungrab();
+#else
 	cli();
 	sk->next=pfkey_sock_list;
 	pfkey_sock_list=sk;
 	sti();
+#endif
 }
 
 DEBUG_NO_STATIC void
 pfkey_remove_socket(struct sock *sk)
 {
 	struct sock **s;
-	
+
+	s = NULL;
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_remove_socket: .\n");
+#ifdef NET_26
+	pfkey_sock_list_grab();
+	sk_del_node_init(sk);
+	pfkey_sock_list_ungrab();
+#else
 	cli();
 	s=&pfkey_sock_list;
 
@@ -344,6 +412,8 @@ pfkey_remove_socket(struct sock *sk)
 		s=&((*s)->next);
 	}
 	sti();
+#endif
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_remove_socket: "
 		    "not found.\n");
@@ -366,12 +436,13 @@ pfkey_destroy_socket(struct sock *sk)
 		    "klips_debug:pfkey_destroy_socket: "
 		    "sk(0p%p)->(&0p%p)receive_queue.{next=0p%p,prev=0p%p}.\n",
 		    sk,
-		    &(sk->receive_queue),
-		    sk->receive_queue.next,
-		    sk->receive_queue.prev);
-	while(sk && ((skb=skb_dequeue(&(sk->receive_queue)))!=NULL)) {
+		    &(sk->sk_receive_queue),
+		    sk->sk_receive_queue.next,
+		    sk->sk_receive_queue.prev);
+
+	while(sk && ((skb=skb_dequeue(&(sk->sk_receive_queue)))!=NULL)) {
 #ifdef NET_21
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 		if(debug_pfkey && sysctl_ipsec_debug_verbose) {
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_destroy_socket: "
@@ -432,7 +503,7 @@ pfkey_destroy_socket(struct sock *sk)
 			printk(" destructor:0p%p", skb->destructor);
 			printk("\n");
 		}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 #endif /* NET_21 */
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_destroy_socket: "
@@ -441,7 +512,11 @@ pfkey_destroy_socket(struct sock *sk)
 		ipsec_kfree_skb(skb);
 	}
 
+#ifdef NET_26
+	sock_set_flag(sk, SOCK_DEAD);
+#else
 	sk->dead = 1;
+#endif
 	sk_free(sk);
 
 	KLIPS_PRINT(debug_pfkey,
@@ -571,17 +646,25 @@ pfkey_create(struct socket *sock, int protocol)
 #ifdef NET_21
 	sock->state = SS_UNCONNECTED;
 #endif /* NET_21 */
-	MOD_INC_USE_COUNT;
+
+	KLIPS_INC_USE;
+
 #ifdef NET_21
-	if((sk=(struct sock *)sk_alloc(PF_KEY, GFP_KERNEL, 1)) == NULL)
+#ifdef NET_26
+	sk=(struct sock *)sk_alloc(PF_KEY, GFP_KERNEL, 1, NULL);
+#else
+	sk=(struct sock *)sk_alloc(PF_KEY, GFP_KERNEL, 1);
+#endif
 #else /* NET_21 */
-	if((sk=(struct sock *)sk_alloc(GFP_KERNEL)) == NULL)
+	sk=(struct sock *)sk_alloc(GFP_KERNEL);
 #endif /* NET_21 */
+
+	if(sk == NULL)
 	{
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_create: "
 			    "Out of memory trying to allocate.\n");
-		MOD_DEC_USE_COUNT;
+		KLIPS_DEC_USE;
 		return -ENOMEM;
 	}
 
@@ -592,39 +675,42 @@ pfkey_create(struct socket *sock, int protocol)
 #ifdef NET_21
 	sock_init_data(sock, sk);
 
-	sk->destruct = NULL;
-	sk->reuse = 1;
+	sk->sk_destruct = NULL;
+	sk->sk_reuse = 1;
 	sock->ops = &pfkey_ops;
 
-	sk->zapped=0;
-	sk->family = PF_KEY;
+	sk->sk_zapped=0;
+	sk->sk_family = PF_KEY;
 /*	sk->num = protocol; */
-	sk->protocol = protocol;
+	sk->sk_protocol = protocol;
 	key_pid(sk) = current->pid;
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_create: "
 		    "sock->fasync_list=0p%p sk->sleep=0p%p.\n",
 		    sock->fasync_list,
-		    sk->sleep);
+		    sk->sk_sleep);
 #else /* NET_21 */
 	sk->type=sock->type;
 	init_timer(&sk->timer);
-	skb_queue_head_init(&sk->write_queue);
-	skb_queue_head_init(&sk->receive_queue);
+	skb_queue_head_init(&sk->sk_write_queue);
+	skb_queue_head_init(&sk->sk_receive_queue);
 	skb_queue_head_init(&sk->back_log);
-	sk->rcvbuf=SK_RMEM_MAX;
-	sk->sndbuf=SK_WMEM_MAX;
-	sk->allocation=GFP_KERNEL;
-	sk->state=TCP_CLOSE;
-	sk->priority=SOPRI_NORMAL;
-	sk->state_change=pfkey_state_change;
-	sk->data_ready=pfkey_data_ready;
-	sk->write_space=pfkey_write_space;
-	sk->error_report=pfkey_state_change;
+	sk->sk_rcvbuf=SK_RMEM_MAX;
+	sk->sk_sndbuf=SK_WMEM_MAX;
+	sk->sk_allocation=GFP_KERNEL;
+	sk->sk_state=TCP_CLOSE;
+	sk->sk_priority=SOPRI_NORMAL;
+	sk->sk_state_change=pfkey_state_change;
+	sk->sk_data_ready=pfkey_data_ready;
+	sk->sk_write_space=pfkey_write_space;
+	sk->sk_error_report=pfkey_state_change;
+#ifndef NET_26
 	sk->mtu=4096;
 	sk->socket=sock;
+#endif
+
 	sock->data=(void *)sk;
-	sk->sleep=sock->wait;
+	sk->sk_sleep=sock->wait;
 #endif /* NET_21 */
 
 	pfkey_insert_socket(sk);
@@ -713,10 +799,10 @@ pfkey_release(struct socket *sock, struct socket *peersock)
 		    "sock=0p%p sk=0p%p\n", sock, sk);
 
 #ifdef NET_21
-	if(!sk->dead)
+	if(sock_flag(sk, SOCK_DEAD))
 #endif /* NET_21 */
-		if(sk->state_change) {
-			sk->state_change(sk);
+		if(sk->sk_state_change) {
+			sk->sk_state_change(sk);
 		}
 
 #ifdef NET_21
@@ -732,7 +818,7 @@ pfkey_release(struct socket *sock, struct socket *peersock)
 		pfkey_list_remove_socket(sock, &(pfkey_registered_sockets[i]));
 	}
 
-	MOD_DEC_USE_COUNT;
+	KLIPS_DEC_USE;
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_release: "
 		    "succeeded.\n");
@@ -859,13 +945,13 @@ pfkey_shutdown(struct socket *sock, int mode)
 	mode++;
 	
 	if(mode&SEND_SHUTDOWN) {
-		sk->shutdown|=SEND_SHUTDOWN;
-		sk->state_change(sk);
+		sk->sk_shutdown|=SEND_SHUTDOWN;
+		sk->sk_state_change(sk);
 	}
 
 	if(mode&RCV_SHUTDOWN) {
-		sk->shutdown|=RCV_SHUTDOWN;
-		sk->state_change(sk);
+		sk->sk_shutdown|=RCV_SHUTDOWN;
+		sk->sk_state_change(sk);
 	}
 	return 0;
 }
@@ -957,7 +1043,11 @@ pfkey_fcntl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		
 DEBUG_NO_STATIC int
 #ifdef NET_21
+#ifdef NET_26
+pfkey_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, size_t len)
+#else
 pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cookie *scm)
+#endif
 #else /* NET_21 */
 pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, int nonblock, int flags)
 #endif /* NET_21 */
@@ -995,7 +1085,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, int nonblock, in
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_sendmsg: .\n");
-	if(sk->err) {
+	if(sk->sk_err) {
 		error = sock_error(sk);
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
@@ -1023,7 +1113,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, int nonblock, in
 		SENDERR(EINVAL);
 	}
 		
-	if(sk->shutdown & SEND_SHUTDOWN) {
+	if(sk->sk_shutdown & SEND_SHUTDOWN) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
 			    "shutdown.\n");
@@ -1165,7 +1255,18 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, int nonblock, in
 		
 DEBUG_NO_STATIC int
 #ifdef NET_21
-pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int size, int flags, struct scm_cookie *scm)
+#ifdef NET_26
+pfkey_recvmsg(struct kiocb *kiocb
+	      , struct socket *sock
+	      , struct msghdr *msg
+	      , size_t size
+	      , int flags)
+#else
+pfkey_recvmsg(struct socket *sock
+	      , struct msghdr *msg
+	      , int size, int flags
+	      , struct scm_cookie *scm)
+#endif
 #else /* NET_21 */
 pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int size, int noblock, int flags, int *addr_len)
 #endif /* NET_21 */
@@ -1224,10 +1325,10 @@ pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int size, int noblock, in
 	}
 #endif /* NET_21 */
 		
-	if(sk->err) {
+	if(sk->sk_err) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
-			    "sk->err=%d.\n", sk->err);
+			    "sk->sk_err=%d.\n", sk->sk_err);
 		return sock_error(sk);
 	}
 
@@ -1245,7 +1346,7 @@ pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int size, int noblock, in
 #endif /* NET_21 */
 
 	skb_copy_datagram_iovec(skb, 0, msg->msg_iov, size);
-        sk->stamp=skb->stamp;
+        sk->sk_stamp=skb->stamp;
 
 	skb_free_datagram(sk, skb);
 	return size;
@@ -1335,89 +1436,83 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 #endif /* !PROC_NO_DUMMY */
 )
 {
-	const int max_content = length > 0? length-1 : 0;
+	const int max_content = length > 0? length-1 : 0;	/* limit of useful snprintf output */
+#ifdef NET_26
+	struct hlist_node *node;
+#endif
 	off_t begin=0;
 	int len=0;
-	struct sock *sk=pfkey_sock_list;
+	struct sock *sk;
 	
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	if(!sysctl_ipsec_debug_verbose) {
-#endif /* CONFIG_IPSEC_DEBUG */
-	len+= snprintf(buffer,length,
+#endif /* CONFIG_KLIPS_DEBUG */
+	len += ipsec_snprintf(buffer, length,
 		      "    sock   pid   socket     next     prev e n p sndbf    Flags     Type St\n");
-#ifdef CONFIG_IPSEC_DEBUG
+#ifdef CONFIG_KLIPS_DEBUG
 	} else {
-	len+= snprintf(buffer,length,
+	len += ipsec_snprintf(buffer, length,
 		      "    sock   pid d    sleep   socket     next     prev e r z n p sndbf    stamp    Flags     Type St\n");
 	}
-#endif /* CONFIG_IPSEC_DEBUG */
-	
-	while(sk!=NULL) {
-#ifdef CONFIG_IPSEC_DEBUG
+#endif /* CONFIG_KLIPS_DEBUG */
+
+	sk_for_each(sk, node, &pfkey_sock_list) {
+
+#ifdef CONFIG_KLIPS_DEBUG
 		if(!sysctl_ipsec_debug_verbose) {
-#endif /* CONFIG_IPSEC_DEBUG */
-		len += ipsec_snprintf(buffer+len, length-len,
-			     "%8p %5d %8p %8p %8p %d %d %d %5d %08lX %8X %2X\n",
-			     sk,
-			     key_pid(sk),
-			     sk->socket,
-			     sk->next,
-			     sk->prev,
-			     sk->err,
-			     sk->num,
-			     sk->protocol,
-			     sk->sndbuf,
-			     sk->socket->flags,
-			     sk->socket->type,
-			     sk->socket->state);
-#ifdef CONFIG_IPSEC_DEBUG
+#endif /* CONFIG_KLIPS_DEBUG */
+		  len += ipsec_snprintf(buffer+len, length-len,
+					"%8p %5d %8p %d %d %5d %08lX %8X %2X\n",
+					sk,
+					key_pid(sk),
+					sk->sk_socket,
+					sk->sk_err,
+					sk->sk_protocol,
+					sk->sk_sndbuf,
+					sk->sk_socket->flags,
+					sk->sk_socket->type,
+					sk->sk_socket->state);
+#ifdef CONFIG_KLIPS_DEBUG
 		} else {
-			len += ipsec_snprintf(buffer+len, length-len,
-			     "%8p %5d %d %8p %8p %8p %8p %d %d %d %d %d %5d %d.%06d %08lX %8X %2X\n",
-			     sk,
-			     key_pid(sk),
-			     sk->dead,
-			     sk->sleep,
-			     sk->socket,
-			     sk->next,
-			     sk->prev,
-			     sk->err,
-			     sk->reuse,
-			     sk->zapped,
-			     sk->num,
-			     sk->protocol,
-			     sk->sndbuf,
-			     (unsigned int)sk->stamp.tv_sec,
-			     (unsigned int)sk->stamp.tv_usec,
-			     sk->socket->flags,
-			     sk->socket->type,
-			     sk->socket->state);
+		  len += ipsec_snprintf(buffer+len, length-len,
+					"%8p %5d %d %8p %8p %d %d %d %d %5d %d.%06d %08lX %8X %2X\n",
+					sk,
+					key_pid(sk),
+					sock_flag(sk, SOCK_DEAD),
+					sk->sk_sleep,
+					sk->sk_socket,
+					sk->sk_err,
+					sk->sk_reuse,
+					sk->sk_zapped,
+					sk->sk_protocol,
+					sk->sk_sndbuf,
+					(unsigned int)sk->sk_stamp.tv_sec,
+					(unsigned int)sk->sk_stamp.tv_usec,
+					sk->sk_socket->flags,
+					sk->sk_socket->type,
+					sk->sk_socket->state);
 		}
-#endif /* CONFIG_IPSEC_DEBUG */
+#endif /* CONFIG_KLIPS_DEBUG */
 		
 		if (len >= max_content) {
-                       /* we've done all that can fit -- stop loop */
-                       len = max_content;      /* truncate crap */
-                        break;
-                } else {
+			/* we've done all that can fit -- stop loop */
+			len = max_content;	/* truncate crap */
+			break;
+		} else {
+			const off_t pos = begin + len;	/* file position of end of what we've generated */
 
-                       const off_t pos = begin + len;  /* file position of end of what we've generated */
+			if (pos <= offset) {
+				/* all is before first interesting character:
+				 * discard, but note where we are.
+				 */
+				len = 0;
+				begin = pos;
+			}
+		}
+	}
 
-                       if (pos <= offset) {
-                               /* all is before first interesting character:
-                                * discard, but note where we are.
-                                */
-                               len = 0;
-                               begin = pos;
-                       }
-                } 
-		sk=sk->next;
-
-        }
-
-	*start = buffer + (offset - begin);     /* Start of wanted data */
+	*start = buffer + (offset - begin);	/* Start of wanted data */
 	return len - (offset - begin);
-
 }
 
 #ifndef PROC_FS_2325
@@ -1430,7 +1525,7 @@ pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
 #endif /* !PROC_NO_DUMMY */
 )
 {
-	const int max_content = length > 0? length-1 : 0;
+	const int max_content = length > 0? length-1 : 0;	/* limit of useful snprintf output */
 	off_t begin=0;
 	int len=0;
 	int satype;
@@ -1451,29 +1546,27 @@ pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
 				     pfkey_supported_p->supportedp->supported_alg_minbits,
 				     pfkey_supported_p->supportedp->supported_alg_maxbits);
 			
-                        if (len >= max_content) {
-                                /* we've done all that can fit -- stop loop */
-                                len = max_content;      /* truncate crap */
-                                break;
-                        } else {
-                               const off_t pos = begin + len;  /* file position of end of what we've generated */
+			if (len >= max_content) {
+				/* we've done all that can fit -- stop loop */
+				len = max_content;	/* truncate crap */
+				break;
+			} else {
+				const off_t pos = begin + len;	/* file position of end of what we've generated */
 
-                               if (pos <= offset) {
-                                       /* all is before first interesting character:
-                                        * discard, but note where we are.
-                                        */
-                                       len = 0;
-                                       begin = pos;
-                               }
-                        } 
+				if (pos <= offset) {
+					/* all is before first interesting character:
+					 * discard, but note where we are.
+					 */
+					len = 0;
+					begin = pos;
+				}
+			}
 
 			pfkey_supported_p = pfkey_supported_p->next;
 		}
 	}
-
-	*start = buffer + (offset - begin);     /* Start of wanted data */
+	*start = buffer + (offset - begin);	/* Start of wanted data */
 	return len - (offset - begin);
-
 }
 
 #ifndef PROC_FS_2325
@@ -1486,7 +1579,7 @@ pfkey_registered_get_info(char *buffer, char **start, off_t offset, int length
 #endif /* !PROC_NO_DUMMY */
 )
 {
-	const int max_content = length > 0? length-1 : 0;
+	const int max_content = length > 0? length-1 : 0;	/* limit of useful snprintf output */
 	off_t begin=0;
 	int len=0;
 	int satype;
@@ -1506,7 +1599,7 @@ pfkey_registered_get_info(char *buffer, char **start, off_t offset, int length
 				     key_pid(pfkey_sockets->socketp->sk),
 				     pfkey_sockets->socketp->sk);
 #else /* NET_21 */
-			len += ipsec_snprintf(buffer+len, length-len,
+			len += ipsec_snprintf(buffer+len,
 				     "    %2d %8p   N/A %8p\n",
 				     satype,
 				     pfkey_sockets->socketp,
@@ -1515,28 +1608,27 @@ pfkey_registered_get_info(char *buffer, char **start, off_t offset, int length
 #endif
 				     (pfkey_sockets->socketp)->data);
 #endif /* NET_21 */
+			
+			if (len >= max_content) {
+				/* we've done all that can fit -- stop loop (could stop two) */
+				len = max_content;	/* truncate crap */
+				break;
+			} else {
+				const off_t pos = begin + len;	/* file position of end of what we've generated */
 
-                        if (len >= max_content) {
-                                /* we've done all that can fit -- stop loop (could stop two) */
-                                len = max_content;      /* truncate crap */
-                                break;
-                        } else {
-                                const off_t pos = begin + len;  /* file position of end of what we've generated */
-
-                                if (pos <= offset) {
-                                        /* all is before first interesting character:
-                                         * discard, but note where we are.
-                                         */
-                                        len = 0;
-                                        begin = pos;
-                                }
-                        } 
-                            			
+				if (pos <= offset) {
+					/* all is before first interesting character:
+					 * discard, but note where we are.
+					 */
+					len = 0;
+					begin = pos;
+				}
+			}
 
 			pfkey_sockets = pfkey_sockets->next;
 		}
 	}
-	*start = buffer + (offset - begin);     /* Start of wanted data */
+	*start = buffer + (offset - begin);	/* Start of wanted data */
 	return len - (offset - begin);
 }
 
@@ -1632,23 +1724,23 @@ pfkey_init(void)
 	int i;
 	
 	static struct supported supported_init_ah[] = {
-#ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
+#ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_MD5HMAC, 0, 128, 128},
-#endif /* CONFIG_IPSEC_AUTH_HMAC_MD5 */
-#ifdef CONFIG_IPSEC_AUTH_HMAC_SHA1
+#endif /* CONFIG_KLIPS_AUTH_HMAC_MD5 */
+#ifdef CONFIG_KLIPS_AUTH_HMAC_SHA1
 		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_SHA1HMAC, 0, 160, 160}
-#endif /* CONFIG_IPSEC_AUTH_HMAC_SHA1 */
+#endif /* CONFIG_KLIPS_AUTH_HMAC_SHA1 */
 	};
 	static struct supported supported_init_esp[] = {
-#ifdef CONFIG_IPSEC_AUTH_HMAC_MD5
+#ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_MD5HMAC, 0, 128, 128},
-#endif /* CONFIG_IPSEC_AUTH_HMAC_MD5 */
-#ifdef CONFIG_IPSEC_AUTH_HMAC_SHA1
+#endif /* CONFIG_KLIPS_AUTH_HMAC_MD5 */
+#ifdef CONFIG_KLIPS_AUTH_HMAC_SHA1
 		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_SHA1HMAC, 0, 160, 160},
-#endif /* CONFIG_IPSEC_AUTH_HMAC_SHA1 */
-#ifdef CONFIG_IPSEC_ENC_3DES
+#endif /* CONFIG_KLIPS_AUTH_HMAC_SHA1 */
+#ifdef CONFIG_KLIPS_ENC_3DES
 		{SADB_EXT_SUPPORTED_ENCRYPT, SADB_EALG_3DESCBC, 64, 168, 168},
-#endif /* CONFIG_IPSEC_ENC_3DES */
+#endif /* CONFIG_KLIPS_ENC_3DES */
 	};
 	static struct supported supported_init_ipip[] = {
 		{SADB_EXT_SUPPORTED_ENCRYPT, SADB_X_TALG_IPv4_in_IPv4, 0, 32, 32}
@@ -1658,11 +1750,11 @@ pfkey_init(void)
 		, {SADB_EXT_SUPPORTED_ENCRYPT, SADB_X_TALG_IPv6_in_IPv6, 0, 128, 128}
 #endif /* defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE) */
 	};
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 	static struct supported supported_init_ipcomp[] = {
 		{SADB_EXT_SUPPORTED_ENCRYPT, SADB_X_CALG_DEFLATE, 0, 1, 1}
 	};
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 
 #if 0
         printk(KERN_INFO
@@ -1677,9 +1769,9 @@ pfkey_init(void)
 
 	error |= supported_add_all(SADB_SATYPE_AH, supported_init_ah, sizeof(supported_init_ah));
 	error |= supported_add_all(SADB_SATYPE_ESP, supported_init_esp, sizeof(supported_init_esp));
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 	error |= supported_add_all(SADB_X_SATYPE_COMP, supported_init_ipcomp, sizeof(supported_init_ipcomp));
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 	error |= supported_add_all(SADB_X_SATYPE_IPIP, supported_init_ipip, sizeof(supported_init_ipip));
 
 #ifdef NET_21
@@ -1724,9 +1816,9 @@ pfkey_cleanup(void)
 
 	error |= supported_remove_all(SADB_SATYPE_AH);
 	error |= supported_remove_all(SADB_SATYPE_ESP);
-#ifdef CONFIG_IPSEC_IPCOMP
+#ifdef CONFIG_KLIPS_IPCOMP
 	error |= supported_remove_all(SADB_X_SATYPE_COMP);
-#endif /* CONFIG_IPSEC_IPCOMP */
+#endif /* CONFIG_KLIPS_IPCOMP */
 	error |= supported_remove_all(SADB_X_SATYPE_IPIP);
 
 #ifdef CONFIG_PROC_FS
@@ -1776,6 +1868,21 @@ pfkey_proto_init(struct net_proto *pro)
 
 /*
  * $Log: pfkey_v2.c,v $
+ * Revision 1.85  2004/12/03 21:25:57  mcr
+ * 	compile time fixes for running on 2.6.
+ * 	still experimental.
+ *
+ * Revision 1.84  2004/08/17 03:27:23  mcr
+ * 	klips 2.6 edits.
+ *
+ * Revision 1.83  2004/08/04 15:57:07  mcr
+ * 	moved des .h files to include/des/ *
+ * 	included 2.6 protocol specific things
+ * 	started at NAT-T support, but it will require a kernel patch.
+ *
+ * Revision 1.82  2004/07/10 19:11:18  mcr
+ * 	CONFIG_IPSEC -> CONFIG_KLIPS.
+ *
  * Revision 1.81  2004/04/25 21:23:11  ken
  * Pull in dhr's changes from FreeS/WAN 2.06
  *

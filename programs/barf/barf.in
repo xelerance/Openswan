@@ -12,12 +12,14 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: barf.in,v 1.95 2004/06/08 01:02:11 mcr Exp $
+# RCSID $Id: barf.in,v 1.106 2004/12/29 08:31:52 hugh Exp $
 
 LOGS=${LOGS-/var/log}
 CONFS=${IPSEC_CONFS-/etc}
 CONFDDIR=${IPSEC_CONFDDIR-/etc/ipsec.d}
 me="ipsec barf"
+# Max lines to use for things like 'route -n'
+maxlines=100
 
 # kludge to produce no barf output mentioning policygroups if none are present.
 # This will not catch ".file" policygroups. 
@@ -34,6 +36,7 @@ pstart='Starting Pluto subsystem'
 case "$1" in
 --help)		echo "Usage: ipsec barf" ; exit 0	;;
 --version)	echo "$me $IPSEC_VERSION" ; exit 0	;;
+--maxlines)     maxlines=$2; shift;;
 esac
 
 # make sure output is in English
@@ -99,7 +102,7 @@ findlog() {		# findlog string fallbackstring possiblefile ...
 }
 
 # try to guess where logs are
-findlog "$fstart" "klips" messages syslog
+findlog "$fstart" "klips" messages syslog auth.log daemon.log
 if test " $findlog_file" = " /dev/null" 
 then
 echo "Unable to find KLIPS messages, typically found in /var/log/messages or equivalent. You may need to run Openswan for the first time; alternatively, your log files have been emptied (ie, logwatch) or we do not understand your logging configuration."
@@ -107,7 +110,7 @@ fi
 klog=$findlog_file
 kline=$findlog_startline
 
-findlog "$pstart" "Pluto" secure auth.log debug
+findlog "$pstart" "Pluto" secure auth.log daemon.log debug
 if test " $findlog_file" = " /dev/null" 
 then
 echo "Unable to find Pluto messages, typically found in /var/log/secure or equivalent. You may need to run Openswan for the first time; alternatively, your log files have been emptied (ie, logwatch) or we do not understand your logging configuration."
@@ -145,31 +148,31 @@ hostname ; date
 set -x
 _________________________ version
 ipsec --version
-_________________________ proc/version
+_________________________ /proc/version
 cat /proc/version
-_________________________ proc/net/ipsec_eroute
+_________________________ /proc/net/ipsec_eroute
 if test -r /proc/net/ipsec_eroute
 then
 	sort -sg +3 /proc/net/ipsec_eroute || cat /proc/net/ipsec_eroute
 fi
 _________________________ netstat-rn
-netstat -nr
-_________________________ proc/net/ipsec_spi
-if test -r proc/net/ipsec_spi
+netstat -nr|head -$maxlines
+_________________________ /proc/net/ipsec_spi
+if test -r /proc/net/ipsec_spi
 then
 	cat /proc/net/ipsec_spi
 fi
-_________________________ proc/net/ipsec_spigrp
+_________________________ /proc/net/ipsec_spigrp
 if test -r /proc/net/ipsec_spigrp
 then
 	cat /proc/net/ipsec_spigrp
 fi
-_________________________ proc/net/ipsec_tncfg
+_________________________ /proc/net/ipsec_tncfg
 if test -r /proc/net/ipsec_tncfg
 then
 	cat /proc/net/ipsec_tncfg
 fi
-_________________________ proc/net/pfkey
+_________________________ /proc/net/pfkey
 if test -r /proc/net/pfkey
 then
 	cat /proc/net/pfkey
@@ -179,9 +182,9 @@ _________________________ setkey-D-P
 	setkey -D -P
 fi
 # not visible on my 2.6 system
-#_________________________ proc/net/pf_key-star
+#_________________________ /proc/net/pf_key-star
 #( cd /proc/net && egrep '^' pf_key_* )
-_________________________ proc/sys/net/ipsec-star
+_________________________ /proc/sys/net/ipsec-star
 if test -d /proc/sys/net/ipsec
 then
 	( cd /proc/sys/net/ipsec && egrep '^' * )
@@ -190,6 +193,12 @@ _________________________ ipsec/status
 ipsec auto --status
 _________________________ ifconfig-a
 ifconfig -a
+_________________________ ip-addr-list
+ip addr list
+_________________________ ip-route-list
+ip route list
+_________________________ ip-rule-list
+ip rule list
 _________________________ ipsec_verify
 ipsec verify --nocolour
 _________________________ mii-tool
@@ -237,13 +246,13 @@ for f in `ls ${IPSEC_EXECDIR-/usr/local/libexec/ipsec} | egrep updown`
 do
 	cat ${IPSEC_EXECDIR-/usr/local/libexec/ipsec}/$f
 done
-_________________________ proc/net/dev
+_________________________ /proc/net/dev
 cat /proc/net/dev
-_________________________ proc/net/route
+_________________________ /proc/net/route
 cat /proc/net/route
-_________________________ proc/sys/net/ipv4/ip_forward
+_________________________ /proc/sys/net/ipv4/ip_forward
 cat /proc/sys/net/ipv4/ip_forward
-_________________________ proc/sys/net/ipv4/conf/star-rp_filter
+_________________________ /proc/sys/net/ipv4/conf/star-rp_filter
 ( cd /proc/sys/net/ipv4/conf && egrep '^' */rp_filter )
 _________________________ uname-a
 uname -a
@@ -262,16 +271,16 @@ else
 		cat /etc/fedora-release
 	fi
 fi
-_________________________ proc/net/ipsec_version
+_________________________ /proc/net/ipsec_version
 if test -r /proc/net/ipsec_version
 then
 	cat /proc/net/ipsec_version
 else
 	if test -r /proc/net/pfkey
 	then
-		echo "native PFKEY (`uname -r`) support detected "
+		echo "NETKEY (`uname -r`) support detected "
 	else
-		echo "no KLIPS or native PFKEY support detected"
+		echo "no KLIPS or NETKEY support detected"
 	fi
 fi
 _________________________ ipfwadm
@@ -300,27 +309,27 @@ _________________________ iptables
 if test -r /sbin/iptables
 then
 	iptables -L -v -n
-_________________________
+_________________________ iptables-nat
 	iptables -t nat -L -v -n
-_________________________
+_________________________ iptables-mangle
 	iptables -t mangle -L -v -n
 elif test -r /sbin/ipchains
 then
 	echo "Warning: no iptables or ipchains found. no firewalling capabilities found."
 fi
-_________________________ proc/modules
+_________________________ /proc/modules
 if test -f /proc/modules
 then
 	cat /proc/modules
 else
 	echo "kernel without module support"
 fi
-_________________________ proc/meminfo
+_________________________ /proc/meminfo
 cat /proc/meminfo
 #obsolete? not on my klips system
 #_________________________ dev/ipsec-ls
 #ls -l /dev/ipsec*
-_________________________ proc/net/ipsec-ls
+_________________________ /proc/net/ipsec-ls
 if test -f /proc/net/ipsec_version
 then
 	ls -l /proc/net/ipsec_*
@@ -328,10 +337,10 @@ fi
 _________________________ usr/src/linux/.config
 if test -f /proc/config.gz
 then
-	zcat /proc/config.gz | egrep 'CONFIG_NETLINK|CONFIG_IPSEC|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP' 
+	zcat /proc/config.gz | egrep 'CONFIG_IPSEC|CONFIG_KLIPS|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP' 
 elif test -f /lib/modules/`uname -r`/build/.config
 then
-	cat /lib/modules/`uname -r`/build/.config | egrep 'CONFIG_NETLINK|CONFIG_IPSEC|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP'
+	cat /lib/modules/`uname -r`/build/.config | egrep 'CONFIG_IPSEC|CONFIG_KLIPS|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP'
 else
 	echo "no .config file found, cannot list kernel properties"
 fi
@@ -341,7 +350,7 @@ _________________________ etc/resolv.conf
 cat /etc/resolv.conf
 _________________________ lib/modules-ls
 ls -ltr /lib/modules
-_________________________ proc/ksyms-netif_rx
+_________________________ /proc/ksyms-netif_rx
 if test -r /proc/ksyms
 then
 	egrep netif_rx /proc/ksyms
