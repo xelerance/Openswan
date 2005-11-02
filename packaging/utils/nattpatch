@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# wander through a FreeSWAN linux directory, creating a patch file (to stdout)
+# that will apply the code to a kernel source directory.
+#
+# $Id: nattpatch,v 1.1 2004/01/06 05:21:19 mcr Exp $
+#
+
+KERN=$1
+shift
+
+case $KERN in
+    2.0) patchname=fs2_0;;
+    2.2) patchname=fs2_2;;
+    2.4) patchname=fs2_4;;
+    2.5) patchname=fs2_5;;
+    *) echo "Invalid kernel patch target: $KERN"; exit 1;;
+esac
+
+# make sure that sort gets the right locale.
+LANG=C export LANG
+LC_ALL=C export LC_ALL
+
+
+find nat-t -type f -print | grep -v CVS | egrep -v 'linux/Makefile' | sort | while read file 
+do 
+  base=`basename $file`
+  case $base in 
+    TAGS) ;;
+    tags) ;;
+    .cvsignore) ;;
+    .*.o.flags) ;;
+    .\#*);;
+    *.o) ;;
+    *~) ;;
+    tagsfile.mak) ;;
+    *.$patchname.patch) cat $file;;
+    *.patch) ;;
+    *) diff -u /dev/null $file;;
+  esac
+done
+
+exit 0
+
+	

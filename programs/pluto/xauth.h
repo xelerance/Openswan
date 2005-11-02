@@ -1,0 +1,48 @@
+/* 
+ * Copyright (C) 2001-2002 Colubris Networks
+ * Copyright (C) 2003 Xelerance Corporation
+ * 
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * for more details.
+ *
+ * RCSID $Id: xauth.h,v 1.4 2004/01/27 23:26:21 mcr Exp $
+ */
+
+struct state;
+
+stf_status modecfg_resp(struct state *st,unsigned int resp
+			,pb_stream *s,u_int16_t id);
+stf_status xauth_client_resp(struct state *st
+			     ,unsigned int xauth_resp
+			     ,pb_stream *rbody
+			     ,u_int16_t ap_id);
+stf_status xauth_client_ackstatus(struct state *st
+				  ,pb_stream *rbody
+				  ,u_int16_t ap_id);
+stf_status modecfg_send_set(struct state *st);
+size_t xauth_mode_cfg_hash(u_char *dest, const u_char *start, const u_char *roof
+, const struct state *st);
+
+stf_status xauth_send_request(struct state *st);
+stf_status xauth_send_status(struct state *st,int status);
+
+int xauth_launch_authent(struct state *st,chunk_t name
+			 ,chunk_t password, chunk_t connname); 
+
+/* XAUTH States */
+extern stf_status xauth_inR0(struct msg_digest *md);
+extern stf_status xauth_inR1(struct msg_digest *md);
+extern stf_status modecfg_inR0(struct msg_digest *md);
+extern stf_status modecfg_inR1(struct msg_digest *md);
+extern stf_status xauth_inI0(struct msg_digest *md);
+extern stf_status xauth_inI1(struct msg_digest *md);
+
+#define XAUTH_PROMPT_TRIES 3
+

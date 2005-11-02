@@ -1,0 +1,1312 @@
+Version 1.4.8
+--------------
+
+- Native 2.6 kernel IPsec now fully supports port and transport
+  protocol selectors.
+
+
+Version 1.4.7a
+--------------
+
+- Made ipsec_xmit.c:extract_ports() visible to ipsec_tunnel.c
+  by defining it as external in ipsec_xmit.h.
+
+
+Version 1.4.7
+-------------
+
+- Removed an assertion which caused pluto to abort when
+  using DN wildcards in connection definitions.
+
+- Added a warning which is issued both in the log and in
+  the whack console if SMARTCARD support is not compiled into Pluto.
+
+- Fixed a bug which did not set the destination port in
+  IPsec transport mode based roadwarrior connections using
+  port selectors.
+
+
+Version 1.4.6
+-------------
+
+- FreeS/WAN now lets the OpenSC library or the smartcard itself
+  do the PKCS#1 padding of the MD5 or SHA-1 hash before the
+  RSA signature is applied. Reason: some smartcards want to
+  do the padding on-card and accept raw hash values, only.
+
+- The DN wildcard bug fix introduced with version 1.3.4 somehow
+  got lost in the 1.4.x series and has been reapplied.
+
+
+Version 1.4.5
+-------------
+
+- Private RSA key files can now be protected by a passphrase which
+  are entered interactively. In /etc/ipsec.secrets define
+  
+    : RSA myKey.pem %prompt
+  
+  After Pluto startup the passphrase prompt is initiated by the
+  command
+  
+    ipsec secrets
+   
+  which is an alias for ipsec auto --rereadsecrets
+
+- The year 2050 is nearing rapidly. This is why we support now the
+  GENERALIZEDTIME date format in certificates and CRLs so that some
+  German certificates can be parsed correctly.
+  
+- We also introduce the nameDistinguisher OID (0.2.262.1.10.7.20)
+  which is used in certificates issued by the Deutsche Telekom AG
+  in connection with the Common Name field to obtain unique
+  Distinguished Names, as e.g. in 'C=DE, O=ACME, ND=1, CN=Joe Doe'.
+
+
+Version 1.4.4
+-------------
+
+- Fixed a bug which caused the port selector not to be set
+  in roadwarrior connections with a rightsubnetwithin parameter.
+
+- Fixed a bug which caused the port selector to be erroneously
+  set in OE connections to clients behind OE-enabled gateways
+  causing endless Quick Mode renegotiations.
+
+
+Version 1.4.3
+-------------
+
+- FreeS/WAN now supports the X.509v3 certificate extensions
+  'subjectKeyIdentifier' and 'authorityKeyIdentifier'. This
+  feature facilitates the traversal of X.509 trust chains and
+  also makes it possible to have in simultaneous use multiple
+  versions of a CA certificate with identical distinguished
+  names but different RSA keys.
+
+- Smart card support now requires OpenSC version 0.8.0 or newer.
+
+- Fixed a bug in the temporary_cyclic_buffer() for ID strings
+
+
+Version 1.4.2
+-------------
+
+- FreeS/WAN as a responder to a road warrior can now send multiple
+  certificate request payloads in IKE Main Mode, enumerating all
+  available CAs. This new feature should now make full interoperability
+  with Cisco boxes possible.
+
+- Using the compiler directive LDAP_VERSION=3 or LDAP_VERSION=2,
+  dynamic CRL fetching can be based either on LDAP V3 (latest
+  OpenLDAP releases) or LDAP V2 (older OpenLDAP version), respectively.
+
+
+Version 1.4.1
+-------------
+
+- Until now only one certificate request (CR) payload could be handled.
+  Now multiple CRs are collected and are taken into account when selecting
+  an appropriate connection.
+
+- Fixed a bug in the smartcard support that prevented Pluto from successfully
+  switching between multiple roadwarrior connections when acting as a
+  responder.
+
+
+Version 1.4.0
+-------------
+
+- Introduces smartcard support based on the PCKS#15 Cryptographic Token
+  Information Format Standard. OpenSC smartcard library functions are
+  used to implement the PKCS#15 functionality. Configuration example
+  in ipsec.conf:
+  
+    conn tandoori
+         right=160.85.22.10
+	 rightid=@tandoori.strongsec.com
+	 rightrsasigkey=%cert
+	 left=%defaultroute
+	 leftcert=%smartcard
+	 auto=add
+  
+  Secret PIN is either stored in ipsec.secrets:
+
+    : PIN %smartcard "12345678"
+
+  or prompted for when starting up a connection:
+  
+    : PIN %smartcard %prompt
+
+- Includes an experimental parser for X.509 attribute certificates.
+
+
+Version 1.3.6
+-------------
+
+- Changes in stock FreeS/WAN caused that no certificate request
+  payload (CR) was sent anymore when Pluto was the responder.
+
+- The $PLUTO_PEER_CA variable was not initialized properly for
+  PSK connections.
+
+- Fixed a port map bug which allowed all ports to be tunneled
+  through an eroute set up with port selectors.
+
+
+Version 1.3.5
+-------------
+
+- Raw RSA keys don't have an issuer field. Fixed a bug in kernel.c:do_command()
+  that caused a Pluto crash when the issuer field contained a NULL pointer.
+
+
+Version 1.3.4
+-------------
+
+- The DN wildcard bug was not completely fixed by version 1.3.3.
+
+
+Version 1.3.3
+-------------
+
+- Fixed a bug causing allocation of 0 bytes of dynamic memory for
+  an issuer DN in preshared.c. Occured only when loading raw RSA keys
+  via whack.
+
+- Fixed a bug that occurred when using roadwarrior connections with
+  DN wildcards. If the connection was not switched after receiving
+  the peer id, the wildcard id was not replaced by the actual peer id.
+
+
+Version 1.3.2
+-------------
+
+- Changed the #include in pem.c from <des.h> to <crypto/des.h>
+
+
+Version 1.3.1
+-------------
+
+- The statement rightca=%same copies the CA from leftca which by default is
+  usually the issuer field extracted from the certificate loaded via leftcert.
+
+- Created the $PLUTO_PEER_CA environment variable that makes the peer's
+  CA available to the updown script.
+
+- Closest match metrics to desired CA have been extended to Quick Mode
+
+
+Version 1.3.0
+-------------
+
+- By introducing the new parameters leftca and rightca, IPsec policies
+  based on issuing CAs can now be implemented. Example:
+
+    conn sales
+         right=%any
+	 rightca="C=CH, O=ACME, OU=Sales, CN=Sales CA"
+	 rightsubnetwithin=10.1.0.0/24  # Sales DHCP range
+	 leftsubnet=10.0.0.0/24         # Sales subnet
+
+  This means that the connection sales can only be used by peers presenting
+  a certificate that has been issued by the Sales CA.
+
+- Additionally if a rightca statement is present, then the CA defined by
+  it will  be sent to the peer as part of a certificate request message
+  (this should help with some Cisco implementations that require a 
+  specific CA in the CR message). The sending of CR messages can be
+  disabled by using the existing nocrsend=yes parameter.
+
+- Automated the error-prone generation of the table coding the OID tree
+  used by the X.509 patch. The perl script oid.pl now generates the new
+  files oid.h and oid.c based on a common text file oid.txt. New OIDs
+  can now be added to oid.txt with ease.
+
+- In order to increase the interoperability with OpenSSL 0.9.7
+  the following two attributes were added that could be use
+  as relative distinguished names:
+
+  emailAddress   long form of E and Email
+  serialAddress: long form of SN
+
+
+Version 1.2.2
+--------------
+
+- A little bug in connections.c:default_end() caused that connections
+  without a rightid parameter (defaulting to right) could not be initiated
+  ("cannot initiate connection without knowing peer IP address")
+
+
+Version 1.2.1
+-------------
+
+- A stupid bug caused pluto to crash while establishing
+  non-roadwarrior connections.
+
+- Corrected a couple of wrong cross-references in the README.
+
+
+Version 1.2.0
+-------------
+
+- Wildcard based templates for ID_DER_ASN1_DNs can be used to enforce
+  complex IPsec  policies are now supported. Example:
+
+    rightid="C=CH, O=strongSec GmbH, OU=Sales, CN=*"
+
+  matches any VPN user or host belonging to the Sales department.
+
+
+Version 1.1.6
+-------------
+
+- Added the following attributes that could be used as relative
+  distinguished names:
+
+  short  long			OID
+
+  UID    userId			0.9.2342.19200300.100.1.1
+  DC     domainComponent	0.9.2342.19200300.100.1.25
+  ID     x500UniqueIdentifier	2.5.4.45
+  
+
+Version 1.1.5
+-------------
+
+- Removed last traces of the obsolete --rereadmycert option
+
+- Changed questionable question mark in connections.c:format_end()
+  to 0.0.0.0/0 client subnet instead.
+
+
+Version 1.1.4
+-------------
+
+- Extended the port and protocol selector functionality in order to make it
+  coexist in a friendly way with opportunistic encryption.
+
+
+Version 1.1.3
+-------------
+
+- fixed a bug in the function scan_proc_shunts() in pluto/kernel.c
+  that incorrectly registererd the ports of orphaned %hold eroutes.
+  Debugging output was also added to scan_proc_shunts().
+
+
+Version 1.1.2
+-------------
+
+- extended the protocol and port selector functionality so that
+  dynamically created %hold eroutes cannot block part of the traffic
+  any more.
+
+
+Version 1.1.1
+-------------
+
+- Stephen J. Bevan's protocol and port selector patch has been worked
+  into the X.509 patch. The added functionality is equivalent to that of
+  version 0.9.18.
+
+
+Version 1.1.0
+-------------
+
+- Added dynamic CRL fetching based on cURL command line tool available
+  from 'http://curl.haxx.se'. Currently 'http', 'ftp' und 'file'
+  crlDistributionPoint URLs are supported.
+   
+- Added dynamic CRL fetching based on the OpenLDAP 2.x library
+  available from 'http://www.openldap.org'. Currently a  single CRL
+  query result based on an 'ldap' crlDistributionPoint URL is
+  supported. Simple authentication without username/password is
+  used.
+  
+- Periodic CRL checking and retrieval is done by an independent
+  pluto thread. Therefore starting with version 1.1.0 the POSIX
+  pthreads library is required, which should already be present on
+  most Linux systems.
+  
+- The new parameter crlcheckinterval in the config setup section of
+  ipsec.conf defines the interval in seconds between two CRL validity
+  checks. The default crlcheckinterval=0 disables dynamic CRL fetching.
+
+  My thanks go to Stephane Laroche <stephane.laroche@colubris.com> who
+  contributed the multithreading source code I based my implementation on.
+  
+- the port and protocol selectors introduced with version 0.9.16 are
+  not supported yet in the 1.x.x versions.
+  
+
+Version 1.0.2
+-------------
+
+- For security reasons the shell metacharacters ', ", `, $, and \
+  are replaced by their octal escape values in the environment variables
+  $PLUTO_MY_ID and $PLUTO_PEER_ID that are made available in the
+  _updown script.
+
+- Changed the error messages of check_validity() in x509.c to
+  make clear that either a X.509 certificate is not valid yet or that
+  it has expired.
+  
+
+Version 1.0.1
+-------------
+
+- Pluto sends an OpenPGP vendor ID if it has an OpenPGP certificate
+  as an initiator or if it receives an OpenPGP vendor ID from the
+  peer as a responder.
+  
+- Fixed two bugs introduced with Version 1.0.0
+
+
+Version 1.0.0
+-------------
+
+- The X.509 default certifcate /etc/x509cert.der and the PGP default
+  certificate /etc/pgpcert.pgp have been obsoleted and are not available
+  any more. Local X.509 certificates in base64 PEM and binary DER
+  format are now exclusively loaded using the leftcert/rightcert
+  parameters in /etc/ipsec.conf.
+
+- OpenPGP certificates containing RSA public keys can now directly be
+  loaded in ASCII armored PGP format using the leftcert/rightcert
+  parameters in /etc/ipsec.conf:
+  
+  conn pgp
+       right=%any
+       righcert=peerCert.asc
+       left=%defaultroute
+       leftcert=gatewayCert.asc
+
+- PGP private keys in unencrypted form i.e. not secured by passphrase
+  can now directly be loaded in ASCII armored PGP format via an entry
+  in /etc/ipsec.secrets:
+
+  : RSA gatewayKey.asc
+
+- The command ipsec auto --listcerts now shows both X.509 and PGP
+  certificates that have been loaded locally. X.509 and PGP
+  connections can now be set up simultaneously.
+
+- The default path for local end certificates has been changed
+  form /etc/ipsec.d to /etc/ipsec.d/certs. The directory /etc/ipsec.d
+  contains now the subdirectories private, certs, cacerts, and crls.
+
+
+############################################################################
+
+
+Version 0.9.37
+--------------
+
+- Fixed a bug which did not set the destination port in
+  IPsec transport mode based roadwarrior connections using
+  port selectors.
+
+
+Version 0.9.36
+--------------
+
+- Fixed a bug which caused the port selector not to be set
+  in roadwarrior connections with a rightsubnetwithin parameter.
+
+- Fixed a bug which caused the port selector to be erroneously
+  set in OE connections to clients behind OE-enabled gateways
+  causing endless Quick Mode renegotiations.
+
+
+Version 0.9.35
+--------------
+
+- FreeS/WAN now supports the X.509v3 certificate extensions
+  'subjectKeyIdentifier' and 'authorityKeyIdentifier'. This
+  feature facilitates the traversal of X.509 trust chains and
+  also makes it possible to have in simultaneous use multiple
+  versions of a CA certificate with identical distinguished
+  names but different RSA keys.
+
+- Fixed a bug in the temporary_cyclic_buffer() for ID strings
+
+
+Version 0.9.34
+--------------
+
+- FreeS/WAN as a responder to a road warrior can now send multiple
+  certificate request payloads in IKE Main Mode, enumerating all
+  available CAs. This new feature should now make full interoperability
+  with Cisco boxes possible.
+
+
+Version 0.9.33
+--------------
+
+- Until now only one certificate request (CR) payload could be handled.
+  Now multiple CRs are collected and are taken into account when selecting
+  an appropriate connection.
+
+
+Version 0.9.32
+--------------
+
+- The $PLUTO_PEER_CA variable was not initialized properly for
+  PSK connections.
+
+- Fixed a port map bug which allowed all ports to be tunneled
+  through an eroute set up with port selectors.
+
+
+Version 0.9.31
+--------------
+
+- Raw RSA keys don't have an issuer field. Fixed a bug in kernel.c:do_command()
+  that caused a Pluto crash when the issuer field contained a NULL pointer.
+
+
+Version 0.9.30
+--------------
+
+- The DN wildcard bug was not completely fixed by version 0.9.29.
+
+
+Version 0.9.29
+--------------
+
+- Fixed a bug causing allocation of 0 bytes of dynamic memory for
+  an issuer DN in preshared.c. Occured only when loading raw RSA keys
+  via whack.
+
+- Fixed a bug that occurred when using roadwarrior connections with
+  DN wildcards. If the connection was not switched after receiving
+  the peer id, the wildcard id was not replaced by the actual peer id.
+
+
+Version 0.9.28
+--------------
+
+- The statement rightca=%same copies the CA from leftca which by default is
+  usually the issuer field extracted from the certificate loaded via leftcert.
+
+- Created the $PLUTO_PEER_CA environment variable that makes the peer's
+  CA available to the updown script.
+
+- The support of the deprecated /etc/x509cert.der default certificate has
+  been discontinued. Please use the leftcert parameter to load FreeS/WAN's
+  certificate[s].
+
+- Closest match metrics to desired CA have been extended to Quick Mode.
+
+
+Version 0.9.27
+--------------
+
+- By introducing the new parameters leftca and rightca, IPsec policies
+  based on issuing CAs can now be implemented. Example:
+
+    conn sales
+         right=%any
+	 rightca="C=CH, O=ACME, OU=Sales, CN=Sales CA"
+	 rightsubnetwithin=10.1.0.0/24  # Sales DHCP range
+	 leftsubnet=10.0.0.0/24         # Sales subnet
+
+  This means that the connection sales can only be used by peers presenting
+  a certificate that has been issued by the Sales CA.
+
+- Additionally if a rightca statement is present, then the CA defined by
+  it will  be sent to the peer as part of a certificate request message
+  (this should help with some Cisco implementations that require a 
+  specific CA in the CR message). The sending of CR messages can be
+  disabled by using the existing nocrsend=yes parameter.
+
+- Automated the error-prone generation of the table coding the OID tree
+  used by the X.509 patch. The perl script oid.pl now generates the new
+  files oid.h and oid.c based on a common text file oid.txt. New OIDs
+  can now be added to oid.txt with ease.
+
+- In order to increase the interoperability with OpenSSL 0.9.7
+  the following two attributes were added that could be use
+  as relative distinguished names:
+
+  emailAddress   long form of E and Email
+  serialAddress: long form of SN
+
+
+Version 0.9.26
+--------------
+
+- A little bug in connections.c:default_end() caused that connections
+  without a rightid parameter (defaulting to right) could not be initiated
+  ("cannot initiate connection without knowing peer IP address")
+
+
+Version 0.9.25
+--------------
+
+- A stupid bug caused pluto to crash while establishing
+  non-roadwarrior connections.
+
+- Corrected a couple of wrong cross-references in the README.
+
+
+Version 0.9.24
+---------------
+
+- Wildcard based templates for ID_DER_ASN1_DNs can be used to enforce
+  complex IPsec  policies are now supported. Example:
+
+    rightid="C=CH, O=strongSec GmbH, OU=Sales, CN=*"
+
+  matches any VPN user or host belonging to the Sales department.
+
+
+Version 0.9.23
+--------------
+
+- Due to a single source code line that got lost while back-porting
+  the changes from x509-1.1.6 to x509patches-0.9.22, the "E=", "Email="
+  and "TCGID" attributes in distinguished names could not be parsed
+  anymore in the rightid/leftid parameters of ipsec.conf.
+
+
+Version 0.9.22
+--------------
+
+- Added the following attributes that could be used as relative
+  distinguished names:
+
+  short  long			OID
+
+  UID    userId			0.9.2342.19200300.100.1.1
+  DC     domainComponent	0.9.2342.19200300.100.1.25
+  ID     x500UniqueIdentifier	2.5.4.45
+  
+- Ported the improved RSA private key selection mechanism
+  from version 1.x.x for freeswan-2.00 back to freeswan-1.99.
+  Using the public key contained in a loaded certificate
+  the corresponding private key is always correctly found.
+
+
+Version 0.9.21
+--------------
+
+- Extended the port and protocol selector functionality in order to make it
+  coexist in a friendly way with opportunistic encryption.
+
+
+Version 0.9.20
+--------------
+
+- fixed a bug in the function scan_proc_shunts() in pluto/kernel.c
+  that incorrectly registererd the ports of orphaned %hold eroutes.
+  Debugging output was also added to scan_proc_shunts().
+
+
+Version 0.9.19
+--------------
+
+- extended the protocol and port selector functionality so that
+  dynamically created %hold eroutes cannot block part of the traffic
+  any more.
+
+
+Version 0.9.18
+--------------
+
+- fixed a bug in the function route_owner() in connections.c. Protocol
+  selectors were not considered when finding existing eroutes. This
+  deficiency made it impossible to set up simultaneous IPsec SAs for 
+  multiple protocols (e.g. tcp, udp and icmp).
+
+- fixed a bug in the function find_client_connection() in connections.c.
+  When refining the connection during quick mode, protocol and port
+  selectors set to zero could be used as wild cards. This feature caused
+  IPsec SAs with active protocol and/or port selectors to be bound to
+  a connection definition having no selectors at all. With the fix in
+  place an exact protocol/port match is required.
+  
+- added protocol/port debugging output during quick mode in ipsec_doi.c.
+
+
+Version 0.9.17
+--------------
+
+- fixed a bug that under certain circumstances caused eroutes without
+  port and protocol selectors to be restricted to port 500.
+
+
+Version 0.9.16
+--------------
+
+- The selector patch developed by Stephen J. Bevan's <stephen@dino.dnsalias.com>
+  has been integrated into the X.509 patch. Port and protocol selectors in
+  eroutes allow outbound traffic selection. Inbound traffic selection must
+  still be based on firewall rules activated by an updown script. If you want
+  e.g. to tunnel http traffic and icmp messages only then you can do this by
+  defining the following two IPsec SAs:
+
+    conn icmp
+         right=%any
+         rightprotoport=icmp
+         left=%defaultroute
+         leftid=@pulpo.strongsec.com
+         leftprotoport=icmp
+
+    conn http
+         right=%any
+         rightprotoport=6
+         left=%defaultroute
+         leftid=@pulpo.strongsec.com
+         leftprotoport=tcp/http
+
+  The command
+
+   ipsec auto --status
+
+  will show the following connection definitions:
+
+    "icmp": 160.85.106.10[@pulpo.strongsec.com]:1/0...%any:1/0
+    "http": 160.85.106.10[@pulpo.strongsec.com]:6/80...%any:6/0
+
+  When an instance of these connection definitions is set up,
+  the corresponding eroutes are created automatically. The remaining
+  protocols and ports are either dropped by default or can be passed
+  in the clear outside the tunnel by setting up appropriate eroutes
+  manually (see Stephen's README.selectors for details).
+
+- Fixed a bug in the _updown.x509 script that uses iptables to
+  set up dynamical firewall rules supporting port and protocol
+  based filtering.
+
+
+Version 0.9.15
+--------------
+
+- For security reasons the shell metacharacters ', ", `, $, and \
+  are replaced by their octal escape values in the environment variables
+  $PLUTO_MY_ID and $PLUTO_PEER_ID that are made available in the
+  _updown script.
+
+
+Version 0.9.14
+--------------
+
+- In a connection definition an IP protocol and optionally
+  the source and/or destination ports can be specified. Example:
+
+  conn dhcp
+       right=%any
+       rightprotoport=udp/bootpc
+       left=%defaultroute
+       leftid=@pluto.strongsec.com
+       leftsubnet=0.0.0.0/0  #allows DHCP discovery broadcast
+       leftprotoport=udp/bootps
+       rekey=no
+       keylife=20s
+       rekeymargin=10s
+       auto=add
+
+  ipsec auto -status shows the following connection definition:
+
+ "dhcp": 0.0.0.0/0===160.85.106.10[@pulpo.strongsec.com]:17/67...%any:17/68
+
+  Important: KLIPS does not enforce these protocol/port restrictions so
+  that always the whole IP traffic is tunneled! Currently the protoport
+  parameter can be used as directions for an ipchains or iptables based
+  firewall, only. By means of the new environment variables $PLUTO_MY_PROTOCOL,
+  $PLUTO_PEER_PROTOCOL, $PLUTO_MY_PORT, and $PLUTO_PEER_PORT, dynamical
+  firewall rules can be set up and released in a customized updown script
+  (see next point below).
+
+- The template utils/_updown.x509 can be used to dynamically insert and
+  delete firewall rules using iptables. The script also includes a facility
+  to log all established or disbanded VPN connections in a concise format.
+
+- The new parameter "strictcrlpolicy" enforces a strict CRL policy.
+  With the ipsec.conf setting
+
+  config setup
+       strictcrlpolicy=yes
+
+  a received peer certificate will not be accepted if the corresponding
+  CRL is either not found in /etc/ipsec.d/crls or if the nextUpdate
+  date of the current CRL is reached and no new CRL has been made
+  available. Please be aware of the severe consequences of setting
+  strictcrlpolicy=yes. All connections will come to a sudden standstill
+  if you forget to update the CRL in time. The default setting is
+  strictcrlpolicy=no.
+
+- The monitoring commands ipsec auto --listcerts | --listcacerts
+  now additionally list the size and the keyid of the RSA public key
+  contained in the certificate. The listing also indicates the possession
+  of a matching RSA private key.
+
+
+Version 0.9.13
+--------------
+
+- Bug fix: whack --debug-raw | --debug-crypt | --debug-parsing |
+                 --debug-emitting | --debug-control | --debug-klips |
+                 --debug-dns | --debug-private
+  caused a segmentation fault because more than 64 different command
+  line options had to be supported. This has been fixed by rising the
+  number of possible options to 128.
+
+
+Version 0.9.12
+--------------
+
+- Good news for network administrators who must manage dozens
+  of roadwarriors behind NAT boxes with IPsec passthrough. Instead
+  of defining each connection individually
+
+    conn rw1
+  	right=%any
+	rightsubnet=10.0.1.5/32
+
+   conn rw2
+ 	right=%any
+	rightsubnet=10.0.1.42/32
+
+   a single connection definition is now sufficient to handle
+   Virtual IPs:
+
+  conn rw
+  	right=%any
+	rightsubnetwithin=10.0.1.0/24
+
+  This feature has been developed by Mario Strasser and is a first
+  step towards full support of the "DHCP-over-IPsec" internet draft.
+
+- Good news for user who run both X.509 based tunnels
+  and connections to unpatched FreeS/WAN peers requiring
+  raw RSA keys. With the new parameter 'nocrsend' in
+  the config setup section of ipsec.conf
+
+    config setup:
+  	nocrsend=yes
+
+  no X.509 certificate requests will be sent to the peers.
+
+  Standard FreeS/WAN boxes are known to choke on certificate
+  requests and also PGPnet when run with OpenPGP certificates
+  will panic when it gets a X.509 CR. The nocrsend=yes setting
+  will help in both cases. The default setting is nocrsend=no.
+
+- The comparison of two distinguished names (DNs) has been refined.
+  Boths DNs are now split into their set of relative distinguished
+  names (RDNs). The individual RDN strings are then compared with
+  each other irrespective of the ASN.1 string type they were coded
+  in. If both RDNs are of ASN.1 type printableString which is usually
+  the case when no special characters are used then the strings
+  will be converted to upper case before comparison. The same applies
+  to an IA5String-coded Email field. One restriction remains:
+  The relative order of the RDNs must be the same in both DNs.
+
+  This fix will help e.g. with X.509 certificates based on certificate
+  requests issued by SSH Sentinel v3.x. Due to a different encoding
+  of RDNs containing special characters, valid connection definitions
+  could not be found by  Pluto.
+
+- "make install" now creates the /etc/ipsec.d directory and its
+  sub directories cacerts, crls, and private. This feature was
+  announced for version 0.9.10 but somehow got lost in the
+  final patch.
+
+
+Version 0.9.11
+--------------
+
+- When multi-tier X.509 hierarchical trust chains are used,
+  Windows XP sends its certificate plus any intermediate CA
+  certificates wrapped in a PKCS#7 signedData structure.
+  Pluto is now able to parse received certificates of type
+  CERT_PKCS7_WRAPPED_X509. In a first step all intermediate
+  CA certificates are added to the chained list of cacerts
+  rejecting self-signed root CA certificates. In a second
+  step the host or user certificate contained in the PKCS#7
+  structure is verified along the trust chain up to the
+  self-signed root CA certificate which must be present
+  in /etc/ipsec.d/cacerts and which is loaded statically
+  when Pluto starts up.
+
+- The monitoring functions ipsec auto --listcerts, --listcacerts
+  and --listcrls now also feature a timestamp logging
+  the exact time when a certificate or CRL was last loaded.
+
+
+Version 0.9.10
+--------------
+
+- Multiple certificates and corresponding multiple private keys
+  for the local FreeS/WAN host are now supported. Assuming that the
+  local side is "left", the parameter leftcert= indicates the
+  certificate to be sent to the peer.
+
+  A leftcert entry in the conn %default section provides a default
+  certificate so that /etc/x509cert.der is not needed anymore.
+
+  Examples:
+
+  conn %default
+       left=%defaultroute
+       leftcert=myCert1.pem
+
+  conn rw1
+       right=%any
+       rightid=@peer1.domain1
+       # leftid is the DN of myCert1
+
+  conn rw2
+       right=%any
+       rightid=@peer2.domain2
+       leftcert=myCert2.pem
+       # leftid is the DN of myCert2
+
+  conn rw3
+       right=%any
+       rightid=@peer3.domain1
+       leftid=@myid.domain1
+       # leftid is myid.domain1 and must be a subjectAltName
+         contained in myCert1
+
+  The certificates are loaded relative to /etc/ipsec.d or from
+  an arbitrary absolute path. The corresponding private keys
+  are loaded via ipsec.secrets:
+
+  : RSA myKey1.pem "<optional passphrase>"
+
+  : RSA myKey2.pem "<optional passphrase>"
+
+  Based on the public key contained in the leftcert certificate
+  the corresponding private key is found automatically.
+
+- Due to the support of multiple certificates and corresponding
+  private keys, configuration has become much simpler. Therefore
+  a large part of the README has been rewritten. Still, backward
+  compatibility to previous versions of the patch has been
+  maintained.
+
+- Since x509.c has grown quite significantly over the last few
+  versions, it has been split into asn1.c, pkcs.c and x509.c,
+  accompanied by the corresponding header files asn1.h, pkcs.h
+  and x509.h.
+
+- The ASN.1 parser now tolerates UTCTIME and GENERALIZEDTIME
+  objects with nonzero time zone offsets and missing seconds
+  field (DER coding requires both Zulu time and a seconds field,
+  so in a proper certificate these special cases should never
+  occur). Thanks go to Jochen Eisinger for his patch.
+
+- Adopted the new FreeS/WAN keyid for RSA public keys, consisting
+  of 9 base64 digits. Used in ipsec auto --listpubkeys.
+
+- "make install" now creates the /etc/ipsec.d directory and its
+  sub directories cacerts, crls, and private.
+
+
+Version 0.9.9
+-------------
+
+- When Pluto wants to use an expired public key in the public key
+  cache in order to check a signature, then the expired key is now
+  deleted from the chained list and the setup of the connection is
+  prevented.
+
+- No certificate request is sent if the public key of the connection
+  has been preloaded using rightrsasigkey=0x.... This makes
+  interoperability with non-X.509 enabled FreeS/WAN clients possible
+  because they choke on certificate requests.
+
+- Created the environment variables $PLUTO_MY_ID and $PLUTO_PEER_ID
+  which can be accessed in the updown script. Use in ID based firewalling
+  policies or for logging purposes.
+
+- Added the distinguished name attribute [Siemens] Trust Center Global
+  ID (TCGID=) having the OID 1.3.6.1.4.1.1201.1.1.2.2.75
+
+
+Version 0.9.8
+-------------
+
+- PKCS#1 RSA private key files can now be read directly by
+  Pluto, thereby eliminating the need to extract the private
+  key using the fswcert tool. As a consequence fswcert is not bundled
+  with the X.509 patch any more but is still available as a
+  separate distribution from http://www.strongsec.com/freeswan/.
+
+  RSA private key files are declared in /etc/ipsec.secrets in
+  the form
+
+    : RSA myKey.pem
+
+  as a PEM file or with
+
+    : RSA freeswanKey.der
+
+  as a DER file. If the private key has been encrypted with 3DES
+  and protected with a passphrase then with the notation
+
+    : RSA pulpoKey.pem "This is my passphrase"
+
+  the key file is automatically decrypted. Be careful to make
+  /etc/ipsec.secrets root readable only.
+
+  Relative pathnames are looked up in the directory /etc/ipsec.d/private.
+  Absolute pathnames like e.g./usr/ssl/private/pulpoKey.pem are also
+  possible. If not protected by a passphrase be sure to make key
+  files root readable only.
+
+- Distinguished Names in ipsec.conf can now be written without
+  the preceding '@' character. The new notation is
+
+    leftid="C=CH, O=strongSec GmbH, CN=pulpo.strongsec.com"
+
+  or alternatively
+
+    leftid="/C=CH/O=strongSec GmbH/CN=pulpo.strongsec.com"
+
+  The old notation
+
+    leftid="@C=CH, O=strongSec GmbH, CN=pulpo.strongsec.com"
+
+  or alternatively
+
+    leftid="@/C=CH/O=strongSec GmbH/CN=pulpo.strongsec.com"
+
+  will also be supported, thus ensuring that existing configuration
+  files can still be used.
+
+- leftcert and rightcert can now be used together with leftid and
+  rightid, if you want to specify a subjectAltName instead of the
+  default subject distinguished name of the certificate. Example:
+
+  conn use_ID_DER_ASN1_DN
+       right=%any
+       rightcert=peerCert.pem
+
+  or
+
+  conn use_ID_FQDN
+       right=%any
+       rightid=@peer.host
+       rightcert=peerCert.pem
+
+  Of course the ID_FQDN peer.host must exist as a DNS subjectAltName
+  extension in the certificate "peerCert.pem", otherwise the subject DN
+  is automatically assumed.
+
+- A certificate can now contain an unlimited amount of subjectAltNames
+  either of the same type or of various types.
+
+- crlDistributionPoints are now parsed in certificates. This is
+  a further step towards support of dynamic CRL updates.
+
+
+Version 0.9.7
+-------------
+
+- Fixed both a bug and a memory leak in send_delete(), the
+  function responsible for sending delete notifications. Both
+  patches were contributed by D. Hugh Redelmeier. Thanks!
+
+
+Version 0.9.6
+-------------
+
+- The following monitoring functions are now available:
+
+  ipsec auto --listpubkeys  #lists all installed public keys
+  ipsec auto --listcacerts  #lists all installed cacerts
+  ipsec auto --listcrls     #lists all installed crls
+
+  all three commands can be used with the option --utc
+  which causes all dates to be represented in UTC time
+  instead of the default local time. The expiration date of cacerts
+  and crls is checked and a warning is issued some time
+  (30 days for cacerts / 7 days for crls) before imminent expiry.
+
+- Dates extracted from certificates and CRLs (e.g. validity,
+  next update,revocation dates) are now represented as standard
+  time_t objects.
+
+- The three patches to the pluto directory, utils/auto and
+  utils/_confread, respectively, have been merged into a
+  single patch "freeswan.diff" that can be applied to the
+  freeswan top directory.
+
+- The script utils/auto does not generate a whack message for
+  leftrsasigkey=%cert and/or rightrsasigkey=%cert anymore,
+  since no RSA keys must be stored in the chained list of
+  public keys before the actual connection is negotiated.
+
+- Locally stored host certificates defined in ipsec.conf are now
+  loaded by pluto. The fswcert tool is not used by utils/_confread
+  anymore.
+
+- Bug fix: Everytime a certificate was received during IKE Main Phase,
+  the validated public key is inserted into a chained list of
+  public keys without prior deletion of the already existing copy.
+  This behaviour leads caused a memory leak in version 0.9.5, but only
+  in combination with freeswan-1.93 or the snapshot.
+
+
+Version 0.9.5
+-------------
+
+- Bug fix: When a roadwarrior set up multiple IPsec SAs,
+  rekeying was impossible since the ID was missing in the
+  roadwarrior instances. Fixed in rw_instantiate() in ipsec_doi.c.
+
+
+Version 0.9.4
+-------------
+
+- Support of several subnets in certificate based roadwarrior
+  connections. Example
+
+  conn rw1
+	right=%any
+	leftsubnet=10.0.1.0/24
+	auto=add
+
+  conn rw2
+	right=%any
+	leftsubnet=10.0.2.0/24
+	auto=add
+
+  conn rw3
+  	right=%any
+	rightsubnet=10.0.3.0/24
+	leftsubnet=10.0.1.0/24
+	auto=add
+
+- Support of ISO-8859-1 character set in distinguished names (DNs).
+  In the example
+
+  rightid="@C=CH, O=strongSec GmbH, OU=@*#Á%&¨^~‰ˆ¸ƒ÷‹ËÈ‡$£[]{}<>!,
+           CN=iso@strongsec.com"
+
+  the relative distinguished names (RDNs) C= and O= are coded
+  as ASN.1 type PRINTABLESTRING, whereas OU= and CN= are coded
+  now correctly as T61STRING since they contain special characters.
+
+- Support of MD2 hash by including md2.h and md2.c from RSAREF
+  [RFC 1319]. Reason: some CA's use md2WithRSAEncryption
+  to sign user or host certificates.
+
+- Fixed two potential dynamic memory allocation bugs in load_crls
+  and load_cacerts.
+
+
+Version 0.9.3
+-------------
+
+- If FreeS/WAN has a certificate of its own then it will now send an
+  ISAKMP certificate request (CR) message to its peer. This makes
+  interoperability with Cisco IOS routers and the Cisco PIX firewall
+  possible, since these boxes send their certificates only upon request.
+
+- CA certificates and CRls stored in the directories /etc/ipsec.d/cacerts
+  and /etc/ipsec.d/crls, respectively, can now be coded either in base64 PEM
+  or binary DER format. Irrespective of the file suffix (.pem, .der, .cer,
+  .crl, etc.) the correct format is automagically determined by pluto.
+  Thus manual conversion into DER format is not required anymore!
+
+- Henry Spencer has made syntax checking in _confread more stringent.
+  Additionally all shell parameters are now quoted. This changes require
+  a slightly modified notation for distinguished names:
+
+  in LDAP-style notation
+    leftid="@C=CH, O=strongSec GmbH, CN=pulpo.strongsec.com"
+
+  or alternatively in the form generated by openssl x509 -subject
+    leftid="@/C=CH/O=strongSec GmbH/CN=pulpo.strongsec.com"
+
+- Most changes proposed by Hugh Redelmeier have been worked into this
+  release. Two major tasks remain to be done: the internal representation
+  of UTCTIME and a revision of Kai Martius' delete notifications.
+
+
+Version 0.9.2
+-------------
+
+- Distinguished Names can now be specified in ipsec.conf
+  either in LDAP-style notation
+    leftid=@'C=CH, O=strongSec GmbH, CN=pulpo.strongsec.com'
+  or alternatively in the form generated by openssl x509 -subject
+    leftid=@'/C=CH/O=strongSec GmbH/CN=pulpo.strongsec.com'
+  Additional whitespace is automatically truncated. The old binary form
+    leftid=@~3025....
+  is still supported and might be used to represent foreign character sets.
+
+- When a certificate shows up as revoked after updating the
+  CRLs with ipsec auto --rereadcrls, the public key connected
+  with this certificate is deleted when the ISAKMP SA of
+  an existing connection using this key comes up for renewal.
+
+- Since roadwarrior connections can have many instances, the
+  ID of the peer is now logged for each established ISAKMP SA.
+
+- The X.509 patch distribution comes with the new fswcert version 0.6
+
+- Bug fix: the exotic subjectAltName "directoryName" occuring in
+  Thawte certificates caused an endless loop in the X.509 parser.
+
+
+Version 0.9.1
+-------------
+
+- Bug fix: handle exception when /etc/ipsec.d/crls or
+ /etc/ipsec.d/cacerts do not exist.
+
+- Bug fix: do not free filelist when directory is empty
+
+
+Version 0.9
+-----------
+
+- Major release supporting CA certificate trust chains,
+  certificate revocation lists (CRLs), and the subjectAltNames
+  IpAddress (IPV4_ADDR), DnsName (FQDN), and rfc822Name (USER_FQDN).
+  Peer certificates don't have to be stored locally anymore.
+  Certificates and CRLs can be reloaded dynamically using
+  whack commands.
+
+- The "commit flag" patch needed for connections with Windows 2000
+  has been incorporated into demux.c.
+
+- Bug fix: Added all possible subjectAltName choices, like e.g.
+  the exotic ediPartyName since they occur sometimes.
+
+
+Version 0.8.5
+-------------
+
+- Bug fix: X.509v1 certificates where no version field
+  exists and no v3 extensions are present are now also
+  handled correctly.
+
+- The v3 extension "subjectAltName" is now parsed in detail
+  and the general names "dnsName", "ipAddress" and "rfc822Name"
+  are extracted.
+
+
+Version 0.8.4
+-------------
+
+- Bug fix: Detailed X.509 certificate loggin is now suppressed
+  with plutodebug=none setting.
+
+- Parsing of X.509 certificate totally rewritten using a
+  generalized table driven approach. Strict ASN.1 type
+  checking applied during parsing process.
+
+- Modulus n and public exponent e of RSA public key gets now
+  extracted.
+
+
+Version 0.8.3
+-------------
+
+- Most things that have to do with X.509 certificates
+  have been moved to the new source and header files
+  x509.c and x509.h, respectively.
+
+- Parsing of X.509v3 certificates has been implemented as a
+  first step in the direction of CA certificate support.
+  The produced source code is 100% of Swiss origin!
+
+
+Version 0.8.2
+-------------
+
+- Some IPSec peers send a certificate request (CR)
+  already in the first ISAKMP message (MI1 or MR2).
+  So we allow them to do this.
+
+
+Version 0.8.1
+-------------
+
+- Version number of X.509 patch is now shown in the logs.
+
+- atoid() in id.c now stores the binary representation
+  of the ID_DER_ASN1_DN and IK_KEY_ID fields in the
+  same temporary string were the hexadecimal versions were
+  stored. This simplifies dynamic memory management and
+  makes the patch more robust in regard to the frequent
+  pluto changes.
+
+
+Version 0.8
+-----------
+
+- X.501 distinguished names can now be output in human-readable
+  form instead of the previous ASN.1 binary format. This gives
+  a much more concise output when using e.g. the status command
+  "ipsec auto --status". The most common X.501 object identifiers
+  (OIDs) are supported.
+
+
+Version 0.7.2
+-------------
+
+- When a road warrior initiates a Phase 1 handshake
+  the local FreeS/WAN host responds by setting up a
+  tentantive connection. Let the local ID type of this
+  connection be "ID_FQDN". After the roadwarrior has identified
+  himself by sending his true ID, the connection is re-evaluated
+  by calling the function  refine_host_connection() in
+  connections.c. If there is a fitting connection for the
+  roadwarrior but the local host for this new connection has
+  a different ID type e.g. ID_DER_ASN1_DN, then the new connection
+  fails. Version 0.7.2 fixes this by additionally testing
+  whether the tentative and the new connections have the same
+  private key in case the two ID types do not agree.
+
+
+Version 0.7.1
+-------------
+
+- In Phase 1 ID payloads protocol/ports can also take on
+  the values 17 / 500. Fixed this for ID_FQDN, ID_KEY_ID
+  and ID_DERN_ASN1_DN. (Fix proposed by Per Cederqvist).
+
+- Version 0.7.1 is now bundled with fswcert version 0.5
+
+
+Version 0.7
+-----------
+
+- Fixed bug in preshared.c found by Svenning Soerensen:
+  changed sizeof(id) into sizeof(*id)
+
+
+Version 0.6
+-----------
+
+- Totally rewrote memory allocation scheme for KEY_ID and
+  DER_ASN1_DN id strings. They are now stored in binary
+  form in id.name. the id.key_id field is not used anymore.
+  This should fix the pluto dumps that occured when deleting
+  connections. Should also mend various memory leaks.
+
+- With plutodebug=none, all debug messages produced by
+  id handling are now suppressed.
+
+
+Version 0.5
+-----------
+
+- Supports now both X.509 and OpenPGP certificates
+
+- Better support of CERT and CR messages in packets.c
+
+- X.509 certificate read from /etc/x509cert.der or
+  OpenPGP certificate read from /etc/pgpcert.pgp
+
+- "cert_type" is now automatically set

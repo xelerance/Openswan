@@ -1,0 +1,13 @@
+
+Quickstarts
+
+The quickstart documents are meant as a series of documents that help you
+quickly setup an IPsec connection using Openswan. 
+
+- What is IPsec in 500 words
+- Overview of the Openswan commands and configuration files
+- Compiling and installing Openswan
+- Host to host tunnel
+- Subnet to subnet tunnel
+- 
+
