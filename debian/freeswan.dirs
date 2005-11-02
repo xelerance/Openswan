@@ -1,0 +1,15 @@
+/etc
+/etc/ipsec.d
+/etc/ipsec.d/cacerts
+/etc/ipsec.d/crls
+/etc/ipsec.d/private
+/etc/ipsec.d/policies
+/etc/init.d
+/etc/logcheck/ignore.d.paranoid
+/etc/logcheck/ignore.d.server
+/etc/logcheck/ignore.d.workstation
+/usr/lib/ipsec
+/usr/libexec/ipsec
+/usr/sbin
+/var/lock/subsys
+

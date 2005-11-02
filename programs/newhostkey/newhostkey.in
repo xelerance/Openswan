@@ -1,0 +1,70 @@
+#! /bin/sh
+# generate new key for this host
+# Copyright (C) 2001, 2002  Henry Spencer.
+# 
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# RCSID $Id: newhostkey.in,v 1.6 2002/09/13 22:27:31 mcr Exp $
+
+me="ipsec newhostkey"
+usage="Usage: $me --output filename [--bits n] [--quiet] [--hostname host]
+         or
+       $me --output - [--bits n] [--quiet] [--verbose] [--hostname host] >filename"
+
+bits=2192
+verbose=
+host=
+output=
+for dummy
+do
+	case "$1" in
+	--bits)	bits="$2" ; shift	;;
+	--quiet)	verbose=	;;
+	--hostname)	host="--hostname $2" ; shift	;;
+	--output)	output="$2" ; shift		;;
+	--verbose)	verbose=--verbose 	;;
+	--version)	echo "$me $IPSEC_VERSION" ; exit 0	;;
+	--help)	echo "$usage" ; exit 0	;;
+	--)	shift ; break		;;
+	-*)	echo "$me: unknown option \`$1'" >&2 ; exit 2	;;
+	*)	break			;;
+	esac
+	shift
+done
+
+if test " $output" = " " && test ! -f ${IPSEC_CONFS}/ipsec.secrets
+then
+    output=${IPSEC_CONFS}/ipsec.secrets
+fi
+
+if test " $output" = " "
+then
+	echo "$0: no --output specification included" >&2
+	exit 1
+elif test " $verbose" != " " -a " $output" != " -" -a -s "$output"
+then
+	echo "$0: WARNING: file \`$output' exists, appending to it" >&2
+fi
+
+(
+	echo ': RSA	{'
+	ipsec rsasigkey $verbose $host $bits
+	echo '	}'
+	echo '# do not change the indenting of that "}"'
+) |
+if test " $output" = " -"
+then
+	cat
+else
+	umask 077
+	cat >>$output.new
+	mv $output.new $output
+fi

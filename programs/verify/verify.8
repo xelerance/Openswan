@@ -1,0 +1,53 @@
+.TH IPSEC_VERIFY 8 "8 June 2002"
+.\" RCSID $Id: verify.8,v 1.5 2003/06/30 06:13:34 sam Exp $
+.SH NAME
+ipsec verify \- see if FreeSWAN has been installed correctly
+.SH SYNOPSIS
+.B ipsec
+.B verify
+[
+.B \-\-host
+\ name\ ]
+.SH DESCRIPTION
+.PP
+Invoked without argument,
+.I verify  
+examines the local system for a number of common system faults: 
+IPsec not in path, no secrets file generated, 
+pluto not running, and IPsec support not present in kernel
+(or IPsec module not loaded).
+If two or more interfaces are found, it performs checks relevant on an 
+IPsec gateway: whether IP forwarding is allowed, and if so, 
+whether MASQ or NAT rules are in play.
+.PP
+In addition, 
+.I verify 
+performs checks relevant to Opportunistic Encryption. 
+It looks in forward DNS for a TXT record for the system's hostname, and
+in reverse DNS for a TXT record for the system's IP addresses.
+It checks whether the system has a public IP. 
+.PP
+The
+.B \-\-host
+option causes
+.B verify
+to look for a TXT record for 
+.I name
+in forward and reverse DNS.
+.SH FILES
+.nf
+/proc/net/ipsec_eroute
+/etc/ipsec.secrets
+.fi
+.SH HISTORY
+Written for the Linux FreeS/WAN project
+<http://www.freeswan.org>
+by Michael Richardson.
+.SH BUGS
+.I Verify 
+does not check for 
+.B ipchains
+masquerading.
+.PP
+.I Verify
+does not look for TXT records for Opportunistic clients behind the system.

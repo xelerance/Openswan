@@ -1,0 +1,50 @@
+######################################################################
+# /etc/network/interfaces -- configuration file for ifup(8), ifdown(8)
+#
+#
+# !!!NOTE!!! THIS IS AN ALPHA RELEASE! DO NOT RELY ON IT!
+#
+# Consider this the first draft of what I think the proper way to
+# configure interfaces is. It makes use of programs like ifconfig(8)
+# and dhcpcd(8), and can be called from /etc/init.d/networking,
+# /etc/pcmcia/network or the command line. It can configure and
+# deconfigure interfaces. In controlled environments it even works.
+# It's *very* subject to change, however. Some of the compulsory
+# options will become optional. Some of the optional ones might
+# become compulsory. Syntax might change. Features might disappear.
+# Bugs might disappear. The examples below are reasonably likely
+# to remain more or less correct. Maybe.
+#                                         -- ajt@debian.org
+#
+#
+# A "#" character in the very first column makes the rest of the line
+# be ignored. Blank lines are ignored. Lines may be indented freely.
+# A "\" character at the very end of the line indicates the next line
+# should be treated as a continuation of the current one.
+#
+# The "noauto", "up", and "down" options are valid for all interfaces.
+# "up" and "down" may be specified multiple times, all other options
+# may only be specified once.
+######################################################################
+
+# We always want the loopback interface. Whether we want ifup/ifdown to
+# know about is another matter, perhaps.
+#
+ iface lo inet loopback
+
+# An example ethernet card setup: (broadcast and gateway are optional)
+#
+iface eth0 inet static
+     address 192.0.2.1
+     network 192.0.2.0
+     netmask 255.255.255.0
+     broadcast 192.0.2.255
+     gateway 192.0.2.254
+
+iface eth0:1 inet static
+     address 192.0.2.2
+     network 192.0.2.0
+     netmask 255.255.255.0
+     broadcast 192.0.2.255
+
+

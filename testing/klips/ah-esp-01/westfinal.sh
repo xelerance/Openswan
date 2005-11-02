@@ -1,0 +1,1 @@
+echo end westfinal.sh

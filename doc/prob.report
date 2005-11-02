@@ -1,0 +1,58 @@
+When reporting problems, please include: 
+
++ a brief description of the problem
+
++ if it's a run-time problem, pointers to where we can find the complete
+	output from "ipsec barf" from BOTH ENDS (not just one of them)
+	(the output is too big to just include in your mail)
+
++ if it's a compile problem, the actual output from make (preferably
+	edited down to only the relevant part, but when in doubt, be
+	as complete as you can) showing the problem
+
++ any other error messages, complaints, etc. that you saw (please send
+	the complete text of the messages, not just a summary of them)
+
++ what your network setup is (subnets, gateway addresses, etc.)
+
++ exactly what you were trying to do with Linux FreeS/WAN, and exactly
+	what went wrong
+
++ a fix, if you have one (but remember, you are sending mail to people
+	all over the world; US residents and US citizens in particular,
+	please read doc/exportlaws.html before sending code -- even small
+	bug fixes -- to the list or to us)
+
+When in doubt about whether to include some seemingly-trivial item of
+information, include it.  It is rare for problem reports to have too
+much information, and common for them to have too little.
+
+If you can, try to simplify the case that is causing the problem.  In
+particular, if you can start FreeS/WAN with no other connections running,
+and then cause the problem to happen, and then do "ipsec barf" on both
+ends immediately, that gives the smallest and least cluttered output.
+
+To report a problem, send mail about it to:
+
+	Linux-IPSEC Mailing List <linux-ipsec@clinet.fi>
+
+For a number of reasons -- including export-control regulations affecting
+almost any *private* discussion of encryption software -- we prefer that
+problem reports and discussions go to the list, not directly to us. 
+Normally we will respond to the list.  (Beware that the list goes
+worldwide; US citizens, read doc/exportlaws.html!)  If you're using this
+software, you really should be on the list; to get onto it, send mail that
+looks about like this: 
+
+	To: Majordomo@clinet.fi
+
+	help
+	subscribe linux-ipsec
+	end
+
+If you do send private mail to us or want a private reply from us, please
+make sure that the return address on your mail (From or Reply-To header)
+is a valid one.  We lack time and energy to try to unravel addresses that
+have been mangled in a futile attempt to confuse spammers. 
+
+This file is RCSID $Id: prob.report,v 1.10 2000/06/18 20:59:44 henry Exp $

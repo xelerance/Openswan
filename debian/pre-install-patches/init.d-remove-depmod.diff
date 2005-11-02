@@ -1,0 +1,4 @@
+232c232
+< 		depmod -a >/dev/null 2>&1
+---
+> 		#depmod -a >/dev/null 2>&1	# disabled for Debian

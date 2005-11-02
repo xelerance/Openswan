@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# 
+# this script looks for a KEY resource record at a given name
+# It does so using lwdnsq in HEAD
+# and  
+# with dig in 2.xx
+#
+
+item=$1 shift
+partof=$1 shift
+
+dig $item key >/dev/null
+
+echo "key 12334 $item" | ipsec lwdnsq --regress --serial --ignoreeof >/tmp/lookkey
+if fgrep "$partof" /tmp/lookkey >/dev/null
+then
+	echo LOOK-FOR-KEY FOUND $partof
+else
+	echo LOOK-FOR-KEY DID NOT FIND $partof
+fi

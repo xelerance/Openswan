@@ -1,0 +1,186 @@
+#! /bin/bash
+# postinst script for freeswan
+#
+# see: dh_installdeb(1)
+
+set -e
+
+# summary of how this script can be called:
+#        * <postinst> `configure' <most-recently-configured-version>
+#        * <old-postinst> `abort-upgrade' <new version>
+#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#          <new-version>
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see /usr/share/doc/packaging-manual/
+#
+# quoting from the policy:
+#     Any necessary prompting should almost always be confined to the
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see /usr/share/doc/packaging-manual/
+#
+# quoting from the policy:
+#     Any necessary prompting should almost always be confined to the
+#     post-installation script, and should be protected with a conditional
+#     so that unnecessary prompting doesn't happen if a package's
+#     installation fails and the `postinst' is called with `abort-upgrade',
+#     `abort-remove' or `abort-deconfigure'.
+
+check_private() {
+	if grep -A 2 "$IPSEC_SECRETS_PATTERN_1" /etc/ipsec.secrets |
+	  tail --lines=2 |
+	  grep -A 1 "$IPSEC_SECRETS_PATTERN_2" |
+	  tail --lines=1 |
+	  grep "$IPSEC_SECRETS_PATTERN_3" >/dev/null; then
+		cp /etc/ipsec.secrets /etc/ipsec.secrets.orig
+		return 0
+	else
+            echo "/etc/ipsec.secrets already contains a RSA secret key."
+	    echo "Not creating a new key. If you want it to be created,"
+            echo "restore /etc/ipsec.secrets to distributed state first."
+	    return 1
+	fi
+}
+
+insert_private_key() {
+	umask 077 ; (
+		sed "/$IPSEC_SECRETS_PATTERN_1/,\$d" /etc/ipsec.secrets
+		echo "$1" ; \
+		sed "1,/$IPSEC_SECRETS_PATTERN_3/d" /etc/ipsec.secrets
+	) > /etc/ipsec.secrets.tmp
+	mv /etc/ipsec.secrets.tmp /etc/ipsec.secrets
+}
+
+insert_private_key_filename() {
+	umask 077 ; (
+		sed "/$IPSEC_SECRETS_PATTERN_1/,\$d" /etc/ipsec.secrets
+		echo ": RSA $1"
+		sed "1,/$IPSEC_SECRETS_PATTERN_3/d" /etc/ipsec.secrets
+	) > /etc/ipsec.secrets.tmp
+	mv /etc/ipsec.secrets.tmp /etc/ipsec.secrets
+}
+
+. /usr/share/debconf/confmodule
+
+IPSEC_SECRETS_PATTERN_1=': RSA	{'
+IPSEC_SECRETS_PATTERN_2='\-\- not filled in because ipsec.secrets existed at build time \-\-'
+IPSEC_SECRETS_PATTERN_3='	}'
+
+case "$1" in
+    configure)
+	if [ ! -e /dev/.devfsd ]; then
+	    db_get freeswan/makedev
+            if [ "$RET" = "true" ]; then
+	        (cd /dev && MAKEDEV ipsec)
+            fi
+	fi
+
+	# does the user wish frees/wan to restart?
+	db_get freeswan/restart
+	if [ "$RET" = "true" ]; then
+	    /etc/init.d/ipsec restart || true # sure, we'll restart it for you
+	fi
+
+	db_get freeswan/create_rsa_key
+	if [ "$RET" = "true" ]; then
+ 	    # OK, ipsec.secrets is still untouched
+	    db_get freeswan/rsa_key_type
+	    if [ "$RET" = "plain" ]; then
+	        # a RSA keypair should be created - check if there is one already
+		if check_private; then
+	            # create a plain freeswan keypair
+		    db_get freeswan/rsa_key_length
+                    umask 077
+                    keylength=$RET
+                    privkey=`mktemp /tmp/ipsec-postinst.XXXXXX`
+                    /usr/lib/ipsec/rsasigkey $keylength > $privkey
+		    insert_private_key $privkey
+                    rm $privkey
+		    echo "Successfully created a plain freeswan RSA keypair."
+ 	        fi
+	    else
+		host=`hostname`
+		newkeyfile="/etc/ipsec.d/private/${host}Key.pem"
+			newcertfile="/etc/ipsec.d/${host}Cert.pem"
+		    # extract the key from a x509 certificate
+		    db_get freeswan/existing_x509_certificate
+		    if [ "$RET" = "true" ]; then
+		    	if check_private; then
+				# existing certificate - use it
+				db_get freeswan/existing_x509_certificate_filename
+				certfile=$RET
+				db_get freeswan/existing_x509_key_filename
+				keyfile=$RET
+				if [ ! -r $certfile ] || [ ! -r $keyfile ]; then
+				    echo "Either the certificate or the key file could not be read !"
+				else
+					openssl x509 -in "$certfile" -outform DER -out /etc/x509cert.der
+					umask 077
+					cp "$keyfile" "$newkeyfile"
+					chmod 0600 "$newkeyfile"
+					insert_private_key_filename "$newkeyfile"
+					echo "Successfully extracted RSA key from existing x509 certificate."
+				fi
+			fi
+		    else
+		    	if check_private; then
+				# create a new certificate
+				db_get freeswan/rsa_key_length
+				keylength=$RET
+				db_get freeswan/x509_self_signed
+				selfsigned=$RET
+				db_get freeswan/x509_country_code
+				countrycode=$RET
+				db_get freeswan/x509_state_name
+				statename=$RET
+				db_get freeswan/x509_locality_name
+				localityname=$RET
+				db_get freeswan/x509_organization_name
+				orgname=$RET
+				db_get freeswan/x509_organizational_unit
+				orgunit=$RET
+				db_get freeswan/x509_common_name
+				commonname=$RET
+				db_get freeswan/x509_email_address
+				email=$RET
+				/usr/lib/ipsec/mkx509cert $keylength 1500 "$newkeyfile" "$newcertfile" "$selfsigned" "$countrycode" "$statename" "$localityname" "$orgname" "$orgunit" "$commonname" "$email"
+				if [ "$selfsigned" = "true" ]; then
+				  openssl x509 -in "$newcertfile" -outform DER -out /etc/x509cert.der
+				fi
+				chmod 0600 "$newkeyfile"
+				umask 077
+				insert_private_key_filename "$newkeyfile"
+				echo "Successfully created x509 certificate."
+			fi
+		    fi
+		fi
+	fi
+
+	update-rc.d ipsec defaults 15 >/dev/null
+	if [ -z "$2" ]; then
+	    # no old configured version - start freeswan now
+	    /etc/init.d/ipsec start || true
+	fi
+
+        db_stop
+
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+
+    ;;
+
+    *)
+        echo "postinst called with unknown argument '$1'" >&2
+        exit 0
+    ;;
+esac
+
+# dh_installdeb will replace this with shell code automatically
+# generated by other debhelper scripts.
+#DEBHELPER#
+
+exit 0

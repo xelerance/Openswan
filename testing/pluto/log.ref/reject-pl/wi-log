@@ -1,0 +1,56 @@
+whackwest --name reject --delete --host 127.95.7.1 --ikeport 8500 --nexthop 127.95.7.254 --updown silly --to --updown sally --host %group --ikeport 8500 --reject
+002 added connection description "reject"
+whackeast --name reject --delete --host 127.95.7.2 --ikeport 8500 --nexthop 127.95.7.254 --updown silly --to --updown sally --host %group --ikeport 8500 --reject
+002 added connection description "reject"
+whackwest --listen
+002 listening for IKE messages
+002 adding interface virtual127.95.7.1/lo:w 127.95.7.1
+002 loading secrets from "./ipsec.secrets/west"
+002 loading group "./ipsec.d/west/reject"
+whackeast --listen
+002 listening for IKE messages
+002 adding interface virtual127.95.7.2/lo:e 127.95.7.2
+002 loading secrets from "./ipsec.secrets/east"
+002 loading group "./ipsec.d/east/reject"
+whackwest --route --name reject
+whackeast --route --name reject
+whackwest --shutdown
+002 shutting down
+whackeast --shutdown
+002 shutting down
+
+>>>Initiator:
+PLUTO --ctlbase pluto.west --interface lo:w --ikeport 8500 --secretsfile ./ipsec.secrets/west --foodgroupsdir ./ipsec.d/west --noklips --uniqueids --stderrlog --debug-all --debug-private
+added connection description "reject"
+listening for IKE messages
+adding interface virtual127.95.7.1/lo:w 127.95.7.1
+loading secrets from "./ipsec.secrets/west"
+loading group "./ipsec.d/west/reject"
+shutting down
+forgetting secrets
+"reject#11.0.0.0/15" 0.0.0.0: deleting connection "reject#11.0.0.0/15" instance with peer 0.0.0.0
+"reject#10.0.0.0/15" 0.0.0.0: deleting connection "reject#10.0.0.0/15" instance with peer 0.0.0.0
+"reject#6.5.0.0/24" 0.0.0.0: deleting connection "reject#6.5.0.0/24" instance with peer 0.0.0.0
+"reject#5.6.0.0/24" 0.0.0.0: deleting connection "reject#5.6.0.0/24" instance with peer 0.0.0.0
+"reject#1.2.3.6/31" 0.0.0.0: deleting connection "reject#1.2.3.6/31" instance with peer 0.0.0.0
+"reject#1.2.3.4/31" 0.0.0.0: deleting connection "reject#1.2.3.4/31" instance with peer 0.0.0.0
+"reject": deleting connection
+shutting down interface virtual127.95.7.1/lo:w 127.95.7.1
+
+>>>Responder:
+PLUTO --ctlbase pluto.east --interface lo:e --ikeport 8500 --secretsfile ./ipsec.secrets/east --foodgroupsdir ./ipsec.d/east --noklips --uniqueids --stderrlog --debug-all --debug-private
+added connection description "reject"
+listening for IKE messages
+adding interface virtual127.95.7.2/lo:e 127.95.7.2
+loading secrets from "./ipsec.secrets/east"
+loading group "./ipsec.d/east/reject"
+shutting down
+forgetting secrets
+"reject#11.0.0.0/15" 0.0.0.0: deleting connection "reject#11.0.0.0/15" instance with peer 0.0.0.0
+"reject#10.0.0.0/15" 0.0.0.0: deleting connection "reject#10.0.0.0/15" instance with peer 0.0.0.0
+"reject#6.5.0.0/24" 0.0.0.0: deleting connection "reject#6.5.0.0/24" instance with peer 0.0.0.0
+"reject#5.6.0.0/24" 0.0.0.0: deleting connection "reject#5.6.0.0/24" instance with peer 0.0.0.0
+"reject#1.2.3.6/31" 0.0.0.0: deleting connection "reject#1.2.3.6/31" instance with peer 0.0.0.0
+"reject#1.2.3.4/31" 0.0.0.0: deleting connection "reject#1.2.3.4/31" instance with peer 0.0.0.0
+"reject": deleting connection
+shutting down interface virtual127.95.7.2/lo:e 127.95.7.2

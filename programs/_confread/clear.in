@@ -1,0 +1,7 @@
+# This file defines the set of CIDRs (network/mask-length) to which
+# communication should always be in the clear.
+#
+# See @FINALDOCDIR@/policygroups.html for details.
+#
+# $Id: clear.in,v 1.4 2003/02/17 02:22:15 mcr Exp $
+#

@@ -1,0 +1,17 @@
+whackwest --name oe --delete --rsa --pfs --host 127.95.7.2 --ikeport 8500 --nexthop 127.95.7.254 --updown silly --to --updown sally --host %opportunisticgroup --ikeport 8500 --encrypt --rekeymargin 350 --ikelifetime 900 --ipseclifetime 800 --keyingtries 2
+002 added connection description "oe"
+whackwest --listen
+002 listening for IKE messages
+002 adding interface virtual127.95.7.1/lo:w 127.95.7.1
+002 loading secrets from "./ipsec.secrets/west"
+whackeast --listen
+002 listening for IKE messages
+002 adding interface virtual127.95.7.2/lo:e 127.95.7.2
+002 loading secrets from "./ipsec.secrets/east"
+whackwest --route --name oe
+022 "oe": we have no ipsecN interface for either end of this connection
+RC: 22
+whackwest --shutdown
+002 shutting down
+whackeast --shutdown
+002 shutting down

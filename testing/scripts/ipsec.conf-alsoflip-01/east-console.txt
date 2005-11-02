@@ -1,0 +1,52 @@
+east:~# D=/testing/scripts/ipsec.conf-alsoflip-01
+east:~# export IPSEC_CONFS="$D/etc-alsoflip"
+east:~# ipsec setup start ; i=0 ; while i=`expr $i + 1`; [ $i -lt 20 ] && ! { ipsec auto --status | grep 'prospective erouted' >/dev/null ; } ; do sleep 1 ; done
+ipsec_setup: Starting FreeS/WAN IPsec VERSION
+pluto[PID]: Starting Pluto (FreeS/WAN Version VERSION)
+pluto[PID]: Changing to directory '/etc/ipsec.d/cacerts'
+pluto[PID]:   Warning: empty directory
+pluto[PID]: Changing to directory '/etc/ipsec.d/crls'
+pluto[PID]:   Warning: empty directory
+pluto[PID]: added connection description "packetdefault"
+pluto[PID]: listening for IKE messages
+pluto[PID]: adding interface ipsec0/eth1 192.1.2.23
+pluto[PID]: loading secrets from "/testing/scripts/ipsec.conf-alsoflip-01/etc-alsoflip/ipsec.secrets"
+east:~# ipsec auto --add flip-base-net
+pluto[PID]: added connection description "flip-base-net"
+east:~# ipsec auto --add flip-flip-net-base
+pluto[PID]: added connection description "flip-flip-net-base"
+east:~# ipsec auto --add noflip-base-base
+pluto[PID]: added connection description "noflip-base-base"
+east:~# ipsec auto --status
+000 interface ipsec0/eth1 192.1.2.23
+000 %myid = (none)
+000 debug none
+000  
+000 "flip-base-net": 192.1.2.23[@east]...192.1.2.45[@west]===192.0.1.0/24; unrouted; eroute owner: #0
+000 "flip-base-net":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+000 "flip-base-net":   policy: RSASIG+ENCRYPT+TUNNEL+PFS; prio: 32,24; interface: eth1; 
+000 "flip-base-net":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "flip-flip-net-base": 192.0.2.0/24===192.1.2.23[@east]...192.1.2.45[@west]; unrouted; eroute owner: #0
+000 "flip-flip-net-base":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+000 "flip-flip-net-base":   policy: RSASIG+ENCRYPT+TUNNEL+PFS; prio: 32,24; interface: eth1; 
+000 "flip-flip-net-base":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "noflip-base-base": 192.1.2.23[@east]...192.1.2.45[@west]; unrouted; eroute owner: #0
+000 "noflip-base-base":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+000 "noflip-base-base":   policy: RSASIG+ENCRYPT+TUNNEL+PFS; prio: 32,32; interface: eth1; 
+000 "noflip-base-base":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "packetdefault": 0.0.0.0/0===192.1.2.23[%myid]---192.1.2.254...%opportunistic; prospective erouted; eroute owner: #0
+000 "packetdefault":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+000 "packetdefault":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+failurePASS+lKOD+rKOD; prio: 0,0; interface: eth1; 
+000 "packetdefault":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000  
+000  
+east:~# ipsec setup stop
+ipsec_setup: Stopping FreeS/WAN IPsec...
+pluto[PID]: shutting down
+pluto[PID]: "noflip-base-base": deleting connection
+pluto[PID]: "flip-flip-net-base": deleting connection
+pluto[PID]: "flip-base-net": deleting connection
+pluto[PID]: "packetdefault": deleting connection
+pluto[PID]: shutting down interface ipsec0/eth1 192.1.2.23
+IPSEC EVENT: KLIPS device ipsec0 shut down.
+

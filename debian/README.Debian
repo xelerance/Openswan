@@ -1,0 +1,38 @@
+freeswan for Debian
+----------------------
+
+This package has been created from scratch with some ideas from the
+freeswan 1.3 package by Tommi Virtanen and the freeswan 1.5 package by
+Aaron Johnson merged in. Most of the code in debian/rules for creating the
+kernel-patch-freeswan package has been taken directly from Tommi Virtanen's
+package, but has been mostly rewritten to fit the needs of newer kernel
+versions (since version 1.9-1).
+
+If you want to use the freeswan utilities, you will need a patched kernel.
+When you install the kernel-patch-freeswan package and use make-kpkg to build
+your kernel, it should be patched automatically when you set the environment
+variable PATCH_THE_KERNEL=YES
+Usually you can then create a kernel package with
+make-kpkg --config=menuconfig --revision=<revision number> kernel_image
+The "--config=menuconfig" parameter forces make-kpkg to call "make menuconfig"
+after patching the kernel source, so that you have the possibility to
+configure compile-time options for freeswan.
+
+If you really want to compile your kernel without the help of kernel-package,
+you can patch it by going to your kernel source tree directory and entering
+'make -C /usr/src/kernel-patches/all/freeswan -f Makefile insert
+	KERNELSRC=<path of your kernel source>
+	PATCHER=/usr/src/kernel-patches/all/freeswan/patcher'
+
+The pluto daemon included in this package has been patched to provide support
+for X.509 certificates. Please refer to the file README.x509 for details. The
+_confread patch has also been applied so that the options 'leftcert' and
+'rightcert' can be used in ipsec.conf.
+
+Since version 1.95-2, this package comes with the patches from 
+http://www.irrigacion.gov.ar/juanjo/ipsec/ applied. Therefore there is now
+support for additional ciphers (such as AES) that are not supported by the
+upstream freeswan. Please look at /usr/share/doc/freeswan/ext-patches/ for
+example configurations using these extended patches.
+
+ -- Rene Mayrhofer <rene.mayrhofer@gibraltar.at>, Thu, 10 Aug 2000 10:50:33 +0200

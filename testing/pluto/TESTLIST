@@ -1,0 +1,175 @@
+#
+# This isn't actually a shell script. It just looks like one.
+# Some tools other than /bin/sh process it. 
+#
+# See doc/src/makecheck.html#TESTLIST for the format.
+# test-kind	directory-containing-test	expectation	[PR#]
+
+
+# basic pluto test - bring up your basic CONN between eastnet-westnet.
+umlplutotest	basic-pluto-01	good
+umlplutotest	basic-pluto-02	good
+umlplutotest	pluto-ipcmp-01	good
+umlplutotest	bad-updown-01	good
+
+# pluto-unit-01 - pluto vs. pluto, without KLIPS
+# This runs in a single UML, so ctltest is appropriate
+ctltest	pluto-unit-01	good
+ctltest	pluto-unit-02	good
+
+# regression test for --dontrekey responder with short SA lifetimes:
+# ought to somehow notify other side.
+# Also a unit test.
+ctltest	pluto-dontreky-expiry-01 good
+
+# test food groups
+# these set up a food group, then run a ping from sunrise-sunset
+
+# clear peer
+umlplutotest	food-groups-clear-01	good
+# oe peer
+#
+# this test is disabled because the OE peer (west) is not 
+# properly configured yet.
+#umlplutotest	food-groups-clear-02	bad
+
+# clear peer
+umlplutotest	food-groups-clear-or-oe-01	good
+
+# oe peer
+#
+# this test is disabled because the OE peer (west) is not 
+# properly configured yet.
+#umlplutotest	food-groups-clear-or-oe-02	bad
+
+# clear peer
+umlplutotest	food-groups-never-01	good
+
+# oe peer
+# This test is disabled, since no packets should ever arrive at west, so
+# it could never reply. A test of replies needs to be done instead.
+# 
+#umlplutotest	food-groups-never-02	bad
+
+# oe peer
+umlplutotest	food-groups-oe-or-clear-01	good
+
+# clear peer
+#
+# this test is disabled because the OE peer (west) is not 
+# properly configured yet.
+#umlplutotest	food-groups-oe-or-clear-02	bad
+
+# oe peer
+umlplutotest	food-groups-oe-or-die-01	good
+
+# clear peer
+#
+# this test is disabled because the OE peer (west) is not 
+# properly configured yet.
+#umlplutotest	food-groups-oe-or-die-02	bad
+
+# Foodgroups bug: used to forget name of target when target is
+# preserved across --listen.
+umlplutotest	food-groups-bug-01	good
+
+# bug: OE should not be attempted if our private key is missing
+umlplutotest	oe-fail-without-private-key-01	good
+
+# bug: pluto and _pluto_adns can deadlock in a flood
+umlplutotest	oe-flood-deadlock-01	good
+
+# Foodgroups orderly transition: policy groups must be transitioned properly
+# when changed
+# umlplutotest	food-groups-orderly-transition-01	good
+
+# Delete SA test.
+umlplutotest	delete-sa-01	good
+
+#
+# oe-snat-01 - do Source address NAT and then OE
+#
+umlplutotest	oe-snat-01	good
+
+#
+# oe-fail-without-resp-client-txt-01 - when responding using an OE 
+# connection, checks that there is a TXT (and possibly KEY) record 
+# that delegates this security gateway to act for the client on our 
+# side.
+umlplutotest	oe-fail-without-resp-client-txt-01	good
+
+#
+# whack --status output should be sorted.
+#
+ctltest		whack-status-01		good
+
+#
+# co-terminal-02 - wavesec+OE, with wavesec started first
+#
+umlXhost	co-terminal-02		good
+
+#
+# co-terminal-03 - wavesec+OE, with OE started first
+#
+umlXhost	co-terminal-03		good
+
+#
+# tests of OE from road warriors (no gateways)
+# full OE test
+#
+umlXhost	oe-road-01		good
+
+#
+# FQDN OE test with TXT RR, no KEY
+#
+umlXhost	oe-road-02		good
+
+#
+# FQDN OE test with TXT, mangled
+#
+umlXhost	oe-road-03		good
+
+#
+# FQDN OE test with KEY, no TXT
+#
+umlXhost	oe-road-04		good
+
+#
+# test for using %dns in VPN conns
+ctltest	 	vpn-dns-01		good
+
+#
+# tests of OE from road warriors (no gateways)
+# full OE test
+#
+umlXhost	myid-road-01		good
+
+#
+# FQDN OE test with TXT RR, no KEY
+#
+umlXhost	myid-road-02		good
+
+#
+# FQDN OE test with TXT, mangled
+#
+umlXhost	myid-road-03		good
+
+#
+# FQDN OE test with KEY, no TXT
+#
+umlXhost	myid-road-04		good
+
+#
+# FQDN OE with trailing dot
+#
+umlXhost	myid-road-05		good
+
+#
+# a test of rekeying an OE connection
+#
+umlXhost	pluto-rekey-01		good
+
+#
+# a test of using X.509 keys
+#
+umlplutotest	x509-pluto-01		good

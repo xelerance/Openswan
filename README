@@ -1,0 +1,127 @@
+
+			Openswan 2.0.0 Release Notes
+
+Openswan is based on code from the FreeS/WAN project (www.freeswan.org)
+It has support for most of the extensions (RFC + IETF drafts) related
+to IPsec, and includes X.509 Digital Certificates
+
+The release was based on FreeS/WAN 2.04 CVS, along with some minor bug fixes, 
+it also includes Andreas Steffan's X.509 Digital Certificate patch.
+
+Download it from http://www.openswan.org/code
+
+
+				REQUIREMENTS
+
+
+We do not support obsolete kernels (e.g. 2.2.xx, xx < 20), and using them 
+is generally a bad idea anyway due to known security holes.
+
+We do not test with 2.0 kernels earlier than 2.0.39.
+
+A number of folks have reported problems where pluto and/or whack don't
+compile properly.  As well if you upgraded over top of another FreeS/WAN
+installation, you may see errors like this:
+
+ipsec__plutorun: /usr/local/lib/ipsec/whack: option `--ike' is ambiguous 
+
+Or pfkey read/write errors.  These indicate mismatched versions of the 
+Openswan userland tool, and the kernel module.
+
+There a few packages required for Openswan to compile:
+
+1. libgmp + libgmp-devel headers.  (GNU Math Precision Library)
+
+2. On RedHat 7.x systems, kernel-headers 2.4.9-34 or higher.  2.4.7-10 is
+broken, and you will see __fswab32 errors during compilation of some of
+the crypto modules.  On non RedHat systems, you'll probably need kernel
+2.4.10 or higher.
+
+4. A non-corrupt kernel source tree.  This seems to fix many reported
+problems - starting with a fresh tree, either vendor supplied or from
+http://www.kernel.org.  The best test is to build a kernel from your
+source tree before patching in Openswan.
+
+				HOW TO INSTALL on Kernel 2.4
+
+1. It's best if you're already installed FreeS/WAN or Super FreeS/WAN 
+before, so you'll be familiar with the steps outlined below.
+
+2. For those interested in exactly how we build/install it, the steps are:
+ i) 	Uncompress linux-2.4.#.tar.bz2 in /usr/src/linux, build a normal
+	working kernel. With recent RedHat kernels (2.4.18+) you will 
+	probably need to run "make mrproper" immediately after installing
+	the source rpm.
+ ii) 	Ensure that your new kernel works before proceeding
+ iii) 	In the Openswan source dir:
+ 	Quick way: "make menugo && make minstall"
+ 	Step by step way: 
+	"make insert && make oldmod && make programs && make minstall" 
+
+				HOW TO INSTALL on Kernel 2.6
+
+For Kernel's 2.6.0 and higher, Openswan uses the built in IPsec support.  Only
+the userland component of Openswan is required to use Openswan with a 2.6 series
+kernel.
+
+
+1.	Uncompress openswan-2.0.0.tar.gz
+2.	cd openswan-2.0.0
+3.	make programs
+4.	make install
+
+Note: you will need setkey from the ipsec-tools package, available from 
+http://ipsec-tools.sourceforge.net 
+
+
+				UPGRADING
+
+1. Just install overtop - it won't replace your /etc/ipsec.* config files 
+
+				SUPPORT
+
+Mailing Lists:
+
+http://lists.openswan.org is home of the mailing lists.  Note: these are 
+closed lists - you must be subscribed to post.  This is different from the
+FreeS/WAN lists which were open.
+
+IRC:
+
+Openswan developers and users can be found on IRC, on #openswan on
+irc.freenode.net.  If you need more information on our IRC channel, see
+http://www.openswan.org/support/irc.php
+
+
+Commercial support for Openswan is also available - see
+http://www.xelerance.com/openswan/support.php for more information, or
+email sales@xelerance.com
+
+				BUGS
+
+Bugs with the package can be filed into our Mantis system, at
+http://bugs.openswan.org
+
+
+				DEVELOPMENT
+
+Those interested in the development, patches, beta releases of Openswan
+can join the development mailing list (http://lists.openswan.org -
+dev@lists.openswan.org) or join the development team on IRC in
+#openswan-dev on irc.freenode.net
+
+				DOCUMENTATION
+
+Several high-level documents are in the doc directory.  Most are in HTML
+format; See doc/index.html for the top level index.
+
+See doc/README for two methods of getting plain-text versions if needed.  
+See doc/roadmap.html for a guide to what's where in this distribution.
+
+Unpacking the distribution needs about 12MB, and compiling it requires
+another 50MB of space.  For setup procedures, start at doc/intro.html
+
+The bulk of this software is under the GNU General Public License; see
+COPYING.  Some parts of it are not; see CREDITS for the details.
+
+$Id: README,v 1.88.12.1 2004/01/18 22:11:36 ken Exp $.

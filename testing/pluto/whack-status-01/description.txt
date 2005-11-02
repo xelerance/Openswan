@@ -1,0 +1,2 @@
+loads connections into pluto in a non-alphabetic order, and then
+dumps it, expecting a sorted output

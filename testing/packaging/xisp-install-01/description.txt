@@ -1,0 +1,3 @@
+This test attempts to duplicate the desired install profile for
+XISP FreeSWAN use. It puts FreeSWAN on the root (/) disk.
+

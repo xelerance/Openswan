@@ -1,0 +1,2 @@
+Test myid= in ipsec.conf's config setup section.
+Implicitly test $IPSEC_CONFS override for path to control files.

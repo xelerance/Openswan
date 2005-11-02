@@ -1,0 +1,103 @@
+east:~#
+ D=/testing/scripts/ipsec.conf-myid-01
+east:~#
+ export IPSEC_CONFS="$D/etc-nomyid"
+east:~#
+ ipsec setup start 
+ipsec_setup: Starting FreeS/WAN IPsec VERSION
+east:~#
+ sleep 4
+east:~#
+ /testing/pluto/basic-pluto-01/eroutewait.sh trap
+east:~#
+ ipsec auto --status
+000 interface ipsec0/eth1 192.1.2.23
+000 %myid = (none)
+000 debug none
+000  
+000 "block": 192.1.2.23[%myid]---192.1.2.254...%group; unrouted; eroute owner: #0
+000 "block":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+000 "block":   policy: TUNNEL+PFS+GROUP+GROUTED+REJECT+NEVER_NEGOTIATE+lKOD+rKOD; prio: 32,0; interface: eth1; 
+000 "block":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "clear": 192.1.2.23[%myid]---192.1.2.254...%group; unrouted; eroute owner: #0
+000 "clear":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+000 "clear":   policy: TUNNEL+PFS+GROUP+GROUTED+PASS+NEVER_NEGOTIATE+lKOD+rKOD; prio: 32,0; interface: eth1; 
+000 "clear":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "clear-or-private": 192.1.2.23[%myid]---192.1.2.254...%opportunisticgroup; unrouted; eroute owner: #0
+000 "clear-or-private":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+000 "clear-or-private":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+GROUP+GROUTED+PASS+failurePASS+lKOD+rKOD; prio: 32,0; interface: eth1; 
+000 "clear-or-private":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "packetdefault": 0.0.0.0/0===192.1.2.23[%myid]---192.1.2.254...%opportunistic; prospective erouted; eroute owner: #0
+000 "packetdefault":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+000 "packetdefault":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+failurePASS+lKOD+rKOD; prio: 0,0; interface: eth1; 
+000 "packetdefault":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "private": 192.1.2.23[%myid]---192.1.2.254...%opportunisticgroup; unrouted; eroute owner: #0
+000 "private":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+000 "private":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+GROUP+GROUTED+failureDROP+lKOD+rKOD; prio: 32,0; interface: eth1; 
+000 "private":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "private-or-clear": 192.1.2.23[%myid]---192.1.2.254...%opportunisticgroup; unrouted; eroute owner: #0
+000 "private-or-clear":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+000 "private-or-clear":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+GROUP+GROUTED+failurePASS+lKOD+rKOD; prio: 32,0; interface: eth1; 
+000 "private-or-clear":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "private-or-clear#0.0.0.0/32": 192.1.2.23[%myid]---192.1.2.254...%opportunistic===?; prospective erouted; eroute owner: #0
+000 "private-or-clear#0.0.0.0/32":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+000 "private-or-clear#0.0.0.0/32":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+failurePASS+lKOD+rKOD; prio: 32,0; interface: eth1; 
+000 "private-or-clear#0.0.0.0/32":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000  
+000  
+east:~#
+ ipsec setup stop
+ipsec_setup: Stopping FreeS/WAN IPsec...
+IPSEC EVENT: KLIPS device ipsec0 shut down.
+east:~#
+ ipsec eroute
+east:~#
+ export IPSEC_CONFS="$D/etc-myid"
+east:~#
+ ipsec setup start 
+ipsec_setup: Starting FreeS/WAN IPsec VERSION
+east:~#
+ sleep 4
+east:~#
+ /testing/pluto/basic-pluto-01/eroutewait.sh trap
+east:~#
+ ipsec auto --status
+000 interface ipsec0/eth1 192.1.2.23
+000 %myid = @freeswan.org
+000 debug none
+000  
+000 "block": 192.1.2.23[%myid]---192.1.2.254...%group; unrouted; eroute owner: #0
+000 "block":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+000 "block":   policy: TUNNEL+PFS+GROUP+GROUTED+REJECT+NEVER_NEGOTIATE+lKOD+rKOD; prio: 32,0; interface: eth1; 
+000 "block":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "clear": 192.1.2.23[%myid]---192.1.2.254...%group; unrouted; eroute owner: #0
+000 "clear":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+000 "clear":   policy: TUNNEL+PFS+GROUP+GROUTED+PASS+NEVER_NEGOTIATE+lKOD+rKOD; prio: 32,0; interface: eth1; 
+000 "clear":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "clear-or-private": 192.1.2.23[%myid]---192.1.2.254...%opportunisticgroup; unrouted; eroute owner: #0
+000 "clear-or-private":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+000 "clear-or-private":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+GROUP+GROUTED+PASS+failurePASS+lKOD+rKOD; prio: 32,0; interface: eth1; 
+000 "clear-or-private":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "packetdefault": 0.0.0.0/0===192.1.2.23[%myid]---192.1.2.254...%opportunistic; prospective erouted; eroute owner: #0
+000 "packetdefault":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+000 "packetdefault":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+failurePASS+lKOD+rKOD; prio: 0,0; interface: eth1; 
+000 "packetdefault":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "private": 192.1.2.23[%myid]---192.1.2.254...%opportunisticgroup; unrouted; eroute owner: #0
+000 "private":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+000 "private":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+GROUP+GROUTED+failureDROP+lKOD+rKOD; prio: 32,0; interface: eth1; 
+000 "private":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "private-or-clear": 192.1.2.23[%myid]---192.1.2.254...%opportunisticgroup; unrouted; eroute owner: #0
+000 "private-or-clear":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+000 "private-or-clear":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+GROUP+GROUTED+failurePASS+lKOD+rKOD; prio: 32,0; interface: eth1; 
+000 "private-or-clear":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "private-or-clear#0.0.0.0/32": 192.1.2.23[%myid]---192.1.2.254...%opportunistic===?; prospective erouted; eroute owner: #0
+000 "private-or-clear#0.0.0.0/32":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+000 "private-or-clear#0.0.0.0/32":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+failurePASS+lKOD+rKOD; prio: 32,0; interface: eth1; 
+000 "private-or-clear#0.0.0.0/32":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000  
+000  
+east:~#
+ ipsec setup stop
+ipsec_setup: Stopping FreeS/WAN IPsec...
+IPSEC EVENT: KLIPS device ipsec0 shut down.
+

@@ -1,0 +1,46 @@
+Source: freeswan
+Section: net
+Priority: optional
+Maintainer: Rene Mayrhofer <rmayr@debian.org>
+Uploaders: Angus Lees <gus@debian.org>
+Standards-Version: 3.2.1
+Build-Depends: debhelper (>= 2.2.0), libgmp3-dev
+
+Package: freeswan
+Architecture: any
+Depends: ${shlibs:Depends}, bsdmainutils, makedev | devfsd, debconf, debianutils (>=1.7)
+Suggests: kernel-patch-freeswan
+Description: IPSEC utilities for FreeS/Wan
+ IPSEC is Internet Protocol SECurity. It uses strong cryptography to provide
+ both authentication and encryption services. Authentication ensures that
+ packets are from the right sender and have not been altered in transit.
+ Encryption prevents unauthorised reading of packet contents.
+ .
+ This version of FreeS/WAN supports Opportunistic Encryption (OE) out of the
+ box. OE enables you to set up IPsec tunnels to a site without
+ co-ordinating with the site administrator, and without hand
+ configuring each tunnel. If enough sites support OE, a "FAX effect"
+ occurs, and many of us can communicate without eavesdroppers. 
+ .
+ In addition to OE, you may manually configure secure tunnels through
+ untrusted networks. Everything passing through the untrusted net is
+ encrypted by the IPSEC gateway machine and decrypted by the gateway
+ at the other end. The result is Virtual Private Network or VPN. This
+ is a network which is effectively private even though it includes
+ machines at several different sites connected by the insecure Internet.
+ .
+ Please note that you will need kernel support for using this package. The
+ standard Debian kernel does not include support for FreeS/Wan. You can build
+ your own kernel by installing the kernel-source package and
+ kernel-patch-freeswan, which can be automatically applied when using
+ make-kpkg.
+
+Package: kernel-patch-freeswan
+Architecture: all
+Depends: fileutils (>= 4.1-7)
+Recommends: kernel-package (>= 7.04)
+Suggests: freeswan
+Description: IPSEC kernel support for FreeS/Wan
+ This package contains the patches for the Linux kernel to get the necessary
+ kernel support to use FreeSWan.
+

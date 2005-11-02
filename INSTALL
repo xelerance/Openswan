@@ -1,0 +1,131 @@
+LINUX FREES/WAN INSTALL
+
+
+
+INSTALL METHODS:
+
+
+* FreeS/WAN may already be on your system. You may only need to enable it.
+See:
+
+    http://www.freeswan.org/freeswan_trees/freeswan-2.03/doc/install.html#distroinstall
+
+* Get RPMs from http://www.freeswan.org/download.html. See our RPM install 
+instructions at:
+
+    http://www.freeswan.org/freeswan_trees/freeswan-2.03/doc/install.html#rpminstall
+
+RPMs make for a quicker, easier install.
+
+* Install by patching the kernel, either as a module (quicker), or statically 
+linked. A Web page with instructions for both is here:
+
+    http://www.freeswan.org/freeswan_trees/freeswan-2.03/doc/install.html#srcinstall
+
+KERNEL PATCH INSTALL instructions also appear below.
+
+
+
+2.6 KERNEL SUPPORT
+
+
+As of Linux FreeS/WAN 2.03, we have preliminary support for 2.6 kernel
+native IPsec. If you are running a 2.6 kernel, you can either:
+
+* install FreeS/WAN, including its KLIPS kernel code, using any of our INSTALL
+  METHODS, or
+
+* install FreeS/WAN's Pluto keying daemon and supporting tools (aka "userland") 
+  for use with the 2.6 kernel native IPsec support.
+
+  For more information on the parts that make up FreeS/WAN, see:
+
+    http://www.freeswan.org/freeswan_trees/freeswan-2.03/doc/ipsec.html#parts
+
+  2.6 install instructions are included with the relevant INSTALL METHODS.
+  Quick links:
+
+    (RPM)
+    http://www.freeswan.org/freeswan_trees/freeswan-2.03/doc/install.html#2.6.rpm
+    (Source)
+    http://www.freeswan.org/freeswan_trees/freeswan-2.03/doc/install.html#2.6.src
+
+
+
+KERNEL PATCH INSTALL
+
+
+NOTE: These instructions are intended for people familiar with Linux kernel
+compilation. Others may have an easier time using our Web document, 
+
+     http://www.freeswan.org/freeswan_trees/freeswan-2.03/doc/install.html
+
+doc/impl.notes discusses some expert-only side issues; doc/kernel.notes
+is some (old) notes on kernel-building fine points.
+
+If you have used an earlier version, read the CHANGES and BUGS files.
+
+0. You must configure and build your own Linux kernel first, and you
+preferably should boot it to confirm that it works.  Also, if humanly
+possible, configure and test your network(s) without IPsec first, to make
+sure packets really can get from one end to the other.  Also, your system
+now needs to have the GMP library, including any "GMP development" package
+as well as GMP itself; this is part of normal Linux distributions but
+often isn't installed unless you ask for it.  (Note, there is also a GPM
+library, which is completely unrelated to GMP despite the similar names.)
+
+1. Do ONE of the following commands, depending on how you configure your
+kernel.  (This configures, builds, and installs IPsec, except it does not
+install the new kernel.  The kernel build includes "make dep clean".)
+
+	# pick one; does more than just configure!
+	make menugo		# use menuconfig
+	make xgo		# use xconfig
+	make ogo		# use config
+	make oldgo		# use oldconfig
+
+You can substitute (e.g.) "menumod" and have only the kernel modules, not 
+the whole kernel, rebuilt.  This can be much quicker and easier.  You must 
+configure IPsec as a module for this to work.
+
+2. IPsec-related configuration settings are under "Networking options". 
+Most relevant things are now right by default.  Some seemingly-unrelated
+options get turned on automatically because IPsec needs them.  Beware that
+the 2.2.xx "advanced router" causes problems:  its "rp_filter" subsystem
+often must be turned off for IPsec to work, and just leaving the whole
+thing disabled is the simplest approach unless you know what you're doing.
+Turning "IPSEC Debugging Option" off may look attractive but is unwise.
+
+3. Save the new configuration settings, even if you have made no changes;
+KLIPS will not be part of your kernel configuration without such a save.
+
+4. Wait.  The compile and kernel build take a while, perhaps 15min on a
+200MHz PCI machine with 32MB and good disks.  No interaction is needed
+after the configuration save.  A report on kernel patching is left in the
+file out.kpatch; the kernel build output is left in out.kbuild.  Proper
+error checking is done at every step:  the make WILL STOP if something
+goes wrong (even in the Linux kernel Makefiles, which are careless about
+this themselves -- their output is caught and checked). 
+
+5. Most of the user-level utilities are now in /usr/local/lib/ipsec, with
+the "ipsec" command in /usr/local/sbin to provide easy access to the rest. 
+(Our procedures generally assume that /usr/local/sbin is in your shell's
+search path.)  The manual pages are in /usr/local/man/man[1-8], mostly
+under names starting with "ipsec_".  The new kernel is built but not yet
+installed.  At boot time, KLIPS and Pluto will start automatically. 
+
+6. Install the new kernel.  *IF* kernel install on your system uses the
+kernel's own "make install" (and perhaps "make modules_install"), then as
+a convenience, you can do it from our top-level directory by: 
+
+	make kinstall		# only if using kernel "make install" etc.
+
+This is properly error-checked, and the output is left in out.kinstall. 
+
+7. Edit the /etc/ipsec.conf and /etc/ipsec.secrets configuration files as
+necessary (see doc/intro.html or the manpages).  The Makefile will not
+overwrite them if run again. 
+
+8. Reboot.
+
+This file is RCSID $Id: INSTALL,v 1.109 2003/09/26 18:49:43 claudia Exp $

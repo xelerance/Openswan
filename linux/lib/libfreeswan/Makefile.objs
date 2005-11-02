@@ -1,0 +1,23 @@
+obj-y += satot.o
+obj-y += addrtot.o
+obj-y += ultot.o 
+obj-y += addrtypeof.o
+obj-y += anyaddr.o
+obj-y += initaddr.o
+obj-y += ultoa.o 
+obj-y += addrtoa.o 
+obj-y += subnettoa.o 
+obj-y += subnetof.o 
+obj-y += goodmask.o 
+obj-y += datatot.o 
+obj-y += rangetoa.o 
+obj-y += prng.o 
+obj-y += pfkey_v2_parse.o 
+obj-y += pfkey_v2_build.o 
+obj-y += pfkey_v2_debug.o 
+obj-y += pfkey_v2_ext_bits.o 
+obj-y += version.o
+
+
+version.c:	${LIBFREESWANDIR}/version.in.c ${FREESWANSRCDIR}/Makefile.ver
+	sed '/"/s/xxx/$(IPSECVERSION)/' ${LIBFREESWANDIR}/version.in.c >$@

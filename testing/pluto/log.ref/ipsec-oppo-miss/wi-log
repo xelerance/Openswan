@@ -1,0 +1,70 @@
+whackwest --name ipsec-oppo-me --delete --rsa --pfs --host 127.95.7.1 --ikeport 8500 --nexthop 127.95.7.254 --updown silly --to --updown sally --host %opportunistic --ikeport 8500 --client 10.0.0.0/8 --encrypt --rekeymargin 350 --ikelifetime 900 --ipseclifetime 800 --keyingtries 2
+002 added connection description "ipsec-oppo-me"
+whackwest --name ipsec-oppo-mine --delete --rsa --pfs --host 127.95.7.1 --ikeport 8500 --client 127.95.7.8/30 --nexthop 127.95.7.254 --updown silly --to --updown sally --host %opportunistic --ikeport 8500 --client 10.0.0.0/8 --encrypt --rekeymargin 350 --ikelifetime 900 --ipseclifetime 800 --keyingtries 2
+002 added connection description "ipsec-oppo-mine"
+whackeast --name ipsec-oppo-me --delete --rsa --pfs --host %opportunistic --ikeport 8500 --client 10.0.0.0/8 --updown silly --to --updown sally --host 127.95.7.2 --ikeport 8500 --nexthop 127.95.7.254 --encrypt --rekeymargin 350 --ikelifetime 900 --ipseclifetime 800 --keyingtries 2
+002 added connection description "ipsec-oppo-me"
+whackeast --name ipsec-oppo-mine --delete --rsa --pfs --host %opportunistic --ikeport 8500 --client 10.0.0.0/8 --updown silly --to --updown sally --host 127.95.7.2 --ikeport 8500 --client 127.95.7.20/30 --nexthop 127.95.7.254 --encrypt --rekeymargin 350 --ikelifetime 900 --ipseclifetime 800 --keyingtries 2
+002 added connection description "ipsec-oppo-mine"
+whackwest --listen
+002 listening for IKE messages
+002 adding interface virtual127.95.7.1/lo:w 127.95.7.1
+002 loading secrets from "./ipsec.secrets/west"
+whackeast --listen
+002 listening for IKE messages
+002 adding interface virtual127.95.7.2/lo:e 127.95.7.2
+002 loading secrets from "./ipsec.secrets/east"
+whackwest --route --name ipsec-oppo-me
+whackwest --route --name ipsec-oppo-mine
+whackwest --status
+000 interface virtual127.95.7.1/lo:w 127.95.7.1
+000 %myid = (none)
+000 debug raw+crypt+parsing+emitting+control+lifecycle+klips+dns+oppo+controlmore+pfkey+private
+000  
+000 "ipsec-oppo-me": 127.95.7.1:8500---127.95.7.254...%opportunistic:8500===10.0.0.0/8; prospective erouted; eroute owner: #0
+000 "ipsec-oppo-me":   ike_life: 900s; ipsec_life: 800s; rekey_margin: 350s; rekey_fuzz: 100%; keyingtries: 2
+000 "ipsec-oppo-me":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+OPPORTUNISTIC+rKOD; prio: 32,8; interface: lo:w; 
+000 "ipsec-oppo-me":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "ipsec-oppo-mine": 127.95.7.8/30===127.95.7.1:8500---127.95.7.254...%opportunistic:8500===10.0.0.0/8; prospective erouted; eroute owner: #0
+000 "ipsec-oppo-mine":   ike_life: 900s; ipsec_life: 800s; rekey_margin: 350s; rekey_fuzz: 100%; keyingtries: 2
+000 "ipsec-oppo-mine":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+OPPORTUNISTIC+rKOD; prio: 30,8; interface: lo:w; 
+000 "ipsec-oppo-mine":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000  
+000  
+whackeast --status
+000 interface virtual127.95.7.2/lo:e 127.95.7.2
+000 %myid = (none)
+000 debug raw+crypt+parsing+emitting+control+lifecycle+klips+dns+oppo+controlmore+pfkey+private
+000  
+000 "ipsec-oppo-me": 127.95.7.2:8500---127.95.7.254...%opportunistic:8500===10.0.0.0/8; unrouted; eroute owner: #0
+000 "ipsec-oppo-me":   ike_life: 900s; ipsec_life: 800s; rekey_margin: 350s; rekey_fuzz: 100%; keyingtries: 2
+000 "ipsec-oppo-me":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+OPPORTUNISTIC+rKOD; prio: 32,8; interface: lo:e; 
+000 "ipsec-oppo-me":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000 "ipsec-oppo-mine": 127.95.7.20/30===127.95.7.2:8500---127.95.7.254...%opportunistic:8500===10.0.0.0/8; unrouted; eroute owner: #0
+000 "ipsec-oppo-mine":   ike_life: 900s; ipsec_life: 800s; rekey_margin: 350s; rekey_fuzz: 100%; keyingtries: 2
+000 "ipsec-oppo-mine":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+OPPORTUNISTIC+rKOD; prio: 30,8; interface: lo:e; 
+000 "ipsec-oppo-mine":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000  
+000  
+whackwest --oppohere 127.95.7.1 --oppothere 127.95.7.2
+033 Can't Opportunistically initiate for 127.95.7.1 to 127.95.7.2: no routed Opportunistic template covers this pair
+RC: 33
+whackwest --oppohere 127.95.7.1 --oppothere 127.95.7.21
+033 Can't Opportunistically initiate for 127.95.7.1 to 127.95.7.21: no routed Opportunistic template covers this pair
+RC: 33
+whackwest --oppohere 127.95.7.11 --oppothere 127.95.7.2
+033 Can't Opportunistically initiate for 127.95.7.11 to 127.95.7.2: no routed Opportunistic template covers this pair
+RC: 33
+whackwest --oppohere 127.95.7.10 --oppothere 127.95.7.22
+033 Can't Opportunistically initiate for 127.95.7.10 to 127.95.7.22: no routed Opportunistic template covers this pair
+RC: 33
+whackwest --oppohere 127.95.7.22 --oppothere 127.95.7.10
+033 Can't Opportunistically initiate for 127.95.7.22 to 127.95.7.10: no routed Opportunistic template covers this pair
+RC: 33
+whackwest --oppohere 127.95.7.10 --oppothere 127.95.7.23
+033 Can't Opportunistically initiate for 127.95.7.10 to 127.95.7.23: no routed Opportunistic template covers this pair
+RC: 33
+whackwest --shutdown
+002 shutting down
+whackeast --shutdown
+002 shutting down

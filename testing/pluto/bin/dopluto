@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# fill in most pluto flags for debugging
+# Only argument is east or west
+# Actually, extra args are passed on to pluto, so --nofork might be useful
+#
+# RCSID $Id: dopluto,v 1.11 2003/05/12 19:50:41 mcr Exp $
+
+. CONFIG
+
+case "$1" in
+east) INTERFACE=$EASTIF ; MYPLUTO=${EASTPLUTO:-$PLUTO} ; MYWHACK=${EASTWHACK:-$WHACK} ;;
+west) INTERFACE=$WESTIF ; MYPLUTO=${WESTPLUTO:-$PLUTO} ; MYWHACK=${WESTWHACK:-$WHACK} ;;
+north) INTERFACE=$NORTHIF ; MYPLUTO=${NORTHPLUTO:-$PLUTO} ; MYWHACK=${NORTHWHACK:-$WHACK} ;;
+south) INTERFACE=$SOUTHIF ; MYPLUTO=${SOUTHPLUTO:-$PLUTO} ; MYWHACK=${SOUTHWHACK:-$WHACK} ;;
+*) echo "$0: \"east\" or \"west\" expected" >&2
+   exit 1;
+   ;;
+esac
+
+SIDE=$1
+shift
+
+# the purpose of this function is to hide differences that don't count
+# from the log: path to pluto and LWDNSQOPTION
+function performpluto() {
+	mkdir -p pluto/$SIDE && cd pluto/$SIDE
+	ln -s -f ../../ipsec.secrets .
+	ln -s -f ../../ipsec.d .
+	echo "PLUTO" "$@"
+	$MYPLUTO ${LWDNSQOPTION:-} "$@" || echo RC: $?
+	}
+
+LOCK=pluto.$SIDE.pid
+
+if [ -f $LOCK ]
+then
+	$MYWHACK --ctlbase pluto.$SIDE --shutdown
+	rm -f $LOCK
+fi
+
+performpluto \
+	--ctlbase pluto.$SIDE \
+	--interface $INTERFACE \
+	--ikeport $IKEPORT \
+	--secretsfile ./ipsec.secrets/$SIDE \
+	--foodgroupsdir ./ipsec.d/$SIDE \
+	--noklips --uniqueids --stderrlog \
+	--debug-all --debug-private \
+	"$@"

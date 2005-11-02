@@ -1,0 +1,93 @@
+This code is still less than perfect and undoubtedly has bugs.  As of this
+release, the following are considered *serious* bugs: 
+
+* Test cases using AH for authentication currently fail. If you need this 
+  functionality for interop, either use an older release (1.99) or JuanJo 
+  Ciarlante's ALG patch. 
+
+* It was our intent for Opportunistic Encryption to work with 4096 bit keys.
+  Currently, there is a buffer limitation that prevents this; the additional 
+  text in TXT records wasn't properly factored into the buffer length. If 
+  you wish to use a key larger than the default of 2192 bits, keep the size 
+  under 4k. This will be fixed in a future release.
+
+* Module built against RedHat 7.1 2.4.2 kernels do not forward large packets.
+  The reason for this is unknown. Upgrade to a newer kernel.
+
+* If there are multiple connections specified between the same two
+  security gateways, either all or none must specify compression.  Otherwise
+  the result is unpredictable. 
+
+* Pluto will not retry if it can not find its key in DNS when it starts.
+
+* Extrusion and Opportunistic Encryption do not mix well without
+  Advanced Routing. (There is a workaround using advanced routing)
+
+* Installing a new FreeS/WAN on top of an old one doesn't update kernel
+  configuration options, so if new options are added, you need to start
+  with a virgin kernel instead.
+
+* KLIPS cannot cope with IP packets employing IP options.  This has
+  caused no trouble that we know of, somewhat to our surprise.
+
+* There are some ill-defined problems with sending large packets through
+  transport-mode connections, especially in 2.2.xx kernels.
+
+* There appears to be a kernel memory leak if rekeying occurs while a
+  connection is carrying traffic.  The effect is small unless you are
+  rekeying very frequently indeed.
+
+* There are too many ways for packets to get around the security stuff. 
+  In particular, suppose you have the following, with security gateways X
+  and Y serving subnets S and T: 
+
+        S======X........Y======T
+
+  A packet which shows up at Y, in clear text, claiming to be from S, with a
+  destination in T, will be forwarded... even if there is an IPsec tunnel
+  between X and Y which ought to be encrypting all such packets.  The damage
+  such packets could do is limited, but denial-of-service attacks are an
+  obvious possibility.  Dealing with this is difficult in general, because
+  we aren't quite close enough yet to the center of the IP processing
+  machinery.  For now, careful firewalling is needed. 
+
+* Another "packet leak" arises because at startup, shutdown, or restart,
+  there is a brief period when the network is up but IPsec is not.  This
+  exposure can be reduced using the forwardcontrol parameter. 
+
+* A similar leak occurs because there is no simple way to *replace* a
+  route using the Linux 2.2.xx route(8) command.  It has to be done with a
+  delete/add sequence, which leaves a timing window in which there is no
+  route for the destination.  Workarounds are complex; firewalling is
+  probably the best countermeasure right now.
+
+* Yet another potential leak arises because the PF_KEYv2 replace form of
+  addroute command is non-atomic.  There is a possibility for packets to
+  slip through the eroute table to a more general eroute between deletion
+  and addition of an eroute.  This is usually of no importance because the
+  packets will generally end up getting dropped rather than forwarded.
+
+* Minor difficulties can arise if more than one subnet is behind a single
+  security gateway, e.g.: 
+
+        S======X.........Y======T
+                         \\
+                           ======U
+
+  If U wants to talk to S encrypted, but T wants to talk to S in clear (no
+  IPsec), it actually is possible... but it has to be done with manual
+  keying's %passthrough feature, which is a little messy if the U-S
+  connection is automatically keyed, because the two connections share a
+  route but Pluto is not aware of this. 
+
+* The number of IPsec interfaces is coded at 4, but can be
+  changed by editing linux/net/ipsec/ipsec_param.h. It can not
+  adjusted dynamically at run-time, which is the bug.
+
+* When building as a module, there is a memory leak when loading/unloading
+  several times. We have not identified the source of this leak. It is on
+  the order of 8k. As we expect some turbulence in the kernel component
+  in the early months of 2003, we are not going to pursue this at this time.
+  Our test case, module-memory-01 therefore fails.
+
+This file is RCSID $Id: BUGS,v 1.54 2003/09/18 17:03:25 sam Exp $

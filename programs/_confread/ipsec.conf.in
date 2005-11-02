@@ -1,0 +1,43 @@
+# /etc/ipsec.conf - FreeS/WAN IPsec configuration file
+# RCSID $Id: ipsec.conf.in,v 1.11 2003/06/13 23:28:41 sam Exp $
+
+# This file:  @FINALEXAMPLECONFDIR@/ipsec.conf-sample
+#
+# Manual:     ipsec.conf.5
+#
+# Help: 
+# http://www.freeswan.org/freeswan_trees/freeswan-xxx/doc/quickstart.html
+# http://www.freeswan.org/freeswan_trees/freeswan-xxx/doc/config.html
+# http://www.freeswan.org/freeswan_trees/freeswan-xxx/doc/adv_config.html
+#
+# Policy groups are enabled by default. See:
+# http://www.freeswan.org/freeswan_trees/freeswan-xxx/doc/policygroups.html
+#
+# Examples:
+# http://www.freeswan.org/freeswan_trees/freeswan-xxx/doc/examples   
+
+
+version	2.0	# conforms to second version of ipsec.conf specification
+
+# basic configuration
+config setup
+	# Debug-logging controls:  "none" for (almost) none, "all" for lots.
+	# klipsdebug=all
+	# plutodebug=dns
+
+
+# Add connections here.
+
+# sample VPN connection
+#sample#	conn sample
+#sample#		# Left security gateway, subnet behind it, next hop toward right.
+#sample#		left=10.0.0.1
+#sample#		leftsubnet=172.16.0.0/24
+#sample#		leftnexthop=10.22.33.44
+#sample#		# Right security gateway, subnet behind it, next hop toward left.
+#sample#		right=10.12.12.1
+#sample#		rightsubnet=192.168.0.0/24
+#sample#		rightnexthop=10.101.102.103
+#sample#		# To authorize this connection, but not actually start it, at startup,
+#sample#		# uncomment this.
+#sample#		#auto=start

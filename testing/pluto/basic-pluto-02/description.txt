@@ -1,0 +1,4 @@
+Basic pluto test with a variation - the responder has no such policy.
+
+It does have the packetdefault policy, which may cause a problem. Or not.
+

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+TOP=$1
+DESTDIR=$2
+
+cp my-ipsec-conf.conf $DESTDIR/etc/ipsec.conf
+

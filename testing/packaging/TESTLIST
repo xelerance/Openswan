@@ -1,0 +1,66 @@
+# Check to see if we can successfully "make" in doc.
+# Currently, this test will be confounded if not run before any of 
+# the basic install tests.
+#
+mkinsttest	basic-docmake-01	good
+
+# Test to see if your basic /usr/local install works correctly.
+#
+mkinsttest	basic-install-01	good
+
+#
+# test to make sure that we can uninstall properly
+#
+mkinsttest	basic-uninstall-01	good
+
+
+#
+# Test to see if one can install into / properly.
+#
+mkinsttest	xisp-install-01		good
+
+#
+# Test to see that we do not overwrite important files when installing
+# a second time. Also confirm that .old files are produced.
+#
+mkinsttest	overwrite-install-01	good
+
+#
+# Tests RPM packaging
+#
+# for RH7.2 kernel
+#rpm_build_install_test	rpm-rh72-install-01	good
+
+# for RH7.3 kernel
+rpm_build_install_test	rpm-rh73-install-01	good
+
+
+#
+# kernel patch tests
+#
+# test the 2.4 patch
+kernel_patch_test	kernpatch-two-four-01	good
+
+# test the 2.2 patch
+kernel_patch_test	kernpatch-two-two-01	good
+
+# test the 2.0 patch
+kernel_patch_test	kernpatch-two-oh-01	good
+
+# test against SuSE kernel source
+kernel_patch_test	kernpatch-suse-two-four	good
+
+
+#
+# test of building the module against various kernel sources
+#
+module_compile		modtest-suse-two-four	good
+
+# test for building without ipcomp.
+module_compile		modtest-noipcomp-01	good
+
+# test for building on Alpha (only works on Alpha)
+module_compile		modtest-rh-alpha-01	good
+
+
+

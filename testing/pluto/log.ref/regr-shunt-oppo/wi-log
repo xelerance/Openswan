@@ -1,0 +1,32 @@
+whackwest --name clear-west-east --delete --host 127.95.7.1 --ikeport 8500 --client 127.95.7.8/30 --nexthop 127.95.7.254 --updown silly --to --updown sally --host %any --client 127.95.7.20/30 --pass
+002 added connection description "clear-west-east"
+whackeast --name clear-west-east --delete --host 127.95.7.2 --ikeport 8500 --client 127.95.7.20/30 --nexthop 127.95.7.254 --updown silly --to --updown sally --host %any --client 127.95.7.8/30 --pass
+002 added connection description "clear-west-east"
+whackwest --listen
+002 listening for IKE messages
+002 adding interface virtual127.95.7.1/lo:w 127.95.7.1
+002 loading secrets from "./ipsec.secrets/west"
+whackeast --listen
+002 listening for IKE messages
+002 adding interface virtual127.95.7.2/lo:e 127.95.7.2
+002 loading secrets from "./ipsec.secrets/east"
+whackwest --name clear-west-east --route
+whackeast --name clear-west-east --route
+whackwest --status
+000 interface virtual127.95.7.1/lo:w 127.95.7.1
+000 %myid = (none)
+000 debug raw+crypt+parsing+emitting+control+lifecycle+klips+dns+oppo+controlmore+pfkey+private
+000  
+000 "clear-west-east": 127.95.7.8/30===127.95.7.1:8500---127.95.7.254...%any===127.95.7.20/30; prospective erouted; eroute owner: #0
+000 "clear-west-east":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+000 "clear-west-east":   policy: TUNNEL+PASS+NEVER_NEGOTIATE; prio: 30,30; interface: lo:w; 
+000 "clear-west-east":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+000  
+000  
+whackwest --oppohere 127.95.7.10 --oppothere 127.95.7.21
+033 Can't Opportunistically initiate for 127.95.7.10 to 127.95.7.21: no routed Opportunistic template covers this pair
+RC: 33
+whackwest --shutdown
+002 shutting down
+whackeast --shutdown
+002 shutting down

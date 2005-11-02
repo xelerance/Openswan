@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# RCSID $Id: tif96,v 1.4 2002/04/24 07:36:18 mcr Exp $
+#
+# This script is OBSOLETE -- rgb, May 6th, 1998
+
+# forward path
+
+../utils/addrt 10.1.0.0 255.255.0.0 10.3.0.0 255.255.0.0 10.2.0.139 113
+echo sleeping after addrt
+sleep 1
+
+../utils/setsa 10.2.0.139 113 ip4 10.2.0.143 10.2.0.139
+
+# ../utils/setsa 10.2.0.139 114 ah md5 66306630663031326630663066303132
+../utils/setsa 10.2.0.139 115 esp 3des-md5-96 i 1000000000000001 6630663066303132
+# ../utils/setsa 10.2.0.139 116 ah hmac-md5 66306630663031326630663066303132
+# ../utils/setsa 10.2.0.139 117 ah hmac-sha1 66306630663031326630663066303132
+# ../utils/setsa 10.2.0.139 118 esp des-md5 i 1000000000000001 6630663066303132
+# ../utils/setsa 10.2.0.139 119 esp des-cbc 61626364 6630663066303132
+
+../utils/spigrp 10.2.0.139 113 10.2.0.139 115 
+
+#
+# $Log: tif96,v $
+# Revision 1.4  2002/04/24 07:36:18  mcr
+# Moved from ./klips/test/ji/tif96,v
+#
+# Revision 1.3  1999/04/06 04:54:36  rgb
+# Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
+# patch shell fixes.
+#
+#

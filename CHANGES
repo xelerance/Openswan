@@ -1,0 +1,2025 @@
+New and notable since last release:
+
+Merged in Andreas Steffen <andreas.steffen@strongsec.com>'s X.509
+patches.
+
+Merged in Herbert Xu <herbert@gondor.apana.org.au>'s patches to
+let pluto run on 2.6 kernels.
+
+Fixed PR#252 - SHA1 reception should now work. New test case east-icmp-04
+	and west-icmp-04.
+
+Our default installed _updown script is now iproute2 based.
+
+New and notable in 2.02:
+
+Identical to 2.02-pre1, aside from documentation updates.
+
+New and notable in 2.02-pre1:
+
+Fixed a bug where pluto failed to reset the eroute_owner upon a 
+sucessful rekey.
+
+Added a RedHat spec file suitable for building RPMs directly
+from the source package, thanks to Charlie Brady.
+
+New and notable in 2.02-pre0:
+
+KLIPS transmit code has been refactored providing for a more modular
+transmit path.
+
+pluto can now have wavesec and OE coexisting.
+
+ipsec auto --status now sorts the connections and states by name, type,
+	and instance#.
+
+ipsec barf looks at libexec dirs as well as lib-dirs.
+
+Added myid= option to ipsec.conf's config setup.  This specifies the
+leftid to be used in implicit policy group conns.
+
+New and notable in 2.01:
+
+Given RFC 3445, Limiting the Scope of the KEY Resource Record (RR), pluto's 
+implementation of Opportunistic Encryption no longer relies on a KEY 
+RR subtype. TXT records are now used exclusively.
+
+This is the only change in this release. OE users should read
+doc/upgrading.html.
+
+If a DNS query returns, but the relevant connection has been deleted, this 
+may cause a null pointer dereference in pluto. A workaround is in place, 
+but a permanent fix is yet to be implemented.
+
+Fixed two additional bugs with VPN conns accessing key information from 
+DNS: a memory leak in pluto, and problem report 233.
+
+Fixed a bug triggered when a %hold eroute disappears during an initiator's 
+DNS query.
+
+New and notable in 2.00:
+
+Identical to 2.00-rc4, aside from some documentation fixes.
+
+New and notable 2.00-rc4:
+
+Small changes to ipkg code and documentation.
+
+New and notable in 2.00-rc3:
+
+Replace packetdefault option (in config setup) with implicit
+conn "packetdefault".  This default will try OE for any traffic
+not covered by another eroute.
+
+Changed ipsec(8) command itself to allow certain configuration variables
+to be specified in the environment: IPSEC_EXECDIR, IPSEC_LIBDIR,
+IPSEC_SBINDIR, and IPSEC_CONFS.
+
+Previous versions have a problem in KLIPS when do host-based Opportunistic
+Encryption on the packets produced after doing Source-NAPT ("IP Masquerade").
+The fix, described in problem report 204 is included. 
+
+Created framework for Zaurus cross-compilation and packaging, thanks to Ken 
+Bantoft and Jens Liebchen.
+
+New and notable in 2.00-rc1:
+
+Added rules to Makefile's so that cross compilation is doable. See 
+doc/src/crosscompile.html.
+
+New program, mailkey, which will format DNS records for OE and draft
+appropriate mail.
+
+New and notable in 2.00-pre8:
+
+Adapted a portion of Mathieu Lafon's Notification/Delete patch. Pluto
+will now accept and process authenticated delete messages.
+
+New and notable in 2.00-pre6:
+
+Converted IPsecSAref_t from signed to unsigned to fix apparent SAref
+exhaustion bug.
+
+Renamed SAref table macro names for clarity.
+
+Added ENOSPC for no room in SAref table and ESPIPE for SAref internal error.
+
+Activated west-rcv-nfmark-set-01 test to check for SA reference properly
+set on incoming.
+
+Added a counter for the number of unused entries in each SAref subtable.
+
+Set SA reference on incoming packets.
+
+New and notable in 2.00pre2:
+
+Fixed some kernel build issues so that it builds on 2.2 series of kernels.
+The default ipsec.conf is now installed into
+   /usr/local/share/doc/freeswan/ipsec.conf-sample
+as a reference.
+
+Switch from pfkey_alloc_ipsec_sa() to ipsec_sa_alloc().
+
+Added new function pfkey_sa_ref_build() to accomodate saref parameter.
+
+pfkey_sa_build() now calls pfkey_sa_ref_build() with the ref parameter
+defaulted.
+
+Added sadb_x_sa_ref to struct sadb_sa.
+
+Defined switch to activate new SAref code.
+
+Rework saref freelist.
+
+Re-write most of the SAref macros and types to eliminate any pointer
+references to Entrys. Renamed saref macros for consistency and brevity.
+
+Fixed SAref/nfmark macros.
+
+Place all ipsec sadb globals into one struct.  Have not migrated to use
+all of them yet.
+
+Split ipsec_sadb_cleanup from new funciton ipsec_sadb_free to avoid problem
+of freeing newly created structures when clearing the reftable upon startup
+to start from a known state.' linux/net/ipsec/ipsec_init.c
+
+Added SAref code compiler directive switch.  This can be eliminated once the
+switch over is complete.
+
+Added ipsec_SAtest() saref test function for testing macros.
+
+Added function ipsec_sa_print() for instrumenting SAs.
+
+Added --saref option to print out saref returned by pfkey to spi.c.
+
+Fixed argcount bug introduced by --listenreply option.
+
+Convert PF_KEY_DEBUG_PARSE_* macros to a set.  pfkey klips debug can now be
+selected by the flags listed in freeswan.h.  PF_KEY_DEBUG_PARSE_FLOW is only
+active in conjunction with verbose klips debugging.
+
+Define switch to divulge hmac keys for debugging in ipsec_param.h.
+
+Added IPOPTIONS switch.
+
+Generalise for platform independance: fix (ia64) using unsigned for sizes.
+
+Fixed limit inclusion error in both type and ext string conversion.
+
+Fixed usage of pfkey_lib_debug.
+
+Added text labels to elucidate numeric values presented in pfkey debug output.
+
+Re-organised pfkey debug output to reduce noise in output.
+
+Print ref and  reftable, refentry on xform debug.
+
+Added memory allocation debugging.
+
+Added compiler directive to switch on IP options and fix IP options bug.
+
+Check for large enough packet before accessing udp header for IKE bypass.
+
+Added text labels for exttype, satype, proto to elucidate numeric values
+presented.
+
+Added program_name to beginning of all output for consistency in spi klips
+util.
+
+New and notable in 2.00pre1:
+
+Added a test case and code mod to address BindView (CERT) concern.
+
+The configuration file system has been revamped. 
+1) An empty ipsec.conf now has an implicit conn defined to support Opportunistic Encryption
+	named "OEself". Add "conn OEself / auto=ignore" to turn off.
+2) All of the defaults defined in the "conn %default" have been merged - so no defaults
+	need be specified.
+3) The configuration file is now version "2.0".
+
+The ipsec_rcv() routine has been refactored and better modularized. There are now tests for
+AH, both MD5 and SHA1.
+
+New and notable in 2.00pre0:
+
+As of 2002-08-09, kernels less than 2.0.39 are no longer supported.
+(2.0.39 is supported) This specific situation is that the netsyms.c file is no
+longer patched. 
+
+Added SA reference table macros and structs and code, latter mostly disabled.
+
+Started cleaning up types to appease ia64 compiler.
+
+Fixed 2.2 device initialisation hang.
+
+Define ARPHRD_VOID for < 2.4 kernels to fix compile bug.
+
+Fixed "opening" speeling mistake in several klips manual utils.
+
+Added leftrsasigkey=%dnsondemand and %dnsonload.  %dns still
+means %dnsonload.  Changed the default in ipsec.conf to %dnsondemand.
+
+leftrsasigkey=%none allows for a default to be overridden.  A
+leftrsasigkey=%dns is treated as %none if right=%any or
+right=%opportunistic.  These avoid unnecessary DNS access.
+
+The target for modules for "make rpm" has been moved to 
+	/lib/modules/kernelversion/net/ipsec
+
+Set unused ipsec devices to ARPHRD_VOID to avoid confusing iproute2.
+
+Abstracted and converted the ipsec device declarations for N dynamic devices.
+
+Remove final vistiges of tdb references via IPSEC_KLIPS1_COMPAT.
+
+Fixed up erroneous test names in about 1/2 dozen klips tests.
+
+Convert "usecount" to "refcount" to remove ambiguity.
+
+Added ipsec_sa_put() for releasing an ipsec_sa refcount.
+
+Cleaned up %p variants in KLIPS to 0p%p for test suite cleanup.
+
+Fixed absolute/relative reference to lifetime count printout.
+
+Added TEST_TYPE=klipstest to test parameters so that the type of test
+would be declared.
+
+Fixed and broadened tags/TAGS target bug in top level Makefile.
+
+Changed all references to tdb, TDB or Tunnel Descriptor Block to ips,
+ipsec_sa or ipsec_sa in KLIPS.
+
+Cleaned out stale KLIPS code (netlink, xform).
+
+Converted reference from ipsec_sa_put to ipsec_sa_add to avoid confusion
+with "put" usage in the kernel.
+
+Added some preliminary ipsec_sa refcount locking code.
+
+Moved all the extension processing functions to pfkey_v2_ext_process.c.
+
+"make install_file_list" will produce a list of all files that would be
+installed by "make install" 
+"make uninstall" uses this to feed to "xargs rm".
+"make oldtarinstall" uses this to feed to "tar czf oldFreeSWAN.tar.gz".
+
+Added esp IV CBC attack fix, disabled.
+
+
+New and notable in 1.98b:
+
+ipsec showhostkey has the --dhclient option.
+
+New and notable in 1.98:
+
+This is a bug-fix release on 1.97. 
+
+showhostkey now splits the initial preamble of the key into its
+own DNS "" string.   
+
+pluto bug fixes - async situations where DNS was slow have
+      been fixed, see pluto/CHANGES. 
+Pluto also does not insert extraneous spaces into TXT records used
+      for opportunistic encryption.
+
+fixes for "make rpm" - ipsec.conf no longer clobbered.
+
+make oldgo restored to undocumented pre-1.97 situation, make "nopromptgo"
+introduced for intended behaviour.  
+
+A workaround for RH 7.3 problems with looping in _realsetup was introduced.
+
+Minor ordering issues in barf output, /etc/resolv.conf added to barf output.
+
+/proc/net/ipsec_eroute output fixed- the idle time was supposed to be relative.
+
+Some debugging code has been made less verbose for
+     "ipsec klipsdebug --set eroute"
+
+ipsec showdefaults - duplication has been eliminated.
+
+added leftrsasigkey2 and rightrsasigkey2 to support key rollover.
+
+Added leftrsasigkey=%dnsondemand and %dnsonload.  %dns still
+means %dnsonload.  Changed the default in ipsec.conf to %dnsondemand.
+
+leftrsasigkey=%none allows for a default to be overridden.  A
+leftrsasigkey=%dns is treated as %none if right=%any or
+right=%opportunistic.  These avoid unnecessary DNS access.
+
+New and notable in 1.97:
+
+Sanity check added for at least one of AH or ESP more for checking if
+"make *config" has even been run.
+
+Fixed 2.2 local IKE fragmentation blackhole.  Still won't work if
+iptraf or another pcap app is running.
+
+MCR added ikeping(8).
+
+Applied DHR's tunnel patch to streamline IKE/specialSA processing.
+
+Added local and remote IKE bypass tests to the UML test suite.
+
+UML KLIPS %trap* tests now check for upbound pf_key messages.
+
+An ICMP ICMP_DEST_UNREACH, ICMP_PKT_FILTERED is now sent upon %reject.
+
+Added a UML input file with first and last packets being outside the 
+covered range to "sandwich" the packets under test.
+
+The default _updown script has been cleaned up slightly, reducing
+internal duplication that arose accidentally.
+
+When doing --add on an RSA-signature conn, ipsec_auto now tells Pluto
+about the keys before, not after, telling it about the conn.  The main
+consequence of this is that if something is wrong with one of the keys,
+the conn itself does *not* get loaded.  This should reduce confusion.
+
+The rp_filter checks during KLIPS startup have been fixed to be a bit less
+paranoid; rp_filter is thought to cause problems only on the physical
+interfaces, not on the ipsecN interfaces. 
+
+The configuration process has been fixed to be a bit more paranoid.  Some
+users have had mysterious compile failures with complaints involving names
+like MD5_CTX; they seem to have resulted from kernel configuration changes
+somehow getting into .config but not into include/linux/autoconf.h (which
+is what actually controls most of the kernel compile).  The post-config
+checking now verifies not only that .config has the right stuff in it, but
+that autoconf.h does too.  (We still don't see *how* this discrepancy can
+arise, but this will at least catch it when it does.)
+
+The details of linking the KLIPS source into the kernel are now under
+control of a configuration variable in Makefile.inc, to make it easier
+for distribution builders to change.
+
+The top-level Makefile now includes cleverness which assigns a date-based
+version code if a build is done from a raw CVS checkout.
+
+The library now includes a new function, ttodatav(), like ttodata() but
+in some cases it gives more verbose error reports.  Also, there are now
+a couple of functions which distill an RSA public key to a "key ID" for
+use in messages, a crypto-quality pseudo-random-number generator, and a
+function that converts a single address into a (singleton) subnet.
+
+Barf's secret/key-censoring utilities have been tidied up so that what
+they emit matches the key-ID library functions. 
+
+The ipsec command now supplies a couple more environment variables to
+things it calls, and this has reduced the number of things which need to
+be edited at build time to know about configuration variables. 
+
+The configuration reader now allows parameter names to begin with "_";
+these are strictly reserved for internal development purposes and will
+not in general be documented.
+
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.96:
+
+Compatibility with the 2.0.xx kernels (under Red Hat 5.2) is broken.
+This was accidental, and we have some hopes of fixing it, although it
+won't last forever even if we do.  See README.
+
+Our "IKE Implementation Issues" IETF draft has been added to our docs.
+
+Newhostkey now has a mandatory --output "option" specifying a filename
+(although the magic filename "-" means "standard output"), and sets
+restrictive permissions on newly-created files to try to keep private keys
+truly private. 
+
+Pluto now gracefully handles a couple of odd error cases (missing private
+keys, network errors at just the wrong time in negotiations) which used to
+cause it to die, provoking an automatic restart of the IPsec subsystem. 
+
+Makefile.inc now has more detailed control over where manpages go, to ease
+integration into distributions.  The name of the destination directory for
+RPMs is also now centralized there.
+
+Rsasigkey now checks for certain obscure internal failures, which can
+happen if --random is used to supply a source of random bits that aren't
+really very random, and complains accordingly.
+
+Barf's eroute table, formerly sorted by source, is now sorted by destination.
+This is probably a bit clearer for hosts with lots of eroutes.
+
+Use of the %reject target in a shunt eroute now, as long planned, actually
+causes an ICMP rejection message (Destination Unreachable:  Communication
+Administratively Prohibited). 
+
+KLIPS now declares its module license to be "Dual BSD/GPL".  (It is 
+dual because the libdes and zlib code is BSD licensed, while KLIPS itself 
+is GPL).  Whether this is exactly right is not yet clear, but at least it
+stops the latest module loaders from whining.
+
+The UML test stuff continues to grow and add new test cases.
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.95:
+
+The last remnants of the "%hold" bug, which broke 1.93 and 1.94, have
+(we think) been dealt with.
+
+Minor bugs in the RPM-building stuff have been fixed, and it has been
+updated to deal with Red Hat's abrupt removal of the --buildroot option
+from rpm.
+
+Pluto now supports the ability to delete an instance of a conn, rather
+than just the whole conn (for cases, notably OE, where a single connection
+description can be involved in multiple connections).  There is no support
+for this in ipsec_auto yet.
+
+Pluto's routine (non-debug) logging is now somewhat terser, and some of
+the more boring messages are produced only if --debug-lifecycle is turned
+on (this is a temporary hack, it's not really debugging output).
+
+Pluto's innards have been reorganized somewhat, in preparation for making
+DNS lookups asynchronous.  There should be no user-visible effects.
+
+Pluto now ignores IPv6 link-local interface addresses; we think that they
+are never relevant, and trying to bind to them causes difficulties.  This
+decision is tentative and may be revisited when we make more progress on
+IPv6 support in general.
+
+A Pluto bug in handling of malformed TXT records has been fixed.  (The
+complaint is still a bit mysterious, but at least Pluto doesn't fall over.)
+
+Pluto's Responder cookie-generation algorithm has been changed so that a
+particular peer no longer gets the same cookie each time. 
+
+KLIPS and its utilities now take their debug and optimization compile
+options from Makefile.inc.
+
+There have been some internal upheavals in the library include files,
+moving kernel-specific stuff out of the library and back into KLIPS where
+it arguably belongs.  No user-visible impact known. 
+
+The UML test facilities continue to improve in various small ways,
+including the arrival of a script to start all defined UMLs
+(testing/utils/start-all-umls.sh).
+
+If KLIPS has been built without its debugging facilities, the startup
+scripts no longer attempt to set a KLIPS debugging level.
+
+"ipsec" and "ipsec --help" are no longer synonymous:  "ipsec" gives a
+shorter, more introductory message and omits the command list.  Also,
+the --help command list now excludes non-executable things (one or two
+of which have sneaked into our command directory). 
+
+The top-level Makefile now gives a better diagnostic for the case where
+there is no /usr/src/linux symlink to the kernel source tree.
+
+Eroute statistics (packet count and last-used time) are now kept up to
+date for shunt eroutes as well as normal ones.
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.94:
+
+1.93, as shipped, wouldn't compile as a module due to an erroneous
+#include.  Oops.  Fixed.  Even after that, it also wouldn't compile as a
+module in a 2.2.xx kernel, for more subtle reasons; also fixed. 
+
+A structure name in KLIPS (struct net_device) has been changed to avoid
+ominous mutterings from the compiler when building in a 2.2.xx kernel.
+
+Due to an obscure internal oversight, the KLIPS utilities were being built
+at the wrong time during the build, and this could cause trouble for folks
+who build as one user and install as another.  Fixed, as is the Makefile
+carelessness which permitted this to go unnoticed. 
+
+The exemption of UDP/500 packets from being caught by the IPsec machinery
+did not apply to %hold eroutes.  Now it does.  This should mostly have
+affected opportunistic encryption.
+
+The bug (noted in 1.93, but dating back earlier) in which the updown
+script was called twice for auto=start connections has been fixed.  (To be
+precise and technical, the updown script is now called only when tunnels
+are set up, not when shunt eroutes are put in place.)
+
+We think we have solved the notorious "%hold bug", which is difficult to
+describe tersely.  In the course of this, some improvements were made in
+Pluto's logging, and it now also handles some unlikely cases rather more
+cleanly. 
+
+There is now provision for uninstalling:  "make uninstall_freeswan" gets
+rid of everything we install *except* the stuff in the kernel (a kernel
+rebuild will be needed to get rid of KLIPS).  (Yes, the name is long,
+that's deliberate, for accident prevention.)  This is now documented.
+
+There are the beginnings of provisions for centralized control of compile
+options like -g and -O3 in Makefile.inc.  This is still in development,
+don't rely on it just yet. 
+
+
+
+New and notable in 1.93:
+
+The code that decides whether to send an ICMP complaint back about a
+packet which had to be fragmented, but couldn't be, has gotten smart
+enough that we now feel comfortable enabling it by default.  That is,
+the default for the "fragicmp" setting has changed from no to yes.
+This may help with the 1.92 fragmentation bug.
+
+Pluto now proposes Diffie-Hellman group 5 before group 2, as the basis for
+key negotiation.  Group 5 is more secure but uses a bit more CPU time; our
+first impression is that this is not a serious problem.  Pluto *does*
+still propose and accept group 2 as well, so there shouldn't be any
+interoperability problem with the many group-2-only systems. 
+
+To aid with key rollover -- replacement of an old key by a new one -- if
+Pluto is fetching RSA public keys from DNS and gets more than one, it will
+now try all of them rather than arbitrarily picking one.  (There is, as
+yet, no support for multiple keys explicitly specified in ipsec.conf.)
+This required substantial reworking of Pluto's innards; with any luck no
+new bugs have resulted!
+
+The ipsec command now has a --versioncode option which supplies just the
+version code (equivalent to "ipsec --version | awk 'NR == 1 { print $NF }'"
+but more convenient for scripts).
+
+IKE (UDP/500) packets which were large enough to be fragmented used to be
+mishandled, with some of the fragments failing to bypass IPsec tunnels
+properly.  This has been fixed; our thanks to Hans Schultz. 
+
+We now have the beginnings of a facility for building RPMs (after a full
+normal build).  Instead of (e.g.) "make xgo", do "make xrpm", and after
+the Makefile does the software and kernel build, it will make some RPMs
+and leave them under the out.rpms directory.  The RPMs are:
+
+	freeswan	the userland utilities
+	freeswan-module	the ipsec.o kernel module (see below)
+	freeswan-kernel	the Linux kernel and its modules
+	freeswan-userkernel	all of the above
+
+(The freeswan-module RPM gets built only if you specified building KLIPS
+as a module.)  This is all very preliminary and needs a lot of polishing
+as yet -- not to mention some documenting -- but it's a start.  (Thanks
+to Paul Lahaie at Steamballoon for the first draft of this stuff.)
+
+Argument checking in the default _updown script has changed slightly, to
+make it easier to build custom scripts based on copies of the default one.
+The script used to object to getting arguments it did not expect; now, if
+the first argument is "custom", there will be no objection to further
+arguments.  This will simplify small customizations by people who don't
+want to learn the details of shell programming. 
+
+Precisely where we insert our entry into the kernel's net/Makefile has
+been changed, partly to put our stuff with related stuff, partly to move
+us away from unstable areas where new changes often break our patches.
+
+Ipsec_spi has been fixed to correctly report cannot-delete-an-unknown-SA
+cases which could previously produce a cryptic "Unknown socket write error"
+message.
+
+There have been some small changes to messages to distinguish automatic
+Pluto restarts (see 1.91, below) from normal ones, so that barf output
+will extend back to a real restart.  (If this sounds familiar, it's
+because this same item was noted in 1.92... but in fact the implementation
+was not finished and didn't work.  Now it does.)
+
+Pluto now stirs a bit of /dev/urandom randomness into some internal
+decisions (notably rekeying times) which formerly were a bit too
+predictable and could conceivably have resulted in different machines
+being more or less synchronized.
+
+Pluto log and status lines now include a bit more context.
+
+KLIPS was checking for sequence-number rollover before packet authentication,
+permitting a nasty denial-of-service attack.  This has been fixed.
+
+A KLIPS locking problem which could cause system hangs on SMP machines
+(and perhaps on non-SMP machines with SMP-enabled kernels) has been fixed.
+
+Ipsec_spi now has an option for specifying SA lifetimes, although Pluto
+is not yet using it.
+
+Internal handling of release/snapshot version numbers has been revised;
+in particular, there are now functions in the library for obtaining the
+current version code, etc.  There should be no user-visible effects.
+The master source for the version code (during builds) is a new top-level
+file, Makefile.ver .
+
+Pluto has a new "dns" debugging flag.
+
+There have been some internal shakeups within KLIPS, which are believed
+to have no user-visible effects.
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.92:
+
+Packets emerging from (automatically-keyed) tunnels are now checked for
+plausible addresses, i.e. for whether they *should* have been sent through
+that particular tunnel.  This can be controlled, on a per-connection
+basis, with the new disablearrivalcheck parameter.  The default is "yes"
+(disable the check) for backward compatibility, but the supplied ipsec.conf
+now includes "disablearrivalcheck=no" in its %default section, since
+almost all users will want the checking enabled. 
+
+As a result of refusing to start an already-running IPsec, the startup
+script would sometimes balk during a reboot after a crash.  This showed up
+only on old Red Hats, which don't completely clear out /var/run during
+reboot.  The locking has been revised to work around this.
+
+The code which reports fragmentation (if fragicmp=yes is set in ipsec.conf)
+has been made more selective, sending back an ICMP Fragmentation Needed
+response only for non-ICMP packets with Don't Fragment set.
+
+Quoting practices in ipsec_auto have been revised, so that essentially all
+parameters emitted into shell commands are now enclosed in ""; this
+permits a few unusual ones to have embedded white space, and makes the
+errors easier to diagnose when ones that shouldn't have such space do. 
+(This is likely to impact users of the X.509 patch, which was exploiting
+the old quoting behavior in messy ways.  It also hurts people who have
+been getting away with always-illegal practices like stray backslashes
+in the middle of (left/right)rsasigkey parameter values.  Reporting of
+such problems has always been poor, and these cases are no exception.)
+
+The FreeS/WAN Makefiles have been shaken up substantially.  Notably, things
+like installation pathnames are now located in a Makefile.inc include file,
+rather than being passed down from the top Makefile by a long list of
+command-line parameters.
+
+White space within a non-quoted ipsec.conf parameter is now diagnosed as
+an error.  It always was a violation of the rules, but we've now found
+some cases where it causes real trouble, so the rules are now being
+enforced more rigorously.
+
+There is a new command, newhostkey, for generating a complete new minimal
+ipsec.secrets file with a new public/private key pair.  (This is a first
+step toward tools for more graceful key rollover.)
+
+The "postpluto" parameter was broken in the last release, and is now fixed.
+
+Pluto no longer does internal caching of DNS data, since it was not smart
+enough to monitor it for staleness, and this increasingly matters.
+
+There is now a "rekey" parameter for automatic keying, and rekey=no means
+that this end will not attempt to rekey the connection when it's about to
+expire.  The supplied opportunistic-encryption connection now sets rekey=no
+(and a short keylife).
+
+Pluto now incorporates a change which has been floating around for some
+time as an informal patch:  the notorious Commit Bit is ignored, rather
+than being cause for rejection of a message. 
+
+The output of "ipsec auto --status" now keeps certain long lines intact
+rather than automatically splitting them; this may hurt readability
+slightly but simplifies program processing of the output.
+
+There have been some small changes to messages to distinguish automatic
+Pluto restarts (see 1.91, below) from normal ones, so that barf output
+will extend back to a real restart.
+
+The "interfaces" machinery in ipsec_setup has been made slightly more
+tolerant of strange ifconfig output, to handle ATM interfaces in
+particular. 
+
+A major bug in the diagnosis of failed "route" commands in the default
+updown script has been fixed, and code has been added for better diagnosis
+of bad nexthop settings (which show up as "route" failures).
+
+Barf now includes iptables dumps and excerpts from ps output.
+
+The algorithm barf uses to figure out which log files to examine has been
+smartened up to deal with the case where IPsec has been running for a long
+time and its startup messages are no longer in the current log files.  It's
+a bit of a kludge but it should generally work.
+
+Barf output now puts tags on its different sections, to facilitate
+automatic disassembly and analysis.
+
+There is a new shunt-eroute type, %trapsubnet, which turns completely into
+a %hold when a packet hits it, rather than spawning off a /32->/32 %hold
+as %trap does.  This is for (future work on) demand connection setup,
+whereas %trap is for opportunistic encryption. 
+
+Minor tweaks have been made to KLIPS to avoid using the kernel min() and
+max() macros, whose definitions keep changing in the 2.4.xx kernels.
+
+As usual, some changes have been needed in KLIPS to track changes in
+internal interfaces in the 2.4.xx kernels.
+
+A %hold shunt eroute now stores the first and last packets to hit it, and
+releases them when it is replaced by a "real" eroute.
+
+The showhostkey --txt output is now split up into multiple strings, if
+necessary, since BIND 9 (unlike BIND 8) won't do this automatically.  The
+result is fully compatible with both.
+
+The PF_KEY code now includes an obscure extension to the Identity
+Extension, mostly for OpenBSD compatibility. 
+
+Compressed transport-mode connections used to flunk tunnel exit checks;
+this has been fixed.
+
+The KLIPS compression code has been made more tolerant of misbehaving
+implementations on the other end:  some demented systems, when asked to
+use a compression method for which a predefined number (CPI) exists, will
+put that number in packets even if a custom number was in fact negotiated.
+KLIPS now copes.
+
+The KLIPS error code used to report missing SAs has changed from EEXIST to
+ENOENT. 
+
+The library header files have been reorganized, moving a lot of the
+kernel-specific clutter out of freeswan.h.
+
+A bug has been fixed (our thanks to Savatier Sibastien) in how explicit
+IP-address IDs are emitted as IKE payloads.
+
+Pluto's internal handling of kernel error reports has been made more
+paranoid, avoiding certain conditions which may have been causing Pluto
+to hang or to fail with confusing error reports.
+
+Some work has been done to reduce spurious compiler warnings in KLIPS.
+
+ipsec.conf(5) has been updated to include discussions of what happens when
+the two ends disagree on parameter values, and also some notes on
+recommended settings (a commentary on the standard boilerplate we supply).
+
+The patcher now knows how to do "patching" by appending rather than by
+using patch(1), and this is used for some kernel files.
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.91:
+
+The big news this time is prototype opportunistic encryption, and bug fixes.
+This release goes back to the "main line" of development; it's not an
+offshoot like 1.9 was.  This means it incorporates some code that's a bit
+more experimental than 1.9, but the divergence has just gotten too large
+to back-port all the important fixes to 1.9.
+
+Opportunistic encryption is starting to be usable; see doc/opportunism.howto
+for the gory details.  (Better docs are coming.)  There is now an
+opportunistic connection description in the supplied ipsec.conf.
+
+We think all the memory leaks in KLIPS have been fixed.
+
+It works with current 2.4.x kernels (2.4.5 as of the time of writing).
+Compatibility with earlier 2.4.x kernels may have been sacrificed to
+some extent.
+
+When the hardware device "underneath" an ipsecN device goes down, the
+ipsecN device doesn't actually go down, to prevent loss of routes and
+packets going out in the clear if the hardware device comes back up. 
+
+The assembler assist for compression has been re-enabled, thanks to a
+fix from Svenning Soerensen (who has also been very helpful with the
+memory leaks, and with updating to match the current 2.4.x kernels).
+
+The spin-lock bug, which caused kernel hangs in SMP-enabled kernels when
+AH+ESP or compression was used, has been fixed.
+
+The ipsec_setup script has been extensively rewritten, and the machinery
+behind it has changed quite substantially.  The only user-visible effect
+should be that the plutobackgroundload parameter is now ignored, because
+the connection setup is always done in the background.  (Another effect,
+possibly visible in unfortunate cases, is that if Pluto dies a messy
+death, the scripts will log the fact and restart it.)  Oh, and the exit
+status of ipsec_setup should now be more accurate.
+
+A 2.2.x kernel's net/Config.in file is now patched using a patch
+appropriate to 2.2.19, BUT NOT to earlier 2.2.x kernels.  (If you must
+use an earlier 2.2.x, "cp klips/patches2.2/net.Config.in klips/patches2.3"
+before building.)
+
+While continuing to offer a nice large MTU, KLIPS now detects attempts
+at path-MTU discovery, and deals with them honestly, so that systems
+trying to do things right will not be misled (perhaps disastrously).
+(This is mostly another Svenning Soerensen fix.)  The "honest" MTU is
+also now reported in the ipsec_tncfg output.
+
+As a first step toward avoiding kernel rebuilds, there is now an
+experimental facility for doing *just* a module build as part of the
+installation, bypassing the rest of the kernel build.  Where you'd
+normally type (e.g.) "make xgo" and "make kinstall", type "make xmod" and
+"make minstall" instead.  (You still get to do a kernel configure, but the
+only essential bit is to set IPsec to install as a module.)  Not perfect,
+and not yet tested on any great diversity of systems, but it's a start. 
+
+The default handling of packets for which no eroute exists is now
+controlled by a packetdefault parameter in the config-setup section of
+ipsec.conf, instead of always defaulting to "drop".  This supersedes the
+no_eroute_pass parameter, which no longer exists.  There is a new family
+of special "shunt" eroutes, implementing this and also relevant to
+opportunistic encryption.  (A side effect of this is that SPI values
+supplied for manual keying are now *required* to be 0x100 or higher,
+whereas formerly this was merely strongly encouraged.)
+
+Incoming policy checking has been beefed up slightly, and in particular
+IPIP encapsulation will be removed only if it is expected.  (Incoming
+checking still does not, alas, check the most important thing:  whether
+the addresses inside the encapsulation are acceptable.)
+
+Vestigial code for the ESP transforms with no encryption, which have not
+really been supported for some time, has been taken out.
+
+There is a new value for the auto parameter, "route", probably useful
+mostly for opportunistic encryption.
+
+The _updown script now handles one case specially:  a far-end subnet of
+0.0.0.0/0 is routed with a pair of routes, one for 0.0.0.0/1 and one for
+128.0.0.0/1, to kludge around a problem found during opportunistic testing.
+
+Rsasigkey's "pubkey" output (used by showhostkey) is now in base64 rather
+than hex, for slightly greater compactness and easier eyeball comparison
+of keys.
+
+Setup will attempt to load a KLIPS module only if the kernel has modules,
+will refuse to start IPsec if it appears to be started already, and will
+comment (but continue) if asked to stop IPsec when it does not appear to
+be running.  (The exit status from a stop request reflects this.)  Also,
+"ipsec setup status" now gives a (terse) report of whether IPsec appears
+to be running or not, and reports in more detail if inconsistencies are
+found (e.g. no Pluto running).  CAUTION:  the status-report syntax has
+changed slightly from its original version.
+
+Showhostkey has a --txt option (which takes a gateway parameter) to
+generate the TXT record used in opportunistic encryption. 
+
+Auto now defaults (left/right)nexthop to %direct, instead of trying to
+fill in right/left, to avoid problems in opportunistic setup in
+particular. 
+
+The prototype ipsec.secrets file no longer includes a shared-secret
+example.
+
+The startup/shutdown priority of IPsec, in the fallback case of systems
+which do not have chkconfig available, has been fixed to be compatible
+with what chkconfig will do.
+
+The default build-a-kernel target is now "boot" for any non-x86, not
+just for the Alpha.  (Unfortunately, "boot" doesn't do the right thing
+on the x86 at present.)
+
+The distribution now includes preliminary KLIPS2 documentation, to
+facilitate comments and review.
+
+KLIPS's utility programs no longer accept one-letter options, to avoid
+confusion in cases of misspellings etc.
+
+Private (x- etc.) parameters are now stripped from _confread's output,
+to avoid shell complaints in some situations.  There should be no
+user-visible effects, except perhaps to folks who have been unwisely
+relying on undocumented properties of the implementation.
+
+Eroutes now have accounting data associated with them, to aid Pluto in
+managing them (especially in the opportunistic case).  Should be no
+user-visible effects, except for slightly different output from
+ipsec_look. 
+
+Pluto has been fixed so that all preparations necessary for whack to talk
+to it are done before it spins off into the background, eliminating an old
+race condition. 
+
+The IPSECDIR variable supplied by the ipsec prefix command is now
+IPSEC_DIR, and there is a new IPSEC_VERSION variable also supplied.
+Most scripts now use this in their --version reporting.
+
+The old manual-keying stuff in the supplied ipsec.conf has been removed.
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.9:
+
+The big change is that it works with the 2.4.x kernels (specifically,
+2.4.2 at the moment).  KLIPS Makefiles have been converted to the new
+2.4.x style, with backwards compatibility for use under 2.2.x and 2.0.x. 
+Various small KLIPS fixes have been done for 2.4.x kernels. 
+
+Inability to start KLIPS now causes a quicker and cleaner abort of the
+whole startup operation.
+
+Routing failure in _updown is now diagnosed in more detail, at Claudia's
+suggestion; mysterious difficulties there are a frequent user problem.
+
+Incorporated Olivier Kurzweg's fixes so that auto= parameters can now be
+picked up from %default sections or sections appended by also=.
+
+Pluto (and rsasigkey) have been fixed to do the "lcm" optimization for RSA
+private keys... which means that Pluto should no longer reject most keys
+generated by modern versions of PGP.  There is a new --noopt option for
+rsasigkey, which suppresses the optimization, to generate private keys
+compatible with the old Pluto.  (Note that public keys are unaffected; for
+the normal way RSA keys are used, all that matters is that a host's own
+Pluto is compatible with the rsasigkey used to generate that host's key.)
+
+showhostkey now has options to produce ipsec.conf (left/right)rsasigkey
+lines.  It retains information on when and how the key was generated,
+as comments.  The default hostname, for DNS format, now comes from the
+hostname supplied by rsasigkey (NOTE INCOMPATIBLE CHANGE) rather than
+from "hostname --fqdn".
+
+Inability to communicate with Pluto (e.g. because Pluto has died or was
+never started) is diagnosed better.
+
+An obscure bug that caused Pluto to die midway through negotiating a
+connection has been fixed.
+
+Pluto now notices whether the kernel supports compression, and will
+refuse to negotiate it if there is no kernel support.
+
+Better diagnosis of the %any-plus-no-id-plus-RSA-key case in ipsec.conf,
+not a sensible usage but some people ran into it accidentally. 
+
+The ipsec command now has a --directory option, reporting where the IPsec
+commands are kept, and a report of this is included in barf output.
+
+There is now a global overridemtu parameter in ipsec.conf, which can be
+used to force a smaller value for the MTU of the ipsecN devices.
+
+A bunch of utilities used for building the docs have moved out of utils
+and into a subdirectory of doc.  Should be no user-visible effects.
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.8:
+
+FreeS/WAN now uses the system's GMP library (WHICH MUST EXIST) rather than
+carrying its own private copy.  This requires not only the GMP library
+itself, but also any "GMP development" package too -- these ship with all
+normal Linuxes, but might not be installed by default.  (Note, "GMP" and
+"GPM" are completely different libraries, despite the similarity of name.)
+
+The problem with ping and tcpdump (and possibly some other software) being
+unable to see large packets emerging from a compressed connection has been
+fixed.
+
+KLIPS locking has been extensively revised, curing a number of mysterious
+performance problems.  (We hope it hasn't introduced any new bugs...)
+
+The default updown script's comments have been extensively revised, in
+hopes of making its workings clearer and facilitating customization.
+
+IPComp has been smartened up (thanks again to Svenning Soerensen) and is
+now somewhat more intelligent about when it should try to compress.
+
+The internal configuration-file reader is progressively getting fussier
+about what it will accept, which may cause problems for illegal ipsec.conf
+files whose sins previously passed unnoticed.  IN PARTICULAR, the "auto"
+parameter's values are now checked for legality everywhere.
+
+Pluto has some experimental code in it to give better reports of who's
+to blame when our packets are being refused.  This depends on some new
+(non-FreeS/WAN) kernel stuff (IP_RECVERR) that isn't well documented yet...
+
+The ipsec_setup code implementing the forwardcontrol parameter is now
+smart enough to turn forwarding on only if it was previously off, and
+turn it back off only if it was originally off.
+
+Ipsec_manual has been updated:  it copes with inbound policy checking
+properly, and invokes updown scripts rather than having its own default
+commands wired in. 
+
+Several scripts which depend on being able to standardize output from
+certain commands now unset even more environment variables, in an attempt
+to keep up with the latest vagaries of the internationalization botches. 
+
+The distribution no longer contains any binary files (a couple of them
+sneaked in deep in the mysterious innards of libdes, but they appear to
+have been spurious) or symbolic links.
+
+The top-level Makefile now supports "make backup" (makes a tarball in
+the current directory, name of the form backup-2000-Nov-29.tar.gz,
+containing everything FreeS/WAN install touches except the kernel and
+its sources) and "make unpatch" (takes all of our patches out of the
+kernel sources; note that a couple of kernel-source files get altered
+by other means, but they are included in "make backup").
+
+The verb Pluto supplies to the updown script was wrong when the local
+subnet contained only a single host (should have ended in -client, was
+ending in -host); this has been fixed.
+
+The output of "ipsec auto --status" has changed in several small ways,
+for the better we hope.
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.7:
+
+Fix for nasty Pluto bug:  When starting to negotiate a connection, Pluto
+has to guess which connection is the appropriate one.  Shortly thereafter,
+it finds out for sure, and may have to switch; this switch did not work if
+the guessed connection had a subnet and the right one didn't, or vice
+versa.  The symptom was mysterious and inappropriate complaints about being
+unable to negotiate because "no connection is known for..."
+
+Another, not quite as bad but serious in the context of our slightly
+unstable IPComp:  with compress=no or no compress parameter, Pluto
+wouldn't propose compression but would accept a proposal with compression,
+if the other end made it.  Now it refuses.  (Finer control is really
+needed, but this will do for now.)
+
+A null-pointer KLIPS bug which caused a hard crash on the first incoming
+packet in a number of situations (manual keying, IPComp negotiated but not
+supported in kernel, etc.) has been worked around.
+
+
+
+New and notable in 1.6:
+
+The documentation has been re-organised and parts of it re-written.
+There is a better table of contents (doc/toc.html), or you can have
+the docs as one big file (doc/Howto.html). Installation is now in
+a separate section (doc/install.html) and the configuration section
+now assumes auto keying and RSA authentication as defaults.
+
+We now implement IPComp, the protocol for pre-encryption data compression.
+(Because encrypted data doesn't compress much, hardware compression is
+useless for encrypted connections, and compression *before* encryption is
+necessary.)  We do only the Deflate algorithm, the control code is not too
+smart yet, and the whole thing is STILL A LITTLE BIT EXPERIMENTAL... so it
+defaults to "off" in the kernel configuration.  (NOTE NEW KERNEL OPTION,
+which you won't see if you drop 1.6 in on top of an existing FreeS/WAN --
+this is a bug in the installation machinery.)  Beware:  if you ask Pluto
+to negotiate a compressed connection, it *assumes* that the kernel is
+configured to do IPComp, and chaos will ensue if it's not.  Also beware:
+neither ping nor tcpdump cope well with compressed connections, although
+more mundane programs like ftp don't have any trouble.  (Credits:
+Svenning Soerensen contributed preliminary versions of most of this code.)
+
+The internal library has been extensively overhauled for IPv6 support, as
+have Pluto and the KLIPS utilities.  KLIPS itself can't do IPv6 yet,
+though, so this isn't too useful so far.  Some IPv6 loose ends like user
+interface haven't been tidied up yet either. 
+
+Diffie-Hellman modp 768 Group, aka "Group 1", which is cryptographically
+unacceptably weak, is NO LONGER SUPPORTED.  Automatic keying will now work
+only with systems supporting the stronger Group 2 or the still-stronger
+Group 5; almost everybody does at least Group 2 anyway.
+
+As part of the IPv6 support, changes were made to the Pluto/updown
+interface.  See pluto(8) for the details.  One oft-requested feature is
+some new environment variables in net/mask format.  The changes are
+"upward compatible", so the version environment variable was changed from
+1.0 to 1.1. 
+
+Unfortunately, the version-variable change WILL BREAK many customized
+updown scripts.  The standard _updown now rejects attempts to run it from
+older versions of Pluto, but accepts attempts to run it from newer ones. 
+Older _updown versions, which many people have used as the basis for their
+own custom ones, were fussier and will *not* run with newer Plutos --
+e.g., this one -- so they will need to be updated. 
+
+Various changes have been made to prefer RSA authentication, the patent
+having expired.  IN PARTICULAR, authby=rsasig is now in the "conn %default"
+section in the sample ipsec.conf. 
+
+There are new configuration parameters to control several kernel options,
+which can now be changed at startup time instead of having to be fixed at
+kernel-configuration time.  The defaults are the same as the old behavior.
+
+There is now a configuration parameter controlling whether the TOS field
+of a tunnel packet is cleared or copied from the enclosed packet.  The
+default IS DIFFERENT from the old (copy) behavior, which we believe
+represented a security flaw:  default is now to clear TOS. 
+
+There is a new configuration parameter, uniqueids, to control a new Pluto
+option:  when a new connection is negotiated with the same ID as an old
+one, the old one is deleted immediately.  This should help eliminate
+dangling Road Warrior connections when the same Road Warrior reconnects. 
+It thus requires that IDs not be shared by hosts (a previously legal but
+probably useless capability).  NOTE WELL:  the sample ipsec.conf now has
+uniqueids=yes in its config-setup section.
+
+Pluto has prototype experimental support for initiating and responding to
+opportunistic negotiation.  A connection is considered for instantiation
+for opportunism if it has a peer of %opportunistic (the connection
+description must not specify a client for the peer).  Currently, the only
+way to provoke an opportunistic initiation is to use whack to simulate the
+interception of an outbound flow (do a "whack --help" and look at
+opportunistic initiation).  These features are lightly documented because
+they are experimental.  Limitations:  no actual interception of packets,
+DNS query synchronous. 
+
+Auto (and hence whack and Pluto) now recognize some magic keywords for
+special addresses, instead of overloading 0.0.0.0 and such:
+  + --host %any signifying any IP address, for Road Warrior,
+    replacing 0.0.0.0 or 0::0
+  + --nexthop %direct signifying "same IP as peer", replacing
+    0.0.0.0 or 0::0
+  + %any and %any6 as indices in ipsec.secrets to match IP addresses of
+    Road Warriors (replacing 0.0.0.0 or 0::0)
+  + --host %opportunistic signifying that the peer is actually
+    to be discovered from the reverse DNS entry for the peer's client.
+    This replaces --host 0.0.0.0 --client 0.0.0.0/32 (and IPv6 variants).
+The old 0.0.0.0 forms continue to work... for now.
+
+In ipsec.secrets, if multiple entries are the best match for the
+connection, they must all have the same secret.  In the past there was no
+code to compare RSA keys, so separate RSA entries were assumed to be
+different.  Now they are compared.
+
+The Pluto compile tries to figure out whether it's on a system that has
+a modern resolver library, by looking at __RES in <resolv.h>.  Possibly
+it gets some borderline cases wrong; we would appreciate bug reports.
+
+Pluto now tries to defend itself against the clock being set backwards. 
+The risk is that events might be delayed a lot.  Still no protection
+against clock being moved forward. 
+
+Interfaces that share IP addresses with others are ignored by Pluto,
+avoiding a case it cannot handle gracefully yet.
+
+The ipsec command has had its copyright goo split off into --copyright,
+to reduce clutter in --version output.  Also, its --version option now
+checks to see if it can determine the KLIPS version; if so, it checks
+that against the userland version, and adjusts its output if the two are
+different.
+
+Ranbits and rsasigkey have had their key-size limits expanded.  Rsasigkey
+hasn't gotten any faster, though; it will now blithely attempt to generate
+a 20000-bit key, but your machine will probably die of old age before it
+finishes. 
+
+Pluto now rejects some forms of ID payloads that it doesn't support.
+
+Manual now recognizes %default to mean 0.0.0.0/0.
+
+The sample ipsec.secrets now uses the explicit "PSK" format for its
+sample shared-secret entry. 
+
+Barf now shows the values of the /proc/net/ipsec/* flags.
+
+IPsec startup now checks for the presence of both /dev/random and
+/dev/urandom, since various things use both. 
+
+The last vestiges of support for the old netlink user-kernel interface
+are vanishing fast.
+
+Progress is being made toward more sophisticated PFKEY2 Pluto-KLIPS
+communication; no spectacular new features to report yet. 
+
+The KLIPS bypass for UDP/500 and type=passthrough used to misbehave on
+very large packets; fixed.
+
+In ipsec.conf, parameters with names starting with x_ and X_ are now
+reserved for user customization, like ones starting with x- and X-.
+
+/proc/net/ipsec_spinew is gone; it was never used and is no longer useful.
+
+Rsasigkey now puts the host name in its output (and accepts an option to
+override the automatically-determined one), which makes keys more
+self-identifying.
+
+Look bug fixed:  the sorting of the route info was affected strangely by
+environment variables in some (now obsolete) Red Hat releases.
+
+Setup now unsets MODPATH and MODULECONF before calling modprobe, to
+ensure that only system modules get loaded.
+
+Auto gives --id to whack only if an id parameter was explicitly given,
+solving some subtle problems with doing Road Warrior with shared-secret
+authentication.
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.5:
+
+Netlink support for user-kernel communication is gone.
+
+Pluto's logging has been revised, although it still needs more work.
+
+There are now manpages for the /proc files that KLIPS provides.
+
+Pluto now avoids generating SPIs in the range 0x100-0xfff, effectively
+reserving that range for manual keying.
+
+Rsasigkey is now capable of taking old-key input from standard input.
+Also, a buffer-size bug in it, which fouled up generation of keys larger
+than about 2048 bits, has been fixed.
+
+The update to the kernel configuration files is now done by copying and
+renaming, which breaks hard links; this solves some problems and with luck
+won't cause others... 
+
+Some of Gerhard Gessler's mods for IPv6 support have been added.  (This
+is only a very small first step; full IPv6 support is still far away.)
+
+Barf now tries harder to find the right files in /var/log, and also makes
+a first attempt at finding updown scripts.
+
+A bug in AH hash setup has been fixed.  This breaks interoperability with
+previous PF_KEY FreeS/WAN, but fixes it with other implementations.  Only
+people using AH -- not many -- should be affected.
+
+There are now prepluto and postpluto parameters in the "config setup"
+section of ipsec.conf, to permit running user-supplied commands just
+before and after Pluto startup (e.g., to briefly decrypt an encrypted
+version of ipsec.secrets). 
+
+The startup output about version and devices has gotten much shorter (a
+somewhat more complete version is still found in the logs). 
+
+Print a debug warning about bogus packets received by the outgoing
+processing machinery only when KLIPS debugging is on.
+
+Added configure option to shut off NO_EROUTE_PASSTHROUGH default (arcane
+special requirement, most users should not have to care).
+
+Some small changes have been made to minimize warning messages in compiles.
+
+A bug in Pluto Road Warrior support has been fixed:  in responding to
+Phase 2 / Quick Mode, once the client subnets (if any) are known, Pluto
+must reselect which connection to use.  If it didn't happen to be using
+the right one already, and no ID was explicitly specified for the peer,
+and the right one is a Road Warrior connection, the right one would not be
+found. 
+
+Pluto now uses exponential backoff in retransmitting packets.  It also
+has a special provision to attempt retransmission more times in the
+case of an initiating message when an unlimited number of retries is
+specified.
+
+The ipsec_look output has changed a bit, adding more information and
+revising the format slightly.
+
+Some bugs in barf's key/secret censoring have been fixed.
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.4:
+
+A nasty bug in which a corrupted sequence number in a packet could
+paralyze a connection, causing all subsequent packets to be rejected as
+"duplicate", has been fixed. 
+
+Setting DESTDIR in the top-level Makefile now puts everything under there
+(and suppresses the chkconfig run), for building systems to be installed
+elsewhere.  Beware, the lower-level Makefiles don't explicitly know about
+this yet, the override works only from the top.
+
+Pluto has the beginnings of DNS key fetching.  "leftrsasigkey=%dns" will
+arrange for that key to be fetched.  It's a bit slow as yet.
+
+ipsec_rsasigkey now generates a DNS KEY record as part of its output, and
+has a --oldkey option that can be used to update old keys (previously
+generated by it) to the current format with the new information. 
+
+There is now an "ipsec showhostkey" command, which (given suitable
+permissions, i.e. usually root) will build a DNS KEY record based on
+/etc/ipsec.secrets.
+
+In the absence of an existing /etc/ipsec.secrets, installation includes
+automatic generation of an RSA host key.
+
+Comments have been added to the default updown script, warning people that
+installing a new release overwrites it.  (They should use a different name
+for a locally-customized version.)
+
+There is a new "config setup" parameter, "plutobackgroundload", which
+moves initial connection loading and startup into the background.  This
+is experimental, but may be of use to people who need fast system boots.
+
+Startup and shutdown are now quieter, with less blow-by-blow narrative
+from ipsec_setup.
+
+ipsec.conf include processing has been made much more efficient, as the
+first step in faster FreeS/WAN startup in large configurations.
+
+The PFKEY2 kernel interface is now the only one supported.  Accordingly,
+/dev/ipsec is no longer needed or created.
+
+KLIPS's PMTU messages are now disabled by default, because they caused
+problems for some people.
+
+The hole that exempts IKE packets from IPSEC processing was a little too
+wide -- it could let IKE packets from other machines through in clear --
+and so it has been narrowed.
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.3:
+
+Pluto now uses a separate "updown" script (changeable via ipsec.conf, the
+default is "ipsec _updown") to manipulate routing and firewalls.  This
+should make it much easier to customize this stuff for local needs.
+
+Pluto now supports per-connection debugging flags.
+
+The conversion of userland-kernel communications from netlink to PFKEY2 is
+nearly complete; netlink is increasingly unsupported.  PFKEY2 support is
+now defaulted to y in kernel configuration.
+
+New command, ipsec showdefaults, to show %defaultroute defaults (if any).
+
+left/rightnexthop=%defaultroute can be used even if left/right is
+specified explicitly.  (Limitation:  some cases with %defaultroute used
+on one side but not the other will be rejected as errors, incorrectly.)
+
+Left=leftnexthop, or right=rightnexthop, is now diagnosed as an error.
+
+Fixed a bug in ipsec_look:  it didn't deal with %defaultroute properly.
+
+Various small improvements to rsasigkey, including ensuring that the
+key is exactly the specified number of bits.
+
+Barf's secret-censoring has been fixed to censor private parts of RSA keys.
+
+The patcher now tries to ensure that a weird user umask doesn't mess up
+file permissions during patch application.  (It's hard to get this really
+right, but this is a first attempt.)
+
+The internal ipsec.conf-reader utility, and the text-to-address conversion
+routine, now object to unprintable characters. 
+
+The INSTALL file has been trimmed back severely, and is now aimed at
+experts only; the HTML docs provide full install instructions for novices,
+as they can do it better. 
+
+/proc/net/ipsec_spi contents have changed, to show individual stats only
+if non-zero, and shorten and clarify a number of details. 
+
+Added inbound policy-checking code, currently experimental and temporarily
+disabled, to reduce the number of packet leak paths. 
+
+Shortened KLIPS debug output per packet.
+
+Spigrp now has an (undocumented) --said option to use more modern syntax.
+
+Support for 2.3.xx kernels has improved (our thanks to Marc Boucher), and
+some bugs introduced by 2.3.xx kernel evolution have been fixed.
+
+A bug in virtual interfaces (IP aliasing) has been fixed.
+
+In general, a bunch of bugs in the hurriedly-prepared 1.2 release have
+been fixed.
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.2:
+
+[Later addition:  somewhere around this release, the ESP transforms using
+null encryption -- providing authentication only -- stopped being
+supported, as a policy decision.]
+
+The patcher has been improved to handle the case where a patch has gone
+away (give it no key+patchfile arguments) and the old version must be
+undone.  A number of the kernel patches have, in fact, gone away; for
+example, all device, proc_fs and protocol registrations are now done
+dynamically even for static-linked configurations.
+
+A %defaultroute feature has been added for automatic configuration in the
+simplest case (IPSEC on only one interface, the one the default route
+points to); it can supply both the interfaces parameter and the address
+and nexthop of one host.
+
+The sample ipsec.conf has been simplified to exploit %defaultroute, and
+has generally been cleaned up.
+
+User-kernel communication is being converted to use PFKEY2 (RFC 2367),
+although not quite everything has yet been taken care of.  The old
+netlink-based code still works, for now.  There are new facilities in the
+library for doing PFKEY2 communication.  All of this should produce no
+user-visible changes except in log messages (which have changed a lot).
+NB, Peter Onion helped out greatly in this.
+
+Experimental facilities for RSA digital-signature authentication have been
+added to Pluto and ipsec_auto, and there is an rsasigkey utility for key
+generation.  This stuff is not yet well shaken down, or well documented. 
+
+There is a new configuration parameter, spi, for ipsec_manual, simplifying
+SPI assignment for FreeS/WAN-to-FreeS/WAN cases.  Standard manual-setup
+keys are supplied in the sample ipsec.conf to aid testing.
+
+The kernel now builds its own copy of the internal library, avoiding some
+perennial problems with compile-option mismatches etc.  (Marc Boucher did
+a lot of this.)
+
+The KLIPS code now gets symlinked into the kernel tree file by file,
+instead of with one symlink to the directory.  This has pros and cons,
+but in particular it does work much better with the standard Makefiles,
+and various little things have been done for better kernel integration.
+
+The ipsec command now supplies PATH and IPSECDIR to commands under it, and
+IPSECDIR is filled in at build time rather than being hardwired; also, it
+can be different from where things are being installed. 
+
+Various undocumented aspects of the /proc output have changed; be warned.
+Of note are rather more per-SA statistics.
+
+KLIPS now has IPSEC SA expiry based on reaching hard limits of
+allocations, bytes, addtime, usetime, and replay counter rolling. 
+
+A double locking bug which hit 2.0.36 (but not 2.0.38) has been fixed.
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.1:
+
+It now runs on the 2.2.xx kernels (we strongly recommend 2.2.12, not
+earlier ones, for non-FreeS/WAN reasons), although there may still be
+some bugs in transport mode.  Preliminary 2.3.xx support is in too.
+
+Automatic rekeying has been heavily revised to fix some subtle bugs
+(notably the "shoelacing" problem), and to vary its timing (see the new
+"rekeyfuzz" parameter in ipsec.conf) so that sites with many connections
+don't try to rekey all of them simultaneously. 
+
+The bugs which made our interim Road Warrior support not work have been
+(we hope) fully fixed.
+
+type=tunnel and keyexchange=ike are now defaults in the ipsec.conf file,
+cutting down the bulk of a simple connection entry.  Also, an empty value
+for a parameter is now exactly equivalent to the default value (whereas
+previously the meaning of this was parameter-specific and ill-defined).
+
+The documentation now includes a permuted index.
+
+Pluto has been fixed to use the correct length for DH values, which does
+create a problem:  about one time in 256, it won't interoperate properly
+with older Plutos (because the older ones got this wrong when the DH value
+had a leading zero byte).  As a transition measure, there is a kludge in
+place which *should* cause Pluto to retry immediately in that case;
+cautious people who don't have to deal with old Plutos might want to
+switch that off (look for the DODGE_DH_MISSING_ZERO_BUG macro in the
+Pluto Makefile).
+
+The kernel-patch applier has been changed so that if the patch seems to
+have been applied already but there is no record of that, it assumes that
+everything is okay.  THIS MEANS IT WILL NOT TRY TO BACK OUT AN OBSOLETE
+PATCH FROM A PRE-1.00 RELEASE.  Anyone upgrading from a pre-1.00 release
+to this release will have to start with a virgin kernel.  (The reason for
+this change is that some of our kernel fixes are now showing up in the
+official Linux kernel releases.)  Also, patch-applier output is now
+saved in out.kpatch for later inspection, and a failed patch results in
+the target file being restored to its original state (with the evidence
+saved in foo.c.mangled).
+
+The ipsec[0123] device is configured down if the attached physical device
+disappears.  This is useful to prevent laptops from crashing when a PCMCIA
+card is removed.
+
+KLIPS now does data-structure locking to prevent some race conditions.
+
+The kernel "make oldconfig" is now supported, via "make oldgo".
+
+Variable length PPP headers are now supported (Thanks MB).
+
+Some attempts have been made to smarten up the logic which tries to figure
+out where boot scripts go.  It's still not perfect.
+
+"ipsec look" now sorts each section of its output, and generally has had
+some small format changes to make it more helpful.
+
+ipsec --version reports the version of FreeS/WAN (even if KLIPS etc. is
+not running at the moment).
+
+There is now a default mechanism in ipsec.conf, so it's possible to set
+defaults which apply for the rest of the file, to simplify repetitive
+connection descriptions.  (Look for %default in the manpage.)
+
+The machinery which reads ipsec.conf now detects unknown parameter names
+and considers them an error.  (Names beginning with x- or X- are exempt,
+they are permanently reserved for user customization.)
+
+A bug in script handling of virtual interfaces (for IP aliasing) has been
+fixed. 
+
+The manual pages are now installed more intelligently, under all the
+appropriate names rather than just some.
+
+Several scripts which depend on the output of ifconfig now set environment
+variables to try to ensure that the output is in English even if the user
+is set up for another language.
+
+We've begun using an ip_address type internally, to hide the details of
+addresses with an eye on long-term IPv6 compatibility.
+
+There is now a dumpdir parameter in ipsec.conf, to specify where Pluto
+core dumps should occur if they are allowed at all (of relevance to
+advanced developers only). 
+
+Pluto's innards have generally been revised and cleaned up.
+
+Devices ipsec2 and ipsec3 have been added, to increase the number of
+interfaces which can have IPSEC on them.
+
+/proc/net/ipsec_klipsdebug has been added to provide feedback about the
+current KLIPS_DEBUG settings.  It is read-only.
+
+There is much new code in the innards for PF_KEY2 support, although it
+is not active by default yet, because it is still highly experimental.
+
+As usual, there are assorted small bug fixes and improvements to docs
+and messages.
+
+
+
+New and notable in 1.00:
+
+INSTALL procedures have changed, to require less typing by having the
+Makefile do most of the dirty work.  The old procedures are still
+available; see doc/impl.notes if required.  More attention is paid to the
+fact that many people do not use the kernel "make install" to install
+their kernels... although there are limits to how much help we can offer,
+considering the complexity of the problem.  doc/kernel.notes offers some
+observations on our experiences.
+
+The default permissions on ipsec.conf are now rw-r--r--, not rw-------.
+
+Command syntax for manual and auto has changed; for example, to bring an
+auto connection up, say "ipsec auto --up name", not "ipsec auto name up".
+The old syntax is still accepted, temporarily, but will draw warning
+messages.
+
+Communication to Pluto (auto+whack) now uses Unix-domain sockets, so that
+permissions can be used to control access.
+
+Configuration parameters for automatically-keyed connections have changed,
+with the "encrypt" parameter gone and "auth" replacing "authenticate"
+(with different values). 
+
+A new config-file parameter, "also", permits putting a connection
+description together piece by piece (with some pieces possibly in other
+files, for greater security).
+
+A new config-file parameter, "auto", cooperates with a new "%search" value
+for the plutoload and plutostart setup parameters to allow connections to
+be loaded and started automatically at IPSEC startup time, without having
+to list all the names in plutoload or plutostart.
+
+A new connection type, "passthrough", supports having some types of traffic
+bypass IPSEC processing altogether.  (Manual "keying" only.)
+
+Auto's --replace operation now also does --rereadsecrets.
+
+The kernel patches are now applied by a more sophisticated script, which
+in particular can undo old patches when the patches change (and can tell
+when this has happened).  The downside is that everybody gets to install
+from virgin kernel sources *once*, because the patcher can't undo patches
+made by previous versions (they didn't leave enough information around).
+
+Many of the more obscure examples formerly found in ipsec.conf are now
+in doc/examples instead.
+
+PMTU and fragmentation issues have been cleaned up w.r.t. RFCs.  The
+kernel configuration includes a switch to shut off ICMP PMTUD messages if
+hosts get confused by receiving ICMP PMTUD messages *and* ACKs.
+
+Several of the configuration parameters for automatically-keyed connections
+have changed name; notably, "lifetime" is now "keylife", and "rekeystart"
+is now "rekeymargin".
+
+Wildcard file includes are supported within ipsec.conf and ipsec.secrets.
+The ipsec.conf processing has been cleaned up, made fussier about errors,
+and centralized for easy changes. 
+
+ipsec_barf output is more complete.
+
+The censoring of keys and shared secrets in barf output is smarter:  now
+it prints checksums instead of just deleting the sensitive information, so
+there is some hope of being able to tell whether (for example) two keys
+are identical. 
+
+The "ipsec" wrapper command is no longer willing to run commands from
+anywhere except its own directory.
+
+The rekeytries parameter has become keyingtries, and applies to initial
+setup as well as rekeying.  (Whack and ipsec_auto return after the first
+try, but tries continue if keyingtries>1.)  A value of 0 means "a really
+big number".
+
+Pluto now respects the policy options of a connection (e.g., "--pfs")
+even if the other end is initiating the connection.
+
+Various rough edges in Pluto associated with disagreements between the two
+ends have been cleared up.
+
+Error messages and logging have generally been improved, and there have
+been the usual assorted bug fixes.
+
+Installation now uses "install" instead of "cp".
+
+New in 0.92:
+
+The biggest change is that the configuration/control files are completely
+different.  /etc/sysconfig/ipsec, /etc/ipsec-manual, and /etc/ipsec-auto
+have merged to become /etc/ipsec.conf, there is now a unified connection-
+description format within it that either manual or auto can use, and
+various other touchups have been done. 
+
+/etc/isakmp-secrets also has changed format, and is now /etc/ipsec.secrets.
+It implements the same "include" mechanism as the configuration file, and
+the new format permits easier sharing of identical files between machines.
+
+ipsec_manual's {left|right}masquerade parameters have been renamed to
+{left|right}firewall, and ipsec_auto understands them too.
+
+There are several new configuration parameters, including provisions for
+asynchronous connection negotiation (in which Pluto starts negotiation
+of all desired connections simultaneously, and IPSEC startup does not
+wait for it to finish).
+
+Pluto's innards have been reorganized; interoperability is much improved.
+Also, Pluto now supports multiple interfaces.
+
+The documentation has been massively improved, although there is still
+much to be done.
+
+The DES library has (finally) been updated to the latest.  The speed
+improvement on x86 CPUs is especially large.
+
+Support for single-DES (as opposed to 3DES) has been largely discontinued.
+(The timing of this was a management decision which not all members of the
+technical team agree with.)
+
+KLIPS now sends all packets with different inner and outer destinations
+directly to the attached physical device, rather than back through
+ip_forward, preventing the "route stealing" problem (in which a route
+being set up to a subnet could clobber the route to its gateway, causing
+total packet loss).  The downside of this is that it is now important to
+get the {left|right}nexthop parameters in the configuration file *right*.
+
+ipsec_auto now supports transport mode.
+
+Fragment handling has been shaken up and improved, generally for the
+better, but the new stuff has not been tested well yet.
+
+IPIP tunnels are now processed internally, not requiring the IPIP module
+to be loaded or configured.
+
+We now decrement TTL in outgoing packet and set TTL on new IPIP_TUNNEL to
+default value, not from existing packet TTL value.  That is, a tunnel
+looks like one hop, as it should. 
+
+The SA ID %passthrough now signifies a magic SA which means that packets
+should be passed through untouched.  (There is no ipsec_manual/auto
+support for this yet.)
+
+The '--said' command-line parameter is now accepted by the 'spi' and 'eroute'
+commands to enable cut-and-paste of /proc/net/ipsec_* and debug output.
+
+Initialization vectors (IVs) are now generated in the kernel; user-level
+support for specifying particular IV values has been discontinued.
+
+KLIPS has changed from transform switching to algorithm switching to
+reduce redundancy (and accomodate PFKEYv2 switchover).  A major code
+cleanup has also been done, reducing both source and binary size by 40%.
+
+There have been many minor improvements, cleanups, and bug fixes.
+
+New in 0.91:
+
+Various new items of documentation, most notably doc/vpn.how, an intro to
+setting up virtual private networks with FreeS/WAN.  Plus assorted updates
+and improvements to old docs too.
+
+Most of the contents of the ietf-drafts directory have been superseded by
+RFCs 2401-2412 and 2451.
+
+All the manual pages now are installed under names beginning with ipsec_,
+to avoid name clashes.  Caution:  there is nothing that automatically
+*removes* the older versions, if you've installed an earlier release.
+
+The configuration file (/etc/sysconfig/ipsec) has been extensively
+reworked, repeatedly.  The latest version supports multiple interfaces and
+does not need to know addresses etc. 
+
+There is an "ipsec manual" command for taking manually-keyed connections
+up and down, with a corresponding control file containing some examples
+(which are realistic enough to use as the basis for real ones).  There is
+a corresponding "ipsec auto" command for Pluto-run connections.
+
+The boot-time startup/shutdown script is now accessible as "ipsec setup",
+and includes a "restart" facility.  It now allows for the possibility that
+Klips may be a module, and clears out eroutes and spis at startup and
+shutdown.  Setup errors and messages go to syslog as well as stderr. 
+There are provisions for boot-time setup of multiple connections, both
+manually and automatically keyed. 
+
+There is now an optional facility for having the boot-time startup script
+enable IP forwarding *after* basic IPSEC setup is done, to avoid timing
+windows in which cleartext packets might leak out.
+
+Rationalised all the klips kernel file headers.  They are much shorter
+now and won't conflict under RH5.2.
+
+"make insert" now sets up various IPSEC-related issues in the kernel
+configuration right, so the sysadmin shouldn't need to make many changes
+by hand. 
+
+Discard packets for which there is no eroute if outbound on ipsec0.
+
+Added temporary udp/500 IPSEC bypass for IKE daemons, so that they can
+continue to talk "in clear" even when all other traffic gets encrypted. 
+
+/proc/net/ipsec_* formats have been cleaned up for easy parsing by scripts.
+
+There is a new concise format for identifying SAs, e.g. "ah0x507@1.2.3.4",
+and many things now use it (and the utility functions that convert it to
+and from internal forms).  Klips now has separate SPI number spaces for
+AH, ESP, and tunneling internally.
+
+The default of no replay checking can be overridden in manually-keyed ESP
+xforms. 
+
+Pluto has been substantially reworked internally, has an internal database
+of potential connections (against which incoming requests are checked),
+and does timed rekeying.  Whack talks to Pluto with TCP rather than UDP,
+which permits Pluto to actually provide feedback on how things are going
+(although the details of the feedback still need work).
+
+Standardise on '-96' notation for AH transforms and '-128' notation for
+ESP transforms in the 'spi' command.  The old notation without any
+authenticator bit length still works and still refers to the '-96'
+transform for AH transforms and '-128' transform for ESP transforms.
+
+The output of "ipsec barf" has been reordered to put the more interesting
+items first.  "ipsec look" has been added as a terse way to look at the
+most important things.
+
+New command, "ipsec ranbits", for generating good random bits for keys and
+such.  (/dev/random does the work, but this provides a convenient scripting
+interface to it.)  The sample isakmp-secrets and ipsec-manual files are now
+built using this, so they no longer contain keys that everyone will know.
+
+There is a new character (0t) key format, for weird people who like to
+write keys as one ASCII character per byte.
+
+Pluto now does PFS (Perfect Forward Secrecy), based on code contributed by
+Kai Martius. 
+
+Various output formats have been cleaned up and improved, and assorted
+minor and major bugs fixed.
+
+
+
+
+New in 0.90:
+
+klips/doc/modes.html documents the setup of various possible types of
+connection in a half-readable form.
+
+Everything now runs under Red Hat 5.1 and the 2.0.35 kernel.
+
+There is now an rc.d startup/shutdown script for Klips and Pluto, set
+up during a normal installation, driven by a configuration file located
+in /etc/sysconfig/ipsec.
+
+There is a manual page for Pluto (and whack).
+
+Pluto is now smart enough to tear down what it sets up.
+
+The following xforms have been added and interop tested against OpenBSD
+with the exception of the NULL xforms:
+ESP_DES
+ESP_3DES
+ESP_DES_SHA1_96
+ESP_3DES_SHA1_96
+ESP_NULL_MD5_96
+ESP_NULL_SHA1_96
+
+All keys and IV's to the spi command must be in hexadecimal with a '0x'
+prefix or in base64 with a '0s' prefix.  SPI's to the spi, spigrp and eroute
+commands are hexadecimal (preferred) if preceded by '0x' or decimal if
+preceded by a digit in the range 1-9.  Beware of leading '0's being
+interpreted as octal.
+
+A --clear option has been added to the eroute and spi commands to clear
+the entire eroute and SA tables respectively and to the tncfg command
+to clear all virtual I/Fs.
+
+The eroute, tncfg, klipsdebug and spi commands have been converted to long
+option names.  All command line parameters have been converted from
+positional to long option args.  All script calls to these utils will
+have to be updated.  The usage text and manpages have been updated
+accordingly.
+
+The spi and spigrp commands now accept name lookups for hosts.
+
+The eroute command now condenses the src, srcmask and dst, dstmask arguments in 
+a 'add' or 'del' call with a delimiting '/'.  It will now accept symbolic
+names for hosts, nets or masks and will accept the mask as a number of 
+significant bits.  Any scripts that call eroute will need to be changed.
+
+All the klips utils now have --version and --help directives.
+
+Klips utils cleaned up to check more thoroughly about improper arguments
+and report more specific error information.  Kernel error codes made more
+specific to help in debugging and identifying automatically, bad
+command syntax.
+
+Cleaned up some useless references to unused resources that prevent
+compilation under RH 5.x.
+
+Packets with more than one IPSEC wrapper will only be counted once in the
+stats, before they were counted as many times as there were wrappers.  The
+skb's pointer to dev is now set to the corresponding ipsecx I/F.
+
+Make clean now does something useful in the klips/net/ipsec directory.
+Dependancies have also been added to force recompile of the klips kernel
+objects when the kernel config changes.
+
+Klips is now statically linkable.  The config procedure has been changed
+to allow options to a 'y' answer for CONFIG_IPSEC.  There are now more patches
+to the kernel and several have changed.  It is advisable to repatch a
+fresh kernel or back out the previous patches made for an earlier version
+of klips.  Don't forget to remove any references to 'insmod ipsec' or
+'modprobe ipsec' in any automatic or manual scripts if you use static
+linking.  Depending on the size of your existing kernel, you may have to
+use 'make bzImage' and install this kernel manually.
+
+The INSTALL instructions now specify static linking, for simplicity.
+
+The Klips sources are no longer copied into the kernel, hurrah.  Some
+reshuffling of directories has made it possible to use a symlink.
+
+Most of the utilities now go in /usr/local/lib/ipsec, with the "ipsec"
+wrapper command used to access them.
+
+Added a warning on module load if IPIP protocol is not available to
+decode tunnel mode packets.  Additionally, kernel message advising of
+receipt of IPIP packets if the protocol is not loaded has been added.
+
+New in 0.85:
+
+There is now a general-utilities directory, notably including a new
+command ("barf") that dumps a bunch of debugging info on stdout.
+
+INSTALL, and the top-level Makefile, have been simplified to do all
+the user-level code in one fell swoop ("make" and "make install").
+Provisions are also in for putting the user-level programs off in
+their own directory and using the "ipsec" prefix command to invoke
+them, but this has not been activated yet.
+
+The manual keying utils' manpages are now installed in the default
+location (/usr/local/man/man8) when the utils are installed.
+
+'spi' utils now complains unless the exact key and iv sizes are supplied.
+
+RX packets received and bogus are both now reported.  Note that packets
+will be reported as many times as there are esp or ah headers per packet.
+This will be fixed with the 2.1.x series kernel work.
+
+Added check for self-describing padding.  It only reports possible bad
+packets.  It does not discard them.  Reporting can be shut off with
+debug options.
+
+Experimental/Obsolete transforms are obvious in the kernel config and
+can be disabled.
+
+/proc/net/ipsec_version has been added which prints out the freeswan
+version as well as the cvs id of each transform.
+
+/proc/net/ipsec_spinew has been added which gives a fresh spi each time
+it is read.  It increments by two each time due to proc subsystem
+operation.  This counter will eventually roll over, so this needs to
+be kept in mind for the long term (ie. todo: garbage collection, etc.).
+
+There is now an organized internal mechanism for providing release version 
+numbers to Klips and Pluto, so they can display them.  (Note, this is done
+by symlinks made by the top-level Makefile at compile time.)
+
+i/r specifier in 'spi' util has been removed.  It was obsolete.  Automated
+commands that use spi will need to be updated.
+
+The encr. and auth. keys have been split in the spi utility.
+
+Version information added to all xform attach routines and klips utils.
+
+Module releases all structures allocated at init to prevent memory
+leaks from multiple insmod/rmmod operations.
+
+All the /proc/net/ipsec_* pseudo-files now have no limit of output
+data.  Previously, *very bad* things happenned if you had more than 3k
+text output from ipsec_eroute and ipsec_spi.
+
+All the /proc/net/ipsec_* interfaces have a banner to announce what it is
+and blank lines to make it easier to read.
+
+The names of the proc files have been changed to be consistent with the
+rest of the files in the directory, in particular, note the change from
+'-' to '_': /proc/net/ipsec-* have become /proc/net/ipsec_*.
+
+/proc/net/ipsec_spi lists what algorithm is in use and does NOT list keys.
+
+/proc/net/ipsec_spigrp lists all existing groups of spi's set by spigrp.
+
+/proc/net/ipsec_tncfg lists all existing virtual IPSEC to physical network
+connections.
+
+Further debug output modifications so that klips will be much quieter
+with debugging off.
+
+Finer control of kernel debug messages from user space with subsystem
+switches in klipsdebug.
+
+All keys are zeroed after use in the manual keying utilities and in klips.
+
+All kernel messages referring to IP's are in decimal dotted quad notation
+now (they were in hex, or even in network order hex before).
+
+Spigrp with one parameter set will ungroup an existing SA chain.
+
+Deleting one SA will also remove all the rest in the chain.
+
+New in 0.8:
+
+The Klips (nee "IPSEC") and Pluto distributions have been integrated for
+the first time, and some duplications cleared out.  We're also now including
+the GMP library which Pluto needs.
+
+Both Klips and Pluto have finally been updated to support separate ESP
+encryption and authentication keys.  The Pluto code for this hasn't been 
+tested extensively yet.
+
+Klips is now capable of operation with devices other than Ethernet
+interfaces.
+
+Internal cleanup of Pluto is underway.  This release of Pluto supports
+and uses more than one Transformation Payload within the Phase 1 SA
+Payload.  One result of this is that it will not interoperate with
+older versions of Pluto.
+
+Work is underway on compatibility with later versions of Linux.
+
+Klips's virtual ipsec devices can now be detached from the physical
+device, and eroutes and sa's can now be deleted, so the last two commands
+have been changed to "eroute" and "spi" from "addrt" and "setsa"
+respectively.  "addrt" and "setsa" are obsolete.  Tunnel mode inside
+transport mode now works with no delay (How useful this is, is debatable). 
+Transmit statistics now work. 
+
+The klips transforms: AH-HMAC-MD5-96, AH-HMAC-SHA1-96, ESP-3DES-MD5-96 and
+ESP-DES-HMAC-MD5-96 have been updated from the old specs (RFC192[5-9])
+to the new proposed draft standards (as of March 1998).
+
+A second ipsec device has been hard-wired into the kernel module for use
+with a second interface.  This is temporary and will change when the
+kernel routing is overhauled and updated to 2.1.xx series kernels.
+
+Kernel instrumentation was corrected, extended and added.
+
+/proc/net/ipsec-route (originally /proc/net/ipsec-rt) is now 
+/proc/net/ipsec-eroute for consistency with the command name.
+
+A user-space utility has been added (klipsdebug) to dynamically change
+klips debug output switches.  This change has removed all but one
+config debug comile switch (ie. rerun kernel make {menu,x,}config).
+
+ipsec_md5 and ipsec_sha1 files no longer have nested header files so
+they can be used by userspace utilities.
+
+tncfg no longer dumps core when invoked for usage message.
+
+Manpages have been added for the (5) userspace klips utilities.
+
+The klips README has been split and overhauled.
+
+Added a tunnel mode and transport mode example based on current setup.
+
+Added a patch for the Linux netlink code to clean up after a badly behaved
+module (not likely to be significant in normal use, but having to reboot
+after each test during debugging is impossibly painful).
+
+Added a patch for the Linux kernel config utility help menus to explain
+what the IPSEC option is, where to find the standards and where to find
+the latest development.
+
+RCSID $Id: CHANGES,v 1.314.8.1 2004/01/18 22:12:44 ken Exp $

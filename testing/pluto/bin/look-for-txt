@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# 
+# this script looks for a TXT resource record at a given name
+# It does so using lwdnsq in HEAD
+# and  
+# with dig in 2.xx
+#
+# arg #1 is name
+# arg #2 is public key fragment to look for
+
+item=$1 shift
+partof=$1 shift
+
+# seems to prime bind
+dig $item txt >/dev/null
+
+if (echo "txt 12334 $item" | ipsec lwdnsq --regress --serial --ignoreeof | fgrep "$partof" - >/dev/null)
+then
+	echo LOOK-FOR-TXT FOUND $partof
+else
+	echo LOOK-FOR-TXT DID NOT FIND $partof
+fi

@@ -1,0 +1,1 @@
+192.0.1.254 > 192.0.1.2: icmp: host 192.0.2.1 unreachable - admin prohibited filter [tos 0xc0]   <=> 1-8

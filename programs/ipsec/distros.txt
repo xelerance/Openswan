@@ -1,0 +1,2 @@
+This is OpenSWAN 2.0.0. It includes X.509 and port-selector patches.
+See http://www.openswan.org/

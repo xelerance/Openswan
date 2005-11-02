@@ -1,0 +1,75 @@
+######################################################################
+# /etc/network/interfaces -- configuration file for ifup(8), ifdown(8)
+#
+#
+# !!!NOTE!!! THIS IS AN ALPHA RELEASE! DO NOT RELY ON IT!
+#
+# Consider this the first draft of what I think the proper way to
+# configure interfaces is. It makes use of programs like ifconfig(8)
+# and dhcpcd(8), and can be called from /etc/init.d/networking,
+# /etc/pcmcia/network or the command line. It can configure and
+# deconfigure interfaces. In controlled environments it even works.
+# It's *very* subject to change, however. Some of the compulsory
+# options will become optional. Some of the optional ones might
+# become compulsory. Syntax might change. Features might disappear.
+# Bugs might disappear. The examples below are reasonably likely
+# to remain more or less correct. Maybe.
+#                                         -- ajt@debian.org
+#
+#
+# A "#" character in the very first column makes the rest of the line
+# be ignored. Blank lines are ignored. Lines may be indented freely.
+# A "\" character at the very end of the line indicates the next line
+# should be treated as a continuation of the current one.
+#
+# The "noauto", "up", and "down" options are valid for all interfaces.
+# "up" and "down" may be specified multiple times, all other options
+# may only be specified once.
+######################################################################
+
+# We always want the loopback interface. Whether we want ifup/ifdown to
+# know about is another matter, perhaps.
+#
+ iface lo inet loopback
+
+# An example ethernet card setup: (broadcast and gateway are optional)
+#
+iface eth0 inet static
+     address 192.1.2.254
+     network 192.1.2.0
+     netmask 255.255.255.0
+     broadcast 192.1.2.255
+     up route add -net 192.0.1.0 netmask 255.255.255.0 gw 192.1.2.45
+     up route add -net 192.0.2.0 netmask 255.255.255.0 gw 192.1.2.23
+
+# A more complicated ethernet setup: (the "up" lines are executed verbatim
+# when the interface is brought up, the "down" lines when it's brought down)
+#
+# iface eth0 inet static
+#     address 192.168.1.42
+#     network 192.168.1.0
+#     netmask 255.255.255.128
+#     broadcast 192.168.1.0
+#     up route add -net 192.168.1.128 netmask 255.255.255.128 gw 192.168.1.2
+#     up route add default gw 192.168.1.200
+#     down route del default gw 192.168.1.200
+#     down route del -net 192.168.1.128 netmask 255.255.255.128 gw 192.168.1.2
+
+# An ethernet DHCP client: (using the dhcpcd .deb)
+#
+# iface eth0 inet dhcp
+
+# A more complicated DHCP client: (hostname and leasetime match the options
+# in the dhcpcd manpage)
+#
+# iface eth0 inet dhcp
+#     hostname charisma
+#     leasetime 3600
+
+# A PCMCIA ethernet DHCP client:
+#
+# iface eth0 inet dhcp
+#     noauto
+#
+# (note, this won't work unless you specifically change the file
+

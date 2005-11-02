@@ -1,0 +1,46 @@
+whackwest --name block --delete --host 127.95.7.1 --ikeport 8500 --nexthop 127.95.7.254 --updown silly --to --updown sally --host %group --ikeport 8500 --drop
+002 added connection description "block"
+whackeast --name block --delete --host 127.95.7.2 --ikeport 8500 --nexthop 127.95.7.254 --updown silly --to --updown sally --host %group --ikeport 8500 --drop
+002 added connection description "block"
+whackwest --listen
+002 listening for IKE messages
+002 adding interface virtual127.95.7.1/lo:w 127.95.7.1
+002 loading secrets from "./ipsec.secrets/west"
+002 loading group "./ipsec.d/west/block"
+whackeast --listen
+002 listening for IKE messages
+002 adding interface virtual127.95.7.2/lo:e 127.95.7.2
+002 loading secrets from "./ipsec.secrets/east"
+whackwest --route --name block
+whackeast --route --name block
+whackwest --shutdown
+002 shutting down
+whackeast --shutdown
+002 shutting down
+
+>>>Initiator:
+PLUTO --ctlbase pluto.west --interface lo:w --ikeport 8500 --secretsfile ./ipsec.secrets/west --foodgroupsdir ./ipsec.d/west --noklips --uniqueids --stderrlog --debug-all --debug-private
+added connection description "block"
+listening for IKE messages
+adding interface virtual127.95.7.1/lo:w 127.95.7.1
+loading secrets from "./ipsec.secrets/west"
+loading group "./ipsec.d/west/block"
+shutting down
+forgetting secrets
+"block#19.84.0.0/30" 0.0.0.0: deleting connection "block#19.84.0.0/30" instance with peer 0.0.0.0
+"block#10.0.0.0/16" 0.0.0.0: deleting connection "block#10.0.0.0/16" instance with peer 0.0.0.0
+"block#9.11.0.0/32" 0.0.0.0: deleting connection "block#9.11.0.0/32" instance with peer 0.0.0.0
+"block#1.2.3.6/31" 0.0.0.0: deleting connection "block#1.2.3.6/31" instance with peer 0.0.0.0
+"block": deleting connection
+shutting down interface virtual127.95.7.1/lo:w 127.95.7.1
+
+>>>Responder:
+PLUTO --ctlbase pluto.east --interface lo:e --ikeport 8500 --secretsfile ./ipsec.secrets/east --foodgroupsdir ./ipsec.d/east --noklips --uniqueids --stderrlog --debug-all --debug-private
+added connection description "block"
+listening for IKE messages
+adding interface virtual127.95.7.2/lo:e 127.95.7.2
+loading secrets from "./ipsec.secrets/east"
+shutting down
+forgetting secrets
+"block": deleting connection
+shutting down interface virtual127.95.7.2/lo:e 127.95.7.2

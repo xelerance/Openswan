@@ -1,0 +1,118 @@
+.TH IPSEC_NEWHOSTKEY 8 "4 March 2002"
+.\" RCSID $Id: newhostkey.8,v 1.5 2002/04/24 07:36:09 mcr Exp $
+.SH NAME
+ipsec newhostkey \- generate a new host authentication key
+.SH SYNOPSIS
+.B ipsec
+.B newhostkey
+.B \-\-output
+filename
+[
+.B \-\-quiet
+]
+.B \e
+.br
+.in +10
+[
+.B \-\-bits
+n
+]
+[
+.B \-\-hostname
+host
+]
+.SH DESCRIPTION
+.I Newhostkey
+outputs (into
+.IR filename ,
+which can be `\fB-\fR' for standard output)
+an RSA private key suitable for this host,
+in
+.IR /etc/ipsec.secrets
+format
+(see
+.IR ipsec.secrets (5)).
+Normally,
+.I newhostkey
+invokes
+.IR rsasigkey
+(see
+.IR ipsec_rsasigkey (8))
+with the
+.B \-\-verbose
+option, so a narrative of what is being done appears on standard error.
+.PP
+The
+.B \-\-output
+specifier, although it is syntactically an option and can appear at
+any point among the options (it doesn't have to be first),
+is not optional.
+The specified
+.I filename
+is created under umask
+.B 077
+if nonexistent;
+if it already exists and is non-empty,
+a warning message about that is sent to standard error,
+and the output is appended to the file.
+.PP
+The
+.B \-\-quiet
+option suppresses both the
+.IR rsasigkey
+narrative and the existing-file warning message.
+.PP
+The
+.B \-\-bits
+option specifies the number of bits in the key;
+the current default is 2192 and we do not recommend use of anything
+shorter unless unusual constraints demand it.
+.PP
+The
+.B \-\-hostname
+option is passed through to
+.IR rsasigkey
+to tell it what host name to label the output with
+(via its
+.B \-\-hostname
+option).
+.PP
+The output format is that of
+.IR rsasigkey ,
+with bracketing added to complete the
+.I ipsec.secrets
+format.
+In the usual case, where
+.I ipsec.secrets
+contains only the host's own private key,
+the output of
+.I newhostkey
+is sufficient as a complete
+.I ipsec.secrets
+file.
+.SH SEE ALSO
+ipsec.secrets(5), ipsec_rsasigkey(8)
+.SH HISTORY
+Written for the Linux FreeS/WAN project
+<http://www.freeswan.org>
+by Henry Spencer.
+.SH BUGS
+As with
+.IR rsasigkey ,
+the run time is difficult to predict,
+since depletion of the system's randomness pool can cause
+arbitrarily long waits for random bits,
+and the prime-number searches can also take unpredictable
+(and potentially large) amounts of CPU time.
+See
+.IR ipsec_rsasigkey (8)
+for some typical performance numbers.
+.PP
+A higher-level tool which could handle the clerical details
+of changing to a new key would be helpful.
+.PP
+The requirement for
+.B \-\-output
+is a blemish,
+but private keys are extremely sensitive information
+and unusual precautions seem justified.

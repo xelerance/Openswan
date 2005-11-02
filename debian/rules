@@ -1,0 +1,372 @@
+#!/usr/bin/make -f
+# Sample debian/rules that uses debhelper.
+# GNU copyright 1997 to 1999 by Joey Hess.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This is the debhelper compatability version to use.
+export DH_COMPAT=3
+
+export DH_OPTIONS
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	# Add here commands to configure the package.
+
+	touch configure-stamp
+
+patch-stamp:
+	dh_testdir
+
+	# apply the x509 patches
+	-echo "Applying the x509 patches"
+	if [ ! -e "patch-x509-stamp" ]; then \
+		patch -p1 < $(wildcard $(CURDIR)/debian/x509patch-*-freeswan-*/freeswan.diff) ; \
+		touch patch-x509-stamp ; \
+	fi
+
+	# and all other patches that are pre-build
+	-echo "Applying all pre-build patches"
+	if [ ! -e "patch-pre-build.stamp" ]; then \
+		for f in `ls $(CURDIR)/debian/pre-build-patches/*.diff | sort`; do \
+			echo "Applying patch $$f"; \
+			patch -p1 < $$f; \
+		done ; \
+		touch patch-pre-build.stamp; \
+	fi
+
+#	# and replace all calls of 'awk' by 'gawk'
+#	-echo "Replacing all calls of awk by gawk"
+#	if [ ! -e "patch-awk-to-gawk.stamp" ]; then \
+#		for f in `grep " awk " --files-with-match utils/*`; \
+#		do \
+#			cp $$f $$f.awk-to-gawk.save; \
+#			sed 's/ awk/ gawk /' $$f.awk-to-gawk.save > $$f; \
+#		done ; \
+#		touch patch-awk-to-gawk.stamp; \
+#	fi
+
+	touch patch-stamp
+
+patch-ext-stamp: patch-stamp
+	# apply the extension patches
+	-echo "Applying the modular extension patches"
+	if [ ! -e "patch-pre-build-ext.stamp" ]; then \
+		for f in `ls $(CURDIR)/debian/crypto-ext-patches/*.diff | sort`; do \
+			echo "Applying patch $$f"; \
+			patch -p1 < $$f; \
+		done ; \
+		touch patch-pre-build-ext.stamp; \
+	fi
+	touch patch-ext-stamp
+
+unpatch: unpatch-ext
+#	# undo the replacement of all calls of 'awk' by 'gawk'
+#	-echo "Undoing the replacement of awk by gawk"
+#	if [ -e "patch-awk-to-gawk.stamp" ]; then \
+#		for f in `find $(CURDIR) -name "*.awk-to-gawk.save"`; \
+#		do \
+#			sh -c "oldf=\`expr $$f : '\(.*\)\.awk-to-gawk.save'\`; \
+#			echo \"Restoring \$$oldf\"; \
+#			mv $$f \$$oldf" ; \
+#		done ; \
+#		rm -f patch-awk-to-gawk.stamp; \
+#	fi
+
+	# remove the pre-build patches
+	-echo "Removing the pre-build patches"
+	if [ -e "patch-pre-build.stamp" ]; then \
+		for f in `ls $(CURDIR)/debian/pre-build-patches/*.diff | sort -r`; do \
+			echo "Removing patch $$f"; \
+			patch -R -p1 < $$f; \
+		done ; \
+		rm -f patch-pre-build.stamp; \
+	fi
+
+	# remove the x509 patches
+	-echo "Removing the x509 patches"
+	if [ -e "patch-x509-stamp" ]; then \
+		patch -p1 -R < $(wildcard $(CURDIR)/debian/x509patch-*-freeswan-*/freeswan.diff) ; \
+		rm -f patch-x509-stamp ; \
+	fi
+
+	rm -f patch-stamp
+
+unpatch-ext:
+	-echo "Removing the modular extension patches"
+	if [ -e "patch-pre-build-ext.stamp" ]; then \
+		for f in `ls $(CURDIR)/debian/crypto-ext-patches/*.diff | sort -r`; do \
+			echo "Removing patch $$f"; \
+			patch -R -p1 < $$f; \
+		done ; \
+		rm -f patch-pre-build-ext.stamp; \
+	fi
+
+	rm -f patch-ext-stamp
+
+
+build: build-stamp
+build-stamp: patch-stamp patch-ext-stamp
+	# create a dummy ipsec.secrets file before building the package so
+	# that no RSA keys are created during the build process
+	# (a package should not include a RSA key, it should produce the key
+	# on demand, e.g. in the postinst script)
+	touch $(CURDIR)/debian/ipsec.secrets
+	$(MAKE) programs INC_USRLOCAL=/usr \
+        		 FINALBINDIR=/usr/lib/ipsec \
+			 PUBDIR=/usr/sbin \
+			 MANTREE=/usr/share/man \
+			 CONFDIR=$(CURDIR)/debian
+	# remove the temporary file, it will be created during install
+	rm -f $(CURDIR)/debian/ipsec.secrets
+
+	#/usr/bin/docbook-to-man debian/freeswan.sgml > freeswan.1
+
+	touch build-stamp
+
+
+clean: unpatch
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+
+	-$(MAKE) clean
+	-$(MAKE) -f debian/rules unpatch-ext
+	-$(MAKE) -f debian/rules unpatch
+
+	# just in case something went wrong
+	rm -f $(CURDIR)/debian/ipsec.secrets
+
+	dh_clean
+
+install-freeswan: DH_OPTIONS=-a
+install-freeswan: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	# Add here commands to install the package into debian/tmp.
+	$(MAKE) install INC_USRLOCAL=/usr \
+        		FINALBINDIR=/usr/lib/ipsec \
+			PUBDIR=$(CURDIR)/debian/freeswan/usr/sbin \
+			MANTREE=$(CURDIR)/debian/freeswan/usr/share/man \
+			DESTDIR=$(CURDIR)/debian/freeswan
+
+	install $(CURDIR)/debian/mkx509cert.sh $(CURDIR)/debian/freeswan/usr/lib/ipsec/mkx509cert
+
+	# patch the init.d script to include the force-reload option
+	patch -p1 $(CURDIR)/debian/freeswan/etc/init.d/ipsec < debian/pre-install-patches/init.d-force-reload.diff
+        # patch the setup script to check for availability of kernel support
+	patch -p1 $(CURDIR)/debian/freeswan/etc/init.d/ipsec < debian/pre-install-patches/init.d-add-kernelsupport-check.diff
+	# patch the init.d script to not call 'depmod -a'
+	patch -p1 $(CURDIR)/debian/freeswan/usr/lib/ipsec/_startklips < debian/pre-install-patches/init.d-remove-depmod.diff
+	rm -f $(CURDIR)/debian/freeswan/etc/init.d/ipsec?*
+	rm -f $(CURDIR)/debian/freeswan/usr/lib/ipsec/_startklips?*
+        
+	# change the paths in the installed doc files
+	( cd $(CURDIR)/debian/freeswan/; \
+	  for f in `grep "/usr/local/" --recursive --files-with-match *`; \
+	  do \
+		cp $$f $$f.old; \
+		sed 's/\/usr\/local\//\/usr\//' $$f.old > $$f; \
+		rm $$f.old; \
+	  done )
+
+	# the logcheck ignore files
+	install --mode=0600 $(CURDIR)/debian/logcheck.ignore.paranoid $(CURDIR)/debian/freeswan/etc/logcheck/ignore.d.paranoid/freeswan
+	install --mode=0600 $(CURDIR)/debian/logcheck.ignore.server $(CURDIR)/debian/freeswan/etc/logcheck/ignore.d.server/freeswan
+	install --mode=0600 $(CURDIR)/debian/logcheck.ignore.server $(CURDIR)/debian/freeswan/etc/logcheck/ignore.d.workstation/freeswan
+
+install-kernel-patch-freeswan: DH_OPTIONS=-i
+install-kernel-patch-freeswan: PKGDIR=$(CURDIR)/debian/kernel-patch-freeswan
+install-kernel-patch-freeswan: patch-stamp unpatch-ext
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+	# some of this has been taken from Tommi Virtanen's package
+	install --mode=0755 debian/kernel-patch-freeswan.apply \
+		"$(PKGDIR)/usr/src/kernel-patches/all/apply/freeswan"
+	install --mode=0755 debian/kernel-patch-freeswan.unpatch \
+		"$(PKGDIR)/usr/src/kernel-patches/all/unpatch/freeswan"
+	install --mode=0755 utils/patcher \
+		"$(PKGDIR)/usr/src/kernel-patches/all/freeswan"
+	cp -r Makefile Makefile.inc Makefile.ver klips/ lib/ libdes/ zlib/ "$(PKGDIR)/usr/src/kernel-patches/all/freeswan"
+#	# do not use symbolic linking because then the compiling would be done under /usr/src/....
+#	# which is undesireable and makes the patch unusable by non-root users for compiling kernels
+#	sed 's/ln -s/cp -R --dereference/' \
+#        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile" \
+#                > "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp"
+#	mv "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp" \
+#        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile"
+	# also don't generate the out.kpatch file under /usr/src/....
+	sed 's/>>out.kpatch//' \
+        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile" \
+                > "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp"
+	mv "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp" \
+        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile"
+	sed 's/>out.kpatch//' \
+        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile" \
+                > "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp"
+	mv "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp" \
+        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile"
+	sed 's/rm -f out.kpatch//' \
+        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile" \
+                > "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp"
+	mv "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp" \
+        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile"
+	chmod u=rwX,go=rX "$(PKGDIR)/usr/src/kernel-patches/all/freeswan"
+	# remove extra junk not needed on linux / that lintian would complain about
+	find "$(PKGDIR)/usr/src/kernel-patches/all/freeswan" \
+		-name '*.o' -print0 | xargs -0 rm -f
+	find "$(PKGDIR)/usr/src/kernel-patches/all/freeswan" \
+		-name '*.a' -print0 | xargs -0 rm -f
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/utils/spi"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/utils/spigrp"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/utils/eroute"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/utils/tncfg"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/utils/klipsdebug"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/patches/kernel.patch.gen.sh"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/lib/COPYING.LIB"
+	rm -rf "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/test"
+	find "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/libdes/asm" \
+		-name '*.pl' -print0 | xargs -0 \
+		perl -pi -e 's{^#!/usr/local/bin/perl}{#!/usr/bin/perl}g'
+	find "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/libdes/asm" \
+		-name '*.pl' -print0 | xargs -0 chmod a+x
+	chmod -R u=rwX,go=rX "$(PKGDIR)/usr/src/kernel-patches/all/freeswan"
+
+install-kernel-patch-freeswan-ext: DH_OPTIONS=-i
+install-kernel-patch-freeswan-ext: PKGDIR=$(CURDIR)/debian/kernel-patch-freeswan-ext
+install-kernel-patch-freeswan-ext: patch-ext-stamp
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	# some of this has been taken from Tommi Virtanen's package
+	install --mode=0755 debian/kernel-patch-freeswan.apply \
+		"$(PKGDIR)/usr/src/kernel-patches/all/apply/freeswan"
+	install --mode=0755 debian/kernel-patch-freeswan.unpatch \
+		"$(PKGDIR)/usr/src/kernel-patches/all/unpatch/freeswan"
+	install --mode=0755 utils/patcher \
+		"$(PKGDIR)/usr/src/kernel-patches/all/freeswan"
+	cp -r Makefile Makefile.inc Makefile.ver klips/ lib/ libcrypto/ libdes/ zlib/ "$(PKGDIR)/usr/src/kernel-patches/all/freeswan"
+#	# do not use symbolic linking because then the compiling would be done under /usr/src/....
+#	# which is undesireable and makes the patch unusable by non-root users for compiling kernels
+#	sed 's/ln -s/cp -R --dereference/' \
+#        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile" \
+#			> "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp"
+#	mv "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp" \
+#        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile"
+	# also don't generate the out.kpatch file under /usr/src/....
+	sed 's/>>out.kpatch//' \
+        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile" \
+			> "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp"
+	mv "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp" \
+        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile"
+	sed 's/>out.kpatch//' \
+        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile" \
+			> "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp"
+	mv "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp" \
+        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile"
+	sed 's/rm -f out.kpatch//' \
+        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile" \
+			> "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp"
+	mv "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile.tmp" \
+        	"$(PKGDIR)/usr/src/kernel-patches/all/freeswan/Makefile"
+	chmod u=rwX,go=rX "$(PKGDIR)/usr/src/kernel-patches/all/freeswan"
+	# remove extra junk not needed on linux / that lintian would complain about
+	find "$(PKGDIR)/usr/src/kernel-patches/all/freeswan" \
+		-name '*.o' -print0 | xargs -0 rm -f
+	find "$(PKGDIR)/usr/src/kernel-patches/all/freeswan" \
+		-name '*.a' -print0 | xargs -0 rm -f
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/utils/pf_key"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/utils/spi"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/utils/spigrp"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/utils/eroute"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/utils/tncfg"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/utils/klipsdebug"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/patches/kernel.patch.gen.sh"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/lib/COPYING.LIB"
+	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/libcrypto/perlasm/LICENSE"
+	rm -rf "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/test"
+	find "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/libdes/asm" \
+		-name '*.pl' -print0 | xargs -0 \
+		perl -pi -e 's{^#!/usr/local/bin/perl}{#!/usr/bin/perl}g'
+	find "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/libcrypto" \
+		-name '*.pl' -print0 | xargs -0 \
+		perl -pi -e 's{^#!/usr/local/bin/perl}{#!/usr/bin/perl}g'
+	find "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/libdes/asm" \
+		-name '*.pl' -print0 | xargs -0 chmod a+x
+	find "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/libcrypto" \
+		-name '*.pl' -print0 | xargs -0 chmod a+x
+	find "$(PKGDIR)/usr/src/kernel-patches/all/freeswan/klips/net/ipsec/alg/scripts" \
+		-name '*.sh' -print0 | xargs -0 chmod a+x
+	chmod -R u=rwX,go=rX "$(PKGDIR)/usr/src/kernel-patches/all/freeswan"
+
+binary-common:
+	#dh_testversion 2
+	dh_testdir
+	dh_testroot
+	dh_installdebconf
+	dh_installdocs
+	# additional docs from the x509 patch
+	-install --mode=644 $(CURDIR)/debian/x509patch-*-freeswan-*/README \
+		$(CURDIR)/debian/freeswan/usr/share/doc/freeswan/README.x509
+	-install --mode=644 $(CURDIR)/debian/x509patch-*-freeswan-*/README \
+		$(CURDIR)/debian/freeswan/usr/share/doc/kernel-patch-freeswan/README.x509
+	-install --mode=644 $(CURDIR)/debian/x509patch-*-freeswan-*/CHANGES \
+		$(CURDIR)/debian/freeswan/usr/share/doc/freeswan/CHANGES.x509
+	-install --mode=644 $(CURDIR)/debian/x509patch-*-freeswan-*/ipsec.secrets.template \
+		$(CURDIR)/debian/freeswan/usr/share/doc/freeswan/ipsec.secrets.template.x509
+	-install --mode=644 $(CURDIR)/debian/Interoperability_with_Win2000_and_PGPNet.txt \
+		$(CURDIR)/debian/freeswan/usr/share/doc/freeswan/
+	-mkdir $(CURDIR)/debian/freeswan/usr/share/doc/freeswan/ext-patches
+	-install --mode=644 $(CURDIR)/debian/ext-patches/* \
+		$(CURDIR)/debian/freeswan/usr/share/doc/freeswan/ext-patches
+#	dh_installexamples
+#	dh_installmenu
+#	dh_installemacsen
+#	dh_installpam
+#	dh_installinit
+#	dh_installcron
+#	dh_installmanpages
+#	dh_installinfo
+#	dh_undocumented
+	dh_installchangelogs CHANGES
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+
+	# set permissions on ipsec.secrets (only for freeswan package)
+	-chmod 600 $(CURDIR)/debian/freeswan/etc/ipsec.secrets
+	-chmod 700 $(CURDIR)/debian/freeswan/etc/ipsec.d
+
+	# You may want to make some executables suid here.
+#	dh_suidregister
+#	dh_makeshlibs
+	dh_installdeb
+#	dh_perl
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture-independent files here.
+binary-indep: install-kernel-patch-freeswan install-kernel-patch-freeswan-ext
+	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
+
+# Build architecture-dependent files here.
+binary-arch: install-freeswan
+	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
+
+# Any other binary targets build just one binary package at a time.
+#binary-%: build install
+#	make -f debian/rules binary-common DH_OPTIONS=-p$*
+             
+binary: binary-indep binary-arch
+#.PHONY: clean binary-indep binary-arch binary install
+.PHONY: clean binary-indep binary-arch

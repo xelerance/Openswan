@@ -1,0 +1,3 @@
+ip_forward=yes
+spoofprotect=no
+syncookies=no

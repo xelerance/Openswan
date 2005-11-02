@@ -1,0 +1,10 @@
+Document: freeswan
+Title: FreeSWan documentation
+Author: The FreeSWan project
+Abstract: This is a comprehensive document which describes what IPSEC
+  is, how it works, and the FreeSWan IPSEC implementation.
+Section: Apps/System
+
+Format: HTML
+Index: /usr/share/doc/freeswan/doc/index.html
+Files: /usr/share/doc/freeswan/doc/*.html

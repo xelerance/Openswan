@@ -1,0 +1,357 @@
+#!/usr/bin/perl
+# mail OE DNS RR info to relevent administrator
+#
+# Copyright (C) 2003 Sam Sgro <sam@freeswan.org> 
+#
+# Based on "verify" from the FreeS/WAN distribution, (C) 2001 Michael 
+# Richardson <mcr@freeswan.org>
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+
+$me="ipsec verify";
+$ENV{'PATH'}="/sbin:/usr/bin:/usr/local/sbin:@IPSEC_SBINDIR@:$ENV{'PATH'}";
+if($ENV{'IPSEC_CONFS'}) { $conf=$ENV{'IPSEC_CONFS'} } else { $conf= `ipsec --confdir`; chomp($conf); }
+
+# Should we print in colour by default?
+$ctype=`/sbin/consoletype`;
+if ( $ctype && !($ctype eq "serial"))
+{
+    $colour="1";
+}
+
+sub printfun {
+  print sprintf("%-65s",@_);
+}
+
+# capture STDOUT as @out, STDERR as @err with no temp files.
+sub run {
+    $command=shift;
+
+    pipe child_read, parent_write; 
+    pipe parent_read, child_write;
+    pipe err_read, err_write; 
+    
+    $mypid=fork;
+    if($mypid)
+    {
+	close child_write; close err_write;
+	@out=<parent_read>;
+	@err=<err_read>;
+    }
+    else 
+    { 
+        close parent_read; close parent_write;
+	open STDOUT,">&child_write"; 
+        open STDERR,">&err_write";
+        exec $command; print STDERR "Cannot execute command \"$command\": $!\n";
+    }
+}
+
+# Code to print out [OK], [FAILED].
+sub errchk {
+	if (!shift(@_)) 
+	{
+	    print "\t[";
+	    if($colour) { print "\e[1;31m"; } 
+	    if(@_) 
+	    { 
+		print "@_"; 
+	    } 
+	    else 
+	    { 
+		print "FAILED"; 
+	    }
+	    if($colour) { print "\e[0;39m"; } 
+	    print "]\n";
+	    if(@err) 
+	    { 
+		print @err; 
+	    }
+	}
+	else
+	{	    
+	    print "\t[";
+	    if($colour) { print "\e[1;32m"; } 
+	    print "OK";
+	    if($colour) { print "\e[0;39m"; } 
+	    print "]\n";
+        }
+}
+
+# Code to print out [DEPRECATED] and key restrict message
+sub deprecated {
+
+    print "\t[";
+    if($colour) { print "\e[1;33m"; } 
+    print "DEPRECATED";
+    if($colour) { print "\e[0;39m"; } 
+    print "]\n
+RFC 3445 restricts the use of the KEY RR to DNSSEC applications. The use of 
+a KEY record sub-type for Opporunistic Encryption (OE) has been deprecated.
+TXT records are used to provide all OE functionality.
+
+For more information on these changes, see:
+http://www.freeswan.org/freeswan_snaps/CURRENT-SNAP/doc/upgrading.html\n\n";
+}
+
+# Verification routines begin here...
+#
+# Check DNS Configuration based on a hostname
+# $1 = Hostname (string)
+# eg: checkdnshost oetest.freeswan.org
+sub checkdnshost {
+    run "host -t key $_[0]";
+    ($keypresent)=grep /(0x4200|16896)/, @out;
+    if($keypresent) 
+    { 
+	printfun "Looking for KEY in forward map: $_[0]";
+	deprecated; 
+    }
+
+
+    printfun "Looking for TXT in forward map: $_[0]";
+    run "host -t txt $_[0]";
+    ($txtpresent)=grep /X-IPsec-Server/,@out;
+    errchk "$txtpresent", "MISSING";
+}
+
+# Check DNS Configuration based on IP address
+# $1 = IP Address (string)
+# eg: checkdnsip 127.0.0.2
+sub checkdnsip {
+    $fortxt=$_[0];
+    $revtxt=join('.',reverse(split(/\./, $fortxt))).".in-addr.arpa.";
+    printfun "Looking for TXT in reverse map: $revtxt";
+    run "host -t txt $revtxt";
+    ($txtpresent)=grep /X-IPsec-Server/,@out;
+    errchk "$txtpresent", "MISSING";
+
+    if($txtpresent) {
+	$txtpresent=~ s/.*X-IPsec-Server\([0-9].*\)=//; $txtpresent=~ s/[\"\ ].*//;
+	$gwip=$txtpresent;
+	chomp($gwip);
+	$gwrev=join('.',reverse(split(/\./, $gwip))).".in-addr.arpa.";
+	# Check for a KEY record for the indicated IPSec GW.
+	run "host -t key $gwrev";
+	($keypresent)=grep /(0x4200|16896)/, @out;
+	if($keypresent) 
+	{ 
+	    printfun "Looking for KEY in reverse map: $gwrev";
+	    deprecated; 
+	}
+	# If the host is its own gateway, then we know we've got a TXT record.
+	if($gwip ne $fortxt) {	
+	    printfun "Looking for TXT in reverse map: $gwrev";
+	    run "host -t txt $gwrev";
+	    ($txtpresent)=grep /X-IPsec-Server/,@out;
+	    errchk "$txtpresent", "MISSING";
+	}
+
+    }
+}
+
+sub udp500check {
+    run "netstat -an";
+    # Flaw: Only taking the first IP address found listening...
+    ($listen)=grep /:500/, @out;
+    if(!$listen)
+    { 
+	printfun "Pluto not listening on port udp 500. Check interfaces defintion in ipsec.conf.";	
+    }
+    else
+    {
+	( $rest, $rest, $rest, $defaultsrcip, $rest)=split(' ',$listen); 
+	$defaultsrcip=~ s/:500//;
+	run "/bin/ls /proc/sys/net/ipv4/conf";
+	foreach $net (grep !/(lo|all|default|ipsec|vmnet)/, @check=@out)
+	{
+	    if ( -e "/proc/net/ip_fwchains" )
+	    {
+		chomp($net);
+		printfun "Checking IPchains port 500 hole ($defaultsrcip on $net)";
+		run "ipchains --check input -p udp --src $defaultsrcip 500 --dst 2.3.4.5 500 -i $net";
+		chomp($out[0]);
+		if( $out[0] eq "accepted" ) { errchk "$out[0]"; } else { errchk "","BLOCKED"; }
+	    }
+	    elsif( -e "/proc/net/ip_tables_names" )
+	    {
+		# iptables --check will never happen, hack it outselves
+		# use tcpdump? nmap? custom rule? at least check outgoing 500? ping outside activeOE box?
+		# print "Cannot check if IPtables has port 500 hole ($defaultsrcip on $net)";
+	    }
+	}
+    }
+}
+
+sub checktunnel {
+    $csource=$_[0]; $cdest=$_[1]; $ctun=$_[2]; $all="0.0.0.0/0";
+
+    printfun "Checking $ctun from $csource to $cdest";
+    run "iptables -t nat -L POSTROUTING -n";
+    @out=grep !/(Chain POSTROUTING|target)/, @out;
+    foreach (@out) {
+	( $target, $prot, $opt, $source, $dest ) = split(' ',$_);
+	if(((($source eq $csource) || ($source eq $all)) && (($dest eq $cdest) || ($dest = $all))) && $target eq "ACCEPT")
+	{ 
+	    errchk "@out";
+	}
+	else
+	{
+	    @err="$target from $source to $dest kills tunnel $source -> $cdest\n";
+	    errchk "","FAILED";
+	}
+    }
+}
+
+sub installstartcheck {
+	print "Checking your system to see if IPsec got installed and started correctly:\n";
+
+	printfun "Version check and ipsec on-path";
+	run "ipsec --version";
+	errchk "@out";
+	print grep /Linux/, @out;
+
+        printfun "Checking for KLIPS support in kernel";
+	if ( -e "/proc/net/ipsec_eroute" ) { $test="1" }
+	errchk "$test";
+
+	printfun "Checking for RSA private key ($conf/ipsec.secrets)";
+	run "ipsec showhostkey --txt 1.1.1.1";
+	errchk @out;
+	
+	# Wouldn't this test fail if your mucked up your interface definition?
+	printfun "Checking that pluto is running";
+	run "ipsec whack --status";
+	errchk "@out";
+	if (grep /interface/, @out)
+	{
+	    udp500check;
+	}
+}
+
+sub tunnelchecks {
+    open("dev", "/proc/net/dev");
+    if((grep !/(ipsec|lo:|Inter|packets)/, <dev>) > 1) 
+    {
+	printfun "Two or more interfaces found, checking IP forwarding";
+        open("cat", "/proc/sys/net/ipv4/ip_forward");
+	if(<cat> == "0") 
+	{ 
+	    errchk ""; 
+	} 
+	else 
+	{
+	    errchk "@out";
+	    printfun "Checking NAT and MASQUERADEing";
+	    if( -e "/proc/net/ip_conntrack" )
+	    {
+		run "iptables -t nat -L -n";
+		if(grep /(NAT|MASQ)/, @out)
+		{
+		    printf "\n";
+		    open("cat", "/proc/net/ipsec_eroute");
+		    foreach(grep /tun0x/, <cat>)
+		    {      
+			@eroute=split(' ',$_);
+			checktunnel $eroute[1], $eroute[3], $eroute[5];
+		    }
+		}
+		else
+		{
+		    errchk "1";
+		}
+	    }
+	    else
+	    { 
+		errchk "","N/A";
+	    }
+	}
+    }
+}
+
+sub dnschecks {
+    # Check the running hostname.
+    printf "\nOpportunistic Encryption DNS checks:\n";
+    run "hostname"; 
+    ($hostname)=@out; chomp $hostname;
+    checkdnshost $hostname;
+    
+    # Check all the public IP addresses...
+    run "/sbin/ifconfig -a";
+    foreach (grep /inet addr/,@out)
+    {
+	$_=~ s/^\s*//;
+        @temp=split(/[:\ ]+/, $_);
+	push(@address,$temp[2]);
+    }
+    # Purge all non-routeable IPs...
+    @address=grep !/^(127.*|10.*|172.1[6789]+.*.*|172.2+.*.*|172.3[01]+.*.*|192.168.*.*|169.254.*.*)/,@address;
+    printfun "Does the machine have at least one non-private address?";
+    errchk @address;
+    foreach(@address=grep !$check{$_}++,@address)
+    {
+	checkdnsip $_;
+    }
+}
+
+# Main function begins here!
+# Harvest options, ensure they're valid.
+use Getopt::Long;
+%optctl = ("host" => \$hostname,"ip" => \$ip, "colour" => \$colour);
+GetOptions(\%optctl, "host=s" ,"ip=s", "colour!");
+
+# Exit if we get passed an option we don't recognize.
+if($Getopt::Long::error) { exit; }
+
+
+# If you've passed --host or --ip, do only those checks.
+if($hostname || $ip)
+{
+# Check this --host for OE.
+    if($hostname)
+    {
+	printf "Checking $hostname for Opportunistic Encryption:\n";
+	checkdnshost $hostname;
+	run "host -t A $hostname";
+	if(($ipaddr) = grep (/address/i, @out))
+	{
+	    $ipaddr=~ s/.*address\ //;
+	    chomp $ipaddr;
+	    checkdnsip $ipaddr;
+	}
+	else
+	{
+	    printf "$hostname does not resolve to an IP, no reverse lookup tests possible.\n";
+	}
+    }
+# Check this IP for OE.
+    if($ip)
+    {
+	printf "Checking IP $ip for Opportunistic Encryption:\n";
+	checkdnsip $ip;
+    }
+}
+else
+{
+    # Call the default routines...
+    # Root check...
+    if($> != "0") 
+    {
+	print "To check this machine, you need to run \"$me\" as root.\n"; exit;
+    }
+    else
+    {
+	installstartcheck;
+	tunnelchecks;
+	dnschecks;
+    }
+}
+

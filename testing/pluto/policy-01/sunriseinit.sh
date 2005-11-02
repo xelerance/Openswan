@@ -1,0 +1,5 @@
+#!/bin/sh
+
+named
+inetd
+

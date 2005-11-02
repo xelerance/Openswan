@@ -1,0 +1,62 @@
+%\documentclass[twocolumn]{article}
+\documentclass{article}
+\usepackage[dvips]{graphicx}
+%\usepackage{ols
+
+% You have to do this to suppress page numbers.  Don't ask.
+\thispagestyle{empty}
+
+\usepackage{html} 
+
+\author{Michael C. Richardson\\
+	Sandelman Software Works Inc.\\
+{\normalsize {\tt mcr@sandelman.ottawa.on.ca} http://www.sandelman.ca/mcr} \\}
+
+%don't want date printed
+\date{}
+
+%\date{April 20, 2002}
+
+\title{\Large \bf Automatic Regression testing of network code: User-Mode Linux and FreeSWAN.}
+
+\begin{document}
+\maketitle\newpage
+
+\begin{abstract}
+
+The Linux FreeSWAN project (IPsec for Linux) produces rather complicated
+networking code. The successful application of the protocol results in all
+network data being encrypted. The use of dynamic keying means that it nearly
+impossible for an observer (even a trusted one trying to test) to know
+what is going on. The need for multiple systems (often as many as 6) to be
+properly configured creates an environment nearly impossible to test
+regularily.
+
+The emergence of virtual machine technology, particularly, User Mode Linux,
+has provided a solution to the testing problem: create as many virtual
+machines as needed and control them using standard testing scaffolding
+technology: expect(1). This paper describes the scaffolding and the resulting
+testing regime which is used. 
+
+The focus is around a modified network switch emulator, "uml\_netjig" which
+provides the ability to play and capture network packets through a single
+User-Mode Linux virtual machine. 
+
+A second iteration of this tool is also described, combining more complicated 
+expect scripts, and a command mode for uml\_netjig, permitting coordination of 
+the multiple virtual machines that are needed when doing fully negotiated
+IPsec sessions.
+
+\end{abstract}
+
+\include{background}
+\include{physical}
+\include{scaffolding}
+\include{firstattempt}
+\include{secondattempt}
+\include{conclusions}
+
+\bibliographystyle{alpha}
+\bibliography{ols2002,rfc}
+
+\end{document}

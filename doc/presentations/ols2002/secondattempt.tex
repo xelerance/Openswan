@@ -1,0 +1,88 @@
+\section{The second virtual attempt}
+
+To fix the various problems noted before, a rewrite of the uml\_netjig was
+done. The rewrite includes a command mode - the result is that the switch
+controller is now just another I/O from the expect script.
+
+\begin{figure}[ht]
+\includegraphics[height=2in,width=3in]{multi_netjig.eps} 
+\caption{NetJig for multiple machines}
+\label{netjig2}
+\end{figure}
+
+The major thing to note in contrasting this diagram with the previous
+diagram is that the expect script is now in control. The expect
+script starts up a copy of the switch emulator (uml\_netjig), asks it to
+create three virtual switches: eastnet, westnet and publicnet. 
+
+These are connected to the User-Mode-Linux systems in turn. 
+
+Initialization scripts are then run on the two user-mode-linux systems.
+
+At the completion of the initialization, the expect script can then
+command the uml\_netjig to play back captured packets on appropriate
+interfaces, while recording packets from other interfaces.
+
+In the simplest test case, {\tt basic-pluto-01} packets are played 
+on the {\tt eastnet}, addressed from {\tt sunrise} (a node on eastnet),
+to {\tt sunset} (a node on westnet). The two machines have negotiated 
+a VPN connection using pluto across the public network. 
+
+The expect script asks the uml\_netjig to signal it when all the packets 
+have been played, and can then shutdown the machines properly.
+
+The are a number of other advantages to this situation:
+
+The startup and shutdown is under the control of the expect script. 
+This means that the systems can be interrogated about the state after the
+packets have occured.
+
+As the startup/shutdown is no longer contigent on the packet flows - this
+means that various tests can be done without requiring any packets to flow.
+
+The final advantage of this system is that the expect script is only 209
+lines long, of which 106 lines are argument processing. A slightly
+abridged version is presented below:
+
+\begin{verbatim}
+spawn -noecho -open [open "|$netjig_prog --cmdproto" w+]
+
+newswitch $netjig1 "$arpreply east"
+newswitch $netjig1 "public"
+newswitch $netjig1 "$arpreply west"
+
+trace variable expect_out(buffer) w log_by_tracing
+
+startuml east 
+startuml west
+
+loginuml east
+loginuml west
+
+inituml east
+inituml west
+
+record $netjig1 east $recordeast
+record $netjig1 west $recordwest
+
+setupplay $netjig1 east $playeast
+setupplay $netjig1 west $playwest
+
+runuml $netjig1
+
+send -i $umlid(east,spawnid) "^C\r"
+send -i $umlid(west,spawnid) "^C\r"
+
+send -i $umlid(east,spawnid) "halt\r"
+expect -i $umlid(east,spawnid) eof
+
+send -i $umlid(west,spawnid) "halt\r"
+expect -i $umlid(west,spawnid) eof
+\end{verbatim}
+
+
+
+
+
+
+

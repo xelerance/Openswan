@@ -1,0 +1,10 @@
+/etc/ipsec.conf
+/etc/ipsec.secrets
+/etc/ipsec.d/policies/clear
+/etc/ipsec.d/policies/private
+/etc/ipsec.d/policies/private-or-clear
+/etc/ipsec.d/policies/clear-or-private
+/etc/ipsec.d/policies/block
+/etc/init.d/ipsec
+/etc/logcheck/ignore.d.workstation/freeswan
+/etc/logcheck/ignore.d.server/freeswan
