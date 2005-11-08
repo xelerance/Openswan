@@ -1855,6 +1855,7 @@ find_connection_for_clients(struct spd_route **srp,
 
     if (best!= NULL && NEVER_NEGOTIATE(best->policy))
 	best = NULL;
+    }
 
     if (srp != NULL && best != NULL)
 	*srp = best_sr;
@@ -2313,11 +2314,11 @@ cannot_oppo(struct connection *c
 #endif
 }
 
-static void initiate_opportunistic_body(struct find_oppo_bundle *b
+static void initiate_ondemand_body(struct find_oppo_bundle *b
     , struct adns_continuation *ac, err_t ac_ugh);	/* forward */
 
 void
-initiate_opportunistic(const ip_address *our_client
+initiate_ondemand(const ip_address *our_client
 , const ip_address *peer_client
 , int transport_proto UNUSED
 , bool held
@@ -2336,7 +2337,7 @@ initiate_opportunistic(const ip_address *our_client
     b.failure_shunt = 0;
     b.whackfd = whackfd;
     b.step = fos_start;
-    initiate_opportunistic_body(&b, NULL, NULL);
+    initiate_ondemand_body(&b, NULL, NULL);
 }
 
 static void
@@ -2405,7 +2406,7 @@ continue_oppo(struct adns_continuation *acr, err_t ugh)
     }
     else
     {
-	initiate_opportunistic_body(&cr->b, &cr->ac, ugh);
+	initiate_ondemand_body(&cr->b, &cr->ac, ugh);
 	whackfd = NULL_FD;	/* was handed off */
     }
 
@@ -2528,7 +2529,7 @@ check_txt_recs(enum myid_state try_state
 
 /* note: gateways_from_dns must be NULL iff this is the first call */
 static void
-initiate_opportunistic_body(struct find_oppo_bundle *b
+initiate_ondemand_body(struct find_oppo_bundle *b
 , struct adns_continuation *ac
 , err_t ac_ugh)
 {

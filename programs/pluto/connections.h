@@ -267,8 +267,11 @@ extern void initiate_connection(const char *name
 				, int whackfd
 				, lset_t moredebug
 				, enum crypto_importance importance);
-extern void initiate_opportunistic(const ip_address *our_client
-    , const ip_address *peer_client, int transport_proto, bool held, int whackfd, err_t why);
+extern void initiate_ondemand(const ip_address *our_client
+			      , const ip_address *peer_client
+			      , int transport_proto
+			      , bool held
+			      , int whackfd, err_t why);
 extern void terminate_connection(const char *nm);
 extern void release_connection(struct connection *c, bool relations);
 extern void delete_connection(struct connection *c, bool relations);
