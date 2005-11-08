@@ -24,7 +24,7 @@ then
 fi
 
 mkdir -p /tmp/$TESTNAME/ipsec.d/policies
-cp /etc/ipsec.d/*          /tmp/$TESTNAME/ipsec.d
+cp -r /etc/ipsec.d/*          /tmp/$TESTNAME/ipsec.d
 cp /etc/ipsec.d/policies/* /tmp/$TESTNAME/ipsec.d/policies
 
 IPSEC_CONFS=/tmp/$TESTNAME export IPSEC_CONFS
