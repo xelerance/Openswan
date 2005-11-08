@@ -1081,7 +1081,7 @@ libtest() {
     elif [ -f ${OPENSWANSRCDIR}/lib/libopenwan/$testsrc ]
     then
 	FILE=${OPENSWANSRCDIR}/lib/libopenswan/$testsrc
-    elif [ -f ${OPENSWANSRCDIR}/lib/libopenwan/$testsrc ]
+    elif [ -f ${OPENSWANSRCDIR}/lib/libopenswan/$testsrc ]
     then
         FILE=${OPENSWANSRCDIR}/lib/libopenswan/$testsrc
     elif [ -f ${OPENSWANSRCDIR}/linux/net/klips/$testsrc ]
