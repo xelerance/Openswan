@@ -1853,7 +1853,7 @@ find_connection_for_clients(struct spd_route **srp,
 	}
     }
 
-    if (best!= NULL && NEVER_NEGOTIATE(best->policy))
+    if (best!= NULL && NEVER_NEGOTIATE(best->policy)) {
 	best = NULL;
     }
 
