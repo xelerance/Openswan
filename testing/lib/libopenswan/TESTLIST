@@ -36,3 +36,5 @@ libtest ttosubnet good
 skiptest lib-ttoul incomplete
 skiptest lib-ultoa incomplete
 skiptest lib-ultot incomplete
+libtest biglset	good
+

@@ -19,9 +19,7 @@ include $(OPENSWANSRCDIR)/Makefile.inc
 SUBDIRS=
 UTILS=${OPENSWANSRCDIR}/testing/utils
 
-def:
-	@echo "Please read doc/intro.html or INSTALL before running make"
-	@false
+def:	check
 
 check:
 	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; source TESTLIST

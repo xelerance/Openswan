@@ -59,7 +59,9 @@ typedef int bool;
 #define streq(a, b) (strcmp((a), (b)) == 0)	/* clearer shorthand */
 #define strcaseeq(a, b) (strcasecmp((a), (b)) == 0)	/* clearer shorthand */
 
-/* set type with room for at least 64 elements for ALG opts (was 32 in stock FS) */
+/* set type with room for at least 64 elements for ALG opts
+ * (was 32 in stock FS)
+ */
 
 typedef unsigned long long lset_t;
 #define LEMPTY 0ULL
@@ -69,6 +71,8 @@ typedef unsigned long long lset_t;
 #define LHAS(set, elem)  ((LELEM(elem) & (set)) != LEMPTY)
 #define LIN(subset, set)  (((subset) & (set)) == (subset))
 #define LDISJOINT(a, b)  (((a) & (b)) == LEMPTY)
+
+#include "biglset.h"
 
 /* Routines to check and display values.
  *
