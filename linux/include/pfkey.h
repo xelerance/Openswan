@@ -248,7 +248,7 @@ int
 pfkey_key_build(struct sadb_ext**	pfkey_ext,
 		uint16_t		exttype,
 		uint16_t		key_bits,
-		char*			key);
+		unsigned char          *key);
 
 int
 pfkey_ident_build(struct sadb_ext**	pfkey_ext,

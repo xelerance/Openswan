@@ -541,7 +541,7 @@ int
 pfkey_key_build(struct sadb_ext**	pfkey_ext,
 		uint16_t		exttype,
 		uint16_t		key_bits,
-		char*			key)
+		unsigned char *		key)
 {
 	int error = 0;
 	struct sadb_key *pfkey_key = (struct sadb_key *)*pfkey_ext;
