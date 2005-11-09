@@ -89,5 +89,6 @@ else
 		pat="$pat|$i"
 	done
 fi
+echo ROUTING TABLE
 ip route | egrep "$pat"
 

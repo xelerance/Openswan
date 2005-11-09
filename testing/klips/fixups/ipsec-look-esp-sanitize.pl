@@ -24,7 +24,9 @@
 #192.1.2.0       0.0.0.0         255.255.255.0   U        40 0          0 eth1
 #192.1.2.0       0.0.0.0         255.255.255.0   U        40 0          0 ipsec0
 #east:~# kill `cat /var/run/klogd.pid`; cat /tmp/klog.log
-
+#
+#The revised look uses ip route, so it does not have a header, so the look
+# command inserts one.
 #
 # the MSS column of the netstat output seems to change, so we now sanitize
 # it to zero.
@@ -248,7 +250,7 @@ while(<>) {
 	$spigrp{$key}=$compline;
       }
       
-      elsif(/^Destination/ || ($inspigrp && /^$/)) {
+      elsif(/^ROUTING TABLE/ || /^Destination/ || ($inspigrp && /^$/)) {
 	$inspigrp=0;
 	$inroute=1;
 	
