@@ -245,7 +245,7 @@ distlist:
 
 CTAGSFLAGS = -N --format=1 # fishy options required for Exuberant Ctags
 
-TAGSFILES=$(DISTSRC) $(LIBOPENSWANDIR)/*.[ch] ${OPENSWANSRCDIR}/include/*.h ${OPENSWANSRCDIR}/linux/include/*.h ${OPENSWANSRCDIR}/linux/include/openswan/*.h
+TAGSFILES=$(DISTSRC) $(LIBOPENSWANDIR)/*.[ch] ${OPENSWANSRCDIR}/include/*.h ${OPENSWANSRCDIR}/linux/include/*.h ${OPENSWANSRCDIR}/linux/include/openswan/*.h ${OPENSWANSRCDIR}/linux/net/ipsec/*.[ch]
 tags:	$(TAGSFILES)
 	LC_ALL=C ctags $(CTAGSFLAGS) ${TAGSFILES}
 
