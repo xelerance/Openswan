@@ -615,7 +615,7 @@ netjigtest() {
 	NJARGS="$NJARGS $NETJIGARGS"
     fi
 
-    if [ "X$ARPREPLY" = "X--arpreply" ]
+    if [ "X${ARPREPLY-}" = "X--arpreply" ]
     then
 	NJARGS="$NJARGS -a"
     fi
@@ -1546,11 +1546,6 @@ do_umlX_test() {
     then
 	PUBOUTPUT=`basename $REF_PUB_OUTPUT .txt`
 	EXP2_ARGS="$EXP2_ARGS -P OUTPUT${KLIPS_MODULE}/$PUBOUTPUT.pcap"
-    fi
-
-    if [ "X$ARPREPLY" = "X--arpreply" ]
-    then
-	EXP2_ARGS="$EXP2_ARGS -a"
     fi
 
     if [ -n "${NETJIG_EXTRA-}" ]
