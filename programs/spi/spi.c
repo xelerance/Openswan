@@ -861,7 +861,7 @@ main(int argc, char *argv[])
 				exit(1);
 			}
 			memset(authkey, 0, authkeylen);
-			authkeylen = atodata(optarg, 0, authkey, authkeylen);
+			authkeylen = atodata(optarg, 0, (char *)authkey, authkeylen);
 			akey_opt = optarg;
 			break;
 		case 'E':
@@ -889,7 +889,7 @@ main(int argc, char *argv[])
 				exit(1);
 			}
 			memset(enckey, 0, enckeylen);
-			enckeylen = atodata(optarg, 0, enckey, enckeylen);
+			enckeylen = atodata(optarg, 0, (char *)enckey, enckeylen);
 			ekey_opt = optarg;
 			break;
 		case 'w':
@@ -930,7 +930,7 @@ main(int argc, char *argv[])
 				exit(1);
 			}
 			memset(iv, 0, ivlen);
-			ivlen = atodata(optarg, 0, iv, ivlen);
+			ivlen = atodata(optarg, 0, (char *)iv, ivlen);
 			iv_opt = optarg;
 			break;
 		case 'D':
