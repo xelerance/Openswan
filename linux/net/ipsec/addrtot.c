@@ -27,12 +27,13 @@ static size_t reverse4(const unsigned char *s, size_t len, char *b, char **dp);
 static size_t reverse6(const unsigned char *s, size_t len, char *b, char **dp);
 
 #if defined(__KERNEL__) && !defined(__HAVE_ARCH_STRSTR) 
+#define strstr ipsec_strstr
 /*
  * Find the first occurrence of find in s.
  * (from NetBSD 1.6's /src/lib/libc/string/strstr.c)
  */
 static char *
-strstr(s, find)
+ipsec_strstr(s, find)
 	const char *s, *find;
 {
 	char c, sc;
