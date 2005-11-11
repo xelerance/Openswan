@@ -76,7 +76,7 @@ char *command;
 extern char *optarg;
 extern int optind, opterr, optopt;
 char scratch[2];
-char *iv = NULL, *enckey = NULL, *authkey = NULL;
+unsigned char *iv = NULL, *enckey = NULL, *authkey = NULL;
 size_t ivlen = 0, enckeylen = 0, authkeylen = 0;
 ip_address edst, dst, src;
 int address_family = 0;
