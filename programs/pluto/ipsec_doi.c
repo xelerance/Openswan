@@ -907,6 +907,21 @@ main_outI1(int whack_sock
     pb_stream reply;	/* not actually a reply, but you know what I mean */
     pb_stream rbody;
 
+    int numvidtosend = 1;  /* we always send DPD VID */
+#ifdef NAT_TRAVERSAL
+    if (nat_traversal_enabled) {
+	numvidtosend++;
+    }
+#endif
+#if SEND_PLUTO_VID || defined(openpgp_peer)
+    numvidtosend++;
+#endif
+#ifdef XAUTH
+    if(c->spd.this.xauth_client || c->spd.this.xauth_server) {
+	numvidtosend++;
+    }
+#endif
+
     /* set up new state */
     st->st_connection = c;
 
@@ -964,8 +979,7 @@ main_outI1(int whack_sock
 	/* if we  have an OpenPGP certificate we assume an
 	 * OpenPGP peer and have to send the Vendor ID
 	 */
-	int np = (SEND_PLUTO_VID || c->spd.this.cert.type == CERT_PGP) ?
-	    ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
+	int np = numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 	if (!out_sa(&rbody
 		    , &oakley_sadb[policy_index], st, TRUE, FALSE, np))
 	{
@@ -978,45 +992,57 @@ main_outI1(int whack_sock
 	clonetochunk(st->st_p1isa, sa_start, rbody.cur - sa_start
 	    , "sa in main_outI1");
     }
+
     if (SEND_PLUTO_VID || c->spd.this.cert.type == CERT_PGP)
     {
 	char *vendorid = (c->spd.this.cert.type == CERT_PGP) ?
 	    pgp_vendorid : pluto_vendorid;
+	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 
-	if (!out_generic_raw(ISAKMP_NEXT_NONE, &isakmp_vendor_id_desc, &rbody
-	, vendorid, strlen(vendorid), "Vendor ID"))
+	if (!out_generic_raw(np, &isakmp_vendor_id_desc, &rbody
+			     , vendorid, strlen(vendorid), "Vendor ID"))
 	    return STF_INTERNAL_ERROR;
     }
 
-    /* ALWAYS Announce our ability to do Dead Peer Detection to the peer */
-    if (!out_modify_previous_np(ISAKMP_NEXT_VID, &rbody))
-        return STF_INTERNAL_ERROR;
-    if( !out_generic_raw(ISAKMP_NEXT_NONE, &isakmp_vendor_id_desc
-			 , &rbody, dpd_vendorid, dpd_vendorid_len, "V_ID"))
-        return STF_INTERNAL_ERROR;
-
+    /* Send DPD VID */
+    {
+	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
+	if(!out_vid(np, &rbody, VID_MISC_DPD)) {
+	    return STF_INTERNAL_ERROR;
+	}
+    }
 
 #ifdef NAT_TRAVERSAL
-    DBG(DBG_NATT, DBG_log("nat traversal enabled: %d", nat_traversal_enabled));
+    DBG(DBG_NATT, DBG_log("nat traversal enabled: %d"
+			  , nat_traversal_enabled));
     if (nat_traversal_enabled) {
+	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
+	
 	/* Add supported NAT-Traversal VID */
-	if (!nat_traversal_add_vid(ISAKMP_NEXT_NONE, &rbody)) {
+	if (!nat_traversal_insert_vid(np, &rbody)) {
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
     }
 #endif
 
-
 #ifdef XAUTH
-    if(c->spd.this.xauth_client || c->spd.this.xauth_server)
-    {
-	if(!out_vendorid(ISAKMP_NEXT_NONE, &rbody, VID_MISC_XAUTH))
-	{
+    if(c->spd.this.xauth_client || c->spd.this.xauth_server) {
+	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
+	if(!out_vid(np, &rbody, VID_MISC_XAUTH)) {
 	    return STF_INTERNAL_ERROR;
 	}
     }
 #endif
+
+#ifdef DEBUG
+    /* if we are not 0 then something went very wrong above */    
+    if(numvidtosend != 0) {
+	openswan_log("payload alignment problem please check the code in main_inR1_outR2 (num=%d)", numvidtosend);
+    }
+#endif
+
+	
 	
 
     close_message(&rbody);
@@ -2022,7 +2048,7 @@ main_inI1_outR1(struct msg_digest *md)
     /* we are looking for an OpenPGP Vendor ID sent by the peer */
     bool openpgp_peer = FALSE;
 
-/* Determin how many Vendor ID payloads we will be sending */
+    /* Determin how many Vendor ID payloads we will be sending */
     int next;
     int numvidtosend = 1;  /* we always send DPD VID */
 #ifdef NAT_TRAVERSAL
@@ -2225,9 +2251,7 @@ main_inI1_outR1(struct msg_digest *md)
        
     /* Announce our ability to do RFC 3706 Dead Peer Detection */
     next = --numvidtosend ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
-    if( !out_generic_raw(next, &isakmp_vendor_id_desc
-			 , &md->rbody, dpd_vendorid
-			 , dpd_vendorid_len, "DPP Vendor ID"))
+    if( !out_vid(next, &md->rbody, VID_MISC_DPD))
       return STF_INTERNAL_ERROR;
 
 #ifdef XAUTH

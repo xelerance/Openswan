@@ -94,6 +94,8 @@ struct msg_digest;
 void handle_vendorid (struct msg_digest *md, const char *vid, size_t len, struct state *st);
 
 bool out_vendorid (u_int8_t np, pb_stream *outs, enum known_vendorid vid);
+bool out_vid(u_int8_t np, pb_stream *outs, unsigned int vid);
+
 
 extern const char compile_time_interop_options[];
 

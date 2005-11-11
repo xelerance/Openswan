@@ -413,34 +413,28 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
 	st->hidden_variables.st_dpd_local = 1;
     }
     
+    /* send DPD VID */
     {
-      int np = ISAKMP_NEXT_NONE;
+	int np = ISAKMP_NEXT_NONE;
 
 #ifdef NAT_TRAVERSAL
-      if (st->hidden_variables.st_nat_traversal) {
-	np = ISAKMP_NEXT_VID;
-      }
+	if (st->hidden_variables.st_nat_traversal) {
+	    np = ISAKMP_NEXT_VID;
+	}
 #endif
 
-      if( !out_generic_raw(np, &isakmp_vendor_id_desc
-			   , &md->rbody, dpd_vendorid
-			   , dpd_vendorid_len, "DPP Vendor ID")) {
-	return STF_INTERNAL_ERROR;
-      }
+	if(!out_vid(np, &md->rbody, VID_MISC_DPD)) {
+	    return STF_INTERNAL_ERROR;
+	}
     }
 
 #ifdef NAT_TRAVERSAL
     if (st->hidden_variables.st_nat_traversal) {
-      if (!out_vendorid(auth_payload
-			, &md->rbody
-			, md->quirks.nat_traversal_vid)) {
+      if (!out_vid(ISAKMP_NEXT_NONE
+		   , &md->rbody
+		   , md->quirks.nat_traversal_vid)) {
 	return STF_INTERNAL_ERROR;
       }
-    }
-
-    if (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD) {
-      if (!nat_traversal_add_natd(auth_payload, &md->rbody, md))
-	return STF_INTERNAL_ERROR;
     }
 #endif
 
@@ -950,11 +944,8 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	np = ISAKMP_NEXT_VID;
       }
 
-      if( !out_generic_raw(np, &isakmp_vendor_id_desc
-			   , &rbody
-			   , dpd_vendorid, dpd_vendorid_len
-			   , "V_ID"))
-        return STF_INTERNAL_ERROR;
+      if( !out_vid(np, &rbody, VID_MISC_DPD))
+	  return STF_INTERNAL_ERROR;
     }
 
 #ifdef NAT_TRAVERSAL
@@ -968,7 +959,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	}
 #endif
 	
-	if (!nat_traversal_add_vid(np, &rbody)) {
+	if (!nat_traversal_insert_vid(np, &rbody)) {
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
@@ -978,7 +969,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 #ifdef XAUTH
     if(c->spd.this.xauth_client || c->spd.this.xauth_server)
     {
-	if(!out_vendorid(ISAKMP_NEXT_NONE, &rbody, VID_MISC_XAUTH))
+	if(!out_vid(ISAKMP_NEXT_NONE, &rbody, VID_MISC_XAUTH))
 	{
 	    return STF_INTERNAL_ERROR;
 	}

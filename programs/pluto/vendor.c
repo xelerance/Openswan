@@ -564,7 +564,8 @@ void handle_vendorid (struct msg_digest *md, const char *vid, size_t len, struct
 }
 
 /**
- * Add a vendor id payload to the msg
+ * Add a vendor id payload to the msg, and modify previous payload
+ * to say NEXT_VID.
  *
  * @param np
  * @param outs PB stream
@@ -595,18 +596,41 @@ bool out_vendorid (u_int8_t np, pb_stream *outs, unsigned int vid)
 		pvid->vid, pvid->vid_len, "V_ID");
 }
 
+/**
+ * Add a vendor id payload to the msg
+ *
+ * @param np
+ * @param outs PB stream
+ * @param vid Int of VendorID to be sent (see vendor.h for the list)
+ * @return bool True if successful
+ */
+bool out_vid(u_int8_t np, pb_stream *outs, unsigned int vid)
+{
+	struct vid_struct *pvid;
+
+	if (!_vid_struct_init) {
+		init_vendorid();
+	}
+
+	for (pvid = _vid_tab; (pvid->id) && (pvid->id!=vid); pvid++);
+
+	if (pvid->id != vid) return STF_INTERNAL_ERROR; /* not found */
+	if (!pvid->vid) return STF_INTERNAL_ERROR; /* not initialized */
+
+	DBG(DBG_EMITTING,
+		DBG_log("out_vendorid(): sending [%s]", pvid->descr);
+	);
+
+	return out_generic_raw(np, &isakmp_vendor_id_desc, outs,
+		pvid->vid, pvid->vid_len, "V_ID");
+}
+
 /* OpenPGP Vendor ID needed for interoperability with PGPnet
  *
  * Note: it is a NUL-terminated ASCII string, but NUL won't go on the wire.
  */
 char pgp_vendorid[] = "OpenPGP10171";
 const int pgp_vendorid_len = sizeof(pgp_vendorid);
-
-char dpd_vendorid[] = {0xAF, 0xCA, 0xD7, 0x13, 0x68, 0xA1, 0xF1,
-          0xC9, 0x6B, 0x86, 0x96, 0xFC, 0x77, 0x57, 0x01, 0x00};
-const int dpd_vendorid_len = sizeof(dpd_vendorid);
-
-
 
 /*
  * Local Variables:

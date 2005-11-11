@@ -415,12 +415,12 @@ static const struct state_microcode state_microcode_table[] = {
      */
     { STATE_AGGR_R0, STATE_AGGR_R1,
       SMF_PSK_AUTH| SMF_REPLY,
-      P(SA) | P(KE) | P(NONCE) | P(ID), P(VID), PT(NONE),
+      P(SA) | P(KE) | P(NONCE) | P(ID), P(VID) | P(NATD_RFC), PT(NONE),
       EVENT_RETRANSMIT, aggr_inI1_outR1_psk },
 
     { STATE_AGGR_R0, STATE_AGGR_R1,
       SMF_DS_AUTH | SMF_REPLY,
-      P(SA) | P(KE) | P(NONCE) | P(ID), P(VID), PT(NONE),
+      P(SA) | P(KE) | P(NONCE) | P(ID), P(VID) | P(NATD_RFC), PT(NONE),
       EVENT_RETRANSMIT, aggr_inI1_outR1_rsasig },
 
     /* STATE_AGGR_I1:
@@ -2113,7 +2113,7 @@ process_packet(struct msg_digest **mdp)
      */
     {
 	struct payload_digest *pd = md->digest;
-	int np = md->hdr.isa_np;
+	volatile int np = md->hdr.isa_np;
 	lset_t needed = smc->req_payloads;
 	const char *excuse
 	    = LIN(SMF_PSK_AUTH | SMF_FIRST_ENCRYPTED_INPUT, smc->flags)
@@ -2131,22 +2131,6 @@ process_packet(struct msg_digest **mdp)
 		return;
 	    }
 
-#ifdef NAT_TRAVERSAL
-	    switch (np)
-	    {
-		case ISAKMP_NEXT_NATD_RFC:
-		case ISAKMP_NEXT_NATOA_RFC:
-		    if ((!st) || (!(st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES))) {
-			/*
-			 * don't accept NAT-D/NAT-OA reloc directly in message,
-			 * unless we're using NAT-T RFC
-			 */
-			sd = NULL;
-		    }
-		    break;
-	    }
-#endif
-
 	    if (sd == NULL)
 	    {
 		/* payload type is out of range or requires special handling */
@@ -2156,15 +2140,18 @@ process_packet(struct msg_digest **mdp)
 		    sd = IS_PHASE1(from_state)
 			? &isakmp_identification_desc : &isakmp_ipsec_identification_desc;
 		    break;
+
 #ifdef NAT_TRAVERSAL
 		case ISAKMP_NEXT_NATD_DRAFTS:
 		    np = ISAKMP_NEXT_NATD_RFC;  /* NAT-D relocated */
 		    sd = payload_descs[np];
 		    break;
+
 		case ISAKMP_NEXT_NATOA_DRAFTS:
 		    np = ISAKMP_NEXT_NATOA_RFC;  /* NAT-OA relocated */
 		    sd = payload_descs[np];
 		    break;
+
 		case ISAKMP_NEXT_NATD_BADDRAFTS:
 			if (st && (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD_BADDRAFT_VALUES)) {
 			    /*
@@ -2199,6 +2186,11 @@ process_packet(struct msg_digest **mdp)
 		    SEND_NOTIFICATION(INVALID_PAYLOAD_TYPE);
 		    return;
 		}
+		
+		DBG(DBG_PARSING
+		    , DBG_log("got payload 0x%qx(%s) needed: 0x%qx opt: 0x%qx"
+			      , s, enum_show(&payload_names, np)
+			      , needed, smc->opt_payloads));
 		needed &= ~s;
 	    }
 
@@ -2384,6 +2376,23 @@ process_packet(struct msg_digest **mdp)
 	    p = p->next;
 	}
     }
+
+    /* VERIFY that we only accept NAT-D/NAT-OE when they sent us the VID */
+#ifdef NAT_TRAVERSAL
+    if((md->chain[ISAKMP_NEXT_NATD_RFC]!=NULL
+        || md->chain[ISAKMP_NEXT_NATOA_RFC]!=NULL)
+       && !(st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES)) {
+	/*
+	 * don't accept NAT-D/NAT-OA reloc directly in message,
+	 * unless we're using NAT-T RFC
+	 */
+	loglog(RC_LOG_SERIOUS, "message ignored because it contains a NAT payload, when we did not receive the appropriate VendorID");
+	/* MAYBE we shouldn't return here */
+	return;
+    }
+#endif
+
+
 
     /* possibly fill in hdr */
     if (smc->first_out_payload != ISAKMP_NEXT_NONE)

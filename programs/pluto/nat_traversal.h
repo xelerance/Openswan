@@ -1,5 +1,6 @@
-/* FreeS/WAN NAT-Traversal
+/* Openswan NAT-Traversal
  * Copyright (C) 2002-2003 Mathieu Lafon - Arkoon Network Security
+ * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -126,6 +127,7 @@ extern int nat_traversal_espinudp_socket (int sk
  */
 #ifndef PB_STREAM_UNDEFINED
 bool nat_traversal_add_vid(u_int8_t np, pb_stream *outs);
+bool nat_traversal_insert_vid(u_int8_t np, pb_stream *outs);
 #endif
 u_int32_t nat_traversal_vid_to_method(unsigned short nat_t_vid);
 
