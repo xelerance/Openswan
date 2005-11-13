@@ -141,9 +141,9 @@ out_sa(pb_stream *outs
 	alginfo = st->st_connection->alg_ike;
 
 	/* this is really checked upon load, but we double check here. */
-	if(revised_sadb == NULL) {
+	if(revised_sadb == NULL && alginfo!=NULL) {
 	    loglog(RC_NOALGO, "%s algorithm string: \"%s\" results in no permitted algorithms"
-		   , modestr, alginfo ? alginfo : "empty");
+		   , modestr, alginfo);
 	    return FALSE;
 	}
     } else {
