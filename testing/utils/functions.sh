@@ -9,6 +9,10 @@ TESTHOST=${TESTHOST-}
 NETJIGVERBOSE=${NETJIGVERBOSE-}
 THREEEIGHT=${THREEEIGHT-}
 TCPDUMPFLAGS=${TCPDUMPFLAGS-}
+WESTHOST=${WESTHOST-}
+EASTHOST=${EASTHOST-}
+TEST_GOAL_ITEM=${TEST_GOAL_ITEM-0}
+
 
 preptest() {
     local testdir="$1"
@@ -37,7 +41,7 @@ preptest() {
     fi
 
     # get rid of any pluto core files.
-    if [ -z "$XHOST_LIST" ]
+    if [ -z "${XHOST_LIST-}" ]
     then
 	XHOST_LIST="EAST WEST JAPAN"
     fi
@@ -709,7 +713,7 @@ do_ctl_test() {
 	NJARGS="$NJARGS -c OUTPUT${KLIPS_MODULE}/console.txt"
     fi
 
-    if [ "X${NEEDS_DNS}" = "Xtrue" ]
+    if [ "X${NEEDS_DNS-}" = "Xtrue" ]
     then
 	NJARGS="$NJARGS -D $POOLSPACE/nic/start.sh"
     fi
@@ -1485,7 +1489,7 @@ do_umlX_test() {
 
        local startvar
        startvar=${host}_START
-       if [ -z "${!startvar}" ]
+       if [ -z "${!startvar-}" ]
        then
             local startdir
 	    local starthost
@@ -1573,7 +1577,7 @@ do_umlX_test() {
        consoleref=REF${KERNVER}_${host}_CONSOLE_OUTPUT
        lhost=`echo $host | tr 'A-Z' 'a-z'`
 
-	if [ -n "${!consoleref}" ]
+	if [ -n "${!consoleref-}" ]
 	then
 	    consolediff ${KERNVER}$lhost OUTPUT${KLIPS_MODULE}/${KERNVER}${lhost}console.txt ${!consoleref}
 	fi
