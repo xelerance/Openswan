@@ -172,26 +172,3 @@ proc postDecrypt {state pb off len} {
 }
    
 
-proc changeState {state conn md} {
-    return "ignore"
-}
-
-proc adjustFailure {state conn md} {
-    return "ignore"
-}
-
-proc avoidEmitting {state conn md} {
-    return "ignore"
-}
-
-proc adjustTimers {state conn md} {
-    return "ignore"
-}
-
-proc avoidEmittingNotify {state pbs hdr} {
-    return "ignore"
-}
-
-proc avoidEmittingDelete {state pbs hdr} {
-    return "ignore"
-}
