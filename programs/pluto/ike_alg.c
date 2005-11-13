@@ -125,13 +125,13 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	    eklen= ike_info->ike_eklen;
 	    
 	    if (!ike_alg_enc_present(ealg)) {
-		DBG_log("ike_alg_db_new() "
+		DBG_log("oakley_alg_makedb() "
 			"ike enc ealg=%d not present",
 			ealg);
 		continue;
 	    }
 	    if (!ike_alg_hash_present(halg)) {
-		DBG_log("ike_alg_db_new() "
+		DBG_log("oakley_alg_makedb() "
 			"ike hash halg=%d not present",
 			halg);
 		continue;
@@ -268,109 +268,6 @@ fail:
     return gsp;
 }
 
-struct db_context *
-ike_alg_db_new(struct alg_info_ike *ai , lset_t policy)
-{
-	struct db_context *db_ctx = NULL;
-	struct ike_info *ike_info;
-	unsigned ealg, halg, modp, eklen=0;
-	struct encrypt_desc *enc_desc;
-	int i;
-
-	if (!ai) {
-		DBG(DBG_CRYPT,DBG_log("no IKE algorithms for this connection "));
-
-		goto fail;
-	}
-	policy &= POLICY_ID_AUTH_MASK;
-	db_ctx = db_prop_new(PROTO_ISAKMP, 8, 8 * 5);
-
-	/* for each group */
-	ALG_INFO_IKE_FOREACH(ai, ike_info, i) {
-	        char ikebuf[IKEALGBUF_LEN];
-
-		DBG(DBG_CONTROLMORE
-		    , DBG_log("examining ike policy of %s"
-			      , alg_info_snprint_ike1(ike_info
-						      , 0, 0
-						      , ikebuf
-						      , sizeof(ikebuf))));
-
-		ealg = ike_info->ike_ealg;
-		halg = ike_info->ike_halg;
-		modp = ike_info->ike_modp;
-		eklen= ike_info->ike_eklen;
-		if (!ike_alg_enc_present(ealg)) {
-			DBG_log("ike_alg_db_new() "
-					"ike enc ealg=%d not present",
-					ealg);
-			continue;
-		}
-		if (!ike_alg_hash_present(halg)) {
-			DBG_log("ike_alg_db_new() "
-					"ike hash halg=%d not present",
-					halg);
-			continue;
-		}
-		enc_desc = ike_alg_get_encrypter(ealg);
-		passert(enc_desc != NULL);
-		if (eklen 
-		/*
-			&& eklen != enc_desc->keydeflen)
-		*/
-			&& (eklen < enc_desc->keyminlen
-				|| eklen >  enc_desc->keymaxlen))
-				
-		{
-			DBG_log("ike_alg_db_new() "
-					"ealg=%d (specified) keylen:%d, "
-					"not valid "
-					/*
-					 "keylen != %d"
-					 */
-					"min=%d, max=%d"
-					, ealg
-					, eklen
-					/*
-					, enc_desc->keydeflen
-					*/
-					, enc_desc->keyminlen
-					, enc_desc->keymaxlen
-					);
-			continue;
-		}
-		if (policy & POLICY_RSASIG) {
-			db_trans_add(db_ctx, KEY_IKE);
-			db_attr_add_values(db_ctx, 
-					OAKLEY_ENCRYPTION_ALGORITHM, ealg);
-			db_attr_add_values(db_ctx, 
-					OAKLEY_HASH_ALGORITHM, halg);
-			if (eklen)
-				db_attr_add_values(db_ctx, 
-						OAKLEY_KEY_LENGTH, eklen);
-			db_attr_add_values(db_ctx, 
-					OAKLEY_AUTHENTICATION_METHOD, OAKLEY_RSA_SIG);
-			db_attr_add_values(db_ctx, 
-					OAKLEY_GROUP_DESCRIPTION, modp);
-		}
-		if (policy & POLICY_PSK) {
-			db_trans_add(db_ctx, KEY_IKE);
-			db_attr_add_values(db_ctx, 
-					OAKLEY_ENCRYPTION_ALGORITHM, ealg);
-			db_attr_add_values(db_ctx, 
-					OAKLEY_HASH_ALGORITHM, halg);
-			if (ike_info->ike_eklen) 
-				db_attr_add_values(db_ctx, 
-						OAKLEY_KEY_LENGTH, ike_info->ike_eklen);
-			db_attr_add_values(db_ctx, 
-					OAKLEY_AUTHENTICATION_METHOD, OAKLEY_PRESHARED_KEY);
-			db_attr_add_values(db_ctx, 
-					OAKLEY_GROUP_DESCRIPTION, modp);
-		}
-	}
-fail:
-	return db_ctx;
-}
 /*
  * 	Show registered IKE algorithms
  */
