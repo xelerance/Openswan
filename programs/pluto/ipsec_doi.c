@@ -1046,7 +1046,6 @@ main_outI1(int whack_sock
 
     /* let TCL hack it before we mark the length and copy it */
     TCLCALLOUT("avoidEmitting", st, st->st_connection, &md);
-    DBG_log("pbs_offset: %d", pbs_offset(&md.reply));
     clonetochunk(st->st_tpacket, md.reply.start, pbs_offset(&md.reply)
 	, "reply packet for main_outI1");
 

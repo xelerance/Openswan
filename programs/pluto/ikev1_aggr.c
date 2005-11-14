@@ -863,12 +863,8 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
     struct msg_digest *md = ke->md;
     struct state *const st = md->st;
     struct connection *c = st->st_connection;
-    u_char space[8192];	/* NOTE: we assume 8192 is big enough to build the packet */
-    pb_stream reply;	/* not actually a reply, but you know what I mean */
-    pb_stream rbody;
 
-    /* set up reply */
-    init_pbs(&reply, space, sizeof(space), "reply packet");
+    /* the MD is already set up by alloc_md() */
 
     /* HDR out */
     {
@@ -881,7 +877,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
 	/* R-cookie, flags and MessageID are left zero */
 
-	if (!out_struct(&hdr, &isakmp_hdr_desc, &reply, &rbody))
+	if (!out_struct(&hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
 	{
 	    cur_state = NULL;
 	    return STF_INTERNAL_ERROR;
@@ -890,12 +886,12 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 
     /* SA out */
     {
-	u_char *sa_start = rbody.cur;
+	u_char *sa_start = md->rbody.cur;
 	int    policy_index = POLICY_ISAKMP(st->st_policy
 					    , c->spd.this.xauth_server
 					    , c->spd.this.xauth_client);
 	
-	if (!out_sa(&rbody
+	if (!out_sa(&md->rbody
 		    , &oakley_am_sadb[policy_index], st
 		    , TRUE, TRUE, ISAKMP_NEXT_KE))
 	{
@@ -905,17 +901,17 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 
 	/* save initiator SA for later HASH */
 	passert(st->st_p1isa.ptr == NULL);	/* no leak! */
-	clonetochunk(st->st_p1isa, sa_start, rbody.cur - sa_start,
+	clonetochunk(st->st_p1isa, sa_start, md->rbody.cur - sa_start,
 		     "sa in aggr_outI1");
     }
 
     /* KE out */
     if (!ship_KE(st, r, &st->st_gi, 
-			   &rbody, ISAKMP_NEXT_NONCE))
+			   &md->rbody, ISAKMP_NEXT_NONCE))
 	return STF_INTERNAL_ERROR;
 
     /* Ni out */
-    if (!ship_nonce(&st->st_ni, r, &rbody, ISAKMP_NEXT_ID, "Ni"))
+    if (!ship_nonce(&st->st_ni, r, &md->rbody, ISAKMP_NEXT_ID, "Ni"))
 	return STF_INTERNAL_ERROR;
 
     /* IDii out */
@@ -926,7 +922,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 
 	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this);
 	id_hd.isaiid_np = ISAKMP_NEXT_VID;
-	if (!out_struct(&id_hd, &isakmp_ipsec_identification_desc, &rbody, &id_pbs)
+	if (!out_struct(&id_hd, &isakmp_ipsec_identification_desc, &md->rbody, &id_pbs)
 	|| !out_chunk(id_b, &id_pbs, "my identity"))
 	    return STF_INTERNAL_ERROR;
 	close_output_pbs(&id_pbs);
@@ -944,7 +940,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	np = ISAKMP_NEXT_VID;
       }
 
-      if( !out_vid(np, &rbody, VID_MISC_DPD))
+      if( !out_vid(np, &md->rbody, VID_MISC_DPD))
 	  return STF_INTERNAL_ERROR;
     }
 
@@ -959,7 +955,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	}
 #endif
 	
-	if (!nat_traversal_insert_vid(np, &rbody)) {
+	if (!nat_traversal_insert_vid(np, &md->rbody)) {
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
@@ -969,7 +965,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 #ifdef XAUTH
     if(c->spd.this.xauth_client || c->spd.this.xauth_server)
     {
-	if(!out_vid(ISAKMP_NEXT_NONE, &rbody, VID_MISC_XAUTH))
+	if(!out_vid(ISAKMP_NEXT_NONE, &md->rbody, VID_MISC_XAUTH))
 	{
 	    return STF_INTERNAL_ERROR;
 	}
@@ -978,10 +974,13 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	
     /* finish message */
 
-    close_message(&rbody);
-    close_output_pbs(&reply);
+    close_message(&md->rbody);
+    close_output_pbs(&md->reply);
 
-    clonetochunk(st->st_tpacket, reply.start, pbs_offset(&reply),
+    /* let TCL hack it before we mark the length and copy it */
+    TCLCALLOUT("avoidEmitting", st, st->st_connection, md);
+
+    clonetochunk(st->st_tpacket, md->reply.start, pbs_offset(&md->reply),
 		 "reply packet from aggr_outI1");
 
     /* Transmit */
@@ -991,6 +990,13 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 
     send_packet(st, "aggr_outI1", TRUE);
 
+    /* Set up a retransmission event, half a minute henceforth */
+    TCLCALLOUT("adjustTimers", st, st->st_connection, md);
+
+#ifdef TPM
+ tpm_stolen:
+ tpm_ignore:
+#endif
     /* Set up a retransmission event, half a minute henceforth */
     delete_event(st);
     event_schedule(EVENT_RETRANSMIT, EVENT_RETRANSMIT_DELAY_0, st);
