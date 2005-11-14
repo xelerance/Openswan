@@ -112,12 +112,14 @@ struct chunk {
 typedef struct chunk chunk_t;
 
 typedef struct packet_byte_stream pb_stream;
+struct pb_stream;
 
 int pbs_peek(pb_stream *pbs, int offset);
 void pbs_poke(pb_stream *pbs, int offset, int value);
 int pbs_append(pb_stream *dest, int destoffset, pb_stream *src, int offset, int length);
 pb_stream *pbs_create(int size);
-void pbs_delete(pb_stream *pbs);
+void pbs_delete(pb_stream *pbs);          /* opposite of pbs_create */
+void pbs_free(pb_stream *pbs);            /* use when a pbs_free    */
 int pbs_offset_get(pb_stream *pbs);
 int pbs_room_get(pb_stream *pbs);
 int pbs_left_get(pb_stream *pbs);

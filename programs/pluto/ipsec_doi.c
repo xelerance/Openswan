@@ -904,8 +904,7 @@ main_outI1(int whack_sock
 	   , enum crypto_importance importance)
 {
     struct state *st = new_state();
-    pb_stream reply;	/* not actually a reply, but you know what I mean */
-    pb_stream rbody;
+    struct msg_digest md;   /* use reply/rbody found inside */
 
     int numvidtosend = 1;  /* we always send DPD VID */
 #ifdef NAT_TRAVERSAL
@@ -949,7 +948,7 @@ main_outI1(int whack_sock
 	openswan_log("initiating Main Mode to replace #%lu", predecessor->st_serialno);
 
     /* set up reply */
-    init_pbs(&reply, reply_buffer, sizeof(reply_buffer), "reply packet");
+    init_pbs(&md.reply, reply_buffer, sizeof(reply_buffer), "reply packet");
 
     /* HDR out */
     {
@@ -962,7 +961,7 @@ main_outI1(int whack_sock
 	memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
 	/* R-cookie, flags and MessageID are left zero */
 
-	if (!out_struct(&hdr, &isakmp_hdr_desc, &reply, &rbody))
+	if (!out_struct(&hdr, &isakmp_hdr_desc, &md.reply, &md.rbody))
 	{
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
@@ -971,7 +970,7 @@ main_outI1(int whack_sock
 
     /* SA out */
     {
-	u_char *sa_start = rbody.cur;
+	u_char *sa_start = md.rbody.cur;
 	int    policy_index = POLICY_ISAKMP(policy
 					    , c->spd.this.xauth_server
 					    , c->spd.this.xauth_client);
@@ -980,7 +979,7 @@ main_outI1(int whack_sock
 	 * OpenPGP peer and have to send the Vendor ID
 	 */
 	int np = numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
-	if (!out_sa(&rbody
+	if (!out_sa(&md.rbody
 		    , &oakley_sadb[policy_index], st, TRUE, FALSE, np))
 	{
 	    openswan_log("outsa fail");
@@ -989,7 +988,7 @@ main_outI1(int whack_sock
 	}
 	/* save initiator SA for later HASH */
 	passert(st->st_p1isa.ptr == NULL);	/* no leak!  (MUST be first time) */
-	clonetochunk(st->st_p1isa, sa_start, rbody.cur - sa_start
+	clonetochunk(st->st_p1isa, sa_start, md.rbody.cur - sa_start
 	    , "sa in main_outI1");
     }
 
@@ -999,7 +998,7 @@ main_outI1(int whack_sock
 	    pgp_vendorid : pluto_vendorid;
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 
-	if (!out_generic_raw(np, &isakmp_vendor_id_desc, &rbody
+	if (!out_generic_raw(np, &isakmp_vendor_id_desc, &md.rbody
 			     , vendorid, strlen(vendorid), "Vendor ID"))
 	    return STF_INTERNAL_ERROR;
     }
@@ -1007,7 +1006,7 @@ main_outI1(int whack_sock
     /* Send DPD VID */
     {
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
-	if(!out_vid(np, &rbody, VID_MISC_DPD)) {
+	if(!out_vid(np, &md.rbody, VID_MISC_DPD)) {
 	    return STF_INTERNAL_ERROR;
 	}
     }
@@ -1019,7 +1018,7 @@ main_outI1(int whack_sock
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 	
 	/* Add supported NAT-Traversal VID */
-	if (!nat_traversal_insert_vid(np, &rbody)) {
+	if (!nat_traversal_insert_vid(np, &md.rbody)) {
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
@@ -1029,7 +1028,7 @@ main_outI1(int whack_sock
 #ifdef XAUTH
     if(c->spd.this.xauth_client || c->spd.this.xauth_server) {
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
-	if(!out_vid(np, &rbody, VID_MISC_XAUTH)) {
+	if(!out_vid(np, &md.rbody, VID_MISC_XAUTH)) {
 	    return STF_INTERNAL_ERROR;
 	}
     }
@@ -1042,20 +1041,25 @@ main_outI1(int whack_sock
     }
 #endif
 
-	
-	
+    close_message(&md.rbody);
+    close_output_pbs(&md.reply);
 
-    close_message(&rbody);
-    close_output_pbs(&reply);
-
-    clonetochunk(st->st_tpacket, reply.start, pbs_offset(&reply)
+    /* let TCL hack it before we mark the length and copy it */
+    TCLCALLOUT("avoidEmitting", st, st->st_connection, &md);
+    DBG_log("pbs_offset: %d", pbs_offset(&md.reply));
+    clonetochunk(st->st_tpacket, md.reply.start, pbs_offset(&md.reply)
 	, "reply packet for main_outI1");
 
     /* Transmit */
-
     send_packet(st, "main_outI1", TRUE);
 
     /* Set up a retransmission event, half a minute henceforth */
+    TCLCALLOUT("adjustTimers", st, st->st_connection, &md);
+
+#ifdef TPM
+ tpm_stolen:
+ tpm_ignore:
+#endif
     delete_event(st);
     event_schedule(EVENT_RETRANSMIT, EVENT_RETRANSMIT_DELAY_0, st);
 
