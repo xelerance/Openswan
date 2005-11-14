@@ -88,6 +88,7 @@ proc insertVendorId {msg vendorid} {
 	set paylen  [expr ([pbs_peek $msg [expr $inLoc + 2]] * 256) + [pbs_peek $msg [expr $inLoc + 3]]]
 
 	puts stderr "copying payload($thispay) at $inLoc, np: $nextpay with len: $paylen"
+
 	# copy payload to new message
 	pbs_append $newpb $outLoc $msg $inLoc $paylen
 	set outLoc [expr $outLoc + $paylen]
@@ -139,24 +140,6 @@ proc insertVendorId {msg vendorid} {
     return $newpb
 }
 
-# drop all informational messages (as they contain delete's)
-proc processRawPacket {state conn md} {
-    return "nothing"
-}
-
-proc recvMessage {state conn md} {
-    return "nothing"
-}
-
-proc preDecrypt {state pb off len} {
-    return "nothing"
-}
-
-proc preEncrypt {state pb off len} {
-    return "nothing"
-}
-
-
 # this should be a sophisticated no-op.
 proc preHash {state pb off len} {
   
@@ -184,34 +167,3 @@ proc preHash {state pb off len} {
     return "nothing"
 }
    
-proc postEncrypt {state pb off len} {
-    return "nothing"
-}
-
-proc postDecrypt {state pb off len} {
-    return "nothing"
-}
-
-proc changeState {state conn md} {
-    return "nothing"
-}
-
-proc adjustFailure {state conn md} {
-    return "nothing"
-}
-
-proc avoidEmitting {state conn md} {
-    return "nothing"
-}
-
-proc adjustTimers {state conn md} {
-    return "nothing"
-}
-
-proc avoidEmittingNotify {state pbs hdr} {
-    return "nothing"
-}
-
-proc avoidEmittingDelete {state pbs hdr} {
-    return "nothing"
-}

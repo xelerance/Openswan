@@ -36,14 +36,6 @@ proc processRawPacket {state conn md} {
     return "ignore"
 }
 
-proc recvMessage {state conn md} {
-    global STATE_MAIN_R1
-    global STATE_QUICK_R0
-    global test_stage
-
-    return "ignore"
-}
-
 proc log_key_iv {msg state} {
     global keys
     set key_chunk [state_st_enc_key_get $state]

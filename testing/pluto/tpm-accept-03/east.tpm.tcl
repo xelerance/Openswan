@@ -62,32 +62,3 @@ proc recvMessage {state conn md} {
     }
 }
 
-proc preDecrypt {state pb off len} {
-  	return "ignore" 
-}
-
-proc preEncrypt {state pb off len} {
-  	return "ignore" 
-}
-
-proc postDecrypt {state pb off len} {
-  	return "ignore" 
-}
-
-proc postEncrypt {state pb off len} {
-  	return "ignore" 
-}
-
-proc changeState {state conn md} {
-  	return "ignore" 
-}
-
-proc adjustFailure {state conn md} {
-  	return "ignore" 
-
-}
-
-proc avoidEmitting {state conn md} {
-  	return "ignore" 
-}
-
