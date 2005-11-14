@@ -126,9 +126,22 @@ proc avoidEmitting {state conn md} {
     # we have the right state now.
     set newpb [insertVendorId $pb "IKEDES128HACK"]
 
-    hexdump_pb "after" $newpb
+    hexdump_pb "after " $newpb
     set pb_size [pbs_offset_get $newpb]
     pbs_append $pb 0 $newpb 0 $pb_size
+    set a [expr ($pb_size >> 24) & 0xff]
+    set b [expr ($pb_size >> 16) & 0xff]
+    set c [expr ($pb_size >> 8)  & 0xff]
+    set d [expr ($pb_size >> 0)  & 0xff]
+    pbs_poke $pb 24 $a
+    pbs_poke $pb 25 $b
+    pbs_poke $pb 26 $c
+    pbs_poke $pb 27 $d
+    puts stderr "a:$a b:$b c:$c d:$d"
+    puts stderr [format "hp:%08x" $pb_size]
+    msg_digest_reply_set $md $pb
+    hexdump_pb "pb:$pb_size " $pb
+    pbs_free $pb
 
     return "nothing"
 }
