@@ -396,7 +396,9 @@ extern const char *prettypolicy(lset_t policy);
 #define POLICY_XAUTH        LELEM(17)   /* do we offer XAUTH? */
 #define POLICY_MODECFG_PULL LELEM(18)   /* is modecfg pulled by client? */
 #define POLICY_AGGRESSIVE   LELEM(19)   /* do we do aggressive mode? */
-
+#define POLICY_PERHOST      LELEM(20)   /* should we specialize the policy to the host? */
+#define POLICY_SUBHOST      LELEM(21)   /* if the policy applies below the host level */
+#define POLICY_PERPROTO     LELEM(22)   /* should we specialize the policy to the protocol? */
 
 /* Any IPsec policy?  If not, a connection description
  * is only for ISAKMP SA, not IPSEC SA.  (A pun, I admit.)
