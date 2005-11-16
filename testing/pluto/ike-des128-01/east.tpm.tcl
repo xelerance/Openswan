@@ -19,6 +19,15 @@ proc hexdump_pb {prefix pb} {
     }
 }
 
+proc hack_sa_payload {sapb} {
+    set propMax [expr [pbs_offset $sapb] - 8]
+    set newsapb [pbs_create [expr [pbs_offset $sadb] + 32]]
+
+    # copy the header
+    pbs_append $newsapb 0 $sapb 0 8
+    set paylengthloc 2
+}
+
 #
 # this inserts the VID at the beginning of the packet.
 #
@@ -49,17 +58,21 @@ proc insertVendorId {msg vendorid} {
 	puts stderr "copying payload($thispay) at $inLoc, np: $nextpay with len: $paylen"
 
 	# copy payload to new message
-	pbs_append $newpb $outLoc $msg $inLoc $paylen
-	set outLoc [expr $outLoc + $paylen]
+	#pbs_append $newpb $outLoc $msg $inLoc $paylen
+	#set outLoc [expr $outLoc + $paylen]
 	
 	# copy payload to new message
-	#set newpaypb [pbs_create [expr $paylen * 2]]
-	#pbs_append $newpaypb 0 $msg $inLoc $paylen
+	set newpaypb [pbs_create [expr $paylen * 2]]
+	pbs_append $newpaypb 0 $msg $inLoc $paylen
+
+	if {$thispay == $ISAKMP_NEXT_SA} {
+	    hack_sa_payload $newpaypb
+	}
 
 	# $newpaypb has the payload now.
-	#set newpaylen [pbs_offset_get $newpaypb]
-	#pbs_append $newpb $outLoc $newpaypb 0 $newpaylen
-	#set outLoc [expr $outLoc + $paylen]
+	set newpaylen [pbs_offset_get $newpaypb]
+	pbs_append $newpb $outLoc $newpaypb 0 $newpaylen
+	set outLoc [expr $outLoc + $paylen]
 	
 	# poke payload type in pointer to this payload.
 	# most of the time, a no-op.
