@@ -14,80 +14,80 @@
 
 compat_variables;
 
-if [ -z "${TEST_TYPE}" ]
+if [ -z "${TEST_TYPE-}" ]
 then
     echo runme.sh now requires that testparams.sh defines TEST_TYPE=
 fi
 
-if [ -n "${REF_EAST_CONSOLE_OUTPUT}" ] && [ -f OUTPUT${KLIPS_MODULE}/eastconsole.txt ]
+if [ -n "${REF_EAST_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/eastconsole.txt ]
 then
     consolediff "east" OUTPUT${KLIPS_MODULE}/eastconsole.txt $REF_EAST_CONSOLE_OUTPUT
 fi
 
-if [ -n "${REF26_EAST_CONSOLE_OUTPUT}" ] && [ -f OUTPUT${KLIPS_MODULE}/26eastconsole.txt ]
+if [ -n "${REF26_EAST_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/26eastconsole.txt ]
 then
     KERNVER=26 consolediff "26east" OUTPUT${KLIPS_MODULE}/26eastconsole.txt $REF26_EAST_CONSOLE_OUTPUT
 fi
 
-if [ -n "${REF_WEST_CONSOLE_OUTPUT}" ] && [ -f OUTPUT${KLIPS_MODULE}/westconsole.txt ]
+if [ -n "${REF_WEST_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/westconsole.txt ]
 then
     consolediff "west" OUTPUT${KLIPS_MODULE}/westconsole.txt $REF_WEST_CONSOLE_OUTPUT
 fi
 
-if [ -n "${REF26_WEST_CONSOLE_OUTPUT}" ] && [ -f OUTPUT${KLIPS_MODULE}/26westconsole.txt ]
+if [ -n "${REF26_WEST_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/26westconsole.txt ]
 then
     KERNVER=26 consolediff "26west" OUTPUT${KLIPS_MODULE}/26westconsole.txt $REF26_WEST_CONSOLE_OUTPUT
 fi
 
-if [ -n "${REF_ROAD_CONSOLE_OUTPUT}" ] && [ -f OUTPUT${KLIPS_MODULE}/roadconsole.txt ]
+if [ -n "${REF_ROAD_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/roadconsole.txt ]
 then
     consolediff "road" OUTPUT${KLIPS_MODULE}/roadconsole.txt $REF_ROAD_CONSOLE_OUTPUT
 fi
 
-if [ -n "${REF26_ROAD_CONSOLE_OUTPUT}" ] && [ -f OUTPUT${KLIPS_MODULE}/26roadconsole.txt ]
+if [ -n "${REF26_ROAD_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/26roadconsole.txt ]
 then
     KERNVER=26 consolediff "26road" OUTPUT${KLIPS_MODULE}/26roadconsole.txt $REF26_ROAD_CONSOLE_OUTPUT
 fi
 
-if [ -n "${REF_JAPAN_CONSOLE_OUTPUT}" ] && [ -f OUTPUT${KLIPS_MODULE}/japanconsole.txt ]
+if [ -n "${REF_JAPAN_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/japanconsole.txt ]
 then
     consolediff "japan" OUTPUT${KLIPS_MODULE}/japanconsole.txt $REF_JAPAN_CONSOLE_OUTPUT
 fi
 
-if [ -n "${REF26_JAPAN_CONSOLE_OUTPUT}" ] && [ -f OUTPUT${KLIPS_MODULE}/26japanconsole.txt ]
+if [ -n "${REF26_JAPAN_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/26japanconsole.txt ]
 then
     KERNVER=26 consolediff "26japan" OUTPUT${KLIPS_MODULE}/26japanconsole.txt $REF26_JAPAN_CONSOLE_OUTPUT
 fi
 
-if [ -n "${REF_CONSOLE_OUTPUT}" ] && [ -f OUTPUT${KLIPS_MODULE}/console.txt ]
+if [ -n "${REF_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/console.txt ]
 then
     consolediff "" OUTPUT${KLIPS_MODULE}/console.txt $REF_CONSOLE_OUTPUT
 fi
 
-if [ -n "${REF26_CONSOLE_OUTPUT}" ] && [ -f OUTPUT${KLIPS_MODULE}/26console.txt ]
+if [ -n "${REF26_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/26console.txt ]
 then
     KERNVER=26 consolediff "26" OUTPUT${KLIPS_MODULE}/26console.txt $REF26_CONSOLE_OUTPUT
 fi
 
-if [ -n "${REF_PUB_OUTPUT}" ]
+if [ -n "${REF_PUB_OUTPUT-}" ]
 then
     base=`basename ${REF_PUB_OUTPUT} .txt`
     pcap_filter public "${REF_PUB_OUTPUT}" $base "${REF_PUB_FILTER}"
 fi
 
-if [ -n "${REF_PRIV_OUTPUT}" ]
+if [ -n "${REF_PRIV_OUTPUT-}" ]
 then
     base=`basename ${REF_PRIV_OUTPUT} .txt`
     pcap_filter private "${REF_PRIV_OUTPUT}" $base "${REF_PRIV_FILTER}"
 fi
 
-if [ -n "${REF_EAST_OUTPUT}" ]
+if [ -n "${REF_EAST_OUTPUT-}" ]
 then
     base=`basename ${REF_EAST_OUTPUT} .txt`
     pcap_filter east "${REF_EAST_OUTPUT}" $base "${REF_EAST_FILTER}"
 fi
 
-if [ -n "${REF_WEST_OUTPUT}" ]
+if [ -n "${REF_WEST_OUTPUT-}" ]
 then
     base=`basename ${REF_WEST_OUTPUT} .txt`
     pcap_filter west "${REF_WEST_OUTPUT}" $base "${REF_WEST_FILTER}"

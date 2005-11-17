@@ -1,44 +1,3 @@
-set test08_count 0
-
-proc is_null_pointer {pointer} {
-    if {[string length $pointer] == 0 || $pointer == "NULL"} {
-	return 1
-    }
-    return 0
-}
-
-proc is_isakmp_sa_established {state} {
-    global STATE_MAIN_R2 STATE_AGGR_R0 STATE_AGGR_I1
-
-    if {[string length $state] == 0} {
-	return 0
-    }
-
-    set st_state [state_st_state_get $state]
-
-    if { ($STATE_MAIN_R2 <= $st_state) && ($STATE_AGGR_R0 != $st_state) && ($STATE_AGGR_I1 != $st_state)} {
-	return 1
-    } {
-	return 0
-    }
-}
-
-proc is_ipsec_sa_established {state} {
-    global STATE_QUICK_R2 STATE_QUICK_I2
-
-    if {[string length $state] == 0} {
-	return 0
-    }
-
-    set st_state [state_st_state_get $state]
-
-    if { ($STATE_QUICK_R2 == $st_state) || ($STATE_QUICK_I2 == $st_state)} {
-	return 1
-    } {
-	return 0
-    }
-}
-
 proc hexdump_pb {prefix pb} {
 
     set pb_size [pbs_offset_get $pb]
@@ -58,6 +17,15 @@ proc hexdump_pb {prefix pb} {
 
 	puts stderr "$prefix $line"
     }
+}
+
+proc hack_sa_payload {sapb} {
+    set propMax [expr [pbs_offset $sapb] - 8]
+    set newsapb [pbs_create [expr [pbs_offset $sadb] + 32]]
+
+    # copy the header
+    pbs_append $newsapb 0 $sapb 0 8
+    set paylengthloc 2
 }
 
 #
@@ -90,7 +58,20 @@ proc insertVendorId {msg vendorid} {
 	puts stderr "copying payload($thispay) at $inLoc, np: $nextpay with len: $paylen"
 
 	# copy payload to new message
-	pbs_append $newpb $outLoc $msg $inLoc $paylen
+	#pbs_append $newpb $outLoc $msg $inLoc $paylen
+	#set outLoc [expr $outLoc + $paylen]
+	
+	# copy payload to new message
+	set newpaypb [pbs_create [expr $paylen * 2]]
+	pbs_append $newpaypb 0 $msg $inLoc $paylen
+
+	if {$thispay == $ISAKMP_NEXT_SA} {
+	    hack_sa_payload $newpaypb
+	}
+
+	# $newpaypb has the payload now.
+	set newpaylen [pbs_offset_get $newpaypb]
+	pbs_append $newpb $outLoc $newpaypb 0 $newpaylen
 	set outLoc [expr $outLoc + $paylen]
 	
 	# poke payload type in pointer to this payload.
@@ -140,30 +121,41 @@ proc insertVendorId {msg vendorid} {
     return $newpb
 }
 
-# this should be a sophisticated no-op.
-proc preHash {state pb off len} {
-  
-    hexdump_pb "pb" $pb
+# just before emitting the first main mode packet, hack the
+# packet so that it has a gratuitous entry in the proposal, that
+# picks a key size of 128 bits.
+proc avoidEmitting {state conn md} {
+    global STATE_MAIN_I1
 
-    global ISAKMP_NEXT_SA
-    global test08_count 
-    
-#    if {$test07_count < 5} {
-	set newpb [insertVendorId $pb "CABLELABS"]
-#   } else {
-#	set newpb $pb
-#    }
-#    incr test08_count
+    set st_state [state_st_state_get $state]
 
-    hexdump_pb "newpb" $newpb
+    if { ($STATE_MAIN_I1 != $st_state)} {
+	return "ignore"
+    } 
 
-    # copy newpb back over pb.
+    set pb [msg_digest_reply_get $md]
+
+    hexdump_pb "before" $pb
+    # we have the right state now.
+    set newpb [insertVendorId $pb "IKEDES128HACK"]
+
+    hexdump_pb "after " $newpb
     set pb_size [pbs_offset_get $newpb]
-
     pbs_append $pb 0 $newpb 0 $pb_size
-
-    #hexdump_pb "npb" $pb
+    set a [expr ($pb_size >> 24) & 0xff]
+    set b [expr ($pb_size >> 16) & 0xff]
+    set c [expr ($pb_size >> 8)  & 0xff]
+    set d [expr ($pb_size >> 0)  & 0xff]
+    pbs_poke $pb 24 $a
+    pbs_poke $pb 25 $b
+    pbs_poke $pb 26 $c
+    pbs_poke $pb 27 $d
+    puts stderr "a:$a b:$b c:$c d:$d"
+    puts stderr [format "hp:%08x" $pb_size]
+    msg_digest_reply_set $md $pb
+    hexdump_pb "pb:$pb_size " $pb
+    pbs_free $pb
 
     return "nothing"
 }
-   
+

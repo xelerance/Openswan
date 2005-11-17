@@ -169,7 +169,8 @@ INSTCONFFLAGS=
 
 # extra compile flags, for userland and kernel stuff, e.g. -g for debug info
 # you can add to this in the defaults file using +=
-USERCOMPILE?=-g -O3 ${WERROR} 
+USERCOMPILE?=-g ${WERROR} 
+#USERCOMPILE?=-g -O3 ${WERROR} 
 KLIPSCOMPILE=-O3
 # for AMD64 use 
 #USERCOMPILE?=-g -O3 -m64
@@ -359,7 +360,7 @@ USE_BASH?=true
 
 # Whether or not to include TaProoM (TCL Pluto Mix) into pluto.
 #
-USE_TAPROOM?=false
+USE_TAPROOM?=true
 
 X509_VERSION=X.509-1.5.4
 NONINTCONFIG=oldconfig

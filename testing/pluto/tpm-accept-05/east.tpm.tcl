@@ -51,39 +51,6 @@ proc processRawPacket {state conn md} {
     return "nothing"
 }
 
-proc recvMessage {state conn md} {
-    return "ignore"
-}
-
-proc preDecrypt {state pbs off len} {
-    return "ignore"
-}
-
-proc preEncrypt {state pbs off len} {
-    return "ignore"
-}
-   
-
-proc postEncrypt {state pbs off len} {
-    return "ignore"
-}
-
-proc postDecrypt {state pbs off len} {
-    return "ignore"
-}
-
-proc changeState {state conn md} {
-    return "ignore"
-}
-
-proc adjustFailure {state conn md} {
-    return "ignore"
-}
-
-proc avoidEmitting {state conn md} {
-    return "nothing"
-}
-
 proc adjustTimers {state conn md} {
     global STATE_QUICK_R2 STATE_QUICK_I2 STATE_MAIN_R2
 
@@ -117,7 +84,3 @@ proc adjustTimers {state conn md} {
     return "ignore"
 }
 
-# nothing.
-proc avoidEmittingNotify {state pbs hdr} {
-    return "ignore"
-}

@@ -122,6 +122,11 @@ void pbs_delete(pb_stream *pbs)
     pfree(pbs);
 }
 
+void pbs_free(pb_stream *pbs)
+{
+    free(pbs);
+}
+
 /*
  * walk through the PBS (containing an IKEv1 message) and find the
  * location of the hash space.
