@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_sa.c,v 1.30 2005/05/24 01:02:35 mcr Exp $
+ * RCSID $Id: ipsec_sa.c,v 1.31 2005/11/11 04:38:56 paul Exp $
  *
  * This is the file formerly known as "ipsec_xform.h"
  *
@@ -1015,9 +1015,11 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
         }
 	ips->ips_ident_d.data = NULL;
 
+#ifdef CONFIG_KLIPS_ALG
 	if (ips->ips_alg_enc||ips->ips_alg_auth) {
 		ipsec_alg_sa_wipe(ips);
 	}
+#endif
 	
 	memset((caddr_t)ips, 0, sizeof(*ips));
 	kfree(ips);
@@ -1264,6 +1266,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 		unsigned int aks;
 #endif
 
+#ifdef CONFIG_KLIPS_ALG
 		ipsec_alg_sa_init(ipsp);
 		ixt_e=ipsp->ips_alg_enc;
 
@@ -1294,7 +1297,6 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 		if ((error=ipsec_alg_enc_key_create(ipsp)) < 0)
 			SENDERR(-error);
 
-#ifdef CONFIG_KLIPS_ALG
 		if ((ixt_a=ipsp->ips_alg_auth)) {
 			if ((error=ipsec_alg_auth_key_create(ipsp)) < 0)
 				SENDERR(-error);
@@ -1492,6 +1494,10 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 
 /*
  * $Log: ipsec_sa.c,v $
+ * Revision 1.31  2005/11/11 04:38:56  paul
+ * More alg code properly #ifdef CONFIG_KLIPS_ALG
+ * Based on David McCullough's patch
+ *
  * Revision 1.30  2005/05/24 01:02:35  mcr
  * 	some refactoring/simplification of situation where alg
  * 	is not found.
