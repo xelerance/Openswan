@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2.c,v 1.102 2005/09/14 16:37:23 mcr Exp $
+ * RCSID $Id: pfkey_v2.c,v 1.99 2005/08/28 01:53:37 paul Exp $
  */
 
 /*
@@ -80,14 +80,19 @@ extern int sysctl_ipsec_debug_verbose;
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
+#ifndef SOCKOPS_WRAPPED
+#define SOCKOPS_WRAPPED(name) name
+#endif /* SOCKOPS_WRAPPED */
+
 extern struct proto_ops pfkey_ops;
 
-static rwlock_t pfkey_sock_lock = RW_LOCK_UNLOCKED;
 #ifdef NET_26
 HLIST_HEAD(pfkey_sock_list);
 static DECLARE_WAIT_QUEUE_HEAD(pfkey_sock_wait);
+static rwlock_t pfkey_sock_lock = RW_LOCK_UNLOCKED;
 static atomic_t pfkey_sock_users = ATOMIC_INIT(0);
 #else
+extern struct proto_ops pfkey_ops;
 struct sock *pfkey_sock_list = NULL;
 #endif
 
@@ -461,9 +466,7 @@ pfkey_destroy_socket(struct sock *sk)
 			       "pfkey_skb contents:");
 			printk(" next:0p%p", skb->next);
 			printk(" prev:0p%p", skb->prev);
-			printk(" list:0p%p", skb->list);
 			printk(" sk:0p%p", skb->sk);
-			printk(" stamp:%ld.%ld", skb->stamp.tv_sec, skb->stamp.tv_usec);
 			printk(" dev:0p%p", skb->dev);
 			if(skb->dev) {
 				if(skb->dev->name) {
@@ -819,9 +822,7 @@ pfkey_release(struct socket *sock, struct socket *peersock)
 			    "No sk attached to sock=0p%p.\n", sock);
 		return 0; /* -EINVAL; */
 	}
-
-	write_lock_bh(&pfkey_sock_lock);
-
+		
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_release: "
 		    "sock=0p%p sk=0p%p\n", sock, sk);
@@ -850,8 +851,6 @@ pfkey_release(struct socket *sock, struct socket *peersock)
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_release: "
 		    "succeeded.\n");
-
-	write_unlock_bh(&pfkey_sock_lock);
 
 	return 0;
 }
@@ -1376,7 +1375,12 @@ pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int size, int noblock, in
 #endif /* NET_21 */
 
 	skb_copy_datagram_iovec(skb, 0, msg->msg_iov, size);
+#ifdef HAVE_TSTAMP
+	sk->sk_stamp.tv_sec  = skb->tstamp.off_sec;
+	sk->sk_stamp.tv_usec = skb->tstamp.off_usec;
+#else
         sk->sk_stamp=skb->stamp;
+#endif
 
 	skb_free_datagram(sk, skb);
 	return size;
@@ -1388,7 +1392,8 @@ struct net_proto_family pfkey_family_ops = {
 	pfkey_create
 };
 
-struct proto_ops pfkey_ops = {
+struct proto_ops SOCKOPS_WRAPPED(pfkey_ops) = {
+#ifdef NETDEV_23
 	family:		PF_KEY,
 	release:	pfkey_release,
 	bind:		sock_no_bind,
@@ -1405,7 +1410,31 @@ struct proto_ops pfkey_ops = {
 	sendmsg:	pfkey_sendmsg,
 	recvmsg:	pfkey_recvmsg,
 	mmap:		sock_no_mmap,
+#else /* NETDEV_23 */
+	PF_KEY,
+	sock_no_dup,
+	pfkey_release,
+	sock_no_bind,
+	sock_no_connect,
+	sock_no_socketpair,
+	sock_no_accept,
+	sock_no_getname,
+	datagram_poll,
+	sock_no_ioctl,
+	sock_no_listen,
+	pfkey_shutdown,
+	sock_no_setsockopt,
+	sock_no_getsockopt,
+	sock_no_fcntl,
+	pfkey_sendmsg,
+	pfkey_recvmsg
+#endif /* NETDEV_23 */
 };
+
+#ifdef NETDEV_23
+#include <linux/smp_lock.h>
+SOCKOPS_WRAP(pfkey, PF_KEY);
+#endif  /* NETDEV_23 */
 
 #else /* NET_21 */
 struct proto_ops pfkey_proto_ops = {
@@ -1891,16 +1920,6 @@ void pfkey_proto_init(struct net_protocol *pro)
 
 /*
  * $Log: pfkey_v2.c,v $
- * Revision 1.102  2005/09/14 16:37:23  mcr
- * 	fix to compile on 2.4.
- *
- * Revision 1.101  2005/09/06 01:42:25  mcr
- *    removed additional SOCKOPS_WRAPPED code
- *
- * Revision 1.100  2005/08/30 18:10:15  mcr
- * 	remove SOCKOPS_WRAPPED() code, add proper locking to the
- * 	pfkey code. (cross fingers)
- *
  * Revision 1.99  2005/08/28 01:53:37  paul
  * Undid Ken's gcc4 fix in version 1.94 since it breaks linking KLIPS on SMP kernels.
  *
