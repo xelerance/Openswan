@@ -58,11 +58,6 @@ setup_host_make() {
     echo
     depends="$depends $host/root"
 
-    echo $host/linux : $KERNEL 
-    echo "$TAB rm -f $host/linux; cp $KERNEL $host/linux"          
-    echo
-    depends="$depends $host/linux"
-
     echo "# make a hard link copy of the ROOT, but"
     echo "# make private copy of /var."
     echo "$hostroot/sbin/init : ${BASICROOT}/sbin/init"
@@ -274,13 +269,6 @@ setup_host() {
     mkdir -p $hostroot/etc/sysconfig/network-scripts
     ${TESTINGROOT}/utils/interfaces2ifcfg.pl $hostroot/etc/network/interfaces $hostroot/etc/sysconfig/network-scripts
 
-    # hard link the kernel to save space.
-    if [ ! -f $POOLSPACE/$host/linux ]
-    then
-	rm -f $POOLSPACE/$host/linux
-	ln $KERNEL $POOLSPACE/$host/linux
-    fi
-
     # make startup script
     startscript=$POOLSPACE/$host/start.sh
     if [ ! -f $startscript ]
@@ -290,7 +278,7 @@ setup_host() {
 	echo '# get $net value from baseconfig'          >>$startscript
 	echo ". ${TESTINGROOT}/baseconfigs/net.$host.sh" >>$startscript
 	echo ''          >>$startscript
-	echo "$POOLSPACE/$host/linux ubd0=$hostroot umid=$host \$net \$UML_DEBUG_OPT \$UML_$host_OPT \$*" >>$startscript
+	echo "$KERNEL ubd0=$hostroot umid=$host \$net \$UML_DEBUG_OPT \$UML_$host_OPT \$*" >>$startscript
 	chmod +x $startscript
     fi
 }
