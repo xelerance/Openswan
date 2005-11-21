@@ -215,7 +215,7 @@ setup_host_make() {
     depends="$depends $startscript"
 
     echo "$host : $depends"
-    echo
+    echo "$TAB for dir in ${UML_extra_DIRS-x}; do (if [ -d \$\$dir ]; then echo installing in \$\$dir; cd \$\$dir && make DESTDIR=$POOLSPACE/$hostroot install; fi); done;"
     echo
 }
 
