@@ -37,6 +37,10 @@ setup_make() {
     echo "$TAB mkdir -p module26"
     echo "$TAB make -C ${OPENSWANSRCDIR} OPENSWANSRCDIR=${OPENSWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MOD26BUILDDIR=$POOLSPACE/module26 KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module26 "
     echo
+
+    # now describe how to build the initrd.
+    echo "initrd.uml: ${OPENSWANSRCDIR}/testing/utils/initrd.list"
+    echo "$TAB fakeroot ${OPENSWANSRCDIR}/testing/utils/buildinitrd ${OPENSWANSRCDIR}/testing/utils/initrd.list ${OPENSWANSRCDIR} ${BASICROOT}" 
 }
 
 # output should directed to a Makefile
@@ -182,13 +186,14 @@ setup_host_make() {
 
 	# make module startup script
 	startscript=$POOLSPACE/$host/startmodule.sh
-	echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh $hostroot/ipsec.o"
+	echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh $hostroot/ipsec.o initrd.uml"
 	echo "$TAB echo '#!/bin/sh' >$startscript"
 	echo "$TAB echo ''          >>$startscript"
 	echo "$TAB echo '# get $net value from baseconfig'          >>$startscript"
 	echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
 	echo "$TAB echo ''          >>$startscript"
-	echo "$TAB echo '$POOLSPACE/plain${KERNVER}/linux root=/dev/root rootfstype=hostfs rootflags=$POOLSPACE/$hostroot rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT \$\$*' >>$startscript"
+	echo "$TAB # the umlroot= is a local hack >>$startscript"
+	echo "$TAB echo '$POOLSPACE/plain${KERNVER}/linux initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot root=/dev/root rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT \$\$*' >>$startscript"
 	echo "$TAB chmod +x $startscript"
 	echo
 	depends="$depends $startscript"
@@ -196,13 +201,14 @@ setup_host_make() {
 
     # make startup script
     startscript=$POOLSPACE/$host/start.sh
-    echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh"
+    echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh initrd.uml"
     echo "$TAB echo '#!/bin/sh' >$startscript"
     echo "$TAB echo ''          >>$startscript"
     echo "$TAB echo '# get $net value from baseconfig'          >>$startscript"
     echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
     echo "$TAB echo ''          >>$startscript"
-    echo "$TAB echo '$POOLSPACE/$host/linux root=/dev/root rootfstype=hostfs rootflags=$POOLSPACE/$hostroot rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT \$\$*' >>$startscript"
+    echo "$TAB # the umlroot= is a local hack >>$startscript"
+    echo "$TAB echo '$KERNEL initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot root=/dev/root rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT \$\$*' >>$startscript"
     echo "$TAB echo 'if [ -n \"\$\$UML_SLEEP\" ]; then eval \$\$UML_SLEEP; fi'  >>$startscript"
     echo "$TAB chmod +x $startscript"
     echo

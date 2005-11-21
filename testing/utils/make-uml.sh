@@ -192,8 +192,9 @@ make WERROR=-Werror USE_OBJDIR=true programs
 for host in $OPENSWANHOSTS
 do
     kernelvar=UML_${host}_KERNEL
-    UMLKERNEL=${!kernelver}
+    UMLKERNEL=${!kernelvar}
     if [ -z "${UMLKERNEL}" ]; then UMLKERNEL=${UMLSWAN}/linux; fi
+    echo Using kernel: $UMLKERNEL for $host
     setup_host_make $host $UMLKERNEL openswan ${KERNVER} >>$UMLMAKE
 done
 
