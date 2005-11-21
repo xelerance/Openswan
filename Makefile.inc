@@ -359,8 +359,8 @@ HAVE_THREADS?=false
 USE_BASH?=true
 
 # Whether or not to include TaProoM (TCL Pluto Mix) into pluto.
-#
-USE_TAPROOM?=true
+# you need at least swig 1.3.24, as well as tcl libraries and includes
+USE_TAPROOM?=false
 
 X509_VERSION=X.509-1.5.4
 NONINTCONFIG=oldconfig
