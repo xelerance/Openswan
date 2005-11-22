@@ -5,6 +5,8 @@
 #
 
 setup_make() {
+    domodules=$1
+
     TAB="	@"
     depends=""
 
@@ -28,15 +30,18 @@ setup_make() {
     echo "$TAB exit 1"
     echo
 
-    echo "module/ipsec.o: ${OPENSWANSRCDIR}/packaging/makefiles/module.make \${IPSECDIR}/*.c"
-    echo "$TAB mkdir -p module"
-    echo "$TAB make -C ${OPENSWANSRCDIR} OPENSWANSRCDIR=${OPENSWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MODBUILDDIR=$POOLSPACE/module KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module "
-    echo
+    if $domodules
+    then
+	echo "module/ipsec.o: ${OPENSWANSRCDIR}/packaging/makefiles/module.make \${IPSECDIR}/*.c"
+	echo "$TAB mkdir -p module"
+	echo "$TAB make -C ${OPENSWANSRCDIR} OPENSWANSRCDIR=${OPENSWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MODBUILDDIR=$POOLSPACE/module KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module "
+	echo
 
-    echo "module26/ipsec.ko: ${OPENSWANSRCDIR}/packaging/makefiles/module26.make \${IPSECDIR}/*.c"
-    echo "$TAB mkdir -p module26"
-    echo "$TAB make -C ${OPENSWANSRCDIR} OPENSWANSRCDIR=${OPENSWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MOD26BUILDDIR=$POOLSPACE/module26 KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module26 "
-    echo
+	echo "module26/ipsec.ko: ${OPENSWANSRCDIR}/packaging/makefiles/module26.make \${IPSECDIR}/*.c"
+	echo "$TAB mkdir -p module26"
+	echo "$TAB make -C ${OPENSWANSRCDIR} OPENSWANSRCDIR=${OPENSWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MOD26BUILDDIR=$POOLSPACE/module26 KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module26 "
+	echo
+    fi
 
     # now describe how to build the initrd.
     echo "initrd.uml: ${OPENSWANSRCDIR}/testing/utils/initrd.list"
@@ -49,6 +54,7 @@ setup_host_make() {
     KERNEL=$2
     HOSTTYPE=$3
     KERNVER=$4
+    domodules=$5          # true or false
     KERNDIR=`dirname $KERNEL`
     TAB="	@"
     hostroot=$host/root
@@ -177,25 +183,28 @@ setup_host_make() {
 	    *) DOTO=".o";;
 	esac
 
-	# update the module, if any.
-	echo "$hostroot/ipsec.o : module${KERNVER}/ipsec${DOTO} $hostroot"
-	echo "$TAB -cp module${KERNVER}/ipsec${DOTO} $hostroot/ipsec.o"
-	echo
-	depends="$depends $hostroot/ipsec.o"
+	if $domodules
+	then
+	    # update the module, if any.
+	    echo "$hostroot/ipsec.o : module${KERNVER}/ipsec${DOTO} $hostroot"
+	    echo "$TAB -cp module${KERNVER}/ipsec${DOTO} $hostroot/ipsec.o"
+	    echo
+	    depends="$depends $hostroot/ipsec.o"
 
-	# make module startup script
-	startscript=$POOLSPACE/$host/startmodule.sh
-	echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh $hostroot/ipsec.o initrd.uml"
-	echo "$TAB echo '#!/bin/sh' >$startscript"
-	echo "$TAB echo ''          >>$startscript"
-	echo "$TAB echo '# get $net value from baseconfig'          >>$startscript"
-	echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
-	echo "$TAB echo ''          >>$startscript"
-	echo "$TAB # the umlroot= is a local hack >>$startscript"
-	echo "$TAB echo '$POOLSPACE/plain${KERNVER}/linux initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot root=/dev/root rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT \$\$*' >>$startscript"
-	echo "$TAB chmod +x $startscript"
-	echo
-	depends="$depends $startscript"
+	    # make module startup script
+	    startscript=$POOLSPACE/$host/startmodule.sh
+	    echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh $hostroot/ipsec.o initrd.uml"
+	    echo "$TAB echo '#!/bin/sh' >$startscript"
+	    echo "$TAB echo ''          >>$startscript"
+	    echo "$TAB echo '# get $net value from baseconfig'          >>$startscript"
+	    echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
+	    echo "$TAB echo ''          >>$startscript"
+	    echo "$TAB # the umlroot= is a local hack >>$startscript"
+	    echo "$TAB echo '$POOLSPACE/plain${KERNVER}/linux initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot root=/dev/root rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT \$\$*' >>$startscript"
+	    echo "$TAB chmod +x $startscript"
+	    echo
+	    depends="$depends $startscript"
+	fi
     fi
 
     # make startup script
