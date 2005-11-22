@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# $Id: functions.sh,v 1.127 2005/09/28 12:49:22 mcr Exp $
+# $Id: functions.sh,v 1.131 2005/11/16 21:31:50 mcr Exp $
 #
 
 KLIPS_MODULE=${KLIPS_MODULE-}
@@ -1722,9 +1722,12 @@ buildtest() {
 
 
 #
-# $Id: functions.sh,v 1.127 2005/09/28 12:49:22 mcr Exp $
+# $Id: functions.sh,v 1.131 2005/11/16 21:31:50 mcr Exp $
 #
 # $Log: functions.sh,v $
+# Revision 1.131  2005/11/16 21:31:50  mcr
+# 	numerous fixes to make checks work with set -u.
+#
 # Revision 1.127  2005/09/28 12:49:22  mcr
 # 	document why developer is being nagged.
 #

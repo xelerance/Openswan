@@ -67,8 +67,6 @@ road:~#
 002 "modecfg-road--eastnet-psk" #1: Dead Peer Detection (RFC 3706): enabled
 002 "modecfg-road--eastnet-psk" #2: initiating Quick Mode PSK+ENCRYPT+TUNNEL+PFS+UP+MODECFGPULL+AGGRESSIVE
 117 "modecfg-road--eastnet-psk" #2: STATE_QUICK_I1: initiate
-002 "modecfg-road--eastnet-psk" #2: up-client output: /usr/local/lib/ipsec/_updown: changesource `ip addr add 192.0.2.209/32 dev ipsec0' failed (RTNETLINK answers: File exists)
-002 "modecfg-road--eastnet-psk" #2: route-client output: /usr/local/lib/ipsec/_updown: addsource `ip addr add 192.0.2.209/32 dev ipsec0' failed (RTNETLINK answers: File exists)
 002 "modecfg-road--eastnet-psk" #2: Dead Peer Detection (RFC 3706): enabled
 002 "modecfg-road--eastnet-psk" #2: transition from state STATE_QUICK_I1 to state STATE_QUICK_I2
 004 "modecfg-road--eastnet-psk" #2: STATE_QUICK_I2: sent QI2, IPsec SA established

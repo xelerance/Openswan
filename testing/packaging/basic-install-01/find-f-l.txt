@@ -1,4 +1,8 @@
 ./etc/ipsec.conf
+./etc/ipsec.d/examples/l2tp-cert-orgWIN2KXP.conf
+./etc/ipsec.d/examples/l2tp-cert.conf
+./etc/ipsec.d/examples/l2tp-psk-orgWIN2KXP.conf
+./etc/ipsec.d/examples/l2tp-psk.conf
 ./etc/ipsec.d/examples/no_oe.conf
 ./etc/ipsec.d/policies/block
 ./etc/ipsec.d/policies/clear

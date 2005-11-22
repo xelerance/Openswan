@@ -10,7 +10,7 @@ WESTHOST=west
 
 ARPREPLY=--arpreply
 
-THREEEIGHT=true
+#THREEEIGHT=true
 
 REF_EAST_CONSOLE_OUTPUT=east-console.txt
 REF26_EAST_CONSOLE_OUTPUT=east-console.txt

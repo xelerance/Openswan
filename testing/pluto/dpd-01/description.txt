@@ -1,5 +1,5 @@
 This tests the RFC3706 DPD implementation, with dpdaction=clear on east,
-and dpdaction=hold on west.
+and dpdaction=restart on west.
 
 This means east will clear the SA after the tunnel times out, while west
 will put the route into %trap, awaiting a new packet to trigger reestablishment

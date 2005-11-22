@@ -16,7 +16,7 @@ whackwest --name ipsec-psk-rw --initiate
 003 "ipsec-psk-rw" #1: received Vendor ID payload [Openswan (this version)  VERSION
 003 "ipsec-psk-rw" #1: received Vendor ID payload [Dead Peer Detection]
 106 "ipsec-psk-rw" #1: STATE_MAIN_I2: sent MI2, expecting MR2
-002 "ipsec-psk-rw" #1: I did not send a certificate because I do not have one.
+002 "ipsec-psk-rw" #1: I did not send a certificate because digital signatures are not being used. (PSK)
 108 "ipsec-psk-rw" #1: STATE_MAIN_I3: sent MI3, expecting MR3
 004 "ipsec-psk-rw" #1: STATE_MAIN_I4: ISAKMP SA established {auth=OAKLEY_PRESHARED_KEY cipher=oakley_3des_cbc_192 prf=oakley_md5 group=modp1536}
 002 "ipsec-psk-rw" #2: initiating Quick Mode PSK+ENCRYPT+TUNNEL+UP
