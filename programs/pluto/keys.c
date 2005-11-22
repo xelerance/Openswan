@@ -623,7 +623,7 @@ has_private_key(cert_t cert)
 
 /* check the existence of an RSA private key matching an RSA public
  */
-bool
+static bool
 has_private_rawkey(struct pubkey *pk)
 {
     struct secret *s;
