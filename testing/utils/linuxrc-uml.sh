@@ -44,7 +44,6 @@ mount_tmpfs() {
 
 # I hate this hack.  -- Md
 make_extra_nodes() {
-  ls -l /root/etc/udev/links.conf
   [ -e /root/etc/udev/links.conf ] || return 0
   grep '^[^#]' /root/etc/udev/links.conf | \
   while read type name arg1; do
