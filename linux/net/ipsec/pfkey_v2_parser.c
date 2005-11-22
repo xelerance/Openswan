@@ -2471,7 +2471,7 @@ pfkey_acquire(struct ipsec_sa *ipsp)
 		SENDERR(-error);
 	}
 
-#if KLIPS_PFKEY_ACQUIRE_LOSSAGE > 0
+#if defined(KLIPS_PFKEY_ACQUIRE_LOSSAGE) && KLIPS_PFKEY_ACQUIRE_LOSSAGE > 0
 	if(sysctl_ipsec_regress_pfkey_lossage) {
 		return(0);
 	}

@@ -242,6 +242,10 @@ extern int sysctl_ipsec_regress_pfkey_lossage;
 #endif
 #endif
 
+#ifndef IPSEC_DEFAULT_TTL
+#define IPSEC_DEFAULT_TTL 64
+#endif
+
 #define _IPSEC_PARAM_H_
 #endif /* _IPSEC_PARAM_H_ */
 

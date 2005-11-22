@@ -12,8 +12,13 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: addrtot.c,v 1.22 2005/05/20 16:47:40 mcr Exp $
+ * RCSID $Id: addrtot.c,v 1.24 2005/11/11 06:59:40 mcr Exp $
  */
+
+#if defined(__KERNEL__) && defined(__HAVE_ARCH_STRSTR)
+#include <linux/string.h>
+#endif
+
 #include "openswan.h"
 
 #define	IP4BYTES	4	/* bytes in an IPv4 address */
@@ -334,6 +339,13 @@ regress()
 
 /*
  * $Log: addrtot.c,v $
+ * Revision 1.24  2005/11/11 06:59:40  mcr
+ * 	try this code to avoid static/extern conflict with newer
+ * 	kernels.
+ *
+ * Revision 1.23  2005/11/11 03:09:53  paul
+ * Fix by Toby for newer kernels that have strstr()
+ *
  * Revision 1.22  2005/05/20 16:47:40  mcr
  * 	make strstr static if we need it.
  *
@@ -371,6 +383,13 @@ regress()
  *
  * Revision 1.12  2003/12/30 06:42:48  mcr
  * 	added $Log: addrtot.c,v $
+ * 	added Revision 1.24  2005/11/11 06:59:40  mcr
+ * 	added 	try this code to avoid static/extern conflict with newer
+ * 	added 	kernels.
+ * 	added
+ * 	added Revision 1.23  2005/11/11 03:09:53  paul
+ * 	added Fix by Toby for newer kernels that have strstr()
+ * 	added
  * 	added Revision 1.22  2005/05/20 16:47:40  mcr
  * 	added 	make strstr static if we need it.
  * 	added
