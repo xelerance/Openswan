@@ -13,6 +13,7 @@
 . testparams.sh
 
 compat_variables;
+KLIPS_MODULE=${KLIPS_MODULE-}
 
 if [ -z "${TEST_TYPE-}" ]
 then
@@ -72,25 +73,25 @@ fi
 if [ -n "${REF_PUB_OUTPUT-}" ]
 then
     base=`basename ${REF_PUB_OUTPUT} .txt`
-    pcap_filter public "${REF_PUB_OUTPUT}" $base "${REF_PUB_FILTER}"
+    pcap_filter public "${REF_PUB_OUTPUT}" $base "${REF_PUB_FILTER-}"
 fi
 
 if [ -n "${REF_PRIV_OUTPUT-}" ]
 then
     base=`basename ${REF_PRIV_OUTPUT} .txt`
-    pcap_filter private "${REF_PRIV_OUTPUT}" $base "${REF_PRIV_FILTER}"
+    pcap_filter private "${REF_PRIV_OUTPUT}" $base "${REF_PRIV_FILTER-}"
 fi
 
 if [ -n "${REF_EAST_OUTPUT-}" ]
 then
     base=`basename ${REF_EAST_OUTPUT} .txt`
-    pcap_filter east "${REF_EAST_OUTPUT}" $base "${REF_EAST_FILTER}"
+    pcap_filter east "${REF_EAST_OUTPUT}" $base "${REF_EAST_FILTER-}"
 fi
 
 if [ -n "${REF_WEST_OUTPUT-}" ]
 then
     base=`basename ${REF_WEST_OUTPUT} .txt`
-    pcap_filter west "${REF_WEST_OUTPUT}" $base "${REF_WEST_FILTER}"
+    pcap_filter west "${REF_WEST_OUTPUT}" $base "${REF_WEST_FILTER-}"
 fi
 
 
