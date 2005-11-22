@@ -2,6 +2,8 @@
 
 For a number of months the Openswan project will move from GIT to CVS.
 
+See [[HowToGit]]
+
 This is the operating proceedure for working with the two trees.
 
 First, the GIT tree is the master tree.
