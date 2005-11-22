@@ -191,7 +191,11 @@ make WERROR=-Werror USE_OBJDIR=true programs
 # now, setup up root dir
 for host in $OPENSWANHOSTS
 do
-    setup_host_make $host $UMLSWAN/linux openswan ${KERNVER} >>$UMLMAKE
+    kernelvar=UML_${host}_KERNEL
+    UMLKERNEL=${!kernelvar}
+    if [ -z "${UMLKERNEL}" ]; then UMLKERNEL=${UMLSWAN}/linux; fi
+    echo Using kernel: $UMLKERNEL for $host
+    setup_host_make $host $UMLKERNEL openswan ${KERNVER} >>$UMLMAKE
 done
 
 # now, execute the Makefile that we have created!
