@@ -1,0 +1,28 @@
+conn l2tp-psk-orgWIN2KXP
+	#
+	# Configuration for one user with the non-updated Windows 2000/XP.
+	#
+	#
+	# Use a Preshared Key. Disable Perfect Forward Secrecy.
+	#
+	authby=secret
+	pfs=no
+        auto=add
+        # we cannot rekey for %any, let client rekey
+        rekey=no
+        # Do not enable the line below. It is implicitely used, and
+        # specifying it will currently break when using nat-t.
+        # type=transport. See http://bugs.xelerance.com/view.php?id=466
+        #
+        left=%defaultroute
+        # or you can use: left=YourIPAddress
+	#
+	# Required for original (non-updated) Windows 2000/XP clients.
+	# to support new clients as well, use leftprotoport=17/%any
+	leftprotoport=17/0
+	#
+	# The remote user.
+	#
+	right=%any
+	rightprotoport=17/1701
+        rightsubnet=vhost:%priv,%no

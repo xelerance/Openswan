@@ -15,7 +15,7 @@
  * for more details.
  */
 
-char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.171.2.1 2005/09/01 01:57:19 paul Exp $";
+char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.171.2.5 2005/10/21 02:22:29 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -53,6 +53,7 @@ char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.171.2.1 2005/09/01 01:5
 
 #include <net/ip.h>
 
+#include "openswan/ipsec_kern24.h"
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
 #include "openswan/ipsec_sa.h"
@@ -1163,9 +1164,19 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 
 	/*
 	 * make sure that data now starts at IP header, since we are going
-	 * to pass this back to ip_input (aka netif_rx).
+	 * to pass this back to ip_input (aka netif_rx). Rules for what the
+	 * pointers wind up a different for 2.6 vs 2.4, so we just fudge it here.
 	 */
+#ifdef NET_26
 	skb->data = skb_push(skb, skb->h.raw - skb->nh.raw);
+#else
+	skb->data = skb->nh.raw;
+	{
+	  struct iphdr *iph = skb->nh.iph;
+	  int len = ntohs(iph->tot_len);
+	  skb->len  = len;
+	}
+#endif
 
 #ifdef SKB_RESET_NFCT
 	nf_conntrack_put(skb->nfct);
@@ -1178,9 +1189,7 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 		    "klips_debug:ipsec_rcv: "
 		    "netif_rx() called.\n");
 	netif_rx(skb);
-
-	KLIPS_DEC_USE;
-	return(0);
+	skb=NULL;
 
  rcvleave:
 	if(skb) {
@@ -1233,13 +1242,15 @@ rcvleave:
 }
 
 
-#if !defined(NET_26)
+#if !defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
 /*
  * decapsulate a UDP encapsulated ESP packet
  */
 struct sk_buff *ipsec_rcv_natt_decap(struct sk_buff *skb
-				     , struct ipsec_rcv_state *irs)
+				     , struct ipsec_rcv_state *irs
+				     , int *udp_decap_ret_p)
 {
+	*udp_decap_ret_p = 0;
 	if (skb->sk && skb->nh.iph && skb->nh.iph->protocol==IPPROTO_UDP) {
 		/**
 		 * Packet comes from udp_queue_rcv_skb so it is already defrag,
@@ -1279,6 +1290,7 @@ struct sk_buff *ipsec_rcv_natt_decap(struct sk_buff *skb
 					    "klips_debug:ipsec_rcv: "
 					    /* not IPv6 compliant message */
 					    "NAT-keepalive from %d.%d.%d.%d.\n", NIPQUAD(ip->saddr));
+				*udp_decap_ret_p = 0;
 				return NULL;
 			}
 			else if ( (tp->esp_in_udp == ESPINUDP_WITH_NON_IKE) &&
@@ -1307,12 +1319,11 @@ struct sk_buff *ipsec_rcv_natt_decap(struct sk_buff *skb
 				KLIPS_PRINT(debug_rcv,
 					    "klips_debug:ipsec_rcv: "
 					    "IKE packet - not handled here\n");
-				KLIPS_DEC_USE;
+				*udp_decap_ret_p = -1;
 				return NULL;
 			}
 		}
 		else {
-			KLIPS_DEC_USE;
 			return NULL;
 		}
 	}
@@ -1363,10 +1374,18 @@ ipsec_rcv(struct sk_buff *skb
 	{
 		/* NET_26 NAT-T is handled by seperate function */
 		struct sk_buff *nskb;
+		int udp_decap_ret = 0;
 
-		nskb = ipsec_rcv_natt_decap(skb, irs);
+		nskb = ipsec_rcv_natt_decap(skb, irs, &udp_decap_ret);
 		if(nskb == NULL) {
-			goto rcvleave;
+			/* return with non-zero, because UDP.c code
+			 * need to send it upstream.
+			 */
+			if(skb && udp_decap_ret == 0) {
+				ipsec_kfree_skb(skb);
+			}
+			KLIPS_DEC_USE;
+			return(udp_decap_ret);
 		}
 		skb = nskb;
 	}
@@ -1680,8 +1699,35 @@ rcvleave:
 
 /*
  * $Log: ipsec_rcv.c,v $
- * Revision 1.171.2.1  2005/09/01 01:57:19  paul
- * michael's fixes for 2.6.13 from head
+ * Revision 1.171.2.5  2005/10/21 02:22:29  mcr
+ * 	pull up of another try at 2.4.x kernel fix
+ *
+ * Revision 1.171.2.4  2005/10/21 01:39:56  mcr
+ *     nat-t fix is 2.4/2.6 specific
+ *
+ * Revision 1.178  2005/10/21 02:19:34  mcr
+ * 	on 2.4 systems, we have to fix up the length as well.
+ *
+ * Revision 1.177  2005/10/21 00:18:31  mcr
+ * 	nat-t fix is 2.4 specific.
+ *
+ * Revision 1.176  2005/10/20 21:06:11  mcr
+ * 	possible fix for nat-t problem on 2.4 kernels.
+ *
+ * Revision 1.175  2005/10/13 02:49:24  mcr
+ * 	tested UDP-encapsulated ESP packets that were not actually ESP,
+ * 	(but IKE) were being eaten.
+ *
+ * Revision 1.174  2005/10/13 01:25:22  mcr
+ * 	UDP-encapsulated ESP packets that were not actually ESP,
+ * 	(but IKE) were being eaten.
+ *
+ * Revision 1.173  2005/08/31 23:26:11  mcr
+ * 	fixes for 2.6.13
+ *
+ * Revision 1.172  2005/08/05 08:44:54  mcr
+ * 	ipsec_kern24.h (compat code for 2.4) must be include
+ * 	explicitely now.
  *
  * Revision 1.171  2005/07/08 23:56:06  ken
  * #ifdef

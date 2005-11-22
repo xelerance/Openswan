@@ -11,18 +11,25 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.3 2004/12/18 18:13:39 mcr Exp $
+# RCSID $Id: Makefile,v 1.3.6.1 2005/11/01 18:10:07 paul Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 CONFDSUBDIR=examples
-CONFDFILES=no_oe.conf
+CONFDFILES=no_oe.conf l2tp-cert.conf l2tp-cert-orgWIN2KXP.conf l2tp-psk.conf l2tp-psk-orgWIN2KXP.conf
 
 include ${srcdir}../Makefile.program
 
 #
 # $Log: Makefile,v $
+# Revision 1.3.6.1  2005/11/01 18:10:07  paul
+# dopted Jacco's L2TP example configuration files. I changed them slightly
+# from his versions to properly support nat-t and to avoid breaking rekey
+# attempts for right=%any. I also changed the pathnames to proper ones,
+# removed hardcoded IP addresses and removed explicitely loading the roadwarriors
+# certificate (and use rightca=%same instead)
+#
 # Revision 1.3  2004/12/18 18:13:39  mcr
 # 	adjusted Makefiles so that ${OBJDIR} builds work.
 #

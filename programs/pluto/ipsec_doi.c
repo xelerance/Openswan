@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_doi.c,v 1.304.2.5 2005/08/12 17:05:59 ken Exp $
+ * RCSID $Id: ipsec_doi.c,v 1.304.2.8 2005/11/16 22:43:30 ken Exp $
  */
 
 #include <stdio.h>

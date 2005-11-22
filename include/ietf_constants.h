@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ietf_constants.h,v 1.16 2005/06/23 01:45:55 mcr Exp $
+ * RCSID $Id: ietf_constants.h,v 1.16.2.1 2005/09/27 04:34:20 paul Exp $
  */
 
 /* Group parameters from draft-ietf-ike-01.txt section 6 */
@@ -270,6 +270,8 @@ extern const char *const payload_name[];
 #define ISAKMP_NEXT_D          12	/* Delete */
 #define ISAKMP_NEXT_VID        13	/* Vendor ID */
 #define ISAKMP_NEXT_ATTR       14       /* Mode config Attribute */
+#define ISAKMP_NEXT_NATD_BADDRAFTS   15 /* NAT-Traversal: NAT-D (bad drafts) */
+                                        /* !!! Conflicts with RFC 3547 */
 #define ISAKMP_NEXT_NATD_RFC   20       /* NAT-Traversal: NAT-D (rfc) */
 #define ISAKMP_NEXT_NATOA_RFC  21       /* NAT-Traversal: NAT-OA (rfc) */
 #define ISAKMP_NEXT_ROOF       22	/* roof on payload types */

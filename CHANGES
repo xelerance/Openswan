@@ -1,13 +1,45 @@
+Please see docs/KNOWN_BUGS file for more information
+
+v2.4.4
+  #487 ASSERTION FAILED at state.c:120:IS_ISAKMP_ENCRYPTED(isakmp_sa->st_state) 
+  (see http://www.openswan.org/niscc2/)
+  (proper fix in pluto_constants.h)
+* Fix for kernels having strstr
+* Various gcc4 warning fixes
+* disable CONFIG_IPSEC_NAT_TRAVERSAL per default so we can build KLIPS on
+  Fedora systems.
+* questionable spin_unlock commented out. Might fix reported SMP crashers.
+* update to permit alg code without module support
+* Fix for detecting proper kernel source/header directory on fedora
+* Various bugfixes as reported on http://bugs.openswan.org/
+  #499: check for module support in kernel for IPsec Modular Extensions
+  #500: recent awk breaks on 'setdefault' command
+
+
+
+v2.4.3
+  #487 ASSERTION FAILED at state.c:120:IS_ISAKMP_ENCRYPTED(isakmp_sa->st_state) 
+  (see http://www.openswan.org/niscc2/)
+  (incorrect fixed. version not released)
+
+v2.4.2
+* Fixes for compiling on 2.6.14 by David McCullough
+* Minor fixes to accomodate FC4 2.6.11 kernels.
+* Fix for compilation of KLIPS on 2.4.x kernels.
+* Fix for NAT-T on 2.4.31
+* Fix for 'short' packets with KLIPS on 2.4.x
+* Merged in Jacco's l2tp configuration examples
+* Various bugfixes as reported on http://bugs.openswan.org/
+  #286 Incorrect links in intro.html
+  #344 netkey-acquire patch
+  #376 install_ipsec_sa and install_inbound_ipsec_sa
+  #486 ASSERTION FAILED at crypto.c:258: key_size==(DES_CBC_BLOCK_SIZE * 3)
+  (see http://www.openswan.org/niscc2/)
+
+v2.4.1
+* Not publically released
+
 v2.4.0
-
-This release is dedicated to Ken Bantoft and Van Le, who were wed today,
-2005-09-10, and who are now collectivity known as Ken and Van Vantoft.
-
-We are sure the photos will show up soon at www.vantoft.org, sometime
-after their Honeymoon is finished.
-
-Please see docs/KNOWN_BUGS file. (Seriously)
-
 * NAT-T support for KLIPS on 2.6 (Sponsored by Astaro)
 * Additional Cipher support with KLIPS on 2.6 (Sponsored by Astaro)
 * Fix for NAT-T/PSK rekey (Ulrich @ Astaro)
@@ -95,4 +127,4 @@ v2.1.0
   while travelling.  This is based on Tuomo Soini's Advanced Routing
   patch.
 
-RCSID $Id: CHANGES,v 1.326.2.19 2005/09/12 17:49:23 paul Exp $
+RCSID $Id: CHANGES,v 1.326.2.28 2005/11/17 23:24:29 paul Exp $

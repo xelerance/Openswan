@@ -15,7 +15,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikev1_quick.c,v 1.3 2005/05/18 19:29:29 mcr Exp $
+ * RCSID $Id: ikev1_quick.c,v 1.3.2.1 2005/10/13 03:55:46 paul Exp $
  */
 
 #include <stdio.h>
@@ -1945,7 +1945,10 @@ quick_inI1_outR1_cryptotail(struct qke_continuation *qke
     /* encrypt message, except for fixed part of header */
     
     if (!encrypt_message(&md->rbody, st))
+    {
+	delete_ipsec_sa(st, TRUE);
 	return STF_INTERNAL_ERROR;	/* ??? we may be partly committed */
+    }
 
     DBG(DBG_CONTROLMORE, DBG_log("finished processing quick inI1"));
     return STF_OK;
@@ -2069,7 +2072,10 @@ quick_inR1_outI2(struct msg_digest *md)
     /* encrypt message, except for fixed part of header */
 
     if (!encrypt_message(&md->rbody, st))
+    {
+	delete_ipsec_sa(st, FALSE);
 	return STF_INTERNAL_ERROR;	/* ??? we may be partly committed */
+    }
 
     {
       DBG(DBG_CONTROLMORE, DBG_log("inR1_outI2: instance %s[%ld], setting newest_ipsec_sa to #%ld (was #%ld) (spd.eroute=#%ld)"
@@ -2090,6 +2096,7 @@ quick_inR1_outI2(struct msg_digest *md)
 	on this conn, so initialize it */
     if (st->st_connection->dpd_delay && st->st_connection->dpd_timeout) {
 	if(dpd_init(st) != STF_OK) {
+	    delete_ipsec_sa(st, FALSE);
 	    return STF_FAIL;
 	}
     }
@@ -2145,6 +2152,7 @@ quick_inI2(struct msg_digest *md)
 	on this conn, so initialize it */
     if(st->st_connection->dpd_delay && st->st_connection->dpd_timeout) {
 	if(dpd_init(st) != STF_OK) {
+	    delete_ipsec_sa(st, FALSE);
 	    return STF_FAIL;
 	}
     }

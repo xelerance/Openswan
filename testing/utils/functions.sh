@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# $Id: functions.sh,v 1.124 2005/07/09 15:40:30 mcr Exp $
+# $Id: functions.sh,v 1.124.2.2 2005/11/17 03:43:46 ken Exp $
 #
 
 preptest() {
@@ -612,7 +612,7 @@ netjigtest() {
 	NJARGS="$NJARGS $NETJIGARGS"
     fi
 
-    if [ "X$ARPREPLY" = "X--arpreply" ]
+    if [ "X${ARPREPLY-}" = "X--arpreply" ]
     then
 	NJARGS="$NJARGS -a"
     fi
@@ -1080,7 +1080,7 @@ libtest() {
     elif [ -f ${OPENSWANSRCDIR}/lib/libopenwan/$testsrc ]
     then
 	FILE=${OPENSWANSRCDIR}/lib/libopenswan/$testsrc
-    elif [ -f ${OPENSWANSRCDIR}/lib/libopenwan/$testsrc ]
+    elif [ -f ${OPENSWANSRCDIR}/lib/libopenswan/$testsrc ]
     then
         FILE=${OPENSWANSRCDIR}/lib/libopenswan/$testsrc
     elif [ -f ${OPENSWANSRCDIR}/linux/net/klips/$testsrc ]
@@ -1605,9 +1605,15 @@ umlXhost() {
 }
 
 #
-# $Id: functions.sh,v 1.124 2005/07/09 15:40:30 mcr Exp $
+# $Id: functions.sh,v 1.124.2.2 2005/11/17 03:43:46 ken Exp $
 #
 # $Log: functions.sh,v $
+# Revision 1.124.2.2  2005/11/17 03:43:46  ken
+# Remove CVS commit errors
+#
+# Revision 1.124.2.1  2005/11/17 01:44:13  mcr
+# 	pullup of code from git tree.
+#
 # Revision 1.124  2005/07/09 15:40:30  mcr
 # 	make tests that need compat variables abort.
 #

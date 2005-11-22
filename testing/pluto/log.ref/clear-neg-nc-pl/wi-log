@@ -46,7 +46,7 @@ PLUTO --ctlbase pluto.east --interface lo:e --ikeport 8500 --secretsfile ./ipsec
 added connection description "clear"
 listening for IKE messages
 adding interface virtual127.95.7.2/lo:e 127.95.7.2
-loading secrets from "./ipsec.secrets/east"
+loading secrets from "/tmp/ipsec.secrets/east"
 loading group "./ipsec.d/east/clear"
 packet from 127.95.7.1:8500: initial Main Mode message received on 127.95.7.2:8500 but no connection has been authorized
 packet from 127.95.7.1:8500: initial Main Mode message received on 127.95.7.2:8500 but no connection has been authorized

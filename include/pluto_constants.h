@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pluto_constants.h,v 1.33.2.2 2005/08/19 17:53:03 ken Exp $
+ * RCSID $Id: pluto_constants.h,v 1.33.2.3 2005/11/16 22:41:30 ken Exp $
  */
 
 /* Control and lock pathnames */
@@ -284,7 +284,7 @@ enum phase1_role {
 #define IS_PHASE1(s) (STATE_MAIN_R0 <= (s) && (s) <= STATE_AGGR_R2)
 #define IS_PHASE15(s) (STATE_XAUTH_R0 <= (s) && (s) <= STATE_XAUTH_I1)
 #define IS_QUICK(s) (STATE_QUICK_R0 <= (s) && (s) <= STATE_QUICK_R2)
-#define IS_ISAKMP_ENCRYPTED(s)     (STATE_MAIN_R2 <= (s) && STATE_AGGR_R0!=(s) && STATE_AGGR_I1 != (s))
+#define IS_ISAKMP_ENCRYPTED(s)     (STATE_MAIN_R2 <= (s) && STATE_AGGR_R0!=(s) && STATE_AGGR_I1 != (s) && STATE_INFO != (s))
 #define IS_ISAKMP_AUTHENTICATED(s) (STATE_MAIN_R3 <= (s))
 #define IS_ISAKMP_SA_ESTABLISHED(s) ((s) == STATE_MAIN_R3 || (s) == STATE_MAIN_I4 \
 				  || (s) == STATE_AGGR_I2 || (s) == STATE_AGGR_R2 \

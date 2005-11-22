@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: spdb_struct.c,v 1.13.2.6 2005/08/27 00:29:15 paul Exp $
+ * RCSID $Id: spdb_struct.c,v 1.13.2.10 2005/11/18 06:21:01 ken Exp $
  */
 
 #include <stdio.h>
@@ -129,14 +129,22 @@ out_sa(pb_stream *outs
 	, ipcomp_cpi_generated = FALSE;
     struct db_sa *revised_sadb;
 
+
     if(oakley_mode) {
+	const char *modestr;
+	const char *alginfo;
+
 	revised_sadb=oakley_alg_makedb(st->st_connection->alg_info_ike
 				       , sadb
 				       , aggressive_mode ? 1 : -1);
+	modestr = "ike";
+	alginfo = st->st_connection->alg_ike;
+
     } else {
 	revised_sadb=kernel_alg_makedb(st->st_connection->alg_info_esp, TRUE);
     }
 
+    /* more sanity */
     if(revised_sadb != NULL) {
 	sadb = revised_sadb;
     }
@@ -1011,10 +1019,16 @@ parse_isakmp_sa_body(
 		     * check if this keylen is compatible with 
 		     * specified alg_info_ike
 		     */
-		    if (!ike_alg_enc_ok(ta.encrypt, val, c->alg_info_ike, &ugh)) {
-			ugh = "peer proposed key_len not valid for encrypt algo setup specified";
+                   if(ta.encrypt == OAKLEY_3DES_CBC) {
+                       ta.enckeylen = 24;
+                   } else if(ta.encrypt == OAKLEY_DES_CBC) {
+                       ta.enckeylen = 8;
+                   } else {
+                       if (!ike_alg_enc_ok(ta.encrypt, val, c->alg_info_ike, &ugh)) {
+                           ugh = "peer proposed key_len not valid for encrypt algo setup specified";
+                       }
+                       ta.enckeylen=val;
 		    }
-		    ta.enckeylen=val;
 		    break;
 #else
 		case OAKLEY_KEY_LENGTH | ISAKMP_ATTR_AF_TV:
@@ -1475,7 +1489,7 @@ parse_ipsec_transform(struct isakmp_transform *trans
 #endif
 
 			case ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS:
-				if (st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES) {
+				if (st->hidden_variables.st_nat_traversal & NAT_T_WITH_ENCAPSULATION_RFC_VALUES) {
 					loglog(RC_LOG_SERIOUS,
 						"%s must only be used with old IETF drafts",
 						enum_name(&enc_mode_names, val));
@@ -1504,7 +1518,7 @@ parse_ipsec_transform(struct isakmp_transform *trans
 
 			case ENCAPSULATION_MODE_UDP_TUNNEL_RFC:
 				if ((st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
-					(st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES)) {
+					(st->hidden_variables.st_nat_traversal & NAT_T_WITH_ENCAPSULATION_RFC_VALUES)) {
 					attrs->encapsulation = val - ENCAPSULATION_MODE_UDP_TUNNEL_RFC + ENCAPSULATION_MODE_TUNNEL;
 				}
 				else if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {

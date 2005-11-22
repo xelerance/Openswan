@@ -20,7 +20,10 @@
  */
 #define __NO_VERSION__
 
+#if defined (MODULE)
 #include <linux/module.h>
+#endif
+
 #include <linux/kernel.h> /* printk() */
 
 #include <linux/netdevice.h>   /* struct device, and other headers */
@@ -85,15 +88,20 @@ static struct list_head ipsec_alg_hash_table[IPSEC_ALG_HASHSZ];
 /* 
  * 	Must be already protected by lock 
  */
-static void __ipsec_alg_usage_inc(struct ipsec_alg *ixt) {
+static void __ipsec_alg_usage_inc(struct ipsec_alg *ixt)
+{
+#ifdef MODULE
 	if (ixt->ixt_module)
 		try_module_get(ixt->ixt_module);
+#endif
 	atomic_inc(&ixt->ixt_refcnt);
 }
 static void __ipsec_alg_usage_dec(struct ipsec_alg *ixt) {
 	atomic_dec(&ixt->ixt_refcnt);
+#ifdef MODULE
 	if (ixt->ixt_module)
 		module_put(ixt->ixt_module);
+#endif
 }
 
 #else
@@ -102,15 +110,19 @@ static void __ipsec_alg_usage_dec(struct ipsec_alg *ixt) {
  * 	Must be already protected by lock 
  */
 static void __ipsec_alg_usage_inc(struct ipsec_alg *ixt) {
+#ifdef MODULE
 	if (ixt->ixt_module) {
 		__MOD_INC_USE_COUNT(ixt->ixt_module);
 	}
+#endif
 	atomic_inc(&ixt->ixt_refcnt);
 }
 static void __ipsec_alg_usage_dec(struct ipsec_alg *ixt) {
 	atomic_dec(&ixt->ixt_refcnt);
+#ifdef MODULE
 	if (ixt->ixt_module)
 		__MOD_DEC_USE_COUNT(ixt->ixt_module);
+#endif
 }
 #endif
 

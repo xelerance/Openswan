@@ -1,0 +1,35 @@
+conn L2TP-PSK
+	#
+	# Configuration for one user with any type of IPsec/L2TP client
+	# including the updated Windows 2000/XP (MS KB Q818043), but
+	# excluding the non-updated Windows 2000/XP.
+	#
+	#
+	# Use a Preshared Key. Disable Perfect Forward Secrecy.
+	#
+	# PreSharedSecret needs to be specified in /etc/ipsec.secrets as
+	# YourIPAddress  %any: "sharedsecret"
+	authby=secret
+	pfs=no
+	auto=add
+	keyingtries=3
+	# we cannot rekey for %any, let client rekey
+	rekey=no
+	# Do not enable the line below. It is implicitely used, and
+	# specifying it will currently break when using nat-t.
+	# type=transport. See http://bugs.xelerance.com/view.php?id=466
+	#
+        left=%defaultroute
+        # or you can use: left=YourIPAddress
+	#
+	# For updated Windows 2000/XP clients,
+	# to support old clients as well, use leftprotoport=17/%any
+	leftprotoport=17/1701
+	#
+	# The remote user.
+	#
+	right=%any
+        rightca=%same
+	rightprotoport=17/1701
+        rightsubnet=vhost:%priv,%no
+

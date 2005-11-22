@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: demux.c,v 1.210.2.7 2005/08/19 17:52:42 ken Exp $
+ * RCSID $Id: demux.c,v 1.210.2.10 2005/10/06 00:57:26 paul Exp $
  */
 
 /* Ordering Constraints on Payloads
@@ -1967,7 +1967,8 @@ process_packet(struct msg_digest **mdp)
 
 	if(st->st_suspended_md) { release_md(st->st_suspended_md); }
 	st->st_suspended_md = md;
-	mdp = NULL;
+	md->st = st;
+	*mdp = NULL;
 	return;
     }
 
@@ -2123,6 +2124,16 @@ process_packet(struct msg_digest **mdp)
 		    np = ISAKMP_NEXT_NATOA_RFC;  /* NAT-OA relocated */
 		    sd = payload_descs[np];
 		    break;
+		case ISAKMP_NEXT_NATD_BADDRAFTS:
+		    if (st && (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD_BADDRAFT_VALUES)) {
+			/*
+			 * Only accept this value if we're in compatibility mode with
+			 * the bad drafts of the RFC
+			 */
+		    np = ISAKMP_NEXT_NATD_RFC;  /* NAT-D relocated */
+		    sd = payload_descs[np];
+		    break;
+		}
 #endif
 		default:
 		    loglog(RC_LOG_SERIOUS, "%smessage ignored because it contains an unknown or"

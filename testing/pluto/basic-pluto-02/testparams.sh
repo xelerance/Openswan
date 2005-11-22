@@ -9,9 +9,11 @@ EASTHOST=east
 WESTHOST=west
 
 ARPREPLY=--arpreply
+THREEEIGHT=true
 
 EAST_INPUT=../../klips/inputs/01-sunrise-sunset-ping.pcap
 REF_WEST_OUTPUT=../../klips/west-icmp-01/spi1-cleartext.txt
+WEST_ARPREPLY=true
 
 REF_EAST_CONSOLE_OUTPUT=east-console.txt
 REF26_EAST_CONSOLE_OUTPUT=east-console26.txt

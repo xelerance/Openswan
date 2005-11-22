@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: nat_traversal.c,v 1.26.2.3 2005/09/07 00:41:12 paul Exp $
+ * RCSID $Id: nat_traversal.c,v 1.26.2.4 2005/09/27 04:30:20 paul Exp $
  */
 
 #ifdef NAT_TRAVERSAL
@@ -219,6 +219,9 @@ u_int32_t nat_traversal_vid_to_method(unsigned short nat_t_vid)
 		case VID_NATT_IETF_03:
 			return LELEM(NAT_TRAVERSAL_IETF_02_03);
 			break;
+		case VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE:
+			return LELEM(NAT_TRAVERSAL_OSX);
+			break;
 		case VID_NATT_RFC:
 			return LELEM(NAT_TRAVERSAL_RFC);
 			break;
@@ -332,7 +335,9 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	DBG(DBG_EMITTING, DBG_log("sending NATD payloads"));
 
 	nat_np = (st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES
-	      ? ISAKMP_NEXT_NATD_RFC : ISAKMP_NEXT_NATD_DRAFTS);
+	      ? ISAKMP_NEXT_NATD_RFC
+	      : (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD_BADDRAFT_VALUES
+	      ? ISAKMP_NEXT_NATD_BADDRAFTS : ISAKMP_NEXT_NATD_DRAFTS));
 	if (!out_modify_previous_np(nat_np, outs)) {
 		return FALSE;
 	}
@@ -549,8 +554,11 @@ void nat_traversal_show_result (u_int32_t nt, u_int16_t sport)
 	case LELEM(NAT_TRAVERSAL_IETF_02_03):
 	    mth = natt_type_bitnames[1];
 	    break;
-	case LELEM(NAT_TRAVERSAL_RFC):
+	case LELEM(NAT_TRAVERSAL_OSX):
 	    mth = natt_type_bitnames[2];
+	    break;
+	case LELEM(NAT_TRAVERSAL_RFC):
+	    mth = natt_type_bitnames[3];
 	    break;
 	}
 	switch (nt & NAT_T_DETECTED) {
@@ -918,6 +926,15 @@ void process_pfkey_nat_t_new_mapping(
 
 /*
  * $Log: nat_traversal.c,v $
+ * Revision 1.26.2.4  2005/09/27 04:30:20  paul
+ * Backport of HEAD's patch, adopted from Peter Van der Beken's
+ * (peterv@propagandism.org) MacOSX interop patch.
+ *
+ * Reported to Apple Developer Center (ADC) by Paul Wouters (paul@xelerance.com):
+ * Problem ID: 4274347
+ * Title: IPsec NAT-T implementation is broken, breaking L2TP VPN's to non-apple servers
+ * Created Date: 26-Sep-2005 06:36 PM
+ *
  * Revision 1.26.2.3  2005/09/07 00:41:12  paul
  * Pull up mcr's nat-t detection for klips.
  *
@@ -982,6 +999,6 @@ void process_pfkey_nat_t_new_mapping(
  * 	added log info.
  *
  *
- * $Id: nat_traversal.c,v 1.26.2.3 2005/09/07 00:41:12 paul Exp $
+ * $Id: nat_traversal.c,v 1.26.2.4 2005/09/27 04:30:20 paul Exp $
  *
  */

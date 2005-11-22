@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel.c,v 1.232 2005/07/13 01:54:14 mcr Exp $
+ * RCSID $Id: kernel.c,v 1.232.2.1 2005/10/21 02:50:46 ken Exp $
  */
 
 #include <stddef.h>
@@ -157,10 +157,23 @@ static void set_text_said(char *text_said
                           , ipsec_spi_t spi
                           , int proto);
 
-static const struct pfkey_proto_info null_proto_info[2] = {
+static const struct pfkey_proto_info narrow_proto_info[2] = {
         {
                 proto: IPPROTO_ESP,
                 encapsulation: ENCAPSULATION_MODE_TRANSPORT,
+                reqid: 0
+        },
+        {
+                proto: 0,
+                encapsulation: 0,
+                reqid: 0
+        }
+};
+
+static const struct pfkey_proto_info broad_proto_info[2] = {
+        {
+                proto: IPPROTO_ESP,
+                encapsulation: ENCAPSULATION_MODE_TUNNEL,
                 reqid: 0
         },
         {
@@ -793,7 +806,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                                        , null_host, &that_broad_client
                                        , htonl(shunt_spi), SA_INT
                                        , transport_proto
-                                       , SADB_X_SATYPE_INT, null_proto_info
+                                       , SADB_X_SATYPE_INT, narrow_proto_info
                                        , SHUNT_PATIENCE, ERO_REPLACE, why))
                             {
                                 struct bare_shunt *bs = alloc_thing(struct bare_shunt, "bare shunt");
@@ -820,7 +833,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                        , htonl(shunt_spi)
                        , SA_INT
                        , transport_proto
-                       , SADB_X_SATYPE_INT, null_proto_info
+                       , SADB_X_SATYPE_INT, narrow_proto_info
                        , SHUNT_PATIENCE, ERO_ADD, why))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client, &that_client
@@ -842,7 +855,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
         if (raw_eroute(null_host, &this_client, null_host, &that_client
                        , htonl(shunt_spi), SA_INT
                        , 0 /* transport_proto */
-                       , SADB_X_SATYPE_INT, null_proto_info
+                       , SADB_X_SATYPE_INT, narrow_proto_info
                        , SHUNT_PATIENCE, op, why))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client
@@ -959,11 +972,11 @@ assign_hold(struct connection *c USED_BY_DEBUG
         {
             if (erouted(ro)
             ? !eroute_connection(sr, htonl(SPI_HOLD), SA_INT, SADB_X_SATYPE_INT
-                                 , null_proto_info
+                                 , broad_proto_info
                                  , ERO_REPLACE
                                  , "replace %trap with broad %hold")
             : !eroute_connection(sr, htonl(SPI_HOLD), SA_INT, SADB_X_SATYPE_INT
-                                 , null_proto_info
+                                 , broad_proto_info
                 , ERO_ADD, "add broad %hold"))
             {
                 return FALSE;
@@ -1183,13 +1196,13 @@ shunt_eroute(struct connection *c
                         , htonl(spi)
                         , SA_INT
                         , 0 /* transport_proto is not relevant */
-                        , SADB_X_SATYPE_INT, null_proto_info
+                        , SADB_X_SATYPE_INT, broad_proto_info
                         , 0      /* use lifetime */
                         , op | (SADB_X_SAFLAGS_INFLOW << ERO_FLAG_SHIFT)
                         , opname);
     }
     return eroute_connection(sr, htonl(spi), SA_INT, SADB_X_SATYPE_INT
-        , null_proto_info, op, opname) && ok;
+        , broad_proto_info, op, opname) && ok;
 }
 
 
@@ -2056,7 +2069,7 @@ teardown_half_ipsec_sa(struct state *st, bool inbound)
                           , 256, IPSEC_PROTO_ANY
                           , c->spd.this.protocol
                           , SADB_SATYPE_UNSPEC
-                          , null_proto_info, 0
+                          , narrow_proto_info, 0
                           , ERO_DEL_INBOUND, "delete inbound");
     }
 
@@ -2509,7 +2522,7 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
                     , SA_INT            /* proto */
                     , 0                 /* transport_proto */
                     , SADB_X_SATYPE_INT
-                    , null_proto_info
+                    , narrow_proto_info
                     , SHUNT_PATIENCE
                     , ERO_REPLACE, "restore");
             }

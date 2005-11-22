@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_netlink.c,v 1.30 2005/07/08 19:14:43 ken Exp $
+ * RCSID $Id: kernel_netlink.c,v 1.30.2.2 2005/11/13 14:59:57 paul Exp $
  */
 
 #if defined(linux) && defined(KERNEL26_SUPPORT)
@@ -504,14 +504,13 @@ netlink_raw_eroute(const ip_address *this_host
 	    tmpl[i].optional =
 		proto_info[i].proto == IPPROTO_COMP && dir != XFRM_POLICY_OUT;
 	    tmpl[i].aalgos = tmpl[i].ealgos = tmpl[i].calgos = ~0;
-	    tmpl[i].mode =
-		proto_info[i].encapsulation == ENCAPSULATION_MODE_TUNNEL;
+	    tmpl[i].mode = 0;
 
-	    if (!tmpl[i].mode)
-	    {
+	    if (proto_info[i].encapsulation != ENCAPSULATION_MODE_TUNNEL
+	    || isanyaddr(that_host))
 		continue;
-	    }
 
+	    tmpl[i].mode = 1;
 	    ip2xfrm(this_host, &tmpl[i].saddr);
 	    ip2xfrm(that_host, &tmpl[i].id.daddr);
 	}
@@ -529,7 +528,8 @@ netlink_raw_eroute(const ip_address *this_host
     {
 	enoent_ok = TRUE;
     }
-    else if (op == ERO_DELETE && ntohl(spi) == SPI_HOLD)
+    else if (op == ERO_DELETE && ntohl(spi) == SPI_HOLD
+    && proto_info[0].encapsulation == ENCAPSULATION_MODE_TRANSPORT)
     {
 	enoent_ok = TRUE;
     }
@@ -814,17 +814,39 @@ netlink_acquire(struct nlmsghdr *n)
      *     that they aren't v4 to v6 or something goofy
      */
 
-    if (!(ugh = xfrm_to_ip_address(family, srcx, &src))
-	&& !(ugh = xfrm_to_ip_address(family, dstx, &dst))
-	&& !(ugh = src_proto == dst_proto? NULL : "src and dst protocols differ")
-	&& !(ugh = addrtosubnet(&src, &ours))
-	&& !(ugh = addrtosubnet(&dst, &his)))
-      record_and_initiate_opportunistic(&ours, &his, transport_proto
-					  , "%acquire-netlink");
-
-
-    if (ugh != NULL)
+    if ((ugh = xfrm_to_ip_address(family, srcx, &src))
+	|| (ugh = xfrm_to_ip_address(family, dstx, &dst))
+	|| (ugh = src_proto == dst_proto? NULL : "src and dst protocols differ")
+	|| (ugh = addrtosubnet(&src, &ours))
+	|| (ugh = addrtosubnet(&dst, &his)))
+    {
 	openswan_log("XFRM_MSG_ACQUIRE message from kernel malformed: %s", ugh);
+	return;
+    }
+
+    /* Remove this once connections.c can handle it. */
+    transport_proto = 0;
+
+    if (has_bare_hold(&src, &dst, transport_proto))
+    {
+	/* On the native stack we emulate %hold eroutes through
+	 * XFRM_STATE_ACQ states which expire after a set interval.
+	 * Therefore we need to filter out subsequent notifications.
+	 */
+	char ocb[ADDRTOT_BUF];
+	char pcb[ADDRTOT_BUF];
+
+	addrtot(&src, 0, ocb, sizeof(ocb));
+	addrtot(&dst, 0, pcb, sizeof(pcb));
+
+	loglog(RC_COMMENT
+	    , "ignoring duplicate netlink acquire event for %s to %s"
+	    , ocb, pcb);
+	return;
+    }
+
+    record_and_initiate_opportunistic(&ours, &his, transport_proto
+				      , "%acquire-netlink");
 }
 
 static void
@@ -1060,8 +1082,9 @@ retry:
 	}
 
 	loglog(RC_LOG_SERIOUS
-	    , "ERROR: netlink_get_spi for %s failed with errno %d: %s"
+	    , "ERROR: netlink_get_spi for %s/%u/%u failed with errno %d: %s"
 	    , text_said
+	    , req.spi.min, req.spi.max
 	    , -rsp.u.e.error
 	    , strerror(-rsp.u.e.error));
 	return 0;

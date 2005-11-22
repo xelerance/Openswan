@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: crypto.c,v 1.36 2005/07/05 22:04:13 mcr Exp $
+ * RCSID $Id: crypto.c,v 1.36.2.1 2005/09/27 04:28:09 paul Exp $
  */
 
 #include <stdio.h>
@@ -167,7 +167,7 @@ init_crypto(void)
 #endif
 
 #ifdef USE_1DES
-#error YOU HAVE TO EDIT THE SOURCE CODE AND REMOVE THIS LINE
+/*#warning YOUR PLUTO IS INSECURE, IT HAS 1DES. DO NOT USE IT. */
 	    {
 		ike_alg_add((struct ike_alg *) &crypto_encrypter_des);
 	    }

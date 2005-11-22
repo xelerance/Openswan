@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# this script is used by "road" UMLs that want to have per-test
+# this script is used by "east" UMLs that want to have per-test
 # configuration files, and will be hitting sunrise-oe to test with.
 
 TESTING=${TESTING-/testing}
@@ -19,7 +19,6 @@ then
 fi
 
 mkdir -p /tmp/$TESTNAME/ipsec.d/policies
-cp /etc/ipsec.d/*          /tmp/$TESTNAME/ipsec.d
-cp /etc/ipsec.d/policies/* /tmp/$TESTNAME/ipsec.d/policies
+cp -r /etc/ipsec.d/*          /tmp/$TESTNAME/ipsec.d
 
 IPSEC_CONFS=/tmp/$TESTNAME export IPSEC_CONFS

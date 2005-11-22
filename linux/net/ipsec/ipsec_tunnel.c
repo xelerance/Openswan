@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.232 2005/06/04 16:06:06 mcr Exp $";
+char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.232.2.1 2005/09/21 22:57:43 paul Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -611,7 +611,7 @@ ipsec_tunnel_send(struct ipsec_xmit_state*ixs)
 	  nf_conntrack_put(ixs->skb->nfct);
 	  ixs->skb->nfct = NULL;
 	}
-#ifdef CONFIG_NETFILTER_DEBUG
+#if defined(CONFIG_NETFILTER_DEBUG) && defined(HAVE_SKB_NF_DEBUG)
 	ixs->skb->nf_debug = 0;
 #endif /* CONFIG_NETFILTER_DEBUG */
 #endif /* SKB_RESET_NFCT */
@@ -1839,6 +1839,9 @@ ipsec_tunnel_cleanup_devices(void)
 
 /*
  * $Log: ipsec_tunnel.c,v $
+ * Revision 1.232.2.1  2005/09/21 22:57:43  paul
+ * pulled up compile fix for 2.6.13
+ *
  * Revision 1.232  2005/06/04 16:06:06  mcr
  * 	better patch for nat-t rcv-device code.
  *

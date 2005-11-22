@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: connections.h,v 1.103 2005/06/14 22:38:06 mcr Exp $
+ * RCSID $Id: connections.h,v 1.103.2.1 2005/11/17 01:44:12 mcr Exp $
  */
 
 /* There are two kinds of connections:
@@ -186,19 +186,19 @@ struct connection {
     time_t sa_rekey_margin;
     unsigned long sa_rekey_fuzz;
     unsigned long sa_keying_tries;
-
+    
     /* RFC 3706 DPD */
     time_t          dpd_delay;              /* time between checks */
     time_t          dpd_timeout;            /* time after which we are dead */
     enum dpd_action dpd_action;             /* what to do when we die */
-
+    
     bool               forceencaps;         /* always use NAT-T encap */
-
+    
     char              *log_file_name;       /* name of log file */
     FILE              *log_file;            /* possibly open FILE */
-    CIRCLEQ_ENTRY(connection) log_link;     /* linked list of open conns */
+    CIRCLEQ_ENTRY(connection) log_link;     /* linked list of open conns {} */
     bool               log_file_err;        /* only bitch once */
-
+			      
     struct spd_route spd;
 
     /* internal fields: */
@@ -227,6 +227,8 @@ struct connection {
 				       next one to apply */
 
     struct gw_info *gw_info;
+    char                *alg_esp;    /* string the admin provided */
+    char                *alg_ike;    /* ditto. may be NULL */
     struct alg_info_esp *alg_info_esp;
     struct alg_info_ike *alg_info_ike;
 

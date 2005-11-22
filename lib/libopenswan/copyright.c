@@ -12,17 +12,18 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: copyright.c,v 1.5 2004/04/09 18:00:39 mcr Exp $
+ * RCSID $Id: copyright.c,v 1.5.14.1 2005/11/03 20:33:18 paul Exp $
  */
 #include "internal.h"
 #include "openswan.h"
 
 static const char *co[] = {
- "Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004 ",
+ "Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005 ",
  "    Henry Spencer, Richard Guy Briggs, Sam Sgro",
  "    D. Hugh Redelmeier, Sandy Harris, Claudia Schmeing,",
  "    Michael C. Richardson, Angelos D. Keromytis, John Ioannidis.",
- "    Ken Bantoft, Andreas Steffan, Mathieu Lafon, Tuomo Soini",
+ "    Ken Bantoft, Andreas Steffen, Mathieu Lafon, Tuomo Soini",
+ "    Paul Wouters",
  "",
  "This program is free software; you can redistribute it and/or modify it",
  "under the terms of the GNU General Public License as published by the",
