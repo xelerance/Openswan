@@ -6,7 +6,7 @@ TESTHOST=east
 
 EXITONEMPTY=--exitonempty
 PRIV_INPUT=../inputs/01-sunrise-sunset-sandwich-nic-ping.pcap
-THREEEIGHT=true
+#THREEEIGHT=true
 REF_PUB_OUTPUT=spi1-output.txt
 REF26_PUB_OUTPUT=spi1-output26.txt
 REF_CONSOLE_OUTPUT=spi1-console.txt

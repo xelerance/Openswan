@@ -42,7 +42,7 @@ s/\(Dentry\).\(cache hash table entries:\).*/\1-\2 NUMBERS/
 s/\(Inode\).\(cache hash table entries:\).*/\1-\2 NUMBERS/
 s/\(Mount.cache hash table entries:\).*/Mount-cache hash table entries: NUMBERS/
 s/\(Buffer.cache hash table entries:\).*/Buffer-cache hash table entries: NUMBERS/
-s/\(Page-cache hash table entries:\).*/\1 NUMEBRS/
+s/\(Page-cache hash table entries:\).*/\1 NUMBERS/
 /block: slots and queues/d
 /RAMDISK driver initialized: 16 RAM disks of 4096K size 1024 blocksize/d
 s/\(PPP generic driver version\).*/\1 VERSION/
@@ -72,3 +72,5 @@ s/TCP: Hash tables configured (established .* bind .*)/TCP: Hash tables configur
 /INIT: Switching to runlevel: 0/d
 /INIT: Sending processes the TERM signal/d
 /Failed to open 'root_fs'/d
+s/none on \/usr\/obj type hostfs (ro,.*)/none on \/usr\/obj type hostfs (ro, PATH)/
+/.*\/dev\/console$/d

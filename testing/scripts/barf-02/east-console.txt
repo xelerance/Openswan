@@ -45,6 +45,7 @@ east:~#
 + _________________________ ipsec/updowns
 + _________________________ /proc/net/dev
 + _________________________ /proc/net/route
++ _________________________ /proc/sys/net/ipv4/ip_no_pmtu_disc
 + _________________________ /proc/sys/net/ipv4/ip_forward
 + _________________________ /proc/sys/net/ipv4/conf/star-rp_filter
 + _________________________ uname-a

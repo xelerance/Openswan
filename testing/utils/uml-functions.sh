@@ -1,7 +1,7 @@
 #! /bin/sh 
 #
 # 
-# $Id: uml-functions.sh,v 1.44 2005/11/08 19:21:15 mcr Exp $
+# $Id: uml-functions.sh,v 1.45 2005/11/21 08:44:57 mcr Exp $
 #
 
 setup_make() {
@@ -74,7 +74,6 @@ setup_host_make() {
     # make sure that we have /dev, /tmp and /var/run
     echo "$TAB mkdir -p $hostroot/dev $hostroot/tmp $hostroot/var/run $hostroot/usr/share $hostroot/proc $hostroot/var/log/pluto/peer"
     echo "$TAB rm -f $hostroot/dev/console $hostroot/dev/null"
-    echo "$TAB mkdir -p $hostroot/dev"
     echo "$TAB touch $hostroot/dev/console $hostroot/dev/null"
 
     # root image may be debian, but we expect rh-style /etc/rc.d
@@ -364,6 +363,9 @@ applypatches() {
 
 #
 # $Log: uml-functions.sh,v $
+# Revision 1.45  2005/11/21 08:44:57  mcr
+# 	adjust UML to use initrd and cramfs.
+#
 # Revision 1.44  2005/11/08 19:21:15  mcr
 # 	add OPENSWANSRCDIR= to generated makefile.
 #

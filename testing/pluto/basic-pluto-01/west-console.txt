@@ -58,6 +58,9 @@ ROUTING TABLE
 192.0.2.0/24 dev ipsec0  scope link 
 default via 192.1.2.254 dev eth1 
 west:~#
+ echo done
+done
+west:~#
  
 
 west:~#

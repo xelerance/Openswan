@@ -15,7 +15,7 @@ TESTNAME=psk-pluto-04
 source /testing/pluto/bin/roadlocal.sh
 
 ipsec setup start
-ipsec auto --add road--eastnet-psk
+ipsec auto --add road-east-psk
 echo done
 
 

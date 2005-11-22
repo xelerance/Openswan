@@ -43,6 +43,9 @@ realclean: clean
 
 #
 # $Log: Makefile,v $
+# Revision 1.6  2005/11/08 22:22:38  mcr
+# 	introduce big logical sets including test case
+#
 # Revision 1.5  2005/01/24 01:13:13  mcr
 # 	make sure that OPENSWANLIB is setup for tests.
 #

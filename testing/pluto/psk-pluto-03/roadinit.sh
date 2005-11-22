@@ -1,5 +1,6 @@
 #!/bin/sh
 : ==== start ====
+TESTNAME=psk-pluto-03
 ipsec setup stop
 umount /usr/local; mount /usr/local
 
@@ -9,13 +10,11 @@ ifconfig eth0 inet 192.1.3.174
 route delete -net default 
 route add -net default gw 192.1.3.254
 
-netstat -rn
+# netstat -rn
 
-TESTNAME=psk-pluto-03
+ls -al /testing/pluto/bin/roadlocal.sh
 source /testing/pluto/bin/roadlocal.sh
 
 ipsec setup start
 ipsec auto --add road--eastnet-psk
 echo done
-
-

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # 
-# $Id: make-uml.sh,v 1.50 2005/07/27 15:51:39 mcr Exp $
+# $Id: make-uml.sh,v 1.51 2005/11/21 08:44:57 mcr Exp $
 #
 
 # show me
@@ -200,6 +200,9 @@ cd $POOLSPACE && make $OPENSWANHOSTS
     
 #
 # $Log: make-uml.sh,v $
+# Revision 1.51  2005/11/21 08:44:57  mcr
+# 	adjust UML to use initrd and cramfs.
+#
 # Revision 1.50  2005/07/27 15:51:39  mcr
 # 	set up $PATH to use local touch program.
 #

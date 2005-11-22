@@ -16,7 +16,7 @@ REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-setup-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-lwdnsq-sanitize.pl"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS pluto-whack-sanitize.sed"
 
-THREEEIGHT=true
+#THREEEIGHT=true
 
 NORTH_PLAY=../../klips/inputs/08-pole-sunrise-ping.pcap
 REF_EAST_OUTPUT=east-cleartext.txt

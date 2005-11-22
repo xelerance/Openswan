@@ -291,6 +291,26 @@ umlplutotest	xauth-pluto-07		good
 #
 umlXhost	xauth-pluto-08		good
 
+#
+# Aggressive Mode Pluto Tests
+#
+umlplutotest	aggr-pluto-01	good
+#
+umlplutotest	aggr-pluto-02	good
+#
+umlplutotest	aggr-pluto-03	good
+
+
+#
+# Aggressive Mode Unit Tests
+#
+ctltest	aggr-unit-01	good
+#
+ctltest	aggr-unit-02	good
+
+
+
+
 
 # 
 # a testcase with pfs=yes connecting to pfs=no
@@ -326,10 +346,10 @@ umlXhost	psk-pluto-04		good
 #
 # a test of using AES with pluto, twofish for phase2
 #
-umlplutotest	basic-pluto-07		good
+umlplutotest	basic-pluto-07		bad
 
 #
 # a test of using twofish with pluto, twofish for phase2
 #
-umlplutotest	basic-pluto-08		good
+umlplutotest	basic-pluto-08		bad
 

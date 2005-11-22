@@ -7,3 +7,5 @@ source /testing/pluto/bin/eastlocal.sh
 
 ipsec setup start
 ipsec auto --add road--eastnet-psk
+echo done
+

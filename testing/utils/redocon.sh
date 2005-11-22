@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# $Id: redocon.sh,v 1.11 2005/09/14 14:46:33 mcr Exp $
+# $Id: redocon.sh,v 1.12 2005/11/16 22:27:38 mcr Exp $
 #
 # use this script to run a single test from within that test directory.
 # note that this assumes a "klipstest" type test.
@@ -96,6 +96,9 @@ fi
 
 
 # $Log: redocon.sh,v $
+# Revision 1.12  2005/11/16 22:27:38  mcr
+# 	additional work to make set -u work.
+#
 # Revision 1.11  2005/09/14 14:46:33  mcr
 # 	adjusted redocon to work properly with 2.6 files.
 #

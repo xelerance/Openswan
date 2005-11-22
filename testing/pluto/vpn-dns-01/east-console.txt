@@ -39,8 +39,11 @@ NET: Registered protocol family 17
 Initialized stdio console driver
 Console initialized on /dev/tty0
 Mounted devfs on /dev
+Mounting a tmpfs over /dev...done.
+Creating initial device nodes...done.
 line_ioctl: tty0: ioctl KDSIGACCEPT called
 INIT: version 2.78 booting
+mount: proc already mounted
 Activating swap...
 Checking all file systems...
 Parallelizing fsck version 1.18 (11-Nov-1999)
@@ -50,6 +53,7 @@ Mounting local filesystems...
 /dev/shm on /var/run type tmpfs (rw)
 devpts on /dev/pts type devpts (rw,mode=0622)
 none on /usr/share type hostfs (ro)
+none on /usr/obj type hostfs (ro, PATH)
 Enabling packet forwarding: done.
 Configuring network interfaces: done.
 Cleaning: /tmp /var/lock /var/run.

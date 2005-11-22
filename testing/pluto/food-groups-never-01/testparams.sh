@@ -18,7 +18,7 @@ REF_PUB_FILTER=../../klips/fixups/no-arp-pcap2.pl
 REF_EAST_CONSOLE_OUTPUT=east-console.txt
 REF26_EAST_CONSOLE_OUTPUT=east-console.txt
 
-THREEEIGHT=true
+#THREEEIGHT=true
 
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-look-esp-sanitize.pl"
