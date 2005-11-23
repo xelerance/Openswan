@@ -14,6 +14,7 @@
 #
 # RCSID $Id: Makefile.inc,v 1.132 2005/10/20 21:01:47 mcr Exp $
 
+-include Makefile.inc.local
 
 
 # Variables in this file with names starting with INC_ are not for use
