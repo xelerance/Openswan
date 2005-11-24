@@ -339,10 +339,10 @@ fi
 _________________________ usr/src/linux/.config
 if test -f /proc/config.gz
 then
-	zcat /proc/config.gz | egrep 'CONFIG_IPSEC|CONFIG_KLIPS|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP' 
+        zcat /proc/config.gz | egrep 'CONFIG_IPSEC|CONFIG_KLIPS|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP|CONFIG_HW_RANDOM|CONFIG_CRYPTO_DEV'
 elif test -f /lib/modules/`uname -r`/build/.config
 then
-	cat /lib/modules/`uname -r`/build/.config | egrep 'CONFIG_IPSEC|CONFIG_KLIPS|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP'
+        cat /lib/modules/`uname -r`/build/.config | egrep 'CONFIG_IPSEC|CONFIG_KLIPS|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP|CONFIG_HW_RANDOM|CONFIG_CRY$
 else
 	echo "no .config file found, cannot list kernel properties"
 fi
