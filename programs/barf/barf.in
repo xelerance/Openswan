@@ -254,8 +254,14 @@ _________________________ /proc/sys/net/ipv4/ip_no_pmtu_disc
 cat /proc/sys/net/ipv4/ip_no_pmtu_disc
 _________________________ /proc/sys/net/ipv4/ip_forward
 cat /proc/sys/net/ipv4/ip_forward
+_________________________ /proc/sys/net/ipv4/tcp_ecn
+cat /proc/sys/net/ipv4/tcp_ecn
 _________________________ /proc/sys/net/ipv4/conf/star-rp_filter
 ( cd /proc/sys/net/ipv4/conf && egrep '^' */rp_filter )
+_________________________ /proc/sys/net/ipv4/tcp_window_scaling
+cat /proc/sys/net/ipv4/tcp_window_scaling
+_________________________ /proc/sys/net/ipv4/tcp_adv_win_scale
+cat /proc/sys/net/ipv4/tcp_adv_win_scale
 _________________________ uname-a
 uname -a
 _________________________ config-built-with
@@ -263,16 +269,15 @@ if test -r /proc/config_built_with
 then
 	cat /proc/config_built_with
 fi
-_________________________ redhat-release
-if test -r /etc/redhat-release
-then
-	cat /etc/redhat-release
-else
-	if test -r /etc/fedora-release
-	then
-		cat /etc/fedora-release
-	fi
-fi
+_________________________ distro-release
+for distro in /etc/redhat-release /etc/debian-release /etc/SuSE-release /etc/mandrake-release /etc/mandriva-release /etc/gentoo-release
+do
+        if test -f $distro
+        then
+               cat $distro
+        fi
+
+done
 _________________________ /proc/net/ipsec_version
 if test -r /proc/net/ipsec_version
 then
