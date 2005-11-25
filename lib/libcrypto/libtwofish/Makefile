@@ -28,6 +28,6 @@ clean:
 	rm -f *.[oa] core $(TARGET) test
 
 check:
-        echo no checks in lib right now.
+	echo no checks in lib right now.
 
 
