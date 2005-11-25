@@ -176,10 +176,10 @@ _________________________ /proc/net/pfkey
 if test -r /proc/net/pfkey
 then
 	cat /proc/net/pfkey
-_________________________ setkey-D
-	setkey -D
-_________________________ setkey-D-P
-	setkey -D -P
+_________________________ ip-xfrm-state
+	ip xfrm state
+_________________________ ip-xfrm-policy
+	ip xfrm policy
 fi
 # not visible on my 2.6 system
 #_________________________ /proc/net/pf_key-star
@@ -354,6 +354,8 @@ else
 	echo "no .config file found, cannot list kernel properties"
 fi
 _________________________ etc/syslog.conf
+_________________________ etc/syslog-ng/syslog-ng.conf
+cat /etc/syslog-ng/syslog-ng.conf
 cat /etc/syslog.conf
 _________________________ etc/resolv.conf
 cat /etc/resolv.conf
