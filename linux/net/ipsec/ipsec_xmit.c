@@ -820,11 +820,7 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 		default:
 			break;
 		}
-#ifdef NETDEV_23
-		ixs->iph->ttl      = sysctl_ip_default_ttl;
-#else /* NETDEV_23 */
-		ixs->iph->ttl      = ip_statistics.IpDefaultTTL;
-#endif /* NETDEV_23 */
+		ixs->iph->ttl      = SYSCTL_IPSEC_DEFAULT_TTL;
 		ixs->iph->frag_off = 0;
 		ixs->iph->saddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_s))->sin_addr.s_addr;
 		ixs->iph->daddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_d))->sin_addr.s_addr;
