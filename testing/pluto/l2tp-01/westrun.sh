@@ -1,7 +1,6 @@
-ipsec auto --up  west--east-port3
-
-telnet east-out 2 | wc -l
-telnet east-out 3 | wc -l
+echo "c server" >/var/run/l2tp-control
+sleep 4
 
 ipsec look
+ifconfig ppp0
 echo done
