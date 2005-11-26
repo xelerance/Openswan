@@ -15,7 +15,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _updown.ip2.in,v 1.18 2005/08/25 21:44:14 paul Exp $
+# RCSID $Id: _updown.ip2.in,v 1.19 2005/08/25 21:52:53 paul Exp $
 
 
 
@@ -356,21 +356,45 @@ doroute() {
 	st=0
 	parms="$PLUTO_PEER_CLIENT"
 	parms2=
+
+	if [ -z "$PLUTO_MY_SOURCEIP" ] && [ -n "$DEFAULTSOURCE" ]
+	then
+	    PLUTO_MY_SOURCEIP="${DEFAULTSOURCE%/*}"
+	fi
+
+	# skip creating any routing in case it is a host to host
+	# tunnel and the peer network(=host) is equal to peer ip,
+	# except there is some different source ip to use.
+	#if test "$PLUTO_PEER_CLIENT" == "$PLUTO_PEER/32" ; then
+	#    test "$PLUTO_ME" != "$PLUTO_MY_SOURCEIP" && \
+	#    test -n "$PLUTO_MY_SOURCEIP" || return 0
+	#fi
+
 	if [ -n "$PLUTO_NEXT_HOP" ] && [ "$PLUTO_NEXT_HOP" != "$PLUTO_PEER" ]
 	then
-	   parms2="via $PLUTO_NEXT_HOP"
++
+	   # nexthop is not needed on ppp interfaces. unset it to make cases
+	   # work, where left is set but no leftnexthop (e.g. left=%dynamic)
+	   ip link show "$PLUTO_INTERFACE" | grep -qs POINTOPOINT && \
+		unset PLUTO_NEXT_HOP
+
+	   # skip routing via nexthop if it is not reachable through any
+	   # directly connected network (but via default route only):
+	   ip route list match "$PLUTO_NEXT_HOP" dev "$PLUTO_INTERFACE" | \
+		grep -qs -v default || unset PLUTO_NEXT_HOP
+
+	   if [ -n "$PLUTO_NEXT_HOP" ]
+	   then
+		parms2="via $PLUTO_NEXT_HOP"
+	   fi
 	fi
+
 	parms2="$parms2 dev $PLUTO_INTERFACE"
 	parms3="$IPROUTEARGS"
 	if [ -n "$IPROUTETABLE" ]
 	then
 	    parms3="$parms3 table $IPROUTETABLE"
 	fi
-
-	if [ -z "$PLUTO_MY_SOURCEIP" ] && [ -n "$DEFAULTSOURCE" ]
-	then
-	    PLUTO_MY_SOURCEIP="${DEFAULTSOURCE%/*}"
-        fi
 
 	if test "$1" = "add" -a -n "$PLUTO_MY_SOURCEIP" 
 	then
