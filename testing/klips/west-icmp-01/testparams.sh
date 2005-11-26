@@ -9,7 +9,7 @@ ARPREPLY=--arpreply
 
 PUB_INPUT=../inputs/02-sunrise-sunset-esp.pcap
 REF_PRIV_OUTPUT=spi1-cleartext.txt
-THREEEIGHT=true
+# THREEEIGHT=true
 
 REF_CONSOLE_OUTPUT=spi1-console.txt
 REF26_CONSOLE_OUTPUT=spi1-console.txt
