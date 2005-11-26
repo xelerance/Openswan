@@ -15,7 +15,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _updown.ip2.in,v 1.17 2005/08/24 21:49:54 mcr Exp $
+# RCSID $Id: _updown.ip2.in,v 1.18 2005/08/25 21:44:14 paul Exp $
 
 
 
@@ -201,15 +201,36 @@ downrule() {
 
 addsource() {
 	st=0
-	if ! ip -o route get ${PLUTO_MY_SOURCEIP%/*} | grep -q ^local
+	#
+	# Fix for Bug #66215 to solve SNAT/MASQUERADE problems with recent
+	# 2.6.x kernels.
+	# Instead of a /32 it seems better to use the netmask of the remote
+	# (peer) network for the sourceip as suggested by Patrick McHardy.
+	#
+	cidr=${PLUTO_PEER_CLIENT##*/}
+	snet=${PLUTO_MY_SOURCEIP%/*}/32
+	if test "${PLUTO_PEER_CLIENT}" != "${cidr}"
 	then
-	    it="ip addr add ${PLUTO_MY_SOURCEIP%/*}/32 dev $PLUTO_INTERFACE"
+		snet=${PLUTO_MY_SOURCEIP%/*}/${cidr}
+	fi
+	if ! ip addr show dev ${PLUTO_INTERFACE%:*} | grep -qs "inet ${snet}"
+	then
+		it="ip addr add ${snet} dev ${PLUTO_INTERFACE%:*}"
+
 	    oops="`eval $it 2>&1`"
 	    st=$?
 	    if test " $oops" = " " -a " $st" != " 0"
 	    then
 		oops="silent error, exit status $st"
 	    fi
+	    case "$oops" in
+		'RTNETLINK answers: File exists'*)
+		# should not happen, but ... ignore if the
+		# address was already assigned on interface
+		oops=""
+		st=0
+	    ;;
+	    esac
 	    if test " $oops" != " " -o " $st" != " 0"
 	    then
 		echo "$0: addsource \`$it' failed ($oops)" >&2
