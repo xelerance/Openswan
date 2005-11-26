@@ -57,5 +57,4 @@ tun0x1000583@192.1.2.45 IPIP: dir=in  src=192.1.2.23 life(c,s,h)= natencap=none 
 ROUTING TABLE
 west:~#
  ipsec klipsdebug --all 
-west:~#
 
