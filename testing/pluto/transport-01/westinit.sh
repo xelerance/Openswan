@@ -1,3 +1,4 @@
+: ==== start ====
 TESTNAME=transport-01
 source /testing/pluto/bin/westlocal.sh
 
@@ -18,10 +19,9 @@ telnet east-out 3 | wc -l
 ipsec setup start
 ipsec auto --add west--east-port3
 ipsec auto --add west--east-pass
-ipsec auto --up west--east-pass
+/testing/pluto/bin/wait-until-pluto-started
 ipsec auto --route west--east-pass
 ipsec whack --debug-control --debug-controlmore --debug-parsing --debug-crypt
-/testing/pluto/bin/wait-until-pluto-started
 
 echo done
 
