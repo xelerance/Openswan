@@ -7,8 +7,9 @@ west:~#
  /testing/pluto/bin/eroutewait.sh trap
 west:~#
  ipsec auto --route westnet-eastnet-bad-updown
-003 "westnet-eastnet-bad-updown": prepare-client command exited with status 1
-003 "westnet-eastnet-bad-updown": route-client command exited with status 1
+003 "westnet-eastnet-bad-updown": prepare-client command exited with status 126
+003 "westnet-eastnet-bad-updown": route-client command exited with status 126
+003 "westnet-eastnet-bad-updown": down-client command exited with status 126
 025 "westnet-eastnet-bad-updown": could not route
 west:~#
  ipsec whack --listen

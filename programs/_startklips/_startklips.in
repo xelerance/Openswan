@@ -285,6 +285,10 @@ then
 		modprobe -qv xfrm4_tunnel
 		# xfrm_user contains netlink support for IPsec 
 		modprobe -qv xfrm_user
+                modprobe -qv hw_random
+                # padlock must load before aes module
+                modprobe -qv padlock
+
 		# load the most common ciphers/algo's
 		modprobe -qv sha1
 		modprobe -qv md5
@@ -305,6 +309,10 @@ then
 		fi
                 unset MODPATH MODULECONF        # no user overrides!
                 depmod -a >/dev/null 2>&1
+                modprobe -qv hw_random
+                # padlock must load before aes module
+                modprobe -qv padlock
+
                 modprobe -v ipsec
         fi
         if test ! -f $ipsecversion

@@ -70,7 +70,7 @@
 #if defined(linux) || (defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
 # define USE_DEV_RANDOM	1
 #ifdef HWRANDOM
-# define RANDOM_PATH    "/dev/hwrandom"
+# define RANDOM_PATH    "/dev/hw_random"
 # define RANDOM_PATH_BACKUP "/dev/urandom"
 #else
 # define RANDOM_PATH    "/dev/urandom"
