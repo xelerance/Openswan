@@ -8,29 +8,12 @@ To have /dev on hostfs, would have meant that we would have to have device
 nodes on the host file system, and that would require root on the host to
 create them.
 
-The new system that was attempted for 2.6.13 is that we have a shell script
-for /sbin/init. It mounts /proc, then starts udev, then creates /dev/console,
-and then exec's the real /sbin/init. 
+The new system is that we have a shell script for /sbin/init.
+It mounts /proc, then starts udev, then creates /dev/console, and
+then exec's the real /sbin/init.
 
 It seems to work, but in order for the script to start, we have to have
-something as /dev/console, and an empty file worked at the time. It stopped
-working. 
-
-Starting with 2.6.14 support (and git HEAD) support, the boot process
-now creates a cramfs to use an initrd. fakeroot lets us build the right
-/dev/console and /dev/null nodes in the cramfs to let things boot.
-
-The cramfs has a /linuxrc that borrows from /etc/init.d/udev and the like.
-It mounts the root from a kernel cmdline variable (umlroot=) on /root,
-and then mounts a tmpfs on /root/dev. It then populates the new dev
-with stuff it gets from udev's config file. (found in /root/etc/udev).
-
-It then sets the rootfs to ROOT_Ram0, which disables the kernels' attempt
-to mount a new root fs, pivots to the new root and exits. The kernel starts
-the real /sbin/init, and all is well.  Since our UML have no hotplug, udev
-really does nothing.
-
-
+something as /dev/console, and an empty file will do for now.
 
 
 
