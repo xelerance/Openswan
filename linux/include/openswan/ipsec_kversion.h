@@ -119,7 +119,6 @@
 /* see <linux/security.h> */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,13)
 #define HAVE_SOCK_SECURITY
-
 /* skb->nf_debug disappared completely in 2.6.13 */
 #define HAVE_SKB_NF_DEBUG
 #endif
@@ -172,6 +171,12 @@
  *
  * Revision 1.18  2005/08/31 23:26:11  mcr
  * 	fixes for 2.6.13
+ *
+ * Revision 1.15.2.3  2005/11/22 04:11:52  ken
+ * Backport fixes for 2.6.14 kernels from HEAD
+ *
+ * Revision 1.15.2.2  2005/09/01 01:57:19  paul
+ * michael's fixes for 2.6.13 from head
  *
  * Revision 1.17  2005/08/27 23:07:21  paul
  * Somewhere between 2.6.12 and 2.6.13rc7 the unused security memnber in sk_buff

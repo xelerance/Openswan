@@ -18,7 +18,7 @@
 #include "openswan.h"
 
 static const char *co[] = {
- "Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005",
+ "Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005 ",
  "    Henry Spencer, Richard Guy Briggs, Sam Sgro",
  "    D. Hugh Redelmeier, Sandy Harris, Claudia Schmeing,",
  "    Michael C. Richardson, Angelos D. Keromytis, John Ioannidis.",
