@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: ipsec_kversion.h,v 1.15.2.2 2005/09/01 01:57:19 paul Exp $
+ * RCSID $Id: ipsec_kversion.h,v 1.15.2.3 2005/11/22 04:11:52 ken Exp $
  */
 #define	_FREESWAN_KVERSIONS_H	/* seen it, no need to see it again */
 
@@ -123,10 +123,19 @@
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,13)
 #define HAVE_SOCK_SECURITY
-
 /* skb->nf_debug disappared completely in 2.6.13 */
 #define HAVE_SKB_NF_DEBUG
 #endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,14)
+/* skb->stamp changed to skb->tstamp in 2.6.14 */
+#define HAVE_TSTAMP
+#define HAVE_INET_SK_SPORT
+#define HAVE_MISSING_IP_DEFAULT_TTL
+#else
+#define HAVE_SKB_LIST
+#endif
+
 
 #ifdef NET_21
 #  include <linux/in6.h>
@@ -232,6 +241,9 @@
 
 /*
  * $Log: ipsec_kversion.h,v $
+ * Revision 1.15.2.3  2005/11/22 04:11:52  ken
+ * Backport fixes for 2.6.14 kernels from HEAD
+ *
  * Revision 1.15.2.2  2005/09/01 01:57:19  paul
  * michael's fixes for 2.6.13 from head
  *

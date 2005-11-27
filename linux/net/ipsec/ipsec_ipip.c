@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_ipip_c_version[] = "RCSID $Id: ipsec_ipip.c,v 1.3 2005/04/29 05:10:22 mcr Exp $";
+char ipsec_ipip_c_version[] = "RCSID $Id: ipsec_ipip.c,v 1.3.2.1 2005/11/22 03:53:38 ken Exp $";
 #include <linux/config.h>
 #include <linux/version.h>
 
@@ -83,11 +83,15 @@ ipsec_xmit_ipip_setup(struct ipsec_xmit_state *ixs)
     break;
   }
 #ifdef NET_21
+#ifdef HAVE_MISSING_IP_DEFAULT_TTL
+  ixs->iph->ttl      = 64; /* accidentilly left out of kernel */
+#else
 #ifdef NETDEV_23
   ixs->iph->ttl      = sysctl_ip_default_ttl;
 #else /* NETDEV_23 */
   ixs->iph->ttl      = ip_statistics.IpDefaultTTL;
 #endif /* NETDEV_23 */
+#endif /* HAVE_MISSING_IP_DEFAULT_TTL */
 #else /* NET_21 */
   ixs->iph->ttl      = 64; /* ip_statistics.IpDefaultTTL; */
 #endif /* NET_21 */

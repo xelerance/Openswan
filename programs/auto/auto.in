@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: auto.in,v 1.104.6.1 2005/11/16 22:32:36 ken Exp $
+# RCSID $Id: auto.in,v 1.104.6.2 2005/11/24 05:47:11 paul Exp $
 
 me='ipsec auto'
 usage="Usage:
@@ -321,10 +321,12 @@ awk '	BEGIN {
 			# the docs say...
 			type_flags = "--tunnel"
 		} else if (t == "transport") {
-			if ("leftsubnet" in s)
-				fail("type=transport incompatible with leftsubnet")
-			if ("rightsubnet" in s)
-				fail("type=transport incompatible with rightsubnet")
+# We need to allow a subnet=vhost:%priv for transport mode behind NAT
+#			if ("leftsubnet" in s)
+#				fail("type=transport incompatible with leftsubnet")
+#			if ("rightsubnet" in s)
+#				fail("type=transport incompatible with rightsubnet")
+
 			type_flags = ""
 		} else if (t == "passthrough") {
 			type_flags = "--pass"
