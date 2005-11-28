@@ -1,7 +1,7 @@
 ipsec auto --up north--east-l2tp
 echo "c server" >/var/run/l2tp-control
-sleep 4
 
 ipsec look
+sleep 5
 ifconfig ppp0
 echo done
