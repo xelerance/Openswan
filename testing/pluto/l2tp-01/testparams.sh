@@ -2,11 +2,14 @@
 
 TEST_PURPOSE=goal
 TEST_PROB_REPORT=0
-TEST_TYPE=umlplutotest
+TEST_TYPE=umlXhost
 
 TESTNAME=l2tp-01
+XHOST_LIST="NIC NORTH EAST"
+
 EASTHOST=east
-WESTHOST=west
+NORTHHOST=north
+NICHOST=north
 
 ARPREPLY=--arpreply
 
@@ -14,8 +17,8 @@ THREEEIGHT=true
 
 REF_EAST_CONSOLE_OUTPUT=east-console.txt
 REF26_EAST_CONSOLE_OUTPUT=east-console.txt
-REF_WEST_CONSOLE_OUTPUT=west-console.txt
-REF26_WEST_CONSOLE_OUTPUT=west-console.txt
+REF_NORTH_CONSOLE_OUTPUT=west-console.txt
+REF26_NORTH_CONSOLE_OUTPUT=west-console.txt
 
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS east-prompt-splitline.pl"
@@ -28,14 +31,12 @@ REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS host-ping-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-look-esp-sanitize.pl"
 
 EAST_INIT_SCRIPT=eastinit.sh
-WEST_INIT_SCRIPT=westinit.sh
+NORTH_INIT_SCRIPT=northinit.sh
 
-WEST_RUN_SCRIPT=westrun.sh
+NORTH_RUN_SCRIPT=northrun.sh
 
 EAST_FINAL_SCRIPT=final.sh
-WEST_FINAL_SCRIPT=final.sh
+NORTH_FINAL_SCRIPT=final.sh
 
 NETJIG_EXTRA=../basic-pluto-01/debugpublic.txt
-
-
 

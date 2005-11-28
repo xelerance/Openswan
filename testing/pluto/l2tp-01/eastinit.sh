@@ -4,7 +4,7 @@ source /testing/pluto/bin/eastlocal.sh
 sh /etc/init.d/inetd restart
 
 if [ -f /var/run/l2tpd.pid ]; then kill `cat /var/run/l2tpd.pid`; fi
-ipsec setup restart
+ipsec setup start
 ipsec auto --add north--east-l2tp
 ipsec auto --add north--east-pass
 /testing/pluto/bin/wait-until-pluto-started
