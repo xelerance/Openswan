@@ -3915,6 +3915,11 @@ fc_try(const struct connection *c
     policy_prio_t best_prio = BOTTOM_PRIO;
     int wildcards, pathlen;
     const bool peer_net_is_host = subnetisaddr(peer_net, &c->spd.that.host_addr);
+    err_t virtualwhy = NULL;
+    char s1[SUBNETTOT_BUF],d1[SUBNETTOT_BUF];
+
+    subnettot(our_net,  0, s1, sizeof(s1));
+    subnettot(peer_net, 0, d1, sizeof(d1));
 
     for (d = hp->connections; d != NULL; d = d->hp_next)
     {
@@ -3951,26 +3956,30 @@ fc_try(const struct connection *c
 	{
 	    policy_prio_t prio;
 #ifdef DEBUG
+	    char s3[SUBNETTOT_BUF],d3[SUBNETTOT_BUF];
+
 	    if (DBGP(DBG_CONTROLMORE))
 	    {
-		char s1[SUBNETTOT_BUF],d1[SUBNETTOT_BUF];
-		char s3[SUBNETTOT_BUF],d3[SUBNETTOT_BUF];
-
-		subnettot(our_net,  0, s1, sizeof(s1));
-		subnettot(peer_net, 0, d1, sizeof(d1));
 		subnettot(&sr->this.client,  0, s3, sizeof(s3));
 		subnettot(&sr->that.client,  0, d3, sizeof(d3));
 		DBG_log("  fc_try trying "
-			"%s:%s:%d/%d -> %s:%d/%d vs %s:%s:%d/%d -> %s:%d/%d"
+			"%s:%s:%d/%d -> %s:%d/%d%s vs %s:%s:%d/%d -> %s:%d/%d%s"
 			, c->name, s1, c->spd.this.protocol, c->spd.this.port
 				 , d1, c->spd.that.protocol, c->spd.that.port
+			, is_virtual_connection(c) ? "(virt)" : ""
 			, d->name, s3, sr->this.protocol, sr->this.port
-				 , d3, sr->that.protocol, sr->that.port);
+				 , d3, sr->that.protocol, sr->that.port
+			, is_virtual_sr(sr) ? "(virt)" : "");
 	    }
 #endif /* DEBUG */
 
-	    if (!samesubnet(&sr->this.client, our_net))
+	    if (!samesubnet(&sr->this.client, our_net)) {
+		DBG(DBG_CONTROLMORE
+		     , DBG_log("   our client(%s) not in our_net (%s)"
+			       , s3, s1));
+		
 		continue;
+	    }
 
 	    if (sr->that.has_client)
 	    {
@@ -3978,17 +3987,27 @@ fc_try(const struct connection *c
 		    if (!subnetinsubnet(peer_net, &sr->that.client))
 			continue;
 		} else {
+		    if ((!samesubnet(&sr->that.client, peer_net))
 #ifdef VIRTUAL_IP
-		    if ((!samesubnet(&sr->that.client, peer_net)) && (!is_virtual_connection(d)))
-#else
-		    if (!samesubnet(&sr->that.client, peer_net))
+			&& (!is_virtual_sr(sr))
 #endif
+			) {
+			DBG(DBG_CONTROLMORE
+			     , DBG_log("   their client(%s) not in same peer_net (%s)"
+				       , d3, d1));
 			continue;
+		    }
+
 #ifdef VIRTUAL_IP
-		    if ((is_virtual_connection(d)) &&
-			( (!is_virtual_net_allowed(d, peer_net, &c->spd.that.host_addr)) ||
-			(is_virtual_net_used(peer_net, peer_id?peer_id:&c->spd.that.id)) ))
-			    continue;
+		    virtualwhy=is_virtual_net_allowed(d, peer_net, &sr->that.host_addr);
+		    
+		    if ((is_virtual_sr(sr)) &&
+			( (virtualwhy != NULL) ||
+			  (is_virtual_net_used(peer_net, peer_id?peer_id:&sr->that.id)) )) {
+			DBG(DBG_CONTROLMORE
+			     , DBG_log("   virtual net not allowed"));
+			continue;
+		    }
 #endif
 		}
 	    }
@@ -4025,6 +4044,17 @@ fc_try(const struct connection *c
 	DBG_log("  fc_try concluding with %s [%ld]"
 		, (best ? best->name : "none"), best_prio)
     )
+
+    if(best == NULL) {
+	openswan_log("the peer proposed: %s:%d/%d -> %s:%d/%d"
+		     , s1, c->spd.this.protocol, c->spd.this.port
+		     , d1, c->spd.that.protocol, c->spd.that.port);
+	if(virtualwhy != NULL) {
+	    openswan_log("this was reject in a virtual connection policy because:");
+	    openswan_log("  %s", virtualwhy);
+	}
+    }
+
     return best;
 }
 
