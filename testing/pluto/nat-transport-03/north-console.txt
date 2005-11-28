@@ -18,17 +18,9 @@ PING 192.0.2.254 (192.0.2.254): 56 data bytes
 4 packets transmitted, 4 packets received, 0% packet loss
 round-trip min/avg/max = 3.1/4.5/9.26 ms
 north:~#
- telnet east-out 3 | wc -l
-telnet: Unable to connect to remote host: Connection refused
-      1
-north:~#
  iptables -A INPUT -i eth1 -s 192.1.2.23 -p tcp --sport 3 -j REJECT
 north:~#
  iptables -A OUTPUT -o eth1 -d 192.1.2.23 -p tcp --dport 3 -j REJECT
-north:~#
- telnet east-out 3 | wc -l
-telnet: Unable to connect to remote host: Connection refused
-      1
 north:~#
  ipsec setup start
 ipsec_setup: Starting Openswan IPsec VERSION
