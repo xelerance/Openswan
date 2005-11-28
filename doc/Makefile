@@ -26,7 +26,7 @@ c=src/compat.html src/interop.html src/performance.html \
 	src/testing.html src/kernel.html src/adv_config.html \
 	src/install.html src/config.html \
 	src/background.html src/user_examples.html \
-	src/makecheck.html 
+	src/makecheck.html src/umltesting.html \
 
 # background and reference material
 d=src/politics.html src/ipsec.html \
@@ -34,7 +34,7 @@ d=src/politics.html src/ipsec.html \
 	src/rfc.html src/roadmap.html
 
 # build and release related
-e=src/makecheck.html src/nightly.html
+e=src/umltesting.html src/makecheck.html src/nightly.html
 
 sections=$a $b $c $d $e
 
@@ -45,7 +45,7 @@ separate=intro.html install.html config.html manpages.html \
 	mail.html performance.html testing.html web.html \
 	glossary.html biblio.html rfc.html faq.html \
 	adv_config.html user_examples.html background.html \
-	quickstart.html makecheck.html nightly.html \
+	quickstart.html  makecheck.html nightly.html \
         upgrading.html policygroups.html
 
 alldocs=${seperate} index.html 

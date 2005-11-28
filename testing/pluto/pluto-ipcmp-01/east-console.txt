@@ -31,7 +31,4 @@ east:~#
  ipsec setup stop
 IPSEC EVENT: KLIPS device ipsec0 shut down.
 ipsec_setup: Stopping Openswan IPsec...
-east:~#
- halt -p -f
-Power down.
 

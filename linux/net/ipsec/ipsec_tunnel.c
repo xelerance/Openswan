@@ -284,13 +284,12 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 			struct tcp_tw_bucket *tw;
 			
 			tw = (struct tcp_tw_bucket *)ixs->skb->sk;
-
 			ixs->sport = ntohs(tw->tw_sport);
 			ixs->dport = ntohs(tw->tw_dport);
 #endif
 #else
-			ixs->sport = ntohs(ixs->skb->sk->sport);
-			ixs->dport = ntohs(ixs->skb->sk->dport);
+                        ixs->sport = ntohs(ixs->skb->sk->sport);
+                        ixs->dport = ntohs(ixs->skb->sk->dport);
 #endif
 		} 
 
@@ -1854,6 +1853,12 @@ ipsec_tunnel_cleanup_devices(void)
  *
  * Revision 1.233  2005/08/31 23:26:11  mcr
  * 	fixes for 2.6.13
+ *
+ * Revision 1.232.2.2  2005/11/22 04:11:52  ken
+ * Backport fixes for 2.6.14 kernels from HEAD
+ *
+ * Revision 1.232.2.1  2005/09/21 22:57:43  paul
+ * pulled up compile fix for 2.6.13
  *
  * Revision 1.232  2005/06/04 16:06:06  mcr
  * 	better patch for nat-t rcv-device code.

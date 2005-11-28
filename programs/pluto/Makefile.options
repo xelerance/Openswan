@@ -1,3 +1,4 @@
+# -*- makefile -*-
 # Pluto Makefile - calculate -D options from Makefile options
 # Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
 #

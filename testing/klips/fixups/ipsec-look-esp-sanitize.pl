@@ -86,11 +86,12 @@ while(<>) {
       # keeping track of them, so that we can in fact come back and print them in the
       # order which they appeared in the eroute table, rather than the spigrp list.
       # 192.1.2.23/32      -> 192.0.1.3/32       => tun0x1002@192.1.2.45 esp0x515a1ad5@192.1.2.45  (8)
+      # 192.1.2.45/32      -> 192.1.2.23/32:3    => tun0x1002@192.1.2.23:6 (10)
       # 1111111111111111111111111111111111111111111 22222-end
       #
       # regexp fills $1-$7 as above
       # 
-      if(m,^([\d.]+/\d+\s+\-\>\s+[\d.]+/\d+\s+\=\>) (.*)$,) {
+      if(m,^([\d.]+/[\d:]+\s+\-\>\s+[\d.]+/[\d:]+\s+\=\>) (.*)$,) {
 	# okay, rebuild $_ with sanitized versions, and record the order of the
 	# tunnels by dest IP $3.
 	
@@ -104,6 +105,7 @@ while(<>) {
 	
 	@new_sa=();
 	for $sa (@sas) {
+	  print STDERR "Eroute processing SA: $sa\n" if $debug;
 	  if($sa =~ m/(tun0x)(.{1,4})@(.*)/) {
 	    $fixed_sa=$1."IPIP@".$3;
 	    push(@salist, $sa);
@@ -132,6 +134,7 @@ while(<>) {
 	    push(@new_sa, $sa);
 	  }
 	  elsif($sa =~ m,\(.*\), || $sa =~ m,\s*,) {
+	    print STDERR "Ignoring count $sa\n" if $debug;
 	    # ignore trailing count.
 	  }
 	  else {
