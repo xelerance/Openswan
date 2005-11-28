@@ -2,14 +2,15 @@
 TESTNAME=transport-01
 source /testing/pluto/bin/eastlocal.sh
 
-sh /etc/init.d/inetd stop
-sh /etc/init.d/inetd start
-
-telnet localhost 3 | wc -l
-
 ipsec setup start
+
 ipsec auto --add west--east-port3
 ipsec auto --add west--east-pass
+ipsec auto --add west--east-pass2
+
+sh /etc/init.d/inetd start
 /testing/pluto/bin/wait-until-pluto-started
 ipsec auto --route west--east-pass
+ipsec auto --route west--east-pass2
+ipsec eroute
 ipsec whack --debug-control --debug-controlmore --debug-crypt
