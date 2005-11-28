@@ -31,7 +31,7 @@ REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS host-ping-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-look-esp-sanitize.pl"
 
 EASTHOST=east
-EAST_INIT_SCRIPT=../l2tp-01/eastinit.sh
+EAST_INIT_SCRIPT=eastinit.sh
 EAST_FINAL_SCRIPT=../nat-pluto-01/final.sh
 
 NORTHHOST=north
