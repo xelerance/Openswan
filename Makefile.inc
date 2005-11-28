@@ -294,7 +294,7 @@ USE_KERNEL26?=true
 USE_VENDORID?=true
 
 # Use /dev/hwrandom if available (EG: VIA Padlock)
-USE_HWRANDOM?=false
+USE_HWRANDOM?=true
 
 # include aggressive mode authentication system code - both Server and Client.
 # This is off by default, since aggressive mode leads to denial of service

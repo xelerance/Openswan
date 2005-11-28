@@ -17,4 +17,4 @@ ipsec-rsa-time-trunc:
 east:/tmp# . doauto --diff ipsec-rsa-time-neg-dontrekey ipsec-rsa-time-trunc-dontrekey
 ipsec-rsa-time-neg-dontrekey:
 ipsec-rsa-time-trunc-dontrekey:
-east:/tmp#
+

@@ -26,3 +26,8 @@ test: test_main.o $(BLIB)
 
 clean:
 	rm -f *.[oa] core $(TARGET) test
+
+check:
+	echo no checks in lib right now.
+
+

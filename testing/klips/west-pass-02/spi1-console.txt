@@ -21,6 +21,6 @@ west:~#
 west NOW
 192.0.1.0/24       -> 192.0.2.0/24       => %pass (0)
 ipsec0->eth1 mtu=16260(1500)->1500
-Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+ROUTING TABLE
 west:~#
  route add -host 192.0.2.1 gw 192.1.2.23 dev ipsec0

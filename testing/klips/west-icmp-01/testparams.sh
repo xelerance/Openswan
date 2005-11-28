@@ -9,10 +9,10 @@ ARPREPLY=--arpreply
 
 PUB_INPUT=../inputs/02-sunrise-sunset-esp.pcap
 REF_PRIV_OUTPUT=spi1-cleartext.txt
-THREEEIGHT=true
+# THREEEIGHT=true
 
 REF_CONSOLE_OUTPUT=spi1-console.txt
-REF26_CONSOLE_OUTPUT=spi1-console.txt
+REF26_CONSOLE_OUTPUT=spi1-console26.txt
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS script-only.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-spi-sanitize.sed"

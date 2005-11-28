@@ -28,5 +28,4 @@ east:~#
  inode    0 dr-xr-xr-x   2 root     root            0 Aug 29 22:34 /proc/net/ipsec/eroute
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/eroute/all
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/klipsdebug
-east:~#
 

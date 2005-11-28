@@ -9,7 +9,7 @@ ipsec setup stop
 
 # confirm that the network is alive
 ping -n -c 4 192.0.2.254
-telnet east-out 3 | wc -l
+
 # make sure that clear text does not get through
 iptables -A INPUT -i eth1 -s 192.1.2.23 -p udp --sport 1701 -j REJECT
 iptables -A OUTPUT -o eth1 -d 192.1.2.23 -p udp --dport 1701 -j REJECT
@@ -25,7 +25,7 @@ ipsec auto --route north--east-pass
 ipsec whack --debug-control --debug-controlmore --debug-parsing --debug-crypt
 
 mount --bind /testing/pluto/l2tp-01 /etc/ppp
-l2tpd -c north.l2tpd.conf -D &
+l2tpd -c north.l2tpd.conf -D 2>/tmp/l2tpd.log &
 
 ipsec auto --route north--east-l2tp
 
