@@ -21,6 +21,7 @@ ipsec auto --add west--east-port3
 ipsec auto --add west--east-pass
 /testing/pluto/bin/wait-until-pluto-started
 ipsec auto --route west--east-pass
+ipsec eroute
 ipsec whack --debug-control --debug-controlmore --debug-parsing --debug-crypt
 
 echo done
