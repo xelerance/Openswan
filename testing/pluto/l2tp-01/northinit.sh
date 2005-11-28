@@ -1,3 +1,4 @@
+: ==== start ====
 TESTNAME=l2tp-01
 source /testing/pluto/bin/northlocal.sh
 
