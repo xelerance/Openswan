@@ -259,7 +259,7 @@ cat /proc/sys/net/ipv4/tcp_ecn
 _________________________ /proc/sys/net/ipv4/conf/star-rp_filter
 ( cd /proc/sys/net/ipv4/conf && egrep '^' */rp_filter )
 _________________________ /proc/sys/net/ipv4/conf/star-star-redirects
-( cd /proc/sys/net/ipv4/conf && egrep '^' */*redirects )
+( cd /proc/sys/net/ipv4/conf && egrep '^' */*redirects ) )
 _________________________ /proc/sys/net/ipv4/tcp_window_scaling
 cat /proc/sys/net/ipv4/tcp_window_scaling
 _________________________ /proc/sys/net/ipv4/tcp_adv_win_scale

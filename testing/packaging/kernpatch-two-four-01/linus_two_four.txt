@@ -1,5 +1,7 @@
 patching file Documentation/Configure.help
 patching file README.openswan-2
+patching file crypto/ciphers/aes/test_main.c
+patching file crypto/ciphers/aes/test_main_mac.c
 patching file include/crypto/aes.h
 patching file include/crypto/aes_cbc.h
 patching file include/crypto/aes_xcbc_mac.h
@@ -47,6 +49,8 @@ patching file include/pfkeyv2.h
 patching file include/zlib/zconf.h
 patching file include/zlib/zlib.h
 patching file include/zlib/zutil.h
+patching file lib/zlib/Makefile
+patching file lib/zlib/Makefile.objs
 patching file net/Config.in
 patching file net/Makefile
 patching file net/ipsec/Config.in

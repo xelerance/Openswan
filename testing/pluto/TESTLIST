@@ -19,9 +19,6 @@ umlplutotest	bad-updown-01	good
 ctltest	pluto-unit-01	good
 ctltest	pluto-unit-02	good
 
-# 
-umlplutotest	pluto-alias-01	good
-
 # regression test for --dontrekey responder with short SA lifetimes:
 # ought to somehow notify other side.
 # Also a unit test.
