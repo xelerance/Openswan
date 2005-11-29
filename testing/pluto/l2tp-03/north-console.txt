@@ -37,7 +37,7 @@ north:~#
  if [ ! -f /etc/ppp/chap-secrets ]; then mount --bind /testing/pluto/l2tp-01 /etc/ppp; fi
 north:~#
  (cd /tmp && l2tpd -c /testing/pluto/l2tp-01/north.l2tpd.conf -D 2>/tmp/l2tpd.log ) &
-[1] 1129
+[1] 9999
 north:~#
  ipsec auto --route north--east-l2tp
 north:~#
@@ -85,6 +85,10 @@ ppp0      Link encap:Point-to-Point Protocol
           TX packets:4 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:3 
 
+north:~#
+ telnet 192.0.2.254 2 | wc -l
+Connection closed by foreign host.
+    834
 north:~#
  echo done
 done
