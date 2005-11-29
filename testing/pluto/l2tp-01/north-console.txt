@@ -86,11 +86,18 @@ ppp0      Link encap:Point-to-Point Protocol
           collisions:0 txqueuelen:3 
 
 north:~#
+ telnet 192.0.2.254 2 | wc -l
+Connection closed by foreign host.
+    834
+north:~#
  echo done
 done
 north:~#
  
 
 north:~#
+north:~#
+ grep 'Result using RFC 3947' /tmp/pluto.log
+"north--east-l2tp" #1: NAT-Traversal: Result using RFC 3947 (NAT-Traversal): no NAT detected
 north:~#
 

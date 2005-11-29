@@ -37,4 +37,7 @@ east:~#
 
 east:~#
 east:~#
+ grep 'Result using RFC 3947' /tmp/pluto.log
+"north--east-pass" #1: NAT-Traversal: Result using RFC 3947 (NAT-Traversal): no NAT detected
+east:~#
 
