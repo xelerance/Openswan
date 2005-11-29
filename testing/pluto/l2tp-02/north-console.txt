@@ -86,6 +86,10 @@ ppp0      Link encap:Point-to-Point Protocol
           collisions:0 txqueuelen:3 
 
 north:~#
+ telnet 192.0.2.254 2 | wc -l
+Connection closed by foreign host.
+    834
+north:~#
  echo done
 done
 north:~#
