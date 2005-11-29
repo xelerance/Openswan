@@ -447,11 +447,8 @@ find_raw_ifaces4(void)
 		, ri.name));
 	if (!(auxinfo.ifr_flags & IFF_UP))
 	    continue;	/* ignore an interface that isn't UP */
-#if defined(linux)
         if (auxinfo.ifr_flags & IFF_SLAVE)
             continue;   /* ignore slave interfaces; they share IPs with their master */
-#endif
-
 
 	/* ignore unconfigured interfaces */
 	if (rs->sin_addr.s_addr == 0)
