@@ -398,6 +398,7 @@ ipsec_xmit_sanity_check_dev(struct ipsec_xmit_state *ixs)
 	}
 
 	ixs->physmtu = ixs->physdev->mtu;
+	ixs->cur_mtu = ixs->dev->mtu;
 
 	ixs->stats = (struct net_device_stats *) &(ixs->prv->mystats);
 
