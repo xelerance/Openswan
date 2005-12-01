@@ -17,7 +17,7 @@ ipsec auto --add north--east-l2tp
 ipsec auto --add north--east-pass
 /testing/pluto/bin/wait-until-pluto-started
 ipsec auto --route north--east-pass
-ipsec whack --debug-control --debug-controlmore --debug-parsing --debug-crypt
+ipsec whack --debug-control --debug-controlmore --debug-natt
 
 if [ ! -f /etc/ppp/chap-secrets ]; then mount --bind /testing/pluto/l2tp-01 /etc/ppp; fi
 (cd /tmp && l2tpd -c /testing/pluto/l2tp-01/north.l2tpd.conf -D 2>/tmp/l2tpd.log ) &

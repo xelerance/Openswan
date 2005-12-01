@@ -9,7 +9,7 @@ ipsec setup restart
 ipsec auto --add client1--east-l2tp
 ipsec auto --add client2--east-l2tp
 /testing/pluto/bin/wait-until-pluto-started
-ipsec whack --debug-control --debug-controlmore --debug-crypt
+ipsec whack --debug-control --debug-controlmore --debug-natt
 
 # make sure that clear text does not get through
 iptables -A INPUT  -i eth1 -d 192.1.2.23 -p udp --dport 1701 -j REJECT

@@ -10,7 +10,7 @@ ipsec auto --add any--east-l2tp
 ipsec auto --add north--east-pass
 /testing/pluto/bin/wait-until-pluto-started
 ipsec auto --route north--east-pass
-ipsec whack --debug-control --debug-controlmore --debug-crypt
+ipsec whack --debug-control --debug-controlmore --debug-natt
 
 # make sure that clear text does not get through
 iptables -A INPUT  -i eth1 -d 192.1.2.23 -p udp --dport 1701 -j REJECT
