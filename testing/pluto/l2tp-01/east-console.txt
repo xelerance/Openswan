@@ -22,7 +22,7 @@ east:~#
 east:~#
  ipsec auto --route north--east-pass
 east:~#
- ipsec whack --debug-control --debug-controlmore --debug-crypt
+ ipsec whack --debug-control --debug-controlmore --debug-natt
 east:~#
  iptables -A INPUT  -i eth1 -d 192.1.2.23 -p udp --dport 1701 -j REJECT
 east:~#
@@ -31,7 +31,7 @@ east:~#
  if [ ! -f /etc/ppp/chap-secrets ]; then mount --bind /testing/pluto/l2tp-01 /etc/ppp; fi
 east:~#
  (cd /tmp && l2tpd -c /testing/pluto/l2tp-01/east.l2tpd.conf -D 2>/tmp/l2tpd.log ) &
-[1] 1102
+[1] 9999
 east:~#
  
 

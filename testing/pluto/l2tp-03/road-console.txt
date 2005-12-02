@@ -28,7 +28,7 @@ road:~#
 road:~#
  /testing/pluto/bin/wait-until-pluto-started
 road:~#
- ipsec whack --debug-control --debug-controlmore --debug-parsing --debug-crypt
+ ipsec whack --debug-control --debug-controlmore --debug-natt
 road:~#
  if [ ! -f /etc/ppp/chap-secrets ]; then mount --bind /testing/pluto/l2tp-01 /etc/ppp; fi
 road:~#
@@ -69,18 +69,12 @@ default via 192.1.3.254 dev eth0
 road:~#
  sleep 5
 road:~#
- ifconfig ppp0
-ppp0      Link encap:Point-to-Point Protocol  
-          inet addr:192.0.2.129  P-t-P:192.0.2.254  Mask:255.255.255.255
-          UP POINTOPOINT RUNNING NOARP MULTICAST  MTU:1410  Metric:1
-          RX packets:3 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:4 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:3 
-
-road:~#
  telnet 192.0.2.254 2 | wc -l
 Connection closed by foreign host.
     834
+road:~#
+ ifconfig ppp0 | grep 'inet addr'
+          inet addr:192.0.2.129  P-t-P:192.0.2.254  Mask:255.255.255.255
 road:~#
  echo done
 done

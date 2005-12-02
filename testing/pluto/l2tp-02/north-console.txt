@@ -32,17 +32,19 @@ north:~#
 north:~#
  ipsec auto --route north--east-pass
 north:~#
- ipsec whack --debug-control --debug-controlmore --debug-parsing --debug-crypt
+ ipsec whack --debug-control --debug-controlmore --debug-natt
 north:~#
  if [ ! -f /etc/ppp/chap-secrets ]; then mount --bind /testing/pluto/l2tp-01 /etc/ppp; fi
 north:~#
  (cd /tmp && l2tpd -c /testing/pluto/l2tp-01/north.l2tpd.conf -D 2>/tmp/l2tpd.log ) &
-[1] 1129
+[1] 9999
 north:~#
  ipsec auto --route north--east-l2tp
 north:~#
  echo done
 done
+north:~#
+ ipsec auto --replace north--east-l2tp
 north:~#
  ipsec auto --up north--east-l2tp
 104 "north--east-l2tp" #1: STATE_MAIN_I1: initiate

@@ -20,7 +20,7 @@ east:~#
 east:~#
  /testing/pluto/bin/wait-until-pluto-started
 east:~#
- ipsec whack --debug-control --debug-controlmore --debug-crypt
+ ipsec whack --debug-control --debug-controlmore --debug-natt
 east:~#
  iptables -A INPUT  -i eth1 -d 192.1.2.23 -p udp --dport 1701 -j REJECT
 east:~#
@@ -36,7 +36,7 @@ east:~#
 east:~#
 east:~#
  grep 'Result using RFC 3947' /tmp/pluto.log
-"client2--east-l2tp"[1] 192.1.2.254 #1: NAT-Traversal: Result using RFC 3947 (NAT-Traversal): peer is NATed
+"client1--east-l2tp"[1] 192.1.2.254 #1: NAT-Traversal: Result using RFC 3947 (NAT-Traversal): peer is NATed
 "client1--east-l2tp"[1] 192.1.2.254 #3: NAT-Traversal: Result using RFC 3947 (NAT-Traversal): peer is NATed
 east:~#
 
