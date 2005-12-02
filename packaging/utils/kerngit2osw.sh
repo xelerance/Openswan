@@ -1,7 +1,7 @@
 #!/bin/sh
 
 klips_git=/mara1/git/klips
-openswan_git=/mara6/openswan/public.git
+openswan_git=`pwd`
 
 (cd $klips_git && find net/ipsec include/openswan* include/pfkey* -type f | cpio -pd $openswan_git/linux )
 
