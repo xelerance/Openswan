@@ -1196,7 +1196,6 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 		ipsec_kfree_skb(skb);
 	}
 
-	KLIPS_DEC_USE;
 	return(0);
 }
 
