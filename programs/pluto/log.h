@@ -138,17 +138,6 @@ extern void close_peerlog(void);
 /* free all per-peer log resources */
 extern void perpeer_logfree(struct connection *c);
 
-
-
-/* the following routines do a dance to capture errno before it is changed
- * A call must doubly parenthesize the argument list (no varargs macros).
- * The first argument must be "e", the local variable that captures errno.
- */
-#define log_errno(a) { int e = errno; log_errno_routine a; }
-extern void log_errno_routine(int e, const char *message, ...) PRINTF_LIKE(2);
-#define exit_log_errno(a) { int e = errno; exit_log_errno_routine a; }
-extern void exit_log_errno_routine(int e, const char *message, ...) PRINTF_LIKE(2) NEVER_RETURNS NEVER_RETURNS;
-
 extern void whack_log(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 
 /* Log to both main log and whack log

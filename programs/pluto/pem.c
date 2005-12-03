@@ -36,6 +36,7 @@
 #include "log.h"
 #include "md5.h"
 #include "whack.h"
+#include "id.h"
 #include "pem.h"
 
 /*

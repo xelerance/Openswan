@@ -166,7 +166,7 @@ key_add_request(const struct whack_message *msg)
     else
     {
 	if (!msg->whack_addkey)
-	    delete_public_keys(&keyid, msg->pubkey_alg);
+	    delete_public_keys(&pluto_pubkeys, &keyid, msg->pubkey_alg);
 
 	if (msg->keyval.len == 0)
 	{
@@ -226,7 +226,7 @@ key_add_request(const struct whack_message *msg)
 	else
 	{
 	    ugh = add_public_key(&keyid, DAL_LOCAL, msg->pubkey_alg
-		, &msg->keyval, &pubkeys);
+		, &msg->keyval, &pluto_pubkeys);
 	    if (ugh != NULL)
 		loglog(RC_LOG_SERIOUS, "%s", ugh);
 	}

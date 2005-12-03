@@ -164,35 +164,35 @@ read_foodgroup(struct fg_groups *g)
 		    /* !!! this test is not sufficient for distinguishing address families.
 		     * We need a notation to specify that a FQDN is to be resolved to IPv6.
 		     */
-		    const struct af_info *afi = strchr(tok, ':') == NULL
+		    const struct af_info *afi = strchr(flp->tok, ':') == NULL
 			? &af_inet4_info: &af_inet6_info;
 		    ip_subnet sn;
 		    err_t ugh;
 
-		    if (strchr(tok, '/') == NULL)
+		    if (strchr(flp->tok, '/') == NULL)
 		    {
 			/* no /, so treat as /32 or V6 equivalent */
 			ip_address t;
 
-			ugh = ttoaddr(tok, 0, afi->af, &t);
+			ugh = ttoaddr(flp->tok, 0, afi->af, &t);
 			if (ugh == NULL)
 			    ugh = addrtosubnet(&t, &sn);
 		    }
 		    else
 		    {
-			ugh = ttosubnet(tok, 0, afi->af, &sn);
+			ugh = ttosubnet(flp->tok, 0, afi->af, &sn);
 		    }
 
 		    if (ugh != NULL)
 		    {
 			loglog(RC_LOG_SERIOUS, "\"%s\" line %d: %s \"%s\""
-			    , flp->filename, flp->lino, ugh, tok);
+			    , flp->filename, flp->lino, ugh, flp->tok);
 		    }
 		    else if (afi->af != AF_INET)
 		    {
 			loglog(RC_LOG_SERIOUS
 			    , "\"%s\" line %d: unsupported Address Family \"%s\""
-			    , flp->filename, flp->lino, tok);
+			    , flp->filename, flp->lino, flp->tok);
 		    }
 		    else
 		    {
@@ -223,7 +223,7 @@ read_foodgroup(struct fg_groups *g)
 				, "\"%s\" line %d: subnet \"%s\", source %s, already \"%s\""
 				, flp->filename
 				, flp->lino
-				, tok
+				, flp->tok
 				, source
 				, (*pp)->group->connection->name);
 			}

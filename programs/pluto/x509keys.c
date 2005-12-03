@@ -78,8 +78,8 @@ add_x509_public_key(x509cert_t *cert , time_t until
     pk->dns_auth_level = dns_auth_level;
     pk->until_time = until;
     pk->issuer = cert->issuer;
-    delete_public_keys(&pk->id, pk->alg);
-    install_public_key(pk, &pubkeys);
+    delete_public_keys(&pluto_pubkeys, &pk->id, pk->alg);
+    install_public_key(pk, &pluto_pubkeys);
 
     gn = cert->subjectAltName;
 
@@ -95,8 +95,8 @@ add_x509_public_key(x509cert_t *cert , time_t until
 	    pk->dns_auth_level = dns_auth_level;
 	    pk->until_time = until;
 	    pk->issuer = cert->issuer;
-	    delete_public_keys(&pk->id, pk->alg);
-	    install_public_key(pk, &pubkeys);
+	    delete_public_keys(&pluto_pubkeys, &pk->id, pk->alg);
+	    install_public_key(pk, &pluto_pubkeys);
 	}
 	gn = gn->next;
     }
@@ -114,8 +114,8 @@ remove_x509_public_key(/*const*/ x509cert_t *cert)
     struct pubkey *revoked_pk;
 
     revoked_pk = allocate_RSA_public_key(c);
-    p          = pubkeys;
-    pp         = &pubkeys;
+    p          = pluto_pubkeys;
+    pp         = &pluto_pubkeys;
 
     while(p != NULL)
    {

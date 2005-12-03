@@ -32,6 +32,8 @@
 
 #include "sysdep.h"
 #include "constants.h"
+#include "oswalloc.h"
+#include "oswtime.h"
 #include "defs.h"
 #include "id.h"
 #include "x509.h"
@@ -3546,7 +3548,7 @@ get_peer_ca(const struct id *peer_id)
 {
     struct pubkey_list *p;
 
-    for (p = pubkeys; p != NULL; p = p->next)
+    for (p = pluto_pubkeys; p != NULL; p = p->next)
     {
        struct pubkey *key = p->key;
 

@@ -660,7 +660,7 @@ add_pgp_public_key(pgpcert_t *cert , time_t until
     pk->id.name.len = PGP_FINGERPRINT_SIZE;
     pk->dns_auth_level = dns_auth_level;
     pk->until_time = until;
-    delete_public_keys(&pk->id, pk->alg);
-    install_public_key(pk, &pubkeys);
+    delete_public_keys(&pluto_pubkeys, &pk->id, pk->alg);
+    install_public_key(pk, &pluto_pubkeys);
 }
 

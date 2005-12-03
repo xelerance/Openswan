@@ -25,6 +25,8 @@
 
 /* smartcard record */
 
+#include "certs.h"
+
 typedef struct smartcard smartcard_t;
 
 struct smartcard{

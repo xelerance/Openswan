@@ -14,5 +14,7 @@
  * RCSID $Id: pem.h,v 1.3 2004/06/14 01:46:03 mcr Exp $
  */
 
+#include "certs.h"
+
 extern err_t pemtobin(chunk_t *blob, prompt_pass_t *pass, const char* label
     , bool *pgp);

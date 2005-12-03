@@ -37,6 +37,7 @@
 #include "log.h"
 #include "id.h"
 #include "asn1.h"
+#include "mpzfuncs.h"
 #include "oid.h"
 #include "x509.h"
 #include "pgp.h"

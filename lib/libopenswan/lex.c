@@ -26,9 +26,7 @@
 
 #include "sysdep.h"
 #include "constants.h"
-#include "defs.h"
-#include "log.h"
-#include "whack.h"	/* for RC_LOG_SERIOUS */
+#include "oswlog.h"
 #include "lex.h"
 
 struct file_lex_position *flp = NULL;
@@ -49,7 +47,7 @@ lexopen(struct file_lex_position *new_flp, const char *name, bool optional)
 
     if (f == NULL)
     {
-	if (!optional || errno != ENOENT)
+      if (!optional || errno != ENOENT) 
 	    log_errno((e, "could not open \"%s\"", name));
 	return FALSE;
     }
@@ -89,9 +87,6 @@ lexclose(void)
  * Returns FALSE if Record Boundary or EOF (i.e. no token);
  * tok will then be NULL.
  */
-char *tok;
-#define tokeq(s) (streq(tok, (s)))
-#define tokeqword(s) (strcasecmp(tok, (s)) == 0)
 
 /** shift - load next token into tok
  *
@@ -118,7 +113,7 @@ shift(void)
 	    if (fgets(flp->buffer, sizeof(flp->buffer)-1, flp->fp) == NULL)
 	    {
 		flp->bdry = B_file;
-		tok = flp->cur = NULL;
+		flp->tok = flp->cur = NULL;
 		return FALSE;
 	    }
 	    else
@@ -145,13 +140,13 @@ shift(void)
 	    if (p != sor)
 	    {
 		/* we have a quoted token: note and advance to its end */
-		tok = p;
+		flp->tok = p;
 		p = strchr(p+1, *p);
 		if (p == NULL)
 		{
 		    loglog(RC_LOG_SERIOUS, "\"%s\" line %d: unterminated string"
 			, flp->filename, flp->lino);
-		    p = tok + strlen(tok);
+		    p = flp->tok + strlen(flp->tok);
 		}
 		else
 		{
@@ -169,7 +164,7 @@ shift(void)
 	    if (p != sor)
 	    {
 		/* we seem to have a token: note and advance to its end */
-		tok = p;
+		flp->tok = p;
 
 		if (p[0] == '0' && p[1] == 't')
 		{
@@ -185,7 +180,7 @@ shift(void)
 			;
 
 		    /* fudge to separate ':' from a preceding adjacent token */
-		    if (p-1 > tok && p[-1] == ':')
+		    if (p-1 > flp->tok && p[-1] == ':')
 			p--;
 		}
 
@@ -198,7 +193,7 @@ shift(void)
 
 	    /* we have a start-of-record: return it, deferring "real" token */
 	    flp->bdry = B_record;
-	    tok = NULL;
+	    flp->tok = NULL;
 	    flp->under = *p;
 	    flp->cur = p;
 	    return FALSE;

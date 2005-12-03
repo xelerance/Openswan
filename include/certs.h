@@ -19,6 +19,9 @@
 
 #include "openswan/ipsec_policy.h"
 
+#include "x509.h"
+#include "pgp.h"
+
 /* path definitions for private keys, end certs,
  * cacerts, attribute certs and crls
  */
@@ -74,11 +77,7 @@ extern const cert_t empty_cert;
  */
 extern bool no_cr_send;
 
-extern rsa_privkey_t* load_rsa_private_key(const char* filename
-    , prompt_pass_t *pass);
 extern chunk_t get_mycert(cert_t cert);
-extern bool load_coded_file(const char *filename, prompt_pass_t *pass
-    , const char *type, chunk_t *blob, bool *pgp);
 extern bool load_cert(bool forcedtype
 		      , const char *filename
 		      , const char *label, cert_t *cert);
@@ -90,6 +89,23 @@ extern void list_certs(bool utc);
 
 
 
+#define MAX_PROMPT_PASS_TRIALS	5
+#define PROMPT_PASS_LEN		64
+
+/* struct used to prompt for a secret passphrase
+ * from a console with file descriptor fd
+ */
+typedef struct {
+    char secret[PROMPT_PASS_LEN];
+    bool prompt;
+    int fd;
+} prompt_pass_t;
+
+
+extern rsa_privkey_t* load_rsa_private_key(const char* filename
+					   , prompt_pass_t *pass);
+extern bool load_coded_file(const char *filename, prompt_pass_t *pass
+			    , const char *type, chunk_t *blob, bool *pgp);
 
 #endif /* _CERTS_H */
 

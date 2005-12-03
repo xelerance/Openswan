@@ -27,12 +27,11 @@ SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 	atoasr.c atosubnet.c atoul.c constants.c copyright.c datatot.c \
 	alloc.c biglset.c diag.c \
 	goodmask.c initaddr.c initsaid.c initsubnet.c keyblobtoid.c \
-	kernel_alg.c \
-	optionsfrom.c \
-	prng.c \
-	packet.c \
-	portof.c rangetoa.c rangetosubnet.c sameaddr.c \
-	satot.c subnetof.c subnettoa.c subnettot.c \
+	kernel_alg.c lex.c mpzfuncs.c \
+	optionsfrom.c oswtime.c \
+	prng.c packet.c portof.c \
+	rangetoa.c rangetosubnet.c sameaddr.c \
+	satot.c secrets.c subnetof.c subnettoa.c subnettot.c \
 	subnettypeof.c ttoaddr.c ttodata.c ttoprotoport.c \
 	ttosa.c ttosubnet.c ttoul.c ultoa.c ultot.c 
 
@@ -65,7 +64,8 @@ HDRS=${KLIPSD}/openswan.h internal.h
 LIBA=libopenswan.a
 LIBL=liboswlog.a
 # Original flags
-CFLAGS=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR} -DDEBUG
+CFLAGS=${PORTINCLUDE} -I. -I${KLIPSSRCDIR} -I${KLIPSD}
+CFLAGS+=-I${OPENSWANSRCDIR} -DDEBUG
 CFLAGS+=${PFKEYV2_DEFS} ${UDPFROMTO_DEFS}
 CFLAGS+= -I${OPENSWANSRCDIR}/include ${PORTINCLUDE} $(USERCOMPILE)
 CFLAGS+= -Wall

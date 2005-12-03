@@ -25,6 +25,7 @@ struct file_lex_position
     char buffer[MAX_TOK_LEN + 1];    /* note: one extra char for our use (jamming '"') */
     char *cur;	/* cursor */
     char under;	/* except in shift(): character orignally at *cur */
+    char *tok;
     struct file_lex_position *previous;
 };
 
@@ -33,10 +34,8 @@ extern struct file_lex_position *flp;
 extern bool lexopen(struct file_lex_position *new_flp, const char *name, bool optional);
 extern void lexclose(void);
 
-
-extern char *tok;
-#define tokeq(s) (streq(tok, (s)))
-#define tokeqword(s) (strcasecmp(tok, (s)) == 0)
+#define tokeq(s) (streq(flp->tok, (s)))
+#define tokeqword(s) (strcasecmp(flp->tok, (s)) == 0)
 
 extern bool shift(void);
 extern bool flushline(const char *m);
