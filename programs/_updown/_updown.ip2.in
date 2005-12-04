@@ -372,7 +372,6 @@ doroute() {
 
 	if [ -n "$PLUTO_NEXT_HOP" ] && [ "$PLUTO_NEXT_HOP" != "$PLUTO_PEER" ]
 	then
-+
 	   # nexthop is not needed on ppp interfaces. unset it to make cases
 	   # work, where left is set but no leftnexthop (e.g. left=%dynamic)
 	   ip link show "$PLUTO_INTERFACE" | grep -qs POINTOPOINT && \
