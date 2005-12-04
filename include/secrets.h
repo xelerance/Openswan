@@ -17,6 +17,7 @@
 #define _SECRETS_H
 
 #include <gmp.h>    /* GNU MP library */
+#include "id.h"
 
 #ifndef SHARED_SECRETS_FILE
 # define SHARED_SECRETS_FILE  "/etc/ipsec.secrets"

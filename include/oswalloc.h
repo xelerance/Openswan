@@ -18,6 +18,8 @@
 #ifndef _OSW_ALLOC_H_
 #define _OSW_ALLOC_H_
 
+#include "constants.h"
+
 /* memory allocation */
 
 extern void leak_pfree(void *ptr, int leak);
