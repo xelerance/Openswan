@@ -15,14 +15,8 @@
  * RCSID $Id: rnd.c,v 1.26 2005/09/26 03:21:55 mcr Exp $
  */
 
-/* A true random number generator (we hope)
- *
- * Under LINUX ("linux" predefined), use /dev/urandom.
- * Under OpenBSD ("__OpenBSD__" predefined), use arc4random().
- * Otherwise use our own random number generator based on clock skew.
- *   I (ADK) first heard of the idea from John Ioannidis, who heard it
- *   from Matt Blaze and/or Jack Lacy.
- * ??? Why is mixing need for linux but not OpenBSD?
+/* 
+ * Use this file if you want use of arc4random(). This is not the default.
  */
 
 /* Pluto's uses of randomness:
@@ -67,70 +61,7 @@
 #include "log.h"
 #include "timer.h"
 
-static int random_fd = -1;
-const char *random_devices[]={
-#if defined(linux) 
-  "/dev/hw_random",
-  "/dev/random",
-  "/dev/urandom"
-#elif defined(macintosh) || (defined(__MACH__) && defined(__APPLE__))
-  "/dev/random",
-  "/dev/urandom"
-#elif defined(__OpenBSD__)
-  "/dev/random"
-#elif defined(__CYGWIN__)
-  "/dev/random"
-#endif
-};
-
-/* if we want to use ARC4, then the Makefile should have compiled rndarc4.c
- * rather than this file
- */
-
-#define RANDOM_POOL_SIZE   SHA1_DIGEST_SIZE
-static u_char random_pool[RANDOM_POOL_SIZE];
-
-/* Generate (what we hope is) a true random byte using /dev/urandom  */
-static u_char
-generate_rnd_byte(void)
-{
-    u_char c;
-
-    while(random_fd == -1) {
-	init_rnd_pool();
-	sleep(30);
-    }
-    if (read(random_fd, &c, sizeof(c)) == -1)
-	exit_log_errno((e, "read() failed in get_rnd_byte()"));
-
-    return c;
-}
-
-#define RANDOM_POOL_SIZE   SHA1_DIGEST_SIZE
-static u_char random_pool[RANDOM_POOL_SIZE];
-
-static void
-mix_pool(void)
-{
-    SHA1_CTX ctx;
-
-    SHA1Init(&ctx);
-    SHA1Update(&ctx, random_pool, RANDOM_POOL_SIZE);
-    SHA1Final(random_pool, &ctx);
-}
-
-/*
- * Get a single random byte.
- */
-static u_char
-get_rnd_byte(void)
-{
-    random_pool[RANDOM_POOL_SIZE - 1] = generate_rnd_byte();
-    random_pool[0] = generate_rnd_byte();
-    mix_pool();
-    return random_pool[0];
-}
-
+#define get_rnd_byte() (arc4random() % 256)
 
 void
 get_rnd_bytes(u_char *buffer, int length)
@@ -147,32 +78,6 @@ get_rnd_bytes(u_char *buffer, int length)
 void
 init_rnd_pool(void)
 {
-    unsigned int i;
-
-    if(random_fd != -1) close(random_fd);
-    random_fd = -1;
-
-    for(i=0; random_fd == -1 && i<elemsof(random_devices); i++) {
-	DBG(DBG_CONTROL, DBG_log("opening %s", random_devices[i]));
-	random_fd = open(random_devices[i], O_RDONLY);
-
-	if (random_fd == -1) {
-	    openswan_log("WARNING: open of %s failed: %s", random_devices[i]
-			 , strerror(errno));
-	}
-    }
-    if(random_fd == -1) {
-	openswan_log("Failed to open any source of random. Unable to start any connections.");
-	return;
-    }
-
-    openswan_log("using %s as source of random entropy", random_devices[i]);
-
-    fcntl(random_fd, F_SETFD, FD_CLOEXEC);
-
-    get_rnd_bytes(random_pool, RANDOM_POOL_SIZE);
-    mix_pool();
-
     /* start of rand(3) on the right foot */
     {
 	unsigned int seed;
@@ -194,11 +99,3 @@ init_secret(void)
     get_rnd_bytes(secret_of_the_day, sizeof(secret_of_the_day));
     event_schedule(EVENT_REINIT_SECRET, EVENT_REINIT_SECRET_DELAY, NULL);
 }
-
-
-/*
- * Local Variables:
- * c-basic-offset:4
- * c-style: pluto
- * End:
- */

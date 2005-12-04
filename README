@@ -2,7 +2,7 @@
 
     ********* See docs/RELEASE-NOTES.txt for more information *********
 
-			Openswan 2.4.0 Release Notes
+			Openswan 2.X Release Notes
 
 Openswan is an IPsec implementation for Linux. It has support for most 
 of the extensions (RFC + IETF drafts) related to IPsec, including 
