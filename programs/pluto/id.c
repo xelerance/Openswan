@@ -45,8 +45,6 @@
 #include "packet.h"
 #include "whack.h"
 
-const struct id empty_id;	/* ID_NONE */
-
 enum myid_state myid_state = MYID_UNKNOWN;
 struct id myids[MYID_SPECIFIED+1];	/* %myid */
 char *myid_str[MYID_SPECIFIED+1];     /* string form of IDs */

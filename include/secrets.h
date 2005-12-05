@@ -121,7 +121,9 @@ extern bool same_RSA_public_key(const struct RSA_public_key *a
 extern void install_public_key(struct pubkey *pk, struct pubkey_list **head);
 extern void free_public_key(struct pubkey *pk);
 
-extern void osw_load_preshared_secrets(struct secret **psecrets, int whackfd);
+extern void osw_load_preshared_secrets(struct secret **psecrets
+				       , const char *secrets_file
+				       , int whackfd);
 extern void osw_free_preshared_secrets(struct secret **psecrets);
 
 extern bool osw_has_private_rawkey(struct secret *secrets, struct pubkey *pk);

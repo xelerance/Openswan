@@ -14,6 +14,9 @@
  * RCSID $Id: id.h,v 1.24 2005/08/05 19:10:43 mcr Exp $
  */
 
+#ifndef _ID_H
+#define _ID_H
+
 struct id {
     int kind;		/* ID_* value */
     ip_address ip_addr;	/* ID_IPV4_ADDR, ID_IPV6_ADDR */
@@ -59,3 +62,6 @@ extern int id_count_wildcards(const struct id *id);
 struct isakmp_ipsec_id;	/* forward declaration of tag (defined in packet.h) */
 extern void
     build_id_payload(struct isakmp_ipsec_id *hd, chunk_t *tl, struct end *end);
+
+#endif /* _ID_H */
+

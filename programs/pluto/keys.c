@@ -73,7 +73,9 @@ struct secret *pluto_secrets = NULL;
 
 void load_preshared_secrets(int whackfd)
 {
-    osw_load_preshared_secrets(&pluto_secrets,whackfd);
+    osw_load_preshared_secrets(&pluto_secrets
+			       , pluto_shared_secrets_file
+			       , whackfd);
 }
 
 void free_preshared_secrets(void)
