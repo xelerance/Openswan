@@ -21,13 +21,17 @@ NAT_DEFS=-DNAT_TRAVERSAL -DVIRTUAL_IP
 endif
 CFLAGS+= ${NAT_DEFS}
 
-LIBS?=${OSWLOGLIB} ${OPENSWANLIB} 
+LIBS?=${OSWLOGLIB} ${OPENSWANLIB} -lgmp
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
 endif
 
 CFLAGS+=-DKERNEL_ALG -DIKE_ALG
+CFLAGS+=-DFINALCONFDIR=\"${FINALCONFDIR}\"
+CFLAGS+=-DFINALCONFDDIR=\"${FINALCONFDDIR}\"
+CFLAGS+=-DFINALCONFFILE=\"${FINALCONFFILE}\"
+CFLAGS+=-DFINALVARDIR=\"${FINALVARDIR}\"
 
 # die if there are any warnings
 ifndef WERROR
@@ -55,9 +59,18 @@ ifndef CONFDSUBDIR
 CONFDSUBDIR=.
 endif
 
+# we can't do tests with two conditions, but we can concatenate the strings
+SHOULDWERESTART=${USE_OBJDIR}$(wildcard ../Makefile.program)
+ifeq ($(SHOULDWERESTART),true../Makefile.program)
+all programs clean install:
+	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/${PROGRAM} && make $@
+else
 all: ${PROGRAM}
-
 programs: all
+clean:	cleanall
+install: doinstall
+
+endif
 
 ifneq ($(PROGRAM),check)
 check: $(PROGRAM)
@@ -66,7 +79,7 @@ endif
 
 ifneq ($(NOINSTALL),true)
 
-install:: $(PROGRAM) $(CONFFILES) $(EXTRA8MAN) $(EXTRA5MAN) $(EXTRA5PROC) $(LIBFILES) $(CONFDFILES)
+doinstall:: $(PROGRAM) $(CONFFILES) $(EXTRA8MAN) $(EXTRA5MAN) $(EXTRA5PROC) $(LIBFILES) $(CONFDFILES)
 	@mkdir -p $(PROGRAMDIR) $(MANDIR8) $(MANDIR5) $(LIBDIR) $(CONFDIR) $(CONFDDIR) $(CONFDDIR)/$(CONFDSUBDIR) $(EXAMPLECONFDIR)
 	@if [ -n "$(PROGRAM)" ]; then $(INSTALL) $(INSTBINFLAGS) $(PROGRAM) $(PROGRAMDIR); fi
 	@$(foreach f, $(addsuffix .8, $(PROGRAM)), \
@@ -184,15 +197,13 @@ ifneq ($(strip $(XMLTO)),)
 	mv "ipsec_$@" $@
 endif
 
-cleanall: clean
-
 distclean: clean
 
 mostlyclean: clean
 
 realclean: clean
 
-clean::
+cleanall: 
 ifneq ($(strip $(PROGRAM)),)
 	@if [ -r $(PROGRAM).in ]; then rm -f $(PROGRAM); fi
 	@if [ -r $(PROGRAM).c ];  then rm -f $(PROGRAM); fi
