@@ -95,10 +95,21 @@ MANS=anyaddr.3 atoaddr.3 atoasr.3 atoul.3 goodmask.3 \
 
 .PHONY:	all install clean l t lt tar check depend checkprograms
 
+# we can't do tests with two conditions, but we can concatenate the strings
+SHOULDWERESTART=${USE_OBJDIR}$(wildcard ttodata.3.xml)
+ifeq ($(SHOULDWERESTART),truettodata.3.xml)
+all programs clean install:
+	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/libopenswan && make $@
+else
 all:	$(LIBA) ${LIBL}
 programs: $(LIBA) ${LIBL}
+clean:	cleanall
+install: doinstall
 
-install:
+endif
+
+
+doinstall:
 	@mkdir -p $(MANDIR)
 	@for f in $(MANS) ; \
 	do \
@@ -150,7 +161,7 @@ version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
 test-%: %.c
 	${CC} ${CFLAGS} -D`echo $* | tr 'a-z' 'A-Z'`_MAIN $*.c -o test-$*
 
-clean:
+cleanall:
 	rm -f $(LIB) *.o try* core *.core $(EXTHDRS) $(EXTLIBS) version.c
 
 
