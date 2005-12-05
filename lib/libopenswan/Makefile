@@ -28,8 +28,8 @@ SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 	alloc.c biglset.c diag.c \
 	goodmask.c initaddr.c initsaid.c initsubnet.c keyblobtoid.c \
 	kernel_alg.c lex.c mpzfuncs.c \
-	optionsfrom.c oswtime.c \
-	prng.c packet.c portof.c \
+	optionsfrom.c oswconf.c oswtime.c \
+	prng.c packet.c portof.c oswconf.c \
 	rangetoa.c rangetosubnet.c sameaddr.c \
 	satot.c secrets.c subnetof.c subnettoa.c subnettot.c \
 	subnettypeof.c ttoaddr.c ttodata.c ttoprotoport.c \
@@ -85,6 +85,13 @@ ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
 endif
 
+CFLAGS+=-DFINALCONFDIR=\"${FINALCONFDIR}\"
+CFLAGS+=-DFINALCONFDDIR=\"${FINALCONFDDIR}\"
+CFLAGS+=-DFINALCONFFILE=\"${FINALCONFFILE}\"
+CFLAGS+=-DFINALVARDIR=\"${FINALVARDIR}\"
+CFLAGS+=-DFINALLIBEXECDIR=\"${FINALLIBEXECDIR}\"
+CFLAGS+=-DFINALLIBDIR=\"${FINALLIBDIR}\"
+CFLAGS+=-DFINALSBINDIR=\"${FINALSBINDIR}\"
 
 ARFLAGS=crvs
 EXTHDRS=des.h
