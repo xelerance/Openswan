@@ -36,7 +36,7 @@
 #include "pkcs.h"
 #include "paths.h"
 
-#define BUF_LEN		256
+#define ASN1_BUF_LEN		256
 
 /*
  * used for initialization of private keys
@@ -256,12 +256,12 @@ load_cert(bool forcedtype, const char *filename, const char *label, cert_t *cert
 bool
 load_host_cert(enum ipsec_cert_type certtype, const char *filename, cert_t *cert)
 {
-    char path[BUF_LEN];
+    char path[ASN1_BUF_LEN];
 
     if (*filename == '/')	/* absolute pathname */
-    	strncpy(path, filename, BUF_LEN);
+    	strncpy(path, filename, ASN1_BUF_LEN);
     else			/* relative pathname */
-	snprintf(path, BUF_LEN, "%s/%s", HOST_CERT_PATH, filename);
+	snprintf(path, ASN1_BUF_LEN, "%s/%s", HOST_CERT_PATH, filename);
 
     return load_cert(certtype, path, "host cert", cert);
 }
@@ -275,7 +275,7 @@ same_cert(const cert_t *a, const cert_t *b)
     return a->type == b->type && a->u.x509 == b->u.x509;
 }
 
-/*  for each link pointing to the certif icate
+/*  for each link pointing to the certificate
  "  increase the count by one
  */
 void
@@ -312,17 +312,6 @@ release_cert(cert_t cert)
 	break;
     }
 }
-
-/*
- *  list all X.509 and OpenPGP end certificates
- */
-void
-list_certs(bool utc)
-{
-    list_x509_end_certs(utc);
-    list_pgp_end_certs(utc);
-}
-
 
 /*
  * Local Variables:
