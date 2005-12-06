@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: ipsec_kversion.h,v 1.15.2.3 2005/11/22 04:11:52 ken Exp $
+ * RCSID $Id: ipsec_kversion.h,v 1.15.2.4 2005/11/27 21:40:14 paul Exp $
  */
 #define	_FREESWAN_KVERSIONS_H	/* seen it, no need to see it again */
 
@@ -131,10 +131,17 @@
 /* skb->stamp changed to skb->tstamp in 2.6.14 */
 #define HAVE_TSTAMP
 #define HAVE_INET_SK_SPORT
-#define HAVE_MISSING_IP_DEFAULT_TTL
 #else
 #define HAVE_SKB_LIST
 #endif
+
+#define SYSCTL_IPSEC_DEFAULT_TTL sysctl_ip_default_ttl
+/* it seems 2.6.14 accidentally removed sysctl_ip_default_ttl */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,14) && LINUX_VERSION_CODE < KERNEL_VERSION(2,6,15)
+#undef  SYSCTL_IPSEC_DEFAULT_TTL
+#define SYSCTL_IPSEC_DEFAULT_TTL IPSEC_DEFAULT_TTL
+#endif
+
 
 
 #ifdef NET_21
@@ -241,6 +248,10 @@
 
 /*
  * $Log: ipsec_kversion.h,v $
+ * Revision 1.15.2.4  2005/11/27 21:40:14  paul
+ * Pull down TTL fixes from head. this fixes "Unknown symbol sysctl_ip_default_ttl"
+ * in for klips as module.
+ *
  * Revision 1.15.2.3  2005/11/22 04:11:52  ken
  * Backport fixes for 2.6.14 kernels from HEAD
  *

@@ -31,7 +31,6 @@ conn L2TP-PSK-noNAT
 	# The remote user.
 	#
 	right=%any
-        rightca=%same
 	rightprotoport=17/1701
 
 

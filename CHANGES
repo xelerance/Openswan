@@ -1,7 +1,13 @@
 Please see docs/KNOWN_BUGS file for more information
 
 v2.4.5
+* Fix for ipsec: Unknown symbol sysctl_ip_default_ttl
 * Fix for compiling on 2.6.14 kernels 
+* Fix patching against 2.6.14 kernels
+* Additions to barf and verify commands for various kernel internals
+* load hw_random and padlock modules before aes module so hardware routines
+  are prefered over software routines.
+* allow rightsubnet= with type=transport for L2TP behind NAT.
 * Refactored natd_lookup / hash code, probably fixes lot of NAT related bugs
   #401 l2tp connection is not work with 2.6 build in IPSEC
   #442 Pluto uses wrong port in NAT-D calculation
@@ -136,4 +142,4 @@ v2.1.0
   while travelling.  This is based on Tuomo Soini's Advanced Routing
   patch.
 
-RCSID $Id: CHANGES,v 1.326.2.31 2005/11/24 05:35:43 ken Exp $
+RCSID $Id: CHANGES,v 1.326.2.33 2005/11/28 02:16:42 paul Exp $
