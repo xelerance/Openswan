@@ -2377,6 +2377,9 @@ process_packet(struct msg_digest **mdp)
 	}
     }
 
+#if 0
+    /* this does not seem to be right */
+
     /* VERIFY that we only accept NAT-D/NAT-OE when they sent us the VID */
 #ifdef NAT_TRAVERSAL
     if((md->chain[ISAKMP_NEXT_NATD_RFC]!=NULL
@@ -2387,9 +2390,9 @@ process_packet(struct msg_digest **mdp)
 	 * unless we're using NAT-T RFC
 	 */
 	loglog(RC_LOG_SERIOUS, "message ignored because it contains a NAT payload, when we did not receive the appropriate VendorID");
-	/* MAYBE we shouldn't return here */
 	return;
     }
+#endif
 #endif
 
 
