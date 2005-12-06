@@ -258,7 +258,7 @@ BIND9STATICLIBDIR?=/usr/lib
 # LWRES is the lightweight resolver, part of BIND9
 # We test with LWRES, but ship with it off, as it requires
 # additional headers not present on most systems.
-USE_LWRES?=true
+USE_LWRES?=false
 
 # Whether or not to use iproute2 based commands.
 # On Kernel 2.0, and early 2.2 systems you may need to either install the
