@@ -73,9 +73,13 @@ struct secret *pluto_secrets = NULL;
 
 void load_preshared_secrets(int whackfd)
 {
+    prompt_pass_t pass;
+
+    pass.prompt = whack_log;
+    pass.fd = whackfd;
     osw_load_preshared_secrets(&pluto_secrets
 			       , pluto_shared_secrets_file
-			       , whackfd);
+			       , &pass);
 }
 
 void free_preshared_secrets(void)
@@ -436,40 +440,6 @@ transfer_to_public_keys(struct gw_info *gateways_from_dns
     }
 #endif /* USE_KEYRR */
 }
-
-struct pubkey *
-reference_key(struct pubkey *pk)
-{
-    pk->refcnt++;
-    return pk;
-}
-
-void
-unreference_key(struct pubkey **pkp)
-{
-    struct pubkey *pk = *pkp;
-    char b[IDTOA_BUF];
-
-    if (pk == NULL)
-	return;
-
-    /* print stuff */
-    DBG(DBG_CONTROLMORE,
- 	idtoa(&pk->id, b, sizeof(b));
- 	DBG_log("unreference key: %p %s cnt %d--", pk, b, pk->refcnt)
-	);
-
-    /* cancel out the pointer */
-    *pkp = NULL;
-
-    passert(pk->refcnt != 0);
-    pk->refcnt--;
-
-    /* we are going to free the key as the refcount will hit zero */
-    if (pk->refcnt == 0)
-      free_public_key(pk);
-}
-
 
 err_t
 add_public_key(const struct id *id

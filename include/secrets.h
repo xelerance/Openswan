@@ -94,6 +94,21 @@ struct pubkey_list {
 };
 
 
+/* struct used to prompt for a secret passphrase
+ * from a console with file descriptor fd
+ */
+#define MAX_PROMPT_PASS_TRIALS	5
+#define PROMPT_PASS_LEN		64
+
+typedef void (*pass_prompt_func)(int mess_no, const char *message, ...) PRINTF_LIKE(2);   
+
+typedef struct {
+    char secret[PROMPT_PASS_LEN];
+    pass_prompt_func prompt;
+    int fd;
+} prompt_pass_t;
+
+
 extern struct pubkey_list *pubkeys;	/* keys from ipsec.conf */
 
 extern struct pubkey *public_key_from_rsa(const struct RSA_public_key *k);
@@ -123,7 +138,7 @@ extern void free_public_key(struct pubkey *pk);
 
 extern void osw_load_preshared_secrets(struct secret **psecrets
 				       , const char *secrets_file
-				       , int whackfd);
+				       , prompt_pass_t *pass);
 extern void osw_free_preshared_secrets(struct secret **psecrets);
 
 extern bool osw_has_private_rawkey(struct secret *secrets, struct pubkey *pk);

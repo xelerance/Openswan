@@ -21,7 +21,7 @@ NAT_DEFS=-DNAT_TRAVERSAL -DVIRTUAL_IP
 endif
 CFLAGS+= ${NAT_DEFS}
 
-LIBS?=${OSWLOGLIB} ${OPENSWANLIB} -lgmp
+LIBS?=${OSWLOGLIB} ${OPENSWANLIB} ${OSWLOGLIB} -lgmp
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
@@ -62,13 +62,16 @@ endif
 # we can't do tests with two conditions, but we can concatenate the strings
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard ../Makefile.program)
 ifeq ($(SHOULDWERESTART),true../Makefile.program)
-all programs clean install:
+all programs clean:
+	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/${PROGRAM} && make $@
+
+install::
 	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/${PROGRAM} && make $@
 else
 all: ${PROGRAM}
 programs: all
 clean:	cleanall
-install: doinstall
+install:: doinstall
 
 endif
 
@@ -203,7 +206,7 @@ mostlyclean: clean
 
 realclean: clean
 
-cleanall: 
+cleanall::
 ifneq ($(strip $(PROGRAM)),)
 	@if [ -r $(PROGRAM).in ]; then rm -f $(PROGRAM); fi
 	@if [ -r $(PROGRAM).c ];  then rm -f $(PROGRAM); fi

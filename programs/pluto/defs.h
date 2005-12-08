@@ -42,18 +42,9 @@ typedef unsigned long so_serial_t;
 #define SOS_NOBODY	0	/* null serial number */
 #define SOS_FIRST	1	/* first normal serial number */
 
-/* display a date either in local or UTC time */
-extern char* timetoa(const time_t *time, bool utc, char *buf, size_t blen);
-
 /* warns a predefined interval before expiry */
 extern const char* check_expiry(time_t expiration_date,
     int warning_interval, bool strict);
-
-/* no time defined in time_t */
-#define UNDEFINED_TIME	0
-
-/* size of timetoa string buffer */
-#define TIMETOA_BUF	30
 
 /* filter eliminating the directory entries '.' and '..' */
 typedef struct dirent dirent_t;

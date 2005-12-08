@@ -23,11 +23,10 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
-
-#include "defs.h"
+#include "oswtime.h"
+#include "oswalloc.h"
 #include "asn1.h"
 #include "oid.h"
-#include "log.h"
 
 /*  If the oid is listed in the oid_names table then the corresponding
  *  position in the oid_names table is returned otherwise -1 is returned

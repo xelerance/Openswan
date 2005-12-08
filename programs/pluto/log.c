@@ -51,7 +51,6 @@
 #include "kernel.h"	/* needs connections.h */
 #include "whack.h"	/* needs connections.h */
 #include "timer.h"
-#include "paths.h"
 #include "kernel_alg.h"
 #include "ike_alg.h"
 #include "plutoalg.h"
@@ -116,7 +115,6 @@ void
 pluto_init_log(void)
 {
     set_exit_log_func(exit_log);
-    set_paths(ipsec_dir);
     if (log_to_stderr)
 	setbuf(stderr, NULL);
     if (log_to_syslog)
@@ -445,7 +443,7 @@ loglog(int mess_no, const char *message, ...)
 }
 
 void
-log_errno_routine(int e, const char *message, ...)
+openswan_log_errno_routine(int e, const char *message, ...)
 {
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
@@ -490,7 +488,7 @@ exit_log(const char *message, ...)
 }
 
 void
-exit_log_errno_routine(int e, const char *message, ...)
+openswan_exit_log_errno_routine(int e, const char *message, ...)
 {
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
@@ -588,9 +586,8 @@ whack_log(int mess_no, const char *message, ...)
 /* Debugging message support */
 
 #ifdef DEBUG
-
 void
-switch_fail(int n, const char *file_str, unsigned long line_no)
+openswan_switch_fail(int n, const char *file_str, unsigned long line_no)
 {
     char buf[30];
 
@@ -845,48 +842,6 @@ daily_log_event(void)
     event_schedule(EVENT_LOG_DAILY, interval, NULL);
 
     daily_log_reset();
-}
-
-/* for paths.h */
-/*
- * decode the paths
- */
-struct pluto_paths plutopaths;
-
-void verify_path_space(struct paththing *p, size_t min, const char *why)
-{
-    if (min > p->path_space)
-    {
-	pfreeany(p->path);
-	p->path_space = min + 10;
-	p->path = alloc_bytes(p->path_space, why);
-    }
-}
-
-void set_paths(const char *basedir)
-{
-    size_t baselen = strlen(basedir) + 2;
-
-    verify_path_space(&plutopaths.acerts, baselen + sizeof("acerts"), "acert path");
-    snprintf(plutopaths.acerts.path, plutopaths.acerts.path_space, "%s/acerts", basedir);
-
-    verify_path_space(&plutopaths.cacerts, baselen + sizeof("cacerts"), "cacert path");
-    snprintf(plutopaths.cacerts.path, plutopaths.cacerts.path_space, "%s/cacerts", basedir);
-
-    verify_path_space(&plutopaths.crls, baselen + sizeof("crls"), "crls path");
-    snprintf(plutopaths.crls.path, plutopaths.crls.path_space, "%s/crls", basedir);
-
-    verify_path_space(&plutopaths.private, baselen + sizeof("private"), "private path");
-    snprintf(plutopaths.private.path, plutopaths.private.path_space, "%s/private", basedir);
-
-    verify_path_space(&plutopaths.certs, baselen + sizeof("certs"), "certs path");
-    snprintf(plutopaths.certs.path, plutopaths.certs.path_space, "%s/certs", basedir);
-
-    verify_path_space(&plutopaths.aacerts, baselen + sizeof("aacerts"), "aacerts path");
-    snprintf(plutopaths.aacerts.path, plutopaths.certs.path_space, "%s/aacerts", basedir);
-
-    verify_path_space(&plutopaths.ocspcerts, baselen + sizeof("ocspcerts"), "ocspcerts path");
-    snprintf(plutopaths.ocspcerts.path, plutopaths.certs.path_space, "%s/ocspcerts", basedir);
 }
 
 /*

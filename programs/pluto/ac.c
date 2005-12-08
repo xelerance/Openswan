@@ -26,9 +26,11 @@
 #include <openswan.h>
 
 #include "sysdep.h"
+#include "oswconf.h"
 #include "constants.h"
 #include "oswlog.h"
 
+#include "oswtime.h"
 #include "defs.h"
 #include "asn1.h"
 #include "oid.h"
@@ -38,7 +40,6 @@
 #include "pgp.h"
 #include "certs.h"
 #include "log.h"
-#include "paths.h"
 #include "whack.h"
 #include "fetch.h"
 
@@ -745,14 +746,15 @@ load_acerts(void)
 
     /* change directory to specified path */
     char *save_dir = getcwd(buf, BUF_LEN);
+    const struct osw_conf_options *oco = osw_init_options(); 
 
-    if (!chdir(A_CERT_PATH))
+    if (!chdir(oco->acerts_dir))
     {
 	struct dirent **filelist;
 	int n;
 
-	openswan_log("Changing to directory '%s'",A_CERT_PATH);
-	n = scandir(A_CERT_PATH, &filelist, file_select, alphasort);
+	openswan_log("Changing to directory '%s'", oco->acerts_dir);
+	n = scandir(oco->acerts_dir, &filelist, file_select, alphasort);
 
 	if (n > 0)
 	{

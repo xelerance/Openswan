@@ -40,7 +40,7 @@ extern struct id myids[MYID_SPECIFIED+1];	/* %myid */
 extern char *myid_str[MYID_SPECIFIED+1];      /* strings */
 extern void set_myid(enum myid_state s, char *);
 extern void show_myid_status(void);
-#define resolve_myid(id) ((id)->kind == ID_MYID? &myids[myid_state] : (id))
+extern const struct id *resolve_myid(const struct id *id);
 extern void set_myFQDN(void);
 
 extern err_t atoid(char *src, struct id *id, bool myid_ok);

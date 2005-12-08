@@ -54,7 +54,6 @@
 #include "ocsp.h"
 #include "pkcs.h"
 #include "x509more.h"
-#include "paths.h"
 
 /* extract id and public key from x.509 certificate and
  * insert it into a pubkeyrec

@@ -1,5 +1,6 @@
 /* Certificate support for IKE authentication
  * Copyright (C) 2002-2004 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -24,17 +25,16 @@
 
 #include "constants.h"
 #include "oswlog.h"
-
-#include "defs.h"
-#include "log.h"
+#include "oswalloc.h"
+#include "oswconf.h"
+#include "oswtime.h"
 #include "asn1.h"
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"
-#include "pem.h"
 #include "certs.h"
 #include "pkcs.h"
-#include "paths.h"
+#include "pem.h"
 
 #define ASN1_BUF_LEN		256
 
@@ -146,12 +146,15 @@ load_rsa_private_key(const char* filename, prompt_pass_t *pass)
 {
     bool pgp = FALSE;
     chunk_t blob = empty_chunk;
-    char path[512];
+    char path[PATH_MAX];
+    const struct osw_conf_options *oco;
+
+    oco = osw_init_options();
 
     if (*filename == '/')	/* absolute pathname */
     	strncpy(path, filename, sizeof(path));
     else			/* relative pathname */
-	snprintf(path, sizeof(path), "%s/%s", PRIVATE_KEY_PATH, filename);
+	snprintf(path, sizeof(path), "%s/%s", oco->private_dir, filename);
 
     if (load_coded_file(path, pass, "private key", &blob, &pgp))
     {
@@ -256,12 +259,15 @@ load_cert(bool forcedtype, const char *filename, const char *label, cert_t *cert
 bool
 load_host_cert(enum ipsec_cert_type certtype, const char *filename, cert_t *cert)
 {
-    char path[ASN1_BUF_LEN];
+    const struct osw_conf_options *oco;
+    char path[PATH_MAX];
+
+    oco = osw_init_options();
 
     if (*filename == '/')	/* absolute pathname */
     	strncpy(path, filename, ASN1_BUF_LEN);
     else			/* relative pathname */
-	snprintf(path, ASN1_BUF_LEN, "%s/%s", HOST_CERT_PATH, filename);
+	snprintf(path, ASN1_BUF_LEN, "%s/%s", oco->certs_dir, filename);
 
     return load_cert(certtype, path, "host cert", cert);
 }

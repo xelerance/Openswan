@@ -33,13 +33,13 @@
 #include "pfkeyv2.h"
 
 #include "sysdep.h"
+#include "oswconf.h"
 #include "constants.h"
 #include "defs.h"
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "paths.h"
 #include "ac.h"
 #include "smartcard.h"
 #ifdef XAUTH_USEPAM
@@ -245,6 +245,7 @@ whack_handle(int whackctlfd)
     int whackfd = accept(whackctlfd, (struct sockaddr *)&whackaddr, &whackaddrlen);
     /* Note: actual value in n should fit in int.  To print, cast to int. */
     ssize_t n;
+    const struct osw_conf_options *oco = osw_init_options();
 
     //DBG_log("whack_crash %d\n", msg.whack_crash);
 
@@ -419,17 +420,17 @@ whack_handle(int whackctlfd)
 
     if (msg.whack_reread & REREAD_CACERTS)
     {
-	load_authcerts("CA cert", CA_CERT_PATH, AUTH_CA);
+	load_authcerts("CA cert", oco->cacerts_dir, AUTH_CA);
     }
 
     if (msg.whack_reread & REREAD_AACERTS)
     {
-       load_authcerts("AA cert", AA_CERT_PATH, AUTH_AA);
+       load_authcerts("AA cert", oco->aacerts_dir, AUTH_AA);
     }
 
     if (msg.whack_reread & REREAD_OCSPCERTS)
     {
-       load_authcerts("OCSP cert", OCSP_CERT_PATH, AUTH_OCSP);
+       load_authcerts("OCSP cert", oco->ocspcerts_dir, AUTH_OCSP);
     }
 
     if (msg.whack_reread & REREAD_ACERTS)
@@ -651,8 +652,6 @@ bool whack_prompt_for(int whackfd
 	
     return TRUE;
 }
-
-
 
 /*
  * Local Variables:

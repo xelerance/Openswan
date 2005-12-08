@@ -31,125 +31,14 @@
 
 #include "sysdep.h"
 #include "constants.h"
-#include "defs.h"
+#include "openswan/passert.h"
+#include "oswalloc.h"
+#include "oswlog.h"
 #include "id.h"
-#include "log.h"
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
-#ifdef XAUTH_USEPAM
-#include <security/pam_appl.h>
-#endif
-#include "connections.h"	/* needs id.h */
-#include "packet.h"
-#include "whack.h"
-
-enum myid_state myid_state = MYID_UNKNOWN;
-struct id myids[MYID_SPECIFIED+1];	/* %myid */
-char *myid_str[MYID_SPECIFIED+1];     /* string form of IDs */
-
-/* initialize id module
- * Fills in myid from environment variable IPSECmyid or defaultrouteaddr
- */
-void
-init_id(void)
-{
-    passert(empty_id.kind == ID_NONE);
-    myid_state = MYID_UNKNOWN;
-    {
-	enum myid_state s;
-
-	for (s = MYID_UNKNOWN; s <= MYID_SPECIFIED; s++)
-	{
-	    myids[s] = empty_id;
-	    myid_str[s] = NULL;
-	}
-    }
-    set_myid(MYID_SPECIFIED, getenv("IPSECmyid"));
-    set_myid(MYID_IP, getenv("defaultrouteaddr"));
-    set_myFQDN();
-}
-
-static void
-calc_myid_str(enum myid_state s)
-{
-    /* preformat the ID name */
-    char buf[IDTOA_BUF];
-
-    idtoa(&myids[s], buf, IDTOA_BUF);
-    replace(myid_str[s], clone_str(buf, "myid string"));
-}
-
-
-void
-set_myid(enum myid_state s, char *idstr)
-{
-    if (idstr != NULL)
-    {
-	struct id id;
-	err_t ugh = atoid(idstr, &id, FALSE);
-
-	if (ugh != NULL)
-	{
-	    loglog(RC_BADID, "myid malformed: %s \"%s\"", ugh, idstr);
-	}
-	else
-	{
-	    free_id_content(&myids[s]);
-	    unshare_id_content(&id);
-	    myids[s] = id;
-	    if (s == MYID_SPECIFIED)
-		myid_state = MYID_SPECIFIED;
-
-	    calc_myid_str(s);
-	}
-    }
-}
-
-void
-set_myFQDN(void)
-{
-    char FQDN[HOST_NAME_MAX + 1];
-    int r = gethostname(FQDN, sizeof(FQDN));
-
-    free_id_content(&myids[MYID_HOSTNAME]);
-    myids[MYID_HOSTNAME] = empty_id;
-    if (r != 0)
-    {
-	log_errno((e, "gethostname() failed in set_myFQDN"));
-    }
-    else
-    {
-	FQDN[sizeof(FQDN) - 1] = '\0';	/* insurance */
-
-	{
-	    size_t len = strlen(FQDN);
-
-	    if (len > 0 && FQDN[len-1] == '.')
-	    {
-		/* nuke trailing . */
-		FQDN[len-1]='\0';
-	    }
-	}
-
-	if (!strcaseeq(FQDN, "localhost.localdomain"))
-	{
-	    clonetochunk(myids[MYID_HOSTNAME].name, FQDN, strlen(FQDN), "my FQDN");
-	    myids[MYID_HOSTNAME].kind = ID_FQDN;
-	    calc_myid_str(MYID_HOSTNAME);
-	}
-    }
-}
-
-void
-show_myid_status(void)
-{
-    char idstr[IDTOA_BUF];
-
-    (void)idtoa(&myids[myid_state], idstr, sizeof(idstr));
-    whack_log(RC_COMMENT, "%%myid = %s", idstr);
-}
 
 /*  Note that there may be as many as six IDs that are temporary at
  *  one time before unsharing the two ends of a connection. So we need
@@ -496,6 +385,8 @@ same_id(const struct id *a, const struct id *b)
     default:
 	bad_case(a->kind);
     }
+    /* NOTREACHED */
+    return FALSE;
 }
 
 /* compare two struct id values, DNs can contain wildcards */
@@ -569,41 +460,6 @@ id_count_wildcards(const struct id *id)
 		, count));
     
     return count;
-}
-
-/* build an ID payload
- * Note: no memory is allocated for the body of the payload (tl->ptr).
- * We assume it will end up being a pointer into a sufficiently
- * stable datastructure.  It only needs to last a short time.
- */
-void
-build_id_payload(struct isakmp_ipsec_id *hd, chunk_t *tl, struct end *end)
-{
-    const struct id *id = resolve_myid(&end->id);
-
-    zero(hd);
-    hd->isaiid_idtype = id->kind;
-    switch (id->kind)
-    {
-    case ID_NONE:
-	hd->isaiid_idtype = aftoinfo(addrtypeof(&end->host_addr))->id_addr;
-	tl->len = addrbytesptr(&end->host_addr
-	    , (const unsigned char **)&tl->ptr);	/* sets tl->ptr too */
-	break;
-    case ID_FQDN:
-    case ID_USER_FQDN:
-    case ID_DER_ASN1_DN:
-    case ID_KEY_ID:
-	*tl = id->name;
-	break;
-    case ID_IPV4_ADDR:
-    case ID_IPV6_ADDR:
-	tl->len = addrbytesptr(&id->ip_addr
-	    , (const unsigned char **)&tl->ptr);	/* sets tl->ptr too */
-	break;
-    default:
-	bad_case(id->kind);
-    }
 }
 
 /*

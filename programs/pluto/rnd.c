@@ -57,6 +57,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include <fcntl.h>
+#include <time.h>
 
 #include <openswan.h>
 
@@ -71,10 +72,8 @@ static int random_fd = -1;
 const char *random_devices[]={
 #if defined(linux) 
   "/dev/hw_random",
-  "/dev/random",
   "/dev/urandom"
 #elif defined(macintosh) || (defined(__MACH__) && defined(__APPLE__))
-  "/dev/random",
   "/dev/urandom"
 #elif defined(__OpenBSD__)
   "/dev/random"
@@ -96,10 +95,6 @@ generate_rnd_byte(void)
 {
     u_char c;
 
-    while(random_fd == -1) {
-	init_rnd_pool();
-	sleep(30);
-    }
     if (read(random_fd, &c, sizeof(c)) == -1)
 	exit_log_errno((e, "read() failed in get_rnd_byte()"));
 
@@ -148,25 +143,29 @@ void
 init_rnd_pool(void)
 {
     unsigned int i;
+    unsigned int max_rnd_devices = elemsof(random_devices)+1;
+    const char *rnd_dev;
 
     if(random_fd != -1) close(random_fd);
     random_fd = -1;
 
-    for(i=0; random_fd == -1 && i<elemsof(random_devices); i++) {
+    for(i=0; random_fd == -1 && i<max_rnd_devices; i++) {
 	DBG(DBG_CONTROL, DBG_log("opening %s", random_devices[i]));
 	random_fd = open(random_devices[i], O_RDONLY);
+	rnd_dev = random_devices[i];
 
 	if (random_fd == -1) {
 	    openswan_log("WARNING: open of %s failed: %s", random_devices[i]
 			 , strerror(errno));
 	}
     }
-    if(random_fd == -1) {
+
+    if(random_fd == -1 || i == max_rnd_devices) {
 	openswan_log("Failed to open any source of random. Unable to start any connections.");
 	return;
     }
 
-    openswan_log("using %s as source of random entropy", random_devices[i]);
+    openswan_log("using %s as source of random entropy", rnd_dev);
 
     fcntl(random_fd, F_SETFD, FD_CLOEXEC);
 

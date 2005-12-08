@@ -83,7 +83,7 @@ static err_t osw_process_rsa_secret(const struct secret *secrets
 				    , struct RSA_private_key *rsak);
 static err_t osw_process_rsa_keyfile(struct secret **psecrets
 				     , struct RSA_private_key *rsak
-				     , int whackfd);
+				     , prompt_pass_t *pass);
 
 #ifdef DEBUG
 static void
@@ -559,17 +559,14 @@ bool osw_has_private_rawkey(struct secret *secrets, struct pubkey *pk)
  */
 err_t osw_process_rsa_keyfile(struct secret **psecrets
 			      , struct RSA_private_key *rsak
-			      , int whackfd)
+			      , prompt_pass_t *pass)
 {
     char filename[BUF_LEN];
     err_t ugh = NULL;
     rsa_privkey_t *key = NULL;
-    prompt_pass_t pass;
 
     memset(filename,'\0', BUF_LEN);
-    memset(pass.secret,'\0', sizeof(pass.secret));
-    pass.prompt = FALSE;
-    pass.fd = whackfd;
+    memset(pass->secret,'\0', sizeof(pass->secret));
 
     /* we expect the filename of a PKCS#1 private key file */
 
@@ -583,20 +580,19 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 	/* we expect an appended passphrase or passphrase prompt*/
 	if (tokeqword("%prompt"))
 	{
-	    if (pass.fd == NULL_FD)
+	    if (pass->fd == NULL_FD)
 		return "enter a passphrase using ipsec auto --rereadsecrets";
-	    pass.prompt = TRUE;
 	}
 	else if (*flp->tok == '"' || *flp->tok == '\'') /* quoted passphrase */
-	    memcpy(pass.secret, flp->tok+1, flp->cur - flp->tok - 2);
+	    memcpy(pass->secret, flp->tok+1, flp->cur - flp->tok - 2);
 	else
-	    memcpy(pass.secret, flp->tok, flp->cur - flp->tok);
+	    memcpy(pass->secret, flp->tok, flp->cur - flp->tok);
 
 	if (shift())
 	    ugh = "RSA private key file -- unexpected token after passphrase";
     }
 
-    key = load_rsa_private_key(filename, &pass);
+    key = load_rsa_private_key(filename, pass);
 
     if (key == NULL)
 	ugh = "error loading RSA private key file";
@@ -868,12 +864,10 @@ process_pin(struct secret *s, int whackfd)
 #endif
 
 static void
-process_secret(struct secret **psecrets, struct secret *s, int whackfd)
+process_secret(struct secret **psecrets, struct secret *s, prompt_pass_t *pass)
 {
     err_t ugh = NULL;
     struct secret *secrets = *psecrets;
-
-    whackfd = whackfd;  /* shut up compiler */
 
     s->pks.kind = PPK_PSK;	/* default */
     if (*flp->tok == '"' || *flp->tok == '\'')
@@ -903,7 +897,7 @@ process_secret(struct secret **psecrets, struct secret *s, int whackfd)
 	}
 	else
 	{
-	    ugh = osw_process_rsa_keyfile(psecrets, &s->pks.u.RSA_private_key, whackfd);
+	    ugh = osw_process_rsa_keyfile(psecrets, &s->pks.u.RSA_private_key,pass);
 	}
 	DBG(DBG_CONTROL,
 	    DBG_log("loaded private key for keyid: %s:%s",
@@ -913,7 +907,7 @@ process_secret(struct secret **psecrets, struct secret *s, int whackfd)
     else if (tokeqword("pin"))
     {
 #ifdef SMARTCARD
-	ugh = process_pin(s, whackfd);
+	ugh = process_pin(s, pass);
 #else
 	ugh = "Smartcard not supported";
 #endif
@@ -939,13 +933,14 @@ process_secret(struct secret **psecrets, struct secret *s, int whackfd)
     }
 }
 
+/* forward declaration */
 static void osw_process_secrets_file(struct secret **psecrets
 				     , const char *file_pat
-				     , int whackfd); /* forward declaration */
+				     , prompt_pass_t *pass);
 
 
 static void
-osw_process_secret_records(struct secret **psecrets, int whackfd)
+osw_process_secret_records(struct secret **psecrets, prompt_pass_t *pass)
 {
     //const struct secret *secret = *psecrets;
 
@@ -998,7 +993,7 @@ osw_process_secret_records(struct secret **psecrets, int whackfd)
 	    (void) shift();	/* move to Record Boundary, we hope */
 	    if (flushline("ignoring malformed INCLUDE -- expected Record Boundary after filename"))
 	    {
-		osw_process_secrets_file(psecrets, fn, whackfd);
+		osw_process_secrets_file(psecrets, fn, pass);
 		flp->tok = NULL;	/* correct, but probably redundant */
 	    }
 	}
@@ -1019,7 +1014,7 @@ osw_process_secret_records(struct secret **psecrets, int whackfd)
 		{
 		    /* found key part */
 		    shift();	/* discard explicit separator */
-		    process_secret(psecrets, s, whackfd);
+		    process_secret(psecrets, s, pass);
 		    break;
 		}
 		else
@@ -1080,13 +1075,13 @@ osw_process_secret_records(struct secret **psecrets, int whackfd)
 static int
 globugh(const char *epath, int eerrno)
 {
-    log_errno_routine(eerrno, "problem with secrets file \"%s\"", epath);
+    openswan_log_errno_routine(eerrno, "problem with secrets file \"%s\"", epath);
     return 1;	/* stop glob */
 }
 
 static void
 osw_process_secrets_file(struct secret **psecrets
-			 , const char *file_pat, int whackfd)
+			 , const char *file_pat, prompt_pass_t *pass)
 {
     struct file_lex_position pos;
     char **fnp;
@@ -1135,7 +1130,7 @@ osw_process_secrets_file(struct secret **psecrets
 	{
 	    openswan_log("loading secrets from \"%s\"", *fnp);
 	    (void) flushline("file starts with indentation (continuation notation)");
-	    osw_process_secret_records(psecrets, whackfd);
+	    osw_process_secret_records(psecrets, pass);
 	    lexclose();
 	}
     }
@@ -1198,10 +1193,44 @@ osw_free_preshared_secrets(struct secret **psecrets)
 void
 osw_load_preshared_secrets(struct secret **psecrets
 			   , const char *secrets_file
-			   , int whackfd)
+			   , prompt_pass_t *pass)
 {
     osw_free_preshared_secrets(psecrets);
-    (void) osw_process_secrets_file(psecrets, secrets_file, whackfd);
+    (void) osw_process_secrets_file(psecrets, secrets_file, pass);
+}
+
+
+struct pubkey *
+reference_key(struct pubkey *pk)
+{
+    pk->refcnt++;
+    return pk;
+}
+
+void
+unreference_key(struct pubkey **pkp)
+{
+    struct pubkey *pk = *pkp;
+    char b[IDTOA_BUF];
+
+    if (pk == NULL)
+	return;
+
+    /* print stuff */
+    DBG(DBG_CONTROLMORE,
+ 	idtoa(&pk->id, b, sizeof(b));
+ 	DBG_log("unreference key: %p %s cnt %d--", pk, b, pk->refcnt)
+	);
+
+    /* cancel out the pointer */
+    *pkp = NULL;
+
+    passert(pk->refcnt != 0);
+    pk->refcnt--;
+
+    /* we are going to free the key as the refcount will hit zero */
+    if (pk->refcnt == 0)
+      free_public_key(pk);
 }
 
 

@@ -19,20 +19,9 @@
 
 #include "openswan/ipsec_policy.h"
 
+#include "secrets.h"
 #include "x509.h"
 #include "pgp.h"
-
-/* path definitions for private keys, end certs,
- * cacerts, attribute certs and crls
- */
-#define A_CERT_PATH	  plutopaths.acerts.path
-#define CA_CERT_PATH	  plutopaths.cacerts.path
-#define CRL_PATH	  plutopaths.crls.path
-#define PRIVATE_KEY_PATH  plutopaths.private.path
-#define HOST_CERT_PATH    plutopaths.certs.path
-#define AA_CERT_PATH      plutopaths.aacerts.path
-#define OCSP_CERT_PATH    plutopaths.ocspcerts.path
-
 
 /* advance warning of imminent expiry of
  * cacerts, public keys, and crls
@@ -87,19 +76,6 @@ extern void share_cert(cert_t cert);
 extern void release_cert(cert_t cert);
 extern void list_certs(bool utc);
 
-
-
-#define MAX_PROMPT_PASS_TRIALS	5
-#define PROMPT_PASS_LEN		64
-
-/* struct used to prompt for a secret passphrase
- * from a console with file descriptor fd
- */
-typedef struct {
-    char secret[PROMPT_PASS_LEN];
-    bool prompt;
-    int fd;
-} prompt_pass_t;
 
 
 extern rsa_privkey_t* load_rsa_private_key(const char* filename

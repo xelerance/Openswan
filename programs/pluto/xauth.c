@@ -39,6 +39,7 @@
 #include <openswan/ipsec_policy.h>
 
 #include "sysdep.h"
+#include "oswconf.h"
 #include "constants.h"
 #include "oswlog.h"
 
@@ -68,7 +69,6 @@
 #include "sha1.h"
 #include "md5.h"
 #include "crypto.h" /* requires sha1.h and md5.h */
-#include "paths.h"
 #include "ike_alg.h"
 
 #include "xauth.h"
@@ -81,7 +81,7 @@
 static stf_status
 modecfg_inI2(struct msg_digest *md);
 
-struct paththing pwdfile;
+char pwdfile[PATH_MAX];
 
 extern bool encrypt_message(pb_stream *pbs, struct state *st); /* forward declaration */
 
@@ -932,21 +932,19 @@ int do_md5_authentication(void *varg)
     char *szconnid;
     char *sztemp;
     int loc = 0;
-    size_t pwlen = strlen(ipsec_dir) + sizeof("/passwd") + 1;
+    const struct osw_conf_options *oco = osw_init_options(); 
 
-    verify_path_space(&pwdfile, pwlen, "xauth passwd file path");
+    snprintf(pwdfile, sizeof(pwdfile), "%s/passwd", oco->confddir);
 
-    snprintf(pwdfile.path, pwdfile.path_space, "%s/passwd", ipsec_dir);
-
-    fp = fopen(pwdfile.path, "r");
+    fp = fopen(pwdfile, "r");
     if( fp == (FILE *)0)
     {
         /* unable to open the password file */
-        openswan_log("XAUTH: unable to open password file (%s) for verification", pwdfile.path);
+        openswan_log("XAUTH: unable to open password file (%s) for verification", pwdfile);
         return FALSE;
     }
 
-    openswan_log("XAUTH: password file (%s) open.", pwdfile.path);
+    openswan_log("XAUTH: password file (%s) open.", pwdfile);
     /** simple stuff read in a line then go through positioning
      * szuser ,szpass and szconnid at the begining of each of the
      * memory locations of our real data and replace the ':' with '\0'

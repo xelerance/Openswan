@@ -143,10 +143,10 @@ enum rc_type {
  * A call must doubly parenthesize the argument list (no varargs macros).
  * The first argument must be "e", the local variable that captures errno.
  */
-#define log_errno(a) { int e = errno; log_errno_routine a; }
-extern void log_errno_routine(int e, const char *message, ...) PRINTF_LIKE(2);
-#define exit_log_errno(a) { int e = errno; exit_log_errno_routine a; }
-extern void exit_log_errno_routine(int e, const char *message, ...) PRINTF_LIKE(2) NEVER_RETURNS NEVER_RETURNS;
+#define log_errno(a) { int e = errno; openswan_log_errno_routine a; }
+extern void openswan_log_errno_routine(int e, const char *message, ...) PRINTF_LIKE(2);
+#define exit_log_errno(a) { int e = errno; openswan_exit_log_errno_routine a; }
+extern void openswan_exit_log_errno_routine(int e, const char *message, ...) PRINTF_LIKE(2) NEVER_RETURNS NEVER_RETURNS;
 
 #endif /* _OSWLOG_H_ */
 

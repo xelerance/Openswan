@@ -32,11 +32,10 @@
 
 #include "sysdep.h"
 #include "constants.h"
-#include "defs.h"
-#include "log.h"
+#include "oswalloc.h"
+#include "oswtime.h"
+#include "oswlog.h"
 #include "md5.h"
-#include "whack.h"
-#include "id.h"
 #include "pem.h"
 
 /*
@@ -242,7 +241,8 @@ pem_decrypt_3des(chunk_t *blob, chunk_t *iv, const char *passphrase)
  * currently we support DES-EDE3-CBC, only
  */
 static err_t
-pem_decrypt(chunk_t *blob, chunk_t *iv, prompt_pass_t *pass, const char* label)
+pem_decrypt(chunk_t *blob, chunk_t *iv
+	    , prompt_pass_t *pass, const char* label)
 {
     DBG(DBG_CRYPT,
 	DBG_log("  decrypting file using 'DES-EDE3-CBC'");
@@ -260,14 +260,14 @@ pem_decrypt(chunk_t *blob, chunk_t *iv, prompt_pass_t *pass, const char* label)
 	chunk_t blob_copy;
  	err_t ugh = "invalid passphrase, too many trials";
 
-	whack_log(RC_ENTERSECRET, "need passphrase for '%s'", label);
+	pass->prompt(RC_ENTERSECRET, "need passphrase for '%s'", label);
 
 	for (i = 0; i < MAX_PROMPT_PASS_TRIALS; i++)
 	{
 	    int n;
 
 	    if (i > 0)
-	    whack_log(RC_ENTERSECRET, "invalid passphrase, please try again");
+	    pass->prompt(RC_ENTERSECRET, "invalid passphrase, please try again");
 
 	    n = read(pass->fd, pass->secret, PROMPT_PASS_LEN);
 
@@ -275,7 +275,7 @@ pem_decrypt(chunk_t *blob, chunk_t *iv, prompt_pass_t *pass, const char* label)
 	    {
 		err_t ugh = "read(whackfd) failed";
 
-		whack_log(RC_LOG_SERIOUS,ugh);
+		pass->prompt(RC_LOG_SERIOUS,ugh);
 		return ugh;
 	    }
 
@@ -283,7 +283,7 @@ pem_decrypt(chunk_t *blob, chunk_t *iv, prompt_pass_t *pass, const char* label)
 	    {
 	        err_t ugh = "no passphrase entered, aborted";
 
-		whack_log(RC_LOG_SERIOUS, ugh);
+		pass->prompt(RC_LOG_SERIOUS, ugh);
 		return ugh;
 	    }
 
@@ -291,7 +291,7 @@ pem_decrypt(chunk_t *blob, chunk_t *iv, prompt_pass_t *pass, const char* label)
 
 	    if (pem_decrypt_3des(blob, iv, pass->secret))
 	    {
-		whack_log(RC_SUCCESS, "valid passphrase, private key loaded successfully");
+		pass->prompt(RC_SUCCESS, "valid passphrase, private key loaded successfully");
 		pfree(blob_copy.ptr);
 		return NULL;
 	    }
@@ -300,7 +300,7 @@ pem_decrypt(chunk_t *blob, chunk_t *iv, prompt_pass_t *pass, const char* label)
 	    pfree(blob->ptr);
 	    *blob = blob_copy;
 	}
-	whack_log(RC_LOG_SERIOUS, ugh);
+	pass->prompt(RC_LOG_SERIOUS, ugh);
 	return ugh;
     }
     else

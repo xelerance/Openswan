@@ -51,6 +51,9 @@ struct generalName {
 #define AUTH_AA		0x02	/* authorization authority */
 #define AUTH_OCSP	0x04	/* ocsp signing authority */
 
+/* forward declaration */
+struct id;
+
 /* access structure for an X.509v3 certificate */
 
 typedef struct x509cert x509cert_t;
@@ -204,5 +207,9 @@ extern void free_authcerts(void);
 extern void free_crls(void);
 extern void free_crl(x509crl_t *crl);
 extern void free_generalNames(generalName_t* gn, bool free_name);
+
+/* in x509dn.c */
+extern bool same_x509cert(const x509cert_t *a, const x509cert_t *b);
+
 
 #endif /* _X509_H */

@@ -28,6 +28,8 @@
 
 #include "sysdep.h"
 #include "constants.h"
+#include "oswtime.h"
+
 #include "defs.h"
 #include "id.h"
 #include "log.h"

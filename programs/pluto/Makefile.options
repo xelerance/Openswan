@@ -148,9 +148,9 @@ endif
 
 # the files are defined here so that TAGS: can catch them.
 #
-X509_DIST_OBJS=ac.o asn1.o oid.o pem.o pgp.o pkcs.o x509.o certs.o md2.o ocsp.o x509keys.o
+X509_DIST_OBJS=ac.o oid.o pgp.o x509.o md2.o ocsp.o x509keys.o
 X509_DIST_SRCS=oid.txt oid.pl ${X509_DIST_OBJS:.o=.c}
-X509_DIST_SRCS+=ac.h asn1.h fetch.h oid.h pem.h pkcs.h 
+X509_DIST_SRCS+=ac.h fetch.h 
 HAVE_THREADS_DIST_OBJS=fetch.o 
 HAVE_THREADS_DIST_SRCS=${HAVE_THREADS_DIST_OBJS:.o=.c}
 SMARTCARD_DIST_OBJS=smartcard.o

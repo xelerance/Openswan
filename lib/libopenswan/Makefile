@@ -23,17 +23,20 @@ include ${OPENSWANSRCDIR}/Makefile.ver
 
 MANDIR=$(MANTREE)/man3
 
+X509LIB=x509dn.c certload.c pem.c pkcs.c asn1.c
+
 SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 	atoasr.c atosubnet.c atoul.c constants.c copyright.c datatot.c \
 	alloc.c biglset.c diag.c \
-	goodmask.c initaddr.c initsaid.c initsubnet.c keyblobtoid.c \
+	goodmask.c id.c initaddr.c initsaid.c initsubnet.c keyblobtoid.c \
 	kernel_alg.c lex.c mpzfuncs.c \
 	optionsfrom.c oswconf.c oswtime.c \
 	prng.c packet.c portof.c oswconf.c \
 	rangetoa.c rangetosubnet.c sameaddr.c \
 	satot.c secrets.c subnetof.c subnettoa.c subnettot.c \
 	subnettypeof.c ttoaddr.c ttodata.c ttoprotoport.c \
-	ttosa.c ttosubnet.c ttoul.c ultoa.c ultot.c 
+	ttosa.c ttosubnet.c ttoul.c ultoa.c ultot.c \
+	$(X509LIB)
 
 SRCS+=sanitizestring.c pfkey_print.c
 
@@ -47,7 +50,7 @@ UDPFROMTO_DEFS=-DWITH_UDPFROMTO -DHAVE_IP_PKTINFO
 UDPFROMTO_SRCS=udpfromto.c
 endif
 
-LOGSRCS=oswlog.c 
+LOGSRCS=oswlog.c oswid.c
 
 
 OBJS=${SRCS:.c=.o} ${PFKEYV2_SRCS:.c=.o} ${UDPFROMTO_SRCS:.c=.o} version.o

@@ -22,10 +22,10 @@
 #include "constants.h"
 #include "oswlog.h"
 
-#include "defs.h"
+#include "oswalloc.h"
+#include "oswconf.h"
 #include "asn1.h"
 #include "oid.h"
-#include "log.h"
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"

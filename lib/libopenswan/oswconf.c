@@ -20,10 +20,37 @@
 #include "oswconf.h"
 #include "oswalloc.h"
 
-static struct osw_conf_options oco;
+static struct osw_conf_options global_oco;
 static bool setup=FALSE;
 
-const struct osw_conf_options *osw_init_options(void)
+static void osw_conf_calculate(struct osw_conf_options *oco)
+{
+    char buf[PATH_MAX];
+
+    /* calculate paths to certain subdirs */
+    snprintf(buf, sizeof(buf), "%s/acerts", oco->confddir);
+    oco->acerts_dir = clone_str(buf, "acert path");
+
+    snprintf(buf, sizeof(buf), "%s/cacerts", oco->confddir);
+    oco->cacerts_dir = clone_str(buf, "cacert path");
+
+    snprintf(buf, sizeof(buf), "%s/crls", oco->confddir);
+    oco->crls_dir = clone_str(buf, "crls path");
+
+    snprintf(buf, sizeof(buf), "%s/private", oco->confddir);
+    oco->private_dir = clone_str(buf, "private path");
+
+    snprintf(buf, sizeof(buf), "%s/certs", oco->confddir);
+    oco->certs_dir = clone_str(buf, "certs path");
+
+    snprintf(buf, sizeof(buf), "%s/aacerts", oco->confddir);
+    oco->aacerts_dir = clone_str(buf, "aacerts path");
+
+    snprintf(buf, sizeof(buf), "%s/ocspcerts", oco->confddir);
+    oco->ocspcerts_dir = clone_str(buf, "ocspcerts path");
+}
+
+void osw_conf_setdefault(void)
 {
     char buf[PATH_MAX];
     char *ipsec_conf_dir = FINALCONFDIR;
@@ -35,9 +62,7 @@ const struct osw_conf_options *osw_init_options(void)
     char *sbin_dir   = FINALSBINDIR;
     char *env;
 
-    if(setup) return &oco;
-
-    memset(&oco, 0, sizeof(oco));
+    memset(&global_oco, 0, sizeof(global_oco));
 
     /* allocate them all to make it consistent */
     ipsec_conf_dir = clone_str(ipsec_conf_dir, "default conf");
@@ -69,12 +94,34 @@ const struct osw_conf_options *osw_init_options(void)
 	ipsec_conf_dir = clone_str(env, "ipsec.conf");
     }
 
-    oco.confdir = ipsec_conf_dir;
-    oco.conffile = conffile;
-
-    return &oco;
+    global_oco.confddir= ipsecd_dir;
+    global_oco.vardir  = var_dir;
+    global_oco.confdir = ipsec_conf_dir;
+    global_oco.conffile = conffile;
 }
 
+
+const struct osw_conf_options *osw_init_options(void)
+{
+    if(setup) return &global_oco;
+    setup = TRUE;
+
+    osw_conf_setdefault();
+    osw_conf_calculate(&global_oco);
+
+    return &global_oco;
+}
+
+const struct osw_conf_options *osw_init_ipsecdir(const char *ipsec_dir)
+{
+    osw_conf_setdefault();
+    global_oco.confddir = clone_str(ipsec_dir, "override ipsec.d");
+    osw_conf_calculate(&global_oco);
+    setup = TRUE;
+
+    return &global_oco;
+}
+    
 /*
  * Local Variables:
  * c-basic-offset:4
