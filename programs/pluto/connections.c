@@ -3842,10 +3842,13 @@ is_virtual_net_used(const ip_subnet *peer_net, const struct id *peer_id)
     struct connection *d;
     for (d = connections; d != NULL; d = d->ac_next)
     {
+	if(NEVER_NEGOTIATE(d->policy)) continue;
+
 	switch (d->kind) {
 	    case CK_PERMANENT:
 	    case CK_TEMPLATE:
 	    case CK_INSTANCE:
+		/* if there is any overlap */
 		if ((subnetinsubnet(peer_net,&d->spd.that.client) ||
 		     subnetinsubnet(&d->spd.that.client,peer_net)) &&
 		     !same_id(&d->spd.that.id, peer_id)) {
@@ -3853,8 +3856,9 @@ is_virtual_net_used(const ip_subnet *peer_net, const struct id *peer_id)
 		    char client[SUBNETTOT_BUF];
 		    subnettot(peer_net, 0, client, sizeof(client));
 		    idtoa(&d->spd.that.id, buf, sizeof(buf));
-		    openswan_log("Virtual IP %s is already used by '%s'",
-			client, buf);
+		    openswan_log("Virtual IP %s is already used by (kind=%s) '%s'",
+				 enum_name(&connection_kind_names, d->kind),
+				 client, buf);
 		    idtoa(peer_id, buf, sizeof(buf));
 			openswan_log("Your ID is '%s'", buf);
 		    return TRUE; /* already used by another one */
