@@ -71,11 +71,11 @@ static int random_fd = -1;
 const char *random_devices[]={
 #if defined(linux) 
   "/dev/hw_random",
-  "/dev/random",
-  "/dev/urandom"
+  "/dev/urandom",
+  "/dev/random"
 #elif defined(macintosh) || (defined(__MACH__) && defined(__APPLE__))
-  "/dev/random",
-  "/dev/urandom"
+  "/dev/urandom",
+  "/dev/random"
 #elif defined(__OpenBSD__)
   "/dev/random"
 #elif defined(__CYGWIN__)
