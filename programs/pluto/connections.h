@@ -403,6 +403,11 @@ struct pending **host_pair_first_pending(const struct connection *c);
 void connection_check_phase2(void);
 void init_connections(void);
 
+#define CONN_BUF_LEN	(2 * (END_BUF - 1) + 4)
+extern size_t format_connection(char *buf, size_t buf_len
+				, const struct connection *c
+				, struct spd_route *sr);
+
 
 
 /*

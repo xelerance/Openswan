@@ -814,9 +814,7 @@ format_end(char *buf
 /* format topology of a connection.
  * Two symmetric ends separated by ...
  */
-#define CONNECTION_BUF	(2 * (END_BUF - 1) + 4)
-
-static size_t
+size_t
 format_connection(char *buf, size_t buf_len
 		  , const struct connection *c
 		  , struct spd_route *sr)
@@ -1390,7 +1388,7 @@ add_connection(const struct whack_message *wm)
 	/* log all about this connection */
 	openswan_log("added connection description \"%s\"", c->name);
 	DBG(DBG_CONTROL,
-	    char topo[CONNECTION_BUF];
+	    char topo[CONN_BUF_LEN];
 
 	    (void) format_connection(topo, sizeof(topo), c, &c->spd);
 
@@ -1586,7 +1584,7 @@ rw_instantiate(struct connection *c
 #ifdef VIRTUAL_IP
     if (d && his_net && is_virtual_connection(c)) {
 	d->spd.that.client = *his_net;
-	d->spd.that.virt = NULL;
+	/* d->spd.that.virt = NULL; */
 	if (subnetishost(his_net) && addrinsubnet(him, his_net))
 	    d->spd.that.has_client = FALSE;
     }
@@ -1675,7 +1673,7 @@ oppo_instantiate(struct connection *c
 	d->instance_initiation_ok = TRUE;
 
     DBG(DBG_CONTROL,
-	char topo[CONNECTION_BUF];
+	char topo[CONN_BUF_LEN];
 
 	(void) format_connection(topo, sizeof(topo), d, &d->spd);
 	DBG_log("instantiated \"%s\": %s", d->name, topo);
@@ -4373,7 +4371,7 @@ show_connections_status(void)
 
 	/* show topology */
 	{
-	    char topo[CONNECTION_BUF];
+	    char topo[CONN_BUF_LEN];
 	    struct spd_route *sr = &c->spd;
 	    int num=0;
 
