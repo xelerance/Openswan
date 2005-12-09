@@ -40,19 +40,19 @@ WEST_RUN_SCRIPT=westrun.sh
 EAST_RUN2_SCRIPT=eastrun2.sh
 
 # initialize
-WEST_RUN2_SCRIPT=westrun.sh
+WEST_RUN2_SCRIPT=westrun2.sh
 
 # set up for stage 03c
 EAST_RUN3_SCRIPT=eastrun3.sh
 
 # initialize
-WEST_RUN3_SCRIPT=westrun.sh
+WEST_RUN3_SCRIPT=westrun3.sh
 
 # set up for stage 03d
 EAST_RUN4_SCRIPT=eastrun4.sh
 
 # initialize
-WEST_RUN4_SCRIPT=westrun.sh
+WEST_RUN4_SCRIPT=westrun4.sh
 
 EAST_FINAL_SCRIPT=final.sh
 WEST_FINAL_SCRIPT=final.sh
