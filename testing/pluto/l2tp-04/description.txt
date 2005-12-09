@@ -1,0 +1,4 @@
+This tests an X.509 L2TP configuration --- 2 clients behind the
+same NAT with certificates that need to have their connection both
+instantiated (in phase 1) and virtualized (in phase 2).
+
