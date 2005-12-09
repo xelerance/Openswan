@@ -26,25 +26,19 @@
 #include "oswlog.h"
 #include "oswtime.h"
 
-#include "defs.h"
-#include "log.h"
+#include "oswalloc.h"
+#include "oswlog.h"
 #include "id.h"
 #include "pgp.h"
 #include "x509.h"
 #include "certs.h"
 #include "md5.h"
-#include "whack.h"
-#include "keys.h"
+#include "secrets.h"
 
 /*
  * Size of temporary buffers
  */
 #define BUF_LEN		256
-
-/*
- * chained list of OpenPGP end certificates
- */
-static pgpcert_t *pgpcerts   = NULL;
 
 /*
  * OpenPGP packet tags defined in section 4.3 of RFC 2440
@@ -539,9 +533,9 @@ select_pgpcert_id(pgpcert_t *cert, struct id *end_id)
  *  add an OpenPGP user/host certificate to the chained list
  */
 pgpcert_t*
-add_pgpcert(pgpcert_t *cert)
+add_pgpcert(pgpcert_t **ppgpcerts, pgpcert_t *cert)
 {
-    pgpcert_t *c = pgpcerts;
+    pgpcert_t *c = *ppgpcerts;
 
     while (c != NULL)
     {
@@ -554,8 +548,8 @@ add_pgpcert(pgpcert_t *cert)
     }
 
     /* insert new cert at the root of the chain */
-    cert->next = pgpcerts;
-    pgpcerts = cert;
+    cert->next = *ppgpcerts;
+    *ppgpcerts = cert;
     return cert;
 }
 
@@ -563,11 +557,11 @@ add_pgpcert(pgpcert_t *cert)
  "  the certificate is freed when the counter reaches zero
  */
 void
-release_pgpcert(pgpcert_t *cert)
+release_pgpcert(pgpcert_t **ppgpcerts, pgpcert_t *cert)
 {
     if (cert != NULL && --cert->count == 0)
     {
-	pgpcert_t **pp = &pgpcerts;
+	pgpcert_t **pp = ppgpcerts;
 	while (*pp != cert)
 	    pp = &(*pp)->next;
         *pp = cert->next;
@@ -587,81 +581,5 @@ free_pgpcert(pgpcert_t *cert)
 	    pfree(cert->certificate.ptr);
 	pfree(cert);
     }
-}
-
-/*
- *  list all PGP end certificates in a chained list
- */
-void
-list_pgp_end_certs(bool utc)
-{
-   pgpcert_t *cert = pgpcerts;
-   time_t now;
-
-    /* determine the current time */
-    time(&now);
-
-    if (cert != NULL)
-    {
-	whack_log(RC_COMMENT, " ");
-	whack_log(RC_COMMENT, "List of PGP End certificates:");
-	whack_log(RC_COMMENT, " ");
-    }
-
-    while (cert != NULL)
-    {
-	unsigned keysize;
-	char buf[BUF_LEN];
-	char tbuf[TIMETOA_BUF];
-	cert_t c;
-
-	c.type = CERT_PGP;
-	c.u.pgp = cert;
-
-	whack_log(RC_COMMENT, "%s, count: %d"
-		  , timetoa(&cert->installed, utc, tbuf, sizeof(tbuf))
-		  , cert->count);
-	datatot(cert->fingerprint, PGP_FINGERPRINT_SIZE, 'x', buf, BUF_LEN);
-	whack_log(RC_COMMENT, "       fingerprint:  %s", buf);
-	form_keyid(cert->publicExponent, cert->modulus, buf, &keysize);
-	whack_log(RC_COMMENT, "       pubkey:   %4d RSA Key %s%s", 8*keysize, buf,
-		(has_private_key(c))? ", has private key" : "");
-	whack_log(RC_COMMENT, "       created:  %s"
-		  , timetoa(&cert->created, utc, tbuf, sizeof(tbuf)));
-	whack_log(RC_COMMENT, "       until:    %s %s"
-		  , timetoa(&cert->until, utc, tbuf, sizeof(tbuf)),
-		check_expiry(cert->until, CA_CERT_WARNING_INTERVAL, TRUE));
-	cert = cert->next;
-    }
-}
-
-/* extract id and public key from OpenPGP certificate and
- * insert it into a pubkeyrec
- */
-void
-add_pgp_public_key(pgpcert_t *cert , time_t until
-    , enum dns_auth_level dns_auth_level)
-{
-    struct pubkey *pk;
-    cert_t c;
-
-    c.type = CERT_PGP;
-    c.u.pgp = cert;
-
-    /* we support RSA only */
-    if (cert->pubkeyAlg != PUBKEY_ALG_RSA)
-    {
-	openswan_log("  RSA public keys supported only");
-	return;
-    }
-
-    pk = allocate_RSA_public_key(c);
-    pk->id.kind = ID_KEY_ID;
-    pk->id.name.ptr = cert->fingerprint;
-    pk->id.name.len = PGP_FINGERPRINT_SIZE;
-    pk->dns_auth_level = dns_auth_level;
-    pk->until_time = until;
-    delete_public_keys(&pluto_pubkeys, &pk->id, pk->alg);
-    install_public_key(pk, &pluto_pubkeys);
 }
 

@@ -300,25 +300,6 @@ share_cert(cert_t cert)
     }
 }
 
-/*  release of a certificate decreases the count by one
- "  the certificate is freed when the counter reaches zero
- */
-void
-release_cert(cert_t cert)
-{
-   switch (cert.type)
-    {
-    case CERT_PGP:
-	release_pgpcert(cert.u.pgp);
-	break;
-    case CERT_X509_SIGNATURE:
-	release_x509cert(cert.u.x509);
-	break;
-    default:
-	break;
-    }
-}
-
 /*
  * Local Variables:
  * c-basic-offset:4

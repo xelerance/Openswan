@@ -47,9 +47,9 @@ extern const pgpcert_t empty_pgpcert;
 extern bool parse_pgp(chunk_t blob, pgpcert_t *cert, struct rsa_privkey *key);
 extern void share_pgpcert(pgpcert_t *cert);
 extern void select_pgpcert_id(pgpcert_t *cert, struct id *end_id);
-extern pgpcert_t* add_pgpcert(pgpcert_t *cert);
+extern pgpcert_t* add_pgpcert(pgpcert_t **chain, pgpcert_t *cert);
 extern void list_pgp_end_certs(bool utc);
-extern void release_pgpcert(pgpcert_t *cert);
+extern void release_pgpcert(pgpcert_t **chain, pgpcert_t *cert);
 extern void free_pgpcert(pgpcert_t *cert);
 
 #endif /* _PGP_H */

@@ -56,6 +56,7 @@
 #include "fetch.h"
 #include "ocsp.h"
 #include "pkcs.h"
+#include "plutocerts.h"
 #include "x509more.h"
 
 /* chained lists of X.509 host/user and ca certificates and crls */
@@ -63,6 +64,12 @@
 static x509cert_t *x509certs   = NULL;
 static x509cert_t *x509authcerts = NULL;
 static x509crl_t  *x509crls    = NULL;
+
+/*
+ * chained list of OpenPGP end certificates
+ */
+static pgpcert_t *pgpcerts   = NULL;
+
 
 /* Maximum length of ASN.1 distinquished name */
 #define ASN1_BUF_LEN	      512
@@ -285,6 +292,31 @@ release_x509cert(x509cert_t *cert)
         *pp = cert->next;
 	unlock_certs_and_keys("release_x509cert");
 	free_x509cert(cert);
+    }
+}
+
+pgpcert_t*
+pluto_add_pgpcert(pgpcert_t *cert)
+{
+    return add_pgpcert(&pgpcerts, cert);
+}
+
+/*  release of a certificate decreases the count by one
+ "  the certificate is freed when the counter reaches zero
+ */
+void
+release_cert(cert_t cert)
+{
+   switch (cert.type)
+    {
+    case CERT_PGP:
+	release_pgpcert(&pgpcerts, cert.u.pgp);
+	break;
+    case CERT_X509_SIGNATURE:
+	release_x509cert(cert.u.x509);
+	break;
+    default:
+	break;
     }
 }
 
@@ -1191,6 +1223,35 @@ get_alt_cacert(chunk_t subject, chunk_t serial, chunk_t keyid
     return NULL;
 }
 
+/* extract id and public key from OpenPGP certificate and
+ * insert it into a pubkeyrec
+ */
+void
+add_pgp_public_key(pgpcert_t *cert , time_t until
+		   , enum dns_auth_level dns_auth_level)
+{
+    struct pubkey *pk;
+    cert_t c;
+
+    c.type = CERT_PGP;
+    c.u.pgp = cert;
+
+    /* we support RSA only */
+    if (cert->pubkeyAlg != PUBKEY_ALG_RSA)
+    {
+	openswan_log("  RSA public keys supported only");
+	return;
+    }
+
+    pk = allocate_RSA_public_key(c);
+    pk->id.kind = ID_KEY_ID;
+    pk->id.name.ptr = cert->fingerprint;
+    pk->id.name.len = PGP_FINGERPRINT_SIZE;
+    pk->dns_auth_level = dns_auth_level;
+    pk->until_time = until;
+    delete_public_keys(&pluto_pubkeys, &pk->id, pk->alg);
+    install_public_key(pk, &pluto_pubkeys);
+}
 
 /* establish trust into a candidate authcert by going up the trust chain.
  * validity and revocation status are not checked.
@@ -1277,6 +1338,52 @@ trust_authcert_candidate(const x509cert_t *cert, const x509cert_t *alt_chain)
     plog("maximum ca path length of %d levels exceeded", MAX_CA_PATH_LEN);
     unlock_authcert_list("trust_authcert_candidate");
     return FALSE;
+}
+
+/*
+ *  list all PGP end certificates in a chained list
+ */
+void
+list_pgp_end_certs(bool utc)
+{
+   pgpcert_t *cert = pgpcerts;
+   time_t now;
+
+    /* determine the current time */
+    time(&now);
+
+    if (cert != NULL)
+    {
+	whack_log(RC_COMMENT, " ");
+	whack_log(RC_COMMENT, "List of PGP End certificates:");
+	whack_log(RC_COMMENT, " ");
+    }
+
+    while (cert != NULL)
+    {
+	unsigned keysize;
+	char buf[ASN1_BUF_LEN];
+	char tbuf[TIMETOA_BUF];
+	cert_t c;
+
+	c.type = CERT_PGP;
+	c.u.pgp = cert;
+
+	whack_log(RC_COMMENT, "%s, count: %d"
+		  , timetoa(&cert->installed, utc, tbuf, sizeof(tbuf))
+		  , cert->count);
+	datatot(cert->fingerprint, PGP_FINGERPRINT_SIZE, 'x', buf, ASN1_BUF_LEN);
+	whack_log(RC_COMMENT, "       fingerprint:  %s", buf);
+	form_keyid(cert->publicExponent, cert->modulus, buf, &keysize);
+	whack_log(RC_COMMENT, "       pubkey:   %4d RSA Key %s%s", 8*keysize, buf,
+		(has_private_key(c))? ", has private key" : "");
+	whack_log(RC_COMMENT, "       created:  %s"
+		  , timetoa(&cert->created, utc, tbuf, sizeof(tbuf)));
+	whack_log(RC_COMMENT, "       until:    %s %s"
+		  , timetoa(&cert->until, utc, tbuf, sizeof(tbuf)),
+		check_expiry(cert->until, CA_CERT_WARNING_INTERVAL, TRUE));
+	cert = cert->next;
+    }
 }
 
 /*

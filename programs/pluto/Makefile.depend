@@ -728,7 +728,8 @@ ocsp.o: ocsp.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/passert.h \
   ../../include/ietf_constants.h \
   ../../include/pluto_constants.h \
-  ../../include/names_constant.h defs.h \
+  ../../include/names_constant.h \
+  ../../include/oswtime.h defs.h \
   ../../include/oswalloc.h \
   ../../include/id.h log.h \
   ../../include/oswlog.h \
@@ -749,7 +750,8 @@ ocsp.o: ocsp.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/passert.h \
   ../../include/ietf_constants.h \
   ../../include/pluto_constants.h \
-  ../../include/names_constant.h defs.h \
+  ../../include/names_constant.h \
+  ../../include/oswtime.h defs.h \
   ../../include/oswalloc.h \
   ../../include/id.h log.h \
   ../../include/oswlog.h \
@@ -760,7 +762,6 @@ ocsp.o: ocsp.c ../../linux/include/openswan.h \
   ../../include/secrets.h \
   ../../include/smartcard.h \
   ../../include/oid.h whack.h keys.h fetch.h ocsp.h
-oid.o: oid.c ../../include/oid.h
 pending.o: pending.c ../../include/arpa/nameser.h \
   ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
@@ -794,7 +795,8 @@ pgp.o: pgp.c ../../linux/include/openswan.h \
   ../../include/ietf_constants.h \
   ../../include/pluto_constants.h \
   ../../include/names_constant.h \
-  ../../include/oswlog.h defs.h \
+  ../../include/oswlog.h \
+  ../../include/oswtime.h defs.h \
   ../../include/oswalloc.h log.h \
   ../../include/id.h ../../include/pgp.h \
   ../../include/x509.h \
@@ -1288,7 +1290,8 @@ x509.o: x509.c ../../linux/include/openswan.h \
   ../../include/ietf_constants.h \
   ../../include/pluto_constants.h \
   ../../include/names_constant.h \
-  ../../include/oswlog.h defs.h \
+  ../../include/oswlog.h \
+  ../../include/oswtime.h defs.h \
   ../../include/oswalloc.h log.h \
   ../../include/id.h ../../include/asn1.h \
   ../../include/mpzfuncs.h \

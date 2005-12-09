@@ -101,14 +101,11 @@ DISTSRC = \
 	${EXTRA_CRYPTO_SRCS} \
 	log.c log.h \
 	plutomain.c plutoalg.c \
-	md2.c \
-	md5.c \
 	ocsp.c ocsp.h \
 	pluto_crypt.c crypt_utils.c pluto_crypt.h crypt_ke.c crypt_dh.c \
 	keys.c keys.h \
 	rnd.c rnd.h \
 	server.c server.h \
-	sha1.c \
 	${SMARTCARD_DIST_SRCS} \
 	spdb.c spdb_struct.c spdb_print.c spdb.h \
 	state.c state.h \
@@ -141,7 +138,7 @@ OBJSPLUTO += $(NETKEY_OBJS) ${KLIPS_OBJS} ${WIN2K_OBJS} ${FUNK_OBJS}
 OBJSPLUTO += kernel_noklips.o rcv_whack.o 
 OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o keys.o dnskey.o
 OBJSPLUTO += pluto_crypt.o crypt_utils.o crypt_ke.o crypt_dh.o
-OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_print.o sha1.o md5.o 
+OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_print.o 
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o 
 OBJSPLUTO += ike_alg_aes.o ike_alginit.o
 OBJSPLUTO += ${EXTRA_CRYPTO_OBJS}
@@ -169,12 +166,6 @@ clean:	cleanall
 install: doinstall
 
 endif
-
-oid.c: oid.txt oid.pl
-	perl oid.pl
-
-oid.h: oid.txt oid.pl
-	perl oid.pl
 
 doinstall: all
 	mkdir -p ${LIBEXECDIR} ${LIBDIR}

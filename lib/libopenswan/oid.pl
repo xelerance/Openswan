@@ -21,10 +21,10 @@ print "oid.pl generating oid.h and oid.c\n";
 
 # Generate oid.h
 
-open(OID_H,  ">oid.h")
+open(OID_H,  ">../../include/oid.h")
     or die "could not open 'oid.h': $!";
 
-print OID_H "/* Object identifiers (OIDs) used by FreeS/WAN\n",
+print OID_H "/* Object identifiers (OIDs) used by Openswan\n",
 	    " * ", $copyright, "\n",
 	    " * \n",
 	    " * ", $automatic, "\n",
