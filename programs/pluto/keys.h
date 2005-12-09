@@ -47,8 +47,6 @@ extern void transfer_to_public_keys(struct gw_info *gateways_from_dns
 #endif /* USE_KEYRR */
     );
 
-extern struct pubkey* allocate_RSA_public_key(const cert_t cert);
-
 extern const chunk_t *get_preshared_secret(const struct connection *c);
 
 extern void load_preshared_secrets(int whackfd);

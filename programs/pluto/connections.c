@@ -34,11 +34,13 @@
 #include "constants.h"
 #include "oswalloc.h"
 #include "oswtime.h"
-#include "defs.h"
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
+#include "secrets.h"
+
+#include "defs.h"
 #include "ac.h"
 #include "smartcard.h"
 #ifdef XAUTH_USEPAM
@@ -56,13 +58,13 @@
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "keys.h"
-#include "secrets.h"
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "whack.h"
 #include "alg_info.h"
 #include "spdb.h"
 #include "ike_alg.h"
+#include "plutocerts.h"
 #include "kernel_alg.h"
 #include "plutoalg.h"
 #include "xauth.h"
@@ -926,7 +928,7 @@ load_end_certificate(const char *filename, struct end *dst)
 		valid_until = cert.u.pgp->until;
 		add_pgp_public_key(cert.u.pgp, cert.u.pgp->until, DAL_LOCAL);
 		dst->cert.type = cert.type;
-		dst->cert.u.pgp = add_pgpcert(cert.u.pgp);
+		dst->cert.u.pgp = pluto_add_pgpcert(cert.u.pgp);
 	    }
 	    break;
 

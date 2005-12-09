@@ -134,6 +134,7 @@ extern bool same_RSA_public_key(const struct RSA_public_key *a
     , const struct RSA_public_key *b);
 
 extern void install_public_key(struct pubkey *pk, struct pubkey_list **head);
+
 extern void free_public_key(struct pubkey *pk);
 
 extern void osw_load_preshared_secrets(struct secret **psecrets
