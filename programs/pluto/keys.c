@@ -433,8 +433,7 @@ get_secret(const struct connection *c, enum PrivateKeyKind kind, bool asym)
     }
 #endif
 #ifdef NAT_TRAVERSAL
-    else if ((nat_traversal_enabled)
-	     && (c->policy & POLICY_PSK)
+    else if ( (c->policy & POLICY_PSK)
 	     && (kind == PPK_PSK)
 	     && (((c->kind == CK_TEMPLATE)
 		  && (c->spd.that.id.kind == ID_NONE))
