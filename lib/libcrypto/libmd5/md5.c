@@ -44,7 +44,7 @@ documentation and/or software.
 #include <sys/types.h>	/* for u_int*_t */
 
 #include "md5.h"
-#include "pluto_endian.h" /* sets BYTE_ORDER, LITTLE_ENDIAN, and BIG_ENDIAN */
+#include "oswendian.h" /* sets BYTE_ORDER, LITTLE_ENDIAN, and BIG_ENDIAN */
 
 #define HAVEMEMCOPY 1	/* use ISO C's memcpy and memset */
 

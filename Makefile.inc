@@ -428,10 +428,18 @@ ISCHOSTARCH?=unix
 LIBDESSRCDIR=${OPENSWANSRCDIR}/linux/crypto/ciphers/des
 LIBDESLITE:=${OBJDIRTOP}/lib/libcrypto/libdes/libdes.a
 LIBAES=${OBJDIRTOP}/lib/libcrypto/libaes/libaes.a
+LIBMD5=${OBJDIRTOP}/lib/libcrypto/libmd5/libmd5.a
+LIBMD2=${OBJDIRTOP}/lib/libcrypto/libmd2/libmd2.a
+LIBSHA1=${OBJDIRTOP}/lib/libcrypto/libsha1/libsha1.a
 LIBBLOWFISH=${OBJDIRTOP}/lib/libcrypto/libblowfish/libblowfish.a
 LIBTWOFISH=${OBJDIRTOP}/lib/libcrypto/libtwofish/libtwofish.a
 LIBSERPENT=${OBJDIRTOP}/lib/libcrypto/libserpent/libserpent.a
 LIBSHA2=${OBJDIRTOP}/lib/libcrypto/libsha2/libsha2.a
+CRYPTOLIBS=${LIBAES} ${LIBSHA1} ${LIBMD5} ${LIBMD2} ${LIBDESLITE} 
+
+ifeq ($(USE_EXTRACRYPTO),true)
+CRYPTOLIBS+=${LIBSHA2} ${LIBSERPENT} ${LIBTWOFISH} ${LIBBLOWFISH}
+endif
 
 LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
 POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
