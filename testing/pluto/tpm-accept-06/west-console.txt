@@ -10,14 +10,17 @@ west:~#
 west:~#
  /testing/pluto/bin/wait-until-pluto-started
 west:~#
- 
+ echo done
+done
+west:~#
+ ipsec auto --delete west--east-psk
 
+west:~#
 west:~#
 west:~#
  cat /tmp/pluto.log
 Plutorun started on DATE
-Starting Pluto (Openswan Version cvs2005Sep26_22:17:50 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEoq[b{aSKmt)
-@(#) built on DATE by PERSON
+Starting Pluto (Openswan Version 2.5.0cl6 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEWAMp}ZbD}l)
 WARNING: 1DES is enabled
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -53,7 +56,7 @@ listening for IKE messages
 forgetting secrets
 loading secrets from "/tmp/tpm-accept-06/ipsec.secrets"
   loaded private key file '/etc/ipsec.d/private/west.pem' (963 bytes)
-packet from 192.1.2.23:500: received Vendor ID payload [Openswan (this version) cvs2005Sep26_22:17:50  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+packet from 192.1.2.23:500: received Vendor ID payload [Openswan (this version) 2.5.0cl6  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 packet from 192.1.2.23:500: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #1: responding to Main Mode
 "west--east-psk" #1: transition from state STATE_MAIN_R0 to state STATE_MAIN_R1
@@ -69,7 +72,7 @@ packet from 192.1.2.23:500: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #2: STATE_QUICK_R1: sent QR1, inbound IPsec SA installed, expecting QI2
 "west--east-psk" #2: transition from state STATE_QUICK_R1 to state STATE_QUICK_R2
 "west--east-psk" #2: STATE_QUICK_R2: IPsec SA established
-packet from 192.1.2.23:500: received Vendor ID payload [Openswan (this version) cvs2005Sep26_22:17:50  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+packet from 192.1.2.23:500: received Vendor ID payload [Openswan (this version) 2.5.0cl6  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 packet from 192.1.2.23:500: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #3: responding to Main Mode
 "west--east-psk" #3: transition from state STATE_MAIN_R0 to state STATE_MAIN_R1
@@ -85,6 +88,11 @@ packet from 192.1.2.23:500: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #4: STATE_QUICK_R1: sent QR1, inbound IPsec SA installed, expecting QI2
 "west--east-psk" #4: transition from state STATE_QUICK_R1 to state STATE_QUICK_R2
 "west--east-psk" #4: STATE_QUICK_R2: IPsec SA established
+"west--east-psk": deleting connection
+"west--east-psk" #2: deleting state (STATE_QUICK_R2)
+"west--east-psk" #4: deleting state (STATE_QUICK_R2)
+"west--east-psk" #1: deleting state (STATE_MAIN_R3)
+"west--east-psk" #3: deleting state (STATE_MAIN_R3)
 west:~#
  if [ -f /tmp/core ]; then echo CORE FOUND; mv /tmp/core /var/tmp; fi
 west:~#

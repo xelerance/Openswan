@@ -31,6 +31,7 @@ EAST_INIT_SCRIPT=eastinit.sh
 WEST_INIT_SCRIPT=westinit.sh
 
 EAST_RUN_SCRIPT=eastrun.sh
+WEST_RUN_SCRIPT=westrun.sh
 
 EAST_FINAL_SCRIPT=final.sh
 WEST_FINAL_SCRIPT=final.sh

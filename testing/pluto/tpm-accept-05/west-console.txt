@@ -29,8 +29,7 @@ west:~#
 west:~#
  cat /tmp/pluto.log
 Plutorun started on DATE
-Starting Pluto (Openswan Version cvs2005Sep26_22:17:50 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEoq[b{aSKmt)
-@(#) built on DATE by PERSON
+Starting Pluto (Openswan Version 2.5.0cl6 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEWAMp}ZbD}l)
 WARNING: 1DES is enabled
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -62,15 +61,15 @@ listening for IKE messages
 adding interface ipsec0/eth1 192.1.2.45:500
 loading secrets from "/tmp/tpm-accept-05/ipsec.secrets"
   loaded private key file '/etc/ipsec.d/private/west.pem' (963 bytes)
+"west--east-psk": deleting connection
+added connection description "west--east-psk"
+"west--east-psk" #1: initiating Main Mode
+"west--east-psk" #1: received Vendor ID payload [Openswan (this version) 2.5.0cl6  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+"west--east-psk" #1: received Vendor ID payload [Dead Peer Detection]
 listening for IKE messages
 forgetting secrets
 loading secrets from "/tmp/tpm-accept-05/ipsec.secrets"
   loaded private key file '/etc/ipsec.d/private/west.pem' (963 bytes)
-"west--east-psk": deleting connection
-added connection description "west--east-psk"
-"west--east-psk" #1: initiating Main Mode
-"west--east-psk" #1: received Vendor ID payload [Openswan (this version) cvs2005Sep26_22:17:50  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
-"west--east-psk" #1: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #1: transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 "west--east-psk" #1: STATE_MAIN_I2: sent MI2, expecting MR2
 "west--east-psk" #1: I did not send a certificate because digital signatures are not being used. (PSK)
@@ -79,12 +78,20 @@ added connection description "west--east-psk"
 "west--east-psk" #1: Main mode peer ID is ID_IPV4_ADDR: '192.1.2.23'
 "west--east-psk" #1: transition from state STATE_MAIN_I3 to state STATE_MAIN_I4
 "west--east-psk" #1: STATE_MAIN_I4: ISAKMP SA established {auth=OAKLEY_PRESHARED_KEY cipher=oakley_3des_cbc_192 prf=oakley_md5 group=modp1536}
-"west--east-psk" #2: initiating Quick Mode PSK+ENCRYPT+TUNNEL+PFS+DONTREKEY+UP
+"west--east-psk" #2: initiating Quick Mode PSK+ENCRYPT+TUNNEL+PFS+UP
 "west--east-psk" #2: transition from state STATE_QUICK_I1 to state STATE_QUICK_I2
 "west--east-psk" #2: STATE_QUICK_I2: sent QI2, IPsec SA established
-"west--east-psk" #2: IPsec SA expired (--dontrekey)
-"west--east-psk" #1: ISAKMP SA expired (--dontrekey)
-packet from 192.1.2.23:500: Quick Mode message is for a non-existent (expired?) ISAKMP SA
+"west--east-psk" #3: responding to Quick Mode 
+"west--east-psk" #3: transition from state STATE_QUICK_R0 to state STATE_QUICK_R1
+"west--east-psk" #3: STATE_QUICK_R1: sent QR1, inbound IPsec SA installed, expecting QI2
+"west--east-psk" #3: transition from state STATE_QUICK_R1 to state STATE_QUICK_R2
+"west--east-psk" #3: STATE_QUICK_R2: IPsec SA established
+"west--east-psk" #1: received Delete SA payload: replace IPSEC State #3 in 10 seconds
+"west--east-psk" #1: received and ignored informational message
+"west--east-psk" #1: received Delete SA(0xSPI1SPI1) payload: deleting IPSEC State #NUM
+"west--east-psk" #1: received and ignored informational message
+"west--east-psk" #1: received Delete SA payload: deleting ISAKMP State #1
+packet from 192.1.2.23:500: received and ignored informational message
 west:~#
  if [ -f /tmp/core ]; then echo CORE FOUND; mv /tmp/core /var/tmp; fi
 west:~#

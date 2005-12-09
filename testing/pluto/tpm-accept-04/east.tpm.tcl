@@ -95,7 +95,6 @@ proc postEncrypt {state pb off len} {
 	return
     }
     set st_state  [state_st_state_get $state]
-    set len [int_value $plen]
 
     if {[string compare $test_stage "t04b"] == 0
         && $stage4b_count < 2} {
@@ -111,10 +110,10 @@ proc postEncrypt {state pb off len} {
 	    # corrupt outgoing IKE message.
 	    
 	    puts stderr "Corrrupting with ABCD"
-	    pbs_poke $pb 20 65
-	    pbs_poke $pb 21 66
-	    pbs_poke $pb 22 67
-	    pbs_poke $pb 23 68
+	    pbs_poke $pb 28 65
+	    pbs_poke $pb 29 66
+	    pbs_poke $pb 30 67
+	    pbs_poke $pb 31 68
 	}
 	set logmsg [format "t04b st:%d" $st_state] 
 	set ikemsg [pbs_bytes $pb 256]
@@ -134,10 +133,10 @@ proc postEncrypt {state pb off len} {
 	    # corrupt outgoing IKE phase 2 message.
 	    
 	    puts stderr "Corrrupting with XYZX"
-	    pbs_poke $pb 20 88
-	    pbs_poke $pb 21 89
-	    pbs_poke $pb 22 90
-	    pbs_poke $pb 23 88
+	    pbs_poke $pb 28 88
+	    pbs_poke $pb 29 89
+	    pbs_poke $pb 30 90
+	    pbs_poke $pb 31 88
 	}
 	set logmsg [format "t04c st:%d" $st_state] 
 	set ikemsg [pbs_bytes $pb 256]

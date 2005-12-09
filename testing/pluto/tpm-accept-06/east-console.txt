@@ -31,7 +31,7 @@ east:~#
 Starting Openswan IPsec pluto
 east:~#
  (cd /tmp && /usr/local/libexec/ipsec/pluto --nofork --secretsfile /tmp/$TESTNAME/ipsec.secrets --ipsecdir /tmp/$TESTNAME/ipsec.d --use-nostack --uniqueids --nhelpers 0 --stderrlog 2>/tmp/pluto.log ) &
-[1] 832
+[1] 828
 east:~#
  sleep 1
 east:~#
@@ -42,6 +42,9 @@ east:~#
 002 adding interface virtual192.1.2.23/eth1 192.1.2.23:500
 002 adding interface virtual192.0.2.254/eth0 192.0.2.254:500
 002 loading secrets from "/tmp/tpm-accept-06/ipsec.secrets"
+east:~#
+ echo done
+done
 east:~#
  echo "Adding basic policy"
 Adding basic policy
@@ -115,13 +118,15 @@ east:~#
 002 "west--east-psk" #4: transition from state STATE_QUICK_I1 to state STATE_QUICK_I2
 004 "west--east-psk" #4: STATE_QUICK_I2: sent QI2, IPsec SA established
 east:~#
+ echo done
+done
+east:~#
  
 
 east:~#
 east:~#
  cat /tmp/pluto.log
-Starting Pluto (Openswan Version cvs2005Sep26_22:17:50 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEoq[b{aSKmt)
-@(#) built on DATE by PERSON
+Starting Pluto (Openswan Version 2.5.0cl6 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEWAMp}ZbD}l)
 WARNING: 1DES is enabled
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -153,7 +158,7 @@ added connection description "west--east-psk"
 "west--east-psk" #1: extra debugging enabled for connection: none
 "west--east-psk" #1: initiating Main Mode
 "west--east-psk" #1: extra debugging enabled for connection: control
-"west--east-psk" #1: received Vendor ID payload [Openswan (this version) cvs2005Sep26_22:17:50  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+"west--east-psk" #1: received Vendor ID payload [Openswan (this version) 2.5.0cl6  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 "west--east-psk" #1: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #1: extra debugging enabled for connection: control
 "west--east-psk" #1: transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
@@ -188,7 +193,7 @@ not sending any delete notification
 "west--east-psk" #3: extra debugging enabled for connection: none
 "west--east-psk" #3: initiating Main Mode
 "west--east-psk" #3: extra debugging enabled for connection: control
-"west--east-psk" #3: received Vendor ID payload [Openswan (this version) cvs2005Sep26_22:17:50  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+"west--east-psk" #3: received Vendor ID payload [Openswan (this version) 2.5.0cl6  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 "west--east-psk" #3: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #3: extra debugging enabled for connection: control
 "west--east-psk" #3: transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
@@ -207,6 +212,21 @@ not sending any delete notification
 "west--east-psk" #4: extra debugging enabled for connection: control
 "west--east-psk" #4: transition from state STATE_QUICK_I1 to state STATE_QUICK_I2
 "west--east-psk" #4: STATE_QUICK_I2: sent QI2, IPsec SA established
+"west--east-psk" #3: extra debugging enabled for connection: control
+"west--east-psk" #3: ignoring Delete SA payload: PROTO_IPSEC_ESP SA(0x1002d229) not found (maybe expired)
+"west--east-psk" #3: received and ignored informational message
+"west--east-psk" #3: extra debugging enabled for connection: control
+"west--east-psk" #3: extra debugging enabled for connection: none
+"west--east-psk" #3: received Delete SA payload: replace IPSEC State #4 in 10 seconds
+"west--east-psk" #3: received and ignored informational message
+packet from 192.1.2.45:500: Informational Exchange is for an unknown (expired?) SA
+"west--east-psk" #3: extra debugging enabled for connection: control
+"west--east-psk" #3: extra debugging enabled for connection: none
+"west--east-psk" #3: received Delete SA payload: deleting ISAKMP State #3
+"west--east-psk" #3: extra debugging enabled for connection: none
+not sending any delete notification
+"west--east-psk" #3: TPM result: stf_ignore
+packet from 192.1.2.45:500: received and ignored informational message
 east:~#
  if [ -f /tmp/core ]; then echo CORE FOUND; mv /tmp/core /var/tmp; fi
 east:~#
