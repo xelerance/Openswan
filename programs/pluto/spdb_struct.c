@@ -147,7 +147,7 @@ out_sa(pb_stream *outs
 	    return FALSE;
 	}
     } else {
-	revised_sadb=kernel_alg_makedb(st->st_connection->alg_info_esp, TRUE);
+	revised_sadb = sa_copy_sa (sadb, 0);
     }
 
     /* more sanity */
