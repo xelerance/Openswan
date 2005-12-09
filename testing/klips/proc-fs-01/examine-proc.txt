@@ -12,6 +12,7 @@ east:~#
  find /proc/net/ipsec -ls
  inode    0 dr-xr-xr-x   7 root     root            0 Aug 29 22:34 /proc/net/ipsec
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/version
+ inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/natt
  inode    0 dr-xr-xr-x   2 root     root            0 Aug 29 22:34 /proc/net/ipsec/stats
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/stats/trap_sendcount
  inode    0 -r--------   1 root     root            0 Aug 29 22:34 /proc/net/ipsec/stats/trap_count

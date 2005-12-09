@@ -176,10 +176,10 @@ _________________________ /proc/net/pfkey
 if test -r /proc/net/pfkey
 then
 	cat /proc/net/pfkey
-_________________________ setkey-D
-	setkey -D
-_________________________ setkey-D-P
-	setkey -D -P
+_________________________ ip-xfrm-state
+	ip xfrm state
+_________________________ ip-xfrm-policy
+	ip xfrm policy
 fi
 # not visible on my 2.6 system
 #_________________________ /proc/net/pf_key-star
@@ -254,8 +254,16 @@ _________________________ /proc/sys/net/ipv4/ip_no_pmtu_disc
 cat /proc/sys/net/ipv4/ip_no_pmtu_disc
 _________________________ /proc/sys/net/ipv4/ip_forward
 cat /proc/sys/net/ipv4/ip_forward
+_________________________ /proc/sys/net/ipv4/tcp_ecn
+cat /proc/sys/net/ipv4/tcp_ecn
 _________________________ /proc/sys/net/ipv4/conf/star-rp_filter
 ( cd /proc/sys/net/ipv4/conf && egrep '^' */rp_filter )
+_________________________ /proc/sys/net/ipv4/conf/star-star-redirects
+( cd /proc/sys/net/ipv4/conf && egrep '^' */*redirects )
+_________________________ /proc/sys/net/ipv4/tcp_window_scaling
+cat /proc/sys/net/ipv4/tcp_window_scaling
+_________________________ /proc/sys/net/ipv4/tcp_adv_win_scale
+cat /proc/sys/net/ipv4/tcp_adv_win_scale
 _________________________ uname-a
 uname -a
 _________________________ config-built-with
@@ -263,16 +271,15 @@ if test -r /proc/config_built_with
 then
 	cat /proc/config_built_with
 fi
-_________________________ redhat-release
-if test -r /etc/redhat-release
-then
-	cat /etc/redhat-release
-else
-	if test -r /etc/fedora-release
-	then
-		cat /etc/fedora-release
-	fi
-fi
+_________________________ distro-release
+for distro in /etc/redhat-release /etc/debian-release /etc/SuSE-release /etc/mandrake-release /etc/mandriva-release /etc/gentoo-release
+do
+        if test -f $distro
+        then
+               cat $distro
+        fi
+
+done
 _________________________ /proc/net/ipsec_version
 if test -r /proc/net/ipsec_version
 then
@@ -339,14 +346,16 @@ fi
 _________________________ usr/src/linux/.config
 if test -f /proc/config.gz
 then
-	zcat /proc/config.gz | egrep 'CONFIG_IPSEC|CONFIG_KLIPS|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP' 
+        zcat /proc/config.gz | egrep 'CONFIG_IPSEC|CONFIG_KLIPS|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP|CONFIG_HW_RANDOM|CONFIG_CRYPTO_DEV'
 elif test -f /lib/modules/`uname -r`/build/.config
 then
-	cat /lib/modules/`uname -r`/build/.config | egrep 'CONFIG_IPSEC|CONFIG_KLIPS|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP'
+        cat /lib/modules/`uname -r`/build/.config | egrep 'CONFIG_IPSEC|CONFIG_KLIPS|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP|CONFIG_HW_RANDOM|CONFIG_CRY$
 else
 	echo "no .config file found, cannot list kernel properties"
 fi
 _________________________ etc/syslog.conf
+_________________________ etc/syslog-ng/syslog-ng.conf
+cat /etc/syslog-ng/syslog-ng.conf
 cat /etc/syslog.conf
 _________________________ etc/resolv.conf
 cat /etc/resolv.conf

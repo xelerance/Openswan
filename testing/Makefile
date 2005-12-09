@@ -11,13 +11,13 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.14 2005/09/29 02:05:50 mcr Exp $
+# RCSID $Id: Makefile,v 1.15 2005/11/12 20:42:44 patrickn Exp $
 
 OPENSWANSRCDIR?=$(shell cd ..; pwd)
 include $(OPENSWANSRCDIR)/Makefile.inc
 
 SUBDIRS=lib utils 
-#SUBDIRS+=klips 
+SUBDIRS+=klips 
 SUBDIRS+=pluto dnssec scripts packaging
 
 def:

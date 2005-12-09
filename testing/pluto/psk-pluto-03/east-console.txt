@@ -7,18 +7,17 @@ east:~#
 ipsec_setup: Starting Openswan IPsec VERSION
 east:~#
  ipsec auto --add road--eastnet-psk
-east:~#
- 
 
+east:~#
 east:~#
  ipsec look
 east NOW
 ipsec0->eth1 mtu=16260(9999)->1500
-Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
-0.0.0.0         192.1.2.254     0.0.0.0         UG       99 0          0 eth1
-192.0.1.0       192.1.2.45      255.255.255.0   UG       99 0          0 eth1
-192.1.2.0       0.0.0.0         255.255.255.0   U        99 0          0 eth1
-192.1.2.0       0.0.0.0         255.255.255.0   U        99 0          0 ipsec0
+ROUTING TABLE
+192.1.2.0/24 dev eth1  proto kernel  scope link  src 192.1.2.23 
+192.1.2.0/24 dev ipsec0  proto kernel  scope link  src 192.1.2.23 
+192.0.1.0/24 via 192.1.2.45 dev eth1 
+default via 192.1.2.254 dev eth1 
 east:~#
 east:~#
 

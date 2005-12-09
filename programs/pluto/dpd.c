@@ -563,7 +563,14 @@ dpd_timeout(struct state *st)
     case DPD_ACTION_RESTART:
 	/** dpdaction=restart - immediate renegotiate the connection. */
         openswan_log("DPD: Restarting Connection");
+        delete_states_by_connection(c, TRUE);
 
+	if (c->kind == CK_INSTANCE) {
+		/* If this is a template (eg: right=%any) we won't be able to reinitiate, the peer 
+		   has probably changed IP addresses, or isn't available anymore.  So remove the routes
+		   too */
+	        unroute_connection(c);        /* --unroute */
+	}
 	/* we replace the SA so that we do it in a rational place */
 	delete_event(st);
 	event_schedule(EVENT_SA_REPLACE, 0, st);

@@ -8,12 +8,12 @@ TESTNAME=basic-pluto-06
 EASTHOST=east
 WESTHOST=west
 
-THREEEIGHT=true
+#THREEEIGHT=true
 
 EAST_INPUT=../../klips/inputs/01-sunrise-sunset-ping.pcap
 REF_WEST_OUTPUT=../../klips/west-icmp-01/spi1-cleartext.txt
 WEST_ARPREPLY=true
-THREEEIGHT=true
+#THREEEIGHT=true
 
 REF_EAST_CONSOLE_OUTPUT=east-console.txt
 REF26_EAST_CONSOLE_OUTPUT=east-console.txt
@@ -29,6 +29,7 @@ REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-setup-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS pluto-whack-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS host-ping-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-look-esp-sanitize.pl"
+#REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS tcpdump-three-eight.sed"
 
 EAST_INIT_SCRIPT=eastinit.sh
 WEST_INIT_SCRIPT=westinit.sh

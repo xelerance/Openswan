@@ -8,7 +8,7 @@ TESTNAME=tpm-accept-06
 EASTHOST=east
 WESTHOST=west
 
-THREEEIGHT=true
+#THREEEIGHT=true
 
 REF_EAST_CONSOLE_OUTPUT=east-console.txt
 REF26_EAST_CONSOLE_OUTPUT=east-console.txt

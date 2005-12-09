@@ -1,3 +1,4 @@
+
 if [ -z "$OPENSWANSRCDIR" ]
 then
 	if [ -f ../../umlsetup.sh ]
@@ -13,14 +14,12 @@ fi
 
 if [ ! -f $OPENSWANSRCDIR/umlsetup.sh ]
 then
-	echo Umlsetup not found at OPENSWANSRCDIR=$OPENWANSRCDIR.
+	echo Umlsetup not found at OPENSWANSRCDIR=$OPENSWANSRCDIR.
 	echo Is OPENSWANSRCDIR set correctly'?'
 	exit 5
 fi
 
-set -u
-
-OPENSWANSRCDIR=`cd ${OPENSWANSRCDIR}&& pwd`
+OPENSWANSRCDIR=`cd ${OPENSWANSRCDIR}; pwd`
 export OPENSWANSRCDIR
 
 TESTINGROOT=${OPENSWANSRCDIR}/testing

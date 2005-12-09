@@ -108,7 +108,7 @@ east:~# ipsec look
 east Sun Apr 17 05:45:18 GMT 2005
 192.1.2.23/32      -> 192.0.1.0/24       => %hold (0)
 ipsec0->eth1 mtu=16260(1500)->1500
-Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+ROUTING TABLE
 east:~# route add -host 192.0.1.1 gw 192.1.2.45 dev ipsec0
 east:~# /usr/src/programs/ikeping/ikeping --verbose --wait 2 --inet 192.0.1.1 192.0.1.1 192.0.1.1 192.0.1.1
 Sending packet to 192.0.1.1/500

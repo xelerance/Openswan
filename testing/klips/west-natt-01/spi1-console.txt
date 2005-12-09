@@ -24,46 +24,45 @@ west NOW
 ipsec0->eth1 mtu=16260(1500)->1500
 esp0x12345678@192.1.2.45 ESP_3DES_HMAC_MD5: dir=in  src=192.1.2.23 iv_bits=64bits iv=0xDEADF00DDEADF00D alen=128 aklen=128 eklen=192 life(c,s,h)= natencap=nonesp natsport=4500 natdport=4500 refcount=4 ref=3
 tun0x12345678@192.1.2.45 IPIP: dir=in  src=192.1.2.23 life(c,s,h)= natencap=none natsport=0 natdport=0 refcount=4 ref=4
-Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+ROUTING TABLE
 west:~#
  route add -host 192.0.2.1 gw 192.1.2.23 dev ipsec0
 west:~#
- ipsec ikeping --ikeport 4500 --listen --natt&
-[1] 121
+ /usr/obj/programs/ikeping/ikeping --ikeport 4500 --listen --natt&
+[1] 165
 west:~#
- tcpdump -t -x -X -e -i ipsec0 -n -P 4
+ tcpdump -t -x -X -e -i ipsec0 -n -c 4
 tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
 listening on ipsec0, link-type EN10MB (Ethernet), capture size 96 bytes
-10:00:00:64:64:23 > 10:00:00:64:64:45, ethertype IPv4 (0x0800), length 98: 192.0.2.1 > 192.0.1.1: ICMP echo request seq 1280, length 64
-	0x0000:  4500 0054 0000 4000 3f01 b8a6 c000 0201
-	0x0010:  c000 0101 0800 baf0 6f00 0500 239b c73b
-	0x0020:  f234 0100 0809 0a0b 0c0d 0e0f 1011 1213
-	0x0030:  1415 1617 1819 1a1b 1c1d 1e1f 2021 2223
-	0x0040:  2425 2627 2829 2a2b 2c2d 2e2f 3031 3233
-	0x0050:  3435
-10:00:00:64:64:23 > 10:00:00:64:64:45, ethertype IPv4 (0x0800), length 98: 192.0.2.1 > 192.0.1.1: ICMP echo request seq 1536, length 64
-	0x0000:  4500 0054 0000 4000 3f01 b8a6 c000 0201
-	0x0010:  c000 0101 0800 72f0 6f00 0600 289b c73b
-	0x0020:  3435 0100 0809 0a0b 0c0d 0e0f 1011 1213
-	0x0030:  1415 1617 1819 1a1b 1c1d 1e1f 2021 2223
-	0x0040:  2425 2627 2829 2a2b 2c2d 2e2f 3031 3233
-	0x0050:  3435
-10:00:00:64:64:23 > 10:00:00:64:64:45, ethertype IPv4 (0x0800), length 98: 192.0.2.1 > 192.0.1.1: ICMP echo request seq 1792, length 64
-	0x0000:  4500 0054 0000 4000 3f01 b8a6 c000 0201
-	0x0010:  c000 0101 0800 d9ef 6f00 0700 2d9b c73b
-	0x0020:  c735 0100 0809 0a0b 0c0d 0e0f 1011 1213
-	0x0030:  1415 1617 1819 1a1b 1c1d 1e1f 2021 2223
-	0x0040:  2425 2627 2829 2a2b 2c2d 2e2f 3031 3233
-	0x0050:  3435
-10:00:00:64:64:23 > 10:00:00:64:64:45, ethertype IPv4 (0x0800), length 98: 192.0.2.1 > 192.0.1.1: ICMP echo request seq 2048, length 64
-	0x0000:  4500 0054 0000 4000 3f01 b8a6 c000 0201
-	0x0010:  c000 0101 0800 e8ef 6f00 0800 329b c73b
-	0x0020:  b235 0100 0809 0a0b 0c0d 0e0f 1011 1213
-	0x0030:  1415 1617 1819 1a1b 1c1d 1e1f 2021 2223
-	0x0040:  2425 2627 2829 2a2b 2c2d 2e2f 3031 3233
-	0x0050:  3435
-
+10:00:00:64:64:23 > 10:00:00:64:64:45, ethertype IPv4 (0x0800), length 98: IP 192.0.2.1 > 192.0.1.1: icmp 64: echo request seq 1280
+	0x0000:  1000 0064 6445 1000 0064 6423 0800 4500  ...ddE...dd#..E.
+	0x0010:  0054 0000 4000 3f01 b8a6 c000 0201 c000  .T..@.?.........
+	0x0020:  0101 0800 baf0 6f00 0500 239b c73b f234  ......o...#..;.4
+	0x0030:  0100 0809 0a0b 0c0d 0e0f 1011 1213 1415  ................
+	0x0040:  1617 1819 1a1b 1c1d 1e1f 2021 2223 2425  ...........!"#$%
+	0x0050:  2627 2829 2a2b 2c2d 2e2f 3031 3233 3435  &'()*+,-./012345
+10:00:00:64:64:23 > 10:00:00:64:64:45, ethertype IPv4 (0x0800), length 98: IP 192.0.2.1 > 192.0.1.1: icmp 64: echo request seq 1536
+	0x0000:  1000 0064 6445 1000 0064 6423 0800 4500  ...ddE...dd#..E.
+	0x0010:  0054 0000 4000 3f01 b8a6 c000 0201 c000  .T..@.?.........
+	0x0020:  0101 0800 72f0 6f00 0600 289b c73b 3435  ....r.o...(..;45
+	0x0030:  0100 0809 0a0b 0c0d 0e0f 1011 1213 1415  ................
+	0x0040:  1617 1819 1a1b 1c1d 1e1f 2021 2223 2425  ...........!"#$%
+	0x0050:  2627 2829 2a2b 2c2d 2e2f 3031 3233 3435  &'()*+,-./012345
+10:00:00:64:64:23 > 10:00:00:64:64:45, ethertype IPv4 (0x0800), length 98: IP 192.0.2.1 > 192.0.1.1: icmp 64: echo request seq 1792
+	0x0000:  1000 0064 6445 1000 0064 6423 0800 4500  ...ddE...dd#..E.
+	0x0010:  0054 0000 4000 3f01 b8a6 c000 0201 c000  .T..@.?.........
+	0x0020:  0101 0800 d9ef 6f00 0700 2d9b c73b c735  ......o...-..;.5
+	0x0030:  0100 0809 0a0b 0c0d 0e0f 1011 1213 1415  ................
+	0x0040:  1617 1819 1a1b 1c1d 1e1f 2021 2223 2425  ...........!"#$%
+	0x0050:  2627 2829 2a2b 2c2d 2e2f 3031 3233 3435  &'()*+,-./012345
+10:00:00:64:64:23 > 10:00:00:64:64:45, ethertype IPv4 (0x0800), length 98: IP 192.0.2.1 > 192.0.1.1: icmp 64: echo request seq 2048
+	0x0000:  1000 0064 6445 1000 0064 6423 0800 4500  ...ddE...dd#..E.
+	0x0010:  0054 0000 4000 3f01 b8a6 c000 0201 c000  .T..@.?.........
+	0x0020:  0101 0800 e8ef 6f00 0800 329b c73b b235  ......o...2..;.5
+	0x0030:  0100 0809 0a0b 0c0d 0e0f 1011 1213 1415  ................
+	0x0040:  1617 1819 1a1b 1c1d 1e1f 2021 2223 2425  ...........!"#$%
+	0x0050:  2627 2829 2a2b 2c2d 2e2f 3031 3233 3435  &'()*+,-./012345
 4 packets captured
-8 packets received by filter
+4 packets received by filter
 0 packets dropped by kernel
 

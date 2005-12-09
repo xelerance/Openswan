@@ -29,4 +29,4 @@ ipsec look
 route add -host 192.0.2.1 gw 192.1.2.23 dev ipsec0
 
 /usr/obj/programs/ikeping/ikeping --ikeport 4500 --listen --natt&
-tcpdump -t -x -X -e -i ipsec0 -n -P 4
+tcpdump -t -x -X -e -i ipsec0 -n -c 4

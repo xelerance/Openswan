@@ -10,7 +10,7 @@ WESTHOST=west
 
 REF_WEST_OUTPUT=westnet-ping.txt
 
-REF_WEST_FILTER=../../klips/fixups/no-arp-pcap.pl
+REF_WEST_FILTER=../../klips/fixups/no-arp-pcap2.pl
 
 REF_EAST_CONSOLE_OUTPUT=east-console.txt
 REF26_EAST_CONSOLE_OUTPUT=east-console.txt

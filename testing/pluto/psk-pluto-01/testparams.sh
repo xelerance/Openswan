@@ -6,7 +6,7 @@ TEST_TYPE=umlXhost
 
 TESTNAME=psk-pluto-01
 
-THREEEIGHT=true
+#THREEEIGHT=true
 
 XHOST_LIST="ROAD EAST"
 EASTHOST=east

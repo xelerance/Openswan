@@ -30,6 +30,13 @@ include ${srcdir}../Makefile.program
 # removed hardcoded IP addresses and removed explicitely loading the roadwarriors
 # certificate (and use rightca=%same instead)
 #
+# Revision 1.3.6.1  2005/11/01 18:10:07  paul
+# dopted Jacco's L2TP example configuration files. I changed them slightly
+# from his versions to properly support nat-t and to avoid breaking rekey
+# attempts for right=%any. I also changed the pathnames to proper ones,
+# removed hardcoded IP addresses and removed explicitely loading the roadwarriors
+# certificate (and use rightca=%same instead)
+#
 # Revision 1.3  2004/12/18 18:13:39  mcr
 # 	adjusted Makefiles so that ${OBJDIR} builds work.
 #

@@ -21,10 +21,16 @@ east:~#
 000 algorithm ESP auth attr: id=2, name=AUTH_ALGORITHM_HMAC_SHA1, keysizemin=160, keysizemax=160
 000 algorithm ESP auth attr: id=9, name=AUTH_ALGORITHM_AES_CBC, keysizemin=128, keysizemax=128
 000  
+000 algorithm IKE encrypt: id=3, name=OAKLEY_BLOWFISH_CBC, blocksize=8, keydeflen=128
 000 algorithm IKE encrypt: id=5, name=OAKLEY_3DES_CBC, blocksize=8, keydeflen=192
 000 algorithm IKE encrypt: id=7, name=OAKLEY_AES_CBC, blocksize=16, keydeflen=128
+000 algorithm IKE encrypt: id=65004, name=OAKLEY_SERPENT_CBC, blocksize=16, keydeflen=128
+000 algorithm IKE encrypt: id=65005, name=OAKLEY_TWOFISH_CBC, blocksize=16, keydeflen=128
+000 algorithm IKE encrypt: id=65289, name=OAKLEY_TWOFISH_CBC_SSH, blocksize=16, keydeflen=128
 000 algorithm IKE hash: id=1, name=OAKLEY_MD5, hashsize=16
 000 algorithm IKE hash: id=2, name=OAKLEY_SHA1, hashsize=20
+000 algorithm IKE hash: id=4, name=OAKLEY_SHA2_256, hashsize=32
+000 algorithm IKE hash: id=6, name=OAKLEY_SHA2_512, hashsize=64
 000 algorithm IKE dh group: id=2, name=OAKLEY_GROUP_MODP1024, bits=1024
 000 algorithm IKE dh group: id=5, name=OAKLEY_GROUP_MODP1536, bits=1536
 000 algorithm IKE dh group: id=14, name=OAKLEY_GROUP_MODP2048, bits=2048
@@ -33,7 +39,7 @@ east:~#
 000 algorithm IKE dh group: id=17, name=OAKLEY_GROUP_MODP6144, bits=6144
 000 algorithm IKE dh group: id=18, name=OAKLEY_GROUP_MODP8192, bits=8192
 000  
-000 stats /net/istari/0i/sandboxes/noklips/programs/pluto/db_ops.c: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0} 
+000 stats db_ops: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0}
 000  
 000 "block": 192.1.2.23[%myid]---192.1.2.254...%group; unrouted; eroute owner: #0
 000 "block":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
@@ -99,10 +105,16 @@ east:~#
 000 algorithm ESP auth attr: id=2, name=AUTH_ALGORITHM_HMAC_SHA1, keysizemin=160, keysizemax=160
 000 algorithm ESP auth attr: id=9, name=AUTH_ALGORITHM_AES_CBC, keysizemin=128, keysizemax=128
 000  
+000 algorithm IKE encrypt: id=3, name=OAKLEY_BLOWFISH_CBC, blocksize=8, keydeflen=128
 000 algorithm IKE encrypt: id=5, name=OAKLEY_3DES_CBC, blocksize=8, keydeflen=192
 000 algorithm IKE encrypt: id=7, name=OAKLEY_AES_CBC, blocksize=16, keydeflen=128
+000 algorithm IKE encrypt: id=65004, name=OAKLEY_SERPENT_CBC, blocksize=16, keydeflen=128
+000 algorithm IKE encrypt: id=65005, name=OAKLEY_TWOFISH_CBC, blocksize=16, keydeflen=128
+000 algorithm IKE encrypt: id=65289, name=OAKLEY_TWOFISH_CBC_SSH, blocksize=16, keydeflen=128
 000 algorithm IKE hash: id=1, name=OAKLEY_MD5, hashsize=16
 000 algorithm IKE hash: id=2, name=OAKLEY_SHA1, hashsize=20
+000 algorithm IKE hash: id=4, name=OAKLEY_SHA2_256, hashsize=32
+000 algorithm IKE hash: id=6, name=OAKLEY_SHA2_512, hashsize=64
 000 algorithm IKE dh group: id=2, name=OAKLEY_GROUP_MODP1024, bits=1024
 000 algorithm IKE dh group: id=5, name=OAKLEY_GROUP_MODP1536, bits=1536
 000 algorithm IKE dh group: id=14, name=OAKLEY_GROUP_MODP2048, bits=2048
@@ -111,7 +123,7 @@ east:~#
 000 algorithm IKE dh group: id=17, name=OAKLEY_GROUP_MODP6144, bits=6144
 000 algorithm IKE dh group: id=18, name=OAKLEY_GROUP_MODP8192, bits=8192
 000  
-000 stats /net/istari/0i/sandboxes/noklips/programs/pluto/db_ops.c: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0} 
+000 stats db_ops: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0}
 000  
 000 "block": 192.1.2.23[%myid]---192.1.2.254...%group; unrouted; eroute owner: #0
 000 "block":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
@@ -154,4 +166,4 @@ east:~#
  ipsec setup stop
 IPSEC EVENT: KLIPS device ipsec0 shut down.
 ipsec_setup: Stopping Openswan IPsec...
-
+ 

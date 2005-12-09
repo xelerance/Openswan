@@ -118,6 +118,10 @@ set argv [ lrange $argv $optind end ]
 set managed_hosts {}
 lappend managed_hosts $umlid(uml,host) 
 
+foreach host $managed_hosts {
+    process_host $host
+}
+
 if {! [file executable $netjig_prog]} {
     puts "The NETJIG management program is not present. Did you run \"make check\"?"
     exit

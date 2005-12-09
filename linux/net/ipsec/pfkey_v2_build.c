@@ -12,14 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_build.c,v 1.52 2005/08/14 21:41:15 mcr Exp $
+ * RCSID $Id: pfkey_v2_build.c,v 1.53 2005/11/09 00:30:37 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_parser.c.
  */
 
-char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.52 2005/08/14 21:41:15 mcr Exp $";
+char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.53 2005/11/09 00:30:37 mcr Exp $";
 
 /*
  * Some ugly stuff to allow consistent debugging code for use in the
@@ -1258,7 +1258,7 @@ int pfkey_x_protocol_build(struct sadb_ext **pfkey_ext,
 }
 
 
-#if I_DONT_THINK_THIS_WILL_BE_USEFUL
+#if defined(I_DONT_THINK_THIS_WILL_BE_USEFUL) && I_DONT_THINK_THIS_WILL_BE_USEFUL
 int (*ext_default_builders[SADB_EXT_MAX +1])(struct sadb_msg*, struct sadb_ext*)
  =
 {
@@ -1423,6 +1423,9 @@ errlab:
 
 /*
  * $Log: pfkey_v2_build.c,v $
+ * Revision 1.53  2005/11/09 00:30:37  mcr
+ * 	adjusted signed-ness and look.in
+ *
  * Revision 1.52  2005/08/14 21:41:15  mcr
  * 	augment error message when an extension is not permitted.
  *

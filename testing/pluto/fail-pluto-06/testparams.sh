@@ -11,7 +11,7 @@ WESTHOST=west
 EAST_INPUT=../../klips/inputs/01-sunrise-sunset-ping.pcap
 REF_WEST_OUTPUT=spi1-cleartext.txt
 WEST_ARPREPLY=true
-THREEEIGHT=true
+#THREEEIGHT=true
 
 REF_EAST_CONSOLE_OUTPUT=east-console.txt
 REF_WEST_CONSOLE_OUTPUT=west-console.txt

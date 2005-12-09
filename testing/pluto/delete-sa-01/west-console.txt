@@ -61,7 +61,7 @@ west:~#
  ipsec look
 west NOW
 ipsec0->NULL mtu=16260(0)->0
-Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+ROUTING TABLE
 west:~#
  ipsec auto --status
 whack: Pluto is not running (no "/var/run/pluto/pluto.ctl")

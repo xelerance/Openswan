@@ -21,7 +21,7 @@
 #include <asm/byteorder.h>
 #else
 #include <sys/types.h>
-#include <asm/byteorder.h>
+#include <endian.h>
 #endif
 
 #include "serpent.h"

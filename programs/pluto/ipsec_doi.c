@@ -1859,7 +1859,9 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	    " but are %d/%d"
 	    , IPPROTO_UDP, IKE_UDP_PORT
 	    , id->isaid_doi_specific_a, id->isaid_doi_specific_b);
-	return FALSE;
+	/* we have turned this into a warning because of bugs in other vendors
+	 * products. Specifically CISCO VPN3000. */
+	/* return FALSE; */
     }
 
     peer.kind = id->isaid_idtype;

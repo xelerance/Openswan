@@ -147,10 +147,15 @@ KILLKLIPS=":"
 
 if $klips
 then
-KILLKLIPS='ifl=` ip link show up | sed -n -e "/ipsec[0-9][0-9]*/s/^[0-9][0-9]*: \([^ ]*\): .*/\1/p" ` ;
-	test "X$ifl" != "X" &&
-	for i in  $ifl ;
-	do
+        #
+        # don't use ifconfig here,  there may be thousands of
+        # interfaces to parse through,  much quicker to go
+        # direct to the source
+        #
+    KILLKLIPS='ifl=`grep -v NULL /proc/net/ipsec_tncfg 2> /dev/null | sed -n -e "/^ipsec/s/ .*//p" ` ;
+        test "X$ifl" != "X" &&
+        for i in  $ifl ;
+        do
 		ip link set $i down ;
 		ip addr flush dev $i ;
 		ipsec tncfg --detach --virtual $i ;

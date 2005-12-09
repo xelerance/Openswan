@@ -45,7 +45,7 @@ separate=intro.html install.html config.html manpages.html \
 	mail.html performance.html testing.html web.html \
 	glossary.html biblio.html rfc.html faq.html \
 	adv_config.html user_examples.html background.html \
-	quickstart.html umltesting.html makecheck.html nightly.html \
+	quickstart.html  makecheck.html nightly.html \
         upgrading.html policygroups.html
 
 alldocs=${seperate} index.html 

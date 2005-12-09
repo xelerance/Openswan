@@ -15,7 +15,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _updown.ip2.in,v 1.20 2005/09/05 17:11:29 mcr Exp $
+# RCSID $Id: _updown.ip2.in,v 1.19 2005/08/25 21:52:53 paul Exp $
 
 
 
@@ -213,9 +213,6 @@ addsource() {
 	then
 		snet=${PLUTO_MY_SOURCEIP%/*}/${cidr}
 	fi
-	#if ! ip -o route get ${PLUTO_MY_SOURCEIP%/*} | grep -q ^local
-	#then
-	#    it="ip addr add ${PLUTO_MY_SOURCEIP%/*}/32 dev ${PLUTO_INTERFACE%:*}"
 	if ! ip addr show dev ${PLUTO_INTERFACE%:*} | grep -qs "inet ${snet}"
 	then
 		it="ip addr add ${snet} dev ${PLUTO_INTERFACE%:*}"
@@ -368,10 +365,10 @@ doroute() {
 	# skip creating any routing in case it is a host to host
 	# tunnel and the peer network(=host) is equal to peer ip,
 	# except there is some different source ip to use.
-	if test "$PLUTO_PEER_CLIENT" == "$PLUTO_PEER/32" ; then
-	    test "$PLUTO_ME" != "$PLUTO_MY_SOURCEIP" && \
-	    test -n "$PLUTO_MY_SOURCEIP" || return 0
-	fi
+	#if test "$PLUTO_PEER_CLIENT" == "$PLUTO_PEER/32" ; then
+	#    test "$PLUTO_ME" != "$PLUTO_MY_SOURCEIP" && \
+	#    test -n "$PLUTO_MY_SOURCEIP" || return 0
+	#fi
 
 	if [ -n "$PLUTO_NEXT_HOP" ] && [ "$PLUTO_NEXT_HOP" != "$PLUTO_PEER" ]
 	then
@@ -397,11 +394,6 @@ doroute() {
 	then
 	    parms3="$parms3 table $IPROUTETABLE"
 	fi
-
-	#if [ -z "$PLUTO_MY_SOURCEIP" ] && [ -n "$DEFAULTSOURCE" ]
-	#then
-	#    PLUTO_MY_SOURCEIP="${DEFAULTSOURCE%/*}"
-        #fi
 
 	if test "$1" = "add" -a -n "$PLUTO_MY_SOURCEIP" 
 	then

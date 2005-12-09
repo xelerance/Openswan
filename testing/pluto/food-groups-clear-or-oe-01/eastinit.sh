@@ -5,13 +5,8 @@ route add -net default gw 192.1.2.45
 
 named
 
-ipsec setup start
-
-/testing/pluto/basic-pluto-01/eroutewait.sh trap
-
-ipsec auto --add clear-or-private
-ipsec whack --listen
-# don't route, it's passive.
+TESTNAME=food-groups-clear-or-oe-01
+source /testing/pluto/bin/eastlocal.sh
 
 echo end eastinit.sh
 

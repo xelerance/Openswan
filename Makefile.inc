@@ -14,6 +14,7 @@
 #
 # RCSID $Id: Makefile.inc,v 1.132 2005/10/20 21:01:47 mcr Exp $
 
+-include ${OPENSWANSRCDIR}/Makefile.inc.local
 
 
 # Variables in this file with names starting with INC_ are not for use
@@ -293,7 +294,7 @@ USE_KERNEL26?=true
 USE_VENDORID?=true
 
 # Use /dev/hwrandom if available (EG: VIA Padlock)
-USE_HWRANDOM?=false
+USE_HWRANDOM?=true
 
 # include aggressive mode authentication system code - both Server and Client.
 # This is off by default, since aggressive mode leads to denial of service
@@ -359,8 +360,8 @@ HAVE_THREADS?=false
 USE_BASH?=true
 
 # Whether or not to include TaProoM (TCL Pluto Mix) into pluto.
-#
-USE_TAPROOM?=true
+# you need at least swig 1.3.24, as well as tcl libraries and includes
+USE_TAPROOM?=false
 
 X509_VERSION=X.509-1.5.4
 NONINTCONFIG=oldconfig
@@ -384,6 +385,8 @@ OSDEP:=$(shell uname -s | tr 'A-Z' 'a-z')
 endif
 
 -include ${OPENSWANSRCDIR}/Makefile.ver
+IPSECVERSION:=${IPSECBASEVERSION}$(shell ${OPENSWANSRCDIR}/packaging/utils/setlocalversion ${OPENSWANSRCDIR})
+export IPSECVERSION
 
 # include OSDEP/ARCH specific makefiles, if any.
 # OSDEP=linux,bsd,cygwin

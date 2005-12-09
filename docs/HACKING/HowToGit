@@ -7,7 +7,7 @@
 
 2. From public repository
         cd /some/place
-        cg-clone http://git.openswan.org/public/scm/openswan.git/
+        cg-clone http://git.openswan.org/public/scm/openswan.git/.git
         (no commits. send patches, or PostToYourOwnGitTree)
 
    From private repository
