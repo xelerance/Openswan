@@ -79,18 +79,12 @@ default via 192.1.3.254 dev eth1
 north:~#
  sleep 5
 north:~#
- ifconfig ppp0
-ppp0      Link encap:Point-to-Point Protocol  
-          inet addr:192.0.2.128  P-t-P:192.0.2.254  Mask:255.255.255.255
-          UP POINTOPOINT RUNNING NOARP MULTICAST  MTU:1410  Metric:1
-          RX packets:3 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:4 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:3 
-
-north:~#
  telnet 192.0.2.254 2 | wc -l
 Connection closed by foreign host.
     834
+north:~#
+ ifconfig ppp0 | grep 'inet addr'
+          inet addr:192.0.2.128  P-t-P:192.0.2.254  Mask:255.255.255.255
 north:~#
  echo done
 done
