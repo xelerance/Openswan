@@ -1574,7 +1574,9 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 		, buf);
 	    return STF_FAIL + INVALID_ID_INFORMATION;
 	}
-	else if (p != c)
+
+	/* did we find a better connection? */
+	if (p != c)
 	{
 	    /* We've got a better connection: it can support the
 	     * specified clients.  But it may need instantiation.
@@ -1660,36 +1662,54 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 #endif
 	    c = p;
 	}
+
 	/* fill in the client's true ip address/subnet */
-	if (p->spd.that.has_client_wildcard)
+	DBG(DBG_CONTROLMORE
+	    , DBG_log("client wildcard: %s  port wildcard: %s  virtual: %s"
+		      , c->spd.that.has_client_wildcard ? "yes" : "no"
+		      , c->spd.that.has_port_wildcard  ? "yes" : "no"
+		      , is_virtual_connection(c) ? "yes" : "no"));
+
+	if (c->spd.that.has_client_wildcard)
 	{
-	    p->spd.that.client = *his_net;
-	    p->spd.that.has_client_wildcard = FALSE;
+	    c->spd.that.client = *his_net;
+	    c->spd.that.has_client_wildcard = FALSE;
 	}
 
+#ifdef VIRTUAL_IP
+	if (is_virtual_connection(c))
+	{
+	    char cthat[END_BUF];
+
+	    c->spd.that.client = *his_net;
+	    c->spd.that.has_client = TRUE;
+	    c->spd.that.virt = NULL;
+
+	    if (subnetishost(his_net)
+		&& addrinsubnet(&c->spd.that.host_addr, his_net)) {
+
+		c->spd.that.has_client = FALSE;
+	    }
+
+	    format_end(cthat, sizeof(cthat), &c->spd.that, NULL, TRUE, LEMPTY);
+	    DBG(DBG_CONTROLMORE
+		, DBG_log("setting phase 2 virtual values to %s"
+			  , cthat));
+	}
+#endif
+
         /* fill in the client's true port */
-        if (p->spd.that.has_port_wildcard)
+        if (c->spd.that.has_port_wildcard)
         {
             int port = htons(b->his.port);
  
-            setportof(port, &p->spd.that.host_addr);
-            setportof(port, &p->spd.that.client.addr);
+            setportof(port, &c->spd.that.host_addr);
+            setportof(port, &c->spd.that.client.addr);
  
-            p->spd.that.port = b->his.port;
-            p->spd.that.has_port_wildcard = FALSE;
+            c->spd.that.port = b->his.port;
+            c->spd.that.has_port_wildcard = FALSE;
         }
 
-
-
-#ifdef VIRTUAL_IP
-	else if (is_virtual_connection(c))
-	{
-	    c->spd.that.client = *his_net;
-	    c->spd.that.virt = NULL;
-	    if (subnetishost(his_net) && addrinsubnet(&c->spd.that.host_addr, his_net))
-		c->spd.that.has_client = FALSE;
-	}
-#endif
     }
     passert((p1st->st_policy & POLICY_PFS)==0 || p1st->st_pfs_group != NULL );
 
@@ -1869,8 +1889,18 @@ quick_inI1_outR1_cryptotail(struct qke_continuation *qke
 	loglog(RC_LOG_SERIOUS, "we require PFS but Quick I1 SA specifies no GROUP_DESCRIPTION");
 	return STF_FAIL + NO_PROPOSAL_CHOSEN;	/* ??? */
     }
-    
-    openswan_log("responding to Quick Mode {msgid:%08x}", st->st_msgid);
+
+    openswan_log("responding to Quick Mode proposal {msgid:%08x}", st->st_msgid);
+    {
+	char instbuf[END_BUF];
+	struct connection *c = st->st_connection;
+	struct spd_route *sr = &c->spd;
+
+	format_end(instbuf, sizeof(instbuf),&sr->this,&sr->that,TRUE, LEMPTY);
+	openswan_log("    us: %s", instbuf);
+	
+	format_end(instbuf, sizeof(instbuf),&sr->that,&sr->this,FALSE, LEMPTY);	openswan_log("  them: %s", instbuf);
+    }
 
     /**** finish reply packet: Nr [, KE ] [, IDci, IDcr ] ****/
     
@@ -1930,6 +1960,9 @@ quick_inI1_outR1_cryptotail(struct qke_continuation *qke
 	    return STF_INTERNAL_ERROR;
 	}
     }
+
+#if 0
+    /* IT MAKES NO SENSE TO DO THIS */
     if ((st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
 	(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT) &&
 	(c->spd.that.has_client)) {
@@ -1937,6 +1970,8 @@ quick_inI1_outR1_cryptotail(struct qke_continuation *qke
 	addrtosubnet(&c->spd.that.host_addr, &c->spd.that.client);
 	c->spd.that.has_client = FALSE;
     }
+#endif
+
 #endif
 
 #ifdef TPM
