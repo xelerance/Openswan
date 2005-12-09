@@ -588,6 +588,8 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 	else
 	    memcpy(pass->secret, flp->tok, flp->cur - flp->tok);
 
+	pass->prompt=NULL;
+
 	if (shift())
 	    ugh = "RSA private key file -- unexpected token after passphrase";
     }

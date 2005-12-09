@@ -80,6 +80,7 @@ fmt_log(char *buf, size_t buf_len,
     {
 	/* start with name of connection */
 	strncat(buf, progname, buf_len);
+	strncat(buf, " ", buf_len);
     }
 
     ps = strlen(buf);

@@ -104,13 +104,15 @@ int main(int argc, char *argv[])
     /* start up logging system */
     tool_init_log();
 
-    snprintf(secrets_file, sizeof(PATH_MAX), "%s/ipsec.secrets", oco->confdir);
+    snprintf(secrets_file, PATH_MAX, "%s/ipsec.secrets", oco->confdir);
     
     while ((opt = getopt_long(argc, argv, "", opts, NULL)) != EOF) {
 	switch (opt) {
 	case 'k':
 	case 'l':
 	case 'r':
+	    break;
+
 	case 'D': /* --dump */
 	    dump_flg=TRUE;
 	    break;
@@ -121,6 +123,7 @@ int main(int argc, char *argv[])
 	case 'c':
 	case 't':
 	case 'd':
+	    break;
 
 	case 'f':  /* --file arg */
 	    secrets_file[0]='\0';
