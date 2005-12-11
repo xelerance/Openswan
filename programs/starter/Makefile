@@ -16,134 +16,34 @@
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-LD=$(CC)
-RM=rm
-LEX=lex
-BISON=bison
-
-OPENSWANDIR=../..
-OPENSWANLIB=$(OPENSWANDIR)/lib/libopenswan/libopenswan.a
-
-ifeq ($(USE_NAT_TRAVERSAL),true)
-DEFINES+=-DNAT_TRAVERSAL -DVIRTUAL_IP 
-endif
-
-INCLUDES=-I${OPENSWANDIR}/linux/include ${srcdir}..$(OPENSWANDIR)/lib -I.. -I../..
-CFLAGS=$(DEFINES) $(INCLUDES)
-CFLAGS+=-DIPSEC_EXECDIR=\"${FINALLIBEXECDIR}\" -DIPSEC_CONFDDIR=\"${FINALCONFDDIR}\"
-CFLAGS+=-DIPSEC_CONFDIR=\"${FINALCONFDIR}\"
-LDFLAGS=
-OBJS=starter.o parser.tab.o lex.yy.o confread.o confwrite.o invokepluto.o starterwhack.o starterlog.o klips.o netkey.o \
-	interfaces.o exec.o cmp.o keywords.o alloc.o
-DISTSRC=$(OBJS:.o=.c)
-DISTSRC+=cmp.h confread.h confwrite.h exec.h files.h interfaces.h klips.h netkey.h starterlog.h
-DISTSRC+=parser.h pluto.h starterwhack.h keywords.h
-LIBS=../pluto/whacklib.o $(OPENSWANLIB)
+PROGLIBS=${WHACKLIB}
 
 PROGRAM=starter
 
-all: starter
+# starter.o is implictely included.
+OBJS=parser.tab.o lex.yy.o confread.o confwrite.o
+OBJS+=invokepluto.o starterwhack.o starterlog.o klips.o netkey.o 
+OBJS+=interfaces.o exec.o cmp.o keywords.o alloc.o 
+DISTSRC=$(OBJS:.o=.c)
+DISTSRC+=cmp.h confread.h confwrite.h exec.h files.h interfaces.h
+DISTSRC+=klips.h netkey.h starterlog.h
+DISTSRC+=parser.h pluto.h starterwhack.h keywords.h
 
-starter: $(OBJS) $(OPENSWANLIB)
-	$(LD) $(LDFLAGS) -o starter $(OBJS) $(LIBS)
+# reach into pluto for now.
+INCLUDES=-I${OPENSWANSRCDIR}/programs/pluto
+INCLUDES+=-I${srcdir}
 
 lex.yy.c: parser.tab.c parser.l parser.y parser.h
-	$(LEX) parser.l
+	$(LEX) ${srcdir}parser.l
 
-parser.tab.c: parser.l parser.y parser.h
-	$(BISON) -v -d parser.y
+parser.tab.h parser.tab.c: parser.l parser.y parser.h
+	$(BISON) -v -d ${srcdir}parser.y
 
-.c.o:
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-clean::
-	$(RM) -f starter $(OBJS) parser.tab.* lex.yy.*
-
-# Stolen from pluto/Makefile
-gatherdeps:
-	@ls | grep '\.c$$' | sed -e 's/\(.*\)\.c$$/\1.o: \1.c/'
-	@echo
-	@ls | grep '\.c$$' | xargs grep '^#[ 	]*include[ 	]*"' | \
-		sed -e 's/\.c:#[ 	]*include[ 	]*"/.o: /' -e 's/".*//'
+cleanall::
+	$(RM) -f parser.tab.* lex.yy.*
 
 include ${srcdir}../Makefile.program
 
 TAGS:	$(DISTSRC)
 	LC_ALL=C etags $(ETAGSFLAGS) $(DISTSRC) $(LIBOPENSWANDIR)/*.[ch]
 
-## gatherdeps
-
-cmp.o: cmp.c
-confread.o: confread.c
-exec.o: exec.c
-foo1.o: foo1.c
-interfaces.o: interfaces.c
-invokepluto.o: invokepluto.c
-keywords.o: keywords.c
-klips.o: klips.c
-netkey.o: netkey.c
-lex.yy.o: lex.yy.c
-starterlog.o: starterlog.c
-parser.tab.o: parser.tab.c
-starter.o: starter.c
-starterwhack.o: starterwhack.c
-
-cmp.o: keywords.h
-cmp.o: confread.h
-cmp.o: cmp.h
-confread.o: parser.h
-confread.o: confread.h
-confread.o: interfaces.h
-confread.o: starterlog.h
-confwrite.o: parser.h
-confwrite.o: confread.h
-confwrite.o: confwrite.h
-confwrite.o: keywords.h
-exec.o: exec.h
-exec.o: starterlog.h
-interfaces.o: interfaces.h
-interfaces.o: exec.h
-interfaces.o: files.h
-interfaces.o: starterlog.h
-invokepluto.o: confread.h
-invokepluto.o: pluto.h
-invokepluto.o: files.h
-invokepluto.o: starterwhack.h
-invokepluto.o: starterlog.h
-keywords.o: parser.h
-keywords.o: keywords.h
-keywords.o: parser.tab.h
-keywords.o: parserlast.h
-klips.o: confread.h
-klips.o: klips.h
-klips.o: files.h
-klips.o: starterlog.h
-klips.o: exec.h
-netkey.o: confread.h
-netkey.o: klips.h
-netkey.o: files.h
-netkey.o: starterlog.h
-netkey.o: exec.h
-lex.yy.o: keywords.h
-lex.yy.o: parser.h
-lex.yy.o: parser.tab.h
-lex.yy.o: parserlast.h
-starterlog.o: starterlog.h
-parser.tab.o: keywords.h
-parser.tab.o: parser.h
-starter.o: confread.h
-starter.o: starterlog.h
-starter.o: files.h
-starter.o: starterwhack.h
-starter.o: pluto.h
-starter.o: klips.h
-starter.o: netkey.h
-starter.o: cmp.h
-starter.o: interfaces.h
-starter.o: keywords.h
-starterwhack.o: ../pluto/defs.h
-starterwhack.o: ../pluto/whack.h
-starterwhack.o: starterwhack.h
-starterwhack.o: confread.h
-starterwhack.o: files.h
-starterwhack.o: starterlog.h

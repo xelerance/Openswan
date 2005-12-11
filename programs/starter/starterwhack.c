@@ -32,8 +32,8 @@
 #include "constants.h"
 #endif
 
-#include "../pluto/defs.h"
-#include "../pluto/whack.h"
+#include "oswalloc.h"
+#include "whack.h"
 
 static int send_whack_msg (struct whack_message *msg)
 {
@@ -58,7 +58,7 @@ static int send_whack_msg (struct whack_message *msg)
 	    return -1;
 	}
 
-	len = wp.str_next - (char *)msg;
+	len = wp.str_next - (unsigned char *)msg;
 
 	/**
 	 * Connect to pluto ctl
