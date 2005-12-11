@@ -29,7 +29,7 @@ include ${srcdir}../Makefile.program
 # into the $BINDIR.
 #
 # the priorities match those in setup's chkconfig line
-install:: setup
+doinstall:: setup
 	@rm -f $(BINDIR)/setup
 	@$(INSTALL) $(INSTBINFLAGS) setup $(RCDIR)/ipsec
 	@ln -s $(FINALRCDIR)/ipsec $(BINDIR)/setup
@@ -53,7 +53,7 @@ install_file_list::
 	@echo $(RCDIR)/../rc5.d/S47ipsec
 	@echo $(RCDIR)/../rc6.d/K76ipsec
 
-clean::
+cleanall:
 	@rm -f setup
 
 #
