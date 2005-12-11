@@ -912,18 +912,26 @@ assign_hold(struct connection *c USED_BY_DEBUG
          */
         if (rn != ro)
         {
-            if (erouted(ro)
-            ? !eroute_connection(sr, htonl(SPI_HOLD), SA_INT, SADB_X_SATYPE_INT
-                                 , null_proto_info
-                                 , ERO_REPLACE
-                                 , "replace %trap with broad %hold")
-            : !eroute_connection(sr, htonl(SPI_HOLD), SA_INT, SADB_X_SATYPE_INT
-                                 , null_proto_info
-                , ERO_ADD, "add broad %hold"))
-            {
+	    int op;
+	    const char *reason;
+
+	    if(erouted(ro)) {
+		op = ERO_REPLACE;
+		reason= "replace %trap with broad %hold";
+	    } else {
+		op = ERO_ADD;
+		reason= "add broad %hold";
+	    }
+
+            if(!eroute_connection(sr, htonl(SPI_HOLD)
+				  , SA_INT, SADB_X_SATYPE_INT
+				  , null_proto_info
+				  , op
+				  , reason)) {
                 return FALSE;
             }
         }
+
         if (!replace_bare_shunt(src, dst
                                 , BOTTOM_PRIO
                                 , SPI_HOLD

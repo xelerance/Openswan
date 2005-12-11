@@ -438,6 +438,8 @@ LIBSHA2=${OBJDIRTOP}/lib/libcrypto/libsha2/libsha2.a
 LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
 POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 
+WHACKLIB=${OBJDIRTOP}/lib/libwhack/libwhack.a
+
 #KERNELBUILDMFLAGS=--debug=biv V=1 
 
 # for emacs
