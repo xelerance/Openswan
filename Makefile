@@ -280,16 +280,6 @@ precheck:
 		exit 1 ; \
 	fi
 
-# set version code if this is a fresh CVS checkout
-ifeq ($(wildcard cvs.datemark),cvs.datemark)
-verset Makefile.ver: cvs.datemark
-	echo IPSECVERSION=`date -r cvs.datemark +cvs%Y%b%d_%H:%M:%S` >Makefile.ver 
-	rm -f cvs.datemark; 
-else
-verset Makefile.ver: 
-	@grep IPSECVERSION Makefile.ver
-endif
-
 Makefile: Makefile.ver
 
 # configuring (exit statuses disregarded, something fishy here sometimes)
@@ -629,5 +619,5 @@ ipkg: programs install ipkg_strip ipkg_module
 
 env:
 	env
-	exit 1
+
 

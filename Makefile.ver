@@ -1,1 +1,5 @@
+<<<<<<< l2tpd
 IPSECVERSION=2.5.0sbs3
+=======
+IPSECBASEVERSION=2.git.public
+>>>>>>> public

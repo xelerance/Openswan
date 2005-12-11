@@ -47,10 +47,14 @@ east:~#
 + _________________________ /proc/net/route
 + _________________________ /proc/sys/net/ipv4/ip_no_pmtu_disc
 + _________________________ /proc/sys/net/ipv4/ip_forward
++ _________________________ /proc/sys/net/ipv4/tcp_ecn
 + _________________________ /proc/sys/net/ipv4/conf/star-rp_filter
++ _________________________ /proc/sys/net/ipv4/conf/star-star-redirects
++ _________________________ /proc/sys/net/ipv4/tcp_window_scaling
++ _________________________ /proc/sys/net/ipv4/tcp_adv_win_scale
 + _________________________ uname-a
 + _________________________ config-built-with
-+ _________________________ redhat-release
++ _________________________ distro-release
 + _________________________ /proc/net/ipsec_version
 + _________________________ ipfwadm
 + _________________________

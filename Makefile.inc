@@ -385,6 +385,8 @@ OSDEP:=$(shell uname -s | tr 'A-Z' 'a-z')
 endif
 
 -include ${OPENSWANSRCDIR}/Makefile.ver
+IPSECVERSION:=${IPSECBASEVERSION}$(shell ${OPENSWANSRCDIR}/packaging/utils/setlocalversion ${OPENSWANSRCDIR})
+export IPSECVERSION
 
 # include OSDEP/ARCH specific makefiles, if any.
 # OSDEP=linux,bsd,cygwin
