@@ -29,6 +29,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
+#include "oswlog.h"
 #include "confread.h"
 #include "confwrite.h"
 #include "starterlog.h"
@@ -48,12 +49,13 @@
 #define FLAG_ACTION_LISTEN        0x10
 
 static unsigned int _action_ = 0;
-int verbose = 0;
+int verbose;
 int warningsarefatal = 0;
 
 char configfile[PATH_MAX];
 char rootdir[PATH_MAX];       /* when evaluating paths, prefix this to them */
 int showonly = 0;
+char *progname;
 
 static void fsig(int signal)
 {
@@ -123,6 +125,11 @@ static void usage(char *name)
 	exit(1);
 }
 
+void exit_tool(num)
+{
+    exit(num);
+}
+
 int main (int argc, char **argv)
 {
 	struct starter_config *cfg = NULL, *new_cfg;
@@ -137,6 +144,8 @@ int main (int argc, char **argv)
 	extern int yydebug;
 	char *confdir;
 	bool justdump = FALSE;
+
+	progname=argv[0];
 
 	/* find environment location for /etc */
 	confdir = getenv(IPSEC_CONFDIR_VAR);
