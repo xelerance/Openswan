@@ -53,7 +53,7 @@ install_file_list::
 	@echo $(RCDIR)/../rc5.d/S47ipsec
 	@echo $(RCDIR)/../rc6.d/K76ipsec
 
-cleanall:
+cleanall::
 	@rm -f setup
 
 #
