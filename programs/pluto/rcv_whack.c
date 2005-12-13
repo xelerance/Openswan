@@ -259,6 +259,7 @@ whack_handle(int whackctlfd)
        close(whackfd);
        return;
     }
+    memset(&msg, 0, sizeof(msg));
     n = read(whackfd, &msg, sizeof(msg));
     if (n <= 0)
     {
