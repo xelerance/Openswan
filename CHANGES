@@ -1,5 +1,9 @@
 Please see docs/KNOWN_BUGS file for more information
 
+v2.5.0sbs5
+    fixed issues with libwhack not getting built with VIRTUAL_IP.
+    adjusted programs/pluto/Makefile to depend upon libraries better
+
 v2.5.0sbs4
 
     fixes so that starter will now compile
