@@ -59,9 +59,7 @@ struct whack_end {
     u_int16_t host_port;	/* host order */
     u_int16_t port;		/* host order */
     u_int8_t protocol;
-#ifdef VIRTUAL_IP
     char *virt;
-#endif
     bool xauth_server;          /* for XAUTH */
     bool xauth_client;
     bool modecfg_server;        /* for MODECFG */
