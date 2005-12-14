@@ -29,17 +29,18 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#include "confread.h"
-#include "confwrite.h"
-#include "starterlog.h"
-#include "files.h"
-#include "starterwhack.h"
-#include "pluto.h"
-#include "klips.h"
-#include "netkey.h"
-#include "cmp.h"
-#include "interfaces.h"
-#include "keywords.h"
+#include "oswlog.h"
+#include "ipsecconf/confread.h"
+#include "ipsecconf/confwrite.h"
+#include "ipsecconf/starterlog.h"
+#include "ipsecconf/files.h"
+#include "ipsecconf/starterwhack.h"
+#include "ipsecconf/pluto.h"
+#include "ipsecconf/klips.h"
+#include "ipsecconf/netkey.h"
+#include "ipsecconf/cmp.h"
+#include "ipsecconf/interfaces.h"
+#include "ipsecconf/keywords.h"
 
 #define FLAG_ACTION_START_PLUTO   0x01
 #define FLAG_ACTION_RELOAD        0x02
