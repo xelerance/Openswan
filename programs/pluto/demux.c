@@ -2201,6 +2201,15 @@ process_packet(struct msg_digest **mdp)
 		return;
 	    }
 
+	    /* do payload-type specific debugging */
+	    switch(np) {
+	    case ISAKMP_NEXT_ID:
+	    case ISAKMP_NEXT_NATOA_RFC:
+		/* dump ID section */
+		DBG(DBG_PARSING, DBG_dump("     obj: ", pd->pbs.cur, pbs_room(&pd->pbs)));
+		break;
+	    }
+
 	    /* place this payload at the end of the chain for this type */
 	    {
 		struct payload_digest **p;
