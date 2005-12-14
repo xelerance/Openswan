@@ -42,6 +42,7 @@ char addconn_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp
 #include <openswan.h>
 
 #include "constants.h"
+#include "oswalloc.h"
 #include "oswconf.h"
 #include "oswlog.h"
 
@@ -54,8 +55,7 @@ static const char *usage_string = ""
   "               names\n";
 
 
-static void
-usage()
+static void usage(void)
 {
     /* print usage */
     fputs(usage_string, stderr);
@@ -85,9 +85,9 @@ main(int argc, char *argv[])
     tool_init_log();
 
     while((opt = getopt_long(argc, argv, "", longopts, 0)) != EOF) {
-	switch(c) {
+	switch(opt) {
 	case 'h':
-	usage:
+	    //usage:
 	    usage();
 	    break;
 
@@ -108,8 +108,11 @@ main(int argc, char *argv[])
 	    break;
 
 	}
+    }
 
-	exit(0);
+    
+
+    exit(0);
 }
 
 void exit_tool(int x)
