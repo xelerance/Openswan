@@ -19,11 +19,11 @@
 #include <sys/queue.h>
 #include <stdlib.h>
 
-#include "confread.h"
-#include "klips.h"
-#include "files.h"
-#include "starterlog.h"
-#include "exec.h"
+#include "ipsecconf/confread.h"
+#include "ipsecconf/klips.h"
+#include "ipsecconf/files.h"
+#include "ipsecconf/starterlog.h"
+#include "ipsecconf/exec.h"
 
 static int _klips_module_loaded = 0;
 

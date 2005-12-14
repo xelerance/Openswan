@@ -22,8 +22,8 @@
 #include <string.h>
 #include <assert.h>
 
-#include "keywords.h"
-#include "parser.h"
+#include "ipsecconf/keywords.h"
+#include "ipsecconf/parser.h"
 
 #define YYDEBUG 1
 #define YYERROR_VERBOSE

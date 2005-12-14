@@ -23,7 +23,7 @@
 #include "openswan.h"
 #include "constants.h"
 
-#include "starterlog.h"
+#include "ipsecconf/starterlog.h"
 
 #define BUFF_SIZE  16384
 

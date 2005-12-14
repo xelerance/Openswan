@@ -156,6 +156,9 @@ LDLIBS=${LIBS} ${USERLINK}
 %: %.o $(OBJS) $(OPENSWANLIB)
 	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LIBS) $(USERLINK)
 
+# cancel direct version
+%: %.c
+
 %.o: ${srcdir}%.c
 	${CC} -c ${CFLAGS} $<
 

@@ -445,6 +445,7 @@ LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
 POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 
 WHACKLIB=${OBJDIRTOP}/lib/libwhack/libwhack.a
+IPSECCONFLIB=${OBJDIRTOP}/lib/libipsecconf/libipsecconf.a
 
 #KERNELBUILDMFLAGS=--debug=biv V=1 
 

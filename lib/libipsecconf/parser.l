@@ -22,10 +22,10 @@
 #include <assert.h>
 #include <unistd.h>
 
-#include "keywords.h"
-#include "parser.h"
+#include "ipsecconf/keywords.h"
+#include "ipsecconf/parser.h"
 #include "parser.tab.h"
-#include "parserlast.h"
+#include "ipsecconf/parserlast.h"
 
 #define MAX_INCLUDE_DEPTH  10
 
@@ -58,7 +58,7 @@ int  parser_cur_lineno(void)
 
 void parser_y_error(char *b, int size, const char *s)
 {
-	extern char yytext[];
+	extern char *yytext;
 
 	snprintf(b, size, "%s:%d: %s [%s]",
 		ic_private.filename[ic_private.stack_ptr],

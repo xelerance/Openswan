@@ -17,11 +17,11 @@
 #ifndef _IPSEC_CONFREAD_H_
 #define _IPSEC_CONFREAD_H_
 
-#include "keywords.h"
+#include "ipsecconf/keywords.h"
 
 #ifndef _OPENSWAN_H
 #include <openswan.h>
-#include "pluto/constants.h"    /* FIXME: ugly include */
+#include "constants.h"  
 #endif
 
 
