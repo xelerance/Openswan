@@ -20,10 +20,10 @@
 #include <assert.h>
 #include <sys/queue.h>
 
-#include "parser.h"
-#include "confread.h"
-#include "confwrite.h"
-#include "keywords.h"
+#include "ipsecconf/parser.h"
+#include "ipsecconf/confread.h"
+#include "ipsecconf/confwrite.h"
+#include "ipsecconf/keywords.h"
 
 void confwrite(struct starter_config *cfg, FILE *out)
 {

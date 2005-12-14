@@ -19,7 +19,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "starterlog.h"
+#include "ipsecconf/starterlog.h"
 
 /*
  * die if allocations fail

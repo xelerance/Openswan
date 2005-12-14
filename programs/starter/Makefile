@@ -16,31 +16,18 @@
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-PROGLIBS=${WHACKLIB}
+PROGLIBS=${WHACKLIB} ${IPSECCONFLIB}
 
 PROGRAM=starter
 
 # starter.o is implictely included.
-OBJS=parser.tab.o lex.yy.o confread.o confwrite.o
-OBJS+=invokepluto.o starterwhack.o starterlog.o klips.o netkey.o 
-OBJS+=interfaces.o exec.o cmp.o keywords.o alloc.o 
+OBJS=invokepluto.o starterwhack.o starterlog.o klips.o 
+OBJS+=interfaces.o exec.o netkey.o
 DISTSRC=$(OBJS:.o=.c)
-DISTSRC+=cmp.h confread.h confwrite.h exec.h files.h interfaces.h
-DISTSRC+=klips.h netkey.h starterlog.h
-DISTSRC+=parser.h pluto.h starterwhack.h keywords.h
 
 # reach into pluto for now.
 INCLUDES=-I${OPENSWANSRCDIR}/programs/pluto
 INCLUDES+=-I${srcdir}
-
-lex.yy.c: parser.tab.c parser.l parser.y parser.h
-	$(LEX) ${srcdir}parser.l
-
-parser.tab.h parser.tab.c: parser.l parser.y parser.h
-	$(BISON) -v -d ${srcdir}parser.y
-
-cleanall::
-	$(RM) -f parser.tab.* lex.yy.*
 
 include ${srcdir}../Makefile.program
 

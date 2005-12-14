@@ -26,10 +26,10 @@
 
 #include "openswan/ipsec_tunnel.h"
 
-#include "interfaces.h"
-#include "exec.h"
-#include "files.h"
-#include "starterlog.h"
+#include "ipsecconf/interfaces.h"
+#include "ipsecconf/exec.h"
+#include "ipsecconf/files.h"
+#include "ipsecconf/starterlog.h"
 
 #define MIN(a,b) ( ((a)>(b)) ? (b) : (a) )
 

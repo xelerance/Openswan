@@ -21,10 +21,10 @@
 #include <assert.h>
 #include <sys/queue.h>
 
-#include "parser.h"
-#include "confread.h"
-#include "interfaces.h"
-#include "starterlog.h"
+#include "ipsecconf/parser.h"
+#include "ipsecconf/confread.h"
+#include "ipsecconf/interfaces.h"
+#include "ipsecconf/starterlog.h"
 
 static char _tmp_err[512];
 

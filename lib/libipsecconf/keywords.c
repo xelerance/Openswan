@@ -15,8 +15,6 @@
  * RCSID $Id: keywords.c,v 1.12 2004/12/02 16:26:02 ken Exp $
  */
 
-#define DEBUG
-
 #include <sys/queue.h>
 #include <string.h>
 #include <assert.h>
@@ -27,10 +25,10 @@
 #include "constants.h"
 #endif
 
-#include "parser.h"
-#include "keywords.h"
+#include "ipsecconf/parser.h"
+#include "ipsecconf/keywords.h"
 #include "parser.tab.h"
-#include "parserlast.h"
+#include "ipsecconf/parserlast.h"
 
 
 /*

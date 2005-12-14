@@ -22,10 +22,10 @@
 #include <assert.h>
 #include <unistd.h>
 
-#include "keywords.h"
-#include "parser.h"
+#include "ipsecconf/keywords.h"
+#include "ipsecconf/parser.h"
 #include "parser.tab.h"
-#include "parserlast.h"
+#include "ipsecconf/parserlast.h"
 
 #define MAX_INCLUDE_DEPTH  10
 

@@ -17,10 +17,10 @@
 #include <sys/queue.h>
 #include <string.h>
 
-#include "keywords.h"
+#include "ipsecconf/keywords.h"
 
-#include "confread.h"
-#include "cmp.h"
+#include "ipsecconf/confread.h"
+#include "ipsecconf/cmp.h"
 
 #define streqn(a,b) (a)?((b)?(strcmp(a,b)):(-1)):(b!=NULL)
 

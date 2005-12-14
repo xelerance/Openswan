@@ -19,8 +19,8 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "exec.h"
-#include "starterlog.h"
+#include "ipsecconf/exec.h"
+#include "ipsecconf/starterlog.h"
 
 #define BUFF_SIZE  2048
 
