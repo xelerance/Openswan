@@ -19,7 +19,7 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 srcdir?=$(shell pwd)/
 
-SUBDIRS=libopenswan libcrypto
+SUBDIRS=libopenswan libcrypto libwhack 
 
 ifeq ($(USE_LWRES),true)
 SUBDIRS+=libisc libdns liblwres
