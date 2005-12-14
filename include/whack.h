@@ -160,7 +160,7 @@ struct whack_message {
 
     /* for WHACK_DELETESTATE: */
     bool whack_deletestate;
-    so_serial_t whack_deletestateno;
+    long unsigned int whack_deletestateno;
 
     /* for WHACK_LISTEN: */
     bool whack_listen, whack_unlisten;

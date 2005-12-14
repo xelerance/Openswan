@@ -55,7 +55,7 @@ LIBSADNS = $(OPENSWANLIB)
 LIBSADNS += -lresolv # -lefence
 
 # Solaris needs -lsocket -lnsl
-LIBSWHACK = whacklib.o ${OPENSWANLIB} 
+LIBSWHACK = ${WHACKLIB} ${OPENSWANLIB} 
 
 
 RM = /bin/rm
@@ -117,7 +117,7 @@ DISTSRC = \
 	$(HAVE_THREADS_DIST_SRCS) \
 	vendor.c nat_traversal.c virtual.c \
 	adns.c adns.h \
-	whack.c whack.h whackinit.c whacklib.c\
+	whack.c whackinit.c \
 	${XAUTH_DIST_SRCS} \
 	${AGGRESSIVE_DIST_SRCS} 
 
@@ -127,8 +127,6 @@ DIST = $(DISTMISC) $(DISTSRC)
 # start of support for DSS/DSA.  Not currently used.
 # OBJSGCRYPT =  gcryptfix.o dsa.o elgamal.o primegen.o smallprime.o
 OBJSGCRYPT =
-
-OBJSLIBPLUTO = whacklib.o
 
 OBJSPLUTO  = connections.o pending.o cookie.o crypto.o defs.o dpd.o
 OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
@@ -146,7 +144,6 @@ OBJSPLUTO += ike_alg.o db_ops.o
 OBJSPLUTO += ${XAUTH_OBJS}
 OBJSPLUTO += ${AGGRESSIVE_OBJS}
 OBJSPLUTO += ${SMARTCARD_OBJS} ${X509_OBJS} ${HAVE_THREADS_OBJS}
-OBJSPLUTO += ${OBJSLIBPLUTO}
 OBJSPLUTO += ${SYSDEP_OBJ} stubs.o
 
 OBJSADNS = adns.o

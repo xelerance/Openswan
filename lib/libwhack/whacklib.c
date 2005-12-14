@@ -36,9 +36,10 @@
 
 #include "sysdep.h"
 #include "constants.h"
-#include "defs.h"
+#include "oswalloc.h"
+#include "oswlog.h"
 #include "whack.h"
-#include "log.h"
+#include "oswlog.h"
 
 /**
  * Pack a string to a whack messages

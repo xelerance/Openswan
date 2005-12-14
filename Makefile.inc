@@ -444,6 +444,8 @@ endif
 LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
 POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 
+WHACKLIB=${OBJDIRTOP}/lib/libwhack/libwhack.a
+
 #KERNELBUILDMFLAGS=--debug=biv V=1 
 
 # for emacs
