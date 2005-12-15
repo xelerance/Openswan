@@ -318,9 +318,9 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 
 	if(!found_him) {
 	    st->hidden_variables.st_nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_PEER);
+	    st->hidden_variables.st_natd = md->sender;
 	}
 	
-	st->hidden_variables.st_natd = md->sender;
 
 	if(st->st_connection->forceencaps) {
 	    DBG(DBG_NATT,
