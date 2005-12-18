@@ -71,6 +71,7 @@ struct encap_msghdr *em;
  */
 char *progname;
 int debug = 0;
+int dumpsaref = 0;
 int saref = 0;
 char *command;
 extern char *optarg;
@@ -385,7 +386,8 @@ static struct option const longopts[] =
 	{"debug", 0, 0, 'g'},
 	{"optionsfrom", 1, 0, '+'},
 	{"life", 1, 0, 'f'},
-	{"saref", 0, 0, 'r'},
+	{"saref",     required_argument, NULL, 'b'},
+	{"dumpsaref", no_argument,       NULL, 'r'},
 	{"listenreply", 0, 0, 'R'},
 	{0, 0, 0, 0}
 };
@@ -549,7 +551,17 @@ main(int argc, char *argv[])
 			break;
 
 		case 'r':
-			saref = 1;
+			dumpsaref = 1;
+			argcount--;
+			break;
+
+		case 'b':  /* set the SAref to use */
+			saref = strtoul(optarg, &endptr, 0);
+			if(!(endptr == optarg + strlen(optarg))) {
+				fprintf(stderr, "%s: Invalid character in SAREF parameter: %s\n",
+					progname, optarg);
+				exit (1);
+			}
 			argcount--;
 			break;
 
@@ -1314,78 +1326,78 @@ main(int argc, char *argv[])
 		encryptalg = SADB_EALG_NONE;
 	}
 	if(!(alg == XF_CLR /* IE: pfkey_msg->sadb_msg_type == SADB_FLUSH */)) {
-		if((error = pfkey_sa_build(&extensions[SADB_EXT_SA],
+	    if((error = pfkey_sa_ref_build(&extensions[SADB_EXT_SA],
 					   SADB_EXT_SA,
 					   htonl(spi), /* in network order */
 					   replay_window,
 					   SADB_SASTATE_MATURE,
 					   authalg,
 					   encryptalg,
-					   0))) {
-			fprintf(stderr, "%s: Trouble building sa extension, error=%d.\n",
-				progname, error);
-			pfkey_extensions_free(extensions);
-			exit(1);
-		}
-		if(debug) {
-			fprintf(stdout, "%s: extensions[0]=0p%p previously set with msg_hdr.\n",
-				progname,
-				extensions[0]);
-		}
-		if(debug) {
-			fprintf(stdout, "%s: assembled SA extension, pfkey msg authalg=%d encalg=%d.\n",
-				progname,
-				authalg,
-				encryptalg);
-		}
+					   0, saref))) {
+		fprintf(stderr, "%s: Trouble building sa extension, error=%d.\n",
+			progname, error);
+		pfkey_extensions_free(extensions);
+		exit(1);
+	    }
+	    if(debug) {
+		fprintf(stdout, "%s: extensions[0]=0p%p previously set with msg_hdr.\n",
+			progname,
+			extensions[0]);
+	    }
+	    if(debug) {
+		fprintf(stdout, "%s: assembled SA extension, pfkey msg authalg=%d encalg=%d.\n",
+			progname,
+			authalg,
+			encryptalg);
+	    }
 		
+	    if(debug) {
+		int i,j;
+		for(i = 0; i < life_maxsever; i++) {
+		    for(j = 0; j < life_maxtype; j++) {
+			fprintf(stdout, "%s: i=%d, j=%d, life_opt[%d][%d]=0p%p, life[%d][%d]=%d\n",
+				progname,
+				i, j, i, j, life_opt[i][j], i, j, life[i][j]);
+		    }
+		}
+	    }
+	    if(life_opt[life_soft][life_alloc] != NULL ||
+	       life_opt[life_soft][life_bytes] != NULL ||
+	       life_opt[life_soft][life_addtime] != NULL ||
+	       life_opt[life_soft][life_usetime] != NULL ||
+	       life_opt[life_soft][life_packets] != NULL) {
+		if((error = pfkey_lifetime_build(&extensions[SADB_EXT_LIFETIME_SOFT],
+						 SADB_EXT_LIFETIME_SOFT,
+						 life[life_soft][life_alloc],/*-1,*/		/*allocations*/
+						 life[life_soft][life_bytes],/*-1,*/		/*bytes*/
+						 life[life_soft][life_addtime],/*-1,*/		/*addtime*/
+						 life[life_soft][life_usetime],/*-1,*/		/*usetime*/
+						 life[life_soft][life_packets]/*-1*/))) {	/*packets*/
+		    fprintf(stderr, "%s: Trouble building lifetime_s extension, error=%d.\n",
+			    progname, error);
+		    pfkey_extensions_free(extensions);
+		    exit(1);
+		}
 		if(debug) {
-			int i,j;
-			for(i = 0; i < life_maxsever; i++) {
-				for(j = 0; j < life_maxtype; j++) {
-					fprintf(stdout, "%s: i=%d, j=%d, life_opt[%d][%d]=0p%p, life[%d][%d]=%d\n",
-						progname,
-						i, j, i, j, life_opt[i][j], i, j, life[i][j]);
-				}
-			}
+		    fprintf(stdout, "%s: lifetime_s extension assembled.\n",
+			    progname);
 		}
-		if(life_opt[life_soft][life_alloc] != NULL ||
-		   life_opt[life_soft][life_bytes] != NULL ||
-		   life_opt[life_soft][life_addtime] != NULL ||
-		   life_opt[life_soft][life_usetime] != NULL ||
-		   life_opt[life_soft][life_packets] != NULL) {
-			if((error = pfkey_lifetime_build(&extensions[SADB_EXT_LIFETIME_SOFT],
-							 SADB_EXT_LIFETIME_SOFT,
-							 life[life_soft][life_alloc],/*-1,*/		/*allocations*/
-							 life[life_soft][life_bytes],/*-1,*/		/*bytes*/
-							 life[life_soft][life_addtime],/*-1,*/		/*addtime*/
-							 life[life_soft][life_usetime],/*-1,*/		/*usetime*/
-							 life[life_soft][life_packets]/*-1*/))) {	/*packets*/
-				fprintf(stderr, "%s: Trouble building lifetime_s extension, error=%d.\n",
-					progname, error);
-				pfkey_extensions_free(extensions);
-				exit(1);
-			}
-			if(debug) {
-				fprintf(stdout, "%s: lifetime_s extension assembled.\n",
-					progname);
-			}
-		}
-
-		if(life_opt[life_hard][life_alloc] != NULL ||
-		   life_opt[life_hard][life_bytes] != NULL ||
-		   life_opt[life_hard][life_addtime] != NULL ||
-		   life_opt[life_hard][life_usetime] != NULL ||
-		   life_opt[life_hard][life_packets] != NULL) {
-			if((error = pfkey_lifetime_build(&extensions[SADB_EXT_LIFETIME_HARD],
-							 SADB_EXT_LIFETIME_HARD,
-							 life[life_hard][life_alloc],/*-1,*/		/*allocations*/
-							 life[life_hard][life_bytes],/*-1,*/		/*bytes*/
-							 life[life_hard][life_addtime],/*-1,*/		/*addtime*/
-							 life[life_hard][life_usetime],/*-1,*/		/*usetime*/
-							 life[life_hard][life_packets]/*-1*/))) {	/*packets*/
-				fprintf(stderr, "%s: Trouble building lifetime_h extension, error=%d.\n",
-					progname, error);
+	    }
+	    
+	    if(life_opt[life_hard][life_alloc] != NULL ||
+	       life_opt[life_hard][life_bytes] != NULL ||
+	       life_opt[life_hard][life_addtime] != NULL ||
+	       life_opt[life_hard][life_usetime] != NULL ||
+	       life_opt[life_hard][life_packets] != NULL) {
+		if((error = pfkey_lifetime_build(&extensions[SADB_EXT_LIFETIME_HARD],
+						 SADB_EXT_LIFETIME_HARD,
+						 life[life_hard][life_alloc],/*-1,*/		/*allocations*/
+						 life[life_hard][life_bytes],/*-1,*/		/*bytes*/
+						 life[life_hard][life_addtime],/*-1,*/		/*addtime*/
+						 life[life_hard][life_usetime],/*-1,*/		/*usetime*/
+						 life[life_hard][life_packets]/*-1*/))) {	/*packets*/
+		    fprintf(stderr, "%s: Trouble building lifetime_h extension, error=%d.\n",
+			    progname, error);
 				pfkey_extensions_free(extensions);
 				exit(1);
 			}

@@ -34,7 +34,7 @@
  */
 
 #define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 24)
-#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 33)
+#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 34)
 
 /* struct whack_end is a lot like connection.h's struct end
  * It differs because it is going to be shipped down a socket
@@ -66,6 +66,7 @@ struct whack_end {
     bool modecfg_client;
     enum certpolicy      sendcert;
     enum ipsec_cert_type certtype;
+    unsigned int tundev;        /* tunnel device for SA */
 };
 
 struct whack_message {

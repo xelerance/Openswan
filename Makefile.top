@@ -56,7 +56,7 @@ taroldinstall:
 # make tags and TAGS files from ctags and etags for vi and emacs, respectively.
 tags TAGS: dummy
 	etags `find lib programs linux -name '*.[ch]'`
-	ctags `find lib programs linux -name '*.[ch]'`
+	-ctags `find lib programs linux -name '*.[ch]'`
 
 .PHONY: dummy
 dummy:
