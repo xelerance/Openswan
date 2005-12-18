@@ -7,4 +7,9 @@ openswan_git=`pwd`
 
 cd $openswan_git/linux/net/ipsec
 if [ -f Makefile ]; then mv Makefile Makefile.fs2_6; fi
+for dir in des aes alg 
+do
+	if [ -f $dir/Makefile ]; then mv $dir/Makefile $dir/Makefile.fs2_6; fi
+done
+rm version.c Makefile.ver
 
