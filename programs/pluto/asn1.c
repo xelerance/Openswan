@@ -227,7 +227,7 @@ asn1totime(const chunk_t *utctime, asn1_t type)
 {
     struct tm t;
     time_t tz_offset;
-    u_char *eot = NULL;
+    char *eot = NULL;
 
     if ((eot = memchr(utctime->ptr, 'Z', utctime->len)) != NULL)
     {
@@ -256,12 +256,12 @@ asn1totime(const chunk_t *utctime, asn1_t type)
 	const char* format = (type == ASN1_UTCTIME)? "%2d%2d%2d%2d%2d":
 						     "%4d%2d%2d%2d%2d";
 
-	sscanf(utctime->ptr, format, &t.tm_year, &t.tm_mon, &t.tm_mday,
+	sscanf((char *)utctime->ptr, format, &t.tm_year, &t.tm_mon, &t.tm_mday,
 				     &t.tm_hour, &t.tm_min);
     }
 
     /* is there a seconds field? */
-    if ((eot - utctime->ptr) == ((type == ASN1_UTCTIME)?12:14))
+    if ((eot - (char *)utctime->ptr) == ((type == ASN1_UTCTIME)?12:14))
     {
 	sscanf(eot-2, "%2d", &t.tm_sec);
     }

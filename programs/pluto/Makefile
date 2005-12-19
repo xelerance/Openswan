@@ -172,10 +172,10 @@ install: doinstall
 endif
 
 oid.c: oid.txt oid.pl
-	perl oid.pl
+	perl ${srcdir}oid.pl
 
 oid.h: oid.txt oid.pl
-	perl oid.pl
+	perl ${srcdir}oid.pl
 
 doinstall: all
 	mkdir -p ${LIBEXECDIR} ${LIBDIR}
