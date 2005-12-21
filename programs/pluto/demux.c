@@ -2700,6 +2700,11 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		    const char *ini = " {";
 		    const char *fin = "";
 
+		    strcpy(sadetails,
+			   (st->st_connection->policy & POLICY_TUNNEL ?
+			    " tunnel mode" : " transport mode"));
+		    b += strlen(sadetails);
+
 		    /* -1 is to leave space for "fin" */
 
 		    if(st->st_esp.present)
@@ -2828,9 +2833,10 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 
 		/* tell whack and logs our progress */
 		loglog(w
-		    , "%s: %s%s"
-		    , enum_name(&state_names, st->st_state)
-		    , story, sadetails);
+		       , "%s: %s%s"
+		       , enum_name(&state_names, st->st_state)
+		       , story
+		       , sadetails);
 	    }
 
 	    /*
