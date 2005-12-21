@@ -702,6 +702,9 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct ipsec_xmit_state *ixs = &ixs_mem;
 	enum ipsec_xmit_value stat;
 
+	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+                   "\n\nipsec_tunnel_start_xmit: STARTING");
+
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 	ixs->natt_type = 0, ixs->natt_head = 0;
 	ixs->natt_sport = 0, ixs->natt_dport = 0;

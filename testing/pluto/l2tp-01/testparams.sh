@@ -35,7 +35,7 @@ EAST_FINAL_SCRIPT=../nat-pluto-01/final.sh
 NORTHHOST=north
 NORTH_INIT_SCRIPT=northinit.sh
 NORTH_RUN_SCRIPT=northrun.sh
-NORTH_FINAL_SCRIPT=../nat-pluto-01/final.sh
+NORTH_FINAL_SCRIPT=final.sh
 
 NICHOST=nic
 NIC_FINAL_SCRIPT=/dev/null

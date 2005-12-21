@@ -876,77 +876,13 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 	   */
 	  __u32 natt_oa = ipsp->ips_natt_oa ?
 	    ((struct sockaddr_in*)(ipsp->ips_natt_oa))->sin_addr.s_addr : 0;
-	  __u16 pkt_len = skb->tail - (unsigned char *)ipp;
-	  __u16 data_len = pkt_len - (ipp->ihl << 2);
-	  
-	  switch (ipp->protocol) {
-	  case IPPROTO_TCP:
-	    if (data_len >= sizeof(struct tcphdr)) {
-	      struct tcphdr *tcp = skb->h.th;
-	      if (natt_oa) {
-		__u32 buff[2] = { ~natt_oa, ipp->saddr };
-		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
-			    "NAT-T & TRANSPORT: "
-			    "fix TCP checksum using NAT-OA\n");
-		tcp->check = csum_fold(
-				       csum_partial((unsigned char *)buff, sizeof(buff),
-						    tcp->check^0xffff));
-	      }
-	      else {
-		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
-			    "NAT-T & TRANSPORT: recalc TCP checksum\n");
-		if (pkt_len > (ntohs(ipp->tot_len)))
-		  data_len -= (pkt_len - ntohs(ipp->tot_len));
-		tcp->check = 0;
-		tcp->check = csum_tcpudp_magic(ipp->saddr, ipp->daddr,
-					       data_len, IPPROTO_TCP,
-					       csum_partial((unsigned char *)tcp, data_len, 0));
-	      }
-	    }
-	    else {
-	      KLIPS_PRINT(debug_rcv,
-			  "klips_debug:ipsec_rcv: "
-			  "NAT-T & TRANSPORT: can't fix TCP checksum\n");
-	    }
-	    break;
-	  case IPPROTO_UDP:
-	    if (data_len >= sizeof(struct udphdr)) {
-	      struct udphdr *udp = skb->h.uh;
-	      if (udp->check == 0) {
-		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
-			    "NAT-T & TRANSPORT: UDP checksum already 0\n");
-	      }
-	      else if (natt_oa) {
-		__u32 buff[2] = { ~natt_oa, ipp->saddr };
-		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
-			    "NAT-T & TRANSPORT: "
-			    "fix UDP checksum using NAT-OA\n");
-		udp->check = csum_fold(
-				       csum_partial((unsigned char *)buff, sizeof(buff),
-						    udp->check^0xffff));
-	      }
-	      else {
-		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
-			    "NAT-T & TRANSPORT: zero UDP checksum\n");
-		udp->check = 0;
-	      }
-	    }
-	    else {
-	      KLIPS_PRINT(debug_rcv,
-			  "klips_debug:ipsec_rcv: "
-			  "NAT-T & TRANSPORT: can't fix UDP checksum\n");
-	    }
-	    break;
-	  default:
-	    KLIPS_PRINT(debug_rcv,
-			"klips_debug:ipsec_rcv: "
-			"NAT-T & TRANSPORT: non TCP/UDP packet -- do nothing\n");
-	    break;
+
+	  if(natt_oa != 0) {
+		  /* reset source address to what it was before NAT */
+		  ipp->saddr = natt_oa;
+		  ipp->check = 0;
+		  ipp->check = ip_fast_csum((unsigned char *)ipp, ipp->ihl);
+		  KLIPS_PRINT(debug_rcv, "csum: %04x\n", ipp->check);
 	  }
 	}
 #endif

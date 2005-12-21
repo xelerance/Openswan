@@ -1,3 +1,4 @@
+ipsec auto --replace road--east-l2tp
 ipsec auto --up road--east-l2tp
 echo "c server" >/var/run/l2tp-control
 
