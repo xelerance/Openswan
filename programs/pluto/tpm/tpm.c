@@ -128,7 +128,7 @@ stf_status tpm_call_it(Tcl_Obj **objv, int objc)
 				 , Tcl_GetString(objv[1])
 				 , Tcl_GetString(objv[2])
 				 , Tcl_GetString(objv[3])
-				 , argc>4 ? Tcl_GetString(objv[4]) : ""));
+				 , objc>4 ? Tcl_GetString(objv[4]) : ""));
 		 
     ret = Tcl_EvalObjv(PlutoInterp, objc, objv, TCL_EVAL_GLOBAL);
 
@@ -139,7 +139,7 @@ stf_status tpm_call_it(Tcl_Obj **objv, int objc)
 			     , Tcl_GetString(objv[1])
 			     , Tcl_GetString(objv[2])
 			     , Tcl_GetString(objv[3])
-			     , argc>4 ? Tcl_GetString(objv[4]) : ""
+			     , objc>4 ? Tcl_GetString(objv[4]) : ""
 			     , res));
 		 
     if(strcmp(res, "ignore")==0 || strcmp(res, "nothing")==0 || res[0]=='\0') {
