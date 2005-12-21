@@ -1378,7 +1378,6 @@ main(int argc, char **argv)
 	    diagq(ttosubnet(optarg, 0, msg.tunnel_addr_family, &msg.right.client), optarg);
 	    msg.right.has_client = TRUE;
 #endif
-	    msg.policy |= POLICY_TUNNEL;	/* client => tunnel */
 	    continue;
 
 	case END_CLIENTWITHIN:	/* --clienwithin <address range> */
@@ -1387,7 +1386,6 @@ main(int argc, char **argv)
 	    tunnel_af_used_by = long_opts[long_index].name;
 	    diagq(ttosubnet(optarg, 0, msg.tunnel_addr_family, &msg.right.client), optarg);
 	    msg.right.has_client = TRUE;
-	    msg.policy |= POLICY_TUNNEL;	/* client => tunnel */
 	    msg.right.has_client_wildcard = TRUE;
 	    continue;
 
