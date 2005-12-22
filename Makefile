@@ -618,6 +618,6 @@ ipkg: programs install ipkg_strip ipkg_module
 
 
 env:
-	env
+	@env | sed -e "s/'/'\\\\''/g" -e "s/\([^=]*\)=\(.*\)/\1='\2'/"
 
 
