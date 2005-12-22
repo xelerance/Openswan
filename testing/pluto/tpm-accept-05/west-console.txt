@@ -29,11 +29,13 @@ west:~#
 west:~#
  cat /tmp/pluto.log
 Plutorun started on DATE
-Starting Pluto (Openswan Version 2.5.0cl6 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEWAMp}ZbD}l)
+Starting Pluto (Openswan Version 2.5.0cl8 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEQAUNTmsT]Y)
 WARNING: 1DES is enabled
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
    including NAT-Traversal patch (Version 0.6c) [disabled]
+WARNING: open of /dev/hw_random failed: No such file or directory
+using /dev/random as source of random entropy
 ike_alg_register_enc(): Activating OAKLEY_TWOFISH_CBC_SSH: Ok (ret=0)
 ike_alg_register_enc(): Activating OAKLEY_TWOFISH_CBC: Ok (ret=0)
 ike_alg_register_enc(): Activating OAKLEY_SERPENT_CBC: Ok (ret=0)
@@ -54,6 +56,8 @@ Changing to directory '/tmp/tpm-accept-05/ipsec.d/crls'
 crl issuer cacert not found for (file:///tmp/tpm-accept-05/ipsec.d/crls/crashcrl-3.pem)
   loaded crl file 'crashcrl-2.pem' (528 bytes)
 crl issuer cacert not found for (file:///tmp/tpm-accept-05/ipsec.d/crls/crashcrl-2.pem)
+WARNING: open of /dev/hw_random failed: No such file or directory
+using /dev/random as source of random entropy
   loaded crl file 'crashcrl-1.pem' (1053 bytes)
 crl issuer cacert not found for (file:///tmp/tpm-accept-05/ipsec.d/crls/crashcrl-1.pem)
 added connection description "west--east-psk"
@@ -61,15 +65,15 @@ listening for IKE messages
 adding interface ipsec0/eth1 192.1.2.45:500
 loading secrets from "/tmp/tpm-accept-05/ipsec.secrets"
   loaded private key file '/etc/ipsec.d/private/west.pem' (963 bytes)
-"west--east-psk": deleting connection
-added connection description "west--east-psk"
-"west--east-psk" #1: initiating Main Mode
-"west--east-psk" #1: received Vendor ID payload [Openswan (this version) 2.5.0cl6  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
-"west--east-psk" #1: received Vendor ID payload [Dead Peer Detection]
 listening for IKE messages
 forgetting secrets
 loading secrets from "/tmp/tpm-accept-05/ipsec.secrets"
   loaded private key file '/etc/ipsec.d/private/west.pem' (963 bytes)
+"west--east-psk": deleting connection
+added connection description "west--east-psk"
+"west--east-psk" #1: initiating Main Mode
+"west--east-psk" #1: received Vendor ID payload [Openswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+"west--east-psk" #1: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #1: transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 "west--east-psk" #1: STATE_MAIN_I2: sent MI2, expecting MR2
 "west--east-psk" #1: I did not send a certificate because digital signatures are not being used. (PSK)
