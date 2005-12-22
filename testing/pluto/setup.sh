@@ -22,6 +22,8 @@ fi
 OPENSWANSRCDIR=`cd ${OPENSWANSRCDIR}; pwd`
 export OPENSWANSRCDIR
 
+eval `(cd $OPENSWANSRCDIR && make env)`
+
 TESTINGROOT=${OPENSWANSRCDIR}/testing
 UTILS=`cd ${TESTINGROOT}/utils && pwd`
 NJ=${UTILS}/uml_netjig/uml_netjig
