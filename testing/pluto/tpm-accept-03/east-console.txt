@@ -31,7 +31,7 @@ east:~#
 Starting Openswan IPsec pluto
 east:~#
  (cd /tmp && /usr/local/libexec/ipsec/pluto --nofork --secretsfile /tmp/$TESTNAME/ipsec.secrets --ipsecdir /tmp/$TESTNAME/ipsec.d --use-nostack --uniqueids --nhelpers 0 --stderrlog 2>/tmp/pluto.log ) &
-[1] 828
+[1] 9999
 east:~#
  sleep 1
 east:~#
@@ -91,11 +91,13 @@ east:~#
 east:~#
 east:~#
  cat /tmp/pluto.log
-Starting Pluto (Openswan Version 2.5.0cl6 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEWAMp}ZbD}l)
+Starting Pluto (Openswan Version 2.5.0cl8 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEQAUNTmsT]Y)
 WARNING: 1DES is enabled
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
    including NAT-Traversal patch (Version 0.6c) [disabled]
+WARNING: open of /dev/hw_random failed: No such file or directory
+using /dev/random as source of random entropy
 ike_alg_register_enc(): Activating OAKLEY_TWOFISH_CBC_SSH: Ok (ret=0)
 ike_alg_register_enc(): Activating OAKLEY_TWOFISH_CBC: Ok (ret=0)
 ike_alg_register_enc(): Activating OAKLEY_SERPENT_CBC: Ok (ret=0)
@@ -120,10 +122,9 @@ loading secrets from "/tmp/tpm-accept-03/ipsec.secrets"
   loaded private key file '/etc/ipsec.d/private/east.pem' (963 bytes)
 added connection description "west--east-psk"
 TPM evaluating 'set test_stage "t03a"' 
-TPM evaluating 'set test_stage "t03b"' 
 tcl says packet from: 192.1.2.23
 recvMessage NULL NULL _POINTER_p_msg_digest
-packet from 192.1.2.45:500: received Vendor ID payload [Openswan (this version) 2.5.0cl6  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+packet from 192.1.2.45:500: received Vendor ID payload [Openswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 packet from 192.1.2.45:500: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #1: extra debugging enabled for connection: impair-die-oninfo
 "west--east-psk" #1: responding to Main Mode
@@ -132,14 +133,21 @@ packet from 192.1.2.45:500: received Vendor ID payload [Dead Peer Detection]
 tcl says packet from: 192.1.2.23
 "west--east-psk" #1: extra debugging enabled for connection: impair-die-oninfo
 recvMessage _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest
-stage: t03b state: 5 MR1: 5 MQ0: 16
+stage: t03a state: 5 MR1: 5 MQ0: 16
+Pausing for 60 seconds in phase 1
 "west--east-psk" #1: extra debugging enabled for connection: impair-die-oninfo
 "west--east-psk" #1: transition from state STATE_MAIN_R1 to state STATE_MAIN_R2
 "west--east-psk" #1: STATE_MAIN_R2: sent MR2, expecting MI3
 tcl says packet from: 192.1.2.23
 "west--east-psk" #1: extra debugging enabled for connection: impair-die-oninfo
+"west--east-psk" #1: discarding duplicate packet; already STATE_MAIN_R2
+tcl says packet from: 192.1.2.23
+"west--east-psk" #1: extra debugging enabled for connection: impair-die-oninfo
+"west--east-psk" #1: discarding duplicate packet; already STATE_MAIN_R2
+tcl says packet from: 192.1.2.23
+"west--east-psk" #1: extra debugging enabled for connection: impair-die-oninfo
 recvMessage _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest
-stage: t03b state: 7 MR1: 5 MQ0: 16
+stage: t03a state: 7 MR1: 5 MQ0: 16
 "west--east-psk" #1: Main mode peer ID is ID_IPV4_ADDR: '192.1.2.45'
 "west--east-psk" #1: I did not send a certificate because digital signatures are not being used. (PSK)
 "west--east-psk" #1: transition from state STATE_MAIN_R2 to state STATE_MAIN_R3
@@ -147,7 +155,7 @@ stage: t03b state: 7 MR1: 5 MQ0: 16
 tcl says packet from: 192.1.2.23
 "west--east-psk" #1: extra debugging enabled for connection: impair-die-oninfo
 recvMessage _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest
-stage: t03b state: 16 MR1: 5 MQ0: 16
+stage: t03a state: 16 MR1: 5 MQ0: 16
 "west--east-psk" #2: extra debugging enabled for connection: none
 "west--east-psk" #2: extra debugging enabled for connection: impair-die-oninfo
 "west--east-psk" #2: responding to Quick Mode 
@@ -156,9 +164,10 @@ stage: t03b state: 16 MR1: 5 MQ0: 16
 tcl says packet from: 192.1.2.23
 "west--east-psk" #2: extra debugging enabled for connection: impair-die-oninfo
 recvMessage _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest
-stage: t03b state: 18 MR1: 5 MQ0: 16
+stage: t03a state: 18 MR1: 5 MQ0: 16
 "west--east-psk" #2: transition from state STATE_QUICK_R1 to state STATE_QUICK_R2
 "west--east-psk" #2: STATE_QUICK_R2: IPsec SA established
+TPM evaluating 'set test_stage "t03b"' 
 tcl says packet from: 192.1.2.23
 "west--east-psk" #1: extra debugging enabled for connection: impair-die-oninfo
 recvMessage _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest
@@ -175,10 +184,9 @@ stage: t03b state: 22 MR1: 5 MQ0: 16
 "west--east-psk" #1: received Delete SA payload: deleting ISAKMP State #1
 "west--east-psk" #1: extra debugging enabled for connection: none
 packet from 192.1.2.45:500: received and ignored informational message
-TPM evaluating 'set test_stage "t03c"' 
 tcl says packet from: 192.1.2.23
 recvMessage NULL NULL _POINTER_p_msg_digest
-packet from 192.1.2.45:500: received Vendor ID payload [Openswan (this version) 2.5.0cl6  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+packet from 192.1.2.45:500: received Vendor ID payload [Openswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 packet from 192.1.2.45:500: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #3: extra debugging enabled for connection: impair-die-oninfo
 "west--east-psk" #3: responding to Main Mode
@@ -187,14 +195,14 @@ packet from 192.1.2.45:500: received Vendor ID payload [Dead Peer Detection]
 tcl says packet from: 192.1.2.23
 "west--east-psk" #3: extra debugging enabled for connection: impair-die-oninfo
 recvMessage _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest
-stage: t03c state: 5 MR1: 5 MQ0: 16
+stage: t03b state: 5 MR1: 5 MQ0: 16
 "west--east-psk" #3: extra debugging enabled for connection: impair-die-oninfo
 "west--east-psk" #3: transition from state STATE_MAIN_R1 to state STATE_MAIN_R2
 "west--east-psk" #3: STATE_MAIN_R2: sent MR2, expecting MI3
 tcl says packet from: 192.1.2.23
 "west--east-psk" #3: extra debugging enabled for connection: impair-die-oninfo
 recvMessage _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest
-stage: t03c state: 7 MR1: 5 MQ0: 16
+stage: t03b state: 7 MR1: 5 MQ0: 16
 "west--east-psk" #3: Main mode peer ID is ID_IPV4_ADDR: '192.1.2.45'
 "west--east-psk" #3: I did not send a certificate because digital signatures are not being used. (PSK)
 "west--east-psk" #3: transition from state STATE_MAIN_R2 to state STATE_MAIN_R3
@@ -202,8 +210,7 @@ stage: t03c state: 7 MR1: 5 MQ0: 16
 tcl says packet from: 192.1.2.23
 "west--east-psk" #3: extra debugging enabled for connection: impair-die-oninfo
 recvMessage _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest
-stage: t03c state: 16 MR1: 5 MQ0: 16
-Pausing for 60 seconds in phase 2
+stage: t03b state: 16 MR1: 5 MQ0: 16
 "west--east-psk" #4: extra debugging enabled for connection: none
 "west--east-psk" #4: extra debugging enabled for connection: impair-die-oninfo
 "west--east-psk" #4: responding to Quick Mode 
@@ -211,21 +218,16 @@ Pausing for 60 seconds in phase 2
 "west--east-psk" #4: STATE_QUICK_R1: sent QR1, inbound IPsec SA installed, expecting QI2
 tcl says packet from: 192.1.2.23
 "west--east-psk" #4: extra debugging enabled for connection: impair-die-oninfo
-"west--east-psk" #4: discarding duplicate packet; already STATE_QUICK_R1
-tcl says packet from: 192.1.2.23
-"west--east-psk" #4: extra debugging enabled for connection: impair-die-oninfo
-"west--east-psk" #4: discarding duplicate packet; already STATE_QUICK_R1
-tcl says packet from: 192.1.2.23
-"west--east-psk" #4: extra debugging enabled for connection: impair-die-oninfo
 recvMessage _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest
-stage: t03c state: 18 MR1: 5 MQ0: 16
+stage: t03b state: 18 MR1: 5 MQ0: 16
 "west--east-psk" #4: transition from state STATE_QUICK_R1 to state STATE_QUICK_R2
 "west--east-psk" #4: STATE_QUICK_R2: IPsec SA established
-TPM evaluating 'set test_stage "t03d"' 
+TPM evaluating 'set test_stage "t03c"' 
 tcl says packet from: 192.1.2.23
 "west--east-psk" #3: extra debugging enabled for connection: impair-die-oninfo
 recvMessage _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest
-stage: t03d state: 16 MR1: 5 MQ0: 16
+stage: t03c state: 16 MR1: 5 MQ0: 16
+Pausing for 60 seconds in phase 2
 "west--east-psk" #5: extra debugging enabled for connection: none
 "west--east-psk" #5: extra debugging enabled for connection: impair-die-oninfo
 "west--east-psk" #5: responding to Quick Mode 
@@ -233,10 +235,17 @@ stage: t03d state: 16 MR1: 5 MQ0: 16
 "west--east-psk" #5: STATE_QUICK_R1: sent QR1, inbound IPsec SA installed, expecting QI2
 tcl says packet from: 192.1.2.23
 "west--east-psk" #5: extra debugging enabled for connection: impair-die-oninfo
+"west--east-psk" #5: discarding duplicate packet; already STATE_QUICK_R1
+tcl says packet from: 192.1.2.23
+"west--east-psk" #5: extra debugging enabled for connection: impair-die-oninfo
+"west--east-psk" #5: discarding duplicate packet; already STATE_QUICK_R1
+tcl says packet from: 192.1.2.23
+"west--east-psk" #5: extra debugging enabled for connection: impair-die-oninfo
 recvMessage _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest
-stage: t03d state: 18 MR1: 5 MQ0: 16
+stage: t03c state: 18 MR1: 5 MQ0: 16
 "west--east-psk" #5: transition from state STATE_QUICK_R1 to state STATE_QUICK_R2
 "west--east-psk" #5: STATE_QUICK_R2: IPsec SA established
+TPM evaluating 'set test_stage "t03d"' 
 tcl says packet from: 192.1.2.23
 "west--east-psk" #3: extra debugging enabled for connection: impair-die-oninfo
 recvMessage _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest
