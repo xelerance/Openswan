@@ -96,20 +96,21 @@ proc postEncrypt {state pb off len} {
     }
     set st_state  [state_st_state_get $state]
 
-    if {[string compare $test_stage "t04b"] == 0
-        && $stage4b_count < 2} {
+    if {[string compare $test_stage "t04b"] == 0} {
 	
-	incr stage4b_count
 	puts stderr [format "t04b inm st:%02d" $st_state] 
 	set logmsg [format "t04b st:%d" $st_state] 
 
 	set ikemsg [pbs_bytes $pb 256]
 	openswan_DBG_dump $logmsg $ikemsg
 
-	if {$st_state == $STATE_MAIN_R2} {
-	    # corrupt outgoing IKE message.
+	if {$st_state == $STATE_MAIN_R2 && $stage4b_count < 1} {
+
+	    incr stage4b_count
+
+	    # corrupt first outgoing IKE message.
 	    
-	    puts stderr "Corrrupting with ABCD"
+	    puts stderr "Corrupting with ABCD"
 	    pbs_poke $pb 28 65
 	    pbs_poke $pb 29 66
 	    pbs_poke $pb 30 67
@@ -120,19 +121,20 @@ proc postEncrypt {state pb off len} {
 	openswan_DBG_dump $logmsg $ikemsg
     }
 
-    if {[string compare $test_stage "t04c"] == 0
-        && $stage4c_count < 2} {
-	
-	incr stage4c_count
+    if {[string compare $test_stage "t04c"] == 0} {
+
 	set ikemsg [pbs_bytes $pb 256]
-	puts stderr [format "t04c inm st:%02d" $st_state] 
+	puts stderr [format "t04c inm st:%02d (QR1:%d)" $st_state $STATE_QUICK_R1] 
 	set logmsg [format "t04c st:%d" $st_state] 
 	openswan_DBG_dump $logmsg $ikemsg
 
-	if {$st_state == $STATE_QUICK_R1} {
-	    # corrupt outgoing IKE phase 2 message.
+	if {$st_state == $STATE_QUICK_R1 && $stage4c_count < 1} {
+	
+	    # corrupt first outgoing IKE phase 2 message.
 	    
-	    puts stderr "Corrrupting with XYZX"
+	    incr stage4c_count
+
+	    puts stderr "Corrupting with XYZX"
 	    pbs_poke $pb 28 88
 	    pbs_poke $pb 29 89
 	    pbs_poke $pb 30 90
@@ -152,7 +154,7 @@ proc postDecrypt {state pb off len} {
     set st_state  [state_st_state_get $state]
 
     if {[string compare $test_stage "t04a"] == 0} {
-	set ikemsg [cdata $buf $len]
+	set ikemsg [pbs_bytes $pb $len]
 
 	puts stderr [format "t04a inm st:%02d" $st_state] 
 	set logmsg [format "t04a st:%d" $st_state] 
