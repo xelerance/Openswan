@@ -68,7 +68,7 @@ proc insertVendorId {msg vendorid} {
     set vidlen [expr ([string bytelength $vendorid] + 7) & 0xfffc]
     set newpb [pbs_create [expr $len + $vidlen]]
 
-    puts stderr "Inserting VID($vidlen): $vendorid"
+    puts stderr "Inserting VID($vidlen): $vendorid (len=$len)"
 
     # copy IKE header
     pbs_append $newpb 0 $msg 0 28
@@ -82,7 +82,7 @@ proc insertVendorId {msg vendorid} {
     #   rfc2409: The Internet Key Exchange (IKE), 5.5 Phase 2 - Quick Mode
 
     global ISAKMP_NEXT_SA ISAKMP_NEXT_HASH
-    for {} {$thispay == $ISAKMP_NEXT_SA || $thispay == $ISAKMP_NEXT_HASH} {} {
+    for {} {$inLoc < $len && ($thispay == $ISAKMP_NEXT_SA || $thispay == $ISAKMP_NEXT_HASH)} {} {
 	set nextpay [pbs_peek $msg $inLoc]
 	set nextpayloc $inLoc
 	set paylen  [expr ([pbs_peek $msg [expr $inLoc + 2]] * 256) + [pbs_peek $msg [expr $inLoc + 3]]]

@@ -151,8 +151,11 @@ proc expectprompt {umlid msg} {
     }
 }
 
-proc playscript {umlid scriptname} {
+proc dumbplayscript {umlname scriptname} {
     global theprompt
+    global umlid
+
+    set id $umlid($umlname,spawnid)
 
     trace variable expect_out(buffer) w log_by_tracing
 
@@ -164,15 +167,30 @@ proc playscript {umlid scriptname} {
 	    continue;
 	}	
 	if {[string match [string index [string trimleft $line] 0] \#] == 0} {
-	    expectprompt $umlid "in playscript $scriptname"
+	    expectprompt $id "in playscript $scriptname"
 
 	    # eat any additional previous output
-	    expect -i $umlid -gl "*"
+	    expect -i $id -gl "*"
 
-	    send -i $umlid -- "$line\r"
+	    send -i $id -- "$line\r"
 	}
     }
     close $initscript
+}
+
+proc playscript {umlname scriptname} {
+    global theprompt
+    global umlid 
+    global managed_hosts
+
+    foreach host $managed_hosts {
+	# insert trace of which script is where. This gets sanitized
+	# out by east-prompt-splitline.pl
+	expectprompt $umlid($host,spawnid) "in start of playscript $scriptname for $umlname"
+	send -i $umlid($host,spawnid) -- ": === NETJIG start of $umlname $scriptname \r"
+    }
+
+    dumbplayscript $umlname $scriptname
 }
 
 proc record {netjig network recordfile} {
@@ -300,7 +318,7 @@ proc inituml {umlname} {
     send -i $umlid($umlname,spawnid) -- "klogd -c 4 -x -f /tmp/klog.log\r"
 
     if {[info exists umlid($umlname,initscript)]} {
-	playscript $umlid($umlname,spawnid) $umlid($umlname,initscript)
+	dumbplayscript $umlname $umlid($umlname,initscript)
 	netjigdebug "$umlname Initialization done"
     }
 }
@@ -330,7 +348,7 @@ proc runXuml {umlname pass} {
 	} 
 
 	if {[file exists $umlid($umlname,$scriptname)]} {
-	    playscript $umlid($umlname,spawnid) $umlid($umlname,$scriptname)
+	    playscript $umlname $umlid($umlname,$scriptname)
 	    netjigdebug "$umlname run script($pass) $umlid($umlname,$scriptname) done"
 	    return 1
 	} else {
@@ -410,7 +428,7 @@ proc killuml {umlname} {
     trace variable expect_out(buffer) w log_by_tracing
 
     if {[info exists umlid($umlname,finalscript)]} {
-	playscript $umlid($umlname,spawnid) $umlid($umlname,finalscript)
+	dumbplayscript $umlname $umlid($umlname,finalscript)
 	netjigdebug "Finalscript done"
     } 
 

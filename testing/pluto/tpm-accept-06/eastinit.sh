@@ -31,4 +31,5 @@ sleep 1
 
 ipsec whack --listen
 
+echo done
 

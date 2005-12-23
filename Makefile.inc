@@ -338,11 +338,11 @@ endif
 # should we include all manner of known to be broken/weak?
 # use this only if you are building some kind of a testing
 # device. Normal use does not need any of this.
-USE_WEAKSTUFF?=false
+USE_WEAKSTUFF?=true
 
 # include algorithms that don't even encrypt (also must set WEAKSTUFF)
 # unless you are doing negative testing, turning this on is foolish.
-USE_NOCRYPTO?=false
+USE_NOCRYPTO?=true
 
 # should we include additional (strong) algorithms?  It adds a measureable
 # amount of code space to pluto, and many of the algorithms have not had
