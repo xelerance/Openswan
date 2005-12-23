@@ -31,7 +31,7 @@ east:~#
 Starting Openswan IPsec pluto
 east:~#
  (cd /tmp && /usr/local/libexec/ipsec/pluto --nofork --secretsfile /tmp/$TESTNAME/ipsec.secrets --ipsecdir /tmp/$TESTNAME/ipsec.d --use-nostack --uniqueids --nhelpers 0 --stderrlog 2>/tmp/pluto.log ) &
-[1] 828
+[1] 9999
 east:~#
  sleep 1
 east:~#
