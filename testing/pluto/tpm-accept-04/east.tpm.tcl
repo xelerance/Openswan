@@ -87,7 +87,7 @@ proc preEncrypt {state pb off len} {
    
 
 proc postEncrypt {state pb off len} {
-    global STATE_MAIN_R2 STATE_QUICK_R1
+    global STATE_MAIN_R2 STATE_QUICK_R0
     global test_stage
     global stage4b_count stage4c_count
 
@@ -124,11 +124,11 @@ proc postEncrypt {state pb off len} {
     if {[string compare $test_stage "t04c"] == 0} {
 
 	set ikemsg [pbs_bytes $pb 256]
-	puts stderr [format "t04c inm st:%02d (QR1:%d)" $st_state $STATE_QUICK_R1] 
+	puts stderr [format "t04c inm st:%02d (QR1:%d)" $st_state $STATE_QUICK_R0] 
 	set logmsg [format "t04c st:%d" $st_state] 
 	openswan_DBG_dump $logmsg $ikemsg
 
-	if {$st_state == $STATE_QUICK_R1 && $stage4c_count < 1} {
+	if {$st_state == $STATE_QUICK_R0 && $stage4c_count < 1} {
 	
 	    # corrupt first outgoing IKE phase 2 message.
 	    

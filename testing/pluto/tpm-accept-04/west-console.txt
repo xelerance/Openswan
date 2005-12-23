@@ -52,7 +52,12 @@ west:~#
 108 "west--east-psk" #6: STATE_MAIN_I3: sent MI3, expecting MR3
 004 "west--east-psk" #6: STATE_MAIN_I4: ISAKMP SA established {auth=OAKLEY_PRESHARED_KEY cipher=oakley_3des_cbc_192 prf=oakley_md5 group=modp1536}
 117 "west--east-psk" #7: STATE_QUICK_I1: initiate
-004 "west--east-psk" #7: STATE_QUICK_I2: sent QI2, IPsec SA established
+003 "west--east-psk" #7: malformed payload in packet
+003 "west--east-psk" #7: malformed payload in packet
+003 "west--east-psk" #7: malformed payload in packet
+003 "west--east-psk" #7: malformed payload in packet
+031 "west--east-psk" #7: max number of retransmissions (2) reached STATE_QUICK_I1.  No acceptable response to our first Quick Mode message: perhaps peer likes no proposal
+000 "west--east-psk" #7: starting keying attempt 2 of an unlimited number, but releasing whack
 west:~#
  ipsec auto --delete west--east-psk
 west:~#
@@ -100,11 +105,11 @@ listening for IKE messages
 adding interface ipsec0/eth1 192.1.2.45:500
 loading secrets from "/tmp/tpm-accept-04/ipsec.secrets"
   loaded private key file '/etc/ipsec.d/private/west.pem' (963 bytes)
-added connection description "west--east-psk"
 listening for IKE messages
 forgetting secrets
 loading secrets from "/tmp/tpm-accept-04/ipsec.secrets"
   loaded private key file '/etc/ipsec.d/private/west.pem' (963 bytes)
+added connection description "west--east-psk"
 "west--east-psk": deleting connection
 added connection description "west--east-psk"
 "west--east-psk" #1: initiating Main Mode
@@ -174,10 +179,21 @@ added connection description "west--east-psk"
 "west--east-psk" #6: transition from state STATE_MAIN_I3 to state STATE_MAIN_I4
 "west--east-psk" #6: STATE_MAIN_I4: ISAKMP SA established {auth=OAKLEY_PRESHARED_KEY cipher=oakley_3des_cbc_192 prf=oakley_md5 group=modp1536}
 "west--east-psk" #7: initiating Quick Mode PSK+ENCRYPT+TUNNEL+PFS+UP
-"west--east-psk" #7: transition from state STATE_QUICK_I1 to state STATE_QUICK_I2
-"west--east-psk" #7: STATE_QUICK_I2: sent QI2, IPsec SA established
+"west--east-psk" #7: malformed payload in packet
+"west--east-psk" #7: sending notification PAYLOAD_MALFORMED to 192.1.2.23:500
+"west--east-psk" #7: malformed payload in packet
+"west--east-psk" #7: sending notification PAYLOAD_MALFORMED to 192.1.2.23:500
+"west--east-psk" #7: malformed payload in packet
+"west--east-psk" #7: sending notification PAYLOAD_MALFORMED to 192.1.2.23:500
+"west--east-psk" #7: malformed payload in packet
+"west--east-psk" #7: sending notification PAYLOAD_MALFORMED to 192.1.2.23:500
+"west--east-psk" #7: max number of retransmissions (2) reached STATE_QUICK_I1.  No acceptable response to our first Quick Mode message: perhaps peer likes no proposal
+"west--east-psk" #7: starting keying attempt 2 of an unlimited number, but releasing whack
+"west--east-psk" #8: initiating Quick Mode PSK+ENCRYPT+TUNNEL+PFS+UP to replace #7
+"west--east-psk" #8: transition from state STATE_QUICK_I1 to state STATE_QUICK_I2
+"west--east-psk" #8: STATE_QUICK_I2: sent QI2, IPsec SA established
 "west--east-psk": deleting connection
-"west--east-psk" #7: deleting state (STATE_QUICK_I2)
+"west--east-psk" #8: deleting state (STATE_QUICK_I2)
 "west--east-psk" #6: deleting state (STATE_MAIN_I4)
 west:~#
  if [ -f /tmp/core ]; then echo CORE FOUND; mv /tmp/core /var/tmp; fi
