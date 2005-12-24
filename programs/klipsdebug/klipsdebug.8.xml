@@ -18,24 +18,24 @@
   <command>ipsec</command>    
     <arg choice='plain'><replaceable>klipsdebug</replaceable></arg>
     <sbr/>
-    <arg choice='plain'><replaceable>ipsecklipsdebug</replaceable></arg>
+    <arg choice='plain'><replaceable>ipsec klipsdebug</replaceable></arg>
     <arg choice='plain'>--set </arg>
     <arg choice='plain'><replaceable>flagname</replaceable></arg>
     <sbr/>
-    <arg choice='plain'><replaceable>ipsecklipsdebug</replaceable></arg>
+    <arg choice='plain'><replaceable>ipsec klipsdebug</replaceable></arg>
     <arg choice='plain'>--clear </arg>
     <arg choice='plain'><replaceable>flagname</replaceable></arg>
     <sbr/>
-    <arg choice='plain'><replaceable>ipsecklipsdebug</replaceable></arg>
+    <arg choice='plain'><replaceable>ipsec klipsdebug</replaceable></arg>
     <arg choice='plain'>--all </arg>
     <sbr/>
-    <arg choice='plain'><replaceable>ipsecklipsdebug</replaceable></arg>
+    <arg choice='plain'><replaceable>ipsec klipsdebug</replaceable></arg>
     <arg choice='plain'>--none </arg>
     <sbr/>
-    <arg choice='plain'><replaceable>ipsecklipsdebug</replaceable></arg>
+    <arg choice='plain'><replaceable>ipsec klipsdebug</replaceable></arg>
     <arg choice='plain'>--help </arg>
     <sbr/>
-    <arg choice='plain'><replaceable>ipsecklipsdebug</replaceable></arg>
+    <arg choice='plain'><replaceable>ipsec klipsdebug</replaceable></arg>
     <arg choice='plain'>--version </arg>
 </cmdsynopsis>
 </refsynopsisdiv>
