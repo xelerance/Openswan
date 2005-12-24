@@ -17,28 +17,11 @@ extern void *malloc(unsigned int size);
 #include "openswan/ipsec_sa.h"
 #include "openswan/ipsec_policy.h"
 #include "openswan/ipsec_proto.h"
+#include "openswan/ipsec_sysctl.h"
 #include "pfkeyv2.h"
 #include "pfkey.h"
 
 #include "talloc.h"
-
-int debug_tunnel;
-int debug_eroute;
-int debug_spi;
-int debug_radij;
-int debug_pfkey;
-int debug_ah;
-int debug_esp;
-int debug_netlink;
-int debug_rcv;
-int debug_xmit;
-extern int sysctl_ipsec_debug_verbose;
-int sysctl_ipsec_debug_ipcomp;
-extern int sysctl_ipsec_icmp;
-extern int sysctl_ipsec_tos;
-extern int debug_rcv;
-int sysctl_ip_default_ttl = 64;
-int sysctl_ipsec_inbound_policy_check = 1;
 
 struct prng ipsec_prng;
 spinlock_t eroute_lock = SPIN_LOCK_UNLOCKED;

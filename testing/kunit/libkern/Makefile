@@ -22,7 +22,7 @@ include ${OPENSWANSRCDIR}/Makefile.ver
 MANDIR=$(MANTREE)/man3
 
 SRCS=printk.c jiffies.c sysctl.c panic.c skb.c netif.c stack.c
-SRCS+=vmalloc.c  module.c
+SRCS+=vmalloc.c  module.c debugflags.c
 SRCS+=bh.c ipv4.c talloc.c skbcreate.c
 # XXX need to have checksum.c for non-x86
 
@@ -44,10 +44,10 @@ CFLAGS+= -I${OPENSWANSRCDIR}/testing/kunit/include
 CFLAGS+= -I${OPENSWANSRCDIR}/include -g -O2
 #KLIPS_FLAGS+=-D__KERNEL__ 
 #KLIPS_FLAGS+=-O2 -U__i386__ -Ui386  -D__arch_um__ -DSUBARCH=\"i386\" 
-KLIPS_FLAGS+=-I${UMLPLAIN}/include
-KLIPS_FLAGS+=-I${UMLPLAIN}/arch/um/include
-KLIPS_FLAGS+=-I${UMLPLAIN}/arch/um/kernel/tt/include
-KLIPS_FLAGS+=-I${UMLPLAIN}/arch/um/kernel/skas/include
+#KLIPS_FLAGS+=-I${UMLPLAIN}/include
+#KLIPS_FLAGS+=-I${UMLPLAIN}/arch/um/include
+#KLIPS_FLAGS+=-I${UMLPLAIN}/arch/um/kernel/tt/include
+#KLIPS_FLAGS+=-I${UMLPLAIN}/arch/um/kernel/skas/include
 CFLAGS+=${KLIPS_FLAGS}
 CFLAGS+= -Wall
 #CFLAGS+= -Wconversion

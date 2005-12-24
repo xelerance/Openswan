@@ -13,21 +13,10 @@
 #include "openswan/ipsec_sa.h"
 #include "openswan/ipsec_policy.h"
 #include "openswan/ipsec_proto.h"
+#include "openswan/ipsec_sysctl.h"
 #include "pfkeyv2.h"
 #include "pfkey.h"
 
-int debug_tunnel;
-int debug_eroute;
-int debug_spi;
-int debug_radij;
-int debug_pfkey;
-int debug_ah;
-int debug_esp;
-int debug_netlink;
-int sysctl_ipsec_debug_verbose;
-int sysctl_ipsec_debug_ipcomp;
-int sysctl_ipsec_icmp;
-int sysctl_ipsec_tos;
 extern int debug_rcv;
 
 struct prng ipsec_prng;

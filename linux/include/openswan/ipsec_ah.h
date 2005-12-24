@@ -46,9 +46,8 @@ struct ahhdr				/* Generic AH header */
 
 extern struct xform_functions ah_xform_funcs[];
 
-#ifdef CONFIG_KLIPS_DEBUG
-extern int debug_ah;
-#endif /* CONFIG_KLIPS_DEBUG */
+#include "openswan/ipsec_sysctl.h"
+
 #endif /* __KERNEL__ */
 
 /*

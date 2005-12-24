@@ -16,11 +16,11 @@
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include $(OPENSWANSRCDIR)/Makefile.inc
 
-SUBDIRS=libkern rcv-01 rcv-02 xmit-01
+srcdir?=$(shell pwd)/
 
-def:
-	@echo "Please read doc/intro.html or INSTALL before running make"
-	@false
+SUBDIRS=libkern rcv-01 rcv-02 xmit-01 saref-01
+
+def:	check
 
 # programs
 
@@ -41,3 +41,7 @@ cleanall distclean mostlyclean realclean install programs checkprograms check cl
 		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1;\
 	done; 
 
+# 
+# Local Variables: 
+# compile-command: "make"
+# End: 

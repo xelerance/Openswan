@@ -1,5 +1,5 @@
-#include <linux/sysctl.h>
 #include <kernelenv.h>
+#include <linux/sysctl.h>
 
 extern int proc_dostring(ctl_table *, int, struct file *,
 			 void __user *, size_t *, loff_t *);

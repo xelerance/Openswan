@@ -52,7 +52,10 @@ ${TESTCASE}.o: ${srcdir}${TESTCASE}.c
 version.c:	${KLIPSSRC}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
 	sed '/"/s/xxx/$(IPSECVERSION)/' ${KLIPSSRC}/version.in.c >$@
 
+ifneq (${PACKFILE},)
 ${TESTCASE}.o: ${PACKFILE}.c 
+endif
+
 ${PACKFILE}.c: ${INPUTS}
 	${PCAP2SKB} ${INPUTS} >$*.c
 
