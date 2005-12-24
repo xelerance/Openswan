@@ -1,7 +1,8 @@
 int sysctl_ip_default_ttl = 64;
-//int sysctl_ipsec_inbound_policy_check = 1;
+int sysctl_ipsec_inbound_policy_check = 1;
 int debug_tunnel;
 int debug_xmit;
+int debug_xform;
 int debug_eroute;
 int debug_spi;
 int debug_radij;
