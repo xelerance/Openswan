@@ -31,7 +31,9 @@
 #ifdef CONFIG_KLIPS_DEBUG
 extern int       debug_ah;
 extern int       debug_esp;
+extern int       debug_mast;
 extern int       debug_tunnel;
+extern int       debug_xmit;
 extern int       debug_eroute;
 extern int       debug_spi;
 extern int       debug_radij;
@@ -69,6 +71,8 @@ enum {
 	NET_IPSEC_INBOUND_POLICY_CHECK=14,
 	NET_IPSEC_TOS=15,
 	NET_IPSEC_REGRESS_PFKEY_LOSSAGE=16,
+	NET_IPSEC_DEBUG_MAST=17,
+	NET_IPSEC_DEBUG_XMIT=18,
 };
 
 static ctl_table ipsec_table[] = {
@@ -77,7 +81,11 @@ static ctl_table ipsec_table[] = {
 	  sizeof(int), 0644, NULL, &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_ESP, "debug_esp", &debug_esp,
 	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	{ NET_IPSEC_DEBUG_MAST, "debug_mast", &debug_mast,
+	  sizeof(int), 0644, NULL, &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_TUNNEL, "debug_tunnel", &debug_tunnel,
+	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	{ NET_IPSEC_DEBUG_TUNNEL, "debug_xmit", &debug_xmit,
 	  sizeof(int), 0644, NULL, &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_EROUTE, "debug_eroute", &debug_eroute,
 	  sizeof(int), 0644, NULL, &proc_dointvec},    
