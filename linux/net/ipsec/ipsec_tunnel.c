@@ -1717,18 +1717,6 @@ ipsec_tunnel_init(struct net_device *dev)
 	/* New-style flags. */
 	dev->flags		= IFF_NOARP /* 0 */ /* Petr Novak */;
 
-#if 0
-#ifdef NET_21
-	dev_init_buffers(dev);
-#else /* NET_21 */
-	dev->family		= AF_INET;
-	dev->pa_addr		= 0;
-	dev->pa_brdaddr 	= 0;
-	dev->pa_mask		= 0;
-	dev->pa_alen		= 4;
-#endif /* NET_21 */
-#endif
-
 	/* We're done.  Have I forgotten anything? */
 	return 0;
 }
@@ -1764,10 +1752,9 @@ ipsec_tunnel_init_devices(void)
 		sprintf(name, IPSEC_DEV_FORMAT, i);
 		dev_ipsec = (struct net_device*)kmalloc(sizeof(struct net_device), GFP_KERNEL);
 		if (dev_ipsec == NULL) {
-			KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
-				    "klips_debug:ipsec_tunnel_init_devices: "
-				    "failed to allocate memory for device %s, quitting device init.\n",
-				    name);
+			printk(KERN_ERR "klips_debug:ipsec_tunnel_init_devices: "
+			       "failed to allocate memory for device %s, quitting device init.\n",
+			       name);
 			return -ENOMEM;
 		}
 		memset((caddr_t)dev_ipsec, 0, sizeof(struct net_device));
