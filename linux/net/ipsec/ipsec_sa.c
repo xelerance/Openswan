@@ -104,41 +104,6 @@ typedef struct {
 #define IPS_HASH(said) (((said)->spi + (said)->dst.u.v4.sin_addr.s_addr + (said)->proto) % SADB_HASHMOD)
 
 
-void
-ipsec_SAtest(void)
-{
-	IPsecSAref_t SAref = 258;
-	struct ipsec_sa ips;
-	ips.ips_ref = 772;
-
-	printk("klips_debug:ipsec_SAtest: "
-	       "IPSEC_SA_REF_SUBTABLE_IDX_WIDTH=%u\n"
-	       "IPSEC_SA_REF_MAINTABLE_NUM_ENTRIES=%u\n"
-	       "IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES=%u\n"
-	       "IPSEC_SA_REF_HOST_FIELD_WIDTH=%lu\n"
-	       "IPSEC_SA_REF_TABLE_MASK=%x\n"
-	       "IPSEC_SA_REF_ENTRY_MASK=%x\n"
-	       "IPsecSAref2table(%d)=%u\n"
-	       "IPsecSAref2entry(%d)=%u\n"
-	       "IPsecSAref2NFmark(%d)=%u\n"
-	       "IPsecSAref2SA(%d)=%p\n"
-	       "IPsecSA2SAref(%p)=%d\n"
-	       ,
-	       IPSEC_SA_REF_SUBTABLE_IDX_WIDTH,
-	       IPSEC_SA_REF_MAINTABLE_NUM_ENTRIES,
-	       IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES,
-	       (unsigned long) IPSEC_SA_REF_HOST_FIELD_WIDTH,
-	       IPSEC_SA_REF_TABLE_MASK,
-	       IPSEC_SA_REF_ENTRY_MASK,
-	       SAref, IPsecSAref2table(SAref),
-	       SAref, IPsecSAref2entry(SAref),
-	       SAref, IPsecSAref2NFmark(SAref),
-	       SAref, IPsecSAref2SA(SAref),
-	       (&ips), IPsecSA2SAref((&ips))
-		);
-	return;
-}
-
 int
 ipsec_SAref_recycle(void)
 {
