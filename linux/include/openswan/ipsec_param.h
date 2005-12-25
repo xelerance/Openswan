@@ -173,6 +173,7 @@ extern int sysctl_ipsec_regress_pfkey_lossage;
 /*
  * debugging routines.
  */
+#define KLIPS_ERROR(flag, format, args...) if(printk_ratelimit() || flag) printk(KERN_ERR "KLIPS " format, ## args)
 #ifdef CONFIG_KLIPS_DEBUG
 	#define KLIPS_PRINT(flag, format, args...) \
 		((flag) ? printk(KERN_INFO format , ## args) : 0)
