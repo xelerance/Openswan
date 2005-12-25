@@ -58,10 +58,6 @@
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_xform = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
-
 #ifdef SPINLOCK
 spinlock_t tdb_lock = SPIN_LOCK_UNLOCKED;
 #else /* SPINLOCK */

@@ -107,6 +107,23 @@ struct ipsec_birth_reply ipsec_ipv6_birth_packet;
 #ifdef CONFIG_KLIPS_DEBUG
 int debug_esp = 0;
 int debug_ah = 0;
+int sysctl_ip_default_ttl = 64;
+int sysctl_ipsec_inbound_policy_check = 1;
+int debug_tunnel = 0;
+int debug_xmit = 0;
+int debug_xform = 0;
+int debug_eroute = 0;
+int debug_spi = 0;
+int debug_radij = 0;
+int debug_pfkey = 0;
+int debug_ah = 0;
+int debug_rcv = 0;
+int debug_esp = 0;
+int debug_netlink = 0;
+int sysctl_ipsec_debug_verbose = 0;
+int sysctl_ipsec_debug_ipcomp =0;
+int sysctl_ipsec_icmp = 0;
+int sysctl_ipsec_tos = 0;
 #endif /* CONFIG_KLIPS_DEBUG */
 
 #define DECREMENT_UNSIGNED(X, amount) ((amount < (X)) ? (X)-amount : 0)

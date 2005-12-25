@@ -112,12 +112,6 @@ char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.106 2005/09/14 14:22:
 MODULE_LICENSE("GPL");
 #endif
 
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_eroute = 0;
-int debug_spi = 0;
-int debug_netlink = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
-
 struct prng ipsec_prng;
 
 

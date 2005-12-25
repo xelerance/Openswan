@@ -72,10 +72,6 @@
 #include "openswan/ipsec_alg.h"
 
 
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_xform = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
-
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
 struct ipsec_sa *ipsec_sadb_hash[SADB_HASHMOD];

@@ -82,12 +82,6 @@ char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.178 2005/10/21 02:19:34
 #include "openswan/ipsec_alg.h"
 #include "openswan/ipsec_kern24.h"
 
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_rcv = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
-
-int sysctl_ipsec_inbound_policy_check = 1;
-
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 #include <linux/udp.h>
 #endif

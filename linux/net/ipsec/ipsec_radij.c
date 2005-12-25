@@ -62,10 +62,6 @@
 
 #include "openswan/ipsec_proto.h"
 
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_radij = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
-
 struct radij_node_head *rnh = NULL;
 #ifdef SPINLOCK
 spinlock_t eroute_lock = SPIN_LOCK_UNLOCKED;

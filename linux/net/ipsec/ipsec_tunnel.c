@@ -87,10 +87,6 @@ char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.234 2005/11/11 04
 
 static __u32 zeroes[64];
 
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_tunnel = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
-
 DEBUG_NO_STATIC int
 ipsec_tunnel_open(struct net_device *dev)
 {
@@ -703,7 +699,7 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	enum ipsec_xmit_value stat;
 
 	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-                   "\n\nipsec_tunnel_start_xmit: STARTING");
+		    "\n\nipsec_tunnel_start_xmit: STARTING");
 
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 	ixs->natt_type = 0, ixs->natt_head = 0;

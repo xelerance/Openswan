@@ -65,11 +65,6 @@ char ipsec_ipcomp_c_version[] = "RCSID $Id: ipsec_ipcomp.c,v 1.6 2005/11/11 03:2
 
 #include "openswan/ipsec_proto.h"
 
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_ipcomp = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
-
-
 #ifdef CONFIG_KLIPS_IPCOMP
 enum ipsec_rcv_value
 ipsec_rcv_ipcomp_checks(struct ipsec_rcv_state *irs,

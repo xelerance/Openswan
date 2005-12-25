@@ -73,11 +73,6 @@
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_kern24.h"
 
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_pfkey = 0;
-extern int sysctl_ipsec_debug_verbose;
-#endif /* CONFIG_KLIPS_DEBUG */
-
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
 #ifndef SOCKOPS_WRAPPED

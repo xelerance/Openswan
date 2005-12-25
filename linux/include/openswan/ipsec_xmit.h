@@ -82,7 +82,8 @@ struct ipsec_xmit_state
 
 	struct sockaddr_encap matcher;	/* eroute search key */
 	struct eroute *eroute;
-	struct ipsec_sa *ipsp, *ipsq;	/* ipsec_sa pointers */
+        struct ipsec_sa *ipsp;	        /* ipsec_sa pointers */
+  //struct ipsec_sa *ipsp_outer;    /* last SA applied by encap_bundle */
 	char sa_txt[SATOT_BUF];
 	size_t sa_len;
 	int hard_header_stripped;	/* has the hard header been removed yet? */
@@ -126,9 +127,8 @@ extern int ipsec_xmit_trap_count;
 extern int ipsec_xmit_trap_sendcount;
 
 #ifdef CONFIG_KLIPS_DEBUG
-extern int debug_tunnel;
-
-#define debug_xmit debug_tunnel
+extern int debug_xmit;
+extern int debug_mast;
 
 #define ipsec_xmit_dmp(_x,_y, _z) if (debug_xmit && sysctl_ipsec_debug_verbose) ipsec_dmp_block(_x,_y,_z)
 #else
