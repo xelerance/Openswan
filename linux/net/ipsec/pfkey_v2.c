@@ -72,6 +72,7 @@
 
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_kern24.h"
+#include "openswan/ipsec_sysctl.h"
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
