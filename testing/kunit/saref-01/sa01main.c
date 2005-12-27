@@ -187,6 +187,7 @@ int main(char *argv[], int argc)
 
   ipsec_sadb_init();
 
+  printf("test 0\n");
   {
     volatile IPsecSAref_t sa1,sa2;
     volatile unsigned int nf1;
@@ -205,6 +206,7 @@ int main(char *argv[], int argc)
     assert( sa1 == sa2 );
   }
 
+  printf("test 1\n");
   /* Test 1 - allocate an SA and let it get a random SAref */
   {
     struct ipsec_sa *sa1;
@@ -221,6 +223,7 @@ int main(char *argv[], int argc)
     ipsec_sa_put(sa1);
   }
 
+  printf("test 2\n");
   /* Test 2 - allocate an SA and give it a known value */
   {
     struct ipsec_sa *sa2;
@@ -228,7 +231,7 @@ int main(char *argv[], int argc)
     sa2 = ipsec_sa_alloc(&error);
     assert(error == 0);
     
-    sa2->ips_ref = 27;
+    sa2->ips_ref = 2727;
     
     error=ipsec_sa_intern(sa2);
     assert(sa2->ips_ref != IPSEC_SAREF_NULL);
@@ -236,6 +239,7 @@ int main(char *argv[], int argc)
     ipsec_sa_put(sa2);
   }
 
+  printf("test 3\n");
   /* Test 2 - allocate an SA, and give it a known value twice */
   {
     struct ipsec_sa *sa1;
@@ -263,7 +267,9 @@ int main(char *argv[], int argc)
     ipsec_sa_put(sa2);
   }
 
+  printf("freeing things up\n");
   ipsec_sadb_cleanup(0);  /* 0 = all protocols */
+  ipsec_sadb_free();
 
   exit(0);
 }
