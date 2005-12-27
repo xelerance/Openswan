@@ -1626,12 +1626,13 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 	ips1p = ipsec_sa_getbyid(&(extr->ips->ips_said));
 	if(ips1p == NULL) {
 		spin_unlock_bh(&tdb_lock);
-		KLIPS_PRINT(debug_pfkey,
+		KLIPS_ERROR(debug_pfkey,
 			    "klips_debug:pfkey_x_grpsa_parse: "
 			    "reserved ipsec_sa for SA1: %s not found.  Call SADB_ADD/UPDATE first.\n",
 			    sa_len1 ? sa1 : " (error)");
 		SENDERR(ENOENT);
 	}
+
 	if(extr->ips2) { /* GRPSA */
 		ips2p = ipsec_sa_getbyid(&(extr->ips2->ips_said));
 		if(ips2p == NULL) {
@@ -1649,7 +1650,7 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 			ipsec_sa_put(ips1p);
 			ipsec_sa_put(ips2p);
 			spin_unlock_bh(&tdb_lock);
-			KLIPS_PRINT(debug_pfkey,
+			KLIPS_ERROR(debug_pfkey,
 				    "klips_debug:pfkey_x_grpsa_parse: "
 				    "ipsec_sa for SA: %s is already linked.\n",
 				    sa_len1 ? sa1 : " (error)");
@@ -1659,7 +1660,7 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 			ipsec_sa_put(ips1p);
 			ipsec_sa_put(ips2p);
 			spin_unlock_bh(&tdb_lock);
-			KLIPS_PRINT(debug_pfkey,
+			KLIPS_ERROR(debug_pfkey,
 				    "klips_debug:pfkey_x_grpsa_parse: "
 				    "ipsec_sa for SA: %s is already linked.\n",
 				    sa_len2 ? sa2 : " (error)");
@@ -1673,7 +1674,7 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 				ipsec_sa_put(ips1p);
 				ipsec_sa_put(ips2p);
 				spin_unlock_bh(&tdb_lock);
-				KLIPS_PRINT(debug_pfkey,
+				KLIPS_ERROR(debug_pfkey,
 					    "klips_debug:pfkey_x_grpsa_parse: "
 					    "ipsec_sa for SA: %s is already linked to %s.\n",
 					    sa_len1 ? sa1 : " (error)",
@@ -1712,6 +1713,9 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 
 	spin_unlock_bh(&tdb_lock);
 
+	/* MCR: not only is this ugly to read, and impossible to debug through, but it's also really inefficient.
+	 * XXX simplify me.
+	 */
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
 							  SADB_X_GRPSA,
 							  satype,
@@ -2889,10 +2893,10 @@ pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg,
 #endif	
  errlab:
 	if(extr.ips != NULL) {
-		ipsec_sa_wipe(extr.ips);
+		ipsec_sa_put(extr.ips);
 	}
 	if(extr.ips2 != NULL) {
-		ipsec_sa_wipe(extr.ips2);
+		ipsec_sa_put(extr.ips2);
 	}
 	if (extr.eroute != NULL) {
 		kfree(extr.eroute);

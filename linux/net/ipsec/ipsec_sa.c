@@ -532,7 +532,7 @@ ipsec_sa_put(struct ipsec_sa *ips)
 
 	if(ips == NULL) {
 		KLIPS_PRINT(debug_xform,
-			    "klips_error:ipsec_sa_put: "
+			    "ipsec_sa_put: "
 			    "null pointer passed in!\n");
 		return -1;
 	}
@@ -541,8 +541,9 @@ ipsec_sa_put(struct ipsec_sa *ips)
 	  sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
 
 	  KLIPS_PRINT(debug_xform,
-		      "klips_debug:ipsec_sa_put: "
-		      "ipsec_sa SA:%s, ref:%d reference count decremented.\n",
+		      "ipsec_sa_put: "
+		      "ipsec_sa %p SA:%s, ref:%d reference count decremented.\n",
+		      ips,
 		      sa_len ? sa : " (error)",
 		      ips->ips_ref);
 	}

@@ -1,7 +1,7 @@
 /*
  * @(#) RFC2367 PF_KEYv2 Key management API message parser
  * Copyright (C) 1998-2003   Richard Guy Briggs.
- * Copyright (C) 2004        Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2004-2006   Michael Richardson <mcr@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -170,9 +170,6 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 		SENDERR(EINVAL);
 	}
 
-	if(error==0 && extr->ips2) {
-		error = ipsec_sa_intern(extr->ips2);
-	}
 errlab:
 	return error;
 }
@@ -456,10 +453,6 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		break;
 	}
 	
-	if(error == 0 && extr->ips2!=NULL) {
-		error = ipsec_sa_intern(extr->ips2);
-	}
-
 	/* XXX check if port!=0 */
 	
 	KLIPS_PRINT(debug_pfkey,
@@ -676,11 +669,11 @@ pfkey_x_satype_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* 
 	struct sadb_x_satype *pfkey_x_satype = (struct sadb_x_satype *)pfkey_ext;
 
 	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_x_satype_process: .\n");
+		    "pfkey_x_satype_process: .\n");
 
 	if(!extr || !extr->ips) {
 		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_x_satype_process: "
+			    "pfkey_x_satype_process: "
 			    "extr or extr->ips is NULL, fatal\n");
 		SENDERR(EINVAL);
 	}
@@ -692,23 +685,19 @@ pfkey_x_satype_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* 
 		SENDERR(-error);
 	}
 	if(!(extr->ips2->ips_said.proto = satype2proto(pfkey_x_satype->sadb_x_satype_satype))) {
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_x_satype_process: "
+		KLIPS_ERROR(debug_pfkey,
+			    "pfkey_x_satype_process: "
 			    "proto lookup from satype=%d failed.\n",
 			    pfkey_x_satype->sadb_x_satype_satype);
 		SENDERR(EINVAL);
 	}
 	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_x_satype_process: "
+		    "pfkey_x_satype_process: "
 		    "protocol==%d decoded from satype==%d(%s).\n",
 		    extr->ips2->ips_said.proto,
 		    pfkey_x_satype->sadb_x_satype_satype,
 		    satype2name(pfkey_x_satype->sadb_x_satype_satype));
 	
-	if(error == 0 && extr->ips2!=NULL) {
-		error = ipsec_sa_intern(extr->ips2);
-	}
-
 errlab:
 	return error;
 }
