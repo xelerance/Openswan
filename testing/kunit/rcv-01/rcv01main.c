@@ -162,6 +162,8 @@ int main(char *argv[], int argc)
     sa1 = ipsec_sa_alloc(&error);
     assert(error == 0);
 
+    ipsec_sa_intern(sa1);
+
     sa1->ips_said.spi = htonl(0x12345678);
     sa1->ips_said.proto = IPPROTO_IPIP;
     sa1->ips_said.dst.u.v4.sin_addr.s_addr = htonl(0xc001022D);
@@ -178,6 +180,9 @@ int main(char *argv[], int argc)
     
   {
     sa = ipsec_sa_alloc(&error);
+
+    ipsec_sa_intern(sa);
+
     assert(error == 0);
     sa->ips_said.spi = htonl(0x12345678);
     sa->ips_said.proto = IPPROTO_ESP;

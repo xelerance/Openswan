@@ -182,6 +182,8 @@ int main(char *argv[], int argc)
     sa1 = ipsec_sa_alloc(&error);
     assert(error == 0);
 
+    ipsec_sa_intern(sa1);
+
     sa1->ips_seq = 1;
     sa1->ips_pid = 10;
     
@@ -199,6 +201,8 @@ int main(char *argv[], int argc)
   {
     sa = ipsec_sa_alloc(&error);
     assert(error == 0);
+
+    ipsec_sa_intern(sa);
 
     sa->ips_said.spi = htonl(0x12345678);
     sa->ips_said.proto = IPPROTO_ESP;
