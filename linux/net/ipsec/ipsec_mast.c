@@ -1,7 +1,6 @@
 /*
  * IPSEC MAST code.
- * Copyright (C) 1996, 1997  John Ioannidis.
- * Copyright (C) 1998, 1999, 2000, 2001, 2002  Richard Guy Briggs.
+ * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -22,7 +21,7 @@ char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.7 2005/04/29 05:10:22
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "freeswan/ipsec_param.h"
+#include "openswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -33,88 +32,107 @@ char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.7 2005/04/29 05:10:22
 #include <linux/types.h>  /* size_t */
 #include <linux/interrupt.h> /* mark_bh */
 
+#include <net/tcp.h>
+#include <net/udp.h>
+#include <linux/skbuff.h>
+
 #include <linux/netdevice.h>   /* struct device, struct net_device_stats, dev_queue_xmit() and other headers */
 #include <linux/etherdevice.h> /* eth_type_trans */
 #include <linux/ip.h>          /* struct iphdr */
-#include <linux/tcp.h>         /* struct tcphdr */
-#include <linux/udp.h>         /* struct udphdr */
 #include <linux/skbuff.h>
-#include <freeswan.h>
-#include <linux/in6.h>
-#include <net/dst.h>
-#undef dev_kfree_skb
-#define dev_kfree_skb(a,b) kfree_skb(a)
-#define PHYSDEV_TYPE
+
+#include <openswan.h>
+
+#ifdef NET_21
+# include <linux/in6.h>
+# define ip_chk_addr inet_addr_type
+# define IS_MYADDR RTN_LOCAL
+# include <net/dst.h>
+# undef dev_kfree_skb
+# define dev_kfree_skb(a,b) kfree_skb(a)
+# define PHYSDEV_TYPE
+#endif /* NET_21 */
+
 #include <net/icmp.h>		/* icmp_send() */
 #include <net/ip.h>
-#include <linux/netfilter_ipv4.h>
+#ifdef NETDEV_23
+# include <linux/netfilter_ipv4.h>
+#endif /* NETDEV_23 */
 
 #include <linux/if_arp.h>
 
-#include "freeswan/radij.h"
-#include "freeswan/ipsec_life.h"
-#include "freeswan/ipsec_xform.h"
-#include "freeswan/ipsec_eroute.h"
-#include "freeswan/ipsec_encap.h"
-#include "freeswan/ipsec_radij.h"
-#include "freeswan/ipsec_sa.h"
-#include "freeswan/ipsec_tunnel.h"
-#include "freeswan/ipsec_mast.h"
-#include "freeswan/ipsec_ipe4.h"
-#include "freeswan/ipsec_ah.h"
-#include "freeswan/ipsec_esp.h"
+#include "openswan/ipsec_kversion.h"
+#include "openswan/radij.h"
+#include "openswan/ipsec_life.h"
+#include "openswan/ipsec_xform.h"
+#include "openswan/ipsec_eroute.h"
+#include "openswan/ipsec_encap.h"
+#include "openswan/ipsec_radij.h"
+#include "openswan/ipsec_sa.h"
+#include "openswan/ipsec_xmit.h"
+#include "openswan/ipsec_mast.h"
+#include "openswan/ipsec_ipe4.h"
+#include "openswan/ipsec_ah.h"
+#include "openswan/ipsec_esp.h"
+#include "openswan/ipsec_kern24.h"
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-#include "freeswan/ipsec_proto.h"
+#include "openswan/ipsec_proto.h"
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#include <linux/udp.h>
+#endif
 
-int ipsec_maxdevice_count = -1;
+int ipsec_mastdevice_count = -1;
+int debug_mast;
+
+static __u32 zeroes[64];
 
 DEBUG_NO_STATIC int
 ipsec_mast_open(struct net_device *dev)
 {
-	struct ipsecpriv *prv = dev->priv;
-	
+        struct mastpriv *prv = dev->priv; 
+
+	prv = prv;
+
 	/*
 	 * Can't open until attached.
 	 */
 
 	KLIPS_PRINT(debug_mast & DB_MAST_INIT,
 		    "klips_debug:ipsec_mast_open: "
-		    "dev = %s, prv->dev = %s\n",
-		    dev->name, prv->dev?prv->dev->name:"NONE");
+		    "dev = %s\n",
+		    dev->name);
 
-	if (prv->dev == NULL)
-		return -ENODEV;
-	
-	KLIPS_INC_USE;
 	return 0;
 }
 
 DEBUG_NO_STATIC int
 ipsec_mast_close(struct net_device *dev)
 {
-	KLIPS_DEC_USE;
 	return 0;
 }
 
 static inline int ipsec_mast_xmit2(struct sk_buff *skb)
 {
-	return ip_send(skb);
+	return dst_output(skb);
 }
 
 enum ipsec_xmit_value
 ipsec_mast_send(struct ipsec_xmit_state*ixs)
 {
+	struct flowi fl;
+
 	/* new route/dst cache code from James Morris */
 	ixs->skb->dev = ixs->physdev;
-	/*skb_orphan(ixs->skb);*/
-	if((ixs->error = ip_route_output(&ixs->route,
-				    ixs->skb->nh.iph->daddr,
-				    ixs->pass ? 0 : ixs->skb->nh.iph->saddr,
-				    RT_TOS(ixs->skb->nh.iph->tos),
-				    ixs->physdev->iflink /* rgb: should this be 0? */))) {
+
+ 	fl.oif = ixs->physdev->iflink;
+ 	fl.nl_u.ip4_u.daddr = ixs->skb->nh.iph->daddr;
+ 	fl.nl_u.ip4_u.saddr = ixs->pass ? 0 : ixs->skb->nh.iph->saddr;
+ 	fl.nl_u.ip4_u.tos = RT_TOS(ixs->skb->nh.iph->tos);
+ 	fl.proto = ixs->skb->nh.iph->protocol;
+ 	if ((ixs->error = ip_route_output_key(&ixs->route, &fl))) {
 		ixs->stats->tx_errors++;
 		KLIPS_PRINT(debug_mast & DB_MAST_XMIT,
 			    "klips_debug:ipsec_xmit_send: "
@@ -123,6 +141,7 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 			    ixs->route->u.dst.dev->name);
 		return IPSEC_XMIT_ROUTEERR;
 	}
+
 	if(ixs->dev == ixs->route->u.dst.dev) {
 		ip_rt_put(ixs->route);
 		/* This is recursion, drop it. */
@@ -133,6 +152,7 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 			    ixs->dev->name);
 		return IPSEC_XMIT_RECURSDETECT;
 	}
+
 	dst_release(ixs->skb->dst);
 	ixs->skb->dst = &ixs->route->u.dst;
 	ixs->stats->tx_bytes += ixs->skb->len;
@@ -145,19 +165,21 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 		       ixs->skb->len);
 		return IPSEC_XMIT_PUSHPULLERR;
 	}
+
 	__skb_pull(ixs->skb, ixs->skb->nh.raw - ixs->skb->data);
+
 #ifdef SKB_RESET_NFCT
 	nf_conntrack_put(ixs->skb->nfct);
 	ixs->skb->nfct = NULL;
-#ifdef CONFIG_NETFILTER_DEBUG
-	ixs->skb->nf_debug = 0;
-#endif /* CONFIG_NETFILTER_DEBUG */
 #endif /* SKB_RESET_NFCT */
+
 	KLIPS_PRINT(debug_mast & DB_MAST_XMIT,
 		    "klips_debug:ipsec_xmit_send: "
 		    "...done, calling ip_send() on device:%s\n",
 		    ixs->skb->dev ? ixs->skb->dev->name : "NULL");
+
 	KLIPS_IP_PRINT(debug_mast & DB_MAST_XMIT, ixs->skb->nh.iph);
+
 	{
 		int err;
 
@@ -175,6 +197,7 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 			return IPSEC_XMIT_IPSENDFAILURE;
 		}
 	}
+
 	ixs->stats->tx_packets++;
 
 	ixs->skb = NULL;
@@ -190,6 +213,7 @@ ipsec_mast_cleanup(struct ipsec_xmit_state*ixs)
 #else /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
 	ixs->dev->tbusy = 0;
 #endif /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
+
 	if(ixs->saved_header) {
 		kfree(ixs->saved_header);
 	}
@@ -207,7 +231,6 @@ ipsec_mast_cleanup(struct ipsec_xmit_state*ixs)
 	}
 }
 
-#if 0
 /*
  *	This function assumes it is being called from dev_queue_xmit()
  *	and that skb is filled properly by that function.
@@ -219,44 +242,34 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev, IPsecSAref_t 
 	struct ipsec_xmit_state *ixs = &ixs_mem;
 	enum ipsec_xmit_value stat = IPSEC_XMIT_OK;
 
-	/* dev could be a mast device, but should be optional, I think... */
-	/* SAref is also optional, but one of the two must be present. */
-	/* I wonder if it could accept no device or saref and guess? */
-
-/*	ipsec_xmit_sanity_check_dev(ixs); */
-
 	ipsec_xmit_sanity_check_skb(ixs);
-
-	ipsec_xmit_adjust_hard_header(ixs);
 
 	stat = ipsec_xmit_encap_bundle(ixs);
 	if(stat != IPSEC_XMIT_OK) {
 		/* SA processing failed */
 	}
-
-	ipsec_xmit_hard_header_restore();
+	
+	return 0;
 }
-#endif
 
 DEBUG_NO_STATIC struct net_device_stats *
 ipsec_mast_get_stats(struct net_device *dev)
 {
-	return &(((struct ipsecpriv *)(dev->priv))->mystats);
+	return &(((struct mastpriv *)(dev->priv))->mystats);
 }
 
+#if 0
 /*
  * Revectored calls.
  * For each of these calls, a field exists in our private structure.
  */
-
 DEBUG_NO_STATIC int
 ipsec_mast_hard_header(struct sk_buff *skb, struct net_device *dev,
 	unsigned short type, void *daddr, void *saddr, unsigned len)
 {
-	struct ipsecpriv *prv = dev->priv;
-	struct net_device *tmp;
-	int ret;
+	struct mastpriv *prv = dev->priv;
 	struct net_device_stats *stats;	/* This device's statistics */
+	int ret = 0;
 	
 	if(skb == NULL) {
 		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
@@ -274,8 +287,7 @@ ipsec_mast_hard_header(struct sk_buff *skb, struct net_device *dev,
 
 	KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
 		    "klips_debug:ipsec_mast_hard_header: "
-		    "skb->dev=%s dev=%s.\n",
-		    skb->dev ? skb->dev->name : "NULL",
+		    "skb->dev=%s\n",
 		    dev->name);
 	
 	if(prv == NULL) {
@@ -287,15 +299,6 @@ ipsec_mast_hard_header(struct sk_buff *skb, struct net_device *dev,
 	}
 
 	stats = (struct net_device_stats *) &(prv->mystats);
-
-	if(prv->dev == NULL) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_hard_header: "
-			    "no physical device associated with dev=%s\n",
-			    dev->name ? dev->name : "NULL");
-		stats->tx_dropped++;
-		return -ENODEV;
-	}
 
 	/* check if we have to send a IPv6 packet. It might be a Router
 	   Solicitation, where the building of the packet happens in
@@ -326,152 +329,38 @@ ipsec_mast_hard_header(struct sk_buff *skb, struct net_device *dev,
 			stats->tx_dropped++;
 			return -ENODEV;
 		}
-		
-#define da ((struct net_device *)(prv->dev))->dev_addr
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_hard_header: "
-			    "Revectored 0p%p->0p%p len=%d type=%d dev=%s->%s dev_addr=%02x:%02x:%02x:%02x:%02x:%02x ",
-			    saddr,
-			    daddr,
-			    len,
-			    type,
-			    dev->name,
-			    prv->dev->name,
-			    da[0], da[1], da[2], da[3], da[4], da[5]);
-		KLIPS_PRINTMORE(debug_mast & DB_MAST_REVEC,
-			    "ip=%08x->%08x\n",
-			    (__u32)ntohl(skb->nh.iph->saddr),
-			    (__u32)ntohl(skb->nh.iph->daddr) );
 	} else {
 		KLIPS_PRINT(debug_mast,
 			    "klips_debug:ipsec_mast_hard_header: "
 			    "is IPv6 packet, skip debugging messages, only revector and build linklocal header.\n");
-	}                                                                       
-	tmp = skb->dev;
-	skb->dev = prv->dev;
-	ret = prv->hard_header(skb, prv->dev, type, (void *)daddr, (void *)saddr, len);
-	skb->dev = tmp;
+	}                                                                      
+
 	return ret;
 }
 
 DEBUG_NO_STATIC int
 ipsec_mast_rebuild_header(struct sk_buff *skb)
 {
-	struct ipsecpriv *prv = skb->dev->priv;
-	struct net_device *tmp;
-	int ret;
-	struct net_device_stats *stats;	/* This device's statistics */
-	
-	if(skb->dev == NULL) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_rebuild_header: "
-			    "no device...");
-		return -ENODEV;
-	}
+	struct mastpriv *prv = skb->dev->priv;
 
-	if(prv == NULL) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_rebuild_header: "
-			    "no private space associated with dev=%s",
-			    skb->dev->name ? skb->dev->name : "NULL");
-		return -ENODEV;
-	}
-
-	stats = (struct net_device_stats *) &(prv->mystats);
-
-	if(prv->dev == NULL) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_rebuild_header: "
-			    "no physical device associated with dev=%s",
-			    skb->dev->name ? skb->dev->name : "NULL");
-		stats->tx_dropped++;
-		return -ENODEV;
-	}
-
-	if(!prv->rebuild_header) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_rebuild_header: "
-			    "physical device has been detached, packet dropped skb->dev=%s->NULL ",
-			    skb->dev->name);
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "ip=%08x->%08x\n",
-			    (__u32)ntohl(skb->nh.iph->saddr),
-			    (__u32)ntohl(skb->nh.iph->daddr) );
-		stats->tx_dropped++;
-		return -ENODEV;
-	}
-
-	KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-		    "klips_debug:ipsec_mast: "
-		    "Revectored rebuild_header dev=%s->%s ",
-		    skb->dev->name, prv->dev->name);
-	KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-		    "ip=%08x->%08x\n",
-		    (__u32)ntohl(skb->nh.iph->saddr),
-		    (__u32)ntohl(skb->nh.iph->daddr) );
-	tmp = skb->dev;
-	skb->dev = prv->dev;
-	
-	ret = prv->rebuild_header(skb);
-	skb->dev = tmp;
-	return ret;
+	prv = prv;
+	return 0;
 }
 
 DEBUG_NO_STATIC int
 ipsec_mast_set_mac_address(struct net_device *dev, void *addr)
 {
-	struct ipsecpriv *prv = dev->priv;
+	struct mastpriv *prv = dev->priv;
 	
-	struct net_device_stats *stats;	/* This device's statistics */
-	
-	if(dev == NULL) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_set_mac_address: "
-			    "no device...");
-		return -ENODEV;
-	}
-
-	if(prv == NULL) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_set_mac_address: "
-			    "no private space associated with dev=%s",
-			    dev->name ? dev->name : "NULL");
-		return -ENODEV;
-	}
-
-	stats = (struct net_device_stats *) &(prv->mystats);
-
-	if(prv->dev == NULL) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_set_mac_address: "
-			    "no physical device associated with dev=%s",
-			    dev->name ? dev->name : "NULL");
-		stats->tx_dropped++;
-		return -ENODEV;
-	}
-
-	if(!prv->set_mac_address) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_set_mac_address: "
-			    "physical device has been detached, cannot set - skb->dev=%s->NULL\n",
-			    dev->name);
-		return -ENODEV;
-	}
-
-	KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-		    "klips_debug:ipsec_mast_set_mac_address: "
-		    "Revectored dev=%s->%s addr=0p%p\n",
-		    dev->name, prv->dev->name, addr);
-	return prv->set_mac_address(prv->dev, addr);
+	prv = prv;
+	return 0;
 
 }
 
 DEBUG_NO_STATIC void
 ipsec_mast_cache_update(struct hh_cache *hh, struct net_device *dev, unsigned char *  haddr)
 {
-	struct ipsecpriv *prv = dev->priv;
-	
-	struct net_device_stats *stats;	/* This device's statistics */
+	struct mastpriv *prv = dev->priv;
 	
 	if(dev == NULL) {
 		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
@@ -488,31 +377,12 @@ ipsec_mast_cache_update(struct hh_cache *hh, struct net_device *dev, unsigned ch
 		return;
 	}
 
-	stats = (struct net_device_stats *) &(prv->mystats);
-
-	if(prv->dev == NULL) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_cache_update: "
-			    "no physical device associated with dev=%s",
-			    dev->name ? dev->name : "NULL");
-		stats->tx_dropped++;
-		return;
-	}
-
-	if(!prv->header_cache_update) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_cache_update: "
-			    "physical device has been detached, cannot set - skb->dev=%s->NULL\n",
-			    dev->name);
-		return;
-	}
-
 	KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
 		    "klips_debug:ipsec_mast: "
 		    "Revectored cache_update\n");
-	prv->header_cache_update(hh, prv->dev, haddr);
 	return;
 }
+#endif
 
 DEBUG_NO_STATIC int
 ipsec_mast_neigh_setup(struct neighbour *n)
@@ -543,213 +413,14 @@ ipsec_mast_neigh_setup_dev(struct net_device *dev, struct neigh_parms *p)
         return 0;
 }
 
-/*
- * We call the attach routine to attach another device.
- */
-
-DEBUG_NO_STATIC int
-ipsec_mast_attach(struct net_device *dev, struct net_device *physdev)
-{
-        int i;
-	struct ipsecpriv *prv = dev->priv;
-
-	if(dev == NULL) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_attach: "
-			    "no device...");
-		return -ENODEV;
-	}
-
-	if(prv == NULL) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_attach: "
-			    "no private space associated with dev=%s",
-			    dev->name ? dev->name : "NULL");
-		return -ENODATA;
-	}
-
-	prv->dev = physdev;
-	prv->hard_start_xmit = physdev->hard_start_xmit;
-	prv->get_stats = physdev->get_stats;
-
-	if (physdev->hard_header) {
-		prv->hard_header = physdev->hard_header;
-		dev->hard_header = ipsec_mast_hard_header;
-	} else
-		dev->hard_header = NULL;
-	
-	if (physdev->rebuild_header) {
-		prv->rebuild_header = physdev->rebuild_header;
-		dev->rebuild_header = ipsec_mast_rebuild_header;
-	} else
-		dev->rebuild_header = NULL;
-	
-	if (physdev->set_mac_address) {
-		prv->set_mac_address = physdev->set_mac_address;
-		dev->set_mac_address = ipsec_mast_set_mac_address;
-	} else
-		dev->set_mac_address = NULL;
-	
-	if (physdev->header_cache_update) {
-		prv->header_cache_update = physdev->header_cache_update;
-		dev->header_cache_update = ipsec_mast_cache_update;
-	} else
-		dev->header_cache_update = NULL;
-
-	dev->hard_header_len = physdev->hard_header_len;
-
-/*	prv->neigh_setup        = physdev->neigh_setup; */
-	dev->neigh_setup        = ipsec_mast_neigh_setup_dev;
-	dev->mtu = 16260; /* 0xfff0; */ /* dev->mtu; */
-	prv->mtu = physdev->mtu;
-
-#ifdef PHYSDEV_TYPE
-	dev->type = physdev->type; /* ARPHRD_MAST; */
-#endif /*  PHYSDEV_TYPE */
-
-	dev->addr_len = physdev->addr_len;
-	for (i=0; i<dev->addr_len; i++) {
-		dev->dev_addr[i] = physdev->dev_addr[i];
-	}
-#ifdef CONFIG_KLIPS_DEBUG
-	if(debug_mast & DB_MAST_INIT) {
-		printk(KERN_INFO "klips_debug:ipsec_mast_attach: "
-		       "physical device %s being attached has HW address: %2x",
-		       physdev->name, physdev->dev_addr[0]);
-		for (i=1; i < physdev->addr_len; i++) {
-			printk(":%02x", physdev->dev_addr[i]);
-		}
-		printk("\n");
-	}
-#endif /* CONFIG_KLIPS_DEBUG */
-
-	return 0;
-}
-
-/*
- * We call the detach routine to detach the ipsec mast from another device.
- */
-
-DEBUG_NO_STATIC int
-ipsec_mast_detach(struct net_device *dev)
-{
-        int i;
-	struct ipsecpriv *prv = dev->priv;
-
-	if(dev == NULL) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_detach: "
-			    "no device...");
-		return -ENODEV;
-	}
-
-	if(prv == NULL) {
-		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
-			    "klips_debug:ipsec_mast_detach: "
-			    "no private space associated with dev=%s",
-			    dev->name ? dev->name : "NULL");
-		return -ENODATA;
-	}
-
-	KLIPS_PRINT(debug_mast & DB_MAST_INIT,
-		    "klips_debug:ipsec_mast_detach: "
-		    "physical device %s being detached from virtual device %s\n",
-		    prv->dev ? prv->dev->name : "NULL",
-		    dev->name);
-
-	prv->dev = NULL;
-	prv->hard_start_xmit = NULL;
-	prv->get_stats = NULL;
-
-	prv->hard_header = NULL;
-#ifdef DETACH_AND_DOWN
-	dev->hard_header = NULL;
-#endif /* DETACH_AND_DOWN */
-	
-	prv->rebuild_header = NULL;
-#ifdef DETACH_AND_DOWN
-	dev->rebuild_header = NULL;
-#endif /* DETACH_AND_DOWN */
-	
-	prv->set_mac_address = NULL;
-#ifdef DETACH_AND_DOWN
-	dev->set_mac_address = NULL;
-#endif /* DETACH_AND_DOWN */
-	
-	prv->header_cache_update = NULL;
-#ifdef DETACH_AND_DOWN
-	dev->header_cache_update = NULL;
-#endif /* DETACH_AND_DOWN */
-
-#ifdef DETACH_AND_DOWN
-	dev->neigh_setup        = NULL;
-#endif /* DETACH_AND_DOWN */
-
-	dev->hard_header_len = 0;
-#ifdef DETACH_AND_DOWN
-	dev->mtu = 0;
-#endif /* DETACH_AND_DOWN */
-	prv->mtu = 0;
-	for (i=0; i<MAX_ADDR_LEN; i++) {
-		dev->dev_addr[i] = 0;
-	}
-	dev->addr_len = 0;
-#ifdef PHYSDEV_TYPE
-	dev->type = ARPHRD_VOID; /* ARPHRD_MAST; */
-#endif /*  PHYSDEV_TYPE */
-	
-	return 0;
-}
-
-/*
- * We call the clear routine to detach all ipsec masts from other devices.
- */
-DEBUG_NO_STATIC int
-ipsec_mast_clear(void)
-{
-	int i;
-	struct net_device *ipsecdev = NULL, *prvdev;
-	struct ipsecpriv *prv;
-	char name[9];
-	int ret;
-
-	KLIPS_PRINT(debug_mast & DB_MAST_INIT,
-		    "klips_debug:ipsec_mast_clear: .\n");
-
-	for(i = 0; i < IPSEC_NUM_IF; i++) {
-		sprintf(name, IPSEC_DEV_FORMAT, i);
-		if((ipsecdev = ipsec_dev_get(name)) != NULL) {
-			if((prv = (struct ipsecpriv *)(ipsecdev->priv))) {
-				prvdev = (struct net_device *)(prv->dev);
-				if(prvdev) {
-					KLIPS_PRINT(debug_mast & DB_MAST_INIT,
-						    "klips_debug:ipsec_mast_clear: "
-						    "physical device for device %s is %s\n",
-						    name, prvdev->name);
-					if((ret = ipsec_mast_detach(ipsecdev))) {
-						KLIPS_PRINT(debug_mast & DB_MAST_INIT,
-							    "klips_debug:ipsec_mast_clear: "
-							    "error %d detatching device %s from device %s.\n",
-							    ret, name, prvdev->name);
-						return ret;
-					}
-				}
-			}
-		}
-	}
-	return 0;
-}
-
 DEBUG_NO_STATIC int
 ipsec_mast_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
 	struct ipsecmastconf *cf = (struct ipsecmastconf *)&ifr->ifr_data;
 	struct ipsecpriv *prv = dev->priv;
-	struct net_device *them; /* physical device */
-#ifdef CONFIG_IP_ALIAS
-	char *colon;
-	char realphysname[IFNAMSIZ];
-#endif /* CONFIG_IP_ALIAS */
+
+	cf = cf;
+	prv=prv;
 	
 	if(dev == NULL) {
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
@@ -763,74 +434,15 @@ ipsec_mast_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 		    "tncfg service call #%d for dev=%s\n",
 		    cmd,
 		    dev->name ? dev->name : "NULL");
+
 	switch (cmd) {
-	/* attach a virtual ipsec? device to a physical device */
-	case IPSEC_SET_DEV:
-		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
-			    "klips_debug:ipsec_mast_ioctl: "
-			    "calling ipsec_mast_attatch...\n");
-#ifdef CONFIG_IP_ALIAS
-		/* If this is an IP alias interface, get its real physical name */
-		strncpy(realphysname, cf->cf_name, IFNAMSIZ);
-		realphysname[IFNAMSIZ-1] = 0;
-		colon = strchr(realphysname, ':');
-		if (colon) *colon = 0;
-		them = ipsec_dev_get(realphysname);
-#else /* CONFIG_IP_ALIAS */
-		them = ipsec_dev_get(cf->cf_name);
-#endif /* CONFIG_IP_ALIAS */
-
-		if (them == NULL) {
-			KLIPS_PRINT(debug_mast & DB_MAST_INIT,
-				    "klips_debug:ipsec_mast_ioctl: "
-				    "physical device %s requested is null\n",
-				    cf->cf_name);
-			return -ENXIO;
-		}
-		
-#if 0
-		if (them->flags & IFF_UP) {
-			KLIPS_PRINT(debug_mast & DB_MAST_INIT,
-				    "klips_debug:ipsec_mast_ioctl: "
-				    "physical device %s requested is not up.\n",
-				    cf->cf_name);
-			return -ENXIO;
-		}
-#endif
-		
-		if (prv && prv->dev) {
-			KLIPS_PRINT(debug_mast & DB_MAST_INIT,
-				    "klips_debug:ipsec_mast_ioctl: "
-				    "virtual device is already connected to %s.\n",
-				    prv->dev->name ? prv->dev->name : "NULL");
-			return -EBUSY;
-		}
-		return ipsec_mast_attach(dev, them);
-
-	case IPSEC_DEL_DEV:
-		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
-			    "klips_debug:ipsec_mast_ioctl: "
-			    "calling ipsec_mast_detatch.\n");
-		if (! prv->dev) {
-			KLIPS_PRINT(debug_mast & DB_MAST_INIT,
-				    "klips_debug:ipsec_mast_ioctl: "
-				    "physical device not connected.\n");
-			return -ENODEV;
-		}
-		return ipsec_mast_detach(dev);
-	       
-	case IPSEC_CLR_DEV:
-		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
-			    "klips_debug:ipsec_mast_ioctl: "
-			    "calling ipsec_mast_clear.\n");
-		return ipsec_mast_clear();
-
 	default:
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
 			    "klips_debug:ipsec_mast_ioctl: "
 			    "unknown command %d.\n",
 			    cmd);
 		return -EOPNOTSUPP;
+	  
 	}
 }
 
@@ -838,10 +450,9 @@ int
 ipsec_mast_device_event(struct notifier_block *unused, unsigned long event, void *ptr)
 {
 	struct net_device *dev = ptr;
-	struct net_device *ipsec_dev;
-	struct ipsecpriv *priv;
-	char name[9];
-	int i;
+	struct mastpriv *priv = dev->priv;
+
+	priv = priv;
 
 	if (dev == NULL) {
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
@@ -882,45 +493,22 @@ ipsec_mast_device_event(struct notifier_block *unused, unsigned long event, void
 				    dev->flags);
 			break;
 		}
-		
-		/* find the attached physical device and detach it. */
-		for(i = 0; i < IPSEC_NUM_IF; i++) {
-			sprintf(name, IPSEC_DEV_FORMAT, i);
-			ipsec_dev = ipsec_dev_get(name);
-			if(ipsec_dev) {
-				priv = (struct ipsecpriv *)(ipsec_dev->priv);
-				if(priv) {
-					;
-					if(((struct net_device *)(priv->dev)) == dev) {
-						/* dev_close(ipsec_dev); */
-						/* return */ ipsec_mast_detach(ipsec_dev);
-						KLIPS_PRINT(debug_mast & DB_MAST_INIT,
-							    "klips_debug:ipsec_mast_device_event: "
-							    "device '%s' has been detached.\n",
-							    ipsec_dev->name);
-						break;
-					}
-				} else {
-					KLIPS_PRINT(debug_mast & DB_MAST_INIT,
-						    "klips_debug:ipsec_mast_device_event: "
-						    "device '%s' has no private data space!\n",
-						    ipsec_dev->name);
-				}
-			}
-		}
 		break;
+
 	case NETDEV_UP:
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
 			    "klips_debug:ipsec_mast_device_event: "
 			    "NETDEV_UP dev=%s\n",
 			    dev->name);
 		break;
+
 	case NETDEV_REBOOT:
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
 			    "klips_debug:ipsec_mast_device_event: "
 			    "NETDEV_REBOOT dev=%s\n",
 			    dev->name);
 		break;
+
 	case NETDEV_CHANGE:
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
 			    "klips_debug:ipsec_mast_device_event: "
@@ -928,12 +516,14 @@ ipsec_mast_device_event(struct notifier_block *unused, unsigned long event, void
 			    dev->name,
 			    dev->flags);
 		break;
+
 	case NETDEV_REGISTER:
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
 			    "klips_debug:ipsec_mast_device_event: "
 			    "NETDEV_REGISTER dev=%s\n",
 			    dev->name);
 		break;
+
 	case NETDEV_CHANGEMTU:
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
 			    "klips_debug:ipsec_mast_device_event: "
@@ -941,24 +531,28 @@ ipsec_mast_device_event(struct notifier_block *unused, unsigned long event, void
 			    dev->name,
 			    dev->mtu);
 		break;
+
 	case NETDEV_CHANGEADDR:
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
 			    "klips_debug:ipsec_mast_device_event: "
 			    "NETDEV_CHANGEADDR dev=%s\n",
 			    dev->name);
 		break;
+
 	case NETDEV_GOING_DOWN:
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
 			    "klips_debug:ipsec_mast_device_event: "
 			    "NETDEV_GOING_DOWN dev=%s\n",
 			    dev->name);
 		break;
+
 	case NETDEV_CHANGENAME:
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
 			    "klips_debug:ipsec_mast_device_event: "
 			    "NETDEV_CHANGENAME dev=%s\n",
 			    dev->name);
 		break;
+
 	default:
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
 			    "klips_debug:ipsec_mast_device_event: "
@@ -974,28 +568,27 @@ ipsec_mast_device_event(struct notifier_block *unused, unsigned long event, void
  *	Called when an ipsec mast device is initialized.
  *	The ipsec mast device structure is passed to us.
  */
- 
 int
-ipsec_mast_init(struct net_device *dev)
+ipsec_mast_probe(struct net_device *dev)
 {
 	int i;
 
 	KLIPS_PRINT(debug_mast,
 		    "klips_debug:ipsec_mast_init: "
 		    "allocating %lu bytes initialising device: %s\n",
-		    (unsigned long) sizeof(struct ipsecpriv),
+		    (unsigned long) sizeof(struct mastpriv),
 		    dev->name ? dev->name : "NULL");
 
 	/* Add our mast functions to the device */
 	dev->open		= ipsec_mast_open;
 	dev->stop		= ipsec_mast_close;
-	dev->hard_start_xmit	= ipsec_mast_start_xmit;
+	//dev->hard_start_xmit	= ipsec_mast_start_xmit;
 	dev->get_stats		= ipsec_mast_get_stats;
 
-	dev->priv = kmalloc(sizeof(struct ipsecpriv), GFP_KERNEL);
+	dev->priv = kmalloc(sizeof(struct mastpriv), GFP_KERNEL);
 	if (dev->priv == NULL)
 		return -ENOMEM;
-	memset((caddr_t)(dev->priv), 0, sizeof(struct ipsecpriv));
+	memset((caddr_t)(dev->priv), 0, sizeof(struct mastpriv));
 
 	for(i = 0; i < sizeof(zeroes); i++) {
 		((__u8*)(zeroes))[i] = 0;
@@ -1011,32 +604,56 @@ ipsec_mast_init(struct net_device *dev)
 	dev->hard_header_len 	= 0;
 	dev->mtu		= 0;
 	dev->addr_len		= 0;
-	dev->type		= ARPHRD_VOID; /* ARPHRD_MAST; */ /* ARPHRD_ETHER; */
-	dev->tx_queue_len	= 10;		/* Small queue */
+	dev->type		= ARPHRD_NONE;
+	dev->tx_queue_len	= 10;		
 	memset((caddr_t)(dev->broadcast),0xFF, ETH_ALEN);	/* what if this is not attached to ethernet? */
 
 	/* New-style flags. */
-	dev->flags		= IFF_NOARP /* 0 */ /* Petr Novak */;
-	dev_init_buffers(dev);
+	dev->flags		= IFF_NOARP;
 
 	/* We're done.  Have I forgotten anything? */
 	return 0;
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/*  Module specific interface (but it links with the rest of IPSEC)  */
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-int
-ipsec_mast_probe(struct net_device *dev)
+int ipsec_mast_create(int num) 
 {
-	ipsec_mast_init(dev); 
+	struct net_device *im;
+
+	im = (struct net_device *)kmalloc(sizeof(struct net_device),GFP_KERNEL);
+	if(im == NULL) {
+		printk(KERN_ERR "failed to allocate space for mast%d device\n", num);
+		return -ENOMEM;
+	}
+		
+	memset((caddr_t)im, 0, sizeof(struct net_device));
+	snprintf(im->name, IFNAMSIZ, MAST_DEV_FORMAT, num);
+
+	im->next = NULL;
+	im->init = ipsec_mast_probe;
+
+	if(ipsec_mastdevice_count < num+1) {
+		ipsec_mastdevice_count = num+1;
+	}
+	
+	if(register_netdev(im) != 0) {
+		printk(KERN_ERR "ipsec_mast: failed to register %s\n",
+		       im->name);
+		return -EIO;
+	}
+
 	return 0;
 }
+	
 
 int 
 ipsec_mast_init_devices(void)
 {
+	/*
+	 * mast0 is used for transport mode stuff, and generally is
+	 * the default unless the user decides to create more.
+	 */
+	ipsec_mast_create(0);
+  
 	return 0;
 }
 
@@ -1052,7 +669,7 @@ ipsec_mast_cleanup_devices(void)
 	for(i = 0; i < ipsec_mastdevice_count; i++) {
 		sprintf(name, MAST_DEV_FORMAT, i);
 		if((dev_mast = ipsec_dev_get(name)) == NULL) {
-			break;
+			continue;
 		}
 		unregister_netdev(dev_mast);
 		kfree(dev_mast->priv);
@@ -1063,30 +680,10 @@ ipsec_mast_cleanup_devices(void)
 
 /*
  * $Log: ipsec_mast.c,v $
- * Revision 1.7  2005/04/29 05:10:22  mcr
- * 	removed from extraenous includes to make unit testing easier.
  *
- * Revision 1.6  2004/12/03 21:25:57  mcr
- * 	compile time fixes for running on 2.6.
- * 	still experimental.
- *
- * Revision 1.5  2004/08/03 18:19:08  mcr
- * 	in 2.6, use "net_device" instead of #define device->net_device.
- * 	this probably breaks 2.0 compiles.
- *
- * Revision 1.4  2004/07/10 19:11:18  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.3  2003/10/31 02:27:55  mcr
- * 	pulled up port-selector patches and sa_id elimination.
- *
- * Revision 1.2.4.1  2003/10/29 01:30:41  mcr
- * 	elimited "struct sa_id".
- *
- * Revision 1.2  2003/06/22 20:06:17  mcr
- * 	refactored mast code still had lots of ipsecX junk in it.
- *
- * Revision 1.1  2003/02/12 19:31:12  rgb
- * Refactored from ipsec_tunnel.c
+ * Local Variables:
+ * c-file-style: "linux"
+ * End:
  *
  */
+

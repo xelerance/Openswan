@@ -76,6 +76,7 @@ char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.106 2005/09/14 14:22:
 #include "openswan/ipsec_radij.h"
 #include "openswan/ipsec_xform.h"
 #include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_mast.h"
 
 #include "openswan/ipsec_rcv.h"
 #include "openswan/ipsec_ah.h"
@@ -219,6 +220,8 @@ ipsec_klips_init(void)
 #endif
 
 	error |= ipsec_tunnel_init_devices();
+
+	error |= ipsec_mast_init_devices();
 
 #if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
 	/* register our ESP-UDP handler */

@@ -32,6 +32,7 @@ base-klips-objs+= ipsec_init.o ipsec_sa.o ipsec_radij.o radij.o
 base-klips-objs+= ipsec_life.o ipsec_proc.o
 base-klips-objs+= ipsec_tunnel.o ipsec_xmit.o ipsec_rcv.o ipsec_ipip.o
 base-klips-objs+= ipsec_snprintf.o
+base-klips-objs+= ipsec_mast.o
 base-klips-objs+= sysctl_net_ipsec.o 
 base-klips-objs+= pfkey_v2.o pfkey_v2_parser.o pfkey_v2_ext_process.o 
 base-klips-objs+= version.o

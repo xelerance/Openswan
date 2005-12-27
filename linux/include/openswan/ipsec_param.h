@@ -46,6 +46,8 @@
 /* for now, no "0"-padding should be used (which would have been helpful */
 /* to make text-searches work */
 #define IPSEC_DEV_FORMAT "ipsec%d"
+#define MAST_DEV_FORMAT "mast%d"
+
 /* For, say, 500 virtual ipsec devices, I would recommend: */
 /* #define IPSEC_NUM_IF	500 */
 /* #define IPSEC_DEV_FORMAT "ipsec%03d" */
