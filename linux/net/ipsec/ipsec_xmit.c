@@ -1680,7 +1680,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 	}
 
 	/* we are done with this SA */
-	ipsec_sa_put(ixs->ipsp); 
+	ipsec_sa_put(saved_ipsp); 
 
 	/* end encapsulation loop here XXX */
  cleanup:
