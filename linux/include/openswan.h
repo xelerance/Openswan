@@ -196,7 +196,7 @@ typedef uint32_t IPsecSAref_t;
 #define IPsecSAref2NFmark(x) ((x) << (IPSEC_SA_REF_FIELD_WIDTH - IPSEC_SA_REF_TABLE_IDX_WIDTH))
 #define NFmark2IPsecSAref(x) ((x) >> (IPSEC_SA_REF_FIELD_WIDTH - IPSEC_SA_REF_TABLE_IDX_WIDTH))
 
-#define IPSEC_SAREF_NULL (~((IPsecSAref_t)0))
+#define IPSEC_SAREF_NULL ((IPsecSAref_t)0)
 
 /* GCC magic for use in function definitions! */
 #ifdef GCC_LINT

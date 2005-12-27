@@ -256,7 +256,15 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 		SENDERR(EINVAL);
 	}
 
-	if((IPSEC_SAREF_NULL != pfkey_sa->sadb_x_sa_ref) && (pfkey_sa->sadb_x_sa_ref >= (1 << IPSEC_SA_REF_TABLE_IDX_WIDTH))) {
+	if(pfkey_sa->sadb_x_sa_ref == IPSEC_SAREF_NULL ||
+	   pfkey_sa->sadb_x_sa_ref == ~(IPSEC_SAREF_NULL))
+	{
+		pfkey_sa->sadb_x_sa_ref = IPSEC_SAREF_NULL;
+	}
+
+	if((IPSEC_SAREF_NULL != pfkey_sa->sadb_x_sa_ref)
+	   && (pfkey_sa->sadb_x_sa_ref >= (1 << IPSEC_SA_REF_TABLE_IDX_WIDTH)))
+	{
 		ERROR(
 			  "pfkey_sa_parse: "
 			  "SAref=%d must be (SAref == IPSEC_SAREF_NULL(%d) || SAref < IPSEC_SA_REF_TABLE_NUM_ENTRIES(%d)).\n",

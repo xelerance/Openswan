@@ -726,10 +726,19 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 	extr->ips->ips_rcvif = NULL;
 	
 	if ((error = pfkey_ipsec_sa_init(extr->ips))) {
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_add_parse: "
+		KLIPS_ERROR(debug_pfkey,
+			    "pfkey_add_parse: "
 			    "not successful for SA: %s, deleting.\n",
 			    sa_len ? sa : " (error)");
+		SENDERR(-error);
+	}
+
+	/* attach it to the SAref table */
+	if((error = ipsec_sa_intern(extr->ips)) != 0) {
+		KLIPS_ERROR(debug_pfkey,
+			    "pfkey_add_parse: "
+			    "failed to intern SA as SAref#%lu\n"
+			    , (unsigned long)extr->ips->ips_ref);
 		SENDERR(-error);
 	}
 

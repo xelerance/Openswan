@@ -88,6 +88,7 @@ char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.20 2005
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
+/* returns 0 on success */
 int
 pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 {
@@ -169,6 +170,9 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 		SENDERR(EINVAL);
 	}
 
+	if(error==0 && extr->ips2) {
+		error = ipsec_sa_intern(extr->ips2);
+	}
 errlab:
 	return error;
 }
@@ -452,6 +456,10 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		break;
 	}
 	
+	if(error == 0 && extr->ips2!=NULL) {
+		error = ipsec_sa_intern(extr->ips2);
+	}
+
 	/* XXX check if port!=0 */
 	
 	KLIPS_PRINT(debug_pfkey,
@@ -696,6 +704,10 @@ pfkey_x_satype_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* 
 		    extr->ips2->ips_said.proto,
 		    pfkey_x_satype->sadb_x_satype_satype,
 		    satype2name(pfkey_x_satype->sadb_x_satype_satype));
+	
+	if(error == 0 && extr->ips2!=NULL) {
+		error = ipsec_sa_intern(extr->ips2);
+	}
 
 errlab:
 	return error;

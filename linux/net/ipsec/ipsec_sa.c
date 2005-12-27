@@ -111,14 +111,14 @@ ipsec_SAref_recycle(void)
 	int entry;
 	int error = 0;
 
-	ipsec_sadb.refFreeListHead = -1;
-	ipsec_sadb.refFreeListTail = -1;
+	ipsec_sadb.refFreeListHead = IPSEC_SAREF_NULL;
+	ipsec_sadb.refFreeListTail = IPSEC_SAREF_NULL;
 
 	if(ipsec_sadb.refFreeListCont == IPSEC_SA_REF_MAINTABLE_NUM_ENTRIES * IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES) {
 		KLIPS_PRINT(debug_xform,
 			    "klips_debug:ipsec_SAref_recycle: "
 			    "end of table reached, continuing at start..\n");
-		ipsec_sadb.refFreeListCont = 0;
+		ipsec_sadb.refFreeListCont = IPSEC_SAREF_FIRST;
 	}
 
 	KLIPS_PRINT(debug_xform,
@@ -144,7 +144,7 @@ ipsec_SAref_recycle(void)
 			if(ipsec_sadb.refTable[table]->entry[entry] == NULL) {
 				ipsec_sadb.refFreeList[++ipsec_sadb.refFreeListTail] = IPsecSArefBuild(table, entry);
 				if(ipsec_sadb.refFreeListTail == (IPSEC_SA_REF_FREELIST_NUM_ENTRIES - 1)) {
-					ipsec_sadb.refFreeListHead = 0;
+					ipsec_sadb.refFreeListHead = IPSEC_SAREF_FIRST;
 					ipsec_sadb.refFreeListCont = ipsec_sadb.refFreeList[ipsec_sadb.refFreeListTail] + 1;
 					KLIPS_PRINT(debug_xform,
 						    "klips_debug:ipsec_SAref_recycle: "
@@ -155,7 +155,7 @@ ipsec_SAref_recycle(void)
 		}
 	}
 
-	if(ipsec_sadb.refFreeListTail == -1) {
+	if(ipsec_sadb.refFreeListTail == IPSEC_SAREF_NULL) {
 		KLIPS_PRINT(debug_xform,
 			    "klips_debug:ipsec_SAref_recycle: "
 			    "out of room in the SArefTable.\n");
@@ -163,7 +163,7 @@ ipsec_SAref_recycle(void)
 		return(-ENOSPC);
 	}
 
-	ipsec_sadb.refFreeListHead = 0;
+	ipsec_sadb.refFreeListHead = IPSEC_SAREF_FIRST;
 	ipsec_sadb.refFreeListCont = ipsec_sadb.refFreeList[ipsec_sadb.refFreeListTail] + 1;
 	KLIPS_PRINT(debug_xform,
 		    "klips_debug:ipsec_SAref_recycle: "
@@ -228,9 +228,9 @@ ipsec_saref_freelist_init(void)
 	for(i = 0; i < IPSEC_SA_REF_FREELIST_NUM_ENTRIES; i++) {
 		ipsec_sadb.refFreeList[i] = IPSEC_SAREF_NULL;
 	}
-	ipsec_sadb.refFreeListHead = -1;
-	ipsec_sadb.refFreeListCont = 0;
-	ipsec_sadb.refFreeListTail = -1;
+	ipsec_sadb.refFreeListHead = IPSEC_SAREF_NULL;
+	ipsec_sadb.refFreeListCont = IPSEC_SAREF_FIRST;
+	ipsec_sadb.refFreeListTail = IPSEC_SAREF_NULL;
        
 	return 0;
 }
@@ -288,7 +288,7 @@ ipsec_SAref_alloc(int*error) /* pass in error var by pointer */
 		    ipsec_sadb.refFreeListTail,
 		    IPSEC_SA_REF_FREELIST_NUM_ENTRIES);
 
-	if(ipsec_sadb.refFreeListHead == -1) {
+	if(ipsec_sadb.refFreeListHead == IPSEC_SAREF_NULL) {
 		KLIPS_PRINT(debug_xform,
 			    "klips_debug:ipsec_SAref_alloc: "
 			    "FreeList empty, recycling...\n");
@@ -300,12 +300,12 @@ ipsec_SAref_alloc(int*error) /* pass in error var by pointer */
 
 	SAref = ipsec_sadb.refFreeList[ipsec_sadb.refFreeListHead];
 	if(SAref == IPSEC_SAREF_NULL) {
-		KLIPS_PRINT(debug_xform,
-			    "klips_debug:ipsec_SAref_alloc: "
+		KLIPS_ERROR(debug_xform,
+			    "ipsec_SAref_alloc: "
 			    "unexpected error, refFreeListHead = %d points to invalid entry.\n",
 			    ipsec_sadb.refFreeListHead);
-			*error = -ESPIPE;
-			return IPSEC_SAREF_NULL;
+		*error = -ESPIPE;
+		return IPSEC_SAREF_NULL;
 	}
 
 	KLIPS_PRINT(debug_xform,
@@ -322,7 +322,7 @@ ipsec_SAref_alloc(int*error) /* pass in error var by pointer */
 		KLIPS_PRINT(debug_xform,
 			    "klips_debug:ipsec_SAref_alloc: "
 			    "last FreeList entry allocated, resetting list head to empty.\n");
-		ipsec_sadb.refFreeListHead = -1;
+		ipsec_sadb.refFreeListHead = IPSEC_SAREF_NULL;
 	}
 
 	return SAref;
@@ -414,29 +414,58 @@ ipsec_sa_alloc(int*error) /* pass in error var by pointer */
 		return NULL;
 	}
 	memset((caddr_t)ips, 0, sizeof(*ips));
-#if IPSEC_SA_REF_CODE
-	ips->ips_ref = ipsec_SAref_alloc(error); /* pass in error return by pointer */
-	KLIPS_PRINT(debug_xform,
-		    "klips_debug:ipsec_sa_alloc: "
-		    "allocated %lu bytes for ipsec_sa struct=0p%p ref=%d.\n",
-		    (unsigned long) sizeof(*ips),
-		    ips,
-		    ips->ips_ref);
-	if(ips->ips_ref == IPSEC_SAREF_NULL) {
-		kfree(ips);
-		KLIPS_PRINT(debug_xform,
-			    "klips_debug:ipsec_sa_alloc: "
-			    "SAref allocation error\n");
-		return NULL;
-	}
-
-	atomic_inc(&ips->ips_refcount);
-	IPsecSAref2SA(ips->ips_ref) = ips;
-#endif /* IPSEC_SA_REF_CODE */
 
 	*error = 0;
 	return(ips);
 }
+
+int
+ipsec_sa_intern(struct ipsec_sa *ips)
+{
+	int error;
+	IPsecSAref_t ref = ips->ips_ref;
+
+	if(ref == IPSEC_SAREF_NULL) {
+		ref = ipsec_SAref_alloc(&error); /* pass in error return by pointer */
+		KLIPS_PRINT(debug_xform,
+			    "klips_debug:ipsec_sa_alloc: "
+			    "allocated %lu bytes for ipsec_sa struct=0p%p ref=%d.\n",
+			    (unsigned long) sizeof(*ips),
+			    ips,
+			    ips->ips_ref);
+		if(ref == IPSEC_SAREF_NULL) {
+			KLIPS_PRINT(debug_xform,
+				    "klips_debug:ipsec_sa_alloc: "
+				    "SAref allocation error\n");
+			return error;
+		}
+
+		ips->ips_ref = ref;
+	}
+
+	atomic_inc(&ips->ips_refcount);
+
+	/* if there is an existing SA at this reference, then free it
+	 * note, that nsa might == ips!. That's okay, we just incremented
+	 * the reference count above.
+	 */
+	{
+		struct ipsec_sa *nsa = IPsecSAref2SA(ref);
+		if(nsa) {
+			ipsec_sa_put(nsa);
+		}
+	}
+
+	KLIPS_PRINT(debug_xform|1,
+		    "ipsec_sa_alloc: "
+		    "SAref[%d]=%p\n",
+		    ips->ips_ref, ips);
+	IPsecSAref2SA(ips->ips_ref) = ips;
+
+	/* return OK */
+	return 0;
+}
+
 
 int
 ipsec_sa_free(struct ipsec_sa* ips)
@@ -508,15 +537,20 @@ ipsec_sa_put(struct ipsec_sa *ips)
 		return -1;
 	}
 
-	sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
+	if(debug_xform) {
+	  sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
 
-	KLIPS_PRINT(debug_xform,
-		    "klips_debug:ipsec_sa_put: "
-		    "ipsec_sa SA:%s, ref:%d reference count decremented.\n",
-		    sa_len ? sa : " (error)",
-		    ips->ips_ref);
+	  KLIPS_PRINT(debug_xform,
+		      "klips_debug:ipsec_sa_put: "
+		      "ipsec_sa SA:%s, ref:%d reference count decremented.\n",
+		      sa_len ? sa : " (error)",
+		      ips->ips_ref);
+	}
 
-	atomic_dec(&ips->ips_refcount);
+	if(atomic_dec_and_test(&ips->ips_refcount)) {
+		/* it was zero */
+		ipsec_sa_wipe(ips);
+	}
 
 	return 0;
 }
@@ -878,14 +912,13 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 		return -ENODATA;
 	}
 
-	/* if(atomic_dec_and_test(ips)) {
-	}; */
-
 #if IPSEC_SA_REF_CODE
 	/* remove me from the SArefTable */
+	if(debug_xform) 
 	{
 		char sa[SATOT_BUF];
 		size_t sa_len;
+
 		sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
 		KLIPS_PRINT(debug_xform,
 			    "klips_debug:ipsec_sa_wipe: "
@@ -897,14 +930,11 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 			    ipsec_sadb.refTable[IPsecSAref2table(IPsecSA2SAref(ips))],
 			    IPsecSAref2entry(IPsecSA2SAref(ips)));
 	}
-	if(ips->ips_ref == IPSEC_SAREF_NULL) {
-		KLIPS_PRINT(debug_xform,
-			    "klips_debug:ipsec_sa_wipe: "
-			    "why does this SA not have a valid SAref?.\n");
+
+	if(ips->ips_ref != IPSEC_SAREF_NULL) {
+		ipsec_sadb.refTable[IPsecSAref2table(IPsecSA2SAref(ips))]->entry[IPsecSAref2entry(IPsecSA2SAref(ips))] = NULL;
+		ips->ips_ref = IPSEC_SAREF_NULL;
 	}
-	ipsec_sadb.refTable[IPsecSAref2table(IPsecSA2SAref(ips))]->entry[IPsecSAref2entry(IPsecSA2SAref(ips))] = NULL;
-	ips->ips_ref = IPSEC_SAREF_NULL;
-	ipsec_sa_put(ips);
 #endif /* IPSEC_SA_REF_CODE */
 
 	/* paranoid clean up */
@@ -982,6 +1012,8 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 	}
 #endif
 	
+	BUG_ON(atomic_read(&ips->ips_refcount) != 0);
+
 	memset((caddr_t)ips, 0, sizeof(*ips));
 	kfree(ips);
 	ips = NULL;

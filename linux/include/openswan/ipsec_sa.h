@@ -108,9 +108,11 @@ typedef unsigned short int IPsecRefTableUnusedCount;
 #define IPSEC_SA_REF_HOST_FIELD_WIDTH (8 * sizeof(IPSEC_SA_REF_HOST_FIELD_TYPE))
 #define IPSEC_SA_REF_FIELD_WIDTH (8 * sizeof(IPsecSAref_t))
 
-#define IPSEC_SA_REF_MASK        (IPSEC_SAREF_NULL >> (IPSEC_SA_REF_FIELD_WIDTH - IPSEC_SA_REF_TABLE_IDX_WIDTH))
-#define IPSEC_SA_REF_TABLE_MASK ((IPSEC_SAREF_NULL >> (IPSEC_SA_REF_FIELD_WIDTH - IPSEC_SA_REF_MAINTABLE_IDX_WIDTH)) << IPSEC_SA_REF_SUBTABLE_IDX_WIDTH)
-#define IPSEC_SA_REF_ENTRY_MASK  (IPSEC_SAREF_NULL >> (IPSEC_SA_REF_FIELD_WIDTH - IPSEC_SA_REF_SUBTABLE_IDX_WIDTH))
+#define IPSEC_SA_REF_MAX         (~IPSEC_SAREF_NULL)
+#define IPSEC_SAREF_FIRST        1
+#define IPSEC_SA_REF_MASK        (IPSEC_SA_REF_MAX >> (IPSEC_SA_REF_FIELD_WIDTH - IPSEC_SA_REF_TABLE_IDX_WIDTH))
+#define IPSEC_SA_REF_TABLE_MASK ((IPSEC_SA_REF_MAX >> (IPSEC_SA_REF_FIELD_WIDTH - IPSEC_SA_REF_MAINTABLE_IDX_WIDTH)) << IPSEC_SA_REF_SUBTABLE_IDX_WIDTH)
+#define IPSEC_SA_REF_ENTRY_MASK  (IPSEC_SA_REF_MAX >> (IPSEC_SA_REF_FIELD_WIDTH - IPSEC_SA_REF_SUBTABLE_IDX_WIDTH))
 
 #define IPsecSAref2table(x) (((x) & IPSEC_SA_REF_TABLE_MASK) >> IPSEC_SA_REF_SUBTABLE_IDX_WIDTH)
 #define IPsecSAref2entry(x) ((x) & IPSEC_SA_REF_ENTRY_MASK)
@@ -241,6 +243,8 @@ extern int ipsec_sa_delchain(struct ipsec_sa *ips);
 extern int ipsec_sadb_cleanup(__u8 proto);
 extern int ipsec_sadb_free(void);
 extern int ipsec_sa_wipe(struct ipsec_sa *ips);
+extern int ipsec_sa_intern(struct ipsec_sa *ips);
+
 #endif /* __KERNEL__ */
 
 enum ipsec_direction {
