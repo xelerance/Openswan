@@ -185,6 +185,24 @@ int main(char *argv[], int argc)
 
   ipsec_sadb_init();
 
+  {
+    volatile IPsecSAref_t sa1,sa2;
+    volatile unsigned int nf1;
+
+    sa1 = 1;
+    nf1 = IPsecSAref2NFmark(sa1);
+    sa2 = NFmark2IPsecSAref(nf1);
+
+    /* Test 0 - basic understanding of macros */
+    printf("saref= %08x => nfmark= %08x\n",
+	   sa1, nf1);
+    
+    printf("nfmark=%08x => saref=  %08x\n",
+	   nf1, sa2);
+
+    assert( sa1 == sa2 );
+  }
+
   /* Test 1 - allocate an SA and let it get a random SAref */
   {
     struct ipsec_sa *sa1;

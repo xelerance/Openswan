@@ -15,6 +15,7 @@
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include $(OPENSWANSRCDIR)/Makefile.inc
+include ${srcdir}Makefile.unit-settings
 
 srcdir?=$(shell pwd)/
 
@@ -23,6 +24,11 @@ SUBDIRS=libkern rcv-01 rcv-02 xmit-01 saref-01
 def:	check
 
 # programs
+
+include/openswan.h:
+	@mkdir -p include/openswan
+	@(cd ${OPENSWANSRCDIR}/linux && find include -type d -print ) | while read dir; do mkdir -p $$dir; echo making $$dir; done
+	@(cd ${OPENSWANSRCDIR}/linux && find include -type f -name '*.h' -print ) | while read file; do ln -f -s ${KLIPS_TOP}/$$file $$file; echo making $$file; done
 
 include/linux/madelinks: include/linux/files.txt
 	@(cd include/linux && make links )
@@ -33,7 +39,7 @@ include/net/madelinks: include/net/files.txt
 include/asm/madelinks: include/asm/files.txt
 	@(cd include/asm && make links )
 
-check:	include/linux/madelinks include/net/madelinks include/asm/madelinks
+check:	include/openswan.h include/linux/madelinks include/net/madelinks include/asm/madelinks
 
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \

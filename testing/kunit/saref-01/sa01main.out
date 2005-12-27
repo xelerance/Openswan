@@ -1,4 +1,6 @@
-INFO:ipsec_sa_alloc: SAref[1]=0xb7ca6dec
-INFO:ipsec_sa_alloc: SAref[27]=0xb7ca6dec
-INFO:ipsec_sa_alloc: SAref[27]=0xb7ca6dec
-INFO:ipsec_sa_alloc: SAref[27]=0xb7ca8dec
+saref= 00000001 => nfmark= 00010000
+nfmark=00010000 => saref=  00000001
+INFO:ipsec_sa_alloc: SAref[1]=0xABCDABCD
+INFO:ipsec_sa_alloc: SAref[27]=0xABCDABCD
+INFO:ipsec_sa_alloc: SAref[27]=0xABCDABCD
+INFO:ipsec_sa_alloc: SAref[27]=0xABCDABCD

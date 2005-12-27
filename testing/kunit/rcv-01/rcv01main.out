@@ -12,7 +12,6 @@ INFO:klips_error:ipsec_rcv: packet received from physical I/F (NULL) not connect
 INFO:klips_debug:ipsec_rcv_decap_once: decap (50) from 192.1.2.23 -> 192.1.2.45
 INFO:klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, src=192.1.2.23 of pkt agrees with expected SA source address policy.
 INFO:klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45 First SA in group.
-INFO:klips_debug:ipsec_rcv: natt_type=0 tdbp->ips_natt_type=0 : ok
 INFO:klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=1 (iv)=0x4c20452f3cb09211 iplen=116 esplen=104 sa=esp.12345678@192.1.2.45
 INFO:klips_debug:ipsec_rcv: encalg = 3, authalg = 2.
 INFO:klips_dmp: at ictx, len=88:
