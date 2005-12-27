@@ -1,6 +1,40 @@
+INFO:klips_debug:ipsec_sadb_init: initialising main table of size 16 (2 ^ 4).
+INFO:klips_debug:ipsec_SArefSubTable_alloc: allocating 16384 bytes for table 0 of 16.
+INFO:klips_debug:ipsec_SArefSubTable_alloc: initialising 4096 elements (2 ^ 12) of table 0.
+INFO:klips_debug:ipsec_saref_freelist_init: initialising 256 elements of FreeList.
 saref= 00000001 => nfmark= 00010000
 nfmark=00010000 => saref=  00000001
+INFO:klips_debug:ipsec_SAref_alloc: SAref requested... head=0, cont=1, tail=0, listsize=256.
+INFO:klips_debug:ipsec_SAref_alloc: FreeList empty, recycling...
+INFO:klips_debug:ipsec_SAref_recycle: recycling, continuing from SAref=1 (0p(nil)), table=0, entry=1.
+INFO:klips_debug:ipsec_SAref_recycle: SArefFreeList refilled.
+INFO:klips_debug:ipsec_SAref_alloc: allocating SAref=1, table=0, entry=1 of 65536.
+INFO:klips_debug:ipsec_sa_alloc: allocated 532 bytes for ipsec_sa struct=0p0xb7ce8dec ref=0.
 INFO:ipsec_sa_alloc: SAref[1]=0xABCDABCD
+INFO:klips_debug:ipsec_sa_put: ipsec_sa SA:unk0:0@<invalid>, ref:1 reference count decremented.
+INFO:klips_debug:ipsec_sa_del: deleting SA:unk0:0@<invalid>, hashval=0.
+ERR;KLIPS klips_debug:ipsec_sa_del: no entries in ipsec_sa table for hash=0 of SA:unk0:0@<invalid>.
 INFO:ipsec_sa_alloc: SAref[27]=0xABCDABCD
+INFO:klips_debug:ipsec_sa_put: ipsec_sa SA:unk0:0@<invalid>, ref:27 reference count decremented.
+INFO:klips_debug:ipsec_sa_del: deleting SA:unk0:0@<invalid>, hashval=0.
+ERR;KLIPS klips_debug:ipsec_sa_del: no entries in ipsec_sa table for hash=0 of SA:unk0:0@<invalid>.
+INFO:klips_debug:ipsec_sa_put: ipsec_sa SA:unk0:0@<invalid>, ref:27 reference count decremented.
 INFO:ipsec_sa_alloc: SAref[27]=0xABCDABCD
+INFO:klips_debug:ipsec_sa_put: ipsec_sa SA:unk0:0@<invalid>, ref:27 reference count decremented.
+INFO:klips_debug:ipsec_sa_del: deleting SA:unk0:0@<invalid>, hashval=0.
+ERR;KLIPS klips_debug:ipsec_sa_del: no entries in ipsec_sa table for hash=0 of SA:unk0:0@<invalid>.
 INFO:ipsec_sa_alloc: SAref[27]=0xABCDABCD
+INFO:klips_debug:ipsec_sa_put: ipsec_sa SA:unk0:0@<invalid>, ref:27 reference count decremented.
+INFO:klips_debug:ipsec_sa_del: deleting SA:unk0:0@<invalid>, hashval=0.
+ERR;KLIPS klips_debug:ipsec_sa_del: no entries in ipsec_sa table for hash=0 of SA:unk0:0@<invalid>.
+INFO:klips_debug:ipsec_sa_put: ipsec_sa SA:unk0:0@<invalid>, ref:27 reference count decremented.
+INFO:klips_debug:ipsec_sadb_cleanup: cleaning up proto=0.
+INFO:klips_debug:ipsec_sadb_cleanup: removing SAref entries and tables.INFO:klips_debug:ipsec_sadb_cleanup: cleaning SAref table=0.
+INFO:klips_debug:ipsec_sa_delchain: passed SA:unk0:0@<invalid>
+INFO:klips_debug:ipsec_sa_delchain: unlinking and delting SA:unk0:0@<invalid>INFO:.
+INFO:klips_debug:ipsec_sa_delchain: passed SA:unk0:0@<invalid>
+INFO:klips_debug:ipsec_sa_delchain: unlinking and delting SA:unk0:0@<invalid>INFO:.
+INFO:klips_debug:ipsec_sadb_cleanup: cleaning SAref table=1.
+
+INFO:klips_debug:ipsec_sadb_cleanup: cleaned 1 used refTables.
+done

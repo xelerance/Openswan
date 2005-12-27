@@ -13,6 +13,7 @@
 #include "openswan/ipsec_sa.h"
 #include "openswan/ipsec_policy.h"
 #include "openswan/ipsec_proto.h"
+#include "openswan/ipsec_sysctl.h"
 #include "pfkeyv2.h"
 #include "pfkey.h"
 
@@ -182,6 +183,7 @@ int main(char *argv[], int argc)
   int error = 0;
 
   talloc_enable_leak_report_full();
+  debug_xform = 1;
 
   ipsec_sadb_init();
 
@@ -260,6 +262,8 @@ int main(char *argv[], int argc)
     ipsec_sa_put(sa1);
     ipsec_sa_put(sa2);
   }
+
+  ipsec_sadb_cleanup(0);  /* 0 = all protocols */
 
   exit(0);
 }
