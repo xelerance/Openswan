@@ -408,7 +408,7 @@ ipsec_sa_alloc(int*error) /* pass in error var by pointer */
 
 	if((ips = kmalloc(sizeof(*ips), GFP_ATOMIC) ) == NULL) {
 		KLIPS_PRINT(debug_xform,
-			    "klips_debug:ipsec_sa_alloc: "
+			    "ipsec_sa_alloc: "
 			    "memory allocation error\n");
 		*error = -ENOMEM;
 		return NULL;
@@ -428,14 +428,14 @@ ipsec_sa_intern(struct ipsec_sa *ips)
 	if(ref == IPSEC_SAREF_NULL) {
 		ref = ipsec_SAref_alloc(&error); /* pass in error return by pointer */
 		KLIPS_PRINT(debug_xform,
-			    "klips_debug:ipsec_sa_alloc: "
+			    "ipsec_sa_alloc: "
 			    "allocated %lu bytes for ipsec_sa struct=0p%p ref=%d.\n",
 			    (unsigned long) sizeof(*ips),
 			    ips,
 			    ips->ips_ref);
 		if(ref == IPSEC_SAREF_NULL) {
 			KLIPS_PRINT(debug_xform,
-				    "klips_debug:ipsec_sa_alloc: "
+				    "ipsec_sa_alloc: "
 				    "SAref allocation error\n");
 			return error;
 		}
@@ -456,7 +456,7 @@ ipsec_sa_intern(struct ipsec_sa *ips)
 		}
 	}
 
-	KLIPS_PRINT(debug_xform|1,
+	KLIPS_PRINT(debug_xform,
 		    "ipsec_sa_alloc: "
 		    "SAref[%d]=%p\n",
 		    ips->ips_ref, ips);
@@ -549,11 +549,32 @@ ipsec_sa_put(struct ipsec_sa *ips)
 
 	if(atomic_dec_and_test(&ips->ips_refcount)) {
 		/* it was zero */
-		ipsec_sa_wipe(ips);
+		ipsec_sa_del(ips);
 	}
 
 	return 0;
 }
+
+int
+ipsec_sa_get(struct ipsec_sa *ips)
+{
+        char sa[SATOT_BUF];
+	size_t sa_len;
+
+	if(debug_xform) {
+	  sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
+
+	  KLIPS_PRINT(debug_xform,
+		      "klips_debug:ipsec_sa_get: "
+		      "ipsec_sa SA:%s, ref:%d reference count incremented.\n",
+		      sa_len ? sa : " (error)",
+		      ips->ips_ref);
+	}
+
+	atomic_inc(&ips->ips_refcount);
+	return atomic_read(&ips->ips_refcount);
+}
+
 
 /*
   The ipsec_sa table better *NOT* be locked before it is handed in, or SMP locks will happen
@@ -584,8 +605,9 @@ ipsec_sa_add(struct ipsec_sa *ips)
 }
 
 /*
-  The ipsec_sa table better be locked before it is handed in, or races might happen
-*/
+ * The ipsec_sa table better be locked before it is handed in,
+ * or races might happen
+ */
 int
 ipsec_sa_del(struct ipsec_sa *ips)
 {
@@ -595,7 +617,7 @@ ipsec_sa_del(struct ipsec_sa *ips)
 	size_t sa_len;
 
 	if(ips == NULL) {
-		KLIPS_PRINT(debug_xform,
+		KLIPS_ERROR(debug_xform,
 			    "klips_error:ipsec_sa_del: "
 			    "null pointer passed in!\n");
 		return -ENODATA;
@@ -603,7 +625,7 @@ ipsec_sa_del(struct ipsec_sa *ips)
 	
 	sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
 	if(ips->ips_inext || ips->ips_onext) {
-		KLIPS_PRINT(debug_xform,
+		KLIPS_ERROR(debug_xform,
 			    "klips_error:ipsec_sa_del: "
 			    "SA:%s still linked!\n",
 			    sa_len ? sa : " (error)");
@@ -614,14 +636,20 @@ ipsec_sa_del(struct ipsec_sa *ips)
 	
 	KLIPS_PRINT(debug_xform,
 		    "klips_debug:ipsec_sa_del: "
-		    "deleting SA:%s, hashval=%d.\n",
+		    "deleting SA:%s (ref=%u), hashval=%d.\n",
 		    sa_len ? sa : " (error)",
+		    ips->ips_ref,
 		    hashval);
+
 	if(ipsec_sadb_hash[hashval] == NULL) {
+	  /* if this is NULL, then we can be sure that the SA was never
+	   * intern'ed. which is is actually okay
+	   */
 		KLIPS_PRINT(debug_xform,
 			    "klips_debug:ipsec_sa_del: "
-			    "no entries in ipsec_sa table for hash=%d of SA:%s.\n",
+			    "no entries in ipsec_sa table for hash=%d (ref=%u) of SA:%s.\n",
 			    hashval,
+			    ips->ips_ref,
 			    sa_len ? sa : " (error)");
 		return -ENOENT;
 	}
@@ -659,9 +687,15 @@ ipsec_sa_del(struct ipsec_sa *ips)
 }
 
 /*
-  The ipsec_sa table better be locked before it is handed in, or races
-  might happen
-*/
+ * Delete a chain of SAs. 
+ *
+ * Actually, we just decrement the reference counts, and ipsec_sa_del()
+ * will get called at the appropriate time.
+ *
+ * The ipsec_sa table better be locked before it is handed in, or races
+ * might happen. 
+ *
+ */
 int
 ipsec_sa_delchain(struct ipsec_sa *ips)
 {
@@ -682,6 +716,8 @@ ipsec_sa_delchain(struct ipsec_sa *ips)
 		    "klips_debug:ipsec_sa_delchain: "
 		    "passed SA:%s\n",
 		    sa_len ? sa : " (error)");
+
+	/* go to last item, and work backwards */
 	while(ips->ips_onext != NULL) {
 		ips = ips->ips_onext;
 	}
@@ -693,32 +729,31 @@ ipsec_sa_delchain(struct ipsec_sa *ips)
 			    "klips_debug:ipsec_sa_delchain: "
 			    "unlinking and delting SA:%s",
 			    sa_len ? sa : " (error)");
+
 		ipsdel = ips;
-		ips = ips->ips_inext;
+		
+		/* advance ips to previous because we will free ips later */
+		ips = ipsdel->ips_inext;
+
 		if(ips != NULL) {
 			sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
 			KLIPS_PRINT(debug_xform,
 				    ", inext=%s",
 				    sa_len ? sa : " (error)");
-			atomic_dec(&ipsdel->ips_refcount);
-			ipsdel->ips_inext = NULL;
-			atomic_dec(&ips->ips_refcount);
+
+			/* free up the SA pointers */
+
+			/* sever pointer to ips */
+			ipsec_sa_put(ipsdel->ips_inext);
+			ipsdel->ips_inext = NULL;  
+
+			/* sever pointer to ipsdel */
+			ipsec_sa_put(ips->ips_onext);
 			ips->ips_onext = NULL;
 		}
+
 		KLIPS_PRINT(debug_xform,
 			    ".\n");
-		if((error = ipsec_sa_del(ipsdel))) {
-			KLIPS_PRINT(debug_xform,
-				    "klips_debug:ipsec_sa_delchain: "
-				    "ipsec_sa_del returned error %d.\n", -error);
-			return error;
-		}
-		if((error = ipsec_sa_wipe(ipsdel))) {
-			KLIPS_PRINT(debug_xform,
-				    "klips_debug:ipsec_sa_delchain: "
-				    "ipsec_sa_wipe returned error %d.\n", -error);
-			return error;
-		}
 	}
 	return error;
 }
@@ -743,8 +778,9 @@ ipsec_sadb_cleanup(__u8 proto)
 		ipsprev = &(ipsec_sadb_hash[i]);
 		ips = ipsec_sadb_hash[i];
 		if(ips != NULL) {
-			atomic_inc(&ips->ips_refcount);
+			ipsec_sa_get(ips);
 		}
+
 		for(; ips != NULL;) {
 			sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
 			KLIPS_PRINT(debug_xform,
@@ -753,15 +789,19 @@ ipsec_sadb_cleanup(__u8 proto)
 				    sa_len ? sa : " (error)",
 				    i,
 				    ips->ips_ref);
+
 			ipsdel = ips;
-			ips = ipsdel->ips_hnext;
+			ips = ips->ips_hnext;
+
 			if(ips != NULL) {
-				atomic_inc(&ips->ips_refcount);
+				ipsec_sa_get(ips);
+
 				sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
 				KLIPS_PRINT(debug_xform,
 					    ", hnext=%s",
 					    sa_len ? sa : " (error)");
 			}
+
 			if(*ipsprev != NULL) {
 				sa_len = satot(&(*ipsprev)->ips_said, 0, sa, sizeof(sa));
 				KLIPS_PRINT(debug_xform,
@@ -776,15 +816,20 @@ ipsec_sadb_cleanup(__u8 proto)
 			}
 			KLIPS_PRINT(debug_xform,
 				    ".\n");
+
 			if(proto == 0 || (proto == ipsdel->ips_said.proto)) {
-				sa_len = satot(&ipsdel->ips_said, 0, sa, sizeof(sa));
+				sa_len = satot(&ipsdel->ips_said, 0
+					       , sa, sizeof(sa));
+
 				KLIPS_PRINT(debug_xform,
 					    "klips_debug:ipsec_sadb_cleanup: "
 					    "deleting SA chain:%s.\n",
 					    sa_len ? sa : " (error)");
+
 				if((error = ipsec_sa_delchain(ipsdel))) {
 					SENDERR(-error);
 				}
+
 				ipsprev = &(ipsec_sadb_hash[i]);
 				ips = ipsec_sadb_hash[i];
 
