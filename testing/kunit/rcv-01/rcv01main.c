@@ -151,6 +151,7 @@ int main(char *argv[], int argc)
 	       0x49, 0x4a, 0x4a, 0x4c, 0x4c, 0x4f, 0x4f, 0x51,
 	       0x51, 0x52, 0x52, 0x54, 0x54, 0x57, 0x57, 0x58};
 
+  debug_xform = 1;
   init_kmalloc();
   debug_rcv=0xffffffff;
   sysctl_ipsec_debug_verbose = 1;
@@ -227,7 +228,9 @@ int main(char *argv[], int argc)
     assert(netif_rx_count == 1);
   }
   
-  return 0;
+  ipsec_sadb_cleanup(0);  /* 0 = all protocols */
+
+  exit(0);
 }
 
   

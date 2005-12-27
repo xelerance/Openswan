@@ -1,3 +1,7 @@
+INFO:klips_debug:ipsec_sadb_init: initialising main table of size 16 (2 ^ 4).
+INFO:klips_debug:ipsec_SArefSubTable_alloc: allocating 16384 bytes for table 0 of 16.
+INFO:klips_debug:ipsec_SArefSubTable_alloc: initialising 4096 elements (2 ^ 12) of table 0.
+INFO:klips_debug:ipsec_saref_freelist_init: initialising 256 elements of FreeList.
 INFO:klips_info:ipsec_alg_init: KLIPS alg v=0.8.1-0 (EALG_MAX=255, AALG_MAX=251)
 INFO:klips_info:ipsec_alg_init: calling ipsec_alg_static_init()
 ERR;pfkey_list_insert_supported returned -1. Loading anyway.
@@ -5,10 +9,26 @@ ipsec_aes_init(alg_type=15 alg_id=12 name=aes): ret=0
 DEBUG:klips_debug: experimental ipsec_alg_AES_MAC not registered [Ok] (auth_id=0)
 ERR;pfkey_list_insert_supported returned -1. Loading anyway.
 ipsec_3des_init(alg_type=15 alg_id=3 name=3des): ret=0
+INFO:klips_debug:ipsec_sa_get: ipsec_sa SA:unk0:0@<invalid>, ref:0 reference count incremented.
+INFO:klips_debug:ipsec_SAref_alloc: SAref requested... head=0, cont=1, tail=0, listsize=256.
+INFO:klips_debug:ipsec_SAref_alloc: FreeList empty, recycling...
+INFO:klips_debug:ipsec_SAref_recycle: recycling, continuing from SAref=1 (0p(nil)), table=0, entry=1.
+INFO:klips_debug:ipsec_SAref_recycle: SArefFreeList refilled.
+INFO:klips_debug:ipsec_SAref_alloc: allocating SAref=1, table=0, entry=1 of 65536.
+INFO:ipsec_sa_alloc: allocated 532 bytes for ipsec_sa struct=0p0xABCDABCD ref=0.
+INFO:klips_debug:ipsec_sa_get: ipsec_sa SA:unk0:0@<invalid>, ref:1 reference count incremented.
 INFO:ipsec_sa_alloc: SAref[1]=0xABCDABCD
+INFO:klips_debug:ipsec_sa_get: ipsec_sa SA:unk0:0@<invalid>, ref:0 reference count incremented.
+INFO:klips_debug:ipsec_SAref_alloc: SAref requested... head=2, cont=256, tail=255, listsize=256.
+INFO:klips_debug:ipsec_SAref_alloc: allocating SAref=2, table=0, entry=2 of 65536.
+INFO:ipsec_sa_alloc: allocated 532 bytes for ipsec_sa struct=0p0xABCDABCD ref=0.
+INFO:klips_debug:ipsec_sa_get: ipsec_sa SA:unk0:0@<invalid>, ref:2 reference count incremented.
 INFO:ipsec_sa_alloc: SAref[2]=0xABCDABCD
+INFO:klips_debug:ipsec_sa_get: ipsec_sa SA:esp:12345678@<invalid>, ref:2 reference count incremented.
 SA natt: 2
 INFO:klips_debug:ipsec_rcv_decap_once: decap (50) from 192.1.2.23 -> 192.1.2.45
+INFO:klips_debug:ipsec_sa_getbyid: linked entry in ipsec_sa table for hash=130 of SA:esp.12345678@192.1.2.45 requested.
+INFO:klips_debug:ipsec_sa_get: ipsec_sa SA:esp:12345678@<invalid>, ref:2 reference count incremented.
 INFO:klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45, src=192.1.2.23 of pkt agrees with expected SA source address policy.
 INFO:klips_debug:ipsec_rcv: SA:esp.12345678@192.1.2.45 First SA in group.
 INFO:klips_debug:ipsec_rcv: packet from 192.1.2.23 received with seq=1 (iv)=0x282c9987cf62f10c iplen=116 esplen=104 sa=esp.12345678@192.1.2.45
