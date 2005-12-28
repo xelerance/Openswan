@@ -236,10 +236,10 @@ extern int ipsec_sadb_init(void);
 extern struct ipsec_sa *ipsec_sa_alloc(int*error); /* pass in error var by pointer */
 extern IPsecSAref_t ipsec_SAref_alloc(int*erorr); /* pass in error var by pointer */
 extern int ipsec_sa_free(struct ipsec_sa* ips);
+extern int ipsec_sa_get(struct ipsec_sa *ips);
 extern int ipsec_sa_put(struct ipsec_sa *ips);
 extern int ipsec_sa_add(struct ipsec_sa *ips);
-extern int ipsec_sa_del(struct ipsec_sa *ips);
-extern int ipsec_sa_delchain(struct ipsec_sa *ips);
+extern void ipsec_sa_rm(struct ipsec_sa *ips);
 extern int ipsec_sadb_cleanup(__u8 proto);
 extern int ipsec_sadb_free(void);
 extern int ipsec_sa_wipe(struct ipsec_sa *ips);

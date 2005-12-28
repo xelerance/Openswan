@@ -1287,7 +1287,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 				    "replay window counter rolled for SA:<%s%s%s> %s, packet dropped, expiring SA.\n",
 				    IPS_XFORM_NAME(ixs->ipsp),
 				    ixs->sa_len ? ixs->sa_txt : " (error)");
-			ipsec_sa_delchain(ixs->ipsp);
+			ipsec_sa_rm(ixs->ipsp);
 			ixs->stats->tx_errors++;
 			bundle_stat = IPSEC_XMIT_REPLAYROLLED;
 			goto cleanup;
@@ -1315,7 +1315,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 		   ipsec_lifetime_check(&ixs->ipsp->ips_life.ipl_packets, "packets",ixs->sa_txt,
 					ipsec_life_countbased, ipsec_outgoing, ixs->ipsp) == ipsec_life_harddied) {
 				
-			ipsec_sa_delchain(ixs->ipsp);
+			ipsec_sa_rm(ixs->ipsp);
 			ixs->stats->tx_errors++;
 			bundle_stat = IPSEC_XMIT_LIFETIMEFAILED;
 			goto cleanup;

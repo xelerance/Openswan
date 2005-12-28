@@ -470,35 +470,27 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		nat_t_ips_saved = extr->ips;
 		extr->ips = ipsq;
 	}
-	else {
+	else 
 #endif
-	
-	/* XXX extr->ips->ips_rcvif = &(enc_softc[em->em_if].enc_if);*/
-	extr->ips->ips_rcvif = NULL;
-	if ((error = pfkey_ipsec_sa_init(extr->ips))) {
+	{
+		/* XXX extr->ips->ips_rcvif = &(enc_softc[em->em_if].enc_if);*/
+		extr->ips->ips_rcvif = NULL;
+		if ((error = pfkey_ipsec_sa_init(extr->ips))) {
+			ipsec_sa_put(ipsq);
+			spin_unlock_bh(&tdb_lock);
+			KLIPS_PRINT(debug_pfkey,
+				    "klips_debug:pfkey_update_parse: "
+				    "not successful for SA: %s, deleting.\n",
+				    sa_len ? sa : " (error)");
+			SENDERR(-error);
+		}
+		
+		extr->ips->ips_life.ipl_addtime.ipl_count = ipsq->ips_life.ipl_addtime.ipl_count;
+
+		/* this will call delchain-equivalent if refcount=>0 */
 		ipsec_sa_put(ipsq);
-		spin_unlock_bh(&tdb_lock);
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_update_parse: "
-			    "not successful for SA: %s, deleting.\n",
-			    sa_len ? sa : " (error)");
-		SENDERR(-error);
 	}
 
-	extr->ips->ips_life.ipl_addtime.ipl_count = ipsq->ips_life.ipl_addtime.ipl_count;
-	ipsec_sa_put(ipsq);
-	if((error = ipsec_sa_delchain(ipsq))) {
-		spin_unlock_bh(&tdb_lock);
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_update_parse: "
-			    "error=%d, trouble deleting intermediate ipsec_sa for SA=%s.\n",
-			    error,
-			    sa_len ? sa : " (error)");
-		SENDERR(-error);
-	}
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
-	}
-#endif
 
 	spin_unlock_bh(&tdb_lock);
 	
@@ -916,15 +908,6 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	}
 
 	ipsec_sa_put(ipsp);
-	if((error = ipsec_sa_delchain(ipsp))) {
-		spin_unlock_bh(&tdb_lock);
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_delete_parse: "
-			    "error=%d returned trying to delete ipsec_sa for SA:%s.\n",
-			    error,
-			    sa_len ? sa : " (error)");
-		SENDERR(-error);
-	}
 	spin_unlock_bh(&tdb_lock);
 
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
