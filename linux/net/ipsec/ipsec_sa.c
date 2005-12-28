@@ -283,7 +283,7 @@ ipsec_SAref_alloc(int*error) /* pass in error var by pointer */
 	IPsecSAref_t SAref;
 
 	KLIPS_PRINT(debug_xform,
-		    "klips_debug:ipsec_SAref_alloc: "
+		    "ipsec_SAref_alloc: "
 		    "SAref requested... head=%d, cont=%d, tail=%d, listsize=%d.\n",
 		    ipsec_sadb.refFreeListHead,
 		    ipsec_sadb.refFreeListCont,
@@ -292,7 +292,7 @@ ipsec_SAref_alloc(int*error) /* pass in error var by pointer */
 
 	if(ipsec_sadb.refFreeListHead == IPSEC_SAREF_NULL) {
 		KLIPS_PRINT(debug_xform,
-			    "klips_debug:ipsec_SAref_alloc: "
+			    "ipsec_SAref_alloc: "
 			    "FreeList empty, recycling...\n");
 		*error = ipsec_SAref_recycle();
 		if(*error) {
@@ -311,7 +311,7 @@ ipsec_SAref_alloc(int*error) /* pass in error var by pointer */
 	}
 
 	KLIPS_PRINT(debug_xform,
-		    "klips_debug:ipsec_SAref_alloc: "
+		    "ipsec_SAref_alloc: "
 		    "allocating SAref=%d, table=%u, entry=%u of %u.\n",
 		    SAref,
 		    IPsecSAref2table(SAref),
@@ -322,7 +322,7 @@ ipsec_SAref_alloc(int*error) /* pass in error var by pointer */
 	ipsec_sadb.refFreeListHead++;
 	if(ipsec_sadb.refFreeListHead > ipsec_sadb.refFreeListTail) {
 		KLIPS_PRINT(debug_xform,
-			    "klips_debug:ipsec_SAref_alloc: "
+			    "ipsec_SAref_alloc: "
 			    "last FreeList entry allocated, resetting list head to empty.\n");
 		ipsec_sadb.refFreeListHead = IPSEC_SAREF_NULL;
 	}
@@ -433,14 +433,12 @@ ipsec_sa_intern(struct ipsec_sa *ips)
 	if(ref == IPSEC_SAREF_NULL) {
 		ref = ipsec_SAref_alloc(&error); /* pass in error return by pointer */
 		KLIPS_PRINT(debug_xform,
-			    "ipsec_sa_alloc: "
-			    "allocated %lu bytes for ipsec_sa struct=0p%p ref=%d.\n",
-			    (unsigned long) sizeof(*ips),
-			    ips,
-			    ips->ips_ref);
+			    "ipsec_sa_intern: "
+			    "allocated ref=%u for sa %p\n", ref, ips);
+
 		if(ref == IPSEC_SAREF_NULL) {
 			KLIPS_PRINT(debug_xform,
-				    "ipsec_sa_alloc: "
+				    "ipsec_sa_intern: "
 				    "SAref allocation error\n");
 			return error;
 		}
@@ -482,7 +480,7 @@ ipsec_sa_getbyid(ip_said *said)
 
 	if(said == NULL) {
 		KLIPS_PRINT(debug_xform,
-			    "klips_error:ipsec_sa_getbyid: "
+			    "ipsec_sa_getbyid: "
 			    "null pointer passed in!\n");
 		return NULL;
 	}
@@ -492,14 +490,14 @@ ipsec_sa_getbyid(ip_said *said)
 	hashval = IPS_HASH(said);
 	
 	KLIPS_PRINT(debug_xform,
-		    "klips_debug:ipsec_sa_getbyid: "
+		    "ipsec_sa_getbyid: "
 		    "linked entry in ipsec_sa table for hash=%d of SA:%s requested.\n",
 		    hashval,
 		    sa_len ? sa : " (error)");
 
 	if((ips = ipsec_sadb_hash[hashval]) == NULL) {
 		KLIPS_PRINT(debug_xform,
-			    "klips_debug:ipsec_sa_getbyid: "
+			    "ipsec_sa_getbyid: "
 			    "no entries in ipsec_sa table for hash=%d of SA:%s.\n",
 			    hashval,
 			    sa_len ? sa : " (error)");
@@ -516,7 +514,7 @@ ipsec_sa_getbyid(ip_said *said)
 	}
 	
 	KLIPS_PRINT(debug_xform,
-		    "klips_debug:ipsec_sa_getbyid: "
+		    "ipsec_sa_getbyid: "
 		    "no entry in linked list for hash=%d of SA:%s.\n",
 		    hashval,
 		    sa_len ? sa : " (error)");
@@ -541,10 +539,11 @@ ipsec_sa_put(struct ipsec_sa *ips)
 
 		KLIPS_PRINT(debug_xform,
 			    "ipsec_sa_put: "
-			    "ipsec_sa %p SA:%s, ref:%d reference count decremented.\n",
+			    "ipsec_sa %p SA:%s, ref:%d reference count (%d--) decremented.\n",
 			    ips,
 			    sa_len ? sa : " (error)",
-			    ips->ips_ref);
+			    ips->ips_ref,
+			    atomic_read(&ips->ips_refcount));
 	}
 
 	if(atomic_dec_and_test(&ips->ips_refcount)) {
@@ -560,7 +559,7 @@ ipsec_sa_put(struct ipsec_sa *ips)
 }
 
 int
-ipsec_sa_get(struct ipsec_sa *ips)
+__ipsec_sa_get(struct ipsec_sa *ips, const char *func, int line)
 {
         char sa[SATOT_BUF];
 	size_t sa_len;
@@ -569,10 +568,13 @@ ipsec_sa_get(struct ipsec_sa *ips)
 	  sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
 
 	  KLIPS_PRINT(debug_xform,
-		      "klips_debug:ipsec_sa_get: "
-		      "ipsec_sa SA:%s, ref:%d reference count incremented.\n",
+		      "ipsec_sa_get: "
+		      "ipsec_sa %p SA:%s, ref:%d reference count (%d++) incremented by %s:%d.\n",
+		      ips,
 		      sa_len ? sa : " (error)",
-		      ips->ips_ref);
+		      ips->ips_ref,
+		      atomic_read(&ips->ips_refcount),
+		      func, line);
 	}
 
 	atomic_inc(&ips->ips_refcount);

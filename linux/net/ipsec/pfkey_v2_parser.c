@@ -854,6 +854,7 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 			    error);
 		SENDERR(-error);
 	}
+	ipsec_sa_put(extr->ips);
 	extr->ips = NULL;
 	
 	KLIPS_PRINT(debug_pfkey,

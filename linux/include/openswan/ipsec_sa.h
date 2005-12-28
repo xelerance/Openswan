@@ -236,7 +236,9 @@ extern int ipsec_sadb_init(void);
 extern struct ipsec_sa *ipsec_sa_alloc(int*error); /* pass in error var by pointer */
 extern IPsecSAref_t ipsec_SAref_alloc(int*erorr); /* pass in error var by pointer */
 extern int ipsec_sa_free(struct ipsec_sa* ips);
-extern int ipsec_sa_get(struct ipsec_sa *ips);
+
+#define ipsec_sa_get(ips) __ipsec_sa_get(ips, __FUNCTION__, __LINE__)
+extern int __ipsec_sa_get(struct ipsec_sa *ips, const char *func, int line);
 extern int ipsec_sa_put(struct ipsec_sa *ips);
 extern int ipsec_sa_add(struct ipsec_sa *ips);
 extern void ipsec_sa_rm(struct ipsec_sa *ips);
