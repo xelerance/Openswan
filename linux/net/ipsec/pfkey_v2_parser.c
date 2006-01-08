@@ -1485,6 +1485,11 @@ pfkey_expire_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	return error;
 }
 
+
+/*
+ *
+ * flush all SAs from the table
+ */
 DEBUG_NO_STATIC int
 pfkey_flush_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extracted_data* extr)
 {
@@ -1618,6 +1623,9 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 	}
 
 	if(extr->ips2) { /* GRPSA */
+
+		/* group ips2p to be after ips1p */
+
 		ips2p = ipsec_sa_getbyid(&(extr->ips2->ips_said));
 		if(ips2p == NULL) {
 			ipsec_sa_put(ips1p);
@@ -1629,8 +1637,8 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 			SENDERR(ENOENT);
 		}
 
-		/* Is either one already linked? */
-		if(ips1p->ips_onext) {
+		/* Is ips1p already linked? */
+		if(ips1p->ips_next) {
 			ipsec_sa_put(ips1p);
 			ipsec_sa_put(ips2p);
 			spin_unlock_bh(&tdb_lock);
@@ -1638,16 +1646,6 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 				    "klips_debug:pfkey_x_grpsa_parse: "
 				    "ipsec_sa for SA: %s is already linked.\n",
 				    sa_len1 ? sa1 : " (error)");
-			SENDERR(EEXIST);
-		}
-		if(ips2p->ips_inext) {
-			ipsec_sa_put(ips1p);
-			ipsec_sa_put(ips2p);
-			spin_unlock_bh(&tdb_lock);
-			KLIPS_ERROR(debug_pfkey,
-				    "klips_debug:pfkey_x_grpsa_parse: "
-				    "ipsec_sa for SA: %s is already linked.\n",
-				    sa_len2 ? sa2 : " (error)");
 			SENDERR(EEXIST);
 		}
 		
@@ -1665,7 +1663,7 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 					    sa_len2 ? sa2 : " (error)");
 				SENDERR(EEXIST);
 			}
-			ipsp = ipsp->ips_onext;
+			ipsp = ipsp->ips_next;
 		}
 		
 		/* link 'em */
@@ -1674,30 +1672,34 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 			    "linking ipsec_sa SA: %s with %s.\n",
 			    sa_len1 ? sa1 : " (error)",
 			    sa_len2 ? sa2 : " (error)");
-		ips1p->ips_onext = ips2p;
-		ips2p->ips_inext = ips1p;
+		ips1p->ips_next = ips2p;
 	} else { /* UNGRPSA */
-		ipsec_sa_put(ips1p);
+		while(ips1p) {
+			struct ipsec_sa *ipsn;
+
+			/* take the reference to next */
+			ipsn = ips1p->ips_next;
+			ips1p->ips_next = NULL;
+
+			/* drop reference to current */
+			ipsec_sa_put(ips1p);
+
+			ips1p = ipsn;
+		}
+
+		/* note: we have dropped reference to ips1p, and
+		 * it is now NULL
+		 */
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_x_grpsa_parse: "
 			    "unlinking ipsec_sa SA: %s.\n",
 			    sa_len1 ? sa1 : " (error)");
-		while(ips1p->ips_onext) {
-			ips1p = ips1p->ips_onext;
-		}
-		while(ips1p->ips_inext) {
-			ipsp = ips1p;
-			ips1p = ips1p->ips_inext;
-			ipsec_sa_put(ips1p);
-			ipsp->ips_inext = NULL;
-			ipsec_sa_put(ipsp);
-			ips1p->ips_onext = NULL;
-		}
 	}
 
 	spin_unlock_bh(&tdb_lock);
 
-	/* MCR: not only is this ugly to read, and impossible to debug through, but it's also really inefficient.
+	/* MCR: not only is this ugly to read, and impossible
+	 *   to debug through, but it's also really inefficient.
 	 * XXX simplify me.
 	 */
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
@@ -1853,7 +1855,7 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 
 		ipsp = ipsq;
 		while(ipsp && ipsp->ips_said.proto != IPPROTO_IPIP) {
-			ipsp = ipsp->ips_inext;
+			ipsp = ipsp->ips_next;
 		}
 
 		if(ipsp == NULL) {

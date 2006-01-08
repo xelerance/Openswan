@@ -907,7 +907,7 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 	ixs->ipsp->ips_life.ipl_usetime.ipl_last = jiffies / HZ;
 	ixs->ipsp->ips_life.ipl_packets.ipl_count++; 
 
-	ixs->ipsp = ixs->ipsp->ips_onext;
+	ixs->ipsp = ixs->ipsp->ips_next;
 			
 	return IPSEC_XMIT_OK;
 }
@@ -1432,7 +1432,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 			bundle_stat = IPSEC_XMIT_BADPROTO;
 			goto cleanup;
 		}
-		ixs->ipsp = ixs->ipsp->ips_onext;
+		ixs->ipsp = ixs->ipsp->ips_next;
 		KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
 			    "klips_debug:ipsec_xmit_encap_bundle: "
 			    "Required head,tailroom: %d,%d\n", 

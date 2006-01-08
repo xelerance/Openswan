@@ -347,11 +347,8 @@ ipsec_sa_print(struct ipsec_sa *ips)
 	if(ips->ips_hnext != NULL) {
 		printk(" hnext=0p%p", ips->ips_hnext);
 	}
-	if(ips->ips_inext != NULL) {
-		printk(" inext=0p%p", ips->ips_inext);
-	}
-	if(ips->ips_onext != NULL) {
-		printk(" onext=0p%p", ips->ips_onext);
+	if(ips->ips_next != NULL) {
+		printk(" next=0p%p", ips->ips_next);
 	}
 	sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
 	printk(" said=%s", sa_len ? sa : " (error)");
@@ -688,29 +685,14 @@ ipsec_sa_del(struct ipsec_sa *ips)
 		return -ENODATA;
 	}
 
-	if(ips->ips_inext) {
-		struct ipsec_sa *in = ips->ips_inext;
+	if(ips->ips_next) {
+		struct ipsec_sa *in = ips->ips_next;
 
-		ips->ips_inext=NULL;
+		ips->ips_next=NULL;
 		ipsec_sa_put(in);
 	}
 	
-	if(ips->ips_onext) {
-		struct ipsec_sa *on = ips->ips_inext;
-
-		ips->ips_onext=NULL;
-		ipsec_sa_put(on);
-	}
-	
 	sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
-	if(ips->ips_inext || ips->ips_onext) {
-		KLIPS_ERROR(debug_xform,
-			    "klips_error:ipsec_sa_del: "
-			    "SA:%s still linked!\n",
-			    sa_len ? sa : " (error)");
-		return -EMLINK;
-	}
-	
 	hashval = IPS_HASH(&ips->ips_said);
 	
 	KLIPS_PRINT(debug_xform,

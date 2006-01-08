@@ -468,37 +468,35 @@ ipsec_spigrp_get_info(char *buffer,
 		     sa_p != NULL;
 		     sa_p = sa_p->ips_hnext)
 		{
-			if(sa_p->ips_inext == NULL) {
-				sa_p2 = sa_p;
-				while(sa_p2 != NULL) {
-					struct ipsec_sa *sa2n;
-					sa_len = satot(&sa_p2->ips_said,
-						       'x', sa, sizeof(sa));
-					
-					len += ipsec_snprintf(buffer+len, length-len, "%s ",
-						       sa_len ? sa : " (error)");
-					
-					sa2n = sa_p2->ips_onext;
-					sa_p2 = sa2n;
-				}
-				len += ipsec_snprintf(buffer+len, length-len, "\n");
-                       }
-                                        
-                       if (len >= max_content) {
-                               /* we've done all that can fit -- stop loops */
-                               len = max_content;      /* truncate crap */
-                               goto done_spigrp_i;
-                       } else {
-                               const off_t pos = begin + len;
-
-                               if (pos <= offset) {
-                                       /* all is before first interesting character:
-                                        * discard, but note where we are.
-                                        */
+			sa_p2 = sa_p;
+			while(sa_p2 != NULL) {
+				struct ipsec_sa *sa2n;
+				sa_len = satot(&sa_p2->ips_said,
+					       'x', sa, sizeof(sa));
+				
+				len += ipsec_snprintf(buffer+len, length-len, "%s ",
+						      sa_len ? sa : " (error)");
+				
+				sa2n = sa_p2->ips_next;
+				sa_p2 = sa2n;
+			}
+			len += ipsec_snprintf(buffer+len, length-len, "\n");
+			
+			if (len >= max_content) {
+				/* we've done all that can fit -- stop loops */
+				len = max_content;      /* truncate crap */
+				goto done_spigrp_i;
+			} else {
+				const off_t pos = begin + len;
+				
+				if (pos <= offset) {
+					/* all is before first interesting character:
+					 * discard, but note where we are.
+					 */
                                         len = 0;
                                         begin = pos;
-                               }
-                       }
+				}
+			}
 		}
 	}
 

@@ -327,11 +327,12 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 			    irs->ipsaddr_txt);
 
 		/*
-		 * at this point, we have looked up a new SA, and we want to make sure that if this
-		 * isn't the first SA in the list, that the previous SA actually points at this one.
+		 * at this point, we have looked up a new SA, and we want to
+		 * make sure that if this isn't the first SA in the list,
+		 * that the previous SA actually points at this one.
 		 */
 		if(irs->ipsp) {
-			if(irs->ipsp->ips_inext != newipsp) {
+			if(irs->ipsp->ips_next != newipsp) {
 				KLIPS_PRINT(debug_rcv,
 					    "klips_debug:ipsec_rcv: "
 					    "unexpected SA:%s: does not agree with ips->inext policy, dropped\n",
@@ -691,7 +692,7 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 	skb->protocol = htons(ETH_P_IP);
 	skb->ip_summed = 0;
 
-	ipsnext = irs->ipsp->ips_inext;
+	ipsnext = irs->ipsp->ips_next;
 	if(sysctl_ipsec_inbound_policy_check) {
 		if(ipsnext) {
 			if(
@@ -700,7 +701,7 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 #ifdef CONFIG_KLIPS_IPCOMP
 				&& ipp->protocol != IPPROTO_COMP
 				&& (ipsnext->ips_said.proto != IPPROTO_COMP
-				    || ipsnext->ips_inext)
+				    || ipsnext->ips_next)
 #endif /* CONFIG_KLIPS_IPCOMP */
 				&& ipp->protocol != IPPROTO_IPIP
 				&& ipp->protocol != IPPROTO_ATT_HEARTBEAT  /* heartbeats to AT&T SIG/GIG */
@@ -851,7 +852,7 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 	/* set up for decap loop */
 	ipp  =irs->ipp;
 	ipsp =irs->ipsp;
-	ipsnext = ipsp->ips_inext;
+	ipsnext = ipsp->ips_next;
 	skb = irs->skb;
 
 	/* if there is an IPCOMP, but we don't have an IPPROTO_COMP,
@@ -860,7 +861,7 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 #ifdef CONFIG_KLIPS_IPCOMP
 	if(ipsnext && ipsnext->ips_said.proto == IPPROTO_COMP) {
 		ipsp = ipsnext;
-		ipsnext = ipsp->ips_inext;
+		ipsnext = ipsp->ips_next;
 	}
 #endif /* CONFIG_KLIPS_IPCOMP */
 
@@ -907,7 +908,7 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 		}
 		if(sysctl_ipsec_inbound_policy_check) {
 			struct sockaddr_in *psin = (struct sockaddr_in*)(ipsp->ips_addr_s);
-			if((ipsnext = ipsp->ips_inext)) {
+			if((ipsnext = ipsp->ips_next)) {
 				char sa2[SATOT_BUF];
 				size_t sa_len2;
 				sa_len2 = satot(&ipsnext->ips_said, 0, sa2, sizeof(sa2));

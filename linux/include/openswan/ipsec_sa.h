@@ -128,9 +128,9 @@ struct ipsec_sa
 {
 	IPsecSAref_t	ips_ref;		/* reference table entry number */
 	atomic_t	ips_refcount;		/* reference count for this struct */
+	struct ipsec_sa	*ips_next;	 	/* pointer to next xform */
+
 	struct ipsec_sa	*ips_hnext;		/* next in hash chain */
-	struct ipsec_sa	*ips_inext;	 	/* pointer to next xform */
-	struct ipsec_sa	*ips_onext;	 	/* pointer to prev xform */
 
 	struct ifnet	*ips_rcvif;	 	/* related rcv encap interface */
 
