@@ -1049,17 +1049,8 @@ static int create_hold_eroute(struct eroute *origtrap,
 	return (error == 0);
 }
 
-/*
- * upon entry to this function, ixs->skb should be setup
- * as follows:
- *
- *   data   = beginning of IP packet   <- differs from ipsec_rcv().
- *   nh.raw = beginning of IP packet.
- *   h.raw  = data after the IP packet.
- *
- */
 enum ipsec_xmit_value
-ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
+ipsec_xmit_encap_bundle_2(struct ipsec_xmit_state *ixs)
 {
 #ifdef CONFIG_KLIPS_ALG
 	struct ipsec_alg_enc *ixt_e = NULL;
@@ -1068,175 +1059,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 #endif /* CONFIG_KLIPS_ALG */
 	enum ipsec_xmit_value bundle_stat = IPSEC_XMIT_OK;
 	struct ipsec_sa *saved_ipsp;
- 
-	ixs->newdst = ixs->orgdst = ixs->iph->daddr;
-	ixs->newsrc = ixs->orgsrc = ixs->iph->saddr;
-	ixs->orgedst = ixs->outgoing_said.dst.u.v4.sin_addr.s_addr;
-	ixs->iphlen = ixs->iph->ihl << 2;
-	ixs->pyldsz = ntohs(ixs->iph->tot_len) - ixs->iphlen;
-	ixs->max_headroom = ixs->max_tailroom = 0;
-		
-	if (ixs->outgoing_said.proto == IPPROTO_INT) {
-		switch (ntohl(ixs->outgoing_said.spi)) {
-		case SPI_DROP:
-			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-				    "klips_debug:ipsec_xmit_encap_bundle: "
-				    "shunt SA of DROP or no eroute: dropping.\n");
-			ixs->stats->tx_dropped++;
-			break;
-				
-		case SPI_REJECT:
-			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-				    "klips_debug:ipsec_xmit_encap_bundle: "
-				    "shunt SA of REJECT: notifying and dropping.\n");
-			ICMP_SEND(ixs->skb,
-				  ICMP_DEST_UNREACH,
-				  ICMP_PKT_FILTERED,
-				  0,
-				  ixs->physdev);
-			ixs->stats->tx_dropped++;
-			break;
-				
-		case SPI_PASS:
-#ifdef NET_21
-			ixs->pass = 1;
-#endif /* NET_21 */
-			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-				    "klips_debug:ipsec_xmit_encap_bundle: "
-				    "PASS: calling dev_queue_xmit\n");
-			return IPSEC_XMIT_PASS;
-			goto cleanup;
-				
-		case SPI_HOLD:
-			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-				    "klips_debug:ipsec_xmit_encap_bundle: "
-				    "shunt SA of HOLD: this does not make sense here, dropping.\n");
-			ixs->stats->tx_dropped++;
-			break;
 
-		case SPI_TRAP:
-		case SPI_TRAPSUBNET:
-		{
-			struct sockaddr_in src, dst;
-#ifdef CONFIG_KLIPS_DEBUG
-			char bufsrc[ADDRTOA_BUF], bufdst[ADDRTOA_BUF];
-#endif /* CONFIG_KLIPS_DEBUG */
-
-			/* Signal all listening KMds with a PF_KEY ACQUIRE */
-
-			memset(&src, 0, sizeof(src));
-			memset(&dst, 0, sizeof(dst));
-			src.sin_family = AF_INET;
-			dst.sin_family = AF_INET;
-			src.sin_addr.s_addr = ixs->iph->saddr;
-			dst.sin_addr.s_addr = ixs->iph->daddr;
-
-			ixs->ips.ips_transport_protocol = 0;
-			src.sin_port = 0;
-			dst.sin_port = 0;
-			
-			if(ixs->eroute->er_eaddr.sen_proto != 0) {
-			  ixs->ips.ips_transport_protocol = ixs->iph->protocol;
-			  
-			  if(ixs->eroute->er_eaddr.sen_sport != 0) {
-			    src.sin_port = 
-			      (ixs->iph->protocol == IPPROTO_UDP
-			       ? ((struct udphdr*) (((caddr_t)ixs->iph) + (ixs->iph->ihl << 2)))->source
-			       : (ixs->iph->protocol == IPPROTO_TCP
-				  ? ((struct tcphdr*)((caddr_t)ixs->iph + (ixs->iph->ihl << 2)))->source
-				  : 0));
-			  }
-			  if(ixs->eroute->er_eaddr.sen_dport != 0) {
-			    dst.sin_port = 
-			      (ixs->iph->protocol == IPPROTO_UDP
-			       ? ((struct udphdr*) (((caddr_t)ixs->iph) + (ixs->iph->ihl << 2)))->dest
-			       : (ixs->iph->protocol == IPPROTO_TCP
-				  ? ((struct tcphdr*)((caddr_t)ixs->iph + (ixs->iph->ihl << 2)))->dest
-				  : 0));
-			  }
-			}
-				
-			ixs->ips.ips_addr_s = (struct sockaddr*)(&src);
-			ixs->ips.ips_addr_d = (struct sockaddr*)(&dst);
-			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-				    "klips_debug:ipsec_xmit_encap_bundle: "
-				    "SADB_ACQUIRE sent with src=%s:%d, dst=%s:%d, proto=%d.\n",
-				    addrtoa(((struct sockaddr_in*)(ixs->ips.ips_addr_s))->sin_addr, 0, bufsrc, sizeof(bufsrc)) <= ADDRTOA_BUF ? bufsrc : "BAD_ADDR",
-				    ntohs(((struct sockaddr_in*)(ixs->ips.ips_addr_s))->sin_port),
-				    addrtoa(((struct sockaddr_in*)(ixs->ips.ips_addr_d))->sin_addr, 0, bufdst, sizeof(bufdst)) <= ADDRTOA_BUF ? bufdst : "BAD_ADDR",
-				    ntohs(((struct sockaddr_in*)(ixs->ips.ips_addr_d))->sin_port),
-				    ixs->ips.ips_said.proto);
-				
-			/* increment count of total traps needed */
-			ipsec_xmit_trap_count++;
-
-			if (pfkey_acquire(&ixs->ips) == 0) {
-
-				/* note that we succeeded */
-			        ipsec_xmit_trap_sendcount++;
-					
-				if (ixs->outgoing_said.spi==htonl(SPI_TRAPSUBNET)) {
-					/*
-					 * The spinlock is to prevent any other
-					 * process from accessing or deleting
-					 * the eroute while we are using and
-					 * updating it.
-					 */
-					spin_lock(&eroute_lock);
-					ixs->eroute = ipsec_findroute(&ixs->matcher);
-					if(ixs->eroute) {
-						ixs->eroute->er_said.spi = htonl(SPI_HOLD);
-						ixs->eroute->er_first = ixs->skb;
-						ixs->skb = NULL;
-					}
-					spin_unlock(&eroute_lock);
-				} else if (create_hold_eroute(ixs->eroute,
-							      ixs->skb,
-							      ixs->iph,
-							      ixs->eroute_pid)) {
-					ixs->skb = NULL;
-				} 
-				/* whether or not the above succeeded, we continue */
-				
-			}
-			ixs->stats->tx_dropped++;
-		}
-		default:
-			/* XXX what do we do with an unknown shunt spi? */
-			break;
-		} /* switch (ntohl(ixs->outgoing_said.spi)) */
-		return IPSEC_XMIT_STOLEN;
-	} /* if (ixs->outgoing_said.proto == IPPROTO_INT) */
-	
-	/*
-	  The spinlock is to prevent any other process from
-	  accessing or deleting the ipsec_sa hash table or any of the
-	  ipsec_sa s while we are using and updating them.
-		  
-	  This is not optimal, but was relatively straightforward
-	  at the time.  A better way to do it has been planned for
-	  more than a year, to lock the hash table and put reference
-	  counts on each ipsec_sa instead.  This is not likely to happen
-	  in KLIPS1 unless a volunteer contributes it, but will be
-	  designed into KLIPS2.
-	*/
-	spin_lock(&tdb_lock);
-
-	ixs->ipsp = ipsec_sa_getbyid(&ixs->outgoing_said);
-	ixs->sa_len = satot(&ixs->outgoing_said, 0, ixs->sa_txt, sizeof(ixs->sa_txt));
-
-	if (ixs->ipsp == NULL) {
-		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_xmit_encap_bundle: "
-			    "no ipsec_sa for SA%s: outgoing packet with no SA, dropped.\n",
-			    ixs->sa_len ? ixs->sa_txt : " (error)");
-		if(ixs->stats) {
-			ixs->stats->tx_dropped++;
-		}
-		bundle_stat = IPSEC_XMIT_SAIDNOTFOUND;
-		goto cleanup;
-	}
-		
 	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 		    "klips_debug:ipsec_xmit_encap_bundle: "
 		    "found ipsec_sa -- SA:<%s%s%s> %s\n",
@@ -1679,105 +1502,191 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 		}
 	}
 
-	/* we are done with this SA */
-	ipsec_sa_put(saved_ipsp); 
-
 	/* end encapsulation loop here XXX */
  cleanup:
-	spin_unlock(&tdb_lock);
 	return bundle_stat;
 }
 
 /*
- * $Log: ipsec_xmit.c,v $
- * Revision 1.23  2005/08/28 02:11:32  ken
- * Add missing HAVE_
+ * upon entry to this function, ixs->skb should be setup
+ * as follows:
  *
- * Revision 1.22  2005/08/27 23:07:21  paul
- * Somewhere between 2.6.12 and 2.6.13rc7 the unused security memnber in sk_buff
- * has been removed. This patch should fix compilation for both cases.
+ *   data   = beginning of IP packet   <- differs from ipsec_rcv().
+ *   nh.raw = beginning of IP packet.
+ *   h.raw  = data after the IP packet.
  *
- * Revision 1.21  2005/08/05 08:44:54  mcr
- * 	ipsec_kern24.h (compat code for 2.4) must be include
- * 	explicitely now.
- *
- * Revision 1.20  2005/07/12 15:39:27  paul
- * include asm/uaccess.h for VERIFY_WRITE
- *
- * Revision 1.19  2005/05/24 01:02:35  mcr
- * 	some refactoring/simplification of situation where alg
- * 	is not found.
- *
- * Revision 1.18  2005/05/23 23:52:33  mcr
- * 	adjust comments, add additional debugging.
- *
- * Revision 1.17  2005/05/23 22:57:23  mcr
- * 	removed explicit 3DES support.
- *
- * Revision 1.16  2005/05/21 03:29:15  mcr
- * 	fixed warning about unused zeroes if AH is off.
- *
- * Revision 1.15  2005/05/20 16:47:59  mcr
- * 	include asm/checksum.h to get ip_fast_csum macro.
- *
- * Revision 1.14  2005/05/11 01:43:03  mcr
- * 	removed "poor-man"s OOP in favour of proper C structures.
- *
- * Revision 1.13  2005/04/29 05:10:22  mcr
- * 	removed from extraenous includes to make unit testing easier.
- *
- * Revision 1.12  2005/04/15 01:28:34  mcr
- * 	use ipsec_dmp_block.
- *
- * Revision 1.11  2005/01/26 00:50:35  mcr
- * 	adjustment of confusion of CONFIG_IPSEC_NAT vs CONFIG_KLIPS_NAT,
- * 	and make sure that NAT_TRAVERSAL is set as well to match
- * 	userspace compiles of code.
- *
- * Revision 1.10  2004/09/13 17:55:21  ken
- * MD5* -> osMD5*
- *
- * Revision 1.9  2004/07/10 19:11:18  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.8  2004/04/06 02:49:26  mcr
- * 	pullup of algo code from alg-branch.
- *
- * Revision 1.7  2004/02/03 03:13:41  mcr
- * 	mark invalid encapsulation states.
- *
- * Revision 1.6.2.1  2003/12/22 15:25:52  jjo
- *      Merged algo-0.8.1-rc11-test1 into alg-branch
- *
- * Revision 1.6  2003/12/10 01:14:27  mcr
- * 	NAT-traversal patches to KLIPS.
- *
- * Revision 1.5  2003/10/31 02:27:55  mcr
- * 	pulled up port-selector patches and sa_id elimination.
- *
- * Revision 1.4.4.2  2003/10/29 01:37:39  mcr
- * 	when creating %hold from %trap, only make the %hold as
- * 	specific as the %trap was - so if the protocol and ports
- * 	were wildcards, then the %hold will be too.
- *
- * Revision 1.4.4.1  2003/09/21 13:59:56  mcr
- * 	pre-liminary X.509 patch - does not yet pass tests.
- *
- * Revision 1.4  2003/06/20 02:28:10  mcr
- * 	misstype of variable name, not detected by module build.
- *
- * Revision 1.3  2003/06/20 01:42:21  mcr
- * 	added counters to measure how many ACQUIREs we send to pluto,
- * 	and how many are successfully sent.
- *
- * Revision 1.2  2003/04/03 17:38:35  rgb
- * Centralised ipsec_kfree_skb and ipsec_dev_{get,put}.
- * Normalised coding style.
- * Simplified logic and reduced duplication of code.
- *
- * Revision 1.1  2003/02/12 19:31:23  rgb
- * Refactored from ipsec_tunnel.c
- *
+ */
+enum ipsec_xmit_value
+ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
+{
+	enum ipsec_xmit_value bundle_stat = IPSEC_XMIT_OK;
+ 
+	ixs->newdst = ixs->orgdst = ixs->iph->daddr;
+	ixs->newsrc = ixs->orgsrc = ixs->iph->saddr;
+	ixs->orgedst = ixs->outgoing_said.dst.u.v4.sin_addr.s_addr;
+	ixs->iphlen = ixs->iph->ihl << 2;
+	ixs->pyldsz = ntohs(ixs->iph->tot_len) - ixs->iphlen;
+	ixs->max_headroom = ixs->max_tailroom = 0;
+		
+	if (ixs->outgoing_said.proto == IPPROTO_INT) {
+		switch (ntohl(ixs->outgoing_said.spi)) {
+		case SPI_DROP:
+			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+				    "klips_debug:ipsec_xmit_encap_bundle: "
+				    "shunt SA of DROP or no eroute: dropping.\n");
+			ixs->stats->tx_dropped++;
+			break;
+				
+		case SPI_REJECT:
+			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+				    "klips_debug:ipsec_xmit_encap_bundle: "
+				    "shunt SA of REJECT: notifying and dropping.\n");
+			ICMP_SEND(ixs->skb,
+				  ICMP_DEST_UNREACH,
+				  ICMP_PKT_FILTERED,
+				  0,
+				  ixs->physdev);
+			ixs->stats->tx_dropped++;
+			break;
+				
+		case SPI_PASS:
+#ifdef NET_21
+			ixs->pass = 1;
+#endif /* NET_21 */
+			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+				    "klips_debug:ipsec_xmit_encap_bundle: "
+				    "PASS: calling dev_queue_xmit\n");
+			return IPSEC_XMIT_PASS;
+			goto cleanup;
+				
+		case SPI_HOLD:
+			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+				    "klips_debug:ipsec_xmit_encap_bundle: "
+				    "shunt SA of HOLD: this does not make sense here, dropping.\n");
+			ixs->stats->tx_dropped++;
+			break;
+
+		case SPI_TRAP:
+		case SPI_TRAPSUBNET:
+		{
+			struct sockaddr_in src, dst;
+#ifdef CONFIG_KLIPS_DEBUG
+			char bufsrc[ADDRTOA_BUF], bufdst[ADDRTOA_BUF];
+#endif /* CONFIG_KLIPS_DEBUG */
+
+			/* Signal all listening KMds with a PF_KEY ACQUIRE */
+
+			memset(&src, 0, sizeof(src));
+			memset(&dst, 0, sizeof(dst));
+			src.sin_family = AF_INET;
+			dst.sin_family = AF_INET;
+			src.sin_addr.s_addr = ixs->iph->saddr;
+			dst.sin_addr.s_addr = ixs->iph->daddr;
+
+			ixs->ips.ips_transport_protocol = 0;
+			src.sin_port = 0;
+			dst.sin_port = 0;
+			
+			if(ixs->eroute->er_eaddr.sen_proto != 0) {
+			  ixs->ips.ips_transport_protocol = ixs->iph->protocol;
+			  
+			  if(ixs->eroute->er_eaddr.sen_sport != 0) {
+			    src.sin_port = 
+			      (ixs->iph->protocol == IPPROTO_UDP
+			       ? ((struct udphdr*) (((caddr_t)ixs->iph) + (ixs->iph->ihl << 2)))->source
+			       : (ixs->iph->protocol == IPPROTO_TCP
+				  ? ((struct tcphdr*)((caddr_t)ixs->iph + (ixs->iph->ihl << 2)))->source
+				  : 0));
+			  }
+			  if(ixs->eroute->er_eaddr.sen_dport != 0) {
+			    dst.sin_port = 
+			      (ixs->iph->protocol == IPPROTO_UDP
+			       ? ((struct udphdr*) (((caddr_t)ixs->iph) + (ixs->iph->ihl << 2)))->dest
+			       : (ixs->iph->protocol == IPPROTO_TCP
+				  ? ((struct tcphdr*)((caddr_t)ixs->iph + (ixs->iph->ihl << 2)))->dest
+				  : 0));
+			  }
+			}
+				
+			ixs->ips.ips_addr_s = (struct sockaddr*)(&src);
+			ixs->ips.ips_addr_d = (struct sockaddr*)(&dst);
+			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+				    "klips_debug:ipsec_xmit_encap_bundle: "
+				    "SADB_ACQUIRE sent with src=%s:%d, dst=%s:%d, proto=%d.\n",
+				    addrtoa(((struct sockaddr_in*)(ixs->ips.ips_addr_s))->sin_addr, 0, bufsrc, sizeof(bufsrc)) <= ADDRTOA_BUF ? bufsrc : "BAD_ADDR",
+				    ntohs(((struct sockaddr_in*)(ixs->ips.ips_addr_s))->sin_port),
+				    addrtoa(((struct sockaddr_in*)(ixs->ips.ips_addr_d))->sin_addr, 0, bufdst, sizeof(bufdst)) <= ADDRTOA_BUF ? bufdst : "BAD_ADDR",
+				    ntohs(((struct sockaddr_in*)(ixs->ips.ips_addr_d))->sin_port),
+				    ixs->ips.ips_said.proto);
+				
+			/* increment count of total traps needed */
+			ipsec_xmit_trap_count++;
+
+			if (pfkey_acquire(&ixs->ips) == 0) {
+
+				/* note that we succeeded */
+			        ipsec_xmit_trap_sendcount++;
+					
+				if (ixs->outgoing_said.spi==htonl(SPI_TRAPSUBNET)) {
+					/*
+					 * The spinlock is to prevent any other
+					 * process from accessing or deleting
+					 * the eroute while we are using and
+					 * updating it.
+					 */
+					spin_lock(&eroute_lock);
+					ixs->eroute = ipsec_findroute(&ixs->matcher);
+					if(ixs->eroute) {
+						ixs->eroute->er_said.spi = htonl(SPI_HOLD);
+						ixs->eroute->er_first = ixs->skb;
+						ixs->skb = NULL;
+					}
+					spin_unlock(&eroute_lock);
+				} else if (create_hold_eroute(ixs->eroute,
+							      ixs->skb,
+							      ixs->iph,
+							      ixs->eroute_pid)) {
+					ixs->skb = NULL;
+				} 
+				/* whether or not the above succeeded, we continue */
+				
+			}
+			ixs->stats->tx_dropped++;
+		}
+		default:
+			/* XXX what do we do with an unknown shunt spi? */
+			break;
+		} /* switch (ntohl(ixs->outgoing_said.spi)) */
+		return IPSEC_XMIT_STOLEN;
+	} /* if (ixs->outgoing_said.proto == IPPROTO_INT) */
+	
+	/* ipsec_sa_getbyid() takes a reference to the ixs */
+	ixs->ipsp = ipsec_sa_getbyid(&ixs->outgoing_said);
+	ixs->sa_len = satot(&ixs->outgoing_said, 0, ixs->sa_txt, sizeof(ixs->sa_txt));
+
+	if (ixs->ipsp == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+			    "klips_debug:ipsec_xmit_encap_bundle: "
+			    "no ipsec_sa for SA%s: outgoing packet with no SA, dropped.\n",
+			    ixs->sa_len ? ixs->sa_txt : " (error)");
+		if(ixs->stats) {
+			ixs->stats->tx_dropped++;
+		}
+		bundle_stat = IPSEC_XMIT_SAIDNOTFOUND;
+		goto cleanup;
+	}
+
+	bundle_stat = ipsec_xmit_encap_bundle_2(ixs);
+
+	/* we are done with this SA */
+	ipsec_sa_put(ixs->ipsp); 
+
+cleanup:
+	return bundle_stat;
+}
+
+
+/*
  * Local Variables:
  * c-file-style: "linux"
  * End:

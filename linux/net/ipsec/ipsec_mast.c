@@ -236,18 +236,37 @@ ipsec_mast_cleanup(struct ipsec_xmit_state*ixs)
  *	and that skb is filled properly by that function.
  */
 int
-ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev, IPsecSAref_t SAref)
+ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct ipsec_xmit_state ixs_mem;
 	struct ipsec_xmit_state *ixs = &ixs_mem;
 	enum ipsec_xmit_value stat = IPSEC_XMIT_OK;
+	IPsecSAref_t SAref;
 
+	if(skb == NULL) {
+		printk("mast start_xmit passed NULL\n");
+		return 0;
+	}
+		
+	memset(&ixs_mem, 0, sizeof(struct ipsec_xmit_state));
+
+	ixs->skb = skb;
+	SAref = NFmark2IPsecSAref(skb->nfmark);
 	ipsec_xmit_sanity_check_skb(ixs);
 
-	stat = ipsec_xmit_encap_bundle(ixs);
+	ixs->ipsp = ipsec_sa_getbyref(SAref);
+	if(ixs->ipsp == NULL) {
+		printk("no SA for saref=%d\n", SAref);
+		ipsec_kfree_skb(skb);
+		return 0;
+	}
+
+	stat = ipsec_xmit_encap_bundle_2(ixs);
 	if(stat != IPSEC_XMIT_OK) {
 		/* SA processing failed */
 	}
+
+	ipsec_sa_put(ixs->ipsp);
 	
 	return 0;
 }
@@ -582,7 +601,7 @@ ipsec_mast_probe(struct net_device *dev)
 	/* Add our mast functions to the device */
 	dev->open		= ipsec_mast_open;
 	dev->stop		= ipsec_mast_close;
-	//dev->hard_start_xmit	= ipsec_mast_start_xmit;
+	dev->hard_start_xmit	= ipsec_mast_start_xmit;
 	dev->get_stats		= ipsec_mast_get_stats;
 
 	dev->priv = kmalloc(sizeof(struct mastpriv), GFP_KERNEL);
