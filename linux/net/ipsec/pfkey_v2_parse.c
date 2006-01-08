@@ -157,9 +157,6 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 {
 	int error = 0;
 	struct sadb_sa *pfkey_sa = (struct sadb_sa *)pfkey_ext;
-#if 0
-	struct sadb_sa sav2;
-#endif
 	
 	/* sanity checks... */
 	if(!pfkey_sa) {
@@ -168,21 +165,6 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 		SENDERR(EINVAL);
 	}
 	
-#if 0
-	/* check if this structure is short, and if so, fix it up.
-	 * XXX this is NOT the way to do things.
-	 */
-	if(pfkey_sa->sadb_sa_len == sizeof(struct sadb_sa_v1)/IPSEC_PFKEYv2_ALIGN) {
-
-		/* yes, so clear out a temporary structure, and copy first */
-		memset(&sav2, 0, sizeof(sav2));
-		memcpy(&sav2, pfkey_sa, sizeof(struct sadb_sa_v1));
-		sav2.sadb_x_sa_ref=-1;
-		sav2.sadb_sa_len = sizeof(struct sadb_sa) / IPSEC_PFKEYv2_ALIGN;
-		
-		pfkey_sa = &sav2;
-	}
-#endif
 
 
 	if(pfkey_sa->sadb_sa_len != sizeof(struct sadb_sa) / IPSEC_PFKEYv2_ALIGN) {

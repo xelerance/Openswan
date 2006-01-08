@@ -1183,20 +1183,6 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, int nonblock, in
 		SENDERR(EMSGSIZE);
 	}
 
-#if 0
-	/* This check is questionable, since a downward message could be
-	   the result of an ACQUIRE either from kernel (PID==0) or
-	   userspace (some other PID). */
-	/* check PID */
-	if(pfkey_msg->sadb_msg_pid != current->pid) {
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_sendmsg: "
-			    "pid (%d) does not equal sending process pid (%d).\n",
-			    pfkey_msg->sadb_msg_pid, current->pid);
-		SENDERR(EINVAL);
-	}
-#endif
-
 	if(pfkey_msg->sadb_msg_reserved) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "

@@ -72,14 +72,10 @@
  * maximum number of SAs that KLIPS can concurrently deal with, plus enough
  * space for keeping expired SAs around.
  *
- * TABLE_MAX_WIDTH is the number of bits that we will use.
+ * TABLE_IDX_WIDTH is the number of bits that we will use.
  * MAIN_TABLE_WIDTH is the number of bits used for the primary index table.
  *
  */
-#ifndef IPSEC_SA_REF_TABLE_IDX_WIDTH
-# define IPSEC_SA_REF_TABLE_IDX_WIDTH 16
-#endif
-
 #ifndef IPSEC_SA_REF_MAINTABLE_IDX_WIDTH 
 # define IPSEC_SA_REF_MAINTABLE_IDX_WIDTH 4 
 #endif

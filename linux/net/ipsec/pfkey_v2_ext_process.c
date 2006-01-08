@@ -132,7 +132,7 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	ipsp->ips_state = pfkey_sa->sadb_sa_state;
 	ipsp->ips_flags = pfkey_sa->sadb_sa_flags;
 	ipsp->ips_replaywin_lastseq = ipsp->ips_replaywin_bitmap = 0;
-	ipsp->ips_ref_rel = pfkey_sa->sadb_x_sa_ref;
+	ipsp->ips_ref = pfkey_sa->sadb_x_sa_ref;
 	
 	switch(ipsp->ips_said.proto) {
 	case IPPROTO_AH:
