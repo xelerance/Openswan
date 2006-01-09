@@ -90,9 +90,6 @@ while { [ set err [ getopt $argv "c:D:H:i:I:n:ap:P:r:R:s:u:U:" opt optarg]] } {
 	    n {
 		set netjig_prog $optarg
 	    }
-	    a {
-		set arpreply "--arpreply"
-	    }
 	    p {
 		set playprivate $optarg
 		set do_playprivate 1
@@ -116,14 +113,19 @@ while { [ set err [ getopt $argv "c:D:H:i:I:n:ap:P:r:R:s:u:U:" opt optarg]] } {
 set argv [ lrange $argv $optind end ]
 
 set managed_hosts {}
+set managednets {public private admin}
 lappend managed_hosts $umlid(uml,host) 
+
+foreach net $managednets {
+    process_net $net
+}
 
 foreach host $managed_hosts {
     process_host $host
 }
 
 if {! [file executable $netjig_prog]} {
-    puts "The NETJIG management program is not present. Did you run \"make check\"?"
+    puts "The NETJIG management program is not present. Did you run \"make checkprograms\"?"
     exit
 }
 
@@ -138,11 +140,11 @@ set netjig1 $spawn_id
 
 netjigsetup $netjig1
 
-newswitch $netjig1 "$arpreply public"
-newswitch $netjig1 "$arpreply private"
+newswitch $netjig1 public
+newswitch $netjig1 private
 
 # this just gets rid of issues with running without a mcast address
-newswitch $netjig1 "$arpreply admin"
+newswitch $netjig1 admin
 
 trace variable expect_out(buffer) w log_by_tracing
 

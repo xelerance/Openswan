@@ -67,10 +67,17 @@ proc sendnjcmd {netjig cmd} {
     return $expect_out(1,string)
 }
 
-proc newswitch {netjig args} {
+proc newswitch {netjig net} {
     global env
     global expect_out(buffer)
-    set lines [sendnjcmd $netjig "NEWSWITCH $args"]
+    global umlid
+
+    set arpreply ""
+
+    if { $umlid(net$net,arp) } {
+	set arpreply "--arpreply"
+    } 
+    set lines [sendnjcmd $netjig "NEWSWITCH $arpreply $net"]
 
 #    exp_internal 1
     while {$lines > 0} {
@@ -547,6 +554,7 @@ proc process_net {net} {
     global umlid
     global env
 
+    netjigdebug "Processing network $net"
     # upcase me
     set upnet [string toupper $net]
 

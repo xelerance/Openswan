@@ -161,11 +161,7 @@ set netjig1 $spawn_id
 netjigsetup $netjig1
 
 foreach net $managednets {
-    if { $umlid(net$net,arp) } {
-	newswitch $netjig1 "--arpreply $net"
-    } {
-	newswitch $netjig1 "$net"
-    }
+    newswitch $netjig1 "$net"
 }
 
 if {[info exists netjig_extra]} {
