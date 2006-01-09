@@ -8,9 +8,10 @@ ipsec eroute --clear
 enckey=0x4043434545464649494a4a4c4c4f4f515152525454575758
 authkey=0x87658765876587658765876587658765
 saref=4562
-nfsaref=$(printf "%d" $(($saref | 0x80000000)))
+nfsaref=$(printf "%d" $(( ($saref * 65536) | 0x80000000 )))
 
 echo 0xffffffff >/proc/sys/net/ipsec/debug_xform
+echo 0xffffffff >/proc/sys/net/ipsec/debug_pfkey
 echo 0xffffffff >/proc/sys/net/ipsec/debug_xmit
 echo 0xffffffff >/proc/sys/net/ipsec/debug_tunnel
 
@@ -24,7 +25,7 @@ ipsec spigrp inet 192.1.2.45 0x1bbdd678 tun inet 192.1.2.45 0x1bbdd678 esp
 # the SAref# and encrypt them appropriately.
 ifconfig mast0 inet 192.1.2.23 netmask 255.255.255.255 up
 
-arp -s 192.1.2.45 10:00:00:64:64:45
+arp -s 192.1.2.45  10:00:00:64:64:45
 arp -s 192.1.2.254 10:00:00:64:64:45
 
 ipsec look
@@ -33,6 +34,5 @@ ipsec look
 
 ip rule add fwmark 0x80000000 fwmarkmask 0x80000000 table 51
 ip route add 0.0.0.0/0 dev mast0 table 51
-iptables -I OUTPUT 1 -t mangle --src 192.0.1.254/32 --dst 192.0.1.0/24 -j MARK --set-mark $nfsaref
+iptables -I OUTPUT 1 -t mangle --src 192.0.2.254/32 --dst 192.0.1.0/24 -j MARK --set-mark $nfsaref
 
-: ==== end ====
