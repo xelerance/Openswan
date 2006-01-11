@@ -1,16 +1,21 @@
---- plain26/net/ipv4/udp.c.orig	2005-08-28 19:41:01.000000000 -0400
-+++ plain26/net/ipv4/udp.c	2006-01-10 14:37:12.000000000 -0500
-@@ -107,6 +107,9 @@
+--- plain26/net/ipv4/udp.c.orig	2006-01-02 22:21:10.000000000 -0500
++++ plain26/net/ipv4/udp.c	2006-01-10 20:07:21.000000000 -0500
+@@ -108,11 +108,14 @@
  #include <net/inet_common.h>
  #include <net/checksum.h>
  #include <net/xfrm.h>
 +#include <net/xfrmudp.h>
-+ 
-+static xfrm4_rcv_encap_t xfrm4_rcv_encap_func;
  
  /*
   *	Snmp MIB for the UDP layer
-@@ -893,6 +896,42 @@
+  */
+ 
++static xfrm4_rcv_encap_t xfrm4_rcv_encap_func;
++
+ DEFINE_SNMP_STAT(struct udp_mib, udp_statistics) __read_mostly;
+ 
+ struct hlist_head udp_hash[UDP_HTABLE_SIZE];
+@@ -894,6 +897,42 @@
  	sk_common_release(sk);
  }
  
@@ -53,7 +58,7 @@
  /* return:
   * 	1  if the the UDP system should process it
   *	0  if we should drop this packet
-@@ -900,9 +939,9 @@
+@@ -901,9 +940,9 @@
   */
  static int udp_encap_rcv(struct sock * sk, struct sk_buff *skb)
  {
@@ -65,7 +70,7 @@
  	struct udp_sock *up = udp_sk(sk);
    	struct udphdr *uh = skb->h.uh;
  	struct iphdr *iph;
-@@ -914,11 +953,11 @@
+@@ -915,11 +954,11 @@
  
  	/* if we're overly short, let UDP handle it */
  	if (udpdata > skb->tail)
@@ -79,7 +84,7 @@
  
  	len = skb->tail - udpdata;
  
-@@ -933,7 +972,7 @@
+@@ -934,7 +973,7 @@
  			len = sizeof(struct udphdr);
  		} else
  			/* Must be an IKE packet.. pass it through */
@@ -88,7 +93,7 @@
  		break;
  	case UDP_ENCAP_ESPINUDP_NON_IKE:
  		/* Check if this is a keepalive packet.  If so, eat it. */
-@@ -946,7 +985,7 @@
+@@ -947,7 +986,7 @@
  			len = sizeof(struct udphdr) + 2 * sizeof(u32);
  		} else
  			/* Must be an IKE packet.. pass it through */
@@ -97,32 +102,34 @@
  		break;
  	}
  
-@@ -1021,8 +1060,13 @@
+@@ -1021,10 +1060,14 @@
+ 			return 0;
  		}
  		if (ret < 0) {
- 			/* process the ESP packet */
+-			/* process the ESP packet */
 -			ret = xfrm4_rcv_encap(skb, up->encap_type);
 -			UDP_INC_STATS_BH(UDP_MIB_INDATAGRAMS);
-+                        if(xfrm4_rcv_encap_func != NULL) {
-+                          ret = (*xfrm4_rcv_encap_func)(skb, up->encap_type);
-+                          UDP_INC_STATS_BH(UDP_MIB_INDATAGRAMS);
-+                        } else {
-+                          UDP_INC_STATS_BH(UDP_MIB_INERRORS);
-+                          ret = 1;
-+                        }
- 			return -ret;
+-			return -ret;
++ 			if(xfrm4_rcv_encap_func != NULL) {
++ 			  ret = (*xfrm4_rcv_encap_func)(skb, up->encap_type);
++ 			  UDP_INC_STATS_BH(UDP_MIB_INDATAGRAMS);
++ 			} else {
++ 			  UDP_INC_STATS_BH(UDP_MIB_INERRORS);
++ 			  ret = 1;
++ 			}
++			return ret;
  		}
  		/* FALLTHROUGH -- it's a UDP Packet */
-@@ -1116,6 +1160,8 @@
+ 	}
+@@ -1114,7 +1157,6 @@
  /*
   *	All we need to do is get the socket, and then do a checksum. 
   */
-+	if (skb_cloned(skb) && pskb_expand_head(skb, 0, 0, GFP_ATOMIC))
-+		return 0;
-  
+- 
  int udp_rcv(struct sk_buff *skb)
  {
-@@ -1573,3 +1619,9 @@
+   	struct sock *sk;
+@@ -1571,3 +1613,9 @@
  EXPORT_SYMBOL(udp_proc_register);
  EXPORT_SYMBOL(udp_proc_unregister);
  #endif
