@@ -85,7 +85,6 @@ char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.23 2005/08/28 02:11:3
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
 
-
 /* 
  * Stupid kernel API differences in APIs. Not only do some
  * kernels not have ip_select_ident, but some have differing APIs,
@@ -120,15 +119,8 @@ char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.23 2005/08/28 02:11:3
 static __u32 zeroes[64];
 #endif
 
-#ifdef CONFIG_KLIPS_DEBUG
-int sysctl_ipsec_debug_verbose = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
-
 int ipsec_xmit_trap_count = 0;
 int ipsec_xmit_trap_sendcount = 0;
-
-int sysctl_ipsec_icmp = 0;
-int sysctl_ipsec_tos = 0;
 
 #ifdef CONFIG_KLIPS_DEBUG
 #define dmp(_x,_y,_z) if(debug_tunnel) ipsec_dmp_block(_x,_y,_z)
