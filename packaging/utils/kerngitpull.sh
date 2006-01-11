@@ -4,6 +4,8 @@ klips_git=/mara1/git/klips
 openswan_git=`pwd`
 patchdir=$openswan_git/linux/patches
 
+
+
 # generate set of patches against last time we did this, and apply
 # the patches to the linux/ subtree.
 rm -rf $patchdir
@@ -30,9 +32,9 @@ do
 	git-mailinfo -k .dotest/msg .dotest/patch <$i >.dotest/info
 	git-stripspace <.dotest/msg >.dotest/msg-clean
 	sed -e 's|^\+\+\+ b/|+++ b/linux/|' -e 's|^--- a/|--- a/linux/|' <.dotest/patch >.dotest/patch-osw
-	cat .dotest/patch-osw
-	read ans
+	#cat .dotest/patch-osw
 	(cd $openswan_git && git-applypatch linux/.dotest/msg-clean linux/.dotest/patch-osw linux/.dotest/info "$SIGNOFF" )
+	read ans
 	shift
     done
 done
