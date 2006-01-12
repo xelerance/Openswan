@@ -64,10 +64,6 @@ char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.44 2005/11/11 03:16:50 paul E
 
 #include <pfkeyv2.h> /* SADB_X_CALG_DEFLATE */
 
-#ifdef CONFIG_KLIPS_DEBUG
-int sysctl_ipsec_debug_ipcomp = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
-
 static
 struct sk_buff *skb_copy_ipcomp(struct sk_buff *skb, int data_growth, int gfp_mask);
 
@@ -674,9 +670,5 @@ struct sk_buff *skb_copy_ipcomp(struct sk_buff *skb, int data_growth, int gfp_ma
         n->shapepend=skb->shapepend;             /* Pending */
 #endif /* defined(CONFIG_SHAPER) || defined(CONFIG_SHAPER_MODULE) */
 #endif /* NETDEV_23 */
-#ifdef CONFIG_HIPPI
-        n->private.ifield=skb->private.ifield;
-#endif /* CONFIG_HIPPI */
-
         return n;
 }
