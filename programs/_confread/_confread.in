@@ -513,7 +513,7 @@ END {
 		if (jam("packetdefault", "route")) {
 			output(o_parm, "type", "tunnel")
 			output(o_parm, "leftsubnet", "0.0.0.0/0")
-			output(o_parm, "rightnexthop", "%defaultroute")
+			output(o_parm, "leftnexthop", "%defaultroute")
 			output(o_parm, "right", "%opportunistic")
 			output(o_parm, "failureshunt", "passthrough")
 			output(o_parm, "keyingtries", "3")
@@ -525,12 +525,12 @@ END {
 			output(o_parm, "type", "passthrough")
 			output(o_parm, "authby", "never")
 			output(o_parm, "right", "%group")
-			output(o_parm, "rightnexthop", "%defaultroute")
+			output(o_parm, "leftnexthop", "%defaultroute")
 		}
 		if (jam("clear-or-private", "route")) {
 			output(o_parm, "type", "passthrough")
 			output(o_parm, "right", "%opportunisticgroup")
-			output(o_parm, "rightnexthop", "%defaultroute")
+			output(o_parm, "leftnexthop", "%defaultroute")
 			output(o_parm, "failureshunt", "passthrough")
 			output(o_parm, "keyingtries", "3")
 			output(o_parm, "ikelifetime", "1h")
@@ -540,7 +540,7 @@ END {
 		if (jam("private-or-clear", "route")) {
 			output(o_parm, "type", "tunnel")
 			output(o_parm, "right", "%opportunisticgroup")
-			output(o_parm, "rightnexthop", "%defaultroute")
+			output(o_parm, "leftnexthop", "%defaultroute")
 			output(o_parm, "failureshunt", "passthrough")
 			output(o_parm, "keyingtries", "3")
 			output(o_parm, "ikelifetime", "1h")
@@ -550,7 +550,7 @@ END {
 		if (jam("private", "route")) {
 			output(o_parm, "type", "tunnel")
 			output(o_parm, "right", "%opportunisticgroup")
-			output(o_parm, "rightnexthop", "%defaultroute")
+			output(o_parm, "leftnexthop", "%defaultroute")
 			output(o_parm, "failureshunt", "drop")
 			output(o_parm, "keyingtries", "3")
 			output(o_parm, "ikelifetime", "1h")
@@ -561,7 +561,7 @@ END {
 			output(o_parm, "type", "reject")
 			output(o_parm, "authby", "never")
 			output(o_parm, "right", "%group")
-			output(o_parm, "rightnexthop", "%defaultroute")
+			output(o_parm, "leftnexthop", "%defaultroute")
 		}
 	}
 
