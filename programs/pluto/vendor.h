@@ -57,6 +57,8 @@ enum known_vendorid {
   VID_OPENSWANSELF	    =36,
   VID_NCP                   =37,
   VID_CISCO_IOS             =38,
+  VID_SONICWALL_1           =39,
+  VID_SONICWALL_2           =40,
 
 
   /* 101 - 200 : NAT-Traversal */
