@@ -39,9 +39,9 @@ do
     done
 done
 
-#cd $klips_git
-#cg-switch openswan_klips
-#git pull . klipsNG
-#cg-switch klipsNG
+cd $klips_git
+cg-switch openswan_klips
+cg-update klipsNG
+cg-switch klipsNG
 
 
