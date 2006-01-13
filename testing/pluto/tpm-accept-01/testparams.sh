@@ -10,8 +10,14 @@ WESTHOST=west
 
 #THREEEIGHT=true
 
-REF_EAST_CONSOLE_OUTPUT=east-console.txt
-REF26_EAST_CONSOLE_OUTPUT=east-console.txt
+
+if $USE_NOCRYPTO
+then
+	REF_EAST_CONSOLE_OUTPUT=east-console-weak.txt
+else
+	REF_EAST_CONSOLE_OUTPUT=east-console-normal.txt
+fi
+REF26_EAST_CONSOLE_OUTPUT=$REF_EAST_CONSOLE_OUTPUT
 REF_WEST_CONSOLE_OUTPUT=west-console.txt
 REF26_WEST_CONSOLE_OUTPUT=west-console.txt
 
@@ -19,6 +25,7 @@ REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS east-prompt-splitline.pl"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS script-only.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS cutout.sed"
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS pid-sanitize.pl"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-debug-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-setup-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS pluto-whack-sanitize.sed"
@@ -31,6 +38,7 @@ EAST_INIT_SCRIPT=eastinit.sh
 WEST_INIT_SCRIPT=westinit.sh
 
 EAST_RUN_SCRIPT=eastrun.sh
+EAST_RUN2_SCRIPT=shutdown.sh
 
 EAST_FINAL_SCRIPT=final.sh
 WEST_FINAL_SCRIPT=final.sh

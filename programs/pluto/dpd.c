@@ -395,7 +395,6 @@ dpd_inI_outR(struct state *p1st
     if (memcmp(pbs->cur, p1st->st_rcookie, COOKIE_SIZE) != 0)
     {
         loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE has invalid rcookie (broken Cisco?)");      
-	return STF_FAIL + INVALID_COOKIE;
     }
     pbs->cur += COOKIE_SIZE;
 

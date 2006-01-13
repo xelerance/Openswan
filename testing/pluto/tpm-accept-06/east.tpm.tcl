@@ -42,43 +42,6 @@ proc processRawPacket {state conn md} {
     return "nothing"
 }
 
-proc recvMessage {state conn md} {
-    return "ignore"
-}
-
-proc preDecrypt {state buf len} {
-    return "ignore"
-}
-
-proc preEncrypt {state buf len} {
-    return "ignore"
-}
-   
-
-proc postEncrypt {state buf len} {
-    return "ignore"
-}
-
-proc postDecrypt {state buf len} {
-    return "ignore"
-}
-
-proc changeState {state conn md} {
-    return "ignore"
-}
-
-proc adjustFailure {state conn md} {
-    return "ignore"
-}
-
-proc avoidEmitting {state conn md} {
-    return "nothing"
-}
-
-proc adjustTimers {state conn md} {
-    return "nothing"
-}
-
 # just discard them all!
 proc avoidEmittingNotify {state pbs hdr} {
     puts stderr "not sending any delete notification"

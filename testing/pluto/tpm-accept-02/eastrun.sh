@@ -7,3 +7,4 @@ ipsec whack --name west--east-psk-grp2 --encrypt --tunnel --pfs --dpdaction "hol
 
 ipsec whack --name west--east-psk-grp2 --initiate
 
+echo done

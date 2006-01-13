@@ -391,6 +391,8 @@ whack_handle(int whackctlfd)
     /* process "listen" before any operation that could require it */
     if (msg.whack_listen)
     {
+	fflush(stderr);
+	fflush(stdout);
 	close_peerlog();    /* close any open per-peer logs */
 	openswan_log("listening for IKE messages");
 	listening = TRUE;
