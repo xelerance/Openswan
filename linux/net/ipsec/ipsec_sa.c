@@ -215,7 +215,6 @@ ipsec_SArefSubTable_alloc(unsigned table)
 int
 ipsec_saref_verify_slot(IPsecSAref_t ref)
 {
-	struct IPsecSArefSubTable *subtable = NULL;
 	int ref_table=IPsecSAref2table(ref);
 	
 	if(ipsec_sadb.refTable[ref_table] == NULL) {
