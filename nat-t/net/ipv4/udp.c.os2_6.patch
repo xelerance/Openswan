@@ -1,21 +1,10 @@
 --- plain26/net/ipv4/udp.c.orig	2006-01-02 22:21:10.000000000 -0500
-+++ plain26/net/ipv4/udp.c	2006-01-10 20:07:21.000000000 -0500
-@@ -108,11 +108,14 @@
- #include <net/inet_common.h>
- #include <net/checksum.h>
++++ plain26/net/ipv4/udp.c	2006-01-12 20:18:57.000000000 -0500
+@@ -110,2 +110,3 @@
  #include <net/xfrm.h>
 +#include <net/xfrmudp.h>
  
- /*
-  *	Snmp MIB for the UDP layer
-  */
- 
-+static xfrm4_rcv_encap_t xfrm4_rcv_encap_func;
-+
- DEFINE_SNMP_STAT(struct udp_mib, udp_statistics) __read_mostly;
- 
- struct hlist_head udp_hash[UDP_HTABLE_SIZE];
-@@ -894,6 +897,42 @@
+@@ -894,6 +897,44 @@
  	sk_common_release(sk);
  }
  
@@ -27,6 +16,8 @@
 +#else
 +static xfrm4_rcv_encap_t xfrm4_rcv_encap_func = NULL;
 +#endif
++
++static xfrm4_rcv_encap_t xfrm4_rcv_encap_func;
 +
 +int udp4_register_esp_rcvencap(xfrm4_rcv_encap_t func
 +			       , xfrm4_rcv_encap_t *oldfunc)
