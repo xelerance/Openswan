@@ -204,8 +204,8 @@ proc record {netjig network recordfile} {
     sendnjcmd $netjig "RECORDFILE --switchname=$network --recordfile=$recordfile\n"
 }
 
-proc setupplay {netjig network playfile} {
-    sendnjcmd $netjig "PLAYFILE --switchname=$network --playfile=$playfile\n"
+proc setupplay {netjig network playfile extra} {
+    sendnjcmd $netjig "PLAYFILE --switchname=$network --playfile=$playfile $extra\n"
 }
 
 proc waitplay {netjig} {
