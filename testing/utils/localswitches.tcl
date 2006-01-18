@@ -14,17 +14,19 @@ set netjig_prog $env(OPENSWANSRCDIR)/testing/utils/uml_netjig/uml_netjig
 set arpreply ""
 set umlid(extra_hosts) ""
 
+set env(NETJIGVERBOSE) 1
+
 spawn $netjig_prog --cmdproto -t $netjig_debug_opt 
 set netjig1 $spawn_id
 
 netjigsetup $netjig1
 
 foreach net $managednets {
-    calc_net $net
+    process_net $net
 }
 
 foreach net $managednets {
-    process_net $net
+    calc_net $net
 }
 
 foreach net $managednets {
@@ -38,6 +40,14 @@ foreach net $managednets {
 foreach host $argv {
     system "$host single &"
 }
+
+foreach net $managednets {
+    if {[info exists umlid(net$net,play)] } {
+	puts "Will play pcap file $umlid(net$net,play) to network '$net'"
+	setupplay $netjig1 $net $umlid(net$net,play) "--rate=ontick"
+    }
+}
+
 
 puts "\nExit the netjig when you are done\n"
 
