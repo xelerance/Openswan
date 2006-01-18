@@ -474,8 +474,8 @@ int main(int argc, char **argv)
     }
 
     if(n < 0 && errno!=EINTR) {
-      perror("poll");
-      ns.done = 1;
+	    perror("poll");
+	    ns.done = 1;
     }
 
     if((timeout!=-1 && n == 0) || ns.forcetick) {
@@ -527,7 +527,17 @@ int main(int argc, char **argv)
 	
 		    packet = pcap_next(nh->nh_input, &ph);
 		    if(packet == NULL) {
-			    nh->nh_input=NULL;
+			    if(ns.forcetick) {
+				    char errbuf[PCAP_ERRBUF_SIZE];
+				    /*
+				     * when we force a tick, we should wrap
+				     * the inputs too!
+				     */
+				    pcap_close(nh->nh_input);
+				    nh->nh_input = pcap_open_offline(nh->nh_inputFile, errbuf);
+			    } else {
+				    nh->nh_input=NULL;
+			    }
 		    } else {
 			    gotinput = 1;
 			    if(ns.verbose) {
