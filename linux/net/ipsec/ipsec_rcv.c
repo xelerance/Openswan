@@ -2,7 +2,7 @@
  * receive code
  * Copyright (C) 1996, 1997  John Ioannidis.
  * Copyright (C) 1998-2003   Richard Guy Briggs.
- * Copyright (C) 2004        Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2004-2005   Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -347,7 +347,7 @@ ipsec_rcv_decap_lookup(struct ipsec_rcv_state *irs
 }
 		       
 /*
- * decapsulate a single layer of the system
+ * decapsulate a single layer of ESP/AH/IPCOMP.
  *
  * the following things should be setup to enter this function.
  *
@@ -376,8 +376,6 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 	int    replay = 0;	         /* replay value in AH or ESP packet */
 	struct iphdr *ipp;
 	struct sk_buff *skb;
-	enum ipsec_rcv_value irv;
-	struct ipsec_sa *newipsp;
 	struct in_addr ipsaddr;
 	struct in_addr ipdaddr;
 #ifdef CONFIG_KLIPS_ALG
@@ -397,18 +395,6 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 	irs->iphlen=iphlen;
 	ipp->check= 0;			/* we know the sum is good */
 	
-	/* look up the SA */
-	irv = ipsec_rcv_decap_lookup(irs, proto_funcs, &newipsp);
-	if(irv != IPSEC_RCV_OK) {
-		return irv;
-	}
-	
-	/* okay, SA checks out, so free any previous SA, and record a new one*/
-	if(irs->ipsp) {
-		ipsec_sa_put(irs->ipsp);
-	}
-	irs->ipsp=newipsp;
-
 	/* now check the lifetimes */
 	if(ipsec_lifetime_check(&irs->ipsp->ips_life.ipl_bytes,   "bytes",
 				irs->sa, ipsec_life_countbased, ipsec_incoming,
@@ -809,6 +795,10 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 	struct in_addr ipdaddr;
 	struct iphdr *ipp;
 	struct sk_buff *skb = NULL;
+	struct ipsec_sa *newipsp;
+	enum ipsec_rcv_value irv;
+	struct xform_functions *proto_funcs;
+	int decap_stat;
 
 	/* begin decapsulating loop here */
 
@@ -826,10 +816,40 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 	*/
 	spin_lock(&tdb_lock);
 
-	do {
-	        int decap_stat;
-		struct xform_functions *proto_funcs;
+	switch(irs->ipp->protocol) {
+	case IPPROTO_ESP:
+		proto_funcs = esp_xform_funcs;
+		break;
+		  
+#ifdef CONFIG_KLIPS_AH
+	case IPPROTO_AH:
+		proto_funcs = ah_xform_funcs;
+		break;
+#endif /* !CONFIG_KLIPS_AH */
+		  
+#ifdef CONFIG_KLIPS_IPCOMP
+	case IPPROTO_COMP:
+		proto_funcs = ipcomp_xform_funcs;
+		break;
+#endif /* !CONFIG_KLIPS_IPCOMP */
+	default:
+		if(irs->stats) {
+			irs->stats->rx_errors++;
+		}
+		decap_stat = IPSEC_RCV_BADPROTO;
+		goto rcvleave;
+	}
 
+	/* look up the first SA */
+	irv = ipsec_rcv_decap_lookup(irs, proto_funcs, &newipsp);
+	if(irv != IPSEC_RCV_OK) {
+		return irv;
+	}
+	
+	/* newipsp is already taken by the get function */
+	irs->ipsp=newipsp;
+
+	do {
 		switch(irs->ipp->protocol) {
 		case IPPROTO_ESP:
 		  proto_funcs = esp_xform_funcs;
@@ -864,6 +884,17 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 		
 			goto rcvleave;
 		}
+
+		/* okay, acted on this SA, so free any previous SA, and record a new one*/
+		if(irs->ipsp) {
+			newipsp = irs->ipsp->ips_next;
+			if(newipsp) {
+				ipsec_sa_get(newipsp);
+			}
+			ipsec_sa_put(irs->ipsp);
+		}
+		irs->ipsp=newipsp;
+
 	/* end decapsulation loop here */
 	} while(   (irs->ipp->protocol == IPPROTO_ESP )
 		|| (irs->ipp->protocol == IPPROTO_AH  )
@@ -872,10 +903,11 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 #endif /* CONFIG_KLIPS_IPCOMP */
 		);
 
-	/* set up for decap loop */
+	/* end of decap loop */
 	ipp  =irs->ipp;
 	ipsp =irs->ipsp;
-	ipsnext = ipsp->ips_next;
+	ipsnext = NULL;
+	if(ipsp) ipsnext = ipsp->ips_next;
 	skb = irs->skb;
 
 	/* if there is an IPCOMP, but we don't have an IPPROTO_COMP,
