@@ -210,7 +210,7 @@ foreach net $managednets {
 foreach net $managednets {
     if {[info exists umlid(net$net,play)] } {
 	netjigdebug "Will play pcap file $umlid(net$net,play) to network '$net'"
-	setupplay $netjig1 $net $umlid(net$net,play)
+	setupplay $netjig1 $net $umlid(net$net,play) ""
     }
 }
 
