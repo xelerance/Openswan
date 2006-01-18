@@ -135,5 +135,3 @@ The build process will cd into that directory and invoke:
 with many build processes, this will cause the install to go to UMLROOTDIR
 instead of /. 
 
-
-
