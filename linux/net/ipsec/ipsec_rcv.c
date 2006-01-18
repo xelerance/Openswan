@@ -187,55 +187,23 @@ struct auth_alg ipsec_rcv_sha1[]={
 #endif /* CONFIG_KLIPS_AUTH_HMAC_MD5 */
 
 /*
- * decapsulate a single layer of the system
- *
- * the following things should be setup to enter this function.
- *
- * irs->stats  == stats structure (or NULL)
- * irs->ipp    = IP header.
- * irs->len    = total length of packet
- * skb->nh.iph = ipp;
- * skb->h.raw  = start of payload
- * irs->ipsp   = NULL.
- * irs->iphlen = N/A = is recalculated.
- * irs->ilen   = 0;
- * irs->authlen = 0;
- * irs->authfuncs = NULL;
- * irs->skb    = the skb;
- *
- * proto_funcs should be from ipsec_esp.c, ipsec_ah.c or ipsec_ipcomp.c.
+ * look up the SA from the said in the header.
  *
  */
 enum ipsec_rcv_value
-ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
-		     , struct xform_functions *proto_funcs)
+ipsec_rcv_decap_lookup(struct ipsec_rcv_state *irs
+		       , struct xform_functions *proto_funcs
+		       , struct ipsec_sa **pnewipsp)
 {
-	int iphlen;
 	__u8 proto;
-	struct in_addr ipsaddr;
-	struct in_addr ipdaddr;
-	int replay = 0;	/* replay value in AH or ESP packet */
-	struct ipsec_sa* ipsnext = NULL;	/* next SA towards inside of packet */
 	struct ipsec_sa *newipsp;
 	struct iphdr *ipp;
 	struct sk_buff *skb;
-#ifdef CONFIG_KLIPS_ALG
-	struct ipsec_alg_auth *ixt_a=NULL;
-#endif /* CONFIG_KLIPS_ALG */
 
-	skb = irs->skb;
-	irs->len = skb->len;
-	ipp = irs->ipp;
-	proto = ipp->protocol;
-	ipsaddr.s_addr = ipp->saddr;
-	addrtoa(ipsaddr, 0, irs->ipsaddr_txt, sizeof(irs->ipsaddr_txt));
-	ipdaddr.s_addr = ipp->daddr;
-	addrtoa(ipdaddr, 0, irs->ipdaddr_txt, sizeof(irs->ipdaddr_txt));
+	skb      = irs->skb;
+	ipp      = irs->ipp;
+	proto    = ipp->protocol;
 
-	iphlen = ipp->ihl << 2;
-	irs->iphlen=iphlen;
-	ipp->check = 0;			/* we know the sum is good */
-	
 	KLIPS_PRINT(debug_rcv,
 		    "klips_debug:ipsec_rcv_decap_once: "
 		    "decap (%d) from %s -> %s\n",
@@ -278,11 +246,6 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 		return IPSEC_RCV_SAIDNOTFOUND;
 	}
 
-	/* MCR - XXX this is bizarre. ipsec_sa_getbyid returned it, having
-	 * incremented the refcount, why in the world would we decrement it
-	 * here? */
-	/* ipsec_sa_put(irs->ipsp);*/ /* incomplete */
-
 	/* If it is in larval state, drop the packet, we cannot process yet. */
 	if(newipsp->ips_state == SADB_SASTATE_LARVAL) {
 		KLIPS_PRINT(debug_rcv,
@@ -308,7 +271,7 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 
 	if(sysctl_ipsec_inbound_policy_check) {
 		if(irs->ipp->saddr != ((struct sockaddr_in*)(newipsp->ips_addr_s))->sin_addr.s_addr) {
-			KLIPS_PRINT(debug_rcv,
+			KLIPS_ERROR(debug_rcv,
 				    "klips_debug:ipsec_rcv: "
 				    "SA:%s, src=%s of pkt does not agree with expected SA source address policy.\n",
 				    irs->sa_len ? irs->sa : " (error)",
@@ -333,7 +296,7 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 		 */
 		if(irs->ipsp) {
 			if(irs->ipsp->ips_next != newipsp) {
-				KLIPS_PRINT(debug_rcv,
+				KLIPS_ERROR(debug_rcv,
 					    "klips_debug:ipsec_rcv: "
 					    "unexpected SA:%s: does not agree with ips->inext policy, dropped\n",
 					    irs->sa_len ? irs->sa : " (error)");
@@ -379,16 +342,72 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 #endif		 
 	}
 
-	/* okay, SA checks out, so free any previous SA, and record a new one*/
+	*pnewipsp = newipsp;
+	return IPSEC_RCV_OK;
+}
+		       
+/*
+ * decapsulate a single layer of the system
+ *
+ * the following things should be setup to enter this function.
+ *
+ * irs->stats  == stats structure (or NULL)
+ * irs->ipp    = IP header.
+ * irs->len    = total length of packet
+ * skb->nh.iph = ipp;
+ * skb->h.raw  = start of payload
+ * irs->ipsp   = NULL.
+ * irs->iphlen = N/A = is recalculated.
+ * irs->ilen   = 0;
+ * irs->authlen = 0;
+ * irs->authfuncs = NULL;
+ * irs->skb    = the skb;
+ *
+ * proto_funcs should be from ipsec_esp.c, ipsec_ah.c or ipsec_ipcomp.c.
+ *
+ */
+enum ipsec_rcv_value
+ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
+		     , struct xform_functions *proto_funcs)
+{
+	int iphlen;
+	__u8 proto;
+	struct ipsec_sa* ipsnext = NULL; /* next SA towards inside of packet */
+	int    replay = 0;	         /* replay value in AH or ESP packet */
+	struct iphdr *ipp;
+	struct sk_buff *skb;
+	enum ipsec_rcv_value irv;
+	struct ipsec_sa *newipsp;
+	struct in_addr ipsaddr;
+	struct in_addr ipdaddr;
+#ifdef CONFIG_KLIPS_ALG
+	struct ipsec_alg_auth *ixt_a=NULL;
+#endif /* CONFIG_KLIPS_ALG */
 
+	skb      = irs->skb;
+	irs->len = skb->len;
+	ipp      = irs->ipp;
+	proto    = ipp->protocol;
+	ipsaddr.s_addr = ipp->saddr;
+	addrtoa(ipsaddr, 0, irs->ipsaddr_txt, sizeof(irs->ipsaddr_txt));
+	ipdaddr.s_addr = ipp->daddr;
+	addrtoa(ipdaddr, 0, irs->ipdaddr_txt, sizeof(irs->ipdaddr_txt));
+
+	iphlen   = ipp->ihl << 2;
+	irs->iphlen=iphlen;
+	ipp->check= 0;			/* we know the sum is good */
+	
+	/* look up the SA */
+	irv = ipsec_rcv_decap_lookup(irs, proto_funcs, &newipsp);
+	if(irv != IPSEC_RCV_OK) {
+		return irv;
+	}
+	
+	/* okay, SA checks out, so free any previous SA, and record a new one*/
 	if(irs->ipsp) {
 		ipsec_sa_put(irs->ipsp);
 	}
 	irs->ipsp=newipsp;
-
-	/* note that the outer code will free the irs->ipsp
-	   if there is an error */
-
 
 	/* now check the lifetimes */
 	if(ipsec_lifetime_check(&irs->ipsp->ips_life.ipl_bytes,   "bytes",
@@ -404,6 +423,10 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 				irs->sa, ipsec_life_countbased, ipsec_incoming,
 				irs->ipsp) == ipsec_life_harddied) {
 		
+		/*
+		 * disconnect SA from the hash table, so it can not be
+		 * found again.
+		 */
 		ipsec_sa_rm(irs->ipsp);
 		if(irs->stats) {
 			irs->stats->rx_dropped++;
@@ -594,7 +617,7 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 
 		if (memcmp(irs->hash, authenticator, irs->authlen)) {
 			irs->ipsp->ips_errs.ips_auth_errs += 1;
-			KLIPS_PRINT(debug_rcv & DB_RX_INAU,
+			KLIPS_ERROR(debug_rcv & DB_RX_INAU,
 				    "klips_debug:ipsec_rcv: "
 				    "auth failed on incoming packet from %s: hash=%08x%08x%08x auth=%08x%08x%08x, dropped\n",
 				    irs->ipsaddr_txt,
@@ -625,7 +648,7 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 		        /* we need to remove it from the sadb hash, so that it can't be found again */
 			ipsec_sa_rm(irs->ipsp);
 
-			KLIPS_PRINT(debug_rcv,
+			KLIPS_ERROR(debug_rcv,
 				    "klips_debug:ipsec_rcv: "
 				    "replay window counter rolled, expiring SA.\n");
 			if(irs->stats) {
@@ -637,7 +660,7 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 		/* now update the replay counter */
 		if (!ipsec_updatereplaywindow(irs->ipsp, replay)) {
 			irs->ipsp->ips_errs.ips_replaywin_errs += 1;
-			KLIPS_PRINT(debug_rcv & DB_RX_REPLAY,
+			KLIPS_ERROR(debug_rcv & DB_RX_REPLAY,
 				    "klips_debug:ipsec_rcv: "
 				    "duplicate frame from %s, packet dropped\n",
 				    irs->ipsaddr_txt);
@@ -1127,6 +1150,11 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 	skb=NULL;
 
  rcvleave:
+	if(irs->ipsp) {
+		ipsec_sa_put(irs->ipsp);
+	}
+	irs->ipsp=NULL;
+
 	if(skb) {
 		ipsec_kfree_skb(skb);
 	}
@@ -1365,17 +1393,19 @@ ipsec_rcv(struct sk_buff *skb
 			skb_push(skb, _len);
 		}
 		KLIPS_PRINT(debug_rcv,
-		    "klips_debug:ipsec_rcv: "
-			"removing %d bytes from ESPinUDP packet\n", irs->natt_len);
+			    "klips_debug:ipsec_rcv: "
+			    "removing %d bytes from ESPinUDP packet\n"
+			    , irs->natt_len);
+
 		ipp = skb->nh.iph;
 		irs->iphlen = ipp->ihl << 2;
 		ipp->tot_len = htons(ntohs(ipp->tot_len) - irs->natt_len);
 		if (skb->len < irs->iphlen + irs->natt_len) {
 			printk(KERN_WARNING
-		       "klips_error:ipsec_rcv: "
-		       "ESPinUDP packet is too small (%d < %d+%d). "
-			   "This should never happen, please report.\n",
-		       (int)(skb->len), irs->iphlen, irs->natt_len);
+			       "klips_error:ipsec_rcv: "
+			       "ESPinUDP packet is too small (%d < %d+%d). "
+			       "This should never happen, please report.\n",
+			       (int)(skb->len), irs->iphlen, irs->natt_len);
 			goto rcvleave;
 		}
 
