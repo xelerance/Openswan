@@ -5,7 +5,7 @@ TESTNAME=west-icmp-01
 TESTHOST=west
 EXITONEMPTY=--exitonempty
 
-ARPREPLY=--arpreply 
+PRIVATE_ARPREPLY=--arpreply 
 
 PUB_INPUT=../inputs/02-sunrise-sunset-esp.pcap
 REF_PRIV_OUTPUT=spi1-cleartext.txt
@@ -21,6 +21,8 @@ REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS east-prompt-splitline.pl"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-debug-sanitize.sed"
 TCPDUMPFLAGS="-n -E 3des-cbc-hmac96:0x4043434545464649494a4a4c4c4f4f515152525454575758"
 INIT_SCRIPT=spi1-in.sh
+RUN_SCRIPT=run0.sh
+FINAL_SCRIPT=final.sh
 
 #NETJIGDEBUG=true
 

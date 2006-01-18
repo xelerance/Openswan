@@ -21,8 +21,9 @@ ipsec spigrp inet 192.1.2.45 0x12345678 tun inet 192.1.2.45 0x12345678 esp
 ipsec tncfg --attach --virtual ipsec0 --physical eth1
 ifconfig ipsec0 inet 192.1.2.45 netmask 0xffffff00 broadcast 192.1.2.255 up
 
-#arp -s 192.1.2.23 10:00:00:64:64:45
-#arp -s 192.1.2.254 10:00:00:64:64:45
+arp -s 192.1.2.23 10:00:00:64:64:45
+arp -s 192.1.2.254 10:00:00:64:64:45
+ping -c 1 192.1.2.254
 
 ipsec look
 
