@@ -227,7 +227,7 @@ proc log_by_tracing {array element op} {
 }
 
 proc shutdown {umlname} {
-    system "uml_mconsole $umlname halt"
+    system "uml_mconsole $umlname halt; exit 0"
 }
 
 proc shutdownumls {} {
