@@ -1637,6 +1637,16 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 			SENDERR(ENOENT);
 		}
 
+		/* userspace puts things in inner to outer order */
+		if(ips2p->ips_flags & EMT_INBOUND) {
+			struct ipsec_sa *t;
+
+			/* exchange ips and ips2 */
+			t = ips1p;
+			ips1p = ips2p;
+			ips2p = t;
+		}
+
 		/* Is ips1p already linked? */
 		if(ips1p->ips_next) {
 			ipsec_sa_put(ips1p);

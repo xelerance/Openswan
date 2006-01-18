@@ -789,16 +789,16 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
  */
 int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 {
-	struct ipsec_sa *ipsp = NULL;
-	struct ipsec_sa* ipsnext = NULL;
 	struct in_addr ipsaddr;
 	struct in_addr ipdaddr;
 	struct iphdr *ipp;
 	struct sk_buff *skb = NULL;
-	struct ipsec_sa *newipsp;
+	struct ipsec_sa *lastipsp;
 	enum ipsec_rcv_value irv;
 	struct xform_functions *proto_funcs;
 	int decap_stat;
+
+	lastipsp=NULL;
 
 	/* begin decapsulating loop here */
 
@@ -806,14 +806,9 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 	  The spinlock is to prevent any other process from
 	  accessing or deleting the ipsec_sa hash table or any of the
 	  ipsec_sa s while we are using and updating them.
-
-	  This is not optimal, but was relatively straightforward
-	  at the time.  A better way to do it has been planned for
-	  more than a year, to lock the hash table and put reference
-	  counts on each ipsec_sa instead.  This is not likely to happen
-	  in KLIPS1 unless a volunteer contributes it, but will be
-	  designed into KLIPS2.
 	*/
+
+	/* probably can go away now */
 	spin_lock(&tdb_lock);
 
 	switch(irs->ipp->protocol) {
@@ -840,14 +835,17 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 		goto rcvleave;
 	}
 
-	/* look up the first SA */
-	irv = ipsec_rcv_decap_lookup(irs, proto_funcs, &newipsp);
-	if(irv != IPSEC_RCV_OK) {
-		return irv;
+	{
+		struct ipsec_sa *newipsp;
+		/* look up the first SA */
+		irv = ipsec_rcv_decap_lookup(irs, proto_funcs, &newipsp);
+		if(irv != IPSEC_RCV_OK) {
+			return irv;
+		}
+		
+		/* newipsp is already referenced by the get() function */
+		irs->ipsp=newipsp;
 	}
-	
-	/* newipsp is already taken by the get function */
-	irs->ipsp=newipsp;
 
 	do {
 		switch(irs->ipp->protocol) {
@@ -887,13 +885,17 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 
 		/* okay, acted on this SA, so free any previous SA, and record a new one*/
 		if(irs->ipsp) {
+			struct ipsec_sa *newipsp = NULL;
 			newipsp = irs->ipsp->ips_next;
 			if(newipsp) {
 				ipsec_sa_get(newipsp);
 			}
-			ipsec_sa_put(irs->ipsp);
+			if(lastipsp) {
+				ipsec_sa_put(lastipsp);
+			}
+			lastipsp = irs->ipsp;
+			irs->ipsp=newipsp;
 		}
-		irs->ipsp=newipsp;
 
 	/* end decapsulation loop here */
 	} while(   (irs->ipp->protocol == IPPROTO_ESP )
@@ -905,49 +907,56 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 
 	/* end of decap loop */
 	ipp  =irs->ipp;
-	ipsp =irs->ipsp;
-	ipsnext = NULL;
-	if(ipsp) ipsnext = ipsp->ips_next;
 	skb = irs->skb;
 
-	/* if there is an IPCOMP, but we don't have an IPPROTO_COMP,
+	/*
+	 * if there is an IPCOMP, but we didn't process it,
 	 * then we can just skip it
 	 */
 #ifdef CONFIG_KLIPS_IPCOMP
-	if(ipsnext && ipsnext->ips_said.proto == IPPROTO_COMP) {
-		ipsp = ipsnext;
-		ipsnext = ipsp->ips_next;
+	if(irs->ipsp && irs->ipsp->ips_said.proto == IPPROTO_COMP) {
+			struct ipsec_sa *newipsp = NULL;
+			newipsp = irs->ipsp->ips_next;
+			if(newipsp) {
+				ipsec_sa_get(newipsp);
+			}
+			if(lastipsp) {
+				ipsec_sa_put(lastipsp);
+			}
+			lastipsp = irs->ipsp;
+			irs->ipsp=newipsp;
 	}
 #endif /* CONFIG_KLIPS_IPCOMP */
 
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 	if ((irs->natt_type) && (ipp->protocol != IPPROTO_IPIP)) {
-	  /**
-	   * NAT-Traversal and Transport Mode:
-	   *   we need to correct TCP/UDP checksum
-	   *
-	   * If we've got NAT-OA, we can fix checksum without recalculation.
-	   */
-	  __u32 natt_oa = ipsp->ips_natt_oa ?
-	    ((struct sockaddr_in*)(ipsp->ips_natt_oa))->sin_addr.s_addr : 0;
-
-	  if(natt_oa != 0) {
-		  /* reset source address to what it was before NAT */
-		  ipp->saddr = natt_oa;
-		  ipp->check = 0;
-		  ipp->check = ip_fast_csum((unsigned char *)ipp, ipp->ihl);
-		  KLIPS_PRINT(debug_rcv, "csum: %04x\n", ipp->check);
-	  }
+		/**
+		 * NAT-Traversal and Transport Mode:
+		 *   we need to correct TCP/UDP checksum
+		 *
+		 * If we've got NAT-OA, we can fix checksum without recalculation.
+		 */
+		__u32 natt_oa = lastipsp->ips_natt_oa ?
+			((struct sockaddr_in*)(lastipsp->ips_natt_oa))->sin_addr.s_addr : 0;
+		
+		if(natt_oa != 0) {
+			/* reset source address to what it was before NAT */
+			ipp->saddr = natt_oa;
+			ipp->check = 0;
+			ipp->check = ip_fast_csum((unsigned char *)ipp, ipp->ihl);
+			KLIPS_PRINT(debug_rcv, "csum: %04x\n", ipp->check);
+		}
 	}
 #endif
 
 	/*
-	 * XXX this needs to be locked from when it was first looked
-	 * up in the decapsulation loop.  Perhaps it is better to put
-	 * the IPIP decap inside the loop.
+	 * the SA is still locked from the loop
 	 */
-	if(ipsnext) {
-		ipsp = ipsnext;
+	if(irs->ipsp) {
+		struct ipsec_sa *ipsp = NULL;
+		struct ipsec_sa* ipsnext = NULL;
+
+		ipsp = irs->ipsp;
 		irs->sa_len = satot(&irs->said, 0, irs->sa, sizeof(irs->sa));
 		if((ipp->protocol != IPPROTO_IPIP) && 
                    (ipp->protocol != IPPROTO_ATT_HEARTBEAT)) {  /* AT&T heartbeats to SIG/GIG */
@@ -993,69 +1002,69 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 			}
 		}
 
-	if(ipp->protocol == IPPROTO_IPIP)  /* added to support AT&T heartbeats to SIG/GIG */
-	{  
-		/*
-		 * XXX this needs to be locked from when it was first looked
-		 * up in the decapsulation loop.  Perhaps it is better to put
-		 * the IPIP decap inside the loop.
-		 */
-		ipsp->ips_life.ipl_bytes.ipl_count += skb->len;
-		ipsp->ips_life.ipl_bytes.ipl_last   = skb->len;
-
-		if(!ipsp->ips_life.ipl_usetime.ipl_count) {
-			ipsp->ips_life.ipl_usetime.ipl_count = jiffies / HZ;
-		}
-		ipsp->ips_life.ipl_usetime.ipl_last = jiffies / HZ;
-		ipsp->ips_life.ipl_packets.ipl_count += 1;
-
-		if(skb->len < irs->iphlen) {
-			spin_unlock(&tdb_lock);
-			printk(KERN_WARNING "klips_debug:ipsec_rcv: "
-			       "tried to skb_pull iphlen=%d, %d available.  This should never happen, please report.\n",
-			       irs->iphlen,
-			       (int)(skb->len));
-
-			goto rcvleave;
-		}
-
-		/*
-		 * we need to pull up by size of IP header,
-		 * options, but also by any UDP/ESP encap there might
-		 * have been, and this deals with all cases.
-		 */
-		skb_pull(skb, (skb->h.raw - skb->nh.raw));
-
-		/* new L3 header is where L4 payload was */
-		skb->nh.raw = skb->h.raw;
-
-		/* now setup new L4 payload location */
-		ipp = (struct iphdr *)skb->nh.raw;
-		skb->h.raw = skb->nh.raw + (ipp->ihl << 2);
-
-
-		/* remove any saved options that we might have,
-		 * since we have a new IP header.
-		 */
-		memset(&(IPCB(skb)->opt), 0, sizeof(struct ip_options));
-
+		if(ipp->protocol == IPPROTO_IPIP)  /* added to support AT&T heartbeats to SIG/GIG */
+		{  
+			/*
+			 * XXX this needs to be locked from when it was first looked
+			 * up in the decapsulation loop.  Perhaps it is better to put
+			 * the IPIP decap inside the loop.
+			 */
+			ipsp->ips_life.ipl_bytes.ipl_count += skb->len;
+			ipsp->ips_life.ipl_bytes.ipl_last   = skb->len;
+			
+			if(!ipsp->ips_life.ipl_usetime.ipl_count) {
+				ipsp->ips_life.ipl_usetime.ipl_count = jiffies / HZ;
+			}
+			ipsp->ips_life.ipl_usetime.ipl_last = jiffies / HZ;
+			ipsp->ips_life.ipl_packets.ipl_count += 1;
+			
+			if(skb->len < irs->iphlen) {
+				spin_unlock(&tdb_lock);
+				printk(KERN_WARNING "klips_debug:ipsec_rcv: "
+				       "tried to skb_pull iphlen=%d, %d available.  This should never happen, please report.\n",
+				       irs->iphlen,
+				       (int)(skb->len));
+				
+				goto rcvleave;
+			}
+			
+			/*
+			 * we need to pull up by size of IP header,
+			 * options, but also by any UDP/ESP encap there might
+			 * have been, and this deals with all cases.
+			 */
+			skb_pull(skb, (skb->h.raw - skb->nh.raw));
+			
+			/* new L3 header is where L4 payload was */
+			skb->nh.raw = skb->h.raw;
+			
+			/* now setup new L4 payload location */
+			ipp = (struct iphdr *)skb->nh.raw;
+			skb->h.raw = skb->nh.raw + (ipp->ihl << 2);
+			
+			
+			/* remove any saved options that we might have,
+			 * since we have a new IP header.
+			 */
+			memset(&(IPCB(skb)->opt), 0, sizeof(struct ip_options));
+			
 #if 0
-		KLIPS_PRINT(debug_rcv, "csum: %d\n", ip_fast_csum((u8 *)ipp, ipp->ihl));
+			KLIPS_PRINT(debug_rcv, "csum: %d\n", ip_fast_csum((u8 *)ipp, ipp->ihl));
 #endif
-
-		/* re-do any strings for debugging */
-		ipsaddr.s_addr = ipp->saddr;
-		addrtoa(ipsaddr, 0, irs->ipsaddr_txt, sizeof(irs->ipsaddr_txt));
-		ipdaddr.s_addr = ipp->daddr;
-		addrtoa(ipdaddr, 0, irs->ipdaddr_txt, sizeof(irs->ipdaddr_txt));
-
-		skb->protocol = htons(ETH_P_IP);
-		skb->ip_summed = 0;
-		KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-			    "klips_debug:ipsec_rcv: "
-			    "IPIP tunnel stripped.\n");
-		KLIPS_IP_PRINT(debug_rcv & DB_RX_PKTRX, ipp);
-  }
+			
+			/* re-do any strings for debugging */
+			ipsaddr.s_addr = ipp->saddr;
+			addrtoa(ipsaddr, 0, irs->ipsaddr_txt, sizeof(irs->ipsaddr_txt));
+			ipdaddr.s_addr = ipp->daddr;
+			addrtoa(ipdaddr, 0, irs->ipdaddr_txt, sizeof(irs->ipdaddr_txt));
+			
+			skb->protocol = htons(ETH_P_IP);
+			skb->ip_summed = 0;
+			KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
+				    "klips_debug:ipsec_rcv: "
+				    "IPIP tunnel stripped.\n");
+			KLIPS_IP_PRINT(debug_rcv & DB_RX_PKTRX, ipp);
+		}
 
 		if(sysctl_ipsec_inbound_policy_check
 		   /*
@@ -1121,37 +1130,6 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 		skb->mac.raw = skb->nh.raw - irs->hard_header_len;
 	}
 
-#ifdef CONFIG_KLIPS_IPCOMP
-	if(ipp->protocol == IPPROTO_COMP) {
-		unsigned int flags = 0;
-
-		if(sysctl_ipsec_inbound_policy_check) {
-			KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-				"klips_debug:ipsec_rcv: "
-				"inbound policy checking enabled, IPCOMP follows IPIP, dropped.\n");
-			if (irs->stats) {
-				irs->stats->rx_errors++;
-			}
-			goto rcvleave;
-		}
-		/*
-		  XXX need a ipsec_sa for updating ratio counters but it is not
-		  following policy anyways so it is not a priority
-		*/
-		skb = skb_decompress(skb, NULL, &flags);
-		if (!skb || flags) {
-			KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-				"klips_debug:ipsec_rcv: "
-				"skb_decompress() returned error flags: %d, dropped.\n",
-				flags);
-			if (irs->stats) {
-				irs->stats->rx_errors++;
-			}
-			goto rcvleave;
-		}
-	}
-#endif /* CONFIG_KLIPS_IPCOMP */
-
 	/*
 	 * make sure that data now starts at IP header, since we are going
 	 * to pass this back to ip_input (aka netif_rx). Rules for what the
@@ -1182,6 +1160,10 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 	skb=NULL;
 
  rcvleave:
+	if(lastipsp) {
+		ipsec_sa_put(lastipsp);
+		lastipsp=NULL;
+	}
 	if(irs->ipsp) {
 		ipsec_sa_put(irs->ipsp);
 	}
