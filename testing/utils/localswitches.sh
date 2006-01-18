@@ -16,6 +16,13 @@ then
     source testparams.sh
 fi
 
+if [ -n "${PUB_INPUT-}" ]
+then
+    export PUBLIC_PLAY=${PUB_INPUT}
+fi
+
+
+
 case $* in
 	0) if [ -n "$XHOST_LIST" ]; then
 		    hosts=`echo $XHOST_LIST | tr 'A-Z' 'a-z'`
