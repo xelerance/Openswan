@@ -1116,6 +1116,10 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 	if(irs->stats) {
 		irs->stats->rx_bytes += skb->len;
 	}
+
+	/* release the dst that was attached, since we have likely
+	 * changed the actual destination of the packet.
+	 */
 	if(skb->dst) {
 		dst_release(skb->dst);
 		skb->dst = NULL;
@@ -1320,11 +1324,8 @@ ipsec_rcv(struct sk_buff *skb
 #endif /* CONFIG_KLIPS_DEBUG */
 	unsigned char protoc;
 	struct net_device_stats *stats = NULL;		/* This device's statistics */
-	struct net_device *ipsecdev = NULL, *prvdev;
-	struct ipsecpriv *prv;
 	struct ipsec_rcv_state nirs, *irs = &nirs;
 	struct iphdr *ipp;
-	char name[9];
 	int i;
 
 	/* Don't unlink in the middle of a turnaround */
@@ -1487,63 +1488,36 @@ ipsec_rcv(struct sk_buff *skb
 		goto rcvleave;
 	}
 
+	/*
+	 * if there is an attached ipsec device, then use that device for
+	 * stats until we know better.
+	 */
 	if(skb->dev) {
+		struct ipsecpriv  *prvdev = NULL;
+		struct net_device *ipsecdev;
+
 		for(i = 0; i < IPSEC_NUM_IF; i++) {
-			sprintf(name, IPSEC_DEV_FORMAT, i);
-			if(!strcmp(name, skb->dev->name)) {
-				prv = (struct ipsecpriv *)(skb->dev->priv);
-				if(prv) {
-					stats = (struct net_device_stats *) &(prv->mystats);
-				}
-				ipsecdev = skb->dev;
-				KLIPS_PRINT(debug_rcv,
-					    "klips_debug:ipsec_rcv: "
-					    "Info -- pkt already proc'ed a group of ipsec headers, processing next group of ipsec headers.\n");
-				break;
-			}
-			if((ipsecdev = __ipsec_dev_get(name)) == NULL) {
-				KLIPS_PRINT(debug_rcv,
-					    "klips_error:ipsec_rcv: "
-					    "device %s does not exist\n",
-					    name);
-			}
-			prv = ipsecdev ? (struct ipsecpriv *)(ipsecdev->priv) : NULL;
-			prvdev = prv ? (struct net_device *)(prv->dev) : NULL;
+			struct net_device *ipsecdevices[IPSEC_NUM_IF];
 
-#if 0
-			KLIPS_PRINT(debug_rcv && prvdev,
-				    "klips_debug:ipsec_rcv: "
-				    "physical device for device %s is %s\n",
-				    name,
-				    prvdev->name);
-#endif
-			if(prvdev && skb->dev &&
-			   !strcmp(prvdev->name, skb->dev->name)) {
-				stats = prv ? ((struct net_device_stats *) &(prv->mystats)) : NULL;
-				skb->dev = ipsecdev;
-				KLIPS_PRINT(debug_rcv && prvdev,
-					    "klips_debug:ipsec_rcv: "
-					    "assigning packet ownership to virtual device %s from physical device %s.\n",
-					    name, prvdev->name);
-				if(stats) {
-					stats->rx_packets++;
-				}
-				break;
-			}
+			ipsecdev = ipsecdevices[i];
+
+			if(ipsecdev == NULL) continue;
+			prvdev = ipsecdev->priv;
+			
+			if(prvdev == NULL) continue;
+
+			if(prvdev->dev == skb->dev) break;
 		}
-	} else {
-		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
-			    "device supplied with skb is NULL\n");
+
+		if(prvdev) {
+			stats = (struct net_device_stats *) &(prvdev->mystats);
+		}
+	} 
+
+	if(stats) {
+		stats->rx_packets++;
 	}
 
-	if(stats == NULL) {
-		KLIPS_PRINT((debug_rcv),
-			    "klips_error:ipsec_rcv: "
-			    "packet received from physical I/F (%s) not connected to ipsec I/F.  Cannot record stats.  May not have SA for decoding.  Is IPSEC traffic expected on this I/F?  Check routing.\n",
-			    skb->dev ? (skb->dev->name ? skb->dev->name : "NULL") : "NULL");
-	}
-		
 	KLIPS_IP_PRINT(debug_rcv, ipp);
 
 	/* set up for decap loop */
