@@ -1326,19 +1326,24 @@ main(int argc, char *argv[])
 		encryptalg = SADB_EALG_NONE;
 	}
 	if(!(alg == XF_CLR /* IE: pfkey_msg->sadb_msg_type == SADB_FLUSH */)) {
-	    if((error = pfkey_sa_ref_build(&extensions[SADB_EXT_SA],
-					   SADB_EXT_SA,
-					   htonl(spi), /* in network order */
-					   replay_window,
-					   SADB_SASTATE_MATURE,
-					   authalg,
-					   encryptalg,
-					   0, saref))) {
+	    struct sadb_builds sab = {
+		.sa_base.sadb_sa_exttype = SADB_EXT_SA,
+		.sa_base.sadb_sa_spi     = htonl(spi),
+		.sa_base.sadb_sa_replay  = replay_window,
+		.sa_base.sadb_sa_state   = SADB_SASTATE_MATURE,
+		.sa_base.sadb_sa_auth    = authalg,
+		.sa_base.sadb_sa_encrypt = encryptalg,
+		.sa_base.sadb_sa_flags   = 0,
+		.sa_base.sadb_x_sa_ref   = saref,
+	    };
+
+	    if((error = pfkey_sa_builds(&extensions[SADB_EXT_SA],sab))) {
 		fprintf(stderr, "%s: Trouble building sa extension, error=%d.\n",
 			progname, error);
 		pfkey_extensions_free(extensions);
 		exit(1);
 	    }
+
 	    if(debug) {
 		fprintf(stdout, "%s: extensions[0]=0p%p previously set with msg_hdr.\n",
 			progname,
