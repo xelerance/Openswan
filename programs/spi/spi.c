@@ -142,6 +142,9 @@ spi --esp <algo> <SA> [<life> ][ --replay_window <replay-window> ] --enckey <eke
 	where <algo> is:	3des\n\
 spi --comp <algo> <SA>\n\
 	where <algo> is:	deflate\n\
+[ --saref=XXX ] set the saref to use\n\
+[ --dumpsaref ] show the saref allocated\n\
+[ --outif=XXX ] set the outgoing interface to use \n\
 [ --debug ] is optional to any spi command.\n\
 [ --label <label> ] is optional to any spi command.\n\
 [ --listenreply ]   is optional, and causes the command to stick\n\
@@ -386,6 +389,7 @@ static struct option const longopts[] =
 	{"debug", 0, 0, 'g'},
 	{"optionsfrom", 1, 0, '+'},
 	{"life", 1, 0, 'f'},
+	{"outif",     required_argument, NULL, 'O'},
 	{"saref",     required_argument, NULL, 'b'},
 	{"dumpsaref", no_argument,       NULL, 'r'},
 	{"listenreply", 0, 0, 'R'},
@@ -496,6 +500,7 @@ main(int argc, char *argv[])
 	char ipaddr_txt[ADDRTOT_BUF];
 	char ipsaid_txt[SATOT_BUF];
 
+	int outif = 0;
 	int error = 0;
 	ssize_t io_error;
 	int argcount = argc;
@@ -559,6 +564,16 @@ main(int argc, char *argv[])
 			saref = strtoul(optarg, &endptr, 0);
 			if(!(endptr == optarg + strlen(optarg))) {
 				fprintf(stderr, "%s: Invalid character in SAREF parameter: %s\n",
+					progname, optarg);
+				exit (1);
+			}
+			argcount--;
+			break;
+
+		case 'O':  /* set interface from which packet should arrive */
+			outif = strtoul(optarg, &endptr, 0);
+			if(!(endptr == optarg + strlen(optarg))) {
+				fprintf(stderr, "%s: Invalid character in outif parameter: %s\n",
 					progname, optarg);
 				exit (1);
 			}
@@ -1342,6 +1357,15 @@ main(int argc, char *argv[])
 			progname, error);
 		pfkey_extensions_free(extensions);
 		exit(1);
+	    }
+
+	    if(outif != 0) {
+		if((error = pfkey_outif_build(&extensions[SADB_X_EXT_PLUMBIF],outif))) {
+		    fprintf(stderr, "%s: Trouble building outif extension, error=%d.\n",
+			    progname, error);
+		    pfkey_extensions_free(extensions);
+		    exit(1);
+		}
 	    }
 
 	    if(debug) {
