@@ -204,16 +204,10 @@ errlab:
 	return error;
 }	
 
+
 int
-pfkey_sa_ref_build(struct sadb_ext **		pfkey_ext,
-		   uint16_t			exttype,
-		   uint32_t			spi,
-		   uint8_t			replay_window,
-		   uint8_t			sa_state,
-		   uint8_t			auth,
-		   uint8_t			encrypt,
-		   uint32_t			flags,
-		   uint32_t/*IPsecSAref_t*/	ref)
+pfkey_sa_builds(struct sadb_ext **pfkey_ext,
+		struct sadb_builds sab)
 {
 	int error = 0;
 	struct sadb_sa *pfkey_sa = (struct sadb_sa *)*pfkey_ext;
@@ -221,12 +215,12 @@ pfkey_sa_ref_build(struct sadb_ext **		pfkey_ext,
 	DEBUGGING(PF_KEY_DEBUG_BUILD,
 		    "pfkey_sa_build: "
 		    "spi=%08x replay=%d sa_state=%d auth=%d encrypt=%d flags=%d\n",
-		    ntohl(spi), /* in network order */
-		    replay_window,
-		    sa_state,
-		    auth,
-		    encrypt,
-		    flags);
+		    ntohl(sab.sa_base.sadb_sa_spi), /* in network order */
+		    sab.sa_base.sadb_sa_replay,
+		    sab.sa_base.sadb_sa_state,
+		    sab.sa_base.sadb_sa_auth,
+		    sab.sa_base.sadb_sa_encrypt,
+		    sab.sa_base.sadb_sa_flags);
 	/* sanity checks... */
 	if(pfkey_sa) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
@@ -235,66 +229,66 @@ pfkey_sa_ref_build(struct sadb_ext **		pfkey_ext,
 		SENDERR(EINVAL);
 	}
 
-	if(exttype != SADB_EXT_SA &&
-	   exttype != SADB_X_EXT_SA2) {
+	if(sab.sa_base.sadb_sa_exttype != SADB_EXT_SA &&
+	   sab.sa_base.sadb_sa_exttype != SADB_X_EXT_SA2) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"invalid exttype=%d.\n",
-			exttype);
+			sab.sa_base.sadb_sa_exttype);
 		SENDERR(EINVAL);
 	}
 
-	if(replay_window > 64) {
+	if(sab.sa_base.sadb_sa_replay > 64) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"replay window size: %d -- must be 0 <= size <= 64\n",
-			replay_window);
+			sab.sa_base.sadb_sa_replay);
 		SENDERR(EINVAL);
 	}
 
-	if(auth > SADB_AALG_MAX) {
+	if(sab.sa_base.sadb_sa_auth > SADB_AALG_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"auth=%d > SADB_AALG_MAX=%d.\n",
-			auth,
+			sab.sa_base.sadb_sa_auth,
 			SADB_AALG_MAX);
 		SENDERR(EINVAL);
 	}
 
 #if SADB_EALG_MAX < 255	
-	if(encrypt > SADB_EALG_MAX) {
+	if(sab.sa_base.sadb_sa_encrypt > SADB_EALG_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"encrypt=%d > SADB_EALG_MAX=%d.\n",
-			encrypt,
+			sab.sa_base.sadb_sa_encrypt,
 			SADB_EALG_MAX);
 		SENDERR(EINVAL);
 	}
 #endif
 
-	if(sa_state > SADB_SASTATE_MAX) {
+	if(sab.sa_base.sadb_sa_state > SADB_SASTATE_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"sa_state=%d exceeds MAX=%d.\n",
-			sa_state,
+			sab.sa_base.sadb_sa_state,
 			SADB_SASTATE_MAX);
 		SENDERR(EINVAL);
 	}
 
-	if(sa_state == SADB_SASTATE_DEAD) {
+	if(sab.sa_base.sadb_sa_state == SADB_SASTATE_DEAD) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"sa_state=%d is DEAD=%d is not allowed.\n",
-			sa_state,
+			sab.sa_base.sadb_sa_state,
 			SADB_SASTATE_DEAD);
 		SENDERR(EINVAL);
 	}
 	
-	if((IPSEC_SAREF_NULL != ref) && (ref >= (1 << IPSEC_SA_REF_TABLE_IDX_WIDTH))) {
+	if((IPSEC_SAREF_NULL != sab.sa_base.sadb_x_sa_ref) && (sab.sa_base.sadb_x_sa_ref >= (1 << IPSEC_SA_REF_TABLE_IDX_WIDTH))) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			  "pfkey_sa_build: "
 			  "SAref=%d must be (SAref == IPSEC_SAREF_NULL(%d) || SAref < IPSEC_SA_REF_TABLE_NUM_ENTRIES(%d)).\n",
-			  ref,
+			  sab.sa_base.sadb_x_sa_ref,
 			  IPSEC_SAREF_NULL,
 			  IPSEC_SA_REF_TABLE_NUM_ENTRIES);
 		SENDERR(EINVAL);
@@ -310,20 +304,39 @@ pfkey_sa_ref_build(struct sadb_ext **		pfkey_ext,
 		SENDERR(ENOMEM);
 	}
 	memset(pfkey_sa, 0, sizeof(struct sadb_sa));
-	
+
+	*pfkey_sa = sab.sa_base;
 	pfkey_sa->sadb_sa_len = sizeof(*pfkey_sa) / IPSEC_PFKEYv2_ALIGN;
-	pfkey_sa->sadb_sa_exttype = exttype;
-	pfkey_sa->sadb_sa_spi = spi;
-	pfkey_sa->sadb_sa_replay = replay_window;
-	pfkey_sa->sadb_sa_state = sa_state;
-	pfkey_sa->sadb_sa_auth = auth;
-	pfkey_sa->sadb_sa_encrypt = encrypt;
-	pfkey_sa->sadb_sa_flags = flags;
-	pfkey_sa->sadb_x_sa_ref = ref;  
 
 errlab:
 	return error;
 }	
+
+int
+pfkey_sa_ref_build(struct sadb_ext **		pfkey_ext,
+		   uint16_t			exttype,
+		   uint32_t			spi,
+		   uint8_t			replay_window,
+		   uint8_t			sa_state,
+		   uint8_t			auth,
+		   uint8_t			encrypt,
+		   uint32_t			flags,
+		   uint32_t/*IPsecSAref_t*/	ref)
+{
+	struct sadb_builds sab;
+	
+	memset(&sab, 0, sizeof(sab));
+	sab.sa_base.sadb_sa_exttype = exttype;
+	sab.sa_base.sadb_sa_spi     = spi;
+	sab.sa_base.sadb_sa_replay  = replay_window;
+	sab.sa_base.sadb_sa_state   = sa_state;
+	sab.sa_base.sadb_sa_auth    = auth;
+	sab.sa_base.sadb_sa_encrypt = encrypt;
+	sab.sa_base.sadb_sa_flags   = flags;
+	sab.sa_base.sadb_x_sa_ref   = ref;
+
+	return pfkey_sa_builds(pfkey_ext, sab);
+}
 
 int
 pfkey_sa_build(struct sadb_ext **	pfkey_ext,
@@ -335,15 +348,19 @@ pfkey_sa_build(struct sadb_ext **	pfkey_ext,
 	       uint8_t			encrypt,
 	       uint32_t			flags)
 {
-	return pfkey_sa_ref_build(pfkey_ext,
-			   exttype,
-			   spi,
-			   replay_window,
-			   sa_state,
-			   auth,
-			   encrypt,
-			   flags,
-			   IPSEC_SAREF_NULL);
+	struct sadb_builds sab;
+	
+	memset(&sab, 0, sizeof(sab));
+	sab.sa_base.sadb_sa_exttype = exttype;
+	sab.sa_base.sadb_sa_spi     = spi;
+	sab.sa_base.sadb_sa_replay  = replay_window;
+	sab.sa_base.sadb_sa_state   = sa_state;
+	sab.sa_base.sadb_sa_auth    = auth;
+	sab.sa_base.sadb_sa_encrypt = encrypt;
+	sab.sa_base.sadb_sa_flags   = flags;
+	sab.sa_base.sadb_x_sa_ref   = IPSEC_SAREF_NULL;
+
+	return pfkey_sa_builds(pfkey_ext, sab);
 }
 
 int
@@ -1177,6 +1194,7 @@ pfkey_x_nat_t_type_build(struct sadb_ext**	pfkey_ext,
 errlab:
 	return error;
 }
+
 int
 pfkey_x_nat_t_port_build(struct sadb_ext**	pfkey_ext,
 		    uint16_t         exttype,
@@ -1253,6 +1271,27 @@ int pfkey_x_protocol_build(struct sadb_ext **pfkey_ext,
 	p->sadb_protocol_proto = protocol;
 	p->sadb_protocol_flags = 0;
 	p->sadb_protocol_reserved2 = 0;
+ errlab:
+	return error;
+}
+
+
+int pfkey_outif_build(struct sadb_ext **pfkey_ext,
+		      uint16_t outif)
+{
+	int error = 0;
+	struct sadb_x_plumbif * p = (struct sadb_x_plumbif *)*pfkey_ext;
+
+	if ((p = (struct sadb_x_plumbif*)MALLOC(sizeof(*p))) == 0) {
+		ERROR("pfkey_build: memory allocation failed\n");
+		SENDERR(ENOMEM);
+	}
+	*pfkey_ext = (struct sadb_ext *)p;
+
+	p->sadb_x_outif_len = sizeof(*p) / sizeof(uint64_t);
+	p->sadb_x_outif_exttype = SADB_X_EXT_PLUMBIF;
+	p->sadb_x_outif_ifnum = outif;
+
  errlab:
 	return error;
 }
