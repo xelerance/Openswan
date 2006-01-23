@@ -134,6 +134,8 @@ struct ipsec_sa
 
 	struct ifnet	*ips_rcvif;	 	/* related rcv encap interface */
 
+	struct xform_functions *ips_xformfuncs; /* pointer to routines to process this SA */    
+
 	ip_said	        ips_said;	 	/* SA ID */
 
 	__u32		ips_seq;		/* seq num of msg that initiated this SA */
