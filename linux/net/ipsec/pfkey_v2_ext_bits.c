@@ -58,7 +58,16 @@ char pfkey_v2_ext_bits_c_version[] = "$Id: pfkey_v2_ext_bits.c,v 1.22 2005/05/11
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
-unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_EXTENSIONS_MAX] = {
+#include "openswan/pfkey_debug.h"
+
+enum pfkey_ext_perm {
+	EXT_BITS_PERM=0,
+	EXT_BITS_REQ=1
+};
+
+
+
+unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_MAX+1] = {
 
 /* INBOUND EXTENSIONS */
 {
@@ -109,6 +118,7 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_EXTENSIONS_MAX]
 | 1<<SADB_X_EXT_NAT_T_SPORT
 | 1<<SADB_X_EXT_NAT_T_DPORT
 | 1<<SADB_X_EXT_NAT_T_OA
+| 1<<SADB_X_EXT_PLUMBIF
 ,
 /* SADB_DELETE */
 1<<SADB_EXT_RESERVED
@@ -233,6 +243,14 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_EXTENSIONS_MAX]
 | 1<<SADB_EXT_ADDRESS_DST
 | 1<<SADB_X_EXT_NAT_T_SPORT
 | 1<<SADB_X_EXT_NAT_T_DPORT
+,
+/* SADB_X_PLUMBIF */
+1<<SADB_EXT_RESERVED
+| 1<<SADB_X_EXT_PLUMBIF
+,
+/* SADB_X_UNPLUMBIF */
+1<<SADB_EXT_RESERVED
+| 1<<SADB_X_EXT_PLUMBIF
 },
 
 /* REQUIRED IN */
@@ -376,6 +394,14 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_EXTENSIONS_MAX]
 | 1<<SADB_EXT_ADDRESS_DST
 | 1<<SADB_X_EXT_NAT_T_SPORT
 | 1<<SADB_X_EXT_NAT_T_DPORT
+,
+/* SADB_X_PLUMBIF */
+1<<SADB_EXT_RESERVED
+| 1<<SADB_X_EXT_PLUMBIF
+,
+/* SADB_X_UNPLUMBIF */
+1<<SADB_EXT_RESERVED
+| 1<<SADB_X_EXT_PLUMBIF
 }
 
 },
@@ -423,6 +449,7 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_EXTENSIONS_MAX]
 | 1<<SADB_X_EXT_NAT_T_SPORT
 | 1<<SADB_X_EXT_NAT_T_DPORT
 | 1<<SADB_X_EXT_NAT_T_OA
+| 1<<SADB_X_EXT_PLUMBIF
 ,
 /* SADB_DELETE */
 1<<SADB_EXT_RESERVED
@@ -580,6 +607,14 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_EXTENSIONS_MAX]
 | 1<<SADB_EXT_ADDRESS_DST
 | 1<<SADB_X_EXT_NAT_T_SPORT
 | 1<<SADB_X_EXT_NAT_T_DPORT
+,
+/* SADB_X_PLUMBIF */
+1<<SADB_EXT_RESERVED
+| 1<<SADB_X_EXT_PLUMBIF
+,
+/* SADB_X_UNPLUMBIF */
+1<<SADB_EXT_RESERVED
+| 1<<SADB_X_EXT_PLUMBIF
 },
 
 /* REQUIRED OUT */
@@ -729,9 +764,48 @@ unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_EXTENSIONS_MAX]
 | 1<<SADB_EXT_ADDRESS_DST
 | 1<<SADB_X_EXT_NAT_T_SPORT
 | 1<<SADB_X_EXT_NAT_T_DPORT
+,
+/* SADB_X_PLUMBIF */
+1<<SADB_EXT_RESERVED
+| 1<<SADB_X_EXT_PLUMBIF
+,
+/* SADB_X_UNPLUMBIF */
+1<<SADB_EXT_RESERVED
+| 1<<SADB_X_EXT_PLUMBIF
 }
 }
 };
+
+int pfkey_required_extension(enum pfkey_ext_required inout,
+			     enum sadb_msg_t sadb_operation,
+			     enum sadb_extension_t exttype)
+{
+	return extensions_bitmaps[inout][EXT_BITS_REQ][sadb_operation] & (1<<exttype);
+}
+
+int pfkey_permitted_extension(enum pfkey_ext_required inout,
+			      enum sadb_msg_t sadb_operation,
+			      enum sadb_extension_t exttype)
+{
+	return extensions_bitmaps[inout][EXT_BITS_PERM][sadb_operation] & (1<<exttype);
+}
+
+
+int pfkey_extensions_missing(enum pfkey_ext_required inout,
+			     enum sadb_msg_t sadb_operation,
+			     pfkey_ext_track extensions_seen)
+
+{
+	pfkey_ext_track req = extensions_bitmaps[inout][EXT_BITS_REQ][sadb_operation];
+
+	if((extensions_seen & req) != req) {
+		ERROR("extensions seen: %08x required %08x, missing: %08x\n",
+		      extensions_seen, req, req & extensions_seen);
+		return 1;
+	}
+	return 0;
+}
+
 
 /*
  * $Log: pfkey_v2_ext_bits.c,v $

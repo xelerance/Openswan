@@ -1266,7 +1266,7 @@ int pfkey_x_protocol_build(struct sadb_ext **pfkey_ext,
 		SENDERR(ENOMEM);
 	}
 	*pfkey_ext = (struct sadb_ext *)p;
-	p->sadb_protocol_len = sizeof(*p) / sizeof(uint64_t);
+	p->sadb_protocol_len = sizeof(*p) / IPSEC_PFKEYv2_ALIGN;
 	p->sadb_protocol_exttype = SADB_X_EXT_PROTOCOL;
 	p->sadb_protocol_proto = protocol;
 	p->sadb_protocol_flags = 0;
@@ -1288,7 +1288,7 @@ int pfkey_outif_build(struct sadb_ext **pfkey_ext,
 	}
 	*pfkey_ext = (struct sadb_ext *)p;
 
-	p->sadb_x_outif_len = sizeof(*p) / sizeof(uint64_t);
+	p->sadb_x_outif_len = IPSEC_PFKEYv2_WORDS(sizeof(*p));
 	p->sadb_x_outif_exttype = SADB_X_EXT_PLUMBIF;
 	p->sadb_x_outif_ifnum = outif;
 
@@ -1388,14 +1388,10 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 		/* copy from extension[ext] to buffer */
 		if(extensions[ext]) {    
 			/* Is this type of extension permitted for this type of message? */
-			if(!(extensions_bitmaps[dir][EXT_BITS_PERM][(*pfkey_msg)->sadb_msg_type] &
-			     1<<ext)) {
-				ERROR("pfkey_msg_build: "
-					"ext type %d not permitted for %d/%d/%d, exts_perm=%08x, 1<<type=%08x\n", 
-					ext,
-				      dir,EXT_BITS_PERM,(*pfkey_msg)->sadb_msg_type,
-					extensions_bitmaps[dir][EXT_BITS_PERM][(*pfkey_msg)->sadb_msg_type],
-					1<<ext);
+			if(!pfkey_permitted_extension(dir,(*pfkey_msg)->sadb_msg_type,ext)) {
+				ERROR("ext type %d not permitted for %d/%d\n", 
+				      ext,
+				      dir,(*pfkey_msg)->sadb_msg_type);
 				SENDERR(EINVAL);
 			}
 
@@ -1421,23 +1417,8 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 		}
 	}
 
-	/* check required extensions */
-	DEBUGGING(PF_KEY_DEBUG_BUILD,
-		"pfkey_msg_build: "
-		"extensions permitted=%08x, seen=%08x, required=%08x.\n",
-		extensions_bitmaps[dir][EXT_BITS_PERM][(*pfkey_msg)->sadb_msg_type],
-		extensions_seen,
-		extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type]);
-	
-	if((extensions_seen &
-	    extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type]) !=
-	   extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type]) {
-		DEBUGGING(PF_KEY_DEBUG_BUILD,
-			"pfkey_msg_build: "
-			"required extensions missing:%08x.\n",
-			extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type] -
-			(extensions_seen &
-			 extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type]) );
+	if(pfkey_extensions_missing(dir,(*pfkey_msg)->sadb_msg_type,extensions_seen)) {
+		ERROR("required extensions missing. seen=%08x\n", extensions_seen);
 		SENDERR(EINVAL);
 	}
 
@@ -1446,11 +1427,10 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
  * this is silly, there is no need to reparse the message that we just built.
  *
  */
-	if((error = pfkey_msg_parse(*pfkey_msg, NULL, extensions_check, dir))) {
-		ERROR(
-			"pfkey_msg_build: "
-			"Trouble parsing newly built pfkey message, error=%d.\n",
-			error);
+	if((error = pfkey_msg_parse(*pfkey_msg,NULL,extensions_check, dir))) {
+		ERROR("pfkey_msg_build: "
+		      "Trouble parsing newly built pfkey message, error=%d.\n",
+		      error);
 		SENDERR(-error);
 	}
 #endif

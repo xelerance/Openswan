@@ -77,8 +77,8 @@ extern int debug_pfkey;
 #include <openswan/pfkey_debug.h>
 
 unsigned int pfkey_lib_debug = PF_KEY_DEBUG_PARSE_NONE;
-void (*pfkey_debug_func)(const char *message, ...) PRINTF_LIKE(1);
-void (*pfkey_error_func)(const char *message, ...) PRINTF_LIKE(1);
+int (*pfkey_debug_func)(const char *message, ...) PRINTF_LIKE(1);
+int (*pfkey_error_func)(const char *message, ...) PRINTF_LIKE(1);
 
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
@@ -1152,6 +1152,27 @@ pfkey_x_ext_nat_t_port_parse(struct sadb_ext *pfkey_ext)
 }
 #endif
 
+DEBUG_NO_STATIC int
+pfkey_x_ext_outif_parse(struct sadb_ext *pfkey_ext)
+{
+	int error = 0;
+	struct sadb_x_plumbif *p = (struct sadb_x_plumbif *)pfkey_ext;
+	
+	DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM, "pfkey_x_outif_parse:\n");
+	/* sanity checks... */
+	
+	if (p->sadb_x_outif_len != IPSEC_PFKEYv2_WORDS(sizeof(*p))) {
+		    DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
+			      "pfkey_x_outif_parse: size wrong ext_len=%d, key_ext_len=%d.\n",
+			      p->sadb_x_outif_len, (int)sizeof(*p));
+		    SENDERR(EINVAL);
+	}
+	
+ errlab:
+	return error;
+}
+
+
 #define DEFINEPARSER(NAME) static struct pf_key_ext_parsers_def NAME##_def={NAME, #NAME};
 
 DEFINEPARSER(pfkey_sa_parse);
@@ -1171,6 +1192,7 @@ DEFINEPARSER(pfkey_x_ext_protocol_parse);
 DEFINEPARSER(pfkey_x_ext_nat_t_type_parse);
 DEFINEPARSER(pfkey_x_ext_nat_t_port_parse);
 #endif
+DEFINEPARSER(pfkey_x_ext_outif_parse);
 
 struct pf_key_ext_parsers_def *ext_default_parsers[]=
 {
@@ -1200,14 +1222,16 @@ struct pf_key_ext_parsers_def *ext_default_parsers[]=
 	&pfkey_address_parse_def,
 	&pfkey_address_parse_def,
 	&pfkey_x_ext_debug_parse_def,
-	&pfkey_x_ext_protocol_parse_def
+	&pfkey_x_ext_protocol_parse_def,
 #ifdef NAT_TRAVERSAL
-	,
 	&pfkey_x_ext_nat_t_type_parse_def,
 	&pfkey_x_ext_nat_t_port_parse_def,
 	&pfkey_x_ext_nat_t_port_parse_def,
-	&pfkey_address_parse_def
+	&pfkey_address_parse_def,
+#else
+	NULL,NULL,NULL,NULL,
 #endif
+	&pfkey_x_ext_outif_parse_def
 };
 
 int
@@ -1219,7 +1243,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	int error = 0;
 	int remain;
 	struct sadb_ext *pfkey_ext;
-	int extensions_seen = 0;
+	pfkey_ext_track extensions_seen = 0;
 	
 	DEBUGGING(PF_KEY_DEBUG_PARSE_STRUCT,
 		  "pfkey_msg_parse: "
@@ -1240,7 +1264,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	pfkey_extensions_init(extensions);
 	
 	remain = pfkey_msg->sadb_msg_len;
-	remain -= sizeof(struct sadb_msg) / IPSEC_PFKEYv2_ALIGN;
+	remain -= IPSEC_PFKEYv2_WORDS(sizeof(struct sadb_msg));
 	
 	pfkey_ext = (struct sadb_ext*)((char*)pfkey_msg +
 				       sizeof(struct sadb_msg));
@@ -1326,12 +1350,6 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		  remain
 		  );
 
-	DEBUGGING(PF_KEY_DEBUG_PARSE_FLOW,
-		"pfkey_msg_parse: "
-		"extensions permitted=%08x, required=%08x.\n",
-		extensions_bitmaps[dir][EXT_BITS_PERM][pfkey_msg->sadb_msg_type],
-		extensions_bitmaps[dir][EXT_BITS_REQ][pfkey_msg->sadb_msg_type]);
-	
 	extensions_seen = 1;
 	
 	while( (remain * IPSEC_PFKEYv2_ALIGN) >= sizeof(struct sadb_ext) ) {
@@ -1363,7 +1381,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		}
 		
 		/* Have we already seen this type of extension? */
-		if((extensions_seen & ( 1 << pfkey_ext->sadb_ext_type )) != 0)
+		if(extensions[pfkey_ext->sadb_ext_type] != NULL)
 		{
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
@@ -1383,15 +1401,10 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		}
 
 		/* Is this type of extension permitted for this type of message? */
-		if(!(extensions_bitmaps[dir][EXT_BITS_PERM][pfkey_msg->sadb_msg_type] &
-		     1<<pfkey_ext->sadb_ext_type)) {
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-				"pfkey_msg_parse: "
-				"ext type %d(%s) not permitted, exts_perm_in=%08x, 1<<type=%08x\n", 
-				pfkey_ext->sadb_ext_type, 
-				pfkey_v2_sadb_ext_string(pfkey_ext->sadb_ext_type),
-				extensions_bitmaps[dir][EXT_BITS_PERM][pfkey_msg->sadb_msg_type],
-				1<<pfkey_ext->sadb_ext_type);
+		if(!pfkey_permitted_extension(dir,pfkey_msg->sadb_msg_type,pfkey_ext->sadb_ext_type)) {
+			ERROR("ext type %d(%s) not permitted\n", 
+			      pfkey_ext->sadb_ext_type, 
+			      pfkey_v2_sadb_ext_string(pfkey_ext->sadb_ext_type));
 			SENDERR(EINVAL);
 		}
 
@@ -1423,8 +1436,8 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 			pfkey_v2_sadb_ext_string(pfkey_ext->sadb_ext_type));
 		
 		/* Mark that we have seen this extension and remember the header location */
-		extensions_seen |= ( 1 << pfkey_ext->sadb_ext_type );
 		extensions[pfkey_ext->sadb_ext_type] = pfkey_ext;
+		pfkey_mark_extension(pfkey_ext->sadb_ext_type,&extensions_seen);
 
 	next_ext:		
 		/* Calculate how much message remains */
@@ -1447,29 +1460,14 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		SENDERR(EINVAL);
 	}
 
-	/* check required extensions */
-	DEBUGGING(PF_KEY_DEBUG_PARSE_STRUCT,
-		"pfkey_msg_parse: "
-		"extensions permitted=%08x, seen=%08x, required=%08x.\n",
-		extensions_bitmaps[dir][EXT_BITS_PERM][pfkey_msg->sadb_msg_type],
-		extensions_seen,
-		extensions_bitmaps[dir][EXT_BITS_REQ][pfkey_msg->sadb_msg_type]);
-
 	/* don't check further if it is an error return message since it
 	   may not have a body */
 	if(pfkey_msg->sadb_msg_errno) {
 		SENDERR(-error);
 	}
 
-	if((extensions_seen &
-	    extensions_bitmaps[dir][EXT_BITS_REQ][pfkey_msg->sadb_msg_type]) !=
-	   extensions_bitmaps[dir][EXT_BITS_REQ][pfkey_msg->sadb_msg_type]) {
-		DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-			"pfkey_msg_parse: "
-			"required extensions missing:%08x.\n",
-			extensions_bitmaps[dir][EXT_BITS_REQ][pfkey_msg->sadb_msg_type] -
-			(extensions_seen &
-			 extensions_bitmaps[dir][EXT_BITS_REQ][pfkey_msg->sadb_msg_type]));
+	if(pfkey_extensions_missing(dir,pfkey_msg->sadb_msg_type,extensions_seen)) {
+		ERROR("required extensions missing.seen=%08x.\n",extensions_seen);
 		SENDERR(EINVAL);
 	}
 	

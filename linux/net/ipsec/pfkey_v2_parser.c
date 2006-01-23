@@ -2705,46 +2705,55 @@ pfkey_build_reply(struct sadb_msg *pfkey_msg,
 						     0,
 						     seq,
 						     pfkey_msg->sadb_msg_pid),
-				 extensions) &&
-		(!(extensions_bitmaps[EXT_BITS_OUT][EXT_BITS_REQ][msg_type] &
-		   1 << SADB_EXT_SA)
-		 || pfkey_safe_build(pfkey_sa_ref_build(&extensions[SADB_EXT_SA],
-						    SADB_EXT_SA,
-						    extr->ips->ips_said.spi,
-						    extr->ips->ips_replaywin,
-						    extr->ips->ips_state,
-						    extr->ips->ips_authalg,
-						    extr->ips->ips_encalg,
-						    extr->ips->ips_flags,
-						    extr->ips->ips_ref),
-				     extensions)) &&
-		(!(extensions_bitmaps[EXT_BITS_OUT][EXT_BITS_REQ][msg_type] &
-		   1 << SADB_EXT_LIFETIME_CURRENT)
-		 || pfkey_safe_build(pfkey_lifetime_build(&extensions
-							  [SADB_EXT_LIFETIME_CURRENT],
-							  SADB_EXT_LIFETIME_CURRENT,
-							  extr->ips->ips_life.ipl_allocations.ipl_count,
-							  extr->ips->ips_life.ipl_bytes.ipl_count,
-							  extr->ips->ips_life.ipl_addtime.ipl_count,
-							  extr->ips->ips_life.ipl_usetime.ipl_count,
-							  extr->ips->ips_life.ipl_packets.ipl_count),
-				     extensions)) &&
-		(!(extensions_bitmaps[EXT_BITS_OUT][EXT_BITS_REQ][msg_type] &
-		   1 << SADB_EXT_ADDRESS_SRC)
-		 || pfkey_safe_build(pfkey_address_build(&extensions[SADB_EXT_ADDRESS_SRC],
-							 SADB_EXT_ADDRESS_SRC,
-							 extr->ips->ips_said.proto,
-							 0,
-							 extr->ips->ips_addr_s),
-				     extensions)) &&
-		(!(extensions_bitmaps[EXT_BITS_OUT][EXT_BITS_REQ][msg_type] &
-		   1 << SADB_EXT_ADDRESS_DST)
-		 || pfkey_safe_build(pfkey_address_build(&extensions[SADB_EXT_ADDRESS_DST],
-							 SADB_EXT_ADDRESS_DST,
-							 extr->ips->ips_said.proto,
-							 0,
-							 extr->ips->ips_addr_d),
-				     extensions));
+				 extensions);
+
+	if(!error
+	   && pfkey_required_extension(EXT_BITS_OUT, msg_type, SADB_EXT_SA)) {
+		
+		error = pfkey_sa_ref_build(&extensions[SADB_EXT_SA],
+					   SADB_EXT_SA,
+					   extr->ips->ips_said.spi,
+					   extr->ips->ips_replaywin,
+					   extr->ips->ips_state,
+					   extr->ips->ips_authalg,
+					   extr->ips->ips_encalg,
+					   extr->ips->ips_flags,
+					   extr->ips->ips_ref);
+		pfkey_safe_build(error, extensions);
+	}
+
+	if(!error
+	   && pfkey_required_extension(EXT_BITS_OUT,msg_type,SADB_EXT_LIFETIME_CURRENT)) {
+		error = pfkey_lifetime_build(&extensions
+					     [SADB_EXT_LIFETIME_CURRENT],
+					     SADB_EXT_LIFETIME_CURRENT,
+					     extr->ips->ips_life.ipl_allocations.ipl_count,
+					     extr->ips->ips_life.ipl_bytes.ipl_count,
+					     extr->ips->ips_life.ipl_addtime.ipl_count,
+					     extr->ips->ips_life.ipl_usetime.ipl_count,
+					     extr->ips->ips_life.ipl_packets.ipl_count);
+		pfkey_safe_build(error, extensions);
+	}
+
+	if(!error
+	   && pfkey_required_extension(EXT_BITS_OUT,msg_type,SADB_EXT_ADDRESS_SRC)) {
+		error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_SRC],
+					    SADB_EXT_ADDRESS_SRC,
+					    extr->ips->ips_said.proto,
+					    0,
+					    extr->ips->ips_addr_s);
+		pfkey_safe_build(error, extensions);
+	}
+
+	if(!error
+	   && pfkey_required_extension(EXT_BITS_OUT,msg_type,SADB_EXT_ADDRESS_DST)) {
+		error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_DST],
+					    SADB_EXT_ADDRESS_DST,
+					    extr->ips->ips_said.proto,
+					    0,
+					    extr->ips->ips_addr_d);
+		pfkey_safe_build(error, extensions);
+	}
 
 	if (error == 0) {
 		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_build_reply: "
