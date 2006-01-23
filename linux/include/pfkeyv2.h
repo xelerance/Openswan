@@ -16,28 +16,32 @@ you leave this credit intact on any copies of this file.
 #ifndef __PFKEY_V2_H
 #define __PFKEY_V2_H 1
 
-#define PF_KEY_V2 2
+#define PF_KEY_V2               2
 #define PFKEYV2_REVISION        199806L
 
-#define SADB_RESERVED    0
-#define SADB_GETSPI      1
-#define SADB_UPDATE      2
-#define SADB_ADD         3
-#define SADB_DELETE      4
-#define SADB_GET         5
-#define SADB_ACQUIRE     6
-#define SADB_REGISTER    7
-#define SADB_EXPIRE      8
-#define SADB_FLUSH       9
-#define SADB_DUMP       10
-#define SADB_X_PROMISC  11
-#define SADB_X_PCHANGE  12
-#define SADB_X_GRPSA    13
-#define SADB_X_ADDFLOW	14
-#define SADB_X_DELFLOW	15
-#define SADB_X_DEBUG	16
-#define SADB_X_NAT_T_NEW_MAPPING  17
-#define SADB_MAX                  17
+enum sadb_msg_t {
+	SADB_RESERVED=0,
+	SADB_GETSPI=1,
+	SADB_UPDATE=2,
+	SADB_ADD=3,
+	SADB_DELETE=4,
+	SADB_GET=5,
+	SADB_ACQUIRE=6,
+	SADB_REGISTER=7,
+	SADB_EXPIRE=8,
+	SADB_FLUSH=9,
+	SADB_DUMP=10,
+	SADB_X_PROMISC=11,
+	SADB_X_PCHANGE=12,
+	SADB_X_GRPSA=13,
+	SADB_X_ADDFLOW=14,
+	SADB_X_DELFLOW=15,
+	SADB_X_DEBUG=16,
+	SADB_X_NAT_T_NEW_MAPPING=17,
+	SADB_X_PLUMBIF=18,
+	SADB_X_UNPLUMBIF=19,
+	SADB_MAX=19
+};
 
 struct sadb_msg {
   uint8_t sadb_msg_version;
@@ -229,6 +233,29 @@ struct sadb_x_nat_t_port {
 };
 
 /*
+ * a plumbif extension can appear in
+ *          - a plumbif message to create the interface.
+ *          - a unplumbif message to delete the interface.
+ *          - a sadb add/replace to indicate which interface
+ *                   a decrypted packet should emerge on.
+ *
+ * the create/delete part could/should be replaced with netlink equivalents,
+ * or better yet, FORCES versions of same.
+ * 
+ */
+struct sadb_x_plumbif {
+	uint16_t sadb_x_outif_len;
+	uint16_t sadb_x_outif_exttype;
+	uint16_t sadb_x_outif_ifnum;
+};
+
+/*
+ * devices 0-49151 are mastXXX devices.
+ * devices 49152-65536 are deprecated ipsecXXX devices.
+ */
+#define IPSECDEV_OFFSET (48*1024)
+
+/*
  * A protocol structure for passing through the transport level
  * protocol.  It contains more fields than are actually used/needed
  * but it is this way to be compatible with the structure used in
@@ -243,41 +270,48 @@ struct sadb_protocol {
   uint8_t  sadb_protocol_reserved2;
 };
 
-#define SADB_EXT_RESERVED             0
-#define SADB_EXT_SA                   1
-#define SADB_EXT_LIFETIME_CURRENT     2
-#define SADB_EXT_LIFETIME_HARD        3
-#define SADB_EXT_LIFETIME_SOFT        4
-#define SADB_EXT_ADDRESS_SRC          5
-#define SADB_EXT_ADDRESS_DST          6
-#define SADB_EXT_ADDRESS_PROXY        7
-#define SADB_EXT_KEY_AUTH             8
-#define SADB_EXT_KEY_ENCRYPT          9
-#define SADB_EXT_IDENTITY_SRC         10
-#define SADB_EXT_IDENTITY_DST         11
-#define SADB_EXT_SENSITIVITY          12
-#define SADB_EXT_PROPOSAL             13
-#define SADB_EXT_SUPPORTED_AUTH       14
-#define SADB_EXT_SUPPORTED_ENCRYPT    15
-#define SADB_EXT_SPIRANGE             16
-#define SADB_X_EXT_KMPRIVATE          17
-#define SADB_X_EXT_SATYPE2            18
-#ifdef KERNEL26_HAS_KAME_DUPLICATES
-#define SADB_X_EXT_POLICY             18
-#endif
-#define SADB_X_EXT_SA2                19
-#define SADB_X_EXT_ADDRESS_DST2       20
-#define SADB_X_EXT_ADDRESS_SRC_FLOW   21
-#define SADB_X_EXT_ADDRESS_DST_FLOW   22
-#define SADB_X_EXT_ADDRESS_SRC_MASK   23
-#define SADB_X_EXT_ADDRESS_DST_MASK   24
-#define SADB_X_EXT_DEBUG              25
-#define SADB_X_EXT_PROTOCOL           26
-#define SADB_X_EXT_NAT_T_TYPE         27
-#define SADB_X_EXT_NAT_T_SPORT        28
-#define SADB_X_EXT_NAT_T_DPORT        29
-#define SADB_X_EXT_NAT_T_OA           30
-#define SADB_EXT_MAX                  30
+/*
+ * NOTE that there is a limit of 31 extensions due to current implementation
+ * in pfkeyv2_ext_bits.c
+ */
+enum sadb_extension_t {
+	SADB_EXT_RESERVED=0,
+	SADB_EXT_SA=              1,
+	SADB_EXT_LIFETIME_CURRENT=2,
+	SADB_EXT_LIFETIME_HARD=   3,
+	SADB_EXT_LIFETIME_SOFT=   4,
+	SADB_EXT_ADDRESS_SRC=     5,
+	SADB_EXT_ADDRESS_DST=     6,
+	SADB_EXT_ADDRESS_PROXY=   7,
+	SADB_EXT_KEY_AUTH=        8,
+	SADB_EXT_KEY_ENCRYPT=     9,
+	SADB_EXT_IDENTITY_SRC=    10,
+	SADB_EXT_IDENTITY_DST=    11,
+	SADB_EXT_SENSITIVITY=     12,
+	SADB_EXT_PROPOSAL=        13,
+	SADB_EXT_SUPPORTED_AUTH=  14,
+	SADB_EXT_SUPPORTED_ENCRYPT=15,
+	SADB_EXT_SPIRANGE=        16,
+	SADB_X_EXT_KMPRIVATE=     17,
+	SADB_X_EXT_SATYPE2=       18,
+	SADB_X_EXT_POLICY=        18,
+	SADB_X_EXT_SA2=           19,
+	SADB_X_EXT_ADDRESS_DST2=  20,
+	SADB_X_EXT_ADDRESS_SRC_FLOW=21,
+	SADB_X_EXT_ADDRESS_DST_FLOW=22,
+	SADB_X_EXT_ADDRESS_SRC_MASK=23,
+	SADB_X_EXT_ADDRESS_DST_MASK=24,
+	SADB_X_EXT_DEBUG=         25,
+	SADB_X_EXT_PROTOCOL=      26,
+	SADB_X_EXT_NAT_T_TYPE=    27,
+	SADB_X_EXT_NAT_T_SPORT=   28,
+	SADB_X_EXT_NAT_T_DPORT=   29,
+	SADB_X_EXT_NAT_T_OA=      30,
+	SADB_X_EXT_PLUMBIF=       31,
+	SADB_EXT_MAX=             31,
+};
+
+
 
 /* SADB_X_DELFLOW required over and above SADB_X_SAFLAGS_CLEARFLOW */
 #define SADB_X_EXT_ADDRESS_DELFLOW \
