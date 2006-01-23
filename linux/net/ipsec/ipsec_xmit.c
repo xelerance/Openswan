@@ -1677,6 +1677,149 @@ cleanup:
 	return bundle_stat;
 }
 
+#ifdef NETDEV_23
+static inline int ipsec_xmit_send2(struct sk_buff *skb)
+{
+#ifdef NETDEV_25	/* 2.6 kernels */
+	return dst_output(skb);
+#else
+	return ip_send(skb);
+#endif
+}
+#endif /* NETDEV_23 */
+
+
+/* avoid forward reference complain on <2.5 */
+struct flowi;
+
+enum ipsec_xmit_value
+ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
+{
+	int error;
+  
+#ifdef NETDEV_25
+ 	fl->nl_u.ip4_u.daddr = ixs->skb->nh.iph->daddr;
+ 	fl->nl_u.ip4_u.saddr = ixs->pass ? 0 : ixs->skb->nh.iph->saddr;
+ 	fl->nl_u.ip4_u.tos = RT_TOS(ixs->skb->nh.iph->tos);
+ 	fl->proto = ixs->skb->nh.iph->protocol;
+ 	if ((error = ip_route_output_key(&ixs->route, fl))) {
+#else
+	/*skb_orphan(ixs->skb);*/
+	if((error = ip_route_output(&ixs->route,
+				    ixs->skb->nh.iph->daddr,
+				    ixs->pass ? 0 : ixs->skb->nh.iph->saddr,
+				    RT_TOS(ixs->skb->nh.iph->tos),
+                                    /* mcr->rgb: should this be 0 instead? */
+				    ixs->physdev->iflink))) {
+#endif
+		ixs->stats->tx_errors++;
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+			    "klips_debug:ipsec_xmit_send: "
+			    "ip_route_output failed with error code %d, rt->u.dst.dev=%s, dropped\n",
+			    error,
+			    ixs->route->u.dst.dev->name);
+		return IPSEC_XMIT_ROUTEERR;
+	}
+
+	if(ixs->dev == ixs->route->u.dst.dev) {
+		ip_rt_put(ixs->route);
+		/* This is recursion, drop it. */
+		ixs->stats->tx_errors++;
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+			    "klips_debug:ipsec_xmit_send: "
+			    "suspect recursion, dev=rt->u.dst.dev=%s, dropped\n",
+			    ixs->dev->name);
+		return IPSEC_XMIT_RECURSDETECT;
+	}
+
+	dst_release(ixs->skb->dst);
+	ixs->skb->dst = &ixs->route->u.dst;
+	if(ixs->stats) {
+		ixs->stats->tx_bytes += ixs->skb->len;
+	}
+
+	if(ixs->skb->len < ixs->skb->nh.raw - ixs->skb->data) {
+		if(ixs->stats) {
+			ixs->stats->tx_errors++;
+		}
+		printk(KERN_WARNING
+		       "klips_error:ipsec_xmit_send: "
+		       "tried to __skb_pull nh-data=%ld, %d available.  This should never happen, please report.\n",
+		       (unsigned long)(ixs->skb->nh.raw - ixs->skb->data),
+		       ixs->skb->len);
+		return IPSEC_XMIT_PUSHPULLERR;
+	}
+	__skb_pull(ixs->skb, ixs->skb->nh.raw - ixs->skb->data);
+#ifdef SKB_RESET_NFCT
+	if(!ixs->pass) {
+	  nf_conntrack_put(ixs->skb->nfct);
+	  ixs->skb->nfct = NULL;
+	}
+#if defined(CONFIG_NETFILTER_DEBUG) && defined(HAVE_SKB_NF_DEBUG)
+	ixs->skb->nf_debug = 0;
+#endif /* CONFIG_NETFILTER_DEBUG */
+#endif /* SKB_RESET_NFCT */
+	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+		    "klips_debug:ipsec_xmit_send: "
+		    "...done, calling ip_send() on device:%s\n",
+		    ixs->skb->dev ? ixs->skb->dev->name : "NULL");
+	KLIPS_IP_PRINT(debug_tunnel & DB_TN_XMIT, ixs->skb->nh.iph);
+#ifdef NETDEV_23	/* 2.4 kernels */
+	{
+		int err;
+
+		err = NF_HOOK(PF_INET, NF_IP_LOCAL_OUT, ixs->skb, NULL,
+			      ixs->route->u.dst.dev,
+			      ipsec_xmit_send2);
+		if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {
+			if(net_ratelimit())
+				printk(KERN_ERR
+				       "klips_error:ipsec_xmit_send: "
+				       "ip_send() failed, err=%d\n", 
+				       -err);
+			if(ixs->stats) {
+				ixs->stats->tx_errors++;
+				ixs->stats->tx_aborted_errors++;
+			}
+			ixs->skb = NULL;
+			return IPSEC_XMIT_IPSENDFAILURE;
+		}
+	}
+#else /* NETDEV_23 */	/* 2.2 kernels */
+	ip_send(ixs->skb);
+#endif /* NETDEV_23 */
+	if(ixs->stats) {
+		ixs->stats->tx_packets++;
+	}
+
+	ixs->skb = NULL;
+	
+	return IPSEC_XMIT_OK;
+}
+
+#ifdef NETDEV_25
+enum ipsec_xmit_value
+ipsec_tunnel_send(struct ipsec_xmit_state *ixs)
+{
+	struct flowi fl;
+	
+	memset(&fl, 0, sizeof(fl));
+
+	/* new route/dst cache code from James Morris */
+	ixs->skb->dev = ixs->physdev;
+ 	fl.oif = ixs->physdev->iflink;
+
+	return ipsec_xmit_send(ixs, &fl);
+}
+#else
+enum ipsec_xmit_value
+ipsec_tunnel_send(struct ipsec_xmit_state *ixs)
+{
+	return ipsec_xmit_send(ixs, NULL);
+}
+#endif
+
+
 
 /*
  * Local Variables:

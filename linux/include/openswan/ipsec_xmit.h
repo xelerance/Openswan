@@ -100,7 +100,6 @@ struct ipsec_xmit_state
 #ifdef NET_21
 	int pass;
 #endif /* NET_21 */
-	int error;
 	uint32_t eroute_pid;
 	struct ipsec_sa ips;
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
@@ -124,6 +123,13 @@ enum ipsec_xmit_value
 ipsec_xmit_encap_bundle_2(struct ipsec_xmit_state *ixs);
 
 extern void ipsec_extract_ports(struct iphdr * iph, struct sockaddr_encap * er);
+
+extern enum ipsec_xmit_value
+ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl);
+
+extern enum ipsec_xmit_value
+ipsec_tunnel_send(struct ipsec_xmit_state *ixs);
+
 
 
 extern int ipsec_xmit_trap_count;
