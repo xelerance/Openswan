@@ -33,6 +33,7 @@
 
 #include "constants.h"
 #include "oswlog.h"
+#include "openswan/pfkey_debug.h"
 
 bool
     log_to_stderr = TRUE,	/* should log go to stderr? */
@@ -52,6 +53,9 @@ tool_init_log(void)
 	setbuf(stderr, NULL);
     if (log_to_syslog)
 	openlog(progname, LOG_CONS | LOG_NDELAY | LOG_PID, LOG_AUTHPRIV);
+
+    pfkey_error_func = printf;
+    pfkey_debug_func = printf;
 }
 
 void
