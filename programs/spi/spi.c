@@ -44,10 +44,10 @@ char spi_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp $";
 #if 0
 #include <linux/autoconf.h>    /* CONFIG_IPSEC_PFKEYv2 */
 #endif
-     #include <signal.h>
-     #include <sys/socket.h>
-     #include <pfkeyv2.h>
-     #include <pfkey.h>
+#include <signal.h>
+#include <sys/socket.h>
+#include <pfkeyv2.h>
+#include <pfkey.h>
 
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
@@ -61,6 +61,7 @@ char spi_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp $";
 #include "oswlog.h"
 #include "alg_info.h"
 #include "kernel_alg.h"
+#include "pfkey_help.h"
 
 struct encap_msghdr *em;
 
@@ -1216,53 +1217,11 @@ main(int argc, char *argv[])
 			progname);
 	}
 
-	if((pfkey_sock = socket(PF_KEY, SOCK_RAW, PF_KEY_V2) ) < 0) {
-		fprintf(stderr, "%s: Trouble opening PF_KEY family socket with error: ",
-			progname);
-		switch(errno) {
-		case ENOENT:
-			fprintf(stderr, "device does not exist.  See FreeS/WAN installation procedure.\n");
-			break;
-		case EACCES:
-			fprintf(stderr, "access denied.  ");
-			if(getuid() == 0) {
-				fprintf(stderr, "Check permissions.  Should be 600.\n");
-			} else {
-				fprintf(stderr, "You must be root to open this file.\n");
-			}
-			break;
-		case EUNATCH:
-			fprintf(stderr, "Netlink not enabled OR KLIPS not loaded.\n");
-			break;
-		case ENODEV:
-			fprintf(stderr, "KLIPS not loaded or enabled.\n");
-			break;
-		case EBUSY:
-			fprintf(stderr, "KLIPS is busy.  Most likely a serious internal error occured in a previous command.  Please report as much detail as possible to development team.\n");
-			break;
-		case EINVAL:
-			fprintf(stderr, "Invalid argument, KLIPS not loaded or check kernel log messages for specifics.\n");
-			break;
-		case ENOBUFS:
-			fprintf(stderr, "No kernel memory to allocate SA.\n");
-			break;
-		case ESOCKTNOSUPPORT:
-			fprintf(stderr, "Algorithm support not available in the kernel.  Please compile in support.\n");
-			break;
-		case EEXIST:
-			fprintf(stderr, "SA already in use.  Delete old one first.\n");
-			break;
-		case ENXIO:
-			fprintf(stderr, "SA does not exist.  Cannot delete.\n");
-			break;
-		case EAFNOSUPPORT:
-			fprintf(stderr, "KLIPS not loaded or enabled.\n");
-			break;
-		default:
-			fprintf(stderr, "Unknown file open error %d.  Please report as much detail as possible to development team.\n", errno);
-		}
-		exit(1);
+	pfkey_sock = pfkey_open_sock_with_error();
+	if(pfkey_sock < 0) {
+	    exit(1);
 	}
+
 
 #ifdef MANUAL_IS_NOT_ABLE_TO_NEGOTIATE
 	/* for registering SA types that can be negotiated */
@@ -1687,7 +1646,7 @@ main(int argc, char *argv[])
 			fprintf(stderr, "SA already in use.  Delete old one first.\n");
 			break;
 		case ENOENT:
-			fprintf(stderr, "device does not exist.  See FreeS/WAN installation procedure.\n");
+			fprintf(stderr, "device does not exist.  See Openswan installation procedure.\n");
 			break;
 		case ENXIO:
 		case ESRCH:
