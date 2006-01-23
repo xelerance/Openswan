@@ -175,13 +175,39 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		return 0;
 	}
 
+	/*
+	 * we should be calculating the MTU by looking up a route
+	 * based upon the destination in the SA, and then cache
+	 * it into the SA, but we don't do that right now.
+	 */
+	ixs->cur_mtu = 1460;
+	ixs->physmtu = 1460;
+
 	stat = ipsec_xmit_encap_bundle_2(ixs);
+
 	if(stat != IPSEC_XMIT_OK) {
 		/* SA processing failed */
+		/* log it somehow */
+		goto failed;
 	}
 
-	ipsec_sa_put(ixs->ipsp);
-	
+	/* now send the packet again */
+	{
+		struct flowi fl;
+		
+		memset(&fl, 0, sizeof(fl));
+		ipsec_xmit_send(ixs, &fl);
+	}
+
+failed:
+	if(ixs->ipsp) {
+		ipsec_sa_put(ixs->ipsp);
+		ixs->ipsp=NULL;
+	}
+	if(ixs->skb) {
+		ipsec_kfree_skb(ixs->skb);
+		ixs->skb=NULL;
+	}
 	return 0;
 }
 
