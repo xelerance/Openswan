@@ -28,7 +28,7 @@ east:~#
 east:~#
  ipsec spigrp inet 192.1.2.45 0x1bbdd678 tun inet 192.1.2.45 0x1bbdd678 esp 
 east:~#
- ifconfig mast0 inet 192.1.2.23 netmask 255.255.255.255 up
+ ifconfig mast0 inet 192.1.2.23 netmask 255.255.255.255 mtu 1460 up
 east:~#
  arp -s 192.1.2.45  10:00:00:64:64:45
 east:~#

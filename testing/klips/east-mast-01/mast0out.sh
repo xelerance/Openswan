@@ -23,7 +23,7 @@ ipsec spigrp inet 192.1.2.45 0x1bbdd678 tun inet 192.1.2.45 0x1bbdd678 esp
 
 # we do *NOT* need to setup an EROUTE, because mast0 accepts packets based
 # the SAref# and encrypt them appropriately.
-ifconfig mast0 inet 192.1.2.23 netmask 255.255.255.255 up
+ifconfig mast0 inet 192.1.2.23 netmask 255.255.255.255 mtu 1460 up
 
 arp -s 192.1.2.45  10:00:00:64:64:45
 arp -s 192.1.2.254 10:00:00:64:64:45
