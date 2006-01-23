@@ -30,7 +30,7 @@ SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 	kernel_alg.c \
 	optionsfrom.c \
 	prng.c \
-	packet.c \
+	packet.c pfkey_sock.c \
 	portof.c rangetoa.c rangetosubnet.c sameaddr.c \
 	satot.c subnetof.c subnettoa.c subnettot.c \
 	subnettypeof.c ttoaddr.c ttodata.c ttoprotoport.c \
@@ -54,18 +54,18 @@ LOGSRCS=oswlog.c
 OBJS=${SRCS:.c=.o} ${PFKEYV2_SRCS:.c=.o} ${UDPFROMTO_SRCS:.c=.o} version.o
 LOGOBJS=${LOGSRCS:.c=.o}
 
-KLIPSD=${OPENSWANSRCDIR}/linux/include
-KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
+#KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
+KLIPSSRCDIR=/mara1/git/klips/net/ipsec
 MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
 
 VPATH+= ${KLIPSSRCDIR}
 
-HDRS=${KLIPSD}/openswan.h internal.h
+HDRS=${KLIPSINC}/openswan.h internal.h
 
 LIBA=libopenswan.a
 LIBL=liboswlog.a
 # Original flags
-CFLAGS=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR} -DDEBUG
+CFLAGS=-I. -I${KLIPSSRCDIR} -I${KLIPSINC} -I${OPENSWANSRCDIR} -DDEBUG
 CFLAGS+=${PFKEYV2_DEFS} ${UDPFROMTO_DEFS}
 CFLAGS+= -I${OPENSWANSRCDIR}/include ${PORTINCLUDE} $(USERCOMPILE)
 CFLAGS+= -Wall
