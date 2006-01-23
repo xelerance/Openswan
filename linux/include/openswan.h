@@ -223,7 +223,7 @@ typedef uint32_t IPsecSAref_t;
  * function to log stuff from libraries that may be used in multiple
  * places.
  */
-typedef void (*openswan_keying_debug_func_t)(const char *message, ...);
+typedef int (*openswan_keying_debug_func_t)(const char *message, ...);
 
 
 
