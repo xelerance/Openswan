@@ -638,7 +638,6 @@ ipsec_mast_cleanup_devices(void)
 }
 
 /*
- * $Log: ipsec_mast.c,v $
  *
  * Local Variables:
  * c-file-style: "linux"

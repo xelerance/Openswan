@@ -111,15 +111,6 @@ void ipsec_dmp_block(char *s, caddr_t bb, int len)
 }
 		
 /*
- *
- * $Log: ipsec_snprintf.c,v $
- * Revision 1.3  2005/04/29 05:10:22  mcr
- * 	removed from extraenous includes to make unit testing easier.
- *
- * Revision 1.2  2005/04/15 00:32:01  mcr
- * 	added ipsec_dmp_block routine.
- *
- *
  * Local Variables:
  * c-file-style: "linux"
  * End:

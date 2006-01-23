@@ -533,48 +533,9 @@ struct inet_protocol esp_protocol =
 
 #endif /* !CONFIG_KLIPS_ESP */
 
-
 /*
- * $Log: ipsec_esp.c,v $
- * Revision 1.13  2005/05/21 03:19:57  mcr
- * 	hash ctx is not really that interesting most of the time.
- *
- * Revision 1.12  2005/05/11 01:28:49  mcr
- * 	removed "poor-man"s OOP in favour of proper C structures.
- *
- * Revision 1.11  2005/04/29 05:10:22  mcr
- * 	removed from extraenous includes to make unit testing easier.
- *
- * Revision 1.10  2005/04/17 04:36:14  mcr
- * 	code now deals with ESP and UDP-ESP code.
- *
- * Revision 1.9  2005/04/15 19:52:30  mcr
- * 	adjustments to use proper skb fields for data.
- *
- * Revision 1.8  2004/09/14 00:22:57  mcr
- * 	adjustment of MD5* functions.
- *
- * Revision 1.7  2004/09/13 02:23:01  mcr
- * 	#define inet_protocol if necessary.
- *
- * Revision 1.6  2004/09/06 18:35:49  mcr
- * 	2.6.8.1 gets rid of inet_protocol->net_protocol compatibility,
- * 	so adjust for that.
- *
- * Revision 1.5  2004/08/17 03:27:23  mcr
- * 	klips 2.6 edits.
- *
- * Revision 1.4  2004/08/04 15:57:07  mcr
- * 	moved des .h files to include/des/ *
- * 	included 2.6 protocol specific things
- * 	started at NAT-T support, but it will require a kernel patch.
- *
- * Revision 1.3  2004/07/10 19:11:18  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.2  2004/04/06 02:49:25  mcr
- * 	pullup of algo code from alg-branch.
- *
- *
+ * Local variables:
+ * c-file-style: "linux"
+ * End:
  *
  */

@@ -128,53 +128,9 @@ pfkey_v2_sadb_type_string(int sadb_type)
   }
 }
 
-
-
-
 /*
- * $Log: pfkey_v2_debug.c,v $
- * Revision 1.11  2005/04/06 17:45:16  mcr
- * 	always include NAT-T names.
  *
- * Revision 1.10  2004/07/10 07:48:35  mcr
- * Moved from linux/lib/libfreeswan/pfkey_v2_debug.c,v
- *
- * Revision 1.9  2004/03/08 01:59:08  ken
- * freeswan.h -> openswan.h
- *
- * Revision 1.8  2003/12/10 01:20:19  mcr
- * 	NAT-traversal patches to KLIPS.
- *
- * Revision 1.7  2002/09/20 05:01:26  rgb
- * Fixed limit inclusion error in both type and ext string conversion.
- *
- * Revision 1.6  2002/04/24 07:55:32  mcr
- * 	#include patches and Makefiles for post-reorg compilation.
- *
- * Revision 1.5  2002/04/24 07:36:40  mcr
- * Moved from ./lib/pfkey_v2_debug.c,v
- *
- * Revision 1.4  2002/01/29 22:25:36  rgb
- * Re-add ipsec_kversion.h to keep MALLOC happy.
- *
- * Revision 1.3  2002/01/29 01:59:09  mcr
- * 	removal of kversions.h - sources that needed it now use ipsec_param.h.
- * 	updating of IPv6 structures to match latest in6.h version.
- * 	removed dead code from openswan.h that also duplicated kversions.h
- * 	code.
- *
- * Revision 1.2  2002/01/20 20:34:50  mcr
- * 	added pfkey_v2_sadb_type_string to decode sadb_type to string.
- *
- * Revision 1.1  2001/11/27 05:30:06  mcr
- * 	initial set of debug strings for pfkey debugging.
- * 	this will eventually only be included for debug builds.
- *
- * Revision 1.1  2001/09/21 04:12:03  mcr
- * 	first compilable version.
- *
- *
- * Local variables:
+ * Local Variables:
  * c-file-style: "linux"
  * End:
  *

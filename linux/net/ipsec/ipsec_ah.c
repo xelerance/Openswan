@@ -347,44 +347,8 @@ struct inet_protocol ah_protocol =
 #endif /* NET_26 */
 
 /*
- * $Log: ipsec_ah.c,v $
- * Revision 1.12  2005/04/29 05:10:22  mcr
- * 	removed from extraenous includes to make unit testing easier.
- *
- * Revision 1.11  2005/04/15 19:50:55  mcr
- * 	adjustments to use proper skb fields for data.
- *
- * Revision 1.10  2004/09/14 00:22:57  mcr
- * 	adjustment of MD5* functions.
- *
- * Revision 1.9  2004/09/13 02:22:47  mcr
- * 	#define inet_protocol if necessary.
- *
- * Revision 1.8  2004/09/06 18:35:48  mcr
- * 	2.6.8.1 gets rid of inet_protocol->net_protocol compatibility,
- * 	so adjust for that.
- *
- * Revision 1.7  2004/08/22 05:00:48  mcr
- * 	if we choose to compile the file, we want the contents,
- * 	so don't pull any punches.
- *
- * Revision 1.6  2004/08/17 03:27:23  mcr
- * 	klips 2.6 edits.
- *
- * Revision 1.5  2004/08/14 03:28:24  mcr
- * 	fixed log comment to remove warning about embedded comment.
- *
- * Revision 1.4  2004/08/04 15:57:07  mcr
- * 	moved des .h files to include/des/ *
- * 	included 2.6 protocol specific things
- * 	started at NAT-T support, but it will require a kernel patch.
- *
- * Revision 1.3  2004/07/10 19:11:18  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.2  2004/04/06 02:49:25  mcr
- * 	pullup of algo code from alg-branch.
- *
- *
+ * Local variables:
+ * c-file-style: "linux"
+ * End:
  *
  */

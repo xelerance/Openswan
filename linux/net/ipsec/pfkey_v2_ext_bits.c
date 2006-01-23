@@ -806,83 +806,10 @@ int pfkey_extensions_missing(enum pfkey_ext_required inout,
 	return 0;
 }
 
-
 /*
- * $Log: pfkey_v2_ext_bits.c,v $
- * Revision 1.22  2005/05/11 01:45:31  mcr
- * 	make pfkey.h standalone.
  *
- * Revision 1.21  2004/07/10 07:48:36  mcr
- * Moved from linux/lib/libfreeswan/pfkey_v2_ext_bits.c,v
- *
- * Revision 1.20  2004/03/08 01:59:08  ken
- * freeswan.h -> openswan.h
- *
- * Revision 1.19  2003/12/22 21:38:13  mcr
- * 	removed extraenous #endif.
- *
- * Revision 1.18  2003/12/22 19:34:41  mcr
- * 	added 0.6c NAT-T patch.
- *
- * Revision 1.17  2003/12/10 01:20:19  mcr
- * 	NAT-traversal patches to KLIPS.
- *
- * Revision 1.16  2003/10/31 02:27:12  mcr
- * 	pulled up port-selector patches and sa_id elimination.
- *
- * Revision 1.15.30.1  2003/09/21 13:59:44  mcr
- * 	pre-liminary X.509 patch - does not yet pass tests.
- *
- * Revision 1.15  2002/04/24 07:55:32  mcr
- * 	#include patches and Makefiles for post-reorg compilation.
- *
- * Revision 1.14  2002/04/24 07:36:40  mcr
- * Moved from ./lib/pfkey_v2_ext_bits.c,v
- *
- * Revision 1.13  2002/01/29 22:25:36  rgb
- * Re-add ipsec_kversion.h to keep MALLOC happy.
- *
- * Revision 1.12  2002/01/29 01:59:10  mcr
- * 	removal of kversions.h - sources that needed it now use ipsec_param.h.
- * 	updating of IPv6 structures to match latest in6.h version.
- * 	removed dead code from openswan.h that also duplicated kversions.h
- * 	code.
- *
- * Revision 1.11  2001/10/18 04:45:24  rgb
- * 2.4.9 kernel deprecates linux/malloc.h in favour of linux/slab.h,
- * lib/openswan.h version macros moved to lib/kversions.h.
- * Other compiler directive cleanups.
- *
- * Revision 1.10  2001/09/08 21:13:35  rgb
- * Added pfkey ident extension support for ISAKMPd. (NetCelo)
- *
- * Revision 1.9  2001/06/14 19:35:16  rgb
- * Update copyright date.
- *
- * Revision 1.8  2001/03/26 23:07:36  rgb
- * Remove requirement for auth and enc key from UPDATE.
- *
- * Revision 1.7  2000/09/12 22:35:37  rgb
- * Restructured to remove unused extensions from CLEARFLOW messages.
- *
- * Revision 1.6  2000/09/09 06:39:01  rgb
- * Added comments for clarity.
- *
- * Revision 1.5  2000/06/02 22:54:14  rgb
- * Added Gerhard Gessler's struct sockaddr_storage mods for IPv6 support.
- *
- * Revision 1.4  2000/01/21 06:27:56  rgb
- * Added address cases for eroute flows.
- * Added comments for each message type.
- * Added klipsdebug switching capability.
- * Fixed GRPSA bitfields.
- *
- * Revision 1.3  1999/12/01 22:20:27  rgb
- * Remove requirement for a proxy address in an incoming getspi message.
- *
- * Revision 1.2  1999/11/27 11:57:06  rgb
- * Consolidated the 4 1-d extension bitmap arrays into one 4-d array.
- * Add CVS log entry to bottom of file.
- * Cleaned out unused bits.
+ * Local Variables:
+ * c-file-style: "linux"
+ * End:
  *
  */

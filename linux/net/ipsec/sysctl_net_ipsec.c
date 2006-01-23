@@ -153,55 +153,9 @@ void ipsec_sysctl_unregister(void)
 #endif /* CONFIG_SYSCTL */
 
 /*
- * $Log: sysctl_net_ipsec.c,v $
- * Revision 1.17  2004/07/10 19:11:18  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
  *
- * Revision 1.16  2004/04/06 02:49:26  mcr
- * 	pullup of algo code from alg-branch.
- *
- * Revision 1.15  2002/04/24 07:55:32  mcr
- * 	#include patches and Makefiles for post-reorg compilation.
- *
- * Revision 1.14  2002/04/24 07:36:35  mcr
- * Moved from ./klips/net/ipsec/sysctl_net_ipsec.c,v
- *
- * Revision 1.13  2002/01/12 02:58:32  mcr
- * 	first regression test causes acquire messages to be lost
- * 	100% of the time. This is to help testing of pluto.
- *
- * Revision 1.12  2001/06/14 19:35:13  rgb
- * Update copyright date.
- *
- * Revision 1.11  2001/02/26 19:58:13  rgb
- * Drop sysctl_ipsec_{no_eroute_pass,opportunistic}, replaced by magic SAs.
- *
- * Revision 1.10  2000/09/16 01:50:15  rgb
- * Protect sysctl_ipsec_debug_ipcomp with compiler defines too so that the
- * linker won't blame rj_delete() for missing symbols.  ;->  Damn statics...
- *
- * Revision 1.9  2000/09/15 23:17:51  rgb
- * Moved stuff around to compile with debug off.
- *
- * Revision 1.8  2000/09/15 11:37:02  rgb
- * Merge in heavily modified Svenning Soerensen's <svenning@post5.tele.dk>
- * IPCOMP zlib deflate code.
- *
- * Revision 1.7  2000/09/15 07:37:15  rgb
- * Munged silly log comment that was causing a warning.
- *
- * Revision 1.6  2000/09/15 04:58:23  rgb
- * Added tos runtime switch.
- * Removed 'sysctl_ipsec_' prefix from /proc/sys/net/ipsec/ filenames.
- *
- * Revision 1.5  2000/09/12 03:25:28  rgb
- * Filled in and implemented sysctl.
- *
- * Revision 1.4  1999/04/11 00:29:03  henry
- * GPL boilerplate
- *
- * Revision 1.3  1999/04/06 04:54:29  rgb
- * Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
- * patch shell fixes.
+ * Local Variables:
+ * c-file-style: "linux"
+ * End:
  *
  */
