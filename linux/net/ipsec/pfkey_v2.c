@@ -96,7 +96,7 @@ struct supported_list *pfkey_supported_list[SADB_SATYPE_MAX+1];
 struct socket_list *pfkey_open_sockets = NULL;
 struct socket_list *pfkey_registered_sockets[SADB_SATYPE_MAX+1];
 
-int pfkey_msg_interp(struct sock *, struct sadb_msg *, struct sadb_msg **);
+int pfkey_msg_interp(struct sock *, struct sadb_msg *);
 
 #ifdef NET_26
 static void pfkey_sock_list_grab(void)
@@ -1203,7 +1203,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, int nonblock, in
 		    "klips_debug:pfkey_sendmsg: "
 		    "msg sent for parsing.\n");
 	
-	if((error = pfkey_msg_interp(sk, pfkey_msg, &pfkey_reply))) {
+	if((error = pfkey_msg_interp(sk, pfkey_msg))) {
 		struct socket_list *pfkey_socketsp;
 
 		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_sendmsg: "

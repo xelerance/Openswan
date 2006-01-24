@@ -37,7 +37,16 @@
 /* This must be < exp(field width of IPSEC_DEV_FORMAT) */
 /* It must also be reasonable so as not to overload the memory and CPU */
 /* constraints of the host. */
-#define IPSEC_NUM_IF	4
+#ifdef CONFIG_KLIPS_IF_MAX
+#define IPSEC_NUM_IFMAX CONFIG_KLIPS_IF_MAX
+#endif
+#ifndef IPSEC_NUM_IFMAX
+#define IPSEC_NUM_IFMAX	64
+#endif
+
+/* default number of ipsecX devices to create */
+#define IPSEC_NUM_IF	2
+
 /* The field width must be < IF_NAM_SIZ - strlen("ipsec") - 1. */
 /* With "ipsec" being 5 characters, that means 10 is the max field width */
 /* but machine memory and CPU constraints are not likely to tollerate */

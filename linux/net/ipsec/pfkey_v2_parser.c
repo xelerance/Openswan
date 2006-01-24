@@ -76,6 +76,7 @@ char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.134 2005/05/11 01
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_esp.h"
 #include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_mast.h"
 #include "openswan/ipsec_rcv.h"
 #include "openswan/ipcomp.h"
 
@@ -2616,9 +2617,24 @@ pfkey_x_nat_t_new_mapping_parse(struct sock *sk, struct sadb_ext **extensions, s
 }
 #endif
 
+/*******************************
+ * EXTENSION PARSERS FOR KLIPS
+ ********************************/
+
+DEBUG_NO_STATIC int
+pfkey_x_outif_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
+{
+	struct sadb_x_plumbif *oif;
+
+	oif = (struct sadb_x_plumbif *)pfkey_ext;
+	extr->outif = oif->sadb_x_outif_ifnum;
+	
+	return 0;
+}
+
 DEBUG_NO_STATIC int (*ext_processors[SADB_EXT_MAX+1])(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr) =
 {
-  NULL, /* pfkey_msg_process, */
+	NULL, /* pfkey_msg_process, */
         pfkey_sa_process,
         pfkey_lifetime_process,
         pfkey_lifetime_process,
@@ -2644,15 +2660,52 @@ DEBUG_NO_STATIC int (*ext_processors[SADB_EXT_MAX+1])(struct sadb_ext *pfkey_ext
         pfkey_address_process,
         pfkey_address_process,
 	pfkey_x_debug_process,
-	pfkey_x_protocol_process
+        pfkey_x_protocol_process,
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
-	,
 	pfkey_x_nat_t_type_process,
 	pfkey_x_nat_t_port_process,
 	pfkey_x_nat_t_port_process,
-	pfkey_address_process
-#endif	
+	pfkey_address_process,
+#else
+	NULL, NULL, NULL, NULL,
+#endif
+	pfkey_x_outif_process,
 };
+
+
+/*******************************
+ * MESSAGE PARSERS FOR KLIPS
+ ********************************/
+
+/*
+ * this is a request to create a new device. Figure out which kind, and call appropriate
+ * routine in mast or tunnel code.
+ */
+DEBUG_NO_STATIC int
+pfkey_x_plumb_parse(struct sock *sk, struct sadb_ext *extensions[], struct pfkey_extracted_data* extr)
+{
+	unsigned int vifnum;
+
+	vifnum = extr->outif;
+	if(vifnum > IPSECDEV_OFFSET) {
+		return ipsec_tunnel_createnum(vifnum);
+	} else {
+		return 0 /*ipsec_mast_createnum(vifnum)*/;
+	}
+}
+
+DEBUG_NO_STATIC int
+pfkey_x_unplumb_parse(struct sock *sk, struct sadb_ext *extensions[], struct pfkey_extracted_data* extr)
+{
+	unsigned int vifnum;
+
+	vifnum = extr->outif;
+	if(vifnum > IPSECDEV_OFFSET) {
+		return ipsec_tunnel_deletenum(vifnum);
+	} else {
+		return 0 /*ipsec_mast_deletenum(vifnum)*/;
+	}
+}
 
 
 DEBUG_NO_STATIC int (*msg_parsers[SADB_MAX +1])(struct sock *sk, struct sadb_ext *extensions[], struct pfkey_extracted_data* extr)
@@ -2674,10 +2727,14 @@ DEBUG_NO_STATIC int (*msg_parsers[SADB_MAX +1])(struct sock *sk, struct sadb_ext
 	pfkey_x_grpsa_parse,
 	pfkey_x_addflow_parse,
 	pfkey_x_delflow_parse,
-	pfkey_x_msg_debug_parse
+	pfkey_x_msg_debug_parse,
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
-	, pfkey_x_nat_t_new_mapping_parse
-#endif	
+	pfkey_x_nat_t_new_mapping_parse,
+#else
+	NULL,
+#endif
+	pfkey_x_plumb_parse,
+	pfkey_x_unplumb_parse,
 };
 
 int
@@ -2774,13 +2831,17 @@ pfkey_build_reply(struct sadb_msg *pfkey_msg,
 	return error;
 }
 
+/*
+ * interpret a pfkey message for klips usage.
+ * it used to be that we provided a reply in a seperate buffer,
+ * but now we overwrite the request buffer and return it.
+ */
 int
-pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg,
-				struct sadb_msg **pfkey_reply)
+pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg)
 {
 	int error = 0;
 	int i;
-	struct sadb_ext *extensions[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions[SADB_EXT_MAX+1];    /* should be kalloc */
 	struct pfkey_extracted_data extr = {NULL, NULL, NULL};
 	
 	pfkey_extensions_init(extensions);
@@ -2890,12 +2951,6 @@ pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg,
 		SENDERR(-error);
 	}
 
-#if 0
-	error = pfkey_build_reply(pfkey_msg, &extr, pfkey_reply);
-	if (error) {
-		*pfkey_reply = NULL;
-	}
-#endif	
  errlab:
 	if(extr.ips != NULL) {
 		ipsec_sa_put(extr.ips);

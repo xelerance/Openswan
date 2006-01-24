@@ -1613,14 +1613,80 @@ ipsec_tunnel_probe(struct net_device *dev)
 	return 0;
 }
 
-struct net_device *ipsecdevices[IPSEC_NUM_IF];
+struct net_device *ipsecdevices[IPSEC_NUM_IFMAX];
+
+
+int
+ipsec_tunnel_createnum(int ifnum)
+{
+	char name[IFNAMSIZ];
+	struct net_device *dev_ipsec;
+	
+	if(ipsecdevices[ifnum]) {
+		ipsec_dev_put(ipsecdevices[ifnum]);
+		ipsecdevices[ifnum]=NULL;
+	}
+
+	KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
+		    "klips_debug:ipsec_tunnel_init_devices: "
+		    "creating and registering IPSEC_NUM_IF=%u device\n",
+		    ifnum);
+
+	sprintf(name, IPSEC_DEV_FORMAT, ifnum);
+	dev_ipsec = (struct net_device*)kmalloc(sizeof(struct net_device), GFP_KERNEL);
+	if (dev_ipsec == NULL) {
+		printk(KERN_ERR "klips_debug:ipsec_tunnel_init_devices: "
+		       "failed to allocate memory for device %s, quitting device init.\n",
+		       name);
+		return -ENOMEM;
+	}
+	memset((caddr_t)dev_ipsec, 0, sizeof(struct net_device));
+#ifdef NETDEV_23
+	strncpy(dev_ipsec->name, name, sizeof(dev_ipsec->name));
+#else /* NETDEV_23 */
+	dev_ipsec->name = (char*)kmalloc(IFNAMSIZ, GFP_KERNEL);
+	if (dev_ipsec->name == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
+			    "klips_debug:ipsec_tunnel_init_devices: "
+			    "failed to allocate memory for device %s name, quitting device init.\n",
+			    name);
+		return -ENOMEM;
+	}
+	memset((caddr_t)dev_ipsec->name, 0, IFNAMSIZ);
+	strncpy(dev_ipsec->name, name, IFNAMSIZ);
+#endif /* NETDEV_23 */
+	dev_ipsec->next = NULL;
+	dev_ipsec->init = &ipsec_tunnel_probe;
+	KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
+		    "klips_debug:ipsec_tunnel_init_devices: "
+		    "registering device %s\n",
+		    dev_ipsec->name);
+	
+	/* reference and hold the device reference */
+	dev_hold(dev_ipsec);
+	ipsecdevices[ifnum]=dev_ipsec;
+	
+	if (register_netdev(dev_ipsec) != 0) {
+		KLIPS_PRINT(1 || debug_tunnel & DB_TN_INIT,
+			    "klips_debug:ipsec_tunnel_init_devices: "
+			    "registering device %s failed, quitting device init.\n",
+			    dev_ipsec->name);
+		return -EIO;
+	} else {
+		KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
+			    "klips_debug:ipsec_tunnel_init_devices: "
+			    "registering device %s succeeded, continuing...\n",
+			    dev_ipsec->name);
+	}
+	return 0;
+}
+	
 
 int 
 ipsec_tunnel_init_devices(void)
 {
 	int i;
-	char name[IFNAMSIZ];
-	struct net_device *dev_ipsec;
+	int error;
 	
 	KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
 		    "klips_debug:ipsec_tunnel_init_devices: "
@@ -1630,55 +1696,42 @@ ipsec_tunnel_init_devices(void)
 		    IFNAMSIZ);
 
 	for(i = 0; i < IPSEC_NUM_IF; i++) {
-		sprintf(name, IPSEC_DEV_FORMAT, i);
-		dev_ipsec = (struct net_device*)kmalloc(sizeof(struct net_device), GFP_KERNEL);
-		if (dev_ipsec == NULL) {
-			printk(KERN_ERR "klips_debug:ipsec_tunnel_init_devices: "
-			       "failed to allocate memory for device %s, quitting device init.\n",
-			       name);
-			return -ENOMEM;
-		}
-		memset((caddr_t)dev_ipsec, 0, sizeof(struct net_device));
-#ifdef NETDEV_23
-		strncpy(dev_ipsec->name, name, sizeof(dev_ipsec->name));
-#else /* NETDEV_23 */
-		dev_ipsec->name = (char*)kmalloc(IFNAMSIZ, GFP_KERNEL);
-		if (dev_ipsec->name == NULL) {
-			KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
-				    "klips_debug:ipsec_tunnel_init_devices: "
-				    "failed to allocate memory for device %s name, quitting device init.\n",
-				    name);
-			return -ENOMEM;
-		}
-		memset((caddr_t)dev_ipsec->name, 0, IFNAMSIZ);
-		strncpy(dev_ipsec->name, name, IFNAMSIZ);
-#endif /* NETDEV_23 */
-		dev_ipsec->next = NULL;
-		dev_ipsec->init = &ipsec_tunnel_probe;
-		KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
-			    "klips_debug:ipsec_tunnel_init_devices: "
-			    "registering device %s\n",
-			    dev_ipsec->name);
-
-		/* reference and hold the device reference */
-		dev_hold(dev_ipsec);
-		ipsecdevices[i]=dev_ipsec;
-
-		if (register_netdev(dev_ipsec) != 0) {
-			KLIPS_PRINT(1 || debug_tunnel & DB_TN_INIT,
-				    "klips_debug:ipsec_tunnel_init_devices: "
-				    "registering device %s failed, quitting device init.\n",
-				    dev_ipsec->name);
-			return -EIO;
-		} else {
-			KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
-				    "klips_debug:ipsec_tunnel_init_devices: "
-				    "registering device %s succeeded, continuing...\n",
-				    dev_ipsec->name);
-		}
+		error = ipsec_tunnel_createnum(i);
+		
+		if(error) break;
 	}
 	return 0;
 }
+
+int
+ipsec_tunnel_deletenum(int vifnum)
+{
+	struct net_device *dev_ipsec;
+	
+	dev_ipsec = ipsecdevices[vifnum];
+	if(dev_ipsec == NULL) {
+		return -ENOENT;
+	}
+
+	/* release reference */
+	ipsecdevices[vifnum]=NULL;
+	ipsec_dev_put(dev_ipsec);
+	
+	KLIPS_PRINT(debug_tunnel, "Unregistering %s (refcnt=%d)\n",
+		    dev_ipsec->name,
+		    atomic_read(&dev_ipsec->refcnt));
+	unregister_netdev(dev_ipsec);
+	KLIPS_PRINT(debug_tunnel, "Unregisted %s\n", dev_ipsec->name);
+#ifndef NETDEV_23
+	kfree(dev_ipsec->name);
+	dev_ipsec->name=NULL;
+#endif /* !NETDEV_23 */
+	kfree(dev_ipsec->priv);
+	dev_ipsec->priv=NULL;
+
+	return 0;
+}
+
 
 /* void */
 int

@@ -69,6 +69,7 @@ struct pfkey_extracted_data
 	struct ipsec_sa* ips;
 	struct ipsec_sa* ips2;
 	struct eroute *eroute;
+	int    outif;
 };
 
 /* forward reference */

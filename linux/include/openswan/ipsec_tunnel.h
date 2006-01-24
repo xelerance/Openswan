@@ -2,6 +2,7 @@
  * IPSEC tunneling code
  * Copyright (C) 1996, 1997  John Ioannidis.
  * Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003  Richard Guy Briggs.
+ * Copyright (C) 2006        Michael Richardson <mcr@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -100,7 +101,7 @@ struct ipsecpriv
 
 extern char ipsec_tunnel_c_version[];
 
-extern struct net_device *ipsecdevices[IPSEC_NUM_IF];
+extern struct net_device *ipsecdevices[IPSEC_NUM_IFMAX];
 
 int ipsec_tunnel_init_devices(void);
 
@@ -127,6 +128,10 @@ extern int sysctl_ipsec_debug_verbose;
 #define DB_TN_REVEC	0x0100
 #define DB_TN_ENCAP     0x0200
 #endif /* CONFIG_KLIPS_DEBUG */
+
+extern int ipsec_tunnel_deletenum(int vifnum);
+extern int ipsec_tunnel_createnum(int vifnum);
+
 
 /*
  * $Log: ipsec_tunnel.h,v $
