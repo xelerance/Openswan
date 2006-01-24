@@ -602,7 +602,7 @@ ipkg_module:
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile) && \
 	mkdir -p $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile) && \
-	cp ${OPENSWANSRCDIR}/modobj/ipsec.o $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec/
+	cp ${OPENSWANSRCDIR}/modobj/ipsec.*o $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec/
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile)
 
 ipkg_clean:
