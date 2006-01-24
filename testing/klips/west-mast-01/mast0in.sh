@@ -28,9 +28,7 @@ arp -s 192.1.2.254 10:00:00:64:64:45
 ipsec look
 
 echo 0xffffffff >/proc/sys/net/ipsec/debug_xform
-echo 0xffffffff >/proc/sys/net/ipsec/debug_pfkey
-echo 0xffffffff >/proc/sys/net/ipsec/debug_xmit
-echo 0xffffffff >/proc/sys/net/ipsec/debug_tunnel
+echo 0xffffffff >/proc/sys/net/ipsec/debug_rcv
 
 : ==== end ====
 
