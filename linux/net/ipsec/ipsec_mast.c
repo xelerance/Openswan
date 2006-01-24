@@ -71,6 +71,7 @@ char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.7 2005/04/29 05:10:22
 #include "openswan/ipsec_sa.h"
 #include "openswan/ipsec_xmit.h"
 #include "openswan/ipsec_mast.h"
+#include "openswan/ipsec_tunnel.h"
 #include "openswan/ipsec_ipe4.h"
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_esp.h"
@@ -574,35 +575,105 @@ ipsec_mast_probe(struct net_device *dev)
 	return 0;
 }
 
-int ipsec_mast_create(int num) 
+struct net_device *mastdevices[IPSEC_NUM_IFMAX];
+int mastdevices_max=-1;
+
+int ipsec_mast_createnum(int vifnum) 
 {
 	struct net_device *im;
+	int vifentry;
 
+	if(vifnum > IPSEC_NUM_IFMAX) {
+		return -ENOENT;
+	}
+
+	if(mastdevices[vifnum]!=NULL) {
+		return -EEXIST;
+	}
+	
+	/* no identical device */
+	if(vifnum > mastdevices_max) {
+		mastdevices_max=vifnum;
+	}
+	vifentry = vifnum;
+	
 	im = (struct net_device *)kmalloc(sizeof(struct net_device),GFP_KERNEL);
 	if(im == NULL) {
-		printk(KERN_ERR "failed to allocate space for mast%d device\n", num);
+		printk(KERN_ERR "failed to allocate space for mast%d device\n", vifnum);
 		return -ENOMEM;
 	}
 		
 	memset((caddr_t)im, 0, sizeof(struct net_device));
-	snprintf(im->name, IFNAMSIZ, MAST_DEV_FORMAT, num);
+	snprintf(im->name, IFNAMSIZ, MAST_DEV_FORMAT, vifnum);
 
 	im->next = NULL;
 	im->init = ipsec_mast_probe;
 
-	if(ipsec_mastdevice_count < num+1) {
-		ipsec_mastdevice_count = num+1;
-	}
-	
 	if(register_netdev(im) != 0) {
 		printk(KERN_ERR "ipsec_mast: failed to register %s\n",
 		       im->name);
 		return -EIO;
 	}
 
+	dev_hold(im);
+	mastdevices[vifentry]=im;
+
 	return 0;
 }
+
+
+int
+ipsec_mast_deletenum(int vifnum)
+{
+	struct net_device *dev_ipsec;
 	
+	if(vifnum > IPSEC_NUM_IFMAX) {
+		return -ENOENT;
+	}
+
+	dev_ipsec = mastdevices[vifnum];
+	if(dev_ipsec == NULL) {
+		return -ENOENT;
+	}
+
+	/* release reference */
+	mastdevices[vifnum]=NULL;
+	ipsec_dev_put(dev_ipsec);
+	
+	KLIPS_PRINT(debug_tunnel, "Unregistering %s (refcnt=%d)\n",
+		    dev_ipsec->name,
+		    atomic_read(&dev_ipsec->refcnt));
+	unregister_netdev(dev_ipsec);
+	KLIPS_PRINT(debug_tunnel, "Unregisted %s\n", dev_ipsec->name);
+#ifndef NETDEV_23
+	kfree(dev_ipsec->name);
+	dev_ipsec->name=NULL;
+#endif /* !NETDEV_23 */
+	kfree(dev_ipsec->priv);
+	dev_ipsec->priv=NULL;
+
+	return 0;
+}
+
+
+struct net_device *
+ipsec_mast_get_device(int vifnum)
+{
+	if(vifnum > IPSECDEV_OFFSET) {
+		return ipsec_tunnel_get_device(vifnum-IPSECDEV_OFFSET);
+	} else {
+		struct net_device *nd;
+		
+		if(vifnum < mastdevices_max) {
+			nd = mastdevices[vifnum];
+
+			if(nd) dev_hold(nd);
+			return nd;
+		} else {
+			return NULL;
+		}
+	}
+}
 
 int 
 ipsec_mast_init_devices(void)
@@ -611,7 +682,7 @@ ipsec_mast_init_devices(void)
 	 * mast0 is used for transport mode stuff, and generally is
 	 * the default unless the user decides to create more.
 	 */
-	ipsec_mast_create(0);
+	ipsec_mast_createnum(0);
   
 	return 0;
 }
@@ -622,17 +693,17 @@ ipsec_mast_cleanup_devices(void)
 {
 	int error = 0;
 	int i;
-	char name[10];
 	struct net_device *dev_mast;
 	
-	for(i = 0; i < ipsec_mastdevice_count; i++) {
-		sprintf(name, MAST_DEV_FORMAT, i);
-		if((dev_mast = ipsec_dev_get(name)) == NULL) {
-			continue;
+	for(i = 0; i < mastdevices_max; i++) {
+		if(mastdevices[i]!=NULL) {
+			dev_mast = mastdevices[i];
+			unregister_netdev(dev_mast);
+			kfree(dev_mast->priv);
+			dev_mast->priv=NULL;
+			dev_put(mastdevices[i]);
+			mastdevices[i]=NULL;
 		}
-		unregister_netdev(dev_mast);
-		kfree(dev_mast->priv);
-		dev_mast->priv=NULL;
 	}
 	return error;
 }

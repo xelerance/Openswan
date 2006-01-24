@@ -848,6 +848,10 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 			    pfkey_socketsp->socketp);
 	}
 
+	if(extr->outif != 0) {
+		extr->ips->ips_out = ipsec_mast_get_device(extr->outif);
+	}
+
 	if((error = ipsec_sa_add(extr->ips))) {
 		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_add_parse: "
 			    "failed to add the mature SA=%s with error=%d.\n",
@@ -2627,6 +2631,7 @@ pfkey_x_outif_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 	struct sadb_x_plumbif *oif;
 
 	oif = (struct sadb_x_plumbif *)pfkey_ext;
+
 	extr->outif = oif->sadb_x_outif_ifnum;
 	
 	return 0;
@@ -2690,7 +2695,7 @@ pfkey_x_plumb_parse(struct sock *sk, struct sadb_ext *extensions[], struct pfkey
 	if(vifnum > IPSECDEV_OFFSET) {
 		return ipsec_tunnel_createnum(vifnum-IPSECDEV_OFFSET);
 	} else {
-		return 0 /*ipsec_mast_createnum(vifnum)*/;
+		return ipsec_mast_createnum(vifnum);
 	}
 }
 
@@ -2703,7 +2708,7 @@ pfkey_x_unplumb_parse(struct sock *sk, struct sadb_ext *extensions[], struct pfk
 	if(vifnum > IPSECDEV_OFFSET) {
 		return ipsec_tunnel_deletenum(vifnum-IPSECDEV_OFFSET);
 	} else {
-		return 0 /*ipsec_mast_deletenum(vifnum)*/;
+		return ipsec_mast_deletenum(vifnum);
 	}
 }
 

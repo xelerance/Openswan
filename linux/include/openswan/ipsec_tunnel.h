@@ -132,6 +132,7 @@ extern int sysctl_ipsec_debug_verbose;
 
 extern int ipsec_tunnel_deletenum(int vifnum);
 extern int ipsec_tunnel_createnum(int vifnum);
+extern struct net_device *ipsec_tunnel_get_device(int vifnum);
 
 
 /*

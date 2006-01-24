@@ -1614,7 +1614,7 @@ ipsec_tunnel_probe(struct net_device *dev)
 }
 
 struct net_device *ipsecdevices[IPSEC_NUM_IFMAX];
-int ipsecdevices_num=0;
+int ipsecdevices_max=-1;
 
 
 int
@@ -1622,22 +1622,21 @@ ipsec_tunnel_createnum(int ifnum)
 {
 	char name[IFNAMSIZ];
 	struct net_device *dev_ipsec;
-	int i, vifentry;
+	int vifentry;
 
-	for(i=0; i<ipsecdevices_num; i++) {
-		if(ipsecdevices[i]!=NULL) {
-			struct ipsecpriv *prv = (struct ipsecpriv *)ipsecdevices[i]->priv;
-			if(prv->vifnum == ifnum) {
-				return -EEXIST;
-			}
-		}
+	if(ifnum > IPSEC_NUM_IFMAX) {
+		return -ENOENT;
+	}
+
+	if(ipsecdevices[ifnum]!=NULL) {
+		return -EEXIST;
 	}
 	
 	/* no identical device */
-	if(ipsecdevices_num >= IPSEC_NUM_IFMAX) {
-		return -ENOMEM;
+	if(ifnum > ipsecdevices_max) {
+		ipsecdevices_max=ifnum;
 	}
-	vifentry = ipsecdevices_num++;
+	vifentry = ifnum;
 	
 	KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
 		    "klips_debug:ipsec_tunnel_init_devices: "
@@ -1720,6 +1719,10 @@ ipsec_tunnel_deletenum(int vifnum)
 {
 	struct net_device *dev_ipsec;
 	
+	if(vifnum > IPSEC_NUM_IFMAX) {
+		return -ENOENT;
+	}
+
 	dev_ipsec = ipsecdevices[vifnum];
 	if(dev_ipsec == NULL) {
 		return -ENOENT;
@@ -1742,6 +1745,22 @@ ipsec_tunnel_deletenum(int vifnum)
 	dev_ipsec->priv=NULL;
 
 	return 0;
+}
+
+
+struct net_device *
+ipsec_tunnel_get_device(int vifnum)
+{
+	struct net_device *nd;
+	
+	if(vifnum < ipsecdevices_max) {
+		nd = ipsecdevices[vifnum];
+
+		if(nd) dev_hold(nd);
+		return nd;
+	} else {
+		return NULL;
+	}
 }
 
 
