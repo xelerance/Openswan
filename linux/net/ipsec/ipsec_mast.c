@@ -664,7 +664,7 @@ ipsec_mast_get_device(int vifnum)
 	} else {
 		struct net_device *nd;
 		
-		if(vifnum < mastdevices_max) {
+		if(vifnum <= mastdevices_max) {
 			nd = mastdevices[vifnum];
 
 			if(nd) dev_hold(nd);
@@ -695,7 +695,7 @@ ipsec_mast_cleanup_devices(void)
 	int i;
 	struct net_device *dev_mast;
 	
-	for(i = 0; i < mastdevices_max; i++) {
+	for(i = 0; i <= mastdevices_max; i++) {
 		if(mastdevices[i]!=NULL) {
 			dev_mast = mastdevices[i];
 			unregister_netdev(dev_mast);

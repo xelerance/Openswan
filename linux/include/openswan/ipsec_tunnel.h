@@ -103,6 +103,7 @@ struct ipsecpriv
 extern char ipsec_tunnel_c_version[];
 
 extern struct net_device *ipsecdevices[IPSEC_NUM_IFMAX];
+extern int ipsecdevices_max;
 
 int ipsec_tunnel_init_devices(void);
 

@@ -61,6 +61,7 @@ char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.178 2005/10/21 02:19:34
 #include "openswan/ipsec_radij.h"
 #include "openswan/ipsec_xform.h"
 #include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_mast.h"
 #include "openswan/ipsec_rcv.h"
 
 #include "openswan/ipsec_auth.h"
@@ -847,6 +848,15 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 		irs->ipsp=newipsp;
 	}
 
+	if(irs->ipsp->ips_out) {
+		skb->dev = irs->ipsp->ips_out;
+
+		if(skb->dev && skb->dev->get_stats) {
+			struct net_device_stats *stats = skb->dev->get_stats(skb->dev);
+			irs->stats = stats;
+		}
+	} 
+
 	do {
 		switch(irs->ipp->protocol) {
 		case IPPROTO_ESP:
@@ -1494,19 +1504,27 @@ ipsec_rcv(struct sk_buff *skb
 	 */
 	if(skb->dev) {
 		struct ipsecpriv  *prvdev = NULL;
-		struct net_device *ipsecdev;
+		struct net_device *ipsecdev = NULL;
 
-		for(i = 0; i < IPSEC_NUM_IF; i++) {
-			struct net_device *ipsecdevices[IPSEC_NUM_IF];
-
-			ipsecdev = ipsecdevices[i];
-
-			if(ipsecdev == NULL) continue;
-			prvdev = ipsecdev->priv;
+		for(i = 0; i < ipsecdevices_max; i++) {
+			if(ipsecdevices[i] == NULL) continue;
+			prvdev = ipsecdevices[i]->priv;
 			
 			if(prvdev == NULL) continue;
 
-			if(prvdev->dev == skb->dev) break;
+			if(prvdev->dev == skb->dev) {
+				ipsecdev = ipsecdevices[i];
+				break;
+			}
+		}
+
+		if(ipsecdev) {
+			skb->dev = ipsecdev;
+		} else {
+			skb->dev = ipsec_mast_get_device(0);
+			
+			/* ipsec_mast_get takes the device */
+			dev_put(skb->dev);
 		}
 
 		if(prvdev) {
