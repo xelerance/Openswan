@@ -73,6 +73,7 @@ struct ipsecpriv
 	struct sk_buff_head sendq;
 	struct net_device *dev;
 	struct wait_queue *wait_queue;
+	int  vifnum;
 	char locked;
 	int  (*hard_start_xmit) (struct sk_buff *skb,
 		struct net_device *dev);

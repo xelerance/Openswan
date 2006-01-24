@@ -2688,7 +2688,7 @@ pfkey_x_plumb_parse(struct sock *sk, struct sadb_ext *extensions[], struct pfkey
 
 	vifnum = extr->outif;
 	if(vifnum > IPSECDEV_OFFSET) {
-		return ipsec_tunnel_createnum(vifnum);
+		return ipsec_tunnel_createnum(vifnum-IPSECDEV_OFFSET);
 	} else {
 		return 0 /*ipsec_mast_createnum(vifnum)*/;
 	}
@@ -2701,7 +2701,7 @@ pfkey_x_unplumb_parse(struct sock *sk, struct sadb_ext *extensions[], struct pfk
 
 	vifnum = extr->outif;
 	if(vifnum > IPSECDEV_OFFSET) {
-		return ipsec_tunnel_deletenum(vifnum);
+		return ipsec_tunnel_deletenum(vifnum-IPSECDEV_OFFSET);
 	} else {
 		return 0 /*ipsec_mast_deletenum(vifnum)*/;
 	}
