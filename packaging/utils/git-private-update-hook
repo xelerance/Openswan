@@ -1,0 +1,32 @@
+#!/bin/sh
+#
+# An example hook script to mail out commit update information.
+# Called by git-receive-pack with arguments: refname sha1-old sha1-new
+#
+# To enable this hook:
+# (1) change the recipient e-mail address
+# (2) make this file executable by "chmod +x update".
+#
+
+exec 1>&2
+
+recipient="nightly@lists.openswan.org,mcr@xelerance.com"
+
+if expr "$2" : '0*$' >/dev/null
+then
+	echo "Created a new ref, with the following commits:"
+	git-rev-list --pretty "$3"
+else
+	base=$(git-merge-base "$2" "$3")
+	case "$base" in
+	"$2")
+		echo "New commits:"
+		;;
+	*)
+		echo "Rebased ref, commits from common ancestor:"
+		;;
+	esac
+fi
+
+git-rev-list --pretty "$3" "^$base" | mail -s "Changes to ref $1" "$recipient"
+exit 0
