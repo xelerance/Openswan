@@ -30,13 +30,15 @@
     <arg choice='plain'><replaceable>OR</replaceable></arg>
     <arg choice='plain'>--said </arg>
     <arg choice='plain'><replaceable>said,</replaceable></arg>
+
     <sbr/>
-    <arg choice='plain'><replaceable>&lt;life&gt;</replaceable></arg>
+  <command>&lt;life&gt;</command>
     <arg choice='plain'><replaceable>means:</replaceable></arg>
     <arg choice='plain'>--life </arg>
-    <arg choice='plain'><replaceable>(soft | hard)</replaceable>-
+    <arg choice='plain'><replaceable>(soft | hard)</replaceable></arg>
     <group choice='plain'><arg choice='plain'>allocations </arg><arg choice='plain'><replaceable>bytes</replaceable></arg><arg choice='plain'><replaceable>addtime</replaceable></arg><arg choice='plain'><replaceable>usetime</replaceable></arg><arg choice='plain'><replaceable>packets</replaceable></arg><arg choice='opt' rep='repeat'>value</arg></group>
-    <arg choice='plain'><replaceable>&lt;SA&gt;</replaceable></arg>
+
+  <command>&lt;SA&gt;</command>
     <arg choice='plain'>--src </arg>
     <arg choice='plain'><replaceable>src</replaceable></arg>
     <arg choice='plain'>--ah </arg>
@@ -46,6 +48,8 @@
     <arg choice='plain'>--authkey </arg>
     <arg choice='plain'><replaceable>akey</replaceable></arg>
     <sbr/>
+
+
     <arg choice='plain'><replaceable>ipsec</replaceable></arg>
     <arg choice='plain'><replaceable>spi</replaceable></arg>
     <arg choice='plain'><replaceable>&lt;SA&gt;</replaceable></arg>
