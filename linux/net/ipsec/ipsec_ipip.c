@@ -101,14 +101,16 @@ ipsec_xmit_ipip_setup(struct ipsec_xmit_state *ixs)
 }
 
 struct xform_functions ipip_xform_funcs[]={
-  {	rcv_checks:         NULL,
-	rcv_setup_auth:     NULL,
-	rcv_calc_auth:      NULL,
-	rcv_decrypt:        NULL,
-
-	xmit_setup:         ipsec_xmit_ipip_setup,
-	xmit_headroom:      sizeof(struct iphdr),
-	xmit_needtailroom:  0,
+  {
+	  protocol:           IPPROTO_IPIP,
+	  rcv_checks:         NULL,
+	  rcv_setup_auth:     NULL,
+	  rcv_calc_auth:      NULL,
+	  rcv_decrypt:        NULL,
+	  
+	  xmit_setup:         ipsec_xmit_ipip_setup,
+	  xmit_headroom:      sizeof(struct iphdr),
+	  xmit_needtailroom:  0,
   },
 };
 

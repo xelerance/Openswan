@@ -718,7 +718,7 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 	/* XXX extr->ips->ips_rcvif = &(enc_softc[em->em_if].enc_if);*/
 	extr->ips->ips_rcvif = NULL;
 	
-	if ((error = pfkey_ipsec_sa_init(extr->ips))) {
+	if ((error = ipsec_sa_init(extr->ips))) {
 		KLIPS_ERROR(debug_pfkey,
 			    "pfkey_add_parse: "
 			    "not successful for SA: %s, deleting.\n",

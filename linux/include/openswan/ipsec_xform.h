@@ -130,6 +130,7 @@ struct ipsec_rcv_state;
 struct ipsec_xmit_state;
 
 struct xform_functions {
+	u8   protocol;
 	enum ipsec_rcv_value (*rcv_checks)(struct ipsec_rcv_state *irs,
 				       struct sk_buff *skb);
         enum ipsec_rcv_value (*rcv_decrypt)(struct ipsec_rcv_state *irs);

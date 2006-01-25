@@ -312,7 +312,9 @@ ipsec_xmit_ah_setup(struct ipsec_xmit_state *ixs)
 }
 
 struct xform_functions ah_xform_funcs[]={
-	{	rcv_checks:         ipsec_rcv_ah_checks,
+	{
+		protocol:           IPPROTO_AH,
+		rcv_checks:         ipsec_rcv_ah_checks,
 		rcv_setup_auth:     ipsec_rcv_ah_setup_auth,
 		rcv_calc_auth:      ipsec_rcv_ah_authcalc,
 		rcv_decrypt:        ipsec_rcv_ah_decap,

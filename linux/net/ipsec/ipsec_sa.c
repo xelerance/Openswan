@@ -64,6 +64,10 @@
 #include "openswan/ipsec_ipe4.h"
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_esp.h"
+#include "openswan/ipsec_ipip.h"
+#ifdef CONFIG_KLIPS_IPCOMP
+#include "openswan/ipsec_ipcomp.h"
+#endif /* CONFIG_KLIPS_COMP */
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
@@ -1060,9 +1064,9 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 		    IPS_XFORM_NAME(ipsp));
 	
 	switch(ipsp->ips_said.proto) {
-		
 #ifdef CONFIG_KLIPS_IPIP
 	case IPPROTO_IPIP: {
+		ipsp->ips_xformfuncs = ipip_xform_funcs;
 		addrtoa(((struct sockaddr_in*)(ipsp->ips_addr_s))->sin_addr,
 			0,
 			ipaddr_txt, sizeof(ipaddr_txt));
@@ -1080,6 +1084,8 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 
 #ifdef CONFIG_KLIPS_AH
 	case IPPROTO_AH:
+		ipsp->ips_xformfuncs = ah_xform_funcs;
+
 		switch(ipsp->ips_authalg) {
 # ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 		case AH_MD5: {
@@ -1254,6 +1260,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 
 #ifdef CONFIG_KLIPS_ESP
 	case IPPROTO_ESP:
+		ipsp->ips_xformfuncs = esp_xform_funcs;
 	{
 #if defined (CONFIG_KLIPS_AUTH_HMAC_MD5) || defined (CONFIG_KLIPS_AUTH_HMAC_SHA1)
 		unsigned char *akp;
@@ -1467,6 +1474,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 #endif /* !CONFIG_KLIPS_ESP */
 #ifdef CONFIG_KLIPS_IPCOMP
 	case IPPROTO_COMP:
+		ipsp->ips_xformfuncs = ipcomp_xform_funcs;
 		ipsp->ips_comp_adapt_tries = 0;
 		ipsp->ips_comp_adapt_skip = 0;
 		ipsp->ips_comp_ratio_cbytes = 0;
