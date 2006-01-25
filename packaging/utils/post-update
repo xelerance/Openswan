@@ -1,4 +1,4 @@
-#!bin/sh
+#!/bin/sh
 
 refname=${1#refs/heads/}
 [ "$refname" = "master" ] && refname=
