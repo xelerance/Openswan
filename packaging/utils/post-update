@@ -1,7 +1,8 @@
 #!/bin/sh
 
+refname=master
 for merged in $*; do
-	/public/scm/openswan.git/ciabot.pl $merged master
+	/public/scm/openswan.git/ciabot.pl $merged $refname
 done
 
 touch /public/scm/openswan.git/last-update
