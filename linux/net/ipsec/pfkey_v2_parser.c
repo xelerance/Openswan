@@ -2923,7 +2923,7 @@ pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg)
 	
 	/* Process the extensions */
 	for(i=1; i <= SADB_EXT_MAX;i++)	{
-		if(extensions[i] != NULL) {
+		if(extensions[i] != NULL && ext_processors[i]!=NULL) {
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_msg_interp: "
 				    "processing ext %d 0p%p with processor 0p%p.\n", 

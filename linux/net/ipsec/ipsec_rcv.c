@@ -783,6 +783,27 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 	return IPSEC_RCV_OK;
 }
 
+void ipsec_rcv_setoutif(struct ipsec_rcv_state *irs,
+			struct sk_buff *skb)
+{
+	if(irs->ipsp->ips_out) {
+		if(skb->dev != irs->ipsp->ips_out) {
+			KLIPS_PRINT(debug_rcv,
+				    "changing originating interface from %s to %s\n",
+				    skb->dev->name,
+				    irs->ipsp->ips_out->name);
+		}
+		skb->dev = irs->ipsp->ips_out;
+		
+		
+		
+		if(skb->dev && skb->dev->get_stats) {
+			struct net_device_stats *stats = skb->dev->get_stats(skb->dev);
+			irs->stats = stats;
+		}
+	} 
+}
+
 static enum ipsec_rcv_value
 ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 {
@@ -837,6 +858,8 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		}
 	}
 	
+	ipsec_rcv_setoutif(irs,skb);
+
 	if(ipp->protocol == IPPROTO_IPIP)  /* added to support AT&T heartbeats to SIG/GIG */
 	{  
 		/*
@@ -947,6 +970,7 @@ rcvleave:
 	return result;
 }
 
+
 /*
  * core decapsulation loop for all protocols.
  *
@@ -1025,16 +1049,9 @@ ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 		irs->ipsp=newipsp;
 	}
 
-	if(irs->ipsp->ips_out) {
-		skb->dev = irs->ipsp->ips_out;
-
-		if(skb->dev && skb->dev->get_stats) {
-			struct net_device_stats *stats = skb->dev->get_stats(skb->dev);
-			irs->stats = stats;
-		}
-	} 
-
 	do {
+		ipsec_rcv_setoutif(irs,skb);
+
 		proto_funcs = irs->ipsp->ips_xformfuncs;
 		if(proto_funcs == NULL) {
 			decap_stat = IPSEC_RCV_BADPROTO;
@@ -1191,7 +1208,7 @@ ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 #endif /* SKB_RESET_NFCT */
 	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
 		    "klips_debug:ipsec_rcv: "
-		    "netif_rx() called.\n");
+		    "netif_rx(%s) called.\n", skb->dev->name);
 	netif_rx(skb);
 	skb=NULL;
 
