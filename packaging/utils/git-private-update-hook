@@ -10,7 +10,7 @@
 
 exec 1>&2
 
-recipient="nightly@lists.openswan.org,mcr@xelerance.com"
+recipient="cvs@lists.openswan.org,mcr@xelerance.com"
 
 if expr "$2" : '0*$' >/dev/null
 then
