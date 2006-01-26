@@ -155,7 +155,7 @@ int createdelete_virtual(int createdelete, char *virtname)
 			 pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN);
 
 	
-	if(io_error) {
+	if(io_error != (pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) {
 		perror("pfkey write");
 		exit(2);
 	}
