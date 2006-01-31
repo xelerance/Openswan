@@ -13,64 +13,44 @@ key management interface. It was written at the U.S. Naval Research
 Laboratory. This file is in the public domain. The authors ask that
 you leave this credit intact on any copies of this file.
 */
+
 #ifndef __PFKEY_V2_H
 #define __PFKEY_V2_H 1
+
+#include <linux/pfkeyv2.h>
 
 #define PF_KEY_V2               2
 #define PFKEYV2_REVISION        199806L
 
 enum sadb_msg_t {
-	SADB_RESERVED=0,
-	SADB_GETSPI=1,
-	SADB_UPDATE=2,
-	SADB_ADD=3,
-	SADB_DELETE=4,
-	SADB_GET=5,
-	SADB_ACQUIRE=6,
-	SADB_REGISTER=7,
-	SADB_EXPIRE=8,
-	SADB_FLUSH=9,
-	SADB_DUMP=10,
-	SADB_X_PROMISC=11,
-	SADB_X_PCHANGE=12,
-	SADB_X_GRPSA=13,
-	SADB_X_ADDFLOW=14,
-	SADB_X_DELFLOW=15,
-	SADB_X_DEBUG=16,
-	SADB_X_NAT_T_NEW_MAPPING=17,
-	SADB_X_PLUMBIF=18,
-	SADB_X_UNPLUMBIF=19,
-	SADB_MAX=19
+	K_SADB_RESERVED=SADB_RESERVED,
+	K_SADB_GETSPI=SADB_GETSPI,
+	K_SADB_UPDATE=SADB_UPDATE,
+	K_SADB_ADD=SADB_ADD,
+	K_SADB_DELETE=SADB_DELETE,
+	K_SADB_GET=SADB_GET,
+	K_SADB_ACQUIRE=SADB_ACQUIRE,
+	K_SADB_REGISTER=SADB_REGISTER,
+	K_SADB_EXPIRE=SADB_EXPIRE,
+	K_SADB_FLUSH=SADB_FLUSH,
+	K_SADB_DUMP=SADB_DUMP,
+	K_SADB_X_PROMISC=11,
+	K_SADB_X_PCHANGE=12,
+	K_SADB_X_GRPSA=13,
+	K_SADB_X_ADDFLOW=14,
+	K_SADB_X_DELFLOW=15,
+	K_SADB_X_DEBUG=16,
+	K_SADB_X_NAT_T_NEW_MAPPING=17,
+	K_SADB_X_PLUMBIF=18,
+	K_SADB_X_UNPLUMBIF=19,
+	K_SADB_MAX=19
 };
 
-struct sadb_msg {
-  uint8_t sadb_msg_version;
-  uint8_t sadb_msg_type;
-  uint8_t sadb_msg_errno;
-  uint8_t sadb_msg_satype;
-  uint16_t sadb_msg_len;
-  uint16_t sadb_msg_reserved;
-  uint32_t sadb_msg_seq;
-  uint32_t sadb_msg_pid;
-};
-
-struct sadb_ext {
-  uint16_t sadb_ext_len;
-  uint16_t sadb_ext_type;
-};
-
-struct sadb_sa {
-  uint16_t sadb_sa_len;
-  uint16_t sadb_sa_exttype;
-  uint32_t sadb_sa_spi;
-  uint8_t sadb_sa_replay;
-  uint8_t sadb_sa_state;
-  uint8_t sadb_sa_auth;
-  uint8_t sadb_sa_encrypt;
-  uint32_t sadb_sa_flags;
-  uint32_t /*IPsecSAref_t*/ sadb_x_sa_ref; /* 32 bits */
-  uint8_t sadb_x_reserved[4];
-};
+struct k_sadb_sa {
+	struct sadb_sa sadb_sa;
+	uint32_t /*IPsecSAref_t*/ sadb_x_sa_ref; /* 32 bits */
+	uint8_t sadb_x_reserved[4];
+} __attribute__((packed));
 
 struct sadb_sa_v1 {
   uint16_t sadb_sa_len;
@@ -83,106 +63,19 @@ struct sadb_sa_v1 {
   uint32_t sadb_sa_flags;
 };
 
-struct sadb_lifetime {
-  uint16_t sadb_lifetime_len;
-  uint16_t sadb_lifetime_exttype;
-  uint32_t sadb_lifetime_allocations;
-  uint64_t sadb_lifetime_bytes;
-  uint64_t sadb_lifetime_addtime;
-  uint64_t sadb_lifetime_usetime;
-  uint32_t sadb_x_lifetime_packets;
-  uint32_t sadb_x_lifetime_reserved;
-};
+struct k_sadb_lifetime {
+	struct sadb_lifetime sadb_lifetime;
+	uint32_t sadb_x_lifetime_packets;
+	uint32_t sadb_x_lifetime_reserved;
+} __attribute__((packed));
 
-struct sadb_address {
-  uint16_t sadb_address_len;
-  uint16_t sadb_address_exttype;
-  uint8_t sadb_address_proto;
-  uint8_t sadb_address_prefixlen;
-  uint16_t sadb_address_reserved;
-};
+struct k_sadb_comb {
+	struct sadb_comb sadb_comp;
+	uint32_t sadb_x_comb_soft_packets;
+	uint32_t sadb_x_comb_hard_packets;
+} __attribute__((packed));
 
-struct sadb_key {
-  uint16_t sadb_key_len;
-  uint16_t sadb_key_exttype;
-  uint16_t sadb_key_bits;
-  uint16_t sadb_key_reserved;
-};
 
-struct sadb_ident {
-  uint16_t sadb_ident_len;
-  uint16_t sadb_ident_exttype;
-  uint16_t sadb_ident_type;
-  uint16_t sadb_ident_reserved;
-  uint64_t sadb_ident_id;
-};
-
-struct sadb_sens {
-  uint16_t sadb_sens_len;
-  uint16_t sadb_sens_exttype;
-  uint32_t sadb_sens_dpd;
-  uint8_t sadb_sens_sens_level;
-  uint8_t sadb_sens_sens_len;
-  uint8_t sadb_sens_integ_level;
-  uint8_t sadb_sens_integ_len;
-  uint32_t sadb_sens_reserved;
-};
-
-struct sadb_prop {
-  uint16_t sadb_prop_len;
-  uint16_t sadb_prop_exttype;
-  uint8_t sadb_prop_replay;
-  uint8_t sadb_prop_reserved[3];
-};
-
-struct sadb_comb {
-  uint8_t sadb_comb_auth;
-  uint8_t sadb_comb_encrypt;
-  uint16_t sadb_comb_flags;
-  uint16_t sadb_comb_auth_minbits;
-  uint16_t sadb_comb_auth_maxbits;
-  uint16_t sadb_comb_encrypt_minbits;
-  uint16_t sadb_comb_encrypt_maxbits;
-  uint32_t sadb_comb_reserved;
-  uint32_t sadb_comb_soft_allocations;
-  uint32_t sadb_comb_hard_allocations;
-  uint64_t sadb_comb_soft_bytes;
-  uint64_t sadb_comb_hard_bytes;
-  uint64_t sadb_comb_soft_addtime;
-  uint64_t sadb_comb_hard_addtime;
-  uint64_t sadb_comb_soft_usetime;
-  uint64_t sadb_comb_hard_usetime;
-  uint32_t sadb_x_comb_soft_packets;
-  uint32_t sadb_x_comb_hard_packets;
-};
-
-struct sadb_supported {
-  uint16_t sadb_supported_len;
-  uint16_t sadb_supported_exttype;
-  uint32_t sadb_supported_reserved;
-};
-
-struct sadb_alg {
-  uint8_t sadb_alg_id;
-  uint8_t sadb_alg_ivlen;
-  uint16_t sadb_alg_minbits;
-  uint16_t sadb_alg_maxbits;
-  uint16_t sadb_alg_reserved;
-};
-
-struct sadb_spirange {
-  uint16_t sadb_spirange_len;
-  uint16_t sadb_spirange_exttype;
-  uint32_t sadb_spirange_min;
-  uint32_t sadb_spirange_max;
-  uint32_t sadb_spirange_reserved;
-};
-
-struct sadb_x_kmprivate {
-  uint16_t sadb_x_kmprivate_len;
-  uint16_t sadb_x_kmprivate_exttype;
-  uint32_t sadb_x_kmprivate_reserved;
-};
 
 struct sadb_x_satype {
   uint16_t sadb_x_satype_len;
@@ -191,16 +84,6 @@ struct sadb_x_satype {
   uint8_t sadb_x_satype_reserved[3];
 };
   
-struct sadb_x_policy {
-  uint16_t sadb_x_policy_len;
-  uint16_t sadb_x_policy_exttype;
-  uint16_t sadb_x_policy_type;
-  uint8_t sadb_x_policy_dir;
-  uint8_t sadb_x_policy_reserved;
-  uint32_t sadb_x_policy_id;
-  uint32_t sadb_x_policy_reserved2;
-};
- 
 struct sadb_x_debug {
   uint16_t sadb_x_debug_len;
   uint16_t sadb_x_debug_exttype;
@@ -217,19 +100,6 @@ struct sadb_x_debug {
   uint32_t sadb_x_debug_ipcomp;
   uint32_t sadb_x_debug_verbose;
   uint8_t sadb_x_debug_reserved[4];
-};
-
-struct sadb_x_nat_t_type {
-  uint16_t sadb_x_nat_t_type_len;
-  uint16_t sadb_x_nat_t_type_exttype;
-  uint8_t sadb_x_nat_t_type_type;
-  uint8_t sadb_x_nat_t_type_reserved[3];
-};
-struct sadb_x_nat_t_port {
-  uint16_t sadb_x_nat_t_port_len;
-  uint16_t sadb_x_nat_t_port_exttype;
-  uint16_t sadb_x_nat_t_port_port;
-  uint16_t sadb_x_nat_t_port_reserved;
 };
 
 /*
@@ -250,10 +120,12 @@ struct sadb_x_plumbif {
 };
 
 /*
- * devices 0-49151 are mastXXX devices.
+ * devices 0-40959 are mastXXX devices.
+ * devices 40960-49141 are mastXXX devices with transport set.
  * devices 49152-65536 are deprecated ipsecXXX devices.
  */
-#define IPSECDEV_OFFSET (48*1024)
+#define IPSECDEV_OFFSET       (48*1024)
+#define MASTTRANSPORT_OFFSET  (40*1024)
 
 /*
  * A protocol structure for passing through the transport level
@@ -275,78 +147,78 @@ struct sadb_protocol {
  * in pfkeyv2_ext_bits.c
  */
 enum sadb_extension_t {
-	SADB_EXT_RESERVED=0,
-	SADB_EXT_SA=              1,
-	SADB_EXT_LIFETIME_CURRENT=2,
-	SADB_EXT_LIFETIME_HARD=   3,
-	SADB_EXT_LIFETIME_SOFT=   4,
-	SADB_EXT_ADDRESS_SRC=     5,
-	SADB_EXT_ADDRESS_DST=     6,
-	SADB_EXT_ADDRESS_PROXY=   7,
-	SADB_EXT_KEY_AUTH=        8,
-	SADB_EXT_KEY_ENCRYPT=     9,
-	SADB_EXT_IDENTITY_SRC=    10,
-	SADB_EXT_IDENTITY_DST=    11,
-	SADB_EXT_SENSITIVITY=     12,
-	SADB_EXT_PROPOSAL=        13,
-	SADB_EXT_SUPPORTED_AUTH=  14,
-	SADB_EXT_SUPPORTED_ENCRYPT=15,
-	SADB_EXT_SPIRANGE=        16,
-	SADB_X_EXT_KMPRIVATE=     17,
-	SADB_X_EXT_SATYPE2=       18,
-	SADB_X_EXT_POLICY=        18,
-	SADB_X_EXT_SA2=           19,
-	SADB_X_EXT_ADDRESS_DST2=  20,
-	SADB_X_EXT_ADDRESS_SRC_FLOW=21,
-	SADB_X_EXT_ADDRESS_DST_FLOW=22,
-	SADB_X_EXT_ADDRESS_SRC_MASK=23,
-	SADB_X_EXT_ADDRESS_DST_MASK=24,
-	SADB_X_EXT_DEBUG=         25,
-	SADB_X_EXT_PROTOCOL=      26,
-	SADB_X_EXT_NAT_T_TYPE=    27,
-	SADB_X_EXT_NAT_T_SPORT=   28,
-	SADB_X_EXT_NAT_T_DPORT=   29,
-	SADB_X_EXT_NAT_T_OA=      30,
-	SADB_X_EXT_PLUMBIF=       31,
-	SADB_EXT_MAX=             31,
+	K_SADB_EXT_RESERVED=0,
+	K_SADB_EXT_SA=              1,
+	K_SADB_EXT_LIFETIME_CURRENT=2,
+	K_SADB_EXT_LIFETIME_HARD=   3,
+	K_SADB_EXT_LIFETIME_SOFT=   4,
+	K_SADB_EXT_ADDRESS_SRC=     5,
+	K_SADB_EXT_ADDRESS_DST=     6,
+	K_SADB_EXT_ADDRESS_PROXY=   7,
+	K_SADB_EXT_KEY_AUTH=        8,
+	K_SADB_EXT_KEY_ENCRYPT=     9,
+	K_SADB_EXT_IDENTITY_SRC=    10,
+	K_SADB_EXT_IDENTITY_DST=    11,
+	K_SADB_EXT_SENSITIVITY=     12,
+	K_SADB_EXT_PROPOSAL=        13,
+	K_SADB_EXT_SUPPORTED_AUTH=  14,
+	K_SADB_EXT_SUPPORTED_ENCRYPT=15,
+	K_SADB_EXT_SPIRANGE=        16,
+	K_SADB_X_EXT_KMPRIVATE=     17,
+	K_SADB_X_EXT_SATYPE2=       18,
+	K_SADB_X_EXT_POLICY=        18,
+	K_SADB_X_EXT_SA2=           19,
+	K_SADB_X_EXT_ADDRESS_DST2=  20,
+	K_SADB_X_EXT_ADDRESS_SRC_FLOW=21,
+	K_SADB_X_EXT_ADDRESS_DST_FLOW=22,
+	K_SADB_X_EXT_ADDRESS_SRC_MASK=23,
+	K_SADB_X_EXT_ADDRESS_DST_MASK=24,
+	K_SADB_X_EXT_DEBUG=         25,
+	K_SADB_X_EXT_PROTOCOL=      26,
+	K_SADB_X_EXT_NAT_T_TYPE=    27,
+	K_SADB_X_EXT_NAT_T_SPORT=   28,
+	K_SADB_X_EXT_NAT_T_DPORT=   29,
+	K_SADB_X_EXT_NAT_T_OA=      30,
+	K_SADB_X_EXT_PLUMBIF=       31,
+	K_SADB_EXT_MAX=             31,
 };
 
 
 
-/* SADB_X_DELFLOW required over and above SADB_X_SAFLAGS_CLEARFLOW */
-#define SADB_X_EXT_ADDRESS_DELFLOW \
-	( (1<<SADB_X_EXT_ADDRESS_SRC_FLOW) \
-	| (1<<SADB_X_EXT_ADDRESS_DST_FLOW) \
-	| (1<<SADB_X_EXT_ADDRESS_SRC_MASK) \
-	| (1<<SADB_X_EXT_ADDRESS_DST_MASK))
+/* K_SADB_X_DELFLOW required over and above K_SADB_X_SAFLAGS_CLEARFLOW */
+#define K_SADB_X_EXT_ADDRESS_DELFLOW \
+	( (1<<K_SADB_X_EXT_ADDRESS_SRC_FLOW) \
+	| (1<<K_SADB_X_EXT_ADDRESS_DST_FLOW) \
+	| (1<<K_SADB_X_EXT_ADDRESS_SRC_MASK) \
+	| (1<<K_SADB_X_EXT_ADDRESS_DST_MASK))
 
-#define SADB_SATYPE_UNSPEC    0
-#define SADB_SATYPE_AH        2
-#define SADB_SATYPE_ESP       3
-#define SADB_SATYPE_RSVP      5
-#define SADB_SATYPE_OSPFV2    6
-#define SADB_SATYPE_RIPV2     7
-#define SADB_SATYPE_MIP       8
-#define SADB_X_SATYPE_IPIP    9
+#define K_SADB_SATYPE_UNSPEC    0
+#define K_SADB_SATYPE_AH        2
+#define K_SADB_SATYPE_ESP       3
+#define K_SADB_SATYPE_RSVP      5
+#define K_SADB_SATYPE_OSPFV2    6
+#define K_SADB_SATYPE_RIPV2     7
+#define K_SADB_SATYPE_MIP       8
+#define K_SADB_X_SATYPE_IPIP    9
 #ifdef KERNEL26_HAS_KAME_DUPLICATES
-#define SADB_X_SATYPE_IPCOMP  9   /* ICK! */
+#define K_SADB_X_SATYPE_IPCOMP  9   /* ICK! */
 #endif
-#define SADB_X_SATYPE_COMP    10
-#define SADB_X_SATYPE_INT     11
-#define SADB_SATYPE_MAX       11
+#define K_SADB_X_SATYPE_COMP    10
+#define K_SADB_X_SATYPE_INT     11
+#define K_SADB_SATYPE_MAX       11
 
 enum sadb_sastate {
-  SADB_SASTATE_LARVAL=0,
-  SADB_SASTATE_MATURE=1,
-  SADB_SASTATE_DYING=2,
-  SADB_SASTATE_DEAD=3
+  K_SADB_SASTATE_LARVAL=0,
+  K_SADB_SASTATE_MATURE=1,
+  K_SADB_SASTATE_DYING=2,
+  K_SADB_SASTATE_DEAD=3
 };
-#define SADB_SASTATE_MAX 3
+#define K_SADB_SASTATE_MAX 3
 
-#define SADB_SAFLAGS_PFS		1
-#define SADB_X_SAFLAGS_REPLACEFLOW	2
-#define SADB_X_SAFLAGS_CLEARFLOW	4
-#define SADB_X_SAFLAGS_INFLOW		8
+#define K_SADB_SAFLAGS_PFS		1
+#define K_SADB_X_SAFLAGS_REPLACEFLOW	2
+#define K_SADB_X_SAFLAGS_CLEARFLOW	4
+#define K_SADB_X_SAFLAGS_INFLOW		8
 
 /* not obvious, but these are the same values as used in isakmp,
  * and in freeswan/ipsec_policy.h. If you need to add any, they
@@ -356,51 +228,51 @@ enum sadb_sastate {
  * and if not, then please try to use a private-use value, and
  * consider asking IANA to assign a value.
  */
-#define SADB_AALG_NONE                  0
-#define SADB_AALG_MD5HMAC               2
-#define SADB_AALG_SHA1HMAC              3
-#define SADB_X_AALG_SHA2_256HMAC	5
-#define SADB_X_AALG_SHA2_384HMAC	6
-#define SADB_X_AALG_SHA2_512HMAC	7
-#define SADB_X_AALG_RIPEMD160HMAC	8
-#define SADB_X_AALG_NULL		251	/* kame */
-#define SADB_AALG_MAX			251
+#define K_SADB_AALG_NONE                  0
+#define K_SADB_AALG_MD5HMAC               2
+#define K_SADB_AALG_SHA1HMAC              3
+#define K_SADB_X_AALG_SHA2_256HMAC	5
+#define K_SADB_X_AALG_SHA2_384HMAC	6
+#define K_SADB_X_AALG_SHA2_512HMAC	7
+#define K_SADB_X_AALG_RIPEMD160HMAC	8
+#define K_SADB_X_AALG_NULL		251	/* kame */
+#define K_SADB_AALG_MAX			251
 
-#define SADB_EALG_NONE                  0
-#define SADB_EALG_DESCBC                2
-#define SADB_EALG_3DESCBC               3
-#define SADB_X_EALG_CASTCBC		6
-#define SADB_X_EALG_BLOWFISHCBC		7
-#define SADB_EALG_NULL			11
-#define SADB_X_EALG_AESCBC		12
-#define SADB_EALG_MAX			255
+#define K_SADB_EALG_NONE                  0
+#define K_SADB_EALG_DESCBC                2
+#define K_SADB_EALG_3DESCBC               3
+#define K_SADB_X_EALG_CASTCBC		6
+#define K_SADB_X_EALG_BLOWFISHCBC		7
+#define K_SADB_EALG_NULL			11
+#define K_SADB_X_EALG_AESCBC		12
+#define K_SADB_EALG_MAX			255
 
-#define SADB_X_CALG_NONE          0
-#define SADB_X_CALG_OUI           1
-#define SADB_X_CALG_DEFLATE       2
-#define SADB_X_CALG_LZS           3
-#define SADB_X_CALG_V42BIS        4
+#define K_SADB_X_CALG_NONE          0
+#define K_SADB_X_CALG_OUI           1
+#define K_SADB_X_CALG_DEFLATE       2
+#define K_SADB_X_CALG_LZS           3
+#define K_SADB_X_CALG_V42BIS        4
 #ifdef KERNEL26_HAS_KAME_DUPLICATES
-#define SADB_X_CALG_LZJH          4
+#define K_SADB_X_CALG_LZJH          4
 #endif
-#define SADB_X_CALG_MAX           4
+#define K_SADB_X_CALG_MAX           4
 
-#define SADB_X_TALG_NONE          0
-#define SADB_X_TALG_IPv4_in_IPv4  1
-#define SADB_X_TALG_IPv6_in_IPv4  2
-#define SADB_X_TALG_IPv4_in_IPv6  3
-#define SADB_X_TALG_IPv6_in_IPv6  4
-#define SADB_X_TALG_MAX           4
+#define K_SADB_X_TALG_NONE          0
+#define K_SADB_X_TALG_IPv4_in_IPv4  1
+#define K_SADB_X_TALG_IPv6_in_IPv4  2
+#define K_SADB_X_TALG_IPv4_in_IPv6  3
+#define K_SADB_X_TALG_IPv6_in_IPv6  4
+#define K_SADB_X_TALG_MAX           4
 
 
-#define SADB_IDENTTYPE_RESERVED   0
-#define SADB_IDENTTYPE_PREFIX     1
-#define SADB_IDENTTYPE_FQDN       2
-#define SADB_IDENTTYPE_USERFQDN   3
-#define SADB_X_IDENTTYPE_CONNECTION 4
-#define SADB_IDENTTYPE_MAX        4
+#define K_SADB_IDENTTYPE_RESERVED   0
+#define K_SADB_IDENTTYPE_PREFIX     1
+#define K_SADB_IDENTTYPE_FQDN       2
+#define K_SADB_IDENTTYPE_USERFQDN   3
+#define K_SADB_X_IDENTTYPE_CONNECTION 4
+#define K_SADB_IDENTTYPE_MAX        4
 
-#define SADB_KEY_FLAGS_MAX     0
+#define K_SADB_KEY_FLAGS_MAX     0
 #endif /* __PFKEY_V2_H */
 
 /*

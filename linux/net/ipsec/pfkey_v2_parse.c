@@ -89,19 +89,19 @@ struct satype_tbl {
 	char* name;
 } static satype_tbl[] = {
 #ifdef __KERNEL__
-	{ IPPROTO_ESP,	SADB_SATYPE_ESP,	"ESP"  },
-	{ IPPROTO_AH,	SADB_SATYPE_AH,		"AH"   },
-	{ IPPROTO_IPIP,	SADB_X_SATYPE_IPIP,	"IPIP" },
+	{ IPPROTO_ESP,	K_SADB_SATYPE_ESP,	"ESP"  },
+	{ IPPROTO_AH,	K_SADB_SATYPE_AH,		"AH"   },
+	{ IPPROTO_IPIP,	K_SADB_X_SATYPE_IPIP,	"IPIP" },
 #ifdef CONFIG_KLIPS_IPCOMP
-	{ IPPROTO_COMP,	SADB_X_SATYPE_COMP,	"COMP" },
+	{ IPPROTO_COMP,	K_SADB_X_SATYPE_COMP,	"COMP" },
 #endif /* CONFIG_KLIPS_IPCOMP */
-	{ IPPROTO_INT,	SADB_X_SATYPE_INT,	"INT" },
+	{ IPPROTO_INT,	K_SADB_X_SATYPE_INT,	"INT" },
 #else /* __KERNEL__ */
-	{ SA_ESP,	SADB_SATYPE_ESP,	"ESP"  },
-	{ SA_AH,	SADB_SATYPE_AH,		"AH"   },
-	{ SA_IPIP,	SADB_X_SATYPE_IPIP,	"IPIP" },
-	{ SA_COMP,	SADB_X_SATYPE_COMP,	"COMP" },
-	{ SA_INT,	SADB_X_SATYPE_INT,	"INT" },
+	{ SA_ESP,	K_SADB_SATYPE_ESP,	"ESP"  },
+	{ SA_AH,	K_SADB_SATYPE_AH,		"AH"   },
+	{ SA_IPIP,	K_SADB_X_SATYPE_IPIP,	"IPIP" },
+	{ SA_COMP,	K_SADB_X_SATYPE_COMP,	"COMP" },
+	{ SA_INT,	K_SADB_X_SATYPE_INT,	"INT" },
 #endif /* __KERNEL__ */
 	{ 0,		0,			"UNKNOWN" }
 };
@@ -157,6 +157,7 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 {
 	int error = 0;
 	struct sadb_sa *pfkey_sa = (struct sadb_sa *)pfkey_ext;
+	struct k_sadb_sa *k_pfkey_sa = (struct k_sadb_sa *)pfkey_ext;
 	
 	/* sanity checks... */
 	if(!pfkey_sa) {
@@ -167,54 +168,54 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 	
 
 
-	if(pfkey_sa->sadb_sa_len != sizeof(struct sadb_sa) / IPSEC_PFKEYv2_ALIGN) {
+	if(k_pfkey_sa->sadb_sa.sadb_sa_len != sizeof(struct k_sadb_sa) / IPSEC_PFKEYv2_ALIGN) {
 		ERROR(
 			  "pfkey_sa_parse: "
 			  "length wrong pfkey_sa->sadb_sa_len=%d sizeof(struct sadb_sa)=%d.\n",
-			  pfkey_sa->sadb_sa_len,
+			  k_pfkey_sa->sadb_sa.sadb_sa_len,
 			  (int)sizeof(struct sadb_sa));
 		SENDERR(EINVAL);
 	}
 
-#if SADB_EALG_MAX < 255	
-	if(pfkey_sa->sadb_sa_encrypt > SADB_EALG_MAX) {
+#if K_SADB_EALG_MAX < 255	
+	if(pfkey_sa->sadb_sa_encrypt > K_SADB_EALG_MAX) {
 		ERROR(
 			  "pfkey_sa_parse: "
-			  "pfkey_sa->sadb_sa_encrypt=%d > SADB_EALG_MAX=%d.\n",
+			  "pfkey_sa->sadb_sa_encrypt=%d > K_SADB_EALG_MAX=%d.\n",
 			  pfkey_sa->sadb_sa_encrypt,
-			  SADB_EALG_MAX);
+			  K_SADB_EALG_MAX);
 		SENDERR(EINVAL);
 	}
 #endif
 	
-#if SADB_AALG_MAX < 255	
-	if(pfkey_sa->sadb_sa_auth > SADB_AALG_MAX) {
+#if K_SADB_AALG_MAX < 255	
+	if(pfkey_sa->sadb_sa_auth > K_SADB_AALG_MAX) {
 		ERROR(
 			  "pfkey_sa_parse: "
-			  "pfkey_sa->sadb_sa_auth=%d > SADB_AALG_MAX=%d.\n",
+			  "pfkey_sa->sadb_sa_auth=%d > K_SADB_AALG_MAX=%d.\n",
 			  pfkey_sa->sadb_sa_auth,
-			  SADB_AALG_MAX);
+			  K_SADB_AALG_MAX);
 		SENDERR(EINVAL);
 	}
 #endif
 	
-#if SADB_SASTATE_MAX < 255	
-	if(pfkey_sa->sadb_sa_state > SADB_SASTATE_MAX) {
+#if K_SADB_SASTATE_MAX < 255	
+	if(pfkey_sa->sadb_sa_state > K_SADB_SASTATE_MAX) {
 		ERROR(
 			  "pfkey_sa_parse: "
 			  "state=%d exceeds MAX=%d.\n",
 			  pfkey_sa->sadb_sa_state,
-			  SADB_SASTATE_MAX);
+			  K_SADB_SASTATE_MAX);
 		SENDERR(EINVAL);
 	}
 #endif
 	
-	if(pfkey_sa->sadb_sa_state == SADB_SASTATE_DEAD) {
+	if(pfkey_sa->sadb_sa_state == K_SADB_SASTATE_DEAD) {
 		ERROR(
 			  "pfkey_sa_parse: "
 			  "state=%d is DEAD=%d.\n",
 			  pfkey_sa->sadb_sa_state,
-			  SADB_SASTATE_DEAD);
+			  K_SADB_SASTATE_DEAD);
 		SENDERR(EINVAL);
 	}
 	
@@ -226,31 +227,31 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 		SENDERR(EINVAL);
 	}
 	
-	if(! ((pfkey_sa->sadb_sa_exttype ==  SADB_EXT_SA) ||
-	      (pfkey_sa->sadb_sa_exttype ==  SADB_X_EXT_SA2)))
+	if(! ((pfkey_sa->sadb_sa_exttype ==  K_SADB_EXT_SA) ||
+	      (pfkey_sa->sadb_sa_exttype ==  K_SADB_X_EXT_SA2)))
 	{
 		ERROR(
 			  "pfkey_sa_parse: "
-			  "unknown exttype=%d, expecting SADB_EXT_SA=%d or SADB_X_EXT_SA2=%d.\n",
+			  "unknown exttype=%d, expecting K_SADB_EXT_SA=%d or K_SADB_X_EXT_SA2=%d.\n",
 			  pfkey_sa->sadb_sa_exttype,
-			  SADB_EXT_SA,
-			  SADB_X_EXT_SA2);
+			  K_SADB_EXT_SA,
+			  K_SADB_X_EXT_SA2);
 		SENDERR(EINVAL);
 	}
 
-	if(pfkey_sa->sadb_x_sa_ref == IPSEC_SAREF_NULL ||
-	   pfkey_sa->sadb_x_sa_ref == ~(IPSEC_SAREF_NULL))
+	if(k_pfkey_sa->sadb_x_sa_ref == IPSEC_SAREF_NULL ||
+	   k_pfkey_sa->sadb_x_sa_ref == ~(IPSEC_SAREF_NULL))
 	{
-		pfkey_sa->sadb_x_sa_ref = IPSEC_SAREF_NULL;
+		k_pfkey_sa->sadb_x_sa_ref = IPSEC_SAREF_NULL;
 	}
 
-	if((IPSEC_SAREF_NULL != pfkey_sa->sadb_x_sa_ref)
-	   && (pfkey_sa->sadb_x_sa_ref >= (1 << IPSEC_SA_REF_TABLE_IDX_WIDTH)))
+	if((IPSEC_SAREF_NULL != k_pfkey_sa->sadb_x_sa_ref)
+	   && (k_pfkey_sa->sadb_x_sa_ref >= (1 << IPSEC_SA_REF_TABLE_IDX_WIDTH)))
 	{
 		ERROR(
 			  "pfkey_sa_parse: "
 			  "SAref=%d must be (SAref == IPSEC_SAREF_NULL(%d) || SAref < IPSEC_SA_REF_TABLE_NUM_ENTRIES(%d)).\n",
-			  pfkey_sa->sadb_x_sa_ref,
+			  k_pfkey_sa->sadb_x_sa_ref,
 			  IPSEC_SAREF_NULL,
 			  IPSEC_SA_REF_TABLE_NUM_ENTRIES);
 		SENDERR(EINVAL);
@@ -268,7 +269,7 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 		  pfkey_sa->sadb_sa_auth,
 		  pfkey_sa->sadb_sa_encrypt,
 		  pfkey_sa->sadb_sa_flags,
-		  pfkey_sa->sadb_x_sa_ref);
+		  k_pfkey_sa->sadb_x_sa_ref);
 	
  errlab:
 	return error;
@@ -279,6 +280,7 @@ pfkey_lifetime_parse(struct sadb_ext  *pfkey_ext)
 {
 	int error = 0;
 	struct sadb_lifetime *pfkey_lifetime = (struct sadb_lifetime *)pfkey_ext;
+	struct k_sadb_lifetime *k_pfkey_lifetime = (struct k_sadb_lifetime *)pfkey_ext;
 
 	DEBUGGING(PF_KEY_DEBUG_PARSE_FLOW,
 		  "pfkey_lifetime_parse:enter\n");
@@ -290,19 +292,19 @@ pfkey_lifetime_parse(struct sadb_ext  *pfkey_ext)
 		SENDERR(EINVAL);
 	}
 
-	if(pfkey_lifetime->sadb_lifetime_len !=
-	   sizeof(struct sadb_lifetime) / IPSEC_PFKEYv2_ALIGN) {
+	if(k_pfkey_lifetime->sadb_lifetime.sadb_lifetime_len !=
+	   sizeof(struct k_sadb_lifetime) / IPSEC_PFKEYv2_ALIGN) {
 		DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 			  "pfkey_lifetime_parse: "
 			  "length wrong pfkey_lifetime->sadb_lifetime_len=%d sizeof(struct sadb_lifetime)=%d.\n",
-			  pfkey_lifetime->sadb_lifetime_len,
+			  k_pfkey_lifetime->sadb_lifetime.sadb_lifetime_len,
 			  (int)sizeof(struct sadb_lifetime));
 		SENDERR(EINVAL);
 	}
 
-	if((pfkey_lifetime->sadb_lifetime_exttype != SADB_EXT_LIFETIME_HARD) &&
-	   (pfkey_lifetime->sadb_lifetime_exttype != SADB_EXT_LIFETIME_SOFT) &&
-	   (pfkey_lifetime->sadb_lifetime_exttype != SADB_EXT_LIFETIME_CURRENT)) {
+	if((pfkey_lifetime->sadb_lifetime_exttype != K_SADB_EXT_LIFETIME_HARD) &&
+	   (pfkey_lifetime->sadb_lifetime_exttype != K_SADB_EXT_LIFETIME_SOFT) &&
+	   (pfkey_lifetime->sadb_lifetime_exttype != K_SADB_EXT_LIFETIME_CURRENT)) {
 		DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 			  "pfkey_lifetime_parse: "
 			  "unexpected ext_type=%d.\n", 
@@ -319,7 +321,7 @@ pfkey_lifetime_parse(struct sadb_ext  *pfkey_ext)
 		  (unsigned)pfkey_lifetime->sadb_lifetime_bytes,
 		  (unsigned)pfkey_lifetime->sadb_lifetime_addtime,
 		  (unsigned)pfkey_lifetime->sadb_lifetime_usetime,
-		  pfkey_lifetime->sadb_x_lifetime_packets); 
+		  k_pfkey_lifetime->sadb_x_lifetime_packets); 
 errlab:
 	return error;
 }
@@ -360,16 +362,16 @@ pfkey_address_parse(struct sadb_ext *pfkey_ext)
 	}
 	
 	switch(pfkey_address->sadb_address_exttype) {	
-	case SADB_EXT_ADDRESS_SRC:
-	case SADB_EXT_ADDRESS_DST:
-	case SADB_EXT_ADDRESS_PROXY:
-	case SADB_X_EXT_ADDRESS_DST2:
-	case SADB_X_EXT_ADDRESS_SRC_FLOW:
-	case SADB_X_EXT_ADDRESS_DST_FLOW:
-	case SADB_X_EXT_ADDRESS_SRC_MASK:
-	case SADB_X_EXT_ADDRESS_DST_MASK:
+	case K_SADB_EXT_ADDRESS_SRC:
+	case K_SADB_EXT_ADDRESS_DST:
+	case K_SADB_EXT_ADDRESS_PROXY:
+	case K_SADB_X_EXT_ADDRESS_DST2:
+	case K_SADB_X_EXT_ADDRESS_SRC_FLOW:
+	case K_SADB_X_EXT_ADDRESS_DST_FLOW:
+	case K_SADB_X_EXT_ADDRESS_SRC_MASK:
+	case K_SADB_X_EXT_ADDRESS_DST_MASK:
 #ifdef NAT_TRAVERSAL
-	case SADB_X_EXT_NAT_T_OA:
+	case K_SADB_X_EXT_NAT_T_OA:
 #endif
 		break;
 	default:
@@ -503,8 +505,8 @@ pfkey_key_parse(struct sadb_ext *pfkey_ext)
 		SENDERR(EINVAL);
 	}
 
-	if(! ( (pfkey_key->sadb_key_exttype == SADB_EXT_KEY_AUTH) ||
-	       (pfkey_key->sadb_key_exttype == SADB_EXT_KEY_ENCRYPT))) {
+	if(! ( (pfkey_key->sadb_key_exttype == K_SADB_EXT_KEY_AUTH) ||
+	       (pfkey_key->sadb_key_exttype == K_SADB_EXT_KEY_ENCRYPT))) {
 		ERROR(
 			"pfkey_key_parse: "
 			"expecting extension type AUTH or ENCRYPT, got %d.\n",
@@ -541,12 +543,12 @@ pfkey_ident_parse(struct sadb_ext *pfkey_ext)
 		SENDERR(EINVAL);
 	}
 
-	if(pfkey_ident->sadb_ident_type > SADB_IDENTTYPE_MAX) {
+	if(pfkey_ident->sadb_ident_type > K_SADB_IDENTTYPE_MAX) {
 		ERROR(
 			"pfkey_ident_parse: "
 			"ident_type=%d out of range, must be less than %d.\n",
 			pfkey_ident->sadb_ident_type,
-			SADB_IDENTTYPE_MAX);
+			K_SADB_IDENTTYPE_MAX);
 		SENDERR(EINVAL);
 	}
 
@@ -570,8 +572,8 @@ pfkey_ident_parse(struct sadb_ext *pfkey_ext)
 		}
 	}
 	
-	if( ! ((pfkey_ident->sadb_ident_exttype == SADB_EXT_IDENTITY_SRC) ||
-	       (pfkey_ident->sadb_ident_exttype == SADB_EXT_IDENTITY_DST))) {
+	if( ! ((pfkey_ident->sadb_ident_exttype == K_SADB_EXT_IDENTITY_SRC) ||
+	       (pfkey_ident->sadb_ident_exttype == K_SADB_EXT_IDENTITY_DST))) {
 		ERROR(
 			"pfkey_key_parse: "
 			"expecting extension type IDENTITY_SRC or IDENTITY_DST, got %d.\n",
@@ -617,7 +619,7 @@ pfkey_prop_parse(struct sadb_ext *pfkey_ext)
 	int error = 0;
 	int i, num_comb;
 	struct sadb_prop *pfkey_prop = (struct sadb_prop *)pfkey_ext;
-	struct sadb_comb *pfkey_comb = (struct sadb_comb *)((char*)pfkey_ext + sizeof(struct sadb_prop));
+	struct k_sadb_comb *k_pfkey_comb = (struct k_sadb_comb *)((char*)pfkey_ext + sizeof(struct sadb_prop));
 
 	/* sanity checks... */
 	if((pfkey_prop->sadb_prop_len < sizeof(struct sadb_prop) / IPSEC_PFKEYv2_ALIGN) || 
@@ -649,16 +651,17 @@ pfkey_prop_parse(struct sadb_ext *pfkey_ext)
 		}
 	}
 
-	num_comb = ((pfkey_prop->sadb_prop_len * IPSEC_PFKEYv2_ALIGN) - sizeof(struct sadb_prop)) / sizeof(struct sadb_comb);
+	num_comb = ((pfkey_prop->sadb_prop_len * IPSEC_PFKEYv2_ALIGN) - sizeof(struct sadb_prop)) / sizeof(struct k_sadb_comb);
 
 	for(i = 0; i < num_comb; i++) {
-		if(pfkey_comb->sadb_comb_auth > SADB_AALG_MAX) {
+		struct sadb_comb *pfkey_comb = (struct sadb_comb *)k_pfkey_comb;
+		if(pfkey_comb->sadb_comb_auth > K_SADB_AALG_MAX) {
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_prop_parse: "
-				"pfkey_comb[%d]->sadb_comb_auth=%d > SADB_AALG_MAX=%d.\n",
+				"pfkey_comb[%d]->sadb_comb_auth=%d > K_SADB_AALG_MAX=%d.\n",
 				i,
 				pfkey_comb->sadb_comb_auth,
-				SADB_AALG_MAX);
+				K_SADB_AALG_MAX);
 			SENDERR(EINVAL);
 		}
 
@@ -705,14 +708,14 @@ pfkey_prop_parse(struct sadb_ext *pfkey_ext)
 			}
 		}
 
-#if SADB_EALG_MAX < 255	
-		if(pfkey_comb->sadb_comb_encrypt > SADB_EALG_MAX) {
+#if K_SADB_EALG_MAX < 255	
+		if(pfkey_comb->sadb_comb_encrypt > K_SADB_EALG_MAX) {
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_comb_parse: "
-				"pfkey_comb[%d]->sadb_comb_encrypt=%d > SADB_EALG_MAX=%d.\n",
+				"pfkey_comb[%d]->sadb_comb_encrypt=%d > K_SADB_EALG_MAX=%d.\n",
 				i,
 				pfkey_comb->sadb_comb_encrypt,
-				SADB_EALG_MAX);
+				K_SADB_EALG_MAX);
 			SENDERR(EINVAL);
 		}
 #endif
@@ -802,25 +805,17 @@ pfkey_prop_parse(struct sadb_ext *pfkey_ext)
 			SENDERR(EINVAL);
 		}
 
-		if(pfkey_comb->sadb_x_comb_hard_packets && pfkey_comb->sadb_x_comb_soft_packets > pfkey_comb->sadb_x_comb_hard_packets) {
+		if(k_pfkey_comb->sadb_x_comb_hard_packets && k_pfkey_comb->sadb_x_comb_soft_packets > k_pfkey_comb->sadb_x_comb_hard_packets) {
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_prop_parse: "
 				"pfkey_comb[%d]->sadb_x_comb_soft_packets=%d > hard_packets=%d, fatal.\n",
 				i,
-				pfkey_comb->sadb_x_comb_soft_packets,
-				pfkey_comb->sadb_x_comb_hard_packets);
+				k_pfkey_comb->sadb_x_comb_soft_packets,
+				k_pfkey_comb->sadb_x_comb_hard_packets);
 			SENDERR(EINVAL);
 		}
 
-		if(pfkey_comb->sadb_comb_reserved) {
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-				"pfkey_prop_parse: "
-				"comb[%d].res=%d, must be zero.\n",
-				i,
-				pfkey_comb->sadb_comb_reserved);
-			SENDERR(EINVAL);
-		}
-		pfkey_comb++;
+		k_pfkey_comb++;
 	}
 
 errlab:
@@ -880,26 +875,26 @@ pfkey_supported_parse(struct sadb_ext *pfkey_ext)
 		   rgb, 2000-04-06 */
 
 		switch(pfkey_supported->sadb_supported_exttype) {
-		case SADB_EXT_SUPPORTED_AUTH:
-			if(pfkey_alg->sadb_alg_id > SADB_AALG_MAX) {
+		case K_SADB_EXT_SUPPORTED_AUTH:
+			if(pfkey_alg->sadb_alg_id > K_SADB_AALG_MAX) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_supported_parse: "
-					"alg[%d], alg_id=%d > SADB_AALG_MAX=%d, fatal.\n",
+					"alg[%d], alg_id=%d > K_SADB_AALG_MAX=%d, fatal.\n",
 					i,
 					pfkey_alg->sadb_alg_id,
-					SADB_AALG_MAX);
+					K_SADB_AALG_MAX);
 				SENDERR(EINVAL);
 			}
 			break;
-		case SADB_EXT_SUPPORTED_ENCRYPT:
-#if SADB_EALG_MAX < 255	
-			if(pfkey_alg->sadb_alg_id > SADB_EALG_MAX) {
+		case K_SADB_EXT_SUPPORTED_ENCRYPT:
+#if K_SADB_EALG_MAX < 255	
+			if(pfkey_alg->sadb_alg_id > K_SADB_EALG_MAX) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_supported_parse: "
-					"alg[%d], alg_id=%d > SADB_EALG_MAX=%d, fatal.\n",
+					"alg[%d], alg_id=%d > K_SADB_EALG_MAX=%d, fatal.\n",
 					i,
 					pfkey_alg->sadb_alg_id,
-					SADB_EALG_MAX);
+					K_SADB_EALG_MAX);
 				SENDERR(EINVAL);
 			}
 #endif
@@ -907,10 +902,10 @@ pfkey_supported_parse(struct sadb_ext *pfkey_ext)
 		default:
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_supported_parse: "
-				"alg[%d], alg_id=%d > SADB_EALG_MAX=%d, fatal.\n",
+				"alg[%d], alg_id=%d > K_SADB_EALG_MAX=%d, fatal.\n",
 				i,
 				pfkey_alg->sadb_alg_id,
-				SADB_EALG_MAX);
+				K_SADB_EALG_MAX);
 			SENDERR(EINVAL);
 		}
 		pfkey_alg++;
@@ -1037,11 +1032,11 @@ pfkey_x_satype_parse(struct sadb_ext *pfkey_ext)
 		SENDERR(EINVAL);
 	}
 
-	if(pfkey_x_satype->sadb_x_satype_satype > SADB_SATYPE_MAX) {
+	if(pfkey_x_satype->sadb_x_satype_satype > K_SADB_SATYPE_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 			"pfkey_x_satype_parse: "
 			"satype %d > max %d, invalid.\n", 
-			pfkey_x_satype->sadb_x_satype_satype, SADB_SATYPE_MAX);
+			pfkey_x_satype->sadb_x_satype_satype, K_SADB_SATYPE_MAX);
 		SENDERR(EINVAL);
 	}
 
@@ -1286,22 +1281,22 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		SENDERR(EINVAL);
 	}
 
-	if(pfkey_msg->sadb_msg_type > SADB_MAX) {
+	if(pfkey_msg->sadb_msg_type > K_SADB_MAX) {
 		ERROR("pfkey_msg_parse: "
 			"msg type=%d > max=%d.\n",
 			pfkey_msg->sadb_msg_type,
-			SADB_MAX);
+			K_SADB_MAX);
 		SENDERR(EINVAL);
 	}
 
 	switch(pfkey_msg->sadb_msg_type) {
-	case SADB_GETSPI:
-	case SADB_UPDATE:
-	case SADB_ADD:
-	case SADB_DELETE:
-	case SADB_GET:
-	case SADB_X_GRPSA:
-	case SADB_X_ADDFLOW:
+	case K_SADB_GETSPI:
+	case K_SADB_UPDATE:
+	case K_SADB_ADD:
+	case K_SADB_DELETE:
+	case K_SADB_GET:
+	case K_SADB_X_GRPSA:
+	case K_SADB_X_ADDFLOW:
 		if(!satype2proto(pfkey_msg->sadb_msg_satype)) {
 			ERROR("pfkey_msg_parse: "
 				  "satype %d conversion to proto failed for msg_type %d (%s).\n",
@@ -1319,9 +1314,9 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 				  pfkey_msg->sadb_msg_type,
 				  pfkey_v2_sadb_type_string(pfkey_msg->sadb_msg_type));
 		}
-	case SADB_ACQUIRE:
-	case SADB_REGISTER:
-	case SADB_EXPIRE:
+	case K_SADB_ACQUIRE:
+	case K_SADB_REGISTER:
+	case K_SADB_EXPIRE:
 		if(!pfkey_msg->sadb_msg_satype) {
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				  "pfkey_msg_parse: "
@@ -1336,7 +1331,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	
 	/* errno must not be set in downward messages */
 	/* this is not entirely true... a response to an ACQUIRE could return an error */
-	if((dir == EXT_BITS_IN) && (pfkey_msg->sadb_msg_type != SADB_ACQUIRE) && pfkey_msg->sadb_msg_errno) {
+	if((dir == EXT_BITS_IN) && (pfkey_msg->sadb_msg_type != K_SADB_ACQUIRE) && pfkey_msg->sadb_msg_errno) {
 		DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 			    "pfkey_msg_parse: "
 			    "errno set to %d.\n",
@@ -1370,13 +1365,13 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 			remain);
 		
 		/* Is the extension header type valid? */
-		if((pfkey_ext->sadb_ext_type > SADB_EXT_MAX) || (!pfkey_ext->sadb_ext_type)) {
+		if((pfkey_ext->sadb_ext_type > K_SADB_EXT_MAX) || (!pfkey_ext->sadb_ext_type)) {
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
-				"ext type %d(%s) invalid, SADB_EXT_MAX=%d.\n", 
+				"ext type %d(%s) invalid, K_SADB_EXT_MAX=%d.\n", 
 				pfkey_ext->sadb_ext_type,
 				pfkey_v2_sadb_ext_string(pfkey_ext->sadb_ext_type),
-				SADB_EXT_MAX);
+				K_SADB_EXT_MAX);
 			SENDERR(EINVAL);
 		}
 		
@@ -1471,105 +1466,105 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		SENDERR(EINVAL);
 	}
 	
-	if((dir == EXT_BITS_IN) && (pfkey_msg->sadb_msg_type == SADB_X_DELFLOW)
-	   && ((extensions_seen	& SADB_X_EXT_ADDRESS_DELFLOW)
-	       != SADB_X_EXT_ADDRESS_DELFLOW)
-	   && (((extensions_seen & (1<<SADB_EXT_SA)) != (1<<SADB_EXT_SA))
-	   || ((((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_flags
-		& SADB_X_SAFLAGS_CLEARFLOW)
-	       != SADB_X_SAFLAGS_CLEARFLOW))) {
+	if((dir == EXT_BITS_IN) && (pfkey_msg->sadb_msg_type == K_SADB_X_DELFLOW)
+	   && ((extensions_seen	& K_SADB_X_EXT_ADDRESS_DELFLOW)
+	       != K_SADB_X_EXT_ADDRESS_DELFLOW)
+	   && (((extensions_seen & (1<<K_SADB_EXT_SA)) != (1<<K_SADB_EXT_SA))
+	   || ((((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_flags
+		& K_SADB_X_SAFLAGS_CLEARFLOW)
+	       != K_SADB_X_SAFLAGS_CLEARFLOW))) {
 		DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 			"pfkey_msg_parse: "
-			"required SADB_X_DELFLOW extensions missing: either %08x must be present or %08x must be present with SADB_X_SAFLAGS_CLEARFLOW set.\n",
-			SADB_X_EXT_ADDRESS_DELFLOW
-			- (extensions_seen & SADB_X_EXT_ADDRESS_DELFLOW),
-			(1<<SADB_EXT_SA) - (extensions_seen & (1<<SADB_EXT_SA)));
+			"required K_SADB_X_DELFLOW extensions missing: either %08x must be present or %08x must be present with K_SADB_X_SAFLAGS_CLEARFLOW set.\n",
+			K_SADB_X_EXT_ADDRESS_DELFLOW
+			- (extensions_seen & K_SADB_X_EXT_ADDRESS_DELFLOW),
+			(1<<K_SADB_EXT_SA) - (extensions_seen & (1<<K_SADB_EXT_SA)));
 		SENDERR(EINVAL);
 	}
 	
 	switch(pfkey_msg->sadb_msg_type) {
-	case SADB_ADD:
-	case SADB_UPDATE:
+	case K_SADB_ADD:
+	case K_SADB_UPDATE:
 		/* check maturity */
-		if(((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state !=
-		   SADB_SASTATE_MATURE) {
+		if(((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_state !=
+		   K_SADB_SASTATE_MATURE) {
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
 				"state=%d for add or update should be MATURE=%d.\n",
-				((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state,
-				SADB_SASTATE_MATURE);
+				((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_state,
+				K_SADB_SASTATE_MATURE);
 			SENDERR(EINVAL);
 		}
 		
 		/* check AH and ESP */
-		switch(((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype) {
-		case SADB_SATYPE_AH:
-			if(!(((struct sadb_sa*)extensions[SADB_EXT_SA]) &&
-			     ((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_auth !=
-			     SADB_AALG_NONE)) {
+		switch(((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype) {
+		case K_SADB_SATYPE_AH:
+			if(!(((struct sadb_sa*)extensions[K_SADB_EXT_SA]) &&
+			     ((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_auth !=
+			     K_SADB_AALG_NONE)) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_msg_parse: "
 					"auth alg is zero, must be non-zero for AH SAs.\n");
 				SENDERR(EINVAL);
 			}
-			if(((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_encrypt !=
-			   SADB_EALG_NONE) {
+			if(((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_encrypt !=
+			   K_SADB_EALG_NONE) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_msg_parse: "
 					"AH handed encalg=%d, must be zero.\n",
-					((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_encrypt);
+					((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_encrypt);
 				SENDERR(EINVAL);
 			}
 			break;
-		case SADB_SATYPE_ESP:
-			if(!(((struct sadb_sa*)extensions[SADB_EXT_SA]) &&
-			     ((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_encrypt !=
-			     SADB_EALG_NONE)) {
+		case K_SADB_SATYPE_ESP:
+			if(!(((struct sadb_sa*)extensions[K_SADB_EXT_SA]) &&
+			     ((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_encrypt !=
+			     K_SADB_EALG_NONE)) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_msg_parse: "
 					"encrypt alg=%d is zero, must be non-zero for ESP=%d SAs.\n",
-					((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_encrypt,
-					((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype);
+					((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_encrypt,
+					((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype);
 				SENDERR(EINVAL);
 			}
-			if((((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_encrypt ==
-			    SADB_EALG_NULL) &&
-			   (((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_auth ==
-			    SADB_AALG_NONE) ) {
+			if((((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_encrypt ==
+			    K_SADB_EALG_NULL) &&
+			   (((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_auth ==
+			    K_SADB_AALG_NONE) ) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_msg_parse: "
 					"ESP handed encNULL+authNONE, illegal combination.\n");
 				SENDERR(EINVAL);
 			}
 			break;
-		case SADB_X_SATYPE_COMP:
-			if(!(((struct sadb_sa*)extensions[SADB_EXT_SA]) &&
-			     ((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_encrypt !=
-			     SADB_EALG_NONE)) {
+		case K_SADB_X_SATYPE_COMP:
+			if(!(((struct sadb_sa*)extensions[K_SADB_EXT_SA]) &&
+			     ((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_encrypt !=
+			     K_SADB_EALG_NONE)) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_msg_parse: "
 					"encrypt alg=%d is zero, must be non-zero for COMP=%d SAs.\n",
-					((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_encrypt,
-					((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype);
+					((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_encrypt,
+					((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype);
 				SENDERR(EINVAL);
 			}
-			if(((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_auth !=
-			   SADB_AALG_NONE) {
+			if(((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_auth !=
+			   K_SADB_AALG_NONE) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_msg_parse: "
 					"COMP handed auth=%d, must be zero.\n",
-					((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_auth);
+					((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_auth);
 				SENDERR(EINVAL);
 			}
 			break;
 		default:
 			break;
 		}
-		if(ntohl(((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_spi) <= 255) {
+		if(ntohl(((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_spi) <= 255) {
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
 				"spi=%08x must be > 255.\n",
-				ntohl(((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_spi));
+				ntohl(((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_spi));
 			SENDERR(EINVAL);
 		}
 	default:	

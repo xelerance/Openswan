@@ -190,7 +190,7 @@ pfkey_ipsec_sa_init(struct ipsec_sa *ipsp)
 }
 
 int
-pfkey_safe_build(int error, struct sadb_ext *extensions[SADB_MAX+1])
+pfkey_safe_build(int error, struct sadb_ext *extensions[K_SADB_MAX+1])
 {
 	KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_safe_build: "
 		    "error=%d\n",
@@ -218,10 +218,10 @@ pfkey_getspi_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	struct ipsec_sa *ipsq;
 	char sa[SATOT_BUF];
 	size_t sa_len;
-	struct sadb_ext *extensions_reply[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions_reply[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
-	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
+	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_getspi_parse: .\n");
@@ -235,9 +235,9 @@ pfkey_getspi_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		SENDERR(EINVAL);
 	}
 
-	if(extensions[SADB_EXT_SPIRANGE]) {
-		minspi = ((struct sadb_spirange *)extensions[SADB_EXT_SPIRANGE])->sadb_spirange_min;
-		maxspi = ((struct sadb_spirange *)extensions[SADB_EXT_SPIRANGE])->sadb_spirange_max;
+	if(extensions[K_SADB_EXT_SPIRANGE]) {
+		minspi = ((struct sadb_spirange *)extensions[K_SADB_EXT_SPIRANGE])->sadb_spirange_min;
+		maxspi = ((struct sadb_spirange *)extensions[K_SADB_EXT_SPIRANGE])->sadb_spirange_max;
 	}
 
 	if(maxspi == minspi) {
@@ -301,37 +301,37 @@ pfkey_getspi_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	extr->ips->ips_rcvif = NULL;
 	extr->ips->ips_life.ipl_addtime.ipl_count = jiffies/HZ;
 
-	extr->ips->ips_state = SADB_SASTATE_LARVAL;
+	extr->ips->ips_state = K_SADB_SASTATE_LARVAL;
 
 	if(!extr->ips->ips_life.ipl_allocations.ipl_count) {
 		extr->ips->ips_life.ipl_allocations.ipl_count += 1;
 	}
 
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
-							  SADB_GETSPI,
+							  K_SADB_GETSPI,
 							  satype,
 							  0,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_seq,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_pid),
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_seq,
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_pid),
 			      extensions_reply)
-	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[SADB_EXT_SA],
-							SADB_EXT_SA,
+	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[K_SADB_EXT_SA],
+							K_SADB_EXT_SA,
 							extr->ips->ips_said.spi,
 							0,
-							SADB_SASTATE_LARVAL,
+							K_SADB_SASTATE_LARVAL,
 							0,
 							0,
 							0,
 							extr->ips->ips_ref),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_SRC],
-						     SADB_EXT_ADDRESS_SRC,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_SRC],
+						     K_SADB_EXT_ADDRESS_SRC,
 						     0, /*extr->ips->ips_said.proto,*/
 						     0,
 						     extr->ips->ips_addr_s),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_DST],
-						     SADB_EXT_ADDRESS_DST,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_DST],
+						     K_SADB_EXT_ADDRESS_DST,
 						     0, /*extr->ips->ips_said.proto,*/
 						     0,
 						     extr->ips->ips_addr_d),
@@ -394,10 +394,10 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	struct ipsec_sa* ipsq;
 	char sa[SATOT_BUF];
 	size_t sa_len;
-	struct sadb_ext *extensions_reply[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions_reply[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
-	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
+	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 	struct ipsec_sa *nat_t_ips_saved = NULL;
 #endif
@@ -406,12 +406,12 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 
 	pfkey_extensions_init(extensions_reply);
 
-	if(((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state != SADB_SASTATE_MATURE) {
+	if(((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_state != K_SADB_SASTATE_MATURE) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_update_parse: "
 			    "error, sa_state=%d must be MATURE=%d\n",
-			    ((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state,
-			    SADB_SASTATE_MATURE);
+			    ((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_state,
+			    K_SADB_SASTATE_MATURE);
 		SENDERR(EINVAL);
 	}
 
@@ -431,7 +431,7 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		spin_unlock_bh(&tdb_lock);
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_update_parse: "
-			    "reserved ipsec_sa for SA: %s not found.  Call SADB_GETSPI first or call SADB_ADD instead.\n",
+			    "reserved ipsec_sa for SA: %s not found.  Call K_SADB_GETSPI first or call K_SADB_ADD instead.\n",
 			    sa_len ? sa : " (error)");
 		SENDERR(ENOENT);
 	}
@@ -496,14 +496,14 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	spin_unlock_bh(&tdb_lock);
 	
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
-							  SADB_UPDATE,
+							  K_SADB_UPDATE,
 							  satype,
 							  0,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_seq,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_pid),
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_seq,
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_pid),
 			      extensions_reply)
-	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[SADB_EXT_SA],
-							SADB_EXT_SA,
+	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[K_SADB_EXT_SA],
+							K_SADB_EXT_SA,
 							extr->ips->ips_said.spi,
 							extr->ips->ips_replaywin,
 							extr->ips->ips_state,
@@ -513,18 +513,18 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 							extr->ips->ips_ref),
 				 extensions_reply)
 	     /* The 3 lifetime extentions should only be sent if non-zero. */
-	     && (extensions[SADB_EXT_LIFETIME_HARD]
-		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[SADB_EXT_LIFETIME_HARD],
-								 SADB_EXT_LIFETIME_HARD,
+	     && (extensions[K_SADB_EXT_LIFETIME_HARD]
+		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[K_SADB_EXT_LIFETIME_HARD],
+								 K_SADB_EXT_LIFETIME_HARD,
 								 extr->ips->ips_life.ipl_allocations.ipl_hard,
 								 extr->ips->ips_life.ipl_bytes.ipl_hard,
 								 extr->ips->ips_life.ipl_addtime.ipl_hard,
 								 extr->ips->ips_life.ipl_usetime.ipl_hard,
 								 extr->ips->ips_life.ipl_packets.ipl_hard),
 				    extensions_reply) : 1)
-	     && (extensions[SADB_EXT_LIFETIME_SOFT]
-		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[SADB_EXT_LIFETIME_SOFT],
-								 SADB_EXT_LIFETIME_SOFT,
+	     && (extensions[K_SADB_EXT_LIFETIME_SOFT]
+		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[K_SADB_EXT_LIFETIME_SOFT],
+								 K_SADB_EXT_LIFETIME_SOFT,
 								 extr->ips->ips_life.ipl_allocations.ipl_count,
 								 extr->ips->ips_life.ipl_bytes.ipl_count,
 								 extr->ips->ips_life.ipl_addtime.ipl_count,
@@ -537,37 +537,37 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		 || extr->ips->ips_life.ipl_usetime.ipl_count
 		 || extr->ips->ips_life.ipl_packets.ipl_count
 
-		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[SADB_EXT_LIFETIME_CURRENT],
-								 SADB_EXT_LIFETIME_CURRENT,
+		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[K_SADB_EXT_LIFETIME_CURRENT],
+								 K_SADB_EXT_LIFETIME_CURRENT,
 								 extr->ips->ips_life.ipl_allocations.ipl_count,
 								 extr->ips->ips_life.ipl_bytes.ipl_count,
 								 extr->ips->ips_life.ipl_addtime.ipl_count,
 								 extr->ips->ips_life.ipl_usetime.ipl_count,
 								 extr->ips->ips_life.ipl_packets.ipl_count),
 				    extensions_reply) : 1)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_SRC],
-							     SADB_EXT_ADDRESS_SRC,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_SRC],
+							     K_SADB_EXT_ADDRESS_SRC,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     extr->ips->ips_addr_s),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_DST],
-							     SADB_EXT_ADDRESS_DST,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_DST],
+							     K_SADB_EXT_ADDRESS_DST,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     extr->ips->ips_addr_d),
 				 extensions_reply)
 	     && (extr->ips->ips_ident_s.data
-                 ? pfkey_safe_build(error = pfkey_ident_build(&extensions_reply[SADB_EXT_IDENTITY_SRC],
-                                                              SADB_EXT_IDENTITY_SRC,
+                 ? pfkey_safe_build(error = pfkey_ident_build(&extensions_reply[K_SADB_EXT_IDENTITY_SRC],
+                                                              K_SADB_EXT_IDENTITY_SRC,
 							      extr->ips->ips_ident_s.type,
 							      extr->ips->ips_ident_s.id,
                                                               extr->ips->ips_ident_s.len,
 							      extr->ips->ips_ident_s.data),
                                     extensions_reply) : 1)
 	     && (extr->ips->ips_ident_d.data
-                 ? pfkey_safe_build(error = pfkey_ident_build(&extensions_reply[SADB_EXT_IDENTITY_DST],
-                                                              SADB_EXT_IDENTITY_DST,
+                 ? pfkey_safe_build(error = pfkey_ident_build(&extensions_reply[K_SADB_EXT_IDENTITY_DST],
+                                                              K_SADB_EXT_IDENTITY_DST,
 							      extr->ips->ips_ident_d.type,
 							      extr->ips->ips_ident_d.id,
                                                               extr->ips->ips_ident_d.len,
@@ -577,7 +577,7 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	     /* FIXME: This won't work yet because I have not finished
 		it. */
 	     && (extr->ips->ips_sens_
-		 ? pfkey_safe_build(error = pfkey_sens_build(&extensions_reply[SADB_EXT_SENSITIVITY],
+		 ? pfkey_safe_build(error = pfkey_sens_build(&extensions_reply[K_SADB_EXT_SENSITIVITY],
 							     extr->ips->ips_sens_dpd,
 							     extr->ips->ips_sens_sens_level,
 							     extr->ips->ips_sens_sens_len,
@@ -667,22 +667,22 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 	struct ipsec_sa* ipsq;
 	char sa[SATOT_BUF];
 	size_t sa_len;
-	struct sadb_ext *extensions_reply[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions_reply[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
-	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
+	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_add_parse: .\n");
 
 	pfkey_extensions_init(extensions_reply);
 
-	if(((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state != SADB_SASTATE_MATURE) {
+	if(((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_state != K_SADB_SASTATE_MATURE) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_add_parse: "
 			    "error, sa_state=%d must be MATURE=%d\n",
-			    ((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state,
-			    SADB_SASTATE_MATURE);
+			    ((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_state,
+			    K_SADB_SASTATE_MATURE);
 		SENDERR(EINVAL);
 	}
 
@@ -741,14 +741,14 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 	}
 
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
-							  SADB_ADD,
+							  K_SADB_ADD,
 							  satype,
 							  0,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_seq,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_pid),
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_seq,
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_pid),
 			      extensions_reply)
-	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[SADB_EXT_SA],
-							SADB_EXT_SA,
+	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[K_SADB_EXT_SA],
+							K_SADB_EXT_SA,
 							extr->ips->ips_said.spi,
 							extr->ips->ips_replaywin,
 							extr->ips->ips_state,
@@ -758,47 +758,47 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 							extr->ips->ips_ref),
 				 extensions_reply)
 	     /* The 3 lifetime extentions should only be sent if non-zero. */
-	     && (extensions[SADB_EXT_LIFETIME_HARD]
-		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[SADB_EXT_LIFETIME_HARD],
-								 SADB_EXT_LIFETIME_HARD,
+	     && (extensions[K_SADB_EXT_LIFETIME_HARD]
+		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[K_SADB_EXT_LIFETIME_HARD],
+								 K_SADB_EXT_LIFETIME_HARD,
 								 extr->ips->ips_life.ipl_allocations.ipl_hard,
 								 extr->ips->ips_life.ipl_bytes.ipl_hard,
 								 extr->ips->ips_life.ipl_addtime.ipl_hard,
 								 extr->ips->ips_life.ipl_usetime.ipl_hard,
 								 extr->ips->ips_life.ipl_packets.ipl_hard),
 				    extensions_reply) : 1)
-	     && (extensions[SADB_EXT_LIFETIME_SOFT]
-		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[SADB_EXT_LIFETIME_SOFT],
-								 SADB_EXT_LIFETIME_SOFT,
+	     && (extensions[K_SADB_EXT_LIFETIME_SOFT]
+		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[K_SADB_EXT_LIFETIME_SOFT],
+								 K_SADB_EXT_LIFETIME_SOFT,
 								 extr->ips->ips_life.ipl_allocations.ipl_soft,
 								 extr->ips->ips_life.ipl_bytes.ipl_soft,
 								 extr->ips->ips_life.ipl_addtime.ipl_soft,
 								 extr->ips->ips_life.ipl_usetime.ipl_soft,
 								 extr->ips->ips_life.ipl_packets.ipl_soft),
 				    extensions_reply) : 1)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_SRC],
-							     SADB_EXT_ADDRESS_SRC,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_SRC],
+							     K_SADB_EXT_ADDRESS_SRC,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     extr->ips->ips_addr_s),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_DST],
-							     SADB_EXT_ADDRESS_DST,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_DST],
+							     K_SADB_EXT_ADDRESS_DST,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     extr->ips->ips_addr_d),
 				 extensions_reply)
             && (extr->ips->ips_ident_s.data
-                 ? pfkey_safe_build(error = pfkey_ident_build(&extensions_reply[SADB_EXT_IDENTITY_SRC],
-                                                              SADB_EXT_IDENTITY_SRC,
+                 ? pfkey_safe_build(error = pfkey_ident_build(&extensions_reply[K_SADB_EXT_IDENTITY_SRC],
+                                                              K_SADB_EXT_IDENTITY_SRC,
 							      extr->ips->ips_ident_s.type,
 							      extr->ips->ips_ident_s.id,
                                                               extr->ips->ips_ident_s.len,
 							      extr->ips->ips_ident_s.data),
                                     extensions_reply) : 1)
             && (extr->ips->ips_ident_d.data
-                 ? pfkey_safe_build(error = pfkey_ident_build(&extensions_reply[SADB_EXT_IDENTITY_DST],
-                                                              SADB_EXT_IDENTITY_DST,
+                 ? pfkey_safe_build(error = pfkey_ident_build(&extensions_reply[K_SADB_EXT_IDENTITY_DST],
+                                                              K_SADB_EXT_IDENTITY_DST,
 							      extr->ips->ips_ident_d.type,
 							      extr->ips->ips_ident_d.id,
                                                               extr->ips->ips_ident_d.len,
@@ -808,7 +808,7 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 	     /* FIXME: This won't work yet because I have not finished
 		it. */
 	     && (extr->ips->ips_sens_
-		 ? pfkey_safe_build(error = pfkey_sens_build(&extensions_reply[SADB_EXT_SENSITIVITY],
+		 ? pfkey_safe_build(error = pfkey_sens_build(&extensions_reply[K_SADB_EXT_SENSITIVITY],
 							     extr->ips->ips_sens_dpd,
 							     extr->ips->ips_sens_sens_level,
 							     extr->ips->ips_sens_sens_len,
@@ -850,6 +850,7 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 
 	if(extr->outif != 0) {
 		extr->ips->ips_out = ipsec_mast_get_device(extr->outif);
+		extr->ips->ips_transport_direct = ipsec_mast_is_transport(extr->outif);
 	}
 
 	if((error = ipsec_sa_add(extr->ips))) {
@@ -882,10 +883,10 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	char sa[SATOT_BUF];
 	size_t sa_len;
 	int error = 0;
-	struct sadb_ext *extensions_reply[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions_reply[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
-	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
+	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_delete_parse: .\n");
@@ -917,14 +918,14 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	spin_unlock_bh(&tdb_lock);
 
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
-							  SADB_DELETE,
+							  K_SADB_DELETE,
 							  satype,
 							  0,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_seq,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_pid),
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_seq,
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_pid),
 			      extensions_reply)
-	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[SADB_EXT_SA],
-							SADB_EXT_SA,
+	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[K_SADB_EXT_SA],
+							K_SADB_EXT_SA,
 							extr->ips->ips_said.spi,
 							0,
 							0,
@@ -933,14 +934,14 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 							0,
 							extr->ips->ips_ref),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_SRC],
-							     SADB_EXT_ADDRESS_SRC,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_SRC],
+							     K_SADB_EXT_ADDRESS_SRC,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     extr->ips->ips_addr_s),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_DST],
-							     SADB_EXT_ADDRESS_DST,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_DST],
+							     K_SADB_EXT_ADDRESS_DST,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     extr->ips->ips_addr_d),
@@ -990,7 +991,7 @@ pfkey_get_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 	struct ipsec_sa *ipsp;
 	char sa[SATOT_BUF];
 	size_t sa_len;
-	struct sadb_ext *extensions_reply[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions_reply[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_reply = NULL;
 
 	KLIPS_PRINT(debug_pfkey,
@@ -1019,14 +1020,14 @@ pfkey_get_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 	}
 	
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
-							  SADB_GET,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype,
+							  K_SADB_GET,
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype,
 							  0,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_seq,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_pid),
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_seq,
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_pid),
 			      extensions_reply)
-	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[SADB_EXT_SA],
-							SADB_EXT_SA,
+	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[K_SADB_EXT_SA],
+							K_SADB_EXT_SA,
 							extr->ips->ips_said.spi,
 							extr->ips->ips_replaywin,
 							extr->ips->ips_state,
@@ -1041,8 +1042,8 @@ pfkey_get_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 		 || ipsp->ips_life.ipl_addtime.ipl_count
 		 || ipsp->ips_life.ipl_usetime.ipl_count
 		 || ipsp->ips_life.ipl_packets.ipl_count
-		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[SADB_EXT_LIFETIME_CURRENT],
-								 SADB_EXT_LIFETIME_CURRENT,
+		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[K_SADB_EXT_LIFETIME_CURRENT],
+								 K_SADB_EXT_LIFETIME_CURRENT,
 								 ipsp->ips_life.ipl_allocations.ipl_count,
 								 ipsp->ips_life.ipl_bytes.ipl_count,
 								 ipsp->ips_life.ipl_addtime.ipl_count,
@@ -1054,8 +1055,8 @@ pfkey_get_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 		 || ipsp->ips_life.ipl_addtime.ipl_hard
 		 || ipsp->ips_life.ipl_usetime.ipl_hard
 		 || ipsp->ips_life.ipl_packets.ipl_hard
-		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[SADB_EXT_LIFETIME_HARD],
-								 SADB_EXT_LIFETIME_HARD,
+		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[K_SADB_EXT_LIFETIME_HARD],
+								 K_SADB_EXT_LIFETIME_HARD,
 								 ipsp->ips_life.ipl_allocations.ipl_hard,
 								 ipsp->ips_life.ipl_bytes.ipl_hard,
 								 ipsp->ips_life.ipl_addtime.ipl_hard,
@@ -1067,29 +1068,29 @@ pfkey_get_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 		 || ipsp->ips_life.ipl_addtime.ipl_soft
 		 || ipsp->ips_life.ipl_usetime.ipl_soft
 		 || ipsp->ips_life.ipl_packets.ipl_soft
-		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[SADB_EXT_LIFETIME_SOFT],
-								 SADB_EXT_LIFETIME_SOFT,
+		 ? pfkey_safe_build(error = pfkey_lifetime_build(&extensions_reply[K_SADB_EXT_LIFETIME_SOFT],
+								 K_SADB_EXT_LIFETIME_SOFT,
 								 ipsp->ips_life.ipl_allocations.ipl_soft,
 								 ipsp->ips_life.ipl_bytes.ipl_soft,
 								 ipsp->ips_life.ipl_addtime.ipl_soft,
 								 ipsp->ips_life.ipl_usetime.ipl_soft,
 								 ipsp->ips_life.ipl_packets.ipl_soft),
 				    extensions_reply) : 1)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_SRC],
-							     SADB_EXT_ADDRESS_SRC,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_SRC],
+							     K_SADB_EXT_ADDRESS_SRC,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     extr->ips->ips_addr_s),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_DST],
-							     SADB_EXT_ADDRESS_DST,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_DST],
+							     K_SADB_EXT_ADDRESS_DST,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     extr->ips->ips_addr_d),
 				 extensions_reply)
 	     && (extr->ips->ips_addr_p
-		 ? pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_PROXY],
-								SADB_EXT_ADDRESS_PROXY,
+		 ? pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_PROXY],
+								K_SADB_EXT_ADDRESS_PROXY,
 								0, /*extr->ips->ips_said.proto,*/
 								0,
 								extr->ips->ips_addr_p),
@@ -1099,8 +1100,8 @@ pfkey_get_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 		stored directly in the ipsec_sa.  They are stored as
 		contexts. */
 	     && (extr->ips->ips_key_a_size
-		 ? pfkey_safe_build(error = pfkey_key_build(&extensions_reply[SADB_EXT_KEY_AUTH],
-							    SADB_EXT_KEY_AUTH,
+		 ? pfkey_safe_build(error = pfkey_key_build(&extensions_reply[K_SADB_EXT_KEY_AUTH],
+							    K_SADB_EXT_KEY_AUTH,
 							    extr->ips->ips_key_a_size * 8,
 							    extr->ips->ips_key_a),
 				    extensions_reply) : 1)
@@ -1108,23 +1109,23 @@ pfkey_get_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 		stored directly in the ipsec_sa.  They are stored as
 		key schedules. */
 	     && (extr->ips->ips_key_e_size
-		 ? pfkey_safe_build(error = pfkey_key_build(&extensions_reply[SADB_EXT_KEY_ENCRYPT],
-							    SADB_EXT_KEY_ENCRYPT,
+		 ? pfkey_safe_build(error = pfkey_key_build(&extensions_reply[K_SADB_EXT_KEY_ENCRYPT],
+							    K_SADB_EXT_KEY_ENCRYPT,
 							    extr->ips->ips_key_e_size * 8,
 							    extr->ips->ips_key_e),
 				    extensions_reply) : 1)
 #endif
 	     && (extr->ips->ips_ident_s.data
-                 ? pfkey_safe_build(error = pfkey_ident_build(&extensions_reply[SADB_EXT_IDENTITY_SRC],
-                                                              SADB_EXT_IDENTITY_SRC,
+                 ? pfkey_safe_build(error = pfkey_ident_build(&extensions_reply[K_SADB_EXT_IDENTITY_SRC],
+                                                              K_SADB_EXT_IDENTITY_SRC,
 							      extr->ips->ips_ident_s.type,
 							      extr->ips->ips_ident_s.id,
                                                               extr->ips->ips_ident_s.len,
 							      extr->ips->ips_ident_s.data),
                                     extensions_reply) : 1)
 	     && (extr->ips->ips_ident_d.data
-                 ? pfkey_safe_build(error = pfkey_ident_build(&extensions_reply[SADB_EXT_IDENTITY_DST],
-                                                              SADB_EXT_IDENTITY_DST,
+                 ? pfkey_safe_build(error = pfkey_ident_build(&extensions_reply[K_SADB_EXT_IDENTITY_DST],
+                                                              K_SADB_EXT_IDENTITY_DST,
 							      extr->ips->ips_ident_d.type,
 							      extr->ips->ips_ident_d.id,
                                                               extr->ips->ips_ident_d.len,
@@ -1134,7 +1135,7 @@ pfkey_get_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 	     /* FIXME: This won't work yet because I have not finished
 		it. */
 	     && (extr->ips->ips_sens_
-		 ? pfkey_safe_build(error = pfkey_sens_build(&extensions_reply[SADB_EXT_SENSITIVITY],
+		 ? pfkey_safe_build(error = pfkey_sens_build(&extensions_reply[K_SADB_EXT_SENSITIVITY],
 							     extr->ips->ips_sens_dpd,
 							     extr->ips->ips_sens_sens_level,
 							     extr->ips->ips_sens_sens_len,
@@ -1183,14 +1184,14 @@ pfkey_acquire_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 {
 	int error = 0;
 	struct socket_list *pfkey_socketsp;
-	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
+	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_acquire_parse: .\n");
 
 	/* XXX I don't know if we want an upper bound, since userspace may
-	   want to register itself for an satype > SADB_SATYPE_MAX. */
-	if((satype == 0) || (satype > SADB_SATYPE_MAX)) {
+	   want to register itself for an satype > K_SADB_SATYPE_MAX. */
+	if((satype == 0) || (satype > K_SADB_SATYPE_MAX)) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_acquire_parse: "
 			    "SATYPE=%d invalid.\n",
@@ -1210,7 +1211,7 @@ pfkey_acquire_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 	    pfkey_socketsp;
 	    pfkey_socketsp = pfkey_socketsp->next) {
 		if((error = pfkey_upmsg(pfkey_socketsp->socketp,
-					((struct sadb_msg*)extensions[SADB_EXT_RESERVED])))) {
+					((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])))) {
 			KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_acquire_parse: "
 				    "sending up acquire reply message for satype=%d(%s) to socket=0p%p failed with error=%d.\n",
 				    satype,
@@ -1234,14 +1235,14 @@ DEBUG_NO_STATIC int
 pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extracted_data* extr)
 {
 	int error = 0;
-	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
+	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_register_parse: .\n");
 
 	/* XXX I don't know if we want an upper bound, since userspace may
-	   want to register itself for an satype > SADB_SATYPE_MAX. */
-	if((satype == 0) || (satype > SADB_SATYPE_MAX)) {
+	   want to register itself for an satype > K_SADB_SATYPE_MAX. */
+	if((satype == 0) || (satype > K_SADB_SATYPE_MAX)) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_register_parse: "
 			    "SATYPE=%d invalid.\n",
@@ -1261,7 +1262,7 @@ pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey
 	
 	/* send up register msg with supported SATYPE algos */
 
-	error=pfkey_register_reply(satype, (struct sadb_msg*)extensions[SADB_EXT_RESERVED]);
+	error=pfkey_register_reply(satype, (struct sadb_msg*)extensions[K_SADB_EXT_RESERVED]);
  errlab:
 	return error;
 }
@@ -1269,7 +1270,7 @@ pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey
 int
 pfkey_register_reply(int satype, struct sadb_msg *sadb_msg)
 {
-	struct sadb_ext *extensions_reply[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions_reply[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
 	struct supported_list *pfkey_supported_listp;
@@ -1279,7 +1280,7 @@ pfkey_register_reply(int satype, struct sadb_msg *sadb_msg)
 
 	pfkey_extensions_init(extensions_reply);
 
-	if((satype == 0) || (satype > SADB_SATYPE_MAX)) {
+	if((satype == 0) || (satype > K_SADB_SATYPE_MAX)) {
 		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_register_reply: "
 			    "SAtype=%d unspecified or unknown.\n",
 			    satype);
@@ -1304,13 +1305,13 @@ pfkey_register_reply(int satype, struct sadb_msg *sadb_msg)
 			    "klips_debug:pfkey_register_reply: "
 			    "checking supported=0p%p\n",
 			    pfkey_supported_listp);
-		if(pfkey_supported_listp->supportedp->ias_exttype == SADB_EXT_SUPPORTED_AUTH) {
+		if(pfkey_supported_listp->supportedp->ias_exttype == K_SADB_EXT_SUPPORTED_AUTH) {
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_register_reply: "
 				    "adding auth alg.\n");
 			alg_num_a++;
 		}
-		if(pfkey_supported_listp->supportedp->ias_exttype == SADB_EXT_SUPPORTED_ENCRYPT) {
+		if(pfkey_supported_listp->supportedp->ias_exttype == K_SADB_EXT_SUPPORTED_ENCRYPT) {
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_register_reply: "
 				    "adding encrypt alg.\n");
@@ -1350,7 +1351,7 @@ pfkey_register_reply(int satype, struct sadb_msg *sadb_msg)
 	pfkey_supported_listp = pfkey_supported_list[satype];
 	while(pfkey_supported_listp) {
 		if(alg_num_a) {
-			if(pfkey_supported_listp->supportedp->ias_exttype == SADB_EXT_SUPPORTED_AUTH) {
+			if(pfkey_supported_listp->supportedp->ias_exttype == K_SADB_EXT_SUPPORTED_AUTH) {
 				alg_ap->sadb_alg_id = pfkey_supported_listp->supportedp->ias_id;
 				alg_ap->sadb_alg_ivlen = pfkey_supported_listp->supportedp->ias_ivlen;
 				alg_ap->sadb_alg_minbits = pfkey_supported_listp->supportedp->ias_keyminbits;
@@ -1364,7 +1365,7 @@ pfkey_register_reply(int satype, struct sadb_msg *sadb_msg)
 			}
 		}
 		if(alg_num_e) {
-			if(pfkey_supported_listp->supportedp->ias_exttype == SADB_EXT_SUPPORTED_ENCRYPT) {
+			if(pfkey_supported_listp->supportedp->ias_exttype == K_SADB_EXT_SUPPORTED_ENCRYPT) {
 				alg_ep->sadb_alg_id = pfkey_supported_listp->supportedp->ias_id;
 				alg_ep->sadb_alg_ivlen = pfkey_supported_listp->supportedp->ias_ivlen;
 				alg_ep->sadb_alg_minbits = pfkey_supported_listp->supportedp->ias_keyminbits;
@@ -1391,19 +1392,19 @@ pfkey_register_reply(int satype, struct sadb_msg *sadb_msg)
 	}
 	
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
-							  SADB_REGISTER,
+							  K_SADB_REGISTER,
 							  satype,
 							  0,
 							  sadb_msg? sadb_msg->sadb_msg_seq : ++pfkey_msg_seq,
 							  sadb_msg? sadb_msg->sadb_msg_pid: current->pid),
 			      extensions_reply) &&
-	     (alg_num_a ? pfkey_safe_build(error = pfkey_supported_build(&extensions_reply[SADB_EXT_SUPPORTED_AUTH],
-									SADB_EXT_SUPPORTED_AUTH,
+	     (alg_num_a ? pfkey_safe_build(error = pfkey_supported_build(&extensions_reply[K_SADB_EXT_SUPPORTED_AUTH],
+									K_SADB_EXT_SUPPORTED_AUTH,
 									alg_num_a,
 									alg_a),
 					  extensions_reply) : 1) &&
-	     (alg_num_e ? pfkey_safe_build(error = pfkey_supported_build(&extensions_reply[SADB_EXT_SUPPORTED_ENCRYPT],
-									SADB_EXT_SUPPORTED_ENCRYPT,
+	     (alg_num_e ? pfkey_safe_build(error = pfkey_supported_build(&extensions_reply[K_SADB_EXT_SUPPORTED_ENCRYPT],
+									K_SADB_EXT_SUPPORTED_ENCRYPT,
 									alg_num_e,
 									alg_e),
 					  extensions_reply) : 1))) {
@@ -1458,7 +1459,7 @@ pfkey_expire_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	int error = 0;
 	struct socket_list *pfkey_socketsp;
 #ifdef CONFIG_KLIPS_DEBUG
-	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
+	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
 #endif /* CONFIG_KLIPS_DEBUG */
 
 	KLIPS_PRINT(debug_pfkey,
@@ -1469,7 +1470,7 @@ pfkey_expire_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		    pfkey_socketsp;
 		    pfkey_socketsp = pfkey_socketsp->next) {
 			if((error = pfkey_upmsg(pfkey_socketsp->socketp,
-						((struct sadb_msg*)extensions[SADB_EXT_RESERVED])))) {
+						((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])))) {
 				KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_expire_parse: "
 					    "sending up expire reply message for satype=%d(%s) to socket=0p%p failed with error=%d.\n",
 					    satype,
@@ -1500,7 +1501,7 @@ pfkey_flush_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_ex
 {
 	int error = 0;
 	struct socket_list *pfkey_socketsp;
-	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
+	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
 	uint8_t proto = 0;
 
 	KLIPS_PRINT(debug_pfkey,
@@ -1512,7 +1513,7 @@ pfkey_flush_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_ex
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_flush_parse: "
 			    "satype %d lookup failed.\n", 
-			    ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype);
+			    ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype);
 		SENDERR(EINVAL);
 	}
 
@@ -1525,7 +1526,7 @@ pfkey_flush_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_ex
 		    pfkey_socketsp;
 		    pfkey_socketsp = pfkey_socketsp->next) {
 			if((error = pfkey_upmsg(pfkey_socketsp->socketp,
-						((struct sadb_msg*)extensions[SADB_EXT_RESERVED])))) {
+						((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])))) {
 				KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_flush_parse: "
 					    "sending up flush reply message for satype=%d(%s) (proto=%d) to socket=0p%p failed with error=%d.\n",
 					    satype,
@@ -1590,10 +1591,10 @@ DEBUG_NO_STATIC int
 pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extracted_data* extr)
 {
 	struct ipsec_sa *ips1p, *ips2p, *ipsp;
-	struct sadb_ext *extensions_reply[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions_reply[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
-	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
+	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
 	char sa1[SATOT_BUF], sa2[SATOT_BUF];
 	size_t sa_len1, sa_len2 = 0;
 	int error = 0;
@@ -1622,7 +1623,7 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 		spin_unlock_bh(&tdb_lock);
 		KLIPS_ERROR(debug_pfkey,
 			    "klips_debug:pfkey_x_grpsa_parse: "
-			    "reserved ipsec_sa for SA1: %s not found.  Call SADB_ADD/UPDATE first.\n",
+			    "reserved ipsec_sa for SA1: %s not found.  Call K_SADB_ADD/UPDATE first.\n",
 			    sa_len1 ? sa1 : " (error)");
 		SENDERR(ENOENT);
 	}
@@ -1637,7 +1638,7 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 			spin_unlock_bh(&tdb_lock);
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_x_grpsa_parse: "
-				    "reserved ipsec_sa for SA2: %s not found.  Call SADB_ADD/UPDATE first.\n",
+				    "reserved ipsec_sa for SA2: %s not found.  Call K_SADB_ADD/UPDATE first.\n",
 				    sa_len2 ? sa2 : " (error)");
 			SENDERR(ENOENT);
 		}
@@ -1718,14 +1719,14 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 	 * XXX simplify me.
 	 */
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
-							  SADB_X_GRPSA,
+							  K_SADB_X_GRPSA,
 							  satype,
 							  0,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_seq,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_pid),
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_seq,
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_pid),
 			      extensions_reply)
-	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[SADB_EXT_SA],
-							SADB_EXT_SA,
+	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[K_SADB_EXT_SA],
+							K_SADB_EXT_SA,
 							extr->ips->ips_said.spi,
 							extr->ips->ips_replaywin,
 							extr->ips->ips_state,
@@ -1734,19 +1735,19 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 							extr->ips->ips_flags,
 							extr->ips->ips_ref),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_DST],
-							     SADB_EXT_ADDRESS_DST,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_DST],
+							     K_SADB_EXT_ADDRESS_DST,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     extr->ips->ips_addr_d),
 				 extensions_reply)
 	     && (extr->ips2
-		 ? (pfkey_safe_build(error = pfkey_x_satype_build(&extensions_reply[SADB_X_EXT_SATYPE2],
-								  ((struct sadb_x_satype*)extensions[SADB_X_EXT_SATYPE2])->sadb_x_satype_satype
+		 ? (pfkey_safe_build(error = pfkey_x_satype_build(&extensions_reply[K_SADB_X_EXT_SATYPE2],
+								  ((struct sadb_x_satype*)extensions[K_SADB_X_EXT_SATYPE2])->sadb_x_satype_satype
 								  /* proto2satype(extr->ips2->ips_said.proto) */),
 								  extensions_reply)
-				     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[SADB_X_EXT_SA2],
-										SADB_X_EXT_SA2,
+				     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[K_SADB_X_EXT_SA2],
+										K_SADB_X_EXT_SA2,
 										extr->ips2->ips_said.spi,
 										extr->ips2->ips_replaywin,
 										extr->ips2->ips_state,
@@ -1755,8 +1756,8 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 										extr->ips2->ips_flags,
 										extr->ips2->ips_ref),
 							 extensions_reply)
-				     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_X_EXT_ADDRESS_DST2],
-										     SADB_X_EXT_ADDRESS_DST2,
+				     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_DST2],
+										     K_SADB_X_EXT_ADDRESS_DST2,
 										     0, /*extr->ips->ips_said.proto,*/
 										     0,
 										     extr->ips2->ips_addr_d),
@@ -1810,10 +1811,10 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 #ifdef CONFIG_KLIPS_DEBUG
 	char buf1[64], buf2[64];
 #endif /* CONFIG_KLIPS_DEBUG */
-	struct sadb_ext *extensions_reply[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions_reply[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
-	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
+	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
 	ip_address srcflow, dstflow, srcmask, dstmask;
 
 	KLIPS_PRINT(debug_pfkey,
@@ -1854,7 +1855,7 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 			    buf1, buf2);
 	}
 #endif /* CONFIG_KLIPS_DEBUG */
-	if(extr->ips->ips_flags & SADB_X_SAFLAGS_INFLOW) {
+	if(extr->ips->ips_flags & K_SADB_X_SAFLAGS_INFLOW) {
 /*	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) */ 
 		struct ipsec_sa *ipsp, *ipsq;
 		char sa[SATOT_BUF];
@@ -1883,7 +1884,7 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		
 		sa_len = satot(&extr->ips->ips_said, 0, sa, sizeof(sa));
 
-		ipsp->ips_flags |= SADB_X_SAFLAGS_INFLOW;
+		ipsp->ips_flags |= K_SADB_X_SAFLAGS_INFLOW;
 		ipsp->ips_flow_s = srcflow;
 		ipsp->ips_flow_d = dstflow;
 		ipsp->ips_mask_s = srcmask;
@@ -1898,7 +1899,7 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 	} else {
 		struct sk_buff *first = NULL, *last = NULL;
 
-		if(extr->ips->ips_flags & SADB_X_SAFLAGS_REPLACEFLOW) {
+		if(extr->ips->ips_flags & K_SADB_X_SAFLAGS_REPLACEFLOW) {
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_x_addflow_parse: "
 				    "REPLACEFLOW flag set, calling breakeroute.\n");
@@ -1928,7 +1929,7 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		if ((error = ipsec_makeroute(&(extr->eroute->er_eaddr),
 					     &(extr->eroute->er_emask),
 					     extr->ips->ips_said,
-					     ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_pid,
+					     ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_pid,
 					     NULL,
 					     &(extr->ips->ips_ident_s),
 					     &(extr->ips->ips_ident_d)))) {
@@ -1958,14 +1959,14 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		    "makeroute call successful.\n");
 
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
-							  SADB_X_ADDFLOW,
+							  K_SADB_X_ADDFLOW,
 							  satype,
 							  0,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_seq,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_pid),
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_seq,
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_pid),
 			      extensions_reply)
-	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[SADB_EXT_SA],
-							SADB_EXT_SA,
+	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[K_SADB_EXT_SA],
+							K_SADB_EXT_SA,
 							extr->ips->ips_said.spi,
 							extr->ips->ips_replaywin,
 							extr->ips->ips_state,
@@ -1974,40 +1975,40 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 							extr->ips->ips_flags,
 							extr->ips->ips_ref),
 				 extensions_reply)
-	     && (extensions[SADB_EXT_ADDRESS_SRC]
-		 ? pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_SRC],
-								SADB_EXT_ADDRESS_SRC,
+	     && (extensions[K_SADB_EXT_ADDRESS_SRC]
+		 ? pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_SRC],
+								K_SADB_EXT_ADDRESS_SRC,
 								0, /*extr->ips->ips_said.proto,*/
 								0,
 								extr->ips->ips_addr_s),
 				    extensions_reply) : 1)
-	     && (extensions[SADB_EXT_ADDRESS_DST]
-		 ? pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_DST],
-								SADB_EXT_ADDRESS_DST,
+	     && (extensions[K_SADB_EXT_ADDRESS_DST]
+		 ? pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_DST],
+								K_SADB_EXT_ADDRESS_DST,
 								0, /*extr->ips->ips_said.proto,*/
 								0,
 								extr->ips->ips_addr_d),
 				    extensions_reply) : 1)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_X_EXT_ADDRESS_SRC_FLOW],
-							     SADB_X_EXT_ADDRESS_SRC_FLOW,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_SRC_FLOW],
+							     K_SADB_X_EXT_ADDRESS_SRC_FLOW,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     (struct sockaddr*)&srcflow),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_X_EXT_ADDRESS_DST_FLOW],
-							     SADB_X_EXT_ADDRESS_DST_FLOW,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_DST_FLOW],
+							     K_SADB_X_EXT_ADDRESS_DST_FLOW,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     (struct sockaddr*)&dstflow),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_X_EXT_ADDRESS_SRC_MASK],
-							     SADB_X_EXT_ADDRESS_SRC_MASK,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_SRC_MASK],
+							     K_SADB_X_EXT_ADDRESS_SRC_MASK,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     (struct sockaddr*)&srcmask),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_X_EXT_ADDRESS_DST_MASK],
-							     SADB_X_EXT_ADDRESS_DST_MASK,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_DST_MASK],
+							     K_SADB_X_EXT_ADDRESS_DST_MASK,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     (struct sockaddr*)&dstmask),
@@ -2063,10 +2064,10 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 #ifdef CONFIG_KLIPS_DEBUG
 	char buf1[64], buf2[64];
 #endif /* CONFIG_KLIPS_DEBUG */
-	struct sadb_ext *extensions_reply[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions_reply[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
-	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
+	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
 	ip_address srcflow, dstflow, srcmask, dstmask;
 
 	KLIPS_PRINT(debug_pfkey,
@@ -2086,7 +2087,7 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		SENDERR(EINVAL);
 	}
 
-	if(extr->ips->ips_flags & SADB_X_SAFLAGS_CLEARFLOW) {
+	if(extr->ips->ips_flags & K_SADB_X_SAFLAGS_CLEARFLOW) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_x_delflow_parse: "
 			    "CLEARFLOW flag set, calling cleareroutes.\n");
@@ -2149,14 +2150,14 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 	}
 	
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
-							  SADB_X_DELFLOW,
+							  K_SADB_X_DELFLOW,
 							  satype,
 							  0,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_seq,
-							  ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_pid),
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_seq,
+							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_pid),
 			      extensions_reply)
-	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[SADB_EXT_SA],
-							SADB_EXT_SA,
+	     && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions_reply[K_SADB_EXT_SA],
+							K_SADB_EXT_SA,
 							extr->ips->ips_said.spi,
 							extr->ips->ips_replaywin,
 							extr->ips->ips_state,
@@ -2165,26 +2166,26 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 							extr->ips->ips_flags,
 							extr->ips->ips_ref),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_X_EXT_ADDRESS_SRC_FLOW],
-							     SADB_X_EXT_ADDRESS_SRC_FLOW,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_SRC_FLOW],
+							     K_SADB_X_EXT_ADDRESS_SRC_FLOW,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     (struct sockaddr*)&srcflow),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_X_EXT_ADDRESS_DST_FLOW],
-							     SADB_X_EXT_ADDRESS_DST_FLOW,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_DST_FLOW],
+							     K_SADB_X_EXT_ADDRESS_DST_FLOW,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     (struct sockaddr*)&dstflow),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_X_EXT_ADDRESS_SRC_MASK],
-							     SADB_X_EXT_ADDRESS_SRC_MASK,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_SRC_MASK],
+							     K_SADB_X_EXT_ADDRESS_SRC_MASK,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     (struct sockaddr*)&srcmask),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_X_EXT_ADDRESS_DST_MASK],
-							     SADB_X_EXT_ADDRESS_DST_MASK,
+	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_DST_MASK],
+							     K_SADB_X_EXT_ADDRESS_DST_MASK,
 							     0, /*extr->ips->ips_said.proto,*/
 							     0,
 							     (struct sockaddr*)&dstmask),
@@ -2248,7 +2249,7 @@ pfkey_x_msg_debug_parse(struct sock *sk, struct sadb_ext **extensions, struct pf
 int
 pfkey_expire(struct ipsec_sa *ipsp, int hard)
 {
-	struct sadb_ext *extensions[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_msg = NULL;
 	struct socket_list *pfkey_socketsp;
 	int error = 0;
@@ -2271,14 +2272,14 @@ pfkey_expire(struct ipsec_sa *ipsp, int hard)
 	}
 
 	if (!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions[0],
-							   SADB_EXPIRE,
+							   K_SADB_EXPIRE,
 							   satype,
 							   0,
 							   ++pfkey_msg_seq,
 							   0),
 			       extensions)
-	      && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions[SADB_EXT_SA],
-							 SADB_EXT_SA,
+	      && pfkey_safe_build(error = pfkey_sa_ref_build(&extensions[K_SADB_EXT_SA],
+							 K_SADB_EXT_SA,
 							 ipsp->ips_said.spi,
 							 ipsp->ips_replaywin,
 							 ipsp->ips_state,
@@ -2287,8 +2288,8 @@ pfkey_expire(struct ipsec_sa *ipsp, int hard)
 							 ipsp->ips_flags,
 							 ipsp->ips_ref),
 				  extensions)
-	      && pfkey_safe_build(error = pfkey_lifetime_build(&extensions[SADB_EXT_LIFETIME_CURRENT],
-							       SADB_EXT_LIFETIME_CURRENT,
+	      && pfkey_safe_build(error = pfkey_lifetime_build(&extensions[K_SADB_EXT_LIFETIME_CURRENT],
+							       K_SADB_EXT_LIFETIME_CURRENT,
 							       ipsp->ips_life.ipl_allocations.ipl_count,
 							       ipsp->ips_life.ipl_bytes.ipl_count,
 							       ipsp->ips_life.ipl_addtime.ipl_count,
@@ -2296,30 +2297,30 @@ pfkey_expire(struct ipsec_sa *ipsp, int hard)
 							       ipsp->ips_life.ipl_packets.ipl_count),
 				  extensions)
 	      && (hard ? 
-		  pfkey_safe_build(error = pfkey_lifetime_build(&extensions[SADB_EXT_LIFETIME_HARD],
-								SADB_EXT_LIFETIME_HARD,
+		  pfkey_safe_build(error = pfkey_lifetime_build(&extensions[K_SADB_EXT_LIFETIME_HARD],
+								K_SADB_EXT_LIFETIME_HARD,
 								ipsp->ips_life.ipl_allocations.ipl_hard,
 								ipsp->ips_life.ipl_bytes.ipl_hard,
 								ipsp->ips_life.ipl_addtime.ipl_hard,
 								ipsp->ips_life.ipl_usetime.ipl_hard,
 								ipsp->ips_life.ipl_packets.ipl_hard),
 				   extensions)
-		  : pfkey_safe_build(error = pfkey_lifetime_build(&extensions[SADB_EXT_LIFETIME_SOFT],
-								  SADB_EXT_LIFETIME_SOFT,
+		  : pfkey_safe_build(error = pfkey_lifetime_build(&extensions[K_SADB_EXT_LIFETIME_SOFT],
+								  K_SADB_EXT_LIFETIME_SOFT,
 								  ipsp->ips_life.ipl_allocations.ipl_soft,
 								  ipsp->ips_life.ipl_bytes.ipl_soft,
 								  ipsp->ips_life.ipl_addtime.ipl_soft,
 								  ipsp->ips_life.ipl_usetime.ipl_soft,
 								  ipsp->ips_life.ipl_packets.ipl_soft),
 				     extensions))
-	      && pfkey_safe_build(error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_SRC],
-							      SADB_EXT_ADDRESS_SRC,
+	      && pfkey_safe_build(error = pfkey_address_build(&extensions[K_SADB_EXT_ADDRESS_SRC],
+							      K_SADB_EXT_ADDRESS_SRC,
 							      0, /* ipsp->ips_said.proto, */
 							      0,
 							      ipsp->ips_addr_s),
 				  extensions)
-	      && pfkey_safe_build(error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_DST],
-							      SADB_EXT_ADDRESS_DST,
+	      && pfkey_safe_build(error = pfkey_address_build(&extensions[K_SADB_EXT_ADDRESS_DST],
+							      K_SADB_EXT_ADDRESS_DST,
 							      0, /* ipsp->ips_said.proto, */
 							      0,
 							      ipsp->ips_addr_d),
@@ -2367,34 +2368,34 @@ pfkey_expire(struct ipsec_sa *ipsp, int hard)
 int
 pfkey_acquire(struct ipsec_sa *ipsp)
 {
-	struct sadb_ext *extensions[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_msg = NULL;
 	struct socket_list *pfkey_socketsp;
 	int error = 0;
-	struct sadb_comb comb[] = {
+	struct k_sadb_comb comb[] = {
 		/* auth; encrypt; flags; */
 		/* auth_minbits; auth_maxbits; encrypt_minbits; encrypt_maxbits; */
 		/* reserved; soft_allocations; hard_allocations; soft_bytes; hard_bytes; */
 		/* soft_addtime; hard_addtime; soft_usetime; hard_usetime; */
 		/* soft_packets; hard_packets; */
-		{ SADB_AALG_MD5HMAC,  SADB_EALG_3DESCBC, SADB_SAFLAGS_PFS,
-		  128, 128, 168, 168,
-		  0, 0, 0, 0, 0,
-		  57600, 86400, 57600, 86400,
+		{ {K_SADB_AALG_MD5HMAC,  K_SADB_EALG_3DESCBC, K_SADB_SAFLAGS_PFS,
+		   128, 128, 168, 168,
+		   0, 0, 0, 0, 0,
+		   57600, 86400, 57600, 86400},
 		  0, 0 },
-		{ SADB_AALG_SHA1HMAC, SADB_EALG_3DESCBC, SADB_SAFLAGS_PFS,
-		  160, 160, 168, 168,
-		  0, 0, 0, 0, 0,
-		  57600, 86400, 57600, 86400,
+		{ {K_SADB_AALG_SHA1HMAC, K_SADB_EALG_3DESCBC, K_SADB_SAFLAGS_PFS,
+		   160, 160, 168, 168,
+		   0, 0, 0, 0, 0,
+		   57600, 86400, 57600, 86400},
 		  0, 0 }
 	};
        
 	/* XXX This should not be hard-coded.  It should be taken from the spdb */
-	uint8_t satype = SADB_SATYPE_ESP;
+	uint8_t satype = K_SADB_SATYPE_ESP;
 
 	pfkey_extensions_init(extensions);
 
-	if((satype == 0) || (satype > SADB_SATYPE_MAX)) {
+	if((satype == 0) || (satype > K_SADB_SATYPE_MAX)) {
 		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_acquire: "
 			    "SAtype=%d unspecified or unknown.\n",
 			    satype);
@@ -2410,45 +2411,45 @@ pfkey_acquire(struct ipsec_sa *ipsp)
 	}
 	
 	if (!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions[0],
-							  SADB_ACQUIRE,
+							  K_SADB_ACQUIRE,
 							  satype,
 							  0,
 							  ++pfkey_msg_seq,
 							  0),
 			      extensions)
-	      && pfkey_safe_build(error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_SRC],
-							      SADB_EXT_ADDRESS_SRC,
+	      && pfkey_safe_build(error = pfkey_address_build(&extensions[K_SADB_EXT_ADDRESS_SRC],
+							      K_SADB_EXT_ADDRESS_SRC,
 							      ipsp->ips_transport_protocol,
 							      0,
 							      ipsp->ips_addr_s),
 				  extensions)
-	      && pfkey_safe_build(error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_DST],
-							      SADB_EXT_ADDRESS_DST,
+	      && pfkey_safe_build(error = pfkey_address_build(&extensions[K_SADB_EXT_ADDRESS_DST],
+							      K_SADB_EXT_ADDRESS_DST,
 							      ipsp->ips_transport_protocol,
 							      0,
 							      ipsp->ips_addr_d),
 				  extensions)
 #if 0
 	      && (ipsp->ips_addr_p
-		  ? pfkey_safe_build(error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_PROXY],
-								 SADB_EXT_ADDRESS_PROXY,
+		  ? pfkey_safe_build(error = pfkey_address_build(&extensions[K_SADB_EXT_ADDRESS_PROXY],
+								 K_SADB_EXT_ADDRESS_PROXY,
 								 ipsp->ips_transport_protocol,
 								 0,
 								 ipsp->ips_addr_p),
 				     extensions) : 1)
 #endif
-	      && (ipsp->ips_ident_s.type != SADB_IDENTTYPE_RESERVED
-		  ? pfkey_safe_build(error = pfkey_ident_build(&extensions[SADB_EXT_IDENTITY_SRC],
-							       SADB_EXT_IDENTITY_SRC,
+	      && (ipsp->ips_ident_s.type != K_SADB_IDENTTYPE_RESERVED
+		  ? pfkey_safe_build(error = pfkey_ident_build(&extensions[K_SADB_EXT_IDENTITY_SRC],
+							       K_SADB_EXT_IDENTITY_SRC,
 							       ipsp->ips_ident_s.type,
 							       ipsp->ips_ident_s.id,
 							       ipsp->ips_ident_s.len,
 							       ipsp->ips_ident_s.data),
 				     extensions) : 1)
 
-	      && (ipsp->ips_ident_d.type != SADB_IDENTTYPE_RESERVED
-		  ? pfkey_safe_build(error = pfkey_ident_build(&extensions[SADB_EXT_IDENTITY_DST],
-							       SADB_EXT_IDENTITY_DST,
+	      && (ipsp->ips_ident_d.type != K_SADB_IDENTTYPE_RESERVED
+		  ? pfkey_safe_build(error = pfkey_ident_build(&extensions[K_SADB_EXT_IDENTITY_DST],
+							       K_SADB_EXT_IDENTITY_DST,
 							       ipsp->ips_ident_d.type,
 							       ipsp->ips_ident_d.id,
 							       ipsp->ips_ident_d.len,
@@ -2458,7 +2459,7 @@ pfkey_acquire(struct ipsec_sa *ipsp)
 	      /* FIXME: This won't work yet because I have not finished
 		 it. */
 	      && (ipsp->ips_sens_
-		  ? pfkey_safe_build(error = pfkey_sens_build(&extensions[SADB_EXT_SENSITIVITY],
+		  ? pfkey_safe_build(error = pfkey_sens_build(&extensions[K_SADB_EXT_SENSITIVITY],
 							      ipsp->ips_sens_dpd,
 							      ipsp->ips_sens_sens_level,
 							      ipsp->ips_sens_sens_len,
@@ -2468,9 +2469,9 @@ pfkey_acquire(struct ipsec_sa *ipsp)
 							      ipsp->ips_sens_integ_bitmap),
 				     extensions) : 1)
 #endif
-	      && pfkey_safe_build(error = pfkey_prop_build(&extensions[SADB_EXT_PROPOSAL],
+	      && pfkey_safe_build(error = pfkey_prop_build(&extensions[K_SADB_EXT_PROPOSAL],
 							   64, /* replay */
-							   sizeof(comb)/sizeof(struct sadb_comb),
+							   sizeof(comb)/sizeof(struct k_sadb_comb),
 							   &(comb[0])),
 				  extensions)
 		)) {
@@ -2524,17 +2525,17 @@ int
 pfkey_nat_t_new_mapping(struct ipsec_sa *ipsp, struct sockaddr *ipaddr,
 	__u16 sport)
 {
-	struct sadb_ext *extensions[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_msg = NULL;
 	struct socket_list *pfkey_socketsp;
 	int error = 0;
-	uint8_t satype = (ipsp->ips_said.proto==IPPROTO_ESP) ? SADB_SATYPE_ESP : 0;
+	uint8_t satype = (ipsp->ips_said.proto==IPPROTO_ESP) ? K_SADB_SATYPE_ESP : 0;
 
-	/* Construct SADB_X_NAT_T_NEW_MAPPING message */
+	/* Construct K_SADB_X_NAT_T_NEW_MAPPING message */
 
 	pfkey_extensions_init(extensions);
 
-	if((satype == 0) || (satype > SADB_SATYPE_MAX)) {
+	if((satype == 0) || (satype > K_SADB_SATYPE_MAX)) {
 		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_nat_t_new_mapping: "
 			    "SAtype=%d unspecified or unknown.\n",
 			    satype);
@@ -2550,29 +2551,29 @@ pfkey_nat_t_new_mapping(struct ipsec_sa *ipsp, struct sockaddr *ipaddr,
 	}
 
 	if (!(pfkey_safe_build
-		(error = pfkey_msg_hdr_build(&extensions[0], SADB_X_NAT_T_NEW_MAPPING,
+		(error = pfkey_msg_hdr_build(&extensions[0], K_SADB_X_NAT_T_NEW_MAPPING,
 			satype, 0, ++pfkey_msg_seq, 0), extensions)
 		/* SA */
 		&& pfkey_safe_build
-		(error = pfkey_sa_build(&extensions[SADB_EXT_SA],
-			SADB_EXT_SA, ipsp->ips_said.spi, 0, 0, 0, 0, 0), extensions)
+		(error = pfkey_sa_build(&extensions[K_SADB_EXT_SA],
+			K_SADB_EXT_SA, ipsp->ips_said.spi, 0, 0, 0, 0, 0), extensions)
 		/* ADDRESS_SRC = old addr */
 		&& pfkey_safe_build
-		(error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_SRC],
-			SADB_EXT_ADDRESS_SRC, ipsp->ips_said.proto, 0, ipsp->ips_addr_s),
+		(error = pfkey_address_build(&extensions[K_SADB_EXT_ADDRESS_SRC],
+			K_SADB_EXT_ADDRESS_SRC, ipsp->ips_said.proto, 0, ipsp->ips_addr_s),
 			extensions)
 		/* NAT_T_SPORT = old port */
 	    && pfkey_safe_build
-		(error = pfkey_x_nat_t_port_build(&extensions[SADB_X_EXT_NAT_T_SPORT],
-			SADB_X_EXT_NAT_T_SPORT, ipsp->ips_natt_sport), extensions)
+		(error = pfkey_x_nat_t_port_build(&extensions[K_SADB_X_EXT_NAT_T_SPORT],
+			K_SADB_X_EXT_NAT_T_SPORT, ipsp->ips_natt_sport), extensions)
 		/* ADDRESS_DST = new addr */
 		&& pfkey_safe_build
-		(error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_DST],
-			SADB_EXT_ADDRESS_DST, ipsp->ips_said.proto, 0, ipaddr), extensions)
+		(error = pfkey_address_build(&extensions[K_SADB_EXT_ADDRESS_DST],
+			K_SADB_EXT_ADDRESS_DST, ipsp->ips_said.proto, 0, ipaddr), extensions)
 		/* NAT_T_DPORT = new port */
 	    && pfkey_safe_build
-		(error = pfkey_x_nat_t_port_build(&extensions[SADB_X_EXT_NAT_T_DPORT],
-			SADB_X_EXT_NAT_T_DPORT, sport), extensions)
+		(error = pfkey_x_nat_t_port_build(&extensions[K_SADB_X_EXT_NAT_T_DPORT],
+			K_SADB_X_EXT_NAT_T_DPORT, sport), extensions)
 		)) {
 		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_nat_t_new_mapping: "
 			    "failed to build the nat_t_new_mapping message extensions\n");
@@ -2616,7 +2617,7 @@ pfkey_nat_t_new_mapping(struct ipsec_sa *ipsp, struct sockaddr *ipaddr,
 DEBUG_NO_STATIC int
 pfkey_x_nat_t_new_mapping_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extracted_data* extr)
 {
-	/* SADB_X_NAT_T_NEW_MAPPING not used in kernel */
+	/* K_SADB_X_NAT_T_NEW_MAPPING not used in kernel */
 	return -EINVAL;
 }
 #endif
@@ -2637,7 +2638,7 @@ pfkey_x_outif_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 	return 0;
 }
 
-DEBUG_NO_STATIC int (*ext_processors[SADB_EXT_MAX+1])(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr) =
+DEBUG_NO_STATIC int (*ext_processors[K_SADB_EXT_MAX+1])(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr) =
 {
 	NULL, /* pfkey_msg_process, */
         pfkey_sa_process,
@@ -2713,7 +2714,7 @@ pfkey_x_unplumb_parse(struct sock *sk, struct sadb_ext *extensions[], struct pfk
 }
 
 
-DEBUG_NO_STATIC int (*msg_parsers[SADB_MAX +1])(struct sock *sk, struct sadb_ext *extensions[], struct pfkey_extracted_data* extr)
+DEBUG_NO_STATIC int (*msg_parsers[K_SADB_MAX +1])(struct sock *sk, struct sadb_ext *extensions[], struct pfkey_extracted_data* extr)
  =
 {
 	NULL, /* RESERVED */
@@ -2747,7 +2748,7 @@ pfkey_build_reply(struct sadb_msg *pfkey_msg,
 		  struct pfkey_extracted_data *extr,
 		  struct sadb_msg **pfkey_reply)
 {
-	struct sadb_ext *extensions[SADB_EXT_MAX+1];
+	struct sadb_ext *extensions[K_SADB_EXT_MAX+1];
 	int error = 0;
 	int msg_type = pfkey_msg->sadb_msg_type;
 	int seq = pfkey_msg->sadb_msg_seq;
@@ -2770,10 +2771,10 @@ pfkey_build_reply(struct sadb_msg *pfkey_msg,
 				 extensions);
 
 	if(!error
-	   && pfkey_required_extension(EXT_BITS_OUT, msg_type, SADB_EXT_SA)) {
+	   && pfkey_required_extension(EXT_BITS_OUT, msg_type, K_SADB_EXT_SA)) {
 		
-		error = pfkey_sa_ref_build(&extensions[SADB_EXT_SA],
-					   SADB_EXT_SA,
+		error = pfkey_sa_ref_build(&extensions[K_SADB_EXT_SA],
+					   K_SADB_EXT_SA,
 					   extr->ips->ips_said.spi,
 					   extr->ips->ips_replaywin,
 					   extr->ips->ips_state,
@@ -2785,10 +2786,10 @@ pfkey_build_reply(struct sadb_msg *pfkey_msg,
 	}
 
 	if(!error
-	   && pfkey_required_extension(EXT_BITS_OUT,msg_type,SADB_EXT_LIFETIME_CURRENT)) {
+	   && pfkey_required_extension(EXT_BITS_OUT,msg_type,K_SADB_EXT_LIFETIME_CURRENT)) {
 		error = pfkey_lifetime_build(&extensions
-					     [SADB_EXT_LIFETIME_CURRENT],
-					     SADB_EXT_LIFETIME_CURRENT,
+					     [K_SADB_EXT_LIFETIME_CURRENT],
+					     K_SADB_EXT_LIFETIME_CURRENT,
 					     extr->ips->ips_life.ipl_allocations.ipl_count,
 					     extr->ips->ips_life.ipl_bytes.ipl_count,
 					     extr->ips->ips_life.ipl_addtime.ipl_count,
@@ -2798,9 +2799,9 @@ pfkey_build_reply(struct sadb_msg *pfkey_msg,
 	}
 
 	if(!error
-	   && pfkey_required_extension(EXT_BITS_OUT,msg_type,SADB_EXT_ADDRESS_SRC)) {
-		error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_SRC],
-					    SADB_EXT_ADDRESS_SRC,
+	   && pfkey_required_extension(EXT_BITS_OUT,msg_type,K_SADB_EXT_ADDRESS_SRC)) {
+		error = pfkey_address_build(&extensions[K_SADB_EXT_ADDRESS_SRC],
+					    K_SADB_EXT_ADDRESS_SRC,
 					    extr->ips->ips_said.proto,
 					    0,
 					    extr->ips->ips_addr_s);
@@ -2808,9 +2809,9 @@ pfkey_build_reply(struct sadb_msg *pfkey_msg,
 	}
 
 	if(!error
-	   && pfkey_required_extension(EXT_BITS_OUT,msg_type,SADB_EXT_ADDRESS_DST)) {
-		error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_DST],
-					    SADB_EXT_ADDRESS_DST,
+	   && pfkey_required_extension(EXT_BITS_OUT,msg_type,K_SADB_EXT_ADDRESS_DST)) {
+		error = pfkey_address_build(&extensions[K_SADB_EXT_ADDRESS_DST],
+					    K_SADB_EXT_ADDRESS_DST,
 					    extr->ips->ips_said.proto,
 					    0,
 					    extr->ips->ips_addr_d);
@@ -2846,7 +2847,7 @@ pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg)
 {
 	int error = 0;
 	int i;
-	struct sadb_ext *extensions[SADB_EXT_MAX+1];    /* should be kalloc */
+	struct sadb_ext *extensions[K_SADB_EXT_MAX+1];    /* should be kalloc */
 	struct pfkey_extracted_data extr = {NULL, NULL, NULL};
 	
 	pfkey_extensions_init(extensions);
@@ -2876,22 +2877,22 @@ pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg)
 		    "allocated extr->ips=0p%p.\n",
 		    extr.ips);
 	
-	if(pfkey_msg->sadb_msg_satype > SADB_SATYPE_MAX) {
+	if(pfkey_msg->sadb_msg_satype > K_SADB_SATYPE_MAX) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_msg_interp: "
 			    "satype %d > max %d\n", 
 			    pfkey_msg->sadb_msg_satype,
-			    SADB_SATYPE_MAX);
+			    K_SADB_SATYPE_MAX);
 		SENDERR(EINVAL);
 	}
 	
 	switch(pfkey_msg->sadb_msg_type) {
-	case SADB_GETSPI:
-	case SADB_UPDATE:
-	case SADB_ADD:
-	case SADB_DELETE:
-	case SADB_X_GRPSA:
-	case SADB_X_ADDFLOW:
+	case K_SADB_GETSPI:
+	case K_SADB_UPDATE:
+	case K_SADB_ADD:
+	case K_SADB_DELETE:
+	case K_SADB_X_GRPSA:
+	case K_SADB_X_ADDFLOW:
 		if(!(extr.ips->ips_said.proto = satype2proto(pfkey_msg->sadb_msg_satype))) {
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_msg_interp: "
@@ -2922,7 +2923,7 @@ pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg)
 	}
 	
 	/* Process the extensions */
-	for(i=1; i <= SADB_EXT_MAX;i++)	{
+	for(i=1; i <= K_SADB_EXT_MAX;i++)	{
 		if(extensions[i] != NULL && ext_processors[i]!=NULL) {
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_msg_interp: "

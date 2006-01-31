@@ -265,7 +265,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 	  rje->rd_nodes->rj_key= er;
 	}
 	
-	if (ident_s && ident_s->type != SADB_IDENTTYPE_RESERVED) {
+	if (ident_s && ident_s->type != K_SADB_IDENTTYPE_RESERVED) {
 		int data_len = ident_s->len * IPSEC_PFKEYv2_ALIGN - sizeof(struct sadb_ident);
 		
 		retrt->er_ident_s.type = ident_s->type;
@@ -287,7 +287,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 		}
 	}
 	
-	if (ident_d && ident_d->type != SADB_IDENTTYPE_RESERVED) {
+	if (ident_d && ident_d->type != K_SADB_IDENTTYPE_RESERVED) {
 		int data_len = ident_d->len  * IPSEC_PFKEYv2_ALIGN - sizeof(struct sadb_ident);
 		
 		retrt->er_ident_d.type = ident_d->type;

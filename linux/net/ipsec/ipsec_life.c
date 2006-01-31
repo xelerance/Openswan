@@ -119,10 +119,10 @@ ipsec_lifetime_check(struct ipsec_lifetime64 *il64,
 			    saname,
 			    dir);
 
-		if(ips->ips_state != SADB_SASTATE_DYING) {
+		if(ips->ips_state != K_SADB_SASTATE_DYING) {
 			pfkey_expire(ips, 0);
 		}
-		ips->ips_state = SADB_SASTATE_DYING;
+		ips->ips_state = K_SADB_SASTATE_DYING;
 
 		return ipsec_life_softdied;
 	}

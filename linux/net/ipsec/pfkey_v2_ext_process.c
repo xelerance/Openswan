@@ -92,6 +92,7 @@ char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.20 2005
 int
 pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 {
+	struct k_sadb_sa *k_pfkey_sa = (struct k_sadb_sa *)pfkey_ext;
 	struct sadb_sa *pfkey_sa = (struct sadb_sa *)pfkey_ext;
 	int error = 0;
 	struct ipsec_sa* ipsp;
@@ -107,10 +108,10 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	}
 
 	switch(pfkey_ext->sadb_ext_type) {
-	case SADB_EXT_SA:
+	case K_SADB_EXT_SA:
 		ipsp = extr->ips;
 		break;
-	case SADB_X_EXT_SA2:
+	case K_SADB_X_EXT_SA2:
 		if(extr->ips2 == NULL) {
 			extr->ips2 = ipsec_sa_alloc(&error); /* pass error var by pointer */
 		}
@@ -132,12 +133,12 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	ipsp->ips_state = pfkey_sa->sadb_sa_state;
 	ipsp->ips_flags = pfkey_sa->sadb_sa_flags;
 	ipsp->ips_replaywin_lastseq = ipsp->ips_replaywin_bitmap = 0;
-	ipsp->ips_ref = pfkey_sa->sadb_x_sa_ref;
+	ipsp->ips_ref = k_pfkey_sa->sadb_x_sa_ref;
 	
 	switch(ipsp->ips_said.proto) {
 	case IPPROTO_AH:
 		ipsp->ips_authalg = pfkey_sa->sadb_sa_auth;
-		ipsp->ips_encalg = SADB_EALG_NONE;
+		ipsp->ips_encalg = K_SADB_EALG_NONE;
 		break;
 	case IPPROTO_ESP:
 		ipsp->ips_authalg = pfkey_sa->sadb_sa_auth;
@@ -191,13 +192,13 @@ pfkey_lifetime_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* 
 	}
 
 	switch(pfkey_lifetime->sadb_lifetime_exttype) {
-	case SADB_EXT_LIFETIME_CURRENT:
+	case K_SADB_EXT_LIFETIME_CURRENT:
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_lifetime_process: "
 			    "lifetime_current not supported yet.\n");
   		SENDERR(EINVAL);
   		break;
-	case SADB_EXT_LIFETIME_HARD:
+	case K_SADB_EXT_LIFETIME_HARD:
 		ipsec_lifetime_update_hard(&extr->ips->ips_life.ipl_allocations,
 					  pfkey_lifetime->sadb_lifetime_allocations);
 
@@ -212,7 +213,7 @@ pfkey_lifetime_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* 
 
 		break;
 
-	case SADB_EXT_LIFETIME_SOFT:
+	case K_SADB_EXT_LIFETIME_SOFT:
 		ipsec_lifetime_update_soft(&extr->ips->ips_life.ipl_allocations,
 					   pfkey_lifetime->sadb_lifetime_allocations);
 
@@ -284,28 +285,28 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 	}
 	
 	switch(pfkey_address->sadb_address_exttype) {
-	case SADB_EXT_ADDRESS_SRC:
+	case K_SADB_EXT_ADDRESS_SRC:
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
 			    "found src address.\n");
 		sap = (unsigned char **)&(extr->ips->ips_addr_s);
 		extr->ips->ips_addr_s_size = saddr_len;
 		break;
-	case SADB_EXT_ADDRESS_DST:
+	case K_SADB_EXT_ADDRESS_DST:
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
 			    "found dst address.\n");
 		sap = (unsigned char **)&(extr->ips->ips_addr_d);
 		extr->ips->ips_addr_d_size = saddr_len;
 		break;
-	case SADB_EXT_ADDRESS_PROXY:
+	case K_SADB_EXT_ADDRESS_PROXY:
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
 			    "found proxy address.\n");
 		sap = (unsigned char **)&(extr->ips->ips_addr_p);
 		extr->ips->ips_addr_p_size = saddr_len;
 		break;
-	case SADB_X_EXT_ADDRESS_DST2:
+	case K_SADB_X_EXT_ADDRESS_DST2:
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
 			    "found 2nd dst address.\n");
@@ -318,7 +319,7 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		sap = (unsigned char **)&(extr->ips2->ips_addr_d);
 		extr->ips2->ips_addr_d_size = saddr_len;
 		break;
-	case SADB_X_EXT_ADDRESS_SRC_FLOW:
+	case K_SADB_X_EXT_ADDRESS_SRC_FLOW:
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
 			    "found src flow address.\n");
@@ -328,7 +329,7 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		sap = (unsigned char **)&(extr->eroute->er_eaddr.sen_ip_src);
 		portp = &(extr->eroute->er_eaddr.sen_sport);
 		break;
-	case SADB_X_EXT_ADDRESS_DST_FLOW:
+	case K_SADB_X_EXT_ADDRESS_DST_FLOW:
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
 			    "found dst flow address.\n");
@@ -338,7 +339,7 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		sap = (unsigned char **)&(extr->eroute->er_eaddr.sen_ip_dst);
 		portp = &(extr->eroute->er_eaddr.sen_dport);
 		break;
-	case SADB_X_EXT_ADDRESS_SRC_MASK:
+	case K_SADB_X_EXT_ADDRESS_SRC_MASK:
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
 			    "found src mask address.\n");
@@ -348,7 +349,7 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		sap = (unsigned char **)&(extr->eroute->er_emask.sen_ip_src);
 		portp = &(extr->eroute->er_emask.sen_sport);
 		break;
-	case SADB_X_EXT_ADDRESS_DST_MASK:
+	case K_SADB_X_EXT_ADDRESS_DST_MASK:
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
 			    "found dst mask address.\n");
@@ -359,7 +360,7 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		portp = &(extr->eroute->er_emask.sen_dport);
 		break;
 #ifdef NAT_TRAVERSAL
-	case SADB_X_EXT_NAT_T_OA:
+	case K_SADB_X_EXT_NAT_T_OA:
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
 			    "found NAT-OA address.\n");
@@ -376,12 +377,12 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 	}
 	
 	switch(pfkey_address->sadb_address_exttype) {
-	case SADB_EXT_ADDRESS_SRC:
-	case SADB_EXT_ADDRESS_DST:
-	case SADB_EXT_ADDRESS_PROXY:
-	case SADB_X_EXT_ADDRESS_DST2:
+	case K_SADB_EXT_ADDRESS_SRC:
+	case K_SADB_EXT_ADDRESS_DST:
+	case K_SADB_EXT_ADDRESS_PROXY:
+	case K_SADB_X_EXT_ADDRESS_DST2:
 #ifdef NAT_TRAVERSAL
-	case SADB_X_EXT_NAT_T_OA:
+	case K_SADB_X_EXT_NAT_T_OA:
 #endif
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
@@ -429,9 +430,9 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 
 	ipsp = extr->ips;
 	switch(pfkey_address->sadb_address_exttype) {
-	case SADB_X_EXT_ADDRESS_DST2:
+	case K_SADB_X_EXT_ADDRESS_DST2:
 		ipsp = extr->ips2;
-	case SADB_EXT_ADDRESS_DST:
+	case K_SADB_EXT_ADDRESS_DST:
 		if(s->sa_family == AF_INET) {
 			ipsp->ips_said.dst.u.v4.sin_addr.s_addr = ((struct sockaddr_in*)(ipsp->ips_addr_d))->sin_addr.s_addr;
 			ipsp->ips_said.dst.u.v4.sin_family      = AF_INET;
@@ -478,7 +479,7 @@ pfkey_key_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	}
 
         switch(pfkey_key->sadb_key_exttype) {
-        case SADB_EXT_KEY_AUTH:
+        case K_SADB_EXT_KEY_AUTH:
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_key_process: "
 			    "allocating %d bytes for authkey.\n",
@@ -495,7 +496,7 @@ pfkey_key_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 		       (char*)pfkey_key + sizeof(struct sadb_key),
 		       extr->ips->ips_key_a_size);
 		break;
-	case SADB_EXT_KEY_ENCRYPT: /* Key(s) */
+	case K_SADB_EXT_KEY_ENCRYPT: /* Key(s) */
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_key_process: "
 			    "allocating %d bytes for enckey.\n",
@@ -541,7 +542,7 @@ pfkey_ident_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* ext
 	}
 
 	switch(pfkey_ident->sadb_ident_exttype) {
-	case SADB_EXT_IDENTITY_SRC:
+	case K_SADB_EXT_IDENTITY_SRC:
 		data_len = pfkey_ident->sadb_ident_len * IPSEC_PFKEYv2_ALIGN - sizeof(struct sadb_ident);
 		
 		extr->ips->ips_ident_s.type = pfkey_ident->sadb_ident_type;
@@ -563,7 +564,7 @@ pfkey_ident_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* ext
 			extr->ips->ips_ident_s.data = NULL;
                 }
                 break;
-	case SADB_EXT_IDENTITY_DST: /* Identity(ies) */
+	case K_SADB_EXT_IDENTITY_DST: /* Identity(ies) */
 		data_len = pfkey_ident->sadb_ident_len * IPSEC_PFKEYv2_ALIGN - sizeof(struct sadb_ident);
 		
 		extr->ips->ips_ident_d.type = pfkey_ident->sadb_ident_type;
@@ -771,10 +772,10 @@ pfkey_x_nat_t_port_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_da
 	}
 
 	switch(pfkey_x_nat_t_port->sadb_x_nat_t_port_exttype) {
-		case SADB_X_EXT_NAT_T_SPORT:
+		case K_SADB_X_EXT_NAT_T_SPORT:
 			extr->ips->ips_natt_sport = pfkey_x_nat_t_port->sadb_x_nat_t_port_port;
 			break;
-		case SADB_X_EXT_NAT_T_DPORT:
+		case K_SADB_X_EXT_NAT_T_DPORT:
 			extr->ips->ips_natt_dport = pfkey_x_nat_t_port->sadb_x_nat_t_port_port;
 			break;
 		default:
