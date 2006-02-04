@@ -129,7 +129,7 @@ extern void passert_fail(const char *pred_str
 
 extern void pluto_init_log(void);
 extern void close_log(void);
-extern void plog(const char *message, ...) PRINTF_LIKE(1);
+extern int plog(const char *message, ...) PRINTF_LIKE(1);
 extern void exit_log(const char *message, ...) PRINTF_LIKE(1) NEVER_RETURNS;
 
 /* close of all per-peer logging */

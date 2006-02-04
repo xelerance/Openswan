@@ -404,7 +404,7 @@ peerlog(const char *prefix, const char *m)
 }
 
 
-void
+int
 openswan_log(const char *message, ...)
 {
     va_list args;
@@ -422,6 +422,8 @@ openswan_log(const char *message, ...)
 	peerlog("", m);
 
     whack_log(RC_LOG, "~%s", m);
+    
+    return 0;
 }
 
 void
@@ -671,7 +673,7 @@ set_debugging(lset_t deb)
 
 /* log a debugging message (prefixed by "| ") */
 
-void
+int
 DBG_log(const char *message, ...)
 {
     va_list args;
@@ -695,6 +697,8 @@ DBG_log(const char *message, ...)
 	prefix[2]='\n';
 	peerlog(prefix, m);
     }
+
+    return 0;
 }
 
 /* dump raw bytes in hex to stderr (for lack of any better destination) */

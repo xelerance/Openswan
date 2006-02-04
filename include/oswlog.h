@@ -38,9 +38,9 @@ extern lset_t cur_debugging;	/* current debugging level */
 #define loglog  openswan_loglog
 #define plog    openswan_log
 #define DBG_dump openswan_DBG_dump
-extern void openswan_DBG_log(const char *message, ...) PRINTF_LIKE(1);
+extern int openswan_DBG_log(const char *message, ...) PRINTF_LIKE(1);
 extern void openswan_DBG_dump(const char *label, const void *p, size_t len);
-extern void openswan_log(const char *message, ...) PRINTF_LIKE(1);
+extern int openswan_log(const char *message, ...) PRINTF_LIKE(1);
 extern void openswan_loglog(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 extern void openswan_exit_log(const char *message, ...) PRINTF_LIKE(1);
 
