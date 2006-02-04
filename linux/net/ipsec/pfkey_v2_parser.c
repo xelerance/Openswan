@@ -850,7 +850,7 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 
 	if(extr->outif != 0) {
 		extr->ips->ips_out = ipsec_mast_get_device(extr->outif);
-		extr->ips->ips_transport_direct = ipsec_mast_is_transport(extr->outif);
+		/*extr->ips->ips_transport_direct = ipsec_mast_is_transport(extr->outif);  */
 	}
 
 	if((error = ipsec_sa_add(extr->ips))) {
@@ -1855,7 +1855,7 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 			    buf1, buf2);
 	}
 #endif /* CONFIG_KLIPS_DEBUG */
-	if(extr->ips->ips_flags & K_SADB_X_SAFLAGS_INFLOW) {
+	if(extr->ips->ips_flags & SADB_X_SAFLAGS_INFLOW) {
 /*	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) */ 
 		struct ipsec_sa *ipsp, *ipsq;
 		char sa[SATOT_BUF];
@@ -1884,7 +1884,7 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		
 		sa_len = satot(&extr->ips->ips_said, 0, sa, sizeof(sa));
 
-		ipsp->ips_flags |= K_SADB_X_SAFLAGS_INFLOW;
+		ipsp->ips_flags |= SADB_X_SAFLAGS_INFLOW;
 		ipsp->ips_flow_s = srcflow;
 		ipsp->ips_flow_d = dstflow;
 		ipsp->ips_mask_s = srcmask;
@@ -1899,7 +1899,7 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 	} else {
 		struct sk_buff *first = NULL, *last = NULL;
 
-		if(extr->ips->ips_flags & K_SADB_X_SAFLAGS_REPLACEFLOW) {
+		if(extr->ips->ips_flags & SADB_X_SAFLAGS_REPLACEFLOW) {
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_x_addflow_parse: "
 				    "REPLACEFLOW flag set, calling breakeroute.\n");
@@ -2087,7 +2087,7 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		SENDERR(EINVAL);
 	}
 
-	if(extr->ips->ips_flags & K_SADB_X_SAFLAGS_CLEARFLOW) {
+	if(extr->ips->ips_flags & SADB_X_SAFLAGS_CLEARFLOW) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_x_delflow_parse: "
 			    "CLEARFLOW flag set, calling cleareroutes.\n");
@@ -2372,22 +2372,20 @@ pfkey_acquire(struct ipsec_sa *ipsp)
 	struct sadb_msg *pfkey_msg = NULL;
 	struct socket_list *pfkey_socketsp;
 	int error = 0;
-	struct k_sadb_comb comb[] = {
+	struct sadb_comb comb[] = {
 		/* auth; encrypt; flags; */
 		/* auth_minbits; auth_maxbits; encrypt_minbits; encrypt_maxbits; */
 		/* reserved; soft_allocations; hard_allocations; soft_bytes; hard_bytes; */
 		/* soft_addtime; hard_addtime; soft_usetime; hard_usetime; */
 		/* soft_packets; hard_packets; */
-		{ {K_SADB_AALG_MD5HMAC,  K_SADB_EALG_3DESCBC, K_SADB_SAFLAGS_PFS,
-		   128, 128, 168, 168,
-		   0, 0, 0, 0, 0,
-		   57600, 86400, 57600, 86400},
-		  0, 0 },
-		{ {K_SADB_AALG_SHA1HMAC, K_SADB_EALG_3DESCBC, K_SADB_SAFLAGS_PFS,
-		   160, 160, 168, 168,
-		   0, 0, 0, 0, 0,
-		   57600, 86400, 57600, 86400},
-		  0, 0 }
+		{ K_SADB_AALG_MD5HMAC,  K_SADB_EALG_3DESCBC, SADB_SAFLAGS_PFS,
+		  128, 128, 168, 168,
+		  0, 0, 0, 0, 0,
+		  57600, 86400, 57600, 86400},
+		{ K_SADB_AALG_SHA1HMAC, K_SADB_EALG_3DESCBC, SADB_SAFLAGS_PFS,
+		  160, 160, 168, 168,
+		  0, 0, 0, 0, 0,
+		  57600, 86400, 57600, 86400},
 	};
        
 	/* XXX This should not be hard-coded.  It should be taken from the spdb */
@@ -2438,8 +2436,8 @@ pfkey_acquire(struct ipsec_sa *ipsp)
 								 ipsp->ips_addr_p),
 				     extensions) : 1)
 #endif
-	      && (ipsp->ips_ident_s.type != K_SADB_IDENTTYPE_RESERVED
-		  ? pfkey_safe_build(error = pfkey_ident_build(&extensions[K_SADB_EXT_IDENTITY_SRC],
+	      && (ipsp->ips_ident_s.type != SADB_IDENTTYPE_RESERVED
+		  ? pfkey_safe_build(error = pfkey_ident_build(&extensions[SADB_EXT_IDENTITY_SRC],
 							       K_SADB_EXT_IDENTITY_SRC,
 							       ipsp->ips_ident_s.type,
 							       ipsp->ips_ident_s.id,
@@ -2447,7 +2445,7 @@ pfkey_acquire(struct ipsec_sa *ipsp)
 							       ipsp->ips_ident_s.data),
 				     extensions) : 1)
 
-	      && (ipsp->ips_ident_d.type != K_SADB_IDENTTYPE_RESERVED
+	      && (ipsp->ips_ident_d.type != SADB_IDENTTYPE_RESERVED
 		  ? pfkey_safe_build(error = pfkey_ident_build(&extensions[K_SADB_EXT_IDENTITY_DST],
 							       K_SADB_EXT_IDENTITY_DST,
 							       ipsp->ips_ident_d.type,
@@ -2471,7 +2469,7 @@ pfkey_acquire(struct ipsec_sa *ipsp)
 #endif
 	      && pfkey_safe_build(error = pfkey_prop_build(&extensions[K_SADB_EXT_PROPOSAL],
 							   64, /* replay */
-							   sizeof(comb)/sizeof(struct k_sadb_comb),
+							   sizeof(comb)/sizeof(struct sadb_comb),
 							   &(comb[0])),
 				  extensions)
 		)) {

@@ -518,6 +518,14 @@ ipsec_tunnel_restore_hard_header(struct ipsec_xmit_state*ixs)
 			(void *)(udp),
 			ntohs(ipp->tot_len) - ixs->iphlen - ixs->natt_head);
 
+#if 0
+		/* set IP destination address (matters in transport mode) */
+		{
+		  struct sockaddr_in *d = (struct sockaddr_in *)ixs->ipsp->ips_addr_d;
+		  ipp->daddr = d->sin_addr.s_addr;
+		}
+#endif
+
 		/* clear UDP & Non-IKE Markers (if any) */
 		memset(udp, 0, ixs->natt_head);
 

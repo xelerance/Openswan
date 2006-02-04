@@ -357,6 +357,12 @@ ipsec_rcv_decap_lookup(struct ipsec_rcv_state *irs
 	*pnewipsp = newipsp;
 	return IPSEC_RCV_OK;
 }
+
+void ip_cmsg_recv_ipsec(struct msghdr *msg, struct sk_buff *skb)
+{
+	/* nothing */
+}
+
 		       
 /*
  * decapsulate a single layer of ESP/AH/IPCOMP.

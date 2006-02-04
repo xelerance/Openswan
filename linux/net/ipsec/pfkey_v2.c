@@ -1786,7 +1786,7 @@ pfkey_init(void)
 	};
 #ifdef CONFIG_KLIPS_IPCOMP
 	static struct ipsec_alg_supported supported_init_ipcomp[] = {
-		{K_SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_X_CALG_DEFLATE, 0, 1, 1}
+		{K_SADB_EXT_SUPPORTED_ENCRYPT, SADB_X_CALG_DEFLATE, 0, 1, 1}
 	};
 #endif /* CONFIG_KLIPS_IPCOMP */
 
