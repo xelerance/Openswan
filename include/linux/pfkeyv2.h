@@ -29,7 +29,7 @@ struct sadb_ext {
 } __attribute__((packed));
 /* sizeof(struct sadb_ext) == 4 */
 
-struct n_sadb_sa {
+struct sadb_sa {
 	uint16_t	sadb_sa_len;
 	uint16_t	sadb_sa_exttype;
 	uint32_t	sadb_sa_spi;

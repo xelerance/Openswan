@@ -210,7 +210,7 @@ pfkey_sa_builds(struct sadb_ext **pfkey_ext,
 		struct sadb_builds sab)
 {
 	int error = 0;
-	struct k_sadb_sa *k_pfkey_sa = (struct k_sadb_sa *)*pfkey_ext;
+	struct k_sadb_sa *pfkey_sa = (struct k_sadb_sa *)*pfkey_ext;
 
 	DEBUGGING(PF_KEY_DEBUG_BUILD,
 		    "pfkey_sa_build: "
@@ -294,8 +294,8 @@ pfkey_sa_builds(struct sadb_ext **pfkey_ext,
 		SENDERR(EINVAL);
 	}
 	
-	k_pfkey_sa = (struct k_sadb_sa*)MALLOC(sizeof(struct k_sadb_sa));
-	*pfkey_ext = (struct sadb_ext*)k_pfkey_sa;
+	pfkey_sa = (struct k_sadb_sa*)MALLOC(sizeof(struct k_sadb_sa));
+	*pfkey_ext = (struct sadb_ext*)pfkey_sa;
 
 	if(k_pfkey_sa == NULL) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
@@ -303,7 +303,7 @@ pfkey_sa_builds(struct sadb_ext **pfkey_ext,
 			"memory allocation failed\n");
 		SENDERR(ENOMEM);
 	}
-	memset(k_pfkey_sa, 0, sizeof(struct sadb_sa));
+	memset(pfkey_sa, 0, sizeof(struct k_sadb_sa));
 
 	*k_pfkey_sa = sab.sa_base;
 	k_pfkey_sa->sadb_sa.sadb_sa_len = sizeof(*k_pfkey_sa) / IPSEC_PFKEYv2_ALIGN;

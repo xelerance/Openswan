@@ -156,8 +156,12 @@ DEBUG_NO_STATIC int
 pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 {
 	int error = 0;
+<<<<<<< .merge_file_piD1Nj
 	struct sadb_sa *pfkey_sa = (struct sadb_sa *)pfkey_ext;
 	struct k_sadb_sa *k_pfkey_sa = (struct k_sadb_sa *)pfkey_ext;
+=======
+	struct k_sadb_sa *pfkey_sa = (struct k_sadb_sa *)pfkey_ext;
+>>>>>>> .merge_file_71L8Rl
 	
 	/* sanity checks... */
 	if(!pfkey_sa) {
@@ -168,12 +172,21 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 	
 
 
+<<<<<<< .merge_file_piD1Nj
 	if(k_pfkey_sa->sadb_sa.sadb_sa_len != sizeof(struct k_sadb_sa) / IPSEC_PFKEYv2_ALIGN) {
+=======
+	if(pfkey_sa->sadb_sa_len != sizeof(struct k_sadb_sa) / IPSEC_PFKEYv2_ALIGN) {
+>>>>>>> .merge_file_71L8Rl
 		ERROR(
 			  "pfkey_sa_parse: "
 			  "length wrong pfkey_sa->sadb_sa_len=%d sizeof(struct sadb_sa)=%d.\n",
+<<<<<<< .merge_file_piD1Nj
 			  k_pfkey_sa->sadb_sa.sadb_sa_len,
 			  (int)sizeof(struct sadb_sa));
+=======
+			  pfkey_sa->sadb_sa_len,
+			  (int)sizeof(struct k_sadb_sa));
+>>>>>>> .merge_file_71L8Rl
 		SENDERR(EINVAL);
 	}
 
@@ -1467,13 +1480,13 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		SENDERR(EINVAL);
 	}
 	
-	if((dir == EXT_BITS_IN) && (pfkey_msg->sadb_msg_type == K_SADB_X_DELFLOW)
-	   && ((extensions_seen	& K_SADB_X_EXT_ADDRESS_DELFLOW)
-	       != K_SADB_X_EXT_ADDRESS_DELFLOW)
-	   && (((extensions_seen & (1<<K_SADB_EXT_SA)) != (1<<K_SADB_EXT_SA))
-	   || ((((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_flags
-		& K_SADB_X_SAFLAGS_CLEARFLOW)
-	       != K_SADB_X_SAFLAGS_CLEARFLOW))) {
+	if((dir == EXT_BITS_IN) && (pfkey_msg->sadb_msg_type == SADB_X_DELFLOW)
+	   && ((extensions_seen	& SADB_X_EXT_ADDRESS_DELFLOW)
+	       != SADB_X_EXT_ADDRESS_DELFLOW)
+	   && (((extensions_seen & (1<<SADB_EXT_SA)) != (1<<SADB_EXT_SA))
+	   || ((((struct k_sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_flags
+		& SADB_X_SAFLAGS_CLEARFLOW)
+	       != SADB_X_SAFLAGS_CLEARFLOW))) {
 		DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 			"pfkey_msg_parse: "
 			"required K_SADB_X_DELFLOW extensions missing: either %08x must be present or %08x must be present with K_SADB_X_SAFLAGS_CLEARFLOW set.\n",
@@ -1487,85 +1500,85 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	case K_SADB_ADD:
 	case K_SADB_UPDATE:
 		/* check maturity */
-		if(((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state !=
+		if(((struct k_sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state !=
 		   K_SADB_SASTATE_MATURE) {
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
 				"state=%d for add or update should be MATURE=%d.\n",
-				((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state,
+				((struct k_sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state,
 				K_SADB_SASTATE_MATURE);
 			SENDERR(EINVAL);
 		}
 		
 		/* check AH and ESP */
-		switch(((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype) {
-		case K_SADB_SATYPE_AH:
-			if(!(((struct sadb_sa*)extensions[K_SADB_EXT_SA]) &&
-			     ((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_auth !=
-			     K_SADB_AALG_NONE)) {
+		switch(((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype) {
+		case SADB_SATYPE_AH:
+			if(!(((struct k_sadb_sa*)extensions[SADB_EXT_SA]) &&
+			     ((struct k_sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_auth !=
+			     SADB_AALG_NONE)) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_msg_parse: "
 					"auth alg is zero, must be non-zero for AH SAs.\n");
 				SENDERR(EINVAL);
 			}
-			if(((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_encrypt !=
-			   K_SADB_EALG_NONE) {
+			if(((struct k_sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_encrypt !=
+			   SADB_EALG_NONE) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_msg_parse: "
 					"AH handed encalg=%d, must be zero.\n",
-					((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_encrypt);
+					((struct k_sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_encrypt);
 				SENDERR(EINVAL);
 			}
 			break;
-		case K_SADB_SATYPE_ESP:
-			if(!(((struct sadb_sa*)extensions[K_SADB_EXT_SA]) &&
-			     ((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_encrypt !=
-			     K_SADB_EALG_NONE)) {
+		case SADB_SATYPE_ESP:
+			if(!(((struct k_sadb_sa*)extensions[SADB_EXT_SA]) &&
+			     ((struct k_sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_encrypt !=
+			     SADB_EALG_NONE)) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_msg_parse: "
 					"encrypt alg=%d is zero, must be non-zero for ESP=%d SAs.\n",
-					((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_encrypt,
-					((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype);
+					((struct k_sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_encrypt,
+					((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype);
 				SENDERR(EINVAL);
 			}
-			if((((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_encrypt ==
-			    K_SADB_EALG_NULL) &&
-			   (((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_auth ==
-			    K_SADB_AALG_NONE) ) {
+			if((((struct k_sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_encrypt ==
+			    SADB_EALG_NULL) &&
+			   (((struct k_sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_auth ==
+			    SADB_AALG_NONE) ) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_msg_parse: "
 					"ESP handed encNULL+authNONE, illegal combination.\n");
 				SENDERR(EINVAL);
 			}
 			break;
-		case K_SADB_X_SATYPE_COMP:
-			if(!(((struct sadb_sa*)extensions[K_SADB_EXT_SA]) &&
-			     ((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_encrypt !=
-			     K_SADB_EALG_NONE)) {
+		case SADB_X_SATYPE_COMP:
+			if(!(((struct k_sadb_sa*)extensions[SADB_EXT_SA]) &&
+			     ((struct k_sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_encrypt !=
+			     SADB_EALG_NONE)) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_msg_parse: "
 					"encrypt alg=%d is zero, must be non-zero for COMP=%d SAs.\n",
-					((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_encrypt,
-					((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype);
+					((struct k_sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_encrypt,
+					((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype);
 				SENDERR(EINVAL);
 			}
-			if(((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_auth !=
-			   K_SADB_AALG_NONE) {
+			if(((struct k_sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_auth !=
+			   SADB_AALG_NONE) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 					"pfkey_msg_parse: "
 					"COMP handed auth=%d, must be zero.\n",
-					((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_auth);
+					((struct k_sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_auth);
 				SENDERR(EINVAL);
 			}
 			break;
 		default:
 			break;
 		}
-		if(ntohl(((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_spi) <= 255) {
+		if(ntohl(((struct k_sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_spi) <= 255) {
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
 				"spi=%08x must be > 255.\n",
-				ntohl(((struct sadb_sa*)(extensions[K_SADB_EXT_SA]))->sadb_sa_spi));
+				ntohl(((struct k_sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_spi));
 			SENDERR(EINVAL);
 		}
 	default:	

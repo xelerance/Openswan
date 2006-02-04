@@ -855,7 +855,7 @@ void nat_traversal_change_port_lookup(struct msg_digest *md, struct state *st)
 }
 
 struct _new_klips_mapp_nfo {
-	struct sadb_sa *sa;
+	struct k_sadb_sa *sa;
 	ip_address src, dst;
 	u_int16_t sport, dport;
 };

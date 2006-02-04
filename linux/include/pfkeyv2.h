@@ -53,7 +53,7 @@ enum sadb_msg_t {
 #define SADB_X_PLUMBIF	    K_SADB_X_PLUMBIF	    
 #define SADB_X_UNPLUMBIF    K_SADB_X_UNPLUMBIF	    
 
-struct sadb_sa {
+struct k_sadb_sa {
 	uint16_t sadb_sa_len;
 	uint16_t sadb_sa_exttype;
 	uint32_t sadb_sa_spi;
@@ -75,17 +75,6 @@ struct sadb_sa_v1 {
   uint8_t sadb_sa_auth;
   uint8_t sadb_sa_encrypt;
   uint32_t sadb_sa_flags;
-};
-
-struct k_sadb_lifetime {
-  uint16_t sadb_lifetime_len;
-  uint16_t sadb_lifetime_exttype;
-  uint32_t sadb_lifetime_allocations;
-  uint64_t sadb_lifetime_bytes;
-  uint64_t sadb_lifetime_addtime;
-  uint64_t sadb_lifetime_usetime;
-  uint32_t sadb_x_lifetime_packets;
-  uint32_t sadb_x_lifetime_reserved;
 };
 
 struct sadb_x_satype {

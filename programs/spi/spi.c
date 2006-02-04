@@ -1759,7 +1759,7 @@ main(int argc, char *argv[])
 					printf("%s: saref=%d\n",
 					       progname,
 					       (extensions[SADB_EXT_SA] != NULL)
-					       ? ((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_x_sa_ref
+					       ? ((struct k_sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_x_sa_ref
 					       : IPSEC_SAREF_NULL);
 				}
 				break;

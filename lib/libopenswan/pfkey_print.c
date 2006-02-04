@@ -59,7 +59,7 @@ pfkey_print(struct sadb_msg *msg, FILE *out)
 	switch(se->sadb_ext_type) {
 	case SADB_EXT_SA:
 	  {
-	    struct sadb_sa *sa = (struct sadb_sa *)se;
+	    struct k_sadb_sa *sa = (struct k_sadb_sa *)se;
 	    fprintf(out, "spi=%08x replay=%d state=%d auth=%d encrypt=%d flags=%08x ref=%08x}",
 		    (int)sa->sadb_sa_spi,
 		    sa->sadb_sa_replay,
