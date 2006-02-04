@@ -255,6 +255,15 @@ enum sadb_sastate {
 #define SADB_X_AALG_SHA2_512HMAC	7
 #define SADB_X_AALG_RIPEMD160HMAC	8
 #define SADB_X_AALG_NULL		251	/* kame */
+enum sadb_aalg {
+	K_SADB_AALG_NONE=          SADB_AALG_NONE,           	
+	K_SADB_AALG_MD5HMAC=       SADB_AALG_MD5HMAC,        	
+	K_SADB_AALG_SHA1HMAC=      SADB_AALG_SHA1HMAC,       	
+	K_SADB_X_AALG_SHA2_256HMAC=SADB_X_AALG_SHA2_256HMAC,
+	K_SADB_X_AALG_SHA2_384HMAC=SADB_X_AALG_SHA2_384HMAC,
+	K_SADB_X_AALG_SHA2_512HMAC=SADB_X_AALG_SHA2_512HMAC,
+	K_SADB_X_AALG_RIPEMD160HMAC=SADB_X_AALG_RIPEMD160HMAC,
+};
 #define K_SADB_AALG_MAX			251
 
 #define SADB_EALG_NONE                  0
@@ -264,6 +273,17 @@ enum sadb_sastate {
 #define SADB_X_EALG_BLOWFISHCBC		7
 #define SADB_EALG_NULL			11
 #define SADB_X_EALG_AESCBC		12
+
+enum sadb_ealg {
+	K_SADB_EALG_NONE=SADB_EALG_NONE,		 
+	K_SADB_EALG_DESCBC=SADB_EALG_DESCBC,	 
+	K_SADB_EALG_3DESCBC=SADB_EALG_3DESCBC,	 
+	K_SADB_X_EALG_CASTCBC=SADB_X_EALG_CASTCBC,	 
+	K_SADB_X_EALG_BLOWFISHCBC=SADB_X_EALG_BLOWFISHCBC, 
+	K_SADB_EALG_NULL=SADB_EALG_NULL,		 
+	K_SADB_X_EALG_AESCBC=SADB_X_EALG_AESCBC    
+};
+
 #undef SADB_EALG_MAX
 #define K_SADB_EALG_MAX			255
 
@@ -271,18 +291,17 @@ enum sadb_sastate {
 #define SADB_X_CALG_OUI           1
 #define SADB_X_CALG_DEFLATE       2
 #define SADB_X_CALG_LZS           3
-#define SADB_X_CALG_V42BIS        4
-#ifdef KERNEL26_HAS_KAME_DUPLICATES
-#define K_SADB_X_CALG_LZJH          4
-#endif
-#define K_SADB_X_CALG_MAX           4
+#define SADB_X_CALG_LZJH          4
+#define SADB_X_CALG_MAX           4
 
-#define SADB_X_TALG_NONE          0
-#define SADB_X_TALG_IPv4_in_IPv4  1
-#define SADB_X_TALG_IPv6_in_IPv4  2
-#define SADB_X_TALG_IPv4_in_IPv6  3
-#define SADB_X_TALG_IPv6_in_IPv6  4
-#define SADB_X_TALG_MAX           4
+enum sadb_talg {
+	K_SADB_X_TALG_NONE=0,
+	K_SADB_X_TALG_IPv4_in_IPv4=1,
+	K_SADB_X_TALG_IPv6_in_IPv4=2,
+	K_SADB_X_TALG_IPv4_in_IPv6=3,
+	K_SADB_X_TALG_IPv6_in_IPv6=4,
+};
+#define SADB_X_TALG_MAX         4
 
 
 #define SADB_IDENTTYPE_RESERVED   0

@@ -157,7 +157,7 @@ pfkey_msg_hdr_build(struct sadb_ext**	pfkey_ext,
 		SENDERR(EINVAL);
 	}
 
-	if(msg_type > K_SADB_MAX) {
+	if(msg_type > SADB_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_msg_hdr_build: "
 			"msg type too large:%d.\n",
@@ -165,11 +165,11 @@ pfkey_msg_hdr_build(struct sadb_ext**	pfkey_ext,
 		SENDERR(EINVAL);
 	}
 
-	if(satype > K_SADB_SATYPE_MAX) {
+	if(satype > SADB_SATYPE_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_msg_hdr_build: "
 			"satype %d > max %d\n", 
-			satype, K_SADB_SATYPE_MAX);
+			satype, SADB_SATYPE_MAX);
 		SENDERR(EINVAL);
 	}
 
@@ -215,43 +215,43 @@ pfkey_sa_builds(struct sadb_ext **pfkey_ext,
 	DEBUGGING(PF_KEY_DEBUG_BUILD,
 		    "pfkey_sa_build: "
 		    "spi=%08x replay=%d sa_state=%d auth=%d encrypt=%d flags=%d\n",
-		    ntohl(sab.sa_base.sadb_sa.sadb_sa_spi), /* in network order */
-		    sab.sa_base.sadb_sa.sadb_sa_replay,
-		    sab.sa_base.sadb_sa.sadb_sa_state,
-		    sab.sa_base.sadb_sa.sadb_sa_auth,
-		    sab.sa_base.sadb_sa.sadb_sa_encrypt,
-		    sab.sa_base.sadb_sa.sadb_sa_flags);
+		    ntohl(sab.sa_base.sadb_sa_spi), /* in network order */
+		    sab.sa_base.sadb_sa_replay,
+		    sab.sa_base.sadb_sa_state,
+		    sab.sa_base.sadb_sa_auth,
+		    sab.sa_base.sadb_sa_encrypt,
+		    sab.sa_base.sadb_sa_flags);
 	/* sanity checks... */
-	if(k_pfkey_sa) {
+	if(pfkey_sa) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"why is pfkey_sa already pointing to something?\n");
 		SENDERR(EINVAL);
 	}
 
-	if(sab.sa_base.sadb_sa.sadb_sa_exttype != K_SADB_EXT_SA &&
-	   sab.sa_base.sadb_sa.sadb_sa_exttype != K_SADB_X_EXT_SA2) {
+	if(sab.sa_base.sadb_sa_exttype != SADB_EXT_SA &&
+	   sab.sa_base.sadb_sa_exttype != K_SADB_X_EXT_SA2) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"invalid exttype=%d.\n",
-			sab.sa_base.sadb_sa.sadb_sa_exttype);
+			sab.sa_base.sadb_sa_exttype);
 		SENDERR(EINVAL);
 	}
 
-	if(sab.sa_base.sadb_sa.sadb_sa_replay > 64) {
+	if(sab.sa_base.sadb_sa_replay > 64) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"replay window size: %d -- must be 0 <= size <= 64\n",
-			sab.sa_base.sadb_sa.sadb_sa_replay);
+			sab.sa_base.sadb_sa_replay);
 		SENDERR(EINVAL);
 	}
 
-	if(sab.sa_base.sadb_sa.sadb_sa_auth > K_SADB_AALG_MAX) {
+	if(sab.sa_base.sadb_sa_auth > SADB_AALG_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
-			"auth=%d > K_SADB_AALG_MAX=%d.\n",
-			sab.sa_base.sadb_sa.sadb_sa_auth,
-			K_SADB_AALG_MAX);
+			"auth=%d > SADB_AALG_MAX=%d.\n",
+			sab.sa_base.sadb_sa_auth,
+			SADB_AALG_MAX);
 		SENDERR(EINVAL);
 	}
 
@@ -259,18 +259,18 @@ pfkey_sa_builds(struct sadb_ext **pfkey_ext,
 	if(sab.sa_base.sadb_sa_encrypt > K_SADB_EALG_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
-			"encrypt=%d > SADB_EALG_MAX=%d.\n",
+			"encrypt=%d > K_SADB_EALG_MAX=%d.\n",
 			sab.sa_base.sadb_sa_encrypt,
 			K_SADB_EALG_MAX);
 		SENDERR(EINVAL);
 	}
 #endif
 
-	if(sab.sa_base.sadb_sa.sadb_sa_state > K_SADB_SASTATE_MAX) {
+	if(sab.sa_base.sadb_sa_state > K_SADB_SASTATE_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"sa_state=%d exceeds MAX=%d.\n",
-			sab.sa_base.sadb_sa.sadb_sa_state,
+			sab.sa_base.sadb_sa_state,
 			K_SADB_SASTATE_MAX);
 		SENDERR(EINVAL);
 	}
@@ -297,7 +297,7 @@ pfkey_sa_builds(struct sadb_ext **pfkey_ext,
 	pfkey_sa = (struct k_sadb_sa*)MALLOC(sizeof(struct k_sadb_sa));
 	*pfkey_ext = (struct sadb_ext*)pfkey_sa;
 
-	if(k_pfkey_sa == NULL) {
+	if(pfkey_sa == NULL) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"memory allocation failed\n");
@@ -305,8 +305,8 @@ pfkey_sa_builds(struct sadb_ext **pfkey_ext,
 	}
 	memset(pfkey_sa, 0, sizeof(struct k_sadb_sa));
 
-	*k_pfkey_sa = sab.sa_base;
-	k_pfkey_sa->sadb_sa.sadb_sa_len = sizeof(*k_pfkey_sa) / IPSEC_PFKEYv2_ALIGN;
+	*pfkey_sa = sab.sa_base;
+	pfkey_sa->sadb_sa_len = sizeof(*pfkey_sa) / IPSEC_PFKEYv2_ALIGN;
 
 errlab:
 	return error;
@@ -326,13 +326,13 @@ pfkey_sa_ref_build(struct sadb_ext **		pfkey_ext,
 	struct sadb_builds sab;
 	
 	memset(&sab, 0, sizeof(sab));
-	sab.sa_base.sadb_sa.sadb_sa_exttype = exttype;
-	sab.sa_base.sadb_sa.sadb_sa_spi     = spi;
-	sab.sa_base.sadb_sa.sadb_sa_replay  = replay_window;
-	sab.sa_base.sadb_sa.sadb_sa_state   = sa_state;
-	sab.sa_base.sadb_sa.sadb_sa_auth    = auth;
-	sab.sa_base.sadb_sa.sadb_sa_encrypt = encrypt;
-	sab.sa_base.sadb_sa.sadb_sa_flags   = flags;
+	sab.sa_base.sadb_sa_exttype = exttype;
+	sab.sa_base.sadb_sa_spi     = spi;
+	sab.sa_base.sadb_sa_replay  = replay_window;
+	sab.sa_base.sadb_sa_state   = sa_state;
+	sab.sa_base.sadb_sa_auth    = auth;
+	sab.sa_base.sadb_sa_encrypt = encrypt;
+	sab.sa_base.sadb_sa_flags   = flags;
 	sab.sa_base.sadb_x_sa_ref   = ref;
 
 	return pfkey_sa_builds(pfkey_ext, sab);
@@ -351,13 +351,13 @@ pfkey_sa_build(struct sadb_ext **	pfkey_ext,
 	struct sadb_builds sab;
 	
 	memset(&sab, 0, sizeof(sab));
-	sab.sa_base.sadb_sa.sadb_sa_exttype = exttype;
-	sab.sa_base.sadb_sa.sadb_sa_spi     = spi;
-	sab.sa_base.sadb_sa.sadb_sa_replay  = replay_window;
-	sab.sa_base.sadb_sa.sadb_sa_state   = sa_state;
-	sab.sa_base.sadb_sa.sadb_sa_auth    = auth;
-	sab.sa_base.sadb_sa.sadb_sa_encrypt = encrypt;
-	sab.sa_base.sadb_sa.sadb_sa_flags   = flags;
+	sab.sa_base.sadb_sa_exttype = exttype;
+	sab.sa_base.sadb_sa_spi     = spi;
+	sab.sa_base.sadb_sa_replay  = replay_window;
+	sab.sa_base.sadb_sa_state   = sa_state;
+	sab.sa_base.sadb_sa_auth    = auth;
+	sab.sa_base.sadb_sa_encrypt = encrypt;
+	sab.sa_base.sadb_sa_flags   = flags;
 	sab.sa_base.sadb_x_sa_ref   = IPSEC_SAREF_NULL;
 
 	return pfkey_sa_builds(pfkey_ext, sab);
@@ -373,21 +373,21 @@ pfkey_lifetime_build(struct sadb_ext **	pfkey_ext,
 		     uint32_t		packets)
 {
 	int error = 0;
-	struct k_sadb_lifetime *k_pfkey_lifetime = (struct k_sadb_lifetime *)*pfkey_ext;
+	struct sadb_lifetime *pfkey_lifetime = (struct sadb_lifetime *)*pfkey_ext;
 
 	DEBUGGING(PF_KEY_DEBUG_BUILD,
 		"pfkey_lifetime_build:\n");
 	/* sanity checks... */
-	if(k_pfkey_lifetime) {
+	if(pfkey_lifetime) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_lifetime_build: "
 			"why is pfkey_lifetime already pointing to something?\n");
 		SENDERR(EINVAL);
 	}
 
-	if(exttype != K_SADB_EXT_LIFETIME_CURRENT &&
-	   exttype != K_SADB_EXT_LIFETIME_HARD &&
-	   exttype != K_SADB_EXT_LIFETIME_SOFT) {
+	if(exttype != SADB_EXT_LIFETIME_CURRENT &&
+	   exttype != SADB_EXT_LIFETIME_HARD &&
+	   exttype != SADB_EXT_LIFETIME_SOFT) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_lifetime_build: "
 			"invalid exttype=%d.\n",
@@ -395,16 +395,16 @@ pfkey_lifetime_build(struct sadb_ext **	pfkey_ext,
 		SENDERR(EINVAL);
 	}
 
-	k_pfkey_lifetime = (struct k_sadb_lifetime*)MALLOC(sizeof(struct k_sadb_lifetime));
-	*pfkey_ext = (struct sadb_ext*) k_pfkey_lifetime;
+	pfkey_lifetime = (struct sadb_lifetime*)MALLOC(sizeof(struct sadb_lifetime));
+	*pfkey_ext = (struct sadb_ext*) pfkey_lifetime;
 
-	if(k_pfkey_lifetime == NULL) {
+	if(pfkey_lifetime == NULL) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_lifetime_build: "
 			"memory allocation failed\n");
 		SENDERR(ENOMEM);
 	}
-	memset(k_pfkey_lifetime, 0, sizeof(struct k_sadb_lifetime));
+	memset(pfkey_lifetime, 0, sizeof(struct sadb_lifetime));
 
 	pfkey_lifetime->sadb_lifetime_len = sizeof(struct sadb_lifetime) / IPSEC_PFKEYv2_ALIGN;
 	pfkey_lifetime->sadb_lifetime_exttype = exttype;
@@ -448,9 +448,9 @@ pfkey_address_build(struct sadb_ext**	pfkey_ext,
 	}
 	
 	switch(exttype) {	
-	case K_SADB_EXT_ADDRESS_SRC:
-	case K_SADB_EXT_ADDRESS_DST:
-	case K_SADB_EXT_ADDRESS_PROXY:
+	case SADB_EXT_ADDRESS_SRC:
+	case SADB_EXT_ADDRESS_DST:
+	case SADB_EXT_ADDRESS_PROXY:
 	case K_SADB_X_EXT_ADDRESS_DST2:
 	case K_SADB_X_EXT_ADDRESS_SRC_FLOW:
 	case K_SADB_X_EXT_ADDRESS_DST_FLOW:
@@ -577,7 +577,7 @@ pfkey_key_build(struct sadb_ext**	pfkey_ext,
 		SENDERR(EINVAL);
 	}
 
-	if( !((exttype == K_SADB_EXT_KEY_AUTH) || (exttype == K_SADB_EXT_KEY_ENCRYPT))) {
+	if( !((exttype == SADB_EXT_KEY_AUTH) || (exttype == SADB_EXT_KEY_ENCRYPT))) {
 		ERROR("pfkey_key_build: "
 			"unsupported extension type=%d.\n",
 			exttype);
@@ -634,29 +634,29 @@ pfkey_ident_build(struct sadb_ext**	pfkey_ext,
 		SENDERR(EINVAL);
 	}
 
-	if( ! ((exttype == K_SADB_EXT_IDENTITY_SRC) ||
-	       (exttype == K_SADB_EXT_IDENTITY_DST))) {
+	if( ! ((exttype == SADB_EXT_IDENTITY_SRC) ||
+	       (exttype == SADB_EXT_IDENTITY_DST))) {
 		ERROR("pfkey_ident_build: "
 			"unsupported extension type=%d.\n",
 			exttype);
 		SENDERR(EINVAL);
 	}
 
-	if((ident_type == K_SADB_IDENTTYPE_RESERVED)) {
+	if((ident_type == SADB_IDENTTYPE_RESERVED)) {
 		ERROR("pfkey_ident_build: "
 			"ident_type must be non-zero.\n");
 		SENDERR(EINVAL);
 	}
 
-	if(ident_type > K_SADB_IDENTTYPE_MAX) {
+	if(ident_type > SADB_IDENTTYPE_MAX) {
 		ERROR("pfkey_ident_build: "
 			"identtype=%d out of range.\n",
 			ident_type);
 		SENDERR(EINVAL);
 	}
 
-	if(((ident_type == K_SADB_IDENTTYPE_PREFIX) ||
-	    (ident_type == K_SADB_IDENTTYPE_FQDN)) &&
+	if(((ident_type == SADB_IDENTTYPE_PREFIX) ||
+	    (ident_type == SADB_IDENTTYPE_FQDN)) &&
 	   !ident_string) {
 		ERROR("pfkey_ident_build: "
 			"string required to allocate size of extension.\n");
@@ -664,7 +664,7 @@ pfkey_ident_build(struct sadb_ext**	pfkey_ext,
 	}
 	
 #if 0
-	if((ident_type == K_SADB_IDENTTYPE_USERFQDN) ) {
+	if((ident_type == SADB_IDENTTYPE_USERFQDN) ) {
 	}
 #endif
 	    
@@ -741,7 +741,7 @@ pfkey_sens_build(struct sadb_ext**	pfkey_ext,
 	
 	pfkey_sens->sadb_sens_len = (sizeof(struct sadb_sens) +
 		    (sens_len + integ_len) * sizeof(uint64_t)) / IPSEC_PFKEYv2_ALIGN;
-	pfkey_sens->sadb_sens_exttype = K_SADB_EXT_SENSITIVITY;
+	pfkey_sens->sadb_sens_exttype = SADB_EXT_SENSITIVITY;
 	pfkey_sens->sadb_sens_dpd = dpd;
 	pfkey_sens->sadb_sens_sens_level = sens_level;
 	pfkey_sens->sadb_sens_sens_len = sens_len;
@@ -767,7 +767,7 @@ int
 pfkey_prop_build(struct sadb_ext**	pfkey_ext,
 		 uint8_t		replay,
 		 unsigned int		comb_num,
-		 struct k_sadb_comb*	comb)
+		 struct sadb_comb*	comb)
 {
 	int error = 0;
 	int i;
@@ -802,7 +802,7 @@ pfkey_prop_build(struct sadb_ext**	pfkey_ext,
 	pfkey_prop->sadb_prop_len = (sizeof(struct sadb_prop) +
 		    comb_num * sizeof(struct sadb_comb)) / IPSEC_PFKEYv2_ALIGN;
 
-	pfkey_prop->sadb_prop_exttype = K_SADB_EXT_PROPOSAL;
+	pfkey_prop->sadb_prop_exttype = SADB_EXT_PROPOSAL;
 	pfkey_prop->sadb_prop_replay = replay;
 
 	for(i=0; i<3; i++) {
@@ -858,7 +858,7 @@ pfkey_supported_build(struct sadb_ext**	pfkey_ext,
 		SENDERR(EINVAL);
 	}
 
-	if( !((exttype == K_SADB_EXT_SUPPORTED_AUTH) || (exttype == K_SADB_EXT_SUPPORTED_ENCRYPT))) {
+	if( !((exttype == SADB_EXT_SUPPORTED_AUTH) || (exttype == SADB_EXT_SUPPORTED_ENCRYPT))) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_supported_build: "
 			"unsupported extension type=%d.\n",
@@ -967,7 +967,7 @@ pfkey_spirange_build(struct sadb_ext**	pfkey_ext,
 	
         pfkey_spirange->sadb_spirange_len = sizeof(struct sadb_spirange) / IPSEC_PFKEYv2_ALIGN;
 
-	pfkey_spirange->sadb_spirange_exttype = K_SADB_EXT_SPIRANGE;
+	pfkey_spirange->sadb_spirange_exttype = SADB_EXT_SPIRANGE;
 	pfkey_spirange->sadb_spirange_min = min;
 	pfkey_spirange->sadb_spirange_max = max;
 	pfkey_spirange->sadb_spirange_reserved = 0;
@@ -1338,7 +1338,7 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 	struct sadb_ext *pfkey_ext;
 	int extensions_seen = 0;
 #ifndef __KERNEL__	
-	struct sadb_ext *extensions_check[K_SADB_EXT_MAX + 1];
+	struct sadb_ext *extensions_check[SADB_EXT_MAX + 1];
 #endif
 	
 	if(!extensions[0]) {
@@ -1349,7 +1349,7 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 
 	/* figure out the total size for all the requested extensions */
 	total_size = IPSEC_PFKEYv2_WORDS(sizeof(struct sadb_msg));
-	for(ext = 1; ext <= K_SADB_EXT_MAX; ext++) {
+	for(ext = 1; ext <= SADB_EXT_MAX; ext++) {
 		if(extensions[ext]) {
 			total_size += (extensions[ext])->sadb_ext_len;
 		}
@@ -1383,7 +1383,7 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 	 */
 	pfkey_ext = (struct sadb_ext*)(((char*)(*pfkey_msg)) + sizeof(struct sadb_msg));
 
-	for(ext = 1; ext <= K_SADB_EXT_MAX; ext++) {
+	for(ext = 1; ext <= SADB_EXT_MAX; ext++) {
 		/* copy from extension[ext] to buffer */
 		if(extensions[ext]) {    
 			/* Is this type of extension permitted for this type of message? */

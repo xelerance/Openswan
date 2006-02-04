@@ -156,12 +156,7 @@ DEBUG_NO_STATIC int
 pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 {
 	int error = 0;
-<<<<<<< .merge_file_piD1Nj
-	struct sadb_sa *pfkey_sa = (struct sadb_sa *)pfkey_ext;
-	struct k_sadb_sa *k_pfkey_sa = (struct k_sadb_sa *)pfkey_ext;
-=======
 	struct k_sadb_sa *pfkey_sa = (struct k_sadb_sa *)pfkey_ext;
->>>>>>> .merge_file_71L8Rl
 	
 	/* sanity checks... */
 	if(!pfkey_sa) {
@@ -172,21 +167,12 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 	
 
 
-<<<<<<< .merge_file_piD1Nj
-	if(k_pfkey_sa->sadb_sa.sadb_sa_len != sizeof(struct k_sadb_sa) / IPSEC_PFKEYv2_ALIGN) {
-=======
 	if(pfkey_sa->sadb_sa_len != sizeof(struct k_sadb_sa) / IPSEC_PFKEYv2_ALIGN) {
->>>>>>> .merge_file_71L8Rl
 		ERROR(
 			  "pfkey_sa_parse: "
 			  "length wrong pfkey_sa->sadb_sa_len=%d sizeof(struct sadb_sa)=%d.\n",
-<<<<<<< .merge_file_piD1Nj
-			  k_pfkey_sa->sadb_sa.sadb_sa_len,
-			  (int)sizeof(struct sadb_sa));
-=======
 			  pfkey_sa->sadb_sa_len,
 			  (int)sizeof(struct k_sadb_sa));
->>>>>>> .merge_file_71L8Rl
 		SENDERR(EINVAL);
 	}
 
@@ -252,19 +238,19 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 		SENDERR(EINVAL);
 	}
 
-	if(k_pfkey_sa->sadb_x_sa_ref == IPSEC_SAREF_NULL ||
-	   k_pfkey_sa->sadb_x_sa_ref == ~(IPSEC_SAREF_NULL))
+	if(pfkey_sa->sadb_x_sa_ref == IPSEC_SAREF_NULL ||
+	   pfkey_sa->sadb_x_sa_ref == ~(IPSEC_SAREF_NULL))
 	{
-		k_pfkey_sa->sadb_x_sa_ref = IPSEC_SAREF_NULL;
+		pfkey_sa->sadb_x_sa_ref = IPSEC_SAREF_NULL;
 	}
 
-	if((IPSEC_SAREF_NULL != k_pfkey_sa->sadb_x_sa_ref)
-	   && (k_pfkey_sa->sadb_x_sa_ref >= (1 << IPSEC_SA_REF_TABLE_IDX_WIDTH)))
+	if((IPSEC_SAREF_NULL != pfkey_sa->sadb_x_sa_ref)
+	   && (pfkey_sa->sadb_x_sa_ref >= (1 << IPSEC_SA_REF_TABLE_IDX_WIDTH)))
 	{
 		ERROR(
 			  "pfkey_sa_parse: "
 			  "SAref=%d must be (SAref == IPSEC_SAREF_NULL(%d) || SAref < IPSEC_SA_REF_TABLE_NUM_ENTRIES(%d)).\n",
-			  k_pfkey_sa->sadb_x_sa_ref,
+			  pfkey_sa->sadb_x_sa_ref,
 			  IPSEC_SAREF_NULL,
 			  IPSEC_SA_REF_TABLE_NUM_ENTRIES);
 		SENDERR(EINVAL);
@@ -282,7 +268,7 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 		  pfkey_sa->sadb_sa_auth,
 		  pfkey_sa->sadb_sa_encrypt,
 		  pfkey_sa->sadb_sa_flags,
-		  k_pfkey_sa->sadb_x_sa_ref);
+		  pfkey_sa->sadb_x_sa_ref);
 	
  errlab:
 	return error;
@@ -293,7 +279,6 @@ pfkey_lifetime_parse(struct sadb_ext  *pfkey_ext)
 {
 	int error = 0;
 	struct sadb_lifetime *pfkey_lifetime = (struct sadb_lifetime *)pfkey_ext;
-	struct k_sadb_lifetime *k_pfkey_lifetime = (struct k_sadb_lifetime *)pfkey_ext;
 
 	DEBUGGING(PF_KEY_DEBUG_PARSE_FLOW,
 		  "pfkey_lifetime_parse:enter\n");
@@ -305,12 +290,12 @@ pfkey_lifetime_parse(struct sadb_ext  *pfkey_ext)
 		SENDERR(EINVAL);
 	}
 
-	if(k_pfkey_lifetime->sadb_lifetime.sadb_lifetime_len !=
-	   sizeof(struct k_sadb_lifetime) / IPSEC_PFKEYv2_ALIGN) {
+	if(pfkey_lifetime->sadb_lifetime_len !=
+	   sizeof(struct sadb_lifetime) / IPSEC_PFKEYv2_ALIGN) {
 		DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 			  "pfkey_lifetime_parse: "
 			  "length wrong pfkey_lifetime->sadb_lifetime_len=%d sizeof(struct sadb_lifetime)=%d.\n",
-			  k_pfkey_lifetime->sadb_lifetime.sadb_lifetime_len,
+			  pfkey_lifetime->sadb_lifetime_len,
 			  (int)sizeof(struct sadb_lifetime));
 		SENDERR(EINVAL);
 	}
@@ -663,7 +648,7 @@ pfkey_prop_parse(struct sadb_ext *pfkey_ext)
 		}
 	}
 
-	num_comb = ((pfkey_prop->sadb_prop_len * IPSEC_PFKEYv2_ALIGN) - sizeof(struct sadb_prop)) / sizeof(struct k_sadb_comb);
+	num_comb = ((pfkey_prop->sadb_prop_len * IPSEC_PFKEYv2_ALIGN) - sizeof(struct sadb_prop)) / sizeof(struct sadb_comb);
 
 	for(i = 0; i < num_comb; i++) {
 		struct sadb_comb *pfkey_comb = (struct sadb_comb *)k_pfkey_comb;
@@ -829,7 +814,7 @@ pfkey_prop_parse(struct sadb_ext *pfkey_ext)
 		}
 #endif
 
-		k_pfkey_comb++;
+		pfkey_comb++;
 	}
 
 errlab:
@@ -1480,9 +1465,9 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		SENDERR(EINVAL);
 	}
 	
-	if((dir == EXT_BITS_IN) && (pfkey_msg->sadb_msg_type == SADB_X_DELFLOW)
-	   && ((extensions_seen	& SADB_X_EXT_ADDRESS_DELFLOW)
-	       != SADB_X_EXT_ADDRESS_DELFLOW)
+	if((dir == EXT_BITS_IN) && (pfkey_msg->sadb_msg_type == K_SADB_X_DELFLOW)
+	   && ((extensions_seen	& K_SADB_X_EXT_ADDRESS_DELFLOW)
+	       != K_SADB_X_EXT_ADDRESS_DELFLOW)
 	   && (((extensions_seen & (1<<SADB_EXT_SA)) != (1<<SADB_EXT_SA))
 	   || ((((struct k_sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_flags
 		& SADB_X_SAFLAGS_CLEARFLOW)
@@ -1551,7 +1536,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 				SENDERR(EINVAL);
 			}
 			break;
-		case SADB_X_SATYPE_COMP:
+		case K_SADB_X_SATYPE_COMP:
 			if(!(((struct k_sadb_sa*)extensions[SADB_EXT_SA]) &&
 			     ((struct k_sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_encrypt !=
 			     SADB_EALG_NONE)) {
