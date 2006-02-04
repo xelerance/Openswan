@@ -401,7 +401,7 @@ netlink_raw_eroute(const ip_address *this_host
 
     policy = IPSEC_POLICY_IPSEC;
 
-    if (satype == SADB_X_SATYPE_INT)
+    if (satype == K_SADB_X_SATYPE_INT)
     {
 	/* shunt route */
 	switch (ntohl(spi))
@@ -546,7 +546,7 @@ netlink_raw_eroute(const ip_address *this_host
 	    break;
 	}
 	else if (proto_info[0].encapsulation != ENCAPSULATION_MODE_TUNNEL
-	&& satype != SADB_X_SATYPE_INT)
+		 && satype != K_SADB_X_SATYPE_INT)
 	{
 	    break;
 	}
@@ -651,7 +651,7 @@ netlink_add_sa(const struct kernel_sa *sa, bool replace)
 	attr = (struct rtattr *)((char *)attr + attr->rta_len);
     }
 
-    if (sa->satype == SADB_X_SATYPE_COMP)
+    if (sa->satype == K_SADB_X_SATYPE_COMP)
     {
 	struct xfrm_algo algo;
 	const char *name;

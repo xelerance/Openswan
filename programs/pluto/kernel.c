@@ -748,7 +748,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                                        , null_host, &that_broad_client
                                        , htonl(shunt_spi), SA_INT
                                        , transport_proto
-                                       , SADB_X_SATYPE_INT, null_proto_info
+                                       , K_SADB_X_SATYPE_INT, null_proto_info
                                        , SHUNT_PATIENCE, ERO_REPLACE, why))
                             {
                                 struct bare_shunt *bs = alloc_thing(struct bare_shunt, "bare shunt");
@@ -775,7 +775,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                        , htonl(shunt_spi)
                        , SA_INT
                        , transport_proto
-                       , SADB_X_SATYPE_INT, null_proto_info
+                       , K_SADB_X_SATYPE_INT, null_proto_info
                        , SHUNT_PATIENCE, ERO_ADD, why))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client, &that_client
@@ -797,7 +797,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
         if (raw_eroute(null_host, &this_client, null_host, &that_client
                        , htonl(shunt_spi), SA_INT
                        , 0 /* transport_proto */
-                       , SADB_X_SATYPE_INT, null_proto_info
+                       , K_SADB_X_SATYPE_INT, null_proto_info
                        , SHUNT_PATIENCE, op, why))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client
@@ -924,7 +924,7 @@ assign_hold(struct connection *c USED_BY_DEBUG
 	    }
 
             if(!eroute_connection(sr, htonl(SPI_HOLD)
-				  , SA_INT, SADB_X_SATYPE_INT
+				  , SA_INT, K_SADB_X_SATYPE_INT
 				  , null_proto_info
 				  , op
 				  , reason)) {
@@ -1085,7 +1085,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->spi = ipip_spi;
-        said_next->satype = SADB_X_SATYPE_IPIP;
+        said_next->satype = K_SADB_X_SATYPE_IPIP;
         said_next->text_said = text_said;
 
         if (!kernel_ops->add_sa(said_next, replace)) {
@@ -1097,7 +1097,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
         inner_spi = ipip_spi;
         proto = SA_IPIP;
-        satype = SADB_X_SATYPE_IPIP;
+        satype = K_SADB_X_SATYPE_IPIP;
     }
 
     /* set up IPCOMP SA, if any */
@@ -1126,7 +1126,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->spi = ipcomp_spi;
-        said_next->satype = SADB_X_SATYPE_COMP;
+        said_next->satype = K_SADB_X_SATYPE_COMP;
         said_next->encalg = compalg;
         said_next->encapsulation = encapsulation;
         said_next->reqid = c->spd.reqid + 2;
@@ -2000,7 +2000,7 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
                     , bs->said.spi      /* network order */
                     , SA_INT            /* proto */
                     , 0                 /* transport_proto */
-                    , SADB_X_SATYPE_INT
+                    , K_SADB_X_SATYPE_INT
                     , null_proto_info
                     , SHUNT_PATIENCE
                     , ERO_REPLACE, "restore");

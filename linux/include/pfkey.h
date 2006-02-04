@@ -311,7 +311,7 @@ int
 pfkey_prop_build(struct sadb_ext**	pfkey_ext,
 		 uint8_t		replay,
 		 unsigned int		comb_num,
-		 struct k_sadb_comb*	comb);
+		 struct sadb_comb*	comb);
 
 int
 pfkey_supported_build(struct sadb_ext**	pfkey_ext,

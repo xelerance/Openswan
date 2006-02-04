@@ -344,14 +344,14 @@ klips_pfkey_register_response(const struct sadb_msg *msg)
      */
     switch (msg->sadb_msg_satype)
     {
-    case SADB_SATYPE_AH:
+    case K_SADB_SATYPE_AH:
 	break;
-    case SADB_SATYPE_ESP:
+    case K_SADB_SATYPE_ESP:
 #ifdef KERNEL_ALG
 	kernel_alg_register_pfkey(msg, sizeof (pfkey_buf));
 #endif
 	break;
-    case SADB_X_SATYPE_COMP:
+    case K_SADB_X_SATYPE_COMP:
 	/* ??? There ought to be an extension to list the
 	 * supported algorithms, but RFC 2367 doesn't
 	 * list one for IPcomp.  KLIPS uses SADB_X_CALG_DEFLATE.
@@ -359,7 +359,7 @@ klips_pfkey_register_response(const struct sadb_msg *msg)
 	 */
 	can_do_IPcomp = TRUE;
 	break;
-    case SADB_X_SATYPE_IPIP:
+    case K_SADB_X_SATYPE_IPIP:
 	break;
     default:
 	break;
@@ -771,11 +771,11 @@ static int kernelop2klips(enum pluto_sadb_operations op)
 static void
 klips_pfkey_register(void)
 {
-    pfkey_register_proto(SADB_SATYPE_AH, "AH");
-    pfkey_register_proto(SADB_SATYPE_ESP, "ESP");
+    pfkey_register_proto(K_SADB_SATYPE_AH, "AH");
+    pfkey_register_proto(K_SADB_SATYPE_ESP, "ESP");
     can_do_IPcomp = FALSE;  /* until we get a response from KLIPS */
-    pfkey_register_proto(SADB_X_SATYPE_COMP, "IPCOMP");
-    pfkey_register_proto(SADB_X_SATYPE_IPIP, "IPIP");
+    pfkey_register_proto(K_SADB_X_SATYPE_COMP, "IPCOMP");
+    pfkey_register_proto(K_SADB_X_SATYPE_IPIP, "IPIP");
 }
 
 static bool
@@ -1168,7 +1168,7 @@ pfkey_shunt_eroute(struct connection *c
 			      , htonl(spi)
 			      , SA_INT
 			      , sr->this.protocol
-			      , SADB_X_SATYPE_INT
+			      , K_SADB_X_SATYPE_INT
 			      , null_proto_info, 0, op, buf2);
     }
 }
@@ -1228,7 +1228,7 @@ pfkey_sag_eroute(struct state *st, struct spd_route *sr
     {
         inner_spi = st->st_ipcomp.attrs.spi;
         inner_proto = SA_COMP;
-        inner_satype = SADB_X_SATYPE_COMP;
+        inner_satype = K_SADB_X_SATYPE_COMP;
 
         i--;
         proto_info[i].proto = IPPROTO_COMP;
@@ -1248,7 +1248,7 @@ pfkey_sag_eroute(struct state *st, struct spd_route *sr
 
         inner_spi = st->st_tunnel_out_spi;
         inner_proto = SA_IPIP;
-        inner_satype = SADB_X_SATYPE_IPIP;
+        inner_satype = K_SADB_X_SATYPE_IPIP;
 
         proto_info[i].encapsulation = ENCAPSULATION_MODE_TUNNEL;
         for (j = i + 1; proto_info[j].proto; j++)
