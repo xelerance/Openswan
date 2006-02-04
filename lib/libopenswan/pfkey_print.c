@@ -112,12 +112,11 @@ pfkey_print(struct sadb_msg *msg, FILE *out)
 	  {
 	    struct sadb_lifetime *life = (struct sadb_lifetime *)se;
 
-	    fprintf(out, "allocations=%d bytes=%qd addtime=%qd usetime=%qd packets=%d",
+	    fprintf(out, "allocations=%d bytes=%qd addtime=%qd usetime=%qd",
 		    (int)life->sadb_lifetime_allocations,
 		    (long long)life->sadb_lifetime_bytes,
 		    (long long)life->sadb_lifetime_addtime,
-		    (long long)life->sadb_lifetime_usetime,
-		    (int)life->sadb_x_lifetime_packets);
+		    (long long)life->sadb_lifetime_usetime);
 	    fprintf(out, " } ");
 	  }
 	  break;

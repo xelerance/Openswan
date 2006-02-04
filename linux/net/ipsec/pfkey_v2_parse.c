@@ -314,14 +314,13 @@ pfkey_lifetime_parse(struct sadb_ext  *pfkey_ext)
 
 	DEBUGGING(PF_KEY_DEBUG_PARSE_STRUCT,
 		  "pfkey_lifetime_parse: "
-		  "life_type=%d(%s) alloc=%u bytes=%u add=%u use=%u pkts=%u.\n", 
+		  "life_type=%d(%s) alloc=%u bytes=%u add=%u use=%u.\n", 
 		  pfkey_lifetime->sadb_lifetime_exttype,
 		  pfkey_v2_sadb_ext_string(pfkey_lifetime->sadb_lifetime_exttype),
 		  pfkey_lifetime->sadb_lifetime_allocations,
 		  (unsigned)pfkey_lifetime->sadb_lifetime_bytes,
 		  (unsigned)pfkey_lifetime->sadb_lifetime_addtime,
-		  (unsigned)pfkey_lifetime->sadb_lifetime_usetime,
-		  k_pfkey_lifetime->sadb_x_lifetime_packets); 
+		  (unsigned)pfkey_lifetime->sadb_lifetime_usetime);
 errlab:
 	return error;
 }
@@ -805,7 +804,8 @@ pfkey_prop_parse(struct sadb_ext *pfkey_ext)
 			SENDERR(EINVAL);
 		}
 
-		if(k_pfkey_comb->sadb_x_comb_hard_packets && k_pfkey_comb->sadb_x_comb_soft_packets > k_pfkey_comb->sadb_x_comb_hard_packets) {
+#ifdef COMB_PACKETS
+		if(pfkey_comb->sadb_x_comb_hard_packets && pfkey_comb->sadb_x_comb_soft_packets > pfkey_comb->sadb_x_comb_hard_packets) {
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_prop_parse: "
 				"pfkey_comb[%d]->sadb_x_comb_soft_packets=%d > hard_packets=%d, fatal.\n",
@@ -814,6 +814,7 @@ pfkey_prop_parse(struct sadb_ext *pfkey_ext)
 				k_pfkey_comb->sadb_x_comb_hard_packets);
 			SENDERR(EINVAL);
 		}
+#endif
 
 		k_pfkey_comb++;
 	}

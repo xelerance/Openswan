@@ -78,18 +78,15 @@ struct sadb_sa_v1 {
 };
 
 struct k_sadb_lifetime {
-	struct sadb_lifetime sadb_lifetime;
-	uint32_t sadb_x_lifetime_packets;
-	uint32_t sadb_x_lifetime_reserved;
-} __attribute__((packed));
-
-struct k_sadb_comb {
-	struct sadb_comb sadb_comp;
-	uint32_t sadb_x_comb_soft_packets;
-	uint32_t sadb_x_comb_hard_packets;
-} __attribute__((packed));
-
-
+  uint16_t sadb_lifetime_len;
+  uint16_t sadb_lifetime_exttype;
+  uint32_t sadb_lifetime_allocations;
+  uint64_t sadb_lifetime_bytes;
+  uint64_t sadb_lifetime_addtime;
+  uint64_t sadb_lifetime_usetime;
+  uint32_t sadb_x_lifetime_packets;
+  uint32_t sadb_x_lifetime_reserved;
+};
 
 struct sadb_x_satype {
   uint16_t sadb_x_satype_len;

@@ -406,13 +406,12 @@ pfkey_lifetime_build(struct sadb_ext **	pfkey_ext,
 	}
 	memset(k_pfkey_lifetime, 0, sizeof(struct k_sadb_lifetime));
 
-	k_pfkey_lifetime->sadb_lifetime.sadb_lifetime_len = sizeof(struct k_sadb_lifetime) / IPSEC_PFKEYv2_ALIGN;
-	k_pfkey_lifetime->sadb_lifetime.sadb_lifetime_exttype = exttype;
-	k_pfkey_lifetime->sadb_lifetime.sadb_lifetime_allocations = allocations;
-	k_pfkey_lifetime->sadb_lifetime.sadb_lifetime_bytes = bytes;
-	k_pfkey_lifetime->sadb_lifetime.sadb_lifetime_addtime = addtime;
-	k_pfkey_lifetime->sadb_lifetime.sadb_lifetime_usetime = usetime;
-	k_pfkey_lifetime->sadb_x_lifetime_packets = packets;
+	pfkey_lifetime->sadb_lifetime_len = sizeof(struct sadb_lifetime) / IPSEC_PFKEYv2_ALIGN;
+	pfkey_lifetime->sadb_lifetime_exttype = exttype;
+	pfkey_lifetime->sadb_lifetime_allocations = allocations;
+	pfkey_lifetime->sadb_lifetime_bytes = bytes;
+	pfkey_lifetime->sadb_lifetime_addtime = addtime;
+	pfkey_lifetime->sadb_lifetime_usetime = usetime;
 
 errlab:
 	return error;

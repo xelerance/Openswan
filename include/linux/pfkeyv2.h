@@ -41,7 +41,6 @@ struct n_sadb_sa {
 } __attribute__((packed));
 /* sizeof(struct sadb_sa) == 16 */
 
-#if 0
 struct sadb_lifetime {
 	uint16_t	sadb_lifetime_len;
 	uint16_t	sadb_lifetime_exttype;
@@ -163,7 +162,6 @@ struct sadb_x_kmprivate {
 	u_int32_t	sadb_x_kmprivate_reserved;
 } __attribute__((packed));
 /* sizeof(struct sadb_x_kmprivate) == 8 */
-#endif
 
 struct sadb_x_sa2 {
 	uint16_t	sadb_x_sa2_len;
@@ -176,7 +174,6 @@ struct sadb_x_sa2 {
 } __attribute__((packed));
 /* sizeof(struct sadb_x_sa2) == 16 */
 
-#if 0
 struct sadb_x_policy {
 	uint16_t	sadb_x_policy_len;
 	uint16_t	sadb_x_policy_exttype;
@@ -187,7 +184,6 @@ struct sadb_x_policy {
 	uint32_t	sadb_x_policy_priority;
 } __attribute__((packed));
 /* sizeof(struct sadb_x_policy) == 16 */
-#endif
 
 struct sadb_x_ipsecrequest {
 	uint16_t	sadb_x_ipsecrequest_len;
@@ -200,7 +196,6 @@ struct sadb_x_ipsecrequest {
 } __attribute__((packed));
 /* sizeof(struct sadb_x_ipsecrequest) == 16 */
 
-#if 0
 /* This defines the TYPE of Nat Traversal in use.  Currently only one
  * type of NAT-T is supported, draft-ietf-ipsec-udp-encaps-06
  */
@@ -220,7 +215,6 @@ struct sadb_x_nat_t_port {
 	uint16_t	sadb_x_nat_t_port_reserved;
 } __attribute__((packed));
 /* sizeof(struct sadb_x_nat_t_port) == 8 */
-#endif
 
 /* Message types */
 #define SADB_RESERVED		0
