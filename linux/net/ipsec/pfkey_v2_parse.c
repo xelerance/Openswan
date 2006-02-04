@@ -886,7 +886,7 @@ pfkey_supported_parse(struct sadb_ext *pfkey_ext)
 				SENDERR(EINVAL);
 			}
 			break;
-		case K_SADB_EXT_SUPPORTED_ENCRYPT:
+		case SADB_EXT_SUPPORTED_ENCRYPT:
 #if K_SADB_EALG_MAX < 255	
 			if(pfkey_alg->sadb_alg_id > K_SADB_EALG_MAX) {
 				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
@@ -1486,12 +1486,12 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	case K_SADB_ADD:
 	case K_SADB_UPDATE:
 		/* check maturity */
-		if(((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_state !=
+		if(((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state !=
 		   K_SADB_SASTATE_MATURE) {
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
 				"state=%d for add or update should be MATURE=%d.\n",
-				((struct sadb_sa*)extensions[K_SADB_EXT_SA])->sadb_sa_state,
+				((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state,
 				K_SADB_SASTATE_MATURE);
 			SENDERR(EINVAL);
 		}

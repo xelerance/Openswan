@@ -34,8 +34,8 @@ enum sadb_msg_t {
 	K_SADB_EXPIRE=SADB_EXPIRE,
 	K_SADB_FLUSH=SADB_FLUSH,
 	K_SADB_DUMP=SADB_DUMP,
-	K_SADB_X_PROMISC=11,
-	K_SADB_X_PCHANGE=12,
+	K_SADB_X_PROMISC=SADB_X_PROMISC,
+	K_SADB_X_PCHANGE=SADB_X_PCHANGE,
 	K_SADB_X_GRPSA=13,
 	K_SADB_X_ADDFLOW=14,
 	K_SADB_X_DELFLOW=15,
@@ -46,8 +46,22 @@ enum sadb_msg_t {
 	K_SADB_MAX=19
 };
 
-struct k_sadb_sa {
-	struct sadb_sa sadb_sa;
+#define SADB_X_GRPSA	    K_SADB_X_GRPSA		    
+#define SADB_X_ADDFLOW	    K_SADB_X_ADDFLOW	    
+#define SADB_X_DELFLOW	    K_SADB_X_DELFLOW	    
+#define SADB_X_DEBUG	    K_SADB_X_DEBUG		    
+#define SADB_X_PLUMBIF	    K_SADB_X_PLUMBIF	    
+#define SADB_X_UNPLUMBIF    K_SADB_X_UNPLUMBIF	    
+
+struct sadb_sa {
+	uint16_t sadb_sa_len;
+	uint16_t sadb_sa_exttype;
+	uint32_t sadb_sa_spi;
+	uint8_t sadb_sa_replay;
+	uint8_t sadb_sa_state;
+	uint8_t sadb_sa_auth;
+	uint8_t sadb_sa_encrypt;
+	uint32_t sadb_sa_flags;
 	uint32_t /*IPsecSAref_t*/ sadb_x_sa_ref; /* 32 bits */
 	uint8_t sadb_x_reserved[4];
 } __attribute__((packed));
@@ -147,27 +161,27 @@ struct sadb_protocol {
  * in pfkeyv2_ext_bits.c
  */
 enum sadb_extension_t {
-	K_SADB_EXT_RESERVED=0,
-	K_SADB_EXT_SA=              1,
-	K_SADB_EXT_LIFETIME_CURRENT=2,
-	K_SADB_EXT_LIFETIME_HARD=   3,
-	K_SADB_EXT_LIFETIME_SOFT=   4,
-	K_SADB_EXT_ADDRESS_SRC=     5,
-	K_SADB_EXT_ADDRESS_DST=     6,
-	K_SADB_EXT_ADDRESS_PROXY=   7,
-	K_SADB_EXT_KEY_AUTH=        8,
-	K_SADB_EXT_KEY_ENCRYPT=     9,
-	K_SADB_EXT_IDENTITY_SRC=    10,
-	K_SADB_EXT_IDENTITY_DST=    11,
-	K_SADB_EXT_SENSITIVITY=     12,
-	K_SADB_EXT_PROPOSAL=        13,
-	K_SADB_EXT_SUPPORTED_AUTH=  14,
-	K_SADB_EXT_SUPPORTED_ENCRYPT=15,
-	K_SADB_EXT_SPIRANGE=        16,
-	K_SADB_X_EXT_KMPRIVATE=     17,
+	K_SADB_EXT_RESERVED=SADB_RESERVED,
+	K_SADB_EXT_SA=              SADB_EXT_SA,
+	K_SADB_EXT_LIFETIME_CURRENT=SADB_EXT_LIFETIME_CURRENT,
+	K_SADB_EXT_LIFETIME_HARD=   SADB_EXT_LIFETIME_HARD,
+	K_SADB_EXT_LIFETIME_SOFT=   SADB_EXT_LIFETIME_SOFT,
+	K_SADB_EXT_ADDRESS_SRC=     SADB_EXT_ADDRESS_SRC,
+	K_SADB_EXT_ADDRESS_DST=     SADB_EXT_ADDRESS_DST,
+	K_SADB_EXT_ADDRESS_PROXY=   SADB_EXT_ADDRESS_PROXY,
+	K_SADB_EXT_KEY_AUTH=        SADB_EXT_KEY_AUTH,
+	K_SADB_EXT_KEY_ENCRYPT=     SADB_EXT_KEY_ENCRYPT,
+	K_SADB_EXT_IDENTITY_SRC=    SADB_EXT_IDENTITY_SRC,
+	K_SADB_EXT_IDENTITY_DST=    SADB_EXT_IDENTITY_DST,
+	K_SADB_EXT_SENSITIVITY=     SADB_EXT_SENSITIVITY,
+	K_SADB_EXT_PROPOSAL=        SADB_EXT_PROPOSAL,
+	K_SADB_EXT_SUPPORTED_AUTH=  SADB_EXT_SUPPORTED_AUTH,
+	K_SADB_EXT_SUPPORTED_ENCRYPT=SADB_EXT_SUPPORTED_ENCRYPT,
+	K_SADB_EXT_SPIRANGE=        SADB_EXT_SPIRANGE,
+	K_SADB_X_EXT_KMPRIVATE=     SADB_X_EXT_KMPRIVATE,
 	K_SADB_X_EXT_SATYPE2=       18,
-	K_SADB_X_EXT_POLICY=        18,
-	K_SADB_X_EXT_SA2=           19,
+	K_SADB_X_EXT_POLICY=        SADB_X_EXT_POLICY,
+	K_SADB_X_EXT_SA2=           SADB_X_EXT_SA2,
 	K_SADB_X_EXT_ADDRESS_DST2=  20,
 	K_SADB_X_EXT_ADDRESS_SRC_FLOW=21,
 	K_SADB_X_EXT_ADDRESS_DST_FLOW=22,
@@ -182,6 +196,22 @@ enum sadb_extension_t {
 	K_SADB_X_EXT_PLUMBIF=       31,
 	K_SADB_EXT_MAX=             31,
 };
+
+
+#define SADB_X_EXT_SATYPE2		K_SADB_X_EXT_SATYPE2		
+#define SADB_X_EXT_ADDRESS_DST2	        K_SADB_X_EXT_ADDRESS_DST2	
+#define SADB_X_EXT_ADDRESS_SRC_FLOW	K_SADB_X_EXT_ADDRESS_SRC_FLOW	
+#define SADB_X_EXT_ADDRESS_DST_FLOW	K_SADB_X_EXT_ADDRESS_DST_FLOW	
+#define SADB_X_EXT_ADDRESS_SRC_MASK	K_SADB_X_EXT_ADDRESS_SRC_MASK	
+#define SADB_X_EXT_ADDRESS_DST_MASK	K_SADB_X_EXT_ADDRESS_DST_MASK	
+#define SADB_X_EXT_DEBUG		K_SADB_X_EXT_DEBUG		
+#define SADB_X_EXT_PROTOCOL		K_SADB_X_EXT_PROTOCOL		
+
+#undef SADB_X_EXT_NAT_T_TYPE		
+#undef SADB_X_EXT_NAT_T_SPORT	        
+#undef SADB_X_EXT_NAT_T_DPORT	        
+#undef SADB_X_EXT_NAT_T_OA		
+#define SADB_X_EXT_PLUMBIF		K_SADB_X_EXT_PLUMBIF		
 
 
 
@@ -203,8 +233,9 @@ enum sadb_extension_t {
 #ifdef KERNEL26_HAS_KAME_DUPLICATES
 #define K_SADB_X_SATYPE_IPCOMP  9   /* ICK! */
 #endif
-#define K_SADB_X_SATYPE_COMP    10
-#define K_SADB_X_SATYPE_INT     11
+#define SADB_X_SATYPE_COMP    10
+#define SADB_X_SATYPE_INT     11
+#undef SADB_SATYPE_MAX
 #define K_SADB_SATYPE_MAX       11
 
 enum sadb_sastate {
@@ -213,12 +244,16 @@ enum sadb_sastate {
   K_SADB_SASTATE_DYING=2,
   K_SADB_SASTATE_DEAD=3
 };
+#undef  SADB_SASTATE_LARVAL
+#undef  SADB_SASTATE_MATURE
+#undef  SADB_SASTATE_DYING
+#undef  SADB_SASTATE_DEAD
 #define K_SADB_SASTATE_MAX 3
 
-#define K_SADB_SAFLAGS_PFS		1
-#define K_SADB_X_SAFLAGS_REPLACEFLOW	2
-#define K_SADB_X_SAFLAGS_CLEARFLOW	4
-#define K_SADB_X_SAFLAGS_INFLOW		8
+#define SADB_SAFLAGS_PFS		1
+#define SADB_X_SAFLAGS_REPLACEFLOW	2
+#define SADB_X_SAFLAGS_CLEARFLOW	4
+#define SADB_X_SAFLAGS_INFLOW		8
 
 /* not obvious, but these are the same values as used in isakmp,
  * and in freeswan/ipsec_policy.h. If you need to add any, they
@@ -228,48 +263,49 @@ enum sadb_sastate {
  * and if not, then please try to use a private-use value, and
  * consider asking IANA to assign a value.
  */
-#define K_SADB_AALG_NONE                  0
-#define K_SADB_AALG_MD5HMAC               2
-#define K_SADB_AALG_SHA1HMAC              3
-#define K_SADB_X_AALG_SHA2_256HMAC	5
-#define K_SADB_X_AALG_SHA2_384HMAC	6
-#define K_SADB_X_AALG_SHA2_512HMAC	7
-#define K_SADB_X_AALG_RIPEMD160HMAC	8
-#define K_SADB_X_AALG_NULL		251	/* kame */
+#define SADB_AALG_NONE                  0
+#define SADB_AALG_MD5HMAC               2
+#define SADB_AALG_SHA1HMAC              3
+#define SADB_X_AALG_SHA2_256HMAC	5
+#define SADB_X_AALG_SHA2_384HMAC	6
+#define SADB_X_AALG_SHA2_512HMAC	7
+#define SADB_X_AALG_RIPEMD160HMAC	8
+#define SADB_X_AALG_NULL		251	/* kame */
 #define K_SADB_AALG_MAX			251
 
-#define K_SADB_EALG_NONE                  0
-#define K_SADB_EALG_DESCBC                2
-#define K_SADB_EALG_3DESCBC               3
-#define K_SADB_X_EALG_CASTCBC		6
-#define K_SADB_X_EALG_BLOWFISHCBC		7
-#define K_SADB_EALG_NULL			11
-#define K_SADB_X_EALG_AESCBC		12
+#define SADB_EALG_NONE                  0
+#define SADB_EALG_DESCBC                2
+#define SADB_EALG_3DESCBC               3
+#define SADB_X_EALG_CASTCBC		6
+#define SADB_X_EALG_BLOWFISHCBC		7
+#define SADB_EALG_NULL			11
+#define SADB_X_EALG_AESCBC		12
+#undef SADB_EALG_MAX
 #define K_SADB_EALG_MAX			255
 
-#define K_SADB_X_CALG_NONE          0
-#define K_SADB_X_CALG_OUI           1
-#define K_SADB_X_CALG_DEFLATE       2
-#define K_SADB_X_CALG_LZS           3
-#define K_SADB_X_CALG_V42BIS        4
+#define SADB_X_CALG_NONE          0
+#define SADB_X_CALG_OUI           1
+#define SADB_X_CALG_DEFLATE       2
+#define SADB_X_CALG_LZS           3
+#define SADB_X_CALG_V42BIS        4
 #ifdef KERNEL26_HAS_KAME_DUPLICATES
 #define K_SADB_X_CALG_LZJH          4
 #endif
 #define K_SADB_X_CALG_MAX           4
 
-#define K_SADB_X_TALG_NONE          0
-#define K_SADB_X_TALG_IPv4_in_IPv4  1
-#define K_SADB_X_TALG_IPv6_in_IPv4  2
-#define K_SADB_X_TALG_IPv4_in_IPv6  3
-#define K_SADB_X_TALG_IPv6_in_IPv6  4
-#define K_SADB_X_TALG_MAX           4
+#define SADB_X_TALG_NONE          0
+#define SADB_X_TALG_IPv4_in_IPv4  1
+#define SADB_X_TALG_IPv6_in_IPv4  2
+#define SADB_X_TALG_IPv4_in_IPv6  3
+#define SADB_X_TALG_IPv6_in_IPv6  4
+#define SADB_X_TALG_MAX           4
 
 
-#define K_SADB_IDENTTYPE_RESERVED   0
-#define K_SADB_IDENTTYPE_PREFIX     1
-#define K_SADB_IDENTTYPE_FQDN       2
-#define K_SADB_IDENTTYPE_USERFQDN   3
-#define K_SADB_X_IDENTTYPE_CONNECTION 4
+#define SADB_IDENTTYPE_RESERVED   0
+#define SADB_IDENTTYPE_PREFIX     1
+#define SADB_IDENTTYPE_FQDN       2
+#define SADB_IDENTTYPE_USERFQDN   3
+#define SADB_X_IDENTTYPE_CONNECTION 4
 #define K_SADB_IDENTTYPE_MAX        4
 
 #define K_SADB_KEY_FLAGS_MAX     0

@@ -1304,7 +1304,7 @@ main(int argc, char *argv[])
 		.sa_base.sadb_sa_exttype = SADB_EXT_SA,
 		.sa_base.sadb_sa_spi     = htonl(spi),
 		.sa_base.sadb_sa_replay  = replay_window,
-		.sa_base.sadb_sa_state   = SADB_SASTATE_MATURE,
+		.sa_base.sadb_sa_state   = K_SADB_SASTATE_MATURE,
 		.sa_base.sadb_sa_auth    = authalg,
 		.sa_base.sadb_sa_encrypt = encryptalg,
 		.sa_base.sadb_sa_flags   = 0,
@@ -1542,7 +1542,7 @@ main(int argc, char *argv[])
 
 	  int err;
 
-	  err = pfkey_x_nat_t_type_build(&extensions[SADB_X_EXT_NAT_T_TYPE]
+	  err = pfkey_x_nat_t_type_build(&extensions[K_SADB_X_EXT_NAT_T_TYPE]
 					 , natt);
 	  success = pfkey_build(err
 				, "pfkey_nat_t_type Add ESP SA"
@@ -1551,8 +1551,8 @@ main(int argc, char *argv[])
 	  if(debug) fprintf(stderr, "setting natt_type to %d\n", natt);
 	  
 	  if(sport != 0) {
-	    err = pfkey_x_nat_t_port_build(&extensions[SADB_X_EXT_NAT_T_SPORT]
-					   , SADB_X_EXT_NAT_T_SPORT
+	    err = pfkey_x_nat_t_port_build(&extensions[K_SADB_X_EXT_NAT_T_SPORT]
+					   , K_SADB_X_EXT_NAT_T_SPORT
 					   , sport);
 	    success = pfkey_build(err
 				  , "pfkey_nat_t_sport Add ESP SA"
@@ -1562,8 +1562,8 @@ main(int argc, char *argv[])
 	  }
 	  
 	  if(dport != 0) {
-	    err = pfkey_x_nat_t_port_build(&extensions[SADB_X_EXT_NAT_T_DPORT]
-					   , SADB_X_EXT_NAT_T_DPORT
+	    err = pfkey_x_nat_t_port_build(&extensions[K_SADB_X_EXT_NAT_T_DPORT]
+					   , K_SADB_X_EXT_NAT_T_DPORT
 					   , dport);
 	    success = pfkey_build(err
 				  , "pfkey_nat_t_dport Add ESP SA"

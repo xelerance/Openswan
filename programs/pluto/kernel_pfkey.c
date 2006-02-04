@@ -76,58 +76,58 @@ static pid_t pid;
 #define NE(x) { x, #x }	/* Name Entry -- shorthand for sparse_names */
 
 static sparse_names pfkey_type_names = {
-	NE(SADB_RESERVED),
-	NE(SADB_GETSPI),
-	NE(SADB_UPDATE),
-	NE(SADB_ADD),
-	NE(SADB_DELETE),
-	NE(SADB_GET),
-	NE(SADB_ACQUIRE),
-	NE(SADB_REGISTER),
-	NE(SADB_EXPIRE),
-	NE(SADB_FLUSH),
-	NE(SADB_DUMP),
-	NE(SADB_X_PROMISC),
-	NE(SADB_X_PCHANGE),
-	NE(SADB_X_GRPSA),
-	NE(SADB_X_ADDFLOW),
-	NE(SADB_X_DELFLOW),
-	NE(SADB_X_DEBUG),
+	NE(K_SADB_RESERVED),
+	NE(K_SADB_GETSPI),
+	NE(K_SADB_UPDATE),
+	NE(K_SADB_ADD),
+	NE(K_SADB_DELETE),
+	NE(K_SADB_GET),
+	NE(K_SADB_ACQUIRE),
+	NE(K_SADB_REGISTER),
+	NE(K_SADB_EXPIRE),
+	NE(K_SADB_FLUSH),
+	NE(K_SADB_DUMP),
+	NE(K_SADB_X_PROMISC),
+	NE(K_SADB_X_PCHANGE),
+	NE(K_SADB_X_GRPSA),
+	NE(K_SADB_X_ADDFLOW),
+	NE(K_SADB_X_DELFLOW),
+	NE(K_SADB_X_DEBUG),
 #ifdef NAT_TRAVERSAL
-	NE(SADB_X_NAT_T_NEW_MAPPING),
+	NE(K_SADB_X_NAT_T_NEW_MAPPING),
 #endif
-	NE(SADB_MAX),	
+	NE(K_SADB_MAX),	
 	{ 0, sparse_end }
 };
 
 #ifdef NEVER /* not needed yet */
 static sparse_names pfkey_ext_names = {
-	NE(SADB_EXT_RESERVED),
-	NE(SADB_EXT_SA),
-	NE(SADB_EXT_LIFETIME_CURRENT),
-	NE(SADB_EXT_LIFETIME_HARD),
-	NE(SADB_EXT_LIFETIME_SOFT),
-	NE(SADB_EXT_ADDRESS_SRC),
-	NE(SADB_EXT_ADDRESS_DST),
-	NE(SADB_EXT_ADDRESS_PROXY),
-	NE(SADB_EXT_KEY_AUTH),
-	NE(SADB_EXT_KEY_ENCRYPT),
-	NE(SADB_EXT_IDENTITY_SRC),
-	NE(SADB_EXT_IDENTITY_DST),
-	NE(SADB_EXT_SENSITIVITY),
-	NE(SADB_EXT_PROPOSAL),
-	NE(SADB_EXT_SUPPORTED_AUTH),
-	NE(SADB_EXT_SUPPORTED_ENCRYPT),
-	NE(SADB_EXT_SPIRANGE),
-	NE(SADB_X_EXT_KMPRIVATE),
-	NE(SADB_X_EXT_SATYPE2),
-	NE(SADB_X_EXT_SA2),
-	NE(SADB_X_EXT_ADDRESS_DST2),
-	NE(SADB_X_EXT_ADDRESS_SRC_FLOW),
-	NE(SADB_X_EXT_ADDRESS_DST_FLOW),
-	NE(SADB_X_EXT_ADDRESS_SRC_MASK),
-	NE(SADB_X_EXT_ADDRESS_DST_MASK),
-	NE(SADB_X_EXT_DEBUG),
+	NE(K_SADB_EXT_RESERVED),
+	NE(K_SADB_EXT_SA),
+	NE(K_SADB_EXT_LIFETIME_CURRENT),
+	NE(K_SADB_EXT_LIFETIME_HARD),
+	NE(K_SADB_EXT_LIFETIME_SOFT),
+	NE(K_SADB_EXT_ADDRESS_SRC),
+	NE(K_SADB_EXT_ADDRESS_DST),
+	NE(K_SADB_EXT_ADDRESS_PROXY),
+	NE(K_SADB_EXT_KEY_AUTH),
+	NE(K_SADB_EXT_KEY_ENCRYPT),
+	NE(K_SADB_EXT_IDENTITY_SRC),
+	NE(K_SADB_EXT_IDENTITY_DST),
+	NE(K_SADB_EXT_SENSITIVITY),
+	NE(K_SADB_EXT_PROPOSAL),
+	NE(K_SADB_EXT_SUPPORTED_AUTH),
+	NE(K_SADB_EXT_SUPPORTED_ENCRYPT),
+	NE(K_SADB_EXT_SPIRANGE),
+	NE(K_SADB_X_EXT_KMPRIVATE),
+	NE(K_SADB_X_EXT_SATYPE2),
+	NE(K_SADB_X_EXT_SA2),
+	NE(K_SADB_X_EXT_ADDRESS_DST2),
+	NE(K_SADB_X_EXT_ADDRESS_SRC_FLOW),
+	NE(K_SADB_X_EXT_ADDRESS_DST_FLOW),
+	NE(K_SADB_X_EXT_ADDRESS_SRC_MASK),
+	NE(K_SADB_X_EXT_ADDRESS_DST_MASK),
+	NE(K_SADB_X_EXT_DEBUG),
 	{ 0, sparse_end }
 };
 #endif /* NEVER */
@@ -272,7 +272,7 @@ pfkey_get(pfkey_buf *buf)
 	|| (buf->msg.sadb_msg_type == SADB_REGISTER)
 #endif
 #ifdef NAT_TRAVERSAL
-	|| (buf->msg.sadb_msg_pid == 0 && buf->msg.sadb_msg_type == SADB_X_NAT_T_NEW_MAPPING)
+	|| (buf->msg.sadb_msg_pid == 0 && buf->msg.sadb_msg_type == K_SADB_X_NAT_T_NEW_MAPPING)
 #endif
 	))
 	{
@@ -458,7 +458,7 @@ pfkey_async(pfkey_buf *buf)
 	    process_pfkey_acquire(buf, extensions);
 	    break;
 #ifdef NAT_TRAVERSAL
-	case SADB_X_NAT_T_NEW_MAPPING:
+	case K_SADB_X_NAT_T_NEW_MAPPING:
 	    process_pfkey_nat_t_new_mapping(&(buf->msg), extensions);
 	    break;
 #endif
@@ -886,7 +886,7 @@ pfkey_add_sa(const struct kernel_sa *sa, bool replace)
     success = pfkey_build(pfkey_sa_build(&extensions[SADB_EXT_SA]
 					 , SADB_EXT_SA
 					 , sa->spi	/* in network order */
-					 , sa->replay_window, SADB_SASTATE_MATURE
+					 , sa->replay_window, K_SADB_SASTATE_MATURE
 					 , sa->authalg, sa->encalg, 0)
 			  , "pfkey_sa Add SA", sa->text_said, extensions);
     if(!success) return FALSE;
@@ -925,7 +925,7 @@ pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 #ifdef NAT_TRAVERSAL
     if(sa->natt_type != 0) {
 	success = pfkey_build(pfkey_x_nat_t_type_build(
-				  &extensions[SADB_X_EXT_NAT_T_TYPE]
+				  &extensions[K_SADB_X_EXT_NAT_T_TYPE]
 				  , sa->natt_type),
 			      "pfkey_nat_t_type Add ESP SA"
 			      ,  sa->text_said, extensions);
@@ -935,8 +935,8 @@ pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 
 	if(sa->natt_sport != 0) {
 	  success = pfkey_build(pfkey_x_nat_t_port_build(
-				  &extensions[SADB_X_EXT_NAT_T_SPORT]
-				  , SADB_X_EXT_NAT_T_SPORT,
+				  &extensions[K_SADB_X_EXT_NAT_T_SPORT]
+				  , K_SADB_X_EXT_NAT_T_SPORT,
 				  sa->natt_sport)
 			      , "pfkey_nat_t_sport Add ESP SA"
 			      , sa->text_said, extensions);
@@ -947,8 +947,8 @@ pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 	
 	if(sa->natt_dport != 0) {
 	  success = pfkey_build(pfkey_x_nat_t_port_build(
-				  &extensions[SADB_X_EXT_NAT_T_DPORT]
-				  , SADB_X_EXT_NAT_T_DPORT
+				  &extensions[K_SADB_X_EXT_NAT_T_DPORT]
+				  , K_SADB_X_EXT_NAT_T_DPORT
 				  , sa->natt_dport)
 			      , "pfkey_nat_t_dport Add ESP SA"
 			      , sa->text_said, extensions);
@@ -959,7 +959,7 @@ pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 	
 
 	if(sa->natt_type!=0 && !isanyaddr(sa->natt_oa)) {
-	  success = pfkeyext_address(SADB_X_EXT_NAT_T_OA, sa->natt_oa
+	  success = pfkeyext_address(K_SADB_X_EXT_NAT_T_OA, sa->natt_oa
 				     , "pfkey_nat_t_oa Add ESP SA"
 				     , sa->text_said, extensions);
 	  DBG(DBG_KLIPS
@@ -1017,7 +1017,7 @@ pfkey_del_sa(const struct kernel_sa *sa)
     && pfkey_build(pfkey_sa_build(&extensions[SADB_EXT_SA]
 	    , SADB_EXT_SA
 	    , sa->spi	/* in host order */
-	    , 0, SADB_SASTATE_MATURE, 0, 0, 0)
+	    , 0, K_SADB_SASTATE_MATURE, 0, 0, 0)
 	, "pfkey_sa delete SA", sa->text_said, extensions)
 
     && pfkeyext_address(SADB_EXT_ADDRESS_SRC, sa->src

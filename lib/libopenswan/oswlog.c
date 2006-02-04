@@ -92,7 +92,7 @@ fmt_log(char *buf, size_t buf_len,
 	(void)sanitize_string(buf, buf_len);
 }
 
-void
+int
 openswan_log(const char *message, ...)
 {
     va_list args;
@@ -106,6 +106,8 @@ openswan_log(const char *message, ...)
 	fprintf(stderr, "%s\n", m);
     if (log_to_syslog)
 	syslog(LOG_WARNING, "%s", m);
+    
+    return 0;
 }
 
 void
@@ -220,7 +222,7 @@ set_debugging(lset_t deb)
 
 /* log a debugging message (prefixed by "| ") */
 
-void
+int
 openswan_DBG_log(const char *message, ...)
 {
     va_list args;
@@ -237,6 +239,8 @@ openswan_DBG_log(const char *message, ...)
 	fprintf(stderr, "| %s\n", m);
     if (log_to_syslog)
 	syslog(LOG_DEBUG, "| %s", m);
+
+    return 0;
 }
 
 /* dump raw bytes in hex to stderr (for lack of any better destination) */

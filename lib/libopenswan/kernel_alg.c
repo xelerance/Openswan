@@ -43,8 +43,8 @@
 #include "oswalloc.h"
 
 /* ALG storage */
-struct sadb_alg esp_aalg[SADB_AALG_MAX+1];
-struct sadb_alg esp_ealg[SADB_EALG_MAX+1];
+struct sadb_alg esp_aalg[K_SADB_AALG_MAX+1];
+struct sadb_alg esp_ealg[K_SADB_EALG_MAX+1];
 int esp_ealg_num=0;
 int esp_aalg_num=0;
 
@@ -58,7 +58,7 @@ sadb_alg_ptr (int satype, int exttype, int alg_id, int rw)
 				break;
 			goto fail;		
 		case SADB_EXT_SUPPORTED_ENCRYPT:
-			if (alg_id<=SADB_EALG_MAX)
+			if (alg_id<=K_SADB_EALG_MAX)
 				break;
 			goto fail;		
 		default:

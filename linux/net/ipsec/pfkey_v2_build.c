@@ -256,11 +256,11 @@ pfkey_sa_builds(struct sadb_ext **pfkey_ext,
 	}
 
 #if K_SADB_EALG_MAX < 255	
-	if(sab.sa_base.sadb_sa.sadb_sa_encrypt > K_SADB_EALG_MAX) {
+	if(sab.sa_base.sadb_sa_encrypt > K_SADB_EALG_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
-			"encrypt=%d > K_SADB_EALG_MAX=%d.\n",
-			sab.sa_base.sadb_sa.sadb_sa_encrypt,
+			"encrypt=%d > SADB_EALG_MAX=%d.\n",
+			sab.sa_base.sadb_sa_encrypt,
 			K_SADB_EALG_MAX);
 		SENDERR(EINVAL);
 	}
@@ -275,11 +275,11 @@ pfkey_sa_builds(struct sadb_ext **pfkey_ext,
 		SENDERR(EINVAL);
 	}
 
-	if(sab.sa_base.sadb_sa.sadb_sa_state == K_SADB_SASTATE_DEAD) {
+	if(sab.sa_base.sadb_sa_state == K_SADB_SASTATE_DEAD) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"sa_state=%d is DEAD=%d is not allowed.\n",
-			sab.sa_base.sadb_sa.sadb_sa_state,
+			sab.sa_base.sadb_sa_state,
 			K_SADB_SASTATE_DEAD);
 		SENDERR(EINVAL);
 	}
