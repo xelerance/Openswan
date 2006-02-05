@@ -39,17 +39,18 @@ char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.67 2005/08/18 14:04:39 ken Ex
 #endif
 /* permanently turn it on since netlink support has been disabled */
 
+#include <stdio.h>
+#include <getopt.h>
+
 #include <signal.h>
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
+#include "pfkey_help.h"
 
-#include <stdio.h>
-#include <getopt.h>
-
-char *program_name;
+char *progname;
 char me[] = "ipsec eroute";
 extern char *optarg;
 extern int optind, opterr, optopt;
@@ -131,6 +132,9 @@ static struct option const longopts[] =
 	{0, 0, 0, 0}
 };
 
+/* outside of main, so that test cases can enable it */
+int debug = 0;
+
 int
 main(int argc, char **argv)
 {
@@ -139,7 +143,6 @@ main(int argc, char **argv)
 /*	int ret; */
 	int c, previous = -1;
 	const char* error_s;
-	int debug = 0;
 
 	int error = 0;
 
@@ -163,7 +166,16 @@ main(int argc, char **argv)
 
 	int argcount = argc;
 
-	program_name = argv[0];
+	memset(&pfkey_address_s_ska, 0, sizeof(ip_address));
+	memset(&pfkey_address_sflow_ska, 0, sizeof(ip_address));
+	memset(&pfkey_address_dflow_ska, 0, sizeof(ip_address));
+	memset(&pfkey_address_smask_ska, 0, sizeof(ip_address));
+	memset(&pfkey_address_dmask_ska, 0, sizeof(ip_address));
+	memset(&said, 0, sizeof(ip_said));
+	memset(&s_subnet, 0, sizeof(ip_subnet));
+	memset(&d_subnet, 0, sizeof(ip_subnet));
+
+	progname = argv[0];
 	eroute_af_opt = said_af_opt = edst_opt = spi_opt = proto_opt = said_opt = dst_opt = src_opt = NULL;
 
 	while((c = getopt_long(argc, argv, ""/*"acdD:e:i:hprs:S:f:vl:+:g"*/, longopts, 0)) != EOF) {
@@ -176,7 +188,7 @@ main(int argc, char **argv)
 		case 'a':
 			if(action_type) {
 				fprintf(stderr, "%s: Only one of '--add', '--addin', '--replace', '--clear', or '--del' options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			action_type = EMT_SETEROUTE;
@@ -184,7 +196,7 @@ main(int argc, char **argv)
 		case 'A':
 			if(action_type) {
 				fprintf(stderr, "%s: Only one of '--add', '--addin', '--replace', '--clear', or '--del' options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			action_type = EMT_INEROUTE;
@@ -192,7 +204,7 @@ main(int argc, char **argv)
 		case 'r':
 			if(action_type) {
 				fprintf(stderr, "%s: Only one of '--add', '--addin', '--replace', '--clear', or '--del' options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			action_type = EMT_REPLACEROUTE;
@@ -200,7 +212,7 @@ main(int argc, char **argv)
 		case 'c':
 			if(action_type) {
 				fprintf(stderr, "%s: Only one of '--add', '--addin', '--replace', '--clear', or '--del' options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			action_type = EMT_CLREROUTE;
@@ -208,7 +220,7 @@ main(int argc, char **argv)
 		case 'd':
 			if(action_type) {
 				fprintf(stderr, "%s: Only one of '--add', '--addin', '--replace', '--clear', or '--del' options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			action_type = EMT_DELEROUTE;
@@ -216,46 +228,46 @@ main(int argc, char **argv)
 		case 'e':
 			if(said_opt) {
 				fprintf(stderr, "%s: Error, EDST parameter redefined:%s, already defined in SA:%s\n",
-					program_name, optarg, said_opt);
+					progname, optarg, said_opt);
 				exit (1);
 			}				
 			if(edst_opt) {
 				fprintf(stderr, "%s: Error, EDST parameter redefined:%s, already defined as:%s\n",
-					program_name, optarg, edst_opt);
+					progname, optarg, edst_opt);
 				exit (1);
 			}				
 			error_s = ttoaddr(optarg, 0, said_af, &said.dst);
 			if(error_s != NULL) {
 				fprintf(stderr, "%s: Error, %s converting --edst argument:%s\n",
-					program_name, error_s, optarg);
+					progname, error_s, optarg);
 				exit (1);
 			}
 			edst_opt = optarg;
 			break;
 		case 'h':
 		case '?':
-			usage(program_name);
+			usage(progname);
 			exit(1);
 		case 's':
 			if(said_opt) {
 				fprintf(stderr, "%s: Error, SPI parameter redefined:%s, already defined in SA:%s\n",
-					program_name, optarg, said_opt);
+					progname, optarg, said_opt);
 				exit (1);
 			}				
 			if(spi_opt) {
 				fprintf(stderr, "%s: Error, SPI parameter redefined:%s, already defined as:%s\n",
-					program_name, optarg, spi_opt);
+					progname, optarg, spi_opt);
 				exit (1);
 			}				
 			said.spi = htonl(strtoul(optarg, &endptr, 0));
 			if(!(endptr == optarg + strlen(optarg))) {
 				fprintf(stderr, "%s: Invalid character in SPI parameter: %s\n",
-					program_name, optarg);
+					progname, optarg);
 				exit (1);
 			}
 			if(ntohl(said.spi) < 0x100) {
 				fprintf(stderr, "%s: Illegal reserved spi: %s => 0x%x Must be larger than 0x100.\n",
-					program_name, optarg, ntohl(said.spi));
+					progname, optarg, ntohl(said.spi));
 				exit(1);
 			}
 			spi_opt = optarg;
@@ -263,18 +275,18 @@ main(int argc, char **argv)
 		case 'p':
 			if(said_opt) {
 				fprintf(stderr, "%s: Error, PROTO parameter redefined:%s, already defined in SA:%s\n",
-					program_name, optarg, said_opt);
+					progname, optarg, said_opt);
 				exit (1);
 			}				
 			if(proto_opt) {
 				fprintf(stderr, "%s: Error, PROTO parameter redefined:%s, already defined as:%s\n",
-					program_name, optarg, proto_opt);
+					progname, optarg, proto_opt);
 				exit (1);
 			}
 #if 0
 			if(said.proto) {
 				fprintf(stderr, "%s: Warning, PROTO parameter redefined:%s\n",
-					program_name, optarg);
+					progname, optarg);
 				exit (1);
 			}
 #endif
@@ -288,7 +300,7 @@ main(int argc, char **argv)
 				said.proto = SA_COMP;
 			if(said.proto == 0) {
 				fprintf(stderr, "%s: Invalid PROTO parameter: %s\n",
-					program_name, optarg);
+					progname, optarg);
 				exit (1);
 			}
 			proto_opt = optarg;
@@ -296,37 +308,37 @@ main(int argc, char **argv)
 		case 'I':
 			if(said_opt) {
 				fprintf(stderr, "%s: Error, SAID parameter redefined:%s, already defined in SA:%s\n",
-					program_name, optarg, said_opt);
+					progname, optarg, said_opt);
 				exit (1);
 			}				
 			if(proto_opt) {
 				fprintf(stderr, "%s: Error, PROTO parameter redefined in SA:%s, already defined as:%s\n",
-					program_name, optarg, proto_opt);
+					progname, optarg, proto_opt);
 				exit (1);
 			}
 			if(edst_opt) {
 				fprintf(stderr, "%s: Error, EDST parameter redefined in SA:%s, already defined as:%s\n",
-					program_name, optarg, edst_opt);
+					progname, optarg, edst_opt);
 				exit (1);
 			}
 			if(spi_opt) {
 				fprintf(stderr, "%s: Error, SPI parameter redefined in SA:%s, already defined as:%s\n",
-					program_name, optarg, spi_opt);
+					progname, optarg, spi_opt);
 				exit (1);
 			}
 			if(said_af_opt) {
 				fprintf(stderr, "%s: Error, address family parameter redefined in SA:%s, already defined as:%s\n",
-					program_name, optarg, said_af_opt);
+					progname, optarg, said_af_opt);
 				exit (1);
 			}
 			error_s = ttosa(optarg, 0, &said);
 			if(error_s != NULL) {
 				fprintf(stderr, "%s: Error, %s converting --sa argument:%s\n",
-					program_name, error_s, optarg);
+					progname, error_s, optarg);
 				exit (1);
 			} else if(ntohl(said.spi) < 0x100){
 				fprintf(stderr, "%s: Illegal reserved spi: %s => 0x%x Must be larger than or equal to 0x100.\n",
-					program_name, optarg, said.spi);
+					progname, optarg, said.spi);
 				exit(1);
 			}
 			said_af = addrtypeof(&said.dst);
@@ -339,13 +351,13 @@ main(int argc, char **argv)
 		case 'D':
 			if(dst_opt) {
 				fprintf(stderr, "%s: Error, --dst parameter redefined:%s, already defined as:%s\n",
-					program_name, optarg, dst_opt);
+					progname, optarg, dst_opt);
 				exit (1);
 			}				
 			error_s = ttosubnet(optarg, 0, eroute_af, &d_subnet);
 			if (error_s != NULL) {
 				fprintf(stderr, "%s: Error, %s converting --dst argument: %s\n",
-					program_name, error_s, optarg);
+					progname, error_s, optarg);
 				exit (1);
 			}
 			dst_opt = optarg;
@@ -353,13 +365,13 @@ main(int argc, char **argv)
 		case 'S':
 			if(src_opt) {
 				fprintf(stderr, "%s: Error, --src parameter redefined:%s, already defined as:%s\n",
-					program_name, optarg, src_opt);
+					progname, optarg, src_opt);
 				exit (1);
 			}				
 			error_s = ttosubnet(optarg, 0, eroute_af, &s_subnet);
 			if (error_s != NULL) {
 				fprintf(stderr, "%s: Error, %s converting --src argument: %s\n",
-					program_name, error_s, optarg);
+					progname, error_s, optarg);
 				exit (1);
 			}
 			src_opt = optarg;
@@ -369,7 +381,7 @@ main(int argc, char **argv)
 				fprintf(stderr, "%s: Error, --transport-proto"
 					" paramter redefined:%s, "
 					"already defined as:%s\n",
-					program_name, optarg,
+					progname, optarg,
 					transport_proto_opt);
 				exit(1);
 			}
@@ -380,7 +392,7 @@ main(int argc, char **argv)
 				fprintf(stderr, "%s: Error, --src-port"
 					" parameter redefined:%s, "
 					"already defined as:%s\n",
-					program_name, optarg, src_port_opt);
+					progname, optarg, src_port_opt);
 				exit(1);
 			}
 			src_port_opt = optarg;
@@ -390,16 +402,16 @@ main(int argc, char **argv)
 				fprintf(stderr, "%s: Error, --dst-port"
 					" parameter redefined:%s, "
 					"already defined as:%s\n",
-					program_name, optarg, dst_port_opt);
+					progname, optarg, dst_port_opt);
 				exit(1);
 			}
 			dst_port_opt = optarg;
 			break;
 		case 'l':
-			program_name = malloc(strlen(argv[0])
+			progname = malloc(strlen(argv[0])
 					      + 10 /* update this when changing the sprintf() */
 					      + strlen(optarg));
-			sprintf(program_name, "%s --label %s",
+			sprintf(progname, "%s --label %s",
 				argv[0],
 				optarg);
 			argcount -= 2;
@@ -407,7 +419,7 @@ main(int argc, char **argv)
 		case 'i': /* specifies the address family of the SAID, stored in said_af */
 			if(said_af_opt) {
 				fprintf(stderr, "%s: Error, address family of SAID redefined:%s, already defined as:%s\n",
-					program_name, optarg, said_af_opt);
+					progname, optarg, said_af_opt);
 				exit (1);
 			}				
 			if(!strcmp(optarg, "inet"))
@@ -416,7 +428,7 @@ main(int argc, char **argv)
 				said_af = AF_INET6;
 			if(said_af == 0) {
 				fprintf(stderr, "%s: Invalid address family parameter for SAID: %s\n",
-					program_name, optarg);
+					progname, optarg);
 				exit (1);
 			}
 			said_af_opt = optarg;
@@ -424,7 +436,7 @@ main(int argc, char **argv)
 		case 'f': /* specifies the address family of the eroute, stored in eroute_af */
 			if(eroute_af_opt) {
 				fprintf(stderr, "%s: Error, address family of eroute redefined:%s, already defined as:%s\n",
-					program_name, optarg, eroute_af_opt);
+					progname, optarg, eroute_af_opt);
 				exit (1);
 			}				
 			if(!strcmp(optarg, "inet"))
@@ -433,7 +445,7 @@ main(int argc, char **argv)
 				eroute_af = AF_INET6;
 			if(eroute_af == 0) {
 				fprintf(stderr, "%s: Invalid address family parameter for eroute: %s\n",
-					program_name, optarg);
+					progname, optarg);
 				exit (1);
 			}
 			eroute_af_opt = optarg;
@@ -449,20 +461,20 @@ main(int argc, char **argv)
 	}
 
 	if(debug) {
-		fprintf(stdout, "%s: DEBUG: argc=%d\n", program_name, argc);
+		fprintf(stdout, "%s: DEBUG: argc=%d\n", progname, argc);
 	}
 	
         if(argcount == 1) {
                 struct stat sts;
                 if ( ((stat ("/proc/net/pfkey", &sts)) == 0) )  {
-                         fprintf(stderr, "%s: NETKEY does not support eroute table.\n",program_name);
+                         fprintf(stderr, "%s: NETKEY does not support eroute table.\n",progname);
 
                         exit(1);
                 }
                 else {
 			int ret = 1;
 			if ((stat ("/proc/net/ipsec_eroute", &sts)) != 0)  {
-				fprintf(stderr, "%s: No eroute table - no IPsec support in kernel (are the modules loaded?)\n", program_name);
+				fprintf(stderr, "%s: No eroute table - no IPsec support in kernel (are the modules loaded?)\n", progname);
 			} else {
 				int ret = system("cat /proc/net/ipsec_eroute");
 				ret = ret != -1 && WIFEXITED(ret) ? WEXITSTATUS(ret) : 1;
@@ -475,7 +487,7 @@ main(int argc, char **argv)
 	/* Sanity checks */
 
 	if(debug) {
-		fprintf(stdout, "%s: DEBUG: action_type=%d\n", program_name, action_type);
+		fprintf(stdout, "%s: DEBUG: action_type=%d\n", progname, action_type);
 	}
 
 	if (transport_proto_opt != 0) {
@@ -487,12 +499,12 @@ main(int argc, char **argv)
 		  if ((*endptr != '\0') 
 		      || (transport_proto == 0 && endptr == transport_proto_opt)) {
 		       fprintf(stderr, "%s: Invalid character in --transport-proto parameter: %s\n",
-			       program_name, transport_proto_opt);
+			       progname, transport_proto_opt);
 		       exit (1);
 		  }
 		  if (transport_proto > 255) {
 		       fprintf(stderr, "%s: --transport-proto parameter: %s must be in the range 0 to 255 inclusive\n",
-			       program_name, transport_proto_opt);
+			       progname, transport_proto_opt);
 		       exit (1);
 		  }
 	     }
@@ -504,7 +516,7 @@ main(int argc, char **argv)
 		case IPPROTO_TCP:
 			break;
 		default:
-			fprintf(stderr, "%s: --transport-proto with either UDP or TCP must be specified if --src-port or --dst-port is used\n", program_name);
+			fprintf(stderr, "%s: --transport-proto with either UDP or TCP must be specified if --src-port or --dst-port is used\n", progname);
 			exit(1);
 		}
         }
@@ -518,12 +530,12 @@ main(int argc, char **argv)
 		  if ((*endptr != '\0')
 		      || (src_port == 0 && endptr == src_port_opt)) {
 		       fprintf(stderr, "%s: Invalid character in --src-port parameter: %s\n",
-			       program_name, src_port_opt);
+			       progname, src_port_opt);
 		       exit (1);
 		  }
 		  if (src_port > 65535) {
 		       fprintf(stderr, "%s: --src-port parameter: %s must be in the range 0 to 65535 inclusive\n",
-			       program_name, src_port_opt);
+			       progname, src_port_opt);
 		  }
 		  src_port = htons(src_port);
 	     }
@@ -538,12 +550,12 @@ main(int argc, char **argv)
 		  if ((*endptr != '\0')
 		      || (dst_port == 0 && endptr == dst_port_opt)) {
 		       fprintf(stderr, "%s: Invalid character in --dst-port parameter: %s\n",
-			       program_name, dst_port_opt);
+			       progname, dst_port_opt);
 		       exit (1);
 		  }
 		  if (dst_port > 65535) {
 		       fprintf(stderr, "%s: --dst-port parameter: %s must be in the range 0 to 65535 inclusive\n",
-			       program_name, dst_port_opt);
+			       progname, dst_port_opt);
 		  }
 		  dst_port = htons(dst_port);
 	     }
@@ -555,18 +567,18 @@ main(int argc, char **argv)
 	case EMT_INEROUTE:
 		if(!(said_af_opt && edst_opt && spi_opt && proto_opt) && !(said_opt)) {
 			fprintf(stderr, "%s: add and addin options must have SA specified.\n",
-				program_name);
+				progname);
 			exit(1);
 		}
 	case EMT_DELEROUTE:
 		if(!src_opt) {
 			fprintf(stderr, "%s: Error -- %s option '--src' is required.\n",
-				program_name, (action_type == EMT_SETEROUTE) ? "add" : "del");
+				progname, (action_type == EMT_SETEROUTE) ? "add" : "del");
 			exit(1);
 		}
 		if(!dst_opt) {
 			fprintf(stderr, "%s: Error -- %s option '--dst' is required.\n",
-				program_name, (action_type == EMT_SETEROUTE) ? "add" : "del");
+				progname, (action_type == EMT_SETEROUTE) ? "add" : "del");
 			exit(1);
 		}
 	case EMT_CLREROUTE:
@@ -574,62 +586,17 @@ main(int argc, char **argv)
 	default:
 		fprintf(stderr, "%s: exactly one of '--add', '--addin', '--replace', '--del' or '--clear' options must be specified.\n"
 			"Try %s --help' for usage information.\n",
-			program_name, program_name);
+			progname, progname);
 		exit(1);
 	}
 
-	if((pfkey_sock = socket(PF_KEY, SOCK_RAW, PF_KEY_V2) ) < 0) {
-		fprintf(stderr, "%s: Trouble opening PF_KEY family socket with error: ",
-			program_name);
-		switch(errno) {
-		case ENOENT:
-			fprintf(stderr, "device does not exist.  See FreeS/WAN installation procedure.\n");
-			break;
-		case EACCES:
-			fprintf(stderr, "access denied.  ");
-			if(getuid() == 0) {
-				fprintf(stderr, "Check permissions.  Should be 600.\n");
-			} else {
-				fprintf(stderr, "You must be root to open this file.\n");
-			}
-			break;
-		case EUNATCH:
-			fprintf(stderr, "KLIPS not loaded.\n");
-			break;
-		case ENODEV:
-			fprintf(stderr, "KLIPS not loaded or enabled.\n");
-			break;
-		case EBUSY:
-			fprintf(stderr, "KLIPS is busy.  Most likely a serious internal error occured in a previous command.  Please report as much detail as possible to development team.\n");
-			break;
-		case EINVAL:
-			fprintf(stderr, "Invalid argument, KLIPS not loaded or check kernel log messages for specifics.\n");
-			break;
-		case ENOBUFS:
-		case ENOMEM:
-		case ENFILE:
-			fprintf(stderr, "No kernel memory to allocate socket.\n");
-			break;
-		case EMFILE:
-			fprintf(stderr, "Process file table overflow.\n");
-			break;
-		case ESOCKTNOSUPPORT:
-			fprintf(stderr, "Socket type not supported.\n");
-			break;
-		case EPROTONOSUPPORT:
-			fprintf(stderr, "Protocol version not supported.\n");
-			break;
-		case EAFNOSUPPORT:
-			fprintf(stderr, "KLIPS not loaded or enabled.\n");
-			break;
-		default:
-			fprintf(stderr, "Unknown file open error %d.  Please report as much detail as possible to development team.\n", errno);
-		}
+	pfkey_sock = pfkey_open_sock_with_error();
+	if(pfkey_sock == -1) {
 		exit(1);
 	}
 
 	if(debug) {
-		fprintf(stdout, "%s: DEBUG: PFKEYv2 socket successfully openned=%d.\n", program_name, pfkey_sock);
+		fprintf(stdout, "%s: DEBUG: PFKEYv2 socket successfully openned=%d.\n", progname, pfkey_sock);
 	}
 
 	/* Build an SADB_X_ADDFLOW or SADB_X_DELFLOW message to send down. */
@@ -645,13 +612,13 @@ main(int argc, char **argv)
 					++pfkey_seq,
 					getpid()))) {
 		fprintf(stderr, "%s: Trouble building message header, error=%d.\n",
-			program_name, error);
+			progname, error);
 		pfkey_extensions_free(extensions);
 		exit(1);
 	}
 
 	if(debug) {
-		fprintf(stdout, "%s: DEBUG: pfkey_msg_hdr_build successfull.\n", program_name);
+		fprintf(stdout, "%s: DEBUG: pfkey_msg_hdr_build successfull.\n", progname);
 	}
 
 	switch(action_type) {
@@ -668,12 +635,12 @@ main(int argc, char **argv)
 					   0,
 					   (action_type == EMT_CLREROUTE) ? SADB_X_SAFLAGS_CLEARFLOW : 0))) {
 			fprintf(stderr, "%s: Trouble building sa extension, error=%d.\n",
-				program_name, error);
+				progname, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
 		if(debug) {
-			fprintf(stdout, "%s: DEBUG: pfkey_sa_build successful.\n", program_name);
+			fprintf(stdout, "%s: DEBUG: pfkey_sa_build successful.\n", progname);
 		}
 
 	default:
@@ -692,12 +659,12 @@ main(int argc, char **argv)
 						sockaddrof(&pfkey_address_s_ska)))) {
 			addrtot(&pfkey_address_s_ska, 0, ipaddr_txt, sizeof(ipaddr_txt));
 			fprintf(stderr, "%s: Trouble building address_s extension (%s), error=%d.\n",
-				program_name, ipaddr_txt, error);
+				progname, ipaddr_txt, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
 		if(debug) {
-			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for src.\n", program_name);
+			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for src.\n", progname);
 		}
 
 		if((error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_DST],
@@ -707,12 +674,12 @@ main(int argc, char **argv)
 						sockaddrof(&said.dst)))) {
 			addrtot(&said.dst, 0, ipaddr_txt, sizeof(ipaddr_txt));
 			fprintf(stderr, "%s: Trouble building address_d extension (%s), error=%d.\n",
-				program_name, ipaddr_txt, error);
+				progname, ipaddr_txt, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
 		if(debug) {
-			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for dst.\n", program_name);
+			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for dst.\n", progname);
 		}
 	default:
 		break;
@@ -732,12 +699,12 @@ main(int argc, char **argv)
 						sockaddrof(&pfkey_address_sflow_ska)))) {
 			addrtot(&pfkey_address_sflow_ska, 0, ipaddr_txt, sizeof(ipaddr_txt));
 			fprintf(stderr, "%s: Trouble building address_sflow extension (%s), error=%d.\n",
-				program_name, ipaddr_txt, error);
+				progname, ipaddr_txt, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
 		if(debug) {
-			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for src flow.\n", program_name);
+			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for src flow.\n", progname);
 		}
 	
 		networkof(&d_subnet, &pfkey_address_dflow_ska); /* dst flow */
@@ -749,12 +716,12 @@ main(int argc, char **argv)
 						sockaddrof(&pfkey_address_dflow_ska)))) {
 			addrtot(&pfkey_address_dflow_ska, 0, ipaddr_txt, sizeof(ipaddr_txt));
 			fprintf(stderr, "%s: Trouble building address_dflow extension (%s), error=%d.\n",
-				program_name, ipaddr_txt, error);
+				progname, ipaddr_txt, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
 		if(debug) {
-			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for dst flow.\n", program_name);
+			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for dst flow.\n", progname);
 		}
 		
 		maskof(&s_subnet, &pfkey_address_smask_ska); /* src mask */
@@ -766,12 +733,12 @@ main(int argc, char **argv)
 						sockaddrof(&pfkey_address_smask_ska)))) {
 			addrtot(&pfkey_address_smask_ska, 0, ipaddr_txt, sizeof(ipaddr_txt));
 			fprintf(stderr, "%s: Trouble building address_smask extension (%s), error=%d.\n",
-				program_name, ipaddr_txt, error);
+				progname, ipaddr_txt, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
 		if(debug) {
-			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for src mask.\n", program_name);
+			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for src mask.\n", progname);
 		}
 		
 		maskof(&d_subnet, &pfkey_address_dmask_ska); /* dst mask */
@@ -783,12 +750,12 @@ main(int argc, char **argv)
 						sockaddrof(&pfkey_address_dmask_ska)))) {
 			addrtot(&pfkey_address_dmask_ska, 0, ipaddr_txt, sizeof(ipaddr_txt));
 			fprintf(stderr, "%s: Trouble building address_dmask extension (%s), error=%d.\n",
-				program_name, ipaddr_txt, error);
+				progname, ipaddr_txt, error);
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
 		if(debug) {
-			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for dst mask.\n", program_name);
+			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for dst mask.\n", progname);
 		}
 	}
 	
@@ -797,28 +764,28 @@ main(int argc, char **argv)
 						    transport_proto))) {
 			fprintf(stderr, "%s: Trouble building transport"
 				" protocol extension, error=%d.\n",
-				program_name, error);
+				progname, error);
 			exit(1);
 		}
 	}
 
 	if((error = pfkey_msg_build(&pfkey_msg, extensions, EXT_BITS_IN))) {
 		fprintf(stderr, "%s: Trouble building pfkey message, error=%d.\n",
-			program_name, error);
+			progname, error);
 		pfkey_extensions_free(extensions);
 		pfkey_msg_free(&pfkey_msg);
 		exit(1);
 	}
 	if(debug) {
-		fprintf(stdout, "%s: DEBUG: pfkey_msg_build successful.\n", program_name);
+		fprintf(stdout, "%s: DEBUG: pfkey_msg_build successful.\n", progname);
 	}
 
 	if((error = write(pfkey_sock,
-			  pfkey_msg,
-			  pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) !=
+				pfkey_msg,
+				pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) !=
 	   (ssize_t)(pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) {
 		fprintf(stderr, "%s: pfkey write failed, returning %d with errno=%d.\n",
-			program_name, error, errno);
+			progname, error, errno);
 		pfkey_extensions_free(extensions);
 		pfkey_msg_free(&pfkey_msg);
 		switch(errno) {
@@ -889,11 +856,11 @@ main(int argc, char **argv)
 			fprintf(stderr, "Unknown socket write error %d.  Please report as much detail as possible to development team.\n", errno);
 		}
 /*		fprintf(stderr, "%s: socket write returned errno %d\n",
-		program_name, errno);*/
+		progname, errno);*/
 		exit(1);
 	}
 	if(debug) {
-		fprintf(stdout, "%s: DEBUG: pfkey write successful.\n", program_name);
+		fprintf(stdout, "%s: DEBUG: pfkey write successful.\n", progname);
 	}
 
 	if(pfkey_msg) {
@@ -904,7 +871,7 @@ main(int argc, char **argv)
 	(void) close(pfkey_sock);  /* close the socket */
 
 	if(debug) {
-		fprintf(stdout, "%s: DEBUG: write ok\n", program_name);
+		fprintf(stdout, "%s: DEBUG: write ok\n", progname);
 	}
 
 	exit(0);
