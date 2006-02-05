@@ -144,30 +144,26 @@ pfkey_msg_hdr_build(struct sadb_ext**	pfkey_ext,
 		*pfkey_ext);
 	/* sanity checks... */
 	if(pfkey_msg) {
-		DEBUGGING(PF_KEY_DEBUG_BUILD,
-			"pfkey_msg_hdr_build: "
+		ERROR("pfkey_msg_hdr_build: "
 			"why is pfkey_msg already pointing to something?\n");
 		SENDERR(EINVAL);
 	}
 
 	if(!msg_type) {
-		DEBUGGING(PF_KEY_DEBUG_BUILD,
-			"pfkey_msg_hdr_build: "
+		ERROR("pfkey_msg_hdr_build: "
 			"msg type not set, must be non-zero..\n");
 		SENDERR(EINVAL);
 	}
 
-	if(msg_type > SADB_MAX) {
-		DEBUGGING(PF_KEY_DEBUG_BUILD,
-			"pfkey_msg_hdr_build: "
+	if(msg_type > K_SADB_MAX) {
+		ERROR("pfkey_msg_hdr_build: "
 			"msg type too large:%d.\n",
 			msg_type);
 		SENDERR(EINVAL);
 	}
 
-	if(satype > SADB_SATYPE_MAX) {
-		DEBUGGING(PF_KEY_DEBUG_BUILD,
-			"pfkey_msg_hdr_build: "
+	if(satype > K_SADB_SATYPE_MAX) {
+		ERROR("pfkey_msg_hdr_build: "
 			"satype %d > max %d\n", 
 			satype, SADB_SATYPE_MAX);
 		SENDERR(EINVAL);
@@ -177,8 +173,7 @@ pfkey_msg_hdr_build(struct sadb_ext**	pfkey_ext,
 	*pfkey_ext = (struct sadb_ext*)pfkey_msg;
 	
 	if(pfkey_msg == NULL) {
-		DEBUGGING(PF_KEY_DEBUG_BUILD,
-			"pfkey_msg_hdr_build: "
+		ERROR("pfkey_msg_hdr_build: "
 			"memory allocation failed\n");
 		SENDERR(ENOMEM);
 	}
@@ -1338,7 +1333,7 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 	struct sadb_ext *pfkey_ext;
 	int extensions_seen = 0;
 #ifndef __KERNEL__	
-	struct sadb_ext *extensions_check[SADB_EXT_MAX + 1];
+	struct sadb_ext *extensions_check[K_SADB_EXT_MAX + 1];
 #endif
 	
 	if(!extensions[0]) {
@@ -1349,7 +1344,7 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 
 	/* figure out the total size for all the requested extensions */
 	total_size = IPSEC_PFKEYv2_WORDS(sizeof(struct sadb_msg));
-	for(ext = 1; ext <= SADB_EXT_MAX; ext++) {
+	for(ext = 1; ext <= K_SADB_EXT_MAX; ext++) {
 		if(extensions[ext]) {
 			total_size += (extensions[ext])->sadb_ext_len;
 		}
@@ -1383,7 +1378,7 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 	 */
 	pfkey_ext = (struct sadb_ext*)(((char*)(*pfkey_msg)) + sizeof(struct sadb_msg));
 
-	for(ext = 1; ext <= SADB_EXT_MAX; ext++) {
+	for(ext = 1; ext <= K_SADB_EXT_MAX; ext++) {
 		/* copy from extension[ext] to buffer */
 		if(extensions[ext]) {    
 			/* Is this type of extension permitted for this type of message? */
