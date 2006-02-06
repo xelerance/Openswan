@@ -1,7 +1,9 @@
 /*
  * A program to dump the IPsec status of the socket found on stdin.
+ *
  * Run me from inetd, for instance.
- * Copyright (C) 2003                Michael Richardson <mcr@freeswan.org>
+ *
+ * Copyright (C) 2003-2006            Michael Richardson <mcr@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -34,13 +36,16 @@ help(void)
 	"showpolicy"
 	    " [--cgi]        lookup the particulars from CGI variables.\n"
 	    " [--socket]     lookup the particulars from the socket on stdin.\n"
+	    " [--udp X]      open a UDP socket on port X\n"
+	    " [--tcp X]      open a TCP socket on port X\n"
+	    " [--sockpolicy] dump based upon IP_IPSEC_RECVREF.\n"
 	    " [--textual]    dump output in human friendly form\n"
 	    " [--plaintext X]    string to dump if no security\n"
 	    " [--vpntext X]      string to dump if VPN configured tunnel\n"
 	    " [--privacytext X]  string to dump if just plain DNS OE\n"
 	    " [--dnssectext X]   string to dump if just DNSSEC OE\n"
             "\n\n"
-	"FreeS/WAN %s\n",
+	"Openswan %s\n",
 	ipsec_version_code());
 }
 
@@ -48,6 +53,9 @@ static const struct option long_opts[] = {
     /* name, has_arg, flag, val */
     { "help",        no_argument, NULL, 'h' },
     { "version",     no_argument, NULL, 'V' },
+    { "udp",         required_argument, NULL, 'U' },
+    { "tcp",         required_argument, NULL, 'T' },
+    { "sockpolicy",  no_argument, NULL, 'P' },
     { "socket",      no_argument, NULL, 'i' },
     { "cgi",         no_argument, NULL, 'g' },
     { "textual",     no_argument, NULL, 't' },
@@ -57,6 +65,101 @@ static const struct option long_opts[] = {
     { "dnssectext",  required_argument, NULL, 's' },
     { 0,0,0,0 }
 };
+
+#ifndef IP_IPSEC_RECVREF
+#define IP_IPSEC_RECVREF 18
+#endif
+
+int open_udp_sock(unsigned short port)
+{
+	struct sockaddr_in s;
+	int one;
+	int fd;
+
+	fd = socket(PF_INET, SOCK_DGRAM, 0);
+	if(fd == -1) {
+		perror("socket");
+		exit(10);
+	}
+
+	memset(&s, 0, sizeof(struct sockaddr_in));
+	s.sin_family = AF_INET;
+	s.sin_port   = port;
+	s.sin_addr.s_addr = INADDR_ANY;
+
+	if(bind(fd, (struct sockaddr *)&s, sizeof(struct sockaddr_in))==-1) {
+		perror("bind");
+		exit(11);
+	}
+
+	one = 1;
+	if(setsockopt(fd, SOL_IP, IP_IPSEC_RECVREF, &one, sizeof(one)) != 0) {
+		perror("setsockopt recvref");
+		exit(12);
+	}
+	return fd;
+}
+
+int open_tcp_sock(unsigned short port)
+{
+	return -1;
+}
+
+int udp_recv_loop(int udpsock)
+{
+	struct sockaddr_in from, to;
+	int fromlen, tolen;
+	struct msghdr msgh;
+	struct cmsghdr *cmsg;
+	struct iovec iov;
+	char cbuf[256];
+	int err;
+	char buf[512];
+	
+	do {
+		memset(&from, 0, sizeof(from));
+		memset(&to,   0, sizeof(to));
+
+		fromlen = sizeof(struct sockaddr_in);
+		tolen   = sizeof(struct sockaddr_in);
+
+		memset(&msgh, 0, sizeof(struct msghdr));
+		iov.iov_base = buf;
+		iov.iov_len  = sizeof(buf);
+		msgh.msg_control = cbuf;
+		msgh.msg_controllen = sizeof(cbuf);
+		msgh.msg_name = &from;
+		msgh.msg_namelen = fromlen;
+		msgh.msg_iov  = &iov;
+		msgh.msg_iovlen = 1;
+		msgh.msg_flags = 0;
+
+		/* Receive one packet. */
+		if ((err = recvmsg(udpsock, &msgh, 0)) < 0) {
+			return err;
+		}
+		
+		/* Process auxiliary received data in msgh */
+		for (cmsg = CMSG_FIRSTHDR(&msgh);
+		     cmsg != NULL;
+		     cmsg = CMSG_NXTHDR(&msgh,cmsg)) {
+			printf("cmsg_level: %d type: %d\n",
+			       cmsg->cmsg_level, cmsg->cmsg_type);
+			
+			if (cmsg->cmsg_level == IPPROTO_IP
+			    && cmsg->cmsg_type == IP_IPSEC_RECVREF) {
+				unsigned int *refp;
+
+				refp = (unsigned int *)CMSG_DATA(cmsg);
+				printf("     refp=%08x (%u)\n", *refp, *refp);
+			}
+		}
+	} while(err != -1);
+
+	return 0;
+}
+	
+	
 
 void dump_policyreply(struct ipsec_policy_cmd_query *q)
 {
@@ -111,7 +214,9 @@ int main(int argc, char *argv[])
 {
   struct ipsec_policy_cmd_query q;
   err_t ret;
-  int   c;
+  int   c, fd;
+  unsigned short port;
+  char  *foo;
 
   /* set the defaults */
   char lookup_style = 'i';
@@ -130,18 +235,40 @@ int main(int argc, char *argv[])
       return 0;	/* GNU coding standards say to stop here */
       
     case 'V':               /* --version */
-      fprintf(stderr, "FreeS/WAN %s\n", ipsec_version_code());
+      fprintf(stderr, "Openswan %s\n", ipsec_version_code());
       return 0;	/* GNU coding standards say to stop here */
       
     case 'i':
-      if(isatty(0)) {
-	printf("please run this connected to a socket\n");
-	exit(1);
-      }
-      
-      lookup_style = 'i';
-      break;
+	    fd = 0;
+	    if(isatty(0)) {
+		    printf("please run this connected to a socket\n");
+		    exit(1);
+	    }
+	    lookup_style = 'i';	    
+	    break;
 
+    case 'U':
+	    port = strtol(optarg, &foo, 0);
+	    if(*foo != '\0') {
+		    fprintf(stderr, "invalid port number: %s\n", optarg);
+		    help();
+	    }
+	    fd = open_udp_sock(port);
+	    break;
+      
+    case 'T':
+	    port = strtol(optarg, &foo, 0);
+	    if(*foo != '\0') {
+		    fprintf(stderr, "invalid port number: %s\n", optarg);
+		    help();
+	    }
+	    fd = open_tcp_sock(port);
+	    break;
+      
+    case 'P':
+      lookup_style = 'P';
+      break;
+      
     case 'g':
       lookup_style = 'g';
       break;
@@ -175,22 +302,26 @@ int main(int argc, char *argv[])
 
   switch(lookup_style) {
   case 'i':
-    if((ret = ipsec_policy_lookup(0, &q)) != NULL) {
-      perror(ret);
-      exit(3);
-    }
-    break;
+	  if((ret = ipsec_policy_lookup(fd, &q)) != NULL) {
+		  perror(ret);
+		  exit(3);
+	  }
+	  break;
     
   case 'g':
-    if((ret = ipsec_policy_cgilookup(&q)) != NULL) {
-      perror(ret);
-      exit(3);
-    }
-    break;
+	  if((ret = ipsec_policy_cgilookup(&q)) != NULL) {
+		  perror(ret);
+		  exit(3);
+	  }
+	  break;
+	  
+  case 'P':
+	  udp_recv_loop(fd);
+	  break;
     
   default:
-    abort();
-    break;
+	  abort();
+	  break;
   }
 
 

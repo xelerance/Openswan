@@ -54,8 +54,6 @@ LOGSRCS=oswlog.c
 OBJS=${SRCS:.c=.o} ${PFKEYV2_SRCS:.c=.o} ${UDPFROMTO_SRCS:.c=.o} version.o
 LOGOBJS=${LOGSRCS:.c=.o}
 
-KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
-#KLIPSSRCDIR=/mara1/git/klips/net/ipsec
 MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
 
 VPATH+= ${KLIPSSRCDIR}
