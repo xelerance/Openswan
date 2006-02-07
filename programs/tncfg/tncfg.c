@@ -104,7 +104,7 @@ uint32_t pfkey_seq = 0;
 int createdelete_virtual(int createdelete, char *virtname)
 {
 	int vifnum;
-	struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	struct sadb_msg *pfkey_msg;
 	int error;
 	int io_error, pfkey_sock;
@@ -169,6 +169,8 @@ void exit_tool(int code)
 }
 
 
+int debug = 0;
+
 int
 main(int argc, char *argv[])
 {
@@ -176,7 +178,6 @@ main(int argc, char *argv[])
 	struct ipsectunnelconf *shc=(struct ipsectunnelconf *)&ifr.ifr_data;
 	int s;
 	int c, previous = -1;
-	int debug = 0;
 	int argcount = argc;
 	int createdelete = 0;
 	char virtname[64];

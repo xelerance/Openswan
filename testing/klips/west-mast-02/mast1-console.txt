@@ -14,7 +14,6 @@ west:~#
  nfsaref=$(printf "%d" $(( ($saref * 65536) | 0x80000000 )))
 west:~#
  ipsec tncfg --create mast1
-pfkey write: Success
 west:~#
  ipsec spi --af inet --edst 192.1.2.45 --spi 0x12345678 --proto esp --src 192.1.2.23 --esp 3des-md5-96 --enckey $enckey --authkey $authkey
 west:~#
