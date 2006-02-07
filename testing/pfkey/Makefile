@@ -19,7 +19,7 @@ include ${srcdir}Makefile.unit-settings
 
 srcdir?=$(shell pwd)/
 
-SUBDIRS=eroute-01 spi-01 spigrp-01
+SUBDIRS=eroute-01 spi-01 spigrp-01 tncfg-01
 
 def:	check
 
