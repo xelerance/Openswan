@@ -31,6 +31,6 @@ def:
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1;\
+		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1;\
 	done; 
 
