@@ -1,28 +1,27 @@
 #!/bin/sh
 
+TEST_PURPOSE=goal
+TEST_PROB_REPORT=0
 TEST_TYPE=klipstest
-TESTNAME=west-mast-03
-TESTHOST=west
+
+TESTNAME=east-mast-03
+TESTHOST=east
 EXITONEMPTY=--exitonempty
 
-PRIVATE_ARPREPLY=true
-PUB_INPUT=../inputs/02-sunrise-sunset-esp.pcap
-REF_PRIV_OUTPUT=spi1-cleartext.txt
-# THREEEIGHT=true
+THREEEIGHT=true
+REF_PUB_OUTPUT=mast3-output.txt
+REF_CONSOLE_OUTPUT=mast3-console.txt
+REF26_CONSOLE_OUTPUT=mast3-console.txt
 
-REF_CONSOLE_OUTPUT=mast1-console.txt
-REF26_CONSOLE_OUTPUT=mast1-console.txt
+PUB_ARPREPLY=--arpreply
 
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
-REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS script-only.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-spi-sanitize.sed"
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS script-only.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-look-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS east-prompt-splitline.pl"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-debug-sanitize.sed"
+INIT_SCRIPT=mast3out.sh
 
-INIT_SCRIPT=mast1in.sh
-RUN_SCRIPT=mast1run.sh
-
-#NETJIGDEBUG=true
-
+RUN_SCRIPT=mast3run.sh
 
