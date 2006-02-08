@@ -41,6 +41,7 @@ char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.178 2005/10/21 02:19:34
 
 #include <net/tcp.h>
 #include <net/udp.h>
+#include <net/xfrm.h>
 #include <linux/skbuff.h>
 #include <openswan.h>
 #ifdef SPINLOCK
@@ -360,7 +361,16 @@ ipsec_rcv_decap_lookup(struct ipsec_rcv_state *irs
 
 void ip_cmsg_recv_ipsec(struct msghdr *msg, struct sk_buff *skb)
 {
-	/* nothing */
+	struct sec_path *sp;
+
+	sp = skb->sp;
+
+	if(sp==NULL) return;
+
+	KLIPS_PRINT(debug_rcv, "retrieving saref=%u from skb=%p\n",
+		    sp->ref, skb);
+
+	put_cmsg(msg, SOL_IP, IP_IPSEC_RECVREF, sizeof(xfrm_sec_unique_t), &sp->ref);
 }
 
 		       
@@ -789,10 +799,11 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 	return IPSEC_RCV_OK;
 }
 
-void ipsec_rcv_setoutif(struct ipsec_rcv_state *irs,
-			struct sk_buff *skb)
+void ipsec_rcv_setoutif(struct ipsec_rcv_state *irs)
 {
-	if(irs->ipsp->ips_out) {
+	struct sk_buff *skb = irs->skb;
+
+	if(skb!=NULL && irs->ipsp->ips_out) {
 		if(skb->dev != irs->ipsp->ips_out) {
 			KLIPS_PRINT(debug_rcv,
 				    "changing originating interface from %s to %s\n",
@@ -800,8 +811,6 @@ void ipsec_rcv_setoutif(struct ipsec_rcv_state *irs,
 				    irs->ipsp->ips_out->name);
 		}
 		skb->dev = irs->ipsp->ips_out;
-		
-		
 		
 		if(skb->dev && skb->dev->get_stats) {
 			struct net_device_stats *stats = skb->dev->get_stats(skb->dev);
@@ -864,7 +873,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		}
 	}
 	
-	ipsec_rcv_setoutif(irs,skb);
+	ipsec_rcv_setoutif(irs);
 
 	if(ipp->protocol == IPPROTO_IPIP)  /* added to support AT&T heartbeats to SIG/GIG */
 	{  
@@ -1056,7 +1065,7 @@ ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 	}
 
 	do {
-		ipsec_rcv_setoutif(irs,skb);
+		ipsec_rcv_setoutif(irs);
 
 		proto_funcs = irs->ipsp->ips_xformfuncs;
 		if(proto_funcs == NULL) {
@@ -1171,6 +1180,22 @@ ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 	if(irs->stats) {
 		irs->stats->rx_bytes += skb->len;
 	}
+
+	/*
+	 * if we are supposed to return the packet directly to the transport
+	 * layer, then dump it out correctly.
+	 */
+	if(lastipsp->ips_transport_direct) {
+		KLIPS_PRINT(debug_rcv, "receiving packet as transport direct\n");
+		skb->ip_summed=CHECKSUM_UNNECESSARY;
+		/* STUFF */
+	}
+	
+	if(skb->sp) {
+		secpath_put(skb->sp);
+	}
+	skb->sp = secpath_dup(NULL);
+	skb->sp->ref = lastipsp->ips_ref;
 
 	/* release the dst that was attached, since we have likely
 	 * changed the actual destination of the packet.

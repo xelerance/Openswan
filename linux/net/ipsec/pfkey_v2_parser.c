@@ -850,7 +850,7 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 
 	if(extr->outif != 0) {
 		extr->ips->ips_out = ipsec_mast_get_device(extr->outif);
-		/*extr->ips->ips_transport_direct = ipsec_mast_is_transport(extr->outif);  */
+		extr->ips->ips_transport_direct = ipsec_mast_is_transport(extr->outif);  
 	}
 
 	if((error = ipsec_sa_add(extr->ips))) {

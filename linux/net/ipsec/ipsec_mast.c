@@ -664,6 +664,10 @@ ipsec_mast_get_device(int vifnum)
 	} else {
 		struct net_device *nd;
 		
+		if(vifnum > MASTTRANSPORT_OFFSET) {
+			vifnum -= MASTTRANSPORT_OFFSET;
+		}
+
 		if(vifnum <= mastdevices_max) {
 			nd = mastdevices[vifnum];
 
@@ -673,6 +677,15 @@ ipsec_mast_get_device(int vifnum)
 			return NULL;
 		}
 	}
+}
+
+unsigned int
+ipsec_mast_is_transport(int vifnum)
+{
+	if(vifnum > MASTTRANSPORT_OFFSET && vifnum <IPSECDEV_OFFSET) {
+		return 1;
+	}
+	return 0;
 }
 
 int 
