@@ -9,7 +9,7 @@ TEST_GOAL_ITEM=160
 EXITONEMPTY=--exitonempty
 ARPREPLY=--arpreply 
 
-THREEEIGHT=true
+#THREEEIGHT=true
 
 PUB_INPUT=../inputs/08-sunrise-sunset-esp-double.pcap
 

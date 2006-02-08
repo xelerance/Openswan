@@ -102,7 +102,7 @@ esp0x12345678@192.1.2.45 ESP_3DES_HMAC_MD5: dir=in  src=192.1.2.23 iv_bits=64bit
 esp0x88447755@192.1.2.45 ESP_3DES_HMAC_MD5: dir=in  src=192.1.2.23 iv_bits=64bits iv=0xDEADF00DDEADF00D alen=128 aklen=128 eklen=192 life(c,s,h)= refcount=4 ref=2
 tun0x12345678@192.1.2.45 IPIP: dir=in  src=192.1.2.23 life(c,s,h)= refcount=4 ref=7
 tun0x88447755@192.1.2.45 IPIP: dir=in  src=192.1.2.23 life(c,s,h)= refcount=4 ref=3
-Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+ROUTING TABLE
 west:~#
  sa1=$(printf "0x%08x" $(expr $sa1 '*' 65536))
 west:~#
