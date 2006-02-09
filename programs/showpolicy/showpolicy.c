@@ -60,14 +60,17 @@ static const struct option long_opts[] = {
     { "cgi",         no_argument, NULL, 'g' },
     { "textual",     no_argument, NULL, 't' },
     { "plaintext",   required_argument, NULL, 'c' },
+    { "maxpacket",   required_argument, NULL, 'N' },
     { "vpntext",     required_argument, NULL, 'v' },
     { "privacytext", required_argument, NULL, 'p' },
     { "dnssectext",  required_argument, NULL, 's' },
     { 0,0,0,0 }
 };
 
-#ifndef IP_IPSEC_RECVREF
-#define IP_IPSEC_RECVREF 18
+int maxpacketcount=0;
+
+#ifndef IP_IPSEC_REFINFO
+#define IP_IPSEC_REFINFO 18
 #endif
 
 int open_udp_sock(unsigned short port)
@@ -84,7 +87,7 @@ int open_udp_sock(unsigned short port)
 
 	memset(&s, 0, sizeof(struct sockaddr_in));
 	s.sin_family = AF_INET;
-	s.sin_port   = port;
+	s.sin_port   = htons(port);
 	s.sin_addr.s_addr = INADDR_ANY;
 
 	if(bind(fd, (struct sockaddr *)&s, sizeof(struct sockaddr_in))==-1) {
@@ -93,7 +96,7 @@ int open_udp_sock(unsigned short port)
 	}
 
 	one = 1;
-	if(setsockopt(fd, SOL_IP, IP_IPSEC_RECVREF, &one, sizeof(one)) != 0) {
+	if(setsockopt(fd, SOL_IP, IP_IPSEC_REFINFO, &one, sizeof(one)) != 0) {
 		perror("setsockopt recvref");
 		exit(12);
 	}
@@ -110,13 +113,15 @@ int udp_recv_loop(int udpsock)
 	struct sockaddr_in from, to;
 	int fromlen, tolen;
 	struct msghdr msgh;
-	struct cmsghdr *cmsg;
 	struct iovec iov;
 	char cbuf[256];
-	int err;
+	int  readlen, err;
 	char buf[512];
+	int packetcount =0;
 	
 	do {
+		unsigned int pktref;
+
 		memset(&from, 0, sizeof(from));
 		memset(&to,   0, sizeof(to));
 
@@ -135,26 +140,79 @@ int udp_recv_loop(int udpsock)
 		msgh.msg_flags = 0;
 
 		/* Receive one packet. */
-		if ((err = recvmsg(udpsock, &msgh, 0)) < 0) {
-			return err;
+		if ((readlen = recvmsg(udpsock, &msgh, 0)) < 0) {
+			return readlen;
 		}
 		
-		/* Process auxiliary received data in msgh */
-		for (cmsg = CMSG_FIRSTHDR(&msgh);
-		     cmsg != NULL;
-		     cmsg = CMSG_NXTHDR(&msgh,cmsg)) {
-			printf("cmsg_level: %d type: %d\n",
-			       cmsg->cmsg_level, cmsg->cmsg_type);
-			
-			if (cmsg->cmsg_level == IPPROTO_IP
-			    && cmsg->cmsg_type == IP_IPSEC_RECVREF) {
-				unsigned int *refp;
+		printf("got message of length: %d\n", readlen);
+		
+		{
+			struct cmsghdr *cmsg;
+			/* Process auxiliary received data in msgh */
+			for (cmsg = CMSG_FIRSTHDR(&msgh);
+			     cmsg != NULL;
+			     cmsg = CMSG_NXTHDR(&msgh,cmsg)) {
+				printf("cmsg_level: %d type: %d\n",
+				       cmsg->cmsg_level, cmsg->cmsg_type);
+				
+				if (cmsg->cmsg_level == IPPROTO_IP
+				    && cmsg->cmsg_type == IP_IPSEC_REFINFO) {
+					unsigned int *refp, *refd;
+					
+					refp = (unsigned int *)CMSG_DATA(cmsg);
+					pktref = *refp;
 
-				refp = (unsigned int *)CMSG_DATA(cmsg);
-				printf("     refp=%08x (%u)\n", *refp, *refp);
+					printf("     ref=%08x (%u)\n",
+					       pktref, pktref);
+					
+					refd = (unsigned int *)buf;
+					*refd = pktref;
+				}
 			}
 		}
-	} while(err != -1);
+
+		/*
+		 * OKAY, now send the packet back again.
+		 */
+		memset(&msgh, 0, sizeof(struct msghdr));
+
+		{
+			struct cmsghdr *cmsg;
+			char cbuf[CMSG_SPACE(sizeof (unsigned int))];
+			unsigned int *refp;
+		
+			msgh.msg_control = cbuf;
+			msgh.msg_controllen = sizeof(cbuf);
+
+			cmsg = CMSG_FIRSTHDR(&msgh);
+			cmsg->cmsg_level = SOL_IP;
+			cmsg->cmsg_type  = IP_IPSEC_REFINFO;
+			cmsg->cmsg_len   = CMSG_LEN(sizeof(unsigned int));
+			refp = (unsigned int *)CMSG_DATA(cmsg);
+			memcpy(refp, &pktref, sizeof(unsigned int));
+			
+			iov.iov_base = buf;
+			iov.iov_len  = readlen;
+
+			/* return packet from whence it came */
+			msgh.msg_name = &from;
+			msgh.msg_namelen = fromlen;
+
+			msgh.msg_iov  = &iov;
+			msgh.msg_iovlen = 1;
+			msgh.msg_flags = 0;
+		}
+
+		/* Receive one packet. */
+		if ((err = sendmsg(udpsock, &msgh, 0)) < 0) {
+			perror("sendmsg");
+			err = 0;
+		}
+		
+		printf("sent message of length: %d\n", err);
+		packetcount++;
+
+	} while(err != -1 && (maxpacketcount==0 || packetcount<maxpacketcount));
 
 	return 0;
 }
@@ -265,6 +323,14 @@ int main(int argc, char *argv[])
 	    fd = open_tcp_sock(port);
 	    break;
       
+    case 'N':
+	    maxpacketcount = strtol(optarg, &foo, 0);
+	    if(*foo != '\0') {
+		    fprintf(stderr, "invalid packetcount number: %s\n", optarg);
+		    help();
+	    }
+	    break;
+      
     case 'P':
       lookup_style = 'P';
       break;
@@ -295,9 +361,11 @@ int main(int argc, char *argv[])
     }
   }
 	
-  if((ret = ipsec_policy_init()) != NULL) {
-    perror(ret);
-    exit(2);
+  if(lookup_style != 'P') {
+	  if((ret = ipsec_policy_init()) != NULL) {
+		  perror(ret);
+		  exit(2);
+	  }
   }
 
   switch(lookup_style) {
@@ -317,7 +385,7 @@ int main(int argc, char *argv[])
 	  
   case 'P':
 	  udp_recv_loop(fd);
-	  break;
+	  exit(0);
     
   default:
 	  abort();
