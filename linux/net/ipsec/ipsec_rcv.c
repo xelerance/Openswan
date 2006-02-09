@@ -359,6 +359,39 @@ ipsec_rcv_decap_lookup(struct ipsec_rcv_state *irs
 	return IPSEC_RCV_OK;
 }
 
+
+int ip_cmsg_send_ipsec(struct cmsghdr *cmsg, struct ipcm_cookie *ipc)
+{
+	struct ipsec_sa *sa1;
+	xfrm_sec_unique_t *ref;
+	struct sec_path *sp;
+
+	if(cmsg->cmsg_len != CMSG_LEN(sizeof(xfrm_sec_unique_t))) {
+		return -EINVAL;
+	}
+	
+	ref = (xfrm_sec_unique_t *)CMSG_DATA(cmsg);
+
+	sp = secpath_dup(NULL);
+	if(!sp) {
+		return -EINVAL;
+	}
+
+	sp->ref = *ref;
+	KLIPS_PRINT(debug_rcv, "sending with saref=%u\n", sp->ref);
+		
+	sa1 = ipsec_sa_getbyref(sp->ref);
+	if(sa1 && sa1->ips_out) {
+		ipc->oif = sa1->ips_out->ifindex;
+		KLIPS_PRINT(debug_rcv, "setting oif: %d\n", ipc->oif);
+	}
+	ipsec_sa_put(sa1);
+	
+	ipc->sp  = sp;
+
+	return 0;
+}
+
 void ip_cmsg_recv_ipsec(struct msghdr *msg, struct sk_buff *skb)
 {
 	struct sec_path *sp;
@@ -370,7 +403,8 @@ void ip_cmsg_recv_ipsec(struct msghdr *msg, struct sk_buff *skb)
 	KLIPS_PRINT(debug_rcv, "retrieving saref=%u from skb=%p\n",
 		    sp->ref, skb);
 
-	put_cmsg(msg, SOL_IP, IP_IPSEC_RECVREF, sizeof(xfrm_sec_unique_t), &sp->ref);
+	put_cmsg(msg, SOL_IP, IP_IPSEC_REFINFO,
+		 sizeof(xfrm_sec_unique_t), &sp->ref);
 }
 
 		       

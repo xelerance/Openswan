@@ -40,6 +40,7 @@ char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.7 2005/04/29 05:10:22
 #include <linux/etherdevice.h> /* eth_type_trans */
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
+#include <net/xfrm.h>
 
 #include <openswan.h>
 
@@ -166,12 +167,25 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	memset(&ixs_mem, 0, sizeof(struct ipsec_xmit_state));
 
 	ixs->skb = skb;
-	SAref = NFmark2IPsecSAref(skb->nfmark);
+	SAref = 0;
+	if(skb->sp) {
+		SAref = skb->sp->ref;
+	}
+
+	if(skb->nfmark & 0x80000000) {
+		SAref = NFmark2IPsecSAref(skb->nfmark);
+		KLIPS_PRINT(debug_mast, "getting SAref=%d from nfmark\n",
+			    SAref);
+	}
+
+	KLIPS_PRINT(debug_mast, "skb=%p\n", skb);
+
 	ipsec_xmit_sanity_check_skb(ixs);
 
 	ixs->ipsp = ipsec_sa_getbyref(SAref);
 	if(ixs->ipsp == NULL) {
-		printk("no SA for saref=%d\n", SAref);
+		KLIPS_ERROR(debug_mast, "%s: no SA for saref=%d (sp=%p)\n",
+			    dev->name, SAref, skb->sp);
 		ipsec_kfree_skb(skb);
 		return 0;
 	}
