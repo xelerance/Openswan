@@ -11,7 +11,7 @@ saref=4562
 nfsaref=$(printf "%d" $(( ($saref * 65536) | 0x80000000 )))
 
 # set up the SA itself -- transport mode.
-ipsec spi --af inet --edst 192.1.2.45 --spi 0x1bbdd678 --proto esp --src 192.1.2.23 --esp 3des-md5-96 --enckey $enckey --authkey $authkey 
+ipsec spi --af inet --edst 192.1.2.45 --spi 0x1bbdd678 --proto esp --src 192.1.2.23 --esp 3des-md5-96 --enckey $enckey --authkey $authkey  --saref $saref
 
 # we do *NOT* need to setup an EROUTE, because mast0 accepts packets based
 # the SAref# and encrypt them appropriately.
@@ -27,5 +27,5 @@ ipsec look
 ip rule add fwmark 0x80000000 fwmarkmask 0x80000000 table 51
 ip route add 0.0.0.0/0 dev mast0 table 51
 
-iptables -I OUTPUT 1 -t mangle -p udp --src 192.0.2.254/32 --dst 192.0.1.254/32 --dport 64 -j MARK --set-mark $nfsaref
+iptables -I OUTPUT 1 -o eth1 -t mangle -p udp --src 192.1.2.23/32 --dst 192.1.2.45/32 --dport 9 -j MARK --set-mark $nfsaref
 
