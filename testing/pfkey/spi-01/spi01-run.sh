@@ -5,3 +5,6 @@ nfsaref=$(printf "%d" $(( ($saref * 65536) | 0x80000000 )))
 
 ./spi01 --clear
 ./spi01 --af inet --edst 192.1.2.45 --spi 0x1bbdd678 --proto esp --src 192.1.2.23 --esp 3des-md5-96 --enckey $enckey --authkey $authkey 
+./spi01 --af inet --edst 192.1.2.45 --spi 0x1bbdd678 --proto tun --src 192.1.2.23 --dst 192.1.2.45 --ip4 --saref $saref
+
+
