@@ -25,8 +25,6 @@ def:	check
 
 # programs
 
-check:	include/openswan.h include/linux/madelinks include/net/madelinks include/asm/madelinks
-
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
