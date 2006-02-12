@@ -27,6 +27,7 @@ clean:
 	rm -rf *.o ${PACKFILE}.c
 
 check:	${TESTCASE}
-	./${TESTCASE}-run.sh | sed -f ${srcdir}../conup.sed | tee ${TESTCASE}-conn.txt  | diff - ${srcdir}${TESTCASE}.conn
-	hexdump -C pfkey.out | sed -f ${srcdir}../fixup.sed | tee ${TESTCASE}-check.txt | diff - ${srcdir}${TESTCASE}.out
+	-rm -f pfkey.out
+	./${TESTCASE}-run.sh | sed -f ${srcdir}../conup.sed | tee ${TESTCASE}.conn.new  | diff - ${srcdir}${TESTCASE}.conn
+	hexdump -C pfkey.out | sed -f ${srcdir}../fixup.sed | tee ${TESTCASE}.out.new | diff - ${srcdir}${TESTCASE}.out
 
