@@ -12,6 +12,11 @@ main(int argc, char **argv)
 	eroute01main(argc,argv);
 }
 
+int exit_tool(int ex)
+{
+	exit(ex);
+}
+
 int eroute01getpid()
 {
 	return 9999;
@@ -21,7 +26,7 @@ int pfkey_open_sock_with_error(void)
 {
 	int pfkey_sock = -1;
 
-	pfkey_sock = open("pfkey.out", O_RDWR|O_CREAT);
+	pfkey_sock = open("pfkey.out", O_RDWR|O_CREAT,0644);
 
 	if(pfkey_sock == -1) {
 		perror("pfkey.out");
