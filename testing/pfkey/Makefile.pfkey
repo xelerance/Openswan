@@ -3,14 +3,13 @@ include ${srcdir}../Makefile.unit-settings
 INCLUDES+=-I${OPENSWANSRCDIR} -I${KLIPSINC} -I${OPENSWANSRCDIR}/include
 UCFLAGS+=${USERCOMPILE} ${PORTINCLUDE} ${INCLUDES}
 
+all:	check
+
 ${TESTCASE}:	${TESTCASE}.o ${IPSEC_OBJS} Makefile
 	${CC} -g -o ${TESTCASE} ${TESTCASE}.o ${IPSEC_OBJS} ${KUTILLIB} ${OPENSWANLIB} ${OSWLOGLIB} ${OPENSWANLIB} -lefence
 
 ${TESTCASE}.o: ${srcdir}${TESTCASE}.c 
 	${CC} ${UCFLAGS} -c -o ${TESTCASE}.o ${srcdir}${TESTCASE}.c
-
-%.o: %.c 
-	${CC} ${UCFLAGS} -DKBUILD_BASENAME=$* -c -o $*.o $< 
 
 # build version.c using version number from Makefile.ver
 version.c:	${KLIPSSRC}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
@@ -24,7 +23,7 @@ ${PACKFILE}.c: ${INPUTS}
 	${PCAP2SKB} ${INPUTS} >$*.c
 
 clean:
-	rm -rf *.o ${PACKFILE}.c
+	rm -rf *.o ${PACKFILE}.c ${TESTCASE}
 
 check:	${TESTCASE}
 	-rm -f pfkey.out

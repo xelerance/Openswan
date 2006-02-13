@@ -12,6 +12,8 @@ TESTCASE=spi01
 
 include ${srcdir}../Makefile.pfkey
 
+spi01.o: ../../../programs/spi/spi.c
+
 # 
 # Local Variables: 
 # compile-command: "make"

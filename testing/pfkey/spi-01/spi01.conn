@@ -1,3 +1,4 @@
+clear
 ./spi01: Algorithm 126 selected.
 ./spi01: All options processed.
 ./spi01: Algorithm ok.
@@ -7,6 +8,7 @@
 ./spi01: pfkey command written to socket.
 ./spi01: pfkey message buffer freed.
 ./spi01: exited normally
+ESP
 ./spi01: edst=192.1.2.45.
 ./spi01: src=192.1.2.23.
 ./spi01: Algorithm 10 selected.
@@ -34,6 +36,7 @@
 ./spi01: pfkey command written to socket.
 ./spi01: pfkey message buffer freed.
 ./spi01: exited normally
+TUN
 ./spi01: edst=192.1.2.45.
 ./spi01: src=192.1.2.23.
 ./spi01: dst=192.1.2.45.
