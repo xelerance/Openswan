@@ -65,15 +65,11 @@ char spi_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp $";
 
 struct encap_msghdr *em;
 
-/* 	
- * 	Manual conn support for ipsec_alg (modular algos).
- * 	Rather ugly to include from pluto dir but avoids
- * 	code duplication.
- */
 char *progname;
 int debug = 0;
 int dumpsaref = 0;
-int saref = 0;
+int saref_him = 0;
+int saref_me  = 0;
 char *command;
 extern char *optarg;
 extern int optind, opterr, optopt;
@@ -143,7 +139,8 @@ spi --esp <algo> <SA> [<life> ][ --replay_window <replay-window> ] --enckey <eke
 	where <algo> is:	3des\n\
 spi --comp <algo> <SA>\n\
 	where <algo> is:	deflate\n\
-[ --saref=XXX ] set the saref to use\n\
+[ --sarefme=XXX ]  set the saref to use for this SA\n\
+[ --sarefhim=XXX ] set the saref to use for paired SA\n\
 [ --dumpsaref ] show the saref allocated\n\
 [ --outif=XXX ] set the outgoing interface to use \n\
 [ --debug ] is optional to any spi command.\n\
@@ -392,6 +389,8 @@ static struct option const longopts[] =
 	{"life", 1, 0, 'f'},
 	{"outif",     required_argument, NULL, 'O'},
 	{"saref",     required_argument, NULL, 'b'},
+	{"sarefme",   required_argument, NULL, 'b'},
+	{"sarefhim",  required_argument, NULL, 'B'},
 	{"dumpsaref", no_argument,       NULL, 'r'},
 	{"listenreply", 0, 0, 'R'},
 	{0, 0, 0, 0}
@@ -562,9 +561,19 @@ main(int argc, char *argv[])
 			break;
 
 		case 'b':  /* set the SAref to use */
-			saref = strtoul(optarg, &endptr, 0);
+			saref_me = strtoul(optarg, &endptr, 0);
 			if(!(endptr == optarg + strlen(optarg))) {
-				fprintf(stderr, "%s: Invalid character in SAREF parameter: %s\n",
+				fprintf(stderr, "%s: Invalid character in SAREFi parameter: %s\n",
+					progname, optarg);
+				exit (1);
+			}
+			argcount--;
+			break;
+
+		case 'B':  /* set the SAref to use for outgoing packets */
+			saref_him = strtoul(optarg, &endptr, 0);
+			if(!(endptr == optarg + strlen(optarg))) {
+				fprintf(stderr, "%s: Invalid character in SAREFo parameter: %s\n",
 					progname, optarg);
 				exit (1);
 			}
@@ -1308,7 +1317,7 @@ main(int argc, char *argv[])
 		.sa_base.sadb_sa_auth    = authalg,
 		.sa_base.sadb_sa_encrypt = encryptalg,
 		.sa_base.sadb_sa_flags   = 0,
-		.sa_base.sadb_x_sa_ref   = saref,
+		.sa_base.sadb_x_sa_ref   = IPSEC_SAREF_NULL,
 	    };
 
 	    if((error = pfkey_sa_builds(&extensions[SADB_EXT_SA],sab))) {
@@ -1318,6 +1327,16 @@ main(int argc, char *argv[])
 		exit(1);
 	    }
 
+	    if(saref_me || saref_him) {
+		error = pfkey_saref_build(&extensions[K_SADB_X_EXT_SAREF],saref_me,saref_him);
+		if(error) {
+		    fprintf(stderr, "%s: Trouble building saref extension, error=%d.\n",
+			    progname, error);
+		    pfkey_extensions_free(extensions);
+		    exit(1);
+		}
+	    }
+		    
 	    if(outif != 0) {
 		if((error = pfkey_outif_build(&extensions[SADB_X_EXT_PLUMBIF],outif))) {
 		    fprintf(stderr, "%s: Trouble building outif extension, error=%d.\n",
@@ -1697,7 +1716,7 @@ main(int argc, char *argv[])
 		free(iv);
 	}
 
-	if(listenreply || saref) {
+	if(listenreply || saref_me) {
 		ssize_t readlen;
 		unsigned char pfkey_buf[PFKEYv2_MAX_MSGSIZE];
 		
@@ -1755,7 +1774,7 @@ main(int argc, char *argv[])
 				}
 			}
 			if((pid_t)pfkey_msg->sadb_msg_pid == mypid) {
-				if(saref) {
+				if(saref_me) {
 					printf("%s: saref=%d\n",
 					       progname,
 					       (extensions[SADB_EXT_SA] != NULL)
