@@ -323,10 +323,6 @@ pfkey_getspi_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 							0,
 							0),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_saref_build(&extensions_reply[K_SADB_X_EXT_SAREF],
-							   extr->ips->ips_ref,
-							   extr->ips->ips_refhim),
-				 extensions_reply)
 
 	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_SRC],
 						     K_SADB_EXT_ADDRESS_SRC,
@@ -514,10 +510,6 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 							extr->ips->ips_authalg,
 							extr->ips->ips_encalg,
 							extr->ips->ips_flags),
-				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_saref_build(&extensions_reply[K_SADB_X_EXT_SAREF],
-							   extr->ips->ips_ref,
-							   extr->ips->ips_refhim),
 				 extensions_reply)
 	     /* The 3 lifetime extentions should only be sent if non-zero. */
 	     && (extensions[K_SADB_EXT_LIFETIME_HARD]
@@ -953,10 +945,6 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 							0,
 							0),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_saref_build(&extensions_reply[K_SADB_X_EXT_SAREF],
-							   extr->ips->ips_ref,
-							   extr->ips->ips_refhim),
-				 extensions_reply)
 	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_SRC],
 							     K_SADB_EXT_ADDRESS_SRC,
 							     0, /*extr->ips->ips_said.proto,*/
@@ -1057,10 +1045,6 @@ pfkey_get_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 							extr->ips->ips_authalg,
 							extr->ips->ips_encalg,
 							extr->ips->ips_flags),
-				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_saref_build(&extensions_reply[K_SADB_X_EXT_SAREF],
-							   extr->ips->ips_ref,
-							   extr->ips->ips_refhim),
 				 extensions_reply)
 	     /* The 3 lifetime extentions should only be sent if non-zero. */
 	     && (ipsp->ips_life.ipl_allocations.ipl_count
@@ -1760,10 +1744,6 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 							extr->ips->ips_encalg,
 							extr->ips->ips_flags),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_saref_build(&extensions_reply[K_SADB_X_EXT_SAREF],
-							   extr->ips->ips_ref,
-							   extr->ips->ips_refhim),
-				 extensions_reply)
 	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_DST],
 							     K_SADB_EXT_ADDRESS_DST,
 							     0, /*extr->ips->ips_said.proto,*/
@@ -1783,10 +1763,6 @@ pfkey_x_grpsa_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_
 							       extr->ips2->ips_authalg,
 							       extr->ips2->ips_encalg,
 							       extr->ips2->ips_flags),
-					extensions_reply)
-		    && pfkey_safe_build(error = pfkey_saref_build(&extensions_reply[K_SADB_X_EXT_SAREF],
-								  extr->ips->ips_ref,
-								  extr->ips->ips_refhim),
 					extensions_reply)
 		    && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_DST2],
 								    K_SADB_X_EXT_ADDRESS_DST2,
@@ -2196,10 +2172,6 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 							extr->ips->ips_encalg,
 							extr->ips->ips_flags),
 				 extensions_reply)
-	     && pfkey_safe_build(error = pfkey_saref_build(&extensions_reply[K_SADB_X_EXT_SAREF],
-							   extr->ips->ips_ref,
-							   extr->ips->ips_refhim),
-				 extensions_reply)
 	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_SRC_FLOW],
 							     K_SADB_X_EXT_ADDRESS_SRC_FLOW,
 							     0, /*extr->ips->ips_said.proto,*/
@@ -2321,10 +2293,6 @@ pfkey_expire(struct ipsec_sa *ipsp, int hard)
 							 ipsp->ips_encalg,
 							 ipsp->ips_flags),
 				  extensions)
-	      && pfkey_safe_build(error = pfkey_saref_build(&extensions[K_SADB_X_EXT_SAREF],
-							    ipsp->ips_ref,
-							    ipsp->ips_refhim),
-				 extensions)
 	      && pfkey_safe_build(error = pfkey_lifetime_build(&extensions[K_SADB_EXT_LIFETIME_CURRENT],
 							       K_SADB_EXT_LIFETIME_CURRENT,
 							       ipsp->ips_life.ipl_allocations.ipl_count,
