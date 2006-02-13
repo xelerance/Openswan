@@ -147,6 +147,39 @@ ipsec_mast_cleanup(struct ipsec_xmit_state*ixs)
 	}
 }
 
+
+int ip_cmsg_send_ipsec(struct cmsghdr *cmsg, struct ipcm_cookie *ipc)
+{
+	struct ipsec_sa *sa1;
+	xfrm_sec_unique_t *ref;
+	struct sec_path *sp;
+
+	if(cmsg->cmsg_len != CMSG_LEN(sizeof(xfrm_sec_unique_t))) {
+		return -EINVAL;
+	}
+	
+	ref = (xfrm_sec_unique_t *)CMSG_DATA(cmsg);
+
+	sp = secpath_dup(NULL);
+	if(!sp) {
+		return -EINVAL;
+	}
+
+	sp->ref = *ref;
+	KLIPS_PRINT(debug_rcv, "sending with saref=%u\n", sp->ref);
+		
+	sa1 = ipsec_sa_getbyref(sp->ref);
+	if(sa1 && sa1->ips_out) {
+		ipc->oif = sa1->ips_out->ifindex;
+		KLIPS_PRINT(debug_rcv, "setting oif: %d\n", ipc->oif);
+	}
+	ipsec_sa_put(sa1);
+	
+	ipc->sp  = sp;
+
+	return 0;
+}
+
 /*
  *	This function assumes it is being called from dev_queue_xmit()
  *	and that skb is filled properly by that function.
