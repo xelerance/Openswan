@@ -394,7 +394,9 @@ int ip_cmsg_send_ipsec(struct cmsghdr *cmsg, struct ipcm_cookie *ipc)
 
 void ip_cmsg_recv_ipsec(struct msghdr *msg, struct sk_buff *skb)
 {
+	struct ipsec_sa *sa1;
 	struct sec_path *sp;
+	xfrm_sec_unique_t refs[2];
 
 	sp = skb->sp;
 
@@ -403,8 +405,14 @@ void ip_cmsg_recv_ipsec(struct msghdr *msg, struct sk_buff *skb)
 	KLIPS_PRINT(debug_rcv, "retrieving saref=%u from skb=%p\n",
 		    sp->ref, skb);
 
+	sa1 = ipsec_sa_getbyref(sp->ref);
+	if(sa1) {
+		refs[1]= sa1->ips_refhim;
+	}
+	refs[0]=sp->ref;
+
 	put_cmsg(msg, SOL_IP, IP_IPSEC_REFINFO,
-		 sizeof(xfrm_sec_unique_t), &sp->ref);
+		 sizeof(xfrm_sec_unique_t)*2, &refs);
 }
 
 		       
