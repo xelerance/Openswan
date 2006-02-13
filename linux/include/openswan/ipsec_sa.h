@@ -126,8 +126,9 @@ typedef unsigned short int IPsecRefTableUnusedCount;
 /* 'struct ipsec_sa' should be 64bit aligned when allocated. */
 struct ipsec_sa 	                        
 {
-	IPsecSAref_t	ips_ref;		/* reference table entry number */
-	atomic_t	ips_refcount;		/* reference count for this struct */
+	atomic_t	ips_refcount;	/* reference count for this struct */
+	IPsecSAref_t	ips_ref;	/* reference table entry number */
+	IPsecSAref_t	ips_refhim;	/* ref of paired SA, if any */
 	struct ipsec_sa	*ips_next;	 	/* pointer to next xform */
 
 	struct ipsec_sa	*ips_hnext;		/* next in hash chain */
@@ -135,7 +136,11 @@ struct ipsec_sa
 	struct ifnet	*ips_rcvif;	 	/* related rcv encap interface */
 
 	struct xform_functions *ips_xformfuncs; /* pointer to routines to process this SA */
+
 	struct net_device *ips_out;             /* what interface to emerge on */
+	__u8            ips_transport_direct;   /* if true, punt directly to
+						 * the protocol layer */
+	struct socket  *ips_sock;               /* cache of transport socket */
 
 	ip_said	        ips_said;	 	/* SA ID */
 

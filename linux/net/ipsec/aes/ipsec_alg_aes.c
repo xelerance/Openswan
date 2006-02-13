@@ -46,6 +46,7 @@
 #endif
 
 /*	Low freeswan header coupling	*/
+#include <openswan.h>
 #include "openswan/ipsec_alg.h"
 #include "crypto/aes_cbc.h"
 

@@ -308,32 +308,6 @@ errlab:
 }	
 
 int
-pfkey_sa_ref_build(struct sadb_ext **		pfkey_ext,
-		   uint16_t			exttype,
-		   uint32_t			spi,
-		   uint8_t			replay_window,
-		   uint8_t			sa_state,
-		   uint8_t			auth,
-		   uint8_t			encrypt,
-		   uint32_t			flags,
-		   uint32_t/*IPsecSAref_t*/	ref)
-{
-	struct sadb_builds sab;
-	
-	memset(&sab, 0, sizeof(sab));
-	sab.sa_base.sadb_sa_exttype = exttype;
-	sab.sa_base.sadb_sa_spi     = spi;
-	sab.sa_base.sadb_sa_replay  = replay_window;
-	sab.sa_base.sadb_sa_state   = sa_state;
-	sab.sa_base.sadb_sa_auth    = auth;
-	sab.sa_base.sadb_sa_encrypt = encrypt;
-	sab.sa_base.sadb_sa_flags   = flags;
-	sab.sa_base.sadb_x_sa_ref   = ref;
-
-	return pfkey_sa_builds(pfkey_ext, sab);
-}
-
-int
 pfkey_sa_build(struct sadb_ext **	pfkey_ext,
 	       uint16_t			exttype,
 	       uint32_t			spi,
@@ -1291,6 +1265,30 @@ int pfkey_outif_build(struct sadb_ext **pfkey_ext,
 }
 
 
+int pfkey_saref_build(struct sadb_ext **pfkey_ext,
+		      IPsecSAref_t in, IPsecSAref_t out)
+{
+	int error = 0;
+	struct sadb_x_saref* s;
+	
+	/* +4 because sadb_x_saref is not a multiple of 8 bytes */
+
+	if ((s = (struct sadb_x_saref*)MALLOC(sizeof(*s)+4)) == 0) {
+		ERROR("pfkey_build: memory allocation failed\n");
+		SENDERR(ENOMEM);
+	}
+	*pfkey_ext = (struct sadb_ext *)s;
+
+	s->sadb_x_saref_len = IPSEC_PFKEYv2_WORDS(sizeof(*s));
+	s->sadb_x_saref_exttype = K_SADB_X_EXT_SAREF;
+	s->sadb_x_saref_me  = in;
+	s->sadb_x_saref_him = out;
+
+ errlab:
+	return error;
+}
+
+
 #if defined(I_DONT_THINK_THIS_WILL_BE_USEFUL) && I_DONT_THINK_THIS_WILL_BE_USEFUL
 int (*ext_default_builders[K_SADB_EXT_MAX +1])(struct sadb_msg*, struct sadb_ext*)
  =
@@ -1331,7 +1329,7 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 	unsigned ext;
 	unsigned total_size;
 	struct sadb_ext *pfkey_ext;
-	int extensions_seen = 0;
+	pfkey_ext_track extensions_seen = 0;
 #ifndef __KERNEL__	
 	struct sadb_ext *extensions_check[K_SADB_EXT_MAX + 1];
 #endif
@@ -1383,7 +1381,7 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 		if(extensions[ext]) {    
 			/* Is this type of extension permitted for this type of message? */
 			if(!pfkey_permitted_extension(dir,(*pfkey_msg)->sadb_msg_type,ext)) {
-				ERROR("ext type %d not permitted for %d/%d\n", 
+				ERROR("ext type %d not permitted for %d/%d (build)\n", 
 				      ext,
 				      dir,(*pfkey_msg)->sadb_msg_type);
 				SENDERR(EINVAL);
@@ -1396,23 +1394,30 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 				  ext,
 				  extensions[ext]->sadb_ext_type);
 
-			memcpy(pfkey_ext,
-			       extensions[ext],
-			       (extensions[ext])->sadb_ext_len * IPSEC_PFKEYv2_ALIGN);
 			{
 			  char *pfkey_ext_c = (char *)pfkey_ext;
 
 			  pfkey_ext_c += (extensions[ext])->sadb_ext_len * IPSEC_PFKEYv2_ALIGN;
+
+#if 0
+			  printf("memcpy(%p,%p,%d) -> %p %p:%p\n", pfkey_ext, 
+				 extensions[ext],
+				 (extensions[ext])->sadb_ext_len * IPSEC_PFKEYv2_ALIGN,
+				 pfkey_ext_c, (*pfkey_msg), (char *)(*pfkey_msg)+(total_size*IPSEC_PFKEYv2_ALIGN));
+#endif
+			  memcpy(pfkey_ext,
+				 extensions[ext],
+				 (extensions[ext])->sadb_ext_len * IPSEC_PFKEYv2_ALIGN);
 			  pfkey_ext = (struct sadb_ext *)pfkey_ext_c;
 			}
 
-			/* Mark that we have seen this extension and remember the header location */
-			extensions_seen |= ( 1 << ext );
+			/* Mark that we have seen this extension */
+			pfkey_mark_extension(ext,&extensions_seen);
 		}
 	}
 
 	if(pfkey_extensions_missing(dir,(*pfkey_msg)->sadb_msg_type,extensions_seen)) {
-		ERROR("required extensions missing. seen=%08x\n", extensions_seen);
+		ERROR("required extensions missing. seen=%08llx\n", (unsigned long long)extensions_seen);
 		SENDERR(EINVAL);
 	}
 

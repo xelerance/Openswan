@@ -75,14 +75,14 @@ struct sadb_sa_v1 {
   uint8_t sadb_sa_auth;
   uint8_t sadb_sa_encrypt;
   uint32_t sadb_sa_flags;
-};
+} __attribute__((packed));
 
 struct sadb_x_satype {
   uint16_t sadb_x_satype_len;
   uint16_t sadb_x_satype_exttype;
   uint8_t sadb_x_satype_satype;
   uint8_t sadb_x_satype_reserved[3];
-};
+} __attribute__((packed));
   
 struct sadb_x_debug {
   uint16_t sadb_x_debug_len;
@@ -100,7 +100,7 @@ struct sadb_x_debug {
   uint32_t sadb_x_debug_ipcomp;
   uint32_t sadb_x_debug_verbose;
   uint8_t sadb_x_debug_reserved[4];
-};
+} __attribute__((packed));
 
 /*
  * a plumbif extension can appear in
@@ -117,15 +117,29 @@ struct sadb_x_plumbif {
 	uint16_t sadb_x_outif_len;
 	uint16_t sadb_x_outif_exttype;
 	uint16_t sadb_x_outif_ifnum;
-};
+} __attribute__((packed));
 
 /*
+ * the ifnum describes a device that you wish to create refer to.
+ *
  * devices 0-40959 are mastXXX devices.
  * devices 40960-49141 are mastXXX devices with transport set.
  * devices 49152-65536 are deprecated ipsecXXX devices.
  */
 #define IPSECDEV_OFFSET       (48*1024)
 #define MASTTRANSPORT_OFFSET  (40*1024)
+
+/*
+ * an saref extension sets the SA's reference number, and
+ * may also set the paired SA's reference number.
+ *
+ */
+struct sadb_x_saref {
+	uint16_t sadb_x_saref_len;
+	uint16_t sadb_x_saref_exttype;
+	uint32_t sadb_x_saref_me;       
+	uint32_t sadb_x_saref_him;
+} __attribute__((packed));
 
 /*
  * A protocol structure for passing through the transport level
@@ -140,7 +154,7 @@ struct sadb_protocol {
   uint8_t  sadb_protocol_direction;
   uint8_t  sadb_protocol_flags;
   uint8_t  sadb_protocol_reserved2;
-};
+} __attribute__((packed));
 
 /*
  * NOTE that there is a limit of 31 extensions due to current implementation
@@ -180,7 +194,8 @@ enum sadb_extension_t {
 	K_SADB_X_EXT_NAT_T_DPORT=   29,
 	K_SADB_X_EXT_NAT_T_OA=      30,
 	K_SADB_X_EXT_PLUMBIF=       31,
-	K_SADB_EXT_MAX=             31,
+	K_SADB_X_EXT_SAREF=         32,
+	K_SADB_EXT_MAX=             32,
 };
 
 

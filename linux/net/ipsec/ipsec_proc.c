@@ -399,6 +399,8 @@ ipsec_spi_get_info(char *buffer,
 
 			len += ipsec_snprintf(buffer+len, length-len, " ref=%d",
 				       sa_p->ips_ref);
+			len += ipsec_snprintf(buffer+len, length-len, " refhim=%d",
+				       sa_p->ips_refhim);
 #ifdef CONFIG_KLIPS_DEBUG
 			if(debug_xform) {
 			len += ipsec_snprintf(buffer+len, length-len, " reftable=%lu refentry=%lu",

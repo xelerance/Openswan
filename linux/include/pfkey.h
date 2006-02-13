@@ -69,7 +69,9 @@ struct pfkey_extracted_data
 	struct ipsec_sa* ips;
 	struct ipsec_sa* ips2;
 	struct eroute *eroute;
-	int    outif;
+	int            outif;
+	IPsecSAref_t   sarefme;
+	IPsecSAref_t   sarefhim;
 };
 
 /* forward reference */
@@ -186,7 +188,7 @@ enum pfkey_ext_required {
 };
 
 
-typedef uint32_t pfkey_ext_track;
+typedef uint64_t pfkey_ext_track;
 static inline void pfkey_mark_extension(enum sadb_extension_t exttype,
 					pfkey_ext_track *exten_track)
 {
@@ -250,6 +252,10 @@ pfkey_sa_build(struct sadb_ext **	pfkey_ext,
 	       uint8_t			auth,
 	       uint8_t			encrypt,
 	       uint32_t			flags);
+
+extern int
+pfkey_saref_build(struct sadb_ext **pfkey_ext,
+		  IPsecSAref_t in, IPsecSAref_t out);
 
 int
 pfkey_lifetime_build(struct sadb_ext **	pfkey_ext,

@@ -167,7 +167,8 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 	
 
 
-	if(pfkey_sa->sadb_sa_len != sizeof(struct k_sadb_sa) / IPSEC_PFKEYv2_ALIGN) {
+	if(pfkey_sa->sadb_sa_len !=sizeof(struct k_sadb_sa)/IPSEC_PFKEYv2_ALIGN
+	   && pfkey_sa->sadb_sa_len!=sizeof(struct sadb_sa)/IPSEC_PFKEYv2_ALIGN) {
 		ERROR(
 			  "pfkey_sa_parse: "
 			  "length wrong pfkey_sa->sadb_sa_len=%d sizeof(struct sadb_sa)=%d.\n",
@@ -238,10 +239,12 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 		SENDERR(EINVAL);
 	}
 
-	if(pfkey_sa->sadb_x_sa_ref == IPSEC_SAREF_NULL ||
-	   pfkey_sa->sadb_x_sa_ref == ~(IPSEC_SAREF_NULL))
-	{
-		pfkey_sa->sadb_x_sa_ref = IPSEC_SAREF_NULL;
+	if(pfkey_sa->sadb_sa_len > sizeof(struct sadb_sa)/IPSEC_PFKEYv2_ALIGN) {
+		if(pfkey_sa->sadb_x_sa_ref == IPSEC_SAREF_NULL ||
+		   pfkey_sa->sadb_x_sa_ref == ~(IPSEC_SAREF_NULL))
+		{
+			pfkey_sa->sadb_x_sa_ref = IPSEC_SAREF_NULL;
+		}
 	}
 
 	if((IPSEC_SAREF_NULL != pfkey_sa->sadb_x_sa_ref)
@@ -1166,6 +1169,26 @@ pfkey_x_ext_outif_parse(struct sadb_ext *pfkey_ext)
 	return error;
 }
 
+DEBUG_NO_STATIC int
+pfkey_x_ext_saref_parse(struct sadb_ext *pfkey_ext)
+{
+	int error = 0;
+	struct sadb_x_saref *p = (struct sadb_x_saref *)pfkey_ext;
+	
+	DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM, "pfkey_x_saref_parse:\n");
+	/* sanity checks... */
+	
+	if (p->sadb_x_saref_len != IPSEC_PFKEYv2_WORDS(sizeof(*p))) {
+		    DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
+			      "pfkey_x_saref_parse: size wrong ext_len=%d, key_ext_len=%d.\n",
+			      p->sadb_x_saref_len, (int)sizeof(*p));
+		    SENDERR(EINVAL);
+	}
+	
+ errlab:
+	return error;
+}
+
 
 #define DEFINEPARSER(NAME) static struct pf_key_ext_parsers_def NAME##_def={NAME, #NAME};
 
@@ -1187,6 +1210,7 @@ DEFINEPARSER(pfkey_x_ext_nat_t_type_parse);
 DEFINEPARSER(pfkey_x_ext_nat_t_port_parse);
 #endif
 DEFINEPARSER(pfkey_x_ext_outif_parse);
+DEFINEPARSER(pfkey_x_ext_saref_parse);
 
 struct pf_key_ext_parsers_def *ext_default_parsers[]=
 {
@@ -1225,7 +1249,8 @@ struct pf_key_ext_parsers_def *ext_default_parsers[]=
 #else
 	NULL,NULL,NULL,NULL,
 #endif
-	&pfkey_x_ext_outif_parse_def
+	&pfkey_x_ext_outif_parse_def,
+	&pfkey_x_ext_saref_parse_def,
 };
 
 int
@@ -1396,7 +1421,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 
 		/* Is this type of extension permitted for this type of message? */
 		if(!pfkey_permitted_extension(dir,pfkey_msg->sadb_msg_type,pfkey_ext->sadb_ext_type)) {
-			ERROR("ext type %d(%s) not permitted\n", 
+			ERROR("ext type %d(%s) not permitted (parse)\n", 
 			      pfkey_ext->sadb_ext_type, 
 			      pfkey_v2_sadb_ext_string(pfkey_ext->sadb_ext_type));
 			SENDERR(EINVAL);
@@ -1461,7 +1486,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	}
 
 	if(pfkey_extensions_missing(dir,pfkey_msg->sadb_msg_type,extensions_seen)) {
-		ERROR("required extensions missing.seen=%08x.\n",extensions_seen);
+		ERROR("required extensions missing.seen=%08llx.\n",(unsigned long long)extensions_seen);
 		SENDERR(EINVAL);
 	}
 	
@@ -1474,10 +1499,10 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	       != SADB_X_SAFLAGS_CLEARFLOW))) {
 		DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 			"pfkey_msg_parse: "
-			"required K_SADB_X_DELFLOW extensions missing: either %08x must be present or %08x must be present with K_SADB_X_SAFLAGS_CLEARFLOW set.\n",
-			K_SADB_X_EXT_ADDRESS_DELFLOW
-			- (extensions_seen & K_SADB_X_EXT_ADDRESS_DELFLOW),
-			(1<<K_SADB_EXT_SA) - (extensions_seen & (1<<K_SADB_EXT_SA)));
+			"required K_SADB_X_DELFLOW extensions missing: either %08llx must be present or %08llx must be present with K_SADB_X_SAFLAGS_CLEARFLOW set.\n",
+			  (unsigned long long)K_SADB_X_EXT_ADDRESS_DELFLOW
+			  - (extensions_seen & K_SADB_X_EXT_ADDRESS_DELFLOW),
+			  (unsigned long long)(1ULL<<K_SADB_EXT_SA) - (extensions_seen & (1ULL<<K_SADB_EXT_SA)));
 		SENDERR(EINVAL);
 	}
 	
