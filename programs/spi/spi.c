@@ -391,6 +391,8 @@ static struct option const longopts[] =
 	{"saref",     required_argument, NULL, 'b'},
 	{"sarefme",   required_argument, NULL, 'b'},
 	{"sarefhim",  required_argument, NULL, 'B'},
+	{"saref_me",  required_argument, NULL, 'b'},
+	{"saref_him", required_argument, NULL, 'B'},
 	{"dumpsaref", no_argument,       NULL, 'r'},
 	{"listenreply", 0, 0, 'R'},
 	{0, 0, 0, 0}
@@ -1774,14 +1776,15 @@ main(int argc, char *argv[])
 				}
 			}
 			if((pid_t)pfkey_msg->sadb_msg_pid == mypid) {
-				if(saref_me) {
-					printf("%s: saref=%d\n",
-					       progname,
-					       (extensions[SADB_EXT_SA] != NULL)
-					       ? ((struct k_sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_x_sa_ref
-					       : IPSEC_SAREF_NULL);
+			    if(saref_me) {
+				struct sadb_x_saref *s = (struct sadb_x_saref *)extensions[K_SADB_X_EXT_SAREF];
+				if(s) {
+				    printf("%s: saref=%d/%d\n",progname,
+					   s->sadb_x_saref_me,
+					   s->sadb_x_saref_him);
 				}
-				break;
+			    }
+			    break;
 			}
 		}
 	}

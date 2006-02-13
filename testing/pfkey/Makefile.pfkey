@@ -30,3 +30,5 @@ check:	${TESTCASE}
 	./${TESTCASE}-run.sh | sed -f ${srcdir}../conup.sed | tee ${TESTCASE}.conn.new  | diff - ${srcdir}${TESTCASE}.conn
 	hexdump -C pfkey.out | sed -f ${srcdir}../fixup.sed | tee ${TESTCASE}.out.new | diff - ${srcdir}${TESTCASE}.out
 
+install:	
+	@true

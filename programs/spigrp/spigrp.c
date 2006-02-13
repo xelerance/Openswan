@@ -388,58 +388,11 @@ main(int argc, char **argv)
 				  pfkey_msg,
 				  pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) !=
 		   (ssize_t)(pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) {
-			fprintf(stderr, "%s: pfkey write failed, returning %d with errno=%d.\n",
-				progname, error, errno);
 			pfkey_extensions_free(extensions);
 			pfkey_msg_free(&pfkey_msg);
-			switch(errno) {
-			case EACCES:
-				fprintf(stderr, "access denied.  ");
-				if(getuid() == 0) {
-					fprintf(stderr, "Check permissions.  Should be 600.\n");
-				} else {
-					fprintf(stderr, "You must be root to open this file.\n");
-				}
-				break;
-			case EUNATCH:
-				fprintf(stderr, "Netlink not enabled OR KLIPS not loaded.\n");
-				break;
-			case EBUSY:
-				fprintf(stderr, "KLIPS is busy.  Most likely a serious internal error occured in a previous command.  Please report as much detail as possible to development team.\n");
-				break;
-			case EINVAL:
-				fprintf(stderr, "Invalid argument, check kernel log messages for specifics.\n");
-				break;
-			case ENODEV:
-				fprintf(stderr, "KLIPS not loaded or enabled.\n");
-				fprintf(stderr, "No device?!?\n");
-				break;
-			case ENOBUFS:
-				fprintf(stderr, "No kernel memory to allocate SA.\n");
-				break;
-			case ESOCKTNOSUPPORT:
-				fprintf(stderr, "Algorithm support not available in the kernel.  Please compile in support.\n");
-				break;
-			case EEXIST:
-				fprintf(stderr, "SA already in use.  Delete old one first.\n");
-				break;
-			case ENOENT:
-				fprintf(stderr, "device does not exist.  See FreeS/WAN installation procedure.\n");
-				break;
-			case ENXIO:
-				fprintf(stderr, "SA does not exist.  Cannot delete.\n");
-				break;
-			case ENOSPC:
-				fprintf(stderr, "no room in kernel SAref table.  Cannot process request.\n");
-				break;
-			case ESPIPE:
-				fprintf(stderr, "kernel SAref table internal error.  Cannot process request.\n");
-				break;
-			default:
-				fprintf(stderr, "Unknown socket write error %d.  Please report as much detail as possible to development team.\n", errno);
-			}
-			exit(1);
+			pfkey_write_error(error, errno);
 		}
+
 		if(pfkey_msg) {
 			pfkey_extensions_free(extensions);
 			pfkey_msg_free(&pfkey_msg);

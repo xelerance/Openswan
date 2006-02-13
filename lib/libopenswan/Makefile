@@ -30,7 +30,7 @@ SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 	kernel_alg.c \
 	optionsfrom.c \
 	prng.c \
-	packet.c pfkey_sock.c \
+	packet.c pfkey_sock.c pfkey_error.c \
 	portof.c rangetoa.c rangetosubnet.c sameaddr.c \
 	satot.c subnetof.c subnettoa.c subnettot.c \
 	subnettypeof.c ttoaddr.c ttodata.c ttoprotoport.c \
