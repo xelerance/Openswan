@@ -120,7 +120,7 @@ int udp_recv_loop(int udpsock)
 	int packetcount =0;
 	
 	do {
-		unsigned int pktref;
+		unsigned int pktref[2];
 
 		memset(&from, 0, sizeof(from));
 		memset(&to,   0, sizeof(to));
@@ -157,16 +157,15 @@ int udp_recv_loop(int udpsock)
 				
 				if (cmsg->cmsg_level == IPPROTO_IP
 				    && cmsg->cmsg_type == IP_IPSEC_REFINFO) {
-					unsigned int *refp, *refd;
+					unsigned int *refp;
 					
 					refp = (unsigned int *)CMSG_DATA(cmsg);
-					pktref = *refp;
+					pktref[0]=refp[0];
+					pktref[1]=refp[1];
 
-					printf("     ref=%08x (%u)\n",
-					       pktref, pktref);
-					
-					refd = (unsigned int *)buf;
-					*refd = pktref;
+					printf("     ref=%08x (%u) him=%08x (%u)\n",
+					       pktref[0], pktref[0],
+					       pktref[1], pktref[1]);
 				}
 			}
 		}
@@ -188,8 +187,10 @@ int udp_recv_loop(int udpsock)
 			cmsg->cmsg_level = SOL_IP;
 			cmsg->cmsg_type  = IP_IPSEC_REFINFO;
 			cmsg->cmsg_len   = CMSG_LEN(sizeof(unsigned int));
+			
+			printf("     sending with saref=%d\n", pktref[1]);
 			refp = (unsigned int *)CMSG_DATA(cmsg);
-			memcpy(refp, &pktref, sizeof(unsigned int));
+			*refp = pktref[1];
 			
 			iov.iov_base = buf;
 			iov.iov_len  = readlen;
