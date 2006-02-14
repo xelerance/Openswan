@@ -1246,6 +1246,7 @@ for details on available debugging types, see
   </listitem>
   </varlistentry>
   <varlistentry>
+
   <term><emphasis remap='B'>plutostderrlog</emphasis></term>
   <listitem>
 <para>do not use syslog, but rather log to stderr, and direct stderr to the
@@ -1254,6 +1255,14 @@ argument file.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
+
+  <term><emphasis remap='B'>protostack</emphasis></term>
+  <listitem>
+<para>decide which protocol stack is going to be used. Valid values are "auto", "klips", "netkey" and "mast". The "mast" stack is a variation for the klips stack.
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+
   <term><emphasis remap='B'>dumpdir</emphasis></term>
   <listitem>
 <para>in what directory should things started by

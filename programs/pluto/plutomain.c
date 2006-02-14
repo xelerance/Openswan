@@ -312,6 +312,7 @@ main(int argc, char **argv)
 	    { "use-auto",  no_argument, NULL, 'G' },
 	    { "usenetkey", no_argument, NULL, 'K' },
 	    { "use-netkey", no_argument, NULL, 'K' },
+	    { "use-mast",   no_argument, NULL, 'M' },
 	    { "interface", required_argument, NULL, 'i' },
 	    { "ikeport", required_argument, NULL, 'p' },
 	    { "ctlbase", required_argument, NULL, 'b' },
@@ -441,6 +442,10 @@ main(int argc, char **argv)
 
 	case 'k':       /* --use-klips */
 	    kern_interface = USE_KLIPS;
+	    continue;
+
+	case 'M':       /* --use-mast */
+	    kern_interface = USE_MASTKLIPS;
 	    continue;
 
 	case 'K':       /* --use-netkey */
