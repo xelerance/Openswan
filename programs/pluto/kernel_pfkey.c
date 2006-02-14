@@ -1,7 +1,9 @@
-/* pfkey interface to the kernel's IPsec mechanism
+/* common routines for interfaces that use pfkey to talk to kernel
+ *
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  * Copyright (C) 2003 Herbert Xu.
+ * Copyright (C) 2003-2006  Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -16,7 +18,7 @@
  * RCSID $Id: kernel_pfkey.c,v 1.25 2005/08/24 22:50:50 mcr Exp $
  */
 
-#ifdef KLIPS
+#ifdef PFKEY
 
 #include <errno.h>
 #include <fcntl.h>
@@ -58,7 +60,7 @@
 #define KLIPS_OP_MASK	0xFF
 #define KLIPS_OP_FLAG_SHIFT	8
 
-static int pfkeyfd = NULL_FD;
+int pfkeyfd = NULL_FD;
 
 typedef u_int32_t pfkey_seq_t;
 static pfkey_seq_t pfkey_seq = 0;	/* sequence number for our PF_KEY messages */
@@ -333,7 +335,7 @@ pfkey_get_response(pfkey_buf *buf, pfkey_seq_t seq)
  * (if kernel modules are loaded and unloaded).
  * Some sanity checking has already been performed.
  */
-static void
+void
 klips_pfkey_register_response(const struct sadb_msg *msg)
 {
     /* Find out what the kernel can support.
@@ -470,8 +472,7 @@ pfkey_async(pfkey_buf *buf)
 }
 
 /* asynchronous messages from our queue */
-static void
-pfkey_dequeue(void)
+void pfkey_dequeue(void)
 {
     while (pfkey_iq_head != NULL)
     {
@@ -497,8 +498,7 @@ pfkey_dequeue(void)
 }
 
 /* asynchronous messages directly from PF_KEY socket */
-static void
-pfkey_event(void)
+void pfkey_event(void)
 {
     pfkey_buf buf;
 
@@ -768,8 +768,7 @@ static int kernelop2klips(enum pluto_sadb_operations op)
     return klips_op;
 }
 
-static void
-klips_pfkey_register(void)
+void klips_pfkey_register(void)
 {
     pfkey_register_proto(SADB_SATYPE_AH, "AH");
     pfkey_register_proto(SADB_SATYPE_ESP, "ESP");
@@ -778,7 +777,7 @@ klips_pfkey_register(void)
     pfkey_register_proto(SADB_X_SATYPE_IPIP, "IPIP");
 }
 
-static bool
+bool
 pfkey_raw_eroute(const ip_address *this_host
 		 , const ip_subnet *this_client
 		 , const ip_address *that_host
@@ -871,8 +870,7 @@ pfkey_raw_eroute(const ip_address *this_host
     return finish_pfkey_msg(extensions, "flow", text_said, NULL);
 }
 
-static bool
-pfkey_add_sa(const struct kernel_sa *sa, bool replace)
+bool pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 {
     struct sadb_ext *extensions[SADB_EXT_MAX + 1];
     bool success = FALSE;
@@ -973,8 +971,7 @@ pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 }
 
 
-static bool
-pfkey_grp_sa(const struct kernel_sa *sa0, const struct kernel_sa *sa1)
+bool pfkey_grp_sa(const struct kernel_sa *sa0, const struct kernel_sa *sa1)
 {
     struct sadb_ext *extensions[SADB_EXT_MAX + 1];
 
@@ -1006,8 +1003,7 @@ pfkey_grp_sa(const struct kernel_sa *sa0, const struct kernel_sa *sa1)
     && finish_pfkey_msg(extensions, "group", sa1->text_said, NULL);
 }
 
-static bool
-pfkey_del_sa(const struct kernel_sa *sa)
+bool pfkey_del_sa(const struct kernel_sa *sa)
 {
     struct sadb_ext *extensions[SADB_EXT_MAX + 1];
 
@@ -1051,7 +1047,7 @@ pfkey_close(void)
  * If negotiation has failed, the choice between %trap/%pass/%drop/%reject
  * is specified in the policy of connection c.
  */
-static bool
+bool
 pfkey_shunt_eroute(struct connection *c
 		   , struct spd_route *sr
 		   , enum routing_t rt_kind
@@ -1174,7 +1170,7 @@ pfkey_shunt_eroute(struct connection *c
 }
 
 /* install or remove eroute for SA Group */
-static bool
+bool
 pfkey_sag_eroute(struct state *st, struct spd_route *sr
 		 , unsigned op, const char *opname)
 {
@@ -1569,7 +1565,7 @@ scan_proc_shunts(void)
  * If FALSE, DPD is not necessary. We also return TRUE for errors, as they
  * could mean that the SA is broken and needs to be replace anyway.
  */
-static bool pfkey_was_eroute_idle(struct state *st, time_t idle_max)
+bool pfkey_was_eroute_idle(struct state *st, time_t idle_max)
 {
         static const char procname[] = "/proc/net/ipsec_spi";
         FILE *f;
@@ -1659,9 +1655,9 @@ static bool pfkey_was_eroute_idle(struct state *st, time_t idle_max)
         return ret;
 }
 
-static void pfkey_set_debug(int cur_debug
-			    , openswan_keying_debug_func_t debug_func
-			    , openswan_keying_debug_func_t error_func)
+void pfkey_set_debug(int cur_debug
+		     , openswan_keying_debug_func_t debug_func
+		     , openswan_keying_debug_func_t error_func)
 {
     pfkey_lib_debug = (cur_debug&DBG_PFKEY ?
 		       PF_KEY_DEBUG_PARSE_MAX : PF_KEY_DEBUG_PARSE_NONE);
@@ -1670,9 +1666,9 @@ static void pfkey_set_debug(int cur_debug
     pfkey_error_func = error_func;
 }
 
-static void pfkey_remove_orphaned_holds(int transport_proto
-					, const ip_subnet *ours
-					, const ip_subnet *his)
+void pfkey_remove_orphaned_holds(int transport_proto
+				 , const ip_subnet *ours
+				 , const ip_subnet *his)
 {
     /*
      * if present, remove from orphaned_holds list.
@@ -1697,29 +1693,4 @@ static void pfkey_remove_orphaned_holds(int transport_proto
     }
 }
 
-const struct kernel_ops klips_kernel_ops = {
-    type: USE_KLIPS,
-    async_fdp: &pfkeyfd,
-    replay_window: 64,
-    
-    pfkey_register: klips_pfkey_register,
-    pfkey_register_response: klips_pfkey_register_response,
-    process_queue: pfkey_dequeue,
-    process_msg: pfkey_event,
-    raw_eroute: pfkey_raw_eroute,
-    shunt_eroute: pfkey_shunt_eroute,
-    sag_eroute: pfkey_sag_eroute,
-    add_sa: pfkey_add_sa,
-    grp_sa: pfkey_grp_sa,
-    del_sa: pfkey_del_sa,
-    get_spi: NULL,
-    eroute_idle: pfkey_was_eroute_idle,
-    inbound_eroute: FALSE,
-    policy_lifetime: FALSE,
-    init: init_pfkey,
-    docommand: do_command_linux,
-    set_debug: pfkey_set_debug,
-    remove_orphaned_holds: pfkey_remove_orphaned_holds,
-    kern_name: "pfkey"
-};
 #endif /* KLIPS */
