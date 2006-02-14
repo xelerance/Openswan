@@ -21,6 +21,31 @@ proc netjigcmddebug {msg} {
     }
 }
 
+proc netjigstart {} {
+    global env
+    global umid
+    global netjig_prog
+
+    # we start up netjig_prog with a plain pipe, so that
+    # stderr from it will go to our stderr.
+    set debugjig ""
+    set tcpdumpjig ""
+    
+    if {[info exists env(NETJIGTESTDEBUG)]} {
+	if {$env(NETJIGTESTDEBUG) == "netjig"} {
+	    set debugjig "--debug"
+	}
+    }
+    
+    if {[info exists env(NETJIGDUMP)]} {
+	set tcpdumpjig "--tcpdump"
+    }
+    
+    spawn -noecho -open [open "|$netjig_prog --cmdproto $debugjig $tcpdumpjig 2>@stderr" w+]
+    return $spawn_id
+}
+
+
 proc sendnjcmd {netjig cmd} {
     global expect_out(buffer)
 
@@ -74,7 +99,9 @@ proc newswitch {netjig net} {
 
     netjigcmddebug "looking for umlid(net$net,arp)=$umlid(net$net,arp)\n"
     if { [info exists umlid(net$net,arp)] } {
-	set arpreply "--arpreply"
+	if { $umlid(net$net,arp) != 0 } {
+	    set arpreply "--arpreply"
+	}
     } 
     set lines [sendnjcmd $netjig "NEWSWITCH $arpreply $net"]
 

@@ -7,8 +7,6 @@
 source $env(OPENSWANSRCDIR)/testing/utils/GetOpts.tcl
 source $env(OPENSWANSRCDIR)/testing/utils/netjig.tcl
 
-set netjig_debug_opt ""
-
 set netjig_prog $env(OPENSWANSRCDIR)/testing/utils/uml_netjig/uml_netjig
 
 set arpreply ""
@@ -16,8 +14,7 @@ set umlid(extra_hosts) ""
 
 set env(NETJIGVERBOSE) 1
 
-spawn $netjig_prog --cmdproto -t $netjig_debug_opt 
-set netjig1 $spawn_id
+set netjig1 [netjigstart]
 
 netjigsetup $netjig1
 
@@ -49,7 +46,7 @@ foreach net $managednets {
 }
 
 
-puts "\nExit the netjig when you are done\n"
+puts "\r\nExit the netjig when you are done\r\n"
 
 set timeout -1
 interact -reset -i $netjig1 

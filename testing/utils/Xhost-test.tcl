@@ -143,19 +143,7 @@ if {! [file executable $netjig_prog]} {
 }
 
 netjigdebug "Starting up the netjig for $netjig_prog"
-
-# we start up netjig_prog with a plain pipe, so that
-# stderr from it will go to our stderr.
-set debugjig ""
-
-if {[info exists env(NETJIGTESTDEBUG)]} {
-    if {$env(NETJIGTESTDEBUG) == "netjig"} {
-	set debugjig "--debug"
-    }
-}
-
-spawn -noecho -open [open "|$netjig_prog --cmdproto $debugjig 2>@stderr" w+]
-set netjig1 $spawn_id
+set netjig1 [netjigstart]
 
 
 netjigsetup $netjig1
