@@ -55,8 +55,8 @@
 #include "alg_info.h"
 #include "kernel_alg.h"
 
-const struct kernel_ops klips_kernel_ops = {
-    type: USE_KLIPS,
+const struct kernel_ops mast_kernel_ops = {
+    type: USE_MASTKLIPS,
     async_fdp: &pfkeyfd,
     replay_window: 64,
     
@@ -78,6 +78,6 @@ const struct kernel_ops klips_kernel_ops = {
     docommand: do_command_linux,
     set_debug: pfkey_set_debug,
     remove_orphaned_holds: pfkey_remove_orphaned_holds,
-    kern_name: "klips"
+    kern_name: "mast"
 };
 #endif /* KLIPS */
