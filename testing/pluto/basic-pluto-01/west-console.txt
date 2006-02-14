@@ -42,16 +42,16 @@ west:~#
 108 "westnet-eastnet" #1: STATE_MAIN_I3: sent MI3, expecting MR3
 004 "westnet-eastnet" #1: STATE_MAIN_I4: ISAKMP SA established {auth=OAKLEY_RSA_SIG cipher=oakley_3des_cbc_192 prf=oakley_md5 group=modp1536}
 117 "westnet-eastnet" #2: STATE_QUICK_I1: initiate
-004 "westnet-eastnet" #2: STATE_QUICK_I2: sent QI2, IPsec SA established
+004 "westnet-eastnet" #2: STATE_QUICK_I2: sent QI2, IPsec SA established tunnel mode
 west:~#
  ipsec look
 west NOW
 192.0.1.0/24       -> 192.0.2.0/24       => tun0xIPIP@192.1.2.23 esp0xESPSPI@192.1.2.23
 ipsec0->eth1 mtu=16260(9999)->1500
-tun0xTUN#@192.1.2.23 IPIP: dir=out src=192.1.2.45 natencap=none natsport=0 natdport=0  
-esp0xKLIPSPIK@192.1.2.23 ESP_3DES_HMAC_MD5: dir=out src=192.1.2.45 iv_bits=64bits iv=0xIVISFORRANDOM000 ooowin=64 alen=128 aklen=128 eklen=192 natencap=none natsport=0 natdport=0  
-esp0xKLIPSPIK@192.1.2.45 ESP_3DES_HMAC_MD5: dir=in  src=192.1.2.23 iv_bits=64bits iv=0xIVISFORRANDOM000 ooowin=64   alen=128 aklen=128 eklen=192  natencap=none natsport=0 natdport=0  
-tun0xTUN#@192.1.2.45 IPIP: dir=in  src=192.1.2.23 policy=192.0.2.0/24->192.0.1.0/24 flags=0x8<>  natencap=none natsport=0 natdport=0  
+tun0xTUN#@192.1.2.23 IPIP: dir=out src=192.1.2.45 natencap=none natsport=0 natdport=0   refhim=0
+esp0xKLIPSPIK@192.1.2.23 ESP_3DES_HMAC_MD5: dir=out src=192.1.2.45 iv_bits=64bits iv=0xIVISFORRANDOM000 ooowin=64 alen=128 aklen=128 eklen=192 natencap=none natsport=0 natdport=0   refhim=0
+esp0xKLIPSPIK@192.1.2.45 ESP_3DES_HMAC_MD5: dir=in  src=192.1.2.23 iv_bits=64bits iv=0xIVISFORRANDOM000 ooowin=64 alen=128 aklen=128 eklen=192 natencap=none natsport=0 natdport=0   refhim=0
+tun0xTUN#@192.1.2.45 IPIP: dir=in  src=192.1.2.23 policy=192.0.2.0/24->192.0.1.0/24 flags=0x8<> natencap=none natsport=0 natdport=0   refhim=0
 ROUTING TABLE
 192.1.2.0/24 dev eth1  proto kernel  scope link  src 192.1.2.45 
 192.1.2.0/24 dev ipsec0  proto kernel  scope link  src 192.1.2.45 

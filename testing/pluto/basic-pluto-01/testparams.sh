@@ -8,8 +8,6 @@ TESTNAME=basic-pluto-01
 EASTHOST=east
 WESTHOST=west
 
-WEST_ARPREPLY=1
-
 EAST_INPUT=../../klips/inputs/01-sunrise-sunset-ping.pcap
 REF_WEST_OUTPUT=../../klips/west-icmp-01/spi1-cleartext.txt
 WEST_ARPREPLY=true
@@ -25,6 +23,7 @@ REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS east-prompt-splitline.pl"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS script-only.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS cutout.sed"
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS wilog.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-debug-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-setup-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS pluto-whack-sanitize.sed"
