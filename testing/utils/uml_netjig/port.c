@@ -196,8 +196,13 @@ void handle_data(struct netjig_state *ns,
 #ifdef NETDISSECT
   /* now dump it to tcpdump dissector if one was configured */
   if(tcpdump_print) {
-    fprintf(stderr, "%8s:", nh->nh_name);
-    ether_if_print((u_char *)&gndo, &ph, (u_char *)packet);
+	  fprintf(stderr, "%8s:", nh->nh_name);
+	  ether_if_print((u_char *)&gndo, &ph, (u_char *)packet);
+  }
+#else
+  if(tcpdump_print) {
+	  fprintf(stderr, "%8s:", nh->nh_name);
+	  hexdump_block((u_char *)packet, len);
   }
 #endif
 

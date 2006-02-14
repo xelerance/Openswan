@@ -119,7 +119,7 @@ static void Usage(void)
 #ifdef NETDISSECT
 	  "\t--tcpdump (-t)           dump packets with tcpdump-dissector\n"
 #else
-	  "\t--tcpdump (-t)           (not available - dissector not built in)\n"
+	  "\t--tcpdump (-t)           hexdump packets (dissector not built in)\n"
 #endif
 #ifdef ARP_PROCESS
 	  "\t--arpreply (-a)          respond to ARP requests\n"
@@ -315,13 +315,7 @@ int main(int argc, char **argv)
 	    break;
 	    
     case 't':
-#ifdef NETDISSECT
 	    tcpdump_print = 1;
-#else
-	    if(ns.verbose) {
-		    fprintf(stderr, "tcpdump dissector not available\n");
-	    }
-#endif
 	    break;
 
     case 'p':
