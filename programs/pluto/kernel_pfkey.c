@@ -384,7 +384,7 @@ klips_pfkey_register_response(const struct sadb_msg *msg)
  * don't cause a whole bunch of redundant negotiations.
  */
 static void
-process_pfkey_acquire(pfkey_buf *buf, struct sadb_ext *extensions[SADB_EXT_MAX + 1])
+process_pfkey_acquire(pfkey_buf *buf, struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 {
     struct sadb_address *srcx = (void *) extensions[SADB_EXT_ADDRESS_SRC];
     struct sadb_address *dstx = (void *) extensions[SADB_EXT_ADDRESS_DST];
@@ -424,7 +424,7 @@ process_pfkey_acquire(pfkey_buf *buf, struct sadb_ext *extensions[SADB_EXT_MAX +
 static void
 pfkey_async(pfkey_buf *buf)
 {
-    struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+    struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 
     if (pfkey_msg_parse(&buf->msg, NULL, extensions, EXT_BITS_OUT))
     {
@@ -510,7 +510,7 @@ static bool
 pfkey_build(int error
 , const char *description
 , const char *text_said
-, struct sadb_ext *extensions[SADB_EXT_MAX + 1])
+, struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 {
     if (error == 0)
     {
@@ -531,7 +531,7 @@ pfkey_msg_start(u_int8_t msg_type
 , u_int8_t satype
 , const char *description
 , const char *text_said
-, struct sadb_ext *extensions[SADB_EXT_MAX + 1])
+, struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 {
     pfkey_extensions_init(extensions);
     return pfkey_build(pfkey_msg_hdr_build(&extensions[0], msg_type
@@ -545,7 +545,7 @@ pfkeyext_address(u_int16_t exttype
 , const ip_address *address
 , const char *description
 , const char *text_said
-, struct sadb_ext *extensions[SADB_EXT_MAX + 1])
+, struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 {
     /* the following variable is only needed to silence
      * a warning caused by the fact that the argument
@@ -561,9 +561,9 @@ pfkeyext_address(u_int16_t exttype
 /* pfkey_build + pfkey_x_protocol_build */
 static bool
 pfkeyext_protocol(int transport_proto
-, const char *description
-, const char *text_said
-, struct sadb_ext *extensions[SADB_EXT_MAX + 1])
+		  , const char *description
+		  , const char *text_said
+		  , struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 {
     return (transport_proto == 0)
         ? TRUE
@@ -579,7 +579,7 @@ pfkeyext_protocol(int transport_proto
  * Returns TRUE iff all appears well.
  */
 static bool
-finish_pfkey_msg(struct sadb_ext *extensions[SADB_EXT_MAX + 1]
+finish_pfkey_msg(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1]
 , const char *description
 , const char *text_said
 , pfkey_buf *response)
@@ -714,7 +714,7 @@ finish_pfkey_msg(struct sadb_ext *extensions[SADB_EXT_MAX + 1]
 void
 pfkey_register_proto(unsigned satype, const char *satypename)
 {
-    struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+    struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
     pfkey_buf pfb;
 
     if (!(pfkey_msg_start(SADB_REGISTER
@@ -792,7 +792,7 @@ pfkey_raw_eroute(const ip_address *this_host
 		 , enum pluto_sadb_operations op
 		 , const char *text_said)
 {
-    struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+    struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
     ip_address
 	sflow_ska,
 	dflow_ska,
@@ -874,7 +874,7 @@ pfkey_raw_eroute(const ip_address *this_host
 static bool
 pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 {
-    struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+    struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
     bool success = FALSE;
 
     success = pfkey_msg_start(replace ? SADB_UPDATE : SADB_ADD, sa->satype
@@ -976,7 +976,7 @@ pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 static bool
 pfkey_grp_sa(const struct kernel_sa *sa0, const struct kernel_sa *sa1)
 {
-    struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+    struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 
     return pfkey_msg_start(SADB_X_GRPSA, sa1->satype
 	, "pfkey_msg_hdr group", sa1->text_said, extensions)
@@ -1009,7 +1009,7 @@ pfkey_grp_sa(const struct kernel_sa *sa0, const struct kernel_sa *sa1)
 static bool
 pfkey_del_sa(const struct kernel_sa *sa)
 {
-    struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+    struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 
     return pfkey_msg_start(SADB_DELETE, proto2satype(sa->proto)
 	, "pfkey_msg_hdr delete SA", sa->text_said, extensions)
