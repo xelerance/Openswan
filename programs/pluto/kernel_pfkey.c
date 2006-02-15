@@ -95,9 +95,9 @@ static sparse_names pfkey_type_names = {
 	NE(K_SADB_X_ADDFLOW),
 	NE(K_SADB_X_DELFLOW),
 	NE(K_SADB_X_DEBUG),
-#ifdef NAT_TRAVERSAL
 	NE(K_SADB_X_NAT_T_NEW_MAPPING),
-#endif
+	NE(K_SADB_X_PLUMBIF),
+	NE(K_SADB_X_UNPLUMBIF),
 	NE(K_SADB_MAX),	
 	{ 0, sparse_end }
 };
@@ -123,6 +123,7 @@ static sparse_names pfkey_ext_names = {
 	NE(K_SADB_EXT_SPIRANGE),
 	NE(K_SADB_X_EXT_KMPRIVATE),
 	NE(K_SADB_X_EXT_SATYPE2),
+	NE(K_SADB_X_EXT_POLICY),
 	NE(K_SADB_X_EXT_SA2),
 	NE(K_SADB_X_EXT_ADDRESS_DST2),
 	NE(K_SADB_X_EXT_ADDRESS_SRC_FLOW),
@@ -130,6 +131,14 @@ static sparse_names pfkey_ext_names = {
 	NE(K_SADB_X_EXT_ADDRESS_SRC_MASK),
 	NE(K_SADB_X_EXT_ADDRESS_DST_MASK),
 	NE(K_SADB_X_EXT_DEBUG),
+	NE(K_SADB_X_EXT_PROTOCOL),
+	NE(K_SADB_X_EXT_NAT_T_TYPE),
+	NE(K_SADB_X_EXT_NAT_T_SPORT),
+	NE(K_SADB_X_EXT_NAT_T_DPORT),
+	NE(K_SADB_X_EXT_NAT_T_OA),
+	NE(K_SADB_X_EXT_PLUMBIF),
+	NE(K_SADB_X_EXT_SAREF),
+	NE(K_SADB_EXT_MAX),
 	{ 0, sparse_end }
 };
 #endif /* NEVER */
@@ -580,9 +589,9 @@ pfkeyext_protocol(int transport_proto
  */
 static bool
 finish_pfkey_msg(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1]
-, const char *description
-, const char *text_said
-, pfkey_buf *response)
+		 , const char *description
+		 , const char *text_said
+		 , pfkey_buf *response)
 {
     struct sadb_msg *pfkey_msg;
     bool success = TRUE;
@@ -671,13 +680,14 @@ finish_pfkey_msg(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1]
 		 */
 		pfkey_buf b;
 		pfkey_buf *bp = response != NULL? response : &b;
+		int seq = ((struct sadb_msg *) extensions[0])->sadb_msg_seq;
 
-		if (!pfkey_get_response(bp, ((struct sadb_msg *) extensions[0])->sadb_msg_seq))
+		if (!pfkey_get_response(bp, seq))
 		{
 		    loglog(RC_LOG_SERIOUS
-			, "ERROR: no response to our PF_KEY %s message for %s %s"
+			, "ERROR: no response to our PF_KEY %s message for %s %s (seq=%u)"
 			, sparse_val_show(pfkey_type_names, pfkey_msg->sadb_msg_type)
-			, description, text_said);
+			   , description, text_said, seq);
 		    success = FALSE;
 		}
 		else if (pfkey_msg->sadb_msg_type != bp->msg.sadb_msg_type)
@@ -1692,5 +1702,35 @@ void pfkey_remove_orphaned_holds(int transport_proto
         }
     }
 }
+
+bool
+pfkey_plumb_mast_device(int mast_dev)
+{
+	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
+	int error;
+
+	pfkey_extensions_init(extensions);
+
+	if((error = pfkey_msg_hdr_build(&extensions[0],
+					K_SADB_X_PLUMBIF,
+					0, 0,
+					++pfkey_seq, pid))) {
+		return FALSE;
+	}
+
+	if((error = pfkey_outif_build(&extensions[SADB_X_EXT_PLUMBIF], mast_dev))) {
+		return FALSE;
+	}
+
+	if(!finish_pfkey_msg(extensions, "configure_mast_device", "", NULL)) {
+		return FALSE;
+	}
+
+	
+	
+	return TRUE;
+}
+
+
 
 #endif /* KLIPS */
