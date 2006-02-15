@@ -168,6 +168,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 	 * see if this is a new thing: search old interfaces list.
 	 */
 	do {
+	    bool newone = TRUE;
 	    struct iface_dev *id = NULL;
 	    struct iface_port *q = interfaces;
 
@@ -177,6 +178,8 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		if (streq(q->ip_dev->id_rname, ifp->name)
 		    && sameaddr(&q->ip_addr, &ifp->addr))
 		{
+		    newone = FALSE;
+
 		    /* matches -- rejuvinate old entry */
 		    q->change = IFN_KEEP;
 #ifdef NAT_TRAVERSAL
@@ -196,25 +199,11 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 	    } 
 
 	    /* search is over if at end of list */
-	    if (q == NULL)
+	    if (newone) 
 	    {
 		/* matches nothing -- create a new entry */
+		char *vname = clone_str("mastXXXXXXXX", "virtual device name");
 		int fd;
-		
-		q = alloc_thing(struct iface_port, "struct iface_port");
-		id = alloc_thing(struct iface_dev, "struct iface_dev");
-		
-		LIST_INSERT_HEAD(&interface_dev, id, id_entry);
-		
-		q->ip_dev = id;
-		id->id_rname = clone_str(ifp->name, "real device name");
-		id->id_vname = clone_str("mastXXXXXXXX", "virtual device name");
-		id->id_count++;
-		
-		q->ip_addr = ifp->addr;
-		q->change = IFN_ADD;
-		q->port = pluto_port;
-		q->ike_float = FALSE;
 		
 		/*
 		 * now, create a mastXXX interface to match, and then configure
@@ -222,11 +211,32 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		 */
 		mastno = allocate_mast_device();
 		passert(mastno != -1);
-		sprintf(q->ip_dev->id_vname, "mast%d", mastno);
+		sprintf(vname, "mast%d", mastno);
 		if(mastdevice[mastno]==MAST_OPEN) {
 		    mastdevice[mastno]=MAST_INUSE;
 		    pfkey_plumb_mast_device(mastno);
 		}
+		
+		fd = create_socket(ifp, vname, pluto_port);
+		
+		if (fd < 0) 
+		    break;
+		
+		q = alloc_thing(struct iface_port, "struct iface_port");
+		id = alloc_thing(struct iface_dev, "struct iface_dev");
+		
+		LIST_INSERT_HEAD(&interface_dev, id, id_entry);
+		
+		q->fd = fd;
+		q->ip_dev = id;
+		id->id_rname = clone_str(ifp->name, "real device name");
+		id->id_vname = vname;
+		id->id_count++;
+		
+		q->ip_addr = ifp->addr;
+		q->change = IFN_ADD;
+		q->port = pluto_port;
+		q->ike_float = FALSE;
 		
 		/* now configure an IP address on the mast number */
 		{
@@ -241,12 +251,6 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 			break;
 		    }
 		}
-		
-		fd = create_socket(ifp, q->ip_dev->id_vname, pluto_port);
-		q->fd = fd;
-		
-		if (fd < 0) 
-		    break;
 		
 #ifdef NAT_TRAVERSAL
 		if (nat_traversal_support_non_ike && addrtypeof(&ifp->addr) == AF_INET)
