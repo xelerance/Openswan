@@ -6,8 +6,8 @@ TESTHOST=west
 EXITONEMPTY=--exitonempty
 ARPREPLY=--arpreply 
 
-PUBINPUT=../inputs/01-sunrise-sunset-esp-short.pcap
-REFPRIVOUTPUT=spi1-cleartext.txt
+PUB_INPUT=../inputs/01-sunrise-sunset-esp-short.pcap
+REF_PRIV_OUTPUT=spi1-cleartext.txt
 REF_CONSOLE_OUTPUT=spi1-console.txt
 REF26_CONSOLE_OUTPUT=spi1-console.txt
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
