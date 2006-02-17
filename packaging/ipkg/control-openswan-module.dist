@@ -4,5 +4,5 @@ Section: Communications
 Version: VERSION
 Architecture: ARCH
 Maintainer: Openswan <users@lists.openswan.org>
-Depends: freeswan
-Description: Openswan ipsec.o binary IPsec Kernel module
+Depends: openswan
+Description: Openswan ipsec.[k]o binary IPsec Kernel module

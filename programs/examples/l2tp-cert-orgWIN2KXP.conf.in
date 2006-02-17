@@ -8,12 +8,14 @@ conn l2tp-cert-orgWIN2KXP
 	authby=rsasig
 	pfs=no
 	auto=add
-        # we cannot rekey for %any, let client rekey
-        rekey=no
-        # Do not enable the line below. It is implicitely used, and
-        # specifying it will currently break when using nat-t.
-        # type=transport. See http://bugs.xelerance.com/view.php?id=466
-        #
+	# we cannot rekey for %any, let client rekey
+	rekey=no
+	# Set ikelifetime and keylife to same defaults windows has
+	ikelifetime=8h
+	keylife=1h
+	# l2tp-over-ipsec is transport mode
+	type=transport
+	#
 	left=%defaultroute
 	# or you can use: left=YourIPAddress
 	leftrsasigkey=%cert
@@ -25,8 +27,8 @@ conn l2tp-cert-orgWIN2KXP
 	# The remote user.
 	#
 	right=%any
-        rightca=%same
+	rightca=%same
 	rightrsasigkey=%cert
 	rightprotoport=17/1701
-        rightsubnet=vhost:%priv,%no
+	rightsubnet=vhost:%priv,%no
 

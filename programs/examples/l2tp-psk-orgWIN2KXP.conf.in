@@ -7,15 +7,17 @@ conn l2tp-psk-orgWIN2KXP
 	#
 	authby=secret
 	pfs=no
-        auto=add
-        # we cannot rekey for %any, let client rekey
-        rekey=no
-        # Do not enable the line below. It is implicitely used, and
-        # specifying it will currently break when using nat-t.
-        # type=transport. See http://bugs.xelerance.com/view.php?id=466
-        #
-        left=%defaultroute
-        # or you can use: left=YourIPAddress
+	auto=add
+	# we cannot rekey for %any, let client rekey
+	rekey=no
+	# Set ikelifetime and keylife to same defaults windows has
+	ikelifetime=8h
+	keylife=1h
+	# l2tp-over-ipsec is transport mode
+	type=transport
+	#
+	left=%defaultroute
+	# or you can use: left=YourIPAddress
 	#
 	# Required for original (non-updated) Windows 2000/XP clients.
 	# to support new clients as well, use leftprotoport=17/%any
@@ -25,4 +27,4 @@ conn l2tp-psk-orgWIN2KXP
 	#
 	right=%any
 	rightprotoport=17/1701
-        rightsubnet=vhost:%priv,%no
+	rightsubnet=vhost:%priv,%no
