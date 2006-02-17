@@ -38,7 +38,9 @@ proc netjigstart {} {
     }
     
     if {[info exists env(NETJIGDUMP)]} {
-	set tcpdumpjig "--tcpdump"
+	if { [string length "$env(NETJIGDUMP)"] > 0 } {
+	    set tcpdumpjig "--tcpdump"
+	}
     }
     
     spawn -noecho -open [open "|$netjig_prog --cmdproto $debugjig $tcpdumpjig 2>@stderr" w+]
