@@ -170,6 +170,10 @@ extern const struct kernel_ops *kernel_ops;
 extern struct raw_iface *find_raw_ifaces4(void);
 extern struct raw_iface *find_raw_ifaces6(void);
 
+/* helper for invoking call outs */
+extern int fmt_common_shell_out(char *buf, int blen, struct connection *c
+				, struct spd_route *sr, struct state *st);
+
 /* KLIPS/mast/pfkey things */
 extern bool pfkey_plumb_mast_device(int mast_dev);
 

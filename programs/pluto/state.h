@@ -77,6 +77,9 @@ struct oakley_trans_attrs {
  * This is a flattened/decoded version of what is represented
  * by a Transaction Payload.  There may be one for AH, one
  * for ESP, and a funny one for IPCOMP.
+ *
+ * Yes, this is screwy -- we keep different direction information
+ * in different places. Fix it up sometime.
  */
 struct ipsec_trans_attrs {
     u_int8_t transid;	/* transform id */
@@ -96,7 +99,7 @@ struct ipsec_trans_attrs {
 /* IPsec per protocol state information */
 struct ipsec_proto_info {
     bool present;	/* was this transform specified? */
-    struct ipsec_trans_attrs attrs;
+    struct ipsec_trans_attrs attrs;   /* info on remote */
     ipsec_spi_t our_spi;
     u_int16_t keymat_len;	/* same for both */
     u_char *our_keymat;
@@ -158,6 +161,9 @@ struct state
 
     ipsec_spi_t        st_tunnel_in_spi;          /* KLUDGE */
     ipsec_spi_t        st_tunnel_out_spi;         /* KLUDGE */
+
+    IPsecSAref_t       ref;	   /* our kernel name for our incoming SA */
+    IPsecSAref_t       refhim;     /* our kernel name for our outgoing SA */
 
     const struct oakley_group_desc *st_pfs_group; /*group for Phase 2 PFS */
 
