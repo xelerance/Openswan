@@ -116,7 +116,7 @@ east Sun Apr 17 05:38:57 GMT 2005
 192.0.2.0/24       -> 192.0.1.0/24       => tun0xa9123456@192.1.2.45  (0)
 ipsec0->eth1 mtu=16260(1500)->1500
 tun0xa9123456@192.1.2.45 IPIP: dir=out src=192.1.2.23 life(c,s,h)=addtime(0,0,0) natencap=none natsport=0 natdport=0 refcount=3 ref=3
-Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+ROUTING TABLE
 east:~# route add -host 192.0.1.1 gw 192.1.2.45 dev ipsec0
 east:~# ipsec setup stop
 IPSEC EVENT: KLIPS device ipsec0 shut down.

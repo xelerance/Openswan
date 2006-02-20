@@ -107,7 +107,7 @@ east:~# ipsec look
 east Sun Apr 17 05:42:20 GMT 2005
 192.0.2.0/24       -> 192.0.1.0/24       => %drop (0)
 ipsec0->eth1 mtu=16260(1500)->1500
-Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+ROUTING TABLE
 east:~# route add -host 192.0.1.1 gw 192.1.2.45 dev ipsec0
 east:~# ipsec setup stop
 IPSEC EVENT: KLIPS device ipsec0 shut down.

@@ -9,7 +9,7 @@ TESTHOST=west
 EXITONEMPTY=--exitonempty
 
 PUB_INPUT=../inputs/08-sunrise-sunset-esp-noauth.pcap
-THREEEIGHT=true
+#THREEEIGHT=true
 
 REF_PRIV_OUTPUT=spi1-output.txt
 REF_CONSOLE_OUTPUT=spi1-console.txt

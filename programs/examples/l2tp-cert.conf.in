@@ -10,18 +10,20 @@ conn l2tp-X.509
 	authby=rsasig
 	pfs=no
 	auto=add
-        # we cannot rekey for %any, let client rekey
+	# we cannot rekey for %any, let client rekey
 	rekey=no
-        # Do not enable the line below. It is implicitely used, and
-        # specifying it will currently break when using nat-t.
-        # type=transport. See http://bugs.xelerance.com/view.php?id=466
+	# Set ikelifetime and keylife to same defaults windows has
+	ikelifetime=8h
+	keylife=1h
+	# l2tp-over-ipsec is transport mode
+	type=transport
 	#
 	left=%defaultroute
-        # or you can use: left=YourIPAddress
+	# or you can use: left=YourIPAddress
 	leftrsasigkey=%cert
 	leftcert=/etc/ipsec.d/certs/YourGatewayCertHere.pem
 	# For updated Windows 2000/XP clients,
-        # to support old clients as well, use leftprotoport=17/%any
+	# to support old clients as well, use leftprotoport=17/%any
 	leftprotoport=17/1701
 	#
 	# The remote user.

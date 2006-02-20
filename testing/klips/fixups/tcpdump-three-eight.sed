@@ -6,4 +6,6 @@ s/\.isakmp/.500/g
 s/^IP //
 s/: IP /: /
 s/icmp:/ICMP/g
+s/icmp \d:/ICMP/g
+s/, length \d//g
 s/echo reply seq .*/echo reply (DF)/
