@@ -71,7 +71,7 @@ void
 pfkey_register(uint8_t satype) {
 	/* for registering SA types that can be negotiated */
 	int error = 0;
-	struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	struct sadb_msg *pfkey_msg;
 
 	pfkey_extensions_init(extensions);
