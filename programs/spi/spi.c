@@ -1718,7 +1718,7 @@ main(int argc, char *argv[])
 		free(iv);
 	}
 
-	if(listenreply || saref_me) {
+	if(listenreply || saref_me || dumpsaref)  {
 		ssize_t readlen;
 		unsigned char pfkey_buf[PFKEYv2_MAX_MSGSIZE];
 		
@@ -1776,7 +1776,7 @@ main(int argc, char *argv[])
 				}
 			}
 			if((pid_t)pfkey_msg->sadb_msg_pid == mypid) {
-			    if(saref_me) {
+			    if(saref_me || dumpsaref) {
 				struct sadb_x_saref *s = (struct sadb_x_saref *)extensions[K_SADB_X_EXT_SAREF];
 				if(s) {
 				    printf("%s: saref=%d/%d\n",progname,
