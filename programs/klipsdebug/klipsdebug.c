@@ -117,7 +117,7 @@ main(int argc, char **argv)
 	int em_db_rj, em_db_es, em_db_ah, em_db_rx, em_db_ky;
 	int em_db_gz, em_db_vb;
 
-	struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	struct sadb_msg *pfkey_msg;
 	
 	em_db_tn=em_db_nl=em_db_xf=em_db_er=em_db_sp=0;
