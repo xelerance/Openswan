@@ -95,11 +95,12 @@ find_next_free_mast(void)
     }
 }
 
-static void
+static int
 recalculate_mast_device_list(struct raw_iface *rifaces)
 {
     struct raw_iface *ifp;
     int mastno;
+    int firstmastno=-1;
 
     /* mark them all as available */
     next_free_mast_device=-1;
@@ -119,11 +120,15 @@ recalculate_mast_device_list(struct raw_iface *rifaces)
 		openswan_log("device %s already in use", ifp->name);
 		/* mark it as existing, and in use */
 		mastdevice[mastno]=MAST_INUSE;
+		if(firstmastno == -1) {
+		    firstmastno = mastno;
+		}
 	    }
 	}
     }
 
     find_next_free_mast();
+    return firstmastno;
 }
 
 static int
@@ -142,15 +147,54 @@ allocate_mast_device(void)
     return -1;
 }
 
+static int
+init_useful_mast(ip_address addr, char *vname)
+{
+    int mastno;
+
+    /*
+     * now, create a mastXXX interface to match, and then configure
+     * it with an IP address that leads out.
+     */
+    mastno = allocate_mast_device();
+    passert(mastno != -1);
+    sprintf(vname, "mast%d", mastno);
+    if(mastdevice[mastno]==MAST_OPEN) {
+	mastdevice[mastno]=MAST_INUSE;
+	pfkey_plumb_mast_device(mastno);
+    }
+    
+    /* now configure an IP address on the mast number */
+    {
+	char cmd[512];
+	
+	snprintf(cmd, sizeof(cmd)
+		 , "ifconfig %s inet %s netmask 255.255.255.255 mtu 1400"
+		 , vname
+		 , ip_str(&addr));
+	
+	invoke_command("plumb","", cmd);
+    }
+    return mastno;
+}
+
 
 static void
 mast_process_raw_ifaces(struct raw_iface *rifaces)
 {
     struct raw_iface *ifp;
-    int mastno;
+    struct iface_port *firstq=NULL;
+    char useful_mast_name[256];
+    bool found_mast=FALSE;
+    int  useful_mastno;
 
-    recalculate_mast_device_list(rifaces);
-
+    strcpy(useful_mast_name, "useless");
+    useful_mastno=recalculate_mast_device_list(rifaces);
+    DBG_log("useful mast device %d\n", useful_mastno);
+    if(useful_mastno >= 0) {
+	sprintf(useful_mast_name, "mast%d", useful_mastno);
+    }
+	
     /* 
      * For each real interface...
      */
@@ -160,9 +204,11 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 	if (strncmp(ifp->name, IPSECDEVPREFIX, sizeof(IPSECDEVPREFIX)-1) == 0)
 	    continue;
 
-	/* ignore if virtual (mast*) interface */
-	if (strncmp(ifp->name, MASTDEVPREFIX, sizeof(MASTDEVPREFIX)-1) == 0)
-	    continue;
+	/* ignore if virtual (mast*) interface */ 
+	if (strncmp(ifp->name, MASTDEVPREFIX, sizeof(MASTDEVPREFIX)-1) == 0) {
+		found_mast=TRUE;
+		continue;
+	}
 
 	/* ignore if loopback interface */
 	if (strncmp(ifp->name, "lo", 2) == 0)
@@ -192,6 +238,12 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 			if (streq(q->ip_dev->id_rname, ifp->name)
 			    && sameaddr(&q->ip_addr, &ifp->addr)) {
 			    q->change = IFN_KEEP;
+			    if(firstq == NULL) {
+				firstq=q;
+				if(useful_mastno == -1) {
+				    useful_mastno=init_useful_mast(firstq->ip_addr, useful_mast_name);
+				}
+			    }
 			}
 		    }
 #endif
@@ -206,21 +258,15 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 	    if (newone) 
 	    {
 		/* matches nothing -- create a new entry */
-		char *vname = clone_str("mastXXXXXXXX", "virtual device name");
+		char *vname;
 		int fd;
 		
-		/*
-		 * now, create a mastXXX interface to match, and then configure
-		 * it with the same IP.
-		 */
-		mastno = allocate_mast_device();
-		passert(mastno != -1);
-		sprintf(vname, "mast%d", mastno);
-		if(mastdevice[mastno]==MAST_OPEN) {
-		    mastdevice[mastno]=MAST_INUSE;
-		    pfkey_plumb_mast_device(mastno);
+		if(useful_mastno == -1) {
+		    useful_mastno=init_useful_mast(ifp->addr, useful_mast_name);
 		}
-		
+
+		vname = clone_str(useful_mast_name
+				  , "virtual device name");
 		fd = create_socket(ifp, vname, pluto_port);
 		
 		if (fd < 0) 
@@ -228,6 +274,9 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		
 		q = alloc_thing(struct iface_port, "struct iface_port");
 		id = alloc_thing(struct iface_dev, "struct iface_dev");
+		memset(q, 0, sizeof(*q));
+		memset(id,0, sizeof(*id));
+		if(firstq == NULL) firstq=q;
 		
 		LIST_INSERT_HEAD(&interface_dev, id, id_entry);
 		
@@ -241,20 +290,6 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		q->change = IFN_ADD;
 		q->port = pluto_port;
 		q->ike_float = FALSE;
-		
-		/* now configure an IP address on the mast number */
-		{
-		    char cmd[512];
-		    
-		    snprintf(cmd, sizeof(cmd)
-			     , "ifconfig %s inet %s netmask 255.255.255.255"
-			     , q->ip_dev->id_vname
-			     , ip_str(&q->ip_addr));
-		    
-		    if(!invoke_command("plumb","", cmd)) {
-			break;
-		    }
-		}
 		
 #ifdef NAT_TRAVERSAL
 		if (nat_traversal_support_non_ike && addrtypeof(&ifp->addr) == AF_INET)
@@ -323,6 +358,11 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 	rifaces = t->next;
 	pfree(t);
     }
+
+    /* make one up for later */
+    if((!found_mast && firstq!=NULL) && useful_mastno==-1) {
+	init_useful_mast(firstq->ip_addr, useful_mast_name);
+    }
 }
 
 static bool
@@ -359,7 +399,8 @@ mast_do_command(struct connection *c, struct spd_route *sr
 	loglog(RC_LOG_SERIOUS, "%s%s command too long!", verb, verb_suffix);
 	return FALSE;
     }
-	
+
+    openswan_log("Using saref=%u/%u\n", st->ref, st->refhim);
     if (-1 == snprintf(cmd, sizeof(cmd)
 		       , "2>&1 "   /* capture stderr along with stdout */
 		       "PLUTO_MY_REF=%u "
@@ -380,6 +421,68 @@ mast_do_command(struct connection *c, struct spd_route *sr
     return invoke_command(verb, verb_suffix, cmd);
 }
 
+static bool
+mast_raw_eroute(const ip_address *this_host UNUSED
+		, const ip_subnet *this_client UNUSED
+		, const ip_address *that_host UNUSED
+		, const ip_subnet *that_client UNUSED
+		, ipsec_spi_t spi UNUSED
+		, unsigned int proto UNUSED
+		, unsigned int transport_proto UNUSED
+		, unsigned int satype UNUSED
+		, const struct pfkey_proto_info *proto_info UNUSED
+		, time_t use_lifetime UNUSED
+		, enum pluto_sadb_operations op UNUSED
+		, const char *text_said UNUSED)
+{
+	
+	/* actually, we did all the work with iptables in _updown */
+	return TRUE;
+}
+
+/* Add/replace/delete a shunt eroute.
+ * Such an eroute determines the fate of packets without the use
+ * of any SAs.  These are defaults, in effect.
+ * If a negotiation has not been attempted, use %trap.
+ * If negotiation has failed, the choice between %trap/%pass/%drop/%reject
+ * is specified in the policy of connection c.
+ */
+static bool
+mast_shunt_eroute(struct connection *c UNUSED
+		   , struct spd_route *sr UNUSED
+		   , enum routing_t rt_kind UNUSED
+		   , enum pluto_sadb_operations op UNUSED
+		  , const char *opname UNUSED)
+{
+    DBG_log("mast_shunt_eroute called");
+    return TRUE;
+}
+
+/* install or remove eroute for SA Group */
+static bool
+mast_sag_eroute(struct state *st, struct spd_route *sr
+		, enum pluto_sadb_operations op, const char *opname UNUSED)
+{
+    switch(op)
+    {
+    case ERO_ADD:
+	return mast_do_command(st->st_connection, sr, "spdadd", st);
+	
+    case ERO_DELETE:
+	return mast_do_command(st->st_connection, sr, "spddel", st);
+
+    case ERO_REPLACE:
+	(void)mast_do_command(st->st_connection, sr, "spddel", st);
+	return mast_do_command(st->st_connection, sr, "spdadd", st);
+	
+    case ERO_ADD_INBOUND:
+    case ERO_REPLACE_INBOUND:
+    case ERO_DEL_INBOUND:
+	return TRUE;
+    }
+    return FALSE;
+}
+
 const struct kernel_ops mast_kernel_ops = {
     type: USE_MASTKLIPS,
     async_fdp: &pfkeyfd,
@@ -389,9 +492,9 @@ const struct kernel_ops mast_kernel_ops = {
     pfkey_register_response: klips_pfkey_register_response,
     process_queue: pfkey_dequeue,
     process_msg: pfkey_event,
-    raw_eroute: pfkey_raw_eroute,
-    shunt_eroute: pfkey_shunt_eroute,
-    sag_eroute: pfkey_sag_eroute,
+    raw_eroute: mast_raw_eroute,
+    shunt_eroute: mast_shunt_eroute,
+    sag_eroute: mast_sag_eroute,
     add_sa: pfkey_add_sa,
     grp_sa: pfkey_grp_sa,
     del_sa: pfkey_del_sa,

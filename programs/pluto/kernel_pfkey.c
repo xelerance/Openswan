@@ -880,9 +880,10 @@ pfkey_raw_eroute(const ip_address *this_host
     return finish_pfkey_msg(extensions, "flow", text_said, NULL);
 }
 
-bool pfkey_add_sa(const struct kernel_sa *sa, bool replace)
+bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 {
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
+    pfkey_buf pfb;
     bool success = FALSE;
 
     success = pfkey_msg_start(replace ? SADB_UPDATE : SADB_ADD, sa->satype
@@ -917,6 +918,15 @@ bool pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 			      , "pfkey_key_a Add SA"
 			      , sa->text_said, extensions);
 	if(!success) return FALSE;
+    }
+
+    if(sa->ref != IPSEC_SAREF_NULL || sa->refhim != IPSEC_SAREF_NULL) {
+	    success = pfkey_build(pfkey_saref_build(&extensions[K_SADB_X_EXT_SAREF]
+						    , sa->ref
+						    , sa->refhim)
+				  , "pfkey_key_sare Add SA"
+				  , sa->text_said, extensions);
+	    if(!success) return FALSE;
     }
 	
     if(sa->enckeylen != 0) {
@@ -977,7 +987,22 @@ bool pfkey_add_sa(const struct kernel_sa *sa, bool replace)
     }
 #endif
 
-    return finish_pfkey_msg(extensions, "Add SA", sa->text_said, NULL);
+    success = finish_pfkey_msg(extensions, "Add SA", sa->text_said, &pfb);
+    
+    if(success) {
+	    /* extract the saref extension */
+	    struct sadb_ext *replies[K_SADB_EXT_MAX + 1];
+	    int error;
+
+	    error = pfkey_msg_parse(&pfb.msg, NULL, replies, EXT_BITS_IN);
+	    if(replies[K_SADB_X_EXT_SAREF]) {
+		    struct sadb_x_saref *sar = (struct sadb_x_saref *)replies[K_SADB_X_EXT_SAREF];
+		    
+		    sa->ref = sar->sadb_x_saref_me;
+		    sa->refhim = sar->sadb_x_saref_him;
+	    }
+    }
+    return success;
 }
 
 
