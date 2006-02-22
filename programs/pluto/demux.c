@@ -2757,6 +2757,20 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 
 		    /* advance b to end of string */
 		    b = b + strlen(b);
+		    
+		    if(st->ref || st->refhim)
+		    {
+			snprintf(b, sizeof(sadetails)-(b-sadetails)-1
+				 , "%sref=%lu refhim=%lu"
+				 , ini
+				 , (unsigned long)st->ref
+				 , (unsigned long)st->refhim);
+			ini = " ";
+			fin = "}";
+		    }
+
+		    /* advance b to end of string */
+		    b = b + strlen(b);
 #ifdef NAT_TRAVERSAL		    
 		    {
 			char oa[ADDRTOT_BUF];
