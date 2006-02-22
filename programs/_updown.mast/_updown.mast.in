@@ -176,6 +176,7 @@ checkipsec() {
 	# note "fwmarkmask" is an Openswan patch to "ip" command.
 	ip rule add fwmark 0x80000000 fwmarkmask 0x80000000 table 50
 	ip route add 0.0.0.0/0 dev $PLUTO_INTERFACE table 50
+
     fi
 
     # now look for -j IPSEC in OUTPUT chains.
@@ -183,7 +184,11 @@ checkipsec() {
     then
 	: found it
     else
-	iptables -A OUTPUT -t mangle -j IPSEC
+	iptables -t mangle -I OUTPUT 1 -j IPSEC
+	iptables -t mangle -I OUTPUT 1 -p udp --sport 500 -j ACCEPT
+	iptables -t mangle -I OUTPUT 1 -p udp --dport 500 -j ACCEPT
+	iptables -t mangle -I OUTPUT 1 -p udp --sport 4500 -j ACCEPT
+	iptables -t mangle -I OUTPUT 1 -p udp --dport 4500 -j ACCEPT
     fi
 
     # now look for -j IPSEC in PREROUTING chains.
