@@ -27,11 +27,7 @@ foreach net $managednets {
 }
 
 foreach net $managednets {
-    if { $umlid(net$net,arp) } {
-	newswitch $netjig1 "--arpreply $net"
-    } {
-	newswitch $netjig1 "$net"
-    }
+    newswitch $netjig1 "$net"
 }
 
 foreach host $argv {
@@ -40,7 +36,7 @@ foreach host $argv {
 
 foreach net $managednets {
     if {[info exists umlid(net$net,play)] } {
-	puts "Will play pcap file $umlid(net$net,play) to network '$net'"
+	puts "Will play pcap file $umlid(net$net,play) to network '$net'\r\n"
 	setupplay $netjig1 $net $umlid(net$net,play) "--rate=ontick"
     }
 }

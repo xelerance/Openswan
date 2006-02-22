@@ -21,6 +21,16 @@ then
     export PUBLIC_PLAY=${PUB_INPUT}
 fi
 
+if [ -n "${PRIV_INPUT-}" ]
+then
+    export PRIV_PLAY=${PRIV_INPUT}
+fi
+
+if [ -n "${EAST_INPUT-}" ]
+then
+    export EAST_PLAY=${EAST_INPUT}
+fi
+
 
 
 case $* in
