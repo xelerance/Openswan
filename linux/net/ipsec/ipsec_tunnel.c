@@ -488,60 +488,7 @@ ipsec_tunnel_restore_hard_header(struct ipsec_xmit_state*ixs)
 			}
 		}
 	}
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
-	if (ixs->natt_type && ixs->natt_head) {
-		struct iphdr *ipp = ixs->skb->nh.iph;
-		struct udphdr *udp;
-		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_tunnel_start_xmit: "
-			    "encapsuling packet into UDP (NAT-Traversal) (%d %d)\n",
-			    ixs->natt_type, ixs->natt_head);
 
-		ixs->iphlen = ipp->ihl << 2;
-		ipp->tot_len =
-			htons(ntohs(ipp->tot_len) + ixs->natt_head);
-		if(skb_tailroom(ixs->skb) < ixs->natt_head) {
-			printk(KERN_WARNING "klips_error:ipsec_tunnel_start_xmit: "
-				"tried to skb_put %d, %d available. "
-				"This should never happen, please report.\n",
-				ixs->natt_head,
-				skb_tailroom(ixs->skb));
-			ixs->stats->tx_errors++;
-			return IPSEC_XMIT_ESPUDP;
-		}
-		skb_put(ixs->skb, ixs->natt_head);
-
-		udp = (struct udphdr *)((char *)ipp + ixs->iphlen);
-
-		/* move ESP hdr after UDP hdr */
-		memmove((void *)((char *)udp + ixs->natt_head),
-			(void *)(udp),
-			ntohs(ipp->tot_len) - ixs->iphlen - ixs->natt_head);
-
-#if 0
-		/* set IP destination address (matters in transport mode) */
-		{
-		  struct sockaddr_in *d = (struct sockaddr_in *)ixs->ipsp->ips_addr_d;
-		  ipp->daddr = d->sin_addr.s_addr;
-		}
-#endif
-
-		/* clear UDP & Non-IKE Markers (if any) */
-		memset(udp, 0, ixs->natt_head);
-
-		/* fill UDP with usefull informations ;-) */
-		udp->source = htons(ixs->natt_sport);
-		udp->dest = htons(ixs->natt_dport);
-		udp->len = htons(ntohs(ipp->tot_len) - ixs->iphlen);
-
-		/* set protocol */
-		ipp->protocol = IPPROTO_UDP;
-
-		/* fix IP checksum */
-		ipp->check = 0;
-		ipp->check = ip_fast_csum((unsigned char *)ipp, ipp->ihl);
-	}
-#endif	
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
 		    "klips_debug:ipsec_xmit_restore_hard_header: "
 		    "With hard_header, final head,tailroom: %d,%d\n",
@@ -669,6 +616,11 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		ixs->outgoing_said.dst.u.v4.sin_addr.s_addr &&
 		ixs->eroute);
 	
+	stat = ipsec_nat_encap(ixs);
+	if(stat != IPSEC_XMIT_OK) {
+		goto cleanup;
+	}
+
 	stat = ipsec_tunnel_restore_hard_header(ixs);
 	if(stat != IPSEC_XMIT_OK) {
 		goto cleanup;

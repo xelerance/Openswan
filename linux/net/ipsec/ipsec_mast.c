@@ -166,12 +166,12 @@ int ip_cmsg_send_ipsec(struct cmsghdr *cmsg, struct ipcm_cookie *ipc)
 	}
 
 	sp->ref = *ref;
-	KLIPS_PRINT(debug_rcv, "sending with saref=%u\n", sp->ref);
+	KLIPS_PRINT(debug_mast, "sending with saref=%u\n", sp->ref);
 		
 	sa1 = ipsec_sa_getbyref(sp->ref);
 	if(sa1 && sa1->ips_out) {
 		ipc->oif = sa1->ips_out->ifindex;
-		KLIPS_PRINT(debug_rcv, "setting oif: %d\n", ipc->oif);
+		KLIPS_PRINT(debug_mast, "setting oif: %d\n", ipc->oif);
 	}
 	ipsec_sa_put(sa1);
 	
@@ -201,13 +201,15 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	ixs->skb = skb;
 	SAref = 0;
-	if(skb->sp) {
-		SAref = skb->sp->ref;
-	}
-
 	if(skb->nfmark & 0x80000000) {
 		SAref = NFmark2IPsecSAref(skb->nfmark);
 		KLIPS_PRINT(debug_mast, "getting SAref=%d from nfmark\n",
+			    SAref);
+	}
+
+	if(skb->sp && skb->sp->ref != IPSEC_SAREF_NULL) {
+		SAref = skb->sp->ref;
+		KLIPS_PRINT(debug_mast, "getting SAref=%d from sec_path\n",
 			    SAref);
 	}
 
@@ -236,6 +238,12 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	if(stat != IPSEC_XMIT_OK) {
 		/* SA processing failed */
 		/* log it somehow */
+		goto failed;
+	}
+
+	/* do any final NAT-encapsulation */
+	stat = ipsec_nat_encap(ixs);
+	if(stat != IPSEC_XMIT_OK) {
 		goto failed;
 	}
 
@@ -706,12 +714,14 @@ ipsec_mast_deletenum(int vifnum)
 struct net_device *
 ipsec_mast_get_device(int vifnum)
 {
+	int ovifnum = vifnum;
+
 	if(vifnum > IPSECDEV_OFFSET) {
 		return ipsec_tunnel_get_device(vifnum-IPSECDEV_OFFSET);
 	} else {
 		struct net_device *nd;
 		
-		if(vifnum > MASTTRANSPORT_OFFSET) {
+		if(vifnum >= MASTTRANSPORT_OFFSET) {
 			vifnum -= MASTTRANSPORT_OFFSET;
 		}
 
@@ -721,6 +731,8 @@ ipsec_mast_get_device(int vifnum)
 			if(nd) dev_hold(nd);
 			return nd;
 		} else {
+			KLIPS_ERROR(debug_tunnel,
+				    "no such vif %d (ovif=%d)\n", vifnum, ovifnum);
 			return NULL;
 		}
 	}

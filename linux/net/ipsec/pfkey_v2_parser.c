@@ -860,10 +860,12 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 			    pfkey_socketsp->socketp);
 	}
 
-	if(extr->outif != 0) {
+	if(extr->outif != 0 || extr->outif != -1) {
 		extr->ips->ips_out = ipsec_mast_get_device(extr->outif);
-		extr->ips->ips_transport_direct = ipsec_mast_is_transport(extr->outif);  
+		extr->ips->ips_transport_direct = ipsec_mast_is_transport(extr->outif); 
 	}
+	KLIPS_ERROR(debug_pfkey, "outif set to %d -> %s\n", extr->outif,
+		    (extr->ips->ips_out ? extr->ips->ips_out->name : "{no such if}"));
 
 	if((error = ipsec_sa_add(extr->ips))) {
 		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_add_parse: "

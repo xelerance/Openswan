@@ -401,6 +401,12 @@ ipsec_spi_get_info(char *buffer,
 				       sa_p->ips_ref);
 			len += ipsec_snprintf(buffer+len, length-len, " refhim=%d",
 				       sa_p->ips_refhim);
+
+			if(sa_p->ips_out) {
+				len += ipsec_snprintf(buffer+len, length-len, " outif=%s:%d",
+						      sa_p->ips_out->name,
+						      sa_p->ips_transport_direct);
+			}
 #ifdef CONFIG_KLIPS_DEBUG
 			if(debug_xform) {
 			len += ipsec_snprintf(buffer+len, length-len, " reftable=%lu refentry=%lu",

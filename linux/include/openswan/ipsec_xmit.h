@@ -128,6 +128,9 @@ extern enum ipsec_xmit_value
 ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl);
 
 extern enum ipsec_xmit_value
+ipsec_nat_encap(struct ipsec_xmit_state*ixs);
+
+extern enum ipsec_xmit_value
 ipsec_tunnel_send(struct ipsec_xmit_state *ixs);
 
 

@@ -1688,6 +1688,64 @@ static inline int ipsec_xmit_send2(struct sk_buff *skb)
 }
 #endif /* NETDEV_23 */
 
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+enum ipsec_xmit_value ipsec_nat_encap(struct ipsec_xmit_state *ixs)
+{
+	if (ixs->natt_type && ixs->natt_head) {
+		struct iphdr *ipp = ixs->skb->nh.iph;
+		struct udphdr *udp;
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+			    "klips_debug:ipsec_tunnel_start_xmit: "
+			    "encapsuling packet into UDP (NAT-Traversal) (%d %d)\n",
+			    ixs->natt_type, ixs->natt_head);
+
+		ixs->iphlen = ipp->ihl << 2;
+		ipp->tot_len =
+			htons(ntohs(ipp->tot_len) + ixs->natt_head);
+		if(skb_tailroom(ixs->skb) < ixs->natt_head) {
+			printk(KERN_WARNING "klips_error:ipsec_tunnel_start_xmit: "
+				"tried to skb_put %d, %d available. "
+				"This should never happen, please report.\n",
+				ixs->natt_head,
+				skb_tailroom(ixs->skb));
+			ixs->stats->tx_errors++;
+			return IPSEC_XMIT_ESPUDP;
+		}
+		skb_put(ixs->skb, ixs->natt_head);
+
+		udp = (struct udphdr *)((char *)ipp + ixs->iphlen);
+
+		/* move ESP hdr after UDP hdr */
+		memmove((void *)((char *)udp + ixs->natt_head),
+			(void *)(udp),
+			ntohs(ipp->tot_len) - ixs->iphlen - ixs->natt_head);
+
+#if 0
+		/* set IP destination address (matters in transport mode) */
+		{
+		  struct sockaddr_in *d = (struct sockaddr_in *)ixs->ipsp->ips_addr_d;
+		  ipp->daddr = d->sin_addr.s_addr;
+		}
+#endif
+
+		/* clear UDP & Non-IKE Markers (if any) */
+		memset(udp, 0, ixs->natt_head);
+
+		/* fill UDP with usefull informations ;-) */
+		udp->source = htons(ixs->natt_sport);
+		udp->dest = htons(ixs->natt_dport);
+		udp->len = htons(ntohs(ipp->tot_len) - ixs->iphlen);
+
+		/* set protocol */
+		ipp->protocol = IPPROTO_UDP;
+
+		/* fix IP checksum */
+		ipp->check = 0;
+		ipp->check = ip_fast_csum((unsigned char *)ipp, ipp->ihl);
+	}
+	return IPSEC_XMIT_OK;
+}
+#endif
 
 /* avoid forward reference complain on <2.5 */
 struct flowi;
