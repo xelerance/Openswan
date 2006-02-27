@@ -123,7 +123,7 @@ int ipsec_xmit_trap_count = 0;
 int ipsec_xmit_trap_sendcount = 0;
 
 #ifdef CONFIG_KLIPS_DEBUG
-#define dmp(_x,_y,_z) if(debug_tunnel) ipsec_dmp_block(_x,_y,_z)
+#define dmp(_x,_y,_z) if(debug_xmit && sysctl_ipsec_debug_verbose) ipsec_dmp_block(_x,_y,_z)
 #else /* CONFIG_KLIPS_DEBUG */
 #define dmp(_x, _y, _z) 
 #endif /* CONFIG_KLIPS_DEBUG */
@@ -689,7 +689,7 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 			osMD5Final(hash, &tctx.md5);
 			dmp("octx hash", (char*)&hash, sizeof(hash));
 			memcpy(&(dat[len - authlen]), hash, authlen);
-			
+
 			/* paranoid */
 			memset((caddr_t)&tctx.md5, 0, sizeof(tctx.md5));
 			memset((caddr_t)hash, 0, sizeof(*hash));
