@@ -860,7 +860,7 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 			    pfkey_socketsp->socketp);
 	}
 
-	if(extr->outif != 0 || extr->outif != -1) {
+	if(extr->outif != 0 && extr->outif != -1) {
 		extr->ips->ips_out = ipsec_mast_get_device(extr->outif);
 		extr->ips->ips_transport_direct = ipsec_mast_is_transport(extr->outif); 
 	}
