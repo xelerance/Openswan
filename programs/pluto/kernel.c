@@ -1515,8 +1515,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->natt_oa = &natt_oa;
 #endif
 	said_next->outif   = -1;
-	if(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT) {
-	    extern int useful_mastno;
+	if(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT && useful_mastno != -1) {
 	    said_next->outif = MASTTRANSPORT_OFFSET+useful_mastno;
 	}
         said_next->text_said = text_said;

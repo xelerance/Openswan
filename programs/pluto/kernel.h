@@ -166,6 +166,7 @@ extern int create_socket(struct raw_iface *ifp, const char *v_name, int port);
 # define IPSECDEVPREFIX "ipsec"
 #endif
 
+extern int useful_mastno;
 #ifndef MASTDEVPREFIX
 # define MASTDEVPREFIX  "mast"
 #endif
