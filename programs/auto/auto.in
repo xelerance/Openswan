@@ -402,6 +402,10 @@ awk '	BEGIN {
 
 		yesno("compress")
 		set_os_default("compress", "no")
+
+		yesno("overlapip")
+		set_os_default("overlapip", "no")
+
 		set_os_default("keylife", "8h")
 		duration("keylife")
 		yesno("rekey")
@@ -508,6 +512,9 @@ awk '	BEGIN {
 
 		if (s["compress"] == "yes")
 			settings = settings " --compress"
+
+		if (s["overlapip"] == "yes")
+			settings = settings " --overlapip"
 
                 if (s["dpddelay"])
                         settings = settings " --dpddelay " qs("dpddelay")

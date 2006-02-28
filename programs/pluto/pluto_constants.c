@@ -262,6 +262,10 @@ const char *const sa_policy_bit_names[] = {
 	"dummy1(XAUTH)",
 	"MODECFGPULL",
 	"AGGRESSIVE",
+	"PERHOST",
+	"SUBHOST",
+	"PERPROTO",
+	"OVERLAPIP",
 	NULL
     };
 
