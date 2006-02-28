@@ -1,4 +1,5 @@
-/* common routines for interfaces that use pfkey to talk to kernel
+/*
+ * common routines for interfaces that use pfkey to talk to kernel
  *
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
@@ -929,7 +930,15 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 	    if(!success) return FALSE;
     }
 	
-    if(sa->enckeylen != 0) {
+    DBG_log("outif = %d", sa->outif);
+    if(sa->outif != -1) {
+	    success = pfkey_outif_build(&extensions[SADB_X_EXT_PLUMBIF],sa->outif);
+	    success = pfkey_build(success, "pfkey_outif_build", sa->text_said, extensions);
+	    
+	    if(!success) return FALSE;
+    }
+ 
+   if(sa->enckeylen != 0) {
 	success = pfkey_build(pfkey_key_build(&extensions[SADB_EXT_KEY_ENCRYPT]
 					      , SADB_EXT_KEY_ENCRYPT
 					      , sa->enckeylen * BITS_PER_BYTE

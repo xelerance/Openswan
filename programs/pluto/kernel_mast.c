@@ -56,6 +56,7 @@
 #include "kernel_alg.h"
 
 static int next_free_mast_device=-1;
+int  useful_mastno=-1;
 
 #ifndef DEFAULT_UPDOWN
 # define DEFAULT_UPDOWN "ipsec _updown"
@@ -168,8 +169,9 @@ init_useful_mast(ip_address addr, char *vname)
     {
 	char cmd[512];
 	
+	/* 1452 gives us enough space for IP + UDP + typical ESP */
 	snprintf(cmd, sizeof(cmd)
-		 , "ifconfig %s inet %s netmask 255.255.255.255 mtu 1400"
+		 , "ifconfig %s inet %s netmask 255.255.255.255 mtu 1452"
 		 , vname
 		 , ip_str(&addr));
 	
@@ -186,10 +188,15 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
     struct iface_port *firstq=NULL;
     char useful_mast_name[256];
     bool found_mast=FALSE;
-    int  useful_mastno;
 
     strcpy(useful_mast_name, "useless");
-    useful_mastno=recalculate_mast_device_list(rifaces);
+    { int new_useful=recalculate_mast_device_list(rifaces);
+
+	    if(new_useful != -1) {
+		    useful_mastno=new_useful;
+	    }
+    }
+
     DBG_log("useful mast device %d\n", useful_mastno);
     if(useful_mastno >= 0) {
 	sprintf(useful_mast_name, "mast%d", useful_mastno);
@@ -372,6 +379,7 @@ mast_do_command(struct connection *c, struct spd_route *sr
     char cmd[1536];     /* arbitrary limit on shell command length */
     char common_shell_out_str[1024];
     const char *verb_suffix;
+    IPsecSAref_t ref,refhim;
 
     /* figure out which verb suffix applies */
     {
@@ -400,7 +408,13 @@ mast_do_command(struct connection *c, struct spd_route *sr
 	return FALSE;
     }
 
-    openswan_log("Using saref=%u/%u\n", st->ref, st->refhim);
+    ref = refhim = IPSEC_SAREF_NULL;
+    if(st) {
+	ref   = st->ref;
+	refhim= st->refhim;
+	openswan_log("Using saref=%u/%u\n", ref, refhim);
+    }
+
     if (-1 == snprintf(cmd, sizeof(cmd)
 		       , "2>&1 "   /* capture stderr along with stdout */
 		       "PLUTO_MY_REF=%u "
@@ -408,8 +422,8 @@ mast_do_command(struct connection *c, struct spd_route *sr
 		       "PLUTO_VERB='%s%s' "
 		       "%s"        /* other stuff   */
 		       "%s"        /* actual script */
-		       , st->ref
-		       , st->refhim
+		       , ref
+		       , refhim
 		       , verb, verb_suffix
 		       , common_shell_out_str
 		       , sr->this.updown == NULL? DEFAULT_UPDOWN : sr->this.updown))

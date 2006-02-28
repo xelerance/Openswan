@@ -80,6 +80,7 @@ struct kernel_sa {
 	unsigned enckeylen;
 	unsigned char *enckey;
 
+	int outif;
 	IPsecSAref_t ref;
 	IPsecSAref_t refhim;
 
