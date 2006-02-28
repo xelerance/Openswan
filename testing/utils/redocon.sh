@@ -30,6 +30,67 @@ then
     KERNVER=26 consolediff "26east" OUTPUT${KLIPS_MODULE}/26eastconsole.txt $REF26_EAST_CONSOLE_OUTPUT
 fi
 
+if [ -n "${REF26_NORTH_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/26northconsole.txt ]
+then
+    KERNVER=26 consolediff "26north" OUTPUT${KLIPS_MODULE}/26northconsole.txt $REF26_NORTH_CONSOLE_OUTPUT
+fi
+
+if [ -n "${REF_WEST_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/westconsole.txt ]
+then
+    consolediff "west" OUTPUT${KLIPS_MODULE}/westconsole.txt $REF_WEST_CONSOLE_OUTPUT
+fi
+
+if [ -n "${REF26_WEST_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/26westconsole.txt ]
+then
+    KERNVER=26 consolediff "26west" OUTPUT${KLIPS_MODULE}/26westconsole.txt $REF26_WEST_CONSOLE_OUTPUT
+fi
+
+if [ -n "${REF_ROAD_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/roadconsole.txt ]
+then
+    consolediff "road" OUTPUT${KLIPS_MODULE}/roadconsole.txt $REF_ROAD_CONSOLE_OUTPUT
+fi
+
+if [ -n "${REF26_ROAD_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/26roadconsole.txt ]
+then
+    KERNVER=26 consolediff "26road" OUTPUT${KLIPS_MODULE}/26roadconsole.txt $REF26_ROAD_CONSOLE_OUTPUT
+fi
+
+if [ -n "${REF_JAPAN_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/japanconsole.txt ]
+then
+    consolediff "japan" OUTPUT${KLIPS_MODULE}/japanconsole.txt $REF_JAPAN_CONSOLE_OUTPUT
+fi
+
+if [ -n "${REF26_JAPAN_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/26japanconsole.txt ]
+then
+    KERNVER=26 consolediff "26japan" OUTPUT${KLIPS_MODULE}/26japanconsole.txt $REF26_JAPAN_CONSOLE_OUTPUT
+fi
+
+if [ -n "${REF_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/console.txt ]
+then
+    consolediff "" OUTPUT${KLIPS_MODULE}/console.txt $REF_CONSOLE_OUTPUT
+fi
+
+if [ -n "${REF26_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/26console.txt ]
+then
+    KERNVER=26 consolediff "26" OUTPUT${KLIPS_MODULE}/26console.txt $REF26_CONSOLE_OUTPUT
+fi
+
+if [ -n "${REF_PUB_OUTPUT-}" ]
+then
+    base=`basename ${REF_PUB_OUTPUT} .txt`
+    pcap_filter public "${REF_PUB_OUTPUT}" $base "${REF_PUB_FILTER-}"
+fi
+
+if [ -n "${REF_PRIV_OUTPUT-}" ]
+then
+    base=`basename ${REF_PRIV_OUTPUT} .txt`
+    pcap_filter private "${REF_PRIV_OUTPUT}" $base "${REF_PRIV_FILTER-}"
+fi
+if [ -n "${REF26_EAST_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/26eastconsole.txt ]
+then
+    KERNVER=26 consolediff "26east" OUTPUT${KLIPS_MODULE}/26eastconsole.txt $REF26_EAST_CONSOLE_OUTPUT
+fi
+
 if [ -n "${REF_WEST_CONSOLE_OUTPUT-}" ] && [ -f OUTPUT${KLIPS_MODULE}/westconsole.txt ]
 then
     consolediff "west" OUTPUT${KLIPS_MODULE}/westconsole.txt $REF_WEST_CONSOLE_OUTPUT
