@@ -56,8 +56,6 @@ north:~#
 108 "north--east-l2tp" #1: STATE_MAIN_I3: sent MI3, expecting MR3
 004 "north--east-l2tp" #1: STATE_MAIN_I4: ISAKMP SA established {auth=OAKLEY_RSA_SIG cipher=oakley_3des_cbc_192 prf=oakley_md5 group=modp1536}
 117 "north--east-l2tp" #2: STATE_QUICK_I1: initiate
-KLIPS no such vif 40959 (ovif=40959)
-KLIPS no such vif 40959 (ovif=40959)
 004 "north--east-l2tp" #2: STATE_QUICK_I2: sent QI2, IPsec SA established transport mode
 north:~#
  echo "c server" >/var/run/l2tp-control

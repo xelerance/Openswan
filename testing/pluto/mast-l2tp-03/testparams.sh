@@ -5,12 +5,14 @@ TEST_PROB_REPORT=0
 TEST_TYPE=umlXhost
 
 TESTNAME=mast-l2tp-03
-XHOST_LIST="NIC NORTH EAST"
+XHOST_LIST="NIC NORTH EAST ROAD"
 
 REF_EAST_CONSOLE_OUTPUT=east-console.txt
 REF26_EAST_CONSOLE_OUTPUT=east-console.txt
 REF_NORTH_CONSOLE_OUTPUT=north-console.txt
 REF26_NORTH_CONSOLE_OUTPUT=north-console.txt
+REF_NORTH_CONSOLE_OUTPUT=road-console.txt
+REF26_NORTH_CONSOLE_OUTPUT=road-console.txt
 
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS east-prompt-splitline.pl"
@@ -32,6 +34,11 @@ NORTHHOST=north
 NORTH_INIT_SCRIPT=../l2tp-01/northinit.sh
 NORTH_RUN_SCRIPT=../l2tp-01/northrun.sh
 NORTH_FINAL_SCRIPT=../l2tp-01/final.sh
+
+ROADHOST=road
+ROAD_INIT_SCRIPT=../l2tp-03/roadinit.sh
+ROAD_RUN_SCRIPT=../l2tp-03/roadrun.sh
+ROAD_FINAL_SCRIPT=../nat-pluto-01/final.sh
 
 NICHOST=nic
 NIC_INIT_SCRIPT=../nat-pluto-01/nicinit.sh
