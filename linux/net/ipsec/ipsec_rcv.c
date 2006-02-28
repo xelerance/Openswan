@@ -647,8 +647,9 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 			irs->ipsp->ips_errs.ips_auth_errs += 1;
 			KLIPS_ERROR(debug_rcv & DB_RX_INAU,
 				    "klips_debug:ipsec_rcv: "
-				    "auth failed on incoming packet from %s: hash=%08x%08x%08x auth=%08x%08x%08x, dropped\n",
+				    "auth failed on incoming packet from %s (replay=%d): calculated hash=%08x%08x%08x received hash=%08x%08x%08x, dropped\n",
 				    irs->ipsaddr_txt,
+				    replay,
 				    ntohl(*(__u32*)&irs->hash[0]),
 				    ntohl(*(__u32*)&irs->hash[4]),
 				    ntohl(*(__u32*)&irs->hash[8]),
