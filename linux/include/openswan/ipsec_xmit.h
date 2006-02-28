@@ -133,6 +133,7 @@ ipsec_nat_encap(struct ipsec_xmit_state*ixs);
 extern enum ipsec_xmit_value
 ipsec_tunnel_send(struct ipsec_xmit_state *ixs);
 
+extern void ipsec_xmit_cleanup(struct ipsec_xmit_state*ixs);
 
 
 extern int ipsec_xmit_trap_count;

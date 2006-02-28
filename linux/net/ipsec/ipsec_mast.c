@@ -44,16 +44,6 @@ char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.7 2005/04/29 05:10:22
 
 #include <openswan.h>
 
-#ifdef NET_21
-# include <linux/in6.h>
-# define ip_chk_addr inet_addr_type
-# define IS_MYADDR RTN_LOCAL
-# include <net/dst.h>
-# undef dev_kfree_skb
-# define dev_kfree_skb(a,b) kfree_skb(a)
-# define PHYSDEV_TYPE
-#endif /* NET_21 */
-
 #include <net/icmp.h>		/* icmp_send() */
 #include <net/ip.h>
 #ifdef NETDEV_23
@@ -120,33 +110,6 @@ static inline int ipsec_mast_xmit2(struct sk_buff *skb)
 {
 	return dst_output(skb);
 }
-
-void
-ipsec_mast_cleanup(struct ipsec_xmit_state*ixs)
-{
-#if defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE)
-	netif_wake_queue(ixs->dev);
-#else /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
-	ixs->dev->tbusy = 0;
-#endif /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
-
-	if(ixs->saved_header) {
-		kfree(ixs->saved_header);
-	}
-	if(ixs->skb) {
-		dev_kfree_skb(ixs->skb, FREE_WRITE);
-	}
-	if(ixs->oskb) {
-		dev_kfree_skb(ixs->oskb, FREE_WRITE);
-	}
-	if (ixs->ips.ips_ident_s.data) {
-		kfree(ixs->ips.ips_ident_s.data);
-	}
-	if (ixs->ips.ips_ident_d.data) {
-		kfree(ixs->ips.ips_ident_d.data);
-	}
-}
-
 
 int ip_cmsg_send_ipsec(struct cmsghdr *cmsg, struct ipcm_cookie *ipc)
 {
@@ -256,6 +219,8 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 
 failed:
+	ipsec_xmit_cleanup(ixs);
+
 	if(ixs->ipsp) {
 		ipsec_sa_put(ixs->ipsp);
 		ixs->ipsp=NULL;

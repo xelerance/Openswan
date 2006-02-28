@@ -498,31 +498,6 @@ ipsec_tunnel_restore_hard_header(struct ipsec_xmit_state*ixs)
 	return IPSEC_XMIT_OK;
 }
 
-void
-ipsec_tunnel_cleanup(struct ipsec_xmit_state*ixs)
-{
-#if defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE)
-	netif_wake_queue(ixs->dev);
-#else /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
-	ixs->dev->tbusy = 0;
-#endif /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
-	if(ixs->saved_header) {
-		kfree(ixs->saved_header);
-	}
-	if(ixs->skb) {
-		dev_kfree_skb(ixs->skb, FREE_WRITE);
-	}
-	if(ixs->oskb) {
-		dev_kfree_skb(ixs->oskb, FREE_WRITE);
-	}
-	if (ixs->ips.ips_ident_s.data) {
-		kfree(ixs->ips.ips_ident_s.data);
-	}
-	if (ixs->ips.ips_ident_d.data) {
-		kfree(ixs->ips.ips_ident_d.data);
-	}
-}
-
 /*
  *	This function assumes it is being called from dev_queue_xmit()
  *	and that skb is filled properly by that function.
@@ -630,7 +605,7 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	stat = ipsec_tunnel_send(ixs);
 
  cleanup:
-	ipsec_tunnel_cleanup(ixs);
+	ipsec_xmit_cleanup(ixs);
 
 	return 0;
 }

@@ -1677,6 +1677,39 @@ cleanup:
 	return bundle_stat;
 }
 
+void
+ipsec_xmit_cleanup(struct ipsec_xmit_state*ixs)
+{
+	if(ixs->dev) {
+#if defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE)
+		netif_wake_queue(ixs->dev);
+#else /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
+		ixs->dev->tbusy = 0;
+#endif /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
+	}
+
+	if(ixs->saved_header) {
+		kfree(ixs->saved_header);
+		ixs->saved_header = NULL;
+	}
+	if(ixs->skb) {
+		dev_kfree_skb(ixs->skb);
+		ixs->skb=NULL;
+	}
+	if(ixs->oskb) {
+		dev_kfree_skb(ixs->oskb);
+		ixs->oskb=NULL;
+	}
+	if (ixs->ips.ips_ident_s.data) {
+		kfree(ixs->ips.ips_ident_s.data);
+		ixs->ips.ips_ident_s.data=NULL;
+	}
+	if (ixs->ips.ips_ident_d.data) {
+		kfree(ixs->ips.ips_ident_d.data);
+		ixs->ips.ips_ident_d.data=NULL;
+	}
+}
+
 #ifdef NETDEV_23
 static inline int ipsec_xmit_send2(struct sk_buff *skb)
 {
