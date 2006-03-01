@@ -1718,7 +1718,7 @@ fmt_client(const ip_subnet *client, const ip_address *gw, const char *prefix, ch
     return strlen(buf);
 }
 
-void
+char *
 fmt_conn_instance(const struct connection *c, char buf[CONN_INST_BUF])
 {
     char *p = buf;
@@ -1753,6 +1753,8 @@ fmt_conn_instance(const struct connection *c, char buf[CONN_INST_BUF])
 	    addrtot(&c->spd.that.host_addr, 0, p, ADDRTOT_BUF);
 	}
     }
+
+    return buf;
 }
 
 /* Find an existing connection for a trapped outbound packet.
@@ -3835,9 +3837,11 @@ refine_host_connection(const struct state *st, const struct id *peer_id
  * used (by another id) addr/net.
  */
 static bool
-is_virtual_net_used(const ip_subnet *peer_net, const struct id *peer_id)
+is_virtual_net_used(struct connection *c, const ip_subnet *peer_net, const struct id *peer_id)
 {
     struct connection *d;
+    char cbuf[CONN_INST_BUF];
+
     for (d = connections; d != NULL; d = d->ac_next)
     {
 	if(NEVER_NEGOTIATE(d->policy)) continue;
@@ -3849,16 +3853,60 @@ is_virtual_net_used(const ip_subnet *peer_net, const struct id *peer_id)
 		/* if there is any overlap */
 		if ((subnetinsubnet(peer_net,&d->spd.that.client) ||
 		     subnetinsubnet(&d->spd.that.client,peer_net)) &&
-		     !same_id(&d->spd.that.id, peer_id)) {
+		     !same_id(&d->spd.that.id, peer_id))
+		{
 		    char buf[IDTOA_BUF];
 		    char client[SUBNETTOT_BUF];
+		    const char *cname;
+		    const char *doesnot = " does not";
+		    const char *esses = "";
+		
 		    subnettot(peer_net, 0, client, sizeof(client));
 		    idtoa(&d->spd.that.id, buf, sizeof(buf));
-		    openswan_log("Virtual IP %s is already used by (kind=%s) '%s'",
-				 enum_name(&connection_kind_names, d->kind),
-				 client, buf);
+
+		    openswan_log("Virtual IP %s overlaps with connection %s\"%s\" (kind=%s) '%s'"
+				 , client
+				 , d->name, fmt_conn_instance(d, cbuf)
+				 , enum_name(&connection_kind_names, d->kind)
+				 , buf);
+
+		    if(!kernel_ops->overlap_supported) {
+			openswan_log("Kernel method '%s' does not support overlapping IP ranges"
+				     , kernel_ops->kern_name);
+			return TRUE;
+
+		    } else if(LIN(POLICY_OVERLAPIP, c->policy)
+			      && LIN(POLICY_OVERLAPIP, d->policy)) {
+			openswan_log("overlap is okay by mutual consent");
+			
+			/* look for another overlap to report on */
+			break;
+
+		    } else if(LIN(POLICY_OVERLAPIP, c->policy)
+			      && !LIN(POLICY_OVERLAPIP, d->policy)) {
+			/* redundant */
+			cname = d->name;
+			fmt_conn_instance(d, cbuf); 
+		    } else if(!LIN(POLICY_OVERLAPIP, c->policy)
+			      && LIN(POLICY_OVERLAPIP, d->policy)) {
+			cname = c->name;
+			fmt_conn_instance(c, cbuf);
+		    } else {
+			cbuf[0]='\0';
+			doesnot="";
+			esses="s";
+			cname="neither";
+		    }
+
+		    openswan_log("overlap is forbidded (%s%s%s agree%s to overlap)"
+				 , cname
+				 , cbuf
+				 , doesnot
+				 , esses);
+
 		    idtoa(peer_id, buf, sizeof(buf));
-			openswan_log("Your ID is '%s'", buf);
+		    openswan_log("Your ID is '%s'", buf);
+
 		    return TRUE; /* already used by another one */
 		}
 		break;
@@ -3903,14 +3951,14 @@ is_virtual_net_used(const ip_subnet *peer_net, const struct id *peer_id)
 /* fc_try: a helper function for find_client_connection */
 static struct connection *
 fc_try(const struct connection *c
-, struct host_pair *hp
-, const struct id *peer_id UNUSED
-, const ip_subnet *our_net
-, const ip_subnet *peer_net
-, const u_int8_t our_protocol
-, const u_int16_t our_port
-, const u_int8_t peer_protocol
-, const u_int16_t peer_port)
+       , struct host_pair *hp
+       , const struct id *peer_id UNUSED
+       , const ip_subnet *our_net
+       , const ip_subnet *peer_net
+       , const u_int8_t our_protocol
+       , const u_int16_t our_port
+       , const u_int8_t peer_protocol
+       , const u_int16_t peer_port)
 {
     struct connection *d;
     struct connection *best = NULL;
@@ -4005,7 +4053,7 @@ fc_try(const struct connection *c
 		    
 		    if ((is_virtual_sr(sr)) &&
 			( (virtualwhy != NULL) ||
-			  (is_virtual_net_used(peer_net, peer_id?peer_id:&sr->that.id)) )) {
+			  (is_virtual_net_used(d, peer_net, peer_id?peer_id:&sr->that.id)) )) {
 			DBG(DBG_CONTROLMORE
 			     , DBG_log("   virtual net not allowed"));
 			continue;

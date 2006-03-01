@@ -521,6 +521,7 @@ const struct kernel_ops mast_kernel_ops = {
     set_debug: pfkey_set_debug,
     remove_orphaned_holds: pfkey_remove_orphaned_holds,
     process_ifaces: mast_process_raw_ifaces,
-    kern_name: "mast"
+    kern_name: "mast",
+    .overlap_supported = TRUE
 };
 #endif /* KLIPS */

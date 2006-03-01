@@ -400,7 +400,7 @@ extern const char *prettypolicy(lset_t policy);
 #define POLICY_PERHOST      LELEM(20)   /* should we specialize the policy to the host? */
 #define POLICY_SUBHOST      LELEM(21)   /* if the policy applies below the host level (TCP/UDP/SCTP ports) */
 #define POLICY_PERPROTO     LELEM(22)   /* should we specialize the policy to the protocol? */
-#define POLICY_OVERLAPIP    LEMEM(23)   /* can two conns that have subnet=vhost: declare the same IP? */
+#define POLICY_OVERLAPIP    LELEM(23)   /* can two conns that have subnet=vhost: declare the same IP? */
 
 /* Any IPsec policy?  If not, a connection description
  * is only for ISAKMP SA, not IPSEC SA.  (A pun, I admit.)
