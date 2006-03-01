@@ -254,11 +254,6 @@ extern int sysctl_ipsec_regress_pfkey_lossage;
 #define IPSEC_DEFAULT_TTL 64
 #endif
 
-#include <linux/in6.h>
-#define ip_chk_addr inet_addr_type
-#define IS_MYADDR RTN_LOCAL
-#include <net/dst.h>
-
 #define _IPSEC_PARAM_H_
 #endif /* _IPSEC_PARAM_H_ */
 
