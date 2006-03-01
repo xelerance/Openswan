@@ -455,7 +455,8 @@ enum routability {
     route_impossible = 0,
     route_easy = 1,
     route_nearconflict = 2,
-    route_farconflict = 3
+    route_farconflict = 3,
+    route_unnecessary = 4
 };
 
 static enum routability
@@ -475,6 +476,14 @@ could_route(struct connection *c)
     {
         loglog(RC_ROUTE, "cannot route an ISAKMP-only connection");
         return route_impossible;
+    }
+
+    /*
+     * if this is a transport SA, and overlapping SAs are supported, then
+     * this route is not necessary at all.
+     */
+    if(kernel_ops->overlap_supported && !LIN(POLICY_TUNNEL, c->policy)) {
+	return route_unnecessary;
     }
 
     /* if this is a Road Warrior template, we cannot route.
@@ -632,6 +641,9 @@ trap_connection(struct connection *c)
 
     case route_farconflict:
         return FALSE;
+
+    case route_unnecessary:
+        return TRUE;
     }
 
     return FALSE;
@@ -1991,20 +2003,26 @@ install_inbound_ipsec_sa(struct state *st)
             struct spd_route *esr;
             struct connection *o = route_owner(c, &esr, NULL, NULL);
 
-            if (o == NULL)
-                break;  /* nobody has a route */
+            if (o == NULL || c==o)
+                break;  /* nobody interesting has a route */
 
             /* note: we ignore the client addresses at this end */
             if (sameaddr(&o->spd.that.host_addr, &c->spd.that.host_addr)
-            && o->interface == c->interface)
+		&& o->interface == c->interface)
                 break;  /* existing route is compatible */
 
             if (o->kind == CK_TEMPLATE && streq(o->name, c->name))
                 break;  /* ??? is this good enough?? */
 
-            loglog(RC_LOG_SERIOUS, "route to peer's client conflicts with \"%s\" %s; releasing old connection to free the route"
-                , o->name, ip_str(&o->spd.that.host_addr));
-            release_connection(o, FALSE);
+	    if(kernel_ops->overlap_supported
+	       && !LIN(POLICY_TUNNEL, c->policy)
+	       && !LIN(POLICY_TUNNEL, o->policy)) {
+		break;
+	    }
+		
+	    loglog(RC_LOG_SERIOUS, "route to peer's client conflicts with \"%s\" %s; releasing old connection to free the route"		
+		   , o->name, ip_str(&o->spd.that.host_addr));
+	    release_connection(o, FALSE);
         }
     }
 
@@ -2014,6 +2032,7 @@ install_inbound_ipsec_sa(struct state *st)
     {
     case route_easy:
     case route_nearconflict:
+    case route_unnecessary:
         break;
 
     default:
@@ -2323,15 +2342,18 @@ bool
 install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
 {
     struct spd_route *sr;
+    enum routability rb;
 
     DBG(DBG_CONTROL, DBG_log("install_ipsec_sa() for #%ld: %s"
                              , st->st_serialno
                              , inbound_also?
                              "inbound and outbound" : "outbound only"));
 
-    switch (could_route(st->st_connection))
+    rb = could_route(st->st_connection);
+    switch (rb)
     {
     case route_easy:
+    case route_unnecessary:
     case route_nearconflict:
         break;
 
@@ -2355,6 +2377,10 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
 	    return FALSE;
 	}
 	DBG(DBG_KLIPS, DBG_log("set up incoming SA, ref=%u/%u", st->ref, st->refhim));
+    }
+
+    if(rb == route_unnecessary) {
+	return TRUE;
     }
 
     for (sr = &st->st_connection->spd; sr != NULL; sr = sr->next)
