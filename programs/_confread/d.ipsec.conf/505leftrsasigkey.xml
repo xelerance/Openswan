@@ -1,0 +1,49 @@
+  <varlistentry>
+  <term><emphasis remap='B'>leftrsasigkey</emphasis></term>
+  <listitem>
+<para>the left participant's
+public key for RSA signature authentication,
+in RFC 2537 format using
+<citerefentry><refentrytitle>ipsec_ttodata</refentrytitle><manvolnum>3</manvolnum></citerefentry>
+encoding.
+The magic value
+<emphasis remap='B'>%none</emphasis>
+means the same as not specifying a value (useful to override a default).
+The value
+<emphasis remap='B'>%dnsondemand</emphasis>
+(the default)
+means the key is to be fetched from DNS at the time it is needed.
+The value
+<emphasis remap='B'>%dnsonload</emphasis>
+means the key is to be fetched from DNS at the time
+the connection description is read from
+<emphasis remap='I'>ipsec.conf</emphasis>;
+currently this will be treated as
+<emphasis remap='B'>%none</emphasis>
+if
+<emphasis remap='B'>right=%any</emphasis>
+or
+<emphasis remap='B'>right=%opportunistic</emphasis>.
+The value
+<emphasis remap='B'>%dns</emphasis>
+is currently treated as
+<emphasis remap='B'>%dnsonload</emphasis>
+but will change to
+<emphasis remap='B'>%dnsondemand</emphasis>
+in the future.
+The identity used for the left participant
+must be a specific host, not
+<emphasis remap='B'>%any</emphasis>
+or another magic value.
+The value 
+<emphasis remap='B'>%cert</emphasis>
+will load the information required from a certificate defined in
+<emphasis remap='B'>%leftcert</emphasis>
+and automatically define leftid for you.
+<emphasis remap='B'>Caution:</emphasis>
+if two connection descriptions
+specify different public keys for the same
+<emphasis remap='B'>leftid</emphasis>,
+confusion and madness will ensue.</para>
+  </listitem>
+  </varlistentry>

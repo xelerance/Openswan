@@ -1,0 +1,10 @@
+  <varlistentry>
+  <term><emphasis remap='B'>leftcert</emphasis></term>
+  <listitem>
+<para>If you are using 
+<emphasis remap='B'>leftrsasigkey=%cert</emphasis>
+this defines the certificate you would like to use. It should point to a X.509
+encoded certificate file. If you do not specify a full pathname, by default it
+will look in /etc/ipsec.d/certs.</para>
+  </listitem>
+  </varlistentry>
