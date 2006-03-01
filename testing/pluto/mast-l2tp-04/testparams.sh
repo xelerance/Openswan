@@ -49,7 +49,7 @@ NICHOST=nic
 NIC_INIT_SCRIPT=../nat-pluto-01/nicinit.sh
 
 WESTHOST=west
-WEST_INIT_SCRIPT=../nat-pluto-01/westinit.sh
+WEST_INIT_SCRIPT=westinit.sh
 
 NETJIG_EXTRA=../basic-pluto-01/debugpublic.txt
 

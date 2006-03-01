@@ -1,5 +1,6 @@
 : ==== start ====
 TESTNAME=mast-l2tp-04
+HOST=japan
 source /testing/pluto/bin/hostlocal.sh japan
 
 route delete -net default

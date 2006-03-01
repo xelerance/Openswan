@@ -1,6 +1,7 @@
 : ==== start ====
 TESTNAME=l2tp-03
-source /testing/pluto/bin/roadlocal.sh
+export HOST=road
+source /testing/pluto/bin/hostlocal.sh
 
 if [ -f /var/run/l2tpd.pid ]; then kill `cat /var/run/l2tpd.pid`; fi
 

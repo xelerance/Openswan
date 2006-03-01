@@ -1,8 +1,6 @@
 #!/bin/sh
 
-HOST=$1
-
-# this script is used by "$1" UMLs that want to have per-test
+# this script is used by "$HOST" UMLs that want to have per-test
 # configuration files, and will be hitting sunrise-oe to test with.
 
 mkdir -p /tmp/$TESTNAME
