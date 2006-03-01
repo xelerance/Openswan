@@ -245,7 +245,7 @@ doipsecrule() {
 	srcnet=$PLUTO_MY_CLIENT_NET/$PLUTO_MY_CLIENT_MASK
 	dstnet=$PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK
 
-	echo SAref: $saref '->' $nf_saref
+	#echo SAref: $saref '->' $nf_saref
 
 	case $1 in
 	    add) it="iptables -I IPSEC 1 -t mangle --src $srcnet --dst $dstnet -j MARK --set-mark $nf_saref";;

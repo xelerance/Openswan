@@ -412,7 +412,7 @@ mast_do_command(struct connection *c, struct spd_route *sr
     if(st) {
 	ref   = st->ref;
 	refhim= st->refhim;
-	openswan_log("Using saref=%u/%u for verb=%s\n", ref, refhim, verb);
+	DBG(DBG_KLIPS, DBG_log("Using saref=%u/%u for verb=%s\n", ref, refhim, verb));
     }
 
     if (-1 == snprintf(cmd, sizeof(cmd)
