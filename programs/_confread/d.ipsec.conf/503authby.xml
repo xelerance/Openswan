@@ -1,0 +1,16 @@
+  <varlistentry>
+  <term><emphasis remap='B'>authby</emphasis></term>
+  <listitem>
+<para>how the two security gateways should authenticate each other;
+acceptable values are
+<emphasis remap='B'>secret</emphasis>
+for shared secrets,
+<emphasis remap='B'>rsasig</emphasis>
+for RSA digital signatures (the default),
+<emphasis remap='B'>secret|rsasig</emphasis>
+for either, and
+<emphasis remap='B'>never</emphasis>
+if negotiation is never to be attempted or accepted (useful for shunt-only conns).
+Digital signatures are superior in every way to shared secrets.</para>
+  </listitem>
+  </varlistentry>

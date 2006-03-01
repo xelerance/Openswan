@@ -29,7 +29,7 @@ ipsec.conf.5.xml: d.ipsec.conf/*.xml
 	cat d.ipsec.conf/*.xml >ipsec.conf.5.xml
 
 diff:	ipsec.conf.5.xml
-	diff -u ipsec.conf.5.xml ipsec.conf.5.xml-ref
+	diff -B -w -u ipsec.conf.5.xml ipsec.conf.5.xml-ref
 
 include ${srcdir}../Makefile.program
 
