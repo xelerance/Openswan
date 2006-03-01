@@ -239,7 +239,6 @@ downrule() {
 # new netfilter module instead.
 doipsecrule() {
 
-    set -x
 	saref=$PLUTO_PEER_REF
 	nf_saref=$(printf "%d" $(( ($saref * 65536) | 0x80000000 )))
 
