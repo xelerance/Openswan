@@ -41,6 +41,7 @@ done
 west:~#
  ipsec look
 west NOW
+0.0.0.0/0          -> 0.0.0.0/0          => %trap
 192.0.1.0/24       -> 192.0.2.0/24       => tun0xIPIP@192.1.2.23 esp0xESPSPI@192.1.2.23
 ipsec0->eth1 mtu=16260(9999)->1500
 tun0xTUN#@192.1.2.23 IPIP: dir=out src=192.1.2.45 natencap=none natsport=0 natdport=0  
@@ -51,6 +52,8 @@ ROUTING TABLE
 192.1.2.0/24 dev eth1  proto kernel  scope link  src 192.1.2.45 
 192.1.2.0/24 dev ipsec0  proto kernel  scope link  src 192.1.2.45 
 192.0.2.0/24 dev ipsec0  scope link 
+0.0.0.0/1 via 192.1.2.254 dev ipsec0 
+128.0.0.0/1 via 192.1.2.254 dev ipsec0 
 default via 192.1.2.254 dev eth1 
 west:~#
  echo done

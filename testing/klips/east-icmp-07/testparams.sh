@@ -8,7 +8,7 @@ TESTHOST=east
 
 EXITONEMPTY=--exitonempty
 PRIV_INPUT=../inputs/01-sunrise-sunset-ping.pcap
-THREEEIGHT=true
+#THREEEIGHT=true
 
 REF_PUB_OUTPUT=spi1-output.txt
 

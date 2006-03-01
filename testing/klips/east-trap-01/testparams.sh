@@ -5,7 +5,7 @@ TESTNAME=east-trap-01
 TESTHOST=east
 EXITONEMPTY=--exitonempty
 
-THREEEIGHT=true
+#THREEEIGHT=true
 
 PRIV_INPUT=../inputs/01-sunrise-sunset-ping.pcap
 REF_PUB_OUTPUT=spi1-output.txt
