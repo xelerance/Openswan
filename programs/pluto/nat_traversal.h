@@ -108,7 +108,7 @@ struct hidden_variables;
 void nat_traversal_natoa_lookup(struct msg_digest *md, struct hidden_variables *hv);
 #ifndef PB_STREAM_UNDEFINED
 bool nat_traversal_add_natoa(u_int8_t np, pb_stream *outs,
-	struct state *st);
+			     struct state *st, bool initiator);
 #endif
 
 /**

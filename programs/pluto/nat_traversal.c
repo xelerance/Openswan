@@ -496,21 +496,28 @@ void nat_traversal_natoa_lookup(struct msg_digest *md, struct hidden_variables *
 }
 
 bool nat_traversal_add_natoa(u_int8_t np, pb_stream *outs,
-	struct state *st)
+			     struct state *st, bool initiator)
 {
 	struct isakmp_nat_oa natoa;
 	pb_stream pbs;
 	unsigned char ip_val[sizeof(struct in6_addr)];
 	size_t ip_len = 0;
-	ip_address *ip;
+	ip_address *ipinit, *ipresp;
 	unsigned int nat_np;
+
+	if(initiator) {
+		ipinit = &(st->st_localaddr);
+		ipresp = &(st->st_remoteaddr);
+	} else {
+		ipresp = &(st->st_localaddr);
+		ipinit = &(st->st_remoteaddr);
+	}
 
 	if ((!st) || (!st->st_connection)) {
 		loglog(RC_LOG_SERIOUS, "NAT-Traversal: assert failed %s:%d",
 			__FILE__, __LINE__);
 		return FALSE;
 	}
-	ip = &(st->st_localaddr);
 
 	nat_np = (st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES
 		  ? ISAKMP_NEXT_NATOA_RFC : ISAKMP_NEXT_NATOA_DRAFTS);
@@ -519,33 +526,65 @@ bool nat_traversal_add_natoa(u_int8_t np, pb_stream *outs,
 	}
 
 	memset(&natoa, 0, sizeof(natoa));
-	natoa.isanoa_np = np;
+	natoa.isanoa_np = nat_np;
 
-	switch (addrtypeof(ip)) {
+	switch (addrtypeof(ipinit)) {
 		case AF_INET:
-			ip_len = sizeof(ip->u.v4.sin_addr.s_addr);
-			memcpy(ip_val, &ip->u.v4.sin_addr.s_addr, ip_len);
+			ip_len = sizeof(ipinit->u.v4.sin_addr.s_addr);
+			memcpy(ip_val, &ipinit->u.v4.sin_addr.s_addr, ip_len);
 			natoa.isanoa_idtype = ID_IPV4_ADDR;
 			break;
 		case AF_INET6:
-			ip_len = sizeof(ip->u.v6.sin6_addr.s6_addr);
-			memcpy(ip_val, &ip->u.v6.sin6_addr.s6_addr, ip_len);
+			ip_len = sizeof(ipinit->u.v6.sin6_addr.s6_addr);
+			memcpy(ip_val, &ipinit->u.v6.sin6_addr.s6_addr, ip_len);
 			natoa.isanoa_idtype = ID_IPV6_ADDR;
 			break;
 		default:
 			loglog(RC_LOG_SERIOUS, "NAT-Traversal: "
-				"invalid addrtypeof()=%d", addrtypeof(ip));
+				"invalid addrtypeof()=%d", addrtypeof(ipinit));
 			return FALSE;
 	}
 
 	if (!out_struct(&natoa, &isakmp_nat_oa, outs, &pbs))
 		return FALSE;
 
-	if (!out_raw(ip_val, ip_len, &pbs, "NAT-OA"))
+	if (!out_raw(ip_val, ip_len, &pbs, "NAT-OAi"))
 		return FALSE;
 
 	DBG(DBG_NATT,
-		DBG_dump("NAT-OA (S):", ip_val, ip_len);
+		DBG_dump("NAT-OAi (S):", ip_val, ip_len);
+	);
+
+	
+	/* output second NAT-OA */
+	memset(&natoa, 0, sizeof(natoa));
+	natoa.isanoa_np = np;
+
+	switch (addrtypeof(ipresp)) {
+		case AF_INET:
+			ip_len = sizeof(ipresp->u.v4.sin_addr.s_addr);
+			memcpy(ip_val, &ipresp->u.v4.sin_addr.s_addr, ip_len);
+			natoa.isanoa_idtype = ID_IPV4_ADDR;
+			break;
+		case AF_INET6:
+			ip_len = sizeof(ipresp->u.v6.sin6_addr.s6_addr);
+			memcpy(ip_val, &ipresp->u.v6.sin6_addr.s6_addr, ip_len);
+			natoa.isanoa_idtype = ID_IPV6_ADDR;
+			break;
+		default:
+			loglog(RC_LOG_SERIOUS, "NAT-Traversal: "
+				"invalid addrtypeof()=%d", addrtypeof(ipresp));
+			return FALSE;
+	}
+
+	if (!out_struct(&natoa, &isakmp_nat_oa, outs, &pbs))
+		return FALSE;
+
+	if (!out_raw(ip_val, ip_len, &pbs, "NAT-OAr"))
+		return FALSE;
+
+	DBG(DBG_NATT,
+		DBG_dump("NAT-OAr (S):", ip_val, ip_len);
 	);
 
 	close_output_pbs(&pbs);
