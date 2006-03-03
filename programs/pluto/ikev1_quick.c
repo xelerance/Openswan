@@ -884,7 +884,7 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	&& (!(st->st_policy & POLICY_TUNNEL))
 	&& (st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_ME))) {
 	/** Send NAT-OA if our address is NATed */
-	if (!nat_traversal_add_natoa(ISAKMP_NEXT_NONE, &rbody, st)) {
+	if (!nat_traversal_add_natoa(ISAKMP_NEXT_NONE, &rbody, st, TRUE /* initiator */)) {
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
@@ -1968,7 +1968,7 @@ quick_inI1_outR1_cryptotail(struct qke_continuation *qke
 	(st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_ME)) &&
 	(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT)) {
 	/** Send NAT-OA if our address is NATed and if we use Transport Mode */
-	if (!nat_traversal_add_natoa(ISAKMP_NEXT_NONE, &md->rbody, md->st)) {
+	if (!nat_traversal_add_natoa(ISAKMP_NEXT_NONE, &md->rbody, md->st, FALSE)) {
 	    return STF_INTERNAL_ERROR;
 	}
     }
