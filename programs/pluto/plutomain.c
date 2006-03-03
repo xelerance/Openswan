@@ -257,12 +257,12 @@ enum kernel_interface kern_interface = AUTO_PICK;
 
 char **global_argv;
 int    global_argc;
+bool log_to_stderr_desired = FALSE;
 
 int
 main(int argc, char **argv)
 {
     bool fork_desired = TRUE;
-    bool log_to_stderr_desired = FALSE;
     int lockfd;
     char* ocspuri = NULL;
     int nhelpers = -1;

@@ -670,6 +670,13 @@ call_server(void)
 	    /* retry if terminated by signal */
 	}
 
+	if(log_to_stderr_desired) {
+	    time_t n;
+
+	    time(&n);
+	    DBG_log("time is %s (%lu)", ctime(&n), n);
+	}
+		    
 	/* figure out what is interesting */
 
 	if (ndes == 0)
