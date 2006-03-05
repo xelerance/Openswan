@@ -1994,15 +1994,18 @@ quick_inI1_outR1_cryptotail(struct qke_continuation *qke
     }
 
 #ifdef NAT_TRAVERSAL
+#if 0
+    DBG_log("NAT-OA: %d tunnel: %d \n"
+		,(st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA)
+    		,(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT));
     if ((st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA) &&
-	(st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_ME)) &&
 	(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT)) {
 	/** Send NAT-OA if our address is NATed and if we use Transport Mode */
 	if (!nat_traversal_add_natoa(ISAKMP_NEXT_NONE, &md->rbody, md->st, FALSE)) {
 	    return STF_INTERNAL_ERROR;
 	}
     }
-
+#endif
 #endif
 
 #ifdef TPM
