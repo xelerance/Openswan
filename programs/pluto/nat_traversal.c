@@ -338,6 +338,8 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	unsigned char hash[MAX_DIGEST_LEN];
 	struct state *st = md->st;
 	unsigned int nat_np;
+	const ip_address *first, *second;
+	unsigned short firstport, secondport;
 
 	if (!st || !st->st_oakley.hasher) {
 		loglog(RC_LOG_SERIOUS, "NAT-Traversal: assert failed %s:%d",
@@ -355,21 +357,21 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 		return FALSE;
 	}
 
+	first = &(md->sender);
+	firstport = ntohs(md->sender_port);
+	second = &(md->iface->ip_addr);
+	secondport = ntohs(st->st_remoteport);
+
+	if(st->st_connection->forceencaps) {
+		firstport=secondport=0;
+	}
+
 	/**
 	 * First one with sender IP & port
 	 */
-	if(st->st_connection->forceencaps) {
-	    _natd_hash(st->st_oakley.hasher
-		       , hash, st->st_icookie
+        _natd_hash(st->st_oakley.hasher, hash, st->st_icookie
 		       , is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie
-		       , &(md->sender)
-		       , 0);
-	} else {
-	    _natd_hash(st->st_oakley.hasher, hash, st->st_icookie
-		       , is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie
-		       , &(md->sender)
-		       , ntohs(md->sender_port));
-	}
+		       , first, firstport);
 
 	if (!out_generic_raw(nat_np, &isakmp_nat_d, outs
 			     , hash
@@ -381,18 +383,10 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	/**
 	 * Second one with my IP & port
 	 */
-	if(st->st_connection->forceencaps) {
-	    _natd_hash(st->st_oakley.hasher, hash
+        _natd_hash(st->st_oakley.hasher, hash
 		       , st->st_icookie
 		       , is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie
-		       , &(md->iface->ip_addr),0);
-	} else {
-	    _natd_hash(st->st_oakley.hasher, hash
-		       , st->st_icookie
-		       , is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie
-		       , &(md->iface->ip_addr)
-		       , ntohs(st->st_remoteport));
-	}
+		       , second, secondport);
 	return (out_generic_raw(np, &isakmp_nat_d, outs,
 		hash, st->st_oakley.hasher->hash_digest_len, "NAT-D"));
 }
