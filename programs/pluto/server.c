@@ -670,6 +670,7 @@ call_server(void)
 	    /* retry if terminated by signal */
 	}
 
+	DBG(DBG_CONTROL, DBG_log(BLANK_FORMAT));
 	if(log_to_stderr_desired) {
 	    time_t n;
 
@@ -686,7 +687,6 @@ call_server(void)
 	    if(!no_retransmits)
 	    {
 		DBG(DBG_CONTROL,
-		    DBG_log(BLANK_FORMAT);
 		    DBG_log("*time to handle event"));
 		
 		handle_timer_event();
@@ -709,7 +709,6 @@ call_server(void)
 	    {
 		passert(ndes > 0);
 		DBG(DBG_CONTROL,
-		    DBG_log(BLANK_FORMAT);
 		    DBG_log("*received adns message"));
 		handle_adns_answer();
 		passert(GLOBALS_ARE_RESET());
@@ -722,7 +721,6 @@ call_server(void)
 	    {
 		passert(ndes > 0);
 		DBG(DBG_CONTROL,
-		    DBG_log(BLANK_FORMAT);
 		    DBG_log("*received kernel message"));
 		kernel_ops->process_msg();
 		passert(GLOBALS_ARE_RESET());
@@ -749,7 +747,6 @@ call_server(void)
 	    {
 		passert(ndes > 0);
 		DBG(DBG_CONTROL,
-		    DBG_log(BLANK_FORMAT);
 		    DBG_log("*received whack message"));
 		whack_handle(ctl_fd);
 		passert(GLOBALS_ARE_RESET());
@@ -761,7 +758,6 @@ call_server(void)
 	    {
 		passert(ndes > 0);
 		DBG(DBG_CONTROL,
-		    DBG_log(BLANK_FORMAT);
 		    DBG_log("*received info message"));
 		info_handle(info_fd);
 		passert(GLOBALS_ARE_RESET());
