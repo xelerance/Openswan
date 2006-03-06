@@ -357,10 +357,10 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 		return FALSE;
 	}
 
-	first = &(md->sender);
-	firstport = ntohs(md->sender_port);
-	second = &(md->iface->ip_addr);
-	secondport = ntohs(st->st_remoteport);
+	first      = &(md->sender);
+	firstport  = ntohs(st->st_remoteport);
+	second     = &(md->iface->ip_addr);
+	secondport = ntohs(st->st_localport);
 
 	if(0) {
 		const ip_address *t;
