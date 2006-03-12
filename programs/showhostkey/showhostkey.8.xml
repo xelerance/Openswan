@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                    "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
-<!-- lifted from troff+man by doclifter -->
+
 <refentry>
 <refmeta>
 <refentrytitle>IPSEC_SHOWHOSTKEY</refentrytitle>
@@ -12,16 +12,20 @@
 <refname>ipsec showhostkey</refname>
 <refpurpose>show host's authentication key</refpurpose>
 </refnamediv>
+
 <!-- body begins here -->
 <refsynopsisdiv id='synopsis'>
 <cmdsynopsis>
   <command>ipsec</command>    
+
     <arg choice='plain'><replaceable>showhostkey</replaceable></arg>
     <arg choice='opt'><arg choice='plain'>--ipseckey </arg><arg choice='opt'><replaceable>gateway</replaceable></arg></arg>
     <arg choice='opt'>--key </arg>
     <arg choice='opt'>--left </arg>
     <arg choice='opt'>--right </arg>
     <arg choice='opt'>--dump </arg>
+    <arg choice='opt'>--verbose </arg>
+    <arg choice='opt'>--version </arg>
     <arg choice='opt'>--list </arg>
     <arg choice='opt'>--x509self </arg>
     <arg choice='opt'>--x509req </arg>
@@ -65,6 +69,10 @@ strings (matching the restrictions of the DNS TXT binary format).
 
 If any split is needed, the first split will be at the start of the key:
 this increases the chances that later hand editing will work.</para>
+
+<para>The <option>--version</option> option causes the version of the binary to be emitted, and nothing else.</para>
+
+<para>The <option>--verbose</option> may be present one or more times. Each occurance increases the verbosity level. </para>
 
 <para>The
 <option>--left</option>

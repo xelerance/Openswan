@@ -100,6 +100,7 @@ int main(int argc, char *argv[])
     bool txt_flg=FALSE;
     bool ipseckey_flg=FALSE;
     bool dhclient_flg=FALSE;
+    int verbose=0;
     const struct osw_conf_options *oco = osw_init_options();
     const char *rsakeyid;
     struct secret *host_secrets = NULL;
@@ -140,9 +141,16 @@ int main(int argc, char *argv[])
 
 	case 'n':
 	case 'i':
-	case 'v':
 	case 'h':
 	    break;
+
+	case 'v':
+	    verbose++;
+	    break;
+
+	case 'V':
+	    fprintf(stdout, "%s\n", ipsec_version_string());
+	    exit(0);
 
 	default:
 	    goto usage;
