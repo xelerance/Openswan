@@ -1,5 +1,6 @@
 /* Certificate support for IKE authentication
  * Copyright (C) 2002-2004 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2006 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -66,7 +67,11 @@ extern const cert_t empty_cert;
  */
 extern bool no_cr_send;
 
+extern rsa_privkey_t* load_rsa_private_key(const char* filename
+					   , prompt_pass_t *pass);
 extern chunk_t get_mycert(cert_t cert);
+extern bool load_coded_file(const char *filename, prompt_pass_t *pass
+    , const char *type, chunk_t *blob, bool *pgp);
 extern bool load_cert(bool forcedtype
 		      , const char *filename
 		      , const char *label, cert_t *cert);
