@@ -10,6 +10,4 @@ ipsec whack --name west--east-psk --terminate
 # start it up again.
 ipsec whack --name west--east-psk --initiate
 
-
-
-
+echo done

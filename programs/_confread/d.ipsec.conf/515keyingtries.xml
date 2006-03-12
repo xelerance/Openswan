@@ -1,0 +1,12 @@
+  <varlistentry>
+  <term><emphasis remap='B'>keyingtries</emphasis></term>
+  <listitem>
+<para>how many attempts (a whole number or <emphasis remap='B'>%forever</emphasis>) should be made to
+negotiate a connection, or a replacement for one, before giving up
+(default
+<emphasis remap='B'>%forever</emphasis>).
+The value <emphasis remap='B'>%forever</emphasis>
+means &ldquo;never give up&rdquo; (obsolete: this can be written <literal>0</literal>).
+Relevant only locally, other end need not agree on it.</para>
+  </listitem>
+  </varlistentry>

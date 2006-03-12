@@ -4,9 +4,9 @@ TEST_TYPE=klipstest
 TESTNAME=east-reject-01
 TESTHOST=east
 EXITONEMPTY=--exitonempty
-PRIVINPUT=../inputs/01-sunrise-sunset-ping.pcap
+PRIV_INPUT=../inputs/01-sunrise-sunset-ping.pcap
 
-THREEEIGHT=true
+#THREEEIGHT=true
 REF_PUB_OUTPUT=spi1-output.txt
 
 REF_PRIV_OUTPUT=icmp-output.txt

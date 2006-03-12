@@ -240,6 +240,13 @@ static struct vid_struct _vid_tab[] = {
 
 	DEC_MD5_VID(NATT_DRAFT_IETF_IPSEC_NAT_T_IKE,"draft-ietf-ipsec-nat-t-ike")
 
+
+	/* SonicWall */
+	{ VID_SONICWALL_1, VID_KEEP, NULL, "Sonicwall 1 (TZ 170 Standard?)",
+	  "\x40\x4b\xf4\x39\x52\x2c\xa3\xf6", 8},
+	{ VID_SONICWALL_2, VID_KEEP, NULL, "Sonicwall 2 (3.1.0.12-86s?)",
+	  "\xda\x8e\x93\x78\x80\x01\x00\x00", 8},
+
 	/* misc */
 
 	

@@ -17,7 +17,7 @@ REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-debug-sanitize.sed"
 TCPDUMPFLAGS="-n"
 INIT_SCRIPT=spi1.sh
 
-THREEEIGHT=true
+#THREEEIGHT=true
 
 
 

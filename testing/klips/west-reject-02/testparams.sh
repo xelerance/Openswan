@@ -7,10 +7,10 @@ TEST_PURPOSE=regress
 TEST_PROB_REPORT=89
 
 EXITONEMPTY=--exitonempty
-PRIVINPUT=../inputs/ikeinit-japan-sunrise.pcap
+PRIV_INPUT=../inputs/ikeinit-japan-sunrise.pcap
 REF_PUB_OUTPUT=spi1-output.txt
 
-THREEEIGHT=true
+#THREEEIGHT=true
 
 REF_PRIV_OUTPUT=icmp-output.txt
 REF_PRIV_FILTER=../../klips/fixups/one-to-eight-icmp.pl

@@ -35,8 +35,6 @@ int pbs_peek(pb_stream *pbs, int offset)
     if(offset < pbs_room(pbs)) {
 	return pbs->start[offset];
     } else {
-	openswan_log("pbs_peek offset:%d < pbs_room(pbs):%d", offset, pbs_room(pbs));
-	pexpect(offset < pbs_room(pbs));
 	return 0;
     }
 }

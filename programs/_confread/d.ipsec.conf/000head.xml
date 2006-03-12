@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!-- lifted from troff+man by doclifter -->
+<refentry>
+<refmeta>
+<refentrytitle>IPSEC.CONF</refentrytitle>
+<manvolnum>5</manvolnum>
+<refmiscinfo class='date'>26 Nov 2001</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>ipsec.conf</refname>
+<refpurpose>IPsec configuration and connections</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+

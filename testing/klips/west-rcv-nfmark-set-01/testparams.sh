@@ -7,7 +7,7 @@ EXITONEMPTY=--exitonempty
 ARPREPLY=--arpreply 
 
 PUB_INPUT=../inputs/02-sunrise-sunset-esp.pcap
-#REFPRIVOUTPUT=spi1-cleartext.txt
+#REF_PRIV_OUTPUT=spi1-cleartext.txt
 REF_CONSOLE_OUTPUT=spi1-console.txt
 REF26_CONSOLE_OUTPUT=spi1-console.txt
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"

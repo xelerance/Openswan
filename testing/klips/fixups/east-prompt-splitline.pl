@@ -9,6 +9,8 @@ while(<>) {
     push(@klips_out, $_);
   } elsif(/^\<\d\>(klips_debug:.*)/) {
     push(@klips_out, "$1\n");
+  } elsif(/=== NETJIG/) {
+    next;
   } elsif(/^\<\d\>.*/) {
     next;
   } else {

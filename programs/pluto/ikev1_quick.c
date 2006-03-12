@@ -2070,16 +2070,6 @@ quick_inR1_outI2(struct msg_digest *md)
 
     /* HDR* out done */
 
-#ifdef TPM
-    {
-	pb_stream *pbs = &md->rbody;
-	size_t enc_len = pbs_offset(pbs) - sizeof(struct isakmp_hdr);
-
-	TCLCALLOUT_crypt("preHash", st,pbs,sizeof(struct isakmp_hdr),enc_len);
-	/* no need to fix up hash */
-    }
-#endif
-
     /* HASH(3) out -- since this is the only content, no passes needed */
     {
 	u_char	/* set by START_HASH_PAYLOAD: */
@@ -2087,10 +2077,20 @@ quick_inR1_outI2(struct msg_digest *md)
 	    *r_hash_start;	/* start of what is to be hashed */
 
 	START_HASH_PAYLOAD(md->rbody, ISAKMP_NEXT_NONE);
+
+#ifdef TPM
+	{
+	    pb_stream *pbs = &md->rbody;
+	    size_t enc_len = pbs_offset(pbs) - sizeof(struct isakmp_hdr);
+	    
+	    TCLCALLOUT_crypt("preHash", st,pbs,sizeof(struct isakmp_hdr),enc_len);
+	    r_hashval = tpm_relocateHash(pbs);	
+	}
+#endif
 	(void)quick_mode_hash3(r_hashval, st);
     }
 
-    /* Derive new keying material */
+   /* Derive new keying material */
     compute_keymats(st);
 
     /* Tell the kernel to establish the inbound, outbound, and routing part

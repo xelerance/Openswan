@@ -78,7 +78,15 @@ pack_str(struct whackpacker *wp, char **p)
 static bool
 unpack_str(struct whackpacker *wp, char **p)
 {
-    unsigned char *end = memchr(wp->str_next, '\0', wp->str_roof - wp->str_next);
+    unsigned int len = wp->str_roof - wp->str_next;
+    unsigned char *end;
+
+    if(len == 0) {
+	*p = (char *)NULL;
+	return TRUE;
+    }
+	
+    end = memchr(wp->str_next, '\0', len);
 
     if (end == NULL)
     {
@@ -117,17 +125,13 @@ err_t pack_whack_msg (struct whackpacker *wp)
 	|| !pack_str(wp, &wp->msg->left.ca)     /* string 4 */
 	|| !pack_str(wp, &wp->msg->left.groups) /* string 5 */
 	|| !pack_str(wp, &wp->msg->left.updown) /* string 6 */
-#ifdef VIRTUAL_IP
-    	|| !pack_str(wp,&wp->msg->left.virt)    /* string 7 */
-#endif
+    	|| !pack_str(wp, &wp->msg->left.virt)    /* string 7 */
 	|| !pack_str(wp, &wp->msg->right.id)    /* string 8 */
     	|| !pack_str(wp, &wp->msg->right.cert)  /* string 9 */
     	|| !pack_str(wp, &wp->msg->right.ca)    /* string 10 */
     	|| !pack_str(wp, &wp->msg->right.groups)/* string 11 */
 	|| !pack_str(wp, &wp->msg->right.updown)/* string 12 */
-#ifdef VIRTUAL_IP
     	|| !pack_str(wp, &wp->msg->right.virt)  /* string 13 */
-#endif
 	|| !pack_str(wp, &wp->msg->keyid)       /* string 14 */
 	|| !pack_str(wp, &wp->msg->myid)        /* string 15 */
     	|| !pack_str(wp, &wp->msg->ike)         /* string 16 */
@@ -171,17 +175,13 @@ err_t unpack_whack_msg (struct whackpacker *wp)
 	|| !unpack_str(wp, &wp->msg->left.ca)     /* string 4 */
 	|| !unpack_str(wp, &wp->msg->left.groups) /* string 5 */
 	|| !unpack_str(wp, &wp->msg->left.updown) /* string 6 */
-#ifdef VIRTUAL_IP
     	|| !unpack_str(wp,&wp->msg->left.virt)    /* string 7 */
-#endif
 	|| !unpack_str(wp, &wp->msg->right.id)    /* string 8 */
     	|| !unpack_str(wp, &wp->msg->right.cert)  /* string 9 */
     	|| !unpack_str(wp, &wp->msg->right.ca)    /* string 10 */
 	|| !unpack_str(wp, &wp->msg->right.groups)/* string 11 */
 	|| !unpack_str(wp, &wp->msg->right.updown)/* string 12 */
-#ifdef VIRTUAL_IP
     	|| !unpack_str(wp, &wp->msg->right.virt)  /* string 13 */
-#endif
 	|| !unpack_str(wp, &wp->msg->keyid)       /* string 14 */
 	|| !unpack_str(wp, &wp->msg->myid)        /* string 15 */
     	|| !unpack_str(wp, &wp->msg->ike)         /* string 16 */

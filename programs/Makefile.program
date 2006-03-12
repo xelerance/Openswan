@@ -2,7 +2,12 @@
 include ${OPENSWANSRCDIR}/Makefile.ver
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-CFLAGS+=${USERCOMPILE} ${PORTINCLUDE} -I${OPENSWANSRCDIR} -I${KLIPSINC} -I${OPENSWANSRCDIR}/include
+LEX=flex
+BISON=bison
+RM=rm
+
+INCLUDES+=-I${OPENSWANSRCDIR} -I${KLIPSINC} -I${OPENSWANSRCDIR}/include
+CFLAGS+=${USERCOMPILE} ${PORTINCLUDE} ${INCLUDES}
 
 CFLAGS+= -Wall
 #CFLAGS+= -Wconversion
@@ -21,7 +26,7 @@ NAT_DEFS=-DNAT_TRAVERSAL -DVIRTUAL_IP
 endif
 CFLAGS+= ${NAT_DEFS}
 
-LIBS?=${OSWLOGLIB} ${OPENSWANLIB} ${CRYPTOLIBS} ${OSWLOGLIB} -lgmp
+LIBS?=${PROGLIBS} ${OSWLOGLIB} ${OPENSWANLIB} ${CRYPTOLIBS} -lgmp
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
@@ -62,16 +67,13 @@ endif
 # we can't do tests with two conditions, but we can concatenate the strings
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard ../Makefile.program)
 ifeq ($(SHOULDWERESTART),true../Makefile.program)
-all programs clean:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/${PROGRAM} && make $@
-
-install::
+all programs clean install:
 	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/${PROGRAM} && make $@
 else
 all: ${PROGRAM}
 programs: all
 clean:	cleanall
-install:: doinstall
+install: doinstall
 
 endif
 
@@ -156,7 +158,7 @@ LOADLIBS=${OBJS}
 LDLIBS=${LIBS} ${USERLINK} ${LIBS}
 
 %: %.o $(OBJS) $(OPENSWANLIB)
-	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LIBS) $(USERLINK)
+	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LDLIBS) $(USERLINK)
 
 # cancel direct version
 %: %.c
@@ -220,4 +222,12 @@ endif
 	@rm -f *.o
 
 checkprograms:
+
+# Gather dependencies caused by explicit #includes within .c files
+depend: ${DISTSRC}
+	@(ls $(DISTSRC) | grep '\.c' | xargs gcc -MM ${PORTINCLUDE} ${INCLUDES} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
+
+-include ${srcdir}Makefile.depend
+
+
 

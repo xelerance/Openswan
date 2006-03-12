@@ -5,5 +5,4 @@ ipsec whack --name west--east-psk --encrypt --tunnel --pfs --dpdaction "hold" --
 ipsec whack --debug-all
 ipsec whack --name west--east-psk --initiate
 
-
-
+echo done

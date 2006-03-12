@@ -66,7 +66,7 @@ echo '--- /dev/null   Fri May 10 13:59:54 2002'
 echo '+++ linux/net/ipsec/Makefile.ver  Sun Jul 28 22:10:40 2002'
 echo '@@ -0,0 +1 @@'
 echo -n '+'
-grep IPSECVERSION Makefile.ver
+(cd ${OPENSWANSRCDIR} && make env ) | grep IPSECVERSION
 
 exit 0
 

@@ -21,20 +21,21 @@ print "oid.pl generating oid.h and oid.c\n";
 
 # Generate oid.h
 
-open(OID_H,  ">../../include/oid.h")
+open(OID_H,  ">oid.h")
     or die "could not open 'oid.h': $!";
 
-print OID_H "/* Object identifiers (OIDs) used by Openswan\n",
+print OID_H "/* Object identifiers (OIDs) used by FreeS/WAN\n",
 	    " * ", $copyright, "\n",
 	    " * \n",
 	    " * ", $automatic, "\n",
 	    " * ", $warning, "\n",
 	    " */\n\n",
+            "#include <sys/types.h>\n",
 	    "typedef struct {\n",
 	    "    u_char octet;\n",
 	    "    u_int  next;\n",
 	    "    u_int  down;\n",
-	    "    const u_char *name;\n",
+	    "    const char *name;\n",
 	    "} oid_t;\n",
 	    "\n",
             "extern const oid_t oid_names[];\n",

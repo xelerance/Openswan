@@ -280,16 +280,6 @@ precheck:
 		exit 1 ; \
 	fi
 
-# set version code if this is a fresh CVS checkout
-ifeq ($(wildcard cvs.datemark),cvs.datemark)
-verset Makefile.ver: cvs.datemark
-	echo IPSECVERSION=`date -r cvs.datemark +cvs%Y%b%d_%H:%M:%S` >Makefile.ver 
-	rm -f cvs.datemark; 
-else
-verset Makefile.ver: 
-	@grep IPSECVERSION Makefile.ver
-endif
-
 Makefile: Makefile.ver
 
 # configuring (exit statuses disregarded, something fishy here sometimes)
@@ -612,7 +602,7 @@ ipkg_module:
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile) && \
 	mkdir -p $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile) && \
-	cp ${OPENSWANSRCDIR}/modobj/ipsec.o $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec/
+	cp ${OPENSWANSRCDIR}/modobj/ipsec.*o $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec/
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile)
 
 ipkg_clean:
@@ -628,6 +618,6 @@ ipkg: programs install ipkg_strip ipkg_module
 
 
 env:
-	env
-	exit 1
+	@env | sed -e "s/'/'\\\\''/g" -e "s/\([^=]*\)=\(.*\)/\1='\2'/"
+
 

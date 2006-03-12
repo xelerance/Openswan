@@ -162,7 +162,7 @@ X509_DEFS=-DX509_VERSION=\"${X509_VERSION}\"
 
 # dynamic LDAP CRL fetching requires OpenLDAP library
 ifeq ($(USE_LDAP),true)
-X509_LIBS+= -lldap
+X509_LLIBS+= -lldap
 ifdef LDAP_VERSION
 X509_DEFS+= -DLDAP_VER=$(LDAP_VERSION)
 endif
@@ -172,7 +172,7 @@ ifeq ($(HAVE_THREADS),true)
 HAVE_THREADS_DEFS=-DHAVE_THREADS
 HAVE_THREADS_OBJS=${HAVE_THREADS_DIST_OBJS}
 HAVE_THREADS_SRCS=${HAVE_THREADS_DIST_SRCS}
-HAVE_THREADS_LIBS=-lpthread
+HAVE_THREADS_LLIBS=-lpthread
 endif
 
 ifeq ($(USE_SMARTCARD),true)
@@ -181,7 +181,7 @@ ifeq ($(USE_SMARTCARD),true)
 SMARTCARD_DEFS=-DSMARTCARD
 SMARTCARD_SRCS=${SMARTCARD_DIST_SRCS}
 SMARTCARD_OBJS=${SMARTCARD_DIST_OBJS}
-SMARTCARD_LIBS=-lopensc
+SMARTCARD_LLIBS=-lopensc
 endif
 
 XAUTH_DIST_SRCS=xauth.c xauth.h
@@ -194,7 +194,7 @@ XAUTH_SRCS=${XAUTH_DIST_SRCS}
 # if we use pam for password checking then add it too
 ifeq ($(USE_XAUTHPAM),true)
 XAUTHPAM_DEFS=-DXAUTH_USEPAM
-XAUTHPAM_LIBS=-lpam
+XAUTHPAM_LLIBS=-lpam
 endif
 endif
 
@@ -219,7 +219,7 @@ ifeq ($(USE_LIBCURL),true)
 # This compile option activates dynamic URL fetching
 # with libcurl in the source code
 CURL_DEFS=-DLIBCURL
-CURL_LIBS=-lcurl
+CURL_LLIBS=-lcurl
 endif
 
 ifeq ($(USE_WEAKSTUFF),true)
@@ -274,7 +274,8 @@ LIBSPLUTO+=$(IPSECPOLICY_LIBS) $(X509_LIBS) $(SMARTCARD_LIBS)
 LIBSPLUTO+=$(HAVE_THREADS_LIBS) ${XAUTHPAM_LIBS}
 LIBSPLUTO+=${CURL_LIBS} ${TPM_LIBS}
 LIBSPLUTO+=${EXTRA_CRYPTO_LIBS} ${WHACKLIB}
-LIBSPLUTO+= -lgmp # -lefence
+PLUTOMINUSL+= ${X509_LLIBS} ${CURL_LLIBS} ${TPM_LLIBS} ${HAVE_THREADS_LLIBS} 
+PLUTOMINUSL+= ${SMARTCARD_LLIBS} -lgmp # -lefence
 
 
 

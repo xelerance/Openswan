@@ -29,6 +29,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
+<<<<<<< master
 #include "oswlog.h"
 #include "ipsecconf/confread.h"
 #include "ipsecconf/confwrite.h"
@@ -41,6 +42,20 @@
 #include "ipsecconf/cmp.h"
 #include "ipsecconf/interfaces.h"
 #include "ipsecconf/keywords.h"
+=======
+#include "oswlog.h"
+#include "confread.h"
+#include "confwrite.h"
+#include "starterlog.h"
+#include "files.h"
+#include "starterwhack.h"
+#include "pluto.h"
+#include "klips.h"
+#include "netkey.h"
+#include "cmp.h"
+#include "interfaces.h"
+#include "keywords.h"
+>>>>>>> public
 
 #define FLAG_ACTION_START_PLUTO   0x01
 #define FLAG_ACTION_RELOAD        0x02
@@ -49,12 +64,13 @@
 #define FLAG_ACTION_LISTEN        0x10
 
 static unsigned int _action_ = 0;
-int verbose = 0;
+int verbose;
 int warningsarefatal = 0;
 
 char configfile[PATH_MAX];
 char rootdir[PATH_MAX];       /* when evaluating paths, prefix this to them */
 int showonly = 0;
+char *progname;
 
 static void fsig(int signal)
 {
@@ -124,6 +140,11 @@ static void usage(char *name)
 	exit(1);
 }
 
+void exit_tool(num)
+{
+    exit(num);
+}
+
 int main (int argc, char **argv)
 {
 	struct starter_config *cfg = NULL, *new_cfg;
@@ -138,6 +159,8 @@ int main (int argc, char **argv)
 	extern int yydebug;
 	char *confdir;
 	bool justdump = FALSE;
+
+	progname=argv[0];
 
 	/* find environment location for /etc */
 	confdir = getenv(IPSEC_CONFDIR_VAR);
