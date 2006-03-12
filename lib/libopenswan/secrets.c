@@ -901,10 +901,9 @@ process_secret(struct secret **psecrets, struct secret *s, prompt_pass_t *pass)
 	{
 	    ugh = osw_process_rsa_keyfile(psecrets, &s->pks.u.RSA_private_key,pass);
 	}
-	DBG(DBG_CONTROL,
-	    DBG_log("loaded private key for keyid: %s:%s",
-		    enum_name(&ppk_names, s->pks.kind),
-		    s->pks.u.RSA_private_key.pub.keyid));
+	openswan_log("loaded private key for keyid: %s:%s",
+		     enum_name(&ppk_names, s->pks.kind),
+		     s->pks.u.RSA_private_key.pub.keyid);
     }
     else if (tokeqword("pin"))
     {
