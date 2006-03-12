@@ -41,7 +41,8 @@ char usage[] = "Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--righ
              "                         [--x509req ] [--x509cert ]      \n"
              "                         [ --txt gateway ] [--dhclient ] \n"
              "                         [ --file secretfile ] \n"
-             "                         [ --keynum count ] [ --id identity ]\n";
+             "                         [ --keynum count ] [ --id identity ]\n"
+             "                         [ --rsaid keyid ] [--verbose] [--version]\n";
 
 struct option opts[] = {
   {"key",	no_argument,	NULL,	'k',},
@@ -58,7 +59,9 @@ struct option opts[] = {
   {"file",	required_argument,NULL,	'f',},
   {"keynum",	required_argument,NULL,	'n',},
   {"id",	required_argument,NULL,	'i',},
-  {"version",	no_argument,	NULL,	'v',},
+  {"rsaid",	required_argument,NULL,	'I',},
+  {"version",	no_argument,	 NULL,	'V',},
+  {"verbose",	no_argument,	 NULL,	'v',},
   {0,		0,	NULL,	0,}
 };
 
@@ -98,6 +101,7 @@ int main(int argc, char *argv[])
     bool ipseckey_flg=FALSE;
     bool dhclient_flg=FALSE;
     const struct osw_conf_options *oco = osw_init_options();
+    const char *rsakeyid;
     struct secret *host_secrets = NULL;
     prompt_pass_t pass;
 
@@ -130,6 +134,10 @@ int main(int argc, char *argv[])
 	    strncat(secrets_file, optarg, PATH_MAX);
 	    break;
 
+	case 'I':
+	    rsakeyid=clone_str(optarg, "rsakeyid");
+	    break;
+
 	case 'n':
 	case 'i':
 	case 'v':
@@ -154,9 +162,12 @@ int main(int argc, char *argv[])
 	goto usage;
     }
     
+    /* now load file from indicated location */
     pass.prompt=showhostkey_log;
     pass.fd = 2; /* stderr */
     osw_load_preshared_secrets(&host_secrets, secrets_file, &pass);
+
+    
 
     exit(0);
 }
