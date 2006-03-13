@@ -1976,7 +1976,6 @@ handle_adns_answer(void)
 		    , typename, name_buf, ugh);
 	}
 	DBG(DBG_RAW | DBG_CRYPT | DBG_PARSING | DBG_CONTROL | DBG_DNS,
-	    DBG_log(BLANK_FORMAT);
 	    if (ugh == NULL)
 		DBG_log("asynch DNS answer %lu for %s of %s"
 		    , cr->query.serial, typename, name_buf);
