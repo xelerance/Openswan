@@ -1980,6 +1980,34 @@ init_kernel(void)
     }
 }
 
+/*
+ * see if the attached connection refers to an older state.
+ * if it does, then initiate this state with the appropriate outgoing
+ * references, such that we won't break any userland applications
+ * that are using the conn with REFINFO.
+ */
+static void look_for_replacement_state(struct state *st)
+{
+    struct connection *c = st->st_connection;
+    struct state *ost = state_with_serialno(c->newest_ipsec_sa);
+    
+    DBG(DBG_CONTROL,
+	DBG_log("checking if this is a replacement state");
+	DBG_log("  st=%p ost=%p st->serialno=#%lu ost->serialno=#%lu "
+		, st, ost, st->st_serialno, ost?ost->st_serialno : 0));
+
+    if(ost && ost != st && ost->st_serialno != st->st_serialno) {
+	/*
+	 * then there is an old state associated, and it is
+	 * different then the new one.
+	 */
+	openswan_log("keeping refhim=%lu during rekey"
+		     , (unsigned long)ost->refhim);
+	st->refhim = ost->refhim;
+    }
+}
+
+
 /* Note: install_inbound_ipsec_sa is only used by the Responder.
  * The Responder will subsequently use install_ipsec_sa for the outbound.
  * The Initiator uses install_ipsec_sa to install both at once.
@@ -2032,7 +2060,16 @@ install_inbound_ipsec_sa(struct state *st)
     {
     case route_easy:
     case route_nearconflict:
+	DBG(DBG_CONTROL
+	    , DBG_log("   routing is easy, or has resolvable near-conflict"));
+	break;
+
     case route_unnecessary:
+	/*
+	 * in this situation, we should look and see if there is a state
+	 * that our connection references, that we are in fact replacing.
+	 */
+	look_for_replacement_state(st);
         break;
 
     default:
