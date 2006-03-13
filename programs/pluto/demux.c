@@ -1396,7 +1396,6 @@ read_packet(struct msg_digest *md)
 
     DBG(DBG_RAW | DBG_CRYPT | DBG_PARSING | DBG_CONTROL,
 	{
-	    DBG_log(BLANK_FORMAT);
 	    DBG_log("*received %d bytes from %s:%u on %s (port=%d)"
 		    , (int) pbs_room(&md->packet_pbs)
 		    , ip_str(cur_from), (unsigned) cur_from_port
