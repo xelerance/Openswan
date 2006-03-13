@@ -238,15 +238,20 @@ struct state
     u_int8_t           st_retransmit;          /* Number of retransmits */
     unsigned long      st_try;                 /* number of times rekeying attempted */
                                                /* 0 means the only time */
-    time_t             st_margin;              /* life after EVENT_SA_REPLACE */
+    time_t             st_margin;              /* life after EVENT_SA_REPLACE*/
     unsigned long      st_outbound_count;      /* traffic through eroute */
-    time_t             st_outbound_time;       /* time of last change to st_outbound_count */
+    time_t             st_outbound_time;       /* time of last change to
+						* st_outbound_count */
 
-    bool               st_calculating;         /* set to TRUE, if we are performing cryptographic
-						* operations on this state at this time
+    bool               st_calculating;         /* set to TRUE, if we are
+						* performing cryptographic
+						* operations on this state at
+						* this time
 						*/
 
-    chunk_t            st_p1isa;               /* Phase 1 initiator SA (Payload) for HASH */
+    chunk_t            st_p1isa;               /* Phase 1 initiator SA
+						  (Payload) for HASH
+					       */
     chunk_t            st_skeyid;              /* Key material */
     chunk_t            st_skeyid_d;            /* KM for non-ISAKMP key derivation */
     chunk_t            st_skeyid_a;            /* KM for ISAKMP authentication */
