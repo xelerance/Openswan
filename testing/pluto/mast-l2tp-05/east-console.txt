@@ -30,8 +30,11 @@ east:~#
 east:~#
  if [ ! -f /etc/ppp/chap-secrets ]; then mount --bind /testing/pluto/l2tp-01 /etc/ppp; fi
 east:~#
- (cd /tmp && l2tpd -c /testing/pluto/l2tp-01/east.l2tpd.conf -D 2>/tmp/l2tpd.log ) &
+ (cd /tmp && l2tpd -c /testing/pluto/mast-l2tp-05/east.l2tpd.conf -D 2>/tmp/l2tpd.log ) &
 [1] 9999
+east:~#
+ echo done
+done
 east:~#
  
 
