@@ -2069,12 +2069,13 @@ install_inbound_ipsec_sa(struct state *st)
 	 * in this situation, we should look and see if there is a state
 	 * that our connection references, that we are in fact replacing.
 	 */
-	look_for_replacement_state(st);
         break;
 
     default:
         return FALSE;
     }
+
+    look_for_replacement_state(st);
 
     /* we now have to set up the outgoing SA first, so that
      * we can refer to it in the incoming SA.
