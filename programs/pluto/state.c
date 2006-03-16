@@ -899,7 +899,7 @@ void fmt_state(struct state *st, time_t n
 	/* XXX - mcr last used is really an attribute of the connection */
 	lastused[0] = '\0';
 	if (c->spd.eroute_owner == st->st_serialno
-	&& st->st_outbound_count != 0)
+	    && st->st_outbound_count != 0)
 	{
 	    snprintf(lastused, sizeof(lastused)
 		, " used %lus ago;"
@@ -924,19 +924,20 @@ void fmt_state(struct state *st, time_t n
 	}
 #ifdef KLIPS
 	if (st->st_ah.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL
-	|| st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL
-	|| st->st_ipcomp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
+	    || st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL
+	    || st->st_ipcomp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
 	{
 	    add_said(&c->spd.that.host_addr, st->st_tunnel_out_spi, SA_IPIP);
 	    add_said(&c->spd.this.host_addr, st->st_tunnel_in_spi, SA_IPIP);
 	}
 #endif
 	snprintf(state_buf2, state_buf2_len
-	    , "#%lu: \"%s\"%s%s%s"
+	    , "#%lu: \"%s\"%s%s%s ref=%lu refhim=%lu"
 	    , st->st_serialno
 	    , c->name, inst
 	    , lastused
-	    , buf);
+	    , buf
+		 , (unsigned long)st->ref, (unsigned long)st->refhim);
 
 #	undef add_said
     }
