@@ -1155,7 +1155,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     bool replace;
     bool outgoing_ref_set = FALSE;
     bool incoming_ref_set = FALSE;
-    IPsecSAref_t refhim = st->refhim;
+    IPsecSAref_t refhim = st->st_refhim;
     IPsecSAref_t new_refhim = IPSEC_SAREF_NULL;
 
     /* SPIs, saved for spigrouping or undoing, if necessary */
@@ -1268,7 +1268,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	    new_refhim = said_next->ref;
 	}
 	if(!incoming_ref_set && inbound) {
-	    st->ref = said_next->ref;
+	    st->st_ref = said_next->ref;
 	    incoming_ref_set=TRUE;
 	}
         said_next++;
@@ -1337,7 +1337,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	    new_refhim = said_next->ref;
 	}
 	if(!incoming_ref_set && inbound) {
-	    st->ref = said_next->ref;
+	    st->st_ref = said_next->ref;
 	    incoming_ref_set=TRUE;
 	}
         said_next++;
@@ -1556,7 +1556,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	    new_refhim = said_next->ref;
 	}
 	if(!incoming_ref_set && inbound) {
-	    st->ref = said_next->ref;
+	    st->st_ref = said_next->ref;
 	    incoming_ref_set=TRUE;
 	}
         said_next++;
@@ -1632,7 +1632,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	    new_refhim = said_next->ref;
 	}
 	if(!incoming_ref_set && inbound) {
-	    st->ref = said_next->ref;
+	    st->st_ref = said_next->ref;
 	    incoming_ref_set=TRUE;
 	}
         said_next++;
@@ -1747,7 +1747,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     }
 
     if(new_refhim != IPSEC_SAREF_NULL) {
-	st->refhim = new_refhim;
+	st->st_refhim = new_refhim;
     }
 
 #ifdef DEBUG
@@ -2002,8 +2002,8 @@ static void look_for_replacement_state(struct state *st)
 	 * different then the new one.
 	 */
 	openswan_log("keeping refhim=%lu during rekey"
-		     , (unsigned long)ost->refhim);
-	st->refhim = ost->refhim;
+		     , (unsigned long)ost->st_refhim);
+	st->st_refhim = ost->st_refhim;
     }
 }
 
@@ -2077,16 +2077,19 @@ install_inbound_ipsec_sa(struct state *st)
 
     look_for_replacement_state(st);
 
-    /* we now have to set up the outgoing SA first, so that
+    /*
+     * we now have to set up the outgoing SA first, so that
      * we can refer to it in the incoming SA.
      */
-    if(st->refhim == IPSEC_SAREF_NULL) {
+    if(st->st_refhim == IPSEC_SAREF_NULL && !st->st_outbound_done) {
+	DBG(DBG_CONTROL, DBG_log("installing outgoing SA now as refhim=%u", st->st_refhim));
 	if(!setup_half_ipsec_sa(st, FALSE)) {
-	    DBG_log("failed to install outgoing SA: %u", st->refhim);
+	    DBG_log("failed to install outgoing SA: %u", st->st_refhim);
 	    return FALSE;
 	}
+	st->st_outbound_done = TRUE;
     }
-    DBG_log("outgoing SA has refhim=%u", st->refhim);
+    DBG(DBG_CONTROL, DBG_log("outgoing SA has refhim=%u", st->st_refhim));
 
     /* (attempt to) actually set up the SAs */
     return setup_half_ipsec_sa(st, TRUE);
@@ -2402,19 +2405,20 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
     /* (attempt to) actually set up the SA group */
 
     /* setup outgoing SA if we haven't already */
-    if(st->refhim == IPSEC_SAREF_NULL) {
+    if(!st->st_outbound_done) {
 	if(!setup_half_ipsec_sa(st, FALSE)) {
 	    return FALSE;
 	}
-	DBG(DBG_KLIPS, DBG_log("set up outoing SA, ref=%u/%u", st->ref, st->refhim));
+	DBG(DBG_KLIPS, DBG_log("set up outoing SA, ref=%u/%u", st->st_ref, st->st_refhim));
+	st->st_outbound_done = TRUE;
     }
 
     /* now setup inbound SA */
-    if(st->ref == IPSEC_SAREF_NULL && inbound_also) {
+    if(st->st_ref == IPSEC_SAREF_NULL && inbound_also) {
 	if(!setup_half_ipsec_sa(st, TRUE)) {
 	    return FALSE;
 	}
-	DBG(DBG_KLIPS, DBG_log("set up incoming SA, ref=%u/%u", st->ref, st->refhim));
+	DBG(DBG_KLIPS, DBG_log("set up incoming SA, ref=%u/%u", st->st_ref, st->st_refhim));
     }
 
     if(rb == route_unnecessary) {

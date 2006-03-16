@@ -937,7 +937,7 @@ void fmt_state(struct state *st, time_t n
 	    , c->name, inst
 	    , lastused
 	    , buf
-		 , (unsigned long)st->ref, (unsigned long)st->refhim);
+		 , (unsigned long)st->st_ref, (unsigned long)st->st_refhim);
 
 #	undef add_said
     }
