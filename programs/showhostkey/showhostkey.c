@@ -30,6 +30,8 @@
 #include <netinet/in.h>
 #include <openswan.h>
 
+#include <arpa/nameser.h>
+
 #include "constants.h"
 #include "oswalloc.h"
 #include "oswlog.h"
@@ -82,7 +84,24 @@ showhostkey_log(int mess_no, const char *message, ...)
     vfprintf(stderr, message, args);
     va_end(args);
 }
+
+void dump_keys(struct secret *host_secrets)
+{
+    
+}
      
+void list_keys(struct secret *host_secrets)
+{
+    
+}
+
+void show_dnskey(struct secret *host_secrets
+		 , const char *id
+		 , int rr_type)
+{
+}
+     
+
 
 int main(int argc, char *argv[])
 {
@@ -102,7 +121,7 @@ int main(int argc, char *argv[])
     bool dhclient_flg=FALSE;
     int verbose=0;
     const struct osw_conf_options *oco = osw_init_options();
-    const char *rsakeyid;
+    const char *rsakeyid, *keyid;
     struct secret *host_secrets = NULL;
     prompt_pass_t pass;
 
@@ -135,12 +154,15 @@ int main(int argc, char *argv[])
 	    strncat(secrets_file, optarg, PATH_MAX);
 	    break;
 
+	case 'i':
+	    keyid=clone_str(optarg, "keyname");
+	    break;
+
 	case 'I':
 	    rsakeyid=clone_str(optarg, "rsakeyid");
 	    break;
 
 	case 'n':
-	case 'i':
 	case 'h':
 	    break;
 
@@ -170,12 +192,42 @@ int main(int argc, char *argv[])
 	goto usage;
     }
     
+    if((key_flg + left_flg + right_flg + dump_flg + list_flg
+	+ x509self_flg + x509req_flg + x509cert_flg + txt_flg
+	+ ipseckey_flg + dhclient_flg) > 1) {
+	fprintf(stderr, "You must specify only one operation\n");
+	goto usage;
+    }
+
     /* now load file from indicated location */
     pass.prompt=showhostkey_log;
     pass.fd = 2; /* stderr */
     osw_load_preshared_secrets(&host_secrets, secrets_file, &pass);
 
+    /* options that apply to entire files */
+    if(dump_flg) {
+	/* dumps private key info too */
+	dump_keys(host_secrets);
+	exit(0);
+    }
+
+    if(list_flg) {
+	list_keys(host_secrets);
+	exit(0);
+    }
+
     
+    if(key_flg || ipseckey_flg || txt_flg) {
+	int rr_type;
+	if(key_flg) {
+	    rr_type = ns_t_key;
+	} else if(ipseckey_flg) {
+	    rr_type = ns_t_ipseckey;
+	} else if(txt_flg) {
+	    rr_type = ns_t_txt;
+	}
+	show_dnskey(host_secrets, keyid, rr_type);
+    }
 
     exit(0);
 }
