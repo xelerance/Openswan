@@ -29,7 +29,6 @@
 #include <errno.h>
 #include <fcntl.h>
 
-<<<<<<< master
 #include "oswlog.h"
 #include "ipsecconf/confread.h"
 #include "ipsecconf/confwrite.h"
@@ -42,20 +41,6 @@
 #include "ipsecconf/cmp.h"
 #include "ipsecconf/interfaces.h"
 #include "ipsecconf/keywords.h"
-=======
-#include "oswlog.h"
-#include "confread.h"
-#include "confwrite.h"
-#include "starterlog.h"
-#include "files.h"
-#include "starterwhack.h"
-#include "pluto.h"
-#include "klips.h"
-#include "netkey.h"
-#include "cmp.h"
-#include "interfaces.h"
-#include "keywords.h"
->>>>>>> public
 
 #define FLAG_ACTION_START_PLUTO   0x01
 #define FLAG_ACTION_RELOAD        0x02

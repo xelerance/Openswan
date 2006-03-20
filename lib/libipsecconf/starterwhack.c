@@ -19,6 +19,8 @@
 #include <sys/un.h>
 #include <sys/queue.h>
 #include <linux/stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -33,7 +35,119 @@
 #endif
 
 #include "oswalloc.h"
+#include "oswlog.h"
 #include "whack.h"
+
+static int
+send_reply(int sock, char *buf, ssize_t len)
+{
+    /* send the secret to pluto */
+    if (write(sock, buf, len) != len)
+    {
+	int e = errno;
+
+	starter_log(LOG_LEVEL_ERR, "whack: write() failed (%d %s)\n",
+		    e, strerror(e));
+	return RC_WHACK_PROBLEM;
+    }
+    return 0;
+}
+
+int starter_whack_read_reply(int sock,
+			     char xauthname[128],
+			     char xauthpass[128],
+			     int xauthnamelen,
+			     int xauthpasslen)
+{
+	char buf[4097];	/* arbitrary limit on log line length */
+	char *be = buf;
+	int ret = 0;
+	
+	for (;;)
+	{
+		char *ls = buf;
+		ssize_t rl = read(sock, be, (buf + sizeof(buf)-1) - be);
+		
+		if (rl < 0)
+		{
+			int e = errno;
+			
+			fprintf(stderr, "whack: read() failed (%d %s)\n", e, strerror(e));
+			return RC_WHACK_PROBLEM;
+		}
+		if (rl == 0)
+		{
+			if (be != buf)
+				fprintf(stderr, "whack: last line from pluto too long or unterminated\n");
+			break;
+		}
+		
+		be += rl;
+		*be = '\0';
+		
+		for (;;)
+		{
+		    char *le = strchr(ls, '\n');
+
+		    if (le == NULL)
+		    {
+			/* move last, partial line to start of buffer */
+			memmove(buf, ls, be-ls);
+			be -= ls - buf;
+			break;
+		    }
+		    
+		    le++;	/* include NL in line */
+		    write(1, ls, le - ls);
+		    fsync(1);
+		    
+		    /* figure out prefix number
+		     * and how it should affect our exit status
+		     */
+		    {
+			unsigned long s = strtoul(ls, NULL, 10);
+
+			switch (s)
+			{
+			case RC_COMMENT:
+			case RC_LOG:
+			    /* ignore */
+			    break;
+			case RC_SUCCESS:
+			    /* be happy */
+			    ret = 0;
+			    break;
+
+			case RC_ENTERSECRET:
+				if(xauthpasslen==0) {
+					xauthpasslen = whack_get_secret(xauthpass
+								  , sizeof(xauthpass));
+				}
+				ret=send_reply(sock, xauthpass, xauthpasslen);
+				if(ret!=0) return ret;
+				break;
+
+			case RC_XAUTHPROMPT:
+				if(xauthnamelen==0) {
+					xauthnamelen = whack_get_value(xauthname
+								 , sizeof(xauthname));
+				}
+				ret=send_reply(sock, xauthname, xauthnamelen);
+				if(ret!=0) return ret;
+				break;
+
+			    /* case RC_LOG_SERIOUS: */
+			default:
+				/* pass through */
+				ret = s;
+				break;
+			}
+		    }
+		    ls = le;
+		}
+	}
+	return ret;
+}
 
 static int send_whack_msg (struct whack_message *msg)
 {
@@ -42,6 +156,7 @@ static int send_whack_msg (struct whack_message *msg)
 	ssize_t len;
 	struct whackpacker wp;
 	err_t ugh;
+	int ret;
 
 	/**
 	 * Pack strings
@@ -87,11 +202,17 @@ static int send_whack_msg (struct whack_message *msg)
 	}
 
 	/**
-	 * TODO: read reply
+	 * read reply
 	 */
+	{
+		char xauthname[128];
+		char xauthpass[128];
+			
+		ret = starter_whack_read_reply(sock, xauthname,xauthpass,0,0);
+		close(sock);
+	}
 
-	close(sock);
-	return 0;
+	return ret;
 }
 
 static void init_whack_msg (struct whack_message *msg)
@@ -210,9 +331,9 @@ int starter_whack_add_conn (struct starter_conn *conn)
 
 	r =  send_whack_msg(&msg);
 
-	if ((r==0) && (conn->policy & POLICY_RSASIG)) {
-		r += starter_whack_add_pubkey (conn, &conn->left, "left");
-		r += starter_whack_add_pubkey (conn, &conn->right, "right");
+	if ((r>0) && (conn->policy & POLICY_RSASIG)) {
+		starter_whack_add_pubkey (conn, &conn->left, "left");
+		starter_whack_add_pubkey (conn, &conn->right, "right");
 	}
 
 	return r;

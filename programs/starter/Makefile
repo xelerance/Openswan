@@ -21,8 +21,8 @@ PROGLIBS=${WHACKLIB} ${IPSECCONFLIB}
 PROGRAM=starter
 
 # starter.o is implictely included.
-OBJS=invokepluto.o starterwhack.o starterlog.o klips.o 
-OBJS+=interfaces.o exec.o netkey.o
+OBJS=invokepluto.o klips.o 
+OBJS+=exec.o netkey.o
 DISTSRC=$(OBJS:.o=.c)
 
 # reach into pluto for now.
