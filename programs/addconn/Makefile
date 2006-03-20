@@ -16,7 +16,8 @@
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-PROGLIBS=${WHACKLIB} ${IPSECCONFLIB}
+PROGLIBS=${WHACKLIB} ${IPSECCONFLIB} 
+EXTRALIBS=-lefence
 
 PROGRAM=addconn
 
