@@ -172,6 +172,8 @@ main(int argc, char *argv[])
 	printf("conn %s loaded\n", conn->name);
     }
 
+    confwrite(cfg, stdout);
+
     exit(0);
 }
 

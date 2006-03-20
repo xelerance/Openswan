@@ -112,11 +112,18 @@ void free_list(char **list)
  */
 char **new_list(char *value)
 {
-	char *val, *b, *e, *end, **ret;
+	char *val, *b, *e, *end, **nlist;
 	int count;
-	val = value ? xstrdup(value) : NULL;
-	if (!val) return NULL;
+
+	if(value == NULL) return NULL;
+
+	/* avoid damaging original string */
+	val = xstrdup(value);
+	if(val == NULL) return NULL;
+
 	end = val + strlen(val);
+
+	/* count number of items in string */
 	for (b=val, count=0; b<end; ) {
 		for (e=b; ((*e!=' ') && (*e!='\0')); e++);
 		*e = '\0';
@@ -127,21 +134,22 @@ char **new_list(char *value)
 		free(val);
 		return NULL;
 	}
-	ret = (char **)malloc((count+1) * sizeof(char *));
-	if (!ret) {
+	
+	nlist = (char **)malloc((count+1) * sizeof(char *));
+	if (!nlist) {
 		free(val);
 		return NULL;
 	}
 	for (b=val, count=0; b<end; ) {
 		for (e=b; (*e!='\0'); e++);
 		if (e!=b) {
-			ret[count++] = xstrdup(b);
+			nlist[count++] = xstrdup(b);
 		}
 		b=e+1;
 	}
-	ret[count] = NULL;
+	nlist[count] = NULL;
 	free(val);
-	return ret;
+	return nlist;
 }
 
 /**
@@ -589,10 +597,6 @@ static int load_conn_basic(struct starter_conn *conn
     /* turn all of the keyword/value pairs into options/strings in left/right */
     err = translate_conn(conn, sl, TRUE, perr);
 
-    /* now, process the also's */
-    if (conn->alsos) free_list(conn->alsos);
-    conn->alsos = new_list(conn->strings[KSF_ALSO]);
-
     return err;
 }
 
@@ -688,7 +692,7 @@ static int load_conn (struct starter_config *cfg
 			for(newalsoplace=0; newalsos[newalsoplace]!=NULL; newalsoplace++);
 			
 			/* extend conn->alsos */
-			alsos = xrealloc(alsos, (alsosize+newalsoplace) * sizeof(char *));
+			alsos = xrealloc(alsos, (alsosize+newalsoplace+1) * sizeof(char *));
 			for(newalsoplace=0; newalsos[newalsoplace]!=NULL; newalsoplace++)
 			{
 			    assert(conn != NULL);
@@ -699,6 +703,7 @@ static int load_conn (struct starter_config *cfg
 			    
 			    alsos[alsosize++]=xstrdup(newalsos[newalsoplace]);
 			}
+			alsos[alsosize]=NULL;
 		    }
 		    
 		    free_list(newalsos);

@@ -1,5 +1,6 @@
-/* FreeS/WAN config file writer (confwrite.c)
- * Copyright (C) 2004 Michael Richardson <mcr@sandelman.ottawa.on.ca>
+/*
+ * Openswan config file writer (confwrite.c)
+ * Copyright (C) 2004-2006 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -44,13 +45,12 @@ void confwrite(struct starter_config *cfg, FILE *out)
 
 	    fprintf(out, "conn %s\n", conn->name);
 
+	    if(conn->alsos) 
 	    { /* handle also= as a comment */
 		
 		int alsoplace=0;
 		fprintf(out, "\t#also = ");
-		while(conn->alsos != NULL
-		      && conn->alsos[alsoplace] != NULL 
-		      && alsoplace < ALSO_LIMIT)
+		while(conn->alsos[alsoplace] != NULL)
 		{
 		    fprintf(out, "%s ", conn->alsos[alsoplace]);
 		    alsoplace++;
