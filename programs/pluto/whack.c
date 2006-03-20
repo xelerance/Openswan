@@ -776,66 +776,6 @@ check_end(struct whack_end *this, struct whack_end *that
 	diagq("the protocol for leftprotoport and rightprotoport must be the same", NULL);
 }
 
-static size_t
-get_secret(char *buf, size_t bufsize)
-{
-    const char *secret;
-    int len;
-
-    fflush(stdout);
-    usleep(20000); /* give fflush time for flushing */
-    secret = getpass("Enter secret: ");
-    secret = (secret == NULL) ? "" : secret;
-
-    strncpy(buf, secret, bufsize);
-
-    len = strlen(buf) + 1;
-    
-    return len;
-}
-
-static int
-get_value(char *buf, size_t bufsize)
-{
-    int len;
-    int try;
-
-    fflush(stdout);
-    usleep(20000); /* give fflush time for flushing - has to go through awk */
-
-    try = 3;
-    len = 0;
-    while(try > 0 && len==0)
-    {
-	fprintf(stderr, "Name enter:   ");
-	
-	memset(buf, 0, bufsize);
-	
-	if(fgets(buf, bufsize, stdin) != buf) {
-	    if(errno == 0) {
-		fprintf(stderr, "Can not read password from standard in\n");
-		exit(RC_WHACK_PROBLEM);
-	    } else {
-		perror("fgets value");
-		exit(RC_WHACK_PROBLEM);
-	    }
-	}
-	
-	/* send the value to pluto, including \0, but fgets adds \n */
-	len = strlen(buf);
-	if(len == 0)
-	{
-	    fprintf(stderr, "answer was empty, retry\n");
-	}
-    }
-    if(len ==  0)
-    {
-	exit(RC_WHACK_PROBLEM);
-    }
-
-    return len;
-}
-
 static void
 send_reply(int sock, char *buf, ssize_t len)
 {
@@ -1904,7 +1844,7 @@ main(int argc, char **argv)
 			case RC_ENTERSECRET:
 			    if(!gotxauthpass)
 			    {
-				xauthpasslen = get_secret(xauthpass
+				xauthpasslen = whack_get_secret(xauthpass
 							  , sizeof(xauthpass));
 			    }
 			    send_reply(sock, xauthpass, xauthpasslen);
@@ -1913,7 +1853,7 @@ main(int argc, char **argv)
 			case RC_XAUTHPROMPT:
 			    if(!gotxauthname)
 			    {
-				xauthnamelen = get_value(xauthname
+				xauthnamelen = whack_get_value(xauthname
 							 , sizeof(xauthname));
 			    }
 			    send_reply(sock, xauthname, xauthnamelen);
