@@ -372,7 +372,8 @@ static int validate_end(struct starter_conn *conn_st
  */
 static bool translate_conn (struct starter_conn *conn
 			    , struct section_list *sl
-			    , bool permitreplace)
+			    , bool permitreplace
+			    , char **error)
 {
     unsigned int err, field;
     ksf    *the_strings;
@@ -396,9 +397,12 @@ static bool translate_conn (struct starter_conn *conn
 	if((kw->keyword.keydef->validity & kv_conn) == 0)
 	{
 	    /* this isn't valid in a conn! */
-	    starter_log(LOG_LEVEL_INFO,
-			"keyword '%s' is not valid in a conn (%s) (#%d)\n",
-			kw->keyword.keydef->keyname, sl->name, i);
+	    *error = _tmp_err;
+
+	    snprintf(*error, sizeof(_tmp_err),
+		     "keyword '%s' is not valid in a conn (%s) (#%d)\n",
+		     kw->keyword.keydef->keyname, sl->name, i);
+	    starter_log(LOG_LEVEL_INFO, _tmp_err);
 	    continue;
 	}
 	
@@ -436,11 +440,15 @@ static bool translate_conn (struct starter_conn *conn
 	    {
 		if(!permitreplace)
 		{
-		    starter_log(LOG_LEVEL_INFO
-				, "duplicate key '%s' in conn %s while processing def %s"
-				, kw->keyword.keydef->keyname
-				, conn->name
-				, sl->name);
+		    *error = _tmp_err;
+
+		    snprintf(*error, sizeof(_tmp_err)
+			     , "duplicate key '%s' in conn %s while processing def %s"
+			     , kw->keyword.keydef->keyname
+			     , conn->name
+			     , sl->name);
+		    
+		    starter_log(LOG_LEVEL_INFO, _tmp_err);
 		    if(kw->keyword.string == NULL
 		       || (*the_strings)[field] == NULL
 		       || strcmp(kw->keyword.string, (*the_strings)[field])!=0)
@@ -492,11 +500,15 @@ static bool translate_conn (struct starter_conn *conn
 	    {
 		if(!permitreplace)
 		{
-		    starter_log(LOG_LEVEL_INFO
+		    *error = _tmp_err;
+
+		    snprintf(*error, sizeof(_tmp_err)
 				, "duplicate key '%s' in conn %s while processing def %s"
 				, kw->keyword.keydef->keyname
 				, conn->name
 				, sl->name);
+
+		    starter_log(LOG_LEVEL_INFO, _tmp_err);
 
 		    /* only fatal if we try to change values */
 		    if((*the_options)[field] != kw->number
@@ -536,11 +548,14 @@ static bool translate_conn (struct starter_conn *conn
 	    {
 		if(!permitreplace)
 		{
-		    starter_log(LOG_LEVEL_INFO
-				, "duplicate key '%s' in conn %s while processing def %s"
-				, kw->keyword.keydef->keyname
-				, conn->name
-				, sl->name);
+		    *error = _tmp_err;
+
+		    snprintf(*error, sizeof(_tmp_err)
+			     , "duplicate key '%s' in conn %s while processing def %s"
+			     , kw->keyword.keydef->keyname
+			     , conn->name
+			     , sl->name);
+		    starter_log(LOG_LEVEL_INFO, _tmp_err);
 		    if((*the_options)[field] != kw->number)
 		    {
 			err++;
@@ -559,7 +574,8 @@ static bool translate_conn (struct starter_conn *conn
 
 
 static int load_conn_basic(struct starter_conn *conn
-			   , struct section_list *sl)
+			   , struct section_list *sl
+			   , char **perr)
 {
     int err;
 
@@ -571,7 +587,7 @@ static int load_conn_basic(struct starter_conn *conn
     memset(conn->right.options_set, 0, sizeof(conn->left.options_set));
 
     /* turn all of the keyword/value pairs into options/strings in left/right */
-    err = translate_conn(conn, sl, TRUE);
+    err = translate_conn(conn, sl, TRUE, perr);
 
     /* now, process the also's */
     if (conn->alsos) free_list(conn->alsos);
@@ -599,7 +615,7 @@ static int load_conn (struct starter_config *cfg
 	
     err = 0;
 
-    err += load_conn_basic(conn, sl);
+    err += load_conn_basic(conn, sl, perr);
     if(err) return err;
 
     if(conn->strings[KSF_ALSO] != NULL
@@ -631,7 +647,7 @@ static int load_conn (struct starter_config *cfg
 
 	alsoplace = 0;
 	while(alsos != NULL
-	      && alsos[alsoplace] != NULL && alsoplace < alsosize
+	      && alsoplace < alsosize && alsos[alsoplace] != NULL 
 	      && alsoplace < ALSO_LIMIT)
 	{
 	    /*
@@ -659,7 +675,7 @@ static int load_conn (struct starter_config *cfg
 		sl1->beenhere = TRUE;
 
 		/* translate things, but do not replace earlier settings */
-		err += translate_conn(conn, sl1, FALSE);
+		err += translate_conn(conn, sl1, FALSE, perr);
 
 		if(conn->strings[KSF_ALSO])
 		{
@@ -706,20 +722,6 @@ static int load_conn (struct starter_config *cfg
 	    free_list(conn->alsos);
 	}
 	conn->alsos = alsos;
-    }
-    
-    
-
-    /* preview of getting rid of transport mode */
-    if(conn->options[KBF_TYPE] == KS_TRANSPORT)
-    {
-	extern struct keyword_enum_values kw_type_list;
-	
-	starter_log(LOG_LEVEL_INFO, "conn %s - only tunnel mode is supported, not %s"
-		    , conn->name
-		    , keyword_name(&kw_type_list, conn->options[KBF_TYPE]));
-	
-	POLICY_ONLY_CONN(conn);
     }
     
     KW_POLICY_FLAG(KBF_TYPE, POLICY_TUNNEL);
@@ -793,7 +795,7 @@ struct starter_config *confread_load(const char *file, char **perr)
 	struct config_parsed *cfgp;
 	struct section_list *sconn;
 	struct starter_conn *conn;
-	unsigned int err = 0;
+	unsigned int err = 0, connerr;
 
 	/**
 	 * Load file
@@ -807,6 +809,7 @@ struct starter_config *confread_load(const char *file, char **perr)
 		parser_free_conf(cfgp);
 		return NULL;
 	}
+	memset(cfg, 0, sizeof(*cfg));
 
 	/**
 	 * Set default values
@@ -839,7 +842,7 @@ struct starter_config *confread_load(const char *file, char **perr)
 	/**
 	 * Load other conns
 	 */
-	for(sconn = cfgp->sections.tqh_first; (!err) && sconn != NULL; sconn = sconn->link.tqe_next)
+	for(sconn = cfgp->sections.tqh_first; sconn != NULL; sconn = sconn->link.tqe_next)
 	{
 		if (strcmp(sconn->name,"%default")==0) continue;
 		starter_log(LOG_LEVEL_DEBUG, "Loading conn %s", sconn->name);
@@ -858,24 +861,20 @@ struct starter_config *confread_load(const char *file, char **perr)
 		}
 		conn->name = xstrdup(sconn->name);
 		conn->desired_state = STARTUP_NO;
-		conn->state = STATE_IGNORE;
+		conn->state = STATE_FAILED;
 
 		TAILQ_INSERT_TAIL(&cfg->conns, conn, link); 
 
-		err += load_conn (cfg, conn, cfgp, sconn, TRUE, perr);
+		connerr = load_conn (cfg, conn, cfgp, sconn, TRUE, perr);
 		
-		if(err == 0)
+		if(connerr == 0)
 		{
 		    conn->state = STATE_LOADED;
 		}
+		err += connerr;
 	}
 
 	parser_free_conf(cfgp);
-
-	if (err) {
-		confread_free(cfg);
-		cfg = NULL;
-	}
 
 	return cfg;
 }
