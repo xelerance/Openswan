@@ -45,11 +45,9 @@ struct starter_end {
     unsigned char *rsakey2;
     u_int16_t port;
     u_int8_t protocol;
-	bool has_client_wildcard;
-	char *cert;
-#ifdef VIRTUAL_IP
-	char *virt;
-#endif
+    bool has_client_wildcard;
+    char *cert;
+    char *virt;
     ksf  strings;
     knf  options;
 
@@ -86,6 +84,7 @@ struct starter_conn {
 	STATE_ADDED,
 	STATE_UP,
 	STATE_REPLACED,
+	STATE_FAILED,
 	STATE_IGNORE
     } state;
 
@@ -100,16 +99,11 @@ struct starter_config {
 	
 	/* derived types */
 	char **interfaces;
-                bool strictcrlpolicy;
-                bool nocrsend;
-#ifdef NAT_TRAVERSAL
-                bool nat_traversal;
-                unsigned int keep_alive;
-#endif
-#ifdef VIRTUAL_IP
-                char *virtual_private;
-#endif
-	
+	bool strictcrlpolicy;
+	bool nocrsend;
+	bool nat_traversal;
+	unsigned int keep_alive;
+	char *virtual_private;
     } setup;
 
     /* conn %default */
