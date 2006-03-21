@@ -734,12 +734,18 @@ static int load_conn (struct starter_config *cfg
     KW_POLICY_FLAG(KBF_PFS,  POLICY_PFS);
     
     /* reset authby flags */
-    conn->policy &= ~(POLICY_ID_AUTH_MASK);
-    conn->policy |= conn->options[KBF_AUTHBY];
+    if(conn->options_set[KBF_AUTHBY]) {
+	conn->policy &= ~(POLICY_ID_AUTH_MASK);
+	conn->policy |= conn->options[KBF_AUTHBY];
+
+	printf("%s: setting conn->policy=%08x (%08x)\n",
+	       conn->name,
+	       (unsigned int)conn->policy,
+	       conn->options[KBF_AUTHBY]);
+    }
     
     KW_POLICY_FLAG(KBF_REKEY, POLICY_DONT_REKEY);
-    KW_POLICY_FLAG(KBF_COMPRESS, POLICY_COMPRESS);
-    
+
     err += validate_end(conn, &conn->left,  TRUE, perr);
     err += validate_end(conn, &conn->right, FALSE,perr);
 
@@ -791,8 +797,15 @@ static void conn_default (struct starter_conn *conn,
     
     CONN_STR(conn->esp);
     CONN_STR(conn->ike);
+
 #undef CONN_STR
 }
+
+static void conn_sysdefaults(struct starter_conn *conn)
+{
+    conn->policy = POLICY_RSASIG|POLICY_TUNNEL;
+}
+
 
 struct starter_config *confread_load(const char *file, char **perr)
 {
@@ -860,6 +873,7 @@ struct starter_config *confread_load(const char *file, char **perr)
 			return NULL;
 		}
 
+		conn_sysdefaults(conn);
 		if(cfg->got_default)
 		{
 		    conn_default(conn, &cfg->conn_default);
