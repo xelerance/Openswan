@@ -300,7 +300,7 @@ void confwrite_conn(FILE *out,
 	if(conn->policy & POLICY_TUNNEL) {
 	    fprintf(out, "\ttype=tunnel\n");
 	} else {
-	    fprintf(out, "\ttype=tunnel\n");
+	    fprintf(out, "\ttype=transport\n");
 	}
 
 	if(conn->policy & POLICY_COMPRESS) {
@@ -329,6 +329,10 @@ void confwrite_conn(FILE *out,
 	    
 	case POLICY_RSASIG:
 	    fprintf(out, "\tauthby=rsasig\n");
+	    break;
+
+	default:
+	    fprintf(out, "\tauthby=never\n");
 	    break;
 	}
     }
