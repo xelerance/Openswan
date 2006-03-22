@@ -37,6 +37,7 @@
 #include "oswalloc.h"
 #include "oswlog.h"
 #include "whack.h"
+#include "id.h"
 
 static int
 send_reply(int sock, char *buf, ssize_t len)
@@ -264,8 +265,9 @@ static int starter_whack_add_pubkey (struct starter_conn *conn,
 	struct starter_end *end, const char *lr)
 {
 	const char *err;
-	static char keyspace[1024 + 4];
+	char keyspace[1024 + 4];
 	struct whack_message msg;
+	int ret;
 
 	init_whack_msg(&msg);
 
@@ -282,13 +284,22 @@ static int starter_whack_add_pubkey (struct starter_conn *conn,
 		}
 		else {
 			msg.keyval.ptr = keyspace;
-			return send_whack_msg(&msg);
+			ret = send_whack_msg(&msg);
 		}
 	}
+
+	if(ret < 0) return ret;
+
+	init_whack_msg(&msg);
+
+	msg.whack_key = TRUE;
+	msg.pubkey_alg = PUBKEY_ALG_RSA;
 	if (end->id && end->rsakey2) {
+		printf("addkey2: %s\n", lr);
+
 		msg.keyid = end->id;
 		err = atobytes(end->rsakey2, 0, keyspace, sizeof(keyspace),
-			&msg.keyval.len);
+			       &msg.keyval.len);
 		if (err) {
 			starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey malformed [%s]",
 				connection_name(conn), lr, err);
@@ -331,7 +342,7 @@ int starter_whack_add_conn (struct starter_conn *conn)
 
 	r =  send_whack_msg(&msg);
 
-	if ((r>0) && (conn->policy & POLICY_RSASIG)) {
+	if ((r==0) && (conn->policy & POLICY_RSASIG)) {
 		starter_whack_add_pubkey (conn, &conn->left, "left");
 		starter_whack_add_pubkey (conn, &conn->right, "right");
 	}

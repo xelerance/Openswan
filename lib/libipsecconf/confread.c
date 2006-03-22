@@ -57,7 +57,7 @@ static void default_values (struct starter_config *cfg)
 	cfg->setup.options[KBF_UNIQUEIDS]= FALSE;
 	cfg->setup.options[KBF_TYPE] = KS_TUNNEL;
 
-	cfg->conn_default.policy = POLICY_ENCRYPT | POLICY_TUNNEL | POLICY_RSASIG;
+	cfg->conn_default.policy = POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
 
 	cfg->conn_default.options[KBF_IKELIFETIME] = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
 	cfg->conn_default.options[KBF_SALIFETIME]  = SA_LIFE_DURATION_DEFAULT;
@@ -798,14 +798,9 @@ static void conn_default (struct starter_conn *conn,
     CONN_STR(conn->esp);
     CONN_STR(conn->ike);
 
+    conn->policy = def->policy;
 #undef CONN_STR
 }
-
-static void conn_sysdefaults(struct starter_conn *conn)
-{
-    conn->policy = POLICY_RSASIG|POLICY_TUNNEL;
-}
-
 
 struct starter_config *confread_load(const char *file, char **perr)
 {
@@ -850,10 +845,6 @@ struct starter_config *confread_load(const char *file, char **perr)
 		if (strcmp(sconn->name,"%default")==0) {
 			starter_log(LOG_LEVEL_DEBUG, "Loading default conn");
 			err += load_conn (cfg, &cfg->conn_default, cfgp, sconn, FALSE, perr);
-			if(err == 0)
-			{
-			    cfg->got_default = TRUE;
-			}
 		}
 	}
 
@@ -873,11 +864,7 @@ struct starter_config *confread_load(const char *file, char **perr)
 			return NULL;
 		}
 
-		conn_sysdefaults(conn);
-		if(cfg->got_default)
-		{
-		    conn_default(conn, &cfg->conn_default);
-		}
+		conn_default(conn, &cfg->conn_default);
 		conn->name = xstrdup(sconn->name);
 		conn->desired_state = STARTUP_NO;
 		conn->state = STATE_FAILED;
