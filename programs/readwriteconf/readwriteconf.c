@@ -169,7 +169,7 @@ main(int argc, char *argv[])
 	conn != NULL;
 	conn = conn->link.tqe_next)
     {
-	printf("conn %s loaded\n", conn->name);
+	printf("#conn %s loaded\n", conn->name);
     }
 
     confwrite(cfg, stdout);
