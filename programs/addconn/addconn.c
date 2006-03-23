@@ -104,11 +104,14 @@ main(int argc, char *argv[])
     int exit_status = 0;
     struct starter_conn *conn = NULL;
 
+#if 0
+    /* efence settings */
     extern int EF_PROTECT_BELOW;
     extern int EF_PROTECT_FREE;
 
     EF_PROTECT_BELOW=1;
     EF_PROTECT_FREE=1;
+#endif
     
 
     progname = argv[0];
