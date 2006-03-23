@@ -763,7 +763,8 @@ load_acerts(void)
 		chunk_t blob = empty_chunk;
 		bool pgp = FALSE;
 
-		if (load_coded_file(filelist[n]->d_name, NULL, "acert", &blob, &pgp))
+		if (load_coded_file(filelist[n]->d_name, NULL,
+				    TRUE, "acert", &blob, &pgp))
 		{
 		    x509acert_t *ac = alloc_thing(x509acert_t, "x509acert");
 		    

@@ -446,7 +446,8 @@ load_authcerts(const char *type, const char *path, u_char auth_flags)
 	    {
 		cert_t cert;
 
-		if (load_cert(CERT_NONE, filelist[n]->d_name, type, &cert))
+		if (load_cert(CERT_NONE, filelist[n]->d_name, TRUE,
+			      type, &cert))
 		    add_authcert(cert.u.x509, auth_flags);
 
 		free(filelist[n]);
@@ -684,7 +685,7 @@ load_crls(void)
 		chunk_t blob = empty_chunk;
 		char *filename = filelist[n]->d_name;
 
-		if (load_coded_file(filename, NULL, "crl", &blob, &pgp))
+		if (load_coded_file(filename, NULL, TRUE, "crl", &blob, &pgp))
 		{
 		    chunk_t crl_uri;
                     crl_uri.len = 8 + strlen(oco->crls_dir) + strlen(filename);

@@ -908,7 +908,7 @@ load_end_certificate(const char *filename, struct end *dst)
 #endif
 	{
 	    /* load cert from file */
-	    valid_cert = load_host_cert(FALSE, filename, &cert);
+	    valid_cert = load_host_cert(FALSE, filename, &cert, TRUE);
 	}
     }
 
@@ -1028,7 +1028,7 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
 	/* certificate is a blob */
 	dst->cert.forced = TRUE;
 	dst->cert.type = src->certtype;
-	load_cert(TRUE, src->cert, "forced cert", &dst->cert);
+	load_cert(TRUE, src->cert, TRUE, "forced cert", &dst->cert);
     } else {
 	/* load local end certificate and extract ID, if any */
 	load_end_certificate(src->cert, dst);
