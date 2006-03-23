@@ -82,6 +82,7 @@ static err_t osw_process_psk_secret(const struct secret *secrets
 static err_t osw_process_rsa_secret(const struct secret *secrets
 				    , struct RSA_private_key *rsak);
 static err_t osw_process_rsa_keyfile(struct secret **psecrets
+				     , int verbose
 				     , struct RSA_private_key *rsak
 				     , prompt_pass_t *pass);
 
@@ -202,11 +203,6 @@ RSA_private_key_sanity(struct RSA_private_key *k)
     return ugh;
 }
 
-struct id_list {
-    struct id id;
-    struct id_list *next;
-};
-
 struct secret {
     struct secret  *next;
     struct id_list *ids;
@@ -214,10 +210,34 @@ struct secret {
     struct private_key_stuff pks;
 };
 
-const struct private_key_stuff *osw_get_pks(const struct secret *s)
+struct private_key_stuff *osw_get_pks(struct secret *s)
 {
     return &s->pks;
 }
+
+int osw_get_secretlineno(const struct secret *s)
+{
+    return s->secretlineno;
+}
+
+struct id_list *osw_get_idlist(const struct secret *s)
+{
+    return s->ids;
+}
+
+struct secret *osw_get_defaultsecret(struct secret *secrets)
+{
+    struct secret *s,*s2;
+
+    /* get last element of array */
+    s=s2=secrets;
+    while(s2 != NULL) {
+	s=s2;
+	s2=s2->next;
+    }
+    return s;
+}
+
 
 /*
  * forms the keyid from the public exponent e and modulus n
@@ -304,30 +324,61 @@ free_public_key(struct pubkey *pk)
     pfree(pk);
 }
 
+struct secret *osw_foreach_secret(struct secret *secrets,
+				  secret_eval func, void *uservoid)
+{
+    struct secret *s;
+
+    for(s=secrets; s!=NULL; s=s->next) {
+	struct private_key_stuff *pks = &s->pks;
+	int result = (*func)(s, pks, uservoid);
+
+	if(result == 0)  return s;
+	if(result == -1) return NULL;
+    }
+    return NULL;
+}
+
+struct secret_byid {
+    int            kind;
+    struct pubkey *my_public_key;
+};
+    
+int osw_check_secret_byid(struct secret *secret,
+			  struct private_key_stuff *pks,
+			  void *uservoid)
+{
+    struct secret_byid *sb=(struct secret_byid *)uservoid;
+
+    DBG(DBG_CONTROL,
+	DBG_log("searching for certificate %s:%s vs %s:%s"
+		, enum_name(&ppk_names, pks->kind)
+		, (pks->kind==PPK_RSA?pks->u.RSA_private_key.pub.keyid : "N/A")
+		, enum_name(&ppk_names, sb->kind)
+		, sb->my_public_key->u.rsa.keyid)
+	);
+    if (pks->kind == sb->kind &&
+	same_RSA_public_key(&pks->u.RSA_private_key.pub
+			    , &sb->my_public_key->u.rsa))
+    {
+	return 0;
+    }
+
+    return 1;
+}
+    
+				  
+
 struct secret *osw_find_secret_by_public_key(struct secret *secrets
 					     , struct pubkey *my_public_key
 					     , int kind)
 {
-    struct secret *s, *best = NULL;
+    struct secret_byid sb;
 
-    for (s = secrets; s != NULL; s = s->next)
-    {
-	DBG(DBG_CONTROL,
-	    DBG_log("searching for certificate %s:%s vs %s:%s"
-		    , enum_name(&ppk_names, s->pks.kind)
-		    , (s->pks.kind==PPK_RSA ? s->pks.u.RSA_private_key.pub.keyid : "N/A")
-		    , enum_name(&ppk_names, kind)
-		    , my_public_key->u.rsa.keyid)
-	    );
-	if (s->pks.kind == kind &&
-	    same_RSA_public_key(&s->pks.u.RSA_private_key.pub
-				, &my_public_key->u.rsa))
-	{
-	    best = s;
-	    break; /* we have found the private key - no sense in searching further */
-	}
-    }
-    return best;
+    sb.kind = kind;
+    sb.my_public_key = my_public_key;
+
+    return osw_foreach_secret(secrets, osw_check_secret_byid, &sb);
 }
 
 struct secret *osw_find_secret_by_id(struct secret *secrets
@@ -347,8 +398,11 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
     struct secret *s, *best = NULL;
 
     idtoa(my_id,  idme,  IDTOA_BUF);
-    idtoa(his_id, idhim, IDTOA_BUF);
-    strcpy(idhim2, idhim);
+
+    if(his_id) {
+	idtoa(his_id, idhim, IDTOA_BUF);
+	strcpy(idhim2, idhim);
+    }
 
     for (s = secrets; s != NULL; s = s->next)
     {
@@ -377,7 +431,7 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 		    if (same_id(my_id, &i->id))
 			match |= match_me;
 
-		    if (same_id(his_id, &i->id))
+		    if (his_id!=NULL && same_id(his_id, &i->id))
 			match |= match_him;
 
 		    DBG(DBG_CONTROL,
@@ -558,6 +612,7 @@ bool osw_has_private_rawkey(struct secret *secrets, struct pubkey *pk)
  * read from ipsec.secrets or prompted for by using whack
  */
 err_t osw_process_rsa_keyfile(struct secret **psecrets
+			      , int verbose
 			      , struct RSA_private_key *rsak
 			      , prompt_pass_t *pass)
 {
@@ -594,7 +649,7 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 	    ugh = "RSA private key file -- unexpected token after passphrase";
     }
 
-    key = load_rsa_private_key(filename, pass);
+    key = load_rsa_private_key(filename, verbose, pass);
 
     if (key == NULL)
 	ugh = "error loading RSA private key file";
@@ -866,7 +921,8 @@ process_pin(struct secret *s, int whackfd)
 #endif
 
 static void
-process_secret(struct secret **psecrets, struct secret *s, prompt_pass_t *pass)
+process_secret(struct secret **psecrets, int verbose,
+	       struct secret *s, prompt_pass_t *pass)
 {
     err_t ugh = NULL;
     struct secret *secrets = *psecrets;
@@ -899,11 +955,14 @@ process_secret(struct secret **psecrets, struct secret *s, prompt_pass_t *pass)
 	}
 	else
 	{
-	    ugh = osw_process_rsa_keyfile(psecrets, &s->pks.u.RSA_private_key,pass);
+	    ugh = osw_process_rsa_keyfile(psecrets, verbose,
+					  &s->pks.u.RSA_private_key,pass);
 	}
-	openswan_log("loaded private key for keyid: %s:%s",
-		     enum_name(&ppk_names, s->pks.kind),
-		     s->pks.u.RSA_private_key.pub.keyid);
+	if(verbose) {
+	    openswan_log("loaded private key for keyid: %s:%s",
+			 enum_name(&ppk_names, s->pks.kind),
+			 s->pks.u.RSA_private_key.pub.keyid);
+	}
     }
     else if (tokeqword("pin"))
     {
@@ -926,8 +985,43 @@ process_secret(struct secret **psecrets, struct secret *s, prompt_pass_t *pass)
     }
     else if (flushline("expected record boundary in key"))
     {
+
 	/* gauntlet has been run: install new secret */
 	lock_certs_and_keys("process_secret");
+
+	if(s->ids == NULL) {
+	    /*
+	     * make sure that empty lists have an implicit match everything
+	     * set of IDs (ipv4 and ipv6)
+	     */
+	    struct id_list *idl, *idl2, *idl3, *idl4;
+	    
+	    idl = alloc_bytes(sizeof(*idl), "id list");
+	    idl->next = NULL;
+	    idl->id = empty_id;
+	    idl->id.kind = ID_IPV4_ADDR;
+	    (void)anyaddr(AF_INET, &idl->id.ip_addr);
+
+	    idl2 = alloc_bytes(sizeof(*idl2), "id list");
+	    idl2->next = idl;
+	    idl2->id = empty_id;
+	    idl2->id.kind = ID_IPV4_ADDR;
+	    (void)anyaddr(AF_INET, &idl2->id.ip_addr);
+
+	    idl3 = alloc_bytes(sizeof(*idl3), "id list");
+	    idl3->next = idl2;
+	    idl3->id = empty_id;
+	    idl3->id.kind = ID_IPV6_ADDR;
+	    (void)anyaddr(AF_INET6, &idl3->id.ip_addr);
+
+	    idl4 = alloc_bytes(sizeof(*idl4), "id list");
+	    idl4->next = idl3;
+	    idl4->id = empty_id;
+	    idl4->id.kind = ID_IPV6_ADDR;
+	    (void)anyaddr(AF_INET6, &idl4->id.ip_addr);
+
+	    s->ids=idl4;
+	}
 	s->next   = *psecrets;
 	*psecrets = s;
 	unlock_certs_and_keys("process_secrets");
@@ -936,12 +1030,14 @@ process_secret(struct secret **psecrets, struct secret *s, prompt_pass_t *pass)
 
 /* forward declaration */
 static void osw_process_secrets_file(struct secret **psecrets
+				     , int verbose
 				     , const char *file_pat
 				     , prompt_pass_t *pass);
 
 
 static void
-osw_process_secret_records(struct secret **psecrets, prompt_pass_t *pass)
+osw_process_secret_records(struct secret **psecrets, int verbose,
+			   prompt_pass_t *pass)
 {
     //const struct secret *secret = *psecrets;
 
@@ -994,79 +1090,87 @@ osw_process_secret_records(struct secret **psecrets, prompt_pass_t *pass)
 	    (void) shift();	/* move to Record Boundary, we hope */
 	    if (flushline("ignoring malformed INCLUDE -- expected Record Boundary after filename"))
 	    {
-		osw_process_secrets_file(psecrets, fn, pass);
+		osw_process_secrets_file(psecrets, verbose, fn, pass);
 		flp->tok = NULL;	/* correct, but probably redundant */
 	    }
 	}
 	else
 	{
-	    /* expecting a list of indices and then the key info */
-	    struct secret *s = alloc_thing(struct secret, "secret");
+	    struct secret *s = NULL;
 
+	    /* expecting a list of indices and then the key info */
+	    s = alloc_thing(struct secret, "secret");
+	    
 	    s->ids = NULL;
 	    s->pks.kind = PPK_PSK;	/* default */
 	    setchunk(s->pks.u.preshared_secret, NULL, 0);
 	    s->secretlineno=flp->lino;
 	    s->next = NULL;
 
-	    for (;;)
+	    while(s != NULL)
 	    {
+		struct id id;
+		err_t ugh;
+
 		if (tokeq(":"))
 		{
 		    /* found key part */
 		    shift();	/* discard explicit separator */
-		    process_secret(psecrets, s, pass);
+		    process_secret(psecrets, verbose, s, pass);
+		    s = NULL;
 		    break;
+		}
+
+		/* an id
+		 * See RFC2407 IPsec Domain of Interpretation 4.6.2
+		 */
+		
+		if (tokeq("%any"))
+		{
+		    id = empty_id;
+		    id.kind = ID_IPV4_ADDR;
+		    ugh = anyaddr(AF_INET, &id.ip_addr);
+		}
+		else if (tokeq("%any6"))
+		{
+		    id = empty_id;
+		    id.kind = ID_IPV6_ADDR;
+		    ugh = anyaddr(AF_INET6, &id.ip_addr);
 		}
 		else
 		{
-		    /* an id
-		     * See RFC2407 IPsec Domain of Interpretation 4.6.2
-		     */
-		    struct id id;
-		    err_t ugh;
-
-		    if (tokeq("%any"))
-		    {
-			id = empty_id;
-			id.kind = ID_IPV4_ADDR;
-			ugh = anyaddr(AF_INET, &id.ip_addr);
-		    }
-		    else if (tokeq("%any6"))
-		    {
-			id = empty_id;
-			id.kind = ID_IPV6_ADDR;
-			ugh = anyaddr(AF_INET6, &id.ip_addr);
-		    }
-		    else
-		    {
-			ugh = atoid(flp->tok, &id, FALSE);
-		    }
-
-		    if (ugh != NULL)
-		    {
-			loglog(RC_LOG_SERIOUS
-			    , "ERROR \"%s\" line %d: index \"%s\" %s"
-			    , flp->filename, flp->lino, flp->tok, ugh);
-		    }
-		    else
-		    {
-			struct id_list *i = alloc_thing(struct id_list
-			    , "id_list");
-
-			i->id = id;
-			unshare_id_content(&i->id);
-			i->next = s->ids;
-			s->ids = i;
-			/* DBG_log("id type %d: %s %.*s", i->pks.kind, ip_str(&i->ip_addr), (int)i->name.len, i->name.ptr); */
-		    }
-		    if (!shift())
-		    {
-			/* unexpected Record Boundary or EOF */
-			loglog(RC_LOG_SERIOUS, "\"%s\" line %d: unexpected end of id list"
-			    , flp->filename, flp->lino);
-			break;
-		    }
+		    ugh = atoid(flp->tok, &id, FALSE);
+		}
+		
+		if (ugh != NULL)
+		{
+		    loglog(RC_LOG_SERIOUS
+			   , "ERROR \"%s\" line %d: index \"%s\" %s"
+			   , flp->filename, flp->lino, flp->tok, ugh);
+		}
+		else
+		{
+		    struct id_list *i = alloc_thing(struct id_list
+						    , "id_list");
+		    char idb[IDTOA_BUF];
+		    
+		    i->id = id;
+		    unshare_id_content(&i->id);
+		    i->next = s->ids;
+		    s->ids = i;
+		    idtoa(&id, idb, IDTOA_BUF);
+		    DBG(DBG_CONTROL,
+			DBG_log("id type added to secret(%p) %d: %s",
+				s,
+				s->pks.kind,
+				idb));
+		}
+		if (!shift())
+		{
+		    /* unexpected Record Boundary or EOF */
+		    loglog(RC_LOG_SERIOUS, "\"%s\" line %d: unexpected end of id list"
+			   , flp->filename, flp->lino);
+		    break;
 		}
 	    }
 	}
@@ -1082,7 +1186,9 @@ globugh(const char *epath, int eerrno)
 
 static void
 osw_process_secrets_file(struct secret **psecrets
-			 , const char *file_pat, prompt_pass_t *pass)
+			 , int verbose
+			 , const char *file_pat
+			 , prompt_pass_t *pass)
 {
     struct file_lex_position pos;
     char **fnp;
@@ -1129,9 +1235,11 @@ osw_process_secrets_file(struct secret **psecrets
     {
 	if (lexopen(&pos, *fnp, FALSE))
 	{
-	    openswan_log("loading secrets from \"%s\"", *fnp);
+	    if(verbose) {
+		openswan_log("loading secrets from \"%s\"", *fnp);
+	    }
 	    (void) flushline("file starts with indentation (continuation notation)");
-	    osw_process_secret_records(psecrets, pass);
+	    osw_process_secret_records(psecrets, verbose, pass);
 	    lexclose();
 	}
     }
@@ -1193,11 +1301,12 @@ osw_free_preshared_secrets(struct secret **psecrets)
 
 void
 osw_load_preshared_secrets(struct secret **psecrets
+			   , int verbose
 			   , const char *secrets_file
 			   , prompt_pass_t *pass)
 {
     osw_free_preshared_secrets(psecrets);
-    (void) osw_process_secrets_file(psecrets, secrets_file, pass);
+    (void) osw_process_secrets_file(psecrets, verbose, secrets_file, pass);
 }
 
 

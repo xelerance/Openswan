@@ -75,8 +75,9 @@ get_mycert(cert_t cert)
  * of binary DER or base64 PEM ASN.1 formats and armored PGP format
  */
 bool
-load_coded_file(const char *filename, prompt_pass_t *pass, const char *type
-, chunk_t *blob, bool *pgp)
+load_coded_file(const char *filename, prompt_pass_t *pass,
+		int verbose,
+		const char *type, chunk_t *blob, bool *pgp)
 {
     err_t ugh = NULL;
     FILE *fd;
@@ -91,7 +92,10 @@ load_coded_file(const char *filename, prompt_pass_t *pass, const char *type
 	blob->ptr = alloc_bytes(blob->len, type);
 	bytes = fread(blob->ptr, 1, blob->len, fd);
 	fclose(fd);
-	openswan_log("  loaded %s file '%s' (%d bytes)", type, filename, bytes);
+
+	if(verbose) {
+	    openswan_log("  loaded %s file '%s' (%d bytes)", type, filename, bytes);
+	}
 
 	*pgp = FALSE;
 
@@ -142,7 +146,7 @@ load_coded_file(const char *filename, prompt_pass_t *pass, const char *type
  *  Loads a PKCS#1 or PGP private RSA key file
  */
 rsa_privkey_t*
-load_rsa_private_key(const char* filename, prompt_pass_t *pass)
+load_rsa_private_key(const char* filename, int verbose, prompt_pass_t *pass)
 {
     bool pgp = FALSE;
     chunk_t blob = empty_chunk;
@@ -156,7 +160,7 @@ load_rsa_private_key(const char* filename, prompt_pass_t *pass)
     else			/* relative pathname */
 	snprintf(path, sizeof(path), "%s/%s", oco->private_dir, filename);
 
-    if (load_coded_file(path, pass, "private key", &blob, &pgp))
+    if (load_coded_file(path, pass, verbose, "private key", &blob, &pgp))
     {
 	rsa_privkey_t *key = alloc_thing(rsa_privkey_t, "rsa_privkey");
 	*key = empty_rsa_privkey;
@@ -184,7 +188,9 @@ load_rsa_private_key(const char* filename, prompt_pass_t *pass)
  *  Loads a X.509 or OpenPGP certificate
  */
 bool
-load_cert(bool forcedtype, const char *filename, const char *label, cert_t *cert)
+load_cert(bool forcedtype, const char *filename,
+	  int verbose,
+	  const char *label, cert_t *cert)
 {
     bool pgp = FALSE;
     chunk_t blob = empty_chunk;
@@ -194,7 +200,7 @@ load_cert(bool forcedtype, const char *filename, const char *label, cert_t *cert
     cert->u.x509 = NULL;
 
     if(!forcedtype) {
-	if (load_coded_file(filename, NULL, label, &blob, &pgp)) {
+	if (load_coded_file(filename, NULL, verbose, label, &blob, &pgp)) {
 	    if (pgp) {
 		pgpcert_t *pgpcert = alloc_thing(pgpcert_t, "pgpcert");
 		*pgpcert = empty_pgpcert;
@@ -257,7 +263,8 @@ load_cert(bool forcedtype, const char *filename, const char *label, cert_t *cert
  *  Loads a host certificate
  */
 bool
-load_host_cert(enum ipsec_cert_type certtype, const char *filename, cert_t *cert)
+load_host_cert(enum ipsec_cert_type certtype, const char *filename,
+	       cert_t *cert, int verbose)
 {
     const struct osw_conf_options *oco;
     char path[PATH_MAX];
@@ -269,7 +276,7 @@ load_host_cert(enum ipsec_cert_type certtype, const char *filename, cert_t *cert
     else			/* relative pathname */
 	snprintf(path, ASN1_BUF_LEN, "%s/%s", oco->certs_dir, filename);
 
-    return load_cert(certtype, path, "host cert", cert);
+    return load_cert(certtype, path, verbose, "host cert", cert);
 }
 
 /*

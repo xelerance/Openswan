@@ -26,6 +26,11 @@ struct id {
 
 extern void init_id(void);
 
+struct id_list {
+    struct id id;
+    struct id_list *next;
+};
+
 extern const struct id empty_id;	/* ID_NONE */
 
 enum myid_state {

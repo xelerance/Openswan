@@ -208,7 +208,13 @@ idtoa(const struct id *id, char *dst, size_t dstlen)
 	break;
     case ID_IPV4_ADDR:
     case ID_IPV6_ADDR:
-	n = (int)addrtot(&id->ip_addr, 0, dst, dstlen) - 1;
+	if(isanyaddr(&id->ip_addr)) {
+	    dst[0]='\0';
+	    strncat(dst, "%any", dstlen);
+	    n = strlen(dst);
+	} else {
+	    n = (int)addrtot(&id->ip_addr, 0, dst, dstlen) - 1;
+	}
 	break;
     case ID_FQDN:
 	n = snprintf(dst, dstlen, "@%.*s", (int)id->name.len, id->name.ptr);

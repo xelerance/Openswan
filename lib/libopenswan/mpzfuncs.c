@@ -67,6 +67,13 @@ mpz_to_n(const MP_INT *mp, size_t bytes)
     return r;
 }
 
+chunk_t mpz_to_n2(const MP_INT *mp)
+{
+	int bytes = (mpz_sizeinbase(mp, 2)+7)/8;
+
+	return mpz_to_n(mp, bytes);
+}
+
 /* Convert network form (binary bytes, big-endian) to MP_INT.
  * The *mp must not be previously mpz_inited.
  */

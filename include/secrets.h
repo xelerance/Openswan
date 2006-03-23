@@ -68,7 +68,22 @@ struct private_key_stuff {
     } u;
 };
 
-extern const struct private_key_stuff *osw_get_pks(const struct secret *s);
+extern struct private_key_stuff *osw_get_pks(struct secret *s);
+extern int osw_get_secretlineno(const struct secret *s);
+extern struct id_list *osw_get_idlist(const struct secret *s);
+
+/*
+ * return 1 to continue to next,
+ * return 0 to return current secret
+ * return -1 to return NULL
+ */
+typedef int (*secret_eval)(struct secret *secret,
+			   struct private_key_stuff *pks,
+			   void *uservoid);
+			   
+extern struct secret *osw_foreach_secret(struct secret *secrets,
+					 secret_eval func, void *uservoid);
+extern struct secret *osw_get_defaultsecret(struct secret *secrets);
 
 
 /* public key machinery  */
@@ -138,6 +153,7 @@ extern void install_public_key(struct pubkey *pk, struct pubkey_list **head);
 extern void free_public_key(struct pubkey *pk);
 
 extern void osw_load_preshared_secrets(struct secret **psecrets
+				       , int verbose
 				       , const char *secrets_file
 				       , prompt_pass_t *pass);
 extern void osw_free_preshared_secrets(struct secret **psecrets);

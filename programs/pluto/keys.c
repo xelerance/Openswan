@@ -78,6 +78,7 @@ void load_preshared_secrets(int whackfd)
     pass.prompt = whack_log;
     pass.fd = whackfd;
     osw_load_preshared_secrets(&pluto_secrets
+			       , TRUE
 			       , pluto_shared_secrets_file
 			       , &pass);
 }
@@ -150,7 +151,7 @@ sign_hash(const struct RSA_private_key *k, const u_char *hash_val, size_t hash_l
  * my_id = &c->spd.this.id
  * his_id = &c->spd.that.id
  */
-static const struct secret *
+static struct secret *
 osw_get_secret(const struct connection *c
 	       , const struct id *my_id
 	       , const struct id *his_id
@@ -247,8 +248,9 @@ has_private_rawkey(struct pubkey *pk)
 const chunk_t *
 get_preshared_secret(const struct connection *c)
 {
-    const struct secret *s = osw_get_secret(c
-					    , &c->spd.this.id, &c->spd.that.id
+    struct secret *s = osw_get_secret(c
+					    , &c->spd.this.id
+					    , &c->spd.that.id
 					    , PPK_PSK, FALSE);
     const struct private_key_stuff *pks;
     
@@ -290,7 +292,7 @@ has_private_key(cert_t cert)
 const struct RSA_private_key *
 get_RSA_private_key(const struct connection *c)
 {
-    const struct secret *s = osw_get_secret(c
+    struct secret *s = osw_get_secret(c
 					, &c->spd.this.id, &c->spd.that.id
 					, PPK_RSA, TRUE);
     const struct private_key_stuff *pks;
