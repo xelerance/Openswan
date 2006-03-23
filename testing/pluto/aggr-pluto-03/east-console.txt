@@ -1,5 +1,5 @@
 east:~#
- TESTNAME=x509-pluto-02
+ TESTNAME=aggr-pluto-03
 east:~#
  source /testing/pluto/bin/eastlocal.sh
 east:~#
@@ -14,7 +14,7 @@ ipsec_setup: Starting Openswan IPsec VERSION
 east:~#
  /testing/pluto/bin/wait-until-pluto-started
 east:~#
- ipsec auto --add north-east-x509-pluto-02
+ ipsec auto --add north-east-aggr-pluto-03
 east:~#
  echo done
 done
