@@ -29,6 +29,7 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <openswan.h>
+#include <sys/utsname.h>
 
 #include <arpa/nameser.h>
 
@@ -37,6 +38,7 @@
 #include "oswlog.h"
 #include "oswconf.h"
 #include "secrets.h"
+#include "mpzfuncs.h"
 
 char usage[] = "Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--right ]\n"
              "                         [--dump ] [--list ] [--x509self]\n"
@@ -85,20 +87,217 @@ showhostkey_log(int mess_no, const char *message, ...)
     va_end(args);
 }
 
+
+int list_key(struct secret *secret,
+	     struct private_key_stuff *pks,
+	     void *uservoid)
+{
+    int lineno = osw_get_secretlineno(secret);
+    struct id_list *l = osw_get_idlist(secret);
+    char idb[IDTOA_BUF];
+
+    while(l) {
+	idtoa(&l->id, idb, IDTOA_BUF);
+
+	switch(pks->kind) {
+	case PPK_PSK:
+	    printf("%d: PSK keyid: %s\n", lineno, idb);
+	    break;
+	    
+	case PPK_RSA:
+	    printf("%d: RSA keyid: %s with id: %s\n", lineno, pks->u.RSA_private_key.pub.keyid,idb);
+	    break;
+	    
+	case PPK_PIN:
+	    printf("%d PIN key-type not yet supported for id: %s\n", lineno, idb);
+	    break;
+	}
+	
+	l=l->next;
+    }
+    
+    return 1;
+}
+
+
+int pickbyid(struct secret *secret,
+	     struct private_key_stuff *pks,
+	     void *uservoid)
+{
+    char *rsakeyid = (char *)uservoid;
+
+    if(strcmp(pks->u.RSA_private_key.pub.keyid, rsakeyid)==0) {
+	return 0;
+    }
+    return 1;
+}
+
+struct secret *get_key_byid(struct secret *host_secrets, char *rsakeyid)
+{
+    return osw_foreach_secret(host_secrets, pickbyid, rsakeyid);
+}
+
+void list_keys(struct secret *host_secrets)
+{
+    (void)osw_foreach_secret(host_secrets, list_key, NULL);
+}
+
+char *get_default_keyid(struct secret *host_secrets)
+{
+    struct private_key_stuff *pks = osw_get_pks(host_secrets);
+
+    return pks->u.RSA_private_key.pub.keyid;
+}
+
+     
 void dump_keys(struct secret *host_secrets)
 {
     
 }
-     
-void list_keys(struct secret *host_secrets)
+
+struct secret *pick_key(struct secret *host_secrets
+			, char *idname)
 {
+    struct id id;
+    struct secret *s;
+    err_t e;
+
+    e = atoid(idname, &id, FALSE);
+    if(e) {
+	printf("%s: key '%s' is invalid\n", progname, idname);
+	exit(4);
+    }
+
+    s = osw_find_secret_by_id(host_secrets, PPK_RSA
+			      , &id, NULL, TRUE /* asymmetric */);
     
+    if(s==NULL) {
+	char abuf[IDTOA_BUF];
+	idtoa(&id, abuf, IDTOA_BUF);
+	printf("%s: can not find key: %s (%s)\n", progname, idname, abuf);
+	exit(5);
+    }
+
+    return s;
 }
 
-void show_dnskey(struct secret *host_secrets
-		 , const char *id
+unsigned char *pubkey_to_rfc3110(const struct RSA_public_key *pub,
+				 unsigned int *keybuflen)
+{
+    unsigned char *buf;
+    unsigned char *p;
+    unsigned int elen;
+
+    chunk_t e, n;
+
+
+    e = mpz_to_n2(&pub->e);
+    n = mpz_to_n2(&pub->n);
+    elen = e.len;
+
+    buf = alloc_bytes(e.len+n.len+3, "buffer for rfc3110");
+    p = buf;
+    
+    if (elen <= 255)
+	*p++ = elen;
+    else if ((elen &~ 0xffff) == 0) {
+	*p++ = 0;
+	*p++ = (elen>>8) & 0xff;
+	*p++ = elen & 0xff;
+    } else
+	return 0;	/* unrepresentable exponent length */
+
+    memcpy(p, e.ptr, e.len);
+    p+=e.len;
+    memcpy(p, n.ptr, n.len);
+    p+=n.len;
+
+    *keybuflen=(p-buf);
+
+    return buf;
+}    
+
+void show_dnskey(struct secret *s
+		 , char *idname
+		 , int precedence
+		 , char *gateway
 		 , int rr_type)
 {
+    char qname[256];
+    char base64[8192];
+    const struct private_key_stuff *pks = osw_get_pks(s);
+    unsigned char *keyblob;
+    unsigned int keybloblen;
+
+    gethostname(qname, sizeof(qname));
+
+    if(pks->kind != PPK_RSA) {
+	printf("%s: wrong kind of key\n", progname);
+	exit(5);
+    }
+
+    keyblob = pubkey_to_rfc3110(&pks->u.RSA_private_key.pub, &keybloblen);
+
+    datatot(keyblob, keybloblen, 's', base64, sizeof(base64));
+
+    switch(rr_type) {
+    case ns_t_key:
+	printf("key not yet implemented\n");
+	break;
+
+    case ns_t_ipseckey:
+	printf("ipseckey not yet implemented\n");
+	break;
+
+    case ns_t_txt:
+	printf("; info about key: %s\n", 
+	       pks->u.RSA_private_key.pub.keyid);
+	printf("%s.    IN    TXT    \"X-IPsec(%d)=%s \" ",
+	       qname, precedence, gateway);
+	{
+	    int len = strlen(base64);
+	    char *p=base64;
+	    while(len > 0) {
+		int printlen = len;
+		char saveit;
+		if(printlen > 240) {
+		    printlen=240;
+		}
+		saveit=p[printlen];
+		p[printlen]='\0';
+		printf("\"%s\" ",p);
+		p[printlen]=saveit;
+		p+=printlen;
+		len-=printlen;
+	    }
+	}
+	printf("\n");
+	break;
+    }
+}
+     
+void show_confkey(struct secret *s
+		  , char *idname
+		  , char *side)
+{
+    char base64[8192];
+    const struct private_key_stuff *pks = osw_get_pks(s);
+    unsigned char *keyblob;
+    unsigned int keybloblen;
+
+    if(pks->kind != PPK_RSA) {
+	printf("%s: wrong kind of key\n", progname);
+	exit(5);
+    }
+
+    keyblob = pubkey_to_rfc3110(&pks->u.RSA_private_key.pub, &keybloblen);
+
+    datatot(keyblob, keybloblen, 's', base64, sizeof(base64));
+
+    printf("\t# rsakey %s\n", 
+	   pks->u.RSA_private_key.pub.keyid);
+    printf("\t%srsasigkey=%s\n", side,
+	   base64);
 }
      
 
@@ -119,10 +318,13 @@ int main(int argc, char *argv[])
     bool txt_flg=FALSE;
     bool ipseckey_flg=FALSE;
     bool dhclient_flg=FALSE;
+    char *gateway;
+    int precedence=10;
     int verbose=0;
     const struct osw_conf_options *oco = osw_init_options();
-    const char *rsakeyid, *keyid;
+    char *rsakeyid, *keyid;
     struct secret *host_secrets = NULL;
+    struct secret *s;
     prompt_pass_t pass;
 
     /* start up logging system */
@@ -133,19 +335,39 @@ int main(int argc, char *argv[])
     while ((opt = getopt_long(argc, argv, "", opts, NULL)) != EOF) {
 	switch (opt) {
 	case 'k':
+	    key_flg=TRUE;
+	    break;
+
 	case 'l':
+	    left_flg=TRUE;
+	    break;
 	case 'r':
+	    right_flg=TRUE;
 	    break;
 
 	case 'D': /* --dump */
 	    dump_flg=TRUE;
 	    break;
 
+	case 'K':
+	    ipseckey_flg=TRUE;
+	    gateway=clone_str(optarg, "gateway");
+	    break;
+
 	case 'L':
+	    list_flg=TRUE;
+	    break;
+
 	case 's':
 	case 'R':
 	case 'c':
+	    break;
+
 	case 't':
+	    txt_flg=TRUE;
+	    gateway=clone_str(optarg, "gateway");
+	    break;
+
 	case 'd':
 	    break;
 
@@ -202,7 +424,8 @@ int main(int argc, char *argv[])
     /* now load file from indicated location */
     pass.prompt=showhostkey_log;
     pass.fd = 2; /* stderr */
-    osw_load_preshared_secrets(&host_secrets, secrets_file, &pass);
+    osw_load_preshared_secrets(&host_secrets, verbose>0?TRUE:FALSE,
+			       secrets_file, &pass);
 
     /* options that apply to entire files */
     if(dump_flg) {
@@ -216,7 +439,34 @@ int main(int argc, char *argv[])
 	exit(0);
     }
 
-    
+    if(rsakeyid) {
+	printf("; picking by rsakeyid=%s\n", rsakeyid);
+	s = get_key_byid(host_secrets, rsakeyid);
+	keyid=rsakeyid;
+    } else if(keyid) {
+	printf("; picking by keyid=%s\n", keyid);
+	s = pick_key(host_secrets, keyid);
+    } else {
+	/* default key is the *LAST* key, because it is first in the file.*/
+	s=osw_get_defaultsecret(host_secrets);
+	keyid="default";
+    }
+
+    if(s==NULL) {
+	printf("No keys found\n");
+	exit(20);
+    }
+
+    if(left_flg) {
+	show_confkey(s, keyid, "left");
+	exit(0);
+    }
+
+    if(right_flg) {
+	show_confkey(s, keyid, "right");
+	exit(0);
+    }
+
     if(key_flg || ipseckey_flg || txt_flg) {
 	int rr_type;
 	if(key_flg) {
@@ -226,7 +476,9 @@ int main(int argc, char *argv[])
 	} else if(txt_flg) {
 	    rr_type = ns_t_txt;
 	}
-	show_dnskey(host_secrets, keyid, rr_type);
+	show_dnskey(s, keyid,
+		    precedence, gateway,
+		    rr_type);
     }
 
     exit(0);
