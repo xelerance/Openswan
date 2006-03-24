@@ -28,7 +28,6 @@ conn us-clear
 
 conn us-let-my-dns-go
 	also=let-my-dns-go
-	also=us
 
 # except the connection to the DNS server
 conn let-my-dns-go
