@@ -22,7 +22,7 @@ fi
 OPENSWANSRCDIR=`cd ${OPENSWANSRCDIR}; pwd`
 export OPENSWANSRCDIR
 
-eval `(cd $OPENSWANSRCDIR && make env)`
+#eval `(cd $OPENSWANSRCDIR && make env)`
 
 TESTINGROOT=${OPENSWANSRCDIR}/testing
 UTILS=`cd ${TESTINGROOT}/utils && pwd`
