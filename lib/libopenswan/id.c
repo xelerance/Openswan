@@ -351,12 +351,18 @@ same_id(const struct id *a, const struct id *b)
 {
     a = resolve_myid(a);
     b = resolve_myid(b);
+
+    if(b->kind == ID_NONE || a->kind==ID_NONE) {
+	return TRUE;    /* it's the wildcard */
+    }
+
     if (a->kind != b->kind)
 	return FALSE;
+    
     switch (a->kind)
     {
     case ID_NONE:
-	return TRUE;	/* kind of vacuous */
+	return TRUE;	/* repeat of above for completeness */
 
     case ID_IPV4_ADDR:
     case ID_IPV6_ADDR:

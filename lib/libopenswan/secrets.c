@@ -428,15 +428,15 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 		    idnum++;
 		    idtoa(&i->id, idstr1, IDTOA_BUF);
 
-		    if (same_id(my_id, &i->id))
+		    if (same_id(&i->id, my_id))
 			match |= match_me;
 
-		    if (his_id!=NULL && same_id(his_id, &i->id))
+		    if (his_id!=NULL && same_id(&i->id, his_id))
 			match |= match_him;
 
 		    DBG(DBG_CONTROL,
-			DBG_log("%d: compared PSK %s to %s / %s -> %d",
-				idnum, idstr1, idme, idhim, match));
+			DBG_log("%d: compared key %s to %s / %s -> %d"
+				, idnum, idstr1, idme, idhim, match));
 
 		}
 
@@ -994,33 +994,21 @@ process_secret(struct secret **psecrets, int verbose,
 	     * make sure that empty lists have an implicit match everything
 	     * set of IDs (ipv4 and ipv6)
 	     */
-	    struct id_list *idl, *idl2, *idl3, *idl4;
+	    struct id_list *idl, *idl2;
 	    
 	    idl = alloc_bytes(sizeof(*idl), "id list");
 	    idl->next = NULL;
 	    idl->id = empty_id;
-	    idl->id.kind = ID_IPV4_ADDR;
+	    idl->id.kind = ID_NONE;
 	    (void)anyaddr(AF_INET, &idl->id.ip_addr);
 
 	    idl2 = alloc_bytes(sizeof(*idl2), "id list");
 	    idl2->next = idl;
 	    idl2->id = empty_id;
-	    idl2->id.kind = ID_IPV4_ADDR;
+	    idl2->id.kind = ID_NONE;
 	    (void)anyaddr(AF_INET, &idl2->id.ip_addr);
 
-	    idl3 = alloc_bytes(sizeof(*idl3), "id list");
-	    idl3->next = idl2;
-	    idl3->id = empty_id;
-	    idl3->id.kind = ID_IPV6_ADDR;
-	    (void)anyaddr(AF_INET6, &idl3->id.ip_addr);
-
-	    idl4 = alloc_bytes(sizeof(*idl4), "id list");
-	    idl4->next = idl3;
-	    idl4->id = empty_id;
-	    idl4->id.kind = ID_IPV6_ADDR;
-	    (void)anyaddr(AF_INET6, &idl4->id.ip_addr);
-
-	    s->ids=idl4;
+	    s->ids=idl2;
 	}
 	s->next   = *psecrets;
 	*psecrets = s;
