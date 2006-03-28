@@ -74,3 +74,4 @@ s/TCP: Hash tables configured (established .* bind .*)/TCP: Hash tables configur
 /Failed to open 'root_fs'/d
 s/none on \/usr\/obj type hostfs (ro,.*)/none on \/usr\/obj type hostfs (ro, PATH)/
 /.*\/dev\/console$/d
+/.*\/dev\/console.$/d

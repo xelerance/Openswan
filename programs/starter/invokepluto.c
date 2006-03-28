@@ -25,11 +25,11 @@
 
 #define DEBUG 1
 
-#include "confread.h"
-#include "pluto.h"
-#include "files.h"
-#include "starterwhack.h"
-#include "starterlog.h"
+#include "ipsecconf/confread.h"
+#include "ipsecconf/pluto.h"
+#include "ipsecconf/files.h"
+#include "ipsecconf/starterwhack.h"
+#include "ipsecconf/starterlog.h"
 
 #ifndef _OPENSWAN_H
 #include <openswan.h>

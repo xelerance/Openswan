@@ -19,11 +19,11 @@
 #include <sys/queue.h>
 #include <stdlib.h>
 
-#include "confread.h"
-#include "netkey.h"
-#include "files.h"
-#include "starterlog.h"
-#include "exec.h"
+#include "ipsecconf/confread.h"
+#include "ipsecconf/netkey.h"
+#include "ipsecconf/files.h"
+#include "ipsecconf/starterlog.h"
+#include "ipsecconf/exec.h"
 
 static int _netkey_module_loaded = 0;
 

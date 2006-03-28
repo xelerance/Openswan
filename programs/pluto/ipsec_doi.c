@@ -1585,7 +1585,7 @@ RSA_check_signature(struct state *st
 	struct pubkey_list *p, **pp;
 	int pathlen;
 
-	pp = &pubkeys;
+	pp = &pluto_pubkeys;
 	pathlen = pathlen;      /* make sure it used even with !X509 */
 
 	{
@@ -1596,12 +1596,13 @@ RSA_check_signature(struct state *st
 	      DBG_log("required CA is '%s'", buf));
 	}
   
-	for (p = pubkeys; p != NULL; p = *pp)
+	for (p = pluto_pubkeys; p != NULL; p = *pp)
 	{
 	    struct pubkey *key = p->key;
 
-	    if (key->alg == PUBKEY_ALG_RSA && same_id(&c->spd.that.id, &key->id)
-	    && trusted_ca(key->issuer, c->spd.that.ca, &pathlen))
+	    if (key->alg == PUBKEY_ALG_RSA
+		&& same_id(&c->spd.that.id, &key->id)
+		&& trusted_ca(key->issuer, c->spd.that.ca, &pathlen))
 	    {
 		time_t now;
 
@@ -1802,7 +1803,7 @@ has_preloaded_public_key(struct state *st)
 	struct pubkey_list *p;
 
 	/* look for a matching RSA public key */
-	for (p = pubkeys; p != NULL; p = p->next)
+	for (p = pluto_pubkeys; p != NULL; p = p->next)
 	{
 	    struct pubkey *key = p->key;
 

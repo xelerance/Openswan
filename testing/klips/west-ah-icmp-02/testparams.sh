@@ -6,7 +6,7 @@ TESTHOST=west
 EXITONEMPTY=--exitonempty
 ARPREPLY=--arpreply 
 
-PUBINPUT=../inputs/08-sunrise-sunset-ah-sha1.pcap
+PUB_INPUT=../inputs/08-sunrise-sunset-ah-sha1.pcap
 REF_PRIV_OUTPUT=ah2-cleartext.txt
 REF_CONSOLE_OUTPUT=ah2-console.txt
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"

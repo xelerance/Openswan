@@ -77,16 +77,6 @@ round-trip min/avg/max = 3.1/4.5/9.26 ms
 east:~#
  sleep 5
 east:~#
- ping -c 1 -n 192.0.1.1
-PING 192.0.1.1 (192.0.1.1): 56 data bytes
-64 bytes from 192.0.1.1: icmp_seq=0 ttl=257 time=999 ms
-
---- 192.0.1.1 ping statistics ---
-1 packets transmitted, 1 packets received, 0% packet loss
-round-trip min/avg/max = 3.1/4.5/9.26 ms
-east:~#
- sleep 5
-east:~#
  ping -c 8 -n 192.0.1.1
 PING 192.0.1.1 (192.0.1.1): 56 data bytes
 64 bytes from 192.0.1.1: icmp_seq=0 ttl=257 time=999 ms

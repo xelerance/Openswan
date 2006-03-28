@@ -6,10 +6,10 @@ TESTHOST=west
 EXITONEMPTY=--exitonempty
 ARPREPLY=--arpreply 
 
-PUBINPUT=../inputs/public-two-1.pcap
+PUB_INPUT=../inputs/public-two-1.pcap
 REF_PRIV_OUTPUT=icmp-priv-flow.txt
 REF_PUB_OUTPUT=icmp-pub-flow.txt
-THREEEIGHT=true
+#THREEEIGHT=true
 
 REF_CONSOLE_OUTPUT=nfmark-console.txt
 

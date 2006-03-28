@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!-- lifted from troff+man by doclifter -->
+<refentry>
+<refmeta>
+<refentrytitle>ipsec addconn</refentrytitle>
+<manvolnum>8</manvolnum>
+<refmiscinfo class='date'>7 Mar 2006</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>ipsec addconn</refname>
+<refpurpose>load a given policy into pluto</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para><emphasis remap='I'>ipsec addconn</emphasis>
+This documentation should be written by Paul.</para>
+</refsect1>
+
+<refsect1 id='history'><title>HISTORY</title>
+<para>Man page written for the Xelerance Openswan project &lt;<ulink url='http://www.openswan.org/'>http://www.openswan.org/</ulink>&gt;
+by Michael Richardson. </para>
+
+</refsect1>
+</refentry>
+

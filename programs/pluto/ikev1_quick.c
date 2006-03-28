@@ -1206,8 +1206,8 @@ quick_inI1_outR1_start_query(struct verify_oppo_bundle *b
     struct connection *c = p1st->st_connection;
     struct verify_oppo_continuation *vc
 	= alloc_thing(struct verify_oppo_continuation, "verify continuation");
+    const struct id *our_id;
     struct id id	/* subject of query */
-	, *our_id	/* needed for myid playing */
 	, our_id_space;	/* ephemeral: no need for unshare_id_content */
     ip_address client;
     err_t ugh;

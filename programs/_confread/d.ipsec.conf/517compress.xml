@@ -1,0 +1,24 @@
+  <varlistentry>
+  <term><emphasis remap='B'>compress</emphasis></term>
+  <listitem>
+<para>whether IPComp compression of content is proposed on the connection
+(link-level compression does not work on encrypted data,
+so to be effective, compression must be done <emphasis remap='I'>before</emphasis> encryption);
+acceptable values are
+<emphasis remap='B'>yes</emphasis>
+and
+<emphasis remap='B'>no</emphasis>
+(the default).
+The two ends need not agree.
+A value of
+<emphasis remap='B'>yes</emphasis>
+causes IPsec to propose both compressed and uncompressed,
+and prefer compressed.
+A value of
+<emphasis remap='B'>no</emphasis>
+prevents IPsec from proposing compression;
+a proposal to compress will still be accepted.</para>
+  </listitem>
+  </varlistentry>
+
+

@@ -148,13 +148,13 @@ endif
 
 # the files are defined here so that TAGS: can catch them.
 #
-X509_DIST_OBJS=ac.o asn1.o oid.o pem.o pgp.o pkcs.o x509.o certs.o md2.o ocsp.o x509keys.o
-X509_DIST_SRCS=oid.txt oid.pl ${X509_DIST_OBJS:.o=.c}
-X509_DIST_SRCS+=ac.h asn1.h certs.h fetch.h oid.h pem.h pgp.h pkcs.h x509.h
+X509_DIST_OBJS=ac.o x509.o ocsp.o x509keys.o
+X509_DIST_SRCS=${X509_DIST_OBJS:.o=.c}
+X509_DIST_SRCS+=ac.h fetch.h 
 HAVE_THREADS_DIST_OBJS=fetch.o 
 HAVE_THREADS_DIST_SRCS=${HAVE_THREADS_DIST_OBJS:.o=.c}
 SMARTCARD_DIST_OBJS=smartcard.o
-SMARTCARD_DIST_SRCS=smartcard.c smartcard.h 
+SMARTCARD_DIST_SRCS=smartcard.c 
 X509_OBJS=${X509_DIST_OBJS}
 X509_SRCS=${X509_DIST_SRCS}
 X509_DEFS=-DX509 
@@ -269,6 +269,7 @@ DEFINES = $(EXTRA_DEFINES) \
 # libefence is a free memory allocation debugger
 # Solaris 2 needs -lsocket -lnsl
 LIBSPLUTO =$(OBJSGCRYPT) $(LIBDESLITE) $(LIBAES) $(OPENSWANLIB) 
+LIBSPLUTO+=${LIBSHA1} ${LIBMD5} ${LIBMD2}
 LIBSPLUTO+=$(IPSECPOLICY_LIBS) $(X509_LIBS) $(SMARTCARD_LIBS) 
 LIBSPLUTO+=$(HAVE_THREADS_LIBS) ${XAUTHPAM_LIBS}
 LIBSPLUTO+=${CURL_LIBS} ${TPM_LIBS}

@@ -489,8 +489,9 @@ the default and currently the only accepted value is
 <emphasis remap='B'>ike</emphasis></para>
   </listitem>
   </varlistentry>
-  <varlistentry>
-  <term><emphasis remap='B'>auto</emphasis></term>
+
+<varlistentry>
+<term><emphasis remap='B'>auto</emphasis></term>
   <listitem>
 <para>what operation, if any, should be done automatically at IPsec startup;
 currently-accepted values are
@@ -525,6 +526,7 @@ both ends should use
 to ensure that any reboot causes immediate renegotiation).</para>
   </listitem>
   </varlistentry>
+
   <varlistentry>
   <term><emphasis remap='B'>auth</emphasis></term>
   <listitem>
@@ -853,6 +855,8 @@ prevents IPsec from proposing compression;
 a proposal to compress will still be accepted.</para>
   </listitem>
   </varlistentry>
+
+
   <varlistentry>
   <term><emphasis remap='B'>disablearrivalcheck</emphasis></term>
   <listitem>
@@ -1246,6 +1250,7 @@ for details on available debugging types, see
   </listitem>
   </varlistentry>
   <varlistentry>
+
   <term><emphasis remap='B'>plutostderrlog</emphasis></term>
   <listitem>
 <para>do not use syslog, but rather log to stderr, and direct stderr to the
@@ -1254,6 +1259,14 @@ argument file.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
+
+  <term><emphasis remap='B'>protostack</emphasis></term>
+  <listitem>
+<para>decide which protocol stack is going to be used. Valid values are "auto", "klips", "netkey" and "mast". The "mast" stack is a variation for the klips stack.
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+
   <term><emphasis remap='B'>dumpdir</emphasis></term>
   <listitem>
 <para>in what directory should things started by

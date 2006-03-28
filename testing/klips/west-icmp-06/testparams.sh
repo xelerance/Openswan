@@ -6,7 +6,7 @@ TESTHOST=west
 EXITONEMPTY=--exitonempty
 ARPREPLY=--arpreply 
 
-THREEEIGHT=true
+#THREEEIGHT=true
 PUB_INPUT=../inputs/08-sunrise-sunset-aes128.pcap
 REF_PRIV_OUTPUT=spi1-cleartext.txt
 

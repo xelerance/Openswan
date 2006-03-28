@@ -42,30 +42,9 @@ typedef unsigned long so_serial_t;
 #define SOS_NOBODY	0	/* null serial number */
 #define SOS_FIRST	1	/* first normal serial number */
 
-/* display a date either in local or UTC time */
-extern char* timetoa(const time_t *time, bool utc, char *buf, size_t blen);
-
 /* warns a predefined interval before expiry */
 extern const char* check_expiry(time_t expiration_date,
     int warning_interval, bool strict);
-
-#define MAX_PROMPT_PASS_TRIALS	5
-#define PROMPT_PASS_LEN		64
-
-/* struct used to prompt for a secret passphrase
- * from a console with file descriptor fd
- */
-typedef struct {
-    char secret[PROMPT_PASS_LEN];
-    bool prompt;
-    int fd;
-} prompt_pass_t;
-
-/* no time defined in time_t */
-#define UNDEFINED_TIME	0
-
-/* size of timetoa string buffer */
-#define TIMETOA_BUF	30
 
 /* filter eliminating the directory entries '.' and '..' */
 typedef struct dirent dirent_t;
@@ -82,22 +61,28 @@ extern void exit_pluto(int /*status*/) NEVER_RETURNS;
 /* are all bytes 0? */
 extern bool all_zero(const unsigned char *m, size_t len);
 
-
-/* some MP utilities */
-
-#include <gmp.h>
-
-extern void n_to_mpz(MP_INT *mp, const u_char *nbytes, size_t nlen);
-extern chunk_t mpz_to_n(const MP_INT *mp, size_t bytes);
-
-/* var := mod(base ** exp, mod), ensuring var is mpz_inited */
-#define mpz_init_powm(flag, var, base, exp, mod) { \
-    if (!(flag)) \
-	mpz_init(&(var)); \
-    (flag) = TRUE; \
-    mpz_powm(&(var), &(base), &(exp), (mod)); \
-    }
-
-
 /* pad_up(n, m) is the amount to add to n to make it a multiple of m */
 #define pad_up(n, m) (((m) - 1) - (((n) + (m) - 1) % (m)))
+
+#ifdef HAVE_THREADS
+extern void lock_crl_list(const char *who);
+extern void unlock_crl_list(const char *who);
+extern void lock_cacert_list(const char *who);
+extern void unlock_cacert_list(const char *who);
+extern void lock_ocsp_cache(const char *who);
+extern void unlock_ocsp_cache(const char *who);
+extern void lock_authcert_list(const char *who);
+extern void unlock_authcert_list(const char *who);
+#else
+#define lock_crl_list(who) /* nothing */
+#define unlock_crl_list(who) /* nothing */
+#define lock_cacert_list(who) /* nothing */
+#define unlock_cacert_list(who) /* nothing */
+#define lock_ocsp_cache(who) /* nothing */
+#define unlock_ocsp_cache(who) /* nothing */
+#define lock_authcert_list(who) /* nothing */
+#define unlock_authcert_list(who) /* nothing */
+#endif
+
+
+
