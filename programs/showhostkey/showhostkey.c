@@ -327,6 +327,9 @@ int main(int argc, char *argv[])
     struct secret *s;
     prompt_pass_t pass;
 
+    rsakeyid=NULL;
+    keyid=NULL;
+
     /* start up logging system */
     tool_init_log();
 
