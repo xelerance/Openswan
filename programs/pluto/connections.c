@@ -1076,15 +1076,34 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 , const struct whack_message *wm)
 {
     if (wm->addr_family != addrtypeof(&this->host_addr)
-    || wm->addr_family != addrtypeof(&this->host_nexthop)
-    || (this->has_client? wm->tunnel_addr_family : wm->addr_family)
-      != subnettypeof(&this->client)
-    || subnettypeof(&this->client) != subnettypeof(&that->client))
+	|| wm->addr_family != addrtypeof(&this->host_nexthop))
     {
 	/* this should have been diagnosed by whack, so we need not be clear
 	 * !!! overloaded use of RC_CLASH
 	 */
-	loglog(RC_CLASH, "address family inconsistency in connection");
+	loglog(RC_CLASH, "address family inconsistency in this connection=%d host=%d/nexthop=%d"
+	       , wm->addr_family
+	       , addrtypeof(&this->host_addr)
+	       , addrtypeof(&this->host_nexthop));
+	return FALSE;
+    }
+
+    if ((this->has_client? wm->tunnel_addr_family : wm->addr_family)
+	!= subnettypeof(&this->client))
+    {
+	/* this should have been diagnosed by whack, so we need not be clear
+	 * !!! overloaded use of RC_CLASH
+	 */
+	loglog(RC_CLASH, "address family inconsistency in this client connection");
+	return FALSE;
+    }
+
+    if (subnettypeof(&this->client) != subnettypeof(&that->client))
+    {
+	/* this should have been diagnosed by whack, so we need not be clear
+	 * !!! overloaded use of RC_CLASH
+	 */
+	loglog(RC_CLASH, "address family inconsistency in this/that connection");
 	return FALSE;
     }
 
