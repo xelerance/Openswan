@@ -33,7 +33,7 @@
 #endif
 
 #ifdef CONFIG_KLIPS_IPCOMP
-#undef CONFIG_KLIPS_IPCOMP
+#define CONFIG_KLIPS_IPCOMP
 #endif
 
 #ifndef CONFIG_KLIPS_IPIP

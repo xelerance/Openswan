@@ -648,10 +648,12 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 		
 		dat[len - authlen - 1] = ixs->iph->protocol;
 		ixs->iph->protocol = IPPROTO_ESP;
-		
+
+#ifdef CONFIG_KLIPS_DEBUG
 		if(debug_tunnel & DB_TN_ENCAP) {
 		        dmp("pre-encrypt", dat, len);
 		}
+#endif
 
 		/*
 		 * Do all operations here:
@@ -1709,10 +1711,11 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 			    skb_headroom(ixs->skb), skb_tailroom(ixs->skb));
 	}
 		
+#ifdef CONFIG_KLIPS_DEBUG
 	if(debug_tunnel & DB_TN_ENCAP) {
 		ipsec_print_ip(ixs->iph);
 	}
-
+#endif
 	/*
 	 * Apply grouped transforms to packet
 	 */
@@ -1721,10 +1724,11 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 
 		encap_stat = ipsec_xmit_encap_once(ixs);
 
+#ifdef CONFIG_KLIPS_DEBUG
 		if(debug_tunnel & DB_TN_ENCAP) {
 			ipsec_print_ip(ixs->iph);
 		}
-
+#endif
 		if(encap_stat != IPSEC_XMIT_OK) {
 			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 				    "klips_debug:ipsec_xmit_encap_bundle: encap_once failed: %d\n",

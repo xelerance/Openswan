@@ -1,6 +1,6 @@
 
 #
-# RCSID $Id: defconfig-noipcomp,v 1.1 2003/01/22 21:35:44 rgb Exp $
+# RCSID $Id: defconfig-nodebug,v 1.2 2005/05/12 03:10:53 mcr Exp $
 #
 
 #
@@ -17,13 +17,15 @@ CONFIG_INET=y
 # This must be on for subnet protection.
 CONFIG_IP_FORWARD=y
 
-# Shut off KLIPS masquerading if it has been enabled, since it will 
+# Shut off IPSEC masquerading if it has been enabled, since it will 
 # break the compile.  IPPROTO_ESP and IPPROTO_AH were included in 
 # net/ipv4/ip_masq.c when they should have gone into include/linux/in.h.
-CONFIG_IP_MASQUERADE_KLIPS=n
+CONFIG_IP_MASQUERADE_IPSEC=n
+
+
 
 #
-# Next, lets set the recommended Openswann configuration.
+# Next, lets set the recommended FreeS/WAN configuration.
 #
 
 # To config as static (preferred), 'y'.  To config as module, 'm'.
@@ -46,14 +48,20 @@ CONFIG_KLIPS_ESP=y
 CONFIG_KLIPS_ENC_3DES=y
 
 # IP Compression: new, probably still has minor bugs.
-CONFIG_KLIPS_IPCOMP=n
+CONFIG_KLIPS_IPCOMP=y
 
 # To enable userspace-switchable KLIPS debugging, say 'y'.
-CONFIG_KLIPS_DEBUG=y
+CONFIG_KLIPS_DEBUG=n
 
 #
 #
-# $Log: defconfig-noipcomp,v $
+# $Log: defconfig-nodebug,v $
+# Revision 1.2  2005/05/12 03:10:53  mcr
+# 	adjusted settings for IPSEC->KLIPS change.
+#
+# Revision 1.1  2004/12/22 00:31:01  paul
+# Added testcase for compiling without CONFIG_KLIPS_DEBUG
+#
 # Revision 1.1  2003/01/22 21:35:44  rgb
 #
 # Added a file that contains the defaults for the kernel config, replacing
@@ -78,7 +86,7 @@ CONFIG_KLIPS_DEBUG=y
 # IPCOMP zlib deflate code.
 #
 # Revision 1.16  2000/09/08 19:12:55  rgb
-# Change references from DEBUG_KLIPS to CONFIG_IPSEC_DEBUG.
+# Change references from DEBUG_IPSEC to CONFIG_KLIPS_DEBUG.
 #
 # Revision 1.15  2000/05/24 19:37:13  rgb
 # *** empty log message ***
@@ -94,7 +102,7 @@ CONFIG_KLIPS_DEBUG=y
 #
 # Revision 1.11  2000/03/16 07:09:46  rgb
 # Hardcode PF_KEYv2 support.
-# Disable KLIPS_ICMP by default.
+# Disable IPSEC_ICMP by default.
 # Remove DES config option from defaults file.
 #
 # Revision 1.10  2000/01/11 03:09:42  rgb
