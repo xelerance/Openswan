@@ -172,7 +172,7 @@ then
 fi
 if [ -n "$defaultroutenexthop" ]
 then
-    options="--defaultroutenexthop $defaultroutenexthop"
+    options="$options --defaultroutenexthop $defaultroutenexthop"
 fi
 echo "ipsec addconn $config $options $names"             | runit
 exit 

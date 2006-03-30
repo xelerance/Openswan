@@ -31,13 +31,6 @@ kamepfkey=/proc/net/pfkey
 # make sure output of (e.g.) ifconfig is in English
 unset LANG LANGUAGE LC_ALL LC_MESSAGES
 
-# check we were called properly
-if test " $IPSEC_confreadsection" != " setup"
-then
-	echo "$me: $0 must be called by ipsec_setup" >&2
-	exit 1
-fi
-
 if test `ip addr list|grep -c cipsec` -ne 0
 then
 	echo "Cisco IPSec client is already loaded, aborting! (cipsec# device found)"
@@ -121,7 +114,7 @@ manualconns() {
 	fi
 
 	# search for things to "ipsec manual --up": auto == "manual"
-	eval `ipsec _confread --varprefix MANUALSTART --search auto manual`
+	eval `ipsec addconn --varprefix MANUALSTART --search auto manual`
 	if test " $MANUALSTART_confreadstatus" != " "
 	then
 		echo "auto=manual search: $MANUALSTART_confreadstatus"
