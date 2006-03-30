@@ -48,6 +48,9 @@ static void osw_conf_calculate(struct osw_conf_options *oco)
 
     snprintf(buf, sizeof(buf), "%s/ocspcerts", oco->confddir);
     oco->ocspcerts_dir = clone_str(buf, "ocspcerts path");
+
+    snprintf(buf, sizeof(buf), "%s/policies", oco->confddir);
+    oco->policies_dir = clone_str(buf, "policies path");
 }
 
 void osw_conf_setdefault(void)
@@ -83,7 +86,7 @@ void osw_conf_setdefault(void)
 	pfree(ipsecd_dir);
 	ipsecd_dir = clone_str(buf, "ipsecdir");
 
-	/* if they change IPSEC_CONFS, reassign ipsecd as well */
+	/* if they change IPSEC_CONFS, reassign ipsec policies as well */
 	snprintf(buf, sizeof(buf), "%s/ipsec.conf", ipsec_conf_dir);
 	pfree(conffile);
 	conffile = clone_str(buf, "ipsec.conf");
