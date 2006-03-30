@@ -95,7 +95,7 @@ main(int argc, char *argv[])
 {
     int opt = 0;
     struct starter_config *cfg = NULL;
-    char *err = NULL;
+    err_t err = NULL;
     char *confdir = NULL;
     char *configfile = NULL;
     struct starter_conn *conn = NULL;
