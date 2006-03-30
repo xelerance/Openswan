@@ -252,11 +252,11 @@ void show_dnskey(struct secret *s
     case ns_t_txt:
 	printf("; info about key: %s\n", 
 	       pks->u.RSA_private_key.pub.keyid);
-	printf("%s.    IN    TXT    \"X-IPsec(%d)=%s \" ",
+	printf("%s.    IN    TXT    \"X-IPsec-Server(%d)=%s \" ",
 	       qname, precedence, gateway);
 	{
 	    int len = strlen(base64);
-	    char *p=base64;
+	    char *p=base64+2;  /* skip 0s */
 	    while(len > 0) {
 		int printlen = len;
 		char saveit;
