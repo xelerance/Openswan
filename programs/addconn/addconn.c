@@ -51,21 +51,20 @@ char addconn_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp
 #include "ipsecconf/starterlog.h"
 #include "ipsecconf/files.h"
 #include "ipsecconf/starterwhack.h"
-//#include "ipsecconf/pluto.h"
-//#include "ipsecconf/klips.h"
-//#include "ipsecconf/netkey.h"
-//#include "ipsecconf/cmp.h"
-//#include "ipsecconf/interfaces.h"
-//#include "ipsecconf/keywords.h"
+#include "ipsecconf/keywords.h"
 
 char *progname;
 int verbose=0;
 int warningsarefatal = 0;
 
 static const char *usage_string = ""
-  "Usage: addconn [--config file] \n"
-  "               [--defaultroute <addr>] [--defaultroutenexthop <addr>]\n"
-  "               names\n";
+    "Usage: addconn [--config file] \n"
+    "               [--addall] [--listroute] [--liststart]\n"
+    "               [--rootdir dir] \n"
+    "               [--configsetup] \n"
+    "               [--defaultroute <addr>] [--defaultroutenexthop <addr>]\n"
+    
+    "               names\n";
 
 
 static void usage(void)
@@ -85,7 +84,13 @@ static struct option const longopts[] =
 	{"debug",               no_argument, NULL, 'D'},
 	{"verbose",             no_argument, NULL, 'D'},
 	{"warningsfatal",       no_argument, NULL, 'W'},
+	{"addall",              no_argument, NULL, 'a'},
+	{"listroute",           no_argument, NULL, 'r'},
+	{"liststart",           no_argument, NULL, 's'},
+	{"varprefix",           required_argument, NULL, 'P'},
+	{"search",              no_argument, NULL, 'S'},
 	{"rootdir",             required_argument, NULL, 'R'},
+	{"configsetup",         no_argument, NULL, 'T'},
 	{"help",                no_argument, NULL, 'h'},
 	{0, 0, 0, 0}
 };
@@ -97,12 +102,18 @@ main(int argc, char *argv[])
 {
     int opt = 0;
     int all = 0;
+    int search = 0;
+    int typeexport = 0;
+    int listroute=0, liststart=0;
     struct starter_config *cfg = NULL;
-    char *err = NULL;
+    err_t err = NULL;
     char *confdir = NULL;
     char *configfile = NULL;
+    char *varprefix = "";
     int exit_status = 0;
     struct starter_conn *conn = NULL;
+    char *defaultroute = NULL;
+    char *defaultnexthop = NULL;
 
 #if 0
     /* efence settings */
@@ -126,12 +137,24 @@ main(int argc, char *argv[])
 	    usage();
 	    break;
 
+	case 'a':
+	    all=1;
+	    break;
+
 	case 'D':
 	    verbose++;
 	    break;
 
 	case 'W':
 	    warningsarefatal++;
+	    break;
+
+	case 'S':
+	    search++;
+	    break;
+
+	case 'T':
+	    typeexport++;
 	    break;
 
 	case 'C':
@@ -142,24 +165,38 @@ main(int argc, char *argv[])
 	    all=1;
 	    break;
 
+	case 'r':
+	    listroute=1;
+	    break;
+
+	case 's':
+	    liststart=1;
+	    break;
+
+	case 'P':
+	    varprefix=optarg;
+	    break;
+
 	case 'R':
 	    printf("setting rootdir=%s\n", optarg);
 	    strncat(rootdir, optarg, sizeof(rootdir));
 	    break;
 
 	case 'd':
-	    /* convert default route info */
+	    defaultroute=optarg;
 	    break;
 
-	case 'N':
-	    /* convert next hop info */
+	case 'n':
+	    defaultnexthop=optarg;
 	    break;
 
+	default:
+	    usage();
 	}
     }
 
     /* if nothing to add, then complain */
-    if(optind == argc && !all) {
+    if(optind == argc && !all && !listroute && !liststart && !search && !typeexport) {
 	usage();
     }
     
@@ -197,9 +234,38 @@ main(int argc, char *argv[])
 	       configfile, err);
 	exit(3);
     }
-	
 
-    if(all)
+    if(defaultroute) {
+	err_t e;
+	char b[ADDRTOT_BUF];
+	e = ttoaddr(defaultroute, strlen(defaultroute), AF_INET, &cfg->dr);
+	if(e) {
+	    printf("invalid default route: %s\n", e);
+	    exit(4);
+	}
+
+	if(verbose) {
+	    addrtot(&cfg->dr, 0, b, sizeof(b));
+	    printf("default route is: %s\n", b);
+	}
+    }
+
+    if(defaultnexthop) {
+	err_t e;
+	char b[ADDRTOT_BUF];
+	e = ttoaddr(defaultnexthop, strlen(defaultnexthop), AF_INET, &cfg->dnh);
+	if(e) {
+	    printf("invalid default route: %s\n", e);
+	    exit(4);
+	}
+
+	if(verbose) {
+	    addrtot(&cfg->dnh, 0, b, sizeof(b));
+	    printf("default nexthop is: %s\n", b);
+	}
+    }
+
+    if(all) 
     {
 	/* load all conns marked as auto=add or better */
 	for(conn = cfg->conns.tqh_first;
@@ -209,9 +275,91 @@ main(int argc, char *argv[])
 	    if (conn->desired_state == STARTUP_ADD
 		|| conn->desired_state == STARTUP_START
 		|| conn->desired_state == STARTUP_ROUTE) {
-		starter_whack_add_conn(conn);
+		starter_whack_add_conn(cfg, conn);
 	    }
 	}
+    } else if(listroute) {
+	/* list all conns marked as auto=route or start or better */
+	for(conn = cfg->conns.tqh_first;
+	    conn != NULL;
+	    conn = conn->link.tqe_next)
+	{
+	    if (conn->desired_state == STARTUP_START
+		|| conn->desired_state == STARTUP_ROUTE) {
+		printf("%s ", conn->name);
+	    }
+	    printf("\n");
+	}
+    } else if(liststart) {
+	/* list all conns marked as auto=route or start or better */
+	for(conn = cfg->conns.tqh_first;
+	    conn != NULL;
+	    conn = conn->link.tqe_next)
+	{
+	    if (conn->desired_state == STARTUP_START) {
+		printf("%s ", conn->name);
+	    }
+	    printf("\n");
+	}
+    } else if(search) {
+	char *sep="";
+	if((argc-optind) < 2 ) {
+	    printf("%s_confreadstatus=failed\n", varprefix);
+	    exit(3);
+	}
+
+	printf("%s_confreadstatus=\n", varprefix);
+	printf("%s_confreadnames=\"",varprefix);
+	
+	/* find conn names that have value set */
+	for(conn = cfg->conns.tqh_first;
+	    conn != NULL;
+	    conn = conn->link.tqe_next)
+	{
+	    /* we recognize a limited set of values */
+	    if(strcasecmp(argv[optind],"auto")==0 &&
+	       strcasecmp(argv[optind+1],"manual")==0) {
+		if(conn->manualkey) {
+		    printf("%s%s", sep, conn->name);
+		    sep=" ";
+		}
+	    }
+	}
+	printf("\"\n");
+	exit(0);
+
+    } else if(typeexport) {
+        struct keyword_def *kd;
+
+	printf("export %sconfreadstatus=''\n", varprefix);
+	for(kd=ipsec_conf_keywords_v2; kd->keyname != NULL; kd++) {
+	    if((kd->validity & kv_config)==0) continue;
+
+	    if(kd->type == kt_string ||
+	       kd->type == kt_filename ||
+	       kd->type == kt_dirname ||
+	       kd->type == kt_loose_enum) {
+		if(cfg->setup.strings[kd->field]) {
+		    printf("export %s%s='%s'\n",
+			   varprefix, kd->keyname,
+			   cfg->setup.strings[kd->field]);
+		}
+	    } else if(kd->type==kt_bool) {
+		printf("export %s%s='%s'\n",
+		       varprefix, kd->keyname,
+		       cfg->setup.options[kd->field] ? "yes" : "no");
+	    } else {
+		
+		if(cfg->setup.options[kd->field]) {
+		    printf("export %s%s='%d'\n",
+			   varprefix, kd->keyname,
+			   cfg->setup.options[kd->field]);
+		}
+	    }
+	}
+
+	exit(0);
+
     } else {
 	/* load named conns, regardless of their state */
 	for(conn = cfg->conns.tqh_first;
@@ -228,7 +376,7 @@ main(int argc, char *argv[])
 			printf("conn %s did not load properly\n", conn->name);
 		    } else {
 			printf("loading conn: %s\n", conn->name);
-			exit_status = starter_whack_add_conn(conn);
+			exit_status = starter_whack_add_conn(cfg, conn);
 			conn->state = STATE_ADDED;
 		    }
 		}
