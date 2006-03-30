@@ -17,7 +17,10 @@
 #ifndef _IPSEC_PARSER_H_
 #define _IPSEC_PARSER_H_
 
-struct config_parsed *parser_load_conf (const char *file, char **perr);
+#include "constants.h"
+#include "openswan.h"
+
+struct config_parsed *parser_load_conf (const char *file, err_t *perr);
 void parser_free_conf (struct config_parsed *cfg);
 
 extern int warningsarefatal;

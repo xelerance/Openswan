@@ -25,6 +25,7 @@
 #include "ipsecconf/confread.h"
 #include "ipsecconf/interfaces.h"
 #include "ipsecconf/starterlog.h"
+#include "ipsecconf/oeconns.h"
 
 static char _tmp_err[512];
 
@@ -64,6 +65,9 @@ static void default_values (struct starter_config *cfg)
 	cfg->conn_default.options[KBF_REKEYMARGIN] = SA_REPLACEMENT_MARGIN_DEFAULT;
 	cfg->conn_default.options[KBF_REKEYFUZZ]   = SA_REPLACEMENT_FUZZ_DEFAULT;
 	cfg->conn_default.options[KBF_KEYINGTRIES] = SA_REPLACEMENT_RETRIES_DEFAULT;
+
+	/* now here is a sticker.. we want it on. But pluto has to be smarter first */
+	cfg->conn_default.options[KBF_OPPOENCRYPT] = FALSE;
 
 	cfg->conn_default.left.addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.left.addr);
@@ -162,7 +166,7 @@ char **new_list(char *value)
  */
 static int load_setup (struct starter_config *cfg
 		       , struct config_parsed *cfgp
-		       , char **perr)
+		       , err_t *perr)
 {
 	unsigned int err = 0;
 	struct kw_list *kw;
@@ -254,7 +258,7 @@ static int load_setup (struct starter_config *cfg
  */
 static int validate_end(struct starter_conn *conn_st
 			, struct starter_end *end
-			, bool left, char **perr)
+			, bool left, err_t *perr)
 {
     err_t er = NULL;
     int err=0;
@@ -378,10 +382,10 @@ static int validate_end(struct starter_conn *conn_st
  * @param permitreplace boolean (can we replace this conn?)
  * @return bool 0 if successfull
  */
-static bool translate_conn (struct starter_conn *conn
-			    , struct section_list *sl
-			    , bool permitreplace
-			    , char **error)
+bool translate_conn (struct starter_conn *conn
+		     , struct section_list *sl
+		     , bool permitreplace
+		     , err_t *error)
 {
     unsigned int err, field;
     ksf    *the_strings;
@@ -405,9 +409,9 @@ static bool translate_conn (struct starter_conn *conn
 	if((kw->keyword.keydef->validity & kv_conn) == 0)
 	{
 	    /* this isn't valid in a conn! */
-	    *error = _tmp_err;
+	    *error = (const char *)_tmp_err;
 
-	    snprintf(*error, sizeof(_tmp_err),
+	    snprintf(_tmp_err, sizeof(_tmp_err),
 		     "keyword '%s' is not valid in a conn (%s) (#%d)\n",
 		     kw->keyword.keydef->keyname, sl->name, i);
 	    starter_log(LOG_LEVEL_INFO, _tmp_err);
@@ -450,7 +454,7 @@ static bool translate_conn (struct starter_conn *conn
 		{
 		    *error = _tmp_err;
 
-		    snprintf(*error, sizeof(_tmp_err)
+		    snprintf(_tmp_err, sizeof(_tmp_err)
 			     , "duplicate key '%s' in conn %s while processing def %s"
 			     , kw->keyword.keydef->keyname
 			     , conn->name
@@ -510,7 +514,7 @@ static bool translate_conn (struct starter_conn *conn
 		{
 		    *error = _tmp_err;
 
-		    snprintf(*error, sizeof(_tmp_err)
+		    snprintf(_tmp_err, sizeof(_tmp_err)
 				, "duplicate key '%s' in conn %s while processing def %s"
 				, kw->keyword.keydef->keyname
 				, conn->name
@@ -558,7 +562,7 @@ static bool translate_conn (struct starter_conn *conn
 		{
 		    *error = _tmp_err;
 
-		    snprintf(*error, sizeof(_tmp_err)
+		    snprintf(_tmp_err, sizeof(_tmp_err)
 			     , "duplicate key '%s' in conn %s while processing def %s"
 			     , kw->keyword.keydef->keyname
 			     , conn->name
@@ -583,7 +587,7 @@ static bool translate_conn (struct starter_conn *conn
 
 static int load_conn_basic(struct starter_conn *conn
 			   , struct section_list *sl
-			   , char **perr)
+			   , err_t *perr)
 {
     int err;
 
@@ -607,7 +611,7 @@ static int load_conn (struct starter_config *cfg
 		      , struct config_parsed *cfgp
 		      , struct section_list *sl
 		      , bool alsoprocessing
-		      , char **perr)
+		      , err_t *perr)
 {
     unsigned int err;
     char **alsos;
@@ -755,8 +759,8 @@ static int load_conn (struct starter_config *cfg
 }
 
     
-static void conn_default (struct starter_conn *conn,
-			  struct starter_conn *def)
+void conn_default (struct starter_conn *conn,
+		   struct starter_conn *def)
 {
     int i;
 
@@ -802,12 +806,56 @@ static void conn_default (struct starter_conn *conn,
 #undef CONN_STR
 }
 
-struct starter_config *confread_load(const char *file, char **perr)
+struct starter_conn *alloc_add_conn(struct starter_config *cfg, char *name, err_t *perr)
+{
+    struct starter_conn *conn;
+    
+    conn = (struct starter_conn *)malloc(sizeof(struct starter_conn));
+    memset(conn, 0, sizeof(struct starter_conn));
+    if (!conn) {
+	if (perr) *perr = xstrdup("can't allocate mem in confread_load()");
+	return NULL;
+    }
+
+    conn_default(conn, &cfg->conn_default);
+    conn->name = xstrdup(name);
+    conn->desired_state = STARTUP_NO;
+    conn->state = STATE_FAILED;
+    
+    TAILQ_INSERT_TAIL(&cfg->conns, conn, link);
+    return conn;
+}
+
+int init_load_conn(struct starter_config *cfg
+		   , struct config_parsed *cfgp
+		   , struct section_list *sconn
+		   , bool alsoprocessing
+		   , err_t *perr)
+{
+    int connerr;
+    struct starter_conn *conn;
+    starter_log(LOG_LEVEL_DEBUG, "Loading conn %s", sconn->name);
+
+    conn = alloc_add_conn(cfg, sconn->name, perr);
+    if(conn == NULL) {
+	return -1;
+    }
+    
+    connerr = load_conn (cfg, conn, cfgp, sconn, TRUE, perr);
+		
+    if(connerr == 0)
+    {
+	conn->state = STATE_LOADED;
+    }
+    return connerr;
+}
+
+
+struct starter_config *confread_load(const char *file, err_t *perr)
 {
 	struct starter_config *cfg = NULL;
 	struct config_parsed *cfgp;
 	struct section_list *sconn;
-	struct starter_conn *conn;
 	unsigned int err = 0, connerr;
 
 	/**
@@ -837,7 +885,7 @@ struct starter_config *confread_load(const char *file, char **perr)
 	if(err) {return NULL;}
 
 	/**
-	 * Find %default conn
+	 * Find %default and %oedefault conn
 	 *
 	 */
 	for(sconn = cfgp->sections.tqh_first; (!err) && sconn != NULL; sconn = sconn->link.tqe_next)
@@ -845,6 +893,14 @@ struct starter_config *confread_load(const char *file, char **perr)
 		if (strcmp(sconn->name,"%default")==0) {
 			starter_log(LOG_LEVEL_DEBUG, "Loading default conn");
 			err += load_conn (cfg, &cfg->conn_default, cfgp, sconn, FALSE, perr);
+		}
+
+		if (strcmp(sconn->name,"%oedefault")==0) {
+			starter_log(LOG_LEVEL_DEBUG, "Loading oedefault conn");
+			err += load_conn (cfg, &cfg->conn_oedefault, cfgp, sconn, FALSE, perr);
+			if(err == 0) {
+			    cfg->got_oedefault=TRUE;
+			}
 		}
 	}
 
@@ -854,30 +910,21 @@ struct starter_config *confread_load(const char *file, char **perr)
 	for(sconn = cfgp->sections.tqh_first; sconn != NULL; sconn = sconn->link.tqe_next)
 	{
 		if (strcmp(sconn->name,"%default")==0) continue;
-		starter_log(LOG_LEVEL_DEBUG, "Loading conn %s", sconn->name);
-		conn = (struct starter_conn *)malloc(sizeof(struct starter_conn));
-		memset(conn, 0, sizeof(struct starter_conn));
-		if (!conn) {
-			if (perr) *perr = xstrdup("can't allocate mem in confread_load()");
-			parser_free_conf(cfgp);
-			confread_free(cfg);
-			return NULL;
-		}
+		if (strcmp(sconn->name,"%oedefault")==0) continue;
 
-		conn_default(conn, &cfg->conn_default);
-		conn->name = xstrdup(sconn->name);
-		conn->desired_state = STARTUP_NO;
-		conn->state = STATE_FAILED;
+		connerr = init_load_conn(cfg,cfgp,sconn,TRUE,perr);
 
-		TAILQ_INSERT_TAIL(&cfg->conns, conn, link); 
-
-		connerr = load_conn (cfg, conn, cfgp, sconn, TRUE, perr);
-		
-		if(connerr == 0)
-		{
-		    conn->state = STATE_LOADED;
+		if(connerr == -1) {
+		    parser_free_conf(cfgp);
+		    confread_free(cfg);
+		    return NULL;
 		}
 		err += connerr;
+	}
+
+	/* if we have OE on, then create any missing OE conns! */
+	if(cfg->setup.options[KBF_OPPOENCRYPT]) {
+	    add_any_oeconns(cfg, cfgp);
 	}
 
 	parser_free_conf(cfgp);

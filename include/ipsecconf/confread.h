@@ -35,7 +35,8 @@ typedef bool  int_set[KEY_NUMERIC_MAX];
 
 struct starter_end {
     sa_family_t addr_family;
-    enum keyword_host addrtype; 
+    enum keyword_host addrtype;
+    enum keyword_host nexttype;
     ip_address addr, nexthop;
     bool has_client;
     ip_subnet subnet;
@@ -46,6 +47,7 @@ struct starter_end {
     u_int16_t port;
     u_int8_t protocol;
     bool has_client_wildcard;
+    bool key_from_DNS_on_demand;
     char *cert;
     char *virt;
     ksf  strings;
@@ -110,11 +112,28 @@ struct starter_config {
     struct starter_conn conn_default;
     bool                got_default;
 
+    struct starter_conn conn_oedefault;
+    bool                got_oedefault;
+
+    ip_address dr;  /* default route */
+    ip_address dnh; /* next hop value */
+
     /* connections list (without %default) */
     TAILQ_HEAD(, starter_conn) conns;
 };
 
-struct starter_config *confread_load(const char *file, char **perr);
+extern struct starter_config *confread_load(const char *file, err_t *perr);
+extern struct starter_conn *alloc_add_conn(struct starter_config *cfg
+					   , char *name, err_t *perr);
+extern int init_load_conn(struct starter_config *cfg
+			  , struct config_parsed *cfgp
+			  , struct section_list *sconn
+			  , bool alsoprocessing
+			  , err_t *perr);
+extern bool translate_conn (struct starter_conn *conn
+			    , struct section_list *sl
+			    , bool permitreplace
+			    , err_t *error);
 
 void confread_free(struct starter_config *cfg);
 

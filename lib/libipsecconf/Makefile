@@ -26,7 +26,7 @@ MANDIR=$(MANTREE)/man3
 
 ONEFILE=parser.y
 SRCS=confread.c confwrite.c starterwhack.c starterlog.c interfaces.c
-SRCS+=cmp.c parser.tab.c lex.yy.c keywords.c alloc.c
+SRCS+=cmp.c parser.tab.c lex.yy.c keywords.c alloc.c oeconns.c
 
 OBJS=${SRCS:.c=.o} 
 

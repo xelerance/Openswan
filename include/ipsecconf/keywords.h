@@ -74,7 +74,8 @@ enum keyword_numeric_config_field {
     KBF_KLIPSDEBUG   = 28,
     KBF_PLUTODEBUG   = 29,
     KBF_NHELPERS     = 30,
-    KBF_MAX          = 31
+    KBF_OPPOENCRYPT  = 31,
+    KBF_MAX          = 32
 };
 
 /*
@@ -108,18 +109,19 @@ enum keyword_string_conn_field {
 enum keyword_numeric_conn_field {
     KNCF_IP               = 0,
     KNCF_FIREWALL         = 1,
-    KNCF_IDTYPE           = 2,
-    KNCF_SPIBASE          = 3,
-    KNCF_SPI              = 4,
-    KNCF_ESPREPLAYWINDOW  = 5,
-    KNCF_DPDDELAY         = 6,
-    KNCF_DPDTIMEOUT       = 7,
-    KNCF_AGGRMODE         = 8,
-    KNCF_XAUTHSERVER      = 9,
-    KNCF_XAUTHCLIENT      = 10,
-    KNCF_MODECONFIGSERVER = 11,
-    KNCF_MODECONFIGCLIENT = 12,
-    KNCF_MODECONFIGPULL   = 13,
+    KNCF_NEXTHOP          = 2,
+    KNCF_IDTYPE           = 3,
+    KNCF_SPIBASE          = 4,
+    KNCF_SPI              = 5,
+    KNCF_ESPREPLAYWINDOW  = 6,
+    KNCF_DPDDELAY         = 7,
+    KNCF_DPDTIMEOUT       = 8,
+    KNCF_AGGRMODE         = 9,
+    KNCF_XAUTHSERVER      = 10,
+    KNCF_XAUTHCLIENT      = 11,
+    KNCF_MODECONFIGSERVER = 12,
+    KNCF_MODECONFIGCLIENT = 13,
+    KNCF_MODECONFIGPULL   = 14,
     KNCF_MAX              = 30
 };
 

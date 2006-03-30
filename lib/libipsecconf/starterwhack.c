@@ -238,11 +238,48 @@ static char *connection_name (struct starter_conn *conn)
 	return conn->name;
 }
 
-static void set_whack_end(struct whack_end *w, struct starter_end *l)
+static void set_whack_end(struct starter_config *cfg
+			  , char *lr
+			  , struct whack_end *w
+			  , struct starter_end *l)
 {
 	w->id = l->id;
-	w->host_addr = l->addr;
-	w->host_nexthop = l->nexthop;
+
+	switch(l->addrtype) {
+	case KH_DEFAULTROUTE:
+		w->host_addr = cfg->dr;
+		break;
+		
+	case KH_IPADDR:
+		w->host_addr = l->addr;
+		break;
+
+	case KH_OPPO:
+	case KH_GROUP:
+	case KH_OPPOGROUP:
+		/* policy should have been set to OPPO */
+		anyaddr(l->addr_family, &w->host_addr);
+		break;
+		
+	default:
+		printf("%s: do something with host case: %d\n", lr, l->addrtype);
+		break;
+	}
+
+	switch(l->nexttype) {
+	case KH_DEFAULTROUTE:
+		w->host_nexthop = cfg->dnh;
+		break;
+		
+	case KH_IPADDR:
+		w->host_nexthop = l->nexthop;
+		break;
+		
+	default:
+		printf("%s: do something with nexthop case: %d\n", lr, l->nexttype);
+		break;
+	}
+
 	w->has_client = l->has_client;
 	if (l->has_client) {
 		w->client = l->subnet;
@@ -256,9 +293,8 @@ static void set_whack_end(struct whack_end *w, struct starter_end *l)
 	w->cert = l->cert;
 	w->protocol = l->protocol;
 	w->port = l->port;
-#ifdef VIRTUAL_IP
 	w->virt = l->virt;
-#endif
+	w->key_from_DNS_on_demand = l->key_from_DNS_on_demand;
 }
 
 static int starter_whack_add_pubkey (struct starter_conn *conn,
@@ -313,7 +349,7 @@ static int starter_whack_add_pubkey (struct starter_conn *conn,
 	return 0;
 }
 
-int starter_whack_add_conn (struct starter_conn *conn)
+int starter_whack_add_conn (struct starter_config *cfg, struct starter_conn *conn)
 {
 	struct whack_message msg;
 	int r;
@@ -321,6 +357,7 @@ int starter_whack_add_conn (struct starter_conn *conn)
 	init_whack_msg(&msg);
 
 	msg.whack_connection = TRUE;
+	msg.whack_delete = TRUE;      /* always do replace for now */
 	msg.name = connection_name(conn);
 
 	msg.addr_family = AF_INET;
@@ -334,8 +371,8 @@ int starter_whack_add_conn (struct starter_conn *conn)
 
 	msg.policy = conn->policy;
 
-	set_whack_end(&msg.left, &conn->left);
-	set_whack_end(&msg.right, &conn->right);
+	set_whack_end(cfg, "left",  &msg.left, &conn->left);
+	set_whack_end(cfg, "right", &msg.right, &conn->right);
 
 	msg.esp = conn->esp;
 	msg.ike = conn->ike;

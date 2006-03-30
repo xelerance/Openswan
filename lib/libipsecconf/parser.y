@@ -402,7 +402,7 @@ void yyerror(const char *s)
 		parser_y_error(parser_errstring, ERRSTRING_LEN, s);
 }
 
-struct config_parsed *parser_load_conf (const char *file, char **perr)
+struct config_parsed *parser_load_conf (const char *file, err_t *perr)
 {
 	struct config_parsed *cfg=NULL;
 	int err = 0;
@@ -457,7 +457,7 @@ struct config_parsed *parser_load_conf (const char *file, char **perr)
 	}
 
 	if (err) {
-		if (perr) *perr = strdup(parser_errstring);
+		if (perr) *perr = (err_t)strdup(parser_errstring);
 		if (cfg) parser_free_conf (cfg);
 		cfg = NULL;
 	}

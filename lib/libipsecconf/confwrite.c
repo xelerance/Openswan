@@ -186,9 +186,22 @@ void confwrite_side(FILE *out,
 	fprintf(out, "\t%sid=\"%s\"\n",     side, end->id);
     }
 
-    if(!isanyaddr(&end->nexthop)) {
+    switch(end->nexttype) {
+    case KH_NOTSET:
+	/* nothing! */
+	break;
+	
+    case KH_DEFAULTROUTE:
+	fprintf(out, "\t%snexthop=%%defaultroute\n",side);
+	break;
+	
+    case KH_IPADDR:
 	addrtot(&end->nexthop, 0, databuf, ADDRTOT_BUF);
-	fprintf(out, "\t%snextop=%s\n", side, databuf);
+	fprintf(out, "\t%snexthop=%s\n", side, databuf);
+	break;
+
+    default:
+	break;
     }
 
     if(end->has_client) {
