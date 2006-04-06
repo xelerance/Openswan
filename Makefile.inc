@@ -272,6 +272,11 @@ USE_IPROUTE2?=true
 #  2.6  - iptables
 IPSEC_FIREWALLTYPE=iptables
 
+# Do we want all the configuration files like ipsec.conf and ipsec.secrets
+# and any certificates to be in a single directory defined by 
+# FINALCONFDDIR?
+USE_SINGLE_CONF_DIR?=false
+
 # whether or not to include ipsec policy code into pluto.
 # false for now, since it is still experimental.
 USE_IPSECPOLICY?=false
