@@ -50,7 +50,7 @@ endif
 
 # -O on Linux makes gcc coredump when compiling sha1.c
 # -Wundef is nice but RHL5.2 compiler doesn't support it
-CFLAGS = -g -Wall -W -Wmissing-prototypes -Wpointer-arith -Wbad-function-cast \
+CFLAGS +=-g -Wall -W -Wmissing-prototypes -Wpointer-arith -Wbad-function-cast \
 	-Wcast-qual -Wmissing-declarations -Wwrite-strings \
 	-Wstrict-prototypes # -Wundef
 
@@ -175,6 +175,15 @@ HAVE_THREADS_SRCS=${HAVE_THREADS_DIST_SRCS}
 HAVE_THREADS_LLIBS=-lpthread
 endif
 
+ifeq ($(HAVE_OCF),true)
+ifeq ($(HAVE_OPENSSL),true)
+HAVE_OCF_OPENSSL_DEFS=-DHAVE_OCF_AND_OPENSSL
+HAVE_OCF_OBJS=${HAVE_OCF_DIST_OBJS}
+HAVE_OCF_SRCS=${HAVE_OCF_DIST_SRCS}
+OPENSSL_LIBS=-lcrypto
+endif
+endif
+
 ifeq ($(USE_SMARTCARD),true)
 # smartcard functions are compiled in whether or not we have -lopensc,
 # but ifndef SMARTCARD, they are dummy functions.
@@ -236,6 +245,10 @@ EXTRA_CRYPTO_OBJS=ike_alg_blowfish.o ike_alg_twofish.o ike_alg_serpent.o ike_alg
 EXTRA_CRYPTO_LIBS=$(LIBBLOWFISH) $(LIBTWOFISH) $(LIBSERPENT) $(LIBSHA2) 
 endif
 
+ifeq ($(USE_SINGLE_CONF_DIR),true)
+SINGLE_CONF_DIR=-DSINGLE_CONF_DIR
+endif
+
 ifeq ($(USE_TAPROOM),true)
 LIBTPM=tpm/libtpm.a
 TPM_LIBS=${LIBTPM} ${TCLLIB}
@@ -263,6 +276,7 @@ DEFINES = $(EXTRA_DEFINES) \
 	${XAUTH_DEFS} ${XAUTHPAM_DEFS} \
 	${NAT_DEFS} ${CURL_DEFS}\
 	${WEAK_DEFS} \
+	${SINGLE_CONF_DIR} ${HAVE_OCF_OPENSSL_DEFS} \
 	${HW_DEFS} \
 	# -DLEAK_DETECTIVE
 
@@ -275,7 +289,8 @@ LIBSPLUTO+=$(HAVE_THREADS_LIBS) ${XAUTHPAM_LIBS}
 LIBSPLUTO+=${CURL_LIBS} ${TPM_LIBS}
 LIBSPLUTO+=${EXTRA_CRYPTO_LIBS} ${WHACKLIB}
 PLUTOMINUSL+= ${X509_LLIBS} ${CURL_LLIBS} ${TPM_LLIBS} ${HAVE_THREADS_LLIBS} 
-PLUTOMINUSL+= ${SMARTCARD_LLIBS} -lgmp # -lefence
+PLUTOMINUSL+= ${SMARTCARD_LLIBS} ${OPENSSL_LIBS} ${LIBCRYPT} -lgmp # -lefence
+
 
 
 

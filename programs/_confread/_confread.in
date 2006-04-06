@@ -81,6 +81,13 @@ then
 else
 	cat $config
 fi |
+(
+	IFS=""
+	while read t
+	do
+		eval echo \"$t\"
+	done
+) |
 awk 'BEGIN {
 	type = "'"$type"'"
 	names = "'"$*"'"

@@ -14,7 +14,10 @@
  *
  * This code was developed with the support of IXIA communications.
  *
- * RCSID $Id: pluto_crypt.c,v 1.22 2005/08/27 05:40:06 paul Exp $
+ * Modifications to use OCF interface written by
+ * Daniel Djamaludin <danield@cyberguard.com>
+ * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ *
  */
 
 #include <stdlib.h>
@@ -48,6 +51,15 @@
 #include "demux.h"
 #include "rnd.h"
 #include "pluto_crypt.h"
+
+#ifdef HAVE_OCF_AND_OPENSSL
+#include "id.h"
+#include "pgp.h"
+#include "x509.h"
+#include "certs.h"
+#include "keys.h"
+#include "ocf_cryptodev.h"
+#endif
 
 struct pluto_crypto_worker {
     int   pcw_helpernum;
@@ -672,6 +684,9 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 	
 	pluto_init_log();
 	init_rnd_pool();
+#ifdef HAVE_OCF_AND_OPENSSL
+	load_cryptodev();
+#endif
 	free_preshared_secrets();
 	openswan_passert_fail = helper_passert_fail;
 	debug_prefix='!';

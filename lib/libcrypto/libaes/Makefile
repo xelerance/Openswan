@@ -57,6 +57,11 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -Wwrite-strings
 CFLAGS+= -Wbad-function-cast 
 
+ifeq ($(HAVE_OCF),true)
+	CFLAGS += -DOCF_ASSIST=1
+	AES_CORE_OBJ += ocf_aes_assist.o
+endif
+
 .PHONY:	all install clean check depend checkprograms
 
 all:	$(LIB) 

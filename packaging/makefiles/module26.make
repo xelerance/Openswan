@@ -20,6 +20,7 @@ EXTRA_CFLAGS += -include ${MODULE_DEF_INCLUDE}
 endif
 
 EXTRA_CFLAGS += -I${KLIPS_TOP}/include
+EXTRA_CFLAGS += -I${KLIPSSRC}/.
 
 # build version.c using version number from Makefile.ver
 ${BUILDDIR}/version.c:	${KLIPSSRC}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver

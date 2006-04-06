@@ -1,7 +1,7 @@
 /* IPsec DOI and Oakley resolution routines
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
- * Copyright (C) 2003-2005  Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2006  Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -13,7 +13,11 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_doi.c,v 1.316 2005/10/20 21:12:36 mcr Exp $
+ *
+ * Modifications to use OCF interface written by
+ * Daniel Djamaludin <danield@cyberguard.com>
+ * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ *
  */
 
 #include <stdio.h>
@@ -87,6 +91,10 @@
 #include "x509more.h"
 
 #include "tpm/tpm.h"
+
+#ifdef HAVE_OCF_AND_OPENSSL
+#include "ocf_cryptodev.h"
+#endif
 
 /*
 * tools for sending Pluto Vendor ID.
@@ -1395,14 +1403,25 @@ try_RSA_signature(const u_char hash_val[MAX_DIGEST_LEN], size_t hash_len
     {
 	chunk_t temp_s;
 	mpz_t c;
+#ifdef HAVE_OCF_AND_OPENSSL
+	BIGNUM r0;
+#endif
 
 	n_to_mpz(c, sig_val, sig_len);
+#ifdef HAVE_OCF_AND_OPENSSL
+	BN_init(&r0);
+	cryptodev.mod_exp(&r0, c, &k->e, &k->n);
+	bn2mp(&r0, (MP_INT *) c);
+#else
 	mpz_powm(c, c, &k->e, &k->n);
+#endif
 
 	temp_s = mpz_to_n(c, sig_len);	/* back to octets */
 	memcpy(s, temp_s.ptr, sig_len);
 	pfree(temp_s.ptr);
+#ifndef HAVE_OCF_AND_OPENSSL
 	mpz_clear(c);
+#endif
     }
 
     /* sanity check on signature: see if it matches
