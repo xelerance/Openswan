@@ -56,7 +56,7 @@ PUBDIR=$(DESTDIR)$(INC_USRLOCAL)/sbin
 
 # BINDIR is where sub-commands get put, FINALBINDIR is where the "ipsec"
 # command will look for them when it is run. Also called LIBEXECDIR.
-FINALLIBEXECDIR=$(INC_USRLOCAL)/libexec/ipsec
+FINALLIBEXECDIR?=$(INC_USRLOCAL)/libexec/ipsec
 LIBEXECDIR=$(DESTDIR)$(FINALBINDIR)
 
 FINALBINDIR=${FINALLIBEXECDIR}
@@ -64,11 +64,11 @@ BINDIR=${LIBEXECDIR}
 
 
 # SBINDIR is where the user interface command goes.
-FINALSBINDIR=$(INC_USRLOCAL)/sbin
+FINALSBINDIR?=$(INC_USRLOCAL)/sbin
 SBINDIR=$(DESTDIR)$(FINALSBINDIR)
 
 # libdir is where utility files go
-FINALLIBDIR=$(INC_USRLOCAL)/lib/ipsec
+FINALLIBDIR?=$(INC_USRLOCAL)/lib/ipsec
 LIBDIR=$(DESTDIR)$(FINALLIBDIR)
 
 
@@ -359,6 +359,12 @@ USE_EXTRACRYPTO?=true
 # or if you need it for CRL fetching.
 # 
 HAVE_THREADS?=false
+
+# Do we have OCF available?
+HAVE_OCF?=false
+
+# Do we have Openssl libraries available for BIGNUM support?
+HAVE_OPENSSL?=false
 
 # Do we assume that the /bin/sh is BASH?
 # if so, then internationalization code is retained in the shell scripts
