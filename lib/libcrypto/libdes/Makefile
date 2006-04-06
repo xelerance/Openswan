@@ -64,11 +64,21 @@ CFLAGS=$(OPTS) $(CFLAG) $(USERCOMPILE) ${PORTINCLUDE}
 CPP=$(CC) -E
 
 # Assember version of des_encrypt*().
-DES_ENC=des_enc.o fcrypt_b.o		# normal C version
+DES_ENC=des_enc.o 
+#DES_ENC=des_enc.o fcrypt_b.o	# normal C version
 #DES_ENC=asm/dx86-elf.o	asm/yx86-elf.o	# elf format x86
 #DES_ENC=asm/dx86-out.o	asm/yx86-out.o	# a.out format x86
 #DES_ENC=asm/dx86-sol.o	asm/yx86-sol.o	# solaris format x86 
 #DES_ENC=asm/dx86bsdi.o	asm/yx86basi.o	# bsdi format x86 
+
+ifeq ($(HAVE_OCF),true)
+	EXTRA_CFLAGS += -DOCF_ASSIST=1
+	CPPFLAGS     += -DNO_FCRYPT=1
+	DES_ENC      += ocf_des_assist.o
+else
+	DES_ENC += fcrypt_b.o
+	FCRYPT = fcrypt.o
+endif
 
 LIBDIR=$(DESTDIR)$(INC_USRLOCAL)/lib
 INCDIR=$(DESTDIR)$(INC_USRLOCAL)/include
@@ -79,7 +89,7 @@ SHELL=/bin/sh
 MAN1=1
 MAN3=3
 SHELL=/bin/sh
-OBJ_LIT=cbc_enc.o ecb_enc.o $(DES_ENC) fcrypt.o set_key.o
+OBJ_LIT=cbc_enc.o ecb_enc.o $(DES_ENC) $(FCRYPT) set_key.o
 OBJ_FULL=cbc_cksm.o $(OBJ_LIT) pcbc_enc.o \
 	xcbc_enc.o qud_cksm.o \
 	cfb64ede.o cfb64enc.o cfb_enc.o ecb3_enc.o \
@@ -183,6 +193,9 @@ asm/dx86unix.S:
 
 asm/yx86unix.S:
 	(cd asm; perl crypt586.pl cpp >yx86unix.S)
+
+.c.o:
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(EXTRA_CFLAGS) -c -o $@ $<
 
 test:	all
 	./destest

@@ -34,6 +34,7 @@ MODULE_CFLAGS= $(shell $(MAKE) -C $(TOPDIR) --no-print-directory -s -f Makefile 
 EXTRA_CFLAGS += ${KERNEL_CFLAGS}
 
 EXTRA_CFLAGS += -I${KLIPS_TOP}/include
+EXTRA_CFLAGS += -I${KLIPSSRC}/.
 
 EXTRA_CFLAGS += -I${TOPDIR}/include 
 EXTRA_CFLAGS += -I${LIBZLIBSRCDIR}

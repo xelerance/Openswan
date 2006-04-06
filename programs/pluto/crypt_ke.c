@@ -14,7 +14,11 @@
  *
  * This code was developed with the support of IXIA communications.
  *
- * RCSID $Id: crypt_ke.c,v 1.14 2005/08/19 04:03:02 mcr Exp $
+ * Modifications to use OCF interface written by
+ * Daniel Djamaludin <danield@cyberguard.com>
+ * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ *
+ * RCSID $Id: crypt_ke.c,v 1.11.2.2 2005/08/19 17:52:42 ken Exp $
  */
 
 #include <stdlib.h>
@@ -46,6 +50,15 @@
 #include "log.h"
 #include "timer.h"
 
+#ifdef HAVE_OCF_AND_OPENSSL
+#include "id.h"
+#include "pgp.h"
+#include "x509.h"
+#include "certs.h"
+#include "keys.h"
+#include "ocf_cryptodev.h"
+#endif
+
 void calc_ke(struct pluto_crypto_req *r)
 {
     MP_INT mp_g;
@@ -53,6 +66,9 @@ void calc_ke(struct pluto_crypto_req *r)
     const struct oakley_group_desc *group;
     chunk_t gi;
     struct pcr_kenonce *kn = &r->pcr_d.kn;
+#ifdef HAVE_OCF_AND_OPENSSL
+    BIGNUM r0;
+#endif
     
     group = lookup_group(kn->oakley_group);
     
@@ -65,7 +81,13 @@ void calc_ke(struct pluto_crypto_req *r)
     n_to_mpz(&secret, wire_chunk_ptr(kn, &(kn->secret)), LOCALSECRETSIZE);
     
     mpz_init(&mp_g);
+#ifdef HAVE_OCF_AND_OPENSSL
+    BN_init(&r0);
+    cryptodev.mod_exp(&r0, &groupgenerator, &secret, group->modulus);
+    bn2mp(&r0, (MP_INT *) &mp_g);
+#else
     mpz_powm(&mp_g, &groupgenerator, &secret, group->modulus);
+#endif
     
     gi = mpz_to_n(&mp_g, group->bytes);
     
@@ -84,7 +106,11 @@ void calc_ke(struct pluto_crypto_req *r)
 	DBG_dump_chunk("Public DH value sent:\n", gi));
 
     /* clean up after ourselves */
+#ifdef HAVE_OCF_AND_OPENSSL
+    BN_free(&r0);
+#else
     mpz_clear(&mp_g);
+#endif
     freeanychunk(gi);
 }
 
