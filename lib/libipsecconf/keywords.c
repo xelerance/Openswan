@@ -69,11 +69,12 @@ struct keyword_enum_values kw_authby_list=
     { kw_authby_values, sizeof(kw_authby_values)/sizeof(struct keyword_enum_value)};
 
 /*
- * Values for dpdaction={hold,clear}
+ * Values for dpdaction={hold,clear,restart} 
  */
 struct keyword_enum_value kw_dpdaction_values[]={
     { "hold",    DPD_ACTION_HOLD},
     { "clear",   DPD_ACTION_CLEAR},
+    { "restart",   DPD_ACTION_RESTART},
 };
 
 struct keyword_enum_values kw_dpdaction_list=
