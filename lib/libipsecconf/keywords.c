@@ -149,7 +149,8 @@ struct keyword_enum_value kw_plutodebug_values[]={
     { "oppo",     DBG_OPPO },
     { "controlmore", DBG_CONTROLMORE },
     { "private",  DBG_PRIVATE },
-    { "x509",  DBG_X509 },
+    { "x509",     DBG_X509 },
+    { "dpd",      DBG_DPD }, 
 
     { "impair-delay-adns-key-answer", IMPAIR_DELAY_ADNS_KEY_ANSWER },
     { "impair-delay-adns-txt-answer", IMPAIR_DELAY_ADNS_TXT_ANSWER },
