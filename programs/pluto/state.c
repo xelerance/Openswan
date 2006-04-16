@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: state.c,v 1.151.4.4 2005/08/12 17:04:08 ken Exp $
+ * RCSID $Id: state.c,v 1.151.4.5 2006/03/20 13:40:23 paul Exp $
  */
 
 #include <stdio.h>
@@ -374,8 +374,10 @@ delete_state(struct state *st)
 
     unreference_key(&st->st_peer_pubkey);
 
-    if (st->st_sec_in_use)
+    if (st->st_sec_in_use) {
 	mpz_clear(&(st->st_sec));
+	pfreeany(st->st_sec_chunk.ptr);
+    }
 
     pfreeany(st->st_tpacket.ptr);
     pfreeany(st->st_rpacket.ptr);

@@ -15,7 +15,7 @@
  * for more details.
  */
 
-char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.171.2.5 2005/10/21 02:22:29 mcr Exp $";
+char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.171.2.6 2005/12/07 06:07:04 paul Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -1196,7 +1196,7 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 		ipsec_kfree_skb(skb);
 	}
 
-	KLIPS_DEC_USE;
+	/* KLIPS_DEC_USE; Artifact from refactor? bug # 454 */
 	return(0);
 }
 
@@ -1699,6 +1699,10 @@ rcvleave:
 
 /*
  * $Log: ipsec_rcv.c,v $
+ * Revision 1.171.2.6  2005/12/07 06:07:04  paul
+ * comment out KLIPS_DEC_USE in ipsec_rcv_decap. Likely an artifact from
+ * refactoring. http://bugs.xelerance.com/view.php?id=454
+ *
  * Revision 1.171.2.5  2005/10/21 02:22:29  mcr
  * 	pull up of another try at 2.4.x kernel fix
  *

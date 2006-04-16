@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
- * RCSID $Id: config-ppc-smp.h,v 1.1.2.2 2005/08/18 20:40:09 paul Exp $
+ * RCSID $Id: config-ppc-smp.h,v 1.1.2.3 2006/03/22 03:43:53 paul Exp $
  */
 #define	_CONFIG_RH_PPC_SMP_H_	/* seen it, no need to see it again */
 
@@ -72,10 +72,10 @@
 #endif
 
 #define CONFIG_KLIPS_ALG_CRYPTOAPI #error
-#define CONFIG_KLIPS_ALG_AES #error
+#define CONFIG_IPSEC_ALG_AES #error
 
-#ifndef CONFIG_KLIPS_ALG_AES_MAC
-#define CONFIG_KLIPS_ALG_AES_MAC 1
+#ifndef CONFIG_IPSEC_ALG_AES_MAC
+#define CONFIG_IPSEC_ALG_AES_MAC 1
 #endif
 
 #ifndef CONFIG_KLIPS_REGRESS

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: dpd.c,v 1.29.2.2 2005/08/26 13:40:48 ken Exp $
+ * RCSID $Id: dpd.c,v 1.29.2.6 2005/12/27 22:30:36 ken Exp $
  */
 
 #include <stdio.h>
@@ -135,7 +135,7 @@ dpd_init(struct state *st)
 		      &st->st_connection->spd.that.host_addr, 0);
 
     if (p1st == NULL) {
-        loglog(RC_LOG_SERIOUS, "could not find phase 1 state for DPD");
+        loglog(RC_LOG_SERIOUS, "DPD: Serious: could not find phase 1 state for DPD");
 
 	/*
 	 * if the phase 1 state has gone away, it really should have
@@ -188,7 +188,7 @@ dpd_sched_timeout(struct state *p1st, time_t tm, time_t timeout)
     if (p1st->st_dpd_event == NULL
 	|| p1st->st_dpd_event->ev_time > tm + timeout)
     {
-	DBG(DBG_DPD, DBG_log("scheduling timeout to %lu"
+	DBG(DBG_DPD, DBG_log("DPD: Debug: scheduling timeout to %lu"
 			     , timeout));
         delete_dpd_event(p1st);
         event_schedule(EVENT_DPD_TIMEOUT, timeout, p1st);
@@ -211,7 +211,7 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
     bool   eroute_idle;
     time_t nextdelay;
 
-    DBG(DBG_DPD, DBG_log("processing dpd for state #%lu (\"%s\")"
+    DBG(DBG_DPD, DBG_log("DPD: Debug: processing dpd for state #%lu (\"%s\")"
 			 , st->st_serialno
 			 , st->st_connection->name));
 
@@ -245,7 +245,7 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
     /* has there been enough activity of late? */
     if(nextdelay > 0) {
 	/* Yes, just reschedule "phase 2" */
-	DBG(DBG_DPD, DBG_log("not yet time for dpd event: %lu < %lu"
+	DBG(DBG_DPD, DBG_log("DPD: Debug: not yet time for dpd event: %lu < %lu"
 			     , tm, (p1st->st_last_dpd + delay)));
 	event_schedule(EVENT_DPD, nextdelay, st);
 	return;
@@ -264,7 +264,7 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
       
 	eroute_idle = was_eroute_idle(st, delay);
 	if(!eroute_idle) {
-	    DBG(DBG_DPD, DBG_log("dpd out event not sent, phase 2 active"));
+	    DBG(DBG_DPD, DBG_log("DPD: Debug: out event not sent, phase 2 active"));
 	    
 	    /* update phase 2 time stamp only */
 	    st->st_last_dpd = tm;
@@ -298,7 +298,7 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
      */
     dpd_sched_timeout(p1st, tm, timeout);
 
-    DBG(DBG_DPD, DBG_log("sending R_U_THERE %u to %s:%d (state #%lu)"
+    DBG(DBG_DPD, DBG_log("DPD: Debug: sending R_U_THERE %u to %s:%d (state #%lu)"
 			 , seqno
 			 , ip_str(&p1st->st_remoteaddr)
 			 , p1st->st_remoteport
@@ -307,7 +307,7 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
     if (send_isakmp_notification(p1st, R_U_THERE
 				 , &seqno, sizeof(seqno)) != STF_IGNORE)
     {   
-        loglog(RC_LOG_SERIOUS, "DPD Error: could not send R_U_THERE");
+        loglog(RC_LOG_SERIOUS, "DPD: Serious: could not send R_U_THERE");
         return;
     }
         
@@ -338,7 +338,7 @@ p2_dpd_outI1(struct state *p2st)
 
     if (st == NULL)
     {
-        loglog(RC_LOG_SERIOUS, "DPD Error: could not find newest phase 1 state");
+        loglog(RC_LOG_SERIOUS, "DPD: Serious: could not find newest phase 1 state");
         return;
     }
 
@@ -376,12 +376,12 @@ dpd_inI_outR(struct state *p1st
         
     if (!IS_ISAKMP_SA_ESTABLISHED(p1st->st_state))
     {   
-        loglog(RC_LOG_SERIOUS, "DPD Error: received R_U_THERE for unestablished ISKAMP SA");
+        loglog(RC_LOG_SERIOUS, "DPD: Warning: received R_U_THERE for unestablished ISKAMP SA");
         return STF_IGNORE;
     }
     if (n->isan_spisize != COOKIE_SIZE * 2 || pbs_left(pbs) < COOKIE_SIZE * 2)
     {
-        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE has invalid SPI length (%d)", n->isan_spisize);
+        loglog(RC_LOG_SERIOUS, "DPD: Error: R_U_THERE has invalid SPI length (%d)", n->isan_spisize);
         return STF_FAIL + PAYLOAD_MALFORMED;
     }
         
@@ -389,38 +389,36 @@ dpd_inI_outR(struct state *p1st
     {
         /* RFC states we *SHOULD* check cookies, not MUST.  So invalid
            cookies are technically valid, as per Geoffrey Huang */
-        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE has invalid icookie (broken Cisco?)");
+        loglog(RC_LOG_SERIOUS, "DPD: Warning: R_U_THERE has invalid icookie");
     }
     pbs->cur += COOKIE_SIZE;
     
     if (memcmp(pbs->cur, p1st->st_rcookie, COOKIE_SIZE) != 0)
     {
-        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE has invalid rcookie (broken Cisco?)");      
-	return STF_FAIL + INVALID_COOKIE;
+        loglog(RC_LOG_SERIOUS, "DPD: Warning: R_U_THERE has invalid rcookie");      
     }
     pbs->cur += COOKIE_SIZE;
 
     if (pbs_left(pbs) != sizeof(seqno))
     {
-        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE has invalid data length (%d)", (int) pbs_left(pbs));
+        loglog(RC_LOG_SERIOUS, "DPD: Error: R_U_THERE has invalid data length (%d)", (int) pbs_left(pbs));
         return STF_FAIL + PAYLOAD_MALFORMED;
     }
 
     seqno = ntohl(*(u_int32_t *)pbs->cur);
     if (p1st->st_dpd_peerseqno && seqno <= p1st->st_dpd_peerseqno) {
-        loglog(RC_LOG_SERIOUS, "DPD Info: received old or duplicate R_U_THERE");
+        loglog(RC_LOG_SERIOUS, "DPD Warning: received old or duplicate R_U_THERE");
         return STF_IGNORE;
     }
      
-    DBG(DBG_DPD, DBG_log("received R_U_THERE seq:%u time:%lu (state=#%lu name=\"%s\")"
-			 , seqno, tm, p1st->st_serialno, p1st->st_connection->name));
+    DBG(DBG_DPD, DBG_log("DPD: Debug: received R_U_THERE seq:%u time:%lu (state=#%lu name=\"%s\")" , seqno, tm, p1st->st_serialno, p1st->st_connection->name));
 
     p1st->st_dpd_peerseqno = seqno;
 
     if (send_isakmp_notification(p1st, R_U_THERE_ACK
 				 , pbs->cur, pbs_left(pbs)) != STF_IGNORE)
     {
-        loglog(RC_LOG_SERIOUS, "DPD Info: could not send R_U_THERE_ACK"); 
+        loglog(RC_LOG_SERIOUS, "DPD: Warning: could not send R_U_THERE_ACK"); 
         return STF_IGNORE;
     }
 
@@ -457,13 +455,13 @@ dpd_inR(struct state *p1st
      
     if (!IS_ISAKMP_SA_ESTABLISHED(p1st->st_state))
     {
-        loglog(RC_LOG_SERIOUS, "recevied R_U_THERE_ACK for unestablished ISKAMP SA");
+        loglog(RC_LOG_SERIOUS, "DPD: Warning: recieved R_U_THERE_ACK for unestablished ISKAMP SA");
         return STF_FAIL;
     }
 
    if (n->isan_spisize != COOKIE_SIZE * 2 || pbs_left(pbs) < COOKIE_SIZE * 2)
     {
-        loglog(RC_LOG_SERIOUS, "R_U_THERE_ACK has invalid SPI length (%d)", n->isan_spisize);
+        loglog(RC_LOG_SERIOUS, "DPD: Error: R_U_THERE_ACK has invalid SPI length (%d)", n->isan_spisize);
         return STF_FAIL + PAYLOAD_MALFORMED;
     }
      
@@ -471,7 +469,7 @@ dpd_inR(struct state *p1st
     {
         /* RFC states we *SHOULD* check cookies, not MUST.  So invalid
            cookies are technically valid, as per Geoffrey Huang */
-        loglog(RC_LOG_SERIOUS, "R_U_THERE_ACK has invalid icookie");
+        loglog(RC_LOG_SERIOUS, "DPD: Warning: R_U_THERE_ACK has invalid icookie");
     }
     pbs->cur += COOKIE_SIZE;
     
@@ -479,22 +477,22 @@ dpd_inR(struct state *p1st
     {
         /* RFC states we *SHOULD* check cookies, not MUST.  So invalid
            cookies are technically valid, as per Geoffrey Huang */
-        loglog(RC_LOG_SERIOUS, "R_U_THERE_ACK has invalid rcookie (tolerated)");
+        loglog(RC_LOG_SERIOUS, "DPD: Warning: R_U_THERE_ACK has invalid rcookie ");
     }
     pbs->cur += COOKIE_SIZE;
     
     if (pbs_left(pbs) != sizeof(seqno))
     {
-        loglog(RC_LOG_SERIOUS, "R_U_THERE_ACK has invalid data length (%d)", (int) pbs_left(pbs));
+        loglog(RC_LOG_SERIOUS, "DPD: Error: R_U_THERE_ACK has invalid data length (%d)", (int) pbs_left(pbs));
         return STF_FAIL + PAYLOAD_MALFORMED;
     }
         
     seqno = ntohl(*(u_int32_t *)pbs->cur);
-    DBG(DBG_DPD, DBG_log("R_U_THERE_ACK, seqno received: %u expected: %u (state=#%lu)",
+    DBG(DBG_DPD, DBG_log("DPD: Debug: R_U_THERE_ACK, seqno received: %u expected: %u (state=#%lu)",
 			 seqno, p1st->st_dpd_expectseqno, p1st->st_serialno));
 
     if (!p1st->st_dpd_expectseqno && seqno != p1st->st_dpd_expectseqno) {
-        loglog(RC_LOG_SERIOUS, "R_U_THERE_ACK has unexpected sequence number (expected: %u got: %u", seqno, p1st->st_dpd_expectseqno);
+        loglog(RC_LOG_SERIOUS, "DPD: Error: R_U_THERE_ACK has unexpected sequence number (expected: %u got: %u", seqno, p1st->st_dpd_expectseqno);
 	p1st->st_dpd_expectseqno = 0;
 	/* do not update time stamp, so we'll send a new one sooner */
     } else {
@@ -541,29 +539,29 @@ dpd_timeout(struct state *st)
     /** delete the state, which is probably in phase 2 */
     set_cur_connection(c);
 
-    openswan_log("DPD: No response from peer - declaring peer dead");
+    openswan_log("DPD: Info: No response from peer - declaring peer dead");
 
     switch(action) {
     case DPD_ACTION_HOLD:
 	/** dpdaction=hold - Wipe the SA's but %trap the eroute so we don't
 	    leak traffic.  Also, being in %trap means new packets will
 	    force an initiation of the conn again.  */
-	openswan_log("DPD: Putting connection into %%trap");
+	openswan_log("DPD: Info: Putting connection into %%trap");
 	delete_states_by_connection(c, TRUE);  
 	break;
 
     case DPD_ACTION_CLEAR:
         /** dpdaction=clear - Wipe the SA & eroute - everything */
     
-        openswan_log("DPD: Clearing Connection");
+        openswan_log("DPD: Info: Clearing Connection");
 	delete_states_by_connection(c, TRUE);
-	DBG(DBG_DPD, DBG_log("unrouting connection"));
+	DBG(DBG_DPD, DBG_log("DPD: Debug: issuing unroute_connection()"));
         unroute_connection(c);        /* --unroute */
 	break;
 
     case DPD_ACTION_RESTART:
 	/** dpdaction=restart - immediate renegotiate the connection. */
-        openswan_log("DPD: Restarting Connection");
+        openswan_log("DPD: Info: Restarting Connection");
 
 	/* we replace the SA so that we do it in a rational place */
 	delete_event(st);

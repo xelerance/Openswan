@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
- * RCSID $Id: config-all.h,v 1.11.6.1 2005/11/17 22:37:20 paul Exp $
+ * RCSID $Id: config-all.h,v 1.11.6.3 2006/03/22 03:50:17 paul Exp $
  */
 #define	_CONFIG_ALL_H_	/* seen it, no need to see it again */
 
@@ -70,10 +70,10 @@
 #endif
 
 #define CONFIG_KLIPS_ALG_CRYPTOAPI #error
-#define CONFIG_KLIPS_ALG_AES #error
+#define CONFIG_IPSEC_ALG_AES #error
 
-#ifndef CONFIG_KLIPS_ALG_AES_MAC
-#define CONFIG_KLIPS_ALG_AES_MAC 1
+#ifndef CONFIG_IPSEC_ALG_AES_MAC
+#define CONFIG_IPSEC_ALG_AES_MAC 1
 #endif
 
 #ifndef CONFIG_KLIPS_REGRESS

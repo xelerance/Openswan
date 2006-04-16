@@ -14,7 +14,7 @@
  *
  * This code was developed with the support of IXIA communications.
  *
- * RCSID $Id: crypt_ke.c,v 1.11.2.2 2005/08/19 17:52:42 ken Exp $
+ * RCSID $Id: crypt_ke.c,v 1.11.2.3 2006/03/20 13:32:03 paul Exp $
  */
 
 #include <stdlib.h>
@@ -85,6 +85,7 @@ void calc_ke(struct pluto_crypto_req *r)
 
     /* clean up after ourselves */
     mpz_clear(&mp_g);
+    mpz_clear(&secret);
     freeanychunk(gi);
 }
 

@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: nat_traversal.c,v 1.26.2.5 2005/11/24 05:30:37 ken Exp $
+ * RCSID $Id: nat_traversal.c,v 1.26.2.7 2006/04/04 22:05:07 ken Exp $
  */
 
 #ifdef NAT_TRAVERSAL
@@ -201,6 +201,7 @@ bool nat_traversal_add_vid(u_int8_t np, pb_stream *outs)
 		if (r) r = out_vendorid(np, outs, VID_NATT_RFC);
 		if (r) r = out_vendorid(np, outs, VID_NATT_IETF_03);
 		if (r) r = out_vendorid(np, outs, VID_NATT_IETF_02);
+		if (r) r = out_vendorid(np, outs, VID_NATT_IETF_02_N);
 	}
 	if (nat_traversal_support_non_ike) {
 		if (r) r = out_vendorid(np, outs, VID_NATT_IETF_00);
@@ -314,6 +315,7 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 	    
 	if(!found_me) {
 	    st->hidden_variables.st_nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_ME);
+	    st->hidden_variables.st_natd = md->sender;
 	}
 
 	if(!found_him) {
@@ -324,6 +326,7 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 	if(st->st_connection->forceencaps) {
 	    st->hidden_variables.st_nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_PEER);
 	    st->hidden_variables.st_nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_ME);
+	    st->hidden_variables.st_natd = md->sender;
 	}
 }
 
@@ -935,6 +938,12 @@ void process_pfkey_nat_t_new_mapping(
 
 /*
  * $Log: nat_traversal.c,v $
+ * Revision 1.26.2.7  2006/04/04 22:05:07  ken
+ * Fix NAT Detection when initiator is behind NAT
+ *
+ * Revision 1.26.2.6  2006/01/04 18:57:52  ken
+ * Send 02_N too
+ *
  * Revision 1.26.2.5  2005/11/24 05:30:37  ken
  * MCR's refactored natd_lookup function for multi-NAT-D Hash
  *
@@ -1011,6 +1020,6 @@ void process_pfkey_nat_t_new_mapping(
  * 	added log info.
  *
  *
- * $Id: nat_traversal.c,v 1.26.2.5 2005/11/24 05:30:37 ken Exp $
+ * $Id: nat_traversal.c,v 1.26.2.7 2006/04/04 22:05:07 ken Exp $
  *
  */

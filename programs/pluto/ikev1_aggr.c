@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikev1_aggr.c,v 1.1.2.1 2005/07/26 01:42:39 ken Exp $
+ * RCSID $Id: ikev1_aggr.c,v 1.1.2.2 2006/02/15 04:37:38 paul Exp $
  */
 
 #include <stdio.h>
@@ -286,7 +286,8 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
     /* ALWAYS Announce our ability to do Dead Peer Detection to the peer */
     {
       int np = ISAKMP_NEXT_NONE;
-	
+
+#ifdef NAT_TRAVERSAL
       if (nat_traversal_enabled
 	  || c->spd.this.xauth_client
 	  || c->spd.this.xauth_server) {
@@ -294,6 +295,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	/* Add supported NAT-Traversal VID */
 	np = ISAKMP_NEXT_VID;
       }
+#endif
 
       if( !out_generic_raw(np, &isakmp_vendor_id_desc
 			   , &rbody

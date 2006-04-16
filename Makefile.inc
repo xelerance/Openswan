@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.inc,v 1.116.2.2 2005/08/25 18:26:06 paul Exp $
+# RCSID $Id: Makefile.inc,v 1.116.2.3 2006/01/11 02:02:59 mcr Exp $
 
 
 
@@ -325,7 +325,7 @@ USE_SMARTCARD?=false
 
 # should opportunistic encryption be turned on by default?
 # Enabled during testing, but probably turned off in shipping versions.
-USE_OE?=false
+USE_OE?=true
 ifeq ($(USE_OE),false)
 # warning: examples subdirectory is statically defined here
 OE_FLAG=\#Disable Opportunistic Encryption\\ninclude ${FINALCONFDDIR}/examples/no_oe.conf
@@ -393,6 +393,9 @@ OBJDIRTOP?=${OPENSWANSRCDIR}
 ### paths within the source tree
 
 KLIPSINC=${OPENSWANSRCDIR}/linux/include
+
+# needed in module makefile
+KLIPSSRC=${OPENSWANSRCDIR}/linux/net/ipsec
 
 LIBOPENSWANDIR=${OPENSWANSRCDIR}/lib/libopenswan
 OPENSWANLIB=${OBJDIRTOP}/lib/libopenswan/libopenswan.a

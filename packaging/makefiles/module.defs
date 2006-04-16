@@ -1,7 +1,7 @@
 # To config as static (preferred), 'y'.  To config as module, 'm'.
 CONFIG_KLIPS=m
 
-# To enable authentication, say 'y'.   (Highly recommended)
+# To enable authentication without encryption, say 'y'.
 CONFIG_KLIPS_AH=y
 
 CONFIG_KLIPS_IPIP=y
@@ -10,7 +10,7 @@ CONFIG_KLIPS_IPIP=y
 CONFIG_KLIPS_AUTH_HMAC_MD5=m
 CONFIG_KLIPS_AUTH_HMAC_SHA1=m
 
-# To enable encryption, say 'y'.   (Highly recommended)
+# To enable encryption with authentication, say 'y'.   (Highly recommended)
 CONFIG_KLIPS_ESP=y
 
 # modular algo extensions (and new ALGOs)
@@ -45,6 +45,9 @@ CONFIG_IPSEC_NAT_TRAVERSAL=y
 #
 #
 # $Log: module.defs,v $
+# Revision 1.3.2.1  2006/03/17 19:29:30  paul
+# changed comments about AH and ESP to make more sense.
+#
 # Revision 1.3  2005/05/11 01:53:24  mcr
 # 	adjusted module make file template.
 #

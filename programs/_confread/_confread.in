@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _confread.in,v 1.81 2005/06/13 23:10:49 mcr Exp $
+# RCSID $Id: _confread.in,v 1.81.2.5 2006/04/12 19:55:42 mcr Exp $
 #
 # Extract configuration info from /etc/ipsec.conf, repackage as assignments
 # to shell variables or tab-delimited fields.  Success or failure is reported
@@ -134,8 +134,8 @@ awk 'BEGIN {
 	good = good " connaddrfamily forceencaps"
 	good = good " modecfgpull"
 	left = " left leftsubnet leftnexthop leftupdown"
-	akey = " keyexchange auth pfs keylife rekey rekeymargin rekeyfuzz"
-        akey = akey " dpddelay dpdtimeout dpdaction"
+	akey = " keyexchange auth pfs pfsgroup keylife rekey rekeymargin"
+        akey = akey " rekeyfuzz dpddelay dpdtimeout dpdaction"
 	akey = akey " xauth"
 	akey = akey " aggrmode"
 	akey = akey " compress"
@@ -513,6 +513,7 @@ END {
 		if (jam("packetdefault", "route")) {
 			output(o_parm, "type", "tunnel")
 			output(o_parm, "leftsubnet", "0.0.0.0/0")
+			output(o_parm, "leftnexthop", "%defaultroute")
 			output(o_parm, "right", "%opportunistic")
 			output(o_parm, "failureshunt", "passthrough")
 			output(o_parm, "keyingtries", "3")
@@ -524,10 +525,12 @@ END {
 			output(o_parm, "type", "passthrough")
 			output(o_parm, "authby", "never")
 			output(o_parm, "right", "%group")
+			output(o_parm, "leftnexthop", "%defaultroute")
 		}
 		if (jam("clear-or-private", "route")) {
 			output(o_parm, "type", "passthrough")
 			output(o_parm, "right", "%opportunisticgroup")
+			output(o_parm, "leftnexthop", "%defaultroute")
 			output(o_parm, "failureshunt", "passthrough")
 			output(o_parm, "keyingtries", "3")
 			output(o_parm, "ikelifetime", "1h")
@@ -537,6 +540,7 @@ END {
 		if (jam("private-or-clear", "route")) {
 			output(o_parm, "type", "tunnel")
 			output(o_parm, "right", "%opportunisticgroup")
+			output(o_parm, "leftnexthop", "%defaultroute")
 			output(o_parm, "failureshunt", "passthrough")
 			output(o_parm, "keyingtries", "3")
 			output(o_parm, "ikelifetime", "1h")
@@ -546,6 +550,7 @@ END {
 		if (jam("private", "route")) {
 			output(o_parm, "type", "tunnel")
 			output(o_parm, "right", "%opportunisticgroup")
+			output(o_parm, "leftnexthop", "%defaultroute")
 			output(o_parm, "failureshunt", "drop")
 			output(o_parm, "keyingtries", "3")
 			output(o_parm, "ikelifetime", "1h")
@@ -556,6 +561,7 @@ END {
 			output(o_parm, "type", "reject")
 			output(o_parm, "authby", "never")
 			output(o_parm, "right", "%group")
+			output(o_parm, "leftnexthop", "%defaultroute")
 		}
 	}
 

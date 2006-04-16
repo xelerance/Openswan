@@ -15,7 +15,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikev1_quick.c,v 1.3.2.1 2005/10/13 03:55:46 paul Exp $
+ * RCSID $Id: ikev1_quick.c,v 1.3.2.3 2006/04/04 22:17:49 paul Exp $
  */
 
 #include <stdio.h>
@@ -1533,6 +1533,19 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	struct connection *p = find_client_connection(c
 	    , our_net, his_net, b->my.proto, b->my.port, b->his.proto, b->his.port);
 
+#ifdef NAT_TRAVERSAL
+#ifdef I_KNOW_TRANSPORT_MODE_HAS_SECURITY_CONCERN_BUT_I_WANT_IT
+    if( (p1st->hidden_variables.st_nat_traversal & NAT_T_DETECTED)
+       && !(p1st->st_policy & POLICY_TUNNEL)
+       && (p1st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_ME))
+       && (p == NULL) )
+        {
+          p = c;
+          DBG(DBG_CONTROL, DBG_log("using (something) old for transport mode connection \"%s\"", p->name));
+        }
+#endif
+#endif
+
 	if (p == NULL)
 	{
 	    /* This message occurs in very puzzling circumstances
@@ -1910,14 +1923,6 @@ quick_inI1_outR1_cryptotail(struct qke_continuation *qke
     }
 
 #ifdef NAT_TRAVERSAL
-    if ((st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA) &&
-	(st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_ME)) &&
-	(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT)) {
-	/** Send NAT-OA if our address is NATed and if we use Transport Mode */
-	if (!nat_traversal_add_natoa(ISAKMP_NEXT_NONE, &md->rbody, md->st)) {
-	    return STF_INTERNAL_ERROR;
-	}
-    }
     if ((st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
 	(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT) &&
 	(c->spd.that.has_client)) {

@@ -15,7 +15,7 @@
  * for more details.
  */
 
-char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.20.2.2 2005/11/27 21:41:03 paul Exp $";
+char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.20.2.3 2005/11/29 21:52:57 ken Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -397,7 +397,7 @@ ipsec_xmit_sanity_check_dev(struct ipsec_xmit_state *ixs)
 	}
 
 	ixs->physmtu = ixs->physdev->mtu;
-
+        ixs->cur_mtu = ixs->physdev->mtu;
 	ixs->stats = (struct net_device_stats *) &(ixs->prv->mystats);
 
 	return IPSEC_XMIT_OK;
@@ -1744,6 +1744,9 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 
 /*
  * $Log: ipsec_xmit.c,v $
+ * Revision 1.20.2.3  2005/11/29 21:52:57  ken
+ * Fix for #518 MTU issues
+ *
  * Revision 1.20.2.2  2005/11/27 21:41:03  paul
  * Pull down TTL fixes from head. this fixes "Unknown symbol sysctl_ip_default_ttl"in for klips as module.
  *

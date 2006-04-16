@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: auto.in,v 1.104.6.2 2005/11/24 05:47:11 paul Exp $
+# RCSID $Id: auto.in,v 1.104.6.3 2006/01/05 22:50:45 ken Exp $
 
 me='ipsec auto'
 usage="Usage:
@@ -258,15 +258,6 @@ awk '	BEGIN {
 		else
 			fail("parameter " v(k) " not valid time, must be nnn[smhd]")
 	}
-	function nexthopset(dir, val,   k) {
-		k = dir "nexthop"
-		if (k in s)
-			fail("non-default value of " k " is being overridden")
-		if (val != "")
-			s[k] = val
-		else if (k in s)
-			delete s[k]
-	}
 	function id(dir,   k) {
 		k = dir "id"
 		if (!(k in s))
@@ -356,12 +347,10 @@ awk '	BEGIN {
 			if (draddr == "")
 				fail("%defaultroute requested but not known")
 			s["left"] = draddr
-			nexthopset("left", drnexthop)
 		} else if (s["right"] == "%defaultroute") {
 			if (draddr == "")
 				fail("%defaultroute requested but not known")
 			s["right"] = draddr
-			nexthopset("right", drnexthop)
 		}
 
 		set_os_default("keyexchange", "ike")

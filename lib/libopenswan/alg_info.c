@@ -568,6 +568,10 @@ alg_info_parse_str (struct alg_info *alg_info
 	/* use default if nul esp string */
 	if (!*alg_str) {
 	    (*alg_info_add)(alg_info, 0, 0, 0, 0, 0, 0);
+	} else {
+		/* This is necessary to have mandatory proposals
+		   add the flag as soon as an explicit proposal is set */
+		alg_info->alg_info_flags |= ALG_INFO_F_STRICT;
 	}
 
 	for(ret=0,ptr=alg_str;ret<ST_EOF;) {

@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char spi_c_version[] = "RCSID $Id: spi.c,v 1.112.2.2 2005/08/18 14:04:51 ken Exp $";
+char spi_c_version[] = "RCSID $Id: spi.c,v 1.112.2.3 2006/02/15 04:36:36 paul Exp $";
 
 #include <asm/types.h>
 #include <sys/types.h>
@@ -389,7 +389,7 @@ static struct option const longopts[] =
 	{0, 0, 0, 0}
 };
 
-
+#ifdef NAT_TRAVERSAL
 static bool
 pfkey_build(int error
 	    , const char *description
@@ -408,7 +408,7 @@ pfkey_build(int error
 	return FALSE;
     }
 }
-
+#endif
 int decode_esp(char *algname)
 {
   int esp_alg;
@@ -1779,6 +1779,10 @@ void exit_tool(int x)
 
 /*
  * $Log: spi.c,v $
+ * Revision 1.112.2.3  2006/02/15 04:36:36  paul
+ * Added #ifdef NAT_TRAVERSAL for pfkey_build. The 'unused' warning caused
+ * a compile failure when compiling without NAT_TRAVERSAL.
+ *
  * Revision 1.112.2.2  2005/08/18 14:04:51  ken
  * Patch from mt@suse.de to avoid GCC warnings with system() calls
  *

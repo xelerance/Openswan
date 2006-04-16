@@ -18,7 +18,7 @@
  * Split out from ipsec_init.c version 1.70.
  */
 
-char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.39.2.1 2005/09/07 00:45:59 paul Exp $";
+char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.39.2.2 2006/02/13 18:48:12 paul Exp $";
 
 
 #include <linux/config.h>
@@ -988,7 +988,7 @@ ipsec_proc_cleanup()
 		do {
 			remove_proc_entry(it->name, *it->parent);
 			it--;
-		} while(it > proc_items);
+		} while(it >= proc_items);
 	}
 
 
@@ -1006,6 +1006,9 @@ ipsec_proc_cleanup()
 
 /*
  * $Log: ipsec_proc.c,v $
+ * Revision 1.39.2.2  2006/02/13 18:48:12  paul
+ * Fix by  Ankit Desai <ankit@elitecore.com> for module unloading.
+ *
  * Revision 1.39.2.1  2005/09/07 00:45:59  paul
  * pull up of mcr's nat-t klips detection patch from head
  *

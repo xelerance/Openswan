@@ -1,9 +1,9 @@
-Written by Michael Richardson <mcr@xelerance.com> on 2005-09-10.
 
 1)	we are pretty certain that we have not consistently broken SMP
 	support in KLIPS. It compiled, but it almost certainly locks up. This
 	is probably an improvement, since before, it only sometimes locked up,
-	and we didn't really know why.
+	and we didn't really know why. This includes running in P4's with
+	hyperthreading activated.
 
 	We do not have an ETA on a fix, although it is important to us.
 
@@ -12,9 +12,12 @@ Written by Michael Richardson <mcr@xelerance.com> on 2005-09-10.
 	of the cause, but it is not made better by setting nhelpers=0.
 	Note that our previous record for SA setups/second was 11/second, so
 	it may well be availability of entropy.
-	
-3)	We are aware that there may be other problems, as yet not clearly
-	documented.
-	We think that this release is miles above the 2.3.1 release, and
-	it is high time to get something out.
 
+3)	Multiple L2TP clients behind the same NAT router, and multiple L2TP
+	clients behind different NAT routers using the same Virtual IP is
+	currently broken. This will not be fixed in the 2.4 series.
+
+	We do not have an ETA on a fix, though work has started on it. If
+	you need this fix, or wishes to contribute resources to Xelerance,
+	please contact us.
+	

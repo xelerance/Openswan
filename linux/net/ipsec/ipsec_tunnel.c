@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.232.2.2 2005/11/22 04:11:52 ken Exp $";
+char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.232.2.4 2006/03/28 20:58:19 ken Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -61,6 +61,7 @@ char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.232.2.2 2005/11/2
 #endif /* NETDEV_23 */
 
 #include <linux/if_arp.h>
+#include <net/arp.h>
 
 #include "openswan/ipsec_kversion.h"
 #include "openswan/radij.h"
@@ -565,6 +566,7 @@ ipsec_tunnel_send(struct ipsec_xmit_state*ixs)
 	/* new route/dst cache code from James Morris */
 	ixs->skb->dev = ixs->physdev;
 #ifdef NETDEV_25
+	memset (&fl, 0x0, sizeof (struct flowi));
  	fl.oif = ixs->physdev->iflink;
  	fl.nl_u.ip4_u.daddr = ixs->skb->nh.iph->daddr;
  	fl.nl_u.ip4_u.saddr = ixs->pass ? 0 : ixs->skb->nh.iph->saddr;
@@ -1844,6 +1846,18 @@ ipsec_tunnel_cleanup_devices(void)
 
 /*
  * $Log: ipsec_tunnel.c,v $
+ * Revision 1.232.2.4  2006/03/28 20:58:19  ken
+ * Fix for KLIPS on 2.6.16 - need to include <net/arp.h> now
+ *
+ * Revision 1.232.2.3  2006/02/15 05:14:12  paul
+ * 568: uninitialized struct in ipsec_tunnel.c coud break routing under 2.6 kernels
+ * ipsec_tunnel_send() calls the entry point function of routing subsystem
+ * (ip_route_output_key()) using a not fully initialized struct of type
+ * struct flowi.
+ * This will cause a failure in routing packets through an ipsec interface
+ * when patches for multipath routing from http://www.ssi.bg/~ja/
+ * are applied.
+ *
  * Revision 1.232.2.2  2005/11/22 04:11:52  ken
  * Backport fixes for 2.6.14 kernels from HEAD
  *

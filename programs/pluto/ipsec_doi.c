@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_doi.c,v 1.304.2.8 2005/11/16 22:43:30 ken Exp $
+ * RCSID $Id: ipsec_doi.c,v 1.304.2.10 2006/03/20 13:34:36 paul Exp $
  */
 
 #include <stdio.h>
@@ -1808,7 +1808,9 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	    " but are %d/%d"
 	    , IPPROTO_UDP, IKE_UDP_PORT
 	    , id->isaid_doi_specific_a, id->isaid_doi_specific_b);
-	return FALSE;
+       /* we have turned this into a warning because of bugs in other vendors
+        * products. Specifically CISCO VPN3000. */
+       /* return FALSE; */
     }
 
     peer.kind = id->isaid_idtype;
@@ -2683,6 +2685,11 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
      *
      */
     {
+    /* Looks like we missed perform_dh() declared at
+     * programs/pluto/pluto_crypt.h as external and implemented nowhere.
+     * Following code regarding dh_continuation allocation seems useless
+     * as it's never used. At least, we should free it.
+     */
 	struct dh_continuation *dh = alloc_thing(struct dh_continuation
 						 , "main_inI2_outR2_tail");
 	dh->st = st;
@@ -2691,6 +2698,7 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
 
 	(void)perform_dh_secretiv(st, RESPONDER, st->st_oakley.group->group);
 	update_iv(st);
+	pfree(dh); dh = NULL;
     }
     return STF_OK;
 }

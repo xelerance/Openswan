@@ -1,19 +1,50 @@
 Please see docs/KNOWN_BUGS file for more information
 
 v2.4.5
-* Fix for ipsec: Unknown symbol sysctl_ip_default_ttl
+* Fix for prefering RFC3947 over OSX-workaround by Jacco de Leeuw
+* Fix for openswan as l2tp server behind NAT by Bernd Galonska
+* Fix for compiling + working on SMP (including HyperThreaded) machines
+* Fix for arp_broken_ops relocation in 2.6.16
 * Fix for compiling on 2.6.14 kernels 
+* Fix patching against 2.6.15 kernels (NAT-T Patch)
 * Fix patching against 2.6.14 kernels
+* Fix for strict mode
+* Fix for ipsec module unload. Fix by Ankit Desai <ankit@elitecore.com>
+* Fix for ipsec: Unknown symbol sysctl_ip_default_ttl
+* Fix for AH hash by Ronen Shitrit <rshitrit@marvell.com>
 * Additions to barf and verify commands for various kernel internals
 * load hw_random and padlock modules before aes module so hardware routines
   are prefered over software routines.
 * allow rightsubnet= with type=transport for L2TP behind NAT.
 * Refactored natd_lookup / hash code, probably fixes lot of NAT related bugs
+* Fix for interop with Cisco devices which propose port 0 (eg: VPN3000)
+* When DPD rcookie is invalid, just warn instead of ignoring entirely
+* Redid all the DPD log messages
+* Fix for manual.in to not use a complicated sed line that some embedded
+  sed versions (busybox?) cannot handle.
+* Fix for NAT-T detection when Openswan is the initiator
   #401 l2tp connection is not work with 2.6 build in IPSEC
   #442 Pluto uses wrong port in NAT-D calculation
   #450 macosx (possible generic PSK+NAT-T rekey bug: eroute already in use.
+  #454 klips module refcount bug (found by Matthias Haas)
+       (prevented klips from unloading on 2.4 kernels)
   #462 updated patch for Openswan and OS X with NAT-T
   #509 KLIPS compilation fail with kernel-2.6.14.2 
+  #518 Incorrect physical interface MTU detection
+  #521 KLIPS module crash for kernel 2.6.12+
+  #545 unnecessary warnings from _updown script, remove weird control character.
+  #558 two machines using incompatible ike= settings still establish a
+       connection. (fix by Matthias Haas <mh@pompase.net>)
+  #560 Pluto crash (memory leak fixes in pluto by Ilia Sotnikov)
+  #563 Error when unload ipsec.ko module "rmmod ipsec" [dupl bug]
+  #568 uninitialized struct in ipsec_tunnel.c coud break routing under 2.6
+       kernels
+  #569 ipsec module unload crasher
+  #573 Openswan fails to compile with NAT_TRAVERSAL=false
+  #574 Openswan fails to compile with NAT_TRAVERSAL=false #2
+  #581 _Updown script installs direct (scope link) routes even for remote
+       peers/subnets
+  #589 userspace with USE_EXTRACRYPTO won't compile without kernel sourcecode
 
 
 v2.4.4
@@ -142,4 +173,4 @@ v2.1.0
   while travelling.  This is based on Tuomo Soini's Advanced Routing
   patch.
 
-RCSID $Id: CHANGES,v 1.326.2.33 2005/11/28 02:16:42 paul Exp $
+RCSID $Id: CHANGES,v 1.326.2.57 2006/04/04 22:26:34 paul Exp $

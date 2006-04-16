@@ -15,15 +15,15 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _updown.in,v 1.21.2.8 2005/08/28 02:45:26 paul Exp $
+# RCSID $Id: _updown.in,v 1.21.2.11 2006/02/20 22:57:28 paul Exp $
 
 
 
-# CAUTION:  Installing a new version of FreeS/WAN will install a new
+# CAUTION:  Installing a new version of Openswan will install a new
 # copy of this script, wiping out any custom changes you make.  If
 # you need changes, make a copy of this under another name, and customize
 # that, and use the (left/right)updown parameters in ipsec.conf to make
-# FreeS/WAN use yours instead of this default one.
+# Openswan use yours instead of this default one.
 
 LC_ALL=C export LC_ALL
 
@@ -39,9 +39,9 @@ LC_ALL=C export LC_ALL
 #              specifies the name of the operation to be performed
 #              (prepare-host, prepare-client, up-host, up-client,
 #              down-host, or down-client).  If the address family
-#              for security gateway to security gateway communica­
-#              tions is IPv6, then a suffix of -v6 is added to the
-#              verb.
+#              for security gateway to security gateway
+#              communications is IPv6, then a suffix of -v6 is added
+#              to the verb.
 #
 #       PLUTO_CONNECTION
 #              is the name of the  connection  for  which  we  are
@@ -185,7 +185,9 @@ uprule() {
 	# virtual sourceip support
 	if [ -n "$PLUTO_MY_SOURCEIP" ]
 	then
-	    if addsource
+	    addsource
+	    rc=$?
+	    if [ $rc -ne 0 ];
 	    then
 		changesource
 	    fi
@@ -230,6 +232,10 @@ addsource() {
 }
 
 changesource() {
+	# Change used route source to destination if there is previous
+	# Route to same PLUTO_PEER_CLIENT. This is basically to fix
+	# configuration errors where all conns to same destination don't
+	#  have (left/right)sourceip set.
 	st=0
 	parms="$PLUTO_PEER_CLIENT dev ${PLUTO_INTERFACE%:*}"
 	parms="$parms src ${PLUTO_MY_SOURCEIP%/*} $IPROUTEARGS"
@@ -250,6 +256,15 @@ changesource() {
  	then
 	    oops="silent error, exit status $st"
 	fi
+	case "$oops" in
+		'RTNETLINK answers: No such file or directory'*)
+		# Will happen every time first tunnel is activated because
+		# there is no previous route to PLUTO_PEER_CLIENT. So we
+		# need to ignore this error.
+		oops=""
+		st=0
+		;;
+	esac
 	if test " $oops" != " " -o " $st" != " 0"
 	then
 	    echo "$0: changesource \`$it' failed ($oops)" >&2

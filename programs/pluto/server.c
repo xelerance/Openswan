@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: server.c,v 1.109.2.1 2005/08/18 14:17:38 ken Exp $
+ * RCSID $Id: server.c,v 1.109.2.2 2005/11/29 03:02:16 paul Exp $
  */
 
 #include <stdio.h>
@@ -337,7 +337,7 @@ use_interface(const char *rifn)
 #endif
 
 static struct raw_iface *
-find_raw_ifaces4(void)
+find_raw_ifaces(void)
 {
     int j;	/* index into buf */
     struct ifconf ifconf;
@@ -348,11 +348,11 @@ find_raw_ifaces4(void)
     /* get list of interfaces with assigned IPv4 addresses from system */
 
     if (master_sock == -1)
-	exit_log_errno((e, "socket() failed in find_raw_ifaces4()"));
+	exit_log_errno((e, "socket() failed in find_raw_ifaces()"));
 
     if (setsockopt(master_sock, SOL_SOCKET, SO_REUSEADDR
     , (const void *)&on, sizeof(on)) < 0)
-	exit_log_errno((e, "setsockopt() in find_raw_ifaces4()"));
+	exit_log_errno((e, "setsockopt() in find_raw_ifaces()"));
 
     /* bind the socket */
     {
@@ -361,7 +361,7 @@ find_raw_ifaces4(void)
 	happy(anyaddr(AF_INET, &any));
 	setportof(htons(pluto_port), &any);
 	if (bind(master_sock, sockaddrof(&any), sockaddrlenof(&any)) < 0)
-	    exit_log_errno((e, "bind() failed in find_raw_ifaces4()"));
+	    exit_log_errno((e, "bind() failed in find_raw_ifaces()"));
     }
 
     /* Get local interfaces.  See netdevice(7). */
@@ -370,7 +370,7 @@ find_raw_ifaces4(void)
     zero(buf);
 
     if (ioctl(master_sock, SIOCGIFCONF, &ifconf) == -1)
-	exit_log_errno((e, "ioctl(SIOCGIFCONF) in find_raw_ifaces4()"));
+	exit_log_errno((e, "ioctl(SIOCGIFCONF) in find_raw_ifaces()"));
 
     /* Add an entry to rifaces for each interesting interface. */
     for (j = 0; (j+1) * sizeof(*buf) <= (size_t)ifconf.ifc_len; j++)
@@ -404,7 +404,7 @@ find_raw_ifaces4(void)
 	memcpy(auxinfo.ifr_name, buf[j].ifr_name, IFNAMSIZ);
 	if (ioctl(master_sock, SIOCGIFFLAGS, &auxinfo) == -1)
 	    exit_log_errno((e
-		, "ioctl(SIOCGIFFLAGS) for %s in find_raw_ifaces4()"
+		, "ioctl(SIOCGIFFLAGS) for %s in find_raw_ifaces()"
 		, ri.name));
 	if (!(auxinfo.ifr_flags & IFF_UP))
 	    continue;	/* ignore an interface that isn't UP */
@@ -430,7 +430,7 @@ find_raw_ifaces4(void)
 }
 
 static struct raw_iface *
-find_raw_ifaces6(void)
+find_raw_ifaces6_linux(void)
 {
 
     /* Get list of interfaces with IPv6 addresses from system from /proc/net/if_inet6).
@@ -874,9 +874,14 @@ void
 find_ifaces(void)
 {
     mark_ifaces_dead();
-    process_raw_ifaces(find_raw_ifaces4());
-    process_raw_ifaces(find_raw_ifaces6());
-
+/* 
+    find_raw_ifaces uses SIOCGIFCONF, which returns ipv4 and ipv6,
+    except on Linux.
+*/
+    process_raw_ifaces(find_raw_ifaces());
+#if defined(linux) 
+    process_raw_ifaces(find_raw_ifaces6_linux());
+#endif
     free_dead_ifaces();	    /* ditch remaining old entries */
 
     if (interfaces == NULL)
