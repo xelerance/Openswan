@@ -244,10 +244,10 @@ static int
 cryptodev_asym(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen, BIGNUM *s)
 {
 	int fd, ret = -1;
-
+	
 	if ((fd = get_asym_dev_crypto()) < 0)
 		return (ret);
-
+	
 	if (r) {
 		kop->crk_param[kop->crk_iparams].crp_p = calloc(rlen, sizeof(char));
 		kop->crk_param[kop->crk_iparams].crp_nbits = rlen * 8;
@@ -358,7 +358,9 @@ static int cryptodev_rsa_mod_exp_crt_sw(const struct RSA_private_key *k, mpz_t *
  * Compute mod exp in software
  */
 static int
-cryptodev_mod_exp_sw(BIGNUM *r0, MP_INT *mp_g, MP_INT *secret, MP_INT *modulus)
+cryptodev_mod_exp_sw(BIGNUM *r0, MP_INT *mp_g
+		     , const MP_INT *secret
+		     , const MP_INT *modulus)
 {
 	mpz_t shared;
 	
@@ -372,7 +374,9 @@ cryptodev_mod_exp_sw(BIGNUM *r0, MP_INT *mp_g, MP_INT *secret, MP_INT *modulus)
  * Compute mod exp in hardware
  */
 static int
-cryptodev_mod_exp(BIGNUM *r0, MP_INT *mp_g, MP_INT *secret, MP_INT *modulus)
+cryptodev_mod_exp(BIGNUM *r0, MP_INT *mp_g
+		  , const MP_INT *secret
+		  , const MP_INT *modulus)
 {
 
 	BIGNUM a, p, m;

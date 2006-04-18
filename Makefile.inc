@@ -361,10 +361,10 @@ USE_EXTRACRYPTO?=true
 HAVE_THREADS?=false
 
 # Do we have OCF available?
-HAVE_OCF?=false
+HAVE_OCF?=true
 
 # Do we have Openssl libraries available for BIGNUM support?
-HAVE_OPENSSL?=false
+HAVE_OPENSSL?=true
 
 # Do we assume that the /bin/sh is BASH?
 # if so, then internationalization code is retained in the shell scripts

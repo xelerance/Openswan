@@ -44,7 +44,8 @@ VPATH += ${SRCDIR}
 LIB=libaes.a
 
 # Original flags
-CFLAGS=-I. -I${SRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR} ${PORTINCLUDE}
+CFLAGS=-I. -I${SRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}/include
+CFLAGS+=-I${OPENSWANSRCDIR} ${PORTINCLUDE}
 CFLAGS+=$(USERCOMPILE)
 CFLAGS+=-O3 -fomit-frame-pointer -Wall  -Wcast-qual 
 CFLAGS+= -Wmissing-prototypes

@@ -24,6 +24,8 @@
 #include "x509.h"
 #include "certs.h"
 
+struct connection;
+
 extern void sign_hash(const struct RSA_private_key *k, const u_char *hash_val
 		      , size_t hash_len, u_char *sig_val, size_t sig_len);
 

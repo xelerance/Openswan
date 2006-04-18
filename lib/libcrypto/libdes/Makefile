@@ -1,5 +1,5 @@
 ifndef OPENSWANSRCDIR
-OPENSWANSRCDIR=../../..
+OPENSWANSRCDIR=$(shell cd ../../..; pwd)
 endif
 
 include ${OPENSWANSRCDIR}/Makefile.inc
@@ -59,6 +59,7 @@ MAKE=make -f Makefile
 #CFLAG= -O4 -funroll-loops -fomit-frame-pointer
 # normally overridden by FreeS/WAN Makefiles anyway
 CFLAG= -O3 -fomit-frame-pointer -I${KLIPSD}/include -I${SRCDIR}
+CFLAG+= -I${OPENSWANSRCDIR}/include -I${OPENSWANSRCDIR}
 
 CFLAGS=$(OPTS) $(CFLAG) $(USERCOMPILE) ${PORTINCLUDE}
 CPP=$(CC) -E
@@ -75,10 +76,10 @@ ifeq ($(HAVE_OCF),true)
 	EXTRA_CFLAGS += -DOCF_ASSIST=1
 	CPPFLAGS     += -DNO_FCRYPT=1
 	DES_ENC      += ocf_des_assist.o
-else
-	DES_ENC += fcrypt_b.o
-	FCRYPT = fcrypt.o
 endif
+
+DES_ENC += fcrypt_b.o
+FCRYPT = fcrypt.o
 
 LIBDIR=$(DESTDIR)$(INC_USRLOCAL)/lib
 INCDIR=$(DESTDIR)$(INC_USRLOCAL)/include
@@ -131,12 +132,24 @@ ALL=	$(GENERAL) $(TESTING_SRC) $(LIBDES) $(PERL) $(HEADERS)
 
 DLIB=	libdes.a
 
+ONEFILE=fcrypt.c
+LIBRARY=crypto/libdes
+
+# we can't do tests with two conditions, but we can concatenate the strings
+SHOULDWERESTART=${USE_OBJDIR}$(wildcard ${ONEFILE})
+ifeq ($(SHOULDWERESTART),true${ONEFILE})
+all programs clean install:
+	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/lib${LIBRARY} && make $@
+else
+all:	$(DLIB) 
+programs: $(DLIB) 
+clean:	cleanall
+install: doinstall
+
+endif
+
 .PHONY:	all cc gcc x86-elf x86-out x86-solaris x86-bsdi test tar_lit \
 	tar shar depend clean dclean install check checkprograms
-
-programs: $(DLIB)
-
-all: $(DLIB) $(TESTING)
 
 cc:
 	$(MAKE) CC=cc CFLAGS="-O $(OPTS) $(CFLAG)" all
@@ -239,7 +252,7 @@ shar:
 depend:
 	makedepend $(LIBDES) $(TESTING_SRC)
 
-clean:
+cleanall:
 	/bin/rm -f *.o tags core $(TESTING) $(DLIB) .nfs* *.old *.bak asm/*.o \
 		asm/*.S
 
@@ -247,7 +260,7 @@ dclean:
 	sed -e '/^# DO NOT DELETE THIS LINE/ q' Makefile >Makefile.new
 	mv -f Makefile.new Makefile
 
-install install_file_list: 
+doinstall install_file_list: 
 	@true
 
 check:

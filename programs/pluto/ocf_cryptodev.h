@@ -58,7 +58,8 @@
 
 struct cryptodev_meth {
 	int (*rsa_mod_exp_crt)(const struct RSA_private_key *k, mpz_t *t1, BIGNUM *r0);
-	int (*mod_exp)(BIGNUM *r0, MP_INT *mp_g, MP_INT *secret, MP_INT *modulus);
+	int (*mod_exp)(BIGNUM *r0, MP_INT *mp_g
+		       , const MP_INT *secret, const MP_INT *modulus);
 };
 
 extern struct cryptodev_meth cryptodev;
