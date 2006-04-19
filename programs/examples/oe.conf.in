@@ -1,0 +1,61 @@
+# this file documents what is implicitely loaded by
+# OE conns. You might use this because you want to override some
+# things in the implicit OE conns
+
+conn packetdefault
+                type=tunnel
+                leftsubnet=0.0.0.0/0
+                leftnexthop=%defaultroute
+                right=%opportunistic
+                failureshunt=passthrough
+                keyingtries=3
+                ikelifetime=1h
+                keylife=1h
+                rekey=no
+
+conn clear
+                type=passthrough
+                authby=never
+                right=%group
+                leftnexthop=%defaultroute
+
+conn clear-or-private
+                type=passthrough
+                right=%opportunisticgroup
+                leftnexthop=%defaultroute
+                failureshunt=passthrough
+                keyingtries=3
+                ikelifetime=1h
+                keylife=1h
+                rekey=no
+
+conn private-or-clear
+                type=tunnel
+                right=%opportunisticgroup
+                leftnexthop=%defaultroute
+                failureshunt=passthrough
+                keyingtries=3
+                ikelifetime=1h
+                keylife=1h
+                rekey=no
+
+
+conn private
+                type=tunnel
+                right=%opportunisticgroup
+                leftnexthop=%defaultroute
+                failureshunt=drop
+                keyingtries=3
+                ikelifetime=1h
+                keylife=1h
+                rekey=no
+
+
+conn block
+                type=reject
+                authby=never
+                right=%group
+                leftnexthop=%defaultroute
+
+
+
