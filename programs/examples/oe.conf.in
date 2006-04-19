@@ -9,8 +9,8 @@ conn packetdefault
 		failureshunt=passthrough
 		keyingtries=3
 		leftid=%myid
-		leftrsasigkey=%dnsondemand"
-		rightrsasigkey=%dnsondemand"
+		leftrsasigkey=%dnsondemand
+		rightrsasigkey=%dnsondemand
 		ikelifetime=1h
 		keylife=1h
 		rekey=no
@@ -20,8 +20,8 @@ conn clear
 		type=passthrough
 		left=%defaultroute
 		leftid=%myid
-		leftrsasigkey=%dnsondemand"
-		rightrsasigkey=%dnsondemand"
+		leftrsasigkey=%dnsondemand
+		rightrsasigkey=%dnsondemand
 		authby=never
 		right=%group
 		leftnexthop=%defaultroute
@@ -31,8 +31,8 @@ conn clear-or-private
 		type=passthrough
 		left=%defaultroute
 		leftid=%myid
-		leftrsasigkey=%dnsondemand"
-		rightrsasigkey=%dnsondemand"
+		leftrsasigkey=%dnsondemand
+		rightrsasigkey=%dnsondemand
 		right=%opportunisticgroup
 		leftnexthop=%defaultroute
 		failureshunt=passthrough
@@ -46,8 +46,8 @@ conn private-or-clear
 		type=tunnel
 		left=%defaultroute
 		leftid=%myid
-		leftrsasigkey=%dnsondemand"
-		rightrsasigkey=%dnsondemand"
+		leftrsasigkey=%dnsondemand
+		rightrsasigkey=%dnsondemand
 		right=%opportunisticgroup
 		leftnexthop=%defaultroute
 		failureshunt=passthrough
@@ -63,8 +63,8 @@ conn private
 		left=%defaultroute
 		right=%opportunisticgroup
 		leftid=%myid
-		leftrsasigkey=%dnsondemand"
-		rightrsasigkey=%dnsondemand"
+		leftrsasigkey=%dnsondemand
+		rightrsasigkey=%dnsondemand
 		leftnexthop=%defaultroute
 		failureshunt=drop
 		keyingtries=3
@@ -79,8 +79,8 @@ conn block
 		left=%defaultroute
 		authby=never
 		leftid=%myid
-		leftrsasigkey=%dnsondemand"
-		rightrsasigkey=%dnsondemand"
+		leftrsasigkey=%dnsondemand
+		rightrsasigkey=%dnsondemand
 		right=%group
 		leftnexthop=%defaultroute
 		auto=route
