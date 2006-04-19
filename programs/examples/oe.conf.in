@@ -1,61 +1,89 @@
-# this file documents what is implicitely loaded by
-# OE conns. You might use this because you want to override some
-# things in the implicit OE conns
 
+			
 conn packetdefault
-                type=tunnel
-                leftsubnet=0.0.0.0/0
-                leftnexthop=%defaultroute
-                right=%opportunistic
-                failureshunt=passthrough
-                keyingtries=3
-                ikelifetime=1h
-                keylife=1h
-                rekey=no
+		type=tunnel
+		left=%defaultroute
+		leftsubnet=0.0.0.0/0
+		leftnexthop=%defaultroute
+		right=%opportunistic
+		failureshunt=passthrough
+		keyingtries=3
+		leftid=%myid
+		leftrsasigkey=%dnsondemand"
+		rightrsasigkey=%dnsondemand"
+		ikelifetime=1h
+		keylife=1h
+		rekey=no
+		auto=route
 
 conn clear
-                type=passthrough
-                authby=never
-                right=%group
-                leftnexthop=%defaultroute
+		type=passthrough
+		left=%defaultroute
+		leftid=%myid
+		leftrsasigkey=%dnsondemand"
+		rightrsasigkey=%dnsondemand"
+		authby=never
+		right=%group
+		leftnexthop=%defaultroute
+		auto=route
 
 conn clear-or-private
-                type=passthrough
-                right=%opportunisticgroup
-                leftnexthop=%defaultroute
-                failureshunt=passthrough
-                keyingtries=3
-                ikelifetime=1h
-                keylife=1h
-                rekey=no
+		type=passthrough
+		left=%defaultroute
+		leftid=%myid
+		leftrsasigkey=%dnsondemand"
+		rightrsasigkey=%dnsondemand"
+		right=%opportunisticgroup
+		leftnexthop=%defaultroute
+		failureshunt=passthrough
+		keyingtries=3
+		ikelifetime=1h
+		keylife=1h
+		rekey=no
+		auto=route
 
 conn private-or-clear
-                type=tunnel
-                right=%opportunisticgroup
-                leftnexthop=%defaultroute
-                failureshunt=passthrough
-                keyingtries=3
-                ikelifetime=1h
-                keylife=1h
-                rekey=no
-
+		type=tunnel
+		left=%defaultroute
+		leftid=%myid
+		leftrsasigkey=%dnsondemand"
+		rightrsasigkey=%dnsondemand"
+		right=%opportunisticgroup
+		leftnexthop=%defaultroute
+		failureshunt=passthrough
+		keyingtries=3
+		ikelifetime=1h
+		keylife=1h
+		rekey=no
+		auto=route
+		
 
 conn private
-                type=tunnel
-                right=%opportunisticgroup
-                leftnexthop=%defaultroute
-                failureshunt=drop
-                keyingtries=3
-                ikelifetime=1h
-                keylife=1h
-                rekey=no
-
+		type=tunnel
+		left=%defaultroute
+		right=%opportunisticgroup
+		leftid=%myid
+		leftrsasigkey=%dnsondemand"
+		rightrsasigkey=%dnsondemand"
+		leftnexthop=%defaultroute
+		failureshunt=drop
+		keyingtries=3
+		ikelifetime=1h
+		keylife=1h
+		rekey=no
+		auto=route
+		
 
 conn block
-                type=reject
-                authby=never
-                right=%group
-                leftnexthop=%defaultroute
-
+		type=reject
+		left=%defaultroute
+		authby=never
+		leftid=%myid
+		leftrsasigkey=%dnsondemand"
+		rightrsasigkey=%dnsondemand"
+		right=%group
+		leftnexthop=%defaultroute
+		auto=route
+	
 
 
