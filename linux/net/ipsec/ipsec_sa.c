@@ -1015,11 +1015,9 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
         }
 	ips->ips_ident_d.data = NULL;
 
-#ifdef CONFIG_KLIPS_ALG
 	if (ips->ips_alg_enc||ips->ips_alg_auth) {
 		ipsec_alg_sa_wipe(ips);
 	}
-#endif
 	
 	memset((caddr_t)ips, 0, sizeof(*ips));
 	kfree(ips);
@@ -1264,7 +1262,6 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 		unsigned int aks;
 #endif
 
-#ifdef CONFIG_KLIPS_ALG
 		ipsec_alg_sa_init(ipsp);
 		ixt_e=ipsp->ips_alg_enc;
 
