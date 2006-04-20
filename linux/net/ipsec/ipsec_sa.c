@@ -1041,10 +1041,8 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 #if defined (CONFIG_KLIPS_AUTH_HMAC_MD5) || defined (CONFIG_KLIPS_AUTH_HMAC_SHA1)
 	unsigned char kb[AHMD596_BLKLEN];
 #endif
-#if defined CONFIG_KLIPS_ALG
 	struct ipsec_alg_enc *ixt_e = NULL;
 	struct ipsec_alg_auth *ixt_a = NULL;
-#endif
 
 	if(ipsp == NULL) {
 		KLIPS_PRINT(debug_pfkey,
@@ -1301,7 +1299,6 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 			if ((error=ipsec_alg_auth_key_create(ipsp)) < 0)
 				SENDERR(-error);
 		} else	
-#endif /* CONFIG_KLIPS_ALG */
 		
 		switch(ipsp->ips_authalg) {
 # ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
@@ -1497,6 +1494,10 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
  * Revision 1.31  2005/11/11 04:38:56  paul
  * More alg code properly #ifdef CONFIG_KLIPS_ALG
  * Based on David McCullough's patch
+ *
+ * Revision 1.30.2.1  2006/04/20 16:33:07  mcr
+ * remove all of CONFIG_KLIPS_ALG --- one can no longer build without it.
+ * Fix in-kernel module compilation. Sub-makefiles do not work.
  *
  * Revision 1.30  2005/05/24 01:02:35  mcr
  * 	some refactoring/simplification of situation where alg
