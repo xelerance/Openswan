@@ -18,7 +18,7 @@
  *
  */
 
-char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.104.2.1 2005/08/12 01:18:20 ken Exp $";
+char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.104.2.2 2006/04/20 16:33:06 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -239,9 +239,7 @@ ipsec_klips_init(void)
         error |= ipsec_sysctl_register();
 #endif                                                                          
 
-#ifdef CONFIG_KLIPS_ALG
 	ipsec_alg_init();
-#endif
 
 	get_random_bytes((void *)seed, sizeof(seed));
 	prng_init(&ipsec_prng, seed, sizeof(seed));
@@ -345,6 +343,10 @@ cleanup_module(void)
 
 /*
  * $Log: ipsec_init.c,v $
+ * Revision 1.104.2.2  2006/04/20 16:33:06  mcr
+ * remove all of CONFIG_KLIPS_ALG --- one can no longer build without it.
+ * Fix in-kernel module compilation. Sub-makefiles do not work.
+ *
  * Revision 1.104.2.1  2005/08/12 01:18:20  ken
  * Warn people who don't have NAT-T patch applied, but try and compile NAT-T code
  *

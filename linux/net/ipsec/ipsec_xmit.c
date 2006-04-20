@@ -15,7 +15,7 @@
  * for more details.
  */
 
-char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.20.2.3 2005/11/29 21:52:57 ken Exp $";
+char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.20.2.4 2006/04/20 16:33:07 mcr Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -498,10 +498,8 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 	int headroom = 0, tailroom = 0, ilen = 0, len = 0;
 	unsigned char *dat;
 	int blocksize = 8; /* XXX: should be inside ixs --jjo */
-#ifdef CONFIG_KLIPS_ALG
 	struct ipsec_alg_enc *ixt_e = NULL;
 	struct ipsec_alg_auth *ixt_a = NULL;
-#endif /* CONFIG_KLIPS_ALG */
 	
 	ixs->iphlen = ixs->iph->ihl << 2;
 	ixs->pyldsz = ntohs(ixs->iph->tot_len) - ixs->iphlen;
@@ -530,12 +528,10 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 			return IPSEC_XMIT_ESP_BADALG;
 		}
 
-#ifdef CONFIG_KLIPS_ALG
 		ixt_a=ixs->ipsp->ips_alg_auth;
 		if (ixt_a) {
 			tailroom += AHHMAC_HASHLEN;
 		} else 
-#endif /* CONFIG_KLIPS_ALG */
 		switch(ixs->ipsp->ips_authalg) {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 		case AH_MD5:
@@ -553,13 +549,11 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 			ixs->stats->tx_errors++;
 			return IPSEC_XMIT_ESP_BADALG;
 		}		
-#ifdef CONFIG_KLIPS_ALG
 		tailroom += blocksize != 1 ?
 			((blocksize - ((ixs->pyldsz + 2) % blocksize)) % blocksize) + 2 :
 			((4 - ((ixs->pyldsz + 2) % 4)) % 4) + 2;
 #else
 		tailroom += ((8 - ((ixs->pyldsz + 2 * sizeof(unsigned char)) % 8)) % 8) + 2;
-#endif /* CONFIG_KLIPS_ALG */
 		tailroom += authlen;
 		break;
 #endif /* CONFIG_KLIPS_ESP */
@@ -670,14 +664,12 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 				   ixs->ipsp->ips_iv_size);
 		} 
 		
-#ifdef CONFIG_KLIPS_ALG
 		if (ixt_a) {
 			ipsec_alg_sa_esp_hash(ixs->ipsp,
 					(caddr_t)espp, len - ixs->iphlen - authlen,
 					&(dat[len - authlen]), authlen);
 
 		} else
-#endif /* CONFIG_KLIPS_ALG */
 		switch(ixs->ipsp->ips_authalg) {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 		case AH_MD5:
@@ -1059,11 +1051,9 @@ static int create_hold_eroute(struct eroute *origtrap,
 enum ipsec_xmit_value
 ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 {
-#ifdef CONFIG_KLIPS_ALG
 	struct ipsec_alg_enc *ixt_e = NULL;
 	struct ipsec_alg_auth *ixt_a = NULL;
 	int blocksize = 8;
-#endif /* CONFIG_KLIPS_ALG */
 	enum ipsec_xmit_value bundle_stat = IPSEC_XMIT_OK;
  
 	ixs->newdst = ixs->orgdst = ixs->iph->daddr;
@@ -1344,11 +1334,9 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 				goto cleanup;
 			}
 
-#ifdef CONFIG_KLIPS_ALG
 			if ((ixt_a=ixs->ipsp->ips_alg_auth)) {
 				ixs->tailroom += AHHMAC_HASHLEN;
 			} else
-#endif /* CONFIG_KLIPS_ALG */
 			switch(ixs->ipsp->ips_authalg) {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 			case AH_MD5:
@@ -1367,13 +1355,9 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 				bundle_stat = IPSEC_XMIT_AH_BADALG;
 				goto cleanup;
 			}			
-#ifdef CONFIG_KLIPS_ALG
 			ixs->tailroom += blocksize != 1 ?
 				((blocksize - ((ixs->pyldsz + 2) % blocksize)) % blocksize) + 2 :
 				((4 - ((ixs->pyldsz + 2) % 4)) % 4) + 2;
-#else
-			ixs->tailroom += ((8 - ((ixs->pyldsz + 2 * sizeof(unsigned char)) % 8)) % 8) + 2;
-#endif /* CONFIG_KLIPS_ALG */
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 		if ((ixs->ipsp->ips_natt_type) && (!ixs->natt_type)) {
 			ixs->natt_type = ixs->ipsp->ips_natt_type;
@@ -1744,6 +1728,10 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 
 /*
  * $Log: ipsec_xmit.c,v $
+ * Revision 1.20.2.4  2006/04/20 16:33:07  mcr
+ * remove all of CONFIG_KLIPS_ALG --- one can no longer build without it.
+ * Fix in-kernel module compilation. Sub-makefiles do not work.
+ *
  * Revision 1.20.2.3  2005/11/29 21:52:57  ken
  * Fix for #518 MTU issues
  *

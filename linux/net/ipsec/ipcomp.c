@@ -14,7 +14,7 @@
  * for more details.
  */
 
-char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.41.2.2 2005/11/22 04:11:52 ken Exp $";
+char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.41.2.3 2006/04/20 15:46:58 mcr Exp $";
 
 /* SSS */
 
@@ -673,9 +673,6 @@ struct sk_buff *skb_copy_ipcomp(struct sk_buff *skb, int data_growth, int gfp_ma
         n->shapepend=skb->shapepend;             /* Pending */
 #endif /* defined(CONFIG_SHAPER) || defined(CONFIG_SHAPER_MODULE) */
 #endif /* NETDEV_23 */
-#ifdef CONFIG_HIPPI
-        n->private.ifield=skb->private.ifield;
-#endif /* CONFIG_HIPPI */
 
         return n;
 }
