@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.13 2005/05/21 03:19:57 mcr Exp $";
+char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.13.2.1 2006/04/20 16:33:06 mcr Exp $";
 #include <linux/config.h>
 #include <linux/version.h>
 
@@ -151,7 +151,6 @@ ipsec_rcv_esp_authcalc(struct ipsec_rcv_state *irs,
 		SHA1_CTX	sha1;
 	} tctx;
 
-#ifdef CONFIG_KLIPS_ALG
 	if (irs->ipsp->ips_alg_auth) {
 		KLIPS_PRINT(debug_rcv,
 				"klips_debug:ipsec_rcv: "
@@ -165,7 +164,6 @@ ipsec_rcv_esp_authcalc(struct ipsec_rcv_state *irs,
 		}
 		return IPSEC_RCV_BADPROTO;
 	}
-#endif
 	aa = irs->authfuncs;
 
 	/* copy the initialized keying material */
@@ -536,6 +534,10 @@ struct inet_protocol esp_protocol =
 
 /*
  * $Log: ipsec_esp.c,v $
+ * Revision 1.13.2.1  2006/04/20 16:33:06  mcr
+ * remove all of CONFIG_KLIPS_ALG --- one can no longer build without it.
+ * Fix in-kernel module compilation. Sub-makefiles do not work.
+ *
  * Revision 1.13  2005/05/21 03:19:57  mcr
  * 	hash ctx is not really that interesting most of the time.
  *

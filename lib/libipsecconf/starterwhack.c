@@ -278,6 +278,9 @@ static void set_whack_end(struct starter_config *cfg
 	default:
 		printf("%s: do something with nexthop case: %d\n", lr, l->nexttype);
 		break;
+
+	case KH_NOTSET:  /* acceptable to not set nexthop */
+		break;
 	}
 
 	w->has_client = l->has_client;
