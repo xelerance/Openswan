@@ -31,8 +31,11 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#if !defined(__CYGWIN32__)
-#include <crypt.h>
+#include <limits.h>
+
+#if defined(linux)
+/* is supposed to be in unistd.h, but it isn't on linux */
+#include <crypt.h> 
 #endif
 
 #include <openswan.h>

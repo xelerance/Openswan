@@ -62,7 +62,7 @@
 #include <syslog.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <linux/errno.h>
+#include <errno.h>
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>

@@ -6,9 +6,10 @@
  */
 
 #include <fcntl.h>
-#include <linux/types.h>
+#include <sys/types.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include "sysdep.h"
 #include "crypto/aes.h"
 #include "crypto/aes_cbc.h"
 #include "crypto/ocf_assist.h"

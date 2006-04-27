@@ -16,6 +16,7 @@
  */
 #include "internal.h"
 #include "openswan.h"
+#include "oswlog.h"
 
 #include <stdio.h>
 

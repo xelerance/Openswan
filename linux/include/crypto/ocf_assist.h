@@ -29,16 +29,17 @@
 #else
 /****************************************************************************/
 
-#include <linux/types.h>
+#include <sys/types.h>
 #include "aes.h"
 #include "des.h"
 
 extern int	ocf_aes_assist(void);
 extern void	ocf_aes_set_key(aes_context *cx, const unsigned char in_key[],
 								int n_bytes, const int f);
-extern int	ocf_aes_cbc_encrypt(aes_context *ctx, __u8 *input,
-								__u8 *output, long length,
-								__u8 *ivec, int enc);
+extern int	ocf_aes_cbc_encrypt(aes_context *ctx, u8 *input,
+				    u8 *output,
+				    long length,
+				    u8 *ivec, int enc);
 
 extern int	ocf_des_assist(void);
 extern int	ocf_des_set_key(des_cblock *key, des_key_schedule schedule);

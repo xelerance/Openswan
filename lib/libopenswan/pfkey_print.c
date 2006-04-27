@@ -18,6 +18,7 @@
 char pfkey_v2_print_c_version[] = "$Id: pfkey_print.c,v 1.3 2005/08/05 01:56:04 mcr Exp $";
 
 #include <sys/types.h>
+#include <stdio.h>
 
 #include <openswan.h>
 #include <pfkeyv2.h>

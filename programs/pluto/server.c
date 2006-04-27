@@ -92,21 +92,19 @@ LIST_HEAD(,iface_dev) interface_dev;
 
 /* control (whack) socket */
 int ctl_fd = NULL_FD;	/* file descriptor of control (whack) socket */
-#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
-struct sockaddr_un ctl_addr = { AF_UNIX, DEFAULT_CTLBASE CTL_SUFFIX };
-#else
-/* This will require fixes elsewhere too! */
-struct sockaddr_un ctl_addr = { sizeof(struct sockaddr_un), AF_UNIX, DEFAULT_CTLBASE CTL_SUFFIX };
-#endif
+struct sockaddr_un ctl_addr = { .sun_family=AF_UNIX,
+#if defined(HAS_SUN_LEN)
+				.sun_len=sizeof(struct sockaddr_un),
+#endif				
+				.sun_path  =DEFAULT_CTLBASE CTL_SUFFIX };
 
 /* info (showpolicy) socket */
 int policy_fd = NULL_FD;
-#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
-struct sockaddr_un info_addr= { AF_UNIX, DEFAULT_CTLBASE INFO_SUFFIX };
-#else
-/* This will require fixes elsewhere too! */
-struct sockaddr_un info_addr= { sizeof(struct sockaddr_un), AF_UNIX, DEFAULT_CTLBASE INFO_SUFFIX };
-#endif
+struct sockaddr_un info_addr= { .sun_family=AF_UNIX,
+#if defined(HAS_SUN_LEN)
+				.sun_len=sizeof(struct sockaddr_un),
+#endif				
+				.sun_path  =DEFAULT_CTLBASE INFO_SUFFIX };
 
 /* Initialize the control socket.
  * Note: this is called very early, so little infrastructure is available.
@@ -447,8 +445,11 @@ find_raw_ifaces4(void)
 		, ri.name));
 	if (!(auxinfo.ifr_flags & IFF_UP))
 	    continue;	/* ignore an interface that isn't UP */
+
+#ifdef IFF_SLAVE
         if (auxinfo.ifr_flags & IFF_SLAVE)
             continue;   /* ignore slave interfaces; they share IPs with their master */
+#endif
 
 	/* ignore unconfigured interfaces */
 	if (rs->sin_addr.s_addr == 0)

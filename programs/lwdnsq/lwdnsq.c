@@ -146,7 +146,7 @@ static int cmdparse(dnskey_glob *gs,
 	const struct cmd_entry *ce = cmds;
 
 	if(cmdlog != NULL) {
-		fprintf(cmdlog, "%lu|%s\n", time(NULL), cmdline);
+		fprintf(cmdlog, "%lu|%s\n", (unsigned long)time(NULL),cmdline);
 		fflush(cmdlog);
 	}
 

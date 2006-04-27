@@ -4473,7 +4473,8 @@ show_connections_status(void)
 		      , c->name
 		      , instance
 		      , enum_name(&dpd_action_names, c->dpd_action)
-		      , c->dpd_delay, c->dpd_timeout);
+		      , (unsigned long)c->dpd_delay
+		      , (unsigned long)c->dpd_timeout);
 	}
 
 	if(c->extra_debugging) {

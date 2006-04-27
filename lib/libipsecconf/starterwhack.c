@@ -18,7 +18,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/queue.h>
-#include <linux/stddef.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -152,7 +152,9 @@ int starter_whack_read_reply(int sock,
 
 static int send_whack_msg (struct whack_message *msg)
 {
-	struct sockaddr_un ctl_addr = { AF_UNIX, CTL_FILE };
+	struct sockaddr_un ctl_addr =
+	  { .sun_family = AF_UNIX,
+	    .sun_path   = CTL_FILE };
 	int sock;
 	ssize_t len;
 	struct whackpacker wp;

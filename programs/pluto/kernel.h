@@ -150,6 +150,11 @@ extern bool do_command_linux(struct connection *c, struct spd_route *sr
 			     , const char *verb, struct state *st);
 #endif
 
+#if defined(__FreeBSD__)
+extern bool do_command_freebsd(struct connection *c, struct spd_route *sr
+			       , const char *verb, struct state *st);
+#endif
+
 #if defined(__CYGWIN32__)
 extern bool do_command_cygwin(struct connection *c, struct spd_route *sr
 			      , const char *verb, struct state *st);

@@ -20,6 +20,7 @@
 
 #include <openswan.h>
 #include <stdarg.h>
+#include <stdio.h>
 
 /* moved common code to library file */
 #include "openswan/passert.h"
@@ -147,6 +148,17 @@ enum rc_type {
 extern void openswan_log_errno_routine(int e, const char *message, ...) PRINTF_LIKE(2);
 #define exit_log_errno(a) { int e = errno; openswan_exit_log_errno_routine a; }
 extern void openswan_exit_log_errno_routine(int e, const char *message, ...) PRINTF_LIKE(2) NEVER_RETURNS NEVER_RETURNS;
+
+/*
+ * general utilities
+ */
+
+/* option pickup from files (userland only because of use of FILE) */
+const char *optionsfrom(const char *filename, int *argcp, char ***argvp,
+						int optind, FILE *errorreport);
+
+/* sanitize a string */
+extern size_t sanitize_string(char *buf, size_t size);
 
 #endif /* _OSWLOG_H_ */
 

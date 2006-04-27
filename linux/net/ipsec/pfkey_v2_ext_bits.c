@@ -26,7 +26,7 @@ char pfkey_v2_ext_bits_c_version[] = "$Id: pfkey_v2_ext_bits.c,v 1.22 2005/05/11
  * kernel and in user space
 */
 
-#ifdef __KERNEL__
+#if defined(__KERNEL__) && defined(linux)
 
 # include <linux/kernel.h>  /* for printk */
 
@@ -50,8 +50,8 @@ char pfkey_v2_ext_bits_c_version[] = "$Id: pfkey_v2_ext_bits.c,v 1.22 2005/05/11
 #else /* __KERNEL__ */
 
 # include <sys/types.h>
-# include <linux/types.h>
-# include <linux/errno.h>
+# include <sys/errno.h>
+# include <stdio.h>
 #endif
 
 #include <openswan.h>

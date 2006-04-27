@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <unistd.h>
+#include <limits.h>
 
 #include "ipsecconf/keywords.h"
 #include "ipsecconf/parser.h"

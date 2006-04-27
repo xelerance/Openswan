@@ -19,6 +19,8 @@
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <limits.h>
 
 #ifndef _OPENSWAN_H
 #include <openswan.h>

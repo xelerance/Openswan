@@ -100,6 +100,22 @@
 #define user_assert(foo) assert(foo)
 #endif
 
+/*
+ * FreeBSD
+ */
+#if defined(__FreeBSD__)
+#  define DEBUG_NO_STATIC static
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <string.h>
+#include <assert.h>
+#define user_assert(foo) assert(foo)
+/* apparently this way to deal with an IPv6 address is not standard. */
+#define s6_addr16 __u6_addr.__u6_addr16
+#endif
+
 
 #ifndef IPPROTO_COMP
 #  define IPPROTO_COMP 108
@@ -458,21 +474,6 @@ bitstomask(
 	int n
 );
 
-
-
-/*
- * general utilities
- */
-
-#ifndef __KERNEL__
-/* option pickup from files (userland only because of use of FILE) */
-const char *optionsfrom(const char *filename, int *argcp, char ***argvp,
-						int optind, FILE *errorreport);
-
-/* sanitize a string */
-extern size_t sanitize_string(char *buf, size_t size);
-
-#endif
 
 
 /*

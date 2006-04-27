@@ -15,13 +15,14 @@
 
 char addconn_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp $";
 
-#include <asm/types.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 #include <sys/ioctl.h>
 /* #include <linux/netdevice.h> */
 #include <net/if.h>
 /* #include <linux/types.h> */ /* new */
 #include <sys/stat.h>
+#include <limits.h>
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>

@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <stdio.h>
 #include "oswconf.h"
 #include "oswalloc.h"
 

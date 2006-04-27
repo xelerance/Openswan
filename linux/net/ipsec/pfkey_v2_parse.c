@@ -56,8 +56,8 @@ extern int debug_pfkey;
 #else /* __KERNEL__ */
 
 # include <sys/types.h>
-# include <linux/types.h>
-# include <linux/errno.h>
+# include <sys/errno.h>
+# include <stdio.h>
 
 # include <openswan.h>
 # include "constants.h" 
@@ -387,7 +387,7 @@ pfkey_address_parse(struct sadb_ext *pfkey_ext)
 			"pfkey_address_parse: "
 			"unexpected ext_type=%d.\n",
 			pfkey_address->sadb_address_exttype);
-		SENDERR(ENOPKG);
+		SENDERR(ENODEV);
 	}
 
 	switch(s->sa_family) {

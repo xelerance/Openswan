@@ -39,8 +39,8 @@ extern int debug_pfkey;
 #else /* __KERNEL__ */
 
 # include <sys/types.h>
-# include <linux/types.h>
-# include <linux/errno.h>
+# include <sys/errno.h>
+# include <stdio.h>
 
 #endif /* __KERNEL__ */
 

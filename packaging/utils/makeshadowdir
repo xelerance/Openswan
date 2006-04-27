@@ -4,7 +4,7 @@ srcdir=$1
 OBJDIR=$2
 dirs=$3
 
-if [ "${OBJDIR}/Makefile" == "${srcdir}/Makefile" ]
+if [ "${OBJDIR}/Makefile" = "${srcdir}/Makefile" ]
 then
 	echo "failed. ${OBJDIR} == ${srcdir}"
 	exit 1
@@ -14,7 +14,7 @@ mkdir -p ${OBJDIR}
 OBJDIR=`(cd ${OBJDIR};pwd)`
 OBJDIRTOP=`(cd ${OBJDIR};pwd)`
 
-if [ -f ${OBJDIR}/Makefile ]
+if [ -f "${OBJDIR}/Makefile" ]
 then
     : echo "Will not overwrite ${OBJDIR}/Makefile"
 else

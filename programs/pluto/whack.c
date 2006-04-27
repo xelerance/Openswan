@@ -684,12 +684,13 @@ static const struct option long_opts[] = {
     { 0,0,0,0 }
 };
 
-#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
-struct sockaddr_un ctl_addr = { AF_UNIX, DEFAULT_CTLBASE CTL_SUFFIX };
-#else
-/* This will require fixes elsewhere too! */
-struct sockaddr_un ctl_addr = { sizeof(struct sockaddr_un), AF_UNIX, DEFAULT_CTLBASE CTL_SUFFIX };
+struct sockaddr_un ctl_addr = {
+    .sun_family = AF_UNIX,
+    .sun_path   = DEFAULT_CTLBASE CTL_SUFFIX,
+#if defined(HAS_SUN_LEN) 
+    .sun_len = sizeof(struct sockaddr_un),
 #endif
+};
 
 
 static void
