@@ -23,55 +23,10 @@ SRCS=${BASE_SRCS} ${BF_CORE_SRC}
 
 OBJS=${BASE_SRCS:.c=.o} ${BF_CORE_OBJ}
 
-HDRS=	
-
-VPATH += ${SRCDIR}
-
+ONEFILE=bf_skey.c
+LIBRARY=crypto/libblowfish
 LIB=libblowfish.a
+INCLUDES+=-I${srcdir}../include
 
-# Original flags
-CFLAGS=-I. -I${SRCDIR} -I${OPENSWANSRCDIR} ${PORTINCLUDE}
-CFLAGS+=$(USERCOMPILE)
-CFLAGS+=-O3 -fomit-frame-pointer -Wall  -Wcast-qual 
-CFLAGS+= -Wmissing-prototypes
-CFLAGS+= -Wpointer-arith
-CFLAGS+= -Wcast-qual
-#CFLAGS+= -Wmissing-declarations
-CFLAGS+= -Wstrict-prototypes
-#CFLAGS+= -pedantic
-#CFLAGS+= -W
-#CFLAGS+= -Wwrite-strings
-CFLAGS+= -Wbad-function-cast 
+include ${srcdir}../../Makefile.library
 
-.PHONY:	all install clean check depend checkprograms
-
-all:	$(LIB) 
-programs: $(LIB)
-
-asm/bx86unix.cpp: asm/$(BF_ASM) ../perlasm/x86asm.pl ../perlasm/cbc.pl
-	(cd asm; $(PERL) $(BF_ASM) cpp $(PROCESSOR) >bx86unix.cpp)
-
-# elf
-asm/bx86-elf.o: asm/bx86unix.cpp
-	$(CPP) -DELF -x c asm/bx86unix.cpp | as -o asm/bx86-elf.o
-
-install install_file_list:
-	@exit 0
-
-$(LIB):	$(OBJS)
-	$(AR) crs $(LIB) $(OBJS)
-
-$(OBJS):	$(HDRS)
-
-clean:
-	rm -f $(LIB) *.o try* core *.core $(EXTHDRS) $(EXTLIBS) version.c
-
-check:
-	echo no checks in lib right now.
-
-depend:
-	makedepend -Y -- $(CFLAGS) -- $(SRCS)
-
-checkprograms:
-
-# DO NOT DELETE THIS LINE -- make depend depends on it.
