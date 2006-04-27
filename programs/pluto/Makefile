@@ -158,7 +158,7 @@ OBJSWHACKINIT = whackinit.o
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard plutomain.c)
 ifeq ($(SHOULDWERESTART),trueplutomain.c)
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/pluto && make $@
+	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/pluto && $(MAKE) $@
 else
 all: $(BINNAMEPLUTO) $(BINNAMEADNSIFNEEDED) $(BINNAMEWHACK) #$(BINNAMEWHACKINIT) 
 programs: $(BINNAMEPLUTO) $(BINNAMEADNSIFNEEDED) $(BINNAMEWHACK) #$(BINNAMEWHACKINIT)

@@ -14,6 +14,7 @@
 # RCSID $Id: Makefile,v 1.4 2005/06/23 01:45:22 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
+srcdir=$(shell pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 SUBDIRS=libaes libdes libmd5 libsha1 libmd2
@@ -29,8 +30,8 @@ def:
 # programs
 
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
-	@for d in $(SUBDIRS) ; \
+	for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1; \
+		(cd $$d && $(MAKE) srcdir=${srcdir}/$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1; \
 	done; \
 

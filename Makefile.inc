@@ -170,7 +170,7 @@ INSTCONFFLAGS=
 
 # extra compile flags, for userland and kernel stuff, e.g. -g for debug info
 # you can add to this in the defaults file using +=
-USERCOMPILE?=-g ${WERROR} 
+USERCOMPILE?=-g ${WERROR} ${PORTDEFINE}
 #USERCOMPILE?=-g -O3 ${WERROR} 
 KLIPSCOMPILE=-O3
 # for AMD64 use 
@@ -291,6 +291,9 @@ USE_KEYRR?=true
 
 # include support for 2.4 KLIPS and 2.6 KLIPS in pluto
 USE_KLIPS?=true
+
+# KLIPS needs PFKEYv2, but sometimes we want PFKEY without KLIPS
+USE_PFKEYv2?=true
 
 # include support for NETKEY 2.5/2.6 IPsec in pluto (aka "native", "kame")
 USE_KERNEL26?=true

@@ -68,7 +68,7 @@ endif
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard ../Makefile.program)
 ifeq ($(SHOULDWERESTART),true../Makefile.program)
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/${PROGRAM} && make $@
+	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/${PROGRAM} && $(MAKE) $@
 else
 all: ${PROGRAM}
 programs: all

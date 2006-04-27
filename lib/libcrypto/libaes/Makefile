@@ -19,6 +19,9 @@ OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 include ${OPENSWANSRCDIR}/Makefile.ver
 
+LIBRARY=crypto/libaes
+ONEFILE=ocf_aes_assist.c
+
 AES_CORE_OBJ:=aes.o
 AES_CORE_SRC:=aes.c
 
@@ -32,62 +35,19 @@ endif
 BASE_SRCS=aes_xcbc_mac.c aes_cbc.o 
 SRCS=${BASE_SRCS} ${AES_CORE_SRC}
 
-OBJS=${BASE_SRCS:.c=.o} ${AES_CORE_OBJ}
-
-HDRS=	
-
-KLIPSD=${OPENSWANSRCDIR}/linux/include
-SRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec/aes
-
-VPATH += ${SRCDIR}
-
-LIB=libaes.a
-
-# Original flags
-CFLAGS=-I. -I${SRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}/include
-CFLAGS+=-I${OPENSWANSRCDIR} ${PORTINCLUDE}
-CFLAGS+=$(USERCOMPILE)
-CFLAGS+=-O3 -fomit-frame-pointer -Wall  -Wcast-qual 
-CFLAGS+= -Wmissing-prototypes
-CFLAGS+= -Wpointer-arith
-CFLAGS+= -Wcast-qual
-#CFLAGS+= -Wmissing-declarations
-CFLAGS+= -Wstrict-prototypes
-#CFLAGS+= -pedantic
-#CFLAGS+= -W
-#CFLAGS+= -Wwrite-strings
-CFLAGS+= -Wbad-function-cast 
-
 ifeq ($(HAVE_OCF),true)
 	CFLAGS += -DOCF_ASSIST=1
 	AES_CORE_OBJ += ocf_aes_assist.o
 endif
 
-.PHONY:	all install clean check depend checkprograms
+OBJS=${BASE_SRCS:.c=.o} ${AES_CORE_OBJ}
 
-all:	$(LIB) 
-programs: $(LIB)
+HDRS=	
 
-install install_file_list:
-	@exit 0
+SRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec/aes
+VPATH += ${SRCDIR}
 
-$(LIB):	$(OBJS)
-	$(AR) crs $(LIB) $(OBJS)
+LIB=libaes.a
 
-$(OBJS):	$(HDRS)
+include ${srcdir}../../Makefile.library
 
-clean:
-	rm -f $(LIB) *.o try* core *.core $(EXTHDRS) $(EXTLIBS) version.c
-
-check:
-	echo no checks in lib right now.
-
-depend:
-	makedepend -Y -- $(CFLAGS) -- $(SRCS)
-
-checkprograms:
-
-# DO NOT DELETE
-
-#aes_xcbc_mac.o: aes.h aes_xcbc_mac.h
-#aes.o: aes.h 
