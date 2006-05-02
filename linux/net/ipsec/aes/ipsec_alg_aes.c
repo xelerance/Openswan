@@ -28,7 +28,7 @@
  *	special case: ipsec core modular with this static algo inside:
  *	must avoid MODULE magic for this file
  */
-#if CONFIG_KLIPS_MODULE && CONFIG_KLIPS_ENC_AES
+#if defined(CONFIG_KLIPS_MODULE) && defined(CONFIG_KLIPS_ENC_AES)
 #undef MODULE
 #endif
 
@@ -250,7 +250,7 @@ IPSEC_ALG_MODULE_EXIT_STATIC( ipsec_aes_fini )
 MODULE_LICENSE("GPL");
 #endif
 
-#if 0+NOT_YET
+#if 0  /* +NOT_YET */
 #ifndef MODULE
 /*
  * 	This is intended for static module setups, currently

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: state.c,v 1.151.4.5 2006/03/20 13:40:23 paul Exp $
+ * RCSID $Id: state.c,v 1.151.4.6 2006/04/16 02:27:00 mcr Exp $
  */
 
 #include <stdio.h>
@@ -267,12 +267,25 @@ void
 unhash_state(struct state *st)
 {
     /* unlink from forward chain */
-    struct state **p = st->st_hashchain_prev == NULL
-	? state_hash(st->st_icookie, st->st_rcookie
-		     , &st->st_connection->spd.that.host_addr)
-	: &st->st_hashchain_prev->st_hashchain_next;
+    struct state **p;
+
+    if(st->st_hashchain_prev == NULL) {
+	p = state_hash(st->st_icookie, st->st_rcookie
+		       , &st->st_connection->spd.that.host_addr);
+    } else {
+	passert(st->st_hashchain_prev != NULL);
+	passert(st->st_hashchain_prev->st_hashchain_next != NULL);
+	p = &st->st_hashchain_prev->st_hashchain_next;
+    }
 
     /* unlink from forward chain */
+    if(*p == NULL) {
+	/* if it isn't linked... then we are done. probably.
+	 * But there is some bug, so log it.
+	 */
+	pexpect(st->st_hashchain_prev != NULL || st->st_hashchain_next != NULL);
+	return;
+    }
     passert(*p == st);
     *p = st->st_hashchain_next;
 
@@ -397,6 +410,8 @@ delete_state(struct state *st)
     pfreeany(st->st_esp.our_keymat);
     pfreeany(st->st_esp.peer_keymat);
     pfreeany(st->st_xauth_username);
+
+    memset(st, 0xAB, sizeof(*st));
     pfree(st);
 }
 

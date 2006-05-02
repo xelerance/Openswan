@@ -12,14 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_parser.c,v 1.134 2005/05/11 01:48:20 mcr Exp $
+ * RCSID $Id: pfkey_v2_parser.c,v 1.134.2.1 2006/05/01 14:37:25 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_netlink.c.
  */
 
-char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.134 2005/05/11 01:48:20 mcr Exp $";
+char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.134.2.1 2006/05/01 14:37:25 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -52,11 +52,9 @@ char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.134 2005/05/11 01
 #  include <asm/spinlock.h> /* *lock* */
 # endif /* SPINLOCK_23 */
 #endif /* SPINLOCK */
-#ifdef NET_21
-# include <linux/in6.h>
-# define ip_chk_addr inet_addr_type
-# define IS_MYADDR RTN_LOCAL
-#endif
+
+#include <linux/in6.h>
+#include <net/route.h>
 
 #include <net/ip.h>
 #ifdef NETLINK_SOCK
@@ -286,7 +284,7 @@ pfkey_getspi_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		SENDERR(EEXIST);
 	}
 
-	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) {
+	if(inet_addr_type((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == RTN_LOCAL) {
 		extr->ips->ips_flags |= EMT_INBOUND;
 	}
 	
@@ -435,7 +433,7 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		SENDERR(ENOENT);
 	}
 
-	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) {
+	if(inet_addr_type((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == RTN_LOCAL) {
 		extr->ips->ips_flags |= EMT_INBOUND;
 	}
 
@@ -712,7 +710,7 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 		SENDERR(EEXIST);
 	}
 
-	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) {
+	if(inet_addr_type((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == RTN_LOCAL) {
 		extr->ips->ips_flags |= EMT_INBOUND;
 	}
 
@@ -1840,8 +1838,8 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 			    buf1, buf2);
 	}
 #endif /* CONFIG_KLIPS_DEBUG */
+
 	if(extr->ips->ips_flags & SADB_X_SAFLAGS_INFLOW) {
-/*	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) */ 
 		struct ipsec_sa *ipsp, *ipsq;
 		char sa[SATOT_BUF];
 		size_t sa_len;
@@ -2893,6 +2891,9 @@ pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg,
 
 /*
  * $Log: pfkey_v2_parser.c,v $
+ * Revision 1.134.2.1  2006/05/01 14:37:25  mcr
+ * ip_chk_addr -> inet_addr_type for more direct 2.4/2.6 support.
+ *
  * Revision 1.134  2005/05/11 01:48:20  mcr
  * 	removed "poor-man"s OOP in favour of proper C structures.
  *

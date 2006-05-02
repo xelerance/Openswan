@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _plutorun.in,v 1.31.2.1 2006/01/05 23:45:00 ken Exp $
+# RCSID $Id: _plutorun.in,v 1.31.2.2 2006/04/21 15:41:45 paul Exp $
 
 me='ipsec _plutorun'		# for messages
 
@@ -188,7 +188,13 @@ IPSEC_SECRETS=${IPSEC_CONFS}/ipsec.secrets
 if test ! -f "${IPSEC_SECRETS}"
 then
     ( logger -p authpriv.info -t ipsec__plutorun No file ${IPSEC_SECRETS}, generating key.
-      ipsec newhostkey --quiet 
+      if test -c "/dev/hw_random"
+      then
+       randomdev="/dev/hw_random"
+      else
+       randomdev="/dev/random"
+      fi
+      ipsec newhostkey --quiet --random $randomdev
       
       # tell pluto to go re-read the file
       ipsec auto --rereadsecrets

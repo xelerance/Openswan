@@ -269,9 +269,9 @@ int ipsec_alg_esp_encrypt(struct ipsec_sa *sa_p, __u8 * idat,
 		    "entering with encalg=%d, ixt_e=%p\n",
 		    sa_p->ips_encalg, ixt_e);
 	if (ixt_e == NULL) {
-	  KLIPS_PRINT(debug_flag,
-			    "klips_debug:ipsec_alg_esp_encrypt: "
-			    "NULL ipsec_alg_enc object\n");
+	  KLIPS_ERROR(debug_flag,
+		      "klips_debug:ipsec_alg_esp_encrypt: "
+		      "NULL ipsec_alg_enc object\n");
 		return -1;
 	}
 	KLIPS_PRINT(debug_flag,

@@ -1,5 +1,17 @@
 Please see docs/KNOWN_BUGS file for more information
 
+v2.4.6
+* Fix for VIA Nehemiah to use /dev/hw_random to generate new rsakey
+  (using /dev/random on these chips caused it to block too long)
+* Various CryptoAPI related fixes.
+* Removed support for HIPPI which broke compilation on 2.6.16.*
+* Pull up of fix for rightnexthop->leftnexthop
+* Added logging when we don't find the right hash bucket
+* Changed a few x509 log messages to make automatic parsing easier
+* Unload KLIPS at shutdown again to prevent lingering IPs on ipsecX,
+  also in case KLIPS is inline, and the ipsecX interfaces do not go away,
+  remove IP addresses from IP aliases bound to ipsecX devices.
+
 v2.4.5
 * Fix for prefering RFC3947 over OSX-workaround by Jacco de Leeuw
 * Fix for openswan as l2tp server behind NAT by Bernd Galonska
@@ -148,6 +160,7 @@ v2.3.0
 * Cisco VPN 3xxx client Interop (Experimental)
 * Cryptographic helpers framework
 * Fixes for NAT-T on 2.4.28+ kernels.
+* Fix for SIOCDEVPRIVATE use (aka the snmpd crasher)
 
 v2.2.0
 * Added RFC 3706 DPD support (see README.DPD)
@@ -173,4 +186,4 @@ v2.1.0
   while travelling.  This is based on Tuomo Soini's Advanced Routing
   patch.
 
-RCSID $Id: CHANGES,v 1.326.2.57 2006/04/04 22:26:34 paul Exp $
+RCSID $Id: CHANGES,v 1.326.2.63 2006/05/02 17:38:35 paul Exp $

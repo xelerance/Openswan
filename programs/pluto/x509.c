@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: x509.c,v 1.23.18.3 2005/07/26 02:11:23 ken Exp $
+ * RCSID $Id: x509.c,v 1.23.18.4 2006/04/27 15:48:13 paul Exp $
  */
 
 #include <stdlib.h>
@@ -2771,7 +2771,7 @@ verify_by_crl(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	    bool revoked_crl, expired_crl;
      
 	    DBG(DBG_X509,
-		DBG_log("crl signature on \"%s\" is valid", cbuf)
+		DBG_log("valid crl signature on \"%s\"", cbuf)
 	    )
 
 	    /* with strict crl policy the public key must have the same
@@ -2822,7 +2822,7 @@ verify_by_crl(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	else
 	{
 	    unlock_crl_list("verify_by_crl");
-	    openswan_log("crl signature on \"%s\" is invalid", cbuf);
+	    openswan_log("invalid crl signature on \"%s\"", cbuf);
 	    if (strict)
 		return FALSE;
 	}
@@ -2899,13 +2899,13 @@ verify_x509cert(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	if (!check_signature(cert->tbsCertificate, cert->signature,
 			     cert->algorithm, issuer_cert))
 	{
-	    openswan_log("certificate signature from \"%s\" on \"%s\" is invalid"
+	    openswan_log("invalid certificate signature from \"%s\" on \"%s\""
 			 , ibuf, sbuf);
 	    unlock_authcert_list("verify_x509cert");
 	    return FALSE;
 	}
 	DBG(DBG_X509,
-	    DBG_log("certificate signature (%s -> %s) is valid"
+	    DBG_log("valid certificate signature (%s -> %s)"
 		    , ibuf, sbuf);
 	)
 	unlock_authcert_list("verify_x509cert");

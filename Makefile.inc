@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.inc,v 1.116.2.3 2006/01/11 02:02:59 mcr Exp $
+# RCSID $Id: Makefile.inc,v 1.116.2.4 2006/04/21 14:49:17 paul Exp $
 
 
 
@@ -291,7 +291,7 @@ USE_KERNEL26?=true
 USE_VENDORID?=true
 
 # Use /dev/hwrandom if available (EG: VIA Padlock)
-USE_HWRANDOM?=false
+USE_HWRANDOM?=true
 
 # include aggressive mode authentication system code - both Server and Client.
 # This is off by default, since aggressive mode leads to denial of service

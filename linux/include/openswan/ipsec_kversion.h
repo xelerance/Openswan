@@ -1,4 +1,4 @@
-#ifndef _FREESWAN_KVERSIONS_H
+#ifndef _OPENSWAN_KVERSIONS_H
 /*
  * header file for FreeS/WAN library functions
  * Copyright (C) 1998, 1999, 2000  Henry Spencer.
@@ -14,9 +14,9 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: ipsec_kversion.h,v 1.15.2.7 2006/01/11 02:02:59 mcr Exp $
+ * RCSID $Id: ipsec_kversion.h,v 1.15.2.8 2006/05/01 14:31:52 mcr Exp $
  */
-#define	_FREESWAN_KVERSIONS_H	/* seen it, no need to see it again */
+#define	_OPENSWAN_KVERSIONS_H	/* seen it, no need to see it again */
 
 /*
  * this file contains a series of atomic defines that depend upon
@@ -239,10 +239,13 @@
 #endif
 
 
-#endif /* _FREESWAN_KVERSIONS_H */
+#endif /* _OPENSWAN_KVERSIONS_H */
 
 /*
  * $Log: ipsec_kversion.h,v $
+ * Revision 1.15.2.8  2006/05/01 14:31:52  mcr
+ * FREESWAN->OPENSWAN in #ifdef.
+ *
  * Revision 1.15.2.7  2006/01/11 02:02:59  mcr
  * updated patches and DEFAULT_TTL code to work
  *

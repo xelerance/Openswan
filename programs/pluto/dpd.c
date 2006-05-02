@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: dpd.c,v 1.29.2.6 2005/12/27 22:30:36 ken Exp $
+ * RCSID $Id: dpd.c,v 1.29.2.7 2006/04/27 19:09:35 paul Exp $
  */
 
 #include <stdio.h>
@@ -407,7 +407,7 @@ dpd_inI_outR(struct state *p1st
 
     seqno = ntohl(*(u_int32_t *)pbs->cur);
     if (p1st->st_dpd_peerseqno && seqno <= p1st->st_dpd_peerseqno) {
-        loglog(RC_LOG_SERIOUS, "DPD Warning: received old or duplicate R_U_THERE");
+        loglog(RC_LOG_SERIOUS, "DPD: Warning: received old or duplicate R_U_THERE");
         return STF_IGNORE;
     }
      

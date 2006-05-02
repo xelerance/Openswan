@@ -12,14 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_build.c,v 1.51 2004/10/03 01:26:36 mcr Exp $
+ * RCSID $Id: pfkey_v2_build.c,v 1.51.8.1 2006/05/01 14:36:39 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_parser.c.
  */
 
-char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.51 2004/10/03 01:26:36 mcr Exp $";
+char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.51.8.1 2006/05/01 14:36:39 mcr Exp $";
 
 /*
  * Some ugly stuff to allow consistent debugging code for use in the
@@ -1257,40 +1257,6 @@ int pfkey_x_protocol_build(struct sadb_ext **pfkey_ext,
 	return error;
 }
 
-
-#if I_DONT_THINK_THIS_WILL_BE_USEFUL
-int (*ext_default_builders[SADB_EXT_MAX +1])(struct sadb_msg*, struct sadb_ext*)
- =
-{
-	NULL, /* pfkey_msg_build, */
-	pfkey_sa_build,
-	pfkey_lifetime_build,
-	pfkey_lifetime_build,
-	pfkey_lifetime_build,
-	pfkey_address_build,
-	pfkey_address_build,
-	pfkey_address_build,
-	pfkey_key_build,
-	pfkey_key_build,
-	pfkey_ident_build,
-	pfkey_ident_build,
-	pfkey_sens_build,
-	pfkey_prop_build,
-	pfkey_supported_build,
-	pfkey_supported_build,
-	pfkey_spirange_build,
-	pfkey_x_kmprivate_build,
-	pfkey_x_satype_build,
-	pfkey_sa_build,
-	pfkey_address_build,
-	pfkey_address_build,
-	pfkey_address_build,
-	pfkey_address_build,
-	pfkey_address_build,
-	pfkey_x_ext_debug_build
-};
-#endif
-
 int
 pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int dir)
 {
@@ -1422,6 +1388,9 @@ errlab:
 
 /*
  * $Log: pfkey_v2_build.c,v $
+ * Revision 1.51.8.1  2006/05/01 14:36:39  mcr
+ * get rid of dead code.
+ *
  * Revision 1.51  2004/10/03 01:26:36  mcr
  * 	fixes for gcc 3.4 compilation.
  *

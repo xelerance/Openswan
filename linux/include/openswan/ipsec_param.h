@@ -15,7 +15,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_param.h,v 1.29.6.2 2005/11/27 21:40:14 paul Exp $
+ * RCSID $Id: ipsec_param.h,v 1.29.6.3 2006/05/01 14:32:31 mcr Exp $
  *
  */
 
@@ -159,11 +159,13 @@ extern int sysctl_ipsec_regress_pfkey_lossage;
 #ifndef KLIPS_PFKEY_ACQUIRE_LOSSAGE
 # ifdef CONFIG_KLIPS_PFKEY_ACQUIRE_LOSSAGE
 #  define KLIPS_PFKEY_ACQUIRE_LOSSAGE 100
-# else /* CONFIG_KLIPS_PFKEY_ACQUIRE_LOSSAGE */
-/* not by default! */
-#  define KLIPS_PFKEY_ACQUIRE_LOSSAGE 0
 # endif /* CONFIG_KLIPS_PFKEY_ACQUIRE_LOSSAGE */
+#else
+#define KLIPS_PFKEY_ACQUIRE_LOSSAGE 0
 #endif /* KLIPS_PFKEY_ACQUIRE_LOSSAGE */
+
+#else /* CONFIG_KLIPS_REGRESS */
+#define KLIPS_PFKEY_ACQUIRE_LOSSAGE 0
 
 #endif /* CONFIG_KLIPS_REGRESS */
 
@@ -171,6 +173,7 @@ extern int sysctl_ipsec_regress_pfkey_lossage;
 /*
  * debugging routines.
  */
+#define KLIPS_ERROR(flag, format, args...) if(printk_ratelimit() || flag) printk(KERN_ERR "KLIPS " format, ## args)
 #ifdef CONFIG_KLIPS_DEBUG
 extern void ipsec_print_ip(struct iphdr *ip);
 
@@ -251,6 +254,9 @@ extern void ipsec_print_ip(struct iphdr *ip);
 
 /*
  * $Log: ipsec_param.h,v $
+ * Revision 1.29.6.3  2006/05/01 14:32:31  mcr
+ * added KLIPS_ERROR and make sure that things work without CONFIG_KLIPS_REGRESS.
+ *
  * Revision 1.29.6.2  2005/11/27 21:40:14  paul
  * Pull down TTL fixes from head. this fixes "Unknown symbol sysctl_ip_default_ttl"
  * in for klips as module.
