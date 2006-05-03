@@ -601,7 +601,7 @@ insert_crl(chunk_t blob, chunk_t crl_uri)
 	    return FALSE;
 	}
 	DBG(DBG_X509,
-	    DBG_log("crl signature is valid")
+	    DBG_log("valid crl signature")
 	)
 
 	lock_crl_list("insert_crl");
@@ -877,7 +877,7 @@ verify_by_crl(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	    bool revoked_crl, expired_crl;
      
 	    DBG(DBG_X509,
-		DBG_log("crl signature on \"%s\" is valid", cbuf)
+		DBG_log("valid crl signature on \"%s\"", cbuf)
 	    )
 
 	    /* with strict crl policy the public key must have the same
@@ -928,7 +928,7 @@ verify_by_crl(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	else
 	{
 	    unlock_crl_list("verify_by_crl");
-	    openswan_log("crl signature on \"%s\" is invalid", cbuf);
+	    openswan_log("invalid crl signature on \"%s\"", cbuf);
 	    if (strict)
 		return FALSE;
 	}
@@ -985,7 +985,7 @@ verify_x509cert(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	}
 
 	DBG(DBG_X509,
-	    DBG_log("certificate for \"%s\" is valid", sbuf)
+	    DBG_log("valid certificate for \"%s\"", sbuf)
 	)
 
 	lock_authcert_list("verify_x509cert");
@@ -1005,13 +1005,13 @@ verify_x509cert(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	if (!check_signature(cert->tbsCertificate, cert->signature,
 			     cert->algorithm, issuer_cert))
 	{
-	    openswan_log("certificate signature from \"%s\" on \"%s\" is invalid"
+	    openswan_log("invalid certificate signature from \"%s\" on \"%s\""
 			 , ibuf, sbuf);
 	    unlock_authcert_list("verify_x509cert");
 	    return FALSE;
 	}
 	DBG(DBG_X509,
-	    DBG_log("certificate signature (%s -> %s) is valid"
+	    DBG_log("valid certificate signature (%s -> %s)"
 		    , ibuf, sbuf);
 	)
 	unlock_authcert_list("verify_x509cert");
@@ -1315,12 +1315,12 @@ trust_authcert_candidate(const x509cert_t *cert, const x509cert_t *alt_chain)
        if (!check_signature(cert->tbsCertificate, cert->signature,
                             cert->algorithm, authcert))
        {
-           plog("certificate signature is invalid");
+           plog("invalid certificate signature");
            unlock_authcert_list("trust_authcert_candidate");
            return FALSE;
        }
        DBG(DBG_CONTROL,
-           DBG_log("certificate signature is valid")
+           DBG_log("valid certificate signature")
        )
 
        /* check if cert is a self-signed root ca */
