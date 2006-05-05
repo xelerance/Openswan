@@ -286,28 +286,6 @@ has_private_key(cert_t cert)
     return has_key;
 }
 
-/* check the existence of an RSA private key matching an RSA public
- */
-static bool
-has_private_rawkey(struct pubkey *pk)
-{
-    struct secret *s;
-    bool has_key = FALSE;
-
-    if(pk == NULL) return FALSE;
-
-    for (s = secrets; s != NULL; s = s->next)
-    {
-	if (s->kind == PPK_RSA &&
-	    same_RSA_public_key(&s->u.RSA_private_key.pub, &pk->u.rsa))
-	{
-	    has_key = TRUE;
-	    break;
-	}
-    }
-    return has_key;
-}
-
 /* find the appropriate RSA private key (see get_secret).
  * Failure is indicated by a NULL pointer.
  */
