@@ -410,8 +410,8 @@ mast_do_command(struct connection *c, struct spd_route *sr
 
     ref = refhim = IPSEC_SAREF_NULL;
     if(st) {
-	ref   = st->ref;
-	refhim= st->refhim;
+	ref   = st->st_ref;
+	refhim= st->st_refhim;
 	DBG(DBG_KLIPS, DBG_log("Using saref=%u/%u for verb=%s\n", ref, refhim, verb));
     }
 
