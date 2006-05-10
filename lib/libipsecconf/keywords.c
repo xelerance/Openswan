@@ -69,11 +69,12 @@ struct keyword_enum_values kw_authby_list=
     { kw_authby_values, sizeof(kw_authby_values)/sizeof(struct keyword_enum_value)};
 
 /*
- * Values for dpdaction={hold,clear}
+ * Values for dpdaction={hold,clear,restart} 
  */
 struct keyword_enum_value kw_dpdaction_values[]={
     { "hold",    DPD_ACTION_HOLD},
     { "clear",   DPD_ACTION_CLEAR},
+    { "restart",   DPD_ACTION_RESTART},
 };
 
 struct keyword_enum_values kw_dpdaction_list=
@@ -149,7 +150,8 @@ struct keyword_enum_value kw_plutodebug_values[]={
     { "oppo",     DBG_OPPO },
     { "controlmore", DBG_CONTROLMORE },
     { "private",  DBG_PRIVATE },
-    { "x509",  DBG_X509 },
+    { "x509",     DBG_X509 },
+    { "dpd",      DBG_DPD }, 
 
     { "impair-delay-adns-key-answer", IMPAIR_DELAY_ADNS_KEY_ANSWER },
     { "impair-delay-adns-txt-answer", IMPAIR_DELAY_ADNS_TXT_ANSWER },
