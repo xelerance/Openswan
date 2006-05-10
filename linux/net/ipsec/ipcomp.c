@@ -1,5 +1,7 @@
 /*
  * IPCOMP zlib interface code.
+ * implementation of RFC 3173.
+ *
  * Copyright (C) 2000  Svenning Soerensen <svenning@post5.tele.dk>
  * Copyright (C) 2000, 2001  Richard Guy Briggs <rgb@conscoop.ottawa.on.ca>
  * 
