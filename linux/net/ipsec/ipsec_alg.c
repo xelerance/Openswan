@@ -69,9 +69,6 @@
 #include "openswan/ipsec_alg.h"
 #include "openswan/ipsec_proto.h"
 
-#ifndef CONFIG_KLIPS_ALG
-#error This file _MUST_ be compiled with CONFIG_KLIPS_ALG enabled !
-#endif
 #if SADB_EALG_MAX < 255
 #warning Compiling with limited ESP support ( SADB_EALG_MAX < 256 )
 #endif
@@ -852,7 +849,7 @@ int ipsec_alg_init(void) {
 	}
 #endif
 
-#if defined(CONFIG_KLIPS_ENC_3DES) && CONFIG_KLIPS_ENC_3DES && !defined(CONFIG_KLIPS_ENC_3DES_MODULE) 
+#if defined(CONFIG_KLIPS_ENC_3DES) && !defined(CONFIG_KLIPS_ENC_3DES_MODULE) 
 #if defined(CONFIG_KLIPS_ENC_CRYPTOAPI) && CONFIG_KLIPS_ENC_CRYPTOAPI
 #warning "Using built-in 3des rather than CryptoAPI 3des"
 #endif	

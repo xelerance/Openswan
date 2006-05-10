@@ -37,10 +37,10 @@
 #include "connections.h"	/* needs id.h */
 #include "foodgroups.h"
 #include "kernel.h"	/* needs connections.h */
+#include "oswconf.h"
 #include "lex.h"
 #include "log.h"
 #include "whack.h"
-#include "paths.h"
 
 
 /* Food group config files are found in directory fg_path */
@@ -133,7 +133,8 @@ read_foodgroup(struct fg_groups *g)
 {
     const char *fgn = g->connection->name;
     const ip_subnet *lsn = &g->connection->spd.this.client;
-    size_t plen = strlen(ipsec_dir) + sizeof("/policies/") + 1 + strlen(fgn) + 1;
+    const struct osw_conf_options *oco = osw_init_options(); 
+    size_t plen = strlen(oco->policies_dir) + 2 + strlen(fgn) + 1;
     struct file_lex_position flp_space;
 
     if (plen > fg_path_space)
@@ -142,7 +143,7 @@ read_foodgroup(struct fg_groups *g)
 	fg_path_space = plen + 10;
 	fg_path = alloc_bytes(fg_path_space, "policy group path");
     }
-    snprintf(fg_path, fg_path_space, "%s/policies/%s", ipsec_dir, fgn);
+    snprintf(fg_path, fg_path_space, "%s/%s", oco->policies_dir, fgn);
     if (!lexopen(&flp_space, fg_path, TRUE))
     {
 	char cwd[PATH_MAX];
@@ -164,35 +165,35 @@ read_foodgroup(struct fg_groups *g)
 		    /* !!! this test is not sufficient for distinguishing address families.
 		     * We need a notation to specify that a FQDN is to be resolved to IPv6.
 		     */
-		    const struct af_info *afi = strchr(tok, ':') == NULL
+		    const struct af_info *afi = strchr(flp->tok, ':') == NULL
 			? &af_inet4_info: &af_inet6_info;
 		    ip_subnet sn;
 		    err_t ugh;
 
-		    if (strchr(tok, '/') == NULL)
+		    if (strchr(flp->tok, '/') == NULL)
 		    {
 			/* no /, so treat as /32 or V6 equivalent */
 			ip_address t;
 
-			ugh = ttoaddr(tok, 0, afi->af, &t);
+			ugh = ttoaddr(flp->tok, 0, afi->af, &t);
 			if (ugh == NULL)
 			    ugh = addrtosubnet(&t, &sn);
 		    }
 		    else
 		    {
-			ugh = ttosubnet(tok, 0, afi->af, &sn);
+			ugh = ttosubnet(flp->tok, 0, afi->af, &sn);
 		    }
 
 		    if (ugh != NULL)
 		    {
 			loglog(RC_LOG_SERIOUS, "\"%s\" line %d: %s \"%s\""
-			    , flp->filename, flp->lino, ugh, tok);
+			    , flp->filename, flp->lino, ugh, flp->tok);
 		    }
 		    else if (afi->af != AF_INET)
 		    {
 			loglog(RC_LOG_SERIOUS
 			    , "\"%s\" line %d: unsupported Address Family \"%s\""
-			    , flp->filename, flp->lino, tok);
+			    , flp->filename, flp->lino, flp->tok);
 		    }
 		    else
 		    {
@@ -223,7 +224,7 @@ read_foodgroup(struct fg_groups *g)
 				, "\"%s\" line %d: subnet \"%s\", source %s, already \"%s\""
 				, flp->filename
 				, flp->lino
-				, tok
+				, flp->tok
 				, source
 				, (*pp)->group->connection->name);
 			}

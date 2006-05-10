@@ -1,0 +1,89 @@
+KLIPSD=${OPENSWANSRCDIR}/linux/include
+KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
+MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
+
+LEX=flex
+BISON=bison
+
+VPATH+= ${KLIPSSRCDIR}
+
+# Original flags
+INCLUDES=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}
+INCLUDES+=-I${OPENSWANSRCDIR}/include 
+CFLAGS+=${PORTINCLUDE} ${INCLUDES} 
+CFLAGS+=-DDEBUG
+CFLAGS+= $(USERCOMPILE)
+CFLAGS+= -Wall
+#CFLAGS+= -Wconversion
+#CFLAGS+= -Wmissing-prototypes
+CFLAGS+= -Wpointer-arith
+CFLAGS+= -Wcast-qual
+#CFLAGS+= -Wmissing-declarations
+CFLAGS+= -Wstrict-prototypes
+#CFLAGS+= -pedantic
+#CFLAGS+= -W
+#CFLAGS+= -Wwrite-strings
+CFLAGS+= -Wbad-function-cast 
+
+ifeq ($(USE_NAT_TRAVERSAL),true)
+CFLAGS+= -DNAT_TRAVERSAL
+endif
+
+ARFLAGS=crvs
+MANS=
+
+.PHONY:	all install clean l t lt tar check depend checkprograms
+
+# we can't do tests with two conditions, but we can concatenate the strings
+SHOULDWERESTART=${USE_OBJDIR}$(wildcard ${ONEFILE})
+ifeq ($(SHOULDWERESTART),true${ONEFILE})
+all programs clean install:
+	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/lib${LIBRARY} && make $@
+else
+all:	$(LIB) 
+programs: $(LIB) 
+clean:	cleanall
+install: doinstall
+
+endif
+
+doinstall:
+	@mkdir -p $(MANDIR)
+	@for f in $(MANS) ; \
+	do \
+		$(INSTALL) $(INSTMANFLAGS) $(MANSRCDIR)/$$f $(MANDIR)/ipsec_$$f || exit 1 ; \
+	done
+	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${MANSRCDIR}/$(man)) | \
+	while read from to; \
+	do \
+		ln -s -f ipsec_$$from $(MANDIR)/$$to; \
+	done
+
+
+install_file_list:
+	@for f in $(MANS) ; \
+	do \
+		echo $(MANDIR)/ipsec_$$f;\
+	done;
+	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${MANSRCDIR}/$(man)) | \
+	while read from to; \
+	do \
+		echo $(MANDIR)/$$to; \
+	done
+
+$(LIB): $(OBJS)
+	$(AR) $(ARFLAGS) $(LIB) $(OBJS)
+
+$(OBJS):	$(HDRS)
+
+cleanall::
+	rm -rf ${OBJS}
+
+# Gather dependencies caused by explicit #includes within .c files
+depend: ${DISTSRC}
+	@(ls $(DISTSRC) | grep '\.c' | xargs gcc -MM ${PORTINCLUDE} ${INCLUDES} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
+
+-include ${srcdir}Makefile.depend
+
+
+

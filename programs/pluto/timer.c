@@ -48,28 +48,11 @@
 #include "timer.h"
 #include "whack.h"
 #include "dpd.h"
+#include "oswtime.h"
 
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
 #endif
-
-/* monotonic version of time(3) */
-time_t
-now(void)
-{
-    static time_t delta = 0
-	, last_time = 0;
-    time_t n = time((time_t)NULL);
-
-    passert(n != (time_t)-1);
-    if (last_time > n)
-    {
-	openswan_log("time moved backwards %ld seconds", (long)(last_time - n));
-	delta += last_time - n;
-    }
-    last_time = n;
-    return n + delta;
-}
 
 /* This file has the event handling routines. Events are
  * kept as a linked list of event structures. These structures

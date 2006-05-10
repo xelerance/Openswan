@@ -46,7 +46,9 @@
 #include "log.h"
 #include "timer.h"
 #include "ike_alg.h"
+#include "id.h"
 #include "secrets.h"
+#include "keys.h"
 
 /** Compute DH shared secret from our local secret and the peer's public value.
  * We make the leap that the length should be that of the group

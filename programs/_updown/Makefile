@@ -33,7 +33,7 @@ endif
 _updown: ${UPDOWN_PROGRAM}
 	cp ${UPDOWN_PROGRAM} _updown
 
-cleanall::
+cleanall:: 
 	rm -f ${UPDOWN_PROGRAM} ${PROGRAM}
 
 #

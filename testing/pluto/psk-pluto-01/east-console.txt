@@ -8,18 +8,11 @@ ipsec_setup: Starting Openswan IPsec VERSION
 east:~#
  ipsec auto --add road--eastnet-psk
 east:~#
- 
-
-east:~#
  ipsec look
 east NOW
-192.0.2.0/24       -> 192.1.3.194/32     => tun0xIPIP@192.1.3.194
-ipsec0->eth1 mtu=16260(9999)->1500
-ROUTING TABLE
-192.1.2.0/24 dev eth1  proto kernel  scope link  src 192.1.2.23
-192.1.2.0/24 dev ipsec0  proto kernel  scope link  src 192.1.2.23
-192.0.1.0/24 via 192.1.2.45 dev eth1
-default via 192.1.2.254 dev eth1
+
+
+east:~#
 east:~#
 east:~#
 

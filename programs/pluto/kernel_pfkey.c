@@ -633,12 +633,12 @@ finish_pfkey_msg(struct sadb_ext *extensions[SADB_EXT_MAX + 1]
 		    
 		  default:
 		  logerr:
-		    log_errno_routine(e1, "pfkey write() of %s message %u"
-				      " for %s %s failed"
-				      , sparse_val_show(pfkey_type_names
-							, pfkey_msg->sadb_msg_type)
-				      , pfkey_msg->sadb_msg_seq
-				      , description, text_said);
+		    openswan_log_errno_routine(e1, "pfkey write() of %s message %u"
+					       " for %s %s failed"
+					       , sparse_val_show(pfkey_type_names
+								 , pfkey_msg->sadb_msg_type)
+					       , pfkey_msg->sadb_msg_seq
+					       , description, text_said);
 		    success = FALSE;
 		  }
 		}

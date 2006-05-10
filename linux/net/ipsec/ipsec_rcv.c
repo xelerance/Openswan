@@ -225,9 +225,7 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 	struct ipsec_sa *newipsp;
 	struct iphdr *ipp;
 	struct sk_buff *skb;
-#ifdef CONFIG_KLIPS_ALG
 	struct ipsec_alg_auth *ixt_a=NULL;
-#endif /* CONFIG_KLIPS_ALG */
 
 	skb = irs->skb;
 	irs->len = skb->len;
@@ -482,7 +480,6 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 	irs->authfuncs=NULL;
 
 	/* authenticate, if required */
-#ifdef CONFIG_KLIPS_ALG
 	if ((ixt_a=irs->ipsp->ips_alg_auth)) {
 		irs->authlen = AHHMAC_HASHLEN;
 		irs->authfuncs = NULL;
@@ -496,7 +493,6 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 				irs->ipsp->ips_authalg, 
 				irs->authlen);
 	} else
-#endif /* CONFIG_KLIPS_ALG */
 	switch(irs->ipsp->ips_authalg) {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 	case AH_MD5:
@@ -1700,6 +1696,14 @@ rcvleave:
  * $Log: ipsec_rcv.c,v $
  * Revision 1.178  2005/10/21 02:19:34  mcr
  * 	on 2.4 systems, we have to fix up the length as well.
+ *
+ * Revision 1.171.2.7  2006/04/20 16:33:07  mcr
+ * remove all of CONFIG_KLIPS_ALG --- one can no longer build without it.
+ * Fix in-kernel module compilation. Sub-makefiles do not work.
+ *
+ * Revision 1.171.2.6  2005/12/07 06:07:04  paul
+ * comment out KLIPS_DEC_USE in ipsec_rcv_decap. Likely an artifact from
+ * refactoring. http://bugs.xelerance.com/view.php?id=454
  *
  * Revision 1.171.2.5  2005/10/21 02:22:29  mcr
  * 	pull up of another try at 2.4.x kernel fix

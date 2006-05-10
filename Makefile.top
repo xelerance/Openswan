@@ -51,12 +51,13 @@ uninstall:
 taroldinstall:
 	tar --ignore-failed-read -c -z -f oldFreeSWAN.tar.gz `$(MAKE) --no-print-directory install_file_list`
 
-# some oddities meant for the developers, probably of no use to users
+TAGSFILES=$(wildcard include/*.h lib/lib*/*.c programs/*/*.c linux/include/*.h linux/include/openswan/*.h linux/net/ipsec/*.[ch])
 
-# make tags and TAGS files from ctags and etags for vi and emacs, respectively.
-tags TAGS: dummy
-	etags `find lib programs linux -name '*.[ch]'`
-	ctags `find lib programs linux -name '*.[ch]'`
+tags:	$(TAGSFILES)
+	@LC_ALL=C ctags $(CTAGSFLAGS) ${TAGSFILES}
+
+TAGS:	$(TAGSFILES)
+	@LC_ALL=C etags $(ETAGSFLAGS) ${TAGSFILES}
 
 .PHONY: dummy
 dummy:
