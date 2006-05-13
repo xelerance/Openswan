@@ -32,6 +32,7 @@ enum kernel_interface {
   USE_NETKEY= 4,
   USE_WIN2K = 5,
   USE_FUNK  = 6,
+  USE_MASTKLIPS = 7,
 };
 
 /* RFC 3706 Dead Peer Detection */
