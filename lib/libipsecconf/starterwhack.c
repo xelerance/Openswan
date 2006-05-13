@@ -280,6 +280,11 @@ static void set_whack_end(struct starter_config *cfg
 		break;
 
 	case KH_NOTSET:  /* acceptable to not set nexthop */
+		/* but, get the family set up right
+		 * XXX the nexthop type has to get into the whack message!
+		 *
+		 */
+		anyaddr(addrtypeof(&l->addr), &w->host_nexthop);
 		break;
 	}
 
