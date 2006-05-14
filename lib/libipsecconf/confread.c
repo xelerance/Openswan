@@ -334,6 +334,10 @@ static int validate_end(struct starter_conn *conn_st
 	if (er) ERR_FOUND("bad subnet %s=%s [%s]", (left ? "leftsubnet" : "rightsubnet"), value, er);
     }
 
+    /* set nexthop address to something consistent, by default */
+    anyaddr(AF_INET, &end->nexthop);
+    anyaddr(addrtypeof(&end->addr), &end->nexthop);
+
     /* validate the KSCF_NEXTHOP */
     if(end->strings[KSCF_NEXTHOP] != NULL)
     {
@@ -627,7 +631,7 @@ static int load_conn (struct starter_config *cfg
     err += load_conn_basic(conn, sl, perr);
     if(err) return err;
 
-    if(conn->strings[KSF_ALSO] != NULL
+    if(conn->strings[KSCF_ALSO] != NULL
        && !alsoprocessing)
     {
 	starter_log(LOG_LEVEL_INFO
@@ -638,7 +642,7 @@ static int load_conn (struct starter_config *cfg
 
     /* now, process the also's */
     if (conn->alsos) free_list(conn->alsos);
-    conn->alsos = new_list(conn->strings[KSF_ALSO]);
+    conn->alsos = new_list(conn->strings[KSCF_ALSO]);
 
     if(alsoprocessing && conn->alsos)
     {
@@ -678,18 +682,18 @@ static int load_conn (struct starter_config *cfg
 	     */
 	    if(sl1 && !sl1->beenhere)
 	    {
-		conn->strings_set[KSF_ALSO]=FALSE;
-		if(conn->strings[KSF_ALSO]) free(conn->strings[KSF_ALSO]);
-		conn->strings[KSF_ALSO]=NULL;
+		conn->strings_set[KSCF_ALSO]=FALSE;
+		if(conn->strings[KSCF_ALSO]) free(conn->strings[KSCF_ALSO]);
+		conn->strings[KSCF_ALSO]=NULL;
 		sl1->beenhere = TRUE;
 
 		/* translate things, but do not replace earlier settings */
 		err += translate_conn(conn, sl1, FALSE, perr);
 
-		if(conn->strings[KSF_ALSO])
+		if(conn->strings[KSCF_ALSO])
 		{
 		    /* now, check out the KSF_ALSO, and extend list if we need to */
-		    newalsos = new_list(conn->strings[KSF_ALSO]);		
+		    newalsos = new_list(conn->strings[KSCF_ALSO]);		
 		    
 		    if(newalsos && newalsos[0]!=NULL)
 		    {

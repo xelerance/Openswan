@@ -6,6 +6,7 @@ rfc1829.txt	The ESP DES-CBC Transform (obsolete)
 rfc2085.txt	HMAC-MD5 IP Authentication with Replay Prevention (obsolete)
 rfc2104.txt	HMAC: Keyed-Hashing for Message Authentication
 rfc2367.txt	PF_KEY Key Management API, Version 2
+rfc2393.txt	IP Payload Compression Protocol (IPComp).
 rfc2401.txt	Security Architecture for the Internet Protocol
 rfc2402.txt	IP Authentication Header
 rfc2403.txt	The Use of HMAC-MD5-96 within ESP and AH
@@ -20,6 +21,7 @@ rfc2411.txt	IP Security - Document Roadmap
 rfc2412.txt	The OAKLEY Key Determination Protocol
 rfc2451.txt	The ESP CBC-Mode Cipher Algorithms
 rfc2857.txt	The Use of HMAC-RIPEMD-160-96 within ESP and AH
+rfc3173.txt	IP Payload Compression Protocol (IPComp).
 rfc3456.txt	Dynamic Host Configuration Protocol (DHCPv4) Configuration of IPsec Tunnel Mode
 rfc3706.txt	A Traffic-Based Method of Detecting Dead Internet Key Exchange (IKE) Peers
 rfc3947.txt	Negotiation of NAT-Traversal in the IKE

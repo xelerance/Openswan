@@ -527,11 +527,12 @@ void list_public_keys(bool utc)
 	    char installed_buf[TIMETOA_BUF];
 
 	    idtoa(&key->id, id_buf, IDTOA_BUF);
-	    whack_log(RC_COMMENT, "%s, %4d RSA Key %s, until %s %s"
+	    whack_log(RC_COMMENT, "%s, %4d RSA Key %s (%s private key), until %s %s"
 		      , timetoa(&key->installed_time, utc,
 				installed_buf, sizeof(installed_buf))
 		      , 8*key->u.rsa.k
 		      , key->u.rsa.keyid
+		      , (has_private_rawkey(key) ? "has" : "no")
 		      , timetoa(&key->until_time, utc,
 				expires_buf, sizeof(expires_buf))
 		      , check_expiry(key->until_time

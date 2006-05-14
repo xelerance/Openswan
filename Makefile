@@ -30,7 +30,7 @@ def:
 	@echo "Commonly used build commands:"
 	@echo
 	@echo "Kernel 2.4: make KERNELSRC=/usr/src/linux-2.4 module minstall programs install"
-	@echo "Kernel 2.6: make programs install"
+	@echo "Kernel 2.6: make KERNELSRC=/usr/src/linux-2.6 programs module minstall install"
 	@echo
 	@echo
 

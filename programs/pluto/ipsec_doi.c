@@ -18,6 +18,7 @@
  * Daniel Djamaludin <danield@cyberguard.com>
  * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
  *
+ * RCSID $Id: ipsec_doi.c,v 1.304.2.11 2006/04/16 02:24:19 mcr Exp $
  */
 
 #include <stdio.h>
@@ -2014,9 +2015,8 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	{
 	    /* apparently, r is an improvement on c -- replace */
 
-	    DBG(DBG_CONTROL
-		, DBG_log("switched from \"%s\" to \"%s\"", c->name, r->name));
-	    if (r->kind == CK_TEMPLATE)
+	    openswan_log("switched from \"%s\" to \"%s\"", c->name, r->name);
+	    if (r->kind == CK_TEMPLATE || r->kind == CK_GROUP)
 	    {
 		/* instantiate it, filling in peer's ID */
 		r = rw_instantiate(r, &c->spd.that.host_addr,

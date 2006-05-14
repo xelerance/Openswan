@@ -63,34 +63,7 @@ endif
 include ${KLIPSSRC}/Makefile.fs2_6
 
 
-# XXX and it seems that recursing into subdirs is a PITA for out-of-kernel
-# module builds. At least, it never occurs for me.
-aes-obj-${CONFIG_KLIPS_ENC_AES} += aes/ipsec_alg_aes.o
-aes-obj-${CONFIG_KLIPS_ENC_AES} += aes/aes_xcbc_mac.o
-aes-obj-${CONFIG_KLIPS_ENC_AES} += aes/aes_cbc.o
 
-ifeq ($(strip ${SUBARCH}),)
-SUBARCH:=${ARCH}
-endif
-
-# the assembly version expects frame pointers, which are
-# optional in many kernel builds. If you want speed, you should
-# probably use cryptoapi code instead.
-USEASSEMBLY=${SUBARCH}${CONFIG_FRAME_POINTER}
-ifeq (${USEASSEMBLY},i386y)
-aes-obj-${CONFIG_KLIPS_ENC_AES} += aes/aes-i586.o
-des-obj-$(CONFIG_KLIPS_ENC_3DES) += dx86unix.o
-else
-aes-obj-${CONFIG_KLIPS_ENC_AES} += aes/aes.o
-des-obj-$(CONFIG_KLIPS_ENC_3DES) += des_enc.o
-endif
-
-des-obj-$(CONFIG_KLIPS_ENC_3DES) += cbc_enc.o
-des-obj-$(CONFIG_KLIPS_ENC_3DES) += ipsec_alg_3des.o
-des-obj-$(CONFIG_KLIPS_ENC_3DES) += ecb_enc.o
-des-obj-$(CONFIG_KLIPS_ENC_3DES) += set_key.o
-
-ipsec-y += ${des-obj-y} ${aes-obj-y} ${des-obj-m} ${aes-obj-m}
 
 
 
