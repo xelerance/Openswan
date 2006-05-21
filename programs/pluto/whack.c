@@ -1861,8 +1861,10 @@ main(int argc, char **argv)
 
 			/* case RC_LOG_SERIOUS: */
 			default:
-			    /* pass through */
-			    exit_status = s;
+			    if( msg.whack_async )
+				exit_status=0;
+			    else
+				exit_status = s;
 			    break;
 			}
 		    }
