@@ -348,7 +348,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	struct pubkey_list *p;
 	char peerca_str[IDTOA_BUF];
 	
-	for (p = pubkeys; p != NULL; p = p->next)
+	for (p = pluto_pubkeys; p != NULL; p = p->next)
 	{
 	    struct pubkey *key = p->key;
 	    int pathlen;

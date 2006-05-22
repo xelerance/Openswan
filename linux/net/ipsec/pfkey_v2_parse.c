@@ -61,7 +61,6 @@ extern int debug_pfkey;
 
 # include <openswan.h>
 # include "constants.h" 
-# include "programs/pluto/defs.h"  /* for PRINTF_LIKE */
 
 #endif /* __KERNEL__ */
 
