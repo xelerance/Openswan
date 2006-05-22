@@ -1011,11 +1011,9 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
         }
 	ips->ips_ident_d.data = NULL;
 
-#ifdef CONFIG_KLIPS_ALG
 	if (ips->ips_alg_enc||ips->ips_alg_auth) {
 		ipsec_alg_sa_wipe(ips);
 	}
-#endif
 	
 	BUG_ON(atomic_read(&ips->ips_refcount) != 0);
 
@@ -1039,10 +1037,8 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 #if defined (CONFIG_KLIPS_AUTH_HMAC_MD5) || defined (CONFIG_KLIPS_AUTH_HMAC_SHA1)
 	unsigned char kb[AHMD596_BLKLEN];
 #endif
-#if defined CONFIG_KLIPS_ALG
 	struct ipsec_alg_enc *ixt_e = NULL;
 	struct ipsec_alg_auth *ixt_a = NULL;
-#endif
 
 	if(ipsp == NULL) {
 		KLIPS_PRINT(debug_pfkey,
@@ -1267,7 +1263,6 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 		unsigned int aks;
 #endif
 
-#ifdef CONFIG_KLIPS_ALG
 		ipsec_alg_sa_init(ipsp);
 		ixt_e=ipsp->ips_alg_enc;
 
@@ -1302,7 +1297,6 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 			if ((error=ipsec_alg_auth_key_create(ipsp)) < 0)
 				SENDERR(-error);
 		} else	
-#endif /* CONFIG_KLIPS_ALG */
 		
 		switch(ipsp->ips_authalg) {
 # ifdef CONFIG_KLIPS_AUTH_HMAC_MD5

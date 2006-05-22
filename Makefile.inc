@@ -338,11 +338,11 @@ endif
 # should we include all manner of known to be broken/weak?
 # use this only if you are building some kind of a testing
 # device. Normal use does not need any of this.
-USE_WEAKSTUFF?=true
+USE_WEAKSTUFF?=false
 
 # include algorithms that don't even encrypt (also must set WEAKSTUFF)
 # unless you are doing negative testing, turning this on is foolish.
-USE_NOCRYPTO?=true
+USE_NOCRYPTO?=false
 
 # should we include additional (strong) algorithms?  It adds a measureable
 # amount of code space to pluto, and many of the algorithms have not had
@@ -432,10 +432,18 @@ ISCHOSTARCH?=unix
 LIBDESSRCDIR=${OPENSWANSRCDIR}/linux/crypto/ciphers/des
 LIBDESLITE:=${OBJDIRTOP}/lib/libcrypto/libdes/libdes.a
 LIBAES=${OBJDIRTOP}/lib/libcrypto/libaes/libaes.a
+LIBMD5=${OBJDIRTOP}/lib/libcrypto/libmd5/libmd5.a
+LIBMD2=${OBJDIRTOP}/lib/libcrypto/libmd2/libmd2.a
+LIBSHA1=${OBJDIRTOP}/lib/libcrypto/libsha1/libsha1.a
 LIBBLOWFISH=${OBJDIRTOP}/lib/libcrypto/libblowfish/libblowfish.a
 LIBTWOFISH=${OBJDIRTOP}/lib/libcrypto/libtwofish/libtwofish.a
 LIBSERPENT=${OBJDIRTOP}/lib/libcrypto/libserpent/libserpent.a
 LIBSHA2=${OBJDIRTOP}/lib/libcrypto/libsha2/libsha2.a
+CRYPTOLIBS=${LIBAES} ${LIBSHA1} ${LIBMD5} ${LIBMD2} ${LIBDESLITE} 
+
+ifeq ($(USE_EXTRACRYPTO),true)
+CRYPTOLIBS+=${LIBSHA2} ${LIBSERPENT} ${LIBTWOFISH} ${LIBBLOWFISH}
+endif
 
 LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
 POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a

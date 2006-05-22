@@ -14,7 +14,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.fs2_6,v 1.8 2005/05/11 03:15:42 mcr Exp $
+# RCSID $Id: Makefile.fs2_6,v 1.8.2.1 2006/04/20 16:33:06 mcr Exp $
 #
 # Note! Dependencies are done automagically by 'make dep', which also
 # removes any old dependencies. DON'T put your own dependencies here
@@ -69,14 +69,45 @@ ipsec-$(CONFIG_KLIPS_AUTH_HMAC_SHA1) += ipsec_sha1.o
 # AH, if you really think you need it.
 ipsec-$(CONFIG_KLIPS_AH)   += ipsec_ah.o
 
-ipsec-$(CONFIG_KLIPS_ALG)  += ipsec_alg.o
+ipsec-y += ipsec_alg.o 
 
-# do not include subdir if building as a module outside of the kernel,
-# as it confuses stuff. The outside kernel build process takes care
-# of bringing this code in explicitely.
-obj-$(CONFIG_KLIPS_ENC_3DES) += des/
-obj-$(CONFIG_KLIPS_ENC_AES)  += aes/
+# include code from DES subdir
+crypto-$(CONFIG_KLIPS_ENC_3DES) += des/ipsec_alg_3des.o
+crypto-$(CONFIG_KLIPS_ENC_3DES) += des/cbc_enc.o
+crypto-$(CONFIG_KLIPS_ENC_3DES) += des/ecb_enc.o
+crypto-$(CONFIG_KLIPS_ENC_3DES) += des/set_key.o
 
+ifeq ($(strip ${SUBARCH}),)
+SUBARCH:=${ARCH}
+endif
+
+# the assembly version expects frame pointers, which are
+# optional in many kernel builds. If you want speed, you should
+# probably use cryptoapi code instead.
+USEASSEMBLY=${SUBARCH}${CONFIG_FRAME_POINTER}
+ifeq (${USEASSEMBLY},i386y)
+crypto-$(CONFIG_KLIPS_ENC_3DES) += des/dx86unix.o
+else
+crypto-$(CONFIG_KLIPS_ENC_3DES) += des/des_enc.o
+endif
+
+# include code from AES subdir
+crypto-$(CONFIG_KLIPS_ENC_AES) += aes/ipsec_alg_aes.o
+crypto-$(CONFIG_KLIPS_ENC_AES) += aes/aes_xcbc_mac.o
+crypto-$(CONFIG_KLIPS_ENC_AES) += aes/aes_cbc.o
+
+ifeq ($(strip ${SUBARCH}),)
+SUBARCH:=${ARCH}
+endif
+
+USEASSEMBLY=${SUBARCH}${CONFIG_FRAME_POINTER}
+ifeq (${USEASSEMBLY},i386y)
+crypto-$(CONFIG_KLIPS_ENC_AES) += aes/aes-i586.o
+else
+crypto-$(CONFIG_KLIPS_ENC_AES) += aes/aes.o
+endif
+
+ipsec-y += ${crypto-y}
 
 ipsec-$(CONFIG_KLIPS_ENC_CRYPTOAPI) += ipsec_alg_cryptoapi.o
 
@@ -112,6 +143,10 @@ EXTRA_CFLAGS += -DIPCOMP_PREFIX
 
 #
 # $Log: Makefile.fs2_6,v $
+# Revision 1.8.2.1  2006/04/20 16:33:06  mcr
+# remove all of CONFIG_KLIPS_ALG --- one can no longer build without it.
+# Fix in-kernel module compilation. Sub-makefiles do not work.
+#
 # Revision 1.8  2005/05/11 03:15:42  mcr
 # 	adjusted makefiles to sanely build modules properly.
 #

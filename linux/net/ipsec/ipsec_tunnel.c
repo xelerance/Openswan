@@ -61,6 +61,7 @@ char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.234 2005/11/11 04
 #endif /* NETDEV_23 */
 
 #include <linux/if_arp.h>
+#include <net/arp.h>
 
 #include "openswan/ipsec_kversion.h"
 #include "openswan/radij.h"

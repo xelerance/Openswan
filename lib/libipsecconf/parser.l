@@ -58,7 +58,9 @@ int  parser_cur_lineno(void)
 
 void parser_y_error(char *b, int size, const char *s)
 {
+#if defined(SOMETHING_FOR_SOME_ARCH)
 	extern char *yytext;
+#endif
 
 	snprintf(b, size, "%s:%d: %s [%s]",
 		ic_private.filename[ic_private.stack_ptr],

@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Kconfig,v 1.7 2005/10/27 05:20:23 mcr Exp $
+# RCSID $Id: Kconfig,v 1.6.2.1 2006/04/20 16:33:06 mcr Exp $
 
 config KLIPS
 	tristate "Openswan IPsec (KLIPS26)"
@@ -60,14 +60,6 @@ config KLIPS_AUTH_HMAC_SHA1
 	   integrity. SHA1 is a little slower than MD5, but is said to be 
 	   a bit more secure. There is little reason not to include it.
 
-config KLIPS_ALG
-	bool 'Enable algorithm plug-ins for encryption'	
-	default y
-	help
-	   This option provides support for loading new algorithms into the 
-	   kernel for use to encrypt. Normally these are modules, but algorithms
-	   may also be statically linked in.
-
 config KLIPS_ENC_CRYPTOAPI
 	bool 'CryptoAPI algorithm interface'
 	default n
@@ -95,7 +87,6 @@ config KLIPS_ENC_3DES
 config KLIPS_ENC_AES
 	bool 'AES encryption algorithm'
 	default y
-	depends on KLIPS_ALG
 	help
            The AES algorithm is used by ESP to provide for packet privacy.
 	   AES the NIST replacement for DES. AES is being widely analyzed,
@@ -135,6 +126,10 @@ endmenu
 # Revision 1.7  2005/10/27 05:20:23  mcr
 # 	adjustment of ipsec_alg so that it will build statically in kernels
 # 	that do not have LKM defined at all.
+#
+# Revision 1.6.2.1  2006/04/20 16:33:06  mcr
+# remove all of CONFIG_KLIPS_ALG --- one can no longer build without it.
+# Fix in-kernel module compilation. Sub-makefiles do not work.
 #
 # Revision 1.6  2005/05/18 20:55:27  mcr
 # 	default cryptoapi to n.

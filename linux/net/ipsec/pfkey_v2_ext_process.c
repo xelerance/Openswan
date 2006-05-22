@@ -13,14 +13,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_ext_process.c,v 1.20 2005/04/29 05:10:22 mcr Exp $
+ * RCSID $Id: pfkey_v2_ext_process.c,v 1.20.2.1 2006/04/20 16:33:07 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_netlink.c.
  */
 
-char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.20 2005/04/29 05:10:22 mcr Exp $";
+char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.20.2.1 2006/04/20 16:33:07 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -146,9 +146,7 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	case IPPROTO_ESP:
 		ipsp->ips_authalg = pfkey_sa->sadb_sa_auth;
 		ipsp->ips_encalg = pfkey_sa->sadb_sa_encrypt;
-#ifdef CONFIG_KLIPS_ALG
 		ipsec_alg_sa_init(ipsp);
-#endif /* CONFIG_KLIPS_ALG */
 		break;
 	case IPPROTO_IPIP:
 		ipsp->ips_authalg = AH_NONE;

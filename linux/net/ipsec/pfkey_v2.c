@@ -80,8 +80,6 @@
 #define SOCKOPS_WRAPPED(name) name
 #endif /* SOCKOPS_WRAPPED */
 
-extern struct proto_ops pfkey_ops;
-
 static rwlock_t pfkey_sock_lock = RW_LOCK_UNLOCKED;
 #ifdef NET_26
 HLIST_HEAD(pfkey_sock_list);
@@ -97,6 +95,68 @@ struct socket_list *pfkey_open_sockets = NULL;
 struct socket_list *pfkey_registered_sockets[K_SADB_SATYPE_MAX+1];
 
 int pfkey_msg_interp(struct sock *, struct sadb_msg *);
+
+DEBUG_NO_STATIC int pfkey_create(struct socket *sock, int protocol);
+DEBUG_NO_STATIC int pfkey_shutdown(struct socket *sock, int mode);
+DEBUG_NO_STATIC int pfkey_release(struct socket *sock);
+
+#ifdef NET_26
+DEBUG_NO_STATIC int pfkey_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, size_t len);
+DEBUG_NO_STATIC int pfkey_recvmsg(struct kiocb *kiocb, struct socket *sock, struct msghdr *msg
+				  , size_t size, int flags);
+#else
+DEBUG_NO_STATIC int pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cookie *scm);
+DEBUG_NO_STATIC int pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int size, int flags, struct scm_cookie *scm);
+#endif
+
+struct net_proto_family pfkey_family_ops = {
+	PF_KEY,
+	pfkey_create
+};
+
+struct proto_ops SOCKOPS_WRAPPED(pfkey_ops) = {
+#ifdef NETDEV_23
+	family:		PF_KEY,
+	release:	pfkey_release,
+	bind:		sock_no_bind,
+	connect:	sock_no_connect,
+	socketpair:	sock_no_socketpair,
+	accept:		sock_no_accept,
+	getname:	sock_no_getname,
+	poll:		datagram_poll,
+	ioctl:		sock_no_ioctl,
+	listen:		sock_no_listen,
+	shutdown:	pfkey_shutdown,
+	setsockopt:	sock_no_setsockopt,
+	getsockopt:	sock_no_getsockopt,
+	sendmsg:	pfkey_sendmsg,
+	recvmsg:	pfkey_recvmsg,
+	mmap:		sock_no_mmap,
+#else /* NETDEV_23 */
+	PF_KEY,
+	sock_no_dup,
+	pfkey_release,
+	sock_no_bind,
+	sock_no_connect,
+	sock_no_socketpair,
+	sock_no_accept,
+	sock_no_getname,
+	datagram_poll,
+	sock_no_ioctl,
+	sock_no_listen,
+	pfkey_shutdown,
+	sock_no_setsockopt,
+	sock_no_getsockopt,
+	sock_no_fcntl,
+	pfkey_sendmsg,
+	pfkey_recvmsg
+#endif /* NETDEV_23 */
+};
+
+#ifdef NETDEV_23
+#include <linux/smp_lock.h>
+SOCKOPS_WRAP(pfkey, PF_KEY);
+#endif  /* NETDEV_23 */
 
 #ifdef NET_26
 static void pfkey_sock_list_grab(void)
@@ -320,45 +380,6 @@ pfkey_list_insert_supported(struct ipsec_alg_supported *supported
 	return 0;
 }
   
-#ifndef NET_21
-DEBUG_NO_STATIC void
-pfkey_state_change(struct sock *sk)
-{
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_state_change: .\n");
-	if(!sk->dead) {
-		wake_up_interruptible(sk->sleep);
-	}
-}
-#endif /* !NET_21 */
-
-#ifndef NET_21
-DEBUG_NO_STATIC void
-pfkey_data_ready(struct sock *sk, int len)
-{
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_data_ready: "
-		    "sk=0p%p len=%d\n",
-		    sk,
-		    len);
-	if(!sk->dead) {
-		wake_up_interruptible(sk->sleep);
-		sock_wake_async(sk->socket, 1);
-	}
-}
-
-DEBUG_NO_STATIC void
-pfkey_write_space(struct sock *sk)
-{
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_write_space: .\n");
-	if(!sk->dead) {
-		wake_up_interruptible(sk->sleep);
-		sock_wake_async(sk->socket, 2);
-	}
-}
-#endif /* !NET_21 */
-
 #ifdef NET_26
 DEBUG_NO_STATIC void
 pfkey_insert_socket(struct sock *sk)
@@ -451,7 +472,6 @@ pfkey_destroy_socket(struct sock *sk)
 		    sk->sk_receive_queue.prev);
 
 	while(sk && ((skb=skb_dequeue(&(sk->sk_receive_queue)))!=NULL)) {
-#ifdef NET_21
 #ifdef CONFIG_KLIPS_DEBUG
 		if(debug_pfkey && sysctl_ipsec_debug_verbose) {
 			KLIPS_PRINT(debug_pfkey,
@@ -514,7 +534,6 @@ pfkey_destroy_socket(struct sock *sk)
 			printk("\n");
 		}
 #endif /* CONFIG_KLIPS_DEBUG */
-#endif /* NET_21 */
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_destroy_socket: "
 			    "skb=0p%p freed.\n",
@@ -554,11 +573,7 @@ pfkey_upmsg(struct socket *sock, struct sadb_msg *pfkey_msg)
 		return -EINVAL;
 	}
 
-#ifdef NET_21
 	sk = sock->sk;
-#else /* NET_21 */
-	sk = sock->data;
-#endif /* NET_21 */
 
 	if(sk == NULL) {
 		KLIPS_PRINT(debug_pfkey,
@@ -594,10 +609,6 @@ pfkey_upmsg(struct socket *sock, struct sadb_msg *pfkey_msg)
 	}
 	skb->h.raw = skb_put(skb, pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN);
 	memcpy(skb->h.raw, pfkey_msg, pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN);
-
-#ifndef NET_21
-	skb->free = 1;
-#endif /* !NET_21 */
 
 	if((error = sock_queue_rcv_skb(sk, skb)) < 0) {
 		skb->sk=NULL;
@@ -662,13 +673,10 @@ pfkey_create(struct socket *sock, int protocol)
 		return -EACCES;
 	}
 
-#ifdef NET_21
 	sock->state = SS_UNCONNECTED;
-#endif /* NET_21 */
 
 	KLIPS_INC_USE;
 
-#ifdef NET_21
 #ifdef NET_26
 #ifdef NET_26_12_SKALLOC
 	sk=(struct sock *)sk_alloc(PF_KEY, GFP_KERNEL, &key_proto, 1);
@@ -679,10 +687,6 @@ pfkey_create(struct socket *sock, int protocol)
 	/* 2.4 interface */
 	sk=(struct sock *)sk_alloc(PF_KEY, GFP_KERNEL, 1);
 #endif
-#else /* NET_21 */
-	/* 2.2 interface */
-	sk=(struct sock *)sk_alloc(GFP_KERNEL);
-#endif /* NET_21 */
 
 	if(sk == NULL)
 	{
@@ -693,11 +697,6 @@ pfkey_create(struct socket *sock, int protocol)
 		return -ENOMEM;
 	}
 
-#ifndef NET_21
-	memset(sk, 0, sizeof(*sk));
-#endif /* !NET_21 */
-
-#ifdef NET_21
 	sock_init_data(sock, sk);
 
 	sk->sk_destruct = NULL;
@@ -713,29 +712,6 @@ pfkey_create(struct socket *sock, int protocol)
 		    "sock->fasync_list=0p%p sk->sleep=0p%p.\n",
 		    sock->fasync_list,
 		    sk->sk_sleep);
-#else /* NET_21 */
-	sk->type=sock->type;
-	init_timer(&sk->timer);
-	skb_queue_head_init(&sk->sk_write_queue);
-	skb_queue_head_init(&sk->sk_receive_queue);
-	skb_queue_head_init(&sk->back_log);
-	sk->sk_rcvbuf=SK_RMEM_MAX;
-	sk->sk_sndbuf=SK_WMEM_MAX;
-	sk->sk_allocation=GFP_KERNEL;
-	sk->sk_state=TCP_CLOSE;
-	sk->sk_priority=SOPRI_NORMAL;
-	sk->sk_state_change=pfkey_state_change;
-	sk->sk_data_ready=pfkey_data_ready;
-	sk->sk_write_space=pfkey_write_space;
-	sk->sk_error_report=pfkey_state_change;
-#ifndef NET_26
-	sk->mtu=4096;
-	sk->socket=sock;
-#endif
-
-	sock->data=(void *)sk;
-	sk->sk_sleep=sock->wait;
-#endif /* NET_21 */
 
 	pfkey_insert_socket(sk);
 	pfkey_list_insert_socket(sock, &pfkey_open_sockets);
@@ -745,47 +721,6 @@ pfkey_create(struct socket *sock, int protocol)
 		    "Socket sock=0p%p sk=0p%p initialised.\n", sock, sk);
 	return 0;
 }
-
-#ifndef NET_21
-DEBUG_NO_STATIC int
-pfkey_dup(struct socket *newsock, struct socket *oldsock)
-{
-	struct sock *sk;
-
-	if(newsock==NULL) {
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_dup: "
-			    "No new socket attached.\n");
-		return -EINVAL;
-	}
-		
-	if(oldsock==NULL) {
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_dup: "
-			    "No old socket attached.\n");
-		return -EINVAL;
-	}
-		
-#ifdef NET_21
-	sk=oldsock->sk;
-#else /* NET_21 */
-	sk=oldsock->data;
-#endif /* NET_21 */
-	
-	/* May not have data attached */
-	if(sk==NULL) {
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_dup: "
-			    "No sock attached to old socket.\n");
-		return -EINVAL;
-	}
-		
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_dup: .\n");
-
-	return pfkey_create(newsock, sk->protocol);
-}
-#endif /* !NET_21 */
 
 DEBUG_NO_STATIC int
 #ifdef NETDEV_23
@@ -804,11 +739,7 @@ pfkey_release(struct socket *sock, struct socket *peersock)
 		return 0; /* -EINVAL; */
 	}
 		
-#ifdef NET_21
 	sk=sock->sk;
-#else /* NET_21 */
-	sk=sock->data;
-#endif /* NET_21 */
 	
 	/* May not have data attached */
 	if(sk==NULL) {
@@ -822,18 +753,12 @@ pfkey_release(struct socket *sock, struct socket *peersock)
 		    "klips_debug:pfkey_release: "
 		    "sock=0p%p sk=0p%p\n", sock, sk);
 
-#ifdef NET_21
 	if(sock_flag(sk, SOCK_DEAD))
-#endif /* NET_21 */
 		if(sk->sk_state_change) {
 			sk->sk_state_change(sk);
 		}
 
-#ifdef NET_21
 	sock->sk = NULL;
-#else /* NET_21 */
-	sock->data = NULL;
-#endif /* NET_21 */
 
 	/* Try to flush out this socket. Throw out buffers at least */
 	pfkey_destroy_socket(sk);
@@ -850,94 +775,6 @@ pfkey_release(struct socket *sock, struct socket *peersock)
 	return 0;
 }
 
-#ifndef NET_21
-DEBUG_NO_STATIC int
-pfkey_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
-{
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_bind: "
-		    "operation not supported.\n");
-	return -EINVAL;
-}
-
-DEBUG_NO_STATIC int
-pfkey_connect(struct socket *sock, struct sockaddr *uaddr, int addr_len, int flags)
-{
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_connect: "
-		    "operation not supported.\n");
-	return -EINVAL;
-}
-
-DEBUG_NO_STATIC int
-pfkey_socketpair(struct socket *a, struct socket *b)
-{
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_socketpair: "
-		    "operation not supported.\n");
-	return -EINVAL;
-}
-
-DEBUG_NO_STATIC int
-pfkey_accept(struct socket *sock, struct socket *newsock, int flags)
-{
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_aaccept: "
-		    "operation not supported.\n");
-	return -EINVAL;
-}
-
-DEBUG_NO_STATIC int
-pfkey_getname(struct socket *sock, struct sockaddr *uaddr, int *uaddr_len,
-		int peer)
-{
-	struct sockaddr *ska = (struct sockaddr*)uaddr;
-	
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_getname: .\n");
-	ska->sa_family = PF_KEY;
-	*uaddr_len = sizeof(*ska);
-	return 0;
-}
-
-DEBUG_NO_STATIC int
-pfkey_select(struct socket *sock, int sel_type, select_table *wait)
-{
-	
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_select: "
-		    ".sock=0p%p sk=0p%p sel_type=%d\n",
-		    sock,
-		    sock->data,
-		    sel_type);
-	if(sock == NULL) {
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_select: "
-			    "Null socket passed in.\n");
-		return -EINVAL;
-	}
-	return datagram_select(sock->data, sel_type, wait);
-}
-
-DEBUG_NO_STATIC int
-pfkey_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
-{
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_ioctl: "
-		    "not supported.\n");
-	return -EINVAL;
-}
-
-DEBUG_NO_STATIC int
-pfkey_listen(struct socket *sock, int backlog)
-{
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_listen: "
-		    "not supported.\n");
-	return -EINVAL;
-}
-#endif /* !NET_21 */
-
 DEBUG_NO_STATIC int
 pfkey_shutdown(struct socket *sock, int mode)
 {
@@ -950,11 +787,7 @@ pfkey_shutdown(struct socket *sock, int mode)
 		return -EINVAL;
 	}
 
-#ifdef NET_21
 	sk=sock->sk;
-#else /* NET_21 */
-	sk=sock->data;
-#endif /* NET_21 */
 	
 	if(sk == NULL) {
 		KLIPS_PRINT(debug_pfkey,
@@ -980,101 +813,16 @@ pfkey_shutdown(struct socket *sock, int mode)
 	return 0;
 }
 
-#ifndef NET_21
-DEBUG_NO_STATIC int
-pfkey_setsockopt(struct socket *sock, int level, int optname, char *optval, int optlen)
-{
-#ifndef NET_21
-	struct sock *sk;
-
-	if(sock == NULL) {
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_setsockopt: "
-			    "Null socket passed in.\n");
-		return -EINVAL;
-	}
-	
-	sk=sock->data;
-	
-	if(sk == NULL) {
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_setsockopt: "
-			    "Null sock passed in.\n");
-		return -EINVAL;
-	}
-#endif /* !NET_21 */
-	
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_setsockopt: .\n");
-	if(level!=SOL_SOCKET) {
-		return -EOPNOTSUPP;
-	}
-#ifdef NET_21
-	return sock_setsockopt(sock, level, optname, optval, optlen);
-#else /* NET_21 */
-	return sock_setsockopt(sk, level, optname, optval, optlen);
-#endif /* NET_21 */
-}
-
-DEBUG_NO_STATIC int
-pfkey_getsockopt(struct socket *sock, int level, int optname, char *optval, int *optlen)
-{
-#ifndef NET_21
-	struct sock *sk;
-
-	if(sock == NULL) {
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_setsockopt: "
-			    "Null socket passed in.\n");
-		return -EINVAL;
-	}
-	
-	sk=sock->data;
-	
-	if(sk == NULL) {
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_setsockopt: "
-			    "Null sock passed in.\n");
-		return -EINVAL;
-	}
-#endif /* !NET_21 */
-
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_getsockopt: .\n");
-	if(level!=SOL_SOCKET) {
-		return -EOPNOTSUPP;
-	}
-#ifdef NET_21
-	return sock_getsockopt(sock, level, optname, optval, optlen);
-#else /* NET_21 */
-	return sock_getsockopt(sk, level, optname, optval, optlen);
-#endif /* NET_21 */
-}
-
-DEBUG_NO_STATIC int
-pfkey_fcntl(struct socket *sock, unsigned int cmd, unsigned long arg)
-{
-	KLIPS_PRINT(debug_pfkey,
-		    "klips_debug:pfkey_fcntl: "
-		    "not supported.\n");
-	return -EINVAL;
-}
-#endif /* !NET_21 */
-
 /*
  *	Send PF_KEY data down.
  */
 		
 DEBUG_NO_STATIC int
-#ifdef NET_21
 #ifdef NET_26
 pfkey_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, size_t len)
 #else
 pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cookie *scm)
 #endif
-#else /* NET_21 */
-pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, int nonblock, int flags)
-#endif /* NET_21 */
 {
 	struct sock *sk;
 	int error = 0;
@@ -1087,11 +835,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, int nonblock, in
 		SENDERR(EINVAL);
 	}
 	
-#ifdef NET_21
 	sk = sock->sk;
-#else /* NET_21 */
-	sk = sock->data;
-#endif /* NET_21 */
 
 	if(sk == NULL) {
 		KLIPS_PRINT(debug_pfkey,
@@ -1125,11 +869,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, int nonblock, in
 		SENDERR(EACCES);
 	}
 
-#ifdef NET_21
 	if(msg->msg_control)
-#else /* NET_21 */
-	if(flags || msg->msg_control)
-#endif /* NET_21 */
 	{
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
@@ -1264,7 +1004,6 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, int nonblock, in
  */
 		
 DEBUG_NO_STATIC int
-#ifdef NET_21
 #ifdef NET_26
 pfkey_recvmsg(struct kiocb *kiocb
 	      , struct socket *sock
@@ -1277,14 +1016,9 @@ pfkey_recvmsg(struct socket *sock
 	      , int size, int flags
 	      , struct scm_cookie *scm)
 #endif
-#else /* NET_21 */
-pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int size, int noblock, int flags, int *addr_len)
-#endif /* NET_21 */
 {
 	struct sock *sk;
-#ifdef NET_21
 	int noblock = flags & MSG_DONTWAIT;
-#endif /* NET_21 */
 	struct sk_buff *skb;
 	int error;
 
@@ -1295,11 +1029,7 @@ pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int size, int noblock, in
 		return -EINVAL;
 	}
 
-#ifdef NET_21
 	sk = sock->sk;
-#else /* NET_21 */
-	sk = sock->data;
-#endif /* NET_21 */
 
 	if(sk == NULL) {
 		KLIPS_PRINT(debug_pfkey,
@@ -1327,13 +1057,7 @@ pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int size, int noblock, in
 		return -EOPNOTSUPP;
 	}
 		
-#ifdef NET_21
 	msg->msg_namelen = 0; /* sizeof(*ska); */
-#else /* NET_21 */
-	if(addr_len) {
-		*addr_len = 0; /* sizeof(*ska); */
-	}
-#endif /* NET_21 */
 		
 	if(sk->sk_err) {
 		KLIPS_PRINT(debug_pfkey,
@@ -1349,11 +1073,9 @@ pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int size, int noblock, in
 	if(size > skb->len) {
 		size = skb->len;
 	}
-#ifdef NET_21
 	else if(size <skb->len) {
 		msg->msg_flags |= MSG_TRUNC;
 	}
-#endif /* NET_21 */
 
 	skb_copy_datagram_iovec(skb, 0, msg->msg_iov, size);
 #ifdef HAVE_TSTAMP
@@ -1367,79 +1089,6 @@ pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int size, int noblock, in
 	return size;
 }
 
-#ifdef NET_21
-struct net_proto_family pfkey_family_ops = {
-	PF_KEY,
-	pfkey_create
-};
-
-struct proto_ops SOCKOPS_WRAPPED(pfkey_ops) = {
-#ifdef NETDEV_23
-	family:		PF_KEY,
-	release:	pfkey_release,
-	bind:		sock_no_bind,
-	connect:	sock_no_connect,
-	socketpair:	sock_no_socketpair,
-	accept:		sock_no_accept,
-	getname:	sock_no_getname,
-	poll:		datagram_poll,
-	ioctl:		sock_no_ioctl,
-	listen:		sock_no_listen,
-	shutdown:	pfkey_shutdown,
-	setsockopt:	sock_no_setsockopt,
-	getsockopt:	sock_no_getsockopt,
-	sendmsg:	pfkey_sendmsg,
-	recvmsg:	pfkey_recvmsg,
-	mmap:		sock_no_mmap,
-#else /* NETDEV_23 */
-	PF_KEY,
-	sock_no_dup,
-	pfkey_release,
-	sock_no_bind,
-	sock_no_connect,
-	sock_no_socketpair,
-	sock_no_accept,
-	sock_no_getname,
-	datagram_poll,
-	sock_no_ioctl,
-	sock_no_listen,
-	pfkey_shutdown,
-	sock_no_setsockopt,
-	sock_no_getsockopt,
-	sock_no_fcntl,
-	pfkey_sendmsg,
-	pfkey_recvmsg
-#endif /* NETDEV_23 */
-};
-
-#ifdef NETDEV_23
-#include <linux/smp_lock.h>
-SOCKOPS_WRAP(pfkey, PF_KEY);
-#endif  /* NETDEV_23 */
-
-#else /* NET_21 */
-struct proto_ops pfkey_proto_ops = {
-	PF_KEY,
-	pfkey_create,
-	pfkey_dup,
-	pfkey_release,
-	pfkey_bind,
-	pfkey_connect,
-	pfkey_socketpair,
-	pfkey_accept,
-	pfkey_getname,
-	pfkey_select,
-	pfkey_ioctl,
-	pfkey_listen,
-	pfkey_shutdown,
-	pfkey_setsockopt,
-	pfkey_getsockopt,
-	pfkey_fcntl,
-	pfkey_sendmsg,
-	pfkey_recvmsg
-};
-#endif /* NET_21 */
-   
 #ifdef CONFIG_PROC_FS
 #ifndef PROC_FS_2325
 DEBUG_NO_STATIC
@@ -1616,23 +1265,12 @@ pfkey_registered_get_info(char *buffer, char **start, off_t offset, int length
 	for(satype = K_SADB_SATYPE_UNSPEC; satype <= K_SADB_SATYPE_MAX; satype++) {
 		pfkey_sockets = pfkey_registered_sockets[satype];
 		while(pfkey_sockets) {
-#ifdef NET_21
 			len += ipsec_snprintf(buffer+len, length-len,
 				     "    %2d %8p %5d %8p\n",
 				     satype,
 				     pfkey_sockets->socketp,
 				     key_pid(pfkey_sockets->socketp->sk),
 				     pfkey_sockets->socketp->sk);
-#else /* NET_21 */
-			len += ipsec_snprintf(buffer+len,
-				     "    %2d %8p   N/A %8p\n",
-				     satype,
-				     pfkey_sockets->socketp,
-#if 0
-				     key_pid((pfkey_sockets->socketp)->data),
-#endif
-				     (pfkey_sockets->socketp)->data);
-#endif /* NET_21 */
 			
 			if (len >= max_content) {
 				/* we've done all that can fit -- stop loop (could stop two) */
@@ -1808,11 +1446,7 @@ pfkey_init(void)
 #endif /* CONFIG_KLIPS_IPCOMP */
 	error |= supported_add_all(K_SADB_X_SATYPE_IPIP, supported_init_ipip, sizeof(supported_init_ipip));
 
-#ifdef NET_21
         error |= sock_register(&pfkey_family_ops);
-#else /* NET_21 */
-        error |= sock_register(pfkey_proto_ops.family, &pfkey_proto_ops);
-#endif /* NET_21 */
 
 #ifdef CONFIG_PROC_FS
 #  ifndef PROC_FS_2325
@@ -1842,11 +1476,7 @@ pfkey_cleanup(void)
 	
         printk(KERN_INFO "klips_info:pfkey_cleanup: "
 	       "shutting down PF_KEY domain sockets.\n");
-#ifdef NET_21
         error |= sock_unregister(PF_KEY);
-#else /* NET_21 */
-        error |= sock_unregister(pfkey_proto_ops.family);
-#endif /* NET_21 */
 
 	error |= supported_remove_all(K_SADB_SATYPE_AH);
 	error |= supported_remove_all(K_SADB_SATYPE_ESP);

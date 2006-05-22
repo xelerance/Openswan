@@ -25,6 +25,7 @@
 #include "ipsecconf/confread.h"
 #include "ipsecconf/interfaces.h"
 #include "ipsecconf/starterlog.h"
+#include "ipsecconf/oeconns.h"
 
 static char _tmp_err[512];
 
@@ -57,13 +58,16 @@ static void default_values (struct starter_config *cfg)
 	cfg->setup.options[KBF_UNIQUEIDS]= FALSE;
 	cfg->setup.options[KBF_TYPE] = KS_TUNNEL;
 
-	cfg->conn_default.policy = POLICY_ENCRYPT | POLICY_TUNNEL | POLICY_RSASIG;
+	cfg->conn_default.policy = POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
 
 	cfg->conn_default.options[KBF_IKELIFETIME] = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
 	cfg->conn_default.options[KBF_SALIFETIME]  = SA_LIFE_DURATION_DEFAULT;
 	cfg->conn_default.options[KBF_REKEYMARGIN] = SA_REPLACEMENT_MARGIN_DEFAULT;
 	cfg->conn_default.options[KBF_REKEYFUZZ]   = SA_REPLACEMENT_FUZZ_DEFAULT;
 	cfg->conn_default.options[KBF_KEYINGTRIES] = SA_REPLACEMENT_RETRIES_DEFAULT;
+
+	/* now here is a sticker.. we want it on. But pluto has to be smarter first */
+	cfg->conn_default.options[KBF_OPPOENCRYPT] = FALSE;
 
 	cfg->conn_default.left.addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.left.addr);
@@ -112,11 +116,18 @@ void free_list(char **list)
  */
 char **new_list(char *value)
 {
-	char *val, *b, *e, *end, **ret;
+	char *val, *b, *e, *end, **nlist;
 	int count;
-	val = value ? xstrdup(value) : NULL;
-	if (!val) return NULL;
+
+	if(value == NULL) return NULL;
+
+	/* avoid damaging original string */
+	val = xstrdup(value);
+	if(val == NULL) return NULL;
+
 	end = val + strlen(val);
+
+	/* count number of items in string */
 	for (b=val, count=0; b<end; ) {
 		for (e=b; ((*e!=' ') && (*e!='\0')); e++);
 		*e = '\0';
@@ -127,21 +138,22 @@ char **new_list(char *value)
 		free(val);
 		return NULL;
 	}
-	ret = (char **)malloc((count+1) * sizeof(char *));
-	if (!ret) {
+	
+	nlist = (char **)malloc((count+1) * sizeof(char *));
+	if (!nlist) {
 		free(val);
 		return NULL;
 	}
 	for (b=val, count=0; b<end; ) {
 		for (e=b; (*e!='\0'); e++);
 		if (e!=b) {
-			ret[count++] = xstrdup(b);
+			nlist[count++] = xstrdup(b);
 		}
 		b=e+1;
 	}
-	ret[count] = NULL;
+	nlist[count] = NULL;
 	free(val);
-	return ret;
+	return nlist;
 }
 
 /**
@@ -154,7 +166,7 @@ char **new_list(char *value)
  */
 static int load_setup (struct starter_config *cfg
 		       , struct config_parsed *cfgp
-		       , char **perr)
+		       , err_t *perr)
 {
 	unsigned int err = 0;
 	struct kw_list *kw;
@@ -246,7 +258,7 @@ static int load_setup (struct starter_config *cfg
  */
 static int validate_end(struct starter_conn *conn_st
 			, struct starter_end *end
-			, bool left, char **perr)
+			, bool left, err_t *perr)
 {
     err_t er = NULL;
     int err=0;
@@ -321,6 +333,10 @@ static int validate_end(struct starter_conn *conn_st
 	if (er) ERR_FOUND("bad subnet %s=%s [%s]", (left ? "leftsubnet" : "rightsubnet"), value, er);
     }
 
+    /* set nexthop address to something consistent, by default */
+    anyaddr(AF_INET, &end->nexthop);
+    anyaddr(addrtypeof(&end->addr), &end->nexthop);
+
     /* validate the KSCF_NEXTHOP */
     if(end->strings[KSCF_NEXTHOP] != NULL)
     {
@@ -370,9 +386,10 @@ static int validate_end(struct starter_conn *conn_st
  * @param permitreplace boolean (can we replace this conn?)
  * @return bool 0 if successfull
  */
-static bool translate_conn (struct starter_conn *conn
-			    , struct section_list *sl
-			    , bool permitreplace)
+bool translate_conn (struct starter_conn *conn
+		     , struct section_list *sl
+		     , bool permitreplace
+		     , err_t *error)
 {
     unsigned int err, field;
     ksf    *the_strings;
@@ -396,9 +413,12 @@ static bool translate_conn (struct starter_conn *conn
 	if((kw->keyword.keydef->validity & kv_conn) == 0)
 	{
 	    /* this isn't valid in a conn! */
-	    starter_log(LOG_LEVEL_INFO,
-			"keyword '%s' is not valid in a conn (%s) (#%d)\n",
-			kw->keyword.keydef->keyname, sl->name, i);
+	    *error = (const char *)_tmp_err;
+
+	    snprintf(_tmp_err, sizeof(_tmp_err),
+		     "keyword '%s' is not valid in a conn (%s) (#%d)\n",
+		     kw->keyword.keydef->keyname, sl->name, i);
+	    starter_log(LOG_LEVEL_INFO, _tmp_err);
 	    continue;
 	}
 	
@@ -436,11 +456,15 @@ static bool translate_conn (struct starter_conn *conn
 	    {
 		if(!permitreplace)
 		{
-		    starter_log(LOG_LEVEL_INFO
-				, "duplicate key '%s' in conn %s while processing def %s"
-				, kw->keyword.keydef->keyname
-				, conn->name
-				, sl->name);
+		    *error = _tmp_err;
+
+		    snprintf(_tmp_err, sizeof(_tmp_err)
+			     , "duplicate key '%s' in conn %s while processing def %s"
+			     , kw->keyword.keydef->keyname
+			     , conn->name
+			     , sl->name);
+		    
+		    starter_log(LOG_LEVEL_INFO, _tmp_err);
 		    if(kw->keyword.string == NULL
 		       || (*the_strings)[field] == NULL
 		       || strcmp(kw->keyword.string, (*the_strings)[field])!=0)
@@ -492,11 +516,15 @@ static bool translate_conn (struct starter_conn *conn
 	    {
 		if(!permitreplace)
 		{
-		    starter_log(LOG_LEVEL_INFO
+		    *error = _tmp_err;
+
+		    snprintf(_tmp_err, sizeof(_tmp_err)
 				, "duplicate key '%s' in conn %s while processing def %s"
 				, kw->keyword.keydef->keyname
 				, conn->name
 				, sl->name);
+
+		    starter_log(LOG_LEVEL_INFO, _tmp_err);
 
 		    /* only fatal if we try to change values */
 		    if((*the_options)[field] != kw->number
@@ -536,11 +564,14 @@ static bool translate_conn (struct starter_conn *conn
 	    {
 		if(!permitreplace)
 		{
-		    starter_log(LOG_LEVEL_INFO
-				, "duplicate key '%s' in conn %s while processing def %s"
-				, kw->keyword.keydef->keyname
-				, conn->name
-				, sl->name);
+		    *error = _tmp_err;
+
+		    snprintf(_tmp_err, sizeof(_tmp_err)
+			     , "duplicate key '%s' in conn %s while processing def %s"
+			     , kw->keyword.keydef->keyname
+			     , conn->name
+			     , sl->name);
+		    starter_log(LOG_LEVEL_INFO, _tmp_err);
 		    if((*the_options)[field] != kw->number)
 		    {
 			err++;
@@ -559,7 +590,8 @@ static bool translate_conn (struct starter_conn *conn
 
 
 static int load_conn_basic(struct starter_conn *conn
-			   , struct section_list *sl)
+			   , struct section_list *sl
+			   , err_t *perr)
 {
     int err;
 
@@ -571,11 +603,7 @@ static int load_conn_basic(struct starter_conn *conn
     memset(conn->right.options_set, 0, sizeof(conn->left.options_set));
 
     /* turn all of the keyword/value pairs into options/strings in left/right */
-    err = translate_conn(conn, sl, TRUE);
-
-    /* now, process the also's */
-    if (conn->alsos) free_list(conn->alsos);
-    conn->alsos = new_list(conn->strings[KSF_ALSO]);
+    err = translate_conn(conn, sl, TRUE, perr);
 
     return err;
 }
@@ -587,7 +615,7 @@ static int load_conn (struct starter_config *cfg
 		      , struct config_parsed *cfgp
 		      , struct section_list *sl
 		      , bool alsoprocessing
-		      , char **perr)
+		      , err_t *perr)
 {
     unsigned int err;
     char **alsos;
@@ -599,10 +627,10 @@ static int load_conn (struct starter_config *cfg
 	
     err = 0;
 
-    err += load_conn_basic(conn, sl);
+    err += load_conn_basic(conn, sl, perr);
     if(err) return err;
 
-    if(conn->strings[KSF_ALSO] != NULL
+    if(conn->strings[KSCF_ALSO] != NULL
        && !alsoprocessing)
     {
 	starter_log(LOG_LEVEL_INFO
@@ -613,7 +641,7 @@ static int load_conn (struct starter_config *cfg
 
     /* now, process the also's */
     if (conn->alsos) free_list(conn->alsos);
-    conn->alsos = new_list(conn->strings[KSF_ALSO]);
+    conn->alsos = new_list(conn->strings[KSCF_ALSO]);
 
     if(alsoprocessing && conn->alsos)
     {
@@ -631,7 +659,7 @@ static int load_conn (struct starter_config *cfg
 
 	alsoplace = 0;
 	while(alsos != NULL
-	      && alsos[alsoplace] != NULL && alsoplace < alsosize
+	      && alsoplace < alsosize && alsos[alsoplace] != NULL 
 	      && alsoplace < ALSO_LIMIT)
 	{
 	    /*
@@ -653,18 +681,18 @@ static int load_conn (struct starter_config *cfg
 	     */
 	    if(sl1 && !sl1->beenhere)
 	    {
-		conn->strings_set[KSF_ALSO]=FALSE;
-		if(conn->strings[KSF_ALSO]) free(conn->strings[KSF_ALSO]);
-		conn->strings[KSF_ALSO]=NULL;
+		conn->strings_set[KSCF_ALSO]=FALSE;
+		if(conn->strings[KSCF_ALSO]) free(conn->strings[KSCF_ALSO]);
+		conn->strings[KSCF_ALSO]=NULL;
 		sl1->beenhere = TRUE;
 
 		/* translate things, but do not replace earlier settings */
-		err += translate_conn(conn, sl1, FALSE);
+		err += translate_conn(conn, sl1, FALSE, perr);
 
-		if(conn->strings[KSF_ALSO])
+		if(conn->strings[KSCF_ALSO])
 		{
 		    /* now, check out the KSF_ALSO, and extend list if we need to */
-		    newalsos = new_list(conn->strings[KSF_ALSO]);		
+		    newalsos = new_list(conn->strings[KSCF_ALSO]);		
 		    
 		    if(newalsos && newalsos[0]!=NULL)
 		    {
@@ -672,7 +700,7 @@ static int load_conn (struct starter_config *cfg
 			for(newalsoplace=0; newalsos[newalsoplace]!=NULL; newalsoplace++);
 			
 			/* extend conn->alsos */
-			alsos = xrealloc(alsos, (alsosize+newalsoplace) * sizeof(char *));
+			alsos = xrealloc(alsos, (alsosize+newalsoplace+1) * sizeof(char *));
 			for(newalsoplace=0; newalsos[newalsoplace]!=NULL; newalsoplace++)
 			{
 			    assert(conn != NULL);
@@ -683,6 +711,7 @@ static int load_conn (struct starter_config *cfg
 			    
 			    alsos[alsosize++]=xstrdup(newalsos[newalsoplace]);
 			}
+			alsos[alsosize]=NULL;
 		    }
 		    
 		    free_list(newalsos);
@@ -708,31 +737,23 @@ static int load_conn (struct starter_config *cfg
 	conn->alsos = alsos;
     }
     
-    
-
-    /* preview of getting rid of transport mode */
-    if(conn->options[KBF_TYPE] == KS_TRANSPORT)
-    {
-	extern struct keyword_enum_values kw_type_list;
-	
-	starter_log(LOG_LEVEL_INFO, "conn %s - only tunnel mode is supported, not %s"
-		    , conn->name
-		    , keyword_name(&kw_type_list, conn->options[KBF_TYPE]));
-	
-	POLICY_ONLY_CONN(conn);
-    }
-    
     KW_POLICY_FLAG(KBF_TYPE, POLICY_TUNNEL);
     KW_POLICY_FLAG(KBF_COMPRESS, POLICY_COMPRESS);
     KW_POLICY_FLAG(KBF_PFS,  POLICY_PFS);
     
     /* reset authby flags */
-    conn->policy &= ~(POLICY_ID_AUTH_MASK);
-    conn->policy |= conn->options[KBF_AUTHBY];
+    if(conn->options_set[KBF_AUTHBY]) {
+	conn->policy &= ~(POLICY_ID_AUTH_MASK);
+	conn->policy |= conn->options[KBF_AUTHBY];
+
+	printf("%s: setting conn->policy=%08x (%08x)\n",
+	       conn->name,
+	       (unsigned int)conn->policy,
+	       conn->options[KBF_AUTHBY]);
+    }
     
     KW_POLICY_FLAG(KBF_REKEY, POLICY_DONT_REKEY);
-    KW_POLICY_FLAG(KBF_COMPRESS, POLICY_COMPRESS);
-    
+
     err += validate_end(conn, &conn->left,  TRUE, perr);
     err += validate_end(conn, &conn->right, FALSE,perr);
 
@@ -742,8 +763,8 @@ static int load_conn (struct starter_config *cfg
 }
 
     
-static void conn_default (struct starter_conn *conn,
-			  struct starter_conn *def)
+void conn_default (struct starter_conn *conn,
+		   struct starter_conn *def)
 {
     int i;
 
@@ -784,16 +805,62 @@ static void conn_default (struct starter_conn *conn,
     
     CONN_STR(conn->esp);
     CONN_STR(conn->ike);
+
+    conn->policy = def->policy;
 #undef CONN_STR
 }
 
-struct starter_config *confread_load(const char *file, char **perr)
+struct starter_conn *alloc_add_conn(struct starter_config *cfg, char *name, err_t *perr)
+{
+    struct starter_conn *conn;
+    
+    conn = (struct starter_conn *)malloc(sizeof(struct starter_conn));
+    memset(conn, 0, sizeof(struct starter_conn));
+    if (!conn) {
+	if (perr) *perr = xstrdup("can't allocate mem in confread_load()");
+	return NULL;
+    }
+
+    conn_default(conn, &cfg->conn_default);
+    conn->name = xstrdup(name);
+    conn->desired_state = STARTUP_NO;
+    conn->state = STATE_FAILED;
+    
+    TAILQ_INSERT_TAIL(&cfg->conns, conn, link);
+    return conn;
+}
+
+int init_load_conn(struct starter_config *cfg
+		   , struct config_parsed *cfgp
+		   , struct section_list *sconn
+		   , bool alsoprocessing
+		   , err_t *perr)
+{
+    int connerr;
+    struct starter_conn *conn;
+    starter_log(LOG_LEVEL_DEBUG, "Loading conn %s", sconn->name);
+
+    conn = alloc_add_conn(cfg, sconn->name, perr);
+    if(conn == NULL) {
+	return -1;
+    }
+    
+    connerr = load_conn (cfg, conn, cfgp, sconn, TRUE, perr);
+		
+    if(connerr == 0)
+    {
+	conn->state = STATE_LOADED;
+    }
+    return connerr;
+}
+
+
+struct starter_config *confread_load(const char *file, err_t *perr)
 {
 	struct starter_config *cfg = NULL;
 	struct config_parsed *cfgp;
 	struct section_list *sconn;
-	struct starter_conn *conn;
-	unsigned int err = 0;
+	unsigned int err = 0, connerr;
 
 	/**
 	 * Load file
@@ -807,6 +874,7 @@ struct starter_config *confread_load(const char *file, char **perr)
 		parser_free_conf(cfgp);
 		return NULL;
 	}
+	memset(cfg, 0, sizeof(*cfg));
 
 	/**
 	 * Set default values
@@ -821,7 +889,7 @@ struct starter_config *confread_load(const char *file, char **perr)
 	if(err) {return NULL;}
 
 	/**
-	 * Find %default conn
+	 * Find %default and %oedefault conn
 	 *
 	 */
 	for(sconn = cfgp->sections.tqh_first; (!err) && sconn != NULL; sconn = sconn->link.tqe_next)
@@ -829,9 +897,13 @@ struct starter_config *confread_load(const char *file, char **perr)
 		if (strcmp(sconn->name,"%default")==0) {
 			starter_log(LOG_LEVEL_DEBUG, "Loading default conn");
 			err += load_conn (cfg, &cfg->conn_default, cfgp, sconn, FALSE, perr);
-			if(err == 0)
-			{
-			    cfg->got_default = TRUE;
+		}
+
+		if (strcmp(sconn->name,"%oedefault")==0) {
+			starter_log(LOG_LEVEL_DEBUG, "Loading oedefault conn");
+			err += load_conn (cfg, &cfg->conn_oedefault, cfgp, sconn, FALSE, perr);
+			if(err == 0) {
+			    cfg->got_oedefault=TRUE;
 			}
 		}
 	}
@@ -839,43 +911,27 @@ struct starter_config *confread_load(const char *file, char **perr)
 	/**
 	 * Load other conns
 	 */
-	for(sconn = cfgp->sections.tqh_first; (!err) && sconn != NULL; sconn = sconn->link.tqe_next)
+	for(sconn = cfgp->sections.tqh_first; sconn != NULL; sconn = sconn->link.tqe_next)
 	{
 		if (strcmp(sconn->name,"%default")==0) continue;
-		starter_log(LOG_LEVEL_DEBUG, "Loading conn %s", sconn->name);
-		conn = (struct starter_conn *)malloc(sizeof(struct starter_conn));
-		memset(conn, 0, sizeof(struct starter_conn));
-		if (!conn) {
-			if (perr) *perr = xstrdup("can't allocate mem in confread_load()");
-			parser_free_conf(cfgp);
-			confread_free(cfg);
-			return NULL;
-		}
+		if (strcmp(sconn->name,"%oedefault")==0) continue;
 
-		if(cfg->got_default)
-		{
-		    conn_default(conn, &cfg->conn_default);
-		}
-		conn->name = xstrdup(sconn->name);
-		conn->desired_state = STARTUP_NO;
-		conn->state = STATE_IGNORE;
+		connerr = init_load_conn(cfg,cfgp,sconn,TRUE,perr);
 
-		TAILQ_INSERT_TAIL(&cfg->conns, conn, link); 
-
-		err += load_conn (cfg, conn, cfgp, sconn, TRUE, perr);
-		
-		if(err == 0)
-		{
-		    conn->state = STATE_LOADED;
+		if(connerr == -1) {
+		    parser_free_conf(cfgp);
+		    confread_free(cfg);
+		    return NULL;
 		}
+		err += connerr;
+	}
+
+	/* if we have OE on, then create any missing OE conns! */
+	if(cfg->setup.options[KBF_OPPOENCRYPT]) {
+	    add_any_oeconns(cfg, cfgp);
 	}
 
 	parser_free_conf(cfgp);
-
-	if (err) {
-		confread_free(cfg);
-		cfg = NULL;
-	}
 
 	return cfg;
 }

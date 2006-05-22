@@ -36,11 +36,11 @@
 
 #include "sysdep.h"
 #include "constants.h"
+#include "oswconf.h"
 #include "defs.h"
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"
-#include "paths.h"
 #include "certs.h"
 #include "ac.h"
 #include "smartcard.h"
@@ -87,7 +87,6 @@
 #define IPSECDIR "/etc/ipsec.d"
 #endif
 
-const char *ipsec_dir = IPSECDIR;
 const char *ctlbase = "/var/run/pluto";
 
 openswan_passert_fail_t openswan_passert_fail = passert_fail;
@@ -267,6 +266,7 @@ main(int argc, char **argv)
     char* ocspuri = NULL;
     int nhelpers = -1;
     char *coredir;
+    const struct osw_conf_options *oco;
 
 #ifdef NAT_TRAVERSAL
     /** Overridden by nat_traversal= in ipsec.conf */
@@ -286,6 +286,10 @@ main(int argc, char **argv)
 
     /* see if there is an environment variable */
     coredir = getenv("PLUTO_CORE_DIR");
+
+    if(getenv("PLUTO_WAIT_FOR_GDB")) {
+	sleep(120);
+    }
 
     /* handle arguments */
     for (;;)
@@ -532,7 +536,7 @@ main(int argc, char **argv)
 	    continue;
 
 	case 'f':	/* --ipsecdir <ipsec-dir> */
-	    ipsec_dir = optarg;
+	    (void)osw_init_ipsecdir(optarg);
 	    continue;
 
 	case 'a':	/* --adns <pathname> */
@@ -602,6 +606,7 @@ main(int argc, char **argv)
 	chdir(coredir);
     }
 
+    oco = osw_init_options();
     lockfd = create_lock();
 
     /* select between logging methods */
@@ -735,12 +740,13 @@ main(int argc, char **argv)
             , compile_time_interop_options);
 #endif
 
-	if(vc[0]=='c' && vc[1]=='v' && vc[2]=='s') {
+	if((vc[0]=='c' && vc[1]=='v' && vc[2]=='s') ||
+	   (vc[2]=='g' && vc[3]=='i' && vc[4]=='t')) {
 	    /*
-	     * when people build RPMs from CVS, make sure they get blamed
-	     * appropriately, and that we get some way to identify who
-	     * did it, and when they did it. Use string concat, so that
-	     * strings the binary can or classic SCCS "what", will find
+	     * when people build RPMs from CVS or GIT, make sure they
+	     * get blamed appropriately, and that we get some way to
+	     * identify who did it, and when they did it. Use string concat,
+	     * so that strings the binary can or classic SCCS "what", will find
 	     * stuff too.
 	     */
 	    openswan_log("@(#) built on "__DATE__":" __TIME__ " by " BUILDER);
@@ -786,11 +792,11 @@ main(int argc, char **argv)
     ocsp_set_default_uri(ocspuri);
 
     /* loading X.509 CA certificates */
-    load_authcerts("CA cert", CA_CERT_PATH, AUTH_CA);
+    load_authcerts("CA cert", oco->cacerts_dir, AUTH_CA);
     /* loading X.509 AA certificates */
-    load_authcerts("AA cert", AA_CERT_PATH, AUTH_AA);
+    load_authcerts("AA cert", oco->aacerts_dir, AUTH_AA);
     /* loading X.509 OCSP certificates */
-    load_authcerts("OCSP cert", OCSP_CERT_PATH, AUTH_OCSP);
+    load_authcerts("OCSP cert", oco->ocspcerts_dir, AUTH_OCSP);
 
     /* loading X.509 CRLs */
     load_crls();

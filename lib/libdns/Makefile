@@ -98,7 +98,6 @@ include/dns/rdatastruct.h: gen \
 code.h:	gen
 	./gen -s ${srcdir} > code.h
 
-HOSTCC=cc
 gen: gen.c
-	${HOSTCC} ${HOSTCINCLUDES} ${LDFLAGS} -o $@ ${srcdir}gen.c ${LIBS}
+	${CC} ${HOSTCINCLUDES} ${LDFLAGS} -o $@ ${srcdir}gen.c ${LIBS}
 

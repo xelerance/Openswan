@@ -1,0 +1,2 @@
+This test checks that KLIPS will compile as a module on 2.6 kernel with SMP enabled.
+

@@ -23,7 +23,7 @@
 
 #define	V	"xxx"		/* substituted in by Makefile */
 static const char openswan_number[] = V;
-static const char openswan_string[] = "Linux FreeS/WAN " V;
+static const char openswan_string[] = "Linux Openswan " V;
 
 /*
  - ipsec_version_code - return IPsec version number/code, as string

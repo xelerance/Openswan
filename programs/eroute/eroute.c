@@ -50,6 +50,9 @@ char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.67 2005/08/18 14:04:39 ken Ex
 #include "openswan/ipsec_encap.h"
 #include "pfkey_help.h"
 
+#include <stdio.h>
+#include <getopt.h>
+
 char *progname;
 char me[] = "ipsec eroute";
 extern char *optarg;
@@ -134,6 +137,11 @@ static struct option const longopts[] =
 
 /* outside of main, so that test cases can enable it */
 int debug = 0;
+
+void exit_tool(int x)
+{
+  exit(x);
+}
 
 int
 main(int argc, char **argv)

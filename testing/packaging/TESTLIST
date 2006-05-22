@@ -68,8 +68,14 @@ skiptest		modtest-suse-two-four	incomplete
 # test for building without ipcomp.
 module_compile		modtest-noipcomp-01	good
 
-# test for building without debug.
+# test for building without debug
 module_compile		modtest-nodebug-01	good
+
+# test for building with SMP
+module_compile		modtest-two-six-smp-01	good
+
+# test for building without SMP.
+module_compile		modtest-two-six-up-01	good
 
 # test for building on Alpha (only works on Alpha)
 skiptest		modtest-rh-alpha-01	incomplete

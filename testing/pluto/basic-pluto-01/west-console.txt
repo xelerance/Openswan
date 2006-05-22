@@ -26,6 +26,7 @@ west:~#
 ipsec_setup: Starting Openswan IPsec VERSION
 west:~#
  ipsec auto --add westnet-eastnet
+                                         loading conn: westnet-eastnet
 west:~#
  ipsec whack --debug-control --debug-controlmore --debug-parsing --debug-crypt
 west:~#

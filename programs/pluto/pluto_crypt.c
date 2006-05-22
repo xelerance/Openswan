@@ -161,7 +161,7 @@ helper_passert_fail(const char *pred_str
 
 void pluto_crypto_helper(int fd, int helpernum)
 {
-    char reqbuf[PCR_REQ_SIZE];
+    long reqbuf[PCR_REQ_SIZE/sizeof(long)];
     struct pluto_crypto_req *r;
 
     signal(SIGHUP, catchhup);
@@ -175,7 +175,7 @@ void pluto_crypto_helper(int fd, int helpernum)
 			      , helpernum, fd));
 
     memset(reqbuf, 0, sizeof(reqbuf));
-    while(read(fd, reqbuf, sizeof(r->pcr_len)) == sizeof(r->pcr_len)) {
+    while(read(fd, (char*)reqbuf, sizeof(r->pcr_len)) == sizeof(r->pcr_len)) {
 	int restlen;
 	int actlen;
 
@@ -185,7 +185,7 @@ void pluto_crypto_helper(int fd, int helpernum)
 	passert(restlen < (signed)PCR_REQ_SIZE);
 
 	/* okay, got a basic size, read the rest of it */
-	if((actlen= read(fd, reqbuf+sizeof(r->pcr_len), restlen)) != restlen) {
+	if((actlen= read(fd, ((char *)reqbuf)+sizeof(r->pcr_len), restlen)) != restlen) {
 	    /* faulty read. die, parent will restart us */
 	    
 	    loglog(RC_LOG_SERIOUS, "cryptographic helper(%d) read(%d)=%d failed: %s\n",
@@ -485,7 +485,7 @@ void delete_cryptographic_continuation(struct state *st)
  */
 void handle_helper_comm(struct pluto_crypto_worker *w)
 {
-    char reqbuf[PCR_REQ_SIZE];
+    long reqbuf[PCR_REQ_SIZE/sizeof(long)];
     struct pluto_crypto_req *r;
     int restlen;
     int actlen;
@@ -499,7 +499,7 @@ void handle_helper_comm(struct pluto_crypto_worker *w)
 			   ,w->pcw_work));
 
     /* read from the pipe */
-    actlen = read(w->pcw_pipe, reqbuf, sizeof(r->pcr_len));
+    actlen = read(w->pcw_pipe, (char *)reqbuf, sizeof(r->pcr_len));
 
     if(actlen != sizeof(r->pcr_len)) {
 	if(actlen != 0) {
@@ -532,7 +532,7 @@ void handle_helper_comm(struct pluto_crypto_worker *w)
 	
     /* okay, got a basic size, read the rest of it */
     if((actlen= read(w->pcw_pipe
-		     , reqbuf+sizeof(r->pcr_len)
+		     , ((char*)reqbuf)+sizeof(r->pcr_len)
 		     , restlen)) != restlen) {
 	/* faulty read. die, parent will restart us */
 	
