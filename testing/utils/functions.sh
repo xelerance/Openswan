@@ -1609,7 +1609,7 @@ umlXhost() {
     ( preptest $testdir umlXhost && do_umlX_test )
     stat=$?
 
-    recordresults $testdir "$testexpect" "$stat" $testdir false
+    recordresults $testdir "$testexpect" "$stat" $testdir ""
 }
 
 

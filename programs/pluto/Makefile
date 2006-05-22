@@ -88,7 +88,7 @@ DISTSRC = \
 	demux.c demux.h \
 	dnskey.c dnskey.h \
 	dpd.c dpd.h \
-	id.c id.h \
+	myid.c \
 	ipsec_doi.c ipsec_doi.h ikev1_quick.c ikev1_continuations.h \
 	kernel.c kernel.h \
 	${NETKEY_SRCS} \
@@ -101,15 +101,11 @@ DISTSRC = \
 	${EXTRA_CRYPTO_SRCS} \
 	log.c log.h \
 	plutomain.c plutoalg.c \
-	md2.c md2.h \
-	md5.c md5.h \
 	ocsp.c ocsp.h \
 	pluto_crypt.c crypt_utils.c pluto_crypt.h crypt_ke.c crypt_dh.c \
-	lex.c lex.h \
-	keys.c keys.h secrets.h \
+	keys.c keys.h \
 	rnd.c rnd.h \
 	server.c server.h \
-	sha1.c sha1.h \
 	${SMARTCARD_DIST_SRCS} \
 	spdb.c spdb_struct.c spdb_print.c spdb.h \
 	state.c state.h \
@@ -135,12 +131,12 @@ OBJSGCRYPT =
 OBJSPLUTO  = connections.o pending.o cookie.o crypto.o defs.o dpd.o
 OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
 OBJSPLUTO += timer.o pluto_constants.o
-OBJSPLUTO += id.o ipsec_doi.o ikev1_quick.o ikeping.o kernel.o 
+OBJSPLUTO += myid.o ipsec_doi.o ikev1_quick.o ikeping.o kernel.o 
 OBJSPLUTO += $(NETKEY_OBJS) ${KLIPS_OBJS} ${WIN2K_OBJS} ${FUNK_OBJS}
 OBJSPLUTO += kernel_noklips.o rcv_whack.o 
-OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o lex.o keys.o dnskey.o
+OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o keys.o dnskey.o
 OBJSPLUTO += pluto_crypt.o crypt_utils.o crypt_ke.o crypt_dh.o
-OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_print.o sha1.o md5.o 
+OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_print.o 
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o 
 OBJSPLUTO += ike_alg_aes.o ike_alginit.o
 OBJSPLUTO += ${EXTRA_CRYPTO_OBJS}
@@ -167,9 +163,6 @@ clean:	cleanall
 install: doinstall
 
 endif
-
-oid.h oid.c: oid.txt oid.pl
-	(cd ${srcdir}; perl oid.pl)
 
 doinstall: all
 	mkdir -p ${LIBEXECDIR} ${LIBDIR}
@@ -234,17 +227,6 @@ $(BINNAMEWHACKINIT): $(OBJSWHACKINIT) ${LIBSPLUTO}
 
 distlist:
 	@echo $(DIST)
-
-# Exuberant Ctags doesn't work if LC_ALL is set to something other than C
-
-CTAGSFLAGS = -N --format=1 # fishy options required for Exuberant Ctags
-
-TAGSFILES=$(DISTSRC) $(LIBOPENSWANDIR)/*.[ch] ${OPENSWANSRCDIR}/include/*.h ${OPENSWANSRCDIR}/linux/include/*.h ${OPENSWANSRCDIR}/linux/include/openswan/*.h ${OPENSWANSRCDIR}/linux/net/ipsec/*.[ch]
-tags:	$(TAGSFILES)
-	LC_ALL=C ctags $(CTAGSFLAGS) ${TAGSFILES}
-
-TAGS:	$(TAGSFILES)
-	LC_ALL=C etags $(ETAGSFLAGS) ${TAGSFILES}
 
 cleanall: 
 	$(RM) $(RMFLAGS) *.core core *~ a.out ktrace.out \

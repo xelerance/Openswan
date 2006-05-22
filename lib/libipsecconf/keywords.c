@@ -69,11 +69,12 @@ struct keyword_enum_values kw_authby_list=
     { kw_authby_values, sizeof(kw_authby_values)/sizeof(struct keyword_enum_value)};
 
 /*
- * Values for dpdaction={hold,clear}
+ * Values for dpdaction={hold,clear,restart} 
  */
 struct keyword_enum_value kw_dpdaction_values[]={
     { "hold",    DPD_ACTION_HOLD},
     { "clear",   DPD_ACTION_CLEAR},
+    { "restart",   DPD_ACTION_RESTART},
 };
 
 struct keyword_enum_values kw_dpdaction_list=
@@ -125,7 +126,22 @@ struct keyword_enum_values kw_rsasigkey_list=
     { kw_rsasigkey_values, sizeof(kw_rsasigkey_values)/sizeof(struct keyword_enum_value)};
 
 
+/*
+ * Values for protostack={klips, none, auto, klipsmast, netkey }
+ */
+struct keyword_enum_value kw_proto_stack_list[]={
+    { "none",         NO_KERNEL },
+    { "auto",         AUTO_PICK },
+    { "klips",        USE_KLIPS },
+    { "mast",         USE_MASTKLIPS }, 
+    { "netkey",       USE_NETKEY },
+    { "native",       USE_NETKEY },
+    { "win2k",        USE_WIN2K },
+    { "funk",         USE_FUNK },
+};
 
+struct keyword_enum_values kw_proto_stack=
+    { kw_proto_stack_list, sizeof(kw_proto_stack_list)/sizeof(struct keyword_enum_value)};
 
 
 /*
@@ -149,7 +165,8 @@ struct keyword_enum_value kw_plutodebug_values[]={
     { "oppo",     DBG_OPPO },
     { "controlmore", DBG_CONTROLMORE },
     { "private",  DBG_PRIVATE },
-    { "x509",  DBG_X509 },
+    { "x509",     DBG_X509 },
+    { "dpd",      DBG_DPD }, 
 
     { "impair-delay-adns-key-answer", IMPAIR_DELAY_ADNS_KEY_ANSWER },
     { "impair-delay-adns-txt-answer", IMPAIR_DELAY_ADNS_TXT_ANSWER },
@@ -199,6 +216,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"manualstart",    kv_config, kt_string,    KSF_MANUALSTART,NOT_ENUM},
     {"pluto",          kv_config, kt_filename,  KSF_PLUTO, NOT_ENUM},
     {"plutowait",      kv_config, kt_bool,      KBF_PLUTOWAIT,NOT_ENUM},
+    {"oe",             kv_config, kt_bool,      KBF_OPPOENCRYPT,NOT_ENUM},
     {"prepluto",       kv_config, kt_filename,  KSF_PREPLUTO,NOT_ENUM},
     {"postpluto",      kv_config, kt_filename,  KSF_POSTPLUTO,NOT_ENUM},
     {"fragicmp",       kv_config, kt_bool,      KBF_FRAGICMP,NOT_ENUM},
@@ -213,6 +231,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"virtual_private",kv_config,kt_string,     KSF_VIRTUALPRIVATE,NOT_ENUM},
     {"nat_traversal", kv_config,kt_bool,        KBF_NATTRAVERSAL, NOT_ENUM},
 #endif
+    {"protostack",     kv_config, kt_string,    KSF_PROTOSTACK, &kw_proto_stack},
     {"nhelpers",kv_config,kt_number, KBF_NHELPERS, NOT_ENUM},
 
     /* this is "left=" and "right=" */
@@ -235,8 +254,8 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"protoport",      kv_conn|kv_leftright, kt_string, KSCF_PROTOPORT,NOT_ENUM},
 
     {"auto",           kv_conn,         kt_enum,   KBF_AUTO,        &kw_auto_list},
-    {"also",           kv_conn,         kt_appendstring, KSF_ALSO,NOT_ENUM},
-    {"alsoflip",       kv_conn,         kt_string, KSF_ALSOFLIP,NOT_ENUM},
+    {"also",           kv_conn,         kt_appendstring, KSCF_ALSO,NOT_ENUM},
+    {"alsoflip",       kv_conn,         kt_string, KSCF_ALSOFLIP,NOT_ENUM},
     {"type",           kv_conn,         kt_enum,   KBF_TYPE,        &kw_type_list},
     {"authby",         kv_conn|kv_auto, kt_string, KBF_AUTHBY,      &kw_authby_list},
     {"keyexchange",    kv_conn|kv_auto, kt_enum,   KBF_KEYEXCHANGE, &kw_keyexchange_list},

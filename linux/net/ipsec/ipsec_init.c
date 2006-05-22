@@ -18,7 +18,7 @@
  *
  */
 
-char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.106 2005/09/14 14:22:55 mcr Exp $";
+char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.104.2.2 2006/04/20 16:33:06 mcr Exp $";
 
 #include <linux/config.h>
 #include <linux/version.h>
@@ -236,9 +236,7 @@ ipsec_klips_init(void)
         error |= ipsec_sysctl_register();
 #endif                                                                          
 
-#ifdef CONFIG_KLIPS_ALG
 	ipsec_alg_init();
-#endif
 
 	get_random_bytes((void *)seed, sizeof(seed));
 	prng_init(&ipsec_prng, seed, sizeof(seed));

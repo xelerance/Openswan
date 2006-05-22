@@ -18,8 +18,9 @@
 #define _STARTER_WHACK_H_
 
 struct starter_conn;
+struct starter_config;
 
-int starter_whack_add_conn (struct starter_conn *conn);
+int starter_whack_add_conn (struct starter_config *cfg, struct starter_conn *conn);
 int starter_whack_del_conn (struct starter_conn *conn);
 int starter_whack_route_conn (struct starter_conn *conn);
 int starter_whack_initiate_conn (struct starter_conn *conn);

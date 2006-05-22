@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<refentry>
+  <refmeta>
+    <refentrytitle>ipsec readwriteconf</refentrytitle>
+
+    <manvolnum>8</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname>ipsec readwriteconf</refname>
+
+    <refpurpose>validate and output an Openswan IPsec configuration
+    file</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>ipsec readwriteconf </command>
+
+      <arg>--config <option>file</option></arg>
+
+      <arg>--debug</arg>
+
+      <arg>--verbose</arg>
+
+      <arg>--rootdir <option>dir</option></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection>
+    <title>Description</title>
+
+    <para>This program reads the given ipsec.conf style configuration file,
+    interpreting the also= options, and outputs an equivalent ipsec.conf file.
+    The purpose of this program is to validate the input processing. This can
+    also be used to validate the syntax of a configuration file.</para>
+
+    <para>The options --debug and --verbose are currently synonums. </para>
+
+    <para>The --rootdir option changes the programs idea of what "/" is when
+    processing include directives. This is useful when validating a
+    configuration which is not installed on a target system yet.</para>
+
+    <para></para>
+  </refsection>
+</refentry>

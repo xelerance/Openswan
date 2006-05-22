@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_doi.c,v 1.316 2005/10/20 21:12:36 mcr Exp $
+ * RCSID $Id: ipsec_doi.c,v 1.304.2.11 2006/04/16 02:24:19 mcr Exp $
  */
 
 #include <stdio.h>
@@ -1585,7 +1585,7 @@ RSA_check_signature(struct state *st
 	struct pubkey_list *p, **pp;
 	int pathlen;
 
-	pp = &pubkeys;
+	pp = &pluto_pubkeys;
 	pathlen = pathlen;      /* make sure it used even with !X509 */
 
 	{
@@ -1596,12 +1596,13 @@ RSA_check_signature(struct state *st
 	      DBG_log("required CA is '%s'", buf));
 	}
   
-	for (p = pubkeys; p != NULL; p = *pp)
+	for (p = pluto_pubkeys; p != NULL; p = *pp)
 	{
 	    struct pubkey *key = p->key;
 
-	    if (key->alg == PUBKEY_ALG_RSA && same_id(&c->spd.that.id, &key->id)
-	    && trusted_ca(key->issuer, c->spd.that.ca, &pathlen))
+	    if (key->alg == PUBKEY_ALG_RSA
+		&& same_id(&c->spd.that.id, &key->id)
+		&& trusted_ca(key->issuer, c->spd.that.ca, &pathlen))
 	    {
 		time_t now;
 
@@ -1802,7 +1803,7 @@ has_preloaded_public_key(struct state *st)
 	struct pubkey_list *p;
 
 	/* look for a matching RSA public key */
-	for (p = pubkeys; p != NULL; p = p->next)
+	for (p = pluto_pubkeys; p != NULL; p = p->next)
 	{
 	    struct pubkey *key = p->key;
 
@@ -1994,9 +1995,8 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	{
 	    /* apparently, r is an improvement on c -- replace */
 
-	    DBG(DBG_CONTROL
-		, DBG_log("switched from \"%s\" to \"%s\"", c->name, r->name));
-	    if (r->kind == CK_TEMPLATE)
+	    openswan_log("switched from \"%s\" to \"%s\"", c->name, r->name);
+	    if (r->kind == CK_TEMPLATE || r->kind == CK_GROUP)
 	    {
 		/* instantiate it, filling in peer's ID */
 		r = rw_instantiate(r, &c->spd.that.host_addr,

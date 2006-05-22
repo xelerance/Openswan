@@ -31,6 +31,7 @@ EAST_INIT_SCRIPT=eastinit.sh
 ROAD_INIT_SCRIPT=roadinit.sh
 
 ROAD_RUN_SCRIPT=roadrun.sh
+EAST_RUN2_SCRIPT=final1.sh
 
 EAST_FINAL_SCRIPT=final.sh
 ROAD_FINAL_SCRIPT=final.sh

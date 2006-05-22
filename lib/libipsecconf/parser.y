@@ -35,6 +35,7 @@
 static char parser_errstring[ERRSTRING_LEN+1];
 void yyerror(const char *s);
 extern int yylex (void);
+static struct kw_list *alloc_kwlist(void);
 
 /**
  * Static Globals
@@ -164,7 +165,7 @@ statement_kw:
 		struct kw_list *new;
 
 		assert(_parser_kw != NULL);
-		new = (struct kw_list *)malloc(sizeof(struct kw_list));
+		new = alloc_kwlist();
 		if (!new) {
 		    yyerror("can't allocate memory in statement_kw");
 		} else {
@@ -216,7 +217,7 @@ statement_kw:
 		struct kw_list *new;
 
 		assert(_parser_kw != NULL);
-		new = (struct kw_list *)malloc(sizeof(struct kw_list));
+		new = alloc_kwlist();
 		if (new) {
 		    new->keyword = $1;
 		    new->decimal = $<dblnum>3;  /* Should not be necessary! */
@@ -234,7 +235,7 @@ statement_kw:
 		struct kw_list *new;
 
 		assert(_parser_kw != NULL);
-		new = (struct kw_list *)malloc(sizeof(struct kw_list));
+		new = alloc_kwlist();
 		if (new) {
 		    new->keyword = $1;
 		    new->number = $<num>3;  /* Should not be necessary! */
@@ -252,7 +253,7 @@ statement_kw:
 		struct kw_list *new;
 
 		assert(_parser_kw != NULL);
-		new = (struct kw_list *)malloc(sizeof(struct kw_list));
+		new = alloc_kwlist();
 		if (new) {
 		    new->keyword = $1;
 		    new->number = $<num>3;  /* Should not be necessary! */
@@ -306,7 +307,7 @@ statement_kw:
 	        if(!fail)
                 {
 		  assert(_parser_kw != NULL);
-		  new = (struct kw_list *)malloc(sizeof(struct kw_list));
+		  new = alloc_kwlist();
 		  if (new) {
 		    new->keyword = $1;
 		    new->number = val;
@@ -356,7 +357,7 @@ statement_kw:
 	        if(!fail)
                 {
 		  assert(_parser_kw != NULL);
-		  new = (struct kw_list *)malloc(sizeof(struct kw_list));
+		  new = alloc_kwlist();
 		  if (new) {
 		    new->keyword = $1;
 		    new->number = val;
@@ -375,7 +376,7 @@ statement_kw:
 		struct kw_list *new;
 
 		assert(_parser_kw != NULL);
-		new = (struct kw_list *)malloc(sizeof(struct kw_list));
+		new = alloc_kwlist();
 		if (new) {
 		    new->keyword = $1;
 		    new->number = $<num>3;  /* Should not be necessary! */
@@ -401,7 +402,7 @@ void yyerror(const char *s)
 		parser_y_error(parser_errstring, ERRSTRING_LEN, s);
 }
 
-struct config_parsed *parser_load_conf (const char *file, char **perr)
+struct config_parsed *parser_load_conf (const char *file, err_t *perr)
 {
 	struct config_parsed *cfg=NULL;
 	int err = 0;
@@ -456,7 +457,7 @@ struct config_parsed *parser_load_conf (const char *file, char **perr)
 	}
 
 	if (err) {
-		if (perr) *perr = strdup(parser_errstring);
+		if (perr) *perr = (err_t)strdup(parser_errstring);
 		if (cfg) parser_free_conf (cfg);
 		cfg = NULL;
 	}
@@ -493,6 +494,16 @@ void parser_free_conf (struct config_parsed *cfg)
 		free(cfg);
 	}
 }
+
+struct kw_list *alloc_kwlist(void)
+{
+	struct kw_list *new;
+
+	new = (struct kw_list *)malloc(sizeof(struct kw_list));
+	memset(new, 0, sizeof(struct kw_list));
+	return new;
+}
+
 
 /*
  * Local Variables:

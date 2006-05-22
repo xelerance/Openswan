@@ -244,6 +244,9 @@ extern err_t pack_whack_msg(struct whackpacker *wp);
 extern err_t unpack_whack_msg (struct whackpacker *wp);
 extern void clear_end(struct whack_end *e);
 
+extern size_t whack_get_secret(char *buf, size_t bufsize);
+extern int whack_get_value(char *buf, size_t bufsize);
+
 /*
  * Local Variables:
  * c-basic-offset:4

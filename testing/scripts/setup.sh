@@ -24,10 +24,15 @@ export OPENSWANSRCDIR
 
 TESTINGROOT=${OPENSWANSRCDIR}/testing
 UTILS=`cd ${TESTINGROOT}/utils && pwd`
-FIXUPDIR=`cd ${OPENSWANSRCDIR}/testing/klips/fixups && pwd`
 NJ=${UTILS}/uml_netjig/uml_netjig
+KLIPSTOP=${OPENSWANSRCDIR}/linux
+FIXUPDIR=`cd ${OPENSWANSRCDIR}/testing/klips/fixups && pwd`
+CONSOLEDIFFDEBUG=${CONSOLEDIFFDEBUG-false}
+NETJIGDEBUG=${NETJIGDEBUG-false}
+
+# find this on the path if not already set.
+TCPDUMP=${TCPDUMP-tcpdump}
 
 REGRESSRESULTS=${REGRESSRESULTS-results}
-
 
 

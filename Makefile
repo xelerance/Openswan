@@ -30,7 +30,7 @@ def:
 	@echo "Commonly used build commands:"
 	@echo
 	@echo "Kernel 2.4: make KERNELSRC=/usr/src/linux-2.4 module minstall programs install"
-	@echo "Kernel 2.6: make programs install"
+	@echo "Kernel 2.6: make KERNELSRC=/usr/src/linux-2.6 programs module minstall install"
 	@echo
 	@echo
 
@@ -602,7 +602,7 @@ ipkg_module:
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile) && \
 	mkdir -p $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile) && \
-	cp ${OPENSWANSRCDIR}/modobj/ipsec.*o $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec/
+	cp ${OPENSWANSRCDIR}/modobj*/ipsec.[k]o $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec/
 	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile)
 
 ipkg_clean:

@@ -26,7 +26,7 @@ NAT_DEFS=-DNAT_TRAVERSAL -DVIRTUAL_IP
 endif
 CFLAGS+= ${NAT_DEFS}
 
-LIBS?=${PROGLIBS} ${OSWLOGLIB} ${OPENSWANLIB} -lgmp
+LIBS?=${PROGLIBS} ${OSWLOGLIB} ${OPENSWANLIB} ${CRYPTOLIBS} 
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
@@ -153,10 +153,15 @@ endif
 
 # set values for implicit rules.
 LOADLIBS=${OBJS} 
-LDLIBS=${LIBS} ${USERLINK}
 
-%: %.o $(OBJS) $(OPENSWANLIB)
-	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LIBS) $(USERLINK)
+# ${LIBS} is repeated due to possible circular dependancies among libraries
+LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} -lgmp
+
+%: %.o $(OBJS) ${LIBS}
+	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LDLIBS) $(USERLINK)
+
+# cancel direct version
+%: %.c
 
 # cancel direct version
 %: %.c
@@ -213,8 +218,8 @@ realclean: clean
 
 cleanall::
 ifneq ($(strip $(PROGRAM)),)
-	@if [ -r $(PROGRAM).in ]; then rm -f $(PROGRAM); fi
-	@if [ -r $(PROGRAM).c ];  then rm -f $(PROGRAM); fi
+	@if [ -r ${srcdir}$(PROGRAM).in ]; then rm -f $(PROGRAM); fi
+	@if [ -r ${srcdir}$(PROGRAM).c ];  then rm -f $(PROGRAM); fi
 	@if [ -n "$(OBJS)" ];     then rm -f $(PROGRAM); fi
 endif
 	@rm -f *.o

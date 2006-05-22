@@ -413,9 +413,7 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 	int    replay = 0;	         /* replay value in AH or ESP packet */
 	struct iphdr *ipp;
 	struct sk_buff *skb;
-#ifdef CONFIG_KLIPS_ALG
 	struct ipsec_alg_auth *ixt_a=NULL;
-#endif /* CONFIG_KLIPS_ALG */
 
 	skb      = irs->skb;
 	irs->len = skb->len;
@@ -529,7 +527,6 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 	irs->authfuncs=NULL;
 
 	/* authenticate, if required */
-#ifdef CONFIG_KLIPS_ALG
 	if ((ixt_a=irs->ipsp->ips_alg_auth)) {
 		irs->authlen = AHHMAC_HASHLEN;
 		irs->authfuncs = NULL;
@@ -543,7 +540,6 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 				irs->ipsp->ips_authalg, 
 				irs->authlen);
 	} else
-#endif /* CONFIG_KLIPS_ALG */
 	switch(irs->ipsp->ips_authalg) {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 	case AH_MD5:

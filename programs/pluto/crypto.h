@@ -22,6 +22,8 @@
 #include "libsha2/sha2.h"
 #endif
 
+#include "mpzfuncs.h"
+
 extern void init_crypto(void);
 
 /* Oakley group descriptions */
