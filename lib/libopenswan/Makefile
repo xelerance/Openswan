@@ -39,7 +39,7 @@ SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 	ttosa.c ttosubnet.c ttoul.c ultoa.c ultot.c \
 	$(X509LIB)
 
-SRCS+=sanitizestring.c pfkey_print.c
+SRCS+=sanitizestring.c pfkey_print.c pfkey_sock.c pfkey_error.c
 
 ifeq ($(USE_KLIPS),true)
 PFKEYV2_DEFS=-DKLIPS -DPFKEYV2
