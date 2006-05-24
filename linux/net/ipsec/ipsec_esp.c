@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.13.2.2 2006/05/01 14:36:03 mcr Exp $";
+char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.13.2.4 2006/05/06 03:07:38 ken Exp $";
 #include <linux/config.h>
 #include <linux/version.h>
 
@@ -399,8 +399,8 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
   ilen = ixs->skb->len - (ixs->iphlen + sizeof(struct esphdr) + ixs->authlen);
   
   /* Self-describing padding */
-  pad = &dat[ixs->pyldsz];
-  padlen = ixs->padsize - 2;
+  pad = &dat[ixs->skb->len - ixs->tailroom];
+  padlen = ixs->tailroom - 2 - ixs->authlen;
   for (i = 0; i < padlen; i++) {
     pad[i] = i + 1; 
   }
@@ -537,6 +537,13 @@ struct inet_protocol esp_protocol =
 
 /*
  * $Log: ipsec_esp.c,v $
+ * Revision 1.13.2.4  2006/05/06 03:07:38  ken
+ * Pull in proper padsize->tailroom fix from #public
+ * Need to do correct math on padlen since padsize is not equal to tailroom
+ *
+ * Revision 1.13.2.3  2006/05/05 03:58:04  ken
+ * ixs->padsize becomes ixs->tailroom
+ *
  * Revision 1.13.2.2  2006/05/01 14:36:03  mcr
  * use KLIPS_ERROR for fatal things.
  *

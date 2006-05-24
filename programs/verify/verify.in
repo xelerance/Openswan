@@ -221,11 +221,11 @@ sub installstartcheck {
 	if ( -e "/proc/net/ipsec_eroute" || -e "/proc/net/pfkey" ) { $test="1" }
 	errchk "$test";
 
-        if ( -e "/proc/net/ipsec_eroute") {
-        printfun "KLIPS detected, checking for NAT Traversal support";
-	if ( -e "/proc/net/ipsec/natt" ) { $nattest = "1" }
-	errchk "$nattest"; 
-	}
+#        if ( -e "/proc/net/ipsec_eroute") {
+#        printfun "KLIPS detected, checking for NAT Traversal support";
+#	if ( -e "/proc/net/ipsec/natt" ) { $nattest = "1" }
+#	errchk "$nattest"; 
+#	}
 
         if ( -e "/proc/net/pfkey") {
         printfun "NETKEY detected, testing for disabled ICMP send_redirects";

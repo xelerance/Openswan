@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _startklips.in,v 1.43.4.2 2005/11/24 23:08:05 ken Exp $
+# RCSID $Id: _startklips.in,v 1.43.4.3 2006/05/09 18:34:34 paul Exp $
 
 me='ipsec _startklips'		# for messages
 
@@ -285,9 +285,13 @@ then
 		modprobe -qv xfrm4_tunnel
 		# xfrm_user contains netlink support for IPsec 
 		modprobe -qv xfrm_user
-		modprobe -qv hw_random
-		# padlock must load before aes module
-		modprobe -qv padlock
+		if [ -n "`cat /proc/cpuinfo |grep Nehemiah`" ]
+		then
+			echo "VIA Nehemiah detected, probing for PadLock"
+			modprobe -qv hw_random
+			# padlock must load before aes module
+			modprobe -qv padlock
+		fi
 		# load the most common ciphers/algo's
 		modprobe -qv sha1
 		modprobe -qv md5

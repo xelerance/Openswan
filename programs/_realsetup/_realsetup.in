@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _realsetup.in,v 1.46.2.5 2006/05/02 17:37:41 paul Exp $
+# RCSID $Id: _realsetup.in,v 1.46.2.9 2006/05/05 18:49:45 ken Exp $
 
 me='ipsec setup'		# for messages
 
@@ -148,13 +148,12 @@ then
 	test -r /proc/net/ipsec_klipsdebug && ipsec klipsdebug --none ;
 	test -d /proc/net/ipsec/eroute && ipsec eroute --clear ;
 	test -d /proc/net/ipsec/spi && ipsec spi --clear'
-	lsmod 2>&1 | grep "^ipsec" > /dev/null && rmmod ipsec'
-	# if klips is inline in the kernel, IP addresses on IP aliases linger. remove them
+	lsmod 2>&1 | grep "^ipsec" > /dev/null && rmmod ipsec ; 
 	for ifname in `ls /proc/sys/net/ipv4/conf/|grep ipsec`; do
-        	for ipaddr in `ip addr list dev $ifname | sed -n '/inet/ s/.*inet \(.*\) brd.*/\1/p'`; do
+        	for ipaddr in `ip addr list dev $ifname | sed -n "/inet/ s/.*inet \(.*\) brd.*/\1/p"`; do
                 	ip addr del "$ipaddr" dev "$ifname"
 		done
-	done
+	done 
 fi
 
 if $netkey
@@ -192,14 +191,6 @@ case "$1" in
 
 	# preliminaries
 	perform rm -f $lock
-
-	for f in /dev/hw_random /dev/random /dev/urandom
-	do
-		perform test -r $f "||" "{" \
-			echo "\"...unable to start Openswan IPsec, no $f!\"" ";" \
-			exit 1 ";" \
-			"}"
-	    done
 
 	# the meaning of $$ at a different runtime is questionable!
 	perform echo '$$' ">" $lock

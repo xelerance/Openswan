@@ -145,7 +145,7 @@ static struct ipsec_alg_auth ipsec_alg_AES_MAC = {
 			ias_keymaxbits:	ESP_AES_MAC_KEY_SZ*8,
 		},
 	},
-#if defined(MODULE_KLIPS_ENC_AES_MODULE)
+#if defined(CONFIG_KLIPS_ENC_AES_MODULE)
 	ixt_module:	THIS_MODULE,
 #endif
 	ixt_a_keylen:	ESP_AES_MAC_KEY_SZ,
@@ -166,7 +166,7 @@ static struct ipsec_alg_enc ipsec_alg_AES = {
 			ias_keymaxbits:	ESP_AES_KEY_SZ_MAX*8,
 		},
 	},
-#if defined(MODULE_KLIPS_ENC_AES_MODULE)
+#if defined(CONFIG_KLIPS_ENC_AES_MODULE)
 	ixt_module:	THIS_MODULE,
 #endif
 	ixt_e_keylen:	ESP_AES_KEY_SZ_MAX,
