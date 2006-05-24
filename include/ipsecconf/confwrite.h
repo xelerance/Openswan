@@ -24,6 +24,7 @@
 #include "constants.h"
 #endif
 
+void confwrite_list(FILE *out, char *prefix, int val, struct keyword_def *k);
 void confwrite(struct starter_config *cfg, FILE *out);
 
 

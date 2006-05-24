@@ -189,6 +189,7 @@ static int load_setup (struct starter_config *cfg
 		assert(kw->keyword.keydef->field < sizeof(cfg->setup.strings));
 		if(cfg->setup.strings[kw->keyword.keydef->field]) free(cfg->setup.strings[kw->keyword.keydef->field]);
 		cfg->setup.strings[kw->keyword.keydef->field] = xstrdup(kw->string);
+		cfg->setup.strings_set[kw->keyword.keydef->field]=TRUE;
 		break;
 
 	    case kt_appendstring:
@@ -196,6 +197,7 @@ static int load_setup (struct starter_config *cfg
 		if(!cfg->setup.strings[kw->keyword.keydef->field])
 		{
 		    cfg->setup.strings[kw->keyword.keydef->field] = xstrdup(kw->string);
+		    cfg->setup.strings_set[kw->keyword.keydef->field]=TRUE;
 		} else {
 		    int len;
 		    char *s;
@@ -210,6 +212,7 @@ static int load_setup (struct starter_config *cfg
 		    strncat(s, kw->string, len);
 		    
 		    cfg->setup.strings[kw->keyword.keydef->field] = s;
+		    cfg->setup.strings_set[kw->keyword.keydef->field]=TRUE;
 		}
 		break;
 		
@@ -223,6 +226,7 @@ static int load_setup (struct starter_config *cfg
 		/* all treated as a number for now */
 		assert(kw->keyword.keydef->field < sizeof(cfg->setup.options));
 		cfg->setup.options[kw->keyword.keydef->field] = kw->number;
+		cfg->setup.options_set[kw->keyword.keydef->field]=TRUE;
 		break;
 
 	    case kt_bitstring:
