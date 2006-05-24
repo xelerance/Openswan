@@ -1574,6 +1574,9 @@ void pfkey_proto_init(struct net_protocol *pro)
  * Revision 1.102  2005/09/14 16:37:23  mcr
  * 	fix to compile on 2.4.
  *
+ * Revision 1.102  2005/09/14 16:37:23  mcr
+ * 	fix to compile on 2.4.
+ *
  * Revision 1.101  2005/09/06 01:42:25  mcr
  *    removed additional SOCKOPS_WRAPPED code
  *

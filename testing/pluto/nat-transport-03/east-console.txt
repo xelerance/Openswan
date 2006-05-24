@@ -1,0 +1,26 @@
+east:~#
+ TESTNAME=nat-transport-03
+east:~#
+ source /testing/pluto/bin/eastlocal.sh
+east:~#
+ sh /etc/init.d/inetd restart
+Restarting internet superserver: inetd.
+east:~#
+ ipsec setup start
+ipsec_setup: Starting Openswan IPsec VERSION
+east:~#
+ ipsec auto --add north--east-port3
+east:~#
+ ipsec auto --add road--east-port3
+east:~#
+ ipsec whack --debug-control --debug-controlmore --debug-crypt
+east:~#
+ /testing/pluto/bin/wait-until-pluto-started
+east:~#
+ 
+
+east:~#
+east:~#
+ if [ -f /tmp/core ]; then echo CORE FOUND; mv /tmp/core /var/tmp; fi
+east:~#
+

@@ -1,0 +1,29 @@
+***************
+*** 23,34 ****
+  EAST_INIT_SCRIPT=eastinit.sh
+  EAST_FINAL_SCRIPT=final.sh
+  REF_EAST_CONSOLE_OUTPUT=east-console.txt
+  
+  NORTHHOST=north
+  NORTH_INIT_SCRIPT=northinit.sh
+  NORTH_RUN_SCRIPT=northrun.sh
+  NORTH_FINAL_SCRIPT=final.sh
+  REF_NORTH_CONSOLE_OUTPUT=north-console.txt
+  
+  NICHOST=nic
+  NIC_INIT_SCRIPT=nicinit.sh
+--- 24,37 ----
+  EAST_INIT_SCRIPT=eastinit.sh
+  EAST_FINAL_SCRIPT=final.sh
+  REF_EAST_CONSOLE_OUTPUT=east-console.txt
++ REF26_EAST_CONSOLE_OUTPUT=east-console.txt
+  
+  NORTHHOST=north
+  NORTH_INIT_SCRIPT=northinit.sh
+  NORTH_RUN_SCRIPT=northrun.sh
+  NORTH_FINAL_SCRIPT=final.sh
+  REF_NORTH_CONSOLE_OUTPUT=north-console.txt
++ REF26_NORTH_CONSOLE_OUTPUT=north-console.txt
+  
+  NICHOST=nic
+  NIC_INIT_SCRIPT=nicinit.sh
