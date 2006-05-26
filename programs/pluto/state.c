@@ -853,6 +853,7 @@ void fmt_state(struct state *st, time_t n
     if (IS_IPSEC_SA_ESTABLISHED(st->st_state))
     {
 	dpdbuf[0]='\0';
+	snprintf(dpdbuf, sizeof(dpdbuf), "; isakmp#%lu", (unsigned long)st->st_clonedfrom);
     } else {
 	if(st->hidden_variables.st_dpd) {
 	    time_t n = time(NULL);
