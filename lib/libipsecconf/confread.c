@@ -76,6 +76,11 @@ static void default_values (struct starter_config *cfg)
 	anyaddr(AF_INET, &cfg->conn_default.right.addr);
 	anyaddr(AF_INET, &cfg->conn_default.right.nexthop);
 
+	/* default is to look in DNS */
+	cfg->conn_default.left.key_from_DNS_on_demand = TRUE;
+	cfg->conn_default.right.key_from_DNS_on_demand = TRUE;
+
+
 	cfg->conn_default.options[KBF_AUTO] = STARTUP_NO;
 	cfg->conn_default.state = STATE_LOADED;
 }
@@ -357,20 +362,29 @@ static int validate_end(struct starter_conn *conn_st
 	end->id = xstrdup(value);
     }
 
-    /* validate the KSCF_RSAKEY1/RSAKEY2 */
-    if(end->strings[KSCF_RSAKEY1] != NULL)
-    {
-	char *value = end->strings[KSCF_RSAKEY1];
+    switch(end->options[KSCF_RSAKEY1]) {
+    case PUBKEY_DNS:
+    case PUBKEY_DNSONDEMAND:
+	end->key_from_DNS_on_demand = TRUE;
+	break;
 
-	if (end->rsakey1) free(end->rsakey1);
-	end->rsakey1 = xstrdup(value);
-    }
-    if(end->strings[KSCF_RSAKEY2] != NULL)
-    {
-	char *value = end->strings[KSCF_RSAKEY2];
-
-	if (end->rsakey2) free(end->rsakey2);
-	end->rsakey2 = xstrdup(value);
+    default:
+	end->key_from_DNS_on_demand = FALSE;
+	/* validate the KSCF_RSAKEY1/RSAKEY2 */
+	if(end->strings[KSCF_RSAKEY1] != NULL)
+	{
+	    char *value = end->strings[KSCF_RSAKEY1];
+	    
+	    if (end->rsakey1) free(end->rsakey1);
+	    end->rsakey1 = xstrdup(value);
+	}
+	if(end->strings[KSCF_RSAKEY2] != NULL)
+	{
+	    char *value = end->strings[KSCF_RSAKEY2];
+	    
+	    if (end->rsakey2) free(end->rsakey2);
+	    end->rsakey2 = xstrdup(value);
+	}
     }
 
     return err;
