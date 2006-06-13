@@ -34,6 +34,7 @@ case "$PLUTO_VERSION" in
 	exit 2
 	;;
 1.*)	;;
+2.*)	;;
 *)	echo "$0: unknown interface version \`$PLUTO_VERSION'" >&2
 	exit 2
 	;;
