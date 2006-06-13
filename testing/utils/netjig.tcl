@@ -17,9 +17,7 @@ proc netjigdebug {msg} {
 proc netjigcmddebug {msg} {
     global env
     if {[info exists env(NETJIGTESTDEBUG)]} {
-	if {$env(NETJIGTESTDEBUG) == "netjig"} {
-	    puts -nonewline stderr $msg
-	}
+	puts -nonewline stderr $msg
     }
 }
 
@@ -186,8 +184,10 @@ proc playscript {umlname scriptname} {
     foreach host $managed_hosts {
 	# insert trace of which script is where. This gets sanitized
 	# out by east-prompt-splitline.pl
-	expectprompt $umlid($host,spawnid) "in start of playscript $scriptname for $umlname"
-	send -i $umlid($host,spawnid) -- ": === NETJIG start of $umlname $scriptname \r"
+	if {[ info exists umlid($host,spawnid)]} {
+	    expectprompt $umlid($host,spawnid) "in start of playscript $scriptname for $umlname"
+	    send -i $umlid($host,spawnid) -- ": === NETJIG start of $umlname $scriptname \r"
+	}
     }
 
     dumbplayscript $umlname $scriptname
@@ -474,7 +474,7 @@ proc set_from_env {host param varname} {
     
     netjigdebug "Looking for $varname..."
     if {[info exists env($varname)]} {
-	netjigdebug "found it: $env($varname)"
+	netjigdebug "found it: umlid($host,$param)=$env($varname)"
 	set umlid($host,$param) $env($varname)
     }
 }
