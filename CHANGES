@@ -1,22 +1,12 @@
 Please see docs/KNOWN_BUGS file for more information
 
-v2.5.0sbs4
+#public
 
     fixes so that starter will now compile
     move whacklib to lib/libwhack
     adjust makefiles to work with OBJDIR version of Makefile.program
     switch to OBJDIR in programs/* and lib/* if it is defined
 
-    When a template conn is instantiated for a phase 1 configuration, it
-	may still need to be adjusted to a virtual IP address. In addition,
-	change the order of the virtual IP address setting and the
-	port-wildcard processing.
-        This patch also provides some additional debugging of the proposal
-	which actually processed by the machinery.
-
-    tests for L2TP+X.509 L2TP configuration --- 2 clients behind the
-        same NAT with certificates that need to have their connection both
-        instantiated (in phase 1) and virtualized (in phase 2).
     added sanitizer for PID files
     be smarter about including git version info into version
     We need to use /dev/urandom first, as it has more random than /dev/random.
