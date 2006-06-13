@@ -886,7 +886,7 @@ pfkey_add_sa(const struct kernel_sa *sa, bool replace)
     success = pfkey_build(pfkey_sa_build(&extensions[SADB_EXT_SA]
 					 , SADB_EXT_SA
 					 , sa->spi	/* in network order */
-					 , sa->replay_window, SADB_SASTATE_MATURE
+					 , sa->replay_window, K_SADB_SASTATE_MATURE
 					 , sa->authalg, sa->encalg, 0)
 			  , "pfkey_sa Add SA", sa->text_said, extensions);
     if(!success) return FALSE;
@@ -1017,7 +1017,7 @@ pfkey_del_sa(const struct kernel_sa *sa)
     && pfkey_build(pfkey_sa_build(&extensions[SADB_EXT_SA]
 	    , SADB_EXT_SA
 	    , sa->spi	/* in host order */
-	    , 0, SADB_SASTATE_MATURE, 0, 0, 0)
+	    , 0, K_SADB_SASTATE_MATURE, 0, 0, 0)
 	, "pfkey_sa delete SA", sa->text_said, extensions)
 
     && pfkeyext_address(SADB_EXT_ADDRESS_SRC, sa->src

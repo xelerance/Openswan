@@ -1277,7 +1277,7 @@ main(int argc, char *argv[])
 					   SADB_EXT_SA,
 					   htonl(spi), /* in network order */
 					   replay_window,
-					   SADB_SASTATE_MATURE,
+					   K_SADB_SASTATE_MATURE,
 					   authalg,
 					   encryptalg,
 					   0))) {

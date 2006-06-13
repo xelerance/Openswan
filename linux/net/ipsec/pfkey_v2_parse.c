@@ -61,7 +61,6 @@ extern int debug_pfkey;
 
 # include <openswan.h>
 # include "constants.h" 
-# include "programs/pluto/defs.h"  /* for PRINTF_LIKE */
 
 #endif /* __KERNEL__ */
 
@@ -77,8 +76,8 @@ extern int debug_pfkey;
 #include <openswan/pfkey_debug.h>
 
 unsigned int pfkey_lib_debug = PF_KEY_DEBUG_PARSE_NONE;
-void (*pfkey_debug_func)(const char *message, ...) PRINTF_LIKE(1);
-void (*pfkey_error_func)(const char *message, ...) PRINTF_LIKE(1);
+int (*pfkey_debug_func)(const char *message, ...) PRINTF_LIKE(1);
+int (*pfkey_error_func)(const char *message, ...) PRINTF_LIKE(1);
 
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
@@ -168,21 +167,6 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 		SENDERR(EINVAL);
 	}
 	
-#if 0
-	/* check if this structure is short, and if so, fix it up.
-	 * XXX this is NOT the way to do things.
-	 */
-	if(pfkey_sa->sadb_sa_len == sizeof(struct sadb_sa_v1)/IPSEC_PFKEYv2_ALIGN) {
-
-		/* yes, so clear out a temporary structure, and copy first */
-		memset(&sav2, 0, sizeof(sav2));
-		memcpy(&sav2, pfkey_sa, sizeof(struct sadb_sa_v1));
-		sav2.sadb_x_sa_ref=-1;
-		sav2.sadb_sa_len = sizeof(struct sadb_sa) / IPSEC_PFKEYv2_ALIGN;
-		
-		pfkey_sa = &sav2;
-	}
-#endif
 
 
 	if(pfkey_sa->sadb_sa_len != sizeof(struct sadb_sa) / IPSEC_PFKEYv2_ALIGN) {
@@ -322,14 +306,13 @@ pfkey_lifetime_parse(struct sadb_ext  *pfkey_ext)
 
 	DEBUGGING(PF_KEY_DEBUG_PARSE_STRUCT,
 		  "pfkey_lifetime_parse: "
-		  "life_type=%d(%s) alloc=%u bytes=%u add=%u use=%u pkts=%u.\n", 
+		  "life_type=%d(%s) alloc=%u bytes=%u add=%u use=%u.\n", 
 		  pfkey_lifetime->sadb_lifetime_exttype,
 		  pfkey_v2_sadb_ext_string(pfkey_lifetime->sadb_lifetime_exttype),
 		  pfkey_lifetime->sadb_lifetime_allocations,
 		  (unsigned)pfkey_lifetime->sadb_lifetime_bytes,
 		  (unsigned)pfkey_lifetime->sadb_lifetime_addtime,
-		  (unsigned)pfkey_lifetime->sadb_lifetime_usetime,
-		  pfkey_lifetime->sadb_x_lifetime_packets); 
+		  (unsigned)pfkey_lifetime->sadb_lifetime_usetime);
 errlab:
 	return error;
 }
@@ -822,14 +805,6 @@ pfkey_prop_parse(struct sadb_ext *pfkey_ext)
 			SENDERR(EINVAL);
 		}
 
-		if(pfkey_comb->sadb_comb_reserved) {
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-				"pfkey_prop_parse: "
-				"comb[%d].res=%d, must be zero.\n",
-				i,
-				pfkey_comb->sadb_comb_reserved);
-			SENDERR(EINVAL);
-		}
 		pfkey_comb++;
 	}
 
@@ -1210,13 +1185,14 @@ struct pf_key_ext_parsers_def *ext_default_parsers[]=
 	&pfkey_address_parse_def,
 	&pfkey_address_parse_def,
 	&pfkey_x_ext_debug_parse_def,
-	&pfkey_x_ext_protocol_parse_def
+	&pfkey_x_ext_protocol_parse_def,
 #ifdef NAT_TRAVERSAL
-	,
 	&pfkey_x_ext_nat_t_type_parse_def,
 	&pfkey_x_ext_nat_t_port_parse_def,
 	&pfkey_x_ext_nat_t_port_parse_def,
-	&pfkey_address_parse_def
+	&pfkey_address_parse_def,
+#else
+	NULL,NULL,NULL,NULL,
 #endif
 };
 
@@ -1593,252 +1569,6 @@ errlab:
 }
 
 /*
- * $Log: pfkey_v2_parse.c,v $
- * Revision 1.65  2005/04/06 17:46:05  mcr
- * 	failure to recognize an extension is considered an error.
- * 	This could be a problem in the future, but we need some kind
- * 	of logging. This should be rate limited, probably.
- *
- * Revision 1.64  2005/01/26 00:50:35  mcr
- * 	adjustment of confusion of CONFIG_IPSEC_NAT vs CONFIG_KLIPS_NAT,
- * 	and make sure that NAT_TRAVERSAL is set as well to match
- * 	userspace compiles of code.
- *
- * Revision 1.63  2004/10/28 22:54:10  mcr
- * 	results from valgrind, thanks to: Harald Hoyer <harald@redhat.com>
- *
- * Revision 1.62  2004/10/03 01:26:36  mcr
- * 	fixes for gcc 3.4 compilation.
- *
- * Revision 1.61  2004/07/10 19:11:18  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.59  2004/04/18 03:03:49  mcr
- * 	renamed common include files from pluto directory.
- *
- * Revision 1.58  2004/03/08 01:59:08  ken
- * freeswan.h -> openswan.h
- *
- * Revision 1.57  2003/12/10 01:20:19  mcr
- * 	NAT-traversal patches to KLIPS.
- *
- * Revision 1.56  2003/12/04 23:01:12  mcr
- * 	removed ipsec_netlink.h
- *
- * Revision 1.55  2003/11/07 01:30:37  ken
- * Cast sizeof() to int to keep things 64bit clean
- *
- * Revision 1.54  2003/10/31 02:27:12  mcr
- * 	pulled up port-selector patches and sa_id elimination.
- *
- * Revision 1.53.20.2  2003/10/29 01:11:32  mcr
- * 	added debugging for pfkey library.
- *
- * Revision 1.53.20.1  2003/09/21 13:59:44  mcr
- * 	pre-liminary X.509 patch - does not yet pass tests.
- *
- * Revision 1.53  2003/01/30 02:32:09  rgb
- *
- * Rename SAref table macro names for clarity.
- * Convert IPsecSAref_t from signed to unsigned to fix apparent SAref exhaustion bug.
- *
- * Revision 1.52  2002/12/30 06:53:07  mcr
- * 	deal with short SA structures... #if 0 out for now. Probably
- * 	not quite the right way.
- *
- * Revision 1.51  2002/12/13 18:16:02  mcr
- * 	restored sa_ref code
- *
- * Revision 1.50  2002/12/13 18:06:52  mcr
- * 	temporarily removed sadb_x_sa_ref reference for 2.xx
- *
- * Revision 1.49  2002/10/05 05:02:58  dhr
- *
- * C labels go on statements
- *
- * Revision 1.48  2002/09/20 15:40:45  rgb
- * Added sadb_x_sa_ref to struct sadb_sa.
- *
- * Revision 1.47  2002/09/20 05:01:31  rgb
- * Fixed usage of pfkey_lib_debug.
- * Format for function declaration style consistency.
- * Added text labels to elucidate numeric values presented.
- * Re-organised debug output to reduce noise in output.
- *
- * Revision 1.46  2002/07/24 18:44:54  rgb
- * Type fiddling to tame ia64 compiler.
- *
- * Revision 1.45  2002/05/23 07:14:11  rgb
- * Cleaned up %p variants to 0p%p for test suite cleanup.
- *
- * Revision 1.44  2002/04/24 07:55:32  mcr
- * 	#include patches and Makefiles for post-reorg compilation.
- *
- * Revision 1.43  2002/04/24 07:36:40  mcr
- * Moved from ./lib/pfkey_v2_parse.c,v
- *
- * Revision 1.42  2002/01/29 22:25:36  rgb
- * Re-add ipsec_kversion.h to keep MALLOC happy.
- *
- * Revision 1.41  2002/01/29 01:59:10  mcr
- * 	removal of kversions.h - sources that needed it now use ipsec_param.h.
- * 	updating of IPv6 structures to match latest in6.h version.
- * 	removed dead code from openswan.h that also duplicated kversions.h
- * 	code.
- *
- * Revision 1.40  2002/01/20 20:34:50  mcr
- * 	added pfkey_v2_sadb_type_string to decode sadb_type to string.
- *
- * Revision 1.39  2001/11/27 05:29:22  mcr
- * 	pfkey parses are now maintained by a structure
- * 	that includes their name for debug purposes.
- * 	DEBUGGING() macro changed so that it takes a debug
- * 	level so that pf_key() can use this to decode the
- * 	structures without innundanting humans.
- * 	Also uses pfkey_v2_sadb_ext_string() in messages.
- *
- * Revision 1.38  2001/11/06 19:47:47  rgb
- * Added packet parameter to lifetime and comb structures.
- *
- * Revision 1.37  2001/10/18 04:45:24  rgb
- * 2.4.9 kernel deprecates linux/malloc.h in favour of linux/slab.h,
- * lib/openswan.h version macros moved to lib/kversions.h.
- * Other compiler directive cleanups.
- *
- * Revision 1.36  2001/06/14 19:35:16  rgb
- * Update copyright date.
- *
- * Revision 1.35  2001/05/03 19:44:51  rgb
- * Standardise on SENDERR() macro.
- *
- * Revision 1.34  2001/03/16 07:41:51  rgb
- * Put openswan.h include before pluto includes.
- *
- * Revision 1.33  2001/02/27 07:13:51  rgb
- * Added satype2name() function.
- * Added text to default satype_tbl entry.
- * Added satype2name() conversions for most satype debug output.
- *
- * Revision 1.32  2001/02/26 20:01:09  rgb
- * Added internal IP protocol 61 for magic SAs.
- * Ditch unused sadb_satype2proto[], replaced by satype2proto().
- * Re-formatted debug output (split lines, consistent spacing).
- * Removed acquire, register and expire requirements for a known satype.
- * Changed message type checking to a switch structure.
- * Verify expected NULL auth for IPCOMP.
- * Enforced spi > 0x100 requirement, now that pass uses a magic SA for
- * appropriate message types.
- *
- * Revision 1.31  2000/12/01 07:09:00  rgb
- * Added ipcomp sanity check to require encalgo is set.
- *
- * Revision 1.30  2000/11/17 18:10:30  rgb
- * Fixed bugs mostly relating to spirange, to treat all spi variables as
- * network byte order since this is the way PF_KEYv2 stored spis.
- *
- * Revision 1.29  2000/10/12 00:02:39  rgb
- * Removed 'format, ##' nonsense from debug macros for RH7.0.
- *
- * Revision 1.28  2000/09/20 16:23:04  rgb
- * Remove over-paranoid extension check in the presence of sadb_msg_errno.
- *
- * Revision 1.27  2000/09/20 04:04:21  rgb
- * Changed static functions to DEBUG_NO_STATIC to reveal function names in
- * oopsen.
- *
- * Revision 1.26  2000/09/15 11:37:02  rgb
- * Merge in heavily modified Svenning Soerensen's <svenning@post5.tele.dk>
- * IPCOMP zlib deflate code.
- *
- * Revision 1.25  2000/09/12 22:35:37  rgb
- * Restructured to remove unused extensions from CLEARFLOW messages.
- *
- * Revision 1.24  2000/09/12 18:59:54  rgb
- * Added Gerhard's IPv6 support to pfkey parts of libopenswan.
- *
- * Revision 1.23  2000/09/12 03:27:00  rgb
- * Moved DEBUGGING definition to compile kernel with debug off.
- *
- * Revision 1.22  2000/09/09 06:39:27  rgb
- * Restrict pfkey errno check to downward messages only.
- *
- * Revision 1.21  2000/09/08 19:22:34  rgb
- * Enabled pfkey_sens_parse().
- * Added check for errno on downward acquire messages only.
- *
- * Revision 1.20  2000/09/01 18:48:23  rgb
- * Fixed reserved check bug and added debug output in
- * pfkey_supported_parse().
- * Fixed debug output label bug in pfkey_ident_parse().
- *
- * Revision 1.19  2000/08/27 01:55:26  rgb
- * Define OCTETBITS and PFKEYBITS to avoid using 'magic' numbers in code.
- *
- * Revision 1.18  2000/08/24 17:00:36  rgb
- * Ignore unknown extensions instead of failing.
- *
- * Revision 1.17  2000/06/02 22:54:14  rgb
- * Added Gerhard Gessler's struct sockaddr_storage mods for IPv6 support.
- *
- * Revision 1.16  2000/05/10 19:25:11  rgb
- * Fleshed out proposal and supported extensions.
- *
- * Revision 1.15  2000/01/24 21:15:31  rgb
- * Added disabled pluto pfkey lib debug flag.
- * Added algo debugging reporting.
- *
- * Revision 1.14  2000/01/22 23:24:29  rgb
- * Added new functions proto2satype() and satype2proto() and lookup
- * table satype_tbl.  Also added proto2name() since it was easy.
- *
- * Revision 1.13  2000/01/21 09:43:59  rgb
- * Cast ntohl(spi) as (unsigned long int) to shut up compiler.
- *
- * Revision 1.12  2000/01/21 06:28:19  rgb
- * Added address cases for eroute flows.
- * Indented compiler directives for readability.
- * Added klipsdebug switching capability.
- *
- * Revision 1.11  1999/12/29 21:14:59  rgb
- * Fixed debug text cut and paste typo.
- *
- * Revision 1.10  1999/12/10 17:45:24  rgb
- * Added address debugging.
- *
- * Revision 1.9  1999/12/09 23:11:42  rgb
- * Ditched <string.h> include since we no longer use memset().
- * Use new pfkey_extensions_init() instead of memset().
- * Added check for SATYPE in pfkey_msg_build().
- * Tidy up comments and debugging comments.
- *
- * Revision 1.8  1999/12/07 19:55:26  rgb
- * Removed unused first argument from extension parsers.
- * Removed static pluto debug flag.
- * Moved message type and state checking to pfkey_msg_parse().
- * Changed print[fk] type from lx to x to quiet compiler.
- * Removed redundant remain check.
- * Changed __u* types to uint* to avoid use of asm/types.h and
- * sys/types.h in userspace code.
- *
- * Revision 1.7  1999/12/01 22:20:51  rgb
- * Moved pfkey_lib_debug variable into the library.
- * Added pfkey version check into header parsing.
- * Added check for SATYPE only for those extensions that require a
- * non-zero value.
- *
- * Revision 1.6  1999/11/27 11:58:05  rgb
- * Added ipv6 headers.
- * Moved sadb_satype2proto protocol lookup table from
- * klips/net/ipsec/pfkey_v2_parser.c.
- * Enable lifetime_current checking.
- * Debugging error messages added.
- * Add argument to pfkey_msg_parse() for direction.
- * Consolidated the 4 1-d extension bitmap arrays into one 4-d array.
- * Add CVS log entry to bottom of file.
- * Moved auth and enc alg check to pfkey_msg_parse().
- * Enable accidentally disabled spirange parsing.
- * Moved protocol/algorithm checks from klips/net/ipsec/pfkey_v2_parser.c
- *
  * Local variables:
  * c-file-style: "linux"
  * End:
