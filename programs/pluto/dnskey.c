@@ -1052,21 +1052,21 @@ process_answer_section(pb_stream *pbs
 
 	tail = rrf.rdlength;
 
-	if (rrf.type == type && rrf.class == C_IN)
+	if (rrf.type == type && rrf.class == ns_c_in)
 	{
 	    err_t ugh;
 
 	    switch (type)
 	    {
 #ifdef USE_KEYRR
-	    case T_KEY:
+	    case ns_t_key:
 		ugh = process_key_rr(pbs->cur, tail, doit, *dns_auth_level, cr);
 		break;
 #endif /* USE_KEYRR */
-	    case T_TXT:
+	    case ns_t_txt:
 		ugh = process_txt_rr(pbs->cur, tail, doit, *dns_auth_level, cr);
 		break;
-	    case T_SIG:
+	    case ns_t_sig:
 		/* Check if SIG RR authenticates what we are learning.
 		 * The RRset covered by a SIG must have the same owner,
 		 * class, and type.
@@ -1193,7 +1193,7 @@ process_dns_answer(struct adns_continuation *const cr
 	if (qsf.qtype != type)
 	    return "unexpected QTYPE in Question Section";
 
-	if (qsf.qclass != C_IN)
+	if (qsf.qclass != ns_c_in)
 	    return "unexpected QCLASS in Question Section";
     }
 
