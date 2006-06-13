@@ -499,7 +499,6 @@ bool nat_traversal_add_natoa(u_int8_t np, pb_stream *outs,
 			     struct state *st, bool initiator)
 {
 	struct isakmp_nat_oa natoa;
-	pb_stream pbs;
 	unsigned char ip_val[sizeof(struct in6_addr)];
 	size_t ip_len = 0;
 	ip_address *ipinit, *ipresp;
@@ -545,15 +544,19 @@ bool nat_traversal_add_natoa(u_int8_t np, pb_stream *outs,
 			return FALSE;
 	}
 
-	if (!out_struct(&natoa, &isakmp_nat_oa, outs, &pbs))
-		return FALSE;
-
-	if (!out_raw(ip_val, ip_len, &pbs, "NAT-OAi"))
-		return FALSE;
-
-	DBG(DBG_NATT,
-		DBG_dump("NAT-OAi (S):", ip_val, ip_len);
-	);
+	{
+		pb_stream pbs;
+		if (!out_struct(&natoa, &isakmp_nat_oa, outs, &pbs))
+			return FALSE;
+		
+		if (!out_raw(ip_val, ip_len, &pbs, "NAT-OAi"))
+			return FALSE;
+		
+		DBG(DBG_NATT,
+		    DBG_dump("NAT-OAi (S):", ip_val, ip_len);
+			);
+		close_output_pbs(&pbs);
+	}
 
 	
 	/* output second NAT-OA */
@@ -577,17 +580,20 @@ bool nat_traversal_add_natoa(u_int8_t np, pb_stream *outs,
 			return FALSE;
 	}
 
-	if (!out_struct(&natoa, &isakmp_nat_oa, outs, &pbs))
-		return FALSE;
-
-	if (!out_raw(ip_val, ip_len, &pbs, "NAT-OAr"))
-		return FALSE;
-
-	DBG(DBG_NATT,
-		DBG_dump("NAT-OAr (S):", ip_val, ip_len);
-	);
-
-	close_output_pbs(&pbs);
+	{
+		pb_stream pbs;
+		if (!out_struct(&natoa, &isakmp_nat_oa, outs, &pbs))
+			return FALSE;
+		
+		if (!out_raw(ip_val, ip_len, &pbs, "NAT-OAr"))
+			return FALSE;
+		
+		DBG(DBG_NATT,
+		    DBG_dump("NAT-OAr (S):", ip_val, ip_len);
+			);
+		
+		close_output_pbs(&pbs);
+	}
 	return TRUE;
 }
 
