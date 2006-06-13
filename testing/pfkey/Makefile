@@ -11,20 +11,21 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.15 2005/11/12 20:42:44 patrickn Exp $
+# RCSID $Id: Makefile,v 1.4 2005/05/24 00:51:44 mcr Exp $
 
-OPENSWANSRCDIR?=$(shell cd ..; pwd)
+OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include $(OPENSWANSRCDIR)/Makefile.inc
+include ${srcdir}Makefile.unit-settings
 
-SUBDIRS=lib utils 
-SUBDIRS+=klips 
-SUBDIRS+=pluto dnssec scripts packaging
+srcdir?=$(shell pwd)/
 
-def:
-	@echo "Please read doc/intro.html or INSTALL before running make"
-	@false
+SUBDIRS=eroute-01 spi-01 spigrp-01 tncfg-01
+
+def:	check
 
 # programs
+
+check:	include/openswan.h include/linux/madelinks include/net/madelinks include/asm/madelinks
 
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
@@ -32,3 +33,7 @@ cleanall distclean mostlyclean realclean install programs checkprograms check cl
 		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1;\
 	done; 
 
+# 
+# Local Variables: 
+# compile-command: "make"
+# End: 
