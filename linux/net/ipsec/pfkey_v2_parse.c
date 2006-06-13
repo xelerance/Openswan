@@ -200,23 +200,23 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 	}
 #endif
 	
-#if SADB_SASTATE_MAX < 255	
-	if(pfkey_sa->sadb_sa_state > SADB_SASTATE_MAX) {
+#if K_SADB_SASTATE_MAX < 255	
+	if(pfkey_sa->sadb_sa_state > K_SADB_SASTATE_MAX) {
 		ERROR(
 			  "pfkey_sa_parse: "
 			  "state=%d exceeds MAX=%d.\n",
 			  pfkey_sa->sadb_sa_state,
-			  SADB_SASTATE_MAX);
+			  K_SADB_SASTATE_MAX);
 		SENDERR(EINVAL);
 	}
 #endif
 	
-	if(pfkey_sa->sadb_sa_state == SADB_SASTATE_DEAD) {
+	if(pfkey_sa->sadb_sa_state == K_SADB_SASTATE_DEAD) {
 		ERROR(
 			  "pfkey_sa_parse: "
 			  "state=%d is DEAD=%d.\n",
 			  pfkey_sa->sadb_sa_state,
-			  SADB_SASTATE_DEAD);
+			  K_SADB_SASTATE_DEAD);
 		SENDERR(EINVAL);
 	}
 	
@@ -1460,8 +1460,8 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	}
 	
 	if((dir == EXT_BITS_IN) && (pfkey_msg->sadb_msg_type == SADB_X_DELFLOW)
-	   && ((extensions_seen	& SADB_X_EXT_ADDRESS_DELFLOW)
-	       != SADB_X_EXT_ADDRESS_DELFLOW)
+	   && ((extensions_seen	& K_SADB_X_EXT_ADDRESS_DELFLOW)
+	       != K_SADB_X_EXT_ADDRESS_DELFLOW)
 	   && (((extensions_seen & (1<<SADB_EXT_SA)) != (1<<SADB_EXT_SA))
 	   || ((((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_flags
 		& SADB_X_SAFLAGS_CLEARFLOW)
@@ -1469,8 +1469,8 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 			"pfkey_msg_parse: "
 			"required SADB_X_DELFLOW extensions missing: either %08x must be present or %08x must be present with SADB_X_SAFLAGS_CLEARFLOW set.\n",
-			SADB_X_EXT_ADDRESS_DELFLOW
-			- (extensions_seen & SADB_X_EXT_ADDRESS_DELFLOW),
+			K_SADB_X_EXT_ADDRESS_DELFLOW
+			- (extensions_seen & K_SADB_X_EXT_ADDRESS_DELFLOW),
 			(1<<SADB_EXT_SA) - (extensions_seen & (1<<SADB_EXT_SA)));
 		SENDERR(EINVAL);
 	}
@@ -1480,12 +1480,12 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	case SADB_UPDATE:
 		/* check maturity */
 		if(((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state !=
-		   SADB_SASTATE_MATURE) {
+		   K_SADB_SASTATE_MATURE) {
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
 				"state=%d for add or update should be MATURE=%d.\n",
 				((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state,
-				SADB_SASTATE_MATURE);
+				K_SADB_SASTATE_MATURE);
 			SENDERR(EINVAL);
 		}
 		

@@ -288,7 +288,7 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 	/* ipsec_sa_put(irs->ipsp);*/ /* incomplete */
 
 	/* If it is in larval state, drop the packet, we cannot process yet. */
-	if(newipsp->ips_state == SADB_SASTATE_LARVAL) {
+	if(newipsp->ips_state == K_SADB_SASTATE_LARVAL) {
 		KLIPS_PRINT(debug_rcv,
 			    "klips_debug:ipsec_rcv: "
 			    "ipsec_sa in larval state, cannot be used yet, dropping packet.\n");
@@ -299,7 +299,7 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 		return IPSEC_RCV_SAIDNOTLIVE;
 	}
 
-	if(newipsp->ips_state == SADB_SASTATE_DEAD) {
+	if(newipsp->ips_state == K_SADB_SASTATE_DEAD) {
 		KLIPS_PRINT(debug_rcv,
 			    "klips_debug:ipsec_rcv: "
 			    "ipsec_sa in dead state, cannot be used any more, dropping packet.\n");

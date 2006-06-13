@@ -300,7 +300,7 @@ pfkey_getspi_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	extr->ips->ips_rcvif = NULL;
 	extr->ips->ips_life.ipl_addtime.ipl_count = jiffies/HZ;
 
-	extr->ips->ips_state = SADB_SASTATE_LARVAL;
+	extr->ips->ips_state = K_SADB_SASTATE_LARVAL;
 
 	if(!extr->ips->ips_life.ipl_allocations.ipl_count) {
 		extr->ips->ips_life.ipl_allocations.ipl_count += 1;
@@ -317,7 +317,7 @@ pfkey_getspi_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 							SADB_EXT_SA,
 							extr->ips->ips_said.spi,
 							0,
-							SADB_SASTATE_LARVAL,
+							K_SADB_SASTATE_LARVAL,
 							0,
 							0,
 							0,
@@ -405,12 +405,12 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 
 	pfkey_extensions_init(extensions_reply);
 
-	if(((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state != SADB_SASTATE_MATURE) {
+	if(((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state != K_SADB_SASTATE_MATURE) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_update_parse: "
 			    "error, sa_state=%d must be MATURE=%d\n",
 			    ((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state,
-			    SADB_SASTATE_MATURE);
+			    K_SADB_SASTATE_MATURE);
 		SENDERR(EINVAL);
 	}
 
@@ -684,12 +684,12 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 
 	pfkey_extensions_init(extensions_reply);
 
-	if(((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state != SADB_SASTATE_MATURE) {
+	if(((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state != K_SADB_SASTATE_MATURE) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_add_parse: "
 			    "error, sa_state=%d must be MATURE=%d\n",
 			    ((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state,
-			    SADB_SASTATE_MATURE);
+			    K_SADB_SASTATE_MATURE);
 		SENDERR(EINVAL);
 	}
 
