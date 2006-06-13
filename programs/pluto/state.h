@@ -15,6 +15,9 @@
  * RCSID $Id: state.h,v 1.100 2005/08/05 19:16:49 mcr Exp $
  */
 
+#ifndef _STATE_H
+#define _STATE_H
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -99,6 +102,32 @@ struct ipsec_proto_info {
     u_char *our_keymat;
     u_char *peer_keymat;
 };
+
+/* internal state that
+ * should get copied by god
+ * Eistein would be proud
+ */
+
+struct hidden_variables {
+    unsigned int   st_malformed_received;
+    unsigned int   st_malformed_sent;
+    bool           st_xauth_client_done;
+    int            st_xauth_client_attempt;
+    bool           st_modecfg_server_done;
+    bool           st_modecfg_vars_set;
+    bool           st_got_certrequest;
+    bool           st_modecfg_started;
+    bool           st_skeyid_calculated;
+    bool           st_dpd;                 /* Peer supports DPD */
+    bool           st_dpd_local;	   /* If we want DPD on this conn */
+    bool           st_logged_p1algos;      /* if we have logged algos */
+    u_int32_t      st_nat_traversal;       /* bit field of permitted
+					    * methods. If non-zero, then
+					    * NAT-T has been detected, and
+					    * should be used. */
+    ip_address     st_nat_oa;
+    ip_address     st_natd;
+};                        
 
 /* state object: record the state of a (possibly nascent) SA
  *
@@ -231,30 +260,7 @@ struct state
     struct state      *st_hashchain_next;      /* Next in list */
     struct state      *st_hashchain_prev;      /* Previous in list */
 
-    struct {
-        unsigned int   st_malformed_received;
-        unsigned int   st_malformed_sent;
-	bool           st_xauth_client_done;
-	int            st_xauth_client_attempt;
-        bool           st_modecfg_server_done;
-        bool           st_modecfg_vars_set;
-	bool           st_got_certrequest;
-        bool           st_modecfg_started;
-	bool           st_skeyid_calculated;
-	bool           st_dpd;                 /* Peer supports DPD */
-	bool           st_dpd_local;	       /* If we want DPD on this conn */
-	bool           st_logged_p1algos;      /* if we have logged algos */
-	u_int32_t      st_nat_traversal;       /* bit field of permitted
-						* methods. If non-zero, then
-						* NAT-T has been detected, and
-						* should be used. */
-	ip_address     st_nat_oa;
-	ip_address     st_natd;
-    } hidden_variables;                        /* internal state that
-						* should get copied by god
-						* Eistein would be proud
-						*/
-
+    struct hidden_variables hidden_variables;
 
     unsigned char *st_xauth_username;
 
@@ -330,6 +336,8 @@ extern void set_state_ike_endpoints(struct state *st
 				    , struct connection *c);
 
 extern void delete_cryptographic_continuation(struct state *st);
+
+#endif /* _STATE_H */
 
 /*
  * Local Variables:

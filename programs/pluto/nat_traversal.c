@@ -401,21 +401,16 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
  * 
  * Look for NAT-OA in message
  */
-void nat_traversal_natoa_lookup(struct msg_digest *md)
+void nat_traversal_natoa_lookup(struct msg_digest *md, struct hidden_variables *hv)
 {
 	struct payload_digest *p;
-	struct state *st = md->st;
 	int i;
 	ip_address ip;
 
-	if (!st || !md->iface) {
-		loglog(RC_LOG_SERIOUS, "NAT-Traversal: assert failed %s:%d",
-			__FILE__, __LINE__);
-		return;
-	}
+	passert(md->iface != NULL);
 
 	/** Initialize NAT-OA */
-	anyaddr(AF_INET, &st->hidden_variables.st_nat_oa);
+	anyaddr(AF_INET, &hv->st_nat_oa);
 
 	/** Count NAT-OA **/
 	for (p = md->chain[ISAKMP_NEXT_NATOA_RFC], i=0;
@@ -429,7 +424,7 @@ void nat_traversal_natoa_lookup(struct msg_digest *md)
 	if (i==0) {
 		return;
 	}
-	else if (!(st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_PEER))) {
+	else if (!(hv->st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_PEER))) {
 		loglog(RC_LOG_SERIOUS, "NAT-Traversal: received %d NAT-OA. "
 			"ignored because peer is not NATed", i);
 		return;
@@ -495,7 +490,7 @@ void nat_traversal_natoa_lookup(struct msg_digest *md)
 		       , "NAT-Traversal: received %%any NAT-OA...");
 	}
 	else {
-		st->hidden_variables.st_nat_oa = ip;
+		hv->st_nat_oa = ip;
 	}
 }
 

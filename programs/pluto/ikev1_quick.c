@@ -394,7 +394,9 @@ decode_net_id(struct isakmp_ipsec_id *id
 	    afi = &af_inet6_info;
 	    break;
 	case ID_FQDN:
-		return TRUE;
+	    loglog(RC_COMMENT, "%s type is FQDN", which);
+	    return TRUE;
+
 	default:
 	    /* XXX support more */
 	    loglog(RC_LOG_SERIOUS, "unsupported ID type %s"
@@ -1075,21 +1077,22 @@ quick_inI1_outR1(struct msg_digest *md)
 
     if (id_pd != NULL)
     {
+	struct payload_digest *IDci = id_pd->next;
+
 	/* ??? we are assuming IPSEC_DOI */
 
 	/* IDci (initiator is peer) */
 
 	if (!decode_net_id(&id_pd->payload.ipsec_id, &id_pd->pbs
-	, &b.his.net, "peer client"))
+			   , &b.his.net, "peer client"))
 	    return STF_FAIL + INVALID_ID_INFORMATION;
 
         /* Hack for MS 818043 NAT-T Update */
-        if (id_pd->payload.ipsec_id.isaiid_idtype == ID_FQDN)
-           memset(&b.his.net, 0, sizeof(ip_subnet));
-
-        if (id_pd->payload.ipsec_id.isaiid_idtype == ID_FQDN)
-           happy(addrtosubnet(&c->spd.that.host_addr, &b.his.net));
-
+        if (id_pd->payload.ipsec_id.isaiid_idtype == ID_FQDN) {
+	    loglog(RC_LOG_SERIOUS, "Applying workaround for MS-818043 NAT-T fat");
+	    memset(&b.his.net, 0, sizeof(ip_subnet));
+	    happy(addrtosubnet(&c->spd.that.host_addr, &b.his.net));
+	}
 	/* End Hack for MS 818043 NAT-T Update */
 
 	b.his.proto = id_pd->payload.ipsec_id.isaiid_protoid;
@@ -1098,13 +1101,45 @@ quick_inI1_outR1(struct msg_digest *md)
 
 	/* IDcr (we are responder) */
 
-	if (!decode_net_id(&id_pd->next->payload.ipsec_id, &id_pd->next->pbs
-	, &b.my.net, "our client"))
+	if (!decode_net_id(&IDci->payload.ipsec_id, &IDci->pbs
+			   , &b.my.net, "our client"))
 	    return STF_FAIL + INVALID_ID_INFORMATION;
 
-	b.my.proto = id_pd->next->payload.ipsec_id.isaiid_protoid;
-	b.my.port = id_pd->next->payload.ipsec_id.isaiid_port;
+	b.my.proto = IDci->payload.ipsec_id.isaiid_protoid;
+	b.my.port = IDci->payload.ipsec_id.isaiid_port;
 	b.my.net.addr.u.v4.sin_port = htons(b.my.port);
+
+#ifdef NAT_TRAVERSAL
+	/*
+	 * if there is a NATOA payload, then use it as
+	 *    &st->st_connection->spd.that.client, if the type
+	 * of the ID was FQDN
+	 *
+	 * we actually do NATOA calculation again later on,
+	 * but we need the info here, and we don't have a state
+	 * to store it in until after we've done the authorization steps.
+	 */
+	if ((p1st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
+	    (p1st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA) &&
+	    (id_pd->payload.ipsec_id.isaiid_idtype == ID_FQDN)) {
+	    struct hidden_variables hv; 
+	    char idfqdn[32], subnet_buf[SUBNETTOT_BUF]; 
+	    int  idlen = pbs_room(&IDci->pbs);
+
+	    if(idlen > 31) idlen=31;
+	    memcpy(idfqdn, IDci->pbs.cur, idlen);
+	    idfqdn[idlen]='\0';
+
+	    hv = p1st->hidden_variables; 
+	    nat_traversal_natoa_lookup(md, &hv); 
+	    
+	    addrtosubnet(&hv.st_nat_oa,&b.his.net);
+	    subnettot(&b.his.net, 0, subnet_buf, sizeof(subnet_buf));
+
+	    loglog(RC_LOG_SERIOUS, "IDci was FQDN: %s, using NAT_OA=%s as IDci"
+		   , idfqdn, subnet_buf);
+	}
+#endif
     }
     else
     {
@@ -1537,6 +1572,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
     struct connection *c = p1st->st_connection;
     ip_subnet *our_net = &b->my.net
 	, *his_net = &b->his.net;
+    struct hidden_variables hv;
 
     /* Now that we have identities of client subnets, we must look for
      * a suitable connection (our current one only matches for hosts).
@@ -1697,7 +1733,14 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
      * do any asynchronous cryptographic operations that we may need to
      * make it all work.
      */
-    
+
+    if ((p1st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
+	(p1st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA)) {
+
+	hv = p1st->hidden_variables;
+	nat_traversal_natoa_lookup(md, &hv);
+    }
+
     /* now that we are sure of our connection, create our new state */
     {
 	struct state *const st = duplicate_state(p1st);
@@ -1735,6 +1778,9 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 
 	insert_state(st);	/* needs cookies, connection, and msgid */
 
+	/* copy hidden variables (possibly with changes */
+	st->hidden_variables = hv;
+
 	/* copy the connection's
 	 * IPSEC policy into our state.  The ISAKMP policy is water under
 	 * the bridge, I think.  It will reflect the ISAKMP SA that we
@@ -1750,10 +1796,6 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	}
 	else {
 	    st->hidden_variables.st_nat_traversal = 0;
-	}
-	if ((st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
-	    (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA)) {
-	    nat_traversal_natoa_lookup(md);
 	}
 #endif
 
@@ -1930,13 +1972,7 @@ quick_inI1_outR1_cryptotail(struct qke_continuation *qke
 	    return STF_INTERNAL_ERROR;
 	}
     }
-    if ((st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
-	(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT) &&
-	(c->spd.that.has_client)) {
-	/** Remove client **/
-	addrtosubnet(&c->spd.that.host_addr, &c->spd.that.client);
-	c->spd.that.has_client = FALSE;
-    }
+
 #endif
 
 #ifdef TPM
@@ -2017,30 +2053,69 @@ quick_inR1_outI2(struct msg_digest *md)
 	}
     }
 
+#ifdef NAT_TRAVERSAL
+	if ((st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
+	    (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA)) {
+	    nat_traversal_natoa_lookup(md, &st->hidden_variables);
+	}
+#endif
+
     /* [ IDci, IDcr ] in; these must match what we sent */
 
     {
-	struct payload_digest *const id_pd = md->chain[ISAKMP_NEXT_ID];
+	struct payload_digest *const IDci = md->chain[ISAKMP_NEXT_ID];
+	struct payload_digest *IDcr;
 
-	if (id_pd != NULL)
+	if (IDci != NULL)
 	{
 	    /* ??? we are assuming IPSEC_DOI */
 
 	    /* IDci (we are initiator) */
 
-	    if (!check_net_id(&id_pd->payload.ipsec_id, &id_pd->pbs
+	    if (!check_net_id(&IDci->payload.ipsec_id, &IDci->pbs
 	    , &st->st_myuserprotoid, &st->st_myuserport
 	    , &st->st_connection->spd.this.client
 	    , "our client"))
 		return STF_FAIL + INVALID_ID_INFORMATION;
 
+	    /* we checked elsewhere that we got two of them */
+	    IDcr = IDci->next;
+	    passert(IDcr != NULL);
+
 	    /* IDcr (responder is peer) */
 
-	    if (!check_net_id(&id_pd->next->payload.ipsec_id, &id_pd->next->pbs
+	    if (!check_net_id(&IDcr->payload.ipsec_id, &IDcr->pbs
 	    , &st->st_peeruserprotoid, &st->st_peeruserport
 	    , &st->st_connection->spd.that.client
 	    , "peer client"))
 		return STF_FAIL + INVALID_ID_INFORMATION;
+
+	    /*
+	     * if there is a NATOA payload, then use it as
+	     *    &st->st_connection->spd.that.client, if the type
+	     * of the ID was FQDN
+	     */
+#ifdef NAT_TRAVERSAL
+	    if ((st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
+		(st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA) &&
+		(IDcr->payload.ipsec_id.isaiid_idtype == ID_FQDN)) {
+		
+		char idfqdn[32], subnet_buf[SUBNETTOT_BUF];
+		int  idlen = pbs_room(&IDcr->pbs);
+		if(idlen > 31) idlen=31;
+		memcpy(idfqdn, IDcr->pbs.cur, idlen);
+		idfqdn[idlen]='\0';
+
+		addrtosubnet(&st->hidden_variables.st_nat_oa,
+			     &st->st_connection->spd.that.client);
+
+		subnettot(&st->st_connection->spd.that.client
+			  , 0, subnet_buf, sizeof(subnet_buf));
+		loglog(RC_LOG_SERIOUS, "IDcr was FQDN: %s, using NAT_OA=%s as IDcr"
+		       , idfqdn, subnet_buf);
+	    }
+#endif
+
 	}
 	else
 	{
@@ -2054,14 +2129,7 @@ quick_inR1_outI2(struct msg_digest *md)
 	    }
 	}
     }
-
-#ifdef NAT_TRAVERSAL
-	if ((st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
-	    (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA)) {
-	    nat_traversal_natoa_lookup(md);
-	}
-#endif
-
+    
     /* ??? We used to copy the accepted proposal into the state, but it was
      * never used.  From sa_pd->pbs.start, length pbs_room(&sa_pd->pbs).
      */
