@@ -138,11 +138,11 @@ set netjig1 $spawn_id
 
 netjigsetup $netjig1
 
-newswitch $netjig1 "$arpreply public"
-newswitch $netjig1 "$arpreply private"
+newswitch $netjig1 public
+newswitch $netjig1 private
 
 # this just gets rid of issues with running without a mcast address
-newswitch $netjig1 "$arpreply admin"
+newswitch $netjig1 admin
 
 trace variable expect_out(buffer) w log_by_tracing
 
