@@ -27,11 +27,7 @@ foreach net $managednets {
 }
 
 foreach net $managednets {
-    if { $umlid(net$net,arp) } {
-	newswitch $netjig1 "--arpreply $net"
-    } {
-	newswitch $netjig1 "$net"
-    }
+    newswitch $netjig1 $net
 }
 
 foreach host $argv {
