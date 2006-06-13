@@ -62,7 +62,11 @@ IPSECprotostack=${IPSECprotostack:-auto}
 # which kernel are we using?
 case $IPSECprotostack in
 auto)
-    if test -f $kamepfkey
+    if false
+    #if test -f /proc/sys/net/ipsec/debug_mast
+    then
+    	netkey=false; klips=false; mast=true;
+    elif test -f $kamepfkey
 	then
 	    netkey=true; klips=false;
 	else
