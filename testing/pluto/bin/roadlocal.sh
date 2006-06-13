@@ -1,3 +1,4 @@
 #!/bin/sh
 
-sh /testing/pluto/bin/hostlocal.sh road
+export HOST=road
+source /testing/pluto/bin/hostlocal.sh 
