@@ -333,7 +333,7 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 }
 
 bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
-	struct msg_digest *md)
+			    struct msg_digest *md)
 {
 	unsigned char hash[MAX_DIGEST_LEN];
 	struct state *st = md->st;
@@ -350,9 +350,9 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	DBG(DBG_EMITTING, DBG_log("sending NATD payloads"));
 
 	nat_np = (st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES
-	      ? ISAKMP_NEXT_NATD_RFC
-	      : (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD_BADDRAFT_VALUES
-	      ? ISAKMP_NEXT_NATD_BADDRAFTS : ISAKMP_NEXT_NATD_DRAFTS));
+		  ? ISAKMP_NEXT_NATD_RFC
+		  : (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD_BADDRAFT_VALUES
+		     ? ISAKMP_NEXT_NATD_BADDRAFTS : ISAKMP_NEXT_NATD_DRAFTS));
 	if (!out_modify_previous_np(nat_np, outs)) {
 		return FALSE;
 	}
@@ -361,6 +361,20 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	firstport = ntohs(md->sender_port);
 	second = &(md->iface->ip_addr);
 	secondport = ntohs(st->st_remoteport);
+
+	if(0) {
+		const ip_address *t;
+		unsigned short p;
+
+		t=first;
+		first=second;
+		second=t;
+
+		p=firstport;
+		firstport=secondport;
+		secondport=p;
+	}
+
 
 	if(st->st_connection->forceencaps) {
 		firstport=secondport=0;
