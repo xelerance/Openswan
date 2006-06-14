@@ -75,7 +75,7 @@ const struct kernel_ops mast_kernel_ops = {
     inbound_eroute: FALSE,
     policy_lifetime: FALSE,
     init: init_pfkey,
-    docommand: do_command_linux,
+    docommand: mast_do_command,
     set_debug: pfkey_set_debug,
     remove_orphaned_holds: pfkey_remove_orphaned_holds,
     kern_name: "mast"
