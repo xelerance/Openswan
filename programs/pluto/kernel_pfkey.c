@@ -78,58 +78,67 @@ static pid_t pid;
 #define NE(x) { x, #x }	/* Name Entry -- shorthand for sparse_names */
 
 static sparse_names pfkey_type_names = {
-	NE(SADB_RESERVED),
-	NE(SADB_GETSPI),
-	NE(SADB_UPDATE),
-	NE(SADB_ADD),
-	NE(SADB_DELETE),
-	NE(SADB_GET),
-	NE(SADB_ACQUIRE),
-	NE(SADB_REGISTER),
-	NE(SADB_EXPIRE),
-	NE(SADB_FLUSH),
-	NE(SADB_DUMP),
-	NE(SADB_X_PROMISC),
-	NE(SADB_X_PCHANGE),
-	NE(SADB_X_GRPSA),
-	NE(SADB_X_ADDFLOW),
-	NE(SADB_X_DELFLOW),
-	NE(SADB_X_DEBUG),
-#ifdef NAT_TRAVERSAL
-	NE(SADB_X_NAT_T_NEW_MAPPING),
-#endif
-	NE(SADB_MAX),	
+	NE(K_SADB_RESERVED),
+	NE(K_SADB_GETSPI),
+	NE(K_SADB_UPDATE),
+	NE(K_SADB_ADD),
+	NE(K_SADB_DELETE),
+	NE(K_SADB_GET),
+	NE(K_SADB_ACQUIRE),
+	NE(K_SADB_REGISTER),
+	NE(K_SADB_EXPIRE),
+	NE(K_SADB_FLUSH),
+	NE(K_SADB_DUMP),
+	NE(K_SADB_X_PROMISC),
+	NE(K_SADB_X_PCHANGE),
+	NE(K_SADB_X_GRPSA),
+	NE(K_SADB_X_ADDFLOW),
+	NE(K_SADB_X_DELFLOW),
+	NE(K_SADB_X_DEBUG),
+	NE(K_SADB_X_NAT_T_NEW_MAPPING),
+	NE(K_SADB_X_PLUMBIF),
+	NE(K_SADB_X_UNPLUMBIF),
+	NE(K_SADB_MAX),	
 	{ 0, sparse_end }
 };
 
 #ifdef NEVER /* not needed yet */
 static sparse_names pfkey_ext_names = {
-	NE(SADB_EXT_RESERVED),
-	NE(SADB_EXT_SA),
-	NE(SADB_EXT_LIFETIME_CURRENT),
-	NE(SADB_EXT_LIFETIME_HARD),
-	NE(SADB_EXT_LIFETIME_SOFT),
-	NE(SADB_EXT_ADDRESS_SRC),
-	NE(SADB_EXT_ADDRESS_DST),
-	NE(SADB_EXT_ADDRESS_PROXY),
-	NE(SADB_EXT_KEY_AUTH),
-	NE(SADB_EXT_KEY_ENCRYPT),
-	NE(SADB_EXT_IDENTITY_SRC),
-	NE(SADB_EXT_IDENTITY_DST),
-	NE(SADB_EXT_SENSITIVITY),
-	NE(SADB_EXT_PROPOSAL),
-	NE(SADB_EXT_SUPPORTED_AUTH),
-	NE(SADB_EXT_SUPPORTED_ENCRYPT),
-	NE(SADB_EXT_SPIRANGE),
-	NE(SADB_X_EXT_KMPRIVATE),
-	NE(SADB_X_EXT_SATYPE2),
-	NE(SADB_X_EXT_SA2),
-	NE(SADB_X_EXT_ADDRESS_DST2),
-	NE(SADB_X_EXT_ADDRESS_SRC_FLOW),
-	NE(SADB_X_EXT_ADDRESS_DST_FLOW),
-	NE(SADB_X_EXT_ADDRESS_SRC_MASK),
-	NE(SADB_X_EXT_ADDRESS_DST_MASK),
-	NE(SADB_X_EXT_DEBUG),
+	NE(K_SADB_EXT_RESERVED),
+	NE(K_SADB_EXT_SA),
+	NE(K_SADB_EXT_LIFETIME_CURRENT),
+	NE(K_SADB_EXT_LIFETIME_HARD),
+	NE(K_SADB_EXT_LIFETIME_SOFT),
+	NE(K_SADB_EXT_ADDRESS_SRC),
+	NE(K_SADB_EXT_ADDRESS_DST),
+	NE(K_SADB_EXT_ADDRESS_PROXY),
+	NE(K_SADB_EXT_KEY_AUTH),
+	NE(K_SADB_EXT_KEY_ENCRYPT),
+	NE(K_SADB_EXT_IDENTITY_SRC),
+	NE(K_SADB_EXT_IDENTITY_DST),
+	NE(K_SADB_EXT_SENSITIVITY),
+	NE(K_SADB_EXT_PROPOSAL),
+	NE(K_SADB_EXT_SUPPORTED_AUTH),
+	NE(K_SADB_EXT_SUPPORTED_ENCRYPT),
+	NE(K_SADB_EXT_SPIRANGE),
+	NE(K_SADB_X_EXT_KMPRIVATE),
+	NE(K_SADB_X_EXT_SATYPE2),
+	NE(K_SADB_X_EXT_POLICY),
+	NE(K_SADB_X_EXT_SA2),
+	NE(K_SADB_X_EXT_ADDRESS_DST2),
+	NE(K_SADB_X_EXT_ADDRESS_SRC_FLOW),
+	NE(K_SADB_X_EXT_ADDRESS_DST_FLOW),
+	NE(K_SADB_X_EXT_ADDRESS_SRC_MASK),
+	NE(K_SADB_X_EXT_ADDRESS_DST_MASK),
+	NE(K_SADB_X_EXT_DEBUG),
+	NE(K_SADB_X_EXT_PROTOCOL),
+	NE(K_SADB_X_EXT_NAT_T_TYPE),
+	NE(K_SADB_X_EXT_NAT_T_SPORT),
+	NE(K_SADB_X_EXT_NAT_T_DPORT),
+	NE(K_SADB_X_EXT_NAT_T_OA),
+	NE(K_SADB_X_EXT_PLUMBIF),
+	NE(K_SADB_X_EXT_SAREF),
+	NE(K_SADB_EXT_MAX),
 	{ 0, sparse_end }
 };
 #endif /* NEVER */
@@ -579,10 +588,10 @@ pfkeyext_protocol(int transport_proto
  * Returns TRUE iff all appears well.
  */
 static bool
-finish_pfkey_msg(struct sadb_ext *extensions[SADB_EXT_MAX + 1]
-, const char *description
-, const char *text_said
-, pfkey_buf *response)
+finish_pfkey_msg(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1]
+		 , const char *description
+		 , const char *text_said
+		 , pfkey_buf *response)
 {
     struct sadb_msg *pfkey_msg;
     bool success = TRUE;
@@ -671,13 +680,14 @@ finish_pfkey_msg(struct sadb_ext *extensions[SADB_EXT_MAX + 1]
 		 */
 		pfkey_buf b;
 		pfkey_buf *bp = response != NULL? response : &b;
+		int seq = ((struct sadb_msg *) extensions[0])->sadb_msg_seq;
 
-		if (!pfkey_get_response(bp, ((struct sadb_msg *) extensions[0])->sadb_msg_seq))
+		if (!pfkey_get_response(bp, seq))
 		{
 		    loglog(RC_LOG_SERIOUS
-			, "ERROR: no response to our PF_KEY %s message for %s %s"
+			, "ERROR: no response to our PF_KEY %s message for %s %s (seq=%u)"
 			, sparse_val_show(pfkey_type_names, pfkey_msg->sadb_msg_type)
-			, description, text_said);
+			   , description, text_said, seq);
 		    success = FALSE;
 		}
 		else if (pfkey_msg->sadb_msg_type != bp->msg.sadb_msg_type)
@@ -1692,5 +1702,35 @@ void pfkey_remove_orphaned_holds(int transport_proto
         }
     }
 }
+
+bool
+pfkey_plumb_mast_device(int mast_dev)
+{
+	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
+	int error;
+
+	pfkey_extensions_init(extensions);
+
+	if((error = pfkey_msg_hdr_build(&extensions[0],
+					K_SADB_X_PLUMBIF,
+					0, 0,
+					++pfkey_seq, pid))) {
+		return FALSE;
+	}
+
+	if((error = pfkey_outif_build(&extensions[SADB_X_EXT_PLUMBIF], mast_dev))) {
+		return FALSE;
+	}
+
+	if(!finish_pfkey_msg(extensions, "configure_mast_device", "", NULL)) {
+		return FALSE;
+	}
+
+	
+	
+	return TRUE;
+}
+
+
 
 #endif /* KLIPS */
