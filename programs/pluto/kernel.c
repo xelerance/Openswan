@@ -1623,18 +1623,20 @@ init_kernel(void)
 #if defined(KLIPS) && defined(NETKEY_SUPPORT)
     if(kern_interface == AUTO_PICK)
     {
-        bool linux_ipsec = 0;
         struct stat buf;
 
-        linux_ipsec = (stat("/proc/net/pfkey", &buf) == 0);
-        if (linux_ipsec)
-            {
-		kern_interface = USE_NETKEY;
-            }
-        else
-            {
-                kern_interface = USE_KLIPS;
-            }
+        if(stat("/proc/sys/net/ipsec/debug_mast",&buf)==0)
+	{
+	    kern_interface = USE_MASTKLIPS;
+	}
+        else if (stat("/proc/net/pfkey", &buf) == 0)
+	{
+	    kern_interface = USE_NETKEY;
+	}
+	else
+	{
+	    kern_interface = USE_KLIPS;
+	}
     }
 #endif
 
@@ -1648,6 +1650,14 @@ init_kernel(void)
 	openswan_log("Using KLIPS IPsec interface code on %s"
 		     , kversion);
 	kernel_ops = &klips_kernel_ops;
+	break;
+#endif
+
+#if defined(KLIPS) 
+    case USE_MASTKLIPS:
+	openswan_log("Using KLIPSng (mast) IPsec interface code on %s"
+		     , kversion);
+	kernel_ops = &mast_kernel_ops;
 	break;
 #endif
 

@@ -20,7 +20,6 @@ extern void init_pfkey(void);
 extern void pfkey_register_proto(unsigned satype, const char *satypename);
 extern void pfkey_close(void);
 
-extern const struct kernel_ops klips_kernel_ops;
 extern void klips_pfkey_register_response(const struct sadb_msg *msg);
 extern void pfkey_dequeue(void);
 extern void pfkey_event(void);

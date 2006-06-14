@@ -277,3 +277,6 @@ extern bool eroute_connection(struct spd_route *sr
 			      , unsigned int satype
 			      , const struct pfkey_proto_info *proto_info
 			      , unsigned int op, const char *opname);
+
+extern const struct kernel_ops klips_kernel_ops;
+extern const struct kernel_ops mast_kernel_ops;
