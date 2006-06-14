@@ -37,8 +37,24 @@ case $bareversion in
 		;;
 esac
 
-klips=true
-netkey=/proc/net/pfkey
+# which kernel are we using?
+case $IPSECprotostack in
+klips)  netkey=false; klips=true;  mast=false;;
+mast)   netkey=false; klips=false; mast=true;;
+netkey) netkey=true;  klips=false; mast=false;;
+none)   netkey=false; klips=false; mast=false;;
+nostack) netkey=false; klips=false; mast=false;;
+*|auto)
+    if test -f /proc/sys/net/ipsec/debug_mast
+    then
+	netkey=false; klips=false; mast=true;
+    elif test -f $kamepfkey
+	then
+	    netkey=true; klips=false;
+	else
+	    netkey=false; klips=true;
+    fi;;
+esac
 
 info=/dev/null
 log=daemon.error
@@ -213,7 +229,11 @@ defaultinterface() {
 	fi
 	next=`netstat -nr |
 		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $2 }'`
-	klipsinterface "ipsec0=$phys" $next
+
+	if $klips
+	then
+	    klipsinterface "ipsec0=$phys" $next
+	fi
 }
 
 # log only to syslog, not to stdout/stderr
@@ -256,24 +276,24 @@ setmodule() {
 # main line
 
 # load module if possible
-if test -f $ipsecversion && test -f $netkey
+if test -f $ipsecversion && $netkey
 then
     # both KLIPS and NETKEY code detected, bail out
     echo "FATAL ERROR: Both KLIPS and NETKEY IPsec code is present in kernel"
     exit
 fi
-if test ! -f $ipsecversion && test ! -f $netkey && modprobe -qn ipsec
+if test ! -f $ipsecversion && ($klips || $mast) && modprobe -qn ipsec
 then
     # statically compiled KLIPS/NETKEY not found; try to load the module
     modprobe ipsec
 fi
 
-if test ! -f $ipsecversion && test ! -f $netkey
+if test ! -f $ipsecversion && $netkey
 then
 	modprobe -v af_key
 fi
 
-if test -f $netkey
+if $netkey
 then
 	klips=false
 	if test -f $modules
@@ -364,7 +384,7 @@ then
 	# clear tables out in case dregs have been left over
 	ipsec eroute --clear
 	ipsec spi --clear
-elif test $netkey
+elif $netkey
 then
 	if ip xfrm state > /dev/null 2>&1
 	then
