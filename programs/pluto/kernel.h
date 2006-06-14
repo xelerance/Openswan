@@ -105,6 +105,7 @@ struct kernel_ops {
     const char *kern_name;
     bool inbound_eroute;
     bool policy_lifetime;
+    bool overlap_supported;
     int  replay_window;
     int *async_fdp;
     

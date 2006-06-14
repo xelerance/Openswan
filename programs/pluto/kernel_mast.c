@@ -56,6 +56,8 @@
 #include "kernel_alg.h"
 
 const struct kernel_ops mast_kernel_ops = {
+    kern_name: "mast",
+    .overlap_supported = TRUE
     type: USE_MASTKLIPS,
     async_fdp: &pfkeyfd,
     replay_window: 64,
@@ -78,6 +80,6 @@ const struct kernel_ops mast_kernel_ops = {
     docommand: NULL,
     set_debug: pfkey_set_debug,
     remove_orphaned_holds: pfkey_remove_orphaned_holds,
-    kern_name: "mast"
+    process_ifaces: NULL,
 };
 #endif /* KLIPS */

@@ -351,8 +351,8 @@ extern struct connection
 #define CONN_INST_BUF \
     (2 + 10 + 1 + SUBNETTOT_BUF + 7 + ADDRTOT_BUF + 3 + SUBNETTOT_BUF + 1)
 
-extern void fmt_conn_instance(const struct connection *c
-    , char buf[CONN_INST_BUF]);
+extern char *fmt_conn_instance(const struct connection *c
+			       , char buf[CONN_INST_BUF]);
 
 /* operations on "pending", the structure representing Quick Mode
  * negotiations delayed until a Keying Channel has been negotiated.
