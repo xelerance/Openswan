@@ -7,39 +7,42 @@
 source $env(OPENSWANSRCDIR)/testing/utils/GetOpts.tcl
 source $env(OPENSWANSRCDIR)/testing/utils/netjig.tcl
 
-set netjig_debug_opt ""
-
 set netjig_prog $env(OPENSWANSRCDIR)/testing/utils/uml_netjig/uml_netjig
 
 set arpreply ""
 set umlid(extra_hosts) ""
 
-spawn $netjig_prog --cmdproto -t $netjig_debug_opt 
-set netjig1 $spawn_id
+set env(NETJIGVERBOSE) 1
+
+set netjig1 [netjigstart]
 
 netjigsetup $netjig1
-
-foreach net $managednets {
-    calc_net $net
-}
 
 foreach net $managednets {
     process_net $net
 }
 
 foreach net $managednets {
-    if { $umlid(net$net,arp) } {
-	newswitch $netjig1 "--arpreply $net"
-    } {
-	newswitch $netjig1 "$net"
-    }
+    calc_net $net
+}
+
+foreach net $managednets {
+    newswitch $netjig1 "$net"
 }
 
 foreach host $argv {
     system "$host single &"
 }
 
-puts "\nExit the netjig when you are done\n"
+foreach net $managednets {
+    if {[info exists umlid(net$net,play)] } {
+	puts "Will play pcap file $umlid(net$net,play) to network '$net'\r\n"
+	setupplay $netjig1 $net $umlid(net$net,play) "--rate=ontick"
+    }
+}
+
+
+puts "\r\nExit the netjig when you are done\r\n"
 
 set timeout -1
 interact -reset -i $netjig1 

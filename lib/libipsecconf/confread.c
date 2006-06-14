@@ -76,6 +76,11 @@ static void default_values (struct starter_config *cfg)
 	anyaddr(AF_INET, &cfg->conn_default.right.addr);
 	anyaddr(AF_INET, &cfg->conn_default.right.nexthop);
 
+	/* default is to look in DNS */
+	cfg->conn_default.left.key_from_DNS_on_demand = TRUE;
+	cfg->conn_default.right.key_from_DNS_on_demand = TRUE;
+
+
 	cfg->conn_default.options[KBF_AUTO] = STARTUP_NO;
 	cfg->conn_default.state = STATE_LOADED;
 }
@@ -189,6 +194,7 @@ static int load_setup (struct starter_config *cfg
 		assert(kw->keyword.keydef->field < sizeof(cfg->setup.strings));
 		if(cfg->setup.strings[kw->keyword.keydef->field]) free(cfg->setup.strings[kw->keyword.keydef->field]);
 		cfg->setup.strings[kw->keyword.keydef->field] = xstrdup(kw->string);
+		cfg->setup.strings_set[kw->keyword.keydef->field]=TRUE;
 		break;
 
 	    case kt_appendstring:
@@ -196,6 +202,7 @@ static int load_setup (struct starter_config *cfg
 		if(!cfg->setup.strings[kw->keyword.keydef->field])
 		{
 		    cfg->setup.strings[kw->keyword.keydef->field] = xstrdup(kw->string);
+		    cfg->setup.strings_set[kw->keyword.keydef->field]=TRUE;
 		} else {
 		    int len;
 		    char *s;
@@ -210,6 +217,7 @@ static int load_setup (struct starter_config *cfg
 		    strncat(s, kw->string, len);
 		    
 		    cfg->setup.strings[kw->keyword.keydef->field] = s;
+		    cfg->setup.strings_set[kw->keyword.keydef->field]=TRUE;
 		}
 		break;
 		
@@ -223,6 +231,7 @@ static int load_setup (struct starter_config *cfg
 		/* all treated as a number for now */
 		assert(kw->keyword.keydef->field < sizeof(cfg->setup.options));
 		cfg->setup.options[kw->keyword.keydef->field] = kw->number;
+		cfg->setup.options_set[kw->keyword.keydef->field]=TRUE;
 		break;
 
 	    case kt_bitstring:
@@ -357,20 +366,29 @@ static int validate_end(struct starter_conn *conn_st
 	end->id = xstrdup(value);
     }
 
-    /* validate the KSCF_RSAKEY1/RSAKEY2 */
-    if(end->strings[KSCF_RSAKEY1] != NULL)
-    {
-	char *value = end->strings[KSCF_RSAKEY1];
+    switch(end->options[KSCF_RSAKEY1]) {
+    case PUBKEY_DNS:
+    case PUBKEY_DNSONDEMAND:
+	end->key_from_DNS_on_demand = TRUE;
+	break;
 
-	if (end->rsakey1) free(end->rsakey1);
-	end->rsakey1 = xstrdup(value);
-    }
-    if(end->strings[KSCF_RSAKEY2] != NULL)
-    {
-	char *value = end->strings[KSCF_RSAKEY2];
-
-	if (end->rsakey2) free(end->rsakey2);
-	end->rsakey2 = xstrdup(value);
+    default:
+	end->key_from_DNS_on_demand = FALSE;
+	/* validate the KSCF_RSAKEY1/RSAKEY2 */
+	if(end->strings[KSCF_RSAKEY1] != NULL)
+	{
+	    char *value = end->strings[KSCF_RSAKEY1];
+	    
+	    if (end->rsakey1) free(end->rsakey1);
+	    end->rsakey1 = xstrdup(value);
+	}
+	if(end->strings[KSCF_RSAKEY2] != NULL)
+	{
+	    char *value = end->strings[KSCF_RSAKEY2];
+	    
+	    if (end->rsakey2) free(end->rsakey2);
+	    end->rsakey2 = xstrdup(value);
+	}
     }
 
     return err;

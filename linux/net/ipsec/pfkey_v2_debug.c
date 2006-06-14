@@ -81,10 +81,13 @@ static char *pfkey_sadb_ext_strings[]={
   "X-dest-mask",                  /* SADB_X_EXT_ADDRESS_DST_MASK   24 */
   "X-set-debug",                  /* SADB_X_EXT_DEBUG              25 */
   /* NAT_TRAVERSAL */
-  "X-NAT-T-type",                 /* SADB_X_EXT_NAT_T_TYPE         26 */
-  "X-NAT-T-sport",                /* SADB_X_EXT_NAT_T_SPORT        27 */
-  "X-NAT-T-dport",                /* SADB_X_EXT_NAT_T_DPORT        28 */
-  "X-NAT-T-OA",                   /* SADB_X_EXT_NAT_T_OA           29 */
+  "X-ext-protocol",               /* K_SADB_X_EXT_PROTOCOL           26 */
+  "X-NAT-T-type",                 /* K_SADB_X_EXT_NAT_T_TYPE         27 */
+  "X-NAT-T-sport",                /* K_SADB_X_EXT_NAT_T_SPORT        28 */
+  "X-NAT-T-dport",                /* K_SADB_X_EXT_NAT_T_DPORT        29 */
+  "X-NAT-T-OA",                   /* K_SADB_X_EXT_NAT_T_OA           30 */
+  "X-plumbif",                    /* K_SADB_X_EXT_PLUMBIF            31 */
+  "X-saref",                      /* K_SADB_X_EXT_SAREF              32 */
 };
 
 const char *

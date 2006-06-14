@@ -122,7 +122,7 @@ If you specify UML_foo_KERNEL= for all hosts, such that no kernel is needed,
 then none will be built. Also, no modules will be built if there are no plain
 kernels built.
 
-* Including additional software
+* Including additional software: UML_extra_DIRS
 
 You can include new things into a UML root file system by listing directories
 in:
@@ -135,5 +135,11 @@ The build process will cd into that directory and invoke:
 with many build processes, this will cause the install to go to UMLROOTDIR
 instead of /. 
 
+* BUILD_MODULES=[true,false]
+
+If set to false, then modules will not be built. This is useful if you
+have changed the kernel code, are compiling it a seperate directory
+(using UML_xxx_KERNEL), and don't want to build kernels against the plain26
+kernel. (Likely because it won't work)
 
 

@@ -227,14 +227,14 @@ worker(int qfd, int afd)
 	a.amagic = ADNS_A_MAGIC;
 	a.serial = q.serial;
 
-	a.result = res_nquery(statp, q.name_buf, C_IN, q.type, a.ans, sizeof(a.ans));
+	a.result = res_nquery(statp, q.name_buf, ns_c_in, q.type, a.ans, sizeof(a.ans));
 	a.h_errno_val = h_errno;
 
 	a.len = offsetof(struct adns_answer, ans) + (a.result < 0? 0 : a.result);
 
 #ifdef DEBUG
-	if (((q.debugging & IMPAIR_DELAY_ADNS_KEY_ANSWER) && q.type == T_KEY)
-	|| ((q.debugging & IMPAIR_DELAY_ADNS_TXT_ANSWER) && q.type == T_TXT))
+	if (((q.debugging & IMPAIR_DELAY_ADNS_KEY_ANSWER) && q.type == ns_t_key)
+	|| ((q.debugging & IMPAIR_DELAY_ADNS_TXT_ANSWER) && q.type == ns_t_txt))
 	    sleep(30);	/* delay the answer */
 #endif
 

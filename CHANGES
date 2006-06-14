@@ -1,5 +1,22 @@
 Please see docs/KNOWN_BUGS file for more information
 
+#public
+
+    fixes so that starter will now compile
+    move whacklib to lib/libwhack
+    adjust makefiles to work with OBJDIR version of Makefile.program
+    switch to OBJDIR in programs/* and lib/* if it is defined
+
+    added sanitizer for PID files
+    be smarter about including git version info into version
+    We need to use /dev/urandom first, as it has more random than /dev/random.
+       Otherwise, we run out really fast (within a few minutes)
+    Use endian.h when comiling out-of-kernel
+    patch to turn error about 17/500,0/0 vs 17/0 error with Cisco VPN3000
+       into a warning.
+    remove test for NAT-T VID vs NATD payload test. It fails for reasons
+       that are unknown at this time, and this check is really being pedantic.
+
 v2.4.5
 * Fix for compiling on 2.6.14 kernels 
 * Refactored natd_lookup / hash code, probably fixes lot of NAT related bugs

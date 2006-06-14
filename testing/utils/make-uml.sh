@@ -153,7 +153,15 @@ then
     (make ARCH=um $NONINTCONFIG && make ARCH=um dep && make ARCH=um linux ) || exit 1 </dev/null 
 fi
 
-setup_make $NEED_plain >>$UMLMAKE
+BUILD_MODULES=${BUILD_MODULES-true}
+if $NEED_plain
+then
+    :
+else
+    BUILD_MODULES=false
+fi
+    
+setup_make $BUILD_MODULES >>$UMLMAKE
 
 # now, execute the Makefile that we have created!
 cd $POOLSPACE && make $REGULARHOSTS 

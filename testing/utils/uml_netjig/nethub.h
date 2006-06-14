@@ -186,11 +186,11 @@ extern void close_descriptor(struct netjig_state *ns,
 
 #ifdef NETDISSECT
 #include "netdissect.h"
-
 extern struct netdissect_options gndo;
-extern int tcpdump_print;
-
 #endif
+
+extern void hexdump_block(const u_char *cp, u_int length);
+extern int tcpdump_print;
 
 #define _NETHUB_H_
 

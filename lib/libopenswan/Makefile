@@ -31,14 +31,15 @@ SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 	goodmask.c id.c initaddr.c initsaid.c initsubnet.c keyblobtoid.c \
 	kernel_alg.c lex.c mpzfuncs.c \
 	optionsfrom.c oswconf.c oswtime.c \
-	prng.c packet.c portof.c oswconf.c \
-	rangetoa.c rangetosubnet.c sameaddr.c \
+	prng.c \
+	packet.c \
+	portof.c rangetoa.c rangetosubnet.c sameaddr.c \
 	satot.c secrets.c subnetof.c subnettoa.c subnettot.c \
 	subnettypeof.c ttoaddr.c ttodata.c ttoprotoport.c \
 	ttosa.c ttosubnet.c ttoul.c ultoa.c ultot.c \
 	$(X509LIB)
 
-SRCS+=sanitizestring.c pfkey_print.c
+SRCS+=sanitizestring.c pfkey_print.c pfkey_sock.c pfkey_error.c
 
 ifeq ($(USE_KLIPS),true)
 PFKEYV2_DEFS=-DKLIPS -DPFKEYV2
@@ -56,18 +57,17 @@ LOGSRCS=oswlog.c oswid.c
 OBJS=${SRCS:.c=.o} ${PFKEYV2_SRCS:.c=.o} ${UDPFROMTO_SRCS:.c=.o} version.o
 LOGOBJS=${LOGSRCS:.c=.o}
 
-KLIPSD=${OPENSWANSRCDIR}/linux/include
-KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
+KLIPSSRCDIR?=${OPENSWANSRCDIR}/linux/net/ipsec
 MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
 
 VPATH+= ${KLIPSSRCDIR}
 
-HDRS=${KLIPSD}/openswan.h internal.h
+HDRS=${KLIPSINC}/openswan.h internal.h
 
 LIBA=libopenswan.a
 LIBL=liboswlog.a
 # Original flags
-CFLAGS=${PORTINCLUDE} -I. -I${KLIPSSRCDIR} -I${KLIPSD}
+CFLAGS=${PORTINCLUDE} -I. -I${KLIPSSRCDIR} -I${KLIPSINC}
 CFLAGS+=-I${OPENSWANSRCDIR} -DDEBUG
 CFLAGS+=${PFKEYV2_DEFS} ${UDPFROMTO_DEFS}
 CFLAGS+= -I${OPENSWANSRCDIR}/include ${PORTINCLUDE} $(USERCOMPILE)

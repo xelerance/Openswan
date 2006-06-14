@@ -39,12 +39,16 @@ char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.67 2005/08/18 14:04:39 ken Ex
 #endif
 /* permanently turn it on since netlink support has been disabled */
 
+#include <stdio.h>
+#include <getopt.h>
+
 #include <signal.h>
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
+#include "pfkey_help.h"
 
 #include <stdio.h>
 #include <getopt.h>
@@ -136,6 +140,9 @@ void exit_tool(int x)
   exit(x);
 }
 
+/* outside of main, so that test cases can enable it */
+int debug = 0;
+
 int
 main(int argc, char **argv)
 {
@@ -144,7 +151,6 @@ main(int argc, char **argv)
 /*	int ret; */
 	int c, previous = -1;
 	const char* error_s;
-	int debug = 0;
 
 	int error = 0;
 
@@ -168,7 +174,18 @@ main(int argc, char **argv)
 
 	int argcount = argc;
 
+
 	progname = argv[0];
+
+	memset(&pfkey_address_s_ska, 0, sizeof(ip_address));
+	memset(&pfkey_address_sflow_ska, 0, sizeof(ip_address));
+	memset(&pfkey_address_dflow_ska, 0, sizeof(ip_address));
+	memset(&pfkey_address_smask_ska, 0, sizeof(ip_address));
+	memset(&pfkey_address_dmask_ska, 0, sizeof(ip_address));
+	memset(&said, 0, sizeof(ip_said));
+	memset(&s_subnet, 0, sizeof(ip_subnet));
+	memset(&d_subnet, 0, sizeof(ip_subnet));
+
 	eroute_af_opt = said_af_opt = edst_opt = spi_opt = proto_opt = said_opt = dst_opt = src_opt = NULL;
 
 	while((c = getopt_long(argc, argv, ""/*"acdD:e:i:hprs:S:f:vl:+:g"*/, longopts, 0)) != EOF) {
@@ -583,53 +600,8 @@ main(int argc, char **argv)
 		exit(1);
 	}
 
-	if((pfkey_sock = socket(PF_KEY, SOCK_RAW, PF_KEY_V2) ) < 0) {
-		fprintf(stderr, "%s: Trouble opening PF_KEY family socket with error: ",
-			progname);
-		switch(errno) {
-		case ENOENT:
-			fprintf(stderr, "device does not exist.  See FreeS/WAN installation procedure.\n");
-			break;
-		case EACCES:
-			fprintf(stderr, "access denied.  ");
-			if(getuid() == 0) {
-				fprintf(stderr, "Check permissions.  Should be 600.\n");
-			} else {
-				fprintf(stderr, "You must be root to open this file.\n");
-			}
-			break;
-		case EUNATCH:
-			fprintf(stderr, "KLIPS not loaded.\n");
-			break;
-		case ENODEV:
-			fprintf(stderr, "KLIPS not loaded or enabled.\n");
-			break;
-		case EBUSY:
-			fprintf(stderr, "KLIPS is busy.  Most likely a serious internal error occured in a previous command.  Please report as much detail as possible to development team.\n");
-			break;
-		case EINVAL:
-			fprintf(stderr, "Invalid argument, KLIPS not loaded or check kernel log messages for specifics.\n");
-			break;
-		case ENOBUFS:
-		case ENOMEM:
-		case ENFILE:
-			fprintf(stderr, "No kernel memory to allocate socket.\n");
-			break;
-		case EMFILE:
-			fprintf(stderr, "Process file table overflow.\n");
-			break;
-		case ESOCKTNOSUPPORT:
-			fprintf(stderr, "Socket type not supported.\n");
-			break;
-		case EPROTONOSUPPORT:
-			fprintf(stderr, "Protocol version not supported.\n");
-			break;
-		case EAFNOSUPPORT:
-			fprintf(stderr, "KLIPS not loaded or enabled.\n");
-			break;
-		default:
-			fprintf(stderr, "Unknown file open error %d.  Please report as much detail as possible to development team.\n", errno);
-		}
+	pfkey_sock = pfkey_open_sock_with_error();
+	if(pfkey_sock == -1) {
 		exit(1);
 	}
 
@@ -819,8 +791,8 @@ main(int argc, char **argv)
 	}
 
 	if((error = write(pfkey_sock,
-			  pfkey_msg,
-			  pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) !=
+				pfkey_msg,
+				pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) !=
 	   (ssize_t)(pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) {
 		fprintf(stderr, "%s: pfkey write failed, returning %d with errno=%d.\n",
 			progname, error, errno);
