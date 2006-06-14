@@ -882,18 +882,18 @@ static void nat_t_new_klips_mapp (struct state *st, void *data)
 
 void process_pfkey_nat_t_new_mapping(
 	struct sadb_msg *msg __attribute__ ((unused)),
-	struct sadb_ext *extensions[SADB_EXT_MAX + 1])
+	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 {
 	struct _new_klips_mapp_nfo nfo;
-	struct sadb_address *srcx = (void *) extensions[SADB_EXT_ADDRESS_SRC];
-	struct sadb_address *dstx = (void *) extensions[SADB_EXT_ADDRESS_DST];
+	struct sadb_address *srcx = (void *) extensions[K_SADB_EXT_ADDRESS_SRC];
+	struct sadb_address *dstx = (void *) extensions[K_SADB_EXT_ADDRESS_DST];
 	struct sockaddr *srca, *dsta;
 	err_t ugh = NULL;
 
-	nfo.sa = (void *) extensions[SADB_EXT_SA];
+	nfo.sa = (void *) extensions[K_SADB_EXT_SA];
 
 	if ((!nfo.sa) || (!srcx) || (!dstx)) {
-		openswan_log("SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: "
+		openswan_log("K_SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: "
 			"got NULL params");
 		return;
 	}
@@ -931,7 +931,7 @@ void process_pfkey_nat_t_new_mapping(
 	}
 
 	if (ugh != NULL)
-		openswan_log("SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: %s", ugh);
+		openswan_log("K_SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: %s", ugh);
 }
 
 #endif
