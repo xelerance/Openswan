@@ -588,7 +588,7 @@ pfkeyext_protocol(int transport_proto
  * Returns TRUE iff all appears well.
  */
 static bool
-finish_pfkey_msg(struct sadb_ext *extensions[K_K_SADB_EXT_MAX + 1]
+finish_pfkey_msg(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1]
 		 , const char *description
 		 , const char *text_said
 		 , pfkey_buf *response)
@@ -751,7 +751,7 @@ static int kernelop2klips(enum pluto_sadb_operations op)
     switch (op)
     {
     case ERO_REPLACE:
-	klips_op = (K_SADB_X_ADDFLOW | (K_SADB_X_SAFLAGS_REPLACEFLOW << KLIPS_OP_FLAG_SHIFT));
+	klips_op = (K_SADB_X_ADDFLOW | (SADB_X_SAFLAGS_REPLACEFLOW << KLIPS_OP_FLAG_SHIFT));
 	break;
 
     case ERO_ADD:
@@ -763,15 +763,15 @@ static int kernelop2klips(enum pluto_sadb_operations op)
 	break;
 	    
     case ERO_ADD_INBOUND:
-	klips_op = (K_SADB_X_ADDFLOW | (K_SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
+	klips_op = (K_SADB_X_ADDFLOW | (SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
 	break;
 
     case ERO_DEL_INBOUND:
-	klips_op = (K_SADB_X_DELFLOW | (K_SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
+	klips_op = (K_SADB_X_DELFLOW | (SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
 	break;
 
     case ERO_REPLACE_INBOUND:
-	klips_op = (K_SADB_X_ADDFLOW | (K_SADB_X_SAFLAGS_REPLACEFLOW|K_SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
+	klips_op = (K_SADB_X_ADDFLOW | (SADB_X_SAFLAGS_REPLACEFLOW|SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
 	break;
     }
 
@@ -1136,7 +1136,7 @@ pfkey_shunt_eroute(struct connection *c
             esr->routing = RT_ROUTED_PROSPECTIVE;
             return pfkey_shunt_eroute(ue, esr
 				      , RT_ROUTED_PROSPECTIVE
-				      , (K_SADB_X_ADDFLOW | (K_SADB_X_SAFLAGS_REPLACEFLOW << KLIPS_OP_FLAG_SHIFT))
+				      , (K_SADB_X_ADDFLOW | (SADB_X_SAFLAGS_REPLACEFLOW << KLIPS_OP_FLAG_SHIFT))
 				      , "restoring eclipsed");
         }
     }
@@ -1703,16 +1703,17 @@ void pfkey_remove_orphaned_holds(int transport_proto
     }
 }
 
+#ifdef KLIPS_MAST
 bool
 pfkey_plumb_mast_device(int mast_dev)
 {
-	struct sadb_ext *extensions[K_K_SADB_EXT_MAX + 1];
+	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	int error;
 
 	pfkey_extensions_init(extensions);
 
 	if((error = pfkey_msg_hdr_build(&extensions[0],
-					K_K_SADB_X_PLUMBIF,
+					K_SADB_X_PLUMBIF,
 					0, 0,
 					++pfkey_seq, pid))) {
 		return FALSE;
@@ -1730,6 +1731,7 @@ pfkey_plumb_mast_device(int mast_dev)
 	
 	return TRUE;
 }
+#endif
 
 
 
