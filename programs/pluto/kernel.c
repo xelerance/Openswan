@@ -1133,6 +1133,10 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     ipsec_spi_t inner_spi = 0;
     unsigned int proto = 0, satype = 0;
     bool replace;
+    bool outgoing_ref_set = FALSE;
+    bool incoming_ref_set = FALSE;
+    IPsecSAref_t refhim = st->refhim;
+    IPsecSAref_t new_refhim = IPSEC_SAREF_NULL;
 
     /* SPIs, saved for spigrouping or undoing, if necessary */
     struct kernel_sa
@@ -1214,11 +1218,38 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->satype = SADB_X_SATYPE_IPIP;
         said_next->text_said = text_said;
 
+	if(inbound) {
+	    /*
+	     * set corresponding outbound SA. We can do this on
+	     * each SA in the bundle without harm.
+	     */
+	    said_next->refhim = refhim;
+	} else if (!outgoing_ref_set) {
+	    /* on outbound, pick up the SAref if not already done */
+	    said_next->ref    = refhim;
+	    outgoing_ref_set  = TRUE;
+	}
+
         if (!kernel_ops->add_sa(said_next, replace)) {
-	    DBG_log("add_sa tunnel failed");
+	    DBG(DBG_KLIPS, DBG_log("add_sa tunnel failed"));
             goto fail;
 	}
 
+	DBG(DBG_KLIPS, DBG_log("added tunnel with ref=%u", said_next->ref));
+
+	/*
+	 * SA refs will have been allocated for this SA.
+	 * The inner most one is interesting for the outgoing SA,
+	 * since we refer to it in the policy that we instantiate.
+	 */
+	if(new_refhim == IPSEC_SAREF_NULL && !inbound) {
+	    DBG(DBG_KLIPS, DBG_log("recorded ref=%u as refhim", said_next->ref));
+	    new_refhim = said_next->ref;
+	}
+	if(!incoming_ref_set && inbound) {
+	    st->ref = said_next->ref;
+	    incoming_ref_set=TRUE;
+	}
         said_next++;
 
         inner_spi = ipip_spi;
@@ -1258,11 +1289,35 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->reqid = c->spd.reqid + 2;
         said_next->text_said = text_said;
 
+	if(inbound) {
+	    /*
+	     * set corresponding outbound SA. We can do this on
+	     * each SA in the bundle without harm.
+	     */
+	    said_next->refhim = refhim;
+	} else if (!outgoing_ref_set) {
+	    /* on outbound, pick up the SAref if not already done */
+	    said_next->ref    = refhim;
+	    outgoing_ref_set  = TRUE;
+	}
+
         if (!kernel_ops->add_sa(said_next, replace)) {
 	    DBG_log("add_sa ipcomp failed");
             goto fail;
 	}
 
+	/*
+	 * SA refs will have been allocated for this SA.
+	 * The inner most one is interesting for the outgoing SA,
+	 * since we refer to it in the policy that we instantiate.
+	 */
+	if(new_refhim == IPSEC_SAREF_NULL && !inbound) {
+	    new_refhim = said_next->ref;
+	}
+	if(!incoming_ref_set && inbound) {
+	    st->ref = said_next->ref;
+	    incoming_ref_set=TRUE;
+	}
         said_next++;
 
         encapsulation = ENCAPSULATION_MODE_TRANSPORT;
@@ -1451,9 +1506,33 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 #endif  
         said_next->text_said = text_said;
 
+	if(inbound) {
+	    /*
+	     * set corresponding outbound SA. We can do this on
+	     * each SA in the bundle without harm.
+	     */
+	    said_next->refhim = refhim;
+	} else if (!outgoing_ref_set) {
+	    /* on outbound, pick up the SAref if not already done */
+	    said_next->ref    = refhim;
+	    outgoing_ref_set  = TRUE;
+	}
+
         if (!kernel_ops->add_sa(said_next, replace))
             goto fail;
 
+	/*
+	 * SA refs will have been allocated for this SA.
+	 * The inner most one is interesting for the outgoing SA,
+	 * since we refer to it in the policy that we instantiate.
+	 */
+	if(new_refhim == IPSEC_SAREF_NULL && !inbound) {
+	    new_refhim = said_next->ref;
+	}
+	if(!incoming_ref_set && inbound) {
+	    st->ref = said_next->ref;
+	    incoming_ref_set=TRUE;
+	}
         said_next++;
 
         encapsulation = ENCAPSULATION_MODE_TRANSPORT;
@@ -1502,9 +1581,33 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->reqid = c->spd.reqid;
         said_next->text_said = text_said;
 
+	if(inbound) {
+	    /*
+	     * set corresponding outbound SA. We can do this on
+	     * each SA in the bundle without harm.
+	     */
+	    said_next->refhim = refhim;
+	} else if (!outgoing_ref_set) {
+	    /* on outbound, pick up the SAref if not already done */
+	    said_next->ref    = refhim;
+	    outgoing_ref_set  = TRUE;
+	}
+
         if (!kernel_ops->add_sa(said_next, replace))
             goto fail;
 
+	/*
+	 * SA refs will have been allocated for this SA.
+	 * The inner most one is interesting for the outgoing SA,
+	 * since we refer to it in the policy that we instantiate.
+	 */
+	if(new_refhim == IPSEC_SAREF_NULL && !inbound) {
+	    new_refhim = said_next->ref;
+	}
+	if(!incoming_ref_set && inbound) {
+	    st->ref = said_next->ref;
+	    incoming_ref_set=TRUE;
+	}
         said_next++;
 
         encapsulation = ENCAPSULATION_MODE_TRANSPORT;
@@ -1603,7 +1706,9 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
             set_text_said(text_said0, s[0].dst, s[0].spi, s[0].proto);
             set_text_said(text_said1, s[1].dst, s[1].spi, s[1].proto);
             
-            DBG(DBG_KLIPS, DBG_log("grouping %s and %s", text_said1, text_said0));
+            DBG(DBG_KLIPS, DBG_log("grouping %s (ref=%u) and %s (ref=%u)"
+				   , text_said1, s[0].ref
+				   , text_said0, s[1].ref));
             
             s[0].text_said = text_said0;
             s[1].text_said = text_said1;
@@ -1612,6 +1717,10 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
                 goto fail;
         }
         /* could update said, but it will not be used */
+    }
+
+    if(new_refhim != IPSEC_SAREF_NULL) {
+	st->refhim = new_refhim;
     }
 
 #ifdef DEBUG
@@ -1759,11 +1868,15 @@ init_kernel(void)
     {
         struct stat buf;
 
+#if 0
+	/* for now, don't automatically pick MASTKLIPS */
         if(stat("/proc/sys/net/ipsec/debug_mast",&buf)==0)
 	{
 	    kern_interface = USE_MASTKLIPS;
 	}
-        else if (stat("/proc/net/pfkey", &buf) == 0)
+        else
+#endif
+	    if (stat("/proc/net/pfkey", &buf) == 0)
 	{
 	    kern_interface = USE_NETKEY;
 	}
@@ -1891,6 +2004,17 @@ install_inbound_ipsec_sa(struct state *st)
     default:
         return FALSE;
     }
+
+    /* we now have to set up the outgoing SA first, so that
+     * we can refer to it in the incoming SA.
+     */
+    if(st->refhim == IPSEC_SAREF_NULL) {
+	if(!setup_half_ipsec_sa(st, FALSE)) {
+	    DBG_log("failed to install outgoing SA: %u", st->refhim);
+	    return FALSE;
+	}
+    }
+    DBG_log("outgoing SA has refhim=%u", st->refhim);
 
     /* (attempt to) actually set up the SAs */
     return setup_half_ipsec_sa(st, TRUE);
@@ -2201,9 +2325,22 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
     }
 
     /* (attempt to) actually set up the SA group */
-    if ((inbound_also && !setup_half_ipsec_sa(st, TRUE))
-	|| !setup_half_ipsec_sa(st, FALSE))
-        return FALSE;
+
+    /* setup outgoing SA if we haven't already */
+    if(st->refhim == IPSEC_SAREF_NULL) {
+	if(!setup_half_ipsec_sa(st, FALSE)) {
+	    return FALSE;
+	}
+	DBG(DBG_KLIPS, DBG_log("set up outoing SA, ref=%u/%u", st->ref, st->refhim));
+    }
+
+    /* now setup inbound SA */
+    if(st->ref == IPSEC_SAREF_NULL && inbound_also) {
+	if(!setup_half_ipsec_sa(st, TRUE)) {
+	    return FALSE;
+	}
+	DBG(DBG_KLIPS, DBG_log("set up incoming SA, ref=%u/%u", st->ref, st->refhim));
+    }
 
     for (sr = &st->st_connection->spd; sr != NULL; sr = sr->next)
     {
