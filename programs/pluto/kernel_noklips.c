@@ -89,7 +89,7 @@ noklips_raw_eroute(const ip_address *this_host UNUSED
 }
 
 static bool
-noklips_add_sa(struct kernel_sa *sa UNUSED
+noklips_add_sa(const struct kernel_sa *sa UNUSED
 	       , bool replace UNUSED)
 {
   return TRUE;

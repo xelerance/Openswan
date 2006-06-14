@@ -80,6 +80,8 @@ struct kernel_sa {
 	unsigned enckeylen;
 	unsigned char *enckey;
 
+	IPsecSAref_t ref, refhim;
+
 	int encapsulation;
 #ifdef NAT_TRAVERSAL
 	u_int16_t natt_sport, natt_dport;

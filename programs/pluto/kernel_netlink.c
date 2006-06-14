@@ -573,7 +573,7 @@ netlink_raw_eroute(const ip_address *this_host
  * @return bool True if successfull
  */
 static bool
-netlink_add_sa(struct kernel_sa *sa, bool replace)
+netlink_add_sa(const struct kernel_sa *sa, bool replace)
 {
     struct {
 	struct nlmsghdr n;
@@ -1419,7 +1419,7 @@ const struct kernel_ops netkey_kernel_ops = {
     pfkey_register_response: linux_pfkey_register_response,
     process_msg: netlink_process_msg,
     raw_eroute: netlink_raw_eroute,
-    add_sa: netlink_add_sa,
+    add_sa: netlink_add_sa, 
     del_sa: netlink_del_sa,
     process_queue: NULL,
     grp_sa: NULL,

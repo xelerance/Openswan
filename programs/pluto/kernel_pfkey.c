@@ -880,7 +880,7 @@ pfkey_raw_eroute(const ip_address *this_host
     return finish_pfkey_msg(extensions, "flow", text_said, NULL);
 }
 
-bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
+bool pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 {
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
     pfkey_buf pfb;
@@ -920,6 +920,7 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 	if(!success) return FALSE;
     }
 
+#ifdef KLIPS_MAST
     if(sa->ref != IPSEC_SAREF_NULL || sa->refhim != IPSEC_SAREF_NULL) {
 	    success = pfkey_build(pfkey_saref_build(&extensions[K_SADB_X_EXT_SAREF]
 						    , sa->ref
@@ -928,6 +929,7 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 				  , sa->text_said, extensions);
 	    if(!success) return FALSE;
     }
+#endif
 	
     if(sa->enckeylen != 0) {
 	success = pfkey_build(pfkey_key_build(&extensions[K_SADB_EXT_KEY_ENCRYPT]
@@ -995,12 +997,15 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 	    int error;
 
 	    error = pfkey_msg_parse(&pfb.msg, NULL, replies, EXT_BITS_IN);
+
+#ifdef KLIPS_MAST	    
 	    if(replies[K_SADB_X_EXT_SAREF]) {
 		    struct sadb_x_saref *sar = (struct sadb_x_saref *)replies[K_SADB_X_EXT_SAREF];
 		    
 		    sa->ref = sar->sadb_x_saref_me;
 		    sa->refhim = sar->sadb_x_saref_him;
 	    }
+#endif
     }
     return success;
 }
