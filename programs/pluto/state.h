@@ -15,6 +15,9 @@
  * RCSID $Id: state.h,v 1.100 2005/08/05 19:16:49 mcr Exp $
  */
 
+#ifndef _STATE_H
+#define _STATE_H
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -74,6 +77,9 @@ struct oakley_trans_attrs {
  * This is a flattened/decoded version of what is represented
  * by a Transaction Payload.  There may be one for AH, one
  * for ESP, and a funny one for IPCOMP.
+ *
+ * Yes, this is screwy -- we keep different direction information
+ * in different places. Fix it up sometime.
  */
 struct ipsec_trans_attrs {
     u_int8_t transid;	/* transform id */
@@ -93,12 +99,38 @@ struct ipsec_trans_attrs {
 /* IPsec per protocol state information */
 struct ipsec_proto_info {
     bool present;	/* was this transform specified? */
-    struct ipsec_trans_attrs attrs;
+    struct ipsec_trans_attrs attrs;   /* info on remote */
     ipsec_spi_t our_spi;
     u_int16_t keymat_len;	/* same for both */
     u_char *our_keymat;
     u_char *peer_keymat;
 };
+
+/* internal state that
+ * should get copied by god
+ * Eistein would be proud
+ */
+
+struct hidden_variables {
+    unsigned int   st_malformed_received;
+    unsigned int   st_malformed_sent;
+    bool           st_xauth_client_done;
+    int            st_xauth_client_attempt;
+    bool           st_modecfg_server_done;
+    bool           st_modecfg_vars_set;
+    bool           st_got_certrequest;
+    bool           st_modecfg_started;
+    bool           st_skeyid_calculated;
+    bool           st_dpd;                 /* Peer supports DPD */
+    bool           st_dpd_local;	   /* If we want DPD on this conn */
+    bool           st_logged_p1algos;      /* if we have logged algos */
+    u_int32_t      st_nat_traversal;       /* bit field of permitted
+					    * methods. If non-zero, then
+					    * NAT-T has been detected, and
+					    * should be used. */
+    ip_address     st_nat_oa;
+    ip_address     st_natd;
+};                        
 
 /* state object: record the state of a (possibly nascent) SA
  *
@@ -129,6 +161,9 @@ struct state
 
     ipsec_spi_t        st_tunnel_in_spi;          /* KLUDGE */
     ipsec_spi_t        st_tunnel_out_spi;         /* KLUDGE */
+
+    IPsecSAref_t       ref;	   /* our kernel name for our incoming SA */
+    IPsecSAref_t       refhim;     /* our kernel name for our outgoing SA */
 
     const struct oakley_group_desc *st_pfs_group; /*group for Phase 2 PFS */
 
@@ -203,15 +238,20 @@ struct state
     u_int8_t           st_retransmit;          /* Number of retransmits */
     unsigned long      st_try;                 /* number of times rekeying attempted */
                                                /* 0 means the only time */
-    time_t             st_margin;              /* life after EVENT_SA_REPLACE */
+    time_t             st_margin;              /* life after EVENT_SA_REPLACE*/
     unsigned long      st_outbound_count;      /* traffic through eroute */
-    time_t             st_outbound_time;       /* time of last change to st_outbound_count */
+    time_t             st_outbound_time;       /* time of last change to
+						* st_outbound_count */
 
-    bool               st_calculating;         /* set to TRUE, if we are performing cryptographic
-						* operations on this state at this time
+    bool               st_calculating;         /* set to TRUE, if we are
+						* performing cryptographic
+						* operations on this state at
+						* this time
 						*/
 
-    chunk_t            st_p1isa;               /* Phase 1 initiator SA (Payload) for HASH */
+    chunk_t            st_p1isa;               /* Phase 1 initiator SA
+						  (Payload) for HASH
+					       */
     chunk_t            st_skeyid;              /* Key material */
     chunk_t            st_skeyid_d;            /* KM for non-ISAKMP key derivation */
     chunk_t            st_skeyid_a;            /* KM for ISAKMP authentication */
@@ -231,30 +271,7 @@ struct state
     struct state      *st_hashchain_next;      /* Next in list */
     struct state      *st_hashchain_prev;      /* Previous in list */
 
-    struct {
-        unsigned int   st_malformed_received;
-        unsigned int   st_malformed_sent;
-	bool           st_xauth_client_done;
-	int            st_xauth_client_attempt;
-        bool           st_modecfg_server_done;
-        bool           st_modecfg_vars_set;
-	bool           st_got_certrequest;
-        bool           st_modecfg_started;
-	bool           st_skeyid_calculated;
-	bool           st_dpd;                 /* Peer supports DPD */
-	bool           st_dpd_local;	       /* If we want DPD on this conn */
-	bool           st_logged_p1algos;      /* if we have logged algos */
-	u_int32_t      st_nat_traversal;       /* bit field of permitted
-						* methods. If non-zero, then
-						* NAT-T has been detected, and
-						* should be used. */
-	ip_address     st_nat_oa;
-	ip_address     st_natd;
-    } hidden_variables;                        /* internal state that
-						* should get copied by god
-						* Eistein would be proud
-						*/
-
+    struct hidden_variables hidden_variables;
 
     unsigned char *st_xauth_username;
 
@@ -330,6 +347,8 @@ extern void set_state_ike_endpoints(struct state *st
 				    , struct connection *c);
 
 extern void delete_cryptographic_continuation(struct state *st);
+
+#endif /* _STATE_H */
 
 /*
  * Local Variables:

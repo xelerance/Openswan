@@ -316,11 +316,12 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 	    st->hidden_variables.st_nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_ME);
 	}
 
+        memset(&st->hidden_variables.st_natd,0,sizeof(st->hidden_variables.st_natd));
 	if(!found_him) {
 	    st->hidden_variables.st_nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_PEER);
+	    st->hidden_variables.st_natd = md->sender;
 	}
 	
-	st->hidden_variables.st_natd = md->sender;
 
 	if(st->st_connection->forceencaps) {
 	    DBG(DBG_NATT,
@@ -332,11 +333,13 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 }
 
 bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
-	struct msg_digest *md)
+			    struct msg_digest *md)
 {
 	unsigned char hash[MAX_DIGEST_LEN];
 	struct state *st = md->st;
 	unsigned int nat_np;
+	const ip_address *first, *second;
+	unsigned short firstport, secondport;
 
 	if (!st || !st->st_oakley.hasher) {
 		loglog(RC_LOG_SERIOUS, "NAT-Traversal: assert failed %s:%d",
@@ -347,28 +350,42 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	DBG(DBG_EMITTING, DBG_log("sending NATD payloads"));
 
 	nat_np = (st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES
-	      ? ISAKMP_NEXT_NATD_RFC
-	      : (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD_BADDRAFT_VALUES
-	      ? ISAKMP_NEXT_NATD_BADDRAFTS : ISAKMP_NEXT_NATD_DRAFTS));
+		  ? ISAKMP_NEXT_NATD_RFC
+		  : (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD_BADDRAFT_VALUES
+		     ? ISAKMP_NEXT_NATD_BADDRAFTS : ISAKMP_NEXT_NATD_DRAFTS));
 	if (!out_modify_previous_np(nat_np, outs)) {
 		return FALSE;
+	}
+
+	first      = &(md->sender);
+	firstport  = ntohs(st->st_remoteport);
+	second     = &(md->iface->ip_addr);
+	secondport = ntohs(st->st_localport);
+
+	if(0) {
+		const ip_address *t;
+		unsigned short p;
+
+		t=first;
+		first=second;
+		second=t;
+
+		p=firstport;
+		firstport=secondport;
+		secondport=p;
+	}
+
+
+	if(st->st_connection->forceencaps) {
+		firstport=secondport=0;
 	}
 
 	/**
 	 * First one with sender IP & port
 	 */
-	if(st->st_connection->forceencaps) {
-	    _natd_hash(st->st_oakley.hasher
-		       , hash, st->st_icookie
+        _natd_hash(st->st_oakley.hasher, hash, st->st_icookie
 		       , is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie
-		       , &(md->sender)
-		       , 0);
-	} else {
-	    _natd_hash(st->st_oakley.hasher, hash, st->st_icookie
-		       , is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie
-		       , &(md->sender)
-		       , ntohs(md->sender_port));
-	}
+		       , first, firstport);
 
 	if (!out_generic_raw(nat_np, &isakmp_nat_d, outs
 			     , hash
@@ -380,18 +397,10 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	/**
 	 * Second one with my IP & port
 	 */
-	if(st->st_connection->forceencaps) {
-	    _natd_hash(st->st_oakley.hasher, hash
+        _natd_hash(st->st_oakley.hasher, hash
 		       , st->st_icookie
 		       , is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie
-		       , &(md->iface->ip_addr),0);
-	} else {
-	    _natd_hash(st->st_oakley.hasher, hash
-		       , st->st_icookie
-		       , is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie
-		       , &(md->iface->ip_addr)
-		       , ntohs(st->st_remoteport));
-	}
+		       , second, secondport);
 	return (out_generic_raw(np, &isakmp_nat_d, outs,
 		hash, st->st_oakley.hasher->hash_digest_len, "NAT-D"));
 }
@@ -401,21 +410,16 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
  * 
  * Look for NAT-OA in message
  */
-void nat_traversal_natoa_lookup(struct msg_digest *md)
+void nat_traversal_natoa_lookup(struct msg_digest *md, struct hidden_variables *hv)
 {
 	struct payload_digest *p;
-	struct state *st = md->st;
 	int i;
 	ip_address ip;
 
-	if (!st || !md->iface) {
-		loglog(RC_LOG_SERIOUS, "NAT-Traversal: assert failed %s:%d",
-			__FILE__, __LINE__);
-		return;
-	}
+	passert(md->iface != NULL);
 
 	/** Initialize NAT-OA */
-	anyaddr(AF_INET, &st->hidden_variables.st_nat_oa);
+	anyaddr(AF_INET, &hv->st_nat_oa);
 
 	/** Count NAT-OA **/
 	for (p = md->chain[ISAKMP_NEXT_NATOA_RFC], i=0;
@@ -429,7 +433,7 @@ void nat_traversal_natoa_lookup(struct msg_digest *md)
 	if (i==0) {
 		return;
 	}
-	else if (!(st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_PEER))) {
+	else if (!(hv->st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_PEER))) {
 		loglog(RC_LOG_SERIOUS, "NAT-Traversal: received %d NAT-OA. "
 			"ignored because peer is not NATed", i);
 		return;
@@ -495,26 +499,32 @@ void nat_traversal_natoa_lookup(struct msg_digest *md)
 		       , "NAT-Traversal: received %%any NAT-OA...");
 	}
 	else {
-		st->hidden_variables.st_nat_oa = ip;
+		hv->st_nat_oa = ip;
 	}
 }
 
 bool nat_traversal_add_natoa(u_int8_t np, pb_stream *outs,
-	struct state *st)
+			     struct state *st, bool initiator)
 {
 	struct isakmp_nat_oa natoa;
-	pb_stream pbs;
 	unsigned char ip_val[sizeof(struct in6_addr)];
 	size_t ip_len = 0;
-	ip_address *ip;
+	ip_address *ipinit, *ipresp;
 	unsigned int nat_np;
+
+	if(initiator) {
+		ipinit = &(st->st_localaddr);
+		ipresp = &(st->st_remoteaddr);
+	} else {
+		ipresp = &(st->st_localaddr);
+		ipinit = &(st->st_remoteaddr);
+	}
 
 	if ((!st) || (!st->st_connection)) {
 		loglog(RC_LOG_SERIOUS, "NAT-Traversal: assert failed %s:%d",
 			__FILE__, __LINE__);
 		return FALSE;
 	}
-	ip = &(st->st_localaddr);
 
 	nat_np = (st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES
 		  ? ISAKMP_NEXT_NATOA_RFC : ISAKMP_NEXT_NATOA_DRAFTS);
@@ -523,36 +533,75 @@ bool nat_traversal_add_natoa(u_int8_t np, pb_stream *outs,
 	}
 
 	memset(&natoa, 0, sizeof(natoa));
-	natoa.isanoa_np = np;
+	natoa.isanoa_np = nat_np;
 
-	switch (addrtypeof(ip)) {
+	switch (addrtypeof(ipinit)) {
 		case AF_INET:
-			ip_len = sizeof(ip->u.v4.sin_addr.s_addr);
-			memcpy(ip_val, &ip->u.v4.sin_addr.s_addr, ip_len);
+			ip_len = sizeof(ipinit->u.v4.sin_addr.s_addr);
+			memcpy(ip_val, &ipinit->u.v4.sin_addr.s_addr, ip_len);
 			natoa.isanoa_idtype = ID_IPV4_ADDR;
 			break;
 		case AF_INET6:
-			ip_len = sizeof(ip->u.v6.sin6_addr.s6_addr);
-			memcpy(ip_val, &ip->u.v6.sin6_addr.s6_addr, ip_len);
+			ip_len = sizeof(ipinit->u.v6.sin6_addr.s6_addr);
+			memcpy(ip_val, &ipinit->u.v6.sin6_addr.s6_addr, ip_len);
 			natoa.isanoa_idtype = ID_IPV6_ADDR;
 			break;
 		default:
 			loglog(RC_LOG_SERIOUS, "NAT-Traversal: "
-				"invalid addrtypeof()=%d", addrtypeof(ip));
+				"invalid addrtypeof()=%d", addrtypeof(ipinit));
 			return FALSE;
 	}
 
-	if (!out_struct(&natoa, &isakmp_nat_oa, outs, &pbs))
-		return FALSE;
+	{
+		pb_stream pbs;
+		if (!out_struct(&natoa, &isakmp_nat_oa, outs, &pbs))
+			return FALSE;
+		
+		if (!out_raw(ip_val, ip_len, &pbs, "NAT-OAi"))
+			return FALSE;
+		
+		DBG(DBG_NATT,
+		    DBG_dump("NAT-OAi (S):", ip_val, ip_len);
+			);
+		close_output_pbs(&pbs);
+	}
 
-	if (!out_raw(ip_val, ip_len, &pbs, "NAT-OA"))
-		return FALSE;
+	
+	/* output second NAT-OA */
+	memset(&natoa, 0, sizeof(natoa));
+	natoa.isanoa_np = np;
 
-	DBG(DBG_NATT,
-		DBG_dump("NAT-OA (S):", ip_val, ip_len);
-	);
+	switch (addrtypeof(ipresp)) {
+		case AF_INET:
+			ip_len = sizeof(ipresp->u.v4.sin_addr.s_addr);
+			memcpy(ip_val, &ipresp->u.v4.sin_addr.s_addr, ip_len);
+			natoa.isanoa_idtype = ID_IPV4_ADDR;
+			break;
+		case AF_INET6:
+			ip_len = sizeof(ipresp->u.v6.sin6_addr.s6_addr);
+			memcpy(ip_val, &ipresp->u.v6.sin6_addr.s6_addr, ip_len);
+			natoa.isanoa_idtype = ID_IPV6_ADDR;
+			break;
+		default:
+			loglog(RC_LOG_SERIOUS, "NAT-Traversal: "
+				"invalid addrtypeof()=%d", addrtypeof(ipresp));
+			return FALSE;
+	}
 
-	close_output_pbs(&pbs);
+	{
+		pb_stream pbs;
+		if (!out_struct(&natoa, &isakmp_nat_oa, outs, &pbs))
+			return FALSE;
+		
+		if (!out_raw(ip_val, ip_len, &pbs, "NAT-OAr"))
+			return FALSE;
+		
+		DBG(DBG_NATT,
+		    DBG_dump("NAT-OAr (S):", ip_val, ip_len);
+			);
+		
+		close_output_pbs(&pbs);
+	}
 	return TRUE;
 }
 
@@ -882,18 +931,18 @@ static void nat_t_new_klips_mapp (struct state *st, void *data)
 
 void process_pfkey_nat_t_new_mapping(
 	struct sadb_msg *msg __attribute__ ((unused)),
-	struct sadb_ext *extensions[SADB_EXT_MAX + 1])
+	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 {
 	struct _new_klips_mapp_nfo nfo;
-	struct sadb_address *srcx = (void *) extensions[SADB_EXT_ADDRESS_SRC];
-	struct sadb_address *dstx = (void *) extensions[SADB_EXT_ADDRESS_DST];
+	struct sadb_address *srcx = (void *) extensions[K_SADB_EXT_ADDRESS_SRC];
+	struct sadb_address *dstx = (void *) extensions[K_SADB_EXT_ADDRESS_DST];
 	struct sockaddr *srca, *dsta;
 	err_t ugh = NULL;
 
-	nfo.sa = (void *) extensions[SADB_EXT_SA];
+	nfo.sa = (void *) extensions[K_SADB_EXT_SA];
 
 	if ((!nfo.sa) || (!srcx) || (!dstx)) {
-		openswan_log("SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: "
+		openswan_log("K_SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: "
 			"got NULL params");
 		return;
 	}
@@ -931,7 +980,7 @@ void process_pfkey_nat_t_new_mapping(
 	}
 
 	if (ugh != NULL)
-		openswan_log("SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: %s", ugh);
+		openswan_log("K_SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: %s", ugh);
 }
 
 #endif

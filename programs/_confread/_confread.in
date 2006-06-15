@@ -146,6 +146,7 @@ awk 'BEGIN {
 	akey = akey " xauth"
 	akey = akey " aggrmode"
 	akey = akey " compress"
+	akey = akey " overlapip"
 	akey = akey " keyingtries ikelifetime disablearrivalcheck failureshunt ike"
 	mkey = " spibase spi esp espenckey espauthkey espreplay_window"
 	left = left " leftespenckey leftespauthkey leftahkey"

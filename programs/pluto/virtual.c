@@ -298,7 +298,23 @@ is_virtual_end(const struct end *that)
 bool
 is_virtual_connection(const struct connection *c)
 {
-    return ((c->spd.that.virt)?TRUE:FALSE);
+    const struct spd_route *sr;
+    for (sr = &c->spd; sr != NULL; sr = sr->next)
+    {
+	if(sr->that.virt) return TRUE;
+    }
+    return FALSE;
+}
+
+/** Does this spd have a virtual IP ?
+ *
+ * @param c Active Connection struct
+ * @return bool True if we do 
+ */
+bool
+is_virtual_sr(const struct spd_route *sr)
+{
+    return ((sr->that.virt)?TRUE:FALSE);
 }
 
 /** net_in_list - Check if a subnet is in a list
@@ -321,40 +337,44 @@ net_in_list(const ip_subnet *peer_net, const ip_subnet *list,
     return FALSE;
 }
 
-/** is_virtual_net_allowed - Check if the virtual network the client proposes
- * is acceptable to us
+/** is_virtual_net_allowed -
+ * Check if the virtual network the client proposes is acceptable to us
  *
  * @param c Connection structure (active)
  * @param peer_net IP Subnet the peer proposes
  * @param his_addr Peers IP Address
  * @return bool True if allowed
  */
-bool
+err_t
 is_virtual_net_allowed(const struct connection *c, const ip_subnet *peer_net,
 	const ip_address *his_addr)
 {
-    if (!c->spd.that.virt) return FALSE;
+    err_t why;
+
+    if (!c->spd.that.virt) return NULL;
 
     if (c->spd.that.virt->flags & F_VIRTUAL_HOST) {
 	if (!subnetishost(peer_net))
-	    return FALSE;
+	    return NULL;
     }
 
     if (c->spd.that.virt->flags & F_VIRTUAL_NO) {
 	if (subnetishost(peer_net) &&
 	    addrinsubnet(his_addr, peer_net))
-	    return TRUE;
+	    return NULL;
     }
 
     if (c->spd.that.virt->flags & F_VIRTUAL_PRIVATE) {
 	if (net_in_list(peer_net, private_net_ok, private_net_ok_len) &&
 	    !net_in_list(peer_net, private_net_ko, private_net_ko_len))
-	    return TRUE;
+	    return NULL;
+	why = "a private network virtual IP was required, but the proposed IP did not match our list (virtual_private=)";
     }
 
     if (c->spd.that.virt->n_net) {
 	if (net_in_list(peer_net, c->spd.that.virt->net, c->spd.that.virt->n_net))
-	    return TRUE;
+	    return NULL;
+	why = "a specific netweork IP was required, but the proposed IP did not match our list (subnet=vhost:list)";
     }
 
     if (c->spd.that.virt->flags & F_VIRTUAL_ALL) {
@@ -362,10 +382,10 @@ is_virtual_net_allowed(const struct connection *c, const ip_subnet *peer_net,
 	loglog(RC_LOG_SERIOUS, "Warning - "
 	    "v%s:%%all must only be used for testing",
 	    (c->spd.that.virt->flags & F_VIRTUAL_HOST) ? "host" : "net");
-	return TRUE;
+	return NULL;
     }
 
-    return FALSE;
+    return why;
 }
 
 #endif

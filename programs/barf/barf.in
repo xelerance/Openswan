@@ -241,11 +241,6 @@ _________________________ ipsec/ls-libdir
 ls -l ${IPSEC_LIBDIR-/usr/local/lib/ipsec}
 _________________________ ipsec/ls-execdir
 ls -l ${IPSEC_EXECDIR-/usr/local/libexec/ipsec}
-_________________________ ipsec/updowns
-for f in `ls ${IPSEC_EXECDIR-/usr/local/libexec/ipsec} | egrep updown`
-do
-	cat ${IPSEC_EXECDIR-/usr/local/libexec/ipsec}/$f
-done
 _________________________ /proc/net/dev
 cat /proc/net/dev
 _________________________ /proc/net/route
@@ -349,7 +344,8 @@ then
         zcat /proc/config.gz | egrep 'CONFIG_IPSEC|CONFIG_KLIPS|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP|CONFIG_HW_RANDOM|CONFIG_CRYPTO_DEV'
 elif test -f /lib/modules/`uname -r`/build/.config
 then
-        cat /lib/modules/`uname -r`/build/.config | egrep 'CONFIG_IPSEC|CONFIG_KLIPS|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP|CONFIG_HW_RANDOM|CONFIG_CRY$
+        cat /lib/modules/`uname -r`/build/.config | egrep 'CONFIG_IPSEC|CONFIG_KLIPS|CONFIG_NET_KEY|CONFIG_INET|CONFIG_IP|CONFIG_HW_RANDOM|CONFIG_CRYPTO_DEV'
+
 else
 	echo "no .config file found, cannot list kernel properties"
 fi

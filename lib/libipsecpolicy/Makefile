@@ -41,10 +41,20 @@ MANS=
 
 .PHONY:	all install clean l t lt tar check depend checkprograms
 
+# we can't do tests with two conditions, but we can concatenate the strings
+SHOULDWERESTART=${USE_OBJDIR}$(wildcard policyquery.c)
+ifeq ($(SHOULDWERESTART),truepolicyquery.c)
+all programs clean install:
+	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/libipsecpolicy && make $@
+else
 all:	$(LIB) 
-programs: $(LIB)
+programs: $(LIB) 
+clean:	cleanall
+install: doinstall
 
-install:
+endif
+
+doinstall:
 	@mkdir -p $(MANDIR)
 	@for f in $(MANS) ; \
 	do \
@@ -75,9 +85,9 @@ $(OBJS):	$(HDRS)
 
 # build version.c using version number from Makefile.ver
 version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
-	sed '/"/s/xxx/$(IPSECVERSION)/' version.in.c >$@
+	sed '/"/s/xxx/$(IPSECVERSION)/' ${KLIPSSRCDIR}/version.in.c >$@
 
-clean:
+cleanall:
 	rm -f $(LIB) *.o try* core *.core $(EXTHDRS) $(EXTLIBS) version.c
 
 

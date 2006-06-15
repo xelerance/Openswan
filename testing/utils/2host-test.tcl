@@ -161,9 +161,9 @@ if {[info exists env(NETJIGTESTDEBUG)]} {
 spawn -noecho -open [open "|$netjig_prog --cmdproto $debugjig 2>@stderr" w+]
 set netjig1 $spawn_id
 
-newswitch $netjig1 "$arpreply east"
-newswitch $netjig1 "public"
-newswitch $netjig1 "$arpreply west"
+newswitch $netjig1 east
+newswitch $netjig1 public
+newswitch $netjig1 west
 
 if {[info exists netjig_extra]} {
     playnjscript $netjig1 $netjig_extra

@@ -279,7 +279,7 @@ USE_SINGLE_CONF_DIR?=false
 
 # whether or not to include ipsec policy code into pluto.
 # false for now, since it is still experimental.
-USE_IPSECPOLICY?=false
+USE_IPSECPOLICY?=true
 
 # include IKEPING (a utility for testing IKE daemons) in the distribution
 USE_IKEPING?=true
@@ -294,6 +294,9 @@ USE_KLIPS?=true
 
 # KLIPS needs PFKEYv2, but sometimes we want PFKEY without KLIPS
 USE_PFKEYv2?=true
+
+# include support for 2.6 KLIPS/MAST variation in pluto
+USE_MAST?=false
 
 # include support for NETKEY 2.5/2.6 IPsec in pluto (aka "native", "kame")
 USE_KERNEL26?=true
@@ -429,6 +432,8 @@ OBJDIRTOP?=${OPENSWANSRCDIR}
 ### paths within the source tree
 
 KLIPSINC=${OPENSWANSRCDIR}/linux/include
+KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
+#KLIPSSRCDIR=/mara1/git/klips/net/ipsec
 
 LIBOPENSWANDIR=${OPENSWANSRCDIR}/lib/libopenswan
 OPENSWANLIB=${OBJDIRTOP}/lib/libopenswan/libopenswan.a

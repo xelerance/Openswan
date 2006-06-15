@@ -98,6 +98,8 @@ struct starter_config {
     struct {
 	ksf   strings;
 	knf   options;
+	str_set strings_set;
+	int_set options_set;
 	
 	/* derived types */
 	char **interfaces;

@@ -1246,7 +1246,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 		}
 
 		/* If it is in larval state, drop the packet, we cannot process yet. */
-		if(ixs->ipsp->ips_state == SADB_SASTATE_LARVAL) {
+		if(ixs->ipsp->ips_state == K_SADB_SASTATE_LARVAL) {
 			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 				    "klips_debug:ipsec_xmit_encap_bundle: "
 				    "ipsec_sa in larval state for SA:<%s%s%s> %s, cannot be used yet, dropping packet.\n",
@@ -1259,7 +1259,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 			goto cleanup;
 		}
 
-		if(ixs->ipsp->ips_state == SADB_SASTATE_DEAD) {
+		if(ixs->ipsp->ips_state == K_SADB_SASTATE_DEAD) {
 			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 				    "klips_debug:ipsec_xmit_encap_bundle: "
 				    "ipsec_sa in dead state for SA:<%s%s%s> %s, can no longer be used, dropping packet.\n",

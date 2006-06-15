@@ -19,7 +19,7 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 PROGRAM=showpolicy
 EXTRA5PROC=${PROGRAM}.8
 
-LIBS=${POLICYLIB} ${FREESWANLIB} 
+LIBS=${POLICYLIB} ${OPENSWANLIB} 
 
 include ${srcdir}../Makefile.program
 

@@ -18,7 +18,7 @@
 #define _DEMUX_H
 
 #include "server.h"
-
+#include "packet.h"
 #include "quirks.h"
 
 struct state;	/* forward declaration of tag */

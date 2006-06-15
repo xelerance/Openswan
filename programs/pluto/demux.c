@@ -960,13 +960,14 @@ send_packet(struct state *st, const char *where, bool verbose)
     }
 
     DBG(DBG_CONTROL|DBG_RAW
-	, DBG_log("sending %lu bytes for %s through %s:%d to %s:%u:"
+	, DBG_log("sending %lu bytes for %s through %s:%d to %s:%u (using #%lu)"
 		  , (unsigned long) st->st_tpacket.len
 		  , where
 		  , st->st_interface->ip_dev->id_rname
 		  , st->st_interface->port
 		  , ip_str(&st->st_remoteaddr)
-		  , st->st_remoteport));
+		  , st->st_remoteport
+		  , st->st_serialno));
     DBG(DBG_RAW
 	, DBG_dump(NULL, ptr, len));
 
@@ -1395,7 +1396,6 @@ read_packet(struct msg_digest *md)
 
     DBG(DBG_RAW | DBG_CRYPT | DBG_PARSING | DBG_CONTROL,
 	{
-	    DBG_log(BLANK_FORMAT);
 	    DBG_log("*received %d bytes from %s:%u on %s (port=%d)"
 		    , (int) pbs_room(&md->packet_pbs)
 		    , ip_str(cur_from), (unsigned) cur_from_port
@@ -2201,6 +2201,15 @@ process_packet(struct msg_digest **mdp)
 		return;
 	    }
 
+	    /* do payload-type specific debugging */
+	    switch(np) {
+	    case ISAKMP_NEXT_ID:
+	    case ISAKMP_NEXT_NATOA_RFC:
+		/* dump ID section */
+		DBG(DBG_PARSING, DBG_dump("     obj: ", pd->pbs.cur, pbs_room(&pd->pbs)));
+		break;
+	    }
+
 	    /* place this payload at the end of the chain for this type */
 	    {
 		struct payload_digest **p;
@@ -2691,6 +2700,11 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		    const char *ini = " {";
 		    const char *fin = "";
 
+		    strcpy(sadetails,
+			   (st->st_connection->policy & POLICY_TUNNEL ?
+			    " tunnel mode" : " transport mode"));
+		    b += strlen(sadetails);
+
 		    /* -1 is to leave space for "fin" */
 
 		    if(st->st_esp.present)
@@ -2819,9 +2833,10 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 
 		/* tell whack and logs our progress */
 		loglog(w
-		    , "%s: %s%s"
-		    , enum_name(&state_names, st->st_state)
-		    , story, sadetails);
+		       , "%s: %s%s"
+		       , enum_name(&state_names, st->st_state)
+		       , story
+		       , sadetails);
 	    }
 
 	    /*

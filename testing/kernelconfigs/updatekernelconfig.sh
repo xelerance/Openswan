@@ -14,7 +14,7 @@ canonicalize_kernel_config() {
     out=`basename $old`
 
     rm -f $out.new
-    cat $new | sed -e 's,^# \(CONFIG.*\) is not set,\1=n,' -e '/^#/d' | cat - $old | sort -u >$out.new
+    cat $new | sed -e 's,^# \(CONFIG.*\) is not set,\1=n,' -e '/^#/d' | cat - $old | sort -u | sed -e 's,\(CONFIG.*\)=n,# \1 is not set,' >$out.new
 }
 
 source ../../umlsetup.sh
