@@ -36,9 +36,11 @@ void pfkey_write_error(int writeerror, int err)
 			fprintf(stderr, "You must be root to open this file.\n");
 		}
 		break;
+#ifdef EUNATCH
 	case EUNATCH:
 		fprintf(stderr, "Netlink not enabled OR KLIPS not loaded.\n");
 		break;
+#endif
 	case EBUSY:
 		fprintf(stderr, "KLIPS is busy.  Most likely a serious internal error occured in a previous command.  Please report as much detail as possible to development team.\n");
 		break;

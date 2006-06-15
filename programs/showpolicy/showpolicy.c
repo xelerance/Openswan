@@ -73,7 +73,6 @@ static const struct option long_opts[] = {
 int open_udp_sock(unsigned short port)
 {
 	struct sockaddr_in s;
-	int one;
 	int fd;
 
 	fd = socket(PF_INET, SOCK_DGRAM, 0);
@@ -92,11 +91,16 @@ int open_udp_sock(unsigned short port)
 		exit(11);
 	}
 
-	one = 1;
-	if(setsockopt(fd, SOL_IP, IP_IPSEC_RECVREF, &one, sizeof(one)) != 0) {
-		perror("setsockopt recvref");
-		exit(12);
+#ifdef SAREF_SUPPORTED
+	{
+	  int one;
+	  one = 1;
+	  if(setsockopt(fd, SOL_IP, IP_IPSEC_RECVREF, &one, sizeof(one)) != 0) {
+		  perror("setsockopt recvref");
+		  exit(12);
+	  }
 	}
+#endif
 	return fd;
 }
 

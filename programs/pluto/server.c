@@ -674,7 +674,7 @@ call_server(void)
 	    time_t n;
 
 	    time(&n);
-	    DBG_log("time is %s (%lu)", ctime(&n), n);
+	    DBG_log("time is %s (%lu)", ctime(&n), (unsigned long)n);
 	}
 		    
 	/* figure out what is interesting */

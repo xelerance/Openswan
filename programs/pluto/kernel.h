@@ -189,6 +189,7 @@ extern bool invoke_command(const char *verb, const char *verb_suffix, char *cmd)
 #if defined(__FreeBSD__)
 extern bool do_command_freebsd(struct connection *c, struct spd_route *sr
 			       , const char *verb, struct state *st);
+extern bool invoke_command(const char *verb, const char *verb_suffix, char *cmd);
 #endif
 
 #if defined(__CYGWIN32__)

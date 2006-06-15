@@ -21,6 +21,10 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -Wwrite-strings
 CFLAGS+= -Wbad-function-cast 
 
+ifeq ($(USE_SAREF_KERNEL),true)
+CFLAGS+=-DSAREF_SUPPORTED
+endif
+
 ifeq ($(USE_NAT_TRAVERSAL),true)
 NAT_DEFS=-DNAT_TRAVERSAL -DVIRTUAL_IP 
 endif

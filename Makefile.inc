@@ -298,6 +298,9 @@ USE_PFKEYv2?=true
 # include support for 2.6 KLIPS/MAST variation in pluto
 USE_MAST?=false
 
+# MAST is generally a prerequisite for SAREF support in applications
+USE_SAREF_KERNEL=false
+
 # include support for NETKEY 2.5/2.6 IPsec in pluto (aka "native", "kame")
 USE_KERNEL26?=true
 
