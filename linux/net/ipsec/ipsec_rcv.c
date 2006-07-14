@@ -363,22 +363,24 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 
 
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
-		KLIPS_PRINT(debug_rcv,
-			"klips_debug:ipsec_rcv: "
-			"natt_type=%u tdbp->ips_natt_type=%u : %s\n",
-			irs->natt_type, newipsp->ips_natt_type,
-			(irs->natt_type==newipsp->ips_natt_type)?"ok":"bad");
-		if (irs->natt_type != newipsp->ips_natt_type) {
-			KLIPS_PRINT(debug_rcv,
-				    "klips_debug:ipsec_rcv: "
-				    "SA:%s does not agree with expected NAT-T policy.\n",
-				    irs->sa_len ? irs->sa : " (error)");
-			if(irs->stats) {
-				irs->stats->rx_dropped++;
-			}
-			ipsec_sa_put(newipsp);
-			return IPSEC_RCV_FAILEDINBOUND;
-		}
+                if (proto == IPPROTO_ESP) {
+                        KLIPS_PRINT(debug_rcv,
+                                "klips_debug:ipsec_rcv: "
+                                "natt_type=%u tdbp->ips_natt_type=%u : %s\n",
+                                irs->natt_type, newipsp->ips_natt_type,
+                                (irs->natt_type==newipsp->ips_natt_type)?"ok":"bad");
+                        if (irs->natt_type != newipsp->ips_natt_type) {
+                                KLIPS_PRINT(debug_rcv,
+                                            "klips_debug:ipsec_rcv: "
+                                            "SA:%s does not agree with expected NAT-T policy.\n",
+                                            irs->sa_len ? irs->sa : " (error)");
+                                if(irs->stats) {
+                                        irs->stats->rx_dropped++;
+                                }
+                                ipsec_sa_put(newipsp);
+                                return IPSEC_RCV_FAILEDINBOUND;
+                        }
+                }
 #endif		 
 	}
 
