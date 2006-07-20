@@ -28,7 +28,7 @@
  *	special case: ipsec core modular with this static algo inside:
  *	must avoid MODULE magic for this file
  */
-#if defined(CONFIG_KLIPS_MODULE) && CONFIG_KLIPS_MODULE && CONFIG_KLIPS_ENC_AES
+#if defined(CONFIG_KLIPS_MODULE) && defined(CONFIG_KLIPS_ENC_AES)
 #undef MODULE
 #endif
 
@@ -79,7 +79,7 @@ static int auth_id=0;
 #else
 static int auth_id=9;
 #endif
-MODULE_PARM(auth_id, "i");
+/* MODULE_PARM(auth_id, "i"); */
 #endif
 
 #define ESP_AES			12	/* truely _constant_  :)  */
@@ -145,7 +145,7 @@ static struct ipsec_alg_auth ipsec_alg_AES_MAC = {
 			ias_keymaxbits:	ESP_AES_MAC_KEY_SZ*8,
 		},
 	},
-#if defined(MODULE_KLIPS_ENC_AES_MODULE)
+#if defined(CONFIG_KLIPS_ENC_AES_MODULE)
 	ixt_module:	THIS_MODULE,
 #endif
 	ixt_a_keylen:	ESP_AES_MAC_KEY_SZ,
@@ -166,7 +166,7 @@ static struct ipsec_alg_enc ipsec_alg_AES = {
 			ias_keymaxbits:	ESP_AES_KEY_SZ_MAX*8,
 		},
 	},
-#if defined(MODULE_KLIPS_ENC_AES_MODULE)
+#if defined(CONFIG_KLIPS_ENC_AES_MODULE)
 	ixt_module:	THIS_MODULE,
 #endif
 	ixt_e_keylen:	ESP_AES_KEY_SZ_MAX,
@@ -250,7 +250,7 @@ IPSEC_ALG_MODULE_EXIT_STATIC( ipsec_aes_fini )
 MODULE_LICENSE("GPL");
 #endif
 
-#if 0
+#if 0  /* +NOT_YET */
 #ifndef MODULE
 /*
  * 	This is intended for static module setups, currently
