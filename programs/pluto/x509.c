@@ -14,7 +14,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: x509.c,v 1.26 2005/09/13 19:43:19 mcr Exp $
+ * Modifications to use OCF interface written by
+ * Daniel Djamaludin <danield@cyberguard.com>
+ * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ *
  */
 
 #include <stdlib.h>
@@ -58,6 +61,10 @@
 #include "pkcs.h"
 #include "plutocerts.h"
 #include "x509more.h"
+
+#ifdef HAVE_OCF_AND_OPENSSL
+#include "ocf_cryptodev.h"
+#endif
 
 /* chained lists of X.509 host/user and ca certificates and crls */
 
@@ -738,7 +745,8 @@ check_validity(const x509cert_t *cert, time_t *until)
     if (current_time > cert->notAfter) {
 	char tbuf[TIMETOA_BUF];
 
-	DBG_log("  aftercheck : %ld > %ld", current_time, cert->notAfter);
+	DBG_log("  aftercheck : %ld > %ld", (unsigned long)current_time
+		, (unsigned long)cert->notAfter);
 	return builddiag("X.509 certificate expired at %s (it is now %s)"
 			 , timetoa(&cert->notAfter, TRUE, tbuf, sizeof(tbuf))
 			 , curtime);

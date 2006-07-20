@@ -16,6 +16,9 @@
 
 #ifndef USE_LWRES	/* whole file! */
 
+/* even though we aren't using LWRES, we can still use the header files */
+#include "arpa/nameser.h"
+
 /* The interface in RHL6.x and BIND distribution 8.2.2 are different,
  * so we build some of our own :-(
  */

@@ -103,6 +103,7 @@ help(void)
 	    " [--encrypt]"
 	    " [--authenticate]"
 	    " [--compress]"
+	    " [--overlapip]"
 	    " [--tunnel]"
 	    " [--pfs]"
 	    " \\\n   "
@@ -431,6 +432,10 @@ enum option_enums {
     CD_DUMMY,           /* same order as POLICY_* 17 -- was XAUTH */
     CD_MODECFGPULL,     /* same order as POLICY_* 18 */
     CD_AGGRESSIVE,      /* same order as POLICY_* 19 */
+    CD_PERHOST,      /* should we specialize the policy to the host? */
+    CD_SUBHOST,      /* if the policy applies below the host level (TCP/UDP/SCTP ports) */
+    CD_PERPROTO,     /* should we specialize the policy to the protocol? */
+    CD_OVERLAPIP,    /* can two conns that have subnet=vhost: declare the same IP? */
     CD_TUNNELIPV4,
     CD_TUNNELIPV6,
     CD_CONNIPV4,
@@ -595,7 +600,8 @@ static const struct option long_opts[] = {
 
     { "encrypt", no_argument, NULL, CD_ENCRYPT + OO },
     { "authenticate", no_argument, NULL, CD_AUTHENTICATE + OO },
-    { "compress", no_argument, NULL, CD_COMPRESS + OO },
+    { "compress",  no_argument, NULL, CD_COMPRESS + OO },
+    { "overlapip", no_argument, NULL, CD_OVERLAPIP + OO },
     { "tunnel", no_argument, NULL, CD_TUNNEL + OO },
     { "tunnelipv4", no_argument, NULL, CD_TUNNELIPV4 + OO },
     { "tunnelipv6", no_argument, NULL, CD_TUNNELIPV6 + OO },
@@ -684,12 +690,13 @@ static const struct option long_opts[] = {
     { 0,0,0,0 }
 };
 
-#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
-struct sockaddr_un ctl_addr = { AF_UNIX, DEFAULT_CTLBASE CTL_SUFFIX };
-#else
-/* This will require fixes elsewhere too! */
-struct sockaddr_un ctl_addr = { sizeof(struct sockaddr_un), AF_UNIX, DEFAULT_CTLBASE CTL_SUFFIX };
+struct sockaddr_un ctl_addr = {
+    .sun_family = AF_UNIX,
+    .sun_path   = DEFAULT_CTLBASE CTL_SUFFIX,
+#if defined(HAS_SUN_LEN) 
+    .sun_len = sizeof(struct sockaddr_un),
 #endif
+};
 
 
 static void
@@ -1359,6 +1366,7 @@ main(int argc, char **argv)
 	case CD_ENCRYPT:	/* --encrypt */
 	case CD_AUTHENTICATE:	/* --authenticate */
 	case CD_COMPRESS:	/* --compress */
+	case CD_OVERLAPIP:	/* --overlapip */
 	case CD_TUNNEL:		/* --tunnel */
 	case CD_PFS:		/* --pfs */
 	case CD_AGGRESSIVE:	/* --aggrmode */
@@ -1861,8 +1869,10 @@ main(int argc, char **argv)
 
 			/* case RC_LOG_SERIOUS: */
 			default:
-			    /* pass through */
-			    exit_status = s;
+			    if( msg.whack_async )
+				exit_status=0;
+			    else
+				exit_status = s;
 			    break;
 			}
 		    }

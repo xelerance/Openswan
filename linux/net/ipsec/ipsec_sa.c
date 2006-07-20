@@ -64,6 +64,10 @@
 #include "openswan/ipsec_ipe4.h"
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_esp.h"
+#include "openswan/ipsec_ipip.h"
+#ifdef CONFIG_KLIPS_IPCOMP
+#include "openswan/ipsec_ipcomp.h"
+#endif /* CONFIG_KLIPS_COMP */
 
 #include <pfkeyv2.h>
 #include <pfkey.h>
@@ -87,8 +91,6 @@ spinlock_t tdb_lock;
 
 struct ipsec_sadb ipsec_sadb;
 
-#if IPSEC_SA_REF_CODE
-
 /* the sub table must be narrower (or equal) in bits than the variable type
    in the main table to count the number of unused entries in it. */
 typedef struct {
@@ -108,41 +110,6 @@ typedef struct {
 #define IPS_HASH(said) (((said)->spi + (said)->dst.u.v4.sin_addr.s_addr + (said)->proto) % SADB_HASHMOD)
 
 
-void
-ipsec_SAtest(void)
-{
-	IPsecSAref_t SAref = 258;
-	struct ipsec_sa ips;
-	ips.ips_ref = 772;
-
-	printk("klips_debug:ipsec_SAtest: "
-	       "IPSEC_SA_REF_SUBTABLE_IDX_WIDTH=%u\n"
-	       "IPSEC_SA_REF_MAINTABLE_NUM_ENTRIES=%u\n"
-	       "IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES=%u\n"
-	       "IPSEC_SA_REF_HOST_FIELD_WIDTH=%lu\n"
-	       "IPSEC_SA_REF_TABLE_MASK=%x\n"
-	       "IPSEC_SA_REF_ENTRY_MASK=%x\n"
-	       "IPsecSAref2table(%d)=%u\n"
-	       "IPsecSAref2entry(%d)=%u\n"
-	       "IPsecSAref2NFmark(%d)=%u\n"
-	       "IPsecSAref2SA(%d)=%p\n"
-	       "IPsecSA2SAref(%p)=%d\n"
-	       ,
-	       IPSEC_SA_REF_SUBTABLE_IDX_WIDTH,
-	       IPSEC_SA_REF_MAINTABLE_NUM_ENTRIES,
-	       IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES,
-	       (unsigned long) IPSEC_SA_REF_HOST_FIELD_WIDTH,
-	       IPSEC_SA_REF_TABLE_MASK,
-	       IPSEC_SA_REF_ENTRY_MASK,
-	       SAref, IPsecSAref2table(SAref),
-	       SAref, IPsecSAref2entry(SAref),
-	       SAref, IPsecSAref2NFmark(SAref),
-	       SAref, IPsecSAref2SA(SAref),
-	       (&ips), IPsecSA2SAref((&ips))
-		);
-	return;
-}
-
 int
 ipsec_SAref_recycle(void)
 {
@@ -150,14 +117,14 @@ ipsec_SAref_recycle(void)
 	int entry;
 	int error = 0;
 
-	ipsec_sadb.refFreeListHead = -1;
-	ipsec_sadb.refFreeListTail = -1;
+	ipsec_sadb.refFreeListHead = IPSEC_SAREF_NULL;
+	ipsec_sadb.refFreeListTail = IPSEC_SAREF_NULL;
 
 	if(ipsec_sadb.refFreeListCont == IPSEC_SA_REF_MAINTABLE_NUM_ENTRIES * IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES) {
 		KLIPS_PRINT(debug_xform,
 			    "klips_debug:ipsec_SAref_recycle: "
 			    "end of table reached, continuing at start..\n");
-		ipsec_sadb.refFreeListCont = 0;
+		ipsec_sadb.refFreeListCont = IPSEC_SAREF_FIRST;
 	}
 
 	KLIPS_PRINT(debug_xform,
@@ -183,7 +150,7 @@ ipsec_SAref_recycle(void)
 			if(ipsec_sadb.refTable[table]->entry[entry] == NULL) {
 				ipsec_sadb.refFreeList[++ipsec_sadb.refFreeListTail] = IPsecSArefBuild(table, entry);
 				if(ipsec_sadb.refFreeListTail == (IPSEC_SA_REF_FREELIST_NUM_ENTRIES - 1)) {
-					ipsec_sadb.refFreeListHead = 0;
+					ipsec_sadb.refFreeListHead = IPSEC_SAREF_FIRST;
 					ipsec_sadb.refFreeListCont = ipsec_sadb.refFreeList[ipsec_sadb.refFreeListTail] + 1;
 					KLIPS_PRINT(debug_xform,
 						    "klips_debug:ipsec_SAref_recycle: "
@@ -194,7 +161,7 @@ ipsec_SAref_recycle(void)
 		}
 	}
 
-	if(ipsec_sadb.refFreeListTail == -1) {
+	if(ipsec_sadb.refFreeListTail == IPSEC_SAREF_NULL) {
 		KLIPS_PRINT(debug_xform,
 			    "klips_debug:ipsec_SAref_recycle: "
 			    "out of room in the SArefTable.\n");
@@ -202,7 +169,7 @@ ipsec_SAref_recycle(void)
 		return(-ENOSPC);
 	}
 
-	ipsec_sadb.refFreeListHead = 0;
+	ipsec_sadb.refFreeListHead = IPSEC_SAREF_FIRST;
 	ipsec_sadb.refFreeListCont = ipsec_sadb.refFreeList[ipsec_sadb.refFreeListTail] + 1;
 	KLIPS_PRINT(debug_xform,
 		    "klips_debug:ipsec_SAref_recycle: "
@@ -252,7 +219,17 @@ ipsec_SArefSubTable_alloc(unsigned table)
 
 	return 0;
 }
-#endif /* IPSEC_SA_REF_CODE */
+
+int
+ipsec_saref_verify_slot(IPsecSAref_t ref)
+{
+	int ref_table=IPsecSAref2table(ref);
+	
+	if(ipsec_sadb.refTable[ref_table] == NULL) {
+		return ipsec_SArefSubTable_alloc(ref_table);
+	}
+	return 0;
+}
 
 int
 ipsec_saref_freelist_init(void)
@@ -267,9 +244,9 @@ ipsec_saref_freelist_init(void)
 	for(i = 0; i < IPSEC_SA_REF_FREELIST_NUM_ENTRIES; i++) {
 		ipsec_sadb.refFreeList[i] = IPSEC_SAREF_NULL;
 	}
-	ipsec_sadb.refFreeListHead = -1;
-	ipsec_sadb.refFreeListCont = 0;
-	ipsec_sadb.refFreeListTail = -1;
+	ipsec_sadb.refFreeListHead = IPSEC_SAREF_NULL;
+	ipsec_sadb.refFreeListCont = IPSEC_SAREF_FIRST;
+	ipsec_sadb.refFreeListTail = IPSEC_SAREF_NULL;
        
 	return 0;
 }
@@ -286,7 +263,6 @@ ipsec_sadb_init(void)
 	/* parts above are for the old style SADB hash table */
 	
 
-#if IPSEC_SA_REF_CODE
 	/* initialise SA reference table */
 
 	/* initialise the main table */
@@ -309,27 +285,25 @@ ipsec_sadb_init(void)
 	}
 
 	error = ipsec_saref_freelist_init();
-#endif /* IPSEC_SA_REF_CODE */
 	return error;
 }
 
-#if IPSEC_SA_REF_CODE
 IPsecSAref_t
 ipsec_SAref_alloc(int*error) /* pass in error var by pointer */
 {
 	IPsecSAref_t SAref;
 
 	KLIPS_PRINT(debug_xform,
-		    "klips_debug:ipsec_SAref_alloc: "
+		    "ipsec_SAref_alloc: "
 		    "SAref requested... head=%d, cont=%d, tail=%d, listsize=%d.\n",
 		    ipsec_sadb.refFreeListHead,
 		    ipsec_sadb.refFreeListCont,
 		    ipsec_sadb.refFreeListTail,
 		    IPSEC_SA_REF_FREELIST_NUM_ENTRIES);
 
-	if(ipsec_sadb.refFreeListHead == -1) {
+	if(ipsec_sadb.refFreeListHead == IPSEC_SAREF_NULL) {
 		KLIPS_PRINT(debug_xform,
-			    "klips_debug:ipsec_SAref_alloc: "
+			    "ipsec_SAref_alloc: "
 			    "FreeList empty, recycling...\n");
 		*error = ipsec_SAref_recycle();
 		if(*error) {
@@ -339,16 +313,16 @@ ipsec_SAref_alloc(int*error) /* pass in error var by pointer */
 
 	SAref = ipsec_sadb.refFreeList[ipsec_sadb.refFreeListHead];
 	if(SAref == IPSEC_SAREF_NULL) {
-		KLIPS_PRINT(debug_xform,
-			    "klips_debug:ipsec_SAref_alloc: "
+		KLIPS_ERROR(debug_xform,
+			    "ipsec_SAref_alloc: "
 			    "unexpected error, refFreeListHead = %d points to invalid entry.\n",
 			    ipsec_sadb.refFreeListHead);
-			*error = -ESPIPE;
-			return IPSEC_SAREF_NULL;
+		*error = -ESPIPE;
+		return IPSEC_SAREF_NULL;
 	}
 
 	KLIPS_PRINT(debug_xform,
-		    "klips_debug:ipsec_SAref_alloc: "
+		    "ipsec_SAref_alloc: "
 		    "allocating SAref=%d, table=%u, entry=%u of %u.\n",
 		    SAref,
 		    IPsecSAref2table(SAref),
@@ -359,14 +333,13 @@ ipsec_SAref_alloc(int*error) /* pass in error var by pointer */
 	ipsec_sadb.refFreeListHead++;
 	if(ipsec_sadb.refFreeListHead > ipsec_sadb.refFreeListTail) {
 		KLIPS_PRINT(debug_xform,
-			    "klips_debug:ipsec_SAref_alloc: "
+			    "ipsec_SAref_alloc: "
 			    "last FreeList entry allocated, resetting list head to empty.\n");
-		ipsec_sadb.refFreeListHead = -1;
+		ipsec_sadb.refFreeListHead = IPSEC_SAREF_NULL;
 	}
 
 	return SAref;
 }
-#endif /* IPSEC_SA_REF_CODE */
 
 int
 ipsec_sa_print(struct ipsec_sa *ips)
@@ -384,11 +357,8 @@ ipsec_sa_print(struct ipsec_sa *ips)
 	if(ips->ips_hnext != NULL) {
 		printk(" hnext=0p%p", ips->ips_hnext);
 	}
-	if(ips->ips_inext != NULL) {
-		printk(" inext=0p%p", ips->ips_inext);
-	}
-	if(ips->ips_onext != NULL) {
-		printk(" onext=0p%p", ips->ips_onext);
+	if(ips->ips_next != NULL) {
+		printk(" next=0p%p", ips->ips_next);
 	}
 	sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
 	printk(" said=%s", sa_len ? sa : " (error)");

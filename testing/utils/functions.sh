@@ -584,6 +584,8 @@ netjigtest() {
 
     NJARGS=''
 
+    export_variables
+
     if [ -n "${PRIV_INPUT-}" ]
     then
 	NJARGS="$NJARGS -p $PRIV_INPUT"
@@ -1438,51 +1440,7 @@ module_compile() {
     recordresults $testdir "$testexpect" "$stat" $testdir false 
 }
 
-
-###################################
-#
-#  test type: umlXhost - a test with many hosts under control
-#
-###################################
-
-do_umlX_test() {
-
-    prerunsetup
-
-    success=true
-    failnum=1
-
-    # these are network names
-    EASTOUTPUT=''
-    WESTOUTPUT=''
-    PUBOUTPUT=''
-
-    EXP2_ARGS=''
-
-    if [ -n "${EAST_INPUT-}" ]
-    then
-	EAST_PLAY=$EAST_INPUT export EAST_PLAY
-    fi
-
-    if [ -n "${WEST_INPUT-}" ]
-    then
-	WEST_PLAY=$WEST_INPUT export WEST_PLAY
-    fi
-    export NORTH_PLAY
-    export SOUTH_PLAY
-
-    if [ -n "${PUB_INPUT-}" ]
-    then
-	EXP2_ARGS="$EXP2_ARGS -p $PUB_INPUT"
-    fi
-
-    if [ -z "${XHOST_LIST-}" ]
-    then
-	XHOST_LIST="EAST WEST JAPAN"
-    fi
-
-    export XHOST_LIST
-
+export_variables() {
     # Xhost script takes things from the environment.
     for host in $XHOST_LIST
     do
@@ -1518,12 +1476,59 @@ do_umlX_test() {
        export ${host}_FINAL_SCRIPT
     done
 
-    for net in NORTH SOUTH NORTHPUBLIC SOUTHPUBLIC EAST WEST PUBLIC ADMIN
+    for net in NORTH SOUTH NORTHPUBLIC SOUTHPUBLIC EAST WEST PUBLIC ADMIN PRIVATE
     do
 	export ${net}_PLAY
 	export ${net}_REC
 	export ${net}_ARPREPLY
     done
+
+    export NORTH_PLAY
+    export SOUTH_PLAY
+    export XHOST_LIST
+}
+
+###################################
+#
+#  test type: umlXhost - a test with many hosts under control
+#
+###################################
+
+do_umlX_test() {
+
+    prerunsetup
+
+    success=true
+    failnum=1
+
+    # these are network names
+    EASTOUTPUT=''
+    WESTOUTPUT=''
+    PUBOUTPUT=''
+
+    EXP2_ARGS=''
+
+    export_variables
+
+    if [ -n "${EAST_INPUT-}" ]
+    then
+	EAST_PLAY=$EAST_INPUT export EAST_PLAY
+    fi
+
+    if [ -n "${WEST_INPUT-}" ]
+    then
+	WEST_PLAY=$WEST_INPUT export WEST_PLAY
+    fi
+
+    if [ -n "${PUB_INPUT-}" ]
+    then
+	EXP2_ARGS="$EXP2_ARGS -p $PUB_INPUT"
+    fi
+
+    if [ -z "${XHOST_LIST-}" ]
+    then
+	XHOST_LIST="EAST WEST JAPAN"
+    fi
 
     if [ -n "${REF_EAST_OUTPUT-}" ]
     then

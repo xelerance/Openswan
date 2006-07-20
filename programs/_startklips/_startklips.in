@@ -24,6 +24,7 @@ rpfilter1=/proc/sys/net/ipv4/conf
 rpfilter2=rp_filter
 # %unchanged or setting (0, 1, or 2)
 rpfiltercontrol=0
+kamepfkey=/proc/net/pfkey
 ipsecversion=/proc/net/ipsec_version
 moduleplace=/lib/modules/`uname -r`/kernel/net/ipsec
 bareversion=`uname -r | sed -e 's/\.nptl//' | sed -e 's/^\(2\.[0-9]\.[1-9][0-9]*-[1-9][0-9]*\(\.[0-9][0-9]*\)*\(\.x\)*\).*$/\1/'`
@@ -37,8 +38,25 @@ case $bareversion in
 		;;
 esac
 
-klips=true
-netkey=/proc/net/pfkey
+# which kernel are we using?
+case $IPSECprotostack in
+klips)  netkey=false; klips=true;  mast=false;;
+mast)   netkey=false; klips=false; mast=true;;
+netkey) netkey=true;  klips=false; mast=false;;
+none)   netkey=false; klips=false; mast=false;;
+nostack) netkey=false; klips=false; mast=false;;
+*|auto)
+    #if test -f /proc/sys/net/ipsec/debug_mast
+    if false
+    then
+	netkey=false; klips=false; mast=true;
+    elif test -f $kamepfkey
+	then
+	    netkey=true; klips=false; mast=false;
+	else
+	    netkey=false; klips=true; mast=false;
+    fi;;
+esac
 
 info=/dev/null
 log=daemon.error
@@ -58,6 +76,20 @@ do
 	esac
 	shift
 done
+
+if $netkey
+then
+    logger -p $log -t ipsec_setup "Using NETKEY/2.6 stack"
+fi
+if $klips
+then
+    logger -p $log -t ipsec_setup "Using KLIPS/legacy stack"
+fi
+if $mast
+then
+    logger -p $log -t ipsec_setup "Using KLIPS/mast stack"
+fi
+
 
 
 
@@ -200,20 +232,25 @@ checkif() {
 # interfaces=%defaultroute:  put ipsec0 on top of default route's interface
 defaultinterface() {
 	phys=`netstat -nr |
-		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $NF }'`
+		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $NF; exit 0 }'`
 	if test " $phys" = " "
 	then
 		echo "no default route, %defaultroute cannot cope!!!"
 		exit 1
 	fi
-	if test `echo " $phys" | wc -l` -gt 1
-	then
-		echo "multiple default routes, %defaultroute cannot cope!!!"
-		exit 1
-	fi
+	#if test `echo " $phys" | wc -l` -gt 1
+	#then
+	#	echo "multiple default routes, %defaultroute cannot cope!!!"
+	#	exit 1
+	#fi
 	next=`netstat -nr |
-		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $2 }'`
+		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $2; exit 0 }'`
 	klipsinterface "ipsec0=$phys" $next
+
+	if $klips
+	then
+	    klipsinterface "ipsec0=$phys" $next
+	fi
 }
 
 # log only to syslog, not to stdout/stderr
@@ -256,26 +293,25 @@ setmodule() {
 # main line
 
 # load module if possible
-if test -f $ipsecversion && test -f $netkey
+if test -f $ipsecversion && $netkey
 then
     # both KLIPS and NETKEY code detected, bail out
     echo "FATAL ERROR: Both KLIPS and NETKEY IPsec code is present in kernel"
     exit
 fi
-if test ! -f $ipsecversion && test ! -f $netkey && modprobe -qn ipsec
+if test ! -f $ipsecversion && ($klips || $mast) && modprobe -qn ipsec
 then
     # statically compiled KLIPS/NETKEY not found; try to load the module
     modprobe ipsec
 fi
 
-if test ! -f $ipsecversion && test ! -f $netkey
+if test ! -f $ipsecversion && $netkey
 then
 	modprobe -v af_key
 fi
 
-if test -f $netkey
+if $netkey
 then
-	klips=false
 	if test -f $modules
 	then
 		modprobe -qv ah4
@@ -296,7 +332,7 @@ then
 	fi
 fi
 
-if test ! -f $ipsecversion && $klips
+if ($klips || $mast)
 then
         if test -r $modules             # kernel does have modules
         then
@@ -359,12 +395,20 @@ then
 	# carry on
 fi
 
-if $klips
+if $mast
+then
+    # flush policy out
+    if iptables -t mangle -L IPSEC >/dev/null
+    then
+	iptables -t mangle -F IPSEC
+    fi
+
+elif $klips
 then
 	# clear tables out in case dregs have been left over
 	ipsec eroute --clear
 	ipsec spi --clear
-elif test $netkey
+elif $netkey
 then
 	if ip xfrm state > /dev/null 2>&1
 	then

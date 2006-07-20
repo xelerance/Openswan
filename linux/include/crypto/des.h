@@ -186,19 +186,7 @@ int des_enc_read(int fd,char *buf,int len,des_key_schedule sched,
 int des_enc_write(int fd,char *buf,int len,des_key_schedule sched,
 	des_cblock *iv);
 char *des_fcrypt(const char *buf,const char *salt, char *ret);
-#ifdef PERL5
-char *des_crypt(const char *buf,const char *salt);
-#else
-/* some stupid compilers complain because I have declared char instead
- * of const char */
-#ifndef __KERNEL__
-#ifdef HEADER_DES_LOCL_H
-char *crypt(const char *buf,const char *salt);
-#else /* HEADER_DES_LOCL_H */
-char *crypt(void);
-#endif /* HEADER_DES_LOCL_H */
-#endif /* __KERNEL__ */
-#endif /* PERL5 */
+
 void des_ofb_encrypt(unsigned char *in,unsigned char *out,
 	int numbits,long length,des_key_schedule schedule,des_cblock *ivec);
 void des_pcbc_encrypt(des_cblock *input,des_cblock *output,long length,

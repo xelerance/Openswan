@@ -15,13 +15,14 @@
 
 char addconn_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp $";
 
-#include <asm/types.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 #include <sys/ioctl.h>
 /* #include <linux/netdevice.h> */
 #include <net/if.h>
 /* #include <linux/types.h> */ /* new */
 #include <sys/stat.h>
+#include <limits.h>
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
@@ -335,26 +336,38 @@ main(int argc, char *argv[])
 	for(kd=ipsec_conf_keywords_v2; kd->keyname != NULL; kd++) {
 	    if((kd->validity & kv_config)==0) continue;
 
-	    if(kd->type == kt_string ||
-	       kd->type == kt_filename ||
-	       kd->type == kt_dirname ||
-	       kd->type == kt_loose_enum) {
+	    switch(kd->type) {
+	    case kt_string:
+	    case kt_filename:
+	    case kt_dirname:
+	    case kt_loose_enum:
 		if(cfg->setup.strings[kd->field]) {
 		    printf("export %s%s='%s'\n",
 			   varprefix, kd->keyname,
 			   cfg->setup.strings[kd->field]);
 		}
-	    } else if(kd->type==kt_bool) {
+		break;
+
+	    case kt_bool:
 		printf("export %s%s='%s'\n",
 		       varprefix, kd->keyname,
 		       cfg->setup.options[kd->field] ? "yes" : "no");
-	    } else {
-		
+		break;
+
+	    case kt_list:
+		printf("export %s%s='",
+		       varprefix, kd->keyname);
+		confwrite_list(stdout, "", cfg->setup.options[kd->field], kd);
+		printf("'\n");
+		break;
+
+	    default:
 		if(cfg->setup.options[kd->field]) {
 		    printf("export %s%s='%d'\n",
 			   varprefix, kd->keyname,
 			   cfg->setup.options[kd->field]);
 		}
+		break;
 	    }
 	}
 

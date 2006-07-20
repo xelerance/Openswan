@@ -62,11 +62,11 @@ void output_transaction_line(dnskey_glob *gs,
 	if(data) {
 		fprintf(gs->cmdproto_out,
 			"%s %ld %d %s %s\n",
-			id, t, ttl, cmd, data);
+			id, (unsigned long)t, ttl, cmd, data);
 	} else {
 		fprintf(gs->cmdproto_out,
 			"%s %ld %d %s\n",
-			id, t, ttl, cmd);
+			id, (unsigned long)t, ttl, cmd);
 	}
 		
 }
@@ -88,8 +88,8 @@ void output_transaction_line_limited(dnskey_glob *gs,
 	}
 
 	fprintf(gs->cmdproto_out,
-			"%s %ld %d %s %.*s\n",
-			id, t, ttl, cmd, max, data);
+		"%s %ld %d %s %.*s\n",
+		id, (unsigned long)t, ttl, cmd, max, data);
 }
 	
 			    

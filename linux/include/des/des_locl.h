@@ -186,11 +186,6 @@ YOU SHOULD NOT HAVE BOTH DES_RISC1 AND DES_RISC2 DEFINED!!!!!
 #undef NOPROTO
 #endif
 
-#ifdef RAND
-#define srandom(s) srand(s)
-#define random rand
-#endif
-
 #define ITERATIONS 16
 #define HALF_ITERATIONS 8
 

@@ -16,6 +16,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <limits.h>
 #include <assert.h>
@@ -26,13 +27,30 @@
 #include "ipsecconf/confwrite.h"
 #include "ipsecconf/keywords.h"
 
+void confwrite_list(FILE *out, char *prefix, int val, struct keyword_def *k)
+{
+    struct keyword_enum_values *kevs = k->validenum;
+    struct keyword_enum_value  *kev  = kevs->values;
+    int i=0;
+    unsigned int mask=1;
+    char *sep="";
+
+    while(i <kevs->valuesize) {
+	mask = kev[i].value;
+	if(mask != 0 && (val & mask) == mask) {
+	    fprintf(out, "%s%s%s", sep, prefix, kev[i].name);
+	    sep=" ";
+	}
+	i++;
+    }
+}
 
 void confwrite_int(FILE *out,
-		   struct starter_conn *conn,
 		   char   *side,
 		   int     context,
 		   knf     options,
-		   int_set  options_set)
+		   int_set options_set,
+		   ksf     strings)
 {
     struct keyword_def *k;
 
@@ -57,6 +75,7 @@ void confwrite_int(FILE *out,
 	case kt_subnet:
 	case kt_idtype:
 	case kt_bitstring:
+	    /* none of these are valid number types */
 	    continue;
 
 	case kt_time:
@@ -65,12 +84,57 @@ void confwrite_int(FILE *out,
 
 	case kt_bool:
 	case kt_invertbool:
+	    /* special enumeration */
+	    if(options_set[k->field]) {
+		int val = options[k->field];
+		if(k->type == kt_invertbool) {
+		    val = !val;
+		}
+
+		fprintf(out, "\t%s%s=%s\n",side,
+			k->keyname, val ? "yes" : "no");
+	    }
+	    continue;
+
 	case kt_enum:
-	case kt_list:
 	case kt_loose_enum:
 	    /* special enumeration */
+	    if(options_set[k->field]) {
+		int val = options[k->field];
+		fprintf(out, "\t%s%s=",side, k->keyname);
+		
+		if(k->type == kt_loose_enum && val == LOOSE_ENUM_OTHER) {
+		    fprintf(out, "%s\n", strings[k->field]);
+		} else {
+		    struct keyword_enum_values *kevs = k->validenum;
+		    struct keyword_enum_value  *kev  = kevs->values;
+		    int i=0;
+
+		    while(i <kevs->valuesize) {
+			if(kev[i].value == val) {
+			    fprintf(out, "%s", kev[i].name);
+			    break;
+			}
+			i++;
+		    }
+		    fprintf(out, "\n");
+		}
+	    }
 	    continue;
-	    break;
+	
+	case kt_list:
+	    /* special enumeration */
+	    if(options_set[k->field]) {
+		int val = options[k->field];
+
+		if(val == 0) continue;
+
+		fprintf(out, "\t%s%s=\"",side, k->keyname);
+		confwrite_list(out, "", val, k);
+
+		fprintf(out, "\"\n");
+	    }
+	    continue;
 
 	case kt_number:
 	    break;
@@ -83,7 +147,6 @@ void confwrite_int(FILE *out,
 }    
 		   
 void confwrite_str(FILE *out,
-		   struct starter_conn *conn,
 		   char   *side,
 		   int     context,
 		   ksf     strings,
@@ -238,10 +301,10 @@ void confwrite_side(FILE *out,
 	fprintf(out, "\t%scert=%s\n", side, end->cert);
     }
 
-    confwrite_int(out, conn, side,
+    confwrite_int(out, side,
 		  keyingtype|kv_conn|kv_leftright,
-		  end->options, end->options_set);
-    confwrite_str(out, conn, side,
+		  end->options, end->options_set, end->strings);
+    confwrite_str(out, side,
 		  keyingtype|kv_conn|kv_leftright,
 		  end->strings, end->strings_set);
 
@@ -276,9 +339,9 @@ void confwrite_conn(FILE *out,
     }
     confwrite_side(out, conn, &conn->left,  "left");
     confwrite_side(out, conn, &conn->right, "right");
-    confwrite_int(out, conn, "", keyingtype|kv_conn,
-		  conn->options, conn->options_set);
-    confwrite_str(out, conn, "", keyingtype|kv_conn,
+    confwrite_int(out, "", keyingtype|kv_conn,
+		  conn->options, conn->options_set, conn->strings);
+    confwrite_str(out, "", keyingtype|kv_conn,
 		  conn->strings, conn->strings_set);
 
     if(conn->manualkey) {
@@ -360,9 +423,16 @@ void confwrite(struct starter_config *cfg, FILE *out)
 /*	int i;
 */
 	/* output version number */
-	fprintf(out, "version 2.0\n");
+	fprintf(out, "\nversion 2.0\n\n");
 
 	/* output config setup section */
+	fprintf(out, "config setup\n");
+	confwrite_int(out, "", kv_config,
+		      cfg->setup.options, cfg->setup.options_set, cfg->setup.strings);
+	confwrite_str(out, "", kv_config,
+		      cfg->setup.strings, cfg->setup.strings_set);
+
+	fprintf(out, "\n\n");
 
 	/* output connections */
 	for(conn = cfg->conns.tqh_first; conn != NULL; conn = conn->link.tqe_next)

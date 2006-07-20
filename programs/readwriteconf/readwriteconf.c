@@ -125,7 +125,7 @@ main(int argc, char *argv[])
 	    break;
 
 	case 'R':
-	    printf("setting rootdir=%s\n", optarg);
+	    printf("#setting rootdir=%s\n", optarg);
 	    strncat(rootdir, optarg, sizeof(rootdir));
 	    break;
 	}

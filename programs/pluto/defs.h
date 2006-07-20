@@ -48,7 +48,11 @@ extern const char* check_expiry(time_t expiration_date,
 
 /* filter eliminating the directory entries '.' and '..' */
 typedef struct dirent dirent_t;
-extern int file_select(const dirent_t *entry);
+extern int file_select(
+#ifdef SCANDIR_HAS_CONST
+		       const
+#endif
+		       dirent_t *entry);
 
 /* cleanly exit Pluto */
 

@@ -62,17 +62,22 @@ IPSECprotostack=${IPSECprotostack:-auto}
 # which kernel are we using?
 case $IPSECprotostack in
 auto)
-    if test -f $kamepfkey
+    if false
+    #if test -f /proc/sys/net/ipsec/debug_mast
+    then
+    	netkey=false; klips=false; mast=true;
+    elif test -f $kamepfkey
 	then
 	    netkey=true; klips=false;
 	else
 	    netkey=false; klips=true;
     fi;;
     
-klips)  netkey=false; klips=true;;
-netkey) netkey=true;  klips=false;;
-none)   netkey=false; klips=false;;
-nostack)   netkey=false; klips=false;;
+klips)  netkey=false; klips=true;  mast=false;;
+mast)   netkey=false; klips=false; mast=true;;
+netkey) netkey=true;  klips=false; mast=false;;
+none)   netkey=false; klips=false; mast=false;;
+nostack) netkey=false; klips=false; mast=false;;
 esac
 
 # Shall we trace?
@@ -157,6 +162,14 @@ then
 	test -d /proc/net/ipsec/eroute && ipsec eroute --clear ;
 	test -d /proc/net/ipsec/spi && ipsec spi --clear'
 	#lsmod 2>&1 | grep "^ipsec" > /dev/null && rmmod ipsec'
+fi
+
+# flush some stuff for mast as well
+if $mast
+then
+	KILLKLIPS='test -r /proc/net/ipsec_klipsdebug && ipsec klipsdebug --none ;
+	    test -d /proc/net/ipsec/eroute && ipsec eroute --clear ;
+	    test -d /proc/net/ipsec/spi && ipsec spi --clear'
 fi
 
 if $netkey

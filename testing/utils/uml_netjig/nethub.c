@@ -49,8 +49,8 @@
 #include "netdissect.h"
 
 struct netdissect_options gndo;
-int tcpdump_print = 1;
 #endif
+int tcpdump_print = 0;
 
 #include "nethub.h"
 #include "netjig.h"
@@ -352,6 +352,27 @@ void bind_sockets(struct nethub *nh)
   exit(1);
 }
 
+void
+hexdump_block(const u_char *cp, u_int length)
+{
+	u_int i, s;
+	int nshorts;
+
+	nshorts = (u_int) length / sizeof(u_short);
+	i = 0;
+	while (--nshorts >= 0) {
+		if ((i++ % 8) == 0)
+			(void)fprintf(stderr, "\r\n\t\t\t");
+		s = *cp++;
+		(void)fprintf(stderr, " %02x%02x", s, *cp++);
+	}
+	if (length & 1) {
+		if ((i % 8) == 0)
+			(void)fprintf(stderr, "\r\n\t\t\t");
+		(void)fprintf(stderr, " %02x", *cp);
+	}
+	fprintf(stderr, "\r\n");
+}
 
 #ifdef NETDISSECT
 /* Like default_print() but data need not be aligned */

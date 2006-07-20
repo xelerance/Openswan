@@ -13,7 +13,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: plutomain.c,v 1.110 2005/09/18 02:10:08 mcr Exp $
+ * Modifications to use OCF interface written by
+ * Daniel Djamaludin <danield@cyberguard.com>
+ * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ *
  */
 
 #include <stdio.h>
@@ -81,6 +84,10 @@
 #ifdef TPM
 #include <tcl.h>
 #include "tpm/tpm.h"
+#endif
+
+#ifdef HAVE_OCF_AND_OPENSSL
+#include "ocf_cryptodev.h"
 #endif
 
 #ifndef IPSECDIR
@@ -256,12 +263,12 @@ enum kernel_interface kern_interface = AUTO_PICK;
 
 char **global_argv;
 int    global_argc;
+bool log_to_stderr_desired = FALSE;
 
 int
 main(int argc, char **argv)
 {
     bool fork_desired = TRUE;
-    bool log_to_stderr_desired = FALSE;
     int lockfd;
     char* ocspuri = NULL;
     int nhelpers = -1;
@@ -316,6 +323,7 @@ main(int argc, char **argv)
 	    { "use-auto",  no_argument, NULL, 'G' },
 	    { "usenetkey", no_argument, NULL, 'K' },
 	    { "use-netkey", no_argument, NULL, 'K' },
+	    { "use-mast",   no_argument, NULL, 'M' },
 	    { "interface", required_argument, NULL, 'i' },
 	    { "ikeport", required_argument, NULL, 'p' },
 	    { "ctlbase", required_argument, NULL, 'b' },
@@ -445,6 +453,10 @@ main(int argc, char **argv)
 
 	case 'k':       /* --use-klips */
 	    kern_interface = USE_KLIPS;
+	    continue;
+
+	case 'M':       /* --use-mast */
+	    kern_interface = USE_MASTKLIPS;
 	    continue;
 
 	case 'K':       /* --use-netkey */
@@ -771,6 +783,9 @@ main(int argc, char **argv)
     init_connections();
     init_crypto();
     init_crypto_helpers(nhelpers);
+#ifdef HAVE_OCF_AND_OPENSSL
+    load_cryptodev();
+#endif
     init_demux();
     init_kernel();
     init_adns();

@@ -37,7 +37,16 @@
 /* This must be < exp(field width of IPSEC_DEV_FORMAT) */
 /* It must also be reasonable so as not to overload the memory and CPU */
 /* constraints of the host. */
-#define IPSEC_NUM_IF	4
+#ifdef CONFIG_KLIPS_IF_MAX
+#define IPSEC_NUM_IFMAX CONFIG_KLIPS_IF_MAX
+#endif
+#ifndef IPSEC_NUM_IFMAX
+#define IPSEC_NUM_IFMAX	64
+#endif
+
+/* default number of ipsecX devices to create */
+#define IPSEC_NUM_IF	2
+
 /* The field width must be < IF_NAM_SIZ - strlen("ipsec") - 1. */
 /* With "ipsec" being 5 characters, that means 10 is the max field width */
 /* but machine memory and CPU constraints are not likely to tollerate */
@@ -46,6 +55,8 @@
 /* for now, no "0"-padding should be used (which would have been helpful */
 /* to make text-searches work */
 #define IPSEC_DEV_FORMAT "ipsec%d"
+#define MAST_DEV_FORMAT "mast%d"
+
 /* For, say, 500 virtual ipsec devices, I would recommend: */
 /* #define IPSEC_NUM_IF	500 */
 /* #define IPSEC_DEV_FORMAT "ipsec%03d" */
@@ -70,14 +81,10 @@
  * maximum number of SAs that KLIPS can concurrently deal with, plus enough
  * space for keeping expired SAs around.
  *
- * TABLE_MAX_WIDTH is the number of bits that we will use.
+ * TABLE_IDX_WIDTH is the number of bits that we will use.
  * MAIN_TABLE_WIDTH is the number of bits used for the primary index table.
  *
  */
-#ifndef IPSEC_SA_REF_TABLE_IDX_WIDTH
-# define IPSEC_SA_REF_TABLE_IDX_WIDTH 16
-#endif
-
 #ifndef IPSEC_SA_REF_MAINTABLE_IDX_WIDTH 
 # define IPSEC_SA_REF_MAINTABLE_IDX_WIDTH 4 
 #endif
@@ -173,6 +180,7 @@ extern int sysctl_ipsec_regress_pfkey_lossage;
 /*
  * debugging routines.
  */
+#define KLIPS_ERROR(flag, format, args...) if(printk_ratelimit() || flag) printk(KERN_ERR "KLIPS " format, ## args)
 #ifdef CONFIG_KLIPS_DEBUG
 	#define KLIPS_PRINT(flag, format, args...) \
 		((flag) ? printk(KERN_INFO format , ## args) : 0)

@@ -21,6 +21,10 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -Wwrite-strings
 CFLAGS+= -Wbad-function-cast 
 
+ifeq ($(USE_SAREF_KERNEL),true)
+CFLAGS+=-DSAREF_SUPPORTED
+endif
+
 ifeq ($(USE_NAT_TRAVERSAL),true)
 NAT_DEFS=-DNAT_TRAVERSAL -DVIRTUAL_IP 
 endif
@@ -68,7 +72,7 @@ endif
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard ../Makefile.program)
 ifeq ($(SHOULDWERESTART),true../Makefile.program)
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/${PROGRAM} && make $@
+	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/${PROGRAM} && $(MAKE) $@
 else
 all: ${PROGRAM}
 programs: all
@@ -163,8 +167,15 @@ LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} -lgmp
 # cancel direct version
 %: %.c
 
+# cancel direct version
+%: %.c
+
 %.o: ${srcdir}%.c
 	${CC} -c ${CFLAGS} $<
+
+%.8: %.8.xml
+	xmlto man $< 
+	@for m in ipsec_*.8; do mv $$m $@; done
 
 %.i: %.c 
 	$(CC) $(CFLAGS) -E -o $@ $< 

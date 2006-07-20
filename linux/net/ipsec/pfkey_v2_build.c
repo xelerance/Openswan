@@ -26,7 +26,7 @@ char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.53 2005/11/09 00:30
  * kernel and in user space
 */
 
-#ifdef __KERNEL__
+#if defined(__KERNEL__) && defined(linux)
 
 # include <linux/kernel.h>  /* for printk */
 
@@ -53,9 +53,10 @@ char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.53 2005/11/09 00:30
 #else /* __KERNEL__ */
 
 # include <sys/types.h>
-# include <linux/types.h>
-# include <linux/errno.h>
-# include <malloc.h>
+# include <sys/errno.h>
+# include <netinet/in.h>
+# include <stdlib.h>
+# include <stdio.h>
 # include <string.h> /* memset */
 
 # include <openswan.h>
@@ -272,21 +273,21 @@ pfkey_sa_ref_build(struct sadb_ext **		pfkey_ext,
 	}
 #endif
 
-	if(sa_state > SADB_SASTATE_MAX) {
+	if(sa_state > K_SADB_SASTATE_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"sa_state=%d exceeds MAX=%d.\n",
 			sa_state,
-			SADB_SASTATE_MAX);
+			K_SADB_SASTATE_MAX);
 		SENDERR(EINVAL);
 	}
 
-	if(sa_state == SADB_SASTATE_DEAD) {
+	if(sa_state == K_SADB_SASTATE_DEAD) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"sa_state=%d is DEAD=%d is not allowed.\n",
 			sa_state,
-			SADB_SASTATE_DEAD);
+			K_SADB_SASTATE_DEAD);
 		SENDERR(EINVAL);
 	}
 	

@@ -16,6 +16,23 @@ then
     source testparams.sh
 fi
 
+if [ -n "${PUB_INPUT-}" ]
+then
+    export PUBLIC_PLAY=${PUB_INPUT}
+fi
+
+if [ -n "${PRIV_INPUT-}" ]
+then
+    export PRIV_PLAY=${PRIV_INPUT}
+fi
+
+if [ -n "${EAST_INPUT-}" ]
+then
+    export EAST_PLAY=${EAST_INPUT}
+fi
+
+
+
 case $* in
 	0) if [ -n "$XHOST_LIST" ]; then
 		    hosts=`echo $XHOST_LIST | tr 'A-Z' 'a-z'`

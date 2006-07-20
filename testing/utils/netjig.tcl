@@ -17,11 +17,36 @@ proc netjigdebug {msg} {
 proc netjigcmddebug {msg} {
     global env
     if {[info exists env(NETJIGTESTDEBUG)]} {
-	if {$env(NETJIGTESTDEBUG) == "netjig"} {
-	    puts -nonewline stderr $msg
-	}
+	puts -nonewline stderr $msg
     }
 }
+
+proc netjigstart {} {
+    global env
+    global umid
+    global netjig_prog
+
+    # we start up netjig_prog with a plain pipe, so that
+    # stderr from it will go to our stderr.
+    set debugjig ""
+    set tcpdumpjig ""
+    
+    if {[info exists env(NETJIGTESTDEBUG)]} {
+	if {$env(NETJIGTESTDEBUG) == "netjig"} {
+	    set debugjig "--debug"
+	}
+    }
+    
+    if {[info exists env(NETJIGDUMP)]} {
+	if { [string length "$env(NETJIGDUMP)"] > 0 } {
+	    set tcpdumpjig "--tcpdump"
+	}
+    }
+    
+    spawn -noecho -open [open "|$netjig_prog --cmdproto $debugjig $tcpdumpjig 2>@stderr" w+]
+    return $spawn_id
+}
+
 
 proc sendnjcmd {netjig cmd} {
     global expect_out(buffer)
@@ -67,10 +92,20 @@ proc sendnjcmd {netjig cmd} {
     return $expect_out(1,string)
 }
 
-proc newswitch {netjig args} {
+proc newswitch {netjig net} {
     global env
     global expect_out(buffer)
-    set lines [sendnjcmd $netjig "NEWSWITCH $args"]
+    global umlid
+
+    set arpreply ""
+
+    if { [info exists umlid(net$net,arp)] } {
+	netjigcmddebug "looking for umlid(net$net,arp)=$umlid(net$net,arp)\n"
+	if { $umlid(net$net,arp) != 0 } {
+	    set arpreply "--arpreply"
+	}
+    } 
+    set lines [sendnjcmd $netjig "NEWSWITCH $arpreply $net"]
 
 #    exp_internal 1
     while {$lines > 0} {
@@ -186,8 +221,10 @@ proc playscript {umlname scriptname} {
     foreach host $managed_hosts {
 	# insert trace of which script is where. This gets sanitized
 	# out by east-prompt-splitline.pl
-	expectprompt $umlid($host,spawnid) "in start of playscript $scriptname for $umlname"
-	send -i $umlid($host,spawnid) -- ": === NETJIG start of $umlname $scriptname \r"
+	if {[ info exists umlid($host,spawnid)]} {
+	    expectprompt $umlid($host,spawnid) "in start of playscript $scriptname for $umlname"
+	    send -i $umlid($host,spawnid) -- ": === NETJIG start of $umlname $scriptname \r"
+	}
     }
 
     dumbplayscript $umlname $scriptname
@@ -197,8 +234,8 @@ proc record {netjig network recordfile} {
     sendnjcmd $netjig "RECORDFILE --switchname=$network --recordfile=$recordfile\n"
 }
 
-proc setupplay {netjig network playfile} {
-    sendnjcmd $netjig "PLAYFILE --switchname=$network --playfile=$playfile\n"
+proc setupplay {netjig network playfile extra} {
+    sendnjcmd $netjig "PLAYFILE --switchname=$network --playfile=$playfile $extra\n"
 }
 
 proc waitplay {netjig} {
@@ -219,7 +256,7 @@ proc log_by_tracing {array element op} {
 }
 
 proc shutdown {umlname} {
-    system "uml_mconsole $umlname halt"
+    system "uml_mconsole $umlname halt; exit 0"
 }
 
 proc shutdownumls {} {
@@ -474,7 +511,7 @@ proc set_from_env {host param varname} {
     
     netjigdebug "Looking for $varname..."
     if {[info exists env($varname)]} {
-	netjigdebug "found it: $env($varname)"
+	netjigdebug "found it: umlid($host,$param)=$env($varname)"
 	set umlid($host,$param) $env($varname)
     }
 }

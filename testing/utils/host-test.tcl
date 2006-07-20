@@ -138,11 +138,11 @@ set netjig1 $spawn_id
 
 netjigsetup $netjig1
 
-newswitch $netjig1 "$arpreply public"
-newswitch $netjig1 "$arpreply private"
+newswitch $netjig1 public
+newswitch $netjig1 private
 
 # this just gets rid of issues with running without a mcast address
-newswitch $netjig1 "$arpreply admin"
+newswitch $netjig1 admin
 
 trace variable expect_out(buffer) w log_by_tracing
 
@@ -166,11 +166,11 @@ if { $do_recordprivate == 1 } {
 }
 
 if { $do_playpublic == 1 } {
-    setupplay $netjig1 public $playpublic
+    setupplay $netjig1 public $playpublic ""
 }
 
 if { $do_playprivate == 1 } {
-    setupplay $netjig1 private $playprivate
+    setupplay $netjig1 private $playprivate ""
 }
 
 runuml uml

@@ -818,9 +818,7 @@ format_end(char *buf
 /* format topology of a connection.
  * Two symmetric ends separated by ...
  */
-#define CONNECTION_BUF	(2 * (END_BUF - 1) + 4)
-
-static size_t
+size_t
 format_connection(char *buf, size_t buf_len
 		  , const struct connection *c
 		  , struct spd_route *sr)
@@ -1413,7 +1411,7 @@ add_connection(const struct whack_message *wm)
 	/* log all about this connection */
 	openswan_log("added connection description \"%s\"", c->name);
 	DBG(DBG_CONTROL,
-	    char topo[CONNECTION_BUF];
+	    char topo[CONN_BUF_LEN];
 
 	    (void) format_connection(topo, sizeof(topo), c, &c->spd);
 
@@ -1609,7 +1607,7 @@ rw_instantiate(struct connection *c
 #ifdef VIRTUAL_IP
     if (d && his_net && is_virtual_connection(c)) {
 	d->spd.that.client = *his_net;
-	d->spd.that.virt = NULL;
+	/* d->spd.that.virt = NULL; */
 	if (subnetishost(his_net) && addrinsubnet(him, his_net))
 	    d->spd.that.has_client = FALSE;
     }
@@ -1698,7 +1696,7 @@ oppo_instantiate(struct connection *c
 	d->instance_initiation_ok = TRUE;
 
     DBG(DBG_CONTROL,
-	char topo[CONNECTION_BUF];
+	char topo[CONN_BUF_LEN];
 
 	(void) format_connection(topo, sizeof(topo), d, &d->spd);
 	DBG_log("instantiated \"%s\": %s", d->name, topo);
@@ -1743,7 +1741,7 @@ fmt_client(const ip_subnet *client, const ip_address *gw, const char *prefix, ch
     return strlen(buf);
 }
 
-void
+char *
 fmt_conn_instance(const struct connection *c, char buf[CONN_INST_BUF])
 {
     char *p = buf;
@@ -1778,6 +1776,8 @@ fmt_conn_instance(const struct connection *c, char buf[CONN_INST_BUF])
 	    addrtot(&c->spd.that.host_addr, 0, p, ADDRTOT_BUF);
 	}
     }
+
+    return buf;
 }
 
 /* Find an existing connection for a trapped outbound packet.
@@ -3860,9 +3860,11 @@ refine_host_connection(const struct state *st, const struct id *peer_id
  * used (by another id) addr/net.
  */
 static bool
-is_virtual_net_used(const ip_subnet *peer_net, const struct id *peer_id)
+is_virtual_net_used(struct connection *c, const ip_subnet *peer_net, const struct id *peer_id)
 {
     struct connection *d;
+    char cbuf[CONN_INST_BUF];
+
     for (d = connections; d != NULL; d = d->ac_next)
     {
 	switch (d->kind) {
@@ -3871,15 +3873,60 @@ is_virtual_net_used(const ip_subnet *peer_net, const struct id *peer_id)
 	    case CK_INSTANCE:
 		if ((subnetinsubnet(peer_net,&d->spd.that.client) ||
 		     subnetinsubnet(&d->spd.that.client,peer_net)) &&
-		     !same_id(&d->spd.that.id, peer_id)) {
+		     !same_id(&d->spd.that.id, peer_id))
+		{
 		    char buf[IDTOA_BUF];
 		    char client[SUBNETTOT_BUF];
+		    const char *cname;
+		    const char *doesnot = " does not";
+		    const char *esses = "";
+		
 		    subnettot(peer_net, 0, client, sizeof(client));
 		    idtoa(&d->spd.that.id, buf, sizeof(buf));
-		    openswan_log("Virtual IP %s is already used by '%s'",
-			client, buf);
+
+		    openswan_log("Virtual IP %s overlaps with connection %s\"%s\" (kind=%s) '%s'"
+				 , client
+				 , d->name, fmt_conn_instance(d, cbuf)
+				 , enum_name(&connection_kind_names, d->kind)
+				 , buf);
+
+		    if(!kernel_ops->overlap_supported) {
+			openswan_log("Kernel method '%s' does not support overlapping IP ranges"
+				     , kernel_ops->kern_name);
+			return TRUE;
+
+		    } else if(LIN(POLICY_OVERLAPIP, c->policy)
+			      && LIN(POLICY_OVERLAPIP, d->policy)) {
+			openswan_log("overlap is okay by mutual consent");
+			
+			/* look for another overlap to report on */
+			break;
+
+		    } else if(LIN(POLICY_OVERLAPIP, c->policy)
+			      && !LIN(POLICY_OVERLAPIP, d->policy)) {
+			/* redundant */
+			cname = d->name;
+			fmt_conn_instance(d, cbuf); 
+		    } else if(!LIN(POLICY_OVERLAPIP, c->policy)
+			      && LIN(POLICY_OVERLAPIP, d->policy)) {
+			cname = c->name;
+			fmt_conn_instance(c, cbuf);
+		    } else {
+			cbuf[0]='\0';
+			doesnot="";
+			esses="s";
+			cname="neither";
+		    }
+
+		    openswan_log("overlap is forbidded (%s%s%s agree%s to overlap)"
+				 , cname
+				 , cbuf
+				 , doesnot
+				 , esses);
+
 		    idtoa(peer_id, buf, sizeof(buf));
-			openswan_log("Your ID is '%s'", buf);
+		    openswan_log("Your ID is '%s'", buf);
+
 		    return TRUE; /* already used by another one */
 		}
 		break;
@@ -3924,20 +3971,25 @@ is_virtual_net_used(const ip_subnet *peer_net, const struct id *peer_id)
 /* fc_try: a helper function for find_client_connection */
 static struct connection *
 fc_try(const struct connection *c
-, struct host_pair *hp
-, const struct id *peer_id UNUSED
-, const ip_subnet *our_net
-, const ip_subnet *peer_net
-, const u_int8_t our_protocol
-, const u_int16_t our_port
-, const u_int8_t peer_protocol
-, const u_int16_t peer_port)
+       , struct host_pair *hp
+       , const struct id *peer_id UNUSED
+       , const ip_subnet *our_net
+       , const ip_subnet *peer_net
+       , const u_int8_t our_protocol
+       , const u_int16_t our_port
+       , const u_int8_t peer_protocol
+       , const u_int16_t peer_port)
 {
     struct connection *d;
     struct connection *best = NULL;
     policy_prio_t best_prio = BOTTOM_PRIO;
     int wildcards, pathlen;
     const bool peer_net_is_host = subnetisaddr(peer_net, &c->spd.that.host_addr);
+    err_t virtualwhy = NULL;
+    char s1[SUBNETTOT_BUF],d1[SUBNETTOT_BUF];
+
+    subnettot(our_net,  0, s1, sizeof(s1));
+    subnettot(peer_net, 0, d1, sizeof(d1));
 
     for (d = hp->connections; d != NULL; d = d->hp_next)
     {
@@ -3974,26 +4026,30 @@ fc_try(const struct connection *c
 	{
 	    policy_prio_t prio;
 #ifdef DEBUG
+	    char s3[SUBNETTOT_BUF],d3[SUBNETTOT_BUF];
+
 	    if (DBGP(DBG_CONTROLMORE))
 	    {
-		char s1[SUBNETTOT_BUF],d1[SUBNETTOT_BUF];
-		char s3[SUBNETTOT_BUF],d3[SUBNETTOT_BUF];
-
-		subnettot(our_net,  0, s1, sizeof(s1));
-		subnettot(peer_net, 0, d1, sizeof(d1));
 		subnettot(&sr->this.client,  0, s3, sizeof(s3));
 		subnettot(&sr->that.client,  0, d3, sizeof(d3));
 		DBG_log("  fc_try trying "
-			"%s:%s:%d/%d -> %s:%d/%d vs %s:%s:%d/%d -> %s:%d/%d"
+			"%s:%s:%d/%d -> %s:%d/%d%s vs %s:%s:%d/%d -> %s:%d/%d%s"
 			, c->name, s1, c->spd.this.protocol, c->spd.this.port
 				 , d1, c->spd.that.protocol, c->spd.that.port
+			, is_virtual_connection(c) ? "(virt)" : ""
 			, d->name, s3, sr->this.protocol, sr->this.port
-				 , d3, sr->that.protocol, sr->that.port);
+				 , d3, sr->that.protocol, sr->that.port
+			, is_virtual_sr(sr) ? "(virt)" : "");
 	    }
 #endif /* DEBUG */
 
-	    if (!samesubnet(&sr->this.client, our_net))
+	    if (!samesubnet(&sr->this.client, our_net)) {
+		DBG(DBG_CONTROLMORE
+		     , DBG_log("   our client(%s) not in our_net (%s)"
+			       , s3, s1));
+		
 		continue;
+	    }
 
 	    if (sr->that.has_client)
 	    {
@@ -4001,17 +4057,27 @@ fc_try(const struct connection *c
 		    if (!subnetinsubnet(peer_net, &sr->that.client))
 			continue;
 		} else {
+		    if ((!samesubnet(&sr->that.client, peer_net))
 #ifdef VIRTUAL_IP
-		    if ((!samesubnet(&sr->that.client, peer_net)) && (!is_virtual_connection(d)))
-#else
-		    if (!samesubnet(&sr->that.client, peer_net))
+			&& (!is_virtual_sr(sr))
 #endif
+			) {
+			DBG(DBG_CONTROLMORE
+			     , DBG_log("   their client(%s) not in same peer_net (%s)"
+				       , d3, d1));
 			continue;
+		    }
+
 #ifdef VIRTUAL_IP
-		    if ((is_virtual_connection(d)) &&
-			( (!is_virtual_net_allowed(d, peer_net, &c->spd.that.host_addr)) ||
-			(is_virtual_net_used(peer_net, peer_id?peer_id:&c->spd.that.id)) ))
-			    continue;
+		    virtualwhy=is_virtual_net_allowed(d, peer_net, &sr->that.host_addr);
+		    
+		    if ((is_virtual_sr(sr)) &&
+			( (virtualwhy != NULL) ||
+			  (is_virtual_net_used(d, peer_net, peer_id?peer_id:&sr->that.id)) )) {
+			DBG(DBG_CONTROLMORE
+			     , DBG_log("   virtual net not allowed"));
+			continue;
+		    }
 #endif
 		}
 	    }
@@ -4048,6 +4114,17 @@ fc_try(const struct connection *c
 	DBG_log("  fc_try concluding with %s [%ld]"
 		, (best ? best->name : "none"), best_prio)
     )
+
+    if(best == NULL) {
+	openswan_log("the peer proposed: %s:%d/%d -> %s:%d/%d"
+		     , s1, c->spd.this.protocol, c->spd.this.port
+		     , d1, c->spd.that.protocol, c->spd.that.port);
+	if(virtualwhy != NULL) {
+	    openswan_log("this was reject in a virtual connection policy because:");
+	    openswan_log("  %s", virtualwhy);
+	}
+    }
+
     return best;
 }
 
@@ -4362,7 +4439,7 @@ show_connections_status(void)
 
 	/* show topology */
 	{
-	    char topo[CONNECTION_BUF];
+	    char topo[CONN_BUF_LEN];
 	    struct spd_route *sr = &c->spd;
 	    int num=0;
 
@@ -4473,7 +4550,8 @@ show_connections_status(void)
 		      , c->name
 		      , instance
 		      , enum_name(&dpd_action_names, c->dpd_action)
-		      , c->dpd_delay, c->dpd_timeout);
+		      , (unsigned long)c->dpd_delay
+		      , (unsigned long)c->dpd_timeout);
 	}
 
 	if(c->extra_debugging) {

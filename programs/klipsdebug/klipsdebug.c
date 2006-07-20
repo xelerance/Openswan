@@ -26,6 +26,8 @@ char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.58 2005/08/18 14:04:3
 #include <stdlib.h> /* system(), strtoul() */
 #include <sys/stat.h> /* open() */
 #include <fcntl.h> /* open() */
+#include <stdio.h>
+#include <getopt.h>
 
 #include <sys/socket.h>
 
@@ -45,15 +47,13 @@ char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.58 2005/08/18 14:04:3
 #include <pfkeyv2.h>
 #include <pfkey.h>
 
+#include "oswlog.h"
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
 #ifndef CONFIG_KLIPS_DEBUG
 #define CONFIG_KLIPS_DEBUG
 #endif /* CONFIG_KLIPS_DEBUG */
 #include "openswan/ipsec_tunnel.h"
-
-#include <stdio.h>
-#include <getopt.h>
 
 __u32 bigbuf[1024];
 char *program_name;

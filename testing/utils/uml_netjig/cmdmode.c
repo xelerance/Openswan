@@ -2,6 +2,7 @@
  * @(#) jig to exercise a UML/FreeSWAN kernel with two interfaces
  *
  * Copyright (C) 2001 Michael Richardson  <mcr@freeswan.org>
+ * Copyright (C) 2005 Michael Richardson  <mcr@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -386,8 +387,8 @@ int playfile(struct netjig_state *ns, int argc, char **argv)
 	struct nethub *nh;
 	char errbuf[256];
 	int rate;
-	char *playfilename;
-	char *switchname;
+	char *playfilename = NULL;
+	char *switchname = NULL;
 	char *foo;
 	static struct option long_options[] =
 		{
@@ -460,7 +461,8 @@ int playfile(struct netjig_state *ns, int argc, char **argv)
 		  progname, playfilename, nh->nh_name);
 	}
 
-	nh->nh_input = pcap_open_offline(playfilename, errbuf);
+	nh->nh_inputFile = strdup(playfilename);
+	nh->nh_input = pcap_open_offline(nh->nh_inputFile, errbuf);
 	if(nh->nh_input == NULL) {
 	  fprintf(ns->cmdproto_out,"FAIL 1 LINES\n");
 	  fprintf(ns->cmdproto_out,"ERROR - playfile '%s': %s\n",
@@ -469,7 +471,6 @@ int playfile(struct netjig_state *ns, int argc, char **argv)
 	  return 3;
 	}
 	  
-	nh->nh_inputFile = strdup(playfilename);
 
 	nh->nh_rate = rate;
 	
@@ -483,8 +484,8 @@ int playfile(struct netjig_state *ns, int argc, char **argv)
  */
 int tickcmd(struct netjig_state *ns, int argc, char **argv)
 {
-  ns->forcetick=1;
-  return 0;
+	ns->forcetick=1;
+	return 0;
 }
 
 /*

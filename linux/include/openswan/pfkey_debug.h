@@ -32,8 +32,8 @@
 
 extern unsigned int pfkey_lib_debug;
 
-extern void (*pfkey_debug_func)(const char *message, ...) PRINTF_LIKE(1);
-extern void (*pfkey_error_func)(const char *message, ...) PRINTF_LIKE(1);
+extern int (*pfkey_debug_func)(const char *message, ...) PRINTF_LIKE(1);
+extern int (*pfkey_error_func)(const char *message, ...) PRINTF_LIKE(1);
 
 #define DEBUGGING(level,args...)  if(pfkey_lib_debug & level) { \
                               if(pfkey_debug_func != NULL) { \

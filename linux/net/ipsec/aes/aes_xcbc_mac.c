@@ -1,11 +1,11 @@
 #ifdef __KERNEL__
 #include <linux/types.h>
 #include <linux/kernel.h>
-#define DEBUG(x) 
+#define AES_DEBUG(x) 
 #else
 #include <stdio.h>
 #include <sys/types.h>
-#define DEBUG(x) x
+#define AES_DEBUG(x) x
 #endif
 
 #include "crypto/aes.h"
@@ -32,7 +32,7 @@ static void do_pad_xor(u_int8_t *out, const u_int8_t *in, int len) {
 		if (pos <= len)
 			*out ^= *in;
 		if (pos > len) {
-			DEBUG(printf("put 0x80 at pos=%d\n", pos));
+			AES_DEBUG(printf("put 0x80 at pos=%d\n", pos));
 			*out ^= 0x80;
 			break;
 		}
@@ -54,12 +54,12 @@ int AES_xcbc_mac_hash(const aes_context_mac *ctxm, const u_int8_t * in, int ilen
 	}
 	do_pad_xor((u_int8_t *)&out, in, ilen);
 	if (ilen==16) {
-		DEBUG(printf("using k3\n"));
+		AES_DEBUG(printf("using k3\n"));
 		xor_block(out, ctxm->k3);
 	}
 	else 
 	{
-		DEBUG(printf("using k2\n"));
+		AES_DEBUG(printf("using k2\n"));
 		xor_block(out, ctxm->k2);
 	}
 	aes_encrypt(&ctxm->ctx_k1, (u_int8_t *)out, hash);

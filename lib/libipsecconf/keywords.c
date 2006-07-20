@@ -19,6 +19,8 @@
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <limits.h>
 
 #ifndef _OPENSWAN_H
 #include <openswan.h>
@@ -126,7 +128,22 @@ struct keyword_enum_values kw_rsasigkey_list=
     { kw_rsasigkey_values, sizeof(kw_rsasigkey_values)/sizeof(struct keyword_enum_value)};
 
 
+/*
+ * Values for protostack={klips, none, auto, klipsmast, netkey }
+ */
+struct keyword_enum_value kw_proto_stack_list[]={
+    { "none",         NO_KERNEL },
+    { "auto",         AUTO_PICK },
+    { "klips",        USE_KLIPS },
+    { "mast",         USE_MASTKLIPS }, 
+    { "netkey",       USE_NETKEY },
+    { "native",       USE_NETKEY },
+    { "win2k",        USE_WIN2K },
+    { "funk",         USE_FUNK },
+};
 
+struct keyword_enum_values kw_proto_stack=
+    { kw_proto_stack_list, sizeof(kw_proto_stack_list)/sizeof(struct keyword_enum_value)};
 
 
 /*
@@ -152,6 +169,7 @@ struct keyword_enum_value kw_plutodebug_values[]={
     { "private",  DBG_PRIVATE },
     { "x509",     DBG_X509 },
     { "dpd",      DBG_DPD }, 
+    { "pfkey",    DBG_PFKEY }, 
 
     { "impair-delay-adns-key-answer", IMPAIR_DELAY_ADNS_KEY_ANSWER },
     { "impair-delay-adns-txt-answer", IMPAIR_DELAY_ADNS_TXT_ANSWER },
@@ -216,6 +234,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"virtual_private",kv_config,kt_string,     KSF_VIRTUALPRIVATE,NOT_ENUM},
     {"nat_traversal", kv_config,kt_bool,        KBF_NATTRAVERSAL, NOT_ENUM},
 #endif
+    {"protostack",     kv_config, kt_string,    KSF_PROTOSTACK, &kw_proto_stack},
     {"nhelpers",kv_config,kt_number, KBF_NHELPERS, NOT_ENUM},
 
     /* this is "left=" and "right=" */
@@ -238,8 +257,8 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"protoport",      kv_conn|kv_leftright, kt_string, KSCF_PROTOPORT,NOT_ENUM},
 
     {"auto",           kv_conn,         kt_enum,   KBF_AUTO,        &kw_auto_list},
-    {"also",           kv_conn,         kt_appendstring, KSF_ALSO,NOT_ENUM},
-    {"alsoflip",       kv_conn,         kt_string, KSF_ALSOFLIP,NOT_ENUM},
+    {"also",           kv_conn,         kt_appendstring, KSCF_ALSO,NOT_ENUM},
+    {"alsoflip",       kv_conn,         kt_string, KSCF_ALSOFLIP,NOT_ENUM},
     {"type",           kv_conn,         kt_enum,   KBF_TYPE,        &kw_type_list},
     {"authby",         kv_conn|kv_auto, kt_string, KBF_AUTHBY,      &kw_authby_list},
     {"keyexchange",    kv_conn|kv_auto, kt_enum,   KBF_KEYEXCHANGE, &kw_keyexchange_list},

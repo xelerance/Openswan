@@ -14,6 +14,10 @@
  * RCSID $Id: kernel.h,v 1.51 2005/08/24 22:50:50 mcr Exp $
  */
 
+#ifndef _KERNEL_H_
+
+#include <net/if.h>
+
 extern bool can_do_IPcomp;  /* can system actually perform IPCOMP? */
 
 /*
@@ -76,6 +80,8 @@ struct kernel_sa {
 	unsigned enckeylen;
 	unsigned char *enckey;
 
+	IPsecSAref_t ref, refhim;
+
 	int encapsulation;
 #ifdef NAT_TRAVERSAL
 	u_int16_t natt_sport, natt_dport;
@@ -85,11 +91,21 @@ struct kernel_sa {
 	const char *text_said;
 };
 
+struct raw_iface {
+    ip_address addr;
+    char name[IFNAMSIZ + 20];	/* what would be a safe size? */
+    struct raw_iface *next;
+};
+
+LIST_HEAD(iface_list, iface_dev);
+extern struct iface_list interface_dev;
+
 struct kernel_ops {
     enum kernel_interface type;
     const char *kern_name;
     bool inbound_eroute;
     bool policy_lifetime;
+    bool overlap_supported;
     int  replay_window;
     int *async_fdp;
     
@@ -140,14 +156,40 @@ struct kernel_ops {
 		      , struct spd_route *sr
 		      , const char *verb
 		      , struct state *st);
+    void (*process_ifaces)(struct raw_iface *rifaces);
 };
 
+extern int create_socket(struct raw_iface *ifp, const char *v_name, int port);
+
+#ifndef IPSECDEVPREFIX
+# define IPSECDEVPREFIX "ipsec"
+#endif
+
+#ifndef MASTDEVPREFIX
+# define MASTDEVPREFIX  "mast"
+#endif
 
 extern const struct kernel_ops *kernel_ops;
+extern struct raw_iface *find_raw_ifaces4(void);
+extern struct raw_iface *find_raw_ifaces6(void);
+
+/* helper for invoking call outs */
+extern int fmt_common_shell_out(char *buf, int blen, struct connection *c
+				, struct spd_route *sr, struct state *st);
+
+/* KLIPS/mast/pfkey things */
+extern bool pfkey_plumb_mast_device(int mast_dev);
 
 #if defined(linux)
 extern bool do_command_linux(struct connection *c, struct spd_route *sr
 			     , const char *verb, struct state *st);
+extern bool invoke_command(const char *verb, const char *verb_suffix, char *cmd);
+#endif
+
+#if defined(__FreeBSD__)
+extern bool do_command_freebsd(struct connection *c, struct spd_route *sr
+			       , const char *verb, struct state *st);
+extern bool invoke_command(const char *verb, const char *verb_suffix, char *cmd);
 #endif
 
 #if defined(__CYGWIN32__)
@@ -277,3 +319,9 @@ extern bool eroute_connection(struct spd_route *sr
 			      , unsigned int satype
 			      , const struct pfkey_proto_info *proto_info
 			      , unsigned int op, const char *opname);
+
+extern const struct kernel_ops klips_kernel_ops;
+extern const struct kernel_ops mast_kernel_ops;
+
+#define _KERNEL_H_
+#endif /* _KERNEL_H_ */

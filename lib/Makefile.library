@@ -8,7 +8,7 @@ BISON=bison
 VPATH+= ${KLIPSSRCDIR}
 
 # Original flags
-INCLUDES=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}
+INCLUDES+=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}
 INCLUDES+=-I${OPENSWANSRCDIR}/include 
 CFLAGS+=${PORTINCLUDE} ${INCLUDES} 
 CFLAGS+=-DDEBUG
@@ -38,7 +38,7 @@ MANS=
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard ${ONEFILE})
 ifeq ($(SHOULDWERESTART),true${ONEFILE})
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/lib${LIBRARY} && make $@
+	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/lib${LIBRARY} && ${MAKE} $@
 else
 all:	$(LIB) 
 programs: $(LIB) 
@@ -48,7 +48,7 @@ install: doinstall
 endif
 
 doinstall:
-	@mkdir -p $(MANDIR)
+	@for d in $(MANDIR); do mkdir -p $$d; done
 	@for f in $(MANS) ; \
 	do \
 		$(INSTALL) $(INSTMANFLAGS) $(MANSRCDIR)/$$f $(MANDIR)/ipsec_$$f || exit 1 ; \

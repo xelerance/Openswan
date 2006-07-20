@@ -37,8 +37,7 @@ enum keyword_string_config_field {
     KSF_PLUTO      = 14,
     KSF_PLUTOOPTS  = 15,
     KSF_PLUTOSTDERRLOG=16,
-    KSF_ALSO       = 17,
-    KSF_ALSOFLIP   = 18,                     /* XXX still to handle */
+    KSF_PROTOSTACK  =17,
     KSF_MAX        = 19
 };
 
@@ -109,7 +108,9 @@ enum keyword_string_conn_field {
     KSCF_ESPAUTHKEY   = 14,
     KSCF_DPDACTION    = 15,
     KSCF_SOURCEIP     = 16,
-    KSCF_MAX          = 20
+    KSCF_ALSO         = 17,
+    KSCF_ALSOFLIP     = 18,                     /* XXX still to handle */
+    KSCF_MAX          = 19
 };
 
 

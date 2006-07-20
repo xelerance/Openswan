@@ -100,6 +100,22 @@
 #define user_assert(foo) assert(foo)
 #endif
 
+/*
+ * FreeBSD
+ */
+#if defined(__FreeBSD__)
+#  define DEBUG_NO_STATIC static
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <string.h>
+#include <assert.h>
+#define user_assert(foo) assert(foo)
+/* apparently this way to deal with an IPv6 address is not standard. */
+#define s6_addr16 __u6_addr.__u6_addr16
+#endif
+
 
 #ifndef IPPROTO_COMP
 #  define IPPROTO_COMP 108
@@ -191,12 +207,19 @@ struct prng {			/* pseudo-random-number-generator guts */
  */
 typedef uint32_t IPsecSAref_t;
 
-#define IPSEC_SA_REF_FIELD_WIDTH (8 * sizeof(IPsecSAref_t))
+/* Translation to/from nfmark.
+ *
+ * use bits 16-31. Leave bit 32 as a indicate that IPsec processing
+ * has already been done.
+ */
+#define IPSEC_SA_REF_TABLE_IDX_WIDTH 15
+#define IPSEC_SA_REF_TABLE_OFFSET    16
+#define IPSEC_SA_REF_MAASK           ((1<<IPSEC_SA_REF_TABLE_IDX_WIDTH)-1)
 
-#define IPsecSAref2NFmark(x) ((x) << (IPSEC_SA_REF_FIELD_WIDTH - IPSEC_SA_REF_TABLE_IDX_WIDTH))
-#define NFmark2IPsecSAref(x) ((x) >> (IPSEC_SA_REF_FIELD_WIDTH - IPSEC_SA_REF_TABLE_IDX_WIDTH))
+#define IPsecSAref2NFmark(x) (((x)&IPSEC_SA_REF_MASK) << IPSEC_SA_REF_TABLE_OFFSET)
+#define NFmark2IPsecSAref(x) (((x) >> IPSEC_SA_REF_TABLE_OFFSET)&IPSEC_SA_REF_MASK)
 
-#define IPSEC_SAREF_NULL (~((IPsecSAref_t)0))
+#define IPSEC_SAREF_NULL ((IPsecSAref_t)0)
 
 /* GCC magic for use in function definitions! */
 #ifdef GCC_LINT
@@ -216,7 +239,7 @@ typedef uint32_t IPsecSAref_t;
  * function to log stuff from libraries that may be used in multiple
  * places.
  */
-typedef void (*openswan_keying_debug_func_t)(const char *message, ...);
+typedef int (*openswan_keying_debug_func_t)(const char *message, ...);
 
 
 
@@ -458,21 +481,6 @@ bitstomask(
 	int n
 );
 
-
-
-/*
- * general utilities
- */
-
-#ifndef __KERNEL__
-/* option pickup from files (userland only because of use of FILE) */
-const char *optionsfrom(const char *filename, int *argcp, char ***argvp,
-						int optind, FILE *errorreport);
-
-/* sanitize a string */
-extern size_t sanitize_string(char *buf, size_t size);
-
-#endif
 
 
 /*
