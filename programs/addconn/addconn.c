@@ -231,8 +231,8 @@ main(int argc, char *argv[])
     cfg = confread_load(configfile, &err);
     
     if(cfg == NULL) {
-	printf("can not load config '%s': %s\n",
-	       configfile, err);
+	fprintf(stderr, "can not load config '%s': %s\n",
+		configfile, err);
 	exit(3);
     }
 
