@@ -149,6 +149,7 @@ usage(const char *mess)
 	    " \\\n\t"
 	    "[--debug-control]"
 	    " [--debug-klips]"
+	    " [--debug-x509]"
 	    " [--debug-dns]"
 	    " [--debug-dpd]"
 	    " [ --debug-private]"
@@ -368,6 +369,7 @@ main(int argc, char **argv)
 	    { "debug-oppo", no_argument, NULL, DBG_OPPO + DBG_OFFSET },
 	    { "debug-controlmore", no_argument, NULL, DBG_CONTROLMORE + DBG_OFFSET },
 	    { "debug-dpd", no_argument, NULL, DBG_DPD + DBG_OFFSET },
+            { "debug-x509", no_argument, NULL, DBG_X509 + DBG_OFFSET },
 	    { "debug-private", no_argument, NULL, DBG_PRIVATE + DBG_OFFSET },
 	    { "debug-pfkey", no_argument, NULL, DBG_PFKEY + DBG_OFFSET },
 
