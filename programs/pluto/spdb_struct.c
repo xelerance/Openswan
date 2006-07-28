@@ -517,6 +517,80 @@ decode_long_duration(pb_stream *pbs)
     return val;
 }
 
+/* Preparse the body of an ISAKMP SA Payload and find which policy is required
+ * to match the packet. Errors are just ignored and will be detected and
+ * handled later in parse_isakmp_sa_body().
+ *
+ * All we want for the moment is to know whether peer is using RSA or PSK.
+ */
+lset_t preparse_isakmp_sa_body(pb_stream *sa_pbs)
+{
+    pb_stream proposal_pbs;
+    struct isakmp_proposal proposal;
+    pb_stream trans_pbs;
+    struct isakmp_transform trans;
+    u_char *attr_start;
+    size_t attr_len;
+    struct isakmp_attribute a;
+    pb_stream attr_pbs;
+    u_int32_t ipsecdoisit;
+    unsigned trans_left;
+    lset_t policy = 0;
+
+    if (!in_struct(&ipsecdoisit, &ipsec_sit_desc, sa_pbs, NULL))
+	return LEMPTY;
+
+    if (!in_struct(&proposal, &isakmp_proposal_desc, sa_pbs, &proposal_pbs))
+	return LEMPTY;
+
+    if (proposal.isap_spisize > MAX_ISAKMP_SPI_SIZE)
+	return LEMPTY;
+
+    if (proposal.isap_spisize > 0)
+    {
+	u_char junk_spi[MAX_ISAKMP_SPI_SIZE];
+
+	if (!in_raw(junk_spi, proposal.isap_spisize, &proposal_pbs, "Oakley SPI"))
+    return LEMPTY;
+    }
+
+    trans_left = proposal.isap_notrans;
+    while (trans_left--) {
+	if (!in_struct(&trans, &isakmp_isakmp_transform_desc, &proposal_pbs,
+	    &trans_pbs))
+	    return LEMPTY;
+
+	attr_start = trans_pbs.cur;
+	attr_len = pbs_left(&trans_pbs);
+
+	while (pbs_left(&trans_pbs) != 0) {
+	    if (!in_struct(&a, &isakmp_oakley_attribute_desc, &trans_pbs,
+		&attr_pbs))
+		return LEMPTY;
+	    switch (a.isaat_af_type) {
+		case OAKLEY_AUTHENTICATION_METHOD | ISAKMP_ATTR_AF_TV:
+		    switch (a.isaat_lv) {
+			case XAUTHInitPreShared:
+			case OAKLEY_PRESHARED_KEY:
+				policy |= POLICY_PSK;
+			    break;
+			case XAUTHInitRSA:
+			case OAKLEY_RSA_SIG:
+				policy |= POLICY_RSASIG;
+			    break;
+		    }
+		    break;
+	    }
+	}
+    }
+
+    if ((policy & POLICY_PSK) && (policy & POLICY_RSASIG))
+	policy &= ~(POLICY_PSK|POLICY_RSASIG);
+
+    return policy;
+}
+
+
 /**
  * Parse the body of an ISAKMP SA Payload (i.e. Phase 1 / Main Mode).
  * Various shortcuts are taken.  In particular, the policy, such as
