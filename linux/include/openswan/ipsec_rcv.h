@@ -137,6 +137,9 @@ extern int sysctl_ipsec_inbound_policy_check;
 
 extern int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type);
 
+// manage ipsec rcv state objects
+extern int ipsec_rcv_state_cache_init (void);
+extern void ipsec_rcv_state_cache_cleanup (void);
 
 #endif /* IPSEC_RCV_H */
 
