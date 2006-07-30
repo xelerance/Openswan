@@ -19,6 +19,7 @@ TEST_EXPLOIT_URL=${TEST_EXPLOIT_URL-http://www.openswan.org/vuln/}
 preptest() {
     local testdir="$1"
     local testtype="$2"
+    local createobjdir="$3"
 
     if [ ! -r "$testdir/testparams.sh" ]
     then
@@ -26,10 +27,14 @@ preptest() {
 	exit 1
     fi
 
+    createobjdir=${createobjdir-false}
+
     # make sure no results survive from a past run
     if [ ! -z "$testdir" ] ; then
-	rm -rf "$testdir/OUTPUT"${KLIPS_MODULE}
-	mkdir -p "$testdir/OUTPUT"${KLIPS_MODULE}
+        if $createobjdir; then
+	    rm -rf "$testdir/OUTPUT"${KLIPS_MODULE}
+	    mkdir -p "$testdir/OUTPUT"${KLIPS_MODULE}
+	fi
     fi
 
     cd $testdir
@@ -1723,4 +1728,86 @@ buildtest() {
 
     recordresults $testdir "$testexpect" "$stat" $testdir${KLIPS_MODULE} false
 }
+
+###################################
+#
+#  test type: unittest
+#
+# testparams.sh should specify a script to be run as $TESTSCRIPT
+#          REF_CONSOLE_OUTPUT= name of reference output
+#    
+# The script will be started with:
+#          ROOTDIR=    set to root of source code.
+#          OBJDIRTOP=  set to location of object files
+# 
+#
+# testparams.sh should set PROGRAMS= to a list of subdirs of programs/ that must
+#                be built before using the test. This allows additional modules
+#                to be built.
+#
+# If there is a Makefile in the subdir, it will be invoked as "make checkprograms"
+#
+# The stdout of the script will be set to an output file, which will then be sanitized
+# using the normal set of fixup scripts.
+#          
+#
+###################################
+
+do_unittest() {
+
+    export ROOTDIR=${OPENSWANSRCDIR}
+    eval `(cd $ROOTDIR; make env)`
+    failnum=1
+
+    if [ ! -x "$TESTSCRIPT" ]; then echo "TESTSCRIPT=$TESTSCRIPT is not executable"; exit 41; fi
+
+    (cd ${ROOTDIR}/programs;
+     for program in ${PROGRAMS}
+     do
+	if [ -d $program ]; then (cd $program && make programs checkprograms ); fi
+     done)
+
+    # if there is a makefile, run it and bail if fails
+    [ -f Makefile ] && make checkprograms
+
+    # make sure we get all core dumps!
+    ulimit -c unlimited
+    export OBJDIRTOP
+
+    OUTDIR=${OBJDIRTOP}/testing/${TESTSUBDIR}/${TESTNAME}
+    mkdir -p ${OUTDIR}
+    ln -f -s ${OUTDIR} OUTPUT
+
+    ./$TESTSCRIPT >${OUTDIR}/console.txt
+
+    stat=$?
+    echo Exit code $stat
+    if [ $stat -gt 128 ]
+    then
+	stat="$stat core"
+    else
+        consolediff "" OUTPUT/console.txt $REF_CONSOLE_OUTPUT
+	case "$success" in
+	true)	exit 0 ;;
+	*)	exit $failnum ;;
+	esac
+    fi
+}
+
+unittest() {
+    testcase=$1
+    testexpect=$2
+
+    echo '**** make unittest RUNNING '$testcase' ****'
+
+    echo Running $testobj
+    ( preptest $testcase unittest false && do_unittest )
+    stat=$?
+
+    TEST_PURPOSE=regress recordresults $testcase "$testexpect" "$stat" $testcase false
+}
+
+
+
+
 

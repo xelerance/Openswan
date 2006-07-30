@@ -19,3 +19,7 @@ ctltest ipsec.conf-myid-01 good
 
 # test case for restart controls for pluto
 ctltest	ipsec.conf-restart-01	good
+
+
+# unit tests
+unittest	readwriteconf-01	good
