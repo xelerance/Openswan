@@ -142,7 +142,7 @@ unsigned char tc2_rcookie[] = {
 unsigned int tc2_rcookie_len = sizeof(tc2_rcookie);
 
 unsigned char tc2_secret[] = {
-       0x0c, 0x6a, 0x00, 0x29,  0xfb, 0xdd, 0x1e, 0x78,  
+	0x0c, 0x6a, 0x00, 0x29,  0xfb, 0xdd, 0x1e, 0x78,  
         0x57, 0x9b, 0x9d, 0x90,  0x58, 0xf6, 0x4e, 0xd7,  
         0xa7, 0x0d, 0x92, 0xea,  0x17, 0x87, 0xae, 0xce,  
         0x72, 0x50, 0xcc, 0xab,  0x7a, 0xc2, 0x02, 0x4d,  
@@ -178,7 +178,8 @@ int main(int argc, char *argv[])
 
 	progname = argv[0];
 	
-	memset(&r, 0, sizeof(struct pluto_crypto_req));
+	/* initialize list of moduli */
+	init_crypto();
 
 	skq->thespace.start = 0;
 	skq->thespace.len   = sizeof(skq->space);
@@ -202,8 +203,27 @@ int main(int argc, char *argv[])
 	copydatlen(secret, tc2_secret, tc2_secret_len);
 	copydatlen(icookie, tc2_icookie, tc2_icookie_len);
 	copydatlen(rcookie, tc2_rcookie, tc2_rcookie_len);
+
+#define dumpdat(field) \
+	openswan_DBG_dump(#field,	\
+			  wire_chunk_ptr(skq, &skq->field), \
+			  skq->field.len);
+
+	dumpdat(icookie);
+	dumpdat(rcookie);
+	dumpdat(ni);
+	dumpdat(nr);
+	dumpdat(gi);
+	dumpdat(gr);
+	dumpdat(secret);
+
+	fflush(stdout);
+	fflush(stderr);
 	
 	calc_dh_iv(&r);
+
+	printf("\noutput:\n");
+	
 
 	{
 		void *shared = wire_chunk_ptr(skr, &skr->shared);
