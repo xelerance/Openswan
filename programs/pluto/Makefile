@@ -94,7 +94,7 @@ DISTSRC = \
 	${NETKEY_SRCS} \
 	${KLIPS_SRCS} ${MAST_SRCS} ${WIN2K_SRCS} ${FUNK_SRCS} \
 	kernel_noklips.c kernel_noklips.h \
-	ike_alg.c ike_alg.h ikeping.c \
+	ike_alg.c ike_alg_status.c ike_alg.h ikeping.c \
 	ike_alg_aes.c ike_alginit.c \
 	rcv_whack.c rcv_whack.h \
 	$(IPSECPOLICY_DIST_SRCS) \
@@ -141,7 +141,7 @@ OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_print.o
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o 
 OBJSPLUTO += ike_alg_aes.o ike_alginit.o
 OBJSPLUTO += ${EXTRA_CRYPTO_OBJS}
-OBJSPLUTO += ike_alg.o db_ops.o 
+OBJSPLUTO += ike_alg.o ike_alg_status.o db_ops.o 
 OBJSPLUTO += ${XAUTH_OBJS}
 OBJSPLUTO += ${AGGRESSIVE_OBJS}
 OBJSPLUTO += ${SMARTCARD_OBJS} ${X509_OBJS} ${HAVE_THREADS_OBJS}
