@@ -304,7 +304,7 @@ void calc_dh_iv(struct pluto_crypto_req *r)
     struct pcr_skeyid_q dhq;
     const struct oakley_group_desc *group;
     MP_INT  sec;
-    chunk_t  shared, g;
+    chunk_t  shared, g, ltsecret;
     chunk_t  skeyid, skeyid_d, skeyid_a, skeyid_e; 
     chunk_t  new_iv, enc_key;
 
@@ -324,11 +324,14 @@ void calc_dh_iv(struct pluto_crypto_req *r)
     shared.ptr = wire_chunk_ptr(skr, &skr->shared);
     shared.len = group->bytes;
 
-    DBG(DBG_CRYPT,
-	DBG_dump_chunk("long term secret: ", shared));
+    ltsecret.ptr = wire_chunk_ptr(&dhq, &dhq.secret);
+    ltsecret.len = dhq.secret.len;
 
     /* recover the long term secret */
-    n_to_mpz(&sec, wire_chunk_ptr(&dhq, &dhq.secret), dhq.secret.len);
+    n_to_mpz(&sec, ltsecret.ptr, ltsecret.len);
+
+    DBG(DBG_CRYPT,
+	DBG_dump_chunk("long term secret: ", ltsecret));
 
     /* now calculate the (g^x)(g^y) --- need gi on responder, gr on initiator */
 
