@@ -1060,6 +1060,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 	struct ipsec_alg_auth *ixt_a = NULL;
 	int blocksize = 8;
 	enum ipsec_xmit_value bundle_stat = IPSEC_XMIT_OK;
+	struct ipsec_sa *saved_ipsp;
  
 	ixs->newdst = ixs->orgdst = ixs->iph->daddr;
 	ixs->newsrc = ixs->orgsrc = ixs->iph->saddr;
@@ -1239,7 +1240,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 	 * How much headroom do we need to be able to apply
 	 * all the grouped transforms?
 	 */
-	ixs->ipsq = ixs->ipsp;	/* save the head of the ipsec_sa chain */
+	saved_ipsp = ixs->ipsp;	/* save the head of the ipsec_sa chain */
 	while (ixs->ipsp) {
 		ixs->sa_len = satot(&ixs->ipsp->ips_said, 0, ixs->sa_txt, sizeof(ixs->sa_txt));
 		if(ixs->sa_len == 0) {
@@ -1279,7 +1280,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 				    "replay window counter rolled for SA:<%s%s%s> %s, packet dropped, expiring SA.\n",
 				    IPS_XFORM_NAME(ixs->ipsp),
 				    ixs->sa_len ? ixs->sa_txt : " (error)");
-			ipsec_sa_delchain(ixs->ipsp);
+			ipsec_sa_rm(ixs->ipsp);
 			ixs->stats->tx_errors++;
 			bundle_stat = IPSEC_XMIT_REPLAYROLLED;
 			goto cleanup;
@@ -1307,7 +1308,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 		   ipsec_lifetime_check(&ixs->ipsp->ips_life.ipl_packets, "packets",ixs->sa_txt,
 					ipsec_life_countbased, ipsec_outgoing, ixs->ipsp) == ipsec_life_harddied) {
 				
-			ipsec_sa_delchain(ixs->ipsp);
+			ipsec_sa_rm(ixs->ipsp);
 			ixs->stats->tx_errors++;
 			bundle_stat = IPSEC_XMIT_LIFETIMEFAILED;
 			goto cleanup;
@@ -1427,7 +1428,7 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 		ixs->max_tailroom += ixs->tailroom;
 		ixs->pyldsz += (ixs->headroom + ixs->tailroom);
 	}
-	ixs->ipsp = ixs->ipsq;	/* restore the head of the ipsec_sa chain */
+	ixs->ipsp = saved_ipsp;	/* restore the head of the ipsec_sa chain */
 		
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
 		    "klips_debug:ipsec_xmit_encap_bundle: "
