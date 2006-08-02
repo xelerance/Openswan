@@ -200,7 +200,11 @@ main(int argc, char *argv[])
     if(optind == argc && !all && !listroute && !liststart && !search && !typeexport) {
 	usage();
     }
-    
+
+    if(verbose > 3) {
+	extern int yydebug;
+	yydebug=1;
+    }
 
     /* find config file */
     confdir = getenv(IPSEC_CONFDIR_VAR);
