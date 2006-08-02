@@ -93,6 +93,7 @@ then
     echo "Failed to parse config setup portion of ipsec.conf"
     exit $?
 fi
+eval $variables
 
 if test " $IPSEC_confreadstatus" != " "
 then

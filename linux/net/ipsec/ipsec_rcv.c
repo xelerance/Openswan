@@ -408,7 +408,12 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 	   ipsec_lifetime_check(&irs->ipsp->ips_life.ipl_packets, "packets",
 				irs->sa, ipsec_life_countbased, ipsec_incoming,
 				irs->ipsp) == ipsec_life_harddied) {
-		ipsec_sa_delchain(irs->ipsp);
+
+		/*
+		 * disconnect SA from the hash table, so it can not be
+		 * found again.
+		 */
+		ipsec_sa_rm(irs->ipsp);
 		if(irs->stats) {
 			irs->stats->rx_dropped++;
 		}
@@ -623,7 +628,10 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 
 		/* If the sequence number == 0, expire SA, it had rolled */
 		if(irs->ipsp->ips_replaywin && !replay /* !irs->ipsp->ips_replaywin_lastseq */) {
-			ipsec_sa_delchain(irs->ipsp);
+
+		        /* we need to remove it from the sadb hash, so that it can't be found again */
+			ipsec_sa_rm(irs->ipsp);
+
 			KLIPS_PRINT(debug_rcv,
 				    "klips_debug:ipsec_rcv: "
 				    "replay window counter rolled, expiring SA.\n");
@@ -1413,7 +1421,12 @@ ipsec_rcv(struct sk_buff *skb
 	   twice.
 	*/
 	if (skb_is_nonlinear(skb)) {
-		if (skb_linearize(skb, GFP_ATOMIC) != 0) {
+#ifdef HAVE_NEW_SKB_LINEARIZE
+		if (skb_linearize_cow(skb) != 0)
+#else
+		if (skb_linearize(skb, GFP_ATOMIC) != 0) 
+#endif
+		{
 			goto rcvleave;
 		}
 	}
@@ -1647,7 +1660,12 @@ int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 	   not assembled automatically to save TCP from having to copy
 	   twice.
 	*/
-	if (skb_is_nonlinear(skb)) {
+#ifdef HAVE_NEW_SKB_LINEARIZE
+		if (skb_linearize_cow(skb) != 0) 
+#else
+		if (skb_linearize(skb, GFP_ATOMIC) != 0) 
+#endif
+		{
 		if (skb_linearize(skb, GFP_ATOMIC) != 0) {
 			goto rcvleave;
 		}

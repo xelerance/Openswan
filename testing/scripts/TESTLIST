@@ -21,5 +21,10 @@ ctltest ipsec.conf-myid-01 good
 ctltest	ipsec.conf-restart-01	good
 
 
-# unit tests
-unittest	readwriteconf-01	good
+unittest 	readwriteconf-01	good
+unittest	readwriteconf-02	good
+
+# only valid on KLIPSng branch
+unittest	readwriteconf-03	skip
+
+unittest	readwriteconf-04	good
