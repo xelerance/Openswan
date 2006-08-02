@@ -1,0 +1,82 @@
+|    initiator cookie:
+|   c8 c9 8b 44  19 84 5a 59
+|    responder cookie:
+|   d0 23 4f 16  d3 3e 23 d4
+
+
+Initiator NONCE
+| keyex value  53 41 5e 65  f1 c1 1c a9  2e 0c 82 d7  7a e1 4d 24
+|   9d 5f c8 aa  68 99 02 0d  db 88 e9 59  0b e3 b1 7c
+|   82 25 c0 c8  bf 63 2e fc  17 78 2c 41  0a d3 d6 f6
+|   d0 6e b8 71  97 21 22 e4  46 8b 91 93  f9 45 fb 25
+|   1b 10 eb 66  db 3d a5 c8  92 48 2e 8e  aa b8 4e 6a
+|   1f 61 4d d9  a1 10 28 3f  1d 71 78 e0  70 fd 02 37
+|   29 b0 d5 27  30 ff 1d 82  c5 99 54 3b  2c 07 3b f0
+|   6a ed c4 c3  8b 49 53 d4  be 1c 69 88  f5 a0 22 aa
+|   ae eb 32 1b  cb aa 73 47  00 0f 0d c7  5e 2c 4f 47
+|   37 5d e4 40  84 03 fb 3d  7f bb a3 4b  3e 41 21 fd
+|   cb 6f f8 19  1a c8 b6 0d  4e 16 6c 60  77 c2 0f 8e
+|   dd fc 06 74  41 58 a0 f6  d5 44 bb 19  c6 0d 51 27
+
+Responder g^y:
+| DH public value received:
+|   f6 80 f2 11  ac b0 24 70  8e 23 14 5d  cb 53 fb 60
+|   f0 65 8f da  de e8 16 ec  38 02 53 3a  3d 49 9d 0d
+|   c5 dc e0 23  ab bd 8f 9c  b3 e2 2d 33  43 29 5a 65
+|   58 ee 3a 59  53 17 ab 94  c5 78 45 15  91 49 df 2a
+|   ab a6 12 d9  bd 01 12 c0  a0 5e 75 d3  56 48 b4 83
+|   8c c4 3d 64  a5 b1 9e fc  d6 17 36 7f  ac f7 a3 08
+|   4c 4c 74 23  6d 88 dc d3  4c b1 5f 64  dd dc 20 ad
+|   a5 51 ef 9a  e8 ec 6a 00  3e 69 f5 c1  9b 32 84 be
+|   75 13 d8 2b  cb 34 3d cd  d6 5b 18 fc  cc 5f c5 0c
+|   96 8e 4c a5  fa 9e 00 d3  1e a9 ce 75  2a 59 33 3d
+|   a3 6f e0 bd  c2 2d 53 19  01 bb 8b 7f  cd fb 41 b9
+|   8b 08 68 66  c8 4b 2c c9  49 3a 22 b5  7b c9 8e 31
+
+
+| skeyid inputs (digi+NI+NR+shared) hasher: oakley_md5
+| shared:   0c 6a 00 29  fb dd 1e 78  57 9b 9d 90  58 f6 4e d7
+|   a7 0d 92 ea  17 87 ae ce  72 50 cc ab  7a c2 02 4d
+|   0c d9 95 9b  61 61 39 b3  43 d0 ee 31  89 3a 0a d9
+|   62 a7 a2 b9  ea 12 36 54  ba 80 ed a3  22 70 4e e8
+|   b3 09 66 52  5e 4e 32 b5  82 2c 5f 97  88 a3 2b c0
+|   22 5d d6 e3  e3 f0 ca bf  99 39 5c 55  f2 2a 81 e9
+|   ff 6f 30 36  27 fb 15 1f  c6 50 a9 fc  1f 5e be 09
+|   1d b4 7d e2  1a 7c db f8  7b 94 3f 82  27 54 f6 34
+|   32 d4 a3 26  5d 48 e6 a9  f4 12 cb 21  8f 7f 1a 4e
+|   83 8e 73 4f  7d 28 53 f2  57 96 14 67  ee ee 01 b6
+|   a0 9e ae 8e  f2 f9 ce 3e  1c a0 fd 2a  d0 38 b7 68
+|   1f d6 dc 5b  1b d0 ff ce  6a 93 ec 6b  4e 7b a1 6c
+| ni:   e7 ff 90 49  25 b6 ff 99  59 ae 80 84  63 3e ec 2f
+| nr:   a2 7d e9 af  fc 36 0b 6d  e8 4c 80 d6  87 9e 6d c6
+| keyid:   7c 5d 2a 9b  82 bb 9d 69  28 ad 2f 9d  fe 69 4a f8
+| DH_i:  53 41 5e 65  f1 c1 1c a9  2e 0c 82 d7  7a e1 4d 24
+|   9d 5f c8 aa  68 99 02 0d  db 88 e9 59  0b e3 b1 7c
+|   82 25 c0 c8  bf 63 2e fc  17 78 2c 41  0a d3 d6 f6
+|   d0 6e b8 71  97 21 22 e4  46 8b 91 93  f9 45 fb 25
+|   1b 10 eb 66  db 3d a5 c8  92 48 2e 8e  aa b8 4e 6a
+|   1f 61 4d d9  a1 10 28 3f  1d 71 78 e0  70 fd 02 37
+|   29 b0 d5 27  30 ff 1d 82  c5 99 54 3b  2c 07 3b f0
+|   6a ed c4 c3  8b 49 53 d4  be 1c 69 88  f5 a0 22 aa
+|   ae eb 32 1b  cb aa 73 47  00 0f 0d c7  5e 2c 4f 47
+|   37 5d e4 40  84 03 fb 3d  7f bb a3 4b  3e 41 21 fd
+|   cb 6f f8 19  1a c8 b6 0d  4e 16 6c 60  77 c2 0f 8e
+|   dd fc 06 74  41 58 a0 f6  d5 44 bb 19  c6 0d 51 27
+| DH_r:  f6 80 f2 11  ac b0 24 70  8e 23 14 5d  cb 53 fb 60
+|   f0 65 8f da  de e8 16 ec  38 02 53 3a  3d 49 9d 0d
+|   c5 dc e0 23  ab bd 8f 9c  b3 e2 2d 33  43 29 5a 65
+|   58 ee 3a 59  53 17 ab 94  c5 78 45 15  91 49 df 2a
+|   ab a6 12 d9  bd 01 12 c0  a0 5e 75 d3  56 48 b4 83
+|   8c c4 3d 64  a5 b1 9e fc  d6 17 36 7f  ac f7 a3 08
+|   4c 4c 74 23  6d 88 dc d3  4c b1 5f 64  dd dc 20 ad
+|   a5 51 ef 9a  e8 ec 6a 00  3e 69 f5 c1  9b 32 84 be
+|   75 13 d8 2b  cb 34 3d cd  d6 5b 18 fc  cc 5f c5 0c
+|   96 8e 4c a5  fa 9e 00 d3  1e a9 ce 75  2a 59 33 3d
+|   a3 6f e0 bd  c2 2d 53 19  01 bb 8b 7f  cd fb 41 b9
+|   8b 08 68 66  c8 4b 2c c9  49 3a 22 b5  7b c9 8e 31
+| Skeyid:    7c 5d 2a 9b  82 bb 9d 69  28 ad 2f 9d  fe 69 4a f8
+| Skeyid_d:  f0 f5 e2 31  c4 59 0e 25  6d 56 aa dd  51 53 2d 4d
+| Skeyid_a:  1d 2c 8b 8f  82 47 e5 4c  0e 36 5d 9d  56 b7 ef df
+| Skeyid_e:  1d 53 2b f6  b8 ad fd 64  bd df cc a8  4d 54 9a 55
+| enc key:  0c c4 0b 85  56 b7 d2 ee  69 df db 3e  e2 ce b6 96
+|   eb 9d fe ca  5a a2 92 28
