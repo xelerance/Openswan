@@ -1299,7 +1299,6 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 		}
 
 		ipsp->ips_iv_size = ixt_e->ixt_common.ixt_support.ias_ivlen/8;
-		KLIPS_PRINT(debug_pfkey, "setting iv_size=%d\n", ipsp->ips_iv_size);
 
 		/* Create IV */
 		if (ipsp->ips_iv_size) {
