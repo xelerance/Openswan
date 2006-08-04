@@ -186,6 +186,7 @@ DEBUG_NO_STATIC int
 pfkey_ipsec_sa_init(struct ipsec_sa *ipsp)
 {
         int rc;
+	KLIPS_PRINT(debug_pfkey, "Calling SA_INIT\n");
 	rc = ipsec_sa_init(ipsp);
         return rc;
 }
@@ -727,6 +728,28 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 		SENDERR(-error);
 	}
 
+#if 0
+	/* extensions would provide this information, but not in this branch */
+	if(extr->sarefme!=IPSEC_SAREF_NULL
+	   && extr->ips->ips_ref==IPSEC_SAREF_NULL) {
+		extr->ips->ips_ref=extr->sarefme;
+	}
+
+	if(extr->sarefhim!=IPSEC_SAREF_NULL
+	   && extr->ips->ips_refhim==IPSEC_SAREF_NULL) {
+		extr->ips->ips_refhim=extr->sarefhim;
+	}
+#endif
+
+	/* attach it to the SAref table */
+	if((error = ipsec_sa_intern(extr->ips)) != 0) {
+		KLIPS_ERROR(debug_pfkey,
+			    "pfkey_add_parse: "
+			    "failed to intern SA as SAref#%lu\n"
+			    , (unsigned long)extr->ips->ips_ref);
+		SENDERR(-error);
+	}
+
 	extr->ips->ips_life.ipl_addtime.ipl_count = jiffies / HZ;
 	if(!extr->ips->ips_life.ipl_allocations.ipl_count) {
 		extr->ips->ips_life.ipl_allocations.ipl_count += 1;
@@ -847,6 +870,7 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 			    error);
 		SENDERR(-error);
 	}
+	ipsec_sa_put(extr->ips);
 	extr->ips = NULL;
 	
 	KLIPS_PRINT(debug_pfkey,
