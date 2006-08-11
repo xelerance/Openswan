@@ -897,6 +897,7 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
 	uint8_t satype = ((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype;
+	IPsecSAref_t ref;
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_delete_parse: .\n");
@@ -924,7 +925,13 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		SENDERR(ESRCH);
 	}
 
-        /* this will call delchain-equivalent if refcount=>0 */
+	/* remove it from SAref tables */
+	ref = ipsp->ips_ref;
+	ipsec_sa_untern(ipsp); 
+	ipsec_sa_rm(ipsp);
+
+	/* this will call delchain-equivalent if refcount -> 0
+	 * noting that get() above, added to ref count */
 	ipsec_sa_put(ipsp);
 	spin_unlock_bh(&tdb_lock);
 
@@ -943,7 +950,7 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 							0,
 							0,
 							0,
-							extr->ips->ips_ref),
+							ref),
 				 extensions_reply)
 	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[SADB_EXT_ADDRESS_SRC],
 							     SADB_EXT_ADDRESS_SRC,
