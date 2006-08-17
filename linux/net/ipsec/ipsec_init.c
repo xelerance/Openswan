@@ -228,6 +228,13 @@ ipsec_klips_init(void)
         if (error)
                 goto error_netdev_notifier;
 
+#ifdef CONFIG_XFRM_ALTERNATE_STACK
+        error = xfrm_register_alternate_rcv (ipsec_rcv);
+        if (error)
+                goto error_xfrm_register;
+
+#else // CONFIG_XFRM_ALTERNATE_STACK
+
 #ifdef CONFIG_KLIPS_ESP
 	openswan_inet_add_protocol(&esp_protocol, IPPROTO_ESP);
 #endif /* CONFIG_KLIPS_ESP */
@@ -242,6 +249,8 @@ ipsec_klips_init(void)
  	openswan_inet_add_protocol(&comp_protocol, IPPROTO_COMP);
 #endif /* CONFIG_KLIPS_IPCOMP */
 #endif
+
+#endif // CONFIG_XFRM_ALTERNATE_STACK
 
 	error |= ipsec_tunnel_init_devices();
         if (error)
@@ -273,6 +282,10 @@ ipsec_klips_init(void)
 error_sysctl_register:
 	ipsec_tunnel_cleanup_devices();
 error_tunnel_init_devices:
+#ifdef CONFIG_XFRM_ALTERNATE_STACK
+        xfrm_deregister_alternate_rcv(ipsec_rcv);
+error_xfrm_register:
+#endif // CONFIG_XFRM_ALTERNATE_STACK
 	unregister_netdevice_notifier(&ipsec_dev_notifier);
 error_netdev_notifier:
 	pfkey_cleanup();
@@ -316,6 +329,12 @@ ipsec_cleanup(void)
 
 	KLIPS_PRINT(debug_netlink, "called ipsec_tunnel_cleanup_devices");
 
+#ifdef CONFIG_XFRM_ALTERNATE_STACK
+
+        xfrm_deregister_alternate_rcv(ipsec_rcv);
+
+#else // CONFIG_XFRM_ALTERNATE_STACK
+
 /* we never actually link IPCOMP to the stack */
 #ifdef IPCOMP_USED_ALONE
 #ifdef CONFIG_KLIPS_IPCOMP
@@ -336,6 +355,8 @@ ipsec_cleanup(void)
 		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 		       "esp close: can't remove protocol\n");
 #endif /* CONFIG_KLIPS_ESP */
+
+#endif // CONFIG_XFRM_ALTERNATE_STACK
 
 	error |= unregister_netdevice_notifier(&ipsec_dev_notifier);
 
