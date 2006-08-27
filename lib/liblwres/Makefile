@@ -68,10 +68,6 @@ timestamp: liblwres.a
 
 $(OBJS):	$(HDRS)
 
-# build version.c using version number from Makefile.ver
-version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
-	sed '/"/s/xxx/$(IPSECVERSION)/' ${KLIPSSRCDIR}/version.in.c >$@
-
 check:
 	echo no checks in lib right now.
 
