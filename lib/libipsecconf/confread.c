@@ -305,7 +305,7 @@ static int validate_end(struct starter_conn *conn_st
 	break;
 
     case KH_OPPOGROUP:
-	conn_st->policy |= POLICY_GROUP|POLICY_GROUP;
+	conn_st->policy |= POLICY_OPPO|POLICY_GROUP;
 	break;
 
     case KH_GROUP:
@@ -355,6 +355,9 @@ static int validate_end(struct starter_conn *conn_st
 	er = ttoaddr(value, 0, AF_INET, &(end->nexthop));
 	if (er) ERR_FOUND("bad addr %s=%s [%s]", (left ? "lextnexthop" : "rightnexthop"), value, er);
     } else {
+	if(conn_st->policy & POLICY_OPPO) {
+	    end->nexttype = KH_DEFAULTROUTE;
+	}
 	anyaddr(AF_INET, &end->nexthop);
     }
 
@@ -947,6 +950,7 @@ struct starter_config *confread_load(const char *file, err_t *perr)
 
 	/* if we have OE on, then create any missing OE conns! */
 	if(cfg->setup.options[KBF_OPPOENCRYPT]) {
+	    starter_log(LOG_LEVEL_DEBUG, "Enabling OE conns\n");
 	    add_any_oeconns(cfg, cfgp);
 	}
 
