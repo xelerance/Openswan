@@ -481,15 +481,16 @@ void add_any_oeconns(struct starter_config *cfg,
 	for(sconn = cfgp->sections.tqh_first; sconn != NULL; sconn = sconn->link.tqe_next)
 		
 	{
-		for(i=0, oc=implicit_conns; *oc!=NULL; oc++) {
-			if(strcasecmp((*oc)->oe_cn, sconn->name)==0) {
-				found_conns[i]=TRUE;
-			}
+	    for(i=0, oc=implicit_conns; *oc!=NULL; oc++, i++) {
+		if(strcasecmp((*oc)->oe_cn, sconn->name)==0) {
+		    starter_log(LOG_LEVEL_DEBUG, "found non-explicit conn: %s\n", sconn->name);
+		    found_conns[i]=TRUE;
 		}
+	    }
 	}
 
 	
-	for(i=0, oc=implicit_conns; *oc!=NULL; oc++) {
+	for(i=0, oc=implicit_conns; *oc!=NULL; oc++, i++) {
 		if(found_conns[i]==FALSE) {
 			int connerr = 0;
 			struct starter_conn *conn;
