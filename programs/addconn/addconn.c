@@ -392,7 +392,9 @@ main(int argc, char *argv[])
 		    } else if(conn->state == STATE_FAILED) {
 			printf("conn %s did not load properly\n", conn->name);
 		    } else {
-			printf("loading conn: %s\n", conn->name);
+			if(verbose) {
+			    printf("loading conn: %s\n", conn->name);
+			}
 			exit_status = starter_whack_add_conn(cfg, conn);
 			conn->state = STATE_ADDED;
 		    }
