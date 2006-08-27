@@ -1039,6 +1039,7 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
     decode_groups(src->groups, &dst->groups);
 
     /* the rest is simple copying of corresponding fields */
+    dst->host_type = src->host_type;
     dst->host_addr = src->host_addr;
     dst->host_nexthop = src->host_nexthop;
     dst->host_srcip = src->host_srcip;
@@ -1073,8 +1074,9 @@ static bool
 check_connection_end(const struct whack_end *this, const struct whack_end *that
 , const struct whack_message *wm)
 {
-    if (wm->addr_family != addrtypeof(&this->host_addr)
-	|| wm->addr_family != addrtypeof(&this->host_nexthop))
+    if (this->host_type == KH_IPADDR
+	&& (wm->addr_family != addrtypeof(&this->host_addr)
+	    || wm->addr_family != addrtypeof(&this->host_nexthop)))
     {
 	/* this should have been diagnosed by whack, so we need not be clear
 	 * !!! overloaded use of RC_CLASH
@@ -1086,6 +1088,9 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	return FALSE;
     }
 
+    /* this check actually prevents IPv4 in IPv6 and vv, so it will
+     * have to go away at some point.
+     */
     if ((this->has_client? wm->tunnel_addr_family : wm->addr_family)
 	!= subnettypeof(&this->client))
     {

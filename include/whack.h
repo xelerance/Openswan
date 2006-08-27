@@ -34,7 +34,7 @@
  */
 
 #define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 24)
-#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 33)
+#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 34)
 
 /* struct whack_end is a lot like connection.h's struct end
  * It differs because it is going to be shipped down a socket
@@ -46,6 +46,7 @@ struct whack_end {
     char *ca;		/* distinguished name string (if any) -- parsed by pluto */
     char *groups;       /* access control groups (if any) -- parsed by pluto */
 
+    enum keyword_host host_type;
     ip_address host_addr,
 	host_nexthop,
 	host_srcip;
