@@ -758,6 +758,8 @@ static int load_conn (struct starter_config *cfg
 	}
 	conn->alsos = alsos;
     }
+
+    /* translate strings/numbers into conn items */
     
     KW_POLICY_FLAG(KBF_TYPE, POLICY_TUNNEL);
     KW_POLICY_FLAG(KBF_COMPRESS, POLICY_COMPRESS);
@@ -775,6 +777,13 @@ static int load_conn (struct starter_config *cfg
     }
     
     KW_POLICY_FLAG(KBF_REKEY, POLICY_DONT_REKEY);
+
+    if(conn->strings_set[KSCF_ESP]) {
+	conn->esp = xstrdup(conn->strings[KSCF_ESP]);
+    }
+    if(conn->strings_set[KSCF_IKE]) {
+	conn->ike = xstrdup(conn->strings[KSCF_IKE]);
+    }
 
     err += validate_end(conn, &conn->left,  TRUE, perr);
     err += validate_end(conn, &conn->right, FALSE,perr);
