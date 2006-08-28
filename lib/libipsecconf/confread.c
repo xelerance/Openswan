@@ -305,7 +305,7 @@ static int validate_end(struct starter_conn *conn_st
 	break;
 
     case KH_OPPOGROUP:
-	conn_st->policy |= POLICY_GROUP|POLICY_GROUP;
+	conn_st->policy |= POLICY_OPPO|POLICY_GROUP;
 	break;
 
     case KH_GROUP:
@@ -355,6 +355,9 @@ static int validate_end(struct starter_conn *conn_st
 	er = ttoaddr(value, 0, AF_INET, &(end->nexthop));
 	if (er) ERR_FOUND("bad addr %s=%s [%s]", (left ? "lextnexthop" : "rightnexthop"), value, er);
     } else {
+	if(conn_st->policy & POLICY_OPPO) {
+	    end->nexttype = KH_DEFAULTROUTE;
+	}
 	anyaddr(AF_INET, &end->nexthop);
     }
 
@@ -755,6 +758,8 @@ static int load_conn (struct starter_config *cfg
 	}
 	conn->alsos = alsos;
     }
+
+    /* translate strings/numbers into conn items */
     
     KW_POLICY_FLAG(KBF_TYPE, POLICY_TUNNEL);
     KW_POLICY_FLAG(KBF_COMPRESS, POLICY_COMPRESS);
@@ -772,6 +777,13 @@ static int load_conn (struct starter_config *cfg
     }
     
     KW_POLICY_FLAG(KBF_REKEY, POLICY_DONT_REKEY);
+
+    if(conn->strings_set[KSCF_ESP]) {
+	conn->esp = xstrdup(conn->strings[KSCF_ESP]);
+    }
+    if(conn->strings_set[KSCF_IKE]) {
+	conn->ike = xstrdup(conn->strings[KSCF_IKE]);
+    }
 
     err += validate_end(conn, &conn->left,  TRUE, perr);
     err += validate_end(conn, &conn->right, FALSE,perr);
@@ -947,6 +959,7 @@ struct starter_config *confread_load(const char *file, err_t *perr)
 
 	/* if we have OE on, then create any missing OE conns! */
 	if(cfg->setup.options[KBF_OPPOENCRYPT]) {
+	    starter_log(LOG_LEVEL_DEBUG, "Enabling OE conns\n");
 	    add_any_oeconns(cfg, cfgp);
 	}
 

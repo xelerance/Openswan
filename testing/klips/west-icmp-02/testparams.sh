@@ -7,7 +7,7 @@ TEST_PURPOSE=goal
 TEST_GOAL_ITEM=160
 
 EXITONEMPTY=--exitonempty
-ARPREPLY=--arpreply 
+PRIVATE_ARPREPLY=true
 
 #THREEEIGHT=true
 

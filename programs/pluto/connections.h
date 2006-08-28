@@ -144,6 +144,8 @@ struct ietfAttr;	/* forward declaration of ietfAttr defined in ac.h */
 
 struct end {
     struct id id;
+
+    enum keyword_host host_type;
     ip_address
 	host_addr,
 	host_nexthop,

@@ -246,6 +246,7 @@ static void set_whack_end(struct starter_config *cfg
 			  , struct starter_end *l)
 {
 	w->id = l->id;
+	w->host_type = l->addrtype;
 
 	switch(l->addrtype) {
 	case KH_DEFAULTROUTE:
@@ -260,6 +261,10 @@ static void set_whack_end(struct starter_config *cfg
 	case KH_GROUP:
 	case KH_OPPOGROUP:
 		/* policy should have been set to OPPO */
+		anyaddr(l->addr_family, &w->host_addr);
+		break;
+
+	case KH_ANY:
 		anyaddr(l->addr_family, &w->host_addr);
 		break;
 		
@@ -341,7 +346,7 @@ static int starter_whack_add_pubkey (struct starter_conn *conn,
 	msg.whack_key = TRUE;
 	msg.pubkey_alg = PUBKEY_ALG_RSA;
 	if (end->id && end->rsakey2) {
-		printf("addkey2: %s\n", lr);
+		/* printf("addkey2: %s\n", lr); */
 
 		msg.keyid = end->id;
 		err = atobytes(end->rsakey2, 0, keyspace, sizeof(keyspace),
