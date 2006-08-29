@@ -120,6 +120,7 @@ struct keyword_enum_values kw_type_list=
  */
 struct keyword_enum_value kw_rsasigkey_values[]={
     { "",             PUBKEY_PREEXCHANGED },
+    { "%cert",        PUBKEY_CERTIFICATE },
     { "%dns",         PUBKEY_DNS },
     { "%dnsondemand", PUBKEY_DNSONDEMAND },
 };

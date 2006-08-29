@@ -326,16 +326,34 @@ static int starter_whack_add_pubkey (struct starter_conn *conn,
 	msg.pubkey_alg = PUBKEY_ALG_RSA;
 	if (end->id && end->rsakey1) {
 		msg.keyid = end->id;
-		err = atobytes(end->rsakey1, 0, keyspace, sizeof(keyspace),
-			&msg.keyval.len);
-		if (err) {
+
+		switch(end->rsakey1_type) {
+		case PUBKEY_DNS:
+		case PUBKEY_DNSONDEMAND:
+		    starter_log(LOG_LEVEL_DEBUG, "conn %s/%s has key from DNS",
+				connection_name(conn), lr);
+		    break;
+
+		case PUBKEY_CERTIFICATE:
+		    starter_log(LOG_LEVEL_DEBUG, "conn %s/%s has key from certificate",
+				connection_name(conn), lr);
+		    break;
+
+		case PUBKEY_NOTSET:
+		    break;
+
+		case PUBKEY_PREEXCHANGED:
+		    err = atobytes(end->rsakey1, 0, keyspace, sizeof(keyspace),
+				   &msg.keyval.len);
+		    if (err) {
 			starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey malformed [%s]",
-				connection_name(conn), lr, err);
+				    connection_name(conn), lr, err);
 			return 1;
-		}
-		else {
+		    }
+		    else {
 			msg.keyval.ptr = keyspace;
 			ret = send_whack_msg(&msg);
+		    }
 		}
 	}
 
@@ -349,16 +367,25 @@ static int starter_whack_add_pubkey (struct starter_conn *conn,
 		/* printf("addkey2: %s\n", lr); */
 
 		msg.keyid = end->id;
-		err = atobytes(end->rsakey2, 0, keyspace, sizeof(keyspace),
-			       &msg.keyval.len);
-		if (err) {
+		switch(end->rsakey2_type) {
+		case PUBKEY_NOTSET:
+		case PUBKEY_DNS:
+		case PUBKEY_DNSONDEMAND:
+		case PUBKEY_CERTIFICATE:
+		    break;
+
+		case PUBKEY_PREEXCHANGED:
+		    err = atobytes(end->rsakey2, 0, keyspace, sizeof(keyspace),
+				   &msg.keyval.len);
+		    if (err) {
 			starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey malformed [%s]",
-				connection_name(conn), lr, err);
+				    connection_name(conn), lr, err);
 			return 1;
-		}
-		else {
+		    }
+		    else {
 			msg.keyval.ptr = keyspace;
 			return send_whack_msg(&msg);
+		    }
 		}
 	}
 	return 0;

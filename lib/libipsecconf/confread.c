@@ -370,28 +370,33 @@ static int validate_end(struct starter_conn *conn_st
 	end->id = xstrdup(value);
     }
 
-    switch(end->options[KSCF_RSAKEY1]) {
-    case PUBKEY_DNS:
-    case PUBKEY_DNSONDEMAND:
-	end->key_from_DNS_on_demand = TRUE;
-	break;
+    if(end->options_set[KSCF_RSAKEY1]) {
+	end->rsakey1_type = end->options[KSCF_RSAKEY1];
+	end->rsakey2_type = end->options[KSCF_RSAKEY2];
 
-    default:
-	end->key_from_DNS_on_demand = FALSE;
-	/* validate the KSCF_RSAKEY1/RSAKEY2 */
-	if(end->strings[KSCF_RSAKEY1] != NULL)
-	{
-	    char *value = end->strings[KSCF_RSAKEY1];
+	switch(end->options[KSCF_RSAKEY1]) {
+	case PUBKEY_DNS:
+	case PUBKEY_DNSONDEMAND:
+	    end->key_from_DNS_on_demand = TRUE;
+	    break;
 	    
-	    if (end->rsakey1) free(end->rsakey1);
-	    end->rsakey1 = xstrdup(value);
-	}
-	if(end->strings[KSCF_RSAKEY2] != NULL)
-	{
-	    char *value = end->strings[KSCF_RSAKEY2];
-	    
-	    if (end->rsakey2) free(end->rsakey2);
-	    end->rsakey2 = xstrdup(value);
+	default:
+	    end->key_from_DNS_on_demand = FALSE;
+	    /* validate the KSCF_RSAKEY1/RSAKEY2 */
+	    if(end->strings[KSCF_RSAKEY1] != NULL)
+	    {
+		char *value = end->strings[KSCF_RSAKEY1];
+		
+		if (end->rsakey1) free(end->rsakey1);
+		end->rsakey1 = xstrdup(value);
+	    }
+	    if(end->strings[KSCF_RSAKEY2] != NULL)
+	    {
+		char *value = end->strings[KSCF_RSAKEY2];
+		
+		if (end->rsakey2) free(end->rsakey2);
+		end->rsakey2 = xstrdup(value);
+	    }
 	}
     }
 
@@ -770,10 +775,11 @@ static int load_conn (struct starter_config *cfg
 	conn->policy &= ~(POLICY_ID_AUTH_MASK);
 	conn->policy |= conn->options[KBF_AUTHBY];
 
-	printf("%s: setting conn->policy=%08x (%08x)\n",
-	       conn->name,
-	       (unsigned int)conn->policy,
-	       conn->options[KBF_AUTHBY]);
+	starter_log(LOG_LEVEL_INFO,
+		    "%s: setting conn->policy=%08x (%08x)\n",
+		    conn->name,
+		    (unsigned int)conn->policy,
+		    conn->options[KBF_AUTHBY]);
     }
     
     KW_POLICY_FLAG(KBF_REKEY, POLICY_DONT_REKEY);
@@ -788,7 +794,9 @@ static int load_conn (struct starter_config *cfg
     err += validate_end(conn, &conn->left,  TRUE, perr);
     err += validate_end(conn, &conn->right, FALSE,perr);
 
-    conn->desired_state = conn->options[KBF_AUTO];
+    if(conn->options_set[KBF_AUTO]) {
+	conn->desired_state = conn->options[KBF_AUTO];
+    }
     
     return err;
 }

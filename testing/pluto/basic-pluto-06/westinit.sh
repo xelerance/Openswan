@@ -7,7 +7,6 @@ iptables -A INPUT -i eth1 -s 192.0.2.0/24 -j DROP
 ping -n -c 4 192.0.2.254
 
 ipsec setup start
-ipsec klipsdebug --all
 ipsec whack --debug-all
 ipsec auto --add westnet-eastnet-x509
 /testing/pluto/basic-pluto-01/eroutewait.sh trap

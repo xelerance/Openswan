@@ -42,6 +42,8 @@ struct starter_end {
     ip_subnet subnet;
     char *iface;
     char *id;
+    
+    enum pubkey_source rsakey1_type, rsakey2_type;
     unsigned char *rsakey1;
     unsigned char *rsakey2;
     u_int16_t port;
