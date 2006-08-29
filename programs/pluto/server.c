@@ -670,11 +670,19 @@ call_server(void)
 	}
 
 	DBG(DBG_CONTROL, DBG_log(BLANK_FORMAT));
+
+	/*
+	 * we log the time when we are about to do something so that
+	 * we know what time things happened, when not using syslog
+	 */
 	if(log_to_stderr_desired) {
 	    time_t n;
 
 	    time(&n);
-	    DBG_log("time is %s (%lu)", ctime(&n), (unsigned long)n);
+	    if(log_did_something) {
+		DBG_log("time is %s (%lu)", ctime(&n), (unsigned long)n);
+		log_did_something=FALSE;
+	    }
 	}
 		    
 	/* figure out what is interesting */
