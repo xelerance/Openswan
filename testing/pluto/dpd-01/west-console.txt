@@ -38,7 +38,7 @@ west:~#
 Tunnel should be up
 west:~#
  ipsec eroute
-10         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
+12         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
 west:~#
  echo "Waiting 15 seconds..."
 Waiting 15 seconds...
@@ -49,22 +49,18 @@ west:~#
 Setting up block via iptables
 west:~#
  iptables -I INPUT -s 192.1.2.23/32 -d 0/0 -j DROP
-iptables v1.2.7a: can't initialize iptables table `filter': iptables who? (do you need to insmod?)
-Perhaps iptables or your kernel needs to be upgraded.
 west:~#
  iptables -I OUTPUT -d 192.1.2.23/32 -s 0/0 -j DROP
-iptables v1.2.7a: can't initialize iptables table `filter': iptables who? (do you need to insmod?)
-Perhaps iptables or your kernel needs to be upgraded.
 west:~#
  sleep 10
 west:~#
  ipsec eroute
-10         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
+12         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
 west:~#
  sleep 10
 west:~#
  ipsec eroute
-10         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
+12         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
 west:~#
  sleep 10
 west:~#
@@ -72,18 +68,14 @@ west:~#
 Tunnel should be down (%trap/%hold)
 west:~#
  ipsec eroute
-10         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
+12         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
 west:~#
  echo "Removing block"
 Removing block
 west:~#
  iptables -D INPUT -s 192.1.2.23/32 -d 0/0 -j DROP
-iptables v1.2.7a: can't initialize iptables table `filter': iptables who? (do you need to insmod?)
-Perhaps iptables or your kernel needs to be upgraded.
 west:~#
  iptables -D OUTPUT -d 192.1.2.23/32 -s 0/0 -j DROP
-iptables v1.2.7a: can't initialize iptables table `filter': iptables who? (do you need to insmod?)
-Perhaps iptables or your kernel needs to be upgraded.
 west:~#
  ping -q -c 8 -n 192.1.2.23
 PING 192.1.2.23 (192.1.2.23): 56 data bytes
@@ -96,7 +88,13 @@ west:~#
 Tunnel should be up
 west:~#
  ipsec eroute
-26         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
+28         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
+west:~#
+ echo end
+end
+west:~#
+ 
+
 west:~#
  echo end
 end
