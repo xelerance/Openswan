@@ -251,6 +251,9 @@ static void set_whack_end(struct starter_config *cfg
 	switch(l->addrtype) {
 	case KH_DEFAULTROUTE:
 		w->host_addr = cfg->dr;
+		if(addrtypeof(&w->host_addr) == 0) {
+			w->host_addr = *aftoinfo(AF_INET)->any;
+		}
 		break;
 		
 	case KH_IPADDR:
@@ -306,6 +309,9 @@ static void set_whack_end(struct starter_config *cfg
 	w->host_port = IKE_UDP_PORT;
 	w->has_client_wildcard = l->has_client_wildcard;
 	w->cert = l->cert;
+	w->ca   = l->ca;
+	w->updown = l->updown;
+	w->virt   = NULL;
 	w->protocol = l->protocol;
 	w->port = l->port;
 	w->virt = l->virt;

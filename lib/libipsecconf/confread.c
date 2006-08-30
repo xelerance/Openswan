@@ -400,6 +400,41 @@ static int validate_end(struct starter_conn *conn_st
 	}
     }
 
+    /* copy certificate path name */
+    if(end->strings_set[KSCF_CERT]) {
+	end->cert = xstrdup(end->strings[KSCF_CERT]);
+    }
+
+    if(end->strings_set[KSCF_CA]) {
+	end->ca = xstrdup(end->strings[KSCF_CA]);
+    }
+
+    if(end->strings_set[KSCF_UPDOWN]) {
+	end->updown = xstrdup(end->strings[KSCF_UPDOWN]);
+    }
+
+    if(end->strings_set[KSCF_UPDOWN]) {
+	end->updown = xstrdup(end->strings[KSCF_UPDOWN]);
+    }
+
+    if(end->strings_set[KSCF_PROTOPORT]) {
+	/* XXX processing needed to strip it apart,
+	 * and also to set per_* controls.
+	 */
+    }
+
+    /*
+    KSCF_SUBNETWITHIN    --- not sure what to do with it.
+    KSCF_PROTOPORT       --- todo
+    KSCF_ESPENCKEY       --- todo (manual keying)
+    KSCF_ESPAUTHKEY      --- todo (manual keying)
+    KSCF_DPDACTION    = 15,
+    KSCF_SOURCEIP     = 16,
+    KSCF_ALSO         = 17,
+    KSCF_ALSOFLIP     = 18,                    
+    KSCF_MAX          = 19
+*/
+
     return err;
 }
 

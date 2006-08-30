@@ -50,8 +50,10 @@ struct starter_end {
     u_int8_t protocol;
     bool has_client_wildcard;
     bool key_from_DNS_on_demand;
-    char *cert;
     char *virt;
+    char *cert;
+    char *ca;
+    char *updown;
     ksf  strings;
     knf  options;
 

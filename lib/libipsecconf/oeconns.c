@@ -526,6 +526,7 @@ void add_any_oeconns(struct starter_config *cfg,
 			conn->ike  = tconn->ike;
 			conn->desired_state = tconn->desired_state;
 			conn->policy = tconn->policy;
+			conn->state = STATE_LOADED;
 
 			if(connerr) {
 				starter_log(LOG_LEVEL_INFO, "implicit %s: %s"

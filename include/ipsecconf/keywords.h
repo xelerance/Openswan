@@ -127,6 +127,7 @@ enum keyword_numeric_conn_field {
     KNCF_ESPREPLAYWINDOW  = 6,
     KNCF_DPDDELAY         = 7,
     KNCF_DPDTIMEOUT       = 8,
+    KNCF_DPDACTION        = 9,
     KNCF_MAX              = 30
 };
 

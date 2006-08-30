@@ -280,7 +280,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     /* DPD */ 
     {"dpddelay", kv_conn|kv_auto,kt_number, KNCF_DPDDELAY, NOT_ENUM},
     {"dpdtimeout", kv_conn|kv_auto,kt_number,KNCF_DPDTIMEOUT , NOT_ENUM},
-    {"dpdaction", kv_conn|kv_auto,kt_enum, KSCF_DPDACTION , &kw_dpdaction_list},
+    {"dpdaction", kv_conn|kv_auto,kt_enum, KNCF_DPDACTION , &kw_dpdaction_list},
 
 
     /* aggr/xauth/modeconfig */ 
