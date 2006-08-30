@@ -162,7 +162,11 @@ struct end {
     bool      host_port_specific; /* if TRUE, then IKE ports are tested for*/
     u_int16_t port;		/* port number, if per-port keying. */
     u_int8_t protocol;          /* protocol number, if per-per keying. */
-    cert_t cert;		/* end certificate */
+
+    enum certpolicy sendcert;   /* whether or not to send the certificate */
+    char   *cert_filename;       /* where we got the certificate */
+    cert_t  cert;		/* end certificate */
+
     chunk_t ca;			/* CA distinguished name */
     struct ietfAttrList *groups;/* access control groups */
     smartcard_t *sc;		/* smartcard reader and key info */
@@ -173,7 +177,6 @@ struct end {
     bool xauth_client;
     bool modecfg_server;        /* Give local addresses to tunnel's end */
     bool modecfg_client;        /* request address for local end */
-    enum certpolicy sendcert;   /* whether or not to send the certificate */
 };
 
 struct spd_route {
