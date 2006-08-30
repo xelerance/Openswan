@@ -819,6 +819,8 @@ static int load_conn (struct starter_config *cfg
     
     KW_POLICY_FLAG(KBF_REKEY, POLICY_DONT_REKEY);
 
+    KW_POLICY_FLAG(KBF_AGGRMODE, POLICY_AGGRESSIVE);
+
     if(conn->strings_set[KSCF_ESP]) {
 	conn->esp = xstrdup(conn->strings[KSCF_ESP]);
     }
