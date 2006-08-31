@@ -57,7 +57,7 @@ struct whack_end {
     bool has_client_wildcard;
     bool has_port_wildcard;
     char *updown;		/* string */
-    u_int16_t host_port;	/* host order */
+    u_int16_t host_port;	/* host order  (for IKE communications) */
     u_int16_t port;		/* host order */
     u_int8_t protocol;
     char *virt;
@@ -107,7 +107,7 @@ struct whack_message {
     /* For DPD 3706 - Dead Peer Detection */
     time_t dpd_delay;
     time_t dpd_timeout;
-    int dpd_action;
+    enum dpd_action dpd_action;
     int dpd_count;
 
     /* Force the use of NAT-T on a connection */
