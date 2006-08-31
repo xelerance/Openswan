@@ -465,10 +465,6 @@ ifeq ($(USE_EXTRACRYPTO),true)
 CRYPTOLIBS+=${LIBSHA2} ${LIBSERPENT} ${LIBTWOFISH} ${LIBBLOWFISH}
 endif
 
-ifeq ($(USE_KLIPS),true)
-CFLAGS+=-DKLIPS
-endif
-
 LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
 POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 
