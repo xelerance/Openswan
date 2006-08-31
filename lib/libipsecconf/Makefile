@@ -31,6 +31,7 @@ SRCS+=interfaces.c
 
 ifeq ($(USE_KLIPS),true)
 SRCS+=virtif.c
+CFLAGS+=-DKLIPS
 endif
 
 OBJS=${SRCS:.c=.o} 
