@@ -330,7 +330,7 @@ enum certpolicy {
 };
 
 /* this is the default setting. */
-#define cert_defaultcertpolicy cert_alwayssend
+#define cert_defaultcertpolicy cert_sendifasked
 
 
 /* Policies for establishing an SA
