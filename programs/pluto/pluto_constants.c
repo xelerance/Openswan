@@ -181,7 +181,6 @@ enum_names state_stories =
 
 /* pluto crypto operations */
 static const char *const pluto_cryptoop_strings[] = {
-	"0-no such request",
 	"build_kenonce",	/* calculate g^i and nonce */
 	"rsa_sign",	        /* do rsa signature operation */
 	"rsa_check",	        /* do rsa signature check */
@@ -193,7 +192,7 @@ static const char *const pluto_cryptoop_strings[] = {
 };
 
 enum_names pluto_cryptoop_names =
-    { pcr_compute_dh, pcr_build_nonce, pluto_cryptoop_strings, NULL};
+    { pcr_build_kenonce, pcr_compute_dh, pluto_cryptoop_strings, NULL};
 
 
 /* pluto crypto importance */
