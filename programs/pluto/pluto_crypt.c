@@ -642,6 +642,9 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
     close_log();
     close_peerlog();
 
+    /* set local so that child inheirits it */
+    pc_helper_num = n;
+
     w->pcw_pid = fork();
     errno2 = errno;
     if(w->pcw_pid == 0) { 
