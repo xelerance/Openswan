@@ -2614,7 +2614,7 @@ main_inI2_outR2(struct msg_digest *md)
 	ke->md = md;
 	st->st_suspended_md = md;
 
-	passert(st->st_sec_in_use != FALSE);
+	passert(st->st_sec_in_use == FALSE);
 	ke->ke_pcrc.pcrc_func = main_inI2_outR2_continue;
 	return build_ke(&ke->ke_pcrc, st
 			, st->st_oakley.group, st->st_import);
