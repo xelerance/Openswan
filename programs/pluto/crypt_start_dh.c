@@ -154,12 +154,9 @@ void finish_dh_secretiv(struct state *st,
     st->st_new_iv_len = dhr->new_iv.len;
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
-
-    /* free up calculation structure */
-    pfree(r);
 }
 
-stf_status perform_dh_secret(struct state *st
+stf_status start_dh_secret(struct state *st
 			     , enum phase1_role init      
 			     , u_int16_t oakley_group)
 {
@@ -200,6 +197,9 @@ stf_status perform_dh_secret(struct state *st
 
     calc_dh(&r);
 
+void finish_dh_secretiv(struct state *st,
+			struct pluto_crypto_req *r)
+{
     clonetochunk(st->st_shared,   wire_chunk_ptr(dhr, &(dhr->shared))
 		 , dhr->shared.len,   "calculated shared secret");
     
