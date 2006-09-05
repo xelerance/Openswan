@@ -172,6 +172,9 @@ aggr_inI1_outR1_continue1(struct pluto_crypto_req_cont *pcrc
   /* unpack first calculation */
   unpack_KE(st, r, &st->st_gr);
 
+  /* unpack nonce too */
+  unpack_nonce(&st->st_nr, r);
+
   /* NOTE: the "r" reply will get freed by our caller */
   
   /* set up second calculation */
