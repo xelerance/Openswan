@@ -1528,21 +1528,29 @@ quick_inI1_outR1_process_answer(struct verify_oppo_bundle *b
     return next_step;
 }
 
+/* forward definitions */
 static stf_status
-quick_inI1_outR1_cryptotail(struct qke_continuation *qke
+quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 			    , struct pluto_crypto_req *r);
 
 static void
-quick_inI1_outR1_cryptocontinue(struct pluto_crypto_req_cont *pcrc
+quick_inI1_outR1_cryptocontinue2(struct pluto_crypto_req_cont *pcrc
 			      , struct pluto_crypto_req *r
-			      , err_t ugh)
+				 , err_t ugh);
+
+
+static void
+quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
+				 , struct pluto_crypto_req *r
+				 , err_t ugh)
 {
     struct qke_continuation *qke = (struct qke_continuation *)pcrc;
+    struct msg_digest *md = qke->md;
     struct state *const st = qke->st;
     stf_status e;
 
     DBG(DBG_CONTROLMORE
-	, DBG_log("quick inI1_outR1: calculated ke+nonce, sending R1"));
+	, DBG_log("quick inI1_outR1: calculated ke+nonce, calculating DH"));
 
     /* XXX should check out ugh */
     passert(ugh == NULL);
@@ -1553,11 +1561,79 @@ quick_inI1_outR1_cryptocontinue(struct pluto_crypto_req_cont *pcrc
 
     set_cur_state(st);	/* we must reset before exit */
     st->st_calculating=FALSE;
-    e = quick_inI1_outR1_cryptotail(qke, r);
 
-    if(qke->md != NULL) {
-	complete_state_transition(&qke->md, e);
-	release_md(qke->md);
+    /* we always calcualte a nonce */
+    unpack_nonce(&st->st_nr, r);
+
+    if (st->st_pfs_group != NULL) {
+	struct dh_continuation *dh = alloc_thing(struct dh_continuation
+						 , "quick outR1 DH");
+
+	unpack_KE(st, r, &st->st_gr);
+    
+	/* set up second calculation */
+	dh->md = md;
+	st->st_suspended_md = md;
+	dh->dh_pcrc.pcrc_func = quick_inI1_outR1_cryptocontinue2;
+	e = start_dh_secret(&dh->dh_pcrc, st
+			    , st->st_import
+			    , RESPONDER
+			    , st->st_oakley.group->group);
+	
+	if(e != STF_SUSPEND) {
+	    if(dh->md != NULL) {
+		complete_state_transition(&qke->md, e);
+		release_md(qke->md);
+	    }
+	}
+	
+    } else {
+	/* but if PFS is off, we don't do a second DH, so
+	 * just call the continuation after making something up.
+	 */
+	struct dh_continuation dh;
+
+	dh.md=md;
+
+	e = quick_inI1_outR1_cryptotail(&dh, NULL);
+
+	if(dh.md != NULL) {
+	    /* note: use qke-> pointer */
+	    complete_state_transition(&qke->md, e);
+	    release_md(qke->md);
+	}
+    }
+    reset_cur_state();
+	
+}
+
+static void
+quick_inI1_outR1_cryptocontinue2(struct pluto_crypto_req_cont *pcrc
+			      , struct pluto_crypto_req *r
+			      , err_t ugh)
+{
+    struct dh_continuation *dh = (struct dh_continuation *)pcrc;
+    struct msg_digest *md = dh->md;
+    struct state *const st = md->st;
+    stf_status e;
+
+    DBG(DBG_CONTROLMORE
+	, DBG_log("quick inI1_outR1: calculated DH, sending R1"));
+
+    /* XXX should check out ugh */
+    passert(ugh == NULL);
+    passert(cur_state == NULL);
+    passert(st != NULL);
+
+    passert(st->st_connection != NULL);
+
+    set_cur_state(st);	/* we must reset before exit */
+    st->st_calculating=FALSE;
+    e = quick_inI1_outR1_cryptotail(dh, r);
+
+    if(dh->md != NULL) {
+	complete_state_transition(&dh->md, e);
+	release_md(dh->md);
     }
 
     reset_cur_state();
@@ -1844,7 +1920,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	    qke->st = st;
 	    qke->isakmp_sa = p1st;
 	    qke->md = md;
-	    qke->qke_pcrc.pcrc_func = quick_inI1_outR1_cryptocontinue;
+	    qke->qke_pcrc.pcrc_func = quick_inI1_outR1_cryptocontinue1;
 
 	    if (st->st_pfs_group != NULL) {
 		e = build_ke(&qke->qke_pcrc, st, st->st_pfs_group, ci);
@@ -1860,10 +1936,10 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 }
 
 static stf_status
-quick_inI1_outR1_cryptotail(struct qke_continuation *qke
+quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 			   , struct pluto_crypto_req *r)
 {
-    struct msg_digest *md = qke->md;
+    struct msg_digest *md = dh->md;
     struct state *st = md->st;
     struct connection *c = st->st_connection;
     struct payload_digest *const id_pd = md->chain[ISAKMP_NEXT_ID];
@@ -1928,24 +2004,19 @@ quick_inI1_outR1_cryptotail(struct qke_continuation *qke
 	}
 
 	/* Nr out */
-	if (!ship_nonce(&st->st_nr, r, &md->rbody
-			, np, "Nr"))
+	if (!justship_nonce(&st->st_nr, &md->rbody, np, "Nr"))
 	    return STF_INTERNAL_ERROR;
     }
     
     /* [ KE ] out (for PFS) */
-    if (st->st_pfs_group != NULL) {
-	stf_status stat;
-
-	if (!ship_KE(st, r, &st->st_gr
-		     , &md->rbody
-		     , id_pd != NULL? ISAKMP_NEXT_ID : ISAKMP_NEXT_NONE))
+    if (st->st_pfs_group != NULL && r!=NULL) {
+	if (!justship_KE(&st->st_gr
+			 , &md->rbody
+			 , id_pd != NULL? ISAKMP_NEXT_ID : ISAKMP_NEXT_NONE))
 	    return STF_INTERNAL_ERROR;
+
+	finish_dh_secret(st, r);
 	
-	stat = perform_dh_secret(st, RESPONDER, st->st_pfs_group->group);
-	if(stat != STF_OK) {
-	    return stat;
-	}
     }
     
     /* [ IDci, IDcr ] out */
