@@ -1279,7 +1279,6 @@ add_connection(const struct whack_message *wm)
 #ifdef KERNEL_ALG
 	if (wm->esp)  
 	{
-		DBG(DBG_CONTROL, DBG_log("from whack: got --esp=%s", wm->esp ? wm->esp: "NULL"));
 		c->alg_info_esp = alg_info_esp_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
 
 		DBG(DBG_CRYPT|DBG_CONTROL, 
@@ -1312,12 +1311,11 @@ add_connection(const struct whack_message *wm)
 	{
 	    c->alg_info_ike = alg_info_ike;
 
-	    DBG(DBG_CONTROL, DBG_log("from whack: got --ike=%s", wm->ike));
 	    DBG(DBG_CRYPT|DBG_CONTROL, 
 		char buf[256];
 		alg_info_snprint(buf, sizeof(buf),
 				 (struct alg_info *)c->alg_info_ike, TRUE);
-		DBG_log("ike string values: %s", buf);
+		DBG_log("ike (phase1) algorihtm values: %s", buf);
 		);
 	    if (c->alg_info_ike) {
 		if (c->alg_info_ike->alg_info_cnt==0) {
