@@ -246,7 +246,7 @@ void show_dnskey(struct secret *s
 
     keyblob = pubkey_to_rfc3110(&pks->u.RSA_private_key.pub, &keybloblen);
 
-    datatot((char *)keyblob, keybloblen, 's', base64, sizeof(base64));
+    datatot(keyblob, keybloblen, 's', base64, sizeof(base64));
 
     switch(rr_type) {
     case ns_t_key:
@@ -300,7 +300,7 @@ void show_confkey(struct secret *s
 
     keyblob = pubkey_to_rfc3110(&pks->u.RSA_private_key.pub, &keybloblen);
 
-    datatot((char *)keyblob, keybloblen, 's', base64, sizeof(base64));
+    datatot(keyblob, keybloblen, 's', base64, sizeof(base64));
 
     printf("\t# rsakey %s\n", 
 	   pks->u.RSA_private_key.pub.keyid);
