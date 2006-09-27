@@ -1018,6 +1018,7 @@ main_outI1(int whack_sock
     {
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 	if(!out_vid(np, &md.rbody, VID_MISC_DPD)) {
+	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
     }
@@ -1040,6 +1041,7 @@ main_outI1(int whack_sock
     if(c->spd.this.xauth_client || c->spd.this.xauth_server) {
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 	if(!out_vid(np, &md.rbody, VID_MISC_XAUTH)) {
+	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
     }
@@ -2629,6 +2631,7 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
 	    release_md(md);
 	}
     }
+    reset_cur_state();
     return;
 }
 
