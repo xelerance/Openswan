@@ -1,3 +1,8 @@
-UMLPOOL
-umlsetup.sh
 *~
+OBJ.*
+*.rej
+*.bak
+TAGS
+UMLPOOL
+testing/.*/OUTPUT/.*
+umlsetup.sh
