@@ -411,11 +411,11 @@ int starter_whack_add_conn (struct starter_config *cfg, struct starter_conn *con
 	msg.addr_family = AF_INET;
 	msg.tunnel_addr_family = AF_INET;
 
-	msg.sa_ike_life_seconds = conn->options[KBF_IKELIFETIME];
-	msg.sa_ipsec_life_seconds = conn->options[KBF_SALIFETIME];
-	msg.sa_rekey_margin = conn->options[KBF_REKEYMARGIN];
-	msg.sa_rekey_fuzz = conn->options[KBF_REKEYFUZZ];
-	msg.sa_keying_tries = conn->options[KBF_KEYINGTRIES];
+	msg.sa_ike_life_seconds = conn->options[KNCF_IKELIFETIME];
+	msg.sa_ipsec_life_seconds = conn->options[KNCF_SALIFETIME];
+	msg.sa_rekey_margin = conn->options[KNCF_REKEYMARGIN];
+	msg.sa_rekey_fuzz = conn->options[KNCF_REKEYFUZZ];
+	msg.sa_keying_tries = conn->options[KNCF_KEYINGTRIES];
 
 	msg.policy = conn->policy;
 

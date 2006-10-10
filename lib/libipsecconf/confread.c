@@ -57,15 +57,15 @@ static void default_values (struct starter_config *cfg)
 	cfg->setup.options[KBF_FRAGICMP] = TRUE;
 	cfg->setup.options[KBF_HIDETOS]  = TRUE;
 	cfg->setup.options[KBF_UNIQUEIDS]= FALSE;
-	cfg->setup.options[KBF_TYPE] = KS_TUNNEL;
+	cfg->conn_default.options[KNCF_TYPE] = KS_TUNNEL;
 
 	cfg->conn_default.policy = POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
 
-	cfg->conn_default.options[KBF_IKELIFETIME] = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
-	cfg->conn_default.options[KBF_SALIFETIME]  = SA_LIFE_DURATION_DEFAULT;
-	cfg->conn_default.options[KBF_REKEYMARGIN] = SA_REPLACEMENT_MARGIN_DEFAULT;
-	cfg->conn_default.options[KBF_REKEYFUZZ]   = SA_REPLACEMENT_FUZZ_DEFAULT;
-	cfg->conn_default.options[KBF_KEYINGTRIES] = SA_REPLACEMENT_RETRIES_DEFAULT;
+	cfg->conn_default.options[KNCF_IKELIFETIME] = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
+	cfg->conn_default.options[KNCF_SALIFETIME]  = SA_LIFE_DURATION_DEFAULT;
+	cfg->conn_default.options[KNCF_REKEYMARGIN] = SA_REPLACEMENT_MARGIN_DEFAULT;
+	cfg->conn_default.options[KNCF_REKEYFUZZ]   = SA_REPLACEMENT_FUZZ_DEFAULT;
+	cfg->conn_default.options[KNCF_KEYINGTRIES] = SA_REPLACEMENT_RETRIES_DEFAULT;
 
 	/* now here is a sticker.. we want it on. But pluto has to be smarter first */
 	cfg->conn_default.options[KBF_OPPOENCRYPT] = FALSE;
@@ -82,7 +82,7 @@ static void default_values (struct starter_config *cfg)
 	cfg->conn_default.right.key_from_DNS_on_demand = TRUE;
 
 
-	cfg->conn_default.options[KBF_AUTO] = STARTUP_NO;
+	cfg->conn_default.options[KNCF_AUTO] = STARTUP_NO;
 	cfg->conn_default.state = STATE_LOADED;
 }
 
@@ -800,10 +800,47 @@ static int load_conn (struct starter_config *cfg
     }
 
     /* translate strings/numbers into conn items */
-    
-    KW_POLICY_FLAG(KBF_TYPE, POLICY_TUNNEL);
-    KW_POLICY_FLAG(KBF_COMPRESS, POLICY_COMPRESS);
-    KW_POLICY_FLAG(KBF_PFS,  POLICY_PFS);
+
+    if(conn->options_set[KNCF_TYPE]) {
+	switch((enum keyword_satype)conn->options[KNCF_TYPE]) {
+	case KS_TUNNEL:
+	    fprintf(stderr, "#setting policy to tunnel\n");
+	    conn->policy |= POLICY_TUNNEL;
+	    conn->policy &= ~POLICY_SHUNT_MASK;
+	    break;
+
+	case KS_TRANSPORT:
+	    fprintf(stderr, "#setting policy to transport\n");
+	    conn->policy &= ~POLICY_TUNNEL;
+	    conn->policy &= ~POLICY_SHUNT_MASK;
+	    break;
+	    
+	case KS_UDPENCAP:
+	    /* no way to specify this yet! */
+	    break;
+
+	case KS_PASSTHROUGH:
+	    conn->policy &= ~(POLICY_ENCRYPT|POLICY_AUTHENTICATE);
+	    conn->policy &= ~POLICY_SHUNT_MASK;
+	    conn->policy |= POLICY_SHUNT_PASS;
+	    break;
+
+	case KS_DROP:
+	    conn->policy &= ~(POLICY_ENCRYPT|POLICY_AUTHENTICATE);
+	    conn->policy &= ~POLICY_SHUNT_MASK;
+	    conn->policy |= POLICY_SHUNT_DROP;
+	    break;
+
+	case KS_REJECT:
+	    conn->policy &= ~(POLICY_ENCRYPT|POLICY_AUTHENTICATE);
+	    conn->policy &= ~POLICY_SHUNT_MASK;
+	    conn->policy |= POLICY_SHUNT_REJECT;
+	    break;
+	}
+    }
+	    
+    KW_POLICY_FLAG(KNCF_COMPRESS, POLICY_COMPRESS);
+    KW_POLICY_FLAG(KNCF_PFS,  POLICY_PFS);
     
     /* reset authby flags */
     if(conn->options_set[KNCF_AUTHBY]) {
@@ -817,9 +854,9 @@ static int load_conn (struct starter_config *cfg
 		    conn->options[KNCF_AUTHBY]);
     }
     
-    KW_POLICY_FLAG(KBF_REKEY, POLICY_DONT_REKEY);
+    KW_POLICY_FLAG(KNCF_REKEY, POLICY_DONT_REKEY);
 
-    KW_POLICY_FLAG(KBF_AGGRMODE, POLICY_AGGRESSIVE);
+    KW_POLICY_FLAG(KNCF_AGGRMODE, POLICY_AGGRESSIVE);
 
     if(conn->strings_set[KSCF_ESP]) {
 	conn->esp = xstrdup(conn->strings[KSCF_ESP]);
@@ -837,8 +874,8 @@ static int load_conn (struct starter_config *cfg
     err += validate_end(conn, &conn->left,  TRUE, perr);
     err += validate_end(conn, &conn->right, FALSE,perr);
 
-    if(conn->options_set[KBF_AUTO]) {
-	conn->desired_state = conn->options[KBF_AUTO];
+    if(conn->options_set[KNCF_AUTO]) {
+	conn->desired_state = conn->options[KNCF_AUTO];
     }
     
     return err;
