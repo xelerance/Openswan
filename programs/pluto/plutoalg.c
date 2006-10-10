@@ -203,9 +203,9 @@ alg_info_snprint_esp(char *buf, int buflen, struct alg_info_esp *alg_info)
 		if (!aklen) 
 			aklen=kernel_alg_esp_auth_keylen(esp_info->esp_aalg_id)*BITS_PER_BYTE;
 		ret=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)_%03d, "
-			     , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP_")
+			     , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP")
 			     , esp_info->esp_ealg_id, eklen
-			     , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC_")
+			     , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
 			     , esp_info->esp_aalg_id, aklen);
 		ptr+=ret;
 		buflen-=ret;
