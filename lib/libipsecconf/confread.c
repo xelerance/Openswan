@@ -303,6 +303,12 @@ static int validate_end(struct starter_conn *conn_st
 
 	er = ttoaddr(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
 	if (er) ERR_FOUND("bad addr %s=%s [%s]", leftright, end->strings[KNCF_IP], er);
+        if(end->id == NULL) {
+            char idbuf[ADDRTOT_BUF];
+            addrtot(&end->addr, 0, idbuf, sizeof(idbuf));
+
+            end->id=clone_str(idbuf, "end if");
+        }
 	break;
 	
     case KH_OPPO:
