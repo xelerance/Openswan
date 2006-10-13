@@ -38,3 +38,4 @@ skiptest lib-ultoa incomplete
 skiptest lib-ultot incomplete
 libtest biglset	good
 
+libtest algparse good
