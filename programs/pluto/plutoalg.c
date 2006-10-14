@@ -287,6 +287,8 @@ parser_init_ike(struct parser_context *p_ctx)
     p_ctx->ealg_getbyname=ealg_getbyname_ike;
     p_ctx->aalg_getbyname=aalg_getbyname_ike;
     p_ctx->modp_getbyname=modp_getbyname_ike;
+    p_ctx->ealg_permit=TRUE;
+    p_ctx->aalg_permit=TRUE;
 }
 
 struct alg_info_ike *

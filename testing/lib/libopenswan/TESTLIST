@@ -39,3 +39,4 @@ skiptest lib-ultot incomplete
 libtest biglset	good
 
 libtest algparse good
+libtest ikeparse good
