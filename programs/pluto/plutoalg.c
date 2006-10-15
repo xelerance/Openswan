@@ -257,7 +257,7 @@ alg_info_snprint_ike(char *buf, int buflen, struct alg_info_ike *alg_info)
 		if (!aklen) 
 		    aklen=hash_desc->hash_digest_len * BITS_PER_BYTE;
 		ret=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)_%03d-%d, "
-			     , enum_name(&esp_transformid_names, ike_info->ike_ealg)+sizeof("ESP")
+			     , enum_name(&oakley_enc_names, ike_info->ike_ealg)+sizeof("ESP")
 			     , ike_info->ike_ealg, eklen
 			     , enum_name(&auth_alg_names, ike_info->ike_halg)+sizeof("AUTH_ALGORITHM_HMAC")
 			     , ike_info->ike_halg, aklen
