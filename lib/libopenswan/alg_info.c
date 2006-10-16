@@ -792,7 +792,7 @@ alg_info_ah_create_from_str (const char *alg_str
 	return NULL;
     }
 
-    alg_info_esp->alg_info_protoid=PROTO_IPSEC_ESP;
+    alg_info_esp->alg_info_protoid=PROTO_IPSEC_AH;
     ret=alg_info_parse_str((struct alg_info *)alg_info_esp
 			   , esp_buf, err_p
 			   , parser_init_ah
@@ -865,10 +865,28 @@ alg_info_snprint(char *buf, int buflen
 	{
 	    struct alg_info_esp *alg_info_esp=(struct alg_info_esp *)alg_info;
 	    ALG_INFO_ESP_FOREACH(alg_info_esp, esp_info, cnt) {
-		np=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d), "
-			    , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP")
-			    , esp_info->esp_ealg_id
-			    , (int)esp_info->esp_ealg_keylen
+		np=snprintf(ptr, buflen, "%s(%d), "
+			    , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
+			    , esp_info->esp_aalg_id);
+		ptr+=np;
+		buflen-=np;
+		if(buflen<0) goto out;
+	    }
+	    if (alg_info_esp->esp_pfsgroup) {
+		np=snprintf(ptr, buflen, "; pfsgroup=%d; "
+			    , alg_info_esp->esp_pfsgroup);
+		ptr+=np;
+		buflen-=np;
+		if(buflen<0) goto out;
+	    }
+	    break;
+	}
+
+    case PROTO_IPSEC_AH: 
+	{
+	    struct alg_info_esp *alg_info_esp=(struct alg_info_esp *)alg_info;
+	    ALG_INFO_ESP_FOREACH(alg_info_esp, esp_info, cnt) {
+		np=snprintf(ptr, buflen, "%s(%d), "
 			    , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
 			    , esp_info->esp_aalg_id);
 		ptr+=np;
@@ -889,9 +907,8 @@ alg_info_snprint(char *buf, int buflen
 	if(permitike) {
 	    ALG_INFO_IKE_FOREACH((struct alg_info_ike *)alg_info, ike_info, cnt) {
 		np=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)-%d, "
-			    , enum_name(&esp_transformid_names, ike_info->ike_ealg)+sizeof("ESP")
-			    , ike_info->ike_ealg
-			    , (int)ike_info->ike_eklen
+			    , enum_name(&oakley_enc_names, ike_info->ike_ealg)+sizeof("OAKLEY")
+			    , ike_info->ike_ealg, (int)ike_info->ike_eklen
 			    , enum_name(&auth_alg_names, ike_info->ike_halg)+sizeof("AUTH_ALGORITHM_HMAC")
 			    , ike_info->ike_halg
 			    , ike_info->ike_modp);
