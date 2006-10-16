@@ -450,17 +450,27 @@ kernel_alg_db_add(struct db_context *db_ctx
 	if(policy & POLICY_ENCRYPT) {
 	    /*	open new transformation */
 	    db_trans_add(db_ctx, ealg_i);
-	}
 
-	/* add ESP auth attr */
-	db_attr_add_values(db_ctx, 
-			   AUTH_ALGORITHM, esp_info->esp_aalg_id);
+	    /* add ESP auth attr */
+	    db_attr_add_values(db_ctx, 
+			       AUTH_ALGORITHM, esp_info->esp_aalg_id);
 
-	/*	add keylegth if specified in esp= string */
-	if (esp_info->esp_ealg_keylen) {
+	    /*	add keylegth if specified in esp= string */
+	    if (esp_info->esp_ealg_keylen) {
 		db_attr_add_values(db_ctx, 
-				KEY_LENGTH, esp_info->esp_ealg_keylen);
+				   KEY_LENGTH, esp_info->esp_ealg_keylen);
+	    }
+
+	} else if(policy & POLICY_AUTHENTICATE) {
+	    /*	open new transformation */
+	    db_trans_add(db_ctx, aalg_i);
+
+	    /* add ESP auth attr */
+	    db_attr_add_values(db_ctx, 
+			       AUTH_ALGORITHM, esp_info->esp_aalg_id);
+
 	}
+
 	return TRUE;
 }
 
@@ -725,6 +735,7 @@ kernel_alg_makedb(lset_t policy, struct alg_info_esp *ei, bool logit)
     }
     
     dbnew=kernel_alg_db_new(ei, policy, logit);
+
     if(!dbnew) {
 	DBG(DBG_CONTROL, DBG_log("failed to translate esp_info to proposal, returning empty"));
 	return NULL;
