@@ -1280,7 +1280,15 @@ add_connection(const struct whack_message *wm)
 	if (wm->esp)  
 	{
 		DBG(DBG_CONTROL, DBG_log("from whack: got --esp=%s", wm->esp ? wm->esp: "NULL"));
-		c->alg_info_esp = alg_info_esp_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
+
+		if(c->policy & POLICY_ENCRYPT) {
+		    c->alg_info_esp = alg_info_esp_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
+		} else if(c->policy & POLICY_AUTHENTICATE) {
+		    c->alg_info_esp = alg_info_ah_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
+		} else {
+		    loglog(RC_NOALGO, "Can only do AH, or ESP, not AH+ESP\n");
+		    return;
+		}
 
 		DBG(DBG_CRYPT|DBG_CONTROL, 
 			static char buf[256]="<NULL>";
@@ -2160,9 +2168,9 @@ initiate_connection(const char *name, int whackfd
 	     */
 	    c->policy |= POLICY_UP;
 
-	    if(c->policy & POLICY_ENCRYPT) {
+	    if(c->policy & (POLICY_ENCRYPT|POLICY_AUTHENTICATE)) {
 		struct alg_info_esp *alg = c->alg_info_esp;
-		struct db_sa *phase2_sa = kernel_alg_makedb(alg, TRUE);
+		struct db_sa *phase2_sa = kernel_alg_makedb(c->policy, alg, TRUE);
 		
 		if(alg != NULL && phase2_sa == NULL) {
 		    whack_log(RC_NOALGO, "can not initiate: no acceptable kernel algorithms loaded");
