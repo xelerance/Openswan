@@ -148,11 +148,6 @@ out_sa(pb_stream *outs
 	    return FALSE;
 	}
     } else {
-	char b2[256];
-	alg_info_snprint_phase2(b2, sizeof(b2)
-		, (struct alg_info_esp *)st->st_connection->alg_info_esp);
-	openswan_log("phase 2 proposal: %s\n", b2);
-
 	revised_sadb=kernel_alg_makedb(st->st_connection->policy
 				       , st->st_connection->alg_info_esp
 				       , TRUE);

@@ -196,6 +196,8 @@ alg_info_snprint_esp(char *buf, int buflen, struct alg_info_esp *alg_info)
 	struct esp_info *esp_info;
 	int cnt;
 	int eklen, aklen;
+	const char *sep="";
+
 	ptr=buf;
 
 	buf[0]=0; strncat(buf, "none", buflen);
@@ -218,7 +220,8 @@ alg_info_snprint_esp(char *buf, int buflen, struct alg_info_esp *alg_info)
 	    if (!aklen) 
 		aklen=kernel_alg_esp_auth_keylen(esp_info->esp_aalg_id)*BITS_PER_BYTE;
 	    
-	    ret=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)_%03d, "
+	    ret=snprintf(ptr, buflen, "%s%s(%d)_%03d-%s(%d)_%03d"
+			 , sep
 			 , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP")
 			 , esp_info->esp_ealg_id, eklen
 			 , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
@@ -226,6 +229,8 @@ alg_info_snprint_esp(char *buf, int buflen, struct alg_info_esp *alg_info)
 	    ptr+=ret;
 	    buflen-=ret;
 	    if (buflen<0) break;
+
+	    sep = ", ";
 	}
 	return ptr-buf;
 }
@@ -242,6 +247,8 @@ alg_info_snprint_ah(char *buf, int buflen, struct alg_info_esp *alg_info)
 	struct esp_info *esp_info;
 	int cnt;
 	int aklen;
+	const char *sep="";
+
 	ptr=buf;
 
 	buf[0]=0; strncat(buf, "none", buflen);
@@ -257,12 +264,15 @@ alg_info_snprint_ah(char *buf, int buflen, struct alg_info_esp *alg_info)
 	    if (!aklen) 
 		aklen=kernel_alg_esp_auth_keylen(esp_info->esp_aalg_id)*BITS_PER_BYTE;
 	    
-	    ret=snprintf(ptr, buflen, "%s(%d)_%03d, "
+	    ret=snprintf(ptr, buflen, "%s%s(%d)_%03d"
+			 , sep
 			 , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
 			 , esp_info->esp_aalg_id, aklen);
 	    ptr+=ret;
 	    buflen-=ret;
 	    if (buflen<0) break;
+
+	    sep = ", ";
 	}
 	return ptr-buf;
 }
@@ -270,8 +280,6 @@ alg_info_snprint_ah(char *buf, int buflen, struct alg_info_esp *alg_info)
 int
 alg_info_snprint_phase2(char *buf, int buflen, struct alg_info_esp *alg_info)
 {
-    DBG_log("phase2 protoid=%d\n", alg_info->alg_info_protoid);
-
     switch(alg_info->alg_info_protoid) {
     case PROTO_IPSEC_ESP:
 	return alg_info_snprint_esp(buf, buflen, alg_info);
