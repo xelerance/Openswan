@@ -163,7 +163,7 @@ kernel_alg_esp_enc_ok(int alg_id, unsigned int key_len,
 	} 
 
 out:
-	if (!ugh) {
+	if (!ugh && alg_p != NULL) {
 		DBG(DBG_KLIPS, 
 			DBG_log("kernel_alg_esp_enc_ok(%d,%d): "
 				"alg_id=%d, "
