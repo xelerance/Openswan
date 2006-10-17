@@ -195,8 +195,9 @@ emit_subnet_id(ip_subnet *net
  */
 static void
 compute_proto_keymat(struct state *st
-, u_int8_t protoid
-, struct ipsec_proto_info *pi)
+		     , u_int8_t protoid
+		     , struct ipsec_proto_info *pi
+		     , const char *satypename)
 {
     size_t needed_len; /* bytes of keying material needed */
 
@@ -349,17 +350,18 @@ compute_proto_keymat(struct state *st
     }
 
     DBG(DBG_CRYPT,
-	DBG_dump("KEYMAT computed:\n", pi->our_keymat, pi->keymat_len);
-	DBG_dump("Peer KEYMAT computed:\n", pi->peer_keymat, pi->keymat_len));
+	DBG_log("%s KEYMAT\n",satypename);
+	DBG_dump("  KEYMAT computed:\n", pi->our_keymat, pi->keymat_len);
+	DBG_dump("  Peer KEYMAT computed:\n", pi->peer_keymat, pi->keymat_len));
 }
 
 static void
 compute_keymats(struct state *st)
 {
     if (st->st_ah.present)
-	compute_proto_keymat(st, PROTO_IPSEC_AH, &st->st_ah);
+	compute_proto_keymat(st, PROTO_IPSEC_AH, &st->st_ah, "AH");
     if (st->st_esp.present)
-	compute_proto_keymat(st, PROTO_IPSEC_ESP, &st->st_esp);
+	compute_proto_keymat(st, PROTO_IPSEC_ESP, &st->st_esp, "ESP");
 }
 
 /* Decode the variable part of an ID packet (during Quick Mode).
