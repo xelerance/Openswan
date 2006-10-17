@@ -283,6 +283,12 @@ compute_proto_keymat(struct state *st
 		needed_len = HMAC_SHA1_KEY_LEN;
 		break;
 	    default:
+#ifdef KERNEL_ALG
+		if (kernel_alg_ah_auth_ok(pi->attrs.auth, NULL)) {
+		    needed_len += kernel_alg_ah_auth_keylen(pi->attrs.auth);
+		    break;
+		} 
+#endif
 		bad_case(pi->attrs.transid);
 	    }
 	    break;
