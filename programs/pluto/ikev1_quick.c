@@ -1896,7 +1896,7 @@ quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 	e = start_dh_secret(&dh->dh_pcrc, st
 			    , st->st_import
 			    , RESPONDER
-			    , st->st_oakley.group->group);
+			    , st->st_pfs_group->group);
 	
 	if(e != STF_SUSPEND) {
 	    if(dh->md != NULL) {
@@ -2160,7 +2160,7 @@ quick_inR1_outI2(struct msg_digest *md)
 	return start_dh_secret(&dh->dh_pcrc, st
 			       , st->st_import
 			       , INITIATOR
-			       , st->st_oakley.group->group);
+			       , st->st_pfs_group->group);
     } else {
 	/* just call the tail function */
 	struct dh_continuation dh;
