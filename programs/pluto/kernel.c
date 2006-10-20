@@ -1515,6 +1515,11 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->text_said = text_said;
 	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
 
+#ifdef DIVULGE_KEYS
+	DBG_dump("esp enckey:",  said_next->enckey,  said_next->enckeylen);
+	DBG_dump("esp authkey:", said_next->authkey, said_next->authkeylen);
+#endif
+
 	if(inbound) {
 	    /*
 	     * set corresponding outbound SA. We can do this on
@@ -1593,6 +1598,10 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->reqid = c->spd.reqid;
         said_next->text_said = text_said;
 	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
+
+#ifdef DIVULGE_KEYS
+	DBG_dump("ah authkey:", said_next->authkey, said_next->authkeylen);
+#endif
 
 	if(inbound) {
 	    /*
