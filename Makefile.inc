@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.inc,v 1.116.2.4 2006/04/21 14:49:17 paul Exp $
+# RCSID $Id: Makefile.inc,v 1.116.2.5 2006/05/24 17:33:14 mcr Exp $
 
 
 
@@ -368,16 +368,17 @@ endif
 ARCH := $(shell echo $(ARCH) | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
 
 ifeq ($(OS),)
-OS:=$(shell uname -s | tr 'A-Z' 'a-z')
+OS:=$(shell uname -s)
 endif
+OSCANONICAL:=$(shell echo $OS | tr 'A-Z' 'a-z')
 
 -include ${OPENSWANSRCDIR}/Makefile.ver
 
 # include OS/ARCH specific makefiles, if any.
 # OS=linux,bsd,win2k,mingw32,etc.
 #
--include ${OPENSWANSRCDIR}/packaging/defaults/${OS}
--include ${OPENSWANSRCDIR}/packaging/defaults/${OS}.${ARCH}
+-include ${OPENSWANSRCDIR}/packaging/defaults/${OSCANONICAL}
+-include ${OPENSWANSRCDIR}/packaging/defaults/${OSCANONICAL}.${ARCH}
 
 ifeq ($(USE_OBJDIR),true)
 OBJDIR=OBJ.${OS}.${ARCH}
