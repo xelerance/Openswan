@@ -1,6 +1,6 @@
 
 #
-# RCSID $Id: defconfig,v 1.28 2005/05/11 03:15:42 mcr Exp $
+# RCSID $Id: defconfig,v 1.28.2.1 2006/10/11 18:14:33 paul Exp $
 #
 
 #
@@ -48,6 +48,7 @@ CONFIG_KLIPS_ALG=y
 # Encryption algorithm(s):
 CONFIG_KLIPS_ENC_3DES=y
 CONFIG_KLIPS_ENC_AES=y
+# CONFIG_KLIPS_ENC_NULL=y
 
 # Use CryptoAPI for ALG? - by default, no.
 CONFIG_KLIPS_ENC_CRYPTOAPI=n
@@ -64,6 +65,10 @@ CONFIG_IPSEC_NAT_TRAVERSAL=y
 #
 #
 # $Log: defconfig,v $
+# Revision 1.28.2.1  2006/10/11 18:14:33  paul
+# Add JuanJo Ciarlante's ESP_NULL patches for KLIPS, but leave it disabled
+# per default.
+#
 # Revision 1.28  2005/05/11 03:15:42  mcr
 # 	adjusted makefiles to sanely build modules properly.
 #

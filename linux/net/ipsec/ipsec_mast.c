@@ -14,11 +14,13 @@
  * for more details.
  */
 
-char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.7 2005/04/29 05:10:22 mcr Exp $";
+char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.7.2.1 2006/10/06 21:39:26 paul Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
-#include <linux/config.h>	/* for CONFIG_IP_FORWARD */
+#ifndef AUTOCONF_INCLUDED
+#include <linux/config.h>
+#endif	/* for CONFIG_IP_FORWARD */
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
@@ -1063,6 +1065,11 @@ ipsec_mast_cleanup_devices(void)
 
 /*
  * $Log: ipsec_mast.c,v $
+ * Revision 1.7.2.1  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
  * Revision 1.7  2005/04/29 05:10:22  mcr
  * 	removed from extraenous includes to make unit testing easier.
  *

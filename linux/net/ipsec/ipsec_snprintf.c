@@ -18,7 +18,9 @@
  * Split out from ipsec_proc.c.
  */
 
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -113,6 +115,11 @@ void ipsec_dmp_block(char *s, caddr_t bb, int len)
 /*
  *
  * $Log: ipsec_snprintf.c,v $
+ * Revision 1.3.2.1  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
  * Revision 1.3  2005/04/29 05:10:22  mcr
  * 	removed from extraenous includes to make unit testing easier.
  *

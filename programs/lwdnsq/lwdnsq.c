@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char tncfg_c_version[] = "RCSID $Id: lwdnsq.c,v 1.19 2004/12/02 06:16:19 mcr Exp $";
+char tncfg_c_version[] = "RCSID $Id: lwdnsq.c,v 1.19.8.2 2006/08/16 21:24:13 mcr Exp $";
 
 
 #include <stdio.h>
@@ -28,6 +28,9 @@ char tncfg_c_version[] = "RCSID $Id: lwdnsq.c,v 1.19 2004/12/02 06:16:19 mcr Exp
 #include <signal.h>
 #include <time.h>
 
+#include <arpa/nameser.h>
+#include <lwres/netdb.h>
+
 #include <isc/lang.h>
 #include <isc/magic.h>
 #include <isc/types.h>
@@ -40,6 +43,10 @@ char tncfg_c_version[] = "RCSID $Id: lwdnsq.c,v 1.19 2004/12/02 06:16:19 mcr Exp
 #include <dns/rdatastruct.h>
 #include <lwres/netdb.h>
 #include <lwres/async.h>
+
+#if defined(__CYGWIN__) || (defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
+#define getopt_long_only getopt_long
+#endif
 
 #include "lwdnsq.h"
 
@@ -109,7 +116,7 @@ static void setdebug(dnskey_glob *gs,
 
 
 static int cmdparse(dnskey_glob *gs,
-	     char *cmdline)
+		    char *cmdline)
 {
 	char *argv[256];
 	int   argc;
@@ -139,7 +146,7 @@ static int cmdparse(dnskey_glob *gs,
 	const struct cmd_entry *ce = cmds;
 
 	if(cmdlog != NULL) {
-		fprintf(cmdlog, "%lu|%s\n", time(NULL), cmdline);
+		fprintf(cmdlog, "%lu|%s\n", (unsigned long)time(NULL),cmdline);
 		fflush(cmdlog);
 	}
 
@@ -544,6 +551,26 @@ main(int argc, char *argv[])
 	
 /*
  * $Log: lwdnsq.c,v $
+ * Revision 1.19.8.2  2006/08/16 21:24:13  mcr
+ * fix signed/unsigned char problem.
+ *
+ * Revision 1.19.8.1  2006/08/16 17:29:11  mcr
+ * back ported #public to 2.4 branch for luck in tracking down loop in
+ * lwdnsq. Added some loop checking code as well.
+ *
+ * Revision 1.23  2005/08/26 19:13:48  mcr
+ * 	fixed attempt to write an #ifdef.
+ *
+ * Revision 1.22  2005/08/25 01:24:40  paul
+ * Added darwin target for MacOSX compile. Some additional or changed ifdef's
+ * to make it compile
+ *
+ * Revision 1.21  2005/08/05 17:23:29  mcr
+ * 	adjustment of signed/unsigned issues for gcc4-cygwin.
+ *
+ * Revision 1.20  2005/08/05 01:42:21  mcr
+ * 	getopt_long_only is GNU-ism.
+ *
  * Revision 1.19  2004/12/02 06:16:19  mcr
  * 	fixed long standing bug with async resolver when there was
  * 	more than one outstanding request.

@@ -1,5 +1,29 @@
 Please see docs/KNOWN_BUGS file for more information
 
+v2.4.7
+* Remove direct use of /dev/hw* for random on Linux. It is not guranteed
+  to be secure (FIPS compliant) random [paul]
+* Fix bugs introduced in 2.4.6 using KLIPS and CryptoAPI on 2.6.17.6+
+* Various fixes to lwdnsq. lwresq is now enabled again to allow
+  proper CNAME following [mcr]
+* Extensively Updated the man page for ipsec.conf [paul]
+* Added rootservers to the clear policy [idea by mcr]
+* Fix for pluto to allow NETKEY's ESP_NULL by JuanJo Ciarlante
+* Added ESP_NULL support to KLIPS by JuanJo Ciarlante (disabled per default)
+* Support Fedora style default RSA hostkey [paul]
+* Clarified various log messages
+* Fixes to _startklips and logging cleanup [paul]
+* Extended ipsec verify to complain misconfigured hardware random [paul]
+* Extended ipsec verify to complain about SElinux in enforced mode, until
+  working security policies are known to exist as it breaks with both
+  NETKEY and KLIPS [paul]
+* Cleanup of crypto module modprobing. It is now silent [paul]
+* bugtracker bugs fixed:
+  #474 ASSERTION FAILED at spdb_struct.c:1233: trans->attr_cnt > == 4"
+  #642: ipsec_xmit.c and CONFIG_KLIPS_DEBUG [completed fix]
+  #655: /etc/rc.d/ipsec --status breaks connection
+  #671: oops from __module_get during pfkey_create
+
 v2.4.6
 * Fix for VIA Nehemiah to use /dev/hw_random to generate new rsakey
   (using /dev/random on these chips caused it to block too long)
@@ -11,13 +35,30 @@ v2.4.6
 * Unload KLIPS at shutdown again to prevent lingering IPs on ipsecX,
   also in case KLIPS is inline, and the ipsecX interfaces do not go away,
   remove IP addresses from IP aliases bound to ipsecX devices.
-
+* Fixed typo in ipsec.conf's virtual_private example
+* Improved protocol detection in ipsec_print_ip() [bart]
+* Fixed minimum skb lenght requried for ipsec decompression [bart]
+  (This is probably bug #609)
+* Fix a 64bit bug in compression code [bart]
+* Removing a left over '#else' that split another '#if/#endif' block in two
+  in ipsec_xmit.c [bart]
+* MODULE_PARM has been obsoleted for module_param on 2.6.17+ [paul]
+* skb_linearize API changed in 2.6.18+ [paul]
+* bugtracker bugs fixed:
+  #452: dpdaction=restart doesn't clear or restart quick mode SAs
+  #537: Compilation will fail with kernel 2.6.14 and klips and CONFIG_HIPPI=y
+  #636: KLIPS and vanilla-2.6.17 compilation error
+  #642: ipsec_xmit.c and CONFIG_KLIPS_DEBUG on 2.4 compile issue [partial fix]
+  #647: compile fails with version 2.4.6-rc2 + vanilla kernel linux-2.6.17.6	
+  #631: KLIPS module does not build with 2.6.17-rc6 kernel
+  #646: NATT + IPCOMP fails on rcv in KLIPS [bart]
+        (This is a generic NATT+ESP bug, not just an ipcomp bug)
 v2.4.5
 * Fix for prefering RFC3947 over OSX-workaround by Jacco de Leeuw
 * Fix for openswan as l2tp server behind NAT by Bernd Galonska
 * Fix for compiling + working on SMP (including HyperThreaded) machines
 * Fix for arp_broken_ops relocation in 2.6.16
-* Fix for compiling on 2.6.14 kernels 
+* Fix for compiling on 2.6.14 kernels
 * Fix patching against 2.6.15 kernels (NAT-T Patch)
 * Fix patching against 2.6.14 kernels
 * Fix for strict mode
@@ -41,7 +82,7 @@ v2.4.5
   #454 klips module refcount bug (found by Matthias Haas)
        (prevented klips from unloading on 2.4 kernels)
   #462 updated patch for Openswan and OS X with NAT-T
-  #509 KLIPS compilation fail with kernel-2.6.14.2 
+  #509 KLIPS compilation fail with kernel-2.6.14.2
   #518 Incorrect physical interface MTU detection
   #521 KLIPS module crash for kernel 2.6.12+
   #545 unnecessary warnings from _updown script, remove weird control character.
@@ -60,7 +101,7 @@ v2.4.5
 
 
 v2.4.4
-  #487 ASSERTION FAILED at state.c:120:IS_ISAKMP_ENCRYPTED(isakmp_sa->st_state) 
+  #487 ASSERTION FAILED at state.c:120:IS_ISAKMP_ENCRYPTED(isakmp_sa->st_state)
   (see http://www.openswan.org/niscc2/)
   (proper fix in pluto_constants.h)
 * Fix for kernels having strstr
@@ -76,7 +117,7 @@ v2.4.4
 
 
 v2.4.3
-  #487 ASSERTION FAILED at state.c:120:IS_ISAKMP_ENCRYPTED(isakmp_sa->st_state) 
+  #487 ASSERTION FAILED at state.c:120:IS_ISAKMP_ENCRYPTED(isakmp_sa->st_state)
   (see http://www.openswan.org/niscc2/)
   (incorrect fixed. version not released)
 
@@ -107,7 +148,7 @@ v2.4.0
   #201 pluto not accepting negotiations on port 500 after port floating to 4500
   #249 two default routes confuses scripts
   #261 2 RW's w/DPD behind a NAT kick each other off at rekey time
-  #267 pluto crashes on inbound X.509 roadwarrior 
+  #267 pluto crashes on inbound X.509 roadwarrior
   #269 informational crasher in demux.c
   #301 kernel_netkey.c lists invalid ESP algorithm
   #302 pluto assumes it has 3DES
@@ -186,4 +227,4 @@ v2.1.0
   while travelling.  This is based on Tuomo Soini's Advanced Routing
   patch.
 
-RCSID $Id: CHANGES,v 1.326.2.63 2006/05/02 17:38:35 paul Exp $
+RCSID $Id: CHANGES,v 1.326.2.86 2006/10/19 04:57:08 paul Exp $

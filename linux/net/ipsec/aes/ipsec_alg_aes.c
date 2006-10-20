@@ -21,7 +21,9 @@
  * 	PK:	make XCBC comply with latest draft (keylength)
  *
  */
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 
 /*	
@@ -59,11 +61,19 @@ static int keyminbits=0;
 static int keymaxbits=0;
 #if defined(CONFIG_KLIPS_ENC_AES_MODULE)
 MODULE_AUTHOR("JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>");
+#ifdef module_param
+module_param(debug_aes,int,0600)
+module_param(test_aes,int,0600)
+module_param(excl_aes,int,0600)
+module_param(keyminbits,int,0600)
+module_param(keymaxbits,int,0600)
+#else
 MODULE_PARM(debug_aes, "i");
 MODULE_PARM(test_aes, "i");
 MODULE_PARM(excl_aes, "i");
 MODULE_PARM(keyminbits, "i");
 MODULE_PARM(keymaxbits, "i");
+#endif
 #endif
 
 #if CONFIG_KLIPS_ENC_AES_MAC
@@ -79,7 +89,11 @@ static int auth_id=0;
 #else
 static int auth_id=9;
 #endif
+#ifdef module_param
+module_param(auth_id, int, 0600);
+#else
 MODULE_PARM(auth_id, "i");
+#endif
 #endif
 
 #define ESP_AES			12	/* truely _constant_  :)  */

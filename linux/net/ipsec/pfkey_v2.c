@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2.c,v 1.97.2.7 2006/04/04 11:34:19 ken Exp $
+ * RCSID $Id: pfkey_v2.c,v 1.97.2.10 2006/10/10 20:43:28 paul Exp $
  */
 
 /*
@@ -23,7 +23,9 @@
 #define __NO_VERSION__
 #include <linux/module.h>
 #include <linux/version.h>
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/kernel.h>
 
 #include "openswan/ipsec_param.h"
@@ -84,8 +86,8 @@ extern int sysctl_ipsec_debug_verbose;
 #define SOCKOPS_WRAPPED(name) name
 #endif /* SOCKOPS_WRAPPED */
 
-static rwlock_t pfkey_sock_lock = RW_LOCK_UNLOCKED;
 #ifdef NET_26
+static rwlock_t pfkey_sock_lock = RW_LOCK_UNLOCKED;
 HLIST_HEAD(pfkey_sock_list);
 static DECLARE_WAIT_QUEUE_HEAD(pfkey_sock_wait);
 static atomic_t pfkey_sock_users = ATOMIC_INIT(0);
@@ -114,13 +116,20 @@ DEBUG_NO_STATIC int pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int s
 #endif
 
 struct net_proto_family pfkey_family_ops = {
+#ifdef NETDEV_23
+	.family	= PF_KEY,
+	.create = pfkey_create,
+	.owner  = THIS_MODULE,
+#else
 	PF_KEY,
 	pfkey_create
+#endif
 };
 
 struct proto_ops SOCKOPS_WRAPPED(pfkey_ops) = {
 #ifdef NETDEV_23
 	family:		PF_KEY,
+	owner:		THIS_MODULE,
 	release:	pfkey_release,
 	bind:		sock_no_bind,
 	connect:	sock_no_connect,
@@ -1541,6 +1550,7 @@ cleanup_module(void)
 }
 #endif /* 0 */
 #else /* MODULE */
+struct net_protocol;
 void pfkey_proto_init(struct net_protocol *pro)
 {
 	pfkey_init();
@@ -1549,6 +1559,17 @@ void pfkey_proto_init(struct net_protocol *pro)
 
 /*
  * $Log: pfkey_v2.c,v $
+ * Revision 1.97.2.10  2006/10/10 20:43:28  paul
+ * Add family/create/owner for pfkey_family_ops. This fixes bug #671
+ *
+ * Revision 1.97.2.9  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
+ * Revision 1.97.2.8  2006/07/10 15:56:11  paul
+ * Fix for bug #642 by Bart.
+ *
  * Revision 1.97.2.7  2006/04/04 11:34:19  ken
  * Backport SMP fixes + #ifdef cleanup from #public
  *
@@ -1570,9 +1591,6 @@ void pfkey_proto_init(struct net_protocol *pro)
  *
  * Revision 1.97.2.1  2005/08/27 23:40:00  paul
  * recommited HAVE_SOCK_SECURITY fixes for linux 2.6.13
- *
- * Revision 1.102  2005/09/14 16:37:23  mcr
- * 	fix to compile on 2.4.
  *
  * Revision 1.102  2005/09/14 16:37:23  mcr
  * 	fix to compile on 2.4.

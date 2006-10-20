@@ -8,11 +8,12 @@ The following people have contributed patches to Openswan 2.x
 	Mathieu Lafon <mlafon@arkoon.net> - NAT-T Support
 	Michael Richardson <mcr@xelerance.com> - testing, integration.
 	Nate Carlson - Force NAT-T framework, KLIPS for 2.6, etc...
-	Paul Wouters <paul@xelerance.com> - documentation.
+	Paul Wouters <paul@xelerance.com> - documentation, bugfixes
 	Stephen Bevan <stephen@dino.dnsalias.com> - RFC2409 port selectors
 	Tuomo Soini <tis@foobar.fi>
 	willy@w.ods.org
 	Matthew Galgoci <mgalgoci@redhat.com>
+	Bart Trojanowski <bart@xelerance.com> KLIPS for 2.6 patches
 
 Openswan is a fork of the FreeS/WAN 2.04 codebase.
 Please see the doc/CREDITS.freeswan file from FreeS/WAN for details on
@@ -21,4 +22,4 @@ original work.
 IXIA Communications (http://www.ixiacom.com/) sponsored the cryptographic
 refit in pluto, which permitted Aggressive mode to be incorporated safely.
 
-This file is RCSID $Id: CREDITS,v 1.35 2004/10/12 05:12:56 mcr Exp $
+This file is RCSID $Id: CREDITS,v 1.35.8.1 2006/08/16 21:43:17 paul Exp $

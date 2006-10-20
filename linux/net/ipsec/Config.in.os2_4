@@ -13,7 +13,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Config.in.os2_4,v 1.1 2005/04/05 00:07:20 mcr Exp $
+# RCSID $Id: Config.in.os2_4,v 1.1.2.1 2006/10/11 18:14:33 paul Exp $
 
 comment 'IPsec options (Openswan)'
 
@@ -27,6 +27,7 @@ comment '   IPsec algorithms to include'
 if [ "$CONFIG_KLIPS_ESP" = "y" ]; then
   bool '      3DES encryption algorithm' CONFIG_KLIPS_ENC_3DES
   bool '       AES encryption algorithm' CONFIG_KLIPS_ENC_AES
+  bool '      NULL encryption algorithm (WARN: non-ciphered, use at your own!)' CONFIG_KLIPS_ENC_NULL
 fi
 
 if [ "$CONFIG_KLIPS_AH" = "y" -o "$CONFIG_KLIPS_ESP" = "y" ]; then
@@ -47,6 +48,10 @@ bool '   IPsec Debugging Option' CONFIG_KLIPS_DEBUG
 #
 #
 # $Log: Config.in.os2_4,v $
+# Revision 1.1.2.1  2006/10/11 18:14:33  paul
+# Add JuanJo Ciarlante's ESP_NULL patches for KLIPS, but leave it disabled
+# per default.
+#
 # Revision 1.1  2005/04/05 00:07:20  mcr
 # 	configuration file renamed to not be present in 2.6.
 #

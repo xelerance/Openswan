@@ -18,10 +18,12 @@
  * Split out from ipsec_init.c version 1.70.
  */
 
-char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.39.2.2 2006/02/13 18:48:12 paul Exp $";
+char ipsec_proc_c_version[] = "RCSID $Id: ipsec_proc.c,v 1.39.2.3 2006/10/06 21:39:26 paul Exp $";
 
 
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -1006,6 +1008,11 @@ ipsec_proc_cleanup()
 
 /*
  * $Log: ipsec_proc.c,v $
+ * Revision 1.39.2.3  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
  * Revision 1.39.2.2  2006/02/13 18:48:12  paul
  * Fix by  Ankit Desai <ankit@elitecore.com> for module unloading.
  *

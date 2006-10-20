@@ -18,9 +18,11 @@
  *
  */
 
-char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.104.2.2 2006/04/20 16:33:06 mcr Exp $";
+char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.104.2.4 2006/10/06 21:39:26 paul Exp $";
 
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
@@ -142,7 +144,7 @@ extern int ipsec_sysctl_register(void);
 extern void ipsec_sysctl_unregister(void);
 #endif
 
-#ifdef NET_26
+#if defined(NET_26) || defined(IPSKB_XFRM_TUNNEL_SIZE)
 static inline int
 openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol)
 {
@@ -343,6 +345,15 @@ cleanup_module(void)
 
 /*
  * $Log: ipsec_init.c,v $
+ * Revision 1.104.2.4  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
+ * Revision 1.104.2.3  2006/07/31 15:25:20  paul
+ * Check for NETKEY backport in Debian using IPSKB_XFRM_TUNNEL_SIZE to
+ * determine wether inet_add_protocol needs the protocol argument.
+ *
  * Revision 1.104.2.2  2006/04/20 16:33:06  mcr
  * remove all of CONFIG_KLIPS_ALG --- one can no longer build without it.
  * Fix in-kernel module compilation. Sub-makefiles do not work.

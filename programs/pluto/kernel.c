@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel.c,v 1.232.2.1 2005/10/21 02:50:46 ken Exp $
+ * RCSID $Id: kernel.c,v 1.232.2.2 2006/10/03 01:16:11 paul Exp $
  */
 
 #include <stddef.h>
@@ -2184,7 +2184,7 @@ init_kernel(void)
     switch(kern_interface) {
 #if defined(KERNEL26_SUPPORT)
     case USE_NETKEY:
-	openswan_log("Using Linux 2.6 IPsec interface code on %s"
+	openswan_log("Using NETKEY IPsec interface code on %s"
 		     , kversion);
 	kernel_ops = &linux_kernel_ops;
 	break;

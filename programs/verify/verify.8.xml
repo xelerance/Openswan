@@ -10,7 +10,7 @@
 </refmeta>
 <refnamediv id='name'>
 <refname>ipsec verify</refname>
-<refpurpose>see if FreeSWAN has been installed correctly</refpurpose>
+<refpurpose>see if Openswan has been installed correctly</refpurpose>
 </refnamediv>
 <!-- body begins here -->
 <refsynopsisdiv id='synopsis'>
@@ -31,7 +31,8 @@ pluto not running, and IPsec support not present in kernel
 (or IPsec module not loaded).
 If two or more interfaces are found, it performs checks relevant on an 
 IPsec gateway: whether IP forwarding is allowed, and if so, 
-whether MASQ or NAT rules are in play.</para>
+whether MASQ or NAT rules are in play. It also checks a number of
+kernel internals in /proc for sane values.</para>
 
 <para>In addition, 
 <emphasis remap='I'>verify</emphasis>

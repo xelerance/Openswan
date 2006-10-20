@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char lookup_c_version[] = "@(#) RCSID $Id: lookup.c,v 1.8 2004/12/02 06:16:19 mcr Exp $";
+char lookup_c_version[] = "@(#) RCSID $Id: lookup.c,v 1.8.8.1 2006/08/16 17:29:11 mcr Exp $";
 
 
 #include <stdio.h>
@@ -453,7 +453,8 @@ static void process_step_first(dnskey_glob *gs,
 		if(dl->wantedtype == dns_rdatatype_txt) {
 			/* special treatment for TXT records */
 			unsigned int len, rdatalen, totlen;
-			unsigned char *txtp, *rdata;
+			char *txtp;
+			unsigned char *rdata;
 
 			txtp     = txtbuf;
 			totlen   = 0;
@@ -644,6 +645,13 @@ void process_dns_reply(dnskey_glob *gs)
 	
 /*
  * $Log: lookup.c,v $
+ * Revision 1.8.8.1  2006/08/16 17:29:11  mcr
+ * back ported #public to 2.4 branch for luck in tracking down loop in
+ * lwdnsq. Added some loop checking code as well.
+ *
+ * Revision 1.9  2005/08/05 17:07:42  mcr
+ * 	adjustment of signed/unsigned issues for gcc4-cygwin.
+ *
  * Revision 1.8  2004/12/02 06:16:19  mcr
  * 	fixed long standing bug with async resolver when there was
  * 	more than one outstanding request.

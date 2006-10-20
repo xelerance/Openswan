@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.inc,v 1.116.2.5 2006/05/24 17:33:14 mcr Exp $
+# RCSID $Id: Makefile.inc,v 1.116.2.9 2006/10/19 04:57:08 paul Exp $
 
 
 
@@ -290,9 +290,6 @@ USE_KERNEL26?=true
 # include support for sending Openswan Vendor IDs
 USE_VENDORID?=true
 
-# Use /dev/hwrandom if available (EG: VIA Padlock)
-USE_HWRANDOM?=true
-
 # include aggressive mode authentication system code - both Server and Client.
 # This is off by default, since aggressive mode leads to denial of service
 # attacks.
@@ -325,7 +322,7 @@ USE_SMARTCARD?=false
 
 # should opportunistic encryption be turned on by default?
 # Enabled during testing, but probably turned off in shipping versions.
-USE_OE?=false
+USE_OE?=true
 ifeq ($(USE_OE),false)
 # warning: examples subdirectory is statically defined here
 OE_FLAG=\#Disable Opportunistic Encryption\\ninclude ${FINALCONFDDIR}/examples/no_oe.conf
@@ -368,17 +365,16 @@ endif
 ARCH := $(shell echo $(ARCH) | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
 
 ifeq ($(OS),)
-OS:=$(shell uname -s)
+OS:=$(shell uname -s | tr 'A-Z' 'a-z')
 endif
-OSCANONICAL:=$(shell echo $OS | tr 'A-Z' 'a-z')
 
 -include ${OPENSWANSRCDIR}/Makefile.ver
 
 # include OS/ARCH specific makefiles, if any.
 # OS=linux,bsd,win2k,mingw32,etc.
 #
--include ${OPENSWANSRCDIR}/packaging/defaults/${OSCANONICAL}
--include ${OPENSWANSRCDIR}/packaging/defaults/${OSCANONICAL}.${ARCH}
+-include ${OPENSWANSRCDIR}/packaging/defaults/${OS}
+-include ${OPENSWANSRCDIR}/packaging/defaults/${OS}.${ARCH}
 
 ifeq ($(USE_OBJDIR),true)
 OBJDIR=OBJ.${OS}.${ARCH}

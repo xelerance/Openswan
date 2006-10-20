@@ -62,11 +62,11 @@ void output_transaction_line(dnskey_glob *gs,
 	if(data) {
 		fprintf(gs->cmdproto_out,
 			"%s %ld %d %s %s\n",
-			id, t, ttl, cmd, data);
+			id, (unsigned long)t, ttl, cmd, data);
 	} else {
 		fprintf(gs->cmdproto_out,
 			"%s %ld %d %s\n",
-			id, t, ttl, cmd);
+			id, (unsigned long)t, ttl, cmd);
 	}
 		
 }
@@ -88,8 +88,8 @@ void output_transaction_line_limited(dnskey_glob *gs,
 	}
 
 	fprintf(gs->cmdproto_out,
-			"%s %ld %d %s %.*s\n",
-			id, t, ttl, cmd, max, data);
+		"%s %ld %d %s %.*s\n",
+		id, (unsigned long)t, ttl, cmd, max, data);
 }
 	
 			    
@@ -310,6 +310,10 @@ void lookup_aaaa(dnskey_glob *gs,
 	
 /*
  * $Log: cmds.c,v $
+ * Revision 1.13.22.1  2006/08/16 17:29:11  mcr
+ * back ported #public to 2.4 branch for luck in tracking down loop in
+ * lwdnsq. Added some loop checking code as well.
+ *
  * Revision 1.13  2003/12/04 23:17:56  mcr
  * 	added "key4" command.
  *

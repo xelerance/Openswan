@@ -16,13 +16,14 @@
  * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* $Id: async.c,v 1.7 2005/03/30 16:49:18 ken Exp $ */
+/* $Id: async.c,v 1.7.4.2 2006/09/22 21:10:16 paul Exp $ */
 
 #include <config.h>
 
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include <lwres/lwres.h>
 #include <lwres/net.h>
@@ -158,13 +159,28 @@ lwres_getrrsetbyname_xmit(lwres_context_t *ctx,
 void
 lwres_sanitize_list(lwres_context_t *ctx)
 {
-	volatile struct lwres_async_state *las;
+	int swap;
+	struct lwres_async_state *tortoise;
+	struct lwres_async_state *hare;
 
-	las = ctx->pending;
-	while(las != NULL) {
-	  REQUIRE(las != (volatile struct lwres_async_state *)0xa5a5a5a5);
-	  REQUIRE(las != (volatile struct lwres_async_state *)0x5a5a5a5a);
-	  las=las->next;
+	hare = ctx->pending;
+	tortoise = hare;
+	swap=1;
+	while(hare != NULL) {
+	  REQUIRE(hare != (volatile struct lwres_async_state *)0xa5a5a5a5);
+	  REQUIRE(hare != (volatile struct lwres_async_state *)0x5a5a5a5a);
+	  
+	  hare=hare->next;
+
+	  swap=!swap;
+	  if(swap) {
+		  tortoise=tortoise->next;
+	  }
+
+	  /* if tortoise ever catches up with hare, it's because
+	   * hare has looped him
+	   */
+	  REQUIRE(hare != tortoise);
 	}
 }
 
@@ -248,9 +264,30 @@ lwres_getrrsetbyname_read(struct lwres_async_state **plas,
 	 */
 	las_prev = &ctx->pending;
 	las = ctx->pending;
-	while(las && las->serial != pkt.serial) {
-		las_prev=&las->next;
-		las=las->next;
+
+	{
+		int swap;
+		struct lwres_async_state *tortoise;
+		struct lwres_async_state *hare = las;   /* it's cuter to call it this */
+		tortoise = hare;
+		swap=1;
+		while(hare != NULL && hare->serial != pkt.serial) {
+			REQUIRE(hare != (volatile struct lwres_async_state *)0xa5a5a5a5);
+			REQUIRE(hare != (volatile struct lwres_async_state *)0x5a5a5a5a);
+
+			las_prev=&hare->next;
+			hare=hare->next;
+			swap=!swap;
+			if(swap) {
+				tortoise=tortoise->next;
+			}
+			
+			/* if tortoise ever catches up with hare, it's because
+			 * hare has laped him
+			 */
+			REQUIRE(hare != tortoise);
+		}
+		las = hare;
 	}
 
 	if(las == NULL) {

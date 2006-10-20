@@ -31,7 +31,7 @@ Group: System Environment/Daemons
 Provides: ipsec-userland
 Obsoletes: freeswan superfreeswan super-freeswan
 Requires: ipsec-kernel, iproute >= 2.6.8, gmp
-BuildRequires: gmp-devel bison flex
+BuildRequires: gmp-devel bison flex bind-devel
 Release: %{ourrelease}
 
 %package doc
@@ -100,8 +100,6 @@ cd packaging/redhat
     KERNELSRC=/lib/modules/%{kversion}/build \
 %if %{buildxen}
     ARCH=xen \
-%else
-    ARCH=%{_arch} \
 %endif
     MODULE_DEF_INCLUDE=$FS/packaging/redhat/config-%{_target_cpu}.h \
     MODULE_EXTRA_INCLUDE=$FS/packaging/redhat/extra_%{krelver}.h \

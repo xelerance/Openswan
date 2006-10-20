@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.189.2.3 2005/08/12 01:12:38 ken Exp $
+# RCSID $Id: Makefile,v 1.189.2.4 2006/10/11 16:24:52 paul Exp $
 
 # All of the USE_ and HAVE_ variables are controlled from openswan/Makefile.inc
 
@@ -39,10 +39,6 @@ endif
 # whether or not to enable aggressive mode exchanges.
 ifeq ($(USE_AGGRESSIVE),true)
 AGGRESSIVE=1
-endif
-
-ifeq ($(USE_HWRANDOM),true)
-HW_DEFS+=-DHWRANDOM
 endif
 
 ifeq ($(USE_XAUTH),true)

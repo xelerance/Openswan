@@ -13,8 +13,10 @@
  * for more details.
  */
 
-char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.12.2.1 2006/02/15 05:35:14 paul Exp $";
+char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.12.2.2 2006/10/06 21:39:26 paul Exp $";
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 
 #define __NO_VERSION__
@@ -349,6 +351,11 @@ struct inet_protocol ah_protocol =
 
 /*
  * $Log: ipsec_ah.c,v $
+ * Revision 1.12.2.2  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
  * Revision 1.12.2.1  2006/02/15 05:35:14  paul
  * Patch by  David McCullough <davidm@snapgear.com>
  * If you setup a tunnel without ESP it doesn't work.  It used to work in

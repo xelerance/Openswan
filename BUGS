@@ -16,6 +16,7 @@ list, see http://bugs.openswan.org
   the result is unpredictable. 
 
 * Pluto will not retry if it can not find its key in DNS when it starts.
+  [Paul: is this still true?]
 
 * Installing a new Openswan on top of an old one doesn't update kernel
   configuration options, so if new options are added, you need to start
@@ -49,6 +50,7 @@ list, see http://bugs.openswan.org
   delete/add sequence, which leaves a timing window in which there is no
   route for the destination.  Workarounds are complex; firewalling is
   probably the best countermeasure right now.
+  [Paul: this clearly is no longer valid with 'ip route change']
 
 * Yet another potential leak arises because the PF_KEYv2 replace form of
   addroute command is non-atomic.  There is a possibility for packets to
@@ -83,4 +85,4 @@ list, see http://bugs.openswan.org
   is more than "IPsec-overhead" larger than the MTU. This is to compatible
   with plpmtud (i.e. "PMTUbis") being proposed in the pmtud WG.
 
-This file is RCSID $Id: BUGS,v 1.56.2.3 2005/11/08 18:13:26 ken Exp $
+This file is RCSID $Id: BUGS,v 1.56.2.5 2006/08/16 21:22:09 paul Exp $

@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_doi.c,v 1.304.2.11 2006/04/16 02:24:19 mcr Exp $
+ * RCSID $Id: ipsec_doi.c,v 1.304.2.12 2006/08/11 17:33:57 mcr Exp $
  */
 
 #include <stdio.h>
@@ -282,6 +282,8 @@ send_notification(struct state *sndst, u_int16_t type, struct state *encst,
 	    delete_state(sndst);
 	    return;
 	}
+
+	openswan_DBG_dump("payload malformed after IV", sndst->st_iv, sndst->st_iv_len);
 
 	/*
 	 * do not encrypt notification, since #1 reason for malformed
@@ -1944,7 +1946,7 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	    /* apparently, r is an improvement on c -- replace */
 
 	    openswan_log("switched from \"%s\" to \"%s\"", c->name, r->name);
-	    if (r->kind == CK_TEMPLATE || r->kind == CK_GROUP)
+	    if (r->kind == CK_TEMPLATE /* || r->kind == CK_GROUP */)
 	    {
 		/* instantiate it, filling in peer's ID */
 		r = rw_instantiate(r, &c->spd.that.host_addr,

@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: ipsec_kversion.h,v 1.15.2.8 2006/05/01 14:31:52 mcr Exp $
+ * RCSID $Id: ipsec_kversion.h,v 1.15.2.9 2006/07/29 05:00:40 paul Exp $
  */
 #define	_OPENSWAN_KVERSIONS_H	/* seen it, no need to see it again */
 
@@ -138,6 +138,9 @@
 #define HAVE_SKB_LIST
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,18)
+#define HAVE_NEW_SKB_LINEARIZE
+#endif
 
 #ifdef NET_21
 #  include <linux/in6.h>
@@ -243,6 +246,10 @@
 
 /*
  * $Log: ipsec_kversion.h,v $
+ * Revision 1.15.2.9  2006/07/29 05:00:40  paul
+ * Added HAVE_NEW_SKB_LINEARIZE for 2.6.18+ kernels where skb_linearize
+ * only takes 1 argument.
+ *
  * Revision 1.15.2.8  2006/05/01 14:31:52  mcr
  * FREESWAN->OPENSWAN in #ifdef.
  *

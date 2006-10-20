@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_life.c,v 1.13 2004/07/10 19:11:18 mcr Exp $
+ * RCSID $Id: ipsec_life.c,v 1.13.10.1 2006/10/06 21:39:26 paul Exp $
  *
  */
 
@@ -31,7 +31,9 @@
 
 #define __NO_VERSION__
 #include <linux/module.h>
-#include <linux/config.h>	/* for CONFIG_IP_FORWARD */
+#ifndef AUTOCONF_INCLUDED
+#include <linux/config.h>
+#endif	/* for CONFIG_IP_FORWARD */
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
@@ -212,6 +214,11 @@ ipsec_lifetime_update_soft(struct ipsec_lifetime64 *lifetime,
 	
 /*
  * $Log: ipsec_life.c,v $
+ * Revision 1.13.10.1  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
  * Revision 1.13  2004/07/10 19:11:18  mcr
  * 	CONFIG_IPSEC -> CONFIG_KLIPS.
  *

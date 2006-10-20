@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: vendor.c,v 1.43.2.1 2005/07/26 02:05:10 ken Exp $
+ * RCSID $Id: vendor.c,v 1.43.2.3 2006/08/03 19:18:40 paul Exp $
  */
 
 #include <stdlib.h>
@@ -68,15 +68,19 @@
  *  1f07f70eaa6514d3b0fa96542a500300 (VPN 3000 version 3.0.0)
  *  1f07f70eaa6514d3b0fa96542a500301 (VPN 3000 version 3.0.1)
  *  1f07f70eaa6514d3b0fa96542a500305 (VPN 3000 version 3.0.5)
- *  1f07f70eaa6514d3b0fa96542a500407 (VPN 3000 version 4.0.7)
+ *  1f07f70eaa6514d3b0fa96542a500400 (Cisco VPN Concentrator, version 4.0.0)
+ *  1f07f70eaa6514d3b0fa96542a500407 (Cisco VPN Concentrator, version 4.0.7)
  *  (Can you see the pattern?)
  *  afcad71368a1f1c96b8696fc77570100 (Non-RFC Dead Peer Detection ?)
  *  c32364b3b4f447eb17c488ab2a480a57
+ *  65963c60eacf802220adccf628738746
  *  6d761ddc26aceca1b0ed11fabbb860c4
  *  5946c258f99a1a57b03eb9d1759e0f24 (From a Cisco VPN 3k)
  *  ebbc5b00141d0c895e11bd395902d690 (From a Cisco VPN 3k)
  *  3e984048101e66cc659fd002b0ed3655 (From a Cisco 1800 IOS device)
- *
+ *  4048b7d56ebce88525e7de7f00d6c2d3c0000000 (IKE Fragmentation ?)
+ *  12f5f28c457168a9702d9fe274cc0100 (Cisco Unity)
+
  * Microsoft L2TP (???):
  * (This could be the MSL2TP client, which is a stripped version of SafeNet)
  *
@@ -99,6 +103,9 @@
  *   DSL FW Version: Alcatel, Version 3.9.122)
  * 4485152d18b6bbcd0be8a8469579ddcc
  * 625027749d5ab97f5616c1602765cf480a3b7d0b)
+ *
+ * Nortel (Contivity VPN Switch 1700?)
+ * 424e455300000005
  *
  * Zyxel Zywall 2 / Zywall 30w
  * 625027749d5ab97f5616c1602765cf480a3b7d0b

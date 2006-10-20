@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: whack.c,v 1.144.4.3 2005/07/26 02:11:23 ken Exp $
+ * RCSID $Id: whack.c,v 1.144.4.4 2006/08/11 17:31:44 mcr Exp $
  */
 
 #include <stdio.h>
@@ -341,7 +341,7 @@ enum option_enums {
     OPT_XAUTHNAME,
     OPT_XAUTHPASS,
 
-#   define OPT_LAST OPT_ASYNC	/* last "normal" option */
+#   define OPT_LAST OPT_DELETECRASH	/* last "normal" option */
 
 /* List options */
 
@@ -940,7 +940,7 @@ main(int argc, char **argv)
 	}
 
 	/* per-class option processing */
-	if (0 <= c && c < OPT_LAST)
+	if (0 <= c && c <= OPT_LAST)
 	{
 	    /* OPT_* options get added opts_seen.
 	     * Reject repeated options (unless later code intervenes).
@@ -1780,7 +1780,7 @@ main(int argc, char **argv)
 
     msg.magic = ((opts_seen & ~(LELEM(OPT_SHUTDOWN) | LELEM(OPT_STATUS)))
 		| lst_seen | cd_seen) != LEMPTY
-	    || msg.whack_options
+	    || msg.whack_options 
 	? WHACK_MAGIC : WHACK_BASIC_MAGIC;
 
     /* send message to Pluto */

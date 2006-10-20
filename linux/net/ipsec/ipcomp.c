@@ -14,11 +14,13 @@
  * for more details.
  */
 
-char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.41.2.3 2006/04/20 15:46:58 mcr Exp $";
+char ipcomp_c_version[] = "RCSID $Id: ipcomp.c,v 1.41.2.5 2006/10/06 21:39:26 paul Exp $";
 
 /* SSS */
 
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 
 #define __NO_VERSION__
@@ -80,6 +82,28 @@ static
 void my_zfree(voidpf opaque, voidpf address)
 {
 	kfree(address);
+}
+
+/* 
+ * We use this function because sometimes we want to pass a negative offset
+ * into skb_put(), this does not work on 64bit platforms because long to
+ * unsigned int casting.
+ */
+static inline unsigned char *
+safe_skb_put(struct sk_buff *skb, int extend)
+{
+        unsigned char *ptr;
+
+        if (extend>0) {
+                // increase the size of the packet
+                ptr = skb_put(skb, extend);
+        } else {
+                // shrink the size of the packet
+                ptr = skb->tail;
+                skb_trim (skb, skb->len + extend);
+        }
+
+        return ptr;
 }
 
 struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned int *flags)
@@ -293,9 +317,8 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 	kfree(buffer);
 	
 	/* Update skb length/tail by "unputting" the shrinkage */
-	skb_put(skb,
-		cpyldsz + sizeof(struct ipcomphdr) - pyldsz);
-	
+        safe_skb_put (skb, cpyldsz + sizeof(struct ipcomphdr) - pyldsz);
+
 #ifdef CONFIG_KLIPS_DEBUG
 	if(sysctl_ipsec_debug_ipcomp && sysctl_ipsec_debug_verbose) {
 		__u8 *c;
@@ -523,7 +546,7 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 #endif
 	
 	/* Update skb length/tail by "unputting" the unused data area */
-	skb_put(nskb, -zs.avail_out);
+	safe_skb_put(nskb, -zs.avail_out);
 	
 	ipsec_kfree_skb(skb);
 	
@@ -595,7 +618,7 @@ struct sk_buff *skb_copy_ipcomp(struct sk_buff *skb, int data_growth, int gfp_ma
         /* Set the data pointer */
         skb_reserve(n,skb->data-skb->head);
         /* Set the tail pointer and length */
-        skb_put(n,skb->len+data_growth);
+        safe_skb_put(n,skb->len+data_growth);
         /* Copy the bytes up to and including the ip header */
         memcpy(n->head,
 	       skb->head,

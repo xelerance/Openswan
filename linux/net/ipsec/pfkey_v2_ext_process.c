@@ -13,16 +13,18 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_ext_process.c,v 1.20.2.1 2006/04/20 16:33:07 mcr Exp $
+ * RCSID $Id: pfkey_v2_ext_process.c,v 1.20.2.2 2006/10/06 21:39:26 paul Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_netlink.c.
  */
 
-char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.20.2.1 2006/04/20 16:33:07 mcr Exp $";
+char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.20.2.2 2006/10/06 21:39:26 paul Exp $";
 
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
@@ -856,6 +858,11 @@ errlab:
 
 /*
  * $Log: pfkey_v2_ext_process.c,v $
+ * Revision 1.20.2.2  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
  * Revision 1.20.2.1  2006/04/20 16:33:07  mcr
  * remove all of CONFIG_KLIPS_ALG --- one can no longer build without it.
  * Fix in-kernel module compilation. Sub-makefiles do not work.

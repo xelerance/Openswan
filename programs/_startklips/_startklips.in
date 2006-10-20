@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _startklips.in,v 1.43.4.3 2006/05/09 18:34:34 paul Exp $
+# RCSID $Id: _startklips.in,v 1.43.4.5 2006/10/13 15:12:49 paul Exp $
 
 me='ipsec _startklips'		# for messages
 
@@ -137,8 +137,12 @@ klipsinterface() {
 	else
 		mtu=
 	fi
-	echo "KLIPS $virt on $phys $addr/$mask $type $otheraddr $mtu" | logonly
-
+	if $klips
+	then
+		echo "KLIPS $virt on $phys $addr/$mask $type $otheraddr $mtu" | logonly
+	else
+		echo "NETKEY on $phys $addr/$mask $type $otheraddr $mtu" | logonly
+	fi
 	if $klips
 	then
 		# attach the interface and bring it up
@@ -264,66 +268,67 @@ then
 fi
 if test ! -f $ipsecversion && test ! -f $netkey && modprobe -qn ipsec
 then
-    # statically compiled KLIPS/NETKEY not found; try to load the module
-    modprobe ipsec
+	# statically compiled KLIPS/NETKEY not found; but there seems to be an ipsec module
+	modprobe ipsec 2> /dev/null
 fi
 
-if test ! -f $ipsecversion && test ! -f $netkey
+if test ! -f $ipsecversion && test ! -f $netkey && modprobe -qn af_key
 then
-	modprobe -v af_key
+	# netkey should work then
+	modprobe af_key 2> /dev/null
 fi
-
-if test -f $netkey
+if test ! -f $ipsecversion && test ! -f $netkey 
 then
-	klips=false
-	if test -f $modules
+	echo "ERROR: Failed to load or detect KLIPS and NETKEY"
+	# continuing, because there is another attempt later on with some changed
+	# env settings. Does that actually work?
+	# echo "kernel appears to lack IPsec support (neither CONFIG_KLIPS or CONFIG_NET_KEY are set)"
+	# exit 1
+fi
+# modules shared between klips and netkey
+if test -f $modules
+then
+	# we modprobe hw_random so ipsec verify can complain about not using it
+	modprobe -q hw_random 2> /dev/null
+	# padlock must load before aes module
+	modprobe -q padlock 2> /dev/null
+	# load the most common ciphers/algo's
+	modprobe -q sha256 2> /dev/null
+	modprobe -q sha1 2> /dev/null
+	modprobe -q md5 2> /dev/null
+	modprobe -q des 2> /dev/null
+	modprobe -q aes 2> /dev/null
+
+	if test -f $netkey
 	then
-		modprobe -qv ah4
-		modprobe -qv esp4
-		modprobe -qv ipcomp
+		klips=false
+		modprobe -q ah4 2> /dev/null
+		modprobe -q esp4 2> /dev/null
+		modprobe -q ipcomp 2> /dev/null
 		#  xfrm4_tunnel is needed by ipip and ipcomp
-		modprobe -qv xfrm4_tunnel
+		modprobe -q xfrm4_tunnel 2> /dev/null
 		# xfrm_user contains netlink support for IPsec 
-		modprobe -qv xfrm_user
-		if [ -n "`cat /proc/cpuinfo |grep Nehemiah`" ]
-		then
-			echo "VIA Nehemiah detected, probing for PadLock"
-			modprobe -qv hw_random
-			# padlock must load before aes module
-			modprobe -qv padlock
-		fi
-		# load the most common ciphers/algo's
-		modprobe -qv sha1
-		modprobe -qv md5
-		modprobe -qv des
-		modprobe -qv aes
+		modprobe -q xfrm_user 2> /dev/null
 	fi
-fi
 
-if test ! -f $ipsecversion && $klips
-then
-        if test -r $modules             # kernel does have modules
-        then
+	if test ! -f $ipsecversion && $klips
+	then
 		if [ ! -e /proc/ksyms -a ! -e /proc/kallsyms ]
 		then
 			echo "Broken 2.6 kernel without kallsyms, skipping calcgoo (Fedora rpm?)"
 		else
-                	setmodule
+               		setmodule
 		fi
-                unset MODPATH MODULECONF        # no user overrides!
-                depmod -a >/dev/null 2>&1
-		modprobe -qv hw_random
-		# padlock must load before aes module
-		modprobe -qv padlock
-                modprobe -v ipsec
-        fi
-        if test ! -f $ipsecversion
-        then
-                echo "kernel appears to lack IPsec support (neither CONFIG_KLIPS or CONFIG_NET_KEY are set)"
-                exit 1
-        fi
+               	unset MODPATH MODULECONF        # no user overrides!
+               	depmod -a >/dev/null 2>&1
+               	modprobe -v ipsec
+        	if test ! -f $ipsecversion
+        	then
+                	echo "kernel appears to lack IPsec support (neither CONFIG_KLIPS or CONFIG_NET_KEY are set)"
+                	exit 1
+        	fi
+	fi
 fi
-
 # figure out debugging flags
 case "$debug" in
 '')	debug=none	;;

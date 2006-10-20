@@ -15,9 +15,11 @@
  * for more details.
  */
 
-char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.171.2.7 2006/04/20 16:33:07 mcr Exp $";
+char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.171.2.10 2006/10/06 21:39:26 paul Exp $";
 
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 
 #define __NO_VERSION__
@@ -361,23 +363,24 @@ ipsec_rcv_decap_once(struct ipsec_rcv_state *irs
 
 
 
-
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
-		KLIPS_PRINT(debug_rcv,
-			"klips_debug:ipsec_rcv: "
-			"natt_type=%u tdbp->ips_natt_type=%u : %s\n",
-			irs->natt_type, newipsp->ips_natt_type,
-			(irs->natt_type==newipsp->ips_natt_type)?"ok":"bad");
-		if (irs->natt_type != newipsp->ips_natt_type) {
+		if (proto == IPPROTO_ESP) {
 			KLIPS_PRINT(debug_rcv,
-				    "klips_debug:ipsec_rcv: "
-				    "SA:%s does not agree with expected NAT-T policy.\n",
-				    irs->sa_len ? irs->sa : " (error)");
-			if(irs->stats) {
-				irs->stats->rx_dropped++;
+				"klips_debug:ipsec_rcv: "
+				"natt_type=%u tdbp->ips_natt_type=%u : %s\n",
+				irs->natt_type, newipsp->ips_natt_type,
+				(irs->natt_type==newipsp->ips_natt_type)?"ok":"bad");
+			if (irs->natt_type != newipsp->ips_natt_type) {
+				KLIPS_PRINT(debug_rcv,
+					    "klips_debug:ipsec_rcv: "
+					    "SA:%s does not agree with expected NAT-T policy.\n",
+					    irs->sa_len ? irs->sa : " (error)");
+				if(irs->stats) {
+					irs->stats->rx_dropped++;
+				}
+				ipsec_sa_put(newipsp);
+				return IPSEC_RCV_FAILEDINBOUND;
 			}
-			ipsec_sa_put(newipsp);
-			return IPSEC_RCV_FAILEDINBOUND;
 		}
 #endif		 
 	}
@@ -1403,7 +1406,12 @@ ipsec_rcv(struct sk_buff *skb
 	   twice.
 	*/
 	if (skb_is_nonlinear(skb)) {
-		if (skb_linearize(skb, GFP_ATOMIC) != 0) {
+#ifdef HAVE_NEW_SKB_LINEARIZE
+		if (skb_linearize_cow(skb) != 0)
+#else
+		if (skb_linearize(skb, GFP_ATOMIC) != 0) 
+#endif
+		{
 			goto rcvleave;
 		}
 	}
@@ -1628,7 +1636,12 @@ int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 	   twice.
 	*/
 	if (skb_is_nonlinear(skb)) {
-		if (skb_linearize(skb, GFP_ATOMIC) != 0) {
+#ifdef HAVE_NEW_SKB_LINEARIZE
+		if (skb_linearize_cow(skb) != 0) 
+#else
+		if (skb_linearize(skb, GFP_ATOMIC) != 0) 
+#endif
+		{
 			goto rcvleave;
 		}
 	}
@@ -1695,6 +1708,25 @@ rcvleave:
 
 /*
  * $Log: ipsec_rcv.c,v $
+ * Revision 1.171.2.10  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
+ * Revision 1.171.2.9  2006/07/30 02:09:33  paul
+ * Author: Bart Trojanowski <bart@xelerance.com>
+ * This fixes a NATT+ESP bug in rcv path.
+ *
+ *     We only want to test NATT policy on the ESP packet.  Doing so on the
+ *     bundled SA breaks because the next layer does not know anything about
+ *     NATT.
+ *
+ *     Fix just puts an if(proto == IPPROTO_ESP) around the NATT policy check.
+ *
+ * Revision 1.171.2.8  2006/07/29 05:03:04  paul
+ * Added check for new version of skb_linearize that only takes 1 argument,
+ * for 2.6.18+ kernels.
+ *
  * Revision 1.171.2.7  2006/04/20 16:33:07  mcr
  * remove all of CONFIG_KLIPS_ALG --- one can no longer build without it.
  * Fix in-kernel module compilation. Sub-makefiles do not work.

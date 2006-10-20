@@ -1,5 +1,5 @@
 /*
- *  $Header: /projects/xelerance/MASTER/cvs-master/openswan-2/doc/utils/rfc_pg.c,v 1.1 2002/07/23 18:42:43 mcr Exp $
+ *  $Header: /xelerance/MASTER/cvs-master/openswan-2/doc/utils/rfc_pg.c,v 1.1 2002/07/23 18:42:43 mcr Exp $
  *
  * from 2-nroff.template file.
  *

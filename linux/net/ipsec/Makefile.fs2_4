@@ -15,7 +15,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.fs2_4,v 1.9 2005/05/20 16:47:26 mcr Exp $
+# RCSID $Id: Makefile.fs2_4,v 1.9.2.1 2006/10/19 04:57:08 paul Exp $
 #
 # Note! Dependencies are done automagically by 'make dep', which also
 # removes any old dependencies. DON'T put your own dependencies here
@@ -118,6 +118,10 @@ obj-$(CONFIG_KLIPS_ENC_3DES) += dx86unix.o
 else
 obj-$(CONFIG_KLIPS_ENC_3DES) += des_enc.o
 endif
+
+# ESP_NULL support:
+VPATH+=${KLIPS_TOP}/net/ipsec/null
+obj-$(CONFIG_KLIPS_ENC_NULL)       += ipsec_alg_null.o
 
 obj-y += satot.o
 obj-y += addrtot.o
@@ -244,6 +248,9 @@ tar:
 
 #
 # $Log: Makefile.fs2_4,v $
+# Revision 1.9.2.1  2006/10/19 04:57:08  paul
+# X.509 setup options added to man page.
+#
 # Revision 1.9  2005/05/20 16:47:26  mcr
 # 	added missing routines for 2.4 compilation.
 #

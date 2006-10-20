@@ -22,6 +22,16 @@ if($ENV{'IPSEC_CONFS'}) { $conf=$ENV{'IPSEC_CONFS'} } else { $conf= `ipsec --con
 
 $print_depricacted=0;
 
+# support fedora style default RSA key
+if ( -e "$conf/ipsec.d/hostkey.secrets" )
+{
+ $seckey="$conf/ipsec.d/hostkey.secrets"
+}
+else
+{
+ $seckey="$conf/ipsec.secrets"
+}
+
 # Should we print in colour by default?
 $ctype=`/sbin/consoletype`;
 if ( $ctype && !($ctype eq "serial"))
@@ -221,11 +231,37 @@ sub installstartcheck {
 	if ( -e "/proc/net/ipsec_eroute" || -e "/proc/net/pfkey" ) { $test="1" }
 	errchk "$test";
 
+# This requires KLIPS NAT-T patch > 2.4.x
 #        if ( -e "/proc/net/ipsec_eroute") {
 #        printfun "KLIPS detected, checking for NAT Traversal support";
 #	if ( -e "/proc/net/ipsec/natt" ) { $nattest = "1" }
 #	errchk "$nattest"; 
 #	}
+
+        if ( -e "/selinux/enforce") {
+        printfun "Testing against enforced SElinux mode";
+        open("cat", "/selinux/enforce");
+        if(<cat> == "1")
+            {
+                errchk "";
+                print "\n  SElinux is running in 'enforced' mode. Since no working SElinux\n  policies exist for Openswan, SElinux should be disabled.\n";
+		print "\n  echo \"0\" > /selinux/enforce (or edit /etc/sysconfig/selinux)\n\n";
+            }
+        else { errchk "1"; }
+        }
+
+        if ( -c "/dev/hw_random" || -c "/dev/hwrng" ) {
+        printfun "Hardware RNG detected, testing if used properly";
+        run "pidof rngd";
+        ($processid) = @out;
+        chomp($processid);
+        if( $processid ne ""  ) { errchk "1"; }
+        else {
+                errchk "";
+                print "\n  Hardware RNG is present but 'rngd' is not running.\n  No harware random used!\n\n";
+             }
+        }
+
 
         if ( -e "/proc/net/pfkey") {
         printfun "NETKEY detected, testing for disabled ICMP send_redirects";
@@ -247,8 +283,8 @@ sub installstartcheck {
 	else { errchk "1"; } 
 	}
 
-	printfun "Checking for RSA private key ($conf/ipsec.secrets)";
-	run "ipsec showhostkey --txt 1.1.1.1";
+	printfun "Checking for RSA private key ($seckey)";
+	run "ipsec showhostkey --file $seckey --txt 1.1.1.1";
 	errchk "@out" , "DISABLED";
 	
 	# Wouldn't this test fail if your mucked up your interface definition?
@@ -309,7 +345,7 @@ sub cmdchecks {
     printfun "Checking for 'iptables' command";
     run "which iptables";
     errchk "@out";
-    open("cat","/etc/ipsec.conf");
+    open("cat","$conf/ipsec.conf");
     foreach(grep /crlcheckinterval/,<cat>)
      {
       if(!$curlcheckdone) {
@@ -403,9 +439,9 @@ else
 	tunnelchecks;
 	cmdchecks;
 	# Go find include files and put them all into an array.
-	@configfiles[0] = "/etc/ipsec.conf";
+	@configfiles[0] = "$conf/ipsec.conf";
 	$n=1;
-	open(OE,"grep ^include /etc/ipsec.conf|");
+	open(OE,"grep ^include $conf/ipsec.conf|");
 	while(<OE>) {
 		($include_temp,$configfiles[$n]) = split(" ",$_);
 		$n++;

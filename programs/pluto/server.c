@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: server.c,v 1.109.2.2 2005/11/29 03:02:16 paul Exp $
+ * RCSID $Id: server.c,v 1.109.2.3 2006/07/20 15:36:25 ken Exp $
  */
 
 #include <stdio.h>
@@ -777,7 +777,7 @@ add_entry:
 		    q = alloc_thing(struct iface_port, "struct iface_port");
 		    id = alloc_thing(struct iface_dev, "struct iface_dev");
 
-		    LIST_INSERT_HEAD(&interface_dev, id, id_entry)
+		    LIST_INSERT_HEAD(&interface_dev, id, id_entry);
 
 		    q->ip_dev = id;
 		    id->id_rname = clone_str(ifp->name, "real device name");

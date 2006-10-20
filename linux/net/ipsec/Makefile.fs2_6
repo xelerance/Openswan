@@ -14,7 +14,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.fs2_6,v 1.8.2.1 2006/04/20 16:33:06 mcr Exp $
+# RCSID $Id: Makefile.fs2_6,v 1.8.2.2 2006/10/11 18:14:33 paul Exp $
 #
 # Note! Dependencies are done automagically by 'make dep', which also
 # removes any old dependencies. DON'T put your own dependencies here
@@ -106,6 +106,8 @@ else
 crypto-$(CONFIG_KLIPS_ENC_AES) += aes/aes.o
 endif
 
+crypto-$(CONFIG_KLIPS_ENC_NULL) += null/ipsec_alg_null.o
+
 ipsec-y += ${crypto-y}
 
 ipsec-$(CONFIG_KLIPS_ENC_CRYPTOAPI) += ipsec_alg_cryptoapi.o
@@ -142,6 +144,10 @@ EXTRA_CFLAGS += -DIPCOMP_PREFIX
 
 #
 # $Log: Makefile.fs2_6,v $
+# Revision 1.8.2.2  2006/10/11 18:14:33  paul
+# Add JuanJo Ciarlante's ESP_NULL patches for KLIPS, but leave it disabled
+# per default.
+#
 # Revision 1.8.2.1  2006/04/20 16:33:06  mcr
 # remove all of CONFIG_KLIPS_ALG --- one can no longer build without it.
 # Fix in-kernel module compilation. Sub-makefiles do not work.

@@ -240,6 +240,11 @@ ipsec whack
 .HP
 .ft B
 ipsec whack
+\-\-crash
+\fIaddress\fP]
+.HP
+.ft B
+ipsec whack
 \-\-shutdown
 [\-\-ctlbase\ \c
 \fIpath\fP]
@@ -567,6 +572,11 @@ The status form displays the \fBpluto\fP's internal state.
 The debug form tells \fBpluto\fP to change the selection of debugging output
 ``on the fly''.  The shutdown form tells
 \fBpluto\fP to shut down, deleting all SAs.
+.LP
+The crash option asks pluto to consider a particularly target IP to have
+crashed, and to attempt to restart all connections with that IP address as a
+gateway. In general, you should use Dead Peer Detection to detect this kind
+of situation automatically, but this is not always possible.
 .LP
 Most options are specific to one of the forms, and will be described
 with that form.  There are three options that apply to all forms.

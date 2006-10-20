@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: dnskey.c,v 1.84 2004/11/30 16:34:08 mcr Exp $
+ * RCSID $Id: dnskey.c,v 1.84.10.1 2006/08/11 17:32:53 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -206,11 +206,17 @@ stop_adns(void)
     if (adns_pid != 0)
     {
 	int status;
-	pid_t p = waitpid(adns_pid, &status, 0);
+	pid_t p;
+
+	sleep(1);
+	p = waitpid(adns_pid, &status, WNOHANG);
 
 	if (p == -1)
 	{
 	    log_errno((e, "waitpid for ADNS process failed"));
+
+	    /* get rid of, it might be stuck */
+	    kill(adns_pid, 15);
 	}
 	else if (WIFEXITED(status))
 	{

@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_rcv.h,v 1.28 2005/05/11 00:59:45 mcr Exp $
+ * RCSID $Id: ipsec_rcv.h,v 1.28.2.2 2006/10/06 21:39:26 paul Exp $
  */
 
 #ifndef IPSEC_RCV_H
@@ -37,8 +37,12 @@
 /* struct options; */
 
 #define __NO_VERSION__
-#include <linux/module.h>
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>	/* for CONFIG_IP_FORWARD */
+#endif
+#ifdef CONFIG_MODULES
+#include <linux/module.h>
+#endif
 #include <linux/version.h>
 #include <openswan.h>
 
@@ -140,6 +144,14 @@ extern int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type);
 
 /*
  * $Log: ipsec_rcv.h,v $
+ * Revision 1.28.2.2  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
+ * Revision 1.28.2.1  2006/07/10 15:52:20  paul
+ * Fix for bug #642 by Bart Trojanowski
+ *
  * Revision 1.28  2005/05/11 00:59:45  mcr
  * 	do not call debug routines if !defined KLIPS_DEBUG.
  *

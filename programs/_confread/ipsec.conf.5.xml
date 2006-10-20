@@ -233,9 +233,11 @@ conn snt
 	left=10.11.11.1
 	leftsubnet=10.0.1.0/24
 	leftnexthop=172.16.55.66
+	leftsourceip=10.0.1.1
 	right=192.168.22.1
 	rightsubnet=10.0.2.0/24
 	rightnexthop=172.16.88.99
+	rightsourceip=10.0.2.1
 	keyingtries=%forever
 </emphasis>
 </literallayout> <!-- .fi -->
@@ -374,7 +376,13 @@ policy group file with the same name as the conn.</para>
 (actually, any form acceptable to
 <citerefentry><refentrytitle>ipsec_ttosubnet</refentrytitle><manvolnum>3</manvolnum></citerefentry>);
 if omitted, essentially assumed to be <emphasis remap='I'>left</emphasis><filename>/32</filename>,
-signifying that the left end of the connection goes to the left participant only</para>
+signifying that the left end of the connection goes to the left participant only. If the global option
+<emphasis remap='I'>virtual_private</emphasis> has been set, the special keyword <emphasis remap='I'>vhost:%priv</emphasis>
+can be used to designate the allowed NAT'ed networks this option can take. If one wants to support both the
+allowed virtual_private networks as well as non-NAT'ed connection, this subnet option can be set
+to <emphasis remap='I'>rightsubnet=vhost:%priv, %no</emphasis>. The special value <emphasis remap='I'>%priv</emphasis>
+will be filled in with the network ranges specified in the global option <emphasis remap='I'>virtual_private=</emphasis>
+</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -413,6 +421,22 @@ Relevant only locally, other end need not agree on it.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
+  <term><emphasis remap='B'>leftsourceip</emphasis></term>
+  <listitem>
+<para>the IP address for this host to use when transmitting a packet to the
+other side of this link.  Relevant only locally, the other end need not agree.
+This option is used to make the gateway itself use its internal IP, which is
+part of the leftsubnet, to communicate to the rightsubnet or right. Otherwise,
+it will use its <emphasis remap='B'>nearest</emphasis> IP address, which is
+its public IP address. This option is mostly used when defining subnet-subnet
+connections, so that the gateways can talk to each other and the subnet at
+the other end, without the need to build additional host-subnet, subnet-host
+and host-host tunnels.
+</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
   <term><emphasis remap='B'>leftupdown</emphasis></term>
   <listitem>
 <para>what &ldquo;updown&rdquo; script to run to adjust routing and/or firewalling
@@ -431,55 +455,16 @@ Relevant only locally, other end need not agree on it.</para>
   <varlistentry>
   <term><emphasis remap='B'>leftfirewall</emphasis></term>
   <listitem>
-<para>whether the left participant is doing forwarding-firewalling
-(including masquerading) for traffic from <emphasis remap='I'>leftsubnet</emphasis>,
-which should be turned off (for traffic to the other subnet)
-once the connection is established;
-acceptable values are
-<emphasis remap='B'>yes</emphasis>
-and (the default)
-<emphasis remap='B'>no</emphasis>.
-May not be used in the same connection description with
-<emphasis remap='B'>leftupdown</emphasis>.
-Implemented as a parameter to the default
-<emphasis remap='I'>updown</emphasis>
-script.
-See notes below.
-Relevant only locally, other end need not agree on it.</para>
+<para>This option is obsolete and should not used anymore. </para>
   </listitem>
   </varlistentry>
 </variablelist>
-
-<para>If one or both security gateways are doing forwarding firewalling
-(possibly including masquerading),
-and this is specified using the firewall parameters,
-tunnels established with IPsec are exempted from it
-so that packets can flow unchanged through the tunnels.
-(This means that all subnets connected in this manner must have
-distinct, non-overlapping subnet address blocks.)
-This is done by the default
-<emphasis remap='I'>updown</emphasis>
-script (see
-<citerefentry><refentrytitle>ipsec_pluto</refentrytitle><manvolnum>8</manvolnum></citerefentry>).</para>
-
-<para>The implementation of this makes certain assumptions about firewall setup,
-notably the use of the old
-<emphasis remap='I'>ipfwadm</emphasis>
-interface to the firewall.
-In situations calling for more control,
-it may be preferable for the user to supply his own
-<emphasis remap='I'>updown</emphasis>
-script,
-which makes the appropriate adjustments for his system.</para>
 </refsect2>
 
 <refsect2 id='conn_parameters__automatic_keying'><title>CONN PARAMETERS:  AUTOMATIC KEYING</title>
-<para>The following parameters are relevant only to automatic keying,
-and are ignored in manual keying.
-Unless otherwise noted,
-for a connection to work,
-in general it is necessary for the two ends to agree exactly
-on the values of these parameters.</para>
+<para>The following parameters are relevant for automatic keying, the normal mode of operation
+for IPsec. They are ignored in manual keying. Unless otherwise noted, for a connection to work,
+in general it is necessary for the two ends to agree exactly on the values of these parameters.</para>
 <variablelist remap='TP'>
   <varlistentry>
   <term><emphasis remap='B'>keyexchange</emphasis></term>
@@ -522,7 +507,10 @@ Relevant only locally, other end need not agree on it
 (but in general, for an intended-to-be-permanent connection,
 both ends should use
 <emphasis remap='B'>auto=start</emphasis>
-to ensure that any reboot causes immediate renegotiation).</para>
+to ensure that any reboot causes immediate renegotiation). For roadwarrior
+connections (<emphasis remap='B'>right=%any</emphasis>), it is not known
+where the client will show up, so one has to use <emphasis remap='B'>auto=add</emphasis>
+</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -550,6 +538,66 @@ for either, and
 <emphasis remap='B'>never</emphasis>
 if negotiation is never to be attempted or accepted (useful for shunt-only conns).
 Digital signatures are superior in every way to shared secrets.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><emphasis remap='B'>ike</emphasis></term>
+  <listitem>
+<para>IKE encryption/authentication algorithm to be used
+for the connection (phase 1 aka ISAKMP SA).  The format is
+<emphasis remap='I'>"cipher-hash;modpgroup, cipher-hash;modpgroup, ..."</emphasis>
+Any left out option will be filled in with all allowed default
+options. Multiple proposals are seperated by a comma. If an
+<emphasis remap='B'>ike=</emphasis>
+line is specified, no other received proposals will be accepted.
+Formerly there was a distinction (by using a <emphasis remap='B'>"!"</emphasis> symbol) between
+"strict mode" or not. That mode has been obsoleted. If an <emphasis remap='B'>ike=</emphasis> option is
+specified, the mode is always strict, meaning no other received proposals will be accepted.
+Some examples are
+<emphasis remap='B'>ike=3des-sha1,aes-sha1</emphasis>,
+<emphasis remap='B'>ike=aes</emphasis>,
+<emphasis remap='B'>ike=aes128-md5;modp2048</emphasis>,
+<emphasis remap='B'>ike=3des-md5;modp1024,esp=aes-sha1;modp1536</emphasis> or
+<emphasis remap='B'>ike=modp1536</emphasis>.
+The options must be suitable as a value of
+<citerefentry><refentrytitle>ipsec_spi</refentrytitle><manvolnum>8</manvolnum></citerefentry>'s
+<option>--ike</option> option. The default is to use IKE, and to allow all combinations of:
+<literallayout remap='.nf'><emphasis remap='B'>
+		cipher:			3des or aes
+		hash:			sha1 or md5
+		pfsgroup (DHgroup):	modp1024 or modp1536
+</emphasis></literallayout></para>
+<para>
+If Openswan was compiled with extra INSECURE and BROKEN options, then the des (1des) and null cipher, as
+well as modp768 are available. This turns your VPN into a joke. Do not enable these options.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>esp</emphasis></term>
+  <listitem>
+<para>ESP encryption/authentication algorithm to be used for the connection (phase2 aka IPsec SA).
+The format is identical to the <emphasis remap='B'>ike</emphasis> option listed above.
+The options must be suitable as a value of
+<citerefentry><refentrytitle>ipsec_spi</refentrytitle><manvolnum>8</manvolnum></citerefentry>'s
+<option>--esp</option> option. The default is to use ESP. The default values are the same as for ike=
+Note also that not all ciphers available to the kernel (eg through CryptoAPI) are necessarilly supported here.
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>ah</emphasis></term>
+  <listitem>
+<para>AH authentication algorithm to be used
+for the connection, e.g here.
+<emphasis remap='B'>hmac-md5</emphasis>
+The options must be suitable as a value of
+<citerefentry><refentrytitle>ipsec_spi</refentrytitle><manvolnum>8</manvolnum></citerefentry>'s
+<option>--ah</option>
+option.
+The default is not to use AH. If for some (invalid) reason you still think you need AH, please
+use esp with the null encryption cipher instead. Note also that not all ciphers available to the kernel (eg through CryptoAPI) are necessarilly supported here.
+</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -659,15 +707,74 @@ you likely need to set this to
 <emphasis remap='B'>always.</emphasis></para>
   </listitem>
   </varlistentry>
+
   <varlistentry>
-  <term><emphasis remap='B'>xauth</emphasis></term>
+  <term><emphasis remap='B'>leftxauthserver</emphasis></term>
   <listitem>
-<para>Use XAUTH / Mode Config for this connection.  This uses PAM for authentication
-currently, and it not well documented.  Use the source :)  Acceptable values are
-<emphasis remap='B'>yes</emphasis>
-or 
-<emphasis remap='B'>no</emphasis>
+<para>Left is an XAUTH server. This can use PAM for authentication or md5 passwords
+in <emphasis remap='I'>/etc/ipsec.d/passwd</emphasis>. These are additional credentials
+to verify the user identity, and should not be confused with the XAUTH
+<emphasis remap='B'>group secret</emphasis>, which is just a regular PSK defined in
+<emphasis remap='I'>ipsec.secrets</emphasis>.  The other side of the connection
+should be configured as <emphasis remap='B'>rightxauthclient</emphasis>. XAUTH
+connections cannot rekey, so <emphasis remap='B'>rekey=no</emphasis> should be
+specified in this conn.  For further details on how to compile and use XAUTH, see README.XAUTH.
+Acceptable values are <emphasis remap='B'>yes</emphasis> or <emphasis remap='B'>no</emphasis>
+(the default). 
+</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><emphasis remap='B'>leftxauthclient</emphasis></term>
+  <listitem>
+<para>Left is an XAUTH client. The xauth connection will have to be started
+interactively and cannot be configured using <emphasis remap='B'>auto=start</emphasis>.
+Instead, it has to be started from the commandline using 
+<emphasis remap='I'>ipsec auto --up connname</emphasis>. You will then be prompted
+for the username and password. To setup an XAUTH connection non-interactively, which
+defeats the whole purpose of XAUTH, but is regularly requested by users, it is
+possible to use a whack command - <emphasis remap='I'>ipsec whack  --name baduser --ipsecgroup-xauth --xauthname badusername --xauthpass password --initiate</emphasis>
+The other side of the connection should be configured as <emphasis remap='B'>rightxauthserver</emphasis>.
+Acceptable values are <emphasis remap='B'>yes</emphasis> or <emphasis remap='B'>no</emphasis>
 (the default).</para>
+  </listitem>
+  </varlistentry>
+
+
+  <varlistentry>
+  <term><emphasis remap='B'>leftmodecfgserver</emphasis></term>
+  <listitem>
+<para>Left is a Mode Config server. It can push network configuration to the client.
+Acceptable values are <emphasis remap='B'>yes</emphasis> or <emphasis remap='B'>no</emphasis>
+(the default). 
+</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><emphasis remap='B'>leftmodecfgclient</emphasis></term>
+  <listitem>
+<para>Left is a Mode Config client. It can receive network configuration from the server.
+Acceptable values are <emphasis remap='B'>yes</emphasis> or <emphasis remap='B'>no</emphasis>
+(the default).</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><emphasis remap='B'>forceencaps</emphasis></term>
+  <listitem>
+<para>
+In some cases, for example when ESP packets are filtered or when a broken
+IPsec peer does not properly recognise NAT, it can be useful to force
+RFC-3948 encapsulation.
+<emphasis remap='B'>forceencaps=yes</emphasis> forces the NAT detection
+code to lie and tell the remote peer that RFC-3948 encapsulation (ESP in UDP
+port 4500 packets) is required. For this option to have any effect, the setup section option
+<emphasis remap='B'>nat_traversal=yes</emphasis> needs to be set. 
+Acceptable values are <emphasis remap='B'>yes</emphasis> or <emphasis remap='B'>no</emphasis>
+(the default).
+</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -703,13 +810,24 @@ really only usefull on the server of a Road Warrior config.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
+  <term><emphasis remap='B'>modecfgpull</emphasis></term>
+  <listitem>
+<para>Pull the Mode Config network information from the server.
+Acceptable values are <emphasis remap='B'>yes</emphasis> or <emphasis remap='B'>no</emphasis>
+(the default).
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
   <term><emphasis remap='B'>pfs</emphasis></term>
   <listitem>
 <para>whether Perfect Forward Secrecy of keys is desired on the connection's
 keying channel
 (with PFS, penetration of the key-exchange protocol
 does not compromise keys negotiated earlier);
-acceptable values are
+Since there is no reason to ever refuse PFS, Openswan will allow a connection defined with
+<emphasis remap='B'>pfs=no</emphasis> to use PFS anyway.
+Acceptable values are
 <emphasis remap='B'>yes</emphasis>
 (the default)
 and
@@ -726,7 +844,23 @@ and  must  be previously coordinated with peer.  Possible
 values are: modp1024,  modp1536, modp2048, modp3072 and modp4096. 
 If not specified, it will use same DH group of phase1.
 
-Default value is the same value as Phase1's DH group.
+Default value is the same value as Phase1's DH group.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>aggrmode</emphasis></term>
+  <listitem>
+<para>Use Aggressive Mode instead of Main Mode. Aggressive Mode is less secure,
+and vulnerable to Denial Of Service attacks. It is also vulnerable to brute force
+attacks with software such as <emphasis remap='B'>ikecrack</emphasis>. It should
+not be used, and it should especially not be used with XAUTH and group secrets (PSK).
+If the remote system administrator insists on staying irresponsible, enable this option.</para>
+<para>Aggressive Mode is further limited to only one proposal - there is no room for
+negotation. Therefor it is mandatory for Aggressive Mode connections that both
+<emphasis remap='B'>ike=</emphasis> and <emphasis remap='B'>esp=</emphasis> options are
+specified with exactly one fully specified proposal.
+Acceptable values are <emphasis remap='B'>yes</emphasis> or <emphasis remap='B'>no</emphasis>
+(the default).</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -900,12 +1034,13 @@ have the obvious meanings.</para>
 
 <refsect2 id='conn_parameters__manual_keying'><title>CONN PARAMETERS:  MANUAL KEYING</title>
 <para>The following parameters are relevant only to manual keying,
-and are ignored in automatic keying.
-Unless otherwise noted,
-for a connection to work,
-in general it is necessary for the two ends to agree exactly
-on the values of these parameters.
-A manually-keyed
+and are ignored in automatic keying. It is <emphasis remap='B'> EXTREMELY UNLIKELY</emphasis>
+that you will actually want to use manual keying. It is <emphasis remap='B'>much</emphasis>
+harder to configure then automatic keying, and <emphasis remap='B'>inheritently insecure</emphasis>
+when used for a prolonged time (eg production) due to the complete lack of key renewal, session
+keys or perfect forward secrecy.</para> 
+<para>Unless otherwise noted, for a connection to work, in general it is necessary for the two
+ends to agree exactly on the values of these parameters.  A manually-keyed
 connection must specify at least one of AH or ESP.</para>
 <variablelist remap='TP'>
   <varlistentry>
@@ -951,19 +1086,6 @@ to be acceptable to KLIPS,
 and use of numbers in the range
 <emphasis remap='B'>0x100</emphasis>-<emphasis remap='B'>0xff0</emphasis>
 is recommended)</para>
-  </listitem>
-  </varlistentry>
-  <varlistentry>
-  <term><emphasis remap='B'>esp</emphasis></term>
-  <listitem>
-<para>ESP encryption/authentication algorithm to be used
-for the connection, e.g.
-<emphasis remap='B'>3des-md5-96</emphasis>
-(must be suitable as a value of
-<citerefentry><refentrytitle>ipsec_spi</refentrytitle><manvolnum>8</manvolnum></citerefentry>'s
-<option>--esp</option>
-option);
-default is not to use ESP</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -1021,19 +1143,6 @@ or
 <emphasis remap='B'>spibase</emphasis>;
 typically a hexadecimal number beginning with
 <emphasis remap='B'>0x</emphasis></para>
-  </listitem>
-  </varlistentry>
-  <varlistentry>
-  <term><emphasis remap='B'>ah</emphasis></term>
-  <listitem>
-<para>AH authentication algorithm to be used
-for the connection, e.g.
-<emphasis remap='B'>hmac-md5-96</emphasis>
-(must be suitable as a value of
-<citerefentry><refentrytitle>ipsec_spi</refentrytitle><manvolnum>8</manvolnum></citerefentry>'s
-<option>--ah</option>
-option);
-default is not to use AH</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -1099,8 +1208,9 @@ Here's an example:</para>
 config setup
 	interfaces="ipsec0=eth1 ipsec1=ppp0"
 	klipsdebug=none
-	plutodebug=all
-	manualstart=
+	plutodebug=control
+	nat_traversal=yes
+	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%4:172.16.0.0/12
 </emphasis>
 </literallayout> <!-- .fi -->
 
@@ -1133,8 +1243,9 @@ An explicit value generally starts with ``<emphasis remap='B'>@</emphasis>''.</p
   <varlistentry>
   <term><emphasis remap='B'>interfaces</emphasis></term>
   <listitem>
-<para>virtual and physical interfaces for IPsec to use:
-a single
+<para>This option is for KLIPS and KLIPSNG (mast)  only and will be ignored
+when using NETKEY, Windows or BSD stacks. It specifies the virtual and physical
+interfaces for IPsec to use: a single
 <emphasis remap='I'>virtual</emphasis><emphasis remap='B'>=</emphasis><emphasis remap='I'>physical</emphasis> pair, a (quoted!) list of pairs separated
 by white space, or
 <emphasis remap='B'>%none</emphasis>.
@@ -1157,6 +1268,71 @@ and
   </listitem>
   </varlistentry>
   <varlistentry>
+  <term><emphasis remap='B'>nat_traversal</emphasis></term>
+  <listitem>
+<para>whether to accept/offer to support NAT (NAPT, also known as "IP Masqurade")
+workaround for IPsec. Acceptable values are:
+<emphasis remap='B'>yes</emphasis>
+and
+<emphasis remap='B'>no</emphasis>
+(the default).
+This parameter may eventually become per-connection.</para>
+
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>virtual_private</emphasis></term>
+  <listitem>
+<para>contains the networks that are allowed as subnet= for the remote
+client. In other words, the address ranges that may live behind a NAT
+router through which a client connects.  This value is usually set to
+all the RFC-1918 address space, excluding the space used in the local
+subnet behind the NAT (An IP address cannot live at two places at once).
+IPv4 address ranges are denoted as
+<emphasis remap='I'>%v4:a.b.c.d/mm</emphasis>
+and IPv6 is denoted as
+<emphasis remap='I'>%v6:aaaa::bbbb:cccc:dddd:eeee/mm</emphasis>. One
+can exclude subnets by using the <emphasis remap='B'>!</emphasis>.
+For example, if the VPN server is giving access to 192.168.1.0/24,
+this option should be set to:
+<emphasis remap='I'>virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%4:172.16.0.0/12,%v4:!192.168.1.0/24</emphasis>.
+This parameter is only needed on the server side and not on the client side that resides behind the NAT router, as
+the client will just use its IP address for the inner IP setting.
+This parameter may eventually become per-connection.
+</para>
+
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>crlcheckinterval</emphasis></term>
+  <listitem>
+<para>interval, specified in seconds, after which pluto will verify
+loaded X.509 CRL's for expiration. If any of the CRL's is expired, or
+if they previously failed to get updated, a new attempt at updating the
+CRL is made. The first attempt to update a CRL is started at two times
+the crlcheckinterval. If set to <emphasis remap='B'>0</emphasis>, which
+is also the default value if this option is not specified, CRL updating
+is disabled.
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>strictcrlpolicy</emphasis></term>
+  <listitem>
+<para>if not set, pluto is tolerant about missing or expired X.509 Certificate
+Revocation Lists (CRL's), and will allow peer certificates as long as they
+do not appear on an expired CRL. When this option is enabled, all connections
+with an expired or missing CRL will be denied. Active connections will be
+terminated at rekey time. This setup is more secure, but also dangerous. If
+the CRL is fetched through an IPsec tunnel with a CRL that expired, the
+entire VPN server will be dead in the water until a new CRL is manually
+transferred to the machine (if it allows non-IPsec connections).
+Acceptable values are <emphasis remap='B'>yes</emphasis> or <emphasis remap='B'>no</emphasis>
+(the default).
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
   <term><emphasis remap='B'>forwardcontrol</emphasis></term>
   <listitem>
 <para>whether
@@ -1172,9 +1348,12 @@ For this to have full effect, forwarding must be
 disabled before the hardware interfaces are brought
 up (e.g.,
 <emphasis remap='B'>net.ipv4.ip_forward&nbsp;=&nbsp;0</emphasis>
-in Red Hat 6.x
+in 
 <filename>/etc/sysctl.conf</filename>),
-because IPsec doesn't get control early enough to do that.</para>
+because IPsec doesn't get control early enough to do that. If this option
+is not specified, and subnet-subnet tunnels are configured, then IP
+forwarding should be enabled by the system administrator.
+</para>
 
   </listitem>
   </varlistentry>
@@ -1190,7 +1369,8 @@ or <literal>0</literal>, <literal>1</literal>, <literal>2</literal> (values to s
 <filename>/proc/sys/net/ipv4/conf/PHYS/rp_filter</filename>
 is badly documented; it must be <literal>0</literal> in many cases
 for ipsec to function.
-The default value for the parameter is <literal>0</literal>.</para>
+The default value for the parameter is <literal>0</literal>, that is, to disable
+rp_filter for all interfaces used.</para>
 
   </listitem>
   </varlistentry>
@@ -1220,7 +1400,8 @@ means full output.
 Otherwise only the specified types of output
 (a quoted list, names separated by white space) are enabled;
 for details on available debugging types, see
-<citerefentry><refentrytitle>ipsec_klipsdebug</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+<citerefentry><refentrytitle>ipsec_klipsdebug</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+This KLIPS option has no effect on NETKEY, Windows or BSD stacks.</para>
 
   </listitem>
   </varlistentry>
@@ -1243,6 +1424,14 @@ separated by white space) are enabled;
 for details on available debugging types, see
 <citerefentry><refentrytitle>ipsec_pluto</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
 
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>plutorestartoncrash</emphasis></term>
+  <listitem>
+<para>prevent pluto from restarting after it crashed. This option should only be used when a
+post-mortem of a core file is desired. It prevents pluto from restarting and possibly overwriting 
+an older core file.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -1354,8 +1543,8 @@ acceptable values are
 <emphasis remap='B'>yes</emphasis>
 (the default)
 and
-<emphasis remap='B'>no</emphasis>.</para>
-
+<emphasis remap='B'>no</emphasis>.
+This KLIPS option has no effect on NETKEY, Windows or BSD stacks.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -1368,8 +1557,8 @@ acceptable values are
 <emphasis remap='B'>yes</emphasis>
 (the default)
 and
-<emphasis remap='B'>no</emphasis>.</para>
-
+<emphasis remap='B'>no</emphasis>.  This KLIPS option has no effect
+on NETKEY, Windows or BSD stacks.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -1378,9 +1567,8 @@ and
 <para>whether a particular participant ID should be kept unique,
 with any new (automatically keyed)
 connection using an ID from a different IP address
-deemed to replace all old ones using that ID;
-acceptable values are
-<emphasis remap='B'>yes</emphasis>
+deemed to replace all old ones using that ID.
+Acceptable values are <emphasis remap='B'>yes</emphasis>
 (the default)
 and
 <emphasis remap='B'>no</emphasis>.
@@ -1395,20 +1583,8 @@ almost invariably intended to replace an old one.</para>
   <listitem>
 <para>value that the MTU of the ipsec<emphasis remap='I'>n</emphasis> interface(s) should be set to,
 overriding IPsec's (large) default.
-This parameter is needed only in special situations.</para>
-
-  </listitem>
-  </varlistentry>
-  <varlistentry>
-  <term><emphasis remap='B'>nat_traversal</emphasis></term>
-  <listitem>
-<para>whether to accept/offer to support NAT (NAPT, also known as "IP Masqurade")
-workaround for IPsec. Acceptable values are:
-<emphasis remap='B'>yes</emphasis>
-and
-<emphasis remap='B'>no</emphasis>
-(the default).
-This parameter may eventually become per-connection.</para>
+This parameter is needed only in special situations.
+This KLIPS option has no effect on NETKEY, Windows or BSD stacks.</para>
 
   </listitem>
   </varlistentry>
@@ -1417,7 +1593,12 @@ This parameter may eventually become per-connection.</para>
 
 <refsect1 id='implicit_conns'><title>IMPLICIT CONNS</title>
 <para>The system automatically defines several conns to implement
-default policy groups.  Each can be overridden by explicitly
+default policy groups. These are used to enable the establishing of
+Opportunitic Encryption IPsec tunnels. That is, setting up IPsec tunnels
+with peers you have no pre-arranged configuration with. Opportunistic
+Encryption is currently only supported using the KLIPS or KLIPSNG (mast) stack,
+and should not be enabled when using NETKEY, Windows or BSD stacks.</para>
+<para> Each can be overridden by explicitly
 defining a new conn with the same name.  If the new conn has <emphasis remap='B'>auto=ignore</emphasis>,
 the definition is suppressed.</para>
 

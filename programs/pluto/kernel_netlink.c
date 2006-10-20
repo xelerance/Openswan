@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_netlink.c,v 1.30.2.2 2005/11/13 14:59:57 paul Exp $
+ * RCSID $Id: kernel_netlink.c,v 1.30.2.4 2006/10/03 05:32:55 paul Exp $
  */
 
 #if defined(linux) && defined(KERNEL26_SUPPORT)
@@ -163,7 +163,7 @@ static void init_netlink(void)
     addr.nl_pid = getpid();
     addr.nl_groups = XFRMGRP_ACQUIRE | XFRMGRP_EXPIRE;
     if (bind(netlink_bcast_fd, (struct sockaddr *)&addr, sizeof(addr)) != 0)
-	exit_log_errno((e, "Failed to bind bcast socket in init_netlink()"));
+	exit_log_errno((e, "Failed to bind bcast socket in init_netlink() - Perhaps kernel has no CONFIG_XFRM_USER support"));
 }
 
 /** send_netlink_msg
@@ -626,7 +626,8 @@ netlink_add_sa(const struct kernel_sa *sa, bool replace)
 	attr = (struct rtattr *)((char *)attr + attr->rta_len);
     }
 
-    if (sa->enckeylen)
+    /* Consider ESP_NULL particular case (enckeylen==0) */
+    if (sa->enckeylen || sa->encalg==SADB_EALG_NULL)
     {
 	struct xfrm_algo algo;
 	const char *name;

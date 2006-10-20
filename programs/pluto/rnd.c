@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: rnd.c,v 1.22.8.1 2005/11/24 23:19:13 ken Exp $
+ * RCSID $Id: rnd.c,v 1.22.8.2 2006/10/11 16:24:52 paul Exp $
  */
 
 /* A true random number generator (we hope)
@@ -69,12 +69,7 @@
 
 #ifdef linux
 # define USE_DEV_RANDOM	1
-#ifdef HWRANDOM
-# define RANDOM_PATH    "/dev/hw_random"
-# define RANDOM_PATH_BACKUP "/dev/urandom"
-#else
 # define RANDOM_PATH    "/dev/urandom"
-#endif
 #else
 # ifdef __OpenBSD__
 #  define USE_ARC4RANDOM

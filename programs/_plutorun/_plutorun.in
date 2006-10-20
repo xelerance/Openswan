@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _plutorun.in,v 1.31.2.2 2006/04/21 15:41:45 paul Exp $
+# RCSID $Id: _plutorun.in,v 1.31.2.4 2006/10/11 16:24:52 paul Exp $
 
 me='ipsec _plutorun'		# for messages
 
@@ -185,21 +185,41 @@ then
 fi
 
 IPSEC_SECRETS=${IPSEC_CONFS}/ipsec.secrets
-if test ! -f "${IPSEC_SECRETS}"
+FEDORA_SECRETS=${IPSEC_CONFS}/ipsec.d/hostkey.secrets
+if test ! -f  "${FEDORA_SECRETS}"
 then
-    ( logger -p authpriv.info -t ipsec__plutorun No file ${IPSEC_SECRETS}, generating key.
-      if test -c "/dev/hw_random"
-      then
-       randomdev="/dev/hw_random"
-      else
-       randomdev="/dev/random"
-      fi
-      ipsec newhostkey --quiet --random $randomdev
-      
-      # tell pluto to go re-read the file
-      ipsec auto --rereadsecrets
-      # XXX publish the key somehow?
-    ) &
+	if test ! -f "${IPSEC_SECRETS}" || test -z "`egrep '^: RSA' ${IPSEC_SECRETS}`"
+	then
+		# we need to generate a default hostkey. Do this in a subshell so we don't
+		# block the iniscript if there is no entropy for enough random
+		( 
+		# find the proper secrets file
+		if test ! -f ${IPSEC_SECRETS}
+		then
+			logger -p authpriv.info -t ipsec__plutorun No file ${IPSEC_SECRETS}, generating key.
+			ipsec newhostkey --output ${IPSEC_SECRETS} --quiet
+		else
+			if test -z "`egrep '^: RSA' ${IPSEC_SECRETS}`"
+			then
+				# no default RSA found. perhaps fedora include file?
+				if test -n "`egrep '^include '${IPSEC_CONFS}'/ipsec.d/\*.secrets$' ${IPSEC_SECRETS}`"
+				then
+					# fedora style secret key include
+					if test ! -f ${FEDORA_SECRETS}
+					then
+						logger -p authpriv.info -t ipsec__plutorun No file ${FEDORA_SECRETS}, generating key.
+						ipsec newhostkey --output ${FEDORA_SECRETS} --quiet
+					fi
+				else
+					logger -p authpriv.info -t ipsec__plutorun Unknown default RSA hostkey scheme, not generating a default hostkey
+				fi
+			fi
+		fi
+		# We got a new secret, tell pluto to go re-read the secrets
+		ipsec auto --rereadsecrets
+		# XXX publish the key somehow?
+		) &
+	fi
 fi
 
 

@@ -269,9 +269,11 @@ int ipsec_alg_esp_encrypt(struct ipsec_sa *sa_p, __u8 * idat,
 		    "entering with encalg=%d, ixt_e=%p\n",
 		    sa_p->ips_encalg, ixt_e);
 	if (ixt_e == NULL) {
+#ifdef CONFIG_KLIPS_DEBUG
 	  KLIPS_ERROR(debug_flag,
 		      "klips_debug:ipsec_alg_esp_encrypt: "
 		      "NULL ipsec_alg_enc object\n");
+#endif
 		return -1;
 	}
 	KLIPS_PRINT(debug_flag,
@@ -858,6 +860,17 @@ int ipsec_alg_init(void) {
 		ipsec_3des_init();
 	}
 #endif
+#if defined(CONFIG_KLIPS_ENC_NULL) && CONFIG_KLIPS_ENC_NULL && !defined(CONFIG_KLIPS_ENC_NULL_MODULE) 
+#if defined(CONFIG_KLIPS_ENC_CRYPTOAPI) && CONFIG_KLIPS_ENC_CRYPTOAPI
+#warning "Using built-in null cipher rather than CryptoAPI null cipher"
+#endif	
+#warning "Building with null cipher (ESP_NULL), blame on you :-)"
+	{
+		extern int ipsec_null_init(void);
+		ipsec_null_init();
+	}
+#endif
+
 
 	/* If we are doing CryptoAPI, then init */
 #if defined(CONFIG_KLIPS_ENC_CRYPTOAPI) && CONFIG_KLIPS_ENC_CRYPTOAPI && !defined(CONFIG_KLIPS_ENC_CRYPTOAPI_MODULE)
@@ -1029,6 +1042,7 @@ ipsec_xform_get_info(char *buffer,
  *	symbol problems for old modutils.
  */
 
+#ifdef CONFIG_MODULES
 #ifndef NET_26
 #if 0
 #ifndef EXPORT_SYMBOL_GPL 
@@ -1039,4 +1053,5 @@ ipsec_xform_get_info(char *buffer,
 EXPORT_SYMBOL(register_ipsec_alg);
 EXPORT_SYMBOL(unregister_ipsec_alg);
 EXPORT_SYMBOL(ipsec_alg_test);
+#endif
 #endif

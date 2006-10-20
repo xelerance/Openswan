@@ -1,5 +1,5 @@
 # /etc/ipsec.conf - Openswan IPsec configuration file
-# RCSID $Id: ipsec.conf.in,v 1.15.2.2 2005/11/14 20:10:27 paul Exp $
+# RCSID $Id: ipsec.conf.in,v 1.15.2.6 2006/10/19 03:49:46 paul Exp $
 
 # This file:  @FINALEXAMPLECONFDIR@/ipsec.conf-sample
 #
@@ -12,29 +12,19 @@ version	2.0	# conforms to second version of ipsec.conf specification
 config setup
 	# plutodebug / klipsdebug = "all", "none" or a combation from below:
 	# "raw crypt parsing emitting control klips pfkey natt x509 private"
-	# eg:
-	# plutodebug="control parsing"
+	# eg: plutodebug="control parsing"
 	#
-	# Only enable klipsdebug=all if you are a developer
+	# ONLY enable plutodebug=all or klipsdebug=all if you are a developer !!
 	#
 	# NAT-TRAVERSAL support, see README.NAT-Traversal
-	# nat_traversal=yes
-	# virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%4:172.16.0.0/12
+	nat_traversal=yes
+	# virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12
+	#
+	# enable this if you see "failed to find any available worker"
+	nhelpers=0
 
 # Add connections here
 
-# sample VPN connection
-#conn sample
-#		# Left security gateway, subnet behind it, nexthop toward right.
-#		left=10.0.0.1
-#		leftsubnet=172.16.0.0/24
-#		leftnexthop=10.22.33.44
-#		# Right security gateway, subnet behind it, nexthop toward left.
-#		right=10.12.12.1
-#		rightsubnet=192.168.0.0/24
-#		rightnexthop=10.101.102.103
-#		# To authorize this connection, but not actually start it, 
-#		# at startup, uncomment this.
-#		#auto=start
+# sample VPN connections, see /etc/ipsec.d/examples/
 
 @OE_FLAG@

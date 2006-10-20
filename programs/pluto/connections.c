@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: connections.c,v 1.256.2.7 2005/11/17 01:44:12 mcr Exp $
+ * RCSID $Id: connections.c,v 1.256.2.8 2006/09/04 17:00:01 mcr Exp $
  */
 
 #include <string.h>
@@ -4445,14 +4445,15 @@ show_connections_status(void)
 	/* Note: we display key_from_DNS_on_demand as if policy [lr]KOD */
 	fmt_policy_prio(c->prio, prio);
 	whack_log(RC_COMMENT
-	    , "\"%s\"%s:   policy: %s%s%s; prio: %s; interface: %s; "
+	    , "\"%s\"%s:   policy: %s%s%s; prio: %s; interface: %s; encap: %s;"
 	    , c->name
 	    , instance
 	    , prettypolicy(c->policy)
 	    , c->spd.this.key_from_DNS_on_demand? "+lKOD" : ""
 	    , c->spd.that.key_from_DNS_on_demand? "+rKOD" : ""
 	    , prio
-	    , ifn);
+	    , ifn
+		  ,c->forceencaps ? "udp" : "esp");
 
 	/* slightly complicated stuff to avoid extra crap */
 	if(c->dpd_timeout > 0 || DBGP(DBG_DPD)) {

@@ -12,16 +12,18 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_parser.c,v 1.134.2.1 2006/05/01 14:37:25 mcr Exp $
+ * RCSID $Id: pfkey_v2_parser.c,v 1.134.2.2 2006/10/06 21:39:26 paul Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_netlink.c.
  */
 
-char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.134.2.1 2006/05/01 14:37:25 mcr Exp $";
+char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.134.2.2 2006/10/06 21:39:26 paul Exp $";
 
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
@@ -2891,6 +2893,11 @@ pfkey_msg_interp(struct sock *sk, struct sadb_msg *pfkey_msg,
 
 /*
  * $Log: pfkey_v2_parser.c,v $
+ * Revision 1.134.2.2  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
  * Revision 1.134.2.1  2006/05/01 14:37:25  mcr
  * ip_chk_addr -> inet_addr_type for more direct 2.4/2.6 support.
  *

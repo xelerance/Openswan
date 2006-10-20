@@ -15,11 +15,13 @@
  * for more details.
  */
 
-char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.20.2.4 2006/04/20 16:33:07 mcr Exp $";
+char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.20.2.8 2006/10/06 21:39:26 paul Exp $";
 
 #define __NO_VERSION__
 #include <linux/module.h>
-#include <linux/config.h>	/* for CONFIG_IP_FORWARD */
+#ifndef AUTOCONF_INCLUDED
+#include <linux/config.h>
+#endif	/* for CONFIG_IP_FORWARD */
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
@@ -283,6 +285,12 @@ ipsec_print_ip(struct iphdr *ip)
 		printk(" (TCP)");
 	if(ip->protocol == IPPROTO_ICMP)
 		printk(" (ICMP)");
+	if(ip->protocol == IPPROTO_ESP)
+		printk(" (ESP)");
+	if(ip->protocol == IPPROTO_AH)
+		printk(" (AH)");
+	if(ip->protocol == IPPROTO_COMP)
+		printk(" (COMP)");
 	printk(" chk:%d", ntohs(ip->check));
 	addrtoa(*((struct in_addr*)(&ip->saddr)), 0, buf, sizeof(buf));
 	printk(" saddr:%s", buf);
@@ -552,8 +560,6 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 		tailroom += blocksize != 1 ?
 			((blocksize - ((ixs->pyldsz + 2) % blocksize)) % blocksize) + 2 :
 			((4 - ((ixs->pyldsz + 2) % 4)) % 4) + 2;
-#else
-		tailroom += ((8 - ((ixs->pyldsz + 2 * sizeof(unsigned char)) % 8)) % 8) + 2;
 		tailroom += authlen;
 		break;
 #endif /* CONFIG_KLIPS_ESP */
@@ -640,10 +646,11 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 		
 		dat[len - authlen - 1] = ixs->iph->protocol;
 		ixs->iph->protocol = IPPROTO_ESP;
-		
+#ifdef CONFIG_KLIPS_DEBUG
 		if(debug_tunnel & DB_TN_ENCAP) {
 		        dmp("pre-encrypt", dat, len);
 		}
+#endif
 
 		/*
 		 * Do all operations here:
@@ -1690,10 +1697,11 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 			    "head,tailroom: %d,%d after allocation\n",
 			    skb_headroom(ixs->skb), skb_tailroom(ixs->skb));
 	}
-		
+#ifdef CONFIG_KLIPS_DEBUG		
 	if(debug_tunnel & DB_TN_ENCAP) {
 		ipsec_print_ip(ixs->iph);
 	}
+#endif
 
 	/*
 	 * Apply grouped transforms to packet
@@ -1702,10 +1710,11 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 		enum ipsec_xmit_value encap_stat = IPSEC_XMIT_OK;
 
 		encap_stat = ipsec_xmit_encap_once(ixs);
-
+#ifdef CONFIG_KLIPS_DEBUG
 		if(debug_tunnel & DB_TN_ENCAP) {
 			ipsec_print_ip(ixs->iph);
 		}
+#endif
 
 		if(encap_stat != IPSEC_XMIT_OK) {
 			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
@@ -1728,6 +1737,22 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 
 /*
  * $Log: ipsec_xmit.c,v $
+ * Revision 1.20.2.8  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
+ * Revision 1.20.2.7  2006/08/24 03:02:01  paul
+ * Compile fixes for when CONFIG_KLIPS_DEBUG is not set. (bug #642)
+ *
+ * Revision 1.20.2.6  2006/07/07 22:09:49  paul
+ * From: Bart Trojanowski <bart@xelerance.com>
+ * Removing a left over '#else' that split another '#if/#endif' block in two.
+ *
+ * Revision 1.20.2.5  2006/07/07 15:43:17  paul
+ * From: Bart Trojanowski <bart@xelerance.com>
+ * improved protocol detection in ipsec_print_ip() -- a debug aid.
+ *
  * Revision 1.20.2.4  2006/04/20 16:33:07  mcr
  * remove all of CONFIG_KLIPS_ALG --- one can no longer build without it.
  * Fix in-kernel module compilation. Sub-makefiles do not work.

@@ -3,5 +3,27 @@
 #
 # See @FINALDOCDIR@/policygroups.html for details.
 #
-# $Id: clear.in,v 1.4 2003/02/17 02:22:15 mcr Exp $
+# $Id: clear.in,v 1.4.30.2 2006/10/19 17:43:56 paul Exp $
 #
+#
+#	Michael's idea: Always have ROOT NAMESERVERS in the clear.
+#	It will make OE work much better on machines running caching
+#	resolvers.
+#
+#	Based on: http://www.internic.net/zones/named.root
+#       This file holds the information on root name servers needed to
+#       last update:    Jan 29, 2004
+#       related version of root zone:   2004012900
+198.41.0.4/32
+192.228.79.201/32
+192.33.4.12/32
+128.8.10.90/32
+192.203.230.10/32
+192.5.5.241/32
+192.112.36.4/32
+128.63.2.53/32
+192.36.148.17/32
+192.58.128.30/32
+193.0.14.129 /32
+198.32.64.12/32
+202.12.27.33/32

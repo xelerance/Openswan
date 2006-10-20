@@ -13,8 +13,10 @@
  * for more details.
  */
 
-char ipsec_ipcomp_c_version[] = "RCSID $Id: ipsec_ipcomp.c,v 1.5 2005/04/29 05:10:22 mcr Exp $";
+char ipsec_ipcomp_c_version[] = "RCSID $Id: ipsec_ipcomp.c,v 1.5.2.2 2006/10/06 21:39:26 paul Exp $";
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 
 #define __NO_VERSION__
@@ -77,7 +79,7 @@ ipsec_rcv_ipcomp_checks(struct ipsec_rcv_state *irs,
 {
 	int ipcompminlen;
 
-	ipcompminlen = irs->hard_header_len + sizeof(struct iphdr);
+	ipcompminlen = sizeof(struct iphdr);
 
 	if(skb->len < (ipcompminlen + sizeof(struct ipcomphdr))) {
 		KLIPS_PRINT(debug_rcv & DB_RX_INAU,

@@ -13,8 +13,10 @@
  * for more details.
  */
 
-char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.13.2.4 2006/05/06 03:07:38 ken Exp $";
+char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.13.2.6 2006/10/06 21:39:26 paul Exp $";
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 
 #define __NO_VERSION__
@@ -236,6 +238,7 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	if (ipsec_alg_esp_encrypt(ipsp, 
 				  idat, irs->ilen, espp->esp_iv, 
 				  IPSEC_ALG_DECRYPT) <= 0) {
+#ifdef CONFIG_KLIPS_DEBUG
 		KLIPS_ERROR(debug_rcv, "klips_error:ipsec_rcv: "
 			    "got packet with esplen = %d "
 			    "from %s -- should be on "
@@ -244,6 +247,7 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 			    irs->ilen,
 			    irs->ipsaddr_txt,
 			    ipsp->ips_encalg);
+#endif
 		if(irs->stats) {
 			irs->stats->rx_errors++;
 		}
@@ -537,6 +541,14 @@ struct inet_protocol esp_protocol =
 
 /*
  * $Log: ipsec_esp.c,v $
+ * Revision 1.13.2.6  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
+ * Revision 1.13.2.5  2006/08/24 03:02:01  paul
+ * Compile fixes for when CONFIG_KLIPS_DEBUG is not set. (bug #642)
+ *
  * Revision 1.13.2.4  2006/05/06 03:07:38  ken
  * Pull in proper padsize->tailroom fix from #public
  * Need to do correct math on padlen since padsize is not equal to tailroom

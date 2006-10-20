@@ -13,10 +13,12 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_radij.c,v 1.73 2005/04/29 05:10:22 mcr Exp $
+ * RCSID $Id: ipsec_radij.c,v 1.73.2.1 2006/10/06 21:39:26 paul Exp $
  */
 
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
@@ -550,6 +552,11 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 
 /*
  * $Log: ipsec_radij.c,v $
+ * Revision 1.73.2.1  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
  * Revision 1.73  2005/04/29 05:10:22  mcr
  * 	removed from extraenous includes to make unit testing easier.
  *
