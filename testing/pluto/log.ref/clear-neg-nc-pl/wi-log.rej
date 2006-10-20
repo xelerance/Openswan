@@ -1,0 +1,41 @@
+***************
+*** 39,57 ****
+  forgetting secrets
+  "isakmp-rsa": deleting connection
+  "isakmp-rsa" #2: deleting state (STATE_MAIN_I1)
+- shutting down interface virtual127.95.7.1/lo:w 127.95.7.1:8500
+  
+  >>>Responder:
+  PLUTO --ctlbase pluto.east --interface lo:e --ikeport 8500 --secretsfile ./ipsec.secrets/east --foodgroupsdir ./ipsec.d/east --noklips --uniqueids --stderrlog --debug-all --debug-private
+  added connection description "clear"
+  listening for IKE messages
+- adding interface virtual127.95.7.2/lo:e 127.95.7.2
+  loading secrets from "/tmp/ipsec.secrets/east"
+  loading group "./ipsec.d/east/clear"
+- packet from 127.95.7.1:8500: initial Main Mode message received on 127.95.7.2:8500 but no connection has been authorized
+- packet from 127.95.7.1:8500: initial Main Mode message received on 127.95.7.2:8500 but no connection has been authorized
+- packet from 127.95.7.1:8500: initial Main Mode message received on 127.95.7.2:8500 but no connection has been authorized
+- packet from 127.95.7.1:8500: initial Main Mode message received on 127.95.7.2:8500 but no connection has been authorized
+  shutting down
+  forgetting secrets
+  "clear#11.0.0.0/15" 0.0.0.0: deleting connection "clear#11.0.0.0/15" instance with peer 0.0.0.0
+--- 39,57 ----
+  forgetting secrets
+  "isakmp-rsa": deleting connection
+  "isakmp-rsa" #2: deleting state (STATE_MAIN_I1)
++ shutting down interface virtual128.95.7.1/lo:w 128.95.7.1:8500
+  
+  >>>Responder:
+  PLUTO --ctlbase pluto.east --interface lo:e --ikeport 8500 --secretsfile ./ipsec.secrets/east --foodgroupsdir ./ipsec.d/east --noklips --uniqueids --stderrlog --debug-all --debug-private
+  added connection description "clear"
+  listening for IKE messages
++ adding interface virtual128.95.7.2/lo:e 128.95.7.2
+  loading secrets from "/tmp/ipsec.secrets/east"
+  loading group "./ipsec.d/east/clear"
++ packet from 128.95.7.1:8500: initial Main Mode message received on 128.95.7.2:8500 but no connection has been authorized
++ packet from 128.95.7.1:8500: initial Main Mode message received on 128.95.7.2:8500 but no connection has been authorized
++ packet from 128.95.7.1:8500: initial Main Mode message received on 128.95.7.2:8500 but no connection has been authorized
++ packet from 128.95.7.1:8500: initial Main Mode message received on 128.95.7.2:8500 but no connection has been authorized
+  shutting down
+  forgetting secrets
+  "clear#11.0.0.0/15" 0.0.0.0: deleting connection "clear#11.0.0.0/15" instance with peer 0.0.0.0

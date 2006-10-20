@@ -325,7 +325,7 @@ USE_SMARTCARD?=false
 
 # should opportunistic encryption be turned on by default?
 # Enabled during testing, but probably turned off in shipping versions.
-USE_OE?=true
+USE_OE?=false
 ifeq ($(USE_OE),false)
 # warning: examples subdirectory is statically defined here
 OE_FLAG=\#Disable Opportunistic Encryption\\ninclude ${FINALCONFDDIR}/examples/no_oe.conf

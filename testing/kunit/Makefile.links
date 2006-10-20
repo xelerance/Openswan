@@ -1,0 +1,5 @@
+links:
+	cat ${srcdir}files.txt | while read file; do ln -f -s ${srcdir}../kernelenv.h $$file;done
+	touch madelinks
+
+.PHONY: links

@@ -1,0 +1,16 @@
+CC=gcc
+PORTINCLUDE+=-I${OPENSWANSRCDIR}/ports/darwin/include 
+#USERCOMPILE+=-D__CYGWIN__ -D__CYGWIN32__
+#USERLINK=-mcygwin 
+#OSDEP=cygwin
+
+USE_KLIPS=false
+USE_KERNEL26=false
+USE_WIN2K=false
+BUILD_KLIPS=false
+
+ISCARCH=unix
+ISCHOSTARCH=unix
+
+#not sure where this is supposed to come from, but the linux port has AR here
+RANLIB=ranlib
