@@ -8,7 +8,7 @@ d.ipsec.conf/leftsubnet.xml
 d.ipsec.conf/leftnexthop.xml
 d.ipsec.conf/leftsourceip.xml
 d.ipsec.conf/leftupdown.xml
-d.ipsec.conf/leftfirewall.xml.xml
+d.ipsec.conf/leftfirewall.xml
 d.ipsec.conf/conngeneralend.xml
 d.ipsec.conf/connauto.xml
 d.ipsec.conf/auto.xml
@@ -54,7 +54,7 @@ d.ipsec.conf/interfaces.xml
 d.ipsec.conf/nat_traversal.xml
 d.ipsec.conf/virtual_private.xml
 d.ipsec.conf/crlcheckinterval.xml
-d.ipsec.conf/striccrlpolicy.xml
+d.ipsec.conf/strictcrlpolicy.xml
 d.ipsec.conf/forwardcontrol.xml
 d.ipsec.conf/rp_filter.xml
 d.ipsec.conf/syslog.xml
