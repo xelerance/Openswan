@@ -40,15 +40,17 @@ sub htmlize_test {
 
   my($expected, $verdict, $packetstat, $consolestat, $file);
 
-  if(++$linecount > 40) {
-	print HTMLFILE "</TABLE>\n";
-	print HTMLFILE "<TD>";
-	print HTMLFILE "<TABLE>\n";
-
-	print HTMLFILE "<TR><TH COLSPAN=3>$testtypename tests</TH></TR>\n";
-	print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
- 	$linecount=4;
-  }	
+  if($multicolumn) {
+    if(++$linecount > 40) {
+      print HTMLFILE "</TABLE>\n";
+      print HTMLFILE "<TD>";
+      print HTMLFILE "<TABLE>\n";
+      
+      print HTMLFILE "<TR><TH COLSPAN=3>$testtypename tests</TH></TR>\n";
+      print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
+      $linecount=4;
+    }
+  }    
 
   print HTMLFILE "<TR><TD>";
 
