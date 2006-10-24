@@ -54,12 +54,19 @@ via an &ldquo;updown&rdquo; script.  However, the default
 <emphasis remap='B'>ipsec _updown</emphasis>
 provides no help in controlling a modern firewall.</para>
 
-<para>Including attributes of the keying channel
-(authentication methods,
-<emphasis remap='B'>ikelifetime</emphasis>,
-etc.)
-as an attribute of a connection,
-rather than of a participant pair, is dubious and incurs limitations.</para>
+<para>Including attributes of the keying channel (authentication methods,
+<emphasis remap='B'>ikelifetime</emphasis>, etc.) as an attribute of a
+connection, rather than of a participant pair, is dubious and incurs
+limitations.</para>
+
+<para>The use of <emphasis remap='B'>%any</emphasis> with the
+<emphasis remap='I'>protoport=</emphasis> option is ambiguous. Should
+the SA permits any port through or should the SA negotiate any single
+port through?  The first is a basic conn with a wildcard. The second
+is a template. The second is the current behaviour, and it's wrong
+for quite a number of uses involving TCP. The keyword
+<emphasis remap='B'>%one</emphasis> may be introduced in the future to
+seperate these two cases.</para>
 
 <para><emphasis remap='I'>ipsec_manual</emphasis>
 is not nearly as generous about the syntax of subnets,
