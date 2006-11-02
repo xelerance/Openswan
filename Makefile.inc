@@ -371,6 +371,9 @@ USE_BASH?=true
 # you need at least swig 1.3.24, as well as tcl libraries and includes
 USE_TAPROOM?=false
 
+# On MAC OSX , we have to use YACC and not BISON.
+USE_YACC?=false
+
 X509_VERSION=X.509-1.5.4
 NONINTCONFIG=oldconfig
 
