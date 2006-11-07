@@ -175,6 +175,8 @@ struct end {
 #endif
     bool xauth_server;
     bool xauth_client;
+    char *xauth_name;
+    char *xauth_password;
     bool modecfg_server;        /* Give local addresses to tunnel's end */
     bool modecfg_client;        /* request address for local end */
 };

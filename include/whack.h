@@ -63,6 +63,7 @@ struct whack_end {
     char *virt;
     bool xauth_server;          /* for XAUTH */
     bool xauth_client;
+    char *xauth_name;
     bool modecfg_server;        /* for MODECFG */
     bool modecfg_client;
     enum certpolicy      sendcert;
