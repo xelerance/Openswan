@@ -61,7 +61,7 @@
 
 #endif /* __KERNEL__ */
 
-#  define DEBUG_NO_STATIC static
+#define DEBUG_NO_STATIC static
 #include <openswan/ipsec_kversion.h>
 #include <openswan/ipsec_param.h>
 #endif /* linux */
