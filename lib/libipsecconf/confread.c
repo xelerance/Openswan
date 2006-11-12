@@ -437,10 +437,11 @@ static int validate_end(struct starter_conn *conn_st
     if(end->strings_set[KSCF_UPDOWN]) {
 	end->updown = xstrdup(end->strings[KSCF_UPDOWN]);
     }
-
-    if(end->strings_set[KSCF_UPDOWN]) {
-	end->updown = xstrdup(end->strings[KSCF_UPDOWN]);
+#ifdef XAUTH
+    if(end->strings_set[KSCF_XAUTHUSERNAME]) {
+	end->updown = xstrdup(end->strings[KSCF_XAUTHUSERNAME]);
     }
+#endif
 
     if(end->strings_set[KSCF_PROTOPORT]) {
 	err_t ugh;
