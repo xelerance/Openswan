@@ -397,6 +397,7 @@ enum option_enums {
     END_CLIENTWITHIN,
     END_CLIENTPROTOPORT,
     END_DNSKEYONDEMAND,
+    END_XAUTHNAME,
     END_XAUTHSERVER,
     END_XAUTHCLIENT,
     END_MODECFGCLIENT,
@@ -634,6 +635,7 @@ static const struct option long_opts[] = {
     { "dpdaction", required_argument, NULL, CD_DPDACTION + OO },
 #ifdef XAUTH
     { "xauth", no_argument, NULL, END_XAUTHSERVER + OO },
+    { "xauthname", required_argument, NULL, END_XAUTHNAME + OO },
     { "xauthserver", no_argument, NULL, END_XAUTHSERVER + OO },
     { "xauthclient", no_argument, NULL, END_XAUTHCLIENT + OO },
 #endif
@@ -1233,9 +1235,15 @@ main(int argc, char **argv)
 	case END_XAUTHCLIENT:	/* --xauthclient */
 	    msg.right.xauth_client = TRUE;
 	    continue;
+
+	case END_XAUTHNAME:	/* --xauthname <xauthname> */
+	    msg.right.xauth_name = optarg;
+	    continue;
+
 #else
 	case END_XAUTHSERVER:
 	case END_XAUTHCLIENT:
+	case END_XAUTHNAME:
 	  diag("pluto is not built with XAUTH support");
 	  continue;
 #endif
@@ -1354,6 +1362,7 @@ main(int argc, char **argv)
 	case END_UPDOWN:	/* --updown <updown> */
 	    msg.right.updown = optarg;
 	    continue;
+
 
 	case CD_TO:		/* --to */
 	    /* process right end, move it to left, reset it */
