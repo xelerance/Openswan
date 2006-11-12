@@ -4515,6 +4515,10 @@ show_connections_status(void)
 		char srcip[ADDRTOT_BUF], dstip[ADDRTOT_BUF];
 		char thissemi[3+sizeof("srcup=")];
 		char thatsemi[3+sizeof("dstup=")];
+#ifdef XAUTH
+		char thisxauthsemi[3+sizeof("thisxauthname=")];
+		char thatxauthsemi[3+sizeof("thatxauthname=")];
+#endif
 		char thiscertsemi[3+sizeof("srccert=")+PATH_MAX];
 		char thatcertsemi[3+sizeof("dstcert=")+PATH_MAX];
 		char *thisup, *thatup;
@@ -4570,13 +4574,33 @@ show_connections_status(void)
 			     , "; dstcert=%s"
 			     , sr->that.cert_filename);
 		}
-		
+
 		whack_log(RC_COMMENT, "\"%s\"%s:     srcip=%s; dstip=%s%s%s%s%s%s%s;"
 			  , c->name, instance, srcip, dstip
 			  , thissemi, thisup
 			  , thatsemi, thatup
 			  , thiscertsemi
 			  , thatcertsemi);
+
+#ifdef XAUTH		
+		thisxauthsemi[0]='\0';
+		if(sr->this.xauthname) {
+		    snprintf(thisxauthsemi, sizeof(thisxauthsemi)-1
+			     , "; srcxauth=%s"
+			     , sr->this.xauthname);
+		}
+
+		thatxauthsemi[0]='\0';
+		if(sr->that.xauthname) {
+		    snprintf(thatxauthsemi, sizeof(thatxauthsemi)-1
+			     , "; dstxauth=%s"
+			     , sr->that.xauthname);
+		}
+		whack_log(RC_COMMENT, "\"%s\"%s xauth info:%s%s"
+			  , c->name, instance
+			  , thisxauthsemi
+			  , thatxauthsemi);
+#endif XAUTH
 		sr = sr->next;
 		num++;
 	    }
