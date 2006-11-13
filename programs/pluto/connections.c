@@ -4584,23 +4584,23 @@ show_connections_status(void)
 
 #ifdef XAUTH		
 		thisxauthsemi[0]='\0';
-		if(sr->this.xauthname) {
+		if(sr->this.xauth_name) {
 		    snprintf(thisxauthsemi, sizeof(thisxauthsemi)-1
 			     , "; srcxauth=%s"
-			     , sr->this.xauthname);
+			     , sr->this.xauth_name);
 		}
 
 		thatxauthsemi[0]='\0';
-		if(sr->that.xauthname) {
+		if(sr->that.xauth_name) {
 		    snprintf(thatxauthsemi, sizeof(thatxauthsemi)-1
 			     , "; dstxauth=%s"
-			     , sr->that.xauthname);
+			     , sr->that.xauth_name);
 		}
 		whack_log(RC_COMMENT, "\"%s\"%s xauth info:%s%s"
 			  , c->name, instance
 			  , thisxauthsemi
 			  , thatxauthsemi);
-#endif XAUTH
+#endif
 		sr = sr->next;
 		num++;
 	    }
