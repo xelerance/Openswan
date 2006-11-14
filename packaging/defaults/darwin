@@ -1,13 +1,13 @@
 CC=gcc
 PORTINCLUDE+=-I${OPENSWANSRCDIR}/ports/darwin/include 
-#USERCOMPILE+=-D__CYGWIN__ -D__CYGWIN32__
-#USERLINK=-mcygwin 
-#OSDEP=cygwin
+PORTINCLUDE+=-g -O3 -I/opt/local/include -L/opt/local/lib
+USERLINK=-L/usr/local/lib
 
 USE_KLIPS=false
 USE_KERNEL26=false
 USE_WIN2K=false
 BUILD_KLIPS=false
+USE_YACC=true
 
 ISCARCH=unix
 ISCHOSTARCH=unix
