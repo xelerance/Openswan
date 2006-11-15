@@ -64,7 +64,8 @@ west:~#
 west:~#
  sleep 10
 west:~#
- : Create the block
+ echo Create the block
+Create the block
 west:~#
  iptables -I INPUT -s 192.1.2.23/32  -d 0/0 -j DROP
 west:~#
@@ -81,7 +82,7 @@ west:~#
  sleep 10
 west:~#
  ipsec eroute
-0          192.1.2.45/32      -> 192.1.2.23/32      => %trap
+0          192.1.2.45/32      -> 192.1.2.23/32      => tun0x1003@192.1.2.23
 west:~#
  echo done
 done

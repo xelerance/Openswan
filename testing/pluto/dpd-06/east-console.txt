@@ -8,10 +8,12 @@ ipsec_setup: Starting Openswan IPsec VERSION
 east:~#
  ipsec auto --add west-east
 east:~#
+ ipsec whack --debug-lifecycle --debug-control --debug-dpd
+east:~#
  : check status
 east:~#
  ipsec eroute
-10         192.1.2.23/32      -> 192.1.2.45/32      => tun0x1002@192.1.2.45
+12         192.1.2.23/32      -> 192.1.2.45/32      => tun0x1001@192.1.2.45
 east:~#
  
 
