@@ -20,11 +20,13 @@ sleep 15
 echo "Setting up block via iptables"
 iptables -I INPUT -s 192.1.2.23/32 -d 0/0 -j DROP
 iptables -I OUTPUT -d 192.1.2.23/32 -s 0/0 -j DROP
+: ==== cut ====
 sleep 10
 ipsec eroute
 sleep 10
 ipsec eroute
 sleep 10
+: ==== tuc ====
 
 # DPD should have triggered now
 echo "Tunnel should be down (%trap/%hold)"

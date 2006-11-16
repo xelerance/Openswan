@@ -626,6 +626,12 @@ static void rekey_state_function(struct state *this
     delete_event(this);
     delete_dpd_event(this);
     event_schedule(EVENT_SA_REPLACE, 0, this);
+
+    /*
+     * but, remove the actual phase2 SA from the kernel, replacing
+     * with a %trap.
+     */
+    delete_ipsec_sa(this, FALSE);
 }
 
 void
