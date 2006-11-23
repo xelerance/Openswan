@@ -844,7 +844,7 @@ aggr_outI1(int whack_sock,
 	if (!st->st_sec_in_use) {
 	    ke->ke_pcrc.pcrc_func = aggr_outI1_continue;
 	    e = build_ke(&ke->ke_pcrc, st, st->st_oakley.group, importance);
-	    if(e != STF_SUSPEND) {
+	    if(e != STF_SUSPEND && e != STF_INLINE) {
 	      loglog(RC_CRYPTOFAILED, "system too busy");
 	      delete_state(st);
 	    }
