@@ -10,7 +10,7 @@ east:~#
 east:~#
  ipsec whack --debug-lifecycle --debug-control --debug-dpd
 east:~#
- : check status
+ : check status -- should have tripped
 east:~#
  ipsec eroute
 0          192.1.2.23/32      -> 192.1.2.45/32      => %trap
