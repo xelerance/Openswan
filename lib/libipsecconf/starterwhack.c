@@ -317,6 +317,19 @@ static void set_whack_end(struct starter_config *cfg
 	w->port = l->port;
 	w->virt = l->virt;
 	w->key_from_DNS_on_demand = l->key_from_DNS_on_demand;
+
+	if(l->options_set[KNCF_XAUTHSERVER]) {
+		w->xauth_server = l->options[KNCF_XAUTHSERVER];
+	}
+	if(l->options_set[KNCF_XAUTHCLIENT]) {
+		w->xauth_client = l->options[KNCF_XAUTHCLIENT];
+	}
+	if(l->options_set[KNCF_MODECONFIGSERVER]) {
+		w->xauth_server = l->options[KNCF_MODECONFIGSERVER];
+	}
+	if(l->options_set[KNCF_MODECONFIGCLIENT]) {
+		w->xauth_client = l->options[KNCF_MODECONFIGCLIENT];
+	}
 }
 
 static int starter_whack_add_pubkey (struct starter_conn *conn,
