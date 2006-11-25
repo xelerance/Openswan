@@ -890,6 +890,8 @@ static int load_conn (struct starter_config *cfg
 
     KW_POLICY_FLAG(KBF_AGGRMODE, POLICY_AGGRESSIVE);
 
+    KW_POLICY_FLAG(KBF_MODECONFIGPULL, POLICY_MODECFG_PULL);
+
     if(conn->strings_set[KSF_ESP]) {
 	conn->esp = xstrdup(conn->strings[KSF_ESP]);
     }

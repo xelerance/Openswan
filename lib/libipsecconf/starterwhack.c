@@ -325,10 +325,10 @@ static void set_whack_end(struct starter_config *cfg
 		w->xauth_client = l->options[KNCF_XAUTHCLIENT];
 	}
 	if(l->options_set[KNCF_MODECONFIGSERVER]) {
-		w->xauth_server = l->options[KNCF_MODECONFIGSERVER];
+		w->modecfg_server = l->options[KNCF_MODECONFIGSERVER];
 	}
 	if(l->options_set[KNCF_MODECONFIGCLIENT]) {
-		w->xauth_client = l->options[KNCF_MODECONFIGCLIENT];
+		w->modecfg_client = l->options[KNCF_MODECONFIGCLIENT];
 	}
 }
 
