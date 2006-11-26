@@ -225,6 +225,9 @@ aggr_inI1_outR1_common(struct msg_digest *md
 
     insert_state(st);	/* needs cookies, connection, and msgid (0) */
 
+    /* copy the quirks we might have accumulated */
+    copy_quirks(&st->quirks,&md->quirks);
+
     st->st_doi = ISAKMP_DOI_IPSEC;
     st->st_situation = SIT_IDENTITY_ONLY; /* We only support this */
 
