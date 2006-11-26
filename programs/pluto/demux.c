@@ -2450,7 +2450,7 @@ static void update_retransmit_history(struct state *st, struct msg_digest *md)
 	}
 }	
 
-static void fmt_ipsec_sa_established(struct state *st, char sadetails[128])
+static void fmt_ipsec_sa_established(struct state *st, char *sadetails, int sad_len)
 {
     char *b = sadetails;
     const char *ini = " {";
@@ -2472,7 +2472,7 @@ static void fmt_ipsec_sa_established(struct state *st, char sadetails[128])
 	   || st->st_connection->forceencaps) {
 	    natinfo="/NAT";
 	}
-	snprintf(b, sizeof(sadetails)-(b-sadetails)-1
+	snprintf(b, sad_len-(b-sadetails)-1
 		 , "%sESP%s=>0x%08lx <0x%08lx xfrm=%s_%d-%s"
 		 , ini
 		 , natinfo
@@ -2489,7 +2489,7 @@ static void fmt_ipsec_sa_established(struct state *st, char sadetails[128])
     
     if(st->st_ah.present)
     {
-	snprintf(b, sizeof(sadetails)-(b-sadetails)-1
+	snprintf(b, sad_len-(b-sadetails)-1
 		 , "%sAH=>0x%08lx <0x%08lx"
 		 , ini
 		 , (unsigned long)ntohl(st->st_ah.attrs.spi)
@@ -2502,7 +2502,7 @@ static void fmt_ipsec_sa_established(struct state *st, char sadetails[128])
     
     if(st->st_ipcomp.present)
     {
-	snprintf(b, sizeof(sadetails)-(b-sadetails)-1
+	snprintf(b, sad_len-(b-sadetails)-1
 		 , "%sIPCOMP=>0x%08lx <0x%08lx"
 		 , ini
 		 , (unsigned long)ntohl(st->st_ipcomp.attrs.spi)
@@ -2522,7 +2522,7 @@ static void fmt_ipsec_sa_established(struct state *st, char sadetails[128])
 	    addrtot(&st->hidden_variables.st_nat_oa, 0
 		    , oa, sizeof(oa));
 	}
-	snprintf(b, sizeof(sadetails)-(b-sadetails)-1
+	snprintf(b, sad_len-(b-sadetails)-1
 		 , "%sNATOA=%s"
 		 , ini, oa);
 	ini = " ";
@@ -2540,7 +2540,7 @@ static void fmt_ipsec_sa_established(struct state *st, char sadetails[128])
 	    snprintf(oa, sizeof(oa)
 		     , "%s:%d", oa2, st->st_remoteport);
 	}
-	snprintf(b, sizeof(sadetails)-(b-sadetails)-1
+	snprintf(b, sad_len-(b-sadetails)-1
 		 , "%sNATD=%s"
 		 , ini, oa);
 	ini = " ";
@@ -2551,7 +2551,7 @@ static void fmt_ipsec_sa_established(struct state *st, char sadetails[128])
     /* advance b to end of string */
     b = b + strlen(b);
     
-    snprintf(b, sizeof(sadetails)-(b-sadetails)-1
+    snprintf(b, sad_len-(b-sadetails)-1
 	     , "%sDPD=%s"
 	     , ini
 	     , st->hidden_variables.st_dpd_local ?
@@ -2563,7 +2563,7 @@ static void fmt_ipsec_sa_established(struct state *st, char sadetails[128])
     strcat(b, fin);
 }
 
-static void fmt_isakmp_sa_established(struct state *st, char sadetails[128])
+static void fmt_isakmp_sa_established(struct state *st, char *sadetails, int sad_len)
 {
 
     /* document ISAKMP SA details for admin's pleasure */
@@ -2573,7 +2573,7 @@ static void fmt_isakmp_sa_established(struct state *st, char sadetails[128])
     passert(st->st_oakley.hasher != NULL);
     passert(st->st_oakley.group != NULL);
     
-    snprintf(b, sizeof(sadetails)-(b-sadetails)-1
+    snprintf(b, sad_len-(b-sadetails)-1
 	     , " {auth=%s cipher=%s_%d prf=%s group=modp%d}"
 	     , enum_show(&oakley_auth_names, st->st_oakley.auth)
 	     , st->st_oakley.encrypter->common.name
@@ -2828,11 +2828,11 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		/* document IPsec SA details for admin's pleasure */
 		if(IS_IPSEC_SA_ESTABLISHED(st->st_state))
 		{
-		    fmt_ipsec_sa_established(st, sadetails);
+		    fmt_ipsec_sa_established(st, sadetails, sizeof(sadetails));
 
 		} else if(IS_ISAKMP_SA_ESTABLISHED(st->st_state)
 		      && !st->hidden_variables.st_logged_p1algos) {
-		    fmt_isakmp_sa_established(st, sadetails);
+		    fmt_isakmp_sa_established(st, sadetails,sizeof(sadetails));
 		}
 
 		if (IS_ISAKMP_SA_ESTABLISHED(st->st_state)
