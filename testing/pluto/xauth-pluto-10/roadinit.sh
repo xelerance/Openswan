@@ -10,7 +10,7 @@ route add -net default gw 192.1.3.254
 
 netstat -rn
 
-TESTNAME=xauth-pluto-xauthusername-01
+TESTNAME=xauth-pluto-10
 source /testing/pluto/bin/roadlocal.sh
 
 ipsec setup start

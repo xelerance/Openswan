@@ -278,8 +278,13 @@ umlXhost	xauth-pluto-05		good
 umlXhost	xauth-pluto-06		good
 
 #
-# a test case of xauth using xauthname= and XAUTH password in ipsec.secrets
-umlXhost	xauth-pluto-xauthusername-01	good
+# a test case of xauth using xauthname= in ipsec.conf 
+umlXhost	xauth-pluto-10		good
+
+#
+# a test case of xauth using xauthname= in ipsec.conf and XAUTH password in ipsec.secrets
+umlXhost	xauth-pluto-11		good
+
 
 #
 # a test of using AES with pluto, with pfs=yes

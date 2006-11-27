@@ -4,7 +4,7 @@ TEST_PURPOSE=goal
 TEST_PROB_REPORT=0
 TEST_TYPE=umlXhost
 
-TESTNAME=xauth-pluto-xauthusername-01
+TESTNAME=xauth-pluto-10
 
 XHOST_LIST="ROAD EAST"
 

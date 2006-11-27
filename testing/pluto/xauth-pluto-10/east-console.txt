@@ -1,5 +1,5 @@
 east:~#
- TESTNAME=xauth-pluto-xauthusername-01
+ TESTNAME=xauth-pluto-10
 east:~#
  source /testing/pluto/bin/eastlocal.sh
 east:~#

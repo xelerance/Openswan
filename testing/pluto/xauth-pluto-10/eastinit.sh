@@ -2,7 +2,7 @@
 
 : ==== start ====
 
-TESTNAME=xauth-pluto-xauthusername-01
+TESTNAME=xauth-pluto-10
 source /testing/pluto/bin/eastlocal.sh
 
 ipsec setup start
