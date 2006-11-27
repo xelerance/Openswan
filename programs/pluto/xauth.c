@@ -1060,8 +1060,8 @@ static void * do_authentication(void *varg)
         if(st->quirks.xauth_ack_msgid) {
 	  st->st_msgid_phase15 = 0;
 	}
-	pfreeany(st->st_xauth_username);
-	st->st_xauth_username = clone_str((char *)arg->name.ptr,"XAUTH Username");
+
+	strncpy(st->st_xauth_username, (char *)arg->name.ptr, sizeof(st->st_xauth_username));
     } else
     {
 	/** Login attempt failed, display error, send XAUTH status to client
@@ -1749,7 +1749,7 @@ stf_status xauth_client_resp(struct state *st
 			     ,u_int16_t ap_id)
 {
     unsigned char *r_hash_start,*r_hashval;
-    char xauth_username[64], xauth_password[64];
+    char xauth_username[XAUTH_USERNAME_LEN], xauth_password[64];
     struct connection *c = st->st_connection;
     
 
@@ -1805,27 +1805,34 @@ stf_status xauth_client_resp(struct state *st
 		case XAUTH_USER_NAME:
 		    attr.isaat_af_type = attr_type | ISAKMP_ATTR_AF_TLV;
 		    out_struct(&attr, &isakmp_xauth_attribute_desc, &strattr, &attrval);
-		    if(st->st_whack_sock == -1)
-		    {
-			loglog(RC_LOG_SERIOUS, "XAUTH username requested, but no file descriptor available for prompt");
-			return STF_FAIL;
-		    }
-		    
-		    if(!whack_prompt_for(st->st_whack_sock
-					 , c->name, "Username", TRUE
-					 , xauth_username
-					 , sizeof(xauth_username)))
-		    {
-			loglog(RC_LOG_SERIOUS, "XAUTH username prompt failed.");
-			return STF_FAIL;
-		    }
-		    /* trip any trailing white space */
-		    {
-		      char *u = xauth_username;
-		      strsep(&u, " \n\t");
-		    }
-		    out_raw(xauth_username, strlen(xauth_username)
-			    ,&attrval, "XAUTH username");
+
+		    if(st->st_xauth_username[0]=='\0') {
+			if(st->st_whack_sock == -1)
+			{
+			    loglog(RC_LOG_SERIOUS, "XAUTH username requested, but no file descriptor available for prompt");
+			    return STF_FAIL;
+			}
+			
+			if(!whack_prompt_for(st->st_whack_sock
+					     , c->name, "Username", TRUE
+					     , xauth_username
+					     , sizeof(xauth_username)))
+			{
+			    loglog(RC_LOG_SERIOUS, "XAUTH username prompt failed.");
+			    return STF_FAIL;
+			}
+			/* trip any trailing white space */
+			{
+			    char *u = xauth_username;
+			    strsep(&u, " \n\t");
+			}
+			strncpy(st->st_xauth_username, xauth_username,
+				sizeof(st->st_xauth_username));
+		    } 
+			
+		    out_raw(st->st_xauth_username
+			    , strlen(st->st_xauth_username)
+			    , &attrval, "XAUTH username");
 		    close_output_pbs(&attrval);
 
 		    break;
@@ -1877,7 +1884,7 @@ stf_status xauth_client_resp(struct state *st
     }
 
     openswan_log("XAUTH: Answering XAUTH challenge with user='%s'"
-		 , xauth_username);
+		 , st->st_xauth_username);
 
     xauth_mode_cfg_hash(r_hashval, r_hash_start, rbody->cur, st);
     

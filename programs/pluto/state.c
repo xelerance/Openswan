@@ -183,10 +183,6 @@ new_state(void)
     st = clone_thing(blank_state, "struct state in new_state()");
     st->st_serialno = next_so++;
     passert(next_so > SOS_FIRST);	/* overflow can't happen! */
-#ifdef XAUTH
-    passert(st->st_oakley.xauth == 0);
-    passert(st->st_xauth_username == NULL);
-#endif    
     st->st_whack_sock = NULL_FD;
     
     anyaddr(AF_INET, &st->hidden_variables.st_nat_oa);
@@ -730,10 +726,6 @@ duplicate_state(struct state *st)
     nst->st_situation = st->st_situation;
     nst->quirks = st->quirks;
     nst->hidden_variables = st->hidden_variables;
-    if(st->st_xauth_username) {
-	nst->st_xauth_username = clone_str((char *)st->st_xauth_username
-					   , "xauth username");
-    }
     nst->st_remoteaddr = st->st_remoteaddr;
     nst->st_remoteport = st->st_remoteport;
     nst->st_localaddr  = st->st_localaddr;

@@ -323,7 +323,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	strcpy(secure_xauth_username_str, "PLUTO_XAUTH_USERNAME='");
 	
 	len = strlen(secure_xauth_username_str);
-	remove_metachar(st->st_xauth_username
+	remove_metachar((unsigned char *)st->st_xauth_username
 			,secure_xauth_username_str+len
 			,sizeof(secure_xauth_username_str)-(len+2));
 	strncat(secure_xauth_username_str, "'", sizeof(secure_xauth_username_str)-1);
