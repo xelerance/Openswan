@@ -125,6 +125,14 @@ consolediff() {
 		*.awk) cleanups="$cleanups | awk -f $FIXUPDIR/$fixup";;
 		    *) echo Unknown fixup type: $fixup;;
             esac
+	elif [ -f $FIXUPDIR2/$fixup ]
+	then
+	    case $fixup in
+		*.sed) cleanups="$cleanups | sed -f $FIXUPDIR2/$fixup";;
+		*.pl)  cleanups="$cleanups | perl $FIXUPDIR2/$fixup";;
+		*.awk) cleanups="$cleanups | awk -f $FIXUPDIR2/$fixup";;
+		    *) echo Unknown fixup type: $fixup;;
+            esac
 	else
 	    echo Fixup $fixup not found.
 	    success="missing fixup"
