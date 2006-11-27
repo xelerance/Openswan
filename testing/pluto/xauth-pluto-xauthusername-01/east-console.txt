@@ -6,7 +6,7 @@ east:~#
  ipsec setup start
 ipsec_setup: Starting Openswan IPsec VERSION
 east:~#
- /testing/pluto/bin/wait-until-policy-loaded
+ /testing/pluto/bin/wait-until-pluto-started
 east:~#
  echo done.
 done.

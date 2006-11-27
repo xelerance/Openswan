@@ -5,9 +5,7 @@ It shows up from a random IP.
 It uses RSASIG to authenticate for phase 1.
 It then uses XAUTH to authenticate the phase 1.5.
 It uses leftxauthname= to obtain the XAUTH username,
-and gets the password from ipsec.secrets.
+but, prompts for the password.
 
 It then proceeds to phase 2.
-
-(see -04 for a case where aggressive mode is used)
 

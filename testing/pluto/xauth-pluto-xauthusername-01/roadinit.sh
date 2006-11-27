@@ -16,7 +16,6 @@ source /testing/pluto/bin/roadlocal.sh
 ipsec setup start
 
 ipsec auto --replace xauth-road--eastnet
-ipsec whack --status
 
 echo done
 
