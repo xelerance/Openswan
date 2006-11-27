@@ -89,42 +89,63 @@ showhostkey_log(int mess_no, const char *message, ...)
 }
 
 
-int list_key(struct secret *secret,
+int print_key(struct secret *secret,
 	     struct private_key_stuff *pks,
-	     void *uservoid)
+	     void *uservoid, bool disclose)
 {
     int lineno = osw_get_secretlineno(secret);
     struct id_list *l = osw_get_idlist(secret);
     char idb[IDTOA_BUF];
+    int count=1;
+
+    char pskbuf[128];
+
+    datatot(pks->u.preshared_secret.ptr,
+	    pks->u.preshared_secret.len,
+	    'x', pskbuf, sizeof(pskbuf));
 
     while(l) {
 	idtoa(&l->id, idb, IDTOA_BUF);
 
 	switch(pks->kind) {
 	case PPK_PSK:
-	    printf("%d: PSK keyid: %s\n", lineno, idb);
+	    printf("%d(%d): PSK keyid: %s\n", lineno, count, idb);
+	    if(disclose) printf("    psk: \"%s\"\n", pskbuf);
 	    break;
 	    
 	case PPK_RSA:
-	    printf("%d: RSA keyid: %s with id: %s\n", lineno, pks->u.RSA_private_key.pub.keyid,idb);
+	    printf("%d(%d): RSA keyid: %s with id: %s\n", lineno, count, pks->u.RSA_private_key.pub.keyid,idb);
+	    break;
+	    
+	case PPK_XAUTH:
+	    printf("%d(%d): XAUTH keyid: %s\n", lineno, count, idb);
+	    if(disclose) printf("    xauth: \"%s\"\n", pskbuf);
 	    break;
 	    
 	case PPK_PIN:
-	    printf("%d PIN key-type not yet supported for id: %s\n", lineno, idb);
+	    printf("%d:(%d) PIN key-type not yet supported for id: %s\n", lineno, count, idb);
 	    break;
 	}
 	
 	l=l->next;
+	count++;
     }
     
     return 1;
+}
+
+int list_key(struct secret *secret,
+	     struct private_key_stuff *pks,
+	     void *uservoid)
+{
+    return print_key(secret, pks, uservoid, FALSE);
 }
 
 int dump_key(struct secret *secret,
 	     struct private_key_stuff *pks,
 	     void *uservoid)
 {
-    return list_key(secret, pks, uservoid);
+    return print_key(secret, pks, uservoid, TRUE);
 }
 
 
