@@ -89,9 +89,9 @@ showhostkey_log(int mess_no, const char *message, ...)
 }
 
 
-int print_key(struct secret *secret,
-	     struct private_key_stuff *pks,
-	     void *uservoid, bool disclose)
+int print_key(struct secret *secret
+	      , struct private_key_stuff *pks
+	      , void *uservoid, bool disclose)
 {
     int lineno = osw_get_secretlineno(secret);
     struct id_list *l = osw_get_idlist(secret);
