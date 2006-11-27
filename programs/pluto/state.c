@@ -390,7 +390,7 @@ delete_state(struct state *st)
     pfreeany(st->st_ah.peer_keymat);
     pfreeany(st->st_esp.our_keymat);
     pfreeany(st->st_esp.peer_keymat);
-    pfreeany(st->st_xauth_username);
+    freeanychunk(st->st_xauth_password);
     pfree(st);
 }
 
