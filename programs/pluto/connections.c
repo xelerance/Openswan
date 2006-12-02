@@ -864,6 +864,7 @@ unshare_connection_strings(struct connection *c)
     struct spd_route *sr;
 
     c->name = clone_str(c->name, "connection name");
+    c->connalias = clone_str(c->connalias, "connection alias");
 
     /* do "right" */
     for(sr=&c->spd; sr!=NULL; sr=sr->next) {
@@ -1270,6 +1271,7 @@ add_connection(const struct whack_message *wm)
 
 	same_rightca = same_leftca = FALSE;
 	c->name = wm->name;
+	c->connalias = wm->connalias;
 
 	c->policy = wm->policy;
 
@@ -4687,6 +4689,15 @@ show_connections_status(void)
 	    , instance
 	    , c->newest_isakmp_sa
 	    , c->newest_ipsec_sa);
+
+	if(c->connalias) {
+	    whack_log(RC_COMMENT
+		      , "\"%s\"%s:   aliases: %s\n"
+		      , c->name
+		      , instance
+		      , c->connalias);
+	}
+
 #ifdef IKE_ALG
 	ike_alg_show_connection(c, instance);
 #endif

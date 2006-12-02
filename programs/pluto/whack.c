@@ -60,6 +60,8 @@ help(void)
 	"connection: whack"
 	    " --name <connection_name>"
 	    " \\\n   "
+	    " --connalias <alias_names>"
+	    " \\\n   "
 	    " [--ipv4 | --ipv6]"
 	    " [--tunnelipv4 | --tunnelipv6]"
 	    " \\\n   "
@@ -313,6 +315,7 @@ enum option_enums {
 #   define OPT_FIRST	OPT_CTLBASE
     OPT_CTLBASE,
     OPT_NAME,
+    OPT_CONNALIAS,
 
     OPT_CD,
 
@@ -521,6 +524,7 @@ static const struct option long_opts[] = {
 
     { "ctlbase", required_argument, NULL, OPT_CTLBASE + OO },
     { "name", required_argument, NULL, OPT_NAME + OO },
+    { "connalias", required_argument, NULL, OPT_CONNALIAS + OO },
 
     { "keyid", required_argument, NULL, OPT_KEYID + OO },
     { "addkey", no_argument, NULL, OPT_ADDKEY + OO },

@@ -196,6 +196,7 @@ struct spd_route {
 
 struct connection {
     char *name;
+    char *connalias;
     lset_t policy;
     time_t sa_ike_life_seconds;
     time_t sa_ipsec_life_seconds;
