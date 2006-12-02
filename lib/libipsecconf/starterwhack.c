@@ -1,5 +1,6 @@
-/* FreeS/WAN whack functions to communicate with pluto (whack.c)
+/* Openswan whack functions to communicate with pluto (whack.c)
  * Copyright (C) 2001-2002 Mathieu Lafon - Arkoon Network Security
+ * Copyright (C) 2004-2006 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -437,6 +438,10 @@ int starter_whack_add_conn (struct starter_config *cfg, struct starter_conn *con
 	msg.sa_keying_tries = conn->options[KBF_KEYINGTRIES];
 
 	msg.policy = conn->policy;
+
+	if(conn->strings_set[KSF_CONNALIAS]) {
+		msg.connalias = conn->strings[KSF_CONNALIAS];
+	}
 
 	if(conn->options_set[KBF_DPDDELAY] &&
 	   conn->options_set[KBF_DPDTIMEOUT]) {
