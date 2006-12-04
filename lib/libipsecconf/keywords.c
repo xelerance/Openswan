@@ -253,17 +253,18 @@ struct keyword_def ipsec_conf_keywords_v2[]={
 
     {"ike",            kv_conn|kv_auto, kt_string, KSF_IKE,NOT_ENUM},
 
-    {"subnet",         kv_conn|kv_leftright|kv_processed, kt_subnet, KSCF_SUBNET,NOT_ENUM}, 
-    {"sourceip",       kv_conn|kv_leftright, kt_ipaddr, KSCF_SOURCEIP,NOT_ENUM}, 
-    {"nexthop",        kv_conn|kv_leftright, kt_ipaddr, KSCF_NEXTHOP,NOT_ENUM},
-    {"firewall",       kv_conn|kv_leftright, kt_bool,   KNCF_FIREWALL,NOT_ENUM},
-    {"updown",         kv_conn|kv_leftright, kt_filename, KSCF_UPDOWN,NOT_ENUM},
-    {"id",             kv_conn|kv_leftright, kt_idtype, KSCF_ID,NOT_ENUM},
-    {"rsasigkey",      kv_conn|kv_leftright, kt_rsakey, KSCF_RSAKEY1, &kw_rsasigkey_list},
-    {"rsasigkey2",     kv_conn|kv_leftright, kt_rsakey, KSCF_RSAKEY2, &kw_rsasigkey_list},
+    {"subnet",         kv_conn|kv_auto|kv_leftright|kv_processed, kt_subnet, KSCF_SUBNET,NOT_ENUM}, 
+    {"subnets",        kv_conn|kv_auto|kv_leftright, kt_appendlist, KSCF_SUBNETS,NOT_ENUM}, 
+    {"sourceip",       kv_conn|kv_auto|kv_leftright, kt_ipaddr, KSCF_SOURCEIP,NOT_ENUM}, 
+    {"nexthop",        kv_conn|kv_auto|kv_leftright, kt_ipaddr, KSCF_NEXTHOP,NOT_ENUM},
+    {"firewall",       kv_conn|kv_auto|kv_leftright, kt_bool,   KNCF_FIREWALL,NOT_ENUM},
+    {"updown",         kv_conn|kv_auto|kv_leftright, kt_filename, KSCF_UPDOWN,NOT_ENUM},
+    {"id",             kv_conn|kv_auto|kv_leftright, kt_idtype, KSCF_ID,NOT_ENUM},
+    {"rsasigkey",      kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY1, &kw_rsasigkey_list},
+    {"rsasigkey2",     kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY2, &kw_rsasigkey_list},
     {"spibase",        kv_conn|kv_auto|kv_leftright, kt_number, KNCF_SPIBASE,NOT_ENUM},
-    {"cert",           kv_conn|kv_leftright, kt_filename, KSCF_CERT,NOT_ENUM},
-    {"ca",             kv_conn|kv_leftright, kt_string, KSCF_CA,NOT_ENUM},
+    {"cert",           kv_conn|kv_auto|kv_leftright, kt_filename, KSCF_CERT,NOT_ENUM},
+    {"ca",             kv_conn|kv_auto|kv_leftright, kt_string, KSCF_CA,NOT_ENUM},
 
     /* these are conn statements which are not left/right */
     {"auto",           kv_conn,         kt_enum,   KBF_AUTO,        &kw_auto_list},

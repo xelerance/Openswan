@@ -73,6 +73,7 @@ void confwrite_int(FILE *out,
 	switch(k->type) {
 	case kt_string:
 	case kt_appendstring:
+	case kt_appendlist:
 	case kt_filename:
 	case kt_dirname:
 	case kt_rsakey:
@@ -162,7 +163,7 @@ void confwrite_str(FILE *out,
     struct keyword_def *k;
 
     for(k=ipsec_conf_keywords_v2; k->keyname!=NULL; k++) {
-	if((k->validity & context)==0) continue;
+	if((k->validity & context)!=context) continue;
 
 	/* do not output aliases */
 	if(k->validity & kv_alias) continue;
@@ -172,6 +173,12 @@ void confwrite_str(FILE *out,
 	if(k->validity & kv_processed) continue;
 	
 	switch(k->type) {
+	case kt_appendlist:
+	    if(strings_set[k->field]) {
+		fprintf(out, "\t%s%s={%s}\n",side, k->keyname, strings[k->field]);
+	    }
+	    continue;	    
+
 	case kt_string:
 	case kt_appendstring:
 	case kt_filename:
@@ -204,7 +211,14 @@ void confwrite_str(FILE *out,
 	}
 
 	if(strings_set[k->field]) {
-	    fprintf(out, "\t%s%s=%s\n",side, k->keyname, strings[k->field]);
+	    char *quote="";
+
+	    if(strchr(strings[k->field],' ')) quote="\"";
+	    
+	    fprintf(out, "\t%s%s=%s%s%s\n",side, k->keyname
+		    , quote
+		    , strings[k->field]
+		    , quote);
 	}
     }	
 }    

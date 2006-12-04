@@ -200,6 +200,7 @@ static int load_setup (struct starter_config *cfg
 		break;
 
 	    case kt_appendstring:
+	    case kt_appendlist:
 		assert(kw->keyword.keydef->field < KEY_STRINGS_MAX);
 		if(!cfg->setup.strings[kw->keyword.keydef->field])
 		{
@@ -572,6 +573,7 @@ bool translate_conn (struct starter_conn *conn
 	    break;
 	    
 	case kt_appendstring:
+	case kt_appendlist:
 	    /* implicitely, this field can have multiple values */
 	    assert(kw->keyword.keydef->field < KEY_STRINGS_MAX);
 	    if(!(*the_strings)[field])
