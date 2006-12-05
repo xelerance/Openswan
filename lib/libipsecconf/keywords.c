@@ -284,7 +284,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"ikelifetime",    kv_conn|kv_auto, kt_time,   KBF_IKELIFETIME,NOT_ENUM},
     {"disablearrivalcheck", kv_conn|kv_auto, kt_invertbool, KBF_ARRIVALCHECK,NOT_ENUM},
     {"failureshunt",   kv_conn|kv_auto, kt_enum,   KBF_FAILURESHUNT, &kw_failureshunt_list},
-    {"connalias",      kv_conn, kt_appendstring,   KSF_CONNALIAS, NOT_ENUM},
+    {"connalias",      kv_conn|kv_processed|kv_auto|kv_manual, kt_appendstring,   KSF_CONNALIAS, NOT_ENUM},
 
     /* attributes of the phase2 policy */
     {"phase2alg",      kv_conn|kv_auto|kv_manual,  kt_string, KSF_ESP,NOT_ENUM},

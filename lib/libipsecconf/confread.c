@@ -898,6 +898,10 @@ static int load_conn (struct starter_config *cfg
 	conn->ike = xstrdup(conn->strings[KSF_IKE]);
     }
 
+    if(conn->strings_set[KSF_CONNALIAS]) {
+	conn->connalias = xstrdup(conn->strings[KSF_CONNALIAS]);
+    }
+
     if(conn->options_set[KBF_PHASE2]) {
 	conn->policy &= ~(POLICY_AUTHENTICATE|POLICY_ENCRYPT);
 	conn->policy |= conn->options[KBF_PHASE2];
@@ -1111,6 +1115,9 @@ static void confread_free_conn(struct starter_conn *conn)
 	{
 	    FREE_STR(conn->strings[i]);
 	}
+
+	FREE_STR(conn->connalias);
+	FREE_STR(conn->name);
 
 #ifdef ALG_PATCH
 	FREE_STR(conn->esp);

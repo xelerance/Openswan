@@ -65,8 +65,9 @@ struct starter_end {
 };
 
 struct starter_conn {
-    TAILQ_ENTRY(starter_conn) link;
+    TAILQ_ENTRY(starter_conn) link; 
     char *name;
+    char *connalias;			      
 
     ksf   strings;
     knf   options;

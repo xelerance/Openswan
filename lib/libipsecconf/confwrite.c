@@ -377,6 +377,10 @@ void confwrite_conn(FILE *out,
     confwrite_str(out, "", keyingtype|kv_conn,
 		  conn->strings, conn->strings_set);
 
+    if(conn->connalias) {
+	fprintf(out, "\tconnalias=\"%s\"\n", conn->connalias);
+    }
+
     if(conn->manualkey) {
 	fprintf(out, "\tmanual=add\n");
     } else {
