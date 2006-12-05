@@ -440,9 +440,7 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 
 	msg.policy = conn->policy;
 
-	if(conn->strings_set[KSF_CONNALIAS]) {
-		msg.connalias = conn->strings[KSF_CONNALIAS];
-	}
+	msg.connalias = conn->connalias;
 
 	if(conn->options_set[KBF_DPDDELAY] &&
 	   conn->options_set[KBF_DPDTIMEOUT]) {
@@ -602,6 +600,8 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 
 		snprintf(tmpconnname,256,"%s/%uX%u", conn->name, lc, rc);
 		sc.name = tmpconnname;
+
+		sc.connalias = conn->name;
 		
 		success = (*operation)(cfg, &sc);
 		if(success != 0) {
