@@ -732,6 +732,7 @@ duplicate_state(struct state *st)
     nst->st_localport  = st->st_localport;
     nst->st_interface  = st->st_interface;
     nst->st_clonedfrom = st->st_serialno;
+    nst->st_import     = st->st_import;
 
 
 #   define clone_chunk(ch, name) \
