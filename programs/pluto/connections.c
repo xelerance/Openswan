@@ -2291,6 +2291,8 @@ initiate_connection(const char *name, int whackfd
 	whack_log(RC_UNKNOWN_NAME
 		  , "no connection named \"%s\"", name);
     }
+
+    close_any(is.whackfd);
 }
 
 
