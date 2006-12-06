@@ -1,4 +1,4 @@
-: check status
+: check status -- should have tripped
 ipsec eroute
 
 

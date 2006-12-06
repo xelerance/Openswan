@@ -313,6 +313,8 @@ extern void state_eroute_usage(ip_subnet *ours, ip_subnet *his
 extern void delete_state(struct state *st);
 struct connection;	/* forward declaration of tag */
 extern void delete_states_by_connection(struct connection *c, bool relations);
+extern void delete_p2states_by_connection(struct connection *c);
+extern void rekey_p2states_by_connection(struct connection *c);
 
 extern struct state
     *duplicate_state(struct state *st),

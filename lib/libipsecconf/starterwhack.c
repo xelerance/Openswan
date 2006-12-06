@@ -317,6 +317,19 @@ static void set_whack_end(struct starter_config *cfg
 	w->port = l->port;
 	w->virt = l->virt;
 	w->key_from_DNS_on_demand = l->key_from_DNS_on_demand;
+
+	if(l->options_set[KNCF_XAUTHSERVER]) {
+		w->xauth_server = l->options[KNCF_XAUTHSERVER];
+	}
+	if(l->options_set[KNCF_XAUTHCLIENT]) {
+		w->xauth_client = l->options[KNCF_XAUTHCLIENT];
+	}
+	if(l->options_set[KNCF_MODECONFIGSERVER]) {
+		w->modecfg_server = l->options[KNCF_MODECONFIGSERVER];
+	}
+	if(l->options_set[KNCF_MODECONFIGCLIENT]) {
+		w->modecfg_client = l->options[KNCF_MODECONFIGCLIENT];
+	}
 }
 
 static int starter_whack_add_pubkey (struct starter_conn *conn,
@@ -420,14 +433,28 @@ int starter_whack_add_conn (struct starter_config *cfg, struct starter_conn *con
 
 	msg.policy = conn->policy;
 
-	if(conn->options_set[KBF_DPDACTION]) {
-		msg.dpd_action = conn->options[KBF_DPDACTION];
+	if(conn->options_set[KBF_DPDDELAY] &&
+	   conn->options_set[KBF_DPDTIMEOUT]) {
+		msg.dpd_delay   = conn->options[KBF_DPDDELAY];
+		msg.dpd_timeout = conn->options[KBF_DPDTIMEOUT];
 
-		if(conn->options_set[KBF_DPDDELAY]) {
-			msg.dpd_delay  = conn->options[KBF_DPDDELAY];
+		if(conn->options_set[KBF_DPDACTION]) {
+			msg.dpd_action = conn->options[KBF_DPDACTION];
+		} else {
+			/*
+			 * there is a default DPD action, but DPD is only
+			 * enabled if there is a dpd delay set.
+			 */
+			msg.dpd_action = DPD_ACTION_HOLD;
 		}
-		if(conn->options_set[KBF_DPDTIMEOUT]) {
-			msg.dpd_timeout  = conn->options[KBF_DPDTIMEOUT];
+
+	} else {
+		if(conn->options_set[KBF_DPDDELAY]  ||
+		   conn->options_set[KBF_DPDTIMEOUT]||
+		   conn->options_set[KBF_DPDACTION])
+		{
+			starter_log(LOG_LEVEL_ERR, "conn: \"%s\" warning dpd settings are not ignored unless dpdtimeout= and dpddelay= are set"
+				    , conn->name);
 		}
 	}
 

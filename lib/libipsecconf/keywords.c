@@ -303,10 +303,10 @@ struct keyword_def ipsec_conf_keywords_v2[]={
 
     /* aggr/xauth/modeconfig */ 
     {"aggrmode",    kv_conn|kv_auto, kt_invertbool,      KBF_AGGRMODE,NOT_ENUM},
-    {"xauthserver", kv_conn|kv_leftright, kt_invertbool, KNCF_XAUTHSERVER , NOT_ENUM},
-    {"xauthclient", kv_conn|kv_leftright, kt_invertbool, KNCF_XAUTHCLIENT, NOT_ENUM},
-    {"modecfgserver", kv_conn|kv_leftright, kt_invertbool, KNCF_MODECONFIGSERVER, NOT_ENUM},
-    {"modecfgclient", kv_conn|kv_leftright, kt_invertbool, KNCF_MODECONFIGCLIENT, NOT_ENUM},
+    {"xauthserver", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_XAUTHSERVER,  NOT_ENUM},
+    {"xauthclient", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_XAUTHCLIENT, NOT_ENUM},
+    {"modecfgserver", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_MODECONFIGSERVER, NOT_ENUM},
+    {"modecfgclient", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_MODECONFIGCLIENT, NOT_ENUM},
     {"modecfgpull", kv_conn|kv_auto, kt_invertbool, KBF_MODECONFIGPULL , NOT_ENUM},
 
 

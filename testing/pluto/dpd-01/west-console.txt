@@ -52,23 +52,11 @@ west:~#
 west:~#
  iptables -I OUTPUT -d 192.1.2.23/32 -s 0/0 -j DROP
 west:~#
- sleep 10
-west:~#
- ipsec eroute
-12         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
-west:~#
- sleep 10
-west:~#
- ipsec eroute
-12         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
-west:~#
- sleep 10
-west:~#
  echo "Tunnel should be down (%trap/%hold)"
 Tunnel should be down (%trap/%hold)
 west:~#
  ipsec eroute
-12         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
+0          192.1.2.45/32      -> 192.1.2.23/32      => %trap
 west:~#
  echo "Removing block"
 Removing block
@@ -81,14 +69,14 @@ west:~#
 PING 192.1.2.23 (192.1.2.23): 56 data bytes
 
 --- 192.1.2.23 ping statistics ---
-8 packets transmitted, 8 packets received, 0% packet loss
+8 packets transmitted, 2 packets received, 75% packet loss
 round-trip min/avg/max = 3.1/4.5/9.26 ms
 west:~#
  echo "Tunnel should be up"
 Tunnel should be up
 west:~#
  ipsec eroute
-28         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
+4          192.1.2.45/32      -> 192.1.2.23/32      => tun0x1003@192.1.2.23
 west:~#
  echo end
 end

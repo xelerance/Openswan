@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 hostname road.uml.freeswan.org
 
 ifconfig eth0 inet 192.1.3.194
