@@ -499,7 +499,7 @@ bool one_subnet_from_string(struct starter_conn *conn
 	}
 
 	/* find first non-space item */
-	while(*subnets!='\0' && (isspace(*subnets) || *subnets==',') subnets++;
+	while(*subnets!='\0' && (isspace(*subnets) || *subnets==',')) subnets++;
 
 	/* did we find something? */
 	if(*subnets=='\0') return FALSE;  /* no */
@@ -507,7 +507,7 @@ bool one_subnet_from_string(struct starter_conn *conn
 	eln = subnets;
 	
 	/* find end of this item */
-        while(*subnets!='\0' && !(isspace(*subnets) || *subnets==',') subnets++;
+        while(*subnets!='\0' && !(isspace(*subnets) || *subnets==',')) subnets++;
 	
 	e = ttosubnet(eln, subnets-eln, af, sn);
 	if(e) {
