@@ -1258,6 +1258,26 @@ int pfkey_x_protocol_build(struct sadb_ext **pfkey_ext,
 	return error;
 }
 
+int pfkey_outif_build(struct sadb_ext **pfkey_ext,
+		      uint16_t outif)
+{
+	int error = 0;
+	struct sadb_x_plumbif * p = (struct sadb_x_plumbif *)*pfkey_ext;
+
+	if ((p = (struct sadb_x_plumbif*)MALLOC(sizeof(*p))) == 0) {
+		ERROR("pfkey_build: memory allocation failed\n");
+		SENDERR(ENOMEM);
+	}
+	*pfkey_ext = (struct sadb_ext *)p;
+
+	p->sadb_x_outif_len = IPSEC_PFKEYv2_WORDS(sizeof(*p));
+	p->sadb_x_outif_exttype = K_SADB_X_EXT_PLUMBIF;
+	p->sadb_x_outif_ifnum = outif;
+
+ errlab:
+	return error;
+}
+
 
 #if defined(I_DONT_THINK_THIS_WILL_BE_USEFUL) && I_DONT_THINK_THIS_WILL_BE_USEFUL
 int (*ext_default_builders[SADB_EXT_MAX +1])(struct sadb_msg*, struct sadb_ext*)

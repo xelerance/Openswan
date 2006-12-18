@@ -41,8 +41,8 @@ char tncfg_c_version[] = "RCSID $Id: tncfg.c,v 1.33 2005/07/08 02:56:38 paul Exp
 #include <getopt.h>
 #include "oswlog.h"
 
-#include "pfkey.h"
-#include "pfkeyv2.h"
+#include "openswan/pfkeyv2.h"
+#include "openswan/pfkey.h"
 #include "pfkey_help.h"
 
 #include "openswan/ipsec_tunnel.h"
