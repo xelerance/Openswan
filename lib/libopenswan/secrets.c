@@ -1314,15 +1314,18 @@ void
 unreference_key(struct pubkey **pkp)
 {
     struct pubkey *pk = *pkp;
-    char b[IDTOA_BUF];
 
     if (pk == NULL)
 	return;
 
     /* print stuff */
     DBG(DBG_CONTROLMORE,
- 	idtoa(&pk->id, b, sizeof(b));
- 	DBG_log("unreference key: %p %s cnt %d--", pk, b, pk->refcnt)
+	{
+	    char b[IDTOA_BUF];
+	    
+	    idtoa(&pk->id, b, sizeof(b));
+	    DBG_log("unreference key: %p %s cnt %d--", pk, b, pk->refcnt);
+	}
 	);
 
     /* cancel out the pointer */

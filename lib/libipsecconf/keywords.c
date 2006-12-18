@@ -1,5 +1,5 @@
 /*
- * FreeS/WAN config file parser (keywords.c)
+ * Openswan config file parser (keywords.c)
  * Copyright (C) 2003 Michael Richardson <mcr@sandelman.ottawa.on.ca>
  *
  * This program is free software; you can redistribute it and/or modify it
