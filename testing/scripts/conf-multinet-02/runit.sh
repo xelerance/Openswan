@@ -7,7 +7,7 @@
 #
 
 exe=permuteconf
-conf=testing/pluto/multinet-01/west.conf
+conf=testing/pluto/multinet-02/west.conf
 args="--rootdir=${ROOTDIR}/testing/baseconfigs/all --config ${ROOTDIR}/$conf"
 echo "file $exe" >.gdbinit
 echo "set args $args " >>.gdbinit
