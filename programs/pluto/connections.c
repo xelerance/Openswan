@@ -2253,9 +2253,9 @@ initiate_a_connection(struct connection *c
 	else
 #endif
 	{
+	    whackfd = dup(whackfd);
 	    ipsecdoi_initiate(whackfd, c, c->policy, 1
 			      , SOS_NOBODY, importance);
-	    is->whackfd = NULL_FD;	/* protect from close */
 	    success = 1;
 	}
     }
