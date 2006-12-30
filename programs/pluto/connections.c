@@ -2260,7 +2260,6 @@ initiate_a_connection(struct connection *c
 	}
     }
     reset_cur_connection();
-    close_any(is->whackfd);
     
     return success;
 }
@@ -2281,6 +2280,7 @@ initiate_connection(const char *name, int whackfd
     if (c != NULL)
     {
 	initiate_a_connection(c, &is);
+	close_any(is.whackfd);
 	return;
     }
 
