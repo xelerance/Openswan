@@ -752,7 +752,7 @@ quick_outI1(int whack_sock
 	if(replacing != SOS_NOBODY)
 	    snprintf(replacestr, 32, " to replace #%lu", replacing);
 	
-	openswan_log("initiating Quick Mode %s%s {using isakmp#%lu msgid=%08x proposal=%s pfsgroup=%s}"
+	openswan_log("initiating Quick Mode %s%s {using isakmp#%lu msgid:%08x proposal=%s pfsgroup=%s}"
 		     , prettypolicy(policy)
 		     , replacestr
 		     , isakmp_sa->st_serialno, st->st_msgid, p2alg, pfsgroupname);
