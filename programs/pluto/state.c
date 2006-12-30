@@ -93,7 +93,7 @@ struct msgid_list
 };
 
 bool
-reserve_msgid(struct state *isakmp_sa, msgid_t msgid)
+unique_msgid(struct state *isakmp_sa, msgid_t msgid)
 {
     struct msgid_list *p;
 
@@ -104,11 +104,18 @@ reserve_msgid(struct state *isakmp_sa, msgid_t msgid)
 	if (p->msgid == msgid)
 	    return FALSE;
 
+    return TRUE;
+}
+
+void
+reserve_msgid(struct state *isakmp_sa, msgid_t msgid)
+{
+    struct msgid_list *p;
+
     p = alloc_thing(struct msgid_list, "msgid");
     p->msgid = msgid;
     p->next = isakmp_sa->st_used_msgids;
     isakmp_sa->st_used_msgids = p;
-    return TRUE;
 }
 
 msgid_t
@@ -122,7 +129,7 @@ generate_msgid(struct state *isakmp_sa)
     for (;;)
     {
 	get_rnd_bytes((void *) &msgid, sizeof(msgid));
-	if (msgid != 0 && reserve_msgid(isakmp_sa, msgid))
+	if (msgid != 0 && unique_msgid(isakmp_sa, msgid))
 	    break;
 
 	if (--timeout == 0)

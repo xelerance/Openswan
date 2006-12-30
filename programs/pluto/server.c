@@ -779,7 +779,12 @@ call_server(void)
 #endif
 
 	    /* note we process helper things last on purpose */
-	    ndes -= pluto_crypto_helper_ready(&readfds);
+	    {
+		int helpers = pluto_crypto_helper_ready(&readfds);
+		DBG(DBG_CONTROL, DBG_log("* processed %d messages from cryptographic helpers\n", helpers));
+		
+		ndes -= helpers;
+	    }
 
 	    passert(ndes == 0);
 	}
