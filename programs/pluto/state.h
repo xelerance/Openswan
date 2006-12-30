@@ -46,7 +46,9 @@ typedef u_int32_t msgid_t;	/* Network order! */
 #define MAINMODE_MSGID    ((msgid_t) 0)
 
 struct state;	/* forward declaration of tag */
-extern bool reserve_msgid(struct state *isakmp_sa, msgid_t msgid);
+extern void reserve_msgid(struct state *isakmp_sa, msgid_t msgid);
+extern bool unique_msgid(struct state *isakmp_sa, msgid_t msgid);
+
 extern msgid_t generate_msgid(struct state *isakmp_sa);
 
 #define XAUTH_USERNAME_LEN 64
@@ -181,6 +183,7 @@ struct state
     u_int16_t          st_localport;           
 
     msgid_t            st_msgid;               /* MSG-ID from header.  Network Order! */
+    bool               st_reserve_msgid;       /* if TRUE, then message id has been reserved already */
 
     msgid_t            st_msgid_phase15;       /* msgid for phase 1.5 */
     msgid_t            st_msgid_phase15b;      /* msgid for phase 1.5 */
