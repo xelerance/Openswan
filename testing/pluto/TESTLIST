@@ -370,4 +370,10 @@ umlplutotest	basic-pluto-08		bad
 # with appropriate modp group
 umlplutotest    algo-pluto-01          good
 
-
+#
+# tests for usnig multiple subnets using conn aliases
+#
+multinet	multinet-01		good
+multinet	multinet-02		good
+multinet	multinet-03		good
+multinet	multinet-04		good
