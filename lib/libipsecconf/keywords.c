@@ -307,7 +307,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"xauthclient", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_XAUTHCLIENT, NOT_ENUM},
     {"modecfgserver", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_MODECONFIGSERVER, NOT_ENUM},
     {"modecfgclient", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_MODECONFIGCLIENT, NOT_ENUM},
-    {"xauthusername", kv_conn|kv_auto|kv_leftright, kt_invertbool, KSCF_XAUTHUSERNAME, NOT_ENUM},
+    {"xauthusername", kv_conn|kv_auto|kv_leftright, kt_string, KSCF_XAUTHUSERNAME, NOT_ENUM},
     {"modecfgpull", kv_conn|kv_auto, kt_invertbool, KBF_MODECONFIGPULL , NOT_ENUM},
 
 
