@@ -417,7 +417,8 @@ static int starter_whack_add_pubkey (struct starter_conn *conn,
 	return 0;
 }
 
-int starter_whack_add_conn (struct starter_config *cfg, struct starter_conn *conn)
+static int starter_whack_basic_add_conn(struct starter_config *cfg
+					, struct starter_conn *conn)
 {
 	struct whack_message msg;
 	int r;
@@ -485,7 +486,177 @@ int starter_whack_add_conn (struct starter_config *cfg, struct starter_conn *con
 	return r;
 }
 
-int starter_whack_del_conn (struct starter_conn *conn)
+bool one_subnet_from_string(struct starter_conn *conn
+			    , char **psubnets
+			    , int af
+			    , ip_subnet *sn
+			    , char *lr)
+{
+	char *eln;
+	char *subnets = *psubnets;
+	err_t e;
+
+	if(subnets == NULL) {
+		return FALSE;
+	}
+
+	/* find first non-space item */
+	while(*subnets!='\0' && isspace(*subnets)) subnets++;
+
+	/* did we find something? */
+	if(*subnets=='\0') return FALSE;  /* no */
+
+	eln = subnets;
+	
+	/* find end of this item */
+	while(*subnets!='\0' && !isspace(*subnets)) subnets++;
+	
+	e = ttosubnet(eln, subnets-eln, af, sn);
+	if(e) {
+		starter_log(LOG_LEVEL_ERR, "conn: \"%s\" warning '%s' is not a subnet declaration. (%ssubnets)"
+			    , conn->name
+			    , eln, lr);
+	}
+
+	*psubnets = subnets;
+	return TRUE;
+}
+
+/*
+ * permutate_conns - generate all combinations of subnets={}
+ *
+ * @operation - the function to apply to each generated conn
+ * @cfg       - the base configuration
+ * @conn      - the conn to permute
+ *
+ * This function goes through the set of N x M combinations of the subnets
+ * defined in conn's "subnets=" declarations and synthesizes conns with
+ * the proper left/right subnet setttings, and then calls operation(),
+ * (which is usually add/delete/route/etc.)
+ *
+ */
+int starter_permutate_conns(int (*operation)(struct starter_config *cfg
+					     , struct starter_conn *conn)
+			    , struct starter_config *cfg
+			    , struct starter_conn *conn)
+{
+	struct starter_conn sc;
+	bool done = FALSE;
+	int lc,rc;
+	char *leftnets, *rightnets;
+	char tmpconnname[256];
+	ip_subnet lnet,rnet;
+
+	leftnets = "";
+	if(conn->left.strings_set[KSCF_SUBNETS]) {
+		leftnets = conn->left.strings[KSCF_SUBNETS];
+	}
+
+	rightnets = "";
+	if(conn->right.strings_set[KSCF_SUBNETS]) {
+		rightnets =conn->right.strings[KSCF_SUBNETS];
+	}
+
+	/*
+	 * the first combination is the current leftsubnet/rightsubnet
+	 * value, and then each iteration of rightsubnets, and then
+	 * each permutation of leftsubnets X rightsubnets.
+	 *
+	 * If both subnet= is set and subnets=, then it is as if an extra
+	 * element of subnets= has been added, so subnets= for only one
+	 * side will do the right thing, as will some combinations of also=
+	 *
+	 */
+
+	if(conn->left.strings_set[KSCF_SUBNET]) {
+		lnet = conn->left.subnet;
+		lc=0;
+	} else {
+		one_subnet_from_string(conn, &leftnets, conn->left.addr_family, &lnet, "left");
+		lc=1;
+	}
+
+	if(conn->right.strings_set[KSCF_SUBNET]) {
+		rnet = conn->right.subnet;
+		rc=0;
+	} else {
+		one_subnet_from_string(conn, &rightnets, conn->right.addr_family, &rnet, "right");
+		rc=1;
+	}
+
+	do {
+		int success;
+
+		/* copy conn  --- we can borrow all pointers, since this
+		 * is a temporary copy */
+		sc = *conn;
+
+		/* fix up leftsubnet/rightsubnet properly, make sure
+		 * that has_client is set.
+		 */
+		sc.left.subnet = lnet;
+		sc.left.has_client = TRUE;
+		
+		sc.right.subnet = rnet;
+		sc.right.has_client = TRUE;
+
+		snprintf(tmpconnname,256,"%s/%uX%u", conn->name, lc, rc);
+		sc.name = tmpconnname;
+		
+		success = (*operation)(cfg, &sc);
+		if(success != 0) {
+			/* fail at first failure? . I think so */
+			return success;
+		}
+
+
+		/* okay, advance right first, and if it is out, then do
+		 * left.
+		 */
+		rc++;
+		if(!one_subnet_from_string(conn, &rightnets, conn->right.addr_family, &rnet, "right")) {
+			/* reset right, and advance left! */
+			rightnets = "";
+			if(conn->right.strings_set[KSCF_SUBNETS]) {
+				rightnets =conn->right.strings[KSCF_SUBNETS];
+			}
+
+			/* should rightsubnet= be the first item ? */
+			if(conn->right.strings_set[KSCF_SUBNET]) {
+				rnet = conn->right.subnet;
+				rc=0;
+			} else {
+				one_subnet_from_string(conn, &rightnets, conn->right.addr_family, &rnet, "right");
+				rc = 1;
+			} 
+			
+			/* left */
+			lc++;
+			if(!one_subnet_from_string(conn, &leftnets, conn->left.addr_family, &lnet, "left")) {
+				done = 1;
+			}
+		}
+
+	} while(!done);
+	
+	return 0;  /* success. */
+}
+
+int starter_whack_add_conn(struct starter_config *cfg
+			   , struct starter_conn *conn)
+{
+	/* basic case, nothing special to synthize! */
+	if(!conn->left.strings_set[KSCF_SUBNETS] &&
+	   !conn->right.strings_set[KSCF_SUBNETS]) {
+		return starter_whack_basic_add_conn(cfg,conn);
+	}
+
+	return starter_permutate_conns(starter_whack_basic_add_conn
+				       , cfg, conn);
+}
+
+int starter_whack_del_conn (struct starter_config *cfg
+			    , struct starter_conn *conn)
 {
 	struct whack_message msg;
 	init_whack_msg(&msg);
