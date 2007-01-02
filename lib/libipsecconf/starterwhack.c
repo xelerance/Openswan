@@ -316,6 +316,7 @@ static void set_whack_end(struct starter_config *cfg
 	w->protocol = l->protocol;
 	w->port = l->port;
 	w->virt = l->virt;
+	w->xauthname = l->strings[KSCF_XAUTHUSERNAME];
 	w->key_from_DNS_on_demand = l->key_from_DNS_on_demand;
 
 	if(l->options_set[KNCF_XAUTHSERVER]) {
