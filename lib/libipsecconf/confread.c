@@ -23,7 +23,9 @@
 #include <sys/queue.h>
 
 #include "oswalloc.h"
+
 #include "ipsecconf/parser.h"
+#include "ipsecconf/files.h"
 #include "ipsecconf/confread.h"
 #include "ipsecconf/interfaces.h"
 #include "ipsecconf/starterlog.h"
@@ -85,6 +87,8 @@ static void default_values (struct starter_config *cfg)
 
 	cfg->conn_default.options[KBF_AUTO] = STARTUP_NO;
 	cfg->conn_default.state = STATE_LOADED;
+
+	cfg->ctlbase = clone_str(CTL_FILE, "default base");
 }
 
 #define ERR_FOUND(args...) \
@@ -260,7 +264,8 @@ static int load_setup (struct starter_config *cfg
  * Validate that yes in fact we are one side of the tunnel
  * 
  * The function checks that IP addresses are valid, nexthops are
- * present (if needed) as well as policies
+ * present (if needed) as well as policies, and sets the leftID 
+ * from the left= if it isn't set.
  *
  * @param conn_st a connection definition
  * @param end a connection end
@@ -918,7 +923,7 @@ static int load_conn (struct starter_config *cfg
 }
 
     
-void conn_default (struct starter_conn *conn,
+void conn_default (char *n, struct starter_conn *conn,
 		   struct starter_conn *def)
 {
     int i;
@@ -977,7 +982,7 @@ struct starter_conn *alloc_add_conn(struct starter_config *cfg, char *name, err_
 	return NULL;
     }
 
-    conn_default(conn, &cfg->conn_default);
+    conn_default(name, conn, &cfg->conn_default);
     conn->name = xstrdup(name);
     conn->desired_state = STARTUP_NO;
     conn->state = STATE_FAILED;
@@ -1011,7 +1016,7 @@ int init_load_conn(struct starter_config *cfg
 }
 
 
-struct starter_config *confread_load(const char *file, err_t *perr)
+struct starter_config *confread_load(const char *file, err_t *perr, char *ctlbase)
 {
 	struct starter_config *cfg = NULL;
 	struct config_parsed *cfgp;
@@ -1036,6 +1041,11 @@ struct starter_config *confread_load(const char *file, err_t *perr)
 	 * Set default values
 	 */
 	default_values(cfg);
+
+	if(ctlbase) {
+	    pfree(cfg->ctlbase);
+	    cfg->ctlbase = clone_str(ctlbase, "control socket");
+	}
 
 	/**
 	 * Load setup
