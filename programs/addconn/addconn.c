@@ -394,20 +394,21 @@ main(int argc, char *argv[])
 	    for(conn = cfg->conns.tqh_first;
 		conn != NULL;
 		conn = conn->link.tqe_next)
-		{
-		    /* yes, let's make it case-insensitive */
-		    if(strcasecmp(conn->name, connname)==0) {
-			if(conn->state == STATE_ADDED) {
-			    printf("\nconn %s already added\n", conn->name);
-			} else if(conn->state == STATE_FAILED) {
-			    printf("\nconn %s did not load properly\n", conn->name);
-			} else {
-			    exit_status = starter_whack_add_conn(cfg, conn);
-			    conn->state = STATE_ADDED;
-			}
+	    {
+		/* yes, let's make it case-insensitive */
+		if(strcasecmp(conn->name, connname)==0) {
+		    if(conn->state == STATE_ADDED) {
+			printf("\nconn %s already added\n", conn->name);
+		    } else if(conn->state == STATE_FAILED) {
+			printf("\nconn %s did not load properly\n", conn->name);
+		    } else {
+			exit_status = starter_whack_add_conn(cfg, conn);
+			conn->state = STATE_ADDED;
 		    }
+		    break;
 		}
-
+	    }
+	    
 	    if(conn == NULL) {
 		/* only if we don't find it, do we now look for aliases */
 
