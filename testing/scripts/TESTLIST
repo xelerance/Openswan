@@ -28,3 +28,8 @@ unittest	readwriteconf-02	good
 unittest	readwriteconf-03	skip
 
 unittest	readwriteconf-04	good
+
+# test cases for showhostkey.
+umlXhost	showhostkey-01		good
+umlXhost	showhostkey-02		good
+

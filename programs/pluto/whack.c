@@ -397,6 +397,7 @@ enum option_enums {
     END_CLIENTWITHIN,
     END_CLIENTPROTOPORT,
     END_DNSKEYONDEMAND,
+    END_XAUTHNAME,
     END_XAUTHSERVER,
     END_XAUTHCLIENT,
     END_MODECFGCLIENT,
@@ -1225,30 +1226,6 @@ main(int argc, char **argv)
 	    msg.right.id = optarg;	/* decoded by Pluto */
 	    continue;
 
-#ifdef XAUTH
-	case END_XAUTHSERVER:	/* --xauthserver */
-	    msg.right.xauth_server = TRUE;
-	    continue;
-
-	case END_XAUTHCLIENT:	/* --xauthclient */
-	    msg.right.xauth_client = TRUE;
-	    continue;
-#else
-	case END_XAUTHSERVER:
-	case END_XAUTHCLIENT:
-	  diag("pluto is not built with XAUTH support");
-	  continue;
-#endif
-#ifdef MODECFG
-	case END_MODECFGCLIENT:
-	    msg.right.modecfg_client = TRUE;
-	    continue;
-
-	case END_MODECFGSERVER:
-	    msg.right.modecfg_server = TRUE;
-	    continue;
-#endif
-
 	case END_SENDCERT:
    	    if(streq(optarg, "yes") || streq(optarg, "always"))
 	    {
@@ -1354,6 +1331,7 @@ main(int argc, char **argv)
 	case END_UPDOWN:	/* --updown <updown> */
 	    msg.right.updown = optarg;
 	    continue;
+
 
 	case CD_TO:		/* --to */
 	    /* process right end, move it to left, reset it */
@@ -1506,12 +1484,25 @@ main(int argc, char **argv)
 	    msg.tunnel_addr_family = AF_INET6;
 	    continue;
 
+#ifdef XAUTH
+	case END_XAUTHSERVER:	/* --xauthserver */
+	    msg.right.xauth_server = TRUE;
+	    continue;
+
+	case END_XAUTHCLIENT:	/* --xauthclient */
+	    msg.right.xauth_client = TRUE;
+	    continue;
+
 	case OPT_XAUTHNAME:
-	  gotxauthname = TRUE;
-	  xauthname[0]='\0';
-	  strncat(xauthname, optarg, sizeof(xauthname));
-	  xauthnamelen = strlen(xauthname)+1;
-	  continue;
+	    /* we can't tell if this is going to be --initiate, or
+	     * if this is going to be an conn definition, so do
+	     * both actions */
+	    msg.right.xauth_name = optarg;
+	    gotxauthname = TRUE;
+	    xauthname[0]='\0';
+	    strncat(xauthname, optarg, sizeof(xauthname));
+	    xauthnamelen = strlen(xauthname)+1;
+	    continue;
 
 	case OPT_XAUTHPASS:
 	  gotxauthpass = TRUE;
@@ -1519,6 +1510,24 @@ main(int argc, char **argv)
 	  strncat(xauthpass, optarg, sizeof(xauthpass));
 	  xauthpasslen = strlen(xauthpass)+1;
 	  continue;
+
+#ifdef MODECFG
+	case END_MODECFGCLIENT:
+	    msg.right.modecfg_client = TRUE;
+	    continue;
+
+	case END_MODECFGSERVER:
+	    msg.right.modecfg_server = TRUE;
+	    continue;
+#endif /* MODECFG */
+
+#else
+	case END_XAUTHSERVER:
+	case END_XAUTHCLIENT:
+	case END_XAUTHNAME:
+	  diag("pluto is not built with XAUTH support");
+	  continue;
+#endif /* XAUTH */
 
 	case OPT_TPMEVAL:
 #ifdef TPM

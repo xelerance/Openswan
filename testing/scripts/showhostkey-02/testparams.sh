@@ -4,7 +4,7 @@ TEST_PURPOSE=regress
 TEST_PROB_REPORT=0
 TEST_TYPE=umlXhost
 
-TESTNAME=showhostkey-01
+TESTNAME=showhostkey-02
 EXITONEMPTY=--exitonempty
 
 XHOST_LIST="EAST"

@@ -438,10 +438,6 @@ static int validate_end(struct starter_conn *conn_st
 	end->updown = xstrdup(end->strings[KSCF_UPDOWN]);
     }
 
-    if(end->strings_set[KSCF_UPDOWN]) {
-	end->updown = xstrdup(end->strings[KSCF_UPDOWN]);
-    }
-
     if(end->strings_set[KSCF_PROTOPORT]) {
 	err_t ugh;
 	char *value = end->strings[KSCF_PROTOPORT];

@@ -797,6 +797,7 @@ aggr_outI1(int whack_sock,
 	   , enum crypto_importance importance)
 {
     struct state *st;
+    struct spd_route *sr;
 
     /* set up new state */
     cur_state = st = new_state();
@@ -812,6 +813,17 @@ aggr_outI1(int whack_sock,
     st->st_state = STATE_AGGR_I1;
 
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
+
+    st->st_import = importance;
+
+    for(sr=&c->spd; sr!=NULL; sr=sr->next) {
+	if(sr->this.xauth_client) {
+	    if(sr->this.xauth_name) {
+		strncpy(st->st_xauth_username, sr->this.xauth_name, sizeof(st->st_xauth_username));
+		break;
+	    }
+	}
+    }
 
     insert_state(st);	/* needs cookies, connection, and msgid (0) */
 

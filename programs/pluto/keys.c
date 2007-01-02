@@ -105,12 +105,16 @@ static int print_secrets(struct secret *secret
 {
     char idb1[IDTOA_BUF];
     char idb2[IDTOA_BUF];
-    const char *kind;
+    const char *kind = "?";
+    const char *more = "";
     
     switch(pks->kind) {
     case PPK_PSK: kind="PSK"; break;
     case PPK_RSA: kind="RSA"; break;
     case PPK_PIN: kind="PIN"; break;
+    case PPK_XAUTH: kind="XAUTH"; break;
+    default:
+	return 1;
     }
 
     struct id_list *ids = osw_get_idlist(secret);
@@ -118,11 +122,14 @@ static int print_secrets(struct secret *secret
     strcpy(idb2,"");
 
     if(ids!=NULL) idtoa(&ids->id, idb1, sizeof(idb1));
-    if(ids->next!=NULL) idtoa(&ids->next->id, idb2, sizeof(idb2));
+    if(ids->next!=NULL) {
+	idtoa(&ids->next->id, idb2, sizeof(idb2));
+	if(ids->next->next) more="more";
+    }
 
     whack_log(RC_COMMENT, "    %d: %s %s %s%s", osw_get_secretlineno(secret),
 	      kind, 
-	      idb1, idb2, (ids->next->next != NULL ? " more" :""));
+	      idb1, idb2, more);
 
     /* continue loop until end */
     return 1;
@@ -290,6 +297,32 @@ osw_get_secret(const struct connection *c
     best = osw_find_secret_by_id(pluto_secrets
 				 , kind
 				 , my_id, his_id, asym);
+
+    return best;
+}
+
+/*
+ * find the struct secret associated with an XAUTH username.
+ */
+struct secret *
+osw_get_xauthsecret(const struct connection *c UNUSED
+		    , char *xauthname)
+{
+    struct secret *best = NULL;
+    struct id xa_id;
+
+    DBG(DBG_CONTROL,
+	DBG_log("started looking for xauth secret for %s"
+		, xauthname));
+
+    memset(&xa_id, 0, sizeof(xa_id));
+    xa_id.kind = ID_FQDN;
+    xa_id.name.ptr = (unsigned char *)xauthname;
+    xa_id.name.len = strlen(xauthname);
+
+    best = osw_find_secret_by_id(pluto_secrets
+				 , PPK_XAUTH
+				 , &xa_id, NULL, TRUE);
 
     return best;
 }

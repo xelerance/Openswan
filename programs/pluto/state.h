@@ -49,6 +49,7 @@ struct state;	/* forward declaration of tag */
 extern bool reserve_msgid(struct state *isakmp_sa, msgid_t msgid);
 extern msgid_t generate_msgid(struct state *isakmp_sa);
 
+#define XAUTH_USERNAME_LEN 64
 
 /* Oakley (Phase 1 / Main Mode) transform and attributes
  * This is a flattened/decoded version of what is represented
@@ -273,7 +274,8 @@ struct state
 
     struct hidden_variables hidden_variables;
 
-    unsigned char *st_xauth_username;
+    char                st_xauth_username[XAUTH_USERNAME_LEN];
+    chunk_t             st_xauth_password;
 
     /* RFC 3706 Dead Peer Detection */
     time_t              st_last_dpd;            /* Time of last DPD transmit */

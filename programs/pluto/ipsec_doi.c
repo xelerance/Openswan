@@ -916,6 +916,7 @@ main_outI1(int whack_sock
 {
     struct state *st = new_state();
     struct msg_digest md;   /* use reply/rbody found inside */
+    struct spd_route *sr;
 
     int numvidtosend = 1;  /* we always send DPD VID */
 #ifdef NAT_TRAVERSAL
@@ -943,7 +944,16 @@ main_outI1(int whack_sock
     st->st_try = try;
     st->st_state = STATE_MAIN_I1;
 
-    st->st_import = importance; 
+    st->st_import = importance;
+
+    for(sr=&c->spd; sr!=NULL; sr=sr->next) {
+	if(sr->this.xauth_client) {
+	    if(sr->this.xauth_name) {
+		strncpy(st->st_xauth_username, sr->this.xauth_name, sizeof(st->st_xauth_username));
+		break;
+	    }
+	}
+    }
 
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
 

@@ -324,6 +324,9 @@ static void set_whack_end(struct starter_config *cfg
 	if(l->options_set[KNCF_XAUTHCLIENT]) {
 		w->xauth_client = l->options[KNCF_XAUTHCLIENT];
 	}
+	if(l->strings_set[KSCF_XAUTHUSERNAME]) {
+		w->xauth_name = l->strings[KSCF_XAUTHUSERNAME];
+	}
 	if(l->options_set[KNCF_MODECONFIGSERVER]) {
 		w->modecfg_server = l->options[KNCF_MODECONFIGSERVER];
 	}

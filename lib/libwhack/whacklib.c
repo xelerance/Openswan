@@ -137,6 +137,8 @@ err_t pack_whack_msg (struct whackpacker *wp)
     	|| !pack_str(wp, &wp->msg->ike)         /* string 16 */
     	|| !pack_str(wp, &wp->msg->esp)         /* string 17 */
     	|| !pack_str(wp, &wp->msg->tpmeval)     /* string 18 */
+    	|| !pack_str(wp, &wp->msg->left.xauth_name)    /* string 19 */
+    	|| !pack_str(wp, &wp->msg->right.xauth_name)   /* string 20 */
 	|| wp->str_roof - wp->str_next < (ptrdiff_t)wp->msg->keyval.len)    /* chunk (sort of string 19) */
     {
 	ugh = "too many bytes of strings to fit in message to pluto";
@@ -187,6 +189,8 @@ err_t unpack_whack_msg (struct whackpacker *wp)
     	|| !unpack_str(wp, &wp->msg->ike)         /* string 16 */
     	|| !unpack_str(wp, &wp->msg->esp)         /* string 17 */
     	|| !unpack_str(wp, &wp->msg->tpmeval)     /* string 18 */
+    	|| !unpack_str(wp, &wp->msg->left.xauth_name)    /* string 19 */
+    	|| !unpack_str(wp, &wp->msg->right.xauth_name)   /* string 20 */
 	|| wp->str_roof - wp->str_next != (ptrdiff_t)wp->msg->keyval.len)	/* check chunk */
     {
 	ugh = "message from whack contains bad string";

@@ -173,10 +173,16 @@ struct end {
 #ifdef VIRTUAL_IP
     struct virtual_t *virt;
 #endif
+#ifdef XAUTH
     bool xauth_server;
     bool xauth_client;
+    char *xauth_name;
+    char *xauth_password;
+#ifdef MODECFG
     bool modecfg_server;        /* Give local addresses to tunnel's end */
     bool modecfg_client;        /* request address for local end */
+#endif
+#endif
 };
 
 struct spd_route {

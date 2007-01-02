@@ -839,30 +839,38 @@ format_connection(char *buf, size_t buf_len
 }
 
 static void
+unshare_connection_end_strings(struct end *e)
+{
+    /* do "left" */
+    unshare_id_content(&e->id);
+    e->updown = clone_str(e->updown, "updown");
+
+#ifdef SMARTCARD
+    scx_share(e->sc);
+#endif
+    share_cert(e->cert);
+    if (e->ca.ptr != NULL)
+	clonetochunk(e->ca, e->ca.ptr, e->ca.len, "ca string");
+
+    if(e->xauth_name) {
+	e->xauth_name = clone_str(e->xauth_name, "xauth name");
+    }
+}    
+
+
+static void
 unshare_connection_strings(struct connection *c)
 {
+    struct spd_route *sr;
+
     c->name = clone_str(c->name, "connection name");
 
-    unshare_id_content(&c->spd.this.id);
-    c->spd.this.updown = clone_str(c->spd.this.updown, "updown");
-
-#ifdef SMARTCARD
-    scx_share(c->spd.this.sc);
-#endif
-    share_cert(c->spd.this.cert);
-    if (c->spd.this.ca.ptr != NULL)
-	clonetochunk(c->spd.this.ca, c->spd.this.ca.ptr, c->spd.this.ca.len, "ca string");
-
-    unshare_id_content(&c->spd.that.id);
-    c->spd.that.updown = clone_str(c->spd.that.updown, "updown");
-
-#ifdef SMARTCARD
-    scx_share(c->spd.that.sc);
-#endif
-    share_cert(c->spd.that.cert);
-    if (c->spd.that.ca.ptr != NULL)
-	clonetochunk(c->spd.that.ca, c->spd.that.ca.ptr, c->spd.that.ca.len, "ca string");
-
+    /* do "right" */
+    for(sr=&c->spd; sr!=NULL; sr=sr->next) {
+	unshare_connection_end_strings(&sr->this);
+	unshare_connection_end_strings(&sr->that);
+    }
+	
     /* increment references to algo's, if any */
     if(c->alg_info_ike) {
 	alg_info_addref(IKETOINFO(c->alg_info_ike));
@@ -871,7 +879,6 @@ unshare_connection_strings(struct connection *c)
     if(c->alg_info_esp) {
 	alg_info_addref(ESPTOINFO(c->alg_info_esp));
     }
-
 }
 
 static void
@@ -1074,6 +1081,7 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
 #ifdef XAUTH
     dst->xauth_server = src->xauth_server;
     dst->xauth_client = src->xauth_client;
+    dst->xauth_name = src->xauth_name;
 #endif
     dst->protocol = src->protocol;
     dst->port = src->port;
@@ -4513,10 +4521,14 @@ show_connections_status(void)
 	    while (sr != NULL)
 	    {
 		char srcip[ADDRTOT_BUF], dstip[ADDRTOT_BUF];
-		char thissemi[3+sizeof("srcup=")];
-		char thatsemi[3+sizeof("dstup=")];
-		char thiscertsemi[3+sizeof("srccert=")+PATH_MAX];
-		char thatcertsemi[3+sizeof("dstcert=")+PATH_MAX];
+		char thissemi[3+sizeof("myup=")];
+		char thatsemi[3+sizeof("hisup=")];
+#ifdef XAUTH
+		char thisxauthsemi[XAUTH_USERNAME_LEN+sizeof("myxauthuser=")];
+		char thatxauthsemi[XAUTH_USERNAME_LEN+sizeof("hisxauthuser=")];
+#endif
+		char thiscertsemi[3+sizeof("mycert=")+PATH_MAX];
+		char thatcertsemi[3+sizeof("hiscert=")+PATH_MAX];
 		char *thisup, *thatup;
 
 		(void) format_connection(topo, sizeof(topo), c, sr);
@@ -4543,7 +4555,7 @@ show_connections_status(void)
 		    thissemi[0]=';';
 		    thissemi[1]=' ';
 		    thissemi[2]='\0';
-		    strcat(thissemi, "srcup=");
+		    strcat(thissemi, "myup=");
 		    thisup=sr->this.updown;
 		}
 		
@@ -4553,30 +4565,52 @@ show_connections_status(void)
 		    thatsemi[0]=';';
 		    thatsemi[1]=' ';
 		    thatsemi[2]='\0';
-		    strcat(thatsemi, "dstup=");
+		    strcat(thatsemi, "hisup=");
 		    thatup=sr->that.updown;
 		}
 		
 		thiscertsemi[0]='\0';
 		if(sr->this.cert_filename) {
 		    snprintf(thiscertsemi, sizeof(thiscertsemi)-1
-			     , "; srccert=%s"
+			     , "; mycert=%s"
 			     , sr->this.cert_filename);
 		}
 
 		thatcertsemi[0]='\0';
 		if(sr->that.cert_filename) {
 		    snprintf(thatcertsemi, sizeof(thatcertsemi)-1
-			     , "; dstcert=%s"
+			     , "; hiscert=%s"
 			     , sr->that.cert_filename);
 		}
-		
-		whack_log(RC_COMMENT, "\"%s\"%s:     srcip=%s; dstip=%s%s%s%s%s%s%s;"
+
+		whack_log(RC_COMMENT, "\"%s\"%s:     myip=%s; hisip=%s%s%s%s%s%s%s;"
 			  , c->name, instance, srcip, dstip
 			  , thissemi, thisup
 			  , thatsemi, thatup
 			  , thiscertsemi
 			  , thatcertsemi);
+
+#ifdef XAUTH
+		if(sr->this.xauth_name || sr->that.xauth_name) {
+		    thisxauthsemi[0]='\0';
+		    if(sr->this.xauth_name) {
+			snprintf(thisxauthsemi, sizeof(thisxauthsemi)-1
+				 , "myxauthuser=%s; "
+				 , sr->this.xauth_name);
+		    }
+		    
+		    thatxauthsemi[0]='\0';
+		    if(sr->that.xauth_name) {
+			snprintf(thatxauthsemi, sizeof(thatxauthsemi)-1
+				 , "hisxauthuser=%s; "
+				 , sr->that.xauth_name);
+		    }
+		    whack_log(RC_COMMENT, "\"%s\"%s:     xauth info: %s%s"
+			      , c->name, instance
+			      , thisxauthsemi
+			      , thatxauthsemi);
+		}
+#endif
 		sr = sr->next;
 		num++;
 	    }

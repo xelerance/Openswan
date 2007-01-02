@@ -121,7 +121,8 @@ enum keyword_string_conn_field {
     KSCF_ESPENCKEY    = 13,
     KSCF_ESPAUTHKEY   = 14,
     KSCF_SOURCEIP     = 15,
-    KSCF_MAX          = 16
+    KSCF_XAUTHUSERNAME= 16,
+    KSCF_MAX          = 17
 };
 
 
