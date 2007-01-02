@@ -66,6 +66,7 @@
 #include "spdb.h"
 #include "timer.h"
 #include "rnd.h"
+#include "keys.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "whack.h"
 
@@ -1749,7 +1750,7 @@ stf_status xauth_client_resp(struct state *st
 			     ,u_int16_t ap_id)
 {
     unsigned char *r_hash_start,*r_hashval;
-    char xauth_username[XAUTH_USERNAME_LEN], xauth_password[64];
+    char xauth_username[XAUTH_USERNAME_LEN];
     struct connection *c = st->st_connection;
     
 
@@ -1840,29 +1841,55 @@ stf_status xauth_client_resp(struct state *st
 		case XAUTH_USER_PASSWORD:
 		    attr.isaat_af_type = attr_type | ISAKMP_ATTR_AF_TLV;
 		    out_struct(&attr, &isakmp_xauth_attribute_desc, &strattr, &attrval);
-		    if(st->st_whack_sock == -1)
-		    {
-			loglog(RC_LOG_SERIOUS, "XAUTH password requested, but no file descriptor available for prompt");
-			return STF_FAIL;
+
+		    if(st->st_xauth_password.ptr == NULL) {
+			struct secret *s;
+
+			s = osw_get_xauthsecret(st->st_connection, st->st_xauth_username);
+			DBG(DBG_CONTROLMORE
+			    , DBG_log("looked up username=%s, got=%p", st->st_xauth_username, s));
+			if(s) {
+			    struct private_key_stuff *pks=osw_get_pks(s);
+
+			    clonetochunk(st->st_xauth_password
+					 , pks->u.preshared_secret.ptr
+					 , pks->u.preshared_secret.len
+					 , "savedxauth password");
+			}
+		    }
+
+		    if(st->st_xauth_password.ptr == NULL) {
+			char xauth_password[64];
+
+			if(st->st_whack_sock == -1)
+			{
+			    loglog(RC_LOG_SERIOUS, "XAUTH password requested, but no file descriptor available for prompt");
+			    return STF_FAIL;
+			}
+			
+			if(!whack_prompt_for(st->st_whack_sock
+					     , c->name, "Password", FALSE
+					     , xauth_password
+					     , sizeof(xauth_password)))
+			{
+			    loglog(RC_LOG_SERIOUS, "XAUTH password prompt failed.");
+			    return STF_FAIL;
+			}
+			
+			/* trip any trailing white space */
+			{
+			    char *u = xauth_password;
+			    
+			    strsep(&u, " \n\t");
+			}
+			clonereplacechunk(st->st_xauth_password
+					  , xauth_password, strlen(xauth_password)
+					  , "XAUTH password");
 		    }
 		    
-		    if(!whack_prompt_for(st->st_whack_sock
-					 , c->name, "Password", FALSE
-					 , xauth_password
-					 , sizeof(xauth_password)))
-		    {
-			loglog(RC_LOG_SERIOUS, "XAUTH password prompt failed.");
-			return STF_FAIL;
-		    }
-
-		    /* trip any trailing white space */
-		    {
-		      char *u = xauth_password;
-
-		      strsep(&u, " \n\t");
-		    }
-		    out_raw(xauth_password, strlen(xauth_password)
-			    ,&attrval, "XAUTH password");
+		    out_raw(st->st_xauth_password.ptr
+			    , st->st_xauth_password.len
+			    , &attrval, "XAUTH password");
 		    close_output_pbs(&attrval);
 		    break;
 		    

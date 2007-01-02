@@ -275,6 +275,7 @@ struct state
     struct hidden_variables hidden_variables;
 
     char                st_xauth_username[XAUTH_USERNAME_LEN];
+    chunk_t             st_xauth_password;
 
     /* RFC 3706 Dead Peer Detection */
     time_t              st_last_dpd;            /* Time of last DPD transmit */

@@ -574,7 +574,8 @@ enum PrivateKeyKind {
     PPK_PSK = 1,
     /* PPK_DSS, */	/* not implemented */
     PPK_RSA = 3,
-    PPK_PIN = 4
+    PPK_PIN = 4,
+    PPK_XAUTH=5,
 };
 
 

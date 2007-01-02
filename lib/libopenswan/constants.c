@@ -908,10 +908,11 @@ static const char *const ppk_name[] = {
   "PPK_DSS",
   "PPK_RSA",
   "PPK_PIN",
+  "PPK_XAUTH",
   NULL
 };
 
-enum_names ppk_names = { PPK_PSK, PPK_PIN, ppk_name, NULL };
+enum_names ppk_names = { PPK_PSK, PPK_XAUTH, ppk_name, NULL };
 
 /*
  * NAT-Traversal defines for nat_traveral type from nat_traversal.h

@@ -399,6 +399,8 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 
     idtoa(my_id,  idme,  IDTOA_BUF);
 
+    idhim[0]='\0';
+    idhim2[0]='\0';
     if(his_id) {
 	idtoa(his_id, idhim, IDTOA_BUF);
 	strcpy(idhim2, idhim);
@@ -406,6 +408,13 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 
     for (s = secrets; s != NULL; s = s->next)
     {
+	DBG(DBG_CONTROLMORE, 
+	    DBG_log("line %d: key type %s(%s) to type %s\n"
+		    , s->secretlineno
+		    , enum_name(&ppk_names, kind)
+		    , idme
+		    , enum_name(&ppk_names, s->pks.kind)));
+
 	if (s->pks.kind == kind)
 	{
 	    unsigned int match = 0;
@@ -448,6 +457,9 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 		    && s->ids->next == NULL)
 		    match |= match_default;
 	    }
+
+	    DBG(DBG_CONTROL, 
+		DBG_log("line %d: match=%d\n", s->secretlineno, match));
 
 	    switch (match)
 	    {
@@ -740,6 +752,42 @@ static err_t osw_process_psk_secret(const struct secret *secrets, chunk_t *psk)
     return ugh;
 }
 
+/* parse XAUTH secret from file */
+static err_t osw_process_xauth_secret(const struct secret *secrets, chunk_t *xauth)
+{
+    err_t ugh = NULL;
+    
+    if (*flp->tok == '"' || *flp->tok == '\'')
+    {
+	clonetochunk(*xauth, flp->tok+1, flp->cur - flp->tok  - 2, "XAUTH");
+	(void) shift();
+    }
+    else
+    {
+	char buf[RSA_MAX_ENCODING_BYTES];	/* limit on size of binary representation of key */
+	size_t sz;
+
+	ugh = ttodatav(flp->tok, flp->cur - flp->tok, 0, buf, sizeof(buf), &sz
+	    , diag_space, sizeof(diag_space), TTODATAV_SPACECOUNTS);
+	if (ugh != NULL)
+	{
+	    /* ttodata didn't like PSK data */
+	    ugh = builddiag("PSK data malformed (%s): %s", ugh, flp->tok);
+	}
+	else
+	{
+	    clonetochunk(*xauth, buf, sz, "XAUTH");
+	    (void) shift();
+	}
+    }
+
+    DBG(DBG_CONTROL, DBG_log("Processing XAUTH at line %d: %s"
+			     , flp->lino
+			     , ugh == NULL ? "passed" : ugh));
+
+    return ugh;
+}
+
 /* Parse fields of RSA private key.
  * A braced list of keyword and value pairs.
  * At the moment, each field is required, in order.
@@ -943,6 +991,13 @@ process_secret(struct secret **psecrets, int verbose,
 	/* preshared key: quoted string or ttodata format */
 	ugh = !shift()? "unexpected end of record in PSK"
 	    : osw_process_psk_secret(secrets, &s->pks.u.preshared_secret);
+    }
+    else if (tokeqword("xauth"))
+    {
+	/* xauth key: quoted string or ttodata format */
+	s->pks.kind = PPK_XAUTH;
+	ugh = !shift()? "unexpected end of record in PSK"
+	    : osw_process_xauth_secret(secrets, &s->pks.u.preshared_secret);
     }
     else if (tokeqword("rsa"))
     {
