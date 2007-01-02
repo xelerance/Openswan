@@ -316,7 +316,6 @@ static void set_whack_end(struct starter_config *cfg
 	w->protocol = l->protocol;
 	w->port = l->port;
 	w->virt = l->virt;
-	w->xauthname = l->strings[KSCF_XAUTHUSERNAME];
 	w->key_from_DNS_on_demand = l->key_from_DNS_on_demand;
 
 	if(l->options_set[KNCF_XAUTHSERVER]) {
@@ -324,6 +323,9 @@ static void set_whack_end(struct starter_config *cfg
 	}
 	if(l->options_set[KNCF_XAUTHCLIENT]) {
 		w->xauth_client = l->options[KNCF_XAUTHCLIENT];
+	}
+	if(l->strings_set[KSCF_XAUTHUSERNAME]) {
+		w->xauth_name = l->strings[KSCF_XAUTHUSERNAME];
 	}
 	if(l->options_set[KNCF_MODECONFIGSERVER]) {
 		w->modecfg_server = l->options[KNCF_MODECONFIGSERVER];

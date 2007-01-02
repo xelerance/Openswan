@@ -4582,24 +4582,26 @@ show_connections_status(void)
 			  , thiscertsemi
 			  , thatcertsemi);
 
-#ifdef XAUTH		
-		thisxauthsemi[0]='\0';
-		if(sr->this.xauth_name) {
-		    snprintf(thisxauthsemi, sizeof(thisxauthsemi)-1
-			     , "; srcxauth=%s"
-			     , sr->this.xauth_name);
+#ifdef XAUTH
+		if(sr->this.xauth_name || sr->that.xauth_name) {
+		    thisxauthsemi[0]='\0';
+		    if(sr->this.xauth_name) {
+			snprintf(thisxauthsemi, sizeof(thisxauthsemi)-1
+				 , "; srcxauth=%s"
+				 , sr->this.xauth_name);
+		    }
+		    
+		    thatxauthsemi[0]='\0';
+		    if(sr->that.xauth_name) {
+			snprintf(thatxauthsemi, sizeof(thatxauthsemi)-1
+				 , "; dstxauth=%s"
+				 , sr->that.xauth_name);
+		    }
+		    whack_log(RC_COMMENT, "\"%s\"%s xauth info:%s%s"
+			      , c->name, instance
+			      , thisxauthsemi
+			      , thatxauthsemi);
 		}
-
-		thatxauthsemi[0]='\0';
-		if(sr->that.xauth_name) {
-		    snprintf(thatxauthsemi, sizeof(thatxauthsemi)-1
-			     , "; dstxauth=%s"
-			     , sr->that.xauth_name);
-		}
-		whack_log(RC_COMMENT, "\"%s\"%s xauth info:%s%s"
-			  , c->name, instance
-			  , thisxauthsemi
-			  , thatxauthsemi);
 #endif
 		sr = sr->next;
 		num++;
