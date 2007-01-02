@@ -1,5 +1,6 @@
-/* FreeS/WAN config file parser (parser.h)
+/* Openswan config file parser (parser.h)
  * Copyright (C) 2001-2002 Mathieu Lafon - Arkoon Network Security
+ * Copyright (C) 2003-2006 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -49,6 +50,8 @@ enum keyword_string_config_field {
     KSF_ESP,
     KSF_ALSO,
     KSF_ALSOFLIP,
+    KSF_ACCELERATION,
+    KSF_CONNALIAS,
     KSF_MAX
 };
 
