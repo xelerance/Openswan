@@ -1,6 +1,6 @@
 /*
  * Openswan config file parser (keywords.c)
- * Copyright (C) 2003 Michael Richardson <mcr@sandelman.ottawa.on.ca>
+ * Copyright (C) 2003-2006 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
