@@ -499,7 +499,7 @@ bool one_subnet_from_string(struct starter_conn *conn
 	}
 
 	/* find first non-space item */
-	while(*subnets!='\0' && isspace(*subnets)) subnets++;
+	while(*subnets!='\0' && (isspace(*subnets) || *subnets==',') subnets++;
 
 	/* did we find something? */
 	if(*subnets=='\0') return FALSE;  /* no */
@@ -507,7 +507,7 @@ bool one_subnet_from_string(struct starter_conn *conn
 	eln = subnets;
 	
 	/* find end of this item */
-	while(*subnets!='\0' && !isspace(*subnets)) subnets++;
+        while(*subnets!='\0' && !(isspace(*subnets) || *subnets==',') subnets++;
 	
 	e = ttosubnet(eln, subnets-eln, af, sn);
 	if(e) {
@@ -598,7 +598,7 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 		sc.right.subnet = rnet;
 		sc.right.has_client = TRUE;
 
-		snprintf(tmpconnname,256,"%s/%uX%u", conn->name, lc, rc);
+		snprintf(tmpconnname,256,"%s/%ux%u", conn->name, lc, rc);
 		sc.name = tmpconnname;
 
 		sc.connalias = conn->name;
@@ -655,8 +655,8 @@ int starter_whack_add_conn(struct starter_config *cfg
 				       , cfg, conn);
 }
 
-int starter_whack_del_conn (struct starter_config *cfg
-			    , struct starter_conn *conn)
+int starter_whack_basic_del_conn (struct starter_config *cfg
+				  , struct starter_conn *conn)
 {
 	struct whack_message msg;
 	init_whack_msg(&msg);
@@ -665,7 +665,21 @@ int starter_whack_del_conn (struct starter_config *cfg
 	return send_whack_msg(&msg);
 }
 
-int starter_whack_route_conn (struct starter_conn *conn)
+int starter_whack_del_conn(struct starter_config *cfg
+			   , struct starter_conn *conn)
+{
+	/* basic case, nothing special to synthize! */
+	if(!conn->left.strings_set[KSCF_SUBNETS] &&
+	   !conn->right.strings_set[KSCF_SUBNETS]) {
+		return starter_whack_basic_del_conn(cfg,conn);
+	}
+
+	return starter_permutate_conns(starter_whack_basic_del_conn
+				       , cfg, conn);
+}
+
+int starter_whack_basic_route_conn (struct starter_config *cfg
+				    , struct starter_conn *conn)
 {
 	struct whack_message msg;
 	init_whack_msg(&msg);
@@ -674,7 +688,21 @@ int starter_whack_route_conn (struct starter_conn *conn)
 	return send_whack_msg(&msg);
 }
 
-int starter_whack_initiate_conn (struct starter_conn *conn)
+int starter_whack_route_conn(struct starter_config *cfg
+			   , struct starter_conn *conn)
+{
+	/* basic case, nothing special to synthize! */
+	if(!conn->left.strings_set[KSCF_SUBNETS] &&
+	   !conn->right.strings_set[KSCF_SUBNETS]) {
+		return starter_whack_basic_route_conn(cfg,conn);
+	}
+
+	return starter_permutate_conns(starter_whack_basic_route_conn
+				       , cfg, conn);
+}
+
+int starter_whack_initiate_conn (struct starter_config *cfg
+				 ,struct starter_conn *conn)
 {
 	struct whack_message msg;
 	init_whack_msg(&msg);
