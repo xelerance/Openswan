@@ -1,7 +1,7 @@
 /* Openswan command interface to Pluto
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
- * Copyright (C) 2004 Xelerance Corporation
+ * Copyright (C) 2004-2006  Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -139,6 +139,7 @@ err_t pack_whack_msg (struct whackpacker *wp)
     	|| !pack_str(wp, &wp->msg->tpmeval)     /* string 18 */
     	|| !pack_str(wp, &wp->msg->left.xauth_name)    /* string 19 */
     	|| !pack_str(wp, &wp->msg->right.xauth_name)   /* string 20 */
+    	|| !pack_str(wp, &wp->msg->connalias)   /* string 21 */
 	|| wp->str_roof - wp->str_next < (ptrdiff_t)wp->msg->keyval.len)    /* chunk (sort of string 19) */
     {
 	ugh = "too many bytes of strings to fit in message to pluto";
@@ -191,6 +192,7 @@ err_t unpack_whack_msg (struct whackpacker *wp)
     	|| !unpack_str(wp, &wp->msg->tpmeval)     /* string 18 */
     	|| !unpack_str(wp, &wp->msg->left.xauth_name)    /* string 19 */
     	|| !unpack_str(wp, &wp->msg->right.xauth_name)   /* string 20 */
+    	|| !unpack_str(wp, &wp->msg->connalias)   /* string 21 */
 	|| wp->str_roof - wp->str_next != (ptrdiff_t)wp->msg->keyval.len)	/* check chunk */
     {
 	ugh = "message from whack contains bad string";

@@ -182,6 +182,9 @@ struct whack_message {
     /* for WHACK_TCPEVAL */
     char *tpmeval;
 
+    /* for connalias string */
+    char *connalias;
+
     /* space for strings (hope there is enough room):
      * Note that pointers don't travel on wire.
      *  1 connection name [name_len]
@@ -253,6 +256,8 @@ extern void clear_end(struct whack_end *e);
 
 extern size_t whack_get_secret(char *buf, size_t bufsize);
 extern int whack_get_value(char *buf, size_t bufsize);
+
+extern bool osw_alias_cmp(const char *needle, const char *haystack);
 
 /*
  * Local Variables:

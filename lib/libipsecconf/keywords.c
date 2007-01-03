@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keywords.c,v 1.12 2004/12/02 16:26:02 ken Exp $
  */
 
 #include <sys/queue.h>
@@ -266,6 +265,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"cert",           kv_conn|kv_leftright, kt_filename, KSCF_CERT,NOT_ENUM},
     {"ca",             kv_conn|kv_leftright, kt_string, KSCF_CA,NOT_ENUM},
 
+    /* these are conn statements which are not left/right */
     {"auto",           kv_conn,         kt_enum,   KBF_AUTO,        &kw_auto_list},
     {"also",           kv_conn,         kt_appendstring, KSF_ALSO,NOT_ENUM},
     {"alsoflip",       kv_conn,         kt_string, KSF_ALSOFLIP,NOT_ENUM},
@@ -283,6 +283,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"ikelifetime",    kv_conn|kv_auto, kt_time,   KBF_IKELIFETIME,NOT_ENUM},
     {"disablearrivalcheck", kv_conn|kv_auto, kt_invertbool, KBF_ARRIVALCHECK,NOT_ENUM},
     {"failureshunt",   kv_conn|kv_auto, kt_enum,   KBF_FAILURESHUNT, &kw_failureshunt_list},
+    {"connalias",      kv_conn, kt_appendstring,   KSF_CONNALIAS, NOT_ENUM},
 
     /* attributes of the phase2 policy */
     {"phase2alg",      kv_conn|kv_auto|kv_manual,  kt_string, KSF_ESP,NOT_ENUM},

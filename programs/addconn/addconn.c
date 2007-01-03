@@ -47,6 +47,7 @@ char addconn_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp
 #include "oswalloc.h"
 #include "oswconf.h"
 #include "oswlog.h"
+#include "whack.h"
 #include "ipsecconf/confread.h"
 #include "ipsecconf/confwrite.h"
 #include "ipsecconf/starterlog.h"
@@ -379,25 +380,65 @@ main(int argc, char *argv[])
 
     } else {
 	/* load named conns, regardless of their state */
-	for(conn = cfg->conns.tqh_first;
-	    conn != NULL;
-	    conn = conn->link.tqe_next)
-	{
-	    int   connum;
-	    for(connum = optind; connum<argc; connum++) {
+	int   connum;
+
+	if(verbose) {
+	    printf("loading named conns:");
+	}
+	for(connum = optind; connum<argc; connum++) {
+	    char *connname = argv[connum];
+
+	    if(verbose) {
+		printf(" %s", connname);
+	    }
+	    for(conn = cfg->conns.tqh_first;
+		conn != NULL;
+		conn = conn->link.tqe_next)
+	    {
 		/* yes, let's make it case-insensitive */
-		if(strcasecmp(conn->name, argv[connum])==0) {
+		if(strcasecmp(conn->name, connname)==0) {
 		    if(conn->state == STATE_ADDED) {
-			printf("conn %s already added\n", conn->name);
+			printf("\nconn %s already added\n", conn->name);
 		    } else if(conn->state == STATE_FAILED) {
-			printf("conn %s did not load properly\n", conn->name);
+			printf("\nconn %s did not load properly\n", conn->name);
 		    } else {
-			if(verbose) {
-			    printf("loading conn: %s\n", conn->name);
-			}
 			exit_status = starter_whack_add_conn(cfg, conn);
 			conn->state = STATE_ADDED;
 		    }
+		    break;
+		}
+	    }
+	    
+	    if(conn == NULL) {
+		/* only if we don't find it, do we now look for aliases */
+
+		for(conn = cfg->conns.tqh_first;
+		    conn != NULL;
+		    conn = conn->link.tqe_next)
+		{
+		    if(conn->strings_set[KSF_CONNALIAS]
+		       && osw_alias_cmp(connname
+					, conn->strings[KSF_CONNALIAS])) {
+
+			if(conn->state == STATE_ADDED) {
+			    printf("\nalias: %s conn %s already added\n", connname, conn->name);
+			} else if(conn->state == STATE_FAILED) {
+			    printf("\nalias: %s conn %s did not load properly\n", connname, conn->name);
+			} else {
+			    exit_status = starter_whack_add_conn(cfg, conn);
+			    conn->state = STATE_ADDED;
+			}
+			break;
+		    }
+		}
+	    }
+
+	    if(conn == NULL) {
+		exit_status++;
+		if(!verbose) {
+		    printf("conn '%s': not found (tried aliases)\n", connname);
+		} else {
+		    printf("(notfound)");
 		}
 	    }
 	}
@@ -412,7 +453,6 @@ void exit_tool(int x)
 }
 
 /*
- * $Log: spi.c,v $
  *
  * Local Variables:
  * c-basic-offset:4

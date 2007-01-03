@@ -357,6 +357,14 @@ delete_sr(struct connection *c, struct spd_route *sr)
 }
 
 
+/*
+ * delete_connection -- removes a connection by pointer
+ *
+ * @c - the connection pointer
+ * @relations - whether to delete any instances as well.
+ *
+ */
+
 void
 delete_connection(struct connection *c, bool relations)
 {
@@ -449,14 +457,46 @@ delete_connection(struct connection *c, bool relations)
     pfree(c);
 }
 
+int foreach_connection_by_alias(const char *alias
+				 , int (*f)(struct connection *c, void *arg)
+				 , void *arg)
+{
+    struct connection *p, *pnext;
+    int count = 0;
+
+    for (p = connections; p!=NULL; p = pnext)
+    {
+	pnext = p->ac_next;
+	
+	if (osw_alias_cmp(alias, p->connalias)) {
+	    count += (*f)(p, arg);
+	}
+    }
+    return count;
+}
+	
+static int
+delete_connection_wrap(struct connection *c, void *arg)
+{
+    bool *barg = (bool *)arg;
+
+    delete_connection(c, *barg);
+    return 1;
+}
+
 /* Delete connections with the specified name */
 void
 delete_connections_by_name(const char *name, bool strict)
 {
+    bool f = FALSE;
     struct connection *c = con_by_name(name, strict);
 
-    for (; c != NULL; c = con_by_name(name, FALSE))
-	delete_connection(c, FALSE);
+    if(c==NULL) {
+	(void)foreach_connection_by_alias(name, delete_connection_wrap, &f);
+    } else {
+	for (; c != NULL; c = con_by_name(name, FALSE))
+	    delete_connection(c, FALSE);
+    }
 }
 
 void
@@ -865,6 +905,9 @@ unshare_connection_strings(struct connection *c)
 
     c->name = clone_str(c->name, "connection name");
 
+    /* duplicate any alias, adding spaces to the beginning and end */
+    c->connalias = clone_str(c->connalias, "connection alias");
+
     /* do "right" */
     for(sr=&c->spd; sr!=NULL; sr=sr->next) {
 	unshare_connection_end_strings(&sr->this);
@@ -880,6 +923,7 @@ unshare_connection_strings(struct connection *c)
 	alg_info_addref(ESPTOINFO(c->alg_info_esp));
     }
 }
+
 
 static void
 load_end_certificate(const char *filename, struct end *dst)
@@ -1270,6 +1314,7 @@ add_connection(const struct whack_message *wm)
 
 	same_rightca = same_leftca = FALSE;
 	c->name = wm->name;
+	c->connalias = wm->connalias;
 
 	c->policy = wm->policy;
 
@@ -2135,81 +2180,119 @@ orient(struct connection *c)
     return oriented(*c);
 }
 
+struct initiate_stuff {
+    int    whackfd;
+    lset_t moredebug;
+    enum crypto_importance importance;
+};
+
+static int
+initiate_a_connection(struct connection *c
+		      , void *arg)
+{
+    struct initiate_stuff *is = (struct initiate_stuff *)arg;
+    int whackfd = is->whackfd;
+    lset_t moredebug = is->moredebug;
+    enum crypto_importance importance = is->importance;
+    int success = 0;
+
+    set_cur_connection(c);
+
+    /* turn on any extra debugging asked for */
+    c->extra_debugging |= moredebug;
+    
+    if (!oriented(*c))
+    {
+	loglog(RC_ORIENT, "We cannot identify ourselves with either end of this connection.");
+    }
+    else if (NEVER_NEGOTIATE(c->policy))
+    {
+	loglog(RC_INITSHUNT
+	       , "cannot initiate an authby=never connection");
+    }
+    else if (c->kind != CK_PERMANENT)
+    {
+	if (isanyaddr(&c->spd.that.host_addr))
+	    loglog(RC_NOPEERIP, "cannot initiate connection without knowing peer IP address (kind=%s)"
+		   , enum_show(&connection_kind_names, c->kind));
+	else
+	    loglog(RC_WILDCARD, "cannot initiate connection with ID wildcards (kind=%s)"
+		   , enum_show(&connection_kind_names, c->kind));
+    }
+    else
+    {
+	/* We will only request an IPsec SA if policy isn't empty
+	 * (ignoring Main Mode items).
+	 * This is a fudge, but not yet important.
+	 * If we are to proceed asynchronously, whackfd will be NULL_FD.
+	 */
+	c->policy |= POLICY_UP;
+	
+	if(c->policy & (POLICY_ENCRYPT|POLICY_AUTHENTICATE)) {
+	    struct alg_info_esp *alg = c->alg_info_esp;
+	    struct db_sa *phase2_sa = kernel_alg_makedb(c->policy, alg, TRUE);
+	    
+	    if(alg != NULL && phase2_sa == NULL) {
+		whack_log(RC_NOALGO, "can not initiate: no acceptable kernel algorithms loaded");
+		reset_cur_connection();
+		close_any(is->whackfd);
+		return 0;
+	    }
+	    free_sa(phase2_sa);
+	}
+	
+#ifdef SMARTCARD
+	/* do we have to prompt for a PIN code? */
+	if (c->spd.this.sc != NULL && !c->spd.this.sc->valid && whackfd != NULL_FD)
+	    scx_get_pin(c->spd.this.sc, whackfd);
+	
+	if (c->spd.this.sc != NULL && !c->spd.this.sc->valid)
+	{
+	    loglog(RC_NOVALIDPIN, "cannot initiate connection without valid PIN");
+	}
+	else
+#endif
+	{
+	    ipsecdoi_initiate(whackfd, c, c->policy, 1
+			      , SOS_NOBODY, importance);
+	    is->whackfd = NULL_FD;	/* protect from close */
+	    success = 1;
+	}
+    }
+    reset_cur_connection();
+    close_any(is->whackfd);
+    
+    return success;
+}
+
 void
 initiate_connection(const char *name, int whackfd
 		    , lset_t moredebug
 		    , enum crypto_importance importance)
 {
-    struct connection *c = con_by_name(name, TRUE);
+    struct initiate_stuff is;
+    struct connection *c = con_by_name(name, FALSE);
+    int count;
+
+    is.whackfd   = whackfd;
+    is.moredebug = moredebug;
+    is.importance= importance;
 
     if (c != NULL)
     {
-	set_cur_connection(c);
-
-	/* turn on any extra debugging asked for */
-	c->extra_debugging |= moredebug;
-
-	if (!oriented(*c))
-	{
-	    loglog(RC_ORIENT, "We cannot identify ourselves with either end of this connection.");
-	}
-	else if (NEVER_NEGOTIATE(c->policy))
-	{
-	    loglog(RC_INITSHUNT
-		, "cannot initiate an authby=never connection");
-	}
-	else if (c->kind != CK_PERMANENT)
-	{
-	    if (isanyaddr(&c->spd.that.host_addr))
-		loglog(RC_NOPEERIP, "cannot initiate connection without knowing peer IP address (kind=%s)"
-		       , enum_show(&connection_kind_names, c->kind));
-	    else
-		loglog(RC_WILDCARD, "cannot initiate connection with ID wildcards (kind=%s)"
-		       , enum_show(&connection_kind_names, c->kind));
-	}
-	else
-	{
-	    /* We will only request an IPsec SA if policy isn't empty
-	     * (ignoring Main Mode items).
-	     * This is a fudge, but not yet important.
-	     * If we are to proceed asynchronously, whackfd will be NULL_FD.
-	     */
-	    c->policy |= POLICY_UP;
-
-	    if(c->policy & (POLICY_ENCRYPT|POLICY_AUTHENTICATE)) {
-		struct alg_info_esp *alg = c->alg_info_esp;
-		struct db_sa *phase2_sa = kernel_alg_makedb(c->policy, alg, TRUE);
-		
-		if(alg != NULL && phase2_sa == NULL) {
-		    whack_log(RC_NOALGO, "can not initiate: no acceptable kernel algorithms loaded");
-		    reset_cur_connection();
-		    close_any(whackfd);
-		    return;
-		}
-		free_sa(phase2_sa);
-	    }
-
-#ifdef SMARTCARD
-	    /* do we have to prompt for a PIN code? */
-	    if (c->spd.this.sc != NULL && !c->spd.this.sc->valid && whackfd != NULL_FD)
-		scx_get_pin(c->spd.this.sc, whackfd);
-
-	    if (c->spd.this.sc != NULL && !c->spd.this.sc->valid)
-	    {
-		loglog(RC_NOVALIDPIN, "cannot initiate connection without valid PIN");
-	    }
-	    else
-#endif
-	    {
-		ipsecdoi_initiate(whackfd, c, c->policy, 1
-				  , SOS_NOBODY, importance);
-		whackfd = NULL_FD;	/* protect from close */
-	    }
-	}
-	reset_cur_connection();
+	initiate_a_connection(c, &is);
+	return;
     }
-    close_any(whackfd);
+
+    loglog(RC_COMMENT, "initiating all conns with alias='%s'\n", name);
+    count = foreach_connection_by_alias(name, initiate_a_connection, &is);
+
+    if(count == 0) {
+	whack_log(RC_UNKNOWN_NAME
+		  , "no connection named \"%s\"", name);
+    }
 }
+
 
 /* (Possibly) Opportunistic Initiation:
  * Knowing clients (single IP addresses), try to build an tunnel.
@@ -4687,6 +4770,15 @@ show_connections_status(void)
 	    , instance
 	    , c->newest_isakmp_sa
 	    , c->newest_ipsec_sa);
+
+	if(c->connalias) {
+	    whack_log(RC_COMMENT
+		      , "\"%s\"%s:   aliases: %s\n"
+		      , c->name
+		      , instance
+		      , c->connalias);
+	}
+
 #ifdef IKE_ALG
 	ike_alg_show_connection(c, instance);
 #endif
