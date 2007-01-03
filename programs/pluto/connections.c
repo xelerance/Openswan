@@ -2253,14 +2253,13 @@ initiate_a_connection(struct connection *c
 	else
 #endif
 	{
+	    whackfd = dup(whackfd);
 	    ipsecdoi_initiate(whackfd, c, c->policy, 1
 			      , SOS_NOBODY, importance);
-	    is->whackfd = NULL_FD;	/* protect from close */
 	    success = 1;
 	}
     }
     reset_cur_connection();
-    close_any(is->whackfd);
     
     return success;
 }
@@ -2281,6 +2280,7 @@ initiate_connection(const char *name, int whackfd
     if (c != NULL)
     {
 	initiate_a_connection(c, &is);
+	close_any(is.whackfd);
 	return;
     }
 
@@ -2291,6 +2291,8 @@ initiate_connection(const char *name, int whackfd
 	whack_log(RC_UNKNOWN_NAME
 		  , "no connection named \"%s\"", name);
     }
+
+    close_any(is.whackfd);
 }
 
 
@@ -3431,6 +3433,20 @@ initiate_ondemand_body(struct find_oppo_bundle *b
     close_any(b->whackfd);
 }
 
+static int
+terminate_a_connection(struct connection *c, void *arg UNUSED)
+{
+    set_cur_connection(c);
+    openswan_log("terminating SAs using this connection");
+    c->policy &= ~POLICY_UP;
+    flush_pending_by_connection(c);
+    delete_states_by_connection(c, FALSE);
+    reset_cur_connection();
+
+    return 1;
+}
+    
+
 void
 terminate_connection(const char *nm)
 {
@@ -3438,21 +3454,30 @@ terminate_connection(const char *nm)
      * But at least one is required (enforced by con_by_name).
      */
     struct connection *c, *n;
+    int count;
 
-    for (c = con_by_name(nm, TRUE); c != NULL; c = n)
-    {
-	n = c->ac_next;	/* grab this before c might disappear */
-	if (streq(c->name, nm)
-	&& c->kind >= CK_PERMANENT
-	&& !NEVER_NEGOTIATE(c->policy))
+    c = con_by_name(nm, TRUE);
+
+    if(c) {
+	for (; c != NULL; c = n)
 	{
-	    set_cur_connection(c);
-	    openswan_log("terminating SAs using this connection");
-	    c->policy &= ~POLICY_UP;
-	    flush_pending_by_connection(c);
-	    delete_states_by_connection(c, FALSE);
-	    reset_cur_connection();
+	    n = c->ac_next;	/* grab this before c might disappear */
+	    if (streq(c->name, nm)
+		&& c->kind >= CK_PERMANENT
+		&& !NEVER_NEGOTIATE(c->policy))
+	    {
+		terminate_a_connection(c, NULL);
+	    }
 	}
+	return;
+    } 
+
+    loglog(RC_COMMENT, "terminating all conns with alias='%s'\n", nm);
+    count = foreach_connection_by_alias(nm, terminate_a_connection, NULL);
+
+    if(count == 0) {
+	whack_log(RC_UNKNOWN_NAME
+		  , "no connection named \"%s\"", nm);
     }
 }
 

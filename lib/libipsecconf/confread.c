@@ -200,6 +200,7 @@ static int load_setup (struct starter_config *cfg
 		break;
 
 	    case kt_appendstring:
+	    case kt_appendlist:
 		assert(kw->keyword.keydef->field < KEY_STRINGS_MAX);
 		if(!cfg->setup.strings[kw->keyword.keydef->field])
 		{
@@ -572,6 +573,7 @@ bool translate_conn (struct starter_conn *conn
 	    break;
 	    
 	case kt_appendstring:
+	case kt_appendlist:
 	    /* implicitely, this field can have multiple values */
 	    assert(kw->keyword.keydef->field < KEY_STRINGS_MAX);
 	    if(!(*the_strings)[field])
@@ -896,6 +898,10 @@ static int load_conn (struct starter_config *cfg
 	conn->ike = xstrdup(conn->strings[KSF_IKE]);
     }
 
+    if(conn->strings_set[KSF_CONNALIAS]) {
+	conn->connalias = xstrdup(conn->strings[KSF_CONNALIAS]);
+    }
+
     if(conn->options_set[KBF_PHASE2]) {
 	conn->policy &= ~(POLICY_AUTHENTICATE|POLICY_ENCRYPT);
 	conn->policy |= conn->options[KBF_PHASE2];
@@ -1109,6 +1115,9 @@ static void confread_free_conn(struct starter_conn *conn)
 	{
 	    FREE_STR(conn->strings[i]);
 	}
+
+	FREE_STR(conn->connalias);
+	FREE_STR(conn->name);
 
 #ifdef ALG_PATCH
 	FREE_STR(conn->esp);

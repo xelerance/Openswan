@@ -197,15 +197,16 @@ enum_names pluto_cryptoop_names =
 
 /* pluto crypto importance */
 static const char *const pluto_cryptoimportance_strings[] = {
-  "stranger asked for crypto",	
-  "a known node asked for crypto",
-  "an ongoing calculation needs crypto",
-  "a local process initiated crypto",
-  "a local administrator initiated crypto"
+	"import:not set",
+  "import:respond to stranger",	
+  "import:respond to friend",
+  "import:ongoing calculation",
+  "import:local rekey",
+  "import:admin initiate"
 };
 
 enum_names pluto_cryptoimportance_names =
-    { pcim_stranger_crypto, pcim_demand_crypto
+    { pcim_notset_crypto, pcim_demand_crypto
       , pluto_cryptoimportance_strings, NULL};
 
 

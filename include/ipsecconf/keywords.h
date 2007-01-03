@@ -125,7 +125,8 @@ enum keyword_string_conn_field {
     KSCF_ESPAUTHKEY   = 14,
     KSCF_SOURCEIP     = 15,
     KSCF_XAUTHUSERNAME= 16,
-    KSCF_MAX          = 17
+    KSCF_SUBNETS      = 17,
+    KSCF_MAX          
 };
 
 
@@ -188,6 +189,7 @@ enum keyword_satype {
 enum keyword_type {
     kt_string,             /* value is some string */
     kt_appendstring,       /* value is some string, append duplicates */
+    kt_appendlist,         /* value is some list, append duplicates */
     kt_filename,           /* value is a filename string */
     kt_dirname,            /* value is a dir name string */
     kt_bool,               /* value is an on/off type */

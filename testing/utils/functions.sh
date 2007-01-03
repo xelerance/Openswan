@@ -1752,14 +1752,17 @@ buildtest() {
 #          OBJDIRTOP=  set to location of object files
 # 
 #
-# testparams.sh should set PROGRAMS= to a list of subdirs of programs/ that must
-#                be built before using the test. This allows additional modules
-#                to be built.
+# testparams.sh should set PROGRAMS= to a list of subdirs of programs/
+#                that must be built before using the test. This allows
+#                additional modules to be built.
 #
-# If there is a Makefile in the subdir, it will be invoked as "make checkprograms"
+# If there is a Makefile in the subdir, it will be invoked as
+# "make checkprograms". It will have the above variables as well,
+# and make get the build environment with 
+#    include ${ROOTDIR}/programs/Makefile.program
 #
-# The stdout of the script will be set to an output file, which will then be sanitized
-# using the normal set of fixup scripts.
+# The stdout of the script will be set to an output file, which will then
+# be sanitized using the normal set of fixup scripts.
 #          
 #
 ###################################

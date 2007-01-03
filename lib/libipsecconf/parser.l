@@ -272,6 +272,12 @@ include			return INCLUDE;
                            return STRING;
 			}
 
+<USERDEF>[^\{}= \t\n]+   {
+			   yylval.s = strdup(yytext);
+			   BEGIN INITIAL;
+                           return STRING;
+			}
+
 \"[^\"\n]*\"	        {
                            char *s = yytext + 1;
 			   int len = strlen(s);
@@ -281,6 +287,19 @@ include			return INCLUDE;
 			   /* remove trailing " */
 			   s[len-1]='\0'; 
 			   if(yydebug) { fprintf(stderr, "STRING: \"%s\"\n", s);}
+			   yylval.s = strdup(s);
+                           return STRING;
+			}
+
+\{[^\"\n]*\}	        {
+                           char *s = yytext + 1;
+			   int len = strlen(s);
+
+			   assert(len>0);
+
+			   /* remove trailing } */
+			   s[len-1]='\0'; 
+			   if(yydebug) { fprintf(stderr, "STRING{}: {%s}\n", s);}
 			   yylval.s = strdup(s);
                            return STRING;
 			}

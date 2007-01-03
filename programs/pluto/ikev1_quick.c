@@ -745,15 +745,18 @@ quick_outI1(int whack_sock
 	pfsgroupname = enum_name(&oakley_group_names, st->st_pfs_group->group);
     }
 
-    if (replacing == SOS_NOBODY)
-	openswan_log("initiating Quick Mode %s {using isakmp#%lu proposal=%s pfsgroup=%s}"
+    {
+	char replacestr[32];
+
+	replacestr[0]='\0';
+	if(replacing != SOS_NOBODY)
+	    snprintf(replacestr, 32, " to replace #%lu", replacing);
+	
+	openswan_log("initiating Quick Mode %s%s {using isakmp#%lu msgid:%08x proposal=%s pfsgroup=%s}"
 		     , prettypolicy(policy)
-		     , isakmp_sa->st_serialno, p2alg, pfsgroupname);
-    else
-	openswan_log("initiating Quick Mode %s to replace #%lu {using isakmp#%lu proposal=%s pfsgroup=%s}"
-		     , prettypolicy(policy)
-		     , replacing
-		     , isakmp_sa->st_serialno, p2alg, pfsgroupname);
+		     , replacestr
+		     , isakmp_sa->st_serialno, st->st_msgid, p2alg, pfsgroupname);
+    }
 
     qke->st = st;
     qke->isakmp_sa = isakmp_sa;

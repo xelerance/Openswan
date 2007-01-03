@@ -27,5 +27,11 @@ int starter_whack_initiate_conn (struct starter_conn *conn);
 int starter_whack_listen (void);
 int starter_whack_shutdown (void);
 
+extern int starter_permutate_conns(int (*operation)(struct starter_config *cfg
+						    , struct starter_conn *conn)
+				   , struct starter_config *cfg
+				   , struct starter_conn *conn);
+
+
 #endif /* _STARTER_WHACK_H_ */
 

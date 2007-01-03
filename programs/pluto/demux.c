@@ -2951,7 +2951,7 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 #endif
 
 	    DBG(DBG_CONTROL
-		, DBG_log("phase 1 is done, looking for phase 1 to unpend"));
+		, DBG_log("phase 1 is done, looking for phase 2 to unpend"));
 
 	    if (smc->flags & SMF_RELEASE_PENDING_P2)
 	    {
@@ -2961,13 +2961,14 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		 * ??? there is a potential race condition
 		 * if we are the responder: the initial Phase 2
 		 * message might outrun the final Phase 1 message.
-		 * I think that retransmission will recover.
 		 *
-		 * The same race condition exists if we are in aggressive
-		 * mode as the final phase 1 message might not have
-		 * been received yet, and in fact, we might even have
-		 * a situation where the responder does not accept our
-		 * our identification.
+		 * so, instead of actualling sending the traffic now,
+		 * we schedule an event to do so.
+		 *
+		 * but, in fact, quick_mode will enqueue a cryptographic operation
+		 * anyway, which will get done "later" anyway, so make it is just fine
+		 * as it is.
+		 *
 		 */
 		unpend(st);
 	    }

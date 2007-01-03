@@ -105,6 +105,8 @@ else
 fi
 
 mkdir -p $POOLSPACE
+if [ ! -d ${OPENSWANSRCDIR}/UMLPOOL/. ]; then ln -s $POOLSPACE ${OPENSWANSRCDIR}/UMLPOOL; fi
+
 UMLMAKE=$POOLSPACE/Makefile
 NOW=`date`
 USER=${USER-`id -un`}

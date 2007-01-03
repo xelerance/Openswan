@@ -1,0 +1,12 @@
+This is a test case for the "subnets=" declaration. It uses one subnet=
+and one subnetS= definition.
+
+Pluto doesn't really understand multiple subnets, and IKE can't really
+negotiate it.  However, the following does occur.
+
+1) subnets= generates a set of policies. So, this is a processing time
+   "macro", if you wish.
+
+2) each policy is given an "alias", and if one --up's an alias, then all
+   connections with that alias are brought up (or down).
+
