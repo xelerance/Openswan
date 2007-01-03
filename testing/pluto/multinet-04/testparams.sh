@@ -3,7 +3,7 @@
 TEST_PURPOSE=goal
 TEST_TYPE=umlplutotest
 
-TESTNAME=multinet-01
+TESTNAME=multinet-04
 EASTHOST=east
 WESTHOST=west
 

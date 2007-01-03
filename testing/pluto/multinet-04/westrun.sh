@@ -1,4 +1,4 @@
-ipsec auto --up  westnet-eastnet-subnets
+ipsec auto --up  westnets-eastnet
 
 ipsec look
 echo done

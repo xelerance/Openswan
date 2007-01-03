@@ -1,5 +1,5 @@
 east:~#
- TESTNAME=multinet-01
+ TESTNAME=multinet-03
 east:~#
  source /testing/pluto/bin/eastlocal.sh
 east:~#
@@ -9,8 +9,6 @@ east:~#
  ipsec auto --add westnet-eastnet-subnets
 east:~#
  /testing/pluto/bin/wait-until-pluto-started
-east:~#
- sleep 25
 east:~#
  
 
