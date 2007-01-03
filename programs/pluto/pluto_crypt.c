@@ -74,6 +74,7 @@ struct pluto_crypto_worker {
 };
 
 static struct pluto_crypto_req_cont *backlogqueue;
+static struct pluto_crypto_req_cont **backlogqueue_last = &backlogqueue;
 static int                           backlogqueue_len;
 
 static void init_crypto_helper(struct pluto_crypto_worker *w, int n);
@@ -259,17 +260,20 @@ static bool crypto_write_request(struct pluto_crypto_worker *w
 		  , r->pcr_id, r->pcr_len, w->pcw_work+1));
 
     do {
+	errno=0;
 	cnt = write(w->pcw_pipe, wdat, wlen);
 	
 	if(cnt <= 0) {
+	    openswan_log("write to helper failed: cnt=%d err=%s\n",
+			 cnt, strerror(errno));
 	    return FALSE;
 	}
-	if(cnt != wlen) {
-	    DBG_log("crypto helper write failed to write all (%d<%d), retrying.\n", cnt, wlen);
+	if(DBGP(DBG_CONTROL) || cnt != wlen) {
+	    DBG_log("crypto helper write of request: cnt=%d<wlen=%d. \n", cnt, wlen);
 	}
 
 	wlen -= cnt;
-	w    += cnt;
+	wdat += cnt;
 
     } while(wlen > 0);
 
@@ -366,13 +370,19 @@ err_t send_crypto_helper_request(struct pluto_crypto_req *r
 
     if(cnt == 0 && r->pcr_pcim >= pcim_demand_crypto) {
 	/* it is very important. Put it all on a queue for later */
-	cn->pcrc_next = backlogqueue;
-	backlogqueue  = cn;
+	if(!backlogqueue_last) backlogqueue_last = &backlogqueue;
+	*backlogqueue_last = cn;
+	cn->pcrc_next = NULL;
+	backlogqueue_last  = &cn->pcrc_next;
+
+	/* copy the request */
+	r = clone_bytes(r, r->pcr_len, "saved cryptorequest");
+	cn->pcrc_pcr = r;
 	
 	backlogqueue_len++;
 	DBG(DBG_CONTROL
-	    , DBG_log("critical demand crypto operation queued as item %d"
-		      , backlogqueue_len));
+	    , DBG_log("critical demand crypto operation queued on backlog as %d'th item, id: q#%u"
+		      , backlogqueue_len, r->pcr_id));
 	*toomuch = FALSE;
 	return NULL;
     }
@@ -407,6 +417,8 @@ err_t send_crypto_helper_request(struct pluto_crypto_req *r
     passert(w->pcw_work < w->pcw_maxcritwork);
     
     if(!crypto_write_request(w, r)) {
+	openswan_log("failed to write crypto request: %s\n",
+		     strerror(errno));
 	return "failed to write";
     }
 	
@@ -433,7 +445,7 @@ static void crypto_send_backlog(struct pluto_crypto_worker *w)
 	r = cn->pcrc_pcr;
       
 	DBG(DBG_CONTROL
-	    , DBG_log("removing backlog item (%d) from queue: %d left"
+	    , DBG_log("removing backlog item id: q#%u from queue: %d left"
 		      , r->pcr_id, backlogqueue_len));
 
 	/* w points to a worker. Make sure it is live */
@@ -462,6 +474,9 @@ static void crypto_send_backlog(struct pluto_crypto_worker *w)
 	    passert(0);
 	    return;
 	} 
+
+	/* if it was on the backlog, it was saved, free it */
+	pfree(r);
 	
 	w->pcw_work++;
     }
@@ -544,9 +559,10 @@ void handle_helper_comm(struct pluto_crypto_worker *w)
     int actlen;
     struct pluto_crypto_req_cont *cn, **cnp;
 
-    DBG(DBG_CRYPT, DBG_log("helper %u has finished work (cnt now %d)"
-			   ,w->pcw_helpernum
-			   ,w->pcw_work));
+    DBG(DBG_CRYPT|DBG_CONTROL
+	, DBG_log("helper %u has finished work (cnt now %d)"
+		  ,w->pcw_helpernum
+		  ,w->pcw_work));
 
     /* read from the pipe */
     actlen = read(w->pcw_pipe, (char *)reqbuf, sizeof(r->pcr_len));
@@ -604,9 +620,9 @@ void handle_helper_comm(struct pluto_crypto_worker *w)
 	inloc   += actlen;
     }
 
-    DBG(DBG_CRYPT, DBG_log("helper %u replies to sequence %u"
-			   ,w->pcw_helpernum
-			   ,r->pcr_id));
+    DBG(DBG_CRYPT|DBG_CONTROL, DBG_log("helper %u replies to id: q#%u"
+				       ,w->pcw_helpernum
+				       ,r->pcr_id));
 
     /*
      * if there is work queued, then send it off after reading, since this

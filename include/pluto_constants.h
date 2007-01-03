@@ -90,11 +90,12 @@ enum pluto_crypto_requests {
  * we should do it all costs.
  */
 enum crypto_importance {
-  pcim_stranger_crypto = 1,
-  pcim_known_crypto    = 2,
-  pcim_ongoing_crypto  = 3,
-  pcim_local_crypto    = 4,
-  pcim_demand_crypto   = 5
+	pcim_notset_crypto=0,
+	pcim_stranger_crypto = 1,
+	pcim_known_crypto    = 2,
+	pcim_ongoing_crypto  = 3,
+	pcim_local_crypto    = 4,
+	pcim_demand_crypto   = 5
 };
 
 /* status for state-transition-function
@@ -574,7 +575,8 @@ enum PrivateKeyKind {
     PPK_PSK = 1,
     /* PPK_DSS, */	/* not implemented */
     PPK_RSA = 3,
-    PPK_PIN = 4
+    PPK_PIN = 4,
+    PPK_XAUTH=5,
 };
 
 

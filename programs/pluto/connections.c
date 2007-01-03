@@ -357,6 +357,14 @@ delete_sr(struct connection *c, struct spd_route *sr)
 }
 
 
+/*
+ * delete_connection -- removes a connection by pointer
+ *
+ * @c - the connection pointer
+ * @relations - whether to delete any instances as well.
+ *
+ */
+
 void
 delete_connection(struct connection *c, bool relations)
 {
@@ -449,14 +457,46 @@ delete_connection(struct connection *c, bool relations)
     pfree(c);
 }
 
+int foreach_connection_by_alias(const char *alias
+				 , int (*f)(struct connection *c, void *arg)
+				 , void *arg)
+{
+    struct connection *p, *pnext;
+    int count = 0;
+
+    for (p = connections; p!=NULL; p = pnext)
+    {
+	pnext = p->ac_next;
+	
+	if (osw_alias_cmp(alias, p->connalias)) {
+	    count += (*f)(p, arg);
+	}
+    }
+    return count;
+}
+	
+static int
+delete_connection_wrap(struct connection *c, void *arg)
+{
+    bool *barg = (bool *)arg;
+
+    delete_connection(c, *barg);
+    return 1;
+}
+
 /* Delete connections with the specified name */
 void
 delete_connections_by_name(const char *name, bool strict)
 {
+    bool f = FALSE;
     struct connection *c = con_by_name(name, strict);
 
-    for (; c != NULL; c = con_by_name(name, FALSE))
-	delete_connection(c, FALSE);
+    if(c==NULL) {
+	(void)foreach_connection_by_alias(name, delete_connection_wrap, &f);
+    } else {
+	for (; c != NULL; c = con_by_name(name, FALSE))
+	    delete_connection(c, FALSE);
+    }
 }
 
 void
@@ -839,30 +879,41 @@ format_connection(char *buf, size_t buf_len
 }
 
 static void
+unshare_connection_end_strings(struct end *e)
+{
+    /* do "left" */
+    unshare_id_content(&e->id);
+    e->updown = clone_str(e->updown, "updown");
+
+#ifdef SMARTCARD
+    scx_share(e->sc);
+#endif
+    share_cert(e->cert);
+    if (e->ca.ptr != NULL)
+	clonetochunk(e->ca, e->ca.ptr, e->ca.len, "ca string");
+
+    if(e->xauth_name) {
+	e->xauth_name = clone_str(e->xauth_name, "xauth name");
+    }
+}    
+
+
+static void
 unshare_connection_strings(struct connection *c)
 {
+    struct spd_route *sr;
+
     c->name = clone_str(c->name, "connection name");
 
-    unshare_id_content(&c->spd.this.id);
-    c->spd.this.updown = clone_str(c->spd.this.updown, "updown");
+    /* duplicate any alias, adding spaces to the beginning and end */
+    c->connalias = clone_str(c->connalias, "connection alias");
 
-#ifdef SMARTCARD
-    scx_share(c->spd.this.sc);
-#endif
-    share_cert(c->spd.this.cert);
-    if (c->spd.this.ca.ptr != NULL)
-	clonetochunk(c->spd.this.ca, c->spd.this.ca.ptr, c->spd.this.ca.len, "ca string");
-
-    unshare_id_content(&c->spd.that.id);
-    c->spd.that.updown = clone_str(c->spd.that.updown, "updown");
-
-#ifdef SMARTCARD
-    scx_share(c->spd.that.sc);
-#endif
-    share_cert(c->spd.that.cert);
-    if (c->spd.that.ca.ptr != NULL)
-	clonetochunk(c->spd.that.ca, c->spd.that.ca.ptr, c->spd.that.ca.len, "ca string");
-
+    /* do "right" */
+    for(sr=&c->spd; sr!=NULL; sr=sr->next) {
+	unshare_connection_end_strings(&sr->this);
+	unshare_connection_end_strings(&sr->that);
+    }
+	
     /* increment references to algo's, if any */
     if(c->alg_info_ike) {
 	alg_info_addref(IKETOINFO(c->alg_info_ike));
@@ -871,8 +922,8 @@ unshare_connection_strings(struct connection *c)
     if(c->alg_info_esp) {
 	alg_info_addref(ESPTOINFO(c->alg_info_esp));
     }
-
 }
+
 
 static void
 load_end_certificate(const char *filename, struct end *dst)
@@ -1074,6 +1125,7 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
 #ifdef XAUTH
     dst->xauth_server = src->xauth_server;
     dst->xauth_client = src->xauth_client;
+    dst->xauth_name = src->xauth_name;
 #endif
     dst->protocol = src->protocol;
     dst->port = src->port;
@@ -1262,6 +1314,7 @@ add_connection(const struct whack_message *wm)
 
 	same_rightca = same_leftca = FALSE;
 	c->name = wm->name;
+	c->connalias = wm->connalias;
 
 	c->policy = wm->policy;
 
@@ -2126,81 +2179,121 @@ orient(struct connection *c)
     return oriented(*c);
 }
 
+struct initiate_stuff {
+    int    whackfd;
+    lset_t moredebug;
+    enum crypto_importance importance;
+};
+
+static int
+initiate_a_connection(struct connection *c
+		      , void *arg)
+{
+    struct initiate_stuff *is = (struct initiate_stuff *)arg;
+    int whackfd = is->whackfd;
+    lset_t moredebug = is->moredebug;
+    enum crypto_importance importance = is->importance;
+    int success = 0;
+
+    set_cur_connection(c);
+
+    /* turn on any extra debugging asked for */
+    c->extra_debugging |= moredebug;
+    
+    if (!oriented(*c))
+    {
+	loglog(RC_ORIENT, "We cannot identify ourselves with either end of this connection.");
+    }
+    else if (NEVER_NEGOTIATE(c->policy))
+    {
+	loglog(RC_INITSHUNT
+	       , "cannot initiate an authby=never connection");
+    }
+    else if (c->kind != CK_PERMANENT)
+    {
+	if (isanyaddr(&c->spd.that.host_addr))
+	    loglog(RC_NOPEERIP, "cannot initiate connection without knowing peer IP address (kind=%s)"
+		   , enum_show(&connection_kind_names, c->kind));
+	else
+	    loglog(RC_WILDCARD, "cannot initiate connection with ID wildcards (kind=%s)"
+		   , enum_show(&connection_kind_names, c->kind));
+    }
+    else
+    {
+	/* We will only request an IPsec SA if policy isn't empty
+	 * (ignoring Main Mode items).
+	 * This is a fudge, but not yet important.
+	 * If we are to proceed asynchronously, whackfd will be NULL_FD.
+	 */
+	c->policy |= POLICY_UP;
+	
+	if(c->policy & (POLICY_ENCRYPT|POLICY_AUTHENTICATE)) {
+	    struct alg_info_esp *alg = c->alg_info_esp;
+	    struct db_sa *phase2_sa = kernel_alg_makedb(c->policy, alg, TRUE);
+	    
+	    if(alg != NULL && phase2_sa == NULL) {
+		whack_log(RC_NOALGO, "can not initiate: no acceptable kernel algorithms loaded");
+		reset_cur_connection();
+		close_any(is->whackfd);
+		return 0;
+	    }
+	    free_sa(phase2_sa);
+	}
+	
+#ifdef SMARTCARD
+	/* do we have to prompt for a PIN code? */
+	if (c->spd.this.sc != NULL && !c->spd.this.sc->valid && whackfd != NULL_FD)
+	    scx_get_pin(c->spd.this.sc, whackfd);
+	
+	if (c->spd.this.sc != NULL && !c->spd.this.sc->valid)
+	{
+	    loglog(RC_NOVALIDPIN, "cannot initiate connection without valid PIN");
+	}
+	else
+#endif
+	{
+	    whackfd = dup(whackfd);
+	    ipsecdoi_initiate(whackfd, c, c->policy, 1
+			      , SOS_NOBODY, importance);
+	    success = 1;
+	}
+    }
+    reset_cur_connection();
+    
+    return success;
+}
+
 void
 initiate_connection(const char *name, int whackfd
 		    , lset_t moredebug
 		    , enum crypto_importance importance)
 {
-    struct connection *c = con_by_name(name, TRUE);
+    struct initiate_stuff is;
+    struct connection *c = con_by_name(name, FALSE);
+    int count;
+
+    is.whackfd   = whackfd;
+    is.moredebug = moredebug;
+    is.importance= importance;
 
     if (c != NULL)
     {
-	set_cur_connection(c);
-
-	/* turn on any extra debugging asked for */
-	c->extra_debugging |= moredebug;
-
-	if (!oriented(*c))
-	{
-	    loglog(RC_ORIENT, "We cannot identify ourselves with either end of this connection.");
-	}
-	else if (NEVER_NEGOTIATE(c->policy))
-	{
-	    loglog(RC_INITSHUNT
-		, "cannot initiate an authby=never connection");
-	}
-	else if (c->kind != CK_PERMANENT)
-	{
-	    if (isanyaddr(&c->spd.that.host_addr))
-		loglog(RC_NOPEERIP, "cannot initiate connection without knowing peer IP address (kind=%s)"
-		       , enum_show(&connection_kind_names, c->kind));
-	    else
-		loglog(RC_WILDCARD, "cannot initiate connection with ID wildcards (kind=%s)"
-		       , enum_show(&connection_kind_names, c->kind));
-	}
-	else
-	{
-	    /* We will only request an IPsec SA if policy isn't empty
-	     * (ignoring Main Mode items).
-	     * This is a fudge, but not yet important.
-	     * If we are to proceed asynchronously, whackfd will be NULL_FD.
-	     */
-	    c->policy |= POLICY_UP;
-
-	    if(c->policy & (POLICY_ENCRYPT|POLICY_AUTHENTICATE)) {
-		struct alg_info_esp *alg = c->alg_info_esp;
-		struct db_sa *phase2_sa = kernel_alg_makedb(c->policy, alg, TRUE);
-		
-		if(alg != NULL && phase2_sa == NULL) {
-		    whack_log(RC_NOALGO, "can not initiate: no acceptable kernel algorithms loaded");
-		    reset_cur_connection();
-		    close_any(whackfd);
-		    return;
-		}
-		free_sa(phase2_sa);
-	    }
-
-#ifdef SMARTCARD
-	    /* do we have to prompt for a PIN code? */
-	    if (c->spd.this.sc != NULL && !c->spd.this.sc->valid && whackfd != NULL_FD)
-		scx_get_pin(c->spd.this.sc, whackfd);
-
-	    if (c->spd.this.sc != NULL && !c->spd.this.sc->valid)
-	    {
-		loglog(RC_NOVALIDPIN, "cannot initiate connection without valid PIN");
-	    }
-	    else
-#endif
-	    {
-		ipsecdoi_initiate(whackfd, c, c->policy, 1
-				  , SOS_NOBODY, importance);
-		whackfd = NULL_FD;	/* protect from close */
-	    }
-	}
-	reset_cur_connection();
+	initiate_a_connection(c, &is);
+	close_any(is.whackfd);
+	return;
     }
-    close_any(whackfd);
+
+    loglog(RC_COMMENT, "initiating all conns with alias='%s'\n", name);
+    count = foreach_connection_by_alias(name, initiate_a_connection, &is);
+
+    if(count == 0) {
+	whack_log(RC_UNKNOWN_NAME
+		  , "no connection named \"%s\"", name);
+    }
+
+    close_any(is.whackfd);
 }
+
 
 /* (Possibly) Opportunistic Initiation:
  * Knowing clients (single IP addresses), try to build an tunnel.
@@ -3339,6 +3432,20 @@ initiate_ondemand_body(struct find_oppo_bundle *b
     close_any(b->whackfd);
 }
 
+static int
+terminate_a_connection(struct connection *c, void *arg UNUSED)
+{
+    set_cur_connection(c);
+    openswan_log("terminating SAs using this connection");
+    c->policy &= ~POLICY_UP;
+    flush_pending_by_connection(c);
+    delete_states_by_connection(c, FALSE);
+    reset_cur_connection();
+
+    return 1;
+}
+    
+
 void
 terminate_connection(const char *nm)
 {
@@ -3346,21 +3453,30 @@ terminate_connection(const char *nm)
      * But at least one is required (enforced by con_by_name).
      */
     struct connection *c, *n;
+    int count;
 
-    for (c = con_by_name(nm, TRUE); c != NULL; c = n)
-    {
-	n = c->ac_next;	/* grab this before c might disappear */
-	if (streq(c->name, nm)
-	&& c->kind >= CK_PERMANENT
-	&& !NEVER_NEGOTIATE(c->policy))
+    c = con_by_name(nm, TRUE);
+
+    if(c) {
+	for (; c != NULL; c = n)
 	{
-	    set_cur_connection(c);
-	    openswan_log("terminating SAs using this connection");
-	    c->policy &= ~POLICY_UP;
-	    flush_pending_by_connection(c);
-	    delete_states_by_connection(c, FALSE);
-	    reset_cur_connection();
+	    n = c->ac_next;	/* grab this before c might disappear */
+	    if (streq(c->name, nm)
+		&& c->kind >= CK_PERMANENT
+		&& !NEVER_NEGOTIATE(c->policy))
+	    {
+		terminate_a_connection(c, NULL);
+	    }
 	}
+	return;
+    } 
+
+    loglog(RC_COMMENT, "terminating all conns with alias='%s'\n", nm);
+    count = foreach_connection_by_alias(nm, terminate_a_connection, NULL);
+
+    if(count == 0) {
+	whack_log(RC_UNKNOWN_NAME
+		  , "no connection named \"%s\"", nm);
     }
 }
 
@@ -4512,10 +4628,14 @@ show_connections_status(void)
 	    while (sr != NULL)
 	    {
 		char srcip[ADDRTOT_BUF], dstip[ADDRTOT_BUF];
-		char thissemi[3+sizeof("srcup=")];
-		char thatsemi[3+sizeof("dstup=")];
-		char thiscertsemi[3+sizeof("srccert=")+PATH_MAX];
-		char thatcertsemi[3+sizeof("dstcert=")+PATH_MAX];
+		char thissemi[3+sizeof("myup=")];
+		char thatsemi[3+sizeof("hisup=")];
+#ifdef XAUTH
+		char thisxauthsemi[XAUTH_USERNAME_LEN+sizeof("myxauthuser=")];
+		char thatxauthsemi[XAUTH_USERNAME_LEN+sizeof("hisxauthuser=")];
+#endif
+		char thiscertsemi[3+sizeof("mycert=")+PATH_MAX];
+		char thatcertsemi[3+sizeof("hiscert=")+PATH_MAX];
 		char *thisup, *thatup;
 
 		(void) format_connection(topo, sizeof(topo), c, sr);
@@ -4542,7 +4662,7 @@ show_connections_status(void)
 		    thissemi[0]=';';
 		    thissemi[1]=' ';
 		    thissemi[2]='\0';
-		    strcat(thissemi, "srcup=");
+		    strcat(thissemi, "myup=");
 		    thisup=sr->this.updown;
 		}
 		
@@ -4552,30 +4672,52 @@ show_connections_status(void)
 		    thatsemi[0]=';';
 		    thatsemi[1]=' ';
 		    thatsemi[2]='\0';
-		    strcat(thatsemi, "dstup=");
+		    strcat(thatsemi, "hisup=");
 		    thatup=sr->that.updown;
 		}
 		
 		thiscertsemi[0]='\0';
 		if(sr->this.cert_filename) {
 		    snprintf(thiscertsemi, sizeof(thiscertsemi)-1
-			     , "; srccert=%s"
+			     , "; mycert=%s"
 			     , sr->this.cert_filename);
 		}
 
 		thatcertsemi[0]='\0';
 		if(sr->that.cert_filename) {
 		    snprintf(thatcertsemi, sizeof(thatcertsemi)-1
-			     , "; dstcert=%s"
+			     , "; hiscert=%s"
 			     , sr->that.cert_filename);
 		}
-		
-		whack_log(RC_COMMENT, "\"%s\"%s:     srcip=%s; dstip=%s%s%s%s%s%s%s;"
+
+		whack_log(RC_COMMENT, "\"%s\"%s:     myip=%s; hisip=%s%s%s%s%s%s%s;"
 			  , c->name, instance, srcip, dstip
 			  , thissemi, thisup
 			  , thatsemi, thatup
 			  , thiscertsemi
 			  , thatcertsemi);
+
+#ifdef XAUTH
+		if(sr->this.xauth_name || sr->that.xauth_name) {
+		    thisxauthsemi[0]='\0';
+		    if(sr->this.xauth_name) {
+			snprintf(thisxauthsemi, sizeof(thisxauthsemi)-1
+				 , "myxauthuser=%s; "
+				 , sr->this.xauth_name);
+		    }
+		    
+		    thatxauthsemi[0]='\0';
+		    if(sr->that.xauth_name) {
+			snprintf(thatxauthsemi, sizeof(thatxauthsemi)-1
+				 , "hisxauthuser=%s; "
+				 , sr->that.xauth_name);
+		    }
+		    whack_log(RC_COMMENT, "\"%s\"%s:     xauth info: %s%s"
+			      , c->name, instance
+			      , thisxauthsemi
+			      , thatxauthsemi);
+		}
+#endif
 		sr = sr->next;
 		num++;
 	    }
@@ -4652,6 +4794,15 @@ show_connections_status(void)
 	    , instance
 	    , c->newest_isakmp_sa
 	    , c->newest_ipsec_sa);
+
+	if(c->connalias) {
+	    whack_log(RC_COMMENT
+		      , "\"%s\"%s:   aliases: %s\n"
+		      , c->name
+		      , instance
+		      , c->connalias);
+	}
+
 #ifdef IKE_ALG
 	ike_alg_show_connection(c, instance);
 #endif

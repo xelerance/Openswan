@@ -1591,7 +1591,7 @@ process_packet(struct msg_digest **mdp)
 		return;
 	    }
 
-	    if (!reserve_msgid(st, md->hdr.isa_msgid))
+	    if (!unique_msgid(st, md->hdr.isa_msgid))
 	    {
 		loglog(RC_LOG_SERIOUS, "Informational Exchange message is invalid because"
 		    " it has a previously used Message ID (0x%08lx)"
@@ -1599,6 +1599,7 @@ process_packet(struct msg_digest **mdp)
 		/* XXX Could send notification back */
 		return;
 	    }
+	    st->st_reserve_msgid = FALSE;
 
 	    init_phase2_iv(st, &md->hdr.isa_msgid);
 	    new_iv_set = TRUE;
@@ -1688,16 +1689,18 @@ process_packet(struct msg_digest **mdp)
 		return;
 	    }
 
-	    /* only accept this new Quick Mode exchange if it has a unique message ID */
-	    if (!reserve_msgid(st, md->hdr.isa_msgid))
+	    if (!unique_msgid(st, md->hdr.isa_msgid))
 	    {
 		loglog(RC_LOG_SERIOUS, "Quick Mode I1 message is unacceptable because"
-		    " it uses a previously used Message ID 0x%08lx"
-		    " (perhaps this is a duplicated packet)"
-		    , (unsigned long) md->hdr.isa_msgid);
+		       " it uses a previously used Message ID 0x%08lx"
+		       " (perhaps this is a duplicated packet)"
+		       , (unsigned long) md->hdr.isa_msgid);
 		SEND_NOTIFICATION(INVALID_MESSAGE_ID);
 		return;
 	    }
+	
+	    /* note that we need to reserve this message ID */
+	    st->st_reserve_msgid=FALSE;
 
 	    /* Quick Mode Initial IV */
 	    init_phase2_iv(st, &md->hdr.isa_msgid);
@@ -2372,10 +2375,14 @@ void process_packet_tail(struct msg_digest **mdp)
 	       && p->payload.notification.isan_type != R_U_THERE_ACK
 	       && p->payload.notification.isan_type != PAYLOAD_MALFORMED) {
 		
-		loglog(RC_LOG_SERIOUS
-		       , "ignoring informational payload, type %s st=%p"
-		       , enum_show(&ipsec_notification_names
-				   , p->payload.notification.isan_type), st);
+		switch(p->payload.notification.isan_type) {
+		case INVALID_MESSAGE_ID:
+		default:
+		    loglog(RC_LOG_SERIOUS
+			   , "ignoring informational payload, type %s msgid=%08x"
+			   , enum_show(&ipsec_notification_names
+				       , p->payload.notification.isan_type), st->st_msgid);
+		}
 #ifdef DEBUG
 		if(st!=NULL
 		   && st->st_connection->extra_debugging & IMPAIR_DIE_ONINFO) {
@@ -2618,7 +2625,6 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
     TCLCALLOUT("adjustFailure", st, (st ? st->st_connection : NULL), md);
     result = md->result;
 
-
     /* If state has DPD support, import it */
     if( st && md->dpd && st->hidden_variables.st_dpd != md->dpd) {
 	DBG(DBG_DPD, DBG_log("peer supports dpd"));
@@ -2669,6 +2675,17 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
                  , enum_name(&state_names, from_state)
                  , enum_name(&state_names, smc->next_state));
 	    
+	    if(st->st_reserve_msgid == FALSE && st->st_clonedfrom != SOS_NOBODY && st->st_msgid != 0) {
+		struct state *p1st = state_with_serialno(st->st_clonedfrom);
+
+		if(p1st) {
+		    /* do message ID reservation */
+		    reserve_msgid(p1st, st->st_msgid);
+		}
+		
+		st->st_reserve_msgid=TRUE;
+	    }
+
 	    st->st_state = smc->next_state;
 
 	    /* Delete previous retransmission event.
@@ -2970,7 +2987,7 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 #endif
 
 	    DBG(DBG_CONTROL
-		, DBG_log("phase 1 is done, looking for phase 1 to unpend"));
+		, DBG_log("phase 1 is done, looking for phase 2 to unpend"));
 
 	    if (smc->flags & SMF_RELEASE_PENDING_P2)
 	    {
@@ -2980,13 +2997,14 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		 * ??? there is a potential race condition
 		 * if we are the responder: the initial Phase 2
 		 * message might outrun the final Phase 1 message.
-		 * I think that retransmission will recover.
 		 *
-		 * The same race condition exists if we are in aggressive
-		 * mode as the final phase 1 message might not have
-		 * been received yet, and in fact, we might even have
-		 * a situation where the responder does not accept our
-		 * our identification.
+		 * so, instead of actualling sending the traffic now,
+		 * we schedule an event to do so.
+		 *
+		 * but, in fact, quick_mode will enqueue a cryptographic operation
+		 * anyway, which will get done "later" anyway, so make it is just fine
+		 * as it is.
+		 *
 		 */
 		unpend(st);
 	    }

@@ -197,6 +197,7 @@ enum_names pluto_cryptoop_names =
 
 /* pluto crypto importance */
 static const char *const pluto_cryptoimportance_strings[] = {
+	"import:not set",
   "import:respond to stranger",	
   "import:respond to friend",
   "import:ongoing calculation",
@@ -205,7 +206,7 @@ static const char *const pluto_cryptoimportance_strings[] = {
 };
 
 enum_names pluto_cryptoimportance_names =
-    { pcim_stranger_crypto, pcim_demand_crypto
+    { pcim_notset_crypto, pcim_demand_crypto
       , pluto_cryptoimportance_strings, NULL};
 
 

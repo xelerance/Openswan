@@ -34,7 +34,7 @@
  */
 
 #define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 24)
-#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 34)
+#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 35)
 
 /* struct whack_end is a lot like connection.h's struct end
  * It differs because it is going to be shipped down a socket
@@ -63,6 +63,7 @@ struct whack_end {
     char *virt;
     bool xauth_server;          /* for XAUTH */
     bool xauth_client;
+    char *xauth_name;
     bool modecfg_server;        /* for MODECFG */
     bool modecfg_client;
     enum certpolicy      sendcert;
@@ -181,6 +182,9 @@ struct whack_message {
     /* for WHACK_TCPEVAL */
     char *tpmeval;
 
+    /* for connalias string */
+    char *connalias;
+
     /* space for strings (hope there is enough room):
      * Note that pointers don't travel on wire.
      *  1 connection name [name_len]
@@ -252,6 +256,8 @@ extern void clear_end(struct whack_end *e);
 
 extern size_t whack_get_secret(char *buf, size_t bufsize);
 extern int whack_get_value(char *buf, size_t bufsize);
+
+extern bool osw_alias_cmp(const char *needle, const char *haystack);
 
 /*
  * Local Variables:

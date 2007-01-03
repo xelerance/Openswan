@@ -257,6 +257,33 @@ struct sadb_x_nat_t_port {
 };
 
 /*
+ * a plumbif extension can appear in
+ *          - a plumbif message to create the interface.
+ *          - a unplumbif message to delete the interface.
+ *          - a sadb add/replace to indicate which interface
+ *                   a decrypted packet should emerge on.
+ *
+ * the create/delete part could/should be replaced with netlink equivalents,
+ * or better yet, FORCES versions of same.
+ * 
+ */
+struct sadb_x_plumbif {
+	uint16_t sadb_x_outif_len;
+	uint16_t sadb_x_outif_exttype;
+	uint16_t sadb_x_outif_ifnum;
+} __attribute__((packed));
+
+/*
+ * the ifnum describes a device that you wish to create refer to.
+ *
+ * devices 0-40959 are mastXXX devices.
+ * devices 40960-49141 are mastXXX devices with transport set.
+ * devices 49152-65536 are deprecated ipsecXXX devices.
+ */
+#define IPSECDEV_OFFSET       (48*1024)
+#define MASTTRANSPORT_OFFSET  (40*1024)
+
+/*
  * A protocol structure for passing through the transport level
  * protocol.  It contains more fields than are actually used/needed
  * but it is this way to be compatible with the structure used in

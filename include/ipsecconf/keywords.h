@@ -1,5 +1,6 @@
-/* FreeS/WAN config file parser (parser.h)
+/* Openswan config file parser (parser.h)
  * Copyright (C) 2001-2002 Mathieu Lafon - Arkoon Network Security
+ * Copyright (C) 2003-2006 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -49,6 +50,8 @@ enum keyword_string_config_field {
     KSF_ESP,
     KSF_ALSO,
     KSF_ALSOFLIP,
+    KSF_ACCELERATION,
+    KSF_CONNALIAS,
     KSF_MAX
 };
 
@@ -121,7 +124,9 @@ enum keyword_string_conn_field {
     KSCF_ESPENCKEY    = 13,
     KSCF_ESPAUTHKEY   = 14,
     KSCF_SOURCEIP     = 15,
-    KSCF_MAX          = 16
+    KSCF_XAUTHUSERNAME= 16,
+    KSCF_SUBNETS      = 17,
+    KSCF_MAX          
 };
 
 
@@ -184,6 +189,7 @@ enum keyword_satype {
 enum keyword_type {
     kt_string,             /* value is some string */
     kt_appendstring,       /* value is some string, append duplicates */
+    kt_appendlist,         /* value is some list, append duplicates */
     kt_filename,           /* value is a filename string */
     kt_dirname,            /* value is a dir name string */
     kt_bool,               /* value is an on/off type */

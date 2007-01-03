@@ -29,6 +29,9 @@ SRCS=confread.c confwrite.c starterwhack.c starterlog.c
 SRCS+=cmp.c parser.tab.c lex.yy.c keywords.c alloc.c oeconns.c
 SRCS+=interfaces.c
 
+#enable to get lots more debugging about semantics.
+#CFLAGS=-DPARSER_TYPE_DEBUG
+
 ifeq ($(USE_KLIPS),true)
 SRCS+=virtif.c
 endif

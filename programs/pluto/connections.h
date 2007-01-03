@@ -173,10 +173,16 @@ struct end {
 #ifdef VIRTUAL_IP
     struct virtual_t *virt;
 #endif
+#ifdef XAUTH
     bool xauth_server;
     bool xauth_client;
+    char *xauth_name;
+    char *xauth_password;
+#ifdef MODECFG
     bool modecfg_server;        /* Give local addresses to tunnel's end */
     bool modecfg_client;        /* request address for local end */
+#endif
+#endif
 };
 
 struct spd_route {
@@ -190,6 +196,7 @@ struct spd_route {
 
 struct connection {
     char *name;
+    char *connalias;
     lset_t policy;
     time_t sa_ike_life_seconds;
     time_t sa_ipsec_life_seconds;
@@ -413,6 +420,12 @@ extern size_t format_connection(char *buf, size_t buf_len
 				, const struct connection *c
 				, struct spd_route *sr);
 
+
+extern void setup_client_ports(struct spd_route *sr);
+
+extern int foreach_connection_by_alias(const char *alias
+				       , int (*f)(struct connection *c, void *arg)
+				       , void *arg);
 
 
 /*

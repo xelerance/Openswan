@@ -23,7 +23,9 @@
 #include <sys/queue.h>
 
 #include "oswalloc.h"
+
 #include "ipsecconf/parser.h"
+#include "ipsecconf/files.h"
 #include "ipsecconf/confread.h"
 #include "ipsecconf/interfaces.h"
 #include "ipsecconf/starterlog.h"
@@ -85,6 +87,8 @@ static void default_values (struct starter_config *cfg)
 
 	cfg->conn_default.options[KBF_AUTO] = STARTUP_NO;
 	cfg->conn_default.state = STATE_LOADED;
+
+	cfg->ctlbase = clone_str(CTL_FILE, "default base");
 }
 
 #define ERR_FOUND(args...) \
@@ -200,6 +204,7 @@ static int load_setup (struct starter_config *cfg
 		break;
 
 	    case kt_appendstring:
+	    case kt_appendlist:
 		assert(kw->keyword.keydef->field < KEY_STRINGS_MAX);
 		if(!cfg->setup.strings[kw->keyword.keydef->field])
 		{
@@ -259,7 +264,8 @@ static int load_setup (struct starter_config *cfg
  * Validate that yes in fact we are one side of the tunnel
  * 
  * The function checks that IP addresses are valid, nexthops are
- * present (if needed) as well as policies
+ * present (if needed) as well as policies, and sets the leftID 
+ * from the left= if it isn't set.
  *
  * @param conn_st a connection definition
  * @param end a connection end
@@ -438,10 +444,6 @@ static int validate_end(struct starter_conn *conn_st
 	end->updown = xstrdup(end->strings[KSCF_UPDOWN]);
     }
 
-    if(end->strings_set[KSCF_UPDOWN]) {
-	end->updown = xstrdup(end->strings[KSCF_UPDOWN]);
-    }
-
     if(end->strings_set[KSCF_PROTOPORT]) {
 	err_t ugh;
 	char *value = end->strings[KSCF_PROTOPORT];
@@ -576,6 +578,7 @@ bool translate_conn (struct starter_conn *conn
 	    break;
 	    
 	case kt_appendstring:
+	case kt_appendlist:
 	    /* implicitely, this field can have multiple values */
 	    assert(kw->keyword.keydef->field < KEY_STRINGS_MAX);
 	    if(!(*the_strings)[field])
@@ -900,6 +903,10 @@ static int load_conn (struct starter_config *cfg
 	conn->ike = xstrdup(conn->strings[KSF_IKE]);
     }
 
+    if(conn->strings_set[KSF_CONNALIAS]) {
+	conn->connalias = xstrdup(conn->strings[KSF_CONNALIAS]);
+    }
+
     if(conn->options_set[KBF_PHASE2]) {
 	conn->policy &= ~(POLICY_AUTHENTICATE|POLICY_ENCRYPT);
 	conn->policy |= conn->options[KBF_PHASE2];
@@ -916,7 +923,7 @@ static int load_conn (struct starter_config *cfg
 }
 
     
-void conn_default (struct starter_conn *conn,
+void conn_default (char *n, struct starter_conn *conn,
 		   struct starter_conn *def)
 {
     int i;
@@ -975,7 +982,7 @@ struct starter_conn *alloc_add_conn(struct starter_config *cfg, char *name, err_
 	return NULL;
     }
 
-    conn_default(conn, &cfg->conn_default);
+    conn_default(name, conn, &cfg->conn_default);
     conn->name = xstrdup(name);
     conn->desired_state = STARTUP_NO;
     conn->state = STATE_FAILED;
@@ -1009,7 +1016,7 @@ int init_load_conn(struct starter_config *cfg
 }
 
 
-struct starter_config *confread_load(const char *file, err_t *perr)
+struct starter_config *confread_load(const char *file, err_t *perr, char *ctlbase)
 {
 	struct starter_config *cfg = NULL;
 	struct config_parsed *cfgp;
@@ -1034,6 +1041,11 @@ struct starter_config *confread_load(const char *file, err_t *perr)
 	 * Set default values
 	 */
 	default_values(cfg);
+
+	if(ctlbase) {
+	    pfree(cfg->ctlbase);
+	    cfg->ctlbase = clone_str(ctlbase, "control socket");
+	}
 
 	/**
 	 * Load setup
@@ -1113,6 +1125,9 @@ static void confread_free_conn(struct starter_conn *conn)
 	{
 	    FREE_STR(conn->strings[i]);
 	}
+
+	FREE_STR(conn->connalias);
+	FREE_STR(conn->name);
 
 #ifdef ALG_PATCH
 	FREE_STR(conn->esp);

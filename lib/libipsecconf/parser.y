@@ -179,6 +179,7 @@ statement_kw:
                         break;
 		    case kt_string:
 		    case kt_appendstring:
+		    case kt_appendlist:
 		    case kt_filename:
                     case kt_dirname:
                     case kt_ipaddr:
@@ -231,6 +232,7 @@ statement_kw:
                         break;
 		    case kt_string:
 		    case kt_appendstring:
+		    case kt_appendlist:
 		    case kt_filename:
                     case kt_dirname:
                     case kt_ipaddr:

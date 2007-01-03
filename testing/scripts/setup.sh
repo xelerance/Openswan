@@ -23,8 +23,11 @@ OPENSWANSRCDIR=`cd ${OPENSWANSRCDIR}; pwd`
 export OPENSWANSRCDIR
 
 FIXUPDIR=`cd ${OPENSWANSRCDIR}/testing/scripts/fixups && pwd`
+FIXUPDIR2=`cd ${OPENSWANSRCDIR}/testing/klips/fixups && pwd`
 TESTINGROOT=${OPENSWANSRCDIR}/testing
 UTILS=`cd ${TESTINGROOT}/utils && pwd`
+NJ=${UTILS}/uml_netjig/uml_netjig
+
 TESTSUBDIR=scripts
 
 

@@ -93,7 +93,7 @@ struct msgid_list
 };
 
 bool
-reserve_msgid(struct state *isakmp_sa, msgid_t msgid)
+unique_msgid(struct state *isakmp_sa, msgid_t msgid)
 {
     struct msgid_list *p;
 
@@ -104,11 +104,18 @@ reserve_msgid(struct state *isakmp_sa, msgid_t msgid)
 	if (p->msgid == msgid)
 	    return FALSE;
 
+    return TRUE;
+}
+
+void
+reserve_msgid(struct state *isakmp_sa, msgid_t msgid)
+{
+    struct msgid_list *p;
+
     p = alloc_thing(struct msgid_list, "msgid");
     p->msgid = msgid;
     p->next = isakmp_sa->st_used_msgids;
     isakmp_sa->st_used_msgids = p;
-    return TRUE;
 }
 
 msgid_t
@@ -122,7 +129,7 @@ generate_msgid(struct state *isakmp_sa)
     for (;;)
     {
 	get_rnd_bytes((void *) &msgid, sizeof(msgid));
-	if (msgid != 0 && reserve_msgid(isakmp_sa, msgid))
+	if (msgid != 0 && unique_msgid(isakmp_sa, msgid))
 	    break;
 
 	if (--timeout == 0)
@@ -183,10 +190,6 @@ new_state(void)
     st = clone_thing(blank_state, "struct state in new_state()");
     st->st_serialno = next_so++;
     passert(next_so > SOS_FIRST);	/* overflow can't happen! */
-#ifdef XAUTH
-    passert(st->st_oakley.xauth == 0);
-    passert(st->st_xauth_username == NULL);
-#endif    
     st->st_whack_sock = NULL_FD;
     
     anyaddr(AF_INET, &st->hidden_variables.st_nat_oa);
@@ -394,7 +397,7 @@ delete_state(struct state *st)
     pfreeany(st->st_ah.peer_keymat);
     pfreeany(st->st_esp.our_keymat);
     pfreeany(st->st_esp.peer_keymat);
-    pfreeany(st->st_xauth_username);
+    freeanychunk(st->st_xauth_password);
     pfree(st);
 }
 
@@ -730,16 +733,13 @@ duplicate_state(struct state *st)
     nst->st_situation = st->st_situation;
     nst->quirks = st->quirks;
     nst->hidden_variables = st->hidden_variables;
-    if(st->st_xauth_username) {
-	nst->st_xauth_username = clone_str((char *)st->st_xauth_username
-					   , "xauth username");
-    }
     nst->st_remoteaddr = st->st_remoteaddr;
     nst->st_remoteport = st->st_remoteport;
     nst->st_localaddr  = st->st_localaddr;
     nst->st_localport  = st->st_localport;
     nst->st_interface  = st->st_interface;
     nst->st_clonedfrom = st->st_serialno;
+    nst->st_import     = st->st_import;
 
 
 #   define clone_chunk(ch, name) \
