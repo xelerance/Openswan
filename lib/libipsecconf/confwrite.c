@@ -47,7 +47,8 @@ void confwrite_list(FILE *out, char *prefix, int val, struct keyword_def *k)
 
 void confwrite_int(FILE *out,
 		   char   *side,
-		   int     context,
+		   unsigned int context,
+		   unsigned int keying_context,
 		   knf     options,
 		   int_set options_set,
 		   ksf     strings)
@@ -56,7 +57,8 @@ void confwrite_int(FILE *out,
 
     for(k=ipsec_conf_keywords_v2; k->keyname!=NULL; k++) {
 	
-	if((k->validity & context)!=context) continue;
+	if((k->validity & KV_CONTEXT_MASK) != context) continue;
+	if(keying_context != 0 && (k->validity & keying_context)==0) continue;
 
 	/* do not output aliases */
 	if(k->validity & kv_alias) continue;
@@ -66,8 +68,8 @@ void confwrite_int(FILE *out,
 	if(k->validity & kv_processed) continue;
 
 #if 0
-	printf("side: %s  %s validity: %08x & %08x=%08x\n", side,
-	       k->keyname, k->validity, context, k->validity&context);
+	printf("#side: %s  %s validity: %08x & %08x=%08x vs %08x\n", side,
+	       k->keyname, k->validity, KV_CONTEXT_MASK, k->validity&KV_CONTEXT_MASK, context);
 #endif
 	
 	switch(k->type) {
@@ -157,13 +159,16 @@ void confwrite_int(FILE *out,
 void confwrite_str(FILE *out,
 		   char   *side,
 		   int     context,
+		   int     keying_context,
 		   ksf     strings,
 		   str_set strings_set)
 {
     struct keyword_def *k;
 
     for(k=ipsec_conf_keywords_v2; k->keyname!=NULL; k++) {
-	if((k->validity & context)!=context) continue;
+
+	if((k->validity & KV_CONTEXT_MASK)!=context) continue;
+	if(keying_context != 0 && (k->validity & keying_context)==0) continue;
 
 	/* do not output aliases */
 	if(k->validity & kv_alias) continue;
@@ -335,10 +340,11 @@ void confwrite_side(FILE *out,
     }
 
     confwrite_int(out, side,
-		  keyingtype|kv_conn|kv_leftright,
+		  kv_conn|kv_leftright,
+		  keyingtype,
 		  end->options, end->options_set, end->strings);
-    confwrite_str(out, side,
-		  keyingtype|kv_conn|kv_leftright,
+    confwrite_str(out, side, kv_conn|kv_leftright,
+		  keyingtype,
 		  end->strings, end->strings_set);
 
 }
@@ -372,9 +378,11 @@ void confwrite_conn(FILE *out,
     }
     confwrite_side(out, conn, &conn->left,  "left");
     confwrite_side(out, conn, &conn->right, "right");
-    confwrite_int(out, "", keyingtype|kv_conn,
+    confwrite_int(out, "", kv_conn,
+		  keyingtype,
 		  conn->options, conn->options_set, conn->strings);
-    confwrite_str(out, "", keyingtype|kv_conn,
+    confwrite_str(out, "", kv_conn,
+		  keyingtype,
 		  conn->strings, conn->strings_set);
 
     if(conn->connalias) {
@@ -520,9 +528,11 @@ void confwrite(struct starter_config *cfg, FILE *out)
 
 	/* output config setup section */
 	fprintf(out, "config setup\n");
-	confwrite_int(out, "", kv_config,
+	confwrite_int(out, "", 
+		      kv_config, 0,
 		      cfg->setup.options, cfg->setup.options_set, cfg->setup.strings);
-	confwrite_str(out, "", kv_config,
+	confwrite_str(out, "", 
+		      kv_config, 0,
 		      cfg->setup.strings, cfg->setup.strings_set);
 
 	fprintf(out, "\n\n");

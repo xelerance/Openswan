@@ -201,18 +201,33 @@ int parser_y_include (const char *filename)
 
 [\t ]+			/* ignore spaces in line */ ;
 
-[0-9]+                  { /* process a number */
+<USERDEF>[0-9]+         { /* process a number */
                            yylval.num = atof(yytext);
+                           BEGIN INITIAL;
 			   return INTEGER;
                         }
 
-%forever                { /* a number, really 0 */
+<USERDEF>%forever       { /* a number, really 0 */
                            yylval.num = 0;
+                           BEGIN INITIAL;
 			   return INTEGER;
 			}
 
+<USERDEF>[0-9]+\.[0-9]* { /* process a number */
+                           yylval.dblnum = atof(yytext);
+                           BEGIN INITIAL;
+			   return NUMBER;
+                        }
+
+[0-9]+                  { /* process a number */
+                           yylval.num = atof(yytext);
+                           BEGIN INITIAL;
+			   return INTEGER;
+                        }
+
 [0-9]+\.[0-9]*          { /* process a number */
                            yylval.dblnum = atof(yytext);
+                           BEGIN INITIAL;
 			   return NUMBER;
                         }
 
@@ -221,6 +236,7 @@ int parser_y_include (const char *filename)
 <BOOLEAN>true |
 <BOOLEAN>on             { /* process a boolean */
                           yylval.num = 1;
+                          BEGIN INITIAL;
 			  return BOOL;
 			}
 
@@ -229,6 +245,7 @@ int parser_y_include (const char *filename)
 <BOOLEAN>false |
 <BOOLEAN>off            { /* process a boolean */
                           yylval.num = 0;
+                          BEGIN INITIAL;
 			  return BOOL;
                         }
   
@@ -244,7 +261,7 @@ int parser_y_include (const char *filename)
 			  return EOL;
 		        }
 
-=			return EQUAL;
+=			{ BEGIN USERDEF; return EQUAL; }
 version                 return VERSION;     
 config			return CONFIG; 
 setup			return SETUP;
@@ -266,19 +283,7 @@ include			return INCLUDE;
 			   return tok;
 			}
 
-<USERDEF>[^\"= \t\n]+   {
-			   yylval.s = strdup(yytext);
-			   BEGIN INITIAL;
-                           return STRING;
-			}
-
-<USERDEF>[^\{}= \t\n]+   {
-			   yylval.s = strdup(yytext);
-			   BEGIN INITIAL;
-                           return STRING;
-			}
-
-\"[^\"\n]*\"	        {
+<USERDEF>\"[^\"\n]*\"	{
                            char *s = yytext + 1;
 			   int len = strlen(s);
 
@@ -288,10 +293,11 @@ include			return INCLUDE;
 			   s[len-1]='\0'; 
 			   if(yydebug) { fprintf(stderr, "STRING: \"%s\"\n", s);}
 			   yylval.s = strdup(s);
+			   BEGIN INITIAL;
                            return STRING;
 			}
 
-\{[^\"\n]*\}	        {
+<USERDEF>\{[^\"\n]*\}	{
                            char *s = yytext + 1;
 			   int len = strlen(s);
 
@@ -301,6 +307,19 @@ include			return INCLUDE;
 			   s[len-1]='\0'; 
 			   if(yydebug) { fprintf(stderr, "STRING{}: {%s}\n", s);}
 			   yylval.s = strdup(s);
+			   BEGIN INITIAL;
+                           return STRING;
+			}
+
+<USERDEF>[^\" \t\n]+   {
+			   yylval.s = strdup(yytext);
+			   BEGIN INITIAL;
+                           return STRING;
+			}
+
+<USERDEF>[^\{} \t\n]+   {
+			   yylval.s = strdup(yytext);
+			   BEGIN INITIAL;
                            return STRING;
 			}
 

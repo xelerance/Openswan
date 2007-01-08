@@ -194,7 +194,7 @@ statement_kw:
 		    case kt_number:
 		    case kt_time:
 		    case kt_percent:
-			yyerror("keyword exists a type not a string");
+			yyerror("keyword value is a keyword, but type not a string");
 			assert(!(kw.keydef->type == kt_bool));
 			break;
 		    }	
@@ -247,7 +247,7 @@ statement_kw:
 		    case kt_number:
 		    case kt_time:
 		    case kt_percent:
-			yyerror("keyword exists a type not a string");
+			yyerror("valid keyword, but value is not a number");
 			assert(!(kw.keydef->type == kt_bool));
 			break;
 		    }	
