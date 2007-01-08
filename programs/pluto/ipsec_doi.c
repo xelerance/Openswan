@@ -3206,12 +3206,19 @@ key_continue(struct adns_continuation *cr
 	     , key_tail_fn *tail)
 {
     struct key_continuation *kc = (void *)cr;
-    struct state *st = kc->md->st;
+    struct msg_digest *md = kc->md;
+    struct state *st;
+
+    if(md == NULL) {
+	return;
+    }
+
+    st= md->st;
 
     passert(cur_state == NULL);
 
     /* if st == NULL, our state has been deleted -- just clean up */
-    if (st != NULL)
+    if (st != NULL && st->st_suspended_md != NULL)
     {
 	stf_status r;
 
