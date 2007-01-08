@@ -364,8 +364,11 @@ static int validate_end(struct starter_conn *conn_st
     {
 	char *value = end->strings[KSCF_NEXTHOP];
 	
+	end->nexttype = KH_IPADDR;
+
 	er = ttoaddr(value, 0, AF_INET, &(end->nexthop));
 	if (er) ERR_FOUND("bad addr %snexthop=%s [%s]", leftright, value, er);
+
     } else {
 	if(conn_st->policy & POLICY_OPPO) {
 	    end->nexttype = KH_DEFAULTROUTE;
