@@ -1,10 +1,18 @@
 Please see docs/KNOWN_BUGS file for more information
 
-#public
+v2.5.02
+    fixed bug in ipsec.conf parser, where it could not read values
+       that had = in them (such as base64 encoded keys)
+    fixed bug in key continuation code that could cause a crash
+	if the DNS request timed out after the state was deleted
+	for other reasons.
+ 
+v2.5.01
+    merged xauthusername code base + multinet tests in.
     removed /dev/hw_random from list of valid random sources on linux.
         use "rngd" instead to feed /dev/random.
 
-v2.5.0 
+v2.5.00 
     fixed various bugs with lifetime values in ipsec.conf parser
     AES-128 (group 5, MD5 or SHA1 for PRF) is now accepted for phase 1,
 	and it is now the preferred cipher as well. This should be the
@@ -25,6 +33,10 @@ v2.5.0
        into a warning.
     remove test for NAT-T VID vs NATD payload test. It fails for reasons
        that are unknown at this time, and this check is really being pedantic.
+    MAJOR: use starter code for "addconn"
+    MAJOR: always use OBJDIRs, and compile on Windows (no kernel)
+    MAJOR: includes "Taproom" code --- TCL call outs from pluto at IKE
+		transition states. 
 
 v2.4.5
 * Fix for compiling on 2.6.14 kernels 
