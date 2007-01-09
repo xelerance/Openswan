@@ -3744,6 +3744,7 @@ find_host_connection2(const char *func
     return c;
 }
 
+#if 0
 /*
  * extracts the peer's ca from the chained list of public keys
  */
@@ -3763,6 +3764,7 @@ get_peer_ca(const struct id *peer_id)
     }
     return empty_chunk;
 }
+#endif
 
 
 
