@@ -206,6 +206,7 @@ enum keyword_type {
     kt_subnet,             /* an IP address subnet */
     kt_idtype,             /* an ID type */
     kt_bitstring,          /* an encryption/authentication key */
+    kt_comment,            /* a value which is a cooked comment */
 };
 
 #define NOT_ENUM NULL

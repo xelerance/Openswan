@@ -312,8 +312,6 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"modecfgclient", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_MODECONFIGCLIENT, NOT_ENUM},
     {"xauthusername", kv_conn|kv_auto|kv_leftright, kt_string, KSCF_XAUTHUSERNAME, NOT_ENUM},
     {"modecfgpull", kv_conn|kv_auto, kt_invertbool, KBF_MODECONFIGPULL , NOT_ENUM},
-
-
     /* things for manual keying only */
     {"spi",            kv_conn|kv_leftright|kv_manual, kt_number, KNCF_SPI,NOT_ENUM},
     {"espenckey",      kv_conn|kv_leftright|kv_manual, kt_bitstring, KSCF_ESPENCKEY,NOT_ENUM},
@@ -321,6 +319,11 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"espreplay_window",kv_conn|kv_leftright|kv_manual, kt_number, KNCF_ESPREPLAYWINDOW,NOT_ENUM}, 
     {NULL, 0, 0, 0, NOT_ENUM}
 };
+
+struct keyword_def ipsec_conf_keyword_comment=
+{"x-comment",   kv_conn|kv_config, kt_comment, 0, NOT_ENUM};
+
+
 
 const int ipsec_conf_keywords_v2_count = sizeof(ipsec_conf_keywords_v2)/sizeof(struct keyword_def);
 
@@ -366,6 +369,12 @@ int parser_find_keyword(const char *s, YYSTYPE *lval)
     }
 
     /* if we found nothing */
+    if(k->keyname == NULL && s[0]=='x' && s[1]=='-')
+    {
+	k = &ipsec_conf_keyword_comment;
+    }
+
+    /* if we still found nothing */
     if(k->keyname == NULL) {
 	lval->s = strdup(s);
 	return STRING;

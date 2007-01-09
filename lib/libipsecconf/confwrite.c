@@ -148,6 +148,9 @@ void confwrite_int(FILE *out,
 
 	case kt_number:
 	    break;
+
+	case kt_comment:
+	    continue;
 	}
 
 	if(options_set[k->field]) {
@@ -212,6 +215,9 @@ void confwrite_str(FILE *out,
 
 	case kt_percent:
 	case kt_number:
+	    continue;
+
+	case kt_comment:
 	    continue;
 	}
 

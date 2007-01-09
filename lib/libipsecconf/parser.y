@@ -197,6 +197,9 @@ statement_kw:
 			yyerror("keyword value is a keyword, but type not a string");
 			assert(!(kw.keydef->type == kt_bool));
 			break;
+
+           	    case kt_comment:
+                        break;
 		    }	
 		    new->next = NULL;
 
@@ -250,6 +253,8 @@ statement_kw:
 			yyerror("valid keyword, but value is not a number");
 			assert(!(kw.keydef->type == kt_bool));
 			break;
+           	    case kt_comment:
+                        break;
 		    }	
 		    new->next = NULL;
 

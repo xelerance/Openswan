@@ -248,6 +248,9 @@ static int load_setup (struct starter_config *cfg
 	    case kt_idtype:
 		err++;
 		break;
+
+	    case kt_comment:
+		break;
 	    }
 	}
 		
@@ -684,6 +687,9 @@ bool translate_conn (struct starter_conn *conn
 #endif
 	    (*the_options)[field] = kw->number;
 	    (*set_options)[field] = TRUE;
+	    break;
+	    
+	case kt_comment:
 	    break;
 	}
     }
