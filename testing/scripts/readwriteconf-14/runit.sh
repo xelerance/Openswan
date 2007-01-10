@@ -6,8 +6,8 @@
 #
 
 exe=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
-conf="--config ${ROOTDIR}/testing/scripts/readwriteconf-14/cassidy.conf"
-args="--rootdir=${ROOTDIR}/testing/baseconfigs/all $conf "
+conf="--config ${ROOTDIR}/testing/scripts/readwriteconf-14/ipsec.conf"
+args="--rootdir=${ROOTDIR}/testing/scripts/readwriteconf-14 $conf "
 #args="$args --verbose --verbose --verbose --verbose"
 echo "file $exe" >.gdbinit
 echo "set args $args " >>.gdbinit
