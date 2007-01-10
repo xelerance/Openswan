@@ -138,7 +138,6 @@ section_or_include:
 		}
 	} kw_sections
 	| INCLUDE STRING EOL {
-		extern void _parser_y_include (const char *f);
  		parser_y_include($2);
 	} 
 	;

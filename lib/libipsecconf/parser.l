@@ -1,7 +1,9 @@
+/* -*- flex-mode -*- */
 %option nounput
-%{ /* -*- flex-mode -*- */
+%{ 
 /* FreeS/WAN config file parser (parser.l)
  * Copyright (C) 2001 Mathieu Lafon - Arkoon Network Security
+ * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -13,7 +15,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: parser.l,v 1.10 2005/08/18 14:06:42 ken Exp $
  */
 
 #include <sys/queue.h>
@@ -22,6 +23,7 @@
 #include <assert.h>
 #include <unistd.h>
 #include <limits.h>
+#include <glob.h>
 
 #include "ipsecconf/keywords.h"
 #include "ipsecconf/parser.h"
@@ -43,26 +45,35 @@ char rootdir2[PATH_MAX];     /* or... try this one too */
 */
 
 extern void yyerror(const char *);
+
 extern int yylex (void);
 extern int yydebug;
 extern int verbose;
     
+struct ic_inputsource {
+	YY_BUFFER_STATE state;
+	FILE  *file;
+	unsigned int line;
+	char  *filename;
+	int    fileglobcnt;
+	glob_t fileglob;
+};
+	
 static struct {
-    int stack_ptr;
-    YY_BUFFER_STATE stack[MAX_INCLUDE_DEPTH];
-    FILE *file[MAX_INCLUDE_DEPTH];
-    unsigned int line[MAX_INCLUDE_DEPTH];
-    char *filename[MAX_INCLUDE_DEPTH];
+	int stack_ptr;
+	struct ic_inputsource stack[MAX_INCLUDE_DEPTH];
 } ic_private;
+
+static struct ic_inputsource *stacktop;
 
 char *parser_cur_filename(void)
 {
-    return ic_private.filename[ic_private.stack_ptr];
+    return stacktop->filename;
 }
 
 int  parser_cur_lineno(void)
 {
-    return ic_private.line[ic_private.stack_ptr];
+    return stacktop->line;
 }
 
 void parser_y_error(char *b, int size, const char *s)
@@ -72,48 +83,106 @@ void parser_y_error(char *b, int size, const char *s)
 #endif
 
 	snprintf(b, size, "%s:%d: %s [%s]",
-		ic_private.filename[ic_private.stack_ptr],
-		ic_private.line[ic_private.stack_ptr],
-		s, yytext);
+		 stacktop->filename ? stacktop->filename : "<none>",
+		 stacktop->line,
+		 s, yytext);
 }
 
 void parser_y_init (const char *f)
 {
 	memset(&ic_private, 0, sizeof(ic_private));
-	ic_private.line[0] = 1;
-	ic_private.filename[0] = strdup(f);
+	ic_private.stack[0].line = 1;
+	ic_private.stack[0].filename = strdup(f);
+	stacktop = &ic_private.stack[0];
+}
+
+void parser_y_close(struct ic_inputsource *iis)
+{
+	if (iis->filename)
+		free(iis->filename);
+	if (iis->file)
+		fclose(iis->file);
+	if (iis->fileglob.gl_pathv)
+		globfree(&iis->fileglob);
 }
 
 void parser_y_fini (void)
 {
 	unsigned int i;
+
 	for (i=0; i<MAX_INCLUDE_DEPTH; i++) {
-		if (ic_private.filename[i])
-			free(ic_private.filename[i]);
-		if (ic_private.file[i])
-			fclose(ic_private.file[i]);
+		parser_y_close(&ic_private.stack[i]);
+		
 	}
 	memset(&ic_private, 0, sizeof(ic_private));
 }
 
+int parser_y_nextglobfile(struct ic_inputsource *iis)
+{
+	FILE *f;
+	int  fcnt;
+
+#if 0
+	printf("fileglobcnt: %d pathc: %d cmp: %u\n", 
+	       iis->fileglobcnt, stacktop->fileglob.gl_pathc,
+	       (iis->fileglobcnt >= (int)stacktop->fileglob.gl_pathc));
+#endif
+
+	if((int)iis->fileglobcnt >= (int)stacktop->fileglob.gl_pathc) {
+		/* EOFiles */
+		return -1;
+	}
+
+	/* increment for next time  */
+	fcnt = iis->fileglobcnt++;
+
+	/* open the file */
+	f = fopen(iis->fileglob.gl_pathv[fcnt], "r");
+	if (!f) {
+                char ebuf[128];
+		snprintf(ebuf, 128, "can't open include filename: '%s'", iis->fileglob.gl_pathv[fcnt]);
+                yyerror(ebuf);
+		return -1;
+	}
+
+	if(iis->file) fclose(iis->file);
+	if(iis->filename) free(iis->filename);
+
+	iis->file  = f;
+	iis->line  = 1;
+	iis->filename = strdup(iis->fileglob.gl_pathv[fcnt]);
+
+	yy_switch_to_buffer(yy_create_buffer(f, YY_BUF_SIZE));
+
+	return 0;
+}
+
 int parser_y_include (const char *filename)
 {
-	unsigned int p;
-	FILE *f;
 	char newname[PATH_MAX];
+        glob_t globbuf;
+
+	globbuf.gl_offs = 0;
 
 	if(rootdir[0]!='\0' && filename[0]=='/')
         {
 	    snprintf(newname, PATH_MAX, "%s%s", rootdir, filename);
 
             if(access(newname, R_OK)!=0) {
-  	      if(rootdir2[0]!='\0') {
-	        snprintf(newname, PATH_MAX, "%s%s", rootdir2, filename);
-              }
-            }
+		    if(rootdir2[0]!='\0') {
+			    snprintf(newname, PATH_MAX, "%s%s", rootdir2, filename);
+		    }
+	    }
 	    filename=newname;
 	}
 		
+	if(glob(filename, GLOB_BRACE|GLOB_NOMAGIC, NULL, &globbuf) == GLOB_NOMATCH) {
+		/* no files found. maybe try rootdir2 now */
+                char ebuf[128];
+		snprintf(ebuf, 128, "can't open include filename: '%s'", filename);
+                yyerror(ebuf);
+		globfree(&globbuf);
+	}
 
 	if (ic_private.stack_ptr >= MAX_INCLUDE_DEPTH)
 	{
@@ -123,29 +192,51 @@ int parser_y_include (const char *filename)
 
 	if(verbose)
 	{
-		starter_log(LOG_LEVEL_DEBUG, "including file %s from line %s:%d\n"
+		starter_log(LOG_LEVEL_DEBUG, "including file '%s' from line %s:%d\n"
 			    , filename
-			    , ic_private.filename[ic_private.stack_ptr]
-			    , ic_private.line[ic_private.stack_ptr]);
+			    , stacktop->filename
+			    , stacktop->line);
 	}
 
-	/**
-	 * TODO: handle wildcards -- see glob()
-	 */
-	f = fopen(filename, "r");
-	if (!f) {
-		yyerror("can't open include filename");
-		return 1;
+	++ic_private.stack_ptr;
+	stacktop = &ic_private.stack[ic_private.stack_ptr];
+	stacktop->state = YY_CURRENT_BUFFER;
+	stacktop->fileglob = globbuf;
+	stacktop->fileglobcnt = 0;
+	stacktop->file = NULL;
+	stacktop->filename=NULL;
+
+	(void)parser_y_nextglobfile(stacktop);
+	
+	return 0;
+}
+
+int parser_y_eof(void)
+{
+	yy_delete_buffer(YY_CURRENT_BUFFER);
+
+	if(parser_y_nextglobfile(stacktop) == -1) {
+		/* no more glob'ed files to process */
+		
+		if(verbose)
+		{
+			int stackp = ic_private.stack_ptr;
+			starter_log(LOG_LEVEL_DEBUG,
+				    "end of file %s, resuming %s line %d\n"
+				    , stacktop->filename
+				    , (stackp > 0 ? ic_private.stack[stackp-1].filename : "<none>")
+				    , (stackp > 0 ? ic_private.stack[stackp-1].line : -1));
+		}
+		
+		yy_switch_to_buffer(stacktop->state);
+
+		parser_y_close(stacktop);
+		
+		if (--ic_private.stack_ptr < 0) {
+			return 1;
+		}
+		stacktop = &ic_private.stack[ic_private.stack_ptr];
 	}
-
-	p = ++ic_private.stack_ptr;
-	ic_private.file[p] = f;
-	ic_private.stack[p] = YY_CURRENT_BUFFER;
-	ic_private.line[p] = 1;
-	ic_private.filename[p] = strdup(filename);
-
-	yy_switch_to_buffer(yy_create_buffer(f, YY_BUF_SIZE));
-
 	return 0;
 }
 
@@ -156,43 +247,21 @@ int parser_y_include (const char *filename)
 %%
 
 <<EOF>>	{
-	if (ic_private.file[ic_private.stack_ptr]) {
-	    int stackp = ic_private.stack_ptr;
-
-		fclose(ic_private.file[stackp]);
-		
-		if(verbose)
-		{
-			starter_log(LOG_LEVEL_DEBUG,
-				    "end of file %s, resuming %s line %d\n"
-				    , ic_private.filename[stackp]
-				    , (stackp > 0 ? ic_private.filename[stackp-1] : "<none>")
-				    , (stackp > 0 ? ic_private.line[stackp-1] : -1));
-		}
-		
-		ic_private.file[stackp] = NULL;
-		yy_delete_buffer (YY_CURRENT_BUFFER);
-		yy_switch_to_buffer(ic_private.stack[stackp]);
-	}
-	if (ic_private.filename[ic_private.stack_ptr]) {
-		free(ic_private.filename[ic_private.stack_ptr]);
-		ic_private.filename[ic_private.stack_ptr] = NULL;
-	}
-	if (--ic_private.stack_ptr < 0) {
+	if(parser_y_eof()) {
 		yyterminate();
 	}
 }
 
 ^\n		        { /* eat totally blank lines */
-                          ic_private.line[ic_private.stack_ptr]++;
+                          stacktop->line++;
 		        }
 
 ^#.*\n		        { /* eat comment lines */
-                          ic_private.line[ic_private.stack_ptr]++;
+                          stacktop->line++;
 		        }
 
 ^[\t ]+#.*\n            { /* eat comment lines inside of stanzas */
-                          ic_private.line[ic_private.stack_ptr]++;
+                          stacktop->line++;
 		        }
 
 ^[\t ]+\n		/* ignore lines that just have combinations of spaces on them */
@@ -252,12 +321,12 @@ int parser_y_include (const char *filename)
 <BOOLEAN>=		return EQUAL;
 
 <BOOLEAN>\n 	        {
-                          ic_private.line[ic_private.stack_ptr]++;
+                          stacktop->line++;
 			  BEGIN INITIAL;
 			  return EOL;
 		        }
 \n  		        {
-                          ic_private.line[ic_private.stack_ptr]++;
+                          stacktop->line++;
 			  return EOL;
 		        }
 

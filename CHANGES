@@ -4,6 +4,7 @@ Please see docs/KNOWN_BUGS file for more information
     ipsec.conf parsing should ignore keywords that start with x-
 	they are a form of structured comment.
     added in forceencaps= keyword.
+    process wildcards with glob() in include statements.
 
 v2.5.02
     fixed bug in ipsec.conf parser, where it could not read values
