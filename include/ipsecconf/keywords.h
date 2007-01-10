@@ -95,6 +95,7 @@ enum keyword_numeric_config_field {
     KBF_IKELIFETIME,
     KBF_AGGRMODE,
     KBF_MODECONFIGPULL,
+    KBF_FORCEENCAP,
     KBF_MAX         
 };
 
