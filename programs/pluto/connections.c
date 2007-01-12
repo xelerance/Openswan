@@ -941,43 +941,45 @@ load_end_certificate(const char *filename, struct end *dst)
     /* initialize smartcard info record */
     dst->sc = NULL;
 
-    if (filename != NULL)
-    {
-	openswan_log("loading certificate from %s\n", filename);
-	dst->cert_filename = clone_str(filename, "certificate filename");
+    if(filename == NULL) {
+	return;
+    }
 
+    openswan_log("loading certificate from %s\n", filename);
+    dst->cert_filename = clone_str(filename, "certificate filename");
+    
 #ifdef SMARTCARD
-	if (strncmp(filename, SCX_TOKEN, strlen(SCX_TOKEN)) == 0)
+    if (strncmp(filename, SCX_TOKEN, strlen(SCX_TOKEN)) == 0)
 	{
 	    /* we have a smartcard */
 	    smartcard_t *sc = scx_parse_reader_id(filename + strlen(SCX_TOKEN));
 	    bool valid_cert = FALSE;
-
+	    
 	    dst->sc = scx_add(sc);
-
+	    
 	    /* is there a cached smartcard certificate? */
 	    cached_cert = dst->sc->last_cert.type != CERT_NONE
 		&& (time(NULL) - dst->sc->last_load) < SCX_CERT_CACHE_INTERVAL;
-
+	    
 	    if (cached_cert)
-	    {
-		cert = dst->sc->last_cert;
-		valid_cert = TRUE;
-	    }
+		{
+		    cert = dst->sc->last_cert;
+		    valid_cert = TRUE;
+		}
 	    else
 	    	valid_cert = scx_load_cert(dst->sc, &cert);
-
+	    
 	    if(!valid_cert) {
 		whack_log(RC_FATAL, "can not load certificate from smartcard: %s\n",
 			  filename);
 		return;
 	    }
 	}
-	else
+    else
 #endif
 	{
 	    bool valid_cert = FALSE;
-
+	    
 	    /* load cert from file */
 	    valid_cert = load_host_cert(FALSE, filename, &cert, TRUE);
 	    if(!valid_cert) {
@@ -986,9 +988,7 @@ load_end_certificate(const char *filename, struct end *dst)
 		return;
 	    }
 	}
-    }
-
-
+    
     switch (cert.type)
     {
     case CERT_PGP:
@@ -1378,7 +1378,7 @@ add_connection(const struct whack_message *wm)
 		char buf[256];
 		alg_info_snprint(buf, sizeof(buf),
 				 (struct alg_info *)c->alg_info_ike, TRUE);
-		DBG_log("ike string values: %s", buf);
+		DBG_log("ike (phase1) algorithm values: %s", buf);
 		);
 	    if (c->alg_info_ike) {
 		if (c->alg_info_ike->alg_info_cnt==0) {
