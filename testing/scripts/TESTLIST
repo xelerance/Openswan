@@ -28,6 +28,16 @@ unittest	readwriteconf-02	good
 unittest	readwriteconf-03	skip
 
 unittest	readwriteconf-04	good
+unittest	readwriteconf-05	good
+unittest	readwriteconf-06	good
+unittest	readwriteconf-07	good
+unittest	readwriteconf-08	good
+unittest	readwriteconf-09	good
+unittest	readwriteconf-10	good
+unittest	readwriteconf-11	good
+unittest	readwriteconf-12	good
+unittest	readwriteconf-13	good
+unittest	readwriteconf-14	good
 
 # test cases for showhostkey.
 umlXhost	showhostkey-01		good

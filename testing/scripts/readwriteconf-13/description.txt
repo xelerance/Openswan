@@ -1,0 +1,2 @@
+This tests parsing of a config file with nexthop settings.
+

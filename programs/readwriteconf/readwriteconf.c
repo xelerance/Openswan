@@ -158,13 +158,18 @@ main(int argc, char *argv[])
 	strcat(configfile, "ipsec.conf");
     }
 
+    if(verbose > 3) {
+	extern int yydebug;
+	yydebug=1;
+    }
+
     if(verbose) {
 	printf("opening file: %s\n", configfile);
     }
 
     starter_use_log (verbose, 1, verbose ? 0 : 1);
 
-    cfg = confread_load(configfile, &err);
+    cfg = confread_load(configfile, &err, NULL);
     
     if(!cfg) {
 	printf("config file: %s can not be loaded: %s\n", configfile, err);
