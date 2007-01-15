@@ -2627,7 +2627,7 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
      * we can only be in calculating state if state is ignore,
      * or suspended.
      */
-    passert(result == STF_IGNORE || result == STF_SUSPEND || st->st_calculating==FALSE);
+    passert(result == STF_INLINE || result == STF_IGNORE || result == STF_SUSPEND || st->st_calculating==FALSE);
 
     switch (result)
     {
