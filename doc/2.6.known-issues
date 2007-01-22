@@ -7,6 +7,17 @@ level IPsec stack.
 This is an overview of known issues with Openswan on the 2.6 kernel codebase
 (also 2.5.x), which includes NETKEY (CONFIG_NET_KEY).
 
+* pluto[709]: initiate on demand from 172.18.1.37:0 to 172.23.1.5:0 proto=0
+  state: fos_start because: acquire
+
+  Netkey does not have %hold operations. It is a serious design bug that
+  KAME also has. It also does not rate limit messages from the kernel to
+  userspace. This means that each packet that wanted to go into a tunnel
+  causes an acquire from the kernel to userspace.
+  Each acquire that the keying daemon gets causes it to initiate a connection.
+  We could rate limit them in some fashion, but we need to be cautious about
+  doing that. Please file a bug with your supplier of your kernel. 
+
 * The iproute2 (sometimes called iproute) package, as of version 2.6.8, 
   contains XFRM support (ip xfrm), obsoleting the use of the 'setkey' command
   from the ipsec-tools package. 
