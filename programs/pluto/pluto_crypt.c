@@ -318,54 +318,51 @@ err_t send_crypto_helper_request(struct pluto_crypto_req *r
     cn->pcrc_id = r->pcr_id;
     cn->pcrc_pcr = r;
 
-    pc_worker_num++;
-    if(pc_worker_num >= pc_workers_cnt) {
-	pc_worker_num = 0;
-    }
-
+    /* find an available worker */
     cnt = pc_workers_cnt;
-
-    /* find an available worker, restarting one if it was found to be dead */
-    w = &pc_workers[pc_worker_num];
-
-    DBG(DBG_CONTROL
-	, DBG_log("%d: w->pcw_dead: %d w->pcw_work: %d cnt: %d %s"
-		  , pc_worker_num, w->pcw_dead, w->pcw_work, cnt
-		  , enum_name(&pluto_cryptoimportance_names,r->pcr_pcim)));
-    
-    while((w->pcw_dead || (w->pcw_work >= w->pcw_maxbasicwork))
-	  && --cnt > 0) {
-	
+    do {
 	pc_worker_num++;
+ 	if(pc_worker_num >= pc_workers_cnt) {
+ 	    pc_worker_num = 0;
+ 	}
 	w = &pc_workers[pc_worker_num];
+
+ 	DBG(DBG_CONTROL
+ 	    , DBG_log("%d: w->pcw_dead: %d w->pcw_work: %d cnt: %d",
+ 		      pc_worker_num, w->pcw_dead, w->pcw_work, cnt));
 
 	/* see if there is something to clean up after */
 	if(w->pcw_dead      == TRUE
 	   && w->pcw_reaped == TRUE) {
 	    cleanup_crypto_helper(w, 0);
+ 	    DBG(DBG_CONTROL
+ 		, DBG_log("clnup %d: w->pcw_dead: %d w->pcw_work: %d cnt: %d",
+ 			  pc_worker_num, w->pcw_dead, w->pcw_work, cnt));
 	}
-	DBG(DBG_CONTROL
-	    , DBG_log("%d: w->pcw_dead: %d w->pcw_work: %d cnt: %d",
-		      pc_worker_num, w->pcw_dead, w->pcw_work, cnt));
-    }
+    } while(((w->pcw_work >= w->pcw_maxbasicwork))
+ 	    && --cnt > 0);
 
     if(cnt == 0 && r->pcr_pcim > pcim_ongoing_crypto) {
 	cnt = pc_workers_cnt;
-	while((w->pcw_dead || (w->pcw_work >= w->pcw_maxcritwork))
+ 	while((w->pcw_work >= w->pcw_maxcritwork)
 	      && --cnt > 0) {
 	
+ 	    /* find an available worker */
 	    pc_worker_num++;
-	    w = &pc_workers[pc_worker_num];
+ 	    if(pc_worker_num >= pc_workers_cnt) {
+ 		pc_worker_num = 0;
+  	    }
 
+	    w = &pc_workers[pc_worker_num];
 	    /* see if there is something to clean up after */
 	    if(w->pcw_dead      == TRUE
 	       && w->pcw_reaped == TRUE) {
 		cleanup_crypto_helper(w, 0);
 	    }
-	    DBG(DBG_CONTROL
-		, DBG_log("crit %d: w->pcw_dead: %d w->pcw_work: %d cnt: %d",
-			  pc_worker_num, w->pcw_dead, w->pcw_work, cnt));
 	}
+	DBG(DBG_CONTROL
+	    , DBG_log("crit %d: w->pcw_dead: %d w->pcw_work: %d cnt: %d",
+		      pc_worker_num, w->pcw_dead, w->pcw_work, cnt));
     }
 
     if(cnt == 0 && r->pcr_pcim >= pcim_demand_crypto) {
@@ -796,6 +793,7 @@ static void cleanup_crypto_helper(struct pluto_crypto_worker *w
     }
 
     w->pcw_pid = -1;
+    w->pcw_work = 0; /* ?!? */
     w->pcw_reaped = FALSE;
     w->pcw_dead   = FALSE;   /* marking is not dead lets it live again */
 }
