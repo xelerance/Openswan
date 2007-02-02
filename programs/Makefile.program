@@ -169,6 +169,10 @@ LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} -lgmp
 %.o: ${srcdir}%.c
 	${CC} -c ${CFLAGS} $<
 
+%.8: %.8.xml
+	xmlto man $< 
+	@for m in ipsec_*.8; do mv $$m $@; done
+
 %.i: %.c 
 	$(CC) $(CFLAGS) -E -o $@ $< 
 

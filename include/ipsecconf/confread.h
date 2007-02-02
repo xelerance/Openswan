@@ -1,5 +1,6 @@
-/* FreeS/WAN config file parser (confread.h)
+/* Openswan config file parser (confread.h)
  * Copyright (C) 2001-2002 Mathieu Lafon - Arkoon Network Security
+ * Copyright (C) 2003-2006 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -37,19 +38,25 @@ struct starter_end {
     sa_family_t addr_family;
     enum keyword_host addrtype;
     enum keyword_host nexttype;
-    ip_address addr, nexthop;
+    ip_address addr, nexthop, sourceip;
     bool has_client;
     ip_subnet subnet;
     char *iface;
     char *id;
+    
+    enum pubkey_source rsakey1_type, rsakey2_type;
     unsigned char *rsakey1;
     unsigned char *rsakey2;
     u_int16_t port;
-    u_int8_t protocol;
+    u_int8_t  protocol;
     bool has_client_wildcard;
     bool key_from_DNS_on_demand;
-    char *cert;
+    bool has_port_wildcard;
+    bool has_id_wildcards;
     char *virt;
+    char *cert;
+    char *ca;
+    char *updown;
     ksf  strings;
     knf  options;
 
@@ -58,8 +65,9 @@ struct starter_end {
 };
 
 struct starter_conn {
-    TAILQ_ENTRY(starter_conn) link;
+    TAILQ_ENTRY(starter_conn) link; 
     char *name;
+    char *connalias;			      
 
     ksf   strings;
     knf   options;
@@ -82,6 +90,7 @@ struct starter_conn {
     enum {
 	STATE_INVALID,
 	STATE_LOADED,
+	STATE_INCOMPLETE,
 	STATE_TO_ADD,
 	STATE_ADDED,
 	STATE_UP,
@@ -120,11 +129,15 @@ struct starter_config {
     ip_address dr;  /* default route */
     ip_address dnh; /* next hop value */
 
+    char *ctlbase;  /* location of pluto control socket */
+
     /* connections list (without %default) */
     TAILQ_HEAD(, starter_conn) conns;
 };
 
-extern struct starter_config *confread_load(const char *file, err_t *perr);
+extern struct starter_config *confread_load(const char *file
+					    , err_t *perr
+					    , char *ctlbase);
 extern struct starter_conn *alloc_add_conn(struct starter_config *cfg
 					   , char *name, err_t *perr);
 extern int init_load_conn(struct starter_config *cfg

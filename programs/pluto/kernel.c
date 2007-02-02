@@ -1251,6 +1251,18 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	    outgoing_ref_set  = TRUE;
 	}
 
+	if(inbound) {
+	    /*
+	     * set corresponding outbound SA. We can do this on
+	     * each SA in the bundle without harm.
+	     */
+	    said_next->refhim = refhim;
+	} else if (!outgoing_ref_set) {
+	    /* on outbound, pick up the SAref if not already done */
+	    said_next->ref    = refhim;
+	    outgoing_ref_set  = TRUE;
+	}
+
         if (!kernel_ops->add_sa(said_next, replace)) {
 	    DBG(DBG_KLIPS, DBG_log("add_sa tunnel failed"));
             goto fail;
@@ -1310,6 +1322,18 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->reqid = c->spd.reqid + 2;
         said_next->text_said = text_said;
 	said_next->outif   = -1;
+
+	if(inbound) {
+	    /*
+	     * set corresponding outbound SA. We can do this on
+	     * each SA in the bundle without harm.
+	     */
+	    said_next->refhim = refhim;
+	} else if (!outgoing_ref_set) {
+	    /* on outbound, pick up the SAref if not already done */
+	    said_next->ref    = refhim;
+	    outgoing_ref_set  = TRUE;
+	}
 
 	if(inbound) {
 	    /*
@@ -1607,6 +1631,18 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->reqid = c->spd.reqid;
         said_next->text_said = text_said;
 	said_next->outif   = -1;
+
+	if(inbound) {
+	    /*
+	     * set corresponding outbound SA. We can do this on
+	     * each SA in the bundle without harm.
+	     */
+	    said_next->refhim = refhim;
+	} else if (!outgoing_ref_set) {
+	    /* on outbound, pick up the SAref if not already done */
+	    said_next->ref    = refhim;
+	    outgoing_ref_set  = TRUE;
+	}
 
 	if(inbound) {
 	    /*
@@ -1927,7 +1963,7 @@ init_kernel(void)
 	break;
 #endif
 
-#if defined(KLIPS) 
+#if defined(KLIPS_MAST) 
     case USE_MASTKLIPS:
 	openswan_log("Using KLIPSng (mast) IPsec interface code on %s"
 		     , kversion);

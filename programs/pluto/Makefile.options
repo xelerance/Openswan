@@ -128,7 +128,14 @@ KLIPS_DIST_SRCS=kernel_pfkey.c kernel_klips.c kernel_mast.c kernel_pfkey.h
 ifeq ($(USE_KLIPS),true)
 KLIPS_SRCS=${KLIPS_DIST_SRCS}
 KLIPS_DEFS=-DKLIPS -DHAVE_UDPFROMTO -DPFKEY
-KLIPS_OBJS=kernel_pfkey.o kernel_klips.o kernel_mast.o
+KLIPS_OBJS=kernel_pfkey.o kernel_klips.o 
+endif
+
+MAST_DIST_SRCS=kernel_mast.c 
+ifeq ($(USE_MAST),true)
+MAST_SRCS=${MAST_DIST_SRCS}
+MAST_DEFS=-DKLIPS_MAST 
+MAST_OBJS=kernel_mast.o
 endif
 
 
@@ -254,7 +261,7 @@ DEFINES = $(EXTRA_DEFINES) \
 	$(HAVE_THREADS_DEFS) \
 	$(SMARTCARD_DEFS) \
 	-DPLUTO \
-	${KLIPS_DEFS} ${WIN2K_DEFS} ${TPM_DEFS} \
+	${KLIPS_DEFS} ${WIN2K_DEFS} ${TPM_DEFS} ${MAST_DEFS} \
 	-DBUILDER=\"${BUILDER}\" \
 	-DDEBUG \
 	-DGCC_LINT \

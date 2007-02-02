@@ -934,12 +934,12 @@ void process_pfkey_nat_t_new_mapping(
 	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 {
 	struct _new_klips_mapp_nfo nfo;
-	struct sadb_address *srcx = (void *) extensions[SADB_EXT_ADDRESS_SRC];
-	struct sadb_address *dstx = (void *) extensions[SADB_EXT_ADDRESS_DST];
+	struct sadb_address *srcx = (void *) extensions[K_SADB_EXT_ADDRESS_SRC];
+	struct sadb_address *dstx = (void *) extensions[K_SADB_EXT_ADDRESS_DST];
 	struct sockaddr *srca, *dsta;
 	err_t ugh = NULL;
 
-	nfo.sa = (void *) extensions[SADB_EXT_SA];
+	nfo.sa = (void *) extensions[K_SADB_EXT_SA];
 
 	if ((!nfo.sa) || (!srcx) || (!dstx)) {
 		openswan_log("K_SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: "

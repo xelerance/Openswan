@@ -1,6 +1,6 @@
 /*
- * FreeS/WAN config file parser (keywords.c)
- * Copyright (C) 2003 Michael Richardson <mcr@sandelman.ottawa.on.ca>
+ * Openswan config file parser (keywords.c)
+ * Copyright (C) 2003-2006 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,13 +12,14 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keywords.c,v 1.12 2004/12/02 16:26:02 ken Exp $
  */
 
 #include <sys/queue.h>
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <limits.h>
 
 #ifndef _OPENSWAN_H
 #include <openswan.h>
@@ -61,6 +62,7 @@ struct keyword_enum_values kw_keyexchange_list=
  * Values for authby={rsasig, secret}
  */
 struct keyword_enum_value kw_authby_values[]={
+    { "never",     0},
     { "rsasig",    POLICY_RSASIG},
     { "secret",    POLICY_PSK},
 };
@@ -100,10 +102,10 @@ struct keyword_enum_values kw_auto_list=
 struct keyword_enum_value kw_type_values[]={
     { "tunnel",    KS_TUNNEL },
     { "transport", KS_TRANSPORT },
-    { "udpencap",  KS_UDPENCAP },
-    { "passthrough", KS_PASSTHROUGH },
     { "udp",       KS_UDPENCAP },
+    { "udpencap",  KS_UDPENCAP },
     { "pass",      KS_PASSTHROUGH },
+    { "passthrough", KS_PASSTHROUGH },
     { "reject",    KS_REJECT },
     { "drop",      KS_DROP },
 };
@@ -118,6 +120,7 @@ struct keyword_enum_values kw_type_list=
  */
 struct keyword_enum_value kw_rsasigkey_values[]={
     { "",             PUBKEY_PREEXCHANGED },
+    { "%cert",        PUBKEY_CERTIFICATE },
     { "%dns",         PUBKEY_DNS },
     { "%dnsondemand", PUBKEY_DNSONDEMAND },
 };
@@ -199,10 +202,20 @@ struct keyword_enum_value kw_klipsdebug_values[]={
     { "comp",     LELEM(KDF_COMP) },
 };
 
-
 struct keyword_enum_values kw_klipsdebug_list=
     { kw_klipsdebug_values, sizeof(kw_klipsdebug_values)/sizeof(struct keyword_enum_value)};
     
+
+struct keyword_enum_value kw_phase2types_values[]={
+    { "ah+esp",   POLICY_ENCRYPT|POLICY_AUTHENTICATE },
+    { "esp",      POLICY_ENCRYPT },
+    { "ah",       POLICY_AUTHENTICATE },
+    { "default",  POLICY_ENCRYPT },     /* alias, find it last */
+};
+
+struct keyword_enum_values kw_phase2types_list=
+    { kw_phase2types_values, sizeof(kw_phase2types_values)/sizeof(struct keyword_enum_value)};
+
 struct keyword_def ipsec_conf_keywords_v2[]={
     {"interfaces",     kv_config, kt_string,    KSF_INTERFACES,NOT_ENUM},
     {"forwardcontrol", kv_config, kt_bool,      KBF_FORWARDCONTROL,NOT_ENUM},
@@ -237,56 +250,68 @@ struct keyword_def ipsec_conf_keywords_v2[]={
 
     /* this is "left=" and "right=" */
     {"",               kv_conn|kv_leftright, kt_loose_enum, KSCF_IP, &kw_host_list},  
-    {"esp",            kv_conn|kv_leftright|kv_manual, kt_string, KSCF_ESP,NOT_ENUM},
-    {"ike",            kv_conn|kv_auto, kt_string, KSCF_IKE,NOT_ENUM},
 
-    {"subnet",         kv_conn|kv_leftright, kt_subnet, KSCF_SUBNET,NOT_ENUM}, 
-    {"sourceip",       kv_conn|kv_leftright, kt_ipaddr, KSCF_SOURCEIP,NOT_ENUM}, 
-    {"nexthop",        kv_conn|kv_leftright, kt_ipaddr, KSCF_NEXTHOP,NOT_ENUM},
-    {"firewall",       kv_conn|kv_leftright, kt_bool,   KNCF_FIREWALL,NOT_ENUM},
-    {"updown",         kv_conn|kv_leftright, kt_filename, KSCF_UPDOWN,NOT_ENUM},
-    {"id",             kv_conn|kv_leftright, kt_idtype, KSCF_ID,NOT_ENUM},
-    {"rsasigkey",      kv_conn|kv_leftright, kt_rsakey, KSCF_RSAKEY1, &kw_rsasigkey_list},
-    {"rsasigkey2",     kv_conn|kv_leftright, kt_rsakey, KSCF_RSAKEY2, &kw_rsasigkey_list},
+    {"ike",            kv_conn|kv_auto, kt_string, KSF_IKE,NOT_ENUM},
+
+    {"subnet",         kv_conn|kv_auto|kv_leftright|kv_processed, kt_subnet, KSCF_SUBNET,NOT_ENUM}, 
+    {"subnets",        kv_conn|kv_auto|kv_leftright, kt_appendlist, KSCF_SUBNETS,NOT_ENUM}, 
+    {"sourceip",       kv_conn|kv_auto|kv_leftright, kt_ipaddr, KSCF_SOURCEIP,NOT_ENUM}, 
+    {"nexthop",        kv_conn|kv_auto|kv_leftright, kt_ipaddr, KSCF_NEXTHOP,NOT_ENUM},
+    {"firewall",       kv_conn|kv_auto|kv_leftright, kt_bool,   KNCF_FIREWALL,NOT_ENUM},
+    {"updown",         kv_conn|kv_auto|kv_leftright, kt_filename, KSCF_UPDOWN,NOT_ENUM},
+    {"id",             kv_conn|kv_auto|kv_leftright, kt_idtype, KSCF_ID,NOT_ENUM},
+    {"rsasigkey",      kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY1, &kw_rsasigkey_list},
+    {"rsasigkey2",     kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY2, &kw_rsasigkey_list},
     {"spibase",        kv_conn|kv_auto|kv_leftright, kt_number, KNCF_SPIBASE,NOT_ENUM},
-    {"cert",           kv_conn|kv_leftright, kt_filename, KSCF_CERT,NOT_ENUM},
-    {"ca",             kv_conn|kv_leftright, kt_string, KSCF_CA,NOT_ENUM},
-    {"subnetwithin",   kv_conn|kv_leftright, kt_string, KSCF_SUBNETWITHIN,NOT_ENUM},
-    {"protoport",      kv_conn|kv_leftright, kt_string, KSCF_PROTOPORT,NOT_ENUM},
+    {"cert",           kv_conn|kv_auto|kv_leftright, kt_filename, KSCF_CERT,NOT_ENUM},
+    {"ca",             kv_conn|kv_auto|kv_leftright, kt_string, KSCF_CA,NOT_ENUM},
 
+    /* these are conn statements which are not left/right */
     {"auto",           kv_conn,         kt_enum,   KBF_AUTO,        &kw_auto_list},
-    {"also",           kv_conn,         kt_appendstring, KSCF_ALSO,NOT_ENUM},
-    {"alsoflip",       kv_conn,         kt_string, KSCF_ALSOFLIP,NOT_ENUM},
+    {"also",           kv_conn,         kt_appendstring, KSF_ALSO,NOT_ENUM},
+    {"alsoflip",       kv_conn,         kt_string, KSF_ALSOFLIP,NOT_ENUM},
     {"type",           kv_conn,         kt_enum,   KBF_TYPE,        &kw_type_list},
-    {"authby",         kv_conn|kv_auto, kt_string, KBF_AUTHBY,      &kw_authby_list},
+    {"authby",         kv_conn|kv_auto, kt_enum,   KBF_AUTHBY,     &kw_authby_list},
     {"keyexchange",    kv_conn|kv_auto, kt_enum,   KBF_KEYEXCHANGE, &kw_keyexchange_list},
     {"pfs",            kv_conn|kv_auto, kt_bool,   KBF_PFS,          NOT_ENUM},
-    {"keylife",        kv_conn|kv_auto, kt_time,   KBF_SALIFETIME,NOT_ENUM},
-    {"lifetime",       kv_conn|kv_auto, kt_time,   KBF_SALIFETIME,NOT_ENUM},
+    {"keylife",        kv_conn|kv_auto|kv_alias, kt_time,   KBF_SALIFETIME,NOT_ENUM},
+    {"lifetime",       kv_conn|kv_auto|kv_alias, kt_time,   KBF_SALIFETIME,NOT_ENUM},
     {"salifetime",     kv_conn|kv_auto, kt_time,   KBF_SALIFETIME,NOT_ENUM},
     {"rekey",          kv_conn|kv_auto, kt_bool,   KBF_REKEY, NOT_ENUM},
     {"rekeymargin",    kv_conn|kv_auto, kt_time,   KBF_REKEYMARGIN,NOT_ENUM},
     {"rekeyfuzz",      kv_conn|kv_auto, kt_time,   KBF_REKEYFUZZ,NOT_ENUM},
-    {"compress",       kv_conn|kv_auto, kt_bool,   KBF_COMPRESS,NOT_ENUM},
     {"keyingtries",    kv_conn|kv_auto, kt_number, KBF_KEYINGTRIES,NOT_ENUM},
     {"ikelifetime",    kv_conn|kv_auto, kt_time,   KBF_IKELIFETIME,NOT_ENUM},
     {"disablearrivalcheck", kv_conn|kv_auto, kt_invertbool, KBF_ARRIVALCHECK,NOT_ENUM},
     {"failureshunt",   kv_conn|kv_auto, kt_enum,   KBF_FAILURESHUNT, &kw_failureshunt_list},
+    {"connalias",      kv_conn|kv_processed|kv_auto|kv_manual, kt_appendstring,   KSF_CONNALIAS, NOT_ENUM},
+
+    /* attributes of the phase2 policy */
+    {"phase2alg",      kv_conn|kv_auto|kv_manual,  kt_string, KSF_ESP,NOT_ENUM},
+    {"esp",            kv_conn|kv_auto|kv_manual|kv_alias,  kt_string, KSF_ESP,NOT_ENUM},
+    {"ah",             kv_conn|kv_auto|kv_manual|kv_alias,  kt_string, KSF_ESP,NOT_ENUM},
+    {"subnetwithin",   kv_conn|kv_leftright, kt_string, KSCF_SUBNETWITHIN,NOT_ENUM},
+    {"protoport",      kv_conn|kv_leftright|kv_processed, kt_string, KSCF_PROTOPORT,NOT_ENUM},
+    {"phase2",         kv_conn|kv_auto|kv_manual|kv_policy,  kt_enum, KBF_PHASE2, &kw_phase2types_list},
+    {"auth",           kv_conn|kv_auto|kv_manual|kv_policy|kv_alias,  kt_enum, KBF_PHASE2, &kw_phase2types_list},
+    {"compress",       kv_conn|kv_auto, kt_bool,   KBF_COMPRESS,NOT_ENUM},
 
 
     /* DPD */ 
-    {"dpddelay", kv_conn|kv_auto,kt_number, KNCF_DPDDELAY, NOT_ENUM},
-    {"dpdtimeout", kv_conn|kv_auto,kt_number,KNCF_DPDTIMEOUT , NOT_ENUM},
-    {"dpdaction", kv_conn|kv_auto,kt_enum, KSCF_DPDACTION , &kw_dpdaction_list},
+    {"dpddelay", kv_conn|kv_auto,kt_number, KBF_DPDDELAY, NOT_ENUM},
+    {"dpdtimeout", kv_conn|kv_auto,kt_number,KBF_DPDTIMEOUT , NOT_ENUM},
+    {"dpdaction", kv_conn|kv_auto,kt_enum, KBF_DPDACTION , &kw_dpdaction_list},
 
 
     /* aggr/xauth/modeconfig */ 
-    {"aggrmode", kv_conn|kv_auto, kt_invertbool, KNCF_AGGRMODE , NOT_ENUM},
-    {"xauthserver", kv_conn|kv_leftright, kt_invertbool, KNCF_XAUTHSERVER , NOT_ENUM},
-    {"xauthclient", kv_conn|kv_leftright, kt_invertbool, KNCF_XAUTHCLIENT, NOT_ENUM},
-    {"modecfgserver", kv_conn|kv_leftright, kt_invertbool, KNCF_MODECONFIGSERVER, NOT_ENUM},
-    {"modecfgclient", kv_conn|kv_leftright, kt_invertbool, KNCF_MODECONFIGCLIENT, NOT_ENUM},
-    {"modecfgpull", kv_conn|kv_auto, kt_invertbool, KNCF_MODECONFIGPULL , NOT_ENUM},
+    {"aggrmode",    kv_conn|kv_auto, kt_invertbool,      KBF_AGGRMODE,NOT_ENUM},
+    {"xauthserver", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_XAUTHSERVER,  NOT_ENUM},
+    {"xauthclient", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_XAUTHCLIENT, NOT_ENUM},
+    {"xauthname",   kv_conn|kv_auto|kv_leftright, kt_string, KSCF_XAUTHUSERNAME, NOT_ENUM},
+    {"modecfgserver", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_MODECONFIGSERVER, NOT_ENUM},
+    {"modecfgclient", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_MODECONFIGCLIENT, NOT_ENUM},
+    {"xauthusername", kv_conn|kv_auto|kv_leftright, kt_string, KSCF_XAUTHUSERNAME, NOT_ENUM},
+    {"modecfgpull", kv_conn|kv_auto, kt_invertbool, KBF_MODECONFIGPULL , NOT_ENUM},
 
 
     /* things for manual keying only */
@@ -355,6 +380,7 @@ int parser_find_keyword(const char *s, YYSTYPE *lval)
 	keywordtype = TIMEWORD;
 	break;
     case kt_bool:
+    case kt_invertbool:
 	keywordtype = BOOLWORD;
 	break;
     default:

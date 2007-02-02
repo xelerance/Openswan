@@ -34,7 +34,7 @@
  */
 
 #define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 24)
-#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 34)
+#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 35)
 
 /* struct whack_end is a lot like connection.h's struct end
  * It differs because it is going to be shipped down a socket
@@ -46,6 +46,7 @@ struct whack_end {
     char *ca;		/* distinguished name string (if any) -- parsed by pluto */
     char *groups;       /* access control groups (if any) -- parsed by pluto */
 
+    enum keyword_host host_type;
     ip_address host_addr,
 	host_nexthop,
 	host_srcip;
@@ -56,17 +57,17 @@ struct whack_end {
     bool has_client_wildcard;
     bool has_port_wildcard;
     char *updown;		/* string */
-    u_int16_t host_port;	/* host order */
+    u_int16_t host_port;	/* host order  (for IKE communications) */
     u_int16_t port;		/* host order */
     u_int8_t protocol;
     char *virt;
     bool xauth_server;          /* for XAUTH */
     bool xauth_client;
+    char *xauth_name;
     bool modecfg_server;        /* for MODECFG */
     bool modecfg_client;
     enum certpolicy      sendcert;
     enum ipsec_cert_type certtype;
-    unsigned int tundev;        /* tunnel device for SA */
 };
 
 struct whack_message {
@@ -107,7 +108,7 @@ struct whack_message {
     /* For DPD 3706 - Dead Peer Detection */
     time_t dpd_delay;
     time_t dpd_timeout;
-    int dpd_action;
+    enum dpd_action dpd_action;
     int dpd_count;
 
     /* Force the use of NAT-T on a connection */
@@ -181,6 +182,9 @@ struct whack_message {
     /* for WHACK_TCPEVAL */
     char *tpmeval;
 
+    /* for connalias string */
+    char *connalias;
+
     /* space for strings (hope there is enough room):
      * Note that pointers don't travel on wire.
      *  1 connection name [name_len]
@@ -189,13 +193,18 @@ struct whack_message {
      *  4 left's ca
      *  5 left's groups
      *  6 left's updown
-     *  7 right's name [left.host.name.len]
-     *  8 right's cert
-     *  9 right's ca
-     * 10 right's groups
-     * 11 right's updown
-     * 12 keyid
-     * 13 myid
+     *  7 left's virt
+     *  8 right's name [left.host.name.len]
+     *  9 right's cert
+     * 10 right's ca
+     * 11 right's groups
+     * 12 right's updown
+     * 13 right's virt
+     * 14 keyid
+     * 15 myid
+     * 16 ike
+     * 17 esp
+     * 18 tpmeval
      * plus keyval (limit: 8K bits + overhead), a chunk.
      */
     size_t str_size;
@@ -215,10 +224,11 @@ struct whack_message {
 #define LIST_CRLS	0x0080	/* list all crls */
 #define LIST_OCSP	0x0100	/* list all ocsp cache entries */
 #define LIST_CARDS	0x0200	/* list all smartcard records */
-#define LIST_EVENTS     0x0400  /* list all queued events */
+#define LIST_PSKS       0x0400  /* list all preshared keys (by name) */
+#define LIST_EVENTS     0x8000  /* list all queued events */
 
 /* omit events from listing options */
-#define LIST_ALL	LRANGES(LIST_PUBKEYS, LIST_CARDS)  /* all list options */
+#define LIST_ALL	LRANGES(LIST_PUBKEYS, LIST_PSKS)  /* all list options */
 
 /* options of whack --reread*** command */
 
@@ -246,6 +256,8 @@ extern void clear_end(struct whack_end *e);
 
 extern size_t whack_get_secret(char *buf, size_t bufsize);
 extern int whack_get_value(char *buf, size_t bufsize);
+
+extern bool osw_alias_cmp(const char *needle, const char *haystack);
 
 /*
  * Local Variables:

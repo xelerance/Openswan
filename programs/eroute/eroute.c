@@ -43,11 +43,12 @@ char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.67 2005/08/18 14:04:39 ken Ex
 #include <getopt.h>
 
 #include <signal.h>
-#include <pfkeyv2.h>
-#include <pfkey.h>
+#include <openswan/pfkeyv2.h>
+#include <openswan/pfkey.h>
 
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
+#include "oswlog.h"
 #include "pfkey_help.h"
 
 #include <stdio.h>
@@ -135,13 +136,13 @@ static struct option const longopts[] =
 	{0, 0, 0, 0}
 };
 
-/* outside of main, so that test cases can enable it */
-int debug = 0;
-
 void exit_tool(int x)
 {
   exit(x);
 }
+
+/* outside of main, so that test cases can enable it */
+int debug = 0;
 
 int
 main(int argc, char **argv)
@@ -174,6 +175,9 @@ main(int argc, char **argv)
 
 	int argcount = argc;
 
+
+	progname = argv[0];
+
 	memset(&pfkey_address_s_ska, 0, sizeof(ip_address));
 	memset(&pfkey_address_sflow_ska, 0, sizeof(ip_address));
 	memset(&pfkey_address_dflow_ska, 0, sizeof(ip_address));
@@ -183,7 +187,6 @@ main(int argc, char **argv)
 	memset(&s_subnet, 0, sizeof(ip_subnet));
 	memset(&d_subnet, 0, sizeof(ip_subnet));
 
-	progname = argv[0];
 	eroute_af_opt = said_af_opt = edst_opt = spi_opt = proto_opt = said_opt = dst_opt = src_opt = NULL;
 
 	while((c = getopt_long(argc, argv, ""/*"acdD:e:i:hprs:S:f:vl:+:g"*/, longopts, 0)) != EOF) {

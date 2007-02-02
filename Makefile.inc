@@ -287,6 +287,9 @@ USE_KEYRR?=true
 # include support for 2.4 KLIPS and 2.6 KLIPS in pluto
 USE_KLIPS?=true
 
+# include support for 2.6 KLIPS/MAST variation in pluto
+USE_MAST?=false
+
 # include support for NETKEY 2.5/2.6 IPsec in pluto (aka "native", "kame")
 USE_KERNEL26?=true
 

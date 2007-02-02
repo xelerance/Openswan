@@ -388,6 +388,8 @@ main(int argc, char **argv)
 				  pfkey_msg,
 				  pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) !=
 		   (ssize_t)(pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) {
+			fprintf(stderr, "%s: pfkey write failed, returning %d with errno=%d.\n",
+				progname, error, errno);
 			pfkey_extensions_free(extensions);
 			pfkey_msg_free(&pfkey_msg);
 			pfkey_write_error(error, errno);

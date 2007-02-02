@@ -23,7 +23,7 @@ include ${OPENSWANSRCDIR}/Makefile.ver
 
 MANDIR=$(MANTREE)/man3
 
-SRCS=whacklib.c
+SRCS=whacklib.c aliascomp.c
 
 OBJS=${SRCS:.c=.o} 
 

@@ -21,13 +21,22 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <unistd.h>
+#include <limits.h>
 
 #include "ipsecconf/keywords.h"
 #include "ipsecconf/parser.h"
 #include "parser.tab.h"
 #include "ipsecconf/parserlast.h"
+#include "ipsecconf/starterlog.h"
 
 #define MAX_INCLUDE_DEPTH  10
+
+char rootdir[PATH_MAX];      /* when evaluating paths, prefix this to them */
+char rootdir2[PATH_MAX];     /* or... try this one too */
+
+
+/* we want no actual output! */
+#define ECHO 
 
 /*    
 #define YY_NO_UNPUT
@@ -96,6 +105,12 @@ int parser_y_include (const char *filename)
 	if(rootdir[0]!='\0' && filename[0]=='/')
         {
 	    snprintf(newname, PATH_MAX, "%s%s", rootdir, filename);
+
+            if(access(newname, R_OK)!=0) {
+  	      if(rootdir2[0]!='\0') {
+	        snprintf(newname, PATH_MAX, "%s%s", rootdir2, filename);
+              }
+            }
 	    filename=newname;
 	}
 		
@@ -108,10 +123,10 @@ int parser_y_include (const char *filename)
 
 	if(verbose)
 	{
-	    fprintf(stderr, "including file %s from line %s:%d\n"
-		    , filename
-		    , ic_private.filename[ic_private.stack_ptr]
-		    , ic_private.line[ic_private.stack_ptr]);
+		starter_log(LOG_LEVEL_DEBUG, "including file %s from line %s:%d\n"
+			    , filename
+			    , ic_private.filename[ic_private.stack_ptr]
+			    , ic_private.line[ic_private.stack_ptr]);
 	}
 
 	/**
@@ -141,10 +156,6 @@ int parser_y_include (const char *filename)
 %%
 
 <<EOF>>	{
-	if (ic_private.filename[ic_private.stack_ptr]) {
-		free(ic_private.filename[ic_private.stack_ptr]);
-		ic_private.filename[ic_private.stack_ptr] = NULL;
-	}
 	if (ic_private.file[ic_private.stack_ptr]) {
 	    int stackp = ic_private.stack_ptr;
 
@@ -152,15 +163,20 @@ int parser_y_include (const char *filename)
 		
 		if(verbose)
 		{
-		    fprintf(stderr, "end of file %s, resuming %s line %d\n"
-			    , ic_private.filename[stackp]
-			    , (stackp > 0 ? ic_private.filename[stackp-1] : "<none>")
-			    , (stackp > 0 ? ic_private.line[stackp-1] : -1));
+			starter_log(LOG_LEVEL_DEBUG,
+				    "end of file %s, resuming %s line %d\n"
+				    , ic_private.filename[stackp]
+				    , (stackp > 0 ? ic_private.filename[stackp-1] : "<none>")
+				    , (stackp > 0 ? ic_private.line[stackp-1] : -1));
 		}
 		
 		ic_private.file[stackp] = NULL;
 		yy_delete_buffer (YY_CURRENT_BUFFER);
 		yy_switch_to_buffer(ic_private.stack[stackp]);
+	}
+	if (ic_private.filename[ic_private.stack_ptr]) {
+		free(ic_private.filename[ic_private.stack_ptr]);
+		ic_private.filename[ic_private.stack_ptr] = NULL;
 	}
 	if (--ic_private.stack_ptr < 0) {
 		yyterminate();
@@ -178,6 +194,8 @@ int parser_y_include (const char *filename)
 ^[\t ]+#.*\n            { /* eat comment lines inside of stanzas */
                           ic_private.line[ic_private.stack_ptr]++;
 		        }
+
+^[\t ]+\n		/* ignore lines that just have combinations of spaces on them */
 
 ^[\t ]+			return FIRST_SPACES;
 
@@ -232,7 +250,6 @@ config			return CONFIG;
 setup			return SETUP;
 conn			{ BEGIN USERDEF; return CONN; }
 include			return INCLUDE;
-%default                return DEFAULT;
 
 [^\"= \t\n]+	        {  int tok;
     
@@ -249,12 +266,13 @@ include			return INCLUDE;
 			   return tok;
 			}
 
-<USERDEF>%default       {
-                           BEGIN INITIAL;
-			   return DEFAULT;
+<USERDEF>[^\"= \t\n]+   {
+			   yylval.s = strdup(yytext);
+			   BEGIN INITIAL;
+                           return STRING;
 			}
 
-<USERDEF>[^\"= \t\n]+   {
+<USERDEF>[^\{}= \t\n]+   {
 			   yylval.s = strdup(yytext);
 			   BEGIN INITIAL;
                            return STRING;
@@ -267,16 +285,29 @@ include			return INCLUDE;
 			   assert(len>0);
 
 			   /* remove trailing " */
-			   s[len-1]='\0';
+			   s[len-1]='\0'; 
 			   if(yydebug) { fprintf(stderr, "STRING: \"%s\"\n", s);}
 			   yylval.s = strdup(s);
                            return STRING;
 			}
 
-#.*		        /* eat comment lines */ ;
+\{[^\"\n]*\}	        {
+                           char *s = yytext + 1;
+			   int len = strlen(s);
+
+			   assert(len>0);
+
+			   /* remove trailing } */
+			   s[len-1]='\0'; 
+			   if(yydebug) { fprintf(stderr, "STRING{}: {%s}\n", s);}
+			   yylval.s = strdup(s);
+                           return STRING;
+			}
+
+#.*		        /* eat comment lines */ {
+                        }
 
 .			yyerror(yytext);
-
 %%
 
 int yywrap(void) {
@@ -285,6 +316,7 @@ int yywrap(void) {
 
 /*
  * Local Variables:
+ * mode: flex
  * c-basic-offset:4
  * c-style: pluto
  * End:

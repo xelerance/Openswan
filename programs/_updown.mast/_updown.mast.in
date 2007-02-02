@@ -123,6 +123,9 @@ LC_ALL=C export LC_ALL
 #       DEFAULTSOURCE
 #              is the default value for PLUTO_MY_SOURCEIP
 #
+#       IPROUTETABLE
+#              is the default value for IPROUTETABLE
+#
 #       IPROUTEARGS
 #              is the extra argument list for ip route command
 #

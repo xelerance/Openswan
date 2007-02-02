@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <limits.h>
 
 #include "ipsecconf/keywords.h"
 #include "ipsecconf/parser.h"
@@ -114,17 +115,6 @@ section_or_include:
 		if(yydebug) fprintf(stderr, "\nconfig setup read\n");
 
 	} kw_sections
-	| CONN DEFAULT EOL {
-		struct section_list *section = &_parser_cfg->conn_default;
-		section->name = "%default";
-		section->kw = NULL;
-
-                /* setup keyword section to record values */
-		_parser_kw = &(section->kw);
-		_parser_kw_last = NULL;
-	
-		if(yydebug) fprintf(stderr, "\nread conn %s\n", section->name);
-	} kw_sections
 	| CONN STRING EOL {
 		struct section_list *section;
 		section = (struct section_list *)malloc(sizeof(struct section_list));
@@ -161,7 +151,62 @@ kw_sections:
 kw_section: FIRST_SPACES statement_kw EOL ;
 
 statement_kw:
-	KEYWORD EQUAL STRING {
+	KEYWORD EQUAL KEYWORD {
+		struct kw_list *new;
+
+		assert(_parser_kw != NULL);
+		new = alloc_kwlist();
+		if (!new) {
+		    yyerror("can't allocate memory in statement_kw");
+		} else {
+		    struct keyword kw;
+                    /* because the third argument was also a keyword, we dig up the string representation. */
+	            const char *value = $3.keydef->keyname;
+
+	            kw = $1;
+		    new->keyword = kw;
+
+		    switch(kw.keydef->type) {
+		    case kt_list:
+			new->number = parser_enum_list(kw.keydef, value, TRUE);
+			break;
+	            case kt_enum:
+			new->number = parser_enum_list(kw.keydef, value, FALSE);
+			break;
+		    case kt_rsakey:
+		    case kt_loose_enum:
+			new->number = parser_loose_enum(&new->keyword, value);
+                        break;
+		    case kt_string:
+		    case kt_appendstring:
+		    case kt_appendlist:
+		    case kt_filename:
+                    case kt_dirname:
+                    case kt_ipaddr:
+                    case kt_bitstring:
+		    case kt_idtype:
+		    case kt_subnet:
+		        new->string = strdup(value);
+			break;
+
+		    case kt_bool:
+		    case kt_invertbool:
+		    case kt_number:
+		    case kt_time:
+		    case kt_percent:
+			yyerror("keyword exists a type not a string");
+			assert(!(kw.keydef->type == kt_bool));
+			break;
+		    }	
+		    new->next = NULL;
+
+		    if (_parser_kw_last)
+			_parser_kw_last->next = new;
+		    _parser_kw_last = new;
+		    if (!*_parser_kw) *_parser_kw = new;
+		}
+	}
+	| KEYWORD EQUAL STRING {
 		struct kw_list *new;
 
 		assert(_parser_kw != NULL);
@@ -187,6 +232,7 @@ statement_kw:
                         break;
 		    case kt_string:
 		    case kt_appendstring:
+		    case kt_appendlist:
 		    case kt_filename:
                     case kt_dirname:
                     case kt_ipaddr:

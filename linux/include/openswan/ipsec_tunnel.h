@@ -44,6 +44,7 @@
 #endif /* NET_21 */
 
 
+#if defined(KLIPS)
 /*
  * Heavily based on drivers/net/new_tunnel.c.  Lots
  * of ideas also taken from the 2.1.x version of drivers/net/shaper.c
@@ -51,7 +52,7 @@
 
 struct ipsectunnelconf
 {
-	__u32	cf_cmd;
+	uint32_t	cf_cmd;
 	union
 	{
 		char 	cfu_name[12];
@@ -62,6 +63,7 @@ struct ipsectunnelconf
 #define IPSEC_SET_DEV	(SIOCDEVPRIVATE)
 #define IPSEC_DEL_DEV	(SIOCDEVPRIVATE + 1)
 #define IPSEC_CLR_DEV	(SIOCDEVPRIVATE + 2)
+#endif
 
 #ifdef __KERNEL__
 #include <linux/version.h>

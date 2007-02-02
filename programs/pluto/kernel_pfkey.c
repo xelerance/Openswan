@@ -277,7 +277,7 @@ pfkey_get(pfkey_buf *buf)
 	}
 	else if (!(buf->msg.sadb_msg_pid == (unsigned)pid
 	/*	for now, unsolicited messages can be: 
-	 *	SADB_ACQUIRE, SADB_REGISTER, SADB_X_NAT_T_NEW_MAPPING
+	 *	K_SADB_ACQUIRE, K_SADB_REGISTER, K_SADB_X_NAT_T_NEW_MAPPING
 	 */
 	|| (buf->msg.sadb_msg_pid == 0 && buf->msg.sadb_msg_type == SADB_ACQUIRE)
 #ifdef KERNEL_ALG
@@ -340,7 +340,7 @@ pfkey_get_response(pfkey_buf *buf, pfkey_seq_t seq)
     return FALSE;
 }
 
-/* Process a SADB_REGISTER message from the kernel.
+/* Process a K_SADB_REGISTER message from the kernel.
  * This will be a response to one of ours, but it may be asynchronous
  * (if kernel modules are loaded and unloaded).
  * Some sanity checking has already been performed.
@@ -366,7 +366,7 @@ klips_pfkey_register_response(const struct sadb_msg *msg)
     case K_SADB_X_SATYPE_COMP:
 	/* ??? There ought to be an extension to list the
 	 * supported algorithms, but RFC 2367 doesn't
-	 * list one for IPcomp.  KLIPS uses SADB_X_CALG_DEFLATE.
+	 * list one for IPcomp.  KLIPS uses K_SADB_X_CALG_DEFLATE.
 	 * Since we only implement deflate, we'll assume this.
 	 */
 	can_do_IPcomp = TRUE;
@@ -378,7 +378,7 @@ klips_pfkey_register_response(const struct sadb_msg *msg)
     }
 }
 
-/* Processs a SADB_ACQUIRE message from KLIPS.
+/* Processs a K_SADB_ACQUIRE message from KLIPS.
  * Try to build an opportunistic connection!
  * See RFC 2367 "PF_KEY Key Management API, Version 2" 3.1.6
  * <base, address(SD), (address(P)), (identity(SD),) (sensitivity,) proposal>
@@ -398,8 +398,8 @@ klips_pfkey_register_response(const struct sadb_msg *msg)
 static void
 process_pfkey_acquire(pfkey_buf *buf, struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 {
-    struct sadb_address *srcx = (void *) extensions[SADB_EXT_ADDRESS_SRC];
-    struct sadb_address *dstx = (void *) extensions[SADB_EXT_ADDRESS_DST];
+    struct sadb_address *srcx = (void *) extensions[K_SADB_EXT_ADDRESS_SRC];
+    struct sadb_address *dstx = (void *) extensions[K_SADB_EXT_ADDRESS_DST];
     int src_proto = srcx->sadb_address_proto;
     int dst_proto = dstx->sadb_address_proto;
     ip_address *src = (ip_address*)&srcx[1];
@@ -425,7 +425,7 @@ process_pfkey_acquire(pfkey_buf *buf, struct sadb_ext *extensions[K_SADB_EXT_MAX
       record_and_initiate_opportunistic(&ours, &his, 0, "%acquire-pfkey");
 
     if (ugh != NULL)
-	plog("SADB_ACQUIRE message from KLIPS malformed: %s", ugh);
+	plog("K_SADB_ACQUIRE message from KLIPS malformed: %s", ugh);
 
 }
 
@@ -462,10 +462,10 @@ pfkey_async(pfkey_buf *buf)
 
 	switch (buf->msg.sadb_msg_type)
 	{
-	case SADB_REGISTER:
+	case K_SADB_REGISTER:
 	    kernel_ops->pfkey_register_response(&buf->msg);
 	    break;
-	case SADB_ACQUIRE:
+	case K_SADB_ACQUIRE:
 	    /* to simulate loss of ACQUIRE, delete this call */
 	    process_pfkey_acquire(buf, extensions);
 	    break;
@@ -577,7 +577,7 @@ pfkeyext_protocol(int transport_proto
 {
     return (transport_proto == 0)
         ? TRUE
-        : pfkey_build(pfkey_x_protocol_build(extensions + SADB_X_EXT_PROTOCOL,
+        : pfkey_build(pfkey_x_protocol_build(extensions + K_SADB_X_EXT_PROTOCOL,
                                              transport_proto),
                       description, text_said, extensions);
 }
@@ -628,7 +628,7 @@ finish_pfkey_msg(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1]
 		{
 		  switch(e1) {
 		  case ESRCH:
-		    if(pfkey_msg->sadb_msg_type == SADB_DELETE) {
+		    if(pfkey_msg->sadb_msg_type == K_SADB_DELETE) {
 		      success=TRUE;
 		    }
 		    else {
@@ -728,7 +728,7 @@ pfkey_register_proto(unsigned satype, const char *satypename)
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
     pfkey_buf pfb;
 
-    if (!(pfkey_msg_start(SADB_REGISTER
+    if (!(pfkey_msg_start(K_SADB_REGISTER
       , satype
       , satypename, NULL, extensions)
     && finish_pfkey_msg(extensions, satypename, "", &pfb)))
@@ -752,27 +752,27 @@ static int kernelop2klips(enum pluto_sadb_operations op)
     switch (op)
     {
     case ERO_REPLACE:
-	klips_op = (SADB_X_ADDFLOW | (SADB_X_SAFLAGS_REPLACEFLOW << KLIPS_OP_FLAG_SHIFT));
+	klips_op = (K_SADB_X_ADDFLOW | (SADB_X_SAFLAGS_REPLACEFLOW << KLIPS_OP_FLAG_SHIFT));
 	break;
 
     case ERO_ADD:
-	klips_op = SADB_X_ADDFLOW;
+	klips_op = K_SADB_X_ADDFLOW;
 	break;
 
     case ERO_DELETE:
-	klips_op = SADB_X_DELFLOW;
+	klips_op = K_SADB_X_DELFLOW;
 	break;
 	    
     case ERO_ADD_INBOUND:
-	klips_op = (SADB_X_ADDFLOW | (SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
+	klips_op = (K_SADB_X_ADDFLOW | (SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
 	break;
 
     case ERO_DEL_INBOUND:
-	klips_op = (SADB_X_DELFLOW | (SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
+	klips_op = (K_SADB_X_DELFLOW | (SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
 	break;
 
     case ERO_REPLACE_INBOUND:
-	klips_op = (SADB_X_ADDFLOW | (SADB_X_SAFLAGS_REPLACEFLOW|SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
+	klips_op = (K_SADB_X_ADDFLOW | (SADB_X_SAFLAGS_REPLACEFLOW|SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
 	break;
     }
 
@@ -831,16 +831,16 @@ pfkey_raw_eroute(const ip_address *this_host
 
     if (op != ERO_DELETE)
     {
-	if (!(pfkey_build(pfkey_sa_build(&extensions[SADB_EXT_SA]
-					 , SADB_EXT_SA
+	if (!(pfkey_build(pfkey_sa_build(&extensions[K_SADB_EXT_SA]
+					 , K_SADB_EXT_SA
 					 , spi	/* in network order */
 					 , 0, 0, 0, 0, klips_op >> KLIPS_OP_FLAG_SHIFT)
 			  , "pfkey_sa add flow", text_said, extensions)
 
-	    && pfkeyext_address(SADB_EXT_ADDRESS_SRC, this_host
+	    && pfkeyext_address(K_SADB_EXT_ADDRESS_SRC, this_host
 		, "pfkey_addr_s add flow", text_said, extensions)
 
-	    && pfkeyext_address(SADB_EXT_ADDRESS_DST, that_host
+	    && pfkeyext_address(K_SADB_EXT_ADDRESS_DST, that_host
 				, "pfkey_addr_d add flow", text_said
 				, extensions)))
 	{
@@ -848,25 +848,25 @@ pfkey_raw_eroute(const ip_address *this_host
 	}
     }
 
-    if (!pfkeyext_address(SADB_X_EXT_ADDRESS_SRC_FLOW, &sflow_ska
+    if (!pfkeyext_address(K_SADB_X_EXT_ADDRESS_SRC_FLOW, &sflow_ska
 			  , "pfkey_addr_sflow", text_said, extensions))
     {
 	return FALSE;
     }
 
-    if (!pfkeyext_address(SADB_X_EXT_ADDRESS_DST_FLOW, &dflow_ska
+    if (!pfkeyext_address(K_SADB_X_EXT_ADDRESS_DST_FLOW, &dflow_ska
 			, "pfkey_addr_dflow", text_said, extensions))
     {
 	return FALSE;
     }
 
-    if (!pfkeyext_address(SADB_X_EXT_ADDRESS_SRC_MASK, &smask_ska
+    if (!pfkeyext_address(K_SADB_X_EXT_ADDRESS_SRC_MASK, &smask_ska
 			, "pfkey_addr_smask", text_said, extensions))
     {
 	return FALSE;
     }
 
-    if (!pfkeyext_address(SADB_X_EXT_ADDRESS_DST_MASK, &dmask_ska
+    if (!pfkeyext_address(K_SADB_X_EXT_ADDRESS_DST_MASK, &dmask_ska
 			, "pfkey_addr_dmask", text_said, extensions))
     {
 	return FALSE;
@@ -881,39 +881,39 @@ pfkey_raw_eroute(const ip_address *this_host
     return finish_pfkey_msg(extensions, "flow", text_said, NULL);
 }
 
-bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
+bool pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 {
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
     pfkey_buf pfb;
     bool success = FALSE;
 
-    success = pfkey_msg_start(replace ? SADB_UPDATE : SADB_ADD, sa->satype
+    success = pfkey_msg_start(replace ? K_SADB_UPDATE : K_SADB_ADD, sa->satype
 			      , "pfkey_msg_hdr Add SA"
 			      , sa->text_said, extensions);
 
     if(!success) return FALSE;
 
-    success = pfkey_build(pfkey_sa_build(&extensions[SADB_EXT_SA]
-					 , SADB_EXT_SA
+    success = pfkey_build(pfkey_sa_build(&extensions[K_SADB_EXT_SA]
+					 , K_SADB_EXT_SA
 					 , sa->spi	/* in network order */
 					 , sa->replay_window, K_SADB_SASTATE_MATURE
 					 , sa->authalg, sa->encalg, 0)
 			  , "pfkey_sa Add SA", sa->text_said, extensions);
     if(!success) return FALSE;
 
-    success = pfkeyext_address(SADB_EXT_ADDRESS_SRC, sa->src
+    success = pfkeyext_address(K_SADB_EXT_ADDRESS_SRC, sa->src
 			       , "pfkey_addr_s Add SA"
 			       , sa->text_said, extensions);
     if(!success) return FALSE;
 
-    success = pfkeyext_address(SADB_EXT_ADDRESS_DST, sa->dst
+    success = pfkeyext_address(K_SADB_EXT_ADDRESS_DST, sa->dst
 			       , "pfkey_addr_d Add SA", sa->text_said
 			       , extensions);
     if(!success) return FALSE;
 
     if(sa->authkeylen != 0) {
-	success = pfkey_build(pfkey_key_build(&extensions[SADB_EXT_KEY_AUTH]
-					      , SADB_EXT_KEY_AUTH
+	success = pfkey_build(pfkey_key_build(&extensions[K_SADB_EXT_KEY_AUTH]
+					      , K_SADB_EXT_KEY_AUTH
 					      , sa->authkeylen * BITS_PER_BYTE
 					      , sa->authkey)
 			      , "pfkey_key_a Add SA"
@@ -921,6 +921,7 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 	if(!success) return FALSE;
     }
 
+#ifdef KLIPS_MAST
     if(sa->ref != IPSEC_SAREF_NULL || sa->refhim != IPSEC_SAREF_NULL) {
 	    success = pfkey_build(pfkey_saref_build(&extensions[K_SADB_X_EXT_SAREF]
 						    , sa->ref
@@ -929,18 +930,18 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 				  , sa->text_said, extensions);
 	    if(!success) return FALSE;
     }
+#endif
 	
-    DBG_log("outif = %d", sa->outif);
     if(sa->outif != -1) {
-	    success = pfkey_outif_build(&extensions[SADB_X_EXT_PLUMBIF],sa->outif);
+	    success = pfkey_outif_build(&extensions[K_SADB_X_EXT_PLUMBIF],sa->outif);
 	    success = pfkey_build(success, "pfkey_outif_build", sa->text_said, extensions);
 	    
 	    if(!success) return FALSE;
     }
  
-   if(sa->enckeylen != 0) {
-	success = pfkey_build(pfkey_key_build(&extensions[SADB_EXT_KEY_ENCRYPT]
-					      , SADB_EXT_KEY_ENCRYPT
+    if(sa->enckeylen != 0) {
+	success = pfkey_build(pfkey_key_build(&extensions[K_SADB_EXT_KEY_ENCRYPT]
+					      , K_SADB_EXT_KEY_ENCRYPT
 					      , sa->enckeylen * BITS_PER_BYTE
 					      , sa->enckey)
 			      , "pfkey_key_e Add SA"
@@ -1004,12 +1005,14 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 	    int error;
 
 	    error = pfkey_msg_parse(&pfb.msg, NULL, replies, EXT_BITS_IN);
+#ifdef KLIPS_MAST	    
 	    if(replies[K_SADB_X_EXT_SAREF]) {
 		    struct sadb_x_saref *sar = (struct sadb_x_saref *)replies[K_SADB_X_EXT_SAREF];
 		    
 		    sa->ref = sar->sadb_x_saref_me;
 		    sa->refhim = sar->sadb_x_saref_him;
 	    }
+#endif
     }
     return success;
 }
@@ -1019,29 +1022,29 @@ bool pfkey_grp_sa(const struct kernel_sa *sa0, const struct kernel_sa *sa1)
 {
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 
-    return pfkey_msg_start(SADB_X_GRPSA, sa1->satype
+    return pfkey_msg_start(K_SADB_X_GRPSA, sa1->satype
 	, "pfkey_msg_hdr group", sa1->text_said, extensions)
 
-    && pfkey_build(pfkey_sa_build(&extensions[SADB_EXT_SA]
-	    , SADB_EXT_SA
+    && pfkey_build(pfkey_sa_build(&extensions[K_SADB_EXT_SA]
+	    , K_SADB_EXT_SA
 	    , sa1->spi	/* in network order */
 	    , 0, 0, 0, 0, 0)
 	, "pfkey_sa group", sa1->text_said, extensions)
 
-    && pfkeyext_address(SADB_EXT_ADDRESS_DST, sa1->dst
+    && pfkeyext_address(K_SADB_EXT_ADDRESS_DST, sa1->dst
 	, "pfkey_addr_d group", sa1->text_said, extensions)
 
-    && pfkey_build(pfkey_x_satype_build(&extensions[SADB_X_EXT_SATYPE2]
+    && pfkey_build(pfkey_x_satype_build(&extensions[K_SADB_X_EXT_SATYPE2]
 	    , sa0->satype)
 	, "pfkey_satype group", sa0->text_said, extensions)
 
-    && pfkey_build(pfkey_sa_build(&extensions[SADB_X_EXT_SA2]
-	    , SADB_X_EXT_SA2
+    && pfkey_build(pfkey_sa_build(&extensions[K_SADB_X_EXT_SA2]
+	    , K_SADB_X_EXT_SA2
 	    , sa0->spi	/* in network order */
 	    , 0, 0, 0, 0, 0)
 	, "pfkey_sa2 group", sa0->text_said, extensions)
 
-    && pfkeyext_address(SADB_X_EXT_ADDRESS_DST2, sa0->dst
+    && pfkeyext_address(K_SADB_X_EXT_ADDRESS_DST2, sa0->dst
 	, "pfkey_addr_d2 group", sa0->text_said, extensions)
 
     && finish_pfkey_msg(extensions, "group", sa1->text_said, NULL);
@@ -1051,19 +1054,19 @@ bool pfkey_del_sa(const struct kernel_sa *sa)
 {
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 
-    return pfkey_msg_start(SADB_DELETE, proto2satype(sa->proto)
+    return pfkey_msg_start(K_SADB_DELETE, proto2satype(sa->proto)
 	, "pfkey_msg_hdr delete SA", sa->text_said, extensions)
 
-    && pfkey_build(pfkey_sa_build(&extensions[SADB_EXT_SA]
-	    , SADB_EXT_SA
+    && pfkey_build(pfkey_sa_build(&extensions[K_SADB_EXT_SA]
+	    , K_SADB_EXT_SA
 	    , sa->spi	/* in host order */
 	    , 0, K_SADB_SASTATE_MATURE, 0, 0, 0)
 	, "pfkey_sa delete SA", sa->text_said, extensions)
 
-    && pfkeyext_address(SADB_EXT_ADDRESS_SRC, sa->src
+    && pfkeyext_address(K_SADB_EXT_ADDRESS_SRC, sa->src
 	, "pfkey_addr_s delete SA", sa->text_said, extensions)
 
-    && pfkeyext_address(SADB_EXT_ADDRESS_DST, sa->dst
+    && pfkeyext_address(K_SADB_EXT_ADDRESS_DST, sa->dst
 	, "pfkey_addr_d delete SA", sa->text_said, extensions)
 
     && finish_pfkey_msg(extensions, "Delete SA", sa->text_said, NULL);
@@ -1170,7 +1173,7 @@ pfkey_shunt_eroute(struct connection *c
             esr->routing = RT_ROUTED_PROSPECTIVE;
             return pfkey_shunt_eroute(ue, esr
 				      , RT_ROUTED_PROSPECTIVE
-				      , (SADB_X_ADDFLOW | (SADB_X_SAFLAGS_REPLACEFLOW << KLIPS_OP_FLAG_SHIFT))
+				      , (K_SADB_X_ADDFLOW | (SADB_X_SAFLAGS_REPLACEFLOW << KLIPS_OP_FLAG_SHIFT))
 				      , "restoring eclipsed");
         }
     }
@@ -1737,6 +1740,7 @@ void pfkey_remove_orphaned_holds(int transport_proto
     }
 }
 
+#ifdef KLIPS_MAST
 bool
 pfkey_plumb_mast_device(int mast_dev)
 {
@@ -1752,7 +1756,7 @@ pfkey_plumb_mast_device(int mast_dev)
 		return FALSE;
 	}
 
-	if((error = pfkey_outif_build(&extensions[SADB_X_EXT_PLUMBIF], mast_dev))) {
+	if((error = pfkey_outif_build(&extensions[K_SADB_X_EXT_PLUMBIF], mast_dev))) {
 		return FALSE;
 	}
 
@@ -1764,6 +1768,7 @@ pfkey_plumb_mast_device(int mast_dev)
 	
 	return TRUE;
 }
+#endif
 
 
 

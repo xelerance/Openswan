@@ -1498,10 +1498,10 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	       != SADB_X_SAFLAGS_CLEARFLOW))) {
 		DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 			"pfkey_msg_parse: "
-			"required K_SADB_X_DELFLOW extensions missing: either %08llx must be present or %08llx must be present with K_SADB_X_SAFLAGS_CLEARFLOW set.\n",
-			  (unsigned long long)K_SADB_X_EXT_ADDRESS_DELFLOW
-			  - (extensions_seen & K_SADB_X_EXT_ADDRESS_DELFLOW),
-			  (unsigned long long)(1ULL<<K_SADB_EXT_SA) - (extensions_seen & (1ULL<<K_SADB_EXT_SA)));
+			"required SADB_X_DELFLOW extensions missing: either %16llx must be present or %16llx must be present with SADB_X_SAFLAGS_CLEARFLOW set.\n",
+			(unsigned long long)K_SADB_X_EXT_ADDRESS_DELFLOW
+			- (extensions_seen & K_SADB_X_EXT_ADDRESS_DELFLOW),
+			(unsigned long long)(1<<SADB_EXT_SA) - (extensions_seen & (1<<SADB_EXT_SA)));
 		SENDERR(EINVAL);
 	}
 	
@@ -1509,7 +1509,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	case K_SADB_ADD:
 	case K_SADB_UPDATE:
 		/* check maturity */
-		if(((struct k_sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state !=
+		if(((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_state !=
 		   K_SADB_SASTATE_MATURE) {
 			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
