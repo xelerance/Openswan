@@ -15,13 +15,14 @@
 
 char addconn_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp $";
 
-#include <asm/types.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 #include <sys/ioctl.h>
 /* #include <linux/netdevice.h> */
 #include <net/if.h>
 /* #include <linux/types.h> */ /* new */
 #include <sys/stat.h>
+#include <limits.h>
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
@@ -46,6 +47,7 @@ char addconn_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp
 #include "oswalloc.h"
 #include "oswconf.h"
 #include "oswlog.h"
+#include "whack.h"
 #include "ipsecconf/confread.h"
 #include "ipsecconf/confwrite.h"
 #include "ipsecconf/starterlog.h"
@@ -61,6 +63,7 @@ static const char *usage_string = ""
     "Usage: addconn [--config file] \n"
     "               [--addall] [--listroute] [--liststart]\n"
     "               [--rootdir dir] \n"
+    "               [--ctlbase socketfile] \n"
     "               [--configsetup] \n"
     "               [--defaultroute <addr>] [--defaultroutenexthop <addr>]\n"
     
@@ -88,6 +91,7 @@ static struct option const longopts[] =
 	{"listroute",           no_argument, NULL, 'r'},
 	{"liststart",           no_argument, NULL, 's'},
 	{"varprefix",           required_argument, NULL, 'P'},
+	{ "ctlbase",            required_argument, NULL, 'c' },
 	{"search",              no_argument, NULL, 'S'},
 	{"rootdir",             required_argument, NULL, 'R'},
 	{"configsetup",         no_argument, NULL, 'T'},
@@ -114,6 +118,7 @@ main(int argc, char *argv[])
     struct starter_conn *conn = NULL;
     char *defaultroute = NULL;
     char *defaultnexthop = NULL;
+    char *ctlbase = NULL;
 
 #if 0
     /* efence settings */
@@ -161,6 +166,10 @@ main(int argc, char *argv[])
 	    configfile = clone_str(optarg, "config file name");
 	    break;
 
+	case 'c':
+	    ctlbase = clone_str(optarg, "control base");
+	    break;
+
 	case 'A':
 	    all=1;
 	    break;
@@ -199,7 +208,11 @@ main(int argc, char *argv[])
     if(optind == argc && !all && !listroute && !liststart && !search && !typeexport) {
 	usage();
     }
-    
+
+    if(verbose > 3) {
+	extern int yydebug;
+	yydebug=1;
+    }
 
     /* find config file */
     confdir = getenv(IPSEC_CONFDIR_VAR);
@@ -227,11 +240,11 @@ main(int argc, char *argv[])
 
     starter_use_log (verbose, 1, verbose ? 0 : 1);
 
-    cfg = confread_load(configfile, &err);
+    cfg = confread_load(configfile, &err, ctlbase);
     
     if(cfg == NULL) {
-	printf("can not load config '%s': %s\n",
-	       configfile, err);
+	fprintf(stderr, "can not load config '%s': %s\n",
+		configfile, err);
 	exit(3);
     }
 
@@ -267,6 +280,9 @@ main(int argc, char *argv[])
 
     if(all) 
     {
+	if(verbose) {
+	    printf("loading all conns:");
+	}
 	/* load all conns marked as auto=add or better */
 	for(conn = cfg->conns.tqh_first;
 	    conn != NULL;
@@ -275,10 +291,15 @@ main(int argc, char *argv[])
 	    if (conn->desired_state == STARTUP_ADD
 		|| conn->desired_state == STARTUP_START
 		|| conn->desired_state == STARTUP_ROUTE) {
+		if(verbose) printf(" %s", conn->name);
 		starter_whack_add_conn(cfg, conn);
 	    }
 	}
+	if(verbose) printf("\n");
     } else if(listroute) {
+	if(verbose) {
+	    printf("listing all conns marked as auto=start\n");
+	}
 	/* list all conns marked as auto=route or start or better */
 	for(conn = cfg->conns.tqh_first;
 	    conn != NULL;
@@ -288,8 +309,8 @@ main(int argc, char *argv[])
 		|| conn->desired_state == STARTUP_ROUTE) {
 		printf("%s ", conn->name);
 	    }
-	    printf("\n");
 	}
+	printf("\n");
     } else if(liststart) {
 	/* list all conns marked as auto=route or start or better */
 	for(conn = cfg->conns.tqh_first;
@@ -299,8 +320,8 @@ main(int argc, char *argv[])
 	    if (conn->desired_state == STARTUP_START) {
 		printf("%s ", conn->name);
 	    }
-	    printf("\n");
 	}
+	printf("\n");
     } else if(search) {
 	char *sep="";
 	if((argc-optind) < 2 ) {
@@ -374,26 +395,69 @@ main(int argc, char *argv[])
 
     } else {
 	/* load named conns, regardless of their state */
-	for(conn = cfg->conns.tqh_first;
-	    conn != NULL;
-	    conn = conn->link.tqe_next)
-	{
-	    int   connum;
-	    for(connum = optind; connum<argc; connum++) {
+	int   connum;
+
+	if(verbose) {
+	    printf("loading named conns:");
+	}
+	for(connum = optind; connum<argc; connum++) {
+	    char *connname = argv[connum];
+
+	    if(verbose) {
+		printf(" %s", connname);
+	    }
+	    for(conn = cfg->conns.tqh_first;
+		conn != NULL;
+		conn = conn->link.tqe_next)
+	    {
 		/* yes, let's make it case-insensitive */
-		if(strcasecmp(conn->name, argv[connum])==0) {
+		if(strcasecmp(conn->name, connname)==0) {
 		    if(conn->state == STATE_ADDED) {
-			printf("conn %s already added\n", conn->name);
+			printf("\nconn %s already added\n", conn->name);
 		    } else if(conn->state == STATE_FAILED) {
-			printf("conn %s did not load properly\n", conn->name);
+			printf("\nconn %s did not load properly\n", conn->name);
 		    } else {
-			printf("loading conn: %s\n", conn->name);
 			exit_status = starter_whack_add_conn(cfg, conn);
 			conn->state = STATE_ADDED;
 		    }
+		    break;
+		}
+	    }
+	    
+	    if(conn == NULL) {
+		/* only if we don't find it, do we now look for aliases */
+
+		for(conn = cfg->conns.tqh_first;
+		    conn != NULL;
+		    conn = conn->link.tqe_next)
+		{
+		    if(conn->strings_set[KSF_CONNALIAS]
+		       && osw_alias_cmp(connname
+					, conn->strings[KSF_CONNALIAS])) {
+
+			if(conn->state == STATE_ADDED) {
+			    printf("\nalias: %s conn %s already added\n", connname, conn->name);
+			} else if(conn->state == STATE_FAILED) {
+			    printf("\nalias: %s conn %s did not load properly\n", connname, conn->name);
+			} else {
+			    exit_status = starter_whack_add_conn(cfg, conn);
+			    conn->state = STATE_ADDED;
+			}
+			break;
+		    }
+		}
+	    }
+
+	    if(conn == NULL) {
+		exit_status++;
+		if(!verbose) {
+		    printf("conn '%s': not found (tried aliases)\n", connname);
+		} else {
+		    printf("(notfound)");
 		}
 	    }
 	}
+	if(verbose) printf("\n");
     }
     
     exit(exit_status);
@@ -405,7 +469,6 @@ void exit_tool(int x)
 }
 
 /*
- * $Log: spi.c,v $
  *
  * Local Variables:
  * c-basic-offset:4

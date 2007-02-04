@@ -66,6 +66,7 @@ struct whack_end {
     char *xauth_name;
     bool modecfg_server;        /* for MODECFG */
     bool modecfg_client;
+    unsigned int tundev;
     enum certpolicy      sendcert;
     enum ipsec_cert_type certtype;
 };

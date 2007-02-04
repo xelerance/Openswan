@@ -55,6 +55,8 @@ char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.58 2005/08/18 14:04:3
 #include <stdio.h>
 #include <getopt.h>
 
+#include "oswlog.h"
+
 __u32 bigbuf[1024];
 char *program_name;
 

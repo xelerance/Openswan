@@ -172,7 +172,7 @@ atoid(char *src, struct id *id, bool myid_ok)
 static int
 keyidtoa(char *dst, size_t dstlen, chunk_t keyid)
 {
-    int n = datatot((char *)keyid.ptr, keyid.len, 'x', dst, dstlen);
+    int n = datatot(keyid.ptr, keyid.len, 'x', dst, dstlen);
     return ((n < (int)dstlen)? n : (int)dstlen) - 1;
 }
 
@@ -406,8 +406,6 @@ bool
 match_id(const struct id *a, const struct id *b, int *wildcards)
 {
     
-    char abuf[IDTOA_BUF];
-    char bbuf[IDTOA_BUF];
     bool match;
 
     if (b->kind == ID_NONE)
@@ -433,11 +431,16 @@ match_id(const struct id *a, const struct id *b, int *wildcards)
 
  done:
     DBG(DBG_CONTROLMORE,
-	idtoa(a, abuf, IDTOA_BUF);
-	idtoa(b, bbuf, IDTOA_BUF);
-	DBG_log("   match_id a=%s", abuf);
-	DBG_log("            b=%s", bbuf);
-	DBG_log("   results  %s", match ? "matched" : "fail");
+	{
+	    char abuf[IDTOA_BUF];
+	    char bbuf[IDTOA_BUF];
+
+	    idtoa(a, abuf, IDTOA_BUF);
+	    idtoa(b, bbuf, IDTOA_BUF);
+	    DBG_log("   match_id a=%s", abuf);
+	    DBG_log("            b=%s", bbuf);
+	    DBG_log("   results  %s", match ? "matched" : "fail");
+	}
 	);
     
     return match;

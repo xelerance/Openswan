@@ -881,7 +881,7 @@ pfkey_raw_eroute(const ip_address *this_host
     return finish_pfkey_msg(extensions, "flow", text_said, NULL);
 }
 
-bool pfkey_add_sa(const struct kernel_sa *sa, bool replace)
+bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 {
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
     pfkey_buf pfb;
@@ -1401,7 +1401,7 @@ scan_proc_shunts(void)
     /* for each line... */
     for (lino = 1; ; lino++)
     {
-        unsigned char buf[1024];        /* should be big enough */
+        char buf[1024];        /* should be big enough */
         chunk_t field[10];      /* 10 is loose upper bound */
         chunk_t *ff;    /* fixed fields (excluding optional count) */
         int fi;
@@ -1427,7 +1427,7 @@ scan_proc_shunts(void)
 
             cp += strspn(cp, sep);      /* find start of field */
             w = strcspn(cp, sep);       /* find width of field */
-            setchunk(field[fi], cp, w);
+            setchunk(field[fi], (unsigned char *)cp, w);
             cp += w;
             if (w == 0)
                 break;
@@ -1452,9 +1452,9 @@ scan_proc_shunts(void)
             }
 
             if (ff[1].len != 2
-            || strncmp(ff[1].ptr, "->", 2) != 0
-            || ff[3].len != 2
-            || strncmp(ff[3].ptr, "=>", 2) != 0)
+		|| strncmp((char *)ff[1].ptr, "->", 2) != 0
+		|| ff[3].len != 2
+		|| strncmp((char *)ff[3].ptr, "=>", 2) != 0)
             {
                 ugh = "is missing -> or =>";
                 break;
@@ -1468,7 +1468,7 @@ scan_proc_shunts(void)
             if (ff != field)
             {
                 context = "count field is malformed: ";
-                ugh = ttoul(field[0].ptr, field[0].len, 10, &eri.count);
+                ugh = ttoul((char *)field[0].ptr, field[0].len, 10,&eri.count);
                 if (ugh != NULL)
                     break;
             }
@@ -1476,24 +1476,24 @@ scan_proc_shunts(void)
             /* our client */
 
             context = "source subnet field malformed: ";
-            ugh = ttosubnet(ff[0].ptr, ff[0].len, AF_INET, &eri.ours);
+            ugh = ttosubnet((char *)ff[0].ptr, ff[0].len, AF_INET, &eri.ours);
             if (ugh != NULL)
                 break;
 
             /* his client */
 
             context = "destination subnet field malformed: ";
-            ugh = ttosubnet(ff[2].ptr, ff[2].len, AF_INET, &eri.his);
+            ugh = ttosubnet((char *)ff[2].ptr, ff[2].len, AF_INET, &eri.his);
             if (ugh != NULL)
                 break;
 
             /* SAID */
 
             context = "SA ID field malformed: ";
-            ugh = read_proto(ff[4].ptr, &ff[4].len, &eri.transport_proto);
+            ugh = read_proto((char *)ff[4].ptr, &ff[4].len, &eri.transport_proto);
             if (ugh != NULL)
                 break;
-            ugh = ttosa(ff[4].ptr, ff[4].len, &eri.said);
+            ugh = ttosa((char *)ff[4].ptr, ff[4].len, &eri.said);
         } while (FALSE);
 
         if (ugh != NULL)

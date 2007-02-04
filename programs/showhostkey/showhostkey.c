@@ -49,6 +49,7 @@ char usage[] = "Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--righ
              "                         [ --rsaid keyid ] [--verbose] [--version]\n";
 
 struct option opts[] = {
+  {"help",	no_argument,	NULL,	'?',},
   {"key",	no_argument,	NULL,	'k',},
   {"left",	no_argument,	NULL,	'l',},
   {"right",	no_argument,	NULL,	'r',},
@@ -88,35 +89,63 @@ showhostkey_log(int mess_no, const char *message, ...)
 }
 
 
-int list_key(struct secret *secret,
-	     struct private_key_stuff *pks,
-	     void *uservoid)
+int print_key(struct secret *secret
+	      , struct private_key_stuff *pks
+	      , void *uservoid, bool disclose)
 {
     int lineno = osw_get_secretlineno(secret);
     struct id_list *l = osw_get_idlist(secret);
     char idb[IDTOA_BUF];
+    int count=1;
+
+    char pskbuf[128];
+
+    datatot(pks->u.preshared_secret.ptr,
+	    pks->u.preshared_secret.len,
+	    'x', pskbuf, sizeof(pskbuf));
 
     while(l) {
 	idtoa(&l->id, idb, IDTOA_BUF);
 
 	switch(pks->kind) {
 	case PPK_PSK:
-	    printf("%d: PSK keyid: %s\n", lineno, idb);
+	    printf("%d(%d): PSK keyid: %s\n", lineno, count, idb);
+	    if(disclose) printf("    psk: \"%s\"\n", pskbuf);
 	    break;
 	    
 	case PPK_RSA:
-	    printf("%d: RSA keyid: %s with id: %s\n", lineno, pks->u.RSA_private_key.pub.keyid,idb);
+	    printf("%d(%d): RSA keyid: %s with id: %s\n", lineno, count, pks->u.RSA_private_key.pub.keyid,idb);
+	    break;
+	    
+	case PPK_XAUTH:
+	    printf("%d(%d): XAUTH keyid: %s\n", lineno, count, idb);
+	    if(disclose) printf("    xauth: \"%s\"\n", pskbuf);
 	    break;
 	    
 	case PPK_PIN:
-	    printf("%d PIN key-type not yet supported for id: %s\n", lineno, idb);
+	    printf("%d:(%d) PIN key-type not yet supported for id: %s\n", lineno, count, idb);
 	    break;
 	}
 	
 	l=l->next;
+	count++;
     }
     
     return 1;
+}
+
+int list_key(struct secret *secret,
+	     struct private_key_stuff *pks,
+	     void *uservoid)
+{
+    return print_key(secret, pks, uservoid, FALSE);
+}
+
+int dump_key(struct secret *secret,
+	     struct private_key_stuff *pks,
+	     void *uservoid)
+{
+    return print_key(secret, pks, uservoid, TRUE);
 }
 
 
@@ -152,7 +181,7 @@ char *get_default_keyid(struct secret *host_secrets)
      
 void dump_keys(struct secret *host_secrets)
 {
-    
+    (void)osw_foreach_secret(host_secrets, dump_key, NULL);
 }
 
 struct secret *pick_key(struct secret *host_secrets
@@ -238,7 +267,7 @@ void show_dnskey(struct secret *s
 
     keyblob = pubkey_to_rfc3110(&pks->u.RSA_private_key.pub, &keybloblen);
 
-    datatot((char *)keyblob, keybloblen, 's', base64, sizeof(base64));
+    datatot(keyblob, keybloblen, 's', base64, sizeof(base64));
 
     switch(rr_type) {
     case ns_t_key:
@@ -292,7 +321,7 @@ void show_confkey(struct secret *s
 
     keyblob = pubkey_to_rfc3110(&pks->u.RSA_private_key.pub, &keybloblen);
 
-    datatot((char *)keyblob, keybloblen, 's', base64, sizeof(base64));
+    datatot(keyblob, keybloblen, 's', base64, sizeof(base64));
 
     printf("\t# rsakey %s\n", 
 	   pks->u.RSA_private_key.pub.keyid);
@@ -318,7 +347,7 @@ int main(int argc, char *argv[])
     bool txt_flg=FALSE;
     bool ipseckey_flg=FALSE;
     bool dhclient_flg=FALSE;
-    char *gateway;
+    char *gateway = NULL;
     int precedence=10;
     int verbose=0;
     const struct osw_conf_options *oco = osw_init_options();
@@ -337,6 +366,10 @@ int main(int argc, char *argv[])
     
     while ((opt = getopt_long(argc, argv, "", opts, NULL)) != EOF) {
 	switch (opt) {
+	case '?':
+	    goto usage;
+	    break;
+
 	case 'k':
 	    key_flg=TRUE;
 	    break;
@@ -424,6 +457,10 @@ int main(int argc, char *argv[])
 	goto usage;
     }
 
+    if(verbose > 2) {
+	set_debugging(DBG_ALL);
+    }
+
     /* now load file from indicated location */
     pass.prompt=showhostkey_log;
     pass.fd = 2; /* stderr */
@@ -471,7 +508,7 @@ int main(int argc, char *argv[])
     }
 
     if(key_flg || ipseckey_flg || txt_flg) {
-	int rr_type;
+	int rr_type = ns_t_invalid;
 	if(key_flg) {
 	    rr_type = ns_t_key;
 	} else if(ipseckey_flg) {

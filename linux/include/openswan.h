@@ -61,7 +61,7 @@
 
 #endif /* __KERNEL__ */
 
-#  define DEBUG_NO_STATIC static
+#define DEBUG_NO_STATIC static
 #include <openswan/ipsec_kversion.h>
 #include <openswan/ipsec_param.h>
 #endif /* linux */
@@ -89,15 +89,38 @@
 #include <TargetConditionals.h>
 #include <AvailabilityMacros.h>
 #include <machine/types.h>
+#include <machine/endian.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <time.h>
+#include <sys/time.h>
 #include <string.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <tcpd.h>
+#include <assert.h>
 #define user_assert(foo) assert(foo)
+#define __u32  unsigned int
+#define __u8  unsigned char
+#define s6_addr16 __u6_addr.__u6_addr16
+#define DEBUG_NO_STATIC static
+#endif
+
+/*
+ * FreeBSD
+ */
+#if defined(__FreeBSD__)
+#  define DEBUG_NO_STATIC static
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <string.h>
+#include <assert.h>
+#define user_assert(foo) assert(foo)
+/* apparently this way to deal with an IPv6 address is not standard. */
+#define s6_addr16 __u6_addr.__u6_addr16
 #endif
 
 
@@ -204,6 +227,7 @@ typedef uint32_t IPsecSAref_t;
 #define NFmark2IPsecSAref(x) (((x) >> IPSEC_SA_REF_TABLE_OFFSET)&IPSEC_SA_REF_MASK)
 
 #define IPSEC_SAREF_NULL ((IPsecSAref_t)0)
+#define IPSEC_SAREF_NA   ((IPsecSAref_t)0xffff0001)
 
 /* GCC magic for use in function definitions! */
 #ifdef GCC_LINT
@@ -257,8 +281,8 @@ err_t ttodatav(const char *src, size_t srclen, int base,
 #define TTODATAV_IGNORESPACE  (1<<1)  /* ignore spaces in base64 encodings*/
 #define TTODATAV_SPACECOUNTS  0       /* do not ignore spaces in base64   */
 
-size_t datatot(const char *src, size_t srclen, int format, char *buf,
-								size_t buflen);
+size_t datatot(const unsigned char *src, size_t srclen, int format
+	       , char *buf, size_t buflen);
 size_t keyblobtoid(const unsigned char *src, size_t srclen, char *dst,
 								size_t dstlen);
 size_t splitkeytoid(const unsigned char *e, size_t elen, const unsigned char *m,
@@ -411,7 +435,7 @@ atobytes(
 );
 size_t				/* 0 failure, else true size */
 bytestoa(
-	const char *src,
+	const unsigned char *src,
 	size_t srclen,
 	int format,		/* character; 0 means default */
 	char *dst,
@@ -428,7 +452,7 @@ atodata(
 );
 size_t				/* 0 failure, else true size */
 datatoa(
-	const char *src,
+	const unsigned char *src,
 	size_t srclen,
 	int format,		/* character; 0 means default */
 	char *dst,
@@ -466,21 +490,6 @@ bitstomask(
 	int n
 );
 
-
-
-/*
- * general utilities
- */
-
-#ifndef __KERNEL__
-/* option pickup from files (userland only because of use of FILE) */
-const char *optionsfrom(const char *filename, int *argcp, char ***argvp,
-						int optind, FILE *errorreport);
-
-/* sanitize a string */
-extern size_t sanitize_string(char *buf, size_t size);
-
-#endif
 
 
 /*

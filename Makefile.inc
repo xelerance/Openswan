@@ -258,7 +258,7 @@ BIND9STATICLIBDIR?=/usr/lib
 # LWRES is the lightweight resolver, part of BIND9
 # We test with LWRES, but ship with it off, as it requires
 # additional headers not present on most systems.
-USE_LWRES?=false
+USE_LWRES?=true
 
 # Whether or not to use iproute2 based commands.
 # On Kernel 2.0, and early 2.2 systems you may need to either install the
@@ -288,7 +288,7 @@ USE_KEYRR?=true
 USE_KLIPS?=true
 
 # include support for 2.6 KLIPS/MAST variation in pluto
-USE_MAST?=false
+USE_MAST?=true
 
 # include support for NETKEY 2.5/2.6 IPsec in pluto (aka "native", "kame")
 USE_KERNEL26?=true
