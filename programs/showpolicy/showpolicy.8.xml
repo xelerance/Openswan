@@ -42,18 +42,14 @@ each packet received on that port using the IP_IPSEC_RECVREF socket option.</par
 <para>The --maxpacket option causes the program to exit after processing that many packets. This can be used in test cases.</para>
 
 <para>This is a test program. One might run it from inetd, via:</para>
-<variablelist remap='TP'>
-  <varlistentry>
-  <term>discard stream tcp nowait nobody /usr/local/libexec/ipsec/showpolicy showpolicy</term>
-  </varlistentry>
-</variablelist>
+<para>
+  discard stream tcp nowait nobody /usr/local/libexec/ipsec/showpolicy showpolicy
+</para>
 
 <para>One could also run it from the command line via:</para>
-<variablelist remap='TP'>
-  <varlistentry>
-  <term>ipsec showpolicy --udp 9 --sockpolicy --maxpacket 2</term>
-  </varlistentry>
-</variablelist>
+<para>
+  ipsec showpolicy --udp 9 --sockpolicy --maxpacket 2
+</para>
 
 
 </refsect1>
