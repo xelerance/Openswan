@@ -364,6 +364,24 @@ applypatches() {
     fi
 }
 
+lndirkerndirnogit() {
+    origin=$1
+    dest=$2
+
+    ( cd $dest
+	stuff=`cd $origin; echo *`
+	for t in $stuff; do
+	  if [ -d $origin/$t ]; then
+	     mkdir $t; (cd $t && lndir -silent $origin/$t .);
+	  else
+             ln -s -f $origin/$t .
+          fi
+        done
+    )
+}
+
+
+
 #
 # $Log: uml-functions.sh,v $
 # Revision 1.45  2005/11/21 08:44:57  mcr
