@@ -146,7 +146,8 @@ done
 if $NEED_plain && [ ! -x $UMLPLAIN/linux ]
 then
     cd $UMLPLAIN
-    lndir -silent $KERNPOOL .
+
+    lndirkerndirnogit $KERNPOOL .
 
     applypatches
 
@@ -216,7 +217,7 @@ done
 if $NEED_swan && [ ! -x $UMLSWAN/linux ]
 then
     cd $UMLSWAN
-    lndir -silent $KERNPOOL .
+    lndirkerndirnogit $KERNPOOL .
 
     applypatches
     

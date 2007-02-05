@@ -320,9 +320,14 @@ then
 		modprobe -qv xfrm4_tunnel
 		# xfrm_user contains netlink support for IPsec 
 		modprobe -qv xfrm_user
-		modprobe -qv hw_random
+
+		echo Trying hardware random, this may fail, which is okay.
+		modprobe -q hw_random 2>/dev/null
+
 		# padlock must load before aes module
-		modprobe -qv padlock
+		echo Trying VIA padlock driver, this may fail, which is okay.
+		modprobe -q padlock 2>/dev/null
+
 		# load the most common ciphers/algo's
 		modprobe -qv sha1
 		modprobe -qv md5
@@ -343,9 +348,14 @@ then
 		fi
                 unset MODPATH MODULECONF        # no user overrides!
                 depmod -a >/dev/null 2>&1
-		modprobe -qv hw_random
+
+		echo Trying hardware random, this may fail, which is okay.
+		modprobe -q hw_random 2>/dev/null
+
 		# padlock must load before aes module
-		modprobe -qv padlock
+		echo Trying VIA padlock driver, this may fail, which is okay.
+		modprobe -q padlock 2>/dev/null
+
                 modprobe -v ipsec
         fi
         if test ! -f $ipsecversion
