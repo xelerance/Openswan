@@ -323,7 +323,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	strcpy(secure_xauth_username_str, "PLUTO_XAUTH_USERNAME='");
 	
 	len = strlen(secure_xauth_username_str);
-	remove_metachar(st->st_xauth_username
+	remove_metachar((unsigned char *)st->st_xauth_username
 			,secure_xauth_username_str+len
 			,sizeof(secure_xauth_username_str)-(len+2));
 	strncat(secure_xauth_username_str, "'", sizeof(secure_xauth_username_str)-1);
@@ -1237,6 +1237,8 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->spi = ipip_spi;
         said_next->satype = K_SADB_X_SATYPE_IPIP;
         said_next->text_said = text_said;
+	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
+
 	said_next->outif   = -1;
 
 	if(inbound) {
@@ -1278,6 +1280,9 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	if(new_refhim == IPSEC_SAREF_NULL && !inbound) {
 	    DBG(DBG_KLIPS, DBG_log("recorded ref=%u as refhim", said_next->ref));
 	    new_refhim = said_next->ref;
+	    if(new_refhim == IPSEC_SAREF_NULL) {
+		new_refhim = IPSEC_SAREF_NA;
+	    }
 	}
 	if(!incoming_ref_set && inbound) {
 	    st->st_ref = said_next->ref;
@@ -1321,6 +1326,8 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->encapsulation = encapsulation;
         said_next->reqid = c->spd.reqid + 2;
         said_next->text_said = text_said;
+	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
+
 	said_next->outif   = -1;
 
 	if(inbound) {
@@ -1359,6 +1366,9 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	 */
 	if(new_refhim == IPSEC_SAREF_NULL && !inbound) {
 	    new_refhim = said_next->ref;
+	    if(new_refhim == IPSEC_SAREF_NULL) {
+		new_refhim = IPSEC_SAREF_NA;
+	    }
 	}
 	if(!incoming_ref_set && inbound) {
 	    st->st_ref = said_next->ref;
@@ -1555,6 +1565,24 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	    said_next->outif = MASTTRANSPORT_OFFSET+useful_mastno;
 	}
         said_next->text_said = text_said;
+	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
+
+#ifdef DIVULGE_KEYS
+	DBG_dump("esp enckey:",  said_next->enckey,  said_next->enckeylen);
+	DBG_dump("esp authkey:", said_next->authkey, said_next->authkeylen);
+#endif
+
+	if(inbound) {
+	    /*
+	     * set corresponding outbound SA. We can do this on
+	     * each SA in the bundle without harm.
+	     */
+	    said_next->refhim = refhim;
+	} else if (!outgoing_ref_set) {
+	    /* on outbound, pick up the SAref if not already done */
+	    said_next->ref    = refhim;
+	    outgoing_ref_set  = TRUE;
+	}
 
 	if(inbound) {
 	    /*
@@ -1578,6 +1606,9 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	 */
 	if(new_refhim == IPSEC_SAREF_NULL && !inbound) {
 	    new_refhim = said_next->ref;
+	    if(new_refhim == IPSEC_SAREF_NULL) {
+		new_refhim = IPSEC_SAREF_NA;
+	    }
 	}
 	if(!incoming_ref_set && inbound) {
 	    st->st_ref = said_next->ref;
@@ -1630,6 +1661,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->encapsulation = encapsulation;
         said_next->reqid = c->spd.reqid;
         said_next->text_said = text_said;
+	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
 	said_next->outif   = -1;
 
 	if(inbound) {
@@ -1666,6 +1698,9 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	 */
 	if(new_refhim == IPSEC_SAREF_NULL && !inbound) {
 	    new_refhim = said_next->ref;
+	    if(new_refhim == IPSEC_SAREF_NULL) {
+		new_refhim = IPSEC_SAREF_NA;
+	    }
 	}
 	if(!incoming_ref_set && inbound) {
 	    st->st_ref = said_next->ref;

@@ -1,7 +1,7 @@
 /* IPsec DOI and Oakley resolution routines
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
- * Copyright (C) 2003-2005  Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2006  Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,6 +12,11 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
+ *
+ *
+ * Modifications to use OCF interface written by
+ * Daniel Djamaludin <danield@cyberguard.com>
+ * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
  *
  * RCSID $Id: ipsec_doi.c,v 1.304.2.11 2006/04/16 02:24:19 mcr Exp $
  */
@@ -87,6 +92,10 @@
 #include "x509more.h"
 
 #include "tpm/tpm.h"
+
+#ifdef HAVE_OCF_AND_OPENSSL
+#include "ocf_cryptodev.h"
+#endif
 
 /*
 * tools for sending Pluto Vendor ID.
@@ -284,6 +293,8 @@ send_notification(struct state *sndst, u_int16_t type, struct state *encst,
 	    delete_state(sndst);
 	    return;
 	}
+
+	openswan_DBG_dump("payload malformed after IV", sndst->st_iv, sndst->st_iv_len);
 
 	/*
 	 * do not encrypt notification, since #1 reason for malformed
@@ -905,6 +916,7 @@ main_outI1(int whack_sock
 {
     struct state *st = new_state();
     struct msg_digest md;   /* use reply/rbody found inside */
+    struct spd_route *sr;
 
     int numvidtosend = 1;  /* we always send DPD VID */
 #ifdef NAT_TRAVERSAL
@@ -932,7 +944,16 @@ main_outI1(int whack_sock
     st->st_try = try;
     st->st_state = STATE_MAIN_I1;
 
-    st->st_import = importance; 
+    st->st_import = importance;
+
+    for(sr=&c->spd; sr!=NULL; sr=sr->next) {
+	if(sr->this.xauth_client) {
+	    if(sr->this.xauth_name) {
+		strncpy(st->st_xauth_username, sr->this.xauth_name, sizeof(st->st_xauth_username));
+		break;
+	    }
+	}
+    }
 
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
 
@@ -1007,6 +1028,7 @@ main_outI1(int whack_sock
     {
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 	if(!out_vid(np, &md.rbody, VID_MISC_DPD)) {
+	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
     }
@@ -1029,6 +1051,7 @@ main_outI1(int whack_sock
     if(c->spd.this.xauth_client || c->spd.this.xauth_server) {
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 	if(!out_vid(np, &md.rbody, VID_MISC_XAUTH)) {
+	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
     }
@@ -1395,14 +1418,25 @@ try_RSA_signature(const u_char hash_val[MAX_DIGEST_LEN], size_t hash_len
     {
 	chunk_t temp_s;
 	mpz_t c;
+#ifdef HAVE_OCF_AND_OPENSSL
+	BIGNUM r0;
+#endif
 
 	n_to_mpz(c, sig_val, sig_len);
+#ifdef HAVE_OCF_AND_OPENSSL
+	BN_init(&r0);
+	cryptodev.mod_exp(&r0, c, &k->e, &k->n);
+	bn2mp(&r0, (MP_INT *) c);
+#else
 	mpz_powm(c, c, &k->e, &k->n);
+#endif
 
 	temp_s = mpz_to_n(c, sig_len);	/* back to octets */
 	memcpy(s, temp_s.ptr, sig_len);
 	pfree(temp_s.ptr);
+#ifndef HAVE_OCF_AND_OPENSSL
 	mpz_clear(c);
+#endif
     }
 
     /* sanity check on signature: see if it matches
@@ -1890,8 +1924,14 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
     case ID_USER_FQDN:
 	if (memchr(id_pbs->cur, '@', pbs_left(id_pbs)) == NULL)
 	{
-	    loglog(RC_LOG_SERIOUS, "peer's ID_USER_FQDN contains no @");
-	    return FALSE;
+	    char idbuf[IDTOA_BUF];
+	    int len = pbs_left(id_pbs);
+	    if(len>(IDTOA_BUF-1)) len = IDTOA_BUF;
+
+	    memcpy(idbuf, id_pbs->cur, len-1);
+	    idbuf[len]='\0';
+	    loglog(RC_LOG_SERIOUS, "peer's ID_USER_FQDN contains no @: %s", idbuf);
+	    //return FALSE;
 	}
 	/* FALLTHROUGH */
     case ID_FQDN:
@@ -2089,10 +2129,12 @@ main_inI1_outR1(struct msg_digest *md)
     /* random source ports are handled by find_host_connection */
     c = find_host_connection(&md->iface->ip_addr, pluto_port
 			     , &md->sender
-			     , md->sender_port);
+			     , md->sender_port, LEMPTY);
 
     if (c == NULL)
     {
+	pb_stream pre_sa_pbs = sa_pd->pbs;
+	lset_t policy = preparse_isakmp_sa_body(&pre_sa_pbs);
 	/* See if a wildcarded connection can be found.
 	 * We cannot pick the right connection, so we're making a guess.
 	 * All Road Warrior connections are fair game:
@@ -2107,7 +2149,7 @@ main_inI1_outR1(struct msg_digest *md)
 	    struct connection *d;
 	    d = find_host_connection(&md->iface->ip_addr, pluto_port
 				     , (ip_address*)NULL
-				     , md->sender_port);
+				     , md->sender_port, policy);
 
 	    for (; d != NULL; d = d->hp_next)
 	    {
@@ -2135,8 +2177,10 @@ main_inI1_outR1(struct msg_digest *md)
 	if (c == NULL)
 	{
 	    loglog(RC_LOG_SERIOUS, "initial Main Mode message received on %s:%u"
-		" but no connection has been authorized"
-		, ip_str(&md->iface->ip_addr), ntohs(portof(&md->iface->ip_addr)));
+		" but no connection has been authorized%s%s"
+		, ip_str(&md->iface->ip_addr), ntohs(portof(&md->iface->ip_addr))
+		, (policy != LEMPTY) ? " with policy=" : ""
+		, (policy != LEMPTY) ? bitnamesof(sa_policy_bit_names, policy) : "");
 	    /* XXX notification is in order! */
 	    return STF_IGNORE;
 	}
@@ -2603,6 +2647,7 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
 	    release_md(md);
 	}
     }
+    reset_cur_state();
     return;
 }
 
@@ -3161,12 +3206,19 @@ key_continue(struct adns_continuation *cr
 	     , key_tail_fn *tail)
 {
     struct key_continuation *kc = (void *)cr;
-    struct state *st = kc->md->st;
+    struct msg_digest *md = kc->md;
+    struct state *st;
+
+    if(md == NULL) {
+	return;
+    }
+
+    st= md->st;
 
     passert(cur_state == NULL);
 
     /* if st == NULL, our state has been deleted -- just clean up */
-    if (st != NULL)
+    if (st != NULL && st->st_suspended_md != NULL)
     {
 	stf_status r;
 

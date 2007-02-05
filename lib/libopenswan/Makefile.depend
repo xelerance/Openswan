@@ -60,8 +60,8 @@ alg_info.o: alg_info.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../linux/include/openswan/passert.h \
   ../../linux/include/openswan/pfkeyv2.h \
-  ../../include/linux/pfkeyv2.h \
-  ../../include/constants.h ../../include/biglset.h \
+  ../../include/constants.h \
+  ../../include/biglset.h \
   ../../include/ietf_constants.h \
   ../../include/pluto_constants.h \
   ../../include/names_constant.h \
@@ -185,9 +185,7 @@ kernel_alg.o: kernel_alg.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
   ../../linux/include/openswan/pfkeyv2.h \
-  ../../include/linux/pfkeyv2.h \
   ../../linux/include/openswan/pfkey.h \
-  ../../linux/include/openswan/pfkeyv2.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/constants.h ../../include/biglset.h \
   ../../linux/include/openswan/passert.h \
@@ -328,20 +326,8 @@ pfkey_sock.o: pfkey_sock.c ../../linux/include/openswan.h \
 pgp.o: pgp.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
-  ../../linux/include/openswan/ipsec_policy.h \
-  ../../ports/linux/include/sysdep.h \
-  ../../include/constants.h ../../include/biglset.h \
-  ../../linux/include/openswan/passert.h \
-  ../../include/ietf_constants.h \
-  ../../include/pluto_constants.h \
-  ../../include/names_constant.h \
-  ../../include/oswlog.h ../../include/constants.h \
-  ../../include/oswtime.h ../../include/oswalloc.h \
-  ../../include/id.h ../../include/pgp.h \
-  ../../include/x509.h ../../include/certs.h \
-  ../../include/secrets.h ../../include/id.h \
-  ../../include/x509.h ../../include/pgp.h \
-  ../../include/md5.h ../../include/secrets.h
+  ../../linux/include/openswan/pfkeyv2.h \
+  ../../linux/include/openswan/pfkey.h
 pkcs.o: pkcs.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \

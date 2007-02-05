@@ -232,19 +232,19 @@ checkif() {
 # interfaces=%defaultroute:  put ipsec0 on top of default route's interface
 defaultinterface() {
 	phys=`netstat -nr |
-		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $NF }'`
+		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $NF; exit 0 }'`
 	if test " $phys" = " "
 	then
 		echo "no default route, %defaultroute cannot cope!!!"
 		exit 1
 	fi
+	next=`netstat -nr |
+		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $2; exit 0 }'`
+
 	if test `echo " $phys" | wc -l` -gt 1
 	then
-		echo "multiple default routes, %defaultroute cannot cope!!!"
-		exit 1
+		echo "multiple default routes, %defaultroute using: $next"
 	fi
-	next=`netstat -nr |
-		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $2 }'`
 
 	if $klips
 	then
@@ -291,10 +291,22 @@ setmodule() {
 
 # main line
 
+# load module if possible
+if test -f $ipsecversion && $netkey
+then
+    # both KLIPS and NETKEY code detected, bail out
+    echo "FATAL ERROR: Both KLIPS and NETKEY IPsec code is present in kernel"
+    exit
+fi
 if test ! -f $ipsecversion && ($klips || $mast) && modprobe -qn ipsec
 then
     # statically compiled KLIPS/NETKEY not found; try to load the module
     modprobe ipsec
+fi
+
+if test ! -f $ipsecversion && $netkey
+then
+	modprobe -v af_key
 fi
 
 if $netkey
@@ -385,8 +397,10 @@ fi
 if $mast
 then
     # flush policy out
-    iptables -t mangle -N IPSEC
-    iptables -t mangle -F IPSEC
+    if iptables -t mangle -L IPSEC >/dev/null
+    then
+	iptables -t mangle -F IPSEC
+    fi
 
 elif $klips
 then

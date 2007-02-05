@@ -3,17 +3,24 @@ KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
 MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
 
 LEX=flex
+ifeq ($(USE_YACC),true)
+BISON="yacc -b parser"
+else
 BISON=bison
+endif
 
 VPATH+= ${KLIPSSRCDIR}
+OSDEP?=$(shell uname -s | tr 'A-Z' 'a-z')
 
 # Original flags
-INCLUDES=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}
+INCLUDES+=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}
 INCLUDES+=-I${OPENSWANSRCDIR}/include 
 CFLAGS+=${PORTINCLUDE} ${INCLUDES} 
 CFLAGS+=-DDEBUG
 CFLAGS+= $(USERCOMPILE)
+ifneq ($(BUILDENV),darwin)
 CFLAGS+= -Wall
+endif
 #CFLAGS+= -Wconversion
 #CFLAGS+= -Wmissing-prototypes
 CFLAGS+= -Wpointer-arith
@@ -29,6 +36,10 @@ ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
 endif
 
+ifeq ($(USE_KLIPS),true)
+CFLAGS+= -DKLIPS
+endif
+
 ARFLAGS=crvs
 MANS=
 
@@ -38,7 +49,7 @@ MANS=
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard ${ONEFILE})
 ifeq ($(SHOULDWERESTART),true${ONEFILE})
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/lib${LIBRARY} && make $@
+	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/lib${LIBRARY} && ${MAKE} $@
 else
 all:	$(LIB) 
 programs: $(LIB) 
@@ -48,7 +59,7 @@ install: doinstall
 endif
 
 doinstall:
-	@mkdir -p $(MANDIR)
+	@for d in $(MANDIR); do mkdir -p $$d; done
 	@for f in $(MANS) ; \
 	do \
 		$(INSTALL) $(INSTMANFLAGS) $(MANSRCDIR)/$$f $(MANDIR)/ipsec_$$f || exit 1 ; \
@@ -81,9 +92,9 @@ cleanall::
 
 # Gather dependencies caused by explicit #includes within .c files
 depend: ${DISTSRC}
-	@(ls $(DISTSRC) | grep '\.c' | xargs gcc -MM ${PORTINCLUDE} ${INCLUDES} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
+	@(ls $(DISTSRC) | grep '\.c' | xargs gcc -MM ${PORTINCLUDE} ${INCLUDES} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP}
 
--include ${srcdir}Makefile.depend
+-include ${srcdir}Makefile.depend.${OSDEP}
 
 
 

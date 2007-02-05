@@ -138,6 +138,10 @@ extern int ipsec_tunnel_createnum(int vifnum);
 extern struct net_device *ipsec_tunnel_get_device(int vifnum);
 
 
+/* manage ipsec xmit state objects */
+extern int ipsec_xmit_state_cache_init (void);
+extern void ipsec_xmit_state_cache_cleanup (void);
+
 /*
  * $Log: ipsec_tunnel.h,v $
  * Revision 1.33  2005/06/04 16:06:05  mcr

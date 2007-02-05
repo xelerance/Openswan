@@ -16,7 +16,9 @@
  * RCSID $Id: ipsec_xform.c,v 1.65 2005/04/29 05:10:22 mcr Exp $
  */
 
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
@@ -55,8 +57,8 @@
 #include "freeswan/ipsec_ah.h"
 #include "freeswan/ipsec_esp.h"
 
-#include <pfkeyv2.h>
-#include <pfkey.h>
+#include <openswan/pfkeyv2.h>
+#include <openswan/pfkey.h>
 
 #ifdef SPINLOCK
 spinlock_t tdb_lock = SPIN_LOCK_UNLOCKED;

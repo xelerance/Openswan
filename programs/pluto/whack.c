@@ -60,6 +60,8 @@ help(void)
 	"connection: whack"
 	    " --name <connection_name>"
 	    " \\\n   "
+	    " --connalias <alias_names>"
+	    " \\\n   "
 	    " [--ipv4 | --ipv6]"
 	    " [--tunnelipv4 | --tunnelipv6]"
 	    " \\\n   "
@@ -210,6 +212,7 @@ help(void)
             " [--listocsp]"
 
 	    " [--listcards]"
+	    " [--listpsks]"
 	    " [--listall]"
 	    "\n\n"
         "purge: whack"
@@ -312,6 +315,7 @@ enum option_enums {
 #   define OPT_FIRST	OPT_CTLBASE
     OPT_CTLBASE,
     OPT_NAME,
+    OPT_CONNALIAS,
 
     OPT_CD,
 
@@ -375,6 +379,7 @@ enum option_enums {
     LST_CRLS,
     LST_OCSP,
     LST_CARDS,
+    LST_PSKS,
     LST_EVENTS,
     LST_ALL,
 
@@ -395,6 +400,7 @@ enum option_enums {
     END_CLIENTWITHIN,
     END_CLIENTPROTOPORT,
     END_DNSKEYONDEMAND,
+    END_XAUTHNAME,
     END_XAUTHSERVER,
     END_XAUTHCLIENT,
     END_MODECFGCLIENT,
@@ -519,6 +525,7 @@ static const struct option long_opts[] = {
 
     { "ctlbase", required_argument, NULL, OPT_CTLBASE + OO },
     { "name", required_argument, NULL, OPT_NAME + OO },
+    { "connalias", required_argument, NULL, OPT_CONNALIAS + OO },
 
     { "keyid", required_argument, NULL, OPT_KEYID + OO },
     { "addkey", no_argument, NULL, OPT_ADDKEY + OO },
@@ -571,6 +578,7 @@ static const struct option long_opts[] = {
     { "listcrls", no_argument, NULL, LST_CRLS + OO },
     { "listocsp", no_argument, NULL, LST_OCSP + OO },
     { "listcards", no_argument, NULL, LST_CARDS + OO },
+    { "listpsks", no_argument, NULL, LST_PSKS + OO },
     { "listevents", no_argument, NULL, LST_EVENTS + OO },
     { "listall", no_argument, NULL, LST_ALL + OO },
                                                                                                         
@@ -692,12 +700,13 @@ static const struct option long_opts[] = {
     { 0,0,0,0 }
 };
 
-#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
-struct sockaddr_un ctl_addr = { AF_UNIX, DEFAULT_CTLBASE CTL_SUFFIX };
-#else
-/* This will require fixes elsewhere too! */
-struct sockaddr_un ctl_addr = { sizeof(struct sockaddr_un), AF_UNIX, DEFAULT_CTLBASE CTL_SUFFIX };
+struct sockaddr_un ctl_addr = {
+    .sun_family = AF_UNIX,
+    .sun_path   = DEFAULT_CTLBASE CTL_SUFFIX,
+#if defined(HAS_SUN_LEN) 
+    .sun_len = sizeof(struct sockaddr_un),
 #endif
+};
 
 
 static void
@@ -1146,6 +1155,7 @@ main(int argc, char **argv)
         case LST_CRLS:          /* --listcrls */
         case LST_OCSP:          /* --listocsp */
         case LST_CARDS:         /* --listcards */
+        case LST_PSKS:          /* --listpsks */
         case LST_EVENTS:         /* --listcards */
             msg.whack_list |= LELEM(c - LST_PUBKEYS);
             continue;
@@ -1221,30 +1231,6 @@ main(int argc, char **argv)
 	case END_ID:	/* --id <identity> */
 	    msg.right.id = optarg;	/* decoded by Pluto */
 	    continue;
-
-#ifdef XAUTH
-	case END_XAUTHSERVER:	/* --xauthserver */
-	    msg.right.xauth_server = TRUE;
-	    continue;
-
-	case END_XAUTHCLIENT:	/* --xauthclient */
-	    msg.right.xauth_client = TRUE;
-	    continue;
-#else
-	case END_XAUTHSERVER:
-	case END_XAUTHCLIENT:
-	  diag("pluto is not built with XAUTH support");
-	  continue;
-#endif
-#ifdef MODECFG
-	case END_MODECFGCLIENT:
-	    msg.right.modecfg_client = TRUE;
-	    continue;
-
-	case END_MODECFGSERVER:
-	    msg.right.modecfg_server = TRUE;
-	    continue;
-#endif
 
 	case END_SENDCERT:
    	    if(streq(optarg, "yes") || streq(optarg, "always"))
@@ -1505,12 +1491,25 @@ main(int argc, char **argv)
 	    msg.tunnel_addr_family = AF_INET6;
 	    continue;
 
+#ifdef XAUTH
+	case END_XAUTHSERVER:	/* --xauthserver */
+	    msg.right.xauth_server = TRUE;
+	    continue;
+
+	case END_XAUTHCLIENT:	/* --xauthclient */
+	    msg.right.xauth_client = TRUE;
+	    continue;
+
 	case OPT_XAUTHNAME:
-	  gotxauthname = TRUE;
-	  xauthname[0]='\0';
-	  strncat(xauthname, optarg, sizeof(xauthname));
-	  xauthnamelen = strlen(xauthname)+1;
-	  continue;
+	    /* we can't tell if this is going to be --initiate, or
+	     * if this is going to be an conn definition, so do
+	     * both actions */
+	    msg.right.xauth_name = optarg;
+	    gotxauthname = TRUE;
+	    xauthname[0]='\0';
+	    strncat(xauthname, optarg, sizeof(xauthname));
+	    xauthnamelen = strlen(xauthname)+1;
+	    continue;
 
 	case OPT_XAUTHPASS:
 	  gotxauthpass = TRUE;
@@ -1518,6 +1517,24 @@ main(int argc, char **argv)
 	  strncat(xauthpass, optarg, sizeof(xauthpass));
 	  xauthpasslen = strlen(xauthpass)+1;
 	  continue;
+
+#ifdef MODECFG
+	case END_MODECFGCLIENT:
+	    msg.right.modecfg_client = TRUE;
+	    continue;
+
+	case END_MODECFGSERVER:
+	    msg.right.modecfg_server = TRUE;
+	    continue;
+#endif /* MODECFG */
+
+#else
+	case END_XAUTHSERVER:
+	case END_XAUTHCLIENT:
+	case END_XAUTHNAME:
+	  diag("pluto is not built with XAUTH support");
+	  continue;
+#endif /* XAUTH */
 
 	case OPT_TPMEVAL:
 #ifdef TPM

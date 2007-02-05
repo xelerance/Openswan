@@ -98,6 +98,9 @@ include/dns/rdatastruct.h: gen \
 code.h:	gen
 	./gen -s ${srcdir} > code.h
 
+# this program is to be built on the host, and should not be
+# cross-compiled!
+HOSTCC?=cc
 gen: gen.c
-	${CC} ${HOSTCINCLUDES} ${LDFLAGS} -o $@ ${srcdir}gen.c ${LIBS}
+	${HOSTCC} ${HOSTCINCLUDES} ${LDFLAGS} -o $@ ${srcdir}gen.c ${LIBS}
 

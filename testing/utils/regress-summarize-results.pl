@@ -24,10 +24,14 @@ $unexpectedcolour="#009999"; # YELLOW
 $expectedcolour="#007700"; # dark green
 $roguecolour="#999900";    # purple?
 
+$fastrate=20;    # when test are running, how often to refresh
+$slowrate=300;   # when tests are not running, how often to refresh.
+
 $failed=0;
 $passed=0;
 $missed=0;
 $total=0;
+$multicolumn=0;
 
 #$gnatsurl="http://gnats.freeswan.org/bugs/gnatsweb.pl?database=freeswan&amp;cmd=view+audit-trail&amp;pr=";
 $gnatsurl=undef;
@@ -39,15 +43,17 @@ sub htmlize_test {
 
   my($expected, $verdict, $packetstat, $consolestat, $file);
 
-  if(++$linecount > 40) {
-	print HTMLFILE "</TABLE>\n";
-	print HTMLFILE "<TD>";
-	print HTMLFILE "<TABLE>\n";
-
-	print HTMLFILE "<TR><TH COLSPAN=3>$testtypename tests</TH></TR>\n";
-	print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
- 	$linecount=4;
-  }	
+  if($multicolumn) {
+    if(++$linecount > 40) {
+      print HTMLFILE "</TABLE>\n";
+      print HTMLFILE "<TD>";
+      print HTMLFILE "<TABLE>\n";
+      
+      print HTMLFILE "<TR><TH COLSPAN=3>$testtypename tests</TH></TR>\n";
+      print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
+      $linecount=4;
+    }
+  }    
 
   print HTMLFILE "<TR><TD>";
 
@@ -322,7 +328,9 @@ print HTMLFILE "<HTML>  <HEAD>\n";
 print HTMLFILE "<META http-equiv=\"content-type\" content=\"text/html; charset=ISO-8859-1\">\n";
 
 if(defined($runningtest)) {
-  print HTMLFILE "<META http-equiv=\"Refresh\" content=\"15,testresults.html\">\n";
+  print HTMLFILE "<META http-equiv=\"Refresh\" content=\"$fastrate,testresults.html\">\n";
+} else {
+  print HTMLFILE "<META http-equiv=\"Refresh\" content=\"$slowrate,testresults.html\">\n";
 }
 
 print HTMLFILE "<TITLE>Openswan nightly testing results for $runtime</TITLE>\n";
@@ -338,7 +346,7 @@ print HTMLFILE "<TABLE border>\n";
 print HTMLFILE "<TD>";
 
 $testtypename="Regression";
-print HTMLFILE "<TABLE>\n";
+print HTMLFILE "<TABLE>\n" if ($multicolumn);
 print HTMLFILE "<TR><TH COLSPAN=3>Regression tests</TH></TR>\n";
 print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
 $linecount=3;
@@ -352,8 +360,8 @@ if($wanttestcategories) {
   }
   
   $testtypename="Goal";
-  print HTMLFILE "</TABLE>\n";
-  print HTMLFILE "<TABLE>\n";
+  print HTMLFILE "</TABLE>\n" if ($multicolumn);
+  print HTMLFILE "<TABLE>\n"  if ($multicolumn);
   print HTMLFILE "<TR><TH COLSPAN=3>Goal tests</TH></TR>\n";
   print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
   $linecount+=3;
@@ -366,8 +374,8 @@ if($wanttestcategories) {
   }
   
   $testtypename="Exploit ";
-  print HTMLFILE "</TABLE>\n";
-  print HTMLFILE "<TABLE>\n";
+  print HTMLFILE "</TABLE>\n"  if ($multicolumn);
+  print HTMLFILE "<TABLE>\n"   if ($multicolumn);
   print HTMLFILE "<TR><TH COLSPAN=3>Exploit tests</TH></TR>\n";
   print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
   $linecount+=3;
@@ -398,7 +406,7 @@ if($subtotal > 0) {
   $testrate="inf";
 }
 
-print HTMLFILE "</TABLE>  \n";
+print HTMLFILE "</TABLE>  \n"  if ($multicolumn);
 print HTMLFILE "</TABLE>  \n";
 print HTMLFILE "\n<BR><PRE>TOTAL tests: $total SKIPPED: $skipped   PASSED: $passed   FAILED: $failed   MISSED: $missed  SUCCESS RATE: $testrate%</PRE><BR>\n";
 print HTMLFILE "<A HREF=\"stdout.txt\">stdout</A><BR>\n";

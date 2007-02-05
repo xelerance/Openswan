@@ -99,8 +99,8 @@ proc newswitch {netjig net} {
 
     set arpreply ""
 
-    netjigcmddebug "looking for umlid(net$net,arp)=$umlid(net$net,arp)\n"
     if { [info exists umlid(net$net,arp)] } {
+	netjigcmddebug "looking for umlid(net$net,arp)=$umlid(net$net,arp)\n"
 	if { $umlid(net$net,arp) != 0 } {
 	    set arpreply "--arpreply"
 	}
@@ -466,7 +466,7 @@ proc killuml {umlname} {
 
     if {[info exists umlid($umlname,finalscript)]} {
 	dumbplayscript $umlname $umlid($umlname,finalscript)
-	netjigdebug "Finalscript done"
+	netjigdebug "Finalscript done for $umlname"
     } 
 
     netjigdebug "Sending halt to $umlname!"
@@ -482,13 +482,16 @@ proc killuml {umlname} {
     send   -i $umlid($umlname,spawnid)     "halt -p -f\r"
 
     netjigdebug "Waiting for final message"
-    expect {
-	-i $umlid($umlname,spawnid)
-	timeout	{ puts stderr "timeout in killuml" }
-	eof	{ puts stderr "EOF in killuml" }
-	-exact "Power down." 
+
+    catch {
+	expect {
+	    -i $umlid($umlname,spawnid)
+	    timeout	{ puts stderr "timeout in killuml" }
+	    eof	{ puts stderr "EOF in killuml" }
+	    -exact "Power down." 
+	}
+	expect -i $umlid($umlname,spawnid) -gl "*"
     }
-    expect -i $umlid($umlname,spawnid) -gl "*"
 }
 
 proc process_extra_host {optarg} {

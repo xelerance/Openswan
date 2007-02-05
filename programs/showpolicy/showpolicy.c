@@ -218,7 +218,6 @@ int udp_recv_loop(int udpsock)
 	return 0;
 }
 	
-	
 
 void dump_policyreply(struct ipsec_policy_cmd_query *q)
 {
@@ -273,7 +272,7 @@ int main(int argc, char *argv[])
 {
   struct ipsec_policy_cmd_query q;
   err_t ret;
-  int   c, fd;
+  int   c, fd = -1;
   unsigned short port;
   char  *foo;
 
@@ -386,7 +385,7 @@ int main(int argc, char *argv[])
 	  
   case 'P':
 	  udp_recv_loop(fd);
-	  exit(0);
+	  break;
     
   default:
 	  abort();

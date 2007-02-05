@@ -15,6 +15,9 @@
  * RCSID $Id: defs.h,v 1.36 2004/05/27 00:39:59 mcr Exp $
  */
 
+#ifndef _DEFS_H
+#define _DEFS_H
+
 #include "oswalloc.h"
 
 #ifdef KLIPS
@@ -48,7 +51,11 @@ extern const char* check_expiry(time_t expiration_date,
 
 /* filter eliminating the directory entries '.' and '..' */
 typedef struct dirent dirent_t;
-extern int file_select(const dirent_t *entry);
+extern int file_select(
+#ifdef SCANDIR_HAS_CONST
+		       const
+#endif
+		       dirent_t *entry);
 
 /* cleanly exit Pluto */
 
@@ -85,4 +92,4 @@ extern void unlock_authcert_list(const char *who);
 #endif
 
 
-
+#endif /* _DEFS_H */

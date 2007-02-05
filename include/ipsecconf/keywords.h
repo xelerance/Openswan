@@ -95,6 +95,7 @@ enum keyword_numeric_config_field {
     KBF_IKELIFETIME,
     KBF_AGGRMODE,
     KBF_MODECONFIGPULL,
+    KBF_FORCEENCAP,
     KBF_MAX         
 };
 
@@ -152,15 +153,16 @@ enum keyword_numeric_conn_field {
 
 /* these are bits set in a word */
 enum keyword_valid {
-    kv_config = LELEM(0),
-    kv_conn   = LELEM(1),
-    kv_leftright = LELEM(2),
-    kv_auto   = LELEM(3),
-    kv_manual = LELEM(4),
-    kv_alias  = LELEM(5),
+    kv_config = LELEM(0),     /* may be present in config section */
+    kv_conn   = LELEM(1),     /* may be present in conn section */
+    kv_leftright = LELEM(2),  /* comes in leftFOO and rightFOO varients */
+    kv_auto   = LELEM(3),     /* valid when keyingtype=auto */
+    kv_manual = LELEM(4),     /* valid when keyingtype=manual */
+    kv_alias  = LELEM(5),     /* is an alias for another keyword */
     kv_policy = LELEM(6),     /* is a policy affecting verb, processed specially */
     kv_processed = LELEM(7),  /* is processed, do not output literal string */
 };
+#define KV_CONTEXT_MASK (kv_config|kv_conn|kv_leftright)
 
 /* values keyexchange= */
 enum keyword_keyexchange {
@@ -205,6 +207,7 @@ enum keyword_type {
     kt_subnet,             /* an IP address subnet */
     kt_idtype,             /* an ID type */
     kt_bitstring,          /* an encryption/authentication key */
+    kt_comment,            /* a value which is a cooked comment */
 };
 
 #define NOT_ENUM NULL

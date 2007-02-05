@@ -18,7 +18,9 @@
  * Split out from ipsec_proc.c.
  */
 
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -52,8 +54,8 @@
 
 #include "openswan/ipsec_proto.h"
 
-#include <pfkeyv2.h>
-#include <pfkey.h>
+#include <openswan/pfkeyv2.h>
+#include <openswan/pfkey.h>
 
 /* ipsec_snprintf: like snprintf except
  * - size is signed and a negative value is treated as if it were 0

@@ -472,7 +472,21 @@ char *argv[];
 	if (memcmp(cbc_out,cbc3_ok,
 		(unsigned int)(strlen((char *)cbc_data)+1+7)/8*8) != 0)
 		{
-		printf("des_ede3_cbc_encrypt encrypt error\n");
+		printf("des_ede3_cbc_encrypt chained encrypt error\n");
+		err=1;
+		}
+
+	memcpy(iv3,cbc_iv,sizeof(cbc_iv));
+	memcpy(cbc_out,cbc_data,40);
+	des_ede3_cbc_encrypt((C_Block *)cbc_out,(C_Block *)cbc_out,
+		16L,ks,ks2,ks3,(C_Block *)iv3,DES_ENCRYPT);
+	des_ede3_cbc_encrypt((C_Block *)&(cbc_out[16]),
+		(C_Block *)&(cbc_out[16]),
+		(long)i-16,ks,ks2,ks3,(C_Block *)iv3,DES_ENCRYPT);
+	if (memcmp(cbc_out,cbc3_ok,
+		(unsigned int)(strlen((char *)cbc_data)+1+7)/8*8) != 0)
+		{
+		printf("des_ede3_cbc_encrypt inplace and chained encrypt error\n");
 		err=1;
 		}
 
@@ -482,6 +496,41 @@ char *argv[];
 	if (memcmp(cbc_in,cbc_data,strlen(cbc_data)+1) != 0)
 		{
 		printf("des_ede3_cbc_encrypt decrypt error\n");
+		err=1;
+		}
+
+	memcpy(iv3,cbc_iv,sizeof(cbc_iv));
+	memcpy(cbc_in,cbc_out,40);
+	des_ede3_cbc_encrypt((C_Block *)cbc_in,(C_Block *)cbc_in,
+		(long)i,ks,ks2,ks3,(C_Block *)iv3,DES_DECRYPT);
+	if (memcmp(cbc_in,cbc_data,strlen(cbc_data)+1) != 0)
+		{
+		printf("des_ede3_cbc_encrypt inplace decrypt error\n");
+		err=1;
+		}
+
+	memcpy(iv3,cbc_iv,sizeof(cbc_iv));
+	des_ede3_cbc_encrypt((C_Block *)cbc_out,(C_Block *)cbc_in,
+		16L,ks,ks2,ks3,(C_Block *)iv3,DES_DECRYPT);
+	des_ede3_cbc_encrypt((C_Block *)&(cbc_out[16]),
+		(C_Block *)&(cbc_in[16]),
+		(long)i-16,ks,ks2,ks3,(C_Block *)iv3,DES_DECRYPT);
+	if (memcmp(cbc_in,cbc_data,strlen(cbc_data)+1) != 0)
+		{
+		printf("des_ede3_cbc_encrypt chained decrypt error\n");
+		err=1;
+		}
+
+	memcpy(iv3,cbc_iv,sizeof(cbc_iv));
+	memcpy(cbc_in,cbc_out,40);
+	des_ede3_cbc_encrypt((C_Block *)cbc_in,(C_Block *)cbc_in,
+		16L,ks,ks2,ks3,(C_Block *)iv3,DES_DECRYPT);
+	des_ede3_cbc_encrypt((C_Block *)&(cbc_in[16]),
+		(C_Block *)&(cbc_in[16]),
+		(long)i-16,ks,ks2,ks3,(C_Block *)iv3,DES_DECRYPT);
+	if (memcmp(cbc_in,cbc_data,strlen(cbc_data)+1) != 0)
+		{
+		printf("des_ede3_cbc_encrypt inplace and chained decrypt error\n");
 		err=1;
 		}
 

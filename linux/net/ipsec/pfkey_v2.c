@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2.c,v 1.99 2005/08/28 01:53:37 paul Exp $
+ * RCSID $Id: pfkey_v2.c,v 1.97.2.8 2006/07/10 15:56:11 paul Exp $
  */
 
 /*
@@ -23,7 +23,9 @@
 #define __NO_VERSION__
 #include <linux/module.h>
 #include <linux/version.h>
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/kernel.h>
 
 #include "openswan/ipsec_param.h"
@@ -67,8 +69,8 @@
 #include "openswan/ipsec_encap.h"
 #include "openswan/ipsec_sa.h"
 
-#include <pfkeyv2.h>
-#include <pfkey.h>
+#include <openswan/pfkeyv2.h>
+#include <openswan/pfkey.h>
 
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_kern24.h"
@@ -80,8 +82,8 @@
 #define SOCKOPS_WRAPPED(name) name
 #endif /* SOCKOPS_WRAPPED */
 
-static rwlock_t pfkey_sock_lock = RW_LOCK_UNLOCKED;
 #ifdef NET_26
+static rwlock_t pfkey_sock_lock = RW_LOCK_UNLOCKED;
 HLIST_HEAD(pfkey_sock_list);
 static DECLARE_WAIT_QUEUE_HEAD(pfkey_sock_wait);
 static atomic_t pfkey_sock_users = ATOMIC_INIT(0);
@@ -1476,7 +1478,7 @@ pfkey_cleanup(void)
 	
         printk(KERN_INFO "klips_info:pfkey_cleanup: "
 	       "shutting down PF_KEY domain sockets.\n");
-        error |= sock_unregister(PF_KEY);
+        sock_unregister(PF_KEY);
 
 	error |= supported_remove_all(K_SADB_SATYPE_AH);
 	error |= supported_remove_all(K_SADB_SATYPE_ESP);
@@ -1523,6 +1525,7 @@ cleanup_module(void)
 }
 #endif /* 0 */
 #else /* MODULE */
+struct net_protocol;
 void pfkey_proto_init(struct net_protocol *pro)
 {
 	pfkey_init();

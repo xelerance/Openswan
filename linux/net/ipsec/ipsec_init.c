@@ -20,7 +20,9 @@
 
 char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.104.2.2 2006/04/20 16:33:06 mcr Exp $";
 
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
@@ -89,8 +91,8 @@ char ipsec_init_c_version[] = "RCSID $Id: ipsec_init.c,v 1.104.2.2 2006/04/20 16
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
 
-#include <pfkeyv2.h>
-#include <pfkey.h>
+#include <openswan/pfkeyv2.h>
+#include <openswan/pfkey.h>
 
 #if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
 #include <net/xfrmudp.h>
@@ -184,7 +186,17 @@ ipsec_klips_init(void)
 		    "KLIPS startup, Openswan KLIPS IPsec stack version: %s\n",
 		    ipsec_version_code());
 
+        error = ipsec_xmit_state_cache_init ();
+        if (error)
+                goto error_xmit_state_cache;
+
+        error = ipsec_rcv_state_cache_init ();
+        if (error)
+                goto error_rcv_state_cache;
+
 	error |= ipsec_proc_init();
+        if (error)
+                goto error_proc_init;
 
 #ifdef SPINLOCK
 	ipsec_sadb.sadb_lock = SPIN_LOCK_UNLOCKED;
@@ -198,11 +210,27 @@ ipsec_klips_init(void)
 #endif /* !SPINLOCK */
 
 	error |= ipsec_sadb_init();
+        if (error)
+                goto error_sadb_init;
+
 	error |= ipsec_radijinit();
+        if (error)
+                goto error_radijinit;
 
 	error |= pfkey_init();
+        if (error)
+                goto error_pfkey_init;
 
 	error |= register_netdevice_notifier(&ipsec_dev_notifier);
+        if (error)
+                goto error_netdev_notifier;
+
+#ifdef CONFIG_XFRM_ALTERNATE_STACK
+        error = xfrm_register_alternate_rcv (ipsec_rcv);
+        if (error)
+                goto error_xfrm_register;
+
+#else // CONFIG_XFRM_ALTERNATE_STACK
 
 #ifdef CONFIG_KLIPS_ESP
 	openswan_inet_add_protocol(&esp_protocol, IPPROTO_ESP);
@@ -219,7 +247,11 @@ ipsec_klips_init(void)
 #endif /* CONFIG_KLIPS_IPCOMP */
 #endif
 
+#endif // CONFIG_XFRM_ALTERNATE_STACK
+
 	error |= ipsec_tunnel_init_devices();
+        if (error)
+                goto error_tunnel_init_devices;
 
 	error |= ipsec_mast_init_devices();
 
@@ -234,6 +266,8 @@ ipsec_klips_init(void)
 
 #ifdef CONFIG_SYSCTL
         error |= ipsec_sysctl_register();
+        if (error)
+                goto error_sysctl_register;
 #endif                                                                          
 
 	ipsec_alg_init();
@@ -242,6 +276,33 @@ ipsec_klips_init(void)
 	prng_init(&ipsec_prng, seed, sizeof(seed));
 
 	return error;
+
+        // undo ipsec_sysctl_register
+error_sysctl_register:
+	ipsec_tunnel_cleanup_devices();
+error_tunnel_init_devices:
+#ifdef CONFIG_XFRM_ALTERNATE_STACK
+        xfrm_deregister_alternate_rcv(ipsec_rcv);
+error_xfrm_register:
+#endif // CONFIG_XFRM_ALTERNATE_STACK
+	unregister_netdevice_notifier(&ipsec_dev_notifier);
+error_netdev_notifier:
+	pfkey_cleanup();
+error_pfkey_init:
+	ipsec_radijcleanup();
+error_radijinit:
+	ipsec_sadb_cleanup(0);
+	ipsec_sadb_free();
+error_sadb_init:
+error_proc_init:
+        // ipsec_proc_init() does not cleanup after itself, so we have to do it here
+        // TODO: ipsec_proc_init() should roll back what it chaned on failure
+	ipsec_proc_cleanup();
+        ipsec_rcv_state_cache_cleanup ();
+error_rcv_state_cache:
+        ipsec_xmit_state_cache_cleanup ();
+error_xmit_state_cache:
+        return error;
 }	
 
 
@@ -267,6 +328,12 @@ ipsec_cleanup(void)
 
 	KLIPS_PRINT(debug_netlink, "called ipsec_tunnel_cleanup_devices");
 
+#ifdef CONFIG_XFRM_ALTERNATE_STACK
+
+        xfrm_deregister_alternate_rcv(ipsec_rcv);
+
+#else // CONFIG_XFRM_ALTERNATE_STACK
+
 /* we never actually link IPCOMP to the stack */
 #ifdef IPCOMP_USED_ALONE
 #ifdef CONFIG_KLIPS_IPCOMP
@@ -288,6 +355,8 @@ ipsec_cleanup(void)
 		       "esp close: can't remove protocol\n");
 #endif /* CONFIG_KLIPS_ESP */
 
+#endif // CONFIG_XFRM_ALTERNATE_STACK
+
 	error |= unregister_netdevice_notifier(&ipsec_dev_notifier);
 
 	KLIPS_PRINT(debug_netlink, /* debug_tunnel & DB_TN_INIT, */
@@ -305,6 +374,12 @@ ipsec_cleanup(void)
 		    "klips_debug:ipsec_cleanup: "
 		    "calling pfkey_cleanup.\n");
 	error |= pfkey_cleanup();
+
+        ipsec_rcv_state_cache_cleanup ();
+        ipsec_xmit_state_cache_cleanup ();
+
+        ipsec_rcv_state_cache_cleanup ();
+        ipsec_xmit_state_cache_cleanup ();
 
 	ipsec_proc_cleanup();
 

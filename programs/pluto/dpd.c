@@ -189,7 +189,7 @@ dpd_sched_timeout(struct state *p1st, time_t tm, time_t timeout)
 	|| p1st->st_dpd_event->ev_time > tm + timeout)
     {
 	DBG(DBG_DPD, DBG_log("scheduling timeout to %lu"
-			     , timeout));
+			     , (unsigned long)timeout));
         delete_dpd_event(p1st);
         event_schedule(EVENT_DPD_TIMEOUT, timeout, p1st);
     }   
@@ -246,7 +246,8 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
     if(nextdelay > 0) {
 	/* Yes, just reschedule "phase 2" */
 	DBG(DBG_DPD, DBG_log("not yet time for dpd event: %lu < %lu"
-			     , tm, (p1st->st_last_dpd + delay)));
+			     , (unsigned long)tm
+			     , (unsigned long)(p1st->st_last_dpd + delay)));
 	event_schedule(EVENT_DPD, nextdelay, st);
 	return;
     }
@@ -412,7 +413,9 @@ dpd_inI_outR(struct state *p1st
     }
      
     DBG(DBG_DPD, DBG_log("received R_U_THERE seq:%u time:%lu (state=#%lu name=\"%s\")"
-			 , seqno, tm, p1st->st_serialno, p1st->st_connection->name));
+			 , seqno
+			 , (unsigned long)tm
+			 , p1st->st_serialno, p1st->st_connection->name));
 
     p1st->st_dpd_peerseqno = seqno;
 
@@ -563,17 +566,28 @@ dpd_timeout(struct state *st)
     case DPD_ACTION_RESTART:
 	/** dpdaction=restart - immediate renegotiate the connection. */
         openswan_log("DPD: Restarting Connection");
-        delete_states_by_connection(c, TRUE);
+
+	/*
+	 * unlike the other kinds, we do not delete any states,
+	 * but rather, we arrange to replace all SAs involved.
+	 */
+	rekey_p2states_by_connection(c);
 
 	if (c->kind == CK_INSTANCE) {
-		/* If this is a template (eg: right=%any) we won't be able to reinitiate, the peer 
-		   has probably changed IP addresses, or isn't available anymore.  So remove the routes
-		   too */
+		/* If this is a template (eg: right=%any) we won't be able to
+		 * reinitiate, the peer has probably changed IP addresses,
+		 * or isn't available anymore.  So remove the routes too */
 	        unroute_connection(c);        /* --unroute */
 	}
-	/* we replace the SA so that we do it in a rational place */
+
+	/* we schedule the replace of the SA so that we do it
+	 * in a rational place and do it at a negative future time,
+	 * so it will occur before any of the phase 2 replacements.
+	 */
 	delete_event(st);
+	delete_dpd_event(st);
 	event_schedule(EVENT_SA_REPLACE, 0, st);
+
 	break;
     }
     reset_cur_connection();

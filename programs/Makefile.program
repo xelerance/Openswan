@@ -9,7 +9,9 @@ RM=rm
 INCLUDES+=-I${OPENSWANSRCDIR} -I${KLIPSINC} -I${OPENSWANSRCDIR}/include
 CFLAGS+=${USERCOMPILE} ${PORTINCLUDE} ${INCLUDES}
 
+ifneq ($(BUILDENV),darwin)
 CFLAGS+= -Wall
+endif
 #CFLAGS+= -Wconversion
 #CFLAGS+= -Wmissing-prototypes
 CFLAGS+= -Wpointer-arith
@@ -20,6 +22,14 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -W
 #CFLAGS+= -Wwrite-strings
 CFLAGS+= -Wbad-function-cast 
+
+ifeq ($(USE_SAREF_KERNEL),true)
+CFLAGS+=-DSAREF_SUPPORTED
+endif
+
+ifeq ($(USE_KLIPS),true)
+CFLAGS+= -DKLIPS
+endif
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 NAT_DEFS=-DNAT_TRAVERSAL -DVIRTUAL_IP 
@@ -68,7 +78,7 @@ endif
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard ../Makefile.program)
 ifeq ($(SHOULDWERESTART),true../Makefile.program)
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/${PROGRAM} && make $@
+	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/${PROGRAM} && $(MAKE) $@
 else
 all: ${PROGRAM}
 programs: all

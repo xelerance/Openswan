@@ -147,8 +147,17 @@ find_host_pair(const ip_address *myaddr
     char b1[ADDRTOT_BUF],b2[ADDRTOT_BUF];
 
     /* default hisaddr to an appropriate any */
-    if (hisaddr == NULL)
-	hisaddr = aftoinfo(addrtypeof(myaddr))->any;
+    if (hisaddr == NULL) {
+	const struct af_info *af = aftoinfo(addrtypeof(myaddr));
+
+	if(af == NULL) {
+	    af = aftoinfo(AF_INET);
+	}
+	
+	if(af) {
+	    hisaddr = af->any;
+	}
+    }
 
     /*
      * look for a host-pair that has the right set of ports/address.
@@ -348,6 +357,14 @@ delete_sr(struct connection *c, struct spd_route *sr)
 }
 
 
+/*
+ * delete_connection -- removes a connection by pointer
+ *
+ * @c - the connection pointer
+ * @relations - whether to delete any instances as well.
+ *
+ */
+
 void
 delete_connection(struct connection *c, bool relations)
 {
@@ -440,14 +457,46 @@ delete_connection(struct connection *c, bool relations)
     pfree(c);
 }
 
+int foreach_connection_by_alias(const char *alias
+				 , int (*f)(struct connection *c, void *arg)
+				 , void *arg)
+{
+    struct connection *p, *pnext;
+    int count = 0;
+
+    for (p = connections; p!=NULL; p = pnext)
+    {
+	pnext = p->ac_next;
+	
+	if (osw_alias_cmp(alias, p->connalias)) {
+	    count += (*f)(p, arg);
+	}
+    }
+    return count;
+}
+	
+static int
+delete_connection_wrap(struct connection *c, void *arg)
+{
+    bool *barg = (bool *)arg;
+
+    delete_connection(c, *barg);
+    return 1;
+}
+
 /* Delete connections with the specified name */
 void
 delete_connections_by_name(const char *name, bool strict)
 {
+    bool f = FALSE;
     struct connection *c = con_by_name(name, strict);
 
-    for (; c != NULL; c = con_by_name(name, FALSE))
-	delete_connection(c, FALSE);
+    if(c==NULL) {
+	(void)foreach_connection_by_alias(name, delete_connection_wrap, &f);
+    } else {
+	for (; c != NULL; c = con_by_name(name, FALSE))
+	    delete_connection(c, FALSE);
+    }
 }
 
 void
@@ -830,30 +879,41 @@ format_connection(char *buf, size_t buf_len
 }
 
 static void
+unshare_connection_end_strings(struct end *e)
+{
+    /* do "left" */
+    unshare_id_content(&e->id);
+    e->updown = clone_str(e->updown, "updown");
+
+#ifdef SMARTCARD
+    scx_share(e->sc);
+#endif
+    share_cert(e->cert);
+    if (e->ca.ptr != NULL)
+	clonetochunk(e->ca, e->ca.ptr, e->ca.len, "ca string");
+
+    if(e->xauth_name) {
+	e->xauth_name = clone_str(e->xauth_name, "xauth name");
+    }
+}    
+
+
+static void
 unshare_connection_strings(struct connection *c)
 {
+    struct spd_route *sr;
+
     c->name = clone_str(c->name, "connection name");
 
-    unshare_id_content(&c->spd.this.id);
-    c->spd.this.updown = clone_str(c->spd.this.updown, "updown");
+    /* duplicate any alias, adding spaces to the beginning and end */
+    c->connalias = clone_str(c->connalias, "connection alias");
 
-#ifdef SMARTCARD
-    scx_share(c->spd.this.sc);
-#endif
-    share_cert(c->spd.this.cert);
-    if (c->spd.this.ca.ptr != NULL)
-	clonetochunk(c->spd.this.ca, c->spd.this.ca.ptr, c->spd.this.ca.len, "ca string");
-
-    unshare_id_content(&c->spd.that.id);
-    c->spd.that.updown = clone_str(c->spd.that.updown, "updown");
-
-#ifdef SMARTCARD
-    scx_share(c->spd.that.sc);
-#endif
-    share_cert(c->spd.that.cert);
-    if (c->spd.that.ca.ptr != NULL)
-	clonetochunk(c->spd.that.ca, c->spd.that.ca.ptr, c->spd.that.ca.len, "ca string");
-
+    /* do "right" */
+    for(sr=&c->spd; sr!=NULL; sr=sr->next) {
+	unshare_connection_end_strings(&sr->this);
+	unshare_connection_end_strings(&sr->that);
+    }
+	
     /* increment references to algo's, if any */
     if(c->alg_info_ike) {
 	alg_info_addref(IKETOINFO(c->alg_info_ike));
@@ -862,15 +922,15 @@ unshare_connection_strings(struct connection *c)
     if(c->alg_info_esp) {
 	alg_info_addref(ESPTOINFO(c->alg_info_esp));
     }
-
 }
+
 
 static void
 load_end_certificate(const char *filename, struct end *dst)
 {
     time_t valid_until;
     cert_t cert;
-    bool valid_cert = FALSE;
+    err_t ugh = NULL;
     bool cached_cert = FALSE;
 
     memset(&dst->cert, 0, sizeof(dst->cert));
@@ -881,73 +941,88 @@ load_end_certificate(const char *filename, struct end *dst)
     /* initialize smartcard info record */
     dst->sc = NULL;
 
-    if (filename != NULL)
-    {
+    if(filename == NULL) {
+	return;
+    }
+
+    openswan_log("loading certificate from %s\n", filename);
+    dst->cert_filename = clone_str(filename, "certificate filename");
+    
 #ifdef SMARTCARD
-	if (strncmp(filename, SCX_TOKEN, strlen(SCX_TOKEN)) == 0)
+    if (strncmp(filename, SCX_TOKEN, strlen(SCX_TOKEN)) == 0)
 	{
 	    /* we have a smartcard */
 	    smartcard_t *sc = scx_parse_reader_id(filename + strlen(SCX_TOKEN));
+	    bool valid_cert = FALSE;
+	    
 	    dst->sc = scx_add(sc);
-
+	    
 	    /* is there a cached smartcard certificate? */
 	    cached_cert = dst->sc->last_cert.type != CERT_NONE
 		&& (time(NULL) - dst->sc->last_load) < SCX_CERT_CACHE_INTERVAL;
-
+	    
 	    if (cached_cert)
-	    {
-		cert = dst->sc->last_cert;
-		valid_cert = TRUE;
-	    }
+		{
+		    cert = dst->sc->last_cert;
+		    valid_cert = TRUE;
+		}
 	    else
 	    	valid_cert = scx_load_cert(dst->sc, &cert);
+	    
+	    if(!valid_cert) {
+		whack_log(RC_FATAL, "can not load certificate from smartcard: %s\n",
+			  filename);
+		return;
+	    }
 	}
-	else
+    else
 #endif
 	{
+	    bool valid_cert = FALSE;
+	    
 	    /* load cert from file */
 	    valid_cert = load_host_cert(FALSE, filename, &cert, TRUE);
+	    if(!valid_cert) {
+		whack_log(RC_FATAL, "can not load certificate file %s\n"
+			  , filename);
+		return;
+	    }
 	}
-    }
-
-    if (valid_cert)
+    
+    switch (cert.type)
     {
-	err_t ugh = NULL;
-
-	switch (cert.type)
+    case CERT_PGP:
+	select_pgpcert_id(cert.u.pgp, &dst->id);
+	
+	if (cached_cert)
+	    dst->cert = cert;
+	else
 	{
-	case CERT_PGP:
-	    select_pgpcert_id(cert.u.pgp, &dst->id);
-
-	    if (cached_cert)
-		dst->cert = cert;
-	    else
-	    {
-		valid_until = cert.u.pgp->until;
-		add_pgp_public_key(cert.u.pgp, cert.u.pgp->until, DAL_LOCAL);
-		dst->cert.type = cert.type;
-		dst->cert.u.pgp = pluto_add_pgpcert(cert.u.pgp);
-	    }
-	    break;
-
-	case CERT_X509_SIGNATURE:
-	    select_x509cert_id(cert.u.x509, &dst->id);
-
-	    if (!cached_cert)
-	    {
-		/* check validity of cert */
-		valid_until = cert.u.x509->notAfter;
-		ugh = check_validity(cert.u.x509, &valid_until);
-	    }
-	    if (ugh != NULL)
-	    {
-		openswan_log("  %s", ugh);
-		free_x509cert(cert.u.x509);
-	    }
-	    else
-	    {
-	    	DBG(DBG_CONTROL,
-		    DBG_log("certificate is valid")
+	    valid_until = cert.u.pgp->until;
+	    add_pgp_public_key(cert.u.pgp, cert.u.pgp->until, DAL_LOCAL);
+	    dst->cert.type = cert.type;
+	    dst->cert.u.pgp = pluto_add_pgpcert(cert.u.pgp);
+	}
+	break;
+	
+    case CERT_X509_SIGNATURE:
+	select_x509cert_id(cert.u.x509, &dst->id);
+	
+	if (!cached_cert)
+	{
+	    /* check validity of cert */
+	    valid_until = cert.u.x509->notAfter;
+	    ugh = check_validity(cert.u.x509, &valid_until);
+	}
+	if (ugh != NULL)
+	{
+	    openswan_log("  %s", ugh);
+	    free_x509cert(cert.u.x509);
+	}
+	else
+	{
+	    DBG(DBG_CONTROL,
+		DBG_log("certificate is valid")
 		)
 		if (cached_cert)
 		    dst->cert = cert;
@@ -957,26 +1032,25 @@ load_end_certificate(const char *filename, struct end *dst)
 		    dst->cert.type = cert.type;
 		    dst->cert.u.x509 = add_x509cert(cert.u.x509);
 		}
-		/* if no CA is defined, use issuer as default */
-		if (dst->ca.ptr == NULL)
-		    dst->ca = dst->cert.u.x509->issuer;
-	    }
-	    break;
-	default:
-	    break;
+	    /* if no CA is defined, use issuer as default */
+	    if (dst->ca.ptr == NULL)
+		dst->ca = dst->cert.u.x509->issuer;
 	}
-
-	/* cache the certificate that was last retrieved from the smartcard */
-	if (dst->sc != NULL)
+	break;
+    default:
+	break;
+    }
+    
+    /* cache the certificate that was last retrieved from the smartcard */
+    if (dst->sc != NULL)
+    {
+	if (!same_cert(&dst->sc->last_cert, &dst->cert))
 	{
-	    if (!same_cert(&dst->sc->last_cert, &dst->cert))
-	    {
-		release_cert(dst->sc->last_cert);
-		dst->sc->last_cert = dst->cert;
-		share_cert(dst->cert);
-	    }
-	    time(&dst->sc->last_load);
+	    release_cert(dst->sc->last_cert);
+	    dst->sc->last_cert = dst->cert;
+	    share_cert(dst->cert);
 	}
+	time(&dst->sc->last_load);
     }
 }
 
@@ -1039,6 +1113,7 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
     decode_groups(src->groups, &dst->groups);
 
     /* the rest is simple copying of corresponding fields */
+    dst->host_type = src->host_type;
     dst->host_addr = src->host_addr;
     dst->host_nexthop = src->host_nexthop;
     dst->host_srcip = src->host_srcip;
@@ -1050,6 +1125,7 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
 #ifdef XAUTH
     dst->xauth_server = src->xauth_server;
     dst->xauth_client = src->xauth_client;
+    dst->xauth_name = src->xauth_name;
 #endif
     dst->protocol = src->protocol;
     dst->port = src->port;
@@ -1073,8 +1149,9 @@ static bool
 check_connection_end(const struct whack_end *this, const struct whack_end *that
 , const struct whack_message *wm)
 {
-    if (wm->addr_family != addrtypeof(&this->host_addr)
-	|| wm->addr_family != addrtypeof(&this->host_nexthop))
+    if (this->host_type == KH_IPADDR
+	&& (wm->addr_family != addrtypeof(&this->host_addr)
+	    || wm->addr_family != addrtypeof(&this->host_nexthop)))
     {
 	/* this should have been diagnosed by whack, so we need not be clear
 	 * !!! overloaded use of RC_CLASH
@@ -1086,6 +1163,9 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	return FALSE;
     }
 
+    /* this check actually prevents IPv4 in IPv6 and vv, so it will
+     * have to go away at some point.
+     */
     if ((this->has_client? wm->tunnel_addr_family : wm->addr_family)
 	!= subnettypeof(&this->client))
     {
@@ -1135,6 +1215,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	    {
 		if (c->policy & POLICY_AGGRESSIVE)
 			continue;
+#if 0
 		if (!NEVER_NEGOTIATE(c->policy)
 		&& ((c->policy ^ wm->policy) & (POLICY_PSK | POLICY_RSASIG)))
 		{
@@ -1143,6 +1224,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 			, c->name);
 		    return FALSE;
 		}
+#endif
 	    }
 	}
     }
@@ -1232,6 +1314,7 @@ add_connection(const struct whack_message *wm)
 
 	same_rightca = same_leftca = FALSE;
 	c->name = wm->name;
+	c->connalias = wm->connalias;
 
 	c->policy = wm->policy;
 
@@ -1250,7 +1333,15 @@ add_connection(const struct whack_message *wm)
 	if (wm->esp)  
 	{
 		DBG(DBG_CONTROL, DBG_log("from whack: got --esp=%s", wm->esp ? wm->esp: "NULL"));
-		c->alg_info_esp = alg_info_esp_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
+
+		if(c->policy & POLICY_ENCRYPT) {
+		    c->alg_info_esp = alg_info_esp_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
+		} else if(c->policy & POLICY_AUTHENTICATE) {
+		    c->alg_info_esp = alg_info_ah_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
+		} else {
+		    loglog(RC_NOALGO, "Can only do AH, or ESP, not AH+ESP\n");
+		    return;
+		}
 
 		DBG(DBG_CRYPT|DBG_CONTROL, 
 			static char buf[256]="<NULL>";
@@ -1287,7 +1378,7 @@ add_connection(const struct whack_message *wm)
 		char buf[256];
 		alg_info_snprint(buf, sizeof(buf),
 				 (struct alg_info *)c->alg_info_ike, TRUE);
-		DBG_log("ike string values: %s", buf);
+		DBG_log("ike (phase1) algorithm values: %s", buf);
 		);
 	    if (c->alg_info_ike) {
 		if (c->alg_info_ike->alg_info_cnt==0) {
@@ -1417,18 +1508,20 @@ add_connection(const struct whack_message *wm)
 
 	    DBG_log("%s", topo);
 
+#if 0
 	    /* Make sure that address families can be correctly inferred
 	     * from printed ends.
 	     */
-	    passert(c->addr_family == addrtypeof(&c->spd.this.host_addr)
-		&& c->addr_family == addrtypeof(&c->spd.this.host_nexthop)
-		&& (c->spd.this.has_client? c->tunnel_addr_family : c->addr_family)
-		  == subnettypeof(&c->spd.this.client)
+	    passert(c->addr_family == addrtypeof(&c->spd.this.host_addr));
+	    passert(c->addr_family == addrtypeof(&c->spd.this.host_nexthop));
+	    passert((c->spd.this.has_client? c->tunnel_addr_family : c->addr_family) == subnettypeof(&c->spd.this.client));
+	    
 
-		&& c->addr_family == addrtypeof(&c->spd.that.host_addr)
-		&& c->addr_family == addrtypeof(&c->spd.that.host_nexthop)
-		&& (c->spd.that.has_client? c->tunnel_addr_family : c->addr_family)
-		  == subnettypeof(&c->spd.that.client));
+	    passert(c->addr_family == addrtypeof(&c->spd.that.host_addr));
+	    passert(c->addr_family == addrtypeof(&c->spd.that.host_nexthop));
+	    passert((c->spd.that.has_client? c->tunnel_addr_family : c->addr_family)
+		    == subnettypeof(&c->spd.that.client));
+#endif
 
 	    DBG_log("ike_life: %lus; ipsec_life: %lus; rekey_margin: %lus;"
 		" rekey_fuzz: %lu%%; keyingtries: %lu; policy: %s"
@@ -2087,81 +2180,121 @@ orient(struct connection *c)
     return oriented(*c);
 }
 
+struct initiate_stuff {
+    int    whackfd;
+    lset_t moredebug;
+    enum crypto_importance importance;
+};
+
+static int
+initiate_a_connection(struct connection *c
+		      , void *arg)
+{
+    struct initiate_stuff *is = (struct initiate_stuff *)arg;
+    int whackfd = is->whackfd;
+    lset_t moredebug = is->moredebug;
+    enum crypto_importance importance = is->importance;
+    int success = 0;
+
+    set_cur_connection(c);
+
+    /* turn on any extra debugging asked for */
+    c->extra_debugging |= moredebug;
+    
+    if (!oriented(*c))
+    {
+	loglog(RC_ORIENT, "We cannot identify ourselves with either end of this connection.");
+    }
+    else if (NEVER_NEGOTIATE(c->policy))
+    {
+	loglog(RC_INITSHUNT
+	       , "cannot initiate an authby=never connection");
+    }
+    else if (c->kind != CK_PERMANENT)
+    {
+	if (isanyaddr(&c->spd.that.host_addr))
+	    loglog(RC_NOPEERIP, "cannot initiate connection without knowing peer IP address (kind=%s)"
+		   , enum_show(&connection_kind_names, c->kind));
+	else
+	    loglog(RC_WILDCARD, "cannot initiate connection with ID wildcards (kind=%s)"
+		   , enum_show(&connection_kind_names, c->kind));
+    }
+    else
+    {
+	/* We will only request an IPsec SA if policy isn't empty
+	 * (ignoring Main Mode items).
+	 * This is a fudge, but not yet important.
+	 * If we are to proceed asynchronously, whackfd will be NULL_FD.
+	 */
+	c->policy |= POLICY_UP;
+	
+	if(c->policy & (POLICY_ENCRYPT|POLICY_AUTHENTICATE)) {
+	    struct alg_info_esp *alg = c->alg_info_esp;
+	    struct db_sa *phase2_sa = kernel_alg_makedb(c->policy, alg, TRUE);
+	    
+	    if(alg != NULL && phase2_sa == NULL) {
+		whack_log(RC_NOALGO, "can not initiate: no acceptable kernel algorithms loaded");
+		reset_cur_connection();
+		close_any(is->whackfd);
+		return 0;
+	    }
+	    free_sa(phase2_sa);
+	}
+	
+#ifdef SMARTCARD
+	/* do we have to prompt for a PIN code? */
+	if (c->spd.this.sc != NULL && !c->spd.this.sc->valid && whackfd != NULL_FD)
+	    scx_get_pin(c->spd.this.sc, whackfd);
+	
+	if (c->spd.this.sc != NULL && !c->spd.this.sc->valid)
+	{
+	    loglog(RC_NOVALIDPIN, "cannot initiate connection without valid PIN");
+	}
+	else
+#endif
+	{
+	    whackfd = dup(whackfd);
+	    ipsecdoi_initiate(whackfd, c, c->policy, 1
+			      , SOS_NOBODY, importance);
+	    success = 1;
+	}
+    }
+    reset_cur_connection();
+    
+    return success;
+}
+
 void
 initiate_connection(const char *name, int whackfd
 		    , lset_t moredebug
 		    , enum crypto_importance importance)
 {
-    struct connection *c = con_by_name(name, TRUE);
+    struct initiate_stuff is;
+    struct connection *c = con_by_name(name, FALSE);
+    int count;
+
+    is.whackfd   = whackfd;
+    is.moredebug = moredebug;
+    is.importance= importance;
 
     if (c != NULL)
     {
-	set_cur_connection(c);
-
-	/* turn on any extra debugging asked for */
-	c->extra_debugging |= moredebug;
-
-	if (!oriented(*c))
-	{
-	    loglog(RC_ORIENT, "We cannot identify ourselves with either end of this connection.");
-	}
-	else if (NEVER_NEGOTIATE(c->policy))
-	{
-	    loglog(RC_INITSHUNT
-		, "cannot initiate an authby=never connection");
-	}
-	else if (c->kind != CK_PERMANENT)
-	{
-	    if (isanyaddr(&c->spd.that.host_addr))
-		loglog(RC_NOPEERIP, "cannot initiate connection without knowing peer IP address (kind=%s)"
-		       , enum_show(&connection_kind_names, c->kind));
-	    else
-		loglog(RC_WILDCARD, "cannot initiate connection with ID wildcards (kind=%s)"
-		       , enum_show(&connection_kind_names, c->kind));
-	}
-	else
-	{
-	    /* We will only request an IPsec SA if policy isn't empty
-	     * (ignoring Main Mode items).
-	     * This is a fudge, but not yet important.
-	     * If we are to proceed asynchronously, whackfd will be NULL_FD.
-	     */
-	    c->policy |= POLICY_UP;
-
-	    if(c->policy & POLICY_ENCRYPT) {
-		struct alg_info_esp *alg = c->alg_info_esp;
-		struct db_sa *phase2_sa = kernel_alg_makedb(alg, TRUE);
-		
-		if(alg != NULL && phase2_sa == NULL) {
-		    whack_log(RC_NOALGO, "can not initiate: no acceptable kernel algorithms loaded");
-		    reset_cur_connection();
-		    close_any(whackfd);
-		    return;
-		}
-		free_sa(phase2_sa);
-	    }
-
-#ifdef SMARTCARD
-	    /* do we have to prompt for a PIN code? */
-	    if (c->spd.this.sc != NULL && !c->spd.this.sc->valid && whackfd != NULL_FD)
-		scx_get_pin(c->spd.this.sc, whackfd);
-
-	    if (c->spd.this.sc != NULL && !c->spd.this.sc->valid)
-	    {
-		loglog(RC_NOVALIDPIN, "cannot initiate connection without valid PIN");
-	    }
-	    else
-#endif
-	    {
-		ipsecdoi_initiate(whackfd, c, c->policy, 1
-				  , SOS_NOBODY, importance);
-		whackfd = NULL_FD;	/* protect from close */
-	    }
-	}
-	reset_cur_connection();
+	initiate_a_connection(c, &is);
+	close_any(is.whackfd);
+	return;
     }
-    close_any(whackfd);
+
+    loglog(RC_COMMENT, "initiating all conns with alias='%s'\n", name);
+    count = foreach_connection_by_alias(name, initiate_a_connection, &is);
+
+    if(count == 0) {
+	whack_log(RC_UNKNOWN_NAME
+		  , "no connection named \"%s\"", name);
+    }
+
+    close_any(is.whackfd);
 }
+
 
 /* (Possibly) Opportunistic Initiation:
  * Knowing clients (single IP addresses), try to build an tunnel.
@@ -3300,6 +3433,20 @@ initiate_ondemand_body(struct find_oppo_bundle *b
     close_any(b->whackfd);
 }
 
+static int
+terminate_a_connection(struct connection *c, void *arg UNUSED)
+{
+    set_cur_connection(c);
+    openswan_log("terminating SAs using this connection");
+    c->policy &= ~POLICY_UP;
+    flush_pending_by_connection(c);
+    delete_states_by_connection(c, FALSE);
+    reset_cur_connection();
+
+    return 1;
+}
+    
+
 void
 terminate_connection(const char *nm)
 {
@@ -3307,21 +3454,30 @@ terminate_connection(const char *nm)
      * But at least one is required (enforced by con_by_name).
      */
     struct connection *c, *n;
+    int count;
 
-    for (c = con_by_name(nm, TRUE); c != NULL; c = n)
-    {
-	n = c->ac_next;	/* grab this before c might disappear */
-	if (streq(c->name, nm)
-	&& c->kind >= CK_PERMANENT
-	&& !NEVER_NEGOTIATE(c->policy))
+    c = con_by_name(nm, TRUE);
+
+    if(c) {
+	for (; c != NULL; c = n)
 	{
-	    set_cur_connection(c);
-	    openswan_log("terminating SAs using this connection");
-	    c->policy &= ~POLICY_UP;
-	    flush_pending_by_connection(c);
-	    delete_states_by_connection(c, FALSE);
-	    reset_cur_connection();
+	    n = c->ac_next;	/* grab this before c might disappear */
+	    if (streq(c->name, nm)
+		&& c->kind >= CK_PERMANENT
+		&& !NEVER_NEGOTIATE(c->policy))
+	    {
+		terminate_a_connection(c, NULL);
+	    }
 	}
+	return;
+    } 
+
+    loglog(RC_COMMENT, "terminating all conns with alias='%s'\n", nm);
+    count = foreach_connection_by_alias(nm, terminate_a_connection, NULL);
+
+    if(count == 0) {
+	whack_log(RC_UNKNOWN_NAME
+		  , "no connection named \"%s\"", nm);
     }
 }
 
@@ -3554,13 +3710,41 @@ shunt_owner(const ip_subnet *ours, const ip_subnet *his)
 struct connection *
 find_host_connection2(const char *func
 		     , const ip_address *me, u_int16_t my_port
-		     , const ip_address *him, u_int16_t his_port)
+		     , const ip_address *him, u_int16_t his_port, lset_t policy)
 {
+    struct connection *c;
     DBG(DBG_CONTROLMORE,
-	DBG_log("find_host_connection called from %s", func));
-    return find_host_pair_connections(__FUNCTION__, me, my_port, him, his_port);
+	DBG_log("find_host_connection called from %s policy=%s", func
+		, bitnamesof(sa_policy_bit_names, policy)));
+    c = find_host_pair_connections(__FUNCTION__, me, my_port, him, his_port);
+
+    if (policy != LEMPTY) {
+	/*
+	 * if we have requirements for the policy, choose the first matching
+	 * connection.
+	 */
+	for (; c != NULL; c = c->hp_next) {
+	    DBG(DBG_CONTROLMORE,
+		DBG_log("searching for policy=%s, found=%s (%s)" 
+			, bitnamesof(sa_policy_bit_names, policy)
+			, bitnamesof(sa_policy_bit_names, c->policy)
+			, c->name));
+	    if(NEVER_NEGOTIATE(c->policy)) continue;
+
+	    if ((c->policy & policy) == policy)
+		break;
+	}
+
+    }
+
+    for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->hp_next);
+
+    DBG(DBG_CONTROLMORE,
+	DBG_log("find_host_connection returns %s", c ? c->name : "empty"));
+    return c;
 }
 
+#if 0
 /*
  * extracts the peer's ca from the chained list of public keys
  */
@@ -3580,6 +3764,7 @@ get_peer_ca(const struct id *peer_id)
     }
     return empty_chunk;
 }
+#endif
 
 
 
@@ -3670,9 +3855,14 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	 , DBG_log("refine_connection: starting with %s"
 		   , c->name));
 
+#if 0
     peer_ca = get_peer_ca(peer_id);
 
+    /* XXX I think that this code should be done later on, or maybe not
+     * at all, since we should conclude the same thing below.
+     */
     if (same_id(&c->spd.that.id, peer_id)
+	&& (peer_ca.ptr != NULL)
 	&& trusted_ca(peer_ca, c->spd.that.ca, &peer_pathlen)
 	&& peer_pathlen == 0
 	&& match_requested_ca(c->requested_ca, c->spd.this.ca, &our_pathlen)
@@ -3685,6 +3875,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 
 	return c;	/* peer ID matches current connection -- look no further */
     }
+#endif
 
 #if defined(XAUTH)
     auth = xauth_calcbaseauth(auth);
@@ -4449,8 +4640,14 @@ show_connections_status(void)
 	    while (sr != NULL)
 	    {
 		char srcip[ADDRTOT_BUF], dstip[ADDRTOT_BUF];
-		char thissemi[3+sizeof("srcup=")];
-		char thatsemi[3+sizeof("dstup=")];
+		char thissemi[3+sizeof("myup=")];
+		char thatsemi[3+sizeof("hisup=")];
+#ifdef XAUTH
+		char thisxauthsemi[XAUTH_USERNAME_LEN+sizeof("myxauthuser=")];
+		char thatxauthsemi[XAUTH_USERNAME_LEN+sizeof("hisxauthuser=")];
+#endif
+		char thiscertsemi[3+sizeof("mycert=")+PATH_MAX];
+		char thatcertsemi[3+sizeof("hiscert=")+PATH_MAX];
 		char *thisup, *thatup;
 
 		(void) format_connection(topo, sizeof(topo), c, sr);
@@ -4477,7 +4674,7 @@ show_connections_status(void)
 		    thissemi[0]=';';
 		    thissemi[1]=' ';
 		    thissemi[2]='\0';
-		    strcat(thissemi, "srcup=");
+		    strcat(thissemi, "myup=");
 		    thisup=sr->this.updown;
 		}
 		
@@ -4487,14 +4684,52 @@ show_connections_status(void)
 		    thatsemi[0]=';';
 		    thatsemi[1]=' ';
 		    thatsemi[2]='\0';
-		    strcat(thatsemi, "dstup=");
+		    strcat(thatsemi, "hisup=");
 		    thatup=sr->that.updown;
 		}
 		
-		whack_log(RC_COMMENT, "\"%s\"%s:     srcip=%s; dstip=%s%s%s%s%s;"
+		thiscertsemi[0]='\0';
+		if(sr->this.cert_filename) {
+		    snprintf(thiscertsemi, sizeof(thiscertsemi)-1
+			     , "; mycert=%s"
+			     , sr->this.cert_filename);
+		}
+
+		thatcertsemi[0]='\0';
+		if(sr->that.cert_filename) {
+		    snprintf(thatcertsemi, sizeof(thatcertsemi)-1
+			     , "; hiscert=%s"
+			     , sr->that.cert_filename);
+		}
+
+		whack_log(RC_COMMENT, "\"%s\"%s:     myip=%s; hisip=%s%s%s%s%s%s%s;"
 			  , c->name, instance, srcip, dstip
 			  , thissemi, thisup
-			  , thatsemi, thatup);
+			  , thatsemi, thatup
+			  , thiscertsemi
+			  , thatcertsemi);
+
+#ifdef XAUTH
+		if(sr->this.xauth_name || sr->that.xauth_name) {
+		    thisxauthsemi[0]='\0';
+		    if(sr->this.xauth_name) {
+			snprintf(thisxauthsemi, sizeof(thisxauthsemi)-1
+				 , "myxauthuser=%s; "
+				 , sr->this.xauth_name);
+		    }
+		    
+		    thatxauthsemi[0]='\0';
+		    if(sr->that.xauth_name) {
+			snprintf(thatxauthsemi, sizeof(thatxauthsemi)-1
+				 , "hisxauthuser=%s; "
+				 , sr->that.xauth_name);
+		    }
+		    whack_log(RC_COMMENT, "\"%s\"%s:     xauth info: %s%s"
+			      , c->name, instance
+			      , thisxauthsemi
+			      , thatxauthsemi);
+		}
+#endif
 		sr = sr->next;
 		num++;
 	    }
@@ -4553,7 +4788,8 @@ show_connections_status(void)
 		      , c->name
 		      , instance
 		      , enum_name(&dpd_action_names, c->dpd_action)
-		      , c->dpd_delay, c->dpd_timeout);
+		      , (unsigned long)c->dpd_delay
+		      , (unsigned long)c->dpd_timeout);
 	}
 
 	if(c->extra_debugging) {
@@ -4570,6 +4806,15 @@ show_connections_status(void)
 	    , instance
 	    , c->newest_isakmp_sa
 	    , c->newest_ipsec_sa);
+
+	if(c->connalias) {
+	    whack_log(RC_COMMENT
+		      , "\"%s\"%s:   aliases: %s\n"
+		      , c->name
+		      , instance
+		      , c->connalias);
+	}
+
 #ifdef IKE_ALG
 	ike_alg_show_connection(c, instance);
 #endif

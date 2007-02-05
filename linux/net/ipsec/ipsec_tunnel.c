@@ -18,7 +18,9 @@ char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.234 2005/11/11 04
 
 #define __NO_VERSION__
 #include <linux/module.h>
-#include <linux/config.h>	/* for CONFIG_IP_FORWARD */
+#ifndef AUTOCONF_INCLUDED
+#include <linux/config.h>
+#endif	/* for CONFIG_IP_FORWARD */
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
@@ -78,8 +80,8 @@ char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.234 2005/11/11 04
 #include "openswan/ipsec_esp.h"
 #include "openswan/ipsec_kern24.h"
 
-#include <pfkeyv2.h>
-#include <pfkey.h>
+#include <openswan/pfkeyv2.h>
+#include <openswan/pfkey.h>
 
 #include "openswan/ipsec_proto.h"
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
@@ -506,8 +508,7 @@ ipsec_tunnel_restore_hard_header(struct ipsec_xmit_state*ixs)
 int
 ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
-	struct ipsec_xmit_state ixs_mem;
-	struct ipsec_xmit_state *ixs = &ixs_mem;
+	struct ipsec_xmit_state *ixs = NULL;
 	enum ipsec_xmit_value stat;
 
 	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
@@ -517,12 +518,12 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	ixs->natt_type = 0, ixs->natt_head = 0;
 	ixs->natt_sport = 0, ixs->natt_dport = 0;
 #endif
+        stat = IPSEC_XMIT_ERRMEMALLOC;
+        ixs = ipsec_xmit_state_new ();
+        if (! ixs) {
+                goto alloc_error;
+        }
 
-	memset((caddr_t)ixs, 0, sizeof(*ixs));
-	ixs->oskb = NULL;
-	ixs->saved_header = NULL;	/* saved copy of the hard header */
-	ixs->route = NULL;
-	memset((caddr_t)&(ixs->ips), 0, sizeof(ixs->ips));
 	ixs->dev = dev;
 	ixs->skb = skb;
 
@@ -608,6 +609,8 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
  cleanup:
 	ipsec_xmit_cleanup(ixs);
 
+        ipsec_xmit_state_delete (ixs);
+alloc_error:
 	return 0;
 }
 
@@ -1731,6 +1734,81 @@ ipsec_tunnel_cleanup_devices(void)
 		dev_ipsec->priv=NULL;
 	}
 	return error;
+}
+
+// ------------------------------------------------------------------------
+// this handles creating and managing state for xmit path
+
+static spinlock_t ixs_cache_lock = SPIN_LOCK_UNLOCKED;
+static kmem_cache_t *ixs_cache_allocator = NULL;
+static unsigned  ixs_cache_allocated_count = 0;
+
+int
+ipsec_xmit_state_cache_init (void)
+{
+        if (ixs_cache_allocator)
+                return -EBUSY;
+
+        spin_lock_init(&ixs_cache_lock);
+
+        ixs_cache_allocator = kmem_cache_create ("ipsec_ixs",
+                sizeof (struct ipsec_xmit_state), 0,
+                0, NULL, NULL);
+        if (! ixs_cache_allocator)
+                return -ENOMEM;
+
+        return 0;
+}
+
+void
+ipsec_xmit_state_cache_cleanup (void)
+{
+        if (unlikely (ixs_cache_allocated_count))
+                printk ("ipsec: deleting ipsec_ixs kmem_cache while in use\n");
+
+        if (ixs_cache_allocator) {
+                kmem_cache_destroy (ixs_cache_allocator);
+                ixs_cache_allocator = NULL;
+        }
+        ixs_cache_allocated_count = 0;
+}
+
+static struct ipsec_xmit_state *
+ipsec_xmit_state_new (void)
+{
+	struct ipsec_xmit_state *ixs;
+
+        spin_lock_bh (&ixs_cache_lock);
+
+        ixs = kmem_cache_alloc (ixs_cache_allocator, GFP_ATOMIC);
+
+        if (likely (ixs != NULL))
+                ixs_cache_allocated_count++;
+
+        spin_unlock_bh (&ixs_cache_lock);
+
+        if (unlikely (NULL == ixs))
+                goto bail;
+
+        // initialize the object
+        memset((caddr_t)ixs, 0, sizeof(*ixs));
+
+bail:
+        return ixs;
+}
+
+static void
+ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs)
+{
+        if (unlikely (! ixs))
+                return;
+
+        spin_lock_bh (&ixs_cache_lock);
+
+        ixs_cache_allocated_count--;
+        kmem_cache_free (ixs_cache_allocator, ixs);
+
+        spin_unlock_bh (&ixs_cache_lock);
 }
 
 /*

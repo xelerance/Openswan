@@ -20,7 +20,9 @@
  *
  */
 
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
@@ -69,8 +71,8 @@
 #include "openswan/ipsec_ipcomp.h"
 #endif /* CONFIG_KLIPS_COMP */
 
-#include <pfkeyv2.h>
-#include <pfkey.h>
+#include <openswan/pfkeyv2.h>
+#include <openswan/pfkey.h>
 
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
@@ -105,13 +107,12 @@ typedef struct {
 
 #define IPS_HASH(said) (((said)->spi + (said)->dst.u.v4.sin_addr.s_addr + (said)->proto) % SADB_HASHMOD)
 
-
 int
 ipsec_SAref_recycle(void)
 {
-	int table;
-	int entry;
+	int table, i;
 	int error = 0;
+	int addone;
 
 	ipsec_sadb.refFreeListHead = IPSEC_SAREF_NULL;
 	ipsec_sadb.refFreeListTail = IPSEC_SAREF_NULL;
@@ -131,10 +132,14 @@ ipsec_SAref_recycle(void)
 		    IPsecSAref2table(ipsec_sadb.refFreeListCont),
 		    IPsecSAref2entry(ipsec_sadb.refFreeListCont));
 
-	for(table = IPsecSAref2table(ipsec_sadb.refFreeListCont);
-	    table < IPSEC_SA_REF_MAINTABLE_NUM_ENTRIES;
-	    table++) {
-		if(ipsec_sadb.refTable[table] == NULL) {
+	/* add one additional table entry */
+	addone = 0;
+
+	ipsec_sadb.refFreeListHead = IPSEC_SAREF_FIRST;
+	for(i = 0; i < IPSEC_SA_REF_FREELIST_NUM_ENTRIES; i++) {
+		table = IPsecSAref2table(ipsec_sadb.refFreeListCont);
+		if(addone == 0 && ipsec_sadb.refTable[table] == NULL) {
+			addone = 1;
 			error = ipsec_SArefSubTable_alloc(table);
 			if(error) {
 				return error;
@@ -155,6 +160,8 @@ ipsec_SAref_recycle(void)
 				}
 			}
 		}
+		ipsec_sadb.refFreeListCont++;
+		ipsec_sadb.refFreeListTail=i;
 	}
 
 	if(ipsec_sadb.refFreeListTail == IPSEC_SAREF_NULL) {
@@ -427,6 +434,30 @@ ipsec_sa_alloc(int*error) /* pass in error var by pointer */
 	return(ips);
 }
 
+void
+ipsec_sa_untern(struct ipsec_sa *ips)
+{
+	IPsecSAref_t ref = ips->ips_ref;
+	int error;
+
+	/* verify that we are removing correct item! */
+	error = ipsec_saref_verify_slot(ref);
+	if(error) {
+		return;
+	}
+
+	if(IPsecSAref2SA(ref) == ips) {
+		IPsecSAref2SA(ref) = NULL;
+		ipsec_sa_put(ips);
+	} else {
+		KLIPS_PRINT(debug_xform,
+			    "ipsec_sa_untern: "
+			    "ref=%u -> %p but untern'ing %p\n", ref,
+			    IPsecSAref2SA(ref), ips);
+	}
+		
+}
+
 int
 ipsec_sa_intern(struct ipsec_sa *ips)
 {
@@ -547,8 +578,8 @@ ipsec_sa_getbyref(IPsecSAref_t ref)
 }
 
 
-int
-ipsec_sa_put(struct ipsec_sa *ips)
+void
+__ipsec_sa_put(struct ipsec_sa *ips, const char *func, int line)
 {
         char sa[SATOT_BUF];
 	size_t sa_len;
@@ -557,7 +588,7 @@ ipsec_sa_put(struct ipsec_sa *ips)
 		KLIPS_PRINT(debug_xform,
 			    "ipsec_sa_put: "
 			    "null pointer passed in!\n");
-		return -1;
+		return;
 	}
 
 	if(debug_xform) {
@@ -565,11 +596,12 @@ ipsec_sa_put(struct ipsec_sa *ips)
 
 		KLIPS_PRINT(debug_xform,
 			    "ipsec_sa_put: "
-			    "ipsec_sa %p SA:%s, ref:%d reference count (%d--) decremented.\n",
+			    "ipsec_sa %p SA:%s, ref:%d reference count (%d--) decremented by %s:%d.\n",
 			    ips,
 			    sa_len ? sa : " (error)",
 			    ips->ips_ref,
-			    atomic_read(&ips->ips_refcount));
+			    atomic_read(&ips->ips_refcount),
+			    func, line);
 	}
 
 	if(atomic_dec_and_test(&ips->ips_refcount)) {
@@ -580,7 +612,42 @@ ipsec_sa_put(struct ipsec_sa *ips)
 		ipsec_sa_wipe(ips);
 	}
 
-	return 0;
+	return;
+}
+
+struct ipsec_sa *
+__ipsec_sa_get(struct ipsec_sa *ips, const char *func, int line)
+{
+        char sa[SATOT_BUF];
+	size_t sa_len;
+
+        if (ips == NULL)
+                return NULL;
+
+	if(debug_xform) {
+	  sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
+
+	  KLIPS_PRINT(debug_xform,
+		      "ipsec_sa_get: "
+		      "ipsec_sa %p SA:%s, ref:%d reference count (%d++) incremented by %s:%d.\n",
+		      ips,
+		      sa_len ? sa : " (error)",
+		      ips->ips_ref,
+		      atomic_read(&ips->ips_refcount),
+		      func, line);
+	}
+
+	atomic_inc(&ips->ips_refcount);
+
+	if(atomic_dec_and_test(&ips->ips_refcount)) {
+		KLIPS_PRINT(debug_xform,
+			    "ipsec_sa_put: freeing %p\n",
+			    ips);
+		/* it was zero */
+		ipsec_sa_wipe(ips);
+	}
+
+        return ips;
 }
 
 int
@@ -615,6 +682,8 @@ ipsec_sa_add(struct ipsec_sa *ips)
 {
 	int error = 0;
 	unsigned int hashval;
+
+	ips = ipsec_sa_get(ips);
 
 	if(ips == NULL) {
 		KLIPS_PRINT(debug_xform,
@@ -894,7 +963,7 @@ ipsec_sadb_free(void)
 	return(error);
 }
 
-int
+static int
 ipsec_sa_wipe(struct ipsec_sa *ips)
 {
 	if(ips == NULL) {
@@ -1268,7 +1337,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 
 		if (ixt_e == NULL) {
 			if(printk_ratelimit()) {
-				printk(KERN_INFO 
+				printk(KERN_ERR
 				       "ipsec_sa_init: "
 				       "encalg=%d support not available in the kernel",
 				       ipsp->ips_encalg);

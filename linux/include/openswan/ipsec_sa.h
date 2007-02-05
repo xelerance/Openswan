@@ -43,7 +43,7 @@
 #endif /* __KERNEL__ */
 #include "openswan/ipsec_param.h"
 
-#include "pfkeyv2.h"
+#include "openswan/pfkeyv2.h"
 
 
 /* SAs are held in a table.
@@ -127,6 +127,7 @@ typedef unsigned short int IPsecRefTableUnusedCount;
 struct ipsec_sa 	                        
 {
 	atomic_t	ips_refcount;	/* reference count for this struct */
+        int             ips_marked_deleted;     /* used with reference counting */
 	IPsecSAref_t	ips_ref;	/* reference table entry number */
 	IPsecSAref_t	ips_refhim;	/* ref of paired SA, if any */
 	struct ipsec_sa	*ips_next;	 	/* pointer to next xform */
@@ -245,8 +246,10 @@ extern IPsecSAref_t ipsec_SAref_alloc(int*erorr); /* pass in error var by pointe
 extern int ipsec_sa_free(struct ipsec_sa* ips);
 
 #define ipsec_sa_get(ips) __ipsec_sa_get(ips, __FUNCTION__, __LINE__)
-extern int __ipsec_sa_get(struct ipsec_sa *ips, const char *func, int line);
-extern int ipsec_sa_put(struct ipsec_sa *ips);
+extern struct ipsec_sa * __ipsec_sa_get(struct ipsec_sa *ips, const char *func, int line);
+
+#define ipsec_sa_put(ips) __ipsec_sa_put(ips, __FUNCTION__, __LINE__)
+extern void __ipsec_sa_put(struct ipsec_sa *ips, const char *func, int line);
 extern int ipsec_sa_add(struct ipsec_sa *ips);
 extern void ipsec_sa_rm(struct ipsec_sa *ips);
 extern int ipsec_sadb_cleanup(__u8 proto);
@@ -255,6 +258,7 @@ extern int ipsec_sa_wipe(struct ipsec_sa *ips);
 extern int ipsec_sa_intern(struct ipsec_sa *ips);
 extern struct ipsec_sa *ipsec_sa_getbyref(IPsecSAref_t ref);
 
+extern void ipsec_sa_untern(struct ipsec_sa *ips);
 #endif /* __KERNEL__ */
 
 enum ipsec_direction {

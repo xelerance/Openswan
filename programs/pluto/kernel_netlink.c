@@ -1407,6 +1407,7 @@ add_entry:
     }
 }
 
+
 const struct kernel_ops netkey_kernel_ops = {
     kern_name: "netkey",
     type: USE_NETKEY,

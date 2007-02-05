@@ -290,8 +290,7 @@ asn1totime(const chunk_t *utctime, asn1_t type)
     t.tm_isdst = 0;
 
     /* compensate timezone */
-
-    return mktime(&t) - TimeZoneOffset - tz_offset;
+    return timegm(&t);
 }
 
 /*

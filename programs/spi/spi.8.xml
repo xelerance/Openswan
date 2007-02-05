@@ -555,54 +555,8 @@ by Richard Guy Briggs.</para>
 <refsect1 id='bugs'><title>BUGS</title>
 <para>The syntax is messy and the transform naming needs work.</para>
 
-<!--  $Log: spi.8,v $ -->
-<!--  Revision 1.32  2002/04/24 07:35:40  mcr -->
-<!--  Moved from ./klips/utils/spi.8,v -->
-
-<!--  Revision 1.31  2001/11/06 20:18:47  rgb -->
-<!--  Added lifetime parameters. -->
-
-<!--  Revision 1.30  2001/10/24 03:23:32  rgb -->
-<!--  Added lifetime option and parameters. -->
-
-<!--  Revision 1.29  2001/05/30 08:14:04  rgb -->
-<!--  Removed vestiges of esp\-null transforms. -->
-
-<!--  Revision 1.28  2000/11/29 19:15:20  rgb -->
-<!--  Add \-\-src requirement for inbound policy routing. -->
-
-<!--  Revision 1.27  2000/09/17 18:56:48  rgb -->
-<!--  Added IPCOMP support. -->
-
-<!--  Revision 1.26  2000/09/13 15:54:32  rgb -->
-<!--  Added Gerhard's ipv6 updates. -->
-
-<!--  Revision 1.25  2000/09/12 22:36:45  rgb -->
-<!--  Gerhard's IPv6 support. -->
-
-<!--  Revision 1.24  2000/06/30 18:21:55  rgb -->
-<!--  Update SEE ALSO sections to include <citerefentry><refentrytitle>ipsec_version</refentrytitle><manvolnum>5</manvolnum></citerefentry> and <citerefentry><refentrytitle>ipsec_pf_key</refentrytitle><manvolnum>5</manvolnum></citerefentry> -->
-<!--  and correct FILES sections to no longer refer to /dev/ipsec which has -->
-<!--  been removed since PF_KEY does not use it. -->
-
-<!--  Revision 1.23  2000/06/21 16:54:57  rgb -->
-<!--  Added 'no additional args' text for listing contents of -->
-<!--  /proc/net/ipsec_* files. -->
-
-<!--  Revision 1.22  1999/08/11 08:35:16  rgb -->
-<!--  Update, deleting references to obsolete and insecure algorithms. -->
-
-<!--  Revision 1.21  1999/07/19 18:53:55  henry -->
-<!--  improve font usage in key abbreviations -->
-
-<!--  Revision 1.20  1999/07/19 18:50:09  henry -->
-<!--  fix slightly\-misformed comments -->
-<!--  abbreviate long keys to avoid long\-line complaints -->
-
-<!--  Revision 1.19  1999/04/06 04:54:38  rgb -->
-<!--  Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes -->
-<!--  patch shell fixes. -->
-
 </refsect1>
 </refentry>
+
+
 

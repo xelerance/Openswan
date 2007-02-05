@@ -465,6 +465,11 @@ whack_handle(int whackctlfd)
     }
 #endif
 
+    if (msg.whack_list & LIST_PSKS)
+    {
+	list_psks();
+    }
+
     if (msg.whack_list & LIST_CERTS)
     {
 	list_certs(msg.whack_utc);

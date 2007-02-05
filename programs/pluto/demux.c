@@ -1591,7 +1591,7 @@ process_packet(struct msg_digest **mdp)
 		return;
 	    }
 
-	    if (!reserve_msgid(st, md->hdr.isa_msgid))
+	    if (!unique_msgid(st, md->hdr.isa_msgid))
 	    {
 		loglog(RC_LOG_SERIOUS, "Informational Exchange message is invalid because"
 		    " it has a previously used Message ID (0x%08lx)"
@@ -1599,6 +1599,7 @@ process_packet(struct msg_digest **mdp)
 		/* XXX Could send notification back */
 		return;
 	    }
+	    st->st_reserve_msgid = FALSE;
 
 	    init_phase2_iv(st, &md->hdr.isa_msgid);
 	    new_iv_set = TRUE;
@@ -1688,16 +1689,18 @@ process_packet(struct msg_digest **mdp)
 		return;
 	    }
 
-	    /* only accept this new Quick Mode exchange if it has a unique message ID */
-	    if (!reserve_msgid(st, md->hdr.isa_msgid))
+	    if (!unique_msgid(st, md->hdr.isa_msgid))
 	    {
 		loglog(RC_LOG_SERIOUS, "Quick Mode I1 message is unacceptable because"
-		    " it uses a previously used Message ID 0x%08lx"
-		    " (perhaps this is a duplicated packet)"
-		    , (unsigned long) md->hdr.isa_msgid);
+		       " it uses a previously used Message ID 0x%08lx"
+		       " (perhaps this is a duplicated packet)"
+		       , (unsigned long) md->hdr.isa_msgid);
 		SEND_NOTIFICATION(INVALID_MESSAGE_ID);
 		return;
 	    }
+	
+	    /* note that we need to reserve this message ID */
+	    st->st_reserve_msgid=FALSE;
 
 	    /* Quick Mode Initial IV */
 	    init_phase2_iv(st, &md->hdr.isa_msgid);
@@ -2353,10 +2356,14 @@ process_packet(struct msg_digest **mdp)
 	       && p->payload.notification.isan_type != R_U_THERE_ACK
 	       && p->payload.notification.isan_type != PAYLOAD_MALFORMED) {
 		
-		loglog(RC_LOG_SERIOUS
-		       , "ignoring informational payload, type %s st=%p"
-		       , enum_show(&ipsec_notification_names
-				   , p->payload.notification.isan_type), st);
+		switch(p->payload.notification.isan_type) {
+		case INVALID_MESSAGE_ID:
+		default:
+		    loglog(RC_LOG_SERIOUS
+			   , "ignoring informational payload, type %s msgid=%08x"
+			   , enum_show(&ipsec_notification_names
+				       , p->payload.notification.isan_type), st->st_msgid);
+		}
 #ifdef DEBUG
 		if(st!=NULL
 		   && st->st_connection->extra_debugging & IMPAIR_DIE_ONINFO) {
@@ -2450,6 +2457,149 @@ static void update_retransmit_history(struct state *st, struct msg_digest *md)
 	}
 }	
 
+static void fmt_ipsec_sa_established(struct state *st, char *sadetails, int sad_len)
+{
+    char *b = sadetails;
+    const char *ini = " {";
+    const char *fin = "";
+    
+    strcpy(sadetails,
+	   (st->st_connection->policy & POLICY_TUNNEL ?
+	    " tunnel mode" : " transport mode"));
+    b += strlen(sadetails);
+    
+    /* -1 is to leave space for "fin" */
+    
+    if(st->st_esp.present)
+    {
+	const char *natinfo="";
+	
+	if((st->st_connection->spd.that.host_port != IKE_UDP_PORT
+	    && st->st_connection->spd.that.host_port != 0)
+	   || st->st_connection->forceencaps) {
+	    natinfo="/NAT";
+	}
+	snprintf(b, sad_len-(b-sadetails)-1
+		 , "%sESP%s=>0x%08lx <0x%08lx xfrm=%s_%d-%s"
+		 , ini
+		 , natinfo
+		 , (unsigned long)ntohl(st->st_esp.attrs.spi)
+		 , (unsigned long)ntohl(st->st_esp.our_spi)
+		 , enum_show(&esp_transformid_names, st->st_esp.attrs.transid)+strlen("ESP_")
+		 , st->st_esp.attrs.key_len
+		 , enum_show(&auth_alg_names, st->st_esp.attrs.auth)+strlen("AUTH_ALGORITHM_"));
+	ini = " ";
+	fin = "}";
+    }
+    /* advance b to end of string */
+    b = b + strlen(b);
+    
+    if(st->st_ah.present)
+    {
+	snprintf(b, sad_len-(b-sadetails)-1
+		 , "%sAH=>0x%08lx <0x%08lx"
+		 , ini
+		 , (unsigned long)ntohl(st->st_ah.attrs.spi)
+		 , (unsigned long)ntohl(st->st_ah.our_spi));
+	ini = " ";
+	fin = "}";
+    }
+    /* advance b to end of string */
+    b = b + strlen(b);
+    
+    if(st->st_ipcomp.present)
+    {
+	snprintf(b, sad_len-(b-sadetails)-1
+		 , "%sIPCOMP=>0x%08lx <0x%08lx"
+		 , ini
+		 , (unsigned long)ntohl(st->st_ipcomp.attrs.spi)
+		 , (unsigned long)ntohl(st->st_ipcomp.our_spi));
+	ini = " ";
+	fin = "}";
+    }
+    
+    if(st->st_ref || st->st_refhim)
+    {
+	snprintf(b, sizeof(sadetails)-(b-sadetails)-1
+		 , "%sref=%lu refhim=%lu"
+		 , ini
+		 , (unsigned long)st->st_ref
+		 , (unsigned long)st->st_refhim);
+	ini = " ";
+	fin = "}";
+    }
+
+    /* advance b to end of string */
+    b = b + strlen(b);
+#ifdef NAT_TRAVERSAL		    
+    {
+	char oa[ADDRTOT_BUF];
+	
+	strcpy(oa, "none");
+	if(!isanyaddr(&st->hidden_variables.st_nat_oa)) {
+	    addrtot(&st->hidden_variables.st_nat_oa, 0
+		    , oa, sizeof(oa));
+	}
+	snprintf(b, sad_len-(b-sadetails)-1
+		 , "%sNATOA=%s"
+		 , ini, oa);
+	ini = " ";
+	fin = "}";
+    }
+    
+    {
+	char oa[ADDRTOT_BUF+sizeof(":00000")];
+	
+	strcpy(oa, "none");
+	if(!isanyaddr(&st->hidden_variables.st_natd)) {
+	    char oa2[ADDRTOT_BUF];
+	    addrtot(&st->hidden_variables.st_natd, 0
+		    , oa2, sizeof(oa2));
+	    snprintf(oa, sizeof(oa)
+		     , "%s:%d", oa2, st->st_remoteport);
+	}
+	snprintf(b, sad_len-(b-sadetails)-1
+		 , "%sNATD=%s"
+		 , ini, oa);
+	ini = " ";
+	fin = "}";
+    }
+#endif
+    
+    /* advance b to end of string */
+    b = b + strlen(b);
+    
+    snprintf(b, sad_len-(b-sadetails)-1
+	     , "%sDPD=%s"
+	     , ini
+	     , st->hidden_variables.st_dpd_local ?
+	     "enabled" : "none");
+    
+    ini = " ";
+    fin = "}";
+    
+    strcat(b, fin);
+}
+
+static void fmt_isakmp_sa_established(struct state *st, char *sadetails, int sad_len)
+{
+
+    /* document ISAKMP SA details for admin's pleasure */
+    char *b = sadetails;
+    
+    passert(st->st_oakley.encrypter != NULL);
+    passert(st->st_oakley.hasher != NULL);
+    passert(st->st_oakley.group != NULL);
+    
+    snprintf(b, sad_len-(b-sadetails)-1
+	     , " {auth=%s cipher=%s_%d prf=%s group=modp%d}"
+	     , enum_show(&oakley_auth_names, st->st_oakley.auth)
+	     , st->st_oakley.encrypter->common.name
+	     , st->st_oakley.enckeylen
+	     , st->st_oakley.hasher->common.name
+	     , (int)st->st_oakley.group->bytes*8);
+    st->hidden_variables.st_logged_p1algos = TRUE;
+}
 
 /* complete job started by the state-specific state transition function */
 
@@ -2466,7 +2616,6 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
     md->result = result;
     TCLCALLOUT("adjustFailure", st, (st ? st->st_connection : NULL), md);
     result = md->result;
-
 
     /* If state has DPD support, import it */
     if( st && md->dpd && st->hidden_variables.st_dpd != md->dpd) {
@@ -2489,7 +2638,7 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
      * we can only be in calculating state if state is ignore,
      * or suspended.
      */
-    passert(result == STF_IGNORE || result == STF_SUSPEND || st->st_calculating==FALSE);
+    passert(result == STF_INLINE || result == STF_IGNORE || result == STF_SUSPEND || st->st_calculating==FALSE);
 
     switch (result)
     {
@@ -2518,6 +2667,17 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
                  , enum_name(&state_names, from_state)
                  , enum_name(&state_names, smc->next_state));
 	    
+	    if(st->st_reserve_msgid == FALSE && st->st_clonedfrom != SOS_NOBODY && st->st_msgid != 0) {
+		struct state *p1st = state_with_serialno(st->st_clonedfrom);
+
+		if(p1st) {
+		    /* do message ID reservation */
+		    reserve_msgid(p1st, st->st_msgid);
+		}
+		
+		st->st_reserve_msgid=TRUE;
+	    }
+
 	    st->st_state = smc->next_state;
 
 	    /* Delete previous retransmission event.
@@ -2696,146 +2856,11 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		/* document IPsec SA details for admin's pleasure */
 		if(IS_IPSEC_SA_ESTABLISHED(st->st_state))
 		{
-		    char *b = sadetails;
-		    const char *ini = " {";
-		    const char *fin = "";
+		    fmt_ipsec_sa_established(st, sadetails, sizeof(sadetails));
 
-		    strcpy(sadetails,
-			   (st->st_connection->policy & POLICY_TUNNEL ?
-			    " tunnel mode" : " transport mode"));
-		    b += strlen(sadetails);
-
-		    /* -1 is to leave space for "fin" */
-
-		    if(st->st_esp.present)
-		    {
-			const char *natinfo="";
-
-			if((st->st_connection->spd.that.host_port != IKE_UDP_PORT
-			    && st->st_connection->spd.that.host_port != 0)
-			   || st->st_connection->forceencaps) {
-			    natinfo="/NAT";
-			}
-			snprintf(b, sizeof(sadetails)-(b-sadetails)-1
-				 , "%sESP%s=>0x%08lx <0x%08lx xfrm=%s_%d-%s"
-				 , ini
-				 , natinfo
-				 , (unsigned long)ntohl(st->st_esp.attrs.spi)
-				 , (unsigned long)ntohl(st->st_esp.our_spi)
-				 , enum_show(&esp_transformid_names, st->st_esp.attrs.transid)+strlen("ESP_")
-				 , st->st_esp.attrs.key_len
-				 , enum_show(&auth_alg_names, st->st_esp.attrs.auth)+strlen("AUTH_ALGORITHM_"));
-			ini = " ";
-			fin = "}";
-		    }
-		    /* advance b to end of string */
-		    b = b + strlen(b);
-		    
-		    if(st->st_ah.present)
-		    {
-			snprintf(b, sizeof(sadetails)-(b-sadetails)-1
-				 , "%sAH=>0x%08lx <0x%08lx"
-				 , ini
-				 , (unsigned long)ntohl(st->st_ah.attrs.spi)
-				 , (unsigned long)ntohl(st->st_ah.our_spi));
-			ini = " ";
-			fin = "}";
-		    }
-		    /* advance b to end of string */
-		    b = b + strlen(b);
-		    
-		    if(st->st_ipcomp.present)
-		    {
-			snprintf(b, sizeof(sadetails)-(b-sadetails)-1
-				 , "%sIPCOMP=>0x%08lx <0x%08lx"
-				 , ini
-				 , (unsigned long)ntohl(st->st_ipcomp.attrs.spi)
-				 , (unsigned long)ntohl(st->st_ipcomp.our_spi));
-			ini = " ";
-			fin = "}";
-		    }
-
-		    /* advance b to end of string */
-		    b = b + strlen(b);
-		    
-		    if(st->st_ref || st->st_refhim)
-		    {
-			snprintf(b, sizeof(sadetails)-(b-sadetails)-1
-				 , "%sref=%lu refhim=%lu"
-				 , ini
-				 , (unsigned long)st->st_ref
-				 , (unsigned long)st->st_refhim);
-			ini = " ";
-			fin = "}";
-		    }
-
-		    /* advance b to end of string */
-		    b = b + strlen(b);
-#ifdef NAT_TRAVERSAL		    
-		    {
-			char oa[ADDRTOT_BUF];
-
-			strcpy(oa, "none");
-			if(!isanyaddr(&st->hidden_variables.st_nat_oa)) {
-			  addrtot(&st->hidden_variables.st_nat_oa, 0
-				  , oa, sizeof(oa));
-			}
-			snprintf(b, sizeof(sadetails)-(b-sadetails)-1
-				 , "%sNATOA=%s"
-				 , ini, oa);
-			ini = " ";
-			fin = "}";
-		    }
-
-		    {
-			char oa[ADDRTOT_BUF+sizeof(":00000")];
-
-			strcpy(oa, "none");
-			if(!isanyaddr(&st->hidden_variables.st_natd)) {
-			    char oa2[ADDRTOT_BUF];
-			    addrtot(&st->hidden_variables.st_natd, 0
-				    , oa2, sizeof(oa2));
-			    snprintf(oa, sizeof(oa)
-				     , "%s:%d", oa2, st->st_remoteport);
-			}
-			snprintf(b, sizeof(sadetails)-(b-sadetails)-1
-				 , "%sNATD=%s"
-				 , ini, oa);
-			ini = " ";
-			fin = "}";
-		    }
-#endif
-
-		    /* advance b to end of string */
-		    b = b + strlen(b);
-		    
-		    snprintf(b, sizeof(sadetails)-(b-sadetails)-1
-			     , "%sDPD=%s"
-			     , ini
-			     , st->hidden_variables.st_dpd_local ?
-			     "enabled" : "none");
-
-		    ini = " ";
-		    fin = "}";
-
-		    strcat(b, fin);
 		} else if(IS_ISAKMP_SA_ESTABLISHED(st->st_state)
-			  && !st->hidden_variables.st_logged_p1algos) {
-		    /* document ISAKMP SA details for admin's pleasure */
-		    char *b = sadetails;
-
-		    passert(st->st_oakley.encrypter != NULL);
-		    passert(st->st_oakley.hasher != NULL);
-		    passert(st->st_oakley.group != NULL);
-
-		    snprintf(b, sizeof(sadetails)-(b-sadetails)-1
-			     , " {auth=%s cipher=%s_%d prf=%s group=modp%d}"
-			     , enum_show(&oakley_auth_names, st->st_oakley.auth)
-			     , st->st_oakley.encrypter->common.name
-			     , st->st_oakley.enckeylen
-			     , st->st_oakley.hasher->common.name
-			     , (int)st->st_oakley.group->bytes*8);
-		    st->hidden_variables.st_logged_p1algos = TRUE;
+		      && !st->hidden_variables.st_logged_p1algos) {
+		    fmt_isakmp_sa_established(st, sadetails,sizeof(sadetails));
 		}
 
 		if (IS_ISAKMP_SA_ESTABLISHED(st->st_state)
@@ -2845,7 +2870,7 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		    w = RC_SUCCESS;
 		}
 
-		/* tell whack and logs our progress */
+                /* tell whack and logs our progress */
 		loglog(w
 		       , "%s: %s%s"
 		       , enum_name(&state_names, st->st_state)
@@ -2954,7 +2979,7 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 #endif
 
 	    DBG(DBG_CONTROL
-		, DBG_log("phase 1 is done, looking for phase 1 to unpend"));
+		, DBG_log("phase 1 is done, looking for phase 2 to unpend"));
 
 	    if (smc->flags & SMF_RELEASE_PENDING_P2)
 	    {
@@ -2964,13 +2989,14 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 		 * ??? there is a potential race condition
 		 * if we are the responder: the initial Phase 2
 		 * message might outrun the final Phase 1 message.
-		 * I think that retransmission will recover.
 		 *
-		 * The same race condition exists if we are in aggressive
-		 * mode as the final phase 1 message might not have
-		 * been received yet, and in fact, we might even have
-		 * a situation where the responder does not accept our
-		 * our identification.
+		 * so, instead of actualling sending the traffic now,
+		 * we schedule an event to do so.
+		 *
+		 * but, in fact, quick_mode will enqueue a cryptographic operation
+		 * anyway, which will get done "later" anyway, so make it is just fine
+		 * as it is.
+		 *
 		 */
 		unpend(st);
 	    }

@@ -66,7 +66,7 @@ unapplypatch:
 
 applypatch:
 	@echo Now performing forward patches; 
-	make kernelpatch${KERNELREL} | tee ${KERNELSRC}/openswan.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
+	${MAKE} kernelpatch${KERNELREL} | tee ${KERNELSRC}/openswan.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
 
 unapplynpatch:
 	-@if [ -f ${KERNELSRC}/natt.patch ]; then \
@@ -76,7 +76,7 @@ unapplynpatch:
 
 applynpatch:
 	@echo Now performing forward NAT patches; 
-	make nattpatch${KERNELREL} | tee ${KERNELSRC}/natt.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
+	${MAKE} nattpatch${KERNELREL} | tee ${KERNELSRC}/natt.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
 
 # patch kernel
 PATCHER=packaging/utils/patcher
@@ -198,14 +198,16 @@ programs install clean::
 
 else
 ABSOBJDIR:=$(shell mkdir -p ${OBJDIR}; cd ${OBJDIR} && pwd)
+OBJDIRTOP=${ABSOBJDIR}
+export OBJDIRTOP
 
 programs install clean:: ${OBJDIR}/Makefile
 	@echo OBJDIR: ${OBJDIR}
-	(cd ${ABSOBJDIR} && OBJDIRTOP=${ABSOBJDIR} OBJDIR=${ABSOBJDIR} make $@ )
+	(cd ${ABSOBJDIR} && OBJDIRTOP=${ABSOBJDIR} OBJDIR=${ABSOBJDIR} ${MAKE} $@ )
 
 ${OBJDIR}/Makefile: ${srcdir}/Makefile packaging/utils/makeshadowdir
 	@echo Setting up for OBJDIR=${OBJDIR}
-	@packaging/utils/makeshadowdir `(cd ${srcdir}; pwd)` ${OBJDIR} "${SUBDIRS}"
+	@packaging/utils/makeshadowdir `(cd ${srcdir}; echo $$PWD)` ${OBJDIR} "${SUBDIRS}"
 
 endif
 
@@ -356,8 +358,8 @@ preprhkern4module:
 		rm -rf include/asm && \
 		(cd include/linux && sed -e '/#include "\/boot\/kernel.h"/d' <rhconfig.h >rhconfig.h-new && mv rhconfig.h-new rhconfig.h ) && \
 		rm -f include/linux/modules/*.stamp && \
-		make dep && \
-		make oldconfig; \
+		${MAKE} dep && \
+		${MAKE} oldconfig; \
 	done;
 
 # module-only building, with error checks
@@ -414,9 +416,9 @@ minstall:
 
 # module-only install, with error checks
 minstall24:
-	( OSMODLIB=`make -C $(KERNELSRC) -p dummy | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
+	( OSMODLIB=`${MAKE} -C $(KERNELSRC) -p dummy | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
 	if [ -z "$$OSMODLIB" ] ; then \
-		OSMODLIB=`make -C $(KERNELSRC) -n -p modules_install | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
+		OSMODLIB=`${MAKE} -C $(KERNELSRC) -n -p modules_install | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
 	fi ; \
 	if [ -z "$$OSMODLIB" ] ; then \
 		echo "No known place to install module. Aborting." ; \
@@ -483,9 +485,9 @@ mod26clean module26clean:
 
 # module-only install, with error checks
 minstall26:
-	( OSMODLIB=`make -C $(KERNELSRC) -p help | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
+	( OSMODLIB=`${MAKE} -C $(KERNELSRC) -p help | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
 	if [ -z "$$OSMODLIB" ] ; then \
-		OSMODLIB=`make -C $(KERNELSRC) -n -p modules_install | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
+		OSMODLIB=`${MAKE} -C $(KERNELSRC) -n -p modules_install | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
 	fi ; \
 	if [ -z "$$OSMODLIB" ] ; then \
 		echo "No known place to install module. Aborting." ; \
@@ -583,7 +585,7 @@ buildready:
 
 rpm:
 	@echo please cd packaging/redhat and
-	@echo run "make RH_KERNELSRC=/some/path/to/kernel/src rpm"
+	@echo run "${MAKE} RH_KERNELSRC=/some/path/to/kernel/src rpm"
 
 ipkg_strip:
 	@echo "Minimizing size for ipkg binaries..."

@@ -1,4 +1,6 @@
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 #include <linux/types.h>
 #include <linux/skbuff.h>
@@ -14,8 +16,8 @@
 #include "openswan/ipsec_policy.h"
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_sysctl.h"
-#include "pfkeyv2.h"
-#include "pfkey.h"
+#include "openswan/pfkeyv2.h"
+#include "openswan/pfkey.h"
 
 extern int debug_rcv;
 

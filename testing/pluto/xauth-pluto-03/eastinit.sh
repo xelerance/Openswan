@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ==== start ====
+
 TESTNAME=xauth-pluto-03
 source /testing/pluto/bin/eastlocal.sh
 

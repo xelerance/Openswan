@@ -13,8 +13,10 @@
  * for more details.
  */
 
-char ipsec_ipcomp_c_version[] = "RCSID $Id: ipsec_ipcomp.c,v 1.6 2005/11/11 03:29:14 paul Exp $";
+char ipsec_ipcomp_c_version[] = "RCSID $Id: ipsec_ipcomp.c,v 1.5.2.1 2006/07/07 16:39:58 paul Exp $";
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 
 #define __NO_VERSION__
@@ -72,7 +74,7 @@ ipsec_rcv_ipcomp_checks(struct ipsec_rcv_state *irs,
 {
 	int ipcompminlen;
 
-	ipcompminlen = irs->hard_header_len + sizeof(struct iphdr);
+	ipcompminlen = sizeof(struct iphdr);
 
 	if(skb->len < (ipcompminlen + sizeof(struct ipcomphdr))) {
 		KLIPS_PRINT(debug_rcv & DB_RX_INAU,
@@ -135,6 +137,7 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 
 	skb = skb_decompress(skb, ipsp, &flags);
 	if (!skb || flags) {
+		spin_unlock(&tdb_lock);
 		KLIPS_PRINT(debug_rcv,
 			    "klips_debug:ipsec_rcv: "
 			    "skb_decompress() returned error flags=%x, dropped.\n",
@@ -229,6 +232,7 @@ struct xform_functions ipcomp_xform_funcs[]={
 /* We probably don't want to install a pure IPCOMP protocol handler, but
    only want to handle IPCOMP if it is encapsulated inside an ESP payload
    (which is already handled) */
+#ifndef CONFIG_XFRM_ALTERNATE_STACK
 #ifdef CONFIG_KLIPS_IPCOMP
 struct inet_protocol comp_protocol =
 {
@@ -245,6 +249,7 @@ struct inet_protocol comp_protocol =
 #endif
 };
 #endif /* CONFIG_KLIPS_IPCOMP */
+#endif /* CONFIG_XFRM_ALTERNATE_STACK */
 #endif
 
 #endif /* CONFIG_KLIPS_IPCOMP */

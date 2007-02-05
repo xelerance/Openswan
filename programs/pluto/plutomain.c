@@ -13,7 +13,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: plutomain.c,v 1.110 2005/09/18 02:10:08 mcr Exp $
+ * Modifications to use OCF interface written by
+ * Daniel Djamaludin <danield@cyberguard.com>
+ * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ *
  */
 
 #include <stdio.h>
@@ -83,6 +86,10 @@
 #include "tpm/tpm.h"
 #endif
 
+#ifdef HAVE_OCF_AND_OPENSSL
+#include "ocf_cryptodev.h"
+#endif
+
 #ifndef IPSECDIR
 #define IPSECDIR "/etc/ipsec.d"
 #endif
@@ -142,6 +149,7 @@ usage(const char *mess)
 	    " \\\n\t"
 	    "[--debug-control]"
 	    " [--debug-klips]"
+	    " [--debug-x509]"
 	    " [--debug-dns]"
 	    " [--debug-dpd]"
 	    " [ --debug-private]"
@@ -361,6 +369,7 @@ main(int argc, char **argv)
 	    { "debug-oppo", no_argument, NULL, DBG_OPPO + DBG_OFFSET },
 	    { "debug-controlmore", no_argument, NULL, DBG_CONTROLMORE + DBG_OFFSET },
 	    { "debug-dpd", no_argument, NULL, DBG_DPD + DBG_OFFSET },
+            { "debug-x509", no_argument, NULL, DBG_X509 + DBG_OFFSET },
 	    { "debug-private", no_argument, NULL, DBG_PRIVATE + DBG_OFFSET },
 	    { "debug-pfkey", no_argument, NULL, DBG_PFKEY + DBG_OFFSET },
 
@@ -532,7 +541,7 @@ main(int argc, char **argv)
 	    continue;
 
 	case 's':	/* --secretsfile <secrets-file> */
-	    shared_secrets_file = optarg;
+	    pluto_shared_secrets_file = optarg;
 	    continue;
 
 	case 'f':	/* --ipsecdir <ipsec-dir> */
@@ -776,6 +785,9 @@ main(int argc, char **argv)
     init_connections();
     init_crypto();
     init_crypto_helpers(nhelpers);
+#ifdef HAVE_OCF_AND_OPENSSL
+    load_cryptodev();
+#endif
     init_demux();
     init_kernel();
     init_adns();

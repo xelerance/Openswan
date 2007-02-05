@@ -1,3 +1,4 @@
+: ==== start ====
 TESTNAME=fail-pluto-06
 source /testing/pluto/bin/eastlocal.sh
 

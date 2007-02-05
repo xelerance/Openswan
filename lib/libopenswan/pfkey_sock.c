@@ -42,9 +42,11 @@ int pfkey_open_sock_with_error(void)
 				fprintf(stderr, "You must be root to open this file.\n");
 			}
 			break;
+#ifdef EUNATCH
 		case EUNATCH:
 			fprintf(stderr, "Netlink not enabled OR KLIPS not loaded.\n");
 			break;
+#endif
 		case ENODEV:
 			fprintf(stderr, "KLIPS not loaded or enabled.\n");
 			break;
@@ -77,4 +79,3 @@ int pfkey_open_sock_with_error(void)
 	
 	return pfkey_sock;
 }
-

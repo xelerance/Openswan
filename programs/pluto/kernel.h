@@ -91,6 +91,8 @@ struct kernel_sa {
 	ip_address *natt_oa;
 #endif
 	const char *text_said;
+  
+    unsigned long sa_lifetime;   /* number of seconds until SA expires */
 };
 
 struct raw_iface {
@@ -186,6 +188,12 @@ extern bool pfkey_plumb_mast_device(int mast_dev);
 #if defined(linux)
 extern bool do_command_linux(struct connection *c, struct spd_route *sr
 			     , const char *verb, struct state *st);
+extern bool invoke_command(const char *verb, const char *verb_suffix, char *cmd);
+#endif
+
+#if defined(__FreeBSD__)
+extern bool do_command_freebsd(struct connection *c, struct spd_route *sr
+			       , const char *verb, struct state *st);
 extern bool invoke_command(const char *verb, const char *verb_suffix, char *cmd);
 #endif
 
@@ -322,3 +330,12 @@ extern const struct kernel_ops mast_kernel_ops;
 
 #define _KERNEL_H_
 #endif /* _KERNEL_H_ */
+
+
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

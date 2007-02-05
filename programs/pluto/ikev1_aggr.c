@@ -142,7 +142,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
     struct connection *c = find_host_connection(&md->iface->ip_addr
 						, md->iface->port
 						, &md->sender
-						, md->sender_port);
+						, md->sender_port, LEMPTY);
 
 
 #if 0    
@@ -150,7 +150,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
     if (c == NULL && md->iface->ike_float)
     {
 	c = find_host_connection(&md->iface->addr, NAT_T_IKE_FLOAT_PORT
-		, &md->sender, md->sender_port);
+				 , &md->sender, md->sender_port, LEMPTY);
     }
 #endif
 #endif
@@ -158,8 +158,10 @@ aggr_inI1_outR1_common(struct msg_digest *md
     if (c == NULL)
     {
 	/* see if a wildcarded connection can be found */
+ 	pb_stream pre_sa_pbs = sa_pd->pbs;
+ 	lset_t policy = preparse_isakmp_sa_body(&pre_sa_pbs);
 	c = find_host_connection(&md->iface->ip_addr, pluto_port
-				 , (ip_address*)NULL, md->sender_port);
+				 , (ip_address*)NULL, md->sender_port, policy);
 	if (c != NULL && c->policy & POLICY_AGGRESSIVE)
 	{
 	    /* Create a temporary connection that is a copy of this one.
@@ -172,8 +174,10 @@ aggr_inI1_outR1_common(struct msg_digest *md
 	else
 	{
 	    loglog(RC_LOG_SERIOUS, "initial Aggressive Mode message from %s"
-		" but no (wildcard) connection has been configured"
-		, ip_str(&md->sender));
+		   " but no (wildcard) connection has been configured%s%s"
+		   , ip_str(&md->sender)
+		   , (policy != LEMPTY) ? " with policy=" : ""
+		   , (policy != LEMPTY) ? bitnamesof(sa_policy_bit_names, policy) : "");
 	    /* XXX notification is in order! */
 	    return STF_IGNORE;
 	}
@@ -220,6 +224,9 @@ aggr_inI1_outR1_common(struct msg_digest *md
     get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);
 
     insert_state(st);	/* needs cookies, connection, and msgid (0) */
+
+    /* copy the quirks we might have accumulated */
+    copy_quirks(&st->quirks,&md->quirks);
 
     st->st_doi = ISAKMP_DOI_IPSEC;
     st->st_situation = SIT_IDENTITY_ONLY; /* We only support this */
@@ -790,6 +797,7 @@ aggr_outI1(int whack_sock,
 	   , enum crypto_importance importance)
 {
     struct state *st;
+    struct spd_route *sr;
 
     /* set up new state */
     cur_state = st = new_state();
@@ -805,6 +813,17 @@ aggr_outI1(int whack_sock,
     st->st_state = STATE_AGGR_I1;
 
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
+
+    st->st_import = importance;
+
+    for(sr=&c->spd; sr!=NULL; sr=sr->next) {
+	if(sr->this.xauth_client) {
+	    if(sr->this.xauth_name) {
+		strncpy(st->st_xauth_username, sr->this.xauth_name, sizeof(st->st_xauth_username));
+		break;
+	    }
+	}
+    }
 
     insert_state(st);	/* needs cookies, connection, and msgid (0) */
 
@@ -840,7 +859,7 @@ aggr_outI1(int whack_sock,
 	if (!st->st_sec_in_use) {
 	    ke->ke_pcrc.pcrc_func = aggr_outI1_continue;
 	    e = build_ke(&ke->ke_pcrc, st, st->st_oakley.group, importance);
-	    if(e != STF_SUSPEND) {
+	    if(e != STF_SUSPEND && e != STF_INLINE) {
 	      loglog(RC_CRYPTOFAILED, "system too busy");
 	      delete_state(st);
 	    }

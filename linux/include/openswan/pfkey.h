@@ -1,7 +1,7 @@
 /*
  * Openswan specific PF_KEY headers
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs.
- * Copyright (C) 2006 Michael Richardson <mcr@xelerance.com.
+ * Copyright (C) 2006-2007 Michael Richardson <mcr@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -187,6 +187,11 @@ enum pfkey_ext_required {
 	EXT_BITS_OUT=1
 };
 
+enum pfkey_ext_perm {
+	EXT_BITS_PERM=0,
+	EXT_BITS_REQ=1
+};
+
 
 typedef uint64_t pfkey_ext_track;
 static inline void pfkey_mark_extension(enum sadb_extension_t exttype,
@@ -205,9 +210,6 @@ extern int pfkey_permitted_extension(enum pfkey_ext_required inout,
 				    enum sadb_msg_t sadb_operation,
 				    enum sadb_extension_t exttype);
 
-
-#define EXT_BITS_IN 0
-#define EXT_BITS_OUT 1
 
 extern void pfkey_extensions_init(struct sadb_ext *extensions[]);
 extern void pfkey_extensions_free(struct sadb_ext *extensions[]);
@@ -373,42 +375,9 @@ int
 pfkey_sa_builds(struct sadb_ext **pfkey_ext,
 		struct sadb_builds sab);
 
-int
+extern int
 pfkey_outif_build(struct sadb_ext **pfkey_ext,
 		  uint16_t outif);
 
 #endif /* __NET_IPSEC_PF_KEY_H */
 
-/*
- * $Log: pfkey.h,v $
- * Revision 1.52  2005/11/09 00:30:37  mcr
- * 	adjusted signed-ness and look.in
- *
- * Revision 1.51  2005/08/14 21:43:15  mcr
- * 	elide very old comments/logs.
- *
- * Revision 1.50  2005/08/05 08:53:29  mcr
- * 	use a typedef for the pfkey debug function.
- *
- * Revision 1.49  2005/05/11 00:57:29  mcr
- * 	rename struct supported -> struct ipsec_alg_supported.
- * 	make pfkey.h more standalone.
- *
- * Revision 1.48  2005/05/01 03:12:50  mcr
- * 	include name of algorithm in datastructure.
- *
- * Revision 1.47  2004/08/21 00:44:14  mcr
- * 	simplify definition of nat_t related prototypes.
- *
- * Revision 1.46  2004/08/04 16:27:22  mcr
- * 	2.6 sk_ options.
- *
- * Revision 1.45  2004/04/06 02:49:00  mcr
- * 	pullup of algo code from alg-branch.
- *
- * Revision 1.44  2003/12/10 01:20:01  mcr
- * 	NAT-traversal patches to KLIPS.
- *
- * ...elided.
- *
- */

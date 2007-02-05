@@ -248,6 +248,9 @@ static int load_setup (struct starter_config *cfg
 	    case kt_idtype:
 		err++;
 		break;
+
+	    case kt_comment:
+		break;
 	    }
 	}
 		
@@ -364,8 +367,11 @@ static int validate_end(struct starter_conn *conn_st
     {
 	char *value = end->strings[KSCF_NEXTHOP];
 	
+	end->nexttype = KH_IPADDR;
+
 	er = ttoaddr(value, 0, AF_INET, &(end->nexthop));
 	if (er) ERR_FOUND("bad addr %snexthop=%s [%s]", leftright, value, er);
+
     } else {
 	if(conn_st->policy & POLICY_OPPO) {
 	    end->nexttype = KH_DEFAULTROUTE;
@@ -681,6 +687,9 @@ bool translate_conn (struct starter_conn *conn
 #endif
 	    (*the_options)[field] = kw->number;
 	    (*set_options)[field] = TRUE;
+	    break;
+	    
+	case kt_comment:
 	    break;
 	}
     }

@@ -32,7 +32,7 @@ KVSHORTUTIL=${MAKEUTILS}/kernelversion-short
 SUBDIRS=doc lib programs testing
 
 clean::
-	-(cd ${OPENSWANSRCDIR} && make modclean && make mod26clean)
+	-(cd ${OPENSWANSRCDIR} && $(MAKE) modclean && $(MAKE) mod26clean)
 
 distclean:	clean
 	rm -f out.kpatch 
@@ -56,6 +56,10 @@ TAGSFILES=$(wildcard include/*.h lib/lib*/*.c programs/*/*.c linux/include/*.h l
 tags:	$(TAGSFILES)
 	@LC_ALL=C ctags $(CTAGSFLAGS) ${TAGSFILES}
 
+cscope:
+	@ls ${TAGSFILES} > cscope.files
+	@cscope -b
+
 TAGS:	$(TAGSFILES)
 	@LC_ALL=C etags $(ETAGSFLAGS) ${TAGSFILES}
 
@@ -69,7 +73,7 @@ uml:	checkprograms
 	./testing/utils/make-uml.sh `pwd`
 
 umluserland:
-	(touch ${OPENSWANSRCDIR}/Makefile.inc && source ${OPENSWANSRCDIR}/umlsetup.sh && cd $$POOLSPACE && make $$OPENSWANHOSTS $$REGULARHOSTS ) 
+	(touch ${OPENSWANSRCDIR}/Makefile.inc && source ${OPENSWANSRCDIR}/umlsetup.sh && cd $$POOLSPACE && $(MAKE) $$OPENSWANHOSTS $$REGULARHOSTS ) 
 
 
 # DESTDIR is normally set in Makefile.inc

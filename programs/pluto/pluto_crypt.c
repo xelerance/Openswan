@@ -14,7 +14,10 @@
  *
  * This code was developed with the support of IXIA communications.
  *
- * RCSID $Id: pluto_crypt.c,v 1.22 2005/08/27 05:40:06 paul Exp $
+ * Modifications to use OCF interface written by
+ * Daniel Djamaludin <danield@cyberguard.com>
+ * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ *
  */
 
 #include <stdlib.h>
@@ -49,6 +52,15 @@
 #include "rnd.h"
 #include "pluto_crypt.h"
 
+#ifdef HAVE_OCF_AND_OPENSSL
+#include "id.h"
+#include "pgp.h"
+#include "x509.h"
+#include "certs.h"
+#include "keys.h"
+#include "ocf_cryptodev.h"
+#endif
+
 struct pluto_crypto_worker {
     int   pcw_helpernum;
     pid_t pcw_pid;
@@ -62,6 +74,7 @@ struct pluto_crypto_worker {
 };
 
 static struct pluto_crypto_req_cont *backlogqueue;
+static struct pluto_crypto_req_cont **backlogqueue_last = &backlogqueue;
 static int                           backlogqueue_len;
 
 static void init_crypto_helper(struct pluto_crypto_worker *w, int n);
@@ -161,6 +174,8 @@ helper_passert_fail(const char *pred_str
 
 void pluto_crypto_helper(int fd, int helpernum)
 {
+    FILE *in  = fdopen(fd, "rb");
+    FILE *out = fdopen(fd, "wb");
     long reqbuf[PCR_REQ_SIZE/sizeof(long)];
     struct pluto_crypto_req *r;
 
@@ -172,41 +187,97 @@ void pluto_crypto_helper(int fd, int helpernum)
     setpriority(PRIO_PROCESS, 0, 10);
 
     DBG(DBG_CONTROL, DBG_log("helper %d waiting on fd: %d"
-			      , helpernum, fd));
+			     , helpernum, fileno(in)));
 
     memset(reqbuf, 0, sizeof(reqbuf));
-    while(read(fd, (char*)reqbuf, sizeof(r->pcr_len)) == sizeof(r->pcr_len)) {
+    while(fread((char*)reqbuf, sizeof(r->pcr_len), 1, in) == 1) {
 	int restlen;
-	int actlen;
+	int actnum;
+	unsigned char *reqrest = ((unsigned char *)reqbuf)+sizeof(r->pcr_len);
 
 	r = (struct pluto_crypto_req *)reqbuf;
 	restlen = r->pcr_len-sizeof(r->pcr_len);
 	
 	passert(restlen < (signed)PCR_REQ_SIZE);
+	passert(restlen > 0);
 
+	actnum = fread(reqrest, 1, restlen, in);
 	/* okay, got a basic size, read the rest of it */
-	if((actlen= read(fd, ((char *)reqbuf)+sizeof(r->pcr_len), restlen)) != restlen) {
+
+	DBG(DBG_CONTROL, DBG_log("helper %d read %d+4/%d bytesfd: %d"
+				 , helpernum, actnum, r->pcr_len, fileno(in)));
+
+	if(actnum != restlen) {
 	    /* faulty read. die, parent will restart us */
-	    
-	    loglog(RC_LOG_SERIOUS, "cryptographic helper(%d) read(%d)=%d failed: %s\n",
-		   getpid(), restlen, actlen, strerror(errno));
+	    loglog(RC_LOG_SERIOUS, "cryptographic helper(%d) fread(%d)=%d failed: %s\n",
+		   getpid(), restlen, actnum, strerror(errno));
+
+#ifdef DEBUG
+	    if(getenv("PLUTO_CRYPTO_HELPER_COREDUMP")) {
+		if(fork()==0) { /* in child */
+		    passert(actnum == 1);
+		}
+	    }
+#endif
 	    exit(1);
 	}
 
 	pluto_do_crypto_op(r);
 
-	actlen = write(fd, (unsigned char *)r, r->pcr_len);
+	actnum = fwrite((unsigned char *)r, r->pcr_len, 1, out);
+	fflush(out);
 
-	if((unsigned)actlen != r->pcr_len) {
-	    loglog(RC_LOG_SERIOUS, "failed to write answer: %d", actlen);
+	if(actnum != 1) {
+	    loglog(RC_LOG_SERIOUS, "failed to write answer: %d", actnum);
 	    exit(2);
 	}
 	memset(reqbuf, 0, sizeof(reqbuf));
     }
 
+    if(!feof(in)) {
+	loglog(RC_LOG_SERIOUS, "helper %d got error: %s", helpernum, strerror(ferror(in)));
+    }
+
     /* probably normal EOF */
-    close(fd);
+    fclose(in);
+    fclose(out);
     exit(0);
+}
+
+
+/* send the request, make sure it all goes down. */
+static bool crypto_write_request(struct pluto_crypto_worker *w
+				 ,struct pluto_crypto_req *r)
+{
+    unsigned char *wdat = (unsigned char *)r;
+    int wlen = r->pcr_len;
+    int cnt;
+    
+    DBG(DBG_CONTROL
+	, DBG_log("asking helper %d to do %s op on seq: %u (len=%u, pcw_work=%d)"
+		  , w->pcw_helpernum
+		  , enum_show(&pluto_cryptoop_names, r->pcr_type)
+		  , r->pcr_id, r->pcr_len, w->pcw_work+1));
+
+    do {
+	errno=0;
+	cnt = write(w->pcw_pipe, wdat, wlen);
+	
+	if(cnt <= 0) {
+	    openswan_log("write to helper failed: cnt=%d err=%s\n",
+			 cnt, strerror(errno));
+	    return FALSE;
+	}
+	if(DBGP(DBG_CONTROL) || cnt != wlen) {
+	    DBG_log("crypto helper write of request: cnt=%d<wlen=%d. \n", cnt, wlen);
+	}
+
+	wlen -= cnt;
+	wdat += cnt;
+
+    } while(wlen > 0);
+
+    return TRUE;
 }
 
 
@@ -247,64 +318,68 @@ err_t send_crypto_helper_request(struct pluto_crypto_req *r
     cn->pcrc_id = r->pcr_id;
     cn->pcrc_pcr = r;
 
-    pc_worker_num++;
-    if(pc_worker_num >= pc_workers_cnt) {
-	pc_worker_num = 0;
-    }
-
+    /* find an available worker */
     cnt = pc_workers_cnt;
-
-    /* find an available worker, restarting one if it was found to be dead */
-    w = &pc_workers[pc_worker_num];
-
-    DBG(DBG_CONTROL
-	, DBG_log("%d: w->pcw_dead: %d w->pcw_work: %d cnt: %d",
-		  pc_worker_num, w->pcw_dead, w->pcw_work, cnt));
-    
-    while((w->pcw_dead || (w->pcw_work >= w->pcw_maxbasicwork))
-	  && --cnt > 0) {
-	
+    do {
 	pc_worker_num++;
+ 	if(pc_worker_num >= pc_workers_cnt) {
+ 	    pc_worker_num = 0;
+ 	}
 	w = &pc_workers[pc_worker_num];
+
+ 	DBG(DBG_CONTROL
+ 	    , DBG_log("%d: w->pcw_dead: %d w->pcw_work: %d cnt: %d",
+ 		      pc_worker_num, w->pcw_dead, w->pcw_work, cnt));
 
 	/* see if there is something to clean up after */
 	if(w->pcw_dead      == TRUE
 	   && w->pcw_reaped == TRUE) {
 	    cleanup_crypto_helper(w, 0);
+ 	    DBG(DBG_CONTROL
+ 		, DBG_log("clnup %d: w->pcw_dead: %d w->pcw_work: %d cnt: %d",
+ 			  pc_worker_num, w->pcw_dead, w->pcw_work, cnt));
 	}
-	DBG(DBG_CONTROL
-	    , DBG_log("%d: w->pcw_dead: %d w->pcw_work: %d cnt: %d",
-		      pc_worker_num, w->pcw_dead, w->pcw_work, cnt));
-    }
+    } while(((w->pcw_work >= w->pcw_maxbasicwork))
+ 	    && --cnt > 0);
 
     if(cnt == 0 && r->pcr_pcim > pcim_ongoing_crypto) {
 	cnt = pc_workers_cnt;
-	while((w->pcw_dead || (w->pcw_work >= w->pcw_maxcritwork))
+ 	while((w->pcw_work >= w->pcw_maxcritwork)
 	      && --cnt > 0) {
 	
+ 	    /* find an available worker */
 	    pc_worker_num++;
-	    w = &pc_workers[pc_worker_num];
+ 	    if(pc_worker_num >= pc_workers_cnt) {
+ 		pc_worker_num = 0;
+  	    }
 
+	    w = &pc_workers[pc_worker_num];
 	    /* see if there is something to clean up after */
 	    if(w->pcw_dead      == TRUE
 	       && w->pcw_reaped == TRUE) {
 		cleanup_crypto_helper(w, 0);
 	    }
-	    DBG(DBG_CONTROL
-		, DBG_log("crit %d: w->pcw_dead: %d w->pcw_work: %d cnt: %d",
-			  pc_worker_num, w->pcw_dead, w->pcw_work, cnt));
 	}
+	DBG(DBG_CONTROL
+	    , DBG_log("crit %d: w->pcw_dead: %d w->pcw_work: %d cnt: %d",
+		      pc_worker_num, w->pcw_dead, w->pcw_work, cnt));
     }
 
     if(cnt == 0 && r->pcr_pcim >= pcim_demand_crypto) {
 	/* it is very important. Put it all on a queue for later */
-	cn->pcrc_next = backlogqueue;
-	backlogqueue  = cn;
+	if(!backlogqueue_last) backlogqueue_last = &backlogqueue;
+	*backlogqueue_last = cn;
+	cn->pcrc_next = NULL;
+	backlogqueue_last  = &cn->pcrc_next;
+
+	/* copy the request */
+	r = clone_bytes(r, r->pcr_len, "saved cryptorequest");
+	cn->pcrc_pcr = r;
 	
 	backlogqueue_len++;
 	DBG(DBG_CONTROL
-	    , DBG_log("critical demand crypto operation queued as item %d"
-		      , backlogqueue_len));
+	    , DBG_log("critical demand crypto operation queued on backlog as %d'th item, id: q#%u"
+		      , backlogqueue_len, r->pcr_id));
 	*toomuch = FALSE;
 	return NULL;
     }
@@ -337,18 +412,12 @@ err_t send_crypto_helper_request(struct pluto_crypto_req *r
     passert(w->pcw_pipe != -1);
     passert(w->pcw_work < w->pcw_maxcritwork);
     
-    DBG(DBG_CONTROL
-	, DBG_log("asking helper %d to do %s op on seq: %u"
-		  , w->pcw_helpernum
-		  , enum_show(&pluto_cryptoop_names, r->pcr_type)
-		  , r->pcr_id));
-
-    /* send the request, and then mark the work as having more work */
-    cnt = write(w->pcw_pipe, r, r->pcr_len);
-    if(cnt == -1) {
+    if(!crypto_write_request(w, r)) {
+	openswan_log("failed to write crypto request: %s\n",
+		     strerror(errno));
 	return "failed to write";
-    } 
-
+    }
+	
     w->pcw_work++;
     *toomuch = FALSE;
     return NULL;
@@ -363,8 +432,6 @@ static void crypto_send_backlog(struct pluto_crypto_worker *w)
     struct pluto_crypto_req_cont *cn;
 
     if(backlogqueue_len > 0) {
-	int cnt;
-
 	passert(backlogqueue != NULL);
 	
 	cn = backlogqueue;
@@ -374,10 +441,10 @@ static void crypto_send_backlog(struct pluto_crypto_worker *w)
 	r = cn->pcrc_pcr;
       
 	DBG(DBG_CONTROL
-	    , DBG_log("removing backlog item (%d) from queue: %d left"
+	    , DBG_log("removing backlog item id: q#%u from queue: %d left"
 		      , r->pcr_id, backlogqueue_len));
 
-	/* w points to a work. Make sure it is live */
+	/* w points to a worker. Make sure it is live */
 	if(w->pcw_pid == -1) {
 	    init_crypto_helper(w, pc_worker_num);
 	    if(w->pcw_pid == -1) {
@@ -397,19 +464,15 @@ static void crypto_send_backlog(struct pluto_crypto_worker *w)
 	passert(w->pcw_pipe != -1);
 	passert(w->pcw_work > 0);
     
-	DBG(DBG_CONTROL
-	    , DBG_log("asking helper %d to do %s op on seq: %u"
-		      , w->pcw_helpernum
-		      , enum_show(&pluto_cryptoop_names, r->pcr_type)
-		      , r->pcr_id));
-	
-	/* send the request, and then mark the work as having more work */
-	cnt = write(w->pcw_pipe, r, r->pcr_len);
-	if(cnt == -1) {
+	/* send the request, and then mark the worker as having more work */
+	if(!crypto_write_request(w, r)) {
 	    /* XXX invoke callback with failure */
 	    passert(0);
 	    return;
 	} 
+
+	/* if it was on the backlog, it was saved, free it */
+	pfree(r);
 	
 	w->pcw_work++;
     }
@@ -486,17 +549,16 @@ void delete_cryptographic_continuation(struct state *st)
 void handle_helper_comm(struct pluto_crypto_worker *w)
 {
     long reqbuf[PCR_REQ_SIZE/sizeof(long)];
+    unsigned char *inloc;
     struct pluto_crypto_req *r;
     int restlen;
     int actlen;
     struct pluto_crypto_req_cont *cn, **cnp;
 
-    /* we can accept more work now that we are about to read from the pipe */
-    w->pcw_work--;
-
-    DBG(DBG_CRYPT, DBG_log("helper %u has work (cnt now %d)"
-			   ,w->pcw_helpernum
-			   ,w->pcw_work));
+    DBG(DBG_CRYPT|DBG_CONTROL
+	, DBG_log("helper %u has finished work (cnt now %d)"
+		  ,w->pcw_helpernum
+		  ,w->pcw_work));
 
     /* read from the pipe */
     actlen = read(w->pcw_pipe, (char *)reqbuf, sizeof(r->pcr_len));
@@ -516,6 +578,9 @@ void handle_helper_comm(struct pluto_crypto_worker *w)
 	return;
     }
 
+    /* we can accept more work now that we have read from the pipe */
+    w->pcw_work--;
+
     r = (struct pluto_crypto_req *)reqbuf;
 
     if(r->pcr_len > sizeof(reqbuf)) {
@@ -523,28 +588,37 @@ void handle_helper_comm(struct pluto_crypto_worker *w)
 	       , w->pcw_helpernum
 	       , w->pcw_pid, (unsigned long)r->pcr_len
                , (unsigned long)sizeof(reqbuf));
+    killit:
 	kill(w->pcw_pid, SIGTERM);
 	w->pcw_dead = TRUE;
 	return;
     }
 
     restlen = r->pcr_len-sizeof(r->pcr_len);
-	
-    /* okay, got a basic size, read the rest of it */
-    if((actlen= read(w->pcw_pipe
-		     , ((char*)reqbuf)+sizeof(r->pcr_len)
-		     , restlen)) != restlen) {
-	/* faulty read. die, parent will restart us */
-	
-	loglog(RC_LOG_SERIOUS
-	       , "cryptographic handler(%d) read(%d)=%d failed: %s\n"
-	       , w->pcw_pipe, restlen, actlen, strerror(errno));
-	return;
+    inloc = ((unsigned char*)reqbuf)+sizeof(r->pcr_len);
+
+    while(restlen > 0) {
+	/* okay, got a basic size, read the rest of it */
+	actlen = read(w->pcw_pipe, inloc, restlen);
+
+	if(actlen <= 0) {
+	    /* faulty read. note this fact, and close pipe. */
+	    /* we actually need to restart this query, but we'll do that
+	     * another day.
+	     */
+	    loglog(RC_LOG_SERIOUS
+		   , "cryptographic handler(%d) read(%d)=%d failed: %s\n"
+		   , w->pcw_pipe, restlen, actlen, strerror(errno));
+	    goto killit;
+	}
+
+	restlen -= actlen;
+	inloc   += actlen;
     }
 
-    DBG(DBG_CRYPT, DBG_log("helper %u replies to sequence %u"
-			   ,w->pcw_helpernum
-			   ,r->pcr_id));
+    DBG(DBG_CRYPT|DBG_CONTROL, DBG_log("helper %u replies to id: q#%u"
+				       ,w->pcw_helpernum
+				       ,r->pcr_id));
 
     /*
      * if there is work queued, then send it off after reading, since this
@@ -630,6 +704,9 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
     close_log();
     close_peerlog();
 
+    /* set local so that child inheirits it */
+    pc_helper_num = n;
+
     w->pcw_pid = fork();
     errno2 = errno;
     if(w->pcw_pid == 0) { 
@@ -672,6 +749,9 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 	
 	pluto_init_log();
 	init_rnd_pool();
+#ifdef HAVE_OCF_AND_OPENSSL
+	load_cryptodev();
+#endif
 	free_preshared_secrets();
 	openswan_passert_fail = helper_passert_fail;
 	debug_prefix='!';
@@ -713,6 +793,7 @@ static void cleanup_crypto_helper(struct pluto_crypto_worker *w
     }
 
     w->pcw_pid = -1;
+    w->pcw_work = 0; /* ?!? */
     w->pcw_reaped = FALSE;
     w->pcw_dead   = FALSE;   /* marking is not dead lets it live again */
 }
@@ -812,6 +893,120 @@ int pluto_crypto_helper_ready(fd_set *readfds)
     }
     
     return ndes;
+}
+
+
+/*
+ * invoke helper to do DH work.
+ */
+stf_status perform_dh_secretiv(struct state *st
+			     , enum phase1_role init       /* TRUE=g_init,FALSE=g_r */
+			     , u_int16_t oakley_group)
+{
+    struct pluto_crypto_req r;
+    struct pcr_skeyid_q *dhq = &r.pcr_d.dhq;
+    struct pcr_skeyid_r *dhr = &r.pcr_d.dhr;
+    const chunk_t *pss = get_preshared_secret(st->st_connection);
+
+    passert(st->st_sec_in_use);
+
+    dhq->thespace.start = 0;
+    dhq->thespace.len   = sizeof(dhq->space);
+
+    /* convert appropriate data to dhq */
+    dhq->auth = st->st_oakley.auth;
+    dhq->hash = st->st_oakley.hash;
+    dhq->oakley_group = oakley_group;
+    dhq->init = init;
+    dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 
+
+    if(pss) {
+	pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->pss, *pss);
+    }
+    pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->ni,  st->st_ni);
+    pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->nr,  st->st_nr);
+    pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->gi,  st->st_gi);
+    pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->gr,  st->st_gr);
+    pluto_crypto_copychunk(&dhq->thespace, dhq->space
+			   , &dhq->secret, st->st_sec_chunk);
+
+    pluto_crypto_allocchunk(&dhq->thespace, &dhq->icookie, COOKIE_SIZE);
+    memcpy(wire_chunk_ptr(&r.pcr_d.dhq, &dhq->icookie)
+	   , st->st_icookie, COOKIE_SIZE);
+
+    pluto_crypto_allocchunk(&dhq->thespace, &dhq->rcookie, COOKIE_SIZE);
+    memcpy(wire_chunk_ptr(&r.pcr_d.dhq, &dhq->rcookie)
+	   , st->st_rcookie, COOKIE_SIZE);
+
+    calc_dh_iv(&r);
+
+    clonetochunk(st->st_shared,   wire_chunk_ptr(dhr, &(dhr->shared))
+		 , dhr->shared.len,   "calculated shared secret");
+    clonetochunk(st->st_skeyid,   wire_chunk_ptr(dhr, &(dhr->skeyid))
+		 , dhr->skeyid.len,   "calculated skeyid secret");
+    clonetochunk(st->st_skeyid_d, wire_chunk_ptr(dhr, &(dhr->skeyid_d))
+		 , dhr->skeyid_d.len, "calculated skeyid_d secret");
+    clonetochunk(st->st_skeyid_a, wire_chunk_ptr(dhr, &(dhr->skeyid_a))
+		 , dhr->skeyid_a.len, "calculated skeyid_a secret");
+    clonetochunk(st->st_skeyid_e, wire_chunk_ptr(dhr, &(dhr->skeyid_e))
+		 , dhr->skeyid_e.len, "calculated skeyid_a secret");
+    clonetochunk(st->st_enc_key, wire_chunk_ptr(dhr, &(dhr->enc_key))
+		 , dhr->enc_key.len, "calculated key for phase 1");
+    
+    passert(dhr->new_iv.len <= MAX_DIGEST_LEN);
+    passert(dhr->new_iv.len > 0);
+    memcpy(st->st_new_iv, wire_chunk_ptr(dhr, &(dhr->new_iv)),dhr->new_iv.len);
+    st->st_new_iv_len = dhr->new_iv.len;
+
+    st->hidden_variables.st_skeyid_calculated = TRUE;
+    return STF_OK;
+}
+
+stf_status perform_dh_secret(struct state *st
+			     , enum phase1_role init      
+			     , u_int16_t oakley_group)
+{
+    struct pluto_crypto_req r;
+    struct pcr_skeyid_q *dhq = &r.pcr_d.dhq;
+    struct pcr_skeyid_r *dhr = &r.pcr_d.dhr;
+    const chunk_t *pss = get_preshared_secret(st->st_connection);
+
+    passert(st->st_sec_in_use);
+
+    dhq->thespace.start = 0;
+    dhq->thespace.len   = sizeof(dhq->space);
+
+    /* convert appropriate data to dhq */
+    dhq->auth = st->st_oakley.auth;
+    dhq->hash = st->st_oakley.hash;
+    dhq->oakley_group = oakley_group;
+    dhq->init = init;
+    dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 
+
+    if(pss) {
+	pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->pss, *pss);
+    }
+    pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->ni,  st->st_ni);
+    pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->nr,  st->st_nr);
+    pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->gi,  st->st_gi);
+    pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->gr,  st->st_gr);
+    pluto_crypto_copychunk(&dhq->thespace, dhq->space
+			   , &dhq->secret, st->st_sec_chunk);
+
+    pluto_crypto_allocchunk(&dhq->thespace, &dhq->icookie, COOKIE_SIZE);
+    memcpy(wire_chunk_ptr(&r.pcr_d.dhq, &dhq->icookie)
+	   , st->st_icookie, COOKIE_SIZE);
+
+    pluto_crypto_allocchunk(&dhq->thespace, &dhq->rcookie, COOKIE_SIZE);
+    memcpy(wire_chunk_ptr(&r.pcr_d.dhq, &dhq->rcookie)
+	   , st->st_rcookie, COOKIE_SIZE);
+
+    calc_dh(&r);
+
+    clonetochunk(st->st_shared,   wire_chunk_ptr(dhr, &(dhr->shared))
+		 , dhr->shared.len,   "calculated shared secret");
+    
+    return STF_OK;
 }
 
 /*

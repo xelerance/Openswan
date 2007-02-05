@@ -13,8 +13,10 @@
  * for more details.
  */
 
-char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.12 2005/04/29 05:10:22 mcr Exp $";
+char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.12.2.1 2006/02/15 05:35:14 paul Exp $";
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 
 #define __NO_VERSION__
@@ -162,7 +164,7 @@ ipsec_rcv_ah_authcalc(struct ipsec_rcv_state *irs,
 	/* finally, do the packet contents themselves */
 	(*aa->update)((void*)&tctx,
 		      (caddr_t)skb->h.raw + ahhlen,
-		      skb->len - irs->iphlen - ahhlen);
+		      skb->len - ahhlen);
 
 	(*aa->final)(irs->hash, (void *)&tctx);
 
@@ -210,6 +212,7 @@ ipsec_rcv_ah_decap(struct ipsec_rcv_state *irs)
 	}
 	skb_pull(skb, ahhlen);
 
+	skb->nh.raw = skb->nh.raw + ahhlen;
 	irs->ipp = skb->nh.iph;
 
 	ipsec_rcv_dmp("ah postpull", (void *)skb->nh.iph, skb->len);
@@ -326,6 +329,7 @@ struct xform_functions ah_xform_funcs[]={
 };
 
 
+#ifndef CONFIG_XFRM_ALTERNATE_STACK
 #ifdef NET_26
 struct inet_protocol ah_protocol = {
   .handler = ipsec_rcv,
@@ -347,6 +351,7 @@ struct inet_protocol ah_protocol =
 #endif
 };
 #endif /* NET_26 */
+#endif /* CONFIG_XFRM_ALTERNATE_STACK */
 
 /*
  * Local variables:

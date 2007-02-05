@@ -14,11 +14,15 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keys.c,v 1.104 2005/08/19 04:03:02 mcr Exp $
+ * Modifications to use OCF interface written by
+ * Daniel Djamaludin <danield@cyberguard.com>
+ * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ *
  */
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
@@ -63,6 +67,13 @@
 #include "fetch.h"
 #include "x509more.h"
 
+#ifdef HAVE_OCF_AND_OPENSSL
+#include "ocf_cryptodev.h"
+#endif
+
+/* Maximum length of filename and passphrase buffer */
+#define BUF_LEN		256
+
 #ifdef NAT_TRAVERSAL
 #define PB_STREAM_UNDEFINED
 #include "nat_traversal.h"
@@ -88,6 +99,49 @@ void free_preshared_secrets(void)
     osw_free_preshared_secrets(&pluto_secrets);
 }
 
+static int print_secrets(struct secret *secret
+			 , struct private_key_stuff *pks UNUSED
+			 , void *uservoid UNUSED)
+{
+    char idb1[IDTOA_BUF];
+    char idb2[IDTOA_BUF];
+    const char *kind = "?";
+    const char *more = "";
+    
+    switch(pks->kind) {
+    case PPK_PSK: kind="PSK"; break;
+    case PPK_RSA: kind="RSA"; break;
+    case PPK_PIN: kind="PIN"; break;
+    case PPK_XAUTH: kind="XAUTH"; break;
+    default:
+	return 1;
+    }
+
+    struct id_list *ids = osw_get_idlist(secret);
+    strcpy(idb1,"%any");
+    strcpy(idb2,"");
+
+    if(ids!=NULL) idtoa(&ids->id, idb1, sizeof(idb1));
+    if(ids->next!=NULL) {
+	idtoa(&ids->next->id, idb2, sizeof(idb2));
+	if(ids->next->next) more="more";
+    }
+
+    whack_log(RC_COMMENT, "    %d: %s %s %s%s", osw_get_secretlineno(secret),
+	      kind, 
+	      idb1, idb2, more);
+
+    /* continue loop until end */
+    return 1;
+}
+
+
+void list_psks(void)
+{
+    whack_log(RC_COMMENT, "List of Pre-shared secrets (from %s)", pluto_shared_secrets_file);
+    osw_foreach_secret(pluto_secrets, print_secrets, NULL);
+}
+
 /*
  * compute an RSA signature with PKCS#1 padding
  */
@@ -96,9 +150,16 @@ sign_hash(const struct RSA_private_key *k, const u_char *hash_val, size_t hash_l
     , u_char *sig_val, size_t sig_len)
 {
     chunk_t ch;
+#ifdef HAVE_OCF_AND_OPENSSL
+    mpz_t t1;
+#else
     mpz_t t1, t2;
+#endif
     size_t padlen;
     u_char *p = sig_val;
+#ifdef HAVE_OCF_AND_OPENSSL
+    BIGNUM r0;
+#endif
 
     DBG(DBG_CONTROL | DBG_CRYPT,
 	DBG_log("signing hash with RSA Key *%s", k->pub.keyid)
@@ -121,6 +182,11 @@ sign_hash(const struct RSA_private_key *k, const u_char *hash_val, size_t hash_l
      * There are two methods, depending on the form of the private key.
      * We use the one based on the Chinese Remainder Theorem.
      */
+#ifdef HAVE_OCF_AND_OPENSSL
+    BN_init(&r0);
+    cryptodev.rsa_mod_exp_crt(k, &t1, &r0);
+    bn2mp(&r0, (MP_INT *) &t1);
+#else
     mpz_init(t2);
 
     mpz_powm(t2, t1, &k->dP, &k->p);	/* m1 = c^dP mod p */
@@ -135,13 +201,16 @@ sign_hash(const struct RSA_private_key *k, const u_char *hash_val, size_t hash_l
     mpz_mul(t2, t2, &k->q);	/* m = m2 + h q */
     mpz_add(t1, t1, t2);
 
+#endif
     /* PKCS#1 v1.5 8.4 integer-to-octet-string conversion */
     ch = mpz_to_n(t1, sig_len);
     memcpy(sig_val, ch.ptr, sig_len);
     pfree(ch.ptr);
+#ifndef HAVE_OCF_AND_OPENSSL
 
     mpz_clear(t1);
     mpz_clear(t2);
+#endif
 }
 
 /* find the struct secret associated with the combination of
@@ -228,6 +297,32 @@ osw_get_secret(const struct connection *c
     best = osw_find_secret_by_id(pluto_secrets
 				 , kind
 				 , my_id, his_id, asym);
+
+    return best;
+}
+
+/*
+ * find the struct secret associated with an XAUTH username.
+ */
+struct secret *
+osw_get_xauthsecret(const struct connection *c UNUSED
+		    , char *xauthname)
+{
+    struct secret *best = NULL;
+    struct id xa_id;
+
+    DBG(DBG_CONTROL,
+	DBG_log("started looking for xauth secret for %s"
+		, xauthname));
+
+    memset(&xa_id, 0, sizeof(xa_id));
+    xa_id.kind = ID_FQDN;
+    xa_id.name.ptr = (unsigned char *)xauthname;
+    xa_id.name.len = strlen(xauthname);
+
+    best = osw_find_secret_by_id(pluto_secrets
+				 , PPK_XAUTH
+				 , &xa_id, NULL, TRUE);
 
     return best;
 }

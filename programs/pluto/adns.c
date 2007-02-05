@@ -170,8 +170,14 @@ write_pipe(int fd, const unsigned char *stuff)
  * __RES was 19960801 in RHL6.2, an old resolver.
  */
 
+#undef OLD_RESOLVER
+
 #if (__RES) <= 19960801
 # define OLD_RESOLVER	1
+#endif
+
+#ifdef __UCLIBC__
+#define OLD_RESOLVER 1
 #endif
 
 #ifdef OLD_RESOLVER

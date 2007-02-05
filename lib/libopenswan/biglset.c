@@ -18,6 +18,7 @@
 #include "openswan.h"
 #include "constants.h"
 #include "biglset.h"
+#include "oswlog.h"
 
 void biglset_format(char *buf, size_t blen, biglset_t b)
 {

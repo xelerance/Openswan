@@ -46,9 +46,12 @@ typedef u_int32_t msgid_t;	/* Network order! */
 #define MAINMODE_MSGID    ((msgid_t) 0)
 
 struct state;	/* forward declaration of tag */
-extern bool reserve_msgid(struct state *isakmp_sa, msgid_t msgid);
+extern void reserve_msgid(struct state *isakmp_sa, msgid_t msgid);
+extern bool unique_msgid(struct state *isakmp_sa, msgid_t msgid);
+
 extern msgid_t generate_msgid(struct state *isakmp_sa);
 
+#define XAUTH_USERNAME_LEN 64
 
 /* Oakley (Phase 1 / Main Mode) transform and attributes
  * This is a flattened/decoded version of what is represented
@@ -181,6 +184,7 @@ struct state
     u_int16_t          st_localport;           
 
     msgid_t            st_msgid;               /* MSG-ID from header.  Network Order! */
+    bool               st_reserve_msgid;       /* if TRUE, then message id has been reserved already */
 
     msgid_t            st_msgid_phase15;       /* msgid for phase 1.5 */
     msgid_t            st_msgid_phase15b;      /* msgid for phase 1.5 */
@@ -274,7 +278,8 @@ struct state
 
     struct hidden_variables hidden_variables;
 
-    unsigned char *st_xauth_username;
+    char                st_xauth_username[XAUTH_USERNAME_LEN];
+    chunk_t             st_xauth_password;
 
     /* RFC 3706 Dead Peer Detection */
     time_t              st_last_dpd;            /* Time of last DPD transmit */
@@ -308,6 +313,8 @@ extern void state_eroute_usage(ip_subnet *ours, ip_subnet *his
 extern void delete_state(struct state *st);
 struct connection;	/* forward declaration of tag */
 extern void delete_states_by_connection(struct connection *c, bool relations);
+extern void delete_p2states_by_connection(struct connection *c);
+extern void rekey_p2states_by_connection(struct connection *c);
 
 extern struct state
     *duplicate_state(struct state *st),

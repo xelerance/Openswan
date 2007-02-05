@@ -13,8 +13,10 @@
  * for more details.
  */
 
-char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.13.2.1 2006/04/20 16:33:06 mcr Exp $";
+char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.13.2.4 2006/05/06 03:07:38 ken Exp $";
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 
 #define __NO_VERSION__
@@ -236,14 +238,14 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	if (ipsec_alg_esp_encrypt(ipsp, 
 				  idat, irs->ilen, espp->esp_iv, 
 				  IPSEC_ALG_DECRYPT) <= 0) {
-		printk("klips_error:ipsec_rcv: "
-		       "got packet with esplen = %d "
-		       "from %s -- should be on "
-		       "ENC(%d) octet boundary, "
-		       "packet dropped\n",
-		       irs->ilen,
-		       irs->ipsaddr_txt,
-		       ipsp->ips_encalg);
+		KLIPS_ERROR(debug_rcv, "klips_error:ipsec_rcv: "
+			    "got packet with esplen = %d "
+			    "from %s -- should be on "
+			    "ENC(%d) octet boundary, "
+			    "packet dropped\n",
+			    irs->ilen,
+			    irs->ipsaddr_txt,
+			    ipsp->ips_encalg);
 		if(irs->stats) {
 			irs->stats->rx_errors++;
 		}
@@ -349,6 +351,9 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	return IPSEC_RCV_OK;
 }
 
+/*
+ *
+ */
 enum ipsec_xmit_value
 ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
 {
@@ -509,6 +514,7 @@ struct xform_functions esp_xform_funcs[]={
 	},
 };
 
+#ifndef CONFIG_XFRM_ALTERNATE_STACK
 #ifdef NET_26
 struct inet_protocol esp_protocol = {
   .handler = ipsec_rcv,
@@ -530,6 +536,7 @@ struct inet_protocol esp_protocol =
 #endif
 };
 #endif /* NET_26 */
+#endif /* CONFIG_XFRM_ALTERNATE_STACK */
 
 #endif /* !CONFIG_KLIPS_ESP */
 

@@ -17,36 +17,44 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <stdio.h>
+#include "oswlog.h"
 #include "oswconf.h"
 #include "oswalloc.h"
 
 static struct osw_conf_options global_oco;
 static bool setup=FALSE;
 
+#ifdef SINGLE_CONF_DIR
+#define SUBDIRNAME(X) ""
+#else
+#define SUBDIRNAME(X) X
+#endif
+
 static void osw_conf_calculate(struct osw_conf_options *oco)
 {
     char buf[PATH_MAX];
 
     /* calculate paths to certain subdirs */
-    snprintf(buf, sizeof(buf), "%s/acerts", oco->confddir);
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/acerts"), oco->confddir);
     oco->acerts_dir = clone_str(buf, "acert path");
 
-    snprintf(buf, sizeof(buf), "%s/cacerts", oco->confddir);
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/cacerts"), oco->confddir);
     oco->cacerts_dir = clone_str(buf, "cacert path");
 
-    snprintf(buf, sizeof(buf), "%s/crls", oco->confddir);
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/crls"), oco->confddir);
     oco->crls_dir = clone_str(buf, "crls path");
 
-    snprintf(buf, sizeof(buf), "%s/private", oco->confddir);
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/private"), oco->confddir);
     oco->private_dir = clone_str(buf, "private path");
 
-    snprintf(buf, sizeof(buf), "%s/certs", oco->confddir);
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/certs"), oco->confddir);
     oco->certs_dir = clone_str(buf, "certs path");
 
-    snprintf(buf, sizeof(buf), "%s/aacerts", oco->confddir);
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/aacerts"), oco->confddir);
     oco->aacerts_dir = clone_str(buf, "aacerts path");
 
-    snprintf(buf, sizeof(buf), "%s/ocspcerts", oco->confddir);
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/ocspcerts"), oco->confddir);
     oco->ocspcerts_dir = clone_str(buf, "ocspcerts path");
 
     snprintf(buf, sizeof(buf), "%s/policies", oco->confddir);
@@ -101,6 +109,8 @@ void osw_conf_setdefault(void)
     global_oco.vardir  = var_dir;
     global_oco.confdir = ipsec_conf_dir;
     global_oco.conffile = conffile;
+
+    //DBG_log("default setting of ipsec.d to %s", global_oco.confddir);
 }
 
 
@@ -121,6 +131,8 @@ const struct osw_conf_options *osw_init_ipsecdir(const char *ipsec_dir)
     global_oco.confddir = clone_str(ipsec_dir, "override ipsec.d");
     osw_conf_calculate(&global_oco);
     setup = TRUE;
+
+    openswan_log("adjusting ipsec.d to %s", global_oco.confddir);
 
     return &global_oco;
 }

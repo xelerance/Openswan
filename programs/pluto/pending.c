@@ -175,13 +175,14 @@ unpend(struct state *st)
 	if (p->isakmp_sa == st)
 	{
 	    DBG(DBG_CONTROL
-		, DBG_log("unqueuing pending Quick Mode with %s \"%s\""
+		, DBG_log("unqueuing pending Quick Mode with %s \"%s\" %s"
 			  , ip_str(&p->connection->spd.that.host_addr)
-			  , p->connection->name));
+			  , p->connection->name
+			  , enum_name(&pluto_cryptoimportance_names,st->st_import)));
 
 	    p->pend_time = time(NULL);
 	    (void) quick_outI1(p->whack_sock, st, p->connection, p->policy
-		, p->try, p->replacing);
+			       , p->try, p->replacing);
 	    p->whack_sock = NULL_FD;	/* ownership transferred */
 	    p->connection = NULL;	/* ownership transferred */
 	    delete_pending(pp);

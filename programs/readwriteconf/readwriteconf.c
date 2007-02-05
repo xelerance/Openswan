@@ -76,7 +76,8 @@ static void usage(void)
     exit(10);
 }
 
-char rootdir[PATH_MAX];       /* when evaluating paths, prefix this to them */
+extern char rootdir[PATH_MAX];       /* when evaluating paths, prefix this to them */
+extern char rootdir2[PATH_MAX];       /* when evaluating paths, prefix this to them */
 
 static struct option const longopts[] =
 {
@@ -84,6 +85,7 @@ static struct option const longopts[] =
 	{"debug",               no_argument, NULL, 'D'},
 	{"verbose",             no_argument, NULL, 'D'},
 	{"rootdir",             required_argument, NULL, 'R'},
+	{"rootdir2",            required_argument, NULL, 'S'},
 	{"help",                no_argument, NULL, 'h'},
 	{0, 0, 0, 0}
 };
@@ -128,6 +130,11 @@ main(int argc, char *argv[])
 	    printf("#setting rootdir=%s\n", optarg);
 	    strncat(rootdir, optarg, sizeof(rootdir));
 	    break;
+
+	case 'S':
+	    printf("#setting rootdir2=%s\n", optarg);
+	    strncat(rootdir2, optarg, sizeof(rootdir2));
+	    break;
 	}
     }
 
@@ -151,16 +158,21 @@ main(int argc, char *argv[])
 	strcat(configfile, "ipsec.conf");
     }
 
+    if(verbose > 3) {
+	extern int yydebug;
+	yydebug=1;
+    }
+
     if(verbose) {
 	printf("opening file: %s\n", configfile);
     }
 
     starter_use_log (verbose, 1, verbose ? 0 : 1);
 
-    cfg = confread_load(configfile, &err);
+    cfg = confread_load(configfile, &err, NULL);
     
     if(!cfg) {
-	printf("config file: %s can not be loaded\n", configfile);
+	printf("config file: %s can not be loaded: %s\n", configfile, err);
 	exit(3);
     }
     

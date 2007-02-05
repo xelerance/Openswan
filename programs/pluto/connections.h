@@ -144,6 +144,8 @@ struct ietfAttr;	/* forward declaration of ietfAttr defined in ac.h */
 
 struct end {
     struct id id;
+
+    enum keyword_host host_type;
     ip_address
 	host_addr,
 	host_nexthop,
@@ -160,18 +162,27 @@ struct end {
     bool      host_port_specific; /* if TRUE, then IKE ports are tested for*/
     u_int16_t port;		/* port number, if per-port keying. */
     u_int8_t protocol;          /* protocol number, if per-per keying. */
-    cert_t cert;		/* end certificate */
+
+    enum certpolicy sendcert;   /* whether or not to send the certificate */
+    char   *cert_filename;       /* where we got the certificate */
+    cert_t  cert;		/* end certificate */
+
     chunk_t ca;			/* CA distinguished name */
     struct ietfAttrList *groups;/* access control groups */
     smartcard_t *sc;		/* smartcard reader and key info */
 #ifdef VIRTUAL_IP
     struct virtual_t *virt;
 #endif
+#ifdef XAUTH
     bool xauth_server;
     bool xauth_client;
+    char *xauth_name;
+    char *xauth_password;
+#ifdef MODECFG
     bool modecfg_server;        /* Give local addresses to tunnel's end */
     bool modecfg_client;        /* request address for local end */
-    enum certpolicy sendcert;   /* whether or not to send the certificate */
+#endif
+#endif
 };
 
 struct spd_route {
@@ -185,6 +196,7 @@ struct spd_route {
 
 struct connection {
     char *name;
+    char *connalias;
     lset_t policy;
     time_t sa_ike_life_seconds;
     time_t sa_ipsec_life_seconds;
@@ -301,11 +313,11 @@ struct state;	/* forward declaration of tag (defined in state.h) */
 extern struct connection
 *con_by_name(const char *nm, bool strict);
 
-#define find_host_connection(me, my_port, him, his_port) find_host_connection2(__FUNCTION__, me, my_port, him, his_port)
+#define find_host_connection(me, my_port, him, his_port, policy) find_host_connection2(__FUNCTION__, me, my_port, him, his_port, policy)
 extern struct connection 
 *find_host_connection2(const char *func
 		       , const ip_address *me, u_int16_t my_port
-	, const ip_address *him, u_int16_t his_port),
+	, const ip_address *him, u_int16_t his_port, lset_t policy),
     *refine_host_connection(const struct state *st, const struct id *id
 	, bool initiator, bool aggrmode),
     *find_client_connection(struct connection *c
@@ -408,6 +420,12 @@ extern size_t format_connection(char *buf, size_t buf_len
 				, const struct connection *c
 				, struct spd_route *sr);
 
+
+extern void setup_client_ports(struct spd_route *sr);
+
+extern int foreach_connection_by_alias(const char *alias
+				       , int (*f)(struct connection *c, void *arg)
+				       , void *arg);
 
 
 /*

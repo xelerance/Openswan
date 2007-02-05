@@ -40,7 +40,7 @@ enum {
 
 #define IPSEC_REPLAYWSIZE  32
 
-#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
+#if !(defined(__FreeBSD__) || defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
 #define IP_IPSEC_POLICY 16
 #define IPV6_IPSEC_POLICY 34
 #endif

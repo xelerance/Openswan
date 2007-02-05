@@ -92,21 +92,19 @@ struct iface_list interface_dev;
 
 /* control (whack) socket */
 int ctl_fd = NULL_FD;	/* file descriptor of control (whack) socket */
-#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
-struct sockaddr_un ctl_addr = { AF_UNIX, DEFAULT_CTLBASE CTL_SUFFIX };
-#else
-/* This will require fixes elsewhere too! */
-struct sockaddr_un ctl_addr = { sizeof(struct sockaddr_un), AF_UNIX, DEFAULT_CTLBASE CTL_SUFFIX };
-#endif
+struct sockaddr_un ctl_addr = { .sun_family=AF_UNIX,
+#if defined(HAS_SUN_LEN)
+				.sun_len=sizeof(struct sockaddr_un),
+#endif				
+				.sun_path  =DEFAULT_CTLBASE CTL_SUFFIX };
 
 /* info (showpolicy) socket */
 int policy_fd = NULL_FD;
-#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
-struct sockaddr_un info_addr= { AF_UNIX, DEFAULT_CTLBASE INFO_SUFFIX };
-#else
-/* This will require fixes elsewhere too! */
-struct sockaddr_un info_addr= { sizeof(struct sockaddr_un), AF_UNIX, DEFAULT_CTLBASE INFO_SUFFIX };
-#endif
+struct sockaddr_un info_addr= { .sun_family=AF_UNIX,
+#if defined(HAS_SUN_LEN)
+				.sun_len=sizeof(struct sockaddr_un),
+#endif				
+				.sun_path  =DEFAULT_CTLBASE INFO_SUFFIX };
 
 /* Initialize the control socket.
  * Note: this is called very early, so little infrastructure is available.
@@ -671,11 +669,25 @@ call_server(void)
 	}
 
 	DBG(DBG_CONTROL, DBG_log(BLANK_FORMAT));
+
+	/*
+	 * we log the time when we are about to do something so that
+	 * we know what time things happened, when not using syslog
+	 */
 	if(log_to_stderr_desired) {
 	    time_t n;
+	    
+	    static time_t lastn = 0;
 
 	    time(&n);
-	    DBG_log("time is %s (%lu)", ctime(&n), n);
+
+	    if(log_did_something) { 
+		lastn=n;
+		log_did_something=FALSE;
+		if((n-lastn) > 60) {
+		    DBG_log("time is %s (%lu)", ctime(&n), (unsigned long)n);
+		}
+	    }
 	}
 		    
 	/* figure out what is interesting */
@@ -766,7 +778,12 @@ call_server(void)
 #endif
 
 	    /* note we process helper things last on purpose */
-	    ndes -= pluto_crypto_helper_ready(&readfds);
+	    {
+		int helpers = pluto_crypto_helper_ready(&readfds);
+		DBG(DBG_CONTROL, DBG_log("* processed %d messages from cryptographic helpers\n", helpers));
+		
+		ndes -= helpers;
+	    }
 
 	    passert(ndes == 0);
 	}

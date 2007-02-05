@@ -17,7 +17,9 @@ char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.7 2005/04/29 05:10:22
 
 #define __NO_VERSION__
 #include <linux/module.h>
-#include <linux/config.h>	/* for CONFIG_IP_FORWARD */
+#ifndef AUTOCONF_INCLUDED
+#include <linux/config.h>
+#endif	/* for CONFIG_IP_FORWARD */
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
@@ -68,8 +70,8 @@ char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.7 2005/04/29 05:10:22
 #include "openswan/ipsec_esp.h"
 #include "openswan/ipsec_kern24.h"
 
-#include <pfkeyv2.h>
-#include <pfkey.h>
+#include <openswan/pfkeyv2.h>
+#include <openswan/pfkey.h>
 
 #include "openswan/ipsec_proto.h"
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL

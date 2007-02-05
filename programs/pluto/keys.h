@@ -24,8 +24,10 @@
 #include "x509.h"
 #include "certs.h"
 
+struct connection;
+
 extern void sign_hash(const struct RSA_private_key *k, const u_char *hash_val
-    , size_t hash_len, u_char *sig_val, size_t sig_len);
+		      , size_t hash_len, u_char *sig_val, size_t sig_len);
 
 extern const struct RSA_private_key *get_RSA_private_key(const struct connection *c);
 
@@ -39,6 +41,7 @@ extern void add_pgp_public_key(pgpcert_t *cert, time_t until
     , enum dns_auth_level dns_auth_level);
 extern void remove_x509_public_key(/*const*/ x509cert_t *cert);
 extern void list_public_keys(bool utc);
+extern void list_psks(void);
 
 struct gw_info;	/* forward declaration of tag (defined in dnskey.h) */
 extern void transfer_to_public_keys(struct gw_info *gateways_from_dns
@@ -49,12 +52,16 @@ extern void transfer_to_public_keys(struct gw_info *gateways_from_dns
 
 extern const chunk_t *get_preshared_secret(const struct connection *c);
 
+extern const char *pluto_shared_secrets_file;
 extern void load_preshared_secrets(int whackfd);
 extern void free_preshared_secrets(void);
 
 extern struct secret *osw_find_secret_by_public_key(struct secret *secrets
 						    , struct pubkey *my_public_key
 						    , int kind);
+
+extern struct secret *osw_get_xauthsecret(const struct connection *c UNUSED
+					  , char *xauthname);
 
 /* keys from ipsec.conf */
 extern struct pubkey_list *pluto_pubkeys;

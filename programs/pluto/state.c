@@ -93,7 +93,7 @@ struct msgid_list
 };
 
 bool
-reserve_msgid(struct state *isakmp_sa, msgid_t msgid)
+unique_msgid(struct state *isakmp_sa, msgid_t msgid)
 {
     struct msgid_list *p;
 
@@ -104,11 +104,18 @@ reserve_msgid(struct state *isakmp_sa, msgid_t msgid)
 	if (p->msgid == msgid)
 	    return FALSE;
 
+    return TRUE;
+}
+
+void
+reserve_msgid(struct state *isakmp_sa, msgid_t msgid)
+{
+    struct msgid_list *p;
+
     p = alloc_thing(struct msgid_list, "msgid");
     p->msgid = msgid;
     p->next = isakmp_sa->st_used_msgids;
     isakmp_sa->st_used_msgids = p;
-    return TRUE;
 }
 
 msgid_t
@@ -122,7 +129,7 @@ generate_msgid(struct state *isakmp_sa)
     for (;;)
     {
 	get_rnd_bytes((void *) &msgid, sizeof(msgid));
-	if (msgid != 0 && reserve_msgid(isakmp_sa, msgid))
+	if (msgid != 0 && unique_msgid(isakmp_sa, msgid))
 	    break;
 
 	if (--timeout == 0)
@@ -183,10 +190,6 @@ new_state(void)
     st = clone_thing(blank_state, "struct state in new_state()");
     st->st_serialno = next_so++;
     passert(next_so > SOS_FIRST);	/* overflow can't happen! */
-#ifdef XAUTH
-    passert(st->st_oakley.xauth == 0);
-    passert(st->st_xauth_username == NULL);
-#endif    
     st->st_whack_sock = NULL_FD;
     
     anyaddr(AF_INET, &st->hidden_variables.st_nat_oa);
@@ -394,7 +397,7 @@ delete_state(struct state *st)
     pfreeany(st->st_ah.peer_keymat);
     pfreeany(st->st_esp.our_keymat);
     pfreeany(st->st_esp.peer_keymat);
-    pfreeany(st->st_xauth_username);
+    freeanychunk(st->st_xauth_password);
     pfree(st);
 }
 
@@ -417,23 +420,18 @@ states_use_connection(struct connection *c)
 }
 
 /*
- * delete all states that were created for a given connection.
- * if relations == TRUE, then also delete states that share
- * the same phase 1 SA.
+ * delete all states that were created for a given connection,
+ * additionally delete any states for which func(st, arg)
+ * returns true.
  */
-void
-delete_states_by_connection(struct connection *c, bool relations)
+static void
+foreach_states_by_connection_func(struct connection *c
+				  , bool (*comparefunc)(struct state *st, struct connection *c, void *arg, int pass)
+				 , void (*successfunc)(struct state *st, struct connection *c, void *arg)
+				 , void *arg)
 {
     int pass;
     /* this kludge avoids an n^2 algorithm */
-    enum connection_kind ck = c->kind;
-    struct spd_route *sr;
-
-    /* save this connection's isakmp SA, since it will get set to later SOS_NOBODY */
-    so_serial_t parent_sa = c->newest_isakmp_sa;
-
-    if (ck == CK_INSTANCE)
-	c->kind = CK_GOING_AWAY;
 
     /* We take two passes so that we delete any ISAKMP SAs last.
      * This allows Delete Notifications to be sent.
@@ -456,24 +454,23 @@ delete_states_by_connection(struct connection *c, bool relations)
 
 		st = st->st_hashchain_next;	/* before this is deleted */
 
+		/* on pass 2, ignore phase2 states */
+ 		if(pass == 2 && IS_ISAKMP_SA_ESTABLISHED(this->st_state)) {
+		    continue;
+		}
 
-                if ((this->st_connection == c
-			|| (relations && parent_sa != SOS_NOBODY 
-			&& this->st_clonedfrom == parent_sa))
-			&& (pass == 1 || !IS_ISAKMP_SA_ESTABLISHED(this->st_state)))
+		/* call comparison function */
+                if ((*comparefunc)(this, c, arg, pass))
                 {
-                    struct state *old_cur_state
-                        = cur_state == this? NULL : cur_state;
+		    struct state *old_cur_state
+			= cur_state == this? NULL : cur_state;
 #ifdef DEBUG
 		    lset_t old_cur_debugging = cur_debugging;
 #endif
 
-		    set_cur_state(this);
-		    openswan_log("deleting state (%s)"
-			, enum_show(&state_names, this->st_state));
+    set_cur_state(this);
+		    (*successfunc)(this, c, arg);
 
-		    if(this->st_event != NULL) delete_event(this);
-		    delete_state(this);
 		    cur_state = old_cur_state;
 #ifdef DEBUG
 		    set_debugging(old_cur_debugging);
@@ -482,13 +479,79 @@ delete_states_by_connection(struct connection *c, bool relations)
 	    }
 	}
     }
+}
 
- /*  Seems to dump here because 1 of the states is NULL.  Removing the Assert
-     makes things work.  We should fix this eventually.
+static void delete_state_function(struct state *this
+				  , struct connection *c UNUSED
+				  , void *arg UNUSED)
+{
+    openswan_log("deleting state (%s)"
+		 , enum_show(&state_names, this->st_state));
 
-    passert(c->newest_ipsec_sa == SOS_NOBODY
-	    && c->newest_isakmp_sa == SOS_NOBODY);
+    if(this->st_event != NULL) delete_event(this);
+    delete_state(this);
+}
+
+/*
+ * delete all states that were created for a given connection.
+ * if relations == TRUE, then also delete states that share
+ * the same phase 1 SA.
  */
+static bool same_phase1_sa_relations(struct state *this
+				     , struct connection *c, void *arg
+				     , int pass UNUSED)
+{
+    so_serial_t *pparent_sa = (so_serial_t *)arg;
+    so_serial_t parent_sa = *pparent_sa;
+
+    return (this->st_connection == c
+	    || (parent_sa != SOS_NOBODY 
+		&& this->st_clonedfrom == parent_sa));
+}
+
+/*
+ * delete all states that were created for a given connection.
+ * if relations == TRUE, then also delete states that share
+ * the same phase 1 SA.
+ */
+static bool same_phase1_sa(struct state *this,
+			   struct connection *c
+			   , void *arg UNUSED
+			   , int pass UNUSED)
+{
+    return (this->st_connection == c);
+}
+
+void
+delete_states_by_connection(struct connection *c, bool relations)
+{
+    so_serial_t parent_sa = c->newest_isakmp_sa;
+    enum connection_kind ck = c->kind;
+    struct spd_route *sr;
+
+    /* save this connection's isakmp SA,
+     * since it will get set to later SOS_NOBODY */
+    if (ck == CK_INSTANCE)
+	c->kind = CK_GOING_AWAY;
+
+    if(relations) {
+	foreach_states_by_connection_func(c, same_phase1_sa_relations
+					  , delete_state_function
+					  , &parent_sa);
+    } else {
+	foreach_states_by_connection_func(c, same_phase1_sa
+					  , delete_state_function
+					  , &parent_sa);
+    }
+
+    /*
+     * Seems to dump here because 1 of the states is NULL.  Removing the Assert
+     * makes things work.  We should fix this eventually.
+     *
+     *  passert(c->newest_ipsec_sa == SOS_NOBODY
+     *  && c->newest_isakmp_sa == SOS_NOBODY);
+     *
+     */
 
     sr = &c->spd;
     while (sr != NULL)
@@ -504,6 +567,97 @@ delete_states_by_connection(struct connection *c, bool relations)
 	delete_connection(c, relations);
     }
 }
+
+/*
+ * delete_p2states_by_connection - deletes only the phase 2 of conn
+ *
+ * @c - the connection whose states need to be removed.
+ *
+ * This is like delete_states_by_connection with relations=TRUE,
+ * but it only deletes phase 2 states.
+ */
+static bool same_phase1_no_phase2(struct state *this
+				  , struct connection *c
+				  , void *arg
+				  , int pass)
+{
+    if(pass == 2) return FALSE;
+
+    if(IS_ISAKMP_SA_ESTABLISHED(this->st_state)) {
+	return FALSE;
+    } else {
+	return same_phase1_sa_relations(this, c, arg, pass);
+    }
+}
+
+void
+delete_p2states_by_connection(struct connection *c)
+{
+    so_serial_t parent_sa = c->newest_isakmp_sa;
+    enum connection_kind ck = c->kind;
+
+    /* save this connection's isakmp SA,
+     * since it will get set to later SOS_NOBODY */
+    if (ck == CK_INSTANCE)
+	c->kind = CK_GOING_AWAY;
+
+    foreach_states_by_connection_func(c, same_phase1_no_phase2
+				      , delete_state_function
+				      , &parent_sa);
+    if (ck == CK_INSTANCE)
+    {
+	c->kind = ck;
+	delete_connection(c, TRUE);
+    }
+}
+
+/*
+ * rekey_p2states_by_connection - rekeys all the phase 2 of conn
+ *
+ * @c - the connection whose states need to be rekeyed
+ *
+ * This is like delete_states_by_connection with relations=TRUE,
+ * but instead of removing the states, is scheduled them for rekey.
+ */
+static void rekey_state_function(struct state *this
+				 , struct connection *c UNUSED
+				 , void *arg UNUSED)
+{
+    openswan_log("rekeying state (%s)"
+		 , enum_show(&state_names, this->st_state));
+
+    delete_event(this);
+    delete_dpd_event(this);
+    event_schedule(EVENT_SA_REPLACE, 0, this);
+
+    /*
+     * but, remove the actual phase2 SA from the kernel, replacing
+     * with a %trap.
+     */
+    delete_ipsec_sa(this, FALSE);
+}
+
+void
+rekey_p2states_by_connection(struct connection *c)
+{
+    so_serial_t parent_sa = c->newest_isakmp_sa;
+    enum connection_kind ck = c->kind;
+
+    /* save this connection's isakmp SA,
+     * since it will get set to later SOS_NOBODY */
+    if (ck == CK_INSTANCE)
+	c->kind = CK_GOING_AWAY;
+
+    foreach_states_by_connection_func(c, same_phase1_no_phase2
+				      , rekey_state_function
+				      , &parent_sa);
+    if (ck == CK_INSTANCE)
+    {
+	c->kind = ck;
+	delete_connection(c, TRUE);
+    }
+}
+
 
 /* Walk through the state table, and delete each state whose phase 1 (IKE)
  * peer is among those given.
@@ -531,11 +685,11 @@ delete_states_by_peer(ip_address *peer)
 		char ra[ADDRTOT_BUF];
 		
 		st = st->st_hashchain_next;	/* before this is deleted */
-		
-		addrtot(&st->st_remoteaddr, 0, ra, sizeof(ra));
+
+		addrtot(&this->st_remoteaddr, 0, ra, sizeof(ra));
 		DBG_log("comparing %s to %s\n", ra, peerstr);
 
-		if(sameaddr(&st->st_remoteaddr, peer)) {
+		if(sameaddr(&this->st_remoteaddr, peer)) {
 		    if(ph1==0 && IS_PHASE1(st->st_state)) {
 			
 			whack_log(RC_COMMENT
@@ -544,8 +698,8 @@ delete_states_by_peer(ip_address *peer)
 				  , c->name);
 			ipsecdoi_replace(st, 1);
 		    } else {
-			delete_event(st);
-			event_schedule(EVENT_SA_REPLACE, 0, st);
+			delete_event(this);
+			event_schedule(EVENT_SA_REPLACE, 0, this);
 		    }
 		}
 	    }
@@ -579,16 +733,13 @@ duplicate_state(struct state *st)
     nst->st_situation = st->st_situation;
     nst->quirks = st->quirks;
     nst->hidden_variables = st->hidden_variables;
-    if(st->st_xauth_username) {
-	nst->st_xauth_username = clone_str((char *)st->st_xauth_username
-					   , "xauth username");
-    }
     nst->st_remoteaddr = st->st_remoteaddr;
     nst->st_remoteport = st->st_remoteport;
     nst->st_localaddr  = st->st_localaddr;
     nst->st_localport  = st->st_localport;
     nst->st_interface  = st->st_interface;
     nst->st_clonedfrom = st->st_serialno;
+    nst->st_import     = st->st_import;
 
 
 #   define clone_chunk(ch, name) \
@@ -858,7 +1009,7 @@ void fmt_state(struct state *st, time_t n
 	if(st->hidden_variables.st_dpd) {
 	    time_t n = time(NULL);
 	    snprintf(dpdbuf, sizeof(dpdbuf), "; lastdpd=%lds(seq in:%u out:%u)"
-		     , st->st_last_dpd !=0 ? n - st->st_last_dpd : -1
+		     , st->st_last_dpd !=0 ? n - st->st_last_dpd : (long)-1
 		     , st->st_dpd_seqno
 		     , st->st_dpd_expectseqno);
 	} else {

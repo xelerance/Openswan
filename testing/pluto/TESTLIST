@@ -278,6 +278,15 @@ umlXhost	xauth-pluto-05		good
 umlXhost	xauth-pluto-06		good
 
 #
+# a test case of xauth using xauthname= in ipsec.conf 
+umlXhost	xauth-pluto-10		good
+
+#
+# a test case of xauth using xauthname= in ipsec.conf and XAUTH password in ipsec.secrets
+umlXhost	xauth-pluto-11		good
+
+
+#
 # a test of using AES with pluto, with pfs=yes
 #
 umlplutotest	basic-pluto-05		good
@@ -356,3 +365,15 @@ umlplutotest	basic-pluto-07		bad
 #
 umlplutotest	basic-pluto-08		bad
 
+# 
+# a test of using aes256 for phase 1 and phase 2,
+# with appropriate modp group
+umlplutotest    algo-pluto-01          good
+
+#
+# tests for usnig multiple subnets using conn aliases
+#
+multinet	multinet-01		good
+multinet	multinet-02		good
+multinet	multinet-03		good
+multinet	multinet-04		good

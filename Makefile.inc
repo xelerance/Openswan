@@ -1,6 +1,6 @@
 # Openswan pathnames and other master configuration
 # Copyright (C) 2001, 2002  Henry Spencer.
-# Copyright (C) 2003, 2004  Xelerance Corporation
+# Copyright (C) 2003-2006   Xelerance Corporation
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -56,7 +56,7 @@ PUBDIR=$(DESTDIR)$(INC_USRLOCAL)/sbin
 
 # BINDIR is where sub-commands get put, FINALBINDIR is where the "ipsec"
 # command will look for them when it is run. Also called LIBEXECDIR.
-FINALLIBEXECDIR=$(INC_USRLOCAL)/libexec/ipsec
+FINALLIBEXECDIR?=$(INC_USRLOCAL)/libexec/ipsec
 LIBEXECDIR=$(DESTDIR)$(FINALBINDIR)
 
 FINALBINDIR=${FINALLIBEXECDIR}
@@ -64,11 +64,11 @@ BINDIR=${LIBEXECDIR}
 
 
 # SBINDIR is where the user interface command goes.
-FINALSBINDIR=$(INC_USRLOCAL)/sbin
+FINALSBINDIR?=$(INC_USRLOCAL)/sbin
 SBINDIR=$(DESTDIR)$(FINALSBINDIR)
 
 # libdir is where utility files go
-FINALLIBDIR=$(INC_USRLOCAL)/lib/ipsec
+FINALLIBDIR?=$(INC_USRLOCAL)/lib/ipsec
 LIBDIR=$(DESTDIR)$(FINALLIBDIR)
 
 
@@ -170,7 +170,7 @@ INSTCONFFLAGS=
 
 # extra compile flags, for userland and kernel stuff, e.g. -g for debug info
 # you can add to this in the defaults file using +=
-USERCOMPILE?=-g ${WERROR} 
+USERCOMPILE?=-g ${WERROR} ${PORTDEFINE}
 #USERCOMPILE?=-g -O3 ${WERROR} 
 KLIPSCOMPILE=-O3
 # for AMD64 use 
@@ -237,18 +237,6 @@ RH_KERNELSRC?=/lib/modules/2.6.9-1.681_FC3/build
 ## build environment variations
 ##
 
-# set this to a place where you have installed a bind9.3 
-# snapshot (20021115 or better). A bind 9.2, particularly a RedHat
-# installed one in RH 7.2, won't work - you wind up depending upon
-# openssl.
-
-BIND9STATICLIBDIR?=/usr/lib
-
-# if you install elsewere, you may need to point the include files to it.
-#BIND9STATICLIBDIR?=/sandel/lib
-#BIND9INCDIR?=/sandel/include
-
-
 #
 # USE_ variables determine if features are compiled into Openswan.
 #       these let you turn on/off specific features
@@ -272,6 +260,11 @@ USE_IPROUTE2?=true
 #  2.6  - iptables
 IPSEC_FIREWALLTYPE=iptables
 
+# Do we want all the configuration files like ipsec.conf and ipsec.secrets
+# and any certificates to be in a single directory defined by 
+# FINALCONFDDIR?
+USE_SINGLE_CONF_DIR?=false
+
 # whether or not to include ipsec policy code into pluto.
 # false for now, since it is still experimental.
 USE_IPSECPOLICY?=true
@@ -287,8 +280,14 @@ USE_KEYRR?=true
 # include support for 2.4 KLIPS and 2.6 KLIPS in pluto
 USE_KLIPS?=true
 
+# KLIPS needs PFKEYv2, but sometimes we want PFKEY without KLIPS
+USE_PFKEYv2?=true
+
 # include support for 2.6 KLIPS/MAST variation in pluto
 USE_MAST?=true
+
+# MAST is generally a prerequisite for SAREF support in applications
+USE_SAREF_KERNEL=false
 
 # include support for NETKEY 2.5/2.6 IPsec in pluto (aka "native", "kame")
 USE_KERNEL26?=true
@@ -358,6 +357,12 @@ USE_EXTRACRYPTO?=true
 # 
 HAVE_THREADS?=false
 
+# Do we have OCF available?
+HAVE_OCF?=true
+
+# Do we have Openssl libraries available for BIGNUM support?
+HAVE_OPENSSL?=true
+
 # Do we assume that the /bin/sh is BASH?
 # if so, then internationalization code is retained in the shell scripts
 USE_BASH?=true
@@ -365,6 +370,9 @@ USE_BASH?=true
 # Whether or not to include TaProoM (TCL Pluto Mix) into pluto.
 # you need at least swig 1.3.24, as well as tcl libraries and includes
 USE_TAPROOM?=false
+
+# On MAC OSX , we have to use YACC and not BISON.
+USE_YACC?=false
 
 X509_VERSION=X.509-1.5.4
 NONINTCONFIG=oldconfig
@@ -408,9 +416,6 @@ OBJDIR=OBJ.${BUILDENV}.${ARCH}
 OBJDIRTOP=${OPENSWANSRCDIR}/${OBJDIR}
 endif
 
-# export everything so that scripts can use them.
-export LIBOPENSWANDIR OPENSWANSRCDIR ARCH 
-
 # where to place the object files which are built 
 OBJDIR?=.
 OBJDIRTOP?=${OPENSWANSRCDIR}
@@ -453,6 +458,13 @@ POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 
 WHACKLIB=${OBJDIRTOP}/lib/libwhack/libwhack.a
 IPSECCONFLIB=${OBJDIRTOP}/lib/libipsecconf/libipsecconf.a
+
+# export everything so that scripts can use them.
+export LIBOPENSWANDIR OPENSWANSRCDIR ARCH PORTINCLUDE 
+export LIBOPENSWANDIR OPENSWANLIB OSWLOGLIB LWRESDIR LIBLWRES LIBDNS
+export LIBISC ISCARCH ISCHOSTARCH LIBDESSRCDIR LIBDESLITE LIBAES
+export LIBMD5 LIBMD2 LIBSHA1 LIBBLOWFISH LIBTWOFISH LIBSERPENT
+export LIBSHA2 CRYPTOLIBS LIBPOLICYDIR POLICYLIB WHACKLIB IPSECCONFLIB
 
 #KERNELBUILDMFLAGS=--debug=biv V=1 
 

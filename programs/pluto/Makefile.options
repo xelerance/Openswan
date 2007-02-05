@@ -50,7 +50,7 @@ endif
 
 # -O on Linux makes gcc coredump when compiling sha1.c
 # -Wundef is nice but RHL5.2 compiler doesn't support it
-CFLAGS = -g -Wall -W -Wmissing-prototypes -Wpointer-arith -Wbad-function-cast \
+CFLAGS +=-g -Wall -W -Wmissing-prototypes -Wpointer-arith -Wbad-function-cast \
 	-Wcast-qual -Wmissing-declarations -Wwrite-strings \
 	-Wstrict-prototypes # -Wundef
 
@@ -124,7 +124,7 @@ NETKEY_SRCS=${NETKEY_DIST_SRCS}
 NETKEY_OBJS=kernel_netlink.o
 endif
 
-KLIPS_DIST_SRCS=kernel_pfkey.c kernel_klips.c kernel_mast.c kernel_pfkey.h 
+KLIPS_DIST_SRCS=kernel_pfkey.c kernel_klips.c kernel_pfkey.h 
 ifeq ($(USE_KLIPS),true)
 KLIPS_SRCS=${KLIPS_DIST_SRCS}
 KLIPS_DEFS=-DKLIPS -DHAVE_UDPFROMTO -DPFKEY
@@ -137,7 +137,6 @@ MAST_SRCS=${MAST_DIST_SRCS}
 MAST_DEFS=-DKLIPS_MAST 
 MAST_OBJS=kernel_mast.o
 endif
-
 
 WIN2K_DIST_SRCS=kernel_win2k.c
 ifeq ($(USE_WIN2K_NATIVE),true)
@@ -183,6 +182,17 @@ HAVE_THREADS_SRCS=${HAVE_THREADS_DIST_SRCS}
 HAVE_THREADS_LLIBS=-lpthread
 endif
 
+ifeq ($(HAVE_OCF),true)
+ifeq ($(HAVE_OPENSSL),true)
+HAVE_OCF_OPENSSL_DEFS=-DHAVE_OCF_AND_OPENSSL
+HAVE_OCF_OBJS=${HAVE_OCF_DIST_OBJS}
+HAVE_OCF_SRCS=${HAVE_OCF_DIST_SRCS}
+HAVE_OCF_DIST_OBJS=ocf_cryptodev.o 
+HAVE_OCF_DIST_SRCS=ocf_cryptodev.c ocf_cryptodev.h
+OPENSSL_LIBS=-lcrypto
+endif
+endif
+
 ifeq ($(USE_SMARTCARD),true)
 # smartcard functions are compiled in whether or not we have -lopensc,
 # but ifndef SMARTCARD, they are dummy functions.
@@ -199,6 +209,9 @@ ifeq ($(USE_XAUTH),true)
 XAUTH_DEFS=-DXAUTH -DMODECFG
 XAUTH_OBJS=${XAUTH_DIST_OBJS}
 XAUTH_SRCS=${XAUTH_DIST_SRCS}
+ifneq ($(BUILDENV), darwin)
+XAUTH_LLIBS=-lcrypt
+endif
 # if we use pam for password checking then add it too
 ifeq ($(USE_XAUTHPAM),true)
 XAUTHPAM_DEFS=-DXAUTH_USEPAM
@@ -244,6 +257,10 @@ EXTRA_CRYPTO_OBJS=ike_alg_blowfish.o ike_alg_twofish.o ike_alg_serpent.o ike_alg
 EXTRA_CRYPTO_LIBS=$(LIBBLOWFISH) $(LIBTWOFISH) $(LIBSERPENT) $(LIBSHA2) 
 endif
 
+ifeq ($(USE_SINGLE_CONF_DIR),true)
+SINGLE_CONF_DIR=-DSINGLE_CONF_DIR
+endif
+
 ifeq ($(USE_TAPROOM),true)
 LIBTPM=tpm/libtpm.a
 TPM_LIBS=${LIBTPM} ${TCLLIB}
@@ -266,11 +283,12 @@ DEFINES = $(EXTRA_DEFINES) \
 	-DDEBUG \
 	-DGCC_LINT \
 	-DUSE_AES -DUSE_3DES \
-	-DIKE_ALG -DKERNEL_ALG -DDB_CONTEXT \
+	-DIKE_ALG -DKERNEL_ALG \
 	${AGGRESSIVE_DEFS} \
 	${XAUTH_DEFS} ${XAUTHPAM_DEFS} \
 	${NAT_DEFS} ${CURL_DEFS}\
 	${WEAK_DEFS} \
+	${SINGLE_CONF_DIR} ${HAVE_OCF_OPENSSL_DEFS} \
 	${HW_DEFS} \
 	# -DLEAK_DETECTIVE
 
@@ -283,7 +301,9 @@ LIBSPLUTO+=$(HAVE_THREADS_LIBS) ${XAUTHPAM_LIBS}
 LIBSPLUTO+=${CURL_LIBS} ${TPM_LIBS}
 LIBSPLUTO+=${EXTRA_CRYPTO_LIBS} ${WHACKLIB}
 PLUTOMINUSL+= ${X509_LLIBS} ${CURL_LLIBS} ${TPM_LLIBS} ${HAVE_THREADS_LLIBS} 
-PLUTOMINUSL+= ${SMARTCARD_LLIBS} -lgmp # -lefence
+PLUTOMINUSL+= ${XAUTH_LLIBS}
+PLUTOMINUSL+= ${SMARTCARD_LLIBS} ${OPENSSL_LIBS} ${LIBCRYPT} -lgmp # -lefence
+
 
 
 

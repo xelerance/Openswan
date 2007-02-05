@@ -85,7 +85,11 @@ check_expiry(time_t expiration_date, int warning_interval, bool strict)
  * and also "CVS" (thus eliminating '.' and '..')
  */
 int
-file_select(const struct dirent *entry)
+file_select(
+#ifdef SCANDIR_HAS_CONST	    
+	    const
+#endif
+	    struct dirent *entry)
 {
   return (entry->d_name[0] != '.' &&
 	  strcmp(entry->d_name, "CVS")!=0 &&

@@ -21,7 +21,9 @@
 
 char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.134 2005/05/11 01:48:20 mcr Exp $";
 
+#ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
+#endif
 #include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
@@ -53,6 +55,7 @@ char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.134 2005/05/11 01
 # endif /* SPINLOCK_23 */
 #endif /* SPINLOCK */
 #ifdef NET_21
+# include <net/route.h>          /* inet_addr_type */
 # include <linux/in6.h>
 # define ip_chk_addr inet_addr_type
 # define IS_MYADDR RTN_LOCAL
@@ -80,8 +83,8 @@ char pfkey_v2_parser_c_version[] = "$Id: pfkey_v2_parser.c,v 1.134 2005/05/11 01
 #include "openswan/ipsec_rcv.h"
 #include "openswan/ipcomp.h"
 
-#include <pfkeyv2.h>
-#include <pfkey.h>
+#include <openswan/pfkeyv2.h>
+#include <openswan/pfkey.h>
 
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
@@ -185,8 +188,10 @@ pfkey_x_protocol_process(struct sadb_ext *pfkey_ext,
 DEBUG_NO_STATIC int
 pfkey_ipsec_sa_init(struct ipsec_sa *ipsp)
 {
-
-	return ipsec_sa_init(ipsp);
+        int rc;
+	KLIPS_PRINT(debug_pfkey, "Calling SA_INIT\n");
+	rc = ipsec_sa_init(ipsp);
+        return rc;
 }
 
 int
@@ -491,7 +496,6 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		/* this will call delchain-equivalent if refcount=>0 */
 		ipsec_sa_put(ipsq);
 	}
-
 
 	spin_unlock_bh(&tdb_lock);
 	
@@ -899,6 +903,7 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
 	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
+	IPsecSAref_t ref;
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_delete_parse: .\n");
@@ -926,6 +931,13 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		SENDERR(ESRCH);
 	}
 
+	/* remove it from SAref tables */
+	ref = ipsp->ips_ref;
+	ipsec_sa_untern(ipsp); 
+	ipsec_sa_rm(ipsp);
+
+	/* this will call delchain-equivalent if refcount -> 0
+	 * noting that get() above, added to ref count */
 	ipsec_sa_put(ipsp);
 	spin_unlock_bh(&tdb_lock);
 
@@ -943,7 +955,8 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 							0,
 							0,
 							0,
-							0),
+							0,
+							ref),
 				 extensions_reply)
 	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_SRC],
 							     K_SADB_EXT_ADDRESS_SRC,
@@ -2777,7 +2790,7 @@ pfkey_build_reply(struct sadb_msg *pfkey_msg,
 	if (!extr || !extr->ips) {
 			KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_build_reply: "
 				    "bad ipsec_sa passed\n");
-			return EINVAL;
+			return EINVAL; // TODO: should this not be negative?
 	}
 	error = pfkey_safe_build(pfkey_msg_hdr_build(&extensions[0],
 						     msg_type,

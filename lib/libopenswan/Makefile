@@ -42,14 +42,18 @@ SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 SRCS+=sanitizestring.c pfkey_print.c pfkey_sock.c pfkey_error.c
 
 ifeq ($(USE_KLIPS),true)
-PFKEYV2_DEFS=-DKLIPS -DPFKEYV2
-PFKEYV2_SRCS+=pfkey_v2_build.c pfkey_v2_ext_bits.c pfkey_v2_parse.c
-PFKEYV2_SRCS+=pfkey_v2_debug.c 
-
+KLIPS_DEFS=-DKLIPS 
 # for now, USE_KLIPS=>linux, which implies we have udpfromto() support.
 UDPFROMTO_DEFS=-DWITH_UDPFROMTO -DHAVE_IP_PKTINFO
 UDPFROMTO_SRCS=udpfromto.c
 endif
+
+ifeq ($(USE_PFKEYv2),true)
+PFKEYV2_DEFS=-DPFKEYV2
+PFKEYV2_SRCS+=pfkey_v2_build.c pfkey_v2_ext_bits.c pfkey_v2_parse.c
+PFKEYV2_SRCS+=pfkey_v2_debug.c 
+endif
+
 
 LOGSRCS=oswlog.c oswid.c
 
@@ -69,7 +73,7 @@ LIBL=liboswlog.a
 # Original flags
 CFLAGS=${PORTINCLUDE} -I. -I${KLIPSSRCDIR} -I${KLIPSINC}
 CFLAGS+=-I${OPENSWANSRCDIR} -DDEBUG
-CFLAGS+=${PFKEYV2_DEFS} ${UDPFROMTO_DEFS}
+CFLAGS+=${PFKEYV2_DEFS} ${KLIPS_DEFS} ${UDPFROMTO_DEFS}
 CFLAGS+= -I${OPENSWANSRCDIR}/include ${PORTINCLUDE} $(USERCOMPILE)
 CFLAGS+= -Wall
 #CFLAGS+= -Wconversion

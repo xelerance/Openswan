@@ -181,31 +181,32 @@ enum_names state_stories =
 
 /* pluto crypto operations */
 static const char *const pluto_cryptoop_strings[] = {
-  "build_kenonce",	/* calculate g^i and nonce */
-  "rsa_sign",	        /* do rsa signature operation */
-  "rsa_check",	        /* do rsa signature check */
-  "x509cert_fetch",     /* X.509 fetch operation */
-  "x509crl_fetch",      /* X.509 crl fetch operation */
-  "build_nonce",        /* just fetch a new nonce */
-  "compute dh+iv",      /* perform (g^x)(g^y) and calculate skeyids */
-  "compute dh(p2)",     /* perform (g^x)(g^y) */
+	"build_kenonce",	/* calculate g^i and nonce */
+	"rsa_sign",	        /* do rsa signature operation */
+	"rsa_check",	        /* do rsa signature check */
+	"x509cert_fetch",     /* X.509 fetch operation */
+	"x509crl_fetch",      /* X.509 crl fetch operation */
+	"build_nonce",        /* just fetch a new nonce */
+	"compute dh+iv",      /* perform (g^x)(g^y) and calculate skeyids */
+	"compute dh(p2)",     /* perform (g^x)(g^y) */
 };
 
 enum_names pluto_cryptoop_names =
-    { pcr_build_kenonce, pcr_build_nonce, pluto_cryptoop_strings, NULL};
+    { pcr_build_kenonce, pcr_compute_dh, pluto_cryptoop_strings, NULL};
 
 
 /* pluto crypto importance */
 static const char *const pluto_cryptoimportance_strings[] = {
-  "stranger asked for crypto",	
-  "a known node asked for crypto",
-  "an ongoing calculation needs crypto",
-  "a local process initiated crypto",
-  "a local administrator initiated crypto"
+	"import:not set",
+  "import:respond to stranger",	
+  "import:respond to friend",
+  "import:ongoing calculation",
+  "import:local rekey",
+  "import:admin initiate"
 };
 
 enum_names pluto_cryptoimportance_names =
-    { pcim_stranger_crypto, pcim_demand_crypto
+    { pcim_notset_crypto, pcim_demand_crypto
       , pluto_cryptoimportance_strings, NULL};
 
 
