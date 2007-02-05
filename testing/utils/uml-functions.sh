@@ -372,7 +372,7 @@ lndirkerndirnogit() {
 	stuff=`cd $origin; echo *`
 	for t in $stuff; do
 	  if [ -d $origin/$t ]; then
-	     mkdir $t; (cd $t && lndir -silent $origin/$t .);
+	     mkdir -p $t; (cd $t && lndir -silent $origin/$t .);
 	  else
              ln -s -f $origin/$t .
           fi
