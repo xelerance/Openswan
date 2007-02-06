@@ -1,0 +1,24 @@
+commit c0f13aeb0d3eaeac192a7186d678c9b8a635643a
+Author: Michael Richardson <mcr@xelerance.com>
+Date:   Tue Apr 25 20:50:28 2006 -0400
+
+    KLIPSng patches to rest of kernel.
+    Sign-off-by: Michael Richardson <mcr@xelerance.com>
+
+diff --git a/include/linux/in.h b/include/linux/in.h
+index ba35538..2b47dff 100644
+--- a/include/linux/in.h
++++ b/include/linux/in.h
+@@ -265,6 +265,9 @@ enum rtattr_type_t
+ 	__RTA_MAX
+ };
+ 
++#define RTA_FWMARK      RTA_PROTOINFO
++#define RTA_FWMARK_MASK RTA_CACHEINFO
++
+ #define RTA_MAX (__RTA_MAX - 1)
+ 
+ #define RTM_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct rtmsg))))
+diff --git a/include/net/ip.h b/include/net/ip.h
+index fab3d5b..dbeb325 100644
+--- a/include/net/ip.h

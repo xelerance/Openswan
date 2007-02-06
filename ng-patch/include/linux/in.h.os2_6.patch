@@ -1,0 +1,22 @@
+commit c0f13aeb0d3eaeac192a7186d678c9b8a635643a
+Author: Michael Richardson <mcr@xelerance.com>
+Date:   Tue Apr 25 20:50:28 2006 -0400
+
+    KLIPSng patches to rest of kernel.
+    Sign-off-by: Michael Richardson <mcr@xelerance.com>
+
+diff --git a/include/linux/in.h b/include/linux/in.h
+index ba35538..2b47dff 100644
+--- a/include/linux/in.h
++++ b/include/linux/in.h
+@@ -72,6 +72,7 @@ struct in_addr {
+ #define IP_FREEBIND	15
+ #define IP_IPSEC_POLICY	16
+ #define IP_XFRM_POLICY	17
++#define IP_IPSEC_REFINFO 18
+ 
+ /* BSD compatibility */
+ #define IP_RECVRETOPTS	IP_RETOPTS
+diff --git a/include/linux/rtnetlink.h b/include/linux/rtnetlink.h
+index d50482b..c1daff1 100644
+--- a/include/linux/rtnetlink.h
