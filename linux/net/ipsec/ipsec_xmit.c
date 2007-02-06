@@ -39,9 +39,11 @@ char ipsec_xmit_c_version[] = "RCSID $Id: ipsec_xmit.c,v 1.20.2.6 2006/07/07 22:
 #include <linux/netdevice.h>   /* struct device, struct net_device_stats, dev_queue_xmit() and other headers */
 #include <linux/etherdevice.h> /* eth_type_trans */
 #include <linux/ip.h>          /* struct iphdr */
-#include <linux/tcp.h>         /* struct tcphdr */
-#include <linux/udp.h>         /* struct udphdr */
+
+#include <net/tcp.h>
+#include <net/udp.h>
 #include <linux/skbuff.h>
+
 #include <asm/uaccess.h>
 #include <asm/checksum.h>
 #include <openswan.h>

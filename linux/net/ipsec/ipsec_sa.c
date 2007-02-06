@@ -112,6 +112,7 @@ ipsec_SAref_recycle(void)
 {
 	int table, i;
 	int error = 0;
+	int entry;
 	int addone;
 
 	ipsec_sadb.refFreeListHead = IPSEC_SAREF_NULL;
@@ -650,30 +651,6 @@ __ipsec_sa_get(struct ipsec_sa *ips, const char *func, int line)
         return ips;
 }
 
-int
-__ipsec_sa_get(struct ipsec_sa *ips, const char *func, int line)
-{
-        char sa[SATOT_BUF];
-	size_t sa_len;
-
-	if(debug_xform) {
-	  sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
-
-	  KLIPS_PRINT(debug_xform,
-		      "ipsec_sa_get: "
-		      "ipsec_sa %p SA:%s, ref:%d reference count (%d++) incremented by %s:%d.\n",
-		      ips,
-		      sa_len ? sa : " (error)",
-		      ips->ips_ref,
-		      atomic_read(&ips->ips_refcount),
-		      func, line);
-	}
-
-	atomic_inc(&ips->ips_refcount);
-	return atomic_read(&ips->ips_refcount);
-}
-
-
 /*
   The ipsec_sa table better *NOT* be locked before it is handed in, or SMP locks will happen
 */
@@ -963,7 +940,7 @@ ipsec_sadb_free(void)
 	return(error);
 }
 
-static int
+int
 ipsec_sa_wipe(struct ipsec_sa *ips)
 {
 	if(ips == NULL) {

@@ -90,6 +90,10 @@ char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.234 2005/11/11 04
 
 static __u32 zeroes[64];
 
+#ifdef CONFIG_KLIPS_DEBUG
+int debug_tunnel = 0;
+#endif /* CONFIG_KLIPS_DEBUG */
+
 DEBUG_NO_STATIC int
 ipsec_tunnel_open(struct net_device *dev)
 {
@@ -500,6 +504,11 @@ ipsec_tunnel_restore_hard_header(struct ipsec_xmit_state*ixs)
 
 	return IPSEC_XMIT_OK;
 }
+
+/* management of buffers */
+static struct ipsec_xmit_state * ipsec_xmit_state_new (void);
+static void ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs);
+
 
 /*
  *	This function assumes it is being called from dev_queue_xmit()
