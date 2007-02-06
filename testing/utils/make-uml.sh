@@ -211,7 +211,7 @@ do
     fi
     echo Using kernel: $UMLKERNEL for $host
 
-    setup_host_make $host $UMLKERNEL openswan ${KERNVER} $NEED_plain >>$UMLMAKE
+    setup_host_make $host $UMLKERNEL openswan ${KERNVER} $BUILD_MODULES >>$UMLMAKE
 done
 
 if $NEED_swan && [ ! -x $UMLSWAN/linux ]
