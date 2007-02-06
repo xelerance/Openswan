@@ -34,6 +34,7 @@ char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.7 2005/04/29 05:10:22
 #include <linux/types.h>  /* size_t */
 #include <linux/interrupt.h> /* mark_bh */
 
+#include <net/arp.h>
 #include <net/tcp.h>
 #include <net/udp.h>
 #include <linux/skbuff.h>

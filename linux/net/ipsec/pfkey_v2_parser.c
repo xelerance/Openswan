@@ -904,6 +904,7 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	struct socket_list *pfkey_socketsp;
 	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
 	IPsecSAref_t ref;
+	struct sadb_builds sab;
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_delete_parse: .\n");
@@ -941,6 +942,16 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	ipsec_sa_put(ipsp);
 	spin_unlock_bh(&tdb_lock);
 
+	memset(&sab, 0, sizeof(sab));
+	sab.sa_base.sadb_sa_exttype = K_SADB_EXT_SA;
+	sab.sa_base.sadb_sa_spi     = extr->ips->ips_said.spi;
+	sab.sa_base.sadb_sa_replay  = 0;
+	sab.sa_base.sadb_sa_state   = 0;
+	sab.sa_base.sadb_sa_auth    = 0;
+	sab.sa_base.sadb_sa_encrypt = 0;
+	sab.sa_base.sadb_sa_flags   = 0;
+	sab.sa_base.sadb_x_sa_ref   = ref;
+
 	if(!(pfkey_safe_build(error = pfkey_msg_hdr_build(&extensions_reply[0],
 							  K_SADB_DELETE,
 							  satype,
@@ -948,15 +959,7 @@ pfkey_delete_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_seq,
 							  ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_pid),
 			      extensions_reply)
-	     && pfkey_safe_build(error = pfkey_sa_build(&extensions_reply[K_SADB_EXT_SA],
-							K_SADB_EXT_SA,
-							extr->ips->ips_said.spi,
-							0,
-							0,
-							0,
-							0,
-							0,
-							ref),
+	     && pfkey_safe_build(error = pfkey_sa_builds(&extensions_reply[K_SADB_EXT_SA], sab),
 				 extensions_reply)
 	     && pfkey_safe_build(error = pfkey_address_build(&extensions_reply[K_SADB_EXT_ADDRESS_SRC],
 							     K_SADB_EXT_ADDRESS_SRC,

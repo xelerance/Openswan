@@ -1,14 +1,5 @@
-commit c0f13aeb0d3eaeac192a7186d678c9b8a635643a
-Author: Michael Richardson <mcr@xelerance.com>
-Date:   Tue Apr 25 20:50:28 2006 -0400
-
-    KLIPSng patches to rest of kernel.
-    Sign-off-by: Michael Richardson <mcr@xelerance.com>
-
-diff --git a/include/linux/in.h b/include/linux/in.h
-index ba35538..2b47dff 100644
---- a/include/linux/in.h
-+++ b/include/linux/in.h
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
 @@ -440,6 +442,8 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, u32 info)
  	u32 saddr;
  	u8  tos;
@@ -18,6 +9,3 @@ index ba35538..2b47dff 100644
  	if (!rt)
  		goto out;
  
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 8ee4d01..d191a6f 100644
---- a/net/ipv4/ip_output.c

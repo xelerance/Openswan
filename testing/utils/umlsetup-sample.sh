@@ -30,6 +30,15 @@ KERNPOOL=$UMLPREFIX/kernel/linux-2.4.19/linux
 # set this to false.
 NATTPATCH=true
 
+# if you want a kernel that supports the BTNS IPsec API
+#   see draft-ietf-btns-capi-xx.txt
+# this requires your kernel to be rebuilt.
+NGPATCH=true
+
+# if you also have a copy of the L2TP IPsec API patch, you can
+# set this to true as well
+NGUDPPATCH=false
+
 # NONINTPATCH is a patch that comes from Redhat kernels. It permits
 # "make oldconfig" to complete without interacting with the user.
 # I think that 2.6. kernels have this. This patch is optional, if you

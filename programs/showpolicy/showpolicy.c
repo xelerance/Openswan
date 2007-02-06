@@ -25,6 +25,7 @@ char showpolicy_version[] = "RCSID $Id: showpolicy.c,v 1.5 2004/04/04 01:50:56 k
 #include <getopt.h>
 #include "openswan.h"
 #include "openswan/ipsec_policy.h"
+#include "rcvinfo.h"
 
 char *program_name;
 
@@ -68,10 +69,6 @@ static const struct option long_opts[] = {
 };
 
 int maxpacketcount=0;
-
-#ifndef IP_IPSEC_REFINFO
-#define IP_IPSEC_REFINFO 18
-#endif
 
 int open_udp_sock(unsigned short port)
 {

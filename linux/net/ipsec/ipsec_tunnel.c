@@ -90,10 +90,6 @@ char ipsec_tunnel_c_version[] = "RCSID $Id: ipsec_tunnel.c,v 1.234 2005/11/11 04
 
 static __u32 zeroes[64];
 
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_tunnel = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
-
 DEBUG_NO_STATIC int
 ipsec_tunnel_open(struct net_device *dev)
 {

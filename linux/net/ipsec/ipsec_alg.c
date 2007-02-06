@@ -69,9 +69,6 @@
 #include "openswan/ipsec_alg.h"
 #include "openswan/ipsec_proto.h"
 
-#ifndef CONFIG_KLIPS_ALG
-#error This file _MUST_ be compiled with CONFIG_KLIPS_ALG enabled !
-#endif
 #if K_SADB_EALG_MAX < 255
 #warning Compiling with limited ESP support ( K_SADB_EALG_MAX < 256 )
 #endif

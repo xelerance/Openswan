@@ -1,14 +1,5 @@
-commit c0f13aeb0d3eaeac192a7186d678c9b8a635643a
-Author: Michael Richardson <mcr@xelerance.com>
-Date:   Tue Apr 25 20:50:28 2006 -0400
-
-    KLIPSng patches to rest of kernel.
-    Sign-off-by: Michael Richardson <mcr@xelerance.com>
-
-diff --git a/include/linux/in.h b/include/linux/in.h
-index ba35538..2b47dff 100644
---- a/include/linux/in.h
-+++ b/include/linux/in.h
+--- a/net/ipv4/ip_sockglue.c
++++ b/net/ipv4/ip_sockglue.c
 @@ -1083,6 +1113,7 @@ int ip_getsockopt(struct sock *sk, int level, int optname, char __user *optval,
  }
  
@@ -17,6 +8,3 @@ index ba35538..2b47dff 100644
  
  EXPORT_SYMBOL(ip_getsockopt);
  EXPORT_SYMBOL(ip_setsockopt);
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index f29a12d..b766404 100644
---- a/net/ipv4/raw.c

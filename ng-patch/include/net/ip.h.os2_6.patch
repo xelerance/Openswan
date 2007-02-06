@@ -1,14 +1,5 @@
-commit c0f13aeb0d3eaeac192a7186d678c9b8a635643a
-Author: Michael Richardson <mcr@xelerance.com>
-Date:   Tue Apr 25 20:50:28 2006 -0400
-
-    KLIPSng patches to rest of kernel.
-    Sign-off-by: Michael Richardson <mcr@xelerance.com>
-
-diff --git a/include/linux/in.h b/include/linux/in.h
-index ba35538..2b47dff 100644
---- a/include/linux/in.h
-+++ b/include/linux/in.h
+--- a/include/net/ip.h
++++ b/include/net/ip.h
 @@ -49,6 +49,7 @@ struct ipcm_cookie
  	u32			addr;
  	int			oif;
@@ -17,6 +8,3 @@ index ba35538..2b47dff 100644
  };
  
  #define IPCB(skb) ((struct inet_skb_parm*)((skb)->cb))
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 8d362c4..c10e2f4 100644
---- a/include/net/xfrm.h
