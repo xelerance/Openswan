@@ -892,10 +892,11 @@ void nat_traversal_change_port_lookup(struct msg_digest *md, struct state *st)
 
 	/**
 	 * If we're initiator and NAT-T (with port floating) is detected, we
-	 * need to change port (MAIN_I3 or QUICK_I1)
+	 * need to change port (MAIN_I3, QUICK_I1 or AGGR_I2)
 	 */
-	if (((st->st_state == STATE_MAIN_I3)
-	     || (st->st_state == STATE_QUICK_I1))
+	if ( ((st->st_state == STATE_MAIN_I3)
+	     || (st->st_state == STATE_QUICK_I1) 
+	     || (st->st_state == STATE_AGGR_I2))
 	    && (st->hidden_variables.st_nat_traversal & NAT_T_WITH_PORT_FLOATING)
 	    && (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED)
 	    && (st->st_localport != NAT_T_IKE_FLOAT_PORT))
