@@ -189,21 +189,22 @@ echo_hdr(struct msg_digest *md, bool enc, u_int8_t np)
     }
 }
 
+
 /*
- * package up the calculate KE value, and emit it as a KE payload.
+ * Processing FOR KE values.
  */
-bool
-ship_KE(struct state *st
-	, struct pluto_crypto_req *r
-	, chunk_t *g
-	, pb_stream *outs, u_int8_t np)
+void
+unpack_KE(struct state *st
+	  , struct pluto_crypto_req *r
+	  , chunk_t *g)
 {
     struct pcr_kenonce *kn = &r->pcr_d.kn;
+
     if (!st->st_sec_in_use)
     {
 	st->st_sec_in_use = TRUE;
 	freeanychunk(*g);	/* happens in odd error cases */
-
+	
 	clonetochunk(*g, wire_chunk_ptr(kn, &(kn->gi))
 		     , kn->gi.len, "saved gi value");
 
@@ -213,11 +214,29 @@ ship_KE(struct state *st
 	clonetochunk(st->st_sec_chunk
 		     , wire_chunk_ptr(kn, &(kn->secret))
 		     , kn->secret.len, "long term secret");
-	
     }
+}
+
+/*
+ * package up the calculate KE value, and emit it as a KE payload.
+ */
+bool
+justship_KE(chunk_t *g
+	    , pb_stream *outs, u_int8_t np)
+{
     return out_generic_chunk(np, &isakmp_keyex_desc, outs, *g, "keyex value");
 }
 
+bool
+ship_KE(struct state *st
+	, struct pluto_crypto_req *r
+	, chunk_t *g
+	, pb_stream *outs, u_int8_t np)
+{
+    unpack_KE(st, r, g);
+    return justship_KE(g, outs, np);
+}
+	
 /* accept_ke
  *
  * Check and accept DH public value (Gi or Gr) from peer's message.
@@ -244,17 +263,30 @@ accept_KE(chunk_t *dest, const char *val_name
     return NOTHING_WRONG;
 }
 
-bool
-ship_nonce(chunk_t *n, struct pluto_crypto_req *r
-	   , pb_stream *outs, u_int8_t np
-	   , const char *name)
+void
+unpack_nonce(chunk_t *n, struct pluto_crypto_req *r)
 {
     struct pcr_kenonce *kn = &r->pcr_d.kn;
 
     freeanychunk(*n);
     clonetochunk(*n, wire_chunk_ptr(kn, &(kn->n))
 		 , DEFAULT_NONCE_SIZE, "initiator nonce");
+}
+
+bool
+justship_nonce(chunk_t *n, pb_stream *outs, u_int8_t np
+	       , const char *name)
+{
     return out_generic_chunk(np, &isakmp_nonce_desc, outs, *n, name);
+}
+
+bool
+ship_nonce(chunk_t *n, struct pluto_crypto_req *r
+	   , pb_stream *outs, u_int8_t np
+	   , const char *name)
+{
+    unpack_nonce(n, r);
+    return justship_nonce(n, outs, np, name);
 }
 
 /* Send a notification to the peer.  We could decide
@@ -2378,7 +2410,7 @@ main_inR1_outI2_continue(struct pluto_crypto_req_cont *pcrc
     passert(st != NULL);
 
     passert(st->st_suspended_md == ke->md);
-    st->st_suspended_md = NULL;	/* no longer connected or suspended */
+    set_suspended(st, NULL);	/* no longer connected or suspended */
 
     set_cur_state(st);
 
@@ -2388,7 +2420,7 @@ main_inR1_outI2_continue(struct pluto_crypto_req_cont *pcrc
 
     if(ke->md != NULL) {
 	complete_state_transition(&ke->md, e);
-	release_md(ke->md);
+	if(ke->md) release_md(ke->md);
     }
 
     reset_cur_state();
@@ -2425,14 +2457,10 @@ main_inR1_outI2(struct msg_digest *md)
 						 , "outI2 KE");
 	ke->md = md;
 	
-	if (!st->st_sec_in_use) {
-	    ke->ke_pcrc.pcrc_func = main_inR1_outI2_continue;
-	    st->st_suspended_md = md;
-	    return build_ke(&ke->ke_pcrc, st, st->st_oakley.group, st->st_import);
-	} else {
-	    return main_inR1_outI2_tail((struct pluto_crypto_req_cont *)ke
-					, NULL);
-	}
+	passert(st->st_sec_in_use==FALSE); 
+	ke->ke_pcrc.pcrc_func = main_inR1_outI2_continue;
+	set_suspended(st, md);
+	return build_ke(&ke->ke_pcrc, st, st->st_oakley.group, st->st_import);
     }
 }
 
@@ -2544,7 +2572,7 @@ main_inI2_outR2_continue(struct pluto_crypto_req_cont *pcrc
     passert(st != NULL);
 
     passert(st->st_suspended_md == ke->md);
-    st->st_suspended_md = NULL;	/* no longer connected or suspended */
+    set_suspended(st, NULL);	/* no longer connected or suspended */
 
     set_cur_state(st);
 
@@ -2553,7 +2581,7 @@ main_inI2_outR2_continue(struct pluto_crypto_req_cont *pcrc
 
     if(ke->md != NULL) {
         complete_state_transition(&ke->md, e);
-        release_md(ke->md);
+        if(ke->md) release_md(ke->md);
     }
     reset_cur_state();
 }
@@ -2602,16 +2630,12 @@ main_inI2_outR2(struct msg_digest *md)
 					     , "inI2_outR2 KE");
 
 	ke->md = md;
-	st->st_suspended_md = md;
+	set_suspended(st, md);
 
-	if (!st->st_sec_in_use) {
-	    ke->ke_pcrc.pcrc_func = main_inI2_outR2_continue;
-	    return build_ke(&ke->ke_pcrc, st
-			    , st->st_oakley.group, st->st_import);
-	} else {
-	    return main_inI2_outR2_tail((struct pluto_crypto_req_cont *)ke
-					, NULL);
-	}
+	passert(st->st_sec_in_use == FALSE);
+	ke->ke_pcrc.pcrc_func = main_inI2_outR2_continue;
+	return build_ke(&ke->ke_pcrc, st
+			, st->st_oakley.group, st->st_import);
     }
 }
 
@@ -2622,18 +2646,28 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
 			 , err_t ugh)
 {
     struct dh_continuation *dh = (struct dh_continuation *)pcrc;
-    struct state *st = dh->st;
+    struct state *st;
+
+    DBG(DBG_CONTROLMORE
+	, DBG_log("main inI2_outR2: calculated DH finished"));
+  
+    st = state_with_serialno(dh->serialno);
+    if(st == NULL) {
+	openswan_log("state %ld disappeared during crypto\n", dh->serialno);
+	return;
+    }
     
-    r = r;
+    set_cur_state(st);
+    if(ugh) {
+	loglog(RC_LOG_SERIOUS, "DH crypto failed: %s\n", ugh);
+	return;
+    }
+
+    finish_dh_secretiv(st, r);
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
     update_iv(st);
 
-    if(ugh != NULL) {
-	openswan_log("failed to perform diffie-hellman: %s\n", ugh);
-	return;
-    }
-	
     /*
      * if there was a packet received while we were calculating, then
      * process it now.
@@ -2641,8 +2675,8 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
     if(st->st_suspended_md != NULL) {
 	struct msg_digest *md = st->st_suspended_md;
 
-	st->st_suspended_md = NULL;
-	process_packet(&md);
+	set_suspended(st, NULL);
+	process_packet_tail(&md);
 	if(md != NULL) {
 	    release_md(md);
 	}
@@ -2781,12 +2815,35 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
     {
 	struct dh_continuation *dh = alloc_thing(struct dh_continuation
 						 , "main_inI2_outR2_tail");
-	dh->st = st;
+	stf_status e;
+
+	dh->md = NULL;
+	dh->serialno = st->st_serialno;
 	dh->dh_pcrc.pcrc_func = main_inI2_outR2_calcdone;
 	passert(st->st_suspended_md == NULL);
 
-	(void)perform_dh_secretiv(st, RESPONDER, st->st_oakley.group->group);
-	update_iv(st);
+	DBG(DBG_CONTROLMORE
+	    , DBG_log("main inI2_outR2: starting async DH calculation (group=%d)", st->st_oakley.group->group));
+
+	e = start_dh_secretiv(&dh->dh_pcrc, st
+			      , st->st_import
+			      , RESPONDER
+			      , st->st_oakley.group->group);
+
+	DBG(DBG_CONTROLMORE,
+	    DBG_log("started dh_secretiv, returned: stf=%s\n"
+		    , enum_name(&stfstatus_name, e)));
+	    
+	if(e == STF_FAIL) {
+	    loglog(RC_LOG_SERIOUS, "failed to start async DH calculation, stf=%s\n"
+		   , enum_name(&stfstatus_name, e));
+	    return e;
+	}
+
+	/* we are calculating in the background, so it doesn't count */
+	if(e == STF_SUSPEND) {
+	    st->st_calculating = FALSE;
+	}
     }
     return STF_OK;
 }
@@ -2836,11 +2893,11 @@ doi_log_cert_thinking(struct msg_digest *md UNUSED
  * SMF_RPKE_AUTH: HDR, <Nr_b>PubKey_i, <KE_b>Ke_r, <IDr1_b>Ke_r
  *	    --> HDR*, HASH_I
  */
-stf_status
-main_inR2_outI3(struct msg_digest *md)
+static stf_status
+main_inR2_outI3_continue(struct msg_digest *md
+			 , struct pluto_crypto_req *r)
 {
     struct state *const st = md->st;
-    pb_stream *const keyex_pbs = &md->chain[ISAKMP_NEXT_KE]->pbs;
     int auth_payload = st->st_oakley.auth == OAKLEY_PRESHARED_KEY
 	? ISAKMP_NEXT_HASH : ISAKMP_NEXT_SIG;
     pb_stream id_pbs;	/* ID Payload; also used for hash calculation */
@@ -2849,12 +2906,7 @@ main_inR2_outI3(struct msg_digest *md)
     generalName_t *requested_ca = NULL;
     cert_t mycert = st->st_connection->spd.this.cert;
 
-    /* KE in */
-    RETURN_STF_FAILURE(accept_KE(&st->st_gr, "Gr"
-				 , st->st_oakley.group, keyex_pbs));
-
-    /* Nr in */
-    RETURN_STF_FAILURE(accept_nonce(md, &st->st_nr, "Nr"));
+    finish_dh_secretiv(st, r);
 
     /* decode certificate requests */
     decode_cr(md, &requested_ca);
@@ -2897,8 +2949,6 @@ main_inR2_outI3(struct msg_digest *md)
     free_generalNames(requested_ca, TRUE);
 
     /* done parsing; initialize crypto  */
-
-    (void)perform_dh_secretiv(st, INITIATOR, st->st_oakley.group->group);
 
 #ifdef NAT_TRAVERSAL
     if (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD) {
@@ -3029,6 +3079,70 @@ main_inR2_outI3(struct msg_digest *md)
     return STF_OK;
 }
 
+static void
+main_inR2_outI3_cryptotail(struct pluto_crypto_req_cont *pcrc
+			   , struct pluto_crypto_req *r
+			   , err_t ugh)
+{
+  struct dh_continuation *dh = (struct dh_continuation *)pcrc;
+  struct msg_digest *md = dh->md;
+  struct state *const st = md->st;
+  stf_status e;
+  
+  DBG(DBG_CONTROLMORE
+      , DBG_log("main inR2_outI3: calculated DH, sending R1"));
+  
+  passert(cur_state == NULL);
+  passert(st != NULL);
+
+  passert(st->st_suspended_md == dh->md);
+  set_suspended(st, NULL);	/* no longer connected or suspended */
+
+  set_cur_state(st);
+  st->st_calculating = FALSE;
+
+  if(ugh) {
+      loglog(RC_LOG_SERIOUS, "failed in DH exponentiation: %s", ugh);
+      e = STF_FATAL;
+  } else {
+      e = main_inR2_outI3_continue(md, r);
+  }
+  
+  if(dh->md != NULL) {
+      complete_state_transition(&dh->md, e);
+      if(dh->md) release_md(dh->md);
+  }
+  reset_cur_state();
+}
+
+stf_status
+main_inR2_outI3(struct msg_digest *md)
+{
+    struct dh_continuation *dh;
+    pb_stream *const keyex_pbs = &md->chain[ISAKMP_NEXT_KE]->pbs;
+    struct state *const st = md->st;
+
+    /* KE in */
+    RETURN_STF_FAILURE(accept_KE(&st->st_gr, "Gr"
+				 , st->st_oakley.group, keyex_pbs));
+
+    /* Nr in */
+    RETURN_STF_FAILURE(accept_nonce(md, &st->st_nr, "Nr"));
+
+    dh = alloc_thing(struct dh_continuation, "aggr outR1 DH");
+    if(!dh) { return STF_FATAL; }
+    
+    dh->md = md;
+    set_suspended(st, md);
+    dh->dh_pcrc.pcrc_func = main_inR2_outI3_cryptotail;
+    return start_dh_secretiv(&dh->dh_pcrc, st
+			     , st->st_import
+			     , INITIATOR
+			     , st->st_oakley.group->group);
+}
+
+
+
 /* Shared logic for asynchronous lookup of DNS KEY records.
  * Used for STATE_MAIN_R2 and STATE_MAIN_I3.
  */
@@ -3120,7 +3234,7 @@ oakley_id_and_auth(struct msg_digest *md
 
 	    /* Record that state is used by a suspended md */
 	    passert(st->st_suspended_md == NULL);
-	    st->st_suspended_md = md;
+	    set_suspended(st,md);
 
 	    nkc->failure_ok = FALSE;
 	    nkc->md = md;
@@ -3159,7 +3273,7 @@ oakley_id_and_auth(struct msg_digest *md
 	    if (ugh != NULL)
 	    {
 		report_key_dns_failure(&st->st_connection->spd.that.id, ugh);
-		st->st_suspended_md = NULL;
+		set_suspended(st, NULL);
 		r = STF_FAIL + INVALID_KEY_INFORMATION;
 	    } else {
 		/*
@@ -3223,7 +3337,7 @@ key_continue(struct adns_continuation *cr
 	stf_status r;
 
 	passert(st->st_suspended_md == kc->md);
-	st->st_suspended_md = NULL;	/* no longer connected or suspended */
+	set_suspended(st,NULL);	/* no longer connected or suspended */
 	cur_state = st;
 
 	/* cancel any DNS event, since we got an anwer */

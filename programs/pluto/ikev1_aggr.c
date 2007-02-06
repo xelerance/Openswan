@@ -95,10 +95,60 @@ static stf_status
 aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
 		     , struct pluto_crypto_req *r);
 
+
 static void
-aggr_inI1_outR1_continue(struct pluto_crypto_req_cont *pcrc
-			 , struct pluto_crypto_req *r
-			 , err_t ugh)
+aggr_inR1_outI2_crypto_continue(struct pluto_crypto_req_cont *pcrc
+				, struct pluto_crypto_req *r
+				, err_t ugh);
+
+
+/*
+ * continuation from second calculation (the DH one)
+ *
+ */
+static void 
+aggr_inI1_outR1_continue2(struct pluto_crypto_req_cont *pcrc
+			  , struct pluto_crypto_req *r
+			  , err_t ugh)
+{
+  struct dh_continuation *dh = (struct dh_continuation *)pcrc;
+  struct msg_digest *md = dh->md;
+  struct state *const st = md->st;
+  stf_status e;
+  
+  DBG(DBG_CONTROLMORE
+      , DBG_log("aggr inI1_outR1: calculated ke+nonce+DH, sending R1"));
+  
+  /* XXX should check out ugh */
+  passert(ugh == NULL);
+  passert(cur_state == NULL);
+  passert(st != NULL);
+
+  passert(st->st_suspended_md == dh->md);
+  set_suspended(st, NULL);	/* no longer connected or suspended */
+
+  set_cur_state(st);
+  st->st_calculating = FALSE;
+
+  e = aggr_inI1_outR1_tail(pcrc, r);
+  
+  if(dh->md != NULL) {
+      complete_state_transition(&dh->md, e);
+      if(dh->md) release_md(dh->md);
+  }
+  reset_cur_state();
+}
+
+/*
+ * for aggressive mode, this is sub-optimal, since we should have
+ * had the crypto helper actually do everything, but we need to do
+ * some additional work to set that all up, so this is fine for now.
+ *
+ */
+static void
+aggr_inI1_outR1_continue1(struct pluto_crypto_req_cont *pcrc
+			  , struct pluto_crypto_req *r
+			  , err_t ugh)
 {
   struct ke_continuation *ke = (struct ke_continuation *)pcrc;
   struct msg_digest *md = ke->md;
@@ -106,7 +156,7 @@ aggr_inI1_outR1_continue(struct pluto_crypto_req_cont *pcrc
   stf_status e;
   
   DBG(DBG_CONTROLMORE
-      , DBG_log("aggr inI1_outR1: calculated ke+nonce, sending R1"));
+      , DBG_log("aggr inI1_outR1: calculated ke+nonce, calculating DH"));
   
   /* XXX should check out ugh */
   passert(ugh == NULL);
@@ -114,17 +164,40 @@ aggr_inI1_outR1_continue(struct pluto_crypto_req_cont *pcrc
   passert(st != NULL);
 
   passert(st->st_suspended_md == ke->md);
-  st->st_suspended_md = NULL;	/* no longer connected or suspended */
+  set_suspended(st, NULL);	/* no longer connected or suspended */
 
   set_cur_state(st);
   st->st_calculating = FALSE;
-  e = aggr_inI1_outR1_tail(pcrc, r);
+
+  /* unpack first calculation */
+  unpack_KE(st, r, &st->st_gr);
+
+  /* unpack nonce too */
+  unpack_nonce(&st->st_nr, r);
+
+  /* NOTE: the "r" reply will get freed by our caller */
   
-  if(ke->md != NULL) {
-      complete_state_transition(&ke->md, e);
-      release_md(ke->md);
+  /* set up second calculation */
+  {
+      struct dh_continuation *dh = alloc_thing(struct dh_continuation
+					       , "aggr outR1 DH");
+      dh->md = md;
+      set_suspended(st, md);
+      dh->dh_pcrc.pcrc_func = aggr_inI1_outR1_continue2;
+      e = start_dh_secretiv(&dh->dh_pcrc, st
+			    , st->st_import
+			    , RESPONDER
+			    , st->st_oakley.group->group);
+      
+      if(e != STF_SUSPEND) {
+	  if(dh->md != NULL) {
+	      complete_state_transition(&dh->md, e);
+	      if(dh->md) release_md(dh->md);
+	  }
+      }
+
+      reset_cur_state();
   }
-  reset_cur_state();
 }
 
 static stf_status
@@ -271,10 +344,10 @@ aggr_inI1_outR1_common(struct msg_digest *md
 	struct ke_continuation *ke = alloc_thing(struct ke_continuation
 						 , "outI2 KE");
 	ke->md = md;
-	st->st_suspended_md = md;
+	set_suspended(st, md);
 
 	if (!st->st_sec_in_use) {
-	    ke->ke_pcrc.pcrc_func = aggr_inI1_outR1_continue;
+	    ke->ke_pcrc.pcrc_func = aggr_inI1_outR1_continue1;
 	    return build_ke(&ke->ke_pcrc, st, st->st_oakley.group
 			    , st->st_import);
 	} else {
@@ -283,6 +356,9 @@ aggr_inI1_outR1_common(struct msg_digest *md
 	}
     }
 }
+
+
+
 
 stf_status
 aggr_inI1_outR1_psk(struct msg_digest *md)
@@ -311,6 +387,8 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
     /* parse_isakmp_sa also spits out a winning SA into our reply,
      * so we have to build our md->reply and emit HDR before calling it.
      */
+
+    finish_dh_secretiv(st, r);
 
     init_pbs(&md->reply, reply_buffer, sizeof(reply_buffer), "reply packet");
 
@@ -348,13 +426,12 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
     /************** build rest of output: KE, Nr, IDir, HASH_R/SIG_R ********/
 
     /* KE */
-    if (!ship_KE(st, r, &st->st_gr, 
-		 &md->rbody, ISAKMP_NEXT_NONCE))
+    if (!justship_KE(&st->st_gr,
+		     &md->rbody, ISAKMP_NEXT_NONCE))
 	return STF_INTERNAL_ERROR;
 
     /* Nr */
-    if (!ship_nonce(&st->st_nr, r
-		    , &md->rbody, ISAKMP_NEXT_ID, "Nr"))
+    if (!justship_nonce(&st->st_nr, &md->rbody, ISAKMP_NEXT_ID, "Nr"))
 	return STF_INTERNAL_ERROR;
 
     /* IDir out */
@@ -370,7 +447,6 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
 	close_output_pbs(&r_id_pbs);
     }
 
-    (void)perform_dh_secretiv(st, RESPONDER, st->st_oakley.group->group);
     update_iv(st);
 
 
@@ -528,15 +604,53 @@ aggr_inR1_outI2(struct msg_digest *md)
     }
 #endif
 
+    /* set up second calculation */
     {
-	stf_status stat;
-	stat = perform_dh_secretiv(st, INITIATOR, st->st_oakley.group->group);
-	if(stat != STF_OK) {
-	    return stat;
-	}
+	struct dh_continuation *dh = alloc_thing(struct dh_continuation
+						 , "aggr outR1 DH");
+	dh->md = md;
+	set_suspended(st, md);
+	dh->dh_pcrc.pcrc_func = aggr_inR1_outI2_crypto_continue;
+	return start_dh_secretiv(&dh->dh_pcrc, st
+				 , st->st_import
+				 , INITIATOR
+				 , st->st_oakley.group->group);
     }
+}
 
-    return aggr_inR1_outI2_tail(md, NULL);
+static void
+aggr_inR1_outI2_crypto_continue(struct pluto_crypto_req_cont *pcrc
+				, struct pluto_crypto_req *r
+				, err_t ugh)
+{
+  struct dh_continuation *dh = (struct dh_continuation *)pcrc;
+  struct msg_digest *md = dh->md;
+  struct state *const st = md->st;
+  stf_status e;
+  
+  DBG(DBG_CONTROLMORE
+      , DBG_log("aggr inR1_outI2: calculated DH, sending I2"));
+  
+  /* XXX should check out ugh */
+  passert(ugh == NULL);
+  passert(cur_state == NULL);
+  passert(st != NULL);
+
+  passert(st->st_suspended_md == dh->md);
+  set_suspended(st, NULL);	/* no longer connected or suspended */
+
+  set_cur_state(st);
+  st->st_calculating = FALSE;
+
+  finish_dh_secretiv(st, r);
+
+  e = aggr_inR1_outI2_tail(md, NULL);
+  
+  if(dh->md != NULL) {
+      complete_state_transition(&dh->md, e);
+      if(dh->md) release_md(dh->md);
+  }
+  reset_cur_state();
 }
 
 static void
@@ -771,7 +885,7 @@ aggr_outI1_continue(struct pluto_crypto_req_cont *pcrc
   passert(st != NULL);
 
   passert(st->st_suspended_md == ke->md);
-  st->st_suspended_md = NULL;	/* no longer connected or suspended */
+  set_suspended(st,NULL);	/* no longer connected or suspended */
 
   set_cur_state(st);
 
@@ -781,7 +895,7 @@ aggr_outI1_continue(struct pluto_crypto_req_cont *pcrc
   
   if(ke->md != NULL) {
       complete_state_transition(&ke->md, e);
-      release_md(ke->md);
+      if(ke->md) release_md(ke->md);
   }
   reset_globals();
 
@@ -854,7 +968,7 @@ aggr_outI1(int whack_sock,
 
 	ke->md = alloc_md();
 	ke->md->st = st;
-	st->st_suspended_md = ke->md;
+	set_suspended(st, ke->md);
 
 	if (!st->st_sec_in_use) {
 	    ke->ke_pcrc.pcrc_func = aggr_outI1_continue;
@@ -867,7 +981,7 @@ aggr_outI1(int whack_sock,
 	    e = aggr_outI1_tail((struct pluto_crypto_req_cont *)ke
 					, NULL);
 	}
-	
+
 	reset_globals();
 
 	return e;
@@ -932,6 +1046,8 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
     /* Ni out */
     if (!ship_nonce(&st->st_ni, r, &md->rbody, ISAKMP_NEXT_ID, "Ni"))
 	return STF_INTERNAL_ERROR;
+
+    DBG_log("setting sec: %d", st->st_sec_in_use);
 
     /* IDii out */
     {
