@@ -1,6 +1,11 @@
 Please see docs/KNOWN_BUGS file for more information
 
 #testing
+v2.5.04
+    zero peer_ca to avoid crashes.
+    (include glob's may still not work correctly)
+
+v2.5.03
     ipsec.conf parsing should ignore keywords that start with x-
 	they are a form of structured comment.
     added in forceencaps= keyword.
