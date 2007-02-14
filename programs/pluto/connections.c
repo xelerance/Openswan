@@ -1145,6 +1145,18 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
     return same_ca;
 }
 
+void
+setup_client_ports(struct spd_route *sr)
+{
+    if(!sr->this.has_port_wildcard) {
+	setportof(htons(sr->this.port), &sr->this.client.addr);
+    }
+    if(!sr->that.has_port_wildcard) {
+	setportof(htons(sr->that.port), &sr->that.client.addr);
+    }
+}
+
+
 static bool
 check_connection_end(const struct whack_end *this, const struct whack_end *that
 , const struct whack_message *wm)
@@ -1373,7 +1385,6 @@ add_connection(const struct whack_message *wm)
 	{
 	    c->alg_info_ike = alg_info_ike;
 
-	    DBG(DBG_CONTROL, DBG_log("from whack: got --ike=%s", wm->ike));
 	    DBG(DBG_CRYPT|DBG_CONTROL, 
 		char buf[256];
 		alg_info_snprint(buf, sizeof(buf),
@@ -3850,6 +3861,10 @@ refine_host_connection(const struct state *st, const struct id *peer_id
     best_our_pathlen  = 0;
     best_peer_pathlen = 0;
     wildcards = best_wildcards = 0;
+
+    /* zero it, so because we will test it later, to see if we found
+     * something, and the get_peer_ca code is uncertain. */
+    memset(&peer_ca, 0, sizeof(peer_ca));
 
     DBG(DBG_CONTROLMORE
 	 , DBG_log("refine_connection: starting with %s"
