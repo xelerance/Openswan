@@ -1118,6 +1118,15 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
     dst->host_nexthop = src->host_nexthop;
     dst->host_srcip = src->host_srcip;
     dst->client = src->client;
+
+#ifdef HAVE_SIN_LEN
+    /* XXX need to fix this for v6 */
+    dst->client.addr.u.v4.sin_len  = sizeof(struct sockaddr_in);
+    dst->host_addr.u.v4.sin_len    = sizeof(struct sockaddr_in);
+    dst->host_nexthop.u.v4.sin_len = sizeof(struct sockaddr_in);
+    dst->host_srcip.u.v4.sin_len   = sizeof(struct sockaddr_in);
+#endif
+    
 #ifdef MODECFG
     dst->modecfg_server = src->modecfg_server;
     dst->modecfg_client = src->modecfg_client;
@@ -1144,6 +1153,18 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
     
     return same_ca;
 }
+
+void
+setup_client_ports(struct spd_route *sr)
+{
+    if(!sr->this.has_port_wildcard) {
+	setportof(htons(sr->this.port), &sr->this.client.addr);
+    }
+    if(!sr->that.has_port_wildcard) {
+	setportof(htons(sr->that.port), &sr->that.client.addr);
+    }
+}
+
 
 static bool
 check_connection_end(const struct whack_end *this, const struct whack_end *that
@@ -1373,7 +1394,6 @@ add_connection(const struct whack_message *wm)
 	{
 	    c->alg_info_ike = alg_info_ike;
 
-	    DBG(DBG_CONTROL, DBG_log("from whack: got --ike=%s", wm->ike));
 	    DBG(DBG_CRYPT|DBG_CONTROL, 
 		char buf[256];
 		alg_info_snprint(buf, sizeof(buf),
@@ -3846,6 +3866,8 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 
     psk = NULL;
 
+    zero(&peer_ca);
+
     our_pathlen = peer_pathlen = 0;
     best_our_pathlen  = 0;
     best_peer_pathlen = 0;
@@ -4058,13 +4080,10 @@ is_virtual_net_used(struct connection *c, const ip_subnet *peer_net, const struc
 
     for (d = connections; d != NULL; d = d->ac_next)
     {
-	if(NEVER_NEGOTIATE(d->policy)) continue;
-
 	switch (d->kind) {
 	    case CK_PERMANENT:
 	    case CK_TEMPLATE:
 	    case CK_INSTANCE:
-		/* if there is any overlap */
 		if ((subnetinsubnet(peer_net,&d->spd.that.client) ||
 		     subnetinsubnet(&d->spd.that.client,peer_net)) &&
 		     !same_id(&d->spd.that.id, peer_id))
