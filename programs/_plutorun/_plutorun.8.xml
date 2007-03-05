@@ -34,28 +34,6 @@ It is also responsible for generating a default raw RSA hostkey if none exists.<
 <para>Man page written for the Linux Openswan project &lt;<ulink url='http://www.openswan.org/'>http://www.openswan.org/</ulink>&gt;
 by Michael Richardson. Original program written by Henry Spencer.</para>
 
-<!--  $Log: _plutorun.8.xml,v $
-<!--  Revision 1.1.16.1  2006/10/10 18:10:39  paul
-<!--  Support new Fedora style /etc/ipsec.d/hostkey.secrets generation at
-<!--  startup, so Fedora can remove their %post install newhost key creation
-<!--  that hangs the initscript if there is no entropy available (which happens
-<!--  on 2.6.18 intel_rng kernels and xen guests)
-<!--
-<!--  Revision 1.1  2004/05/26 17:48:14  ken
-<!--  Import XML version
-<!-- -->
-<!--  Revision 1.2  2002/04/29 22:39:31  mcr -->
-<!--  	added basic man page for all internal commands. -->
-
-<!--  Revision 1.1  2002/04/26 01:21:43  mcr -->
-<!--  	while tracking down a missing (not installed) /etc/ipsec.conf, -->
-<!--  	MCR has decided that it is not okay for each program subdir to have -->
-<!--  	some subset (determined with \-f) of possible files. -->
-<!--  	Each subdir that defines $PROGRAM, MUST have a PROGRAM.8 file as well as a PROGRAM file. -->
-<!--  	Optional PROGRAM.5 files have been added to the makefiles. -->
-
-
-
 </refsect1>
 </refentry>
 

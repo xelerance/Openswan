@@ -1,0 +1,19 @@
+conn linux-to-linux
+	#
+	# Simple use raw RSA keys
+	# After starting openswan, run: ipsec showhostkey --left (or --right)
+	# and fill in the connection similarly to the example below.
+	#
+	left=1.2.3.4
+	# optional
+	# leftsubnet=10.0.1.0/24
+	leftid=@bofh.xelerance.com
+	leftrsasigkey=0sAQPWTXt8DDlEhTZJ91ngNMxTSyuos6JZxXQmtRcwUl6ppUCcuuWvjXrF/qiz6eiL1LMlpGJyG1oVhtFhTaFJl7ZkF/4J1B9LCFzYxvYI97AnLuC0op5pVAZ1SZx29+aRjeMcKC4zbZ6dMMjUdn9H1gqG9rpE0MBEFNSVLEu9U8rtlz14RfxQAQ9ePj64HnGLfgJlDB0VYhKEIcRihy72bvjZ4eoX16S1EY1FgnHyrveZPxRi8sgn6Q19RytEzSmUAlGjvMDhNfenq6WCSYMeqgj0jFSArTNBQmR2QBkUG6NSOXfb+18c6jDPicGmbmWfoRx/PUJo46WiRF4RRmsxnFpbHpklILFzEJ+/k6qHVAekpVfp
+	# The remote user.
+	#
+	right=5.6.7.8
+	rightid=@tla.xelerance.com
+	# optional
+	# rightsubnet=10.0.2.0/24
+	rightrsasigkey=0sAQNxf6caKULJklYZycuo66Ko0U+iHaJUDr0QZHnG4MJ9IRNYi5H6kPxcwKIXkg+OGo+NeUyyWDEc+ox27BFYViAHQNEyBRLZu0kyE681h+cHm7lfCSy0AOEBSCyZF3aGcL8GWxVhtimpJQ4tNxXZg7tLX5sfYw8mZnUBjkHvyccIred/q3cNWbDlq2WU4TL+NBb5FnxXi9Hk/SRV7sMe56fvZuXkcJu4e2C7uocltzzF1b0BZx7yeXwHjzqAWnW/UA54fbSTvzgnrpSC+FMuhWTI1EdxcqGaOFIjGWWGV2nxg/QaPU9i8vpwFwrEEdCJTiqlbYYNudblg4vYthnVNez0/RkfZHfhAaHdbJRSaQzOu88h
+	auto=start

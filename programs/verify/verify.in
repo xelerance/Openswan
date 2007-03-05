@@ -98,6 +98,38 @@ sub errchk {
         }
 }
 
+# Code to print out [OK], [FAILED] in warning colours
+sub warnchk {
+        if (!shift(@_))
+        {
+            print "\t[";
+            if($colour) { print "\e[1;33m"; }
+            if(@_)
+            {
+                print "@_";
+            }
+            else
+            {
+                print "FAILED";
+            }
+            if($colour) { print "\e[0;39m"; }
+            print "]\n";
+            if(@err)
+            {
+                print "  @err";
+            }
+        }
+        else
+        {
+            print "\t[";
+            if($colour) { print "\e[1;32m"; }
+            print "OK";
+            if($colour) { print "\e[0;39m"; }
+            print "]\n";
+        }
+}
+
+
 # Code to print out [DEPRECATED] and key restrict message
 sub deprecated {
 
@@ -232,11 +264,13 @@ sub installstartcheck {
 	errchk "$test";
 
 # This requires KLIPS NAT-T patch > 2.4.x
-#        if ( -e "/proc/net/ipsec_eroute") {
-#        printfun "KLIPS detected, checking for NAT Traversal support";
-#	if ( -e "/proc/net/ipsec/natt" ) { $nattest = "1" }
-#	errchk "$nattest"; 
-#	}
+        if ( -e "/proc/net/ipsec_eroute") {
+        printfun "KLIPS detected, checking for NAT Traversal support";
+        open("cat", "/sys/module/ipsec/parameters/natt_available");
+        if(<cat> == "1")
+		{ $nattest = "1" }
+	errchk "$nattest"; 
+	}
 
         if ( -e "/selinux/enforce") {
         printfun "Testing against enforced SElinux mode";
@@ -455,7 +489,7 @@ else
 	}
 	if( $oe_disabled) {
 		printfun "Opportunistic Encryption Support";
-		errchk "", "DISABLED";
+		warnchk "", "DISABLED";
 	} else {
 		dnschecks;
 	}

@@ -386,6 +386,39 @@ will be filled in with the network ranges specified in the global option <emphas
   </listitem>
   </varlistentry>
   <varlistentry>
+  <term><emphasis remap='B'>leftprotoport</emphasis></term>
+  <listitem>
+<para>allowed protocols and ports over connection, also called Port
+Selectors. The argument is in the form <emphasis remap='I'>protocol</emphasis>,
+which can be a number or a name that will be looked up in
+<emphasis remap='I'>/etc/protocols</emphasis>, such as
+<emphasis remap='I'>leftprotoport=icmp</emphasis>, or in the form of
+<emphasis remap='I'>protocol/port</emphasis>, such as
+<emphasis remap='I'>tcp/smtp</emphasis>. Ports can be defined as a number (eg. 25)
+or as a name (eg smtp) which will be looked up in 
+<emphasis remap='I'>/etc/services</emphasis>. A special keyword
+<emphasis remap='I'>%any</emphasis> can be used to allow all ports of a certain
+protocol. The most common use of this option is for L2TP connections to only
+allow l2tp packets (UDP port 1701), eg: 
+<emphasis remap='I'>leftprotoport=17/1701</emphasis>. Some clients, notably
+older Windows XP and some Mac OSX clients, use a random high port as source
+port. In those cases <emphasis remap='I'>rightprotoport=17/%any</emphasis> can
+be used to allow all UDP traffic on the connection.
+Note that this option is part of the proposal, so it cannot be arbitrarily left out
+if one end does not care about the traffic selection over this connection - both peers have
+to agree. The Port Selectors show up in the output of
+<emphasis remap='I'>ipsec eroute</emphasis> and <emphasis remap='I'>ipsec auto --status</emphasis>
+eg:<emphasis remap='I'>"l2tp": 193.110.157.131[@aivd.xelernace.com]:7/1701...%any:17/1701</emphasis>
+This option only filters outbound traffic.  Inbound traffic selection
+must still be based on firewall rules activated by an updown script. The
+variablees $PLUTO_MY_PROTOCOL, $PLUTO_PEER_PROTOCOL, $PLUTO_MY_PORT, and
+$PLUTO_PEER_PORT are available for use in <emphasis remap='I'>updown</emphasis>
+scripts. Older workarounds for bugs involved a setting of <emphasis remap='I'>17/0</emphasis>
+to denote all ports were allowed. This notation should no longer be used.
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
   <term><emphasis remap='B'>leftnexthop</emphasis></term>
   <listitem>
 <para>next-hop gateway IP address for the left participant's connection
@@ -546,7 +579,7 @@ Digital signatures are superior in every way to shared secrets.</para>
   <listitem>
 <para>IKE encryption/authentication algorithm to be used
 for the connection (phase 1 aka ISAKMP SA).  The format is
-<emphasis remap='I'>"cipher-hash;modpgroup, cipher-hash;modpgroup, ..."</emphasis>
+<emphasis remap='I'>"cipher-hash-modpgroup, cipher-hash-modpgroup, ..."</emphasis>
 Any left out option will be filled in with all allowed default
 options. Multiple proposals are seperated by a comma. If an
 <emphasis remap='B'>ike=</emphasis>
@@ -557,8 +590,8 @@ specified, the mode is always strict, meaning no other received proposals will b
 Some examples are
 <emphasis remap='B'>ike=3des-sha1,aes-sha1</emphasis>,
 <emphasis remap='B'>ike=aes</emphasis>,
-<emphasis remap='B'>ike=aes128-md5;modp2048</emphasis>,
-<emphasis remap='B'>ike=3des-md5;modp1024,esp=aes-sha1;modp1536</emphasis> or
+<emphasis remap='B'>ike=aes128-md5-modp2048</emphasis>,
+<emphasis remap='B'>ike=3des-md5-modp1024,esp=aes-sha1-modp1536</emphasis> or
 <emphasis remap='B'>ike=modp1536</emphasis>.
 The options must be suitable as a value of
 <citerefentry><refentrytitle>ipsec_spi</refentrytitle><manvolnum>8</manvolnum></citerefentry>'s
@@ -617,9 +650,7 @@ or a fully-qualified domain name preceded by
 The magic value
 <emphasis remap='B'>%myid</emphasis>
 stands for the current setting of <emphasis remap='I'>myid</emphasis>.
-This is set in <emphasis remap='B'>config setup</emphasis> or by <citerefentry><refentrytitle>ipsec_whack</refentrytitle><manvolnum>8</manvolnum></citerefentry>), or, if not set,
-it is the IP address in <emphasis remap='B'>%defaultroute</emphasis> (if that is supported by a TXT record in its reverse domain), or otherwise
-it is the system's hostname (if that is supported by a TXT record in its forward domain), or otherwise it is undefined.</para>
+</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -685,7 +716,12 @@ Either key can authenticate the signature, allowing for key rollover.</para>
 <emphasis remap='B'>leftrsasigkey=%cert</emphasis>
 this defines the certificate you would like to use. It should point to a X.509
 encoded certificate file. If you do not specify a full pathname, by default it
-will look in /etc/ipsec.d/certs.</para>
+will look in /etc/ipsec.d/certs. If openswan has been compiled with
+<emphasis remap='B'>USE_SMARTCARD=true</emphasis>, then this option can also be
+set to <emphasis remap='B'>leftcert=%smartcard</emphasis>. If multiple smartcards
+or USB tokens are present, they can be specified using
+<emphasis remap='B'>leftcert=%smartcard&lt;reader nr&gt;&lt;PKCS#15 key id&gt;</emphasis>
+</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -704,7 +740,25 @@ The default for this option is
 which may break compatibility with other vendor's IPSec implementations, such as
 Cisco and SafeNet. If you find that you are getting errors about no ID/Key found,
 you likely need to set this to
-<emphasis remap='B'>always.</emphasis></para>
+<emphasis remap='B'>always</emphasis>.
+This per-conn option replaces the obsolete global <emphasis remap='B'>nocrsend</emphasis>
+option.
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>leftca</emphasis></term>
+  <listitem>
+<para>specifies the authorized Certificate Agency (CA) that signed the
+certificate of the peer. If undefined, it defaults to the CA that signed
+the certificate specified in <emphasis remap='B'>leftcert</emphasis>.
+The special <emphasis remap='B'>rightca=%same</emphasis> is implied when
+not specifying a <emphasis remap='B'>rightca</emphasis> and means that
+only peers with certificates signed by the same CA as the leftca will be
+allowed. This option is only useful in complex multi CA certificate
+situations. When using a single CA, it can be safely omitted for left and
+right.
+</para>
   </listitem>
   </varlistentry>
 
@@ -803,10 +857,13 @@ to the default.</para>
   <varlistentry>
   <term><emphasis remap='B'>dpdaction</emphasis></term>
   <listitem>
-<para>When a DPD enabled peer is declared dead, what action should be taken.
-<emphasis remap='B'>hold (default) means the eroute will be put into %hold status, while</emphasis>
-<emphasis remap='B'>clear means the eroute and SA with both be cleared. dpdaction=clear is</emphasis>
-really only usefull on the server of a Road Warrior config.</para>
+<para>When a DPD enabled peer is declared dead, what action should be
+taken.  <emphasis remap='B'>hold</emphasis> (default) means the eroute
+will be put into %hold status, while <emphasis remap='B'>clear</emphasis>
+means the eroute and SA with both be cleared. dpdaction=clear is really
+only usefull on the server of a Road Warrior config. The action
+<emphasis remap='B'>restart</emphasis> is used on tunnels that need to be
+permanently up, and have static IP addresses.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -880,7 +937,7 @@ or
 (a time
 in minutes, hours, or days respectively)
 (default
-<emphasis remap='B'>8.0h</emphasis>,
+<emphasis remap='B'>8h</emphasis>,
 maximum
 <emphasis remap='B'>24h</emphasis>).
 Normally, the connection is renegotiated (via the keying channel)
@@ -973,7 +1030,7 @@ acceptable values as for
 currently
 <emphasis remap='B'>1h</emphasis>,
 maximum
-<emphasis remap='B'>8h</emphasis>).
+<emphasis remap='B'>24h</emphasis>).
 The two-ends-disagree case is similar to that of
 <emphasis remap='B'>keylife</emphasis>.</para>
   </listitem>
@@ -1291,7 +1348,7 @@ subnet behind the NAT (An IP address cannot live at two places at once).
 IPv4 address ranges are denoted as
 <emphasis remap='I'>%v4:a.b.c.d/mm</emphasis>
 and IPv6 is denoted as
-<emphasis remap='I'>%v6:aaaa::bbbb:cccc:dddd:eeee/mm</emphasis>. One
+<emphasis remap='I'>%v6:aaaa::bbbb:cccc:dddd/mm</emphasis>. One
 can exclude subnets by using the <emphasis remap='B'>!</emphasis>.
 For example, if the VPN server is giving access to 192.168.1.0/24,
 this option should be set to:
@@ -1301,6 +1358,33 @@ the client will just use its IP address for the inner IP setting.
 This parameter may eventually become per-connection.
 </para>
 
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>nhelpers</emphasis></term>
+  <listitem>
+<para>how many <emphasis remap='I'>pluto helpers</emphasis> are started
+to help with cryptographic operations. Pluto will start 
+<emphasis remap='I'>(n-1)</emphasis> of them, where <emphasis remap='I'>n</emphasis>
+is the number of CPU's you have (including hypherthreaded CPU's). 
+A value of 0 forces pluto to do all operations in the main
+process. A value of -1 tells pluto to perform the above calculation. Any
+other value forces the number to that amount.
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>myid</emphasis></term>
+  <listitem>
+<para>the identity to be used for <emphasis remap='B'>%myid</emphasis>.
+<emphasis remap='B'>%myid</emphasis> is used in the implicit policy group
+conns and can be used as an identity in explicit conns.
+If unspecified, <emphasis remap='B'>%myid</emphasis> is set to the IP address
+in <emphasis remap='B'>%defaultroute</emphasis> (if that is supported by a
+TXT record in its reverse domain), or otherwise the system's hostname (if that
+is supported by a TXT record in its forward domain), or otherwise it is undefined.
+An explicit value generally starts with ``<emphasis remap='B'>@</emphasis>''.
+</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -1782,7 +1866,7 @@ information about the client subnets to complete the instantiation.</para>
 </refsect1>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
-<para><citerefentry><refentrytitle>ipsec</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_ttoaddr</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_auto</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_manual</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_rsasigkey</refentrytitle><manvolnum>8</manvolnum></citerefentry></para>
+<para><citerefentry><refentrytitle>ipsec</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_ttoaddr</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_whack</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_auto</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_manual</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_rsasigkey</refentrytitle><manvolnum>8</manvolnum></citerefentry></para>
 </refsect1>
 
 <refsect1 id='history'><title>HISTORY</title>
@@ -1806,12 +1890,18 @@ via an &ldquo;updown&rdquo; script.  However, the default
 <emphasis remap='B'>ipsec _updown</emphasis>
 provides no help in controlling a modern firewall.</para>
 
-<para>Including attributes of the keying channel
-(authentication methods,
+<para>The use of <emphasis remap='B'>%any</emphasis> with the
+<emphasis remap='I'>protoport=</emphasis> option is ambiguous. Should the SA permits any
+port through or should the SA negotiate any single port through?
+The first is a basic conn with a wildcard. The second is a template. The
+second is the current behaviour, and it's wrong for quite a number of
+uses involving TCP. The keyword <emphasis remap='B'>%one</emphasis> may be
+introduced in the future to seperate these two cases.</para>
+
+<para>Including attributes of the keying channel (authentication methods,
 <emphasis remap='B'>ikelifetime</emphasis>,
-etc.)
-as an attribute of a connection,
-rather than of a participant pair, is dubious and incurs limitations.</para>
+etc.) as an attribute of a connection, rather than of a participant pair,
+is dubious and incurs limitations.</para>
 
 <para><emphasis remap='I'>Ipsec_manual</emphasis>
 is not nearly as generous about the syntax of subnets,

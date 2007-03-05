@@ -21,6 +21,12 @@
 </cmdsynopsis>
 </refsynopsisdiv>
 
+<refsect1 id='obsolete'><title>OBSOLETE</title>
+<para>Note that starter is being obsoleted for the new connection loading
+code that replace all the scripts, and will be removed from Openswan in
+the next major release.
+</para>
+</refsect1>
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para>Openswan Starter is aimed to replace all the scripts which are used to

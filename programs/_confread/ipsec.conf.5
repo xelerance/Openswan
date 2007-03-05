@@ -140,6 +140,10 @@ the type of the connection; currently the accepted values are \fItunnel\fR (the 
 private subnet behind the left participant, expressed as \fInetwork\fR\fI/\fR\fInetmask\fR (actually, any form acceptable to \fBipsec_ttosubnet\fR(3)); if omitted, essentially assumed to be \fIleft\fR\fI/32\fR, signifying that the left end of the connection goes to the left participant only\&. If the global option \fIvirtual_private\fR has been set, the special keyword \fIvhost:%priv\fR can be used to designate the allowed NAT'ed networks this option can take\&. If one wants to support both the allowed virtual_private networks as well as non\-NAT'ed connection, this subnet option can be set to \fIrightsubnet=vhost:%priv, %no\fR\&. The special value \fI%priv\fR will be filled in with the network ranges specified in the global option \fIvirtual_private=\fR 
 
 .TP
+\fIleftprotoport\fR
+allowed protocols and ports over connection, also called Port Selectors\&. The argument is in the form \fIprotocol\fR, which can be a number or a name that will be looked up in \fI/etc/protocols\fR, such as \fIleftprotoport=icmp\fR, or in the form of \fIprotocol/port\fR, such as \fItcp/smtp\fR\&. Ports can be defined as a number (eg\&. 25) or as a name (eg smtp) which will be looked up in \fI/etc/services\fR\&. A special keyword \fI%any\fR can be used to allow all ports of a certain protocol\&. The most common use of this option is for L2TP connections to only allow l2tp packets (UDP port 1701), eg: \fIleftprotoport=17/1701\fR\&. Some clients, notably older Windows XP and some Mac OSX clients, use a random high port as source port\&. In those cases \fIrightprotoport=17/%any\fR can be used to allow all UDP traffic on the connection\&. Note that this option is part of the proposal, so it cannot be arbitrarily left out if one end does not care about the traffic selection over this connection \- both peers have to agree\&. The Port Selectors show up in the output of \fIipsec eroute\fR and \fIipsec auto \-\-status\fR eg:\fI"l2tp": 193\&.110\&.157\&.131[@aivd\&.xelernace\&.com]:7/1701\&.\&.\&.%any:17/1701\fR This option only filters outbound traffic\&. Inbound traffic selection must still be based on firewall rules activated by an updown script\&. The variablees $PLUTO_MY_PROTOCOL, $PLUTO_PEER_PROTOCOL, $PLUTO_MY_PORT, and $PLUTO_PEER_PORT are available for use in \fIupdown\fR scripts\&. Older workarounds for bugs involved a setting of \fI17/0\fR to denote all ports were allowed\&. This notation should no longer be used\&.
+
+.TP
 \fIleftnexthop\fR
 next\-hop gateway IP address for the left participant's connection to the public network; defaults to \fI%direct\fR (meaning \fIright\fR)\&. If the value is to be overridden by the \fIleft=%defaultroute\fR method (see above), an explicit value must \fInot\fR be given\&. If that method is not being used, but \fIleftnexthop\fR is \fI%defaultroute\fR, and \fIinterfaces=%defaultroute\fR is used in the \fIconfig\fR  \fIsetup\fR section, the next\-hop gateway address of the default\-route interface will be used\&. The magic value \fI%direct\fR signifies a value to be filled in (by automatic keying) with the peer's address\&. Relevant only locally, other end need not agree on it\&.
 
@@ -178,7 +182,7 @@ how the two security gateways should authenticate each other; acceptable values 
 
 .TP
 \fIike\fR
-IKE encryption/authentication algorithm to be used for the connection (phase 1 aka ISAKMP SA)\&. The format is \fI"cipher\-hash;modpgroup, cipher\-hash;modpgroup, \&.\&.\&."\fR Any left out option will be filled in with all allowed default options\&. Multiple proposals are seperated by a comma\&. If an \fIike=\fR line is specified, no other received proposals will be accepted\&. Formerly there was a distinction (by using a \fI"!"\fR symbol) between "strict mode" or not\&. That mode has been obsoleted\&. If an \fIike=\fR option is specified, the mode is always strict, meaning no other received proposals will be accepted\&. Some examples are \fIike=3des\-sha1,aes\-sha1\fR, \fIike=aes\fR, \fIike=aes128\-md5;modp2048\fR, \fIike=3des\-md5;modp1024,esp=aes\-sha1;modp1536\fR or \fIike=modp1536\fR\&. The options must be suitable as a value of \fBipsec_spi\fR(8)'s \fB\-\-ike\fR option\&. The default is to use IKE, and to allow all combinations of: 
+IKE encryption/authentication algorithm to be used for the connection (phase 1 aka ISAKMP SA)\&. The format is \fI"cipher\-hash\-modpgroup, cipher\-hash\-modpgroup, \&.\&.\&."\fR Any left out option will be filled in with all allowed default options\&. Multiple proposals are seperated by a comma\&. If an \fIike=\fR line is specified, no other received proposals will be accepted\&. Formerly there was a distinction (by using a \fI"!"\fR symbol) between "strict mode" or not\&. That mode has been obsoleted\&. If an \fIike=\fR option is specified, the mode is always strict, meaning no other received proposals will be accepted\&. Some examples are \fIike=3des\-sha1,aes\-sha1\fR, \fIike=aes\fR, \fIike=aes128\-md5\-modp2048\fR, \fIike=3des\-md5\-modp1024,esp=aes\-sha1\-modp1536\fR or \fIike=modp1536\fR\&. The options must be suitable as a value of \fBipsec_spi\fR(8)'s \fB\-\-ike\fR option\&. The default is to use IKE, and to allow all combinations of: 
 
 .nf
 \fI
@@ -201,7 +205,7 @@ AH authentication algorithm to be used for the connection, e\&.g here\&. \fIhmac
 
 .TP
 \fIleftid\fR
-how the left participant should be identified for authentication; defaults to \fIleft\fR\&. Can be an IP address (in any \fBipsec_ttoaddr\fR(3) syntax) or a fully\-qualified domain name preceded by \fI@\fR (which is used as a literal string and not resolved)\&. The magic value \fI%myid\fR stands for the current setting of \fImyid\fR\&. This is set in \fIconfig setup\fR or by \fBipsec_whack\fR(8)), or, if not set, it is the IP address in \fI%defaultroute\fR (if that is supported by a TXT record in its reverse domain), or otherwise it is the system's hostname (if that is supported by a TXT record in its forward domain), or otherwise it is undefined\&.
+how the left participant should be identified for authentication; defaults to \fIleft\fR\&. Can be an IP address (in any \fBipsec_ttoaddr\fR(3) syntax) or a fully\-qualified domain name preceded by \fI@\fR (which is used as a literal string and not resolved)\&. The magic value \fI%myid\fR stands for the current setting of \fImyid\fR\&.
 
 .TP
 \fIleftrsasigkey\fR
@@ -213,11 +217,15 @@ if present, a second public key\&. Either key can authenticate the signature, al
 
 .TP
 \fIleftcert\fR
-If you are using \fIleftrsasigkey=%cert\fR this defines the certificate you would like to use\&. It should point to a X\&.509 encoded certificate file\&. If you do not specify a full pathname, by default it will look in /etc/ipsec\&.d/certs\&.
+If you are using \fIleftrsasigkey=%cert\fR this defines the certificate you would like to use\&. It should point to a X\&.509 encoded certificate file\&. If you do not specify a full pathname, by default it will look in /etc/ipsec\&.d/certs\&. If openswan has been compiled with \fIUSE_SMARTCARD=true\fR, then this option can also be set to \fIleftcert=%smartcard\fR\&. If multiple smartcards or USB tokens are present, they can be specified using \fIleftcert=%smartcard<reader nr><PKCS#15 key id>\fR 
 
 .TP
 \fIleftsendcert\fR
-This option configures when Openswan will send X\&.509 certificates to the remote host\&. Acceptable values are \fIyes|always\fR (signifying that we should always send a certificate), \fIifasked\fR (signifying that we should send a certificate if the remote end asks for it), and \fIno|never\fR (signifying that we will never send a X\&.509 certificate)\&. The default for this option is \fIifasked\fR which may break compatibility with other vendor's IPSec implementations, such as Cisco and SafeNet\&. If you find that you are getting errors about no ID/Key found, you likely need to set this to \fIalways\&.\fR
+This option configures when Openswan will send X\&.509 certificates to the remote host\&. Acceptable values are \fIyes|always\fR (signifying that we should always send a certificate), \fIifasked\fR (signifying that we should send a certificate if the remote end asks for it), and \fIno|never\fR (signifying that we will never send a X\&.509 certificate)\&. The default for this option is \fIifasked\fR which may break compatibility with other vendor's IPSec implementations, such as Cisco and SafeNet\&. If you find that you are getting errors about no ID/Key found, you likely need to set this to \fIalways\fR\&. This per\-conn option replaces the obsolete global \fInocrsend\fR option\&.
+
+.TP
+\fIleftca\fR
+specifies the authorized Certificate Agency (CA) that signed the certificate of the peer\&. If undefined, it defaults to the CA that signed the certificate specified in \fIleftcert\fR\&. The special \fIrightca=%same\fR is implied when not specifying a \fIrightca\fR and means that only peers with certificates signed by the same CA as the leftca will be allowed\&. This option is only useful in complex multi CA certificate situations\&. When using a single CA, it can be safely omitted for left and right\&.
 
 .TP
 \fIleftxauthserver\fR
@@ -249,7 +257,7 @@ Set the length of time (in seconds) we will idle without hearing either an R_U_T
 
 .TP
 \fIdpdaction\fR
-When a DPD enabled peer is declared dead, what action should be taken\&. \fIhold (default) means the eroute will be put into %hold status, while\fR  \fIclear means the eroute and SA with both be cleared\&. dpdaction=clear is\fR really only usefull on the server of a Road Warrior config\&.
+When a DPD enabled peer is declared dead, what action should be taken\&. \fIhold\fR (default) means the eroute will be put into %hold status, while \fIclear\fR means the eroute and SA with both be cleared\&. dpdaction=clear is really only usefull on the server of a Road Warrior config\&. The action \fIrestart\fR is used on tunnels that need to be permanently up, and have static IP addresses\&.
 
 .TP
 \fImodecfgpull\fR
@@ -271,7 +279,7 @@ Aggressive Mode is further limited to only one proposal \- there is no room for 
 
 .TP
 \fIkeylife\fR
-how long a particular instance of a connection (a set of encryption/authentication keys for user packets) should last, from successful negotiation to expiry; acceptable values are an integer optionally followed by \fIs\fR (a time in seconds) or a decimal number followed by \fIm\fR, \fIh\fR, or \fId\fR (a time in minutes, hours, or days respectively) (default \fI8\&.0h\fR, maximum \fI24h\fR)\&. Normally, the connection is renegotiated (via the keying channel) before it expires\&. The two ends need not exactly agree on \fIkeylife\fR, although if they do not, there will be some clutter of superseded connections on the end which thinks the lifetime is longer\&.
+how long a particular instance of a connection (a set of encryption/authentication keys for user packets) should last, from successful negotiation to expiry; acceptable values are an integer optionally followed by \fIs\fR (a time in seconds) or a decimal number followed by \fIm\fR, \fIh\fR, or \fId\fR (a time in minutes, hours, or days respectively) (default \fI8h\fR, maximum \fI24h\fR)\&. Normally, the connection is renegotiated (via the keying channel) before it expires\&. The two ends need not exactly agree on \fIkeylife\fR, although if they do not, there will be some clutter of superseded connections on the end which thinks the lifetime is longer\&.
 
 .TP
 \fIrekey\fR
@@ -291,7 +299,7 @@ how many attempts (a whole number or \fI%forever\fR) should be made to negotiate
 
 .TP
 \fIikelifetime\fR
-how long the keying channel of a connection (buzzphrase: “ISAKMP SA”) should last before being renegotiated; acceptable values as for \fIkeylife\fR (default set by \fBipsec_pluto\fR(8), currently \fI1h\fR, maximum \fI8h\fR)\&. The two\-ends\-disagree case is similar to that of \fIkeylife\fR\&.
+how long the keying channel of a connection (buzzphrase: “ISAKMP SA”) should last before being renegotiated; acceptable values as for \fIkeylife\fR (default set by \fBipsec_pluto\fR(8), currently \fI1h\fR, maximum \fI24h\fR)\&. The two\-ends\-disagree case is similar to that of \fIkeylife\fR\&.
 
 .TP
 \fIcompress\fR
@@ -388,7 +396,15 @@ whether to accept/offer to support NAT (NAPT, also known as "IP Masqurade") work
 
 .TP
 \fIvirtual_private\fR
-contains the networks that are allowed as subnet= for the remote client\&. In other words, the address ranges that may live behind a NAT router through which a client connects\&. This value is usually set to all the RFC\-1918 address space, excluding the space used in the local subnet behind the NAT (An IP address cannot live at two places at once)\&. IPv4 address ranges are denoted as \fI%v4:a\&.b\&.c\&.d/mm\fR and IPv6 is denoted as \fI%v6:aaaa::bbbb:cccc:dddd:eeee/mm\fR\&. One can exclude subnets by using the \fI!\fR\&. For example, if the VPN server is giving access to 192\&.168\&.1\&.0/24, this option should be set to: \fIvirtual_private=%v4:10\&.0\&.0\&.0/8,%v4:192\&.168\&.0\&.0/16,%4:172\&.16\&.0\&.0/12,%v4:!192\&.168\&.1\&.0/24\fR\&. This parameter is only needed on the server side and not on the client side that resides behind the NAT router, as the client will just use its IP address for the inner IP setting\&. This parameter may eventually become per\-connection\&.
+contains the networks that are allowed as subnet= for the remote client\&. In other words, the address ranges that may live behind a NAT router through which a client connects\&. This value is usually set to all the RFC\-1918 address space, excluding the space used in the local subnet behind the NAT (An IP address cannot live at two places at once)\&. IPv4 address ranges are denoted as \fI%v4:a\&.b\&.c\&.d/mm\fR and IPv6 is denoted as \fI%v6:aaaa::bbbb:cccc:dddd/mm\fR\&. One can exclude subnets by using the \fI!\fR\&. For example, if the VPN server is giving access to 192\&.168\&.1\&.0/24, this option should be set to: \fIvirtual_private=%v4:10\&.0\&.0\&.0/8,%v4:192\&.168\&.0\&.0/16,%4:172\&.16\&.0\&.0/12,%v4:!192\&.168\&.1\&.0/24\fR\&. This parameter is only needed on the server side and not on the client side that resides behind the NAT router, as the client will just use its IP address for the inner IP setting\&. This parameter may eventually become per\-connection\&.
+
+.TP
+\fInhelpers\fR
+how many \fIpluto helpers\fR are started to help with cryptographic operations\&. Pluto will start \fI(n\-1)\fR of them, where \fIn\fR is the number of CPU's you have (including hypherthreaded CPU's)\&. A value of 0 forces pluto to do all operations in the main process\&. A value of \-1 tells pluto to perform the above calculation\&. Any other value forces the number to that amount\&.
+
+.TP
+\fImyid\fR
+the identity to be used for \fI%myid\fR\&. \fI%myid\fR is used in the implicit policy group conns and can be used as an identity in explicit conns\&. If unspecified, \fI%myid\fR is set to the IP address in \fI%defaultroute\fR (if that is supported by a TXT record in its reverse domain), or otherwise the system's hostname (if that is supported by a TXT record in its forward domain), or otherwise it is undefined\&. An explicit value generally starts with ``\fI@\fR''\&.
 
 .TP
 \fIcrlcheckinterval\fR
@@ -622,7 +638,7 @@ When choosing a connection to use to respond to a negotiation which doesn't matc
 .SH "SEE ALSO"
 
 .PP
-\fBipsec\fR(8), \fBipsec_ttoaddr\fR(8), \fBipsec_auto\fR(8), \fBipsec_manual\fR(8), \fBipsec_rsasigkey\fR(8)
+\fBipsec\fR(8), \fBipsec_ttoaddr\fR(8), \fBipsec_whack\fR(8), \fBipsec_auto\fR(8), \fBipsec_manual\fR(8), \fBipsec_rsasigkey\fR(8)
 
 .SH "HISTORY"
 
@@ -633,6 +649,9 @@ Designed for the FreeS/WAN project <http://www\&.freeswan\&.org: \fIhttp://www.f
 
 .PP
 When \fItype\fR or \fIfailureshunt\fR is set to \fIdrop\fR or \fIreject,\fR Openswan blocks outbound packets using eroutes, but assumes inbound blocking is handled by the firewall\&. Openswan offers firewall hooks via an “updown” script\&. However, the default \fIipsec _updown\fR provides no help in controlling a modern firewall\&.
+
+.PP
+The use of \fI%any\fR with the \fIprotoport=\fR option is ambiguous\&. Should the SA permits any port through or should the SA negotiate any single port through? The first is a basic conn with a wildcard\&. The second is a template\&. The second is the current behaviour, and it's wrong for quite a number of uses involving TCP\&. The keyword \fI%one\fR may be introduced in the future to seperate these two cases\&.
 
 .PP
 Including attributes of the keying channel (authentication methods, \fIikelifetime\fR, etc\&.) as an attribute of a connection, rather than of a participant pair, is dubious and incurs limitations\&.

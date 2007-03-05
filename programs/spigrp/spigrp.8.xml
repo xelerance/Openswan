@@ -38,6 +38,11 @@
 </cmdsynopsis>
 </refsynopsisdiv>
 
+<refsect1 id='obsolete'><title>OBSOLETE</title>
+<para>Note that spi is only supported on the classic KLIPS stack. It is
+not supported on any other stack and will be completely removed in future
+versions. A replacement command still needs to be designed</para>
+</refsect1>
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><emphasis remap='I'>Spigrp</emphasis>
@@ -179,8 +184,11 @@ by Richard Guy Briggs.</para>
 although admittedly it's hard to see why you would need more.</para>
 
 <!--  $Log: spigrp.8.xml,v $
-<!--  Revision 1.1  2004/05/26 17:51:14  ken
-<!--  Import XML version
+<!--  Revision 1.1.16.1  2006/10/26 20:50:29  paul
+<!--  Fixed and regenerated spigrp man page. Added note on obsoleteness
+<!-- -->
+<!--  Revision 1.1  2004/05/26 17:51:14  ken -->
+<!--  Import XML version -->
 <!-- -->
 <!--  Revision 1.20  2002/04/24 07:35:41  mcr -->
 <!--  Moved from ./klips/utils/spigrp.8,v -->

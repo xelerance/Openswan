@@ -10,7 +10,7 @@
 </refmeta>
 <refnamediv id='name'>
 <refname>pf_key</refname>
-<refpurpose>shows pfkey messages emitted by the kernel</refpurpose>
+<refpurpose>shows pfkey messages emitted by the kernel when using the KLIPS or MAST stack.</refpurpose>
 </refnamediv>
 <!-- body begins here -->
 <refsynopsisdiv id='synopsis'>
@@ -24,6 +24,12 @@
     <group choice='plain'><arg choice='plain'><replaceable>filehmac-md5-96</replaceable></arg><arg choice='plain'><replaceable>hmac-sha1-96</replaceable></arg></group>
 </cmdsynopsis>
 </refsynopsisdiv>
+
+<refsect1 id='stack'><title>STACK</title>
+<para>Note that pf_key is only supported on the KLIPS and MAST stacks. It is
+not supported on any other stack.
+</para>
+</refsect1>
 
 
 <refsect1 id='description'><title>DESCRIPTION</title>
@@ -56,32 +62,6 @@ present race conditions in regression testing.</para>
 <para>Written for the Linux FreeS/WAN project
 &lt;<ulink url='http://www.freeswan.org/'>http://www.freeswan.org/</ulink>&gt;
 by Michael Richardson &lt;mcr@freeswan.org&gt;</para>
-
-<!--  $Log: pf_key.8.xml,v $
-<!--  Revision 1.1  2004/05/26 17:49:53  ken
-<!--  Import XML version
-<!-- -->
-<!--  Revision 1.4  2002/07/16 02:53:42  mcr -->
-<!--  	added \-\-daemon &lt;pidfile&gt; to "ipsec pf_key" command. -->
-<!--  	this is used in *\-trap\-* tests to avoid race conditions between -->
-<!--  	registration of PF_KEY listeners and arrival of first test packet. -->
-
-<!--  Revision 1.3  2002/04/24 07:35:39  mcr -->
-<!--  Moved from ./klips/utils/pf_key.8,v -->
-
-<!--  Revision 1.2  2001/11/23 07:23:14  mcr -->
-<!--  	pulled up klips2 Makefile and pf_key code. -->
-
-<!--  Revision 1.1.2.1  2001/10/23 18:49:12  mcr -->
-<!--  	renamed man page to section 8. -->
-<!--  	added \-\-ah, \-\-esp, \-\-ipcomp and \-\-ipip to control which -->
-<!--  	protocols are printed. -->
-<!--  	incomplete messages which include at least an sadb header are printed. -->
-
-<!--  Revision 1.1.2.1  2001/10/17 23:25:37  mcr -->
-<!--  	added "pk_key" program to dump raw kernel pf messages. -->
-<!--  	(program is still skeletal) -->
-
 
 
 </refsect1>

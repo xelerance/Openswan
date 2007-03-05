@@ -1,0 +1,23 @@
+
+# example entries for /etc/sysctl.conf
+# forwarding is needed for subnet or l2tp connections
+net.ipv4.ip_forward = 1
+
+# rp_filter is stupid and cannot deal decrypted packets "appearing out of
+# nowhere"
+net.ipv4.conf.default.rp_filter = 0
+
+# when using 1 interface for two networks, and in some other cases with
+# NETKEY, the kernel thinks it can be clever but breaks things.
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.default.send_redirects = 0
+net.ipv4.icmp_ignore_bogus_error_responses = 1
+net.ipv4.conf.all.log_martians = 0
+net.ipv4.conf.default.log_martians = 0
+
+# these are non-ipsec specific security policies you should use
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+
+
