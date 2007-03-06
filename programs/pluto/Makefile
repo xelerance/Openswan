@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.189.2.4 2006/10/11 16:24:52 paul Exp $
+# RCSID $Id: Makefile,v 1.189.2.5 2006/11/07 15:55:52 paul Exp $
 
 # All of the USE_ and HAVE_ variables are controlled from openswan/Makefile.inc
 
@@ -72,7 +72,6 @@ HDRDIRS = -I${OPENSWANSRCDIR}/programs/pluto/linux26 -I${OPENSWANSRCDIR}/include
 # -DDEBUG enables debugging code, allowing for debugging output
 #    (note that output must also be selected at runtime, so it is
 #    reasonable to always define this)
-# -DX509_VERSION is used to transfer the X.509 version number to Pluto
 # -DPLUTO_SENDS_VENDORID enables pluto to send out a VendorID payload.
 #    this can be used by remote nodes to work around faults (bugs),
 #    but is most useful to humans who are debugging things.
@@ -147,7 +146,6 @@ SMARTCARD_DIST_SRCS=smartcard.c smartcard.h
 X509_OBJS=${X509_DIST_OBJS}
 X509_SRCS=${X509_DIST_SRCS}
 X509_DEFS=-DX509 
-X509_DEFS=-DX509_VERSION=\"${X509_VERSION}\"
 
 # dynamic LDAP CRL fetching requires OpenLDAP library
 ifeq ($(USE_LDAP),true)
