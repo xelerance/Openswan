@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: plutomain.c,v 1.102.2.4 2005/08/12 01:15:00 ken Exp $
+ * RCSID $Id: plutomain.c,v 1.102.2.6 2006/10/27 03:00:30 paul Exp $
  */
 
 #include <stdio.h>
@@ -105,7 +105,6 @@ usage(const char *mess)
 	    " \\\n\t"
 	    "[--nofork]"
 	    " [--stderrlog]"
-	    " [--use-nostack]"         /* old --no_klips */
 	    " [--nocrsend]"
 	    " [--strictcrlpolicy]"
 	    " [--crlcheckinterval]"
@@ -114,6 +113,7 @@ usage(const char *mess)
 	    " [--use-auto]"
 	    " [--use-klips]"
 	    " [--use-netkey]"
+	    " [--use-nostack]"         /* old --no_klips */
 	    " \\\n\t"
 	    "[--interface <ifname>]"
 	    " [--ikeport <port-number>]"
@@ -121,6 +121,8 @@ usage(const char *mess)
 	    "[--ctlbase <path>]"
 	    " \\\n\t"
 	    "[--perpeerlogbase <path>] [--perpeerlog]"
+	    " \\\n\t"
+	    "[--coredir <dirname>] [--noretransmits]"
 	    " \\\n\t"
 	    "[--secretsfile <secrets-file>]"
 	    " [--ipsecdir <ipsec-dir>]"
@@ -138,8 +140,10 @@ usage(const char *mess)
 	    " [--debug-emitting]"
 	    " \\\n\t"
 	    "[--debug-control]"
+	    "[--debug-lifecycle]"
 	    " [--debug-klips]"
 	    " [--debug-dns]"
+	    " [--debug-oppo]"
 	    " [--debug-dpd]"
 	    " [ --debug-private]"
 	    " [ --debug-pfkey]"
