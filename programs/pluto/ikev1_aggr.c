@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikev1_aggr.c,v 1.1.2.2 2006/02/15 04:37:38 paul Exp $
+ * RCSID $Id: ikev1_aggr.c,v 1.1.2.3 2006/11/24 04:07:33 paul Exp $
  */
 
 #include <stdio.h>
@@ -191,7 +191,7 @@ aggr_outI1(int whack_sock,
 	if (!st->st_sec_in_use) {
 	    ke->ke_pcrc.pcrc_func = aggr_outI1_continue;
 	    e = build_ke(&ke->ke_pcrc, st, st->st_oakley.group, importance);
-	    if(e != STF_SUSPEND) {
+	    if(e != STF_SUSPEND && e != STF_INLINE) {
 	      loglog(RC_CRYPTOFAILED, "system too busy");
 	      delete_state(st);
 	    }
