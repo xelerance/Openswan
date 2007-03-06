@@ -2095,11 +2095,12 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_x_delflow_parse: "
 			    "CLEARFLOW flag set, calling cleareroutes.\n");
-		if ((error = ipsec_cleareroutes()))
+		if ((error = ipsec_cleareroutes())) {
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_x_delflow_parse: "
 				    "cleareroutes returned %d.\n", error);
 			SENDERR(-error);
+		}
 	} else {
 		struct sk_buff *first = NULL, *last = NULL;
 
