@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.inc,v 1.116.2.9 2006/10/19 04:57:08 paul Exp $
+# RCSID $Id: Makefile.inc,v 1.116.2.11 2006/11/07 15:55:52 paul Exp $
 
 
 
@@ -255,6 +255,8 @@ BIND9STATICLIBDIR?=/usr/local/lib
 # LWRES is the lightweight resolver, part of BIND9
 # We test with LWRES, but ship with it off, as it requires
 # additional headers not present on most systems.
+# Note you need a locally running bind9 nameserver with lwres{} enabled
+# to use this.
 USE_LWRES?=false
 
 # Whether or not to use iproute2 based commands.
@@ -348,7 +350,6 @@ HAVE_THREADS?=false
 # if so, then internationalization code is retained in the shell scripts
 USE_BASH?=true
 
-X509_VERSION=X.509-1.5.4
 NONINTCONFIG=oldconfig
 
 # Should we build with object directories?
