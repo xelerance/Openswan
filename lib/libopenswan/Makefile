@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.18 2005/01/25 20:06:40 mcr Exp $
+# RCSID $Id: Makefile,v 1.18.6.1 2006/11/07 16:30:16 paul Exp $
 
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
@@ -71,7 +71,6 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -W
 #CFLAGS+= -Wwrite-strings
 CFLAGS+= -Wbad-function-cast 
-CFLAGS+= -DX509_VERSION=\"${X509_VERSION}\"
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
