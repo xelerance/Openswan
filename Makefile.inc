@@ -246,6 +246,9 @@ RH_KERNELSRC?=/lib/modules/2.6.9-1.681_FC3/build
 # LWRES is the lightweight resolver, part of BIND9
 # We test with LWRES, but ship with it off, as it requires
 # additional headers not present on most systems.
+# Note you need a locally running bind9 nameserver with lwres{} enabled
+# to use this, or have the "lwres" package installed and running.
+# This only affects conns that use DNS for keys in lookups.
 USE_LWRES?=true
 
 # Whether or not to use iproute2 based commands.
