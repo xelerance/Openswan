@@ -3,7 +3,7 @@
 #
 # See @FINALDOCDIR@/policygroups.html for details.
 #
-# $Id: clear.in,v 1.4.30.2 2006/10/19 17:43:56 paul Exp $
+# $Id: clear.in,v 1.4.30.3 2006/11/21 19:49:51 paul Exp $
 #
 #
 #	Michael's idea: Always have ROOT NAMESERVERS in the clear.
@@ -24,6 +24,6 @@
 128.63.2.53/32
 192.36.148.17/32
 192.58.128.30/32
-193.0.14.129 /32
+193.0.14.129/32
 198.32.64.12/32
 202.12.27.33/32
