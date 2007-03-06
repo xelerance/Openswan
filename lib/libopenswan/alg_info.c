@@ -753,6 +753,36 @@ alg_info_snprint(char *buf, int buflen
 	{
 	    struct alg_info_esp *alg_info_esp=(struct alg_info_esp *)alg_info;
 	    ALG_INFO_ESP_FOREACH(alg_info_esp, esp_info, cnt) {
+		np=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)"
+			    , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP")
+			    , esp_info->esp_ealg_id
+			    , (int)esp_info->esp_ealg_keylen
+			    , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
+			    , esp_info->esp_aalg_id);
+		ptr+=np;
+		buflen-=np;
+		if ( cnt > 0) {
+			np=snprintf(ptr, buflen, ", ");
+			ptr+=np;
+			buflen-=np;
+		}
+		if(buflen<0) goto out;
+	    }
+	    if (alg_info_esp->esp_pfsgroup) {
+		np=snprintf(ptr, buflen, "; pfsgroup=%s(%d)"
+			, enum_name(&oakley_group_names, alg_info_esp->esp_pfsgroup)+ sizeof("OAKLEY_GROUP")
+		        , alg_info_esp->esp_pfsgroup);
+		ptr+=np;
+		buflen-=np;
+		if(buflen<0) goto out;
+	    }
+	    break;
+	}
+
+    case PROTO_IPSEC_AH:
+        {
+	    struct alg_info_esp *alg_info_esp=(struct alg_info_esp *)alg_info;
+	    ALG_INFO_ESP_FOREACH(alg_info_esp, esp_info, cnt) {
 		np=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d), "
 			    , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP")
 			    , esp_info->esp_ealg_id
@@ -771,20 +801,26 @@ alg_info_snprint(char *buf, int buflen
 		if(buflen<0) goto out;
 	    }
 	    break;
-	}
+        }
 
     case PROTO_ISAKMP:
 	if(permitike) {
 	    ALG_INFO_IKE_FOREACH((struct alg_info_ike *)alg_info, ike_info, cnt) {
-		np=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)-%d, "
-			    , enum_name(&esp_transformid_names, ike_info->ike_ealg)+sizeof("ESP")
+		np=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)-%s(%d)"
+			    , enum_name(&oakley_enc_names, ike_info->ike_ealg)+sizeof("OAKLEY")
 			    , ike_info->ike_ealg
 			    , (int)ike_info->ike_eklen
-			    , enum_name(&auth_alg_names, ike_info->ike_halg)+sizeof("AUTH_ALGORITHM_HMAC")
+			    , enum_name(&oakley_hash_names, ike_info->ike_halg)+ sizeof("OAKLEY")
 			    , ike_info->ike_halg
+			    , enum_name(&oakley_group_names, ike_info->ike_modp)+ sizeof("OAKLEY_GROUP")
 			    , ike_info->ike_modp);
 		ptr+=np;
 		buflen-=np;
+                if ( cnt > 0) {
+                        np=snprintf(ptr, buflen, ", ");
+                        ptr+=np;
+                        buflen-=np;
+                }
 		if(buflen<0) goto out;
 	    }
 	    break;
@@ -798,7 +834,7 @@ alg_info_snprint(char *buf, int buflen
 	buflen-=np;
 	goto out;
     }
-    np=snprintf(ptr, buflen, "flags=%s",
+    np=snprintf(ptr, buflen, "; flags=%s",
 		alg_info->alg_info_flags&ALG_INFO_F_STRICT?
 		"strict":"-strict");
     ptr+=np;
