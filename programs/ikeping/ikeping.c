@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikeping.c,v 1.13 2005/07/08 02:56:38 paul Exp $
+ * RCSID $Id: ikeping.c,v 1.13.2.1 2007/03/05 15:36:23 paul Exp $
  */
 
 #include <stdio.h>
@@ -310,7 +310,7 @@ main(int argc, char **argv)
   pfamily=PF_INET;
   lport=500;
   dport=500;
-  waitTime=10;
+  waitTime=10*1000;
   verbose=0;
   natt=0;
   listen_only=0;
