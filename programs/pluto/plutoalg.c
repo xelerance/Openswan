@@ -187,28 +187,34 @@ int
 alg_info_snprint_esp(char *buf, int buflen, struct alg_info_esp *alg_info)
 {
 	char *ptr=buf;
-	int ret;
 	struct esp_info *esp_info;
 	int cnt;
+	int len;
 	int eklen, aklen;
 	ptr=buf;
 	ALG_INFO_ESP_FOREACH(alg_info, esp_info, cnt) {
 		if (kernel_alg_esp_enc_ok(esp_info->esp_ealg_id, 0, NULL) &&
-			(kernel_alg_esp_auth_ok(esp_info->esp_aalg_id, NULL))) {
-		eklen=esp_info->esp_ealg_keylen;
-		if (!eklen) 
-			eklen=kernel_alg_esp_enc_keylen(esp_info->esp_ealg_id)*BITS_PER_BYTE;
-		aklen=esp_info->esp_aalg_keylen;
-		if (!aklen) 
-			aklen=kernel_alg_esp_auth_keylen(esp_info->esp_aalg_id)*BITS_PER_BYTE;
-		ret=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)_%03d, "
-			     , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP_")
-			     , esp_info->esp_ealg_id, eklen
-			     , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC_")
-			     , esp_info->esp_aalg_id, aklen);
-		ptr+=ret;
-		buflen-=ret;
-		if (buflen<0) break;
+	   	    (kernel_alg_esp_auth_ok(esp_info->esp_aalg_id, NULL))) {
+			eklen=esp_info->esp_ealg_keylen;
+			if (!eklen) 
+				eklen=kernel_alg_esp_enc_keylen(esp_info->esp_ealg_id)*BITS_PER_BYTE;
+			aklen=esp_info->esp_aalg_keylen;
+			if (!aklen) 
+				aklen=kernel_alg_esp_auth_keylen(esp_info->esp_aalg_id)*BITS_PER_BYTE;
+
+			len=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)_%03d"
+				     , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP")
+				     , esp_info->esp_ealg_id, eklen
+				     , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
+				     , esp_info->esp_aalg_id, aklen);
+			ptr+=len;
+			buflen-=len;
+			if ( cnt > 0) {
+				len=snprintf(ptr, buflen, ", ");
+				ptr+=len;
+				buflen-=len;
+			}
+			if (buflen<0) break;
 		}
 	}
 	return ptr-buf;
@@ -219,13 +225,15 @@ char *alg_info_snprint_ike1(struct ike_info *ike_info
 			    , char *buf
 			    , int buflen)
 {
-    snprintf(buf, buflen-1, "%d_%03d-%d_%03d-%d",
-	     ike_info->ike_ealg,
-	     eklen,
-	     ike_info->ike_halg,
-	     aklen,
-	     ike_info->ike_modp);
-    return buf;
+	snprintf(buf, buflen-1, "%s(%d)_%03d-%s(%d)_%03d-%s(%d)"
+		, enum_name(&oakley_enc_names, ike_info->ike_ealg)+ sizeof("OAKLEY") 
+		, ike_info->ike_ealg, eklen
+		, enum_name(&oakley_hash_names, ike_info->ike_halg)+ sizeof("OAKLEY")
+		, ike_info->ike_halg, aklen
+		, enum_name(&oakley_group_names, ike_info->ike_modp)+ sizeof("OAKLEY_GROUP")
+		, ike_info->ike_modp);
+       return buf;
+
 }
 
 int
@@ -255,14 +263,21 @@ alg_info_snprint_ike(char *buf, int buflen, struct alg_info_ike *alg_info)
 		aklen=ike_info->ike_hklen;
 		if (!aklen) 
 		    aklen=hash_desc->hash_digest_len * BITS_PER_BYTE;
-		ret=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)_%03d-%d, "
-			     , enum_name(&esp_transformid_names, ike_info->ike_ealg)+sizeof("ESP")
+		/* fixme: needs to handle too short buffer properly instead of crashing */
+		ret=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)_%03d-%s(%d)"
+			     , enum_name(&oakley_enc_names, ike_info->ike_ealg)+sizeof("OAKLEY")
 			     , ike_info->ike_ealg, eklen
-			     , enum_name(&auth_alg_names, ike_info->ike_halg)+sizeof("AUTH_ALGORITHM_HMAC")
+			     , enum_name(&oakley_hash_names, ike_info->ike_halg)+sizeof("OAKLEY")
 			     , ike_info->ike_halg, aklen
+			      , enum_name(&oakley_group_names, ike_info->ike_modp)+sizeof("OAKLEY_GROUP")
 			     , ike_info->ike_modp);
 		ptr+=ret;
 		buflen-=ret;
+                if ( cnt > 0) {
+                        ret=snprintf(ptr, buflen, ", ");
+                        ptr+=ret;
+                        buflen-=ret;
+                }
 		if (buflen<0) break;
 	    }
 	}
@@ -598,16 +613,13 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
 		, "\"%s\"%s:   ESP algorithm newest: %s_%d-%s; pfsgroup=%s"
 		, c->name
 		, instance
-		, enum_show(&esp_transformid_names, st->st_esp.attrs.transid)
-		+4 /* strlen("ESP_") */
+		, enum_show(&esp_transformid_names, st->st_esp.attrs.transid) +sizeof("ESP") 
 		, st->st_esp.attrs.key_len
-		, enum_show(&auth_alg_names, st->st_esp.attrs.auth)+
-		+15 /* strlen("AUTH_ALGORITHM_") */
+		, enum_show(&auth_alg_names, st->st_esp.attrs.auth)+ sizeof("AUTH_ALGORITHM")
 		, c->policy & POLICY_PFS ?
 			c->alg_info_esp->esp_pfsgroup ?
 					enum_show(&oakley_group_names, 
-						c->alg_info_esp->esp_pfsgroup)
-						+13 /*strlen("OAKLEY_GROUP_")*/
+						c->alg_info_esp->esp_pfsgroup) + sizeof("OAKLEY_GROUP")
 				: "<Phase1>"
 			: "<N/A>"
 	);
