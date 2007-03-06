@@ -1,0 +1,138 @@
+
+
+All RFC's can be downloaded from http://www.rfc-editor.org/ or one
+of the many mirror sites.
+
+IPsec related RFC's and drafts:
+
+Overview RFCs
+
+RFC 2401	Security Architecture for the Internet Protocol
+RFC 2411	IP Security Document Roadmap
+RFC 4301	Security Architecture for the Internet Protocol
+
+Basic protocols
+
+RFC 2402	IP Authentication Header (AH)
+RFC 2406	IP Encapsulating Security Payload (ESP)
+RFC 4302	IP Authentication Header
+RFC 4303	IP Encapsulating Security Payload (ESP)
+
+Key management
+
+RFC 2367	PF_KEY Key Management API, Version 2
+RFC 2407	The Internet IP Security Domain of Interpretation for ISAKMP
+RFC 2408	Internet Security Association and Key Management Protocol (ISAKMP)
+RFC 2409	The Internet Key Exchange (IKE)
+RFC 2412	The OAKLEY Key Determination Protocol
+RFC 2528	Internet X.509 Public Key Infrastructure
+
+RFC 3526	More Modular Exponential (MODP) Diffie-Hellman groups for Internet Key Exchange (IKE) 
+RFC 3664	The AES-XCBC-PRF-128 Algorithm for the Internet Key Exchange Protocol (IKE) 
+RFC 4109	Algorithms for Internet Key Exchange version 1 (IKEv1)
+RFC 4210	Internet X.509 Public Key Infrastructure Certificate Management Protocol (CMP)
+RFC 4304	Extended Sequence Number (ESN) Addendum to IPsec Domain of Interpretation (DOI) for Internet Security Association and Key Management Protocol (ISAKMP)
+RFC 4306	Internet Key Exchange (IKEv2) Protocol
+
+Procedural and Operational RFC's
+
+RFC 1750	Randomness Recommendations for Security
+RFC 1918	Address Allocation for Private Internets
+RFC 1984	IAB and IESG Statement on Cryptographic Technology and the Internet
+RFC 2144	The CAST-128 Encryption Algorithm
+RFC 3457	Requirements for IPsec Remote Access Scenarios
+RFC 3585	IPsec Configuration Policy Information Model  	
+
+Detailed RFC's on specific cryptograhpic algorithms and ciphers
+
+RFC 1321	The MD5 Message-Digest Algorithm
+RFC 1828	IP Authentication using Keyed MD5
+RFC 1829	The ESP DES-CBC Transform
+RFC 1851	The ESP Triple DES Transform
+RFC 1852	IP Authentication using Keyed SHA
+RFC 2085	HMAC-MD5 IP Authentication with Replay Prevention
+RFC 2104	HMAC: Keyed-Hashing for Message Authentication
+RFC 2202	Test Cases for HMAC-MD5 and HMAC-SHA-1
+RFC 2403	The Use of HMAC-MD5-96 within ESP and AH
+RFC 2404	The Use of HMAC-SHA-1-96 within ESP and AH
+RFC 2405	The ESP DES-CBC Cipher Algorithm With Explicit IV
+RFC 2410	The NULL Encryption Algorithm and Its Use With IPsec
+RFC 2451	The ESP CBC-Mode Cipher Algorithms
+RFC 2521	ICMP Security Failures Messages
+RFC 3566	The AES-XCBC-MAC-96 Algorithm and Its Use With IPsec 
+RFC 3602	The AES-CBC Cipher Algorithm and Its Use with IPsec  
+RFC 3686	Using Advanced Encryption Standard (AES) Counter Mode With IPsec Encapsulating Security Payload (ESP)  
+RFC 4196	The SEED Cipher Algorithm and Its Use with IPsec
+RFC 4106	The Use of Galois/Counter Mode (GCM) in IPsec Encapsulating Security Payload (ESP)
+RFC 4305	 Cryptographic Algorithm Implementation Requirements for Encapsulating Security Payload (ESP) and Authentication Header (AH)
+RFC 4307	Cryptographic Algorithms for Use in the Internet Key Exchange Version 2 (IKEv2)
+RFC 4308	Cryptographic Suites for IPsec
+RFC 4309	Using Advanced Encryption Standard (AES) CCM Mode with IPsec Encapsulating Security Payload (ESP)
+
+Dead Peer Detection RFC's
+
+RFC 3706	A Traffic-Based Method of Detecting Dead Internet Key Exchange (IKE) Peers
+
+NAT-Traversal and UDP encapsulation RFC's
+
+RFC 2709	Security Model with Tunnel-mode IPsec for NAT Domains
+RFC 3715	IPsec-Network Address Translation (NAT) Compatibility Requirements
+RFC 3947	Negotiation of NAT-Traversal in the IKE
+RFC 3948	UDP Encapsulation of IPsec ESP Packets
+
+
+RFCs for secure DNS service, which IPSEC may use
+
+RFC 2137	Secure Domain Name System Dynamic Update
+RFC 2230	Key Exchange Delegation Record for the DNS
+RFC 2535	Domain Name System Security Extensions
+RFC 2536	DSA KEYs and SIGs in the Domain Name System (DNS)
+RFC 2537	RSA/MD5 KEYs and SIGs in the Domain Name System (DNS)
+RFC 2538	Storing Certificates in the Domain Name System (DNS)
+RFC 2539	Storage of Diffie-Hellman Keys in the Domain Name System (DNS)
+RFC 3007	Secure Domain Name System (DNS) Dynamic Update 
+RFC 3008	Domain Name System Security (DNSSEC) Signing Authority  [obsoleted]
+RFC 3130	Notes from the State-Of-The-Technology: DNSSEC 
+RFC 3225	Indicating Resolver Support of DNSSEC 
+RFC 3226	DNSSEC and IPv6 A6 aware server/resolver message size requirements 
+RFC 3757	Domain Name System KEY (DNSKEY) Resource Record (RR) Secure Entry Point (SEP) Flag [obsoleted]
+RFC 3845	DNS Security (DNSSEC) NextSECure (NSEC) RDATA Format [obsoleted]
+RFC 4025	A Method for Storing IPsec Keying Material in DNS
+RFC 4033	DNS Security Introduction and Requirements
+RFC 4034	Resource Records for the DNS Security Extensions 
+RFC 4035	Protocol Modifications for the DNS Security Extensions
+RFC 4322	Opportunistic Encryption using the Internet Key Exchange (IKE)
+
+RFC's related to L2TP, often used in combination with IPsec
+
+RFC 2341	Cisco Layer Two Forwarding (Protocol) "L2F". (A predecessor to L2TP)
+RFC 2637	Point-to-Point Tunneling Protocol (PPTP). (A predecessor to L2TP)
+RFC 2661	Layer Two Tunneling Protocol "L2TP"
+RFC 2809	Implementation of L2TP Compulsory Tunneling via RADIUS
+RFC 2888	Secure Remote Access with L2TP
+RFC 3070	Layer Two Tunneling Protocol (L2TP) over Frame Relay
+RFC 3145	L2TP Disconnect Cause Information
+RFC 3193	Securing L2TP using IPsec
+RFC 3301	Layer Two Tunnelling Protocol (L2TP): ATM access network
+RFC 3308	Layer Two Tunneling Protocol (L2TP) Differentiated Services
+RFC 3355	Layer Two Tunnelling Protocol (L2TP) Over ATM Adaptation Layer 5 (AAL5)
+RFC 3371	Layer Two Tunneling Protocol "L2TP" Management Information Base
+RFC 3437	Layer Two Tunneling Protocol Extensions for PPP Link Control Protocol Negotiation
+RFC 3438	Layer Two Tunneling Protocol (L2TP) Internet Assigned Numbers: Internet Assigned Numbers Authority (IANA) Considerations Update
+RFC 3573	Signaling of Modem-On-Hold status in Layer 2 Tunneling Protocol (L2TP)
+RFC 3817	Layer 2 Tunneling Protocol (L2TP) Active Discovery Relay for PPP over Ethernet (PPPoE)
+
+RFC's on IPsec in relation to other protocols
+
+RFC 2207	RSVP Extensions for IPSEC Data Flows
+RFC 2521	ICMP Security Failures Messages
+RFC 3104	RSIP Support for End-to-end IPsec  
+RFC 3554	On the Use of Stream Control Transmission Protocol (SCTP) with IPsec  
+RFC 3776	Using IPsec to Protect Mobile IPv6 Signaling Between Mobile Nodes and Home Agents 
+RFC 3884	Use of IPsec Transport Mode for Dynamic Routing 
+
+RFCs that are not really in use or implemented across multiple vendors
+
+RFC 2522	Photuris: Session-Key Management Protocol
+RFC 2523	Photuris: Extended Schemes and Attributes
+RFC 3456	Dynamic Host Configuration Protocol (DHCPv4) Configuration of IPsec Tunnel Mode  

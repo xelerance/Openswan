@@ -11,7 +11,7 @@
 +#if defined(CONFIG_XFRM) || defined(CONFIG_IPSEC_NAT_TRAVERSAL)
 +
 +/* if XFRM isn't a module, then register it directly. */
-+#if 0 && !defined(CONFIG_XFRM_MODULE) && !defined(CONFIG_IPSEC_NAT_TRAVERSAL)
++#if !defined(CONFIG_XFRM_MODULE) 
 +static xfrm4_rcv_encap_t xfrm4_rcv_encap_func = xfrm4_rcv_encap;
 +#else
 +static xfrm4_rcv_encap_t xfrm4_rcv_encap_func = NULL;

@@ -22,6 +22,20 @@
 </cmdsynopsis>
 </refsynopsisdiv>
 
+<refsect1 id='examples'><title>EXAMPLES</title>
+<cmdsynopsis>
+  <command>ipsec</command>
+    <arg choice='plain'><replaceable>setup</replaceable></arg>
+    <arg choice='opt'>[ --showonly ] </arg>
+    <arg choice='plain'>{ --start | --stop | --restart }</arg>
+</cmdsynopsis>
+<cmdsynopsis>
+  <command>ipsec</command>
+    <arg choice='plain'><replaceable>setup</replaceable></arg>
+    <arg choice='plain'> --status </arg>
+</cmdsynopsis>
+</refsect1>
+
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><emphasis remap='I'>Setup</emphasis>

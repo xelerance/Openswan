@@ -1,110 +1,74 @@
-.TH IPSEC_TNCFG 8 "21 Jun 2000"
-.\"
-.\" RCSID $Id: tncfg.8,v 1.15 2002/04/24 07:35:41 mcr Exp $
-.\"
-.SH NAME
+.\" ** You probably do not want to edit this file directly **
+.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
+.\" Instead of manually editing it, you probably should edit the DocBook XML
+.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
+.TH "IPSEC_TNCFG" "8" "11/23/2006" "21 Jun 2000" "21 Jun 2000"
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
 ipsec tncfg \- associate IPSEC virtual interface with physical interface
-.SH SYNOPSIS
-.B ipsec
-.B tncfg
+.SH "SYNOPSIS"
+.HP 6
+\fBipsec\fR \fItncfg\fR
+.br
+ \fIipsectncfg\fR \-\-attach \-\-virtual \fIvirtual\fR \-\-physical \fIphysical\fR
+.br
+ \fIipsectncfg\fR \-\-detach \-\-virtual \fIvirtual\fR
+.br
+ \fIipsectncfg\fR \-\-clear
+.br
+ \fIipsectncfg\fR \-\-version
+.br
+ \fIipsectncfg\fR \-\-help
+.SH "OBSOLETE"
 .PP
-.B ipsec
-.B tncfg
-.B \-\-attach
-.B \-\-virtual
-virtual
-.B \-\-physical
-physical
+Note that tncfg is only supported on the classic KLIPS stack. It is not supported on any other stack and will be completely removed in future versions. A replacement command still needs to be designed
+.SH "DESCRIPTION"
 .PP
-.B ipsec
-.B tncfg
-.B \-\-detach
-.B \-\-virtual
-virtual
+\fITncfg\fR
+attaches/detaches IPSEC virtual interfaces to/from physical interfaces, through which packets will be forwarded once processed by IPSEC.
 .PP
-.B ipsec
-.B tncfg
-.B \-\-clear
-.PP
-.B ipsec
-.B tncfg
-.B \-\-version
-.PP
-.B ipsec
-.B tncfg
-.B \-\-help
-.SH DESCRIPTION
-.I Tncfg
-attaches/detaches IPSEC virtual interfaces to/from
-physical interfaces,
-through which packets will be forwarded once processed by IPSEC.
-.PP
-The form with no additional arguments lists the contents of
-/proc/net/ipsec_tncfg.  The format of /proc/net/ipsec_tncfg is discussed
-in ipsec_tncfg(5).
-The
-.B \-\-attach
+The form with no additional arguments lists the contents of /proc/net/ipsec_tncfg. The format of /proc/net/ipsec_tncfg is discussed in ipsec_tncfg(5). The
+\fB\-\-attach\fR
 form attaches the
-.I virtual
+\fIvirtual\fR
 interface to the
-.I physical
-one.
-The
-.B \-\-detach
+\fIphysical\fR
+one. The
+\fB\-\-detach\fR
 form detaches the
-.I virtual
-interface from whichever physical interface it is attached to.
-The
-.B \-\-clear
+\fIvirtual\fR
+interface from whichever physical interface it is attached to. The
+\fB\-\-clear\fR
 form clears all the
-.I virtual
+\fIvirtual\fR
 interfaces from whichever physical interfaces they were attached to.
 .PP
 Virtual interfaces typically have names like
-.BR ipsec0 ,
-while physical interfaces typically have names like
-.B eth0
+\fIipsec0\fR, while physical interfaces typically have names like
+\fIeth0\fR
 or
-.BR ppp0 .
-.SH EXAMPLES
+\fIppp0\fR.
+.SH "EXAMPLES"
 .TP
-.B ipsec tncfg \-\-attach \-\-virtual ipsec0 \-\-physical eth0
+\fIipsec tncfg \-\-attach \-\-virtual ipsec0 \-\-physical eth0\fR
 attaches the
-.B ipsec0
+\fIipsec0\fR
 virtual device to the
-.B eth0
+\fIeth0\fR
 physical device.
-.LP
 .SH "FILES"
+.PP
 /proc/net/ipsec_tncfg, /usr/local/bin/ipsec
 .SH "SEE ALSO"
-ipsec(8), ipsec_manual(8), ipsec_eroute(8), ipsec_spi(8),
-ipsec_spigrp(8), ipsec_klipsdebug(8), ipsec_tncfg(5)
-.SH HISTORY
-Written for the Linux FreeS/WAN project
-<http://www.freeswan.org/>
-by Richard Guy Briggs.
-.\"
-.\" $Log: tncfg.8,v $
-.\" Revision 1.15  2002/04/24 07:35:41  mcr
-.\" Moved from ./klips/utils/tncfg.8,v
-.\"
-.\" Revision 1.14  2000/09/12 13:09:04  rgb
-.\" Fixed real/physical discrepancy between tncfg.8 and tncfg.c.
-.\"
-.\" Revision 1.13  2000/06/30 18:21:55  rgb
-.\" Update SEE ALSO sections to include ipsec_version(5) and ipsec_pf_key(5)
-.\" and correct FILES sections to no longer refer to /dev/ipsec which has
-.\" been removed since PF_KEY does not use it.
-.\"
-.\" Revision 1.12  2000/06/21 16:54:58  rgb
-.\" Added 'no additional args' text for listing contents of
-.\" /proc/net/ipsec_* files.
-.\"
-.\" Revision 1.11  1999/07/19 18:47:25  henry
-.\" fix slightly-misformed comments
-.\"
-.\" Revision 1.10  1999/04/06 04:54:39  rgb
-.\" Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
-.\" patch shell fixes.
-.\"
+.PP
+ipsec(8), ipsec_manual(8), ipsec_eroute(8), ipsec_spi(8), ipsec_spigrp(8), ipsec_klipsdebug(8), ipsec_tncfg(5)
+.SH "HISTORY"
+.PP
+Written for the Linux FreeS/WAN project <[1]\&\fIhttp://www.freeswan.org/\fR> by Richard Guy Briggs.
+.SH "REFERENCES"
+.TP 3
+1.\ http://www.freeswan.org/
+\%http://www.freeswan.org/

@@ -90,6 +90,10 @@ This is only useful in listen mode.</para>
 <para><citerefentry><refentrytitle>ping</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_pluto</refentrytitle><manvolnum>8</manvolnum></citerefentry></para>
 </refsect1>
 
+<refsect1 id='bugs'><title>BUGS</title>
+<para><citerefentry><refentrytitle>ipsec_pluto</refentrytitle><manvolnum>8</manvolnum></citerefentry> does not support the ikeping packet yet, and cannot be used as a listener. Therefor, one needs to stop pluto and start an ikeping in listen mode to test a remote site.</para>
+</refsect1>
+
 <refsect1 id='history'><title>HISTORY</title>
 <para>Written for the Linux FreeS/WAN project
 &lt;<ulink url='http://www.freeswan.org'>http://www.freeswan.org</ulink>&gt;

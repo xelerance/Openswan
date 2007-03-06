@@ -13,7 +13,6 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: setup.in,v 1.124 2005/08/16 02:14:41 mcr Exp $
 #
 # ipsec         init.d script for starting and stopping
 #               the IPsec security subsystem (KLIPS and Pluto).
@@ -171,12 +170,14 @@ case "$1" in
 	;;
 
   --help)
-	echo "Usage: $me {--start|--stop|--restart|--status}"
+	echo "Usage: $me [ --showonly ] {--start|--stop|--restart}"
+	echo "       $me --status"
 	exit 0
 	;;
 
   *)
-	echo "Usage: $me {--start|--stop|--restart|--status}" >&2
+	echo "Usage: $me [ --showonly ] {--start|--stop|--restart}"
+	echo "       $me --status"
 	exit 2
 esac
 

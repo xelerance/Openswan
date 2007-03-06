@@ -10,7 +10,8 @@
 </refmeta>
 <refnamediv id='name'>
 <refname>ipsec klipsdebug</refname>
-<refpurpose>set KLIPS (kernel IPSEC support) debug features and level</refpurpose>
+<refpurpose>set KLIPS and MAST debug features and level. Other stacks are
+not supported.</refpurpose>
 </refnamediv>
 <!-- body begins here -->
 <refsynopsisdiv id='synopsis'>
@@ -39,7 +40,6 @@
     <arg choice='plain'>--version </arg>
 </cmdsynopsis>
 </refsynopsisdiv>
-
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><emphasis remap='I'>Klipsdebug</emphasis>
@@ -189,39 +189,6 @@ by Richard Guy Briggs.</para>
 <refsect1 id='bugs'><title>BUGS</title>
 <para>It really ought to be possible to set or unset selective combinations
 of flags.</para>
-
-<!--  $Log: klipsdebug.8.xml,v $
-<!--  Revision 1.1  2004/05/26 17:49:20  ken
-<!--  Import XML version
-<!-- -->
-<!--  Revision 1.18  2002/04/24 07:35:39  mcr -->
-<!--  Moved from ./klips/utils/klipsdebug.8,v -->
-
-<!--  Revision 1.17  2000/10/10 20:10:19  rgb -->
-<!--  Added support for debug_ipcomp and debug_verbose to klipsdebug. -->
-
-<!--  Revision 1.16  2000/08/18 17:33:11  rgb -->
-<!--  Updated obsolete netlink reference and added pfkey and tunnel\-xmit. -->
-
-<!--  Revision 1.15  2000/06/30 18:21:55  rgb -->
-<!--  Update SEE ALSO sections to include <citerefentry><refentrytitle>ipsec_version</refentrytitle><manvolnum>5</manvolnum></citerefentry> and <citerefentry><refentrytitle>ipsec_pf_key</refentrytitle><manvolnum>5</manvolnum></citerefentry> -->
-<!--  and correct FILES sections to no longer refer to /dev/ipsec which has -->
-<!--  been removed since PF_KEY does not use it. -->
-
-<!--  Revision 1.14  2000/06/28 05:53:09  rgb -->
-<!--  Mention that netlink is obsolete. -->
-
-<!--  Revision 1.13  2000/06/21 16:54:58  rgb -->
-<!--  Added 'no additional args' text for listing contents of -->
-<!--  /proc/net/ipsec_* files. -->
-
-<!--  Revision 1.12  1999/07/19 18:47:24  henry -->
-<!--  fix slightly\-misformed comments -->
-
-<!--  Revision 1.11  1999/04/06 04:54:37  rgb -->
-<!--  Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes -->
-<!--  patch shell fixes. -->
-
 
 </refsect1>
 </refentry>
