@@ -1,32 +1,23 @@
 --- plain26/net/ipv4/udp.c.orig	2006-01-02 22:21:10.000000000 -0500
-+++ plain26/net/ipv4/udp.c	2006-01-10 20:07:21.000000000 -0500
-@@ -108,11 +108,14 @@
- #include <net/inet_common.h>
- #include <net/checksum.h>
++++ plain26/net/ipv4/udp.c	2006-01-12 20:18:57.000000000 -0500
+@@ -110,2 +110,3 @@
  #include <net/xfrm.h>
 +#include <net/xfrmudp.h>
  
- /*
-  *	Snmp MIB for the UDP layer
-  */
- 
-+static xfrm4_rcv_encap_t xfrm4_rcv_encap_func;
-+
- DEFINE_SNMP_STAT(struct udp_mib, udp_statistics) __read_mostly;
- 
- struct hlist_head udp_hash[UDP_HTABLE_SIZE];
-@@ -894,6 +897,42 @@
+@@ -894,6 +897,44 @@
  	sk_common_release(sk);
  }
  
 +#if defined(CONFIG_XFRM) || defined(CONFIG_IPSEC_NAT_TRAVERSAL)
 +
 +/* if XFRM isn't a module, then register it directly. */
-+#if 0 && !defined(CONFIG_XFRM_MODULE) && !defined(CONFIG_IPSEC_NAT_TRAVERSAL)
++#if !defined(CONFIG_XFRM_MODULE) 
 +static xfrm4_rcv_encap_t xfrm4_rcv_encap_func = xfrm4_rcv_encap;
 +#else
 +static xfrm4_rcv_encap_t xfrm4_rcv_encap_func = NULL;
 +#endif
++
++static xfrm4_rcv_encap_t xfrm4_rcv_encap_func;
 +
 +int udp4_register_esp_rcvencap(xfrm4_rcv_encap_t func
 +			       , xfrm4_rcv_encap_t *oldfunc)
@@ -52,7 +43,7 @@
 +  xfrm4_rcv_encap_func = NULL;
 +  return 0;
 +}
-+#endif /* CONFIG_XFRM_MODULE || CONFIG_IPSEC_NAT_TRAVERSAL */
++#endif /* CONFIG_XFRM || defined(CONFIG_IPSEC_NAT_TRAVERSAL)*/
 +
 +
  /* return:
@@ -70,38 +61,6 @@
  	struct udp_sock *up = udp_sk(sk);
    	struct udphdr *uh = skb->h.uh;
  	struct iphdr *iph;
-@@ -915,11 +954,11 @@
- 
- 	/* if we're overly short, let UDP handle it */
- 	if (udpdata > skb->tail)
--		return 1;
-+		return 2;
- 
- 	/* if this is not encapsulated socket, then just return now */
- 	if (!encap_type)
--		return 1;
-+		return 3;
- 
- 	len = skb->tail - udpdata;
- 
-@@ -934,7 +973,7 @@
- 			len = sizeof(struct udphdr);
- 		} else
- 			/* Must be an IKE packet.. pass it through */
--			return 1;
-+			return 4;
- 		break;
- 	case UDP_ENCAP_ESPINUDP_NON_IKE:
- 		/* Check if this is a keepalive packet.  If so, eat it. */
-@@ -947,7 +986,7 @@
- 			len = sizeof(struct udphdr) + 2 * sizeof(u32);
- 		} else
- 			/* Must be an IKE packet.. pass it through */
--			return 1;
-+			return 5;
- 		break;
- 	}
- 
 @@ -1021,10 +1060,14 @@
  			return 0;
  		}
