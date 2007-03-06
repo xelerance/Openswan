@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: anyaddr.c,v 1.10 2004/07/10 07:43:47 mcr Exp $
+ * RCSID $Id: anyaddr.c,v 1.10.10.1 2006/11/24 05:55:46 paul Exp $
  */
 #include "openswan.h"
 
@@ -101,6 +101,9 @@ const ip_address *src;
 	case AF_INET6:
 		cmp = memcmp(&src->u.v6.sin6_addr, &v6any, sizeof(v6any));
 		break;
+	case 0:
+		/* a zeroed structure is considered any address */
+		return 1;
 	default:
 		return 0;
 		break;
