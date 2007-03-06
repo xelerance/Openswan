@@ -11,7 +11,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pluto_constants.c,v 1.17 2005/08/19 17:59:31 ken Exp $
  */
 
 /*
@@ -33,7 +32,6 @@
 
 /* string naming compile-time options that have interop implications */
 const char compile_time_interop_options[] = ""
-	" " X509_VERSION
 #ifdef LDAP_VER
 #if LDAP_VER == 2
 	" LDAP_V2"
