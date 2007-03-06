@@ -310,7 +310,7 @@ main(int argc, char **argv)
   pfamily=PF_INET;
   lport=500;
   dport=500;
-  waitTime=10;
+  waitTime=10*1000;
   verbose=0;
   natt=0;
   listen_only=0;
