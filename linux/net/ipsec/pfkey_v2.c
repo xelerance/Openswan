@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2.c,v 1.97.2.10 2006/10/10 20:43:28 paul Exp $
+ * RCSID $Id: pfkey_v2.c,v 1.97.2.12 2006/11/24 05:43:29 paul Exp $
  */
 
 /*
@@ -119,7 +119,9 @@ struct net_proto_family pfkey_family_ops = {
 #ifdef NETDEV_23
 	.family	= PF_KEY,
 	.create = pfkey_create,
+#ifdef NET_26
 	.owner  = THIS_MODULE,
+#endif
 #else
 	PF_KEY,
 	pfkey_create
@@ -129,7 +131,9 @@ struct net_proto_family pfkey_family_ops = {
 struct proto_ops SOCKOPS_WRAPPED(pfkey_ops) = {
 #ifdef NETDEV_23
 	family:		PF_KEY,
+#ifdef NET_26
 	owner:		THIS_MODULE,
+#endif
 	release:	pfkey_release,
 	bind:		sock_no_bind,
 	connect:	sock_no_connect,
@@ -1503,7 +1507,7 @@ pfkey_cleanup(void)
 	
         printk(KERN_INFO "klips_info:pfkey_cleanup: "
 	       "shutting down PF_KEY domain sockets.\n");
-        error |= sock_unregister(PF_KEY);
+        sock_unregister(PF_KEY);
 
 	error |= supported_remove_all(SADB_SATYPE_AH);
 	error |= supported_remove_all(SADB_SATYPE_ESP);
@@ -1559,6 +1563,13 @@ void pfkey_proto_init(struct net_protocol *pro)
 
 /*
  * $Log: pfkey_v2.c,v $
+ * Revision 1.97.2.12  2006/11/24 05:43:29  paul
+ * kernels after 2.6.18 do not return a code from unregister_socket()
+ * backport from git 41e54a2684dc809d7952e816860ea646a3194a72
+ *
+ * Revision 1.97.2.11  2006/11/15 16:05:57  paul
+ * fix for compiling on 2.4. kernels by Matthias Haas.
+ *
  * Revision 1.97.2.10  2006/10/10 20:43:28  paul
  * Add family/create/owner for pfkey_family_ops. This fixes bug #671
  *
