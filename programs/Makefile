@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.21 2004/12/18 18:13:35 mcr Exp $
+# RCSID $Id: Makefile,v 1.21.6.1 2006/10/27 14:47:07 paul Exp $
 
 OPENSWANSRCDIR?=$(shell cd ..; pwd)
 srcdir?=${OPENSWANSRCDIR}/programs/
@@ -23,7 +23,7 @@ SUBDIRS=spi eroute spigrp tncfg klipsdebug pf_key proc pluto
 SUBDIRS+=_confread _copyright _include _keycensor _plutoload _plutorun
 SUBDIRS+=_realsetup _secretcensor _startklips _updown _updown_x509
 SUBDIRS+=auto barf verify ipsec look manual newhostkey ranbits secrets
-SUBDIRS+=rsasigkey send-pr setup showdefaults showhostkey calcgoo mailkey
+SUBDIRS+=rsasigkey setup showdefaults showhostkey calcgoo mailkey
 SUBDIRS+=ikeping examples livetest
 
 ifeq ($(USE_LWRES),true)
