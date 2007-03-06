@@ -11,7 +11,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: connections.c,v 1.263 2005/10/13 03:05:18 mcr Exp $
  */
 
 #include <string.h>
@@ -3226,9 +3225,10 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 		    }
 #endif
 		    c->gw_info->key->last_tried_time = now();
-		    openswan_log("initiate on demand from %s:%d to %s:%d proto=%d state: %s because: %s"
+		    DBG(DBG_CONTROL,
+			DBG_log("initiate on demand from %s:%d to %s:%d proto=%d state: %s because: %s"
 				 , ours, ourport, his, hisport, b->transport_proto
-				 , oppo_step_name[b->step], b->want);
+				 , oppo_step_name[b->step], b->want));
 
 		    ipsecdoi_initiate(b->whackfd, c, c->policy, 1
 				      , SOS_NOBODY, pcim_local_crypto);
