@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: demux.c,v 1.210.2.10 2005/10/06 00:57:26 paul Exp $
+ * RCSID $Id: demux.c,v 1.210.2.11 2007/01/22 21:05:12 paul Exp $
  */
 
 /* Ordering Constraints on Payloads
@@ -414,12 +414,12 @@ static const struct state_microcode state_microcode_table[] = {
      */
     { STATE_AGGR_R0, STATE_AGGR_R1,
       SMF_PSK_AUTH| SMF_REPLY,
-      P(SA) | P(KE) | P(NONCE) | P(ID), P(VID), PT(NONE),
+      P(SA) | P(KE) | P(NONCE) | P(ID), P(VID) | P(NATD_RFC), PT(NONE),
       EVENT_RETRANSMIT, aggr_inI1_outR1_psk },
 
     { STATE_AGGR_R0, STATE_AGGR_R1,
       SMF_DS_AUTH | SMF_REPLY,
-      P(SA) | P(KE) | P(NONCE) | P(ID), P(VID), PT(NONE),
+      P(SA) | P(KE) | P(NONCE) | P(ID), P(VID) | P(NATD_RFC), PT(NONE),
       EVENT_RETRANSMIT, aggr_inI1_outR1_rsasig },
 
     /* STATE_AGGR_I1:
