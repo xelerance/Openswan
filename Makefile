@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile,v 1.273.2.5 2006/10/14 03:07:49 paul Exp $
+# RCSID $Id: Makefile,v 1.273.2.7 2006/11/17 15:35:51 paul Exp $
 
 
 OPENSWANSRCDIR?=$(shell pwd)
@@ -29,8 +29,8 @@ def:
 	@echo
 	@echo "Commonly used build commands:"
 	@echo
-	@echo "Kernel 2.4: make KERNELSRC=/usr/src/linux-2.4 module minstall programs install"
-	@echo "Kernel 2.6: make programs install"
+	@echo "When using KLIPS: make KERNELSRC=/usr/src/linux-2.6.18 module minstall programs install"
+	@echo "When using NETKEY: make programs install"
 	@echo
 	@echo
 
