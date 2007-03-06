@@ -14,7 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: ipsec_kversion.h,v 1.15.2.9 2006/07/29 05:00:40 paul Exp $
+ * RCSID $Id: ipsec_kversion.h,v 1.15.2.11 2007/02/20 03:53:16 paul Exp $
  */
 #define	_OPENSWAN_KVERSIONS_H	/* seen it, no need to see it again */
 
@@ -142,6 +142,11 @@
 #define HAVE_NEW_SKB_LINEARIZE
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,20)
+/* skb->nfmark changed to skb->mark in 2.6.20 */
+#define nfmark mark
+#endif
+
 #ifdef NET_21
 #  include <linux/in6.h>
 #else
@@ -246,6 +251,12 @@
 
 /*
  * $Log: ipsec_kversion.h,v $
+ * Revision 1.15.2.11  2007/02/20 03:53:16  paul
+ * Added comment, made layout consistent with other checks.
+ *
+ * Revision 1.15.2.10  2007/02/16 19:08:12  paul
+ * Fix for compiling on 2.6.20 (nfmark is now called mark in sk_buff)
+ *
  * Revision 1.15.2.9  2006/07/29 05:00:40  paul
  * Added HAVE_NEW_SKB_LINEARIZE for 2.6.18+ kernels where skb_linearize
  * only takes 1 argument.
