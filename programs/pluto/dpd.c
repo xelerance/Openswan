@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: dpd.c,v 1.29.2.8 2006/07/21 02:27:20 ken Exp $
+ * RCSID $Id: dpd.c,v 1.29.2.9 2006/11/24 04:21:42 paul Exp $
  */
 
 #include <stdio.h>
@@ -561,19 +561,29 @@ dpd_timeout(struct state *st)
 
     case DPD_ACTION_RESTART:
 	/** dpdaction=restart - immediate renegotiate the connection. */
-        /* Terminate connection if this is for a dynamic endpoint */
+	openswan_log("DPD: Restarting Connection");
+
+        /*
+         * unlike the other kinds, we do not delete any states,
+         * but rather, we arrange to replace all SAs involved.
+         */
+        rekey_p2states_by_connection(c);
+
         if (c->kind == CK_INSTANCE) {
-            openswan_log("DPD: Clearing Connection");
-            delete_states_by_connection(c, TRUE);
-            DBG(DBG_DPD, DBG_log("unrouting connection"));
-            unroute_connection(c); /* --unroute */
+                /* If this is a template (eg: right=%any) we won't be able to
+                 * reinitiate, the peer has probably changed IP addresses,
+                 * or isn't available anymore.  So remove the routes too */
+                unroute_connection(c);        /* --unroute */
         }
-        else {
-            openswan_log("DPD: Restarting Connection");
-            delete_states_by_connection(c, TRUE);
-            unroute_connection(c);
-            initiate_connection(c->name, 0, 0, 0);
-        }
+
+        /* we schedule the replace of the SA so that we do it
+         * in a rational place and do it at a negative future time,
+         * so it will occur before any of the phase 2 replacements.
+         */
+        delete_event(st);
+        delete_dpd_event(st);
+        event_schedule(EVENT_SA_REPLACE, 0, st);
+
 	break;
 
     }
