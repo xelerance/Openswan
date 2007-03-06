@@ -415,9 +415,12 @@ ike_alg_show_status(void)
 void
 ike_alg_show_connection(struct connection *c, const char *instance)
 {
-	char buf[256];
 	struct state *st;
+
 	if (c->alg_info_ike) {
+		/* size of textual representations of all our ike proposals. */
+		char buf[1024]; 
+
 		alg_info_snprint(buf, sizeof(buf)-1, 
 				 (struct alg_info *)c->alg_info_ike, TRUE);
 		whack_log(RC_COMMENT
@@ -425,11 +428,9 @@ ike_alg_show_connection(struct connection *c, const char *instance)
 		    , c->name
 		    , instance
 		    , buf);
-	}
-	if (c->alg_info_ike) {
 		alg_info_snprint_ike(buf, sizeof(buf)-1, c->alg_info_ike);
 		whack_log(RC_COMMENT
-		    , "\"%s\"%s:   IKE algorithms found:  %s"
+		    , "\"%s\"%s:   IKE algorithms found: %s"
 		    , c->name
 		    , instance
 		    , buf);
