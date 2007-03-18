@@ -201,6 +201,9 @@ KERNEL=$(shell if expr " `uname -m`" : ' i.86' >/dev/null ; \
 	else echo boot ; \
 	fi)
 
+# look for XMLTO command
+XMLTO?=$(shell which xmlto|grep /)
+
 #
 # default number of bits for ipsec newhostkey
 #

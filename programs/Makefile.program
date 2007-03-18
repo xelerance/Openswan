@@ -179,14 +179,7 @@ LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} -lgmp
 %.o: ${srcdir}%.c
 	${CC} -c ${CFLAGS} $<
 
-%.5: %.5.xml
-	xmlto man $< 
-	@for m in ipsec_*.5; do if [ -f $$m ]; then mv $$m $@; fi; done
-
-
-%.8: %.8.xml
-	xmlto man $< 
-	@for m in ipsec_*.8; do if [ -f $$m ]; then mv $$m $@; fi; done
+include ${srcdir}../Makefile.manpages
 
 %.i: %.c 
 	$(CC) $(CFLAGS) -E -o $@ $< 
@@ -213,21 +206,6 @@ LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} -lgmp
 			| cat >$@
 	@if [ -x $< ]; then chmod +x $@; fi
 	@if [ "${PROGRAM}.in" = $< ]; then chmod +x $@; fi
-
-# xmlto is from http://cyberelk.net/tim/xmlto/
-ifneq ($(strip $(XMLTO)),)
-%.8: %.8.xml
-	${XMLTO} man $< 
-	mv "ipsec_$@" $@
-
-%.5: %.5.xml
-	${XMLTO} man $< 
-	mv "ipsec_$@" $@
-
-%.1: %.1.xml
-	${XMLTO} man $< 
-	mv "ipsec_$@" $@
-endif
 
 distclean: clean
 

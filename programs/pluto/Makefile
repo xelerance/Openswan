@@ -24,6 +24,7 @@ srcdir?=./
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 include ${srcdir}Makefile.options
+include ${srcdir}../Makefile.manpages
 
 FMANDIR=$(MANTREE)/man5
 PMANDIR=$(MANTREE)/man8
