@@ -6,20 +6,198 @@
 <refmeta>
 <refentrytitle>_UPDOWN</refentrytitle>
 <manvolnum>8</manvolnum>
-<refmiscinfo class='date'>25 Apr 2002</refmiscinfo>
+<refmiscinfo class='date'>28 Oct 2006</refmiscinfo>
 </refmeta>
 <refnamediv id='name'>
 <refname>ipsec _updown</refname>
-<refpurpose>klips manipulation script</refpurpose>
+<refpurpose>kernel and routing manipulation script</refpurpose>
 </refnamediv>
 <!-- body begins here -->
 <refsynopsisdiv id='synopsis'>
 <para><emphasis remap='I'>_updown</emphasis>
 is invoked by pluto when it has brought up a new connection. This script
-is used to insert the appropriate routing entries for IPsec operation.
+is used to insert the appropriate routing entries for IPsec operation on
+some kernel IPsec stacks, such as KLIPS and MAST, and may do other
+neccessary work that is kernel or user specific, such as defining custom
+firewall rules.
 The interface to the script is documented in the pluto man page.</para>
 </refsynopsisdiv>
 
+<refsect1 id='variables'><title>VARIABLES</title>
+<para>The <emphasis remap='I'>_updown</emphasis> is passed along a number of
+variables which can be used to act differently based on the information:</para>
+<variablelist remap='TP'>
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_VERSION</emphasis></term>
+  <listitem>
+   <para>indicates what version of this interface is being used. This
+document describes version 1.1. This is upwardly compatible with version 1.0.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_VERB</emphasis></term>
+  <listitem>
+   <para>specifies the name of the operation to be performed, which
+can be one of <option>prepare-host</option>, <option>prepare-client</option>,
+<option>up-host</option>, <option>up-client</option>,
+<option>down-host</option> or <option>down-client</option>. If the address
+family for security gateway to security gateway communications is IPv6, then
+a suffix of -v6 is added to this verb.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_CONNECTION</emphasis></term>
+  <listitem>
+   <para>is the name of the connection for which we are routing.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_NEXT_HOP</emphasis></term>
+  <listitem>
+   <para>is the next hop to which packets bound for the peer must be sent.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_INTERFACE</emphasis></term>
+  <listitem>
+   <para>is the name of the ipsec interface to be used.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_ME</emphasis></term>
+  <listitem>
+   <para>is the IP address of our host.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_MY_CLIENT</emphasis></term>
+  <listitem>
+   <para>is the IP address / count of our client subnet. If the client
+is just the host, this will be the host’s own IP address / max
+(where max is 32 for IPv4 and 128 for IPv6).
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_MY_CLIENT_NET</emphasis></term>
+  <listitem>
+   <para>is the IP address of our client net. If the client is just the
+host, this will be the host’s own IP address.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_MY_CLIENT_MASK</emphasis></term>
+  <listitem>
+   <para>is the mask for our client net. If the client is just the host,
+this will be 255.255.255.255.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_PEER</emphasis></term>
+  <listitem>
+   <para>is the IP address of our peer.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_PEER_CLIENT</emphasis></term>
+  <listitem>
+   <para>is the IP address / count of the peer’s client subnet. If the
+client is just the peer, this will be the peer’s own IP address / max
+(where max is 32 for IPv4 and 128 for IPv6).
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_PEER_CLIENT_NET</emphasis></term>
+  <listitem>
+   <para>is the IP address of the peer’s client net. If the client is
+just the peer, this will be the peer’s own IP address.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_PEER_CLIENT_MASK</emphasis></term>
+  <listitem>
+   <para>is  the  mask  for the peer’s client net.  If the client is just
+the peer, this will be 255.255.255.255.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_MY_PROTOCOL</emphasis></term>
+  <listitem>
+   <para>lists the protocols allowed over this IPsec SA.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_PEER_PROTOCOL</emphasis></term>
+  <listitem>
+   <para>lists the protocols the peer allows over this IPsec SA.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_MY_PORT</emphasis></term>
+  <listitem>
+   <para>lists the ports allowed over this IPsec SA.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_PEER_PORT</emphasis></term>
+  <listitem>
+   <para>lists the ports the peer allows over this IPsec SA.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_MY_ID</emphasis></term>
+  <listitem>
+   <para>lists our id.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_PEER_ID</emphasis></term>
+  <listitem>
+   <para>lists our peer's id.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_PEER_CA</emphasis></term>
+  <listitem>
+   <para>lists the peer's CA.
+   </para>
+  </listitem>
+ </varlistentry>
+
+</variablelist>
+</refsect1>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
 <para><citerefentry><refentrytitle>ipsec</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_pluto</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
@@ -28,22 +206,6 @@ The interface to the script is documented in the pluto man page.</para>
 <refsect1 id='history'><title>HISTORY</title>
 <para>Man page written for the Linux FreeS/WAN project &lt;<ulink url='http://www.freeswan.org/'>http://www.freeswan.org/</ulink>&gt;
 by Michael Richardson. Original program written by Henry Spencer.</para>
-
-<!--  $Log: _updown.8.xml,v $
-<!--  Revision 1.1  2004/05/26 17:48:33  ken
-<!--  Import XML version
-<!-- -->
-<!--  Revision 1.2  2002/04/29 22:39:31  mcr -->
-<!--  	added basic man page for all internal commands. -->
-
-<!--  Revision 1.1  2002/04/26 01:21:43  mcr -->
-<!--  	while tracking down a missing (not installed) /etc/ipsec.conf, -->
-<!--  	MCR has decided that it is not okay for each program subdir to have -->
-<!--  	some subset (determined with \-f) of possible files. -->
-<!--  	Each subdir that defines $PROGRAM, MUST have a PROGRAM.8 file as well as a PROGRAM file. -->
-<!--  	Optional PROGRAM.5 files have been added to the makefiles. -->
-
-
 
 </refsect1>
 </refentry>

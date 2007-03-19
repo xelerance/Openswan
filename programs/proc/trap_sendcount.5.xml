@@ -20,6 +20,11 @@
 </cmdsynopsis>
 </refsynopsisdiv>
 
+<refsect1 id='obsolete'><title>OBSOLETE</title>
+<para>Note that trap_sendcount is only supported on the classic KLIPS stack. It is
+not supported on any other stack and will be completely removed in future
+versions. A replacement command still needs to be designed</para>
+</refsect1>
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><filename>/proc/net/ipsec/stats/trap_sendcount</filename>
@@ -40,16 +45,6 @@ number of successful PF_ACQUIRE messages that were sent.</para>
 <para>Written for the Linux FreeS/WAN project
 &lt;<ulink url='http://www.freeswan.org/'>http://www.freeswan.org/</ulink>&gt;
 by Michael C. Richardson &lt;mcr@freeswan.org&gt;</para>
-
-<!--  $Log: trap_sendcount.5.xml,v $
-<!--  Revision 1.1  2004/05/26 17:50:13  ken
-<!--  Import XML version
-<!-- -->
-<!--  Revision 1.1  2003/06/20 02:56:20  mcr -->
-<!--  	added documentation for /proc/net/ipsec/stats/trap_* and -->
-<!--  	amendments to test cases. -->
-
-
 
 </refsect1>
 </refentry>

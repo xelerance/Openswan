@@ -13,7 +13,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: mailkey.in,v 1.4 2005/01/30 19:07:15 paul Exp $
+# RCSID $Id: mailkey.in,v 1.4.6.1 2006/10/28 23:49:23 paul Exp $
 
 me="ipsec mailkey"
 
@@ -178,19 +178,19 @@ These are important for the RSA key to survive DNS processing.
 
 
 
-Opportunistic Encryption (OE) is the result of ongoing effort by the FreeS/WAN
-project (www.freeswan.org). It allows for the creation of dynamic IPSec 
+Opportunistic Encryption (OE) is the result of ongoing effort by the Openswan
+project (www.openswan.org). It allows for the creation of dynamic IPSec 
 connections between hosts without pre-arrangement, authenticated via RSA keys 
 stored in DNS records.
 
-Technical information on OE can be found in this RFC draft:
+Technical information on OE can be found in RFC 4322:
 
-http://www.freeswan.org/freeswan_snaps/CURRENT-SNAP/doc/draft-richardson-ipsec-opportunistic.txt
+http://www.ietf.org/rfc/rfc4322.txt
 
 If you have any questions about these TXT records, or about OE in general, 
-please direct them to the FreeS/WAN support lists: 
+please direct them to the Openswan support lists: 
 
-users@lists.freeswan.org
+users@lists.openswan.org
 "
 
 # If we managed to find a hostmaster, make the appropriate modifications to the mail's body and 

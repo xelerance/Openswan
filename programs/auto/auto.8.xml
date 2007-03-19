@@ -6,7 +6,7 @@
 <refmeta>
 <refentrytitle>IPSEC_AUTO</refentrytitle>
 <manvolnum>8</manvolnum>
-<refmiscinfo class='date'>31 Jan 2002</refmiscinfo>
+<refmiscinfo class='date'>25 Oct 2006</refmiscinfo>
 </refmeta>
 <refnamediv id='name'>
 <refname>ipsec auto</refname>
@@ -23,18 +23,68 @@
     <sbr/>
     <arg choice='opt'><arg choice='plain'>--config </arg><arg choice='plain'><replaceable>configfile</replaceable></arg></arg>
     <arg choice='opt'>--verbose </arg>
+    <arg choice='plain'><replaceable>operation 
+connection</replaceable></arg>
     <sbr/>
-    <arg choice='plain'><replaceable>operationconnectionipsecauto</replaceable></arg>
+</cmdsynopsis>
+<cmdsynopsis>
+  <command>ipsec</command>    
+    <arg choice='plain'><replaceable>auto</replaceable></arg>
     <arg choice='opt'>--show </arg>
     <arg choice='opt'>--showonly </arg>
-    <arg choice='plain'><replaceable>operation</replaceable></arg>
+    <arg choice='opt'>--asynchronous </arg>
+    <sbr/>
+    <arg choice='opt'><arg choice='plain'>--config </arg><arg choice='plain'><replaceable>configfile</replaceable></arg></arg>
+    <arg choice='opt'>--verbose </arg>
+    <arg choice='plain'><replaceable>operation 
+connection</replaceable></arg>
+    <sbr/>
 </cmdsynopsis>
 </refsynopsisdiv>
 
+<refsect1 id='examples'><title>EXAMPLES</title>
+<cmdsynopsis>
+  <command>ipsec</command>    
+    <arg choice='plain'><replaceable>auto</replaceable></arg>
+    <arg choice='plain'>{ --add | --delete | --replace | --up | --down }</arg>
+    <arg choice='plain'><replaceable>connection</replaceable></arg> 
+</cmdsynopsis>
+<cmdsynopsis>
+  <command>ipsec</command>    
+    <arg choice='plain'><replaceable>auto</replaceable></arg>
+    <arg choice='plain'>{ --status | --ready  }</arg>
+    <arg choice='plain'><replaceable>connection</replaceable></arg> 
+</cmdsynopsis>
+<cmdsynopsis>
+  <command>ipsec</command>    
+    <arg choice='plain'><replaceable>auto</replaceable></arg>
+    <arg choice='plain'>{ --route | --unroute  }</arg>
+    <arg choice='plain'><replaceable>connection</replaceable></arg> 
+</cmdsynopsis>
+<cmdsynopsis>
+  <command>ipsec</command>    
+    <arg choice='plain'><replaceable>auto</replaceable></arg>
+    <arg choice='opt'>--utc </arg>
+    <arg choice='opt'>--listall | --rereadall </arg>
+    <arg choice='opt'>--rereadsecrets </arg>
+    <arg choice='opt'>--listcerts </arg>
+    <arg choice='opt'>--listpubkeys </arg>
+    <arg choice='opt'>--listcards </arg>
+    <arg choice='opt'>--listcacerts | --rereadcacerts</arg>
+    <arg choice='opt'>--listcrls | --rereadcrls </arg>
+    <arg choice='opt'>
+      <arg choice='opt'>--listocspcerts | --rereadocspcerts </arg>
+      <arg choice='opt'>--listocsp | --purgeocsp </arg>
+    </arg>
+    <arg choice='opt'>--listacerts | --rereadacerts </arg>
+    <arg choice='opt'>--listaacerts | --rereadaacerts </arg>
+    <arg choice='opt'>--listgroups | --rereadgroups </arg>
 
+</cmdsynopsis>
+</refsect1>
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><emphasis remap='I'>Auto</emphasis>
-manipulates automatically-keyed FreeS/WAN IPsec connections,
+manipulates automatically-keyed Openswan IPsec connections,
 setting them up and shutting them down
 based on the information in the IPsec configuration file.
 In the normal usage,
@@ -170,12 +220,85 @@ which it normally reads only at startup time.
 <option>--ready</option>,
 but that may change.)</para>
 
-<para>The
-<option>--show</option>
-option turns on the
-<option>-x</option>
-option of the shell used to execute the commands,
-so each command is shown as it is executed.</para>
+
+<para>      The    <option>--rereadsecrets</option>   operation   tells   pluto   to   re-read   the
+       /etc/ipsec.secrets secret-keys file, which it normally  reads  only  at
+       startup  time.   (This is currently a synonym for <option>--ready,</option> but that may
+       change.)
+</para>
+<para>       The <option>--rereadcacerts</option> operation reads all certificate files contained  in
+       the  /etc/ipsec.d/cacerts  directory  and  adds them to pluto’s list of
+       Certification Authority (CA) certificates.
+</para>
+<para>       The <option>--rereadaacerts</option> operation reads all certificate files contained  in
+       the  /etc/ipsec.d/aacerts  directory  and  adds them to pluto’s list of
+       Authorization Authority (AA) certificates.
+</para>
+<para>       The <option>--rereadocspcerts</option> operation reads all certificate  files  contained
+       in  the  /etc/ipsec.d/ocspcerts directory and adds them to pluto’s list
+       of OCSP signer certificates.
+</para>
+<para>       The <option>--rereadacerts</option> operation reads all certificate files  contained  in
+       the  /etc/ipsec.d/acerts  directory  and  adds  them to pluto’s list of
+       attribute certificates.
+</para>
+<para>       The <option>--rereadcrls</option> operation reads all certificate revocation list  (CRL)
+       files  contained  in  the  /etc/ipsec.d/crls directory and adds them to
+       pluto’s list of CRLs.
+</para>
+<para>       The <option>--rereadall</option> operation is equivalent to the execution of --rereadse-
+       crets, <option>--rereadcacerts,</option> --rereadaacerts, --rereadocspcerts, --rereadac-
+       erts, and --rereadcrls.
+</para>
+<para>       The <option>--listpubkeys</option> operation lists all RSA public keys  either  received
+       from  peers  via the IKE protocol embedded in authenticated certificate
+       payloads or loaded locally using the rightcert /  leftcert  or  rightr-
+       sasigkey / leftrsasigkey parameters in ipsec.conf(5).
+
+</para>
+<para>      The  <option>--listcerts</option>  operation  lists  all  X.509 and OpenPGP certificates
+       loaded  locally  using  the  rightcert  and  leftcert   parameters   in
+       ipsec.conf(5).
+</para>
+<para>       The  <option>--listcacerts</option>  operation  lists  all  X.509 CA certificates either
+       loaded locally from the /etc/ipsec.d/cacerts directory or  received  in
+       PKCS#7-wrapped certificate payloads via the IKE protocol.
+</para>
+<para>       The  <option>--listaacerts</option>  operation  lists  all  X.509 AA certificates loaded
+       locally from the /etc/ipsec.d/aacerts directory.
+</para>
+<para>       The <option>--listocspcerts</option> operation lists all OCSP signer certificates either
+       loaded  locally  from  the /etc/ipsec.d/ocspcerts directory or received
+       via the Online Certificate Status Protocol from an OCSP server.
+</para>
+<para>       The <option>--listacerts</option>  operation  lists  all  X.509  attribute  certificates
+       loaded locally from the /etc/ipsec.d/acerts directory.
+</para>
+<para>       The  <option>--listgropus</option>  operation  lists  all groups that are either used in
+       connection definitions in ipsec.conf(5) or are embedded in loaded X.509
+       attributes certificates.
+</para>
+<para>       The  <option>--listcainfos</option> operation lists the certification authority informa-
+       tion specified in the ca sections of ipsec.conf(5).
+</para>
+<para>       The <option>--listcrls</option> operation lists all Certificate Revocation Lists  (CRLs)
+       either  loaded  locally from the /etc/ipsec.d/crls directory or fetched
+       dynamically from an HTTP or LDAP server.
+</para>
+<para>       The  <option>--listocsp</option>  operation  lists  the  certicates  status  information
+       fetched from OCSP servers.
+</para>
+<para>       The  <option>--purgeocsp</option> operation deletes any cached certificate status infor-
+       mation and pending OCSP fetch requests.
+</para>
+<para>       The <option>--listcards</option> operation lists information about  attached  smartcards
+       or crypto tokens.
+</para>
+<para>       The  <option>--listall</option>  operation is equivalent to the execution of 
+       --listpubkeys,  --listcerts,  --listcacerts,  --listaacerts,  --listoc-
+       spcerts,  --listacerts, --listgroups, --listcainfos, --listcrls, --lis-
+       tocsp, and --listcards.
+</para>
 
 <para>The
 <option>--showonly</option>
@@ -205,6 +328,13 @@ to pass through all output from
 including log output that is normally filtered out as uninteresting.</para>
 
 <para>The
+<option>--show</option>
+option turns on the
+<option>-x</option>
+option of the shell used to execute the commands,
+so each command is shown as it is executed.</para>
+
+<para>The
 <option>--config</option>
 option specifies a non-standard location for the IPsec
 configuration file (default
@@ -213,33 +343,18 @@ configuration file (default
 <para>See
 <citerefentry><refentrytitle>ipsec.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
 for details of the configuration file.
-Apart from the basic parameters which specify the endpoints and routing
-of a connection (<emphasis remap='B'>left</emphasis>
-and
-<emphasis remap='B'>right</emphasis>,
-plus possibly
-<emphasis remap='B'>leftsubnet</emphasis>,
-<emphasis remap='B'>leftnexthop</emphasis>,
-<emphasis remap='B'>leftfirewall</emphasis>,
-their
-<emphasis remap='B'>right</emphasis>
-equivalents,
-and perhaps
-<emphasis remap='B'>type</emphasis>),
-an
-<emphasis remap='I'>auto</emphasis>
-connection almost certainly needs a
-<emphasis remap='B'>keyingtries</emphasis>
-parameter (since the
-<emphasis remap='B'>keyingtries</emphasis>
-default is poorly chosen).</para>
+</para>
 </refsect1>
 
 <refsect1 id='files'><title>FILES</title>
-<!-- .ta \w'/var/run/pluto/ipsec.info'u+4n -->
-<para>/etc/ipsec.conf	default IPSEC configuration file
-<!-- .br -->
-/var/run/pluto/ipsec.info	<emphasis remap='B'>%defaultroute</emphasis> information</para>
+<para>
+<literallayout remap='.nf'>
+/etc/ipsec.conf			default IPSEC configuration file
+/etc/ipsec.d/			X.509 and Opportunistic Encryption files
+/var/run/pluto/ipsec.info	<emphasis remap='B'>%defaultroute</emphasis> information
+/var/run/pluto/pluto.ctl	Pluto command socket
+</literallayout>
+</para>
 </refsect1>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
@@ -247,7 +362,7 @@ default is poorly chosen).</para>
 </refsect1>
 
 <refsect1 id='history'><title>HISTORY</title>
-<para>Written for the FreeS/WAN project
+<para>Originally written for the FreeS/WAN project
 &lt;<ulink url='http://www.freeswan.org'>http://www.freeswan.org</ulink>&gt;
 by Henry Spencer.</para>
 </refsect1>

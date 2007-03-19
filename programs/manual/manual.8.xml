@@ -20,23 +20,28 @@
     <arg choice='opt'>--show </arg>
     <arg choice='opt'>--showonly </arg>
     <arg choice='opt'>--other </arg>
-    <sbr/>
-    <arg choice='opt'><arg choice='plain'>--iam </arg><arg choice='plain'><replaceable>address@interface</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--config </arg><arg choice='plain'><replaceable>configfile</replaceable></arg></arg>
-    <sbr/>
-    <arg choice='plain'><replaceable>operationconnectionipsecmanual</replaceable></arg>
+    <arg choice='opt'>--iam <replaceable>address@interface</replaceable></arg>
+    <arg choice='opt'>--config <replaceable>configfile</replaceable></arg>
+    <arg choice='plain'><replaceable>operation</replaceable></arg>
+</cmdsynopsis>
+<cmdsynopsis>
+  <command>ipsec</command>    
+    <arg choice='plain'><replaceable>manual</replaceable></arg>
     <arg choice='opt'><replaceable>options</replaceable></arg>
     <arg choice='plain'>--union </arg>
-    <arg choice='plain' rep='repeat'><replaceable>operationpart</replaceable></arg>
+    <arg choice='plain' rep='repeat'><replaceable>operation_part</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><emphasis remap='I'>Manual</emphasis>
-manipulates manually-keyed FreeS/WAN IPsec connections,
+manipulates manually-keyed Openswan IPsec connections,
 setting them up and shutting them down,
 based on the information in the IPsec configuration file.
+Normally, manually keyed connections should not be used - automatic
+keying connections
+
 In the normal usage,
 <emphasis remap='I'>connection</emphasis>
 is the name of a connection specification in the configuration file;
@@ -138,9 +143,8 @@ based on what IPsec interfaces are up and how they are configured).</para>
 
 <para>The
 <option>--config</option>
-option specifies a non-standard location for the FreeS/WAN IPsec
-configuration file (default
-<filename>/etc/ipsec.conf</filename>).</para>
+option specifies a non-standard location for the 
+<filename>/etc/ipsec.conf</filename>) file.</para>
 
 <para>See
 <citerefentry><refentrytitle>ipsec.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
@@ -203,9 +207,9 @@ i.e. in the range
 <emphasis remap='B'>0x100</emphasis>
 through
 <emphasis remap='B'>0xfff</emphasis>;
-FreeS/WAN reserves those for manual keying and will not
+Openswan reserves those for manual keying and will not
 attempt to use them for automatic keying (unless requested to,
-presumably by a non-FreeS/WAN other end).</para>
+presumably by a non-Openswan other end).</para>
 </refsect1>
 
 <refsect1 id='files'><title>FILES</title>

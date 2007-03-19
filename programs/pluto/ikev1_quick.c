@@ -2036,7 +2036,13 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
     
     {
 	int np;
+#ifdef IMPAIR_UNALIGNED_R1_MSG
+	char *padstr=getenv("PLUTO_UNALIGNED_R1_MSG");
 
+	if(padstr) {
+	    np = ISAKMP_NEXT_VID;
+	} else
+#endif
 	if(st->st_pfs_group != NULL) {
 	    np = ISAKMP_NEXT_KE;
 	} else if(id_pd != NULL) {
@@ -2048,8 +2054,37 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 	/* Nr out */
 	if (!justship_nonce(&st->st_nr, &md->rbody, np, "Nr"))
 	    return STF_INTERNAL_ERROR;
+
+
+#ifdef IMPAIR_UNALIGNED_R1_MSG
+	if(padstr) {
+	    pb_stream vid_pbs;
+	    int padsize;
+	    padsize = strtoul(padstr, NULL, 0);
+	    
+	    openswan_log("inserting fake VID payload of %u size", padsize);
+	    
+	    if(st->st_pfs_group != NULL) {
+		np = ISAKMP_NEXT_KE;
+	    } else if(id_pd != NULL) {
+		np = ISAKMP_NEXT_ID;
+	    } else {
+		np = ISAKMP_NEXT_NONE;
+	    }
+
+	    if (!out_generic(np,
+			     &isakmp_vendor_id_desc, &md->rbody, &vid_pbs))
+		return STF_INTERNAL_ERROR;
+	    
+	    if (!out_zero(padsize, &vid_pbs, "Filler VID"))
+		return STF_INTERNAL_ERROR;
+		
+	    close_output_pbs(&vid_pbs);
+	} 
+#endif
     }
     
+
     /* [ KE ] out (for PFS) */
     if (st->st_pfs_group != NULL && r!=NULL) {
 	if (!justship_KE(&st->st_gr
@@ -2318,13 +2353,39 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 
     /* HDR* out done */
 
-    /* HASH(3) out -- since this is the only content, no passes needed */
+    /* HASH(3) out -- sometimes, we add more content */
     {
 	u_char	/* set by START_HASH_PAYLOAD: */
 	    *r_hashval,	/* where in reply to jam hash value */
 	    *r_hash_start;	/* start of what is to be hashed */
 
+#ifdef IMPAIR_UNALIGNED_I2_MSG
+	{
+	    char *padstr=getenv("PLUTO_UNALIGNED_I2_MSG");
+	    
+	    if(padstr) {
+		pb_stream vid_pbs;
+		int padsize;
+		padsize = strtoul(padstr, NULL, 0);
+		
+		openswan_log("inserting fake VID payload of %u size", padsize);
+		START_HASH_PAYLOAD(md->rbody, ISAKMP_NEXT_VID);
+		
+		if (!out_generic(ISAKMP_NEXT_NONE,
+				 &isakmp_vendor_id_desc, &md->rbody, &vid_pbs))
+		    return STF_INTERNAL_ERROR;
+		
+		if (!out_zero(padsize, &vid_pbs, "Filler VID"))
+		    return STF_INTERNAL_ERROR;
+		
+		close_output_pbs(&vid_pbs);
+	    } else {
+		START_HASH_PAYLOAD(md->rbody, ISAKMP_NEXT_NONE);
+	    }
+	}
+#else
 	START_HASH_PAYLOAD(md->rbody, ISAKMP_NEXT_NONE);
+#endif
 
 #ifdef TPM
 	{
@@ -2335,6 +2396,7 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 	    r_hashval = tpm_relocateHash(pbs);	
 	}
 #endif
+
 	(void)quick_mode_hash3(r_hashval, st);
     }
 

@@ -1,6 +1,13 @@
 Please see docs/KNOWN_BUGS file for more information
 
-#testing
+#stable
+   set LANGUAGE, LANG and LC_ALL in setup script.
+   change OE off by default note and scripts.
+
+v2.5.05
+   2.5.03 and 2.5.04 were not properly released, and 2.5.05 now
+   is properly released and includes below items
+    
 v2.5.04
     zero peer_ca to avoid crashes.
     (include glob's may still not work correctly)

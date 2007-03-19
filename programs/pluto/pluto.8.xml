@@ -3,15 +3,15 @@
                    "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <!-- lifted from troff+man by doclifter -->
 <refentry id='pluto8'>
-<refentryinfo><date>28 March 1999</date></refentryinfo>
+<refentryinfo><date>26 October 2006</date></refentryinfo>
 <refmeta>
 <refentrytitle>IPSEC_PLUTO</refentrytitle>
 <manvolnum>8</manvolnum>
-<refmiscinfo class='date'>28 March 1999</refmiscinfo>
+<refmiscinfo class='date'>26 October 2006</refmiscinfo>
 </refmeta>
 <refnamediv id='name'>
 <refname>ipsec pluto</refname>
-<refpurpose>IPsec IKE keying daemon</refpurpose>
+<refpurpose>ipsec whack : IPsec IKE keying daemon and control interface</refpurpose>
 </refnamediv>
 <!-- body begins here -->
 <refsynopsisdiv id='synopsis'>
@@ -19,164 +19,363 @@
   <command>ipsec</command>    <arg choice='plain'><replaceable>pluto</replaceable></arg>
     <arg choice='opt'>--help </arg>
     <arg choice='opt'>--version </arg>
-    <arg choice='opt'><arg choice='plain'>--optionsfrom <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>filename</replaceable></arg></arg>
+    <arg choice='opt'>--optionsfrom <replaceable>filename</replaceable> </arg>
     <arg choice='opt'>--nofork </arg>
     <arg choice='opt'>--stderrlog </arg>
-    <arg choice='opt'>--noklips </arg>
+    <arg choice='opt'>--use-auto </arg>
+    <arg choice='opt'>--use-klips </arg>
+    <arg choice='opt'>--use-netkey </arg>
+    <arg choice='opt'>--use-nostack </arg>
     <arg choice='opt'>--uniqueids </arg>
+    <arg choice='opt'>--nat_traversal </arg>
+    <arg choice='opt'>--virtual_private <replaceable>network_list</replaceable> </arg>
+    <arg choice='opt'>--keep_alive <replaceable>delay_sec</replaceable> </arg>
+    <arg choice='opt'>--force_keepalive </arg>
+    <arg choice='opt'>--disable_port_floating </arg>
+    <arg choice='opt'>--nocrsend </arg>
+    <arg choice='opt'>--strictcrlpolicy </arg>
+    <arg choice='opt'>--crlcheckinterval </arg>
+    <arg choice='opt'>--ocspuri </arg>
     <arg choice='opt'>--interface <replaceable>interfacename</replaceable></arg>
-    <arg choice='opt'><arg choice='plain'>--ikeport <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>portnumber</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--ctlbase <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>path</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--secretsfile <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>secrets&hyphen;file</replaceable></arg></arg>
+    <arg choice='opt'>--ikeport <replaceable>portnumber</replaceable> </arg>
+    <arg choice='opt'>--ctlbase <replaceable>path</replaceable> </arg>
+    <arg choice='opt'>--secretsfile <replaceable>secrets-file</replaceable> </arg>
     <arg choice='opt'>--adns <replaceable>pathname</replaceable></arg>
+    <arg choice='opt'>--nhelpers <replaceable>number</replaceable></arg>
     <arg choice='opt'>--lwdnsq <replaceable>pathname</replaceable></arg>
     <arg choice='opt'>--perpeerlog </arg>
-    <arg choice='opt'><arg choice='plain'>--perpeerlogbase <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>dirname</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--ipsecdir <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>dirname</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--coredir <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>dirname</replaceable></arg></arg>
+    <arg choice='opt'>--perpeerlogbase <replaceable>dirname</replaceable> </arg>
+    <arg choice='opt'>--ipsecdir <replaceable>dirname</replaceable> </arg>
+    <arg choice='opt'>--coredir <replaceable>dirname</replaceable> </arg>
     <arg choice='opt'>--noretransmits </arg>
-    <arg choice='opt'>--debug&hyphen;none </arg>
-    <arg choice='opt'>--debug&hyphen;all </arg>
-    <arg choice='opt'>--debug&hyphen;raw </arg>
-    <arg choice='opt'>--debug&hyphen;crypt </arg>
-    <arg choice='opt'>--debug&hyphen;parsing </arg>
-    <arg choice='opt'>--debug&hyphen;emitting </arg>
-    <arg choice='opt'>--debug&hyphen;control </arg>
-    <arg choice='opt'>--debug&hyphen;lifecycle </arg>
-    <arg choice='opt'>--debug&hyphen;klips </arg>
-    <arg choice='opt'>--debug&hyphen;dns </arg>
-    <arg choice='opt'>--debug&hyphen;oppo </arg>
-    <arg choice='opt'>--debug&hyphen;private </arg>
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
+</cmdsynopsis>
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
     <arg choice='opt'>--help </arg>
     <arg choice='opt'>--version </arg>
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
-    <arg choice='plain'>--name <replaceable>c</replaceable></arg>
-    <arg choice='plain'><replaceable>connection-name</replaceable></arg>
+</cmdsynopsis>
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <arg choice='opt'>--debug-none </arg>
+    <arg choice='opt'>--debug-all </arg>
+    <arg choice='opt'>--debug-raw </arg>
+    <arg choice='opt'>--debug-crypt </arg>
+    <arg choice='opt'>--debug-parsing </arg>
+    <arg choice='opt'>--debug-emitting </arg>
+    <arg choice='opt'>--debug-control </arg>
+    <arg choice='opt'>--debug-lifecycle </arg>
+    <arg choice='opt'>--debug-klips </arg>
+    <arg choice='opt'>--debug-pfkey </arg>
+    <arg choice='opt'>--debug-nat-t </arg>
+    <arg choice='opt'>--debug-dpd </arg>
+    <arg choice='opt'>--debug-dns </arg>
+    <arg choice='opt'>--debug-oppo </arg>
+    <arg choice='opt'>--debug-private </arg>
+</cmdsynopsis>
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <arg choice='plain'>--name <replaceable>connection-name</replaceable></arg>
+    <group choice='opt'>
+    <arg choice='opt'>--ipv4 </arg>
+    <arg choice='opt'>--ipv6 </arg>
+    </group>
+    <group choice='opt'>
+    <arg choice='opt'>--tunnelipv4 </arg>
+    <arg choice='opt'>--tunnelipv6 </arg>
+    </group>
     <sbr/>
-    <arg choice='opt'><arg choice='plain'>--id <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>id</replaceable></arg></arg>
-    <arg choice='plain'><replaceable>c</replaceable></arg>
-    <arg choice='opt'><arg choice='plain'>--host <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>ip&hyphen;address</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--ikeport <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>port&hyphen;number</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--nexthop <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>ip&hyphen;address</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--client <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>subnet</replaceable></arg></arg>
+    <sbr/>
+    <arg choice='opt'>--id <replaceable>identity</replaceable> </arg>
+    <arg choice='opt'>--host <replaceable>ip-address</replaceable> </arg>
+    <arg choice='opt'>--cert <replaceable>path</replaceable> </arg>
+    <arg choice='opt'>--ca <replaceable>distinguished name</replaceable> </arg>
+    <arg choice='opt'>--groups <replaceable>access control groups</replaceable> </arg>
+    <arg choice='opt'>--sendcert 
+     <group choice='plain'>
+      <arg choice='plain'>yes</arg>
+      <arg choice='plain'>forced</arg>
+      <arg choice='plain'>always</arg>
+      <arg choice='plain'>ifasked</arg>
+      <arg choice='plain'>no</arg>
+      <arg choice='plain'>never</arg>
+     </group>
+    </arg>
+    <arg choice='opt'>--certtype <replaceable>number</replaceable> </arg>
+    <arg choice='opt'>--ikeport <replaceable>portnumber</replaceable> </arg>
+    <arg choice='opt'>--nexthop <replaceable>ip-address</replaceable> </arg>
+    <group choice='opt'>
+    <arg choice='opt'>--client <replaceable>subnet</replaceable> </arg>
+    <arg choice='opt'>--clientwithin <replaceable>subnet</replaceable> </arg>
+    </group>
+    <arg choice='opt'>--clientprotoport <replaceable>protocol</replaceable>/<replaceable>port</replaceable></arg>
+    <arg choice='opt'>--srcip <replaceable>ip-address</replaceable></arg>
+    <arg choice='opt'>--xauthserver </arg>
+    <arg choice='opt'>--xauthclient </arg>
+    <arg choice='opt'>--modecfgserver </arg>
+    <arg choice='opt'>--modecfgclient </arg>
     <arg choice='opt'>--dnskeyondemand </arg>
-    <arg choice='opt'><arg choice='plain'>--updown <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>updown</replaceable></arg></arg>
+    <arg choice='opt'>--updown <replaceable>updown</replaceable></arg>
     <sbr/>
-    <arg choice='plain'>--to </arg>
     <sbr/>
-    <arg choice='opt'><arg choice='plain'>--id <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>id</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--host <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>ip&hyphen;address</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--ikeport <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>port&hyphen;number</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--nexthop <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>ip&hyphen;address</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--client <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>subnet</replaceable></arg></arg>
+    <arg choice='plain'>--to</arg>
+    <sbr/>
+    <sbr/>
+    <arg choice='opt'>--id <replaceable>identity</replaceable></arg>
+    <arg choice='opt'>--host <replaceable>ip-address</replaceable> </arg>
+    <arg choice='opt'>--cert <replaceable>path</replaceable> </arg>
+    <arg choice='opt'>--ca <replaceable>distinguished name</replaceable> </arg>
+    <arg choice='opt'>--groups <replaceable>access control groups</replaceable> </arg>
+    <arg choice='opt'>--sendcert 
+     <group choice='plain'>
+      <arg choice='plain'>yes</arg>
+      <arg choice='plain'>always</arg>
+      <arg choice='plain'>ifasked</arg>
+      <arg choice='plain'>no</arg>
+      <arg choice='plain'>never</arg>
+     </group>
+    </arg>
+    <arg choice='opt'>--certtype <replaceable>number</replaceable> </arg>
+    <arg choice='opt'>--ikeport <replaceable>port-number</replaceable> </arg>
+    <arg choice='opt'>--nexthop <replaceable>ip-address</replaceable> </arg>
+    <arg choice='opt'>--client <replaceable>subnet</replaceable> </arg>
+    <arg choice='opt'>--clientwithin <replaceable>subnet</replaceable> </arg>
+    <arg choice='opt'>--clientprotoport <replaceable>protocol</replaceable>/<replaceable>port</replaceable></arg>
+    <arg choice='opt'>--srcip <replaceable>ip-address</replaceable></arg>
+    <arg choice='opt'>--xauthserver </arg>
+    <arg choice='opt'>--xauthclient </arg>
+    <arg choice='opt'>--modecfgserver </arg>
+    <arg choice='opt'>--modecfgclient </arg>
     <arg choice='opt'>--dnskeyondemand </arg>
-    <arg choice='opt'><arg choice='plain'>--updown <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>updown</replaceable></arg></arg>
+    <arg choice='opt'>--updown <replaceable>updown</replaceable> </arg>
     <sbr/>
-    <arg choice='opt'>--aggrmode </arg>
+    <sbr/>
+    <arg choice='opt'>--tunnel </arg>
     <arg choice='opt'>--psk </arg>
     <arg choice='opt'>--rsasig </arg>
     <arg choice='opt'>--encrypt </arg>
     <arg choice='opt'>--authenticate </arg>
     <arg choice='opt'>--compress </arg>
-    <arg choice='opt'>--tunnel </arg>
     <arg choice='opt'>--pfs </arg>
+    <arg choice='opt'>--pfsgroup 
+     <group choice='plain'>
+       <arg choice='opt'>modp1024 </arg>
+       <arg choice='opt'>modp1536 </arg>
+       <arg choice='opt'>modp2048 </arg>
+       <arg choice='opt'>modp3072 </arg>
+       <arg choice='opt'>modp4096 </arg>
+       <arg choice='opt'>modp6144 </arg>
+       <arg choice='opt'>modp8192 </arg>
+     </group>
+    </arg>
+
     <arg choice='opt'>--disablearrivalcheck </arg>
-    <arg choice='opt'>--ipv4 </arg>
-    <arg choice='opt'>--ipv6 </arg>
-    <arg choice='opt'>--tunnelipv4 </arg>
-    <arg choice='opt'>--tunnelipv6 </arg>
-    <arg choice='opt'><arg choice='plain'>--ikelifetime <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>seconds</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--ipseclifetime <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>seconds</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--rekeymargin <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>seconds</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--rekeyfuzz <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>percentage</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--keyingtries <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>count</replaceable></arg></arg>
+    <arg choice='opt'>--ikelifetime <replaceable>seconds</replaceable> </arg>
+    <arg choice='opt'>--ipseclifetime <replaceable>seconds</replaceable> </arg>
+    <arg choice='opt'>--rekeymargin <replaceable>seconds</replaceable> </arg>
+    <arg choice='opt'>--rekeyfuzz <replaceable>percentage</replaceable> </arg>
+    <arg choice='opt'>--keyingtries <replaceable>count</replaceable> </arg>
+    <arg choice='opt'>--esp <replaceable>esp-algos</replaceable> </arg>
     <arg choice='opt'>--dontrekey </arg>
-    <arg choice='opt'>--delete </arg>
-    <arg choice='opt'><arg choice='plain'>--ctlbase <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>path</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--optionsfrom <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>filename</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--label <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>string</replaceable></arg></arg>
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
-    <arg choice='plain'>--keyid <replaceable>c</replaceable></arg>
-    <arg choice='plain'><replaceable>id</replaceable></arg>
+    <arg choice='opt'>--aggrmode </arg>
+    <arg choice='opt'>--modecfgpull </arg>
+    <group choice='opt'>
+    <arg choice='opt'>--dpddelay <replaceable>seconds</replaceable> </arg>
+    <arg choice='opt'>--dpdtimeout <replaceable>seconds</replaceable> </arg>
+    </group>
+    <arg choice='opt'>--dpdaction
+     <group choice='plain'>
+       <arg choice='opt'>clear </arg>
+       <arg choice='opt'>hold </arg>
+       <arg choice='opt'>restart </arg>
+     </group>
+    </arg>
+    <arg choice='opt'>--forceencaps </arg>
+    <arg choice='opt'>
+     <group choice='plain'>
+      <arg choice='opt'>--initiateontraffic </arg>
+      <arg choice='opt'>--pass </arg>
+      <arg choice='opt'>--drop </arg>
+      <arg choice='opt'>--reject </arg>
+     </group>
+    </arg>
+    <arg choice='opt'>
+     <group choice='plain'>
+      <arg choice='opt'>--failnone </arg>
+      <arg choice='opt'>--failpass </arg>
+      <arg choice='opt'>--faildrop </arg>
+      <arg choice='opt'>--failreject </arg>
+     </group>
+    </arg>
+    <arg choice='opt'>--ctlbase <replaceable>path</replaceable> </arg>
+    <arg choice='opt'>--optionsfrom <replaceable>filename</replaceable> </arg>
+    <arg choice='opt'>--label <replaceable>string</replaceable> </arg>
+</cmdsynopsis>
+
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <arg choice='plain'>--keyid <replaceable>id</replaceable></arg>
     <arg choice='opt'>--addkey </arg>
-    <arg choice='opt'><arg choice='plain'>--pubkeyrsa <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>key</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--ctlbase <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>path</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--optionsfrom <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>filename</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--label <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>string</replaceable></arg></arg>
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
-    <arg choice='plain'>--myid <replaceable>c</replaceable></arg>
-    <arg choice='plain'><replaceable>id</replaceable></arg>
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
-    <group choice='plain'><arg choice='plain'>--listen </arg><arg choice='plain'>--unlisten </arg><arg choice='opt'><arg choice='plain'>--ctlbase <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>path</replaceable></arg></arg><arg choice='opt'><arg choice='plain'>--optionsfrom <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>filename</replaceable></arg></arg><arg choice='opt'><arg choice='plain'>--label <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>string</replaceable></arg></arg></group>
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
-    <group choice='plain'><arg choice='plain'>--route </arg><arg choice='plain'>--unroute </arg><arg choice='plain'>--name <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>connection-name</replaceable></arg><arg choice='opt'><arg choice='plain'>--ctlbase <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>path</replaceable></arg></arg><arg choice='opt'><arg choice='plain'>--optionsfrom <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>filename</replaceable></arg></arg><arg choice='opt'><arg choice='plain'>--label <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>string</replaceable></arg></arg></group>
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
-    <group choice='plain'><arg choice='plain'>--initiate </arg><arg choice='plain'>--terminate </arg><arg choice='plain'>--name <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>connection-name</replaceable></arg><arg choice='opt'>--xauthuser <replaceable>user</replaceable></arg><arg choice='opt'>--xauthpass <replaceable>pass</replaceable></arg><arg choice='opt'>--asynchronous </arg><arg choice='opt'><arg choice='plain'>--ctlbase <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>path</replaceable></arg></arg><arg choice='opt'><arg choice='plain'>--optionsfrom <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>filename</replaceable></arg></arg><arg choice='opt'><arg choice='plain'>--label <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>string</replaceable></arg></arg></group>
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <arg choice='opt'>--pubkeyrsa <replaceable>key</replaceable> </arg>
+    <arg choice='opt'>--ctlbase <replaceable>path</replaceable> </arg>
+    <arg choice='opt'>--optionsfrom <replaceable>filename</replaceable> </arg>
+    <arg choice='opt'>--label <replaceable>string</replaceable> </arg>
+</cmdsynopsis>
+
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <arg choice='plain'>--myid <replaceable>id</replaceable></arg>
+</cmdsynopsis>
+
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <group choice='plain'>
+    <arg choice='plain'>--listen </arg>
+    <arg choice='plain'>--unlisten</arg>
+    </group>
+    <arg choice='opt'>--ctlbase <replaceable>path</replaceable> </arg>
+    <arg choice='opt'>--optionsfrom <replaceable>filename</replaceable> </arg>
+    <arg choice='opt'>--label <replaceable>string</replaceable> </arg>
+</cmdsynopsis>
+
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <group choice='plain'>
+     <arg choice='plain'> --route </arg>
+     <arg choice='plain'>--unroute</arg>
+    </group>
+    <arg choice='plain'>--name <replaceable>connection-name</replaceable></arg>
+    <arg choice='opt'>--ctlbase <replaceable>path</replaceable> </arg>
+    <arg choice='opt'>--optionsfrom <replaceable>filename</replaceable> </arg>
+    <arg choice='opt'>--label <replaceable>string</replaceable></arg> 
+</cmdsynopsis>
+
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <group choice='plain'>
+    <arg choice='plain'>--initiate </arg>
+    <arg choice='plain'>--terminate </arg>
+    </group>
+    <arg choice='plain'>--name <replaceable>connection-name</replaceable></arg>
+    <arg choice='opt'>--xauthuser <replaceable>user</replaceable></arg>
+    <arg choice='opt'>--xauthpass <replaceable>pass</replaceable></arg>
+    <arg choice='opt'>--asynchronous </arg>
+    <arg choice='opt'>--ctlbase <replaceable>path</replaceable> </arg>
+    <arg choice='opt'>--optionsfrom <replaceable>filename</replaceable> </arg>
+    <arg choice='opt'>--label <replaceable>string</replaceable> </arg>
+</cmdsynopsis>
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <group choice='opt'>
     <arg choice='opt'>--tunnelipv4 </arg>
     <arg choice='opt'>--tunnelipv6 </arg>
-    <arg choice='plain'>--oppohere <replaceable>ip&hyphen;address</replaceable></arg>
-    <arg choice='plain'>--oppothere <replaceable>ip&hyphen;address</replaceable></arg>
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
-    <arg choice='plain'>--delete </arg>
-    <arg choice='plain'>--name <replaceable>c</replaceable></arg>
-    <arg choice='plain'><replaceable>connection-name</replaceable></arg>
-    <arg choice='opt'><arg choice='plain'>--ctlbase <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>path</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--optionsfrom <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>filename</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--label <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>string</replaceable></arg></arg>
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
-    <arg choice='plain'>--deletestate <replaceable>c</replaceable></arg>
-    <arg choice='plain'><replaceable>state-number</replaceable></arg>
-    <arg choice='opt'><arg choice='plain'>--ctlbase <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>path</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--optionsfrom <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>filename</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--label <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>string</replaceable></arg></arg>
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
-    <arg choice='opt'><arg choice='plain'>--name <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>connection-name</replaceable></arg></arg>
-    <arg choice='opt'>--debug&hyphen;none </arg>
-    <arg choice='opt'>--debug&hyphen;all </arg>
-    <arg choice='opt'>--debug&hyphen;raw </arg>
-    <arg choice='opt'>--debug&hyphen;crypt </arg>
-    <arg choice='opt'>--debug&hyphen;parsing </arg>
-    <arg choice='opt'>--debug&hyphen;emitting </arg>
-    <arg choice='opt'>--debug&hyphen;control </arg>
-    <arg choice='opt'>--debug&hyphen;lifecycle </arg>
-    <arg choice='opt'>--debug&hyphen;klips </arg>
-    <arg choice='opt'>--debug&hyphen;dns </arg>
-    <arg choice='opt'>--debug&hyphen;oppo </arg>
-    <arg choice='opt'>--debug&hyphen;private </arg>
-    <arg choice='opt'><arg choice='plain'>--ctlbase <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>path</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--optionsfrom <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>filename</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--label <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>string</replaceable></arg></arg>
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
-    <arg choice='plain'>--status </arg>
-    <arg choice='opt'><arg choice='plain'>--ctlbase <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>path</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--optionsfrom <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>filename</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--label <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>string</replaceable></arg></arg>
+    </group>
+    <arg choice='plain'>--oppohere <replaceable>ip-address</replaceable></arg>
+    <arg choice='plain'>--oppothere <replaceable>ip-address</replaceable></arg>
+</cmdsynopsis>
 
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
     <arg choice='plain'>--crash </arg>
-    <arg choice='opt'><arg choice='plain'>ipaddress</arg></arg>
+    <arg choice='opt'>ipaddress</arg>
+</cmdsynopsis>
 
-    <arg choice='plain'><replaceable>ipsec</replaceable></arg>
-    <arg choice='plain'><replaceable>whack</replaceable></arg>
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <arg choice='plain'>--delete </arg>
+    <arg choice='plain'>--name <replaceable>connection-name</replaceable></arg>
+    <arg choice='opt'>--ctlbase <replaceable>path</replaceable> </arg>
+    <arg choice='opt'>--optionsfrom <replaceable>filename</replaceable> </arg>
+    <arg choice='opt'>--label <replaceable>string</replaceable> </arg>
+</cmdsynopsis>
+
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <arg choice='plain'>--deletestate <replaceable>state-number</replaceable></arg>
+    <arg choice='opt'>--ctlbase <replaceable>path</replaceable> </arg>
+    <arg choice='opt'>--optionsfrom <replaceable>filename</replaceable> </arg>
+    <arg choice='opt'>--label <replaceable>string</replaceable> </arg>
+</cmdsynopsis>
+
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <arg choice='opt'>--name <replaceable>connection-name</replaceable> </arg>
+    <arg choice='opt'>--debug-none </arg>
+    <arg choice='opt'>--debug-all </arg>
+    <arg choice='opt'>--debug-raw </arg>
+    <arg choice='opt'>--debug-crypt </arg>
+    <arg choice='opt'>--debug-parsing </arg>
+    <arg choice='opt'>--debug-emitting </arg>
+    <arg choice='opt'>--debug-control </arg>
+    <arg choice='opt'>--debug-controlmore </arg>
+    <arg choice='opt'>--debug-lifecycle </arg>
+    <arg choice='opt'>--debug-klips </arg>
+    <arg choice='opt'>--debug-pfkey </arg>
+    <arg choice='opt'>--debug-dns </arg>
+    <arg choice='opt'>--debug-dpd </arg>
+    <arg choice='opt'>--debug-natt </arg>
+    <arg choice='opt'>--debug-oppo </arg>
+    <arg choice='opt'>--debug-private </arg>
+    <arg choice='opt'>--impair-delay-adns-key-answer </arg>
+    <arg choice='opt'>--impair-delay-adns-txt-answer </arg>
+    <arg choice='opt'>--impair-bust-mi2 </arg>
+    <arg choice='opt'>--impair-bust-mr2 </arg>
+    <arg choice='opt'>--impair-sa-fail </arg>
+    <arg choice='opt'>--impair-die-oninfo </arg>
+    <arg choice='opt'>--impair-jacob-two-two </arg>
+</cmdsynopsis>
+
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <arg choice='opt'>--utc </arg>
+    <arg choice='opt'>--listall </arg>
+    <arg choice='opt'>--listpubkeys </arg>
+    <arg choice='opt'>--listcerts </arg>
+    <arg choice='opt'>--listcacerts </arg>
+    <arg choice='opt'>--listacerts </arg>
+    <arg choice='opt'>--listaacerts </arg>
+    <arg choice='opt'>--listocspcerts </arg>
+    <arg choice='opt'>--listgroups </arg>
+    <arg choice='opt'>--listcrls </arg>
+    <arg choice='opt'>--listocsp </arg>
+    <arg choice='opt'>--listcards </arg>
+</cmdsynopsis>
+
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <arg choice='opt'>--utc </arg>
+    <arg choice='opt'>--rereadsecrets </arg>
+    <arg choice='opt'>--rereadall </arg>
+    <arg choice='opt'>--rereadcacerts </arg>
+    <arg choice='opt'>--rereadacerts </arg>
+    <arg choice='opt'>--rereadaacerts </arg>
+    <arg choice='opt'>--rereadocspcerts </arg>
+    <arg choice='opt'>--rereadcrls </arg>
+</cmdsynopsis>
+
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <arg choice='plain'>--purgeocsp </arg>
+</cmdsynopsis>
+
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <arg choice='plain'>--listevents </arg>
+</cmdsynopsis>
+
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
+    <arg choice='plain'>--status </arg>
+    <arg choice='opt'>--ctlbase <replaceable>path</replaceable></arg>
+    <arg choice='opt'>--optionsfrom <replaceable>filename</replaceable></arg>
+    <arg choice='opt'>--label <replaceable>string</replaceable> </arg>
+</cmdsynopsis>
+
+<cmdsynopsis>
+  <command>ipsec</command>    <arg choice='plain'><replaceable>whack</replaceable></arg>
     <arg choice='plain'>--shutdown </arg>
-    <arg choice='opt'><arg choice='plain'>--ctlbase <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>path</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--optionsfrom <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>filename</replaceable></arg></arg>
-    <arg choice='opt'><arg choice='plain'>--label <replaceable>c</replaceable></arg><arg choice='plain'><replaceable>string</replaceable></arg></arg>
+    <arg choice='opt'>--ctlbase <replaceable>path</replaceable> </arg>
+    <arg choice='opt'>--optionsfrom <replaceable>filename</replaceable> </arg>
+    <arg choice='opt'>--label <replaceable>string</replaceable> </arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -196,9 +395,10 @@ In other words,
 can eliminate much of the work of manual keying.
 The actual
 secure transmission of packets is the responsibility of other parts of
-the system (see
-<emphasis remap='B'>KLIPS</emphasis>,
-the companion implementation of IPsec).
+the system - the kernel. Pluto can talk to various kernel implementations,
+such as <emphasis remap='B'>KLIPS</emphasis>, 
+such as <emphasis remap='B'>NETKEY</emphasis>, and
+such as <emphasis remap='B'>KAME</emphasis> IPsec stacks.
 <citerefentry><refentrytitle>ipsec_auto</refentrytitle><manvolnum>8</manvolnum></citerefentry> provides a more convenient interface to
 <emphasis remap='B'>pluto</emphasis> and <emphasis remap='B'>whack</emphasis>.</para>
 
@@ -230,9 +430,8 @@ IPsec SAs can then be built by the IKEs - these are used to carry
 protected IP traffic between the systems.</para>
 
 <para>The negotiation of the ISAKMP SA is known as Phase 1.  In theory,
-Phase 1 can be accomplished by a couple of different exchange types,
-but we only implement one called Main Mode (we don't implement
-Aggressive Mode).</para>
+Phase 1 can be accomplished by a couple of different exchange types.
+Currently, Main Mode and Aggressive Mode are implemented.</para>
 
 <para>Any negotiation under the protection of an ISAKMP SA, including the
 negotiation of IPsec SAs, is part of Phase 2.  The exchange type
@@ -257,11 +456,14 @@ are considered policy and are left in the system administrator's hands.</para>
 
 <para><emphasis remap='B'>pluto</emphasis> is an implementation of IKE.  It runs as a daemon on a network
 node.  Currently, this network node must be a LINUX system running the
-<emphasis remap='B'>KLIPS</emphasis> implementation of IPsec.</para>
+<emphasis remap='B'>KLIPS</emphasis> or <emphasis remap='B'>NETKEY</emphasis> implementation of IPsec,
+or a FreeBSD/NetBSD/Mac OSX system running the <emphasis remap='B'>KAME</emphasis> implementation of
+IPsec.</para>
 
-<para><emphasis remap='B'>pluto</emphasis> only implements a subset of IKE.  This is enough for it to
+<para><emphasis remap='B'>pluto</emphasis> implements a large subset of IKE.  This is enough for it to
 interoperate with other instances of <emphasis remap='B'>pluto</emphasis>, and many other IKE
-implementations.  We are working on implementing more of IKE.</para>
+implementations.  It currently supports XAUTH, ModeConfig, X.509, Dead Peer Detection,
+Opportunistic Encryption and all the NAT Traversal standards.</para>
 
 <para>The policy for acceptable characteristics for Security Associations is
 mostly hardwired into the code of <emphasis remap='B'>pluto</emphasis> (spdb.c).  Eventually
@@ -269,7 +471,8 @@ this will be moved into a security policy database with reasonable
 expressive power and more convenience.</para>
 
 <para><emphasis remap='B'>pluto</emphasis> uses shared secrets or RSA signatures to authenticate
-peers with whom it is negotiating.</para>
+peers with whom it is negotiating. These RSA signatures can come from DNS(SEC), a configuration
+file, or from X.509 and CA certificates.</para>
 
 <para><emphasis remap='B'>pluto</emphasis> initiates negotiation of a Security Association when it is
 manually prodded: the program <emphasis remap='B'>whack</emphasis> is run to trigger this.
@@ -277,9 +480,9 @@ It will also initiate a negotiation when <emphasis remap='B'>KLIPS</emphasis> tr
 for Opportunistic Encryption.</para>
 
 <para><emphasis remap='B'>pluto</emphasis> implements ISAKMP SAs itself.  After it has negotiated the
-characteristics of an IPsec SA, it directs <emphasis remap='B'>KLIPS</emphasis> to implement it.
-It also invokes a script to adjust any firewall and issue <citerefentry><refentrytitle>route</refentrytitle><manvolnum>8</manvolnum></citerefentry>
-commands to direct IP packets through <emphasis remap='B'>KLIPS</emphasis>.</para>
+characteristics of an IPsec SA, it directs the <emphasis remap='B'>kernel</emphasis> to implement it.
+If necessary, it also invokes a script to adjust any firewall and issue <citerefentry><refentrytitle>route</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+commands to direct IP packets.</para>
 
 <para>When <emphasis remap='B'>pluto</emphasis> shuts down, it closes all Security Associations.</para>
 </refsect2>
@@ -289,8 +492,7 @@ commands to direct IP packets through <emphasis remap='B'>KLIPS</emphasis>.</par
 <para><emphasis remap='B'>pluto</emphasis> runs as a daemon with userid root.  Before running it, a few
 things must be set up.</para>
 
-<para><emphasis remap='B'>pluto</emphasis> requires <emphasis remap='B'>KLIPS</emphasis>, the Openswan implementation of IPsec.
-All of the components of <emphasis remap='B'>KLIPS</emphasis> and <emphasis remap='B'>pluto</emphasis> should be installed.</para>
+<para><emphasis remap='B'>pluto</emphasis> requires a working IPsec stack.</para>
 
 <para><emphasis remap='B'>pluto</emphasis> supports multiple public networks (that is, networks
 that are considered insecure and thus need to have their traffic
@@ -301,9 +503,11 @@ the interfaces considered).
 It does this only when <emphasis remap='B'>whack</emphasis> tells it to --listen,
 so the interfaces must be configured by then.  Each interface with a name of the form
 <command>ipsec</command>[<literal>0</literal>-<literal>9</literal>] is taken as a <emphasis remap='B'>KLIPS</emphasis> virtual public interface.
-Another network interface with the same IP address (there should be only
-one) is taken as the corresponding real public
-interface.  <citerefentry><refentrytitle>ifconfig</refentrytitle><manvolnum>8</manvolnum></citerefentry> with the <option>-a</option> flag will show
+Another network interface with the same IP address (the first one found will be used)
+is taken as the corresponding real public
+interface.  <citerefentry><refentrytitle>ifconfig</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+or  <citerefentry><refentrytitle>ip</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+ with the <option>-a</option> flag will show
 the name and status of each network interface.</para>
 
 <para><emphasis remap='B'>pluto</emphasis> requires a database of preshared secrets and RSA private keys.
@@ -343,6 +547,13 @@ the physical interface to which it has just been connected using
 <citerefentry><refentrytitle>ipsec_tncfg</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
 </refsect2>
 
+<refsect2 id='setting_up_fbnetkeyfp_for_fbplutofp'><title>Setting up <emphasis remap='B'>NETKEY</emphasis> for <emphasis remap='B'>pluto</emphasis></title>
+
+<para>No special requirements are necessary to use NETKEY - it ships with all modern versions of Linux 2.4 and 2.6.
+however, note that certain vendors or older distributions use old versions or backports of NETKEY which are broken.
+If possible use a NETKEY version that is at least based on, or backported from Linux 2.6.11 or newer.</para>
+</refsect2>
+
 <refsect2 id='ipsecsecrets_file'><title>ipsec.secrets file</title>
 
 <para>A <emphasis remap='B'>pluto</emphasis> daemon and another IKE daemon (for example, another instance
@@ -352,8 +563,8 @@ accomplished by using either secrets that have been shared beforehand
 (manually) or by using RSA signatures.  There are other techniques,
 but they have not been implemented in <emphasis remap='B'>pluto</emphasis>.</para>
 
-<para>The file <filename>/etc/ipsec.secrets</filename> is used to keep preshared secret keys
-and RSA private keys for
+<para>The file <filename>/etc/ipsec.secrets</filename> is used to keep preshared secret keys,
+RSA private keys, X.509 encoded keyfiles and smartcard PIN's for
 authentication with other IKE daemons.  For debugging, there is an
 argument to the <emphasis remap='B'>pluto</emphasis> command to use a different file.
 This file is described in
@@ -365,7 +576,52 @@ This file is described in
 <para>To fire up the daemon, just type <emphasis remap='B'>pluto</emphasis> (be sure to be running as
 the superuser).
 The default IKE port number is 500, the UDP port assigned by IANA for IKE Daemons.
-<emphasis remap='B'>pluto</emphasis> must be run by the superuser to be able to use the UDP 500 port.</para>
+<emphasis remap='B'>pluto</emphasis> must be run by the superuser to be able to use the UDP 500 port.
+If pluto is told to enable NAT-Traversal, then UDP port 4500 is also taken by pluto to listen on.</para>
+
+<para>Pluto supports different IPstacks on different operating systems. The option <option>--use-auto</option>,
+which is also the default, lets pluto find a stack automatically. This behaviour can be changed by explicitely
+setting the stack using <option>--use-klips</option>, <option>--use-netkey</option> or <option>--use-nostack</option>.
+The latter is meant for testing only - no actual IPsec connections will be loaded into the kernel.</para>
+
+<para>Pluto supports the NAT-Traversal drafts and the final standard, RFC 3947, if the <option>--nat_traversal</option>
+is specified. The allowed range behind the NAT routers is submitted using the <option>--virtual_private</option>
+option. See <citerefentry><refentrytitle>ipsec.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry> for the syntax.
+The option
+<option>--force_keepalive</option> forces the sending of the <emphasis remap='I'>keep-alive packets</emphasis>, which
+are send to prevent the NAT router from closing its port when there is not enough traffic on the IPsec connection. The
+<option>--keep_alive</option> sets the delay (in seconds) of these keep-alive packets. The newer NAT-T standards
+support <emphasis remap='I'>port floating</emphasis>, and Openswan enables this per default. It can be disabled using
+the <option>--disable_port_floating</option> option.
+</para>
+
+<para>Pluto supports the use of X.509 certificates and sends it certificate when needed. This can confuse IKE
+implementations that do not implement this, such as the old FreeS/WAN implementation. The <option>--nocrsend</option>
+prevents pluto from sending these. At startup, pluto loads all the X.509 related files from the directories
+<filename>/etc/ipsec.d/certs</filename>, <filename>/etc/ipsec.d/cacerts</filename>, <filename>/etc/ipsec.d/aacerts</filename>,
+<filename>/etc/ipsec.d/ocspcerts</filename>, <filename>/etc/ipsec.d/private</filename> and <filename>/etc/ipsec.d/crls</filename>.
+The <emphasis remap='I'>Certificate Revocation Lists</emphasis> can also be retrieved from an URL. The option
+<option>--crlcheckinterval</option> sets the time between checking for CRL expiration and issuing new fetch commands.
+The first attempt to update a CRL is started at <emphasis remap='I'>2*crlcheckinterval</emphasis> before the next update time.
+Pluto logs a warning if no valid CRL was loaded or obtained for a connection. If <option>--strictcrlpolicy</option> is given, the connection
+will be rejected until a valid CRL has been loaded. Pluto also has support for the <emphasis remap='I'>Online Certificate
+Store Protocol</emphasis> (OSCP) as defined in RFC 2560. The URL to the OSCP store can be given to pluto via the
+<option>--ocspuri</option> option.</para>
+
+<para>Pluto can use the BIND9 secure resolver, which means it has support for DNSSEC, using the BIND9
+<emphasis remap='I'>lwres {}</emphasis> interface, see 
+<citerefentry><refentrytitle>named.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>. Pluto can also
+use the old <emphasis remap='I'>adns</emphasis> interface if there is no BIND9 running with <emphasis remap='I'>lwres {}</emphasis>
+on the host, but then pluto cannot do any DNSSEC processing. Pluto forks and starts these DNS helpers in seperate
+children. The options <option>--lwdnsq</option> and <option>--adns</option> invoke these resolvers.</para>
+
+<para>Pluto can also use helper children to off-load cryptographic operations. This behavior can be fine tuned
+using the <option>--nhelpers</option>. Pluto will start <emphasis remap='I'>(n-1)</emphasis> of them, where
+<emphasis remap='I'>n</emphasis> is the number of CPU’s you have (including hypherthreaded CPU’s). A value
+of <emphasis remap='I'>0</emphasis> forces pluto to do all operations in the main process. A value of
+<emphasis remap='I'>-1</emphasis> tells pluto to perform the above calculation. Any other value forces the
+number to that amount.
+</para>
 
 <para><emphasis remap='B'>pluto</emphasis> attempts to create a lockfile with the name
 <filename>/var/run/pluto/pluto.pid</filename>.  If the lockfile cannot be created,
@@ -378,13 +634,14 @@ make sense anyway).</para>
 
 <para><emphasis remap='B'>pluto</emphasis> then forks and the parent exits.  This is the conventional
 &ldquo;daemon fork&rdquo;.  It can make debugging awkward, so there is an option
-to suppress this fork.</para>
+to suppress this fork. In certain configurations, pluto might also launch helper programs to
+assist with DNS queries or to offload cryptographic operations.</para>
 
 <para>All logging, including diagnostics, is sent to
 <citerefentry><refentrytitle>syslog</refentrytitle><manvolnum>3</manvolnum></citerefentry>
 with facility=authpriv;
 it decides where to put these messages (possibly in /var/log/secure).
-Since this too can make debugging awkward, there is an option to
+Since this too can make debugging awkward, the option <option>--stderrlog</option> is used to
 steer logging to stderr.</para>
 
 <para>If the <option>--perpeerlog</option> option is given, then pluto will open
@@ -403,7 +660,7 @@ in a subdirectory formed by turning all dot (.) [IPv4} or colon (:)
 about its internal state.  Furthermore, the terminology is needed to decipher
 some of the diagnostic messages.</para>
 
-<para>Pluto supports <emphasis remap='B'>food groups</emphasis>, and certificates. These are located in
+<para>Pluto supports <emphasis remap='B'>food groups</emphasis>, and X.509 certificates. These are located in
 /etc/ipsec.d, or another directory as specified by <option>--ipsecdir</option>.</para>
 
 <para>Pluto may core dump. It will normally do so into the current working
@@ -411,7 +668,9 @@ directory. The standard scripts have an option dumpdir=, which can set the
 current directory to determine where the core dump will go. In some cases, it
 may be more convenient to specify it on the command line using --coredir.
 A third method is to set the environment variable PLUTO_CORE_DIR. The command
-line argument takes precedence over the environment variable.</para>
+line argument takes precedence over the environment variable. The option plutorestartoncrash can be
+set to no to prevent multiple core files and a looping pluto process. Normally, when pluto crashes,
+another pluto process is started.</para>
 
 <para>At times it may be desireable to turn off all timed events in <emphasis remap='B'>pluto</emphasis>,
 this can be done with <option>--noretransmits</option>.</para>
@@ -445,6 +704,8 @@ done is specified by <emphasis remap='I'>ipsec eroute(8)</emphasis> commands.
 <emphasis remap='B'>pluto</emphasis> takes the responsibility of managing both of these special
 kinds of routes.</para>
 
+<para><emphasis remap='B'>NETKEY</emphasis> requires no special routing.</para>
+
 <para>Each connection may be routed, and must be while it has an IPsec SA.
 The connection specifies the characteristics of the route: the
 interface on this machine, the &ldquo;gateway&rdquo; (the nexthop),
@@ -453,7 +714,7 @@ connections may not be simultaneously routed if they are for the same
 peer's client subnet but use different interfaces or gateways
 (<emphasis remap='B'>pluto</emphasis>'s logic does not reflect any advanced routing capabilities).</para>
 
-<para>Each eroute is associated with the state object for an IPsec SA
+<para>On KLIPS, each eroute is associated with the state object for an IPsec SA
 because it has the particular characteristics of the SA.
 Two eroutes conflict if they specify the identical local
 and remote clients (unlike for routes, the local clients are
@@ -485,8 +746,8 @@ is taken over by the new eroute.  The incoming traffic will still be
 processed.  This characteristic is exploited during rekeying.</para>
 
 <para>All of these routing characteristics are expected change when
-<emphasis remap='B'>KLIPS</emphasis> is modified to use the firewall hooks in the LINUX 2.4.x
-kernel.</para>
+<emphasis remap='B'>KLIPS</emphasis> and <emphasis remap='B'>NETKEY</emphasis> merge into a single new
+stack. </para>
 </refsect2>
 
 <refsect2 id='using_whack'><title>Using Whack</title>
@@ -576,7 +837,7 @@ that would make the command ill-formed.</para>
   <varlistentry>
   <term><option>--name</option>&nbsp;<emphasis remap='I'>connection-name</emphasis></term>
   <listitem>
-<para></para> <!-- FIXME: blank list item -->
+<para>sets the name of the connection</para>
   </listitem>
   </varlistentry>
 </variablelist>
@@ -598,7 +859,7 @@ side of the connection, based on the IP numbers of its interfaces.</para>
 <para>the identity of the end.  Currently, this can be an IP address (specified
 as dotted quad or as a Fully Qualified Domain Name, which will be resolved
 immediately) or as a Fully Qualified Domain Name itself (prefixed by &ldquo;@&rdquo;
-to signify that it should not be resolved), or as user@FQDN, or as the
+to signify that it should not be resolved), or as user@FQDN, or an X.509 DN, or as the
 magic value <emphasis remap='B'>%myid</emphasis>.
 <emphasis remap='B'>Pluto</emphasis> only authenticates the identity, and does not use it for
 addressing, so, for example, an IP address need not be the one to which
@@ -613,7 +874,7 @@ or the system's hostname, if it is supported by a suitable TXT record in its for
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>--host</option>&nbsp;<emphasis remap='I'>ip&hyphen;address</emphasis></term>
+  <term><option>--host</option>&nbsp;<emphasis remap='I'>ip-address</emphasis></term>
   <term><option>--host</option>&nbsp;<emphasis remap='B'>%any</emphasis></term>
   <term><option>--host</option>&nbsp;<emphasis remap='B'>%opportunistic</emphasis></term>
   <listitem>
@@ -627,8 +888,58 @@ If <emphasis remap='B'>pluto</emphasis> is to opportunistically initiate the con
 use <emphasis remap='B'>%opportunistic</emphasis></para>
   </listitem>
   </varlistentry>
+
   <varlistentry>
-  <term><option>--ikeport</option>&nbsp;<emphasis remap='I'>port&hyphen;number</emphasis></term>
+  <term><option>--cert</option>&nbsp;<emphasis remap='I'>filename</emphasis></term>
+  <listitem>
+<para>The filename of the X.509 certificate. This must be the public key certificate only,
+and cannot be the PKCS#12 certificate file. See
+<citerefentry><refentrytitle>ipsec.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry> 
+on how to extrac this from the PKCS#12 file.
+</para>
+</listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--ca</option>&nbsp;<emphasis remap='I'>distinguished name</emphasis></term>
+  <listitem>
+<para>the X.509 Certificate Authority's Distinguished Name (DN) used as trust anchor for this
+connection. This is the CA certificate that signed the host certificate, as well as the
+certificate of the incoming client.</para>
+</listitem>
+  </varlistentry>
+
+
+  <varlistentry>
+  <term><option>--groups</option>&nbsp;<emphasis remap='I'>access control groups</emphasis></term>
+  <listitem>
+<para>the access control groups used.</para>
+</listitem>
+  </varlistentry>
+
+
+  <varlistentry>
+  <term><option>--sendcert</option>&nbsp;<emphasis remap='I'>yes|forced|always|ifasked|no|never</emphasis></term>
+  <listitem>
+<para>Wether or not to send our X.509 certificate credentials. This could potentially give an attacker too much
+information about which identities are allowed to connect to this host. The default is to use
+<emphasis remap='B'>ifasked</emphasis> when we are a Responder, and to use 
+<emphasis remap='B'>yes</emphasis> (which is the same as <emphasis remap='B'>forced</emphasis> and
+<emphasis remap='B'>always</emphasis> if we are an Initiator. The values <emphasis remap='B'>no</emphasis>
+and <emphasis remap='B'>never</emphasis> are equivalent. NOTE: "forced" does not seem to be actually
+implemented - do not use it.</para>
+</listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--certtype</option>&nbsp;<emphasis remap='I'>number</emphasis></term>
+  <listitem>
+<para>The X.509 certificate type number.</para>
+</listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--ikeport</option>&nbsp;<emphasis remap='I'>port-number</emphasis></term>
   <listitem>
 <para>the UDP port that IKE listens to on that host.  The default is 500.
 (<emphasis remap='B'>pluto</emphasis> on this machine uses the port specified by its own command
@@ -636,7 +947,7 @@ line argument, so this only affects where <emphasis remap='B'>pluto</emphasis> s
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>--nexthop</option>&nbsp;<emphasis remap='I'>ip&hyphen;address</emphasis></term>
+  <term><option>--nexthop</option>&nbsp;<emphasis remap='I'>ip-address</emphasis></term>
   <listitem>
 <para>where to route packets for the peer's client (presumably for the peer too,
 but it will not be used for this).
@@ -658,17 +969,91 @@ The subnet can be specified in any of the forms supported by <citerefentry><refe
 The general form is <emphasis remap='I'>address</emphasis>/<emphasis remap='I'>mask</emphasis>.  The <emphasis remap='I'>address</emphasis> can be either
 a domain name or four decimal numbers (specifying octets) separated by dots.
 The most convenient form of the <emphasis remap='I'>mask</emphasis> is a decimal integer, specifying
-the number of leading one bits in the mask.  So, for example, 10.0.0.0/8
+the number of leading one bits in the mask. So, for example, 10.0.0.0/8
 would specify the class A network &ldquo;Net 10&rdquo;.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>--dnskeyondemand]</option></term>
+  <term><option>--clientwithin</option>&nbsp;<emphasis remap='I'>subnet</emphasis></term>
+  <listitem>
+<para>This option is obsolete and will be removed. Do not use this option anymore.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--clientprotoport</option>&nbsp;<emphasis remap='I'>protocol/port</emphasis></term>
+  <listitem>
+<para>specify the Port Selectors (filters) to be used on this connection. 
+The general form is <emphasis remap='I'>protocol</emphasis>/<emphasis remap='I'>port</emphasis>.
+This is most commonly used to limit the connection to L2TP traffic only by specifying a value of 
+<emphasis remap='I'>17/1701</emphasis> for UDP (protocol 17) and port 1701. The notation
+<emphasis remap='I'>17/%any</emphasis> can be used to allow all UDP traffic and is needed for L2TP
+connections with Windows XP machines before Service Pack 2.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--srcip</option>&nbsp;<emphasis remap='I'>ip-address</emphasis></term>
+  <listitem>
+<para>the IP address for this host to use when transmitting a packet to the remote IPsec
+gateway itself. This option is used to make the gateway itself use its internal IP,
+which is part of the <option>--client subnet</option>. Otherwise it will use its
+nearest IP address, which is its public IP address, which is not part of the subnet-subnet
+IPsec tunnel, and would therefor not get encrypted.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--xauthserver</option></term>
+  <listitem>
+<para>this end is an xauthserver. It will lookup the xauth user name and password and verify
+this before allowing the connection to get established.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--xauthclient</option></term>
+  <listitem>
+<para>this end is an xauthclient. To bring this connection up with the <option>--initiate</option> also
+requires the client to specify <option>--xauthuser username</option> and <option>--xauthpass password </option></para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--xauthuser</option></term>
+  <listitem>
+<para>The username for the xauth authentication.This option is normally passed along by 
+<citerefentry><refentrytitle>ipsec_auto</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+when an xauth connection is started using <emphasis remap='I'>ipsec auto --up conn</emphasis>
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--xauthpass</option></term>
+  <listitem>
+<para>The password for the xauth authentication. This option is normally passed along by 
+<citerefentry><refentrytitle>ipsec_auto</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+when an xauth connection is started using <emphasis remap='I'>ipsec auto --up conn</emphasis>
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--modecfgserver</option></term>
+  <listitem>
+<para>this end is an Mode Config server</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--modecfgclient</option></term>
+  <listitem>
+<para>this end is an Mode Config client</para>
+  </listitem>
+  </varlistentry>
+
+
+  <varlistentry>
+  <term><option>--dnskeyondemand</option></term>
   <listitem>
 <para>specifies that when an RSA public key is needed to authenticate this
 host, and it isn't already known, fetch it from DNS.</para>
   </listitem>
   </varlistentry>
+
   <varlistentry>
   <term><option>--updown</option>&nbsp;<emphasis remap='I'>updown</emphasis></term>
   <listitem>
@@ -677,13 +1062,16 @@ brings up or down a connection.
 The script is used to build a shell command, so it may contain positional
 parameters, but ought not to have punctuation that would cause the
 resulting command to be ill-formed.
-The default is <emphasis remap='I'>ipsec _updown</emphasis>.</para>
+The default is <emphasis remap='I'>ipsec _updown</emphasis>. Pluto passes a dozen
+environment variables to the script about the connection involved.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
   <term><option>--to</option></term>
   <listitem>
-<para>separates the specification of the left and right ends of the connection.</para>
+<para>separates the specification of the left and right ends of the connection. Pluto tries
+to decide wether it is <emphasis remap='I'>left</emphasis> or <emphasis remap='I'>right</emphasis>
+based on the information provided on both sides of this option.</para>
   </listitem>
   </varlistentry>
 </variablelist>
@@ -691,16 +1079,6 @@ The default is <emphasis remap='I'>ipsec _updown</emphasis>.</para>
 <para>The potential connection description also specifies characteristics of
 rekeying and security.</para>
 <variablelist remap='TP'>
-  <varlistentry>
-  <term><option>--aggrmode</option></term>
-  <listitem>
-<para>This tunnel is using aggressive mode ISAKMP negotiation. The default is
-main mode. Aggressive mode is less secure than main mode as it reveals
-your identity to an eavesdropper, but is needed to support road warriors
-using PSK keys or to interoperate with other buggy implementations insisting
-on using aggressive mode.</para>
-  </listitem>
-  </varlistentry>
   <varlistentry>
   <term><option>--psk</option></term>
   <listitem>
@@ -797,10 +1175,97 @@ ISAKMP SA be deleted after the IPSEC SA is negotiated.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
+  <term><option>--pfsgroup</option>&nbsp;<emphasis remap='I'>modp-group</emphasis></term>
+  <listitem>
+<para>Sets the Diffie-Hellman group used. Currently the following values are supported:
+<emphasis remap='B'>modp1024</emphasis> (DHgroup 2), <emphasis remap='B'>modp1536</emphasis> (DHgroup 5), <emphasis remap='B'>modp2048</emphasis> (DHgroup 14),
+<emphasis remap='B'>modp3072</emphasis> (DHgroup 15), <emphasis remap='B'>modp4096</emphasis> (DHgroup 16), <emphasis remap='B'>modp6144</emphasis> (DHgroup 17),
+and <emphasis remap='B'>modp8192</emphasis> (DHgroup 18). It is possible to support the weak and broken 
+<emphasis remap='B'>modp768</emphasis> (DHgroup 1), but this requires a manual recompile and is strongly discouraged.
+</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
   <term><option>--disablearrivalcheck</option></term>
   <listitem>
 <para>If the connection is a tunnel, allow packets arriving through the tunnel
 to have any source and destination addresses.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--esp</option>&nbsp;<emphasis remap='I'>esp-algos</emphasis></term>
+  <listitem>
+<para>ESP encryption/authentication algorithm to be used for the connection (phase2 aka IPsec SA).
+The options must be suitable as a value of
+<citerefentry><refentrytitle>ipsec_spi</refentrytitle><manvolnum>8</manvolnum></citerefentry>. See
+<citerefentry><refentrytitle>ipsec.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry> for a
+detailed description of the algorithm format.
+</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--aggrmode</option></term>
+  <listitem>
+<para>This tunnel is using aggressive mode ISAKMP negotiation. The default is
+main mode. Aggressive mode is less secure than main mode as it reveals
+your identity to an eavesdropper, but is needed to support road warriors
+using PSK keys or to interoperate with other buggy implementations insisting
+on using aggressive mode.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--modecfgpull</option></term>
+  <listitem>
+<para>Pull the Mode Config network information from the peer. 
+</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--dpddelay</option>&nbsp;<emphasis remap='I'>seconds</emphasis></term>
+  <listitem>
+<para>Set the delay (in seconds) between Dead Peer Dectection (RFC 3706) keepalives
+(R_U_THERE, R_U_THERE_ACK) that are sent for this connection (default 30 seconds).
+</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--timeout</option>&nbsp;<emphasis remap='I'>seconds</emphasis></term>
+  <listitem>
+<para>Set the length of time (in seconds) we will idle without hearing
+either an R_U_THERE poll from our peer, or an R_U_THERE_ACK reply. After
+this period has elapsed with no response and no traffic, we will declare
+the peer dead, and remove the SA (default 120 seconds).</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--dpdaction</option>&nbsp;<emphasis remap='I'>action</emphasis></term>
+  <listitem>
+<para>When a DPD enabled peer is declared dead, what action should be
+taken. <emphasis remap='B'>hold</emphasis>(default) means the eroute will be put into <emphasis remap='I'>%hold</emphasis>
+status, while <emphasis remap='B'>clear</emphasis>means the eroute and SA with both be cleared. Clear is
+really only usefull on the server of a Road Warrior config. The action <emphasis remap='B'>restart</emphasis> is
+used on tunnels that need to be permanently up, and have static IP addresses.
+</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--forceencaps</option></term>
+  <listitem>
+<para>In some cases, for example when ESP packets are filtered or when
+a broken IPsec peer does not properly recognise NAT, it can be useful
+to force RFC-3948 encapsulation using this option. It causes pluto lie
+and tell the remote peer that RFC-3948 encapsulation (ESP in UDP port
+4500 packets) is required. For this option to have any effect, pluto
+must have been started with the <option>--nat_traversal</option> option.
+</para>
   </listitem>
   </varlistentry>
 </variablelist>
@@ -810,10 +1275,175 @@ or <option>--pfs</option> flags is given, the initiating the connection will
 only build an ISAKMP SA.  For such a connection, client subnets have
 no meaning and must not be specified.</para>
 
+<para>Apart from initiating directly using the <option>--initiate</option> option, a tunnel
+can be loaded with a different policy</para>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term><option>--initiateontraffic</option></term>
+  <listitem>
+<para>Only initiate the connection when we have traffic to send over the connection</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--pass</option></term>
+  <listitem>
+<para>Allow <emphasis remap='B'>unencrypted</emphasis> traffic to flow until the tunnel is initiated.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--drop</option></term>
+  <listitem>
+<para>Drop unencrypted traffic silently.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--reject</option></term>
+  <listitem>
+<para>Drop unencrypted traffic silently, but send an ICMP message notifying the other end.</para>
+  </listitem>
+  </varlistentry>
+</variablelist>
+
+<para>These options need to be documented</para>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term><option>--failnone</option></term>
+  <listitem>
+<para>to be documented</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--failpass</option></term>
+  <listitem>
+<para>to be documented</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--faildrop</option></term>
+  <listitem>
+<para>to be documented</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--failreject</option></term>
+  <listitem>
+<para>to be documented</para>
+  </listitem>
+  </varlistentry>
+</variablelist>
+
+
+<para><emphasis remap='B'>pluto</emphasis> supports various X.509 Certificate related options.</para>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term><option>--utc</option></term>
+  <listitem>
+<para>
+display all times in UTC.
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--listall</option></term>
+  <listitem>
+<para>
+lists all of the X.509 information known to pluto.
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--listpubkeys</option></term>
+  <listitem>
+<para>
+list all the public keys that have been successfully loaded.
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--listcerts</option></term>
+  <listitem>
+<para>
+list all the X.509 certificates that are currently loaded.
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--listcacerts</option></term>
+  <listitem>
+<para>list all the X.509 Certificate Agency (CA) certificates that are currently loaded.
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--listacerts</option></term>
+  <listitem>
+<para>list all the X.509 Attribute certificates that are currently loaded
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--listaacerts</option></term>
+  <listitem>
+<para></para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--ocspcerts</option></term>
+  <listitem>
+<para>list all of the X.509 certificates obtained via the <emphasis remap='I'>Online Certificate Store Protocol</emphasis> (OCSP)
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--listgroups</option></term>
+  <listitem>
+<para>
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--listcrls</option></term>
+  <listitem>
+<para>list all the loaded <emphasis remap='I'>Certificate Revocation Lists</emphasis> (CRLs)
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--listcards</option></term>
+  <listitem>
+<para>list all the smartcard and USB token devices.
+</para>
+  </listitem>
+  </varlistentry>
+</variablelist>
+
+<para>The corresponding options
+<option>--rereadsecrets</option>,
+<option>--rereadall</option>,
+<option>--rereadcacerts</option>,
+<option>--rereadacerts</option>,
+<option>--rereadaacerts</option>,
+<option>--rereadocspcerts</option>
+<option>--rereadcrls</option>,
+and <option>--purgeocsp</option>,
+ options reread this information from their respective sources, and
+purge all the online obtained information. The option <option>--listevents</option>
+lists all pending CRL fetch commands.  </para>
+
+
+
+
 <para>More work is needed to allow for flexible policies.  Currently
 policy is hardwired in the source file spdb.c.  The ISAKMP SAs may use
-Oakley groups MODP1024 and MODP1536; 3DES encryption; SHA1-96
-and MD5-96 authentication.  The IPsec SAs may use 3DES and
+Oakley groups MODP1024 and MODP1536; AES or 3DES encryption; SHA1-96
+and MD5-96 authentication.  The IPsec SAs may use AES or 3DES and
 MD5-96 or SHA1-96 for ESP, or just MD5-96 or SHA1-96 for AH.
 IPCOMP Compression is always Deflate.</para>
 <variablelist remap='TP'>
@@ -831,8 +1461,8 @@ This option will not affect what is accepted.
   <listitem>
 <para>how long <emphasis remap='B'>pluto</emphasis> will propose that an IPsec SA be allowed to live.
 The default is 28800 (eight hours) and the maximum is 86400 (one day).
-This option will not affect what is accepted.
-<emphasis remap='B'>pluto</emphasis> will reject proposals that exceed the maximum.</para>
+This option will not affect what is accepted. <emphasis remap='B'>pluto</emphasis> will reject
+proposals that exceed the maximum.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -893,26 +1523,24 @@ connection to delete.  Any routing in place for the connection is undone.</para>
   </varlistentry>
 </variablelist>
 
-<para>The delete form deletes a named connection description and any
-SAs established or negotiations initiated using this connection.
-Any routing in place for the connection is undone.</para>
 <variablelist remap='TP'>
   <varlistentry>
   <term><option>--delete</option></term>
   <term><option>--name</option>&nbsp;<emphasis remap='I'>connection-name</emphasis></term>
   <listitem>
-<para></para> <!-- FIXME: blank list item -->
+<para>The delete form deletes a named connection description and any
+SAs established or negotiations initiated using this connection.
+Any routing in place for the connection is undone.</para>
   </listitem>
   </varlistentry>
 </variablelist>
 
-<para>The deletestate form deletes the state object with the specified serial number.
-This is useful for selectively deleting instances of connections.</para>
 <variablelist remap='TP'>
   <varlistentry>
   <term><option>--deletestate</option>&nbsp;<emphasis remap='I'>state-number</emphasis></term>
   <listitem>
-<para></para> <!-- FIXME: blank list item -->
+<para>The deletestate form deletes the state object with the specified serial number.
+This is useful for selectively deleting instances of connections.</para>
   </listitem>
   </varlistentry>
 </variablelist>
@@ -928,31 +1556,29 @@ Pluto will initiate the connection.
 An explicit <emphasis remap='B'>whack</emphasis> route is not always needed: if it hasn't been
 done when an IPsec SA is being installed, one will be automatically attempted.</para>
 
-<para>When a routing is attempted for a connection, there must not already
-be a routing for a different connection with the same subnet but different
-interface or destination, or if
-there is, it must not be being used by an IPsec SA.  Otherwise the
-attempt will fail.</para>
 <variablelist remap='TP'>
   <varlistentry>
   <term><option>--route</option></term>
   <term><option>--name</option>&nbsp;<emphasis remap='I'>connection-name</emphasis></term>
   <listitem>
-<para></para> <!-- FIXME: blank list item -->
+<para>When a routing is attempted for a connection, there must not already
+be a routing for a different connection with the same subnet but different
+interface or destination, or if
+there is, it must not be being used by an IPsec SA.  Otherwise the
+attempt will fail.</para>
   </listitem>
   </varlistentry>
 </variablelist>
 
-<para>The unroute form of the <emphasis remap='B'>whack</emphasis> command tells <emphasis remap='B'>pluto</emphasis> to undo
-a routing.  <emphasis remap='B'>pluto</emphasis> will refuse if an IPsec SA is using the connection.
-If another connection is sharing the same routing, it will be left in place.
-Without a routing, packets will be sent without encryption or authentication.</para>
 <variablelist remap='TP'>
   <varlistentry>
   <term><option>--unroute</option></term>
   <term><option>--name</option>&nbsp;<emphasis remap='I'>connection-name</emphasis></term>
   <listitem>
-<para></para> <!-- FIXME: blank list item -->
+<para>The unroute form of the <emphasis remap='B'>whack</emphasis> command tells <emphasis remap='B'>pluto</emphasis> to undo
+a routing.  <emphasis remap='B'>pluto</emphasis> will refuse if an IPsec SA is using the connection.
+If another connection is sharing the same routing, it will be left in place.
+Without a routing, packets will be sent without encryption or authentication.</para>
   </listitem>
   </varlistentry>
 </variablelist>
@@ -962,17 +1588,13 @@ Without a routing, packets will be sent without encryption or authentication.</p
 Initiation requires a route that <option>--route</option> would provide;
 if none is in place at the time an IPsec SA is being installed,
 <emphasis remap='B'>pluto</emphasis> attempts to set one up.</para>
+
 <variablelist remap='TP'>
   <varlistentry>
   <term><option>--initiate</option></term>
   <term><option>--name</option>&nbsp;<emphasis remap='I'>connection-name</emphasis></term>
   <term><option>--asynchronous</option></term>
   <listitem>
-<para></para> <!-- FIXME: blank list item -->
-  </listitem>
-  </varlistentry>
-</variablelist>
-
 <para>The initiate form of the <emphasis remap='B'>whack</emphasis> command will relay back from
 <emphasis remap='B'>pluto</emphasis> status information via the UNIX domain socket (unless
 --asynchronous is specified).  The status information is meant to
@@ -980,6 +1602,10 @@ look a bit like that from <emphasis remap='B'>FTP</emphasis>.  Currently <emphas
 copies this to stderr.  When the request is finished (eg. the SAs are
 established or <emphasis remap='B'>pluto</emphasis> gives up), <emphasis remap='B'>pluto</emphasis> closes the channel,
 causing <emphasis remap='B'>whack</emphasis> to terminate.</para>
+  </listitem>
+  </varlistentry>
+</variablelist>
+
 
 <para>The opportunistic initiate form is mainly used for debugging.</para>
 <variablelist remap='TP'>
@@ -989,26 +1615,35 @@ causing <emphasis remap='B'>whack</emphasis> to terminate.</para>
   <term><option>--oppohere</option>&nbsp;<emphasis remap='I'>ip-address</emphasis></term>
   <term><option>--oppothere</option>&nbsp;<emphasis remap='I'>ip-address</emphasis></term>
   <listitem>
-<para></para> <!-- FIXME: blank list item -->
-  </listitem>
-  </varlistentry>
-</variablelist>
-
 <para>This will cause <emphasis remap='B'>pluto</emphasis> to attempt to opportunistically initiate a
 connection from here to the there, even if a previous attempt
 had been made.
 The whack log will show the progress of this attempt.</para>
+  </listitem>
+  </varlistentry>
+</variablelist>
 
-<para>The terminate form tells <emphasis remap='B'>pluto</emphasis> to delete any SAs that use the specified
-connection and to stop any negotiations in process.
-It does not prevent new negotiations from starting (the delete form
-has this effect).</para>
-<variablelist remap='TP'>
+<para>Ending an connection</para>
+
+<variablelist remap='tp'>
   <varlistentry>
   <term><option>--terminate</option></term>
-  <term><option>--name</option>&nbsp;<emphasis remap='I'>connection-name</emphasis></term>
+  <term><option>--name</option>&nbsp;<emphasis remap='i'>connection-name</emphasis></term>
   <listitem>
-<para></para> <!-- FIXME: blank list item -->
+<para>the terminate form tells <emphasis remap='b'>pluto</emphasis> to delete any sas that use the specified
+connection and to stop any negotiations in process.
+it does not prevent new negotiations from starting (the delete form
+has this effect).</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--crash</option>&nbsp;<emphasis remap='i'>ip-address</emphasis></term>
+  <listitem>
+<para>If the remote peer has crashed, and therefor did not notify us, we keep sending
+encrypted traffic, and rejecting all plaintext (non-IKE) traffic from that remote peer. The
+<option>--crash</option> brings our end down as well for all the known connections to the
+specified <emphasis remap='i'>ip-address</emphasis></para>
   </listitem>
   </varlistentry>
 </variablelist>
@@ -1326,6 +1961,58 @@ If the client is just the peer, this will be the peer's own IP address.</para>
 If the client is just the peer, this will be 255.255.255.255.</para>
   </listitem>
   </varlistentry>
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_MY_PROTOCOL</emphasis></term>
+  <listitem>
+   <para>lists the protocols allowed over this IPsec SA.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_PEER_PROTOCOL</emphasis></term>
+  <listitem>
+   <para>lists the protocols the peer allows over this IPsec SA.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_MY_PORT</emphasis></term>
+  <listitem>
+   <para>lists the ports allowed over this IPsec SA.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_PEER_PORT</emphasis></term>
+  <listitem>
+   <para>lists the ports the peer allows over this IPsec SA.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_MY_ID</emphasis></term>
+  <listitem>
+   <para>lists our id.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_PEER_ID</emphasis></term>
+  <listitem>
+   <para>Dlists our peer's id.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term><emphasis remap='B'>PLUTO_PEER_CA</emphasis></term>
+  <listitem>
+   <para>lists the peer's CA.
+   </para>
+  </listitem>
+ </varlistentry>
+
 </variablelist>
 
 <para>All output sent by the script to stderr or stdout is logged.  The
@@ -1543,8 +2230,8 @@ Quoting is generally needed to prevent the shell from doing the globbing.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>--adns</option> <replaceable>pathname</replaceable></term>
-  <term><option>--lwdnsq</option> <replaceable>pathname</replaceable></term>
+  <term><option>--adns</option> <replaceable>path to adns</replaceable></term>
+  <term><option>--lwdnsq</option> <replaceable>path to lwdnsq</replaceable></term>
   <listitem>
 <para>specifies where to find <emphasis remap='B'>pluto</emphasis>'s helper program for asynchronous DNS lookup.
 <emphasis remap='B'>pluto</emphasis> can be built to use one of two helper programs: <emphasis remap='B'>_pluto_adns</emphasis>
@@ -1560,12 +2247,6 @@ in the same directory as <emphasis remap='B'>pluto</emphasis>.</para>
 <para>disable &ldquo;daemon fork&rdquo; (default is to fork).  In addition, after the
 lock file and control socket are created, print the line &ldquo;Pluto
 initialized&rdquo; to standard out.</para>
-  </listitem>
-  </varlistentry>
-  <varlistentry>
-  <term><option>--noklips</option></term>
-  <listitem>
-<para>don't actually implement negotiated IPsec SAs</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -1589,7 +2270,7 @@ then regained at another IP address.</para>
 <para>For example</para>
 <variablelist remap='TP'>
   <varlistentry>
-  <term>pluto --secretsfile&nbsp;ipsec.secrets --ctlbase&nbsp;pluto.base --ikeport&nbsp;8500 --nofork --noklips --stderrlog</term>
+  <term>pluto --secretsfile&nbsp;ipsec.secrets --ctlbase&nbsp;pluto.base --ikeport&nbsp;8500 --nofork --use-nostack --stderrlog</term>
   <listitem>
 <para></para> <!-- FIXME: blank list item -->
   </listitem>
@@ -1608,6 +2289,18 @@ messages.</para>
 <para>When <emphasis remap='B'>pluto</emphasis> is invoked, it may be given arguments to specify
 which classes to output.  The current options are:</para>
 <variablelist remap='TP'>
+  <varlistentry>
+  <term><option>--debug-none</option></term>
+  <listitem>
+<para>disable all debugging</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>--debug-all</option></term>
+  <listitem>
+<para>enable all debugging</para>
+  </listitem>
+  </varlistentry>
   <varlistentry>
   <term><option>--debug-raw</option></term>
   <listitem>
@@ -1639,6 +2332,12 @@ which classes to output.  The current options are:</para>
   </listitem>
   </varlistentry>
   <varlistentry>
+  <term><option>--debug-controlmore</option></term>
+  <listitem>
+<para>show even more detailed <emphasis remap='B'>pluto</emphasis> decision making</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
   <term><option>--debug-lifecycle</option></term>
   <listitem>
 <para>[this option is temporary] log more detail of lifecycle of SAs</para>
@@ -1651,11 +2350,32 @@ which classes to output.  The current options are:</para>
   </listitem>
   </varlistentry>
   <varlistentry>
+  <term><option>--debug-pfkey</option></term>
+  <listitem>
+<para>show <emphasis remap='B'>pluto</emphasis>'s <emphasis remap='B'>PFKEY</emphasis>interface communication</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
   <term><option>--debug-dns</option></term>
   <listitem>
 <para>show <emphasis remap='B'>pluto</emphasis>'s interaction with <emphasis remap='B'>DNS</emphasis> for KEY and TXT records</para>
   </listitem>
   </varlistentry>
+
+  <varlistentry>
+  <term><option>--debug-dpd</option></term>
+  <listitem>
+<para>show <emphasis remap='B'>pluto</emphasis>'s <emphasis remap='B'>Dead Peer Detection</emphasis> handling </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><option>--debug-natt</option></term>
+  <listitem>
+<para>show <emphasis remap='B'>pluto</emphasis>'s <emphasis remap='B'>NAT Traversal</emphasis> handling </para>
+  </listitem>
+  </varlistentry>
+
   <varlistentry>
   <term><option>--debug-oppo</option></term>
   <listitem>
@@ -1663,21 +2383,9 @@ which classes to output.  The current options are:</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>--debug-all</option></term>
-  <listitem>
-<para>all of the above</para>
-  </listitem>
-  </varlistentry>
-  <varlistentry>
   <term><option>--debug-private</option></term>
   <listitem>
 <para>allow debugging output with private keys.</para>
-  </listitem>
-  </varlistentry>
-  <varlistentry>
-  <term><option>--debug-none</option></term>
-  <listitem>
-<para>none of the above</para>
   </listitem>
   </varlistentry>
 </variablelist>
@@ -1949,23 +2657,24 @@ and the mailing lists described there.</para>
 
 <refsect1 id='history'><title>HISTORY</title>
 <para>This code is released under the GPL terms.
-See the accompanying file COPYING-2.0 for more details.
+See the accompanying files COPYING and CREDITS for more details.
 The GPL does NOT apply to those pieces of code written by others
 which are included in this distribution, except as noted by the
 individual authors.</para>
 
 <para>This software was originally written
 for the FreeS/WAN project
-&lt;<ulink url='http://www.freeswan.org'>http://www.freeswan.org</ulink>&gt;
-by Angelos D. Keromytis
-(angelos@dsl.cis.upenn.edu), in May/June 1997, in Athens, Greece.
-Thanks go to John Ioannidis for his help.</para>
+&lt;<ulink url='http://www.freeswan.org'>http://www.freeswan.org</ulink>&gt;,
+founded by John Gilmore and managed by Hugh Daniel. It was written by
+Angelos D. Keromytis (angelos@dsl.cis.upenn.edu), in May/June 1997, in Athens,
+Greece.  Thanks go to John Ioannidis for his help.</para>
 
-<para>It was developed/maintained from 2000-2004 by by D. Hugh Redelmeier
+<para>It is currently maintained and extended by Xelerance Corporation, in
+Canada under the Openswan name. See CHANGES for details.</para>
+
+<para>FreeS/WAN was developed/maintained from 2000-2004 by D. Hugh Redelmeier
 (hugh@mimosa.com), in Canada.  The regulations of Greece and Canada
-allow us to make the code freely redistributable.</para>
-
-<para>It is currently maintained by Xelerance Corporation, in Canada.</para>
+allow the code to be freely redistributable.</para>
 
 <para>Kai Martius (admin@imib.med.tu-dresden.de) contributed the initial
 version of the code supporting PFS.</para>

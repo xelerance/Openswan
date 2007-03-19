@@ -141,6 +141,11 @@
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,18)
 #define HAVE_NEW_SKB_LINEARIZE
 #endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,20)
+/* skb->nfmark changed to skb->mark in 2.6.20 */
+#define nfmark mark
+#endif
  
 #if __KERNEL__
 #if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,0)

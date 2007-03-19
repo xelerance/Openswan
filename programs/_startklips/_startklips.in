@@ -12,7 +12,6 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _startklips.in,v 1.43.4.2 2005/11/24 23:08:05 ken Exp $
 
 me='ipsec _startklips'		# for messages
 
@@ -185,8 +184,11 @@ klipsinterface() {
 			echo "defaultroutephys=$phys"
 			echo "defaultroutevirt=$virt"
 			echo "defaultrouteaddr=$addr"
-			if test " $2" != " 0.0.0.0"
+			if test " $2" = " 0.0.0.0"
 			then
+				# this happens on people with ppp interfaces with 'route add default dev ppp0'.
+				echo "defaultroutenexthop=%direct"
+			else
 				echo "defaultroutenexthop=$2"
 			fi
 		) >>$info

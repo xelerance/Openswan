@@ -23,6 +23,11 @@
 </cmdsynopsis>
 </refsynopsisdiv>
 
+<refsect1 id='obsolete'><title>OBSOLETE</title>
+<para>Note that eroute is only supported on the classic KLIPS stack. It is
+not supported on any other stack and will be completely removed in future
+versions. A replacement command still needs to be designed</para>
+</refsect1>
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><filename>/proc/net/ipsec_spi</filename>
@@ -286,8 +291,11 @@ start.  It would be better to display them in seconds before now for
 human readability.</para>
 
 <!--  $Log: spi.5.xml,v $
-<!--  Revision 1.1  2004/05/26 17:50:59  ken
-<!--  Import XML version
+<!--  Revision 1.1.16.1  2006/10/26 20:53:59  paul
+<!--  fixed and regenerated spi man page. added note it will be obsolete.
+<!-- -->
+<!--  Revision 1.1  2004/05/26 17:50:59  ken -->
+<!--  Import XML version -->
 <!-- -->
 <!--  Revision 1.9  2002/04/24 07:35:39  mcr -->
 <!--  Moved from ./klips/utils/spi.5,v -->

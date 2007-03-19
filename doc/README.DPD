@@ -13,7 +13,7 @@ has elapsed.  If there still hasn't been any traffic or R_U_THERE_ACK
 packets received, the peer is declared to be dead, and the SA deleted, 
 and related eroute removed from the table.
 
-DPD support is tuneable on a per connection basis, using the dpdaction, 
+DPD support is tuneable on a per connection basis, using the dpdtimeout, 
 dpddelay and dpdaction directives.  See also the ipsec.conf man page for
 more information.
 
@@ -76,4 +76,3 @@ now we do, however we still log it.
 
 Thanks to Geoffrey Huang <ghuang@cisco.com> for debating this with me.
 
-# RCSID $Id: README.DPD,v 1.3 2004/12/04 04:36:46 ken Exp $

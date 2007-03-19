@@ -1820,6 +1820,7 @@ encrypt_message(pb_stream *pbs, struct state *st)
     DBG_cond_dump(DBG_CRYPT | DBG_RAW, "IV:\n"
 		  , st->st_new_iv 
 		  , st->st_new_iv_len); 
+    DBG(DBG_CRYPT, DBG_log("unpadded size is: %u", enc_len));
 
     /* Pad up to multiple of encryption blocksize.
      * See the description associated with the definition of
@@ -1837,7 +1838,8 @@ encrypt_message(pb_stream *pbs, struct state *st)
     }
 
     DBG(DBG_CRYPT
-	, DBG_log("encrypting using %s"
+	, DBG_log("encrypting %d using %s"
+		  , enc_len
 		  , enum_show(&oakley_enc_names, st->st_oakley.encrypt)));
 
     TCLCALLOUT_crypt("preEncrypt", st, pbs,sizeof(struct isakmp_hdr),enc_len);
