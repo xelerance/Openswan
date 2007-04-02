@@ -2486,6 +2486,8 @@ cannot_oppo(struct connection *c
 #ifdef KLIPS
     if (b->held)
     {
+	int failure_shunt = b->failure_shunt;
+
 	/* Replace HOLD with b->failure_shunt.
 	 * If no b->failure_shunt specified, use SPI_PASS -- THIS MAY CHANGE.
 	 */
@@ -2493,12 +2495,13 @@ cannot_oppo(struct connection *c
 	{
 	    DBG(DBG_OPPO, DBG_log("no explicit failure shunt for %s to %s; installing %%pass"
 				  , ocb, pcb));
+	    failure_shunt = SPI_PASS;
 	}
 
 	(void) replace_bare_shunt(&b->our_client, &b->peer_client
 	    , b->policy_prio
-	    , b->failure_shunt
-	    , b->failure_shunt != 0
+	    , failure_shunt
+	    , failure_shunt == SPI_PASS
 	    , b->transport_proto
 	    , ugh);
     }
