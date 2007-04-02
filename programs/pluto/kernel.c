@@ -798,6 +798,7 @@ raw_eroute(const ip_address *this_host
     char text_said[SATOT_BUF];
     int sport = ntohs(portof(&this_client->addr));
     int dport = ntohs(portof(&that_client->addr));
+    bool result;
 
     set_text_said(text_said, that_host, spi, proto);
 
@@ -813,12 +814,18 @@ raw_eroute(const ip_address *this_host
                     , text_said);
         });
 
-    return kernel_ops->raw_eroute(this_host, this_client
+    result = kernel_ops->raw_eroute(this_host, this_client
                                   , that_host, that_client
                                   , spi, proto
                                   , transport_proto
                                   , satype, proto_info
                                   , use_lifetime, op, text_said);
+    
+    if(result == FALSE || DBGP(DBG_CONTROL|DBG_KLIPS)) {
+	   DBG_log("raw_eroute result=%u\n", result);
+    }
+
+    return result;
 }
 
 /* test to see if %hold remains */
@@ -880,6 +887,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                 /* is there already a broad host-to-host bare shunt? */
                 if (bs_pp == NULL)
                     {
+			DBG(DBG_KLIPS, DBG_log("replacing broad host-to-host bare shunt"));
                         if (raw_eroute(null_host, &this_broad_client
                                        , null_host, &that_broad_client
                                        , htonl(shunt_spi), SA_INT
@@ -907,6 +915,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                 shunt_spi = SPI_HOLD;
             }
         
+	DBG(DBG_KLIPS, DBG_log("adding specific host-to-host bare shunt"));
         if (raw_eroute(null_host, &this_client, null_host, &that_client
                        , htonl(shunt_spi)
                        , SA_INT
@@ -928,8 +937,9 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
             }
     }
     else {
-        unsigned int op = repl? ERO_REPLACE : ERO_DELETE;
+        unsigned int op = repl ? ERO_REPLACE : ERO_DELETE;
         
+	DBG(DBG_KLIPS, DBG_log("%s specific host-to-host bare shunt", repl ? "replacing" : "removing"));
         if (raw_eroute(null_host, &this_client, null_host, &that_client
                        , htonl(shunt_spi), SA_INT
                        , 0 /* transport_proto */
