@@ -2400,8 +2400,8 @@ cannot_oppo(struct connection *c
     addrtot(&b->our_client, 0, ocb, sizeof(ocb));
 
     DBG(DBG_OPPO,
-	DBG_log("Can not opportunistically initiate for %s to %s: %s"
-		, ocb, pcb, ugh));
+	openswan_log("Can not opportunistically initiate for %s to %s: %s"
+		     , ocb, pcb, ugh));
 
     whack_log(RC_OPPOFAILURE
 	, "Can not opportunistically initiate for %s to %s: %s"
@@ -2747,8 +2747,8 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	     , ours, ourport, his, hisport, b->transport_proto
 	     , oppo_step_name[b->step], b->want);
     
-    if(DBGP(DBG_OPPO)) {
-	DBG_log("%s", demandbuf);
+    if(DBGP(DBG_OPPOINFO)) {
+	openswan_log("%s", demandbuf);
 	loggedit = TRUE;
     } else if(whack_log_fd != NULL_FD) {
 	whack_log(RC_COMMENT, "%s", demandbuf);
