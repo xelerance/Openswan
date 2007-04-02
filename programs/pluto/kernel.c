@@ -489,12 +489,14 @@ could_route(struct connection *c)
         return route_impossible;
     }
 
+#if 0
     /* if we don't know nexthop, we cannot route */
     if (isanyaddr(&c->spd.this.host_nexthop))
     {
         loglog(RC_ROUTE, "cannot route connection without knowing our nexthop");
         return route_impossible;
     }
+#endif
 
     /* if routing would affect IKE messages, reject */
     if (kern_interface != NO_KERNEL

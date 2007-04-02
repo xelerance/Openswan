@@ -2399,8 +2399,9 @@ cannot_oppo(struct connection *c
     addrtot(&b->peer_client, 0, pcb, sizeof(pcb));
     addrtot(&b->our_client, 0, ocb, sizeof(ocb));
 
-    openswan_log("Can not opportunistically initiate for %s to %s: %s"
-		 , ocb, pcb, ugh);
+    DBG(DBG_OPPO,
+	DBG_log("Can not opportunistically initiate for %s to %s: %s"
+		, ocb, pcb, ugh));
 
     whack_log(RC_OPPOFAILURE
 	, "Can not opportunistically initiate for %s to %s: %s"
@@ -3234,9 +3235,10 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 		    }
 #endif
 		    c->gw_info->key->last_tried_time = now();
-		    openswan_log("initiate on demand from %s:%d to %s:%d proto=%d state: %s because: %s"
-				 , ours, ourport, his, hisport, b->transport_proto
-				 , oppo_step_name[b->step], b->want);
+		    DBG(DBG_OPPO|DBG_CONTROL,
+			DBG_log("initiate on demand from %s:%d to %s:%d proto=%d state: %s because: %s"
+				, ours, ourport, his, hisport, b->transport_proto
+				, oppo_step_name[b->step], b->want));
 
 		    ipsecdoi_initiate(b->whackfd, c, c->policy, 1
 				      , SOS_NOBODY, pcim_local_crypto);
