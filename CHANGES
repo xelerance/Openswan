@@ -1,9 +1,25 @@
 Please see docs/KNOWN_BUGS file for more information
 
 #stable
+v2.5.10
+   Includes fixes for xmlto generation for _confread directory.
+
+v2.5.09
+   Minor fix to build process, updated CHANGES file.
+
+v2.5.08
+   Correct release.
+   Includes some changes to permit OE to work without nexthop,
+   however this seems to cause it to return an unreachable on 
+   the first message.
+
+v2.5.07	-dud due to release script error.
+
+v2.5.06
    set LANGUAGE, LANG and LC_ALL in setup script.
    change OE off by default note and scripts.
-
+   Merge of additional code from 2.4.
+   
 v2.5.05
    2.5.03 and 2.5.04 were not properly released, and 2.5.05 now
    is properly released and includes below items
