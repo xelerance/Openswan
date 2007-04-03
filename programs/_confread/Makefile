@@ -19,15 +19,16 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 EXTRA5MAN=ipsec.conf.5
 CONFFILES=ipsec.conf
 EXCONFILES=ipsec.win2k.conf
+SOURCEDIR=_confread
 
 CONFDSUBDIR=policies
 CONFDFILES=clear clear-or-private private-or-clear private block
 
-ipsec.conf.5.xml: d.ipsec.conf/*.xml d.ipsec.conf/order.txt
-	cat `cat d.ipsec.conf/order.txt` >ipsec.conf.5.xml
+include ${srcdir}../Makefile.program
+
+${srcdir}ipsec.conf.5.xml: $(wildcard d.ipsec.conf/*.xml) ${srcdir}d.ipsec.conf/order.txt
+	cd ${srcdir} && cat `cat ${srcdir}d.ipsec.conf/order.txt` >ipsec.conf.5.xml
 
 diff:	ipsec.conf.5.xml
 	diff -B -w -u ipsec.conf.5.xml ipsec.conf.5.xml-ref
-
-include ${srcdir}../Makefile.program
 

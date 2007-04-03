@@ -155,6 +155,7 @@ typedef enum {
 #define DBG_NATT        LELEM(11)       /* debugging of NAT-traversal */
 #define DBG_X509        LELEM(12)       /* X.509/pkix verify, cert retrival */
 #define DBG_DPD         LELEM(13)       /* DPD items */
+#define DBG_OPPOINFO    LELEM(14)       /* log various informational things about oppo/%trap-keying */
 #define DBG_PRIVATE	LELEM(20)	/* private information: DANGER! */
 
 #define IMPAIR0	21	/* first bit for IMPAIR_* */
@@ -345,63 +346,63 @@ enum certpolicy {
 extern const char *prettypolicy(lset_t policy);
 
 /* ISAKMP auth techniques (none means never negotiate) */
-#define POLICY_PSK           LELEM(0)
-#define POLICY_RSASIG        LELEM(1)
-
+enum pluto_policy {
+	POLICY_PSK     = LELEM(0), 
+	POLICY_RSASIG  = LELEM(1),
 #define POLICY_ISAKMP_SHIFT	0	/* log2(POLICY_PSK) */
 
 /* policies that affect ID types that are acceptable - RSA, PSK, XAUTH */
-#define POLICY_ID_AUTH_MASK	LRANGES(POLICY_PSK, POLICY_RSASIG)
+        POLICY_ID_AUTH_MASK=LRANGES(POLICY_PSK, POLICY_RSASIG), 
 
 /* policies that affect choices of proposal, note, does not include XAUTH */
 #define POLICY_ISAKMP(x,xs,xc)	(((x) & LRANGES(POLICY_PSK, POLICY_RSASIG)) + \
                                  ((xs)*4) + ((xc)*8))
 
 /* Quick Mode (IPSEC) attributes */
-#define POLICY_ENCRYPT       LELEM(2)	/* must be first of IPSEC policies */
-#define POLICY_AUTHENTICATE  LELEM(3)	/* must be second */
-#define POLICY_COMPRESS      LELEM(4)	/* must be third */
-#define POLICY_TUNNEL        LELEM(5)
-#define POLICY_PFS           LELEM(6)
-#define POLICY_DISABLEARRIVALCHECK  LELEM(7)	/* supress tunnel egress address checking */
+	POLICY_ENCRYPT = LELEM(2),	/* must be first of IPSEC policies */
+	POLICY_AUTHENTICATE=LELEM(3),	/* must be second */
+	POLICY_COMPRESS=LELEM(4),	/* must be third */
+	POLICY_TUNNEL  = LELEM(5),
+	POLICY_PFS     = LELEM(6),
+	POLICY_DISABLEARRIVALCHECK = LELEM(7),	/* supress tunnel egress address checking */
 
 #define POLICY_IPSEC_SHIFT	2	/* log2(POLICY_ENCRYPT) */
-#define POLICY_IPSEC_MASK	LRANGES(POLICY_ENCRYPT, POLICY_DISABLEARRIVALCHECK)
+	POLICY_IPSEC_MASK = LRANGES(POLICY_ENCRYPT, POLICY_DISABLEARRIVALCHECK),
 
 /* shunt attributes: what to do when routed without tunnel (2 bits) */
-#define POLICY_SHUNT_SHIFT	8	/* log2(POLICY_SHUNT_PASS) */
-#define POLICY_SHUNT_MASK	(03ul << POLICY_SHUNT_SHIFT)
-
-#define POLICY_SHUNT_TRAP	(0ul << POLICY_SHUNT_SHIFT) /* default: negotiate */
-#define POLICY_SHUNT_PASS	(1ul << POLICY_SHUNT_SHIFT)
-#define POLICY_SHUNT_DROP	(2ul << POLICY_SHUNT_SHIFT)
-#define POLICY_SHUNT_REJECT	(3ul << POLICY_SHUNT_SHIFT)
+	POLICY_SHUNT_SHIFT = 8,	/* log2(POLICY_SHUNT_PASS) */
+	POLICY_SHUNT_MASK  = (03ul << POLICY_SHUNT_SHIFT),
+	POLICY_SHUNT_TRAP  = (0ul << POLICY_SHUNT_SHIFT), /* default: negotiate */
+	POLICY_SHUNT_PASS  = (1ul << POLICY_SHUNT_SHIFT), 
+	POLICY_SHUNT_DROP  = (2ul << POLICY_SHUNT_SHIFT),
+	POLICY_SHUNT_REJECT=(3ul << POLICY_SHUNT_SHIFT),
 
 /* fail attributes: what to do with failed negotiation (2 bits) */
 
-#define POLICY_FAIL_SHIFT	10	/* log2(POLICY_FAIL_PASS) */
-#define POLICY_FAIL_MASK	(03ul << POLICY_FAIL_SHIFT)
+	POLICY_FAIL_SHIFT  = 10,	/* log2(POLICY_FAIL_PASS) */
+	POLICY_FAIL_MASK   = (03ul << POLICY_FAIL_SHIFT),
 
-#define POLICY_FAIL_NONE     (0ul << POLICY_FAIL_SHIFT) /* default */
-#define POLICY_FAIL_PASS     (1ul << POLICY_FAIL_SHIFT)
-#define POLICY_FAIL_DROP     (2ul << POLICY_FAIL_SHIFT)
-#define POLICY_FAIL_REJECT   (3ul << POLICY_FAIL_SHIFT)
+	POLICY_FAIL_NONE   = (0ul << POLICY_FAIL_SHIFT), /* default */
+	POLICY_FAIL_PASS   = (1ul << POLICY_FAIL_SHIFT),
+	POLICY_FAIL_DROP   = (2ul << POLICY_FAIL_SHIFT),
+	POLICY_FAIL_REJECT = (3ul << POLICY_FAIL_SHIFT),
 
 /* connection policy
  * Other policies could vary per state object.  These live in connection.
  */
-#define POLICY_DONT_REKEY   LELEM(12)   /* don't rekey state either Phase */
-#define POLICY_OPPO         LELEM(13)   /* is this opportunistic? */
-#define POLICY_GROUP        LELEM(14)   /* is this a group template? */
-#define POLICY_GROUTED      LELEM(15)   /* do we want this group routed? */
-#define POLICY_UP           LELEM(16)   /* do we want this up? */
-#define POLICY_XAUTH        LELEM(17)   /* do we offer XAUTH? */
-#define POLICY_MODECFG_PULL LELEM(18)   /* is modecfg pulled by client? */
-#define POLICY_AGGRESSIVE   LELEM(19)   /* do we do aggressive mode? */
-#define POLICY_PERHOST      LELEM(20)   /* should we specialize the policy to the host? */
-#define POLICY_SUBHOST      LELEM(21)   /* if the policy applies below the host level (TCP/UDP/SCTP ports) */
-#define POLICY_PERPROTO     LELEM(22)   /* should we specialize the policy to the protocol? */
-#define POLICY_OVERLAPIP    LELEM(23)   /* can two conns that have subnet=vhost: declare the same IP? */
+	POLICY_DONT_REKEY   = LELEM(12),   /* don't rekey state either Phase */
+	POLICY_OPPO         = LELEM(13),   /* is this opportunistic? */
+	POLICY_GROUP        = LELEM(14),   /* is this a group template? */
+	POLICY_GROUTED      = LELEM(15),   /* do we want this group routed? */
+	POLICY_UP           = LELEM(16),   /* do we want this up? */
+	POLICY_XAUTH        = LELEM(17),   /* do we offer XAUTH? */
+	POLICY_MODECFG_PULL = LELEM(18),   /* is modecfg pulled by client? */
+	POLICY_AGGRESSIVE   = LELEM(19),   /* do we do aggressive mode? */
+	POLICY_PERHOST      = LELEM(20),   /* should we specialize the policy to the host? */
+	POLICY_SUBHOST      = LELEM(21),   /* if the policy applies below the host level (TCP/UDP/SCTP ports), */
+	POLICY_PERPROTO     = LELEM(22),   /* should we specialize the policy to the protocol? */
+	POLICY_OVERLAPIP    = LELEM(23),   /* can two conns that have subnet=vhost: declare the same IP? */
+};
 
 /* Any IPsec policy?  If not, a connection description
  * is only for ISAKMP SA, not IPSEC SA.  (A pun, I admit.)

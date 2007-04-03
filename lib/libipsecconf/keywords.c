@@ -166,6 +166,7 @@ struct keyword_enum_value kw_plutodebug_values[]={
     { "klips",    DBG_KLIPS },
     { "dns",      DBG_DNS },
     { "oppo",     DBG_OPPO },
+    { "oppoinfo",    DBG_OPPOINFO },
     { "controlmore", DBG_CONTROLMORE },
     { "private",  DBG_PRIVATE },
     { "x509",     DBG_X509 },

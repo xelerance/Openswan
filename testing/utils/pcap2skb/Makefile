@@ -12,3 +12,6 @@ install:
 clean:
 	rm -f *.o pcap2skb
 
+install_file_list:
+	@true
+

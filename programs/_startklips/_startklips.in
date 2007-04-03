@@ -24,7 +24,7 @@ rpfilter2=rp_filter
 # %unchanged or setting (0, 1, or 2)
 rpfiltercontrol=0
 kamepfkey=/proc/net/pfkey
-ipsecversion=/proc/net/ipsec_version
+ipsecversion=/proc/net/ipsec/version
 moduleplace=/lib/modules/`uname -r`/kernel/net/ipsec
 bareversion=`uname -r | sed -e 's/\.nptl//' | sed -e 's/^\(2\.[0-9]\.[1-9][0-9]*-[1-9][0-9]*\(\.[0-9][0-9]*\)*\(\.x\)*\).*$/\1/'`
 moduleinstplace=/lib/modules/$bareversion/kernel/net/ipsec
@@ -300,11 +300,6 @@ then
     echo "FATAL ERROR: Both KLIPS and NETKEY IPsec code is present in kernel"
     exit
 fi
-if test ! -f $ipsecversion && ($klips || $mast) && modprobe -qn ipsec
-then
-    # statically compiled KLIPS/NETKEY not found; try to load the module
-    modprobe ipsec
-fi
 
 if test ! -f $ipsecversion && $netkey
 then
@@ -358,8 +353,13 @@ then
 		echo Trying VIA padlock driver, this may fail, which is okay.
 		modprobe -q padlock 2>/dev/null
 
-                modprobe -v ipsec
+		if test ! -f $ipsecversion && ($klips || $mast) && modprobe -qn ipsec
+		then
+                    # statically compiled KLIPS/NETKEY not found; try to load the module
+                    modprobe ipsec
+                fi
         fi
+
         if test ! -f $ipsecversion
         then
                 echo "kernel appears to lack IPsec support (neither CONFIG_KLIPS or CONFIG_NET_KEY are set)"

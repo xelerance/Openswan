@@ -828,6 +828,10 @@ pfkey_raw_eroute(const ip_address *this_host
 	return FALSE;
     }
 
+#if 0
+    DBG_log("klips pfkey op = %u / %u (ERO_DELETE=%u)", op, klips_op, ERO_DELETE);
+#endif
+
     if (op != ERO_DELETE)
     {
 	if (!(pfkey_build(pfkey_sa_build(&extensions[K_SADB_EXT_SA]

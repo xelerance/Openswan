@@ -1460,6 +1460,11 @@ add_connection(const struct whack_message *wm)
 	c->newest_ipsec_sa = SOS_NOBODY;
 	c->spd.eroute_owner = SOS_NOBODY;
 
+	/* force all oppo connections to have a client */
+	if (c->policy & POLICY_OPPO) {
+	    c->spd.that.has_client = TRUE;
+	}
+	    
 	if (c->policy & POLICY_GROUP)
 	{
 	    c->kind = CK_GROUP;
@@ -1738,12 +1743,16 @@ oppo_instantiate(struct connection *c
 		 , const ip_address *peer_client)
 {
     struct connection *d = instantiate(c, him, his_id);
+    char instbuf[512];
 
     DBG(DBG_CONTROL,
 	DBG_log("oppo instantiate d=%s from c=%s with c->routing %s, d->routing %s"
 		, d->name, c->name
 		, enum_name(&routing_story, c->spd.routing)
 		, enum_name(&routing_story, d->spd.routing)));
+    DBG(DBG_CONTROL,
+	DBG_log("new oppo instance: %s"
+		, (format_connection(instbuf, sizeof(instbuf), d, &d->spd), instbuf)));
 
     passert(d->spd.next == NULL);
 
@@ -1770,8 +1779,8 @@ oppo_instantiate(struct connection *c
      * fill in peer's client side.
      * If the client is the peer, excise the client from the connection.
      */
-    passert((d->policy & POLICY_OPPO)
-	&& addrinsubnet(peer_client, &d->spd.that.client));
+    passert(d->policy & POLICY_OPPO);
+    passert(addrinsubnet(peer_client, &d->spd.that.client));
     happy(addrtosubnet(peer_client, &d->spd.that.client));
 
     /* opportunistic connections do not use port selectors */
@@ -2390,8 +2399,9 @@ cannot_oppo(struct connection *c
     addrtot(&b->peer_client, 0, pcb, sizeof(pcb));
     addrtot(&b->our_client, 0, ocb, sizeof(ocb));
 
-    openswan_log("Can not opportunistically initiate for %s to %s: %s"
-		 , ocb, pcb, ugh);
+    DBG(DBG_OPPO,
+	openswan_log("Can not opportunistically initiate for %s to %s: %s"
+		     , ocb, pcb, ugh));
 
     whack_log(RC_OPPOFAILURE
 	, "Can not opportunistically initiate for %s to %s: %s"
@@ -2476,6 +2486,8 @@ cannot_oppo(struct connection *c
 #ifdef KLIPS
     if (b->held)
     {
+	int failure_shunt = b->failure_shunt;
+
 	/* Replace HOLD with b->failure_shunt.
 	 * If no b->failure_shunt specified, use SPI_PASS -- THIS MAY CHANGE.
 	 */
@@ -2483,12 +2495,13 @@ cannot_oppo(struct connection *c
 	{
 	    DBG(DBG_OPPO, DBG_log("no explicit failure shunt for %s to %s; installing %%pass"
 				  , ocb, pcb));
+	    failure_shunt = SPI_PASS;
 	}
 
 	(void) replace_bare_shunt(&b->our_client, &b->peer_client
 	    , b->policy_prio
-	    , b->failure_shunt
-	    , b->failure_shunt != 0
+	    , failure_shunt
+	    , failure_shunt == SPI_PASS
 	    , b->transport_proto
 	    , ugh);
     }
@@ -2737,8 +2750,8 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	     , ours, ourport, his, hisport, b->transport_proto
 	     , oppo_step_name[b->step], b->want);
     
-    if(DBGP(DBG_OPPO)) {
-	DBG_log("%s", demandbuf);
+    if(DBGP(DBG_OPPOINFO)) {
+	openswan_log("%s", demandbuf);
 	loggedit = TRUE;
     } else if(whack_log_fd != NULL_FD) {
 	whack_log(RC_COMMENT, "%s", demandbuf);
@@ -3225,10 +3238,10 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 		    }
 #endif
 		    c->gw_info->key->last_tried_time = now();
-		    DBG(DBG_CONTROL,
+		    DBG(DBG_OPPO|DBG_CONTROL,
 			DBG_log("initiate on demand from %s:%d to %s:%d proto=%d state: %s because: %s"
-				 , ours, ourport, his, hisport, b->transport_proto
-				 , oppo_step_name[b->step], b->want));
+				, ours, ourport, his, hisport, b->transport_proto
+				, oppo_step_name[b->step], b->want));
 
 		    ipsecdoi_initiate(b->whackfd, c, c->policy, 1
 				      , SOS_NOBODY, pcim_local_crypto);
