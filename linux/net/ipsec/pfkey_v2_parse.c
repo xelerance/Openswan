@@ -1323,7 +1323,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	while( (remain * IPSEC_PFKEYv2_ALIGN) >= sizeof(struct sadb_ext) ) {
 		/* Is there enough message left to support another extension header? */
 		if(remain < pfkey_ext->sadb_ext_len) {
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
+			ERROR(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
 				"remain %d less than ext len %d.\n", 
 				remain, pfkey_ext->sadb_ext_len);
@@ -1339,7 +1339,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		
 		/* Is the extension header type valid? */
 		if((pfkey_ext->sadb_ext_type > SADB_EXT_MAX) || (!pfkey_ext->sadb_ext_type)) {
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
+			ERROR(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
 				"ext type %d(%s) invalid, SADB_EXT_MAX=%d.\n", 
 				pfkey_ext->sadb_ext_type,
@@ -1351,7 +1351,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		/* Have we already seen this type of extension? */
 		if((extensions_seen & ( 1 << pfkey_ext->sadb_ext_type )) != 0)
 		{
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
+			ERROR(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
 				"ext type %d(%s) already seen.\n", 
 				pfkey_ext->sadb_ext_type,
@@ -1371,7 +1371,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		/* Is this type of extension permitted for this type of message? */
 		if(!(extensions_bitmaps[dir][EXT_BITS_PERM][pfkey_msg->sadb_msg_type] &
 		     1<<pfkey_ext->sadb_ext_type)) {
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
+			ERROR(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
 				"ext type %d(%s) not permitted, exts_perm_in=%08x, 1<<type=%08x\n", 
 				pfkey_ext->sadb_ext_type, 
@@ -1394,7 +1394,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		/* Parse the extension */
 		if((error =
 		    (*ext_parsers[pfkey_ext->sadb_ext_type]->parser)(pfkey_ext))) {
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
+			ERROR(PF_KEY_DEBUG_PARSE_PROBLEM,
 				"pfkey_msg_parse: "
 				"extension parsing for type %d(%s) failed with error %d.\n",
 				pfkey_ext->sadb_ext_type,
