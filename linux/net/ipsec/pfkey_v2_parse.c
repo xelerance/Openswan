@@ -1205,7 +1205,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	int error = 0;
 	int remain;
 	struct sadb_ext *pfkey_ext;
-	int extensions_seen = 0;
+	unsigned int extensions_seen = 0;
 	
 	DEBUGGING(PF_KEY_DEBUG_PARSE_STRUCT,
 		  "pfkey_msg_parse: "

@@ -1410,11 +1410,12 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 		extensions_bitmaps[dir][EXT_BITS_PERM][(*pfkey_msg)->sadb_msg_type],
 		extensions_seen,
 		extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type]);
-	
+
+#if 0	
 	if((extensions_seen &
 	    extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type]) !=
 	   extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type]) {
-		DEBUGGING(PF_KEY_DEBUG_BUILD,
+		ERROR(PF_KEY_DEBUG_BUILD,
 			"pfkey_msg_build: "
 			"required extensions missing:%08x.\n",
 			extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type] -
@@ -1422,6 +1423,7 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 			 extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type]) );
 		SENDERR(EINVAL);
 	}
+#endif
 
 #ifndef __KERNEL__	
 /*

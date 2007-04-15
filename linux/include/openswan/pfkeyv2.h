@@ -362,8 +362,7 @@ enum sadb_extension_t {
 	K_SADB_X_EXT_NAT_T_DPORT=   29,
 	K_SADB_X_EXT_NAT_T_OA=      30,
 	K_SADB_X_EXT_PLUMBIF=       31,
-	K_SADB_X_EXT_SAREF=         32,
-	K_SADB_EXT_MAX=             32,
+	K_SADB_EXT_MAX=             31,
 };
 
 
