@@ -1205,7 +1205,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	int error = 0;
 	int remain;
 	struct sadb_ext *pfkey_ext;
-	int extensions_seen = 0;
+	unsigned int extensions_seen = 0;
 	
 	DEBUGGING(PF_KEY_DEBUG_PARSE_STRUCT,
 		  "pfkey_msg_parse: "
@@ -1323,8 +1323,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	while( (remain * IPSEC_PFKEYv2_ALIGN) >= sizeof(struct sadb_ext) ) {
 		/* Is there enough message left to support another extension header? */
 		if(remain < pfkey_ext->sadb_ext_len) {
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-				"pfkey_msg_parse: "
+			ERROR("pfkey_msg_parse: "
 				"remain %d less than ext len %d.\n", 
 				remain, pfkey_ext->sadb_ext_len);
 			SENDERR(EINVAL);
@@ -1339,8 +1338,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		
 		/* Is the extension header type valid? */
 		if((pfkey_ext->sadb_ext_type > SADB_EXT_MAX) || (!pfkey_ext->sadb_ext_type)) {
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-				"pfkey_msg_parse: "
+			ERROR("pfkey_msg_parse: "
 				"ext type %d(%s) invalid, SADB_EXT_MAX=%d.\n", 
 				pfkey_ext->sadb_ext_type,
 				pfkey_v2_sadb_ext_string(pfkey_ext->sadb_ext_type),
@@ -1351,8 +1349,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		/* Have we already seen this type of extension? */
 		if((extensions_seen & ( 1 << pfkey_ext->sadb_ext_type )) != 0)
 		{
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-				"pfkey_msg_parse: "
+			ERROR("pfkey_msg_parse: "
 				"ext type %d(%s) already seen.\n", 
 				pfkey_ext->sadb_ext_type,
 				pfkey_v2_sadb_ext_string(pfkey_ext->sadb_ext_type));
@@ -1371,8 +1368,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		/* Is this type of extension permitted for this type of message? */
 		if(!(extensions_bitmaps[dir][EXT_BITS_PERM][pfkey_msg->sadb_msg_type] &
 		     1<<pfkey_ext->sadb_ext_type)) {
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-				"pfkey_msg_parse: "
+			ERROR("pfkey_msg_parse: "
 				"ext type %d(%s) not permitted, exts_perm_in=%08x, 1<<type=%08x\n", 
 				pfkey_ext->sadb_ext_type, 
 				pfkey_v2_sadb_ext_string(pfkey_ext->sadb_ext_type),
@@ -1394,8 +1390,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		/* Parse the extension */
 		if((error =
 		    (*ext_parsers[pfkey_ext->sadb_ext_type]->parser)(pfkey_ext))) {
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-				"pfkey_msg_parse: "
+			ERROR("pfkey_msg_parse: "
 				"extension parsing for type %d(%s) failed with error %d.\n",
 				pfkey_ext->sadb_ext_type,
 				pfkey_v2_sadb_ext_string(pfkey_ext->sadb_ext_type),
@@ -1450,8 +1445,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	if((extensions_seen &
 	    extensions_bitmaps[dir][EXT_BITS_REQ][pfkey_msg->sadb_msg_type]) !=
 	   extensions_bitmaps[dir][EXT_BITS_REQ][pfkey_msg->sadb_msg_type]) {
-		DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-			"pfkey_msg_parse: "
+		ERROR("pfkey_msg_parse: "
 			"required extensions missing:%08x.\n",
 			extensions_bitmaps[dir][EXT_BITS_REQ][pfkey_msg->sadb_msg_type] -
 			(extensions_seen &
@@ -1495,15 +1489,13 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 			if(!(((struct sadb_sa*)extensions[SADB_EXT_SA]) &&
 			     ((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_auth !=
 			     SADB_AALG_NONE)) {
-				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-					"pfkey_msg_parse: "
+				ERROR("pfkey_msg_parse: "
 					"auth alg is zero, must be non-zero for AH SAs.\n");
 				SENDERR(EINVAL);
 			}
 			if(((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_encrypt !=
 			   SADB_EALG_NONE) {
-				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-					"pfkey_msg_parse: "
+				ERROR("pfkey_msg_parse: "
 					"AH handed encalg=%d, must be zero.\n",
 					((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_encrypt);
 				SENDERR(EINVAL);
@@ -1513,8 +1505,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 			if(!(((struct sadb_sa*)extensions[SADB_EXT_SA]) &&
 			     ((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_encrypt !=
 			     SADB_EALG_NONE)) {
-				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-					"pfkey_msg_parse: "
+				ERROR("pfkey_msg_parse: "
 					"encrypt alg=%d is zero, must be non-zero for ESP=%d SAs.\n",
 					((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_encrypt,
 					((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype);
@@ -1524,8 +1515,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 			    SADB_EALG_NULL) &&
 			   (((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_auth ==
 			    SADB_AALG_NONE) ) {
-				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-					"pfkey_msg_parse: "
+				ERROR("pfkey_msg_parse: "
 					"ESP handed encNULL+authNONE, illegal combination.\n");
 				SENDERR(EINVAL);
 			}
@@ -1534,8 +1524,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 			if(!(((struct sadb_sa*)extensions[SADB_EXT_SA]) &&
 			     ((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_encrypt !=
 			     SADB_EALG_NONE)) {
-				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-					"pfkey_msg_parse: "
+				ERROR("pfkey_msg_parse: "
 					"encrypt alg=%d is zero, must be non-zero for COMP=%d SAs.\n",
 					((struct sadb_sa*)extensions[SADB_EXT_SA])->sadb_sa_encrypt,
 					((struct sadb_msg*)extensions[SADB_EXT_RESERVED])->sadb_msg_satype);
@@ -1543,8 +1532,7 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 			}
 			if(((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_auth !=
 			   SADB_AALG_NONE) {
-				DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-					"pfkey_msg_parse: "
+			        ERROR("pfkey_msg_parse: "
 					"COMP handed auth=%d, must be zero.\n",
 					((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_auth);
 				SENDERR(EINVAL);
@@ -1553,9 +1541,9 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 		default:
 			break;
 		}
+
 		if(ntohl(((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_spi) <= 255) {
-			DEBUGGING(PF_KEY_DEBUG_PARSE_PROBLEM,
-				"pfkey_msg_parse: "
+			ERROR("pfkey_msg_parse: "
 				"spi=%08x must be > 255.\n",
 				ntohl(((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_sa_spi));
 			SENDERR(EINVAL);
@@ -1563,8 +1551,8 @@ pfkey_msg_parse(struct sadb_msg *pfkey_msg,
 	default:	
 		break;
 	}
-errlab:
 
+errlab:
 	return error;
 }
 

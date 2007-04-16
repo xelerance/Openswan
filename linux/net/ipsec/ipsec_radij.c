@@ -90,7 +90,7 @@ ipsec_radijinit(void)
 int
 ipsec_radijcleanup(void)
 {
-	int error;
+	int error = 0;
 
 	spin_lock_bh(&eroute_lock);
 
