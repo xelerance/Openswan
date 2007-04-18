@@ -1,6 +1,10 @@
 Please see docs/KNOWN_BUGS file for more information
 
 #stable
+   Some fixes in KLIPS for "ipsec eroute --clear" bug. It is not clear
+   why this suddendly became an issue, or if it would have been an issue
+   previously, given the right compiler optimization.
+   
 v2.5.10
    Includes fixes for xmlto generation for _confread directory.
 
