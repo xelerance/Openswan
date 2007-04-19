@@ -30,6 +30,8 @@
 #ifndef _PLUTO_CRYPT_H
 #define _PLUTO_CRYPT_H
 
+#include "crypto.h"
+
 typedef unsigned int pcr_req_id;
 
 typedef struct wire_chunk {
@@ -121,7 +123,7 @@ typedef void (*crypto_req_func)(struct pluto_crypto_req_cont *
 				, err_t ugh);
 
 struct pluto_crypto_req_cont {
-  struct pluto_crypto_req_cont *pcrc_next;
+	TAILQ_ENTRY(pluto_crypto_req_cont) pcrc_list;
   struct pluto_crypto_req      *pcrc_pcr;
   so_serial_t                   pcrc_serialno;
   pcr_req_id                    pcrc_id;
