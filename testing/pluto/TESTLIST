@@ -373,7 +373,7 @@ umlplutotest    algo-pluto-01          good
 #
 # tests for usnig multiple subnets using conn aliases
 #
-multinet	multinet-01		good
-multinet	multinet-02		good
-multinet	multinet-03		good
-multinet	multinet-04		good
+umlXhost	multinet-01		good
+umlXhost	multinet-02		good
+umlXhost	multinet-03		good
+umlXhost	multinet-04		good

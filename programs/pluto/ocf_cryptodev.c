@@ -76,6 +76,9 @@
 #include "keys.h"
 #include "log.h"
 #include "ocf_cryptodev.h"
+#include "sysqueue.h"
+#include "pluto_crypt.h"
+#include "server.h"
 
 static u_int32_t cryptodev_asymfeat = 0;
 struct cryptodev_meth cryptodev;
