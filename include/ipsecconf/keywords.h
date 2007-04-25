@@ -168,7 +168,7 @@ enum keyword_valid {
 /* values keyexchange= */
 enum keyword_keyexchange {
     KE_NONE = 0,
-    KH_IKE  = 1,
+    KE_IKE  = 1,
 };
 
 /* values for auto={add,start,route,ignore} */
