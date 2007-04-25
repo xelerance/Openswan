@@ -268,7 +268,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"ca",             kv_conn|kv_auto|kv_leftright, kt_string, KSCF_CA,NOT_ENUM},
 
     /* these are conn statements which are not left/right */
-    {"auto",           kv_conn,         kt_enum,   KBF_AUTO,        &kw_auto_list},
+    {"auto",           kv_conn|kv_duplicateok, kt_enum,   KBF_AUTO,        &kw_auto_list},
     {"also",           kv_conn,         kt_appendstring, KSF_ALSO,NOT_ENUM},
     {"alsoflip",       kv_conn,         kt_string, KSF_ALSOFLIP,NOT_ENUM},
     {"type",           kv_conn,         kt_enum,   KBF_TYPE,        &kw_type_list},

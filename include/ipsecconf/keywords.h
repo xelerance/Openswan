@@ -161,6 +161,7 @@ enum keyword_valid {
     kv_alias  = LELEM(5),     /* is an alias for another keyword */
     kv_policy = LELEM(6),     /* is a policy affecting verb, processed specially */
     kv_processed = LELEM(7),  /* is processed, do not output literal string */
+    kv_duplicateok = LELEM(8),  /* it is okay if also= items are duplicated */
 };
 #define KV_CONTEXT_MASK (kv_config|kv_conn|kv_leftright)
 

@@ -556,6 +556,11 @@ bool translate_conn (struct starter_conn *conn
 	    {
 		if(!permitreplace)
 		{
+		    if(kw->keyword.keydef->validity & kv_duplicateok) {
+			/* be quiet about duplicate, but do not override it */
+			break;
+		    }
+			
 		    *error = _tmp_err;
 
 		    snprintf(_tmp_err, sizeof(_tmp_err)
