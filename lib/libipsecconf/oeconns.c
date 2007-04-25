@@ -111,7 +111,7 @@ struct oe_conn oe_packet_default = {
 			 },
 			 .maskbits=0
 		 },
-		.right.nexttype = KH_DEFAULTROUTE,
+		.right.nexttype = KH_NOTSET,
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
