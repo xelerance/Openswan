@@ -563,6 +563,7 @@ ipsec_tunnel_restore_hard_header(struct ipsec_xmit_state*ixs)
 enum ipsec_xmit_value
 ipsec_tunnel_send(struct ipsec_xmit_state*ixs)
 {
+	int err;
 #ifdef NETDEV_25
 	struct flowi fl;
 #endif
@@ -593,6 +594,7 @@ ipsec_tunnel_send(struct ipsec_xmit_state*ixs)
 			    ixs->route->u.dst.dev->name);
 		return IPSEC_XMIT_ROUTEERR;
 	}
+
 	if(ixs->dev == ixs->route->u.dst.dev) {
 		ip_rt_put(ixs->route);
 		/* This is recursion, drop it. */
@@ -605,6 +607,7 @@ ipsec_tunnel_send(struct ipsec_xmit_state*ixs)
 	}
 	dst_release(ixs->skb->dst);
 	ixs->skb->dst = &ixs->route->u.dst;
+
 	ixs->stats->tx_bytes += ixs->skb->len;
 	if(ixs->skb->len < ixs->skb->nh.raw - ixs->skb->data) {
 		ixs->stats->tx_errors++;
@@ -630,36 +633,26 @@ ipsec_tunnel_send(struct ipsec_xmit_state*ixs)
 		    "...done, calling ip_send() on device:%s\n",
 		    ixs->skb->dev ? ixs->skb->dev->name : "NULL");
 	KLIPS_IP_PRINT(debug_tunnel & DB_TN_XMIT, ixs->skb->nh.iph);
-#ifdef NETDEV_23	/* 2.4 kernels */
-	{
-		int err;
 
-		err = NF_HOOK(PF_INET, NF_IP_LOCAL_OUT, ixs->skb, NULL, ixs->route->u.dst.dev,
-			      ipsec_tunnel_xmit2);
-		if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {
-			if(net_ratelimit())
-				printk(KERN_ERR
-				       "klips_error:ipsec_xmit_send: "
-				       "ip_send() failed, err=%d\n", 
-				       -err);
-			ixs->stats->tx_errors++;
-			ixs->stats->tx_aborted_errors++;
-			ixs->skb = NULL;
-			return IPSEC_XMIT_IPSENDFAILURE;
-		}
+	if(ixs->pass) {
+		err = ipsec_tunnel_xmit2(ixs->skb);
+	} else {
+		err = NF_HOOK(PF_INET, NF_IP_LOCAL_OUT,
+			      ixs->skb, NULL, ixs->route->u.dst.dev,
+		      ipsec_tunnel_xmit2);
 	}
-#else /* NETDEV_23 */	/* 2.2 kernels */
-	ip_send(ixs->skb);
-#endif /* NETDEV_23 */
-#else /* NET_21 */	/* 2.0 kernels */
-	ixs->skb->arp = 1;
-	/* ISDN/ASYNC PPP from Matjaz Godec. */
-	/*	skb->protocol = htons(ETH_P_IP); */
-	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-		    "klips_debug:ipsec_xmit_send: "
-		    "...done, calling dev_queue_xmit() or ip_fragment().\n");
-	IP_SEND(ixs->skb, ixs->physdev);
-#endif /* NET_21 */
+	if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {
+		if(net_ratelimit())
+			printk(KERN_ERR
+			       "klips_error:ipsec_xmit_send: "
+			       "ip_send() failed, err=%d\n", 
+			       -err);
+		ixs->stats->tx_errors++;
+		ixs->stats->tx_aborted_errors++;
+		ixs->skb = NULL;
+		return IPSEC_XMIT_IPSENDFAILURE;
+	}
+
 	ixs->stats->tx_packets++;
 
 	ixs->skb = NULL;
