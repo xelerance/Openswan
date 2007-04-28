@@ -51,7 +51,7 @@ struct keyword_enum_values kw_failureshunt_list=
  * Values for keyexchange=
  */
 struct keyword_enum_value kw_keyexchange_values[]={
-    { "ike",  KH_IKE },
+    { "ike",  KE_IKE },
 };
 
 struct keyword_enum_values kw_keyexchange_list=
