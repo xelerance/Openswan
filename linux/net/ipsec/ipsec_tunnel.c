@@ -122,16 +122,15 @@ ipsec_tunnel_close(struct net_device *dev)
 	return 0;
 }
 
-#ifdef NETDEV_23
 static inline int ipsec_tunnel_xmit2(struct sk_buff *skb)
 {
+
 #ifdef NETDEV_25	/* 2.6 kernels */
 	return dst_output(skb);
 #else
 	return ip_send(skb);
 #endif
 }
-#endif /* NETDEV_23 */
 
 enum ipsec_xmit_value
 ipsec_tunnel_strip_hard_header(struct ipsec_xmit_state *ixs)
@@ -568,7 +567,6 @@ ipsec_tunnel_send(struct ipsec_xmit_state*ixs)
 	struct flowi fl;
 #endif
   
-#ifdef NET_21	/* 2.2 and 2.4 kernels */
 	/* new route/dst cache code from James Morris */
 	ixs->skb->dev = ixs->physdev;
 #ifdef NETDEV_25
