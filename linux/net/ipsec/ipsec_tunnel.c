@@ -620,8 +620,8 @@ ipsec_tunnel_send(struct ipsec_xmit_state*ixs)
 	__skb_pull(ixs->skb, ixs->skb->nh.raw - ixs->skb->data);
 #ifdef SKB_RESET_NFCT
 	if(!ixs->pass) {
-	  nf_conntrack_put(ixs->skb->nfct);
-	  ixs->skb->nfct = NULL;
+		nf_conntrack_put(ixs->skb->nfct);
+		ixs->skb->nfct = NULL;
 	}
 #if defined(CONFIG_NETFILTER_DEBUG) && defined(HAVE_SKB_NF_DEBUG)
 	ixs->skb->nf_debug = 0;
