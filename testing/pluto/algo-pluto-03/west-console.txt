@@ -57,8 +57,8 @@ ROUTING TABLE
 192.1.2.0/24 dev eth1  proto kernel  scope link  src 192.1.2.45 
 192.1.2.0/24 dev ipsec0  proto kernel  scope link  src 192.1.2.45 
 192.0.2.0/24 dev ipsec0  scope link 
-0.0.0.0/1 dev ipsec0  scope link 
-128.0.0.0/1 dev ipsec0  scope link 
+0.0.0.0/1 via 192.1.2.254 dev ipsec0 
+128.0.0.0/1 via 192.1.2.254 dev ipsec0 
 default via 192.1.2.254 dev eth1 
 west:~#
  ipsec auto --delete  westnet-eastnet-ah-sha1-pfs
@@ -88,8 +88,8 @@ ROUTING TABLE
 192.1.2.0/24 dev eth1  proto kernel  scope link  src 192.1.2.45 
 192.1.2.0/24 dev ipsec0  proto kernel  scope link  src 192.1.2.45 
 192.0.2.0/24 dev ipsec0  scope link 
-0.0.0.0/1 dev ipsec0  scope link 
-128.0.0.0/1 dev ipsec0  scope link 
+0.0.0.0/1 via 192.1.2.254 dev ipsec0 
+128.0.0.0/1 via 192.1.2.254 dev ipsec0 
 default via 192.1.2.254 dev eth1 
 west:~#
  echo done
@@ -115,7 +115,7 @@ ROUTING TABLE
 192.1.2.0/24 dev eth1  proto kernel  scope link  src 192.1.2.45 
 192.1.2.0/24 dev ipsec0  proto kernel  scope link  src 192.1.2.45 
 192.0.2.0/24 dev ipsec0  scope link 
-0.0.0.0/1 dev ipsec0  scope link 
-128.0.0.0/1 dev ipsec0  scope link 
+0.0.0.0/1 via 192.1.2.254 dev ipsec0 
+128.0.0.0/1 via 192.1.2.254 dev ipsec0 
 default via 192.1.2.254 dev eth1 
 
