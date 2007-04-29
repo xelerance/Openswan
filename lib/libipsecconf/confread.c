@@ -16,6 +16,7 @@
  */
 
 #include <stdlib.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
@@ -94,11 +95,35 @@ static void default_values (struct starter_config *cfg)
 	cfg->ctlbase = clone_str(CTL_FILE, "default base");
 }
 
-#define ERR_FOUND(args...) \
-	{ if (perr && (*perr==NULL)) { \
-		snprintf(_tmp_err, sizeof(_tmp_err)-1, ## args); \
-		*perr = xstrdup(_tmp_err); } \
-	err++; }
+/* format error, and append to string of errors */
+int error_append(char **perr, const char *fmt, ...) 
+{
+    va_list args;
+
+    if(perr) {
+	char *nerr; 
+	int len; 
+	
+	va_start(args, fmt);
+	vsnprintf(_tmp_err, sizeof(_tmp_err)-1, fmt, args);
+	va_end(args);
+	
+	len = 1+ strlen(_tmp_err) + (*perr ? strlen(*perr) : 0);	
+	nerr = xmalloc(len);
+	nerr[0]='\0';
+	if(*perr) strcpy(nerr, *perr); 
+	strcat(nerr, _tmp_err);			
+	
+	if(*perr) free(*perr);
+	*perr = nerr;
+
+	return 1;
+    }
+    return 0;
+}
+
+#define ERR_FOUND(args...) do { err += error_append(&err_str, ##args); } while(0)
+
 
 #define KW_POLICY_FLAG(val,fl) if(conn->options_set[val]) \
         { if(conn->options[val]) \
@@ -284,6 +309,7 @@ static int validate_end(struct starter_conn *conn_st
 			, bool left, err_t *perr)
 {
     err_t er = NULL;
+    char *err_str = NULL;
     const char *leftright=(left ? "left" : "right");
     int err=0;
 
@@ -470,6 +496,7 @@ static int validate_end(struct starter_conn *conn_st
     KSCF_MAX          = 19
 */
 
+    if(err) *perr = err_str;
     return err;
 }
 
