@@ -240,6 +240,7 @@ main(int argc, char *argv[])
 
     starter_use_log (verbose, 1, verbose ? 0 : 1);
 
+    err = NULL;  /* reset to no error */
     cfg = confread_load(configfile, &err, ctlbase);
     
     if(cfg == NULL) {
