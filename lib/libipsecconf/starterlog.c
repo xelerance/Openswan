@@ -40,10 +40,7 @@ static void do_print_info (int level, const char *buff)
 {
 	if ((!_debug) && (level == LOG_LEVEL_DEBUG)) return;
 	if (_console) {
-		if (level == LOG_LEVEL_ERR)
-			fprintf(stderr, "%s\n", buff);
-		else
-			fprintf(stdout, "%s\n", buff);
+		fprintf(stderr, "%s\n", buff);
 	}
 	if (_syslog) {
 		if (level == LOG_LEVEL_ERR)

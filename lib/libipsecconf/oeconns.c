@@ -167,7 +167,7 @@ struct oe_conn oe_clear = {
 			 },
 			 .maskbits=0
 		 },
-		.right.nexttype = KH_DEFAULTROUTE,
+		.right.nexttype = KH_NOTSET,
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
@@ -240,7 +240,7 @@ struct oe_conn oe_clear_or_private = {
 			 },
 			 .maskbits=0
 		 },
-		.right.nexttype = KH_DEFAULTROUTE,
+		.right.nexttype = KH_NOTSET,
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
@@ -313,7 +313,7 @@ struct oe_conn oe_private_or_clear = {
 			 },
 			 .maskbits=0
 		 },
-		.right.nexttype = KH_DEFAULTROUTE,
+		.right.nexttype = KH_NOTSET,
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
@@ -389,7 +389,7 @@ struct oe_conn oe_private = {
 			 },
 			 .maskbits=0
 		 },
-		.right.nexttype = KH_DEFAULTROUTE,
+		.right.nexttype = KH_NOTSET,
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
@@ -450,7 +450,7 @@ struct oe_conn oe_block = {
 			 },
 			 .maskbits=0
 		 },
-		.right.nexttype = KH_DEFAULTROUTE,
+		.right.nexttype = KH_NOTSET,
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
