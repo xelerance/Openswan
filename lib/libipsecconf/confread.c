@@ -395,16 +395,21 @@ static int validate_end(struct starter_conn *conn_st
     if(end->strings_set[KSCF_NEXTHOP])
     {
 	char *value = end->strings[KSCF_NEXTHOP];
-	
-	end->nexttype = KH_IPADDR;
 
-	er = ttoaddr(value, 0, AF_INET, &(end->nexthop));
-	if (er) ERR_FOUND("bad addr %snexthop=%s [%s]", leftright, value, er);
+	if(strcasecmp(value, "%defaultroute")==0) {
+	    end->nexttype=KH_DEFAULTROUTE;
+	} else {
+	    er = ttoaddr(value, 0, AF_INET, &(end->nexthop));
+	    if (er) ERR_FOUND("bad addr %snexthop=%s [%s]", leftright, value, er);
 
+	    end->nexttype = KH_IPADDR;
+	}
     } else {
+#if 0
 	if(conn_st->policy & POLICY_OPPO) {
 	    end->nexttype = KH_DEFAULTROUTE;
 	}
+#endif
 	anyaddr(AF_INET, &end->nexthop);
     }
 
