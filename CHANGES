@@ -3,6 +3,12 @@ Please see docs/KNOWN_BUGS file for more information
 #stable
    A fix to detect that XEN has been patched into the kernel, and set
    some of the 2.6.18 changes.
+   never log starter_log() things to stdout, they always go to stderr.
+   when a packet is passed through, do not call NF_IP_LOCAL_OUT, as it has already 
+	passed through the output hooks, and doing it again, confuses things
+	causing ip_route_me_harder() which creates a look, since it does the flow
+	lookup again. (This doesn't happen if the kernel hasn't got XFRM support)
+   
 
 v2.5.11
    Some fixes in KLIPS for "ipsec eroute --clear" bug. It is not clear

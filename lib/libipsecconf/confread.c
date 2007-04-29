@@ -75,12 +75,9 @@ static void default_values (struct starter_config *cfg)
 
 	cfg->conn_default.left.addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.left.addr);
-	cfg->conn_default.left.nexttype  = KH_NOTSET;
 	anyaddr(AF_INET, &cfg->conn_default.left.nexthop);
-
 	cfg->conn_default.right.addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.right.addr);
-	cfg->conn_default.right.nexttype = KH_NOTSET;
 	anyaddr(AF_INET, &cfg->conn_default.right.nexthop);
 
 	/* default is to look in DNS */
