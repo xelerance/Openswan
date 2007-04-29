@@ -1057,6 +1057,10 @@ int init_load_conn(struct starter_config *cfg
     
     connerr = load_conn (cfg, conn, cfgp, sconn, TRUE, perr);
 		
+    if(connerr != 0) {
+	starter_log(LOG_LEVEL_INFO, "while loading '%s': %s\n",
+		    sconn->name, *perr);
+    }
     if(connerr == 0)
     {
 	conn->state = STATE_LOADED;
