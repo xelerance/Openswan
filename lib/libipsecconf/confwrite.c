@@ -345,6 +345,11 @@ void confwrite_side(FILE *out,
 	fprintf(out, "\t%scert=%s\n", side, end->cert);
     }
 
+    if(!isanyaddr(&end->sourceip)) {
+	addrtot(&end->sourceip, 0, databuf, ADDRTOT_BUF);
+	fprintf(out, "\t%ssourceip=%s\n", side, databuf);
+    }
+
     confwrite_int(out, side,
 		  kv_conn|kv_leftright,
 		  keyingtype,
