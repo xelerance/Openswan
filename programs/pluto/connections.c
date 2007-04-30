@@ -4336,11 +4336,8 @@ fc_try(const struct connection *c
     )
 
     if(best == NULL) {
-	openswan_log("the peer proposed: %s:%d/%d -> %s:%d/%d"
-		     , s1, c->spd.this.protocol, c->spd.this.port
-		     , d1, c->spd.that.protocol, c->spd.that.port);
 	if(virtualwhy != NULL) {
-	    openswan_log("this was reject in a virtual connection policy because:");
+	    openswan_log("peer proposal was reject in a virtual connection policy because:");
 	    openswan_log("  %s", virtualwhy);
 	}
     }
