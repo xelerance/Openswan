@@ -8,6 +8,10 @@ Please see docs/KNOWN_BUGS file for more information
 	passed through the output hooks, and doing it again, confuses things
 	causing ip_route_me_harder() which creates a look, since it does the flow
 	lookup again. (This doesn't happen if the kernel hasn't got XFRM support)
+   fixed parsing of config file so that "version 2" is accepted.
+   fixed addconn to respect "right/left"sourceip=, new test case sourceip-01 
+   fixed processing of "first"/"last" packet for %trap/%hold conns in KLIPS, it now
+	properly forwards the packets when the packet is released.
    
 
 v2.5.11
