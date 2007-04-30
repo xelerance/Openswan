@@ -301,6 +301,10 @@ static void set_whack_end(struct starter_config *cfg
 		break;
 	}
 
+	if(!isanyaddr(&l->sourceip)) {
+		w->host_srcip = l->sourceip;
+	}
+
 	w->has_client = l->has_client;
 	if (l->has_client) {
 		w->client = l->subnet;
