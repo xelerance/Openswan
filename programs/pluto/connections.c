@@ -1463,6 +1463,7 @@ add_connection(const struct whack_message *wm)
 	/* force all oppo connections to have a client */
 	if (c->policy & POLICY_OPPO) {
 	    c->spd.that.has_client = TRUE;
+	    c->spd.that.client.maskbits=0;
 	}
 	    
 	if (c->policy & POLICY_GROUP)
