@@ -454,9 +454,9 @@ void confwrite_conn(FILE *out,
 	    }
 	    
 	    if(conn->policy & POLICY_DONT_REKEY) {
-		fprintf(out, "\tnorekey=yes\n");
+		fprintf(out, "\trekey=no  #duplicate?\n");
 	    } else {
-		fprintf(out, "\tnorekey=no\n");
+		fprintf(out, "\trekey=yes\n");
 	    }
 	    
 	    auth_policy=(conn->policy & POLICY_ID_AUTH_MASK);
