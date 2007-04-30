@@ -1814,7 +1814,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 
 	insert_state(st);	/* needs cookies, connection, and msgid */
 
-	/* copy hidden variables (possibly with changes */
+	/* copy hidden variables (possibly with changes) */
 	st->hidden_variables = hv;
 
 	/* copy the connection's
