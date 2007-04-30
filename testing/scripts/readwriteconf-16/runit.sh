@@ -10,5 +10,5 @@ args="--rootdir=${ROOTDIR}/testing/baseconfigs/all --config ${ROOTDIR}/testing/p
 echo "file $exe" >.gdbinit
 echo "set args $args " >>.gdbinit
 
-eval $exe $args 
+eval $exe $args 2>&1
 
