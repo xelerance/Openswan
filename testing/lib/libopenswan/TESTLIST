@@ -29,10 +29,10 @@ skiptest lib-subnetof incomplete
 skiptest lib-subnettoa incomplete
 skiptest lib-subnettot incomplete
 skiptest lib-subnettypeof incomplete
-skiptest lib-ttoaddr incomplete
-libtest ttodata good
-libtest ttosa   good
-libtest ttosubnet good
+libtest ttoaddr     good
+libtest ttodata     good
+libtest ttosa       good
+libtest ttosubnet   good
 skiptest lib-ttoul incomplete
 skiptest lib-ultoa incomplete
 skiptest lib-ultot incomplete

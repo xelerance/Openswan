@@ -42,11 +42,10 @@ static err_t getpiece(const char **, const char *, unsigned *);
  - ttoaddr - convert text name or dotted-decimal address to binary address
  */
 err_t				/* NULL for success, else string literal */
-ttoaddr(src, srclen, af, dst)
-const char *src;
-size_t srclen;			/* 0 means "apply strlen" */
-int af;				/* address family */
-ip_address *dst;
+ttoaddr(const char *src,
+	size_t srclen,		/* 0 means "apply strlen" */
+	int af,			/* address family */
+	ip_address *dst)
 {
 	err_t oops;
 #	define	HEXLEN	10	/* strlen("0x11223344") */
@@ -432,3 +431,100 @@ unsigned *retp;			/* return-value pointer */
 	*retp = ret;
 	return NULL;
 }
+
+err_t				/* NULL for success, else string literal */
+ttoaddr_name(const char *src,
+	     size_t srclen,	/* 0 means "apply strlen" */
+	     int af,		/* address family */
+	     ip_address *dst)
+{
+	
+}
+
+#ifdef TTOADDR_MAIN
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+void regress(void);
+
+int
+main(int argc, char *argv[])
+{
+	if (argc < 2) {
+		fprintf(stderr, "Usage: %s {addr|net/mask|begin...end|-r}\n",
+								argv[0]);
+		exit(2);
+	}
+
+	if (strcmp(argv[1], "-r") == 0) {
+		regress();
+		fprintf(stderr, "regress() returned?!?\n");
+		exit(1);
+	}
+	exit(0);
+}
+
+struct rtab {
+	char *input;
+        char  format;
+	char *output;			/* NULL means error expected */
+} rtab[] = {
+	{"1.2.3.0",		0, "1.2.3.0"},
+	{"1:2::3:4",            0, "1:2::3:4"},
+	{"1:2::3:4",           'Q', "1:2:0:0:0:0:3:4"},
+	{"1:2:0:0:3:4:0:0",     0, "1:2::3:4:0:0"},
+	{"1.2.3.4",            'r' , "4.3.2.1.IN-ADDR.ARPA."},
+ 	/*                                   0 1 2 3 4 5 6 7 8 9 a b c d e f 0 1 2 3 4 5 6 7 8 9 a b c d e f */
+	{"1:2::3:4",                   'r', "4.0.0.0.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.0.0.0.1.0.0.0.IP6.ARPA."},
+	 {NULL,				0, NULL}
+};
+
+void
+regress()
+{
+	struct rtab *r;
+	int status = 0;
+	ip_address a;
+	char in[100];
+	char buf[100];
+	const char *oops;
+	size_t n;
+
+	for (r = rtab; r->input != NULL; r++) {
+		strcpy(in, r->input);
+
+		/* convert it *to* internal format */
+		oops = ttoaddr(in, strlen(in), 0, &a);
+
+		/* now convert it back */
+
+		n = addrtot(&a, r->format, buf, sizeof(buf));
+
+		if (n == 0 && r->output == NULL)
+			{}		/* okay, error expected */
+		
+		else if (n == 0) {
+			printf("`%s' atoasr failed\n", r->input);
+			status = 1;
+			
+		} else if (r->output == NULL) {
+			printf("`%s' atoasr succeeded unexpectedly '%c'\n",
+							r->input, r->format);
+			status = 1;
+		} else {
+		  if (strcasecmp(r->output, buf) != 0) {
+		    printf("`%s' '%c' gave `%s', expected `%s'\n",
+			   r->input, r->format, buf, r->output);
+		    status = 1;
+		  }
+		}
+	}
+	exit(status);
+}
+
+#endif /* ADDRTOT_MAIN */
+
