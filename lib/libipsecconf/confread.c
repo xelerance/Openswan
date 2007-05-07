@@ -306,7 +306,9 @@ static int load_setup (struct starter_config *cfg
  */
 static int validate_end(struct starter_conn *conn_st
 			, struct starter_end *end
-			, bool left, err_t *perr)
+			, bool left
+			, bool resolvip
+			, err_t *perr)
 {
     err_t er = NULL;
     char *err_str = NULL;
@@ -340,8 +342,17 @@ static int validate_end(struct starter_conn *conn_st
     case KH_IPADDR:
 	assert(end->strings[KSCF_IP] != NULL);
 
-	er = ttoaddr(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
-	if (er) ERR_FOUND("bad addr %s=%s [%s]", leftright, end->strings[KNCF_IP], er);
+	if(resolvip) {
+	    er = ttoaddr(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
+	    if (er) ERR_FOUND("bad addr %s=%s [%s]", leftright, end->strings[KNCF_IP], er);
+	} else {
+	    er = ttoaddr_num(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
+	    if(er) {
+		/* XXX --- copy the string directly, and set the type to DNS */
+		end->addrtype = KH_IPHOSTNAME; 
+	    }
+	}
+
         if(end->id == NULL) {
             char idbuf[ADDRTOT_BUF];
             addrtot(&end->addr, 0, idbuf, sizeof(idbuf));
@@ -362,6 +373,10 @@ static int validate_end(struct starter_conn *conn_st
 	conn_st->policy |= POLICY_GROUP;
 	break;
 	
+    case KH_IPHOSTNAME:
+	/* generally, this doesn't show up at this stage */
+	break;
+
     case KH_DEFAULTROUTE:
 	break;
 
@@ -756,6 +771,7 @@ static int load_conn (struct starter_config *cfg
 		      , struct config_parsed *cfgp
 		      , struct section_list *sl
 		      , bool alsoprocessing
+		      , bool resolvip
 		      , err_t *perr)
 {
     unsigned int err;
@@ -961,8 +977,8 @@ static int load_conn (struct starter_config *cfg
 	conn->policy |= conn->options[KBF_PHASE2];
     }
 
-    err += validate_end(conn, &conn->left,  TRUE, perr);
-    err += validate_end(conn, &conn->right, FALSE,perr);
+    err += validate_end(conn, &conn->left,  TRUE,  resolvip, perr);
+    err += validate_end(conn, &conn->right, FALSE, resolvip, perr);
 
     if(conn->options_set[KBF_AUTO]) {
 	conn->desired_state = conn->options[KBF_AUTO];
@@ -1044,6 +1060,7 @@ int init_load_conn(struct starter_config *cfg
 		   , struct config_parsed *cfgp
 		   , struct section_list *sconn
 		   , bool alsoprocessing
+		   , bool resolvip
 		   , err_t *perr)
 {
     int connerr;
@@ -1055,7 +1072,7 @@ int init_load_conn(struct starter_config *cfg
 	return -1;
     }
     
-    connerr = load_conn (cfg, conn, cfgp, sconn, TRUE, perr);
+    connerr = load_conn (cfg, conn, cfgp, sconn, TRUE, resolvip, perr);
 		
     if(connerr != 0) {
 	starter_log(LOG_LEVEL_INFO, "while loading '%s': %s\n",
@@ -1069,7 +1086,10 @@ int init_load_conn(struct starter_config *cfg
 }
 
 
-struct starter_config *confread_load(const char *file, err_t *perr, char *ctlbase)
+struct starter_config *confread_load(const char *file
+				     , err_t *perr
+				     , bool resolvip
+				     , char *ctlbase)
 {
 	struct starter_config *cfg = NULL;
 	struct config_parsed *cfgp;
@@ -1115,12 +1135,12 @@ struct starter_config *confread_load(const char *file, err_t *perr, char *ctlbas
 	{
 		if (strcmp(sconn->name,"%default")==0) {
 			starter_log(LOG_LEVEL_DEBUG, "Loading default conn");
-			err += load_conn (cfg, &cfg->conn_default, cfgp, sconn, FALSE, perr);
+			err += load_conn (cfg, &cfg->conn_default, cfgp, sconn, FALSE, resolvip, perr);
 		}
 
 		if (strcmp(sconn->name,"%oedefault")==0) {
 			starter_log(LOG_LEVEL_DEBUG, "Loading oedefault conn");
-			err += load_conn (cfg, &cfg->conn_oedefault, cfgp, sconn, FALSE, perr);
+			err += load_conn (cfg, &cfg->conn_oedefault, cfgp, sconn, FALSE, resolvip, perr);
 			if(err == 0) {
 			    cfg->got_oedefault=TRUE;
 			}
@@ -1135,7 +1155,7 @@ struct starter_config *confread_load(const char *file, err_t *perr, char *ctlbas
 		if (strcmp(sconn->name,"%default")==0) continue;
 		if (strcmp(sconn->name,"%oedefault")==0) continue;
 
-		connerr = init_load_conn(cfg,cfgp,sconn,TRUE,perr);
+		connerr = init_load_conn(cfg, cfgp, sconn, TRUE, resolvip, perr);
 
 		if(connerr == -1) {
 		    parser_free_conf(cfgp);

@@ -263,6 +263,10 @@ static void set_whack_end(struct starter_config *cfg
 		w->host_addr = l->addr;
 		break;
 
+	case KH_IPHOSTNAME:
+		/* note: we always copy the name string below */
+		break;
+
 	case KH_OPPO:
 	case KH_GROUP:
 	case KH_OPPOGROUP:
@@ -278,6 +282,7 @@ static void set_whack_end(struct starter_config *cfg
 		printf("%s: do something with host case: %d\n", lr, l->addrtype);
 		break;
 	}
+	w->host_addr_name = l->strings[KSCF_IP];
 
 	switch(l->nexttype) {
 	case KH_DEFAULTROUTE:

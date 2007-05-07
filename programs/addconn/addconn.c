@@ -119,6 +119,7 @@ main(int argc, char *argv[])
     char *defaultroute = NULL;
     char *defaultnexthop = NULL;
     char *ctlbase = NULL;
+    bool resolvip = FALSE;
 
 #if 0
     /* efence settings */
@@ -240,8 +241,14 @@ main(int argc, char *argv[])
 
     starter_use_log (verbose, 1, verbose ? 0 : 1);
 
-    err = NULL;  /* reset to no error */
-    cfg = confread_load(configfile, &err, ctlbase);
+    err = NULL;      /* reset to no error */
+    resolvip=TRUE;   /* default to looking up names */
+
+    if(typeexport || listroute || liststart || search) {
+	/* but not if we have no use for them... might cause delays too! */
+	resolvip=FALSE;
+    }
+    cfg = confread_load(configfile, &err, resolvip, ctlbase);
     
     if(cfg == NULL) {
 	fprintf(stderr, "can not load config '%s': %s\n",

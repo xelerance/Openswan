@@ -278,6 +278,12 @@ void confwrite_side(FILE *out,
 	fprintf(out, "\t%s=%%group\n",side);   
 	break;
 
+    case KH_IPHOSTNAME:
+	if(end->strings_set[KSCF_IP]) {
+	    fprintf(out, "\t%s=%s\n",side, end->strings[KSCF_IP]);
+	}
+	break;
+
     case KH_IPADDR:
 	addrtot(&end->addr, 0, databuf, ADDRTOT_BUF);
 	fprintf(out, "\t%s=%s\n", side, databuf);
