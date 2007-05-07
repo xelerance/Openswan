@@ -1,6 +1,10 @@
 Please see docs/KNOWN_BUGS file for more information
 
 #stable
+v2.5.13
+   move DNS lookups from libipsecconf into pluto, where they belong. DNS lookups
+	are still only done once during conn load time, and are done synchronously.
+
 v2.5.12
    A fix to detect that XEN has been patched into the kernel, and set
    some of the 2.6.18 changes.

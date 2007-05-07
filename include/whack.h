@@ -71,7 +71,7 @@ struct whack_end {
     
     char *host_addr_name;       /* DNS name for host, of hosttype==IPHOSTNAME*/
                                 /* pluto will convert to IP address again,
-				 * if this is non-NULL
+				 * if this is non-NULL when conn fails.
 				 */
 };
 

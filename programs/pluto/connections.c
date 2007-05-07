@@ -346,6 +346,7 @@ delete_end(struct connection *c UNUSED, struct spd_route *sr UNUSED, struct end 
 #endif
     release_cert(e->cert);
     free_ietfAttrList(e->groups);
+    pfreeany(e->host_addr_name);
 }
 
 static void
@@ -671,7 +672,8 @@ format_end(char *buf
     const char *client_sep = "";
     char protoport[sizeof(":255/65535")];
     const char *host = NULL;
-    char host_space[ADDRTOT_BUF];
+    char host_space[ADDRTOT_BUF+256];
+    bool dohost_name = FALSE;
     char host_port[sizeof(":65535")];
     char host_id[IDTOA_BUF + 2];
     char hop[ADDRTOT_BUF];
@@ -687,20 +689,26 @@ format_end(char *buf
 
     if (isanyaddr(&this->host_addr))
     {
-	switch (policy & (POLICY_GROUP | POLICY_OPPO))
-	{
-	case POLICY_GROUP:
-	    host = "%group";
-	    break;
-	case POLICY_OPPO:
-	    host = "%opportunistic";
-	    break;
-	case POLICY_GROUP | POLICY_OPPO:
-	    host = "%opportunisticgroup";
-	    break;
-	default:
-	    host = "%any";
-	    break;
+	if(this->host_type == KH_IPHOSTNAME) {
+	    host=host_space;
+	    strcpy(host_space, "%dns");
+	    dohost_name=TRUE;
+	} else {
+	    switch (policy & (POLICY_GROUP | POLICY_OPPO))
+	    {
+	    case POLICY_GROUP:
+		host = "%group";
+		break;
+	    case POLICY_OPPO:
+		host = "%opportunistic";
+		break;
+	    case POLICY_GROUP | POLICY_OPPO:
+		host = "%opportunisticgroup";
+		break;
+	    default:
+		host = "%any";
+		break;
+	    }
 	}
     }
 
@@ -742,7 +750,17 @@ format_end(char *buf
     {
 	addrtot(&this->host_addr, 0, host_space, sizeof(host_space));
 	host = host_space;
+	dohost_name=TRUE;
     }
+
+    if(dohost_name) {
+    	if(this->host_addr_name) {
+	    strncat(host_space, "<", sizeof(host_space)-1);
+	    strncat(host_space, this->host_addr_name, sizeof(host_space)-1);
+	    strncat(host_space, ">", sizeof(host_space));
+	}
+    }
+
 
     host_port[0] = '\0';
     if (this->host_port_specific)
@@ -893,6 +911,10 @@ unshare_connection_end_strings(struct end *e)
 
     if(e->xauth_name) {
 	e->xauth_name = clone_str(e->xauth_name, "xauth name");
+    }
+
+    if(e->host_addr_name) {
+	e->host_addr_name = clone_str(e->host_addr_name, "host ip");
     }
 }    
 
@@ -1114,6 +1136,7 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
     /* the rest is simple copying of corresponding fields */
     dst->host_type = src->host_type;
     dst->host_addr = src->host_addr;
+    dst->host_addr_name = src->host_addr_name;
     dst->host_nexthop = src->host_nexthop;
     dst->host_srcip = src->host_srcip;
     dst->client = src->client;
@@ -1140,6 +1163,28 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
     }
 
     dst->sendcert =  src->sendcert;
+
+    /* see if we can resolve the DNS name right now */
+    /* XXX this is WRONG, we should do this asynchronously, as part of
+     * the normal loading process
+     */
+    {
+	err_t er;
+	
+	switch(dst->host_type) {
+	case KH_IPHOSTNAME:
+	    er = ttoaddr(dst->host_addr_name, 0, 0, &dst->host_addr);
+	    
+	    if(er) {
+		loglog(RC_COMMENT, "failed to convert '%s' at load time: %s"
+		       , dst->host_addr_name, er);
+	    }
+	    break;
+	    
+	default:
+	    break;
+	}
+    }
     
     return same_ca;
 }
@@ -1154,7 +1199,6 @@ setup_client_ports(struct spd_route *sr)
 	setportof(htons(sr->that.port), &sr->that.client.addr);
     }
 }
-
 
 static bool
 check_connection_end(const struct whack_end *this, const struct whack_end *that
@@ -1173,7 +1217,6 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	       , addrtypeof(&this->host_nexthop));
 	return FALSE;
     }
-
     /* this check actually prevents IPv4 in IPv6 and vv, so it will
      * have to go away at some point.
      */
@@ -1196,10 +1239,11 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	return FALSE;
     }
 
-    if (isanyaddr(&that->host_addr))
+    /* MAKE this more sane in the face of unresolved IP addresses */
+    if (that->host_type != KH_IPHOSTNAME && isanyaddr(&that->host_addr))
     {
 	/* other side is wildcard: we must check if other conditions met */
-	if (isanyaddr(&this->host_addr))
+	if (that->host_type != KH_IPHOSTNAME && isanyaddr(&this->host_addr))
 	{
 	    loglog(RC_ORIENT, "connection must specify host IP address for our side");
 	    return FALSE;

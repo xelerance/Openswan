@@ -146,6 +146,7 @@ struct end {
     struct id id;
 
     enum keyword_host host_type;
+    char  *host_addr_name;       /* string version from whack */
     ip_address
 	host_addr,
 	host_nexthop,

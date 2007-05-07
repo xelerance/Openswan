@@ -307,7 +307,7 @@ static int load_setup (struct starter_config *cfg
 static int validate_end(struct starter_conn *conn_st
 			, struct starter_end *end
 			, bool left
-			, bool resolvip
+			, bool resolvip UNUSED
 			, err_t *perr)
 {
     err_t er = NULL;
@@ -342,15 +342,10 @@ static int validate_end(struct starter_conn *conn_st
     case KH_IPADDR:
 	assert(end->strings[KSCF_IP] != NULL);
 
-	if(resolvip) {
-	    er = ttoaddr(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
-	    if (er) ERR_FOUND("bad addr %s=%s [%s]", leftright, end->strings[KNCF_IP], er);
-	} else {
-	    er = ttoaddr_num(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
-	    if(er) {
-		/* XXX --- copy the string directly, and set the type to DNS */
-		end->addrtype = KH_IPHOSTNAME; 
-	    }
+	er = ttoaddr_num(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
+	if(er) {
+	    /* not numeric, so set the type to the string type */
+	    end->addrtype = KH_IPHOSTNAME; 
 	}
 
         if(end->id == NULL) {

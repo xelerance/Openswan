@@ -265,6 +265,7 @@ static void set_whack_end(struct starter_config *cfg
 
 	case KH_IPHOSTNAME:
 		/* note: we always copy the name string below */
+		anyaddr(l->addr_family, &w->host_addr);
 		break;
 
 	case KH_OPPO:
