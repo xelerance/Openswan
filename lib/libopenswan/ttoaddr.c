@@ -42,22 +42,14 @@ static err_t getpiece(const char **, const char *, unsigned *);
  - ttoaddr - convert text name or dotted-decimal address to binary address
  */
 err_t				/* NULL for success, else string literal */
-ttoaddr(const char *src,
-	size_t srclen,		/* 0 means "apply strlen" */
-	int af,			/* address family */
-	ip_address *dst)
+ttoaddr_base(const char *src,
+	     size_t srclen,		/* 0 means "apply strlen" */
+	     int    af,			/* address family */
+	     int   *allnumericfailed,
+	     ip_address *dst)
 {
 	err_t oops;
 #	define	HEXLEN	10	/* strlen("0x11223344") */
-	int nultermd;
-
-	if (srclen == 0) {
-		srclen = strlen(src);
-		if (srclen == 0)
-			return "empty string";
-		nultermd = 1;
-	} else
-		nultermd = 0;	/* at least, not *known* to be terminated */
 
 	switch (af) {
 	case AF_INET:
@@ -95,7 +87,8 @@ ttoaddr(const char *src,
 			return oops;		/* probably meant as d-d */
 	}
 
-	return tryname(src, srclen, nultermd, af, dst);
+	*allnumericfailed=1;
+	return "not numeric";
 }
 
 /*
@@ -433,12 +426,57 @@ unsigned *retp;			/* return-value pointer */
 }
 
 err_t				/* NULL for success, else string literal */
-ttoaddr_name(const char *src,
-	     size_t srclen,	/* 0 means "apply strlen" */
-	     int af,		/* address family */
-	     ip_address *dst)
+ttoaddr(const char *src,
+	size_t srclen,	/* 0 means "apply strlen" */
+	int af,		/* address family */
+	ip_address *dst)
 {
+	int nultermd;
+	int numfailed=0;
+	err_t err;
+	if (srclen == 0) {
+		srclen = strlen(src);
+		if (srclen == 0)
+			return "empty string";
+		nultermd = 1;
+	} else
+		nultermd = 0;	/* at least, not *known* to be terminated */
+
+	err = ttoaddr_base(src, srclen, af, &numfailed, dst);
+
+	if(err && numfailed) {
+		err = NULL;
+		if(af == 0) {
+			err = tryname(src, srclen, nultermd, AF_INET6, dst);
+			if(err) {
+				af=AF_INET;
+			}
+		}
+		if(err) {
+			err = tryname(src, srclen, nultermd, af, dst);
+		}
+		return err;
+	}
 	
+	return err;
+}
+
+err_t				/* NULL for success, else string literal */
+ttoaddr_num(const char *src,
+	    size_t srclen,	/* 0 means "apply strlen" */
+	    int af,		/* address family */
+	    ip_address *dst)
+{
+	int numfailed=0;
+
+	if (srclen == 0) {
+		srclen = strlen(src);
+		if (srclen == 0)
+			return "empty string";
+	} 
+
+	err_t err = ttoaddr_base(src, srclen, af, &numfailed, dst);
+	return err;
 }
 
 #ifdef TTOADDR_MAIN
@@ -470,17 +508,21 @@ main(int argc, char *argv[])
 
 struct rtab {
 	char *input;
+	char  numonly;
         char  format;
+	char  expectfailure;
 	char *output;			/* NULL means error expected */
 } rtab[] = {
-	{"1.2.3.0",		0, "1.2.3.0"},
-	{"1:2::3:4",            0, "1:2::3:4"},
-	{"1:2::3:4",           'Q', "1:2:0:0:0:0:3:4"},
-	{"1:2:0:0:3:4:0:0",     0, "1:2::3:4:0:0"},
-	{"1.2.3.4",            'r' , "4.3.2.1.IN-ADDR.ARPA."},
+	{"1.2.3.0",	0,	0,   0,       "1.2.3.0"},
+	{"1:2::3:4",    0,      0,   0,       "1:2::3:4"},
+	{"1:2::3:4",    0,      'Q', 0,       "1:2:0:0:0:0:3:4"},
+	{"1:2:0:0:3:4:0:0", 0,    0, 0,       "1:2::3:4:0:0"},
+	{"www.openswan.org", 0,   0, 0,       "193.110.157.129"},
+	{"www.openswan.org", 1,   0, 'F',     "1.2.3.4"},
+	{"1.2.3.4",         0,   'r',0,       "4.3.2.1.IN-ADDR.ARPA."},
  	/*                                   0 1 2 3 4 5 6 7 8 9 a b c d e f 0 1 2 3 4 5 6 7 8 9 a b c d e f */
-	{"1:2::3:4",                   'r', "4.0.0.0.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.0.0.0.1.0.0.0.IP6.ARPA."},
-	 {NULL,				0, NULL}
+	{"1:2::3:4",        0,   'r',0,     "4.0.0.0.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.0.0.0.1.0.0.0.IP6.ARPA."},
+	{NULL,		    0,  0, 0, NULL}
 };
 
 void
@@ -493,12 +535,35 @@ regress()
 	char buf[100];
 	const char *oops;
 	size_t n;
+	int count=0;
 
 	for (r = rtab; r->input != NULL; r++) {
+		++count;
+		memset(&a, 0, sizeof(a));
 		strcpy(in, r->input);
 
-		/* convert it *to* internal format */
-		oops = ttoaddr(in, strlen(in), 0, &a);
+		if(r->numonly) {
+			/* convert it *to* internal format (no DNS) */
+			oops = ttoaddr_num(in, strlen(in), 0, &a);
+		} else {
+			/* convert it *to* internal format */
+			oops = ttoaddr(in, strlen(in), 0, &a);
+		}
+
+		if(r->expectfailure && oops==NULL) {
+			printf("%u: '%s' expected failure, but it succeeded\n",
+			       count, r->input);
+			status++;
+			continue;
+		}
+			
+		if(oops) {
+			if(r->expectfailure) continue;
+			printf("%u: '%s' failed to parse: %s\n",
+			       count, r->input, oops);
+			status++;;
+			continue;
+		}
 
 		/* now convert it back */
 
@@ -509,17 +574,17 @@ regress()
 		
 		else if (n == 0) {
 			printf("`%s' atoasr failed\n", r->input);
-			status = 1;
+			status++;
 			
 		} else if (r->output == NULL) {
 			printf("`%s' atoasr succeeded unexpectedly '%c'\n",
 							r->input, r->format);
-			status = 1;
+			status++;
 		} else {
 		  if (strcasecmp(r->output, buf) != 0) {
-		    printf("`%s' '%c' gave `%s', expected `%s'\n",
+		    printf("`%s' '%u' gave `%s', expected `%s'\n",
 			   r->input, r->format, buf, r->output);
-		    status = 1;
+		    status++;
 		  }
 		}
 	}
