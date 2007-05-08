@@ -245,6 +245,20 @@ case "$1" in
 	fi
 
 
+	if $netkey
+	then
+		perform ipsec _startnetkey \
+				--info $info \
+				--debug "\"$IPSECklipsdebug\"" \
+				--omtu "\"$IPSECoverridemtu\"" \
+				--fragicmp "\"$IPSECfragicmp\"" \
+				--hidetos "\"$IPSEChidetos\"" \
+				--rpfilter "\"$IPSECrp_filter\"" \
+				--log "\"$IPSECsyslog\"" \
+				$IPSECinterfaces "||" \
+			"{" rm -f $lock ";" exit 1 ";" "}"
+	fi
+
 	if $klips
 	then
 		# here we go
