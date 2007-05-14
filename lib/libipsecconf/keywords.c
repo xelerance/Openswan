@@ -217,6 +217,22 @@ struct keyword_enum_value kw_phase2types_values[]={
 struct keyword_enum_values kw_phase2types_list=
     { kw_phase2types_values, sizeof(kw_phase2types_values)/sizeof(struct keyword_enum_value)};
 
+/*
+ * Values for {left/right}sendcert={never,sendifasked,always,forcedtype}
+ */
+struct keyword_enum_value kw_sendcert_values[]={
+    { "never",        cert_neversend },
+    { "sendifasked",  cert_sendifasked }, 
+    { "alwayssend",   cert_alwayssend },
+    { "always",       cert_alwayssend },
+    { "forcedtype",   cert_forcedtype },
+};
+
+struct keyword_enum_values kw_sendcert_list=
+    { kw_sendcert_values, sizeof(kw_sendcert_values)/sizeof(struct keyword_enum_value)};
+
+
+/* MASTER KEYWORD LIST */
 struct keyword_def ipsec_conf_keywords_v2[]={
     {"interfaces",     kv_config, kt_string,    KSF_INTERFACES,NOT_ENUM},
     {"forwardcontrol", kv_config, kt_bool,      KBF_FORWARDCONTROL,NOT_ENUM},
@@ -265,6 +281,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"rsasigkey2",     kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY2, &kw_rsasigkey_list},
     {"spibase",        kv_conn|kv_auto|kv_leftright, kt_number, KNCF_SPIBASE,NOT_ENUM},
     {"cert",           kv_conn|kv_auto|kv_leftright, kt_filename, KSCF_CERT,NOT_ENUM},
+    {"sendcert",       kv_conn|kv_auto|kv_leftright, kt_enum,   KNCF_SENDCERT, &kw_sendcert_list},
     {"ca",             kv_conn|kv_auto|kv_leftright, kt_string, KSCF_CA,NOT_ENUM},
 
     /* these are conn statements which are not left/right */

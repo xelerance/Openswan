@@ -145,6 +145,7 @@ enum keyword_numeric_conn_field {
     KNCF_MODECONFIGCLIENT = 10,
     KNCF_SPI,
     KNCF_ESPREPLAYWINDOW,
+    KNCF_SENDCERT,
     KNCF_MAX              
 };
 
