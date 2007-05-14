@@ -322,8 +322,13 @@ static void set_whack_end(struct starter_config *cfg
 	w->host_port = IKE_UDP_PORT;
 	w->has_client_wildcard = l->has_client_wildcard;
 	w->has_port_wildcard   = l->has_port_wildcard;
+
 	w->cert = l->cert;
 	w->ca   = l->ca;
+	if(l->options_set[KNCF_SENDCERT]) {
+		w->sendcert = l->options[KNCF_SENDCERT];
+	}
+
 	w->updown = l->updown;
 	w->virt   = NULL;
 	w->protocol = l->protocol;
