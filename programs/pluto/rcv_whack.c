@@ -125,6 +125,75 @@ key_add_merge(struct key_add_common *oc, const struct id *keyid)
     }
 }
 
+static char whackrecordname[PATH_MAX];
+static FILE *whackrecordfile=NULL;
+
+/*
+ * writes out 64-bit time, even though we actually
+ * only have 32-bit time here. Assumes that time will
+ * be written out in big-endian format, with MSB word
+ * being first.
+ *
+ */
+static bool writewhackrecord(char *buf, int buflen)
+{
+    u_int32_t header[3];
+    time_t n;
+
+    /* round up buffer length */
+    int abuflen = (buflen + 3) & ~0x3;
+
+    /* bail if we aren't writing anything */
+    if(whackrecordfile == NULL) return TRUE;
+
+    header[0]=abuflen + 12;
+    header[1]=0;
+    time(&n);
+    header[2]=n;
+    
+    fwrite(header, 12, 1, whackrecordfile);
+    fwrite(buf, abuflen, 1, whackrecordfile);
+    
+    return TRUE;
+}
+
+static bool openwhackrecordfile(char *file)
+{
+    char when[256];
+    char FQDN[HOST_NAME_MAX + 1];
+    u_int32_t magic;
+    struct tm tm1, *tm;
+    time_t n;
+    
+    strcpy(FQDN, "unknown host");
+    gethostname(FQDN, sizeof(FQDN));
+
+    strncpy(whackrecordname, file, sizeof(whackrecordname));
+    whackrecordfile = fopen(whackrecordname, "w");
+    if(whackrecordfile==NULL) {
+	openswan_log("Failed to open whack record file: '%s'\n"
+		     , whackrecordname);
+	return FALSE;
+    }
+
+    time(&n);
+    tm = localtime_r(&n, &tm1);
+    strftime(when, sizeof(when), "%F %T", tm);
+    
+    fprintf(whackrecordfile, "#!-pluto-whack-file- recorded on %s on %s\n",
+	    FQDN, when);
+
+    magic = WHACK_BASIC_MAGIC;
+    writewhackrecord((char *)&magic, 4);
+    
+    DBG(DBG_CONTROL
+	, DBG_log("started recording whack messages to %s\n"
+		  , whackrecordname));
+    return TRUE;
+}
+    
+
+
 static void
 key_add_continue(struct adns_continuation *ac, err_t ugh)
 {
@@ -239,7 +308,7 @@ key_add_request(const struct whack_message *msg)
 void
 whack_handle(int whackctlfd)
 {
-    struct whack_message msg;
+    struct whack_message msg, msg_saved;
     struct sockaddr_un whackaddr;
     unsigned int whackaddrlen = sizeof(whackaddr);
     int whackfd = accept(whackctlfd, (struct sockaddr *)&whackaddr, &whackaddrlen);
@@ -270,6 +339,8 @@ whack_handle(int whackctlfd)
     }
 
     whack_log_fd = whackfd;
+
+    msg_saved = msg;
 
     /* sanity check message */
     {
@@ -325,37 +396,75 @@ whack_handle(int whackctlfd)
 	}
     }
 
+    /* dump record if necessary */
+    writewhackrecord((char *)&msg_saved, n);
+
+
     //DBG_log("whack_crash %d\n", msg.whack_crash);
 
     if (msg.whack_options)
     {
+	switch(msg.opt_set) {
+	case WHACK_ADJUSTOPTIONS:
 #ifdef DEBUG
-	if (msg.name == NULL)
-	{
-	    /* we do a two-step so that if either old or new would
-	     * cause the message to print, it will be printed.
-	     */
-	    set_debugging(cur_debugging | msg.debugging);
-	    DBG(DBG_CONTROL
-		, DBG_log("base debugging = %s"
-		    , bitnamesof(debug_bit_names, msg.debugging)));
-	    base_debugging = msg.debugging;
-	    set_debugging(base_debugging);
-	}
-	else if (!msg.whack_connection)
-	{
-	    struct connection *c = con_by_name(msg.name, TRUE);
-
-	    if (c != NULL)
+	    if (msg.name == NULL)
 	    {
-		c->extra_debugging = msg.debugging;
+		/* we do a two-step so that if either old or new would
+		 * cause the message to print, it will be printed.
+		 */
+		set_debugging(cur_debugging | msg.debugging);
 		DBG(DBG_CONTROL
-		    , DBG_log("\"%s\" extra_debugging = %s"
-			, c->name
-			, bitnamesof(debug_bit_names, c->extra_debugging)));
+		    , DBG_log("base debugging = %s"
+			      , bitnamesof(debug_bit_names, msg.debugging)));
+		base_debugging = msg.debugging;
+		set_debugging(base_debugging);
 	    }
-	}
+	    else if (!msg.whack_connection)
+	    {
+		struct connection *c = con_by_name(msg.name, TRUE);
+		
+		if (c != NULL)
+		{
+		    c->extra_debugging = msg.debugging;
+		    DBG(DBG_CONTROL
+			, DBG_log("\"%s\" extra_debugging = %s"
+				  , c->name
+				  , bitnamesof(debug_bit_names, c->extra_debugging)));
+		}
+	    }
 #endif
+	    break;
+
+	case WHACK_SETDUMPDIR:
+	    /* XXX */
+	    break;
+	    
+	case WHACK_STARTWHACKRECORD:
+	    /* close old filename */
+	    if(whackrecordfile) {
+		DBG(DBG_CONTROL
+		    , DBG_log("stopped recording whack messages to %s\n"
+			      , whackrecordname));
+		fclose(whackrecordfile);
+	    }
+	    whackrecordfile=NULL;
+
+	    openwhackrecordfile(msg.string1);
+
+	    /* do not do any other processing for these */
+	    goto done;
+	    
+	case WHACK_STOPWHACKRECORD:
+	    if(whackrecordfile) {
+		DBG(DBG_CONTROL
+		    , DBG_log("stopped recording whack messages to %s\n"
+			      , whackrecordname));
+		fclose(whackrecordfile);
+	    }
+	    whackrecordfile=NULL;
+	    /* do not do any other processing for these */
+	    goto done;
+	}
     }
 
     if (msg.whack_myid)
@@ -620,6 +729,7 @@ whack_handle(int whackctlfd)
 	exit_pluto(0);	/* delete lock and leave, with 0 status */
     }
 
+done:
     whack_log_fd = NULL_FD;
     close(whackfd);
 }

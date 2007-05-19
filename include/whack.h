@@ -34,7 +34,7 @@
  */
 
 #define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 24)
-#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 36)
+#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 37)
 
 /* struct whack_end is a lot like connection.h's struct end
  * It differs because it is going to be shipped down a socket
@@ -73,6 +73,13 @@ struct whack_end {
                                 /* pluto will convert to IP address again,
 				 * if this is non-NULL when conn fails.
 				 */
+};
+
+enum whack_opt_set {
+    WHACK_ADJUSTOPTIONS=0,     /* normal case */
+    WHACK_SETDUMPDIR=1,    /* string1 contains new dumpdir */
+    WHACK_STARTWHACKRECORD=2, /* string1 contains file to write options to */
+    WHACK_STOPWHACKRECORD=3,  /* turn off recording to file */
 };
 
 struct whack_message {
@@ -190,6 +197,12 @@ struct whack_message {
     /* for connalias string */
     char *connalias;
 
+    /* for use with general option adjustments */
+    enum whack_opt_set opt_set;
+    char *string1;
+    char *string2;
+    char *string3;
+
     /* space for strings (hope there is enough room):
      * Note that pointers don't travel on wire.
      *  1 connection name [name_len]
@@ -210,10 +223,18 @@ struct whack_message {
      * 16 ike
      * 17 esp
      * 18 tpmeval
+     * 19 left.xauth_name
+     * 20 right.xauth_name
+     * 21 connalias
+     * 22 left.host_addr_name
+     * 23 right.host_addr_name
+     * 24 genstring1  - used with opt_set 
+     * 25 genstring2
+     * 26 genstring3
      * plus keyval (limit: 8K bits + overhead), a chunk.
      */
     size_t str_size;
-    unsigned char string[2048];
+    unsigned char string[4096];
 };
 
 /* options of whack --list*** command */

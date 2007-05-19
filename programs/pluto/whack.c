@@ -196,6 +196,7 @@ help(void)
 	    " \\\n   "
 	    " [--debug-private]"
 	    "\n\n"
+	"testcases: [--whackrecord file] [--whackstoprecord]\n"
 #endif
 	"listen: whack"
 	    " (--listen | --unlisten)"
@@ -363,8 +364,10 @@ enum option_enums {
     OPT_XAUTHNAME,
     OPT_XAUTHPASS,
     OPT_TPMEVAL,
+    OPT_WHACKRECORD,
+    OPT_WHACKSTOPRECORD,
 
-#define OPT_LAST2 OPT_TPMEVAL  /* last "normal" option */
+#define OPT_LAST2 OPT_WHACKSTOPRECORD /* last "normal" option */
 
 
 /* List options */
@@ -696,6 +699,8 @@ static const struct option long_opts[] = {
     { "impair-sa-fail",    no_argument, NULL, DBGOPT_IMPAIR_SA_CREATION + OO },
     { "impair-die-oninfo", no_argument, NULL, DBGOPT_IMPAIR_DIE_ONINFO  + OO },
     { "impair-jacob-two-two", no_argument, NULL, DBGOPT_IMPAIR_JACOB_TWO_TWO + OO },
+    { "whackrecord",     required_argument, NULL, OPT_WHACKRECORD + OO},
+    { "whackstoprecord", required_argument, NULL, OPT_WHACKSTOPRECORD + OO},
 #endif
 #   undef OO
     { 0,0,0,0 }
@@ -1546,7 +1551,19 @@ main(int argc, char **argv)
 	    diag("TaProoM is not enabled in this build");
 #endif	    
 	    continue;
-	    
+
+#ifdef DEBUG
+	case OPT_WHACKRECORD:
+	    msg.string1 = strdup(optarg);
+	    msg.whack_options = TRUE;
+	    msg.opt_set = WHACK_STARTWHACKRECORD;
+	    break;
+
+	case OPT_WHACKSTOPRECORD:
+	    msg.whack_options = TRUE;
+	    msg.opt_set = WHACK_STOPWHACKRECORD;
+	    break;
+#endif
 
 #ifdef DEBUG
 	case DBGOPT_NONE:	/* --debug-none */
