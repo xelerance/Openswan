@@ -91,6 +91,7 @@ DISTSRC = \
 	dnskey.c dnskey.h \
 	dpd.c dpd.h \
 	myid.c hmac.c \
+	hostpair.c \
 	ipsec_doi.c ipsec_doi.h ikev1_quick.c ikev1_continuations.h \
 	kernel.c kernel.h \
 	${NETKEY_SRCS} \
@@ -133,7 +134,7 @@ OBJSGCRYPT =
 
 OBJSPLUTO  = connections.o pending.o cookie.o crypto.o defs.o dpd.o
 OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
-OBJSPLUTO += timer.o pluto_constants.o hmac.o
+OBJSPLUTO += timer.o pluto_constants.o hmac.o hostpair.o
 OBJSPLUTO += myid.o ipsec_doi.o ikev1_quick.o ikeping.o kernel.o 
 OBJSPLUTO += $(NETKEY_OBJS) ${KLIPS_OBJS} ${MAST_OBJS} ${WIN2K_OBJS} ${FUNK_OBJS}
 OBJSPLUTO += kernel_noklips.o rcv_whack.o 
