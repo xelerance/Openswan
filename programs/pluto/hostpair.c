@@ -185,6 +185,11 @@ find_host_pair(const ip_address *myaddr
     return p;
 }
 
+void remove_host_pair(struct host_pair *hp)
+{
+    list_rm(struct host_pair, next, hp, host_pairs);
+}
+
 /* find head of list of connections with this pair of hosts */
 struct connection *
 find_host_pair_connections(const char *func
@@ -259,6 +264,57 @@ connect_to_host_pair(struct connection *c)
 	unoriented_connections = c;
     }
 }
+
+void
+release_dead_interfaces(void)
+{
+    struct host_pair *hp;
+
+    for (hp = host_pairs; hp != NULL; hp = hp->next)
+    {
+	struct connection **pp
+	    , *p;
+
+	for (pp = &hp->connections; (p = *pp) != NULL; )
+	{
+	    if (p->interface->change == IFN_DELETE)
+	    {
+		/* this connection's interface is going away */
+		enum connection_kind k = p->kind;
+
+		release_connection(p, TRUE);
+
+		if (k <= CK_PERMANENT)
+		{
+		    /* The connection should have survived release:
+		     * move it to the unoriented_connections list.
+		     */
+		    passert(p == *pp);
+
+		    p->interface = NULL;
+
+		    *pp = p->hp_next;	/* advance *pp */
+		    p->host_pair = NULL;
+		    p->hp_next = unoriented_connections;
+		    unoriented_connections = p;
+		}
+		else
+		{
+		    /* The connection should have vanished,
+		     * but the previous connection remains.
+		     */
+		    passert(p != *pp);
+		}
+	    }
+	    else
+	    {
+		pp = &p->hp_next;	/* advance pp */
+	    }
+	}
+    }
+}
+
+
 
 /*
  * Local Variables:

@@ -233,10 +233,7 @@ struct connection {
 	newest_isakmp_sa,
 	newest_ipsec_sa;
 
-
-#ifdef DEBUG
     lset_t extra_debugging;
-#endif
 
     /* note: if the client is the gateway, the following must be equal */
     sa_family_t addr_family;		/* between gateways */
