@@ -302,105 +302,12 @@ key_add_request(const struct whack_message *msg)
     }
 }
 
-/* Handle a kernel request. Supposedly, there's a message in
- * the kernelsock socket.
+/*
+ * handle a whack message.
  */
-void
-whack_handle(int whackctlfd)
+void whack_process(int whackfd, struct whack_message msg)
 {
-    struct whack_message msg, msg_saved;
-    struct sockaddr_un whackaddr;
-    unsigned int whackaddrlen = sizeof(whackaddr);
-    int whackfd = accept(whackctlfd, (struct sockaddr *)&whackaddr, &whackaddrlen);
-    /* Note: actual value in n should fit in int.  To print, cast to int. */
-    ssize_t n;
     const struct osw_conf_options *oco = osw_init_options();
-
-    //DBG_log("whack_crash %d\n", msg.whack_crash);
-
-    if (whackfd < 0)
-    {
-	log_errno((e, "accept() failed in whack_handle()"));
-	return;
-    }
-    if (fcntl(whackfd, F_SETFD, FD_CLOEXEC) < 0)
-    {
-       log_errno((e, "failed to set CLOEXEC in whack_handle()"));
-       close(whackfd);
-       return;
-    }
-    memset(&msg, 0, sizeof(msg));
-    n = read(whackfd, &msg, sizeof(msg));
-    if (n <= 0)
-    {
-	log_errno((e, "read() failed in whack_handle()"));
-	close(whackfd);
-	return;
-    }
-
-    whack_log_fd = whackfd;
-
-    msg_saved = msg;
-
-    /* sanity check message */
-    {
-	err_t ugh = NULL;
-        struct whackpacker wp;
-        
-        wp.msg = &msg;
-        wp.n   = n;
-        wp.str_next = msg.string;
-        wp.str_roof = (unsigned char *)&msg + n;
-
-	if ((size_t)n < offsetof(struct whack_message, whack_shutdown) + sizeof(msg.whack_shutdown))
-	{
-	    ugh = builddiag("ignoring runt message from whack: got %d bytes", (int)n);
-	}
-	else if (msg.magic != WHACK_MAGIC)
-	{
-	    if (msg.magic == WHACK_BASIC_MAGIC)
-	    {
-		/* Only basic commands.  Simpler inter-version compatability. */
-		if (msg.whack_status)
-		    show_status();
-
-		if (msg.whack_shutdown)
-		{
-		    openswan_log("shutting down");
-		    exit_pluto(0);	/* delete lock and leave, with 0 status */
-		}
-		ugh = "";	/* bail early, but without complaint */
-	    }
-	    else
-	    {
-		ugh = builddiag("ignoring message from whack with bad magic %d; should be %d; Mismatched versions of userland tools and KLIPS code."
-		    , msg.magic, WHACK_MAGIC);
-	    }
-	}
-        else if ((ugh = unpack_whack_msg(&wp)) != NULL)
-        {
-            /* nothing, ugh is already set */
-        }
-        else
-        {
-            msg.keyval.ptr = wp.str_next;    /* grab chunk */
-        }
-
-	if (ugh != NULL)
-	{
-	    if (*ugh != '\0') 
-		loglog(RC_BADWHACKMESSAGE, "%s", ugh);
-	    whack_log_fd = NULL_FD;
-	    close(whackfd);
-	    return;
-	}
-    }
-
-    /* dump record if necessary */
-    writewhackrecord((char *)&msg_saved, n);
-
-
-    //DBG_log("whack_crash %d\n", msg.whack_crash);
 
     if (msg.whack_options)
     {
@@ -732,6 +639,105 @@ whack_handle(int whackctlfd)
 done:
     whack_log_fd = NULL_FD;
     close(whackfd);
+}
+
+/*
+ * Handle a whack request. 
+ */
+void
+whack_handle(int whackctlfd)
+{
+    struct whack_message msg, msg_saved;
+    struct sockaddr_un whackaddr;
+    unsigned int whackaddrlen = sizeof(whackaddr);
+    int whackfd = accept(whackctlfd, (struct sockaddr *)&whackaddr, &whackaddrlen);
+    /* Note: actual value in n should fit in int.  To print, cast to int. */
+    ssize_t n;
+
+    //DBG_log("whack_crash %d\n", msg.whack_crash);
+
+    if (whackfd < 0)
+    {
+	log_errno((e, "accept() failed in whack_handle()"));
+	return;
+    }
+    if (fcntl(whackfd, F_SETFD, FD_CLOEXEC) < 0)
+    {
+       log_errno((e, "failed to set CLOEXEC in whack_handle()"));
+       close(whackfd);
+       return;
+    }
+    memset(&msg, 0, sizeof(msg));
+    n = read(whackfd, &msg, sizeof(msg));
+    if (n <= 0)
+    {
+	log_errno((e, "read() failed in whack_handle()"));
+	close(whackfd);
+	return;
+    }
+
+    whack_log_fd = whackfd;
+
+    msg_saved = msg;
+
+    /* sanity check message */
+    {
+	err_t ugh = NULL;
+        struct whackpacker wp;
+        
+        wp.msg = &msg;
+        wp.n   = n;
+        wp.str_next = msg.string;
+        wp.str_roof = (unsigned char *)&msg + n;
+
+	if ((size_t)n < offsetof(struct whack_message, whack_shutdown) + sizeof(msg.whack_shutdown))
+	{
+	    ugh = builddiag("ignoring runt message from whack: got %d bytes", (int)n);
+	}
+	else if (msg.magic != WHACK_MAGIC)
+	{
+	    if (msg.magic == WHACK_BASIC_MAGIC)
+	    {
+		/* Only basic commands.  Simpler inter-version compatability. */
+		if (msg.whack_status)
+		    show_status();
+
+		if (msg.whack_shutdown)
+		{
+		    openswan_log("shutting down");
+		    exit_pluto(0);	/* delete lock and leave, with 0 status */
+		}
+		ugh = "";	/* bail early, but without complaint */
+	    }
+	    else
+	    {
+		ugh = builddiag("ignoring message from whack with bad magic %d; should be %d; Mismatched versions of userland tools and KLIPS code."
+		    , msg.magic, WHACK_MAGIC);
+	    }
+	}
+        else if ((ugh = unpack_whack_msg(&wp)) != NULL)
+        {
+            /* nothing, ugh is already set */
+        }
+        else
+        {
+            msg.keyval.ptr = wp.str_next;    /* grab chunk */
+        }
+
+	if (ugh != NULL)
+	{
+	    if (*ugh != '\0') 
+		loglog(RC_BADWHACKMESSAGE, "%s", ugh);
+	    whack_log_fd = NULL_FD;
+	    close(whackfd);
+	    return;
+	}
+    }
+
+    /* dump record if necessary */
+    writewhackrecord((char *)&msg_saved, n);
+    
+    whack_process(whackfd, msg);
 }
 
 /*

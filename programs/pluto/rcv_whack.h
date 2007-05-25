@@ -14,4 +14,5 @@
  * RCSID $Id: rcv_whack.h,v 1.8 2002/04/27 00:17:51 mcr Exp $
  */
 
+extern void whack_process(int whackfd, struct whack_message msg);
 extern void whack_handle(int kernelfd);
