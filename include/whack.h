@@ -14,6 +14,9 @@
  * RCSID $Id: whack.h,v 1.70 2005/09/26 03:23:18 mcr Exp $
  */
 
+#ifndef _WHACK_H
+#define _WHACK_H
+
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
 
@@ -284,6 +287,7 @@ extern size_t whack_get_secret(char *buf, size_t bufsize);
 extern int whack_get_value(char *buf, size_t bufsize);
 
 extern bool osw_alias_cmp(const char *needle, const char *haystack);
+#endif /* _WHACK_H */
 
 /*
  * Local Variables:
