@@ -150,13 +150,7 @@ extern void loglog(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 /* show status, usually on whack log */
 extern void show_status(void);
 
-/* ip_str: a simple to use variant of addrtot.
- * It stores its result in a static buffer.
- * This means that newer calls overwrite the storage of older calls.
- * Note: this is not used in any of the logging functions, so their
- * callers may use it.
- */
-extern const char *ip_str(const ip_address *src);
+#define ip_str pluto_ip_str
 
 /*
  * call this routine to reset daily items.

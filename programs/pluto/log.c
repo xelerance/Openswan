@@ -806,21 +806,6 @@ show_status(void)
 #endif
 }
 
-/* ip_str: a simple to use variant of addrtot.
- * It stores its result in a static buffer.
- * This means that newer calls overwrite the storage of older calls.
- * Note: this is not used in any of the logging functions, so their
- * callers may use it.
- */
-const char *
-ip_str(const ip_address *src)
-{
-    static char buf[ADDRTOT_BUF];
-
-    addrtot(src, 0, buf, sizeof(buf));
-    return buf;
-}
-
 /*
  * a routine that attempts to schedule itself daily.
  *
