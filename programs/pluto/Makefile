@@ -79,11 +79,10 @@ DISTGCRYPT = \
 	smallprime.c
 
 DISTSRC = \
-	connections.c connections.h \
+        connections.c initiate.c connections.h \
 	pending.c pending.h \
 	foodgroups.c foodgroups.h \
 	cookie.c cookie.h \
-	pluto_constants.c \
 	crypto.h crypto.c \
 	db_ops.c \
 	defs.h defs.c \
@@ -132,9 +131,9 @@ DIST = $(DISTMISC) $(DISTSRC)
 # OBJSGCRYPT =  gcryptfix.o dsa.o elgamal.o primegen.o smallprime.o
 OBJSGCRYPT =
 
-OBJSPLUTO  = connections.o pending.o cookie.o crypto.o defs.o dpd.o
+OBJSPLUTO  = connections.o initiate.o pending.o cookie.o crypto.o defs.o dpd.o
 OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
-OBJSPLUTO += timer.o pluto_constants.o hmac.o hostpair.o
+OBJSPLUTO += timer.o hmac.o hostpair.o
 OBJSPLUTO += myid.o ipsec_doi.o ikev1_quick.o ikeping.o kernel.o 
 OBJSPLUTO += $(NETKEY_OBJS) ${KLIPS_OBJS} ${MAST_OBJS} ${WIN2K_OBJS} ${FUNK_OBJS}
 OBJSPLUTO += kernel_noklips.o rcv_whack.o 
