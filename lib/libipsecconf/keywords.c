@@ -91,6 +91,7 @@ struct keyword_enum_value kw_auto_values[]={
     { "add",    STARTUP_ADD },
     { "route",  STARTUP_ROUTE },
     { "start",  STARTUP_START },
+    { "up",     STARTUP_START }, /* alias */
 };
 
 struct keyword_enum_values kw_auto_list=
