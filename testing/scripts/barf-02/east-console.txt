@@ -42,7 +42,6 @@ east:~#
 + _________________________ ipsec/policies/us-private-or-clear-all
 + _________________________ ipsec/ls-libdir
 + _________________________ ipsec/ls-execdir
-+ _________________________ ipsec/updowns
 + _________________________ /proc/net/dev
 + _________________________ /proc/net/route
 + _________________________ /proc/sys/net/ipv4/ip_no_pmtu_disc
@@ -63,11 +62,14 @@ east:~#
 + _________________________ ipchains
 + _________________________
 + _________________________ iptables
++ _________________________ iptables-nat
++ _________________________ iptables-mangle
 + _________________________ /proc/modules
 + _________________________ /proc/meminfo
 + _________________________ /proc/net/ipsec-ls
 + _________________________ usr/src/linux/.config
 + _________________________ etc/syslog.conf
++ _________________________ etc/syslog-ng/syslog-ng.conf
 + _________________________ etc/resolv.conf
 + _________________________ lib/modules-ls
 + _________________________ /proc/ksyms-netif_rx
