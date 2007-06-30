@@ -211,5 +211,39 @@ extern void free_generalNames(generalName_t* gn, bool free_name);
 /* in x509dn.c */
 extern bool same_x509cert(const x509cert_t *a, const x509cert_t *b);
 
+/* in x509chain.c */
+extern bool x509_check_revocation(const x509crl_t *crl, chunk_t serial);
+extern x509cert_t *x509_get_authcerts_chain(void);
+
+
+#ifdef HAVE_THREADS
+extern void lock_crl_list(const char *who);
+extern void unlock_crl_list(const char *who);
+extern void lock_cacert_list(const char *who);
+extern void unlock_cacert_list(const char *who);
+extern void lock_ocsp_cache(const char *who);
+extern void unlock_ocsp_cache(const char *who);
+extern void lock_authcert_list(const char *who);
+extern void unlock_authcert_list(const char *who);
+#else
+#define lock_crl_list(who) /* nothing */
+#define unlock_crl_list(who) /* nothing */
+#define lock_cacert_list(who) /* nothing */
+#define unlock_cacert_list(who) /* nothing */
+#define lock_ocsp_cache(who) /* nothing */
+#define unlock_ocsp_cache(who) /* nothing */
+#define lock_authcert_list(who) /* nothing */
+#define unlock_authcert_list(who) /* nothing */
+#endif
+
+/* filter eliminating the directory entries '.' and '..' */
+typedef struct dirent dirent_t;
+
+extern int file_select(
+#ifdef SCANDIR_HAS_CONST
+		       const
+#endif
+		       dirent_t *entry);
+
 
 #endif /* _X509_H */

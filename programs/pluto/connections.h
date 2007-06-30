@@ -141,6 +141,7 @@ struct virtual_t;
 #endif
 
 struct ietfAttr;	/* forward declaration of ietfAttr defined in ac.h */
+struct host_pair;    /* opaque type */
 
 struct end {
     struct id id;
@@ -232,10 +233,7 @@ struct connection {
 	newest_isakmp_sa,
 	newest_ipsec_sa;
 
-
-#ifdef DEBUG
     lset_t extra_debugging;
-#endif
 
     /* note: if the client is the gateway, the following must be equal */
     sa_family_t addr_family;		/* between gateways */
@@ -250,7 +248,7 @@ struct connection {
     struct alg_info_esp *alg_info_esp;
     struct alg_info_ike *alg_info_ike;
 
-    struct host_pair *host_pair;
+    struct host_pair *host_pair;            /* opaque type outside of connections.c/hostpair.c */
     struct connection *hp_next;	/* host pair list link */
 
     struct connection *ac_next;	/* all connections list link */
@@ -428,6 +426,8 @@ extern int foreach_connection_by_alias(const char *alias
 				       , int (*f)(struct connection *c, void *arg)
 				       , void *arg);
 
+
+struct connection *unoriented_connections;
 
 /*
  * Local Variables:

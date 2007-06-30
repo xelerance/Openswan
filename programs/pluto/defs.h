@@ -49,14 +49,6 @@ typedef unsigned long so_serial_t;
 extern const char* check_expiry(time_t expiration_date,
     int warning_interval, bool strict);
 
-/* filter eliminating the directory entries '.' and '..' */
-typedef struct dirent dirent_t;
-extern int file_select(
-#ifdef SCANDIR_HAS_CONST
-		       const
-#endif
-		       dirent_t *entry);
-
 /* cleanly exit Pluto */
 
 extern void exit_pluto(int /*status*/) NEVER_RETURNS;
@@ -70,26 +62,5 @@ extern bool all_zero(const unsigned char *m, size_t len);
 
 /* pad_up(n, m) is the amount to add to n to make it a multiple of m */
 #define pad_up(n, m) (((m) - 1) - (((n) + (m) - 1) % (m)))
-
-#ifdef HAVE_THREADS
-extern void lock_crl_list(const char *who);
-extern void unlock_crl_list(const char *who);
-extern void lock_cacert_list(const char *who);
-extern void unlock_cacert_list(const char *who);
-extern void lock_ocsp_cache(const char *who);
-extern void unlock_ocsp_cache(const char *who);
-extern void lock_authcert_list(const char *who);
-extern void unlock_authcert_list(const char *who);
-#else
-#define lock_crl_list(who) /* nothing */
-#define unlock_crl_list(who) /* nothing */
-#define lock_cacert_list(who) /* nothing */
-#define unlock_cacert_list(who) /* nothing */
-#define lock_ocsp_cache(who) /* nothing */
-#define unlock_ocsp_cache(who) /* nothing */
-#define lock_authcert_list(who) /* nothing */
-#define unlock_authcert_list(who) /* nothing */
-#endif
-
 
 #endif /* _DEFS_H */

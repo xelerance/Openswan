@@ -80,30 +80,6 @@ check_expiry(time_t expiration_date, int warning_interval, bool strict)
 }
 
 
-/*
- * Filter eliminating the directory entries starting with .,
- * and also "CVS" (thus eliminating '.' and '..')
- */
-int
-file_select(
-#ifdef SCANDIR_HAS_CONST	    
-	    const
-#endif
-	    struct dirent *entry)
-{
-  return (entry->d_name[0] != '.' &&
-	  strcmp(entry->d_name, "CVS")!=0 &&
-	  strcmp(entry->d_name, "RCS")!=0);
-	  
-}
-
-/*
- * Local Variables:
- * c-basic-offset:4
- * c-style: pluto
- * End:
- */
-
 /*  compare two chunks, returns zero if a equals b
  *  negative/positive if a is earlier/later in the alphabet than b
  */
@@ -118,4 +94,11 @@ cmp_chunk(chunk_t a, chunk_t b)
 
     return (cmp_value == 0)? cmp_len : cmp_value;
 };
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */
 

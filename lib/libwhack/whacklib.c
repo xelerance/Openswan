@@ -142,6 +142,9 @@ err_t pack_whack_msg (struct whackpacker *wp)
     	|| !pack_str(wp, &wp->msg->connalias)   /* string 21 */
     	|| !pack_str(wp, &wp->msg->left.host_addr_name)    /* string 22 */
     	|| !pack_str(wp, &wp->msg->right.host_addr_name)   /* string 23 */
+	|| !pack_str(wp, &wp->msg->string1)                /* string 24 */
+	|| !pack_str(wp, &wp->msg->string2)                /* string 25 */
+	|| !pack_str(wp, &wp->msg->string3)                /* string 26 */
 	|| wp->str_roof - wp->str_next < (ptrdiff_t)wp->msg->keyval.len)    /* chunk (sort of string 19) */
     {
 	ugh = "too many bytes of strings to fit in message to pluto";
@@ -197,6 +200,9 @@ err_t unpack_whack_msg (struct whackpacker *wp)
     	|| !unpack_str(wp, &wp->msg->connalias)   /* string 21 */
     	|| !unpack_str(wp, &wp->msg->left.host_addr_name)    /* string 22 */
     	|| !unpack_str(wp, &wp->msg->right.host_addr_name)   /* string 23 */
+	|| !unpack_str(wp, &wp->msg->string1)                /* string 24 */
+	|| !unpack_str(wp, &wp->msg->string2)                /* string 25 */
+	|| !unpack_str(wp, &wp->msg->string3)                /* string 26 */
 	|| wp->str_roof - wp->str_next != (ptrdiff_t)wp->msg->keyval.len)	/* check chunk */
     {
 	ugh = "message from whack contains bad string";
