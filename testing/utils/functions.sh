@@ -1124,6 +1124,8 @@ libtest() {
 
     EXTRAFLAGS=
     EXTRALIBS=
+    UNITTESTARGS=-r
+
     if [ -f ${SRCDIR}FLAGS.$testobj ]
     then
         echo Sourcing ${SRCDIR}FLAGS.$testobj
@@ -1141,7 +1143,7 @@ libtest() {
 	    export TEST_PURPOSE=regress
 
 	    echo Running $testobj
-	    ( ulimit -c unlimited; cd lib-$testobj && ../$testobj -r >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
+	    ( ulimit -c unlimited; cd lib-$testobj && ../$testobj -r ${UNITTESTARGS} >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
 
 	    stat=$?
 	    echo Exit code $stat
