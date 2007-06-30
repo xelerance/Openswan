@@ -16,6 +16,7 @@
  */
 
 #include <stdlib.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
@@ -75,9 +76,12 @@ static void default_values (struct starter_config *cfg)
 
 	cfg->conn_default.left.addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.left.addr);
+	cfg->conn_default.left.nexttype  = KH_NOTSET;
 	anyaddr(AF_INET, &cfg->conn_default.left.nexthop);
+
 	cfg->conn_default.right.addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.right.addr);
+	cfg->conn_default.right.nexttype = KH_NOTSET;
 	anyaddr(AF_INET, &cfg->conn_default.right.nexthop);
 
 	/* default is to look in DNS */
@@ -91,11 +95,35 @@ static void default_values (struct starter_config *cfg)
 	cfg->ctlbase = clone_str(CTL_FILE, "default base");
 }
 
-#define ERR_FOUND(args...) \
-	{ if (perr && (*perr==NULL)) { \
-		snprintf(_tmp_err, sizeof(_tmp_err)-1, ## args); \
-		*perr = xstrdup(_tmp_err); } \
-	err++; }
+/* format error, and append to string of errors */
+int error_append(char **perr, const char *fmt, ...) 
+{
+    va_list args;
+
+    if(perr) {
+	char *nerr; 
+	int len; 
+	
+	va_start(args, fmt);
+	vsnprintf(_tmp_err, sizeof(_tmp_err)-1, fmt, args);
+	va_end(args);
+	
+	len = 1+ strlen(_tmp_err) + (*perr ? strlen(*perr) : 0);	
+	nerr = xmalloc(len);
+	nerr[0]='\0';
+	if(*perr) strcpy(nerr, *perr); 
+	strcat(nerr, _tmp_err);			
+	
+	if(*perr) free(*perr);
+	*perr = nerr;
+
+	return 1;
+    }
+    return 0;
+}
+
+#define ERR_FOUND(args...) do { err += error_append(&err_str, ##args); } while(0)
+
 
 #define KW_POLICY_FLAG(val,fl) if(conn->options_set[val]) \
         { if(conn->options[val]) \
@@ -278,9 +306,12 @@ static int load_setup (struct starter_config *cfg
  */
 static int validate_end(struct starter_conn *conn_st
 			, struct starter_end *end
-			, bool left, err_t *perr)
+			, bool left
+			, bool resolvip UNUSED
+			, err_t *perr)
 {
     err_t er = NULL;
+    char *err_str = NULL;
     const char *leftright=(left ? "left" : "right");
     int err=0;
 
@@ -311,8 +342,12 @@ static int validate_end(struct starter_conn *conn_st
     case KH_IPADDR:
 	assert(end->strings[KSCF_IP] != NULL);
 
-	er = ttoaddr(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
-	if (er) ERR_FOUND("bad addr %s=%s [%s]", leftright, end->strings[KNCF_IP], er);
+	er = ttoaddr_num(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
+	if(er) {
+	    /* not numeric, so set the type to the string type */
+	    end->addrtype = KH_IPHOSTNAME; 
+	}
+
         if(end->id == NULL) {
             char idbuf[ADDRTOT_BUF];
             addrtot(&end->addr, 0, idbuf, sizeof(idbuf));
@@ -333,6 +368,10 @@ static int validate_end(struct starter_conn *conn_st
 	conn_st->policy |= POLICY_GROUP;
 	break;
 	
+    case KH_IPHOSTNAME:
+	/* generally, this doesn't show up at this stage */
+	break;
+
     case KH_DEFAULTROUTE:
 	break;
 
@@ -366,16 +405,21 @@ static int validate_end(struct starter_conn *conn_st
     if(end->strings_set[KSCF_NEXTHOP])
     {
 	char *value = end->strings[KSCF_NEXTHOP];
-	
-	end->nexttype = KH_IPADDR;
 
-	er = ttoaddr(value, 0, AF_INET, &(end->nexthop));
-	if (er) ERR_FOUND("bad addr %snexthop=%s [%s]", leftright, value, er);
+	if(strcasecmp(value, "%defaultroute")==0) {
+	    end->nexttype=KH_DEFAULTROUTE;
+	} else {
+	    er = ttoaddr(value, 0, AF_INET, &(end->nexthop));
+	    if (er) ERR_FOUND("bad addr %snexthop=%s [%s]", leftright, value, er);
 
+	    end->nexttype = KH_IPADDR;
+	}
     } else {
+#if 0
 	if(conn_st->policy & POLICY_OPPO) {
 	    end->nexttype = KH_DEFAULTROUTE;
 	}
+#endif
 	anyaddr(AF_INET, &end->nexthop);
     }
 
@@ -467,6 +511,7 @@ static int validate_end(struct starter_conn *conn_st
     KSCF_MAX          = 19
 */
 
+    if(err) *perr = err_str;
     return err;
 }
 
@@ -556,6 +601,11 @@ bool translate_conn (struct starter_conn *conn
 	    {
 		if(!permitreplace)
 		{
+		    if(kw->keyword.keydef->validity & kv_duplicateok) {
+			/* be quiet about duplicate, but do not override it */
+			break;
+		    }
+			
 		    *error = _tmp_err;
 
 		    snprintf(_tmp_err, sizeof(_tmp_err)
@@ -716,6 +766,7 @@ static int load_conn (struct starter_config *cfg
 		      , struct config_parsed *cfgp
 		      , struct section_list *sl
 		      , bool alsoprocessing
+		      , bool resolvip
 		      , err_t *perr)
 {
     unsigned int err;
@@ -921,8 +972,8 @@ static int load_conn (struct starter_config *cfg
 	conn->policy |= conn->options[KBF_PHASE2];
     }
 
-    err += validate_end(conn, &conn->left,  TRUE, perr);
-    err += validate_end(conn, &conn->right, FALSE,perr);
+    err += validate_end(conn, &conn->left,  TRUE,  resolvip, perr);
+    err += validate_end(conn, &conn->right, FALSE, resolvip, perr);
 
     if(conn->options_set[KBF_AUTO]) {
 	conn->desired_state = conn->options[KBF_AUTO];
@@ -1004,6 +1055,7 @@ int init_load_conn(struct starter_config *cfg
 		   , struct config_parsed *cfgp
 		   , struct section_list *sconn
 		   , bool alsoprocessing
+		   , bool resolvip
 		   , err_t *perr)
 {
     int connerr;
@@ -1015,8 +1067,12 @@ int init_load_conn(struct starter_config *cfg
 	return -1;
     }
     
-    connerr = load_conn (cfg, conn, cfgp, sconn, TRUE, perr);
+    connerr = load_conn (cfg, conn, cfgp, sconn, TRUE, resolvip, perr);
 		
+    if(connerr != 0) {
+	starter_log(LOG_LEVEL_INFO, "while loading '%s': %s\n",
+		    sconn->name, *perr);
+    }
     if(connerr == 0)
     {
 	conn->state = STATE_LOADED;
@@ -1025,7 +1081,10 @@ int init_load_conn(struct starter_config *cfg
 }
 
 
-struct starter_config *confread_load(const char *file, err_t *perr, char *ctlbase)
+struct starter_config *confread_load(const char *file
+				     , err_t *perr
+				     , bool resolvip
+				     , char *ctlbase)
 {
 	struct starter_config *cfg = NULL;
 	struct config_parsed *cfgp;
@@ -1071,12 +1130,12 @@ struct starter_config *confread_load(const char *file, err_t *perr, char *ctlbas
 	{
 		if (strcmp(sconn->name,"%default")==0) {
 			starter_log(LOG_LEVEL_DEBUG, "Loading default conn");
-			err += load_conn (cfg, &cfg->conn_default, cfgp, sconn, FALSE, perr);
+			err += load_conn (cfg, &cfg->conn_default, cfgp, sconn, FALSE, resolvip, perr);
 		}
 
 		if (strcmp(sconn->name,"%oedefault")==0) {
 			starter_log(LOG_LEVEL_DEBUG, "Loading oedefault conn");
-			err += load_conn (cfg, &cfg->conn_oedefault, cfgp, sconn, FALSE, perr);
+			err += load_conn (cfg, &cfg->conn_oedefault, cfgp, sconn, FALSE, resolvip, perr);
 			if(err == 0) {
 			    cfg->got_oedefault=TRUE;
 			}
@@ -1091,7 +1150,7 @@ struct starter_config *confread_load(const char *file, err_t *perr, char *ctlbas
 		if (strcmp(sconn->name,"%default")==0) continue;
 		if (strcmp(sconn->name,"%oedefault")==0) continue;
 
-		connerr = init_load_conn(cfg,cfgp,sconn,TRUE,perr);
+		connerr = init_load_conn(cfg, cfgp, sconn, TRUE, resolvip, perr);
 
 		if(connerr == -1) {
 		    parser_free_conf(cfgp);

@@ -34,6 +34,7 @@
  * Bison
  */
 static char parser_errstring[ERRSTRING_LEN+1];
+static void checkversion(int ver);
 void yyerror(const char *s);
 extern int yylex (void);
 static struct kw_list *alloc_kwlist(void);
@@ -80,23 +81,8 @@ config_file:
 
 /* check out the version number */
 versionstmt: 
-	VERSION NUMBER EOL { int ver = $2;
-                                 if(_parser_cfg->ipsec_conf_version == 0
-                                    || _parser_cfg->ipsec_conf_version == ver)
-				 {
-	                                 _parser_cfg->ipsec_conf_version = ver;
-                                 } else {
-                                         yyerror("can not set version more than once");
-                                 }
-
-                                 if(_parser_cfg->ipsec_conf_version != THIS_IPSEC_CONF_VERSION)
-                                 {
-					char buf[128];
-
-				        snprintf(buf, 128, "only version %d configuration files are supported, not %d", THIS_IPSEC_CONF_VERSION,  _parser_cfg->ipsec_conf_version);
-					yyerror(buf);
-                                 }
-                        	}
+	VERSION NUMBER EOL  { int ver = $2; checkversion(ver); }
+        | VERSION INTEGER EOL { int ver = $2; checkversion(ver); }
 	;
 
 blanklines: /* NULL */
@@ -450,6 +436,25 @@ void yyerror(const char *s)
 	extern void parser_y_error(char *b, int size, const char *s);
 	if (_save_errors_)
 		parser_y_error(parser_errstring, ERRSTRING_LEN, s);
+}
+
+void checkversion(int ver) 
+{
+        if(_parser_cfg->ipsec_conf_version == 0
+	   || _parser_cfg->ipsec_conf_version == ver)
+	{
+		_parser_cfg->ipsec_conf_version = ver;
+	} else {
+		yyerror("can not set version more than once");
+	}
+	
+	if(_parser_cfg->ipsec_conf_version != THIS_IPSEC_CONF_VERSION)
+	{
+		char buf[128];
+		
+		snprintf(buf, 128, "only version %d configuration files are supported, not %d", THIS_IPSEC_CONF_VERSION,  _parser_cfg->ipsec_conf_version);
+		yyerror(buf);
+	}
 }
 
 struct config_parsed *parser_load_conf (const char *file, err_t *perr)

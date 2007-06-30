@@ -278,6 +278,12 @@ void confwrite_side(FILE *out,
 	fprintf(out, "\t%s=%%group\n",side);   
 	break;
 
+    case KH_IPHOSTNAME:
+	if(end->strings_set[KSCF_IP]) {
+	    fprintf(out, "\t%s=%s\n",side, end->strings[KSCF_IP]);
+	}
+	break;
+
     case KH_IPADDR:
 	addrtot(&end->addr, 0, databuf, ADDRTOT_BUF);
 	fprintf(out, "\t%s=%s\n", side, databuf);
@@ -343,6 +349,11 @@ void confwrite_side(FILE *out,
 
     if(end->cert) {
 	fprintf(out, "\t%scert=%s\n", side, end->cert);
+    }
+
+    if(!isanyaddr(&end->sourceip)) {
+	addrtot(&end->sourceip, 0, databuf, ADDRTOT_BUF);
+	fprintf(out, "\t%ssourceip=%s\n", side, databuf);
     }
 
     confwrite_int(out, side,
@@ -449,9 +460,9 @@ void confwrite_conn(FILE *out,
 	    }
 	    
 	    if(conn->policy & POLICY_DONT_REKEY) {
-		fprintf(out, "\tnorekey=yes\n");
+		fprintf(out, "\trekey=no  #duplicate?\n");
 	    } else {
-		fprintf(out, "\tnorekey=no\n");
+		fprintf(out, "\trekey=yes\n");
 	    }
 	    
 	    auth_policy=(conn->policy & POLICY_ID_AUTH_MASK);

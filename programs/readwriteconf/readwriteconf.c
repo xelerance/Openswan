@@ -169,7 +169,7 @@ main(int argc, char *argv[])
 
     starter_use_log (verbose, 1, verbose ? 0 : 1);
 
-    cfg = confread_load(configfile, &err, NULL);
+    cfg = confread_load(configfile, &err, FALSE, NULL);
     
     if(!cfg) {
 	printf("config file: %s can not be loaded: %s\n", configfile, err);

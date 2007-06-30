@@ -17,7 +17,6 @@
  */
 
 
-#ifdef NET_21
 # define DEV_QUEUE_XMIT(skb, device, pri) {\
 	skb->dev = device; \
 	neigh_compat_output(skb); \
@@ -27,20 +26,6 @@
 	icmp_send(skb_in, type, code, htonl(info))
 # define IP_SEND(skb, dev) \
 	ip_send(skb);
-#else /* NET_21 */
-# define DEV_QUEUE_XMIT(skb, device, pri) {\
-	dev_queue_xmit(skb, device, pri); \
- }
-# define ICMP_SEND(skb_in, type, code, info, dev) \
-	icmp_send(skb_in, type, code, info, dev)
-# define IP_SEND(skb, dev) \
-	if(ntohs(iph->tot_len) > physmtu) { \
-		ip_fragment(NULL, skb, dev, 0); \
-		ipsec_kfree_skb(skb); \
-	} else { \
-		dev_queue_xmit(skb, dev, SOPRI_NORMAL); \
-	}
-#endif /* NET_21 */
 
 
 #if defined(KLIPS)

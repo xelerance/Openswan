@@ -35,7 +35,7 @@ endif
 
 SUBDIRS+=proc pluto addconn _confread
 SUBDIRS+=_copyright _include _keycensor _plutoload _plutorun
-SUBDIRS+=_realsetup _secretcensor _startklips _updown _updown.klips _updown.mast
+SUBDIRS+=_realsetup _secretcensor _startklips _startnetkey _updown _updown.klips _updown.mast
 SUBDIRS+=auto barf verify ipsec look newhostkey ranbits secrets
 SUBDIRS+=rsasigkey setup showdefaults showhostkey calcgoo mailkey
 SUBDIRS+=ikeping examples livetest
