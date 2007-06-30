@@ -14,7 +14,7 @@ canonicalize_kernel_config() {
     out=`basename $old`
 
     rm -f $out.new
-    ./canincalize_kernel_config.pl >$out.new
+    ./canonicalize_kernel_config.pl $old $new >$out.new
 }
 
 source ../../umlsetup.sh

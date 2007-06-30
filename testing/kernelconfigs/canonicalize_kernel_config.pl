@@ -20,7 +20,7 @@ while(<OLD>) {
     $kerneloptions{$1}='n';
     next;
   }
-  if(/(CONFIG.*)=([ynm])/) {
+  if(/(CONFIG.*)=([ynm])$/) {
     $kerneloptions{$1}=$2;
     next;
   }
