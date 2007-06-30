@@ -231,6 +231,8 @@ umlXhost	nat-pluto-04		good
 # Test of NAT traversal w/DPD
 umlXhost	nat-dpd-pluto-01	good
 
+# Test of NAT traversal, with Aggressive Mode client
+umlXhost	nat-aggr-01		good
 
 
 #
