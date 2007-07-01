@@ -78,8 +78,6 @@ err_t start_adns_query(const struct id *id	/* domain to query */
     /* SHOULD call continuation immediately with "NOT FOUND" */
 }
 
-#include "seam_log.c"
-
 /* dnskey.c SEAM */
 void reset_adns_restart_count(void) {}
 
@@ -220,6 +218,4 @@ void readwhackmsg(char *infile)
     if(iocount != 0 || !feof(record)) {
 	perror(infile);
     }
-	
-    exit(0);
 }
