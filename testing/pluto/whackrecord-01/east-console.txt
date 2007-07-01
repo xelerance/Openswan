@@ -6,7 +6,7 @@ east:~#
  ipsec setup start
 ipsec_setup: Starting Openswan IPsec VERSION
 east:~#
- ipsec whack --whackrecord /tmp/east.record
+ ipsec whack --whackrecord /var/tmp/east.record
 east:~#
  ipsec auto --add westnet-eastnet
 east:~#

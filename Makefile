@@ -326,10 +326,10 @@ confcheck:
 # kernel building, with error checks
 kernel:
 	rm -f out.kbuild out.kinstall
-	# undocumented kernel folklore: clean BEFORE dep. 
-	# we run make dep seperately, because there is no point in running ERRCHECK
-	# on the make dep output.
-	# see LKML thread "clean before or after dep?"
+        # undocumented kernel folklore: clean BEFORE dep. 
+        # we run make dep seperately, because there is no point in running ERRCHECK
+        # on the make dep output.
+        # see LKML thread "clean before or after dep?"
 	( cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) $(KERNCLEAN) $(KERNDEP) )
 	( cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) $(KERNEL) ) 2>&1 | tee out.kbuild
 	@if egrep -q '^CONFIG_MODULES=y' $(KCFILE) ; \

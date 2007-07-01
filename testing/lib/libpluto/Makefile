@@ -53,3 +53,7 @@ mostlyclean: clean
 
 realclean: clean
 
+east.record: ${OPENSWANSRCDIR}/programs/pluto/rcv_whack.c
+	(cd ${OPENSWANSRCDIR}/programs/pluto && unset OPENSWANSRCDIR && pl_inst.sh)
+	(cd ${OPENSWANSRCDIR}/testing/pluto/whackrecord-01 && ../../utils/runme.sh )
+	source ${OPENSWANSRCDIR}/umlsetup.sh; cp $$POOLSPACE/east/root/var/tmp/east.record .

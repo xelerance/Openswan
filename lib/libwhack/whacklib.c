@@ -183,7 +183,7 @@ err_t unpack_whack_msg (struct whackpacker *wp)
 	|| !unpack_str(wp, &wp->msg->left.ca)     /* string 4 */
 	|| !unpack_str(wp, &wp->msg->left.groups) /* string 5 */
 	|| !unpack_str(wp, &wp->msg->left.updown) /* string 6 */
-    	|| !unpack_str(wp,&wp->msg->left.virt)    /* string 7 */
+    	|| !unpack_str(wp, &wp->msg->left.virt)   /* string 7 */
 	|| !unpack_str(wp, &wp->msg->right.id)    /* string 8 */
     	|| !unpack_str(wp, &wp->msg->right.cert)  /* string 9 */
     	|| !unpack_str(wp, &wp->msg->right.ca)    /* string 10 */

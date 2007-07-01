@@ -1,7 +1,7 @@
 #define LEAK_DETECTIVE
 #define AGGRESSIVE 1
-#undef XAUTH 
-#undef MODECFG 
+#define XAUTH 
+#define MODECFG 
 #define DEBUG 1
 #define PRINT_SA_DEBUG 1
 #define USE_KEYRR 1
@@ -145,6 +145,12 @@ void terminate_connection(const char *nm) {}
 void show_status(void) {}
 
 
+/* xauth.c SEAM */
+oakley_auth_t xauth_calcbaseauth(oakley_auth_t baseauth)
+{ return 0; }
+
+
+
 
 
 
@@ -159,20 +165,34 @@ struct pubkey_list *pluto_pubkeys = NULL;	/* keys from ipsec.conf */
 bool listening = TRUE;
 bool strict_crl_policy = FALSE;
 
+/* efence defines */
+extern int EF_DISABLE_BANNER;
+extern int EF_ALIGNMENT;
+extern int EF_PROTECT_BELOW;
+extern int EF_PROTECT_FREE;
+extern int EF_ALLOW_MALLOC_0;
+extern int EF_FREE_WIPES;
+
+
 main(int argc, char *argv[])
 {
     int   len;
+    int   iocount;
     FILE *record;
     char *infile;
     char  b1[8192];
     u_int32_t plen;
 
+    EF_PROTECT_FREE=1;
+    EF_FREE_WIPES  =1;
+
     progname = argv[0];
 
-    if(argc != 2) {
+    if(argc > 2 ) {
 	fprintf(stderr, "Usage: %s <whackrecord>\n", progname);
 	    exit(10);
     }
+    /* argv[1] == "-r" */
 
     tool_init_log();
     
@@ -182,25 +202,54 @@ main(int argc, char *argv[])
 	    exit(9);
     }
 
-    /* okay, eat first line */
+    /* okay, eat first line, it's a comment, but log it. */
     fgets(b1, sizeof(b1), record);
+    printf("Pre-amble: %s", b1);
     
     plen=0;
-    while(fread(&plen, 4, 1, record)<1) {
+    while((iocount=fread(&plen, 4, 1, record))==1) {
 	u_int32_t a[2];
+	err_t ugh = NULL;
+        struct whackpacker wp;
 	struct whack_message m1;
+	int abuflen;
 
 	fread(&a, 4, 2, record);  /* eat time stamp */
 	
-	if(fread(&m1, plen, 1, record) != 1) {
+	/* account for this header we just consumed */
+	plen -= 12;
+
+	/* round up to multiple of 4 */
+	abuflen = (plen + 3) & ~0x3;
+
+	if(abuflen > sizeof(m1)) {
+	    fprintf(stderr, "whackmsg file has too big a record=%u > %u\n", abuflen, sizeof(m1));
+	    exit(6);
+	}
+
+	if((iocount=fread(&m1, abuflen, 1, record)) != 1) {
 	    if(feof(record)) break;
 	    perror(infile);
+	    exit(5);
 	}
 	
-	if(plen <= 16) {
+	if(plen <= 4) {
 	    /* empty message */
 	    continue;
 	}
+
+        wp.msg = &m1;
+        wp.n   = plen;
+        wp.str_next = m1.string;
+        wp.str_roof = (unsigned char *)&m1 + plen;
+
+        if ((ugh = unpack_whack_msg(&wp)) != NULL)
+        {
+            fprintf(stderr, "failed to parse whack msg: %s\n", ugh);
+	    continue;
+	}
+
+	m1.keyval.ptr = wp.str_next;    /* grab chunk */
 
 	/*
 	 * okay, we have plen bytes in b1, so turn it into a whack
@@ -209,6 +258,10 @@ main(int argc, char *argv[])
 	whack_process(NULL_FD, m1);
     }
 
+    if(iocount != 0 || !feof(record)) {
+	perror(infile);
+    }
+	
     report_leaks();
 
     tool_close_log();
