@@ -163,7 +163,6 @@ void readwhackmsg(char *infile)
     int   len;
     int   iocount;
     FILE *record;
-    char *infile;
     char  b1[8192];
     u_int32_t plen;
 

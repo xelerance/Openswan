@@ -5,4 +5,5 @@ libtest skeyidcalc good
 libtest spdbph1 good
 
 libtest whackmsgtest good
+libtest refineconnection good
 
