@@ -1082,15 +1082,12 @@ ipkg_build_install_test() {
 #
 ###################################
 
-# test entry point:
-libtest() {
+complibtest() {
     testobj=$1
-    testexpect=$2
-    testsrc=$testobj.c
+    testsrc=$2
 
     CC=${CC-cc}
-
-    echo '**** make libtest RUNNING' $testsrc '****'
+    ECHO=${ECHO-echo}
 
     symbol=`echo $testobj | tr 'a-z' 'A-Z'`_MAIN
 
@@ -1128,18 +1125,30 @@ libtest() {
 
     if [ -f ${SRCDIR}FLAGS.$testobj ]
     then
-        echo Sourcing ${SRCDIR}FLAGS.$testobj
+        ${ECHO} Sourcing ${SRCDIR}FLAGS.$testobj
 	source ${SRCDIR}FLAGS.$testobj
     fi
 
     stat=99
     if [ -n "${FILE-}" -a -r "${FILE-}" ]
     then
-	    echo ${CC} -g -o $testobj -D$symbol  ${PORTINCLUDE} ${EXTRAFLAGS} -I${OPENSWANSRCDIR}/linux/include -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include ${PORTINCLUDE} ${FILE} ${OPENSWANLIB} ${EXTRALIBS}
-	    ${CC} -g -o $testobj -D$symbol ${PORTINCLUDE} ${EXTRAFLAGS} -I${OPENSWANSRCDIR}/linux/include -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include ${FILE} ${OPENSWANLIB} ${EXTRALIBS}
-	    rm -rf lib-$testobj/OUTPUT
-	    mkdir -p lib-$testobj/OUTPUT
+	    ${ECHO} ${CC} -g -o $testobj -D$symbol ${MOREFLAGS} ${PORTINCLUDE} ${EXTRAFLAGS} -I${OPENSWANSRCDIR}/linux/include -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include ${FILE} ${OPENSWANLIB} ${EXTRALIBS}
+	    ${CC} -g -o $testobj -D$symbol ${MOREFLAGS} ${PORTINCLUDE} ${EXTRAFLAGS} -I${OPENSWANSRCDIR}/linux/include -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include ${FILE} ${OPENSWANLIB} ${EXTRALIBS}
+    fi
+}
 
+# test entry point:
+libtest() {
+    testobj=$1
+    testexpect=$2
+    testsrc=$testobj.c
+
+    ${ECHO} '**** make libtest COMPILING' $testsrc '****'
+    complibtest $testobj $testsrc
+
+    stat=99
+    if [ -n "${FILE-}" -a -r "${FILE-}" ]
+    then
 	    export TEST_PURPOSE=regress
 
 	    echo Running $testobj
