@@ -20,6 +20,7 @@
 #include "seam_crypt.c"
 #include "seam_kernel.c"
 #include "seam_rnd.c"
+#include "seam_log.c"
 
 main(int argc, char *argv[])
 {

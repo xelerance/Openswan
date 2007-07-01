@@ -14,6 +14,7 @@
 #include "../../programs/pluto/connections.c"
 
 #include "whackmsgtestlib.c"
+#include "seam_log.c"
 #include "seam_state.c"
 
 main(int argc, char *argv[])
