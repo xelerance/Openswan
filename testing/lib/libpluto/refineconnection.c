@@ -14,7 +14,12 @@
 #include "../../programs/pluto/connections.c"
 
 #include "whackmsgtestlib.c"
-#include "seam_state.c"
+#include "seam_timer.c"
+#include "seam_ipsecdoi.c"
+#include "seam_pending.c"
+#include "seam_crypt.c"
+#include "seam_kernel.c"
+#include "seam_rnd.c"
 
 main(int argc, char *argv[])
 {
@@ -38,6 +43,22 @@ main(int argc, char *argv[])
 
     readwhackmsg(infile);
 
+    {
+	struct state *st1 = new_state();
+	struct connection *nc;
+	struct id peer_id;
+
+	/* set it to the first connection, there may be only one?? */
+	st1->st_connection = connections;
+	st1->st_oakley.auth = OAKLEY_RSA_SIG;
+
+	atoid("@west", &peer_id, TRUE);
+	
+	nc = refine_host_connection(st1, &peer_id, FALSE, FALSE);
+	
+	printf("new name: %s\n", nc ? nc->name : "<none>");
+    }
+
     report_leaks();
 
     tool_close_log();
@@ -49,6 +70,6 @@ main(int argc, char *argv[])
  * Local Variables:
  * c-style: pluto
  * c-basic-offset: 4
- * compile-command: "make whackmsgtest"
+ * compile-command: "make refineconnection"
  * End:
  */

@@ -27,7 +27,6 @@ void whack_log(int rc, const char *msg, ...)
 }
 
 void flush_pending_by_connection(struct connection *c) {}
-void delete_states_by_connection(struct connection *c, bool relations) {}
 void unroute_connection(struct connection *c) {}
 void release_cert(cert_t cert) {}
 bool trap_connection(struct connection *c) { return TRUE; }
@@ -59,7 +58,6 @@ void gw_addref(struct gw_info *gw) {}
 void gw_delref(struct gw_info **gwp) {}
 
 bool in_pending_use(struct connection *c) { return FALSE; }
-bool states_use_connection(struct connection *c) { return FALSE; }
 
 err_t add_public_key(const struct id *id
 		     , enum dns_auth_level dns_auth_level
@@ -80,14 +78,7 @@ err_t start_adns_query(const struct id *id	/* domain to query */
     /* SHOULD call continuation immediately with "NOT FOUND" */
 }
 
-/* state.c SEAM */
-struct state *state_with_serialno(so_serial_t sn) { return NULL; }
-void delete_state(struct state *st) {}
-void delete_states_by_peer(ip_address *peer) {}
-
-/* log.c SEAM */
-void close_peerlog(void) {}
-void daily_log_reset(void) {}
+#include "seam_log.c"
 
 /* dnskey.c SEAM */
 void reset_adns_restart_count(void) {}
@@ -142,7 +133,6 @@ oakley_auth_t xauth_calcbaseauth(oakley_auth_t baseauth)
 struct iface_port  *interfaces = NULL;	/* public interfaces */
 struct connection *cur_connection = NULL;
 enum kernel_interface kern_interface = NO_KERNEL;
-u_int16_t pluto_port = 500;	/* Pluto's port */
 bool can_do_IPcomp=TRUE;
 bool nat_traversal_enabled=TRUE;
 int whack_log_fd = NULL_FD;
