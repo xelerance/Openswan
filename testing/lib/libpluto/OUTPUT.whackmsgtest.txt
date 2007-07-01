@@ -1,2 +1,10 @@
 
-
+  Electric Fence 2.1 Copyright (C) 1987-1998 Bruce Perens.
+../whackmsgtest added connection description "westnet-eastnet"
+| base debugging = crypt+control+controlmore
+Pre-amble: #!-pluto-whack-file- recorded on east on 2007-07-01 00:48:03
+../whackmsgtest listening for IKE messages
+../whackmsgtest listening for IKE messages
+../whackmsgtest leak: 2 * host ip
+../whackmsgtest leak: connection name
+../whackmsgtest leak: struct connection
