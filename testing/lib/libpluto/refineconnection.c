@@ -9,7 +9,7 @@
 #include "constants.h"
 #include "oswalloc.h"
 #include "whack.h"
-#include "rcv_whack.h"
+#include "../../programs/pluto/rcv_whack.h"
 
 #include "../../programs/pluto/connections.c"
 
@@ -21,6 +21,8 @@
 #include "seam_kernel.c"
 #include "seam_rnd.c"
 #include "seam_log.c"
+#include "seam_xauth.c"
+#include "seam_initiate.c"
 
 main(int argc, char *argv[])
 {

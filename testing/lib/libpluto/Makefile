@@ -13,7 +13,7 @@
 #
 # RCSID $Id: Makefile,v 1.5 2005/08/05 17:04:54 mcr Exp $
 
-OPENSWANSRCDIR?=../../..
+OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
 srcdir?=./
 include $(OPENSWANSRCDIR)/Makefile.inc
 
@@ -52,6 +52,12 @@ distclean: clean
 mostlyclean: clean
 
 realclean: clean
+
+depend:
+	(source ${UTILS}/functions.sh; ls *.c | (while read file; do echo 'Calculating depends for '$$file >&2; ECHO=':' MOREFLAGS=-MM complibtest .Makefile.depend.$$file.${OSDEP} $$file >&2; cat .Makefile.depend.$$file.${OSDEP}; done) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP})
+
+-include ${srcdir}Makefile.depend.${OSDEP}
+
 
 east.record: ${OPENSWANSRCDIR}/programs/pluto/rcv_whack.c
 	(cd ${OPENSWANSRCDIR}/programs/pluto && unset OPENSWANSRCDIR && pl_inst.sh)

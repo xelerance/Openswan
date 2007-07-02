@@ -46,7 +46,6 @@ struct db_sa *kernel_alg_makedb(lset_t policy, struct alg_info_esp *ei, bool log
     return NULL;
 }
 void free_sa(struct db_sa *f) {}
-bool orient(struct connection *c) { return TRUE; }
 
 /* ac.c SEAM */
 void decode_groups(char *groups, ietfAttrList_t **listp) {}
@@ -118,10 +117,6 @@ void initiate_ondemand(const ip_address *our_client
 void terminate_connection(const char *nm) {}
 void show_status(void) {}
 
-
-/* xauth.c SEAM */
-oakley_auth_t xauth_calcbaseauth(oakley_auth_t baseauth)
-{ return 0; }
 
 
 
