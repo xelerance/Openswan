@@ -1,0 +1,20 @@
+
+  Electric Fence 2.1 Copyright (C) 1987-1998 Bruce Perens.
+| interface "eth0" matched right side
+../refineconnection added connection description "westnet-eastnet"
+| base debugging = crypt+control+controlmore
+Pre-amble: #!-pluto-whack-file- recorded on east on 2007-07-01 00:48:03
+../refineconnection listening for IKE messages
+../refineconnection listening for IKE messages
+| creating state object #1 at 0x401f3c10
+| refine_connection: starting with westnet-eastnet
+|    match_id a=@west
+|             b=@west
+|    results  matched
+|   trusted_ca called with a=(empty) b=(empty)
+| refine_connection: checking westnet-eastnet against westnet-eastnet, best=(none) with match=1(id=1/ca=1/reqca=1)
+| refine_connection: checked westnet-eastnet against westnet-eastnet, now for see if best
+../refineconnection leak: 2 * host ip
+../refineconnection leak: connection name
+../refineconnection leak: struct connection
+new name: westnet-eastnet
