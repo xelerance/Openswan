@@ -53,6 +53,11 @@ while(<NEW>) {
     $kerneloptions{$1}='M';
     next;
   }
+  if(/(CONFIG.*)=(.*)/) {
+    $kerneloptions{$1}="value";
+    $kernelvalue{$1}=$2;
+    next;
+  }
   #print "4 processing $_\n";
 }
 close(NEW);
