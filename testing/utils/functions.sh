@@ -1143,6 +1143,8 @@ libtest() {
     testexpect=$2
     testsrc=$testobj.c
 
+    ECHO=${ECHO-echo}
+
     ${ECHO} '**** make libtest COMPILING' $testsrc '****'
     complibtest $testobj $testsrc
 
