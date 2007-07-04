@@ -32,7 +32,6 @@ east:~#
 000 algorithm IKE hash: id=2, name=OAKLEY_SHA1, hashsize=20
 000 algorithm IKE hash: id=4, name=OAKLEY_SHA2_256, hashsize=32
 000 algorithm IKE hash: id=6, name=OAKLEY_SHA2_512, hashsize=64
-000 algorithm IKE dh group: id=1, name=OAKLEY_GROUP_MODP768, bits=768
 000 algorithm IKE dh group: id=2, name=OAKLEY_GROUP_MODP1024, bits=1024
 000 algorithm IKE dh group: id=5, name=OAKLEY_GROUP_MODP1536, bits=1536
 000 algorithm IKE dh group: id=14, name=OAKLEY_GROUP_MODP2048, bits=2048
@@ -43,13 +42,13 @@ east:~#
 000  
 000 stats db_ops: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0}
 000  
-000 "packetdefault": 0.0.0.0/0===192.1.2.23[%myid]---192.1.2.254...192.1.2.254---%opportunistic; prospective erouted; eroute owner: #0
-000 "packetdefault":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
-000 "packetdefault":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
-000 "packetdefault":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+failurePASS+lKOD+rKOD; prio: 0,0; interface: eth1; 
+000 "packetdefault": 0.0.0.0/0===192.1.2.23---192.1.2.254...%opportunistic; prospective erouted; eroute owner: #0
+000 "packetdefault":     myip=unset; hisip=unset;
+000 "packetdefault":   ike_life: 3600s; ipsec_life: 1800s; rekey_margin: 0s; rekey_fuzz: 0%; keyingtries: 3
+000 "packetdefault":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+OPPORTUNISTIC+failurePASS+lKOD+rKOD; prio: 0,0; interface: eth1; 
 000 "packetdefault":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
-000 "SAwest-east": 192.1.2.23[@east,S?C]---192.1.2.45...%any[@west,S?C]; unrouted; eroute owner: #0
-000 "SAwest-east":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
+000 "SAwest-east": 192.1.2.23[@east]---192.1.2.45...%any[@west]; unrouted; eroute owner: #0
+000 "SAwest-east":     myip=unset; hisip=unset; myup=ipsec _updown; hisup=ipsec _updown;
 000 "SAwest-east":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 1
 000 "SAwest-east":   policy: RSASIG+ENCRYPT+TUNNEL+PFS; prio: 32,32; interface: eth1; 
 000 "SAwest-east":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
@@ -63,6 +62,7 @@ east:~#
 east NOW
 0.0.0.0/0          -> 0.0.0.0/0          => %trap
 ipsec0->eth1 mtu=16260(9999)->1500
+tun0xTUN#@192.1.2.23 IPIP: dir=in  src=192.1.2.45 policy=192.1.2.45/32->192.1.2.23/32 flags=0x8<>  natencap=none natsport=0 natdport=0  
 ROUTING TABLE
 192.1.2.0/24 dev eth1  proto kernel  scope link  src 192.1.2.23
 192.1.2.0/24 dev ipsec0  proto kernel  scope link  src 192.1.2.23
@@ -82,7 +82,6 @@ east:~#
 000 algorithm ESP auth attr: id=2, name=AUTH_ALGORITHM_HMAC_SHA1, keysizemin=160, keysizemax=160
 000 algorithm ESP auth attr: id=9, name=AUTH_ALGORITHM_AES_CBC, keysizemin=128, keysizemax=128
 000  
-000 algorithm IKE encrypt: id=1, name=OAKLEY_DES_CBC, blocksize=8, keydeflen=64
 000 algorithm IKE encrypt: id=3, name=OAKLEY_BLOWFISH_CBC, blocksize=8, keydeflen=128
 000 algorithm IKE encrypt: id=5, name=OAKLEY_3DES_CBC, blocksize=8, keydeflen=192
 000 algorithm IKE encrypt: id=7, name=OAKLEY_AES_CBC, blocksize=16, keydeflen=128
@@ -93,7 +92,6 @@ east:~#
 000 algorithm IKE hash: id=2, name=OAKLEY_SHA1, hashsize=20
 000 algorithm IKE hash: id=4, name=OAKLEY_SHA2_256, hashsize=32
 000 algorithm IKE hash: id=6, name=OAKLEY_SHA2_512, hashsize=64
-000 algorithm IKE dh group: id=1, name=OAKLEY_GROUP_MODP768, bits=768
 000 algorithm IKE dh group: id=2, name=OAKLEY_GROUP_MODP1024, bits=1024
 000 algorithm IKE dh group: id=5, name=OAKLEY_GROUP_MODP1536, bits=1536
 000 algorithm IKE dh group: id=14, name=OAKLEY_GROUP_MODP2048, bits=2048
@@ -104,13 +102,13 @@ east:~#
 000  
 000 stats db_ops: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0}
 000  
-000 "packetdefault": 0.0.0.0/0===192.1.2.23[%myid]---192.1.2.254...192.1.2.254---%opportunistic; prospective erouted; eroute owner: #0
-000 "packetdefault":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
-000 "packetdefault":   ike_life: 3600s; ipsec_life: 3600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
-000 "packetdefault":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+OPPORTUNISTIC+failurePASS+lKOD+rKOD; prio: 0,0; interface: eth1; 
+000 "packetdefault": 0.0.0.0/0===192.1.2.23---192.1.2.254...%opportunistic; prospective erouted; eroute owner: #0
+000 "packetdefault":     myip=unset; hisip=unset;
+000 "packetdefault":   ike_life: 3600s; ipsec_life: 1800s; rekey_margin: 0s; rekey_fuzz: 0%; keyingtries: 3
+000 "packetdefault":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+OPPORTUNISTIC+failurePASS+lKOD+rKOD; prio: 0,0; interface: eth1; 
 000 "packetdefault":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
-000 "SAwest-east": 192.1.2.23[@east,S?C]---192.1.2.45...%any[@west,S?C]; unrouted; eroute owner: #0
-000 "SAwest-east":     srcip=unset; dstip=unset; srcup=ipsec _updown; dstup=ipsec _updown;
+000 "SAwest-east": 192.1.2.23[@east]---192.1.2.45...%any[@west]; unrouted; eroute owner: #0
+000 "SAwest-east":     myip=unset; hisip=unset; myup=ipsec _updown; hisup=ipsec _updown;
 000 "SAwest-east":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 1
 000 "SAwest-east":   policy: RSASIG+ENCRYPT+TUNNEL+PFS; prio: 32,32; interface: eth1; 
 000 "SAwest-east":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
