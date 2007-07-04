@@ -28,15 +28,18 @@ main(int argc, char *argv[])
 {
     int   len;
     char *infile;
+    FILE *idfile;
+    char idbuf[256];
+    int  lineno=0;
 
     EF_PROTECT_FREE=1;
     EF_FREE_WIPES  =1;
 
     progname = argv[0];
 
-    if(argc > 2 ) {
-	fprintf(stderr, "Usage: %s <whackrecord>\n", progname);
-	    exit(10);
+    if(argc != 3 ) {
+	fprintf(stderr, "Usage: %s <whackrecord> <idfile>\n", progname);
+	exit(10);
     }
     /* argv[1] == "-r" */
 
@@ -46,20 +49,36 @@ main(int argc, char *argv[])
 
     readwhackmsg(infile);
 
+    idfile = fopen(argv[2], "r");
+    if(!idfile) {
+	perror(argv[2]);
+	exit(11);
+    }
+
+    while(fgets(idbuf, sizeof(idbuf), idfile) != NULL)
     {
-	struct state *st1 = new_state();
+	struct state *st1;
 	struct connection *nc;
 	struct id peer_id;
+	int aggrmode, initiate;
+	char id1[256];
+	
+	/* ignore comments */
+	if(idbuf[0]=='#') continue;
+
+	st1 = new_state();
+	
+	sscanf(idbuf, "%s %u %u", id1, &initiate, &aggrmode);
 
 	/* set it to the first connection, there may be only one?? */
 	st1->st_connection = connections;
 	st1->st_oakley.auth = OAKLEY_RSA_SIG;
 
-	atoid("@west", &peer_id, TRUE);
+	atoid(id1, &peer_id, TRUE);
 	
-	nc = refine_host_connection(st1, &peer_id, FALSE, FALSE);
+	nc = refine_host_connection(st1, &peer_id, initiate, aggrmode);
 	
-	printf("new name: %s\n", nc ? nc->name : "<none>");
+	printf("%u: %s -> conn: %s\n", ++lineno, id1,nc ? nc->name : "<none>");
     }
 
     report_leaks();

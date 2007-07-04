@@ -1153,8 +1153,8 @@ libtest() {
     then
 	    export TEST_PURPOSE=regress
 
-	    echo Running $testobj
-	    ( ulimit -c unlimited; cd lib-$testobj && ../$testobj ${UNITTESTARGS} >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
+	    echo Running $testobj ${UNITTESTARGS}
+	    ( ulimit -c unlimited; cd lib-$testobj && eval ../$testobj ${UNITTESTARGS} >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
 
 	    stat=$?
 	    echo Exit code $stat
@@ -1178,6 +1178,50 @@ libtest() {
 
     TEST_PURPOSE=regress  UML_BRAND=0 recordresults lib-$testobj "$testexpect" $stat lib-$testobj
 }
+
+# test entry point:
+multilibtest() {
+    testobj=$1
+    testexpect=$2
+    testsrc=$testobj.c
+
+    ECHO=${ECHO-echo}
+
+    ${ECHO} '**** make libtest COMPILING' $testsrc '****'
+    complibtest $testobj $testsrc
+
+    stat=99
+    if [ -n "${FILE-}" -a -r "${FILE-}" ]
+    then
+	    export TEST_PURPOSE=regress
+
+	    echo Running $testobj ${UNITTESTARGS}
+	    ( ulimit -c unlimited; cd lib-$testobj && ./testlist.sh >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
+
+	    stat=$?
+	    echo Exit code $stat
+	    if [ $stat -gt 128 ]
+	    then
+		stat="$stat core"
+	    else
+		if [ -r OUTPUT.$testobj.txt ]
+		then
+		    if diff -N -u -w -b -B lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.txt OUTPUT.$testobj.txt > lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.output.diff
+		    then
+			echo "output matched"
+			stat="0"
+		    else
+			echo "output differed"
+			stat="1"
+		    fi
+		fi
+            fi
+    fi
+
+    TEST_PURPOSE=regress  UML_BRAND=0 recordresults lib-$testobj "$testexpect" $stat lib-$testobj
+}
+
+
 
 ###################################
 #

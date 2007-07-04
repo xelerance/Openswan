@@ -26,6 +26,9 @@ TESTS=$(shell awk '{print $$2;}' ${srcdir}TESTLIST)
 all: ${TESTS}
 	echo ${TESTS}
 
+refineconnection: refineconnection.c lib-refineconnection/testlist.sh OUTPUT.refineconnection.txt FLAGS.refineconnection
+	source ${UTILS}/functions.sh; multilibtest `basename $< .c`
+
 %: %.c OUTPUT.%.txt FLAGS.%
 	source ${UTILS}/functions.sh; libtest `basename $< .c`
 
