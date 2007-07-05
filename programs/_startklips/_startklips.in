@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _startklips.in,v 1.43.4.7 2006/11/13 20:27:18 paul Exp $
+# RCSID $Id: _startklips.in,v 1.43.4.9 2007/06/19 14:52:18 paul Exp $
 
 me='ipsec _startklips'		# for messages
 
@@ -147,7 +147,10 @@ klipsinterface() {
 	then
 		# attach the interface and bring it up
 		ipsec tncfg --attach --virtual $virt --physical $phys
-		ifconfig $virt inet $addr $type $otheraddr netmask $mask $mtu
+		# busybox does not like "inet" keyword in ifconfiga
+		# see http://busybox.net/bugs/view.php?id=752
+		# ifconfig $virt inet $addr $type $otheraddr netmask $mask $mtu
+		ifconfig $virt $addr $type $otheraddr netmask $mask $mtu
 	fi
 
 	# if %defaultroute, note the facts
@@ -269,16 +272,16 @@ then
     echo "FATAL ERROR: Both KLIPS and NETKEY IPsec code is present in kernel"
     exit
 fi
-if test ! -f $ipsecversion && test ! -f $netkey && modprobe -qn ipsec
+if test ! -f $ipsecversion && test ! -f $netkey && @MODPROBE@ -qn ipsec
 then
 	# statically compiled KLIPS/NETKEY not found; but there seems to be an ipsec module
-	modprobe ipsec 2> /dev/null
+	@MODPROBE@ ipsec 2> /dev/null
 fi
 
-if test ! -f $ipsecversion && test ! -f $netkey && modprobe -qn af_key
+if test ! -f $ipsecversion && test ! -f $netkey && @MODPROBE@ -qn af_key
 then
 	# netkey should work then
-	modprobe af_key 2> /dev/null
+	@MODPROBE@ af_key 2> /dev/null
 fi
 if test ! -f $ipsecversion && test ! -f $netkey 
 then
@@ -292,26 +295,26 @@ fi
 if test -f $modules
 then
 	# we modprobe hw_random so ipsec verify can complain about not using it
-	modprobe -q hw_random 2> /dev/null
+	@MODPROBE@ -q hw_random 2> /dev/null
 	# padlock must load before aes module
-	modprobe -q padlock 2> /dev/null
+	@MODPROBE@ -q padlock 2> /dev/null
 	# load the most common ciphers/algo's
-	modprobe -q sha256 2> /dev/null
-	modprobe -q sha1 2> /dev/null
-	modprobe -q md5 2> /dev/null
-	modprobe -q des 2> /dev/null
-	modprobe -q aes 2> /dev/null
+	@MODPROBE@ -q sha256 2> /dev/null
+	@MODPROBE@ -q sha1 2> /dev/null
+	@MODPROBE@ -q md5 2> /dev/null
+	@MODPROBE@ -q des 2> /dev/null
+	@MODPROBE@ -q aes 2> /dev/null
 
 	if test -f $netkey
 	then
 		klips=false
-		modprobe -q ah4 2> /dev/null
-		modprobe -q esp4 2> /dev/null
-		modprobe -q ipcomp 2> /dev/null
+		@MODPROBE@ -q ah4 2> /dev/null
+		@MODPROBE@ -q esp4 2> /dev/null
+		@MODPROBE@ -q ipcomp 2> /dev/null
 		#  xfrm4_tunnel is needed by ipip and ipcomp
-		modprobe -q xfrm4_tunnel 2> /dev/null
+		@MODPROBE@ -q xfrm4_tunnel 2> /dev/null
 		# xfrm_user contains netlink support for IPsec 
-		modprobe -q xfrm_user 2> /dev/null
+		@MODPROBE@ -q xfrm_user 2> /dev/null
 	fi
 
 	if test ! -f $ipsecversion && $klips
@@ -324,7 +327,7 @@ then
 		fi
                	unset MODPATH MODULECONF        # no user overrides!
                	depmod -a >/dev/null 2>&1
-               	modprobe -v ipsec
+               	@MODPROBE@ -v ipsec
         	if test ! -f $ipsecversion
         	then
                 	echo "kernel appears to lack IPsec support (neither CONFIG_KLIPS or CONFIG_NET_KEY are set)"

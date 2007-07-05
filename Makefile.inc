@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.inc,v 1.116.2.11 2006/11/07 15:55:52 paul Exp $
+# RCSID $Id: Makefile.inc,v 1.116.2.13 2007/06/19 14:49:19 paul Exp $
 
 
 
@@ -147,6 +147,8 @@ VERFILE=$(KERNELSRC)/include/linux/version.h
 # where KLIPS kernel module is install
 OSMOD_DESTDIR?=net/ipsec
 
+# What command to use to load the modules. openwrt does not have modprobe
+MODPROBE?=modprobe
 
 ### misc installation stuff
 
@@ -171,7 +173,7 @@ INSTCONFFLAGS=
 # Do no use this for cross-compiling flags such as -I or -L. Add those to a
 # CC variable
 # (caution, this stuff is still being sorted out, will change in future)
-USERCOMPILE?=-g -O3
+USERCOMPILE?=-g -O3 -DDISABLE_UDP_CHECKSUM
 KLIPSCOMPILE=-O3
 # for AMD64 use 
 #USERCOMPILE?=-g -O3 -m64

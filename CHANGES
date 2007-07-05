@@ -1,18 +1,60 @@
 Please see docs/KNOWN_BUGS file for more information
 
+v2.4.9
+* typofix for smartcard support [andreas zwicker]
+* fix for when responder PSK incorrectly uses pfs and has nhelpers=0
+  [Matthias Haas]
+* bugtracker bugs fixed:
+  #801: Patch for fixing type-punned compiler warnings [Alin Nastac]
+
+v2.4.8
+* Added Andy Gay's ipcomp with esp= fix in contrib/ipcomp/ (see #538)
+* Added and enabled DISABLE_UDP_CHECKSUM until the cause of this bug
+  has been fixed. This is bug#601. Found by Frank Vogt
+* fix for ikeping reporting wrong percentge of lost packets [Mark-Andre Hopf]
+* Fix for busybox' ifconfig (doesn't support 'inet') [Dave Chuha]
+* Fix for compiling on 2.6.20 (sk_buff's nfmark is now called mark)
+* NAT-T patch update for 2.6.20
+* NAT-T patch broke NAT-T for NETKEY,even with CONFIG_IPSEC_NAT_TRAVERSAL unset
+* Fix for too small ike string buffer ipsec auto --status output [paul/dhr]
+* Fix for Aggressive Mode and NAT-T port floating, based on RedHat patch [paul]
+* Fix for Aggressive Mode and NAT-T (#491) by Delta Yeh
+* ikeping waits milliseconds instead of seconds, patch by Mark-Andre Hopf 
+* Workaround for NETKEY's unlimited acquire stream by Michael Smiths (#726)
+* Some vendor ID's for Vista and Cisco VPN 3000 [jacco]
+
+* backports from git
+  #git 5735f731ed474dbb22fce2f5bc0a9f5e1fea2994: rewrite of available worker
+                                                 code from egbert@ [mcr]
+  #git c75967b03b2c478a612aef4ccb7e5dff6e4bdaf5: dpdaction=restart fix [mcr]
+  #git 41e54a2684dc809d7952e816860ea646a3194a72: Fix for kernels > 2.6.18 
+  #git c2e23a6e16a55632d618740518d419f3fad3323d: AggressiveMode with nhelpers=0
+                                                 fix from Marin Hincks
+  #git 1933710623a33fe8f3229b193721aed005fb87c2: Crasher in printing alg debug
+  #git 9bfb2794bd9c239dfe9e9617616eaf6fc389de57: uninitialized sockaddrs fix
+  #git e199785d8e11687534569b04a3e0a6956b2086b8: set helper # in child
+* bugtracker bugs fixed:
+  #723: Bogus Code in pluto_crypt.c [egbert/mt/mcr]
+  #698: Wrong IKE-Algorithm displayed on ipsec auto --status [martin/paul/mcr]
+        original patch by Martin Schiller
+  #719: Fix to authenticate with a smartcard (USB Aladdin eToken) ["pm"]
+
 v2.4.7
 * Remove direct use of /dev/hw* for random on Linux. It is not guranteed
   to be secure (FIPS compliant) random [paul]
 * Fix bugs introduced in 2.4.6 using KLIPS and CryptoAPI on 2.6.17.6+
-* Various fixes to lwdnsq. lwresq is now enabled again to allow
-  proper CNAME following [mcr]
-* Extensively Updated the man page for ipsec.conf [paul]
+* fixes for displaying proper NAT-T draft/rfc used [jacco]
+* Various fixes to lwdnsq [mcr]
+* Extensively updated man pages [paul]
 * Added rootservers to the clear policy [idea by mcr]
 * Fix for pluto to allow NETKEY's ESP_NULL by JuanJo Ciarlante
 * Added ESP_NULL support to KLIPS by JuanJo Ciarlante (disabled per default)
 * Support Fedora style default RSA hostkey [paul]
 * Clarified various log messages
+* Possible interop fix for Sonicwall
 * Fixes to _startklips and logging cleanup [paul]
+* Fix for handling defaultroute to a p-t-p interface without gw ip. [bleve]
+  - this might also fix #693
 * Extended ipsec verify to complain misconfigured hardware random [paul]
 * Extended ipsec verify to complain about SElinux in enforced mode, until
   working security policies are known to exist as it breaks with both
@@ -227,4 +269,4 @@ v2.1.0
   while travelling.  This is based on Tuomo Soini's Advanced Routing
   patch.
 
-RCSID $Id: CHANGES,v 1.326.2.86 2006/10/19 04:57:08 paul Exp $
+RCSID $Id: CHANGES,v 1.326.2.115 2007/06/05 16:50:22 paul Exp $

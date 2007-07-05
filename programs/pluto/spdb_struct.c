@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: spdb_struct.c,v 1.13.2.11 2006/08/31 20:18:47 paul Exp $
+ * RCSID $Id: spdb_struct.c,v 1.13.2.15 2007/05/13 21:56:48 paul Exp $
  */
 
 #include <stdio.h>
@@ -947,7 +947,7 @@ parse_isakmp_sa_body(
 		    ta.group = lookup_group(val);
 		    if (ta.group == NULL)
 		    {
-			ugh = "only OAKLEY_GROUP_MODP1024 and OAKLEY_GROUP_MODP1536 supported";
+			ugh = builddiag("Diffie-Hellman group %d is not a supported modp group" , val);
 			break;
 		    }
 		    break;
@@ -2130,22 +2130,22 @@ parse_ipsec_sa_body(
 		    loglog(RC_LOG_SERIOUS
 			   , "AH and ESP transforms disagree about encapsulation; TUNNEL presumed");
 		}
+#ifdef KERNEL_ALG
+		/* 
+		 * ML: at last check for allowed transforms in alg_info_esp 
+		 *     (ALG_INFO_F_STRICT flag)
+		 *
+		 */
+		if (c->alg_info_esp!=NULL
+		    && !kernel_alg_esp_ok_final(esp_attrs.transid, esp_attrs.key_len,
+						esp_attrs.auth, c->alg_info_esp))
+			continue;
+#endif
 
 		break;	/* we seem to be happy */
 	    }
 	    if (tn == esp_proposal.isap_notrans)
 		continue;	/* we didn't find a nice one */
-#ifdef KERNEL_ALG
-	    /* 
-	     * ML: at last check for allowed transforms in alg_info_esp 
-	     *     (ALG_INFO_F_STRICT flag)
-	     *
-	     */
-	    if (c->alg_info_esp!=NULL
-		&& !kernel_alg_esp_ok_final(esp_attrs.transid, esp_attrs.key_len,
-					    esp_attrs.auth, c->alg_info_esp))
-		    continue;
-#endif
 	    esp_attrs.spi = esp_spi;
 	    inner_proto = IPPROTO_ESP;
 	    if (esp_attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)

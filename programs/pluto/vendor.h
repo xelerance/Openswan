@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: vendor.h,v 1.13.2.2 2006/04/04 21:43:02 paul Exp $
+ * RCSID $Id: vendor.h,v 1.13.2.3 2007/03/12 02:01:07 paul Exp $
  */
 
 #ifndef _VENDOR_H_
@@ -57,6 +57,8 @@ enum known_vendorid {
   VID_OPENSWANSELF	    =36,
   VID_NCP                   =37,
   VID_CISCO_IOS             =38,
+  VID_VISTA_AUTHIP          =39,
+  VID_VISTA_AUTHIP2         =40,
 
 
   /* 101 - 200 : NAT-Traversal */

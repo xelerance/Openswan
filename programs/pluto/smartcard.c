@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: smartcard.c,v 1.6 2004/09/22 15:47:07 paul Exp $
+ * RCSID $Id: smartcard.c,v 1.6.16.2 2007/05/25 14:53:28 paul Exp $
  */
 
 #include <stdio.h>
@@ -381,7 +381,7 @@ scx_sign_hash(smartcard_t *sc UNUSED
     sc_pkcs15_hex_string_to_id(sc->id, &id);
 
     /* get private key by id */
-    r = sc_pkcs15_find_prkey_by_id(p15card, &id, &key);
+    r = sc_pkcs15_find_prkey_by_id_usage(p15card, &id, SC_PKCS15_PRKEY_USAGE_SIGN | SC_PKCS15_PRKEY_USAGE_SIGNRECOVER, &key);
 
     if (r < 0)
     {

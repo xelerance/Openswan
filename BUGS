@@ -1,6 +1,10 @@
 As of this release, the following are considered known bugs.  For a detailed
 list, see http://bugs.openswan.org 
 
+* Using esp= with compress=yes does not work as expected. If you really
+  need this, try Andy Gay's patch in contrib/ipcomp. This issue is fixed
+  in openswan 3.x (for details, see bug #538)
+
 * Test cases using AH for authentication currently fail. If you need this 
   functionality for interop, either use an older release (1.99) or JuanJo 
   Ciarlante's ALG patch. 
@@ -85,4 +89,4 @@ list, see http://bugs.openswan.org
   is more than "IPsec-overhead" larger than the MTU. This is to compatible
   with plpmtud (i.e. "PMTUbis") being proposed in the pmtud WG.
 
-This file is RCSID $Id: BUGS,v 1.56.2.5 2006/08/16 21:22:09 paul Exp $
+This file is RCSID $Id: BUGS,v 1.56.2.6 2007/05/16 17:06:11 paul Exp $

@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: demux.c,v 1.210.2.11 2007/01/22 21:05:12 paul Exp $
+ * RCSID $Id: demux.c,v 1.210.2.12 2007/06/05 16:43:37 paul Exp $
  */
 
 /* Ordering Constraints on Payloads
@@ -2411,7 +2411,7 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
      * we can only be in calculating state if state is ignore,
      * or suspended.
      */
-    passert(result == STF_IGNORE || result == STF_SUSPEND || st->st_calculating==FALSE);
+    passert(result == STF_IGNORE || result == STF_INLINE || result == STF_SUSPEND || st->st_calculating==FALSE);
 
     switch (result)
     {

@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: plutomain.c,v 1.102.2.6 2006/10/27 03:00:30 paul Exp $
+ * RCSID $Id: plutomain.c,v 1.102.2.7 2007/04/06 17:10:37 paul Exp $
  */
 
 #include <stdio.h>
@@ -421,7 +421,7 @@ main(int argc, char **argv)
 
                 if (*endptr != '\0' || endptr == optarg
 		    || count < -1)
-                    usage("<interval-time> must be a positive number, 0 or -1");
+                    usage("<nhelpers> must be a positive number, 0 or -1");
                 nhelpers = count;
             }
 	    continue;

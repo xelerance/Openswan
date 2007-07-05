@@ -15,7 +15,7 @@
  * for more details.
  */
 
-char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.171.2.10 2006/10/06 21:39:26 paul Exp $";
+char ipsec_rcv_c_version[] = "RCSID $Id: ipsec_rcv.c,v 1.171.2.11 2007/04/28 20:46:40 paul Exp $";
 
 #ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
@@ -924,9 +924,17 @@ int ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 			    "klips_debug:ipsec_rcv: "
 			    "NAT-T & TRANSPORT: "
 			    "fix UDP checksum using NAT-OA\n");
+#ifdef DISABLE_UDP_CHECKSUM
+		udp->check=0
+		KLIPS_PRINT(debug_rcv,
+			    "klips_debug:ipsec_rcv: "
+			    "NAT-T & TRANSPORT: "
+			    "UDP checksum using NAT-OA disabled at compile time\n");
+#else
 		udp->check = csum_fold(
 				       csum_partial((unsigned char *)buff, sizeof(buff),
 						    udp->check^0xffff));
+#endif
 	      }
 	      else {
 		KLIPS_PRINT(debug_rcv,
@@ -1708,6 +1716,11 @@ rcvleave:
 
 /*
  * $Log: ipsec_rcv.c,v $
+ * Revision 1.171.2.11  2007/04/28 20:46:40  paul
+ * Added compile time switch for -DDISABLE_UDP_CHECKSUM that seems to be
+ * breaking IPsec+NAT+Transport mode with NAT-OA. Enabled this per default
+ * via Makefile.inc's USERCOMPILE flags.
+ *
  * Revision 1.171.2.10  2006/10/06 21:39:26  paul
  * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
  * set. This is defined through autoconf.h which is included through the

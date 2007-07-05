@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: whack.c,v 1.144.4.4 2006/08/11 17:31:44 mcr Exp $
+ * RCSID $Id: whack.c,v 1.144.4.11 2006/10/27 20:05:09 paul Exp $
  */
 
 #include <stdio.h>
@@ -64,6 +64,8 @@ help(void)
 	    " \\\n   "
 	    " (--host <ip-address> | --id <identity> | --cert <path>)"
 	    " [--ca <distinguished name>]"
+	    " [--sendcert <yes|forced|ifasked|no>]"
+	    " [--certtype number]"
 	    " [--ikeport <port-number>]"
 	    " \\\n   "
 	    " [--nexthop <ip-address>]"
@@ -72,6 +74,15 @@ help(void)
 	    " \\\n   "
 	    " [--clientprotoport <protocol>/<port>]"
 	    " [--dnskeyondemand]"
+#ifdef XAUTH
+	    " \\\n   "
+	    " [--xauthserver]"
+	    " [--xauthclient]"
+#endif
+#ifdef MODECFG
+	    " [--modecfgserver]"
+	    " [--modecfgclient]"
+#endif
 	    " \\\n   "
 	    " [--updown <updown>]"
 	    " --to"
@@ -80,18 +91,28 @@ help(void)
             " [--cert <path>]"
             " [--groups <access control groups>]"
 	    " [--ca <distinguished name>]"
-	    " [--sendcert]"
-	    " [--sendcerttype number]"
+	    " [--sendcert <yes|ifasked|no]"
+	    " [--certtype number]"
 	    " \\\n   "
 	    " [--ikeport <port-number>]"
 	    " \\\n   "
 	    " [--nexthop <ip-address>]"
 	    " \\\n   "
 	    " [--client <subnet> | --clientwithin <address range>]"
+	    " [--srcip <ip-address>]"
 	    " \\\n   "
 	    " [--clientprotoport <protocol>/<port>]"
-	    " \\\n   "
 	    " [--dnskeyondemand]"
+#ifdef XAUTH
+	    " \\\n   "
+	    " [--xauthserver]"
+	    " [--xauthclient]"
+#endif
+#ifdef MODECFG
+	    " [--modecfgserver]"
+	    " [--modecfgclient]"
+#endif
+	    " \\\n   "
 	    " [--updown <updown>]"
 	    " [--psk]"
 	    " [--rsasig]"
@@ -101,6 +122,8 @@ help(void)
 	    " [--compress]"
 	    " [--tunnel]"
 	    " [--pfs]"
+	    " \\\n   "
+	    " [--pfsgroup modp1024|modp1536|modp2048|modp3072|modp4096|modp6144|modp8192]"
 	    " \\\n   "
 	    " [--ikelifetime <seconds>]"
 	    " [--ipseclifetime <seconds>]"
@@ -120,9 +143,8 @@ help(void)
 	    " [--forceencaps]"
 
 
-#ifdef XAUTH
-	    " [--xauthserver]"
-	    " [--xauthclient]"
+#ifdef MODECFG
+	    " [--modecfgpull]"
 #endif
 	    " \\\n   "
 	    " [--initiateontraffic|--pass|--drop|--reject]"
@@ -176,14 +198,27 @@ help(void)
 	    " [--debug-emitting]"
 	    " \\\n   "
 	    " [--debug-control]"
+	    " [--debug-controlmore]"
 	    " [--debug-klips]"
 	    " [--debug-dns]"
-	    " [--debug-pfkey]"
 	    " \\\n   "
+	    " [--debug-pfkey]"
 	    " [--debug-natt]"
 	    " [--debug-x509]"
+	    " [--debug-dpd]"
 	    " \\\n   "
+	    " [--debug-lifecycle]"
 	    " [--debug-private]"
+	    " \\\n   "
+	    " [--impair-delay-adns-key-answer]"
+	    " [--impair-delay-adns-txt-answer]"
+	    " \\\n   "
+	    " [--impair-bust-mi2]"
+	    " [--impair-bust-mr2]"
+	    " [--impair-sa-fail]"
+	    " \\\n   "
+	    " [--impair-die-oninfo]"
+	    " [--impair-jacob-two-two]"
 	    "\n\n"
 #endif
 	"listen: whack"

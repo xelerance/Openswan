@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pending.c,v 1.5 2005/03/27 20:18:13 mcr Exp $
+ * RCSID $Id: pending.c,v 1.5.4.1 2007/01/23 15:37:06 paul Exp $
  */
 
 #include <string.h>
@@ -69,6 +69,37 @@ struct pending {
     struct pending *next;
 };
 
+static void
+delete_pending(struct pending **pp);
+
+static void delete_old_pending(const struct connection *c,
+			       const struct pending *match)
+{
+    struct pending *p, **pp;
+
+    pp = host_pair_first_pending(c);
+    if(pp == NULL) return;
+
+    while ((p = *pp) != NULL)
+    {
+    	if (p->isakmp_sa == match->isakmp_sa
+	    && p->connection == match->connection
+	    && p->policy == match->policy)
+	{
+	    DBG(DBG_CONTROL, DBG_log("NETKEY workaround for missing hold state or proper rate limiting: deleting existing pending state from %d.  "
+	        , (int)p->pend_time));
+
+	    p->connection = NULL;
+	    delete_pending(pp);
+	}
+    	else
+	{
+    	    pp = &p->next;
+	}
+    }
+}
+
+
 /* queue a Quick Mode negotiation pending completion of a suitable Main Mode */
 void
 add_pending(int whack_sock
@@ -90,6 +121,8 @@ add_pending(int whack_sock
     p->try = try;
     p->replacing = replacing;
     p->pend_time = time(NULL);
+
+    delete_old_pending(c, p);
 
     host_pair_enqueue_pending(c, p, &p->next);
 }

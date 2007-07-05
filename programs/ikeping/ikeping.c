@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikeping.c,v 1.13.2.1 2007/03/05 15:36:23 paul Exp $
+ * RCSID $Id: ikeping.c,v 1.13.2.2 2007/04/25 17:43:36 paul Exp $
  */
 
 #include <stdio.h>
@@ -505,10 +505,10 @@ main(int argc, char **argv)
 	  }
   }
 
-  if(numReceived > 0) {
-    printf("%d packets sent, %d packets received. %d packet loss\n",
-  	   numSenders, numReceived, numSenders*100/numReceived);
-  }
+  printf("%d packets sent, %d packets received. %d%% packet loss\n",
+  numSenders,
+  numReceived,
+  numSenders > 0 ? 100-numReceived*100/numSenders : 0);
   exit(0);
 }
 

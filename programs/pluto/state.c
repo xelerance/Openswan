@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: state.c,v 1.151.4.7 2006/08/11 17:34:49 mcr Exp $
+ * RCSID $Id: state.c,v 1.151.4.8 2006/11/24 04:21:42 paul Exp $
  */
 
 #include <stdio.h>
@@ -434,23 +434,18 @@ states_use_connection(struct connection *c)
 }
 
 /*
- * delete all states that were created for a given connection.
- * if relations == TRUE, then also delete states that share
- * the same phase 1 SA.
+ * delete all states that were created for a given connection,
+ * additionally delete any states for which func(st, arg)
+ * returns true.
  */
-void
-delete_states_by_connection(struct connection *c, bool relations)
+static void
+foreach_states_by_connection_func(struct connection *c
+				  , bool (*comparefunc)(struct state *st, struct connection *c, void *arg, int pass)
+				 , void (*successfunc)(struct state *st, struct connection *c, void *arg)
+				 , void *arg)
 {
     int pass;
     /* this kludge avoids an n^2 algorithm */
-    enum connection_kind ck = c->kind;
-    struct spd_route *sr;
-
-    /* save this connection's isakmp SA, since it will get set to later SOS_NOBODY */
-    so_serial_t parent_sa = c->newest_isakmp_sa;
-
-    if (ck == CK_INSTANCE)
-	c->kind = CK_GOING_AWAY;
 
     /* We take two passes so that we delete any ISAKMP SAs last.
      * This allows Delete Notifications to be sent.
@@ -473,24 +468,23 @@ delete_states_by_connection(struct connection *c, bool relations)
 
 		st = st->st_hashchain_next;	/* before this is deleted */
 
+		/* on pass 2, ignore phase2 states */
+ 		if(pass == 2 && IS_ISAKMP_SA_ESTABLISHED(this->st_state)) {
+		    continue;
+		}
 
-                if ((this->st_connection == c
-			|| (relations && parent_sa != SOS_NOBODY 
-			&& this->st_clonedfrom == parent_sa))
-			&& (pass == 1 || !IS_ISAKMP_SA_ESTABLISHED(this->st_state)))
+		/* call comparison function */
+                if ((*comparefunc)(this, c, arg, pass))
                 {
-                    struct state *old_cur_state
-                        = cur_state == this? NULL : cur_state;
+		    struct state *old_cur_state
+			= cur_state == this? NULL : cur_state;
 #ifdef DEBUG
 		    lset_t old_cur_debugging = cur_debugging;
 #endif
 
-		    set_cur_state(this);
-		    openswan_log("deleting state (%s)"
-			, enum_show(&state_names, this->st_state));
+    set_cur_state(this);
+		    (*successfunc)(this, c, arg);
 
-		    if(this->st_event != NULL) delete_event(this);
-		    delete_state(this);
 		    cur_state = old_cur_state;
 #ifdef DEBUG
 		    set_debugging(old_cur_debugging);
@@ -499,13 +493,79 @@ delete_states_by_connection(struct connection *c, bool relations)
 	    }
 	}
     }
+}
 
- /*  Seems to dump here because 1 of the states is NULL.  Removing the Assert
-     makes things work.  We should fix this eventually.
+static void delete_state_function(struct state *this
+				  , struct connection *c UNUSED
+				  , void *arg UNUSED)
+{
+    openswan_log("deleting state (%s)"
+		 , enum_show(&state_names, this->st_state));
 
-    passert(c->newest_ipsec_sa == SOS_NOBODY
-	    && c->newest_isakmp_sa == SOS_NOBODY);
+    if(this->st_event != NULL) delete_event(this);
+    delete_state(this);
+}
+
+/*
+ * delete all states that were created for a given connection.
+ * if relations == TRUE, then also delete states that share
+ * the same phase 1 SA.
  */
+static bool same_phase1_sa_relations(struct state *this
+				     , struct connection *c, void *arg
+				     , int pass UNUSED)
+{
+    so_serial_t *pparent_sa = (so_serial_t *)arg;
+    so_serial_t parent_sa = *pparent_sa;
+
+    return (this->st_connection == c
+	    || (parent_sa != SOS_NOBODY 
+		&& this->st_clonedfrom == parent_sa));
+}
+
+/*
+ * delete all states that were created for a given connection.
+ * if relations == TRUE, then also delete states that share
+ * the same phase 1 SA.
+ */
+static bool same_phase1_sa(struct state *this,
+			   struct connection *c
+			   , void *arg UNUSED
+			   , int pass UNUSED)
+{
+    return (this->st_connection == c);
+}
+
+void
+delete_states_by_connection(struct connection *c, bool relations)
+{
+    so_serial_t parent_sa = c->newest_isakmp_sa;
+    enum connection_kind ck = c->kind;
+    struct spd_route *sr;
+
+    /* save this connection's isakmp SA,
+     * since it will get set to later SOS_NOBODY */
+    if (ck == CK_INSTANCE)
+	c->kind = CK_GOING_AWAY;
+
+    if(relations) {
+	foreach_states_by_connection_func(c, same_phase1_sa_relations
+					  , delete_state_function
+					  , &parent_sa);
+    } else {
+	foreach_states_by_connection_func(c, same_phase1_sa
+					  , delete_state_function
+					  , &parent_sa);
+    }
+
+    /*
+     * Seems to dump here because 1 of the states is NULL.  Removing the Assert
+     * makes things work.  We should fix this eventually.
+     *
+     *  passert(c->newest_ipsec_sa == SOS_NOBODY
+     *  && c->newest_isakmp_sa == SOS_NOBODY);
+     *
+     */
 
     sr = &c->spd;
     while (sr != NULL)
@@ -521,6 +581,91 @@ delete_states_by_connection(struct connection *c, bool relations)
 	delete_connection(c, relations);
     }
 }
+
+/*
+ * delete_p2states_by_connection - deletes only the phase 2 of conn
+ *
+ * @c - the connection whose states need to be removed.
+ *
+ * This is like delete_states_by_connection with relations=TRUE,
+ * but it only deletes phase 2 states.
+ */
+static bool same_phase1_no_phase2(struct state *this
+				  , struct connection *c
+				  , void *arg
+				  , int pass)
+{
+    if(pass == 2) return FALSE;
+
+    if(IS_ISAKMP_SA_ESTABLISHED(this->st_state)) {
+	return FALSE;
+    } else {
+	return same_phase1_sa_relations(this, c, arg, pass);
+    }
+}
+
+void
+delete_p2states_by_connection(struct connection *c)
+{
+    so_serial_t parent_sa = c->newest_isakmp_sa;
+    enum connection_kind ck = c->kind;
+
+    /* save this connection's isakmp SA,
+     * since it will get set to later SOS_NOBODY */
+    if (ck == CK_INSTANCE)
+	c->kind = CK_GOING_AWAY;
+
+    foreach_states_by_connection_func(c, same_phase1_no_phase2
+				      , delete_state_function
+				      , &parent_sa);
+    if (ck == CK_INSTANCE)
+    {
+	c->kind = ck;
+	delete_connection(c, TRUE);
+    }
+}
+
+/*
+ * rekey_p2states_by_connection - rekeys all the phase 2 of conn
+ *
+ * @c - the connection whose states need to be rekeyed
+ *
+ * This is like delete_states_by_connection with relations=TRUE,
+ * but instead of removing the states, is scheduled them for rekey.
+ */
+static void rekey_state_function(struct state *this
+				 , struct connection *c UNUSED
+				 , void *arg UNUSED)
+{
+    openswan_log("rekeying state (%s)"
+		 , enum_show(&state_names, this->st_state));
+
+    delete_event(this);
+    delete_dpd_event(this);
+    event_schedule(EVENT_SA_REPLACE, 0, this);
+}
+
+void
+rekey_p2states_by_connection(struct connection *c)
+{
+    so_serial_t parent_sa = c->newest_isakmp_sa;
+    enum connection_kind ck = c->kind;
+
+    /* save this connection's isakmp SA,
+     * since it will get set to later SOS_NOBODY */
+    if (ck == CK_INSTANCE)
+	c->kind = CK_GOING_AWAY;
+
+    foreach_states_by_connection_func(c, same_phase1_no_phase2
+				      , rekey_state_function
+				      , &parent_sa);
+    if (ck == CK_INSTANCE)
+    {
+	c->kind = ck;
+	delete_connection(c, TRUE);
+    }
+}
+
 
 /* Walk through the state table, and delete each state whose phase 1 (IKE)
  * peer is among those given.

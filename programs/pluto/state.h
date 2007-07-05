@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: state.h,v 1.98.2.2 2005/07/26 02:11:23 ken Exp $
+ * RCSID $Id: state.h,v 1.98.2.3 2006/11/24 04:21:42 paul Exp $
  */
 
 #include <sys/types.h>
@@ -291,6 +291,8 @@ extern void state_eroute_usage(ip_subnet *ours, ip_subnet *his
 extern void delete_state(struct state *st);
 struct connection;	/* forward declaration of tag */
 extern void delete_states_by_connection(struct connection *c, bool relations);
+extern void delete_p2states_by_connection(struct connection *c);
+extern void rekey_p2states_by_connection(struct connection *c);
 
 extern struct state
     *duplicate_state(struct state *st),

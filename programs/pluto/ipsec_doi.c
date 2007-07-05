@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_doi.c,v 1.304.2.12 2006/08/11 17:33:57 mcr Exp $
+ * RCSID $Id: ipsec_doi.c,v 1.304.2.16 2007/01/22 21:05:12 paul Exp $
  */
 
 #include <stdio.h>
@@ -1840,8 +1840,16 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
     case ID_USER_FQDN:
 	if (memchr(id_pbs->cur, '@', pbs_left(id_pbs)) == NULL)
 	{
-	    loglog(RC_LOG_SERIOUS, "peer's ID_USER_FQDN contains no @");
-	    return FALSE;
+           char idbuf[IDTOA_BUF];
+           int len = pbs_left(id_pbs);
+           if(len>(IDTOA_BUF-1)) len = IDTOA_BUF;
+
+           memcpy(idbuf, id_pbs->cur, len-1);
+           idbuf[len]='\0';
+           loglog(RC_LOG_SERIOUS, "peer's ID_USER_FQDN contains no @: %s", idbuf);
+           /* return FALSE; */
+
+
 	}
 	/* FALLTHROUGH */
     case ID_FQDN:
@@ -2324,7 +2332,7 @@ main_inR1_outI2(struct msg_digest *md)
     if (nat_traversal_enabled && md->quirks.nat_traversal_vid) {
 	st->hidden_variables.st_nat_traversal = nat_traversal_vid_to_method(md->quirks.nat_traversal_vid);
 	openswan_log("enabling possible NAT-traversal with method %s"
-	     , bitnamesof(natt_type_bitnames, st->hidden_variables.st_nat_traversal));
+	     , bitnamesof(natt_type_bitnames, st->hidden_variables.st_nat_traversal>>1));
     }
 #endif
 
@@ -3517,6 +3525,8 @@ aggr_inI1_outR1_common(struct msg_digest *md
     st->st_connection = c;
     st->st_remoteaddr = md->sender;
     st->st_remoteport = md->sender_port;
+    st->st_localaddr  = md->iface->ip_addr;
+    st->st_localport  = md->iface->port;
     st->st_interface  = md->iface;
     st->st_state = STATE_AGGR_R1;
 
@@ -3772,7 +3782,7 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
     }
 
     if (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD) {
-      if (!nat_traversal_add_natd(auth_payload, &md->rbody, md))
+        if (!nat_traversal_add_natd(ISAKMP_NEXT_NONE, &md->rbody, md))
 	return STF_INTERNAL_ERROR;
     }
 #endif

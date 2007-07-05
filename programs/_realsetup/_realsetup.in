@@ -12,13 +12,15 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _realsetup.in,v 1.46.2.11 2006/10/03 01:20:32 paul Exp $
+# RCSID $Id: _realsetup.in,v 1.46.2.12 2007/06/19 15:18:52 paul Exp $
 
 me='ipsec setup'		# for messages
 
 # Misc. paths (some of this should perhaps be overrideable from ipsec.conf).
 plutopid=/var/run/pluto/pluto.pid
 plutoctl=/var/run/pluto/pluto.ctl
+rundir=/var/run/pluto
+subsysdir=/var/lock/subsys
 subsyslock=/var/lock/subsys/ipsec
 lock=/var/run/pluto/ipsec_setup.pid
 info=/var/run/pluto/ipsec.info
@@ -191,6 +193,8 @@ case "$1" in
 
 	# preliminaries
 	perform rm -f $lock
+	mkdir -p rundir > /dev/null 2>/dev/null
+	mkdir -p subsysdir > /dev/null 2>/dev/null
 
 	# the meaning of $$ at a different runtime is questionable!
 	perform echo '$$' ">" $lock

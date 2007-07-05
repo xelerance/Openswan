@@ -1,16 +1,19 @@
 The following people have contributed patches to Openswan 2.x
 
-	Andreas Steffen <andreas.steffen@strongsec.com> - X.509 Digital Certificates
+	David McCullough <david_mccullough@au.securecomputing.com> - OCFv1
+	Andreas Steffen <andreas.steffen@strongsec.com> - X.509 Certificates
+	JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar> - Cipher/algs patches
 	Dr{Who} on Freenode - Porting NAT-T + XAUTH to Openswan 2.x 
-	Herbert Xu - Support for 26sec, NAT-T on 26sec, etc...
-	Jacco de Leeuw <jacco2@dds.nl> - Fixes for MS Interop
+	Herbert Xu - Support for NETKEY, NAT-T on NETKEY, etc...
+	Jacco de Leeuw <jacco2@dds.nl> - Fixes for MS Interop, L2TP
 	Ken Bantoft <ken@xelerance.com> - RFC3706 DPD, cross compiling, etc...
 	Mathieu Lafon <mlafon@arkoon.net> - NAT-T Support
-	Michael Richardson <mcr@xelerance.com> - testing, integration.
+	Michael Richardson <mcr@xelerance.com> - testing, integration, etc...
 	Nate Carlson - Force NAT-T framework, KLIPS for 2.6, etc...
-	Paul Wouters <paul@xelerance.com> - documentation, bugfixes
+	Paul Wouters <paul@xelerance.com> - documentation, bugfixes, etc...
 	Stephen Bevan <stephen@dino.dnsalias.com> - RFC2409 port selectors
-	Tuomo Soini <tis@foobar.fi>
+	Tuomo Soini <tis@foobar.fi> - Advanced Routing, packaging, etc.
+	Rene Mayrhofer <rene.mayrhofer@gibraltar.at> - Debian fixes
 	willy@w.ods.org
 	Matthew Galgoci <mgalgoci@redhat.com>
 	Bart Trojanowski <bart@xelerance.com> KLIPS for 2.6 patches
@@ -22,4 +25,4 @@ original work.
 IXIA Communications (http://www.ixiacom.com/) sponsored the cryptographic
 refit in pluto, which permitted Aggressive mode to be incorporated safely.
 
-This file is RCSID $Id: CREDITS,v 1.35.8.1 2006/08/16 21:43:17 paul Exp $
+This file is RCSID $Id: CREDITS,v 1.35.8.2 2006/10/27 20:27:34 paul Exp $

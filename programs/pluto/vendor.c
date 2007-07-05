@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: vendor.c,v 1.43.2.3 2006/08/03 19:18:40 paul Exp $
+ * RCSID $Id: vendor.c,v 1.43.2.8 2007/03/12 02:01:07 paul Exp $
  */
 
 #include <stdlib.h>
@@ -78,7 +78,6 @@
  *  5946c258f99a1a57b03eb9d1759e0f24 (From a Cisco VPN 3k)
  *  ebbc5b00141d0c895e11bd395902d690 (From a Cisco VPN 3k)
  *  3e984048101e66cc659fd002b0ed3655 (From a Cisco 1800 IOS device)
- *  4048b7d56ebce88525e7de7f00d6c2d3c0000000 (IKE Fragmentation ?)
  *  12f5f28c457168a9702d9fe274cc0100 (Cisco Unity)
 
  * Microsoft L2TP (???):
@@ -109,6 +108,9 @@
  *
  * Zyxel Zywall 2 / Zywall 30w
  * 625027749d5ab97f5616c1602765cf480a3b7d0b
+ *
+ * Juniper
+ * 166f932d55eb64d8e4df4fd37e2313f0d0fd84510000000000000000
  */
 
 #define MAX_LOG_VID_LEN            32
@@ -272,11 +274,47 @@ static struct vid_struct _vid_tab[] = {
 	DEC_MD5_VID(MISC_FRAGMENTATION, "FRAGMENTATION")
 	DEC_MD5_VID(INITIAL_CONTACT, "Vid-Initial-Contact")
 
+	/**
+	 * Cisco VPN 3000
+	 */
+	{ VID_MISC_FRAGMENTATION, VID_MD5HASH | VID_SUBSTRING_DUMPHEXA,
+		"FRAGMENTATION", NULL, NULL, 0 },
+
+	/**
+	 * Windows Vista (and Longhorn?)
+	 */
+	DEC_MD5_VID(VISTA_AUTHIP, "MS-Negotiation Discovery Capable")
+	DEC_MD5_VID(VISTA_AUTHIP2, "IKE CGA version 1")
+
 	/*
 	 * NCP.de
 	 */
 	{ VID_NCP, VID_KEEP, "NCP client", NULL, 
 	  "\x10\x1f\xb0\xb3\x5c\x5a\x4f\x4c\x08\xb9\x19\xf1\xcb\x97\x77\xb0", 16 },
+	
+
+	/*
+	 * Thomson 
+	 * Product Name  	SpeedTouch 608WL
+	 * Physical Address 	00-14-7F-03-AD-10
+	 * Software Release 	5.4.0.14
+	 * Board Name 		BANT-G
+	 * Serial Number 	CP0533JT3W5
+	 * Product Code 	35921810
+	 * 54686f6d736f6e20535400363038574c00352e342e302e3134
+	 * version plus keying tries/ conn number?
+	 * 54686f6d736f6e20535400363038574c00362e312e302e34
+	 * 54686f6d736f6e20535400363038574c00362e312e302e35
+	 * 54686f6d736f6e20535400363038574c00352e332e322e36
+	 * 4d1e0e136deafa34c4f3ea9f02ec7285
+	 * LENGTH : 29
+	 * VENDOR ID : Thomson ST
+	 * unknown Vendor ID payload [54686f6d736f6e20535400363038574c00352e342e302e3134]
+	 * LENGTH : 20
+	 * VENDOR ID : NAT Traversal V6
+	 * ignoring unknown Vendor ID payload [4d1e0e136deafa34c4f3ea9f02ec7285]
+	 * this is md5(draft-ietf-ipsec-nat-t-ike-06)
+	 */
 	
 
 	/* -- */

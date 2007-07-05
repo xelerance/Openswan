@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: nat_traversal.h,v 1.4.8.1 2005/09/27 04:30:20 paul Exp $
+ * RCSID $Id: nat_traversal.h,v 1.4.8.2 2006/11/13 17:05:54 paul Exp $
  */
 
 #ifndef _NAT_TRAVERSAL_H_
@@ -21,8 +21,8 @@
 
 #define NAT_TRAVERSAL_IETF_00_01     1
 #define NAT_TRAVERSAL_IETF_02_03     2
-#define NAT_TRAVERSAL_RFC            3
-#define NAT_TRAVERSAL_OSX            4
+#define NAT_TRAVERSAL_OSX            3
+#define NAT_TRAVERSAL_RFC            4
 
 #define NAT_TRAVERSAL_NAT_BHND_ME    30
 #define NAT_TRAVERSAL_NAT_BHND_PEER  31

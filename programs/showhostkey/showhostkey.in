@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: showhostkey.in,v 1.23 2004/11/14 13:40:41 paul Exp $
+# RCSID $Id: showhostkey.in,v 1.23.8.2 2007/06/19 15:27:27 paul Exp $
 
 me="ipsec showhostkey"
 usage="Usage: $me [--file secrets] [--left] [--right] [--txt gateway] [--id id]
@@ -63,7 +63,12 @@ then
 	exit 1
 fi
 
-host="`hostname --fqdn`"
+if test -f /proc/sys/kernel/hostname
+then
+	host="`cat /proc/sys/kernel/hostname`"
+else
+	host="`hostname --fqdn`"
+fi
 
 awk '	BEGIN {
 		inkey = 0
@@ -81,7 +86,7 @@ awk '	BEGIN {
 		os = "[ \t]*"
 		x = "[^ \t]+"
 		oc = "(#.*)?"
-		suffix = ":" os "[rR][sS][aA]" os "{" os oc "$"
+		suffix = ":" os "[rR][sS][aA]" os "[{]" os oc "$"
 		if (id == "") {
 			pat = "^" suffix
 			printid = "default"

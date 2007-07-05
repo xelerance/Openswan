@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: look.in,v 1.33.2.1 2005/08/18 14:10:09 ken Exp $
+# RCSID $Id: look.in,v 1.33.2.2 2007/06/19 14:34:28 paul Exp $
 
 info=/var/run/pluto/ipsec.info
 me="ipsec look"
@@ -84,7 +84,7 @@ if test " $defaultroutephys" != " "
 then
 	pat="$pat|$defaultroutephys\$|$defaultroutevirt\$"
 else
-	for i in `echo "$IPSECinterfaces" | sed 's/=/ /'`
+	for i in `echo "$IPSECinterfaces" | tr '=' ' '`
 	do
 		pat="$pat|$i\$"
 	done
