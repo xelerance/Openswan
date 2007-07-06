@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: demux.c,v 1.210.2.12 2007/06/05 16:43:37 paul Exp $
+ * RCSID $Id: demux.c,v 1.210.2.13 2007/07/06 00:02:15 mcr Exp $
  */
 
 /* Ordering Constraints on Payloads
@@ -2090,9 +2090,17 @@ process_packet(struct msg_digest **mdp)
 		return;
 	    }
 
+	    DBG_log("np=%u and sd=%p\n", np, sd);
+
 #ifdef NAT_TRAVERSAL
-	    switch (np)
-	    {
+	    /*
+	     * only do this in main mode. In aggressive mode, there
+	     * is no negotiation of NAT-T method. Get it right.
+	     */
+	    if(st != NULL && st->st_connection != NULL
+	       && (st->st_connection->policy & POLICY_AGGRESSIVE)==0) {
+		switch (np)
+		{
 		case ISAKMP_NEXT_NATD_RFC:
 		case ISAKMP_NEXT_NATOA_RFC:
 		    if ((!st) || (!(st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES))) {
@@ -2100,12 +2108,15 @@ process_packet(struct msg_digest **mdp)
 			 * don't accept NAT-D/NAT-OA reloc directly in message,
 			 * unless we're using NAT-T RFC
 			 */
+			DBG_log("st_nat_traversal was: %u\n",
+				st->hidden_variables.st_nat_traversal);
 			sd = NULL;
 		    }
 		    break;
+		}
 	    }
 #endif
-
+		
 	    if (sd == NULL)
 	    {
 		/* payload type is out of range or requires special handling */
