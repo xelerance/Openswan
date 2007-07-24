@@ -1,6 +1,14 @@
 Please see docs/KNOWN_BUGS file for more information
 
 #stable
+   change ipsec_breakroute to permit non-existant eroute's to be replaced.  
+
+v2.5.14
+   failed attempt to fix ipsec_breakroute.
+   fixed leftsendcert= to be implemented in keyword parser.
+   introduced startnetkey functions.
+   UML kernel configuration canonicalization updated.
+
 v2.5.13
    move DNS lookups from libipsecconf into pluto, where they belong. DNS lookups
 	are still only done once during conn load time, and are done synchronously.
