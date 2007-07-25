@@ -50,13 +50,13 @@
 #include "log.h"
 #include "timer.h"
 
-#ifdef HAVE_OCF_AND_OPENSSL
+#ifdef HAVE_OCF
 #include "id.h"
 #include "pgp.h"
 #include "x509.h"
 #include "certs.h"
 #include "keys.h"
-#include "ocf_cryptodev.h"
+#include "ocf_pk.h"
 #endif
 
 void calc_ke(struct pluto_crypto_req *r)
@@ -66,9 +66,6 @@ void calc_ke(struct pluto_crypto_req *r)
     const struct oakley_group_desc *group;
     chunk_t gi;
     struct pcr_kenonce *kn = &r->pcr_d.kn;
-#ifdef HAVE_OCF_AND_OPENSSL
-    BIGNUM r0;
-#endif
     
     group = lookup_group(kn->oakley_group);
     
@@ -81,13 +78,7 @@ void calc_ke(struct pluto_crypto_req *r)
     n_to_mpz(&secret, wire_chunk_ptr(kn, &(kn->secret)), LOCALSECRETSIZE);
     
     mpz_init(&mp_g);
-#ifdef HAVE_OCF_AND_OPENSSL
-    BN_init(&r0);
-    cryptodev.mod_exp(&r0, &groupgenerator, &secret, group->modulus);
-    bn2mp(&r0, (MP_INT *) &mp_g);
-#else
-    mpz_powm(&mp_g, &groupgenerator, &secret, group->modulus);
-#endif
+    cryptodev.mod_exp(&mp_g, &groupgenerator, &secret, group->modulus);
     
     gi = mpz_to_n(&mp_g, group->bytes);
     
@@ -106,11 +97,7 @@ void calc_ke(struct pluto_crypto_req *r)
 	DBG_dump_chunk("Public DH value sent:\n", gi));
 
     /* clean up after ourselves */
-#ifdef HAVE_OCF_AND_OPENSSL
-    BN_free(&r0);
-#else
     mpz_clear(&mp_g);
-#endif
     freeanychunk(gi);
 }
 

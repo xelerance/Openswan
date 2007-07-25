@@ -52,13 +52,13 @@
 #include "rnd.h"
 #include "pluto_crypt.h"
 
-#ifdef HAVE_OCF_AND_OPENSSL
+#ifdef HAVE_OCF
 #include "id.h"
 #include "pgp.h"
 #include "x509.h"
 #include "certs.h"
 #include "keys.h"
-#include "ocf_cryptodev.h"
+#include "ocf_pk.h"
 #endif
 
 TAILQ_HEAD(req_queue, pluto_crypto_req_cont);
@@ -740,7 +740,7 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 	
 	pluto_init_log();
 	init_rnd_pool();
-#ifdef HAVE_OCF_AND_OPENSSL
+#ifdef HAVE_OCF
 	load_cryptodev();
 #endif
 	free_preshared_secrets();
