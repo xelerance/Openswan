@@ -173,6 +173,7 @@ struct keyword_enum_value kw_plutodebug_values[]={
     { "x509",     DBG_X509 },
     { "dpd",      DBG_DPD }, 
     { "pfkey",    DBG_PFKEY }, 
+    { "nattraversal", DBG_NATT },
 
     { "impair-delay-adns-key-answer", IMPAIR_DELAY_ADNS_KEY_ANSWER },
     { "impair-delay-adns-txt-answer", IMPAIR_DELAY_ADNS_TXT_ANSWER },
@@ -202,6 +203,9 @@ struct keyword_enum_value kw_klipsdebug_values[]={
     { "tunnel",   LELEM(KDF_TUNNEL) },
     { "pfkey",    LELEM(KDF_PFKEY) },
     { "comp",     LELEM(KDF_COMP) },
+    { "nat-traversal", LELEM(KDF_NATT) },
+    { "nattraversal", LELEM(KDF_NATT) },
+    { "natt",     LELEM(KDF_NATT) },
 };
 
 struct keyword_enum_values kw_klipsdebug_list=
