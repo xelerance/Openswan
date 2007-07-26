@@ -1,5 +1,5 @@
 east:~#
- TESTNAME=nat-pluto-06
+ TESTNAME=nat-pluto-07
 east:~#
  source /testing/pluto/bin/eastlocal.sh
 east:~#
@@ -14,3 +14,6 @@ east:~#
 done
 east:~#
  
+
+east:~#
+
