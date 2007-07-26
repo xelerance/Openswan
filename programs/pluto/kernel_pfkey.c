@@ -1198,12 +1198,17 @@ pfkey_shunt_eroute(struct connection *c
     {
       const ip_address *peer = &sr->that.host_addr;
       char buf2[256];
+      const struct af_info *fam = aftoinfo(addrtypeof(peer));
+      
+      if(fam == NULL) {
+	      fam=aftoinfo(AF_INET);
+      }
       
       snprintf(buf2, sizeof(buf2)
 	       , "eroute_connection %s", opname);
 
       return pfkey_raw_eroute(&sr->this.host_addr, &sr->this.client
-			      , aftoinfo(addrtypeof(peer))->any
+			      , fam->any
 			      , &sr->that.client
 			      , htonl(spi)
 			      , SA_INT
