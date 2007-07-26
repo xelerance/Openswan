@@ -227,6 +227,15 @@ umlXhost	nat-pluto-03		good
 # Test of NAT traversal, with subnetwithin/vhost overlap
 umlXhost	nat-pluto-04		good
 
+# Test of NAT traversal, not yet debugged?
+umlXhost	nat-pluto-05		bad
+
+# Test of NAT traversal with non-port 500 origins.
+umlXhost	nat-pluto-06		good
+
+# Test of NAT traversal, with IP address change during negotiation.
+umlXhost	nat-pluto-07		good
+
 #
 # Test of NAT traversal w/DPD
 umlXhost	nat-dpd-pluto-01	good
