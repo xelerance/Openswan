@@ -34,3 +34,6 @@ REF_NORTH_CONSOLE_OUTPUT=north-console.txt
 NICHOST=nic
 NIC_INIT_SCRIPT=nicinit.sh
 
+NETJIG_EXTRA=../nat-pluto-06/debugpublic.txt
+
+

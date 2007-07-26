@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ifconfig eth0:1 inet 192.1.2.245 netmask 255.255.255.0
+ifconfig eth0:1 inet 192.1.2.111 netmask 255.255.255.0
 
 # NAT North's IP to ours
 iptables -t nat -F POSTROUTING 
