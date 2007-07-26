@@ -295,10 +295,23 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	secure_myid_str[IDTOA_BUF] = "",
 	secure_peerid_str[IDTOA_BUF] = "",
 	secure_peerca_str[IDTOA_BUF] = "",
+	nexthop_str[sizeof("PLUTO_NEXT_HOP='' ")+ADDRTOT_BUF],
 	secure_xauth_username_str[IDTOA_BUF] = "";
     
     ip_address ta;
     
+    nexthop_str[0]='\0';
+    if(addrbytesptr(&sr->this.host_nexthop, NULL)
+       && !isanyaddr(&sr->this.host_nexthop))
+    {
+	char *n;
+	strcpy(nexthop_str, "PLUTO_NEXT_HOP='");
+	n = nexthop_str + strlen(nexthop_str);
+	addrtot(&sr->this.host_nexthop, 0,
+		n, sizeof(nexthop_str)-strlen(nexthop_str));
+	strncat(nexthop_str, "' ", sizeof(nexthop_str));
+    }
+
     addrtot(&sr->this.host_addr, 0, me_str, sizeof(me_str));
     idtoa(&sr->this.id, myid_str, sizeof(myid_str));
     escape_metachar(myid_str, secure_myid_str, sizeof(secure_myid_str));
@@ -367,6 +380,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    "PLUTO_VERSION='2.0' "  /* change VERSION when interface spec changes */
 		    "PLUTO_CONNECTION='%s' "
 		    "PLUTO_INTERFACE='%s' "
+		    "%s"      /* possible PLUTO_NEXT_HOP */
 		    "PLUTO_ME='%s' "
 		    "PLUTO_MY_ID='%s' "
 		    "PLUTO_MY_CLIENT='%s' "
@@ -388,6 +402,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    "%s "           /* PLUTO_MY_SRCIP */
 		    , c->name
 		    , c->interface->ip_dev->id_vname
+		    , nexthop_str
 		    , me_str
 		    , secure_myid_str
 		    , myclient_str

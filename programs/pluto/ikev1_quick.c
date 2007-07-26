@@ -1599,6 +1599,17 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	, *his_net = &b->his.net;
     struct hidden_variables hv;
 
+    {
+	char s1[SUBNETTOT_BUF],d1[SUBNETTOT_BUF];
+    
+	subnettot(our_net, 0, s1, sizeof(s1));
+	subnettot(his_net, 0, d1, sizeof(d1));
+	
+	openswan_log("the peer proposed: %s:%d/%d -> %s:%d/%d"
+		     , s1, c->spd.this.protocol, c->spd.this.port
+		     , d1, c->spd.that.protocol, c->spd.that.port);
+    }
+
     /* Now that we have identities of client subnets, we must look for
      * a suitable connection (our current one only matches for hosts).
      */
@@ -1803,7 +1814,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 
 	insert_state(st);	/* needs cookies, connection, and msgid */
 
-	/* copy hidden variables (possibly with changes */
+	/* copy hidden variables (possibly with changes) */
 	st->hidden_variables = hv;
 
 	/* copy the connection's

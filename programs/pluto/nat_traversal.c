@@ -795,64 +795,58 @@ void nat_traversal_ka_event (void)
 }
 
 struct _new_mapp_nfo {
-	ip_address addr;
-	u_int16_t sport, dport;
+	struct state *st;
+	ip_address    addr;
+	u_int16_t     port;
 };
+
 
 static void nat_traversal_find_new_mapp_state (struct state *st, void *data)
 {
-	struct connection *c = st->st_connection;
 	struct _new_mapp_nfo *nfo = (struct _new_mapp_nfo *)data;
 
-	if ((c)
-	    && sameaddr(&st->st_remoteaddr, &(nfo->addr)) &&
-	    (st->st_remoteport == nfo->sport))
-	{
+	if(st->st_serialno == nfo->st->st_clonedfrom ||
+	   st->st_clonedfrom == nfo->st->st_clonedfrom) {
+		char b1[ADDRTOT_BUF];
+		char b2[ADDRTOT_BUF];
+		struct connection *c = st->st_connection;
 
-	    /**
-	     * Change host port
-	     */
-	    st->st_remoteport = nfo->dport;
+		addrtot(&st->st_remoteaddr, 0, b1, ADDRTOT_BUF);
+		addrtot(&nfo->addr,         0, b2, ADDRTOT_BUF);
 
-	    if (IS_IPSEC_SA_ESTABLISHED(st->st_state) ||
-		IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(st->st_state)) {
-		if (!update_ipsec_sa(st)) {
-		    /**
-		     * If ipsec update failed, restore old port or we'll
-		     * not be able to update anymore.
-		     */
-		    st->st_remoteport = nfo->sport;
+		openswan_log("new NAT mapping for #%u, was %s:%d, now %s:%d"
+			     , (unsigned int)st->st_serialno
+			     , b1, st->st_remoteport
+			     , b2, nfo->port);
+		
+		/* update it */
+		st->st_remoteaddr = nfo->addr;
+		st->st_remoteport = nfo->port;
+		st->hidden_variables.st_natd = nfo->addr;
+
+		if(c->kind == CK_INSTANCE) {
+			c->spd.that.host_addr = nfo->addr;
 		}
-	    }
 	}
 }
 
-static int nat_traversal_new_mapping(const ip_address *src, u_int16_t sport,
-	const ip_address *dst, u_int16_t dport)
+
+static int nat_traversal_new_mapping(struct state *st
+				     , const ip_address *nsrc
+				     , u_int16_t nsrcport)
 {
-	char srca[ADDRTOT_BUF], dsta[ADDRTOT_BUF];
 	struct _new_mapp_nfo nfo;
+	char ba[ADDRTOT_BUF];
+	
+	addrtot(nsrc, 0, ba, ADDRTOT_BUF);
 
-	addrtot(src, 0, srca, ADDRTOT_BUF);
-	addrtot(dst, 0, dsta, ADDRTOT_BUF);
+	DBG_log("state #%u NAT-T: new mapping %s:%d"
+		, (unsigned int)st->st_serialno
+		, ba, nsrcport);
 
-	if (!sameaddr(src, dst)) {
-		loglog(RC_LOG_SERIOUS, "nat_traversal_new_mapping: "
-			"address change currently not supported [%s:%d,%s:%d]",
-			srca, sport, dsta, dport);
-		return -1;
-	}
-
-	if (sport == dport) {
-		/* no change */
-		return 0;
-	}
-
-	DBG_log("NAT-T: new mapping %s:%d/%d)", srca, sport, dport);
-
-	nfo.addr = *src;
-	nfo.sport = sport;
-	nfo.dport = dport;
+	nfo.st    = st;
+	nfo.addr  = *nsrc;
+	nfo.port  = nsrcport;
 
 	for_each_state((void *)nat_traversal_find_new_mapp_state, &nfo);
 
@@ -869,15 +863,17 @@ void nat_traversal_change_port_lookup(struct msg_digest *md, struct state *st)
 
 	if (md) {
 		/**
-		 * If source port has changed, update (including other
+		 * If source port/address has changed, update (including other
 		 * states and established kernel SA)
 		 */
-		if (st->st_remoteport != md->sender_port) {
-		    nat_traversal_new_mapping(&st->st_remoteaddr
-					      , st->st_remoteport
-					      , &st->st_remoteaddr
-					      , md->sender_port);
+		if (st->st_remoteport != md->sender_port ||
+		    !sameaddr(&st->st_remoteaddr, &md->sender)) {
+
+			nat_traversal_new_mapping(st
+						  , &md->sender
+						  , md->sender_port);
 		}
+
 		/**
 		 * If interface type has changed, update local port (500/4500)
 		 */
@@ -961,9 +957,7 @@ static void nat_t_new_klips_mapp (struct state *st, void *data)
 	    && sameaddr(&st->st_remoteaddr, &(nfo->src))
 	    && (st->st_esp.our_spi == nfo->sa->sadb_sa_spi))
 	{
-	    nat_traversal_new_mapping(&st->st_remoteaddr
-				      , st->st_remoteport
-				      , &(nfo->dst), nfo->dport);
+		nat_traversal_new_mapping(st, &(nfo->dst), nfo->dport);
 	}
 }
 

@@ -86,8 +86,8 @@
 #include "tpm/tpm.h"
 #endif
 
-#ifdef HAVE_OCF_AND_OPENSSL
-#include "ocf_cryptodev.h"
+#ifdef HAVE_OCF
+#include "ocf_pk.h"
 #endif
 
 #ifndef IPSECDIR
@@ -745,14 +745,14 @@ main(int argc, char **argv)
         const char *v = init_pluto_vendorid();
 	const char *vc = ipsec_version_code();
 
-        openswan_log("Starting Pluto (Openswan Version %s%s; Vendor ID %s)"
-            , vc
-            , compile_time_interop_options
-            , v);
+        openswan_log("Starting Pluto (Openswan Version %s%s; Vendor ID %s) pid:%u"
+		     , vc
+		     , compile_time_interop_options
+		     , v, getpid());
 #else
-        openswan_log("Starting Pluto (Openswan Version %s%s)"
-            , ipsec_version_code()
-            , compile_time_interop_options);
+        openswan_log("Starting Pluto (Openswan Version %s%s) pid:%u"
+		     , ipsec_version_code()
+		     , compile_time_interop_options, getpid());
 #endif
 
 	if((vc[0]=='c' && vc[1]=='v' && vc[2]=='s') ||
@@ -791,7 +791,7 @@ main(int argc, char **argv)
     init_connections();
     init_crypto();
     init_crypto_helpers(nhelpers);
-#ifdef HAVE_OCF_AND_OPENSSL
+#ifdef HAVE_OCF
     load_cryptodev();
 #endif
     init_demux();

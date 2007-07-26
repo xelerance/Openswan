@@ -505,11 +505,12 @@ main(int argc, char **argv)
 	  }
   }
 
-  if(numReceived > 0) {
-    printf("%d packets sent, %d packets received. %d packet loss\n",
-  	   numSenders, numReceived, numSenders*100/numReceived);
-  }
-  exit(0);
+   printf("%d packets sent, %d packets received. %d%% packet loss\n",
+	  numSenders, 
+	  numReceived,
+	  numSenders > 0 ? 100-numReceived*100/numSenders : 0);
+
+   exit(0);
 }
 
 /*

@@ -181,14 +181,11 @@ HAVE_THREADS_LLIBS=-lpthread
 endif
 
 ifeq ($(HAVE_OCF),true)
-ifeq ($(HAVE_OPENSSL),true)
-HAVE_OCF_OPENSSL_DEFS=-DHAVE_OCF_AND_OPENSSL
+HAVE_OCF_OPENSSL_DEFS=-DHAVE_OCF
 HAVE_OCF_OBJS=${HAVE_OCF_DIST_OBJS}
 HAVE_OCF_SRCS=${HAVE_OCF_DIST_SRCS}
-HAVE_OCF_DIST_OBJS=ocf_cryptodev.o 
-HAVE_OCF_DIST_SRCS=ocf_cryptodev.c ocf_cryptodev.h
-OPENSSL_LIBS=-lcrypto
-endif
+HAVE_OCF_DIST_OBJS=ocf_pk.o
+HAVE_OCF_DIST_SRCS=ocf_pk.c ocf_pk.h
 endif
 
 ifeq ($(USE_SMARTCARD),true)

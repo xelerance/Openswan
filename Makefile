@@ -554,6 +554,9 @@ nattpatch2.4:
 nattpatch2.2:
 	packaging/utils/nattpatch 2.2
 
+nattupdate:
+	(cd UMLPOOL && diff -u plain26/net/ipv4/udp.c.orig plain26/net/ipv4/udp.c; exit 0) >nat-t/net/ipv4/udp.c.os2_6.patch
+
 # take all the patches out of the kernel
 # (Note, a couple of files are modified by non-patch means; they are
 # included in "make backup".)

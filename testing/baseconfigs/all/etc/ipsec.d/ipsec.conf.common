@@ -15,7 +15,9 @@ conn us-to-anyone
 
 conn me-to-anyone
 	right=%defaultroute
+	rightnexthop=%defaultroute
 	left=%opportunistic
+	failureshunt=drop
 	# uncomment to enable incoming; change to auto=route for outgoing
 	#auto=add
 

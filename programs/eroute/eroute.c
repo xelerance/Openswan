@@ -172,6 +172,7 @@ main(int argc, char **argv)
 	ip_subnet s_subnet, d_subnet;
  	int eroute_af = 0;
  	int said_af = 0;
+	int sa_flags=0;
 
 	int argcount = argc;
 
@@ -633,10 +634,17 @@ main(int argc, char **argv)
 	}
 
 	switch(action_type) {
-	case EMT_SETEROUTE:
-	case EMT_REPLACEROUTE:
-	case EMT_INEROUTE:
 	case EMT_CLREROUTE:
+		sa_flags = SADB_X_SAFLAGS_CLEARFLOW;
+		goto sa_build;
+
+	case EMT_REPLACEROUTE:
+		sa_flags = SADB_X_SAFLAGS_REPLACEFLOW;
+		goto sa_build;
+
+	case EMT_SETEROUTE:
+	case EMT_INEROUTE:
+	sa_build:
 		if((error = pfkey_sa_build(&extensions[SADB_EXT_SA],
 					   SADB_EXT_SA,
 					   said.spi, /* in network order */
@@ -644,7 +652,7 @@ main(int argc, char **argv)
 					   0,
 					   0,
 					   0,
-					   (action_type == EMT_CLREROUTE) ? SADB_X_SAFLAGS_CLEARFLOW : 0))) {
+					   sa_flags))) {
 			fprintf(stderr, "%s: Trouble building sa extension, error=%d.\n",
 				progname, error);
 			pfkey_extensions_free(extensions);

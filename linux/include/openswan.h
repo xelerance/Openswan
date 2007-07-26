@@ -259,7 +259,13 @@ typedef int (*openswan_keying_debug_func_t)(const char *message, ...);
 err_t ttoul(const char *src, size_t srclen, int format, unsigned long *dst);
 size_t ultot(unsigned long src, int format, char *buf, size_t buflen);
 #define	ULTOT_BUF	(22+1)	/* holds 64 bits in octal */
+
+/* looks up names in DNS */
 err_t ttoaddr(const char *src, size_t srclen, int af, ip_address *dst);
+
+/* does not look up names in DNS */
+err_t ttoaddr_num(const char *src, size_t srclen, int af, ip_address *dst);
+
 err_t tnatoaddr(const char *src, size_t srclen, int af, ip_address *dst);
 size_t addrtot(const ip_address *src, int format, char *buf, size_t buflen);
 /* RFC 1886 old IPv6 reverse-lookup format is the bulkiest */
@@ -510,7 +516,8 @@ enum klips_debug_flags {
     KDF_RCV         = 9,
     KDF_TUNNEL      = 10,
     KDF_PFKEY       = 11,
-    KDF_COMP        = 12
+    KDF_COMP        = 12,
+    KDF_NATT        = 13,
 };
 
 

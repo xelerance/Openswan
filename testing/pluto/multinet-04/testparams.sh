@@ -1,7 +1,7 @@
 #!/bin/sh
 
 TEST_PURPOSE=goal
-TEST_TYPE=umlplutotest
+TEST_TYPE=umlXhost
 
 TESTNAME=multinet-04
 EASTHOST=east

@@ -62,8 +62,8 @@
 #include "plutocerts.h"
 #include "x509more.h"
 
-#ifdef HAVE_OCF_AND_OPENSSL
-#include "ocf_cryptodev.h"
+#ifdef HAVE_OCF
+#include "ocf_pk.h"
 #endif
 
 /* chained lists of X.509 host/user and ca certificates and crls */

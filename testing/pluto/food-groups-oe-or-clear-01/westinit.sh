@@ -12,7 +12,7 @@ ping -n -c 4 192.0.1.3
 ipsec setup start
 
 : wait for packetdefault to show up
-/testing/pluto/basic-pluto-01/eroutewait.sh trap
+/testing/pluto/bin/wait-until-pluto-started
 
 ipsec eroute
 
@@ -22,7 +22,9 @@ ipsec auto --add us-to-anyone
 : let my people go - let all packets not otherwise dealt with out in the
 : clear, despite stoopid routing tricks.
 ipsec auto --delete packetdefault
-ipsec manual --up let-my-people-go
+
+# use ipsec eroute directly for now.
+ipsec eroute --add --eraf inet --src 0.0.0.0/0 --dst 0.0.0.0/0 --said %pass
 
 #ipsec look
 

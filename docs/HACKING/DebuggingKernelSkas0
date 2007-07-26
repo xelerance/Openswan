@@ -22,9 +22,9 @@
                 24789
 
    Attach to the pid:
-                gdb> attach 24789
-                gdb> handle SIGSEGV noprint nostop
-                gdb> handle SIGUSR1 noprint nostop
+          gdb> attach 24789
+               handle SIGSEGV noprint nostop
+               handle SIGUSR1 noprint nostop
            
    At this point, break points should be created as appropriate.
 

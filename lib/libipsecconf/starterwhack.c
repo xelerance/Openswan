@@ -263,6 +263,11 @@ static void set_whack_end(struct starter_config *cfg
 		w->host_addr = l->addr;
 		break;
 
+	case KH_IPHOSTNAME:
+		/* note: we always copy the name string below */
+		anyaddr(l->addr_family, &w->host_addr);
+		break;
+
 	case KH_OPPO:
 	case KH_GROUP:
 	case KH_OPPOGROUP:
@@ -278,6 +283,7 @@ static void set_whack_end(struct starter_config *cfg
 		printf("%s: do something with host case: %d\n", lr, l->addrtype);
 		break;
 	}
+	w->host_addr_name = l->strings[KSCF_IP];
 
 	switch(l->nexttype) {
 	case KH_DEFAULTROUTE:
@@ -301,6 +307,10 @@ static void set_whack_end(struct starter_config *cfg
 		break;
 	}
 
+	if(!isanyaddr(&l->sourceip)) {
+		w->host_srcip = l->sourceip;
+	}
+
 	w->has_client = l->has_client;
 	if (l->has_client) {
 		w->client = l->subnet;
@@ -312,8 +322,13 @@ static void set_whack_end(struct starter_config *cfg
 	w->host_port = IKE_UDP_PORT;
 	w->has_client_wildcard = l->has_client_wildcard;
 	w->has_port_wildcard   = l->has_port_wildcard;
+
 	w->cert = l->cert;
 	w->ca   = l->ca;
+	if(l->options_set[KNCF_SENDCERT]) {
+		w->sendcert = l->options[KNCF_SENDCERT];
+	}
+
 	w->updown = l->updown;
 	w->virt   = NULL;
 	w->protocol = l->protocol;

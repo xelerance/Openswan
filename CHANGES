@@ -1,9 +1,58 @@
 Please see docs/KNOWN_BUGS file for more information
 
 #stable
+   change ipsec_breakroute to permit non-existant eroute's to be replaced.  
+   fix for NAT-T negotiation with IP address changes during negotiation.
+   adjusted addconn to support nat-t debug keywords.
+
+v2.5.14
+   failed attempt to fix ipsec_breakroute.
+   fixed leftsendcert= to be implemented in keyword parser.
+   introduced startnetkey functions.
+   UML kernel configuration canonicalization updated.
+
+v2.5.13
+   move DNS lookups from libipsecconf into pluto, where they belong. DNS lookups
+	are still only done once during conn load time, and are done synchronously.
+
+v2.5.12
+   A fix to detect that XEN has been patched into the kernel, and set
+   some of the 2.6.18 changes.
+   never log starter_log() things to stdout, they always go to stderr.
+   when a packet is passed through, do not call NF_IP_LOCAL_OUT, as it has already 
+	passed through the output hooks, and doing it again, confuses things
+	causing ip_route_me_harder() which creates a look, since it does the flow
+	lookup again. (This doesn't happen if the kernel hasn't got XFRM support)
+   fixed parsing of config file so that "version 2" is accepted.
+   fixed addconn to respect "right/left"sourceip=, new test case sourceip-01 
+   fixed processing of "first"/"last" packet for %trap/%hold conns in KLIPS, it now
+	properly forwards the packets when the packet is released.
+   
+
+v2.5.11
+   Some fixes in KLIPS for "ipsec eroute --clear" bug. It is not clear
+   why this suddendly became an issue, or if it would have been an issue
+   previously, given the right compiler optimization.
+   
+v2.5.10
+   Includes fixes for xmlto generation for _confread directory.
+
+v2.5.09
+   Minor fix to build process, updated CHANGES file.
+
+v2.5.08
+   Correct release.
+   Includes some changes to permit OE to work without nexthop,
+   however this seems to cause it to return an unreachable on 
+   the first message.
+
+v2.5.07	-dud due to release script error.
+
+v2.5.06
    set LANGUAGE, LANG and LC_ALL in setup script.
    change OE off by default note and scripts.
-
+   Merge of additional code from 2.4.
+   
 v2.5.05
    2.5.03 and 2.5.04 were not properly released, and 2.5.05 now
    is properly released and includes below items

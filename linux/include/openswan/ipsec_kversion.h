@@ -142,6 +142,13 @@
 #define HAVE_NEW_SKB_LINEARIZE
 #endif
 
+/* this is the best we can do to detect XEN, which makes
+ * patches to linux/skbuff.h, making it look like 2.6.18 version 
+ */
+#ifdef CONFIG_XEN
+#define HAVE_NEW_SKB_LINEARIZE
+#endif
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,20)
 /* skb->nfmark changed to skb->mark in 2.6.20 */
 #define nfmark mark
