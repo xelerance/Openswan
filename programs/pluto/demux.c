@@ -2429,8 +2429,6 @@ void process_packet_tail(struct msg_digest **mdp)
 #endif
 #endif
 
-
-
     /* possibly fill in hdr */
     if (smc->first_out_payload != ISAKMP_NEXT_NONE)
 	echo_hdr(md, (smc->flags & SMF_OUTPUT_ENCRYPTED) != 0

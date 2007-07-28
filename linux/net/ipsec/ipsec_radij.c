@@ -145,7 +145,7 @@ ipsec_breakroute(struct sockaddr_encap *eaddr,
 		KLIPS_PRINT(debug_eroute, 
 			    "klips_debug:ipsec_breakroute: "
 			    "node not found, eroute delete failed.\n");
-		return error;
+		return 0;
 	}
 
 	spin_unlock_bh(&eroute_lock);

@@ -150,24 +150,18 @@ generate_msgid(struct state *isakmp_sa)
 static struct state *statetable[STATE_TABLE_SIZE];
 
 static struct state **
-state_hash(const u_char *icookie, const u_char *rcookie, const ip_address *peer)
+state_hash(const u_char *icookie, const u_char *rcookie)
 {
     u_int i = 0, j;
-    const unsigned char *byte_ptr;
-    size_t length = addrbytesptr(peer, &byte_ptr);
 
     DBG(DBG_RAW | DBG_CONTROL,
 	DBG_dump("ICOOKIE:", icookie, COOKIE_SIZE);
-	DBG_dump("RCOOKIE:", rcookie, COOKIE_SIZE);
-	DBG_dump("peer:", byte_ptr, length));
+	DBG_dump("RCOOKIE:", rcookie, COOKIE_SIZE));
 
     /* XXX the following hash is pretty pathetic */
 
     for (j = 0; j < COOKIE_SIZE; j++)
 	i = i * 407 + icookie[j] + rcookie[j];
-
-    for (j = 0; j < length; j++)
-	i = i * 613 + byte_ptr[j];
 
     i = i % STATE_TABLE_SIZE;
 
@@ -242,8 +236,7 @@ state_with_serialno(so_serial_t sn)
 void
 insert_state(struct state *st)
 {
-    struct state **p = state_hash(st->st_icookie, st->st_rcookie
-	, &st->st_connection->spd.that.host_addr);
+    struct state **p = state_hash(st->st_icookie, st->st_rcookie);
 
     passert(st->st_hashchain_prev == NULL && st->st_hashchain_next == NULL);
 
@@ -271,8 +264,7 @@ unhash_state(struct state *st)
 {
     /* unlink from forward chain */
     struct state **p = st->st_hashchain_prev == NULL
-	? state_hash(st->st_icookie, st->st_rcookie
-		     , &st->st_connection->spd.that.host_addr)
+	? state_hash(st->st_icookie, st->st_rcookie)
 	: &st->st_hashchain_prev->st_hashchain_next;
 
     /* unlink from forward chain */
@@ -778,15 +770,14 @@ void for_each_state(void *(f)(struct state *, void *data), void *data)
 struct state *
 find_state(const u_char *icookie
 , const u_char *rcookie
-, const ip_address *peer
+, const ip_address *peer UNUSED
 , msgid_t /*network order*/ msgid)
 {
-    struct state *st = *state_hash(icookie, rcookie, peer);
+    struct state *st = *state_hash(icookie, rcookie);
 
     while (st != (struct state *) NULL)
     {
-	if (sameaddr(peer, &st->st_connection->spd.that.host_addr)
-	    && memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
+	if (memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
 	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0)
 	{
 	    DBG(DBG_CONTROL,
@@ -817,15 +808,14 @@ find_state(const u_char *icookie
 struct state *
 find_info_state(const u_char *icookie
 		, const u_char *rcookie
-		, const ip_address *peer
+		, const ip_address *peer UNUSED
 		, msgid_t /*network order*/ msgid)
 {
-    struct state *st = *state_hash(icookie, rcookie, peer);
+    struct state *st = *state_hash(icookie, rcookie);
 
     while (st != (struct state *) NULL)
     {
-	if (sameaddr(peer, &st->st_connection->spd.that.host_addr)
-	    && memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
+	if (memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
 	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0)
 	{
 	    DBG(DBG_CONTROL,

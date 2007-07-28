@@ -31,6 +31,7 @@
 #include <arpa/inet.h>
 #include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
 #include <sys/time.h>		/* for gettimeofday */
+#include <gmp.h>
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
@@ -93,8 +94,8 @@
 
 #include "tpm/tpm.h"
 
-#ifdef HAVE_OCF_AND_OPENSSL
-#include "ocf_cryptodev.h"
+#ifdef HAVE_OCF
+#include "ocf_pk.h"
 #endif
 
 /*
@@ -1449,26 +1450,15 @@ try_RSA_signature(const u_char hash_val[MAX_DIGEST_LEN], size_t hash_len
     /* actual exponentiation; see PKCS#1 v2.0 5.1 */
     {
 	chunk_t temp_s;
-	mpz_t c;
-#ifdef HAVE_OCF_AND_OPENSSL
-	BIGNUM r0;
-#endif
+	MP_INT c;
 
-	n_to_mpz(c, sig_val, sig_len);
-#ifdef HAVE_OCF_AND_OPENSSL
-	BN_init(&r0);
-	cryptodev.mod_exp(&r0, c, &k->e, &k->n);
-	bn2mp(&r0, (MP_INT *) c);
-#else
-	mpz_powm(c, c, &k->e, &k->n);
-#endif
+	n_to_mpz(&c, sig_val, sig_len);
+	cryptodev.mod_exp(&c, &c, &k->e, &k->n);
 
-	temp_s = mpz_to_n(c, sig_len);	/* back to octets */
+	temp_s = mpz_to_n(&c, sig_len);	/* back to octets */
 	memcpy(s, temp_s.ptr, sig_len);
 	pfree(temp_s.ptr);
-#ifndef HAVE_OCF_AND_OPENSSL
-	mpz_clear(c);
-#endif
+	mpz_clear(&c);
     }
 
     /* sanity check on signature: see if it matches

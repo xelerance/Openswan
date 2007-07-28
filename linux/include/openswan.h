@@ -516,7 +516,8 @@ enum klips_debug_flags {
     KDF_RCV         = 9,
     KDF_TUNNEL      = 10,
     KDF_PFKEY       = 11,
-    KDF_COMP        = 12
+    KDF_COMP        = 12,
+    KDF_NATT        = 13,
 };
 
 
