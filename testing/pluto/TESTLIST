@@ -378,3 +378,8 @@ umlXhost	multinet-01		good
 umlXhost	multinet-02		good
 umlXhost	multinet-03		good
 umlXhost	multinet-04		good
+
+# transport mode related tests
+umlplutotest	transport-01		good
+umlplutotest	transport-02		good
+umlplutotest	transport-03		bad
