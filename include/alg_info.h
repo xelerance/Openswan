@@ -141,10 +141,10 @@ int alg_info_snprint_ike(char *buf, int buflen, struct alg_info_ike *alg_info);
 #define ALG_INFO_IKE_FOREACH(ai, ai_ike, i) \
 	for (i=(ai)->alg_info_cnt,ai_ike=(ai)->ike; i--; ai_ike++) 
 
-extern int alg_enum_search_prefix (enum_names *ed, const char *prefix, const char *str, int strlen);
+extern int alg_enum_search_prefix (enum_names *ed, const char *prefix, const char *str, int str_len);
 extern int alg_enum_search_ppfix (enum_names *ed, const char *prefix
 				  , const char *postfix, const char *str
-				  , int strlen);
+				  , int str_len);
 
 struct parser_context;
 struct oakley_group_desc;
