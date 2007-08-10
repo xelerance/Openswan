@@ -155,9 +155,9 @@ totext_sig(ARGS_TOTEXT) {
 	if (dns_rdatatype_isknown(covered) && covered != 0) {
 		RETERR(dns_rdatatype_totext(covered, target));
 	} else {
-		char buf[sizeof("65535")];
-		sprintf(buf, "%u", covered);
-		RETERR(str_totext(buf, target));
+		char mybuf[sizeof("65535")];
+		sprintf(mybuf, "%u", covered);
+		RETERR(str_totext(mybuf, target));
 	}
 	RETERR(str_totext(" ", target));
 
