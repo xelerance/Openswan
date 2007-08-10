@@ -390,3 +390,6 @@ umlXhost	multinet-04		good
 umlplutotest	transport-01		good
 umlplutotest	transport-02		good
 umlplutotest	transport-03		bad
+
+#
+umlplutotest	protoport-01		good
