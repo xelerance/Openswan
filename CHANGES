@@ -6,6 +6,7 @@ v2.5.15
   #708: vanilla kernel-2.6.19, KLIPS compile error (sock_unregister) [sergeil]
   #654: XAUTH strips space out of username/password + patch [Dustin Lang]
   #641: Herein patches to fix warnings if -Wshadow is used [andygay/paul]
+  #580: kernel 2.4.x cryptoapi broken [espakman]
 
 v2.5.14
 ?
