@@ -1822,10 +1822,11 @@ stf_status xauth_client_resp(struct state *st
 			    loglog(RC_LOG_SERIOUS, "XAUTH username prompt failed.");
 			    return STF_FAIL;
 			}
-			/* trip any trailing white space */
+			/* replace the first newline character with a string-terminating \0. */
 			{
-			    char *u = xauth_username;
-			    strsep(&u, " \n\t");
+			    char* cptr = memchr(xauth_username, '\n', sizeof(xauth_username));
+			    if (cptr)
+				*cptr = '\0';
 			}
 			strncpy(st->st_xauth_username, xauth_username,
 				sizeof(st->st_xauth_username));
@@ -1876,11 +1877,11 @@ stf_status xauth_client_resp(struct state *st
 			    return STF_FAIL;
 			}
 			
-			/* trip any trailing white space */
+			/* replace the first newline character with a string-terminating \0. */
 			{
-			    char *u = xauth_password;
-			    
-			    strsep(&u, " \n\t");
+			    char* cptr = memchr(xauth_password, '\n', sizeof(xauth_password));
+			    if (cptr)
+				cptr = '\0';
 			}
 			clonereplacechunk(st->st_xauth_password
 					  , xauth_password, strlen(xauth_password)
