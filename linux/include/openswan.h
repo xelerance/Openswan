@@ -303,6 +303,7 @@ err_t loopbackaddr(int af, ip_address *dst);
 err_t unspecaddr(int af, ip_address *dst);
 err_t anyaddr(int af, ip_address *dst);
 err_t initaddr(const unsigned char *src, size_t srclen, int af, ip_address *dst);
+err_t add_port(int af, ip_address *addr, unsigned short port);
 err_t initsubnet(const ip_address *addr, int maskbits, int clash, ip_subnet *dst);
 err_t addrtosubnet(const ip_address *addr, ip_subnet *dst);
 

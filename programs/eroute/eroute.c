@@ -81,18 +81,6 @@ uint32_t pfkey_seq = 0;
 #define EMT_GETDEBUG	13	/* get debug level if active */
 #define EMT_INEROUTE	14	/* set incoming policy for IPIP on a chain */
 
-static void add_port(int af, ip_address * addr, short port)
-{
-	switch (af) {
-	case AF_INET:
-		addr->u.v4.sin_port = port;
-		break;
-	case AF_INET6:
-		addr->u.v6.sin6_port = port;
-		break;
-	}
-}
-
 static void
 usage(char* arg)
 {

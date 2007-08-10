@@ -457,7 +457,7 @@ static void initiate_ondemand_body(struct find_oppo_bundle *b
 void
 initiate_ondemand(const ip_address *our_client
 , const ip_address *peer_client
-, int transport_proto UNUSED
+, int transport_proto
 , bool held
 , int whackfd
 , err_t why)
@@ -468,7 +468,7 @@ initiate_ondemand(const ip_address *our_client
     b.failure_ok = FALSE;
     b.our_client = *our_client;
     b.peer_client = *peer_client;
-    b.transport_proto = 0;
+    b.transport_proto = transport_proto;
     b.held = held;
     b.policy_prio = BOTTOM_PRIO;
     b.failure_shunt = 0;
