@@ -1,5 +1,5 @@
 east:~#
- TESTNAME=transport-02
+ TESTNAME=transport-03
 east:~#
  source /testing/pluto/bin/eastlocal.sh
 east:~#

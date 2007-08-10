@@ -1,5 +1,5 @@
 : ==== start ====
-TESTNAME=transport-02
+TESTNAME=transport-03
 source /testing/pluto/bin/westlocal.sh
 
 iptables -F INPUT

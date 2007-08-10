@@ -1,5 +1,5 @@
 west:~#
- TESTNAME=transport-02
+ TESTNAME=transport-03
 west:~#
  source /testing/pluto/bin/westlocal.sh
 west:~#

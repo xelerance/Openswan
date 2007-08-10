@@ -4,7 +4,7 @@ TEST_PURPOSE=regress
 TEST_PROB_REPORT=0
 TEST_TYPE=umlplutotest
 
-TESTNAME=transport-02
+TESTNAME=transport-03
 EASTHOST=east
 WESTHOST=west
 
