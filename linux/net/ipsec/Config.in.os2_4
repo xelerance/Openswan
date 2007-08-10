@@ -37,7 +37,7 @@ fi
 
 bool '   IPsec Modular Extensions' CONFIG_KLIPS_ALG
 if [ "$CONFIG_KLIPS_ALG" != "n" ]; then
-	source net/ipsec/alg/Config.in
+	bool ' CryptoAPI algorithm interface' CONFIG_KLIPS_ENC_CRYPTOAPI
 fi
 
 bool '   IPsec: IP Compression' CONFIG_KLIPS_IPCOMP
