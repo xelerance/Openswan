@@ -1445,7 +1445,7 @@ unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pubkey)
 	    , (pubkey->ptr[1] << BITS_PER_BYTE) + pubkey->ptr[2]);
     }
 
-    if (pubkey->len - (exponent.ptr - pubkey->ptr) < exp.len + RSA_MIN_OCTETS_RFC)
+    if (pubkey->len - (exponent.ptr - pubkey->ptr) < exponent.len + RSA_MIN_OCTETS_RFC)
 	return "RSA public key blob too short";
 
     mod.ptr = exponent.ptr + exponent.len;

@@ -151,32 +151,32 @@ decode_cert(struct msg_digest *md)
 	blob.len = pbs_left(&p->pbs);
 	if (cert->isacert_type == CERT_X509_SIGNATURE)
 	{
-	    x509cert_t cert = empty_x509cert;
-	    if (parse_x509cert(blob, 0, &cert))
+	    x509cert_t cert2 = empty_x509cert;
+	    if (parse_x509cert(blob, 0, &cert2))
 	    {
-		if (verify_x509cert(&cert, strict_crl_policy, &valid_until))
+		if (verify_x509cert(&cert2, strict_crl_policy, &valid_until))
 		{
 		    DBG(DBG_X509 | DBG_PARSING,
 			DBG_log("Public key validated")
 		    )
-		    add_x509_public_key(&cert, valid_until, DAL_SIGNED);
+		    add_x509_public_key(&cert2, valid_until, DAL_SIGNED);
 		}
 		else
 		{
 		    plog("X.509 certificate rejected");
 		}
-		free_generalNames(cert.subjectAltName, FALSE);
-		free_generalNames(cert.crlDistributionPoints, FALSE);
+		free_generalNames(cert2.subjectAltName, FALSE);
+		free_generalNames(cert2.crlDistributionPoints, FALSE);
 	    }
 	    else
 		plog("Syntax error in X.509 certificate");
 	}
 	else if (cert->isacert_type == CERT_PKCS7_WRAPPED_X509)
 	{
-	    x509cert_t *cert = NULL;
+	    x509cert_t *cert2 = NULL;
 
-	    if (parse_pkcs7_cert(blob, &cert))
-		store_x509certs(&cert, strict_crl_policy);
+	    if (parse_pkcs7_cert(blob, &cert2))
+		store_x509certs(&cert2, strict_crl_policy);
 	    else
 		plog("Syntax error in PKCS#7 wrapped X.509 certificates");
 	}

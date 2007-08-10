@@ -2018,11 +2018,11 @@ xauth_inI0(struct msg_digest *md)
 	    
 	    if (attr.isaat_af_type & 0x8000)
 	    {
-		alen = 4;
+		len = 4;
 		val = attr.isaat_lv;
 		dat = NULL;
 	    } else {
-		alen = attr.isaat_lv;
+		len = attr.isaat_lv;
 		val = ntohs(*(u_int16_t *)strattr.cur);
 		dat = strattr.cur;
 	    }
@@ -2035,9 +2035,9 @@ xauth_inI0(struct msg_digest *md)
 		break;
 		
 	    case XAUTH_MESSAGE:
-		if(alen > 80) alen=80;
-		memcpy(msgbuf, dat, alen);
-		msgbuf[alen]='\0';
+		if(len > 80) len=80;
+		memcpy(msgbuf, dat, len);
+		msgbuf[len]='\0';
 		loglog(RC_LOG_SERIOUS, "XAUTH: Bad Message: %s", msgbuf);
 		break;
 		

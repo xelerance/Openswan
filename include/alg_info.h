@@ -157,7 +157,7 @@ extern int alg_info_parse_str (struct alg_info *alg_info
 						      , int aalg_id, int ak_bits
 						      , int modp_id
 						      , bool permitmann)
-			       , const struct oakley_group_desc *(*lookup_group)(u_int16_t group)
+			       , const struct oakley_group_desc *(*lookup_group_f)(u_int16_t group)
 			       , bool permitmann);
 
 #endif /* ALG_INFO_H */

@@ -1043,10 +1043,10 @@ main(int argc, char **argv)
 	case OPT_PUBKEYRSA:	/* --pubkeyrsa <key> */
 	    {
 		static char keyspace[RSA_MAX_ENCODING_BYTES];
-		char diag_space[TTODATAV_BUF];
+		char mydiag_space[TTODATAV_BUF];
 		ugh = ttodatav(optarg, 0, 0
 		    , keyspace, sizeof(keyspace)
-		    , &msg.keyval.len, diag_space, sizeof(diag_space)
+		    , &msg.keyval.len, mydiag_space, sizeof(mydiag_space)
 		    , TTODATAV_SPACECOUNTS);
 
 		if (ugh != NULL)

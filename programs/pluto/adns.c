@@ -504,11 +504,11 @@ answer(struct worker_info *w)
     else
     {
 	/* pass the answer on to Pluto */
-	enum helper_exit_status r
+	enum helper_exit_status rs
 	    = write_pipe(PLUTO_AFD, (const unsigned char *) &a);
 
-	if (r != HES_CONTINUE)
-	    exit(r);
+	if (rs != HES_CONTINUE)
+	    exit(rs);
 	w->busy = FALSE;
 	forward_query(w);
     }
