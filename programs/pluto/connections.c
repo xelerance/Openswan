@@ -143,7 +143,7 @@ delete_end(struct connection *c UNUSED, struct spd_route *sr UNUSED, struct end 
     pfreeany(e->updown);
     freeanychunk(e->ca);
 #ifdef SMARTCARD
-    scx_release(e->sc);
+    scx_release(e->sc,TRUE);
 #endif
     release_cert(e->cert);
     free_ietfAttrList(e->groups);
