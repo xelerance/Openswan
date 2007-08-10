@@ -2876,11 +2876,11 @@ doi_log_cert_thinking(struct msg_digest *md UNUSED
 
     if(!send_cert) {
 	if(auth == OAKLEY_PRESHARED_KEY) {
-	    openswan_log("I did not send a certificate because digital signatures are not being used. (PSK)");
+	    DBG(DBG_CONTROL, DBG_log("I did not send a certificate because digital signatures are not being used. (PSK)");
 	} else if(certtype == CERT_NONE) {
-	    openswan_log("I did not send a certificate because I do not have one.");
+	    DBG(DBG_CONTROL, DBG_log("I did not send a certificate because I do not have one.");
 	} else if(policy == cert_sendifasked) {
-	    openswan_log("I did not send my certificate because I was not asked to.");
+	    DBG(DBG_CONTROL, DBG_log("I did not send my certificate because I was not asked to.");
 	}
     }
 }
