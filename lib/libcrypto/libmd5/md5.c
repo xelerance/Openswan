@@ -160,33 +160,33 @@ const unsigned char *input;                          /* input block */
 UINT4 inputLen;                            /* length of input block */
 {
   UINT4 i;
-  unsigned int index, partLen;
+  unsigned int myindex, partLen;
 
   /* Compute number of bytes mod 64 */
-  index = (unsigned int)((context->count[0] >> 3) & 0x3F);
+  myindex = (unsigned int)((context->count[0] >> 3) & 0x3F);
 
   /* Update number of bits */
   if ((context->count[0] += (inputLen << 3)) < (inputLen << 3))
 	context->count[1]++;
   context->count[1] += (inputLen >> 29);
 
-  partLen = 64 - index;
+  partLen = 64 - myindex;
 
   /* Transform as many times as possible. */
   if (inputLen >= partLen) {
-	MD5_memcpy((POINTER)&context->buffer[index], (CONSTPOINTER)input, partLen);
+	MD5_memcpy((POINTER)&context->buffer[myindex], (CONSTPOINTER)input, partLen);
 	MD5Transform (context->state, context->buffer);
 
 	for (i = partLen; i + 63 < inputLen; i += 64)
 	    MD5Transform (context->state, &input[i]);
 
-	index = 0;
+	myindex = 0;
   }
   else
 	i = 0;
 
   /* Buffer remaining input */
-  MD5_memcpy((POINTER)&context->buffer[index], (CONSTPOINTER)&input[i], inputLen-i);
+  MD5_memcpy((POINTER)&context->buffer[myindex], (CONSTPOINTER)&input[i], inputLen-i);
 }
 
 /* MD5 finalization. Ends an MD5 message-digest operation, writing the
@@ -197,15 +197,15 @@ unsigned char digest[16];                         /* message digest */
 MD5_CTX *context;                                       /* context */
 {
   unsigned char bits[8];
-  unsigned int index, padLen;
+  unsigned int myindex, padLen;
 
   /* Save number of bits */
   Encode (bits, context->count, 8);
 
   /* Pad out to 56 mod 64.
 */
-  index = (unsigned int)((context->count[0] >> 3) & 0x3f);
-  padLen = (index < 56) ? (56 - index) : (120 - index);
+  myindex = (unsigned int)((context->count[0] >> 3) & 0x3f);
+  padLen = (myindex < 56) ? (56 - myindex) : (120 - myindex);
   osMD5Update (context, PADDING, padLen);
 
   /* Append length (before padding) */

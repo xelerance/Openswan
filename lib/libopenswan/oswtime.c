@@ -60,13 +60,13 @@ static const char* months[] = {
  *  Display a date either in local or UTC time
  */
 char *
-timetoa(const time_t *time, bool utc, char *b, size_t blen)
+timetoa(const time_t *timep, bool utc, char *b, size_t blen)
 {
-    if (*time == UNDEFINED_TIME)
+    if (*timep == UNDEFINED_TIME)
 	snprintf(b, blen, "--- -- --:--:--%s----", (utc)?" UTC ":" ");
     else
     {
-	struct tm *t = (utc)? gmtime(time) : localtime(time);
+	struct tm *t = (utc)? gmtime(timep) : localtime(timep);
 
 	snprintf(b, blen, "%s %02d %02d:%02d:%02d%s%04d",
 	    months[t->tm_mon], t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec,

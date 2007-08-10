@@ -487,7 +487,7 @@ main(int argc, char **argv)
 			if ((stat ("/proc/net/ipsec_eroute", &sts)) != 0)  {
 				fprintf(stderr, "%s: No eroute table - no IPsec support in kernel (are the modules loaded?)\n", progname);
 			} else {
-				int ret = system("cat /proc/net/ipsec_eroute");
+				ret = system("cat /proc/net/ipsec_eroute");
 				ret = ret != -1 && WIFEXITED(ret) ? WEXITSTATUS(ret) : 1;
 			}
 			exit(ret);

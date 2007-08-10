@@ -433,7 +433,7 @@ statement_kw:
 
 void yyerror(const char *s)
 {
-	extern void parser_y_error(char *b, int size, const char *s);
+	extern void parser_y_error(char *b, int size, const char *sp);
 	if (_save_errors_)
 		parser_y_error(parser_errstring, ERRSTRING_LEN, s);
 }
@@ -463,7 +463,7 @@ struct config_parsed *parser_load_conf (const char *file, err_t *perr)
 	int err = 0;
 	FILE *f;
 
-	extern void parser_y_init (const char *f);
+	extern void parser_y_init (const char *fn);
 	extern FILE *yyin;
 
 	memset(parser_errstring, 0, ERRSTRING_LEN+1);
