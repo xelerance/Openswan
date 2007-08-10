@@ -1,0 +1,2 @@
+this tests that we properly reject the old-style "strict mode" while parsing
+ike=, esp=, phase2alg=.
