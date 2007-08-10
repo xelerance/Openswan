@@ -481,9 +481,9 @@ extract_object(asn1Object_t const *objects,
 	case ASN1_UTCTIME:
 	case ASN1_GENERALIZEDTIME:
 	    DBG(DBG_PARSING,
-		time_t time = asn1totime(object, obj.type);
+		time_t timep = asn1totime(object, obj.type);
 		char tbuf[TIMETOA_BUF];
-		DBG_log("  '%s'", timetoa(&time, TRUE, tbuf, sizeof(tbuf)));
+		DBG_log("  '%s'", timetoa(&timep, TRUE, tbuf, sizeof(tbuf)));
 	    )
 	    return TRUE;
 
