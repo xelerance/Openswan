@@ -1,5 +1,5 @@
 : ==== start ====
-TESTNAME=protoport-01
+TESTNAME=protoport-02
 source /testing/pluto/bin/eastlocal.sh
 
 ipsec setup start
