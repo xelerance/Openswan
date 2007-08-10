@@ -7,6 +7,7 @@ v2.5.15
   #654: XAUTH strips space out of username/password + patch [Dustin Lang]
   #641: Herein patches to fix warnings if -Wshadow is used [andygay/paul]
   #580: kernel 2.4.x cryptoapi broken [espakman]
+  #582: Cannot initiate on demand a connection with traffic selectors [Ilia Sotnikov]
 
 v2.5.14
 ?
