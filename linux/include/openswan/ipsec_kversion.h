@@ -149,6 +149,10 @@
 #define HAVE_NEW_SKB_LINEARIZE
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,19)
+#define VOID_SOCK_UNREGISTER
+#endif
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,20)
 /* skb->nfmark changed to skb->mark in 2.6.20 */
 #define nfmark mark
