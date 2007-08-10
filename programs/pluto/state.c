@@ -1008,9 +1008,9 @@ void fmt_state(struct state *st, time_t n
 	snprintf(dpdbuf, sizeof(dpdbuf), "; isakmp#%lu", (unsigned long)st->st_clonedfrom);
     } else {
 	if(st->hidden_variables.st_dpd) {
-	    time_t n = time(NULL);
+	    time_t tn = time(NULL);
 	    snprintf(dpdbuf, sizeof(dpdbuf), "; lastdpd=%lds(seq in:%u out:%u)"
-		     , st->st_last_dpd !=0 ? n - st->st_last_dpd : (long)-1
+		     , st->st_last_dpd !=0 ? tn - st->st_last_dpd : (long)-1
 		     , st->st_dpd_seqno
 		     , st->st_dpd_expectseqno);
 	} else {

@@ -887,10 +887,8 @@ void
 list_pgp_end_certs(bool utc)
 {
    pgpcert_t *cert = pgpcerts;
-   time_t now;
 
     /* determine the current time */
-    time(&now);
 
     if (cert != NULL)
     {

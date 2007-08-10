@@ -334,7 +334,7 @@ struct find_oppo_continuation {
 static void
 cannot_oppo(struct connection *c
 	    , struct find_oppo_bundle *b
-	    , err_t ugh)
+	    , err_t ughmsg)
 {
     char pcb[ADDRTOT_BUF];
     char ocb[ADDRTOT_BUF];
@@ -344,11 +344,11 @@ cannot_oppo(struct connection *c
 
     DBG(DBG_OPPO,
 	openswan_log("Can not opportunistically initiate for %s to %s: %s"
-		     , ocb, pcb, ugh));
+		     , ocb, pcb, ughmsg));
 
     whack_log(RC_OPPOFAILURE
 	, "Can not opportunistically initiate for %s to %s: %s"
-	, ocb, pcb, ugh);
+	, ocb, pcb, ughmsg);
 
     if (c != NULL && c->policy_next != NULL)
     {
@@ -446,7 +446,7 @@ cannot_oppo(struct connection *c
 	    , failure_shunt
 	    , failure_shunt == SPI_PASS
 	    , b->transport_proto
-	    , ugh);
+	    , ughmsg);
     }
 #endif
 }
@@ -1200,13 +1200,13 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	/* the second chunk: initiate the next DNS query (if any) */
 	DBG(DBG_CONTROL,
 	{
-	    char ours[ADDRTOT_BUF];
-	    char his[ADDRTOT_BUF];
+	    char ours2[ADDRTOT_BUF];
+	    char his2[ADDRTOT_BUF];
 
-	    addrtot(&b->our_client, 0, ours, sizeof(ours));
-	    addrtot(&b->peer_client, 0, his, sizeof(his));
+	    addrtot(&b->our_client, 0, ours2, sizeof(ours));
+	    addrtot(&b->peer_client, 0, his2, sizeof(his));
 	    DBG_log("initiate on demand from %s to %s new state: %s with ugh: %s"
-		    , ours, his, oppo_step_name[b->step], ugh ? ugh : "ok");
+		    , ours2, his2, oppo_step_name[b->step], ugh ? ugh : "ok");
 	});
 
 	if (ugh != NULL)

@@ -175,7 +175,7 @@ extern stf_status start_dh_secretiv(struct pluto_crypto_req_cont *cn
 				    , struct state *st
 				    , enum crypto_importance importance
 				    , enum phase1_role init /* TRUE=g_init,FALSE=g_r */
-				    , u_int16_t oakley_group);
+				    , u_int16_t oakley_group_p);
 
 extern void finish_dh_secretiv(struct state *st,
 			       struct pluto_crypto_req *r);
@@ -184,7 +184,7 @@ extern stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
 				  , struct state *st
 				  , enum crypto_importance importance
 				  , enum phase1_role init      
-				  , u_int16_t oakley_group);
+				  , u_int16_t oakley_group_p);
 
 extern void finish_dh_secret(struct state *st,
 			     struct pluto_crypto_req *r);

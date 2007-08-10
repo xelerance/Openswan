@@ -1670,7 +1670,7 @@ RSA_check_signature(struct state *st
 		&& same_id(&c->spd.that.id, &key->id)
 		&& trusted_ca(key->issuer, c->spd.that.ca, &pathlen))
 	    {
-		time_t now;
+		time_t tnow;
 
 		{
 		  char buf[IDTOA_BUF];
@@ -1681,8 +1681,8 @@ RSA_check_signature(struct state *st
 		}
 
 		/* check if found public key has expired */
-		time(&now);
-		if (key->until_time != UNDEFINED_TIME && key->until_time < now)
+		time(&tnow);
+		if (key->until_time != UNDEFINED_TIME && key->until_time < tnow)
 		{
 		    loglog(RC_LOG_SERIOUS,
 			"cached RSA public key has expired and has been deleted");

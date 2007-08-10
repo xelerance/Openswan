@@ -2000,29 +2000,29 @@ xauth_inI0(struct msg_digest *md)
 			   , attrs, &strattr))
 	    {
 		/* Skip unknown */
-		int len;
+		int alen;
 		if (attr.isaat_af_type & 0x8000)
-		    len = 4;
+		    alen = 4;
 		else
-		    len = attr.isaat_lv;
+		    alen = attr.isaat_lv;
 		
-		if(len < 4)
+		if(alen < 4)
 		{
-		    openswan_log("Attribute was too short: %d", len);
+		    openswan_log("Attribute was too short: %d", alen);
 		    return STF_FAIL;
 		}
 		
-		attrs->cur += len;
+		attrs->cur += alen;
 		continue;
 	    }
 	    
 	    if (attr.isaat_af_type & 0x8000)
 	    {
-		len = 4;
+		alen = 4;
 		val = attr.isaat_lv;
 		dat = NULL;
 	    } else {
-		len = attr.isaat_lv;
+		alen = attr.isaat_lv;
 		val = ntohs(*(u_int16_t *)strattr.cur);
 		dat = strattr.cur;
 	    }
@@ -2035,9 +2035,9 @@ xauth_inI0(struct msg_digest *md)
 		break;
 		
 	    case XAUTH_MESSAGE:
-		if(len > 80) len=80;
-		memcpy(msgbuf, dat, len);
-		msgbuf[len]='\0';
+		if(alen > 80) alen=80;
+		memcpy(msgbuf, dat, alen);
+		msgbuf[alen]='\0';
 		loglog(RC_LOG_SERIOUS, "XAUTH: Bad Message: %s", msgbuf);
 		break;
 		

@@ -282,7 +282,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 {
     char
 	me_str[ADDRTOT_BUF],
-	myid_str[IDTOA_BUF],
+	myid_str2[IDTOA_BUF],
 	srcip_str[ADDRTOT_BUF+sizeof("PLUTO_MY_SOURCEIP=")+4],
 	myclient_str[SUBNETTOT_BUF],
 	myclientnet_str[ADDRTOT_BUF],
@@ -313,8 +313,8 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
     }
 
     addrtot(&sr->this.host_addr, 0, me_str, sizeof(me_str));
-    idtoa(&sr->this.id, myid_str, sizeof(myid_str));
-    escape_metachar(myid_str, secure_myid_str, sizeof(secure_myid_str));
+    idtoa(&sr->this.id, myid_str2, sizeof(myid_str2));
+    escape_metachar(myid_str2, secure_myid_str, sizeof(secure_myid_str));
     subnettot(&sr->this.client, 0, myclient_str, sizeof(myclientnet_str));
     networkof(&sr->this.client, &ta);
     addrtot(&ta, 0, myclientnet_str, sizeof(myclientnet_str));

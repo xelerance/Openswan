@@ -788,10 +788,10 @@ void
 list_acerts(bool utc)
 {
     x509acert_t *ac = x509acerts;
-    time_t now;
+    time_t tnow;
 
     /* determine the current time */
-    time(&now);
+    time(&tnow);
 
     if (ac != NULL)
     {
@@ -857,7 +857,7 @@ list_acerts(bool utc)
 
 	whack_log(RC_COMMENT, "       validity: not before %s %s",
 		timetoa(&ac->notBefore, utc, tbuf, sizeof(tbuf)),
-		(ac->notBefore < now)?"ok":"fatal (not valid yet)");
+		(ac->notBefore < tnow)?"ok":"fatal (not valid yet)");
 	whack_log(RC_COMMENT, "                 not after  %s %s",
 		timetoa(&ac->notAfter, utc, tbuf, sizeof(tbuf)),
 		check_expiry(ac->notAfter, ACERT_WARNING_INTERVAL, TRUE));
