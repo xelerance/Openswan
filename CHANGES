@@ -1,6 +1,14 @@
 Please see docs/KNOWN_BUGS file for more information
 
 #stable
+v2.5.15
+* Bugtracker bugs fixed:
+  #708: vanilla kernel-2.6.19, KLIPS compile error (sock_unregister) [sergeil]
+  #654: XAUTH strips space out of username/password + patch [Dustin Lang]
+
+v2.5.14
+-?
+
 v2.5.13
    move DNS lookups from libipsecconf into pluto, where they belong. DNS lookups
 	are still only done once during conn load time, and are done synchronously.
