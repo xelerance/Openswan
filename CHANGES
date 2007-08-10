@@ -9,6 +9,7 @@ v2.5.15
   #580: kernel 2.4.x cryptoapi broken [espakman]
   #582: Cannot initiate on demand a connection with traffic selectors [Ilia Sotnikov]
   #590: serpent lib used private kernel header [paul]
+  #544: the following error should only show up for x509 debugging: ... [paul]
 
 v2.5.14
 ?
