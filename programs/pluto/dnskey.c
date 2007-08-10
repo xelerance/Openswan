@@ -568,11 +568,11 @@ process_lwdnsq_key(char *str
 	 */
 	u_char kb[RSA_MAX_ENCODING_BYTES];	/* plenty of space for binary form of public key */
 	chunk_t kbc;
-	err_t ugh = ttodatav(rest, 0, 64, (char *)kb, sizeof(kb), &kbc.len
+	err_t myugh = ttodatav(rest, 0, 64, (char *)kb, sizeof(kb), &kbc.len
 	    , diag_space, sizeof(diag_space), TTODATAV_IGNORESPACE);
 
-	if (ugh != NULL)
-	    return builddiag("malformed key data: %s", ugh);
+	if (myugh != NULL)
+	    return builddiag("malformed key data: %s", myugh);
 
 	if (kbc.len > sizeof(kb))
 	    return builddiag("key data larger than %lu bytes"
