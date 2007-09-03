@@ -367,6 +367,7 @@ int parser_find_keyword(const char *s, YYSTYPE *lval)
 
     keyleft=FALSE;
     k = ipsec_conf_keywords_v2;
+
     while(k->keyname != NULL) {
 	if(strcasecmp(s, k->keyname) == 0)
 	{
@@ -393,7 +394,7 @@ int parser_find_keyword(const char *s, YYSTYPE *lval)
     }
 
     /* if we found nothing */
-    if(k->keyname == NULL && s[0]=='x' && s[1]=='-')
+    if(k->keyname == NULL && (s[0]=='x' || s[0]=='X') && s[1]=='-')
     {
 	k = &ipsec_conf_keyword_comment;
     }
@@ -411,6 +412,9 @@ int parser_find_keyword(const char *s, YYSTYPE *lval)
 	break;
     case kt_time:
 	keywordtype = TIMEWORD;
+	break;
+    case kt_comment:
+	keywordtype = COMMENT;
 	break;
     case kt_bool:
     case kt_invertbool:

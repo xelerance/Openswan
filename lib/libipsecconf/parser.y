@@ -68,6 +68,7 @@ static struct kw_list **_parser_kw, *_parser_kw_last;
 %token <k>      TIMEWORD
 %token <k>      BOOLWORD
 %token <k>      PERCENTWORD
+%token <k>      COMMENT
 %%
 
 /*
@@ -192,6 +193,24 @@ statement_kw:
 			_parser_kw_last->next = new;
 		    _parser_kw_last = new;
 		    if (!*_parser_kw) *_parser_kw = new;
+		}
+	}
+	| COMMENT EQUAL STRING {
+		struct kw_list *new;
+
+		assert(_parser_kw != NULL);
+		new = alloc_kwlist();
+		if (new) {
+		    new->keyword = $1;
+		    new->string  = $3;  
+		    new->next = NULL;
+		    if (_parser_kw_last)
+			_parser_kw_last->next = new;
+		    _parser_kw_last = new;
+		    if (!*_parser_kw) *_parser_kw = new;
+		}
+		else {
+		    yyerror("can't allocate memory in statement_kw");
 		}
 	}
 	| KEYWORD EQUAL STRING {

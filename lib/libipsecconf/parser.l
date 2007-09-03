@@ -242,7 +242,7 @@ int parser_y_eof(void)
 
 %}
 
-%x USERDEF BOOLEAN
+%x USERDEF BOOLEAN COMMENTEQUAL COMMENTSTRING
 
 %%
 
@@ -325,32 +325,17 @@ int parser_y_eof(void)
 			  BEGIN INITIAL;
 			  return EOL;
 		        }
-\n  		        {
-                          stacktop->line++;
-			  return EOL;
-		        }
 
-=			{ BEGIN USERDEF; return EQUAL; }
-version                 return VERSION;     
-config			return CONFIG; 
-setup			return SETUP;
-conn			{ BEGIN USERDEF; return CONN; }
-include			return INCLUDE;
+<COMMENTEQUAL>=        {
+                            BEGIN COMMENTSTRING;
+                            return EQUAL;
+                        }
 
-[^\"= \t\n]+	        {  int tok;
-    
-                           if(yydebug) { fprintf(stderr, "STR/KEY: %s\n", yytext); }
-                           tok = parser_find_keyword(yytext, &yylval);
-			   switch(tok)
-			   {
-			   case BOOLWORD:
-			       BEGIN BOOLEAN;
-			       break;
-			   default:
-                               break;
-			   }
-			   return tok;
-			}
+<COMMENTSTRING>[^\n]*   {
+                            yylval.s = strdup(yytext);
+                            BEGIN INITIAL;
+                            return STRING;
+                        }
 
 <USERDEF>\"[^\"\n]*\"	{
                            char *s = yytext + 1;
@@ -390,6 +375,36 @@ include			return INCLUDE;
 			   yylval.s = strdup(yytext);
 			   BEGIN INITIAL;
                            return STRING;
+			}
+
+\n  		        {
+                          stacktop->line++;
+			  return EOL;
+		        }
+
+=			{ BEGIN USERDEF; return EQUAL; }
+version                 return VERSION;     
+config			return CONFIG; 
+setup			return SETUP;
+conn			{ BEGIN USERDEF; return CONN; }
+include			return INCLUDE;
+
+[^\"= \t\n]+	        {  int tok;
+    
+                           if(yydebug) { fprintf(stderr, "STR/KEY: %s\n", yytext); }
+                           tok = parser_find_keyword(yytext, &yylval);
+			   switch(tok)
+			   {
+			   case BOOLWORD:
+			       BEGIN BOOLEAN;
+			       break;
+                           case COMMENT:
+			       BEGIN COMMENTEQUAL;
+                               break;
+			   default:
+                               break;
+			   }
+			   return tok;
 			}
 
 #.*		        /* eat comment lines */ {
