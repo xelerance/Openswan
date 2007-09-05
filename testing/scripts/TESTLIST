@@ -28,7 +28,7 @@ unittest	readwriteconf-02	good
 unittest	readwriteconf-03	skip
 
 unittest	readwriteconf-04	good
-unittest	readwriteconf-05	good
+unittest	readwriteconf-05	skip
 unittest	readwriteconf-06	good
 unittest	readwriteconf-07	good
 unittest	readwriteconf-08	good

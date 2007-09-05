@@ -7,7 +7,7 @@
 
 exe=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 conf="--config ${ROOTDIR}/testing/scripts/readwriteconf-12/gimli.conf"
-args="--rootdir=${ROOTDIR}/testing/baseconfigs/all $conf --verbose --verbose --verbose --verbose"
+args="--rootdir=${ROOTDIR}/testing/baseconfigs/all $conf --verbose --verbose"
 echo "file $exe" >.gdbinit
 echo "set args $args " >>.gdbinit
 
