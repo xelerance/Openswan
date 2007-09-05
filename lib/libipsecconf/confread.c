@@ -747,6 +747,20 @@ bool translate_conn (struct starter_conn *conn
 }
 
 
+void move_comment_list(struct starter_comments_list *to,
+		       struct starter_comments_list *from)
+{
+    struct starter_comments *sc, *scnext;
+    
+    for(sc = from->tqh_first;
+	sc != NULL;
+	sc = scnext) {
+	scnext = sc->link.tqe_next;
+	TAILQ_REMOVE(from, sc,link);
+	TAILQ_INSERT_TAIL(to, sc,link);
+    }
+}
+
 static int load_conn_basic(struct starter_conn *conn
 			   , struct section_list *sl
 			   , err_t *perr)
@@ -780,6 +794,9 @@ static int load_conn (struct starter_config *cfg
     err = 0;
 
     err += load_conn_basic(conn, sl, perr);
+
+    move_comment_list(&conn->comments, &sl->comments);
+
     if(err) return err;
 
     if(conn->strings[KSF_ALSO] != NULL
@@ -1046,6 +1063,8 @@ struct starter_conn *alloc_add_conn(struct starter_config *cfg, char *name, err_
     conn->name = xstrdup(name);
     conn->desired_state = STARTUP_NO;
     conn->state = STATE_FAILED;
+
+    TAILQ_INIT(&conn->comments);
     
     TAILQ_INSERT_TAIL(&cfg->conns, conn, link);
     return conn;
