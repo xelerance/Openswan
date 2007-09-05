@@ -1866,7 +1866,7 @@ teardown_half_ipsec_sa(struct state *st, bool inbound)
     }
     else
     {
-        impossible();   /* neither AH nor ESP in outbound SA bundle! */
+	return TRUE;
     }
     protos[i].proto = 0;
 
