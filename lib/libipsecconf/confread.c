@@ -663,12 +663,16 @@ bool translate_conn (struct starter_conn *conn
 	    assert(field < KEY_STRINGS_MAX);
 	    assert(field < KEY_NUMERIC_MAX);
 	    
-	    if((*set_options)[field])
+	    if((*set_options)[field] == k_set)
 	    {
 		if(!permitreplace)
 		{
+		    if(kw->keyword.keydef->validity & kv_duplicateok) {
+			/* be quiet about duplicate, but do not override it */
+			break;
+		    }
+			
 		    *error = _tmp_err;
-
 		    snprintf(_tmp_err, sizeof(_tmp_err)
 				, "duplicate key '%s' in conn %s while processing def %s"
 				, kw->keyword.keydef->keyname
@@ -698,7 +702,7 @@ bool translate_conn (struct starter_conn *conn
 		if((*the_strings)[field]) free((*the_strings)[field]);
 		(*the_strings)[field] = xstrdup(kw->keyword.string);
 	    } 
-	    (*set_options)[field] = TRUE;
+	    (*set_options)[field] = k_set;
 	    break;
 	    
 	case kt_list:
@@ -711,12 +715,16 @@ bool translate_conn (struct starter_conn *conn
 	    /* all treated as a number for now */
 	    assert(field < KEY_NUMERIC_MAX);
 
-	    if((*set_options)[field])
+	    if((*set_options)[field] == k_set)
 	    {
 		if(!permitreplace)
 		{
+		    if(kw->keyword.keydef->validity & kv_duplicateok) {
+			/* be quiet about duplicate, but do not override it */
+			break;
+		    }
+			
 		    *error = _tmp_err;
-
 		    snprintf(_tmp_err, sizeof(_tmp_err)
 			     , "duplicate key '%s' in conn %s while processing def %s"
 			     , kw->keyword.keydef->keyname
@@ -736,7 +744,7 @@ bool translate_conn (struct starter_conn *conn
 			kw->keyword.keydef->keyname, field, kw->number);
 #endif
 	    (*the_options)[field] = kw->number;
-	    (*set_options)[field] = TRUE;
+	    (*set_options)[field] = k_set;
 	    break;
 	    
 	case kt_comment:
@@ -845,8 +853,8 @@ static int load_conn (struct starter_config *cfg
 			, conn->name, alsos[alsoplace]);
 			    
 	    /*
-	     * if we found something that matches by name, and we haven't be there, then
-	     * process it.
+	     * if we found something that matches by name, and we haven't be
+	     * there, then process it.
 	     */
 	    if(sl1 && !sl1->beenhere)
 	    {
@@ -855,7 +863,12 @@ static int load_conn (struct starter_config *cfg
 		conn->strings[KSF_ALSO]=NULL;
 		sl1->beenhere = TRUE;
 
-		/* translate things, but do not replace earlier settings */
+		/* translate things, but do not replace earlier settings
+		 * as the earlier settings are a result of fewer also=
+		 * statements, so override lower statements.
+		 * Some things should get warnings if there are duplicates.
+		 * There is not yet any logic for which ones.
+		 */
 		err += translate_conn(conn, sl1, FALSE, perr);
 
 		if(conn->strings[KSF_ALSO])

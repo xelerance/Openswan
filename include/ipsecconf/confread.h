@@ -29,10 +29,15 @@
 /* define an upper limit to number of times also= can be used */
 #define ALSO_LIMIT 32
 
+enum keyword_set {
+    k_unset   =FALSE,
+    k_set     =TRUE,
+    k_default = 2
+};
 typedef char *ksf[KEY_STRINGS_MAX];
 typedef int   knf[KEY_NUMERIC_MAX];
-typedef bool  str_set[KEY_STRINGS_MAX];
-typedef bool  int_set[KEY_NUMERIC_MAX];
+typedef enum keyword_set str_set[KEY_STRINGS_MAX];
+typedef enum keyword_set int_set[KEY_NUMERIC_MAX];
 
 struct starter_end {
     sa_family_t addr_family;
