@@ -1,0 +1,4 @@
+This tests parsing of a config file from mrcharlie that has multiple
+keywords of the same type, which should be quietly dealth with.
+
+
