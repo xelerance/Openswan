@@ -151,11 +151,12 @@ extern int init_load_conn(struct starter_config *cfg
 			  , struct config_parsed *cfgp
 			  , struct section_list *sconn
 			  , bool alsoprocessing
+			  , bool defaultconn
 			  , bool resolvip
 			  , err_t *perr);
 extern bool translate_conn (struct starter_conn *conn
 			    , struct section_list *sl
-			    , bool permitreplace
+			    , enum keyword_set   assigned_value
 			    , err_t *error);
 
 void confread_free(struct starter_config *cfg);
