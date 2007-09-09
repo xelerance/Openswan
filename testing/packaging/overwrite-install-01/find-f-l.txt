@@ -3,7 +3,9 @@
 ./etc/ipsec.d/examples/l2tp-cert.conf
 ./etc/ipsec.d/examples/l2tp-psk-orgWIN2KXP.conf
 ./etc/ipsec.d/examples/l2tp-psk.conf
+./etc/ipsec.d/examples/linux-linux.conf
 ./etc/ipsec.d/examples/no_oe.conf
+./etc/ipsec.d/examples/sysctl.conf
 ./etc/ipsec.d/policies/block
 ./etc/ipsec.d/policies/clear
 ./etc/ipsec.d/policies/clear-or-private
@@ -11,6 +13,8 @@
 ./etc/ipsec.d/policies/private-or-clear
 ./etc/rc.d/init.d/ipsec
 ./etc/rc.d/init.d/ipsec.old
+./etc/rc.d/init.d/setup
+./etc/rc.d/init.d/setup.old
 ./etc/rc.d/rc0.d/K76ipsec
 ./etc/rc.d/rc1.d/K76ipsec
 ./etc/rc.d/rc2.d/S47ipsec
@@ -18,8 +22,6 @@
 ./etc/rc.d/rc4.d/S47ipsec
 ./etc/rc.d/rc5.d/S47ipsec
 ./etc/rc.d/rc6.d/K76ipsec
-./usr/local/lib/ipsec/_confread
-./usr/local/lib/ipsec/_confread.old
 ./usr/local/lib/ipsec/_copyright
 ./usr/local/lib/ipsec/_copyright.old
 ./usr/local/lib/ipsec/_include
@@ -36,11 +38,16 @@
 ./usr/local/lib/ipsec/_secretcensor.old
 ./usr/local/lib/ipsec/_startklips
 ./usr/local/lib/ipsec/_startklips.old
+./usr/local/lib/ipsec/_startnetkey
+./usr/local/lib/ipsec/_startnetkey.old
 ./usr/local/lib/ipsec/_updown
+./usr/local/lib/ipsec/_updown.klips
+./usr/local/lib/ipsec/_updown.klips.old
+./usr/local/lib/ipsec/_updown.mast
+./usr/local/lib/ipsec/_updown.mast.old
 ./usr/local/lib/ipsec/_updown.old
-./usr/local/lib/ipsec/_updown_x509
-./usr/local/lib/ipsec/_updown_x509.old
-./usr/local/lib/ipsec/ipsec_pr.template
+./usr/local/libexec/ipsec/addconn
+./usr/local/libexec/ipsec/addconn.old
 ./usr/local/libexec/ipsec/auto
 ./usr/local/libexec/ipsec/auto.old
 ./usr/local/libexec/ipsec/barf
@@ -61,8 +68,6 @@
 ./usr/local/libexec/ipsec/lwdnsq.old
 ./usr/local/libexec/ipsec/mailkey
 ./usr/local/libexec/ipsec/mailkey.old
-./usr/local/libexec/ipsec/manual
-./usr/local/libexec/ipsec/manual.old
 ./usr/local/libexec/ipsec/newhostkey
 ./usr/local/libexec/ipsec/newhostkey.old
 ./usr/local/libexec/ipsec/pf_key
@@ -75,13 +80,13 @@
 ./usr/local/libexec/ipsec/rsasigkey.old
 ./usr/local/libexec/ipsec/secrets
 ./usr/local/libexec/ipsec/secrets.old
-./usr/local/libexec/ipsec/send-pr
-./usr/local/libexec/ipsec/send-pr.old
 ./usr/local/libexec/ipsec/setup
 ./usr/local/libexec/ipsec/showdefaults
 ./usr/local/libexec/ipsec/showdefaults.old
 ./usr/local/libexec/ipsec/showhostkey
 ./usr/local/libexec/ipsec/showhostkey.old
+./usr/local/libexec/ipsec/showpolicy
+./usr/local/libexec/ipsec/showpolicy.old
 ./usr/local/libexec/ipsec/spi
 ./usr/local/libexec/ipsec/spi.old
 ./usr/local/libexec/ipsec/spigrp
@@ -163,6 +168,7 @@
 ./usr/local/man/man5/ipsec_ipsec.secrets.5
 ./usr/local/man/man5/ipsec_klipsdebug.5
 ./usr/local/man/man5/ipsec_pf_key.5
+./usr/local/man/man5/ipsec_showpolicy.8
 ./usr/local/man/man5/ipsec_spi.5
 ./usr/local/man/man5/ipsec_spigrp.5
 ./usr/local/man/man5/ipsec_tncfg.5
@@ -180,8 +186,11 @@
 ./usr/local/man/man8/ipsec__realsetup.8
 ./usr/local/man/man8/ipsec__secretcensor.8
 ./usr/local/man/man8/ipsec__startklips.8
+./usr/local/man/man8/ipsec__startnetkey.8
 ./usr/local/man/man8/ipsec__updown.8
-./usr/local/man/man8/ipsec__updown_x509.8
+./usr/local/man/man8/ipsec__updown.klips.8
+./usr/local/man/man8/ipsec__updown.mast.8
+./usr/local/man/man8/ipsec_addconn.8
 ./usr/local/man/man8/ipsec_auto.8
 ./usr/local/man/man8/ipsec_barf.8
 ./usr/local/man/man8/ipsec_calcgoo.8
@@ -198,9 +207,9 @@
 ./usr/local/man/man8/ipsec_pf_key.8
 ./usr/local/man/man8/ipsec_pluto.8
 ./usr/local/man/man8/ipsec_ranbits.8
+./usr/local/man/man8/ipsec_readwriteconf.8
 ./usr/local/man/man8/ipsec_rsasigkey.8
 ./usr/local/man/man8/ipsec_secrets.8
-./usr/local/man/man8/ipsec_send-pr.8
 ./usr/local/man/man8/ipsec_setup.8
 ./usr/local/man/man8/ipsec_showdefaults.8
 ./usr/local/man/man8/ipsec_showhostkey.8
@@ -210,7 +219,6 @@
 ./usr/local/man/man8/ipsec_starter.8
 ./usr/local/man/man8/ipsec_tncfg.8
 ./usr/local/man/man8/ipsec_verify.8
-./usr/local/man/man8/ipsec_whack.8
 ./usr/local/sbin/ipsec
 ./usr/local/sbin/ipsec.old
 ./usr/local/share/doc/openswan/index.html
@@ -227,8 +235,11 @@
 ./usr/local/share/doc/openswan/ipsec__realsetup.8.html
 ./usr/local/share/doc/openswan/ipsec__secretcensor.8.html
 ./usr/local/share/doc/openswan/ipsec__startklips.8.html
+./usr/local/share/doc/openswan/ipsec__startnetkey.8.html
 ./usr/local/share/doc/openswan/ipsec__updown.8.html
-./usr/local/share/doc/openswan/ipsec__updown_x509.8.html
+./usr/local/share/doc/openswan/ipsec__updown.klips.8.html
+./usr/local/share/doc/openswan/ipsec__updown.mast.8.html
+./usr/local/share/doc/openswan/ipsec_addconn.8.html
 ./usr/local/share/doc/openswan/ipsec_addrbytesof.3.html
 ./usr/local/share/doc/openswan/ipsec_addrbytesptr.3.html
 ./usr/local/share/doc/openswan/ipsec_addrcmp.3.html
@@ -287,6 +298,7 @@
 ./usr/local/share/doc/openswan/ipsec_ranbits.8.html
 ./usr/local/share/doc/openswan/ipsec_rangetoa.3.html
 ./usr/local/share/doc/openswan/ipsec_rangetosubnet.3.html
+./usr/local/share/doc/openswan/ipsec_readwriteconf.8.html
 ./usr/local/share/doc/openswan/ipsec_rsasigkey.8.html
 ./usr/local/share/doc/openswan/ipsec_sameaddr.3.html
 ./usr/local/share/doc/openswan/ipsec_sameaddrtype.3.html
@@ -295,7 +307,6 @@
 ./usr/local/share/doc/openswan/ipsec_samesubnettype.3.html
 ./usr/local/share/doc/openswan/ipsec_satot.3.html
 ./usr/local/share/doc/openswan/ipsec_secrets.8.html
-./usr/local/share/doc/openswan/ipsec_send-pr.8.html
 ./usr/local/share/doc/openswan/ipsec_setportof.3.html
 ./usr/local/share/doc/openswan/ipsec_setup.8.html
 ./usr/local/share/doc/openswan/ipsec_showdefaults.8.html
@@ -333,4 +344,3 @@
 ./usr/local/share/doc/openswan/ipsec_version.5.html
 ./usr/local/share/doc/openswan/ipsec_version_code.3.html
 ./usr/local/share/doc/openswan/ipsec_version_string.3.html
-./usr/local/share/doc/openswan/ipsec_whack.8.html
