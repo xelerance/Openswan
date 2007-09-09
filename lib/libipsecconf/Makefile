@@ -44,7 +44,7 @@ lex.yy.c: parser.tab.c parser.l parser.y
 	$(LEX) ${srcdir}parser.l
 
 parser.tab.h parser.tab.c: parser.l parser.y 
-	$(BISON) -v -d ${srcdir}parser.y
+	$(BISON) -g --verbose -v -d ${srcdir}parser.y
 
 cleanall::
 	$(RM) -f parser.tab.* lex.yy.*

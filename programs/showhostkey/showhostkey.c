@@ -100,9 +100,11 @@ int print_key(struct secret *secret
 
     char pskbuf[128];
 
-    datatot(pks->u.preshared_secret.ptr,
-	    pks->u.preshared_secret.len,
-	    'x', pskbuf, sizeof(pskbuf));
+    if(pks->kind == PPK_PSK || pks->kind==PPK_XAUTH) {
+	datatot(pks->u.preshared_secret.ptr,
+		pks->u.preshared_secret.len,
+		'x', pskbuf, sizeof(pskbuf));
+    }
 
     while(l) {
 	idtoa(&l->id, idb, IDTOA_BUF);

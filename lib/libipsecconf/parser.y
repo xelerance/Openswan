@@ -25,6 +25,7 @@
 
 #include "ipsecconf/keywords.h"
 #include "ipsecconf/parser.h"
+#include "ipsecconf/confread.h"
 
 #define YYDEBUG 1
 #define YYERROR_VERBOSE
@@ -38,6 +39,7 @@ static void checkversion(int ver);
 void yyerror(const char *s);
 extern int yylex (void);
 static struct kw_list *alloc_kwlist(void);
+static struct starter_comments *alloc_comment(void);
 
 /**
  * Static Globals
@@ -45,6 +47,7 @@ static struct kw_list *alloc_kwlist(void);
 static int _save_errors_;
 static struct config_parsed *_parser_cfg;
 static struct kw_list **_parser_kw, *_parser_kw_last;
+static struct starter_comments_list *_parser_comments;
 
 /**
  * Functions
@@ -68,6 +71,7 @@ static struct kw_list **_parser_kw, *_parser_kw_last;
 %token <k>      TIMEWORD
 %token <k>      BOOLWORD
 %token <k>      PERCENTWORD
+%token <k>      COMMENT
 %%
 
 /*
@@ -98,6 +102,7 @@ section_or_include:
 	CONFIG SETUP EOL {
 		_parser_kw = &(_parser_cfg->config_setup);
 		_parser_kw_last = NULL;
+		_parser_comments = &_parser_cfg->comments;
 		if(yydebug) fprintf(stderr, "\nconfig setup read\n");
 
 	} kw_sections
@@ -105,6 +110,7 @@ section_or_include:
 		struct section_list *section;
 		section = (struct section_list *)malloc(sizeof(struct section_list));
 		if (section) {
+
 			section->name = $2;
 			section->kw = NULL;
 
@@ -113,7 +119,11 @@ section_or_include:
         	        /* setup keyword section to record values */
 			_parser_kw = &(section->kw);
 			_parser_kw_last = NULL;
-	
+
+			/* and comments */
+			TAILQ_INIT(&section->comments);
+			_parser_comments = &section->comments;
+
 			if(yydebug) fprintf(stderr, "\nread conn %s\n", section->name);
 
 		}
@@ -192,6 +202,19 @@ statement_kw:
 			_parser_kw_last->next = new;
 		    _parser_kw_last = new;
 		    if (!*_parser_kw) *_parser_kw = new;
+		}
+	}
+	| COMMENT EQUAL STRING {
+		struct starter_comments *new;
+
+		new = alloc_comment();
+		if (new) {
+		    new->x_comment = strdup($1.string);
+		    new->commentvalue = strdup($3);
+	            TAILQ_INSERT_TAIL(_parser_comments, new, link);
+                }
+		else {
+		    yyerror("can't allocate memory in statement_kw");
 		}
 	}
 	| KEYWORD EQUAL STRING {
@@ -478,9 +501,10 @@ struct config_parsed *parser_load_conf (const char *file, err_t *perr)
 			parser_y_init(file);
 			_save_errors_=1;
 			TAILQ_INIT(&cfg->sections);
+			TAILQ_INIT(&cfg->comments);
 			_parser_cfg = cfg;
 
-		    if (yyparse()!=0) {
+	   	        if (yyparse()!=0) {
 				if (parser_errstring[0]=='\0') {
 					snprintf(parser_errstring, ERRSTRING_LEN,
 						"Unknown error...");
@@ -546,6 +570,7 @@ void parser_free_conf (struct config_parsed *cfg)
 			parser_free_kwlist(sec->kw);
 			free(sec);
 		}
+		
 		free(cfg);
 	}
 }
@@ -556,6 +581,15 @@ struct kw_list *alloc_kwlist(void)
 
 	new = (struct kw_list *)malloc(sizeof(struct kw_list));
 	memset(new, 0, sizeof(struct kw_list));
+	return new;
+}
+
+struct starter_comments *alloc_comment(void)
+{
+	struct starter_comments *new;
+
+	new = (struct starter_comments *)malloc(sizeof(struct starter_comments));
+	memset(new, 0, sizeof(struct starter_comments));
 	return new;
 }
 

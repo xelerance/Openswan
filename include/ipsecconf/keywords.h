@@ -236,11 +236,22 @@ struct kw_list {
     unsigned int number;
 };
 
+struct starter_comments {
+    TAILQ_ENTRY(starter_comments) link;
+    char *x_comment;
+    char *commentvalue;
+};
+
+TAILQ_HEAD(starter_comments_list, starter_comments);
+extern void move_comment_list(struct starter_comments_list *to,
+			      struct starter_comments_list *from);
+
 struct section_list {
     TAILQ_ENTRY(section_list) link;
 
     char *name;    
     struct kw_list *kw;
+    struct starter_comments_list comments;
     bool  beenhere;
 };
 
@@ -249,6 +260,8 @@ struct config_parsed {
 
     TAILQ_HEAD(sectionhead, section_list) sections;
     int ipsec_conf_version;
+
+    struct starter_comments_list comments;
 
     struct section_list conn_default;
     bool                got_default;
