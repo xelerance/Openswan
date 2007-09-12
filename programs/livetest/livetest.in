@@ -41,7 +41,7 @@ wget -o /dev/null  -O /tmp/ipseclive.conn "http://192.168.0.1/olts/?leftid=$left
 sh < /tmp/ipseclive.conn
 ipsec eroute.pl
 leftid=`echo $leftid | sed "s/@//"`
-ipsec whack --delete --name olts-$leftid >> /tmp/ipsec.olts.local.log
+ipsec whack --name olts-$leftid --delete >> /tmp/ipsec.olts.local.log
 wget -o /dev/null -O /tmp/ipsec.olts.remote.log "http://192.168.0.1/olts/log.php?leftid=$leftid"
 
 #

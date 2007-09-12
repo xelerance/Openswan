@@ -39,16 +39,16 @@
 const char*
 check_expiry(time_t expiration_date, int warning_interval, bool strict)
 {
-    time_t now;
+    time_t tnow;
     int time_left;
 
     if (expiration_date == UNDEFINED_TIME)
       return "ok (expires never)";
 
     /* determine the current time */
-    time(&now);
+    time(&tnow);
 
-    time_left = (expiration_date - now);
+    time_left = (expiration_date - tnow);
     if (time_left < 0)
 	return strict? "fatal (expired)" : "warning (expired)";
 

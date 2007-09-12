@@ -1,6 +1,17 @@
 Please see docs/KNOWN_BUGS file for more information
 
 #stable
+* Bugtracker bugs fixed:
+  #708: vanilla kernel-2.6.19, KLIPS compile error (sock_unregister) [sergeil]
+  #654: XAUTH strips space out of username/password + patch [Dustin Lang]
+  #641: Herein patches to fix warnings if -Wshadow is used [andygay/paul]
+  #580: kernel 2.4.x cryptoapi broken [espakman]
+  #582: Cannot initiate on demand a connection with traffic selectors [Ilia Sotnikov]
+  #590: serpent lib used private kernel header [paul]
+  #544: the following error should only show up for x509 debugging: ... [paul]
+  #185: Deadlock in function "scx_release()" daemon pluto.(SMARTCARD) [Kurodo]
+
+v2.5.15
    change ipsec_breakroute to permit non-existant eroute's to be replaced.  
    fix for NAT-T negotiation with IP address changes during negotiation.
    adjusted addconn to support nat-t debug keywords.

@@ -143,7 +143,7 @@ delete_end(struct connection *c UNUSED, struct spd_route *sr UNUSED, struct end 
     pfreeany(e->updown);
     freeanychunk(e->ca);
 #ifdef SMARTCARD
-    scx_release(e->sc);
+    scx_release(e->sc,TRUE);
 #endif
     release_cert(e->cert);
     free_ietfAttrList(e->groups);
@@ -584,28 +584,28 @@ format_end(char *buf
 	}
 
 	{
-	    const char *send = "";
+	    const char *send_cert = "";
 	    char s[32];
 
-	    send="";
+	    send_cert="";
 	    
 	    switch(this->sendcert) {
 	    case cert_neversend:
-		send="S-C";
+		send_cert="S-C";
 		break;
 	    case cert_sendifasked:
-		send="S?C";
+		send_cert="S?C";
 		break;
 	    case cert_alwayssend:
-		send="S=C";
+		send_cert="S=C";
 		break;
 	    case cert_forcedtype:
 		sprintf(s, "S%d", this->cert.type);
-		send=s;
+		send_cert=s;
 		break;
 	    }
 	    strncat(endopts, plus, sizeof(endopts));
-	    strncat(endopts, send, sizeof(endopts));
+	    strncat(endopts, send_cert, sizeof(endopts));
 	    plus="+";
 	}
     }
@@ -2850,22 +2850,22 @@ find_client_connection(struct connection *c
     if (d == NULL)
     {
 	/* look for an abstract connection to match */
-	struct spd_route *sr;
+	struct spd_route *sra;
 	struct host_pair *hp = NULL;
 
-	for (sr = &c->spd; hp==NULL && sr != NULL; sr = sr->next)
+	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next)
 	{
-	    hp = find_host_pair(&sr->this.host_addr
-				, sr->this.host_port
+	    hp = find_host_pair(&sra->this.host_addr
+				, sra->this.host_port
 				, NULL
-				, sr->that.host_port);
+				, sra->that.host_port);
 #ifdef DEBUG
 	    if (DBGP(DBG_CONTROLMORE))
 	    {
 		char s2[SUBNETTOT_BUF],d2[SUBNETTOT_BUF];
 
-		subnettot(&sr->this.client, 0, s2, sizeof(s2));
-		subnettot(&sr->that.client, 0, d2, sizeof(d2));
+		subnettot(&sra->this.client, 0, s2, sizeof(s2));
+		subnettot(&sra->that.client, 0, d2, sizeof(d2));
 
 		DBG_log("  checking hostpair %s -> %s is %s"
 			, s2, d2

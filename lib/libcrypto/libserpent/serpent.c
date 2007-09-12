@@ -18,7 +18,7 @@
 #include <linux/init.h>
 #include <linux/types.h>
 
-#include <asm/byteorder.h>
+#include <endian.h>
 #else
 #include <sys/types.h>
 #include "oswendian.h"

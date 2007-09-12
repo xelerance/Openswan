@@ -57,7 +57,7 @@ stf_status start_dh_secretiv(struct pluto_crypto_req_cont *cn
 			     , struct state *st
 			     , enum crypto_importance importance
 			     , enum phase1_role init       /* TRUE=g_init,FALSE=g_r */
-			     , u_int16_t oakley_group)
+			     , u_int16_t oakley_group2)
 {
     struct pluto_crypto_req r;
     struct pcr_skeyid_q *dhq;
@@ -79,13 +79,13 @@ stf_status start_dh_secretiv(struct pluto_crypto_req_cont *cn
     /* convert appropriate data to dhq */
     dhq->auth = st->st_oakley.auth;
     dhq->hash = st->st_oakley.hash;
-    dhq->oakley_group = oakley_group;
+    dhq->oakley_group = oakley_group2;
     dhq->init = init;
     dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 
 
     passert(r.pcr_d.dhq.oakley_group != 0);
     DBG_log("parent1 type: %d group: %d len: %d\n", r.pcr_type,
-	    r.pcr_d.dhq.oakley_group, r.pcr_len);
+	    r.pcr_d.dhq.oakley_group, (int)r.pcr_len);
 
     if(pss) {
 	pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->pss, *pss);
@@ -159,7 +159,7 @@ stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
 			   , struct state *st
 			   , enum crypto_importance importance
 			   , enum phase1_role init      
-			   , u_int16_t oakley_group)
+			   , u_int16_t oakley_group2)
 {
     struct pluto_crypto_req r;
     struct pcr_skeyid_q *dhq;
@@ -181,7 +181,7 @@ stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
     /* convert appropriate data to dhq */
     dhq->auth = st->st_oakley.auth;
     dhq->hash = st->st_oakley.hash;
-    dhq->oakley_group = oakley_group;
+    dhq->oakley_group = oakley_group2;
     dhq->init = init;
     dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 
 

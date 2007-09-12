@@ -419,14 +419,14 @@ decode_net_id(struct isakmp_ipsec_id *id
 	case ID_IPV6_ADDR:
 	{
 	    ip_address temp_address;
-	    err_t ugh;
+	    err_t ughmsg;
 
-	    ugh = initaddr(id_pbs->cur, pbs_left(id_pbs), afi->af, &temp_address);
+	    ughmsg = initaddr(id_pbs->cur, pbs_left(id_pbs), afi->af, &temp_address);
 
-	    if (ugh != NULL)
+	    if (ughmsg != NULL)
 	    {
 		loglog(RC_LOG_SERIOUS, "%s ID payload %s has wrong length in Quick I1 (%s)"
-		    , which, idtypename, ugh);
+		    , which, idtypename, ughmsg);
 		/* XXX Could send notification back */
 		return FALSE;
 	    }
@@ -447,7 +447,7 @@ decode_net_id(struct isakmp_ipsec_id *id
 	case ID_IPV6_ADDR_SUBNET:
 	{
 	    ip_address temp_address, temp_mask;
-	    err_t ugh;
+	    err_t ughmsg;
 
 	    if (pbs_left(id_pbs) != 2 * afi->ia_sz)
 	    {
@@ -456,20 +456,20 @@ decode_net_id(struct isakmp_ipsec_id *id
 		/* XXX Could send notification back */
 		return FALSE;
 	    }
-	    ugh = initaddr(id_pbs->cur
+	    ughmsg = initaddr(id_pbs->cur
 		, afi->ia_sz, afi->af, &temp_address);
-	    if (ugh == NULL)
-		ugh = initaddr(id_pbs->cur + afi->ia_sz
+	    if (ughmsg == NULL)
+		ughmsg = initaddr(id_pbs->cur + afi->ia_sz
 		    , afi->ia_sz, afi->af, &temp_mask);
-	    if (ugh == NULL)
-		ugh = initsubnet(&temp_address, masktocount(&temp_mask)
+	    if (ughmsg == NULL)
+		ughmsg = initsubnet(&temp_address, masktocount(&temp_mask)
 		    , '0', net);
-	    if (ugh == NULL && subnetisnone(net))
-		ugh = "contains only anyaddr";
-	    if (ugh != NULL)
+	    if (ughmsg == NULL && subnetisnone(net))
+		ughmsg = "contains only anyaddr";
+	    if (ughmsg != NULL)
 	    {
 		loglog(RC_LOG_SERIOUS, "%s ID payload %s bad subnet in Quick I1 (%s)"
-		    , which, idtypename, ugh);
+		    , which, idtypename, ughmsg);
 		/* XXX Could send notification back */
 		return FALSE;
 	    }
@@ -487,7 +487,7 @@ decode_net_id(struct isakmp_ipsec_id *id
 	case ID_IPV6_ADDR_RANGE:
 	{
 	    ip_address temp_address_from, temp_address_to;
-	    err_t ugh;
+	    err_t ughmsg;
 
 	    if (pbs_left(id_pbs) != 2 * afi->ia_sz)
 	    {
@@ -496,22 +496,22 @@ decode_net_id(struct isakmp_ipsec_id *id
 		/* XXX Could send notification back */
 		return FALSE;
 	    }
-	    ugh = initaddr(id_pbs->cur, afi->ia_sz, afi->af, &temp_address_from);
-	    if (ugh == NULL)
-		ugh = initaddr(id_pbs->cur + afi->ia_sz
+	    ughmsg = initaddr(id_pbs->cur, afi->ia_sz, afi->af, &temp_address_from);
+	    if (ughmsg == NULL)
+		ughmsg = initaddr(id_pbs->cur + afi->ia_sz
 		    , afi->ia_sz, afi->af, &temp_address_to);
-	    if (ugh != NULL)
+	    if (ughmsg != NULL)
 	    {
 		loglog(RC_LOG_SERIOUS, "%s ID payload %s malformed (%s) in Quick I1"
-		    , which, idtypename, ugh);
+		    , which, idtypename, ughmsg);
 		/* XXX Could send notification back */
 		return FALSE;
 	    }
 
-	    ugh = rangetosubnet(&temp_address_from, &temp_address_to, net);
-	    if (ugh == NULL && subnetisnone(net))
-		ugh = "contains only anyaddr";
-	    if (ugh != NULL)
+	    ughmsg = rangetosubnet(&temp_address_from, &temp_address_to, net);
+	    if (ughmsg == NULL && subnetisnone(net))
+		ughmsg = "contains only anyaddr";
+	    if (ughmsg != NULL)
 	    {
 		char temp_buff1[ADDRTOT_BUF], temp_buff2[ADDRTOT_BUF];
 
@@ -519,7 +519,7 @@ decode_net_id(struct isakmp_ipsec_id *id
 		addrtot(&temp_address_to, 0, temp_buff2, sizeof(temp_buff2));
 		loglog(RC_LOG_SERIOUS, "%s ID payload in Quick I1, %s"
 		    " %s - %s unacceptable: %s"
-		    , which, idtypename, temp_buff1, temp_buff2, ugh);
+		    , which, idtypename, temp_buff1, temp_buff2, ughmsg);
 		return FALSE;
 	    }
 	    DBG(DBG_PARSING | DBG_CONTROL,

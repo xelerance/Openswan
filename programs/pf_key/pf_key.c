@@ -51,7 +51,7 @@ uint32_t pfkey_seq = 0;
 int pfkey_sock;
 
 static void
-Usage(char *progname)
+Usage(void)
 {
 	fprintf(stderr, "%s: Usage: %s [--help]\n"
 		"\tby default listens for AH, ESP, IPIP and IPCOMP\n"
@@ -178,7 +178,7 @@ main(int argc, char *argv[])
 			break;
 			
 		case 'h':
-			Usage(progname);
+			Usage();
 			break;
 		case '0':
 			/* it was a long option with a flag */

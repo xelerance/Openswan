@@ -1660,7 +1660,7 @@ RSA_check_signature(struct state *st
 		&& same_id(&c->spd.that.id, &key->id)
 		&& trusted_ca(key->issuer, c->spd.that.ca, &pathlen))
 	    {
-		time_t now;
+		time_t tnow;
 
 		{
 		  char buf[IDTOA_BUF];
@@ -1671,8 +1671,8 @@ RSA_check_signature(struct state *st
 		}
 
 		/* check if found public key has expired */
-		time(&now);
-		if (key->until_time != UNDEFINED_TIME && key->until_time < now)
+		time(&tnow);
+		if (key->until_time != UNDEFINED_TIME && key->until_time < tnow)
 		{
 		    loglog(RC_LOG_SERIOUS,
 			"cached RSA public key has expired and has been deleted");
@@ -1810,7 +1810,7 @@ encrypt_message(pb_stream *pbs, struct state *st)
     DBG_cond_dump(DBG_CRYPT | DBG_RAW, "IV:\n"
 		  , st->st_new_iv 
 		  , st->st_new_iv_len); 
-    DBG(DBG_CRYPT, DBG_log("unpadded size is: %u", enc_len));
+    DBG(DBG_CRYPT, DBG_log("unpadded size is: %u", (unsigned int)enc_len));
 
     /* Pad up to multiple of encryption blocksize.
      * See the description associated with the definition of
@@ -1829,7 +1829,7 @@ encrypt_message(pb_stream *pbs, struct state *st)
 
     DBG(DBG_CRYPT
 	, DBG_log("encrypting %d using %s"
-		  , enc_len
+		  , (unsigned int)enc_len
 		  , enum_show(&oakley_enc_names, st->st_oakley.encrypt)));
 
     TCLCALLOUT_crypt("preEncrypt", st, pbs,sizeof(struct isakmp_hdr),enc_len);
@@ -2866,11 +2866,11 @@ doi_log_cert_thinking(struct msg_digest *md UNUSED
 
     if(!send_cert) {
 	if(auth == OAKLEY_PRESHARED_KEY) {
-	    openswan_log("I did not send a certificate because digital signatures are not being used. (PSK)");
+	    DBG(DBG_CONTROL, DBG_log("I did not send a certificate because digital signatures are not being used. (PSK)"));
 	} else if(certtype == CERT_NONE) {
-	    openswan_log("I did not send a certificate because I do not have one.");
+	    DBG(DBG_CONTROL, DBG_log("I did not send a certificate because I do not have one."));
 	} else if(policy == cert_sendifasked) {
-	    openswan_log("I did not send my certificate because I was not asked to.");
+	    DBG(DBG_CONTROL, DBG_log("I did not send my certificate because I was not asked to."));
 	}
     }
 }

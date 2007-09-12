@@ -80,18 +80,18 @@ void starter_log (int level, const char *fmt, ...)
 	va_end(args);
 }
 
-void starter_use_log (int debug, int console, int syslog)
+void starter_use_log (int debug, int console, int mysyslog)
 {
 	_debug = debug;
 	_console = console;
-	if (syslog != _syslog) {
-		if (syslog) {
+	if (mysyslog != _syslog) {
+		if (mysyslog) {
 			openlog("ipsec_starter", LOG_PID, LOG_USER);
 		}
 		else {
 			closelog();
 		}
-		_syslog = syslog;
+		_syslog = mysyslog;
 	}
 	if(_debug) {
 	    starter_log(LOG_LEVEL_ERR, "debugging mode enabled\n");

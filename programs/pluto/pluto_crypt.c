@@ -206,7 +206,7 @@ void pluto_crypto_helper(int fd, int helpernum)
 	/* okay, got a basic size, read the rest of it */
 
 	DBG(DBG_CONTROL, DBG_log("helper %d read %d+4/%d bytesfd: %d"
-				 , helpernum, actnum, r->pcr_len, fileno(in)));
+				 , helpernum, actnum, (int)r->pcr_len, fileno(in)));
 
 	if(actnum != restlen) {
 	    /* faulty read. die, parent will restart us */
@@ -258,7 +258,7 @@ static bool crypto_write_request(struct pluto_crypto_worker *w
 	, DBG_log("asking helper %d to do %s op on seq: %u (len=%u, pcw_work=%d)"
 		  , w->pcw_helpernum
 		  , enum_show(&pluto_cryptoop_names, r->pcr_type)
-		  , r->pcr_id, r->pcr_len, w->pcw_work+1));
+		  , r->pcr_id, (unsigned int)r->pcr_len, w->pcw_work+1));
 
     do {
 	errno=0;

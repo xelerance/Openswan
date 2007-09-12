@@ -160,9 +160,9 @@ usage(char *s, FILE *f)
 int
 parse_life_options(u_int32_t life[life_maxsever][life_maxtype],
 		   char *life_opt[life_maxsever][life_maxtype],
-		   char *optarg)
+		   char *myoptarg)
 {
-	char *optargp = optarg;
+	char *optargp = myoptarg;
 	char *endptr;
 	
 	do {
@@ -286,9 +286,9 @@ parse_life_options(u_int32_t life[life_maxsever][life_maxtype],
 				"%s: Invalid character='%c' at offset %d in lifetime option parameter: '%s', parameter string is %d characters long, %d valid value characters found.\n",
 				progname,
 				*endptr,
-				(int)(endptr - optarg),
-				optarg,
-				(int)strlen(optarg),
+				(int)(endptr - myoptarg),
+				myoptarg,
+				(int)strlen(myoptarg),
 				(int)(strcspn(optargp, ", ") - 1));
 			return(1);
 		}
@@ -1661,8 +1661,8 @@ main(int argc, char *argv[])
 		unsigned char pfkey_buf[PFKEYv2_MAX_MSGSIZE];
 		
 		while((readlen = read(pfkey_sock, pfkey_buf, sizeof(pfkey_buf))) > 0) {
-			struct sadb_ext *extensions[SADB_EXT_MAX + 1];
-			pfkey_extensions_init(extensions);
+			struct sadb_ext *extensions2[SADB_EXT_MAX + 1];
+			pfkey_extensions_init(extensions2);
 			pfkey_msg = (struct sadb_msg *)pfkey_buf;
 			
 			/* first, see if we got enough for an sadb_msg */
@@ -1701,7 +1701,7 @@ main(int argc, char *argv[])
 				continue;
 			}
 			
-			if (pfkey_msg_parse(pfkey_msg, NULL, extensions, EXT_BITS_OUT)) {
+			if (pfkey_msg_parse(pfkey_msg, NULL, extensions2, EXT_BITS_OUT)) {
 				if(debug) {
 					printf("%s: unparseable PF_KEY message.\n",
 					       progname);
@@ -1717,8 +1717,8 @@ main(int argc, char *argv[])
 				if(saref) {
 					printf("%s: saref=%d\n",
 					       progname,
-					       (extensions[SADB_EXT_SA] != NULL)
-					       ? ((struct sadb_sa*)(extensions[SADB_EXT_SA]))->sadb_x_sa_ref
+					       (extensions2[SADB_EXT_SA] != NULL)
+					       ? ((struct sadb_sa*)(extensions2[SADB_EXT_SA]))->sadb_x_sa_ref
 					       : IPSEC_SAREF_NULL);
 				}
 				break;

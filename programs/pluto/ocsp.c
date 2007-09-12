@@ -1339,13 +1339,13 @@ parse_basic_ocsp_response(chunk_t blob, int level0, response_t *res)
 	    break;
 	case BASIC_RESPONSE_CERTIFICATE:
 	    {
-		chunk_t blob;
+		chunk_t blob2;
 		x509cert_t *cert = alloc_thing(x509cert_t, "ocspcert");
 
-		clonetochunk(blob, object.ptr, object.len, "ocspcert blob");
+		clonetochunk(blob2, object.ptr, object.len, "ocspcert blob");
 		*cert = empty_x509cert;
 
-                if (parse_x509cert(blob, level+1, cert)
+                if (parse_x509cert(blob2, level+1, cert)
                     && cert->isOcspSigner
                     && trust_authcert_candidate(cert, NULL))
 		{
@@ -1561,7 +1561,7 @@ add_certinfo(ocsp_location_t *loc, ocsp_certinfo_t *info, ocsp_location_t **chai
     ocsp_location_t *location;
     ocsp_certinfo_t *certinfo, **certinfop;
     char buf[BUF_LEN];
-    time_t now;
+    time_t tnow;
     int cmp = -1;
 
     location = get_ocsp_location(loc, *chain);
@@ -1601,14 +1601,14 @@ add_certinfo(ocsp_location_t *loc, ocsp_certinfo_t *info, ocsp_location_t **chai
 	    , (cmp == 0)? (request?"already exists":"updated"):"added")
     )
 
-    time(&now);
+    time(&tnow);
    
     if (request)
     {
 	certinfo->status = CERT_UNDEFINED;
 	
 	if (cmp != 0)
-	    certinfo->thisUpdate = now;
+	    certinfo->thisUpdate = tnow;
 
 	certinfo->nextUpdate = UNDEFINED_TIME;
     }
@@ -1617,12 +1617,12 @@ add_certinfo(ocsp_location_t *loc, ocsp_certinfo_t *info, ocsp_location_t **chai
 	certinfo->status = info->status;
 
 	certinfo->thisUpdate = (info->thisUpdate != UNDEFINED_TIME)?
-	    info->thisUpdate : now;
+	    info->thisUpdate : tnow;
 
 	certinfo->once = (info->nextUpdate == UNDEFINED_TIME);
 
 	certinfo->nextUpdate = (certinfo->once)?
-	    (now + OCSP_DEFAULT_VALID_TIME) : info->nextUpdate;
+	    (tnow + OCSP_DEFAULT_VALID_TIME) : info->nextUpdate;
     }
 }
 

@@ -421,12 +421,14 @@ netlink_raw_eroute(const ip_address *this_host
 	    break;
 	case SPI_TRAP:
 	case SPI_TRAPSUBNET:
-	case SPI_HOLD:
 	  if (sadb_op == ERO_ADD_INBOUND || sadb_op == ERO_DEL_INBOUND)
 	    {
 		return TRUE;
 	    }
 	    break;
+	/* Do we really need %hold under NETKEY? Seems not, so just ignore */
+	case SPI_HOLD:
+		return TRUE; 
 	}
     }
 
@@ -813,6 +815,7 @@ netlink_acquire(struct nlmsghdr *n)
 
     src_proto = 0;   /* XXX-MCR where to get protocol from? */
     dst_proto = 0;   /* ditto */
+    src_proto = dst_proto = acquire->sel.proto;
 
     /* XXX also the type of src/dst should be checked to make sure
      *     that they aren't v4 to v6 or something goofy
@@ -820,6 +823,8 @@ netlink_acquire(struct nlmsghdr *n)
 
     if (!(ugh = xfrm_to_ip_address(family, srcx, &src))
 	&& !(ugh = xfrm_to_ip_address(family, dstx, &dst))
+	&& (ugh = add_port (family, &src, acquire->sel.sport))
+	&& (ugh = add_port (family, &dst, acquire->sel.dport))
 	&& !(ugh = src_proto == dst_proto? NULL : "src and dst protocols differ")
 	&& !(ugh = addrtosubnet(&src, &ours))
 	&& !(ugh = addrtosubnet(&dst, &his)))
