@@ -179,9 +179,16 @@ int parser_y_include (const char *filename)
 	if(glob(filename, GLOB_BRACE|GLOB_NOMAGIC, NULL, &globbuf) == GLOB_NOMATCH) {
 		/* no files found. maybe try rootdir2 now */
                 char ebuf[128];
+
+		if(strchr(filename, '*')) {
+		   /* be quiet about missing files */
+		   return 0;
+                }
+
 		snprintf(ebuf, 128, "can't open include filename: '%s'", filename);
                 yyerror(ebuf);
 		globfree(&globbuf);
+		return 1;
 	}
 
 	if (ic_private.stack_ptr >= MAX_INCLUDE_DEPTH)
