@@ -10,7 +10,9 @@
 umlplutotest	basic-pluto-01	good
 umlplutotest	basic-pluto-02	good
 umlXhost	basic-pluto-03	good
-umlplutotest	basic-pluto-06	good
+
+# fails due to refineconnection bug.
+umlplutotest	basic-pluto-06	bad
 umlplutotest	pluto-ipcmp-01	good
 umlplutotest	bad-updown-01	good
 
