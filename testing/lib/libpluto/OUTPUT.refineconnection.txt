@@ -1,20 +1,73 @@
-
-  Electric Fence 2.1 Copyright (C) 1987-1998 Bruce Perens.
-| interface "eth0" matched right side
-../refineconnection added connection description "westnet-eastnet"
-| base debugging = crypt+control+controlmore
-Pre-amble: #!-pluto-whack-file- recorded on east on 2007-07-01 00:48:03
-../refineconnection listening for IKE messages
-../refineconnection listening for IKE messages
-| creating state object #1 at 0x401f3c10
-| refine_connection: starting with westnet-eastnet
-|    match_id a=@west
-|             b=@west
-|    results  matched
-|   trusted_ca called with a=(empty) b=(empty)
-| refine_connection: checking westnet-eastnet against westnet-eastnet, best=(none) with match=1(id=1/ca=1/reqca=1)
-| refine_connection: checked westnet-eastnet against westnet-eastnet, now for see if best
-../refineconnection leak: 2 * host ip
-../refineconnection leak: connection name
-../refineconnection leak: struct connection
-new name: westnet-eastnet
+3,4d2
+< Pre-amble: #!-pluto-whack-file- recorded on east on 2007-07-04 01:12:06
+< ../refineconnection listening for IKE messages
+6c4,60
+< ../refineconnection added connection description "westnet-eastnet-aggr"
+---
+> ../refineconnection added connection description "westnet-eastnet"
+> | base debugging = crypt+control+controlmore
+> Pre-amble: #!-pluto-whack-file- recorded on east on 2007-07-01 00:48:03
+> ../refineconnection listening for IKE messages
+> ../refineconnection listening for IKE messages
+> | creating state object #1 at 0x401f5c10
+> | refine_connection: starting with westnet-eastnet
+> |    match_id a=@west
+> |             b=@west
+> |    results  matched
+> |   trusted_ca called with a=(empty) b=(empty)
+> | refine_connection: checking westnet-eastnet against westnet-eastnet, best=(none) with match=1(id=1/ca=1/reqca=1)
+> | refine_connection: checked westnet-eastnet against westnet-eastnet, now for see if best
+> | creating state object #2 at 0x401f7c10
+> | refine_connection: starting with westnet-eastnet
+> |    match_id a=@west
+> |             b=@west
+> |    results  matched
+> |   trusted_ca called with a=(empty) b=(empty)
+> | refine_connection: checking westnet-eastnet against westnet-eastnet, best=(none) with match=1(id=1/ca=1/reqca=1)
+> | refine_connection: checked westnet-eastnet against westnet-eastnet, now for see if best
+> | creating state object #3 at 0x401f9c10
+> | refine_connection: starting with westnet-eastnet
+> |    match_id a=@west
+> |             b=@west
+> |    results  matched
+> |   trusted_ca called with a=(empty) b=(empty)
+> | refine_connection: checking westnet-eastnet against westnet-eastnet, best=(none) with match=1(id=1/ca=1/reqca=1)
+> | find_host_pair: comparing to 192.1.2.23:500 192.1.2.45:500 
+> | find_host_pair_conn (refine_host_connection): 192.1.2.23:500 %any:500 -> hp:none 
+> | creating state object #4 at 0x401fbc10
+> | refine_connection: starting with westnet-eastnet
+> |    match_id a=@west
+> |             b=@west
+> |    results  matched
+> |   trusted_ca called with a=(empty) b=(empty)
+> | refine_connection: checking westnet-eastnet against westnet-eastnet, best=(none) with match=1(id=1/ca=1/reqca=1)
+> | find_host_pair: comparing to 192.1.2.23:500 192.1.2.45:500 
+> | find_host_pair_conn (refine_host_connection): 192.1.2.23:500 %any:500 -> hp:none 
+> | creating state object #5 at 0x401fdc10
+> | refine_connection: starting with westnet-eastnet
+> |    match_id a=@east
+> |             b=@west
+> |    results  fail
+> |   trusted_ca called with a=(empty) b=(empty)
+> | refine_connection: checking westnet-eastnet against westnet-eastnet, best=(none) with match=0(id=0/ca=1/reqca=1)
+> | find_host_pair: comparing to 192.1.2.23:500 192.1.2.45:500 
+> | find_host_pair_conn (refine_host_connection): 192.1.2.23:500 %any:500 -> hp:none 
+> | creating state object #6 at 0x401ffc10
+> | refine_connection: starting with westnet-eastnet
+> |    match_id a=@east
+> |             b=@west
+> |    results  fail
+> |   trusted_ca called with a=(empty) b=(empty)
+> | refine_connection: checking westnet-eastnet against westnet-eastnet, best=(none) with match=0(id=0/ca=1/reqca=1)
+> | find_host_pair: comparing to 192.1.2.23:500 192.1.2.45:500 
+> | find_host_pair_conn (refine_host_connection): 192.1.2.23:500 %any:500 -> hp:none 
+10,13c64,67
+< 1: @west -> conn: <none>
+< 2: @west -> conn: <none>
+< 3: @west -> conn: westnet-eastnet-aggr
+< 4: @west -> conn: westnet-eastnet-aggr
+---
+> 1: @west -> conn: westnet-eastnet
+> 2: @west -> conn: westnet-eastnet
+> 3: @west -> conn: <none>
+> 4: @west -> conn: <none>

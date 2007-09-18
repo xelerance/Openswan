@@ -23,6 +23,7 @@
 #include "seam_log.c"
 #include "seam_xauth.c"
 #include "seam_initiate.c"
+#include "seam_alg.c"
 
 main(int argc, char *argv[])
 {

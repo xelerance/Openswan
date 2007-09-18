@@ -39,12 +39,6 @@ void add_x509_public_key(x509cert_t *cert , time_t until
 			 , enum dns_auth_level dns_auth_level) {}
 x509cert_t*add_x509cert(x509cert_t *cert) { return NULL; }
 
-struct alg_info_ike *alg_info_ike_create_from_str (const char *alg_str, const char **err_p) {
-    return NULL;
-}
-struct db_sa *kernel_alg_makedb(lset_t policy, struct alg_info_esp *ei, bool logit) {
-    return NULL;
-}
 void free_sa(struct db_sa *f) {}
 
 /* ac.c SEAM */
