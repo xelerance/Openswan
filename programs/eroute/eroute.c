@@ -81,18 +81,6 @@ uint32_t pfkey_seq = 0;
 #define EMT_GETDEBUG	13	/* get debug level if active */
 #define EMT_INEROUTE	14	/* set incoming policy for IPIP on a chain */
 
-static void add_port(int af, ip_address * addr, short port)
-{
-	switch (af) {
-	case AF_INET:
-		addr->u.v4.sin_port = port;
-		break;
-	case AF_INET6:
-		addr->u.v6.sin6_port = port;
-		break;
-	}
-}
-
 static void
 usage(char* arg)
 {
@@ -172,6 +160,7 @@ main(int argc, char **argv)
 	ip_subnet s_subnet, d_subnet;
  	int eroute_af = 0;
  	int said_af = 0;
+	int sa_flags=0;
 
 	int argcount = argc;
 
@@ -487,7 +476,7 @@ main(int argc, char **argv)
 			if ((stat ("/proc/net/ipsec_eroute", &sts)) != 0)  {
 				fprintf(stderr, "%s: No eroute table - no IPsec support in kernel (are the modules loaded?)\n", progname);
 			} else {
-				int ret = system("cat /proc/net/ipsec_eroute");
+				ret = system("cat /proc/net/ipsec_eroute");
 				ret = ret != -1 && WIFEXITED(ret) ? WEXITSTATUS(ret) : 1;
 			}
 			exit(ret);
@@ -633,10 +622,17 @@ main(int argc, char **argv)
 	}
 
 	switch(action_type) {
-	case EMT_SETEROUTE:
-	case EMT_REPLACEROUTE:
-	case EMT_INEROUTE:
 	case EMT_CLREROUTE:
+		sa_flags = SADB_X_SAFLAGS_CLEARFLOW;
+		goto sa_build;
+
+	case EMT_REPLACEROUTE:
+		sa_flags = SADB_X_SAFLAGS_REPLACEFLOW;
+		goto sa_build;
+
+	case EMT_SETEROUTE:
+	case EMT_INEROUTE:
+	sa_build:
 		if((error = pfkey_sa_build(&extensions[SADB_EXT_SA],
 					   SADB_EXT_SA,
 					   said.spi, /* in network order */
@@ -644,7 +640,7 @@ main(int argc, char **argv)
 					   0,
 					   0,
 					   0,
-					   (action_type == EMT_CLREROUTE) ? SADB_X_SAFLAGS_CLEARFLOW : 0))) {
+					   sa_flags))) {
 			fprintf(stderr, "%s: Trouble building sa extension, error=%d.\n",
 				progname, error);
 			pfkey_extensions_free(extensions);

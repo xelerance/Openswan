@@ -150,24 +150,18 @@ generate_msgid(struct state *isakmp_sa)
 static struct state *statetable[STATE_TABLE_SIZE];
 
 static struct state **
-state_hash(const u_char *icookie, const u_char *rcookie, const ip_address *peer)
+state_hash(const u_char *icookie, const u_char *rcookie)
 {
     u_int i = 0, j;
-    const unsigned char *byte_ptr;
-    size_t length = addrbytesptr(peer, &byte_ptr);
 
     DBG(DBG_RAW | DBG_CONTROL,
 	DBG_dump("ICOOKIE:", icookie, COOKIE_SIZE);
-	DBG_dump("RCOOKIE:", rcookie, COOKIE_SIZE);
-	DBG_dump("peer:", byte_ptr, length));
+	DBG_dump("RCOOKIE:", rcookie, COOKIE_SIZE));
 
     /* XXX the following hash is pretty pathetic */
 
     for (j = 0; j < COOKIE_SIZE; j++)
 	i = i * 407 + icookie[j] + rcookie[j];
-
-    for (j = 0; j < length; j++)
-	i = i * 613 + byte_ptr[j];
 
     i = i % STATE_TABLE_SIZE;
 
@@ -242,8 +236,7 @@ state_with_serialno(so_serial_t sn)
 void
 insert_state(struct state *st)
 {
-    struct state **p = state_hash(st->st_icookie, st->st_rcookie
-	, &st->st_connection->spd.that.host_addr);
+    struct state **p = state_hash(st->st_icookie, st->st_rcookie);
 
     passert(st->st_hashchain_prev == NULL && st->st_hashchain_next == NULL);
 
@@ -271,8 +264,7 @@ unhash_state(struct state *st)
 {
     /* unlink from forward chain */
     struct state **p = st->st_hashchain_prev == NULL
-	? state_hash(st->st_icookie, st->st_rcookie
-		     , &st->st_connection->spd.that.host_addr)
+	? state_hash(st->st_icookie, st->st_rcookie)
 	: &st->st_hashchain_prev->st_hashchain_next;
 
     /* unlink from forward chain */
@@ -778,15 +770,14 @@ void for_each_state(void *(f)(struct state *, void *data), void *data)
 struct state *
 find_state(const u_char *icookie
 , const u_char *rcookie
-, const ip_address *peer
+, const ip_address *peer UNUSED
 , msgid_t /*network order*/ msgid)
 {
-    struct state *st = *state_hash(icookie, rcookie, peer);
+    struct state *st = *state_hash(icookie, rcookie);
 
     while (st != (struct state *) NULL)
     {
-	if (sameaddr(peer, &st->st_connection->spd.that.host_addr)
-	    && memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
+	if (memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
 	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0)
 	{
 	    DBG(DBG_CONTROL,
@@ -817,15 +808,14 @@ find_state(const u_char *icookie
 struct state *
 find_info_state(const u_char *icookie
 		, const u_char *rcookie
-		, const ip_address *peer
+		, const ip_address *peer UNUSED
 		, msgid_t /*network order*/ msgid)
 {
-    struct state *st = *state_hash(icookie, rcookie, peer);
+    struct state *st = *state_hash(icookie, rcookie);
 
     while (st != (struct state *) NULL)
     {
-	if (sameaddr(peer, &st->st_connection->spd.that.host_addr)
-	    && memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
+	if (memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
 	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0)
 	{
 	    DBG(DBG_CONTROL,
@@ -1008,9 +998,9 @@ void fmt_state(struct state *st, time_t n
 	snprintf(dpdbuf, sizeof(dpdbuf), "; isakmp#%lu", (unsigned long)st->st_clonedfrom);
     } else {
 	if(st->hidden_variables.st_dpd) {
-	    time_t n = time(NULL);
+	    time_t tn = time(NULL);
 	    snprintf(dpdbuf, sizeof(dpdbuf), "; lastdpd=%lds(seq in:%u out:%u)"
-		     , st->st_last_dpd !=0 ? n - st->st_last_dpd : (long)-1
+		     , st->st_last_dpd !=0 ? tn - st->st_last_dpd : (long)-1
 		     , st->st_dpd_seqno
 		     , st->st_dpd_expectseqno);
 	} else {
@@ -1149,42 +1139,43 @@ show_states_status(void)
 	}
     }
 
-    /* build the array */
-    array = alloc_bytes(sizeof(struct state *)*count, "state array");
-    count = 0;
-    for (i = 0; i < STATE_TABLE_SIZE; i++)
+    if (count != 0)
     {
-	struct state *st;
-
-	for (st = statetable[i]; st != NULL; st = st->st_hashchain_next)
+	/* build the array */
+	array = alloc_bytes(sizeof(struct state *)*count, "state array");
+	count = 0;
+	for (i = 0; i < STATE_TABLE_SIZE; i++)
 	{
-	    array[count++]=st;
+	   struct state *st;
+
+	   for (st = statetable[i]; st != NULL; st = st->st_hashchain_next)
+	   {
+	      array[count++]=st;
+	   }
+        }
+
+         /* sort it! */
+         qsort(array, count, sizeof(struct state *), state_compare);
+
+         /* now print sorted results */
+        for (i = 0; i < count; i++)
+	{
+	  struct state *st;
+	  st = array[i];
+	  fmt_state(st, n, state_buf, sizeof(state_buf)
+		, state_buf2, sizeof(state_buf2));
+	  whack_log(RC_COMMENT, state_buf);
+	  if (state_buf2[0] != '\0')
+		whack_log(RC_COMMENT, state_buf2);
+
+	  /* show any associated pending Phase 2s */
+	  if (IS_PHASE1(st->st_state))
+		show_pending_phase2(st->st_connection, st);
 	}
+
+	/* free the array */
+	pfree(array);
     }
-
-    /* sort it! */
-    qsort(array, count, sizeof(struct state *), state_compare);
-
-    /* now print sorted results */
-    for (i = 0; i < count; i++)
-    {
-	struct state *st;
-
-	st = array[i];
-
-	fmt_state(st, n, state_buf, sizeof(state_buf)
-		  , state_buf2, sizeof(state_buf2));
-	whack_log(RC_COMMENT, state_buf);
-	if (state_buf2[0] != '\0')
-	    whack_log(RC_COMMENT, state_buf2);
-
-	/* show any associated pending Phase 2s */
-	if (IS_PHASE1(st->st_state))
-	    show_pending_phase2(st->st_connection, st);
-    }
-
-    /* free the array */
-    pfree(array);
 }
 
 /* Given that we've used up a range of unused CPI's,

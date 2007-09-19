@@ -100,7 +100,7 @@ crypt_ke.o: crypt_ke.c ../../linux/include/openswan.h \
   ../../include/certs.h ../../include/secrets.h \
   ../../include/id.h ../../include/x509.h \
   ../../include/pgp.h keys.h ../../include/secrets.h \
-  ocf_cryptodev.h
+  ocf_pk.h
 crypt_start_dh.o: crypt_start_dh.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
@@ -608,7 +608,7 @@ ipsec_doi.o: ipsec_doi.c ../../include/arpa/nameser.h \
   ../../linux/include/openswan/pfkeyv2.h plutoalg.h pluto_crypt.h \
   ikev1.h ikev1_continuations.h xauth.h vendor.h nat_traversal.h \
   virtual.h dpd.h x509more.h tpm/tpm.h ../../include/constants.h \
-  ocf_cryptodev.h
+  ocf_pk.h
 kernel.o: kernel.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
@@ -754,8 +754,8 @@ keys.o: keys.c ../../include/arpa/nameser.h \
   ../../include/secrets.h adns.h dnskey.h log.h \
   ../../include/oswlog.h ../../include/whack.h timer.h \
   ../../include/oswtime.h ../../include/mpzfuncs.h fetch.h \
-  x509more.h ../../include/packet.h demux.h server.h \
-  ocf_cryptodev.h nat_traversal.h
+  x509more.h ../../include/packet.h demux.h server.h ocf_pk.h \
+  nat_traversal.h
 log.o: log.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
@@ -826,7 +826,7 @@ nat_traversal.o: nat_traversal.c ../../linux/include/openswan.h \
   ../../lib/libcrypto/libsha2/sha2.h \
   ../../include/mpzfuncs.h vendor.h \
   ../../include/natt_defines.h nat_traversal.h
-ocf_cryptodev.o: ocf_cryptodev.c ../../include/crypto/cryptodev.h \
+ocf_pk.o: ocf_pk.c ../../include/crypto/cryptodev.h \
   ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
@@ -842,7 +842,7 @@ ocf_cryptodev.o: ocf_cryptodev.c ../../include/crypto/cryptodev.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h keys.h \
   ../../include/secrets.h log.h ../../include/oswlog.h \
-  ocf_cryptodev.h ../../include/sysqueue.h pluto_crypt.h crypto.h \
+  ocf_pk.h ../../include/sysqueue.h pluto_crypt.h crypto.h \
   ../../include/sha1.h ../../include/md5.h \
   ../../lib/libcrypto/libsha2/sha2.h \
   ../../include/mpzfuncs.h server.h \
@@ -930,7 +930,7 @@ pluto_crypt.o: pluto_crypt.c ../../linux/include/openswan.h \
   ../../include/certs.h ../../include/secrets.h \
   ../../include/id.h ../../include/x509.h \
   ../../include/pgp.h keys.h ../../include/secrets.h \
-  ocf_cryptodev.h
+  ocf_pk.h
 plutoalg.o: plutoalg.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
@@ -981,7 +981,7 @@ plutomain.o: plutomain.c ../../include/arpa/nameser.h \
   ../../include/sha1.h ../../include/md5.h crypto.h \
   ../../lib/libcrypto/libsha2/sha2.h \
   ../../include/mpzfuncs.h vendor.h pluto_crypt.h virtual.h \
-  nat_traversal.h ocf_cryptodev.h
+  nat_traversal.h ocf_pk.h
 primegen.o: primegen.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
@@ -1379,7 +1379,7 @@ x509.o: x509.c ../../linux/include/openswan.h \
   ../../include/certs.h state.h ../../include/md2.h \
   ../../include/md5.h ../../include/sha1.h \
   ../../include/whack.h fetch.h ocsp.h ../../include/pkcs.h \
-  plutocerts.h x509more.h ocf_cryptodev.h
+  plutocerts.h x509more.h ocf_pk.h
 x509keys.o: x509keys.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \

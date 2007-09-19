@@ -944,18 +944,18 @@ parse_isakmp_sa_body(
 			else
 			{
 			    /* check that we can find a preshared secret */
-			    struct connection *c = st->st_connection;
+			    struct connection *con = st->st_connection;
 
-			    if (get_preshared_secret(c) == NULL)
+			    if (get_preshared_secret(con) == NULL)
 			    {
 				char mid[IDTOA_BUF]
 				    , hid[IDTOA_BUF];
 
-				idtoa(&c->spd.this.id, mid, sizeof(mid));
-				if (his_id_was_instantiated(c))
+				idtoa(&con->spd.this.id, mid, sizeof(mid));
+				if (his_id_was_instantiated(con))
 				    strcpy(hid, "%any");
 				else
-				    idtoa(&c->spd.that.id, hid, sizeof(hid));
+				    idtoa(&con->spd.that.id, hid, sizeof(hid));
 				ugh = builddiag("Can't authenticate: no preshared key found for `%s' and `%s'"
 				    , mid, hid);
 			    }

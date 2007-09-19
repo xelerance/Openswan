@@ -1427,7 +1427,7 @@ free_public_keys(struct pubkey_list **keys)
 err_t
 unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pubkey)
 {
-    chunk_t exp;
+    chunk_t exponent;
     chunk_t mod;
 
     rsa->keyid[0] = '\0';	/* in case of keybolbtoid failure */
@@ -1437,18 +1437,18 @@ unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pubkey)
 
     if (pubkey->ptr[0] != 0x00)
     {
-	setchunk(exp, pubkey->ptr + 1, pubkey->ptr[0]);
+	setchunk(exponent, pubkey->ptr + 1, pubkey->ptr[0]);
     }
     else
     {
-	setchunk(exp, pubkey->ptr + 3
+	setchunk(exponent, pubkey->ptr + 3
 	    , (pubkey->ptr[1] << BITS_PER_BYTE) + pubkey->ptr[2]);
     }
 
-    if (pubkey->len - (exp.ptr - pubkey->ptr) < exp.len + RSA_MIN_OCTETS_RFC)
+    if (pubkey->len - (exponent.ptr - pubkey->ptr) < exponent.len + RSA_MIN_OCTETS_RFC)
 	return "RSA public key blob too short";
 
-    mod.ptr = exp.ptr + exp.len;
+    mod.ptr = exponent.ptr + exponent.len;
     mod.len = &pubkey->ptr[pubkey->len] - mod.ptr;
 
     if (mod.len < RSA_MIN_OCTETS)
@@ -1457,7 +1457,7 @@ unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pubkey)
     if (mod.len > RSA_MAX_OCTETS)
 	return RSA_MAX_OCTETS_UGH;
 
-    n_to_mpz(&rsa->e, exp.ptr, exp.len);
+    n_to_mpz(&rsa->e, exponent.ptr, exponent.len);
     n_to_mpz(&rsa->n, mod.ptr, mod.len);
 
     keyblobtoid(pubkey->ptr, pubkey->len, rsa->keyid, sizeof(rsa->keyid));

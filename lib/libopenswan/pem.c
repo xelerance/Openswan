@@ -273,7 +273,7 @@ pem_decrypt(chunk_t *blob, chunk_t *iv
 
 	    if (n == -1)
 	    {
-		err_t ugh = "read(whackfd) failed";
+		ugh = "read(whackfd) failed";
 
 		pass->prompt(RC_LOG_SERIOUS,ugh);
 		return ugh;
@@ -281,7 +281,7 @@ pem_decrypt(chunk_t *blob, chunk_t *iv
 
 	    if (strlen(pass->secret) == 0)
 	    {
-	        err_t ugh = "no passphrase entered, aborted";
+	        ugh = "no passphrase entered, aborted";
 
 		pass->prompt(RC_LOG_SERIOUS, ugh);
 		return ugh;

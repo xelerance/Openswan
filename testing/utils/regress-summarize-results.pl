@@ -26,48 +26,43 @@ $roguecolour="#999900";    # purple?
 
 $fastrate=20;    # when test are running, how often to refresh
 $slowrate=300;   # when tests are not running, how often to refresh.
+$maxpieceperpage=20;
 
 $failed=0;
 $passed=0;
 $missed=0;
 $total=0;
-$multicolumn=0;
 
 #$gnatsurl="http://gnats.freeswan.org/bugs/gnatsweb.pl?database=freeswan&amp;cmd=view+audit-trail&amp;pr=";
 $gnatsurl=undef;
 
 @faillist=();
 
+sub printit {
+  print HTMLFILE @_;
+  print HTMLPART @_;
+}
+
 sub htmlize_test {
   local($testname)=@_;
 
   my($expected, $verdict, $packetstat, $consolestat, $file);
 
-  if($multicolumn) {
-    if(++$linecount > 40) {
-      print HTMLFILE "</TABLE>\n";
-      print HTMLFILE "<TD>";
-      print HTMLFILE "<TABLE>\n";
-      
-      print HTMLFILE "<TR><TH COLSPAN=3>$testtypename tests</TH></TR>\n";
-      print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
-      $linecount=4;
-    }
-  }    
+  &openpiecefile;
 
-  print HTMLFILE "<TR><TD>";
+  &printit("<TR><TD>");
 
   if(-f "$testname/description.txt") {
-    print HTMLFILE "<A HREF=\"$testname/description.txt\">$testname</A>";
+    &printit("<A HREF=\"$testname/description.txt\">$testname</A>");
   } else {
-    print HTMLFILE "$testname";
+    &printit("$testname");
   }
 
-  print HTMLFILE "</TD>";
+  &printit("</TD>");
 
   if($testname eq $runningtest) {
       $verdict="<BLINK>**RUNNING**</BLINK>";
-      print HTMLFILE "<TD>$verdict</TD></TR>";
+      &printit("<TD>$verdict</TD></TR>");
       return;
   } 
 
@@ -229,7 +224,7 @@ sub htmlize_test {
     $missed++;
   }
 
-  print HTMLFILE "<TD>$verdict</TD>";
+  &printit("<TD>$verdict</TD>");
 
   if(-f "$testname/regress.txt") {
     open(PROBREPORT, "$testname/regress.txt") || die "$testname/regress.txt: $!\n";
@@ -237,7 +232,7 @@ sub htmlize_test {
     close(PROBREPORT);
 
     if($prnum > 0 && defined($gnatsurl)) {
-	    print HTMLFILE "<TD><A HREF=\"$gnatsurl$prnum\">PR#$prnum</A></TD>";
+	    &printit("<TD><A HREF=\"$gnatsurl$prnum\">PR#$prnum</A></TD>");
     }
 
   } elsif(-f "$testname/goal.txt") {
@@ -246,7 +241,7 @@ sub htmlize_test {
     close(GOALREQ);
 
     $goalnum=sprintf("%03d", $goalnum);
-    #print HTMLFILE "<TD><A HREF=\"http://www.freeswan.org/freeswan_snaps/CURRENT-SNAP/klips/doc/klipsNGreq/requirements/$goalnum\">Requirement $goalnum</A></TD>";
+    #&printit("<TD><A HREF=\"http://www.freeswan.org/freeswan_snaps/CURRENT-SNAP/klips/doc/klipsNGreq/requirements/$goalnum\">Requirement $goalnum</A></TD>";
 
   } elsif(-f "$testname/exploit.txt") {
     open(EXPLOIT, "$testname/exploit.txt") || die "$testname/exploit.txt: $!\n";
@@ -257,7 +252,7 @@ sub htmlize_test {
     # test not categorized, output nothing.
   }
 
-  print HTMLFILE "</TR>\n";
+  &printit("</TR>\n");
 }
 
 # the test names are sorted.
@@ -323,32 +318,78 @@ $hostname=`uname -n`;
 
 open(HTMLFILE, ">testresults.html") || die "Can not open testresults.html: $!\n";
 
-print HTMLFILE "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n";
-print HTMLFILE "<HTML>  <HEAD>\n";
-print HTMLFILE "<META http-equiv=\"content-type\" content=\"text/html; charset=ISO-8859-1\">\n";
+$piece = 1;
+$piececount=0;
+
+sub openpiecefile {
+  if($piececount == 0) {
+    $file = sprintf("testresult%02d.html", $piece);
+
+    print HTMLPART "</TABLE>  \n";
+    print HTMLPART "\n<BR><PRE>TOTAL tests: $total SKIPPED: $skipped   PASSED: $passed   FAILED: $failed   MISSED: $missed  SUCCESS RATE: $testrate%</PRE><BR>\n";
+    print HTMLPART "<A HREF=\"$file\">next page</A><BR>\n";
+    print HTMLPART "<A HREF=\"stdout.txt\">stdout</A><BR>\n";
+    print HTMLPART "<A HREF=\"stderr.txt\">stderr</A><BR>\n";
+    print HTMLPART "</BODY></HTML>\n";
+    close(HTMLPART);
+
+    open(HTMLPART, ">$file") || die "Can not open $file: $!\n";
+
+    print HTMLPART "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n";
+    print HTMLPART "<HTML>  <HEAD>\n";
+    print HTMLPART "<META http-equiv=\"content-type\" content=\"text/html; charset=ISO-8859-1\">\n";
+    
+    if(defined($runningtest)) {
+      print HTMLPART "<META http-equiv=\"Refresh\" content=\"$fastrate,$file\">\n";
+    } else {
+      print HTMLPART "<META http-equiv=\"Refresh\" content=\"$slowrate,$file\">\n";
+    }
+    
+    print HTMLPART "<TITLE>Openswan nightly testing results for $runtime</TITLE>\n";
+    print HTMLPART "</HEAD>  <BODY>\n";
+    print HTMLPART "<H1>Openswan nightly testing results for $runtime on $hostname</H1>\n";
+    
+    if(defined($runningtest)) {
+      print HTMLPART "Currently running $runningtest<P>\n";
+    }
+    
+    
+    print HTMLPART "<TABLE border>\n";
+    print HTMLPART "<TD>";
+    
+    print HTMLPART "<TR><TH COLSPAN=3>Regression tests</TH></TR>\n";
+    print HTMLPART "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
+    $piece++;
+    $piececount=$maxpieceperpage;
+  }
+  $piececount--;
+}
+
+&printit("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n");
+&printit("<HTML>  <HEAD>\n");
+&printit("<META http-equiv=\"content-type\" content=\"text/html; charset=ISO-8859-1\">\n");
 
 if(defined($runningtest)) {
-  print HTMLFILE "<META http-equiv=\"Refresh\" content=\"$fastrate,testresults.html\">\n";
+  &printit("<META http-equiv=\"Refresh\" content=\"$fastrate,testresults.html\">\n");
 } else {
-  print HTMLFILE "<META http-equiv=\"Refresh\" content=\"$slowrate,testresults.html\">\n";
+  &printit("<META http-equiv=\"Refresh\" content=\"$slowrate,testresults.html\">\n");
 }
 
-print HTMLFILE "<TITLE>Openswan nightly testing results for $runtime</TITLE>\n";
-print HTMLFILE "</HEAD>  <BODY>\n";
-print HTMLFILE "<H1>Openswan nightly testing results for $runtime on $hostname</H1>\n";
+&printit("<TITLE>Openswan nightly testing results for $runtime</TITLE>\n");
+&printit("</HEAD>  <BODY>\n");
+&printit("<H1>Openswan nightly testing results for $runtime on $hostname</H1>\n");
 
 if(defined($runningtest)) {
-  print HTMLFILE "Currently running $runningtest<P>\n";
+  &printit("Currently running $runningtest<P>\n");
 }
 
 
-print HTMLFILE "<TABLE border>\n";
-print HTMLFILE "<TD>";
+&printit("<TABLE border>\n");
+&printit("<TD>");
 
 $testtypename="Regression";
-print HTMLFILE "<TABLE>\n" if ($multicolumn);
-print HTMLFILE "<TR><TH COLSPAN=3>Regression tests</TH></TR>\n";
-print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
+&printit("<TR><TH COLSPAN=3>Regression tests</TH></TR>\n");
+&printit("<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n");
 $linecount=3;
 
 if($wanttestcategories) {
@@ -360,10 +401,8 @@ if($wanttestcategories) {
   }
   
   $testtypename="Goal";
-  print HTMLFILE "</TABLE>\n" if ($multicolumn);
-  print HTMLFILE "<TABLE>\n"  if ($multicolumn);
-  print HTMLFILE "<TR><TH COLSPAN=3>Goal tests</TH></TR>\n";
-  print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
+  &printit("<TR><TH COLSPAN=3>Goal tests</TH></TR>\n");
+  &printit("<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n");
   $linecount+=3;
   
   foreach $testname (@goaltests) {
@@ -374,10 +413,8 @@ if($wanttestcategories) {
   }
   
   $testtypename="Exploit ";
-  print HTMLFILE "</TABLE>\n"  if ($multicolumn);
-  print HTMLFILE "<TABLE>\n"   if ($multicolumn);
-  print HTMLFILE "<TR><TH COLSPAN=3>Exploit tests</TH></TR>\n";
-  print HTMLFILE "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
+  &printit("<TR><TH COLSPAN=3>Exploit tests</TH></TR>\n");
+  &printit("<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n");
   $linecount+=3;
   
   foreach $testname (@exploittests) {
@@ -406,12 +443,11 @@ if($subtotal > 0) {
   $testrate="inf";
 }
 
-print HTMLFILE "</TABLE>  \n"  if ($multicolumn);
-print HTMLFILE "</TABLE>  \n";
-print HTMLFILE "\n<BR><PRE>TOTAL tests: $total SKIPPED: $skipped   PASSED: $passed   FAILED: $failed   MISSED: $missed  SUCCESS RATE: $testrate%</PRE><BR>\n";
-print HTMLFILE "<A HREF=\"stdout.txt\">stdout</A><BR>\n";
-print HTMLFILE "<A HREF=\"stderr.txt\">stderr</A><BR>\n";
-print HTMLFILE "</BODY></HTML>\n";
+&printit("</TABLE>  \n");
+&printit("\n<BR><PRE>TOTAL tests: $total SKIPPED: $skipped   PASSED: $passed   FAILED: $failed   MISSED: $missed  SUCCESS RATE: $testrate%</PRE><BR>\n");
+&printit("<A HREF=\"stdout.txt\">stdout</A><BR>\n");
+&printit("<A HREF=\"stderr.txt\">stderr</A><BR>\n");
+&printit("</BODY></HTML>\n");
 close(HTMLFILE);
 
 if(!defined($runningtest)) {

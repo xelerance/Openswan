@@ -16,6 +16,26 @@
  */
 #include "openswan.h"
 
+err_t
+add_port(af, addr, port)
+int af;
+ip_address *addr;
+unsigned short port;
+{
+	switch (af) {
+	case AF_INET:
+		addr->u.v4.sin_port = port;
+		break;
+	case AF_INET6:
+		addr->u.v6.sin6_port = port;
+		break;
+	default:
+		return "unknown address family in add_port";
+		break;
+	}
+	return NULL;
+}
+
 /*
  - initaddr - initialize ip_address from bytes
  */
@@ -31,7 +51,7 @@ ip_address *dst;
 		if (srclen != 4)
 			return "IPv4 address must be exactly 4 bytes";
 		dst->u.v4.sin_family = af;
-		dst->u.v4.sin_port = 0;		/* unused */
+		dst->u.v4.sin_port = 0;
 		memcpy((char *)&dst->u.v4.sin_addr.s_addr, src, srclen);
 		break;
 	case AF_INET6:
@@ -39,7 +59,7 @@ ip_address *dst;
 			return "IPv6 address must be exactly 16 bytes";
 		dst->u.v6.sin6_family = af;
 		dst->u.v6.sin6_flowinfo = 0;		/* unused */
-		dst->u.v6.sin6_port = 0;		/* unused */
+		dst->u.v6.sin6_port = 0;
 		memcpy((char *)&dst->u.v6.sin6_addr, src, srclen);
 		break;
 	default:

@@ -52,14 +52,14 @@ char diag_space[sizeof(diag_space)];
 err_t
 builddiag(const char *fmt, ...)
 {
-    static char diag_space[LOG_WIDTH];	/* longer messages will be truncated */
-    char t[sizeof(diag_space)];	/* build result here first */
+    static char mydiag_space[LOG_WIDTH];	/* longer messages will be truncated */
+    char t[sizeof(mydiag_space)];	/* build result here first */
     va_list args;
 
     va_start(args, fmt);
     t[0] = '\0';	/* in case nothing terminates string */
     vsnprintf(t, sizeof(t), fmt, args);
     va_end(args);
-    strcpy(diag_space, t);
-    return diag_space;
+    strcpy(mydiag_space, t);
+    return mydiag_space;
 }

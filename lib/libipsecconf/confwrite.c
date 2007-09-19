@@ -366,6 +366,20 @@ void confwrite_side(FILE *out,
 
 }
 
+void confwrite_comments(FILE *out, struct starter_conn *conn)
+{
+    struct starter_comments *sc, *scnext;
+
+    for(sc = conn->comments.tqh_first;
+	sc != NULL;
+	sc = scnext) {
+	scnext = sc->link.tqe_next;
+	
+	fprintf(out, "\t%s=%s\n",
+		sc->x_comment, sc->commentvalue);
+    }
+}
+
 void confwrite_conn(FILE *out,
 		    struct starter_conn *conn)
 {
@@ -401,6 +415,7 @@ void confwrite_conn(FILE *out,
     confwrite_str(out, "", kv_conn,
 		  keyingtype,
 		  conn->strings, conn->strings_set);
+    confwrite_comments(out, conn);
 
     if(conn->connalias) {
 	fprintf(out, "\tconnalias=\"%s\"\n", conn->connalias);

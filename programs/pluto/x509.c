@@ -62,8 +62,8 @@
 #include "plutocerts.h"
 #include "x509more.h"
 
-#ifdef HAVE_OCF_AND_OPENSSL
-#include "ocf_cryptodev.h"
+#ifdef HAVE_OCF
+#include "ocf_pk.h"
 #endif
 
 /* chained lists of X.509 host/user and ca certificates and crls */
@@ -695,10 +695,10 @@ list_x509cert_chain(const char *caption, x509cert_t* cert, u_char auth_flags
  , bool utc)
 {
     bool first = TRUE;
-    time_t now;
+    time_t tnow;
 
     /* determine the current time */
-    time(&now);
+    time(&tnow);
 
     while (cert != NULL)
     {
@@ -738,7 +738,7 @@ list_x509cert_chain(const char *caption, x509cert_t* cert, u_char auth_flags
 		(has_private_key(c)? ", has private key" : ""));
 	    whack_log(RC_COMMENT, "       validity: not before %s %s",
 		timetoa(&cert->notBefore, utc, tbuf, sizeof(tbuf)),
-		(cert->notBefore < now)?"ok":"fatal (not valid yet)");
+		(cert->notBefore < tnow)?"ok":"fatal (not valid yet)");
 	    whack_log(RC_COMMENT, "                 not after  %s %s",
 		timetoa(&cert->notAfter, utc, tbuf, sizeof(tbuf)),
 		check_expiry(cert->notAfter, CA_CERT_WARNING_INTERVAL, TRUE));
@@ -887,10 +887,8 @@ void
 list_pgp_end_certs(bool utc)
 {
    pgpcert_t *cert = pgpcerts;
-   time_t now;
 
     /* determine the current time */
-    time(&now);
 
     if (cert != NULL)
     {

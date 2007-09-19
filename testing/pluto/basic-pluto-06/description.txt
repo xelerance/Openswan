@@ -1,3 +1,5 @@
+FAILS to due problems with refineconnection!!!
+
 Basic pluto X.509 test, with full debugging enabled on both klips and pluto.
 
 Based off x509-pluto-01

@@ -647,10 +647,12 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 		
 		dat[len - authlen - 1] = ixs->iph->protocol;
 		ixs->iph->protocol = IPPROTO_ESP;
-		
+
+#ifdef CONFIG_KLIPS_DEBUG		
 		if(debug_tunnel & DB_TN_ENCAP) {
 		        dmp("pre-encrypt", dat, len);
 		}
+#endif
 
 		/*
 		 * Do all operations here:

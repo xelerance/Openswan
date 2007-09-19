@@ -88,7 +88,7 @@ alg_info_esp_sadb2aa(int sadb_aalg)
  * 	Search enum_name array with in prefixed uppercase
  */
 int
-alg_enum_search_prefix (enum_names *ed, const char *prefix, const char *str, int strlen)
+alg_enum_search_prefix (enum_names *ed, const char *prefix, const char *str, int str_len)
 {
 	char buf[64];
 	char *ptr;
@@ -97,7 +97,7 @@ alg_enum_search_prefix (enum_names *ed, const char *prefix, const char *str, int
 
 	for (ptr=buf; *prefix; *ptr++=*prefix++, len--);
 
-	while (strlen--&&len--&&*str) *ptr++=toupper(*str++);
+	while (str_len--&&len--&&*str) *ptr++=toupper(*str++);
 	*ptr=0;
 
 	DBG(DBG_CRYPT, DBG_log("enum_search_prefix () "
@@ -112,14 +112,14 @@ alg_enum_search_prefix (enum_names *ed, const char *prefix, const char *str, int
 int
 alg_enum_search_ppfix (enum_names *ed, const char *prefix
 		   , const char *postfix, const char *str
-		   , int strlen)
+		   , int str_len)
 {
 	char buf[64];
 	char *ptr;
 	int ret;
 	int len=sizeof(buf)-1;	/* reserve space for final \0 */
 	for (ptr=buf; *prefix; *ptr++=*prefix++, len--);
-	while (strlen--&&len--&&*str) *ptr++=toupper(*str++);
+	while (str_len--&&len--&&*str) *ptr++=toupper(*str++);
 	while (len--&&*postfix) *ptr++=*postfix++;
 	*ptr=0;
 	DBG(DBG_CRYPT, DBG_log("enum_search_ppfixi () "

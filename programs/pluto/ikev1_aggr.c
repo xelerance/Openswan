@@ -405,17 +405,17 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
     /* start of SA out */
     {
 	struct isakmp_sa r_sa = sa_pd->payload.sa;
-	notification_t r;
+	notification_t rn;
 
 	r_sa.isasa_np = ISAKMP_NEXT_KE;
 	if (!out_struct(&r_sa, &isakmp_sa_desc, &md->rbody, &r_sa_pbs))
 	    return STF_INTERNAL_ERROR;
 
 	/* SA body in and out */
-	r = parse_isakmp_sa_body(&sa_pd->pbs, &sa_pd->payload.sa,
+	rn = parse_isakmp_sa_body(&sa_pd->pbs, &sa_pd->payload.sa,
 				 &r_sa_pbs, FALSE, st);
-	if (r != NOTHING_WRONG)
-	    return STF_FAIL + r;
+	if (rn != NOTHING_WRONG)
+	    return STF_FAIL + rn;
     }
 
     /* don't know until after SA body has been parsed */

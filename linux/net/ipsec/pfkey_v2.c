@@ -1496,7 +1496,11 @@ pfkey_cleanup(void)
 	
         printk(KERN_INFO "klips_info:pfkey_cleanup: "
 	       "shutting down PF_KEY domain sockets.\n");
+#ifdef VOID_SOCK_UNREGISTER
+	sock_unregister(PF_KEY);
+#else
         sock_unregister(PF_KEY);
+#endif
 
 	error |= supported_remove_all(SADB_SATYPE_AH);
 	error |= supported_remove_all(SADB_SATYPE_ESP);

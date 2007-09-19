@@ -29,10 +29,15 @@
 /* define an upper limit to number of times also= can be used */
 #define ALSO_LIMIT 32
 
+enum keyword_set {
+    k_unset   =FALSE,
+    k_set     =TRUE,
+    k_default = 2
+};
 typedef char *ksf[KEY_STRINGS_MAX];
 typedef int   knf[KEY_NUMERIC_MAX];
-typedef bool  str_set[KEY_STRINGS_MAX];
-typedef bool  int_set[KEY_NUMERIC_MAX];
+typedef enum keyword_set str_set[KEY_STRINGS_MAX];
+typedef enum keyword_set int_set[KEY_NUMERIC_MAX];
 
 struct starter_end {
     sa_family_t addr_family;
@@ -65,7 +70,8 @@ struct starter_end {
 };
 
 struct starter_conn {
-    TAILQ_ENTRY(starter_conn) link; 
+    TAILQ_ENTRY(starter_conn) link;
+    struct starter_comments_list comments;
     char *name;
     char *connalias;			      
 
@@ -145,11 +151,12 @@ extern int init_load_conn(struct starter_config *cfg
 			  , struct config_parsed *cfgp
 			  , struct section_list *sconn
 			  , bool alsoprocessing
+			  , bool defaultconn
 			  , bool resolvip
 			  , err_t *perr);
 extern bool translate_conn (struct starter_conn *conn
 			    , struct section_list *sl
-			    , bool permitreplace
+			    , enum keyword_set   assigned_value
 			    , err_t *error);
 
 void confread_free(struct starter_config *cfg);

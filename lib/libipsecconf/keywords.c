@@ -173,6 +173,7 @@ struct keyword_enum_value kw_plutodebug_values[]={
     { "x509",     DBG_X509 },
     { "dpd",      DBG_DPD }, 
     { "pfkey",    DBG_PFKEY }, 
+    { "nattraversal", DBG_NATT },
 
     { "impair-delay-adns-key-answer", IMPAIR_DELAY_ADNS_KEY_ANSWER },
     { "impair-delay-adns-txt-answer", IMPAIR_DELAY_ADNS_TXT_ANSWER },
@@ -202,6 +203,9 @@ struct keyword_enum_value kw_klipsdebug_values[]={
     { "tunnel",   LELEM(KDF_TUNNEL) },
     { "pfkey",    LELEM(KDF_PFKEY) },
     { "comp",     LELEM(KDF_COMP) },
+    { "nat-traversal", LELEM(KDF_NATT) },
+    { "nattraversal", LELEM(KDF_NATT) },
+    { "natt",     LELEM(KDF_NATT) },
 };
 
 struct keyword_enum_values kw_klipsdebug_list=
@@ -231,7 +235,6 @@ struct keyword_enum_value kw_sendcert_values[]={
 
 struct keyword_enum_values kw_sendcert_list=
     { kw_sendcert_values, sizeof(kw_sendcert_values)/sizeof(struct keyword_enum_value)};
-
 
 /* MASTER KEYWORD LIST */
 struct keyword_def ipsec_conf_keywords_v2[]={
@@ -340,9 +343,9 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {NULL, 0, 0, 0, NOT_ENUM}
 };
 
+/* distinguished keyword */
 struct keyword_def ipsec_conf_keyword_comment=
-{"x-comment",   kv_conn|kv_config, kt_comment, 0, NOT_ENUM};
-
+{"x-comment",      kv_conn,   kt_comment, 0, NOT_ENUM};
 
 
 const int ipsec_conf_keywords_v2_count = sizeof(ipsec_conf_keywords_v2)/sizeof(struct keyword_def);
@@ -363,6 +366,7 @@ int parser_find_keyword(const char *s, YYSTYPE *lval)
 
     keyleft=FALSE;
     k = ipsec_conf_keywords_v2;
+
     while(k->keyname != NULL) {
 	if(strcasecmp(s, k->keyname) == 0)
 	{
@@ -388,10 +392,12 @@ int parser_find_keyword(const char *s, YYSTYPE *lval)
 	k++;
     }
 
+    lval->s = NULL;
     /* if we found nothing */
-    if(k->keyname == NULL && s[0]=='x' && s[1]=='-')
+    if(k->keyname == NULL && (s[0]=='x' || s[0]=='X') && s[1]=='-')
     {
 	k = &ipsec_conf_keyword_comment;
+	lval->k.string = strdup(s);
     }
 
     /* if we still found nothing */
@@ -407,6 +413,9 @@ int parser_find_keyword(const char *s, YYSTYPE *lval)
 	break;
     case kt_time:
 	keywordtype = TIMEWORD;
+	break;
+    case kt_comment:
+	keywordtype = COMMENT;
 	break;
     case kt_bool:
     case kt_invertbool:

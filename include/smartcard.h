@@ -51,7 +51,7 @@ extern bool scx_get_pin(smartcard_t *sc, int whackfd);
 extern size_t scx_get_keylength(smartcard_t *sc);
 extern smartcard_t* scx_add(smartcard_t *smartcard);
 extern smartcard_t* scx_get(x509cert_t *cert);
-extern void scx_release(smartcard_t *sc);
+extern void scx_release(smartcard_t *sc, bool pthlock);
 extern void scx_release_context(void);
 extern void scx_free_pin(chunk_t *pin);
 extern void scx_free(smartcard_t *sc);

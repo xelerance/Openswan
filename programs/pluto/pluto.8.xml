@@ -534,10 +534,10 @@
 
       <arg choice="plain"><replaceable>whack</replaceable></arg>
 
-      <arg choice="plain">--delete</arg>
-
       <arg choice="plain">--name
       <replaceable>connection-name</replaceable></arg>
+
+      <arg choice="plain">--delete</arg>
 
       <arg choice="opt">--ctlbase <replaceable>path</replaceable></arg>
 

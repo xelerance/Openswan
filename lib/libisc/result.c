@@ -109,14 +109,14 @@ static ISC_LIST(resulttable)			tables;
 static isc_mutex_t				lock;
 
 static isc_result_t
-register_table(unsigned int base, unsigned int nresults, const char **text,
+register_table(unsigned int base, unsigned int nresults, const char **mytext,
 	       isc_msgcat_t *msgcat, int set)
 {
 	resulttable *table;
 
 	REQUIRE(base % ISC_RESULTCLASS_SIZE == 0);
 	REQUIRE(nresults <= ISC_RESULTCLASS_SIZE);
-	REQUIRE(text != NULL);
+	REQUIRE(mytext != NULL);
 
 	/*
 	 * We use malloc() here because we we want to be able to use
@@ -127,7 +127,7 @@ register_table(unsigned int base, unsigned int nresults, const char **text,
 		return (ISC_R_NOMEMORY);
 	table->base = base;
 	table->last = base + nresults - 1;
-	table->text = text;
+	table->text = mytext;
 	table->msgcat = msgcat;
 	table->set = set;
 	ISC_LINK_INIT(table, link);
@@ -167,14 +167,14 @@ initialize(void) {
 const char *
 isc_result_totext(isc_result_t result) {
 	resulttable *table;
-	const char *text, *default_text;
+	const char *mytext, *default_text;
 	int index;
 
 	initialize();
 
 	LOCK(&lock);
 
-	text = NULL;
+	mytext = NULL;
 	for (table = ISC_LIST_HEAD(tables);
 	     table != NULL;
 	     table = ISC_LIST_NEXT(table, link)) {
@@ -186,25 +186,25 @@ isc_result_totext(isc_result_t result) {
 			 * instead of index because isc_msgcat_get() requires
 			 * the message number to be > 0.
 			 */
-			text = isc_msgcat_get(table->msgcat, table->set,
+			mytext = isc_msgcat_get(table->msgcat, table->set,
 					      index + 1, default_text);
 			break;
 		}
 	}
-	if (text == NULL)
-		text = isc_msgcat_get(isc_msgcat, ISC_RESULT_UNAVAILABLESET,
+	if (mytext == NULL)
+		mytext = isc_msgcat_get(isc_msgcat, ISC_RESULT_UNAVAILABLESET,
 				      1, "(result code text not available)");
 
 	UNLOCK(&lock);
 
-	return (text);
+	return (mytext);
 }
 
 isc_result_t
 isc_result_register(unsigned int base, unsigned int nresults,
-		    const char **text, isc_msgcat_t *msgcat, int set)
+		    const char **mytext, isc_msgcat_t *msgcat, int set)
 {
 	initialize();
 
-	return (register_table(base, nresults, text, msgcat, set));
+	return (register_table(base, nresults, mytext, msgcat, set));
 }

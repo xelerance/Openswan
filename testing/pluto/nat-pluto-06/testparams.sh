@@ -3,11 +3,12 @@
 TEST_PURPOSE=goal
 TEST_TYPE=umlXhost
 
-TESTNAME=nat-pluto-01
+TESTNAME=nat-pluto-06
 
 XHOST_LIST="NIC NORTH EAST"
 
 REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS script-only.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS east-prompt-splitline.pl"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS cutout.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-debug-sanitize.sed"

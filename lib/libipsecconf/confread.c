@@ -522,12 +522,15 @@ static int validate_end(struct starter_conn *conn_st
  *
  * @param conn a connection definition
  * @param sl a section_list
- * @param permitreplace boolean (can we replace this conn?)
+ * @param assigned_value is set to either k_set, or k_default.
+ *        k_default is used when we are loading a conn that should be
+ *        considered to be a "default" value, and that replacing this
+ *        value is considered acceptable.
  * @return bool 0 if successfull
  */
 bool translate_conn (struct starter_conn *conn
 		     , struct section_list *sl
-		     , bool permitreplace
+		     , enum keyword_set   assigned_value
 		     , err_t *error)
 {
     unsigned int err, field;
@@ -597,31 +600,23 @@ bool translate_conn (struct starter_conn *conn
 	case kt_idtype:
 	    /* all treated as strings for now */
 	    assert(kw->keyword.keydef->field < KEY_STRINGS_MAX);
-	    if((*set_strings)[field])
+	    if((*set_strings)[field] == k_set)
 	    {
-		if(!permitreplace)
+		*error = _tmp_err;
+		
+		snprintf(_tmp_err, sizeof(_tmp_err)
+			 , "duplicate key '%s' in conn %s while processing def %s"
+			 , kw->keyword.keydef->keyname
+			 , conn->name
+			 , sl->name);
+		
+		starter_log(LOG_LEVEL_INFO, _tmp_err);
+		if(kw->keyword.string == NULL
+		   || (*the_strings)[field] == NULL
+		   || strcmp(kw->keyword.string, (*the_strings)[field])!=0)
 		{
-		    if(kw->keyword.keydef->validity & kv_duplicateok) {
-			/* be quiet about duplicate, but do not override it */
-			break;
-		    }
-			
-		    *error = _tmp_err;
-
-		    snprintf(_tmp_err, sizeof(_tmp_err)
-			     , "duplicate key '%s' in conn %s while processing def %s"
-			     , kw->keyword.keydef->keyname
-			     , conn->name
-			     , sl->name);
-		    
-		    starter_log(LOG_LEVEL_INFO, _tmp_err);
-		    if(kw->keyword.string == NULL
-		       || (*the_strings)[field] == NULL
-		       || strcmp(kw->keyword.string, (*the_strings)[field])!=0)
-		    {
-			err++;
-			break;
-		    }
+		    err++;
+		    break;
 		}
 	    }
 	    if((*the_strings)[field])
@@ -630,7 +625,7 @@ bool translate_conn (struct starter_conn *conn
 	    }
 	    
 	    (*the_strings)[field] = xstrdup(kw->string);
-	    (*set_strings)[field] = TRUE;
+	    (*set_strings)[field] = assigned_value;
 	    break;
 	    
 	case kt_appendstring:
@@ -663,31 +658,27 @@ bool translate_conn (struct starter_conn *conn
 	    assert(field < KEY_STRINGS_MAX);
 	    assert(field < KEY_NUMERIC_MAX);
 	    
-	    if((*set_options)[field])
+	    if((*set_options)[field] == k_set)
 	    {
-		if(!permitreplace)
+		*error = _tmp_err;
+		snprintf(_tmp_err, sizeof(_tmp_err)
+			 , "duplicate key '%s' in conn %s while processing def %s"
+			 , kw->keyword.keydef->keyname
+			 , conn->name
+			 , sl->name);
+		
+		starter_log(LOG_LEVEL_INFO, _tmp_err);
+		
+		/* only fatal if we try to change values */
+		if((*the_options)[field] != kw->number
+		   || !((*the_options)[field] == LOOSE_ENUM_OTHER
+			&& kw->number == LOOSE_ENUM_OTHER
+			&& kw->keyword.string != NULL
+			&& (*the_strings)[field] != NULL
+			&& strcmp(kw->keyword.string, (*the_strings)[field])==0))
 		{
-		    *error = _tmp_err;
-
-		    snprintf(_tmp_err, sizeof(_tmp_err)
-				, "duplicate key '%s' in conn %s while processing def %s"
-				, kw->keyword.keydef->keyname
-				, conn->name
-				, sl->name);
-
-		    starter_log(LOG_LEVEL_INFO, _tmp_err);
-
-		    /* only fatal if we try to change values */
-		    if((*the_options)[field] != kw->number
-		       || !((*the_options)[field] == LOOSE_ENUM_OTHER
-			    && kw->number == LOOSE_ENUM_OTHER
-			    && kw->keyword.string != NULL
-			    && (*the_strings)[field] != NULL
-			    && strcmp(kw->keyword.string, (*the_strings)[field])==0))
-		    {
-			err++;
-			break;
-		    }
+		    err++;
+		    break;
 		}
 	    }
 
@@ -698,7 +689,7 @@ bool translate_conn (struct starter_conn *conn
 		if((*the_strings)[field]) free((*the_strings)[field]);
 		(*the_strings)[field] = xstrdup(kw->keyword.string);
 	    } 
-	    (*set_options)[field] = TRUE;
+	    (*set_options)[field] = assigned_value;
 	    break;
 	    
 	case kt_list:
@@ -711,23 +702,19 @@ bool translate_conn (struct starter_conn *conn
 	    /* all treated as a number for now */
 	    assert(field < KEY_NUMERIC_MAX);
 
-	    if((*set_options)[field])
+	    if((*set_options)[field] == k_set)
 	    {
-		if(!permitreplace)
+		*error = _tmp_err;
+		snprintf(_tmp_err, sizeof(_tmp_err)
+			 , "duplicate key '%s' in conn %s while processing def %s"
+			 , kw->keyword.keydef->keyname
+			 , conn->name
+			 , sl->name);
+		starter_log(LOG_LEVEL_INFO, _tmp_err);
+		if((*the_options)[field] != kw->number)
 		{
-		    *error = _tmp_err;
-
-		    snprintf(_tmp_err, sizeof(_tmp_err)
-			     , "duplicate key '%s' in conn %s while processing def %s"
-			     , kw->keyword.keydef->keyname
-			     , conn->name
-			     , sl->name);
-		    starter_log(LOG_LEVEL_INFO, _tmp_err);
-		    if((*the_options)[field] != kw->number)
-		    {
-			err++;
-			break;
-		    }
+		    err++;
+		    break;
 		}
 	    }
 
@@ -736,7 +723,7 @@ bool translate_conn (struct starter_conn *conn
 			kw->keyword.keydef->keyname, field, kw->number);
 #endif
 	    (*the_options)[field] = kw->number;
-	    (*set_options)[field] = TRUE;
+	    (*set_options)[field] = assigned_value;
 	    break;
 	    
 	case kt_comment:
@@ -747,14 +734,29 @@ bool translate_conn (struct starter_conn *conn
 }
 
 
+void move_comment_list(struct starter_comments_list *to,
+		       struct starter_comments_list *from)
+{
+    struct starter_comments *sc, *scnext;
+    
+    for(sc = from->tqh_first;
+	sc != NULL;
+	sc = scnext) {
+	scnext = sc->link.tqe_next;
+	TAILQ_REMOVE(from, sc,link);
+	TAILQ_INSERT_TAIL(to, sc,link);
+    }
+}
+
 static int load_conn_basic(struct starter_conn *conn
 			   , struct section_list *sl
+			   , enum keyword_set assigned_value
 			   , err_t *perr)
 {
     int err;
 
-    /* turn all of the keyword/value pairs into options/strings in left/right */
-    err = translate_conn(conn, sl, TRUE, perr);
+    /*turn all of the keyword/value pairs into options/strings in left/right */
+    err = translate_conn(conn, sl, assigned_value, perr);
 
     return err;
 }
@@ -766,6 +768,7 @@ static int load_conn (struct starter_config *cfg
 		      , struct config_parsed *cfgp
 		      , struct section_list *sl
 		      , bool alsoprocessing
+		      , bool defaultconn
 		      , bool resolvip
 		      , err_t *perr)
 {
@@ -779,7 +782,10 @@ static int load_conn (struct starter_config *cfg
 	
     err = 0;
 
-    err += load_conn_basic(conn, sl, perr);
+    err += load_conn_basic(conn, sl, defaultconn ? k_default : k_set, perr);
+
+    move_comment_list(&conn->comments, &sl->comments);
+
     if(err) return err;
 
     if(conn->strings[KSF_ALSO] != NULL
@@ -828,8 +834,8 @@ static int load_conn (struct starter_config *cfg
 			, conn->name, alsos[alsoplace]);
 			    
 	    /*
-	     * if we found something that matches by name, and we haven't be there, then
-	     * process it.
+	     * if we found something that matches by name, and we haven't be
+	     * there, then process it.
 	     */
 	    if(sl1 && !sl1->beenhere)
 	    {
@@ -838,8 +844,8 @@ static int load_conn (struct starter_config *cfg
 		conn->strings[KSF_ALSO]=NULL;
 		sl1->beenhere = TRUE;
 
-		/* translate things, but do not replace earlier settings */
-		err += translate_conn(conn, sl1, FALSE, perr);
+		/* translate things, but do not replace earlier settings!*/
+		err += translate_conn(conn, sl1, k_set, perr);
 
 		if(conn->strings[KSF_ALSO])
 		{
@@ -1046,6 +1052,8 @@ struct starter_conn *alloc_add_conn(struct starter_config *cfg, char *name, err_
     conn->name = xstrdup(name);
     conn->desired_state = STARTUP_NO;
     conn->state = STATE_FAILED;
+
+    TAILQ_INIT(&conn->comments);
     
     TAILQ_INSERT_TAIL(&cfg->conns, conn, link);
     return conn;
@@ -1055,6 +1063,7 @@ int init_load_conn(struct starter_config *cfg
 		   , struct config_parsed *cfgp
 		   , struct section_list *sconn
 		   , bool alsoprocessing
+		   , bool defaultconn
 		   , bool resolvip
 		   , err_t *perr)
 {
@@ -1067,7 +1076,8 @@ int init_load_conn(struct starter_config *cfg
 	return -1;
     }
     
-    connerr = load_conn (cfg, conn, cfgp, sconn, TRUE, resolvip, perr);
+    connerr = load_conn (cfg, conn, cfgp, sconn, TRUE,
+			 defaultconn, resolvip, perr);
 		
     if(connerr != 0) {
 	starter_log(LOG_LEVEL_INFO, "while loading '%s': %s\n",
@@ -1130,12 +1140,18 @@ struct starter_config *confread_load(const char *file
 	{
 		if (strcmp(sconn->name,"%default")==0) {
 			starter_log(LOG_LEVEL_DEBUG, "Loading default conn");
-			err += load_conn (cfg, &cfg->conn_default, cfgp, sconn, FALSE, resolvip, perr);
+			err += load_conn (cfg, &cfg->conn_default,
+					  cfgp, sconn, FALSE,
+					  /*default conn*/TRUE,
+					  resolvip, perr);
 		}
 
 		if (strcmp(sconn->name,"%oedefault")==0) {
 			starter_log(LOG_LEVEL_DEBUG, "Loading oedefault conn");
-			err += load_conn (cfg, &cfg->conn_oedefault, cfgp, sconn, FALSE, resolvip, perr);
+			err += load_conn (cfg, &cfg->conn_oedefault,
+					  cfgp, sconn, FALSE,
+					  /*default conn*/TRUE,
+					  resolvip, perr);
 			if(err == 0) {
 			    cfg->got_oedefault=TRUE;
 			}
@@ -1150,7 +1166,8 @@ struct starter_config *confread_load(const char *file
 		if (strcmp(sconn->name,"%default")==0) continue;
 		if (strcmp(sconn->name,"%oedefault")==0) continue;
 
-		connerr = init_load_conn(cfg, cfgp, sconn, TRUE, resolvip, perr);
+		connerr = init_load_conn(cfg, cfgp, sconn, TRUE, FALSE,
+					 resolvip, perr);
 
 		if(connerr == -1) {
 		    parser_free_conf(cfgp);

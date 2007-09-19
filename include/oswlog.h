@@ -165,7 +165,7 @@ extern void openswan_exit_log_errno_routine(int e, const char *message, ...) PRI
 
 /* option pickup from files (userland only because of use of FILE) */
 const char *optionsfrom(const char *filename, int *argcp, char ***argvp,
-						int optind, FILE *errorreport);
+						int opt_ind, FILE *errorreport);
 
 /* sanitize a string */
 extern size_t sanitize_string(char *buf, size_t size);

@@ -21,36 +21,36 @@ Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--right ]
                          [ --rsaid keyid ] [--verbose] [--version]
 east:~#
  ipsec showhostkey --dump
-25: RSA keyid: AwEAAaFHY with id: %any
-25: RSA keyid: AwEAAaFHY with id: C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org
-8: RSA keyid: AQN3cn11F with id: (none)
-8: RSA keyid: AQN3cn11F with id: (none)
+25(1): RSA keyid: AwEAAaFHY with id: %any
+25(2): RSA keyid: AwEAAaFHY with id: C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org
+8(1): RSA keyid: AQN3cn11F with id: (none)
+8(2): RSA keyid: AQN3cn11F with id: (none)
 east:~#
  ipsec showhostkey --dump --verbose
 ipsec showhostkey loading secrets from "/etc/ipsec.secrets"
 ipsec showhostkey loaded private key for keyid: PPK_RSA:AQN3cn11F
 ipsec showhostkey   loaded private key file '/etc/ipsec.d/private/east.pem' (963 bytes)
 ipsec showhostkey loaded private key for keyid: PPK_RSA:AwEAAaFHY
-25: RSA keyid: AwEAAaFHY with id: %any
-25: RSA keyid: AwEAAaFHY with id: C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org
-8: RSA keyid: AQN3cn11F with id: (none)
-8: RSA keyid: AQN3cn11F with id: (none)
+25(1): RSA keyid: AwEAAaFHY with id: %any
+25(2): RSA keyid: AwEAAaFHY with id: C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org
+8(1): RSA keyid: AQN3cn11F with id: (none)
+8(2): RSA keyid: AQN3cn11F with id: (none)
 east:~#
  : error to load west.pem is expected
 east:~#
  ipsec showhostkey --file /testing/baseconfigs/west/etc/ipsec.secrets --dump 
 ipsec showhostkey   could not open private key file '/etc/ipsec.d/private/west.pem'
 ipsec showhostkey "/testing/baseconfigs/west/etc/ipsec.secrets" line 26: error loading RSA private key file
-8: RSA keyid: AQNzGEFs1 with id: (none)
-8: RSA keyid: AQNzGEFs1 with id: (none)
+8(1): RSA keyid: AQNzGEFs1 with id: (none)
+8(2): RSA keyid: AQNzGEFs1 with id: (none)
 east:~#
  ipsec showhostkey --file /testing/baseconfigs/west/etc/ipsec.secrets --dump  --verbose
 ipsec showhostkey loading secrets from "/testing/baseconfigs/west/etc/ipsec.secrets"
 ipsec showhostkey loaded private key for keyid: PPK_RSA:AQNzGEFs1
 ipsec showhostkey   could not open private key file '/etc/ipsec.d/private/west.pem'
 ipsec showhostkey "/testing/baseconfigs/west/etc/ipsec.secrets" line 26: error loading RSA private key file
-8: RSA keyid: AQNzGEFs1 with id: (none)
-8: RSA keyid: AQNzGEFs1 with id: (none)
+8(1): RSA keyid: AQNzGEFs1 with id: (none)
+8(2): RSA keyid: AQNzGEFs1 with id: (none)
 east:~#
  ipsec showhostkey --left
 	# rsakey AQN3cn11F

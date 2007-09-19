@@ -1,2 +1,3 @@
 this tests parsing of a config file with a rightsendcert=always.
+Also test parsing leftsendcert=never
 

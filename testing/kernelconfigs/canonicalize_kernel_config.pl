@@ -20,7 +20,7 @@ while(<OLD>) {
     $kerneloptions{$1}='n';
     next;
   }
-  if(/(CONFIG.*)=([ynm])/) {
+  if(/(CONFIG.*)=([ynm])$/) {
     $kerneloptions{$1}=$2;
     next;
   }
@@ -51,6 +51,11 @@ while(<NEW>) {
   #print "3 processing $_\n";
   if(/(CONFIG.*)=m/) {
     $kerneloptions{$1}='M';
+    next;
+  }
+  if(/(CONFIG.*)=(.*)/) {
+    $kerneloptions{$1}="value";
+    $kernelvalue{$1}=$2;
     next;
   }
   #print "4 processing $_\n";
