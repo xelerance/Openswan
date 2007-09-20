@@ -4,3 +4,5 @@ It does so with esp=null-md5 on both ends.
 
 This is testcase for Mantis #428
 
+NOTE that this likely fails on stock option builds.
+

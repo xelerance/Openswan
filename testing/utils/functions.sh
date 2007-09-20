@@ -1090,6 +1090,7 @@ libtest() {
 
     CC=${CC-cc}
 
+    echo
     echo '**** make libtest RUNNING' $testsrc '****'
 
     symbol=`echo $testobj | tr 'a-z' 'A-Z'`_MAIN
@@ -1126,25 +1127,25 @@ libtest() {
     EXTRALIBS=
     if [ -f ${SRCDIR}FLAGS.$testobj ]
     then
-        echo Sourcing ${SRCDIR}FLAGS.$testobj
+        echo "   "Sourcing ${SRCDIR}FLAGS.$testobj
 	source ${SRCDIR}FLAGS.$testobj
     fi
 
     stat=99
     if [ -n "${FILE-}" -a -r "${FILE-}" ]
     then
-	    echo ${CC} -g -o $testobj -D$symbol  ${PORTINCLUDE} ${EXTRAFLAGS} -I${OPENSWANSRCDIR}/linux/include -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include ${PORTINCLUDE} ${FILE} ${OPENSWANLIB} ${EXTRALIBS}
+	    echo "   "CC -g -o $testobj -D$symbol ${FILE} ${OPENSWANLIB} 
 	    ${CC} -g -o $testobj -D$symbol ${PORTINCLUDE} ${EXTRAFLAGS} -I${OPENSWANSRCDIR}/linux/include -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include ${FILE} ${OPENSWANLIB} ${EXTRALIBS}
 	    rm -rf lib-$testobj/OUTPUT
 	    mkdir -p lib-$testobj/OUTPUT
 
 	    export TEST_PURPOSE=regress
 
-	    echo Running $testobj
+	    echo "   "Running $testobj
 	    ( ulimit -c unlimited; cd lib-$testobj && ../$testobj -r >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
 
 	    stat=$?
-	    echo Exit code $stat
+	    echo "   "Exit code $stat
 	    if [ $stat -gt 128 ]
 	    then
 		stat="$stat core"
@@ -1153,10 +1154,10 @@ libtest() {
 		then
 		    if diff -N -u -w -b -B lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.txt OUTPUT.$testobj.txt > lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.output.diff
 		    then
-			echo "output matched"
+			echo "   ""output matched"
 			stat="0"
 		    else
-			echo "output differed"
+			echo "   ""output differed"
 			stat="1"
 		    fi
 		fi
