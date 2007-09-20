@@ -1123,6 +1123,10 @@ add_connection(const struct whack_message *wm)
 	bool same_rightca, same_leftca;
 	struct connection *c = alloc_thing(struct connection, "struct connection");
 
+	/* set this up so that we can log which end is which after orient */
+	c->spd.this.left = TRUE;
+	c->spd.that.left = FALSE;
+
 	same_rightca = same_leftca = FALSE;
 	c->name = wm->name;
 	c->connalias = wm->connalias;

@@ -145,6 +145,7 @@ struct host_pair;    /* opaque type */
 
 struct end {
     struct id id;
+    bool      left;
 
     enum keyword_host host_type;
     char  *host_addr_name;       /* string version from whack */
@@ -172,19 +173,19 @@ struct end {
     chunk_t ca;			/* CA distinguished name */
     struct ietfAttrList *groups;/* access control groups */
     smartcard_t *sc;		/* smartcard reader and key info */
-#ifdef VIRTUAL_IP
+/*#ifdef VIRTUAL_IP */
     struct virtual_t *virt;
-#endif
-#ifdef XAUTH
+/*#endif */
+/*#ifdef XAUTH*/
     bool xauth_server;
     bool xauth_client;
     char *xauth_name;
     char *xauth_password;
-#ifdef MODECFG
+/*#ifdef MODECFG */
     bool modecfg_server;        /* Give local addresses to tunnel's end */
     bool modecfg_client;        /* request address for local end */
-#endif
-#endif
+/*#endif*/
+/*#endif*/
 };
 
 struct spd_route {
@@ -254,7 +255,7 @@ struct connection {
     struct connection *ac_next;	/* all connections list link */
     
     generalName_t *requested_ca;	/* collected certificate requests */
-#ifdef XAUTH_USEPAM
+#ifdef XAUTH_USEPAM 
     pam_handle_t  *pamh;		/*  PAM handle for that connection  */
 #endif
 };

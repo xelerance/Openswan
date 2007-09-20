@@ -146,17 +146,26 @@ static bool writewhackrecord(char *buf, int buflen)
     /* bail if we aren't writing anything */
     if(whackrecordfile == NULL) return TRUE;
 
-    header[0]=abuflen + 12;
+    header[0]=buflen + sizeof(u_int32_t)*3;
     header[1]=0;
     time(&n);
     header[2]=n;
+
+    //DBG_log("buflen: %u abuflen: %u\n", header[0], abuflen);
     
-    fwrite(header, 12, 1, whackrecordfile);
+    fwrite(header, sizeof(u_int32_t)*3, 1, whackrecordfile);
     fwrite(buf, abuflen, 1, whackrecordfile);
     
     return TRUE;
 }
 
+
+/*
+ * we write out an empty record with the right WHACK magic.
+ * this should permit a later mechanism to figure out the
+ * endianess of the file, since we will get records from
+ * other systems for analysis eventually.
+ */
 static bool openwhackrecordfile(char *file)
 {
     char when[256];
@@ -653,8 +662,7 @@ whack_handle(int whackctlfd)
     int whackfd = accept(whackctlfd, (struct sockaddr *)&whackaddr, &whackaddrlen);
     /* Note: actual value in n should fit in int.  To print, cast to int. */
     ssize_t n;
-
-    //DBG_log("whack_crash %d\n", msg.whack_crash);
+    //static int msgnum=0;
 
     if (whackfd < 0)
     {
@@ -679,6 +687,8 @@ whack_handle(int whackctlfd)
     whack_log_fd = whackfd;
 
     msg_saved = msg;
+
+    //DBG_log("msg %d size=%u\n", ++msgnum, n);
 
     /* sanity check message */
     {

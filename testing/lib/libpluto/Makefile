@@ -13,7 +13,7 @@
 #
 # RCSID $Id: Makefile,v 1.5 2005/08/05 17:04:54 mcr Exp $
 
-OPENSWANSRCDIR?=../../..
+OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
 srcdir?=./
 include $(OPENSWANSRCDIR)/Makefile.inc
 
@@ -26,7 +26,10 @@ TESTS=$(shell awk '{print $$2;}' ${srcdir}TESTLIST)
 all: ${TESTS}
 	echo ${TESTS}
 
-%: %.c OUTPUT.%.txt
+refineconnection: refineconnection.c lib-refineconnection/testlist.sh OUTPUT.refineconnection.txt FLAGS.refineconnection
+	source ${UTILS}/functions.sh; multilibtest `basename $< .c`
+
+%: %.c OUTPUT.%.txt FLAGS.%
 	source ${UTILS}/functions.sh; libtest `basename $< .c`
 
 def:
@@ -53,37 +56,13 @@ mostlyclean: clean
 
 realclean: clean
 
-#
-# $Log: Makefile,v $
-# Revision 1.5  2005/08/05 17:04:54  mcr
-# 	adjustment of test cases to work with object directories.
-#
-# Revision 1.4  2005/05/12 03:09:33  mcr
-# 	added spdbph1 test case.
-#
-# Revision 1.3  2005/03/13 18:58:27  mcr
-# 	added skeyid calculation test.
-#
-# Revision 1.2  2005/03/13 00:28:52  mcr
-# 	make sure to export *LIB variables.
-#
-# Revision 1.1  2004/10/16 22:54:21  mcr
-# 	new test case for spdb.c clone/copy functions.
-#
-# Revision 1.4  2004/04/09 18:09:41  mcr
-# Moved from testing/lib/libfreeswan/Makefile,v
-#
-# Revision 1.3  2004/04/03 19:44:51  ken
-# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
-#
-# Revision 1.2  2003/11/05 04:57:30  dhr
-#
-# set up a default REGRESSRESULTS for libfreeswan tests (like other kinds of tests)
-#
-# Revision 1.1  2002/06/08 17:41:22  mcr
-# 	library test routines.
-#
-# 
+depend:
+	(source ${UTILS}/functions.sh; ls *.c | (while read file; do echo 'Calculating depends for '$$file >&2; ECHO=':' MOREFLAGS=-MM complibtest .Makefile.depend.$$file.${OSDEP} $$file >&2; cat .Makefile.depend.$$file.${OSDEP}; done) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP})
+
+-include ${srcdir}Makefile.depend.${OSDEP}
 
 
-
+east.record: ${OPENSWANSRCDIR}/programs/pluto/rcv_whack.c
+	(cd ${OPENSWANSRCDIR}/programs/pluto && unset OPENSWANSRCDIR && pl_inst.sh)
+	(cd ${OPENSWANSRCDIR}/testing/pluto/whackrecord-01 && ../../utils/runme.sh )
+	source ${OPENSWANSRCDIR}/umlsetup.sh; cp $$POOLSPACE/east/root/var/tmp/east.record .

@@ -1082,16 +1082,13 @@ ipkg_build_install_test() {
 #
 ###################################
 
-# test entry point:
-libtest() {
+complibtest() {
     testobj=$1
-    testexpect=$2
-    testsrc=$testobj.c
+    testsrc=$2
 
     CC=${CC-cc}
 
-    echo
-    echo '**** make libtest RUNNING' $testsrc '****'
+    ECHO=${ECHO-echo}
 
     symbol=`echo $testobj | tr 'a-z' 'A-Z'`_MAIN
 
@@ -1125,27 +1122,45 @@ libtest() {
 
     EXTRAFLAGS=
     EXTRALIBS=
+    UNITTESTARGS=-r
+
     if [ -f ${SRCDIR}FLAGS.$testobj ]
     then
-        echo "   "Sourcing ${SRCDIR}FLAGS.$testobj
+        ${ECHO} "   "Sourcing ${SRCDIR}FLAGS.$testobj
 	source ${SRCDIR}FLAGS.$testobj
     fi
 
     stat=99
     if [ -n "${FILE-}" -a -r "${FILE-}" ]
     then
-	    echo "   "CC -g -o $testobj -D$symbol ${FILE} ${OPENSWANLIB} 
-	    ${CC} -g -o $testobj -D$symbol ${PORTINCLUDE} ${EXTRAFLAGS} -I${OPENSWANSRCDIR}/linux/include -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include ${FILE} ${OPENSWANLIB} ${EXTRALIBS}
+	    ${ECHO} "   "CC -g -o $testobj -D$symbol ${FILE} ${OPENSWANLIB} 
+	    ${CC} -g -o $testobj -D$symbol ${MOREFLAGS} ${PORTINCLUDE} ${EXTRAFLAGS} -I${OPENSWANSRCDIR}/linux/include -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include ${FILE} ${OPENSWANLIB} ${EXTRALIBS}
 	    rm -rf lib-$testobj/OUTPUT
 	    mkdir -p lib-$testobj/OUTPUT
+    fi
+}
 
+# test entry point:
+libtest() {
+    testobj=$1
+    testexpect=$2
+    testsrc=$testobj.c
+
+    ECHO=${ECHO-echo}
+
+    ${ECHO} '**** make libtest COMPILING' $testsrc '****'
+    complibtest $testobj $testsrc
+
+    stat=99
+    if [ -n "${FILE-}" -a -r "${FILE-}" ]
+    then
 	    export TEST_PURPOSE=regress
 
-	    echo "   "Running $testobj
-	    ( ulimit -c unlimited; cd lib-$testobj && ../$testobj -r >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
+	    ${ECHO} "   "Running $testobj
+	    ( ulimit -c unlimited; cd lib-$testobj && eval ../$testobj ${UNITTESTARGS} >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
 
 	    stat=$?
-	    echo "   "Exit code $stat
+	    ${ECHO} "   "Exit code $stat
 	    if [ $stat -gt 128 ]
 	    then
 		stat="$stat core"
@@ -1154,10 +1169,10 @@ libtest() {
 		then
 		    if diff -N -u -w -b -B lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.txt OUTPUT.$testobj.txt > lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.output.diff
 		    then
-			echo "   ""output matched"
+			${ECHO} "   ""output matched"
 			stat="0"
 		    else
-			echo "   ""output differed"
+			${ECHO} "   ""output differed"
 			stat="1"
 		    fi
 		fi
@@ -1166,6 +1181,50 @@ libtest() {
 
     TEST_PURPOSE=regress  UML_BRAND=0 recordresults lib-$testobj "$testexpect" $stat lib-$testobj
 }
+
+# test entry point:
+multilibtest() {
+    testobj=$1
+    testexpect=$2
+    testsrc=$testobj.c
+
+    ECHO=${ECHO-echo}
+
+    ${ECHO} '**** make libtest COMPILING' $testsrc '****'
+    complibtest $testobj $testsrc
+
+    stat=99
+    if [ -n "${FILE-}" -a -r "${FILE-}" ]
+    then
+	    export TEST_PURPOSE=regress
+
+	    echo Running $testobj ${UNITTESTARGS}
+	    ( ulimit -c unlimited; cd lib-$testobj && ./testlist.sh >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
+
+	    stat=$?
+	    echo Exit code $stat
+	    if [ $stat -gt 128 ]
+	    then
+		stat="$stat core"
+	    else
+		if [ -r OUTPUT.$testobj.txt ]
+		then
+		    if diff -N -u -w -b -B lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.txt OUTPUT.$testobj.txt > lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.output.diff
+		    then
+			echo "output matched"
+			stat="0"
+		    else
+			echo "output differed"
+			stat="1"
+		    fi
+		fi
+            fi
+    fi
+
+    TEST_PURPOSE=regress  UML_BRAND=0 recordresults lib-$testobj "$testexpect" $stat lib-$testobj
+}
+
+
 
 ###################################
 #
