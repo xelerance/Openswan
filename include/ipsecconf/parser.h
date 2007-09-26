@@ -28,7 +28,7 @@ extern int warningsarefatal;
 extern char *parser_cur_filename(void);
 extern int   parser_cur_lineno(void);
 extern void parser_y_error(char *b, int size, const char *s);
-extern void parser_y_init (const char *f);
+extern void parser_y_init (const char *name, FILE *f);
 extern void parser_y_fini (void);
 extern int  parser_y_include (const char *filename);
 extern char rootdir[PATH_MAX];       /* when evaluating paths, prefix this to them */

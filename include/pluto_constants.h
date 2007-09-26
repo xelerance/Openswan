@@ -335,6 +335,13 @@ enum certpolicy {
 #define cert_defaultcertpolicy cert_sendifasked
 
 
+enum four_options {
+	fo_never   = 0,  /* do not propose, do not permit */
+	fo_permit  = 1,  /* do not propose, but permit peer to propose */
+	fo_propose = 1,  /* propose, and permit, but do not insist  */
+	fo_insist  = 3   /* propose, and only accept if peer agrees */
+};
+
 /* Policies for establishing an SA
  *
  * These are used to specify attributes (eg. encryption) and techniques

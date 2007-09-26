@@ -57,6 +57,20 @@ struct keyword_enum_value kw_keyexchange_values[]={
 struct keyword_enum_values kw_keyexchange_list=
     { kw_keyexchange_values, sizeof(kw_keyexchange_values)/sizeof(struct keyword_enum_value)};
 
+/*
+ * Values for Four-State options, such as ikev2
+ */
+struct keyword_enum_value kw_fourvalued_values[]={
+    { "never",     fo_never  },
+    { "permit",    fo_permit },
+    { "propose",   fo_propose},
+    { "insist",    fo_insist },
+    { "yes",       fo_propose},
+    { "always",    fo_insist },
+    { "no",        fo_never  }
+};
+struct keyword_enum_values kw_fourvalued_list=
+{ kw_fourvalued_values, sizeof(kw_fourvalued_values)/sizeof(struct keyword_enum_value)};
 
 /*
  * Values for authby={rsasig, secret}
@@ -295,6 +309,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"type",           kv_conn,         kt_enum,   KBF_TYPE,        &kw_type_list},
     {"authby",         kv_conn|kv_auto, kt_enum,   KBF_AUTHBY,     &kw_authby_list},
     {"keyexchange",    kv_conn|kv_auto, kt_enum,   KBF_KEYEXCHANGE, &kw_keyexchange_list},
+    {"ikev2",          kv_conn|kv_auto, kt_enum,   KBF_IKEV2,       &kw_fourvalued_list},
     {"pfs",            kv_conn|kv_auto, kt_bool,   KBF_PFS,          NOT_ENUM},
     {"keylife",        kv_conn|kv_auto|kv_alias, kt_time,   KBF_SALIFETIME,NOT_ENUM},
     {"lifetime",       kv_conn|kv_auto|kv_alias, kt_time,   KBF_SALIFETIME,NOT_ENUM},
