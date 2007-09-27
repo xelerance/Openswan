@@ -7,7 +7,7 @@ ipsec setup start
 
 /testing/pluto/basic-pluto-01/eroutewait.sh trap
 
-ipsec manual --up westnet-east-pass
+ipsec auto --up westnet-east-pass
 ipsec look
 
 echo end
