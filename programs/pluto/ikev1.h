@@ -32,6 +32,13 @@ extern bool ship_KE(struct state *st
 extern notification_t accept_nonce(struct msg_digest *md
 				   , chunk_t *dest, const char *name);
 
+/* **MAIN MODE FUNCTIONS** in ikev1_main.c */
+extern stf_status main_outI1(int whack_sock
+			     , struct connection *c
+			     , struct state *predecessor
+			     , lset_t policy
+			     , unsigned long try
+			     , enum crypto_importance importance);
 
 extern stf_status aggr_outI1(int whack_sock,
 			     struct connection *c,

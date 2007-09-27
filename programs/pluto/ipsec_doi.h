@@ -103,3 +103,17 @@ extern stf_status
 send_isakmp_notification(struct state *st
 			 , u_int16_t type, const void *data, size_t len);
 
+extern bool has_preloaded_public_key(struct state *st);
+
+/*
+ * tools for sending Pluto Vendor ID.
+ */
+#ifdef PLUTO_SENDS_VENDORID
+#define SEND_PLUTO_VID	1
+#else /* !PLUTO_SENDS_VENDORID */
+#define SEND_PLUTO_VID	0
+#endif /* !PLUTO_SENDS_VENDORID */
+
+extern char pluto_vendorid[];
+
+

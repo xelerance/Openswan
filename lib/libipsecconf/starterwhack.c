@@ -489,6 +489,29 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 		msg.forceencaps=conn->options[KBF_FORCEENCAP];
 	}
 
+	if(conn->options_set[KBF_IKEv2]) {
+		switch(conn->options[KBF_IKEv2]) {
+		case fo_never:
+			msg.policy &= ~POLICY_IKEV2_ALLOW;
+			break;
+
+		case fo_permit:
+			/* this is the default for now */
+			msg.policy |= POLICY_IKEV2_ALLOW;
+			break;
+
+		case fo_propose:
+			msg.policy |= POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE;
+			break;
+
+		case fo_insist:
+			msg.policy |= POLICY_IKEV1_DISABLE;
+			msg.policy |= POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE;
+			break;
+		}
+	}
+			
+
 	set_whack_end(cfg, "left",  &msg.left, &conn->left);
 	set_whack_end(cfg, "right", &msg.right, &conn->right);
 

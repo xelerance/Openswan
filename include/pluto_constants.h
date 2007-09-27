@@ -338,7 +338,7 @@ enum certpolicy {
 enum four_options {
 	fo_never   = 0,  /* do not propose, do not permit */
 	fo_permit  = 1,  /* do not propose, but permit peer to propose */
-	fo_propose = 1,  /* propose, and permit, but do not insist  */
+	fo_propose = 2,  /* propose, and permit, but do not insist  */
 	fo_insist  = 3   /* propose, and only accept if peer agrees */
 };
 
@@ -409,6 +409,15 @@ enum pluto_policy {
 	POLICY_SUBHOST      = LELEM(21),   /* if the policy applies below the host level (TCP/UDP/SCTP ports), */
 	POLICY_PERPROTO     = LELEM(22),   /* should we specialize the policy to the protocol? */
 	POLICY_OVERLAPIP    = LELEM(23),   /* can two conns that have subnet=vhost: declare the same IP? */
+
+	/*
+	 * this is mapped by parser's ikev2={four_state}. It is a bit richer
+	 * in that we can actually turn off everything, but it expands more
+	 * sensibly to an IKEv3 and other methods.
+	 */
+	POLICY_IKEV1_DISABLE = LELEM(24),   /* should we !accept IKEv1? */
+	POLICY_IKEV2_ALLOW   = LELEM(25),   /* should we accept IKEv2? */
+	POLICY_IKEV2_PROPOSE = LELEM(26)    /* should we propose IKEv2? */
 };
 
 /* Any IPsec policy?  If not, a connection description
