@@ -32,6 +32,7 @@ $failed=0;
 $passed=0;
 $missed=0;
 $total=0;
+$skipped=0;
 
 #$gnatsurl="http://gnats.freeswan.org/bugs/gnatsweb.pl?database=freeswan&amp;cmd=view+audit-trail&amp;pr=";
 $gnatsurl=undef;
@@ -109,7 +110,8 @@ sub htmlize_test {
       if(defined($expected) &&
         $expected ne 'missing') {
 	$verdict .= " <FONT COLOR=\"$unexpectedcolour\">AWOL</FONT>";
-      }	
+      }
+      $skipped++;	
     } else {
       $verdict = "${old}FAILED";
       if(!defined($expected) ||
@@ -326,7 +328,7 @@ sub openpiecefile {
     $file = sprintf("testresult%02d.html", $piece);
 
     print HTMLPART "</TABLE>  \n";
-    print HTMLPART "\n<BR><PRE>TOTAL tests: $total SKIPPED: $skipped   PASSED: $passed   FAILED: $failed   MISSED: $missed  SUCCESS RATE: $testrate%</PRE><BR>\n";
+    print HTMLPART "\n<BR><PRE>TOTAL tests: $total SKIPPED: $skipped   PASSED: $passed   FAILED: $failed   MISSED: $missed SKIPPED: $skipped SUCCESS RATE: $testrate%</PRE><BR>\n";
     print HTMLPART "<A HREF=\"$file\">next page</A><BR>\n";
     print HTMLPART "<A HREF=\"stdout.txt\">stdout</A><BR>\n";
     print HTMLPART "<A HREF=\"stderr.txt\">stderr</A><BR>\n";
@@ -457,7 +459,7 @@ if(!defined($runningtest)) {
   close(FAILLIST);
 
   open(STATS, ">stats.txt") || die "failed to write to stats.txt: $!\n";
-  print STATS "$timestamp $total $passed $failed $missed\n";
+  print STATS "$timestamp $total $passed $failed $missed $skipped\n";
   close(STATS);
 }
 
