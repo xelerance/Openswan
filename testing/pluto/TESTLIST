@@ -211,8 +211,7 @@ umlplutotest	x509-pluto-03		good
 
 #
 # Test of XAUTH client to XAUTH server
-# broken due to algo integration.
-umlXhost	xauth-pluto-03		bad
+umlXhost	xauth-pluto-03		good
 
 #
 # Test of NAT traversal
