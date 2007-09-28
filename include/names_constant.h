@@ -58,6 +58,9 @@ extern enum_names oakley_group_type_names;
 extern enum_names notification_names;
 extern enum_names ipsec_notification_names;
 
+/* IKEv2 */
+extern enum_names critical_names;
+
 
 /* socket address family info */
 

@@ -607,6 +607,35 @@ static field_desc isanat_oa_fields[] = {
 
 struct_desc isakmp_nat_oa = { "ISAKMP NAT-OA Payload", isanat_oa_fields, sizeof(struct isakmp_nat_oa) };
 
+/*
+ * IKEv2 - Security Association Payload
+ *
+ * layout from RFC 4306 - section 3.3.1
+ * A variable number of proposals follows.
+ *
+ *                         1                   2                   3
+ *     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ! Next Payload  !C!  RESERVED   !         Payload Length        !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !                                                               !
+ *    ~                          <Proposals>                          ~
+ *    !                                                               !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ */
+static field_desc ikev2sa_fields[] = {
+    { ft_enum, 8/BITS_PER_BYTE, "next payload type",  &payload_names },
+    { ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names},
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_end, 0, NULL, NULL }
+};
+
+struct_desc ikev2_sa_desc = { "IKEv2 Security Association Payload",
+			      ikev2sa_fields, sizeof(struct isakmp_sa) };
+
+
+
 /* descriptor for each payload type
  *
  * There is a slight problem in that some payloads differ, depending
@@ -638,6 +667,10 @@ struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
     NULL,                               /* 19 */
     &isakmp_nat_d,                      /* 20=130 ISAKMP_NEXT_NATD (NAT-D) */
     &isakmp_nat_oa,                     /* 21=131 ISAKMP_NEXT_NATOA (NAT-OA) */
+    NULL, NULL, NULL, NULL,             /* 22,23,24,25 */
+    NULL, NULL, NULL, NULL,             /* 26,27,28,29 */
+    NULL, NULL, NULL,                   /* 30,31,32 */
+    &ikev2_sa_desc,                     /* 33 */
 };
 
 void

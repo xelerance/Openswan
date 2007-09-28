@@ -44,6 +44,7 @@
 
 typedef u_int32_t msgid_t;	/* Network order! */
 #define MAINMODE_MSGID    ((msgid_t) 0)
+#define INVALID_MSGID     0xffffffff
 
 struct state;	/* forward declaration of tag */
 extern void reserve_msgid(struct state *isakmp_sa, msgid_t msgid);
@@ -109,9 +110,10 @@ struct ipsec_proto_info {
     u_char *peer_keymat;
 };
 
-/* internal state that
- * should get copied by god
- * Eistein would be proud
+/*
+ * internal state that
+ * should get copied by god... to the child SA state.
+ * this is to make Einstein happy.
  */
 
 struct hidden_variables {
@@ -152,6 +154,8 @@ struct state
     so_serial_t        st_clonedfrom;        /* serial number of parent */
     int                st_usage;
 
+    bool               st_ikev2;             /* is this an IKEv2 state? */
+
     struct connection *st_connection;          /* connection for this SA */
     int                st_whack_sock;          /* fd for our Whack TCP socket.
                                                 * Single copy: close when
@@ -188,23 +192,32 @@ struct state
     ip_address         st_localaddr;           /* where to send them from */
     u_int16_t          st_localport;           
 
+    /* IKEv1 things */
     msgid_t            st_msgid;               /* MSG-ID from header.  Network Order! */
     bool               st_reserve_msgid;       /* if TRUE, then message id has been reserved already */
 
     msgid_t            st_msgid_phase15;       /* msgid for phase 1.5 */
     msgid_t            st_msgid_phase15b;      /* msgid for phase 1.5 */
-
     /* only for a state representing an ISAKMP SA */
     struct msgid_list  *st_used_msgids;        /* used-up msgids */
 
-/* symmetric stuff */
+    /* IKEv2 things */
+    /* message ID sequence for things we send */
+    msgid_t            st_msgid_lastack;       /* last one peer acknowledged */
+    msgid_t            st_msgid_nextuse;       /* next one to use */
 
-  /* initiator stuff */
+    /* message ID sequence for things we receive */
+    msgid_t            st_msgid_lastrecv;      /* last one peer sent */
+
+
+    /* symmetric stuff */
+
+    /* initiator stuff */
     chunk_t            st_gi;                  /* Initiator public value */
     u_int8_t           st_icookie[COOKIE_SIZE];/* Initiator Cookie */
     chunk_t            st_ni;                  /* Ni nonce */
 
-  /* responder stuff */
+    /* responder stuff */
     chunk_t            st_gr;                  /* Responder public value */
     u_int8_t           st_rcookie[COOKIE_SIZE];/* Responder Cookie */
     chunk_t            st_nr;                  /* Nr nonce */
@@ -323,7 +336,7 @@ extern void rekey_p2states_by_connection(struct connection *c);
 
 extern struct state
     *duplicate_state(struct state *st),
-    *find_state(const u_char *icookie
+    *find_state_ikev1(const u_char *icookie
 	, const u_char *rcookie
 	, const ip_address *peer
 	, msgid_t msgid),
@@ -333,10 +346,21 @@ extern struct state
     *find_phase1_state(const struct connection *c, lset_t ok_states),
     *find_sender(size_t packet_len, u_char *packet);
 
+extern struct state *find_state_ikev2(const u_char *icookie
+				      , const u_char *rcookie);
+
+
 extern struct state *find_info_state(const u_char *icookie
 				     , const u_char *rcookie
 				     , const ip_address *peer
 				     , msgid_t msgid);
+
+extern void initialize_new_state(struct state *st
+			       , struct connection *c
+			       , lset_t policy
+			       , int try
+			       , int whack_sock
+			       , enum crypto_importance importance);
 
 extern void show_states_status(void);
 

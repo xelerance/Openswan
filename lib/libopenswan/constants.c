@@ -133,12 +133,39 @@ const char *const payload_name[] = {
 	NULL
     };
 
-const char *const payload_name_nat_d[] = { "ISAKMP_NEXT_NAT-D",
-	"ISAKMP_NEXT_NAT-OA", NULL };
+const char *const payload_names_ikev2[] = {
+    "ISAKMP_NEXT_v2SA",
+    "ISAKMP_NEXT_v2KE",
+    "ISAKMP_NEXT_v2IDi",
+    "ISAKMP_NEXT_v2IDr",
+    "ISAKMP_NEXT_v2CERT",  
+    "ISAKMP_NEXT_v2CERTREQ",
+    "ISAKMP_NEXT_v2AUTH",
+    "ISAKMP_NEXT_v2Ni",
+    "ISAKMP_NEXT_v2N",
+    "ISAKMP_NEXT_v2D",
+    "ISAKMP_NEXT_v2V",
+    "ISAKMP_NEXT_v2TSi",
+    "ISAKMP_NEXT_v2TSr",
+    "ISAKMP_NEXT_v2E",
+    "ISAKMP_NEXT_v2CP",
+    "ISAKMP_NEXT_v2EAP",
+    NULL
+};
+
+const char *const payload_name_nat_d[] = {
+    "ISAKMP_NEXT_NAT-D",
+    "ISAKMP_NEXT_NAT-OA",
+    NULL
+};
+
 static enum_names payload_names_nat_d =
-	{ ISAKMP_NEXT_NATD_DRAFTS, ISAKMP_NEXT_NATOA_DRAFTS, payload_name_nat_d, NULL };
+{ ISAKMP_NEXT_NATD_DRAFTS, ISAKMP_NEXT_NATOA_DRAFTS, payload_name_nat_d, NULL };
+static enum_names payload_names_ikev2_d =
+{ ISAKMP_NEXT_v2SA, ISAKMP_NEXT_v2EAP, payload_names_ikev2, &payload_names_nat_d };
+
 enum_names payload_names =
-    { ISAKMP_NEXT_NONE, ISAKMP_NEXT_NATOA_RFC, payload_name, &payload_names_nat_d };
+{ ISAKMP_NEXT_NONE, ISAKMP_NEXT_NATOA_RFC, payload_name, &payload_names_ikev2_d };
 
 
 /* Exchange types (note: two discontinuous ranges) */
@@ -156,11 +183,14 @@ static const char *const exchange_name[] = {
 static const char *const exchange_name2[] = {
 	"ISAKMP_XCHG_QUICK",
 	"ISAKMP_XCHG_NGRP",
-	"ISAKMP_XCHG_ACK_INFO",
+	"ISAKMP_v2_SA_INIT",
+	"ISAKMP_v2_AUTH",
+	"ISAKMP_v2_CHILD_SA",
+	"ISAKMP_v2_INFORMATIONAL",
     };
 
 static enum_names exchange_desc2 =
-    { ISAKMP_XCHG_QUICK, ISAKMP_XCHG_ACK_INFO, exchange_name2, NULL };
+    { ISAKMP_XCHG_QUICK, ISAKMP_v2_INFORMATIONAL, exchange_name2, NULL };
 
 enum_names exchange_names =
     { ISAKMP_XCHG_NONE, ISAKMP_XCHG_MODE_CFG, exchange_name, &exchange_desc2 };
@@ -773,6 +803,13 @@ const char *const attr_msg_type_name[] = {
 
 enum_names attr_msg_type_names =
     { 0 , ISAKMP_CFG_ACK, attr_msg_type_name , NULL };
+
+/*
+ * IKEv2 CRITICAL BYTE "enum"
+ */
+const char *const critical_name[]= { "Payload-Critical", NULL };
+enum_names critical_names = 
+{ ISAKMP_PAYLOAD_CRITICAL, ISAKMP_PAYLOAD_CRITICAL, critical_name, NULL};
 
 /* socket address family info */
 

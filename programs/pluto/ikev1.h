@@ -1,5 +1,5 @@
 /*
- * IKEv1 functions: that ipsec_doi.c provides and ikev1_aggr.c
+ * IKEv1 functions: that ikev1_main.c provides and ikev1_aggr.c
  * needs.
  */
 

@@ -214,13 +214,16 @@
 
 #define IKE_UDP_PORT	500
 
-/* Version numbers */
-
+/* Version numbers - IKEv1 */
 #define ISAKMP_MAJOR_VERSION   0x1
 #define ISAKMP_MINOR_VERSION   0x0
 
-/* Domain of Interpretation */
+/* version numbers - IKEv2 */
+#define IKEv2_MAJOR_VERSION    0x2
+#define IKEv2_MINOR_VERSION    0x0
 
+
+/* Domain of Interpretation */
 #define ISAKMP_DOI_ISAKMP          0
 #define ISAKMP_DOI_IPSEC           1
 
@@ -248,28 +251,51 @@
  * Private USE 128-255
  */
 
-#define ISAKMP_NEXT_NONE       0	/* No other payload following */
-#define ISAKMP_NEXT_SA         1	/* Security Association */
-#define ISAKMP_NEXT_P          2	/* Proposal */
-#define ISAKMP_NEXT_T          3	/* Transform */
-#define ISAKMP_NEXT_KE         4	/* Key Exchange */
-#define ISAKMP_NEXT_ID         5	/* Identification */
-#define ISAKMP_NEXT_CERT       6	/* Certificate */
-#define ISAKMP_NEXT_CR         7	/* Certificate Request */
-#define ISAKMP_NEXT_HASH       8	/* Hash */
-#define ISAKMP_NEXT_SIG        9	/* Signature */
-#define ISAKMP_NEXT_NONCE      10	/* Nonce */
-#define ISAKMP_NEXT_N          11	/* Notification */
-#define ISAKMP_NEXT_D          12	/* Delete */
-#define ISAKMP_NEXT_VID        13	/* Vendor ID */
-#define ISAKMP_NEXT_ATTR       14       /* Mode config Attribute */
-#define ISAKMP_NEXT_NATD_BADDRAFTS   15 /* NAT-Traversal: NAT-D (bad drafts) */
-                                        /* !!! Conflicts with RFC 3547 */
-#define ISAKMP_NEXT_NATD_RFC   20       /* NAT-Traversal: NAT-D (rfc) */
-#define ISAKMP_NEXT_NATOA_RFC  21       /* NAT-Traversal: NAT-OA (rfc) */
-#define ISAKMP_NEXT_ROOF       22	/* roof on payload types */
-#define ISAKMP_NEXT_NATD_DRAFTS   130   /* NAT-Traversal: NAT-D (drafts) */
-#define ISAKMP_NEXT_NATOA_DRAFTS  131   /* NAT-Traversal: NAT-OA (drafts) */
+enum next_payload_types {
+	ISAKMP_NEXT_NONE     =  0,	/* No other payload following */
+	ISAKMP_NEXT_SA       =  1,	/* Security Association */
+	ISAKMP_NEXT_P        =  2,	/* Proposal */
+	ISAKMP_NEXT_T        =  3,	/* Transform */
+	ISAKMP_NEXT_KE       =  4,	/* Key Exchange */
+	ISAKMP_NEXT_ID       =  5,	/* Identification */
+	ISAKMP_NEXT_CERT     =  6,	/* Certificate */
+	ISAKMP_NEXT_CR       =  7,	/* Certificate Request */
+	ISAKMP_NEXT_HASH     =  8,	/* Hash */
+	ISAKMP_NEXT_SIG      =  9,	/* Signature */
+	ISAKMP_NEXT_NONCE    =  10,	/* Nonce */
+	ISAKMP_NEXT_N        =  11,	/* Notification */
+	ISAKMP_NEXT_D        =  12,	/* Delete */
+	ISAKMP_NEXT_VID      =  13,	/* Vendor ID */
+	ISAKMP_NEXT_ATTR     =  14,       /* Mode config Attribute */
+	ISAKMP_NEXT_NATD_BADDRAFTS =15, /* NAT-Traversal: NAT-D (bad drafts) */
+                                /* !!! Conflicts with RFC 3547 */
+	ISAKMP_NEXT_NATD_RFC  = 20,       /* NAT-Traversal: NAT-D (rfc) */
+	ISAKMP_NEXT_NATOA_RFC = 21,       /* NAT-Traversal: NAT-OA (rfc) */
+
+	ISAKMP_NEXT_v2SA  = 33,          /* security association */
+	ISAKMP_NEXT_v2KE  = 34,          /* key exchange payload */
+	ISAKMP_NEXT_v2IDi = 35,          /* Initiator ID payload */
+	ISAKMP_NEXT_v2IDr = 36,          /* Responder ID payload */
+	ISAKMP_NEXT_v2CERT= 37,          /* Certificate */
+	ISAKMP_NEXT_v2CERTREQ= 38,       /* Certificate Request */
+	ISAKMP_NEXT_v2AUTH= 39,          /* Authentication */
+	ISAKMP_NEXT_v2Ni  = 40,          /* Nonce - initiator */
+	/* ISAKMP_NEXT_v2Nr  = 40,*/     /* Nonce - responder */
+	ISAKMP_NEXT_v2N   = 41,          /* Notify */
+	ISAKMP_NEXT_v2D   = 42,          /* Delete */
+	ISAKMP_NEXT_v2V   = 43,          /* Vendor ID */
+	ISAKMP_NEXT_v2TSi = 44,          /* Traffic Selector, initiator */
+	ISAKMP_NEXT_v2TSr = 45,          /* Traffic Selector, responder */
+	ISAKMP_NEXT_v2E   = 46,          /* Encrypted payload */
+	ISAKMP_NEXT_v2CP  = 47,          /* Configuration payload (MODECFG) */
+	ISAKMP_NEXT_v2EAP = 48,          /* Extensible authentication*/
+
+	ISAKMP_NEXT_ROOF  = 49,	         /* roof on payload types */
+
+	/* SPECIAL CASES */
+	ISAKMP_NEXT_NATD_DRAFTS  = 130,   /* NAT-Traversal: NAT-D (drafts) */
+	ISAKMP_NEXT_NATOA_DRAFTS = 131   /* NAT-Traversal: NAT-OA (drafts) */
+};
 
 /* These values are to be used within the Type field of an Attribute (14) 
  *    ISAKMP payload.  */
@@ -341,18 +367,25 @@
 #define ISAKMP_XCHG_INFO       5	/* Informational */
 #define ISAKMP_XCHG_MODE_CFG   6        /* Mode Config */
 
+/* Private exchanges to pluto */
+#define ISAKMP_XCHG_ECHOREQUEST 30      /* Echo Request */
+#define ISAKMP_XCHG_ECHOREPLY   31      /* Echo Reply   */
+
 /* Extra exchange types, defined by Oakley
  * RFC2409 "The Internet Key Exchange (IKE)", near end of Appendix A
  */
 #define ISAKMP_XCHG_QUICK      32	/* Oakley Quick Mode */
 #define ISAKMP_XCHG_NGRP       33	/* Oakley New Group Mode */
-/* added in draft-ietf-ipsec-ike-01.txt, near end of Appendix A */
-#define ISAKMP_XCHG_ACK_INFO   34	/* Oakley Acknowledged Informational */
 
+/* IKEv2 things */
+#define ISAKMP_v2_SA_INIT      34
+#define ISAKMP_v2_AUTH         35
+#define ISAKMP_v2_CHILD_SA     36
+#define ISAKMP_v2_INFORMATIONAL 37
 
-/* Private exchanges to pluto */
-#define ISAKMP_XCHG_ECHOREQUEST 30      /* Echo Request */
-#define ISAKMP_XCHG_ECHOREPLY   31      /* Echo Reply   */
+#define ISAKMP_FLAGS_I         (1<<3)     /* bit 3 of flags --- initiator */
+#define ISAKMP_FLAGS_V         (1<<4)     /* bit 4 of flags --- version */
+#define ISAKMP_FLAGS_R         (1<<5)     /* bit 5 of flags --- response */
 
 #define ISAKMP_XCHG_ECHOREQUEST_PRIVATE 244     /* Private Echo Request */
 #define ISAKMP_XCHG_ECHOREPLY_PRIVATE   245     /* Private Echo Reply   */
@@ -371,6 +404,9 @@ extern const char *const sit_bit_names[];
 #define SIT_IDENTITY_ONLY        0x01
 #define SIT_SECRECY              0x02
 #define SIT_INTEGRITY            0x04
+
+/* Critical bit in each payload */
+#define ISAKMP_PAYLOAD_CRITICAL  0x80
 
 /* Protocol IDs
  * RFC2407 The Internet IP security Domain of Interpretation for ISAKMP 4.4.1

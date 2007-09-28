@@ -131,8 +131,8 @@ dpd_init(struct state *st)
     struct state *p1st;
 
     /* find the related Phase 1 state */
-    p1st = find_state(st->st_icookie, st->st_rcookie,
-		      &st->st_connection->spd.that.host_addr, 0);
+    p1st = find_state_ikev1(st->st_icookie, st->st_rcookie,
+			    &st->st_connection->spd.that.host_addr, 0);
 
     if (p1st == NULL) {
         loglog(RC_LOG_SERIOUS, "could not find phase 1 state for DPD");

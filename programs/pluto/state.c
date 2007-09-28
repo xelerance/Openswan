@@ -53,6 +53,7 @@
 
 #include "sha1.h"
 #include "md5.h"
+#include "cookie.h"
 #include "crypto.h" /* requires sha1.h and md5.h */
 
 /*
@@ -765,23 +766,24 @@ void for_each_state(void *(f)(struct state *, void *data), void *data)
 #endif
 
 /*
- * Find a state object.
+ * Find a state object for an IKEv1 state
  */
 struct state *
-find_state(const u_char *icookie
-, const u_char *rcookie
-, const ip_address *peer UNUSED
-, msgid_t /*network order*/ msgid)
+find_state_ikev1(const u_char *icookie
+		 , const u_char *rcookie
+		 , const ip_address *peer UNUSED
+		 , msgid_t /*network order*/ msgid)
 {
     struct state *st = *state_hash(icookie, rcookie);
 
     while (st != (struct state *) NULL)
     {
 	if (memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
-	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0)
+	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0
+	    && st->st_ikev2 == FALSE)
 	{
 	    DBG(DBG_CONTROL,
-		DBG_log("peer and cookies match on #%ld, provided msgid %08lx vs %08lx"
+		DBG_log("v1 peer and cookies match on #%ld, provided msgid %08lx vs %08lx"
 			, st->st_serialno
 			, (long unsigned)ntohl(msgid)
 			, (long unsigned)ntohl(st->st_msgid)));
@@ -793,9 +795,43 @@ find_state(const u_char *icookie
 
     DBG(DBG_CONTROL,
 	if (st == NULL)
-	    DBG_log("state object not found");
+	    DBG_log("v1 state object not found");
 	else
-	    DBG_log("state object #%lu found, in %s"
+	    DBG_log("v1 state object #%lu found, in %s"
+		, st->st_serialno
+		, enum_show(&state_names, st->st_state)));
+
+    return st;
+}
+
+/*
+ * Find a state object for an IKEv2 state
+ */
+struct state *
+find_state_ikev2(const u_char *icookie
+		 , const u_char *rcookie)
+{
+    struct state *st = *state_hash(icookie, rcookie);
+
+    while (st != (struct state *) NULL)
+    {
+	if (memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
+	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0
+	    && st->st_ikev2 == TRUE)
+	{
+	    DBG(DBG_CONTROL,
+		DBG_log("v2 peer and cookies match on #%ld"
+			, st->st_serialno));
+	    break;
+	}
+	st = st->st_hashchain_next;
+    }
+
+    DBG(DBG_CONTROL,
+	if (st == NULL)
+	    DBG_log("v2 state object not found");
+	else
+	    DBG_log("v2 state object #%lu found, in %s"
 		, st->st_serialno
 		, enum_show(&state_names, st->st_state)));
 
@@ -1315,6 +1351,39 @@ void set_state_ike_endpoints(struct state *st
     st->st_remoteport = c->spd.that.host_port;
 
     st->st_interface = c->interface;
+}
+
+void initialize_new_state(struct state *st
+			, struct connection *c
+			, lset_t policy
+			, int try
+			, int whack_sock
+			, enum crypto_importance importance)
+{
+    struct spd_route *sr;
+
+    st->st_connection = c;
+
+    set_state_ike_endpoints(st, c);
+
+    set_cur_state(st);	/* we must reset before exit */
+    st->st_policy     = policy & ~POLICY_IPSEC_MASK;   /* clear bits */
+    st->st_whack_sock = whack_sock;
+    st->st_try   = try;
+
+    st->st_import = importance;
+
+    for(sr=&c->spd; sr!=NULL; sr=sr->next) {
+	if(sr->this.xauth_client) {
+	    if(sr->this.xauth_name) {
+		strncpy(st->st_xauth_username, sr->this.xauth_name, sizeof(st->st_xauth_username));
+		break;
+	    }
+	}
+    }
+
+    get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
+    insert_state(st);	/* needs cookies, connection */
 }
 
 /*

@@ -112,7 +112,6 @@ main_outI1(int whack_sock
 {
     struct state *st = new_state();
     struct msg_digest md;   /* use reply/rbody found inside */
-    struct spd_route *sr;
 
     int numvidtosend = 1;  /* we always send DPD VID */
 #ifdef NAT_TRAVERSAL
@@ -130,30 +129,8 @@ main_outI1(int whack_sock
 #endif
 
     /* set up new state */
-    st->st_connection = c;
-
-    set_state_ike_endpoints(st, c);
-
-    set_cur_state(st);	/* we must reset before exit */
-    st->st_policy = policy & ~POLICY_IPSEC_MASK;
-    st->st_whack_sock = whack_sock;
-    st->st_try = try;
+    initialize_new_state(st, c, policy, try, whack_sock, importance);
     st->st_state = STATE_MAIN_I1;
-
-    st->st_import = importance;
-
-    for(sr=&c->spd; sr!=NULL; sr=sr->next) {
-	if(sr->this.xauth_client) {
-	    if(sr->this.xauth_name) {
-		strncpy(st->st_xauth_username, sr->this.xauth_name, sizeof(st->st_xauth_username));
-		break;
-	    }
-	}
-    }
-
-    get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
-
-    insert_state(st);	/* needs cookies, connection, and msgid (0) */
 
     if (HAS_IPSEC_POLICY(policy))
 	add_pending(dup_any(whack_sock), st, c, policy, 1

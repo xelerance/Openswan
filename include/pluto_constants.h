@@ -246,6 +246,12 @@ enum state_kind {
     STATE_XAUTH_I0,              /* client state is awaiting request */
     STATE_XAUTH_I1,              /* client state is awaiting result code */
 
+    /* IKEv2 states.
+     * Note that message reliably sending is done in a substate, unlike
+     * with IKEv1
+     */
+    STATE_PARENT_I1,             /* sent initial exchange */
+
     STATE_IKE_ROOF
 
 };
