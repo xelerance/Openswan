@@ -10,7 +10,7 @@ export IPSEC_CONFS="$D/etc-nomyid"
 
 ipsec setup start 
 sleep 4
-/testing/pluto/basic-pluto-01/eroutewait.sh trap
+/testing/pluto/bin/wait-until-pluto-started
 ipsec auto --status
 ipsec setup stop
 
@@ -20,7 +20,7 @@ export IPSEC_CONFS="$D/etc-myid"
 
 ipsec setup start 
 sleep 4
-/testing/pluto/basic-pluto-01/eroutewait.sh trap
+/testing/pluto/bin/wait-until-pluto-started
 ipsec auto --status
 ipsec setup stop
 
