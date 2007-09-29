@@ -1,5 +1,5 @@
 north:~#
- TESTNAME=nat-pluto-01 
+ TESTNAME=nat-aggr-01 
 north:~#
  source /testing/pluto/bin/northlocal.sh
 north:~#

@@ -30,4 +30,5 @@ Sending packet to 192.0.1.1/500
 Sending packet to 192.0.1.1/500
 Sending packet to 192.0.1.1/500
 Sending packet to 192.0.1.1/500
+4 packets sent, 0 packets received. 100% packet loss
 
