@@ -4,9 +4,9 @@ east:~#
  ipsec setup start
 ipsec_setup: Starting Openswan IPsec VERSION
 east:~#
- ipsec auto --add westnet-eastnet-x509
+ /testing/pluto/bin/wait-until-pluto-started
 east:~#
- /testing/pluto/basic-pluto-01/eroutewait.sh trap
+ ipsec auto --add westnet-eastnet-x509
 east:~#
  
 

@@ -35,7 +35,7 @@ PING 192.1.2.23 (192.1.2.23): 56 data bytes
 round-trip min/avg/max = 3.1/4.5/9.26 ms
 west:~#
  ipsec eroute
-12         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
+10         192.1.2.45/32      -> 192.1.2.23/32      => tun0x1001@192.1.2.23
 west:~#
  echo done
 done

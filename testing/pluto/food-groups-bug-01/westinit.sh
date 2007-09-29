@@ -7,7 +7,7 @@ ipsec setup start
 
 /testing/pluto/bin/wait-until-pluto-started
 
-# ipsec manual --show --up westnet-east-pass
-ipsec manual --up westnet-east-pass
+# ipsec auto --show --up westnet-east-pass
+ipsec auto --up westnet-east-pass
 
 # : hello

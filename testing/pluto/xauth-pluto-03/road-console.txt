@@ -39,7 +39,6 @@ road:~#
 003 "xauth-road--eastnet" #1: received Vendor ID payload [XAUTH]
 002 "xauth-road--eastnet" #1: transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 106 "xauth-road--eastnet" #1: STATE_MAIN_I2: sent MI2, expecting MR2
-002 "xauth-road--eastnet" #1: I did not send a certificate because I do not have one.
 002 "xauth-road--eastnet" #1: transition from state STATE_MAIN_I2 to state STATE_MAIN_I3
 108 "xauth-road--eastnet" #1: STATE_MAIN_I3: sent MI3, expecting MR3
 002 "xauth-road--eastnet" #1: Main mode peer ID is ID_FQDN: '@east'
