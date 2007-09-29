@@ -221,6 +221,31 @@ send "\n"
 EOF
 openssl ca -batch -in reqs/spaceincn.req -days 365 -out certs/spaceincn.crt -notext -cert certs/ca.crt -keyfile keys/ca.key  -passin pass:foobar
 
+# CN of client cert is the same as the CA's CN
+expect  <<EOF
+spawn openssl req -newkey rsa:1024 -passin pass:foobar -passout pass:foobar -keyout keys/cnofca.key -out reqs/cnofca.req
+expect "Country Name"
+send "\n"
+expect "State"
+send "\n"
+expect "Locality"
+send "\n"
+expect "Organization"
+send "\n"
+expect "Organizational"
+send "\n"
+expect "Common"
+send "Xelerance test CA for ca\n"
+expect "Email"
+send "testing@xelerance.com\n"
+expect "challenge"
+send "\n"
+expect "optional"
+send "\n"
+expect ""
+send "\n"
+EOF
+openssl ca -batch -in reqs/cnofca.req -days 365 -out certs/cnofca.crt -notext -cert certs/ca.crt -keyfile keys/ca.key  -passin pass:foobar
 # Revoke and generate CRL
 openssl ca -gencrl -crldays 15 -out crls/cacrl.pem  -keyfile keys/ca.key -cert certs/ca.crt -passin pass:foobar
 openssl ca -gencrl -crldays 15 -out crls/othercacrl.pem  -keyfile keys/otherca.key -cert certs/otherca.crt -passin pass:foobar
