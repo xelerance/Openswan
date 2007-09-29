@@ -118,7 +118,7 @@ openssl ca -batch -in reqs/signedbyotherca.req -days 365 -out certs/signedbyothe
 
 # wrong DN (Organisation is different)
 expect  <<EOF
-spawn openssl req -newkey rsa:2048 -passin pass:foobar -passout pass:foobar -keyout keys/wrongdnorg.key -out reqs/wrongdnorg.req
+spawn openssl req -newkey rsa:1024 -passin pass:foobar -passout pass:foobar -keyout keys/wrongdnorg.key -out reqs/wrongdnorg.req
 expect "Country Name"
 send "\n"
 expect "State"
@@ -144,7 +144,7 @@ openssl ca -batch -in reqs/wrongdnorg.req -days 365 -out certs/wrongdnorg.crt -n
 
 # wrong number of DN's
 expect  <<EOF
-spawn openssl req -newkey rsa:2048 -passin pass:foobar -passout pass:foobar -keyout keys/wrongdnnum.key -out reqs/wrongdnnum.req
+spawn openssl req -newkey rsa:1024 -passin pass:foobar -passout pass:foobar -keyout keys/wrongdnnum.key -out reqs/wrongdnnum.req
 expect "Country Name"
 send "\n"
 expect "State"
@@ -171,7 +171,7 @@ openssl ca -batch -in reqs/wrongdnnum.req -days 365 -out certs/wrongdnnum.crt -n
 
 # Unwise charachters
 expect  <<EOF
-spawn openssl req -newkey rsa:2048 -passin pass:foobar -passout pass:foobar -keyout keys/unwisechar.key -out reqs/unwisechar.req
+spawn openssl req -newkey rsa:1024 -passin pass:foobar -passout pass:foobar -keyout keys/unwisechar.key -out reqs/unwisechar.req
 expect "Country Name"
 send "\n"
 expect "State"
@@ -197,7 +197,7 @@ openssl ca -batch -in reqs/unwisechar.req -days 365 -out certs/unwisechar.crt -n
 
 # Space in CN
 expect  <<EOF
-spawn openssl req -newkey rsa:2048 -passin pass:foobar -passout pass:foobar -keyout keys/spaceincn.key -out reqs/spaceincn.req
+spawn openssl req -newkey rsa:1024 -passin pass:foobar -passout pass:foobar -keyout keys/spaceincn.key -out reqs/spaceincn.req
 expect "Country Name"
 send "\n"
 expect "State"
