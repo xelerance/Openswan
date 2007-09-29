@@ -5,6 +5,7 @@ then
 	echo "for now only run from the directory that contains this script"
 	exit
 fi
+
 # generate X509 certs for testing harness
 # Paul Wouters <paul@xelerance.com>
 #
@@ -47,7 +48,7 @@ EOF
 done
 
 # Generate machine keys/certs
-for machine in east west sunset sunrise north south pole park beet carrot nic japan bigkey revoke notyetvalid notvalidanymore signedbyotherca 
+for machine in east west sunset sunrise north south pole park beet carrot nic japan bigkey revoked notyetvalid notvalidanymore signedbyotherca 
 do
 # generate host key/cert
 expect  <<EOF
@@ -114,8 +115,6 @@ openssl ca -batch -in reqs/bigkey.req -days 365 -out certs/bigkey.crt -notext -c
 # signed by other ca
 rm certs/signedbyotherca.crt
 openssl ca -batch -in reqs/signedbyotherca.req -days 365 -out certs/signedbyotherca.crt -notext -cert certs/otherca.crt -keyfile keys/otherca.key  -passin pass:foobar
-
-# revoked
 
 # wrong DN (Organisation is different)
 expect  <<EOF
@@ -221,3 +220,9 @@ expect ""
 send "\n"
 EOF
 openssl ca -batch -in reqs/spaceincn.req -days 365 -out certs/spaceincn.crt -notext -cert certs/ca.crt -keyfile keys/ca.key  -passin pass:foobar
+
+# Revoke and generate CRL
+openssl ca -gencrl -crldays 15 -out crls/cacrl.pem  -keyfile keys/ca.key -cert certs/ca.crt -passin pass:foobar
+openssl ca -gencrl -crldays 15 -out crls/othercacrl.pem  -keyfile keys/otherca.key -cert certs/otherca.crt -passin pass:foobar
+openssl ca -revoke certs/revoked.crt -keyfile keys/ca.key -cert certs/ca.crt -passin pass:foobar
+openssl crl -in crls/crl.pem -noout -text
