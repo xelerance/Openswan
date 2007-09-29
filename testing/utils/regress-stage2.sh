@@ -10,21 +10,18 @@
 #    $MONTH             today's month.
 #    $TODAY             today's date.
 #
-# it is expected that $BUILDSPOOL/freeswan contains a checked out copy
+# it is expected that $BUILDSPOOL/openswan-2 contains a checked out copy
 # of the source tree that is ready for building. 
 #
 # In general, this script is in fact running from
-#    $BUILDSPOOL/freeswan/testing/utils/regress-stage2.sh
+#    $BUILDSPOOL/openswan-2/testing/utils/regress-stage2.sh
 #
 # invoked from regress-nightly.sh. The two stages permit the regress-nightly.sh
 # scritpt, which must be invoked from outside of the CVS tree to change
 # very seldom.
 #
-# This script will further look for $HOME/freeswan-regress-env.sh for a list 
+# This script will further look for $HOME/openswan-regress-env.sh for a list 
 # of variables to include.
-#
-# This should include
-#
 
 # die if anything dies.
 set -e
@@ -39,12 +36,12 @@ echo "#" `date`                                                     >$umlsetup
 echo "POOLSPACE=$BUILDSPOOL/UMLPOOL"                               >>$umlsetup
 echo "BUILDTOP=$BUILDSPOOL/${TOPMODULE} export BUILDTOP"               >>$umlsetup
 
-# ${TOPMODULE}-regress-eng.sh should have the following variables
+# ${TOPMODULE}-regress-env.sh should have the following variables
 # defined. This should be the only local configuration required.
 # 
-# KERNPOOL=/abigail/kernel/linux-2.4.17
-# UMLPATCH=/abigail/user-mode-linux/uml-patch-2.4.17-4.bz2
-# BASICROOT=/abigail/user-mode-linux/root-6.0
+# KERNPOOL=/abigail/kernel/linux-2.6.18
+# UMLPATCH=/abigail/user-mode-linux/uml-patch-2.6.18-4.bz2
+# BASICROOT=/abigail/user-mode-linux/root-23.0
 # SHAREDIR=${BASICROOT}/usr/share
 #
 # Please see doc/umltesting.html for details on filling in these variables.
@@ -72,12 +69,4 @@ perl -e 'print time()."\n";' >${REGRESSRESULTS}/datestamp
 cd $BUILDSPOOL/${TOPMODULE} && make check
 
 perl $BUILDSPOOL/${TOPMODULE}/testing/utils/regress-summarize-results.pl $REGRESSRESULTS notest
-
-
-
-
-
-
-
-
 
