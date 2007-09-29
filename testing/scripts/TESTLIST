@@ -11,10 +11,10 @@
 #ctltest	ipsec.conf-migration-03	good
 #ctltest	ipsec.conf-migration-04	good
 
-ctltest	barf-01	good
-ctltest	barf-02	good
+ctltest		barf-01			good
+ctltest		barf-02			good
 
-ctltest ipsec.conf-myid-01 good
+ctltest 	ipsec.conf-myid-01 	good
 
 
 # test case for restart controls for pluto
