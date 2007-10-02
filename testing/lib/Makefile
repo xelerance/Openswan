@@ -16,7 +16,7 @@
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include $(OPENSWANSRCDIR)/Makefile.inc
 
-SUBDIRS=libopenswan
+SUBDIRS=libopenswan libpluto
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
