@@ -1275,6 +1275,39 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
     return TRUE;
 }
 
+void initialize_new_state(struct state *st
+			, struct connection *c
+			, lset_t policy
+			, int try
+			, int whack_sock
+			, enum crypto_importance importance)
+{
+    struct spd_route *sr;
+
+    st->st_connection = c;
+
+    set_state_ike_endpoints(st, c);
+
+    set_cur_state(st);	/* we must reset before exit */
+    st->st_policy     = policy & ~POLICY_IPSEC_MASK;   /* clear bits */
+    st->st_whack_sock = whack_sock;
+    st->st_try   = try;
+
+    st->st_import = importance;
+
+    for(sr=&c->spd; sr!=NULL; sr=sr->next) {
+	if(sr->this.xauth_client) {
+	    if(sr->this.xauth_name) {
+		strncpy(st->st_xauth_username, sr->this.xauth_name, sizeof(st->st_xauth_username));
+		break;
+	    }
+	}
+    }
+
+    get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
+    insert_state(st);	/* needs cookies, connection */
+}
+
 /*
  * Local Variables:
  * c-basic-offset:4
