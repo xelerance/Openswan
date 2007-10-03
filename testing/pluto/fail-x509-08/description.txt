@@ -3,7 +3,7 @@ Basic pluto X.509 test, with send_cr.
 East does *NOT* have West's X.509 Cert locally.
 east is FORCED to send it.
 
-"westnet-eastnet": 192.0.1.0/24===192.1.2.45[CN=west.uml.freeswan.org]...192.1.2.23[CN=east.uml.freeswan.org]===192.0.2.0/24
+"westnet-eastnet": 192.0.1.0/24===192.1.2.45[CN=west.testing.xelerance.com]...192.1.2.23[CN=east.testing.xelerance.com]===192.0.2.0/24
 
 identical to fail-pluto-07, but the rightca on both is setup wrong.
 this results in an invalid packet.
