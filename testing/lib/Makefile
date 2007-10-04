@@ -16,6 +16,8 @@
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include $(OPENSWANSRCDIR)/Makefile.inc
 
+srcdir?=${OPENSWANSRCDIR}/testing/lib/
+
 SUBDIRS=libopenswan libpluto
 
 def:
