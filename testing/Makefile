@@ -16,6 +16,8 @@
 OPENSWANSRCDIR?=$(shell cd ..; pwd)
 include $(OPENSWANSRCDIR)/Makefile.inc
 
+srcdir?=${OPENSWANSRCDIR}/testing/
+
 SUBDIRS=lib utils 
 SUBDIRS+=klips 
 SUBDIRS+=pluto dnssec scripts packaging

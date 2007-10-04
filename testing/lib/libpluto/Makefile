@@ -14,7 +14,7 @@
 # RCSID $Id: Makefile,v 1.5 2005/08/05 17:04:54 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
-srcdir?=./
+srcdir?=${OPENSWANSRCDIR}/testing/lib/libpluto
 include $(OPENSWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
