@@ -1124,6 +1124,11 @@ complibtest() {
     EXTRALIBS=
     UNITTESTARGS=-r
 
+    if [ -f ${SRCDIR}FLAGS ]; then 
+        ${ECHO} "   "Sourcing ${SRCDIR}FLAGS
+	source ${SRCDIR}FLAGS
+    fi
+     	
     if [ -f ${SRCDIR}FLAGS.$testobj ]
     then
         ${ECHO} "   "Sourcing ${SRCDIR}FLAGS.$testobj
