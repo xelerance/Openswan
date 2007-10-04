@@ -44,28 +44,3 @@ mostlyclean: clean
 
 realclean: clean
 
-#
-# $Log: Makefile,v $
-# Revision 1.6  2005/11/08 22:22:38  mcr
-# 	introduce big logical sets including test case
-#
-# Revision 1.5  2005/01/24 01:13:13  mcr
-# 	make sure that OPENSWANLIB is setup for tests.
-#
-# Revision 1.4  2004/04/09 18:09:41  mcr
-# Moved from testing/lib/libfreeswan/Makefile,v
-#
-# Revision 1.3  2004/04/03 19:44:51  ken
-# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
-#
-# Revision 1.2  2003/11/05 04:57:30  dhr
-#
-# set up a default REGRESSRESULTS for libfreeswan tests (like other kinds of tests)
-#
-# Revision 1.1  2002/06/08 17:41:22  mcr
-# 	library test routines.
-#
-# 
-
-
-
