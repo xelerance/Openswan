@@ -1,5 +1,7 @@
-As of this release, the following are considered known bugs.  For a detailed
-list, see http://bugs.openswan.org 
+This code is still less than perfect and undoubtedly has bugs.  As of this
+release, the following are considered known bugs.
+
+For a detailed list, see http://bugs.openswan.org/
 
 * Test cases using AH for authentication currently fail. If you need this 
   functionality for interop, either use an older release (1.99) or JuanJo 
@@ -16,6 +18,11 @@ list, see http://bugs.openswan.org
   the result is unpredictable. 
 
 * Pluto will not retry if it can not find its key in DNS when it starts.
+
+* Extrusion and Opportunistic Encryption do not mix well without
+  Advanced Routing. (There is a workaround using advanced routing)
+
+* Openswan on OSX/FreeBSD does not properly install the SA's into the kernel.
 
 * Installing a new Openswan on top of an old one doesn't update kernel
   configuration options, so if new options are added, you need to start
