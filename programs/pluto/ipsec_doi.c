@@ -700,6 +700,15 @@ void initialize_new_state(struct state *st
     insert_state(st);	/* needs cookies, connection */
 }
 
+void
+send_delete(struct state *st)
+{
+    if(st->st_ikev2) {
+	ikev2_delete_out(st);
+    } else {
+	ikev1_delete_out(st);
+    }
+}
 /*
  * Local Variables:
  * c-basic-offset:4

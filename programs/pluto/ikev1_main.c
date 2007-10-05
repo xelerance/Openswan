@@ -2775,7 +2775,7 @@ send_notification_from_md(struct msg_digest *md, u_int16_t type)
  * @param st State struct (hopefully has some SA's related to it) 
  */
 void
-send_delete(struct state *st)
+ikev1_delete_out(struct state *st)
 {
     pb_stream reply_pbs;
     pb_stream r_hdr_pbs;

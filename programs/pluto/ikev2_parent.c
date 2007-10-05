@@ -198,6 +198,12 @@ ikev2parent_outI1(int whack_sock
     return STF_OK;
 }
 
+void ikev2_delete_out(struct state *st UNUSED)
+{
+    abort();
+}
+
+
 /*
  * Local Variables:
  * c-basic-offset:4

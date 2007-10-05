@@ -54,6 +54,9 @@ extern stf_status aggr_not_present(int whack_sock,
 			     unsigned long try
 			     , enum crypto_importance importance);
 
+extern void ikev1_delete_out(struct state *st);
+
+
 extern bool
 decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode);
 

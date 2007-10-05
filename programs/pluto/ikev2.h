@@ -9,5 +9,6 @@ extern stf_status ikev2parent_outI1(int whack_sock
 				    , unsigned long try
 				    , enum crypto_importance importance);
 
+extern void ikev2_delete_out(struct state *st);
 
 
