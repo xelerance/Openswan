@@ -1,0 +1,23 @@
+EXTRAFLAGS="$EXTRAFLAGS ${USERCOMPILE}"
+EXTRAFLAGS="$EXTRAFLAGS -I${OPENSWANSRCDIR}/programs/pluto"
+EXTRAFLAGS="$EXTRAFLAGS -I${OPENSWANSRCDIR}/include"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/hostpair.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/virtual.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/rcv_whack.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/myid.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/foodgroups.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/ipsec_doi.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/ikev2_parent.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/state.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/hmac.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/cookie.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/spdb.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/vendor.o"
+EXTRALIBS="${EXTRALIBS} ${PLUTOLIB} ${CRYPTOLIBS} ${WHACKLIB}"
+EXTRALIBS="${EXTRALIBS} ${OSWLOGLIB} ${OPENSWANLIB} ${OSWLOGLIB} -lgmp -lefence"
+
+UNITTESTARGS="ikev2.record westnet--eastnet-ikev2"
+
+# Local Variables:
+# compile-command: "make parentI1"
+# End:

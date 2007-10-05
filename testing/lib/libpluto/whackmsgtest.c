@@ -19,6 +19,7 @@
 #include "seam_initiate.c"
 #include "seam_xauth.c"
 #include "seam_alg.c" 
+#include "seam_spdb.c"
 
 main(int argc, char *argv[])
 {

@@ -14,7 +14,7 @@
 # RCSID $Id: Makefile,v 1.5 2005/08/05 17:04:54 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
-srcdir?=${OPENSWANSRCDIR}/testing/lib/libpluto
+srcdir?=${OPENSWANSRCDIR}/testing/lib/libpluto/
 include $(OPENSWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
@@ -29,7 +29,7 @@ all: ${TESTS}
 refineconnection: refineconnection.c lib-refineconnection/testlist.sh OUTPUT.refineconnection.txt FLAGS.refineconnection
 	source ${UTILS}/functions.sh; multilibtest `basename $< .c`
 
-%: %.c OUTPUT.%.txt FLAGS.%
+%: %.c OUTPUT.%.txt FLAGS.% 
 	source ${UTILS}/functions.sh; libtest `basename $< .c`
 
 def:
