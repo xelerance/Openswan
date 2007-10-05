@@ -421,9 +421,9 @@ enum pluto_policy {
 	 * in that we can actually turn off everything, but it expands more
 	 * sensibly to an IKEv3 and other methods.
 	 */
-	POLICY_IKEV1_DISABLE = LELEM(24),   /* should we !accept IKEv1? */
-	POLICY_IKEV2_ALLOW   = LELEM(25),   /* should we accept IKEv2? */
-	POLICY_IKEV2_PROPOSE = LELEM(26)    /* should we propose IKEv2? */
+	POLICY_IKEV1_DISABLE = LELEM(24), /* !accept IKEv1?  0x0100 0000 */
+	POLICY_IKEV2_ALLOW   = LELEM(25), /* accept IKEv2?   0x0200 0000 */
+	POLICY_IKEV2_PROPOSE = LELEM(26)  /* propose IKEv2?  0x0400 0000 */
 };
 
 /* Any IPsec policy?  If not, a connection description
