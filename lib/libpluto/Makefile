@@ -25,6 +25,8 @@ OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 include ${OPENSWANSRCDIR}/Makefile.ver
 
+srcdir?=${OPENSWANSRCDIR}/lib/
+
 LIBRARY=pluto
 LIB=lib${LIBRARY}.a
 MANDIR=$(MANTREE)/man3
