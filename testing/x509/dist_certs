@@ -1,0 +1,313 @@
+#!/bin/sh
+#
+#
+# (c) 2007 Xelerance Corporation
+# Paul Wouters <paul@xelerance.com>
+#
+# Setup a variety of X509 certificates for testcases
+#
+
+OUTDIR=`dirname $0`
+pushd $OUTDIR
+
+# Clean
+rm -f reqs/* certs/* keys/* newcerts/* cacerts/* crls/* pkcs12/* index.txt* serial*
+
+# Prep
+mkdir -p certs crls newcerts keys reqs pkcs12 cacerts
+touch index.txt
+echo "01" > serial
+export OPENSSL_CONF=./openssl.cnf
+
+# Get some useful dates. Blame openssl for not being Y2K compatible with its -startdate
+YEAR=`date +%y`
+MONTH=`date +%m`
+DAY=`date +%d`
+DAYMINONE=`expr $DAY - 2`
+if [ $DAYMINONE -lt 10 ]
+then
+	DAYMINONE="0$DAYMINONE"
+	if [ $DAYMINONE = "00" ]
+	then
+		# we dont care about 30 vs 31 or 28
+		DAYMINONE="28"
+		MONTHMINONE=`expr $MONTH - 1`
+		if [ $MONTHMINONE -lt 10 ]
+		then
+			MONTHMINONE="0$MONTHMINONE"
+			if [ $MONTHMINONE = "00" ]
+			then
+				MONTHMINONE="12"
+				# 2001 is fine - why check the tests on New Year anyway?
+				YEAR="01"
+			fi
+		fi
+	fi
+fi
+TODAY="$YEAR$MONTH$DAY"
+TWODAYSAGO="$YEAR$MONTHMINONE$DAYMINONE"
+START="$TWODAYSAGO"000000Z 
+END="$TWODAYSAGO"235959Z
+# future < 10*365 (length of CA validity)
+FUTURE="12$MONTH$DAY"000000Z
+FUTUREEND="15$MONTH$DAY"000000Z
+
+
+# Generate CA's
+for cauth in ca otherca
+do
+openssl genrsa -passout pass:foobar -des3 -out keys/$cauth.key 1024 
+openssl rsa -in keys/$cauth.key -out keys/$cauth.key -passin pass:foobar
+# use defaults to ensure the same values for all certs based on openssl.cnf
+# req -x509 does not accept -startdate, this might invalidate certs? 
+expect  <<EOF
+spawn openssl req -x509 -days 3650 -newkey rsa:1024 -keyout keys/$cauth.key -out cacerts/$cauth.crt -passin pass:foobar -passout pass:foobar
+expect "Country Name"
+send "\n"
+expect "State"
+send "\n"
+expect "Locality"
+send "\n"
+expect "Organization"
+send "\n"
+expect "Organizational"
+send "\n"
+expect "Common"
+send "Xelerance test CA for $cauth\n"
+expect "Email"
+send "testing@xelerance.com\n"
+expect ""
+send "\n"
+EOF
+done
+
+# Generate machine keys/certs
+for machine in east west sunset sunrise north south pole park beet carrot nic japan revoked notyetvalid notvalidanymore signedbyotherca 
+do
+# generate host key/cert
+expect  <<EOF
+spawn openssl req -newkey rsa:1024 -passin pass:foobar -passout pass:foobar -keyout keys/$machine.key -out reqs/$machine.req
+expect "Country Name"
+send "\n"
+expect "State"
+send "\n"
+expect "Locality"
+send "\n"
+expect "Organization"
+send "\n"
+expect "Organizational"
+send "\n"
+expect "Common"
+send "$machine.testing.xelerance.com\n"
+expect "Email"
+send "testing@xelerance.com\n"
+expect "challenge"
+send "\n"
+expect "optional"
+send "\n"
+expect ""
+send "\n"
+EOF
+# sign machine cert
+openssl ca -batch -in reqs/$machine.req -startdate $START -enddate $FUTURE -out certs/$machine.crt -notext -cert cacerts/ca.crt -keyfile keys/ca.key  -passin pass:foobar 
+# package in pkcs#12
+openssl pkcs12 -export -inkey keys/$machine.key -in certs/$machine.crt -name "$machine" -certfile cacerts/ca.crt -caname "Xelerance test CA for ca" -out pkcs12/$machine.p12 -passin pass:foobar -passout pass:foobar
+done
+
+# Special Cases follow
+
+# large rsa key
+expect  <<EOF
+spawn openssl req -newkey rsa:2048 -passin pass:foobar -passout pass:foobar -keyout keys/bigkey.key -out reqs/bigkey.req
+expect "Country Name"
+send "\n"
+expect "State"
+send "\n"
+expect "Locality"
+send "\n"
+expect "Organization"
+send "\n"
+expect "Organizational"
+send "\n"
+expect "Common"
+send "bigkey.testing.xelerance.com\n"
+expect "Email"
+send "testing@xelerance.com\n"
+expect "challenge"
+send "\n"
+expect "optional"
+send "\n"
+expect ""
+send "\n"
+EOF
+openssl ca -batch -in reqs/bigkey.req -startdate $START -days 365 -out certs/bigkey.crt -notext -cert cacerts/ca.crt -keyfile keys/ca.key  -passin pass:foobar 
+
+# cert that is not yet valid
+openssl ca -batch -in reqs/notvalidyet.req -startdate $FUTURE -enddate $FUTUREEND -out certs/notvalidyet.crt -notext -cert cacerts/ca.crt -keyfile keys/ca.key  -passin pass:foobar 
+
+# cert not valid anymore
+openssl ca -batch -in reqs/notvalidanymore.req -startdate $START -enddate $END -out certs/notvalidanymore.crt -notext -cert cacerts/ca.crt -keyfile keys/ca.key  -passin pass:foobar 
+
+# signed by other ca
+rm certs/signedbyotherca.crt
+openssl ca -batch -in reqs/signedbyotherca.req -startdate $START -days 365 -out certs/signedbyotherca.crt -notext -cert cacerts/otherca.crt -keyfile keys/otherca.key  -passin pass:foobar
+
+# wrong DN (Organisation is different)
+expect  <<EOF
+spawn openssl req -newkey rsa:1024 -passin pass:foobar -passout pass:foobar -keyout keys/wrongdnorg.key -out reqs/wrongdnorg.req
+expect "Country Name"
+send "\n"
+expect "State"
+send "\n"
+expect "Locality"
+send "\n"
+expect "Organization"
+send "Traitors Inc\n"
+expect "Organizational"
+send "\n"
+expect "Common"
+send "wrongdnorg.testing.xelerance.com\n"
+expect "Email"
+send "testing@xelerance.com\n"
+expect "challenge"
+send "\n"
+expect "optional"
+send "\n"
+expect ""
+send "\n"
+EOF
+openssl ca -batch -in reqs/wrongdnorg.req -startdate $START -days 365 -out certs/wrongdnorg.crt -notext -cert cacerts/ca.crt -keyfile keys/ca.key  -passin pass:foobar
+
+# wrong number of DN's
+expect  <<EOF
+spawn openssl req -newkey rsa:1024 -passin pass:foobar -passout pass:foobar -keyout keys/wrongdnnum.key -out reqs/wrongdnnum.req
+expect "Country Name"
+send "\n"
+expect "State"
+send "\n"
+expect "Locality"
+send "\n"
+expect "Organization"
+send "\n"
+expect "Organizational"
+send ".\n"
+expect "Common"
+send "wrongdnnum.testing.xelerance.com\n"
+expect "Email"
+send "testing@xelerance.com\n"
+expect "challenge"
+send "\n"
+expect "optional"
+send "\n"
+expect ""
+send "\n"
+EOF
+openssl ca -batch -in reqs/wrongdnnum.req -startdate $START -days 365 -out certs/wrongdnnum.crt -notext -cert cacerts/ca.crt -keyfile keys/ca.key  -passin pass:foobar
+
+
+# Unwise charachters
+expect  <<EOF
+spawn openssl req -newkey rsa:1024 -passin pass:foobar -passout pass:foobar -keyout keys/unwisechar.key -out reqs/unwisechar.req
+expect "Country Name"
+send "\n"
+expect "State"
+send "\n"
+expect "Locality"
+send "\n"
+expect "Organization"
+send "\n"
+expect "Organizational"
+send "\n"
+expect "Common"
+send "unwisechar ~!@#$%^&*()-_=+;:/?<>.testing.xelerance.com\n"
+expect "Email"
+send "testing@xelerance.com\n"
+expect "challenge"
+send "\n"
+expect "optional"
+send "\n"
+expect ""
+send "\n"
+EOF
+openssl ca -batch -in reqs/unwisechar.req -startdate $START -days 365 -out certs/unwisechar.crt -notext -cert cacerts/ca.crt -keyfile keys/ca.key  -passin pass:foobar
+
+# Space in CN
+expect  <<EOF
+spawn openssl req -newkey rsa:1024 -passin pass:foobar -passout pass:foobar -keyout keys/spaceincn.key -out reqs/spaceincn.req
+expect "Country Name"
+send "\n"
+expect "State"
+send "\n"
+expect "Locality"
+send "\n"
+expect "Organization"
+send "\n"
+expect "Organizational"
+send "\n"
+expect "Common"
+send "space invaders.testing.xelerance.com\n"
+expect "Email"
+send "testing@xelerance.com\n"
+expect "challenge"
+send "\n"
+expect "optional"
+send "\n"
+expect ""
+send "\n"
+EOF
+openssl ca -batch -in reqs/spaceincn.req -startdate $START -days 365 -out certs/spaceincn.crt -notext -cert cacerts/ca.crt -keyfile keys/ca.key  -passin pass:foobar
+
+# CN of client cert is the same as the CA's CN
+expect  <<EOF
+spawn openssl req -newkey rsa:1024 -passin pass:foobar -passout pass:foobar -keyout keys/cnofca.key -out reqs/cnofca.req
+expect "Country Name"
+send "\n"
+expect "State"
+send "\n"
+expect "Locality"
+send "\n"
+expect "Organization"
+send "\n"
+expect "Organizational"
+send "\n"
+expect "Common"
+send "Xelerance test CA for ca\n"
+expect "Email"
+send "testing@xelerance.com\n"
+expect "challenge"
+send "\n"
+expect "optional"
+send "\n"
+expect ""
+send "\n"
+EOF
+openssl ca -batch -in reqs/cnofca.req -startdate $START -days 365 -out certs/cnofca.crt -notext -cert cacerts/ca.crt -keyfile keys/ca.key  -passin pass:foobar
+# Revoke and generate CRL
+openssl ca -gencrl -crldays 15 -out crls/cacrlvalid.pem  -keyfile keys/ca.key -cert cacerts/ca.crt -passin pass:foobar
+openssl ca -gencrl -startdate $START -enddate $END -out crls/cacrlexpired.pem  -keyfile keys/ca.key -cert cacerts/ca.crt -passin pass:foobar
+openssl ca -gencrl -startdate $FUTURE -enddate $FUTUREEND -out crls/cacrlnotyetvalid.pem  -keyfile keys/ca.key -cert cacerts/ca.crt -passin pass:foobar
+openssl ca -gencrl -crldays 15 -out crls/othercacrl.pem  -keyfile keys/otherca.key -cert cacerts/otherca.crt -passin pass:foobar
+openssl ca -revoke certs/revoked.crt -keyfile keys/ca.key -cert cacerts/ca.crt -passin pass:foobar
+openssl ca -gencrl -crldays 15 -out crls/cacrlvalid.pem -keyfile keys/ca.key -cert cacerts/ca.crt -passin pass:foobar
+
+
+# Copy to the same places as CA/dist_certs did
+cp certs/* ../baseconfigs/all/etc/ipsec.d/certs
+cp cacerts/* ../baseconfigs/all/etc/ipsec.d/cacerts
+cp crls/* ../baseconfigs/all/etc/ipsec.d/crls
+cp keys/* ../baseconfigs/all/etc/ipsec.d/private
+
+# Copy private keys to individual baseconfig directories
+cd keys
+for i in *.key
+do
+	HOST=`echo $i|sed "s/.key$//"`
+	if [ -d ../../baseconfigs/$HOST/etc/ipsec.d/private ]
+	then
+		cp $i ../../baseconfigs/$HOST/etc/ipsec.d/private
+		cp ../reqs/$HOST.req ../pkcs12/$HOST.p12 ../../baseconfigs/$HOST/etc/ipsec.d/private
+	fi
+done
+cd ..
+# back to original directory
+popd

@@ -14,17 +14,12 @@
 # RCSID $Id: Makefile,v 1.5 2005/08/05 17:04:54 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
-srcdir?=${OPENSWANSRCDIR}/testing/lib/libpluto
 include $(OPENSWANSRCDIR)/Makefile.inc
+srcdir?=${OPENSWANSRCDIR}/testing/lib/libpluto/
 
 SUBDIRS=
 SRCDIR=${srcdir}
 UTILS=${OPENSWANSRCDIR}/testing/utils
-
-TESTS=$(shell awk '{print $$2;}' ${srcdir}TESTLIST)
-
-all: ${TESTS}
-	echo ${TESTS}
 
 refineconnection: refineconnection.c lib-refineconnection/testlist.sh OUTPUT.refineconnection.txt FLAGS.refineconnection
 	source ${UTILS}/functions.sh; multilibtest `basename $< .c`
@@ -37,13 +32,14 @@ def:
 	@false
 
 check:
-	REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; source ${srcdir}TESTLIST
+	REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; source TESTLIST
+
 
 install install_file_list checkprograms programs:
 	@true
 
 clean:
-	cat ${srcdir}TESTLIST | while read testtype name status; \
+	cat TESTLIST | while read testtype name status; \
 	do\
 		rm -rf `basename $$name .c`;\
 	done
@@ -59,7 +55,7 @@ realclean: clean
 depend:
 	(source ${UTILS}/functions.sh; ls *.c | (while read file; do echo 'Calculating depends for '$$file >&2; ECHO=':' MOREFLAGS=-MM complibtest .Makefile.depend.$$file.${OSDEP} $$file >&2; cat .Makefile.depend.$$file.${OSDEP}; done) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP})
 
--include ${srcdir}Makefile.depend.${OSDEP}
+-include Makefile.depend.${OSDEP}
 
 
 east.record: ${OPENSWANSRCDIR}/programs/pluto/rcv_whack.c
