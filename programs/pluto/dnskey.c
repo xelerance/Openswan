@@ -120,7 +120,7 @@ init_adns(void)
 	    }
 	}
 	else
-#if !defined(MACINTOSH)
+#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
 	{
 	    /* The program will be in the same directory as Pluto,
 	     * so we use the sympolic link /proc/self/exe to
