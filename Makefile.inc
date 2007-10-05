@@ -164,6 +164,9 @@ INSTSUIDFLAGS=--mode=u+rxs,g+rx,o+rx --group=root -b --suffix=.old
 INSTMANFLAGS=
 INSTCONFFLAGS=
 
+# flags for bison, overrode in packages/default/foo
+BISONOSFLAGS=
+
 
 ### misc configuration, included here in hopes that other files will not
 ### have to be changed for common customizations.
