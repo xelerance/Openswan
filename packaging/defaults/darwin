@@ -3,11 +3,14 @@ PORTINCLUDE+=-I${OPENSWANSRCDIR}/ports/darwin/include
 PORTINCLUDE+=-g -O3 -I/opt/local/include -L/opt/local/lib
 USERLINK=-L/usr/local/lib
 
+USE_MAST=false
 USE_KLIPS=false
 USE_KERNEL26=false
 USE_WIN2K=false
 BUILD_KLIPS=false
-USE_YACC=true
+USE_LWRES=true
+# no longer needed now the bison/yacc options got updated
+USE_YACC=false
 
 ISCARCH=unix
 ISCHOSTARCH=unix
