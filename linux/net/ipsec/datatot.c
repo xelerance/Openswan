@@ -15,7 +15,6 @@
  * RCSID $Id: datatot.c,v 1.9 2005/08/30 21:15:26 mcr Exp $
  */
 #include "openswan.h"
-#include "assert.h"
 
 static void convert(const char *src, size_t nreal, int format, char *out);
 
