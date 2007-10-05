@@ -20,6 +20,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#ifndef HOST_NAME_MAX   /* POSIX 1003.1-2001 says <unistd.h> defines this */
+# define HOST_NAME_MAX  255 /* upper bound, according to SUSv2 */
+#endif
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
