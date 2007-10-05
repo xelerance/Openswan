@@ -16,6 +16,7 @@
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 export OPENSWANSRCDIR
 include $(OPENSWANSRCDIR)/Makefile.inc
+srcdir?=${OPENSWANSRCDIR}/testing/scripts/
 
 SUBDIRS=
 UTILS=${OPENSWANSRCDIR}/testing/utils
@@ -25,7 +26,10 @@ def:
 	@false
 
 check: 	${OPENSWANSRCDIR}/umlsetup.sh
-	source ${OPENSWANSRCDIR}/umlsetup.sh; source setup.sh; source ${UTILS}/functions.sh; source TESTLIST
+	source ${OPENSWANSRCDIR}/umlsetup.sh; source ${srcdir}setup.sh; source ${UTILS}/functions.sh; source ${srcdir}TESTLIST
+
+one:
+	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`
 
 install install_file_list checkprograms programs:
 	@true
@@ -43,34 +47,4 @@ distclean: clean
 mostlyclean: clean
 
 realclean: clean
-
-#
-# $Log: Makefile,v $
-# Revision 1.4  2004/12/18 18:13:45  mcr
-# 	adjusted Makefiles so that ${OBJDIR} builds work.
-#
-# Revision 1.3  2004/04/03 19:44:51  ken
-# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
-#
-# Revision 1.2  2003/02/24 04:54:20  mcr
-# 	make clean in scripts should remove OUTPUT dir.
-#
-# Revision 1.1  2002/08/26 04:42:22  mcr
-# 	start of tests for scripts - "ipsec setup", etc.
-#
-# Revision 1.3  2002/08/08 01:52:32  mcr
-# 	the "make clean" script should ignore comments in the TESTLIST.
-#
-# Revision 1.2  2002/06/19 09:22:23  mcr
-# 	enable pluto tests by default.
-#
-# Revision 1.1  2002/06/19 07:16:23  mcr
-# 	first prototype of 2-UML tests for pluto.
-#
-# Revision 1.1  2002/06/08 17:41:22  mcr
-# 	library test routines.
-#
-# 
-
-
 
