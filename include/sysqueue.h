@@ -29,7 +29,7 @@
  *	@(#)queue.h	8.3 (Berkeley) 12/13/93
  */
 
-#ifndef	_SYS_QUEUE_H
+#if !defined(_SYS_QUEUE_H) && !defined(_SYS_QUEUE_H_)
 #define	_SYS_QUEUE_H 1
 
 /*
