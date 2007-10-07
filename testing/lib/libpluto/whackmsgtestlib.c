@@ -23,6 +23,7 @@ void whack_log(int rc, const char *msg, ...)
     va_start(args, msg);
     fprintf(stderr, "RC=%u ", rc);
     vfprintf(stderr, msg, args);
+    putc('\n', stderr);
     va_end(args);
 }
 
@@ -120,7 +121,7 @@ struct connection *cur_connection = NULL;
 enum kernel_interface kern_interface = NO_KERNEL;
 bool can_do_IPcomp=TRUE;
 bool nat_traversal_enabled=TRUE;
-int whack_log_fd = NULL_FD;
+int whack_log_fd = 1;
 struct pubkey_list *pluto_pubkeys = NULL;	/* keys from ipsec.conf */
 bool listening = TRUE;
 bool strict_crl_policy = FALSE;

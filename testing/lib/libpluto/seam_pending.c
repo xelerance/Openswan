@@ -9,7 +9,6 @@ add_pending(int whack_sock
 	    , unsigned long try
 	    , so_serial_t replacing)
 {
-	abort();
 }
 
 void

@@ -60,6 +60,8 @@ main(int argc, char *argv[])
  
     c1 = con_by_name(conn_name, TRUE);
 
+    show_one_connection(c1);
+    
     ipsecdoi_initiate(/* whack-sock=stdout */1
 		      , c1
 		      , c1->policy
