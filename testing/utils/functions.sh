@@ -1161,8 +1161,12 @@ libtest() {
     then
 	    export TEST_PURPOSE=regress
 
+	    echo "file ../$testobj" >lib-$testobj/.gdbinit
+	    echo "set args "${UNITTESTARGS} >>lib-$testobj/.gdbinit
+
 	    ${ECHO} "   "Running $testobj
 	    ( ulimit -c unlimited; cd lib-$testobj && eval ../$testobj ${UNITTESTARGS} >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
+
 
 	    stat=$?
 	    ${ECHO} "   "Exit code $stat
@@ -1195,13 +1199,16 @@ multilibtest() {
 
     ECHO=${ECHO-echo}
 
-    ${ECHO} '**** make libtest COMPILING' $testsrc '****'
+    ${ECHO} '**** make multilibtest COMPILING' $testsrc '****'
     complibtest $testobj $testsrc
 
     stat=99
     if [ -n "${FILE-}" -a -r "${FILE-}" ]
     then
 	    export TEST_PURPOSE=regress
+
+	    echo "file ../$testobj" >lib-$testobj/.gdbinit
+	    echo "set args "${UNITTESTARS} >>$testobj/.gdbinit
 
 	    echo Running $testobj ${UNITTESTARGS}
 	    ( ulimit -c unlimited; cd lib-$testobj && ./testlist.sh >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
@@ -1835,7 +1842,7 @@ buildtest() {
 do_unittest() {
 
     export ROOTDIR=${OPENSWANSRCDIR}
-    eval `(cd $ROOTDIR; make env)`
+    eval `(cd $ROOTDIR; make --no-print-directory env )`
     failnum=1
 
     if [ ! -x "$TESTSCRIPT" ]; then echo "TESTSCRIPT=$TESTSCRIPT is not executable"; exit 41; fi
