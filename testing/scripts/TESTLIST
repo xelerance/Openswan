@@ -41,7 +41,9 @@ unittest	readwriteconf-14	good
 unittest	readwriteconf-15	good
 unittest	readwriteconf-16	good
 unittest	readwriteconf-17	good
-unittest	readwriteconf-18	bad
+unittest	readwriteconf-18	good
+unittest	readwriteconf-19	good
+unittest	readwriteconf-20	good
 
 # test cases for showhostkey.
 umlXhost	showhostkey-01		good
