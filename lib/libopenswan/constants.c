@@ -33,14 +33,22 @@
 
 /* version */
 
-static const char *const version_name[] = {
-	"ISAKMP Version 1.0",
+static const char *const version_name_1[] = {
+	"ISAKMP Version 1.0 (rfc2407)",
+};
+static const char *const version_name_2[] = {
+	"IKEv2 version 2.0 (rfc4036)",
 };
 
-enum_names version_names =
+enum_names version_names_1 =
     { ISAKMP_MAJOR_VERSION<<ISA_MAJ_SHIFT | ISAKMP_MINOR_VERSION,
 	ISAKMP_MAJOR_VERSION<<ISA_MAJ_SHIFT | ISAKMP_MINOR_VERSION,
-	version_name, NULL };
+	version_name_1, NULL };
+
+enum_names version_names =
+    { IKEv2_MAJOR_VERSION<<ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION,
+	IKEv2_MAJOR_VERSION<<ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION,
+	version_name_2, &version_names_1 };
 
 /* Domain of Interpretation */
 
@@ -134,7 +142,7 @@ const char *const payload_name[] = {
     };
 
 const char *const payload_names_ikev2[] = {
-    "ISAKMP_NEXT_v2SA",
+    "ISAKMP_NEXT_v2SA",            /* 33 */
     "ISAKMP_NEXT_v2KE",
     "ISAKMP_NEXT_v2IDi",
     "ISAKMP_NEXT_v2IDr",
@@ -196,9 +204,13 @@ enum_names exchange_names =
     { ISAKMP_XCHG_NONE, ISAKMP_XCHG_MODE_CFG, exchange_name, &exchange_desc2 };
 /* Flag BITS */
 const char *const flag_bit_names[] = {
-	"ISAKMP_FLAG_ENCRYPTION",
-	"ISAKMP_FLAG_COMMIT",
-	NULL
+    "ISAKMP_FLAG_ENCRYPTION",         /* bit 0 */
+    "ISAKMP_FLAG_COMMIT",             /* bit 1 */
+    "bit 2",                          /* bit 2 */
+    "ISAKMP_FLAG_INIT",               /* bit 3 */
+    "ISAKMP_FLAG_VERSION",            /* bit 4 */
+    "ISAKMP_FLAG_RESPONSE",           /* bit 5 */
+    NULL
     };
 
 /* Situation BITS definition for IPsec DOI */

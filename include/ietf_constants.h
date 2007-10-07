@@ -383,6 +383,8 @@ enum next_payload_types {
 #define ISAKMP_v2_CHILD_SA     36
 #define ISAKMP_v2_INFORMATIONAL 37
 
+#define ISAKMP_FLAGS_E         (1<<0)     /* bit 0 of flags --- encrypt  */
+#define ISAKMP_FLAGS_C         (1<<1)     /* bit 1 of flags --- commit   */
 #define ISAKMP_FLAGS_I         (1<<3)     /* bit 3 of flags --- initiator */
 #define ISAKMP_FLAGS_V         (1<<4)     /* bit 4 of flags --- version */
 #define ISAKMP_FLAGS_R         (1<<5)     /* bit 5 of flags --- response */
