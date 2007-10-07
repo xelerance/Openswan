@@ -423,7 +423,8 @@ enum pluto_policy {
 	 */
 	POLICY_IKEV1_DISABLE = LELEM(24), /* !accept IKEv1?  0x0100 0000 */
 	POLICY_IKEV2_ALLOW   = LELEM(25), /* accept IKEv2?   0x0200 0000 */
-	POLICY_IKEV2_PROPOSE = LELEM(26)  /* propose IKEv2?  0x0400 0000 */
+	POLICY_IKEV2_PROPOSE = LELEM(26), /* propose IKEv2?  0x0400 0000 */
+	POLICY_IKEV2_MASK = POLICY_IKEV1_DISABLE|POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE,
 };
 
 /* Any IPsec policy?  If not, a connection description

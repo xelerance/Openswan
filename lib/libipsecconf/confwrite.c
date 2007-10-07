@@ -449,10 +449,12 @@ void confwrite_conn(FILE *out,
 
     if(conn->policy) {
 	int auth_policy, phase2_policy, shunt_policy, failure_policy;
+	int ikev2_policy;
 
 	phase2_policy = (conn->policy & (POLICY_AUTHENTICATE|POLICY_ENCRYPT));
 	failure_policy = (conn->policy & POLICY_FAIL_MASK);
 	shunt_policy=(conn->policy & POLICY_SHUNT_MASK);
+	ikev2_policy = conn->policy & POLICY_IKEV2_MASK;
 
 	switch(shunt_policy) {
 	case POLICY_SHUNT_TRAP:
@@ -526,6 +528,25 @@ void confwrite_conn(FILE *out,
 		
 	    case POLICY_FAIL_REJECT:
 		fprintf(out, "\tfailureshunt=reject\n");
+		break;
+	    }
+
+	    switch(ikev2_policy) {
+	    case 0:
+		fprintf(out, "\tikev2=never\n"); 
+		break;
+
+	    case POLICY_IKEV2_ALLOW:
+		/* it's the default, do not print anything */
+		/* fprintf(out, "\tikev2=permit\n"); */
+		break;
+		
+	    case POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE:
+		fprintf(out, "\tikev2=propose\n");
+		break;
+		
+	    case POLICY_IKEV1_DISABLE|POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE:
+		fprintf(out, "\tikev2=insist\n");
 		break;
 	    }
 	    break;

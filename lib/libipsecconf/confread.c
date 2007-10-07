@@ -63,7 +63,10 @@ static void default_values (struct starter_config *cfg)
 	cfg->setup.options[KBF_UNIQUEIDS]= FALSE;
 	cfg->conn_default.options[KBF_TYPE] = KS_TUNNEL;
 
-	cfg->conn_default.policy = POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
+	cfg->conn_default.policy =
+	    POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
+	
+	cfg->conn_default.policy |= POLICY_IKEV2_ALLOW;
 
 	cfg->conn_default.options[KBF_IKELIFETIME] = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
 	cfg->conn_default.options[KBF_SALIFETIME]  = SA_LIFE_DURATION_DEFAULT;
@@ -954,6 +957,8 @@ static int load_conn (struct starter_config *cfg
 		    conn->options[KBF_AUTHBY]);
 #endif
     }
+
+
     
     KW_POLICY_FLAG(KBF_REKEY, POLICY_DONT_REKEY);
 
@@ -976,6 +981,28 @@ static int load_conn (struct starter_config *cfg
     if(conn->options_set[KBF_PHASE2]) {
 	conn->policy &= ~(POLICY_AUTHENTICATE|POLICY_ENCRYPT);
 	conn->policy |= conn->options[KBF_PHASE2];
+    }
+
+    if(conn->options_set[KBF_IKEv2]) {
+	switch(conn->options[KBF_IKEv2]) {
+	case fo_never:
+	    conn->policy &= ~POLICY_IKEV2_ALLOW;
+	    break;
+	    
+	case fo_permit:
+	    /* this is the default for now */
+	    conn->policy |= POLICY_IKEV2_ALLOW;
+	    break;
+	    
+	case fo_propose:
+	    conn->policy |= POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE;
+	    break;
+	    
+	case fo_insist:
+	    conn->policy |= POLICY_IKEV1_DISABLE;
+	    conn->policy |= POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE;
+	    break;
+	}
     }
 
     err += validate_end(conn, &conn->left,  TRUE,  resolvip, perr);
