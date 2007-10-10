@@ -11,4 +11,9 @@ extern stf_status ikev2parent_outI1(int whack_sock
 
 extern void ikev2_delete_out(struct state *st);
 
+extern bool ikev2_out_sa(pb_stream *outs
+			 , struct db_sa *sadb
+			 , struct state *st
+			 , u_int8_t np);
+
 

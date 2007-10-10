@@ -37,6 +37,7 @@
 #include "kernel_alg.h"
 #include "plutoalg.h"
 #include "pluto_crypt.h"
+#include "packet.h"
 #include "ikev2.h"
 #include "demux.h"
 #include "log.h"
@@ -120,8 +121,9 @@ ikev2parent_outI1(int whack_sock
 	 * OpenPGP peer and have to send the Vendor ID
 	 */
 	int np = numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
-	if (!out_sa(&md.rbody
-		    , &oakley_sadb[policy_index], st, TRUE, FALSE, np))
+	if (!ikev2_out_sa(&md.rbody
+			  , &oakley_sadb[policy_index]
+			  , st, np))
 	{
 	    openswan_log("outsa fail");
 	    reset_cur_state();
@@ -152,13 +154,6 @@ ikev2parent_outI1(int whack_sock
 	    return STF_INTERNAL_ERROR;
 	}
     }
-
-#ifdef DEBUG
-    /* if we are not 0 then something went very wrong above */    
-    if(numvidtosend != 0) {
-	openswan_log("payload alignment problem please check the code in main_inR1_outR2 (num=%d)", numvidtosend);
-    }
-#endif
 
     close_message(&md.rbody);
     close_output_pbs(&md.reply);
