@@ -1153,7 +1153,8 @@ add_connection(const struct whack_message *wm)
 		    c->alg_info_esp = alg_info_esp_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
 		} else if(c->policy & POLICY_AUTHENTICATE) {
 		    c->alg_info_esp = alg_info_ah_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
-		} else {
+		} 
+		if( (c->policy & POLICY_AUTHENTICATE) && (c->policy & POLICY_ENCRYPT)){
 		    loglog(RC_NOALGO, "Can only do AH, or ESP, not AH+ESP\n");
 		    return;
 		}
