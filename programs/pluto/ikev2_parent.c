@@ -97,7 +97,7 @@ ikev2parent_outI1(int whack_sock
 
 	zero(&hdr);	/* default to 0 */
 	hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
-	hdr.isa_np = ISAKMP_NEXT_SA;
+	hdr.isa_np   = ISAKMP_NEXT_v2SA;
 	hdr.isa_xchg = ISAKMP_v2_SA_INIT;
 	hdr.isa_flags = ISAKMP_FLAGS_I;
 	memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);

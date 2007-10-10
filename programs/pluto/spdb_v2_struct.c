@@ -78,7 +78,7 @@ ikev2_out_sa(pb_stream *outs
 	struct ikev2_sa sa;
 
 	memset(&sa, 0, sizeof(sa));
-	sa.isasa_np = np;
+	sa.isasa_np     = np;
 	sa.isasa_commit = ISAKMP_PAYLOAD_CRITICAL;
 	/* no ipsec_doi on IKEv2 */
 
