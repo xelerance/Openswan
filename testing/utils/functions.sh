@@ -1167,7 +1167,6 @@ libtest() {
 	    ${ECHO} "   "Running $testobj
 	    ( ulimit -c unlimited; cd lib-$testobj && eval ../$testobj ${UNITTESTARGS} >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
 
-
 	    stat=$?
 	    ${ECHO} "   "Exit code $stat
 	    if [ $stat -gt 128 ]
@@ -1208,7 +1207,7 @@ multilibtest() {
 	    export TEST_PURPOSE=regress
 
 	    echo "file ../$testobj" >lib-$testobj/.gdbinit
-	    echo "set args "${UNITTESTARS} >>$testobj/.gdbinit
+	    echo "set args "${UNITTESTARS} >>lib-$testobj/.gdbinit
 
 	    echo Running $testobj ${UNITTESTARGS}
 	    ( ulimit -c unlimited; cd lib-$testobj && ./testlist.sh >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
