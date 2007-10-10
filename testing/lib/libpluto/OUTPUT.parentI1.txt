@@ -1,1 +1,34 @@
-
+Pre-amble: #!-pluto-whack-file- recorded on west on 2007-10-07 01:40:12
+../parentI1 listening for IKE messages
+| interface "eth0" matched right side
+../parentI1 added connection description "westnet--eastnet-ikev2"
+| base debugging = crypt+parsing+control+controlmore
+../parentI1 listening for IKE messages
+RC=0 "westnet--eastnet-ikev2": 192.0.2.0/24===192.1.2.23<192.1.2.23>[@east]...192.1.2.45<192.1.2.45>[@west]===192.0.1.0/24; unrouted; eroute owner: #0
+RC=0 "westnet--eastnet-ikev2":     myip=unset; hisip=unset;
+RC=0 "westnet--eastnet-ikev2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+RC=0 "westnet--eastnet-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init; prio: 24,24; interface: eth0; 
+RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+| creating state object #1 at 0x40221c00
+| interface "eth0" matched right side
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+../parentI1 initiating v2 parent SA
+../parentI1 payload alignment problem please check the code in main_inR1_outR2 (num=-1)
+|   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   01 20 22 08  00 00 00 00  00 00 00 40  0d 80 00 0c
+|   00 00 00 08  00 01 00 01  00 00 00 04  00 00 00 14
+|   af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
+RC=104 STATE_IKE_ROOF: initiate
+../parentI1 leak: 2 * host ip
+../parentI1 leak: connection name
+../parentI1 leak: struct connection
+sending 64 bytes for main_outI1 through eth0:500 to 192.1.2.45:500 (using #1)TCPDUMP output
+reading from file parentI1.pcap, link-type NULL (BSD loopback)
+20:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 92, bad cksum 0 (->f63d)!)
+    192.168.1.1.500 > 192.168.2.2.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[I]:
+    (sa[C]: len=8
+        (p: #0 protoid=isakmp transform=1
+            ()))
+    ()

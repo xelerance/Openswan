@@ -26,6 +26,9 @@ TESTS=$(shell awk '{print $$2;}' ${srcdir}TESTLIST)
 all: ${TESTS}
 	echo ${TESTS}
 
+one:
+	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`
+
 refineconnection: refineconnection.c lib-refineconnection/testlist.sh OUTPUT.refineconnection.txt FLAGS.refineconnection
 	source ${UTILS}/functions.sh; multilibtest `basename $< .c`
 

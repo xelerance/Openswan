@@ -57,6 +57,8 @@ main(int argc, char *argv[])
     conn_name = argv[2];
 
     readwhackmsg(infile);
+
+    send_packet_setup_pcap("parentI1.pcap");
  
     c1 = con_by_name(conn_name, TRUE);
 

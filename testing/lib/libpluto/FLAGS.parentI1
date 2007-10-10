@@ -12,9 +12,11 @@ EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/state.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/hmac.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/cookie.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/spdb.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/vendor.o"
 EXTRALIBS="${EXTRALIBS} ${PLUTOLIB} ${CRYPTOLIBS} ${WHACKLIB}"
-EXTRALIBS="${EXTRALIBS} ${OSWLOGLIB} ${OPENSWANLIB} ${OSWLOGLIB} -lgmp -lefence"
+EXTRALIBS="${EXTRALIBS} ${OSWLOGLIB} ${OPENSWANLIB} ${OSWLOGLIB}"
+EXTRALIBS="${EXTRALIBS} -lgmp -lefence -lpcap"
 
 UNITTESTARGS="ikev2.record westnet--eastnet-ikev2"
 
