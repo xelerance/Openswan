@@ -674,5 +674,30 @@ union payload {
  */
 extern struct_desc *const payload_descs[ISAKMP_NEXT_ROOF];
 
+/*
+ * IKEv2 structures
+ */
+struct ikev2_sa
+{
+	u_int8_t  isasa_np;			/* Next payload */
+	u_int8_t  isasa_commit;
+	u_int16_t isasa_length;		/* Payload length */
+};
+
+extern struct_desc ikev2_sa_desc;
+
+struct ikev2_prop
+{
+	u_int8_t  isap_np;		/* Next payload */
+	u_int16_t isap_length;		/* Payload length */
+	u_int8_t  isap_propnum;
+	u_int8_t  isap_protoid;
+	u_int8_t  isap_spisize;
+	u_int8_t  isap_numtrans;
+};
+
+extern struct_desc ikev2_prop_desc;
+
+
 #endif /* _PACKET_H */
 

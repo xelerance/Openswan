@@ -610,7 +610,7 @@ struct_desc isakmp_nat_oa = { "ISAKMP NAT-OA Payload", isanat_oa_fields, sizeof(
 /*
  * IKEv2 - Security Association Payload
  *
- * layout from RFC 4306 - section 3.3.1
+ * layout from RFC 4306 - section 3.3.
  * A variable number of proposals follows.
  *
  *                         1                   2                   3
@@ -632,7 +632,43 @@ static field_desc ikev2sa_fields[] = {
 };
 
 struct_desc ikev2_sa_desc = { "IKEv2 Security Association Payload",
-			      ikev2sa_fields, sizeof(struct isakmp_sa) };
+			      ikev2sa_fields, sizeof(struct ikev2_sa) };
+
+
+/* IKEv2 - Proposal sub-structure
+ *
+ * 3.3.1.  Proposal Substructure
+ *
+ *
+ *                         1                   2                   3
+ *     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ! 0 (last) or 2 !   RESERVED    !         Proposal Length       !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ! Proposal #    !  Protocol ID  !    SPI Size   !# of Transforms!
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ~                        SPI (variable)                         ~
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !                                                               !
+ *    ~                        <Transforms>                           ~
+ *    !                                                               !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ *             Figure 7:  Proposal Substructure
+ */
+static field_desc ikev2prop_fields[] = {
+    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_nat,  8/BITS_PER_BYTE, "prop #", NULL },
+    { ft_nat,  8/BITS_PER_BYTE, "proto ID", NULL },
+    { ft_nat,  8/BITS_PER_BYTE, "spi size", NULL },
+    { ft_nat,  8/BITS_PER_BYTE, "# transforms", NULL },
+    { ft_end,  0, NULL, NULL }
+};
+
+struct_desc ikev2_prop_desc = { "IKEv2 Proposal Substructure Payload",
+			      ikev2prop_fields, sizeof(struct ikev2_prop) };
 
 
 
