@@ -36,28 +36,41 @@ struct db_trans {
     int attr_cnt;	/* number of elements */
 };
 
-/* proposal */
+/* proposal - IKEv1 */
 struct db_prop {
-    u_int8_t protoid;	/* Protocol-Id */
-    struct db_trans *trans;	/* array (disjunction) */
-    int trans_cnt;	/* number of elements */
+    u_int8_t protoid;	        /* Protocol-Id */
+    struct db_trans *trans;	/* array (disjunction-OR) */
+    int trans_cnt;	        /* number of elements */
     /* SPI size and value isn't part of DB */
 };
 
-/* conjunction of proposals */
+/* conjunction (AND) of proposals - IKEv1 */
 struct db_prop_conj {
     struct db_prop *props;	/* array */
-    int prop_cnt;	/* number of elements */
+    int prop_cnt;	        /* number of elements */
+};
+
+/* proposal - IKEv2 */
+struct db_v2_prop_conj {
+    u_int8_t protoid;	        /* Protocol-Id: ikev2_trans_type */
+    struct db_trans *trans;	/* array (disjunction-OR) */
+    int trans_cnt;	        /* number of elements */
+    /* SPI size and value isn't part of DB */
+};
+
+/* conjunction (AND) of proposals - IKEv2 */
+struct db_v2_prop {
+    struct db_v2_prop_conj  *props;	/* array */
+    int prop_cnt;	        /* number of elements */
 };
 
 /* security association */
 struct db_sa {
-    struct db_prop_conj *prop_conjs;	/* array */
-    int prop_conj_cnt;	/* number of elements */
-    /* Hardwired for now;
-     * DOI: ISAKMP_DOI_IPSEC
-     * Situation: SIT_IDENTITY_ONLY
-     */
+	struct db_prop_conj    *prop_conjs; /* array */
+	int prop_conj_cnt;     /* number of elements */
+	
+	struct db_v2_prop      *prop_disj;  /* array */
+	int prop_disj_cnt;     /* number of elements */
 };
 
 /* The oakley sadb is subscripted by a bitset with members
@@ -74,6 +87,20 @@ extern struct db_sa oakley_sadb_am;
  * from POLICY_ENCRYPT, POLICY_AUTHENTICATE, POLICY_COMPRESS
  */
 extern struct db_sa ipsec_sadb[1 << 3];
+
+/* for db_sa */
+#define AD_SA(x)    prop_conjs: x, prop_conj_cnt: elemsof(x)	
+#define AD_NULL     prop_conjs: NULL, prop_conj_cnt: 0,
+
+/* for db_trans */
+#define AD_TR(p, x) transid: p, attrs: x, attr_cnt: elemsof(x)	
+
+/* for db_prop */
+#define AD_PR(p, x) protoid: p, trans: x, trans_cnt: elemsof(x)	
+
+/* for db_prop_conj */
+#define AD_PC(x) props: x, prop_cnt: elemsof(x)	
+
 
 extern bool out_sa(
     pb_stream *outs,

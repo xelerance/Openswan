@@ -2404,8 +2404,6 @@ parse_ipsec_sa_body(
     return NO_PROPOSAL_CHOSEN;
 }
 
-#define AD(x) x, elemsof(x)	/* Array Description */
-#define AD_NULL NULL, 0
 /*
  * empty structure, for clone use.
  */
@@ -2418,15 +2416,15 @@ static struct db_attr otempty[] = {
 	};
 
 static struct db_trans oakley_trans_empty[] = {
-	{ KEY_IKE, AD(otempty) },
-    };
+    { AD_TR(KEY_IKE, otempty) },
+};
 
 static struct db_prop oakley_pc_empty[] =
-    { { PROTO_ISAKMP, AD(oakley_trans_empty) } };
+{ { AD_PR(PROTO_ISAKMP, oakley_trans_empty) } };
 
-static struct db_prop_conj oakley_props_empty[] = { { AD(oakley_pc_empty) } };
+static struct db_prop_conj oakley_props_empty[] = {{ AD_PC(oakley_pc_empty) }};
 
-struct db_sa oakley_empty = { AD(oakley_props_empty) };
+struct db_sa oakley_empty = { AD_SA(oakley_props_empty) };
 
 /*
  * 	Create an OAKLEY proposal based on alg_info and policy

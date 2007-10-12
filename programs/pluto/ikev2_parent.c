@@ -66,12 +66,6 @@ ikev2parent_outI1(int whack_sock
     struct msg_digest md;   /* use reply/rbody found inside */
     int numvidtosend = 1;  /* we always send DPD VID */
 
-#ifdef XAUTH
-    if(c->spd.this.xauth_client || c->spd.this.xauth_server) {
-	numvidtosend++;
-    }
-#endif
-
     /* set up new state */
     initialize_new_state(st, c, policy, try, whack_sock, importance);
     st->st_ikev2 = TRUE;
@@ -133,17 +127,6 @@ ikev2parent_outI1(int whack_sock
 	passert(st->st_p1isa.ptr == NULL);	/* no leak!  (MUST be first time) */
 	clonetochunk(st->st_p1isa, sa_start, md.rbody.cur - sa_start
 	    , "sa in main_outI1");
-    }
-
-    if (SEND_PLUTO_VID || c->spd.this.cert.type == CERT_PGP)
-    {
-	char *vendorid = (c->spd.this.cert.type == CERT_PGP) ?
-	    pgp_vendorid : pluto_vendorid;
-	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
-
-	if (!out_generic_raw(np, &isakmp_vendor_id_desc, &md.rbody
-			     , vendorid, strlen(vendorid), "Vendor ID"))
-	    return STF_INTERNAL_ERROR;
     }
 
     /* Send DPD VID */
