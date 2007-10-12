@@ -15,9 +15,8 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 ../parentI1 initiating v2 parent SA
-../parentI1 payload alignment problem please check the code in main_inR1_outR2 (num=-1)
 |   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   01 20 22 08  00 00 00 00  00 00 00 40  0d 80 00 0c
+|   21 20 22 08  00 00 00 00  00 00 00 40  0d 80 00 0c
 |   00 00 00 08  00 01 00 01  00 00 00 04  00 00 00 14
 |   af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
 RC=104 STATE_IKE_ROOF: initiate
