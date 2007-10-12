@@ -7,6 +7,7 @@
 #include "constants.h"
 #include "defs.h"
 #include "state.h"
+#include "alg_info.h"
 #include "plutoalg.h"
 #include "spdb.h"
 #include "ike_alg.h"
@@ -102,5 +103,6 @@ main(int argc, char *argv[])
  * Local Variables:
  * c-style: pluto
  * c-basic-offset: 4
+ * compile-command: "make spdbph1"
  * End:
  */
