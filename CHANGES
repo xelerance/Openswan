@@ -2,6 +2,7 @@ Please see docs/KNOWN_BUGS file for more information
 
 #stable
 * Bugtracker bugs fixed:
+  #852: dd_connection() fails with ...not AH+ESP for type=passthrough conns
   #708: vanilla kernel-2.6.19, KLIPS compile error (sock_unregister) [sergeil]
   #654: XAUTH strips space out of username/password + patch [Dustin Lang]
   #641: Herein patches to fix warnings if -Wshadow is used [andygay/paul]
