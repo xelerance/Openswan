@@ -548,19 +548,26 @@ decode_net_id(struct isakmp_ipsec_id *id
 /* like decode, but checks that what is received matches what was sent */
 static bool
 check_net_id(struct isakmp_ipsec_id *id
-, pb_stream *id_pbs
-, u_int8_t *protoid
-, u_int16_t *port
-, ip_subnet *net
-, const char *which)
+	     , pb_stream *id_pbs
+	     , u_int8_t *protoid
+	     , u_int16_t *port
+	     , ip_subnet *net
+	     , const char *which)
 {
     ip_subnet net_temp;
 
     if (!decode_net_id(id, id_pbs, &net_temp, which))
 	return FALSE;
 
+    /* 
+     * workaround for #802- "our client ID returned doesn't match my proposal"
+     * until such time as #849 is properly fixed.
+     */
     if (!samesubnet(net, &net_temp)
-    || *protoid != id->isaiid_protoid || *port != id->isaiid_port)
+	|| *protoid != id->isaiid_protoid
+	|| (*port    != id->isaiid_port
+	    && *port != 0 && id->isaiid_port!=1701)
+	)
     {
 	loglog(RC_LOG_SERIOUS, "%s ID returned doesn't match my proposal", which);
 	return FALSE;
@@ -2297,11 +2304,10 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 	    /* ??? we are assuming IPSEC_DOI */
 
 	    /* IDci (we are initiator) */
-
 	    if (!check_net_id(&IDci->payload.ipsec_id, &IDci->pbs
-	    , &st->st_myuserprotoid, &st->st_myuserport
-	    , &st->st_connection->spd.this.client
-	    , "our client"))
+			      , &st->st_myuserprotoid, &st->st_myuserport
+			      , &st->st_connection->spd.this.client
+			      , "our client"))
 		return STF_FAIL + INVALID_ID_INFORMATION;
 
 	    /* we checked elsewhere that we got two of them */
@@ -2311,9 +2317,9 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 	    /* IDcr (responder is peer) */
 
 	    if (!check_net_id(&IDcr->payload.ipsec_id, &IDcr->pbs
-	    , &st->st_peeruserprotoid, &st->st_peeruserport
-	    , &st->st_connection->spd.that.client
-	    , "peer client"))
+			      , &st->st_peeruserprotoid, &st->st_peeruserport
+			      , &st->st_connection->spd.that.client
+			      , "peer client"))
 		return STF_FAIL + INVALID_ID_INFORMATION;
 
 	    /*
