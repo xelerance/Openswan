@@ -20,6 +20,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#ifndef HOST_NAME_MAX   /* POSIX 1003.1-2001 says <unistd.h> defines this */
+# define HOST_NAME_MAX  255 /* upper bound, according to SUSv2 */
+#endif
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -658,7 +661,7 @@ whack_handle(int whackctlfd)
 {
     struct whack_message msg, msg_saved;
     struct sockaddr_un whackaddr;
-    unsigned int whackaddrlen = sizeof(whackaddr);
+    socklen_t whackaddrlen = sizeof(whackaddr);
     int whackfd = accept(whackctlfd, (struct sockaddr *)&whackaddr, &whackaddrlen);
     /* Note: actual value in n should fit in int.  To print, cast to int. */
     ssize_t n;

@@ -1,3 +1,3 @@
 #!/bin/sh
 
-openssl x509 -in ../../CA/west.uml.freeswan.org/west.uml.freeswan.org.cert -outform der -out westcert.der
+openssl x509 -in ../../x509/certs/west.crt -outform der -out westcert.der

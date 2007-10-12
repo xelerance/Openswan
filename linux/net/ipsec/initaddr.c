@@ -50,6 +50,16 @@ ip_address *dst;
 	case AF_INET:
 		if (srclen != 4)
 			return "IPv4 address must be exactly 4 bytes";
+		/* On BSD, the kernel compares the entire struct sockaddr when
+ 		 * using bind(). However, this is as large as the largest
+ 		 * address family, so the 'remainder' has to be 0. Linux
+ 		 * compares interface addresses with the length of sa_len,
+ 		 * instead of sizeof(struct sockaddr), so in that case padding
+ 		 * is not needed.
+ 		 *
+ 		 * Patch by Stefan Arentz <stefan@soze.com>
+ 		 */
+		bzero(&dst->u.v4, sizeof(dst->u.v4));
 		dst->u.v4.sin_family = af;
 		dst->u.v4.sin_port = 0;
 		memcpy((char *)&dst->u.v4.sin_addr.s_addr, src, srclen);
@@ -57,6 +67,7 @@ ip_address *dst;
 	case AF_INET6:
 		if (srclen != 16)
 			return "IPv6 address must be exactly 16 bytes";
+		bzero(&dst->u.v6, sizeof(dst->u.v6));
 		dst->u.v6.sin6_family = af;
 		dst->u.v6.sin6_flowinfo = 0;		/* unused */
 		dst->u.v6.sin6_port = 0;

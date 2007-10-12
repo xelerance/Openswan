@@ -56,14 +56,14 @@ kernel_patch_test	kernpatch-two-four-01	good
 # test against SuSE kernel source
 # Disabled - SuSE now includes 2.6 backport stuff, so 
 # we don't patch the kernel
-skiptest	kernpatch-suse-two-four	incomplete
+#skiptest	kernpatch-suse-two-four	incomplete
 
 #
 # test of building the module against various kernel sources
 #
 # Disabled - SuSE now includes 2.6 backport stuff, so 
 # we don't patch the kernel
-skiptest		modtest-suse-two-four	incomplete
+#skiptest		modtest-suse-two-four	incomplete
 
 # test for building without ipcomp.
 module_compile		modtest-noipcomp-01	good
@@ -78,7 +78,7 @@ module_compile		modtest-two-six-smp-01	good
 module_compile		modtest-two-six-up-01	good
 
 # test for building on Alpha (only works on Alpha)
-skiptest		modtest-rh-alpha-01	incomplete
+#skiptest		modtest-rh-alpha-01	incomplete
 
 
 
