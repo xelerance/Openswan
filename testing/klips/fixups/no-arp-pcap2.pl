@@ -5,6 +5,7 @@ while(<>) {
 
 	next if(/^arp who-has/);
 	next if(/^arp reply/);
+        next if(/^ARP, Request/);
 
 	if (/\.domain\s/) {
 	  next;

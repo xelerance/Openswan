@@ -563,6 +563,9 @@ pcap_filter() {
 	FILTER="$FILTER | sed -f $FIXUPDIR/tcpdump-three-eight.sed"
     fi
 
+    PATH=$PATH:../../klips/fixups
+    export PATH
+
     if [ -n "${OUTPUT-}" ]
     then
 	rm -f OUTPUT${KLIPS_MODULE}/${OUTPUT}.txt
