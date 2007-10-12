@@ -671,6 +671,35 @@ struct_desc ikev2_prop_desc = { "IKEv2 Proposal Substructure Payload",
 			      ikev2prop_fields, sizeof(struct ikev2_prop) };
 
 
+/*
+ * 3.3.2.  Transform Substructure
+ *
+ *                         1                   2                   3
+ *     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ! 0 (last) or 3 !   RESERVED    !        Transform Length       !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !Transform Type !   RESERVED    !          Transform ID         !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !                                                               !
+ *    ~                      Transform Attributes                     ~
+ *    !                                                               !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ */
+static field_desc ikev2trans_fields[] = {
+    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_nat,  8/BITS_PER_BYTE, "transform type", &trans_type_names },
+    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_nat, 16/BITS_PER_BYTE, "transform ID", NULL },
+    { ft_end,  0, NULL, NULL }
+};
+
+struct_desc ikev2_trans_desc = { "IKEv2 Transform Substructure Payload",
+			      ikev2trans_fields, sizeof(struct ikev2_trans) };
+
 
 /* descriptor for each payload type
  *

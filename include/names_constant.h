@@ -60,7 +60,11 @@ extern enum_names ipsec_notification_names;
 
 /* IKEv2 */
 extern enum_names critical_names;
-
+extern enum_names trans_type_names;
+extern enum_names trans_type_encr_names;
+extern enum_names trans_type_prf_names;
+extern enum_names trans_type_integ_names;
+extern enum_names trans_type_esn_names;
 
 /* socket address family info */
 

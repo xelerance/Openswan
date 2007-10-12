@@ -698,6 +698,16 @@ struct ikev2_prop
 
 extern struct_desc ikev2_prop_desc;
 
+/* rfc4306, section 3.3.2 */
+struct ikev2_trans
+{
+	u_int8_t  isat_np;	    /* Next payload */
+	u_int16_t isat_length;	    /* Payload length */
+	u_int8_t  isat_type;        /* transform type */
+	u_int8_t  isat_transid;     /* ID */
+};
+extern struct_desc ikev2_trans_desc;
+
 
 #endif /* _PACKET_H */
 

@@ -383,29 +383,28 @@ enum next_payload_types {
 #define ISAKMP_v2_CHILD_SA     36
 #define ISAKMP_v2_INFORMATIONAL 37
 
+#define ISAKMP_XCHG_ECHOREQUEST_PRIVATE 244     /* Private Echo Request */
+#define ISAKMP_XCHG_ECHOREPLY_PRIVATE   245     /* Private Echo Reply   */
+
+/* Flag bits */
 #define ISAKMP_FLAGS_E         (1<<0)     /* bit 0 of flags --- encrypt  */
 #define ISAKMP_FLAGS_C         (1<<1)     /* bit 1 of flags --- commit   */
 #define ISAKMP_FLAGS_I         (1<<3)     /* bit 3 of flags --- initiator */
 #define ISAKMP_FLAGS_V         (1<<4)     /* bit 4 of flags --- version */
 #define ISAKMP_FLAGS_R         (1<<5)     /* bit 5 of flags --- response */
-
-#define ISAKMP_XCHG_ECHOREQUEST_PRIVATE 244     /* Private Echo Request */
-#define ISAKMP_XCHG_ECHOREPLY_PRIVATE   245     /* Private Echo Reply   */
-
-/* Flag bits */
-
 extern const char *const flag_bit_names[];
 
-#define ISAKMP_FLAG_ENCRYPTION   0x1
+#define ISAKMP_FLAG_ENCRYPTION   0x1  /* repeat of above */
 #define ISAKMP_FLAG_COMMIT       0x2
 
-/* Situation definition for IPsec DOI */
 
+/* Situation definition for IPsec DOI */
 extern const char *const sit_bit_names[];
 
 #define SIT_IDENTITY_ONLY        0x01
 #define SIT_SECRECY              0x02
 #define SIT_INTEGRITY            0x04
+
 
 /* Critical bit in each payload */
 #define ISAKMP_PAYLOAD_CRITICAL  0x80
@@ -415,13 +414,61 @@ extern const char *const sit_bit_names[];
  */
 
 /*
-  extern enum_names protocol_names;
-*/
-
+ * extern enum_names protocol_names;
+ * same in IKEv1 and IKEv2.
+ */
 #define PROTO_ISAKMP             1
 #define PROTO_IPSEC_AH           2
 #define PROTO_IPSEC_ESP          3
 #define PROTO_IPCOMP             4
+
+/*
+ * IKEv2 proposal, transform-type.
+ */
+enum ikev2_trans_type {
+	IKEv2_TRANS_TYPE_ENCR = 1,
+	IKEv2_TRANS_TYPE_PRF  = 2,
+	IKEv2_TRANS_TYPE_INTEG= 3,
+	IKEv2_TRANS_TYPE_DH   = 4,   /* same as in IKEv1 */
+	IKEv2_TRANS_TYPE_ESN  = 5,
+};
+
+enum ikev2_trans_type_encr {
+	IKEv2_ENCR_DES_IV64 = 1,
+	IKEv2_ENCR_DES      = 2,
+	IKEv2_ENCR_3DES     = 3,
+	IKEv2_ENCR_RC5      = 4,
+	IKEv2_ENCR_IDEA     = 5,
+	IKEv2_ENCR_CAST     = 6,
+	IKEv2_ENCR_BLOWFISH = 7,
+	IKEv2_ENCR_3IDEA    = 8,
+	IKEv2_ENCR_DES_IV32 = 9,
+	IKEv2_ENCR_RES10    = 10,
+	IKEv2_ENCR_NULL     = 11,
+	IKEv2_ENCR_AES_CBC  = 12,
+	IKEv2_ENCR_AES_CTR  = 13,
+};
+
+enum ikev2_trans_type_prf {
+	IKEv2_PRF_HMAC_MD5  = 1,
+	IKEv2_PRF_HMAC_SHA1 = 2,
+	IKEv2_PRF_HMAC_TIGER= 3,
+	IKEv2_PRF_AES128_XCBC=4,
+};
+
+enum ikev2_trans_type_integ {
+	IKEv2_AUTH_HMAC_MD5_96 =1,
+	IKEv2_AUTH_HMAC_SHA1_96=2,
+	IKEv2_AUTH_DES_MAC     =3,
+	IKEv2_AUTH_KPDK_MD5    =4,
+	IKEv2_AUTH_AES_XCBC_96 =5,
+};
+
+enum ikev2_trans_type_esn {
+	IKEv2_ESN_DISABLED = 0,
+	IKEv2_ESN_ENABLED  = 1,
+};
+	
 
 /* many transform values are moved to openswan/ipsec_policy.h
  * including all of the following, which are here so that
@@ -619,7 +666,7 @@ typedef u_int16_t ipsec_auth_t;
  * and from http://www.isi.edu/in-notes/iana/assignments/ipsec-registry
  */
 
-/* extern enum_names oakley_enc_names; */
+/* extern enum_names oakley_enc_names; (IKEv1 only) */
 
 #define OAKLEY_DES_CBC          1
 #define OAKLEY_IDEA_CBC         2
@@ -696,19 +743,22 @@ typedef u_int16_t oakley_auth_t;
  */
 /* extern enum_names oakley_group_names; */
 
-typedef u_int16_t oakley_group_t;
-#define OAKLEY_GROUP_MODP768       1
-#define OAKLEY_GROUP_MODP1024      2
-#define OAKLEY_GROUP_GP155         3
-#define OAKLEY_GROUP_GP185         4
-#define OAKLEY_GROUP_MODP1536      5
+typedef enum ike_trans_type_dh oakley_group_t;
 
-#define OAKLEY_GROUP_MODP2048      14
-#define OAKLEY_GROUP_MODP3072      15
-#define OAKLEY_GROUP_MODP4096      16
-#define OAKLEY_GROUP_MODP6144      17
-#define OAKLEY_GROUP_MODP8192      18
 /*	you must also touch: constants.c, crypto.c */
+enum ike_trans_type_dh {
+	OAKLEY_GROUP_MODP768      = 1,
+	OAKLEY_GROUP_MODP1024     = 2,
+	OAKLEY_GROUP_GP155        = 3,
+	OAKLEY_GROUP_GP185        = 4,
+	OAKLEY_GROUP_MODP1536     = 5,
+
+	OAKLEY_GROUP_MODP2048     = 14,
+	OAKLEY_GROUP_MODP3072     = 15,
+	OAKLEY_GROUP_MODP4096     = 16,
+	OAKLEY_GROUP_MODP6144     = 17,
+	OAKLEY_GROUP_MODP8192     = 18,
+};
 
 /* Oakley Group Type attribute
  * draft-ietf-ipsec-ike-01.txt appendix A

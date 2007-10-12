@@ -823,6 +823,66 @@ const char *const critical_name[]= { "Payload-Critical", NULL };
 enum_names critical_names = 
 { ISAKMP_PAYLOAD_CRITICAL, ISAKMP_PAYLOAD_CRITICAL, critical_name, NULL};
 
+/* Transform Type */
+const char *const trans_type_name[]={
+    "trans-type-encr",
+    "trans-type-prf",
+    "trans-type-integ",
+    "trans-type-dh",
+    "trans-type-esn"
+};
+enum_names trans_type_names =
+{ IKEv2_TRANS_TYPE_ENCR, IKEv2_TRANS_TYPE_ESN, trans_type_name, NULL};
+
+/* Transform-type Encryption */
+const char *const trans_type_encr_name[]={
+    "des-iv64",
+    "des",
+    "3des",
+    "rc5",
+    "idea",
+    "cast",
+    "blowfish",
+    "3idea",
+    "des-iv32",
+    "res10",
+    "null",
+    "aes-cbc",
+    "aes-ctr",
+};
+enum_names trans_type_encr_names =
+{ IKEv2_ENCR_DES_IV64, IKEv2_ENCR_AES_CTR, trans_type_encr_name, NULL};
+
+/* Transform-type PRF */
+const char *const trans_type_prf_name[]={
+    "prf-hmac-md5",
+    "prf-hmac-sha1",
+    "prf-hmac-tiger",
+    "prf-hmac-aes128-xcbc",
+};
+enum_names trans_type_prf_names =
+{ IKEv2_PRF_HMAC_MD5, IKEv2_PRF_AES128_XCBC, trans_type_prf_name, NULL};
+
+/* Transform-type Integrity */
+const char *const trans_type_integ_name[]={
+    "auth-hmac-md5-96",
+    "auth-hmac-sha1-96",
+    "auth-des-mac",
+    "auth-kpdk-md5",
+    "auth-aes-xcbc-96",
+};
+enum_names trans_type_integ_names =
+{ IKEv2_AUTH_HMAC_MD5_96, IKEv2_AUTH_AES_XCBC_96, trans_type_integ_name, NULL};
+
+/* Transform-type Integrity */
+const char *const trans_type_esn_name[]={
+    "esn-disabled",
+    "esn-enabled",
+};
+enum_names trans_type_esn_names =
+{ IKEv2_ESN_DISABLED, IKEv2_ESN_ENABLED, trans_type_esn_name, NULL};
+
+
 /* socket address family info */
 
 static const char *const af_inet_name[] = {
