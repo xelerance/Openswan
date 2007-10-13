@@ -1107,15 +1107,9 @@ complibtest() {
     elif [ -f ${OPENSWANSRCDIR}/lib/libopenswan/$testsrc ]
     then
         FILE=${OPENSWANSRCDIR}/lib/libopenswan/$testsrc
-    elif [ -f ${OPENSWANSRCDIR}/linux/net/klips/$testsrc ]
-    then
-        FILE=${OPENSWANSRCDIR}/linux/net/klips/$testsrc
     elif [ -f ${OPENSWANSRCDIR}/linux/lib/libopenswan/$testsrc ]
     then
         FILE=${OPENSWANSRCDIR}/linux/lib/libopenswan/$testsrc
-    elif [ -f ${OPENSWANSRCDIR}/linux/lib/libfreeswan/$testsrc ]
-    then
-        FILE=${OPENSWANSRCDIR}/linux/lib/libfreeswan/$testsrc
     elif [ -f ${OPENSWANSRCDIR}/linux/net/ipsec/$testsrc ]
     then
         FILE=${OPENSWANSRCDIR}/linux/net/ipsec/$testsrc
