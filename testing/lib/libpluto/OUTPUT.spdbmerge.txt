@@ -7,7 +7,7 @@ sa disjunct cnt: 0
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -16,7 +16,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -27,7 +27,7 @@ main mode oakley: 1
 sa1:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 6
+    protoid: 1 (PROTO_ISAKMP) cnt: 6
       transform: 1 cnt: 4
         type: 1 val: 7
         type: 2 val: 2
@@ -61,7 +61,7 @@ sa disjunct cnt: 1
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -70,7 +70,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 7
+    protoid: 1 (PROTO_ISAKMP) cnt: 7
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -111,7 +111,7 @@ main mode oakley: 2
 sa1:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 6
+    protoid: 1 (PROTO_ISAKMP) cnt: 6
       transform: 1 cnt: 4
         type: 1 val: 7
         type: 2 val: 2
@@ -145,7 +145,7 @@ sa disjunct cnt: 1
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -154,7 +154,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 7
+    protoid: 1 (PROTO_ISAKMP) cnt: 7
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -195,7 +195,7 @@ main mode oakley: 3
 sa1:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 8
+    protoid: 1 (PROTO_ISAKMP) cnt: 8
       transform: 1 cnt: 4
         type: 1 val: 5
         type: 2 val: 1
@@ -239,7 +239,7 @@ sa disjunct cnt: 1
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -248,7 +248,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 9
+    protoid: 1 (PROTO_ISAKMP) cnt: 9
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -301,7 +301,7 @@ sa disjunct cnt: 0
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -310,7 +310,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -321,7 +321,7 @@ main mode oakley: 5
 sa1:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 6
+    protoid: 1 (PROTO_ISAKMP) cnt: 6
       transform: 1 cnt: 4
         type: 1 val: 7
         type: 2 val: 2
@@ -355,7 +355,7 @@ sa disjunct cnt: 1
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -364,7 +364,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 7
+    protoid: 1 (PROTO_ISAKMP) cnt: 7
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -405,7 +405,7 @@ main mode oakley: 6
 sa1:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 6
+    protoid: 1 (PROTO_ISAKMP) cnt: 6
       transform: 1 cnt: 4
         type: 1 val: 7
         type: 2 val: 2
@@ -439,7 +439,7 @@ sa disjunct cnt: 1
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -448,7 +448,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 7
+    protoid: 1 (PROTO_ISAKMP) cnt: 7
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -489,7 +489,7 @@ main mode oakley: 7
 sa1:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 8
+    protoid: 1 (PROTO_ISAKMP) cnt: 8
       transform: 1 cnt: 4
         type: 1 val: 5
         type: 2 val: 1
@@ -533,7 +533,7 @@ sa disjunct cnt: 1
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -542,7 +542,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 9
+    protoid: 1 (PROTO_ISAKMP) cnt: 9
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -595,7 +595,7 @@ sa disjunct cnt: 0
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -604,7 +604,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -615,7 +615,7 @@ main mode oakley: 9
 sa1:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 6
+    protoid: 1 (PROTO_ISAKMP) cnt: 6
       transform: 1 cnt: 4
         type: 1 val: 7
         type: 2 val: 1
@@ -649,7 +649,7 @@ sa disjunct cnt: 1
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -658,7 +658,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 7
+    protoid: 1 (PROTO_ISAKMP) cnt: 7
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -699,7 +699,7 @@ main mode oakley: 10
 sa1:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 6
+    protoid: 1 (PROTO_ISAKMP) cnt: 6
       transform: 1 cnt: 4
         type: 1 val: 7
         type: 2 val: 2
@@ -733,7 +733,7 @@ sa disjunct cnt: 1
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -742,7 +742,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 7
+    protoid: 1 (PROTO_ISAKMP) cnt: 7
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -783,7 +783,7 @@ main mode oakley: 11
 sa1:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 8
+    protoid: 1 (PROTO_ISAKMP) cnt: 8
       transform: 1 cnt: 4
         type: 1 val: 5
         type: 2 val: 1
@@ -827,7 +827,7 @@ sa disjunct cnt: 1
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -836,7 +836,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 9
+    protoid: 1 (PROTO_ISAKMP) cnt: 9
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -889,7 +889,7 @@ sa disjunct cnt: 0
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -898,7 +898,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -911,7 +911,7 @@ sa disjunct cnt: 0
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -920,7 +920,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -933,7 +933,7 @@ sa disjunct cnt: 0
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -942,7 +942,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -955,7 +955,7 @@ sa disjunct cnt: 0
 gsp:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535
@@ -964,7 +964,7 @@ sa disjunct cnt: 1
 sa2:
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 cnt: 1
+    protoid: 1 (PROTO_ISAKMP) cnt: 1
       transform: 1 cnt: 4
         type: 1 val: 65535
         type: 2 val: 65535

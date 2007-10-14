@@ -70,7 +70,7 @@ void
 print_sa_trans(struct db_trans *tr)
 {
     int i;
-    printf("      transform: %d cnt: %d\n",
+    printf("      transform: %u cnt: %u\n",
 	   tr->transid, tr->attr_cnt);
     for(i=0; i<tr->attr_cnt; i++) {
 	print_sa_attr(&tr->attrs[i]);
@@ -81,8 +81,10 @@ void
 print_sa_prop(struct db_prop *dp)
 {
     int i;
-    printf("    protoid: %d cnt: %d\n",
-	   dp->protoid, dp->trans_cnt);
+    printf("    protoid: %u (%s) cnt: %u\n"
+	   , dp->protoid
+	   , enum_name(&protocol_names, dp->protoid)
+	   , dp->trans_cnt);
     for(i=0; i<dp->trans_cnt; i++) {
 	print_sa_trans(&dp->trans[i]);
     }
@@ -92,7 +94,7 @@ void
 print_sa_prop_conj(struct db_prop_conj *pc)
 {
     int i;
-    printf("  conjunctions cnt: %d\n",
+    printf("  conjunctions cnt: %u\n",
 	   pc->prop_cnt);
     for(i=0; i<pc->prop_cnt; i++) {
 	print_sa_prop(&pc->props[i]);
@@ -103,10 +105,44 @@ void
 sa_print(struct db_sa *f)
 {
     int i;
-    printf("sa disjunct cnt: %d\n",
+    printf("sa disjunct cnt: %u\n",
 	   f->prop_conj_cnt);
     for(i=0; i<f->prop_conj_cnt; i++) {
 	print_sa_prop_conj(&f->prop_conjs[i]);
     }
 }
 
+void
+print_sa_v2_prop_conj(struct db_v2_prop_conj *dp, int propnum)
+{
+    int i;
+    printf("    proposal #%u protoid: %u (%s) cnt: %u\n", propnum
+	   , dp->protoid
+	   , enum_name(&protocol_names, dp->protoid)
+	   , dp->trans_cnt);
+    for(i=0; i<dp->trans_cnt; i++) {
+	print_sa_trans(&dp->trans[i]);
+    }
+}
+
+void
+print_sa_v2_prop(struct db_v2_prop *pc)
+{
+    int i;
+    printf("  conjunctions cnt: %u\n",
+	   pc->prop_cnt);
+    for(i=0; i<pc->prop_cnt; i++) {
+	    print_sa_v2_prop_conj(&pc->props[i], i);
+    }
+}
+
+void
+sa_v2_print(struct db_sa *f)
+{
+	int i;
+	printf("sav2 disjoint cnt: %u\n",
+	       f->prop_disj_cnt);
+	for(i=0; i<f->prop_disj_cnt; i++) {
+		print_sa_v2_prop(&f->prop_disj[i]);
+	}
+}
