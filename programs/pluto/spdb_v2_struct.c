@@ -145,7 +145,166 @@ return_out:
     return ret;
 }
 
+struct db_trans_flat {
+	u_int8_t               protoid;	        /* Protocol-Id */
+
+	u_int16_t              auth_method; 
+	u_int16_t              encr_transid;	/* Transform-Id */
+	u_int16_t              hash_transid;	/* Transform-Id */
+	u_int16_t              prf_transid;	/* Transform-Id */
+	u_int16_t              group_transid;	/* Transform-Id */
+};
+
+void sa_v2_convert(struct db_sa *f)
+{
+    int pcc, prc, tcc;
+    int tot_trans, i;
+    struct db_trans_flat *dtfset;
+    struct db_trans_flat *dtfone;
+    struct db_trans_flat *dtflast;
+    struct db_v2_trans     *tr;
+    struct db_v2_prop_conj *pc;
+    struct db_v2_prop      *pr;
+    int                     pr_cnt, pc_cnt;
+    
+    tot_trans=0;
+    for(pcc=0; pcc<f->prop_conj_cnt; pcc++) {
+	struct db_prop_conj *dpc = &f->prop_conjs[i];
+
+	if(dpc->props == NULL) continue;
+	for(prc=0; prc < dpc->prop_cnt; prc++) {
+	    struct db_prop *dp = &dpc->props[i];
+
+	    if(dp->trans == NULL) continue;
+	    for(tcc=0; tcc<dp->trans_cnt; tcc++) {
+		tot_trans++;
+	    }
+	}
+    }
+    
+    dtfset = malloc(sizeof(struct db_trans_flat)*tot_trans);
+    
+    tot_trans=0;
+    for(pcc=0; pcc<f->prop_conj_cnt; pcc++) {
+	struct db_prop_conj *dpc = &f->prop_conjs[i];
+	
+	if(dpc->props == NULL) continue;
+	for(prc=0; prc < dpc->prop_cnt; prc++) {
+	    struct db_prop *dp = &dpc->props[i];
+	    
+	    if(dp->trans == NULL) continue;
+	    for(tcc=0; tcc<dp->trans_cnt; tcc++) {
+		struct db_trans *tr=&dp->trans[i];
+		struct db_trans_flat *dtfone = &dtfset[tot_trans];
+		int attr_cnt;
+		
+		dtfone->protoid        = dp->protoid;
+		for(attr_cnt=0; attr_cnt<tr->attr_cnt; attr_cnt++) {
+		    struct db_attr *attr = &tr->attrs[attr_cnt];
+		    switch(attr->type) {
+		    case OAKLEY_AUTHENTICATION_METHOD:
+			dtfone->auth_method = attr->val;
+			break;
+			
+		    case OAKLEY_ENCRYPTION_ALGORITHM:
+			dtfone->encr_transid = attr->val;
+			break;
+		    case OAKLEY_HASH_ALGORITHM:
+			if(dtfone->protoid == PROTO_ISAKMP) {
+			    dtfone->prf_transid=attr->val;
+			} else {
+			    dtfone->hash_transid=attr->val;
+			}
+			break;
+			
+		    case OAKLEY_GROUP_DESCRIPTION:
+			dtfone->group_transid = attr->val;
+			break;
+
+		    default:
+			break;
+		    }
+		}
+		tot_trans++;
+	    }
+	}
+    }
+    
+    pr=NULL;
+    pr_cnt=0;
+    if(tot_trans > 1) {
+	pr = malloc(sizeof(struct db_v2_prop));
+	pr_cnt = 1;
+    }
+    dtflast = NULL;
+    tr = NULL;
+    pc = NULL; pc_cnt = 0;
+    
+    for(i=0; i < tot_trans; i++) {
+	int tr_cnt = 4;
+
+	dtfone = &dtfset[i];
+	if(dtflast != NULL) {
+	    /*
+	     * see if previous protoid is identical to this
+	     * one, and if so, then this is a disjunction (OR),
+	     * otherwise, it's conjunction (AND)
+	     */
+	    if(dtflast->protoid != dtfone->protoid) {
+		/* need to extend pr by one */
+		pr_cnt++;
+		pr = realloc(pr, sizeof(struct db_v2_prop)*pr_cnt);
+		/* need to zero this, so it gets allocated */
+		pc = NULL;
+		pc_cnt=0;
+	    } else {
+		/* need to extend pc by one */
+		pc_cnt++;
+		pc = realloc(pc, sizeof(struct db_v2_prop_conj)*pc_cnt);
+	    }
+	}
+	dtflast = dtfone;
+	
+	if(!pc) {
+	    pc = malloc(sizeof(struct db_v2_prop_conj));
+	    pr[pr_cnt].props = pc;
+	    pr[pr_cnt].prop_cnt = pc_cnt;
+	}
+	if(dtfone->protoid != PROTO_ISAKMP) tr_cnt=5;
+	    
+	tr = malloc(sizeof(struct db_v2_trans)*tr_cnt);
+	pc[pc_cnt].trans=tr;  pc[pc_cnt].trans_cnt = tr_cnt;
+	
+	pc->protoid = dtfset->protoid;
+	
+	tr[0].transform_type = IKEv2_TRANS_TYPE_ENCR;
+	tr[0].transid        = dtfset->encr_transid;
+	
+	tr[1].transform_type = IKEv2_TRANS_TYPE_INTEG;
+	tr[1].transid        = dtfset->hash_transid;
+	
+	tr[2].transform_type = IKEv2_TRANS_TYPE_PRF;
+	tr[2].transid        = dtfset->prf_transid;
+	
+	tr[3].transform_type = IKEv2_TRANS_TYPE_DH;
+	tr[3].transid        = dtfset->group_transid;
+
+	if(dtfone->protoid != PROTO_ISAKMP) {
+	    tr[4].transform_type = IKEv2_TRANS_TYPE_ESN;
+	    tr[4].transid        = IKEv2_ESN_DISABLED;
+	}
+    }
+    
+    f->prop_disj = pr;
+    f->prop_disj_cnt = pr_cnt;
+    
+    free(dtfset);
+}
 
     
-
-
+/*
+ * Local Variables:
+ * c-style: pluto
+ * c-basic-offset: 4
+ * End:
+ */

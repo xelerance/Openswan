@@ -113,6 +113,20 @@ sa_print(struct db_sa *f)
 }
 
 void
+print_sa_v2_trans(struct db_v2_trans *tr)
+{
+    int i;
+    printf("      type: %u(%s) transform: %u cnt: %u\n"
+	   , tr->transform_type
+	   , enum_name(&trans_type_names, tr->transform_type)
+	   , tr->transid
+	   , tr->attr_cnt);
+    for(i=0; i<tr->attr_cnt; i++) {
+	print_sa_attr(&tr->attrs[i]);
+    }
+}
+
+void
 print_sa_v2_prop_conj(struct db_v2_prop_conj *dp, int propnum)
 {
     int i;
@@ -121,7 +135,7 @@ print_sa_v2_prop_conj(struct db_v2_prop_conj *dp, int propnum)
 	   , enum_name(&protocol_names, dp->protoid)
 	   , dp->trans_cnt);
     for(i=0; i<dp->trans_cnt; i++) {
-	print_sa_trans(&dp->trans[i]);
+	print_sa_v2_trans(&dp->trans[i]);
     }
 }
 

@@ -31,14 +31,14 @@ struct db_attr {
 
 /* transform */
 struct db_trans {
-    u_int8_t transid;	/* Transform-Id */
-    struct db_attr *attrs;	/* array */
-    int attr_cnt;	/* number of elements */
+	u_int16_t              transid;	        /* Transform-Id */
+	struct db_attr *attrs;	/* array */
+	int attr_cnt;	        /* number of elements */
 };
 
 /* proposal - IKEv1 */
 struct db_prop {
-    u_int8_t protoid;	        /* Protocol-Id */
+    u_int8_t         protoid;	/* Protocol-Id */
     struct db_trans *trans;	/* array (disjunction-OR) */
     int trans_cnt;	        /* number of elements */
     /* SPI size and value isn't part of DB */
@@ -50,18 +50,26 @@ struct db_prop_conj {
     int prop_cnt;	        /* number of elements */
 };
 
+/* transform - IKEv2 */
+struct db_v2_trans {
+	enum ikev2_trans_type    transform_type;
+	u_int16_t                transid;	        /* Transform-Id */
+	struct db_attr *attrs;	 /* array of attributes */
+	int attr_cnt;	         /* number of elements */
+};
+
 /* proposal - IKEv2 */
 struct db_v2_prop_conj {
-    u_int8_t protoid;	        /* Protocol-Id: ikev2_trans_type */
-    struct db_trans *trans;	/* array (disjunction-OR) */
-    int trans_cnt;	        /* number of elements */
-    /* SPI size and value isn't part of DB */
+	u_int8_t protoid;	        /* Protocol-Id: ikev2_trans_type */
+	struct db_v2_trans *trans;	/* array (disjunction-OR) */
+	int trans_cnt;	        /* number of elements */
+	/* SPI size and value isn't part of DB */
 };
 
 /* conjunction (AND) of proposals - IKEv2 */
 struct db_v2_prop {
-    struct db_v2_prop_conj  *props;	/* array */
-    int prop_cnt;	        /* number of elements */
+	struct db_v2_prop_conj  *props;	/* array */
+	int prop_cnt;	        /* number of elements */
 };
 
 /* security association */
@@ -160,6 +168,13 @@ extern void print_sa_trans(struct db_trans *tr);
 extern void print_sa_prop(struct db_prop *dp);
 extern void print_sa_prop_conj(struct db_prop_conj *pc);
 extern void sa_print(struct db_sa *f);
+
+extern void print_sa_v2_trans(struct db_v2_trans *tr);
+extern void print_sa_v2_prop_conj(struct db_v2_prop_conj *dp, int propnum);
+extern void print_sa_v2_prop(struct db_v2_prop *pc);
+extern void sa_v2_print(struct db_sa *f);
+
+extern void sa_v2_convert(struct db_sa *f);
 
 
 #endif /*  _SPDB_H_ */

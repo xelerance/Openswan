@@ -423,7 +423,8 @@ extern const char *const sit_bit_names[];
 #define PROTO_IPCOMP             4
 
 /*
- * IKEv2 proposal, transform-type.
+ * IKEv2 proposal,
+ * extern enum_names trans_type_names;
  */
 enum ikev2_trans_type {
 	IKEv2_TRANS_TYPE_ENCR = 1,
