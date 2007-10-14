@@ -1149,15 +1149,19 @@ add_connection(const struct whack_message *wm)
 	{
 		DBG(DBG_CONTROL, DBG_log("from whack: got --esp=%s", wm->esp ? wm->esp: "NULL"));
 
-		if(c->policy & POLICY_ENCRYPT) {
-		    c->alg_info_esp = alg_info_esp_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
-		} else if(c->policy & POLICY_AUTHENTICATE) {
-		    c->alg_info_esp = alg_info_ah_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
-		} 
-		if( (c->policy & POLICY_AUTHENTICATE) && (c->policy & POLICY_ENCRYPT)){
+		if( (c->policy & POLICY_AUTHENTICATE)
+		    && (c->policy & POLICY_ENCRYPT)) {
 		    loglog(RC_NOALGO, "Can only do AH, or ESP, not AH+ESP\n");
 		    return;
 		}
+
+		if(c->policy & POLICY_ENCRYPT) {
+		    c->alg_info_esp = alg_info_esp_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
+		} 
+
+		if(c->policy & POLICY_AUTHENTICATE) {
+		    c->alg_info_esp = alg_info_ah_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
+		} 
 
 		DBG(DBG_CRYPT|DBG_CONTROL, 
 			static char buf[256]="<NULL>";
