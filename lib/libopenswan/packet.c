@@ -1140,8 +1140,13 @@ out_struct(const void *struct_ptr, struct_desc *sd
 	{
 	    size_t i = fp->size;
 
+	    /* make sure that there is space for the next structure element */
 	    passert(outs->roof - cur >= (ptrdiff_t)i);
+
+	    /* verify that the spot is correct in the offset */
 	    passert(cur - outs->cur <= (ptrdiff_t)(sd->size - i));
+
+	    /* verify that we are at the right place in the input structure */
 	    passert(inp - (cur - outs->cur) == struct_ptr);
 
 #if 0

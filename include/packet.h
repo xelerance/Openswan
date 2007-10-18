@@ -689,6 +689,7 @@ extern struct_desc ikev2_sa_desc;
 struct ikev2_prop
 {
 	u_int8_t  isap_np;		/* Next payload */
+	u_int8_t  isap_res1;
 	u_int16_t isap_length;		/* Payload length */
 	u_int8_t  isap_propnum;
 	u_int8_t  isap_protoid;
@@ -702,8 +703,10 @@ extern struct_desc ikev2_prop_desc;
 struct ikev2_trans
 {
 	u_int8_t  isat_np;	    /* Next payload */
+	u_int8_t  isat_res1;
 	u_int16_t isat_length;	    /* Payload length */
 	u_int8_t  isat_type;        /* transform type */
+	u_int8_t  isat_res2;
 	u_int8_t  isat_transid;     /* ID */
 };
 extern struct_desc ikev2_trans_desc;
