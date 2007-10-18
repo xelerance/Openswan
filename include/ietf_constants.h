@@ -448,6 +448,7 @@ enum ikev2_trans_type_encr {
 	IKEv2_ENCR_NULL     = 11,
 	IKEv2_ENCR_AES_CBC  = 12,
 	IKEv2_ENCR_AES_CTR  = 13,
+	IKEv2_ENCR_INVALID  = 65536
 };
 
 enum ikev2_trans_type_prf {
@@ -463,6 +464,7 @@ enum ikev2_trans_type_integ {
 	IKEv2_AUTH_DES_MAC     =3,
 	IKEv2_AUTH_KPDK_MD5    =4,
 	IKEv2_AUTH_AES_XCBC_96 =5,
+	IKEv2_AUTH_INVALID     =65536
 };
 
 enum ikev2_trans_type_esn {

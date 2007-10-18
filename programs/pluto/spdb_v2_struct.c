@@ -146,14 +146,61 @@ return_out:
 }
 
 struct db_trans_flat {
-	u_int8_t               protoid;	        /* Protocol-Id */
+    u_int8_t               protoid;	        /* Protocol-Id */
 
-	u_int16_t              auth_method; 
-	u_int16_t              encr_transid;	/* Transform-Id */
-	u_int16_t              hash_transid;	/* Transform-Id */
-	u_int16_t              prf_transid;	/* Transform-Id */
-	u_int16_t              group_transid;	/* Transform-Id */
+    u_int16_t              auth_method;     /* conveyed another way in ikev2*/
+    u_int16_t              encr_transid;	/* Transform-Id */
+    u_int16_t              integ_transid;	/* Transform-Id */
+    u_int16_t              prf_transid;	/* Transform-Id */
+    u_int16_t              group_transid;	/* Transform-Id */
 };
+
+enum ikev2_trans_type_encr v1tov2_encr(int oakley)
+{
+    switch(oakley) {
+    case OAKLEY_DES_CBC:
+	return IKEv2_ENCR_DES;
+    case OAKLEY_IDEA_CBC:
+	return IKEv2_ENCR_IDEA;
+    case OAKLEY_BLOWFISH_CBC:
+	return IKEv2_ENCR_BLOWFISH;
+    case OAKLEY_RC5_R16_B64_CBC:
+	return IKEv2_ENCR_RC5;
+    case OAKLEY_3DES_CBC:
+	return IKEv2_ENCR_3DES;
+    case OAKLEY_CAST_CBC:
+	return IKEv2_ENCR_CAST;
+    case OAKLEY_AES_CBC:
+	return IKEv2_ENCR_AES_CBC;
+    case OAKLEY_TWOFISH_CBC_SSH:
+    case OAKLEY_TWOFISH_CBC:
+    case OAKLEY_SERPENT_CBC:
+    default:
+	return IKEv2_ENCR_INVALID;
+    }
+}
+
+enum ikev2_trans_type_integ v1tov2_integ(int oakley)
+{
+    switch(oakley) {
+    case AUTH_ALGORITHM_HMAC_MD5:
+	return IKEv2_AUTH_HMAC_MD5_96;
+    case AUTH_ALGORITHM_HMAC_SHA1:
+	return IKEv2_AUTH_HMAC_SHA1_96;
+    case AUTH_ALGORITHM_DES_MAC:
+	return IKEv2_AUTH_DES_MAC;
+    case AUTH_ALGORITHM_KPDK:
+	return IKEv2_AUTH_KPDK_MD5;
+
+    case AUTH_ALGORITHM_HMAC_SHA2_256:
+    case AUTH_ALGORITHM_HMAC_SHA2_384:
+    case AUTH_ALGORITHM_HMAC_SHA2_512:
+    case AUTH_ALGORITHM_HMAC_RIPEMD:
+    default:
+	return IKEv2_AUTH_INVALID;
+	/* return IKEv2_AUTH_AES_XCBC_96; */
+    }
+}
 
 void sa_v2_convert(struct db_sa *f)
 {
@@ -169,11 +216,11 @@ void sa_v2_convert(struct db_sa *f)
     
     tot_trans=0;
     for(pcc=0; pcc<f->prop_conj_cnt; pcc++) {
-	struct db_prop_conj *dpc = &f->prop_conjs[i];
+	struct db_prop_conj *dpc = &f->prop_conjs[pcc];
 
 	if(dpc->props == NULL) continue;
 	for(prc=0; prc < dpc->prop_cnt; prc++) {
-	    struct db_prop *dp = &dpc->props[i];
+	    struct db_prop *dp = &dpc->props[prc];
 
 	    if(dp->trans == NULL) continue;
 	    for(tcc=0; tcc<dp->trans_cnt; tcc++) {
@@ -182,19 +229,19 @@ void sa_v2_convert(struct db_sa *f)
 	}
     }
     
-    dtfset = malloc(sizeof(struct db_trans_flat)*tot_trans);
+    dtfset = alloc_bytes(sizeof(struct db_trans_flat)*tot_trans, "spdb_v2_dtfset");
     
     tot_trans=0;
     for(pcc=0; pcc<f->prop_conj_cnt; pcc++) {
-	struct db_prop_conj *dpc = &f->prop_conjs[i];
+	struct db_prop_conj *dpc = &f->prop_conjs[pcc];
 	
 	if(dpc->props == NULL) continue;
 	for(prc=0; prc < dpc->prop_cnt; prc++) {
-	    struct db_prop *dp = &dpc->props[i];
+	    struct db_prop *dp = &dpc->props[prc];
 	    
 	    if(dp->trans == NULL) continue;
 	    for(tcc=0; tcc<dp->trans_cnt; tcc++) {
-		struct db_trans *tr=&dp->trans[i];
+		struct db_trans *tr=&dp->trans[tcc];
 		struct db_trans_flat *dtfone = &dtfset[tot_trans];
 		int attr_cnt;
 		
@@ -213,7 +260,7 @@ void sa_v2_convert(struct db_sa *f)
 			if(dtfone->protoid == PROTO_ISAKMP) {
 			    dtfone->prf_transid=attr->val;
 			} else {
-			    dtfone->hash_transid=attr->val;
+			    dtfone->integ_transid=attr->val;
 			}
 			break;
 			
@@ -233,17 +280,17 @@ void sa_v2_convert(struct db_sa *f)
     pr=NULL;
     pr_cnt=0;
     if(tot_trans > 1) {
-	pr = malloc(sizeof(struct db_v2_prop));
-	pr_cnt = 1;
+	pr = alloc_bytes(sizeof(struct db_v2_prop), "db_v2_prop");
     }
     dtflast = NULL;
     tr = NULL;
     pc = NULL; pc_cnt = 0;
     
     for(i=0; i < tot_trans; i++) {
-	int tr_cnt = 4;
+	int tr_cnt = 3;
 
 	dtfone = &dtfset[i];
+
 	if(dtflast != NULL) {
 	    /*
 	     * see if previous protoid is identical to this
@@ -252,42 +299,59 @@ void sa_v2_convert(struct db_sa *f)
 	     */
 	    if(dtflast->protoid != dtfone->protoid) {
 		/* need to extend pr by one */
+		struct db_v2_prop *pr1;
 		pr_cnt++;
-		pr = realloc(pr, sizeof(struct db_v2_prop)*pr_cnt);
+		pr1 = alloc_bytes(sizeof(struct db_v2_prop)*(pr_cnt+1), "db_v2_prop");
+		memcpy(pr1, pr, sizeof(struct db_v2_prop)*pr_cnt);
+		pfree(pr);
+		pr = pr1;
+		
 		/* need to zero this, so it gets allocated */
 		pc = NULL;
 		pc_cnt=0;
 	    } else {
+		struct db_v2_prop_conj *pc1;
 		/* need to extend pc by one */
 		pc_cnt++;
-		pc = realloc(pc, sizeof(struct db_v2_prop_conj)*pc_cnt);
+
+		pc1 = alloc_bytes(sizeof(struct db_v2_prop_conj)*(pc_cnt+1), "db_v2_prop_conj");
+		memcpy(pc1, pc, sizeof(struct db_v2_prop_conj)*pc_cnt);
+		pfree(pc);
+		pc = pc1;
+		pr[pr_cnt].props=pc;
+		pr[pr_cnt].prop_cnt=pc_cnt+1;
 	    }
 	}
 	dtflast = dtfone;
 	
 	if(!pc) {
-	    pc = malloc(sizeof(struct db_v2_prop_conj));
+	    pc = alloc_bytes(sizeof(struct db_v2_prop_conj), "db_v2_prop_conj");
+	    pc_cnt=0;
 	    pr[pr_cnt].props = pc;
-	    pr[pr_cnt].prop_cnt = pc_cnt;
+	    pr[pr_cnt].prop_cnt = pc_cnt+1;
 	}
-	if(dtfone->protoid != PROTO_ISAKMP) tr_cnt=5;
+	if(dtfone->protoid != PROTO_ISAKMP) tr_cnt=4;
 	    
-	tr = malloc(sizeof(struct db_v2_trans)*tr_cnt);
-	pc[pc_cnt].trans=tr;  pc[pc_cnt].trans_cnt = tr_cnt;
+	tr = alloc_bytes(sizeof(struct db_v2_trans)*(tr_cnt+1), "db_v2_trans");
+	pc[pc_cnt].trans=tr;  pc[pc_cnt].trans_cnt = tr_cnt+1;
 	
-	pc->protoid = dtfset->protoid;
+	pc[pc_cnt].protoid = dtfset->protoid;
 	
 	tr[0].transform_type = IKEv2_TRANS_TYPE_ENCR;
-	tr[0].transid        = dtfset->encr_transid;
+	tr[0].transid        = v1tov2_encr(dtfone->encr_transid);
 	
+	if(dtfone->integ_transid == 0) {
+	    tr[1].transid        = IKEv2_AUTH_HMAC_SHA1_96;
+	} else {
+	    tr[1].transid        = v1tov2_integ(dtfone->integ_transid);
+	}
 	tr[1].transform_type = IKEv2_TRANS_TYPE_INTEG;
-	tr[1].transid        = dtfset->hash_transid;
 	
 	tr[2].transform_type = IKEv2_TRANS_TYPE_PRF;
-	tr[2].transid        = dtfset->prf_transid;
+	tr[2].transid        = dtfone->prf_transid;
 	
 	tr[3].transform_type = IKEv2_TRANS_TYPE_DH;
-	tr[3].transid        = dtfset->group_transid;
+	tr[3].transid        = dtfone->group_transid;
 
 	if(dtfone->protoid != PROTO_ISAKMP) {
 	    tr[4].transform_type = IKEv2_TRANS_TYPE_ESN;
@@ -296,9 +360,9 @@ void sa_v2_convert(struct db_sa *f)
     }
     
     f->prop_disj = pr;
-    f->prop_disj_cnt = pr_cnt;
+    f->prop_disj_cnt = pr_cnt+1;
     
-    free(dtfset);
+    pfree(dtfset);
 }
 
     

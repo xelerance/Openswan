@@ -421,6 +421,7 @@ enum_names *oakley_attr_val_descs[] = {
 	NULL,			/* OAKLEY_FIELD_SIZE */
 	NULL,			/* OAKLEY_GROUP_ORDER */
     };
+const unsigned int oakley_attr_val_descs_size = elemsof(oakley_attr_val_descs);
 
 /* IPsec DOI attributes (RFC 2407 "IPsec DOI" section 4.5) */
 
@@ -823,17 +824,6 @@ const char *const critical_name[]= { "Payload-Critical", NULL };
 enum_names critical_names = 
 { ISAKMP_PAYLOAD_CRITICAL, ISAKMP_PAYLOAD_CRITICAL, critical_name, NULL};
 
-/* Transform Type */
-const char *const trans_type_name[]={
-    "trans-type-encr",
-    "trans-type-prf",
-    "trans-type-integ",
-    "trans-type-dh",
-    "trans-type-esn"
-};
-enum_names trans_type_names =
-{ IKEv2_TRANS_TYPE_ENCR, IKEv2_TRANS_TYPE_ESN, trans_type_name, NULL};
-
 /* Transform-type Encryption */
 const char *const trans_type_encr_name[]={
     "des-iv64",
@@ -882,6 +872,28 @@ const char *const trans_type_esn_name[]={
 enum_names trans_type_esn_names =
 { IKEv2_ESN_DISABLED, IKEv2_ESN_ENABLED, trans_type_esn_name, NULL};
 
+/* Transform Type */
+const char *const trans_type_name[]={
+    "trans-type-encr",
+    "trans-type-prf",
+    "trans-type-integ",
+    "trans-type-dh",
+    "trans-type-esn"
+};
+enum_names trans_type_names =
+{ IKEv2_TRANS_TYPE_ENCR, IKEv2_TRANS_TYPE_ESN, trans_type_name, NULL};
+
+/* for each IKEv2 transform attribute,which enum_names describes its values? */
+enum_names *ikev2_transid_val_descs[] = {
+    NULL,
+    &trans_type_encr_names, /* 1 */
+    &trans_type_prf_names,  /* 2 */
+    &trans_type_integ_names, /* 3 */
+    &oakley_group_names,    /* 4 */
+    &trans_type_esn_names,  /* 5 */
+};
+const unsigned int ikev2_transid_val_descs_size = elemsof(ikev2_transid_val_descs);
+    
 
 /* socket address family info */
 

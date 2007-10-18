@@ -18,6 +18,7 @@ extern const char *const sa_policy_bit_names[];
 extern enum_names oakley_attr_names;
 extern const char *const oakley_attr_bit_names[];
 extern enum_names *oakley_attr_val_descs[];
+extern const unsigned int  oakley_attr_val_descs_size;
 extern enum_names ipsec_attr_names;
 extern enum_names *ipsec_attr_val_descs[];
 extern enum_names sa_lifetime_names;
@@ -65,6 +66,9 @@ extern enum_names trans_type_encr_names;
 extern enum_names trans_type_prf_names;
 extern enum_names trans_type_integ_names;
 extern enum_names trans_type_esn_names;
+extern enum_names *ikev2_transid_val_descs[];
+extern const unsigned int ikev2_transid_val_descs_size;
+
 
 /* socket address family info */
 

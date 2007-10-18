@@ -59,11 +59,18 @@
 void
 print_sa_attr(struct db_attr *at)
 {
+    const struct enum_names *en;
+	
     if(at->type == 0) {
 	return;
     }
-    
-    printf("        type: %u val: %d\n", at->type, at->val);
+
+    if(at->type <= oakley_attr_val_descs_size) {
+	en = oakley_attr_val_descs[at->type];
+    }
+    printf("        type: %u(%s) val: %u(%s)\n"
+	   , at->type, enum_name(&oakley_attr_names, at->type+ISAKMP_ATTR_AF_TV)
+	   , at->val,  en ? enum_name(en, at->val) : "unknown");
 }
 
 void
@@ -112,17 +119,38 @@ sa_print(struct db_sa *f)
     }
 }
 
+static void
+print_sa_v2_attr(struct db_attr *at)
+{
+    const struct enum_names *en;
+	
+    if(at->type == 0) {
+	return;
+    }
+
+    en = NULL; /* XXX */
+    printf("        type: %u(%s) val: %u(%s)\n"
+	   , at->type, "" /*enum_name(&oakley_attr_names, at->type+ISAKMP_ATTR_AF_TV)*/
+	   , at->val,  en ? enum_name(en, at->val) : "unknown");
+}
+
 void
 print_sa_v2_trans(struct db_v2_trans *tr)
 {
     int i;
-    printf("      type: %u(%s) transform: %u cnt: %u\n"
+    const struct enum_names *en;
+
+    if(tr->transform_type <= ikev2_transid_val_descs_size) {
+	en = ikev2_transid_val_descs[tr->transform_type];
+    }
+
+    printf("      type: %u(%s) value: %u(%s) attr_cnt: %u\n"
 	   , tr->transform_type
 	   , enum_name(&trans_type_names, tr->transform_type)
-	   , tr->transid
+	   , tr->transid, en ? enum_name(en, tr->transid) : "unknown"
 	   , tr->attr_cnt);
     for(i=0; i<tr->attr_cnt; i++) {
-	print_sa_attr(&tr->attrs[i]);
+	print_sa_v2_attr(&tr->attrs[i]);
     }
 }
 
@@ -160,3 +188,11 @@ sa_v2_print(struct db_sa *f)
 		print_sa_v2_prop(&f->prop_disj[i]);
 	}
 }
+
+    
+/*
+ * Local Variables:
+ * c-style: pluto
+ * c-basic-offset: 4
+ * End:
+ */

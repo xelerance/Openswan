@@ -174,7 +174,10 @@ extern void print_sa_v2_prop_conj(struct db_v2_prop_conj *dp, int propnum);
 extern void print_sa_v2_prop(struct db_v2_prop *pc);
 extern void sa_v2_print(struct db_sa *f);
 
+/* IKEv1 <-> IKEv2 things */
 extern void sa_v2_convert(struct db_sa *f);
+extern enum ikev2_trans_type_encr v1tov2_encr(int oakley);
+extern enum ikev2_trans_type_integ v1tov2_integ(int oakley);
 
 
 #endif /*  _SPDB_H_ */
