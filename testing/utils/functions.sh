@@ -1204,7 +1204,7 @@ multilibtest() {
 	    export TEST_PURPOSE=regress
 
 	    echo "file ../$testobj" >lib-$testobj/.gdbinit
-	    echo "set args "${UNITTESTARS} >>lib-$testobj/.gdbinit
+	    echo "set args "${UNITTESTARGS} >>lib-$testobj/.gdbinit
 
 	    echo Running $testobj ${UNITTESTARGS}
 	    ( ulimit -c unlimited; cd lib-$testobj && ./testlist.sh >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
