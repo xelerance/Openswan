@@ -64,6 +64,7 @@ main(int argc, char *argv[])
 
     show_one_connection(c1);
     
+    set_debugging(DBG_EMITTING);
     ipsecdoi_initiate(/* whack-sock=stdout */1
 		      , c1
 		      , c1->policy
