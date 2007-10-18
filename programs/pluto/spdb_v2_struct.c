@@ -87,55 +87,73 @@ ikev2_out_sa(pb_stream *outs
 	    return_on(ret, FALSE);
     }
 
+    if(sadb->prop_disj_cnt == 0 || sadb->prop_disj) {
+	sa_v2_convert(sadb);
+    }
+
     /* now send out all the proposals */
     for(pc_cnt=0; pc_cnt < sadb->prop_disj_cnt; pc_cnt++)
     {
-	    struct db_v2_prop *vp = &sadb->prop_disj[pc_cnt];
+	struct db_v2_prop *vp = &sadb->prop_disj[pc_cnt];
+	int pr_cnt;	    
+
+	/* now send out all the transforms */
+	for(pr_cnt=0; pr_cnt < vp->prop_cnt; pr_cnt++)
+	{
+	    int ts_cnt;	    
+	    struct db_v2_prop_conj *vpc = &vp->props[pr_cnt];
+	    
 	    struct ikev2_prop p;
 	    pb_stream t_pbs;
-	    int ts_cnt;	    
-
+	    
 	    memset(&p, 0, sizeof(p));
-
-	    if(pc_cnt+1 < sadb->prop_disj_cnt) {
-		    p.isap_np      = ISAKMP_NEXT_P;
+	    
+	    /* if there is a next proposal, then the np needs to be set right */
+	    if(pr_cnt+1 < vp->prop_cnt || pc_cnt+1 < sadb->prop_disj_cnt) {
+		p.isap_np      = ISAKMP_NEXT_P;
 	    } else {
-		    p.isap_np      = ISAKMP_NEXT_NONE;
+		p.isap_np      = ISAKMP_NEXT_NONE;
 	    }
-		    
+	    
 	    p.isap_length  = 0;
-	    p.isap_propnum = pc_cnt+1;
+	    p.isap_propnum = pr_cnt+1;
 	    p.isap_protoid = PROTO_ISAKMP;
 	    p.isap_spisize = 0;  /* set when we rekey */
-	    p.isap_numtrans= 1;
-
-	    if (!out_struct(&p, &ikev2_prop_desc, &sa_pbs, &t_pbs))
-		    return_on(ret, FALSE);
-
-	    if(p.isap_spisize > 0) {
-		    /* out_raw() with SPI value */
-	    }
-
-	    /* now send out all the transforms */
-	    for(ts_cnt=0; ts_cnt < vp->prop_cnt; ts_cnt++)
-	    {
-		    struct db_v2_prop_conj *vpc = &vp->props[ts_cnt];
-		    struct ikev2_trans t;
+	    p.isap_numtrans= vpc->trans_cnt;
 	    
-		    memset(&t, 0, sizeof(t));
-		    if(ts_cnt+1 < vp->prop_cnt) {
-			    t.isat_np      = ISAKMP_NEXT_T;
-		    } else {
-			    t.isat_np      = ISAKMP_NEXT_NONE;
-		    }
-		    
-		    t.isat_length = 0;
-		    t.isat_type   = vpc->protoid;
-		    t.isat_transid= ts_cnt+1;
-
-		    if (!out_struct(&t, &ikev2_trans_desc, &t_pbs, NULL))
-			    return_on(ret, FALSE);
+	    if (!out_struct(&p, &ikev2_prop_desc, &sa_pbs, &t_pbs))
+		return_on(ret, FALSE);
+	    
+	    if(p.isap_spisize > 0) {
+		/* out_raw() with SPI value */
 	    }
+	
+	    for(ts_cnt=0; ts_cnt < vpc->trans_cnt; ts_cnt++) {
+		struct db_v2_trans *tr = &vpc->trans[ts_cnt];
+		struct ikev2_trans t;
+		pb_stream at_pbs;
+	    
+		memset(&t, 0, sizeof(t));
+		if(ts_cnt+1 < vpc->trans_cnt) {
+		    t.isat_np      = ISAKMP_NEXT_T;
+		} else {
+		    t.isat_np      = ISAKMP_NEXT_NONE;
+		}
+
+		
+		t.isat_length = 0;
+		t.isat_type   = tr->transform_type;
+		t.isat_transid= tr->transid;
+
+		if (!out_struct(&t, &ikev2_trans_desc, &t_pbs, &at_pbs))
+		    return_on(ret, FALSE);
+		
+		/* here we need to send out the attributes */
+		/* XXX */
+		close_output_pbs(&at_pbs);
+	    }
+	    close_output_pbs(&t_pbs);
+	}
     }
 
     close_output_pbs(&sa_pbs);
