@@ -126,13 +126,8 @@ struct pubkey_list *pluto_pubkeys = NULL;	/* keys from ipsec.conf */
 bool listening = TRUE;
 bool strict_crl_policy = FALSE;
 
-/* efence defines */
-extern int EF_DISABLE_BANNER;
-extern int EF_ALIGNMENT;
-extern int EF_PROTECT_BELOW;
-extern int EF_PROTECT_FREE;
-extern int EF_ALLOW_MALLOC_0;
-extern int EF_FREE_WIPES;
+#include "efencedef.h"
+
 
 void readwhackmsg(char *infile)
 {

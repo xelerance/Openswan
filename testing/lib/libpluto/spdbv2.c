@@ -12,6 +12,8 @@
 #include "spdb.h"
 #include "ike_alg.h"
 
+#include "efencedef.h"
+
 char *progname;
 
 bool can_do_IPcomp = TRUE;  
@@ -81,6 +83,9 @@ main(int argc, char *argv[])
     struct db_sa *sa2 = NULL;
     struct alg_info_ike *aii;
     err_t ugh;
+
+    EF_PROTECT_FREE=1;
+    EF_FREE_WIPES  =1;
 
     progname = argv[0];
 
