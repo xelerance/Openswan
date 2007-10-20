@@ -66,6 +66,13 @@ mkdir -p ${REGRESSRESULTS}
 
 perl -e 'print time()."\n";' >${REGRESSRESULTS}/datestamp
 
+# Create all the X509 certs before we start testing
+# Yes, we do this every full regression, since some certs are time/date specific, and
+# need to be recreated to ensure the tests are legit.
+#
+
+cd $BUILDSPOOL/${TOPMODULE}/testing/x509 && ./dist_certs
+
 cd $BUILDSPOOL/${TOPMODULE} && make check
 
 perl $BUILDSPOOL/${TOPMODULE}/testing/utils/regress-summarize-results.pl $REGRESSRESULTS notest
