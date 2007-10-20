@@ -195,3 +195,11 @@ extern void calc_dh(struct pluto_crypto_req *r);
 
 #endif /* _PLUTO_CRYPT_H */
 
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */
+ 
