@@ -273,6 +273,11 @@ static struct vid_struct _vid_tab[] = {
 	DEC_MD5_VID(MISC_FRAGMENTATION, "FRAGMENTATION")
 	DEC_MD5_VID(INITIAL_CONTACT, "Vid-Initial-Contact")
 
+	/* Microsoft Windows Vista, and maybe Server 2008? */
+ 	DEC_MD5_VID(VISTA_AUTHIP,  "MS-Negotiation Discovery Capable")
+ 	DEC_MD5_VID(VISTA_AUTHIP2, "IKE CGA version 1")
+	DEC_MD5_VID(VISTA_AUTHIP3, "MS-MamieExists")
+
 	/*
 	 * NCP.de
 	 */
