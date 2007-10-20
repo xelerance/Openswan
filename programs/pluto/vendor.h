@@ -60,6 +60,12 @@ enum known_vendorid {
   VID_SONICWALL_1           =39,
   VID_SONICWALL_2           =40,
 
+/* World of Microsoft */
+  VID_VISTA_AUTHIP	    =51,
+  VID_VISTA_AUTHIP2	    =52,
+  VID_VISTA_AUTHIP3	    =53,
+
+
 
   /* 101 - 200 : NAT-Traversal */
   VID_NATT_STENBERG_01       =101,
