@@ -86,7 +86,7 @@ DISTSRC = \
 	crypto.h crypto.c \
 	db_ops.c \
 	defs.h defs.c \
-	demux.c demux.h \
+	demux.c demux.h msgdigest.c \
 	dnskey.c dnskey.h \
 	dpd.c dpd.h \
 	myid.c hmac.c \
@@ -142,7 +142,7 @@ OBJSPLUTO += ikev2_parent.o ikev2_child.o spdb_v2_struct.o
 OBJSPLUTO += ikeping.o kernel.o 
 OBJSPLUTO += $(NETKEY_OBJS) ${KLIPS_OBJS} ${MAST_OBJS} ${WIN2K_OBJS} ${FUNK_OBJS}
 OBJSPLUTO += kernel_noklips.o rcv_whack.o 
-OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o keys.o dnskey.o
+OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o msgdigest.o keys.o dnskey.o
 OBJSPLUTO += pluto_crypt.o crypt_utils.o crypt_ke.o crypt_dh.o crypt_start_dh.o
 OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_print.o 
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o 
