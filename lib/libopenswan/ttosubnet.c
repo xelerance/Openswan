@@ -76,7 +76,6 @@ ip_subnet *dst;
 		return "no / in subnet specification";
 	mask = slash + 1;
 	mlen = srclen - (mask - src);
-
 	oops = ttoaddr(src, slash-src, af, &addrtmp);
 	if (oops != NULL)
 		return oops;
@@ -115,7 +114,6 @@ ip_subnet *dst;
 	} else {
 	  return "masks are not permitted for IPv6 addresses";
 	}
-
 	return initsubnet(&addrtmp, i, '0', dst);
 }
 
@@ -156,7 +154,6 @@ int main(int argc, char *argv[])
 		p = argv[2];
 	} else if (strchr(argv[1], ':') != NULL)
 		af = AF_INET6;
-
 	oops = ttosubnet(p, 0, af, &s);
 	if (oops != NULL) {
 		fprintf(stderr, "%s: conversion failed: %s\n", argv[0], oops);
@@ -212,14 +209,14 @@ struct rtab {
 	{4, "10/8",			"10.0.0.0/8"},
 	{4, "10.0/8",			"10.0.0.0/8"},
 	{4, "10.0.0/8",			"10.0.0.0/8"},
-	{4, "10.0.1/24",			"10.0.1.0/24"},
+	{4, "10.0.1/24",		"10.0.1.0/24"},
 	{4, "_",				NULL},
 	{4, "_/_",			NULL},
 	{4, "1.2.3.1",			NULL},
 	{4, "1.2.3.1/_",			NULL},
 	{4, "1.2.3.1/24._",		NULL},
 	{4, "1.2.3.1/99",		NULL},
-	{4, "localhost/32", 		"127.0.0.1/32"},
+	{4, "localhost/32", 		NULL},
 	{4, "%default",			"0.0.0.0/0"},
 	{6, "3049:1::8007:2040/0",	"::/0"},
 	{6, "3049:1::8007:2040/128",	"3049:1::8007:2040/128"},
@@ -270,26 +267,26 @@ regress(void)
 	for (r = rtab; r->input != NULL; r++) {
 		af = (r->family == 4) ? AF_INET : AF_INET6;
 		strcpy(in, r->input);
+		printf("Testing `%s' ... ",in);
 		oops = ttosubnet(in, 0, af, &s);
-		if (oops != NULL && r->output == NULL)
-			{}		/* okay, error expected */
-		else if (oops != NULL) {
+		if (oops != NULL && r->output == NULL ) { /* Error was expected, do nothing */
+			printf("OK (%s)\n",oops);
+		}
+		if (oops == NULL && r->output != NULL ) { /* No error, no error expected */
+			printf("OK\n");
+		} 
+		if (oops == NULL && r->output == NULL ) { /* If no errors, but we expected one */
+			printf("`%s' ttosubnet succeeded unexpectedly\n", r->input);
+			status = 1;
+		}
+		if (oops != NULL && r->output != NULL ) { /* Error occurred, but we didn't expect one  */
 			printf("`%s' ttosubnet failed: %s\n", r->input, oops);
 			status = 1;
-		} else if (r->output == NULL) {
-			printf("`%s' ttosubnet succeeded unexpectedly\n",
-								r->input);
-			status = 1;
-		} else {
 			n = subnetporttot(&s, 0, buf, sizeof(buf));
 			if (n > sizeof(buf)) {
-				printf("`%s' subnettot failed:  need %ld\n",
-							r->input, (long)n);
-				status = 1;
+				printf("`%s' subnettot failed:  need %ld\n", r->input, (long)n);
 			} else if (strcmp(r->output, buf) != 0) {
-				printf("`%s' gave `%s', expected `%s'\n",
-						r->input, buf, r->output);
-				status = 1;
+				printf("`%s' gave `%s', expected `%s'\n", r->input, buf, r->output);
 			}
 		}
 	}
