@@ -15,7 +15,7 @@ rm -f reqs/* certs/* keys/* newcerts/* cacerts/* crls/* pkcs12/* index.txt* seri
 
 # Prep
 mkdir -p certs crls newcerts keys reqs pkcs12 cacerts
-touch index.txt
+/usr/bin/touch index.txt
 echo "01" > serial
 export OPENSSL_CONF=./openssl.cnf
 
