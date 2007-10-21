@@ -95,6 +95,11 @@
 #endif
 
 const char *ctlbase = "/var/run/pluto";
+#ifdef LEAK_DETECTIVE
+int leak_detective=1;
+#else
+int leak_detective=0;
+#endif
 
 openswan_passert_fail_t openswan_passert_fail = passert_fail;
 

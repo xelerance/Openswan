@@ -3,6 +3,7 @@
 #include "../../programs/pluto/crypt_dh.c"
 
 char *progname;
+int leak_detective=1;
 
 void exit_tool(int stat)
 {

@@ -54,6 +54,6 @@ main(int argc, char *argv[])
  * Local Variables:
  * c-style: pluto
  * c-basic-offset: 4
- * compile-command: "make whackmsgtest"
+ * compile-command: "make TEST=whackmsgtest one"
  * End:
  */

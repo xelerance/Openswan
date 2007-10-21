@@ -1,3 +1,24 @@
+55,62c55
+< ../refineconnection leak: 6 * struct state in new_state()
+< ../refineconnection leak: myid string
+< ../refineconnection leak: my FQDN
+< ../refineconnection leak: host_pair
+< ../refineconnection leak: host ip
+< ../refineconnection leak: keep id name
+< ../refineconnection leak: host ip
+< ../refineconnection leak: keep id name
+---
+> ../refineconnection leak: 2 * host ip
+65,73d57
+< ../refineconnection leak: policies path
+< ../refineconnection leak: ocspcerts path
+< ../refineconnection leak: aacerts path
+< ../refineconnection leak: certs path
+< ../refineconnection leak: private path
+< ../refineconnection leak: crls path
+< ../refineconnection leak: cacert path
+< ../refineconnection leak: acert path
+< ../refineconnection leak: 7 * default conf
 3c3,6
 < Pre-amble: #!-pluto-whack-file- recorded on east on 2007-07-04 01:12:06
 ---
