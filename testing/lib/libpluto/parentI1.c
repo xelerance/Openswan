@@ -63,14 +63,16 @@ main(int argc, char *argv[])
     c1 = con_by_name(conn_name, TRUE);
 
     show_one_connection(c1);
-    
-    set_debugging(DBG_EMITTING);
+
+    c1->extra_debugging = DBG_EMITTING|DBG_CONTROLMORE;
     ipsecdoi_initiate(/* whack-sock=stdout */1
 		      , c1
 		      , c1->policy
 		      , 0
 		      , FALSE
 		      , pcim_demand_crypto);
+
+    run_continuation();
 
     report_leaks();
 

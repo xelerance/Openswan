@@ -11,8 +11,14 @@ RC=0 "westnet--eastnet-ikev2":     myip=unset; hisip=unset;
 RC=0 "westnet--eastnet-ikev2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 RC=0 "westnet--eastnet-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init; prio: 24,24; interface: eth0; 
 RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+| creating state object #1 at 0x40221c00
 | interface "eth0" matched right side
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
 ../parentI1 initiating v2 parent SA
+RC=104 STATE_IKE_ROOF: initiate
+| ikev2 parent outI1: calculated ke+nonce, sending I1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
@@ -215,7 +221,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 |   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
 |   00 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00
-RC=104 STATE_IKE_ROOF: initiate
+transitioning on result: STF_OK
 ../parentI1 leak: 2 * host ip
 ../parentI1 leak: connection name
 ../parentI1 leak: struct connection

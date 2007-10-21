@@ -32,7 +32,6 @@ void unroute_connection(struct connection *c) {}
 void release_cert(cert_t cert) {}
 bool trap_connection(struct connection *c) { return TRUE; }
 void free_ietfAttrList(ietfAttrList_t* list) {}
-void extra_debugging(const struct connection *c) {}
 void perpeer_logfree(struct connection *c) {}
 void add_pgp_public_key(pgpcert_t *cert , time_t until, enum dns_auth_level dns_auth_level) {}
 pgpcert_t*pluto_add_pgpcert(pgpcert_t *cert) { return NULL; }

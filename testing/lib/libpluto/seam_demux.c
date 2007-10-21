@@ -75,3 +75,9 @@ send_packet(struct state *st, const char *where, bool verbose)
 }
 
 
+void
+complete_state_transition(struct msg_digest **mdp, stf_status result)
+{
+	fprintf(stderr, "transitioning on result: %s\n"
+		, enum_name(&stfstatus_name, result));
+}
