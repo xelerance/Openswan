@@ -1,10 +1,7 @@
 /*
  * continuations used
  */
-struct ke_continuation {
-    struct pluto_crypto_req_cont ke_pcrc;
-    struct msg_digest           *md;
-};
+#include "ike_continuations.h"
 
 struct qke_continuation {
     struct pluto_crypto_req_cont qke_pcrc;

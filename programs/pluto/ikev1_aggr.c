@@ -963,7 +963,7 @@ aggr_outI1(int whack_sock,
 
     {
 	struct ke_continuation *ke = alloc_thing(struct ke_continuation
-						 , "outI2 KE");
+						 , "aggr_outI1 KE");
 	stf_status e;
 
 	ke->md = alloc_md();
