@@ -1206,7 +1206,7 @@ multilibtest() {
 	    echo "file ../$testobj" >lib-$testobj/.gdbinit
 	    echo "set args "${UNITTESTARGS} >>lib-$testobj/.gdbinit
 
-	    echo Running $testobj ${UNITTESTARGS}
+	    echo Multilib running lib-$testobj/testlist.sh for $testobj ${UNITTESTARGS}
 	    ( ulimit -c unlimited; cd lib-$testobj && ./testlist.sh >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
 
 	    stat=$?
