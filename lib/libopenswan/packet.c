@@ -701,6 +701,75 @@ struct_desc ikev2_trans_desc = { "IKEv2 Transform Substructure Payload",
 			      ikev2trans_fields, sizeof(struct ikev2_trans) };
 
 
+/* 3.4.  Key Exchange Payload
+ *
+ * The Key Exchange Payload, denoted KE in this memo, is used to
+ * exchange Diffie-Hellman public numbers as part of a Diffie-Hellman
+ * key exchange.  The Key Exchange Payload consists of the IKE generic
+ * payload header followed by the Diffie-Hellman public value itself.
+ *
+ *                         1                   2                   3
+ *     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ! Next Payload  !C!  RESERVED   !         Payload Length        !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !          DH Group #           !           RESERVED            !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !                                                               !
+ *    ~                       Key Exchange Data                       ~
+ *    !                                                               !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ *              Figure 10:  Key Exchange Payload Format
+ *	
+ */
+static field_desc ikev2ke_fields[] = {
+    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_nat, 16/BITS_PER_BYTE, "transform type", &oakley_group_names },
+    { ft_mbz, 16/BITS_PER_BYTE, NULL, NULL },
+    { ft_end,  0, NULL, NULL }
+};
+
+struct_desc ikev2_ke_desc = { "IKEv2 Key Exchange Payload",
+			      ikev2ke_fields, sizeof(struct ikev2_ke) };
+
+/* 
+ * 3.9.  Nonce Payload
+ * 
+ * The Nonce Payload, denoted Ni and Nr in this memo for the initiator's
+ * and responder's nonce respectively, contains random data used to
+ * guarantee liveness during an exchange and protect against replay
+ * attacks.
+ *
+ * The Nonce Payload is defined as follows:
+ *
+ *                         1                   2                   3
+ *     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ! Next Payload  !C!  RESERVED   !         Payload Length        !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !                                                               !
+ *    ~                            Nonce Data                         ~
+ *    !                                                               !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ *                 Figure 15:  Nonce Payload Format
+ */
+static field_desc ikev2nonce_fields[] = {
+    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names},
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_end,  0, NULL, NULL }
+};
+
+struct_desc ikev2_nonce_desc = { "IKEv2 Nonce Payload",
+			      ikev2nonce_fields, sizeof(struct ikev2_nonce) };
+
+
+
+
 /* descriptor for each payload type
  *
  * There is a slight problem in that some payloads differ, depending
@@ -736,6 +805,9 @@ struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
     NULL, NULL, NULL, NULL,             /* 26,27,28,29 */
     NULL, NULL, NULL,                   /* 30,31,32 */
     &ikev2_sa_desc,                     /* 33 */
+    &ikev2_ke_desc,                     /* 34 */
+    NULL, NULL, NULL, NULL, NULL,       /* 35, 36, 37, 38, 39 */
+    &ikev2_nonce_desc,
 };
 
 void

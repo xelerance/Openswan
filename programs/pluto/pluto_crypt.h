@@ -101,8 +101,6 @@ struct pcr_skeyid_r {
     memcpy(wire_chunk_ptr(ctner, w), c->ptr, c->len);	\
   } while(0)
 
-
-
 struct pluto_crypto_req {
   size_t                     pcr_len;
 
@@ -192,6 +190,31 @@ extern void finish_dh_secret(struct state *st,
 
 extern void calc_dh_iv(struct pluto_crypto_req *r);
 extern void calc_dh(struct pluto_crypto_req *r);
+
+extern void unpack_KE(struct state *st
+		      , struct pluto_crypto_req *r
+		      , chunk_t *g);
+extern void unpack_nonce(chunk_t *n, struct pluto_crypto_req *r);
+
+
+static inline void clonetowirechunk(wire_chunk_t  *thespace,
+			     unsigned char *space,
+			     wire_chunk_t *wiretarget,
+			     const void   *origdat,
+			     const size_t  origlen)
+{
+    char *gip;
+    pluto_crypto_allocchunk(thespace, wiretarget, origlen);
+
+    gip = space_chunk_ptr(space, wiretarget);
+    memcpy(gip, origdat, origlen);
+}
+
+static inline void pcr_init(struct pluto_crypto_req *r)
+{
+    r->pcr_d.kn.thespace.start = 0;
+    r->pcr_d.kn.thespace.len   = sizeof(r->pcr_d.kn.space);
+}
 
 #endif /* _PLUTO_CRYPT_H */
 

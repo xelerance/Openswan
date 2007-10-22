@@ -17,9 +17,6 @@ extern bool ship_nonce(chunk_t *n, struct pluto_crypto_req *r
 		       , pb_stream *outs, u_int8_t np
 		       , const char *name);
 
-extern void unpack_KE(struct state *st
-		      , struct pluto_crypto_req *r
-		      , chunk_t *g);
 extern bool justship_KE(chunk_t *g
 			, pb_stream *outs, u_int8_t np);
 

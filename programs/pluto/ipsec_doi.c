@@ -206,26 +206,6 @@ unpack_KE(struct state *st
     }
 }
 
-/*
- * package up the calculate KE value, and emit it as a KE payload.
- */
-bool
-justship_KE(chunk_t *g
-	    , pb_stream *outs, u_int8_t np)
-{
-    return out_generic_chunk(np, &isakmp_keyex_desc, outs, *g, "keyex value");
-}
-
-bool
-ship_KE(struct state *st
-	, struct pluto_crypto_req *r
-	, chunk_t *g
-	, pb_stream *outs, u_int8_t np)
-{
-    unpack_KE(st, r, g);
-    return justship_KE(g, outs, np);
-}
-	
 /* accept_ke
  *
  * Check and accept DH public value (Gi or Gr) from peer's message.
@@ -698,6 +678,10 @@ void initialize_new_state(struct state *st
 
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
     insert_state(st);	/* needs cookies, connection */
+
+#ifdef DEBUG
+    extra_debugging(c);
+#endif
 }
 
 void

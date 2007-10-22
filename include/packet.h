@@ -677,10 +677,22 @@ extern struct_desc *const payload_descs[ISAKMP_NEXT_ROOF];
 /*
  * IKEv2 structures
  */
+/* 
+ * 3.2.  Generic Payload Header
+ */
+struct ikev2_generic
+{
+	u_int8_t    isag_np;
+	u_int8_t    isag_critical;
+	u_int16_t   isag_length;
+};
+
+extern struct_desc ikev2_generic_desc;
+
 struct ikev2_sa
 {
 	u_int8_t  isasa_np;			/* Next payload */
-	u_int8_t  isasa_commit;
+	u_int8_t  isasa_critical;
 	u_int16_t isasa_length;		/* Payload length */
 };
 
@@ -710,6 +722,26 @@ struct ikev2_trans
 	u_int8_t  isat_transid;     /* ID */
 };
 extern struct_desc ikev2_trans_desc;
+
+/* rfc4306, section 3.4 */
+struct ikev2_ke
+{
+	u_int8_t  isak_np;	    /* Next payload */
+	u_int8_t  isak_res1;
+	u_int16_t isak_length;	    /* Payload length */
+	u_int16_t isak_group;       /* transform type */
+	u_int16_t isak_res2;
+};
+extern struct_desc ikev2_ke_desc;
+
+/* rfc4306, section 3.9 */
+struct ikev2_nonce
+{
+	u_int8_t  isan_np;	    /* Next payload */
+	u_int8_t  isan_critical;
+	u_int16_t isan_length;	    /* Payload length */
+};
+extern struct_desc ikev2_nonce_desc;
 
 
 #endif /* _PACKET_H */

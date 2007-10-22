@@ -1243,6 +1243,27 @@ main_inR1_outI2(struct msg_digest *md)
     }
 }
 
+/*
+ * package up the calculate KE value, and emit it as a KE payload.
+ * used by IKEv1: main, aggressive, and quick (in PFS mode).
+ */
+bool
+justship_KE(chunk_t *g
+	    , pb_stream *outs, u_int8_t np)
+{
+    return out_generic_chunk(np, &isakmp_keyex_desc, outs, *g, "keyex value");
+}
+
+bool
+ship_KE(struct state *st
+	, struct pluto_crypto_req *r
+	, chunk_t *g
+	, pb_stream *outs, u_int8_t np)
+{
+    unpack_KE(st, r, g);
+    return justship_KE(g, outs, np);
+}
+	
 /* STATE_MAIN_I1: HDR, SA --> auth dependent
  * PSK_AUTH, DS_AUTH: --> HDR, KE, Ni
  *

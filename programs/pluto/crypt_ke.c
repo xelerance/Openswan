@@ -126,12 +126,11 @@ stf_status build_ke(struct pluto_crypto_req_cont *cn
 
     memset(&rd, 0, sizeof(rd));
 
-  r->pcr_len  = sizeof(struct pluto_crypto_req);
-  r->pcr_type = pcr_build_kenonce;
-  r->pcr_pcim = importance;
+    r->pcr_len  = sizeof(struct pluto_crypto_req);
+    r->pcr_type = pcr_build_kenonce;
+    r->pcr_pcim = importance;
 
-  r->pcr_d.kn.thespace.start = 0;
-  r->pcr_d.kn.thespace.len   = sizeof(r->pcr_d.kn.space);
+    pcr_init(r);
   r->pcr_d.kn.oakley_group   = group->group;
 
   cn->pcrc_serialno = st->st_serialno;
@@ -202,7 +201,7 @@ stf_status build_nonce(struct pluto_crypto_req_cont *cn
 
 /*
  * Local Variables:
- * c-basic-offset:4
+ * c-basic-offset: 4
  * c-style: pluto
  * End:
  */
