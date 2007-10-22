@@ -30,7 +30,7 @@ RC=104 STATE_IKE_ROOF: initiate
 |    flags: ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 00
 | ***emit IKEv2 Security Association Payload:
-|    next payload type: ISAKMP_NEXT_VID
+|    next payload type: ISAKMP_NEXT_v2KE
 |    critical bit: Payload-Critical
 | ****emit IKEv2 Proposal Substructure Payload:
 |    next payload type: ISAKMP_NEXT_P
@@ -195,15 +195,37 @@ RC=104 STATE_IKE_ROOF: initiate
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | emitting length of IKEv2 Security Association Payload: 244
-| out_vendorid(): sending [Dead Peer Detection]
+| ***emit IKEv2 Key Exchange Payload:
+|    next payload type: ISAKMP_NEXT_v2Ni
+|    transform type: 0
+| emitting 192 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
+| ikev2 g^x  ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
+|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
+|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
+|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
+|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
+|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
+|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
+|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
+|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
+|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
+|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
+|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
+| emitting length of IKEv2 Key Exchange Payload: 200
+| ***emit IKEv2 Nonce Payload:
+|    next payload type: ISAKMP_NEXT_v2V
+|    critical bit: Payload-Critical
+| emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
+| IKEv2 nonce  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
+| emitting length of IKEv2 Nonce Payload: 20
 | ***emit ISAKMP Vendor ID Payload:
 |    next payload type: ISAKMP_NEXT_NONE
-| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
-| V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
-| emitting length of ISAKMP Vendor ID Payload: 20
-| emitting length of ISAKMP Message: 292
+| emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
+| Vendor ID  4f 45 50 63  5f 48 5f 52  78 62 6c 6c
+| emitting length of ISAKMP Vendor ID Payload: 16
+| emitting length of ISAKMP Message: 508
 |   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 01 24  0d 80 00 f4
+|   21 20 22 08  00 00 00 00  00 00 01 fc  22 80 00 f4
 |   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
 |   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
 |   00 00 00 08  04 00 00 05  02 00 00 28  02 01 00 04
@@ -219,15 +241,49 @@ RC=104 STATE_IKE_ROOF: initiate
 |   00 00 00 08  04 00 00 02  00 00 00 28  06 01 00 04
 |   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
 |   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
-|   00 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
-|   77 57 01 00
+|   28 00 00 c8  00 00 00 00  ff bc 6a 92  a6 b9 55 9b
+|   05 fa 96 a7  a4 35 07 b4  c1 e1 c0 86  1a 58 71 d9
+|   ba 73 a1 63  11 37 88 c0  de bb 39 79  e7 ff 0c 52
+|   b4 ce 60 50  eb 05 36 9e  a4 30 0d 2b  ff 3b 1b 29
+|   9f 3b 80 2c  cb 13 31 8c  2a b9 e3 b5  62 7c b4 b3
+|   5e b9 39 98  20 76 b5 7c  05 0d 7b 35  c3 c5 c7 cc
+|   8c 0f ea b7  b6 4a 7d 7b  6b 8f 6b 4d  ab f4 ac 40
+|   6d d2 01 26  b9 0a 98 ac  76 6e fa 37  a7 89 0c 43
+|   94 ff 9a 77  61 5b 58 f5  2d 65 1b bf  a5 8d 2a 54
+|   9a f8 b0 1a  a4 bc a3 d7  62 42 66 63  b1 55 d4 eb
+|   da 9f 60 a6  a1 35 73 e6  a8 88 13 5c  dc 67 3d d4
+|   83 02 99 03  f3 a9 0e ca  23 e1 ec 1e  27 03 31 b2
+|   d0 50 f4 f7  58 f4 99 27  2b 80 00 14  b5 ce 84 19
+|   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  00 00 00 10
+|   4f 45 50 63  5f 48 5f 52  78 62 6c 6c
 transitioning on result: STF_OK
-../parentI1 leak: 2 * host ip
+| deleting state #1
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+../parentI1 leak: long term secret
+../parentI1 leak: ikev2_outI1 KE
+../parentI1 leak: myid string
+../parentI1 leak: my FQDN
+../parentI1 leak: host_pair
+../parentI1 leak: host ip
+../parentI1 leak: keep id name
+../parentI1 leak: host ip
+../parentI1 leak: keep id name
 ../parentI1 leak: connection name
 ../parentI1 leak: struct connection
-sending 292 bytes for main_outI1 through eth0:500 to 192.1.2.45:500 (using #1)TCPDUMP output
+../parentI1 leak: policies path
+../parentI1 leak: ocspcerts path
+../parentI1 leak: aacerts path
+../parentI1 leak: certs path
+../parentI1 leak: private path
+../parentI1 leak: crls path
+../parentI1 leak: cacert path
+../parentI1 leak: acert path
+../parentI1 leak: 7 * default conf
+TCPDUMP output
 reading from file parentI1.pcap, link-type NULL (BSD loopback)
-20:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 320, bad cksum 0 (->f559)!)
+20:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f481)!)
     192.168.1.1.500 > 192.168.2.2.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[I]:
     (sa[C]: len=240
         (p: #1 protoid=isakmp transform=4
@@ -260,4 +316,6 @@ reading from file parentI1.pcap, link-type NULL (BSD loopback)
             (t: #2 type=integ id=hmac-sha )
             (t: #3 type=prf id=hmac-md5 )
             (t: #4 type=dh id=modp1024 )))
-    (vid: len=16)
+    (v2ke: len=192 group=#0)
+    (nonce[C]: len=16 nonce=(b5ce8419095c6e2b6b62d3055305b3c4) )
+    (v2vid: len=12 vid=OEPc_H_Rxbll)

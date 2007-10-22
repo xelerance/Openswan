@@ -11,6 +11,7 @@ EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/ikev2_parent.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/state.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/msgdigest.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/hmac.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/crypt_utils.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/cookie.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/spdb.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o"
@@ -22,5 +23,5 @@ EXTRALIBS="${EXTRALIBS} -lgmp -lefence -lpcap"
 UNITTESTARGS="ikev2.record westnet--eastnet-ikev2"
 
 # Local Variables:
-# compile-command: "make parentI1"
+# compile-command: "make TEST=parentI1 one"
 # End:

@@ -32,9 +32,6 @@ one:
 refineconnection: refineconnection.c lib-refineconnection/testlist.sh OUTPUT.refineconnection.txt FLAGS.refineconnection
 	source ${UTILS}/functions.sh; multilibtest `basename $< .c`
 
-%: %.c OUTPUT.%.txt FLAGS.% 
-	source ${UTILS}/functions.sh; libtest `basename $< .c`
-
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
 	@false

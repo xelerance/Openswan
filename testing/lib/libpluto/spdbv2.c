@@ -15,6 +15,7 @@
 #include "efencedef.h"
 
 char *progname;
+int leak_detective=1;
 
 bool can_do_IPcomp = TRUE;  
 

@@ -14,14 +14,12 @@ stf_status build_ke(struct pluto_crypto_req_cont *cn
 	return STF_SUSPEND;
 }
 
-void run_continuation()
+void run_continuation(struct pluto_crypto_req *r)
 {
-	struct pluto_crypto_req r;
-
 	while(continuation != NULL) {
 		struct pluto_crypto_req_cont *cn = continuation;
 		continuation = NULL;
-		(*cn->pcrc_func)(cn, &r, NULL);
+		(*cn->pcrc_func)(cn, r, NULL);
 	}
 }
 
