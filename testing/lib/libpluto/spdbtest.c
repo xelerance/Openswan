@@ -5,7 +5,6 @@
 #include "../../programs/pluto/spdb.c"
 
 char *progname;
-int leak_detective=1;
 
 void exit_tool(int stat)
 {
@@ -19,6 +18,7 @@ main(int argc, char *argv[])
     struct db_sa *sa2 = NULL;
     
     progname = argv[0];
+    leak_detective=1;
 
     tool_init_log();
     

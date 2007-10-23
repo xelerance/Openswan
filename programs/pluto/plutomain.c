@@ -95,11 +95,6 @@
 #endif
 
 const char *ctlbase = "/var/run/pluto";
-#ifdef LEAK_DETECTIVE
-int leak_detective=1;
-#else
-int leak_detective=0;
-#endif
 
 openswan_passert_fail_t openswan_passert_fail = passert_fail;
 
@@ -296,6 +291,11 @@ main(int argc, char **argv)
 #ifdef VIRTUAL_IP
     /** Overridden by virtual_private= in ipsec.conf */
     char *virtual_private = NULL;
+#endif
+#ifdef LEAK_DETECTIVE
+    leak_detective=1;
+#else
+    leak_detective=0;
 #endif
 
     global_argv = argv;

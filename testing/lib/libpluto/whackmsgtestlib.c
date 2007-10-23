@@ -1,5 +1,4 @@
 char *progname;
-int leak_detective = 1;
 
 /* LINK seams */
 void exit_log(const char *msg, ...)

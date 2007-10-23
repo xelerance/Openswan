@@ -37,6 +37,7 @@ main(int argc, char *argv[])
     EF_FREE_WIPES  =1;
 
     progname = argv[0];
+    leak_detective = 1;
 
     if(argc != 3 ) {
 	fprintf(stderr, "Usage: %s <whackrecord> <idfile>\n", progname);

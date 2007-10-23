@@ -3,7 +3,6 @@
 #include "../../programs/pluto/crypt_dh.c"
 
 char *progname;
-int leak_detective=1;
 
 void exit_tool(int stat)
 {
@@ -143,6 +142,7 @@ main(int argc, char *argv[])
     const struct hash_desc *hasher;
 
     progname = argv[0];
+    leak_detective=1;
 
     cur_debugging = DBG_ALL;
 

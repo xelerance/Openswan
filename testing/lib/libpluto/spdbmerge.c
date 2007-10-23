@@ -28,7 +28,6 @@ static struct db_prop_conj oakley_props_empty[] = { { AD_PC(oakley_pc_empty) } }
 struct db_sa oakley_empty = { AD(oakley_props_empty) };
 
 char *progname;
-int leak_detective=1;
 
 void exit_tool(int stat)
 {
@@ -43,6 +42,7 @@ main(int argc, char *argv[])
     struct db_sa *sa2 = NULL;
 
     progname = argv[0];
+    leak_detective=1;
 
     tool_init_log();
     

@@ -15,7 +15,6 @@
 #include "efencedef.h"
 
 char *progname;
-int leak_detective=1;
 
 bool can_do_IPcomp = TRUE;  
 
@@ -89,6 +88,7 @@ main(int argc, char *argv[])
     EF_FREE_WIPES  =1;
 
     progname = argv[0];
+    leak_detective=1;
 
     tool_init_log();
     init_crypto();

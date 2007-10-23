@@ -89,6 +89,7 @@ main(int argc, char *argv[])
     EF_FREE_WIPES  =1;
 
     progname = argv[0];
+    leak_detective = 1;
     memset(&r, 0, sizeof(r));
     pcr_init(&r);
 

@@ -13,7 +13,6 @@
 #include "ike_alg.h"
 
 char *progname;
-int leak_detective=1;
 
 bool can_do_IPcomp = TRUE;  
 
@@ -84,6 +83,7 @@ main(int argc, char *argv[])
     err_t ugh;
 
     progname = argv[0];
+    leak_detective=1;
 
     tool_init_log();
     init_crypto();

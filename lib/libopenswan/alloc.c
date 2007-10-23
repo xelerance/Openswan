@@ -30,6 +30,8 @@
 #define LEAK_DETECTIVE
 #include "oswalloc.h"
 
+int leak_detective = 0;
+
 const chunk_t empty_chunk = { NULL, 0 };
 
 exit_log_func_t exit_log_func;
