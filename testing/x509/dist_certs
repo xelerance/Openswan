@@ -22,6 +22,7 @@ export OPENSSL_CONF=./openssl.cnf
 # Get some useful dates. Blame openssl for not being Y2K compatible with its -startdate
 YEAR=`date +%y`
 MONTH=`date +%m`
+MONTHMINONE=$MONTH
 DAY=`date +%d`
 DAYMINONE=`expr $DAY - 2`
 if [ $DAYMINONE -lt 10 ]
