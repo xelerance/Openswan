@@ -7,8 +7,8 @@
 # Setup a variety of X509 certificates for testcases
 #
 
-OUTDIR=`dirname $0`
-pushd $OUTDIR
+#OUTDIR=`dirname $0`
+#pushd $OUTDIR
 
 # Clean
 rm -f reqs/* certs/* keys/* newcerts/* cacerts/* crls/* pkcs12/* index.txt* serial*
@@ -52,6 +52,21 @@ END="$TWODAYSAGO"235959Z
 FUTURE="12$MONTH$DAY"000000Z
 FUTUREEND="15$MONTH$DAY"000000Z
 
+echo "------------------------------------------"
+echo "Certificate dates being used for this run:"
+echo ""
+echo "Today: $TODAY"
+echo "Two days ago: $TWODAYSAGO"
+echo "Start: $START"
+echo "End: $END"
+echo "Future: $FUTURE"
+echo "Year: $YEAR"
+echo "Month: $MONTH"
+echo "Day: $DAY"
+echo "Month-1: $MONTHMINONE"
+echo "Day-1: $DAYMINONE"
+echo "------------------------------------------"
+echo ""
 
 # Generate CA's
 for cauth in ca otherca
@@ -310,4 +325,4 @@ do
 done
 cd ..
 # back to original directory
-popd
+#popd
