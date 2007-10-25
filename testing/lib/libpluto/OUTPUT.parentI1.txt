@@ -11,13 +11,14 @@ RC=0 "westnet--eastnet-ikev2":     myip=unset; hisip=unset;
 RC=0 "westnet--eastnet-ikev2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 RC=0 "westnet--eastnet-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init; prio: 24,24; interface: eth0; 
 RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
-| creating state object #1 at 0x40221c00
+| creating state object #1 at 0xABCDABCD
 | interface "eth0" matched right side
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 ../parentI1 initiating v2 parent SA
 RC=104 STATE_IKE_ROOF: initiate
+| no IKE algorithms for this connection 
 | ikev2 parent outI1: calculated ke+nonce, sending I1
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -221,7 +222,7 @@ RC=104 STATE_IKE_ROOF: initiate
 | ***emit ISAKMP Vendor ID Payload:
 |    next payload type: ISAKMP_NEXT_NONE
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 78 7e  78 43 45 4d  47 56 5b 42
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 508
 |   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
@@ -255,7 +256,7 @@ RC=104 STATE_IKE_ROOF: initiate
 |   83 02 99 03  f3 a9 0e ca  23 e1 ec 1e  27 03 31 b2
 |   d0 50 f4 f7  58 f4 99 27  2b 80 00 14  b5 ce 84 19
 |   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  00 00 00 10
-|   4f 45 78 7e  78 43 45 4d  47 56 5b 42
+|   4f 45 ab ab  ab ab ab ab  ab ab ab ab
 transitioning on result: STF_OK
 | deleting state #1
 | ICOOKIE:  00 01 02 03  04 05 06 07
@@ -268,6 +269,10 @@ transitioning on result: STF_OK
 ../parentI1 leak: db_v2_prop
 ../parentI1 leak: msg_digest
 ../parentI1 leak: ikev2_outI1 KE
+../parentI1 leak: db_v2_trans
+../parentI1 leak: db_v2_prop_conj
+../parentI1 leak: 5 * db_v2_trans
+../parentI1 leak: db_v2_prop
 ../parentI1 leak: myid string
 ../parentI1 leak: my FQDN
 ../parentI1 leak: host_pair
@@ -323,4 +328,4 @@ reading from file parentI1.pcap, link-type NULL (BSD loopback)
             (t: #4 type=dh id=modp1024 )))
     (v2ke: len=192 group=#0)
     (nonce[C]: len=16 nonce=(b5ce8419095c6e2b6b62d3055305b3c4) )
-    (v2vid: len=12 vid=OEx~xCEMGV[B)
+    (v2vid: len=12 vid=OEababababab)
