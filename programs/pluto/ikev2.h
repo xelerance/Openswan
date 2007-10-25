@@ -16,4 +16,6 @@ extern bool ikev2_out_sa(pb_stream *outs
 			 , struct state *st
 			 , u_int8_t np);
 
+extern void complete_v2_state_transition(struct msg_digest **mdp
+					 , stf_status result);
 

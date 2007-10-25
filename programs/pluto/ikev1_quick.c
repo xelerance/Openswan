@@ -1260,7 +1260,7 @@ quick_inI1_outR1_continue(struct adns_continuation *cr, err_t ugh)
 	{
 	    r = quick_inI1_outR1_authtail(b, cr);
 	}
-	complete_state_transition(&b->md, r);
+	complete_v1_state_transition(&b->md, r);
     }
     if (b->md != NULL)
 	release_md(b->md);
@@ -1929,7 +1929,7 @@ quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 	
 	if(e != STF_SUSPEND) {
 	    if(dh->md != NULL) {
-		complete_state_transition(&qke->md, e);
+		complete_v1_state_transition(&qke->md, e);
 		if(dh->md) release_md(qke->md);
 	    }
 	}
@@ -1946,7 +1946,7 @@ quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 
 	if(dh.md != NULL) {
 	    /* note: use qke-> pointer */
-	    complete_state_transition(&qke->md, e);
+	    complete_v1_state_transition(&qke->md, e);
 	    if(dh.md) release_md(qke->md);
 	}
     }
@@ -1981,7 +1981,7 @@ quick_inI1_outR1_cryptocontinue2(struct pluto_crypto_req_cont *pcrc
     e = quick_inI1_outR1_cryptotail(dh, r);
 
     if(dh->md != NULL) {
-	complete_state_transition(&dh->md, e);
+	complete_v1_state_transition(&dh->md, e);
 	if(dh->md) release_md(dh->md);
     }
 
@@ -2261,7 +2261,7 @@ quick_inR1_outI2_continue(struct pluto_crypto_req_cont *pcrc
     e = quick_inR1_outI2_cryptotail(dh, r);
 
     if(dh->md != NULL) {
-	complete_state_transition(&dh->md, e);
+	complete_v1_state_transition(&dh->md, e);
 	if(dh->md) release_md(dh->md);
     }
     reset_cur_state();

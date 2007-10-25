@@ -1,7 +1,22 @@
+#ifndef _IKEV1_H
+#define _IKEv1_H
+
+#include "pluto_crypt.h"
+#include "ikev1_continuations.h"
+#include "dnskey.h"
+
+/* ikev1.c */
+extern void complete_v1_state_transition(struct msg_digest **mdp, stf_status result);
+extern void process_v1_packet(struct msg_digest **mdp);
+
 /*
  * IKEv1 functions: that ikev1_main.c provides and ikev1_aggr.c
  * needs.
  */
+
+/* continue with encrypted packet */
+extern void process_packet_tail(struct msg_digest **mdp);
+
 
 extern notification_t accept_KE(chunk_t *dest, const char *val_name
 				, const struct oakley_group_desc *gr
@@ -116,14 +131,4 @@ aggr_id_and_auth(struct msg_digest *md
     return oakley_id_and_auth(md, initiator, TRUE, cont_fn, kc);
 }
 
-
-
-
-
-
-
-
-
-
-
-
+#endif

@@ -1,3 +1,5 @@
+#ifndef _IKEv1_CONTINUATIONS_H
+#define _IKEv1_CONTINUATIONS_H
 /*
  * continuations used
  */
@@ -36,3 +38,4 @@ typedef stf_status initiator_function(int whack_sock
 
 #define RETURN_STF_FAILURE(f) RETURN_STF_FAILURE2(f, NULL)
 
+#endif /* _IKEv1_CONTINUATIONS */

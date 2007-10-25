@@ -876,7 +876,7 @@ encrypt_message(pb_stream *pbs, struct state *st)
  * The definition of state_microcode_table in demux.c is a good
  * overview of these routines.
  *
- * - Called from process_packet; result handled by complete_state_transition
+ * - Called from process_packet; result handled by complete_v1_state_transition
  * - struct state_microcode member "processor" points to these
  * - these routine definitionss are in state order
  * - these routines must be restartable from any point of error return:
@@ -1198,7 +1198,7 @@ main_inR1_outI2_continue(struct pluto_crypto_req_cont *pcrc
     e = main_inR1_outI2_tail(pcrc, r);
 
     if(ke->md != NULL) {
-	complete_state_transition(&ke->md, e);
+	complete_v1_state_transition(&ke->md, e);
 	if(ke->md) release_md(ke->md);
     }
 
@@ -1380,7 +1380,7 @@ main_inI2_outR2_continue(struct pluto_crypto_req_cont *pcrc
     e = main_inI2_outR2_tail(pcrc, r);
 
     if(ke->md != NULL) {
-        complete_state_transition(&ke->md, e);
+        complete_v1_state_transition(&ke->md, e);
         if(ke->md) release_md(ke->md);
     }
     reset_cur_state();
@@ -1909,7 +1909,7 @@ main_inR2_outI3_cryptotail(struct pluto_crypto_req_cont *pcrc
   }
   
   if(dh->md != NULL) {
-      complete_state_transition(&dh->md, e);
+      complete_v1_state_transition(&dh->md, e);
       if(dh->md) release_md(dh->md);
   }
   reset_cur_state();
@@ -2159,7 +2159,7 @@ key_continue(struct adns_continuation *cr
 	    kc->last_ugh = ugh;	/* record previous error in case we need it */
 	    r = (*tail)(kc->md, kc);
 	}
-	complete_state_transition(&kc->md, r);
+	complete_v1_state_transition(&kc->md, r);
     }
     if (kc->md != NULL)
 	release_md(kc->md);

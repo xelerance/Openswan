@@ -133,7 +133,7 @@ aggr_inI1_outR1_continue2(struct pluto_crypto_req_cont *pcrc
   e = aggr_inI1_outR1_tail(pcrc, r);
   
   if(dh->md != NULL) {
-      complete_state_transition(&dh->md, e);
+      complete_v1_state_transition(&dh->md, e);
       if(dh->md) release_md(dh->md);
   }
   reset_cur_state();
@@ -191,7 +191,7 @@ aggr_inI1_outR1_continue1(struct pluto_crypto_req_cont *pcrc
       
       if(e != STF_SUSPEND) {
 	  if(dh->md != NULL) {
-	      complete_state_transition(&dh->md, e);
+	      complete_v1_state_transition(&dh->md, e);
 	      if(dh->md) release_md(dh->md);
 	  }
       }
@@ -647,7 +647,7 @@ aggr_inR1_outI2_crypto_continue(struct pluto_crypto_req_cont *pcrc
   e = aggr_inR1_outI2_tail(md, NULL);
   
   if(dh->md != NULL) {
-      complete_state_transition(&dh->md, e);
+      complete_v1_state_transition(&dh->md, e);
       if(dh->md) release_md(dh->md);
   }
   reset_cur_state();
@@ -894,7 +894,7 @@ aggr_outI1_continue(struct pluto_crypto_req_cont *pcrc
   e = aggr_outI1_tail(pcrc, r);
   
   if(ke->md != NULL) {
-      complete_state_transition(&ke->md, e);
+      complete_v1_state_transition(&ke->md, e);
       if(ke->md) release_md(ke->md);
   }
   reset_globals();

@@ -150,7 +150,7 @@ stf_status build_ke(struct pluto_crypto_req_cont *cn
       return STF_SUSPEND;
   } else {
       /* we must have run the continuation directly, so
-       * complete_state_transition already got called. 
+       * complete_v1_state_transition already got called. 
        */
       return STF_INLINE;
   }
@@ -192,7 +192,7 @@ stf_status build_nonce(struct pluto_crypto_req_cont *cn
       return STF_SUSPEND;
   } else {
       /* we must have run the continuation directly, so
-       * complete_state_transition already got called. 
+       * complete_v1_state_transition already got called. 
        */
       return STF_INLINE;
   }

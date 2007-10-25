@@ -83,17 +83,18 @@ extern void release_md(struct msg_digest *md);
 
 typedef stf_status state_transition_fn(struct msg_digest *md);
 
-extern void complete_state_transition(struct msg_digest **mdp, stf_status result);
-extern void process_packet(struct msg_digest **mdp);
-
-/* continue with encrypted packet */
-extern void process_packet_tail(struct msg_digest **mdp);
-
+extern void fmt_ipsec_sa_established(struct state *st
+				     , char *sadetails, int sad_len);
+extern void fmt_isakmp_sa_established(struct state *st
+				      , char *sadetails, int sad_len);
 
 extern void free_md_pool(void);
 
 /* deal with echo request/reply */
 extern void receive_ike_echo_request(struct msg_digest *md);
 extern void receive_ike_echo_reply(struct msg_digest *md);
+
+extern void process_packet(struct msg_digest **mdp);
+
 
 #endif /* _DEMUX_H */

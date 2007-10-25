@@ -56,6 +56,12 @@ static void ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
 static stf_status ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 						, struct pluto_crypto_req *r);
 
+void complete_v2_state_transition(struct msg_digest **mdp UNUSED
+				  , stf_status result UNUSED)
+{
+    /* XXX */
+}
+
 /* Initiate an Oakley Main Mode exchange.
  *       HDR, SAi1, KEi, Ni   -->
  *
@@ -213,7 +219,7 @@ ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
     e = ikev2_parent_outI1_tail(pcrc, r);
   
     if(ke->md != NULL) {
-	complete_state_transition(&ke->md, e);
+	complete_v2_state_transition(&ke->md, e);
 	if(ke->md) release_md(ke->md);
     }
     reset_globals();
