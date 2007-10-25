@@ -71,6 +71,12 @@ ikev2parent_outI1(int whack_sock
 	       , enum crypto_importance importance)
 {
     struct state *st = new_state();
+    struct db_sa *sadb;
+    int    groupnum;
+    int    policy_index = POLICY_ISAKMP(policy
+					, c->spd.this.xauth_server
+					, c->spd.this.xauth_client);
+
 
     /* set up new state */
     initialize_new_state(st, c, policy, try, whack_sock, importance);
@@ -101,6 +107,55 @@ ikev2parent_outI1(int whack_sock
 	whack_log(RC_NEW_STATE + STATE_MAIN_I1
 	    , "%s: initiate", enum_name(&state_names, st->st_state));
     }
+
+    /*
+     * now, we need to initialize st->st_oakley, specifically, the group
+     * number needs to be initialized.
+     */
+
+    groupnum = 0;
+    
+    st->st_sadb = &oakley_sadb[policy_index];
+    sadb = oakley_alg_makedb(st->st_connection->alg_info_ike
+			     , st->st_sadb, 0);
+    if(sadb != NULL) {
+	st->st_sadb = sadb;
+    }
+    sa_v2_convert(st->st_sadb);
+    {
+	int  pc_cnt;
+
+	/* look at all the proposals */
+	if(st->st_sadb->prop_disj!=NULL) {
+	    for(pc_cnt=0; pc_cnt < st->st_sadb->prop_disj_cnt && groupnum==0;
+		pc_cnt++)
+	    {
+		struct db_v2_prop *vp = &st->st_sadb->prop_disj[pc_cnt];
+		int pr_cnt;	    
+	    
+		/* look at all the proposals */
+		if(vp->props!=NULL) {
+		    for(pr_cnt=0; pr_cnt < vp->prop_cnt && groupnum==0; pr_cnt++)
+		    {
+			int ts_cnt;	    
+			struct db_v2_prop_conj *vpc = &vp->props[pr_cnt];
+			
+			for(ts_cnt=0; ts_cnt < vpc->trans_cnt && groupnum==0; ts_cnt++) {
+			    struct db_v2_trans *tr = &vpc->trans[ts_cnt];
+			    if(tr!=NULL
+			       && tr->transform_type == IKEv2_TRANS_TYPE_DH) {
+				groupnum = tr->transid;
+			    }
+			}
+		    }
+		}
+	    }
+	}
+    }
+    if(groupnum == 0) {
+	groupnum = OAKLEY_GROUP_MODP1536;
+    }
+    st->st_oakley.group=lookup_group(groupnum); 
 
     /* now. we need to go calculate the nonce, and the KE */
     {
@@ -202,7 +257,7 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
     struct ke_continuation *ke = (struct ke_continuation *)pcrc;
     struct msg_digest *md = ke->md;
     struct state *const st = md->st;
-    struct connection *c = st->st_connection;
+    /* struct connection *c = st->st_connection; */
     int numvidtosend = 1;  /* we always send Openswan VID */
 
     /* set up reply */
@@ -230,15 +285,12 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
     /* SA out */
     {
 	u_char *sa_start = md->rbody.cur;
-	int    policy_index = POLICY_ISAKMP(st->st_policy
-					    , c->spd.this.xauth_server
-					    , c->spd.this.xauth_client);
 
 	/* if we  have an OpenPGP certificate we assume an
 	 * OpenPGP peer and have to send the Vendor ID
 	 */
 	if (!ikev2_out_sa(&md->rbody
-			  , &oakley_sadb[policy_index]
+			  , st->st_sadb
 			  , st, ISAKMP_NEXT_v2KE))
 	{
 	    openswan_log("outsa fail");

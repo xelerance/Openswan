@@ -111,7 +111,7 @@ DISTSRC = \
 	rnd.c rnd.h \
 	server.c server.h \
 	${SMARTCARD_DIST_SRCS} \
-	spdb.c spdb_struct.c spdb_print.c spdb.h \
+	spdb.c spdb_struct.c spdb_v1_struct.c spdb_print.c spdb.h \
 	state.c state.h \
 	stubs.c \
 	${SYSDEP_SRC} \
@@ -144,7 +144,7 @@ OBJSPLUTO += $(NETKEY_OBJS) ${KLIPS_OBJS} ${MAST_OBJS} ${WIN2K_OBJS} ${FUNK_OBJS
 OBJSPLUTO += kernel_noklips.o rcv_whack.o 
 OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o msgdigest.o keys.o dnskey.o
 OBJSPLUTO += pluto_crypt.o crypt_utils.o crypt_ke.o crypt_dh.o crypt_start_dh.o
-OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_print.o 
+OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_v1_struct.o spdb_print.o 
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o 
 OBJSPLUTO += ike_alg_aes.o ike_alginit.o
 OBJSPLUTO += ${EXTRA_CRYPTO_OBJS}

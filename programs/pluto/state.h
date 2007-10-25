@@ -192,6 +192,8 @@ struct state
     ip_address         st_localaddr;           /* where to send them from */
     u_int16_t          st_localport;           
 
+    struct db_sa      *st_sadb;
+
     /* IKEv1 things */
     msgid_t            st_msgid;               /* MSG-ID from header.  Network Order! */
     bool               st_reserve_msgid;       /* if TRUE, then message id has been reserved already */
