@@ -20,4 +20,8 @@ ttodata
 ttosa
 ttosubnet
 udpfromto
+algparse
+lib-algparse
+lib-ttoaddr
+ttoaddr
 
