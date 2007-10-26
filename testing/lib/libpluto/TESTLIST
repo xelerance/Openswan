@@ -8,5 +8,6 @@ libtest spdbv2  good
 libtest      whackmsgtest     good
 multilibtest refineconnection good
 multilibtest parentI1         good
+multilibtest parentR1         good
 
 
