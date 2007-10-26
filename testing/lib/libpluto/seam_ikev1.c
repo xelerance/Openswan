@@ -36,3 +36,20 @@ ikev1_delete_out(struct state *st)
 {
 	printf("deleted state #%lu\n", st->st_serialno);
 }
+
+void
+send_notification_from_state(struct state *st, enum state_kind state,
+    u_int16_t type)
+{
+}
+
+void
+send_notification_from_md(struct msg_digest *md, u_int16_t type)
+{
+}
+
+void
+process_v1_packet(struct msg_digest **mdp)
+{
+	abort();
+}

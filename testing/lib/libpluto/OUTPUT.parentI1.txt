@@ -257,7 +257,6 @@ RC=104 STATE_IKE_ROOF: initiate
 |   d0 50 f4 f7  58 f4 99 27  2b 80 00 14  b5 ce 84 19
 |   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  00 00 00 10
 |   4f 45 ab ab  ab ab ab ab  ab ab ab ab
-transitioning on result: STF_OK
 | deleting state #1
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00

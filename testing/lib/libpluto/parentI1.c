@@ -22,6 +22,7 @@
 #include "seam_rnd.c"
 #include "seam_log.c"
 #include "seam_xauth.c"
+#include "seam_west.c"
 #include "seam_initiate.c"
 #include "seam_alg.c"
 #include "seam_x509.c"

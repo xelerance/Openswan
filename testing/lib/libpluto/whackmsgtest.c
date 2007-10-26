@@ -16,6 +16,7 @@
 #include "whackmsgtestlib.c"
 #include "seam_log.c"
 #include "seam_state.c"
+#include "seam_west.c"
 #include "seam_initiate.c"
 #include "seam_xauth.c"
 #include "seam_alg.c" 
