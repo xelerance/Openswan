@@ -1184,7 +1184,7 @@ libtest() {
             fi
     fi
 
-    TEST_PURPOSE=regress  UML_BRAND=0 recordresults lib-$testobj "$testexpect" $stat lib-$testobj
+    TEST_PURPOSE=regress  UML_BRAND=0 recordresults lib-$testobj "$testexpect" "$stat" lib-$testobj
 }
 
 # test entry point:
@@ -1229,7 +1229,7 @@ multilibtest() {
             fi
     fi
 
-    TEST_PURPOSE=regress  UML_BRAND=0 recordresults lib-$testobj "$testexpect" $stat lib-$testobj
+    TEST_PURPOSE=regress  UML_BRAND=0 recordresults lib-$testobj "$testexpect" "$stat" lib-$testobj false
 }
 
 
