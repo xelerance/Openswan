@@ -359,32 +359,34 @@ enum next_payload_types {
   extern enum_names exchange_names;
 */
 
-#define ISAKMP_XCHG_NONE       0
-#define ISAKMP_XCHG_BASE       1
-#define ISAKMP_XCHG_IDPROT     2	/* ID Protection */
-#define ISAKMP_XCHG_AO         3	/* Authentication Only */
-#define ISAKMP_XCHG_AGGR       4	/* Aggressive */
-#define ISAKMP_XCHG_INFO       5	/* Informational */
-#define ISAKMP_XCHG_MODE_CFG   6        /* Mode Config */
+enum isakmp_xchg_types {
+	ISAKMP_XCHG_NONE=0,
+	ISAKMP_XCHG_BASE=1,
+	ISAKMP_XCHG_IDPROT=2,	/* ID Protection */
+	ISAKMP_XCHG_AO=3,	/* Authentication Only */
+	ISAKMP_XCHG_AGGR=4,	/* Aggressive */
+	ISAKMP_XCHG_INFO=5,	/* Informational */
+	ISAKMP_XCHG_MODE_CFG=6,      /* Mode Config */
 
-/* Private exchanges to pluto */
-#define ISAKMP_XCHG_ECHOREQUEST 30      /* Echo Request */
-#define ISAKMP_XCHG_ECHOREPLY   31      /* Echo Reply   */
+        /* Private exchanges to pluto -- tried to write an RFC */
+	ISAKMP_XCHG_ECHOREQUEST=30,    /* Echo Request */
+	ISAKMP_XCHG_ECHOREPLY=31,      /* Echo Reply   */
 
-/* Extra exchange types, defined by Oakley
- * RFC2409 "The Internet Key Exchange (IKE)", near end of Appendix A
- */
-#define ISAKMP_XCHG_QUICK      32	/* Oakley Quick Mode */
-#define ISAKMP_XCHG_NGRP       33	/* Oakley New Group Mode */
+        /* Extra exchange types, defined by Oakley
+         * RFC2409 "The Internet Key Exchange (IKE)", near end of Appendix A
+         */
+	ISAKMP_XCHG_QUICK=32,	/* Oakley Quick Mode */
+	ISAKMP_XCHG_NGRP=33,	/* Oakley New Group Mode */
 
-/* IKEv2 things */
-#define ISAKMP_v2_SA_INIT      34
-#define ISAKMP_v2_AUTH         35
-#define ISAKMP_v2_CHILD_SA     36
-#define ISAKMP_v2_INFORMATIONAL 37
+        /* IKEv2 things */
+	ISAKMP_v2_SA_INIT=34,
+	ISAKMP_v2_AUTH=35,
+	ISAKMP_v2_CHILD_SA=36,
+	ISAKMP_v2_INFORMATIONAL=37,
 
-#define ISAKMP_XCHG_ECHOREQUEST_PRIVATE 244     /* Private Echo Request */
-#define ISAKMP_XCHG_ECHOREPLY_PRIVATE   245     /* Private Echo Reply   */
+	ISAKMP_XCHG_ECHOREQUEST_PRIVATE=244,     /* Private Echo Request */
+	ISAKMP_XCHG_ECHOREPLY_PRIVATE=245,     /* Private Echo Reply   */
+};
 
 /* Flag bits */
 #define ISAKMP_FLAGS_E         (1<<0)     /* bit 0 of flags --- encrypt  */

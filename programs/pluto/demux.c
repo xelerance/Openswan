@@ -551,6 +551,11 @@ process_packet(struct msg_digest **mdp)
     case ISAKMP_MAJOR_VERSION:
 	process_v1_packet(mdp);
 	break;
+
+    case IKEv2_MAJOR_VERSION:
+	process_v2_packet(mdp);
+	break;
+
     default:
 	bad_case(maj);
     }

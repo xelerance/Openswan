@@ -61,7 +61,8 @@ struct msg_digest {
     struct isakmp_hdr hdr;	/* message's header */
     bool encrypted;	/* was it encrypted? */
     enum state_kind from_state;	/* state we started in */
-    const struct state_microcode *smc;	/* microcode for initial state */
+    const struct state_microcode *smc;	  /* microcode for initial state (v1)*/
+    const struct state_v2_microcode *svm; /* microcode for initial state (v2)*/
     bool new_iv_set;
     struct state *st;	/* current state object */
     pb_stream reply;	/* room for reply */
@@ -95,6 +96,8 @@ extern void receive_ike_echo_request(struct msg_digest *md);
 extern void receive_ike_echo_reply(struct msg_digest *md);
 
 extern void process_packet(struct msg_digest **mdp);
+extern void process_v1_packet(struct msg_digest **mdp);
+extern void process_v2_packet(struct msg_digest **mdp);
 
 
 #endif /* _DEMUX_H */

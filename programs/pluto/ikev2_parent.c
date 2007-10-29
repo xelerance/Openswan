@@ -56,13 +56,14 @@ static void ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
 static stf_status ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 						, struct pluto_crypto_req *r);
 
-void complete_v2_state_transition(struct msg_digest **mdp UNUSED
-				  , stf_status result UNUSED)
-{
-    /* XXX */
-}
-
-/* Initiate an Oakley Main Mode exchange.
+/*
+ *
+ ***************************************************************
+ *                       PARENT_OUTI1                      *****
+ ***************************************************************
+ *
+ * 
+ * Initiate an Oakley Main Mode exchange.
  *       HDR, SAi1, KEi, Ni   -->
  *
  * Note: this is not called from demux.c, but from ipsecdoi_initiate().
@@ -103,14 +104,14 @@ ikev2parent_outI1(int whack_sock
     if (predecessor != NULL)
     {
 	update_pending(predecessor, st);
-	whack_log(RC_NEW_STATE + STATE_MAIN_I1
+	whack_log(RC_NEW_STATE + STATE_PARENT_I1
 	    , "%s: initiate, replacing #%lu"
 	    , enum_name(&state_names, st->st_state)
 	    , predecessor->st_serialno);
     }
     else
     {
-	whack_log(RC_NEW_STATE + STATE_MAIN_I1
+	whack_log(RC_NEW_STATE + STATE_PARENT_I1
 	    , "%s: initiate", enum_name(&state_names, st->st_state));
     }
 
@@ -170,6 +171,7 @@ ikev2parent_outI1(int whack_sock
 	stf_status e;
 
 	ke->md = alloc_md();
+	ke->md->svm = ikev2_parent_firststate();
 	ke->md->st = st;
 	set_suspended(st, ke->md);
 
@@ -365,6 +367,64 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
     return STF_OK;
 }
 
+/*
+ *
+ ***************************************************************
+ *                       PARENT_INI1                       *****
+ ***************************************************************
+ *  - 
+ *  
+ *
+ */
+stf_status ikev2parent_inI1(struct msg_digest *md)
+{
+#if 0
+    struct state *st = md->st;
+    struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
+    struct payload_digest *const sa_gi = md->chain[ISAKMP_NEXT_v2KE];
+    struct payload_digest *const sa_ni = md->chain[ISAKMP_NEXT_v2Ni];
+#endif
+    struct connection *c = find_host_connection(&md->iface->ip_addr
+						, md->iface->port
+						, &md->sender
+						, md->sender_port
+						, POLICY_IKEV2_ALLOW);
+
+    /* retrieve st->st_gi */
+
+#if 0
+    if(c==NULL) {
+	/*
+	 * make up a policy from the thing that was proposed, and see
+	 * if we can find a connection with that policy.
+	 */
+	
+ 	pb_stream pre_sa_pbs = sa_pd->pbs;
+ 	lset_t policy = preparse_isakmp_sa_body(&pre_sa_pbs);
+	c = find_host_connection(&md->iface->ip_addr, pluto_port
+				 , (ip_address*)NULL, md->sender_port, policy);
+	
+	
+    }
+#endif
+
+    DBG_log("found connection: %s\n", c ? c->name : "<none>");
+
+    return STF_FAIL;
+}
+
+stf_status ikev2parent_inR1(struct msg_digest *md UNUSED)
+{
+    abort();
+}
+
+/*
+ *
+ ***************************************************************
+ *                       DELETE_OUT                        *****
+ ***************************************************************
+ *
+ */
 void ikev2_delete_out(struct state *st UNUSED)
 {
     abort();

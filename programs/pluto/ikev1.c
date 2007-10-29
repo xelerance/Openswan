@@ -1,4 +1,4 @@
-/* demultiplex incoming IKE messages
+/* State machine for IKEv1
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  *
@@ -109,17 +109,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
-#include <sys/time.h>	/* only used for belt-and-suspenders select call */
-#include <sys/poll.h>	/* only used for forensic poll call */
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
-#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
-#  include <asm/types.h>	/* for __u8, __u32 */
-#  include <linux/errqueue.h>
-#  include <sys/uio.h>	/* struct iovec */
-#endif
 
 #include <openswan.h>
 

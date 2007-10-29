@@ -245,15 +245,23 @@ enum state_kind {
 
     STATE_XAUTH_I0,              /* client state is awaiting request */
     STATE_XAUTH_I1,              /* client state is awaiting result code */
+    STATE_IKE_ROOF,
 
     /* IKEv2 states.
      * Note that message reliably sending is done in a substate, unlike
      * with IKEv1
      */
-    STATE_PARENT_I1,             /* sent initial exchange */
+    STATE_IKEv2_BASE,
+    /* INITIATOR states */
+    STATE_PARENT_I1,           /* sent initial message, waiting for reply */
+    STATE_PARENT_I2,           /* sent auth message, waiting for reply */
 
-    STATE_IKE_ROOF
-
+    /* RESPONDER states  --- no real actions, initiator is responsible
+     * for all work states. */
+    STATE_PARENT_R1,
+    STATE_PARENT_R2,
+    
+    STATE_IKEv2_ROOF,
 };
 
 enum phase1_role {

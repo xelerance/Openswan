@@ -127,11 +127,20 @@ static const char *const state_name[] = {
 	"STATE_XAUTH_I0",
 	"STATE_XAUTH_I1",
 
-	"STATE_IKE_ROOF"  
+	"STATE_IKE_ROOF",
+
+	/* v2 */
+	"STATE_IKEv2_BASE",
+	"STATE_PARENT_I1",
+	"STATE_PARENT_I2",
+	"STATE_PARENT_R1",
+	"STATE_PARENT_R2",
+	"STATE_IKEv2_ROOF"
+	
     };
 
 enum_names state_names =
-    { STATE_MAIN_R0, STATE_IKE_ROOF-1, state_name, NULL };
+    { STATE_MAIN_R0, STATE_IKEv2_ROOF-1, state_name, NULL };
 
 /* story for state */
 

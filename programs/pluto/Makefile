@@ -92,7 +92,7 @@ DISTSRC = \
 	myid.c hmac.c \
 	hostpair.c \
 	ipsec_doi.c ipsec_doi.h ikev1.c ikev1_quick.c ikev1_continuations.h \
-        ikev2_parent.c ikev2_child.c spdb_v2_struct.c \
+        ikev2.c ikev2_parent.c ikev2_child.c spdb_v2_struct.c \
 	kernel.c kernel.h \
 	${NETKEY_SRCS} \
 	${KLIPS_SRCS} ${MAST_SRCS} ${WIN2K_SRCS} ${FUNK_SRCS} \
@@ -137,12 +137,12 @@ OBJSPLUTO  = connections.o initiate.o pending.o cookie.o crypto.o defs.o dpd.o
 OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
 OBJSPLUTO += timer.o hmac.o hostpair.o
 OBJSPLUTO += myid.o ipsec_doi.o
-OBJSPLUTO += ikev1_main.o   ikev1_quick.o 
-OBJSPLUTO += ikev2_parent.o ikev2_child.o spdb_v2_struct.o
+OBJSPLUTO += ikev1.o ikev1_main.o   ikev1_quick.o 
+OBJSPLUTO += ikev2.o ikev2_parent.o ikev2_child.o spdb_v2_struct.o
 OBJSPLUTO += ikeping.o kernel.o 
 OBJSPLUTO += $(NETKEY_OBJS) ${KLIPS_OBJS} ${MAST_OBJS} ${WIN2K_OBJS} ${FUNK_OBJS}
 OBJSPLUTO += kernel_noklips.o rcv_whack.o 
-OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o ikev1.o msgdigest.o keys.o dnskey.o
+OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o msgdigest.o keys.o dnskey.o
 OBJSPLUTO += pluto_crypt.o crypt_utils.o crypt_ke.o crypt_dh.o crypt_start_dh.o
 OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_v1_struct.o spdb_print.o 
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o 
