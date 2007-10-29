@@ -114,7 +114,7 @@ main(int argc, char *argv[])
 
     show_one_connection(c1);
 
-    c1->extra_debugging = DBG_EMITTING|DBG_CONTROLMORE;
+    c1->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
     ipsecdoi_initiate(/* whack-sock=stdout */1
 		      , c1
 		      , c1->policy

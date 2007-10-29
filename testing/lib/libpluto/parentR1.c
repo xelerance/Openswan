@@ -107,7 +107,6 @@ main(int argc, char *argv[])
     char *conn_name;
     int  lineno=0;
     struct connection *c1;
-    struct state *st;
     struct pluto_crypto_req r;
     struct pcr_kenonce *kn = &r.pcr_d.kn;
     pcap_t *pt;
@@ -139,9 +138,6 @@ main(int argc, char *argv[])
 
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
  
-    /* clean up so that we can see any leaks */
-    delete_state(st);
-
     report_leaks();
 
     tool_close_log();

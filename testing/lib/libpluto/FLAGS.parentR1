@@ -7,6 +7,7 @@ EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/rcv_whack.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/myid.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/foodgroups.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/ipsec_doi.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/ikev2.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/ikev2_parent.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/state.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/msgdigest.o"
@@ -31,7 +32,7 @@ EXTRALIBS="${EXTRALIBS} ${LIBSHA2} ${LIBBLOWFISH}"
 EXTRALIBS="${EXTRALIBS} ${OSWLOGLIB} ${OPENSWANLIB} ${OSWLOGLIB}"
 EXTRALIBS="${EXTRALIBS} -lgmp -lefence -lpcap"
 
-UNITTESTARGS="ikev2.record westnet--eastnet-ikev2"
+UNITTESTARGS="ikev2.record westnet--eastnet-ikev2 parentI1.pcap"
 
 # Local Variables:
 # compile-command: "make TEST=parentR1 one"

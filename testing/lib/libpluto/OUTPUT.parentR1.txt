@@ -1,2 +1,59 @@
 
   Electric Fence 2.1 Copyright (C) 1987-1998 Bruce Perens.
+Pre-amble: #!-pluto-whack-file- recorded on east on 2007-10-26 03:25:28
+../parentR1 listening for IKE messages
+| interface "eth0" matched left side
+../parentR1 added connection description "westnet--eastnet-ikev2"
+| *received 508 bytes from 192.168.1.1:500 on eth0 (port=500)
+|   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   21 20 22 08  00 00 00 00  00 00 01 fc  22 80 00 f4
+|   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   00 00 00 08  04 00 00 05  02 00 00 28  02 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  03 00 00 02
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
+|   02 00 00 28  03 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   00 00 00 08  04 00 00 05  02 00 00 28  04 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
+|   02 00 00 28  05 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   00 00 00 08  04 00 00 02  00 00 00 28  06 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
+|   28 00 00 c8  00 00 00 00  ff bc 6a 92  a6 b9 55 9b
+|   05 fa 96 a7  a4 35 07 b4  c1 e1 c0 86  1a 58 71 d9
+|   ba 73 a1 63  11 37 88 c0  de bb 39 79  e7 ff 0c 52
+|   b4 ce 60 50  eb 05 36 9e  a4 30 0d 2b  ff 3b 1b 29
+|   9f 3b 80 2c  cb 13 31 8c  2a b9 e3 b5  62 7c b4 b3
+|   5e b9 39 98  20 76 b5 7c  05 0d 7b 35  c3 c5 c7 cc
+|   8c 0f ea b7  b6 4a 7d 7b  6b 8f 6b 4d  ab f4 ac 40
+|   6d d2 01 26  b9 0a 98 ac  76 6e fa 37  a7 89 0c 43
+|   94 ff 9a 77  61 5b 58 f5  2d 65 1b bf  a5 8d 2a 54
+|   9a f8 b0 1a  a4 bc a3 d7  62 42 66 63  b1 55 d4 eb
+|   da 9f 60 a6  a1 35 73 e6  a8 88 13 5c  dc 67 3d d4
+|   83 02 99 03  f3 a9 0e ca  23 e1 ec 1e  27 03 31 b2
+|   d0 50 f4 f7  58 f4 99 27  2b 80 00 14  b5 ce 84 19
+|   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  00 00 00 10
+|   4f 45 55 7c  53 7b 41 76  5b 5d 73 4d
+../parentR1 notsuremessage ignored because it contains an unknown or unexpected payload type (ISAKMP_NEXT_v2V) at the outermost level
+../parentR1 leak: msg_digest
+../parentR1 leak: host_pair
+../parentR1 leak: host ip
+../parentR1 leak: keep id name
+../parentR1 leak: host ip
+../parentR1 leak: keep id name
+../parentR1 leak: connection name
+../parentR1 leak: struct connection
+../parentR1 leak: myid string
+../parentR1 leak: my FQDN
+../parentR1 leak: policies path
+../parentR1 leak: ocspcerts path
+../parentR1 leak: aacerts path
+../parentR1 leak: certs path
+../parentR1 leak: private path
+../parentR1 leak: crls path
+../parentR1 leak: cacert path
+../parentR1 leak: acert path
+../parentR1 leak: 7 * default conf
