@@ -40,7 +40,7 @@
 #include "secrets.h"
 #include "mpzfuncs.h"
 
-char usage[] = "Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--right ]\n"
+char usage[] = "Usage: ipsec showhostkey [--ipseckey {gateway}] [--left ] [--right ]\n"
              "                         [--dump ] [--list ] [--x509self]\n"
              "                         [--x509req ] [--x509cert ]      \n"
              "                         [ --txt gateway ] [--dhclient ] \n"
