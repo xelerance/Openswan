@@ -443,6 +443,8 @@ recordresults() {
 	copybadresults=true
     fi
 
+    ECHO=${ECHO-echo}
+
     export REGRESSRESULTS
     roguekill $REPORT_NAME
 
@@ -483,7 +485,7 @@ recordresults() {
 	    *)	success=false;;
 	esac
 
-	echo "Recording "'"'"$success: $status"'"'" to $REGRESSRESULTS/$REPORT_NAME/status"
+	${ECHO} "Recording "'"'"$success: $status"'"'" to $REGRESSRESULTS/$REPORT_NAME/status"
 	echo "$success: $status" >$REGRESSRESULTS/$REPORT_NAME/status
 	echo console=$console >>$REGRESSRESULTS/$REPORT_NAME/status
 	echo packet=$packet   >>$REGRESSRESULTS/$REPORT_NAME/status
@@ -1206,11 +1208,11 @@ multilibtest() {
 	    echo "file ../$testobj" >lib-$testobj/.gdbinit
 	    echo "set args "${UNITTESTARGS} >>lib-$testobj/.gdbinit
 
-	    echo Multilib running lib-$testobj/testlist.sh for $testobj ${UNITTESTARGS}
+	    ${ECHO} Multilib running lib-$testobj/testlist.sh for $testobj ${UNITTESTARGS}
 	    ( ulimit -c unlimited; cd lib-$testobj && ./testlist.sh >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
 
 	    stat=$?
-	    echo Exit code $stat
+	    ${ECHO} Exit code $stat
 	    if [ $stat -gt 128 ]
 	    then
 		stat="$stat core"
@@ -1219,7 +1221,7 @@ multilibtest() {
 		then
 		    if diff -N -u -w -b -B lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.txt OUTPUT.$testobj.txt > lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.output.diff
 		    then
-			echo "output matched"
+			${ECHO} "output matched"
 			stat="0"
 		    else
 			echo "output differed"

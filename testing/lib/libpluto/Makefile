@@ -37,7 +37,7 @@ def:
 	@false
 
 check:
-	REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; source ${srcdir}TESTLIST
+	@ECHO=: REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; source ${srcdir}TESTLIST
 
 install install_file_list checkprograms programs:
 	@true
