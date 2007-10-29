@@ -1,3 +1,2 @@
-ipsec eroute
 ipsec look
 
