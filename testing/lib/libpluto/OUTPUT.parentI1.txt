@@ -293,8 +293,8 @@ RC=133 STATE_PARENT_I1: initiate
 ../parentI1 leak: 7 * default conf
 TCPDUMP output
 reading from file parentI1.pcap, link-type NULL (BSD loopback)
-20:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f481)!)
-    192.168.1.1.500 > 192.168.2.2.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[I]:
+20:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f485)!)
+    192.10.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[I]:
     (sa[C]: len=240
         (p: #1 protoid=isakmp transform=4
             (t: #1 type=encr id=aes )

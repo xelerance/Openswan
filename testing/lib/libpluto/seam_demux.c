@@ -55,8 +55,8 @@ send_packet(struct state *st, const char *where, bool verbose)
 	    ip->ttl     = 64;
 	    ip->protocol= IPPROTO_UDP;
 	    ip->check   = 0;
-	    ip->saddr   = htonl(0xc0a80101); /* 192.168.1.1 */
-	    ip->daddr   = htonl(0xc0a80202); /* 192.168.2.2 */
+	    ip->saddr   = htonl(0xc00a022d); /* 192.0.1.45 - west */
+	    ip->daddr   = htonl(0xc0010217); /* 192.0.1.23 - east */
 	    udp = (struct udphdr *)&buf[sizeof(struct iphdr)+4];
 	    udp->source = htons(500);
 	    udp->dest   = htons(500);
