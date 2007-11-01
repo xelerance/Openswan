@@ -74,6 +74,11 @@ send_packet(struct state *st, const char *where, bool verbose)
     }
 }
 
+bool
+check_msg_errqueue(const struct iface_port *ifp, short interest)
+{
+	return TRUE;
+}
 
 void
 complete_state_transition(struct msg_digest **mdp, stf_status result)

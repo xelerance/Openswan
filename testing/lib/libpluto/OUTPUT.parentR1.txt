@@ -1,10 +1,14 @@
 
   Electric Fence 2.1 Copyright (C) 1987-1998 Bruce Perens.
-Pre-amble: #!-pluto-whack-file- recorded on east on 2007-10-26 03:25:28
-../parentR1 listening for IKE messages
-| interface "eth0" matched left side
+| interface "eth0" matched right side
 ../parentR1 added connection description "westnet--eastnet-ikev2"
-| *received 508 bytes from 192.168.1.1:500 on eth0 (port=500)
+| base debugging = crypt+control+controlmore
+RC=0 "westnet--eastnet-ikev2": 192.0.2.0/24===192.1.2.23<192.1.2.23>[@east]...192.1.2.45<192.1.2.45>[@west]===192.0.1.0/24; unrouted; eroute owner: #0
+RC=0 "westnet--eastnet-ikev2":     myip=unset; hisip=unset;
+RC=0 "westnet--eastnet-ikev2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+RC=0 "westnet--eastnet-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init; prio: 24,24; interface: eth0; 
+RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+| *received 508 bytes from 192.1.2.45:500 on eth0 (port=500)
 |   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 01 fc  22 80 00 f4
 |   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
@@ -37,6 +41,24 @@ Pre-amble: #!-pluto-whack-file- recorded on east on 2007-10-26 03:25:28
 |   d0 50 f4 f7  58 f4 99 27  2b 80 00 14  b5 ce 84 19
 |   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  00 00 00 10
 |   4f 45 55 7c  53 7b 41 76  5b 5d 73 4d
+|  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34)
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v2 state object not found
+| find_host_connection called from ikev2parent_inI1, me=192.1.2.23:500 him=192.1.2.45:500 policy=IKEv2ALLOW
+| find_host_pair: comparing to 192.1.2.23:500 192.1.2.45:500 
+| find_host_pair_conn (find_host_connection2): 192.1.2.23:500 192.1.2.45:500 -> hp:westnet--eastnet-ikev2 
+| searching for policy=IKEv2ALLOW, found=IKEv2ALLOW (westnet--eastnet-ikev2)
+| find_host_connection returns westnet--eastnet-ikev2
+| found connection: westnet--eastnet-ikev2 
+| creating state object #1 at 0x40223bfc
+| interface "eth0" matched right side
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| complete v2 state transition with (null)
+../parentR1 leak: struct state in new_state()
 ../parentR1 leak: msg_digest
 ../parentR1 leak: host_pair
 ../parentR1 leak: host ip
@@ -45,8 +67,6 @@ Pre-amble: #!-pluto-whack-file- recorded on east on 2007-10-26 03:25:28
 ../parentR1 leak: keep id name
 ../parentR1 leak: connection name
 ../parentR1 leak: struct connection
-../parentR1 leak: myid string
-../parentR1 leak: my FQDN
 ../parentR1 leak: policies path
 ../parentR1 leak: ocspcerts path
 ../parentR1 leak: aacerts path
@@ -56,3 +76,6 @@ Pre-amble: #!-pluto-whack-file- recorded on east on 2007-10-26 03:25:28
 ../parentR1 leak: cacert path
 ../parentR1 leak: acert path
 ../parentR1 leak: 7 * default conf
+Pre-amble: #!-pluto-whack-file- recorded on east on 2007-10-31 06:13:08
+TCPDUMP output
+reading from file parentR1.pcap, link-type NULL (BSD loopback)

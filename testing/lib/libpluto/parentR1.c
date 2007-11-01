@@ -30,6 +30,7 @@
 #include "seam_alg.c"
 #include "seam_x509.c"
 #include "seam_spdbstruct.c"
+#include "seam_demux.c"
 
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 bool nat_traversal_support_non_ike = FALSE;
@@ -134,6 +135,8 @@ main(int argc, char *argv[])
 
     readwhackmsg(infile);
 
+    send_packet_setup_pcap("parentR1.pcap");
+ 
     c1 = con_by_name(conn_name, TRUE);
 
     show_one_connection(c1);
