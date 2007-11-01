@@ -25,14 +25,14 @@ OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 include ${OPENSWANSRCDIR}/Makefile.ver
 
-srcdir?=${OPENSWANSRCDIR}/lib/
+srcdir?=${OPENSWANSRCDIR}/lib/libpluto/
 
 LIBRARY=pluto
 LIB=lib${LIBRARY}.a
 MANDIR=$(MANTREE)/man3
 
 ONEFILE=pluto_constants.c
-SRCS=pluto_constants.c x509support.c
+SRCS=pluto_constants.c x509support.c packet.c
 SRCS+=
 
 #enable to get lots more debugging about semantics.
