@@ -31,7 +31,6 @@ SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 	kernel_alg.c lex.c mpzfuncs.c \
 	optionsfrom.c oswconf.c oswtime.c \
 	prng.c \
-	packet.c \
 	portof.c rangetoa.c rangetosubnet.c sameaddr.c \
 	satot.c secrets.c subnetof.c subnettoa.c subnettot.c \
 	subnettypeof.c ttoaddr.c ttodata.c ttoprotoport.c \
