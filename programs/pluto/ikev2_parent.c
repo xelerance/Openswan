@@ -49,6 +49,8 @@
 
 #include "tpm/tpm.h"
 
+#define SEND_NOTIFICATION(t) abort()
+
 static void ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
 				, struct pluto_crypto_req *r
 				, err_t ugh);
@@ -320,12 +322,12 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
     unpack_nonce(&st->st_ni, r);
     {
 	int np = numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
-	struct ikev2_nonce in;
+	struct ikev2_generic in;
 	pb_stream pb;
 	
 	memset(&in, 0, sizeof(in));
-	in.isan_np = np;
-	in.isan_critical = ISAKMP_PAYLOAD_CRITICAL;
+	in.isag_np = np;
+	in.isag_critical = ISAKMP_PAYLOAD_CRITICAL;
 
 	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
 	   !out_raw(st->st_ni.ptr, st->st_ni.len, &pb, "IKEv2 nonce"))
@@ -378,8 +380,9 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
  */
 stf_status ikev2parent_inI1(struct msg_digest *md)
 {
-#if 0
     struct state *st = md->st;
+    lset_t policy = POLICY_IKEV2_ALLOW;
+#if 0
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
     struct payload_digest *const sa_gi = md->chain[ISAKMP_NEXT_v2KE];
     struct payload_digest *const sa_ni = md->chain[ISAKMP_NEXT_v2Ni];
@@ -400,7 +403,7 @@ stf_status ikev2parent_inI1(struct msg_digest *md)
 	 */
 	
  	pb_stream pre_sa_pbs = sa_pd->pbs;
- 	lset_t policy = preparse_isakmp_sa_body(&pre_sa_pbs);
+ 	policy = preparse_isakmp_sa_body(&pre_sa_pbs);
 	c = find_host_connection(&md->iface->ip_addr, pluto_port
 				 , (ip_address*)NULL, md->sender_port, policy);
 	
@@ -408,7 +411,29 @@ stf_status ikev2parent_inI1(struct msg_digest *md)
     }
 #endif
 
+    if(c == NULL) {
+	/*
+	 * be careful about responding, or logging, since it may be that we
+	 * are under DOS
+	 */
+	DBG_log("no connection found\n");
+	SEND_NOTIFICATION(NO_PROPOSAL_CHOSEN);
+	return STF_FATAL;
+    }
+	
+
     DBG_log("found connection: %s\n", c ? c->name : "<none>");
+
+    if(!st) {
+	st = new_state();
+	/* set up new state */
+	initialize_new_state(st, c, policy, 0, NULL_FD, pcim_stranger_crypto);
+	st->st_ikev2 = TRUE;
+	st->st_state = STATE_PARENT_R1;
+	st->st_msgid_lastack = INVALID_MSGID;
+	st->st_msgid_nextuse = 0;
+	md->st = st;
+    }
 
     return STF_FAIL;
 }

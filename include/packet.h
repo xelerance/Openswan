@@ -686,7 +686,6 @@ struct ikev2_generic
 	u_int8_t    isag_critical;
 	u_int16_t   isag_length;
 };
-
 extern struct_desc ikev2_generic_desc;
 
 struct ikev2_sa
@@ -734,14 +733,11 @@ struct ikev2_ke
 };
 extern struct_desc ikev2_ke_desc;
 
-/* rfc4306, section 3.9 */
-struct ikev2_nonce
-{
-	u_int8_t  isan_np;	    /* Next payload */
-	u_int8_t  isan_critical;
-	u_int16_t isan_length;	    /* Payload length */
-};
+/* rfc4306, section 3.9, nonce, uses generic header */
 extern struct_desc ikev2_nonce_desc;
+
+/* rfc4306, section 3.12, vendor ID, uses generic header */
+extern struct_desc ikev2_vendor_id_desc;
 
 
 #endif /* _PACKET_H */

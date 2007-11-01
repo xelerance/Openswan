@@ -169,7 +169,7 @@ process_v2_packet(struct msg_digest **mdp)
     enum isakmp_xchg_types ix;
     bool rcookiezero;
 
-#define SEND_NOTIFICATION(t) 
+#define SEND_NOTIFICATION(t) abort()
 
     /* Look for an state which matches the various things we know */
     /*

@@ -409,7 +409,9 @@ extern const char *const sit_bit_names[];
 
 
 /* Critical bit in each payload */
-#define ISAKMP_PAYLOAD_CRITICAL  0x80
+/* extern enum_names critical_names; */
+#define ISAKMP_PAYLOAD_NONCRITICAL  0x00
+#define ISAKMP_PAYLOAD_CRITICAL     0x80
 
 /* Protocol IDs
  * RFC2407 The Internet IP security Domain of Interpretation for ISAKMP 4.4.1

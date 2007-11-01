@@ -820,9 +820,14 @@ enum_names attr_msg_type_names =
 /*
  * IKEv2 CRITICAL BYTE "enum"
  */
-const char *const critical_name[]= { "Payload-Critical", NULL };
+const char *const critical_name[]=    { "Payload-Critical", NULL };
+const char *const no_critical_name[]= { "Payload-Non-Critical", NULL };
+enum_names no_crit_names ={ ISAKMP_PAYLOAD_NONCRITICAL,
+			    ISAKMP_PAYLOAD_NONCRITICAL,
+			    no_critical_name, NULL};
 enum_names critical_names = 
-{ ISAKMP_PAYLOAD_CRITICAL, ISAKMP_PAYLOAD_CRITICAL, critical_name, NULL};
+{ ISAKMP_PAYLOAD_CRITICAL, ISAKMP_PAYLOAD_CRITICAL,
+  critical_name, &no_crit_names};
 
 /* Transform-type Encryption */
 const char *const trans_type_encr_name[]={
