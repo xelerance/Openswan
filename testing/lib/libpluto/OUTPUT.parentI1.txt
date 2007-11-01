@@ -2,17 +2,17 @@
   Electric Fence 2.1 Copyright (C) 1987-1998 Bruce Perens.
 Pre-amble: #!-pluto-whack-file- recorded on west on 2007-10-07 01:40:12
 ../parentI1 listening for IKE messages
-| interface "eth0" matched right side
+| interface "eth0" matched left side
 ../parentI1 added connection description "westnet--eastnet-ikev2"
 | base debugging = crypt+parsing+control+controlmore
 ../parentI1 listening for IKE messages
-RC=0 "westnet--eastnet-ikev2": 192.0.2.0/24===192.1.2.23<192.1.2.23>[@east]...192.1.2.45<192.1.2.45>[@west]===192.0.1.0/24; unrouted; eroute owner: #0
+RC=0 "westnet--eastnet-ikev2": 192.0.1.0/24===192.1.2.45<192.1.2.45>[@west]...192.1.2.23<192.1.2.23>[@east]===192.0.2.0/24; unrouted; eroute owner: #0
 RC=0 "westnet--eastnet-ikev2":     myip=unset; hisip=unset;
 RC=0 "westnet--eastnet-ikev2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 RC=0 "westnet--eastnet-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init; prio: 24,24; interface: eth0; 
 RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 | creating state object #1 at 0xABCDABCD
-| interface "eth0" matched right side
+| interface "eth0" matched left side
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -293,8 +293,8 @@ RC=133 STATE_PARENT_I1: initiate
 ../parentI1 leak: 7 * default conf
 TCPDUMP output
 reading from file parentI1.pcap, link-type NULL (BSD loopback)
-20:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f485)!)
-    192.10.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[I]:
+20:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f48e)!)
+    192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[I]:
     (sa[C]: len=240
         (p: #1 protoid=isakmp transform=4
             (t: #1 type=encr id=aes )

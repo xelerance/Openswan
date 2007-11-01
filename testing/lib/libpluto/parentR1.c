@@ -134,8 +134,13 @@ main(int argc, char *argv[])
 
     readwhackmsg(infile);
 
+    c1 = con_by_name(conn_name, TRUE);
+
+    show_one_connection(c1);
+
     pt = pcap_open_offline(argv[3], eb1);
 
+    cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
  
     report_leaks();

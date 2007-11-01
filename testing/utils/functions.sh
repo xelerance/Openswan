@@ -1224,7 +1224,7 @@ multilibtest() {
 			${ECHO} "output matched"
 			stat="0"
 		    else
-			echo "output differed"
+			echo "$testobj: output differed"
 			stat="1"
 		    fi
 		fi

@@ -37,7 +37,6 @@ Pre-amble: #!-pluto-whack-file- recorded on east on 2007-10-26 03:25:28
 |   d0 50 f4 f7  58 f4 99 27  2b 80 00 14  b5 ce 84 19
 |   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  00 00 00 10
 |   4f 45 55 7c  53 7b 41 76  5b 5d 73 4d
-../parentR1 notsuremessage ignored because it contains an unknown or unexpected payload type (ISAKMP_NEXT_v2V) at the outermost level
 ../parentR1 leak: msg_digest
 ../parentR1 leak: host_pair
 ../parentR1 leak: host ip
