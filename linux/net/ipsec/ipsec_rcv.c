@@ -1630,6 +1630,11 @@ error_no_skb:
  * skb->iph->protocol = 50 IPPROTO_ESP;
  *
  */
+int klips26_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
+{
+	return klips26_rcv_encap(skb, udp_sk(sk)->encap_type);
+}
+
 int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 {
 	struct ipsec_rcv_state *irs = NULL;

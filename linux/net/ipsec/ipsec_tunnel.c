@@ -1491,6 +1491,31 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 			    "calling ipsec_tunnel_clear.\n");
 		return ipsec_tunnel_clear();
 
+	case IPSEC_UDP_ENCAP_CONVERT:
+	{
+		unsigned int *socknum =(unsigned int *)&ifr->ifr_data;
+		struct socket *sock;
+		int err, fput_needed;
+
+		sock = sockfd_lookup_light(*socknum, &err, &fput_needed);
+		if (!sock)
+			goto encap_out;
+
+		/* check that it's a UDP socket */
+		udp_sk(sk)->encap_type = UDP_ENCAP_ESPINUDP_NON_IKE;
+		udp_sk(sk)->encap_rcv  = klips26_udp_encap_rcv;
+
+		KLIPS_PRINT(debug_tunnel
+			    , "UDP socket: %u set to NON-IKE encap mode\n"
+			    , socknum);
+		       
+		err = 0;
+
+	encap_output:
+		fput_light(sock->file, fput_needed);
+	encap_out:
+		return err;
+
 	default:
 		KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
 			    "klips_debug:ipsec_tunnel_ioctl: "
