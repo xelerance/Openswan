@@ -77,7 +77,6 @@ enum known_vendorid {
   VID_NATT_RFC               =109,
   VID_NATT_IETF_05,
   VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE,
-  VID_NATT_RFC,
 
 /* 
   While searching (strings) in /usr/sbin/racoon on Max OS X 10.3.3, I found it :
