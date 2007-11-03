@@ -12,7 +12,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _startklips.in,v 1.43.4.9 2007/06/19 14:52:18 paul Exp $
+# RCSID $Id: _startklips.in,v 1.43.4.10 2007/07/06 17:29:15 paul Exp $
 
 me='ipsec _startklips'		# for messages
 
@@ -223,6 +223,10 @@ defaultinterface() {
 	fi
 	next=`netstat -nr |
 		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $2 }'`
+	if [ "$next" = "0.0.0.0" ] ; then
+		next=`ip addr list $phys | grep -E '^ +inet6*.*scope global $phys' |
+			awk '{ print $2}' | awk -F / '{ print $1 }'`
+	fi
 	klipsinterface "ipsec0=$phys" $next
 }
 
