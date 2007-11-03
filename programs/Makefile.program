@@ -207,6 +207,7 @@ include ${srcdir}../Makefile.manpages
 			-e "s:@USE_IPROUTE2@:$(USE_IPROUTE2):" \
 			-e "s:@IPSEC_FIREWALLTYPE@:$(IPSEC_FIREWALLTYPE):" \
 			-e "s:@OE_FLAG@:$(OE_FLAG):" \
+                        -e "s:@MODPROBE@:$(MODPROBE):" \
 			| cat >$@
 	@if [ -x $< ]; then chmod +x $@; fi
 	@if [ "${PROGRAM}.in" = $< ]; then chmod +x $@; fi
