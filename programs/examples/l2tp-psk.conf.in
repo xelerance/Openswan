@@ -35,6 +35,9 @@ conn L2TP-PSK-noNAT
 	# The remote user.
 	#
 	right=%any
-	rightprotoport=17/1701
+	# Using the magic port of "0" means "any one single port". This is
+	# a work around required for Apple OSX clients that use a randomly
+	# high port, but propose "0" instead of their port.
+	rightprotoport=17/0
 
 
