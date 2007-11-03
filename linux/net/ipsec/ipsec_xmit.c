@@ -540,6 +540,7 @@ ipsec_xmit_encap_once(struct ipsec_xmit_state *ixs)
 		ixt_a=ixs->ipsp->ips_alg_auth;
 		if (ixt_a) {
 			tailroom += AHHMAC_HASHLEN;
+			authlen = AHHMAC_HASHLEN;
 		} else 
 		switch(ixs->ipsp->ips_authalg) {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
@@ -1742,6 +1743,18 @@ ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 
 /*
  * $Log: ipsec_xmit.c,v $
+ * Revision 1.20.2.9  2007/07/06 17:18:43  paul
+ * Fix for authentication field on sent packets has size equals to zero when
+ * using custom auth algorithms. This is bug #811. Patch by "iamscared".
+ *
+ * Revision 1.20.2.8  2006/10/06 21:39:26  paul
+ * Fix for 2.6.18+ only include linux/config.h if AUTOCONF_INCLUDED is not
+ * set. This is defined through autoconf.h which is included through the
+ * linux kernel build macros.
+ *
+ * Revision 1.20.2.7  2006/08/24 03:02:01  paul
+ * Compile fixes for when CONFIG_KLIPS_DEBUG is not set. (bug #642)
+ *
  * Revision 1.20.2.6  2006/07/07 22:09:49  paul
  * From: Bart Trojanowski <bart@xelerance.com>
  * Removing a left over '#else' that split another '#if/#endif' block in two.
