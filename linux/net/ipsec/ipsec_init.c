@@ -272,9 +272,7 @@ ipsec_klips_init(void)
                 goto error_sysctl_register;
 #endif                                                                          
 
-#ifdef CONFIG_KLIPS_ALG
 	ipsec_alg_init();
-#endif
 
 	get_random_bytes((void *)seed, sizeof(seed));
 	prng_init(&ipsec_prng, seed, sizeof(seed));
@@ -419,6 +417,7 @@ cleanup_module(void)
 #endif
 #endif /* MODULE */
 
+/*
  *
  * Local variables:
  * c-file-style: "linux"

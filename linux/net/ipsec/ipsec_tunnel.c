@@ -1488,6 +1488,7 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 			    "calling ipsec_tunnel_clear.\n");
 		return ipsec_tunnel_clear();
 
+#ifdef IPSEC_UDP_ENCAP_CONVERT
 	case IPSEC_UDP_ENCAP_CONVERT:
 	{
 		unsigned int *socknum =(unsigned int *)&ifr->ifr_data;
@@ -1512,6 +1513,7 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 		fput_light(sock->file, fput_needed);
 	encap_out:
 		return err;
+#endif
 
 	default:
 		KLIPS_PRINT(debug_tunnel & DB_TN_INIT,

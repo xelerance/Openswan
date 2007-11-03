@@ -196,6 +196,9 @@ static ctl_table ipsec_table[] = {
 	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_VERBOSE, "debug_verbose",&sysctl_ipsec_debug_verbose,
 	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+#endif /* CTL_TABLE_PARENT */
+#endif /* CONFIG_KLIPS_DEBUG */
+
 #ifdef CONFIG_KLIPS_IPCOMP
 #ifdef CTL_TABLE_PARENT
         { .ctl_name = NET_IPSEC_DEBUG_IPCOMP,
@@ -209,6 +212,7 @@ static ctl_table ipsec_table[] = {
 #else
 	{ NET_IPSEC_DEBUG_IPCOMP, "debug_ipcomp", &sysctl_ipsec_debug_ipcomp,
 	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+#endif
 #endif /* CONFIG_KLIPS_IPCOMP */
 
 #ifdef CONFIG_KLIPS_REGRESS
@@ -226,9 +230,9 @@ static ctl_table ipsec_table[] = {
 	{ NET_IPSEC_REGRESS_PFKEY_LOSSAGE, "pfkey_lossage",
 	  &sysctl_ipsec_regress_pfkey_lossage,
 	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
+#endif /* CTL_TABLE_PARENT */
 #endif /* CONFIG_KLIPS_REGRESS */
 
-#endif /* CONFIG_KLIPS_DEBUG */
 #ifdef CTL_TABLE_PARENT
        { .ctl_name = NET_IPSEC_ICMP,
          .procname = "icmp",
