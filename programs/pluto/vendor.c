@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: vendor.c,v 1.46 2005/09/06 20:01:19 paul Exp $
  */
 
 #include <stdlib.h>
@@ -278,6 +277,12 @@ static struct vid_struct _vid_tab[] = {
  	DEC_MD5_VID(VISTA_AUTHIP2, "IKE CGA version 1")
 	DEC_MD5_VID(VISTA_AUTHIP3, "MS-MamieExists")
 
+	/**
+	 * Cisco VPN 3000
+	 */
+	{ VID_MISC_FRAGMENTATION, VID_MD5HASH | VID_SUBSTRING_DUMPHEXA,
+		"FRAGMENTATION", NULL, NULL, 0 },
+
 	/*
 	 * NCP.de
 	 */
@@ -424,6 +429,7 @@ static void handle_known_vendorid (struct msg_digest *md UNUSED
 	case VID_NATT_IETF_02:
 	case VID_NATT_IETF_02_N:
 	case VID_NATT_IETF_03:
+	case VID_NATT_IETF_05:
 	case VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE:
 	case VID_NATT_RFC:
 	    vid_usefull = 1;

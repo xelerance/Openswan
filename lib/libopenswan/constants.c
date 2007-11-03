@@ -1057,6 +1057,7 @@ enum_names ppk_names = { PPK_PSK, PPK_XAUTH, ppk_name, NULL };
 const char *const natt_type_bitnames[] = {
   "draft-ietf-ipsec-nat-t-ike-00/01",    /* 0 */
   "draft-ietf-ipsec-nat-t-ike-02/03",
+  "draft-ietf-ipsec-nat-t-ike-05",
   "draft-ietf-ipsec-nat-t-ike (MacOS X)", 
   "RFC 3947 (NAT-Traversal)",		/* 3 */
   "4",   "5",   "6",   "7", 

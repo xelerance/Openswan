@@ -199,7 +199,9 @@ bool nat_traversal_insert_vid(u_int8_t np, pb_stream *outs)
 		      
 	if (nat_traversal_support_port_floating) {
 	    if (r) r = out_vid(ISAKMP_NEXT_VID, outs, VID_NATT_RFC);
+	    if (r) r = out_vid(ISAKMP_NEXT_VID, outs, VID_NATT_IETF_05);
 	    if (r) r = out_vid(ISAKMP_NEXT_VID, outs, VID_NATT_IETF_03);
+	    if (r) r = out_vid(ISAKMP_NEXT_VID, outs, VID_NATT_IETF_02_N);
 	    if (r) r = out_vid(np, outs, VID_NATT_IETF_02);
 	}
 	if (nat_traversal_support_non_ike) {
@@ -1034,10 +1036,12 @@ void process_pfkey_nat_t_new_mapping(
 
 /*
  * $Log: nat_traversal.c,v $
-<<<<<<< HEAD:programs/pluto/nat_traversal.c
  * Revision 1.32  2005/10/03 19:59:11  mcr
  * 	fixed english typo.
-=======
+ * Revision 1.26.2.11  2007/10/28 07:00:22  paul
+ * Added draft-ietf-ipsec-nat-t-ike-05 (80d0bb3def54565ee84645d4c85ce3ee)
+ * used in OSX.
+ *
  * Revision 1.26.2.10  2007/07/09 23:08:47  paul
  * Ensured two debug lines only appear when plutodebug=control is specified.
  *
@@ -1060,7 +1064,6 @@ void process_pfkey_nat_t_new_mapping(
  * Revision 1.26.2.4  2005/09/27 04:30:20  paul
  * Backport of HEAD's patch, adopted from Peter Van der Beken's
  * (peterv@propagandism.org) MacOSX interop patch.
->>>>>>> fd94264...   turn off debugging unless asked for:programs/pluto/nat_traversal.c
  *
  * Revision 1.31  2005/10/02 22:01:10  mcr
  * 	change indentation, and make sure that port hash is calculated
@@ -1131,11 +1134,5 @@ void process_pfkey_nat_t_new_mapping(
  * Revision 1.13  2004/11/05 00:14:50  mcr
  * 	added log info.
  *
- *
-<<<<<<< HEAD:programs/pluto/nat_traversal.c
- * $Id: nat_traversal.c,v 1.32 2005/10/03 19:59:11 mcr Exp $
-=======
- * $Id: nat_traversal.c,v 1.26.2.10 2007/07/09 23:08:47 paul Exp $
->>>>>>> fd94264...   turn off debugging unless asked for:programs/pluto/nat_traversal.c
  *
  */
