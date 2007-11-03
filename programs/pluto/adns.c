@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: adns.c,v 1.11 2004/03/08 01:50:34 ken Exp $
+ * RCSID $Id: adns.c,v 1.11.24.1 2007/09/05 03:01:04 paul Exp $
  */
 
 #ifndef USE_LWRES	/* whole file! */
