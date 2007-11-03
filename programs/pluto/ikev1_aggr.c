@@ -13,7 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikev1_aggr.c,v 1.1.2.3 2006/11/24 04:07:33 paul Exp $
+ * RCSID $Id: ikev1_aggr.c,v 1.1.2.5 2007/07/07 00:02:59 mcr Exp $
  */
 
 #include <stdio.h>
