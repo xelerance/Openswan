@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: addrtot.c,v 1.24 2005/11/11 06:59:40 mcr Exp $
  */
 
 #if defined(__KERNEL__) && defined(__HAVE_ARCH_STRSTR)
@@ -37,7 +36,11 @@ static size_t reverse6(const unsigned char *s, size_t len, char *b, char **dp);
  * Find the first occurrence of find in s.
  * (from NetBSD 1.6's /src/lib/libc/string/strstr.c)
  */
-static char *ipsec_strstr(const char *s, const char *find)
+static char *strstr(const char *s, const char *find);
+
+static char *
+strstr(s, find)
+	const char *s, *find;
 {
 	char c, sc;
 	size_t len;
@@ -338,12 +341,17 @@ regress()
 
 /*
  * $Log: addrtot.c,v $
+<<<<<<< HEAD:linux/net/ipsec/addrtot.c
  * Revision 1.24  2005/11/11 06:59:40  mcr
  * 	try this code to avoid static/extern conflict with newer
  * 	kernels.
  *
  * Revision 1.23  2005/11/11 03:09:53  paul
  * Fix by Toby for newer kernels that have strstr()
+=======
+ * Revision 1.22.2.2  2007/10/30 21:32:26  paul
+ * Added strstr prototype [dhr]
+>>>>>>> 2280ffe...    added prototype for strstr:linux/net/ipsec/addrtot.c
  *
  * Revision 1.22.2.1  2005/11/17 22:30:49  paul
  * pull up strstr fix from head.
@@ -383,5 +391,53 @@ regress()
  * 	if the address type is invalid, then return length of <invalid>
  * 	string!
  *
+<<<<<<< HEAD:linux/net/ipsec/addrtot.c
+=======
+ * Revision 1.12  2003/12/30 06:42:48  mcr
+ * 	added $Log: addrtot.c,v $
+ * 	added Revision 1.22.2.2  2007/10/30 21:32:26  paul
+ * 	added Added strstr prototype [dhr]
+ * 	added
+ * 	added Revision 1.22.2.1  2005/11/17 22:30:49  paul
+ * 	added pull up strstr fix from head.
+ * 	added
+ * 	added Revision 1.22  2005/05/20 16:47:40  mcr
+ * 	added 	make strstr static if we need it.
+ * 	added
+ * 	added Revision 1.21  2005/03/21 00:35:12  mcr
+ * 	added     test for strstr properly
+ * 	added
+ * 	added Revision 1.20  2004/11/09 22:52:20  mcr
+ * 	added 	until we figure out which kernels have strsep and which
+ * 	added 	do not (UML does not under certain circumstances), then
+ * 	added 	let's just provide our own.
+ * 	added
+ * 	added Revision 1.19  2004/10/08 16:30:33  mcr
+ * 	added 	pull-up of initial crypto-offload work.
+ * 	added
+ * 	added Revision 1.18  2004/09/18 19:33:08  mcr
+ * 	added 	use an appropriate kernel happy ifdef for strstr.
+ * 	added
+ * 	added Revision 1.17  2004/09/15 21:49:02  mcr
+ * 	added 	use local copy of strstr() if this is going in the kernel.
+ * 	added 	Not clear why this worked before, or why this shows up
+ * 	added 	for modules only.
+ * 	added
+ * 	added Revision 1.16  2004/07/10 07:43:47  mcr
+ * 	added Moved from linux/lib/libfreeswan/addrtot.c,v
+ * 	added
+ * 	added Revision 1.15  2004/04/11 17:39:25  mcr
+ * 	added 	removed internal.h requirements.
+ * 	added
+ * 	added Revision 1.14  2004/03/08 01:59:08  ken
+ * 	added freeswan.h -> openswan.h
+ * 	added
+ * 	added Revision 1.13  2004/01/05 23:21:05  mcr
+ * 	added 	if the address type is invalid, then return length of <invalid>
+ * 	added 	string!
+ * 	added
+ *
+ *
+>>>>>>> 2280ffe...    added prototype for strstr:linux/net/ipsec/addrtot.c
  */
 
