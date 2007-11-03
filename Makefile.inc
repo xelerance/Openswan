@@ -150,6 +150,8 @@ VERFILE=$(KERNELSRC)/include/linux/version.h
 # where KLIPS kernel module is install
 OSMOD_DESTDIR?=net/ipsec
 
+# What command to use to load the modules. openwrt does not have modprobe
+MODPROBE?=modprobe
 
 ### misc installation stuff
 

@@ -304,36 +304,41 @@ then
     echo "FATAL ERROR: Both KLIPS and NETKEY IPsec code is present in kernel"
     exit
 fi
-
-if test ! -f $ipsecversion && $netkey
+if test ! -f $ipsecversion && test ! -f $netkey && @MODPROBE@ -q ipsec
 then
-	modprobe -v af_key
+	# statically compiled KLIPS/NETKEY not found; but there seems to be an ipsec module
+	@MODPROBE@ ipsec 2> /dev/null
+fi
+
+if test ! -f $ipsecversion && test ! -f $netkey && @MODPROBE@ -q af_key
+then
+	@MODPROBE@ -v af_key
 fi
 
 if $netkey
 then
 	if test -f $modules
 	then
-		modprobe -qv ah4
-		modprobe -qv esp4
-		modprobe -qv ipcomp
+		@MODPROBE@ -qv ah4
+		@MODPROBE@ -qv esp4
+		@MODPROBE@ -qv ipcomp
 		#  xfrm4_tunnel is needed by ipip and ipcomp
-		modprobe -qv xfrm4_tunnel
+		@MODPROBE@ -qv xfrm4_tunnel
 		# xfrm_user contains netlink support for IPsec 
-		modprobe -qv xfrm_user
+		@MODPROBE@ -qv xfrm_user
 
 		echo Trying hardware random, this may fail, which is okay.
-		modprobe -q hw_random 2>/dev/null
+		@MODPROBE@ -q hw_random 2>/dev/null
 
 		# padlock must load before aes module
 		echo Trying VIA padlock driver, this may fail, which is okay.
-		modprobe -q padlock 2>/dev/null
+		@MODPROBE@ -q padlock 2>/dev/null
 
 		# load the most common ciphers/algo's
-		modprobe -qv sha1
-		modprobe -qv md5
-		modprobe -qv des
-		modprobe -qv aes
+		@MODPROBE@ -qv sha1
+		@MODPROBE@ -qv md5
+		@MODPROBE@ -qv des
+		@MODPROBE@ -qv aes
 	fi
 fi
 
