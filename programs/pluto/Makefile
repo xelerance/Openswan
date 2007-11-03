@@ -214,7 +214,7 @@ install_file_list:
 		done
 
 alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypto.o $(LIBDESLITE) $(OPENSWANLIB)
-	$(CC) -o $@ $^ $(LIBSPLUTO)
+	$(CC) -o $@ $^ $(LDFLAGS) $(LIBSPLUTO)
 
 ${LIBTPM}: $(wildcard ${srcdir}tpm/*.c) $(wildcard ${srcdir}tpm/*.h) $(wildcard ${srcdir}tpm/*.i)
 	@(cd tpm && ${MAKE} srcdir=${srcdir}tpm/ libtpm.a )
@@ -223,13 +223,13 @@ $(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) $(OPENSWANLIB) ${LIBTPM} ${LIBSPLUTO}
 	$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(USERLINK) $(OBJSPLUTO) $(LIBSPLUTO) ${PLUTOMINUSL}
 
 $(BINNAMEADNS): $(OBJSADNS) ${LIBSPLUTO}
-	$(CC) -o $(BINNAMEADNS) $(OBJSADNS) $(USERLINK) $(LIBSADNS) ${ADNSMINUSL}
+	$(CC) -o $(BINNAMEADNS) $(LDFLAGS) $(OBJSADNS) $(USERLINK) $(LIBSADNS) ${ADNSMINUSL}
 
 $(BINNAMEWHACK): $(OBJSWHACK) ${LIBSPLUTO}
-	$(CC) -o $(BINNAMEWHACK) $(OBJSWHACK) $(USERLINK) $(LIBSWHACK) ${WHACKMINUSL}
+	$(CC) -o $(BINNAMEWHACK) $(LDFLAGS) $(OBJSWHACK) $(USERLINK) $(LIBSWHACK) ${WHACKMINUSL}
 
 $(BINNAMEWHACKINIT): $(OBJSWHACKINIT) ${LIBSPLUTO}
-	$(CC) -o $(BINNAMEWHACKINIT) $(OBJSWHACKINIT) $(USERLINK) $(LIBSWHACK)
+	$(CC) -o $(BINNAMEWHACKINIT) $(LDFLAGS) $(OBJSWHACKINIT) $(USERLINK) $(LIBSWHACK)
 
 distlist:
 	@echo $(DIST)
