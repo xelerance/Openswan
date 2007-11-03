@@ -922,7 +922,7 @@ const char *const natt_type_bitnames[] = {
   "draft-ietf-ipsec-nat-t-ike-02/03",
   "draft-ietf-ipsec-nat-t-ike-05",
   "draft-ietf-ipsec-nat-t-ike (MacOS X)", 
-  "RFC 3947 (NAT-Traversal)",		/* 3 */
+  "RFC 3947 (NAT-Traversal)",		/* 4 */
   "4",   "5",   "6",   "7", 
   "8",   "9",   "10",  "11",
   "12",  "13",  "14",  "15",

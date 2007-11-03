@@ -215,18 +215,20 @@ u_int32_t nat_traversal_vid_to_method(unsigned short nat_t_vid)
 	switch (nat_t_vid) {
 		case VID_NATT_IETF_00:
 			return LELEM(NAT_TRAVERSAL_IETF_00_01);
-			break;
+
 		case VID_NATT_IETF_02:
 		case VID_NATT_IETF_02_N:
 		case VID_NATT_IETF_03:
 			return LELEM(NAT_TRAVERSAL_IETF_02_03);
-			break;
+
+		case VID_NATT_IETF_05:
+			return LELEM(NAT_TRAVERSAL_IETF_05);
+
 		case VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE:
 			return LELEM(NAT_TRAVERSAL_OSX);
-			break;
+
 		case VID_NATT_RFC:
 			return LELEM(NAT_TRAVERSAL_RFC);
-			break;
 	}
 	return 0;
 }
@@ -617,11 +619,14 @@ void nat_traversal_show_result (u_int32_t nt, u_int16_t sport)
 	case LELEM(NAT_TRAVERSAL_IETF_02_03):
 	    mth = natt_type_bitnames[1];
 	    break;
-	case LELEM(NAT_TRAVERSAL_OSX):
+	case LELEM(NAT_TRAVERSAL_IETF_05):
 	    mth = natt_type_bitnames[2];
 	    break;
-	case LELEM(NAT_TRAVERSAL_RFC):
+	case LELEM(NAT_TRAVERSAL_OSX):
 	    mth = natt_type_bitnames[3];
+	    break;
+	case LELEM(NAT_TRAVERSAL_RFC):
+	    mth = natt_type_bitnames[4];
 	    break;
 	}
 	switch (nt & NAT_T_DETECTED) {
