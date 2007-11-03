@@ -1061,11 +1061,9 @@ static int create_hold_eroute(struct eroute *origtrap,
 enum ipsec_xmit_value
 ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs)
 {
-#ifdef CONFIG_KLIPS_ALG
 	struct ipsec_alg_enc *ixt_e = NULL;
 	struct ipsec_alg_auth *ixt_a = NULL;
 	int blocksize = 8;
-#endif
 	enum ipsec_xmit_value bundle_stat = IPSEC_XMIT_OK;
 	struct ipsec_sa *saved_ipsp;
  
