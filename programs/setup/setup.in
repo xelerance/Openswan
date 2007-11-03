@@ -123,8 +123,10 @@ mkdir -p /var/run/pluto
 case "$1" in
   start|--start|stop|--stop|_autostop|_autostart)
 	# remove for: @cygwin_START@ 
-	if test " `id -u`" != " 0"
+	# portable way for checking for root
+	if [ ! -w / ]
 	then
+		
 		echo "permission denied (must be superuser)" |
 			logger -s -p $IPSECsyslog -t ipsec_setup 2>&1
 		exit 1
