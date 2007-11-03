@@ -1,11 +1,10 @@
-# $Id: Makefile,v 1.1 2005/04/17 22:45:48 paul Exp $
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openswan
-PKG_VERSION:=2.3.1
-PKG_RELEASE:=1
-PKG_MD5SUM:=3dcf1cd7efcbe8db3148fc288d429db1
+PKG_VERSION:=2.4.9
+PKG_RELEASE:=7
+PKG_MD5SUM:=c6f3714bf39b91a80633ec3aa7fce298
 
 PKG_SOURCE_URL:=http://www.openswan.org/download
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -40,6 +39,8 @@ $(PKG_BUILD_DIR)/$(PKG_NAME): $(PKG_BUILD_DIR)/.patched
 		EXTRA_LIBS="-L$(STAGING_DIR)/usr/lib" \
 		IPSECDIR="/usr/lib/ipsec" \
 		INC_USRLOCAL="/usr" \
+		INC_RCDEFAULT="/etc/init.d" \
+		MODPROBE="/sbin/insmod" \
 		programs
 
 $(PKG_IPK): $(PKG_BUILD_DIR)/$(PKG_NAME)
@@ -52,19 +53,18 @@ $(PKG_IPK): $(PKG_BUILD_DIR)/$(PKG_NAME)
 		USERCOMPILE="$(FLAGS)" \
 		IPSECDIR="/usr/lib/ipsec" \
 		INC_USRLOCAL="/usr" \
+		INC_RCDEFAULT="/etc/init.d" \
+		MODPROBE="/sbin/insmod" \
 		install
-	-$(STRIP) $(PKG_IPK_DIR)/usr/lib/ipsec/*
-	-$(STRIP) $(PKG_IPK_DIR)/usr/libexec/ipsec/*
-	rm -rf $(PKG_IPK_DIR)/usr/share
-	rm -rf $(PKG_IPK_DIR)/usr/man
-	rm -rf $(PKG_IPK_DIR)/var
-	rm -rf $(PKG_IPK_DIR)/etc/rc.d/rc*.d
-	mkdir -p $(PKG_IPK_DIR)/etc/init.d
-	ln -sf ../rc.d/init.d/ipsec $(PKG_IPK_DIR)/etc/init.d/S60ipsec
-	mkdir -p $(PKG_IPK_DIR)/lib/modules/$(LINUX_VERSION)
-	cp $(PKG_BUILD_DIR)/modobj/ipsec.o $(PKG_IPK_DIR)/lib/modules/$(LINUX_VERSION)/
-#	$(TARGET_CROSS)strip --remove-section=.comment --remove-section=.note \
-#	  $(PKG_IPK_DIR)/lib/modules/$(LINUX_VERSION)/ipsec.o
+	-$(STRIP) $(IDIR_OPENSWAN)/usr/lib/ipsec/*
+	-$(STRIP) $(IDIR_OPENSWAN)/usr/libexec/ipsec/*
+	rm -rf $(IDIR_OPENSWAN)/usr/share
+	rm -rf $(IDIR_OPENSWAN)/usr/man
+	rm -rf $(IDIR_OPENSWAN)/var
+	rm -rf $(IDIR_OPENSWAN)/etc/rc.d/rc*.d
+	mkdir -p $(IDIR_OPENSWAN)/etc/init.d
+	ln -sf ipsec $(IDIR_OPENSWAN)/etc/init.d/S60ipsec
+	find $(PKG_BUILD_DIR) -name \*.old | xargs rm -rf
 	mkdir -p $(PACKAGE_DIR)
 	find $(PKG_BUILD_DIR) -name \*.old | xargs rm -rf
 	$(IPKG_BUILD) $(PKG_IPK_DIR) $(PACKAGE_DIR)
