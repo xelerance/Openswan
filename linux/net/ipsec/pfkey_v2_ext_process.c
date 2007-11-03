@@ -13,14 +13,11 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_ext_process.c,v 1.20 2005/04/29 05:10:22 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_netlink.c.
  */
-
-char pfkey_v2_ext_process_c_version[] = "$Id: pfkey_v2_ext_process.c,v 1.20 2005/04/29 05:10:22 mcr Exp $";
 
 #ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
@@ -144,7 +141,9 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	case IPPROTO_ESP:
 		ipsp->ips_authalg = pfkey_sa->sadb_sa_auth;
 		ipsp->ips_encalg = pfkey_sa->sadb_sa_encrypt;
+#ifdef CONFIG_KLIPS_ALG
 		ipsec_alg_sa_init(ipsp);
+#endif
 		break;
 	case IPPROTO_IPIP:
 		ipsp->ips_authalg = AH_NONE;
@@ -263,7 +262,8 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 	switch(s->sa_family) {
 	case AF_INET:
 		saddr_len = sizeof(struct sockaddr_in);
-		addrtoa(((struct sockaddr_in*)s)->sin_addr, 0, ipaddr_txt, sizeof(ipaddr_txt));
+		if (debug_pfkey)
+			addrtoa(((struct sockaddr_in*)s)->sin_addr, 0, ipaddr_txt, sizeof(ipaddr_txt));
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
 			    "found address family=%d, AF_INET, %s.\n",
@@ -435,7 +435,8 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		if(s->sa_family == AF_INET) {
 			ipsp->ips_said.dst.u.v4.sin_addr.s_addr = ((struct sockaddr_in*)(ipsp->ips_addr_d))->sin_addr.s_addr;
 			ipsp->ips_said.dst.u.v4.sin_family      = AF_INET;
-			addrtoa(((struct sockaddr_in*)(ipsp->ips_addr_d))->sin_addr,
+			if (debug_pfkey)
+				addrtoa(((struct sockaddr_in*)(ipsp->ips_addr_d))->sin_addr,
 				0,
 				ipaddr_txt,
 				sizeof(ipaddr_txt));
