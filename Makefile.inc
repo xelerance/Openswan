@@ -12,7 +12,6 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.inc,v 1.132 2005/10/20 21:01:47 mcr Exp $
 #
 # TODO: Some creative ifeq ($(BUILDENV,xxx) to automatically determine
 # where we are building on and disable things (eg KLIPS on OSX)
