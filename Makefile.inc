@@ -182,7 +182,7 @@ BISONOSFLAGS=
 # you can add to this in the defaults file using +=
 USERCOMPILE?=-g ${WERROR} ${PORTDEFINE}
 #USERCOMPILE?=-g -O3 ${WERROR} 
-KLIPSCOMPILE=-O3
+KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG
 # for AMD64 use 
 #USERCOMPILE?=-g -O3 -m64
 #KLIPSCOMPILE=-O3 -m64 -mno-red-zone
