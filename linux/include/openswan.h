@@ -42,8 +42,11 @@
 #include <linux/in6.h>
 #include <linux/string.h>
 #include <linux/ctype.h>
+#include <openswan/ipsec_kversion.h>
+#include <openswan/ipsec_param.h>
 #define user_assert(foo)  /*nothing*/
-#else
+
+#else /* NOT in kernel */
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <string.h>
@@ -61,10 +64,9 @@
 
 #endif /* __KERNEL__ */
 
-#define DEBUG_NO_STATIC static
-#include <openswan/ipsec_kversion.h>
-#include <openswan/ipsec_param.h>
 #endif /* linux */
+
+#define DEBUG_NO_STATIC static
 
 /*
  * Yes Virginia, we have started a windows port.
