@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: nat_traversal.c,v 1.26.2.9 2007/01/22 22:42:43 paul Exp $
+ * RCSID $Id: nat_traversal.c,v 1.26.2.10 2007/07/09 23:08:47 paul Exp $
  */
 
 #ifdef NAT_TRAVERSAL
@@ -798,7 +798,7 @@ static int nat_traversal_new_mapping(const ip_address *src, u_int16_t sport,
 		return 0;
 	}
 
-	DBG_log("NAT-T: new mapping %s:%d/%d)", srca, sport, dport);
+	DBG(DBG_CONTROLMORE, DBG_log("NAT-T: new mapping %s:%d/%d)", srca, sport, dport));
 
 	nfo.addr = *src;
 	nfo.sport = sport;
@@ -976,6 +976,9 @@ void process_pfkey_nat_t_new_mapping(
 
 /*
  * $Log: nat_traversal.c,v $
+ * Revision 1.26.2.10  2007/07/09 23:08:47  paul
+ * Ensured two debug lines only appear when plutodebug=control is specified.
+ *
  * Revision 1.26.2.9  2007/01/22 22:42:43  paul
  * Second part of Delta Yeh's patch of nat_traversal with aggressive mode,
  * posted in bug #491.
@@ -1065,6 +1068,6 @@ void process_pfkey_nat_t_new_mapping(
  * 	added log info.
  *
  *
- * $Id: nat_traversal.c,v 1.26.2.9 2007/01/22 22:42:43 paul Exp $
+ * $Id: nat_traversal.c,v 1.26.2.10 2007/07/09 23:08:47 paul Exp $
  *
  */
