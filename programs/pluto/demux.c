@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: demux.c,v 1.210.2.13 2007/07/06 00:02:15 mcr Exp $
+ * RCSID $Id: demux.c,v 1.210.2.14 2007/07/09 23:08:47 paul Exp $
  */
 
 /* Ordering Constraints on Payloads
@@ -2090,7 +2090,7 @@ process_packet(struct msg_digest **mdp)
 		return;
 	    }
 
-	    DBG_log("np=%u and sd=%p\n", np, sd);
+	    DBG(DBG_CONTROLMORE, DBG_log("np=%u and sd=%p\n", np, sd));
 
 #ifdef NAT_TRAVERSAL
 	    /*
