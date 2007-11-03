@@ -11,7 +11,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: nat_traversal.c,v 1.32 2005/10/03 19:59:11 mcr Exp $
  */
 
 #ifdef NAT_TRAVERSAL
@@ -840,9 +839,24 @@ static int nat_traversal_new_mapping(struct state *st
 	
 	addrtot(nsrc, 0, ba, ADDRTOT_BUF);
 
-	DBG_log("state #%u NAT-T: new mapping %s:%d"
+	DBG(DBG_CONTROLMORE, DBG_log("state #%u NAT-T: new mapping %s:%d"
 		, (unsigned int)st->st_serialno
 		, ba, nsrcport);
+
+	addrtot(src, 0, srca, ADDRTOT_BUF);
+	addrtot(dst, 0, dsta, ADDRTOT_BUF);
+
+	if (!sameaddr(src, dst)) {
+		loglog(RC_LOG_SERIOUS, "nat_traversal_new_mapping: "
+			"address change currently not supported [%s:%d,%s:%d]",
+			srca, sport, dsta, dport);
+		return -1;
+	}
+
+	if (sport == dport) {
+		/* no change */
+		return 0;
+	}
 
 	nfo.st    = st;
 	nfo.addr  = *nsrc;
@@ -1020,8 +1034,33 @@ void process_pfkey_nat_t_new_mapping(
 
 /*
  * $Log: nat_traversal.c,v $
+<<<<<<< HEAD:programs/pluto/nat_traversal.c
  * Revision 1.32  2005/10/03 19:59:11  mcr
  * 	fixed english typo.
+=======
+ * Revision 1.26.2.10  2007/07/09 23:08:47  paul
+ * Ensured two debug lines only appear when plutodebug=control is specified.
+ *
+ * Revision 1.26.2.9  2007/01/22 22:42:43  paul
+ * Second part of Delta Yeh's patch of nat_traversal with aggressive mode,
+ * posted in bug #491.
+ *
+ * Revision 1.26.2.8  2007/01/22 20:46:59  paul
+ * Fix for Aggressive Mode and NAT-T port floating, based on RedHat patch.
+ *
+ * Revision 1.26.2.7  2006/04/04 22:05:07  ken
+ * Fix NAT Detection when initiator is behind NAT
+ *
+ * Revision 1.26.2.6  2006/01/04 18:57:52  ken
+ * Send 02_N too
+ *
+ * Revision 1.26.2.5  2005/11/24 05:30:37  ken
+ * MCR's refactored natd_lookup function for multi-NAT-D Hash
+ *
+ * Revision 1.26.2.4  2005/09/27 04:30:20  paul
+ * Backport of HEAD's patch, adopted from Peter Van der Beken's
+ * (peterv@propagandism.org) MacOSX interop patch.
+>>>>>>> fd94264...   turn off debugging unless asked for:programs/pluto/nat_traversal.c
  *
  * Revision 1.31  2005/10/02 22:01:10  mcr
  * 	change indentation, and make sure that port hash is calculated
@@ -1093,6 +1132,10 @@ void process_pfkey_nat_t_new_mapping(
  * 	added log info.
  *
  *
+<<<<<<< HEAD:programs/pluto/nat_traversal.c
  * $Id: nat_traversal.c,v 1.32 2005/10/03 19:59:11 mcr Exp $
+=======
+ * $Id: nat_traversal.c,v 1.26.2.10 2007/07/09 23:08:47 paul Exp $
+>>>>>>> fd94264...   turn off debugging unless asked for:programs/pluto/nat_traversal.c
  *
  */
