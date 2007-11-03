@@ -13,7 +13,6 @@
  * for more details.
  */
 
-char ipsec_esp_c_version[] = "RCSID $Id: ipsec_esp.c,v 1.13.2.4 2006/05/06 03:07:38 ken Exp $";
 #ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
 #endif
@@ -110,7 +109,7 @@ ipsec_rcv_esp_checks(struct ipsec_rcv_state *irs,
 		return IPSEC_RCV_BADLEN;
 	}
 
-	irs->protostuff.espstuff.espp = (struct esphdr *)skb->h.raw;
+	irs->protostuff.espstuff.espp = (struct esphdr *)skb_transport_header(skb);
 	irs->said.spi = irs->protostuff.espstuff.espp->esp_spi;
 
 	return IPSEC_RCV_OK;
@@ -137,7 +136,7 @@ ipsec_rcv_esp_decrypt_setup(struct ipsec_rcv_state *irs,
 		    irs->sa_len ? irs->sa : " (error)");
 
 	*replay = ntohl(espp->esp_rpl);
-	*authenticator = &(skb->h.raw[irs->ilen]);
+	*authenticator = &(skb_transport_header(skb)[irs->ilen]);
 
 	return IPSEC_RCV_OK;
 }
@@ -153,6 +152,7 @@ ipsec_rcv_esp_authcalc(struct ipsec_rcv_state *irs,
 		SHA1_CTX	sha1;
 	} tctx;
 
+#ifdef CONFIG_KLIPS_ALG
 	if (irs->ipsp->ips_alg_auth) {
 		KLIPS_PRINT(debug_rcv,
 				"klips_debug:ipsec_rcv: "
@@ -166,6 +166,7 @@ ipsec_rcv_esp_authcalc(struct ipsec_rcv_state *irs,
 		}
 		return IPSEC_RCV_BADPROTO;
 	}
+#endif
 	aa = irs->authfuncs;
 
 	/* copy the initialized keying material */
@@ -211,9 +212,10 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	struct sk_buff *skb;
 	struct ipsec_alg_enc *ixt_e=NULL;
 
+#ifdef CONFIG_KLIPS_ALG
 	skb=irs->skb;
 
-	idat = skb->h.raw;
+	idat = skb_transport_header(skb);
 
 	/* encaplen is the distance between the end of the IP
 	 * header and the beginning of the ESP header.
@@ -223,7 +225,7 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	 * Note: UDP-encap code has already moved the
 	 *       skb->data forward to accomodate this.
 	 */
-	encaplen = idat - (skb->nh.raw + irs->iphlen);
+	encaplen = skb_transport_header(skb) - (skb_network_header(skb) + irs->iphlen);
 
 	ixt_e=ipsp->ips_alg_enc;
 	esphlen = ESP_HEADER_LEN + ixt_e->ixt_common.ixt_support.ias_ivlen/8;
@@ -250,6 +252,7 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 			irs->stats->rx_errors++;
 		}
 		return IPSEC_RCV_BAD_DECRYPT;
+#endif /* CONFIG_KLIPS_ALG */
 	} 
 
 	ESP_DMP("postdecrypt", idat, irs->ilen);
@@ -313,7 +316,7 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	 *
 	 */
 	memmove((void *)(idat - irs->iphlen),
-		(void *)(skb->nh.raw), irs->iphlen);
+		(void *)(skb_network_header(skb)), irs->iphlen);
 
 	ESP_DMP("esp postmove", (idat - irs->iphlen),
 		irs->iphlen + irs->ilen);
@@ -329,8 +332,8 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 		return IPSEC_RCV_ESP_DECAPFAIL;
 	}
 	skb_pull(skb, esphlen);
-	skb->nh.raw = idat - irs->iphlen;
-	irs->ipp = skb->nh.iph;
+	skb_set_network_header(skb, ipsec_skb_offset(skb, idat - irs->iphlen));
+	irs->ipp = ip_hdr(skb);
 
 	ESP_DMP("esp postpull", skb->data, skb->len);
 
@@ -494,7 +497,7 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
     return IPSEC_XMIT_AH_BADALG;
   }
 
-  ixs->skb->h.raw = (unsigned char*)espp;
+  skb_set_transport_header(ixs->skb, ipsec_skb_offset(ixs->skb, espp));
 
   return IPSEC_XMIT_OK;
 }
@@ -538,62 +541,3 @@ struct inet_protocol esp_protocol =
 
 #endif /* !CONFIG_KLIPS_ESP */
 
-
-/*
- * $Log: ipsec_esp.c,v $
- * Revision 1.13.2.4  2006/05/06 03:07:38  ken
- * Pull in proper padsize->tailroom fix from #public
- * Need to do correct math on padlen since padsize is not equal to tailroom
- *
- * Revision 1.13.2.3  2006/05/05 03:58:04  ken
- * ixs->padsize becomes ixs->tailroom
- *
- * Revision 1.13.2.2  2006/05/01 14:36:03  mcr
- * use KLIPS_ERROR for fatal things.
- *
- * Revision 1.13.2.1  2006/04/20 16:33:06  mcr
- * remove all of CONFIG_KLIPS_ALG --- one can no longer build without it.
- * Fix in-kernel module compilation. Sub-makefiles do not work.
- *
- * Revision 1.13  2005/05/21 03:19:57  mcr
- * 	hash ctx is not really that interesting most of the time.
- *
- * Revision 1.12  2005/05/11 01:28:49  mcr
- * 	removed "poor-man"s OOP in favour of proper C structures.
- *
- * Revision 1.11  2005/04/29 05:10:22  mcr
- * 	removed from extraenous includes to make unit testing easier.
- *
- * Revision 1.10  2005/04/17 04:36:14  mcr
- * 	code now deals with ESP and UDP-ESP code.
- *
- * Revision 1.9  2005/04/15 19:52:30  mcr
- * 	adjustments to use proper skb fields for data.
- *
- * Revision 1.8  2004/09/14 00:22:57  mcr
- * 	adjustment of MD5* functions.
- *
- * Revision 1.7  2004/09/13 02:23:01  mcr
- * 	#define inet_protocol if necessary.
- *
- * Revision 1.6  2004/09/06 18:35:49  mcr
- * 	2.6.8.1 gets rid of inet_protocol->net_protocol compatibility,
- * 	so adjust for that.
- *
- * Revision 1.5  2004/08/17 03:27:23  mcr
- * 	klips 2.6 edits.
- *
- * Revision 1.4  2004/08/04 15:57:07  mcr
- * 	moved des .h files to include/des/ *
- * 	included 2.6 protocol specific things
- * 	started at NAT-T support, but it will require a kernel patch.
- *
- * Revision 1.3  2004/07/10 19:11:18  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.2  2004/04/06 02:49:25  mcr
- * 	pullup of algo code from alg-branch.
- *
- *
- *
- */

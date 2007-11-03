@@ -14,7 +14,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_sa.c,v 1.31 2005/11/11 04:38:56 paul Exp $
  *
  * This is the file formerly known as "ipsec_xform.h"
  *
@@ -524,7 +523,7 @@ ipsec_sa_getbyid(ip_said *said)
 		return NULL;
 	}
 
-	sa_len = satot(said, 0, sa, sizeof(sa));
+	sa_len = KLIPS_SATOT(debug_xform, said, 0, sa, sizeof(sa));
 
 	hashval = IPS_HASH(said);
 	
@@ -588,11 +587,15 @@ __ipsec_sa_put(struct ipsec_sa *ips, const char *func, int line)
 		return;
 	}
 
+<<<<<<< HEAD:linux/net/ipsec/ipsec_sa.c
 #ifdef CONFIG_KLIPS_DEBUG
 	if(debug_xform) {
 		char sa[SATOT_BUF];
 		size_t sa_len;
 		sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
+=======
+	sa_len = KLIPS_SATOT(debug_xform, &ips->ips_said, 0, sa, sizeof(sa));
+>>>>>>> 84dee3e...   patches for 2.6.22, skb-pointer-changes:linux/net/ipsec/ipsec_sa.c
 
 		KLIPS_PRINT(debug_xform,
 			    "ipsec_sa_put: "
@@ -760,12 +763,23 @@ ipsec_sa_del(struct ipsec_sa *ips)
 			    "null pointer passed in!\n");
 		return -ENODATA;
 	}
+<<<<<<< HEAD:linux/net/ipsec/ipsec_sa.c
 
 	if(ips->ips_next) {
 		struct ipsec_sa *in = ips->ips_next;
 
 		ips->ips_next=NULL;
 		ipsec_sa_put(in);
+=======
+	
+	sa_len = KLIPS_SATOT(debug_xform, &ips->ips_said, 0, sa, sizeof(sa));
+	if(ips->ips_inext || ips->ips_onext) {
+		KLIPS_PRINT(debug_xform,
+			    "klips_error:ipsec_sa_del: "
+			    "SA:%s still linked!\n",
+			    sa_len ? sa : " (error)");
+		return -EMLINK;
+>>>>>>> 84dee3e...   patches for 2.6.22, skb-pointer-changes:linux/net/ipsec/ipsec_sa.c
 	}
 	
 	sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
@@ -823,7 +837,75 @@ ipsec_sa_del(struct ipsec_sa *ips)
 		    sa_len ? sa : " (error)");
 	return -ENOENT;
 }
+<<<<<<< HEAD:linux/net/ipsec/ipsec_sa.c
 #endif
+=======
+
+/*
+  The ipsec_sa table better be locked before it is handed in, or races
+  might happen
+*/
+int
+ipsec_sa_delchain(struct ipsec_sa *ips)
+{
+	struct ipsec_sa *ipsdel;
+	int error = 0;
+        char sa[SATOT_BUF];
+	size_t sa_len;
+
+	if(ips == NULL) {
+		KLIPS_PRINT(debug_xform,
+			    "klips_error:ipsec_sa_delchain: "
+			    "null pointer passed in!\n");
+		return -ENODATA;
+	}
+
+	sa_len = KLIPS_SATOT(debug_xform, &ips->ips_said, 0, sa, sizeof(sa));
+	KLIPS_PRINT(debug_xform,
+		    "klips_debug:ipsec_sa_delchain: "
+		    "passed SA:%s\n",
+		    sa_len ? sa : " (error)");
+	while(ips->ips_onext != NULL) {
+		ips = ips->ips_onext;
+	}
+
+	while(ips) {
+		/* XXX send a pfkey message up to advise of deleted ipsec_sa */
+		sa_len = KLIPS_SATOT(debug_xform, &ips->ips_said, 0, sa, sizeof(sa));
+		KLIPS_PRINT(debug_xform,
+			    "klips_debug:ipsec_sa_delchain: "
+			    "unlinking and delting SA:%s",
+			    sa_len ? sa : " (error)");
+		ipsdel = ips;
+		ips = ips->ips_inext;
+		if(ips != NULL) {
+			sa_len = KLIPS_SATOT(debug_xform, &ips->ips_said, 0, sa, sizeof(sa));
+			KLIPS_PRINT(debug_xform,
+				    ", inext=%s",
+				    sa_len ? sa : " (error)");
+			atomic_dec(&ipsdel->ips_refcount);
+			ipsdel->ips_inext = NULL;
+			atomic_dec(&ips->ips_refcount);
+			ips->ips_onext = NULL;
+		}
+		KLIPS_PRINT(debug_xform,
+			    ".\n");
+		if((error = ipsec_sa_del(ipsdel))) {
+			KLIPS_PRINT(debug_xform,
+				    "klips_debug:ipsec_sa_delchain: "
+				    "ipsec_sa_del returned error %d.\n", -error);
+			return error;
+		}
+		if((error = ipsec_sa_wipe(ipsdel))) {
+			KLIPS_PRINT(debug_xform,
+				    "klips_debug:ipsec_sa_delchain: "
+				    "ipsec_sa_wipe returned error %d.\n", -error);
+			return error;
+		}
+	}
+	return error;
+}
+>>>>>>> 84dee3e...   patches for 2.6.22, skb-pointer-changes:linux/net/ipsec/ipsec_sa.c
 
 int 
 ipsec_sadb_cleanup(__u8 proto)
@@ -844,13 +926,95 @@ ipsec_sadb_cleanup(__u8 proto)
 
 	for (i = 0; i < SADB_HASHMOD; i++) {
 		ips = ipsec_sadb_hash[i];
+<<<<<<< HEAD:linux/net/ipsec/ipsec_sa.c
 		
 		while(ips) {
 			ipsec_sadb_hash[i]=ips->ips_hnext;
 			ips->ips_hnext=NULL;
 			ipsec_sa_put(ips);
+=======
+		if(ips != NULL) {
+			atomic_inc(&ips->ips_refcount);
+		}
+		for(; ips != NULL;) {
+			sa_len = KLIPS_SATOT(debug_xform, &ips->ips_said, 0, sa, sizeof(sa));
+			KLIPS_PRINT(debug_xform,
+				    "klips_debug:ipsec_sadb_cleanup: "
+				    "checking SA:%s, hash=%d, ref=%d",
+				    sa_len ? sa : " (error)",
+				    i,
+				    ips->ips_ref);
+			ipsdel = ips;
+			ips = ipsdel->ips_hnext;
+			if(ips != NULL) {
+				atomic_inc(&ips->ips_refcount);
+				sa_len = KLIPS_SATOT(debug_xform, &ips->ips_said, 0, sa, sizeof(sa));
+				KLIPS_PRINT(debug_xform,
+					    ", hnext=%s",
+					    sa_len ? sa : " (error)");
+			}
+			if(*ipsprev != NULL) {
+				sa_len = KLIPS_SATOT(debug_xform, &(*ipsprev)->ips_said, 0, sa, sizeof(sa));
+				KLIPS_PRINT(debug_xform,
+					    ", *ipsprev=%s",
+					    sa_len ? sa : " (error)");
+				if((*ipsprev)->ips_hnext) {
+					sa_len = KLIPS_SATOT(debug_xform, &(*ipsprev)->ips_hnext->ips_said, 0, sa, sizeof(sa));
+					KLIPS_PRINT(debug_xform,
+						    ", *ipsprev->ips_hnext=%s",
+						    sa_len ? sa : " (error)");
+				}
+			}
+			KLIPS_PRINT(debug_xform,
+				    ".\n");
+			if(proto == 0 || (proto == ipsdel->ips_said.proto)) {
+				sa_len = KLIPS_SATOT(debug_xform, &ipsdel->ips_said, 0, sa, sizeof(sa));
+				KLIPS_PRINT(debug_xform,
+					    "klips_debug:ipsec_sadb_cleanup: "
+					    "deleting SA chain:%s.\n",
+					    sa_len ? sa : " (error)");
+				if((error = ipsec_sa_delchain(ipsdel))) {
+					SENDERR(-error);
+				}
+				ipsprev = &(ipsec_sadb_hash[i]);
+				ips = ipsec_sadb_hash[i];
+>>>>>>> 84dee3e...   patches for 2.6.22, skb-pointer-changes:linux/net/ipsec/ipsec_sa.c
 
+<<<<<<< HEAD:linux/net/ipsec/ipsec_sa.c
 			ips = ipsec_sadb_hash[i];
+=======
+				KLIPS_PRINT(debug_xform,
+					    "klips_debug:ipsec_sadb_cleanup: "
+					    "deleted SA chain:%s",
+					    sa_len ? sa : " (error)");
+				if(ips != NULL) {
+					sa_len = KLIPS_SATOT(debug_xform, &ips->ips_said, 0, sa, sizeof(sa));
+					KLIPS_PRINT(debug_xform,
+						    ", ipsec_sadb_hash[%d]=%s",
+						    i,
+						    sa_len ? sa : " (error)");
+				}
+				if(*ipsprev != NULL) {
+					sa_len = KLIPS_SATOT(debug_xform, &(*ipsprev)->ips_said, 0, sa, sizeof(sa));
+					KLIPS_PRINT(debug_xform,
+						    ", *ipsprev=%s",
+						    sa_len ? sa : " (error)");
+					if((*ipsprev)->ips_hnext != NULL) {
+					        sa_len = KLIPS_SATOT(debug_xform, &(*ipsprev)->ips_hnext->ips_said, 0, sa, sizeof(sa));
+						KLIPS_PRINT(debug_xform,
+							    ", *ipsprev->ips_hnext=%s",
+							    sa_len ? sa : " (error)");
+					}
+				}
+				KLIPS_PRINT(debug_xform,
+					    ".\n");
+			} else {
+				ipsprev = &ipsdel;
+			}
+			if(ipsdel != NULL) {
+				ipsec_sa_put(ipsdel);
+			}
+>>>>>>> 84dee3e...   patches for 2.6.22, skb-pointer-changes:linux/net/ipsec/ipsec_sa.c
 		}
 	}
 
@@ -949,6 +1113,38 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 		return -ENODATA;
 	}
 
+<<<<<<< HEAD:linux/net/ipsec/ipsec_sa.c
+=======
+	/* if(atomic_dec_and_test(ips)) {
+	}; */
+
+#if IPSEC_SA_REF_CODE
+	/* remove me from the SArefTable */
+	{
+		char sa[SATOT_BUF];
+		size_t sa_len;
+		sa_len = KLIPS_SATOT(debug_xform, &ips->ips_said, 0, sa, sizeof(sa));
+		KLIPS_PRINT(debug_xform,
+			    "klips_debug:ipsec_sa_wipe: "
+			    "removing SA=%s(0p%p), SAref=%d, table=%d(0p%p), entry=%d from the refTable.\n",
+			    sa_len ? sa : " (error)",
+			    ips,
+			    ips->ips_ref,
+			    IPsecSAref2table(IPsecSA2SAref(ips)),
+			    ipsec_sadb.refTable[IPsecSAref2table(IPsecSA2SAref(ips))],
+			    IPsecSAref2entry(IPsecSA2SAref(ips)));
+	}
+	if(ips->ips_ref == IPSEC_SAREF_NULL) {
+		KLIPS_PRINT(debug_xform,
+			    "klips_debug:ipsec_sa_wipe: "
+			    "why does this SA not have a valid SAref?.\n");
+	}
+	ipsec_sadb.refTable[IPsecSAref2table(IPsecSA2SAref(ips))]->entry[IPsecSAref2entry(IPsecSA2SAref(ips))] = NULL;
+	ips->ips_ref = IPSEC_SAREF_NULL;
+	ipsec_sa_put(ips);
+#endif /* IPSEC_SA_REF_CODE */
+
+>>>>>>> 84dee3e...   patches for 2.6.22, skb-pointer-changes:linux/net/ipsec/ipsec_sa.c
 	/* paranoid clean up */
 	if(ips->ips_addr_s != NULL) {
 		memset((caddr_t)(ips->ips_addr_s), 0, ips->ips_addr_s_size);
@@ -1018,9 +1214,11 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
         }
 	ips->ips_ident_d.data = NULL;
 
+#ifdef CONFIG_KLIPS_ALG
 	if (ips->ips_alg_enc||ips->ips_alg_auth) {
 		ipsec_alg_sa_wipe(ips);
 	}
+#endif /* CONFIG_KLIPS_ALG */
 	
 	BUG_ON(atomic_read(&ips->ips_refcount) != 0);
 
@@ -1044,8 +1242,10 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 #if defined (CONFIG_KLIPS_AUTH_HMAC_MD5) || defined (CONFIG_KLIPS_AUTH_HMAC_SHA1)
 	unsigned char kb[AHMD596_BLKLEN];
 #endif
+#if defined CONFIG_KLIPS_ALG
 	struct ipsec_alg_enc *ixt_e = NULL;
 	struct ipsec_alg_auth *ixt_a = NULL;
+#endif /* CONFIG_KLIPS_ALG */
 
 	if(ipsp == NULL) {
 		KLIPS_PRINT(debug_pfkey,
@@ -1054,7 +1254,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 		SENDERR(EINVAL);
 	}
 
-	sa_len = satot(&ipsp->ips_said, 0, sa, sizeof(sa));
+	sa_len = KLIPS_SATOT(debug_pfkey, &ipsp->ips_said, 0, sa, sizeof(sa));
 
         KLIPS_PRINT(debug_pfkey,
 		    "ipsec_sa_init: "
@@ -1269,7 +1469,8 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 		unsigned char *akp;
 		unsigned int aks;
 #endif
-
+		ipsp->ips_iv_size = 0;
+#ifdef CONFIG_KLIPS_ALG
 		ipsec_alg_sa_init(ipsp);
 		ixt_e=ipsp->ips_alg_enc;
 
@@ -1304,6 +1505,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 			if ((error=ipsec_alg_auth_key_create(ipsp)) < 0)
 				SENDERR(-error);
 		} else	
+#endif /* CONFIG_KLIPS_ALG */
 		
 		switch(ipsp->ips_authalg) {
 # ifdef CONFIG_KLIPS_AUTH_HMAC_MD5

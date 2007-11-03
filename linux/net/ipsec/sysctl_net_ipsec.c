@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: sysctl_net_ipsec.c,v 1.17 2004/07/10 19:11:18 mcr Exp $
+ * RCSID $Id: sysctl_net_ipsec.c,v 1.17.10.2 2007/10/30 21:42:25 paul Exp $
  */
 
 /* -*- linux-c -*-
@@ -20,6 +20,7 @@
  * Initiated April 3, 1998, Richard Guy Briggs <rgb@conscoop.ottawa.on.ca>
  */
 
+#include <linux/version.h>
 #include <linux/mm.h>
 #include <linux/sysctl.h>
 
@@ -174,29 +175,27 @@ static ctl_table ipsec_table[] = {
        },
 #else
 	{ NET_IPSEC_DEBUG_AH, "debug_ah", &debug_ah,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_ESP, "debug_esp", &debug_esp,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_TUNNEL, "debug_tunnel", &debug_tunnel,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_EROUTE, "debug_eroute", &debug_eroute,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_SPI, "debug_spi", &debug_spi,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_RADIJ, "debug_radij", &debug_radij,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_NETLINK, "debug_netlink", &debug_netlink,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_XFORM, "debug_xform", &debug_xform,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_RCV, "debug_rcv", &debug_rcv,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_PFKEY, "debug_pfkey", &debug_pfkey,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{ NET_IPSEC_DEBUG_VERBOSE, "debug_verbose",&sysctl_ipsec_debug_verbose,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
-#endif
-
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 #ifdef CONFIG_KLIPS_IPCOMP
 #ifdef CTL_TABLE_PARENT
         { .ctl_name = NET_IPSEC_DEBUG_IPCOMP,
@@ -209,8 +208,7 @@ static ctl_table ipsec_table[] = {
        },
 #else
 	{ NET_IPSEC_DEBUG_IPCOMP, "debug_ipcomp", &sysctl_ipsec_debug_ipcomp,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
-#endif
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 #endif /* CONFIG_KLIPS_IPCOMP */
 
 #ifdef CONFIG_KLIPS_REGRESS
@@ -227,8 +225,7 @@ static ctl_table ipsec_table[] = {
 #else
 	{ NET_IPSEC_REGRESS_PFKEY_LOSSAGE, "pfkey_lossage",
 	  &sysctl_ipsec_regress_pfkey_lossage,
-	  sizeof(int), 0644, NULL, &proc_dointvec},
-#endif
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 #endif /* CONFIG_KLIPS_REGRESS */
 
 #endif /* CONFIG_KLIPS_DEBUG */
@@ -262,11 +259,11 @@ static ctl_table ipsec_table[] = {
        {0}
 #else
 	{ NET_IPSEC_ICMP, "icmp", &sysctl_ipsec_icmp,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{ NET_IPSEC_INBOUND_POLICY_CHECK, "inbound_policy_check", &sysctl_ipsec_inbound_policy_check,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{ NET_IPSEC_TOS, "tos", &sysctl_ipsec_tos,
-	  sizeof(int), 0644, NULL, &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 	{0}
 #endif
 };
@@ -309,7 +306,11 @@ static struct ctl_table_header *ipsec_table_header;
 
 int ipsec_sysctl_register(void)
 {
-        ipsec_table_header = ipsec_register_sysctl_table(ipsec_root_table, 0);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,21)
+        ipsec_table_header = register_sysctl_table(ipsec_root_table);
+#else
+        ipsec_table_header = register_sysctl_table(ipsec_root_table, 0);
+#endif
         if (!ipsec_table_header) {
                 return -ENOMEM;
 	}
@@ -323,56 +324,3 @@ void ipsec_sysctl_unregister(void)
 
 #endif /* CONFIG_SYSCTL */
 
-/*
- * $Log: sysctl_net_ipsec.c,v $
- * Revision 1.17  2004/07/10 19:11:18  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.16  2004/04/06 02:49:26  mcr
- * 	pullup of algo code from alg-branch.
- *
- * Revision 1.15  2002/04/24 07:55:32  mcr
- * 	#include patches and Makefiles for post-reorg compilation.
- *
- * Revision 1.14  2002/04/24 07:36:35  mcr
- * Moved from ./klips/net/ipsec/sysctl_net_ipsec.c,v
- *
- * Revision 1.13  2002/01/12 02:58:32  mcr
- * 	first regression test causes acquire messages to be lost
- * 	100% of the time. This is to help testing of pluto.
- *
- * Revision 1.12  2001/06/14 19:35:13  rgb
- * Update copyright date.
- *
- * Revision 1.11  2001/02/26 19:58:13  rgb
- * Drop sysctl_ipsec_{no_eroute_pass,opportunistic}, replaced by magic SAs.
- *
- * Revision 1.10  2000/09/16 01:50:15  rgb
- * Protect sysctl_ipsec_debug_ipcomp with compiler defines too so that the
- * linker won't blame rj_delete() for missing symbols.  ;->  Damn statics...
- *
- * Revision 1.9  2000/09/15 23:17:51  rgb
- * Moved stuff around to compile with debug off.
- *
- * Revision 1.8  2000/09/15 11:37:02  rgb
- * Merge in heavily modified Svenning Soerensen's <svenning@post5.tele.dk>
- * IPCOMP zlib deflate code.
- *
- * Revision 1.7  2000/09/15 07:37:15  rgb
- * Munged silly log comment that was causing a warning.
- *
- * Revision 1.6  2000/09/15 04:58:23  rgb
- * Added tos runtime switch.
- * Removed 'sysctl_ipsec_' prefix from /proc/sys/net/ipsec/ filenames.
- *
- * Revision 1.5  2000/09/12 03:25:28  rgb
- * Filled in and implemented sysctl.
- *
- * Revision 1.4  1999/04/11 00:29:03  henry
- * GPL boilerplate
- *
- * Revision 1.3  1999/04/06 04:54:29  rgb
- * Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
- * patch shell fixes.
- *
- */

@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2.c,v 1.97.2.8 2006/07/10 15:56:11 paul Exp $
  */
 
 /*
@@ -498,9 +497,9 @@ pfkey_destroy_socket(struct sock *sk)
 			} else {
 				printk(" dev:NULL");
 			}
-			printk(" h:0p%p", skb->h.raw);
-			printk(" nh:0p%p", skb->nh.raw);
-			printk(" mac:0p%p", skb->mac.raw);
+			printk(" h:0p%p", skb_transport_header(skb));
+			printk(" nh:0p%p", skb_network_header(skb));
+			printk(" mac:0p%p", skb_mac_header(skb));
 			printk(" dst:0p%p", skb->dst);
 			if(sysctl_ipsec_debug_verbose) {
 				int i;
@@ -527,12 +526,12 @@ pfkey_destroy_socket(struct sock *sk)
 			printk(" truesize:%d", skb->truesize);
 			printk(" head:0p%p", skb->head);
 			printk(" data:0p%p", skb->data);
-			printk(" tail:0p%p", skb->tail);
-			printk(" end:0p%p", skb->end);
+			printk(" tail:0p%p", skb_tail_pointer(skb));
+			printk(" end:0p%p", skb_end_pointer(skb));
 			if(sysctl_ipsec_debug_verbose) {
 				unsigned char* i;
 				printk(" data");
-				for(i = skb->head; i < skb->end; i++) {
+				for(i = skb->head; i < skb_end_pointer(skb); i++) {
 					printk(":%2x", (unsigned char)(*(i)));
 				}
 			}
@@ -613,8 +612,8 @@ pfkey_upmsg(struct socket *sock, struct sadb_msg *pfkey_msg)
 		ipsec_kfree_skb(skb);
 		return -ENOBUFS;
 	}
-	skb->h.raw = skb_put(skb, pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN);
-	memcpy(skb->h.raw, pfkey_msg, pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN);
+	skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_put(skb, pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)));
+	memcpy(skb_transport_header(skb), pfkey_msg, pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN);
 
 	if((error = sock_queue_rcv_skb(sk, skb)) < 0) {
 		skb->sk=NULL;
@@ -1098,7 +1097,9 @@ pfkey_recvmsg(struct socket *sock
 	}
 
 	skb_copy_datagram_iovec(skb, 0, msg->msg_iov, size);
-#ifdef HAVE_TSTAMP
+#ifdef HAVE_KERNEL_TSTAMP
+	sk->sk_stamp = skb->tstamp;
+#elif defined(HAVE_TSTAMP)
 	sk->sk_stamp.tv_sec  = skb->tstamp.off_sec;
 	sk->sk_stamp.tv_usec = skb->tstamp.off_usec;
 #else
@@ -1158,6 +1159,8 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 					sk->sk_socket->state);
 #ifdef CONFIG_KLIPS_DEBUG
 		} else {
+		  struct timeval t;
+		  grab_socket_timeval(t, *sk);
 		  len += ipsec_snprintf(buffer+len, length-len,
 					"%8p %5d %d %8p %8p %d %d %d %d %5d %d.%06d %08lX %8X %2X\n",
 					sk,
@@ -1174,8 +1177,8 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 #endif					
 					sk->sk_protocol,
 					sk->sk_sndbuf,
-					(unsigned int)sk->sk_stamp.tv_sec,
-					(unsigned int)sk->sk_stamp.tv_usec,
+					(unsigned int)t.tv_sec,
+					(unsigned int)t.tv_usec,
 					sk->sk_socket->flags,
 					sk->sk_socket->type,
 					sk->sk_socket->state);
@@ -1554,447 +1557,3 @@ void pfkey_proto_init(struct net_protocol *pro)
 }
 #endif /* MODULE */
 
-/*
- * $Log: pfkey_v2.c,v $
- * Revision 1.97.2.8  2006/07/10 15:56:11  paul
- * Fix for bug #642 by Bart.
- *
- * Revision 1.97.2.7  2006/04/04 11:34:19  ken
- * Backport SMP fixes + #ifdef cleanup from #public
- *
- * Revision 1.97.2.6  2006/02/15 05:00:20  paul
- * Fix for crasher on 2.6.12+ with klips (mostly seen on redhat kernels)
- *
- * Revision 1.97.2.5  2005/11/22 04:11:52  ken
- * Backport fixes for 2.6.14 kernels from HEAD
- *
- * Revision 1.97.2.4  2005/09/14 16:40:45  mcr
- *    pull up of compilation on 2.4
- *
- * Revision 1.97.2.3  2005/09/06 02:10:03  mcr
- *    pulled up possible SMP-related compilation fix
- *
- * Revision 1.97.2.2  2005/08/28 01:21:12  paul
- * Undid Ken's gcc4 fix in version 1.94 since it breaks linking KLIPS on
- * SMP kernels.
- *
- * Revision 1.97.2.1  2005/08/27 23:40:00  paul
- * recommited HAVE_SOCK_SECURITY fixes for linux 2.6.13
- *
- * Revision 1.102  2005/09/14 16:37:23  mcr
- * 	fix to compile on 2.4.
- *
- * Revision 1.101  2005/09/06 01:42:25  mcr
- *    removed additional SOCKOPS_WRAPPED code
- *
- * Revision 1.100  2005/08/30 18:10:15  mcr
- * 	remove SOCKOPS_WRAPPED() code, add proper locking to the
- * 	pfkey code. (cross fingers)
- *
- * Revision 1.99  2005/08/28 01:53:37  paul
- * Undid Ken's gcc4 fix in version 1.94 since it breaks linking KLIPS on SMP kernels.
- *
- * Revision 1.98  2005/08/27 23:07:21  paul
- * Somewhere between 2.6.12 and 2.6.13rc7 the unused security memnber in sk_buff
- * has been removed. This patch should fix compilation for both cases.
- *
- * Revision 1.97  2005/07/20 00:33:36  mcr
- * 	fixed typo in #ifdef for SKALLOC.
- *
- * Revision 1.96  2005/07/19 20:02:15  mcr
- * 	sk_alloc() interface change.
- *
- * Revision 1.95  2005/07/09 00:40:06  ken
- * Fix for GCC4 - it doesn't like the potential for duplicate declaration
- *
- * Revision 1.94  2005/07/09 00:14:04  ken
- * Casts for 64bit cleanliness
- *
- * Revision 1.93  2005/07/08 16:20:05  mcr
- * 	fix for 2.6.12 disapperance of sk_zapped field -> sock_flags.
- *
- * Revision 1.92  2005/05/21 03:29:39  mcr
- * 	fixed missing prototype definition.
- *
- * Revision 1.91  2005/05/11 01:43:45  mcr
- * 	removed "poor-man"s OOP in favour of proper C structures.
- *
- * Revision 1.90  2005/05/02 18:42:47  mcr
- * 	fix for cut&paste error with pfkey_v2.c "supported_name"
- *
- * Revision 1.89  2005/05/01 03:12:31  mcr
- * 	print name if it is available.
- *
- * Revision 1.88  2005/04/29 05:10:22  mcr
- * 	removed from extraenous includes to make unit testing easier.
- *
- * Revision 1.87  2005/04/15 19:57:10  mcr
- * 	make sure that address has 0p so that it will
- * 	sanitized.
- *
- * Revision 1.86  2005/04/08 18:28:36  mcr
- * 	some minor #ifdef simplification in pursuit of a possible bug.
- *
- * Revision 1.85  2004/12/03 21:25:57  mcr
- * 	compile time fixes for running on 2.6.
- * 	still experimental.
- *
- * Revision 1.84  2004/08/17 03:27:23  mcr
- * 	klips 2.6 edits.
- *
- * Revision 1.83  2004/08/04 15:57:07  mcr
- * 	moved des .h files to include/des/ *
- * 	included 2.6 protocol specific things
- * 	started at NAT-T support, but it will require a kernel patch.
- *
- * Revision 1.82  2004/07/10 19:11:18  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.81  2004/04/25 21:23:11  ken
- * Pull in dhr's changes from FreeS/WAN 2.06
- *
- * Revision 1.80  2004/04/06 02:49:26  mcr
- * 	pullup of algo code from alg-branch.
- *
- * Revision 1.79.4.1  2003/12/22 15:25:52  jjo
- * . Merged algo-0.8.1-rc11-test1 into alg-branch
- *
- * Revision 1.79  2003/10/31 02:27:55  mcr
- * 	pulled up port-selector patches and sa_id elimination.
- *
- * Revision 1.78.4.1  2003/10/29 01:30:41  mcr
- * 	elimited "struct sa_id".
- *
- * Revision 1.78  2003/04/03 17:38:09  rgb
- * Centralised ipsec_kfree_skb and ipsec_dev_{get,put}.
- *
- * Revision 1.77  2002/10/17 16:49:36  mcr
- * 	sock->ops should reference the unwrapped options so that
- * 	we get hacked in locking on SMP systems.
- *
- * Revision 1.76  2002/10/12 23:11:53  dhr
- *
- * [KenB + DHR] more 64-bit cleanup
- *
- * Revision 1.75  2002/09/20 05:01:57  rgb
- * Added memory allocation debugging.
- *
- * Revision 1.74  2002/09/19 02:42:50  mcr
- * 	do not define the pfkey_ops function for now.
- *
- * Revision 1.73  2002/09/17 17:29:23  mcr
- * 	#if 0 out some dead code - pfkey_ops is never used as written.
- *
- * Revision 1.72  2002/07/24 18:44:54  rgb
- * Type fiddling to tame ia64 compiler.
- *
- * Revision 1.71  2002/05/23 07:14:11  rgb
- * Cleaned up %p variants to 0p%p for test suite cleanup.
- *
- * Revision 1.70  2002/04/24 07:55:32  mcr
- * 	#include patches and Makefiles for post-reorg compilation.
- *
- * Revision 1.69  2002/04/24 07:36:33  mcr
- * Moved from ./klips/net/ipsec/pfkey_v2.c,v
- *
- * Revision 1.68  2002/03/08 01:15:17  mcr
- * 	put some internal structure only debug messages behind
- * 	&& sysctl_ipsec_debug_verbose.
- *
- * Revision 1.67  2002/01/29 17:17:57  mcr
- * 	moved include of ipsec_param.h to after include of linux/kernel.h
- * 	otherwise, it seems that some option that is set in ipsec_param.h
- * 	screws up something subtle in the include path to kernel.h, and
- * 	it complains on the snprintf() prototype.
- *
- * Revision 1.66  2002/01/29 04:00:54  mcr
- * 	more excise of kversions.h header.
- *
- * Revision 1.65  2002/01/29 02:13:18  mcr
- * 	introduction of ipsec_kversion.h means that include of
- * 	ipsec_param.h must preceed any decisions about what files to
- * 	include to deal with differences in kernel source.
- *
- * Revision 1.64  2001/11/26 09:23:51  rgb
- * Merge MCR's ipsec_sa, eroute, proc and struct lifetime changes.
- *
- * Revision 1.61.2.1  2001/09/25 02:28:44  mcr
- * 	cleaned up includes.
- *
- * Revision 1.63  2001/11/12 19:38:00  rgb
- * Continue trying other sockets even if one fails and return only original
- * error.
- *
- * Revision 1.62  2001/10/18 04:45:22  rgb
- * 2.4.9 kernel deprecates linux/malloc.h in favour of linux/slab.h,
- * lib/freeswan.h version macros moved to lib/kversions.h.
- * Other compiler directive cleanups.
- *
- * Revision 1.61  2001/09/20 15:32:59  rgb
- * Min/max cleanup.
- *
- * Revision 1.60  2001/06/14 19:35:12  rgb
- * Update copyright date.
- *
- * Revision 1.59  2001/06/13 15:35:48  rgb
- * Fixed #endif comments.
- *
- * Revision 1.58  2001/05/04 16:37:24  rgb
- * Remove erroneous checking of return codes for proc_net_* in 2.4.
- *
- * Revision 1.57  2001/05/03 19:43:36  rgb
- * Initialise error return variable.
- * Check error return codes in startup and shutdown.
- * Standardise on SENDERR() macro.
- *
- * Revision 1.56  2001/04/21 23:05:07  rgb
- * Define out skb->used for 2.4 kernels.
- *
- * Revision 1.55  2001/02/28 05:03:28  rgb
- * Clean up and rationalise startup messages.
- *
- * Revision 1.54  2001/02/27 22:24:55  rgb
- * Re-formatting debug output (line-splitting, joining, 1arg/line).
- * Check for satoa() return codes.
- *
- * Revision 1.53  2001/02/27 06:48:18  rgb
- * Fixed pfkey socket unregister log message to reflect type and function.
- *
- * Revision 1.52  2001/02/26 22:34:38  rgb
- * Fix error return code that was getting overwritten by the error return
- * code of an upmsg.
- *
- * Revision 1.51  2001/01/30 23:42:47  rgb
- * Allow pfkey msgs from pid other than user context required for ACQUIRE
- * and subsequent ADD or UDATE.
- *
- * Revision 1.50  2001/01/23 20:22:59  rgb
- * 2.4 fix to remove removed is_clone member.
- *
- * Revision 1.49  2000/11/06 04:33:47  rgb
- * Changed non-exported functions to DEBUG_NO_STATIC.
- *
- * Revision 1.48  2000/09/29 19:47:41  rgb
- * Update copyright.
- *
- * Revision 1.47  2000/09/22 04:23:04  rgb
- * Added more debugging to pfkey_upmsg() call from pfkey_sendmsg() error.
- *
- * Revision 1.46  2000/09/21 04:20:44  rgb
- * Fixed array size off-by-one error.  (Thanks Svenning!)
- *
- * Revision 1.45  2000/09/20 04:01:26  rgb
- * Changed static functions to DEBUG_NO_STATIC for revealing function names
- * in oopsen.
- *
- * Revision 1.44  2000/09/19 00:33:17  rgb
- * 2.0 fixes.
- *
- * Revision 1.43  2000/09/16 01:28:13  rgb
- * Fixed use of 0 in p format warning.
- *
- * Revision 1.42  2000/09/16 01:09:41  rgb
- * Fixed debug format warning for pointers that was expecting ints.
- *
- * Revision 1.41  2000/09/13 15:54:00  rgb
- * Rewrote pfkey_get_info(), added pfkey_{supported,registered}_get_info().
- * Moved supported algos add and remove to functions.
- *
- * Revision 1.40  2000/09/12 18:49:28  rgb
- * Added IPIP tunnel and IPCOMP register support.
- *
- * Revision 1.39  2000/09/12 03:23:49  rgb
- * Converted #if0 debugs to sysctl.
- * Removed debug_pfkey initialisations that prevented no_debug loading or
- * linking.
- *
- * Revision 1.38  2000/09/09 06:38:02  rgb
- * Return positive errno in pfkey_reply error message.
- *
- * Revision 1.37  2000/09/08 19:19:09  rgb
- * Change references from DEBUG_IPSEC to CONFIG_IPSEC_DEBUG.
- * Clean-up of long-unused crud...
- * Create pfkey error message on on failure.
- * Give pfkey_list_{insert,remove}_{socket,supported}() some error
- * checking.
- *
- * Revision 1.36  2000/09/01 18:49:38  rgb
- * Reap experimental NET_21_ bits.
- * Turned registered sockets list into an array of one list per satype.
- * Remove references to deprecated sklist_{insert,remove}_socket.
- * Removed leaking socket debugging code.
- * Removed duplicate pfkey_insert_socket in pfkey_create.
- * Removed all references to pfkey msg->msg_name, since it is not used for
- * pfkey.
- * Added a supported algorithms array lists, one per satype and registered
- * existing algorithms.
- * Fixed pfkey_list_{insert,remove}_{socket,support}() to allow change to
- * list.
- * Only send pfkey_expire() messages to sockets registered for that satype.
- *
- * Revision 1.35  2000/08/24 17:03:00  rgb
- * Corrected message size error return code for PF_KEYv2.
- * Removed downward error prohibition.
- *
- * Revision 1.34  2000/08/21 16:32:26  rgb
- * Re-formatted for cosmetic consistency and readability.
- *
- * Revision 1.33  2000/08/20 21:38:24  rgb
- * Added a pfkey_reply parameter to pfkey_msg_interp(). (Momchil)
- * Extended the upward message initiation of pfkey_sendmsg(). (Momchil)
- *
- * Revision 1.32  2000/07/28 14:58:31  rgb
- * Changed kfree_s to kfree, eliminating extra arg to fix 2.4.0-test5.
- *
- * Revision 1.31  2000/05/16 03:04:00  rgb
- * Updates for 2.3.99pre8 from MB.
- *
- * Revision 1.30  2000/05/10 19:22:21  rgb
- * Use sklist private functions for 2.3.xx compatibility.
- *
- * Revision 1.29  2000/03/22 16:17:03  rgb
- * Fixed SOCKOPS_WRAPPED macro for SMP (MB).
- *
- * Revision 1.28  2000/02/21 19:30:45  rgb
- * Removed references to pkt_bridged for 2.3.47 compatibility.
- *
- * Revision 1.27  2000/02/14 21:07:00  rgb
- * Fixed /proc/net/pf-key legend spacing.
- *
- * Revision 1.26  2000/01/22 03:46:59  rgb
- * Fixed pfkey error return mechanism so that we are able to free the
- * local copy of the pfkey_msg, plugging a memory leak and silencing
- * the bad object free complaints.
- *
- * Revision 1.25  2000/01/21 06:19:44  rgb
- * Moved pfkey_list_remove_socket() calls to before MOD_USE_DEC_COUNT.
- * Added debugging to pfkey_upmsg.
- *
- * Revision 1.24  2000/01/10 16:38:23  rgb
- * MB fixups for 2.3.x.
- *
- * Revision 1.23  1999/12/09 23:22:16  rgb
- * Added more instrumentation for debugging 2.0 socket
- * selection/reading.
- * Removed erroneous 2.0 wait==NULL check bug in select.
- *
- * Revision 1.22  1999/12/08 20:32:16  rgb
- * Tidied up 2.0.xx support, after major pfkey work, eliminating
- * msg->msg_name twiddling in the process, since it is not defined
- * for PF_KEYv2.
- *
- * Revision 1.21  1999/12/01 22:17:19  rgb
- * Set skb->dev to zero on new skb in case it is a reused skb.
- * Added check for skb_put overflow and freeing to avoid upmsg on error.
- * Added check for wrong pfkey version and freeing to avoid upmsg on
- * error.
- * Shut off content dumping in pfkey_destroy.
- * Added debugging message for size of buffer allocated for upmsg.
- *
- * Revision 1.20  1999/11/27 12:11:00  rgb
- * Minor clean-up, enabling quiet operation of pfkey if desired.
- *
- * Revision 1.19  1999/11/25 19:04:21  rgb
- * Update proc_fs code for pfkey to use dynamic registration.
- *
- * Revision 1.18  1999/11/25 09:07:17  rgb
- * Implemented SENDERR macro for propagating error codes.
- * Fixed error return code bug.
- *
- * Revision 1.17  1999/11/23 23:07:20  rgb
- * Change name of pfkey_msg_parser to pfkey_msg_interp since it no longer
- * parses. (PJO)
- * Sort out pfkey and freeswan headers, putting them in a library path.
- *
- * Revision 1.16  1999/11/20 22:00:22  rgb
- * Moved socketlist type declarations and prototypes for shared use.
- * Renamed reformatted and generically extended for use by other socket
- * lists pfkey_{del,add}_open_socket to pfkey_list_{remove,insert}_socket.
- *
- * Revision 1.15  1999/11/18 04:15:09  rgb
- * Make pfkey_data_ready temporarily available for 2.2.x testing.
- * Clean up pfkey_destroy_socket() debugging statements.
- * Add Peter Onion's code to send messages up to all listening sockets.
- * Changed all occurrences of #include "../../../lib/freeswan.h"
- * to #include <freeswan.h> which works due to -Ilibfreeswan in the
- * klips/net/ipsec/Makefile.
- * Replaced all kernel version macros to shorter, readable form.
- * Added CONFIG_PROC_FS compiler directives in case it is shut off.
- *
- * Revision 1.14  1999/11/17 16:01:00  rgb
- * Make pfkey_data_ready temporarily available for 2.2.x testing.
- * Clean up pfkey_destroy_socket() debugging statements.
- * Add Peter Onion's code to send messages up to all listening sockets.
- * Changed #include "../../../lib/freeswan.h" to #include <freeswan.h>
- * which works due to -Ilibfreeswan in the klips/net/ipsec/Makefile.
- *
- * Revision 1.13  1999/10/27 19:59:51  rgb
- * Removed af_unix comments that are no longer relevant.
- * Added debug prink statements.
- * Added to the /proc output in pfkey_get_info.
- * Made most functions non-static to enable oops tracing.
- * Re-enable skb dequeueing and freeing.
- * Fix skb_alloc() and skb_put() size bug in pfkey_upmsg().
- *
- * Revision 1.12  1999/10/26 17:05:42  rgb
- * Complete re-ordering based on proto_ops structure order.
- * Separated out proto_ops structures for 2.0.x and 2.2.x for clarity.
- * Simplification to use built-in socket ops where possible for 2.2.x.
- * Add shorter macros for compiler directives to visually clean-up.
- * Add lots of sk skb dequeueing debugging statements.
- * Added to the /proc output in pfkey_get_info.
- *
- * Revision 1.11  1999/09/30 02:55:10  rgb
- * Bogus skb detection.
- * Fix incorrect /proc/net/ipsec-eroute printk message.
- *
- * Revision 1.10  1999/09/21 15:22:13  rgb
- * Temporary fix while I figure out the right way to destroy sockets.
- *
- * Revision 1.9  1999/07/08 19:19:44  rgb
- * Fix pointer format warning.
- * Fix missing member error under 2.0.xx kernels.
- *
- * Revision 1.8  1999/06/13 07:24:04  rgb
- * Add more debugging.
- *
- * Revision 1.7  1999/06/10 05:24:17  rgb
- * Clarified compiler directives.
- * Renamed variables to reduce confusion.
- * Used sklist_*_socket() kernel functions to simplify 2.2.x socket support.
- * Added lots of sanity checking.
- *
- * Revision 1.6  1999/06/03 18:59:50  rgb
- * More updates to 2.2.x socket support.  Almost works, oops at end of call.
- *
- * Revision 1.5  1999/05/25 22:44:05  rgb
- * Start fixing 2.2 sockets.
- *
- * Revision 1.4  1999/04/29 15:21:34  rgb
- * Move log to the end of the file.
- * Eliminate min/max redefinition in #include <net/tcp.h>.
- * Correct path for pfkey #includes
- * Standardise an error return method.
- * Add debugging instrumentation.
- * Move message type checking to pfkey_msg_parse().
- * Add check for errno incorrectly set.
- * Add check for valid PID.
- * Add check for reserved illegally set.
- * Add check for message out of bounds.
- *
- * Revision 1.3  1999/04/15 17:58:07  rgb
- * Add RCSID labels.
- *
- * Revision 1.2  1999/04/15 15:37:26  rgb
- * Forward check changes from POST1_00 branch.
- *
- * Revision 1.1.2.2  1999/04/13 20:37:12  rgb
- * Header Title correction.
- *
- * Revision 1.1.2.1  1999/03/26 20:58:55  rgb
- * Add pfkeyv2 support to KLIPS.
- *
- *
- * RFC 2367
- * PF_KEY_v2 Key Management API
- */

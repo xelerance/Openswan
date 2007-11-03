@@ -13,7 +13,6 @@
  * for more details.
  */
 
-char ipsec_ah_c_version[] = "RCSID $Id: ipsec_ah.c,v 1.12.2.1 2006/02/15 05:35:14 paul Exp $";
 #ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
 #endif
@@ -75,7 +74,7 @@ ipsec_rcv_ah_checks(struct ipsec_rcv_state *irs,
 	ahminlen = irs->hard_header_len + sizeof(struct iphdr);
 
 	/* take care not to deref this pointer until we check the minlen though */
-	irs->protostuff.ahstuff.ahp = (struct ahhdr *)skb->h.raw;
+	irs->protostuff.ahstuff.ahp = (struct ahhdr *)skb_transport_header(skb);
 
 	if((skb->len < ahminlen+sizeof(struct ahhdr)) ||
 	   (skb->len < ahminlen+(irs->protostuff.ahstuff.ahp->ah_hl << 2))) {
@@ -163,7 +162,7 @@ ipsec_rcv_ah_authcalc(struct ipsec_rcv_state *irs,
 
 	/* finally, do the packet contents themselves */
 	(*aa->update)((void*)&tctx,
-		      (caddr_t)skb->h.raw + ahhlen,
+		      (caddr_t)skb_transport_header(skb) + ahhlen,
 		      skb->len - ahhlen);
 
 	(*aa->final)(irs->hash, (void *)&tctx);
@@ -194,8 +193,8 @@ ipsec_rcv_ah_decap(struct ipsec_rcv_state *irs)
 	 * move the IP header forward by the size of the AH header, which
 	 * will remove the the AH header from the packet.
 	 */
-	memmove((void *)(skb->nh.raw + ahhlen),
-		(void *)(skb->nh.raw), irs->iphlen);
+	memmove((void *)(skb_network_header(skb) + ahhlen),
+		(void *)(skb_network_header(skb)), irs->iphlen);
 
 	ipsec_rcv_dmp("ah postmove", skb->data, skb->len);
 
@@ -212,10 +211,10 @@ ipsec_rcv_ah_decap(struct ipsec_rcv_state *irs)
 	}
 	skb_pull(skb, ahhlen);
 
-	skb->nh.raw = skb->nh.raw + ahhlen;
-	irs->ipp = skb->nh.iph;
+	skb_set_network_header(skb, ahhlen);
+	irs->ipp = ip_hdr(skb);
 
-	ipsec_rcv_dmp("ah postpull", (void *)skb->nh.iph, skb->len);
+	ipsec_rcv_dmp("ah postpull", (void *)ip_hdr(skb), skb->len);
 
 	return IPSEC_RCV_OK;
 }
@@ -308,7 +307,7 @@ ipsec_xmit_ah_setup(struct ipsec_xmit_state *ixs)
     return IPSEC_XMIT_AH_BADALG;
   }
 #ifdef NET_21
-  ixs->skb->h.raw = (unsigned char*)ahp;
+  skb_set_transport_header(ixs->skb, ipsec_skb_offset(ixs->skb, ahp));
 #endif /* NET_21 */
 
   return IPSEC_XMIT_OK;
@@ -351,54 +350,3 @@ struct inet_protocol ah_protocol =
 #endif /* NET_26 */
 #endif /* CONFIG_XFRM_ALTERNATE_STACK */
 
-/*
- * $Log: ipsec_ah.c,v $
- * Revision 1.12.2.1  2006/02/15 05:35:14  paul
- * Patch by  David McCullough <davidm@snapgear.com>
- * If you setup a tunnel without ESP it doesn't work.  It used to work in
- * an older openswan version but stopped when klips was modified to deal
- * with the pulled IP header on the received SKB's.
- *
- * The code in ipsec_ah.c still thinks the IP header is there and runs the
- * hash on the incorrect data.
- *
- * Revision 1.12  2005/04/29 05:10:22  mcr
- * 	removed from extraenous includes to make unit testing easier.
- *
- * Revision 1.11  2005/04/15 19:50:55  mcr
- * 	adjustments to use proper skb fields for data.
- *
- * Revision 1.10  2004/09/14 00:22:57  mcr
- * 	adjustment of MD5* functions.
- *
- * Revision 1.9  2004/09/13 02:22:47  mcr
- * 	#define inet_protocol if necessary.
- *
- * Revision 1.8  2004/09/06 18:35:48  mcr
- * 	2.6.8.1 gets rid of inet_protocol->net_protocol compatibility,
- * 	so adjust for that.
- *
- * Revision 1.7  2004/08/22 05:00:48  mcr
- * 	if we choose to compile the file, we want the contents,
- * 	so don't pull any punches.
- *
- * Revision 1.6  2004/08/17 03:27:23  mcr
- * 	klips 2.6 edits.
- *
- * Revision 1.5  2004/08/14 03:28:24  mcr
- * 	fixed log comment to remove warning about embedded comment.
- *
- * Revision 1.4  2004/08/04 15:57:07  mcr
- * 	moved des .h files to include/des/ *
- * 	included 2.6 protocol specific things
- * 	started at NAT-T support, but it will require a kernel patch.
- *
- * Revision 1.3  2004/07/10 19:11:18  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.2  2004/04/06 02:49:25  mcr
- * 	pullup of algo code from alg-branch.
- *
- *
- *
- */

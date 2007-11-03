@@ -14,7 +14,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_life.c,v 1.13 2004/07/10 19:11:18 mcr Exp $
  *
  */
 
@@ -42,6 +41,7 @@
 #include <linux/netdevice.h>   /* struct device, struct net_device_stats and other headers */
 #include <linux/etherdevice.h> /* eth_type_trans */
 #include <linux/skbuff.h>
+#include <linux/ip.h>
 #include <openswan.h>
 
 #include "openswan/radij.h"
@@ -213,53 +213,6 @@ ipsec_lifetime_update_soft(struct ipsec_lifetime64 *lifetime,
 
 	
 /*
- * $Log: ipsec_life.c,v $
- * Revision 1.13  2004/07/10 19:11:18  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.12  2004/04/23 20:44:35  ken
- * Update comments
- *
- * Revision 1.11  2004/04/06 02:49:26  mcr
- * 	pullup of algo code from alg-branch.
- *
- * Revision 1.10  2004/03/30 11:03:10  paul
- * two more occurances of snprintf, found by Sam from a users oops msg.
- *
- * Revision 1.9  2003/10/31 02:27:55  mcr
- * 	pulled up port-selector patches and sa_id elimination.
- *
- * Revision 1.8.4.1  2003/10/29 01:30:41  mcr
- * 	elimited "struct sa_id".
- *
- * Revision 1.8  2003/02/06 02:00:10  rgb
- * Fixed incorrect debugging text label
- *
- * Revision 1.7  2002/05/23 07:16:26  rgb
- * Fixed absolute/relative reference to lifetime count printout.
- *
- * Revision 1.6  2002/04/24 07:55:32  mcr
- * 	#include patches and Makefiles for post-reorg compilation.
- *
- * Revision 1.5  2002/04/24 07:36:28  mcr
- * Moved from ./klips/net/ipsec/ipsec_life.c,v
- *
- * Revision 1.4  2002/01/29 17:17:55  mcr
- * 	moved include of ipsec_param.h to after include of linux/kernel.h
- * 	otherwise, it seems that some option that is set in ipsec_param.h
- * 	screws up something subtle in the include path to kernel.h, and
- * 	it complains on the snprintf() prototype.
- *
- * Revision 1.3  2002/01/29 02:13:17  mcr
- * 	introduction of ipsec_kversion.h means that include of
- * 	ipsec_param.h must preceed any decisions about what files to
- * 	include to deal with differences in kernel source.
- *
- * Revision 1.2  2001/11/26 09:16:14  rgb
- * Merge MCR's ipsec_sa, eroute, proc and struct lifetime changes.
- *
- * Revision 1.1.2.1  2001/09/25 02:25:57  mcr
- * 	lifetime structure created and common functions created.
  *
  * Local variables:
  * c-file-style: "linux"
