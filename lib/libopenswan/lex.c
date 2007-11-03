@@ -11,7 +11,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: lex.c,v 1.4 2005/08/05 19:12:10 mcr Exp $
  */
 
 #include <stdio.h>
@@ -137,6 +136,7 @@ shift(void)
 
 	case '"':	/* quoted token */
 	case '\'':
+	case '`':   /* or execute quotes */
 	    if (p != sor)
 	    {
 		/* we have a quoted token: note and advance to its end */
