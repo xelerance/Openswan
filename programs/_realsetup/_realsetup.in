@@ -12,7 +12,6 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _realsetup.in,v 1.50 2005/08/26 14:49:01 ken Exp $
 
 me='ipsec setup'		# for messages
 
@@ -212,6 +211,8 @@ case "$1" in
 
 	# preliminaries
 	perform rm -f $lock
+	mkdir -p $rundir > /dev/null 2>/dev/null
+	mkdir -p $subsysdir > /dev/null 2>/dev/null
 
 	for f in /dev/random /dev/urandom
 	do
@@ -219,7 +220,7 @@ case "$1" in
 			echo "\"...unable to start Openswan IPsec, no $f!\"" ";" \
 			exit 1 ";" \
 			"}"
-	    done
+        done
 
 	# the meaning of $$ at a different runtime is questionable!
 	perform echo '$$' ">" $lock
@@ -367,7 +368,7 @@ case "$1" in
 	fi
 
 	perform test -f $plutopid "&&" "{" \
-		if ps -p '`' cat $plutopid '`' ">" /dev/null ";" \
+		if test -d '/proc/`' cat $plutopid '`' ">" /dev/null ";" \
 		then \
 			ipsec whack --shutdown "|" grep -v "^002" ";" \
 			sleep 1 ";" \
@@ -425,7 +426,7 @@ case "$1" in
 
 	if test -s $plutopid
 	then
-		if ps -p `cat $plutopid` >/dev/null
+		if test -d /proc/`cat $plutopid` >/dev/null
 		then
 			plutokind=normal
 		elif ps -C pluto >/dev/null
