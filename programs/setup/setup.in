@@ -13,7 +13,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: setup.in,v 1.122.6.5 2007/06/19 15:37:33 paul Exp $
+# RCSID $Id: setup.in,v 1.122.6.7 2007/07/10 03:12:57 paul Exp $
 #
 # ipsec         init.d script for starting and stopping
 #               the IPsec security subsystem (KLIPS and Pluto).
@@ -118,8 +118,10 @@ mkdir -p /var/lock/subsys
 # do it
 case "$1" in
   start|--start|stop|--stop|_autostop|_autostart)
-	if [ "x${USER}" != "xroot" ]
+	# portable way for checking for root
+	if [ ! -w / ]
 	then
+		
 		echo "permission denied (must be superuser)" |
 			logger -s -p $IPSECsyslog -t ipsec_setup 2>&1
 		exit 1
