@@ -843,12 +843,15 @@ static int nat_traversal_new_mapping(struct state *st
 
 	DBG(DBG_CONTROLMORE, DBG_log("state #%u NAT-T: new mapping %s:%d"
 		, (unsigned int)st->st_serialno
-		, ba, nsrcport);
+		, ba, nsrcport));
 
-	addrtot(src, 0, srca, ADDRTOT_BUF);
-	addrtot(dst, 0, dsta, ADDRTOT_BUF);
-
+#if 0
 	if (!sameaddr(src, dst)) {
+		char srca[ADDRTOT_BUF];
+		char srcb[ADDRTOT_BUF];
+		addrtot(src, 0, srca, ADDRTOT_BUF);
+		addrtot(dst, 0, dsta, ADDRTOT_BUF);
+
 		loglog(RC_LOG_SERIOUS, "nat_traversal_new_mapping: "
 			"address change currently not supported [%s:%d,%s:%d]",
 			srca, sport, dsta, dport);
@@ -859,6 +862,7 @@ static int nat_traversal_new_mapping(struct state *st
 		/* no change */
 		return 0;
 	}
+#endif
 
 	nfo.st    = st;
 	nfo.addr  = *nsrc;
