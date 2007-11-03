@@ -137,6 +137,7 @@ extern int debug_rcv;
 extern int sysctl_ipsec_inbound_policy_check;
 #endif /* __KERNEL__ */
 
+extern int klips26_udp_encap_rcv(struct sock *sk, struct sk_buff *skb);
 extern int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type);
 
 // manage ipsec rcv state objects
