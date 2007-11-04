@@ -349,7 +349,7 @@ case "$1" in
 			status=0 ";" \
 			. $info ";" \
 		else \
-			echo "\"stop ordered, but IPsec appear to be stopped already!\"" ";" \
+			echo "\"stop ordered, but IPsec appears to be already stopped!\"" ";" \
 			echo "\"doing cleanup anyway...\"" ";" \
 			status=0 ";" \
 		fi
