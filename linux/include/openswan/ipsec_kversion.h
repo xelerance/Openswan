@@ -189,6 +189,11 @@
 /* turn a pointer into an offset for above macros */
 #define ipsec_skb_offset(skb, ptr) (((unsigned char *)(ptr)) - (skb)->data)
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22)
+/* Try using the new kernel encaps hook for nat-t, instead of udp.c */
+#define IPSEC_UDP_ENCAP_CONVERT
+#endif
+
 #ifdef NET_21
 #  include <linux/in6.h>
 #else
