@@ -191,7 +191,7 @@
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,23)
 /* Try using the new kernel encaps hook for nat-t, instead of udp.c */
-#define IPSEC_UDP_ENCAP_CONVERT
+#define HAVE_UDP_ENCAP_CONVERT
 #endif
 
 #ifdef NET_21

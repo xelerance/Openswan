@@ -1488,14 +1488,16 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 			    "calling ipsec_tunnel_clear.\n");
 		return ipsec_tunnel_clear();
 
-#ifdef IPSEC_UDP_ENCAP_CONVERT
+#ifdef HAVE_UDP_ENCAP_CONVERT
 	case IPSEC_UDP_ENCAP_CONVERT:
 	{
 		unsigned int *socknum =(unsigned int *)&ifr->ifr_data;
 		struct socket *sock;
 		int err, fput_needed;
 
-		sock = sockfd_lookup_light(*socknum, &err, &fput_needed);
+		/* that's a static function in socket.c 
+ 		 * sock = sockfd_lookup_light(*socknum, &err, &fput_needed); */
+		sock = sockfd_lookup(*socknum, &err);
 		if (!sock)
 			goto encap_out;
 
