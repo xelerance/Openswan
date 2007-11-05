@@ -157,6 +157,13 @@
 #define nfmark mark
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,21)
+#define ipsec_register_sysctl_table(a,b) register_sysctl_table(a)
+#define CTL_TABLE_PARENT
+#else
+#define ipsec_register_sysctl_table(a,b) register_sysctl_table(a,b)
+#endif
+ 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22)
 /* need to include ip.h early, no longer pick it up in skbuff.h */
 #include <linux/ip.h>
@@ -194,13 +201,6 @@
 #  define uint64_t __u64 
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,21)
-#define ipsec_register_sysctl_table(a,b) register_sysctl_table(a)
-#define CTL_TABLE_PARENT
-#else
-#define ipsec_register_sysctl_table(a,b) register_sysctl_table(a,b)
-#endif
- 
 #if __KERNEL__
 #if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,0)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,0) 
