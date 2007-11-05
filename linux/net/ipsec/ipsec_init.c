@@ -96,9 +96,11 @@
 #include <net/xfrmudp.h>
 #endif
 
-#if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL) && !defined(HAVE_XFRM4_UDP_REGISTER)
-#warning "You are trying to build KLIPS2.6 with NAT-T support, but you did not"
-#error   "properly apply the NAT-T patch to your 2.6 kernel source tree."
+#ifndef HAVE_UDP_ENCAP_CONVERT
+# if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL) && !defined(HAVE_XFRM4_UDP_REGISTER)
+# warning "You are trying to build KLIPS2.6 with NAT-T support, but you did not"
+# error   "properly apply the NAT-T patch to your 2.6 kernel source tree."
+# endif
 #endif
 
 #if !defined(CONFIG_KLIPS_ESP) && !defined(CONFIG_KLIPS_AH)
