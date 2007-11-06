@@ -2,7 +2,7 @@ east:~# D=/testing/scripts/ipsec.conf-restart-01
 east:~# export IPSEC_CONFS="$D/etc-norestart"
 east:~# ipsec setup --showonly start | sed -e 's=\(Starting FreeS/WAN IPsec \).*\.\.\.=\1DATE...='
 ipsec_setup: 	 PATH=/usr/local/sbin:/sbin:/usr/sbin:/usr/local/bin:/bin:/usr/bin
-ipsec_setup: 	 test ! -f /var/run/pluto/ipsec_setup.pid || { echo "Openswan IPsec apparently already running, start aborted" ; exit 1 ; }
+ipsec_setup: 	 test ! -f /var/run/pluto/ipsec_setup.pid || { echo "Openswan IPsec apparently already active, start aborted" ; exit 0 ; }
 ipsec_setup:    echo "Starting Openswan IPsec VER"
 ipsec_setup: 	 rm -f /var/run/pluto/ipsec_setup.pid
 ipsec_setup: 	 test -r /dev/random || { echo "...unable to start Openswan IPsec, no /dev/random!" ; exit 1 ; }
@@ -18,7 +18,7 @@ ipsec_setup: 	 echo "...Openswan IPsec started" | logger -p daemon.error -t ipse
 east:~# export IPSEC_CONFS="$D/etc-restart"
 east:~# ipsec setup --showonly start | sed -e 's=\(Starting FreeS/WAN IPsec \).*\.\.\.=\1DATE...='
 ipsec_setup: 	 PATH=/usr/local/sbin:/sbin:/usr/sbin:/usr/local/bin:/bin:/usr/bin
-ipsec_setup: 	 test ! -f /var/run/pluto/ipsec_setup.pid || { echo "Openswan IPsec apparently already running, start aborted" ; exit 1 ; }
+ipsec_setup: 	 test ! -f /var/run/pluto/ipsec_setup.pid || { echo "Openswan IPsec apparently already active, start aborted" ; exit 0 ; }
 ipsec_setup:    echo "Starting Openswan IPsec VER"
 ipsec_setup: 	 rm -f /var/run/pluto/ipsec_setup.pid
 ipsec_setup: 	 test -r /dev/random || { echo "...unable to start Openswan IPsec, no /dev/random!" ; exit 1 ; }
