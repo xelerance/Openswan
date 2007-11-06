@@ -9,7 +9,7 @@ north:~#
  cd /testing/pluto/$TESTNAME
 north:/testing/pluto/nat-pluto-06# source northrun1.sh
 ipsec_setup: Stopping Openswan IPsec...
-ipsec_setup: stop ordered, but IPsec does not appear to be running!
+ipsec_setup: stop ordered, but IPsec appears to be already stopped!
 ipsec_setup: doing cleanup anyway...
 ipsec_setup: Starting Openswan IPsec VERSION
 104 "northnet--eastnet-nat" #1: STATE_MAIN_I1: initiate
