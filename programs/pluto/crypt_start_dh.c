@@ -78,7 +78,7 @@ stf_status start_dh_secretiv(struct pluto_crypto_req_cont *cn
 
     /* convert appropriate data to dhq */
     dhq->auth = st->st_oakley.auth;
-    dhq->hash = st->st_oakley.hash;
+    dhq->hash = st->st_oakley.prf_hash;
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
     dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 
@@ -180,7 +180,7 @@ stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
 
     /* convert appropriate data to dhq */
     dhq->auth = st->st_oakley.auth;
-    dhq->hash = st->st_oakley.hash;
+    dhq->hash = st->st_oakley.prf_hash;
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
     dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 

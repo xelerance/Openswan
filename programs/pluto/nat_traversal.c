@@ -240,7 +240,7 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 	bool found_him= FALSE;
 	int i;
 
-	if (!st || !md->iface || !st->st_oakley.hasher) {
+	if (!st || !md->iface || !st->st_oakley.prf_hasher) {
 		loglog(RC_LOG_SERIOUS, "NAT-Traversal: assert failed %s:%d",
 			__FILE__, __LINE__);
 		return;
@@ -264,7 +264,7 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 	/**
 	 * First one with my IP & port
 	 */
-	_natd_hash(st->st_oakley.hasher, hash_me
+	_natd_hash(st->st_oakley.prf_hasher, hash_me
 		   , st->st_icookie, st->st_rcookie
 		   , &(md->iface->ip_addr)
 		   , ntohs(md->iface->port));
@@ -272,7 +272,7 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 	/**
 	 * The others with sender IP & port
 	 */
-	_natd_hash(st->st_oakley.hasher, hash_him
+	_natd_hash(st->st_oakley.prf_hasher, hash_him
 		   , st->st_icookie, st->st_rcookie
 		   , &(md->sender), ntohs(md->sender_port));
 
@@ -285,22 +285,22 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 		DBG_log("NAT_TRAVERSAL hash=%d (me:%d) (him:%d)"
 			, i, found_me, found_him);
 		DBG_dump("expected NAT-D(me):", hash_me,
-			 st->st_oakley.hasher->hash_digest_len);
+			 st->st_oakley.prf_hasher->hash_digest_len);
 		DBG_dump("expected NAT-D(him):", hash_him,
-			 st->st_oakley.hasher->hash_digest_len);
+			 st->st_oakley.prf_hasher->hash_digest_len);
 		DBG_dump("received NAT-D:", p->pbs.cur, pbs_left(&p->pbs));
 		);
 #endif
-	    if ( (pbs_left(&p->pbs) == st->st_oakley.hasher->hash_digest_len)
+	    if ( (pbs_left(&p->pbs) == st->st_oakley.prf_hasher->hash_digest_len)
 		 && (memcmp(p->pbs.cur, hash_me
-			    , st->st_oakley.hasher->hash_digest_len)==0))
+			    , st->st_oakley.prf_hasher->hash_digest_len)==0))
 	      {
 		found_me = TRUE;
 	      } 
 	    
-	    if ( (pbs_left(&p->pbs) == st->st_oakley.hasher->hash_digest_len)
+	    if ( (pbs_left(&p->pbs) == st->st_oakley.prf_hasher->hash_digest_len)
 		 && (memcmp(p->pbs.cur, hash_him
-			    , st->st_oakley.hasher->hash_digest_len)==0))
+			    , st->st_oakley.prf_hasher->hash_digest_len)==0))
 	      {
 		found_him = TRUE;
 	      } 
@@ -342,7 +342,7 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	const ip_address *first, *second;
 	unsigned short firstport, secondport;
 
-	if (!st || !st->st_oakley.hasher) {
+	if (!st || !st->st_oakley.prf_hasher) {
 		loglog(RC_LOG_SERIOUS, "NAT-Traversal: assert failed %s:%d",
 			__FILE__, __LINE__);
 		return FALSE;
@@ -384,13 +384,13 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	/**
 	 * First one with sender IP & port
 	 */
-        _natd_hash(st->st_oakley.hasher, hash, st->st_icookie
+        _natd_hash(st->st_oakley.prf_hasher, hash, st->st_icookie
 		       , is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie
 		       , first, firstport);
 
 	if (!out_generic_raw(nat_np, &isakmp_nat_d, outs
 			     , hash
-			     , st->st_oakley.hasher->hash_digest_len
+			     , st->st_oakley.prf_hasher->hash_digest_len
 			     , "NAT-D")) {
 	    return FALSE;
 	}
@@ -398,12 +398,12 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	/**
 	 * Second one with my IP & port
 	 */
-        _natd_hash(st->st_oakley.hasher, hash
+        _natd_hash(st->st_oakley.prf_hasher, hash
 		       , st->st_icookie
 		       , is_zero_cookie(st->st_rcookie) ? md->hdr.isa_rcookie : st->st_rcookie
 		       , second, secondport);
 	return (out_generic_raw(np, &isakmp_nat_d, outs,
-		hash, st->st_oakley.hasher->hash_digest_len, "NAT-D"));
+		hash, st->st_oakley.prf_hasher->hash_digest_len, "NAT-D"));
 }
 
 /**

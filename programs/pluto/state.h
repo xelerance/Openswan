@@ -63,18 +63,22 @@ struct oakley_trans_attrs {
     u_int16_t encrypt;		/* Encryption algorithm */
     u_int16_t enckeylen;	/* encryption key len (bits) */
     const struct encrypt_desc *encrypter;	/* package of encryption routines */
-    oakley_hash_t hash;		/* Hash algorithm */
-    const struct hash_desc *hasher;	/* package of hashing routines */
+    oakley_hash_t prf_hash;		/* Hash algorithm for PRF */
+    const struct hash_desc *prf_hasher;	/* package of hashing routines */
+
+    oakley_hash_t integ_hash;		  /* Hash algorithm for integ */
+    const struct hash_desc *integ_hasher; /* package of hashing routines */
+
     oakley_auth_t auth;		/* Authentication method */
 #ifdef XAUTH
     u_int16_t xauth;            /* did we negotiate Extended Authentication? */
 #endif
+
+    u_int16_t                       groupnum;
     const struct oakley_group_desc *group;	/* Oakley group */
+
     time_t life_seconds;	/* When this SA expires (seconds) */
     u_int32_t life_kilobytes;	/* When this SA is exhausted (kilobytes) */
-#if 0 /* not yet */
-    u_int16_t prf;		/* Pseudo Random Function */
-#endif
 };
 
 /* IPsec (Phase 2 / Quick Mode) transform and attributes

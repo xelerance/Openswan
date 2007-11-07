@@ -309,7 +309,7 @@ compute_proto_keymat(struct state *st
 	size_t needed_space;	/* space needed for keying material (rounded up) */
 	size_t i;
 
-	hmac_init_chunk(&ctx_me, st->st_oakley.hasher, st->st_skeyid_d);
+	hmac_init_chunk(&ctx_me, st->st_oakley.prf_hasher, st->st_skeyid_d);
 	ctx_peer = ctx_me;	/* duplicate initial conditions */
 
 	needed_space = needed_len + pad_up(needed_len, ctx_me.hmac_digest_len);
@@ -588,7 +588,7 @@ quick_mode_hash12(u_char *dest, const u_char *start, const u_char *roof
     }
     DBG_dump("hash key", st->st_skeyid_a.ptr, st->st_skeyid_a.len);
 #endif
-    hmac_init_chunk(&ctx, st->st_oakley.hasher, st->st_skeyid_a);
+    hmac_init_chunk(&ctx, st->st_oakley.prf_hasher, st->st_skeyid_a);
     hmac_update(&ctx, (const void *) msgid, sizeof(msgid_t));
     if (hash2)
 	hmac_update_chunk(&ctx, st->st_ni);	/* include Ni_b in the hash */
@@ -613,7 +613,7 @@ quick_mode_hash3(u_char *dest, struct state *st)
 {
     struct hmac_ctx ctx;
 
-    hmac_init_chunk(&ctx, st->st_oakley.hasher, st->st_skeyid_a);
+    hmac_init_chunk(&ctx, st->st_oakley.prf_hasher, st->st_skeyid_a);
     hmac_update(&ctx, (const u_char *)"\0", 1);
     hmac_update(&ctx, (u_char *) &st->st_msgid, sizeof(st->st_msgid));
     hmac_update_chunk(&ctx, st->st_ni);
@@ -629,7 +629,7 @@ quick_mode_hash3(u_char *dest, struct state *st)
 void
 init_phase2_iv(struct state *st, const msgid_t *msgid)
 {
-    const struct hash_desc *h = st->st_oakley.hasher;
+    const struct hash_desc *h = st->st_oakley.prf_hasher;
     union hash_ctx ctx;
 
     DBG_cond_dump(DBG_CRYPT, "last Phase 1 IV:"

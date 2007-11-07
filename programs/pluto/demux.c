@@ -532,7 +532,7 @@ void fmt_isakmp_sa_established(struct state *st, char *sadetails, int sad_len)
     char *b = sadetails;
     
     passert(st->st_oakley.encrypter != NULL);
-    passert(st->st_oakley.hasher != NULL);
+    passert(st->st_oakley.prf_hasher != NULL);
     passert(st->st_oakley.group != NULL);
     
     snprintf(b, sad_len-(b-sadetails)-1
@@ -540,7 +540,7 @@ void fmt_isakmp_sa_established(struct state *st, char *sadetails, int sad_len)
 	     , enum_show(&oakley_auth_names, st->st_oakley.auth)
 	     , st->st_oakley.encrypter->common.name
 	     , st->st_oakley.enckeylen
-	     , st->st_oakley.hasher->common.name
+	     , st->st_oakley.prf_hasher->common.name
 	     , (int)st->st_oakley.group->bytes*8);
     st->hidden_variables.st_logged_p1algos = TRUE;
 }

@@ -265,7 +265,7 @@ xauth_mode_cfg_hash(u_char *dest
 {
     struct hmac_ctx ctx;
 
-    hmac_init_chunk(&ctx, st->st_oakley.hasher, st->st_skeyid_a);
+    hmac_init_chunk(&ctx, st->st_oakley.prf_hasher, st->st_skeyid_a);
     hmac_update(&ctx, (const u_char *) &st->st_msgid_phase15
 		, sizeof(st->st_msgid_phase15));
     hmac_update(&ctx, start, roof-start);
@@ -308,7 +308,7 @@ stf_status modecfg_resp(struct state *st
       if (!out_generic(np, &isakmp_hash_desc, rbody, &hash_pbs)) 
 	return STF_INTERNAL_ERROR; 
       r_hashval = hash_pbs.cur;	/* remember where to plant value */ 
-      if (!out_zero(st->st_oakley.hasher->hash_digest_len, &hash_pbs, "HASH")) 
+      if (!out_zero(st->st_oakley.prf_hasher->hash_digest_len, &hash_pbs, "HASH")) 
 	return STF_INTERNAL_ERROR; 
       close_output_pbs(&hash_pbs); 
       r_hash_start = (rbody)->cur;	/* hash from after HASH payload */ 
@@ -1763,7 +1763,7 @@ stf_status xauth_client_resp(struct state *st
       if (!out_generic(np, &isakmp_hash_desc, rbody, &hash_pbs)) 
 	return STF_INTERNAL_ERROR; 
       r_hashval = hash_pbs.cur;	/* remember where to plant value */ 
-      if (!out_zero(st->st_oakley.hasher->hash_digest_len, &hash_pbs, "HASH")) 
+      if (!out_zero(st->st_oakley.prf_hasher->hash_digest_len, &hash_pbs, "HASH")) 
 	return STF_INTERNAL_ERROR; 
       close_output_pbs(&hash_pbs); 
       r_hash_start = (rbody)->cur;	/* hash from after HASH payload */ 
@@ -2159,7 +2159,7 @@ stf_status xauth_client_ackstatus(struct state *st
       if (!out_generic(np, &isakmp_hash_desc, rbody, &hash_pbs)) 
 	return STF_INTERNAL_ERROR; 
       r_hashval = hash_pbs.cur;	/* remember where to plant value */ 
-      if (!out_zero(st->st_oakley.hasher->hash_digest_len, &hash_pbs, "HASH")) 
+      if (!out_zero(st->st_oakley.prf_hasher->hash_digest_len, &hash_pbs, "HASH")) 
 	return STF_INTERNAL_ERROR; 
       close_output_pbs(&hash_pbs); 
       r_hash_start = (rbody)->cur;	/* hash from after HASH payload */ 

@@ -72,7 +72,7 @@ extern void dpd_timeout(struct state *st);
     if (!out_generic(np, &isakmp_hash_desc, &(rbody), &hash_pbs)) \
 	return STF_INTERNAL_ERROR; \
     r_hashval = hash_pbs.cur;	/* remember where to plant value */ \
-    if (!out_zero(st->st_oakley.hasher->hash_digest_len, &hash_pbs, "HASH")) \
+    if (!out_zero(st->st_oakley.prf_hasher->hash_digest_len, &hash_pbs, "HASH")) \
 	return STF_INTERNAL_ERROR; \
     close_output_pbs(&hash_pbs); \
     r_hash_start = (rbody).cur;	/* hash from after HASH payload */ \
