@@ -121,7 +121,7 @@ ike_alg_show_connection(struct connection *c, const char *instance)
 		+7 /* strlen("OAKLEY_") */
 		/* , st->st_oakley.encrypter->keydeflen */
 		, st->st_oakley.enckeylen
-		, enum_show(&oakley_hash_names, st->st_oakley.hash)
+		, enum_show(&oakley_hash_names, st->st_oakley.prf_hash)
 		+7 /* strlen("OAKLEY_") */
 		, enum_show(&oakley_group_names, st->st_oakley.group->group)
 		+13 /* strlen("OAKLEY_GROUP_") */
