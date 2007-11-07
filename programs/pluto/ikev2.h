@@ -23,5 +23,18 @@ extern stf_status ikev2parent_inI1(struct msg_digest *md);
 extern stf_status ikev2parent_inR1(struct msg_digest *md);
 extern const struct state_v2_microcode *ikev2_parent_firststate(void);
 
+/* MAGIC: perform f, a function that returns notification_t
+ * and return from the ENCLOSING stf_status returning function if it fails.
+ */
+#define RETURN_STF_FAILURE2(f, xf)					\
+    { int r = (f); if (r != NOTHING_WRONG) { \
+	  if((xf)!=NULL) pfree(xf);	     \
+	  return STF_FAIL + r; }}
 
+#define RETURN_STF_FAILURE(f) RETURN_STF_FAILURE2(f, NULL)
 
+extern notification_t parse_ikev2_sa_body(pb_stream *sa_pbs
+					  , const struct ikev2_sa *sa
+					  , pb_stream *r_sa_pbs
+					  , bool selection
+					  , struct state *st);

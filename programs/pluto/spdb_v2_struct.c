@@ -383,6 +383,336 @@ void sa_v2_convert(struct db_sa *f)
     pfree(dtfset);
 }
 
+
+static bool 
+spdb_v2_match(struct db_sa *sadb UNUSED
+	      , unsigned encr_transform UNUSED
+	      , unsigned integ_transform UNUSED
+	      , unsigned prf_transform UNUSED
+	      , unsigned dh_transform  UNUSED
+	      , unsigned esn_transform UNUSED)
+{
+    return TRUE;
+}
+
+#define MAX_TRANS_LIST 32         /* 32 is an arbitrary limit */
+
+notification_t
+parse_ikev2_sa_body(
+    pb_stream *sa_pbs,              /* body of input SA Payload */
+    const struct ikev2_sa *sa_prop UNUSED, /* header of input SA Payload */
+    pb_stream *r_sa_pbs UNUSED,	    /* if non-NULL, where to emit winning SA */
+    bool selection UNUSED,          /* if this SA is a selection, only one 
+				     * tranform can appear. */
+    struct state *st)	        /* current state object */
+{
+    pb_stream proposal_pbs;
+    struct ikev2_prop proposal;
+    unsigned int np = ISAKMP_NEXT_P;
+    /* we need to parse proposal structures until there are none */
+    unsigned int lastpropnum=-1;
+    bool conjunction, gotmatch, oldgotmatch;
+    struct ikev2_prop winning_prop;
+    struct db_sa *sadb;
+    struct oakley_trans_attrs ta;
+    struct connection *c = st->st_connection;
+    int    policy_index = POLICY_ISAKMP(c->policy
+					, c->spd.this.xauth_server
+					, c->spd.this.xauth_client);
+    unsigned int encr_transforms[MAX_TRANS_LIST];    
+    unsigned int encr_trans_next=0, encr_i;
+    unsigned int integ_transforms[MAX_TRANS_LIST];   
+    unsigned int integ_trans_next=0, integ_i;
+    unsigned int prf_transforms[MAX_TRANS_LIST];     
+    unsigned int prf_trans_next=0,   prf_i;
+    unsigned int dh_transforms[MAX_TRANS_LIST];      
+    unsigned int dh_trans_next=0,    dh_i;
+    unsigned int esn_transforms[MAX_TRANS_LIST];      
+    unsigned int esn_trans_next=0,   esn_i;
+
+
+    /* find the policy structures */
+    sadb = st->st_sadb;
+    if(!sadb) {
+	st->st_sadb = &oakley_sadb[policy_index];
+	sadb = oakley_alg_makedb(st->st_connection->alg_info_ike
+				 , st->st_sadb, 0);
+	if(sadb != NULL) {
+	    st->st_sadb = sadb;
+	}
+	sadb = st->st_sadb;
+    }
+    sa_v2_convert(sadb);
+
+    gotmatch = FALSE;
+    conjunction = FALSE;
+	
+    while(np == ISAKMP_NEXT_P) {
+	/*
+	 * note: we don't support ESN,
+	 * so ignore any proposal that insists on it
+	 */
+	
+	if(!in_struct(&proposal, &ikev2_prop_desc, sa_pbs, &proposal_pbs))
+	    return PAYLOAD_MALFORMED;
+
+	if(proposal.isap_protoid != PROTO_ISAKMP)
+	{
+	    loglog(RC_LOG_SERIOUS, "unexpected Protocol ID (%s) found in PARENT_SA Proposal"
+		   , enum_show(&protocol_names, proposal.isap_protoid));
+	    return INVALID_PROTOCOL_ID;
+	}
+
+	if (proposal.isap_spisize == 0)
+	{
+	    /* as it should be */
+	}
+	else if(proposal.isap_spisize <= MAX_ISAKMP_SPI_SIZE)
+	{
+	    u_char junk_spi[MAX_ISAKMP_SPI_SIZE];
+	    if(!in_raw(junk_spi, proposal.isap_spisize, &proposal_pbs,
+		       "PARENT SA SPI"))
+		return PAYLOAD_MALFORMED;
+	}
+	else
+	{
+	    loglog(RC_LOG_SERIOUS, "invalid SPI size (%u) in PARENT_SA Proposal"
+		   , (unsigned)proposal.isap_spisize);
+	    return INVALID_SPI;
+	}
+
+	if(proposal.isap_propnum == lastpropnum) {
+	    conjunction = TRUE;
+	} else {
+	    lastpropnum = proposal.isap_propnum;
+	    conjunction = FALSE;
+	}
+
+	if(gotmatch && conjunction == FALSE) {
+	    /* we already got a winner, and it was an OR with this one,
+	       so do no more work. */
+	    break;
+	}
+
+	if(!gotmatch && conjunction == TRUE) {
+	    /*
+	     * last one failed, and this next one is an AND, so this
+	     * one can not succeed either, so don't bother.
+	     */
+	    continue;
+	}
+
+	oldgotmatch = gotmatch;
+	gotmatch = FALSE;
+
+	while(proposal.isap_numtrans-- > 0) {
+	    pb_stream trans_pbs;
+	    //u_char *attr_start;
+	    //size_t attr_len;
+	    struct ikev2_trans trans;
+	    struct oakley_trans_attrs ta;
+	    //err_t ugh = NULL;	/* set to diagnostic when problem detected */
+	    zero(&ta);
+
+	    if (!in_struct(&trans, &ikev2_trans_desc
+			   , &proposal_pbs, &trans_pbs))
+		return BAD_PROPOSAL_SYNTAX;
+	    
+	    /* we read the attributes if we need to see details. */
+	    /* XXX deal with different sizes AES keys */
+	    switch(trans.isat_type) {
+	    case IKEv2_TRANS_TYPE_ENCR:
+		if(encr_trans_next < MAX_TRANS_LIST) {
+		    encr_transforms[encr_trans_next++]=trans.isat_transid;
+		}
+		break;
+		
+	    case IKEv2_TRANS_TYPE_INTEG:
+		if(integ_trans_next < MAX_TRANS_LIST) {
+		    integ_transforms[integ_trans_next++]=trans.isat_transid;
+		}
+		break;
+		
+	    case IKEv2_TRANS_TYPE_PRF:
+		if(prf_trans_next < MAX_TRANS_LIST) {
+		    prf_transforms[prf_trans_next++]=trans.isat_transid;
+		}
+		break;
+		
+	    case IKEv2_TRANS_TYPE_DH:
+		if(dh_trans_next < MAX_TRANS_LIST) {
+		    dh_transforms[dh_trans_next++]=trans.isat_transid;
+		}
+		break;
+		
+	    case IKEv2_TRANS_TYPE_ESN:
+		if(esn_trans_next < MAX_TRANS_LIST) {
+		    esn_transforms[esn_trans_next++]=trans.isat_transid;
+		}
+		break;
+	    }
+	}
+
+	if(encr_trans_next < 1) {
+	    openswan_log("ignored proposal %u with no cipher transforms",
+			 proposal.isap_propnum);
+	    continue;
+	}
+	if(integ_trans_next < 1) {
+	    openswan_log("ignored proposal %u with no integrity transforms",
+			 proposal.isap_propnum);
+	    continue;
+	}
+	if(prf_trans_next < 1) {
+	    openswan_log("ignored proposal %u with no prf transforms",
+			 proposal.isap_propnum);
+	    continue;
+	}
+	if(dh_trans_next < 1) {
+	    openswan_log("ignored proposal %u with no diffie-hellman transforms",
+			 proposal.isap_propnum);
+	    continue;
+	}
+	if(esn_trans_next == 0) {
+	    /* what is the default for IKEv2? */
+	    esn_transforms[esn_trans_next++]=IKEv2_ESN_DISABLED;
+	}
+
+	/*
+	 * now that we have a list of all the possibilities, see if any
+	 * of them fit.
+	 *
+	 * XXX - have to deal with attributes.
+	 *
+	 */
+	for(encr_i=0; encr_i < encr_trans_next; encr_i++) {
+	    for(integ_i=0; integ_i < integ_trans_next; integ_i++) {
+		for(prf_i=0; prf_i < prf_trans_next; prf_i++) {
+		    for(dh_i=0; dh_i < dh_trans_next; dh_i++) {
+			for(esn_i=0; esn_i < esn_trans_next; esn_i++) {
+			    gotmatch = spdb_v2_match(sadb,
+						     encr_transforms[encr_i],
+						     integ_transforms[integ_i],
+						     prf_transforms[prf_i],
+						     dh_transforms[dh_i],
+						     esn_transforms[esn_i]);
+			    winning_prop = proposal;
+			    if(gotmatch) break;
+			}
+			if(gotmatch) break;
+		    }
+		    if(gotmatch) break;
+		}
+		if(gotmatch) break;
+	    }
+	    if(gotmatch) break;
+	}
+    }
+
+    /*
+     * we are out of the loop. There are two situations in which we break
+     * out: gotmatch == FALSE, means nothing selected.
+     */
+    if(!gotmatch) {
+	return NO_PROPOSAL_CHOSEN;
+    }
+
+    /* there might be some work to do here if there was a conjunction,
+     * not sure yet about that case.
+     */
+
+    /*
+     * since we found something that matched, we might need to emit the
+     * winning value.
+     */
+    ta.encrypt   = encr_transforms[encr_i];
+    ta.encrypter = (struct encrypt_desc *)ike_alg_ikev2_find(IKE_ALG_ENCRYPT
+							     , ta.encrypt
+							     , /*keysize*/0);
+    passert(ta.encrypter != NULL);
+    ta.enckeylen = ta.encrypter->keydeflen;
+    ta.integ_hash  = integ_transforms[integ_i];
+    ta.integ_hasher= crypto_get_hasher(ta.integ_hash);
+    ta.prf_hash  = prf_transforms[prf_i];
+    ta.prf_hasher= crypto_get_hasher(ta.prf_hash);
+    ta.groupnum  = dh_transforms[dh_i];
+    ta.group     = NULL; /* XXX */
+
+    if (r_sa_pbs != NULL)
+    {
+	struct ikev2_prop  r_proposal = winning_prop;
+	pb_stream r_proposal_pbs;
+	struct ikev2_trans r_trans;
+	pb_stream r_trans_pbs;
+
+	memset(&r_trans, 0, sizeof(r_trans));
+
+	/* Proposal - XXX */
+	r_proposal.isap_spisize = 0;
+
+	if(!out_struct(&r_proposal, &ikev2_prop_desc
+		       , r_sa_pbs, &r_proposal_pbs))
+	    impossible();
+
+	/* Transform - cipher */
+	r_trans.isat_type= IKEv2_TRANS_TYPE_ENCR;
+	r_trans.isat_transid = ta.encrypt;
+	r_trans.isat_np = ISAKMP_NEXT_T;
+	if(!out_struct(&r_trans, &ikev2_trans_desc
+		       , &r_proposal_pbs, NULL))
+	    impossible();
+	close_output_pbs(&r_trans_pbs);
+
+	/* Transform - integrity check */
+	r_trans.isat_type= IKEv2_TRANS_TYPE_INTEG;
+	r_trans.isat_transid = ta.integ_hash;
+	r_trans.isat_np = ISAKMP_NEXT_T;
+	if(!out_struct(&r_trans, &ikev2_trans_desc
+		       , &r_proposal_pbs, NULL))
+	    impossible();
+	close_output_pbs(&r_trans_pbs);
+
+	/* Transform - PRF hash */
+	r_trans.isat_type= IKEv2_TRANS_TYPE_PRF;
+	r_trans.isat_transid = ta.groupnum;
+	r_trans.isat_np = ISAKMP_NEXT_T;
+	if(!out_struct(&r_trans, &ikev2_trans_desc
+		       , &r_proposal_pbs, NULL))
+	    impossible();
+	close_output_pbs(&r_trans_pbs);
+
+	/* Transform - DH hash */
+	r_trans.isat_type= IKEv2_TRANS_TYPE_DH;
+	r_trans.isat_transid = ta.prf_hash;
+	r_trans.isat_np = ISAKMP_NEXT_T;
+	if(!out_struct(&r_trans, &ikev2_trans_desc
+		       , &r_proposal_pbs, NULL))
+	    impossible();
+	close_output_pbs(&r_trans_pbs);
+
+	/* Transform - ESN sequence */
+	r_trans.isat_type= IKEv2_TRANS_TYPE_ESN;
+	r_trans.isat_transid = IKEv2_ESN_DISABLED;
+	r_trans.isat_np = ISAKMP_NEXT_NONE;
+	if(!out_struct(&r_trans, &ikev2_trans_desc
+		       , &r_proposal_pbs, NULL))
+	    impossible();
+	close_output_pbs(&r_trans_pbs);
+
+	close_output_pbs(&r_proposal_pbs);
+	close_output_pbs(r_sa_pbs);
+    }
+
+    /* ??? If selection, we used to save the proposal in state.
+     * We never used it.  From proposal_pbs.start,
+     * length pbs_room(&proposal_pbs)
+     */
+    
+    /* copy over the results */
+    st->st_oakley = ta;
+    return NOTHING_WRONG;
+}
+    
     
 /*
  * Local Variables:

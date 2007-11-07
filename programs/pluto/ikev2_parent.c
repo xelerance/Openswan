@@ -61,7 +61,7 @@ static stf_status ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 /*
  *
  ***************************************************************
- *                       PARENT_OUTI1                      *****
+ *****                   PARENT_OUTI1                      *****
  ***************************************************************
  *
  * 
@@ -382,8 +382,9 @@ stf_status ikev2parent_inI1(struct msg_digest *md)
 {
     struct state *st = md->st;
     lset_t policy = POLICY_IKEV2_ALLOW;
-#if 0
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
+    pb_stream *keyex_pbs;
+#if 0
     struct payload_digest *const sa_gi = md->chain[ISAKMP_NEXT_v2KE];
     struct payload_digest *const sa_ni = md->chain[ISAKMP_NEXT_v2Ni];
 #endif
@@ -435,7 +436,38 @@ stf_status ikev2parent_inI1(struct msg_digest *md)
 	md->st = st;
     }
 
-    return STF_FAIL;
+    keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
+
+    /* HDR out */
+    {
+	struct isakmp_hdr r_hdr = md->hdr;
+
+	memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
+	r_hdr.isa_np = ISAKMP_NEXT_SA;
+	r_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
+	r_hdr.isa_flags |=  ISAKMP_FLAGS_R;
+	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
+	    return STF_INTERNAL_ERROR;
+    }
+
+    /* start of SA out */
+    {
+	struct isakmp_sa r_sa = sa_pd->payload.sa;
+	notification_t rn;
+	pb_stream r_sa_pbs;
+
+	r_sa.isasa_np = ISAKMP_NEXT_NONE;  /* XXX */
+	if (!out_struct(&r_sa, &ikev2_sa_desc, &md->rbody, &r_sa_pbs))
+	    return STF_INTERNAL_ERROR;
+
+	/* SA body in and out */
+	rn = parse_ikev2_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
+				 &r_sa_pbs, FALSE, st);
+	if (rn != NOTHING_WRONG)
+	    return STF_FAIL + rn;
+    }
+
+    return STF_OK;
 }
 
 stf_status ikev2parent_inR1(struct msg_digest *md UNUSED)

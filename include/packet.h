@@ -647,23 +647,6 @@ struct isakmp_nat_oa
 extern struct_desc isakmp_nat_d;
 extern struct_desc isakmp_nat_oa;
 
-/* union of all payloads */
-
-union payload {
-    struct isakmp_generic generic;
-    struct isakmp_sa sa;
-    struct isakmp_proposal proposal;
-    struct isakmp_transform transform;
-    struct isakmp_id id;    /* Main Mode */
-    struct isakmp_cert cert;
-    struct isakmp_cr cr;
-    struct isakmp_ipsec_id ipsec_id;	/* Quick Mode */
-    struct isakmp_notification notification;
-    struct isakmp_delete delete;
-    struct isakmp_nat_oa nat_oa;
-    struct isakmp_mode_attr attribute;
-};
-
 /* descriptor for each payload type
  *
  * There is a slight problem in that some payloads differ, depending
@@ -739,6 +722,34 @@ extern struct_desc ikev2_nonce_desc;
 /* rfc4306, section 3.12, vendor ID, uses generic header */
 extern struct_desc ikev2_vendor_id_desc;
 
+/* union of all payloads */
+
+union payload {
+    struct isakmp_generic generic;
+    struct isakmp_sa sa;
+    struct isakmp_proposal proposal;
+    struct isakmp_transform transform;
+    struct isakmp_id id;    /* Main Mode */
+    struct isakmp_cert cert;
+    struct isakmp_cr cr;
+    struct isakmp_ipsec_id ipsec_id;	/* Quick Mode */
+    struct isakmp_notification notification;
+    struct isakmp_delete delete;
+    struct isakmp_nat_oa nat_oa;
+    struct isakmp_mode_attr attribute;
+    struct ikev2_ke         v2ke;
+    struct ikev2_trans      v2trans;
+    struct ikev2_prop       v2prop;
+    struct ikev2_sa         v2sa;
+};
+
 
 #endif /* _PACKET_H */
 
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */
+ 
