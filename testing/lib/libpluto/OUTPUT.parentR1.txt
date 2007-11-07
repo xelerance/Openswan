@@ -52,7 +52,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | searching for policy=IKEv2ALLOW, found=IKEv2ALLOW (westnet--eastnet-ikev2)
 | find_host_connection returns westnet--eastnet-ikev2
 | found connection: westnet--eastnet-ikev2 
-| creating state object #1 at 0x40223bfc
+| creating state object #1 at ADDR
 | interface "eth0" matched right side
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
@@ -79,3 +79,5 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 Pre-amble: #!-pluto-whack-file- recorded on east on 2007-10-31 06:13:08
 TCPDUMP output
 reading from file parentR1.pcap, link-type NULL (BSD loopback)
+20:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f48e)!)
+    192.1.2.23.500 > 192.1.2.45.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[I]:

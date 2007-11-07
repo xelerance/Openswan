@@ -55,6 +55,8 @@ void recv_pcap_packet(u_char *user
 	struct sockaddr_in6 sa_in6;
     } from;
 
+    init_crypto();
+
     md = alloc_md();
     dlt = (u_int32_t *)bytes;
     if(*dlt != PF_INET) return;
