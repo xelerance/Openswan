@@ -29,6 +29,7 @@ struct encrypt_desc algo_blowfish =
 {
 	common: {algo_type:	IKE_ALG_ENCRYPT,
 		 algo_id:	OAKLEY_BLOWFISH_CBC,
+		 algo_v2id:     IKEv2_ENCR_BLOWFISH,
 		 algo_next:	NULL, }, 
 	enc_ctxsize: sizeof(BF_KEY),
 	enc_blocksize: BLOWFISH_CBC_BLOCK_SIZE,
@@ -50,3 +51,10 @@ ike_alg_blowfish_init(void)
 /*
 IKE_ALG_INIT_NAME: ike_alg_blowfish_init
 */
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

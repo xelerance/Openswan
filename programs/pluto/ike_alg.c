@@ -204,11 +204,24 @@ ike_alg_find(unsigned algo_type, unsigned algo_id, unsigned keysize __attribute_
 	return e;
 }
 
+struct ike_alg *
+ike_alg_ikev2_find(unsigned algo_type
+		   , enum ikev2_trans_type_encr algo_v2id
+		   , unsigned keysize __attribute__((unused)))
+{
+	struct ike_alg *e=ike_alg_base[algo_type];
+	for(;e!=NULL;e=e->algo_next) {
+		if (e->algo_v2id==algo_v2id)
+			break;
+	}
+	return e;
+}
+
 /*
  * 	Main "raw" ike_alg list adding function
  */
 int
-ike_alg_add(struct ike_alg* a)
+ ike_alg_add(struct ike_alg* a)
 {
 	int ret=0;
 	const char *ugh="No error";
