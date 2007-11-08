@@ -258,6 +258,7 @@ RC=133 STATE_PARENT_I1: initiate
 |   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  00 00 00 10
 |   4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | complete v2 state transition with STF_OK
+../parentI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 | deleting state #1
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
@@ -293,7 +294,7 @@ RC=133 STATE_PARENT_I1: initiate
 ../parentI1 leak: 7 * default conf
 TCPDUMP output
 reading from file parentI1.pcap, link-type NULL (BSD loopback)
-20:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f48e)!)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f48e)!)
     192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[I]:
     (sa[C]: len=240
         (p: #1 protoid=isakmp transform=4

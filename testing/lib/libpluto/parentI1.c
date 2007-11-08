@@ -28,6 +28,8 @@
 #include "seam_x509.c"
 #include "seam_spdbstruct.c"
 #include "seam_demux.c"
+#include "seam_whack.c"
+#include "seam_natt.c"
 
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 bool nat_traversal_support_non_ike = FALSE;

@@ -9,3 +9,8 @@ void whack_log(int rc, const char *msg, ...)
     va_end(args);
 }
 
+void
+release_pending_whacks(struct state *st, err_t story)
+{
+}
+
