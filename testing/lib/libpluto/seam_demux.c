@@ -23,7 +23,8 @@ send_packet(struct state *st, const char *where, bool verbose)
     ptr = st->st_tpacket.ptr;
     len = (unsigned long) st->st_tpacket.len;
 
-    printf("sending %lu bytes for %s through %s:%d to %s:%u (using #%lu)"
+    fprintf(stderr
+	    , "sending %lu bytes for %s through %s:%d to %s:%u (using #%lu)\n"
 	   , (unsigned long) st->st_tpacket.len
 	   , where
 	   , st->st_interface->ip_dev->id_rname
@@ -55,11 +56,11 @@ send_packet(struct state *st, const char *where, bool verbose)
 	    ip->ttl     = 64;
 	    ip->protocol= IPPROTO_UDP;
 	    ip->check   = 0;
-	    ip->saddr   = htonl(0xc001022d); /* 192.0.1.45 - west */
-	    ip->daddr   = htonl(0xc0010217); /* 192.0.1.23 - east */
+	    ip->saddr   = st->st_interface->ip_addr.u.v4.sin_addr.s_addr;
+	    ip->daddr   = st->st_remoteaddr.u.v4.sin_addr.s_addr;
 	    udp = (struct udphdr *)&buf[sizeof(struct iphdr)+4];
 	    udp->source = htons(500);
-	    udp->dest   = htons(500);
+	    udp->dest   = htons(st->st_remoteport);
 	    udp->len    = htons(sizeof(struct udphdr)+len);
 	    udp->check  = 0;
 	    

@@ -225,6 +225,7 @@ RC=133 STATE_PARENT_I1: initiate
 | Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 508
+sending 508 bytes for main_outI1 through eth0:500 to 192.1.2.23:500 (using #1)
 |   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 01 fc  22 80 00 f4
 |   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
