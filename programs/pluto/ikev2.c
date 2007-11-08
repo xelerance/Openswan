@@ -82,6 +82,8 @@ enum smf2_flags {
     
     SMF2_STATENEEDED=LELEM(2),
     SMF2_NEWSTATE  = 0,
+
+    SMF2_REPLY     = LELEM(3),
 };
 
 /*
@@ -137,7 +139,7 @@ static const struct state_v2_microcode state_microcode_table[] = {
 
     { .state      = STATE_UNDEFINED,
       .next_state = STATE_PARENT_R1,
-      .flags = SMF2_RESPONDER|SMF2_NEWSTATE,
+      .flags = SMF2_RESPONDER|SMF2_NEWSTATE|SMF2_REPLY,
       .processor  = ikev2parent_inI1,
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
@@ -320,16 +322,75 @@ process_v2_packet(struct msg_digest **mdp)
     }
 }
 
+static void success_v2_state_transition(struct msg_digest **mdp)
+{
+    struct msg_digest *md = *mdp;
+    const struct state_v2_microcode *svm = md->svm;
+    enum state_kind from_state = md->from_state;
+    struct state *st = md->st;
+
+    openswan_log("transition from state %s to state %s"
+                 , enum_name(&state_names, from_state)
+                 , enum_name(&state_names, svm->next_state));
+	    
+    st->st_state = svm->next_state;
+    
+    /* Delete previous retransmission event.
+     * New event will be scheduled below.
+     */
+    delete_event(st);
+
+    /* free previous transmit packet */
+    freeanychunk(st->st_tpacket);
+
+    /* if requested, send the new reply packet */
+    if (svm->flags & SMF2_REPLY)
+    {
+	char buf[ADDRTOT_BUF];
+
+	if(nat_traversal_enabled) {
+	    /* adjust our destination port if necessary */
+	    nat_traversal_change_port_lookup(md, st);
+	}
+	
+	DBG(DBG_CONTROL
+	    , DBG_log("sending reply packet to %s:%u (from port %u)"
+		      , (addrtot(&st->st_remoteaddr
+				 , 0, buf, sizeof(buf)), buf)
+		      , st->st_remoteport
+		      , st->st_interface->port));
+
+	close_output_pbs(&md->reply);   /* good form, but actually a no-op */
+
+	clonetochunk(st->st_tpacket, md->reply.start
+		     , pbs_offset(&md->reply), "reply packet");
+
+	/* actually send the packet
+	 * Note: this is a great place to implement "impairments"
+	 * for testing purposes.  Suppress or duplicate the
+	 * send_packet call depending on st->st_state.
+	 */
+
+	TCLCALLOUT("avoidEmitting", st, st->st_connection, md);
+	send_packet(st, enum_name(&state_names, from_state), TRUE);
+    }
+
+    TCLCALLOUT("adjustTimers", st, st->st_connection, md);
+
+
+}
+
 void complete_v2_state_transition(struct msg_digest **mdp
 				  , stf_status result)
 {
     struct msg_digest *md = *mdp;
-    const struct state_v2_microcode *svm=md->svm;
+    //const struct state_v2_microcode *svm=md->svm;
     struct state *st;
+    enum state_kind from_state;
 
     cur_state = st = md->st;	/* might have changed */
 
-    st->st_state = svm->next_state;
+    from_state   = st->st_state;
 
     md->result = result;
     TCLCALLOUT("v2AdjustFailure", st, (st ? st->st_connection : NULL), md);
@@ -340,7 +401,78 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	, DBG_log("complete v2 state transition with %s"
 		  , enum_name(&stfstatus_name, result)));
 
-    /* XXX */
+    switch(result) {
+    case STF_IGNORE:
+	break;
+
+    case STF_INLINE:         /* this is second time through complete
+			      * state transition, so the MD has already
+			      * been freed.
+			      0				  */
+	*mdp = NULL;
+	break;
+
+    case STF_SUSPEND:
+	/* update the previous packet history */
+	/* IKEv2 XXX */ /* update_retransmit_history(st, md); */
+	
+	/* the stf didn't complete its job: don't relase md */
+	*mdp = NULL;
+	break;
+
+    case STF_OK:
+	/* advance the state */
+	success_v2_state_transition(mdp);
+	break;
+	
+    case STF_INTERNAL_ERROR:
+	abort();
+	break;
+
+    case STF_TOOMUCHCRYPTO:
+	/* well, this should never happen during a whack, since
+	 * a whack will always force crypto.
+	 */
+	set_suspended(st, NULL);
+	pexpect(st->st_calculating == FALSE);
+	openswan_log("message in state %s ignored due to cryptographic overload"
+		     , enum_name(&state_names, from_state));
+	break;
+
+    case STF_FATAL:
+	/* update the previous packet history */
+	/* update_retransmit_history(st, md); */
+
+	whack_log(RC_FATAL
+		  , "encountered fatal error in state %s"
+		  , enum_name(&state_names, st->st_state));
+	delete_event(st);
+	release_pending_whacks(st, "fatal error");
+	delete_state(st);
+	break;
+
+    default:	/* a shortcut to STF_FAIL, setting md->note */
+	passert(result > STF_FAIL);
+	md->note = result - STF_FAIL;
+	result = STF_FAIL;
+	/* FALL THROUGH ... */
+
+    case STF_FAIL:
+	whack_log(RC_NOTIFICATION + md->note
+		  , "%s: %s", enum_name(&state_names, st->st_state)
+		  , enum_name(&ipsec_notification_names, md->note));
+
+#if 0
+	if(md->note > 0) {
+	    SEND_NOTIFICATION(md->note);
+	}
+#endif
+	
+	DBG(DBG_CONTROL,
+	    DBG_log("state transition function for %s failed: %s"
+		    , enum_name(&state_names, from_state)
+		    , enum_name(&ipsec_notification_names, md->note)));
+    }
 }
 
 /*

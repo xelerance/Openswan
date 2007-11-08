@@ -173,6 +173,7 @@ ikev2parent_outI1(int whack_sock
 	stf_status e;
 
 	ke->md = alloc_md();
+	ke->md->from_state = STATE_IKEv2_BASE;
 	ke->md->svm = ikev2_parent_firststate();
 	ke->md->st = st;
 	set_suspended(st, ke->md);
