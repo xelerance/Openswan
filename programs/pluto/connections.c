@@ -1107,7 +1107,7 @@ add_connection(const struct whack_message *wm)
 	if (alg_info_ike!= NULL && alg_info_ike->alg_info_cnt==0) {
 	    loglog(RC_NOALGO
 		   , "got 0 transforms for ike=\"%s\""
-		   , wm->esp);
+		   , wm->ike);
 	    return;
 	} 
 
@@ -2281,6 +2281,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
      *   + our ID must not change (we sent it in previous message)
      *   + our RSA key must not change (we used in in previous message)
      */
+    passert(c != NULL);
     d = c->host_pair->connections;
     for (wcpip = FALSE; ; wcpip = TRUE)
     {
