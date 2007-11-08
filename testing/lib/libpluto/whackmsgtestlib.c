@@ -16,17 +16,6 @@ void exit_pluto(int status)
     exit(status);
 }
 
-void whack_log(int rc, const char *msg, ...)
-{
-    va_list args;
-
-    va_start(args, msg);
-    fprintf(stderr, "RC=%u ", rc);
-    vfprintf(stderr, msg, args);
-    putc('\n', stderr);
-    va_end(args);
-}
-
 void flush_pending_by_connection(struct connection *c) {}
 void unroute_connection(struct connection *c) {}
 void release_cert(cert_t cert) {}

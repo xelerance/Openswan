@@ -8,6 +8,7 @@ alg_info_ike_create_from_str (const char *alg_str, const char **err_p)
 	 * 	transform count in advance.
 	 */
 	alg_info_ike=alloc_thing (struct alg_info_ike, "alg_info_ike");
+	alg_info_ike->alg_info_cnt = 1;
 
 	return alg_info_ike;
 }
