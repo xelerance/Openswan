@@ -435,6 +435,7 @@ stf_status ikev2parent_inI1(struct msg_digest *md)
 	st->st_msgid_lastack = INVALID_MSGID;
 	st->st_msgid_nextuse = 0;
 	md->st = st;
+	md->from_state = STATE_IKEv2_BASE;
     }
 
     keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
@@ -444,7 +445,7 @@ stf_status ikev2parent_inI1(struct msg_digest *md)
 	struct isakmp_hdr r_hdr = md->hdr;
 
 	memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
-	r_hdr.isa_np = ISAKMP_NEXT_SA;
+	r_hdr.isa_np = ISAKMP_NEXT_v2SA;
 	r_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
 	r_hdr.isa_flags |=  ISAKMP_FLAGS_R;
 	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
@@ -464,10 +465,12 @@ stf_status ikev2parent_inI1(struct msg_digest *md)
 	/* SA body in and out */
 	rn = parse_ikev2_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
 				 &r_sa_pbs, FALSE, st);
+	
 	if (rn != NOTHING_WRONG)
 	    return STF_FAIL + rn;
     }
 
+    close_output_pbs(&md->rbody);
     return STF_OK;
 }
 

@@ -649,6 +649,8 @@ parse_ikev2_sa_body(
 
 	/* Proposal - XXX */
 	r_proposal.isap_spisize = 0;
+	r_proposal.isap_numtrans = 5;
+	r_proposal.isap_np = ISAKMP_NEXT_NONE;
 
 	if(!out_struct(&r_proposal, &ikev2_prop_desc
 		       , r_sa_pbs, &r_proposal_pbs))
@@ -699,6 +701,7 @@ parse_ikev2_sa_body(
 	    impossible();
 	close_output_pbs(&r_trans_pbs);
 
+	/* close out the proposal */
 	close_output_pbs(&r_proposal_pbs);
 	close_output_pbs(r_sa_pbs);
     }
