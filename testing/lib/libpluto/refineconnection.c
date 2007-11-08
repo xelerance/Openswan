@@ -22,9 +22,10 @@
 #include "seam_rnd.c"
 #include "seam_log.c"
 #include "seam_xauth.c"
-#include "seam_west.c"
+#include "seam_east.c"
 #include "seam_initiate.c"
 #include "seam_alg.c"
+#include "seam_whack.c"
 
 main(int argc, char *argv[])
 {
@@ -58,6 +59,8 @@ main(int argc, char *argv[])
 	exit(11);
     }
 
+    cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
+
     while(fgets(idbuf, sizeof(idbuf), idfile) != NULL)
     {
 	struct state *st1;
@@ -77,6 +80,8 @@ main(int argc, char *argv[])
 	st1->st_connection = connections;
 	st1->st_oakley.auth = OAKLEY_RSA_SIG;
 
+	passert(connections != NULL);
+
 	atoid(id1, &peer_id, TRUE);
 	
 	nc = refine_host_connection(st1, &peer_id, initiate, aggrmode);
@@ -95,6 +100,6 @@ main(int argc, char *argv[])
  * Local Variables:
  * c-style: pluto
  * c-basic-offset: 4
- * compile-command: "make refineconnection"
+ * compile-command: "make TEST=refineconnection one"
  * End:
  */
