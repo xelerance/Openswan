@@ -1,5 +1,12 @@
 
   Electric Fence 2.1 Copyright (C) 1987-1998 Bruce Perens.
+../parentR1 ike_alg_register_enc(): Activating OAKLEY_TWOFISH_CBC_SSH: Ok (ret=0)
+../parentR1 ike_alg_register_enc(): Activating OAKLEY_TWOFISH_CBC: Ok (ret=0)
+../parentR1 ike_alg_register_enc(): Activating OAKLEY_SERPENT_CBC: Ok (ret=0)
+../parentR1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+../parentR1 ike_alg_register_enc(): Activating OAKLEY_BLOWFISH_CBC: Ok (ret=0)
+../parentR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+../parentR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 | interface "eth0" matched right side
 ../parentR1 added connection description "westnet--eastnet-ikev2"
 | base debugging = crypt+control+controlmore
@@ -8,13 +15,6 @@ RC=0 "westnet--eastnet-ikev2":     myip=unset; hisip=unset;
 RC=0 "westnet--eastnet-ikev2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 RC=0 "westnet--eastnet-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init; prio: 24,24; interface: eth0; 
 RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
-../parentR1 ike_alg_register_enc(): Activating OAKLEY_TWOFISH_CBC_SSH: Ok (ret=0)
-../parentR1 ike_alg_register_enc(): Activating OAKLEY_TWOFISH_CBC: Ok (ret=0)
-../parentR1 ike_alg_register_enc(): Activating OAKLEY_SERPENT_CBC: Ok (ret=0)
-../parentR1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
-../parentR1 ike_alg_register_enc(): Activating OAKLEY_BLOWFISH_CBC: Ok (ret=0)
-../parentR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
-../parentR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 | *received 508 bytes from 192.1.2.45:500 on eth0 (port=500)
 |   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 01 fc  22 80 00 f4
@@ -53,7 +53,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | v2 state object not found
-| find_host_connection called from ikev2parent_inI1, me=192.1.2.23:500 him=192.1.2.45:500 policy=IKEv2ALLOW
+| find_host_connection called from ikev2parent_inI1outR1, me=192.1.2.23:500 him=192.1.2.45:500 policy=IKEv2ALLOW
 | find_host_pair: comparing to 192.1.2.23:500 192.1.2.45:500 
 | find_host_pair_conn (find_host_connection2): 192.1.2.23:500 192.1.2.45:500 -> hp:westnet--eastnet-ikev2 
 | searching for policy=IKEv2ALLOW, found=IKEv2ALLOW (westnet--eastnet-ikev2)
@@ -64,6 +64,8 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
+| complete v2 state transition with STF_SUSPEND
+| ikev2 parent inI1outR1: calculated ke+nonce, sending I1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
@@ -77,6 +79,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | ***emit IKEv2 Security Association Payload:
 |    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: Payload-Critical
+| no IKE algorithms for this connection 
 | ****emit IKEv2 Proposal Substructure Payload:
 |    next payload type: ISAKMP_NEXT_NONE
 |    prop #: 1
@@ -130,9 +133,9 @@ sending 80 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (using
 ../parentR1 leak: db_v2_prop_conj
 ../parentR1 leak: 5 * db_v2_trans
 ../parentR1 leak: db_v2_prop
+../parentR1 leak: ikev2_inI1outR1 KE
 ../parentR1 leak: struct state in new_state()
 ../parentR1 leak: msg_digest
-../parentR1 leak: 2 * hasher name
 ../parentR1 leak: host_pair
 ../parentR1 leak: host ip
 ../parentR1 leak: keep id name
@@ -149,6 +152,7 @@ sending 80 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (using
 ../parentR1 leak: cacert path
 ../parentR1 leak: acert path
 ../parentR1 leak: 7 * default conf
+../parentR1 leak: 2 * hasher name
 Pre-amble: #!-pluto-whack-file- recorded on east on 2007-10-31 06:13:08
 TCPDUMP output
 reading from file parentR1.pcap, link-type NULL (BSD loopback)
