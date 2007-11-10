@@ -254,7 +254,7 @@ ship_v2KE(struct state *st
     if(!out_struct(&v2ke, &ikev2_ke_desc, outs, &kepbs)) {
 	return FALSE;
     }
-    if(!out_chunk(st->st_gi, &kepbs, "ikev2 g^x")) {
+    if(!out_chunk(*g, &kepbs, "ikev2 g^x")) {
 	return FALSE;
     }
     close_output_pbs(&kepbs);
@@ -512,12 +512,13 @@ ikev2_parent_inI1outR1_continue(struct pluto_crypto_req_cont *pcrc
 
 static stf_status
 ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
-			    , struct pluto_crypto_req *r UNUSED)
+			    , struct pluto_crypto_req *r)
 {
     struct ke_continuation *ke = (struct ke_continuation *)pcrc;
     struct msg_digest *md = ke->md;
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
     struct state *const st = md->st;
+    int    numvidtosend=1;
 
     /* HDR out */
     {
@@ -537,7 +538,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	notification_t rn;
 	pb_stream r_sa_pbs;
 
-	r_sa.isasa_np = ISAKMP_NEXT_NONE;  /* XXX */
+	r_sa.isasa_np = ISAKMP_NEXT_v2KE;  /* XXX */
 	if (!out_struct(&r_sa, &ikev2_sa_desc, &md->rbody, &r_sa_pbs))
 	    return STF_INTERNAL_ERROR;
 
@@ -549,7 +550,51 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	    return STF_FAIL + rn;
     }
 
-    close_output_pbs(&md->rbody);
+    /* send KE */
+    if(!ship_v2KE(st, r, &st->st_gr, &md->rbody, ISAKMP_NEXT_v2Nr))
+	return STF_INTERNAL_ERROR;
+    
+    /* send NONCE */
+    unpack_nonce(&st->st_nr, r);
+    {
+	int np = numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
+	struct ikev2_generic in;
+	pb_stream pb;
+	
+	memset(&in, 0, sizeof(in));
+	in.isag_np = np;
+	in.isag_critical = ISAKMP_PAYLOAD_CRITICAL;
+
+	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
+	   !out_raw(st->st_nr.ptr, st->st_nr.len, &pb, "IKEv2 nonce"))
+	    return STF_INTERNAL_ERROR;
+	close_output_pbs(&pb);
+    }
+
+    /* Send DPD VID */
+    {
+	int np = --numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
+
+	if (!out_generic_raw(np, &isakmp_vendor_id_desc, &md->rbody
+			     , pluto_vendorid, strlen(pluto_vendorid), "Vendor ID"))
+	    return STF_INTERNAL_ERROR;
+    }
+
+    close_message(&md->rbody);
+    close_output_pbs(&md->reply);
+
+    /* let TCL hack it before we mark the length. */
+    TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
+
+    /* keep it for a retransmit if necessary */
+    clonetochunk(st->st_tpacket, md->reply.start, pbs_offset(&md->reply)
+		 , "reply packet for ikev2_parent_outI1");
+
+    /* Transmit */
+    send_packet(st, "main_outI1", TRUE);
+
+    /* note: retransimission is driven by initiator */
+
     return STF_OK;
     
 }

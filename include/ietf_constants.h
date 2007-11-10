@@ -280,7 +280,7 @@ enum next_payload_types {
 	ISAKMP_NEXT_v2CERTREQ= 38,       /* Certificate Request */
 	ISAKMP_NEXT_v2AUTH= 39,          /* Authentication */
 	ISAKMP_NEXT_v2Ni  = 40,          /* Nonce - initiator */
-	/* ISAKMP_NEXT_v2Nr  = 40,*/     /* Nonce - responder */
+	ISAKMP_NEXT_v2Nr  = 40,          /* Nonce - responder */
 	ISAKMP_NEXT_v2N   = 41,          /* Notify */
 	ISAKMP_NEXT_v2D   = 42,          /* Delete */
 	ISAKMP_NEXT_v2V   = 43,          /* Vendor ID */
