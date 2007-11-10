@@ -140,7 +140,7 @@ static const struct state_v2_microcode state_microcode_table[] = {
     { .state      = STATE_UNDEFINED,
       .next_state = STATE_PARENT_R1,
       .flags = SMF2_RESPONDER|SMF2_NEWSTATE|SMF2_REPLY,
-      .processor  = ikev2parent_inI1,
+      .processor  = ikev2parent_inI1outR1,
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
 	

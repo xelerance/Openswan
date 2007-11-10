@@ -183,7 +183,7 @@ LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} -lgmp
 %.o: ${srcdir}%.c
 	${CC} -c ${CFLAGS} $<
 
-include ${srcdir}../Makefile.manpages
+include ${OPENSWANSRCDIR}/programs/Makefile.manpages
 
 %.i: %.c 
 	$(CC) $(CFLAGS) -E -o $@ $< 

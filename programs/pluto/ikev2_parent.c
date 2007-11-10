@@ -379,11 +379,18 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
  *  
  *
  */
-stf_status ikev2parent_inI1(struct msg_digest *md)
+static void ikev2_parent_inI1outR1_continue(struct pluto_crypto_req_cont *pcrc
+					    , struct pluto_crypto_req *r
+					    , err_t ugh);
+
+static stf_status
+ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
+			    , struct pluto_crypto_req *r);
+
+stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 {
     struct state *st = md->st;
     lset_t policy = POLICY_IKEV2_ALLOW;
-    struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
     pb_stream *keyex_pbs;
 #if 0
     struct payload_digest *const sa_gi = md->chain[ISAKMP_NEXT_v2KE];
@@ -440,6 +447,78 @@ stf_status ikev2parent_inI1(struct msg_digest *md)
 
     keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
 
+    /* now. we need to go calculate the nonce, and the KE */
+    {
+	struct ke_continuation *ke = alloc_thing(struct ke_continuation
+						 , "ikev2_inI1outR1 KE");
+	stf_status e;
+
+	ke->md = md;
+	set_suspended(st, ke->md);
+
+	if (!st->st_sec_in_use) {
+	    ke->ke_pcrc.pcrc_func = ikev2_parent_inI1outR1_continue;
+	    e = build_ke(&ke->ke_pcrc, st, st->st_oakley.group, pcim_stranger_crypto);
+	    if(e != STF_SUSPEND && e != STF_INLINE) {
+	      loglog(RC_CRYPTOFAILED, "system too busy");
+	      delete_state(st);
+	    }
+	} else {
+	    e = ikev2_parent_inI1outR1_tail((struct pluto_crypto_req_cont *)ke
+					    , NULL);
+	}
+
+	reset_globals();
+
+	return e;
+    }
+}
+
+static void
+ikev2_parent_inI1outR1_continue(struct pluto_crypto_req_cont *pcrc
+				, struct pluto_crypto_req *r
+				, err_t ugh)
+{
+    struct ke_continuation *ke = (struct ke_continuation *)pcrc;
+    struct msg_digest *md = ke->md;
+    struct state *const st = md->st;
+    stf_status e;
+    
+    DBG(DBG_CONTROLMORE
+	, DBG_log("ikev2 parent inI1outR1: calculated ke+nonce, sending I1"));
+  
+    /* XXX should check out ugh */
+    passert(ugh == NULL);
+    passert(cur_state == NULL);
+    passert(st != NULL);
+
+    passert(st->st_suspended_md == ke->md);
+    set_suspended(st,NULL);	/* no longer connected or suspended */
+    
+    set_cur_state(st);
+    
+    st->st_calculating = FALSE;
+
+    e = ikev2_parent_inI1outR1_tail(pcrc, r);
+  
+    if(ke->md != NULL) {
+	complete_v2_state_transition(&ke->md, e);
+	if(ke->md) release_md(ke->md);
+    }
+    reset_globals();
+    
+    passert(GLOBALS_ARE_RESET());
+}
+
+static stf_status
+ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
+			    , struct pluto_crypto_req *r UNUSED)
+{
+    struct ke_continuation *ke = (struct ke_continuation *)pcrc;
+    struct msg_digest *md = ke->md;
+    struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
+    struct state *const st = md->st;
+
     /* HDR out */
     {
 	struct isakmp_hdr r_hdr = md->hdr;
@@ -472,6 +551,7 @@ stf_status ikev2parent_inI1(struct msg_digest *md)
 
     close_output_pbs(&md->rbody);
     return STF_OK;
+    
 }
 
 stf_status ikev2parent_inR1(struct msg_digest *md UNUSED)
