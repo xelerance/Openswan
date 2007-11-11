@@ -617,9 +617,6 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     clonetochunk(st->st_tpacket, md->reply.start, pbs_offset(&md->reply)
 		 , "reply packet for ikev2_parent_outI1");
 
-    /* Transmit */
-    send_packet(st, "main_outI1", TRUE);
-
     /* note: retransimission is driven by initiator */
 
     return STF_OK;
