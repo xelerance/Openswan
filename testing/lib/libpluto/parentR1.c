@@ -43,8 +43,7 @@ void recv_pcap_packet(u_char *user
 		      , const struct pcap_pkthdr *h
 		      , const u_char *bytes)
 {
-    struct pluto_crypto_req r;
-    struct pcr_kenonce *kn = &r.pcr_d.kn;
+    struct pcr_kenonce *kn = &r->pcr_d.kn;
     struct msg_digest *md;
     u_int32_t *dlt;
     struct iphdr  *ip;
@@ -60,9 +59,6 @@ void recv_pcap_packet(u_char *user
 	struct sockaddr_in sa_in4;
 	struct sockaddr_in6 sa_in6;
     } from;
-
-    memset(&r, 0, sizeof(r));
-    pcr_init(&r);
 
     md = alloc_md();
     dlt = (u_int32_t *)bytes;
@@ -122,7 +118,7 @@ void recv_pcap_packet(u_char *user
     clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc2_nr, tc2_nr_len);
     clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc2_gr, tc2_gr_len);
     
-    run_continuation(&r);
+    run_continuation(r);
 
 }
 
@@ -168,6 +164,14 @@ main(int argc, char *argv[])
 
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
+
+    {
+	struct state *st;
+
+	/* find st involved */
+	st = state_with_serialno(1);
+	delete_state(st);
+    }
 
     report_leaks();
 
