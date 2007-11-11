@@ -349,7 +349,7 @@ main_mode_hash(struct state *st
 {
     struct hmac_ctx ctx;
 
-    hmac_init_chunk(&ctx, st->st_oakley.hasher, st->st_skeyid);
+    hmac_init_chunk(&ctx, st->st_oakley.prf_hasher, st->st_skeyid);
     main_mode_hash_body(st, hashi, idpl, &ctx.hash_ctx, ctx.h->hash_update);
     hmac_final(hash_val, &ctx);
     return ctx.hmac_digest_len;
@@ -2495,7 +2495,7 @@ send_isakmp_notification(struct state *st
     {
         /* finish computing HASH */     
         struct hmac_ctx ctx;
-        hmac_init_chunk(&ctx, st->st_oakley.hasher, st->st_skeyid_a);
+        hmac_init_chunk(&ctx, st->st_oakley.prf_hasher, st->st_skeyid_a);
         hmac_update(&ctx, (const u_char *) &msgid, sizeof(msgid_t));
         hmac_update(&ctx, r_hash_start, rbody.cur-r_hash_start);
         hmac_final(r_hashval, &ctx);  
@@ -2622,7 +2622,7 @@ send_notification(struct state *sndst, u_int16_t type, struct state *encst,
 	    impossible();
 	r_hashval = hash_pbs.cur;  /* remember where to plant value */
 	if (!out_zero(
-	    encst->st_oakley.hasher->hash_digest_len,
+	    encst->st_oakley.prf_hasher->hash_digest_len,
 	    &hash_pbs, "HASH(1)"))
 	    impossible();
 	close_output_pbs(&hash_pbs);
@@ -2670,7 +2670,7 @@ send_notification(struct state *sndst, u_int16_t type, struct state *encst,
     if (encst)
     {
 	struct hmac_ctx ctx;
-	hmac_init_chunk(&ctx, encst->st_oakley.hasher, encst->st_skeyid_a);
+	hmac_init_chunk(&ctx, encst->st_oakley.prf_hasher, encst->st_skeyid_a);
 	hmac_update(&ctx, (u_char *) &msgid, sizeof(msgid_t));
 	hmac_update(&ctx, r_hash_start, r_hdr_pbs.cur-r_hash_start);
 	hmac_final(r_hashval, &ctx);
@@ -2875,7 +2875,7 @@ ikev1_delete_out(struct state *st)
 	if (!out_generic(ISAKMP_NEXT_D, &isakmp_hash_desc, &r_hdr_pbs, &hash_pbs))
 	    impossible();
 	r_hashval = hash_pbs.cur;	/* remember where to plant value */
-	if (!out_zero(p1st->st_oakley.hasher->hash_digest_len, &hash_pbs, "HASH(1)"))
+	if (!out_zero(p1st->st_oakley.prf_hasher->hash_digest_len, &hash_pbs, "HASH(1)"))
 	    impossible();
 	close_output_pbs(&hash_pbs);
 	r_hash_start = r_hdr_pbs.cur;	/* hash from after HASH(1) */
@@ -2927,7 +2927,7 @@ ikev1_delete_out(struct state *st)
     /* calculate hash value and patch into Hash Payload */
     {
 	struct hmac_ctx ctx;
-	hmac_init_chunk(&ctx, p1st->st_oakley.hasher, p1st->st_skeyid_a);
+	hmac_init_chunk(&ctx, p1st->st_oakley.prf_hasher, p1st->st_skeyid_a);
 	hmac_update(&ctx, (u_char *) &msgid, sizeof(msgid_t));
 	hmac_update(&ctx, r_hash_start, r_hdr_pbs.cur-r_hash_start);
 	hmac_final(r_hashval, &ctx);

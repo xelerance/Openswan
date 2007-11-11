@@ -873,8 +873,8 @@ parse_isakmp_sa_body(
 		case OAKLEY_HASH_ALGORITHM | ISAKMP_ATTR_AF_TV:
 #ifdef IKE_ALG
 		    if (ike_alg_hash_present(val)) {
-			ta.hash = val;
-			ta.hasher = crypto_get_hasher(val);
+			ta.prf_hash = val;
+			ta.prf_hasher = crypto_get_hasher(val);
 		    } else 
 #endif
 /* #else */
@@ -882,8 +882,8 @@ parse_isakmp_sa_body(
 		    {
 		    case OAKLEY_MD5:
 		    case OAKLEY_SHA:
-			ta.hash = val;
-			ta.hasher = crypto_get_hasher(val);
+			ta.prf_hash = val;
+			ta.prf_hasher = crypto_get_hasher(val);
 			break;
 		    default:
 			ugh = builddiag("%s is not supported"
@@ -1147,7 +1147,7 @@ parse_isakmp_sa_body(
 	 */
 	if (ugh == NULL)
 	{
-		if (!ike_alg_ok_final(ta.encrypt, ta.enckeylen, ta.hash,
+		if (!ike_alg_ok_final(ta.encrypt, ta.enckeylen, ta.prf_hash,
 			ta.group ? ta.group->group : -1, c->alg_info_ike)) {
 			ugh = "OAKLEY proposal refused";
 		}
@@ -1332,9 +1332,9 @@ init_am_st_oakley(struct state *st, lset_t policy)
     }
 
     passert(hash->type == OAKLEY_HASH_ALGORITHM);
-    ta.hash = hash->val;               /* OAKLEY_HASH_ALGORITHM */
-    ta.hasher = crypto_get_hasher(ta.hash);
-    passert(ta.hasher != NULL);
+    ta.prf_hash = hash->val;               /* OAKLEY_HASH_ALGORITHM */
+    ta.prf_hasher = crypto_get_hasher(ta.prf_hash);
+    passert(ta.prf_hasher != NULL);
 
     passert(auth->type == OAKLEY_AUTHENTICATION_METHOD);
     ta.auth   = auth->val;             /* OAKLEY_AUTHENTICATION_METHOD */
