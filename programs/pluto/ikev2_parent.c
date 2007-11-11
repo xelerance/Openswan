@@ -121,7 +121,6 @@ ikev2parent_outI1(int whack_sock
      * now, we need to initialize st->st_oakley, specifically, the group
      * number needs to be initialized.
      */
-
     groupnum = 0;
     
     st->st_sadb = &oakley_sadb[policy_index];
@@ -132,7 +131,7 @@ ikev2parent_outI1(int whack_sock
     }
     sa_v2_convert(st->st_sadb);
     {
-	int  pc_cnt;
+	unsigned int  pc_cnt;
 
 	/* look at all the proposals */
 	if(st->st_sadb->prop_disj!=NULL) {
@@ -140,13 +139,13 @@ ikev2parent_outI1(int whack_sock
 		pc_cnt++)
 	    {
 		struct db_v2_prop *vp = &st->st_sadb->prop_disj[pc_cnt];
-		int pr_cnt;	    
+		unsigned int pr_cnt;	    
 	    
 		/* look at all the proposals */
 		if(vp->props!=NULL) {
 		    for(pr_cnt=0; pr_cnt < vp->prop_cnt && groupnum==0; pr_cnt++)
 		    {
-			int ts_cnt;	    
+			unsigned int ts_cnt;	    
 			struct db_v2_prop_conj *vpc = &vp->props[pr_cnt];
 			
 			for(ts_cnt=0; ts_cnt < vpc->trans_cnt && groupnum==0; ts_cnt++) {
@@ -391,7 +390,6 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 {
     struct state *st = md->st;
     lset_t policy = POLICY_IKEV2_ALLOW;
-    pb_stream *keyex_pbs;
 #if 0
     struct payload_digest *const sa_gi = md->chain[ISAKMP_NEXT_v2KE];
     struct payload_digest *const sa_ni = md->chain[ISAKMP_NEXT_v2Ni];
@@ -445,7 +443,28 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	md->from_state = STATE_IKEv2_BASE;
     }
 
-    keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
+    /*
+     * We have to agree to the DH group before we actually know who
+     * we are talking to.   If we support the group, we use it.
+     *
+     * It is really too hard here to go through all the possible policies
+     * that might permit this group.  If we think we are being DOS'ed
+     * then we should demand a cookie.
+     */
+    {
+	struct ikev2_ke *ke;
+	ke = &md->chain[ISAKMP_NEXT_v2KE]->payload.v2ke;
+
+	st->st_oakley.group=lookup_group(ke->isak_group);
+	if(st->st_oakley.group==NULL) {
+	    char fromname[ADDRTOT_BUF];
+	    
+	    addrtot(&md->sender, 0, fromname, ADDRTOT_BUF);
+	    openswan_log("rejecting I1 from %s:%u, invalid DH group=%u"
+			 ,fromname, md->sender_port, ke->isak_group);
+	    return INVALID_KE_PAYLOAD;
+	}
+    }
 
     /* now. we need to go calculate the nonce, and the KE */
     {
@@ -518,6 +537,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     struct msg_digest *md = ke->md;
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
     struct state *const st = md->st;
+    pb_stream *keyex_pbs;
     int    numvidtosend=1;
 
     /* HDR out */
@@ -549,6 +569,13 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	if (rn != NOTHING_WRONG)
 	    return STF_FAIL + rn;
     }
+
+    keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
+    /* KE in */
+    RETURN_STF_FAILURE(accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs));
+
+    /* Ni in */
+    RETURN_STF_FAILURE(accept_v2_nonce(md, &st->st_ni, "Ni"));
 
     /* send KE */
     if(!ship_v2KE(st, r, &st->st_gr, &md->rbody, ISAKMP_NEXT_v2Nr))
