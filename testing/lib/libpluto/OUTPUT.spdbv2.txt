@@ -30,24 +30,27 @@ sa disjunct cnt: 1
         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 2(OAKLEY_GROUP_MODP1024)
-sav2 disjoint cnt: 1
-  conjunctions cnt: 4
-    proposal #0 protoid: 1 (PROTO_ISAKMP) cnt: 4
+sav2 disjoint cnt: 4
+  conjunctions cnt: 1
+    proposal #1 protoid: 1 (PROTO_ISAKMP) cnt: 4
       type: 1(trans-type-encr) value: 3(3des) attr_cnt: 0
       type: 3(trans-type-integ) value: 2(auth-hmac-sha1-96) attr_cnt: 0
       type: 2(trans-type-prf) value: 1(prf-hmac-md5) attr_cnt: 0
       type: 4(trans-type-dh) value: 5(OAKLEY_GROUP_MODP1536) attr_cnt: 0
-    proposal #1 protoid: 1 (PROTO_ISAKMP) cnt: 4
+  conjunctions cnt: 1
+    proposal #2 protoid: 1 (PROTO_ISAKMP) cnt: 4
       type: 1(trans-type-encr) value: 3(3des) attr_cnt: 0
       type: 3(trans-type-integ) value: 2(auth-hmac-sha1-96) attr_cnt: 0
       type: 2(trans-type-prf) value: 2(prf-hmac-sha1) attr_cnt: 0
       type: 4(trans-type-dh) value: 5(OAKLEY_GROUP_MODP1536) attr_cnt: 0
-    proposal #2 protoid: 1 (PROTO_ISAKMP) cnt: 4
+  conjunctions cnt: 1
+    proposal #3 protoid: 1 (PROTO_ISAKMP) cnt: 4
       type: 1(trans-type-encr) value: 3(3des) attr_cnt: 0
       type: 3(trans-type-integ) value: 2(auth-hmac-sha1-96) attr_cnt: 0
       type: 2(trans-type-prf) value: 1(prf-hmac-md5) attr_cnt: 0
       type: 4(trans-type-dh) value: 2(OAKLEY_GROUP_MODP1024) attr_cnt: 0
-    proposal #3 protoid: 1 (PROTO_ISAKMP) cnt: 4
+  conjunctions cnt: 1
+    proposal #4 protoid: 1 (PROTO_ISAKMP) cnt: 4
       type: 1(trans-type-encr) value: 3(3des) attr_cnt: 0
       type: 3(trans-type-integ) value: 2(auth-hmac-sha1-96) attr_cnt: 0
       type: 2(trans-type-prf) value: 2(prf-hmac-sha1) attr_cnt: 0

@@ -112,6 +112,6 @@ main(int argc, char *argv[])
  * Local Variables:
  * c-style: pluto
  * c-basic-offset: 4
- * compile-command: "make spdbv2"
+ * compile-command: "make TEST=spdbv2 one"
  * End:
  */
