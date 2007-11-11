@@ -45,16 +45,13 @@ main(int argc, char *argv[])
     int  lineno=0;
     struct connection *c1;
     struct state *st;
-    struct pluto_crypto_req r;
-    struct pcr_kenonce *kn = &r.pcr_d.kn;
+    struct pcr_kenonce *kn = &r->pcr_d.kn;  /* r is a global */
 
     EF_PROTECT_FREE=1;
     EF_FREE_WIPES  =1;
 
     progname = argv[0];
     leak_detective = 1;
-    memset(&r, 0, sizeof(r));
-    pcr_init(&r);
 
     if(argc != 3) {
 	fprintf(stderr, "Usage: %s <whackrecord> <conn-name>\n", progname);
@@ -93,7 +90,7 @@ main(int argc, char *argv[])
     clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc2_ni, tc2_ni_len);
     clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc2_gi, tc2_gi_len);
     
-    run_continuation(&r);
+    run_continuation(r);
 
     /* clean up so that we can see any leaks */
     delete_state(st);

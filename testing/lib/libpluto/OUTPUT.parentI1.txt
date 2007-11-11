@@ -198,7 +198,7 @@ RC=133 STATE_PARENT_I1: initiate
 | emitting length of IKEv2 Security Association Payload: 244
 | ***emit IKEv2 Key Exchange Payload:
 |    next payload type: ISAKMP_NEXT_v2Ni
-|    transform type: 0
+|    transform type: 5
 | emitting 192 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
 | ikev2 g^x  ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
 |   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
@@ -243,7 +243,7 @@ sending 508 bytes for main_outI1 through eth0:500 to 192.1.2.23:500 (using #1)
 |   00 00 00 08  04 00 00 02  00 00 00 28  06 01 00 04
 |   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
 |   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
-|   28 00 00 c8  00 00 00 00  ff bc 6a 92  a6 b9 55 9b
+|   28 00 00 c8  00 05 00 00  ff bc 6a 92  a6 b9 55 9b
 |   05 fa 96 a7  a4 35 07 b4  c1 e1 c0 86  1a 58 71 d9
 |   ba 73 a1 63  11 37 88 c0  de bb 39 79  e7 ff 0c 52
 |   b4 ce 60 50  eb 05 36 9e  a4 30 0d 2b  ff 3b 1b 29
@@ -328,6 +328,6 @@ IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, b
             (t: #2 type=integ id=hmac-sha )
             (t: #3 type=prf id=hmac-md5 )
             (t: #4 type=dh id=modp1024 )))
-    (v2ke: len=192 group=#0)
+    (v2ke: len=192 group=modp1536)
     (nonce[C]: len=16 nonce=(b5ce8419095c6e2b6b62d3055305b3c4) )
     (v2vid: len=12 vid=OEababababab)
