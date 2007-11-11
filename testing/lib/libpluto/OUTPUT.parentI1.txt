@@ -267,14 +267,32 @@ sending 508 bytes for main_outI1 through eth0:500 to 192.1.2.23:500 (using #1)
 ../parentI1 leak: long term secret
 ../parentI1 leak: db_v2_trans
 ../parentI1 leak: db_v2_prop_conj
-../parentI1 leak: 5 * db_v2_trans
 ../parentI1 leak: db_v2_prop
+../parentI1 leak: db_v2_trans
+../parentI1 leak: db_v2_prop_conj
+../parentI1 leak: db_v2_trans
+../parentI1 leak: db_v2_prop_conj
+../parentI1 leak: db_v2_trans
+../parentI1 leak: db_v2_prop_conj
+../parentI1 leak: db_v2_trans
+../parentI1 leak: db_v2_prop_conj
+../parentI1 leak: db_v2_trans
+../parentI1 leak: db_v2_prop_conj
 ../parentI1 leak: msg_digest
 ../parentI1 leak: ikev2_outI1 KE
 ../parentI1 leak: db_v2_trans
 ../parentI1 leak: db_v2_prop_conj
-../parentI1 leak: 5 * db_v2_trans
 ../parentI1 leak: db_v2_prop
+../parentI1 leak: db_v2_trans
+../parentI1 leak: db_v2_prop_conj
+../parentI1 leak: db_v2_trans
+../parentI1 leak: db_v2_prop_conj
+../parentI1 leak: db_v2_trans
+../parentI1 leak: db_v2_prop_conj
+../parentI1 leak: db_v2_trans
+../parentI1 leak: db_v2_prop_conj
+../parentI1 leak: db_v2_trans
+../parentI1 leak: db_v2_prop_conj
 ../parentI1 leak: myid string
 ../parentI1 leak: my FQDN
 ../parentI1 leak: host_pair
