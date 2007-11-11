@@ -129,7 +129,7 @@ ikev2parent_outI1(int whack_sock
     if(sadb != NULL) {
 	st->st_sadb = sadb;
     }
-    sadb = st->st_sadb = sa_v2_convert(sadb);
+    sadb = st->st_sadb = sa_v2_convert(st->st_sadb);
     {
 	unsigned int  pc_cnt;
 

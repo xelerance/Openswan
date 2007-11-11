@@ -232,6 +232,7 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
     struct db_v2_prop      *pr;
     unsigned int            pr_cnt, pc_cnt, propnum;
 
+    if(!f) return NULL;
     if(!f->dynamic) f = sa_copy_sa(f, 0);
     
     tot_trans=0;

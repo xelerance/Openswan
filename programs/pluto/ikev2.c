@@ -270,6 +270,11 @@ process_v2_packet(struct msg_digest **mdp)
 		return;
 	    }
 
+	    DBG(DBG_PARSING
+		, DBG_log("processing payload: %s (len=%u)\n"
+			  , enum_show(&payload_names, np)
+			  , pd->payload.generic.isag_length));
+
 	    /* do payload-type specific debugging */
 	    switch(np) {
 	    default:   /* nothing special */
@@ -478,7 +483,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
 notification_t
 accept_v2_nonce(struct msg_digest *md, chunk_t *dest, const char *name)
 {
-    return accept_nonce(md, dest, name, ISAKMP_NEXT_v2N);
+    return accept_nonce(md, dest, name, ISAKMP_NEXT_v2Ni);
 }
 
 
