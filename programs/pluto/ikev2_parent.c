@@ -46,6 +46,7 @@
 #include "vendor.h"
 #include "timer.h"
 #include "ike_continuations.h"
+#include "cookie.h"
 
 #include "tpm/tpm.h"
 
@@ -540,6 +541,11 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     pb_stream *keyex_pbs;
     int    numvidtosend=1;
 
+    unhash_state(st);
+    memcpy(st->st_icookie, md->hdr.isa_icookie, COOKIE_SIZE);
+    get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);
+    insert_state(st);	
+    
     /* HDR out */
     {
 	struct isakmp_hdr r_hdr = md->hdr;
