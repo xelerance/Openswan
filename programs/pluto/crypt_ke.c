@@ -131,29 +131,29 @@ stf_status build_ke(struct pluto_crypto_req_cont *cn
     r->pcr_pcim = importance;
 
     pcr_init(r);
-  r->pcr_d.kn.oakley_group   = group->group;
-
-  cn->pcrc_serialno = st->st_serialno;
-  e= send_crypto_helper_request(r, cn, &toomuch);
-
-  if(e != NULL) {
-      loglog(RC_LOG_SERIOUS, "can not start crypto helper: %s", e);
-      if(toomuch) {
-	  return STF_TOOMUCHCRYPTO;
-      } else {
-	  return STF_FAIL;
-      }
-  } else if(!toomuch) {
-      st->st_calculating = TRUE;
-      delete_event(st);
-      event_schedule(EVENT_CRYPTO_FAILED, EVENT_CRYPTO_FAILED_DELAY, st);
-      return STF_SUSPEND;
-  } else {
-      /* we must have run the continuation directly, so
-       * complete_v1_state_transition already got called. 
-       */
-      return STF_INLINE;
-  }
+    r->pcr_d.kn.oakley_group   = group->group;
+    
+    cn->pcrc_serialno = st->st_serialno;
+    e= send_crypto_helper_request(r, cn, &toomuch);
+    
+    if(e != NULL) {
+	loglog(RC_LOG_SERIOUS, "can not start crypto helper: %s", e);
+	if(toomuch) {
+	    return STF_TOOMUCHCRYPTO;
+	} else {
+	    return STF_FAIL;
+	}
+    } else if(!toomuch) {
+	st->st_calculating = TRUE;
+	delete_event(st);
+	event_schedule(EVENT_CRYPTO_FAILED, EVENT_CRYPTO_FAILED_DELAY, st);
+	return STF_SUSPEND;
+    } else {
+	/* we must have run the continuation directly, so
+	 * complete_v1_state_transition already got called. 
+	 */
+	return STF_INLINE;
+    }
 }
 
 
