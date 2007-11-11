@@ -123,7 +123,7 @@ out_sa(pb_stream *outs
        , u_int8_t np)
 {
     pb_stream sa_pbs;
-    int pcn;
+    unsigned int pcn;
     bool ret = FALSE;
     bool ah_spi_generated = FALSE
 	, esp_spi_generated = FALSE
@@ -187,7 +187,7 @@ out_sa(pb_stream *outs
     for (pcn = 0; pcn < sadb->prop_conj_cnt; pcn++)
     {
 	struct db_prop_conj *pc;
-	int pn;
+	unsigned int pn;
 	int valid_prop_cnt;
 	
 	pc = &sadb->prop_conjs[pcn];
@@ -219,7 +219,7 @@ out_sa(pb_stream *outs
 	    struct_desc *trans_desc;
 	    struct_desc *attr_desc;
 	    enum_names **attr_val_descs;
-	    int tn;
+	    unsigned int tn;
 	    bool tunnel_mode;
 
 	    /*
@@ -367,7 +367,7 @@ out_sa(pb_stream *outs
 		struct db_trans *t = &p->trans[tn];
 		pb_stream trans_pbs;
 		struct isakmp_transform trans;
-		int an;
+		unsigned int an;
 
 		trans.isat_np = (tn == p->trans_cnt - 1)
 		    ? ISAKMP_NEXT_NONE : ISAKMP_NEXT_T;
