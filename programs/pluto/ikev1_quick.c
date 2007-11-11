@@ -1847,7 +1847,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	}
 
 	/* Ni in */
-	RETURN_STF_FAILURE(accept_nonce(md, &st->st_ni, "Ni"));
+	RETURN_STF_FAILURE(accept_v1_nonce(md, &st->st_ni, "Ni"));
 
 	/* [ KE ] in (for PFS) */
 	RETURN_STF_FAILURE(accept_PFS_KE(md, &st->st_gi
@@ -2208,7 +2208,7 @@ quick_inR1_outI2(struct msg_digest *md)
     }
 
     /* Nr in */
-    RETURN_STF_FAILURE(accept_nonce(md, &st->st_nr, "Nr"));
+    RETURN_STF_FAILURE(accept_v1_nonce(md, &st->st_nr, "Nr"));
 
     /* [ KE ] in (for PFS) */
     RETURN_STF_FAILURE(accept_PFS_KE(md, &st->st_gr, "Gr", "Quick Mode R1"));

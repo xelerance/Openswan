@@ -23,6 +23,9 @@ extern stf_status ikev2parent_inI1outR1(struct msg_digest *md);
 extern stf_status ikev2parent_inR1(struct msg_digest *md);
 extern const struct state_v2_microcode *ikev2_parent_firststate(void);
 
+extern notification_t accept_v2_nonce(struct msg_digest *md, chunk_t *dest
+				      , const char *name);
+
 /* MAGIC: perform f, a function that returns notification_t
  * and return from the ENCLOSING stf_status returning function if it fails.
  */

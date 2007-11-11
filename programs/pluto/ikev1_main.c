@@ -804,21 +804,10 @@ RSA_check_signature(struct state *st
 
 
 notification_t
-accept_nonce(struct msg_digest *md, chunk_t *dest, const char *name)
+accept_v1_nonce(struct msg_digest *md, chunk_t *dest, const char *name)
 {
-    pb_stream *nonce_pbs = &md->chain[ISAKMP_NEXT_NONCE]->pbs;
-    size_t len = pbs_left(nonce_pbs);
-
-    if (len < MINIMUM_NONCE_SIZE || MAXIMUM_NONCE_SIZE < len)
-    {
-	loglog(RC_LOG_SERIOUS, "%s length not between %d and %d"
-	    , name , MINIMUM_NONCE_SIZE, MAXIMUM_NONCE_SIZE);
-	return PAYLOAD_MALFORMED;	/* ??? */
-    }
-    clonereplacechunk(*dest, nonce_pbs->cur, len, "nonce");
-    return NOTHING_WRONG;
+    return accept_nonce(md, dest, name, ISAKMP_NEXT_NONCE);
 }
-
 
 /* encrypt message, sans fixed part of header
  * IV is fetched from st->st_new_iv and stored into st->st_iv.
@@ -1396,7 +1385,7 @@ main_inI2_outR2(struct msg_digest *md)
 				 , st->st_oakley.group, keyex_pbs));
 
     /* Ni in */
-    RETURN_STF_FAILURE(accept_nonce(md, &st->st_ni, "Ni"));
+    RETURN_STF_FAILURE(accept_v1_nonce(md, &st->st_ni, "Ni"));
 
     /* decode certificate requests */
     decode_cr(md, &st->st_connection->requested_ca);
@@ -1927,7 +1916,7 @@ main_inR2_outI3(struct msg_digest *md)
 				 , st->st_oakley.group, keyex_pbs));
 
     /* Nr in */
-    RETURN_STF_FAILURE(accept_nonce(md, &st->st_nr, "Nr"));
+    RETURN_STF_FAILURE(accept_v1_nonce(md, &st->st_nr, "Nr"));
 
     dh = alloc_thing(struct dh_continuation, "aggr outR1 DH");
     if(!dh) { return STF_FATAL; }

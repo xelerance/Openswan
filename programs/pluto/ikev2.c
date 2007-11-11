@@ -475,6 +475,14 @@ void complete_v2_state_transition(struct msg_digest **mdp
     }
 }
 
+notification_t
+accept_v2_nonce(struct msg_digest *md, chunk_t *dest, const char *name)
+{
+    return accept_nonce(md, dest, name, ISAKMP_NEXT_v2N);
+}
+
+
+
 /*
  * Local Variables:
  * c-basic-offset:4

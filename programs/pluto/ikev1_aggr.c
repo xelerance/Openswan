@@ -338,7 +338,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
     RETURN_STF_FAILURE(accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs));
 
     /* Ni in */
-    RETURN_STF_FAILURE(accept_nonce(md, &st->st_ni, "Ni"));
+    RETURN_STF_FAILURE(accept_v1_nonce(md, &st->st_ni, "Ni"));
 
     {
 	struct ke_continuation *ke = alloc_thing(struct ke_continuation
@@ -584,7 +584,7 @@ aggr_inR1_outI2(struct msg_digest *md)
     RETURN_STF_FAILURE(accept_KE(&st->st_gr, "Gr", st->st_oakley.group, keyex_pbs));
 
     /* Ni in */
-    RETURN_STF_FAILURE(accept_nonce(md, &st->st_nr, "Nr"));
+    RETURN_STF_FAILURE(accept_v1_nonce(md, &st->st_nr, "Nr"));
 
     /* moved the following up as we need Rcookie for hash, skeyids */
     /* Reinsert the state, using the responder cookie we just received */
