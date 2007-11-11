@@ -155,10 +155,11 @@ print_sa_v2_trans(struct db_v2_trans *tr)
 }
 
 void
-print_sa_v2_prop_conj(struct db_v2_prop_conj *dp, int propnum)
+print_sa_v2_prop_conj(struct db_v2_prop_conj *dp)
 {
     unsigned int i;
-    printf("    proposal #%u protoid: %u (%s) cnt: %u\n", propnum
+    printf("    proposal #%u protoid: %u (%s) cnt: %u\n"
+	   , dp->propnum
 	   , dp->protoid
 	   , enum_name(&protocol_names, dp->protoid)
 	   , dp->trans_cnt);
@@ -174,7 +175,7 @@ print_sa_v2_prop(struct db_v2_prop *pc)
     printf("  conjunctions cnt: %u\n",
 	   pc->prop_cnt);
     for(i=0; i<pc->prop_cnt; i++) {
-	    print_sa_v2_prop_conj(&pc->props[i], i);
+	    print_sa_v2_prop_conj(&pc->props[i]);
     }
 }
 

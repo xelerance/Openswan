@@ -72,7 +72,7 @@ ikev2_out_sa(pb_stream *outs
 {
     pb_stream sa_pbs;
     bool ret = FALSE;
-    int  pc_cnt;
+    unsigned int  pc_cnt;
 
     /* SA header out */
     {
@@ -95,12 +95,12 @@ ikev2_out_sa(pb_stream *outs
     for(pc_cnt=0; pc_cnt < sadb->prop_disj_cnt; pc_cnt++)
     {
 	struct db_v2_prop *vp = &sadb->prop_disj[pc_cnt];
-	int pr_cnt;	    
+	unsigned int pr_cnt;	    
 
 	/* now send out all the transforms */
 	for(pr_cnt=0; pr_cnt < vp->prop_cnt; pr_cnt++)
 	{
-	    int ts_cnt;	    
+	    unsigned int ts_cnt;	    
 	    struct db_v2_prop_conj *vpc = &vp->props[pr_cnt];
 	    
 	    struct ikev2_prop p;
@@ -116,7 +116,7 @@ ikev2_out_sa(pb_stream *outs
 	    }
 	    
 	    p.isap_length  = 0;
-	    p.isap_propnum = pr_cnt+1;
+	    p.isap_propnum = vpc->propnum;
 	    p.isap_protoid = PROTO_ISAKMP;
 	    p.isap_spisize = 0;  /* set when we rekey */
 	    p.isap_numtrans= vpc->trans_cnt;
@@ -222,7 +222,7 @@ enum ikev2_trans_type_integ v1tov2_integ(int oakley)
 
 void sa_v2_convert(struct db_sa *f)
 {
-    int pcc, prc, tcc;
+    unsigned int pcc, prc, tcc;
     int tot_trans, i;
     struct db_trans_flat *dtfset;
     struct db_trans_flat *dtfone;
@@ -230,7 +230,7 @@ void sa_v2_convert(struct db_sa *f)
     struct db_v2_trans     *tr;
     struct db_v2_prop_conj *pc;
     struct db_v2_prop      *pr;
-    int                     pr_cnt, pc_cnt;
+    unsigned int            pr_cnt, pc_cnt, propnum;
     
     tot_trans=0;
     for(pcc=0; pcc<f->prop_conj_cnt; pcc++) {
@@ -261,7 +261,7 @@ void sa_v2_convert(struct db_sa *f)
 	    for(tcc=0; tcc<dp->trans_cnt; tcc++) {
 		struct db_trans *tr=&dp->trans[tcc];
 		struct db_trans_flat *dtfone = &dtfset[tot_trans];
-		int attr_cnt;
+		unsigned int attr_cnt;
 		
 		dtfone->protoid        = dp->protoid;
 		for(attr_cnt=0; attr_cnt<tr->attr_cnt; attr_cnt++) {
@@ -303,6 +303,7 @@ void sa_v2_convert(struct db_sa *f)
     dtflast = NULL;
     tr = NULL;
     pc = NULL; pc_cnt = 0;
+    propnum=1;
     
     for(i=0; i < tot_trans; i++) {
 	int tr_cnt = 3;
@@ -315,8 +316,8 @@ void sa_v2_convert(struct db_sa *f)
 	     * one, and if so, then this is a disjunction (OR),
 	     * otherwise, it's conjunction (AND)
 	     */
-	    if(dtflast->protoid != dtfone->protoid) {
-		/* need to extend pr by one */
+	    if(dtflast->protoid == dtfone->protoid) {
+		/* need to extend pr (list of disjunctions) by one */
 		struct db_v2_prop *pr1;
 		pr_cnt++;
 		pr1 = alloc_bytes(sizeof(struct db_v2_prop)*(pr_cnt+1), "db_v2_prop");
@@ -325,11 +326,12 @@ void sa_v2_convert(struct db_sa *f)
 		pr = pr1;
 		
 		/* need to zero this, so it gets allocated */
+		propnum++;
 		pc = NULL;
 		pc_cnt=0;
 	    } else {
 		struct db_v2_prop_conj *pc1;
-		/* need to extend pc by one */
+		/* need to extend pc (list of conjuections) by one */
 		pc_cnt++;
 
 		pc1 = alloc_bytes(sizeof(struct db_v2_prop_conj)*(pc_cnt+1), "db_v2_prop_conj");
@@ -338,6 +340,8 @@ void sa_v2_convert(struct db_sa *f)
 		pc = pc1;
 		pr[pr_cnt].props=pc;
 		pr[pr_cnt].prop_cnt=pc_cnt+1;
+
+		/* do not increment propnum! */
 	    }
 	}
 	dtflast = dtfone;
@@ -353,6 +357,7 @@ void sa_v2_convert(struct db_sa *f)
 	tr = alloc_bytes(sizeof(struct db_v2_trans)*(tr_cnt+1), "db_v2_trans");
 	pc[pc_cnt].trans=tr;  pc[pc_cnt].trans_cnt = tr_cnt+1;
 	
+	pc[pc_cnt].propnum = propnum;
 	pc[pc_cnt].protoid = dtfset->protoid;
 	
 	tr[0].transform_type = IKEv2_TRANS_TYPE_ENCR;
@@ -383,17 +388,112 @@ void sa_v2_convert(struct db_sa *f)
     pfree(dtfset);
 }
 
+bool
+ikev2_acceptable_group(struct state *st, oakley_group_t group)
+{
+    struct db_sa *sadb = st->st_sadb;
+    struct db_v2_prop *pd;
+    unsigned int       pd_cnt;
+    bool dh_matched;
+
+    dh_matched=FALSE;
+
+    for(pd_cnt=0; pd_cnt < sadb->prop_disj_cnt; pd_cnt++) {
+	struct db_v2_prop_conj  *pj;
+	struct db_v2_trans      *tr;
+	unsigned int             tr_cnt;
+
+	pd = &sadb->prop_disj[pd_cnt];
+	dh_matched=FALSE;
+
+	/* In PARENT SAs, we only support one conjunctive item */
+	if(pd->prop_cnt != 1) continue;
+
+	pj = &pd->props[0];
+	if(pj->protoid  != PROTO_ISAKMP) continue;
+
+	for(tr_cnt=0; tr_cnt < pj->trans_cnt; tr_cnt++) {
+
+	    tr = &pj->trans[tr_cnt];
+	    
+	    switch(tr->transform_type) {
+	    case IKEv2_TRANS_TYPE_DH:
+		if(tr->transid == group)
+		    return TRUE;
+		break;
+	    default:
+		break;
+	    }
+	}
+    }
+    return FALSE;
+}
 
 static bool 
-spdb_v2_match(struct db_sa *sadb UNUSED
-	      , unsigned encr_transform UNUSED
-	      , unsigned integ_transform UNUSED
-	      , unsigned prf_transform UNUSED
-	      , unsigned dh_transform  UNUSED
-	      , unsigned esn_transform UNUSED)
+spdb_v2_match(struct db_sa *sadb
+	      , unsigned encr_transform
+	      , unsigned integ_transform
+	      , unsigned prf_transform
+	      , unsigned dh_transform
+	      , unsigned esn_transform)
 {
-    return TRUE;
+    struct db_v2_prop *pd;
+    unsigned int       pd_cnt;
+    bool encr_matched, integ_matched, prf_matched, dh_matched, esn_matched;
+
+    encr_matched=integ_matched=prf_matched=dh_matched=esn_matched=FALSE;
+
+    for(pd_cnt=0; pd_cnt < sadb->prop_disj_cnt; pd_cnt++) {
+	struct db_v2_prop_conj  *pj;
+	struct db_v2_trans      *tr;
+	unsigned int             tr_cnt;
+
+	pd = &sadb->prop_disj[pd_cnt];
+	encr_matched=integ_matched=prf_matched=dh_matched=esn_matched=FALSE;
+	if(pd->prop_cnt != 1) continue;
+
+	/* In PARENT SAs, we only support one conjunctive item */
+	pj = &pd->props[0];
+	if(pj->protoid  != PROTO_ISAKMP) continue;
+
+	for(tr_cnt=0; tr_cnt < pj->trans_cnt; tr_cnt++) {
+
+	    tr = &pj->trans[tr_cnt];
+	    
+	    switch(tr->transform_type) {
+	    case IKEv2_TRANS_TYPE_ENCR:
+		if(tr->transid == encr_transform)
+		    encr_matched=TRUE;
+		break;
+		
+	    case IKEv2_TRANS_TYPE_INTEG:
+		if(tr->transid == integ_transform)
+		    integ_matched=TRUE;
+		break;
+		
+	    case IKEv2_TRANS_TYPE_PRF:
+		if(tr->transid == prf_transform)
+		    prf_matched=TRUE;
+		break;
+		
+	    case IKEv2_TRANS_TYPE_DH:
+		if(tr->transid == dh_transform)
+		    dh_matched=TRUE;
+		break;
+
+	    case IKEv2_TRANS_TYPE_ESN:
+		if(tr->transid == esn_transform)
+		    esn_matched=TRUE;
+		break;
+	    }
+
+	    if(dh_matched && prf_matched && integ_matched && encr_matched)
+		return TRUE;
+	}
+    }
+    return FALSE;
 }
+
 
 #define MAX_TRANS_LIST 32         /* 32 is an arbitrary limit */
 
@@ -544,7 +644,7 @@ parse_ikev2_sa_body(
 		    dh_transforms[dh_trans_next++]=trans.isat_transid;
 		}
 		break;
-		
+
 	    case IKEv2_TRANS_TYPE_ESN:
 		if(esn_trans_next < MAX_TRANS_LIST) {
 		    esn_transforms[esn_trans_next++]=trans.isat_transid;

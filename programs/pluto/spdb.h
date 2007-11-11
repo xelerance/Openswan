@@ -59,17 +59,20 @@ struct db_v2_trans {
 };
 
 /* proposal - IKEv2 */
+/* transforms are OR of each unique transform_type */
 struct db_v2_prop_conj {
-	u_int8_t protoid;	        /* Protocol-Id: ikev2_trans_type */
+	u_int8_t            propnum;
+	u_int8_t            protoid;	/* Protocol-Id: ikev2_trans_type */
 	struct db_v2_trans *trans;	/* array (disjunction-OR) */
-	unsigned int trans_cnt;	        /* number of elements */
+	unsigned int        trans_cnt;	/* number of elements */
 	/* SPI size and value isn't part of DB */
 };
 
 /* conjunction (AND) of proposals - IKEv2 */
+/* this is, for instance, ESP+AH, etc.    */
 struct db_v2_prop {
 	struct db_v2_prop_conj  *props;	/* array */
-	unsigned int prop_cnt;	        /* number of elements */
+	unsigned int prop_cnt;	        /* number of elements... AND*/
 };
 
 /* security association */
@@ -170,7 +173,7 @@ extern void print_sa_prop_conj(struct db_prop_conj *pc);
 extern void sa_print(struct db_sa *f);
 
 extern void print_sa_v2_trans(struct db_v2_trans *tr);
-extern void print_sa_v2_prop_conj(struct db_v2_prop_conj *dp, int propnum);
+extern void print_sa_v2_prop_conj(struct db_v2_prop_conj *dp);
 extern void print_sa_v2_prop(struct db_v2_prop *pc);
 extern void sa_v2_print(struct db_sa *f);
 
