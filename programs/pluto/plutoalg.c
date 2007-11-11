@@ -497,14 +497,15 @@ kernel_alg_db_add(struct db_context *db_ctx
 struct db_context * 
 kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy, bool logit)
 {
-	int ealg_i, aalg_i, tn=0;
+    int ealg_i, aalg_i;
+    unsigned int tn=0;
 	int i;
 	const struct esp_info *esp_info;
 	struct esp_info tmp_esp_info;
 	struct db_context *ctx_new=NULL;
 	struct db_trans *t;
 	struct db_prop  *prop;
-	int trans_cnt;
+	unsigned int trans_cnt;
 	bool success = TRUE;
 	int protoid;
 

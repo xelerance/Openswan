@@ -206,7 +206,7 @@ db_attrs_expand(struct db_context *ctx, int delta_attrs)
 	int ret = -1;
 	struct db_attr *new_attrs, *old_attrs;
 	struct db_trans *t;
-	int ti;
+	unsigned int ti;
 	int max_attrs = ctx->max_attrs + delta_attrs;
 	int offset;
 

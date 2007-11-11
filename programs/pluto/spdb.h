@@ -31,23 +31,23 @@ struct db_attr {
 
 /* transform */
 struct db_trans {
-	u_int16_t              transid;	        /* Transform-Id */
+	u_int16_t     transid;  /* Transform-Id */
 	struct db_attr *attrs;	/* array */
-	int attr_cnt;	        /* number of elements */
+	unsigned int attr_cnt;  /* number of elements */
 };
 
 /* proposal - IKEv1 */
 struct db_prop {
     u_int8_t         protoid;	/* Protocol-Id */
     struct db_trans *trans;	/* array (disjunction-OR) */
-    int trans_cnt;	        /* number of elements */
+    unsigned int trans_cnt;	/* number of elements */
     /* SPI size and value isn't part of DB */
 };
 
 /* conjunction (AND) of proposals - IKEv1 */
 struct db_prop_conj {
-    struct db_prop *props;	/* array */
-    int prop_cnt;	        /* number of elements */
+	struct db_prop *props;	/* array */
+	unsigned int prop_cnt;	/* number of elements */
 };
 
 /* transform - IKEv2 */
@@ -55,30 +55,30 @@ struct db_v2_trans {
 	enum ikev2_trans_type    transform_type;
 	u_int16_t                transid;	        /* Transform-Id */
 	struct db_attr *attrs;	 /* array of attributes */
-	int attr_cnt;	         /* number of elements */
+	unsigned int attr_cnt;	         /* number of elements */
 };
 
 /* proposal - IKEv2 */
 struct db_v2_prop_conj {
 	u_int8_t protoid;	        /* Protocol-Id: ikev2_trans_type */
 	struct db_v2_trans *trans;	/* array (disjunction-OR) */
-	int trans_cnt;	        /* number of elements */
+	unsigned int trans_cnt;	        /* number of elements */
 	/* SPI size and value isn't part of DB */
 };
 
 /* conjunction (AND) of proposals - IKEv2 */
 struct db_v2_prop {
 	struct db_v2_prop_conj  *props;	/* array */
-	int prop_cnt;	        /* number of elements */
+	unsigned int prop_cnt;	        /* number of elements */
 };
 
 /* security association */
 struct db_sa {
 	struct db_prop_conj    *prop_conjs; /* array */
-	int prop_conj_cnt;     /* number of elements */
+	unsigned int prop_conj_cnt;         /* number of elements */
 	
 	struct db_v2_prop      *prop_disj;  /* array */
-	int prop_disj_cnt;     /* number of elements */
+	unsigned int prop_disj_cnt;         /* number of elements... OR */
 };
 
 /* The oakley sadb is subscripted by a bitset with members
@@ -178,6 +178,8 @@ extern void sa_v2_print(struct db_sa *f);
 extern void sa_v2_convert(struct db_sa *f);
 extern enum ikev2_trans_type_encr v1tov2_encr(int oakley);
 extern enum ikev2_trans_type_integ v1tov2_integ(int oakley);
+extern bool ikev2_acceptable_group(struct state *st, oakley_group_t group);
+
 
 
 #endif /*  _SPDB_H_ */

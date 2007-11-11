@@ -840,7 +840,7 @@ free_sa_trans(struct db_trans *tr)
 void
 free_sa_prop(struct db_prop *dp)
 {
-    int i;
+    unsigned int i;
     for(i=0; i<dp->trans_cnt; i++) {
 	free_sa_trans(&dp->trans[i]);
     }
@@ -852,7 +852,7 @@ free_sa_prop(struct db_prop *dp)
 void
 free_sa_prop_conj(struct db_prop_conj *pc)
 {
-    int i;
+    unsigned int i;
     for(i=0; i<pc->prop_cnt; i++) {
 	free_sa_prop(&pc->props[i]);
     }
@@ -864,7 +864,7 @@ free_sa_prop_conj(struct db_prop_conj *pc)
 void
 free_sa(struct db_sa *f)
 {
-    int i;
+    unsigned int i;
     if(f == NULL) return;
 
     for(i=0; i<f->prop_conj_cnt; i++) {
@@ -887,7 +887,7 @@ void clone_trans(struct db_trans *tr)
 
 void clone_prop(struct db_prop *p, int extra)
 {
-    int i;
+    unsigned int i;
 
     p->trans = clone_bytes(p->trans
 			  , (p->trans_cnt+extra)*sizeof(p->trans[0])
@@ -899,7 +899,7 @@ void clone_prop(struct db_prop *p, int extra)
 
 void clone_propconj(struct db_prop_conj *pc, int extra)
 {
-    int i;
+    unsigned int i;
 
     pc->props = clone_bytes(pc->props
 			   , (pc->prop_cnt+extra)*sizeof(pc->props[0])
@@ -911,7 +911,7 @@ void clone_propconj(struct db_prop_conj *pc, int extra)
 
 struct db_sa *sa_copy_sa(struct db_sa *sa, int extra)
 {
-    int i;
+    unsigned int i;
     struct db_sa *nsa;
 
     nsa = clone_thing(*sa, "sa copy prop_conj");
@@ -976,7 +976,7 @@ struct db_sa *
 sa_merge_proposals(struct db_sa *a, struct db_sa *b)
 {
     struct db_sa *n;
-    int i,j,k;
+    unsigned int i,j,k;
 
     if(a == NULL || a->prop_conj_cnt == 0) {
 	return sa_copy_sa(b, 0);
