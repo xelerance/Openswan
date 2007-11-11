@@ -55,6 +55,7 @@
 #include "md5.h"
 #include "cookie.h"
 #include "crypto.h" /* requires sha1.h and md5.h */
+#include "spdb.h"
 
 /*
  * Global variables: had to go somewhere, might as well be this file.
@@ -369,6 +370,9 @@ delete_state(struct state *st)
     }
 
     unreference_key(&st->st_peer_pubkey);
+
+    free_sa(st->st_sadb);
+    st->st_sadb=NULL;
 
     if (st->st_sec_in_use)
 	mpz_clear(&(st->st_sec));

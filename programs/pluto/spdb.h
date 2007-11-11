@@ -77,6 +77,7 @@ struct db_v2_prop {
 
 /* security association */
 struct db_sa {
+	bool                    dynamic;    /* set if these items were allocated */
 	struct db_prop_conj    *prop_conjs; /* array */
 	unsigned int prop_conj_cnt;         /* number of elements */
 	
@@ -178,7 +179,7 @@ extern void print_sa_v2_prop(struct db_v2_prop *pc);
 extern void sa_v2_print(struct db_sa *f);
 
 /* IKEv1 <-> IKEv2 things */
-extern void sa_v2_convert(struct db_sa *f);
+extern struct db_sa *sa_v2_convert(struct db_sa *f);
 extern enum ikev2_trans_type_encr v1tov2_encr(int oakley);
 extern enum ikev2_trans_type_integ v1tov2_integ(int oakley);
 extern bool ikev2_acceptable_group(struct state *st, oakley_group_t group);

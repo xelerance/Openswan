@@ -100,11 +100,13 @@ main(int argc, char *argv[])
 			    , -1);
     sa_print(gsp);
 
-    sa_v2_convert(gsp);
+    gsp = sa_v2_convert(gsp);
 
     sa_v2_print(gsp);
 
     tool_close_log();
+
+    free_sa(gsp);
     exit(0);
 }
 

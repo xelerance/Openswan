@@ -66,8 +66,8 @@
 
 bool
 ikev2_out_sa(pb_stream *outs
-	     , struct db_sa *sadb UNUSED
-	     , struct state *st UNUSED
+	     , struct db_sa *sadb
+	     , struct state *st
 	     , u_int8_t np)
 {
     pb_stream sa_pbs;
@@ -88,7 +88,7 @@ ikev2_out_sa(pb_stream *outs
     }
 
     if(sadb->prop_disj_cnt == 0 || sadb->prop_disj) {
-	sa_v2_convert(sadb);
+	st->st_sadb = sadb = sa_v2_convert(st->st_sadb);
     }
 
     /* now send out all the proposals */
@@ -220,7 +220,7 @@ enum ikev2_trans_type_integ v1tov2_integ(int oakley)
     }
 }
 
-void sa_v2_convert(struct db_sa *f)
+struct db_sa *sa_v2_convert(struct db_sa *f)
 {
     unsigned int pcc, prc, tcc;
     int tot_trans, i;
@@ -231,6 +231,8 @@ void sa_v2_convert(struct db_sa *f)
     struct db_v2_prop_conj *pc;
     struct db_v2_prop      *pr;
     unsigned int            pr_cnt, pc_cnt, propnum;
+
+    if(!f->dynamic) f = sa_copy_sa(f, 0);
     
     tot_trans=0;
     for(pcc=0; pcc<f->prop_conj_cnt; pcc++) {
@@ -386,6 +388,8 @@ void sa_v2_convert(struct db_sa *f)
     f->prop_disj_cnt = pr_cnt+1;
     
     pfree(dtfset);
+    
+    return f;
 }
 
 bool
@@ -542,7 +546,7 @@ parse_ikev2_sa_body(
 	}
 	sadb = st->st_sadb;
     }
-    sa_v2_convert(sadb);
+    sadb = st->st_sadb = sa_v2_convert(sadb);
 
     gotmatch = FALSE;
     conjunction = FALSE;
@@ -736,7 +740,7 @@ parse_ikev2_sa_body(
     ta.prf_hash  = prf_transforms[prf_i];
     ta.prf_hasher= crypto_get_hasher(ta.prf_hash);
     ta.groupnum  = dh_transforms[dh_i];
-    ta.group     = NULL; /* XXX */
+    ta.group     = lookup_group(ta.groupnum); 
 
     if (r_sa_pbs != NULL)
     {

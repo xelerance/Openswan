@@ -4,8 +4,6 @@
 #define PRINT_SA_DEBUG 1
 #include "../../programs/pluto/spdb.c"
 
-#define AD(x) x, elemsof(x)	/* Array Description */
-#define AD_NULL NULL, 0
 /*
  * empty structure, for clone use.
  */
@@ -25,7 +23,7 @@ static struct db_prop oakley_pc_empty[] =
 
 static struct db_prop_conj oakley_props_empty[] = { { AD_PC(oakley_pc_empty) } };
 
-struct db_sa oakley_empty = { AD(oakley_props_empty) };
+struct db_sa oakley_empty = { AD_SA(oakley_props_empty) };
 
 char *progname;
 

@@ -834,6 +834,16 @@ free_sa_trans(struct db_trans *tr)
 {
     if(tr->attrs) {
 	pfree(tr->attrs);
+	tr->attrs=NULL;
+    }
+}
+
+static void
+free_sa_v2_trans(struct db_v2_trans *tr)
+{
+    if(tr->attrs) {
+	pfree(tr->attrs);
+	tr->attrs=NULL;
     }
 }
 
@@ -846,6 +856,20 @@ free_sa_prop(struct db_prop *dp)
     }
     if(dp->trans) {
 	pfree(dp->trans);
+	dp->trans=NULL;
+    }
+}
+
+static void
+free_sa_v2_prop(struct db_v2_prop_conj *dp)
+{
+    unsigned int i;
+    for(i=0; i<dp->trans_cnt; i++) {
+	free_sa_v2_trans(&dp->trans[i]);
+    }
+    if(dp->trans) {
+	pfree(dp->trans);
+	dp->trans=NULL;
     }
 }
 
@@ -855,6 +879,18 @@ free_sa_prop_conj(struct db_prop_conj *pc)
     unsigned int i;
     for(i=0; i<pc->prop_cnt; i++) {
 	free_sa_prop(&pc->props[i]);
+    }
+    if(pc->props) {
+	pfree(pc->props);
+    }
+}
+
+static void
+free_sa_v2_prop_disj(struct db_v2_prop *pc)
+{
+    unsigned int i;
+    for(i=0; i<pc->prop_cnt; i++) {
+	free_sa_v2_prop(&pc->props[i]);
     }
     if(pc->props) {
 	pfree(pc->props);
@@ -872,7 +908,19 @@ free_sa(struct db_sa *f)
     }
     if(f->prop_conjs) {
 	pfree(f->prop_conjs);
+	f->prop_conjs=NULL;
+	f->prop_conj_cnt=0;
     }
+
+    for(i=0; i<f->prop_disj_cnt; i++) {
+	free_sa_v2_prop_disj(&f->prop_disj[i]);
+    }
+    if(f->prop_disj) {
+	pfree(f->prop_disj);
+	f->prop_disj=NULL;
+	f->prop_disj_cnt=0;
+    }
+
     if(f) {
 	pfree(f);
     }
@@ -915,6 +963,8 @@ struct db_sa *sa_copy_sa(struct db_sa *sa, int extra)
     struct db_sa *nsa;
 
     nsa = clone_thing(*sa, "sa copy prop_conj");
+    nsa->dynamic = TRUE;
+
     nsa->prop_conjs =
 	clone_bytes(nsa->prop_conjs
 		    , (nsa->prop_conj_cnt+extra)*sizeof(nsa->prop_conjs[0])

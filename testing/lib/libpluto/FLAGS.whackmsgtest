@@ -5,8 +5,13 @@ EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/hostpair.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/virtual.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/rcv_whack.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/myid.o"
+EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/spdb.o"
 EXTRALIBS="${EXTRALIBS} ${OBJDIRTOP}/programs/pluto/foodgroups.o"
 EXTRALIBS="${EXTRALIBS} ${PLUTOLIB} ${CRYPTOLIBS} ${WHACKLIB}"
 EXTRALIBS="${EXTRALIBS} ${OSWLOGLIB} ${OPENSWANLIB} ${OSWLOGLIB} -lgmp -lefence"
 
 UNITTESTARGS="east.record"
+
+# Local Variables:
+# compile-command: "make TEST=whackmsgtest one"
+# End:
