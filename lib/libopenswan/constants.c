@@ -37,7 +37,7 @@ static const char *const version_name_1[] = {
 	"ISAKMP Version 1.0 (rfc2407)",
 };
 static const char *const version_name_2[] = {
-	"IKEv2 version 2.0 (rfc4036)",
+	"IKEv2 version 2.0 (rfc4306)",
 };
 
 enum_names version_names_1 =
