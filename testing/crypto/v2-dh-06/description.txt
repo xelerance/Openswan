@@ -1,0 +1,42 @@
+This test does a DH calculation using only software (GMP)
+according to RFC4306, section 2.14:
+
+2.14.  Generating Keying Material for the IKE_SA
+
+   The shared keys are computed as follows.  A quantity called SKEYSEED
+   is calculated from the nonces exchanged during the IKE_SA_INIT
+   exchange and the Diffie-Hellman shared secret established during that
+   exchange.  SKEYSEED is used to calculate seven other secrets: SK_d
+   used for deriving new keys for the CHILD_SAs established with this
+   IKE_SA; SK_ai and SK_ar used as a key to the integrity protection
+   algorithm for authenticating the component messages of subsequent
+   exchanges; SK_ei and SK_er used for encrypting (and of course
+   decrypting) all subsequent exchanges; and SK_pi and SK_pr, which are
+   used when generating an AUTH payload.
+
+   SKEYSEED and its derivatives are computed as follows:
+
+       SKEYSEED = prf(Ni | Nr, g^ir)
+
+       {SK_d | SK_ai | SK_ar | SK_ei | SK_er | SK_pi | SK_pr } = prf+
+                 (SKEYSEED, Ni | Nr | SPIi | SPIr )
+
+   (indicating that the quantities SK_d, SK_ai, SK_ar, SK_ei, SK_er,
+   SK_pi, and SK_pr are taken in order from the generated bits of the
+   prf+).  g^ir is the shared secret from the ephemeral Diffie-Hellman
+   exchange.  g^ir is represented as a string of octets in big endian
+   order padded with zeros if necessary to make it the length of the
+   modulus.  Ni and Nr are the nonces, stripped of any headers.  If the
+   negotiated prf takes a fixed-length key and the lengths of Ni and Nr
+   do not add up to that length, half the bits must come from Ni and
+   half from Nr, taking the first bits of each.
+
+   The two directions of traffic flow use different keys.  The keys used
+   to protect messages from the original initiator are SK_ai and SK_ei.
+   The keys used to protect messages in the other direction are SK_ar
+   and SK_er.  Each algorithm takes a fixed number of bits of keying
+   material, which is specified as part of the algorithm.  For integrity
+   algorithms based on a keyed hash, the key size is always equal to the
+   length of the output of the underlying hash function.
+
+
