@@ -134,7 +134,7 @@ static const struct state_v2_microcode state_microcode_table[] = {
     { .state      = STATE_PARENT_I1,
       .next_state = STATE_PARENT_I2,
       .flags = SMF2_INITIATOR|SMF2_STATENEEDED,
-      .processor  = ikev2parent_inR1,
+      .processor  = ikev2parent_inR1outI2,
     },
 
     { .state      = STATE_UNDEFINED,
@@ -182,6 +182,10 @@ process_v2_packet(struct msg_digest **mdp)
 
     st = find_state_ikev2(md->hdr.isa_icookie, md->hdr.isa_rcookie);
     rcookiezero = is_zero_cookie(md->hdr.isa_rcookie);
+    if(st == NULL && !rcookiezero) {
+	st = find_state_ikev2(md->hdr.isa_icookie, zero_cookie);
+    }
+	
     ix = md->hdr.isa_xchg;
     if(st) {
 	from_state = st->st_state;

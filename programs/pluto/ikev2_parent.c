@@ -391,10 +391,6 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 {
     struct state *st = md->st;
     lset_t policy = POLICY_IKEV2_ALLOW;
-#if 0
-    struct payload_digest *const sa_gi = md->chain[ISAKMP_NEXT_v2KE];
-    struct payload_digest *const sa_ni = md->chain[ISAKMP_NEXT_v2Ni];
-#endif
     struct connection *c = find_host_connection(&md->iface->ip_addr
 						, md->iface->port
 						, &md->sender
@@ -629,9 +625,184 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     
 }
 
-stf_status ikev2parent_inR1(struct msg_digest *md UNUSED)
+/*
+ *
+ ***************************************************************
+ *                       PARENT_inR1                       *****
+ ***************************************************************
+ *  - 
+ *  
+ *
+ */
+static void ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
+					    , struct pluto_crypto_req *r
+					    , err_t ugh);
+
+static stf_status
+ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
+			    , struct pluto_crypto_req *r);
+
+stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 {
-    abort();
+    struct state *st = md->st;
+    //struct connection *c = st->st_connection;
+    pb_stream *keyex_pbs;
+
+    /*
+     * the responder sent us back KE, Gr, Nr, and it's our time to calculate
+     * the shared key values.
+     */
+
+    DBG(DBG_CONTROLMORE
+	, DBG_log("ikev2 parent inR1: calculating g^{xy} in order to send I2"));
+  
+    /* KE in */
+    keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
+    RETURN_STF_FAILURE(accept_KE(&st->st_gr, "Gr", st->st_oakley.group, keyex_pbs));
+
+    /* Ni in */
+    RETURN_STF_FAILURE(accept_v2_nonce(md, &st->st_nr, "Ni"));
+    
+    /* now. we need to go calculate the nonce, and the KE */
+    {
+	struct dh_continuation *dh = alloc_thing(struct dh_continuation
+						 , "ikev2_inR1outI2 KE");
+	stf_status e;
+
+	dh->md = md;
+	set_suspended(st, dh->md);
+
+	if (!st->st_sec_in_use) {
+	    dh->dh_pcrc.pcrc_func = ikev2_parent_inR1outI2_continue;
+	    e = start_dh_v2(&dh->dh_pcrc, st, st->st_import, TRUE,st->st_oakley.groupnum);
+	    if(e != STF_SUSPEND && e != STF_INLINE) {
+	      loglog(RC_CRYPTOFAILED, "system too busy");
+	      delete_state(st);
+	    }
+	} else {
+	    e = ikev2_parent_inR1outI2_tail((struct pluto_crypto_req_cont *)dh
+					    , NULL);
+	}
+
+	reset_globals();
+
+	return e;
+    }
+}
+
+static void
+ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
+				, struct pluto_crypto_req *r
+				, err_t ugh)
+{
+    struct ke_continuation *ke = (struct ke_continuation *)pcrc;
+    struct msg_digest *md = ke->md;
+    struct state *const st = md->st;
+    stf_status e;
+    
+    DBG(DBG_CONTROLMORE
+	, DBG_log("ikev2 parent inR1outI1: calculating g^{xy}, sending I2"));
+  
+    /* XXX should check out ugh */
+    passert(ugh == NULL);
+    passert(cur_state == NULL);
+    passert(st != NULL);
+
+    passert(st->st_suspended_md == ke->md);
+    set_suspended(st,NULL);	/* no longer connected or suspended */
+    
+    set_cur_state(st);
+    
+    st->st_calculating = FALSE;
+
+    e = ikev2_parent_inR1outI2_tail(pcrc, r);
+  
+    if(ke->md != NULL) {
+	complete_v2_state_transition(&ke->md, e);
+	if(ke->md) release_md(ke->md);
+    }
+    reset_globals();
+    
+    passert(GLOBALS_ARE_RESET());
+}
+
+static stf_status
+ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
+			    , struct pluto_crypto_req *r UNUSED)
+{
+    struct ke_continuation *ke = (struct ke_continuation *)pcrc;
+    struct msg_digest *md = ke->md;
+    //struct state *const st = md->st;
+
+    /* HDR out */
+    {
+	struct isakmp_hdr r_hdr = md->hdr;
+
+	r_hdr.isa_np    = ISAKMP_NEXT_v2AUTH;
+	r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
+	r_hdr.isa_flags = ISAKMP_FLAGS_I;
+	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
+	    return STF_INTERNAL_ERROR;
+    }
+
+#if 0
+    /* start of SA out */
+    {
+	struct isakmp_sa r_sa = sa_pd->payload.sa;
+	notification_t rn;
+	pb_stream r_sa_pbs;
+
+	r_sa.isasa_np = ISAKMP_NEXT_v2KE;  /* XXX */
+	if (!out_struct(&r_sa, &ikev2_sa_desc, &md->rbody, &r_sa_pbs))
+	    return STF_INTERNAL_ERROR;
+
+	/* SA body in and out */
+	rn = parse_ikev2_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
+				 &r_sa_pbs, FALSE, st);
+	
+	if (rn != NOTHING_WRONG)
+	    return STF_FAIL + rn;
+    }
+
+1    {
+	int np = numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
+	struct ikev2_generic in;
+	pb_stream pb;
+	
+	memset(&in, 0, sizeof(in));
+	in.isag_np = np;
+	in.isag_critical = ISAKMP_PAYLOAD_CRITICAL;
+
+	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
+	   !out_raw(st->st_nr.ptr, st->st_nr.len, &pb, "IKEv2 nonce"))
+	    return STF_INTERNAL_ERROR;
+	close_output_pbs(&pb);
+    }
+
+    /* Send DPD VID */
+    {
+	int np = --numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
+
+	if (!out_generic_raw(np, &isakmp_vendor_id_desc, &md->rbody
+			     , pluto_vendorid, strlen(pluto_vendorid), "Vendor ID"))
+	    return STF_INTERNAL_ERROR;
+    }
+
+    close_message(&md->rbody);
+    close_output_pbs(&md->reply);
+
+    /* let TCL hack it before we mark the length. */
+    TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
+
+    /* keep it for a retransmit if necessary */
+    clonetochunk(st->st_tpacket, md->reply.start, pbs_offset(&md->reply)
+		 , "reply packet for ikev2_parent_outI1");
+
+    /* note: retransimission is driven by initiator */
+#endif
+
+    return STF_OK;
+    
 }
 
 /*

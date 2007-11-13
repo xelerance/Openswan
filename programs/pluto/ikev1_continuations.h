@@ -13,14 +13,6 @@ struct qke_continuation {
     struct msg_digest           *md;            /* used in responder */
 };
 
-struct dh_continuation {
-	struct pluto_crypto_req_cont dh_pcrc;
-	struct msg_digest           *md;
-	so_serial_t                  serialno;  /* used for inter state
-						 * calculations on responder */
-};
-
-
 typedef stf_status initiator_function(int whack_sock
 				      , struct connection *c
 				      , struct state *predecessor
