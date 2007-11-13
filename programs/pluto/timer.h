@@ -14,6 +14,8 @@
  * RCSID $Id: timer.h,v 1.19 2005/07/07 04:45:39 mcr Exp $
  */
 
+#ifndef _TIMER_H
+#define _TIMER_H
 #include "oswtime.h"
 
 struct state;	/* forward declaration */
@@ -38,3 +40,4 @@ extern void _delete_dpd_event(struct state *st, const char *file, int lineno);
 
 extern void timer_list(void);
 
+#endif /* _TIMER_H */
