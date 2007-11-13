@@ -80,6 +80,7 @@ enum pluto_crypto_requests {
   pcr_build_nonce    = 6,
   pcr_compute_dh_iv  = 7,  /* perform phase 1 calculation: DH + prf */
   pcr_compute_dh     = 8,  /* perform phase 2 PFS DH */
+  pcr_compute_dh_v2  = 9,  /* perform IKEv2 PARENT SA calculation, create SKEYSEED */
 };
 
 /*

@@ -296,7 +296,6 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 	DBG_dump_chunk("IV:",       *new_iv));
 }
 
-
 void calc_dh_iv(struct pluto_crypto_req *r)
 {
     struct pcr_skeyid_q *skq = &r->pcr_d.dhq;
@@ -337,9 +336,9 @@ void calc_dh_iv(struct pluto_crypto_req *r)
     /* now calculate the (g^x)(g^y) --- need gi on responder, gr on initiator */
 
     if(dhq.init == RESPONDER) {
-      setchunk_fromwire(g, &dhq.gi, &dhq);
+	setchunk_fromwire(g, &dhq.gi, &dhq);
     } else {
-      setchunk_fromwire(g, &dhq.gr, &dhq);
+	setchunk_fromwire(g, &dhq.gr, &dhq);
     }
 
     calc_dh_shared(&shared, g, &sec, group);
@@ -350,6 +349,7 @@ void calc_dh_iv(struct pluto_crypto_req *r)
     memset(&skeyid_e, 0, sizeof(skeyid_e));
     memset(&new_iv,   0, sizeof(new_iv));
     memset(&enc_key,  0, sizeof(enc_key));
+
     /* okay, so now calculate IV */
     calc_skeyids_iv(&dhq
 		    , shared
@@ -421,6 +421,99 @@ void calc_dh(struct pluto_crypto_req *r)
     /* now translate it back to wire chunks, freeing the chunks */
     setwirechunk_fromchunk(skr->shared,   shared,   skr);
     freeanychunk(shared);
+
+    return;
+}
+
+void calc_dh_v2(struct pluto_crypto_req *r)
+{
+    struct pcr_skeyid_q    *skq = &r->pcr_d.dhq;
+    struct pcr_skeycalc_v2 *skr = &r->pcr_d.dhv2;
+    struct pcr_skeyid_q dhq;
+    const struct oakley_group_desc *group;
+    MP_INT  sec;
+    chunk_t  shared, g, ltsecret;
+    chunk_t  skeyseed;
+    chunk_t  SK_d, SK_ai, SK_ar, SK_ei, SK_er, SK_pi, SK_pr;
+
+    /* copy the request, since we will use the same memory for the reply */
+    memcpy(&dhq, skq, sizeof(struct pcr_skeyid_q));
+
+    /* clear out the reply */
+    memset(skr, 0, sizeof(*skr));
+    skr->thespace.start = 0;
+    skr->thespace.len   = sizeof(skr->space);
+
+    group = lookup_group(dhq.oakley_group);
+    passert(group != NULL);
+
+    pluto_crypto_allocchunk(&skr->thespace
+			   , &skr->shared
+			   , group->bytes);
+    shared.ptr = wire_chunk_ptr(skr, &skr->shared);
+    shared.len = group->bytes;
+
+    ltsecret.ptr = wire_chunk_ptr(&dhq, &dhq.secret);
+    ltsecret.len = dhq.secret.len;
+
+    /* recover the long term secret */
+    n_to_mpz(&sec, ltsecret.ptr, ltsecret.len);
+
+    DBG(DBG_CRYPT,
+	DBG_dump_chunk("long term secret: ", ltsecret));
+
+    /* now calculate the (g^x)(g^y) --- need gi on responder, gr on initiator */
+
+    if(dhq.init == RESPONDER) {
+	setchunk_fromwire(g, &dhq.gi, &dhq);
+    } else {
+	setchunk_fromwire(g, &dhq.gr, &dhq);
+    }
+
+    calc_dh_shared(&shared, g, &sec, group);
+    
+    memset(&skeyseed,  0, sizeof(skeyseed));
+    memset(&SK_d,      0, sizeof(SK_d));
+    memset(&SK_ai,     0, sizeof(SK_ai));
+    memset(&SK_ar,     0, sizeof(SK_ar));
+    memset(&SK_ei,     0, sizeof(SK_ei));
+    memset(&SK_er,     0, sizeof(SK_er));
+    memset(&SK_pi,     0, sizeof(SK_pi));
+    memset(&SK_pr,     0, sizeof(SK_pr));
+
+#if 0
+    /* okay, so now calculate IV */
+    calc_skeyids_v2(&dhq
+		    , shared
+		    , dhq.keysize
+		    , &skey
+		    , &skeyid_d
+		    , &skeyid_a
+		    , &skeyid_e
+		    , &new_iv
+		    , &enc_key);
+#endif
+
+    /* now translate it back to wire chunks, freeing the chunks */
+    setwirechunk_fromchunk(skr->shared,   shared,   skr);
+    setwirechunk_fromchunk(skr->skeyseed, skeyseed, skr);
+    setwirechunk_fromchunk(skr->skeyid_d, SK_d, skr);
+    setwirechunk_fromchunk(skr->skeyid_ai,SK_ai, skr);
+    setwirechunk_fromchunk(skr->skeyid_ar,SK_ar, skr);
+    setwirechunk_fromchunk(skr->skeyid_ei,SK_ei, skr);
+    setwirechunk_fromchunk(skr->skeyid_er,SK_er, skr);
+    setwirechunk_fromchunk(skr->skeyid_pi,SK_pi, skr);
+    setwirechunk_fromchunk(skr->skeyid_pr,SK_pr, skr);
+
+    freeanychunk(shared);
+    freeanychunk(skeyseed);
+    freeanychunk(SK_d);
+    freeanychunk(SK_ai);
+    freeanychunk(SK_ar);
+    freeanychunk(SK_ei);
+    freeanychunk(SK_er);
+    freeanychunk(SK_pi);
+    freeanychunk(SK_pr);
 
     return;
 }

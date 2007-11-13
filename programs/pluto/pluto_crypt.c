@@ -131,6 +131,10 @@ void pluto_do_crypto_op(struct pluto_crypto_req *r)
 	calc_dh(r);
 	break;
 
+    case pcr_compute_dh_v2:
+	calc_dh_v2(r);
+	break;
+
     case pcr_rsa_sign:
     case pcr_rsa_check:
     case pcr_x509cert_fetch:

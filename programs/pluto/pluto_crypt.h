@@ -88,6 +88,22 @@ struct pcr_skeyid_r {
   unsigned char space[DHCALC_SIZE];
 };
 
+struct pcr_skeycalc_v2 {
+    /* outputs */
+    wire_chunk_t shared;
+    wire_chunk_t skeyseed;        /* output */
+    wire_chunk_t skeyid_d;        /* output */
+    wire_chunk_t skeyid_ai;       /* output */
+    wire_chunk_t skeyid_ar;       /* output */
+    wire_chunk_t skeyid_ei;       /* output */
+    wire_chunk_t skeyid_er;       /* output */
+    wire_chunk_t skeyid_pi;       /* output */
+    wire_chunk_t skeyid_pr;       /* output */
+
+    wire_chunk_t thespace;
+    unsigned char space[DHCALC_SIZE];
+};
+
 
 #define space_chunk_ptr(SPACE, wire) ((void *)&((SPACE)[(wire)->start]))
 #define wire_chunk_ptr(k, wire) space_chunk_ptr((k)->space, wire)
@@ -109,9 +125,10 @@ struct pluto_crypto_req {
   enum crypto_importance     pcr_pcim;
   int                        pcr_slot;
   union {
-    struct pcr_kenonce kn;
-    struct pcr_skeyid_q  dhq;
-    struct pcr_skeyid_r  dhr;
+      struct pcr_kenonce      kn;
+      struct pcr_skeyid_q     dhq;
+      struct pcr_skeyid_r     dhr;
+      struct pcr_skeycalc_v2  dhv2;
   } pcr_d;
 };
 
@@ -187,9 +204,18 @@ extern stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
 extern void finish_dh_secret(struct state *st,
 			     struct pluto_crypto_req *r);
 
+extern stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
+			      , struct state *st
+			      , enum crypto_importance importance
+			      , enum phase1_role init       /* TRUE=g_init,FALSE=g_r */
+			      , u_int16_t oakley_group2);
+
+extern void finish_dh_v2(struct state *st,
+			 struct pluto_crypto_req *r);
 
 extern void calc_dh_iv(struct pluto_crypto_req *r);
 extern void calc_dh(struct pluto_crypto_req *r);
+extern void calc_dh_v2(struct pluto_crypto_req *r);
 
 extern void unpack_KE(struct state *st
 		      , struct pluto_crypto_req *r

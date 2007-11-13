@@ -14,8 +14,8 @@ struct encrypt_desc *tc2_encrypter = &crypto_encrypter_3des;
 static void perform_t2_test(void)
 {
 	struct pluto_crypto_req r;
-	struct pcr_skeyid_r *skr = &r.pcr_d.dhr;
-	struct pcr_skeyid_q *skq = &r.pcr_d.dhq;
+	struct pcr_skeycalc_v2 *skr = &r.pcr_d.dhv2;
+	struct pcr_skeyid_q    *skq = &r.pcr_d.dhq;
 
 	skq->thespace.start = 0;
 	skq->thespace.len   = sizeof(skq->space);
