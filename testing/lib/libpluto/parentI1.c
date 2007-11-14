@@ -37,6 +37,8 @@ bool nat_traversal_support_port_floating = FALSE;
 
 #include "seam_gi.c"
 
+#include "ikev2sendI1.c"
+
 main(int argc, char *argv[])
 {
     int   len;
@@ -45,7 +47,6 @@ main(int argc, char *argv[])
     int  lineno=0;
     struct connection *c1;
     struct state *st;
-    struct pcr_kenonce *kn = &r->pcr_d.kn;  /* r is a global */
 
     EF_PROTECT_FREE=1;
     EF_FREE_WIPES  =1;
@@ -73,22 +74,7 @@ main(int argc, char *argv[])
 
     show_one_connection(c1);
 
-    c1->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
-    ipsecdoi_initiate(/* whack-sock=stdout */1
-		      , c1
-		      , c1->policy
-		      , 0
-		      , FALSE
-		      , pcim_demand_crypto);
-
-    /* find st involved */
-    st = state_with_serialno(1);
-
-    
-    /* now fill in the KE values from a constant.. not calculated */
-    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc2_secret,tc2_secret_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc2_ni, tc2_ni_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc2_gi, tc2_gi_len);
+    st = sendI1(c1);
     
     run_continuation(r);
 
