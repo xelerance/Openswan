@@ -1,6 +1,36 @@
 This test does a DH calculation using only software (GMP)
 according to RFC4306, section 2.14:
 
+2.13
+
+   Keying material will always be derived as the output of the
+   negotiated prf algorithm.  Since the amount of keying material needed
+   may be greater than the size of the output of the prf algorithm, we
+   will use the prf iteratively.  We will use the terminology prf+ to
+   describe the function that outputs a pseudo-random stream based on
+   the inputs to a prf as follows: (where | indicates concatenation)
+
+   prf+ (K,S) = T1 | T2 | T3 | T4 | ...
+
+   where:
+   T1 = prf (K, S | 0x01)
+   T2 = prf (K, T1 | S | 0x02)
+   T3 = prf (K, T2 | S | 0x03)
+   T4 = prf (K, T3 | S | 0x04)
+
+   continuing as needed to compute all required keys.  The keys are
+   taken from the output string without regard to boundaries (e.g., if
+   the required keys are a 256-bit Advanced Encryption Standard (AES)
+   key and a 160-bit HMAC key, and the prf function generates 160 bits,
+   the AES key will come from T1 and the beginning of T2, while the HMAC
+   key will come from the rest of T2 and the beginning of T3).
+
+   The constant concatenated to the end of each string feeding the prf
+   is a single octet. prf+ in this document is not defined beyond 255
+   times the size of the prf output.
+
+...
+
 2.14.  Generating Keying Material for the IKE_SA
 
    The shared keys are computed as follows.  A quantity called SKEYSEED
@@ -38,5 +68,4 @@ according to RFC4306, section 2.14:
    material, which is specified as part of the algorithm.  For integrity
    algorithms based on a keyed hash, the key size is always equal to the
    length of the output of the underlying hash function.
-
 

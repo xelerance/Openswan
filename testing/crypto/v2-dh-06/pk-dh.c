@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
 	struct pcr_skeyid_q    *skq = &r.pcr_d.dhq;
 
 	progname = argv[0];
+	cur_debugging = DBG_CRYPT;
 	
 	/* initialize list of moduli */
 	init_crypto();
@@ -106,10 +107,18 @@ int main(int argc, char *argv[])
 	fflush(stdout);
 	fflush(stderr);
 
-	{
-		void *shared = wire_chunk_ptr(skr, &skr->shared);
-
-		openswan_DBG_dump("shared", shared, skr->shared.len);
+#define dumpskr(FOO) { void *FOO = wire_chunk_ptr(skr, &skr->FOO);\
+		openswan_DBG_dump(#FOO, FOO, skr->FOO.len); \
 	}
+
+	dumpskr(shared);
+	dumpskr(skeyseed);
+	dumpskr(skeyid_d);
+	dumpskr(skeyid_ai);
+	dumpskr(skeyid_ar);
+	dumpskr(skeyid_ei);
+	dumpskr(skeyid_er);
+	dumpskr(skeyid_pi);
+	dumpskr(skeyid_pr);
 	exit(0);
 }
