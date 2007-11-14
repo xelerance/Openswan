@@ -425,6 +425,158 @@ void calc_dh(struct pluto_crypto_req *r)
     return;
 }
 
+/* 
+ * IKEv2 - RFC4306 SKEYSEED - calculation.
+ */
+
+struct v2prf_stuff {
+    chunk_t t;
+    const struct hash_desc *prf_hasher;
+    chunk_t *skeyseed;
+    chunk_t ni;
+    chunk_t nr;
+    chunk_t spii;
+    chunk_t spir;
+    u_char counter[1];
+    unsigned int availbytes;
+    unsigned int nextbytes;
+};
+    
+static void
+v2prfplus(struct v2prf_stuff *vps)
+{
+    struct hmac_ctx ctx;
+
+    hmac_init_chunk(&ctx, vps->prf_hasher, *vps->skeyseed);
+    hmac_update_chunk(&ctx, vps->t);
+    hmac_update_chunk(&ctx, vps->ni);
+    hmac_update_chunk(&ctx, vps->nr);
+    hmac_update_chunk(&ctx, vps->spii);
+    hmac_update_chunk(&ctx, vps->spir);
+    hmac_update(&ctx, vps->counter, 1);
+    hmac_final_chunk(vps->t, "skeyseed_t1", &ctx);
+    vps->counter[0]++;
+    vps->availbytes  = vps->t.len;
+    vps->nextbytes   = 0;
+}
+
+static void v2genbytes(chunk_t *need
+		       , unsigned int needed, const char *name
+		       , struct v2prf_stuff *vps)
+{
+    u_char *target;
+    need->ptr = alloc_bytes(needed, name);
+    need->len = needed;
+    target = need->ptr;
+
+    while(needed > vps->availbytes) {
+	if(vps->availbytes) {
+	    /* use any bytes which are presently in the buffer */
+	    memcpy(target, &vps->t.ptr[vps->nextbytes], vps->availbytes);
+	    target += vps->availbytes;
+	    needed -= vps->availbytes;
+	    vps->availbytes = 0;
+	}
+	/* generate more bits into t1 */
+	v2prfplus(vps);
+    }
+    passert(needed <= vps->availbytes);
+
+    memcpy(target, &vps->t.ptr[vps->nextbytes], needed);
+    vps->availbytes -= needed;
+    vps->nextbytes  += needed;
+}
+
+static void
+calc_skeyseed_v2(struct pcr_skeyid_q *skq
+		 , chunk_t shared
+		 , const size_t keysize
+		 , chunk_t *skeyseed
+		 , chunk_t *SK_d
+		 , chunk_t *SK_ai
+		 , chunk_t *SK_ar
+		 , chunk_t *SK_ei
+		 , chunk_t *SK_er
+		 , chunk_t *SK_pi
+		 , chunk_t *SK_pr
+    )
+{
+    struct v2prf_stuff vpss;
+    chunk_t gi, gr;
+    memset(&vpss, 0, sizeof(vpss));
+    vpss.prf_hasher = crypto_get_hasher(skq->hash);
+
+    /* this doesn't take any memory, it's just moving pointers around */
+    setchunk_fromwire(gi,      &skq->gi, skq);
+    setchunk_fromwire(gr,      &skq->gr, skq);
+    setchunk_fromwire(vpss.ni, &skq->ni, skq);
+    setchunk_fromwire(vpss.nr, &skq->nr, skq);
+    setchunk_fromwire(vpss.spii, &skq->icookie, skq);
+    setchunk_fromwire(vpss.spir, &skq->rcookie, skq);
+
+    /* generate SKEYSEED from key=(Ni|Nr), hash of shared */
+    {
+	struct hmac_ctx ctx;
+	unsigned int keybytes;
+	unsigned char *kb;
+
+	if(vpss.prf_hasher->hash_key_size == 0) {
+	    keybytes = vpss.ni.len + vpss.nr.len;
+	} else {
+	    keybytes = vpss.prf_hasher->hash_key_size/8;
+	}
+
+	kb = alloc_bytes(keybytes, "skeyseed prf key");
+	memset(kb, 0, keybytes);
+	memcpy(kb,              vpss.ni.ptr, keybytes/2);
+	memcpy(kb + keybytes/2, vpss.nr.ptr, keybytes/2);
+
+	/* SKEYSEED */
+	hmac_init(&ctx, vpss.prf_hasher, kb, keybytes);
+	hmac_update_chunk(&ctx, shared);
+	hmac_final_chunk(*skeyseed, "skeyseed base", &ctx);
+	vpss.skeyseed = skeyseed;
+	pfree(kb);
+    }
+
+    /* now we have to generate the keys for everything */
+    {
+	/* need to know how many bits to generate */
+	/* SK_d needs PRF hasher key bits */
+	/* SK_p needs PRF hasher*2 key bits */
+	/* SK_e needs keysize*2 key bits */
+	/* SK_a needs hash's key bits size */
+	const struct hash_desc *auth_hasher = crypto_get_hasher(skq->auth);
+	int skd_bytes = vpss.prf_hasher->hash_key_size;
+	int ska_bytes = auth_hasher->hash_key_size;
+	int ske_bytes = keysize;
+	int skp_bytes = vpss.prf_hasher->hash_key_size;
+
+	vpss.counter[0]=0x01;
+	vpss.t.len = 0;
+
+	/* SKEYSEED_T1 */
+	v2genbytes(SK_d,  skd_bytes, "SK_d", &vpss);
+	v2genbytes(SK_ai, ska_bytes, "SK_ai", &vpss);
+	v2genbytes(SK_ar, ska_bytes, "SK_ar", &vpss);
+	v2genbytes(SK_ei, ske_bytes, "SK_ei", &vpss);
+	v2genbytes(SK_er, ske_bytes, "SK_er", &vpss);
+	v2genbytes(SK_pi, skp_bytes, "SK_ei", &vpss);
+	v2genbytes(SK_pr, skp_bytes, "SK_er", &vpss);
+    }
+
+    DBG(DBG_CRYPT,
+	DBG_dump_chunk("shared:  ", shared);
+	DBG_dump_chunk("skeyseed:", *skeyseed);
+	DBG_dump_chunk("SK_d:", *SK_d);
+	DBG_dump_chunk("SK_ai:", *SK_ai);
+	DBG_dump_chunk("SK_ar:", *SK_ar);
+	DBG_dump_chunk("SK_ei:", *SK_ei);
+	DBG_dump_chunk("SK_er:", *SK_er);
+	DBG_dump_chunk("SK_pi:", *SK_pi);
+	DBG_dump_chunk("SK_pr:", *SK_pr));
+}
+
 void calc_dh_v2(struct pluto_crypto_req *r)
 {
     struct pcr_skeyid_q    *skq = &r->pcr_d.dhq;
@@ -481,18 +633,19 @@ void calc_dh_v2(struct pluto_crypto_req *r)
     memset(&SK_pi,     0, sizeof(SK_pi));
     memset(&SK_pr,     0, sizeof(SK_pr));
 
-#if 0
     /* okay, so now calculate IV */
-    calc_skeyids_v2(&dhq
-		    , shared
-		    , dhq.keysize
-		    , &skey
-		    , &skeyid_d
-		    , &skeyid_a
-		    , &skeyid_e
-		    , &new_iv
-		    , &enc_key);
-#endif
+    calc_skeyseed_v2(&dhq
+		     , shared
+		     , dhq.keysize
+		     , &skeyseed
+		     , &SK_d
+		     , &SK_ai
+		     , &SK_ar
+		     , &SK_ei
+		     , &SK_er
+		     , &SK_pi
+		     , &SK_pr);
+
 
     /* now translate it back to wire chunks, freeing the chunks */
     setwirechunk_fromchunk(skr->shared,   shared,   skr);

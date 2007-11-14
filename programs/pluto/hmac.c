@@ -93,3 +93,9 @@ hmac_final(u_char *output, struct hmac_ctx *ctx)
     h->hash_final(output, &ctx->hash_ctx);
 }
 
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

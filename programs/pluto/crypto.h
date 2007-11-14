@@ -75,11 +75,11 @@ void crypto_cbc_encrypt(const struct encrypt_desc *e, bool enc, u_int8_t *buf, s
 /* unification of cryptographic hashing mechanisms */
 
 union hash_ctx {
-  MD5_CTX ctx_md5;
-  SHA1_CTX ctx_sha1;
+    MD5_CTX ctx_md5;
+    SHA1_CTX ctx_sha1;
 #ifdef USE_SHA2
-  sha256_context ctx_sha256;
-  sha512_context ctx_sha512;
+    sha256_context ctx_sha256;
+    sha512_context ctx_sha512;
 #endif
 };
 
@@ -96,8 +96,8 @@ struct hmac_ctx {
     union hash_ctx hash_ctx;	/* ctx for hash function */
     u_char buf1[HMAC_BUFSIZE], buf2[HMAC_BUFSIZE];
 #ifdef USE_SHA2
-  sha256_context ctx_sha256;
-  sha512_context ctx_sha512;
+    sha256_context ctx_sha256;
+    sha512_context ctx_sha512;
 #endif
 };
 
@@ -129,3 +129,10 @@ extern void hmac_final(u_char *output, struct hmac_ctx *ctx);
 #endif
 
 #endif /* _CRYPTO_H */
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

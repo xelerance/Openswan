@@ -31,6 +31,7 @@ typedef void (*hash_update_t)(void *, const u_char *, size_t) ;
 
 struct hash_desc {
     struct ike_alg common;
+    size_t hash_key_size;          /* in bits */
     size_t hash_ctx_size;
     size_t hash_digest_len;
     void (*hash_init)(void *ctx);
