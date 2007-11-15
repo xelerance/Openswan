@@ -19,7 +19,7 @@ struct state;
 
 stf_status modecfg_resp(struct state *st,unsigned int resp
 			, pb_stream *s, u_int16_t cmd
-			, bool hackthat, u_int16_t id);
+			, bool use_modecfg_addr_as_client_addr, u_int16_t id);
 
 stf_status xauth_client_resp(struct state *st
                              ,unsigned int xauth

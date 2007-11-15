@@ -286,7 +286,12 @@ xauth_mode_cfg_hash(u_char *dest
  *
  * @param st State structure
  * @param resp Type of reply (int)
- * @param rbody Body of the reply (stream)
+ * @param pb_stream rbody Body of the reply (stream)
+ * @param replytype int
+ * @param use_modecfg_addr_as_client_addr bool 
+ *         True means force the IP assigned by Mode Config to be the 
+ *         spd.that.addr.  Useful when you know the client will change his IP
+ *         to be what was assigned immediatly after authentication.
  * @param ap_id ISAMA Identifier 
  * @return stf_status STF_OK or STF_INTERNAL_ERROR
  */
@@ -294,7 +299,7 @@ stf_status modecfg_resp(struct state *st
 			,unsigned int resp
 			,pb_stream *rbody
 			,u_int16_t replytype
-			,bool hackthat
+			,bool use_modecfg_addr_as_client_addr
 			,u_int16_t ap_id)
 {
     unsigned char *r_hash_start,*r_hashval;
@@ -344,7 +349,7 @@ stf_status modecfg_resp(struct state *st
 	else
 		resp &= ~LELEM(INTERNAL_IP4_NBNS);
 
-	if(hackthat) {
+	if(use_modecfg_addr_as_client_addr) {
 	    if(memcmp(&st->st_connection->spd.that.client.addr
 		      ,&ia.ipaddr
 		      ,sizeof(ia.ipaddr)) != 0)
