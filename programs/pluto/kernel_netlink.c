@@ -167,7 +167,7 @@ static void init_netlink(void)
     addr.nl_pid = getpid();
     addr.nl_groups = XFRMGRP_ACQUIRE | XFRMGRP_EXPIRE;
     if (bind(netlink_bcast_fd, (struct sockaddr *)&addr, sizeof(addr)) != 0)
-	exit_log_errno((e, "Failed to bind bcast socket in init_netlink()"));
+	exit_log_errno((e, "Failed to bind bcast socket in init_netlink() - Perhaps kernel was not compiled with CONFIG_XFRM"));
 }
 
 /** send_netlink_msg
