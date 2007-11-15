@@ -320,7 +320,7 @@ main(int argc, char *argv[])
 	}
 	printf("\n");
     } else if(liststart) {
-	/* list all conns marked as auto=route or start or better */
+	/* list all conns marked as auto=start */
 	for(conn = cfg->conns.tqh_first;
 	    conn != NULL;
 	    conn = conn->link.tqe_next)
