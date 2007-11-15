@@ -1219,7 +1219,7 @@ multilibtest() {
 	    else
 		if [ -r OUTPUT.$testobj.txt ]
 		then
-		    if diff -N -u -w -b -B lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.txt OUTPUT.$testobj.txt > lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.output.diff
+		    if diff -N -u -w -b -B OUTPUT.$testobj.txt lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.txt > lib-$testobj/OUTPUT${KLIPS_MODULE}/$testobj.output.diff
 		    then
 			${ECHO} "output matched"
 			stat="0"
