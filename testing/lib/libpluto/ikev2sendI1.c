@@ -14,11 +14,14 @@ struct state *sendI1(struct connection *c1)
 	/* find st involved */
 	st = state_with_serialno(1);
 
+	cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 	
 	/* now fill in the KE values from a constant.. not calculated */
 	clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc2_secret,tc2_secret_len);
 	clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc2_ni, tc2_ni_len);
 	clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc2_gi, tc2_gi_len);
+
+	run_continuation(r);
 
 	return st;
 }
