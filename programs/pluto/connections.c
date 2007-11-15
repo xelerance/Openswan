@@ -71,9 +71,7 @@
 #include "nat_traversal.h"
 #endif
 
-#ifdef VIRTUAL_IP
 #include "virtual.h"
-#endif
 
 #include "hostpair.h"
 
@@ -231,9 +229,7 @@ delete_connection(struct connection *c, bool relations)
 	}
     }
 
-#ifdef VIRTUAL_IP
     if (c->kind != CK_GOING_AWAY) pfreeany(c->spd.that.virt);
-#endif
 
 #ifdef DEBUG
     set_debugging(old_cur_debugging);
@@ -466,11 +462,9 @@ format_end(char *buf
 
     client[0] = '\0';
 
-#ifdef VIRTUAL_IP
     if (is_virtual_end(this) && isanyaddr(&this->host_addr)) {
 	host = "%virtual";
     }
-#endif
 
     /* [client===] */
     if (this->has_client)
@@ -1039,13 +1033,11 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	    }
 	}
     }
-#ifdef VIRTUAL_IP
     if ((this->virt) && (!isanyaddr(&this->host_addr) || this->has_client)) {
 	loglog(RC_CLASH,
 	    "virtual IP must only be used with %%any and without client");
 	return FALSE;
     }
-#endif    
     return TRUE;	/* happy */
 }
 
@@ -1302,7 +1294,6 @@ add_connection(const struct whack_message *wm)
 
 	c->gw_info = NULL;
 
-#ifdef VIRTUAL_IP
 	passert(!(wm->left.virt && wm->right.virt));
 	if (wm->left.virt || wm->right.virt) {
 	    passert(isanyaddr(&c->spd.that.host_addr));
@@ -1311,7 +1302,6 @@ add_connection(const struct whack_message *wm)
 	    if (c->spd.that.virt)
 		c->spd.that.has_client = TRUE;
 	}
-#endif
 
 	unshare_connection_strings(c);
 #ifdef KERNEL_ALG
@@ -1406,12 +1396,10 @@ add_group_instance(struct connection *group, const ip_subnet *target)
 
 	t->spd.reqid = gen_reqid();
 
-#ifdef VIRTUAL_IP
 	if (t->spd.that.virt) {
 	        DBG_log("virtual_ip not supported in group instance");
 		t->spd.that.virt = NULL;	
 	}
-#endif
 
 	/* add to connections list */
 	t->ac_next = connections;
@@ -1522,14 +1510,12 @@ rw_instantiate(struct connection *c
 {
     struct connection *d = instantiate(c, him, his_id);
 
-#ifdef VIRTUAL_IP
     if (d && his_net && is_virtual_connection(c)) {
 	d->spd.that.client = *his_net;
 	/* d->spd.that.virt = NULL; */
 	if (subnetishost(his_net) && addrinsubnet(him, his_net))
 	    d->spd.that.has_client = FALSE;
     }
-#endif
 
     if (d->policy & POLICY_OPPO)
     {
@@ -2407,7 +2393,6 @@ refine_host_connection(const struct state *st, const struct id *peer_id
     }
 }
 
-#ifdef VIRTUAL_IP
 /**
  * With virtual addressing, we must not allow someone to use an already
  * used (by another id) addr/net.
@@ -2490,7 +2475,6 @@ is_virtual_net_used(struct connection *c, const ip_subnet *peer_net, const struc
     }
     return FALSE; /* you can safely use it */
 }
-#endif
 
 /* find_client_connection: given a connection suitable for ISAKMP
  * (i.e. the hosts match), find a one suitable for IPSEC
@@ -2611,9 +2595,7 @@ fc_try(const struct connection *c
 			continue;
 		} else {
 		    if ((!samesubnet(&sr->that.client, peer_net))
-#ifdef VIRTUAL_IP
 			&& (!is_virtual_sr(sr))
-#endif
 			) {
 			DBG(DBG_CONTROLMORE
 			     , DBG_log("   their client(%s) not in same peer_net (%s)"
@@ -2621,7 +2603,6 @@ fc_try(const struct connection *c
 			continue;
 		    }
 
-#ifdef VIRTUAL_IP
 		    virtualwhy=is_virtual_net_allowed(d, peer_net, &sr->that.host_addr);
 		    
 		    if ((is_virtual_sr(sr)) &&
@@ -2631,7 +2612,6 @@ fc_try(const struct connection *c
 			     , DBG_log("   virtual net not allowed"));
 			continue;
 		    }
-#endif
 		}
 	    }
 	    else

@@ -15,7 +15,6 @@
  * RCSID $Id: virtual.c,v 1.6 2005/08/05 19:18:47 mcr Exp $
  */
 
-#ifdef VIRTUAL_IP
 
 #include <openswan.h>
 
@@ -349,7 +348,7 @@ err_t
 is_virtual_net_allowed(const struct connection *c, const ip_subnet *peer_net,
 	const ip_address *his_addr)
 {
-    err_t why;
+    err_t why = NULL;
 
     if (!c->spd.that.virt) return NULL;
 
@@ -388,5 +387,4 @@ is_virtual_net_allowed(const struct connection *c, const ip_subnet *peer_net,
     return why;
 }
 
-#endif
 

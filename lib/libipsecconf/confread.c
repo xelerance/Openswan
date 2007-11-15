@@ -1218,10 +1218,8 @@ static void confread_free_conn(struct starter_conn *conn)
 	FREE_STR(conn->esp);
 	FREE_STR(conn->ike);
 #endif
-#ifdef VIRTUAL_IP
 	FREE_STR(conn->left.virt);
 	FREE_STR(conn->right.virt);
-#endif
 }
 
 void confread_free(struct starter_config *cfg)
@@ -1229,9 +1227,7 @@ void confread_free(struct starter_config *cfg)
     int i;
 	struct starter_conn *conn, *c;
 	FREE_LST(cfg->setup.interfaces);
-#ifdef VIRTUAL_IP
 	FREE_STR(cfg->setup.virtual_private);
-#endif
 	for(i=0 ;i<KSF_MAX; i++)
 	{
 	    FREE_STR(cfg->setup.strings[i]);

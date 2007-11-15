@@ -152,12 +152,10 @@ int starter_start_pluto (struct starter_config *cfg, int debug)
 		}
 	}
 #endif
-#ifdef VIRTUAL_IP
 	if (cfg->setup.virtual_private) {
 		arg[argc++] = "--virtual_private";
 		arg[argc++] = cfg->setup.virtual_private;
 	}
-#endif
 
 	if (_pluto_pid) {
 		starter_log(LOG_LEVEL_ERR,
