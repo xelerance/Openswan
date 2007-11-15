@@ -181,9 +181,15 @@ process_v2_packet(struct msg_digest **mdp)
      */
 
     st = find_state_ikev2(md->hdr.isa_icookie, md->hdr.isa_rcookie);
-    rcookiezero = is_zero_cookie(md->hdr.isa_rcookie);
-    if(st == NULL && !rcookiezero) {
+    if(st == NULL) {
 	st = find_state_ikev2(md->hdr.isa_icookie, zero_cookie);
+	
+	rcookiezero = is_zero_cookie(md->hdr.isa_rcookie);
+	if(st && !rcookiezero) {
+	    unhash_state(st);
+	    memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
+	    insert_state(st);
+	}
     }
 	
     ix = md->hdr.isa_xchg;
