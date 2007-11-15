@@ -85,8 +85,8 @@ bool ike_alg_enc_ok(int ealg, unsigned key_len,
 	/* 
 	 * test #2: if key_len specified, it must be in range 
 	 */
-	if ((key_len) && ((key_len < enc_desc->keyminlen) ||
-			 (key_len > enc_desc->keymaxlen))) {
+	if ((key_len) && ((key_len <= enc_desc->keyminlen) ||
+			 (key_len >= enc_desc->keymaxlen))) {
 		snprintf(errbuf, sizeof(errbuf)-1,
 				"key_len not in range: encalg=%d, "
 				"key_len=%d, keyminlen=%d, keymaxlen=%d",
