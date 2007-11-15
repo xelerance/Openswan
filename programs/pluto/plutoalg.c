@@ -190,7 +190,7 @@ in_loop:
 
 
 /*
- * print which algorithm has actually be selected, based upon which
+ * print which ESP algorithm has actually been selected, based upon which
  * ones are actually loaded.
  */
 int
@@ -241,7 +241,7 @@ alg_info_snprint_esp(char *buf, int buflen, struct alg_info_esp *alg_info)
 }
 
 /*
- * print which algorithm has actually be selected, based upon which
+ * print which AH algorithm has actually been selected, based upon which
  * ones are actually loaded.
  */
 int
