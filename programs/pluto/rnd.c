@@ -78,6 +78,7 @@
  */
 static int random_fd = -1;
 const char *random_devices[]={
+/* Default on Linux + OSX is to use /dev/urandom as 1st choice, and fall back to /dev/random if /dev/urandom doesn't exist */
 #if defined(linux) 
   "/dev/urandom",
   "/dev/random"
@@ -98,7 +99,7 @@ const char *random_devices[]={
 #define RANDOM_POOL_SIZE   SHA1_DIGEST_SIZE
 static u_char random_pool[RANDOM_POOL_SIZE];
 
-/* Generate (what we hope is) a true random byte using /dev/urandom  */
+/* Generate (what we hope is) a true random byte using a random device */
 static u_char
 generate_rnd_byte(void)
 {
