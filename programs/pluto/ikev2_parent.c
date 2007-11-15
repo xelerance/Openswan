@@ -672,16 +672,11 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 	dh->md = md;
 	set_suspended(st, dh->md);
 
-	if (!st->st_sec_in_use) {
-	    dh->dh_pcrc.pcrc_func = ikev2_parent_inR1outI2_continue;
-	    e = start_dh_v2(&dh->dh_pcrc, st, st->st_import, TRUE,st->st_oakley.groupnum);
-	    if(e != STF_SUSPEND && e != STF_INLINE) {
-	      loglog(RC_CRYPTOFAILED, "system too busy");
-	      delete_state(st);
-	    }
-	} else {
-	    e = ikev2_parent_inR1outI2_tail((struct pluto_crypto_req_cont *)dh
-					    , NULL);
+	dh->dh_pcrc.pcrc_func = ikev2_parent_inR1outI2_continue;
+	e = start_dh_v2(&dh->dh_pcrc, st, st->st_import, TRUE,st->st_oakley.groupnum);
+	if(e != STF_SUSPEND && e != STF_INLINE) {
+	    loglog(RC_CRYPTOFAILED, "system too busy");
+	    delete_state(st);
 	}
 
 	reset_globals();
@@ -732,7 +727,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 {
     struct ke_continuation *ke = (struct ke_continuation *)pcrc;
     struct msg_digest *md = ke->md;
-    //struct state *const st = md->st;
+    struct state *const st = md->st;
 
     /* HDR out */
     {
@@ -788,6 +783,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	    return STF_INTERNAL_ERROR;
     }
 
+#endif
+
     close_message(&md->rbody);
     close_output_pbs(&md->reply);
 
@@ -799,7 +796,6 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 		 , "reply packet for ikev2_parent_outI1");
 
     /* note: retransimission is driven by initiator */
-#endif
 
     return STF_OK;
     
