@@ -97,34 +97,6 @@ bool ike_alg_enc_ok(int ealg, unsigned key_len,
 		plog ("ike_alg_enc_ok(): %s", errbuf);
 		return_on(ret, FALSE);
 	} 
-#if 0 /* ML: logic moved to ike_alg_ok_final() */
-	/* 
-	 * test #3: if alg_info specified AND strict flag, only
-	 * only allow algo iff listed in st->alg_info_esp
-	 */
-	else if (alg_info_ike && (alg_info_ike->alg_info_flags & ALG_INFO_F_STRICT) ) {
-		int i;
-		struct ike_info *ike_info;
-		ALG_INFO_IKE_FOREACH(alg_info_ike, ike_info, i) {
-			if ((ike_info->ike_ealg == ealg) &&
-				((ike_info->ike_eklen==0) || (key_len==0) ||
-				 (ike_info->ike_eklen==key_len))) {
-				return_on(ret, TRUE);
-			}
-		}
-		snprintf(errbuf, sizeof(errbuf),
-				"strict flag and encrypt algorithm "
-				"not in transform string list: "
-				"ealg=%d, "
-				"key_len=%d, keyminbits=%d, keymaxbits=%d",
-				ealg, key_len,
-				enc_desc->keyminlen,
-				enc_desc->keymaxlen
-		   );
-		log("ike_alg_enc_ok(): %s", errbuf);
-		return_on(ret, FALSE);
-	}
-#endif
 return_out:
 	DBG(DBG_KLIPS, 
 		if (ret) 
