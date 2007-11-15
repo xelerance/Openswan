@@ -62,7 +62,7 @@ static void win2k_init(void)
  * @param satype int
  * @param proto_info 
  * @param lifetime (Currently unused)
- * @param ip int 
+ * @param op int 
  * @return boolean True if successful 
  */
 static bool
