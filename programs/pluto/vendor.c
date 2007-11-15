@@ -192,9 +192,6 @@ static struct vid_struct _vid_tab[] = {
 	{ VID_CISCO3K, VID_KEEP | VID_SUBSTRING_MATCH, 
           NULL, "Cisco VPN 3000 Series" , "\x1f\x07\xf7\x0e\xaa\x65\x14\xd3\xb0\xfa\x96\x54\x2a\x50", 14},
 
-	{ VID_CISCO3K, VID_KEEP | VID_SUBSTRING_MATCH, 
-          NULL, "Cisco VPN 3000 Series" , "\x1f\x07\xf7\x0e\xaa\x65\x14\xd3\xb0\xfa\x96\x54\x2a\x50", 14},
-
 	{ VID_CISCO_IOS, VID_KEEP | VID_SUBSTRING_MATCH, 
 	  NULL, "Cisco IOS Device", "\x3e\x98\x40\x48", 4},
 
