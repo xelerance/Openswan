@@ -14,6 +14,10 @@ Please see docs/KNOWN_BUGS file for more information
   #185: Deadlock in function "scx_release()" daemon pluto.(SMARTCARD) [Kurodo]
 * incorporated changes between 2.4.8 and 2.4.9
 * incorporated changes between 2.4.9 and 2.4.10
+* Notice and gracefully fail to load KLIPS when we try to load esp/ah/ipcomp
+  protocol and another module already has registered these (eg esp4, ah4,
+  ipcomp) [paul]
+* Fix for KLIPS NAT-T dropping all packets on 64bit big endian machines [dhr]
 
 v2.5.15
    change ipsec_breakroute to permit non-existant eroute's to be replaced.  
