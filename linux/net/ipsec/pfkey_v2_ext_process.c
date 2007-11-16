@@ -399,8 +399,7 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 			SENDERR(EPFNOSUPPORT);
 		}
 		{
-			unsigned long *ulsap = (unsigned long *)sap;
-			*ulsap = ((struct sockaddr_in*)s)->sin_addr.s_addr;
+			*(struct in_addr *)sap = ((struct sockaddr_in *)s)->sin_addr;
 		}
 
 		if (portp != 0)
