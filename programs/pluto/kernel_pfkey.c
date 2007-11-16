@@ -721,19 +721,20 @@ finish_pfkey_msg(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1]
 }
 
 /*  register SA types that can be negotiated */
-void
-pfkey_register_proto(unsigned satype, const char *satypename)
+static void
+pfkey_register_proto(unsigned int sadb_register
+		     ,unsigned satype, const char *satypename)
 {
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
     pfkey_buf pfb;
 
-    if (!(pfkey_msg_start(K_SADB_REGISTER
-      , satype
-      , satypename, NULL, extensions)
-    && finish_pfkey_msg(extensions, satypename, "", &pfb)))
+    if (!(pfkey_msg_start(sadb_register
+			  , satype
+			  , satypename, NULL, extensions)
+	  && finish_pfkey_msg(extensions, satypename, "", &pfb)))
     {
 	/* ??? should this be loglog */
-	plog("no KLIPS support for %s", satypename);
+	plog("no kernel support for %s", satypename);
     }
     else
     {
@@ -742,6 +743,19 @@ pfkey_register_proto(unsigned satype, const char *satypename)
 	    DBG_log("%s registered with kernel.", satypename));
     }
 }
+
+void 
+klips_register_proto(unsigned satype, const char *satypename)
+{
+    return pfkey_register_proto(K_SADB_REGISTER, satype, satypename);
+}
+
+void
+netlink_register_proto(unsigned satype, const char *satypename)
+{
+    return pfkey_register_proto(SADB_REGISTER, satype, satypename);
+}
+
 
 static int kernelop2klips(enum pluto_sadb_operations op)
 {
@@ -780,11 +794,11 @@ static int kernelop2klips(enum pluto_sadb_operations op)
 
 void klips_pfkey_register(void)
 {
-    pfkey_register_proto(SADB_SATYPE_AH, "AH");
-    pfkey_register_proto(SADB_SATYPE_ESP, "ESP");
+    klips_register_proto(SADB_SATYPE_AH, "AH");
+    klips_register_proto(SADB_SATYPE_ESP, "ESP");
     can_do_IPcomp = FALSE;  /* until we get a response from KLIPS */
-    pfkey_register_proto(SADB_X_SATYPE_COMP, "IPCOMP");
-    pfkey_register_proto(SADB_X_SATYPE_IPIP, "IPIP");
+    klips_register_proto(SADB_X_SATYPE_COMP, "IPCOMP");
+    klips_register_proto(SADB_X_SATYPE_IPIP, "IPIP");
 }
 
 bool

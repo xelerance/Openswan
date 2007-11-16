@@ -17,7 +17,8 @@
 
 #ifdef KLIPS
 extern void init_pfkey(void);
-extern void pfkey_register_proto(unsigned satype, const char *satypename);
+extern void klips_register_proto(unsigned satype, const char *satypename);
+extern void netlink_register_proto(unsigned satype, const char *satypename);
 extern void pfkey_close(void);
 
 extern void klips_pfkey_register_response(const struct sadb_msg *msg);

@@ -168,6 +168,13 @@ static void init_netlink(void)
     addr.nl_groups = XFRMGRP_ACQUIRE | XFRMGRP_EXPIRE;
     if (bind(netlink_bcast_fd, (struct sockaddr *)&addr, sizeof(addr)) != 0)
 	exit_log_errno((e, "Failed to bind bcast socket in init_netlink() - Perhaps kernel was not compiled with CONFIG_XFRM"));
+
+    /*
+     * also open the pfkey socket, since we need it to get a list of
+     * algorithms.
+     * XXX - There is probably a netlink way to do this.
+     */
+    init_pfkey();
 }
 
 /** send_netlink_msg
@@ -759,9 +766,9 @@ linux_pfkey_register_response(const struct sadb_msg *msg)
 static void
 linux_pfkey_register(void)
 {
-    pfkey_register_proto(SADB_SATYPE_AH, "AH");
-    pfkey_register_proto(SADB_SATYPE_ESP, "ESP");
-    pfkey_register_proto(SADB_X_SATYPE_IPCOMP, "IPCOMP");
+    netlink_register_proto(SADB_SATYPE_AH, "AH");
+    netlink_register_proto(SADB_SATYPE_ESP, "ESP");
+    netlink_register_proto(SADB_X_SATYPE_IPCOMP, "IPCOMP");
     pfkey_close();
 }
 
