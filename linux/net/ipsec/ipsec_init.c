@@ -145,11 +145,18 @@ extern int ipsec_sysctl_register(void);
 extern void ipsec_sysctl_unregister(void);
 #endif
 
+/*
+ * inet_*_protocol returns void on 2.4.x, int on 2.6.x
+ * So we need our own wrapper
+*/
 #ifdef NET_26
 static inline int
-openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol)
+openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol, char *protstr)
 {
-	return inet_add_protocol(prot, protocol);
+	int err = inet_add_protocol(prot, protocol);
+	if (err)
+		printk(KERN_ERR "KLIPS: can not register %s protocol - recompile with CONFIG_INET_%s disabled or as module\n", protstr,protstr);
+	return err;
 }
 
 static inline int
@@ -239,17 +246,24 @@ ipsec_klips_init(void)
 #else // CONFIG_XFRM_ALTERNATE_STACK
 
 #ifdef CONFIG_KLIPS_ESP
-	openswan_inet_add_protocol(&esp_protocol, IPPROTO_ESP);
+	error |= openswan_inet_add_protocol(&esp_protocol, IPPROTO_ESP,"ESP");
+	if (error)
+		goto error_openswan_inet_add_protocol_esp;
+
 #endif /* CONFIG_KLIPS_ESP */
 
 #ifdef CONFIG_KLIPS_AH
-	openswan_inet_add_protocol(&ah_protocol, IPPROTO_AH);
+	error |= openswan_inet_add_protocol(&ah_protocol, IPPROTO_AH,"AH");
+	if (error)
+		goto error_openswan_inet_add_protocol_ah;
 #endif /* CONFIG_KLIPS_AH */
 
 /* we never actually link IPCOMP to the stack */
 #ifdef IPCOMP_USED_ALONE
 #ifdef CONFIG_KLIPS_IPCOMP
- 	openswan_inet_add_protocol(&comp_protocol, IPPROTO_COMP);
+ 	error |= openswan_inet_add_protocol(&comp_protocol, IPPROTO_COMP,"IPCOMP");
+	if (error)
+		goto error_openswan_inet_add_protocol_comp;
 #endif /* CONFIG_KLIPS_IPCOMP */
 #endif
 
@@ -288,7 +302,18 @@ error_tunnel_init_devices:
 #ifdef CONFIG_XFRM_ALTERNATE_STACK
         xfrm_deregister_alternate_rcv(ipsec_rcv);
 error_xfrm_register:
-#endif // CONFIG_XFRM_ALTERNATE_STACK
+#else // CONFIG_XFRM_ALTERNATE_STACK
+#ifdef IPCOMP_USED_ALONE
+#ifdef CONFIG_KLIPS_IPCOMP
+error_openswan_inet_add_protocol_comp:
+	openswan_inet_del_protocol(&comp_protocol, IPPROTO_COMP);
+#endif /* CONFIG_KLIPS_IPCOMP */
+#endif
+error_openswan_inet_add_protocol_ah:
+	openswan_inet_del_protocol(&ah_protocol, IPPROTO_AH);
+error_openswan_inet_add_protocol_esp:
+	openswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP);
+#endif
 	unregister_netdevice_notifier(&ipsec_dev_notifier);
 error_netdev_notifier:
 	pfkey_cleanup();
