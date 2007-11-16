@@ -16,6 +16,7 @@ REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-setup-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS host-dig-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS host-ping-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS pluto-whack-sanitize.sed"
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS private-key-sanitize.sed"
 
 NICHOST=nic
 NIC_INIT_SCRIPT=nic-init.sh
