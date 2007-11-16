@@ -386,9 +386,13 @@ delete_state(struct state *st)
     pfreeany(st->st_ni.ptr);
     pfreeany(st->st_nr.ptr);
     pfreeany(st->st_skeyid.ptr);
-    pfreeany(st->st_skeyid_d.ptr);
-    pfreeany(st->st_skeyid_a.ptr);
-    pfreeany(st->st_skeyid_e.ptr);
+    pfreeany(st->st_skey_d.ptr);
+    pfreeany(st->st_skey_ai.ptr);
+    pfreeany(st->st_skey_ar.ptr);
+    pfreeany(st->st_skey_ei.ptr);
+    pfreeany(st->st_skey_er.ptr);
+    pfreeany(st->st_skey_pi.ptr);
+    pfreeany(st->st_skey_pr.ptr);
     pfreeany(st->st_enc_key.ptr);
     pfreeany(st->st_ah.our_keymat);
     pfreeany(st->st_ah.peer_keymat);

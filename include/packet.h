@@ -683,7 +683,7 @@ extern struct_desc ikev2_sa_desc;
 struct ikev2_prop
 {
 	u_int8_t  isap_np;		/* Next payload */
-	u_int8_t  isap_res1;
+	u_int8_t  isap_critical;
 	u_int16_t isap_length;		/* Payload length */
 	u_int8_t  isap_propnum;
 	u_int8_t  isap_protoid;
@@ -697,7 +697,7 @@ extern struct_desc ikev2_prop_desc;
 struct ikev2_trans
 {
 	u_int8_t  isat_np;	    /* Next payload */
-	u_int8_t  isat_res1;
+	u_int8_t  isat_critical;
 	u_int16_t isat_length;	    /* Payload length */
 	u_int8_t  isat_type;        /* transform type */
 	u_int8_t  isat_res2;
@@ -709,12 +709,24 @@ extern struct_desc ikev2_trans_desc;
 struct ikev2_ke
 {
 	u_int8_t  isak_np;	    /* Next payload */
-	u_int8_t  isak_res1;
+	u_int8_t  isak_critical;
 	u_int16_t isak_length;	    /* Payload length */
 	u_int16_t isak_group;       /* transform type */
 	u_int16_t isak_res2;
 };
 extern struct_desc ikev2_ke_desc;
+
+/* rfc4306, section 3.5 */
+struct ikev2_id
+{
+	u_int8_t  isai_np;	    /* Next payload */
+	u_int8_t  isai_critical;
+	u_int16_t isai_length;	    /* Payload length */
+	u_int8_t  isai_type;        /* transform type */
+	u_int8_t  isai_res1;
+	u_int16_t isai_res2;
+};
+extern struct_desc ikev2_id_desc;
 
 /* rfc4306, section 3.9, nonce, uses generic header */
 extern struct_desc ikev2_nonce_desc;

@@ -312,26 +312,25 @@ stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
 void finish_dh_v2(struct state *st,
 		  struct pluto_crypto_req *r)
 {
-    struct pcr_skeyid_r *dhr = &r->pcr_d.dhr;
+    struct pcr_skeycalc_v2 *dhv2 = &r->pcr_d.dhv2;
 			
-    clonetochunk(st->st_shared,   wire_chunk_ptr(dhr, &(dhr->shared))
-		 , dhr->shared.len,   "calculated shared secret");
-    clonetochunk(st->st_skeyid,   wire_chunk_ptr(dhr, &(dhr->skeyid))
-		 , dhr->skeyid.len,   "calculated skeyid secret");
-    clonetochunk(st->st_skeyid_d, wire_chunk_ptr(dhr, &(dhr->skeyid_d))
-		 , dhr->skeyid_d.len, "calculated skeyid_d secret");
-    clonetochunk(st->st_skeyid_a, wire_chunk_ptr(dhr, &(dhr->skeyid_a))
-		 , dhr->skeyid_a.len, "calculated skeyid_a secret");
-    clonetochunk(st->st_skeyid_e, wire_chunk_ptr(dhr, &(dhr->skeyid_e))
-		 , dhr->skeyid_e.len, "calculated skeyid_a secret");
-    clonetochunk(st->st_enc_key, wire_chunk_ptr(dhr, &(dhr->enc_key))
-		 , dhr->enc_key.len, "calculated key for phase 1");
+    clonetochunk(st->st_shared,   wire_chunk_ptr(dhv2, &(dhv2->shared))
+		 , dhv2->shared.len,   "calculated shared secret");
+    clonetochunk(st->st_skey_d,   wire_chunk_ptr(dhv2, &(dhv2->skeyid_d))
+		 , dhv2->skeyid_d.len,   "calculated skeyid secret");
+    clonetochunk(st->st_skey_ai, wire_chunk_ptr(dhv2, &(dhv2->skeyid_ai))
+		 , dhv2->skeyid_ai.len, "calculated skeyid_ai secret");
+    clonetochunk(st->st_skey_ar, wire_chunk_ptr(dhv2, &(dhv2->skeyid_ar))
+		 , dhv2->skeyid_ar.len, "calculated skeyid_ar secret");
+    clonetochunk(st->st_skey_pi, wire_chunk_ptr(dhv2, &(dhv2->skeyid_pi))
+		 , dhv2->skeyid_pi.len, "calculated skeyid_pi secret");
+    clonetochunk(st->st_skey_pr, wire_chunk_ptr(dhv2, &(dhv2->skeyid_pr))
+		 , dhv2->skeyid_pr.len, "calculated skeyid_pr secret");
+    clonetochunk(st->st_skey_ei, wire_chunk_ptr(dhv2, &(dhv2->skeyid_ei))
+		 , dhv2->skeyid_ei.len, "calculated skeyid_ei secret");
+    clonetochunk(st->st_skey_er, wire_chunk_ptr(dhv2, &(dhv2->skeyid_er))
+		 , dhv2->skeyid_er.len, "calculated skeyid_er secret");
     
-    passert(dhr->new_iv.len <= MAX_DIGEST_LEN);
-    passert(dhr->new_iv.len > 0);
-    memcpy(st->st_new_iv, wire_chunk_ptr(dhr, &(dhr->new_iv)),dhr->new_iv.len);
-    st->st_new_iv_len = dhr->new_iv.len;
-
     st->hidden_variables.st_skeyid_calculated = TRUE;
 }
 

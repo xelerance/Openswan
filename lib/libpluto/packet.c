@@ -742,6 +742,51 @@ static field_desc ikev2ke_fields[] = {
 struct_desc ikev2_ke_desc = { "IKEv2 Key Exchange Payload",
 			      ikev2ke_fields, sizeof(struct ikev2_ke) };
 
+/*
+ * 3.5.  Identification Payloads
+ *
+ * The Identification Payloads, denoted IDi and IDr in this memo, allow
+ * peers to assert an identity to one another.  This identity may be
+ * used for policy lookup, but does not necessarily have to match
+ * anything in the CERT payload; both fields may be used by an
+ * implementation to perform access control decisions.
+ *
+ * NOTE: In IKEv1, two ID payloads were used in each direction to hold
+ * Traffic Selector (TS) information for data passing over the SA.  In
+ * IKEv2, this information is carried in TS payloads (see section 3.13).
+ *
+ * The Identification Payload consists of the IKE generic payload header
+ * followed by identification fields as follows:
+ *
+ *                         1                   2                   3
+ *     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ! Next Payload  !C!  RESERVED   !         Payload Length        !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !   ID Type     !                 RESERVED                      |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !                                                               !
+ *    ~                   Identification Data                         ~
+ *    !                                                               !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ *             Figure 11:  Identification Payload Format
+ */
+static field_desc ikev2id_fields[] = {
+    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_enum, 8/BITS_PER_BYTE, "id_type", &ident_names },
+    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_mbz, 16/BITS_PER_BYTE, NULL, NULL },
+    { ft_end,  0, NULL, NULL }
+};
+
+struct_desc ikev2_id_desc = { "IKEv2 Identification Payload",
+			      ikev2id_fields, sizeof(struct ikev2_id) };
+
+
+
 /* 
  * 3.9.  Nonce Payload
  * 
@@ -827,7 +872,8 @@ struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
     NULL, NULL, NULL,                   /* 30,31,32 */
     &ikev2_sa_desc,                     /* 33 */
     &ikev2_ke_desc,                     /* 34 */
-    NULL, NULL, NULL, NULL, NULL,       /* 35, 36, 37, 38, 39 */
+    &ikev2_id_desc, &ikev2_id_desc,     /* 35,36 */
+    NULL, NULL, NULL,                   /* 37, 38, 39 */
     &ikev2_nonce_desc,                  /* 40 */
     NULL, NULL,                         /* 41,42 */
     &ikev2_vendor_id_desc,              /* 43 */

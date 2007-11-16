@@ -281,10 +281,18 @@ struct state
     chunk_t            st_p1isa;               /* Phase 1 initiator SA
 						  (Payload) for HASH
 					       */
-    chunk_t            st_skeyid;              /* Key material */
-    chunk_t            st_skeyid_d;            /* KM for non-ISAKMP key derivation */
-    chunk_t            st_skeyid_a;            /* KM for ISAKMP authentication */
-    chunk_t            st_skeyid_e;            /* KM for ISAKMP encryption */
+#define st_skeyid   st_skeyseed
+    chunk_t            st_skeyseed;            /* Key material */
+#define st_skeyid_d st_skey_d
+    chunk_t            st_skey_d;        /* KM for non-ISAKMP key derivation */
+#define st_skeyid_a st_skey_ai
+    chunk_t            st_skey_ai;       /* KM for ISAKMP authentication */
+    chunk_t            st_skey_ar;       /* KM for ISAKMP authentication */
+#define st_skeyid_e st_skey_ei
+    chunk_t            st_skey_ei;       /* KM for ISAKMP encryption */
+    chunk_t            st_skey_er;       /* KM for ISAKMP encryption */
+    chunk_t            st_skey_pi;       /* KM for ISAKMP encryption */
+    chunk_t            st_skey_pr;       /* KM for ISAKMP encryption */
     u_char             st_iv[MAX_DIGEST_LEN];  /* IV for encryption */
     u_char             st_old_iv[MAX_DIGEST_LEN];  /* IV for encryption */
     u_char             st_new_iv[MAX_DIGEST_LEN];
@@ -310,7 +318,7 @@ struct state
     u_int32_t           st_dpd_seqno;           /* Next R_U_THERE to send */
     u_int32_t           st_dpd_expectseqno;     /* Next R_U_THERE_ACK to receive */
     u_int32_t           st_dpd_peerseqno;       /* global variables */
-    struct event        *st_dpd_event;          /* backpointer for DPD events */
+    struct event       *st_dpd_event;          /* backpointer for DPD events */
 
 
     u_int32_t	      st_seen_vendorid;	  /* Bit field about recognized Vendor ID */

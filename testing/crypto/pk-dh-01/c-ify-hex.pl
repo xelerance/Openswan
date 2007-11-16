@@ -1,7 +1,26 @@
 #!/usr/bin/perl
 
+$end="";
+$output=0;
+
 while(<>) {
-  chop;
+  chomp;
+  s/^\|//;
+
+  if(/^output:/) {
+    $output=1;
+    next;
+  }
+  next unless ($output);
+
+  if(/(s\S*)/) {
+    $val=$1;
+    s/(s\S*)//;
+    print "$end\n";
+    print "unsigned char tc2_results_$val\[\]= {\n";
+    $end="};\n";
+  }
+
   ($a1,$a2,$a3,$a4,
    $b1,$b2,$b3,$b4,
    $c1,$c2,$c3,$c4,
@@ -18,4 +37,5 @@ while(<>) {
   printf "\n";
 }
 
+print "$end\n";
 

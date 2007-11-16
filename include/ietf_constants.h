@@ -908,4 +908,8 @@ enum pubkey_alg
 
 #define ISAKMP_ATTR_RTYPE_MASK 0x7FFF
 
+/* NOTE:
+ * ID_IPV4_ADDR, ID_FQDN, etc. are defined in openswan/ipsec_policy.h
+ * AND: enum_names ident_names is in constants.c
+ */
 

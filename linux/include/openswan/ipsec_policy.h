@@ -116,7 +116,12 @@ enum ipsec_comp_algo {
 };
 
 /* Identification type values
- * RFC 2407 The Internet IP security Domain of Interpretation for ISAKMP 4.6.2.1 
+ * RFC 2407 The Internet IP security Domain of Interpretation for
+ * ISAKMP 4.6.2.1
+ *
+ * Also for RFC4306. 
+ *
+ * enum 
  */
 
 enum ipsec_id_type {
@@ -126,6 +131,7 @@ enum ipsec_id_type {
   ID_IPV4_ADDR=                1,
   ID_FQDN=                     2,
   ID_USER_FQDN=                3,
+  ID_RFC822_ADDR = ID_USER_FQDN,        /* RFC4306 */
   ID_IPV4_ADDR_SUBNET=         4,
   ID_IPV6_ADDR=                5,
   ID_IPV6_ADDR_SUBNET=         6,

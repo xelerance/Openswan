@@ -690,8 +690,8 @@ ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
 				, struct pluto_crypto_req *r
 				, err_t ugh)
 {
-    struct ke_continuation *ke = (struct ke_continuation *)pcrc;
-    struct msg_digest *md = ke->md;
+    struct dh_continuation *dh = (struct dh_continuation *)pcrc;
+    struct msg_digest *md = dh->md;
     struct state *const st = md->st;
     stf_status e;
     
@@ -703,7 +703,7 @@ ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    passert(st->st_suspended_md == ke->md);
+    passert(st->st_suspended_md == dh->md);
     set_suspended(st,NULL);	/* no longer connected or suspended */
     
     set_cur_state(st);
@@ -712,9 +712,9 @@ ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
 
     e = ikev2_parent_inR1outI2_tail(pcrc, r);
   
-    if(ke->md != NULL) {
-	complete_v2_state_transition(&ke->md, e);
-	if(ke->md) release_md(ke->md);
+    if(dh->md != NULL) {
+	complete_v2_state_transition(&dh->md, e);
+	if(dh->md) release_md(dh->md);
     }
     reset_globals();
     
@@ -723,43 +723,46 @@ ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
 
 static stf_status
 ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
-			    , struct pluto_crypto_req *r UNUSED)
+			    , struct pluto_crypto_req *r)
 {
-    struct ke_continuation *ke = (struct ke_continuation *)pcrc;
-    struct msg_digest *md = ke->md;
+    struct dh_continuation *dh = (struct dh_continuation *)pcrc;
+    struct msg_digest *md = dh->md;
     struct state *const st = md->st;
+    struct connection *c   = st->st_connection;
+
+    finish_dh_v2(st, r);
 
     /* HDR out */
     {
 	struct isakmp_hdr r_hdr = md->hdr;
 
-	r_hdr.isa_np    = ISAKMP_NEXT_v2AUTH;
+	r_hdr.isa_np    = ISAKMP_NEXT_v2IDi;
 	r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
 	r_hdr.isa_flags = ISAKMP_FLAGS_I;
 	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
 	    return STF_INTERNAL_ERROR;
     }
 
-#if 0
-    /* start of SA out */
+    /* send out the IDi payload */
     {
-	struct isakmp_sa r_sa = sa_pd->payload.sa;
-	notification_t rn;
-	pb_stream r_sa_pbs;
+	struct ikev2_id r_id;
+	pb_stream r_id_pbs;
+	chunk_t id_b;
 
-	r_sa.isasa_np = ISAKMP_NEXT_v2KE;  /* XXX */
-	if (!out_struct(&r_sa, &ikev2_sa_desc, &md->rbody, &r_sa_pbs))
+	r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
+	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
+
+	if (!out_struct(&r_id
+			, &ikev2_id_desc
+			, &md->rbody
+			, &r_id_pbs)
+	    || !out_chunk(id_b, &r_id_pbs, "my identity"))
 	    return STF_INTERNAL_ERROR;
-
-	/* SA body in and out */
-	rn = parse_ikev2_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-				 &r_sa_pbs, FALSE, st);
-	
-	if (rn != NOTHING_WRONG)
-	    return STF_FAIL + rn;
+	close_output_pbs(&r_id_pbs);
     }
 
-1    {
+#if 0
+    {
 	int np = numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
 	struct ikev2_generic in;
 	pb_stream pb;
