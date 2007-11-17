@@ -1,4 +1,4 @@
-struct state *sendI1(struct connection *c1)
+struct state *sendI1(struct connection *c1, int debugging)
 {
 	struct state *st;
 	struct pcr_kenonce *kn = &r->pcr_d.kn;  /* r is a global */
@@ -14,8 +14,9 @@ struct state *sendI1(struct connection *c1)
 	/* find st involved */
 	st = state_with_serialno(1);
 
-	cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
-	
+	cur_debugging = debugging;
+	c1->extra_debugging = debugging;
+
 	/* now fill in the KE values from a constant.. not calculated */
 	clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc2_secret,tc2_secret_len);
 	clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc2_ni, tc2_ni_len);

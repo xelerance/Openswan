@@ -74,7 +74,7 @@ main(int argc, char *argv[])
 
     show_one_connection(c1);
 
-    st = sendI1(c1);
+    st = sendI1(c1,DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE);
     
     run_continuation(r);
 
