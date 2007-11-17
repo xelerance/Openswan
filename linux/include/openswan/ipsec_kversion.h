@@ -185,6 +185,7 @@
 /* need to include ip.h early, no longer pick it up in skbuff.h */
 #include <linux/ip.h>
 #  define HAVE_KERNEL_TSTAMP
+#  define HAVE_KMEM_CACHE_MACRO
 /* type of sock.sk_stamp changed from timeval to ktime  */
 #  define grab_socket_timeval(tv, sock)  { (tv) = ktime_to_timeval((sock).sk_stamp); }
 #else

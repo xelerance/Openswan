@@ -1763,7 +1763,11 @@ error_alloc:
 // this handles creating and managing state for recv path
 
 static spinlock_t irs_cache_lock = SPIN_LOCK_UNLOCKED;
+#ifdef HAVE_KMEM_CACHE_MACRO
+static struct kmem_cache *irs_cache_allocator = NULL;
+#else
 static kmem_cache_t *irs_cache_allocator = NULL;
+#endif
 static unsigned  irs_cache_allocated_count = 0;
 
 int
@@ -1773,10 +1777,13 @@ ipsec_rcv_state_cache_init (void)
                 return -EBUSY;
 
         spin_lock_init(&irs_cache_lock);
-
+#ifdef HAVE_KMEM_CACHE_MACRO
+        irs_cache_allocator = KMEM_CACHE(ipsec_irs,0);
+#else
         irs_cache_allocator = kmem_cache_create ("ipsec_irs",
                 sizeof (struct ipsec_rcv_state), 0,
                 0, NULL, NULL);
+#endif
         if (! irs_cache_allocator)
                 return -ENOMEM;
 
