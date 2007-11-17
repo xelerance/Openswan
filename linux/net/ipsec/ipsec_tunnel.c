@@ -1874,20 +1874,30 @@ ipsec_tunnel_cleanup_devices(void)
 // this handles creating and managing state for xmit path
 
 static spinlock_t ixs_cache_lock = SPIN_LOCK_UNLOCKED;
+#ifdef HAVE_KMEM_CACHE_MACRO
+static struct kmem_cache *ixs_cache_allocator = NULL;
+#else
 static kmem_cache_t *ixs_cache_allocator = NULL;
+#endif
 static unsigned  ixs_cache_allocated_count = 0;
 
 int
 ipsec_xmit_state_cache_init (void)
 {
+#ifdef HAVE_KMEM_CACHE_MACRO
+	struct ipsec_xmit_state ipsec_ixs;
+#endif
         if (ixs_cache_allocator)
                 return -EBUSY;
 
         spin_lock_init(&ixs_cache_lock);
-
+#ifdef HAVE_KMEM_CACHE_MACRO
+	ixs_cache_allocator = KMEM_CACHE(ipsec_ixs,0);
+#else
         ixs_cache_allocator = kmem_cache_create ("ipsec_ixs",
                 sizeof (struct ipsec_xmit_state), 0,
                 0, NULL, NULL);
+#endif
         if (! ixs_cache_allocator)
                 return -ENOMEM;
 
