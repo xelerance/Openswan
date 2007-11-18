@@ -152,7 +152,7 @@ cat /proc/version
 _________________________ /proc/net/ipsec_eroute
 if test -r /proc/net/ipsec_eroute
 then
-	sort -sg +3 /proc/net/ipsec_eroute || cat /proc/net/ipsec_eroute
+	sort -sg -k 3 /proc/net/ipsec_eroute || cat /proc/net/ipsec_eroute
 fi
 _________________________ netstat-rn
 netstat -nr|head -n $maxlines
