@@ -114,7 +114,7 @@ main(int argc, char *argv[])
     /* now, send the I1 packet, really just so that we are in the right
      * state to receive the R1 packet and process it.
      */
-    st = sendI1(c1);
+    st = sendI1(c1, 0);
 
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING;
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
