@@ -734,6 +734,9 @@ extern struct_desc ikev2_nonce_desc;
 /* rfc4306, section 3.12, vendor ID, uses generic header */
 extern struct_desc ikev2_vendor_id_desc;
 
+/* rfc4306, section 3.14, encrypted payload, uses generic header */
+extern struct_desc ikev2_e_desc;
+
 /* union of all payloads */
 
 union payload {

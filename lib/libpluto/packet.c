@@ -835,6 +835,32 @@ struct_desc ikev2_vendor_id_desc = { "IKEv2 Vendor ID Payload",
 				     sizeof(struct ikev2_generic) };
 
 
+/*
+ * 3.14.  Encrypted Payload
+ *
+ *                         1                   2                   3
+ *    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ! Next Payload  !C!  RESERVED   !         Payload Length        !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !                     Initialization Vector                     !
+ *    !         (length is block size for encryption algorithm)       !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ~                    Encrypted IKE Payloads                     ~
+ *    +               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !               !             Padding (0-255 octets)            !
+ *    +-+-+-+-+-+-+-+-+                               +-+-+-+-+-+-+-+-+
+ *    !                                               !  Pad Length   !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ~                    Integrity Checksum Data                    ~
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ *             Figure 21:  Encrypted Payload Format
+ */
+struct_desc ikev2_e_desc = { "IKEv2 Encryption Payload",
+			      ikev2generic_fields,
+			     sizeof(struct ikev2_generic)};
+
 
 /* descriptor for each payload type
  *
@@ -877,6 +903,8 @@ struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
     &ikev2_nonce_desc,                  /* 40 */
     NULL, NULL,                         /* 41,42 */
     &ikev2_vendor_id_desc,              /* 43 */
+    NULL, NULL,                         /* 44, 45 */
+    &ikev2_e_desc,                      /* 46 */
 };
 
 void
@@ -1291,8 +1319,8 @@ out_struct(const void *struct_ptr, struct_desc *sd
 	    passert(inp - (cur - outs->cur) == struct_ptr);
 
 #if 0
-	    DBG(DBG_EMITTING, DBG_log("%d %s"
-		, (int) (cur - outs->cur), fp->name == NULL? "" : fp->name);
+	    DBG_log("out_struct: %d %s"
+		    , (int) (cur - outs->cur), fp->name == NULL? "<end>" : fp->name);
 #endif
 	    switch (fp->field_type)
 	    {

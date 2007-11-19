@@ -354,7 +354,7 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	, "reply packet for ikev2_parent_outI1");
 
     /* Transmit */
-    send_packet(st, "main_outI1", TRUE);
+    send_packet(st, __FUNCTION__, TRUE);
 
     /* Set up a retransmission event, half a minute henceforth */
     TCLCALLOUT("v2_adjustTimers", st, st->st_connection, md);
@@ -729,6 +729,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     struct msg_digest *md = dh->md;
     struct state *const st = md->st;
     struct connection *c   = st->st_connection;
+    struct ikev2_generic e;
+    pb_stream e_pbs;
 
     finish_dh_v2(st, r);
 
@@ -736,11 +738,19 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     {
 	struct isakmp_hdr r_hdr = md->hdr;
 
-	r_hdr.isa_np    = ISAKMP_NEXT_v2IDi;
+	r_hdr.isa_np    = ISAKMP_NEXT_v2E;
 	r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
 	r_hdr.isa_flags = ISAKMP_FLAGS_I;
 	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
 	    return STF_INTERNAL_ERROR;
+    }
+
+    /* insert an Encryption payload header */
+    e.isag_np = ISAKMP_NEXT_v2IDi;
+    e.isag_critical = ISAKMP_PAYLOAD_CRITICAL;
+
+    if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
+	return STF_INTERNAL_ERROR;
     }
 
     /* send out the IDi payload */
@@ -754,7 +764,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 	if (!out_struct(&r_id
 			, &ikev2_id_desc
-			, &md->rbody
+			, &e_pbs
 			, &r_id_pbs)
 	    || !out_chunk(id_b, &r_id_pbs, "my identity"))
 	    return STF_INTERNAL_ERROR;
@@ -788,7 +798,12 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 #endif
 
-    close_message(&md->rbody);
+    /* pads things up to message size boundary */
+    close_message(&e_pbs);
+
+    /* now encrypt, authenticate, etc. */
+    /* XXX */
+    close_output_pbs(&md->rbody);
     close_output_pbs(&md->reply);
 
     /* let TCL hack it before we mark the length. */
