@@ -26,7 +26,7 @@ RC=133 STATE_PARENT_I1: initiate
 |    responder cookie:
 |   00 00 00 00  00 00 00 00
 |    next payload type: ISAKMP_NEXT_v2SA
-|    ISAKMP version: IKEv2 version 2.0 (rfc4036)
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306)
 |    exchange type: ISAKMP_v2_SA_INIT
 |    flags: ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 00
