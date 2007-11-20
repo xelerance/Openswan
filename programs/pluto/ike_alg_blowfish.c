@@ -36,7 +36,7 @@ struct encrypt_desc algo_blowfish =
 	keyminlen: BLOWFISH_KEY_MIN_LEN,
 	keydeflen: BLOWFISH_KEY_MIN_LEN,
 	keymaxlen: BLOWFISH_KEY_MAX_LEN,
-	do_crypt: do_blowfish,
+	do_crypt:    do_blowfish,
 };
 
 int ike_alg_blowfish_init(void);

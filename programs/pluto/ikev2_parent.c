@@ -749,7 +749,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     struct state *const st = md->st;
     struct connection *c   = st->st_connection;
     struct ikev2_generic e;
-    pb_stream      e_pbs;
+    pb_stream      e_pbs, e_pbs_cipher;
     unsigned char *iv, *encstart;
     int            ivsize;
 
@@ -783,7 +783,11 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     get_rnd_bytes(iv, ivsize);
 
     /* note where cleartext starts */
-    encstart = e_pbs.cur;
+    init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
+    e_pbs_cipher.container = &e_pbs;
+    e_pbs_cipher.desc = NULL;
+    e_pbs_cipher.cur = e_pbs.cur;
+    encstart = e_pbs_cipher.cur;
 
     /* send out the IDi payload */
     {
@@ -796,7 +800,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 	if (!out_struct(&r_id
 			, &ikev2_id_desc
-			, &e_pbs
+			, &e_pbs_cipher
 			, &r_id_pbs)
 	    || !out_chunk(id_b, &r_id_pbs, "my identity"))
 	    return STF_INTERNAL_ERROR;
@@ -834,19 +838,28 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     {
 	char   b[1];
 	size_t blocksize = st->st_oakley.encrypter->enc_blocksize;
-	size_t padding =  pad_up(pbs_offset(&e_pbs), blocksize);
-	if (padding == 0) padding=blocksize-1;
-	(void) out_zero(padding, &e_pbs, "message padding");
-	b[0] = padding;
-	out_raw(b, 1, &e_pbs, "pad length");
+	size_t padding =  pad_up(pbs_offset(&e_pbs_cipher), blocksize);
+	if (padding == 0) padding=blocksize;
+	(void) out_zero(padding-1, &e_pbs_cipher, "message padding");
+	b[0] = padding-1;
+	out_raw(b, 1, &e_pbs_cipher, "pad length");
     }
+
+    /* encrypt the block */
+    {
+	size_t  blocksize = st->st_oakley.encrypter->enc_blocksize;
+	unsigned char *savediv = alloca(blocksize);
+
+	memcpy(savediv, iv, blocksize);
     
-    /* now, encrypt */
-    (st->st_oakley.encrypter->do_crypt)(encstart,
-					e_pbs.cur - encstart,
-					st->st_skey_ei.ptr,
-					st->st_skey_ei.len,
-					iv, TRUE);
+	/* now, encrypt */
+	(st->st_oakley.encrypter->do_crypt)(encstart,
+					    e_pbs_cipher.cur - encstart,
+					    st->st_skey_ei.ptr,
+					    st->st_skey_ei.len,
+					    savediv, TRUE);
+    }
+    close_output_pbs(&e_pbs_cipher);
     
     /* okay, authenticate from beginning of IV */
     {
