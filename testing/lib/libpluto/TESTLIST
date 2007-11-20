@@ -10,5 +10,6 @@ multilibtest refineconnection good
 multilibtest parentI1         good
 multilibtest parentR1         good
 multilibtest parentI2         good
+multilibtest parentR2         good
 
 
