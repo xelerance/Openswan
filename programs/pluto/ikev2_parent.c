@@ -47,6 +47,7 @@
 #include "timer.h"
 #include "ike_continuations.h"
 #include "cookie.h"
+#include "rnd.h"
 
 #include "tpm/tpm.h"
 
@@ -662,8 +663,26 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 
     /* Ni in */
     RETURN_STF_FAILURE(accept_v2_nonce(md, &st->st_nr, "Ni"));
-    
-    /* now. we need to go calculate the nonce, and the KE */
+
+    if(md->chain[ISAKMP_NEXT_v2SA] == NULL) {
+	openswan_log("No responder SA proposal found");
+	return PAYLOAD_MALFORMED;
+    }
+
+    /* process and confirm the SA selected */
+    {
+	struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
+	notification_t rn;
+
+	/* SA body in and out */
+	rn = parse_ikev2_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
+				 NULL, FALSE, st);
+	
+	if (rn != NOTHING_WRONG)
+	    return STF_FAIL + rn;
+    }
+
+    /* now. we need to go calculate the g^xy */
     {
 	struct dh_continuation *dh = alloc_thing(struct dh_continuation
 						 , "ikev2_inR1outI2 KE");
@@ -730,7 +749,9 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     struct state *const st = md->st;
     struct connection *c   = st->st_connection;
     struct ikev2_generic e;
-    pb_stream e_pbs;
+    pb_stream      e_pbs;
+    unsigned char *iv, *encstart;
+    int            ivsize;
 
     finish_dh_v2(st, r);
 
@@ -752,6 +773,17 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
 	return STF_INTERNAL_ERROR;
     }
+
+    /* insert IV */
+    iv     = e_pbs.cur;
+    ivsize = st->st_oakley.encrypter->iv_size;
+    if(!out_zero(ivsize, &e_pbs, "iv")) {
+	return STF_INTERNAL_ERROR;
+    }
+    get_rnd_bytes(iv, ivsize);
+
+    /* note where cleartext starts */
+    encstart = e_pbs.cur;
 
     /* send out the IDi payload */
     {
@@ -799,10 +831,38 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 #endif
 
     /* pads things up to message size boundary */
-    close_message(&e_pbs);
+    {
+	char   b[1];
+	size_t blocksize = st->st_oakley.encrypter->enc_blocksize;
+	size_t padding =  pad_up(pbs_offset(&e_pbs), blocksize);
+	if (padding == 0) padding=blocksize-1;
+	(void) out_zero(padding, &e_pbs, "message padding");
+	b[0] = padding;
+	out_raw(b, 1, &e_pbs, "pad length");
+    }
+    
+    /* now, encrypt */
+    (st->st_oakley.encrypter->do_crypt)(encstart,
+					e_pbs.cur - encstart,
+					st->st_skey_ei.ptr,
+					st->st_skey_ei.len,
+					iv, TRUE);
+    
+    /* okay, authenticate from beginning of IV */
+    {
+	unsigned char *b12;
+	struct hmac_ctx ctx;
+	
+	b12 = e_pbs.cur;
+	if(!out_zero(12, &e_pbs, "96-bits of truncated HMAC"))
+	    return STF_INTERNAL_ERROR;
 
-    /* now encrypt, authenticate, etc. */
-    /* XXX */
+	hmac_init_chunk(&ctx, st->st_oakley.integ_hasher, st->st_skey_ai);
+	hmac_update(&ctx, iv, b12-iv);
+	hmac_final(b12, &ctx);
+    }
+    close_output_pbs(&e_pbs);
+
     close_output_pbs(&md->rbody);
     close_output_pbs(&md->reply);
 
