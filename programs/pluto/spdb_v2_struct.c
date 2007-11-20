@@ -436,6 +436,7 @@ ikev2_acceptable_group(struct state *st, oakley_group_t group)
 
 static bool 
 spdb_v2_match(struct db_sa *sadb
+	      , unsigned propnum
 	      , unsigned encr_transform
 	      , unsigned integ_transform
 	      , unsigned prf_transform
@@ -452,8 +453,10 @@ spdb_v2_match(struct db_sa *sadb
 	struct db_v2_prop_conj  *pj;
 	struct db_v2_trans      *tr;
 	unsigned int             tr_cnt;
+	int encrid, integid, prfid, dhid, esnid; 
 
 	pd = &sadb->prop_disj[pd_cnt];
+	encrid = integid = prfid = dhid = esnid = 0;
 	encr_matched=integ_matched=prf_matched=dh_matched=esn_matched=FALSE;
 	if(pd->prop_cnt != 1) continue;
 
@@ -467,34 +470,60 @@ spdb_v2_match(struct db_sa *sadb
 	    
 	    switch(tr->transform_type) {
 	    case IKEv2_TRANS_TYPE_ENCR:
+		encrid = tr->transid;
 		if(tr->transid == encr_transform)
 		    encr_matched=TRUE;
 		break;
 		
 	    case IKEv2_TRANS_TYPE_INTEG:
+		integid = tr->transid;
 		if(tr->transid == integ_transform)
 		    integ_matched=TRUE;
 		break;
 		
 	    case IKEv2_TRANS_TYPE_PRF:
+		prfid = tr->transid;
 		if(tr->transid == prf_transform)
 		    prf_matched=TRUE;
 		break;
 		
 	    case IKEv2_TRANS_TYPE_DH:
+		esnid = tr->transid;
 		if(tr->transid == dh_transform)
 		    dh_matched=TRUE;
 		break;
 
 	    case IKEv2_TRANS_TYPE_ESN:
+		esnid = tr->transid;
 		if(tr->transid == esn_transform)
 		    esn_matched=TRUE;
 		break;
 	    }
 
+	    /* esn_matched not tested! */
 	    if(dh_matched && prf_matched && integ_matched && encr_matched)
 		return TRUE;
 	}
+	if(DBGP(DBG_CONTROLMORE)) {
+	    DBG_log("proposal %u %s encr= (policy:%s vs offered:%s)"
+		    , propnum
+		    , encr_matched ? "failed" : "     "
+		    , enum_name(&trans_type_encr_names, encrid)
+		    , enum_name(&trans_type_encr_names, encr_transform));
+	    DBG_log("            %s integ=(policy:%s vs offered:%s)"
+		    , integ_matched ? "failed" : "     "
+		    , enum_name(&trans_type_integ_names, integid)
+		    , enum_name(&trans_type_integ_names, integ_transform));
+	    DBG_log("            %s prf=  (policy:%s vs offered:%s)"
+		    , prf_matched ? "failed" : "     "
+		    , enum_name(&trans_type_prf_names, prfid)
+		    , enum_name(&trans_type_prf_names, prf_transform));
+	    DBG_log("            %s dh=   (policy:%s vs offered:%s)"
+		    , dh_matched ? "failed" : "     "
+		    , enum_name(&oakley_group_names, dhid)
+		    , enum_name(&oakley_group_names, dh_transform));
+	}
+	
     }
     return FALSE;
 }
@@ -506,8 +535,8 @@ notification_t
 parse_ikev2_sa_body(
     pb_stream *sa_pbs,              /* body of input SA Payload */
     const struct ikev2_sa *sa_prop UNUSED, /* header of input SA Payload */
-    pb_stream *r_sa_pbs UNUSED,	    /* if non-NULL, where to emit winning SA */
-    bool selection UNUSED,          /* if this SA is a selection, only one 
+    pb_stream *r_sa_pbs,	    /* if non-NULL, where to emit winning SA */
+    bool selection,                 /* if this SA is a selection, only one 
 				     * tranform can appear. */
     struct state *st)	        /* current state object */
 {
@@ -551,6 +580,7 @@ parse_ikev2_sa_body(
 
     gotmatch = FALSE;
     conjunction = FALSE;
+    zero(&ta);
 	
     while(np == ISAKMP_NEXT_P) {
 	/*
@@ -615,9 +645,7 @@ parse_ikev2_sa_body(
 	    //u_char *attr_start;
 	    //size_t attr_len;
 	    struct ikev2_trans trans;
-	    struct oakley_trans_attrs ta;
 	    //err_t ugh = NULL;	/* set to diagnostic when problem detected */
-	    zero(&ta);
 
 	    if (!in_struct(&trans, &ikev2_trans_desc
 			   , &proposal_pbs, &trans_pbs))
@@ -696,6 +724,7 @@ parse_ikev2_sa_body(
 		    for(dh_i=0; dh_i < dh_trans_next; dh_i++) {
 			for(esn_i=0; esn_i < esn_trans_next; esn_i++) {
 			    gotmatch = spdb_v2_match(sadb,
+						     proposal.isap_propnum,
 						     encr_transforms[encr_i],
 						     integ_transforms[integ_i],
 						     prf_transforms[prf_i],
@@ -711,6 +740,13 @@ parse_ikev2_sa_body(
 		if(gotmatch) break;
 	    }
 	    if(gotmatch) break;
+	}
+
+	np = proposal.isap_np;
+	
+	if(selection && !gotmatch && np == ISAKMP_NEXT_P) {
+	    openswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
+	    return NO_PROPOSAL_CHOSEN;
 	}
     }
 
@@ -766,7 +802,7 @@ parse_ikev2_sa_body(
 	r_trans.isat_transid = ta.encrypt;
 	r_trans.isat_np = ISAKMP_NEXT_T;
 	if(!out_struct(&r_trans, &ikev2_trans_desc
-		       , &r_proposal_pbs, NULL))
+		       , &r_proposal_pbs, &r_trans_pbs))
 	    impossible();
 	close_output_pbs(&r_trans_pbs);
 
@@ -775,25 +811,25 @@ parse_ikev2_sa_body(
 	r_trans.isat_transid = ta.integ_hash;
 	r_trans.isat_np = ISAKMP_NEXT_T;
 	if(!out_struct(&r_trans, &ikev2_trans_desc
-		       , &r_proposal_pbs, NULL))
+		       , &r_proposal_pbs, &r_trans_pbs))
 	    impossible();
 	close_output_pbs(&r_trans_pbs);
 
 	/* Transform - PRF hash */
 	r_trans.isat_type= IKEv2_TRANS_TYPE_PRF;
-	r_trans.isat_transid = ta.groupnum;
+	r_trans.isat_transid = ta.prf_hash;
 	r_trans.isat_np = ISAKMP_NEXT_T;
 	if(!out_struct(&r_trans, &ikev2_trans_desc
-		       , &r_proposal_pbs, NULL))
+		       , &r_proposal_pbs, &r_trans_pbs))
 	    impossible();
 	close_output_pbs(&r_trans_pbs);
 
 	/* Transform - DH hash */
 	r_trans.isat_type= IKEv2_TRANS_TYPE_DH;
-	r_trans.isat_transid = ta.prf_hash;
+	r_trans.isat_transid = ta.groupnum;
 	r_trans.isat_np = ISAKMP_NEXT_T;
 	if(!out_struct(&r_trans, &ikev2_trans_desc
-		       , &r_proposal_pbs, NULL))
+		       , &r_proposal_pbs, &r_trans_pbs))
 	    impossible();
 	close_output_pbs(&r_trans_pbs);
 
@@ -802,7 +838,7 @@ parse_ikev2_sa_body(
 	r_trans.isat_transid = IKEv2_ESN_DISABLED;
 	r_trans.isat_np = ISAKMP_NEXT_NONE;
 	if(!out_struct(&r_trans, &ikev2_trans_desc
-		       , &r_proposal_pbs, NULL))
+		       , &r_proposal_pbs, &r_trans_pbs))
 	    impossible();
 	close_output_pbs(&r_trans_pbs);
 
