@@ -59,8 +59,8 @@ void recv_pcap_packet(u_char *user
 
     /* now fill in the SKEYSEED values from constants.. not calculated */
     clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc2_secret,tc2_secret_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc2_nr, tc2_nr_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc2_gr, tc2_gr_len);
+    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc2_ni, tc2_ni_len);
+    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc2_gi, tc2_gi_len);
     
     run_continuation(r);
 
