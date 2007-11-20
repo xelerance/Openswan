@@ -69,6 +69,7 @@ main(int argc, char *argv[])
     pcap_t *pt;
     char   eb1[256];
 
+    EF_PROTECT_BELOW=1;
     EF_PROTECT_FREE=1;
     EF_FREE_WIPES  =1;
 

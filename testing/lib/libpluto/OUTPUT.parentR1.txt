@@ -82,7 +82,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 |    responder cookie:
 |   c0 2e 7a 30  31 a0 31 88
 |    next payload type: ISAKMP_NEXT_v2SA
-|    ISAKMP version: IKEv2 version 2.0 (rfc4036)
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306)
 |    exchange type: ISAKMP_v2_SA_INIT
 |    flags: ISAKMP_FLAG_RESPONSE
 |    message ID:  00 00 00 00
@@ -98,31 +98,26 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 |    # transforms: 5
 | *****emit IKEv2 Transform Substructure Payload:
 |    next payload type: ISAKMP_NEXT_T
-|    length: 0
 |    transform type: 1
 |    transform ID: 12
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    next payload type: ISAKMP_NEXT_T
-|    length: 0
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    next payload type: ISAKMP_NEXT_T
-|    length: 0
 |    transform type: 2
-|    transform ID: 5
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    length: 0
-|    transform type: 4
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 4
+|    transform ID: 5
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
 |    next payload type: ISAKMP_NEXT_NONE
-|    length: 0
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
@@ -167,7 +162,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | ***emit ISAKMP Vendor ID Payload:
 |    next payload type: ISAKMP_NEXT_NONE
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 5f 6d  79 4c 7e 78  4b 6b 59 62
+| Vendor ID  4f 45 72 6c  41 5c 6e 51  75 6b 53 52
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 316
 | complete v2 state transition with STF_OK
@@ -177,8 +172,8 @@ sending 316 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
 |   21 20 22 20  00 00 00 00  00 00 01 3c  22 80 00 34
 |   00 00 00 30  01 01 00 05  03 00 00 08  01 00 00 0c
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 05
-|   03 00 00 08  04 00 00 02  00 00 00 08  05 00 00 00
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   03 00 00 08  04 00 00 05  00 00 00 08  05 00 00 00
 |   28 00 00 c8  00 05 00 00  cd 30 df 6e  c0 85 44 12
 |   53 01 80 d8  7e 1a fb b3  26 79 3e 99  56 c8 6a 96
 |   25 53 c2 77  ad 5b ab 50  f8 32 5a d8  64 0b 0e fe
@@ -193,7 +188,7 @@ sending 316 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 |   6d 11 35 f6  5d 93 5f 60  b9 73 0f e0  49 2c 2a f8
 |   c9 04 f6 4c  59 16 90 9d  2b 80 00 14  47 e9 f9 25
 |   8c a2 38 58  f6 75 b1 66  b0 2c c2 92  00 00 00 10
-|   4f 45 5f 6d  79 4c 7e 78  4b 6b 59 62
+|   4f 45 72 6c  41 5c 6e 51  75 6b 53 52
 | deleting state #1
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
@@ -227,8 +222,8 @@ reading from file parentR1.pcap, link-type NULL (BSD loopback)
         (p: #1 protoid=isakmp transform=5
             (t: #1 type=encr id=aes )
             (t: #2 type=integ id=hmac-sha )
-            (t: #3 type=prf id=#5 )
-            (t: #4 type=dh id=modp1024 )
+            (t: #3 type=prf id=hmac-sha )
+            (t: #4 type=dh id=modp1536 )
             (t: #5 type=esn id=no-esn )))
     (v2ke: len=192 group=modp1536)
     (nonce[C]: len=16 nonce=(47e9f9258ca23858f675b166b02cc292) )
