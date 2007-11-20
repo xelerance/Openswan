@@ -14,8 +14,10 @@ struct ike_alg {
 
 struct encrypt_desc {
     struct ike_alg common;
-    size_t enc_ctxsize;
-    size_t enc_blocksize;
+    size_t   enc_ctxsize;
+    size_t   enc_blocksize;
+/* Is this always true?  usually with CBC methods. Maybe not with others */
+#define iv_size enc_blocksize
     unsigned keydeflen;
     unsigned keymaxlen;
     unsigned keyminlen;
