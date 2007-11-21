@@ -99,6 +99,10 @@ main(int argc, char *argv[])
     show_one_connection(c1);
 
     pt = pcap_open_offline(argv[3], eb1);
+    if(!pt) {
+	perror(argv[3]);
+	exit(50);
+    }
 
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
