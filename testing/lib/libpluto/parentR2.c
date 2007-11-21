@@ -134,6 +134,6 @@ main(int argc, char *argv[])
  * Local Variables:
  * c-style: pluto
  * c-basic-offset: 4
- * compile-command: "make TEST=parentR1 one"
+ * compile-command: "make TEST=parentR2 one"
  * End:
  */
