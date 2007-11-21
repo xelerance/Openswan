@@ -32,7 +32,7 @@ EXTRALIBS="${EXTRALIBS} ${LIBSHA2} ${LIBBLOWFISH}"
 EXTRALIBS="${EXTRALIBS} ${OSWLOGLIB} ${OPENSWANLIB} ${OSWLOGLIB}"
 EXTRALIBS="${EXTRALIBS} -lgmp -lefence -lpcap"
 
-UNITTESTARGS="../lib-parentI1/ikev2.record westnet--eastnet-ikev2 parentR1.pcap"
+UNITTESTARGS="../lib-parentR1/ikev2.record westnet--eastnet-ikev2 parentI2.pcap"
 
 # Local Variables:
 # compile-command: "make TEST=parentR1 one"

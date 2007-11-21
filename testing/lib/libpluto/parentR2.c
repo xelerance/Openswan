@@ -1,5 +1,5 @@
 /*
- * PARENT I2 test case actually invokes the parent I1 test case
+ * PARENT R2 test case actually invokes the parent R1 test case
  * to get all of the states into the right order.
  *
  */
