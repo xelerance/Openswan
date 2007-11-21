@@ -10,24 +10,24 @@
 Started ../parentI2
 Pre-amble: #!-pluto-whack-file- recorded on west on 2007-10-07 01:40:12
 ../parentI2 listening for IKE messages
-| interface "eth0" matched right side
+| interface "eth0" matched left side
 ../parentI2 added connection description "westnet--eastnet-ikev2"
 | base debugging = crypt+parsing+control+controlmore
 ../parentI2 listening for IKE messages
-RC=0 "westnet--eastnet-ikev2": 192.0.2.0/24===192.1.2.23<192.1.2.23>[@east]...192.1.2.45<192.1.2.45>[@west]===192.0.1.0/24; unrouted; eroute owner: #0
+RC=0 "westnet--eastnet-ikev2": 192.0.1.0/24===192.1.2.45<192.1.2.45>[@west]...192.1.2.23<192.1.2.23>[@east]===192.0.2.0/24; unrouted; eroute owner: #0
 RC=0 "westnet--eastnet-ikev2":     myip=unset; hisip=unset;
 RC=0 "westnet--eastnet-ikev2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 RC=0 "westnet--eastnet-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init; prio: 24,24; interface: eth0; 
 RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 | creating state object #1 at ADDR
-| interface "eth0" matched right side
+| interface "eth0" matched left side
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 ../parentI2 initiating v2 parent SA
 RC=133 STATE_PARENT_I1: initiate
 | no IKE algorithms for this connection 
-sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.45:500 (using #1)
+sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500 (using #1)
 |   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 01 fc  22 80 00 f4
 |   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
@@ -183,7 +183,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.45:500
 |    next payload type: ISAKMP_NEXT_NONE
 |    id_type: ID_FQDN
 | emitting 4 raw bytes of my identity into IKEv2 Identification Payload
-| my identity  65 61 73 74
+| my identity  77 65 73 74
 | emitting length of IKEv2 Identification Payload: 12
 | emitting 3 zero bytes of message padding into cleartext
 | emitting 1 raw bytes of pad length into cleartext
@@ -193,13 +193,13 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.45:500
 | emitting length of ISAKMP Message: 76
 | complete v2 state transition with STF_OK
 ../parentI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
-| sending reply packet to 192.1.2.45:500 (from port 500)
-sending 76 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.45:500 (using #1)
+| sending reply packet to 192.1.2.23:500 (from port 500)
+sending 76 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using #1)
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
 |   2e 20 23 08  00 00 00 00  00 00 00 4c  23 80 00 30
 |   00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   e8 71 42 27  28 2d a5 7f  4b 3c 9c 2d  e2 81 77 e4
-|   2a 2d 44 7b  3f 51 b0 8b  a2 c5 f6 20
+|   a4 34 ea d1  e6 e8 ef a0  d4 9c c3 3e  3c 66 80 2a
+|   f2 99 af 7d  f3 4a 93 92  2c b0 de 51
 | deleting state #1
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
@@ -256,7 +256,7 @@ sending 76 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.45:500 (using #
 TCPDUMP output
 reading from file parentI2.pcap, link-type NULL (BSD loopback)
 19:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f48e)!)
-    192.1.2.23.500 > 192.1.2.45.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[I]:
+    192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[I]:
     (sa[C]: len=240
         (p: #1 protoid=isakmp transform=4
             (t: #1 type=encr id=aes )
@@ -292,5 +292,5 @@ reading from file parentI2.pcap, link-type NULL (BSD loopback)
     (nonce[C]: len=16 nonce=(b5ce8419095c6e2b6b62d3055305b3c4) )
     (v2vid: len=12 vid=OEababababab)
 19:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 104, bad cksum 0 (->f63e)!)
-    192.1.2.23.500 > 192.1.2.45.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_auth[I]:
+    192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_auth[I]:
     (v2e[C]: len=44) [|v2IDi]
