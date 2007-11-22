@@ -177,7 +177,7 @@ reading from file parentR2.pcap, link-type NULL (BSD loopback)
 19:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 344, bad cksum 0 (->f54e)!)
     192.1.2.23.500 > 192.1.2.45.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[]:
     (sa[C]: len=48
-        (p: #1 protoid=isakmp transform=5
+        (p: #1 protoid=isakmp transform=5 len=48
             (t: #1 type=encr id=aes )
             (t: #2 type=integ id=hmac-sha )
             (t: #3 type=prf id=hmac-sha )
