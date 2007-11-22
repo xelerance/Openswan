@@ -1030,6 +1030,8 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	}
     }
 
+    DBG(DBG_PARSING, DBG_log("authenticator matched"));
+
 #if 0
     {
 	size_t  blocksize = st->st_oakley.encrypter->enc_blocksize;
