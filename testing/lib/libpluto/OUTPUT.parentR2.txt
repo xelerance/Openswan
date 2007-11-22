@@ -139,6 +139,7 @@ sending 316 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 |    length: 12
 |    id_type: ID_FQDN
 | processing payload: ISAKMP_NEXT_v2IDi (len=12) 
+../parentR2 IKEv2 mode peer ID is ID_FQDN: '@west'
 | complete v2 state transition with STF_OK
 ../parentR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 | sending reply packet to 192.1.2.45:500 (from port 500)
