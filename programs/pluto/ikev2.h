@@ -24,6 +24,7 @@ extern void complete_v2_state_transition(struct msg_digest **mdp
 extern stf_status ikev2parent_inI1outR1(struct msg_digest *md);
 extern stf_status ikev2parent_inR1(struct msg_digest *md);
 extern stf_status ikev2parent_inR1outI2(struct msg_digest *md);
+extern stf_status ikev2parent_inI2outR2(struct msg_digest *md);
 
 extern const struct state_v2_microcode *ikev2_parent_firststate(void);
 
@@ -45,3 +46,10 @@ extern notification_t parse_ikev2_sa_body(pb_stream *sa_pbs
 					  , pb_stream *r_sa_pbs
 					  , bool selection
 					  , struct state *st);
+
+extern void send_v2_notification_from_state(struct state *st
+					    , enum state_kind state
+					    , u_int16_t type);
+
+extern void send_v2_notification_from_md(struct msg_digest *md,u_int16_t type);
+

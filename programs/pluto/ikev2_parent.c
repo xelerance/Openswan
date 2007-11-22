@@ -51,7 +51,9 @@
 
 #include "tpm/tpm.h"
 
-#define SEND_NOTIFICATION(t) abort()
+#define SEND_NOTIFICATION(t) \
+    if (st) send_v2_notification_from_state(st, from_state, t); \
+    else send_v2_notification_from_md(md, t); }
 
 static void ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
 				, struct pluto_crypto_req *r
@@ -422,8 +424,8 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	 * are under DOS
 	 */
 	DBG_log("no connection found\n");
-	SEND_NOTIFICATION(NO_PROPOSAL_CHOSEN);
-	return STF_FATAL;
+	//SEND_NOTIFICATION(NO_PROPOSAL_CHOSEN);
+	return STF_FAIL;
     }
 	
 
@@ -762,6 +764,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	r_hdr.isa_np    = ISAKMP_NEXT_v2E;
 	r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
 	r_hdr.isa_flags = ISAKMP_FLAGS_I;
+	memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
+	memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
 	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
 	    return STF_INTERNAL_ERROR;
     }
@@ -887,6 +891,291 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 		 , "reply packet for ikev2_parent_outI1");
 
     /* note: retransimission is driven by initiator */
+
+    return STF_OK;
+    
+}
+
+/*
+ *
+ ***************************************************************
+ *                       PARENT_inR2                       *****
+ ***************************************************************
+ *  - 
+ *  
+ *
+ */
+static void ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
+					    , struct pluto_crypto_req *r
+					    , err_t ugh);
+
+static stf_status
+ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
+			    , struct pluto_crypto_req *r);
+
+stf_status ikev2parent_inI2outR2(struct msg_digest *md)
+{
+    struct state *st = md->st;
+    //struct connection *c = st->st_connection;
+
+    /*
+     * the initiator sent us an encrypted payload. We need to calculate
+     * our g^xy, and skeyseed values, and then decrypt the payload.
+     */
+
+    DBG(DBG_CONTROLMORE
+	, DBG_log("ikev2 parent inR2: calculating g^{xy} in order to decrypt I2"));
+
+    /* verify that there is in fact an encrypted payload */
+    if(!md->chain[ISAKMP_NEXT_v2E]) {
+	openswan_log("R2 state should receive an encrypted payload");
+	return STF_FATAL;
+    }
+
+    /* now. we need to go calculate the g^xy */
+    {
+	struct dh_continuation *dh = alloc_thing(struct dh_continuation
+						 , "ikev2_inI2outR2 KE");
+	stf_status e;
+
+	dh->md = md;
+	set_suspended(st, dh->md);
+
+	dh->dh_pcrc.pcrc_func = ikev2_parent_inI2outR2_continue;
+	e = start_dh_v2(&dh->dh_pcrc, st, st->st_import, FALSE, st->st_oakley.groupnum);
+	if(e != STF_SUSPEND && e != STF_INLINE) {
+	    loglog(RC_CRYPTOFAILED, "system too busy");
+	    delete_state(st);
+	}
+
+	reset_globals();
+
+	return e;
+    }
+}
+
+static void
+ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
+				, struct pluto_crypto_req *r
+				, err_t ugh)
+{
+    struct dh_continuation *dh = (struct dh_continuation *)pcrc;
+    struct msg_digest *md = dh->md;
+    struct state *const st = md->st;
+    stf_status e;
+    
+    DBG(DBG_CONTROLMORE
+	, DBG_log("ikev2 parent inR1outI1: calculating g^{xy}, sending I2"));
+  
+    /* XXX should check out ugh */
+    passert(ugh == NULL);
+    passert(cur_state == NULL);
+    passert(st != NULL);
+
+    passert(st->st_suspended_md == dh->md);
+    set_suspended(st,NULL);	/* no longer connected or suspended */
+    
+    set_cur_state(st);
+    
+    st->st_calculating = FALSE;
+
+    e = ikev2_parent_inI2outR2_tail(pcrc, r);
+  
+    if(dh->md != NULL) {
+	complete_v2_state_transition(&dh->md, e);
+	if(dh->md) release_md(dh->md);
+    }
+    reset_globals();
+    
+    passert(GLOBALS_ARE_RESET());
+}
+
+static stf_status
+ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
+			    , struct pluto_crypto_req *r)
+{
+    struct dh_continuation *dh = (struct dh_continuation *)pcrc;
+    struct msg_digest *md = dh->md;
+    struct state *const st = md->st;
+    //struct connection *c   = st->st_connection;
+    pb_stream     *e_pbs;
+    unsigned char *iv;
+
+    /* extract calculated values from r */
+    finish_dh_v2(st, r);
+
+    e_pbs = &md->chain[ISAKMP_NEXT_v2E]->pbs;
+
+    iv = e_pbs->cur;
+    /* now decrypt the payload --- start by checking authenticator */
+    {
+	unsigned char  b12[12];
+	struct hmac_ctx ctx;
+	unsigned char *encend;
+	
+	encend = e_pbs->roof - 12;
+	
+	hmac_init_chunk(&ctx, st->st_oakley.integ_hasher, st->st_skey_ai);
+	hmac_update(&ctx, iv, b12-iv);
+	hmac_final(b12, &ctx);
+
+	if(DBGP(DBG_PARSING)) {
+	    DBG_dump("R2 calculated auth:", b12, 12); 
+	    DBG_dump("R2  provided  auth:", encend, 12);
+	}
+
+	if(memcmp(b12, encend, 12)!=0) {
+	    openswan_log("R2 failed to match authenticator");
+	    return STF_FAIL;
+	}
+    }
+
+#if 0
+    {
+	size_t  blocksize = st->st_oakley.encrypter->enc_blocksize;
+	unsigned char *savediv = alloca(blocksize);
+
+	memcpy(savediv, iv, blocksize);
+    
+	/* now, encrypt */
+	(st->st_oakley.encrypter->do_crypt)(encstart,
+					    e_pbs_cipher.cur - encstart,
+					    st->st_skey_ei.ptr,
+					    st->st_skey_ei.len,
+					    savediv, TRUE);
+    }
+    close_output_pbs(&e_pbs_cipher);
+    
+
+
+
+
+
+
+
+
+
+
+
+    /* HDR out */
+    {
+	struct isakmp_hdr r_hdr = md->hdr;
+
+	r_hdr.isa_np    = ISAKMP_NEXT_v2E;
+	r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
+	r_hdr.isa_flags = ISAKMP_FLAGS_I;
+	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
+	    return STF_INTERNAL_ERROR;
+    }
+
+    /* insert an Encryption payload header */
+    e.isag_np = ISAKMP_NEXT_v2IDi;
+    e.isag_critical = ISAKMP_PAYLOAD_CRITICAL;
+
+    if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
+	return STF_INTERNAL_ERROR;
+    }
+
+    /* insert IV */
+    iv     = e_pbs.cur;
+    ivsize = st->st_oakley.encrypter->iv_size;
+    if(!out_zero(ivsize, &e_pbs, "iv")) {
+	return STF_INTERNAL_ERROR;
+    }
+    get_rnd_bytes(iv, ivsize);
+
+    /* note where cleartext starts */
+    init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
+    e_pbs_cipher.container = &e_pbs;
+    e_pbs_cipher.desc = NULL;
+    e_pbs_cipher.cur = e_pbs.cur;
+    encstart = e_pbs_cipher.cur;
+
+    /* send out the IDi payload */
+    {
+	struct ikev2_id r_id;
+	pb_stream r_id_pbs;
+	chunk_t id_b;
+
+	r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
+	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
+
+	if (!out_struct(&r_id
+			, &ikev2_id_desc
+			, &e_pbs_cipher
+			, &r_id_pbs)
+	    || !out_chunk(id_b, &r_id_pbs, "my identity"))
+	    return STF_INTERNAL_ERROR;
+	close_output_pbs(&r_id_pbs);
+    }
+
+#if 0
+    {
+	int np = numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
+	struct ikev2_generic in;
+	pb_stream pb;
+	
+	memset(&in, 0, sizeof(in));
+	in.isag_np = np;
+	in.isag_critical = ISAKMP_PAYLOAD_CRITICAL;
+
+	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
+	   !out_raw(st->st_nr.ptr, st->st_nr.len, &pb, "IKEv2 nonce"))
+	    return STF_INTERNAL_ERROR;
+	close_output_pbs(&pb);
+    }
+
+    /* Send DPD VID */
+    {
+	int np = --numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
+
+	if (!out_generic_raw(np, &isakmp_vendor_id_desc, &md->rbody
+			     , pluto_vendorid, strlen(pluto_vendorid), "Vendor ID"))
+	    return STF_INTERNAL_ERROR;
+    }
+
+#endif
+
+    /* pads things up to message size boundary */
+    {
+	char   b[1];
+	size_t blocksize = st->st_oakley.encrypter->enc_blocksize;
+	size_t padding =  pad_up(pbs_offset(&e_pbs_cipher), blocksize);
+	if (padding == 0) padding=blocksize;
+	(void) out_zero(padding-1, &e_pbs_cipher, "message padding");
+	b[0] = padding-1;
+	out_raw(b, 1, &e_pbs_cipher, "pad length");
+    }
+
+    /* encrypt the block */
+    {
+	size_t  blocksize = st->st_oakley.encrypter->enc_blocksize;
+	unsigned char *savediv = alloca(blocksize);
+
+	memcpy(savediv, iv, blocksize);
+    
+	/* now, encrypt */
+	(st->st_oakley.encrypter->do_crypt)(encstart,
+					    e_pbs_cipher.cur - encstart,
+					    st->st_skey_ei.ptr,
+					    st->st_skey_ei.len,
+					    savediv, TRUE);
+    }
+    close_output_pbs(&e_pbs_cipher);
+    
+
+    close_output_pbs(&md->rbody);
+    close_output_pbs(&md->reply);
+
+    /* let TCL hack it before we mark the length. */
+    TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
+
+    /* keep it for a retransmit if necessary */
+    clonetochunk(st->st_tpacket, md->reply.start, pbs_offset(&md->reply)
+		 , "reply packet for ikev2_parent_outI1");
+
+    /* note: retransimission is driven by initiator */
+#endif
 
     return STF_OK;
     

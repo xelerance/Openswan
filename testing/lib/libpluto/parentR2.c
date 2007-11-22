@@ -113,6 +113,10 @@ main(int argc, char *argv[])
     pt = pcap_open_offline(argv[3], eb1);
 
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+    /* process first packet */
+    pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
+
+    /* process second packet */
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
 
     {

@@ -145,6 +145,13 @@ static const struct state_v2_microcode state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
 	
+    { .state      = STATE_PARENT_R1,
+      .next_state = STATE_PARENT_R2,
+      .flags = SMF2_RESPONDER|SMF2_STATENEEDED|SMF2_REPLY,
+      .processor  = ikev2parent_inI2outR2,
+      .recv_type  = ISAKMP_v2_AUTH,
+    },
+
     /* last entry */
     { .state      = STATE_IKEv2_ROOF }
 };
@@ -172,7 +179,10 @@ process_v2_packet(struct msg_digest **mdp)
     enum isakmp_xchg_types ix;
     bool rcookiezero;
 
-#define SEND_NOTIFICATION(t) abort()
+#define SEND_NOTIFICATION(t) { 					\
+    if (st) send_v2_notification_from_state(st, from_state, t); \
+    else send_v2_notification_from_md(md, t); }
+
 
     /* Look for an state which matches the various things we know */
     /*
@@ -218,7 +228,7 @@ process_v2_packet(struct msg_digest **mdp)
 	    /* must be an initiator message, so we are the responder */
 
 	    /* XXX need to be more specific */
-	    SEND_NOTIFICATION(INVALID_MESSAGE);
+	    SEND_NOTIFICATION(INVALID_MESSAGE_ID);
 	}
 	return;
     }
@@ -336,6 +346,54 @@ process_v2_packet(struct msg_digest **mdp)
 	stf = (svm->processor)(md);
 	complete_v2_state_transition(mdp, stf);
     }
+}
+
+void
+send_v2_notification_from_state(struct state *st, enum state_kind state,
+				u_int16_t type)
+{
+    passert(st);
+
+    if (state == STATE_UNDEFINED)
+	state = st->st_state;
+
+    openswan_log("Sending notification %u", type);
+}
+
+void
+send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type)
+{
+    /**
+     * Create a dummy state to be able to use send_packet in
+     * send_notification
+     *
+     * we need to set:
+     *   st_connection->that.host_addr
+     *   st_connection->that.host_port
+     *   st_connection->interface
+     */
+    openswan_log("Sending notification %u", type);
+
+#if 0
+    struct state st;
+    struct connection cnx;
+
+
+    passert(md);
+
+    memset(&st, 0, sizeof(st));
+    memset(&cnx, 0, sizeof(cnx));
+    st.st_connection = &cnx;
+    st.st_remoteaddr = md->sender;
+    st.st_remoteport = md->sender_port;
+    st.st_localaddr  = md->iface->ip_addr;
+    st.st_localport  = md->iface->port;
+    cnx.interface = md->iface;
+    st.st_interface = md->iface;
+
+    send_notification(&st, type, NULL, 0,
+	md->hdr.isa_icookie, md->hdr.isa_rcookie, NULL, 0, PROTO_ISAKMP);
+#endif
 }
 
 static void success_v2_state_transition(struct msg_digest **mdp)
