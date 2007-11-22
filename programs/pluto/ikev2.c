@@ -66,6 +66,11 @@
 #include "udpfromto.h"
 #include "tpm/tpm.h"
 
+#define SEND_NOTIFICATION(t) { 					\
+    if (st) send_v2_notification_from_state(st, from_state, t); \
+    else send_v2_notification_from_md(md, t); }
+
+
 struct state_v2_microcode {
     enum state_kind state, next_state;
     enum isakmp_xchg_types recv_type;
@@ -164,6 +169,105 @@ const struct state_v2_microcode *ikev2_parent_firststate()
 
 
 /*
+ * split up an incoming message into payloads
+ */
+void ikev2_process_payloads(struct msg_digest *md,
+			    pb_stream    *in_pbs,
+			    unsigned int from_state,
+			    unsigned int np)
+{
+    struct payload_digest *pd = md->digest;
+    struct state *st = md->st;
+    err_t excuse = "notsure";
+    
+    //lset_t needed = smc->req_payloads;
+    
+    while (np != ISAKMP_NEXT_NONE)
+    {
+	struct_desc *sd = np < ISAKMP_NEXT_ROOF? payload_descs[np] : NULL;
+	int thisp = np;
+	
+	
+	if (pd == &md->digest[PAYLIMIT])
+	{
+	    loglog(RC_LOG_SERIOUS, "more than %d payloads in message; ignored", PAYLIMIT);
+	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
+	    return;
+	}
+	
+	if (sd == NULL)
+	{
+	    loglog(RC_LOG_SERIOUS, "%smessage ignored because it contains an unknown or"
+		   " unexpected payload type (%s) at the outermost level"
+		   , excuse, enum_show(&payload_names, thisp));
+	    SEND_NOTIFICATION(INVALID_PAYLOAD_TYPE);
+	    return;
+	}
+	
+#if 0
+	{
+	    lset_t s = LELEM(thisp);
+	    
+	    if (LDISJOINT(s
+			  , needed | smc->opt_payloads|
+			  LELEM(ISAKMP_NEXT_VID) |
+			  LELEM(ISAKMP_NEXT_N) | LELEM(ISAKMP_NEXT_D)))
+	    {
+		loglog(RC_LOG_SERIOUS, "%smessage ignored because it "
+		       "contains an unexpected payload type (%s)"
+		       , excuse, enum_show(&payload_names, thisp));
+		SEND_NOTIFICATION(INVALID_PAYLOAD_TYPE);
+		return;
+	    }
+	    
+	    DBG(DBG_PARSING
+		, DBG_log("got payload 0x%qx(%s) needed: 0x%qx opt: 0x%qx"
+			  , s, enum_show(&payload_names, thisp)
+			  , needed, smc->opt_payloads));
+	    needed &= ~s;
+	}
+#endif
+	
+	if (!in_struct(&pd->payload, sd, in_pbs, &pd->pbs))
+	{
+	    loglog(RC_LOG_SERIOUS, "%smalformed payload in packet", excuse);
+	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
+	    return;
+	}
+	
+	DBG(DBG_PARSING
+	    , DBG_log("processing payload: %s (len=%u)\n"
+		      , enum_show(&payload_names, thisp)
+		      , pd->payload.generic.isag_length));
+	
+	/* place this payload at the end of the chain for this type */
+	{
+	    struct payload_digest **p;
+	    
+	    for (p = &md->chain[thisp]; *p != NULL; p = &(*p)->next)
+		;
+	    *p = pd;
+	    pd->next = NULL;
+	}
+	
+	np = pd->payload.generic.isag_np;
+	
+	/* do payload-type specific things that need to be here. */
+	switch(thisp) {
+	case ISAKMP_NEXT_v2E:
+	    np = ISAKMP_NEXT_NONE;
+	    break;
+	default:   /* nothing special */
+	    break;
+	}
+	
+	pd++;
+    }
+    
+    md->digest_roof = pd;
+}
+
+/*
  * process an input packet, possibly generating a reply.
  *
  * If all goes well, this routine eventually calls a state-specific
@@ -178,11 +282,6 @@ process_v2_packet(struct msg_digest **mdp)
     const struct state_v2_microcode *svm;
     enum isakmp_xchg_types ix;
     bool rcookiezero;
-
-#define SEND_NOTIFICATION(t) { 					\
-    if (st) send_v2_notification_from_state(st, from_state, t); \
-    else send_v2_notification_from_md(md, t); }
-
 
     /* Look for an state which matches the various things we know */
     /*
@@ -233,115 +332,25 @@ process_v2_packet(struct msg_digest **mdp)
 	return;
     }
 
+    ikev2_process_payloads(md, &md->message_pbs, from_state, md->hdr.isa_np);
+
+
+    DBG(DBG_PARSING,
+	if (pbs_left(&md->message_pbs) != 0)
+	    DBG_log("removing %d bytes of padding", (int) pbs_left(&md->message_pbs)));
+    
+    md->message_pbs.roof = md->message_pbs.cur;
+    
+#if 0
+    /* check that all mandatory payloads appeared */
+    if (needed != 0)
     {
-	struct payload_digest *pd = md->digest;
-	volatile int np = md->hdr.isa_np;
-	err_t excuse = "notsure";
-
-	//lset_t needed = smc->req_payloads;
-
-	while (np != ISAKMP_NEXT_NONE)
-	{
-	    struct_desc *sd = np < ISAKMP_NEXT_ROOF? payload_descs[np] : NULL;
-	    int thisp = np;
-
-
-	    if (pd == &md->digest[PAYLIMIT])
-	    {
-		loglog(RC_LOG_SERIOUS, "more than %d payloads in message; ignored", PAYLIMIT);
-		SEND_NOTIFICATION(PAYLOAD_MALFORMED);
-		return;
-	    }
-
-	    if (sd == NULL)
-	    {
-		loglog(RC_LOG_SERIOUS, "%smessage ignored because it contains an unknown or"
-		       " unexpected payload type (%s) at the outermost level"
-		       , excuse, enum_show(&payload_names, thisp));
-		SEND_NOTIFICATION(INVALID_PAYLOAD_TYPE);
-		return;
-	    }
-
-#if 0
-	    {
-		lset_t s = LELEM(thisp);
-
-		if (LDISJOINT(s
-			      , needed | smc->opt_payloads|
-			      LELEM(ISAKMP_NEXT_VID) |
-			      LELEM(ISAKMP_NEXT_N) | LELEM(ISAKMP_NEXT_D)))
-		{
-		    loglog(RC_LOG_SERIOUS, "%smessage ignored because it "
-			   "contains an unexpected payload type (%s)"
-			, excuse, enum_show(&payload_names, thisp));
-		    SEND_NOTIFICATION(INVALID_PAYLOAD_TYPE);
-		    return;
-		}
-		
-		DBG(DBG_PARSING
-		    , DBG_log("got payload 0x%qx(%s) needed: 0x%qx opt: 0x%qx"
-			      , s, enum_show(&payload_names, thisp)
-			      , needed, smc->opt_payloads));
-		needed &= ~s;
-	    }
+	loglog(RC_LOG_SERIOUS, "message for %s is missing payloads %s"
+	       , enum_show(&state_names, from_state)
+	       , bitnamesof(payload_name, needed));
+	SEND_NOTIFICATION(PAYLOAD_MALFORMED);
+	return;
 #endif
-
-	    if (!in_struct(&pd->payload, sd, &md->message_pbs, &pd->pbs))
-	    {
-		loglog(RC_LOG_SERIOUS, "%smalformed payload in packet", excuse);
-		SEND_NOTIFICATION(PAYLOAD_MALFORMED);
-		return;
-	    }
-
-	    DBG(DBG_PARSING
-		, DBG_log("processing payload: %s (len=%u)\n"
-			  , enum_show(&payload_names, thisp)
-			  , pd->payload.generic.isag_length));
-
-	    /* place this payload at the end of the chain for this type */
-	    {
-		struct payload_digest **p;
-
-		for (p = &md->chain[thisp]; *p != NULL; p = &(*p)->next)
-		    ;
-		*p = pd;
-		pd->next = NULL;
-	    }
-
-	    np = pd->payload.generic.isag_np;
-
-	    /* do payload-type specific things that need to be here. */
-	    switch(thisp) {
-	    case ISAKMP_NEXT_v2E:
-		np = ISAKMP_NEXT_NONE;
-		break;
-	    default:   /* nothing special */
-		break;
-	    }
-
-	    pd++;
-	}
-
-	md->digest_roof = pd;
-
-	DBG(DBG_PARSING,
-	    if (pbs_left(&md->message_pbs) != 0)
-		DBG_log("removing %d bytes of padding", (int) pbs_left(&md->message_pbs)));
-
-	md->message_pbs.roof = md->message_pbs.cur;
-
-#if 0
-	/* check that all mandatory payloads appeared */
-	if (needed != 0)
-	{
-	    loglog(RC_LOG_SERIOUS, "message for %s is missing payloads %s"
-		, enum_show(&state_names, from_state)
-		, bitnamesof(payload_name, needed));
-	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
-	    return;
-	}
-#endif
-    }
 
     md->svm = svm;
     md->from_state = from_state;

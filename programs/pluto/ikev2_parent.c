@@ -995,25 +995,28 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 			    , struct pluto_crypto_req *r)
 {
     struct dh_continuation *dh = (struct dh_continuation *)pcrc;
-    struct msg_digest *md = dh->md;
+    struct msg_digest *md  = dh->md;
     struct state *const st = md->st;
     //struct connection *c   = st->st_connection;
     pb_stream     *e_pbs;
+    pb_stream      clr_pbs;
     unsigned char *iv;
+    unsigned char *encend;
+    unsigned int   np;
 
     /* extract calculated values from r */
     finish_dh_v2(st, r);
 
     e_pbs = &md->chain[ISAKMP_NEXT_v2E]->pbs;
+    np    = md->chain[ISAKMP_NEXT_v2E]->payload.generic.isag_np;
 
-    iv = e_pbs->cur;
-    /* now decrypt the payload --- start by checking authenticator */
+    iv     = e_pbs->cur;
+    encend = e_pbs->roof - 12;
+
+    /* start by checking authenticator */
     {
 	unsigned char  b12[12];
 	struct hmac_ctx ctx;
-	unsigned char *encend;
-	
-	encend = e_pbs->roof - 12;
 	
 	hmac_init_chunk(&ctx, st->st_oakley.integ_hasher, st->st_skey_ai);
 	hmac_update(&ctx, iv, encend-iv);
@@ -1032,30 +1035,41 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
     DBG(DBG_PARSING, DBG_log("authenticator matched"));
 
-#if 0
+    /* decrypt */
     {
-	size_t  blocksize = st->st_oakley.encrypter->enc_blocksize;
-	unsigned char *savediv = alloca(blocksize);
+	size_t         blocksize = st->st_oakley.encrypter->enc_blocksize;
+	unsigned char *encstart  = iv + blocksize;
+	unsigned int   enclen    = encend - encstart;
+	unsigned int   padlen;
 
-	memcpy(savediv, iv, blocksize);
-    
-	/* now, encrypt */
+	/* now, decrypt */
 	(st->st_oakley.encrypter->do_crypt)(encstart,
-					    e_pbs_cipher.cur - encstart,
+					    enclen,
 					    st->st_skey_ei.ptr,
 					    st->st_skey_ei.len,
-					    savediv, TRUE);
+					    iv, FALSE);
+
+	padlen = encstart[enclen-1];
+	encend = encend - padlen+1;
+	
+	if(encend < encstart) {
+	    openswan_log("invalid pad length: %u", padlen);
+	    return STF_FAIL;
+	}
+
+	if(DBGP(DBG_PARSING)) {
+	    DBG_dump("decrypted payload:", encstart, enclen);
+	    DBG_log("striping %u bytes as pad", padlen+1);
+	}
+
+	init_pbs(&clr_pbs, encstart, enclen - (padlen+1), "cleartext");
     }
-    close_output_pbs(&e_pbs_cipher);
-    
+
+    ikev2_process_payloads(md, &clr_pbs, st->st_state, np);
 
 
 
-
-
-
-
-
+#if 0
 
 
 

@@ -52,4 +52,8 @@ extern void send_v2_notification_from_state(struct state *st
 					    , u_int16_t type);
 
 extern void send_v2_notification_from_md(struct msg_digest *md,u_int16_t type);
+extern void ikev2_process_payloads(struct msg_digest *md,
+				   pb_stream   *in_pbs,
+				   unsigned int from_state,
+				   unsigned int np);
 
