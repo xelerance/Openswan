@@ -1016,7 +1016,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	encend = e_pbs->roof - 12;
 	
 	hmac_init_chunk(&ctx, st->st_oakley.integ_hasher, st->st_skey_ai);
-	hmac_update(&ctx, iv, b12-iv);
+	hmac_update(&ctx, iv, encend-iv);
 	hmac_final(b12, &ctx);
 
 	if(DBGP(DBG_PARSING)) {

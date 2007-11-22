@@ -243,6 +243,8 @@ process_v2_packet(struct msg_digest **mdp)
 	while (np != ISAKMP_NEXT_NONE)
 	{
 	    struct_desc *sd = np < ISAKMP_NEXT_ROOF? payload_descs[np] : NULL;
+	    int thisp = np;
+
 
 	    if (pd == &md->digest[PAYLIMIT])
 	    {
@@ -255,14 +257,14 @@ process_v2_packet(struct msg_digest **mdp)
 	    {
 		loglog(RC_LOG_SERIOUS, "%smessage ignored because it contains an unknown or"
 		       " unexpected payload type (%s) at the outermost level"
-		       , excuse, enum_show(&payload_names, np));
+		       , excuse, enum_show(&payload_names, thisp));
 		SEND_NOTIFICATION(INVALID_PAYLOAD_TYPE);
 		return;
 	    }
 
 #if 0
 	    {
-		lset_t s = LELEM(np);
+		lset_t s = LELEM(thisp);
 
 		if (LDISJOINT(s
 			      , needed | smc->opt_payloads|
@@ -271,14 +273,14 @@ process_v2_packet(struct msg_digest **mdp)
 		{
 		    loglog(RC_LOG_SERIOUS, "%smessage ignored because it "
 			   "contains an unexpected payload type (%s)"
-			, excuse, enum_show(&payload_names, np));
+			, excuse, enum_show(&payload_names, thisp));
 		    SEND_NOTIFICATION(INVALID_PAYLOAD_TYPE);
 		    return;
 		}
 		
 		DBG(DBG_PARSING
 		    , DBG_log("got payload 0x%qx(%s) needed: 0x%qx opt: 0x%qx"
-			      , s, enum_show(&payload_names, np)
+			      , s, enum_show(&payload_names, thisp)
 			      , needed, smc->opt_payloads));
 		needed &= ~s;
 	    }
@@ -293,26 +295,30 @@ process_v2_packet(struct msg_digest **mdp)
 
 	    DBG(DBG_PARSING
 		, DBG_log("processing payload: %s (len=%u)\n"
-			  , enum_show(&payload_names, np)
+			  , enum_show(&payload_names, thisp)
 			  , pd->payload.generic.isag_length));
-
-	    /* do payload-type specific debugging */
-	    switch(np) {
-	    default:   /* nothing special */
-		break;
-	    }
 
 	    /* place this payload at the end of the chain for this type */
 	    {
 		struct payload_digest **p;
 
-		for (p = &md->chain[np]; *p != NULL; p = &(*p)->next)
+		for (p = &md->chain[thisp]; *p != NULL; p = &(*p)->next)
 		    ;
 		*p = pd;
 		pd->next = NULL;
 	    }
 
 	    np = pd->payload.generic.isag_np;
+
+	    /* do payload-type specific things that need to be here. */
+	    switch(thisp) {
+	    case ISAKMP_NEXT_v2E:
+		np = ISAKMP_NEXT_NONE;
+		break;
+	    default:   /* nothing special */
+		break;
+	    }
+
 	    pd++;
 	}
 
