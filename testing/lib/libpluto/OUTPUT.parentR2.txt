@@ -132,6 +132,13 @@ sending 316 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 | R2 calculated auth:  f2 99 af 7d  f3 4a 93 92  2c b0 de 51
 | R2  provided  auth:  f2 99 af 7d  f3 4a 93 92  2c b0 de 51
 | authenticator matched
+| decrypted payload:  00 00 00 0c  02 00 00 00  77 65 73 74  00 00 00 03
+| striping 4 bytes as pad
+| **parse IKEv2 Identification Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    length: 12
+|    id_type: ID_FQDN
+| processing payload: ISAKMP_NEXT_v2IDi (len=12) 
 | complete v2 state transition with STF_OK
 ../parentR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 | sending reply packet to 192.1.2.45:500 (from port 500)
