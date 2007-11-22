@@ -756,6 +756,7 @@ union payload {
     struct ikev2_trans      v2trans;
     struct ikev2_prop       v2prop;
     struct ikev2_sa         v2sa;
+    struct ikev2_id         v2id;
 };
 
 

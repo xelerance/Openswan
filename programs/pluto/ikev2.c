@@ -367,8 +367,8 @@ bool
 ikev2_decode_peer_id(struct msg_digest *md, bool initiator)
 {
     //struct state *const st = md->st;
-    unsigned int hisID = initiator ? ISAKMP_NEXT_v2IDi : ISAKMP_NEXT_v2IDr;
-    //unsigned int myID  = initiator ? ISAKMP_NEXT_v2IDr : ISAKMP_NEXT_v2IDi;
+    unsigned int hisID = initiator ? ISAKMP_NEXT_v2IDr : ISAKMP_NEXT_v2IDi;
+    //unsigned int myID  = initiator ? ISAKMP_NEXT_v2IDi: ISAKMP_NEXT_v2IDr;
     //struct payload_digest *const id_me  = md->chain[myID];
     struct payload_digest *const id_him = md->chain[hisID];
     const pb_stream * id_pbs;
