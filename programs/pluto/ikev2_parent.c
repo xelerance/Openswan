@@ -1067,6 +1067,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
     ikev2_process_payloads(md, &clr_pbs, st->st_state, np);
 
+    if(!ikev2_decode_peer_id(md, FALSE)) {
+	return STF_FAIL + INVALID_ID_INFORMATION;
+    }
+
 
 
 #if 0

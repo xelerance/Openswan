@@ -113,6 +113,9 @@ send_isakmp_notification(struct state *st
 
 extern bool has_preloaded_public_key(struct state *st);
 
+extern bool extract_peer_id(struct id *peer, const pb_stream const* id_pbs);
+
+
 /*
  * tools for sending Pluto Vendor ID.
  */

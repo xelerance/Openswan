@@ -57,3 +57,7 @@ extern void ikev2_process_payloads(struct msg_digest *md,
 				   unsigned int from_state,
 				   unsigned int np);
 
+extern bool
+ikev2_decode_peer_id(struct msg_digest *md, bool initiator);
+
+

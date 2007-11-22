@@ -463,6 +463,78 @@ has_preloaded_public_key(struct state *st)
  * We must be called before SIG or HASH are decoded since we
  * may change the peer's RSA key or ID.
  */
+
+bool
+extract_peer_id(struct id *peer, const pb_stream const* id_pbs)
+{
+    switch (peer->kind)
+    {
+    case ID_IPV4_ADDR:
+    case ID_IPV6_ADDR:
+	/* failure mode for initaddr is probably inappropriate address length */
+	{
+	    err_t ugh = initaddr(id_pbs->cur, pbs_left(id_pbs)
+		, peer->kind == ID_IPV4_ADDR? AF_INET : AF_INET6
+		, &peer->ip_addr);
+
+	    if (ugh != NULL)
+	    {
+		loglog(RC_LOG_SERIOUS, "improper %s identification payload: %s"
+		    , enum_show(&ident_names, peer->kind), ugh);
+		/* XXX Could send notification back */
+		return FALSE;
+	    }
+	}
+	break;
+
+    case ID_USER_FQDN:
+	if (memchr(id_pbs->cur, '@', pbs_left(id_pbs)) == NULL)
+	{
+	    char idbuf[IDTOA_BUF];
+	    int len = pbs_left(id_pbs);
+	    if(len>(IDTOA_BUF-1)) len = IDTOA_BUF;
+
+	    memcpy(idbuf, id_pbs->cur, len-1);
+	    idbuf[len]='\0';
+	    loglog(RC_LOG_SERIOUS, "peer's ID_USER_FQDN contains no @: %s", idbuf);
+	    //return FALSE;
+	}
+	/* FALLTHROUGH */
+    case ID_FQDN:
+	if (memchr(id_pbs->cur, '\0', pbs_left(id_pbs)) != NULL)
+	{
+	    loglog(RC_LOG_SERIOUS, "Phase 1 ID Payload of type %s contains a NUL"
+		, enum_show(&ident_names, peer->kind));
+	    return FALSE;
+	}
+
+	/* ??? ought to do some more sanity check, but what? */
+
+	setchunk(peer->name, id_pbs->cur, pbs_left(id_pbs));
+	break;
+
+    case ID_KEY_ID:
+	setchunk(peer->name, id_pbs->cur, pbs_left(id_pbs));
+	DBG(DBG_PARSING,
+ 	    DBG_dump_chunk("KEY ID:", peer->name));
+	break;
+
+    case ID_DER_ASN1_DN:
+	setchunk(peer->name, id_pbs->cur, pbs_left(id_pbs));
+ 	DBG(DBG_PARSING,
+ 	    DBG_dump_chunk("DER ASN1 DN:", peer->name));
+	break;
+
+    default:
+	/* XXX Could send notification back */
+	loglog(RC_LOG_SERIOUS, "Unacceptable identity type (%s) in Phase 1 ID Payload"
+	    , enum_show(&ident_names, peer->kind));
+	return FALSE;
+    }
+    
+    return TRUE;
+}
+
 bool
 decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 {
@@ -505,68 +577,7 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 
     peer.kind = id->isaid_idtype;
 
-    switch (peer.kind)
-    {
-    case ID_IPV4_ADDR:
-    case ID_IPV6_ADDR:
-	/* failure mode for initaddr is probably inappropriate address length */
-	{
-	    err_t ugh = initaddr(id_pbs->cur, pbs_left(id_pbs)
-		, peer.kind == ID_IPV4_ADDR? AF_INET : AF_INET6
-		, &peer.ip_addr);
-
-	    if (ugh != NULL)
-	    {
-		loglog(RC_LOG_SERIOUS, "improper %s identification payload: %s"
-		    , enum_show(&ident_names, peer.kind), ugh);
-		/* XXX Could send notification back */
-		return FALSE;
-	    }
-	}
-	break;
-
-    case ID_USER_FQDN:
-	if (memchr(id_pbs->cur, '@', pbs_left(id_pbs)) == NULL)
-	{
-	    char idbuf[IDTOA_BUF];
-	    int len = pbs_left(id_pbs);
-	    if(len>(IDTOA_BUF-1)) len = IDTOA_BUF;
-
-	    memcpy(idbuf, id_pbs->cur, len-1);
-	    idbuf[len]='\0';
-	    loglog(RC_LOG_SERIOUS, "peer's ID_USER_FQDN contains no @: %s", idbuf);
-	    //return FALSE;
-	}
-	/* FALLTHROUGH */
-    case ID_FQDN:
-	if (memchr(id_pbs->cur, '\0', pbs_left(id_pbs)) != NULL)
-	{
-	    loglog(RC_LOG_SERIOUS, "Phase 1 ID Payload of type %s contains a NUL"
-		, enum_show(&ident_names, peer.kind));
-	    return FALSE;
-	}
-
-	/* ??? ought to do some more sanity check, but what? */
-
-	setchunk(peer.name, id_pbs->cur, pbs_left(id_pbs));
-	break;
-
-    case ID_KEY_ID:
-	setchunk(peer.name, id_pbs->cur, pbs_left(id_pbs));
-	DBG(DBG_PARSING,
- 	    DBG_dump_chunk("KEY ID:", peer.name));
-	break;
-
-    case ID_DER_ASN1_DN:
-	setchunk(peer.name, id_pbs->cur, pbs_left(id_pbs));
- 	DBG(DBG_PARSING,
- 	    DBG_dump_chunk("DER ASN1 DN:", peer.name));
-	break;
-
-    default:
-	/* XXX Could send notification back */
-	loglog(RC_LOG_SERIOUS, "Unacceptable identity type (%s) in Phase 1 ID Payload"
-	    , enum_show(&ident_names, peer.kind));
+    if(!extract_peer_id(&peer, id_pbs)) {
 	return FALSE;
     }
 
@@ -578,9 +589,9 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 		     , aggrmode ? "Aggressive" : "Main"
 		     , enum_show(&ident_names, id->isaid_idtype), buf);
     }
-
-     /* check for certificates */
-     decode_cert(md);
+    
+    /* check for certificates */
+    decode_cert(md);
 
     /* Now that we've decoded the ID payload, let's see if we
      * need to switch connections.

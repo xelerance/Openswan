@@ -363,6 +363,43 @@ process_v2_packet(struct msg_digest **mdp)
     }
 }
 
+bool
+ikev2_decode_peer_id(struct msg_digest *md, bool initiator)
+{
+    //struct state *const st = md->st;
+    unsigned int hisID = initiator ? ISAKMP_NEXT_v2IDi : ISAKMP_NEXT_v2IDr;
+    //unsigned int myID  = initiator ? ISAKMP_NEXT_v2IDr : ISAKMP_NEXT_v2IDi;
+    //struct payload_digest *const id_me  = md->chain[myID];
+    struct payload_digest *const id_him = md->chain[hisID];
+    const pb_stream * id_pbs;
+    struct ikev2_id * id;
+    struct id peer;
+
+    if(!id_him) {
+	return FALSE;
+    }
+
+    id_pbs = &id_him->pbs;
+    id = &id_him->payload.v2id;
+    peer.kind = id->isai_type;
+
+    if(!extract_peer_id(&peer, id_pbs)) {
+	return FALSE;
+    }
+    
+    {
+	char buf[IDTOA_BUF];
+
+	idtoa(&peer, buf, sizeof(buf));
+	openswan_log("IKEv2 mode peer ID is %s: '%s'"
+		     , enum_show(&ident_names, id->isai_type), buf);
+    }
+    
+    return TRUE;
+}
+	
+
+
 void
 send_v2_notification_from_state(struct state *st, enum state_kind state,
 				u_int16_t type)
