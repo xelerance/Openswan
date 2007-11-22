@@ -131,6 +131,19 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |    length: 16
 | processing payload: ISAKMP_NEXT_v2V (len=16) 
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
+| DH public value received:
+|   cd 30 df 6e  c0 85 44 12  53 01 80 d8  7e 1a fb b3
+|   26 79 3e 99  56 c8 6a 96  25 53 c2 77  ad 5b ab 50
+|   f8 32 5a d8  64 0b 0e fe  a5 1d 6c 83  1f a1 7c fb
+|   0f 2e 1a f4  b1 66 a0 fe  30 75 12 ad  0f 81 ab b8
+|   aa fb 68 48  ec 10 a4 97  6c 3d b1 17  ec e1 e6 61
+|   db bf 48 0c  28 2e 3f 11  07 c1 86 42  80 1e e8 3f
+|   9e 4a b9 ab  63 6f 23 7d  aa f6 a7 aa  d8 22 99 3e
+|   a4 1e a3 31  ee 27 82 0b  93 f5 0b 8f  3f 71 05 61
+|   c9 25 70 26  97 ba 6b 1e  95 3c 21 fb  c9 a7 7d 2b
+|   5f 87 3c fc  50 99 e7 7d  48 4c dd 52  66 4b cf 0d
+|   bf 00 ca fd  ae 6d e7 14  6d 11 35 f6  5d 93 5f 60
+|   b9 73 0f e0  49 2c 2a f8  c9 04 f6 4c  59 16 90 9d
 | ****parse IKEv2 Proposal Substructure Payload:
 |    next payload type: ISAKMP_NEXT_NONE
 |    length: 48
@@ -165,6 +178,8 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |    transform ID: 0
 | complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI1: calculating g^{xy}, sending I2
+../parentI2 ikev2 I 0x0001020304050607 0xc02e7a3031a03188 sha1:0x3e43b9a8f84eb02ba1be336f4a37da21 aes:0x50a946727aaffb5d8f8521d488eb84ec728728feb06a22c2
+../parentI2 ikev2 R 0x0001020304050607 0xc02e7a3031a03188 sha1:0xba4efe1cf00a4db022025d4f53b95645 aes:0x83c5c282bbf7d5b77adc9f0b1d3211cc9022792c20b493d6
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
@@ -255,7 +270,7 @@ sending 76 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using #
 ../parentI2 leak: 2 * hasher name
 TCPDUMP output
 reading from file parentI2.pcap, link-type NULL (BSD loopback)
-19:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f48e)!)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f48e)!)
     192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[I]:
     (sa[C]: len=240
         (p: #1 protoid=isakmp transform=4
@@ -291,6 +306,6 @@ reading from file parentI2.pcap, link-type NULL (BSD loopback)
     (v2ke: len=192 group=modp1536)
     (nonce[C]: len=16 nonce=(b5ce8419095c6e2b6b62d3055305b3c4) )
     (v2vid: len=12 vid=OEababababab)
-19:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 104, bad cksum 0 (->f63e)!)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 104, bad cksum 0 (->f63e)!)
     192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_auth[I]:
     (v2e[C]: len=44) [|v2IDi]

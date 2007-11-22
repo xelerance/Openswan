@@ -48,6 +48,9 @@ clean:
 		rm -rf `basename $$name .c`;\
 	done
 
+ike-secrets.txt: OUTPUT.parentI2.txt
+	grep '../parentI2 ikev2 [IR]' OUTPUT.parentI2.txt | cut -c13- >ike-secrets.txt
+
 cleanall: clean
 
 distclean: clean

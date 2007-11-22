@@ -55,7 +55,7 @@ void recv_pcap_packet(u_char *user
 
     /* find st involved */
     st = state_with_serialno(1);
-    st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+    st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PRIVATE|DBG_CRYPT;
 
     /* now fill in the SKEYSEED values from constants.. not calculated */
     clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc2_secret,tc2_secret_len);
@@ -116,7 +116,7 @@ main(int argc, char *argv[])
      */
     st = sendI1(c1, 0);
 
-    cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING;
+    cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING|DBG_PRIVATE|DBG_CRYPT;
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
 
     {
