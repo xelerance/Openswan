@@ -526,11 +526,11 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	unsigned int keybytes;
 	unsigned char *kb;
 
-	if(vpss.prf_hasher->hash_key_size == 0) {
-	    keybytes = vpss.ni.len + vpss.nr.len;
-	} else {
-	    keybytes = vpss.prf_hasher->hash_key_size/8;
-	}
+	//if(vpss.prf_hasher->hash_key_size == 0) {
+	keybytes = vpss.ni.len + vpss.nr.len;
+	//} else {
+	//keybytes = vpss.prf_hasher->hash_key_size;
+	//}
 
 	kb = alloc_bytes(keybytes, "skeyseed prf key");
 	memset(kb, 0, keybytes);
@@ -538,6 +538,9 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	memcpy(kb + keybytes/2, vpss.nr.ptr, keybytes/2);
 
 	/* SKEYSEED */
+	DBG(DBG_CRYPT,
+	    DBG_dump("Input to SKEYSEED: ", kb, keybytes));
+
 	hmac_init(&ctx, vpss.prf_hasher, kb, keybytes);
 	hmac_update_chunk(&ctx, shared);
 	hmac_final_chunk(*skeyseed, "skeyseed base", &ctx);
@@ -561,6 +564,14 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	vpss.counter[0]=0x01;
 	vpss.t.len = 0;
 
+	if(DBGP(DBG_CRYPT)) {
+	    DBG_log("PRF+ input");
+	    DBG_dump_chunk("Ni", vpss.ni);
+	    DBG_dump_chunk("Nr", vpss.nr);
+	    DBG_dump_chunk("SPIi", vpss.spii);
+	    DBG_dump_chunk("SPIr", vpss.spir);
+	}
+	
 	/* SKEYSEED_T1 */
 	v2genbytes(SK_d,  skd_bytes, "SK_d", &vpss);
 	v2genbytes(SK_ai, ska_bytes, "SK_ai", &vpss);

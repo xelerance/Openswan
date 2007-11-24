@@ -888,6 +888,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_init_chunk(&ctx, st->st_oakley.integ_hasher, st->st_skey_ai);
 	hmac_update(&ctx, iv, b12-iv);
 	hmac_final(b12, &ctx);
+
+	if(DBGP(DBG_PARSING)) {
+	    DBG_dump("I2 calculated auth:", b12, 12); 
+	}
     }
     close_output_pbs(&e_pbs);
 
