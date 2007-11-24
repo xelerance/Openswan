@@ -204,10 +204,11 @@ static const char *const pluto_cryptoop_strings[] = {
 	"build_nonce",        /* just fetch a new nonce */
 	"compute dh+iv",      /* perform (g^x)(g^y) and calculate skeyids */
 	"compute dh(p2)",     /* perform (g^x)(g^y) */
+	"compute dh(v2)",     /* IKEv2 IKE_SA calculation */
 };
 
 enum_names pluto_cryptoop_names =
-    { pcr_build_kenonce, pcr_compute_dh, pluto_cryptoop_strings, NULL};
+    { pcr_build_kenonce, pcr_compute_dh_v2, pluto_cryptoop_strings, NULL};
 
 
 /* pluto crypto importance */
