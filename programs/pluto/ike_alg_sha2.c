@@ -25,7 +25,8 @@ static void sha512_hash_final(u_char *hash, sha512_context *ctx)
 	memcpy(hash, &ctx->sha_out[0], SHA2_512_DIGEST_SIZE);
 }
 struct hash_desc hash_desc_sha2_256 = {
-	common:{algo_type: IKE_ALG_HASH,
+	common:{officname:  "sha256",
+		algo_type: IKE_ALG_HASH,
 		algo_id:   OAKLEY_SHA2_256,
 		algo_next: NULL, },
 	hash_ctx_size: sizeof(sha256_context),
@@ -36,7 +37,8 @@ struct hash_desc hash_desc_sha2_256 = {
 	hash_final:(void (*)(u_char *, void *))sha256_hash_final,
 };
 struct hash_desc hash_desc_sha2_512 = {
-	common:{algo_type: IKE_ALG_HASH,
+	common:{officname: "sha512",
+		algo_type: IKE_ALG_HASH,
 		algo_id:   OAKLEY_SHA2_512,
 		algo_next: NULL, },
 	hash_ctx_size: sizeof(sha512_context),

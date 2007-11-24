@@ -46,6 +46,7 @@ struct encrypt_desc algo_aes =
 {
 	common: {
 	  name: "aes",
+	  officname: "aes",
 	  algo_type: 	IKE_ALG_ENCRYPT,
 	  algo_id:   	OAKLEY_AES_CBC,
 	  algo_v2id:    IKEv2_ENCR_AES_CBC,

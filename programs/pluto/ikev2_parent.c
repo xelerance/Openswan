@@ -757,6 +757,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     finish_dh_v2(st, r);
 
+    if(DBGP(DBG_PRIVATE) && DBGP(DBG_CRYPT)) {
+	ikev2_log_parentSA(st);
+    }
+
     /* HDR out */
     {
 	struct isakmp_hdr r_hdr = md->hdr;
@@ -1006,6 +1010,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* extract calculated values from r */
     finish_dh_v2(st, r);
+
+    if(DBGP(DBG_PRIVATE) && DBGP(DBG_CRYPT)) {
+	ikev2_log_parentSA(st);
+    }
 
     e_pbs = &md->chain[ISAKMP_NEXT_v2E]->pbs;
     np    = md->chain[ISAKMP_NEXT_v2E]->payload.generic.isag_np;

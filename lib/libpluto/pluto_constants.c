@@ -133,6 +133,7 @@ static const char *const state_name[] = {
 	"STATE_IKEv2_START",
 	"STATE_PARENT_I1",
 	"STATE_PARENT_I2",
+	"STATE_PARENT_I3",
 	"STATE_PARENT_R1",
 	"STATE_PARENT_R2",
 	"STATE_IKEv2_ROOF"
@@ -180,11 +181,18 @@ const char *const state_story[] = {
 
 	"XAUTH client - awaiting CFG_request",  /* MODE_XAUTH_I0 */
 	"XAUTH client - awaiting CFG_set",      /* MODE_XAUTH_I1 */
-	"invalid state - IKE roof"
+	"invalid state - IKE roof",
+	"invalid state - IKEv2 base",
+	"sent v2I1, expected v2R1",             /* STATE_PARENT_I1 */
+	"sent v2I2, expected v2R2",
+	"PARENT SA established",
+	"received v2I1, sent v2R1",
+	"received v2I2, PARENT SA established",
+	"invalid state - IKEv2 roof"
     };
 
 enum_names state_stories =
-    { STATE_MAIN_R0, STATE_IKE_ROOF-1, state_story, NULL };
+    { STATE_MAIN_R0, STATE_IKEv2_ROOF-1, state_story, NULL };
 
 /* pluto crypto operations */
 static const char *const pluto_cryptoop_strings[] = {

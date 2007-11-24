@@ -63,6 +63,7 @@ static void do_des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size
 static struct encrypt_desc crypto_encrypter_des =
 {
     common: {name: "oakley_des_cbc",
+	     officname:         "1des",
              algo_type:         IKE_ALG_ENCRYPT,
              algo_id:           OAKLEY_DES_CBC,
              algo_next:         NULL, },
@@ -80,6 +81,7 @@ static void do_3des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_siz
 static struct encrypt_desc crypto_encrypter_3des =
 { 	
     common: {name: "oakley_3des_cbc",
+	     officname:         "3des",
 	     algo_type: 	IKE_ALG_ENCRYPT,
 	     algo_id:   	OAKLEY_3DES_CBC, 
 	     algo_next: 	NULL, },
@@ -95,6 +97,7 @@ static struct encrypt_desc crypto_encrypter_3des =
 static struct hash_desc crypto_hasher_md5 =
 { 	
     common: {name: "oakley_md5",
+	     officname: "md5",
 	     algo_type: IKE_ALG_HASH,
 	     algo_id:   OAKLEY_MD5,
 	     algo_next: NULL, },
@@ -108,6 +111,7 @@ static struct hash_desc crypto_hasher_md5 =
 static struct hash_desc crypto_hasher_sha1 =
 { 	
     common: {name: "oakley_sha",
+	     officname: "sha1",
 	     algo_type: IKE_ALG_HASH,
 	     algo_id:   OAKLEY_SHA,
 	     algo_next: NULL, },

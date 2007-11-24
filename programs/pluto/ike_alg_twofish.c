@@ -44,7 +44,8 @@ do_twofish(u_int8_t *buf, size_t buf_size, u_int8_t *key, size_t key_size, u_int
 
 struct encrypt_desc encrypt_desc_twofish = 
 {
-	common:{algo_type:      IKE_ALG_ENCRYPT,
+	common:{officname:      "twofish",
+		algo_type:      IKE_ALG_ENCRYPT,
 		algo_id:   	OAKLEY_TWOFISH_CBC,
 		algo_next: 	NULL, },
 	enc_ctxsize: 	sizeof(twofish_context),

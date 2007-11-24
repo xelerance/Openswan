@@ -27,7 +27,8 @@ do_blowfish(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int
 
 struct encrypt_desc algo_blowfish =
 {
-	common: {algo_type:	IKE_ALG_ENCRYPT,
+    common: {    officname: "blowfish",
+	         algo_type:	IKE_ALG_ENCRYPT,
 		 algo_id:	OAKLEY_BLOWFISH_CBC,
 		 algo_v2id:     IKEv2_ENCR_BLOWFISH,
 		 algo_next:	NULL, }, 

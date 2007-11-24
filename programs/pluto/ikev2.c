@@ -397,7 +397,71 @@ ikev2_decode_peer_id(struct msg_digest *md, bool initiator)
     
     return TRUE;
 }
+
+/*
+ * this logs to the main log (including peerlog!) the authentication
+ * and encryption keys for an IKEv2 SA.  This is done in a format that
+ * is compatible with tcpdump 4.0's -E option.
+ * 
+ * The peerlog will be perfect, the syslog will require that a cut
+ * command is used to remove the initial text.
+ *
+ */
+void ikev2_log_parentSA(struct state *st)
+{
+    const char *authalgo;
+    char authkeybuf[256];
+    char encalgo[128];
+    char enckeybuf[256];
+
+    if(st->st_oakley.integ_hasher==NULL ||
+       st->st_oakley.encrypter==NULL) {
+	return;
+    }
+    
+    authalgo = st->st_oakley.integ_hasher->common.officname;
+
+    if(st->st_oakley.enckeylen != 0) {
+	/* 3des will use '3des', while aes becomes 'aes128' */
+	sprintf(encalgo, "%s%u", st->st_oakley.encrypter->common.officname
+		, st->st_oakley.enckeylen);
+    } else {
+	strcpy(encalgo, st->st_oakley.encrypter->common.officname);
+    }
 	
+
+    datatot(st->st_skey_ei.ptr, st->st_skey_ei.len, 'x', enckeybuf, 256);
+    datatot(st->st_skey_ai.ptr, st->st_skey_ai.len, 'x', authkeybuf, 256);
+    openswan_log("ikev2 I 0x%02x%02x%02x%02x%02x%02x%02x%02x 0x%02x%02x%02x%02x%02x%02x%02x%02x %s:%s %s:%s"
+		 , st->st_icookie[0], st->st_icookie[1]
+		 , st->st_icookie[2], st->st_icookie[3]
+		 , st->st_icookie[4], st->st_icookie[5]
+		 , st->st_icookie[6], st->st_icookie[7]
+		 , st->st_rcookie[0], st->st_rcookie[1]
+		 , st->st_rcookie[2], st->st_rcookie[3]
+		 , st->st_rcookie[4], st->st_rcookie[5]
+		 , st->st_rcookie[6], st->st_rcookie[7]
+		 , authalgo
+		 , authkeybuf
+		 , encalgo
+		 , enckeybuf);
+
+    datatot(st->st_skey_er.ptr, st->st_skey_er.len, 'x', enckeybuf, 256);
+    datatot(st->st_skey_ar.ptr, st->st_skey_ar.len, 'x', authkeybuf, 256);
+    openswan_log("ikev2 R 0x%02x%02x%02x%02x%02x%02x%02x%02x 0x%02x%02x%02x%02x%02x%02x%02x%02x %s:%s %s:%s"
+		 , st->st_icookie[0], st->st_icookie[1]
+		 , st->st_icookie[2], st->st_icookie[3]
+		 , st->st_icookie[4], st->st_icookie[5]
+		 , st->st_icookie[6], st->st_icookie[7]
+		 , st->st_rcookie[0], st->st_rcookie[1]
+		 , st->st_rcookie[2], st->st_rcookie[3]
+		 , st->st_rcookie[4], st->st_rcookie[5]
+		 , st->st_rcookie[6], st->st_rcookie[7]
+		 , authalgo
+		 , authkeybuf
+		 , encalgo
+		 , enckeybuf);
+}
 
 
 void
@@ -465,6 +529,41 @@ static void success_v2_state_transition(struct msg_digest **mdp)
      * New event will be scheduled below.
      */
     delete_event(st);
+
+    /* tell whack and log of progress */
+    {
+	const char *story = enum_name(&state_stories, st->st_state);
+	enum rc_type w = RC_NEW_STATE + st->st_state;
+	char sadetails[128];
+
+	passert(st->st_state >= STATE_IKEv2_BASE);
+	passert(st->st_state <  STATE_IKEv2_ROOF);
+	
+	sadetails[0]='\0';
+
+	/* document IPsec SA details for admin's pleasure */
+	if(IS_CHILD_SA_ESTABLISHED(st->st_state))
+	{
+	    fmt_ipsec_sa_established(st, sadetails, sizeof(sadetails));
+	} else if(IS_PARENT_SA_ESTABLISHED(st->st_state)) {
+	    fmt_isakmp_sa_established(st, sadetails,sizeof(sadetails));
+	}
+	
+	if (IS_PARENT_SA_ESTABLISHED(st->st_state)
+	    || IS_CHILD_SA_ESTABLISHED(st->st_state))
+	{
+	    /* log our success */
+	    w = RC_SUCCESS;
+	}
+	
+	/* tell whack and logs our progress */
+	loglog(w
+	       , "%s: %s%s"
+	       , enum_name(&state_names, st->st_state)
+	       , story
+	       , sadetails);
+    }
+
 
     /* free previous transmit packet */
     freeanychunk(st->st_tpacket);

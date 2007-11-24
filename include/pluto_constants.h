@@ -249,13 +249,14 @@ enum state_kind {
     STATE_IKE_ROOF,
 
     /* IKEv2 states.
-     * Note that message reliably sending is done in a substate, unlike
-     * with IKEv1
+     * Note that message reliably sending is done by initiator only,
+     * unlike with IKEv1.
      */
     STATE_IKEv2_BASE,
     /* INITIATOR states */
     STATE_PARENT_I1,           /* sent initial message, waiting for reply */
     STATE_PARENT_I2,           /* sent auth message, waiting for reply */
+    STATE_PARENT_I3,           /* received auth message, done. */
 
     /* RESPONDER states  --- no real actions, initiator is responsible
      * for all work states. */
@@ -303,6 +304,12 @@ enum phase1_role {
 #ifdef MODECFG
 #define IS_MODE_CFG_ESTABLISHED(s) ((s) == STATE_MODE_CFG_R2)
 #endif
+
+#define IS_PARENT_SA_ESTABLISHED(s) ((s) == STATE_PARENT_I2 || (s) == STATE_PARENT_R1)
+#define IS_CHILD_SA_ESTABLISHED(s)  ((s) == STATE_PARENT_I3 || (s) == STATE_PARENT_R2)
+
+
+
 
 /* kind of struct connection
  * Ordered (mostly) by concreteness.  Order is exploited.

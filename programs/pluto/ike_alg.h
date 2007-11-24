@@ -6,6 +6,7 @@ struct connection;
 
 struct ike_alg {
     const char *name;
+    const char *officname;
     u_int16_t algo_type;	
     u_int16_t algo_id;
     enum ikev2_trans_type_encr algo_v2id;
