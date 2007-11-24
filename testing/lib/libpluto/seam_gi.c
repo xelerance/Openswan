@@ -1,4 +1,4 @@
-/* test case 2 - DH operation */
+/* test case 2 - DH operation - 3des/MD5 */
 u_int16_t     tc2_oakleygroup  = OAKLEY_GROUP_MODP1536;
 oakley_auth_t tc2_auth         = AUTH_ALGORITHM_HMAC_MD5;
 oakley_hash_t tc2_hash         = OAKLEY_MD5;
@@ -159,8 +159,6 @@ unsigned char tc2_results_skey_pr[]= {
 	0xc0, 0x47, 0xbc, 0x10,  0x1f, 0xd5, 0xb0, 0xe9,  
 	0xb2, 0x9f, 0x74, 0x93,  0x2a, 0x8e, 0xc4, 0x3a,  
 };
-
-
 
 void finish_dh_v2(struct state *st,
 		  struct pluto_crypto_req *r)

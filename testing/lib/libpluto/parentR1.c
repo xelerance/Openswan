@@ -33,7 +33,7 @@
 #include "seam_demux.c"
 #include "seam_whack.c"
 #include "seam_natt.c"
-#include "seam_gi.c"
+#include "seam_gi_sha1.c"
 
 #include "seam_commhandle.c"
 
@@ -51,9 +51,9 @@ void recv_pcap_packet(u_char *user
     st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 
     /* now fill in the KE values from a constant.. not calculated */
-    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc2_secret,tc2_secret_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc2_nr, tc2_nr_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc2_gr, tc2_gr_len);
+    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc3_secret,tc3_secret_len);
+    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc3_nr, tc3_nr_len);
+    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc3_gr, tc3_gr_len);
     
     run_continuation(r);
 

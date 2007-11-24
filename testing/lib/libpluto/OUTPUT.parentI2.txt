@@ -179,8 +179,8 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |    transform ID: 0
 | complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI1: calculating g^{xy}, sending I2
-../parentI2 ikev2 I 0x0001020304050607 0xc02e7a3031a03188 sha1:0x3e43b9a8f84eb02ba1be336f4a37da21 aes128:0x50a946727aaffb5d8f8521d488eb84ec728728feb06a22c2
-../parentI2 ikev2 R 0x0001020304050607 0xc02e7a3031a03188 sha1:0xba4efe1cf00a4db022025d4f53b95645 aes128:0x83c5c282bbf7d5b77adc9f0b1d3211cc9022792c20b493d6
+../parentI2 ikev2 I 0x0001020304050607 0xc02e7a3031a03188 sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
+../parentI2 ikev2 R 0x0001020304050607 0xc02e7a3031a03188 sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
@@ -207,7 +207,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | data before encryption:
 |   00 00 00 0c  02 00 00 00  77 65 73 74  00 00 00 03
 | data after encryption:
-|   a4 34 ea d1  e6 e8 ef a0  d4 9c c3 3e  3c 66 80 2a
+|   d8 f2 29 64  34 eb cc be  2f 8b d5 83  e6 fb 5d 70
 | emitting 12 zero bytes of 96-bits of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 48
 | emitting length of ISAKMP Message: 76
@@ -219,8 +219,8 @@ sending 76 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using #
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
 |   2e 20 23 08  00 00 00 00  00 00 00 4c  23 80 00 30
 |   00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   a4 34 ea d1  e6 e8 ef a0  d4 9c c3 3e  3c 66 80 2a
-|   f2 99 af 7d  f3 4a 93 92  2c b0 de 51
+|   d8 f2 29 64  34 eb cc be  2f 8b d5 83  e6 fb 5d 70
+|   f1 d4 9a 66  64 08 2d a3  e2 58 52 49
 | deleting state #1
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88

@@ -35,7 +35,7 @@ u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 bool nat_traversal_support_non_ike = FALSE;
 bool nat_traversal_support_port_floating = FALSE;
 
-#include "seam_gi.c"
+#include "seam_gi_sha1.c"
 
 #include "ikev2sendI1.c"
 
