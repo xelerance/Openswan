@@ -44,27 +44,9 @@
 #include "seam_commhandle.c"
 #include "ikev2sendI1.c"
 
-void recv_pcap_packet(u_char *user
-		      , const struct pcap_pkthdr *h
-		      , const u_char *bytes)
-{
-    struct state *st;
-    struct pcr_kenonce *kn = &r->pcr_d.kn;
+int add_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PRIVATE|DBG_CRYPT;
 
-    recv_pcap_packet_gen(user, h, bytes);
-
-    /* find st involved */
-    st = state_with_serialno(1);
-    st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PRIVATE|DBG_CRYPT;
-
-    /* now fill in the SKEYSEED values from constants.. not calculated */
-    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc3_secret,tc3_secret_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc3_ni, tc3_ni_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc3_gi, tc3_gi_len);
-    
-    run_continuation(r);
-
-}
+#include "seam_recv1i.c"
 
 main(int argc, char *argv[])
 {
@@ -117,7 +99,7 @@ main(int argc, char *argv[])
     st = sendI1(c1, 0);
 
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING|DBG_PRIVATE|DBG_CRYPT;
-    pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
+    pcap_dispatch(pt, 1, recv_pcap_packet1, NULL);
 
     {
 	struct state *st;

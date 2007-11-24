@@ -1,3 +1,6 @@
+core.*
 OUTPUT
 .gdbinit
 parentI2.pcap
+ike-secrets.txt
+secrets.raw
