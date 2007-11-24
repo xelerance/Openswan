@@ -119,8 +119,8 @@ sending 316 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
 |   2e 20 23 08  00 00 00 00  00 00 00 4c  23 80 00 30
 |   00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   a4 34 ea d1  e6 e8 ef a0  d4 9c c3 3e  3c 66 80 2a
-|   f2 99 af 7d  f3 4a 93 92  2c b0 de 51
+|   d8 f2 29 64  34 eb cc be  2f 8b d5 83  e6 fb 5d 70
+|   f1 d4 9a 66  64 08 2d a3  e2 58 52 49
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35)
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
@@ -130,11 +130,11 @@ sending 316 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 | ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
 | complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI1: calculating g^{xy}, sending I2
-| R2 calculated auth:  f2 99 af 7d  f3 4a 93 92  2c b0 de 51
-| R2  provided  auth:  f2 99 af 7d  f3 4a 93 92  2c b0 de 51
+| R2 calculated auth:  f1 d4 9a 66  64 08 2d a3  e2 58 52 49
+| R2  provided  auth:  f1 d4 9a 66  64 08 2d a3  e2 58 52 49
 | authenticator matched
 | data before decryption:
-|   a4 34 ea d1  e6 e8 ef a0  d4 9c c3 3e  3c 66 80 2a
+|   d8 f2 29 64  34 eb cc be  2f 8b d5 83  e6 fb 5d 70
 | decrypted payload:  00 00 00 0c  02 00 00 00  77 65 73 74  00 00 00 03
 | striping 4 bytes as pad
 | **parse IKEv2 Identification Payload:
@@ -179,7 +179,7 @@ Pre-amble: #!-pluto-whack-file- recorded on east on 2007-10-31 06:13:08
 TCPDUMP output
 reading from file parentR2.pcap, link-type NULL (BSD loopback)
 19:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 344, bad cksum 0 (->f54e)!)
-    192.1.2.23.500 > 192.1.2.45.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[]:
+    192.1.2.23.500 > 192.1.2.45.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->c02e7a3031a03188: parent_sa ikev2_init[]:
     (sa[C]: len=48
         (p: #1 protoid=isakmp transform=5 len=48
             (t: #1 type=encr id=aes )

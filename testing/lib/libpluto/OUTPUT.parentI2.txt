@@ -209,6 +209,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | data after encryption:
 |   d8 f2 29 64  34 eb cc be  2f 8b d5 83  e6 fb 5d 70
 | emitting 12 zero bytes of 96-bits of truncated HMAC into IKEv2 Encryption Payload
+| I2 calculated auth:  f1 d4 9a 66  64 08 2d a3  e2 58 52 49
 | emitting length of IKEv2 Encryption Payload: 48
 | emitting length of ISAKMP Message: 76
 | complete v2 state transition with STF_OK
@@ -276,8 +277,9 @@ sending 76 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using #
 ../parentI2 leak: 2 * hasher name
 TCPDUMP output
 reading from file parentI2.pcap, link-type NULL (BSD loopback)
+tcpdump: WARNING: failed to decode espsecret: ike-secrets.txt
 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f48e)!)
-    192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_init[I]:
+    192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->0000000000000000: parent_sa ikev2_init[I]:
     (sa[C]: len=240
         (p: #1 protoid=isakmp transform=4 len=40
             (t: #1 type=encr id=aes )
@@ -313,5 +315,5 @@ IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, b
     (nonce[C]: len=16 nonce=(b5ce8419095c6e2b6b62d3055305b3c4) )
     (v2vid: len=12 vid=OEababababab)
 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 104, bad cksum 0 (->f63e)!)
-    192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid  cookie ->: parent_sa ikev2_auth[I]:
+    192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->c02e7a3031a03188: parent_sa ikev2_auth[I]:
     (v2e[C]: len=44)
