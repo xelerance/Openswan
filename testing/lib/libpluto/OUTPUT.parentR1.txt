@@ -167,6 +167,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | emitting length of ISAKMP Message: 316
 | complete v2 state transition with STF_OK
 ../parentR1 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
+../parentR1 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 cipher=aes_128 integ=sha1 prf=oakley_sha group=modp1536}
 | sending reply packet to 192.1.2.45:500 (from port 500)
 sending 316 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (using #1)
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88

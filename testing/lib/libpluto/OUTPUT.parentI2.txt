@@ -62,6 +62,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |   4f 45 72 6c  41 5c 6e 51  75 6b 53 52
 | complete v2 state transition with STF_OK
 ../parentI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
+../parentI2 STATE_PARENT_I1: sent v2I1, expected v2R1
 | *received 316 bytes from 192.1.2.23:500 on eth0 (port=500)
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
 |   21 20 22 20  00 00 00 00  00 00 01 3c  22 80 00 34
@@ -178,8 +179,8 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |    transform ID: 0
 | complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI1: calculating g^{xy}, sending I2
-../parentI2 ikev2 I 0x0001020304050607 0xc02e7a3031a03188 sha1:0x3e43b9a8f84eb02ba1be336f4a37da21 aes:0x50a946727aaffb5d8f8521d488eb84ec728728feb06a22c2
-../parentI2 ikev2 R 0x0001020304050607 0xc02e7a3031a03188 sha1:0xba4efe1cf00a4db022025d4f53b95645 aes:0x83c5c282bbf7d5b77adc9f0b1d3211cc9022792c20b493d6
+../parentI2 ikev2 I 0x0001020304050607 0xc02e7a3031a03188 sha1:0x3e43b9a8f84eb02ba1be336f4a37da21 aes128:0x50a946727aaffb5d8f8521d488eb84ec728728feb06a22c2
+../parentI2 ikev2 R 0x0001020304050607 0xc02e7a3031a03188 sha1:0xba4efe1cf00a4db022025d4f53b95645 aes128:0x83c5c282bbf7d5b77adc9f0b1d3211cc9022792c20b493d6
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
@@ -208,6 +209,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | emitting length of ISAKMP Message: 76
 | complete v2 state transition with STF_OK
 ../parentI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
+../parentI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 cipher=aes_128 integ=sha1 prf=oakley_sha group=modp1536}
 | sending reply packet to 192.1.2.23:500 (from port 500)
 sending 76 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using #1)
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
