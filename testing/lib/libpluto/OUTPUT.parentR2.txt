@@ -133,6 +133,8 @@ sending 316 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 | R2 calculated auth:  f2 99 af 7d  f3 4a 93 92  2c b0 de 51
 | R2  provided  auth:  f2 99 af 7d  f3 4a 93 92  2c b0 de 51
 | authenticator matched
+| data before decryption:
+|   a4 34 ea d1  e6 e8 ef a0  d4 9c c3 3e  3c 66 80 2a
 | decrypted payload:  00 00 00 0c  02 00 00 00  77 65 73 74  00 00 00 03
 | striping 4 bytes as pad
 | **parse IKEv2 Identification Payload:

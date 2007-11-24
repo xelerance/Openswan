@@ -204,6 +204,10 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | emitting 3 zero bytes of message padding into cleartext
 | emitting 1 raw bytes of pad length into cleartext
 | pad length  03
+| data before encryption:
+|   00 00 00 0c  02 00 00 00  77 65 73 74  00 00 00 03
+| data after encryption:
+|   a4 34 ea d1  e6 e8 ef a0  d4 9c c3 3e  3c 66 80 2a
 | emitting 12 zero bytes of 96-bits of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 48
 | emitting length of ISAKMP Message: 76
