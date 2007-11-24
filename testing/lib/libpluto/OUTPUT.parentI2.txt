@@ -277,7 +277,6 @@ sending 76 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using #
 ../parentI2 leak: 2 * hasher name
 TCPDUMP output
 reading from file parentI2.pcap, link-type NULL (BSD loopback)
-tcpdump: WARNING: failed to decode espsecret: ike-secrets.txt
 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f48e)!)
     192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->0000000000000000: parent_sa ikev2_init[I]:
     (sa[C]: len=240
@@ -316,4 +315,5 @@ IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, b
     (v2vid: len=12 vid=OEababababab)
 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 104, bad cksum 0 (->f63e)!)
     192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->c02e7a3031a03188: parent_sa ikev2_auth[I]:
-    (v2e[C]: len=44)
+    (v2e[C]: len=44
+            (v2IDi: len=8 fqdn:west))
