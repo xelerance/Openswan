@@ -857,15 +857,22 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     {
 	size_t  blocksize = st->st_oakley.encrypter->enc_blocksize;
 	unsigned char *savediv = alloca(blocksize);
+	unsigned int   cipherlen = e_pbs_cipher.cur - encstart;
+
+	DBG(DBG_CRYPT,
+	    DBG_dump("data before encryption:", encstart, cipherlen));
 
 	memcpy(savediv, iv, blocksize);
     
 	/* now, encrypt */
 	(st->st_oakley.encrypter->do_crypt)(encstart,
-					    e_pbs_cipher.cur - encstart,
+					    cipherlen,
 					    st->st_skey_ei.ptr,
 					    st->st_skey_ei.len,
 					    savediv, TRUE);
+
+	DBG(DBG_CRYPT,
+	    DBG_dump("data after encryption:", encstart, cipherlen));
     }
     close_output_pbs(&e_pbs_cipher);
     
@@ -1050,6 +1057,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	unsigned int   enclen    = encend - encstart;
 	unsigned int   padlen;
 
+	DBG(DBG_CRYPT,
+	    DBG_dump("data before decryption:", encstart, enclen));
+
 	/* now, decrypt */
 	(st->st_oakley.encrypter->do_crypt)(encstart,
 					    enclen,
@@ -1065,7 +1075,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    return STF_FAIL;
 	}
 
-	if(DBGP(DBG_PARSING)) {
+	if(DBGP(DBG_CRYPT)) {
 	    DBG_dump("decrypted payload:", encstart, enclen);
 	    DBG_log("striping %u bytes as pad", padlen+1);
 	}
