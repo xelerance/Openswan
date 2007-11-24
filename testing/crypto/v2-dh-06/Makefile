@@ -17,6 +17,9 @@ pk-dh: ${SOURCES}
 programs checkprograms: ${UNITTEST}
 	@true
 
+check:
+	../../utils/runme.sh
+
 include ${OPENSWANSRCDIR}/programs/Makefile.program
 
 
