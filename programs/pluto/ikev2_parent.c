@@ -504,7 +504,7 @@ ikev2_parent_inI1outR1_continue(struct pluto_crypto_req_cont *pcrc
     stf_status e;
     
     DBG(DBG_CONTROLMORE
-	, DBG_log("ikev2 parent inI1outR1: calculated ke+nonce, sending I1"));
+	, DBG_log("ikev2 parent inI1outR1: calculated ke+nonce, sending R1"));
   
     /* XXX should check out ugh */
     passert(ugh == NULL);
@@ -694,7 +694,7 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 	set_suspended(st, dh->md);
 
 	dh->dh_pcrc.pcrc_func = ikev2_parent_inR1outI2_continue;
-	e = start_dh_v2(&dh->dh_pcrc, st, st->st_import, TRUE,st->st_oakley.groupnum);
+	e = start_dh_v2(&dh->dh_pcrc, st, st->st_import, INITIATOR, st->st_oakley.groupnum);
 	if(e != STF_SUSPEND && e != STF_INLINE) {
 	    loglog(RC_CRYPTOFAILED, "system too busy");
 	    delete_state(st);
@@ -957,7 +957,7 @@ stf_status ikev2parent_inI2outR2(struct msg_digest *md)
 	set_suspended(st, dh->md);
 
 	dh->dh_pcrc.pcrc_func = ikev2_parent_inI2outR2_continue;
-	e = start_dh_v2(&dh->dh_pcrc, st, st->st_import, FALSE, st->st_oakley.groupnum);
+	e = start_dh_v2(&dh->dh_pcrc, st, st->st_import, RESPONDER, st->st_oakley.groupnum);
 	if(e != STF_SUSPEND && e != STF_INLINE) {
 	    loglog(RC_CRYPTOFAILED, "system too busy");
 	    delete_state(st);

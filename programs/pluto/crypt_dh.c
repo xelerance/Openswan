@@ -330,16 +330,18 @@ void calc_dh_iv(struct pluto_crypto_req *r)
     /* recover the long term secret */
     n_to_mpz(&sec, ltsecret.ptr, ltsecret.len);
 
-    DBG(DBG_CRYPT,
-	DBG_dump_chunk("long term secret: ", ltsecret));
-
-    /* now calculate the (g^x)(g^y) --- need gi on responder, gr on initiator */
+    /* now calculate the (g^x)(g^y) ---
+       need gi on responder, gr on initiator */
 
     if(dhq.init == RESPONDER) {
 	setchunk_fromwire(g, &dhq.gi, &dhq);
     } else {
 	setchunk_fromwire(g, &dhq.gr, &dhq);
     }
+
+    DBG(DBG_CRYPT,
+	DBG_dump_chunk("peer's g: ", g);
+	DBG_dump_chunk("long term secret: ", ltsecret));
 
     calc_dh_shared(&shared, g, &sec, group);
     
