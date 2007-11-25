@@ -742,6 +742,71 @@ ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
     passert(GLOBALS_ARE_RESET());
 }
 
+static stf_status ikev2_encrypt_msg(struct msg_digest *md,
+				    unsigned char *iv,
+				    unsigned char *encstart,
+				    pb_stream *e_pbs,
+				    pb_stream *e_pbs_cipher)
+{
+    struct state *st = md->st;
+
+    /* pads things up to message size boundary */
+    {
+	char   b[1];
+	size_t blocksize = st->st_oakley.encrypter->enc_blocksize;
+	size_t padding =  pad_up(pbs_offset(e_pbs_cipher), blocksize);
+	if (padding == 0) padding=blocksize;
+	(void) out_zero(padding-1, e_pbs_cipher, "message padding");
+	b[0] = padding-1;
+	out_raw(b, 1, e_pbs_cipher, "pad length");
+    }
+    
+    /* encrypt the block */
+    {
+	size_t  blocksize = st->st_oakley.encrypter->enc_blocksize;
+	unsigned char *savediv = alloca(blocksize);
+	unsigned int   cipherlen = e_pbs_cipher->cur - encstart;
+	
+	DBG(DBG_CRYPT,
+	    DBG_dump("data before encryption:", encstart, cipherlen));
+	
+	memcpy(savediv, iv, blocksize);
+	
+	/* now, encrypt */
+	(st->st_oakley.encrypter->do_crypt)(encstart,
+					    cipherlen,
+					    st->st_skey_ei.ptr,
+					    st->st_skey_ei.len,
+					    savediv, TRUE);
+	
+	DBG(DBG_CRYPT,
+	    DBG_dump("data after encryption:", encstart, cipherlen));
+    }
+    close_output_pbs(e_pbs_cipher);
+    
+    /* okay, authenticate from beginning of IV */
+    {
+	unsigned char *b12;
+	struct hmac_ctx ctx;
+	
+	b12 = e_pbs->cur;
+	if(!out_zero(12, e_pbs, "96-bits of truncated HMAC"))
+	    return STF_INTERNAL_ERROR;
+	
+	hmac_init_chunk(&ctx, st->st_oakley.integ_hasher, st->st_skey_ai);
+	hmac_update(&ctx, iv, b12-iv);
+	hmac_final(b12, &ctx);
+	
+	if(DBGP(DBG_PARSING)) {
+	    DBG_dump("out calculated auth:", b12, 12); 
+	}
+    }
+    close_output_pbs(e_pbs);
+    
+    return STF_OK;
+}
+
+
 static stf_status
 ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 			    , struct pluto_crypto_req *r)
@@ -751,9 +816,11 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     struct state *const st = md->st;
     struct connection *c   = st->st_connection;
     struct ikev2_generic e;
+    unsigned char *encstart;
     pb_stream      e_pbs, e_pbs_cipher;
-    unsigned char *iv, *encstart;
+    unsigned char *iv;
     int            ivsize;
+    stf_status     ret;
 
     finish_dh_v2(st, r);
 
@@ -842,58 +909,9 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 #endif
 
-    /* pads things up to message size boundary */
-    {
-	char   b[1];
-	size_t blocksize = st->st_oakley.encrypter->enc_blocksize;
-	size_t padding =  pad_up(pbs_offset(&e_pbs_cipher), blocksize);
-	if (padding == 0) padding=blocksize;
-	(void) out_zero(padding-1, &e_pbs_cipher, "message padding");
-	b[0] = padding-1;
-	out_raw(b, 1, &e_pbs_cipher, "pad length");
-    }
+    ret = ikev2_encrypt_msg(md, iv, encstart, &e_pbs, &e_pbs_cipher);
+    if(ret != STF_OK) return ret;
 
-    /* encrypt the block */
-    {
-	size_t  blocksize = st->st_oakley.encrypter->enc_blocksize;
-	unsigned char *savediv = alloca(blocksize);
-	unsigned int   cipherlen = e_pbs_cipher.cur - encstart;
-
-	DBG(DBG_CRYPT,
-	    DBG_dump("data before encryption:", encstart, cipherlen));
-
-	memcpy(savediv, iv, blocksize);
-    
-	/* now, encrypt */
-	(st->st_oakley.encrypter->do_crypt)(encstart,
-					    cipherlen,
-					    st->st_skey_ei.ptr,
-					    st->st_skey_ei.len,
-					    savediv, TRUE);
-
-	DBG(DBG_CRYPT,
-	    DBG_dump("data after encryption:", encstart, cipherlen));
-    }
-    close_output_pbs(&e_pbs_cipher);
-    
-    /* okay, authenticate from beginning of IV */
-    {
-	unsigned char *b12;
-	struct hmac_ctx ctx;
-	
-	b12 = e_pbs.cur;
-	if(!out_zero(12, &e_pbs, "96-bits of truncated HMAC"))
-	    return STF_INTERNAL_ERROR;
-
-	hmac_init_chunk(&ctx, st->st_oakley.integ_hasher, st->st_skey_ai);
-	hmac_update(&ctx, iv, b12-iv);
-	hmac_final(b12, &ctx);
-
-	if(DBGP(DBG_PARSING)) {
-	    DBG_dump("I2 calculated auth:", b12, 12); 
-	}
-    }
-    close_output_pbs(&e_pbs);
 
     close_output_pbs(&md->rbody);
     close_output_pbs(&md->reply);
