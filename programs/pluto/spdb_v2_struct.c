@@ -772,12 +772,17 @@ parse_ikev2_sa_body(
 							     , /*keysize*/0);
     passert(ta.encrypter != NULL);
     ta.enckeylen = ta.encrypter->keydeflen;
+
     ta.integ_hash  = integ_transforms[integ_i];
-    ta.integ_hasher= crypto_get_hasher(ta.integ_hash);
-    ta.prf_hash  = prf_transforms[prf_i];
-    ta.prf_hasher= crypto_get_hasher(ta.prf_hash);
-    ta.groupnum  = dh_transforms[dh_i];
-    ta.group     = lookup_group(ta.groupnum); 
+    ta.integ_hasher= (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_INTEG,ta.integ_hash, 0);
+    passert(ta.integ_hasher != NULL);
+
+    ta.prf_hash    = prf_transforms[prf_i];
+    ta.prf_hasher  = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH, ta.prf_hash, 0);
+    passert(ta.prf_hasher != NULL);
+
+    ta.groupnum    = dh_transforms[dh_i];
+    ta.group       = lookup_group(ta.groupnum); 
 
     if (r_sa_pbs != NULL)
     {

@@ -78,7 +78,7 @@ stf_status start_dh_secretiv(struct pluto_crypto_req_cont *cn
 
     /* convert appropriate data to dhq */
     dhq->auth = st->st_oakley.auth;
-    dhq->hash = st->st_oakley.prf_hash;
+    dhq->prf_hash = st->st_oakley.prf_hash;
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
     dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 
@@ -180,7 +180,7 @@ stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
 
     /* convert appropriate data to dhq */
     dhq->auth = st->st_oakley.auth;
-    dhq->hash = st->st_oakley.prf_hash;
+    dhq->prf_hash = st->st_oakley.prf_hash;
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
     dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 
@@ -259,16 +259,21 @@ stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
     dhq->thespace.start = 0;
     dhq->thespace.len   = sizeof(dhq->space);
 
+    DBG(DBG_CONTROLMORE
+	, DBG_log("calculating skeyseed using prf=%s integ=%s cipherkey=%s"
+		  , enum_name(&trans_type_prf_names,   st->st_oakley.integ_hash)
+		  , enum_name(&trans_type_integ_names, st->st_oakley.prf_hash)
+		  , enum_name(&trans_type_encr_names,  st->st_oakley.encrypt)));
+
     /* convert appropriate data to dhq */
     dhq->auth = st->st_oakley.auth;
-    dhq->hash = st->st_oakley.prf_hash;
+    dhq->prf_hash   = st->st_oakley.prf_hash;
+    dhq->integ_hash = st->st_oakley.integ_hash;
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
     dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 
 
     passert(r.pcr_d.dhq.oakley_group != 0);
-    DBG_log("parent1 type: %d group: %d len: %d\n", r.pcr_type,
-	    r.pcr_d.dhq.oakley_group, (int)r.pcr_len);
 
     pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->ni,  st->st_ni);
     pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->nr,  st->st_nr);

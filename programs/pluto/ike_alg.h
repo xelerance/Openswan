@@ -69,7 +69,8 @@ int ike_alg_init(void);
  */
 #define IKE_ALG_ENCRYPT	0
 #define IKE_ALG_HASH	1
-#define IKE_ALG_MAX	1
+#define IKE_ALG_INTEG	2
+#define IKE_ALG_MAX	3
 extern struct ike_alg *ike_alg_base[IKE_ALG_MAX+1];
 int ike_alg_add(struct ike_alg *);
 int ike_alg_register_enc(struct encrypt_desc *e);

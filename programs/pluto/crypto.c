@@ -100,6 +100,7 @@ static struct hash_desc crypto_hasher_md5 =
 	     officname: "md5",
 	     algo_type: IKE_ALG_HASH,
 	     algo_id:   OAKLEY_MD5,
+	     algo_v2id: IKEv2_PRF_HMAC_MD5,
 	     algo_next: NULL, },
     hash_ctx_size: sizeof(MD5_CTX),
     hash_key_size:   MD5_DIGEST_SIZE,
@@ -108,12 +109,46 @@ static struct hash_desc crypto_hasher_md5 =
     hash_update: (void (*)(void *, const u_int8_t *, size_t)) osMD5Update,
     hash_final: (void (*)(u_char *, void *)) osMD5Final,
 };
+
+static struct hash_desc crypto_integ_md5 =
+{ 	
+    common: {name: "oakley_md5",
+	     officname: "md5",
+	     algo_type: IKE_ALG_INTEG,
+	     algo_id:   OAKLEY_MD5,
+	     algo_v2id: IKEv2_AUTH_HMAC_MD5_96,
+	     algo_next: NULL, },
+    hash_ctx_size: sizeof(MD5_CTX),
+    hash_key_size:   MD5_DIGEST_SIZE,
+    hash_digest_len: MD5_DIGEST_SIZE,
+    hash_init: (void (*)(void *)) osMD5Init,
+    hash_update: (void (*)(void *, const u_int8_t *, size_t)) osMD5Update,
+    hash_final: (void (*)(u_char *, void *)) osMD5Final,
+};
+
 static struct hash_desc crypto_hasher_sha1 =
 { 	
     common: {name: "oakley_sha",
 	     officname: "sha1",
 	     algo_type: IKE_ALG_HASH,
 	     algo_id:   OAKLEY_SHA,
+	     algo_v2id: IKEv2_PRF_HMAC_SHA1,
+	     algo_next: NULL, },
+    hash_ctx_size: sizeof(SHA1_CTX),
+    hash_key_size:   SHA1_DIGEST_SIZE,
+    hash_digest_len: SHA1_DIGEST_SIZE,
+    hash_init: (void (*)(void *)) SHA1Init,
+    hash_update: (void (*)(void *, const u_int8_t *, size_t)) SHA1Update,
+    hash_final: (void (*)(u_char *, void *)) SHA1Final,
+};
+
+static struct hash_desc crypto_integ_sha1 =
+{ 	
+    common: {name: "oakley_sha",
+	     officname: "sha1",
+	     algo_type: IKE_ALG_INTEG,
+	     algo_id:   OAKLEY_SHA,
+	     algo_v2id: IKEv2_AUTH_HMAC_SHA1_96,
 	     algo_next: NULL, },
     hash_ctx_size: sizeof(SHA1_CTX),
     hash_key_size:   SHA1_DIGEST_SIZE,
@@ -189,7 +224,9 @@ init_crypto(void)
 #endif
 	    
 	    ike_alg_add((struct ike_alg *) &crypto_hasher_sha1);
+	    ike_alg_add((struct ike_alg *) &crypto_integ_sha1);
 	    ike_alg_add((struct ike_alg *) &crypto_hasher_md5);
+	    ike_alg_add((struct ike_alg *) &crypto_integ_md5);
 	}
 #endif
 }

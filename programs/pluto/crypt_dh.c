@@ -166,7 +166,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     )
 {
     oakley_auth_t auth = skq->auth;
-    oakley_hash_t hash = skq->hash;
+    oakley_hash_t hash = skq->prf_hash;
     const struct hash_desc *hasher = crypto_get_hasher(hash);
     chunk_t pss;  
     chunk_t ni;
@@ -510,7 +510,6 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     struct v2prf_stuff vpss;
     chunk_t gi, gr;
     memset(&vpss, 0, sizeof(vpss));
-    vpss.prf_hasher = crypto_get_hasher(skq->hash);
 
     /* this doesn't take any memory, it's just moving pointers around */
     setchunk_fromwire(gi,      &skq->gi, skq);
@@ -519,6 +518,15 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     setchunk_fromwire(vpss.nr, &skq->nr, skq);
     setchunk_fromwire(vpss.spii, &skq->icookie, skq);
     setchunk_fromwire(vpss.spir, &skq->rcookie, skq);
+
+    DBG(DBG_CONTROLMORE
+	, DBG_log("calculating skeyseed using prf=%s integ=%s cipherkey=%u"
+		  , enum_name(&trans_type_prf_names, skq->prf_hash)
+		  , enum_name(&trans_type_integ_names, skq->integ_hash)
+		  , keysize));
+
+
+    vpss.prf_hasher = crypto_get_hasher(skq->prf_hash);
 
     /* generate SKEYSEED from key=(Ni|Nr), hash of shared */
     {
@@ -555,9 +563,9 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	/* SK_p needs PRF hasher*2 key bits */
 	/* SK_e needs keysize*2 key bits */
 	/* SK_a needs hash's key bits size */
-	const struct hash_desc *auth_hasher = crypto_get_hasher(skq->auth);
+	const struct hash_desc *integ_hasher = crypto_get_hasher(skq->integ_hash);
 	int skd_bytes = vpss.prf_hasher->hash_key_size;
-	int ska_bytes = auth_hasher->hash_key_size;
+	int ska_bytes = integ_hasher->hash_key_size;
 	int ske_bytes = keysize;
 	int skp_bytes = vpss.prf_hasher->hash_key_size;
 

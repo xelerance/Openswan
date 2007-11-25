@@ -211,8 +211,8 @@ ike_alg_ikev2_find(unsigned algo_type
 {
 	struct ike_alg *e=ike_alg_base[algo_type];
 	for(;e!=NULL;e=e->algo_next) {
-		if (e->algo_v2id==algo_v2id)
-			break;
+	    if (e->algo_v2id==algo_v2id)
+		break;
 	}
 	return e;
 }

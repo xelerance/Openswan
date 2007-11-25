@@ -56,9 +56,10 @@ struct pcr_kenonce {
 #define DHCALC_SIZE 2560
 struct pcr_skeyid_q {
   /* inputs */
-  u_int16_t     oakley_group;
-  oakley_auth_t auth;	            
-  oakley_hash_t hash;               
+    u_int16_t     oakley_group;
+    oakley_auth_t auth;	            
+    oakley_hash_t integ_hash;
+    oakley_hash_t prf_hash;               
   enum phase1_role init;
   size_t        keysize;     /* of encryptor */
   wire_chunk_t gi;

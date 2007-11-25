@@ -93,7 +93,7 @@ struct skey_rsacalc {
     chunk_t icookie, rcookie;
     size_t  keysize;
     oakley_auth_t auth;
-    oakley_hash_t hash;
+    oakley_hash_t prf_hash;
     u_int16_t oakley_group;
 } rsasc[]={
     {
@@ -106,7 +106,7 @@ struct skey_rsacalc {
 	rcookie: { rc1, sizeof(rc1) },
 	keysize: 8*3,
 	auth: OAKLEY_RSA_SIG,
-	hash: OAKLEY_MD5,
+	prf_hash: OAKLEY_MD5,
 	oakley_group: OAKLEY_GROUP_MODP1536
     }
 };
@@ -173,7 +173,7 @@ main(int argc, char *argv[])
 
 	/* convert appropriate data to dhq */
 	skq.auth = rsasc[i].auth;
-	skq.hash = rsasc[i].hash;
+	skq.prf_hash = rsasc[i].prf_hash;
 	skq.oakley_group = rsasc[i].oakley_group;
 	skq.keysize = rsasc[i].keysize;
 	pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->ni,  rsasc[i].ni);
@@ -207,5 +207,6 @@ main(int argc, char *argv[])
  * Local Variables:
  * c-style: pluto
  * c-basic-offset: 4
+ * compile-command: "make TEST=skeyidcalc one"
  * End:
  */
