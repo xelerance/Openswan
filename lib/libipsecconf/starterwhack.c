@@ -327,7 +327,10 @@ static void set_whack_end(struct starter_config *cfg
 	w->ca   = l->ca;
 	if(l->options_set[KNCF_SENDCERT]) {
 		w->sendcert = l->options[KNCF_SENDCERT];
-	}
+        } else { 
+                w->sendcert = cert_alwayssend; 
+        }
+
 
 	w->updown = l->updown;
 	w->virt   = NULL;

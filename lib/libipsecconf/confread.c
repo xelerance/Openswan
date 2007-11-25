@@ -77,9 +77,6 @@ static void default_values (struct starter_config *cfg)
 	/* now here is a sticker.. we want it on. But pluto has to be smarter first */
 	cfg->conn_default.options[KBF_OPPOENCRYPT] = FALSE;
 
-	/* default to sending X.509 certs if needed */
-	cfg->conn_default.options[KNCF_SENDCERT] = cert_alwayssend;
-
 	cfg->conn_default.left.addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.left.addr);
 	cfg->conn_default.left.nexttype  = KH_NOTSET;
