@@ -1,3 +1,6 @@
 core.*
 parentR2.pcap
 OUTPUT
+ike-secrets.txt
+secrets.raw
+

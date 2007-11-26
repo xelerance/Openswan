@@ -82,7 +82,7 @@ main(int argc, char *argv[])
 
     readwhackmsg(infile);
 
-    send_packet_setup_pcap("parentI2.pcap");
+    send_packet_setup_pcap("parentI3.pcap");
     pt = pcap_open_offline(argv[3], eb1);
     if(!pt) {
 	perror(argv[3]);
@@ -96,6 +96,9 @@ main(int argc, char *argv[])
      * state to receive the R1 packet and process it.
      */
     st = sendI1(c1, 0);
+
+    cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING;
+    pcap_dispatch(pt, 1, recv_pcap_packet1, NULL);
 
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING;
     pcap_dispatch(pt, 1, recv_pcap_packet1, NULL);
