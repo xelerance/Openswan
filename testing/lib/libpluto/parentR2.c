@@ -56,7 +56,7 @@ void recv_pcap_packet2(u_char *user
 
     /* find st involved */
     st = state_with_serialno(1);
-    st->st_connection->extra_debugging = DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+    st->st_connection->extra_debugging = DBG_PRIVATE|DBG_CRYPT|DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 
     run_continuation(r);
 
