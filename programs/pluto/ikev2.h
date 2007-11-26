@@ -25,6 +25,7 @@ extern stf_status ikev2parent_inI1outR1(struct msg_digest *md);
 extern stf_status ikev2parent_inR1(struct msg_digest *md);
 extern stf_status ikev2parent_inR1outI2(struct msg_digest *md);
 extern stf_status ikev2parent_inI2outR2(struct msg_digest *md);
+extern stf_status ikev2parent_inR2(struct msg_digest *md);
 
 extern const struct state_v2_microcode *ikev2_parent_firststate(void);
 
@@ -57,7 +58,8 @@ extern void ikev2_process_payloads(struct msg_digest *md,
 				   unsigned int from_state,
 				   unsigned int np);
 
-extern bool ikev2_decode_peer_id(struct msg_digest *md, bool initiator);
+extern bool ikev2_decode_peer_id(struct msg_digest *md
+				 , enum phase1_role initiator);
 extern void ikev2_log_parentSA(struct state *st);
 
 

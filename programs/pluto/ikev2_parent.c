@@ -817,7 +817,8 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
 }
 
 static
-stf_status ikev2_decrypt_msg(struct msg_digest *md)
+stf_status ikev2_decrypt_msg(struct msg_digest *md
+			     , enum phase1_role init)
 {
     struct state *st = md->st;
     unsigned char *encend;
@@ -825,7 +826,16 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md)
     unsigned int   np;
     unsigned char *iv;
     pb_stream      clr_pbs;
-    
+    chunk_t       *cipherkey, *authkey;
+
+    if(init == INITIATOR) {
+	cipherkey = &st->st_skey_er;
+	authkey   = &st->st_skey_ar;
+    } else {
+	cipherkey = &st->st_skey_ei;
+	authkey   = &st->st_skey_ai;
+    }
+
     e_pbs = &md->chain[ISAKMP_NEXT_v2E]->pbs;
     np    = md->chain[ISAKMP_NEXT_v2E]->payload.generic.isag_np;
     
@@ -837,7 +847,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md)
 	unsigned char  *b12 = alloca(st->st_oakley.integ_hasher->hash_digest_len);
 	struct hmac_ctx ctx;
 	
-	hmac_init_chunk(&ctx, st->st_oakley.integ_hasher, st->st_skey_ai);
+	hmac_init_chunk(&ctx, st->st_oakley.integ_hasher, *authkey);
 	hmac_update(&ctx, iv, encend-iv);
 	hmac_final(b12, &ctx);
 	
@@ -868,8 +878,8 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md)
 	/* now, decrypt */
 	(st->st_oakley.encrypter->do_crypt)(encstart,
 					    enclen,
-					    st->st_skey_ei.ptr,
-					    st->st_skey_ei.len,
+					    cipherkey->ptr,
+					    cipherkey->len,
 					    iv, FALSE);
 	
 	padlen = encstart[enclen-1];
@@ -1129,11 +1139,11 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     /* decrypt things. */
     {
 	stf_status ret; 
-	ret = ikev2_decrypt_msg(md);
+	ret = ikev2_decrypt_msg(md, RESPONDER);
 	if(ret != STF_OK) return ret;
     }
 
-    if(!ikev2_decode_peer_id(md, FALSE)) {
+    if(!ikev2_decode_peer_id(md, RESPONDER)) {
 	return STF_FAIL + INVALID_ID_INFORMATION;
     }
 
@@ -1223,7 +1233,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     
 }
 
-#if 0
 /*
  *
  ***************************************************************
@@ -1236,7 +1245,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
  */
 stf_status ikev2parent_inR2(struct msg_digest *md)
 {
-    struct state *st = md->st;
+    //struct state *st = md->st;
     //struct connection *c = st->st_connection;
 
     /*
@@ -1256,102 +1265,17 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     /* decrypt things. */
     {
 	stf_status ret; 
-	ret = ikev2_decrypt_msg(md);
+	ret = ikev2_decrypt_msg(md, INITIATOR);
 	if(ret != STF_OK) return ret;
     }
 
-
-	
-    if(!ikev2_decode_peer_id(md, FALSE)) {
+    if(!ikev2_decode_peer_id(md, INITIATOR)) {
 	return STF_FAIL + INVALID_ID_INFORMATION;
     }
-
-    /* send response */
-    {
-	unsigned char *encstart;
-	unsigned char *iv;
-	unsigned int ivsize;
-	struct ikev2_generic e;
-	pb_stream      e_pbs, e_pbs_cipher;
-	stf_status     ret;
-
-	/* HDR out */
-	{
-	    struct isakmp_hdr r_hdr = md->hdr;
-	    
-	    r_hdr.isa_np    = ISAKMP_NEXT_v2E;
-	    r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
-	    r_hdr.isa_flags = ISAKMP_FLAGS_R;
-	    memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
-	    memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
-	    if (!out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
-		return STF_INTERNAL_ERROR;
-	}
-	
-	/* insert an Encryption payload header */
-	e.isag_np = ISAKMP_NEXT_v2IDr;
-	e.isag_critical = ISAKMP_PAYLOAD_CRITICAL;
-
-	if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
-	    return STF_INTERNAL_ERROR;
-	}
-
-	/* insert IV */
-	iv     = e_pbs.cur;
-	ivsize = st->st_oakley.encrypter->iv_size;
-	if(!out_zero(ivsize, &e_pbs, "iv")) {
-	    return STF_INTERNAL_ERROR;
-	}
-	get_rnd_bytes(iv, ivsize);
-	
-	/* note where cleartext starts */
-	init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
-	e_pbs_cipher.container = &e_pbs;
-	e_pbs_cipher.desc = NULL;
-	e_pbs_cipher.cur = e_pbs.cur;
-	encstart = e_pbs_cipher.cur;
-	
-	/* send out the IDi payload */
-	{
-	    struct ikev2_id r_id;
-	    pb_stream r_id_pbs;
-	    chunk_t id_b;
-	    
-	    r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
-	    build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b,
-			     &c->spd.this);
-	    
-	    if (!out_struct(&r_id
-			    , &ikev2_id_desc
-			    , &e_pbs_cipher
-			    , &r_id_pbs)
-		|| !out_chunk(id_b, &r_id_pbs, "my identity"))
-		return STF_INTERNAL_ERROR;
-	    close_output_pbs(&r_id_pbs);
-	}
-
-	ret = ikev2_encrypt_msg(md, RESPONDER,
-				iv, encstart,
-				&e_pbs, &e_pbs_cipher);
-	if(ret != STF_OK) return ret;
-    }
-
-    close_output_pbs(&md->rbody);
-    close_output_pbs(&md->reply);
-
-    /* let TCL hack it before we mark the length. */
-    TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
-
-    /* keep it for a retransmit if necessary */
-    clonetochunk(st->st_tpacket, md->reply.start, pbs_offset(&md->reply)
-		 , "reply packet for ikev2_parent_outI1");
-
-    /* note: retransimission is driven by initiator */
 
     return STF_OK;
     
 }
-#endif
 
 /*
  *

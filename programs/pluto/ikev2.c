@@ -143,6 +143,13 @@ static const struct state_v2_microcode state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
 
+    { .state      = STATE_PARENT_I2,
+      .next_state = STATE_PARENT_I3,
+      .flags = SMF2_INITIATOR|SMF2_STATENEEDED,
+      .processor  = ikev2parent_inR2,
+      .recv_type  = ISAKMP_v2_AUTH,
+    },
+
     { .state      = STATE_UNDEFINED,
       .next_state = STATE_PARENT_R1,
       .flags = SMF2_RESPONDER|SMF2_NEWSTATE|SMF2_REPLY,
@@ -364,10 +371,11 @@ process_v2_packet(struct msg_digest **mdp)
 }
 
 bool
-ikev2_decode_peer_id(struct msg_digest *md, bool initiator)
+ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
 {
     //struct state *const st = md->st;
-    unsigned int hisID = initiator ? ISAKMP_NEXT_v2IDr : ISAKMP_NEXT_v2IDi;
+    unsigned int hisID = (init==INITIATOR) ?
+	ISAKMP_NEXT_v2IDr : ISAKMP_NEXT_v2IDi;
     //unsigned int myID  = initiator ? ISAKMP_NEXT_v2IDi: ISAKMP_NEXT_v2IDr;
     //struct payload_digest *const id_me  = md->chain[myID];
     struct payload_digest *const id_him = md->chain[hisID];
