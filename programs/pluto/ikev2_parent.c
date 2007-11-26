@@ -816,6 +816,81 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
     return STF_OK;
 }
 
+static
+stf_status ikev2_decrypt_msg(struct msg_digest *md)
+{
+    struct state *st = md->st;
+    unsigned char *encend;
+    pb_stream     *e_pbs;
+    unsigned int   np;
+    unsigned char *iv;
+    pb_stream      clr_pbs;
+    
+    e_pbs = &md->chain[ISAKMP_NEXT_v2E]->pbs;
+    np    = md->chain[ISAKMP_NEXT_v2E]->payload.generic.isag_np;
+    
+    iv     = e_pbs->cur;
+    encend = e_pbs->roof - 12;
+    
+    /* start by checking authenticator */
+    {
+	unsigned char  *b12 = alloca(st->st_oakley.integ_hasher->hash_digest_len);
+	struct hmac_ctx ctx;
+	
+	hmac_init_chunk(&ctx, st->st_oakley.integ_hasher, st->st_skey_ai);
+	hmac_update(&ctx, iv, encend-iv);
+	hmac_final(b12, &ctx);
+	
+	if(DBGP(DBG_PARSING)) {
+	    DBG_dump("R2 calculated auth:", b12, 12); 
+	    DBG_dump("R2  provided  auth:", encend, 12);
+	}
+	
+	/* compare first 96 bits == 12 bytes */
+	if(memcmp(b12, encend, 12)!=0) {
+	    openswan_log("R2 failed to match authenticator");
+	    return STF_FAIL;
+	}
+    }
+    
+    DBG(DBG_PARSING, DBG_log("authenticator matched"));
+    
+    /* decrypt */
+    {
+	size_t         blocksize = st->st_oakley.encrypter->enc_blocksize;
+	unsigned char *encstart  = iv + blocksize;
+	unsigned int   enclen    = encend - encstart;
+	unsigned int   padlen;
+	
+	DBG(DBG_CRYPT,
+	    DBG_dump("data before decryption:", encstart, enclen));
+	
+	/* now, decrypt */
+	(st->st_oakley.encrypter->do_crypt)(encstart,
+					    enclen,
+					    st->st_skey_ei.ptr,
+					    st->st_skey_ei.len,
+					    iv, FALSE);
+	
+	padlen = encstart[enclen-1];
+	encend = encend - padlen+1;
+	
+	if(encend < encstart) {
+	    openswan_log("invalid pad length: %u", padlen);
+	    return STF_FAIL;
+	}
+	
+	if(DBGP(DBG_CRYPT)) {
+	    DBG_dump("decrypted payload:", encstart, enclen);
+	    DBG_log("striping %u bytes as pad", padlen+1);
+	}
+	
+	init_pbs(&clr_pbs, encstart, enclen - (padlen+1), "cleartext");
+    }
+    
+    ikev2_process_payloads(md, &clr_pbs, st->st_state, np);
+    return STF_OK;
+}
 
 static stf_status
 ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
@@ -944,7 +1019,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 /*
  *
  ***************************************************************
- *                       PARENT_inR2                       *****
+ *                       PARENT_inI2                       *****
  ***************************************************************
  *  - 
  *  
@@ -969,7 +1044,7 @@ stf_status ikev2parent_inI2outR2(struct msg_digest *md)
      */
 
     DBG(DBG_CONTROLMORE
-	, DBG_log("ikev2 parent inR2: calculating g^{xy} in order to decrypt I2"));
+	, DBG_log("ikev2 parent inI2outR2: calculating g^{xy} in order to decrypt I2"));
 
     /* verify that there is in fact an encrypted payload */
     if(!md->chain[ISAKMP_NEXT_v2E]) {
@@ -1010,7 +1085,7 @@ ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
     stf_status e;
     
     DBG(DBG_CONTROLMORE
-	, DBG_log("ikev2 parent inR1outI1: calculating g^{xy}, sending I2"));
+	, DBG_log("ikev2 parent inI2outR2: calculating g^{xy}, sending R2"));
   
     /* XXX should check out ugh */
     passert(ugh == NULL);
@@ -1053,76 +1128,139 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* decrypt things. */
     {
-	unsigned char *encend;
-	pb_stream     *e_pbs;
-	unsigned int   np;
-	unsigned char *iv;
-	pb_stream      clr_pbs;
-	
-	e_pbs = &md->chain[ISAKMP_NEXT_v2E]->pbs;
-	np    = md->chain[ISAKMP_NEXT_v2E]->payload.generic.isag_np;
-
-	iv     = e_pbs->cur;
-	encend = e_pbs->roof - 12;
-
-	/* start by checking authenticator */
-	{
-	    unsigned char  *b12 = alloca(st->st_oakley.integ_hasher->hash_digest_len);
-	    struct hmac_ctx ctx;
-	    
-	    hmac_init_chunk(&ctx, st->st_oakley.integ_hasher, st->st_skey_ai);
-	    hmac_update(&ctx, iv, encend-iv);
-	    hmac_final(b12, &ctx);
-	    
-	    if(DBGP(DBG_PARSING)) {
-		DBG_dump("R2 calculated auth:", b12, 12); 
-		DBG_dump("R2  provided  auth:", encend, 12);
-	    }
-
-	    /* compare first 96 bits == 12 bytes */
-	    if(memcmp(b12, encend, 12)!=0) {
-		openswan_log("R2 failed to match authenticator");
-		return STF_FAIL;
-	    }
-	}
-	
-	DBG(DBG_PARSING, DBG_log("authenticator matched"));
-	
-	/* decrypt */
-	{
-	    size_t         blocksize = st->st_oakley.encrypter->enc_blocksize;
-	    unsigned char *encstart  = iv + blocksize;
-	    unsigned int   enclen    = encend - encstart;
-	    unsigned int   padlen;
-	    
-	    DBG(DBG_CRYPT,
-		DBG_dump("data before decryption:", encstart, enclen));
-	    
-	    /* now, decrypt */
-	    (st->st_oakley.encrypter->do_crypt)(encstart,
-						enclen,
-						st->st_skey_ei.ptr,
-						st->st_skey_ei.len,
-						iv, FALSE);
-	    
-	    padlen = encstart[enclen-1];
-	    encend = encend - padlen+1;
-	    
-	    if(encend < encstart) {
-		openswan_log("invalid pad length: %u", padlen);
-		return STF_FAIL;
-	    }
-	    
-	    if(DBGP(DBG_CRYPT)) {
-		DBG_dump("decrypted payload:", encstart, enclen);
-		DBG_log("striping %u bytes as pad", padlen+1);
-	    }
-	    
-	    init_pbs(&clr_pbs, encstart, enclen - (padlen+1), "cleartext");
-	}
-
-	ikev2_process_payloads(md, &clr_pbs, st->st_state, np);
+	stf_status ret; 
+	ret = ikev2_decrypt_msg(md);
+	if(ret != STF_OK) return ret;
     }
+
+    if(!ikev2_decode_peer_id(md, FALSE)) {
+	return STF_FAIL + INVALID_ID_INFORMATION;
+    }
+
+    /* send response */
+    {
+	unsigned char *encstart;
+	unsigned char *iv;
+	unsigned int ivsize;
+	struct ikev2_generic e;
+	pb_stream      e_pbs, e_pbs_cipher;
+	stf_status     ret;
+
+	/* HDR out */
+	{
+	    struct isakmp_hdr r_hdr = md->hdr;
+	    
+	    r_hdr.isa_np    = ISAKMP_NEXT_v2E;
+	    r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
+	    r_hdr.isa_flags = ISAKMP_FLAGS_R;
+	    memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
+	    memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
+	    if (!out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
+		return STF_INTERNAL_ERROR;
+	}
+	
+	/* insert an Encryption payload header */
+	e.isag_np = ISAKMP_NEXT_v2IDr;
+	e.isag_critical = ISAKMP_PAYLOAD_CRITICAL;
+
+	if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
+	    return STF_INTERNAL_ERROR;
+	}
+
+	/* insert IV */
+	iv     = e_pbs.cur;
+	ivsize = st->st_oakley.encrypter->iv_size;
+	if(!out_zero(ivsize, &e_pbs, "iv")) {
+	    return STF_INTERNAL_ERROR;
+	}
+	get_rnd_bytes(iv, ivsize);
+	
+	/* note where cleartext starts */
+	init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
+	e_pbs_cipher.container = &e_pbs;
+	e_pbs_cipher.desc = NULL;
+	e_pbs_cipher.cur = e_pbs.cur;
+	encstart = e_pbs_cipher.cur;
+	
+	/* send out the IDi payload */
+	{
+	    struct ikev2_id r_id;
+	    pb_stream r_id_pbs;
+	    chunk_t id_b;
+	    
+	    r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
+	    build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b,
+			     &c->spd.this);
+	    
+	    if (!out_struct(&r_id
+			    , &ikev2_id_desc
+			    , &e_pbs_cipher
+			    , &r_id_pbs)
+		|| !out_chunk(id_b, &r_id_pbs, "my identity"))
+		return STF_INTERNAL_ERROR;
+	    close_output_pbs(&r_id_pbs);
+	}
+
+	ret = ikev2_encrypt_msg(md, RESPONDER,
+				iv, encstart,
+				&e_pbs, &e_pbs_cipher);
+	if(ret != STF_OK) return ret;
+    }
+
+    close_output_pbs(&md->rbody);
+    close_output_pbs(&md->reply);
+
+    /* let TCL hack it before we mark the length. */
+    TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
+
+    /* keep it for a retransmit if necessary */
+    clonetochunk(st->st_tpacket, md->reply.start, pbs_offset(&md->reply)
+		 , "reply packet for ikev2_parent_outI1");
+
+    /* note: retransimission is driven by initiator */
+
+    return STF_OK;
+    
+}
+
+#if 0
+/*
+ *
+ ***************************************************************
+ *                       PARENT_inR2                       *****
+ ***************************************************************
+ *  - there are no cryptographic continuations, but be certain
+ *    that there will have to be DNS continuations, but they
+ *    just aren't implemented yet.
+ *
+ */
+stf_status ikev2parent_inR2(struct msg_digest *md)
+{
+    struct state *st = md->st;
+    //struct connection *c = st->st_connection;
+
+    /*
+     * the initiator sent us an encrypted payload. We need to calculate
+     * our g^xy, and skeyseed values, and then decrypt the payload.
+     */
+
+    DBG(DBG_CONTROLMORE
+	, DBG_log("ikev2 parent inR2: calculating g^{xy} in order to decrypt I2"));
+
+    /* verify that there is in fact an encrypted payload */
+    if(!md->chain[ISAKMP_NEXT_v2E]) {
+	openswan_log("R2 state should receive an encrypted payload");
+	return STF_FATAL;
+    }
+
+    /* decrypt things. */
+    {
+	stf_status ret; 
+	ret = ikev2_decrypt_msg(md);
+	if(ret != STF_OK) return ret;
+    }
+
+
 	
     if(!ikev2_decode_peer_id(md, FALSE)) {
 	return STF_FAIL + INVALID_ID_INFORMATION;
@@ -1213,6 +1351,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     return STF_OK;
     
 }
+#endif
 
 /*
  *
