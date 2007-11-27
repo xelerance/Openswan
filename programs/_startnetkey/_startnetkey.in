@@ -1,6 +1,6 @@
 #!/bin/sh
 # Netkey startup script
-# Copyright (C) 2007 Ken Bantoft
+# Copyright (C) 2007 Ken Bantoft, Paul Wouters
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -22,7 +22,6 @@ rpfilter2=rp_filter
 # %unchanged or setting (0, 1, or 2)
 rpfiltercontrol=0
 kamepfkey=/proc/net/pfkey
-bareversion=`uname -r | sed -e 's/\.nptl//' | sed -e 's/^\(2\.[0-9]\.[1-9][0-9]*-[1-9][0-9]*\(\.[0-9][0-9]*\)*\(\.x\)*\).*$/\1/'`
 
 info=/dev/null
 log=daemon.error
@@ -44,8 +43,7 @@ do
 done
 
 
-logger -p $log -t ipsec_setup "Using NETKEY/2.6 stack"
-
+logger -p $log -t ipsec_setup "Using NETKEY(XFRM) stack"
 
 
 # Code to determine default route on Linux, taken from _startklips 
@@ -111,27 +109,39 @@ logonly() {
 
 	if test -f $modules
 	then
-		modprobe -qv af_key
-		modprobe -qv ah4
-		modprobe -qv esp4
-		modprobe -qv ipcomp
-		#  xfrm4_tunnel is needed by ipip and ipcomp
-		modprobe -qv xfrm4_tunnel
-		# xfrm_user contains netlink support for IPsec 
-		modprobe -qv xfrm_user
-
+		# load hardware random related modules - some changed names over time
 		echo Trying hardware random, this may fail, which is okay.
 		modprobe -qv hw_random 2>/dev/null
+		modprobe -qv hwrng 2>/dev/null
+		modprove -qv amd-rng 2>/dev/null
+		modprobe -qv intel-rng 2>/dev/null
+
+		
+		# load all NETKEY modules
+		echo -n Trying to load all NETKEY modules:
+		for mod in xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro \
+			xfrm6_mode_transport xfrm4_mode_transport xfrm4_mode_tunnel \
+			xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 ipcomp ipcomp6 af_key
+		   do
+			echo -n $mod
+			modprobe -qv $mod 2> /dev/null
+		   done
+		# xfrm_user is the old name for xfrm4_tunnel - backwards compatibility
+		modprobe -qv xfrm_user 2> /dev/null
+
 
 		# padlock must load before aes module
 		echo Trying VIA padlock driver, this may fail, which is okay.
 		modprobe -qv padlock 2>/dev/null
 
 		# load the most common ciphers/algo's
-		modprobe -qv sha1
-		modprobe -qv md5
-		modprobe -qv des
-		modprobe -qv aes
+		# aes-x86_64 has higher priority in via crypto api
+		echo Trying to load Crypto API modules, some may fail, which is okay.
+		for crypto in aes-x86_64 aes des sha512 sha256 md5 cbc xcbc ecb twofish blowfish serpent 
+		   do
+			echo -n $crypto
+			modprobe -qv $crypto 2> /dev/null
+		   done
 	fi
 
 
