@@ -225,6 +225,9 @@ struct id_list *osw_get_idlist(const struct secret *s)
     return s->ids;
 }
 
+/* This is a bad assumption, and failes when people put PSK
+ * entries before the default RSA case, which most people do
+ */
 struct secret *osw_get_defaultsecret(struct secret *secrets)
 {
     struct secret *s,*s2;
