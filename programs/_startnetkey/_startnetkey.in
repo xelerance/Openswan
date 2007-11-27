@@ -70,7 +70,7 @@ logonly() {
 			xfrm6_mode_transport xfrm4_mode_transport xfrm4_mode_tunnel \
 			xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 ipcomp ipcomp6 af_key
 		   do
-			echo -n $mod
+			echo -n "$mod "
 			modprobe -qv $mod 2> /dev/null
 		   done
 		echo
@@ -88,7 +88,7 @@ logonly() {
 		echo Trying to load Crypto API modules, some may fail, which is okay.
 		for crypto in aes-x86_64 aes des sha512 sha256 md5 cbc xcbc ecb twofish blowfish serpent 
 		   do
-			echo -n $crypto
+			echo -n "$crypto "
 			modprobe -qv $crypto 2> /dev/null
 		   done
 		echo
