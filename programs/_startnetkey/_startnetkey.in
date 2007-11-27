@@ -73,6 +73,8 @@ logonly() {
 			echo -n $mod
 			modprobe -qv $mod 2> /dev/null
 		   done
+		echo
+
 		# xfrm_user is the old name for xfrm4_tunnel - backwards compatibility
 		modprobe -qv xfrm_user 2> /dev/null
 
@@ -89,6 +91,7 @@ logonly() {
 			echo -n $crypto
 			modprobe -qv $crypto 2> /dev/null
 		   done
+		echo
 	fi
 
 
