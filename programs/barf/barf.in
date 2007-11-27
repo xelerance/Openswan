@@ -183,6 +183,12 @@ fi
 # not visible on my 2.6 system
 #_________________________ /proc/net/pf_key-star
 #( cd /proc/net && egrep '^' pf_key_* )
+__________________________/proc/sys/net/core/xfrm-star
+for i in /proc/sys/net/core/xfrm_*
+do
+	echo -n "$i: "
+	cat $i
+done
 _________________________ /proc/sys/net/ipsec-star
 if test -d /proc/sys/net/ipsec
 then
