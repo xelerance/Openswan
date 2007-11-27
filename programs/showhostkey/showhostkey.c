@@ -263,7 +263,7 @@ void show_dnskey(struct secret *s
     gethostname(qname, sizeof(qname));
 
     if(pks->kind != PPK_RSA) {
-	printf("%s: wrong kind of key\n", progname);
+	printf("%s: wrong kind of key in show_dnskey\n", progname);
 	exit(5);
     }
 
@@ -317,7 +317,7 @@ void show_confkey(struct secret *s
     unsigned int keybloblen;
 
     if(pks->kind != PPK_RSA) {
-	printf("%s: wrong kind of key\n", progname);
+	printf("%s: wrong kind of key in show_confkey\n", progname);
 	exit(5);
     }
 
