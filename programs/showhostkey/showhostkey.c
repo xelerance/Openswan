@@ -263,7 +263,18 @@ void show_dnskey(struct secret *s
     gethostname(qname, sizeof(qname));
 
     if(pks->kind != PPK_RSA) {
-	printf("%s: wrong kind of key in show_dnskey\n", progname);
+	char *enumstr;
+	switch (pks->kind) {
+	case PPK_PSK:
+		enumstr = "PPK_PSK";
+	case PPK_PIN:
+		enumstr = "PPK_PIN";
+	case PPK_XAUTH:
+		enumstr = "PPK_XAUTH";
+	default:
+		sscanf(enumstr,"UNKNOWN (%d)",(int *)pks->kind);
+	}
+	printf("%s: wrong kind of key %s in show_dnskey. Expected PPK_RSA.\n", progname,enumstr);
 	exit(5);
     }
 
@@ -317,7 +328,18 @@ void show_confkey(struct secret *s
     unsigned int keybloblen;
 
     if(pks->kind != PPK_RSA) {
-	printf("%s: wrong kind of key in show_confkey\n", progname);
+        char *enumstr;
+        switch (pks->kind) {
+        case PPK_PSK:
+                enumstr = "PPK_PSK";
+        case PPK_PIN:
+                enumstr = "PPK_PIN";
+        case PPK_XAUTH:
+                enumstr = "PPK_XAUTH";
+        default:
+                sscanf(enumstr,"UNKNOWN (%d)",(int *)pks->kind);
+        }
+	printf("%s: wrong kind of key %s in show_confkey. Expected PPK_RSA.\n", progname,enumstr);
 	exit(5);
     }
 
