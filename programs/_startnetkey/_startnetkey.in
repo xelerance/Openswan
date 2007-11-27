@@ -46,56 +46,6 @@ done
 logger -p $log -t ipsec_setup "Using NETKEY(XFRM) stack"
 
 
-# Code to determine default route on Linux, taken from _startklips 
-defaultinterface() {
-	phys=`netstat -nr |
-		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $NF; exit 0 }'`
-	if test " $phys" = " "
-	then
-		echo "no default route, %defaultroute cannot cope!!!"
-		exit 1
-	fi
-        addr=
-        eval `ifconfig $phys |
-                awk '$1 == "inet" && $2 ~ /^addr:/ && $NF ~ /^Mask:/ {
-                        gsub(/:/, " ", $0)
-                        print "addr=" $3
-                        other = $5
-                        if ($4 == "Bcast")
-                                print "type=broadcast"
-                        else if ($4 == "P-t-P")
-                                print "type=pointopoint"
-                        else if (NF == 5) {
-                                print "type="
-                                other = ""
-                        } else
-                                print "type=unknown"
-                        print "otheraddr=" other
-                        print "mask=" $NF
-                }'`
-        if test " $addr" = " "
-        then
-                echo "unable to determine address of \`$phys'"
-                exit 1
-        fi
-
-
-	nexthop=`netstat -nr |
-		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $2; exit 0 }'` 
-
-	(
-	echo "defaultroutephys=$phys"
-        echo "defaultrouteaddr=$addr"
-		if test " $2" = " 0.0.0.0"
-                then
-                	# this happens on people with ppp interfaces with 'route add default dev ppp0'.
-                        echo "defaultroutenexthop=%direct"
-                else
-                        echo "defaultroutenexthop=$nexthop"
-                fi
-                ) >>$info
-}
-
 # log only to syslog, not to stdout/stderr
 logonly() {
 	logger -p $log -t ipsec_setup
@@ -103,9 +53,6 @@ logonly() {
 
 
 # main line
-
-	# Go find us a default Interface
- 	defaultinterface;
 
 	if test -f $modules
 	then
