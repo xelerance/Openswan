@@ -274,6 +274,8 @@ case "$1" in
 				$IPSECinterfaces "||" \
 			"{" rm -f $lock ";" exit 1 ";" "}"
 
+# Paul: Shouldn't the below tests be outside the klips test?
+
 		perform test -f $ipsecversion "||" \
 			test -f $kamepfkey "||" "{" \
 			echo "\"OOPS, should have aborted!  Broken shell!\"" ";" \
@@ -389,10 +391,12 @@ case "$1" in
 
 	# When we exit we clean up (remove) the modules we are using, even the kame'ish ones
 	if test -e ${kamepfkey}; then
-		lsmod 2>&1 | grep "^xfrm4_tunnel" > /dev/null && rmmod -s xfrm4_tunnel
-		lsmod 2>&1 | grep "^af_key" > /dev/null && rmmod -s af_key
-		# old name for xfrm4_tunnel
-		lsmod 2>&1 | grep "^xfrm_user" > /dev/null && rmmod -s xfrm_user
+		for mod in xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro \
+			xfrm6_mode_transport xfrm4_mode_transport xfrm4_mode_tunnel  xfrm_user \
+			xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 ipcomp ipcomp6 af_key
+		    do
+			lsmod 2>&1 | grep "^$mod" > /dev/null && rmmod -s $mod
+		    done
 	fi 
 
 	perform test -d `dirname $subsyslock` "&&" rm -f $subsyslock
