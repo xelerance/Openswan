@@ -1962,7 +1962,7 @@ init_kernel(void)
 
 #if defined(NETKEY_SUPPORT)
     case USE_NETKEY:
-	openswan_log("Using Linux 2.6 IPsec interface code on %s (THIS CODE MAY BE BROKEN IN 2.5.0DR1)"
+	openswan_log("Using Linux 2.6 IPsec interface code on %s (experimental code)"
 		     , kversion);
 	kernel_ops = &netkey_kernel_ops;
 	break;
