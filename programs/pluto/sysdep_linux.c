@@ -515,7 +515,7 @@ do_command_linux(struct connection *c, struct spd_route *sr
 
         if (-1 == snprintf(cmd, sizeof(cmd)
 			   , "2>&1 "   /* capture stderr along with stdout */
-			   "PLUTO_VERSION='1.1' "    /* change VERSION when interface spec changes */
+			   "PLUTO_VERSION='2.0' "    /* change VERSION when interface spec changes */
 			   "PLUTO_VERB='%s%s' "
 			   "PLUTO_CONNECTION='%s' "
 			   "%s"      /* possible PLUTO_NEXT_HOP */
@@ -535,6 +535,7 @@ do_command_linux(struct connection *c, struct spd_route *sr
 			   "PLUTO_PEER_PORT='%u' "
 			   "PLUTO_PEER_PROTOCOL='%u' "
 			   "PLUTO_PEER_CA='%s' "
+			   "PLUTO_STACK='%s' "
 			   "PLUTO_CONN_POLICY='%s' "
 			   "%s "
 			   "%s "       /* PLUTO_MY_SRCIP */                    
@@ -558,6 +559,7 @@ do_command_linux(struct connection *c, struct spd_route *sr
 			   , sr->that.port
 			   , sr->that.protocol
 			   , secure_peerca_str
+			   , kernel_ops->kern_name
 			   , prettypolicy(c->policy)
 			   , secure_xauth_username_str
 			   , srcip_str
