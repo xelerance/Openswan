@@ -292,28 +292,6 @@ else
 		echo "no KLIPS or NETKEY support detected"
 	fi
 fi
-_________________________ ipfwadm
-if test -r /sbin/ipfwadm
-then
-	ipfwadm -F -l -n -e
-_________________________
-	ipfwadm -I -l -n -e
-_________________________
-	ipfwadm -O -l -n -e
-_________________________
-	ipfwadm -M -l -n -e
-else
-	"no old-style linux 1.x/2.0 ipfwadm firewall support"
-fi
-_________________________ ipchains
-if test -r /sbin/ipchains
-then
-	ipchains -L -v -n
-_________________________
-	ipchains -M -L -v -n
-else
-	echo "no old-style linux 2.0 ipchains firewall support"
-fi
 _________________________ iptables
 if test -r /sbin/iptables
 then
