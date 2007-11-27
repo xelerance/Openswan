@@ -513,6 +513,7 @@ int main(int argc, char *argv[])
     } else {
 	/* Paul: This assumption is WRONG. Mostly I have PSK's above my
  	 * multiline default : RSA entry, and then this assumption breaks
+ 	 * The proper test would be for ": RSA" vs "@something :RSA"
  	 */
 	/* default key is the *LAST* key, because it is first in the file.*/
 	s=osw_get_defaultsecret(host_secrets);
