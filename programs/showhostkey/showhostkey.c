@@ -511,6 +511,9 @@ int main(int argc, char *argv[])
 	printf("; picking by keyid=%s\n", keyid);
 	s = pick_key(host_secrets, keyid);
     } else {
+	/* Paul: This assumption is WRONG. Mostly I have PSK's above my
+ 	 * multiline default : RSA entry, and then this assumption breaks
+ 	 */
 	/* default key is the *LAST* key, because it is first in the file.*/
 	s=osw_get_defaultsecret(host_secrets);
 	keyid="default";
