@@ -762,13 +762,16 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
 
     /* pads things up to message size boundary */
     {
-	char   b[1];
 	size_t blocksize = st->st_oakley.encrypter->enc_blocksize;
+	char  *b = alloca(blocksize);
+	unsigned int    i;
 	size_t padding =  pad_up(pbs_offset(e_pbs_cipher), blocksize);
 	if (padding == 0) padding=blocksize;
-	(void) out_zero(padding-1, e_pbs_cipher, "message padding");
-	b[0] = padding-1;
-	out_raw(b, 1, e_pbs_cipher, "pad length");
+
+	for(i=0; i<padding; i++) {
+	    b[i]=i;
+	}
+	out_raw(b, padding, e_pbs_cipher, "padding and length");
     }
     
     /* encrypt the block */
