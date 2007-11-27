@@ -178,7 +178,7 @@ static void _natd_hash(const struct hash_desc *hasher, unsigned char *hash
 					sizeof(ip->u.v4.sin_addr.s_addr));
 				break;
 		}
-		DBG_log("_natd_hash: port=%d", port);
+		DBG_log("_natd_hash: port=%d", ntohs(port));
 		DBG_dump("_natd_hash: hash=", hash, hasher->hash_digest_len);
 	);
 #endif
