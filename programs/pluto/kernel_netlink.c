@@ -1448,4 +1448,4 @@ const struct kernel_ops netkey_kernel_ops = {
 
     process_ifaces: netlink_process_raw_ifaces,
 };
-#endif /* linux && KLIPS */
+#endif /* linux && NETKEY_SUPPORT */
