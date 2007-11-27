@@ -6,11 +6,11 @@
 <refmeta>
 <refentrytitle>_STARTNETKEY</refentrytitle>
 <manvolnum>8</manvolnum>
-<refmiscinfo class='date'>25 Apr 2002</refmiscinfo>
+<refmiscinfo class='date'>27 Nov 2007</refmiscinfo>
 </refmeta>
 <refnamediv id='name'>
 <refname>ipsec _startnetkey</refname>
-<refpurpose>internal script to bring up kernel components for 2.6 netkey</refpurpose>
+<refpurpose>internal script to bring up kernel components for netkey (xfrm)</refpurpose>
 </refnamediv>
 <!-- body begins here -->
 
@@ -21,7 +21,13 @@ required modules.</para>
 </refsect1>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
-<para><citerefentry><refentrytitle>ipsec</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_tncfg</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+<para><citerefentry><refentrytitle>ip</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_tncfg</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+</refsect1>
+
+<refsect1 id='bugs'><title>BUGS</title>
+<para>The <emphasis remap='I'>ip xfrm</emphasis> commands are not documented
+in the man page. Ask linux-net people, but do not hold your breath. See <emphasis remap='I'>ip xfrm state help</emphasis>
+and <emphasis remap='I'>ip xfrm policy help</emphasis> for the magic words.</para>
 </refsect1>
 
 <refsect1 id='history'><title>HISTORY</title>
