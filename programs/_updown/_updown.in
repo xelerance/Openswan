@@ -119,6 +119,8 @@ LC_ALL=C export LC_ALL
 #              KLIPSng(mast) references to the SA to be used in each
 #              direction.
 #
+#	PLUTO_STACK
+		The kernel level IPstack used (see protostack=)
 case $PLUTO_VERSION in
     1.*) # Older Pluto?!?  Play it safe, script may be using new features.
 	echo "$0: obsolete interface version \`$PLUTO_VERSION'," >&2
@@ -130,6 +132,8 @@ esac
 if [ -x @IPSEC_LIBDIR@/_updown.${PLUTO_STACK} ]
 then
 	exec @IPSEC_LIBDIR@/_updown.${PLUTO_STACK} $*
+else
+	echo "FATAL: Could not execute @IPSEC_LIBDIR@/_updown.${PLUTO_STACK} $*"
 fi
 
 exit 3;
