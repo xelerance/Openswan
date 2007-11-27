@@ -334,7 +334,7 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 	    
 	    st->hidden_variables.st_nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_PEER);
 	    st->hidden_variables.st_nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_ME);
-	    st->hidden_variables.st_natd = md->sender
+	    st->hidden_variables.st_natd = md->sender;
 	}
 }
 
