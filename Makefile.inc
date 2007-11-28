@@ -293,7 +293,7 @@ USE_IKEPING?=true
 # using TXT instead of KEY records.  See references to 'Flag Day'
 USE_KEYRR?=true
 
-# include support for 2.4 KLIPS and 2.6 KLIPS in pluto
+# include support for Linux 2.4 and 2.6 KLIPS kernel level IPsec support for pluto
 USE_KLIPS?=true
 
 # KLIPS needs PFKEYv2, but sometimes we want PFKEY without KLIPS
@@ -305,8 +305,8 @@ USE_MAST?=false
 # MAST is generally a prerequisite for SAREF support in applications
 USE_SAREF_KERNEL=false
 
-# include support for NETKEY 2.5/2.6 IPsec in pluto (aka "native", "kame")
-USE_KERNEL26?=true
+# include support for Linux NETKEY (XFRM) kernel level IPsec support for pluto (aka "native", "kame")
+USE_NETKEY?=true
 
 # include support for sending Openswan Vendor IDs
 USE_VENDORID?=true

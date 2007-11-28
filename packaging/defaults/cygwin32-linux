@@ -14,7 +14,7 @@ TCLINC=-I/0g/sandboxes/cygwin/tcl/include
 PORTINCLUDE+=-I${OPENSWANSRCDIR}/ports/win2k/include 
 
 USE_KLIPS=false
-USE_KERNEL26=false
+USE_NETKEY=false
 USE_WIN2K=true
 BUILD_KLIPS=false
 

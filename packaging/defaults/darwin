@@ -5,7 +5,7 @@ USERLINK=-L/usr/local/lib
 
 USE_MAST=false
 USE_KLIPS=false
-USE_KERNEL26=false
+USE_NETKEY=false
 USE_WIN2K=false
 BUILD_KLIPS=false
 USE_LWRES=true
