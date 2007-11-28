@@ -120,7 +120,8 @@ LC_ALL=C export LC_ALL
 #              direction.
 #
 #	PLUTO_STACK
-		The kernel level IPstack used (see protostack=)
+#		The kernel level IPstack used (see protostack=)
+
 case $PLUTO_VERSION in
     1.*) # Older Pluto?!?  Play it safe, script may be using new features.
 	echo "$0: obsolete interface version \`$PLUTO_VERSION'," >&2
