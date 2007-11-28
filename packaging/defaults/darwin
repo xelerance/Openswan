@@ -4,7 +4,7 @@ PORTINCLUDE+=-g -O3 -I/opt/local/include -L/opt/local/lib
 USERLINK=-L/usr/local/lib
 
 USE_KLIPS=false
-USE_KERNEL26=false
+USE_NETKEY=false
 USE_WIN2K=false
 BUILD_KLIPS=false
 USE_YACC=true
