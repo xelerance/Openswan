@@ -33,10 +33,11 @@ else
 
 programs: ${PROGRAM}
 
-ifeq ($(USE_IPROUTE2),true)
-UPDOWN_PROGRAM=_updown.ip2
+ifeq ($(USE_IPROUTE2),false)
+echo "Cannot build _updown.netkey without USE_IPROUTE2, aborted"
+exit 1
 else
-UPDOWN_PROGRAM=_updown.posix
+UPDOWN_PROGRAM=_updown.ip2
 endif
 
 ${PROGRAM}: ${UPDOWN_PROGRAM}
