@@ -146,8 +146,9 @@ void list_psks(void)
  * compute an RSA signature with PKCS#1 padding
  */
 void
-sign_hash(const struct RSA_private_key *k, const u_char *hash_val, size_t hash_len
-    , u_char *sig_val, size_t sig_len)
+sign_hash(const struct RSA_private_key *k
+	  , const u_char *hash_val, size_t hash_len
+	  , u_char *sig_val, size_t sig_len)
 {
     chunk_t ch;
 #if defined(HAVE_OCF) && 0
