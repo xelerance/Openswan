@@ -258,11 +258,6 @@ RH_KERNELSRC?=/lib/modules/2.6.9-1.681_FC3/build
 # This only affects conns that use DNS for keys in lookups.
 USE_LWRES?=true
 
-# Whether or not to use iproute2 based commands.
-# On Kernel 2.0, and early 2.2 systems you may need to either install the
-# iproute2 package, or set this to false
-USE_IPROUTE2?=true
-
 # what kind of firewalling to use:
 #  2.0 	- ipfwadm
 #  2.2  - ipchains
@@ -279,41 +274,48 @@ USE_SINGLE_CONF_DIR?=false
 # false for now, since it is still experimental.
 USE_IPSECPOLICY?=true
 
-# include IKEPING (a utility for testing IKE daemons) in the distribution
+# Build ikeping (a utility for testing IKE daemons) in the distribution
 USE_IKEPING?=true
 
-# include support for KEY RR 
+# Build support for KEY RR 
 # this will become false in the future, as all OE sites transition to
 # using TXT instead of KEY records.  See references to 'Flag Day'
 USE_KEYRR?=true
 
-# include support for Linux 2.4 and 2.6 KLIPS kernel level IPsec support for pluto
+# Build support for Linux 2.4 and 2.6 KLIPS kernel level IPsec support
+# for pluto
 USE_KLIPS?=true
 
 # KLIPS needs PFKEYv2, but sometimes we want PFKEY without KLIPS
 USE_PFKEYv2?=true
 
-# include support for 2.6 KLIPS/MAST variation in pluto
+# Build support for 2.6 KLIPS/MAST variation in pluto
 USE_MAST?=false
 
 # MAST is generally a prerequisite for SAREF support in applications
 USE_SAREF_KERNEL=false
 
-# include support for Linux NETKEY (XFRM) kernel level IPsec support for pluto (aka "native", "kame")
+# Build support for Linux NETKEY (XFRM) kernel level IPsec support for
+# pluto (aka "native", "kame")
 USE_NETKEY?=true
 
-# include support for sending Openswan Vendor IDs
+# Whether or not to use iproute2 based commands.
+# On Kernel 2.0, and early 2.2 systems you may need to either install the
+# iproute2 package, or set this to false. Required for USE_NETKEY.
+USE_IPROUTE2?=true
+
+# Build support for sending Openswan Vendor IDs
 USE_VENDORID?=true
 
 # Use /dev/hwrandom if available (EG: VIA Padlock)
 USE_HWRANDOM?=true
 
-# include aggressive mode authentication system code - both Server and Client.
+# Build aggressive mode authentication system code - both Server and Client.
 # This is off by default, since aggressive mode leads to denial of service
 # attacks.
 USE_AGGRESSIVE?=true
 
-# include XAUTH authentication system code - both Server and Client.
+# Build XAUTH authentication system code - both Server and Client.
 # This is off by default, since XAUTH is tricky, and you can get into 
 # security trouble unless you do additional configuration.
 USE_XAUTH?=true
@@ -352,7 +354,7 @@ endif
 # device. Normal use does not need any of this.
 USE_WEAKSTUFF?=false
 
-# include algorithms that don't even encrypt (also must set WEAKSTUFF)
+# Build algorithms that don't even encrypt (also must set WEAKSTUFF)
 # unless you are doing negative testing, turning this on is foolish.
 USE_NOCRYPTO?=false
 
