@@ -59,7 +59,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |   83 02 99 03  f3 a9 0e ca  23 e1 ec 1e  27 03 31 b2
 |   d0 50 f4 f7  58 f4 99 27  2b 80 00 14  b5 ce 84 19
 |   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  00 00 00 10
-|   4f 45 72 6c  41 5c 6e 51  75 6b 53 52
+|   4f 45 VENDOR
 | complete v2 state transition with STF_OK
 ../parentI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 ../parentI2 STATE_PARENT_I1: sent v2I1, expected v2R1
@@ -83,7 +83,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |   6d 11 35 f6  5d 93 5f 60  b9 73 0f e0  49 2c 2a f8
 |   c9 04 f6 4c  59 16 90 9d  2b 80 00 14  47 e9 f9 25
 |   8c a2 38 58  f6 75 b1 66  b0 2c c2 92  00 00 00 10
-|   4f 45 72 6c  41 5c 6e 51  75 6b 53 52
+|   4f 45 VENDOR
 | **parse ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
@@ -196,33 +196,76 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |    critical bit: Payload-Critical
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
 | *****emit IKEv2 Identification Payload:
-|    next payload type: ISAKMP_NEXT_NONE
+|    next payload type: ISAKMP_NEXT_v2AUTH
 |    id_type: ID_FQDN
 | emitting 4 raw bytes of my identity into IKEv2 Identification Payload
 | my identity  77 65 73 74
 | emitting length of IKEv2 Identification Payload: 12
-| emitting 3 zero bytes of message padding into cleartext
-| emitting 1 raw bytes of pad length into cleartext
-| pad length  03
+| *****emit IKEv2 Identification Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    auth method: v2_AUTH_RSA
+| emitting 192 zero bytes of fake rsa sig into IKEv2 Identification Payload
+| emitting length of IKEv2 Identification Payload: 200
+| emitting 12 raw bytes of padding and length into cleartext
+| padding and length  00 01 02 03  04 05 06 07  08 09 0a 0b
 | data before encryption:
-|   00 00 00 0c  02 00 00 00  77 65 73 74  00 00 00 03
+|   27 00 00 0c  02 00 00 00  77 65 73 74  00 00 00 c8
+|   01 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 01 02 03  04 05 06 07  08 09 0a 0b
 | data after encryption:
-|   d8 f2 29 64  34 eb cc be  2f 8b d5 83  e6 fb 5d 70
+|   4b cf 2d a2  04 44 ca ca  5f b5 91 c1  ab 4b 9b 4d
+|   4f 22 ac 7c  b4 9e 6b 08  d2 73 88 84  fb 3e fd 8e
+|   eb c6 07 ac  cc 1f 80 f8  90 e2 4d f6  5e 53 d6 1e
+|   89 9f 1d 31  9d 89 c0 33  52 4d 03 6f  d4 ea 7e 03
+|   45 de f9 33  56 e2 86 5e  54 81 a6 a2  0a 76 04 08
+|   3d e0 45 95  e1 07 1a 2e  98 17 9e ef  b4 e6 ae 47
+|   08 e6 87 5a  e2 97 b4 dc  5b 26 02 d9  71 e3 6f 66
+|   ce f1 23 03  94 6e ea 89  7d 86 bb b5  90 31 15 28
+|   1a 26 6f 4d  cb 62 7e 14  69 72 ff 2f  71 02 93 1d
+|   f8 2f 24 a2  e4 0d f5 94  af c1 1e 0a  85 eb 1c 56
+|   b9 ed db 7e  2d e5 2f a9  5c f5 1f 4b  4c 9b 5d 53
+|   23 7a e3 9f  64 51 94 13  d2 01 37 4a  98 7f a8 d1
+|   ce 46 0f a2  d6 7c 41 74  62 20 3f 29  48 c0 b9 ed
+|   8b 73 4a 69  a0 15 ff 63  bd e7 67 f4  4f 83 c3 cf
 | emitting 12 zero bytes of 96-bits of truncated HMAC into IKEv2 Encryption Payload
 | out calculated auth:
-|   f1 d4 9a 66  64 08 2d a3  e2 58 52 49
-| emitting length of IKEv2 Encryption Payload: 48
-| emitting length of ISAKMP Message: 76
+|   e5 11 9d 72  d7 4e 69 5b  10 32 b9 57
+| emitting length of IKEv2 Encryption Payload: 256
+| emitting length of ISAKMP Message: 284
 | complete v2 state transition with STF_OK
 ../parentI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 ../parentI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 cipher=aes_128 integ=sha1 prf=oakley_sha group=modp1536}
 | sending reply packet to 192.1.2.23:500 (from port 500)
-sending 76 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using #1)
+sending 284 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using #1)
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
-|   2e 20 23 08  00 00 00 00  00 00 00 4c  23 80 00 30
+|   2e 20 23 08  00 00 00 00  00 00 01 1c  23 80 01 00
 |   00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   d8 f2 29 64  34 eb cc be  2f 8b d5 83  e6 fb 5d 70
-|   f1 d4 9a 66  64 08 2d a3  e2 58 52 49
+|   4b cf 2d a2  04 44 ca ca  5f b5 91 c1  ab 4b 9b 4d
+|   4f 22 ac 7c  b4 9e 6b 08  d2 73 88 84  fb 3e fd 8e
+|   eb c6 07 ac  cc 1f 80 f8  90 e2 4d f6  5e 53 d6 1e
+|   89 9f 1d 31  9d 89 c0 33  52 4d 03 6f  d4 ea 7e 03
+|   45 de f9 33  56 e2 86 5e  54 81 a6 a2  0a 76 04 08
+|   3d e0 45 95  e1 07 1a 2e  98 17 9e ef  b4 e6 ae 47
+|   08 e6 87 5a  e2 97 b4 dc  5b 26 02 d9  71 e3 6f 66
+|   ce f1 23 03  94 6e ea 89  7d 86 bb b5  90 31 15 28
+|   1a 26 6f 4d  cb 62 7e 14  69 72 ff 2f  71 02 93 1d
+|   f8 2f 24 a2  e4 0d f5 94  af c1 1e 0a  85 eb 1c 56
+|   b9 ed db 7e  2d e5 2f a9  5c f5 1f 4b  4c 9b 5d 53
+|   23 7a e3 9f  64 51 94 13  d2 01 37 4a  98 7f a8 d1
+|   ce 46 0f a2  d6 7c 41 74  62 20 3f 29  48 c0 b9 ed
+|   8b 73 4a 69  a0 15 ff 63  bd e7 67 f4  4f 83 c3 cf
+|   e5 11 9d 72  d7 4e 69 5b  10 32 b9 57
 | deleting state #1
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
@@ -314,7 +357,8 @@ IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, b
     (v2ke: len=192 group=modp1536)
     (nonce[C]: len=16 nonce=(b5ce8419095c6e2b6b62d3055305b3c4) )
     (v2vid: len=12 vid=OEababababab)
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 104, bad cksum 0 (->f63e)!)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 312, bad cksum 0 (->f56e)!)
     192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->c02e7a3031a03188: parent_sa ikev2_auth[I]:
-    (v2e[C]: len=44
-            (v2IDi: len=8 fqdn:west))
+    (v2e[C]: len=252
+            (v2IDi: len=8 fqdn:west)
+            (v2auth: len=196 method=rsasig authdata=(01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) ))

@@ -54,4 +54,11 @@ void run_continuation(struct pluto_crypto_req *r)
 	}
 }
 
+bool ikev2_calculate_rsa_sha1(struct state *st
+			      , unsigned char *idhash
+			      , pb_stream *a_pbs)
+{
+	out_zero(192, a_pbs, "fake rsa sig");
+	return TRUE;
+}
 

@@ -47,7 +47,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 |   83 02 99 03  f3 a9 0e ca  23 e1 ec 1e  27 03 31 b2
 |   d0 50 f4 f7  58 f4 99 27  2b 80 00 14  b5 ce 84 19
 |   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  00 00 00 10
-|   4f 45 5f 6d  79 4c 7e 78  4b 6b 59 62
+|   4f 45 VENDOR
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34)
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
@@ -162,7 +162,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | ***emit ISAKMP Vendor ID Payload:
 |    next payload type: ISAKMP_NEXT_NONE
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 72 6c  41 5c 6e 51  75 6b 53 52
+| Vendor ID  4f 45 VENDOR
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 316
 | complete v2 state transition with STF_OK
@@ -189,7 +189,7 @@ sending 316 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 |   6d 11 35 f6  5d 93 5f 60  b9 73 0f e0  49 2c 2a f8
 |   c9 04 f6 4c  59 16 90 9d  2b 80 00 14  47 e9 f9 25
 |   8c a2 38 58  f6 75 b1 66  b0 2c c2 92  00 00 00 10
-|   4f 45 72 6c  41 5c 6e 51  75 6b 53 52
+|   4f 45 VENDOR
 | deleting state #1
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
