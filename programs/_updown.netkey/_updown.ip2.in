@@ -164,18 +164,6 @@ custom:*)		# custom parameters (see above CAUTION comment)
 esac
 
 # utility functions for route manipulation
-# Meddling with this stuff should not be necessary and requires great care.
-uproute() {
-	# not needed for netkey
-	#doroute add
-	#ip route flush cache
-}
-
-downroute() {
-	# not needed for netkey
-	#doroute delete
-	#ip route flush cache
-}
 
 uprule() {
 	# policy based advanced routing

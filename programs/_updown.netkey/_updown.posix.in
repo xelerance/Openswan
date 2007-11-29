@@ -51,46 +51,6 @@ custom:*)		# custom parameters (see above CAUTION comment)
 	;;
 esac
 
-# utility functions for route manipulation
-# Meddling with this stuff should not be necessary and requires great care.
-uproute() {
-	# not needed for netkey
-	#doroute add
-}
-downroute() {
-	# not needed for netkey
-	#doroute del
-}
-doroute() {
-	parms="-net $PLUTO_PEER_CLIENT_NET netmask $PLUTO_PEER_CLIENT_MASK"
-	parms2="dev $PLUTO_INTERFACE gw $PLUTO_NEXT_HOP"
-	case "$PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK" in
-	"0.0.0.0/0.0.0.0")
-		# horrible kludge for obscure routing bug with opportunistic
-		it="route $1 -net 0.0.0.0 netmask 128.0.0.0 $parms2 &&
-			route $1 -net 128.0.0.0 netmask 128.0.0.0 $parms2"
-		;;
-	*)	it="route $1 $parms $parms2"
-		;;
-	esac
-	eval $it
-	st=$?
-	if test $st -ne 0
-	then
-		# route has already given its own cryptic message
-		echo "$0: \`$it' failed" >&2
-		if test " $1 $st" = " add 7"
-		then
-			# another totally undocumented interface -- 7 and
-			# "SIOCADDRT: Network is unreachable" means that
-			# the gateway isn't reachable.
-			echo "$0: (incorrect or missing nexthop setting??)" >&2
-		fi
-	fi
-	return $st
-}
-
-
 
 # the big choice
 case "$PLUTO_VERB:$1" in
