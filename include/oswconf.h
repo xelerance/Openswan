@@ -35,6 +35,7 @@ struct pluto_paths {
 };
 
 struct osw_conf_options {
+    char *rootdir;                /* default is "" --- used for testing */
     char *confdir;                /* "/etc" */
     char *conffile;               /* "/etc/ipsec.conf" */
     char *confddir;               /* "/etc/ipsec.d" */
@@ -51,6 +52,7 @@ struct osw_conf_options {
 
 extern const struct osw_conf_options *osw_init_options(void);
 extern const struct osw_conf_options *osw_init_ipsecdir(const char *ipsec_dir);
+extern const struct osw_conf_options *osw_init_rootdir(const char *root_dir);
 
 #endif /* _OSW_ALLOC_H_ */
 

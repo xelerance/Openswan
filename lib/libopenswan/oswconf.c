@@ -104,7 +104,8 @@ void osw_conf_setdefault(void)
 	pfree(conffile);
 	ipsec_conf_dir = clone_str(env, "ipsec.conf");
     }
-
+    
+    global_oco.rootdir = "";
     global_oco.confddir= ipsecd_dir;
     global_oco.vardir  = var_dir;
     global_oco.confdir = ipsec_conf_dir;
@@ -122,6 +123,15 @@ const struct osw_conf_options *osw_init_options(void)
     osw_conf_setdefault();
     osw_conf_calculate(&global_oco);
 
+    return &global_oco;
+}
+
+const struct osw_conf_options *osw_init_rootdir(const char *root_dir)
+{
+    osw_conf_setdefault();
+    global_oco.rootdir = clone_str(root_dir, "override /");
+    setup = TRUE;
+    
     return &global_oco;
 }
 

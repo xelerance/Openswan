@@ -156,8 +156,10 @@ load_rsa_private_key(const char* filename, int verbose, prompt_pass_t *pass)
 
     oco = osw_init_options();
 
-    if (*filename == '/')	/* absolute pathname */
-    	strncpy(path, filename, sizeof(path));
+    if (*filename == '/') {
+	/* absolute pathname --- might be hacked by local rootdir */
+	snprintf(path, sizeof(path), "%s%s", oco->rootdir, filename);
+    }
     else			/* relative pathname */
 	snprintf(path, sizeof(path), "%s/%s", oco->private_dir, filename);
 
