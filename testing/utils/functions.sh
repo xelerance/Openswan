@@ -1861,11 +1861,11 @@ do_unittest() {
 
     OUTDIR=${OBJDIRTOP}/testing/${TESTSUBDIR}/${TESTNAME}
     mkdir -p ${OUTDIR}
-    ln -f -s ${OUTDIR} OUTPUT
+    rm -f OUTPUT; ln -f -s ${OUTDIR} OUTPUT
 
     echo "RUNNING $TESTSCRIPT"
     ./$TESTSCRIPT >${OUTDIR}/console.txt
-    echo "DONE $TESTSCRIPT"
+    echo "DONE    $TESTSCRIPT"
 
     stat=$?
     echo Exit code $stat
