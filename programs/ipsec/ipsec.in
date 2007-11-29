@@ -51,7 +51,13 @@ fixversion() {
 			stack=" (netkey)"
                         kv="`uname -r`"
                 else
-                        kv="(no kernel code presently loaded)"
+			if test -f /mach_kernel
+			then
+				stack=" (OSX)"
+                        	kv="`uname -r`"
+			else
+                        	kv="(no kernel code presently loaded)"
+			fi
                 fi
 	fi
 	if test " $kv" != " $version"
