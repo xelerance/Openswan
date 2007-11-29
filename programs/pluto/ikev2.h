@@ -65,3 +65,6 @@ extern void ikev2_log_parentSA(struct state *st);
 extern bool ikev2_calculate_rsa_sha1(struct state *st
 				     , unsigned char *idhash
 				     , pb_stream *a_pbs);
+extern bool ikev2_verify_rsa_sha1(struct state *st
+				  , unsigned char *idhash
+				  , unsigned char *sig_val);

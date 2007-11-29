@@ -56,18 +56,37 @@
 #include "dpd.h"
 #include "keys.h"
 
+static u_char der_digestinfo[]={
+    0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e,
+    0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14
+};
+static int der_digestinfo_len=sizeof(der_digestinfo);
+
+static void ikev2_calculate_sighash(struct state *st
+				    , unsigned char *idhash
+				    , unsigned char *sig_octets)
+{
+	SHA1_CTX       ctx_sha1;
+
+	SHA1Init(&ctx_sha1);
+	SHA1Update(&ctx_sha1
+		   , st->st_firstpacket.ptr
+		   , st->st_firstpacket.len);
+	SHA1Update(&ctx_sha1, st->st_nr.ptr, st->st_nr.len);
+
+	/* we took the PRF(SK_d,ID[ir]'), so length is prf hash length */
+	SHA1Update(&ctx_sha1, idhash
+		   , st->st_oakley.prf_hasher->hash_digest_len);
+
+	SHA1Final(sig_octets, &ctx_sha1);
+}
+
 bool ikev2_calculate_rsa_sha1(struct state *st
 			 , unsigned char *idhash
 			 , pb_stream *a_pbs)
 {
-	SHA1_CTX       ctx_sha1;
 	unsigned char  signed_octets[SHA1_DIGEST_SIZE+16];
 	size_t         signed_len;
-	static u_char der_digestinfo[]={
-		0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e,
-		0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14
-	};
-	static int der_digestinfo_len=sizeof(der_digestinfo);
 	const struct connection *c = st->st_connection;
 	const struct RSA_private_key *k = get_RSA_private_key(c);
 	unsigned int sz;
@@ -79,15 +98,7 @@ bool ikev2_calculate_rsa_sha1(struct state *st
 
 	memcpy(signed_octets, der_digestinfo, der_digestinfo_len);
 
-	SHA1Init(&ctx_sha1);
-	SHA1Update(&ctx_sha1
-		   , st->st_firstpacket.ptr
-		   , st->st_firstpacket.len);
-	SHA1Update(&ctx_sha1, st->st_nr.ptr, st->st_nr.len);
-	SHA1Update(&ctx_sha1, idhash
-		   , st->st_oakley.prf_hasher->hash_digest_len);
-	SHA1Final(signed_octets+der_digestinfo_len, &ctx_sha1);
-
+	ikev2_calculate_sighash(st, idhash, signed_octets+der_digestinfo_len);
 	signed_len = der_digestinfo_len + SHA1_DIGEST_SIZE;
 
 	passert(RSA_MIN_OCTETS <= sz && 4 + signed_len < sz && sz <= RSA_MAX_OCTETS);
@@ -104,9 +115,15 @@ bool ikev2_calculate_rsa_sha1(struct state *st
 		out_raw(sig_val, sz, a_pbs, "rsa signature");
 	}
 	
-	return STF_OK;
+	return TRUE;
 }
 
+bool ikev2_verify_rsa_sha1(struct state *st UNUSED
+			   , unsigned char *idhash UNUSED
+			   , unsigned char *sig_val UNUSED)
+{
+    return TRUE;
+}
 
 
 
