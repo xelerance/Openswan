@@ -154,19 +154,19 @@ struct hidden_variables {
  */
 struct state
 {
-    so_serial_t        st_serialno;          /*serial number (for seniority) */
+    so_serial_t        st_serialno;          /* serial number (for seniority)*/
     so_serial_t        st_clonedfrom;        /* serial number of parent */
     int                st_usage;
 
     bool               st_ikev2;             /* is this an IKEv2 state? */
 
-    struct connection *st_connection;          /* connection for this SA */
-    int                st_whack_sock;          /* fd for our Whack TCP socket.
-                                                * Single copy: close when
-						* freeing struct.
-                                                */
+    struct connection *st_connection;        /* connection for this SA */
+    int                st_whack_sock;        /* fd for our Whack TCP socket.
+                                              * Single copy: close when
+				              * freeing struct.
+					      */
 
-    struct msg_digest *st_suspended_md;        /* suspended state-transition */
+    struct msg_digest *st_suspended_md;      /* suspended state-transition */
     const char        *st_suspended_md_func;
     int                st_suspended_md_line;
 
@@ -199,8 +199,10 @@ struct state
     struct db_sa      *st_sadb;
 
     /* IKEv1 things */
-    msgid_t            st_msgid;               /* MSG-ID from header.  Network Order! */
-    bool               st_reserve_msgid;       /* if TRUE, then message id has been reserved already */
+    msgid_t            st_msgid;               /* MSG-ID from header.
+						  Network Order! */
+    bool               st_reserve_msgid;       /* if TRUE, then message id
+						  has been reserved already */
 
     msgid_t            st_msgid_phase15;       /* msgid for phase 1.5 */
     msgid_t            st_msgid_phase15b;      /* msgid for phase 1.5 */
@@ -229,8 +231,7 @@ struct state
     chunk_t            st_nr;                  /* Nr nonce */
 
 
-  /* my stuff */
-
+    /* my stuff */
     chunk_t            st_tpacket;             /* Transmitted packet */
 
     /* Phase 2 ID payload info about my user */
@@ -245,8 +246,7 @@ struct state
     u_int8_t           st_peeruserprotoid;     /* IDcx.protoid */
     u_int16_t          st_peeruserport;
 
-/* end of symmetric stuff */
-
+    /* end of symmetric stuff */
     u_int8_t           st_sec_in_use;      /* bool: does st_sec hold a value */
     MP_INT             st_sec;             /* Our local secret value */
     chunk_t            st_sec_chunk;       /* copy of above */
@@ -265,7 +265,8 @@ struct state
 
     enum state_kind    st_state;               /* State of exchange */
     u_int8_t           st_retransmit;          /* Number of retransmits */
-    unsigned long      st_try;                 /* number of times rekeying attempted */
+    unsigned long      st_try;                 /* number of times rekeying
+						  attempted */
                                                /* 0 means the only time */
     time_t             st_margin;              /* life after EVENT_SA_REPLACE*/
     unsigned long      st_outbound_count;      /* traffic through eroute */
@@ -304,7 +305,8 @@ struct state
 
     chunk_t            st_enc_key;             /* Oakley Encryption key */
 
-    struct event      *st_event;               /* backpointer for certain events */
+    struct event      *st_event;               /* backpointer for certain
+						  events */
     struct state      *st_hashchain_next;      /* Next in list */
     struct state      *st_hashchain_prev;      /* Previous in list */
 
@@ -316,12 +318,13 @@ struct state
     /* RFC 3706 Dead Peer Detection */
     time_t              st_last_dpd;            /* Time of last DPD transmit */
     u_int32_t           st_dpd_seqno;           /* Next R_U_THERE to send */
-    u_int32_t           st_dpd_expectseqno;     /* Next R_U_THERE_ACK to receive */
+    u_int32_t           st_dpd_expectseqno;     /* Next R_U_THERE_ACK
+						   to receive */
     u_int32_t           st_dpd_peerseqno;       /* global variables */
     struct event       *st_dpd_event;          /* backpointer for DPD events */
 
-
-    u_int32_t	      st_seen_vendorid;	  /* Bit field about recognized Vendor ID */
+    u_int32_t           st_seen_vendorid;      /* Bit field about
+						  recognized Vendor ID */
     struct isakmp_quirks quirks;          /* work arounds for faults in other
  					   * products */
     
