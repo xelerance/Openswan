@@ -18,6 +18,8 @@
  * RCSID $Id: crypt_dh.c,v 1.11 2005/08/14 21:47:29 mcr Exp $
  */
 
+#include "oswlog.h"
+#include "oswconf.h"
 #include "../../../programs/pluto/ikev2_rsa.c"
 #include "seam_whack.c"
 
@@ -64,16 +66,32 @@ int main(int argc, char *argv[])
 	progname = argv[0];
 	cur_debugging = DBG_CRYPT;
 
+	pluto_shared_secrets_file = "../../baseconfigs/east/etc/ipsec.secrets";
+
+	osw_init_ipsecdir("../../baseconfigs/east/etc/ipsec.d");
+	osw_init_rootdir("../../baseconfigs/east");
+
 	/* initialize list of moduli */
 	init_crypto();
 
 	init_pbs(&outs, outbuf, 1024, "rsa signature");
 
-	clonetochunk(st1.st_firstpacket, packet1+20, packet1_len-20, "I1");
+	load_preshared_secrets(NULL_FD);
+
+	clonetochunk(st1.st_firstpacket, packet1+32, packet1_len-32, "I1");
+	clonetochunk(st1.st_nr, tc3_nr, tc3_nr_len, "NR");
+
+	st1.st_oakley.prf_hash = IKEv2_PRF_HMAC_SHA1;
+	st1.st_oakley.prf_hasher =
+		(struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH
+						       , st1.st_oakley.prf_hash
+						       , 0);
 
 	ikev2_calculate_rsa_sha1(&st1,
 				 idhash,
 				 &outs);
+
+	DBG_dump_pbs(&outs);
 
 	exit(0);
 }

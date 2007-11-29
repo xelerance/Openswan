@@ -1,114 +1,34 @@
-| icookie  75 46 d3 d6  ea 09 f7 df
-| rcookie  61 a6 78 6a  41 ea 48 06
-| ni  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
-| nr  47 e9 f9 25  8c a2 38 58  f6 75 b1 66  b0 2c c2 92
-| gi  ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
-|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
-|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
-|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
-|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
-|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
-|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
-|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
-|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
-|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
-|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
-|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
-| gr  cd 30 df 6e  c0 85 44 12  53 01 80 d8  7e 1a fb b3
-|   26 79 3e 99  56 c8 6a 96  25 53 c2 77  ad 5b ab 50
-|   f8 32 5a d8  64 0b 0e fe  a5 1d 6c 83  1f a1 7c fb
-|   0f 2e 1a f4  b1 66 a0 fe  30 75 12 ad  0f 81 ab b8
-|   aa fb 68 48  ec 10 a4 97  6c 3d b1 17  ec e1 e6 61
-|   db bf 48 0c  28 2e 3f 11  07 c1 86 42  80 1e e8 3f
-|   9e 4a b9 ab  63 6f 23 7d  aa f6 a7 aa  d8 22 99 3e
-|   a4 1e a3 31  ee 27 82 0b  93 f5 0b 8f  3f 71 05 61
-|   c9 25 70 26  97 ba 6b 1e  95 3c 21 fb  c9 a7 7d 2b
-|   5f 87 3c fc  50 99 e7 7d  48 4c dd 52  66 4b cf 0d
-|   bf 00 ca fd  ae 6d e7 14  6d 11 35 f6  5d 93 5f 60
-|   b9 73 0f e0  49 2c 2a f8  c9 04 f6 4c  59 16 90 9d
-| secret  17 9b b3 22  a6 ab cd ef  01 4e 41 03  f2 f6 2e 93
-|   fb 07 d4 93  84 57 e4 54  1e 64 46 a9  34 37 c4 9d
-| long term secret:   17 9b b3 22  a6 ab cd ef  01 4e 41 03  f2 f6 2e 93
-|   fb 07 d4 93  84 57 e4 54  1e 64 46 a9  34 37 c4 9d
-| DH shared-secret:
-|   60 76 62 71  0c 76 fe 27  4f 6f 7c 9f  68 cf cf e0
-|   a7 56 44 cb  a1 92 2a b9  c9 c2 16 0e  a7 80 d0 71
-|   50 06 87 10  85 f0 80 30  58 c4 2e c9  d6 ae 4f 53
-|   41 b6 2b 7c  66 8d 9f ba  20 15 5a 7c  23 60 e6 22
-|   03 55 a0 80  3b c9 11 a5  6f c7 30 0d  d7 f6 6b 01
-|   c4 88 ab 8f  79 1a d2 cc  58 8d 28 c0  c0 78 fa 61
-|   21 d5 88 1b  3a e9 b4 a7  d8 c9 a6 58  60 6e 0a 2a
-|   5e 9c 5f 9e  c2 b5 0b 63  d7 af bb 80  f4 a4 83 37
-|   ce de f5 aa  6f a1 a0 f3  af c3 21 47  19 2c 7f ba
-|   7e 27 9f 00  28 81 21 cb  3d e7 f1 d9  76 fd f1 6c
-|   99 28 db 95  92 38 f7 83  a4 fd 38 75  7e 55 2c e9
-|   2d db d6 f5  0c 1d 35 af  77 34 fc 85  cb 30 b8 09
-| prf+[1]:  ac 97 eb 39  07 53 a4 5d  61 c1 64 ff  ca 25 99 b0
-|   2e 05 3c 7e
-| prf+[2]:  4e a8 e6 62  b0 7c dd 43  0f 69 44 c6  72 3e 4b 82
-|   d5 72 24 18
-| prf+[3]:  51 5b 0b d2  2e 6d 76 b3  4f db 76 0a  a7 bf ad 80
-|   b1 09 b7 5d
-| prf+[4]:  3f 44 bf 47  ca fd 81 50  59 1d eb 08  81 99 fc bf
-|   be db 67 ec
-| prf+[5]:  7d c3 d0 0c  cc ac 42 e7  0c d6 3b de  cc 07 97 44
-|   b4 a3 4e 8a
-| prf+[6]:  0d 2f 27 8b  ee 06 6d 07  a5 a5 75 2e  e9 00 11 7e
-|   41 d4 31 62
-| prf+[7]:  40 b8 63 22  bf 06 9f bc  eb 81 58 e7  6a 49 14 75
-|   56 d3 3c 8e
-| shared:    60 76 62 71  0c 76 fe 27  4f 6f 7c 9f  68 cf cf e0
-|   a7 56 44 cb  a1 92 2a b9  c9 c2 16 0e  a7 80 d0 71
-|   50 06 87 10  85 f0 80 30  58 c4 2e c9  d6 ae 4f 53
-|   41 b6 2b 7c  66 8d 9f ba  20 15 5a 7c  23 60 e6 22
-|   03 55 a0 80  3b c9 11 a5  6f c7 30 0d  d7 f6 6b 01
-|   c4 88 ab 8f  79 1a d2 cc  58 8d 28 c0  c0 78 fa 61
-|   21 d5 88 1b  3a e9 b4 a7  d8 c9 a6 58  60 6e 0a 2a
-|   5e 9c 5f 9e  c2 b5 0b 63  d7 af bb 80  f4 a4 83 37
-|   ce de f5 aa  6f a1 a0 f3  af c3 21 47  19 2c 7f ba
-|   7e 27 9f 00  28 81 21 cb  3d e7 f1 d9  76 fd f1 6c
-|   99 28 db 95  92 38 f7 83  a4 fd 38 75  7e 55 2c e9
-|   2d db d6 f5  0c 1d 35 af  77 34 fc 85  cb 30 b8 09
-| skeyseed:  9d 8e 53 96  0b 36 01 f4  c0 d3 29 ee  1e c3 70 27
-|   0d 06 22 17
-| SK_d:  ac 97 eb 39  07 53 a4 5d  61 c1 64 ff  ca 25 99 b0
-|   2e 05 3c 7e
-| SK_ai:  4e a8 e6 62  b0 7c dd 43  0f 69 44 c6  72 3e 4b 82
-|   d5 72 24 18
-| SK_ar:  51 5b 0b d2  2e 6d 76 b3  4f db 76 0a  a7 bf ad 80
-|   b1 09 b7 5d
-| SK_ei:  3f 44 bf 47  ca fd 81 50  59 1d eb 08  81 99 fc bf
-| SK_er:  be db 67 ec  7d c3 d0 0c  cc ac 42 e7  0c d6 3b de
-| SK_pi:  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
-|   a5 a5 75 2e
-| SK_pr:  e9 00 11 7e  41 d4 31 62  40 b8 63 22  bf 06 9f bc
-|   eb 81 58 e7
-
-output:
-| shared  60 76 62 71  0c 76 fe 27  4f 6f 7c 9f  68 cf cf e0
-|   a7 56 44 cb  a1 92 2a b9  c9 c2 16 0e  a7 80 d0 71
-|   50 06 87 10  85 f0 80 30  58 c4 2e c9  d6 ae 4f 53
-|   41 b6 2b 7c  66 8d 9f ba  20 15 5a 7c  23 60 e6 22
-|   03 55 a0 80  3b c9 11 a5  6f c7 30 0d  d7 f6 6b 01
-|   c4 88 ab 8f  79 1a d2 cc  58 8d 28 c0  c0 78 fa 61
-|   21 d5 88 1b  3a e9 b4 a7  d8 c9 a6 58  60 6e 0a 2a
-|   5e 9c 5f 9e  c2 b5 0b 63  d7 af bb 80  f4 a4 83 37
-|   ce de f5 aa  6f a1 a0 f3  af c3 21 47  19 2c 7f ba
-|   7e 27 9f 00  28 81 21 cb  3d e7 f1 d9  76 fd f1 6c
-|   99 28 db 95  92 38 f7 83  a4 fd 38 75  7e 55 2c e9
-|   2d db d6 f5  0c 1d 35 af  77 34 fc 85  cb 30 b8 09
-| skeyseed  9d 8e 53 96  0b 36 01 f4  c0 d3 29 ee  1e c3 70 27
-|   0d 06 22 17
-| skeyid_d  ac 97 eb 39  07 53 a4 5d  61 c1 64 ff  ca 25 99 b0
-|   2e 05 3c 7e
-| skeyid_ai  4e a8 e6 62  b0 7c dd 43  0f 69 44 c6  72 3e 4b 82
-|   d5 72 24 18
-| skeyid_ar  51 5b 0b d2  2e 6d 76 b3  4f db 76 0a  a7 bf ad 80
-|   b1 09 b7 5d
-| skeyid_ei  3f 44 bf 47  ca fd 81 50  59 1d eb 08  81 99 fc bf
-| skeyid_er  be db 67 ec  7d c3 d0 0c  cc ac 42 e7  0c d6 3b de
-| skeyid_pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
-|   a5 a5 75 2e
-| skeyid_pr  e9 00 11 7e  41 d4 31 62  40 b8 63 22  bf 06 9f bc
-|   eb 81 58 e7
+./rsa-v2 adjusting ipsec.d to ../../baseconfigs/east/etc/ipsec.d
+./rsa-v2 ike_alg_register_enc(): Activating OAKLEY_TWOFISH_CBC_SSH: Ok (ret=0)
+./rsa-v2 ike_alg_register_enc(): Activating OAKLEY_TWOFISH_CBC: Ok (ret=0)
+./rsa-v2 ike_alg_register_enc(): Activating OAKLEY_SERPENT_CBC: Ok (ret=0)
+./rsa-v2 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./rsa-v2 ike_alg_register_enc(): Activating OAKLEY_BLOWFISH_CBC: Ok (ret=0)
+./rsa-v2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./rsa-v2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./rsa-v2 loading secrets from "../../baseconfigs/east/etc/ipsec.secrets"
+./rsa-v2 loaded private key for keyid: PPK_RSA:AQN3cn11F
+./rsa-v2   loaded private key file '../../baseconfigs/east/etc/ipsec.d/private/east.pem' (963 bytes)
+|   decrypting file using 'DES-EDE3-CBC'
+./rsa-v2 loaded private key for keyid: PPK_RSA:AwEAAaFHY
+| v2rsa octets  30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 d3
+|   7f a9 0f 46  a2 a8 20 7e  40 8b 8e f1  5b 1c 1c 4d
+|   90 ce ec
+| signing hash with RSA Key *AQN3cn11F
+| rsa signature  70 76 da f8  fa 45 fc 22  24 fe 74 a4  23 e4 c6 0d
+|   ef d0 79 8c  bc 34 78 78  cc b7 ff 31  b7 0c a3 8d
+|   fd 16 5e 38  2f 2d e9 4c  cc 93 45 b4  12 a5 05 d9
+|   27 e4 9f b1  b8 30 70 94  6d 25 0c b4  ac 1c ce a2
+|   8e 72 78 06  59 69 66 be  9b 2c a9 51  12 02 ef 19
+|   91 81 0a 23  b8 aa af 1c  9e e4 f9 04  24 86 9a 2a
+|   1a a8 55 fa  7d c5 b5 28  e1 fe 8e 70  5c 4d 6e 3e
+|   26 d2 9b 4b  49 30 63 f0  b9 ea c3 a1  f1 ab 2e e9
+|   fa ec 0d e2  4f b9 85 55  28 e8 09 77  bc 7a 4d a7
+|   da c9 64 d0  3c d0 17 2f  21 18 90 5b  1f 1f 58 b8
+|   12 17 02 61  83 60 d5 c7  a4 8e 16 04  a0 e1 9a a8
+|   04 16 7c 44  f0 b1 e9 9d  3a 9c ef 69  24 cc 63 e5
+|   5f db 6c 0b  b7 1d a0 da  e4 a5 f2 2c  fb 1e 70 de
+|   e3 16 54 81  dc ea c6 06  e8 c4 a3 63  da 00 c1 b3
+|   97 e7 df 8c  0c 5f 98 49  9f 13 c5 e4  5e 19 69 5d
+|   fa 24 49 01  f0 94 71 05  7b 1b 81 f3  89 63 4f ad
 
