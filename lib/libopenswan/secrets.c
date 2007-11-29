@@ -970,6 +970,7 @@ process_pin(struct secret *s, int whackfd)
 #ifdef SMARTCARD
     openswan_log("  %s PIN for reader: %d, id: %s", pin_status, sc->reader, sc->id);
 #else
+    /* XXX since this is nested in another #ifdef SMARTCARD, we never reach this */
     openswan_log("  warning: SMARTCARD support is deactivated in pluto/Makefile!");
 #endif
     return NULL;
