@@ -7,6 +7,7 @@
 #include <pcap.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
 
 static int packnum = 0;
 
@@ -20,7 +21,7 @@ void pcap_skbuff(u_char *user,
   int i;
   
   packnum++;
-  fprintf(out, "const unsigned char packet%d_len=%d;\n", packnum, h->caplen);
+  fprintf(out, "const unsigned int packet%d_len=%d;\n", packnum, h->caplen);
   fprintf(out, "const unsigned char packet%d[]={\n", packnum);
 
   memset(line, ' ', sizeof(line));
@@ -84,4 +85,6 @@ int main(int argc, char *argv[])
     pcap_dispatch(pc, -1, pcap_skbuff, (u_char *)out);
     pcap_close(pc);
   }
+
+  exit(0);
 }
