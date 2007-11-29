@@ -927,6 +927,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     unsigned char *iv;
     int            ivsize;
     stf_status     ret;
+    unsigned char *idhash;
 
     finish_dh_v2(st, r);
 
@@ -974,18 +975,64 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     {
 	struct ikev2_id r_id;
 	pb_stream r_id_pbs;
-	chunk_t id_b;
+	chunk_t         id_b;
+	struct hmac_ctx id_ctx;
+	unsigned char *id_start;
 
-	r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
+	hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher, st->st_skey_pi);
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
+	r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
+	r_id.isai_np = ISAKMP_NEXT_v2AUTH;
 
+	id_start = e_pbs_cipher.cur;
 	if (!out_struct(&r_id
 			, &ikev2_id_desc
 			, &e_pbs_cipher
 			, &r_id_pbs)
 	    || !out_chunk(id_b, &r_id_pbs, "my identity"))
 	    return STF_INTERNAL_ERROR;
+
 	close_output_pbs(&r_id_pbs);
+
+	/* calculate hash of IDi for AUTH below */
+	hmac_update(&id_ctx, id_start, e_pbs_cipher.cur - id_start);
+	idhash = alloca(st->st_oakley.integ_hasher->hash_digest_len);
+	hmac_final(idhash, &id_ctx);
+    }
+
+    /* send out the AUTH payload */
+    {
+	struct ikev2_a a;
+	pb_stream      a_pbs;
+
+	a.isaa_critical = ISAKMP_PAYLOAD_CRITICAL;
+	a.isaa_np = ISAKMP_NEXT_NONE;
+
+	if(c->policy & POLICY_RSASIG) {
+	    a.isaa_type = v2_AUTH_RSA;
+	} else if(c->policy & POLICY_PSK) {
+	    a.isaa_type = v2_AUTH_SHARED;
+	} else {
+	    /* what else is there?... DSS not implemented. */
+	    return STF_FAIL;
+	}
+
+	if (!out_struct(&a
+			, &ikev2_a_desc
+			, &e_pbs_cipher
+			, &a_pbs))
+	    return STF_INTERNAL_ERROR;
+
+	if(c->policy & POLICY_RSASIG) {
+	    if(!ikev2_calculate_rsa_sha1(st, idhash, &a_pbs))
+		return STF_FATAL;
+	    
+	} else if(c->policy & POLICY_PSK) {
+	    /* todo */
+	    return STF_FAIL;
+	} 
+
+	close_output_pbs(&a_pbs);
     }
 
 #if 0
@@ -1158,6 +1205,36 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	return STF_FAIL + INVALID_ID_INFORMATION;
     }
 
+    /* process AUTH payload */
+    if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
+	openswan_log("no authentication payload found");
+	return STF_FAIL;
+    }
+
+    /* now check signature from RSA key */
+    switch(md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type)
+    {
+    case v2_AUTH_RSA:
+    {
+#if 0
+	u_char sig_val[RSA_MAX_OCTETS];
+	size_t sig_len = ikev2_check_rsa_sha1(st->st_connection
+				       , sig_val
+				       , st->st_firstpacket.ptr
+				       , st->st_firstpacket.len);
+#endif
+    }
+    break;
+	
+    default:
+	openswan_log("authentication method: %s not supported"
+		     , enum_name(&ikev2_auth_names
+				 ,md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type));
+	return STF_FAIL;
+    }
+    
+
+    
     /* send response */
     {
 	unsigned char *encstart;

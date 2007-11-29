@@ -728,6 +728,18 @@ struct ikev2_id
 };
 extern struct_desc ikev2_id_desc;
 
+/* rfc4306, section 3.8 */
+struct ikev2_a
+{
+	u_int8_t  isaa_np;	    /* Next payload */
+	u_int8_t  isaa_critical;
+	u_int16_t isaa_length;	    /* Payload length */
+	u_int8_t  isaa_type;        /* auth type */
+	u_int8_t  isaa_res1;
+	u_int16_t isaa_res2;
+};
+extern struct_desc ikev2_a_desc;
+
 /* rfc4306, section 3.9, nonce, uses generic header */
 extern struct_desc ikev2_nonce_desc;
 
@@ -757,6 +769,7 @@ union payload {
     struct ikev2_prop       v2prop;
     struct ikev2_sa         v2sa;
     struct ikev2_id         v2id;
+    struct ikev2_a          v2a;
 };
 
 

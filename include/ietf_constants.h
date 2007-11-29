@@ -744,6 +744,12 @@ typedef u_int16_t oakley_hash_t;
 /* typedef to make our life easier */
 typedef u_int16_t oakley_auth_t;
 
+/* extern enum_names ikev2_auth_names; */
+enum ikev2_auth_method {
+	v2_AUTH_RSA = 1,
+	v2_AUTH_SHARED=2,
+	v2_AUTH_DSA = 3,
+};
 
 /* Oakley Group Description attribute
  * draft-ietf-ipsec-ike-01.txt appendix A

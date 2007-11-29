@@ -786,6 +786,38 @@ struct_desc ikev2_id_desc = { "IKEv2 Identification Payload",
 			      ikev2id_fields, sizeof(struct ikev2_id) };
 
 
+/*
+ * 3.8.  Authentication Payload
+ * 
+ *                         1                   2                   3
+ *     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ! Next Payload  !C!  RESERVED   !         Payload Length        !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ! Auth Method   !                RESERVED                       !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !                                                               !
+ *    ~                      Authentication Data                      ~
+ *    !                                                               !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ *               Figure 14:  Authentication Payload Format
+ *
+ */
+static field_desc ikev2a_fields[] = {
+    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_enum, 8/BITS_PER_BYTE, "auth method", &ikev2_auth_names },
+    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_mbz, 16/BITS_PER_BYTE, NULL, NULL },
+    { ft_end,  0, NULL, NULL }
+};
+
+struct_desc ikev2_a_desc = { "IKEv2 Identification Payload",
+			     ikev2a_fields, sizeof(struct ikev2_id) };
+
+
 
 /* 
  * 3.9.  Nonce Payload

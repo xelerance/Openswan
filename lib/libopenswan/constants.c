@@ -698,6 +698,16 @@ enum_names oakley_auth_names =
     { XAUTHInitPreShared, XAUTHRespRSARevisedEncryption
 	, oakley_auth_name3, &oakley_auth_names2 };
 
+/* ikev2 auth methods */
+static const char *const ikev2_auth_strings[]={
+	"v2_AUTH_RSA",
+	"v2_AUTH_SHARED",
+	"v2_AUTH_DSA",
+};
+enum_names ikev2_auth_names =
+{ v2_AUTH_RSA, v2_AUTH_DSA, ikev2_auth_strings, NULL};
+
+
 /* Oakley Group Description attribute */
 
 static const char *const oakley_group_name[] = {

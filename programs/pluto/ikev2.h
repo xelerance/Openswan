@@ -62,4 +62,6 @@ extern bool ikev2_decode_peer_id(struct msg_digest *md
 				 , enum phase1_role initiator);
 extern void ikev2_log_parentSA(struct state *st);
 
-
+extern bool ikev2_calculate_rsa_sha1(struct state *st
+				     , unsigned char *idhash
+				     , pb_stream *a_pbs);
