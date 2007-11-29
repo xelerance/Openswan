@@ -1852,8 +1852,15 @@ do_unittest() {
 	if [ -d $program ]; then (cd $program && make programs checkprograms ); fi
      done)
 
+    echo "BUILDING TEST CASE"
     # if there is a makefile, run it and bail if fails
-    [ -f Makefile ] && make checkprograms
+    if [ -f Makefile ]; then
+	if make checkprograms; then
+	    :
+	else
+	    exit 1;
+	fi
+    fi
 
     # make sure we get all core dumps!
     ulimit -c unlimited
