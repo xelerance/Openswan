@@ -1325,6 +1325,9 @@ osw_free_preshared_secrets(struct secret **psecrets)
 	    case PPK_PSK:
 		pfree(s->pks.u.preshared_secret.ptr);
 		break;
+	    case PPK_XAUTH:
+		pfree(s->pks.u.preshared_secret.ptr);
+		break;
 	    case PPK_RSA:
 		free_RSA_public_content(&s->pks.u.RSA_private_key.pub);
 		mpz_clear(&s->pks.u.RSA_private_key.d);
