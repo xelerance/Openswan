@@ -354,7 +354,11 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
     /* let TCL hack it before we mark the length and copy it */
     TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
     clonetochunk(st->st_tpacket, md->reply.start, pbs_offset(&md->reply)
-	, "reply packet for ikev2_parent_outI1");
+       , "reply packet for ikev2_parent_outI1");
+
+    /* save packet for later signing */
+    clonetochunk(st->st_firstpacket, md->reply.start
+		 , pbs_offset(&md->reply), "saved first packet");
 
     /* Transmit */
     send_packet(st, __FUNCTION__, TRUE);
@@ -621,6 +625,10 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     /* keep it for a retransmit if necessary */
     clonetochunk(st->st_tpacket, md->reply.start, pbs_offset(&md->reply)
 		 , "reply packet for ikev2_parent_outI1");
+
+    /* save packet for later signing */
+    clonetochunk(st->st_firstpacket, md->reply.start
+		 , pbs_offset(&md->reply), "saved first packet");
 
     /* note: retransimission is driven by initiator */
 

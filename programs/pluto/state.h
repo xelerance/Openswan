@@ -233,6 +233,7 @@ struct state
 
     /* my stuff */
     chunk_t            st_tpacket;             /* Transmitted packet */
+    chunk_t            st_firstpacket;         /* copy of message 1 */
 
     /* Phase 2 ID payload info about my user */
     u_int8_t           st_myuserprotoid;       /* IDcx.protoid */
