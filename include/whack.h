@@ -287,6 +287,8 @@ extern size_t whack_get_secret(char *buf, size_t bufsize);
 extern int whack_get_value(char *buf, size_t bufsize);
 
 extern bool osw_alias_cmp(const char *needle, const char *haystack);
+extern void whack_process(int whackfd, struct whack_message msg);
+
 #endif /* _WHACK_H */
 
 /*

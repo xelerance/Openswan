@@ -33,7 +33,7 @@ MANDIR=$(MANTREE)/man3
 
 ONEFILE=pluto_constants.c
 SRCS=pluto_constants.c x509support.c packet.c
-SRCS+=
+SRCS+=readwhackmsg.c
 
 #enable to get lots more debugging about semantics.
 #CFLAGS=-DPARSER_TYPE_DEBUG
