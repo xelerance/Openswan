@@ -21,20 +21,19 @@ PROGRAMDIR=${LIBDIR}
 
 include ${srcdir}../Makefile.program
 
+cleanall::
+	rm -f ${UPDOWN_PROGRAM} ${PROGRAM}
+
 programs: ${PROGRAM}
-
-
 ifeq ($(USE_IPROUTE2),false)
-echo "Cannot build _updown.netkey without USE_IPROUTE2, aborted"
-exit 1
+	echo "Cannot build _updown.netkey without USE_IPROUTE2, aborted"
+	exit 1
 else
-UPDOWN_PROGRAM=_updown.ip2
+	UPDOWN_PROGRAM=_updown.ip2
 endif
 
 ${PROGRAM}: ${UPDOWN_PROGRAM}
 	cp ${UPDOWN_PROGRAM} ${PROGRAM}
 
-cleanall::
-	rm -f ${UPDOWN_PROGRAM} ${PROGRAM}
 
 
