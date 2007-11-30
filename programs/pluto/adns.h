@@ -14,6 +14,9 @@
  * RCSID $Id: adns.h,v 1.6 2002/12/17 14:26:54 dhr Exp $
  */
 
+#ifndef _ADNS_H
+#define _ADNS_H
+
 #ifndef USE_LWRES	/* whole file! */
 
 /* even though we aren't using LWRES, we can still use the header files */
@@ -76,3 +79,5 @@ enum helper_exit_status {
 };
 
 #endif /* !USE_LWRES */
+
+#endif /* _ADNS_H */

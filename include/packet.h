@@ -61,7 +61,8 @@ typedef const struct field_desc {
  * Several routines are provided to manipulate these objects
  * Actual packet transfer is done elsewhere.
  */
-typedef struct packet_byte_stream {
+struct packet_byte_stream
+{
     struct packet_byte_stream *container;   /* PBS of which we are part */
     struct_desc *desc;
     const char *name;	/* what does this PBS represent? */
@@ -74,7 +75,8 @@ typedef struct packet_byte_stream {
      */
     u_int8_t *lenfld;
     field_desc *lenfld_desc;
-} pb_stream;
+};
+typedef struct packet_byte_stream pb_stream;
 
 /* For an input PBS, pbs_offset is amount of stream processed.
  * For an output PBS, pbs_offset is current size of stream.
