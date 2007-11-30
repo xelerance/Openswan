@@ -16,6 +16,9 @@
  * RCSID $Id: ac.h,v 1.3 2004/06/14 01:46:02 mcr Exp $
  */
 
+#ifndef _AC_H
+#define _AC_H
+
 /* definition of ietfAttribute kinds */
 
 typedef enum {
@@ -89,3 +92,4 @@ extern void free_acerts(void);
 extern void list_acerts(bool utc);
 extern void list_groups(bool utc);
 
+#endif /* _AC_H */
