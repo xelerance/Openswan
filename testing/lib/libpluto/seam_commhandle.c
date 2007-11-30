@@ -1,6 +1,4 @@
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
-bool nat_traversal_support_non_ike = FALSE;
-bool nat_traversal_support_port_floating = FALSE;
 
 void recv_pcap_packet_gen(u_char *user
 			  , const struct pcap_pkthdr *h

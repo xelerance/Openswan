@@ -1,3 +1,5 @@
+#include "alg_info.h"
+
 struct alg_info_ike *
 alg_info_ike_create_from_str (const char *alg_str, const char **err_p)
 {

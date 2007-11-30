@@ -1,3 +1,4 @@
+#include "server.h"
 struct iface_dev  ifd1 = {
 	.id_count = 1,
 	.id_vname = "ipsec0",

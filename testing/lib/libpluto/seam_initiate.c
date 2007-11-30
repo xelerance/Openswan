@@ -50,6 +50,7 @@ bool compare_and_swap_interface(struct connection *c, struct iface_port *p)
 			}
 		}
 	}
+	return TRUE;
 }
 
 bool orient(struct connection *c)

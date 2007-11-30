@@ -20,21 +20,6 @@ void load_acerts(void) {}
 void list_acerts(bool utc) {}
 void list_groups(bool utc) {}
 
-void gw_addref(struct gw_info *gw) {}
-void gw_delref(struct gw_info **gwp) {}
-
-bool in_pending_use(struct connection *c) { return FALSE; }
-
-err_t add_public_key(const struct id *id
-		     , enum dns_auth_level dns_auth_level
-		     , enum pubkey_alg alg
-		     , const chunk_t *key
-		     , struct pubkey_list **head) { return NULL; /* no error */ }
-
-
-void transfer_to_public_keys(struct gw_info *gateways_from_dns
-			     , struct pubkey_list **keys) {}
-
 #include "dnskey.h"
 err_t start_adns_query(const struct id *id	/* domain to query */
 		       , const struct id *sgw_id	/* if non-null, any accepted gw_info must match */
@@ -85,7 +70,6 @@ enum kernel_interface kern_interface = NO_KERNEL;
 bool can_do_IPcomp=TRUE;
 bool nat_traversal_enabled=TRUE;
 int whack_log_fd = 1;
-struct pubkey_list *pluto_pubkeys = NULL;	/* keys from ipsec.conf */
 bool listening = TRUE;
 bool strict_crl_policy = FALSE;
 
