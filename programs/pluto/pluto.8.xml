@@ -221,6 +221,14 @@
 
       <arg choice="opt">--modecfgclient</arg>
 
+      <arg choice="opt">--modecfgdns1</arg>
+
+      <arg choice="opt">--modecfgdns2</arg>
+
+      <arg choice="opt">--modecfgwins1</arg>
+
+      <arg choice="opt">--modecfgwins2</arg>
+
       <arg choice="opt">--dnskeyondemand</arg>
 
       <arg choice="opt">--updown <replaceable>updown</replaceable></arg>
@@ -281,6 +289,14 @@
       <arg choice="opt">--modecfgserver</arg>
 
       <arg choice="opt">--modecfgclient</arg>
+
+      <arg choice="opt">--modecfgdns1 <replaceable>ip-address</replaceable></arg>
+
+      <arg choice="opt">--modecfgdns2 <replaceable>ip-address</replaceable></arg>
+
+      <arg choice="opt">--modecfgwins1 <replaceable>ip-address</replaceable></arg>
+
+      <arg choice="opt">--modecfgwins2 <replaceable>ip-address</replaceable></arg>
 
       <arg choice="opt">--dnskeyondemand</arg>
 
@@ -1602,6 +1618,38 @@
 
           <listitem>
             <para>this end is an Mode Config client</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--modecfgdns1</option></term>
+
+          <listitem>
+            <para>The IP address of the first DNS server to pass along to the ModeConfig Client</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--modecfgdns2</option></term>
+
+          <listitem>
+            <para>The IP address of the second DNS server to pass along to the ModeConfig Client</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--modecfgwins1</option></term>
+
+          <listitem>
+            <para>The IP address of the first WINS server to pass along to the ModeConfig Client</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--modecfgwins2</option></term>
+
+          <listitem>
+            <para>The IP address of the second WINS server to pass along to the ModeConfig Client</para>
           </listitem>
         </varlistentry>
 
