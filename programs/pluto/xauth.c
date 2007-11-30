@@ -201,6 +201,18 @@ int get_internal_addresses(struct connection *con,struct internal_addr *ia)
     {
 	/** assumes IPv4, and also that the mask is ignored */
 	ia->ipaddr = con->spd.that.client.addr;
+	if (!isanyaddr(&con->modecfg_dns1)) {
+		ia->dns[0] = con->modecfg_dns1;
+	}
+	if (!isanyaddr(&con->modecfg_dns2)) {
+		ia->dns[1] = con->modecfg_dns2;
+	}
+	if (!isanyaddr(&con->modecfg_wins1)) {
+		ia->wins[0] = con->modecfg_wins1;
+	}
+	if (!isanyaddr(&con->modecfg_wins2)) {
+		ia->wins[1] = con->modecfg_wins2;
+	}
 
     }
     else
@@ -502,6 +514,14 @@ stf_status modecfg_send_set(struct state *st)
 			return STF_INTERNAL_ERROR;
 		}
 	}
+
+#ifdef SOFTREMOTE_CLIENT_WORKAROUND
+	/* see: http://popoludnica.pl/?id=10100110 */
+	/* should become a conn option */
+	/* client-side is not yet implemented for this - only works with SoftRemote clients */
+        /* SoftRemote takes the IV for XAUTH from phase2, where Openswan takes it from phase1 */
+	init_phase2_iv(st, &st->st_msgid_phase15);
+#endif
 
 #define MODECFG_SET_ITEM ( LELEM(INTERNAL_IP4_ADDRESS) | LELEM(INTERNAL_IP4_SUBNET) | LELEM(INTERNAL_IP4_NBNS) | LELEM(INTERNAL_IP4_DNS) )
 
