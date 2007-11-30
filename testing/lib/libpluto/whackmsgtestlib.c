@@ -2,22 +2,6 @@ char *progname;
 #include "x509.h"
 #include "ac.h"
 
-/* LINK seams */
-void exit_log(const char *msg, ...)
-{
-    abort();
-}
-
-void exit_tool(int status)
-{
-    exit(status);
-}
-
-void exit_pluto(int status)
-{
-    exit(status);
-}
-
 void flush_pending_by_connection(struct connection *c) {}
 void unroute_connection(struct connection *c) {}
 void release_cert(cert_t cert) {}
