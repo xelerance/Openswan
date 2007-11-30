@@ -2,6 +2,7 @@
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2003  D. Hugh Redelmeier.
  * Copyright (C) 2004 Michael Richardson <mcr@sandelman.ottawa.on.ca>
+ * Copyright (C) 2007 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -447,6 +448,10 @@ enum option_enums {
     CD_SUBHOST,      /* if the policy applies below the host level (TCP/UDP/SCTP ports) */
     CD_PERPROTO,     /* should we specialize the policy to the protocol? */
     CD_OVERLAPIP,    /* can two conns that have subnet=vhost: declare the same IP? */
+    CD_MODECFGDNS1,
+    CD_MODECFGDNS2,
+    CD_MODECFGWINS1,
+    CD_MODECFGWINS2,
     CD_TUNNELIPV4,
     CD_TUNNELIPV6,
     CD_CONNIPV4,
@@ -651,6 +656,10 @@ static const struct option long_opts[] = {
     { "modecfgpull",   no_argument, NULL, CD_MODECFGPULL + OO },
     { "modecfgserver", no_argument, NULL, END_MODECFGSERVER + OO },
     { "modecfgclient", no_argument, NULL, END_MODECFGCLIENT + OO },
+    { "modecfgdns1", required_argument, NULL, CD_MODECFGDNS1 + OO },
+    { "modecfgdns2", required_argument, NULL, CD_MODECFGDNS2 + OO },
+    { "modecfgwins1", required_argument, NULL, CD_MODECFGWINS1 + OO },
+    { "modecfgwins2", required_argument, NULL, CD_MODECFGWINS2 + OO },
     { "modeconfigserver", no_argument, NULL, END_MODECFGSERVER + OO },
     { "modeconfigclient", no_argument, NULL, END_MODECFGCLIENT + OO },
 #endif
@@ -1526,6 +1535,30 @@ main(int argc, char **argv)
 	case END_MODECFGSERVER:
 	    msg.right.modecfg_server = TRUE;
 	    continue;
+
+	case CD_MODECFGDNS1:
+	   af_used_by = long_opts[long_index].name; 
+	   diagq(ttoaddr(optarg, 0, msg.addr_family
+		, &msg.modecfg_dns1), optarg);
+	   continue;
+
+	case CD_MODECFGDNS2:
+	   af_used_by = long_opts[long_index].name;
+	   diagq(ttoaddr(optarg, 0, msg.addr_family
+		, &msg.modecfg_dns2), optarg);
+	   continue;
+
+	case CD_MODECFGWINS1:
+	   af_used_by = long_opts[long_index].name;
+	   diagq(ttoaddr(optarg, 0, msg.addr_family
+		, &msg.modecfg_wins1), optarg);
+	   continue;
+
+	case CD_MODECFGWINS2:
+	   af_used_by = long_opts[long_index].name;
+	   diagq(ttoaddr(optarg, 0, msg.addr_family
+		, &msg.modecfg_wins2), optarg);
+	   continue;
 #endif /* MODECFG */
 
 #else
