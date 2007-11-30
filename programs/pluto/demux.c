@@ -1676,6 +1676,15 @@ process_packet(struct msg_digest **mdp)
 	    {
 		st->st_state = STATE_MAIN_R3;	    /* ISAKMP is up... */
 	    }
+#ifdef SOFTREMOTE_CLIENT_WORKAROUND
+	    /* See: http://popoludnica.pl/?id=10100110 */
+	    if(st->st_state == STATE_MODE_CFG_R1)
+	    {
+		openswan_log("SoftRemote workaround: Cannot do Quick Mode until MODECFG done.");
+		return;
+	    }
+#endif
+
 #endif
 
 	    set_cur_state(st);
