@@ -1,0 +1,34 @@
+conn xauthserver
+	#
+	left=1.2.3.4
+	leftcert=/etc/ipsec.d/certs/xauthserver.pem
+	leftxauthserver=yes
+	leftmodecfgserver=yes
+	#
+	right=%any
+	rightxauthclient=yes
+	rightmodecfgclient=yes
+	#
+	auto=add
+	rekey=yes
+	modecfgpull=yes
+	modecfgdns1=1.2.3.4
+	modecfgdns2=5.6.7.8
+	modecfgwins1=1.2.3.4
+	modecfgwins2=5.6.7.8
+
+conn xauthclient	
+	#
+	left=1.2.3.4
+	leftxauthserver=yes
+	leftmodecfgserver=yes
+	#
+	right=%defaultroute
+	rightxauthclient=yes
+	rightmodecfgclient=yes
+	#
+	auto=add
+	# you probably can not rekey, it requires xauth password, and openswan does not
+	# cache it for you. Other clients might cache it and rekey to an openswan server
+	rekey=no
+	modecfgpull=yes
