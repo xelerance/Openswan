@@ -139,7 +139,7 @@ awk 'BEGIN {
 
 	good = "also alsoflip type auto authby _plutodevel"
 	good = good " connaddrfamily forceencaps"
-	good = good " modecfgpull"
+	good = good " modecfgpull modecfgdns1 modecfgdns2 modecfgwins1 modecfgwins2"
 	left = " left leftsubnet leftnexthop leftupdown"
 	akey = " keyexchange auth pfs keylife rekey rekeymargin rekeyfuzz"
         akey = akey " dpddelay dpdtimeout dpdaction"
