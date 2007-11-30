@@ -23,6 +23,9 @@ ROUTING TABLE
 192.0.1.0/24 via 192.1.2.45 dev eth1 
 default via 192.1.2.254 dev eth1 
 east:~#
+ echo done
+done
+east:~#
  
 
 east:~#
