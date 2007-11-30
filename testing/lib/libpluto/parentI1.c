@@ -29,6 +29,7 @@
 #include "seam_spdbstruct.c"
 #include "seam_demux.c"
 #include "seam_whack.c"
+#include "seam_keys.c"
 #include "seam_natt.c"
 
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];

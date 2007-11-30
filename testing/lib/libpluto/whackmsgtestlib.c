@@ -1,4 +1,6 @@
 char *progname;
+#include "x509.h"
+#include "ac.h"
 
 /* LINK seams */
 void exit_log(const char *msg, ...)
@@ -49,6 +51,7 @@ err_t add_public_key(const struct id *id
 void transfer_to_public_keys(struct gw_info *gateways_from_dns
 			     , struct pubkey_list **keys) {}
 
+#include "dnskey.h"
 err_t start_adns_query(const struct id *id	/* domain to query */
 		       , const struct id *sgw_id	/* if non-null, any accepted gw_info must match */
 		       , int type	/* T_TXT or T_KEY, selecting rr type of interest */
@@ -63,18 +66,6 @@ void reset_adns_restart_count(void) {}
 
 /* server.c SEAM */
 void find_ifaces(void) {}
-
-/* keys.c SEAM */
-void load_preshared_secrets(int whackfd) {}
-chunk_t mysecret = { .ptr="abcd", .len=4 };
-const chunk_t *get_preshared_secret(const struct connection *c) { return &mysecret; }
-
-struct RSA_private_key f1;
-const struct RSA_private_key *get_RSA_private_key(const struct connection *c) {
-    return &f1;
-}
-void list_public_keys(bool utc) {}
-void list_psks(void) {}
 
 /* x509.c SEAM */
 void load_crls(void) {}

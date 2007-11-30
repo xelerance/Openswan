@@ -39,6 +39,7 @@
 #include "seam_demux.c"
 #include "seam_whack.c"
 #include "seam_natt.c"
+#include "seam_keys.c"
 #include "seam_gi_sha1.c"
 
 #include "seam_commhandle.c"

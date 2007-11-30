@@ -21,6 +21,7 @@
 #include "seam_xauth.c"
 #include "seam_alg.c" 
 #include "seam_spdb.c"
+#include "seam_keys.c"
 #include "seam_whack.c"
 
 main(int argc, char *argv[])
