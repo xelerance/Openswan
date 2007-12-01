@@ -22,6 +22,7 @@ rpfilter2=rp_filter
 # %unchanged or setting (0, 1, or 2)
 rpfiltercontrol=0
 kamepfkey=/proc/net/pfkey
+ipsecpfkey=/proc/net/ipsec/version
 
 info=/dev/null
 log=daemon.error
@@ -54,14 +55,29 @@ logonly() {
 
 # main line
 
+# since klips/mast now calls _startklips, we know we're called to use netkey
+# so if we find klips/mast, try to unload it or die
+if test -f $ipsecpfkey
+then
+	echo "Warning: found KLIPS/MAST stack loaded"
+	echo -n Trying to unload KLIPS/MAST module:
+	rmmod ipsec 2> /dev/null
+
+	if test -f $ipsecpfkey
+	then
+		echo "FAILURE to unload KLIPS/MAST module. Use protostack=klsips or protostack=mast, or recompile kernel without builtin KLIPS/MAST support"
+                exit 1
+        fi
+fi
+
 	if test -f $modules
 	then
 		# load hardware random related modules - some changed names over time
 		echo Trying hardware random, this may fail, which is okay.
-		modprobe -qv hw_random 2>/dev/null
-		modprobe -qv hwrng 2>/dev/null
+		@@MODPROBE@@ -qv hw_random 2>/dev/null
+		@@MODPROBE@@ -qv hwrng 2>/dev/null
 		modprove -qv amd-rng 2>/dev/null
-		modprobe -qv intel-rng 2>/dev/null
+		@@MODPROBE@@ -qv intel-rng 2>/dev/null
 
 		
 		# load all NETKEY modules
@@ -71,17 +87,17 @@ logonly() {
 			xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 ipcomp ipcomp6 af_key
 		   do
 			echo -n "$mod "
-			modprobe -qv $mod 2> /dev/null
+			@@MODPROBE@@ -qv $mod 2> /dev/null
 		   done
 		echo
 
 		# xfrm_user is the old name for xfrm4_tunnel - backwards compatibility
-		modprobe -qv xfrm_user 2> /dev/null
+		@@MODPROBE@@ -qv xfrm_user 2> /dev/null
 
 
 		# padlock must load before aes module
 		echo Trying VIA padlock driver, this may fail, which is okay.
-		modprobe -qv padlock 2>/dev/null
+		@@MODPROBE@@ -qv padlock 2>/dev/null
 
 		# load the most common ciphers/algo's
 		# aes-x86_64 has higher priority in via crypto api
@@ -89,7 +105,7 @@ logonly() {
 		for crypto in aes-x86_64 aes des sha512 sha256 md5 cbc xcbc ecb twofish blowfish serpent 
 		   do
 			echo -n "$crypto "
-			modprobe -qv $crypto 2> /dev/null
+			@@MODPROBE@@ -qv $crypto 2> /dev/null
 		   done
 		echo
 	fi
