@@ -1,6 +1,7 @@
 #!/bin/sh
 # KLIPS startup script
 # Copyright (C) 1998, 1999, 2001, 2002  Henry Spencer.
+# Copyright (C) 2006, 2007  Paul Wouters <paul@xelerance.com>
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -20,7 +21,6 @@ sysflags=/proc/sys/net/ipsec
 modules=/proc/modules
 # full rp_filter path is $rpfilter1/interface/$rpfilter2
 rpfilter1=/proc/sys/net/ipv4/conf
-rpfilter2=rp_filter
 # %unchanged or setting (0, 1, or 2)
 rpfiltercontrol=0
 kamepfkey=/proc/net/pfkey
@@ -37,23 +37,40 @@ case $bareversion in
 		;;
 esac
 
+# since netkey now calls _startnetkey, we know we're called to use klips or mast.
+# so if we find netkey, try to unload it or die
+if test -f $kamepfkey
+then
+	echo "Warning: found NETKEY stack loaded"
+	echo -n Trying to unload all NETKEY modules:
+                for mod in xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro \
+                        xfrm6_mode_transport xfrm4_mode_transport xfrm4_mode_tunnel \
+                        xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 ipcomp ipcomp6 af_key xfrm_user
+                   do
+                        echo -n "$mod "
+                        rmmod -r $mod 2> /dev/null
+                   done
+                echo
+	if test -f $kamepfkey
+	then
+		echo "FAILURE to unload NETKEY modules. Use protostack=netkey or recompile kernel without builtin NETKEY support"
+		exit 1
+	fi
+fi
+
 # which kernel are we using?
 case $IPSECprotostack in
-klips)  netkey=false; klips=true;  mast=false;;
-mast)   netkey=false; klips=false; mast=true;;
-netkey) netkey=true;  klips=false; mast=false;;
-none)   netkey=false; klips=false; mast=false;;
-nostack) netkey=false; klips=false; mast=false;;
+klips)   klips=true;  mast=false;;
+mast)    klips=false; mast=true;;
+none)    klips=false; mast=false;;
+nostack) klips=false; mast=false;;
 *|auto)
     #if test -f /proc/sys/net/ipsec/debug_mast
     if false
     then
-	netkey=false; klips=false; mast=true;
-    elif test -f $kamepfkey
-	then
-	    netkey=true; klips=false; mast=false;
+	klips=false; mast=true;
 	else
-	    netkey=false; klips=true; mast=false;
+	    klips=true; mast=false;
     fi;;
 esac
 
@@ -76,17 +93,14 @@ do
 	shift
 done
 
-if $netkey
-then
-    logger -p $log -t ipsec_setup "Using NETKEY/2.6 stack"
-fi
 if $klips
 then
     logger -p $log -t ipsec_setup "Using KLIPS/legacy stack"
-fi
-if $mast
+elif $mast
 then
     logger -p $log -t ipsec_setup "Using KLIPS/mast stack"
+else
+    logger -p $log -t ipsec_setup "NOT using any IPsec stack - no real IPsec SA's will be created"
 fi
 
 
@@ -263,39 +277,6 @@ logonly() {
 	logger -p $log -t ipsec_setup
 }
 
-# sort out which module is appropriate, changing it if necessary
-setmodule() {
-	if [ -e /proc/kallsyms ]
-	then
-		kernelsymbols="/proc/kallsyms";
-		echo "calcgoo: warning: 2.6 kernel with kallsyms not supported yet"
-	else
-		kernelsymbols="/proc/ksyms";
-	fi	
-        wantgoo="`ipsec calcgoo $kernelsymbols`"
-        module=$moduleplace/$modulename
-        if test -f $module
-        then
-                goo="`nm -ao $module | ipsec calcgoo`"
-                if test " $wantgoo" = " $goo"
-                then
-                        return          # looks right
-                fi
-        fi
-        if test -f $moduleinstplace/$wantgoo
-        then
-                echo "modprobe failed, but found matching template module $wantgoo."
-                echo "Copying $moduleinstplace/$wantgoo to $module."
-                rm -f $module
-                mkdir -p $moduleplace
-                cp -p $moduleinstplace/$wantgoo $module
-                # "depmod -a" gets done by caller
-        fi
-}
-
-
-
-# main line
 
 # load module if possible
 if test -f $ipsecversion && $netkey
@@ -342,38 +323,10 @@ then
 	fi
 fi
 
-if ($klips || $mast)
+if test ! -f $ipsecversion
 then
-        if test -r $modules             # kernel does have modules
-        then
-		if [ ! -e /proc/ksyms -a ! -e /proc/kallsyms ]
-		then
-			echo "Broken 2.6 kernel without kallsyms, skipping calcgoo (Fedora rpm?)"
-		else
-                	setmodule
-		fi
-                unset MODPATH MODULECONF        # no user overrides!
-                depmod -a >/dev/null 2>&1
-
-		echo Trying hardware random, this may fail, which is okay.
-		modprobe -q hw_random 2>/dev/null
-
-		# padlock must load before aes module
-		echo Trying VIA padlock driver, this may fail, which is okay.
-		modprobe -q padlock 2>/dev/null
-
-		if test ! -f $ipsecversion && ($klips || $mast) && modprobe -qn ipsec
-		then
-                    # statically compiled KLIPS/NETKEY not found; try to load the module
-                    modprobe ipsec
-                fi
-        fi
-
-        if test ! -f $ipsecversion
-        then
-                echo "kernel appears to lack IPsec support (neither CONFIG_KLIPS or CONFIG_NET_KEY are set)"
-                exit 1
-        fi
+	echo "kernel appears to lack IPsec support (neither CONFIG_KLIPS or CONFIG_NET_KEY are set)"
+	exit 1
 fi
 
 # figure out debugging flags
