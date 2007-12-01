@@ -1,6 +1,7 @@
 #! /bin/sh
 # default updown script
 # Copyright (C) 2000, 2001  D. Hugh Redelmeier, Henry Spencer
+# Copyright (C) 2006, 2007  Paul Wouters
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -28,12 +29,11 @@
 
 # check interface version
 case "$PLUTO_VERSION" in
-1.[0])	# Older Pluto?!?  Play it safe, script may be using new features.
+1.*)	# Older Pluto?!?  Play it safe, script may be using new features.
 	echo "$0: obsolete interface version \`$PLUTO_VERSION'," >&2
 	echo "$0: 	called by obsolete Pluto?" >&2
 	exit 2
 	;;
-1.*)	;;
 2.*)	;;
 *)	echo "$0: unknown interface version \`$PLUTO_VERSION'" >&2
 	exit 2
@@ -43,8 +43,6 @@ esac
 # check parameter(s)
 case "$1:$*" in
 ':')			# no parameters
-	;;
-ipfwadm:ipfwadm)	# due to (left/right)firewall; for default script only
 	;;
 custom:*)		# custom parameters (see above CAUTION comment)
 	;;
@@ -150,20 +148,6 @@ up-client:)
 down-client:)
 	# connection to my client subnet going down
 	# If you are doing a custom version, firewall commands go here.
-	;;
-up-client:ipfwadm)
-	# connection to client subnet, with (left/right)firewall=yes, coming up
-	# This is used only by the default updown script, not by your custom
-	# ones, so do not mess with it; see CAUTION comment up at top.
-	ipfwadm -F -i accept -b -S $PLUTO_MY_CLIENT_NET/$PLUTO_MY_CLIENT_MASK \
-		-D $PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK
-	;;
-down-client:ipfwadm)
-	# connection to client subnet, with (left/right)firewall=yes, going down
-	# This is used only by the default updown script, not by your custom
-	# ones, so do not mess with it; see CAUTION comment up at top.
-	ipfwadm -F -d accept -b -S $PLUTO_MY_CLIENT_NET/$PLUTO_MY_CLIENT_MASK \
-		-D $PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK
 	;;
 *)	echo "$0: unknown verb \`$PLUTO_VERB' or parameter \`$1'" >&2
 	exit 1
