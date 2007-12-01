@@ -2,8 +2,9 @@
 # iproute2 version, default updown script
 #
 # Copyright (C) 2003-2004 Nigel Metheringham
-# Copyright (C) 2002-2004 Michael Richardson <mcr@xelerance.com>
-# Copyright (C) 2003-2005 Tuomo Soini <tis@foobar.fi>
+# Copyright (C) 2002-2007 Michael Richardson <mcr@xelerance.com>
+# Copyright (C) 2003-2007 Tuomo Soini <tis@foobar.fi>
+# Copyright (C) 2003-2007 Paul Wouters <paul@xelerance.com>
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -19,11 +20,11 @@
 
 
 
-# CAUTION:  Installing a new version of FreeS/WAN will install a new
+# CAUTION:  Installing a new version of Openswan will install a new
 # copy of this script, wiping out any custom changes you make.  If
 # you need changes, make a copy of this under another name, and customize
-# that, and use the (left/right)updown parameters in ipsec.conf to make
-# FreeS/WAN use yours instead of this default one.
+# that, and use the (left/right)updown= parameters in ipsec.conf to make
+# Openswan use yours instead of this default one.
 
 LC_ALL=C export LC_ALL
 
@@ -115,6 +116,8 @@ LC_ALL=C export LC_ALL
 #
 #       PLUTO_CONNECTION_TYPE
 #
+#	PLUTO_STACK
+#		the kernel stack being used (eg protostack= value)
 
 # Import default _updown configs from the /etc/sysconfig/pluto_updown file
 #
@@ -153,8 +156,6 @@ esac
 # check parameter(s)
 case "$1:$*" in
 ':')			# no parameters
-	;;
-ipfwadm:ipfwadm)	# due to (left/right)firewall; for default script only
 	;;
 custom:*)		# custom parameters (see above CAUTION comment)
 	;;
@@ -495,22 +496,6 @@ down-client:)
 	# connection to my client subnet going down
 	downrule
 	# If you are doing a custom version, firewall commands go here.
-	;;
-up-client:ipfwadm)
-	# connection to client subnet, with (left/right)firewall=yes, coming up
-	uprule
-	# This is used only by the default updown script, not by your custom
-	# ones, so do not mess with it; see CAUTION comment up at top.
-	ipfwadm -F -i accept -b -S $PLUTO_MY_CLIENT_NET/$PLUTO_MY_CLIENT_MASK \
-		-D $PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK
-	;;
-down-client:ipfwadm)
-	# connection to client subnet, with (left/right)firewall=yes, going down
-	downrule
-	# This is used only by the default updown script, not by your custom
-	# ones, so do not mess with it; see CAUTION comment up at top.
-	ipfwadm -F -d accept -b -S $PLUTO_MY_CLIENT_NET/$PLUTO_MY_CLIENT_MASK \
-		-D $PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK
 	;;
 #
 # IPv6
