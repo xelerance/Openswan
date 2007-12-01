@@ -35,10 +35,19 @@ endif
 
 SUBDIRS+=proc pluto addconn _confread
 SUBDIRS+=_copyright _include _keycensor _plutoload _plutorun
-SUBDIRS+=_realsetup _secretcensor _startklips _startnetkey _updown _updown.klips _updown.mast _updown.netkey
+SUBDIRS+=_realsetup _secretcensor _updown
 SUBDIRS+=auto barf verify ipsec look newhostkey ranbits secrets
 SUBDIRS+=rsasigkey setup showdefaults showhostkey calcgoo mailkey
 SUBDIRS+=ikeping examples livetest
+ifeq ($(USE_KLIPS),true)
+SUBDIRS+= _startklips _updown.klips 
+endif
+ifeq ($(USE_MAST),true)
+SUBDIRS+= _updown.mast 
+endif
+ifeq ($(USE_NETKEY),true)
+SUBDIRS+= _startnetkey _updown.netkey
+endif
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
