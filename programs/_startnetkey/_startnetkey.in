@@ -22,6 +22,7 @@ rpfilter2=rp_filter
 # %unchanged or setting (0, 1, or 2)
 rpfiltercontrol=0
 kamepfkey=/proc/net/pfkey
+ipsecpfkey=/proc/net/ipsec/version
 
 info=/dev/null
 log=daemon.error
@@ -53,6 +54,21 @@ logonly() {
 
 
 # main line
+
+# since klips/mast now calls _startklips, we know we're called to use netkey
+# so if we find klips/mast, try to unload it or die
+if test -f $ipsecpfkey
+then
+	echo "Warning: found KLIPS/MAST stack loaded"
+	echo -n Trying to unload KLIPS/MAST module:
+	rmmod ipsec 2> /dev/null
+
+	if test -f $ipsecpfkey
+	then
+		echo "FAILURE to unload KLIPS/MAST module. Use protostack=klsips or protostack=mast, or recompile kernel without builtin KLIPS/MAST support"
+                exit 1
+        fi
+fi
 
 	if test -f $modules
 	then
