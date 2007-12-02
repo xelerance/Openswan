@@ -814,8 +814,8 @@ static field_desc ikev2a_fields[] = {
     { ft_end,  0, NULL, NULL }
 };
 
-struct_desc ikev2_a_desc = { "IKEv2 Identification Payload",
-			     ikev2a_fields, sizeof(struct ikev2_id) };
+struct_desc ikev2_a_desc = { "IKEv2 Authentication Payload",
+			     ikev2a_fields, sizeof(struct ikev2_a) };
 
 
 
@@ -931,7 +931,8 @@ struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
     &ikev2_sa_desc,                     /* 33 */
     &ikev2_ke_desc,                     /* 34 */
     &ikev2_id_desc, &ikev2_id_desc,     /* 35,36 */
-    NULL, NULL, NULL,                   /* 37, 38, 39 */
+    NULL, NULL,                         /* 37, 38*/
+    &ikev2_a_desc,                      /* 39 */
     &ikev2_nonce_desc,                  /* 40 */
     NULL, NULL,                         /* 41,42 */
     &ikev2_vendor_id_desc,              /* 43 */
