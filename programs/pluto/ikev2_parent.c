@@ -915,6 +915,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 
 static stf_status ikev2_send_auth(struct connection *c
 				  , struct state *st
+				  , enum phase1_role role
 				  , unsigned char *idhash_out
 				  , pb_stream *outpbs)
 {
@@ -940,7 +941,7 @@ static stf_status ikev2_send_auth(struct connection *c
 	return STF_INTERNAL_ERROR;
     
     if(c->policy & POLICY_RSASIG) {
-	if(!ikev2_calculate_rsa_sha1(st, idhash_out, &a_pbs))
+	if(!ikev2_calculate_rsa_sha1(st, role, idhash_out, &a_pbs))
 	    return STF_FATAL;
 	
     } else if(c->policy & POLICY_PSK) {
@@ -1041,7 +1042,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* send out the AUTH payload */
     {
-	stf_status authstat = ikev2_send_auth(c, st, idhash, &e_pbs_cipher);
+	stf_status authstat = ikev2_send_auth(c, st, INITIATOR, idhash, &e_pbs_cipher);
 	if(authstat != STF_OK) return authstat;
     }
 
@@ -1240,6 +1241,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     case v2_AUTH_RSA:
     {
 	stf_status authstat = ikev2_verify_rsa_sha1(st
+						    , RESPONDER
 						    , idhash_in
 						    , NULL /* keys from DNS */
 						    , NULL /* gateways from DNS */
@@ -1336,7 +1338,8 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
 	/* now send AUTH payload */
 	{
-	    stf_status authstat = ikev2_send_auth(c, st, idhash_out, &e_pbs_cipher);
+	    stf_status authstat = ikev2_send_auth(c, st, RESPONDER
+						  , idhash_out, &e_pbs_cipher);
 	    if(authstat != STF_OK) return authstat;
 	}
 
@@ -1427,6 +1430,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     case v2_AUTH_RSA:
     {
 	stf_status authstat = ikev2_verify_rsa_sha1(st
+						    , INITIATOR
 						    , idhash_in
 						    , NULL /* keys from DNS */
 						    , NULL /* gateways from DNS */

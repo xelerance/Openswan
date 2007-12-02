@@ -68,16 +68,33 @@ static u_char der_digestinfo[]={
 static int der_digestinfo_len=sizeof(der_digestinfo);
 
 static void ikev2_calculate_sighash(struct state *st
+				    , enum phase1_role role
 				    , unsigned char *idhash
 				    , unsigned char *sig_octets)
 {
 	SHA1_CTX       ctx_sha1;
+	const chunk_t *nonce;
+	const char    *nonce_name;
 
+	if(role == INITIATOR) {
+	    /* on initiator, we need to hash responders nonce */
+	    nonce = &st->st_nr;
+	    nonce_name = "inputs to hash2 (responder nonce)";
+	} else {
+	    nonce = &st->st_ni;
+	    nonce_name = "inputs to hash2 (initiator nonce)";
+	}
+	    
+	DBG(DBG_CRYPT
+	    , DBG_dump_chunk("inputs to hash1 (first packet)", st->st_firstpacket);
+	      DBG_dump_chunk(nonce_name, *nonce);
+	    DBG_dump("idhash", idhash, st->st_oakley.prf_hasher->hash_digest_len));
+				
 	SHA1Init(&ctx_sha1);
 	SHA1Update(&ctx_sha1
 		   , st->st_firstpacket.ptr
 		   , st->st_firstpacket.len);
-	SHA1Update(&ctx_sha1, st->st_nr.ptr, st->st_nr.len);
+	SHA1Update(&ctx_sha1, nonce->ptr, nonce->len);
 
 	/* we took the PRF(SK_d,ID[ir]'), so length is prf hash length */
 	SHA1Update(&ctx_sha1, idhash
@@ -87,8 +104,9 @@ static void ikev2_calculate_sighash(struct state *st
 }
 
 bool ikev2_calculate_rsa_sha1(struct state *st
-			 , unsigned char *idhash
-			 , pb_stream *a_pbs)
+			      , enum phase1_role role
+			      , unsigned char *idhash
+			      , pb_stream *a_pbs)
 {
 	unsigned char  signed_octets[SHA1_DIGEST_SIZE+16];
 	size_t         signed_len;
@@ -103,7 +121,7 @@ bool ikev2_calculate_rsa_sha1(struct state *st
 
 	memcpy(signed_octets, der_digestinfo, der_digestinfo_len);
 
-	ikev2_calculate_sighash(st, idhash, signed_octets+der_digestinfo_len);
+	ikev2_calculate_sighash(st, role, idhash, signed_octets+der_digestinfo_len);
 	signed_len = der_digestinfo_len + SHA1_DIGEST_SIZE;
 
 	passert(RSA_MIN_OCTETS <= sz && 4 + signed_len < sz && sz <= RSA_MAX_OCTETS);
@@ -199,6 +217,7 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
 
 stf_status
 ikev2_verify_rsa_sha1(struct state *st
+		      , enum phase1_role role
 			    , unsigned char *idhash
 			    , const struct pubkey_list *keys_from_dns
 			    , const struct gw_info *gateways_from_dns
@@ -207,7 +226,7 @@ ikev2_verify_rsa_sha1(struct state *st
     unsigned char calc_hash[SHA1_DIGEST_SIZE];
     unsigned int  hash_len = SHA1_DIGEST_SIZE;
     
-    ikev2_calculate_sighash(st, idhash, calc_hash);
+    ikev2_calculate_sighash(st, role, idhash, calc_hash);
 
     return RSA_check_signature_gen(st, calc_hash, hash_len
 				   , sig_pbs
