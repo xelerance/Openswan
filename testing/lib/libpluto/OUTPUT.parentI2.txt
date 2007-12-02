@@ -201,11 +201,11 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | emitting 4 raw bytes of my identity into IKEv2 Identification Payload
 | my identity  77 65 73 74
 | emitting length of IKEv2 Identification Payload: 12
-| *****emit IKEv2 Identification Payload:
+| *****emit IKEv2 Authentication Payload:
 |    next payload type: ISAKMP_NEXT_NONE
 |    auth method: v2_AUTH_RSA
-| emitting 192 zero bytes of fake rsa sig into IKEv2 Identification Payload
-| emitting length of IKEv2 Identification Payload: 200
+| emitting 192 zero bytes of fake rsa sig into IKEv2 Authentication Payload
+| emitting length of IKEv2 Authentication Payload: 200
 | emitting 12 raw bytes of padding and length into cleartext
 | padding and length  00 01 02 03  04 05 06 07  08 09 0a 0b
 | data before encryption:
