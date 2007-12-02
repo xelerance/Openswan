@@ -227,9 +227,11 @@ endif
 
 checkprograms:
 
+OPENSWANSRCDIRREL?=../..
+
 # Gather dependencies caused by explicit #includes within .c files
 depend: ${DISTSRC}
-	@(ls $(DISTSRC) | grep '\.c' | xargs gcc -MM ${PORTINCLUDE} ${INCLUDES} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
+	@(ls $(DISTSRC) | grep '\.c' | xargs gcc -MM ${PORTINCLUDE} ${INCLUDES} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},${OPENSWANSRCDIRREL},g' >Makefile.depend
 
 -include ${srcdir}Makefile.depend
 
