@@ -146,6 +146,7 @@ int main(int argc, char *argv[])
 						       , 0);
 
 	ikev2_calculate_rsa_sha1(&st1,
+				 INITIATOR,
 				 idhash,
 				 &outs);
 
@@ -171,6 +172,7 @@ int main(int argc, char *argv[])
 	show_one_connection(c1);
 	{
 		stf_status stat = ikev2_verify_rsa_sha1(&st1
+							, INITIATOR
 							, idhash
 							, NULL  /* keys from dns */
 							, NULL  /* gateways from dns */
