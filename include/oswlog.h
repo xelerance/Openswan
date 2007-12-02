@@ -44,7 +44,6 @@ extern lset_t cur_debugging;	/* current debugging level */
 
 #define DBG_log openswan_DBG_log
 #define DBG_dump openswan_DBG_dump
-#define DBG_dump_pbs(pbs) DBG_dump((pbs)->name, (pbs)->start, (pbs)->cur-(pbs)->start)
 extern int openswan_DBG_log(const char *message, ...) PRINTF_LIKE(1);
 extern void openswan_DBG_dump(const char *label, const void *p, size_t len);
 
@@ -63,7 +62,6 @@ extern void set_debugging(lset_t deb);
 #define exit_tool exit
 #define openswan_DBG_dump(...) do { } while(0)
 #define DBG_log(...) do { } while(0)
-#define DBG_dump_pbs(pbs) do {} while(0)
 extern void tool_init_log(void);
 extern void tool_close_log(void);
 

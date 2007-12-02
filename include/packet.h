@@ -110,8 +110,11 @@ extern bool out_raw(const void *bytes, size_t len, pb_stream *outs, const char *
 extern void close_output_pbs(pb_stream *pbs);
 
 #ifdef DEBUG
+#define DBG_dump_pbs(pbs) DBG_dump((pbs)->name, (pbs)->start, pbs_offset(pbs))
 extern void DBG_print_struct(const char *label, const void *struct_ptr,
     struct_desc *sd, bool len_meaningful);
+#else
+#define DBG_dump_pbs(pbs) do {} while(0)
 #endif
 
 /* ISAKMP Header: for all messages
