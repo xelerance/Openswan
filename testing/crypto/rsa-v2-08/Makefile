@@ -1,8 +1,11 @@
 OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
 
 UNITTEST=rsa-v2
-CFLAGS=-DUSE_3DES -I${OPENSWANSRCDIR}/programs/pluto
-CFLAGS+=-I${OPENSWANSRCDIR}/testing/lib/libpluto
+CFLAGS=-DUSE_3DES
+INCLUDES=-I${srcdir}${OPENSWANSRCDIR}/programs/pluto
+INCLUDES+=-I${srcdir}${OPENSWANSRCDIR}/testing/lib/libpluto
+VPATH += ${srcdir}
+OPENSWANSRCDIRREL=../../..
 
 SOURCES=rsa-v2.c packetsI1.c 
 

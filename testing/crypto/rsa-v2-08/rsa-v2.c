@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
 
 	load_preshared_secrets(NULL_FD);
 
-	clonetochunk(st1.st_firstpacket, packet1+32, packet1_len-32, "I1");
+	clonetochunk(st1.st_firstpacket_me, packet1+32, packet1_len-32, "I1");
 	clonetochunk(st1.st_nr, tc3_nr, tc3_nr_len, "NR");
 
 	st1.st_connection = c1;
@@ -168,6 +168,7 @@ int main(int argc, char *argv[])
 		c1->spd.this = c1->spd.that;
 		c1->spd.that = tmp;
 	}
+	clonetochunk(st1.st_firstpacket_him, packet1+32, packet1_len-32, "I1");
 
 	show_one_connection(c1);
 	{
