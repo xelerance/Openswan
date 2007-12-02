@@ -70,6 +70,7 @@ static int der_digestinfo_len=sizeof(der_digestinfo);
 static void ikev2_calculate_sighash(struct state *st
 				    , enum phase1_role role
 				    , unsigned char *idhash
+				    , chunk_t firstpacket
 				    , unsigned char *sig_octets)
 {
 	SHA1_CTX       ctx_sha1;
@@ -86,14 +87,14 @@ static void ikev2_calculate_sighash(struct state *st
 	}
 	    
 	DBG(DBG_CRYPT
-	    , DBG_dump_chunk("inputs to hash1 (first packet)", st->st_firstpacket);
+	    , DBG_dump_chunk("inputs to hash1 (first packet)", firstpacket);
 	      DBG_dump_chunk(nonce_name, *nonce);
 	    DBG_dump("idhash", idhash, st->st_oakley.prf_hasher->hash_digest_len));
 				
 	SHA1Init(&ctx_sha1);
 	SHA1Update(&ctx_sha1
-		   , st->st_firstpacket.ptr
-		   , st->st_firstpacket.len);
+		   , firstpacket.ptr
+		   , firstpacket.len);
 	SHA1Update(&ctx_sha1, nonce->ptr, nonce->len);
 
 	/* we took the PRF(SK_d,ID[ir]'), so length is prf hash length */
@@ -121,7 +122,9 @@ bool ikev2_calculate_rsa_sha1(struct state *st
 
 	memcpy(signed_octets, der_digestinfo, der_digestinfo_len);
 
-	ikev2_calculate_sighash(st, role, idhash, signed_octets+der_digestinfo_len);
+	ikev2_calculate_sighash(st, role, idhash
+				, st->st_firstpacket_me
+				, signed_octets+der_digestinfo_len);
 	signed_len = der_digestinfo_len + SHA1_DIGEST_SIZE;
 
 	passert(RSA_MIN_OCTETS <= sz && 4 + signed_len < sz && sz <= RSA_MAX_OCTETS);
@@ -226,7 +229,7 @@ ikev2_verify_rsa_sha1(struct state *st
     unsigned char calc_hash[SHA1_DIGEST_SIZE];
     unsigned int  hash_len = SHA1_DIGEST_SIZE;
     
-    ikev2_calculate_sighash(st, role, idhash, calc_hash);
+    ikev2_calculate_sighash(st, role, idhash, st->st_firstpacket_him, calc_hash);
 
     return RSA_check_signature_gen(st, calc_hash, hash_len
 				   , sig_pbs

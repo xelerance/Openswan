@@ -357,7 +357,7 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
        , "reply packet for ikev2_parent_outI1");
 
     /* save packet for later signing */
-    clonetochunk(st->st_firstpacket, md->reply.start
+    clonetochunk(st->st_firstpacket_me, md->reply.start
 		 , pbs_offset(&md->reply), "saved first packet");
 
     /* Transmit */
@@ -548,6 +548,11 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     memcpy(st->st_icookie, md->hdr.isa_icookie, COOKIE_SIZE);
     get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);
     insert_state(st);	
+
+    /* record first packet for later checking of signature */
+    clonetochunk(st->st_firstpacket_him, md->message_pbs.start
+		 , pbs_offset(&md->message_pbs), "saved first received packet");
+
     
     /* HDR out */
     {
@@ -627,7 +632,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 		 , "reply packet for ikev2_parent_outI1");
 
     /* save packet for later signing */
-    clonetochunk(st->st_firstpacket, md->reply.start
+    clonetochunk(st->st_firstpacket_me, md->reply.start
 		 , pbs_offset(&md->reply), "saved first packet");
 
     /* note: retransimission is driven by initiator */
@@ -974,6 +979,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     if(DBGP(DBG_PRIVATE) && DBGP(DBG_CRYPT)) {
 	ikev2_log_parentSA(st);
     }
+
+    /* record first packet for later checking of signature */
+    clonetochunk(st->st_firstpacket_him, md->message_pbs.start
+		 , pbs_offset(&md->message_pbs), "saved first received packet");
 
     /* HDR out */
     {

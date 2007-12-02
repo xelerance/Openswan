@@ -377,7 +377,8 @@ delete_state(struct state *st)
     if (st->st_sec_in_use)
 	mpz_clear(&(st->st_sec));
 
-    pfreeany(st->st_firstpacket.ptr);
+    pfreeany(st->st_firstpacket_me.ptr);
+    pfreeany(st->st_firstpacket_him.ptr);
     pfreeany(st->st_tpacket.ptr);
     pfreeany(st->st_rpacket.ptr);
     pfreeany(st->st_p1isa.ptr);
