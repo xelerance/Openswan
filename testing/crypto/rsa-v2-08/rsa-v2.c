@@ -18,12 +18,54 @@
  * RCSID $Id: crypt_dh.c,v 1.11 2005/08/14 21:47:29 mcr Exp $
  */
 
+#define LEAK_DETECTIVE
+#define AGGRESSIVE 1
+#define XAUTH 
+#define MODECFG 
+#define DEBUG 1
+#define PRINT_SA_DEBUG 1
+#define USE_KEYRR 1
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "sysqueue.h"
 #include "oswlog.h"
 #include "oswconf.h"
-#include "../../../programs/pluto/ikev2_rsa.c"
+#include "packet.h"
+#include "defs.h"
+#include "connections.h"
+#include "state.h"
+#include "keys.h"
+#include "crypto.h"
+#include "readwhackmsg.h"
+#include "ike_alg.h"
+#include "ikev2.h"
+#include "ocf_pk.h"
+
+#include "seam_pending.c"
+#include "whackmsgtestlib.c"
 #include "seam_whack.c"
+#include "seam_log.c"
+#include "seam_east.c"
+#include "seam_rnd.c"
+#include "seam_timer.c"
+#include "seam_initiate.c" 
+#include "seam_xauth.c"
+#include "seam_natt.c"
+#include "seam_state.c"
+#include "seam_kernelops.c"
+
+void gw_addref(struct gw_info *gw) {}
+void gw_delref(struct gw_info **gwp) {}
+bool in_pending_use(struct connection *c) { return FALSE; }
 
 char *progname;
+
+const char*
+check_expiry(time_t expiration_date, int warning_interval, bool strict)
+{
+	return "ok (never)";
+}
 
 void exit_log(const char *message, ...)
 {
@@ -39,6 +81,11 @@ void exit_log(const char *message, ...)
 }
 
 void exit_tool(int code)
+{
+	exit(code);
+}
+
+void exit_pluto(int code)
 {
 	exit(code);
 }
@@ -62,10 +109,12 @@ int main(int argc, char *argv[])
 	unsigned char outbuf[1024];
 	struct state st1;
 	pb_stream outs;
+	struct connection *c1;
 
 	progname = argv[0];
 	cur_debugging = DBG_CRYPT;
 
+	memset(&st1, 0, sizeof(st1));
 	pluto_shared_secrets_file = "../../baseconfigs/east/etc/ipsec.secrets";
 
 	osw_init_ipsecdir("../../baseconfigs/east/etc/ipsec.d");
@@ -73,6 +122,13 @@ int main(int argc, char *argv[])
 
 	/* initialize list of moduli */
 	init_crypto();
+	load_cryptodev();
+
+	readwhackmsg("../../lib/libpluto/lib-parentI1/ikev2.record");
+	c1 = con_by_name("westnet--eastnet-ikev2", TRUE);
+
+	passert(c1!=NULL);
+	show_one_connection(c1);
 
 	init_pbs(&outs, outbuf, 1024, "rsa signature");
 
@@ -81,9 +137,11 @@ int main(int argc, char *argv[])
 	clonetochunk(st1.st_firstpacket, packet1+32, packet1_len-32, "I1");
 	clonetochunk(st1.st_nr, tc3_nr, tc3_nr_len, "NR");
 
+	st1.st_connection = c1;
 	st1.st_oakley.prf_hash = IKEv2_PRF_HMAC_SHA1;
 	st1.st_oakley.prf_hasher =
 		(struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH
+
 						       , st1.st_oakley.prf_hash
 						       , 0);
 
@@ -93,5 +151,34 @@ int main(int argc, char *argv[])
 
 	DBG_dump_pbs(&outs);
 
+	{
+		int sig_len;
+		sig_len = pbs_offset(&outs);
+		/* rewind outs pbs */
+		init_pbs(&outs, outbuf, sig_len, "rsa signature");
+	}
+
+
+	/* swap c1->this and c1->that, because to verify, we have to swap
+	 * identities.
+	 */
+	{
+		struct end tmp = c1->spd.this;
+		c1->spd.this = c1->spd.that;
+		c1->spd.that = tmp;
+	}
+
+	show_one_connection(c1);
+	{
+		stf_status stat = ikev2_verify_rsa_sha1(&st1
+							, idhash
+							, NULL  /* keys from dns */
+							, NULL  /* gateways from dns */
+							, &outs);
+		printf("stf status: %s\n", enum_name(&stfstatus_name, stat));
+	}
+
 	exit(0);
 }
+
+

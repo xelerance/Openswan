@@ -6,29 +6,116 @@
 ./rsa-v2 ike_alg_register_enc(): Activating OAKLEY_BLOWFISH_CBC: Ok (ret=0)
 ./rsa-v2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./rsa-v2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+Pre-amble: #!-pluto-whack-file- recorded on west on 2007-10-07 01:40:12
+./rsa-v2 listening for IKE messages
 ./rsa-v2 loading secrets from "../../baseconfigs/east/etc/ipsec.secrets"
 ./rsa-v2 loaded private key for keyid: PPK_RSA:AQN3cn11F
 ./rsa-v2   loaded private key file '../../baseconfigs/east/etc/ipsec.d/private/east.pem' (963 bytes)
 |   decrypting file using 'DES-EDE3-CBC'
 ./rsa-v2 loaded private key for keyid: PPK_RSA:AwEAAaFHY
-| v2rsa octets  30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 d3
-|   7f a9 0f 46  a2 a8 20 7e  40 8b 8e f1  5b 1c 1c 4d
-|   90 ce ec
+| interface "eth0" matched right side
+./rsa-v2 added connection description "westnet--eastnet-ikev2"
+| base debugging = crypt+parsing+control+controlmore
+./rsa-v2 listening for IKE messages
+./rsa-v2 forgetting secrets
+./rsa-v2 loading secrets from "../../baseconfigs/east/etc/ipsec.secrets"
+./rsa-v2 loaded private key for keyid: PPK_RSA:AQN3cn11F
+| id type added to secret(0x80be980) 1: C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org
+| id type added to secret(0x80be980) 1: %any
+./rsa-v2   loaded private key file '../../baseconfigs/east/etc/ipsec.d/private/east.pem' (963 bytes)
+|   file content is not binary ASN.1
+|   -----BEGIN RSA PRIVATE KEY-----
+|   Proc-Type: 4,ENCRYPTED
+|   DEK-Info: DES-EDE3-CBC,16F2C4D726B9DB34
+|   -----END RSA PRIVATE KEY-----
+|   decrypting file using 'DES-EDE3-CBC'
+|   file coded in PEM format
+| L0 - RSAPrivateKey:
+| L1 - version:
+| L1 - modulus:
+| L1 - publicExponent:
+| L1 - privateExponent:
+| L1 - prime1:
+| L1 - prime2:
+| L1 - exponent1:
+| L1 - exponent2:
+| L1 - coefficient:
+./rsa-v2 loaded private key for keyid: PPK_RSA:AwEAAaFHY
+RC=0 "westnet--eastnet-ikev2": 192.0.2.0/24===192.1.2.23<192.1.2.23>[@east]...192.1.2.45<192.1.2.45>[@west]===192.0.1.0/24; unrouted; eroute owner: #0
+RC=0 "westnet--eastnet-ikev2":     myip=unset; hisip=unset;
+RC=0 "westnet--eastnet-ikev2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+RC=0 "westnet--eastnet-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init; prio: 24,24; interface: eth0; 
+RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+./rsa-v2 forgetting secrets
+./rsa-v2 loading secrets from "../../baseconfigs/east/etc/ipsec.secrets"
+./rsa-v2 loaded private key for keyid: PPK_RSA:AQN3cn11F
+| id type added to secret(0x80bf480) 1: C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org
+| id type added to secret(0x80bf480) 1: %any
+./rsa-v2   loaded private key file '../../baseconfigs/east/etc/ipsec.d/private/east.pem' (963 bytes)
+|   file content is not binary ASN.1
+|   -----BEGIN RSA PRIVATE KEY-----
+|   Proc-Type: 4,ENCRYPTED
+|   DEK-Info: DES-EDE3-CBC,16F2C4D726B9DB34
+|   -----END RSA PRIVATE KEY-----
+|   decrypting file using 'DES-EDE3-CBC'
+|   file coded in PEM format
+| L0 - RSAPrivateKey:
+| L1 - version:
+| L1 - modulus:
+| L1 - publicExponent:
+| L1 - privateExponent:
+| L1 - prime1:
+| L1 - prime2:
+| L1 - exponent1:
+| L1 - exponent2:
+| L1 - coefficient:
+./rsa-v2 loaded private key for keyid: PPK_RSA:AwEAAaFHY
+| started looking for secret for @east->@west of kind PPK_RSA
+| actually looking for secret for @east->@west of kind PPK_RSA
+| line 25: key type PPK_RSA(@east) to type PPK_RSA 
+| 1: compared key %any to @east / @west -> 0
+| 2: compared key C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org to @east / @west -> 0
+| line 25: match=0 
+| line 8: key type PPK_RSA(@east) to type PPK_RSA 
+| 1: compared key (none) to @east / @west -> 6
+| 2: compared key (none) to @east / @west -> 6
+| line 8: match=6 
+| best_match 0>6 best=0x80beb68 (line=8)
+| concluding with best_match=6 best=0x80beb68 (lineno=8)
+| v2rsa octets  30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 18
+|   29 e4 2f 6b  79 63 92 08  41 28 e4 f9  ec bb a0 f4
+|   0d e6 f0
 | signing hash with RSA Key *AQN3cn11F
-| rsa signature  70 76 da f8  fa 45 fc 22  24 fe 74 a4  23 e4 c6 0d
-|   ef d0 79 8c  bc 34 78 78  cc b7 ff 31  b7 0c a3 8d
-|   fd 16 5e 38  2f 2d e9 4c  cc 93 45 b4  12 a5 05 d9
-|   27 e4 9f b1  b8 30 70 94  6d 25 0c b4  ac 1c ce a2
-|   8e 72 78 06  59 69 66 be  9b 2c a9 51  12 02 ef 19
-|   91 81 0a 23  b8 aa af 1c  9e e4 f9 04  24 86 9a 2a
-|   1a a8 55 fa  7d c5 b5 28  e1 fe 8e 70  5c 4d 6e 3e
-|   26 d2 9b 4b  49 30 63 f0  b9 ea c3 a1  f1 ab 2e e9
-|   fa ec 0d e2  4f b9 85 55  28 e8 09 77  bc 7a 4d a7
-|   da c9 64 d0  3c d0 17 2f  21 18 90 5b  1f 1f 58 b8
-|   12 17 02 61  83 60 d5 c7  a4 8e 16 04  a0 e1 9a a8
-|   04 16 7c 44  f0 b1 e9 9d  3a 9c ef 69  24 cc 63 e5
-|   5f db 6c 0b  b7 1d a0 da  e4 a5 f2 2c  fb 1e 70 de
-|   e3 16 54 81  dc ea c6 06  e8 c4 a3 63  da 00 c1 b3
-|   97 e7 df 8c  0c 5f 98 49  9f 13 c5 e4  5e 19 69 5d
-|   fa 24 49 01  f0 94 71 05  7b 1b 81 f3  89 63 4f ad
+| rsa signature  27 2f 36 dc  93 2a 63 65  5c 18 2a a6  ea 43 5e fe
+|   6b b5 74 a9  fb 44 66 a7  cb d1 77 ff  3f d3 c7 42
+|   77 fe 61 18  95 a9 5d c2  b5 35 80 bf  84 c8 08 bb
+|   58 18 bc 6f  65 03 b9 72  7f 0e 8f f9  7a e5 1e 0d
+|   49 fd c3 57  e6 a1 8a 74  d8 24 a5 14  0e 07 83 4e
+|   b0 1c c0 3c  8d 5a 38 ae  24 4d 86 fe  a8 20 e8 45
+|   5d 81 2e f5  9e 50 09 3e  65 9b 40 55  52 bd 00 17
+|   94 a9 bc 79  8e 5e 6b 57  51 be 24 f5  52 9e ff e4
+|   77 cf 00 04  5e 81 59 7e  7a f4 7e 70  1a 0a ae 00
+|   c1 15 fc 92  a7 8f a5 6f  a0 8b 1e db  ff c5 ce 23
+|   62 e1 94 31  c0 f3 b9 dc  6d 36 29 ab  0e a5 be c0
+|   da f9 3e 36  23 79 97 57  0d 32 c7 81  19 c5 f8 4f
+|   df 15 da 63  ea d4 51 99  ef 24 eb 97  43 96 9c 0c
+|   4e 4a 57 dd  97 55 d3 67  ab 49 cf e4  b0 9c 1a 27
+|   72 b2 a6 e0  55 ed 27 6e  33 a6 d2 85  72 5a fa 3d
+|   e7 74 73 05  9f 3b 97 9b  ad 62 8a a2  e3 8b 08 77
+RC=0 "westnet--eastnet-ikev2": 192.0.1.0/24===192.1.2.45<192.1.2.45>[@west]...192.1.2.23<192.1.2.23>[@east]===192.0.2.0/24; unrouted; eroute owner: #0
+RC=0 "westnet--eastnet-ikev2":     myip=unset; hisip=unset;
+RC=0 "westnet--eastnet-ikev2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
+RC=0 "westnet--eastnet-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init; prio: 24,24; interface: eth0; 
+RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+| required CA is '%any'
+|   trusted_ca called with a=(empty) b=(empty)
+| key issuer CA is '%any'
+| v2rsa decrypted SIG:
+|   18 29 e4 2f  6b 79 63 92  08 41 28 e4  f9 ec bb a0
+|   f4 0d e6 f0
+| v2rsa computed hash:
+|   18 29 e4 2f  6b 79 63 92  08 41 28 e4  f9 ec bb a0
+|   f4 0d e6 f0
+| an RSA Sig check passed with *AQN3cn11F [preloaded key]
+stf status: STF_OK
 
