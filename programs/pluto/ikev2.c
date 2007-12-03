@@ -526,6 +526,7 @@ static void success_v2_state_transition(struct msg_digest **mdp)
     const struct state_v2_microcode *svm = md->svm;
     enum state_kind from_state = md->from_state;
     struct state *st = md->st;
+    enum rc_type w = RC_NEW_STATE + st->st_state;
 
     openswan_log("transition from state %s to state %s"
                  , enum_name(&state_names, from_state)
@@ -541,7 +542,6 @@ static void success_v2_state_transition(struct msg_digest **mdp)
     /* tell whack and log of progress */
     {
 	const char *story = enum_name(&state_stories, st->st_state);
-	enum rc_type w = RC_NEW_STATE + st->st_state;
 	char sadetails[128];
 
 	passert(st->st_state >= STATE_IKEv2_BASE);
@@ -552,13 +552,12 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	/* document IPsec SA details for admin's pleasure */
 	if(IS_CHILD_SA_ESTABLISHED(st->st_state))
 	{
-	    fmt_ipsec_sa_established(st, sadetails, sizeof(sadetails));
+	    fmt_ipsec_sa_established(st,  sadetails,sizeof(sadetails));
 	} else if(IS_PARENT_SA_ESTABLISHED(st->st_state)) {
 	    fmt_isakmp_sa_established(st, sadetails,sizeof(sadetails));
 	}
 	
-	if (IS_PARENT_SA_ESTABLISHED(st->st_state)
-	    || IS_CHILD_SA_ESTABLISHED(st->st_state))
+	if (IS_CHILD_SA_ESTABLISHED(st->st_state))
 	{
 	    /* log our success */
 	    w = RC_SUCCESS;
@@ -610,7 +609,9 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 
     TCLCALLOUT("adjustTimers", st, st->st_connection, md);
 
-
+    if (w == RC_SUCCESS) {
+	release_whack(st);
+    }
 }
 
 void complete_v2_state_transition(struct msg_digest **mdp

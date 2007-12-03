@@ -98,9 +98,11 @@ ikev2parent_outI1(int whack_sock
     st->st_msgid_lastack = INVALID_MSGID;
     st->st_msgid_nextuse = 0;
 
+#if 0
     if (HAS_IPSEC_POLICY(policy))
 	add_pending(dup_any(whack_sock), st, c, policy, 1
 	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno);
+#endif
 
     if (predecessor == NULL)
 	openswan_log("initiating v2 parent SA");
