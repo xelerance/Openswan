@@ -801,6 +801,7 @@ void fmt_ipsec_sa_established(struct state *st, char *sadetails, int sad_len)
 	fin = "}";
     }
     
+    b = b + strlen(b);
     {
 	char oa[ADDRTOT_BUF+sizeof(":00000")];
 	
