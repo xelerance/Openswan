@@ -228,8 +228,11 @@ ikev2_verify_rsa_sha1(struct state *st
 {
     unsigned char calc_hash[SHA1_DIGEST_SIZE];
     unsigned int  hash_len = SHA1_DIGEST_SIZE;
+    enum phase1_role invertrole;
+
+    invertrole = (role == INITIATOR ? RESPONDER : INITIATOR);
     
-    ikev2_calculate_sighash(st, role, idhash, st->st_firstpacket_him, calc_hash);
+    ikev2_calculate_sighash(st, invertrole, idhash, st->st_firstpacket_him, calc_hash);
 
     return RSA_check_signature_gen(st, calc_hash, hash_len
 				   , sig_pbs

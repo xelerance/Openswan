@@ -1027,6 +1027,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	chunk_t         id_b;
 	struct hmac_ctx id_ctx;
 	unsigned char *id_start;
+	unsigned int   id_len;
 
 	hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher, st->st_skey_pi);
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
@@ -1044,7 +1045,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	close_output_pbs(&r_id_pbs);
 
 	/* calculate hash of IDi for AUTH below */
-	hmac_update(&id_ctx, id_start, e_pbs_cipher.cur - id_start);
+	id_len = e_pbs_cipher.cur - id_start;
+	DBG(DBG_CRYPT, DBG_dump_chunk("idhash calc pi", st->st_skey_pi));
+	DBG(DBG_CRYPT, DBG_dump("idhash calc I2", id_start, id_len));
+	hmac_update(&id_ctx, id_start, id_len);
 	idhash = alloca(st->st_oakley.integ_hasher->hash_digest_len);
 	hmac_final(idhash, &id_ctx);
     }
@@ -1233,7 +1237,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher, st->st_skey_pi);
 
 	/* calculate hash of IDi for AUTH below */
-	hmac_update(&id_ctx, id_pbs->start, pbs_offset(id_pbs));
+	DBG(DBG_CRYPT, DBG_dump_chunk("idhash verify pi", st->st_skey_pi));
+	DBG(DBG_CRYPT, DBG_dump("idhash verify I2", id_pbs->start, pbs_room(id_pbs)));
+	hmac_update(&id_ctx, id_pbs->start, pbs_room(id_pbs));
 	idhash_in = alloca(st->st_oakley.integ_hasher->hash_digest_len);
 	hmac_final(idhash_in, &id_ctx);
     }
@@ -1323,8 +1329,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    chunk_t id_b;
 	    struct hmac_ctx id_ctx;
 	    unsigned char *id_start;
+	    unsigned int   id_len;
 	    
-	    hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher, st->st_skey_pi);
+	    hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher, st->st_skey_pr);
 	    build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b,
 			     &c->spd.this);
 	    r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
@@ -1340,7 +1347,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    close_output_pbs(&r_id_pbs);
 
 	    /* calculate hash of IDi for AUTH below */
-	    hmac_update(&id_ctx, id_start, e_pbs_cipher.cur - id_start);
+	    id_len = e_pbs_cipher.cur - id_start;
+	    DBG(DBG_CRYPT, DBG_dump_chunk("idhash calc pr", st->st_skey_pr));
+	    DBG(DBG_CRYPT, DBG_dump("idhash calc R2",id_start, id_len));
+	    hmac_update(&id_ctx, id_start, id_len);
 	    idhash_out = alloca(st->st_oakley.integ_hasher->hash_digest_len);
 	    hmac_final(idhash_out, &id_ctx);
 	}
@@ -1419,10 +1429,12 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	struct hmac_ctx id_ctx;
 	const pb_stream *id_pbs = &md->chain[ISAKMP_NEXT_v2IDr]->pbs;
 
-	hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher, st->st_skey_pi);
+	hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher, st->st_skey_pr);
 
 	/* calculate hash of IDr for AUTH below */
-	hmac_update(&id_ctx, id_pbs->start, pbs_offset(id_pbs));
+	DBG(DBG_CRYPT, DBG_dump_chunk("idhash verify pr", st->st_skey_pr));
+	DBG(DBG_CRYPT, DBG_dump("idhash auth R2", id_pbs->start, pbs_room(id_pbs)));
+	hmac_update(&id_ctx, id_pbs->start, pbs_room(id_pbs));
 	idhash_in = alloca(st->st_oakley.integ_hasher->hash_digest_len);
 	hmac_final(idhash_in, &id_ctx);
     }
