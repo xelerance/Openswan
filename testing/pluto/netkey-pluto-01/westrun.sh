@@ -1,4 +1,5 @@
 ipsec auto --up  westnet-eastnet
 
-ipsec look
+ip xfrm policy
+ip xfrm state
 echo done
