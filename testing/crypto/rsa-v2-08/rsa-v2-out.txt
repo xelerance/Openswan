@@ -116,29 +116,29 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 |   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  00 00 00 10
 |   4f 45 73 40  40 7a 4a 56  57 5b 6a 5d
 | inputs to hash2 (responder nonce)
-|   47 e9 f9 25  8c a2 38 58  f6 75 b1 66  b0 2c c2 92
+|   b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
 | idhash  01 02 03 04  11 12 13 14  21 22 23 24  31 32 33 34
 |   41 42 43 44
-| v2rsa octets  30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 18
-|   29 e4 2f 6b  79 63 92 08  41 28 e4 f9  ec bb a0 f4
-|   0d e6 f0
+| v2rsa octets  30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 47
+|   8f 2d 01 ca  ce e5 9c 83  c5 f2 3c 18  dc 44 7a 2c
+|   d5 2b 3e
 | signing hash with RSA Key *AQN3cn11F
-| rsa signature  27 2f 36 dc  93 2a 63 65  5c 18 2a a6  ea 43 5e fe
-|   6b b5 74 a9  fb 44 66 a7  cb d1 77 ff  3f d3 c7 42
-|   77 fe 61 18  95 a9 5d c2  b5 35 80 bf  84 c8 08 bb
-|   58 18 bc 6f  65 03 b9 72  7f 0e 8f f9  7a e5 1e 0d
-|   49 fd c3 57  e6 a1 8a 74  d8 24 a5 14  0e 07 83 4e
-|   b0 1c c0 3c  8d 5a 38 ae  24 4d 86 fe  a8 20 e8 45
-|   5d 81 2e f5  9e 50 09 3e  65 9b 40 55  52 bd 00 17
-|   94 a9 bc 79  8e 5e 6b 57  51 be 24 f5  52 9e ff e4
-|   77 cf 00 04  5e 81 59 7e  7a f4 7e 70  1a 0a ae 00
-|   c1 15 fc 92  a7 8f a5 6f  a0 8b 1e db  ff c5 ce 23
-|   62 e1 94 31  c0 f3 b9 dc  6d 36 29 ab  0e a5 be c0
-|   da f9 3e 36  23 79 97 57  0d 32 c7 81  19 c5 f8 4f
-|   df 15 da 63  ea d4 51 99  ef 24 eb 97  43 96 9c 0c
-|   4e 4a 57 dd  97 55 d3 67  ab 49 cf e4  b0 9c 1a 27
-|   72 b2 a6 e0  55 ed 27 6e  33 a6 d2 85  72 5a fa 3d
-|   e7 74 73 05  9f 3b 97 9b  ad 62 8a a2  e3 8b 08 77
+| rsa signature  2c 62 5c 5c  30 bb ac ae  0a bb 9d 50  86 63 ec bc
+|   57 28 50 ba  b8 73 d6 40  3c 31 a4 2b  72 18 c1 de
+|   da ec 10 d5  47 a5 42 33  23 32 e5 4e  cf c6 47 6a
+|   27 a5 66 b7  6b f9 6f 32  55 b7 c1 3d  cf 13 31 c9
+|   4a 16 ee 83  d4 dd fc 33  9a 4d 8b 7d  c5 8d ab 27
+|   38 89 dc db  eb df d9 8a  be 32 a4 0c  11 9d 0d f6
+|   93 ec 33 6d  1a 58 65 32  f3 ed 03 c1  8a 26 bd 0b
+|   9e 46 52 d2  e5 83 c8 5a  43 b5 94 70  56 e5 03 92
+|   e7 d9 fd 4e  19 b5 83 13  db af 9c 02  63 43 0e c2
+|   1f dc c3 cf  20 3c cc c6  03 2d 92 8d  5a ca 27 9e
+|   d9 f9 d7 1e  fe 69 de 87  87 ea 95 e2  e7 08 1a f1
+|   9c 4a 0b 37  de 03 39 05  8d 89 52 f5  d2 63 e7 f5
+|   8f ed 7d 99  80 f2 91 81  2d ef ea 53  83 0d f6 e0
+|   ae db 65 ba  35 5e 10 1a  d0 01 b5 a4  cc 26 43 db
+|   d0 fe fb ba  19 10 74 af  ef 16 3e ca  1b 09 a7 93
+|   fc db 22 41  6a c4 92 73  69 37 b4 15  25 0b a0 df
 RC=0 "westnet--eastnet-ikev2": 192.0.1.0/24===192.1.2.45<192.1.2.45>[@west]...192.1.2.23<192.1.2.23>[@east]===192.0.2.0/24; unrouted; eroute owner: #0
 RC=0 "westnet--eastnet-ikev2":     myip=unset; hisip=unset;
 RC=0 "westnet--eastnet-ikev2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
@@ -178,18 +178,17 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 |   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  00 00 00 10
 |   4f 45 73 40  40 7a 4a 56  57 5b 6a 5d
 | inputs to hash2 (responder nonce)
-|   47 e9 f9 25  8c a2 38 58  f6 75 b1 66  b0 2c c2 92
+|   b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
 | idhash  01 02 03 04  11 12 13 14  21 22 23 24  31 32 33 34
 |   41 42 43 44
 | required CA is '%any'
 |   trusted_ca called with a=(empty) b=(empty)
 | key issuer CA is '%any'
 | v2rsa decrypted SIG:
-|   18 29 e4 2f  6b 79 63 92  08 41 28 e4  f9 ec bb a0
-|   f4 0d e6 f0
+|   47 8f 2d 01  ca ce e5 9c  83 c5 f2 3c  18 dc 44 7a
+|   2c d5 2b 3e
 | v2rsa computed hash:
-|   18 29 e4 2f  6b 79 63 92  08 41 28 e4  f9 ec bb a0
-|   f4 0d e6 f0
+|   47 8f 2d 01  ca ce e5 9c  83 c5 f2 3c  18 dc 44 7a
+|   2c d5 2b 3e
 | an RSA Sig check passed with *AQN3cn11F [preloaded key]
 stf status: STF_OK
-

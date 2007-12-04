@@ -135,7 +135,10 @@ int main(int argc, char *argv[])
 	load_preshared_secrets(NULL_FD);
 
 	clonetochunk(st1.st_firstpacket_me, packet1+32, packet1_len-32, "I1");
-	clonetochunk(st1.st_nr, tc3_nr, tc3_nr_len, "NR");
+
+	/* write nonce to both sides, because we switch roles */
+	clonetochunk(st1.st_ni, tc3_ni, tc3_ni_len, "Ni");
+	clonetochunk(st1.st_nr, tc3_ni, tc3_ni_len, "Nr");
 
 	st1.st_connection = c1;
 	st1.st_oakley.prf_hash = IKEv2_PRF_HMAC_SHA1;
@@ -168,12 +171,12 @@ int main(int argc, char *argv[])
 		c1->spd.this = c1->spd.that;
 		c1->spd.that = tmp;
 	}
-	clonetochunk(st1.st_firstpacket_him, packet1+32, packet1_len-32, "I1");
+	clonetochunk(st1.st_firstpacket_him, packet1+32, packet1_len-32, "R1");
 
 	show_one_connection(c1);
 	{
 		stf_status stat = ikev2_verify_rsa_sha1(&st1
-							, INITIATOR
+							, RESPONDER
 							, idhash
 							, NULL  /* keys from dns */
 							, NULL  /* gateways from dns */
