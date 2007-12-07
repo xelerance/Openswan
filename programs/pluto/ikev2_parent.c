@@ -48,6 +48,8 @@
 #include "ike_continuations.h"
 #include "cookie.h"
 #include "rnd.h"
+#include "pending.h"
+#include "kernel.h"
 
 #include "tpm/tpm.h"
 
@@ -98,11 +100,9 @@ ikev2parent_outI1(int whack_sock
     st->st_msgid_lastack = INVALID_MSGID;
     st->st_msgid_nextuse = 0;
 
-#if 0
     if (HAS_IPSEC_POLICY(policy))
 	add_pending(dup_any(whack_sock), st, c, policy, 1
 	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno);
-#endif
 
     if (predecessor == NULL)
 	openswan_log("initiating v2 parent SA");
@@ -306,6 +306,7 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	 * OpenPGP peer and have to send the Vendor ID
 	 */
 	if (!ikev2_out_sa(&md->rbody
+			  , PROTO_ISAKMP
 			  , st->st_sadb
 			  , st, ISAKMP_NEXT_v2KE))
 	{
@@ -923,6 +924,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 static stf_status ikev2_send_auth(struct connection *c
 				  , struct state *st
 				  , enum phase1_role role
+				  , unsigned int np
 				  , unsigned char *idhash_out
 				  , pb_stream *outpbs)
 {
@@ -930,7 +932,7 @@ static stf_status ikev2_send_auth(struct connection *c
     pb_stream      a_pbs;
     
     a.isaa_critical = ISAKMP_PAYLOAD_CRITICAL;
-    a.isaa_np = ISAKMP_NEXT_NONE;
+    a.isaa_np = np;
     
     if(c->policy & POLICY_RSASIG) {
 	a.isaa_type = v2_AUTH_RSA;
@@ -1057,36 +1059,34 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* send out the AUTH payload */
     {
-	stf_status authstat = ikev2_send_auth(c, st, INITIATOR, idhash, &e_pbs_cipher);
+	stf_status authstat = ikev2_send_auth(c, st
+					      , INITIATOR, ISAKMP_NEXT_v2SA
+					      , idhash, &e_pbs_cipher);
 	if(authstat != STF_OK) return authstat;
     }
 
-#if 0
+    /*
+     * now, find an eligible child SA from the pending list, and emit
+     * SA2i, TSi and TSr for it.
+     */
     {
-	int np = numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
-	struct ikev2_generic in;
-	pb_stream pb;
-	
-	memset(&in, 0, sizeof(in));
-	in.isag_np = np;
-	in.isag_critical = ISAKMP_PAYLOAD_CRITICAL;
+	lset_t policy;
+	struct connection *c0 = first_pending(st, &policy);
 
-	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
-	   !out_raw(st->st_nr.ptr, st->st_nr.len, &pb, "IKEv2 nonce"))
-	    return STF_INTERNAL_ERROR;
-	close_output_pbs(&pb);
+	if(c0) {
+	    struct spd_route *sr;
+
+	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
+	    ikev2_derive_child_keys(st);
+	    install_inbound_ipsec_sa(st);
+	    st->st_childsa = c0;
+
+	    for(sr=&c0->spd; sr != NULL; sr = sr->next) {
+		ikev2_emit_ts(md, &e_pbs_cipher, &sr->this, INITIATOR);
+		ikev2_emit_ts(md, &e_pbs_cipher, &sr->that, RESPONDER);
+	    }
+	}
     }
-
-    /* Send DPD VID */
-    {
-	int np = --numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
-
-	if (!out_generic_raw(np, &isakmp_vendor_id_desc, &md->rbody
-			     , pluto_vendorid, strlen(pluto_vendorid), "Vendor ID"))
-	    return STF_INTERNAL_ERROR;
-    }
-
-#endif
 
     ret = ikev2_encrypt_msg(md, INITIATOR,
 			    iv, encstart,
@@ -1333,7 +1333,8 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    unsigned char *id_start;
 	    unsigned int   id_len;
 	    
-	    hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher, st->st_skey_pr);
+	    hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher
+			    , st->st_skey_pr);
 	    build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b,
 			     &c->spd.this);
 	    r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
@@ -1359,7 +1360,8 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
 	/* now send AUTH payload */
 	{
-	    stf_status authstat = ikev2_send_auth(c, st, RESPONDER
+	    stf_status authstat = ikev2_send_auth(c, st
+						  , RESPONDER, ISAKMP_NEXT_NONE
 						  , idhash_out, &e_pbs_cipher);
 	    if(authstat != STF_OK) return authstat;
 	}

@@ -744,8 +744,18 @@ kernel_alg_makedb(lset_t policy, struct alg_info_esp *ei, bool logit)
     struct db_sa t, *n;
 
     if(ei == NULL) {
-	DBG(DBG_CONTROL, DBG_log("empty esp_info, returning empty"));
-	return NULL;
+	struct db_sa *sadb;
+	lset_t pm = POLICY_ENCRYPT | POLICY_AUTHENTICATE;
+
+#if 0
+	if (can_do_IPcomp)
+	    pm |= POLICY_COMPRESS;
+#endif
+
+	sadb = &ipsec_sadb[(policy & pm) >> POLICY_IPSEC_SHIFT];
+
+	DBG(DBG_CONTROL, DBG_log("empty esp_info, returning defaults"));
+	return sadb;
     }
     
     dbnew=kernel_alg_db_new(ei, policy, logit);

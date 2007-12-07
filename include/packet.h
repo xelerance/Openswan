@@ -751,6 +751,25 @@ extern struct_desc ikev2_nonce_desc;
 /* rfc4306, section 3.12, vendor ID, uses generic header */
 extern struct_desc ikev2_vendor_id_desc;
 
+/* rfc4306, section 3.13 */
+struct ikev2_ts
+{
+    u_int8_t  isat_np;	    /* Next payload */
+    u_int8_t  isat_critical;
+    u_int16_t isat_length;	    /* Payload length */
+    u_int8_t  isat_num;         /* number of TSs */
+    u_int8_t  isat_res1;
+    u_int16_t isat_res2;
+};
+struct ikev2_ts1
+{
+    u_int8_t  isat1_type;
+    u_int8_t  isat1_ipprotoid;
+    u_int16_t isat1_sellen;
+    u_int16_t isat1_startport;
+    u_int16_t isat1_endport;
+};
+
 /* rfc4306, section 3.14, encrypted payload, uses generic header */
 extern struct_desc ikev2_e_desc;
 
@@ -775,6 +794,7 @@ union payload {
     struct ikev2_sa         v2sa;
     struct ikev2_id         v2id;
     struct ikev2_a          v2a;
+    struct ikev2_ts         v2ts;
 };
 
 

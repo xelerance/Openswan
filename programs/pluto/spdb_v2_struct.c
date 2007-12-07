@@ -66,6 +66,7 @@
 
 bool
 ikev2_out_sa(pb_stream *outs
+	     , unsigned int protoid
 	     , struct db_sa *sadb
 	     , struct state *st
 	     , u_int8_t np)
@@ -87,6 +88,7 @@ ikev2_out_sa(pb_stream *outs
 	    return_on(ret, FALSE);
     }
 
+    passert(sadb != NULL);
     if(sadb->prop_disj_cnt == 0 || sadb->prop_disj) {
 	st->st_sadb = sadb = sa_v2_convert(st->st_sadb);
     }
@@ -117,7 +119,7 @@ ikev2_out_sa(pb_stream *outs
 	    
 	    p.isap_length  = 0;
 	    p.isap_propnum = vpc->propnum;
-	    p.isap_protoid = PROTO_ISAKMP;
+	    p.isap_protoid = protoid;
 	    p.isap_spisize = 0;  /* set when we rekey */
 	    p.isap_numtrans= vpc->trans_cnt;
 	    
@@ -363,25 +365,33 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 	pc[pc_cnt].propnum = propnum;
 	pc[pc_cnt].protoid = dtfset->protoid;
 	
-	tr[0].transform_type = IKEv2_TRANS_TYPE_ENCR;
-	tr[0].transid        = v1tov2_encr(dtfone->encr_transid);
-	
+	tr_cnt = 0;
+	tr[tr_cnt].transform_type = IKEv2_TRANS_TYPE_ENCR;
+	tr[tr_cnt].transid        = v1tov2_encr(dtfone->encr_transid);
+	tr_cnt++;
+
 	if(dtfone->integ_transid == 0) {
-	    tr[1].transid        = IKEv2_AUTH_HMAC_SHA1_96;
+	    tr[tr_cnt].transid        = IKEv2_AUTH_HMAC_SHA1_96;
 	} else {
-	    tr[1].transid        = v1tov2_integ(dtfone->integ_transid);
+	    tr[tr_cnt].transid        = v1tov2_integ(dtfone->integ_transid);
 	}
-	tr[1].transform_type = IKEv2_TRANS_TYPE_INTEG;
+	tr[tr_cnt].transform_type = IKEv2_TRANS_TYPE_INTEG;
+	tr_cnt++;
 	
-	tr[2].transform_type = IKEv2_TRANS_TYPE_PRF;
-	tr[2].transid        = dtfone->prf_transid;
+	if(dtfone->protoid == PROTO_ISAKMP) {
+	    tr[tr_cnt].transform_type = IKEv2_TRANS_TYPE_PRF;
+	    tr[tr_cnt].transid        = dtfone->prf_transid;
+	    tr_cnt++;
+	}
 	
-	tr[3].transform_type = IKEv2_TRANS_TYPE_DH;
-	tr[3].transid        = dtfone->group_transid;
+	tr[tr_cnt].transform_type = IKEv2_TRANS_TYPE_DH;
+	tr[tr_cnt].transid        = dtfone->group_transid;
+	tr_cnt++;
 
 	if(dtfone->protoid != PROTO_ISAKMP) {
-	    tr[4].transform_type = IKEv2_TRANS_TYPE_ESN;
-	    tr[4].transid        = IKEv2_ESN_DISABLED;
+	    tr[tr_cnt].transform_type = IKEv2_TRANS_TYPE_ESN;
+	    tr[tr_cnt].transid        = IKEv2_ESN_DISABLED;
+	    tr_cnt++;
 	}
     }
     
@@ -861,6 +871,38 @@ parse_ikev2_sa_body(
     st->st_oakley = ta;
     return NOTHING_WRONG;
 }
+
+stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
+			       , pb_stream *outpbs
+			       , unsigned int np
+			       , struct connection *c
+			       , lset_t policy)
+{
+    int proto;
+    struct db_sa *p2alg;
+
+    if(c->policy & POLICY_ENCRYPT) {
+	proto = PROTO_IPSEC_ESP;
+    } else if(c->policy & POLICY_AUTHENTICATE) {
+	proto = PROTO_IPSEC_AH;
+    } else {
+	return STF_FATAL;
+    }
+
+    p2alg = kernel_alg_makedb(policy
+			      , c->alg_info_esp
+			      , TRUE);
+
+    p2alg = sa_v2_convert(p2alg);
+
+    ikev2_out_sa(outpbs
+		 , proto
+		 , p2alg
+		 , md->st, np);
+
+    return STF_OK;
+}
+
     
     
 /*

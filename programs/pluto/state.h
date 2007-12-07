@@ -296,6 +296,8 @@ struct state
     chunk_t            st_skey_er;       /* KM for ISAKMP encryption */
     chunk_t            st_skey_pi;       /* KM for ISAKMP encryption */
     chunk_t            st_skey_pr;       /* KM for ISAKMP encryption */
+    struct connection *st_childsa;       /* connection included in AUTH */
+
     u_char             st_iv[MAX_DIGEST_LEN];  /* IV for encryption */
     u_char             st_old_iv[MAX_DIGEST_LEN];  /* IV for encryption */
     u_char             st_new_iv[MAX_DIGEST_LEN];

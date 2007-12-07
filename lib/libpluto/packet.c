@@ -868,6 +868,73 @@ struct_desc ikev2_vendor_id_desc = { "IKEv2 Vendor ID Payload",
 
 
 /*
+ * 3.13.  Traffic Selector Payload
+ *
+ *
+ * The Traffic Selector Payload, denoted TS in this memo, allows peers
+ * to identify packet flows for processing by IPsec security services.
+ * The Traffic Selector Payload consists of the IKE generic payload
+ * header followed by individual traffic selectors as follows:
+ *
+ *                         1                   2                   3
+ *     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ! Next Payload  !C!  RESERVED   !         Payload Length        !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ! Number of TSs !                 RESERVED                      !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !                                                               !
+ *    ~                       <Traffic Selectors>                     ~
+ *    !                                                               !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+static field_desc ikev2ts_fields[] = {
+    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_nat,  8/BITS_PER_BYTE, "number of TS", NULL},
+    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_mbz, 16/BITS_PER_BYTE, NULL, NULL },
+    { ft_end,  0, NULL, NULL }
+};
+struct_desc ikev2_ts_desc = { "IKEv2 Traffic Selectors",
+			     ikev2ts_fields, sizeof(struct ikev2_ts) };
+
+
+/*
+ * 3.13.1.  Traffic Selector
+ *
+ *                         1                   2                   3
+ *     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !   TS Type     !IP Protocol ID*|       Selector Length         |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    |           Start Port*         |           End Port*           |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !                                                               !
+ *    ~                         Starting Address*                     ~
+ *    !                                                               !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !                                                               !
+ *    ~                         Ending Address*                       ~
+ *    !                                                               !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ *                Figure 20: Traffic Selector
+ */
+static field_desc ikev2ts1_fields[] = {
+    { ft_enum, 8/BITS_PER_BYTE, "TS type", &ident_names },
+    { ft_nat,  8/BITS_PER_BYTE, "IP Protocol ID", NULL}, 
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_nat, 16/BITS_PER_BYTE, "start port", NULL},
+    { ft_nat, 16/BITS_PER_BYTE, "end port", NULL},
+    { ft_end,  0, NULL, NULL }
+};
+struct_desc ikev2_ts1_desc = { "IKEv2 Traffic Selectors",
+			       ikev2ts1_fields, sizeof(struct ikev2_ts1) };
+
+
+/*
  * 3.14.  Encrypted Payload
  *
  *                         1                   2                   3
@@ -892,6 +959,7 @@ struct_desc ikev2_vendor_id_desc = { "IKEv2 Vendor ID Payload",
 struct_desc ikev2_e_desc = { "IKEv2 Encryption Payload",
 			      ikev2generic_fields,
 			     sizeof(struct ikev2_generic)};
+
 
 
 /* descriptor for each payload type
@@ -936,7 +1004,7 @@ struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
     &ikev2_nonce_desc,                  /* 40 */
     NULL, NULL,                         /* 41,42 */
     &ikev2_vendor_id_desc,              /* 43 */
-    NULL, NULL,                         /* 44, 45 */
+    &ikev2_ts_desc, &ikev2_ts_desc,     /* 44, 45 */
     &ikev2_e_desc,                      /* 46 */
 };
 

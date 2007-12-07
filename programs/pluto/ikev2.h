@@ -14,6 +14,7 @@ extern stf_status ikev2parent_outI1(int whack_sock
 extern void ikev2_delete_out(struct state *st);
 
 extern bool ikev2_out_sa(pb_stream *outs
+			 , unsigned int protoid
 			 , struct db_sa *sadb
 			 , struct state *st
 			 , u_int8_t np);
@@ -72,3 +73,16 @@ extern stf_status ikev2_verify_rsa_sha1(struct state *st
 				   , const struct pubkey_list *keys_from_dns
 				   , const struct gw_info *gateways_from_dns
 				   , pb_stream *sig_pbs);
+
+extern stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
+				      , pb_stream *outpbs
+				      , unsigned int np
+				      , struct connection *c
+				      , lset_t policy);
+
+extern void ikev2_derive_child_keys(struct state *st);
+
+extern void ikev2_emit_ts(struct msg_digest *md
+			  , pb_stream *outpbs
+			  , struct end *end
+			  , enum phase1_role role);

@@ -121,7 +121,7 @@ enum ipsec_comp_algo {
  *
  * Also for RFC4306. 
  *
- * enum 
+ * enum ident_names;
  */
 
 enum ipsec_id_type {

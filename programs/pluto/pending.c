@@ -194,6 +194,29 @@ unpend(struct state *st)
     }
 }
 
+struct connection *first_pending(struct state *st, lset_t *policy)
+{
+    struct pending **pp
+	, *p;
+
+    DBG(DBG_DPD,
+	DBG_log("getting first pending from state #%lu", st->st_serialno));
+
+    for (pp = host_pair_first_pending(st->st_connection); (p = *pp) != NULL; )
+    {
+	if (p->isakmp_sa == st)
+	{
+	    *policy = p->policy;
+	    return p->connection;
+	}
+	else
+	{
+	    pp = &p->next;
+	}
+    }
+    return NULL;
+}
+
 /*
  * Look for phase2s that were waiting for a phase 1.  If the time that we
  * have been pending exceeds a DPD timeout that was set, then we call the
