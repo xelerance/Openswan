@@ -1784,11 +1784,11 @@ pfkey_plumb_mast_device(int mast_dev)
 	
 	return TRUE;
 }
-#endif
+#endif /* KLIPS_MAST */
 
 
 
-#endif /* KLIPS */
+#endif /* PFKEY */
 
 /*
  * Local Variables:
