@@ -744,18 +744,21 @@ pfkey_register_proto(unsigned int sadb_register
     }
 }
 
+#ifdef KLIPS
 void 
 klips_register_proto(unsigned satype, const char *satypename)
 {
     return pfkey_register_proto(K_SADB_REGISTER, satype, satypename);
 }
+#endif
 
+#ifdef NETKEY_SUPPORT
 void
 netlink_register_proto(unsigned satype, const char *satypename)
 {
     return pfkey_register_proto(SADB_REGISTER, satype, satypename);
 }
-
+#endif
 
 static int kernelop2klips(enum pluto_sadb_operations op)
 {
