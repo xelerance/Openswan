@@ -172,7 +172,7 @@ static void init_netlink(void)
     /*
      * also open the pfkey socket, since we need it to get a list of
      * algorithms.
-     * XXX - There is probably a netlink way to do this.
+     * There is currently no netlink way to do this.
      */
     init_pfkey();
 }
