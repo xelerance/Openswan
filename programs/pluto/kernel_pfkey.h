@@ -15,11 +15,9 @@
  * RCSID $Id: kernel_pfkey.h,v 1.1 2003/07/31 18:14:23 mcr Exp $
  */
 
-/* Mcr: Why is netlink_register_proto() in a KLIPS define? */
 #ifdef KLIPS
 extern void init_pfkey(void);
 extern void klips_register_proto(unsigned satype, const char *satypename);
-extern void netlink_register_proto(unsigned satype, const char *satypename);
 extern void pfkey_close(void);
 
 extern void klips_pfkey_register_response(const struct sadb_msg *msg);
@@ -59,4 +57,8 @@ extern bool pfkey_shunt_eroute(struct connection *c
 
 extern int pfkeyfd;
 
+#endif
+
+#ifdef NETKEY_SUPPORT
+extern void netlink_register_proto(unsigned satype, const char *satypename);
 #endif

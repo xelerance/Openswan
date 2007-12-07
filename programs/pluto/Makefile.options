@@ -63,6 +63,7 @@ HDRDIRS = -I${OPENSWANSRCDIR}/programs/pluto/linux26 -I${OPENSWANSRCDIR}/include
 # BYTE_ORDER = -DBIG_ENDIAN=4321 -DLITTLE_ENDIAN=1234 -DBYTE_ORDER=LITTLE_ENDIAN
 
 # -DKLIPS enables interface to Kernel LINUX IPsec code
+# -DNETKEY enables interface to Kernel NETKEY/XFRM IPsec code
 # -DDEBUG enables debugging code, allowing for debugging output
 #    (note that output must also be selected at runtime, so it is
 #    reasonable to always define this)
