@@ -250,6 +250,12 @@ struct connection {
 #ifdef XAUTH_USEPAM 
     pam_handle_t  *pamh;		/*  PAM handle for that connection  */
 #endif
+#ifdef MODECFG
+    ip_address modecfg_dns1;
+    ip_address modecfg_dns2;
+    ip_address modecfg_wins1;
+    ip_address modecfg_wins2;
+#endif
 };
 
 #define oriented(c) ((c).interface != NULL)

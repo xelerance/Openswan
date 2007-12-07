@@ -1233,6 +1233,13 @@ add_connection(const struct whack_message *wm)
 	else if (same_leftca)
 	    c->spd.this.ca = c->spd.that.ca;
 
+#ifdef MODECFG
+	c->modecfg_dns1 = wm->modecfg_dns1;
+	c->modecfg_dns2 = wm->modecfg_dns2;
+	c->modecfg_wins1 = wm->modecfg_wins1;
+	c->modecfg_wins2 = wm->modecfg_wins2;
+#endif
+
 	default_end(&c->spd.this, &c->spd.that.host_addr);
 	default_end(&c->spd.that, &c->spd.this.host_addr);
 

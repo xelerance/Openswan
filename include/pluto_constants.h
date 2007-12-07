@@ -403,6 +403,10 @@ enum pluto_policy {
 	POLICY_SUBHOST      = LELEM(21),   /* if the policy applies below the host level (TCP/UDP/SCTP ports), */
 	POLICY_PERPROTO     = LELEM(22),   /* should we specialize the policy to the protocol? */
 	POLICY_OVERLAPIP    = LELEM(23),   /* can two conns that have subnet=vhost: declare the same IP? */
+	POLICY_MODECFGDNS1  = LELEM(24),   /* should we offer a DNS server IP */
+	POLICY_MODECFGDNS2  = LELEM(25),   /* should we offer another DNS server IP */
+	POLICY_MODECFGWINS1 = LELEM(26),   /* should we offer a WINS server IP */
+	POLICY_MODECFGWINS2 = LELEM(27),   /* should we offer another WINS server IP */
 };
 
 /* Any IPsec policy?  If not, a connection description
