@@ -259,7 +259,7 @@ send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
 	else if (addr.nl_pid != 0)
 	{
 	    /* not for us: ignore */
-	    DBG(DBG_KLIPS,
+	    DBG(DBG_NETKEY,
 		DBG_log("netlink: ignoring %s message from process %u"
 		    , sparse_val_show(xfrm_type_names, rsp.n.nlmsg_type)
 		    , addr.nl_pid));
@@ -267,7 +267,7 @@ send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
 	}
 	else if (rsp.n.nlmsg_seq != seq)
 	{
-	    DBG(DBG_KLIPS,
+	    DBG(DBG_NETKEY,
 		DBG_log("netlink: ignoring out of sequence (%u/%u) message %s"
 		    , rsp.n.nlmsg_seq, seq
 		    , sparse_val_show(xfrm_type_names, rsp.n.nlmsg_type)));
@@ -909,7 +909,7 @@ netlink_policy_expire(struct nlmsghdr *n)
     }
     else if (rsp.n.nlmsg_type == NLMSG_ERROR)
     {
-	DBG(DBG_KLIPS,
+	DBG(DBG_NETKEY,
 	    DBG_log("netlink_policy_expire: policy died on us: "
 		    "dir=%d, index=%d"
 		, req.id.dir, req.id.index));
@@ -924,7 +924,7 @@ netlink_policy_expire(struct nlmsghdr *n)
     }
     else if (req.id.index != rsp.pol.index)
     {
-	DBG(DBG_KLIPS,
+	DBG(DBG_NETKEY,
 	    DBG_log("netlink_policy_expire: policy was replaced: "
 		    "dir=%d, oldindex=%d, newindex=%d"
 		, req.id.dir, req.id.index, rsp.pol.index));
@@ -932,7 +932,7 @@ netlink_policy_expire(struct nlmsghdr *n)
     }
     else if (upe->pol.curlft.add_time != rsp.pol.curlft.add_time)
     {
-	DBG(DBG_KLIPS,
+	DBG(DBG_NETKEY,
 	    DBG_log("netlink_policy_expire: policy was replaced "
 		    " and you have won the lottery: "
 		    "dir=%d, index=%d"
@@ -979,7 +979,7 @@ netlink_get(void)
     else if (addr.nl_pid != 0)
     {
 	/* not for us: ignore */
-	DBG(DBG_KLIPS,
+	DBG(DBG_NETKEY,
 	    DBG_log("netlink_get: ignoring %s message from process %u"
 		, sparse_val_show(xfrm_type_names, rsp.n.nlmsg_type)
 		, addr.nl_pid));
@@ -993,7 +993,7 @@ netlink_get(void)
 	return TRUE;
     }
 
-    DBG(DBG_KLIPS,
+    DBG(DBG_NETKEY,
 	DBG_log("netlink_get: %s message"
 		, sparse_val_show(xfrm_type_names, rsp.n.nlmsg_type)));
 
@@ -1091,7 +1091,7 @@ retry:
 	return 0;
     }
 
-    DBG(DBG_KLIPS,
+    DBG(DBG_NETKEY,
 	DBG_log("netlink_get_spi: allocated 0x%x for %s"
 	    , ntohl(rsp.u.sa.id.spi), text_said));
     return rsp.u.sa.id.spi;
