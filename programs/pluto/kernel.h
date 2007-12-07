@@ -179,8 +179,10 @@ extern struct raw_iface *find_raw_ifaces6(void);
 extern int fmt_common_shell_out(char *buf, int blen, struct connection *c
 				, struct spd_route *sr, struct state *st);
 
+#ifdef KLIPS_MAST
 /* KLIPS/mast/pfkey things */
 extern bool pfkey_plumb_mast_device(int mast_dev);
+#endif
 
 #if defined(linux)
 extern bool do_command_linux(struct connection *c, struct spd_route *sr
