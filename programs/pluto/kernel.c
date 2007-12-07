@@ -1920,6 +1920,10 @@ init_kernel(void)
     {
         struct stat buf;
 
+	/* If we detect NETKEY and KLIPS, we can't continue */
+	passert( (stat("/proc/net/pfkey", &buf) == 0) &&
+		 (stat("/proc/net/pf_key", &buf) == 0) )
+
 #if 0
 	/* for now, don't automatically pick MASTKLIPS */
         if(stat("/proc/sys/net/ipsec/debug_mast",&buf)==0)
@@ -2433,6 +2437,13 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
 void
 delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 {
+switch kern_interface:
+ {
+#ifdef KLIPS
+   case USE_KLIPS:
+#ifdef KLIPS_MAST
+   case USE_MASTKLIPS:
+#endif
     if (!inbound_only)
     {
         /* If the state is the eroute owner, we must adjust
@@ -2480,6 +2491,26 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
         (void) teardown_half_ipsec_sa(st, FALSE);
     }
     (void) teardown_half_ipsec_sa(st, TRUE);
+    break;
+#endif /* KLIPS */
+#ifdef NETKEY_SUPPORT
+   case USE_NETKEY:
+    DBG(DBG_CONTROL, DBG_log("No support (required?) to delete_ipsec_sa with NETKEY"))
+   break;
+#endif
+#if defined(WIN32) && defined(WIN32_NATIVE)
+    case USE_WIN32_NATIVE:
+     DBG(DBG_CONTROL, DBG_log("No support (required?) to delete_ipsec_sa with Win2k"))
+     break;
+#endif
+#if defined(__CYGWIN32__) || defined(linux) || (defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
+    case NO_KERNEL:
+     DBG(DBG_CONTROL, DBG_log("No support required to delete_ipsec_sa with NoKernel support"))
+     break;
+#endif    
+    case default:
+     DBG(DBG_CONTROL, DBG_log("Unknown kernel stack in delete_ipsec_sa %s"))
+ } /* switch kern_interface */
 }
 
 #ifdef NAT_TRAVERSAL
