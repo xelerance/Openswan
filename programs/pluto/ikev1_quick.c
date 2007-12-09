@@ -207,7 +207,7 @@ compute_proto_keymat(struct state *st
     switch (protoid)
     {
     case PROTO_IPSEC_ESP:
-	    switch (pi->attrs.transid)
+	    switch (pi->attrs.transattrs.encrypt)
 	    {
 	    case ESP_NULL:
 		needed_len = 0;
@@ -222,17 +222,17 @@ compute_proto_keymat(struct state *st
 		needed_len = AES_CBC_BLOCK_SIZE;
 
 		/* if an attribute is set, then use that! */
-		if(st->st_esp.attrs.key_len) {
-		    needed_len = st->st_esp.attrs.key_len/8;
+		if(st->st_esp.attrs.transattrs.enckeylen) {
+		    needed_len = st->st_esp.attrs.transattrs.enckeylen/8;
 		}
 		break;
 
 	    default:
 #ifdef KERNEL_ALG
-		if((needed_len=kernel_alg_esp_enc_keylen(pi->attrs.transid))>0) {
+		if((needed_len=kernel_alg_esp_enc_keylen(pi->attrs.transattrs.encrypt))>0) {
 			/* XXX: check key_len "coupling with kernel.c's */
-			if (pi->attrs.key_len) {
-				needed_len=pi->attrs.key_len/8;
+			if (pi->attrs.transattrs.enckeylen) {
+				needed_len=pi->attrs.transattrs.enckeylen/8;
 				DBG(DBG_PARSING, DBG_log("compute_proto_keymat:"
 						"key_len=%d from peer",
 						(int)needed_len));
@@ -240,13 +240,13 @@ compute_proto_keymat(struct state *st
 			break;
 		}
 #endif
-		bad_case(pi->attrs.transid);
+		bad_case(pi->attrs.transattrs.encrypt);
 	    }
 	    DBG(DBG_PARSING, DBG_log("compute_proto_keymat:"
 				     "needed_len (after ESP enc)=%d",
 				     (int)needed_len));
 
-	    switch (pi->attrs.auth)
+	    switch (pi->attrs.transattrs.integ_hash)
 	    {
 	    case AUTH_ALGORITHM_NONE:
 		break;
@@ -258,13 +258,13 @@ compute_proto_keymat(struct state *st
 		break;
 	    default:
 #ifdef KERNEL_ALG
-	      if (kernel_alg_esp_auth_ok(pi->attrs.auth, NULL)) {
-		needed_len += kernel_alg_esp_auth_keylen(pi->attrs.auth);
-		break;
+	      if (kernel_alg_esp_auth_ok(pi->attrs.transattrs.integ_hash, NULL)) {
+		  needed_len += kernel_alg_esp_auth_keylen(pi->attrs.transattrs.integ_hash);
+		  break;
 	      } 
 #endif
 	    case AUTH_ALGORITHM_DES_MAC:
-		bad_case(pi->attrs.auth);
+		bad_case(pi->attrs.transattrs.integ_hash);
 		break;
 	      
 	    }
@@ -274,7 +274,7 @@ compute_proto_keymat(struct state *st
 	    break;
 
     case PROTO_IPSEC_AH:
-	    switch (pi->attrs.transid)
+	    switch (pi->attrs.transattrs.encrypt)
 	    {
 	    case AH_MD5:
 		needed_len = HMAC_MD5_KEY_LEN;
@@ -284,12 +284,12 @@ compute_proto_keymat(struct state *st
 		break;
 	    default:
 #ifdef KERNEL_ALG
-		if (kernel_alg_ah_auth_ok(pi->attrs.auth, NULL)) {
-		    needed_len += kernel_alg_ah_auth_keylen(pi->attrs.auth);
+		if (kernel_alg_ah_auth_ok(pi->attrs.transattrs.integ_hash, NULL)) {
+		    needed_len += kernel_alg_ah_auth_keylen(pi->attrs.transattrs.integ_hash);
 		    break;
 		} 
 #endif
-		bad_case(pi->attrs.transid);
+		bad_case(pi->attrs.transattrs.encrypt);
 	    }
 	    break;
 

@@ -1295,7 +1295,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         ipsec_spi_t ipcomp_spi = inbound? st->st_ipcomp.our_spi : st->st_ipcomp.attrs.spi;
         unsigned compalg;
 
-        switch (st->st_ipcomp.attrs.transid)
+        switch (st->st_ipcomp.attrs.transattrs.encrypt)
         {
             case IPCOMP_DEFLATE:
                 compalg = SADB_X_CALG_DEFLATE;
@@ -1303,7 +1303,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
             default:
                 loglog(RC_LOG_SERIOUS, "IPCOMP transform %s not implemented"
-                    , enum_name(&ipcomp_transformid_names, st->st_ipcomp.attrs.transid));
+                    , enum_name(&ipcomp_transformid_names, st->st_ipcomp.attrs.transattrs.encrypt));
                 goto fail;
         }
 
@@ -1434,9 +1434,9 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
 	DBG(DBG_CRYPT
 	    , DBG_log("looking for alg with transid: %d keylen: %d auth: %d\n"
-		      , st->st_esp.attrs.transid
-		      , st->st_esp.attrs.key_len
-		      , st->st_esp.attrs.auth));
+		      , st->st_esp.attrs.transattrs.encrypt
+		      , st->st_esp.attrs.transattrs.enckeylen
+		      , st->st_esp.attrs.transattrs.integ_hash));
 		    
         for (ei = esp_info; ; ei++)
         {
@@ -1446,9 +1446,9 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
             {
                 /* Check for additional kernel alg */
 #ifdef KERNEL_ALG
-                if ((ei=kernel_alg_esp_info(st->st_esp.attrs.transid,
-					    st->st_esp.attrs.key_len,
-					    st->st_esp.attrs.auth))!=NULL) {
+                if ((ei=kernel_alg_esp_info(st->st_esp.attrs.transattrs.encrypt,
+					    st->st_esp.attrs.transattrs.enckeylen,
+					    st->st_esp.attrs.transattrs.integ_hash))!=NULL) {
                         break;
                 }
 #endif
@@ -1459,9 +1459,9 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
                  * assuming the name will be found.
                  */
                 loglog(RC_LOG_SERIOUS, "ESP transform %s(%d) / auth %s not implemented yet"
-                    , enum_name(&esp_transformid_names, st->st_esp.attrs.transid)
-		       , st->st_esp.attrs.key_len
-                    , enum_name(&auth_alg_names, st->st_esp.attrs.auth));
+                    , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
+		       , st->st_esp.attrs.transattrs.enckeylen
+                    , enum_name(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash));
                 goto fail;
             }
 
@@ -1469,27 +1469,27 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 		, DBG_log("checking transid: %d keylen: %d auth: %d\n"
 			  , ei->transid, ei->enckeylen, ei->auth));
 		    
-            if (st->st_esp.attrs.transid == ei->transid
-		&& (st->st_esp.attrs.key_len ==0 || st->st_esp.attrs.key_len == ei->enckeylen*8)
-		&& st->st_esp.attrs.auth == ei->auth)
+            if (st->st_esp.attrs.transattrs.encrypt == ei->transid
+		&& (st->st_esp.attrs.transattrs.enckeylen ==0 || st->st_esp.attrs.transattrs.enckeylen == ei->enckeylen*8)
+		&& st->st_esp.attrs.transattrs.integ_hash == ei->auth)
                 break;
         }
 
-	if (st->st_esp.attrs.transid != ei->transid
-	    && st->st_esp.attrs.key_len != ei->enckeylen*8  
-	    && st->st_esp.attrs.auth != ei->auth) {
+	if (st->st_esp.attrs.transattrs.encrypt != ei->transid
+	    && st->st_esp.attrs.transattrs.enckeylen != ei->enckeylen*8  
+	    && st->st_esp.attrs.transattrs.integ_hash != ei->auth) {
 	    loglog(RC_LOG_SERIOUS, "failed to find key info for %s/%s"
-		   , enum_name(&esp_transformid_names, st->st_esp.attrs.transid)
-		   , enum_name(&auth_alg_names, st->st_esp.attrs.auth));
+		   , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
+		   , enum_name(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash));
 	    goto fail;
 	}
 
-        key_len = st->st_esp.attrs.key_len/8;
+        key_len = st->st_esp.attrs.transattrs.enckeylen/8;
         if (key_len) {
                 /* XXX: must change to check valid _range_ key_len */
                 if (key_len > ei->enckeylen) {
                         loglog(RC_LOG_SERIOUS, "ESP transform %s passed key_len=%d > %d",
-                        enum_name(&esp_transformid_names, st->st_esp.attrs.transid),
+                        enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt),
                         (int)key_len, (int)ei->enckeylen);
                         goto fail;
                 }
@@ -1535,7 +1535,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 #ifdef NAT_TRAVERSAL
         said_next->natt_sport = natt_sport;
         said_next->natt_dport = natt_dport;
-        said_next->transid = st->st_esp.attrs.transid;
+        said_next->transid = st->st_esp.attrs.transattrs.encrypt;
         said_next->natt_type = natt_type;
         said_next->natt_oa = &natt_oa;
 #endif  
@@ -1591,7 +1591,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
         unsigned char authalg;
 
-        switch (st->st_ah.attrs.auth)
+        switch (st->st_ah.attrs.transattrs.integ_hash)
         {
         case AUTH_ALGORITHM_HMAC_MD5:
             authalg = SADB_AALG_MD5HMAC;
@@ -1605,7 +1605,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         case AUTH_ALGORITHM_DES_MAC:
         default:
             loglog(RC_LOG_SERIOUS, "%s not implemented yet"
-                , enum_show(&auth_alg_names, st->st_ah.attrs.auth));
+                , enum_show(&auth_alg_names, st->st_ah.attrs.transattrs.integ_hash));
             goto fail;
         }
 
@@ -2506,10 +2506,10 @@ static bool update_nat_t_ipsec_esp_sa (struct state *st, bool inbound)
         sa.src = &src;
         sa.dst = &dst;
         sa.text_said = text_said;
-        sa.authalg = st->st_esp.attrs.auth;
+        sa.authalg = st->st_esp.attrs.transattrs.integ_hash;
         sa.natt_sport = natt_sport;
         sa.natt_dport = natt_dport;
-        sa.transid = st->st_esp.attrs.transid;
+        sa.transid = st->st_esp.attrs.transattrs.encrypt;
 
         return kernel_ops->add_sa(&sa, TRUE);
 

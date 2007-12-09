@@ -407,7 +407,7 @@ ipsecdoi_replace(struct state *st, unsigned long try)
 	    if (st->st_ah.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
 		policy |= POLICY_TUNNEL;
 	}
-	if (st->st_esp.present && st->st_esp.attrs.transid != ESP_NULL)
+	if (st->st_esp.present && st->st_esp.attrs.transattrs.encrypt != ESP_NULL)
 	{
 	    policy |= POLICY_ENCRYPT;
 	    if (st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
@@ -750,9 +750,9 @@ void fmt_ipsec_sa_established(struct state *st, char *sadetails, int sad_len)
 		 , natinfo
 		 , (unsigned long)ntohl(st->st_esp.attrs.spi)
 		 , (unsigned long)ntohl(st->st_esp.our_spi)
-		 , enum_show(&esp_transformid_names, st->st_esp.attrs.transid)+strlen("ESP_")
-		 , st->st_esp.attrs.key_len
-		 , enum_show(&auth_alg_names, st->st_esp.attrs.auth)+strlen("AUTH_ALGORITHM_"));
+		 , enum_show(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)+strlen("ESP_")
+		 , st->st_esp.attrs.transattrs.enckeylen
+		 , enum_show(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash)+strlen("AUTH_ALGORITHM_"));
 	ini = " ";
 	fin = "}";
     }

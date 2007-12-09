@@ -151,7 +151,7 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
     if (p2st->st_ah.present)
     {
 	ipcq->strength = IPSEC_PRIVACY_INTEGRAL;
-	ipcq->auth_detail = p2st->st_esp.attrs.auth;
+	ipcq->auth_detail = p2st->st_esp.attrs.transattrs.integ_hash;
     }
 
     if (p2st->st_esp.present)
@@ -160,7 +160,7 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
 	 * XXX-mcr Please do not shout at me about relative strengths
 	 *         here. I'm not a cryptographer. I just diddle bits.
 	 */
-	switch (p2st->st_esp.attrs.transid)
+	switch (p2st->st_esp.attrs.transattrs.encrypt)
 	{
 	case ESP_NULL:
 	    /* actually, do not change it if we set it from AH */
@@ -192,11 +192,11 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
 	    ipcq->bandwidth = IPSEC_QOS_FTP;
 	    break;
 	}
-	ipcq->esp_detail = p2st->st_esp.attrs.transid;
+	ipcq->esp_detail = p2st->st_esp.attrs.transattrs.encrypt;
     }
 
     if (p2st->st_ipcomp.present)
-	ipcq->comp_detail = p2st->st_esp.attrs.transid;
+	ipcq->comp_detail = p2st->st_esp.attrs.transattrs.encrypt;
 
     /* now! the credentails that were used */
     /* for the moment we only have 1 credential, the DNS name,

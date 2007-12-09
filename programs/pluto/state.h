@@ -59,12 +59,14 @@ extern msgid_t generate_msgid(struct state *isakmp_sa);
  * in the Transaction Payload.
  * Names are chosen to match corresponding names in state.
  */
-struct oakley_trans_attrs {
+struct trans_attrs {
     u_int16_t encrypt;		/* Encryption algorithm */
     u_int16_t enckeylen;	/* encryption key len (bits) */
     const struct encrypt_desc *encrypter;	/* package of encryption routines */
+
     oakley_hash_t prf_hash;		/* Hash algorithm for PRF */
     const struct hash_desc *prf_hasher;	/* package of hashing routines */
+
 
     oakley_hash_t integ_hash;		  /* Hash algorithm for integ */
     const struct hash_desc *integ_hasher; /* package of hashing routines */
@@ -90,14 +92,11 @@ struct oakley_trans_attrs {
  * in different places. Fix it up sometime.
  */
 struct ipsec_trans_attrs {
-    u_int8_t transid;	/* transform id */
-    ipsec_spi_t spi;	/* his SPI */
-    time_t life_seconds;		/* When this SA expires */
-    u_int32_t life_kilobytes;	/* When this SA expires */
+    struct trans_attrs   transattrs;
+    ipsec_spi_t spi;	         /* his SPI */
+    time_t life_seconds;	 /* When this SA expires */
+    u_int32_t life_kilobytes;	 /* When this SA expires */
     u_int16_t encapsulation;
-    ipsec_auth_t auth;            
-    u_int16_t key_len;
-    u_int16_t key_rounds;
 #if 0 /* not implemented yet */
     u_int16_t cmprs_dict_sz;
     u_int32_t cmprs_alg;
@@ -170,7 +169,7 @@ struct state
     const char        *st_suspended_md_func;
     int                st_suspended_md_line;
 
-    struct oakley_trans_attrs st_oakley;
+    struct trans_attrs st_oakley;
 
     struct ipsec_proto_info st_ah;
     struct ipsec_proto_info st_esp;

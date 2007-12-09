@@ -703,10 +703,11 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
 		, "\"%s\"%s:   %s algorithm newest: %s_%d-%s; pfsgroup=%s"
 		, c->name
 			  , instance, satype
-		, enum_show(&esp_transformid_names, st->st_esp.attrs.transid)
+		, enum_show(&esp_transformid_names
+			    ,st->st_esp.attrs.transattrs.encrypt)
 		+4 /* strlen("ESP_") */
-		, st->st_esp.attrs.key_len
-		, enum_show(&auth_alg_names, st->st_esp.attrs.auth)+
+		, st->st_esp.attrs.transattrs.enckeylen
+		, enum_show(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash)+
 		+15 /* strlen("AUTH_ALGORITHM_") */
 		, c->policy & POLICY_PFS ?
 			c->alg_info_esp->esp_pfsgroup ?
@@ -722,7 +723,7 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
 		, "\"%s\"%s:   %s algorithm newest: %s; pfsgroup=%s"
 		, c->name
 			  , instance, satype
-		, enum_show(&auth_alg_names, st->st_esp.attrs.auth)+
+		, enum_show(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash)+
 		+15 /* strlen("AUTH_ALGORITHM_") */
 		, c->policy & POLICY_PFS ?
 			c->alg_info_esp->esp_pfsgroup ?
@@ -748,11 +749,14 @@ kernel_alg_makedb(lset_t policy, struct alg_info_esp *ei, bool logit)
 	lset_t pm = POLICY_ENCRYPT | POLICY_AUTHENTICATE;
 
 #if 0
-	if (can_do_IPcomp)
+y	if (can_do_IPcomp)
 	    pm |= POLICY_COMPRESS;
 #endif
 
 	sadb = &ipsec_sadb[(policy & pm) >> POLICY_IPSEC_SHIFT];
+
+	/* make copy, to keep from freeing the static policies */
+	sadb = sa_copy_sa(sadb, 0);
 
 	DBG(DBG_CONTROL, DBG_log("empty esp_info, returning defaults"));
 	return sadb;
