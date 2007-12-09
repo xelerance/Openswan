@@ -183,17 +183,20 @@ void ikev2_process_payloads(struct msg_digest *md,
 			    unsigned int from_state,
 			    unsigned int np)
 {
-    struct payload_digest *pd = md->digest;
+    struct payload_digest *pd = md->digest_roof;
     struct state *st = md->st;
     err_t excuse = "notsure";
     
     //lset_t needed = smc->req_payloads;
-    
+
+    /* zero out the digest descriptors -- might nuke [v2E] digest! */
+
     while (np != ISAKMP_NEXT_NONE)
     {
 	struct_desc *sd = np < ISAKMP_NEXT_ROOF? payload_descs[np] : NULL;
 	int thisp = np;
 	
+	memset(pd, 0, sizeof(*pd));
 	
 	if (pd == &md->digest[PAYLIMIT])
 	{

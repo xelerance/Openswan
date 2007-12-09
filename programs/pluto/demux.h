@@ -58,6 +58,7 @@ struct msg_digest {
     u_int16_t sender_port;	/* host order */
     pb_stream packet_pbs;	/* whole packet */
     pb_stream message_pbs;	/* message to be processed */
+    pb_stream clr_pbs;          /* place to store decrypted packet */
     struct isakmp_hdr hdr;	/* message's header */
     bool encrypted;	/* was it encrypted? */
     enum state_kind from_state;	/* state we started in */
@@ -69,7 +70,8 @@ struct msg_digest {
     pb_stream rbody;	/* room for reply body (after header) */
     notification_t note;	/* reason for failure */
     bool dpd;           /* Peer supports RFC 3706 DPD */
-	stf_status result;  /* temporary stored here for access by Tcl */
+    stf_status result;  /* temporary stored here for access by Tcl */
+
 
 #   define PAYLIMIT 20
     struct payload_digest
@@ -102,3 +104,11 @@ extern bool check_msg_errqueue(const struct iface_port *ifp, short interest);
 
 
 #endif /* _DEMUX_H */
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */
+ 
