@@ -563,24 +563,136 @@ struct ikev2_transform_list {
     unsigned int integ_transforms[MAX_TRANS_LIST];   
     unsigned int integ_trans_next, integ_i;
     unsigned int prf_transforms[MAX_TRANS_LIST];     
-    unsigned int prf_trans_next,   prf_i;
+    unsigned int prf_trans_next, prf_i;
     unsigned int dh_transforms[MAX_TRANS_LIST];      
-    unsigned int dh_trans_next,    dh_i;
+    unsigned int dh_trans_next, dh_i;
     unsigned int esn_transforms[MAX_TRANS_LIST];      
-    unsigned int esn_trans_next,   esn_i;
+    unsigned int esn_trans_next, esn_i;
     u_int32_t spi_values[MAX_TRANS_LIST];      
     unsigned int spi_values_next;
 };
+
+static bool
+ikev2_match_transform_list(struct db_sa *sadb
+			   , unsigned int propnum
+			   , struct ikev2_transform_list *itl)
+{
+    if(itl->encr_trans_next < 1) {
+	openswan_log("ignored proposal %u with no cipher transforms",
+		     propnum);
+	return FALSE;
+    }
+    if(itl->integ_trans_next < 1) {
+	openswan_log("ignored proposal %u with no integrity transforms",
+		     propnum);
+	return FALSE;
+    }
+    if(itl->prf_trans_next < 1) {
+	openswan_log("ignored proposal %u with no prf transforms",
+		     propnum);
+	return FALSE;
+    }
+    if(itl->dh_trans_next < 1) {
+	openswan_log("ignored proposal %u with no diffie-hellman transforms",
+		     propnum);
+	return FALSE;
+    }
+    if(itl->esn_trans_next == 0) {
+	/* what is the default for IKEv2? */
+	itl->esn_transforms[itl->esn_trans_next++]=IKEv2_ESN_DISABLED;
+    }
+    
+    /*
+     * now that we have a list of all the possibilities, see if any
+     * of them fit.
+     *
+     * XXX - have to deal with attributes.
+     *
+     */
+    for(itl->encr_i=0; itl->encr_i < itl->encr_trans_next; itl->encr_i++) {
+	for(itl->integ_i=0; itl->integ_i < itl->integ_trans_next; itl->integ_i++) {
+	    for(itl->prf_i=0; itl->prf_i < itl->prf_trans_next; itl->prf_i++) {
+		for(itl->dh_i=0; itl->dh_i < itl->dh_trans_next; itl->dh_i++) {
+		    for(itl->esn_i=0; itl->esn_i<itl->esn_trans_next; itl->esn_i++) {
+			if(spdb_v2_match(sadb, propnum, 
+					 itl->encr_transforms[itl->encr_i],
+					 itl->integ_transforms[itl->integ_i],
+					 itl->prf_transforms[itl->prf_i],
+					 itl->dh_transforms[itl->dh_i],
+					 itl->esn_transforms[itl->esn_i])) {
+			    return TRUE;
+			}
+		    }
+		}
+	    }
+	}
+    }
+    return FALSE;
+}
+
+static stf_status
+ikev2_process_transforms(struct ikev2_prop *prop
+			 , pb_stream *prop_pbs
+			 ,  struct ikev2_transform_list *itl)
+{
+    while(prop->isap_numtrans-- > 0) {
+	pb_stream trans_pbs;
+	//u_char *attr_start;
+	//size_t attr_len;
+	struct ikev2_trans trans;
+	//err_t ugh = NULL;	/* set to diagnostic when problem detected */
+	
+	if (!in_struct(&trans, &ikev2_trans_desc
+		       , prop_pbs, &trans_pbs))
+	    return BAD_PROPOSAL_SYNTAX;
+	
+	/* we read the attributes if we need to see details. */
+	/* XXX deal with different sizes AES keys */
+	switch(trans.isat_type) {
+	case IKEv2_TRANS_TYPE_ENCR:
+	    if(itl->encr_trans_next < MAX_TRANS_LIST) {
+		itl->encr_transforms[itl->encr_trans_next++]=trans.isat_transid;
+	    }
+	    break;
+	    
+	case IKEv2_TRANS_TYPE_INTEG:
+	    if(itl->integ_trans_next < MAX_TRANS_LIST) {
+		itl->integ_transforms[itl->integ_trans_next++]=trans.isat_transid;
+	    }
+	    break;
+	    
+	case IKEv2_TRANS_TYPE_PRF:
+	    if(itl->prf_trans_next < MAX_TRANS_LIST) {
+		itl->prf_transforms[itl->prf_trans_next++]=trans.isat_transid;
+	    }
+	    break;
+	    
+	case IKEv2_TRANS_TYPE_DH:
+	    if(itl->dh_trans_next < MAX_TRANS_LIST) {
+		itl->dh_transforms[itl->dh_trans_next++]=trans.isat_transid;
+	    }
+	    break;
+	    
+	case IKEv2_TRANS_TYPE_ESN:
+	    if(itl->esn_trans_next < MAX_TRANS_LIST) {
+		itl->esn_transforms[itl->esn_trans_next++]=trans.isat_transid;
+	    }
+	    break;
+	}
+    }
+    return STF_OK;
+}
 
 notification_t
 parse_ikev2_sa_body(
     pb_stream *sa_pbs,              /* body of input SA Payload */
     const struct ikev2_sa *sa_prop UNUSED, /* header of input SA Payload */
     pb_stream *r_sa_pbs,	    /* if non-NULL, where to emit winning SA */
+    struct state *st,  	            /* current state object */
     bool selection,                 /* if this SA is a selection, only one 
 				     * tranform can appear. */
-    bool parentSA,                  /* TRUE if expecting parent SA */
-    struct state *st)	        /* current state object */
+    bool parentSA                   /* TRUE if expecting parent SA */
+    )
 {
     pb_stream proposal_pbs;
     struct ikev2_prop proposal;
@@ -701,117 +813,24 @@ parse_ikev2_sa_body(
 	oldgotmatch = gotmatch;
 	gotmatch = FALSE;
 
-	while(proposal.isap_numtrans-- > 0) {
-	    pb_stream trans_pbs;
-	    //u_char *attr_start;
-	    //size_t attr_len;
-	    struct ikev2_trans trans;
-	    //err_t ugh = NULL;	/* set to diagnostic when problem detected */
-
-	    if (!in_struct(&trans, &ikev2_trans_desc
-			   , &proposal_pbs, &trans_pbs))
-		return BAD_PROPOSAL_SYNTAX;
-	    
-	    /* we read the attributes if we need to see details. */
-	    /* XXX deal with different sizes AES keys */
-	    switch(trans.isat_type) {
-	    case IKEv2_TRANS_TYPE_ENCR:
-		if(itl->encr_trans_next < MAX_TRANS_LIST) {
-		    itl->encr_transforms[itl->encr_trans_next++]=trans.isat_transid;
-		}
-		break;
-		
-	    case IKEv2_TRANS_TYPE_INTEG:
-		if(itl->integ_trans_next < MAX_TRANS_LIST) {
-		    itl->integ_transforms[itl->integ_trans_next++]=trans.isat_transid;
-		}
-		break;
-		
-	    case IKEv2_TRANS_TYPE_PRF:
-		if(itl->prf_trans_next < MAX_TRANS_LIST) {
-		    itl->prf_transforms[itl->prf_trans_next++]=trans.isat_transid;
-		}
-		break;
-		
-	    case IKEv2_TRANS_TYPE_DH:
-		if(itl->dh_trans_next < MAX_TRANS_LIST) {
-		    itl->dh_transforms[itl->dh_trans_next++]=trans.isat_transid;
-		}
-		break;
-
-	    case IKEv2_TRANS_TYPE_ESN:
-		if(itl->esn_trans_next < MAX_TRANS_LIST) {
-		    itl->esn_transforms[itl->esn_trans_next++]=trans.isat_transid;
-		}
-		break;
-	    }
-	}
-
-	if(itl->encr_trans_next < 1) {
-	    openswan_log("ignored proposal %u with no cipher transforms",
-			 proposal.isap_propnum);
-	    continue;
-	}
-	if(itl->integ_trans_next < 1) {
-	    openswan_log("ignored proposal %u with no integrity transforms",
-			 proposal.isap_propnum);
-	    continue;
-	}
-	if(itl->prf_trans_next < 1) {
-	    openswan_log("ignored proposal %u with no prf transforms",
-			 proposal.isap_propnum);
-	    continue;
-	}
-	if(itl->dh_trans_next < 1) {
-	    openswan_log("ignored proposal %u with no diffie-hellman transforms",
-			 proposal.isap_propnum);
-	    continue;
-	}
-	if(itl->esn_trans_next == 0) {
-	    /* what is the default for IKEv2? */
-	    itl->esn_transforms[itl->esn_trans_next++]=IKEv2_ESN_DISABLED;
-	}
-
-	/*
-	 * now that we have a list of all the possibilities, see if any
-	 * of them fit.
-	 *
-	 * XXX - have to deal with attributes.
-	 *
-	 */
-	{
-	    unsigned int encr_i,integ_i, prf_i, dh_i, esn_i;
-
-	    for(encr_i=0; encr_i < itl->encr_trans_next; encr_i++) {
-		for(integ_i=0; integ_i < itl->integ_trans_next; integ_i++) {
-		    for(prf_i=0; prf_i < itl->prf_trans_next; prf_i++) {
-			for(dh_i=0; dh_i < itl->dh_trans_next; dh_i++) {
-			    for(esn_i=0; esn_i < itl->esn_trans_next; esn_i++) {
-				gotmatch = spdb_v2_match(sadb,
-							 proposal.isap_propnum,
-							 itl->encr_transforms[itl->encr_i],
-							 itl->integ_transforms[itl->integ_i],
-							 itl->prf_transforms[itl->prf_i],
-							 itl->dh_transforms[itl->dh_i],
-							 itl->esn_transforms[itl->esn_i]);
-				winning_prop = proposal;
-				if(gotmatch) break;
-			    }
-			    if(gotmatch) break;
-			}
-			if(gotmatch) break;
-		    }
-		    if(gotmatch) break;
-		}
-		if(gotmatch) break;
-	    }
+	{ stf_status ret = ikev2_process_transforms(&proposal
+						    , &proposal_pbs, itl);
+	    if(ret != STF_OK) return ret;
 	}
 
 	np = proposal.isap_np;
-	
-	if(selection && !gotmatch && np == ISAKMP_NEXT_P) {
-	    openswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
-	    return NO_PROPOSAL_CHOSEN;
+
+	if(ikev2_match_transform_list(sadb
+				      , proposal.isap_propnum
+				      , itl)) {
+
+	    winning_prop = proposal;
+	    gotmatch = TRUE;
+
+	    if(selection && !gotmatch && np == ISAKMP_NEXT_P) {
+		openswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
+		return NO_PROPOSAL_CHOSEN;
+	    }
 	}
     }
 

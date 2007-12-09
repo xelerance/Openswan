@@ -47,9 +47,9 @@ extern notification_t accept_v2_nonce(struct msg_digest *md, chunk_t *dest
 extern notification_t parse_ikev2_sa_body(pb_stream *sa_pbs
 					  , const struct ikev2_sa *sa
 					  , pb_stream *r_sa_pbs
+					  , struct state *st
 					  , bool selection
-					  , bool parentSA
-					  , struct state *st);
+					  , bool parentSA);
 
 extern void send_v2_notification_from_state(struct state *st
 					    , enum state_kind state
