@@ -581,8 +581,8 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	    return STF_INTERNAL_ERROR;
 
 	/* SA body in and out */
-	rn = parse_ikev2_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-				 &r_sa_pbs, st, FALSE, TRUE /* parentSA*/);
+	rn = ikev2_parse_parent_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
+				 &r_sa_pbs, st, FALSE);
 	
 	if (rn != NOTHING_WRONG)
 	    return STF_FAIL + rn;
@@ -694,8 +694,8 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 	notification_t rn;
 
 	/* SA body in and out */
-	rn = parse_ikev2_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-				 NULL, st, FALSE, TRUE /* parentSA */);
+	rn = ikev2_parse_parent_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
+					NULL, st, FALSE);
 	
 	if (rn != NOTHING_WRONG)
 	    return STF_FAIL + rn;

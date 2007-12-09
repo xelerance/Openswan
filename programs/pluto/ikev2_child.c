@@ -154,8 +154,8 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	    return STF_INTERNAL_ERROR;
 
 	/* SA body in and out */
-	rn = parse_ikev2_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-				 &r_sa_pbs, st, FALSE, /*parentSA*/FALSE);
+	rn = ikev2_parse_parent_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
+					&r_sa_pbs, st, FALSE);
 	
 	if (rn != NOTHING_WRONG)
 	    return STF_FAIL + rn;

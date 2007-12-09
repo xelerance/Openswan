@@ -683,15 +683,117 @@ ikev2_process_transforms(struct ikev2_prop *prop
     return STF_OK;
 }
 
+
+static notification_t
+ikev2_emit_winning_sa(
+    struct state *st
+    , pb_stream *r_sa_pbs
+    , struct trans_attrs ta
+    , bool parentSA
+    , struct ikev2_prop winning_prop)
+{
+    struct ikev2_prop  r_proposal = winning_prop;
+    pb_stream r_proposal_pbs;
+    struct ikev2_trans r_trans;
+    pb_stream r_trans_pbs;
+    
+    memset(&r_trans, 0, sizeof(r_trans));
+    
+    if(parentSA) {
+	/* Proposal - XXX */
+	r_proposal.isap_spisize= 0;
+    } else {
+	r_proposal.isap_spisize= 4;
+	st->st_esp.present = TRUE;
+	st->st_esp.our_spi = get_ipsec_spi(0 /* avoid this # */
+					   , IPPROTO_ESP
+					   , &st->st_connection->spd
+					   , TRUE /* tunnel */);
+    }
+		
+    r_proposal.isap_numtrans = 5;
+    r_proposal.isap_np = ISAKMP_NEXT_NONE;
+    
+    if(!out_struct(&r_proposal, &ikev2_prop_desc
+		   , r_sa_pbs, &r_proposal_pbs))
+	impossible();
+    
+    if(!parentSA) {
+	if(!out_raw(&st->st_esp.our_spi, 4, &r_proposal_pbs, "our spi"))
+	    return STF_INTERNAL_ERROR;
+    }
+
+    /* Transform - cipher */
+    r_trans.isat_type= IKEv2_TRANS_TYPE_ENCR;
+    r_trans.isat_transid = ta.encrypt;
+    r_trans.isat_np = ISAKMP_NEXT_T;
+    if(!out_struct(&r_trans, &ikev2_trans_desc
+		   , &r_proposal_pbs, &r_trans_pbs))
+	impossible();
+    close_output_pbs(&r_trans_pbs);
+    
+    /* Transform - integrity check */
+    r_trans.isat_type= IKEv2_TRANS_TYPE_INTEG;
+    r_trans.isat_transid = ta.integ_hash;
+    r_trans.isat_np = ISAKMP_NEXT_T;
+    if(!out_struct(&r_trans, &ikev2_trans_desc
+		   , &r_proposal_pbs, &r_trans_pbs))
+	impossible();
+    close_output_pbs(&r_trans_pbs);
+    
+    if(parentSA) {
+	/* Transform - PRF hash */
+	r_trans.isat_type= IKEv2_TRANS_TYPE_PRF;
+	r_trans.isat_transid = ta.prf_hash;
+	r_trans.isat_np = ISAKMP_NEXT_T;
+	if(!out_struct(&r_trans, &ikev2_trans_desc
+		       , &r_proposal_pbs, &r_trans_pbs))
+	    impossible();
+	close_output_pbs(&r_trans_pbs);
+    
+	/* Transform - DH hash */
+	r_trans.isat_type= IKEv2_TRANS_TYPE_DH;
+	r_trans.isat_transid = ta.groupnum;
+	r_trans.isat_np = ISAKMP_NEXT_T;
+	if(!out_struct(&r_trans, &ikev2_trans_desc
+		       , &r_proposal_pbs, &r_trans_pbs))
+	    impossible();
+	close_output_pbs(&r_trans_pbs);
+    } else {
+	if(!parentSA) {
+	    /* Transform - ESN sequence */
+	    r_trans.isat_type= IKEv2_TRANS_TYPE_ESN;
+	    r_trans.isat_transid = IKEv2_ESN_DISABLED;
+	    r_trans.isat_np = ISAKMP_NEXT_NONE;
+	    if(!out_struct(&r_trans, &ikev2_trans_desc
+			   , &r_proposal_pbs, &r_trans_pbs))
+		impossible();
+	    close_output_pbs(&r_trans_pbs);
+	}
+    }
+
+    /* close out the proposal */
+    close_output_pbs(&r_proposal_pbs);
+    close_output_pbs(r_sa_pbs);
+
+    /* ??? If selection, we used to save the proposal in state.
+     * We never used it.  From proposal_pbs.start,
+     * length pbs_room(&proposal_pbs)
+     */
+    
+    /* copy over the results */
+    st->st_oakley = ta;
+    return NOTHING_WRONG;
+}
+
 notification_t
-parse_ikev2_sa_body(
+ikev2_parse_parent_sa_body(
     pb_stream *sa_pbs,              /* body of input SA Payload */
     const struct ikev2_sa *sa_prop UNUSED, /* header of input SA Payload */
     pb_stream *r_sa_pbs,	    /* if non-NULL, where to emit winning SA */
     struct state *st,  	            /* current state object */
-    bool selection,                 /* if this SA is a selection, only one 
+    bool selection                 /* if this SA is a selection, only one 
 				     * tranform can appear. */
-    bool parentSA                   /* TRUE if expecting parent SA */
     )
 {
     pb_stream proposal_pbs;
@@ -702,7 +804,7 @@ parse_ikev2_sa_body(
     bool conjunction, gotmatch, oldgotmatch;
     struct ikev2_prop winning_prop;
     struct db_sa *sadb;
-    struct oakley_trans_attrs ta;
+    struct trans_attrs ta;
     struct connection *c = st->st_connection;
     int    policy_index = POLICY_ISAKMP(c->policy
 					, c->spd.this.xauth_server
@@ -726,10 +828,6 @@ parse_ikev2_sa_body(
     }
     sadb = st->st_sadb = sa_v2_convert(sadb);
 
-    gotmatch = FALSE;
-    conjunction = FALSE;
-    zero(&ta);
-	
     while(np == ISAKMP_NEXT_P) {
 	/*
 	 * note: we don't support ESN,
@@ -739,54 +837,27 @@ parse_ikev2_sa_body(
 	if(!in_struct(&proposal, &ikev2_prop_desc, sa_pbs, &proposal_pbs))
 	    return PAYLOAD_MALFORMED;
 
-	switch(proposal.isap_protoid) {
-	case PROTO_ISAKMP:
-	    if(parentSA == FALSE) {
-		loglog(RC_LOG_SERIOUS, "unexpected PARENT_SA, expected child");
-		return PAYLOAD_MALFORMED;
-	    }
-	    if (proposal.isap_spisize == 0)
-	    {
-		/* as it should be */
-	    }
-	    else if(proposal.isap_spisize <= MAX_ISAKMP_SPI_SIZE)
-	    {
-		u_char junk_spi[MAX_ISAKMP_SPI_SIZE];
-		if(!in_raw(junk_spi, proposal.isap_spisize, &proposal_pbs,
-			   "PARENT SA SPI"))
-		    return PAYLOAD_MALFORMED;
-	    }
-	    else
-	    {
-		loglog(RC_LOG_SERIOUS, "invalid SPI size (%u) in PARENT_SA Proposal"
-		       , (unsigned)proposal.isap_spisize);
-		return INVALID_SPI;
-	    }
-	    break;
+	if(proposal.isap_protoid != PROTO_ISAKMP) {
+	    loglog(RC_LOG_SERIOUS, "unexpected PARENT_SA, expected child");
+	    return PAYLOAD_MALFORMED;
+	}
 
-	case PROTO_IPSEC_ESP:
-	    if(parentSA == TRUE) {
-		loglog(RC_LOG_SERIOUS, "unexpected CHILD_SA, expected parent");
+	if (proposal.isap_spisize == 0)
+	{
+	    /* as it should be */
+	}
+	else if(proposal.isap_spisize <= MAX_ISAKMP_SPI_SIZE)
+	{
+	    u_char junk_spi[MAX_ISAKMP_SPI_SIZE];
+	    if(!in_raw(junk_spi, proposal.isap_spisize, &proposal_pbs,
+		       "PARENT SA SPI"))
 		return PAYLOAD_MALFORMED;
-	    }
-	    if (proposal.isap_spisize == 4)
-	    {
-		if(!in_raw(&itl->spi_values[itl->spi_values_next++],proposal.isap_spisize
-			   , &proposal_pbs, "CHILD SA SPI"))
-		    return PAYLOAD_MALFORMED;
-	    }
-	    else
-	    {
-		loglog(RC_LOG_SERIOUS, "invalid SPI size (%u) in CHILD_SA Proposal"
-		       , (unsigned)proposal.isap_spisize);
-		return INVALID_SPI;
-	    }
-	    break;
-
-	default:
-	    loglog(RC_LOG_SERIOUS, "unexpected Protocol ID (%s) found in PARENT_SA Proposal"
-		   , enum_show(&protocol_names, proposal.isap_protoid));
-	    return INVALID_PROTOCOL_ID;
+	}
+	else
+	{
+	    loglog(RC_LOG_SERIOUS, "invalid SPI size (%u) in PARENT_SA Proposal"
+		   , (unsigned)proposal.isap_spisize);
+	    return INVALID_SPI;
 	}
 
 	if(proposal.isap_propnum == lastpropnum) {
@@ -868,6 +939,167 @@ parse_ikev2_sa_body(
     ta.groupnum    = itl->dh_transforms[itl->dh_i];
     ta.group       = lookup_group(ta.groupnum); 
 
+    if (r_sa_pbs != NULL)
+    {
+	return ikev2_emit_winning_sa(st, r_sa_pbs
+				     , ta
+				     , /*parentSA*/TRUE
+				     , winning_prop);
+    }
+    return NOTHING_WRONG;
+}
+
+notification_t
+ikev2_parse_child_sa_body(
+    pb_stream *sa_pbs,              /* body of input SA Payload */
+    const struct ikev2_sa *sa_prop UNUSED, /* header of input SA Payload */
+    pb_stream *r_sa_pbs,	    /* if non-NULL, where to emit winning SA */
+    struct state *st,  	            /* current state object */
+    bool selection                 /* if this SA is a selection, only one 
+				     * tranform can appear. */
+    )
+{
+    pb_stream proposal_pbs;
+    struct ikev2_prop proposal;
+    unsigned int np = ISAKMP_NEXT_P;
+    /* we need to parse proposal structures until there are none */
+    unsigned int lastpropnum=-1;
+    bool conjunction, gotmatch, oldgotmatch;
+    struct ikev2_prop winning_prop;
+    struct db_sa *p2alg;
+    struct trans_attrs ta;
+    struct connection *c = st->st_connection;
+    struct ikev2_transform_list itl0, *itl;
+
+    memset(&itl0, 0, sizeof(struct ikev2_transform_list));
+    itl = &itl0;
+
+    /* find the policy structures */
+    p2alg = kernel_alg_makedb(c->policy
+			      , c->alg_info_esp
+			      , TRUE);
+
+    p2alg = sa_v2_convert(p2alg);
+
+    gotmatch = FALSE;
+    conjunction = FALSE;
+    zero(&ta);
+
+    while(np == ISAKMP_NEXT_P) {
+	/*
+	 * note: we don't support ESN,
+	 * so ignore any proposal that insists on it
+	 */
+	
+	if(!in_struct(&proposal, &ikev2_prop_desc, sa_pbs, &proposal_pbs))
+	    return PAYLOAD_MALFORMED;
+
+	switch(proposal.isap_protoid) {
+	case PROTO_ISAKMP:
+	    loglog(RC_LOG_SERIOUS, "unexpected PARENT_SA, expected child");
+	    return PAYLOAD_MALFORMED;
+	    break;
+
+	case PROTO_IPSEC_ESP:
+	    if (proposal.isap_spisize == 4)
+	    {
+		if(!in_raw(&itl->spi_values[itl->spi_values_next++],proposal.isap_spisize
+			   , &proposal_pbs, "CHILD SA SPI"))
+		    return PAYLOAD_MALFORMED;
+	    }
+	    else
+	    {
+		loglog(RC_LOG_SERIOUS, "invalid SPI size (%u) in CHILD_SA Proposal"
+		       , (unsigned)proposal.isap_spisize);
+		return INVALID_SPI;
+	    }
+	    break;
+
+	default:
+	    loglog(RC_LOG_SERIOUS, "unexpected Protocol ID (%s) found in PARENT_SA Proposal"
+		   , enum_show(&protocol_names, proposal.isap_protoid));
+	    return INVALID_PROTOCOL_ID;
+	}
+
+	if(proposal.isap_propnum == lastpropnum) {
+	    conjunction = TRUE;
+	} else {
+	    lastpropnum = proposal.isap_propnum;
+	    conjunction = FALSE;
+	}
+
+	if(gotmatch && conjunction == FALSE) {
+	    /* we already got a winner, and it was an OR with this one,
+	       so do no more work. */
+	    break;
+	}
+
+	if(!gotmatch && conjunction == TRUE) {
+	    /*
+	     * last one failed, and this next one is an AND, so this
+	     * one can not succeed either, so don't bother.
+	     */
+	    continue;
+	}
+
+	oldgotmatch = gotmatch;
+	gotmatch = FALSE;
+
+	{ stf_status ret = ikev2_process_transforms(&proposal
+						    , &proposal_pbs, itl);
+	    if(ret != STF_OK) return ret;
+	}
+
+	np = proposal.isap_np;
+
+	if(ikev2_match_transform_list(p2alg
+				      , proposal.isap_propnum
+				      , itl)) {
+
+	    winning_prop = proposal;
+	    gotmatch = TRUE;
+
+	    if(selection && !gotmatch && np == ISAKMP_NEXT_P) {
+		openswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
+		return NO_PROPOSAL_CHOSEN;
+	    }
+	}
+    }
+
+    /*
+     * we are out of the loop. There are two situations in which we break
+     * out: gotmatch == FALSE, means nothing selected.
+     */
+    if(!gotmatch) {
+	return NO_PROPOSAL_CHOSEN;
+    }
+
+    /* there might be some work to do here if there was a conjunction,
+     * not sure yet about that case.
+     */
+
+    /*
+     * since we found something that matched, we might need to emit the
+     * winning value.
+     */
+    ta.encrypt   = itl->encr_transforms[itl->encr_i];
+    ta.encrypter = (struct encrypt_desc *)ike_alg_ikev2_find(IKE_ALG_ENCRYPT
+							     , ta.encrypt
+							     , /*keysize*/0);
+    passert(ta.encrypter != NULL);
+    ta.enckeylen = ta.encrypter->keydeflen;
+
+    ta.integ_hash  = itl->integ_transforms[itl->integ_i];
+    ta.integ_hasher= (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_INTEG,ta.integ_hash, 0);
+    passert(ta.integ_hasher != NULL);
+
+    ta.prf_hash    = itl->prf_transforms[itl->prf_i];
+    ta.prf_hasher  = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH, ta.prf_hash, 0);
+    passert(ta.prf_hasher != NULL);
+
+    ta.groupnum    = itl->dh_transforms[itl->dh_i];
+    ta.group       = lookup_group(ta.groupnum); 
+
 #if 0
     if(!parentSA) {
 	st->st_esp.attrs.spi = itl->spi_values[itl->spi_values_next+-1];
@@ -881,96 +1113,15 @@ parse_ikev2_sa_body(
 
     if (r_sa_pbs != NULL)
     {
-	struct ikev2_prop  r_proposal = winning_prop;
-	pb_stream r_proposal_pbs;
-	struct ikev2_trans r_trans;
-	pb_stream r_trans_pbs;
-
-	memset(&r_trans, 0, sizeof(r_trans));
-
-	if(parentSA) {
-	    /* Proposal - XXX */
-	    r_proposal.isap_spisize= 0;
-	} else {
-	    r_proposal.isap_spisize= 4;
-	    st->st_esp.present = TRUE;
-	    st->st_esp.our_spi = get_ipsec_spi(0 /* avoid this # */
-					      , IPPROTO_ESP
-					      , &st->st_connection->spd
-					      , TRUE /* tunnel */);
-	}
-		
-	r_proposal.isap_numtrans = 5;
-	r_proposal.isap_np = ISAKMP_NEXT_NONE;
-
-	if(!out_struct(&r_proposal, &ikev2_prop_desc
-		       , r_sa_pbs, &r_proposal_pbs))
-	    impossible();
-
-	if(!parentSA) {
-	    if(!out_raw(&st->st_esp.our_spi, 4, &r_proposal_pbs, "our spi"))
-		return STF_INTERNAL_ERROR;
-	}
-
-	/* Transform - cipher */
-	r_trans.isat_type= IKEv2_TRANS_TYPE_ENCR;
-	r_trans.isat_transid = ta.encrypt;
-	r_trans.isat_np = ISAKMP_NEXT_T;
-	if(!out_struct(&r_trans, &ikev2_trans_desc
-		       , &r_proposal_pbs, &r_trans_pbs))
-	    impossible();
-	close_output_pbs(&r_trans_pbs);
-
-	/* Transform - integrity check */
-	r_trans.isat_type= IKEv2_TRANS_TYPE_INTEG;
-	r_trans.isat_transid = ta.integ_hash;
-	r_trans.isat_np = ISAKMP_NEXT_T;
-	if(!out_struct(&r_trans, &ikev2_trans_desc
-		       , &r_proposal_pbs, &r_trans_pbs))
-	    impossible();
-	close_output_pbs(&r_trans_pbs);
-
-	/* Transform - PRF hash */
-	r_trans.isat_type= IKEv2_TRANS_TYPE_PRF;
-	r_trans.isat_transid = ta.prf_hash;
-	r_trans.isat_np = ISAKMP_NEXT_T;
-	if(!out_struct(&r_trans, &ikev2_trans_desc
-		       , &r_proposal_pbs, &r_trans_pbs))
-	    impossible();
-	close_output_pbs(&r_trans_pbs);
-
-	/* Transform - DH hash */
-	r_trans.isat_type= IKEv2_TRANS_TYPE_DH;
-	r_trans.isat_transid = ta.groupnum;
-	r_trans.isat_np = ISAKMP_NEXT_T;
-	if(!out_struct(&r_trans, &ikev2_trans_desc
-		       , &r_proposal_pbs, &r_trans_pbs))
-	    impossible();
-	close_output_pbs(&r_trans_pbs);
-
-	/* Transform - ESN sequence */
-	r_trans.isat_type= IKEv2_TRANS_TYPE_ESN;
-	r_trans.isat_transid = IKEv2_ESN_DISABLED;
-	r_trans.isat_np = ISAKMP_NEXT_NONE;
-	if(!out_struct(&r_trans, &ikev2_trans_desc
-		       , &r_proposal_pbs, &r_trans_pbs))
-	    impossible();
-	close_output_pbs(&r_trans_pbs);
-
-	/* close out the proposal */
-	close_output_pbs(&r_proposal_pbs);
-	close_output_pbs(r_sa_pbs);
+	return ikev2_emit_winning_sa(st, r_sa_pbs
+				     , ta
+				     , /*parentSA*/FALSE
+				     , winning_prop);
     }
 
-    /* ??? If selection, we used to save the proposal in state.
-     * We never used it.  From proposal_pbs.start,
-     * length pbs_room(&proposal_pbs)
-     */
-    
-    /* copy over the results */
-    st->st_oakley = ta;
     return NOTHING_WRONG;
 }
+	
 
 stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 			       , pb_stream *outpbs
