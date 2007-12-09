@@ -17,6 +17,7 @@ extern bool ikev2_out_sa(pb_stream *outs
 			 , unsigned int protoid
 			 , struct db_sa *sadb
 			 , struct state *st
+			 , bool parentSA
 			 , u_int8_t np);
 
 extern void complete_v2_state_transition(struct msg_digest **mdp
@@ -47,6 +48,7 @@ extern notification_t parse_ikev2_sa_body(pb_stream *sa_pbs
 					  , const struct ikev2_sa *sa
 					  , pb_stream *r_sa_pbs
 					  , bool selection
+					  , bool parentSA
 					  , struct state *st);
 
 extern void send_v2_notification_from_state(struct state *st
@@ -82,7 +84,11 @@ extern stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 
 extern void ikev2_derive_child_keys(struct state *st);
 
-extern void ikev2_emit_ts(struct msg_digest *md
-			  , pb_stream *outpbs
-			  , struct end *end
-			  , enum phase1_role role);
+extern stf_status ikev2_emit_ts(struct msg_digest *md 
+				, pb_stream *outpbs   
+				, unsigned int np
+				, struct end *end    
+				, enum phase1_role role);
+
+extern stf_status ikev2_child_sa_respond(struct msg_digest *md
+					 , pb_stream *outpbs);

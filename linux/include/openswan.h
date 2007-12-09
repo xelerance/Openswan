@@ -488,14 +488,9 @@ int
 goodmask(
 	struct in_addr mask
 );
-int
-masktobits(
-	struct in_addr mask
-);
-struct in_addr
-bitstomask(
-	int n
-);
+extern int masktobits(struct in_addr mask);
+extern struct in_addr  bitstomask(int n);
+extern struct in6_addr bitstomask6(int n);
 
 
 

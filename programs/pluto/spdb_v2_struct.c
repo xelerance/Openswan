@@ -69,6 +69,7 @@ ikev2_out_sa(pb_stream *outs
 	     , unsigned int protoid
 	     , struct db_sa *sadb
 	     , struct state *st
+	     , bool parentSA
 	     , u_int8_t np)
 {
     pb_stream sa_pbs;
@@ -120,14 +121,28 @@ ikev2_out_sa(pb_stream *outs
 	    p.isap_length  = 0;
 	    p.isap_propnum = vpc->propnum;
 	    p.isap_protoid = protoid;
-	    p.isap_spisize = 0;  /* set when we rekey */
+	    if(parentSA) {
+		p.isap_spisize = 0;  /* set when we rekey */
+	    } else {
+		p.isap_spisize = 4;
+	    }
 	    p.isap_numtrans= vpc->trans_cnt;
 	    
 	    if (!out_struct(&p, &ikev2_prop_desc, &sa_pbs, &t_pbs))
 		return_on(ret, FALSE);
 	    
 	    if(p.isap_spisize > 0) {
-		/* out_raw() with SPI value */
+		if(parentSA) {
+		    /* XXX set when rekeying */
+		} else {
+		    st->st_esp.our_spi = get_ipsec_spi(0 /* avoid this # */
+						      , IPPROTO_ESP
+						      , &st->st_connection->spd
+						      , TRUE /* tunnel */);
+		    if(!out_raw(&st->st_esp.our_spi, 4
+				, &t_pbs, "our spi"))
+			return STF_INTERNAL_ERROR;
+		}
 	    }
 	
 	    for(ts_cnt=0; ts_cnt < vpc->trans_cnt; ts_cnt++) {
@@ -311,7 +326,8 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
     propnum=1;
     
     for(i=0; i < tot_trans; i++) {
-	int tr_cnt = 3;
+	int tr_cnt = 4;
+	int tr_pos;
 
 	dtfone = &dtfset[i];
 
@@ -357,42 +373,42 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 	    pr[pr_cnt].props = pc;
 	    pr[pr_cnt].prop_cnt = pc_cnt+1;
 	}
-	if(dtfone->protoid != PROTO_ISAKMP) tr_cnt=4;
 	    
-	tr = alloc_bytes(sizeof(struct db_v2_trans)*(tr_cnt+1), "db_v2_trans");
-	pc[pc_cnt].trans=tr;  pc[pc_cnt].trans_cnt = tr_cnt+1;
+	tr = alloc_bytes(sizeof(struct db_v2_trans)*(tr_cnt), "db_v2_trans");
+	pc[pc_cnt].trans=tr;  pc[pc_cnt].trans_cnt = tr_cnt;
 	
 	pc[pc_cnt].propnum = propnum;
 	pc[pc_cnt].protoid = dtfset->protoid;
 	
-	tr_cnt = 0;
-	tr[tr_cnt].transform_type = IKEv2_TRANS_TYPE_ENCR;
-	tr[tr_cnt].transid        = v1tov2_encr(dtfone->encr_transid);
-	tr_cnt++;
+	tr_pos = 0;
+	tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_ENCR;
+	tr[tr_pos].transid        = v1tov2_encr(dtfone->encr_transid);
+	tr_pos++;
 
 	if(dtfone->integ_transid == 0) {
-	    tr[tr_cnt].transid        = IKEv2_AUTH_HMAC_SHA1_96;
+	    tr[tr_pos].transid        = IKEv2_AUTH_HMAC_SHA1_96;
 	} else {
-	    tr[tr_cnt].transid        = v1tov2_integ(dtfone->integ_transid);
+	    tr[tr_pos].transid        = v1tov2_integ(dtfone->integ_transid);
 	}
-	tr[tr_cnt].transform_type = IKEv2_TRANS_TYPE_INTEG;
-	tr_cnt++;
+	tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_INTEG;
+	tr_pos++;
 	
 	if(dtfone->protoid == PROTO_ISAKMP) {
-	    tr[tr_cnt].transform_type = IKEv2_TRANS_TYPE_PRF;
-	    tr[tr_cnt].transid        = dtfone->prf_transid;
-	    tr_cnt++;
+	    tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_PRF;
+	    tr[tr_pos].transid        = dtfone->prf_transid;
+	    tr_pos++;
 	}
 	
-	tr[tr_cnt].transform_type = IKEv2_TRANS_TYPE_DH;
-	tr[tr_cnt].transid        = dtfone->group_transid;
-	tr_cnt++;
+	tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_DH;
+	tr[tr_pos].transid        = dtfone->group_transid;
+	tr_pos++;
 
 	if(dtfone->protoid != PROTO_ISAKMP) {
-	    tr[tr_cnt].transform_type = IKEv2_TRANS_TYPE_ESN;
-	    tr[tr_cnt].transid        = IKEv2_ESN_DISABLED;
-	    tr_cnt++;
+	    tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_ESN;
+	    tr[tr_pos].transid        = IKEv2_ESN_DISABLED;
+	    tr_pos++;
 	}
+	passert(tr_cnt == tr_pos);
     }
     
     f->prop_disj = pr;
@@ -541,6 +557,21 @@ spdb_v2_match(struct db_sa *sadb
 
 #define MAX_TRANS_LIST 32         /* 32 is an arbitrary limit */
 
+struct ikev2_transform_list {
+    unsigned int encr_transforms[MAX_TRANS_LIST];    
+    unsigned int encr_trans_next, encr_i;
+    unsigned int integ_transforms[MAX_TRANS_LIST];   
+    unsigned int integ_trans_next, integ_i;
+    unsigned int prf_transforms[MAX_TRANS_LIST];     
+    unsigned int prf_trans_next,   prf_i;
+    unsigned int dh_transforms[MAX_TRANS_LIST];      
+    unsigned int dh_trans_next,    dh_i;
+    unsigned int esn_transforms[MAX_TRANS_LIST];      
+    unsigned int esn_trans_next,   esn_i;
+    u_int32_t spi_values[MAX_TRANS_LIST];      
+    unsigned int spi_values_next;
+};
+
 notification_t
 parse_ikev2_sa_body(
     pb_stream *sa_pbs,              /* body of input SA Payload */
@@ -548,6 +579,7 @@ parse_ikev2_sa_body(
     pb_stream *r_sa_pbs,	    /* if non-NULL, where to emit winning SA */
     bool selection,                 /* if this SA is a selection, only one 
 				     * tranform can appear. */
+    bool parentSA,                  /* TRUE if expecting parent SA */
     struct state *st)	        /* current state object */
 {
     pb_stream proposal_pbs;
@@ -563,17 +595,11 @@ parse_ikev2_sa_body(
     int    policy_index = POLICY_ISAKMP(c->policy
 					, c->spd.this.xauth_server
 					, c->spd.this.xauth_client);
-    unsigned int encr_transforms[MAX_TRANS_LIST];    
-    unsigned int encr_trans_next=0, encr_i;
-    unsigned int integ_transforms[MAX_TRANS_LIST];   
-    unsigned int integ_trans_next=0, integ_i;
-    unsigned int prf_transforms[MAX_TRANS_LIST];     
-    unsigned int prf_trans_next=0,   prf_i;
-    unsigned int dh_transforms[MAX_TRANS_LIST];      
-    unsigned int dh_trans_next=0,    dh_i;
-    unsigned int esn_transforms[MAX_TRANS_LIST];      
-    unsigned int esn_trans_next=0,   esn_i;
 
+    struct ikev2_transform_list itl0, *itl;
+
+    memset(&itl0, 0, sizeof(struct ikev2_transform_list));
+    itl = &itl0;
 
     /* find the policy structures */
     sadb = st->st_sadb;
@@ -601,29 +627,54 @@ parse_ikev2_sa_body(
 	if(!in_struct(&proposal, &ikev2_prop_desc, sa_pbs, &proposal_pbs))
 	    return PAYLOAD_MALFORMED;
 
-	if(proposal.isap_protoid != PROTO_ISAKMP)
-	{
+	switch(proposal.isap_protoid) {
+	case PROTO_ISAKMP:
+	    if(parentSA == FALSE) {
+		loglog(RC_LOG_SERIOUS, "unexpected PARENT_SA, expected child");
+		return PAYLOAD_MALFORMED;
+	    }
+	    if (proposal.isap_spisize == 0)
+	    {
+		/* as it should be */
+	    }
+	    else if(proposal.isap_spisize <= MAX_ISAKMP_SPI_SIZE)
+	    {
+		u_char junk_spi[MAX_ISAKMP_SPI_SIZE];
+		if(!in_raw(junk_spi, proposal.isap_spisize, &proposal_pbs,
+			   "PARENT SA SPI"))
+		    return PAYLOAD_MALFORMED;
+	    }
+	    else
+	    {
+		loglog(RC_LOG_SERIOUS, "invalid SPI size (%u) in PARENT_SA Proposal"
+		       , (unsigned)proposal.isap_spisize);
+		return INVALID_SPI;
+	    }
+	    break;
+
+	case PROTO_IPSEC_ESP:
+	    if(parentSA == TRUE) {
+		loglog(RC_LOG_SERIOUS, "unexpected CHILD_SA, expected parent");
+		return PAYLOAD_MALFORMED;
+	    }
+	    if (proposal.isap_spisize == 4)
+	    {
+		if(!in_raw(&itl->spi_values[itl->spi_values_next++],proposal.isap_spisize
+			   , &proposal_pbs, "CHILD SA SPI"))
+		    return PAYLOAD_MALFORMED;
+	    }
+	    else
+	    {
+		loglog(RC_LOG_SERIOUS, "invalid SPI size (%u) in CHILD_SA Proposal"
+		       , (unsigned)proposal.isap_spisize);
+		return INVALID_SPI;
+	    }
+	    break;
+
+	default:
 	    loglog(RC_LOG_SERIOUS, "unexpected Protocol ID (%s) found in PARENT_SA Proposal"
 		   , enum_show(&protocol_names, proposal.isap_protoid));
 	    return INVALID_PROTOCOL_ID;
-	}
-
-	if (proposal.isap_spisize == 0)
-	{
-	    /* as it should be */
-	}
-	else if(proposal.isap_spisize <= MAX_ISAKMP_SPI_SIZE)
-	{
-	    u_char junk_spi[MAX_ISAKMP_SPI_SIZE];
-	    if(!in_raw(junk_spi, proposal.isap_spisize, &proposal_pbs,
-		       "PARENT SA SPI"))
-		return PAYLOAD_MALFORMED;
-	}
-	else
-	{
-	    loglog(RC_LOG_SERIOUS, "invalid SPI size (%u) in PARENT_SA Proposal"
-		   , (unsigned)proposal.isap_spisize);
-	    return INVALID_SPI;
 	}
 
 	if(proposal.isap_propnum == lastpropnum) {
@@ -665,60 +716,60 @@ parse_ikev2_sa_body(
 	    /* XXX deal with different sizes AES keys */
 	    switch(trans.isat_type) {
 	    case IKEv2_TRANS_TYPE_ENCR:
-		if(encr_trans_next < MAX_TRANS_LIST) {
-		    encr_transforms[encr_trans_next++]=trans.isat_transid;
+		if(itl->encr_trans_next < MAX_TRANS_LIST) {
+		    itl->encr_transforms[itl->encr_trans_next++]=trans.isat_transid;
 		}
 		break;
 		
 	    case IKEv2_TRANS_TYPE_INTEG:
-		if(integ_trans_next < MAX_TRANS_LIST) {
-		    integ_transforms[integ_trans_next++]=trans.isat_transid;
+		if(itl->integ_trans_next < MAX_TRANS_LIST) {
+		    itl->integ_transforms[itl->integ_trans_next++]=trans.isat_transid;
 		}
 		break;
 		
 	    case IKEv2_TRANS_TYPE_PRF:
-		if(prf_trans_next < MAX_TRANS_LIST) {
-		    prf_transforms[prf_trans_next++]=trans.isat_transid;
+		if(itl->prf_trans_next < MAX_TRANS_LIST) {
+		    itl->prf_transforms[itl->prf_trans_next++]=trans.isat_transid;
 		}
 		break;
 		
 	    case IKEv2_TRANS_TYPE_DH:
-		if(dh_trans_next < MAX_TRANS_LIST) {
-		    dh_transforms[dh_trans_next++]=trans.isat_transid;
+		if(itl->dh_trans_next < MAX_TRANS_LIST) {
+		    itl->dh_transforms[itl->dh_trans_next++]=trans.isat_transid;
 		}
 		break;
 
 	    case IKEv2_TRANS_TYPE_ESN:
-		if(esn_trans_next < MAX_TRANS_LIST) {
-		    esn_transforms[esn_trans_next++]=trans.isat_transid;
+		if(itl->esn_trans_next < MAX_TRANS_LIST) {
+		    itl->esn_transforms[itl->esn_trans_next++]=trans.isat_transid;
 		}
 		break;
 	    }
 	}
 
-	if(encr_trans_next < 1) {
+	if(itl->encr_trans_next < 1) {
 	    openswan_log("ignored proposal %u with no cipher transforms",
 			 proposal.isap_propnum);
 	    continue;
 	}
-	if(integ_trans_next < 1) {
+	if(itl->integ_trans_next < 1) {
 	    openswan_log("ignored proposal %u with no integrity transforms",
 			 proposal.isap_propnum);
 	    continue;
 	}
-	if(prf_trans_next < 1) {
+	if(itl->prf_trans_next < 1) {
 	    openswan_log("ignored proposal %u with no prf transforms",
 			 proposal.isap_propnum);
 	    continue;
 	}
-	if(dh_trans_next < 1) {
+	if(itl->dh_trans_next < 1) {
 	    openswan_log("ignored proposal %u with no diffie-hellman transforms",
 			 proposal.isap_propnum);
 	    continue;
 	}
-	if(esn_trans_next == 0) {
+	if(itl->esn_trans_next == 0) {
 	    /* what is the default for IKEv2? */
-	    esn_transforms[esn_trans_next++]=IKEv2_ESN_DISABLED;
+	    itl->esn_transforms[itl->esn_trans_next++]=IKEv2_ESN_DISABLED;
 	}
 
 	/*
@@ -728,19 +779,24 @@ parse_ikev2_sa_body(
 	 * XXX - have to deal with attributes.
 	 *
 	 */
-	for(encr_i=0; encr_i < encr_trans_next; encr_i++) {
-	    for(integ_i=0; integ_i < integ_trans_next; integ_i++) {
-		for(prf_i=0; prf_i < prf_trans_next; prf_i++) {
-		    for(dh_i=0; dh_i < dh_trans_next; dh_i++) {
-			for(esn_i=0; esn_i < esn_trans_next; esn_i++) {
-			    gotmatch = spdb_v2_match(sadb,
-						     proposal.isap_propnum,
-						     encr_transforms[encr_i],
-						     integ_transforms[integ_i],
-						     prf_transforms[prf_i],
-						     dh_transforms[dh_i],
-						     esn_transforms[esn_i]);
-			    winning_prop = proposal;
+	{
+	    unsigned int encr_i,integ_i, prf_i, dh_i, esn_i;
+
+	    for(encr_i=0; encr_i < itl->encr_trans_next; encr_i++) {
+		for(integ_i=0; integ_i < itl->integ_trans_next; integ_i++) {
+		    for(prf_i=0; prf_i < itl->prf_trans_next; prf_i++) {
+			for(dh_i=0; dh_i < itl->dh_trans_next; dh_i++) {
+			    for(esn_i=0; esn_i < itl->esn_trans_next; esn_i++) {
+				gotmatch = spdb_v2_match(sadb,
+							 proposal.isap_propnum,
+							 itl->encr_transforms[itl->encr_i],
+							 itl->integ_transforms[itl->integ_i],
+							 itl->prf_transforms[itl->prf_i],
+							 itl->dh_transforms[itl->dh_i],
+							 itl->esn_transforms[itl->esn_i]);
+				winning_prop = proposal;
+				if(gotmatch) break;
+			    }
 			    if(gotmatch) break;
 			}
 			if(gotmatch) break;
@@ -749,7 +805,6 @@ parse_ikev2_sa_body(
 		}
 		if(gotmatch) break;
 	    }
-	    if(gotmatch) break;
 	}
 
 	np = proposal.isap_np;
@@ -776,23 +831,34 @@ parse_ikev2_sa_body(
      * since we found something that matched, we might need to emit the
      * winning value.
      */
-    ta.encrypt   = encr_transforms[encr_i];
+    ta.encrypt   = itl->encr_transforms[itl->encr_i];
     ta.encrypter = (struct encrypt_desc *)ike_alg_ikev2_find(IKE_ALG_ENCRYPT
 							     , ta.encrypt
 							     , /*keysize*/0);
     passert(ta.encrypter != NULL);
     ta.enckeylen = ta.encrypter->keydeflen;
 
-    ta.integ_hash  = integ_transforms[integ_i];
+    ta.integ_hash  = itl->integ_transforms[itl->integ_i];
     ta.integ_hasher= (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_INTEG,ta.integ_hash, 0);
     passert(ta.integ_hasher != NULL);
 
-    ta.prf_hash    = prf_transforms[prf_i];
+    ta.prf_hash    = itl->prf_transforms[itl->prf_i];
     ta.prf_hasher  = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH, ta.prf_hash, 0);
     passert(ta.prf_hasher != NULL);
 
-    ta.groupnum    = dh_transforms[dh_i];
+    ta.groupnum    = itl->dh_transforms[itl->dh_i];
     ta.group       = lookup_group(ta.groupnum); 
+
+#if 0
+    if(!parentSA) {
+	st->st_esp.attrs.spi = itl->spi_values[itl->spi_values_next+-1];
+	st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TUNNEL;
+
+	/* note: translate back to v1 enumeration field */
+	st->st_esp.attrs.auth    = ta.integ_hasher->common.algo_id;
+	st->st_esp.attrs.transid = ta.encrypter->common.algo_id;
+    }
+#endif
 
     if (r_sa_pbs != NULL)
     {
@@ -803,14 +869,29 @@ parse_ikev2_sa_body(
 
 	memset(&r_trans, 0, sizeof(r_trans));
 
-	/* Proposal - XXX */
-	r_proposal.isap_spisize = 0;
+	if(parentSA) {
+	    /* Proposal - XXX */
+	    r_proposal.isap_spisize= 0;
+	} else {
+	    r_proposal.isap_spisize= 4;
+	    st->st_esp.present = TRUE;
+	    st->st_esp.our_spi = get_ipsec_spi(0 /* avoid this # */
+					      , IPPROTO_ESP
+					      , &st->st_connection->spd
+					      , TRUE /* tunnel */);
+	}
+		
 	r_proposal.isap_numtrans = 5;
 	r_proposal.isap_np = ISAKMP_NEXT_NONE;
 
 	if(!out_struct(&r_proposal, &ikev2_prop_desc
 		       , r_sa_pbs, &r_proposal_pbs))
 	    impossible();
+
+	if(!parentSA) {
+	    if(!out_raw(&st->st_esp.our_spi, 4, &r_proposal_pbs, "our spi"))
+		return STF_INTERNAL_ERROR;
+	}
 
 	/* Transform - cipher */
 	r_trans.isat_type= IKEv2_TRANS_TYPE_ENCR;
@@ -898,7 +979,8 @@ stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
     ikev2_out_sa(outpbs
 		 , proto
 		 , p2alg
-		 , md->st, np);
+		 , md->st
+		 , FALSE, np);
 
     return STF_OK;
 }

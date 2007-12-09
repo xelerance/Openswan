@@ -308,7 +308,8 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	if (!ikev2_out_sa(&md->rbody
 			  , PROTO_ISAKMP
 			  , st->st_sadb
-			  , st, ISAKMP_NEXT_v2KE))
+			  , st, TRUE /* parentSA */
+			  , ISAKMP_NEXT_v2KE))
 	{
 	    openswan_log("outsa fail");
 	    reset_cur_state();
@@ -581,7 +582,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 
 	/* SA body in and out */
 	rn = parse_ikev2_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-				 &r_sa_pbs, FALSE, st);
+				 &r_sa_pbs, FALSE, TRUE /* parentSA*/, st);
 	
 	if (rn != NOTHING_WRONG)
 	    return STF_FAIL + rn;
@@ -694,7 +695,7 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 
 	/* SA body in and out */
 	rn = parse_ikev2_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-				 NULL, FALSE, st);
+				 NULL, FALSE, TRUE /* parentSA */, st);
 	
 	if (rn != NOTHING_WRONG)
 	    return STF_FAIL + rn;
@@ -844,7 +845,6 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
     pb_stream     *e_pbs;
     unsigned int   np;
     unsigned char *iv;
-    pb_stream      clr_pbs;
     chunk_t       *cipherkey, *authkey;
 
     if(init == INITIATOR) {
@@ -914,10 +914,10 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 	    DBG_log("striping %u bytes as pad", padlen+1);
 	}
 	
-	init_pbs(&clr_pbs, encstart, enclen - (padlen+1), "cleartext");
+	init_pbs(&md->clr_pbs, encstart, enclen - (padlen+1), "cleartext");
     }
     
-    ikev2_process_payloads(md, &clr_pbs, st->st_state, np);
+    ikev2_process_payloads(md, &md->clr_pbs, st->st_state, np);
     return STF_OK;
 }
 
@@ -1082,8 +1082,12 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	    st->st_childsa = c0;
 
 	    for(sr=&c0->spd; sr != NULL; sr = sr->next) {
-		ikev2_emit_ts(md, &e_pbs_cipher, &sr->this, INITIATOR);
-		ikev2_emit_ts(md, &e_pbs_cipher, &sr->that, RESPONDER);
+		ret = ikev2_emit_ts(md, &e_pbs_cipher, ISAKMP_NEXT_v2TSr
+				    , &sr->this, INITIATOR);
+		if(ret!=STF_OK) return ret;
+		ret = ikev2_emit_ts(md, &e_pbs_cipher, ISAKMP_NEXT_NONE
+				    , &sr->that, RESPONDER);
+		if(ret!=STF_OK) return ret;
 	    }
 	}
     }
@@ -1277,8 +1281,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	return STF_FAIL;
     }
     
-
-    
     /* send response */
     {
 	unsigned char *encstart;
@@ -1364,6 +1366,20 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 						  , RESPONDER, ISAKMP_NEXT_NONE
 						  , idhash_out, &e_pbs_cipher);
 	    if(authstat != STF_OK) return authstat;
+	}
+
+	/* authentication good, see if there is a child SA available */
+	if(md->chain[ISAKMP_NEXT_v2SA] == NULL
+	   || md->chain[ISAKMP_NEXT_v2TSi] == NULL
+	   || md->chain[ISAKMP_NEXT_v2TSr] == NULL) {
+	    
+	    /* initiator didn't propose anything. Weird. Try unpending out end. */
+	    /* UNPEND XXX */
+	} else {
+	    /* must have enough to build an CHILD_SA */
+	    ret = ikev2_child_sa_respond(md, &e_pbs_cipher);
+
+	    if(ret != STF_OK) return ret;
 	}
 
 	ret = ikev2_encrypt_msg(md, RESPONDER,
@@ -1472,6 +1488,15 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 		     , enum_name(&ikev2_auth_names
 				 ,md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type));
 	return STF_FAIL;
+    }
+
+    
+    /* authentication good, see if there is a child SA available */
+    if(md->chain[ISAKMP_NEXT_v2SA] == NULL
+	|| md->chain[ISAKMP_NEXT_v2TSi] == NULL
+	|| md->chain[ISAKMP_NEXT_v2TSr] == NULL) {
+	/* not really anything to here... but it would be worth unpending again */
+	return STF_OK;
     }
     
     return STF_OK;
