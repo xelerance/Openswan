@@ -12,7 +12,7 @@ ipsec_spi_t get_ipsec_spi(ipsec_spi_t avoid UNUSED
 			  , bool tunnel UNUSED)
 {
 	if(spinext == 4) spinext=0;
-	return spis[spinext++];
+	return htonl(spis[spinext++]);
 }
 
 
