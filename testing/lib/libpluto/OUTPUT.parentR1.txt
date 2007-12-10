@@ -95,7 +95,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 |    prop #: 1
 |    proto ID: 1
 |    spi size: 0
-|    # transforms: 5
+|    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
 |    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
@@ -167,7 +167,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (using #1)
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
 |   21 20 22 20  00 00 00 00  00 00 01 34  22 80 00 2c
-|   00 00 00 28  01 01 00 05  03 00 00 08  01 00 00 0c
+|   00 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
 |   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
 |   00 00 00 08  04 00 00 05  28 00 00 c8  00 05 00 00
 |   cd 30 df 6e  c0 85 44 12  53 01 80 d8  7e 1a fb b3
@@ -215,7 +215,7 @@ reading from file parentR1.pcap, link-type NULL (BSD loopback)
 19:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 336, bad cksum 0 (->f556)!)
     192.1.2.23.500 > 192.1.2.45.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->c02e7a3031a03188: parent_sa ikev2_init[]:
     (sa[C]: len=40
-        (p: #1 protoid=isakmp transform=5 len=40
+        (p: #1 protoid=isakmp transform=4 len=40
             (t: #1 type=encr id=aes )
             (t: #2 type=integ id=hmac-sha )
             (t: #3 type=prf id=hmac-sha )

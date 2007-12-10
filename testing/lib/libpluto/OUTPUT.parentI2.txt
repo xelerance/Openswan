@@ -63,27 +63,27 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | complete v2 state transition with STF_OK
 ../parentI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 ../parentI2 STATE_PARENT_I1: sent v2I1, expected v2R1
-| *received 316 bytes from 192.1.2.23:500 on eth0 (port=500)
+| *received 308 bytes from 192.1.2.23:500 on eth0 (port=500)
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
-|   21 20 22 20  00 00 00 00  00 00 01 3c  22 80 00 34
-|   00 00 00 30  01 01 00 05  03 00 00 08  01 00 00 0c
+|   21 20 22 20  00 00 00 00  00 00 01 34  22 80 00 2c
+|   00 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
 |   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   03 00 00 08  04 00 00 05  00 00 00 08  05 00 00 00
-|   28 00 00 c8  00 05 00 00  cd 30 df 6e  c0 85 44 12
-|   53 01 80 d8  7e 1a fb b3  26 79 3e 99  56 c8 6a 96
-|   25 53 c2 77  ad 5b ab 50  f8 32 5a d8  64 0b 0e fe
-|   a5 1d 6c 83  1f a1 7c fb  0f 2e 1a f4  b1 66 a0 fe
-|   30 75 12 ad  0f 81 ab b8  aa fb 68 48  ec 10 a4 97
-|   6c 3d b1 17  ec e1 e6 61  db bf 48 0c  28 2e 3f 11
-|   07 c1 86 42  80 1e e8 3f  9e 4a b9 ab  63 6f 23 7d
-|   aa f6 a7 aa  d8 22 99 3e  a4 1e a3 31  ee 27 82 0b
-|   93 f5 0b 8f  3f 71 05 61  c9 25 70 26  97 ba 6b 1e
-|   95 3c 21 fb  c9 a7 7d 2b  5f 87 3c fc  50 99 e7 7d
-|   48 4c dd 52  66 4b cf 0d  bf 00 ca fd  ae 6d e7 14
-|   6d 11 35 f6  5d 93 5f 60  b9 73 0f e0  49 2c 2a f8
-|   c9 04 f6 4c  59 16 90 9d  2b 80 00 14  47 e9 f9 25
-|   8c a2 38 58  f6 75 b1 66  b0 2c c2 92  00 00 00 10
-|   4f 45 VENDOR
+|   00 00 00 08  04 00 00 05  28 00 00 c8  00 05 00 00
+|   cd 30 df 6e  c0 85 44 12  53 01 80 d8  7e 1a fb b3
+|   26 79 3e 99  56 c8 6a 96  25 53 c2 77  ad 5b ab 50
+|   f8 32 5a d8  64 0b 0e fe  a5 1d 6c 83  1f a1 7c fb
+|   0f 2e 1a f4  b1 66 a0 fe  30 75 12 ad  0f 81 ab b8
+|   aa fb 68 48  ec 10 a4 97  6c 3d b1 17  ec e1 e6 61
+|   db bf 48 0c  28 2e 3f 11  07 c1 86 42  80 1e e8 3f
+|   9e 4a b9 ab  63 6f 23 7d  aa f6 a7 aa  d8 22 99 3e
+|   a4 1e a3 31  ee 27 82 0b  93 f5 0b 8f  3f 71 05 61
+|   c9 25 70 26  97 ba 6b 1e  95 3c 21 fb  c9 a7 7d 2b
+|   5f 87 3c fc  50 99 e7 7d  48 4c dd 52  66 4b cf 0d
+|   bf 00 ca fd  ae 6d e7 14  6d 11 35 f6  5d 93 5f 60
+|   b9 73 0f e0  49 2c 2a f8  c9 04 f6 4c  59 16 90 9d
+|   2b 80 00 14  47 e9 f9 25  8c a2 38 58  f6 75 b1 66
+|   b0 2c c2 92  00 00 00 10  4f 45 73 40  40 7a 4a 56
+|   57 5b 6a 5d
 | **parse ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
@@ -94,7 +94,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |    exchange type: ISAKMP_v2_SA_INIT
 |    flags: ISAKMP_FLAG_RESPONSE
 |    message ID:  00 00 00 00
-|    length: 316
+|    length: 308
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34)
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
@@ -114,8 +114,8 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | ***parse IKEv2 Security Association Payload:
 |    next payload type: ISAKMP_NEXT_v2KE
 |    critical bit: Payload-Critical
-|    length: 52
-| processing payload: ISAKMP_NEXT_v2SA (len=52) 
+|    length: 44
+| processing payload: ISAKMP_NEXT_v2SA (len=44) 
 | ***parse IKEv2 Key Exchange Payload:
 |    next payload type: ISAKMP_NEXT_v2Ni
 |    length: 200
@@ -147,11 +147,11 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |   b9 73 0f e0  49 2c 2a f8  c9 04 f6 4c  59 16 90 9d
 | ****parse IKEv2 Proposal Substructure Payload:
 |    next payload type: ISAKMP_NEXT_NONE
-|    length: 48
+|    length: 40
 |    prop #: 1
 |    proto ID: 1
 |    spi size: 0
-|    # transforms: 5
+|    # transforms: 4
 | *****parse IKEv2 Transform Substructure Payload:
 |    next payload type: ISAKMP_NEXT_T
 |    length: 8
@@ -168,15 +168,10 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |    transform type: 2
 |    transform ID: 2
 | *****parse IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
+|    next payload type: ISAKMP_NEXT_NONE
 |    length: 8
 |    transform type: 4
 |    transform ID: 5
-| *****parse IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    length: 8
-|    transform type: 5
-|    transform ID: 0
 | complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI1: calculating g^{xy}, sending I2
 ../parentI2 ikev2 I 0x0001020304050607 0xc02e7a3031a03188 sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
