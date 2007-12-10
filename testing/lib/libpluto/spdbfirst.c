@@ -10,10 +10,10 @@
  * empty structure, for clone use.
  */
 static struct db_attr otempty[] = {
-	{ OAKLEY_ENCRYPTION_ALGORITHM, -1 },
-	{ OAKLEY_HASH_ALGORITHM,       -1 },
-	{ OAKLEY_AUTHENTICATION_METHOD, -1 },
-	{ OAKLEY_GROUP_DESCRIPTION,    -1 },
+	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, -1 },
+	{ .type.oakley=OAKLEY_HASH_ALGORITHM,       -1 },
+	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, -1 },
+	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION,    -1 },
 	};
 
 static struct db_trans oakley_trans_empty[] = {
@@ -25,7 +25,7 @@ static struct db_prop oakley_pc_empty[] =
 
 static struct db_prop_conj oakley_props_empty[] = { { AD_PC(oakley_pc_empty) } };
 
-struct db_sa oakley_empty = { AD_SA(oakley_props_empty) };
+struct db_sa oakley_empty = { AD_SAp(oakley_props_empty) };
 
 char *progname;
 
