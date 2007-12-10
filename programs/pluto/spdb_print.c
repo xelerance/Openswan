@@ -61,15 +61,15 @@ print_sa_attr(struct db_attr *at)
 {
     const struct enum_names *en;
 	
-    if(at->type == 0) {
+    if(at->type.oakley == 0) {
 	return;
     }
 
-    if(at->type <= oakley_attr_val_descs_size) {
-	en = oakley_attr_val_descs[at->type];
+    if(at->type.oakley <= oakley_attr_val_descs_size) {
+	en = oakley_attr_val_descs[at->type.oakley];
     }
     printf("        type: %u(%s) val: %u(%s)\n"
-	   , at->type, enum_name(&oakley_attr_names, at->type+ISAKMP_ATTR_AF_TV)
+	   , at->type.oakley, enum_name(&oakley_attr_names, at->type.oakley+ISAKMP_ATTR_AF_TV)
 	   , at->val,  en ? enum_name(en, at->val) : "unknown");
 }
 
@@ -124,13 +124,13 @@ print_sa_v2_attr(struct db_attr *at)
 {
     const struct enum_names *en;
 	
-    if(at->type == 0) {
+    if(at->type.ikev2 == 0) {
 	return;
     }
 
     en = NULL; /* XXX */
     printf("        type: %u(%s) val: %u(%s)\n"
-	   , at->type, "" /*enum_name(&oakley_attr_names, at->type+ISAKMP_ATTR_AF_TV)*/
+	   , at->type.ikev2, "" /*enum_name(&oakley_attr_names, at->type+ISAKMP_ATTR_AF_TV)*/
 	   , at->val,  en ? enum_name(en, at->val) : "unknown");
 }
 

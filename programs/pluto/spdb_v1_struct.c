@@ -465,9 +465,16 @@ out_sa(pb_stream *outs
 		{
 		    struct db_attr *a = &t->attrs[an];
 
-		    out_attr(a->type, a->val
-			, attr_desc, attr_val_descs
-			, &trans_pbs);
+		    if(oakley_mode) {
+			out_attr(a->type.oakley, a->val
+				 , attr_desc, attr_val_descs
+				 , &trans_pbs);
+		    } else {
+			out_attr(a->type.ipsec,  a->val
+				 , attr_desc, attr_val_descs
+				 , &trans_pbs);
+		    }
+			
 		}
 
 		close_output_pbs(&trans_pbs);
@@ -1318,7 +1325,7 @@ init_am_st_oakley(struct state *st, lset_t policy)
 		  , hash->val
 		  , grp->val));
 
-    passert(enc->type == OAKLEY_ENCRYPTION_ALGORITHM);
+    passert(enc->type.oakley == OAKLEY_ENCRYPTION_ALGORITHM);
     ta.encrypt = enc->val;             /* OAKLEY_ENCRYPTION_ALGORITHM */
     ta.encrypter = crypto_get_encrypter(ta.encrypt);
     passert(ta.encrypter != NULL);
@@ -1331,15 +1338,15 @@ init_am_st_oakley(struct state *st, lset_t policy)
 	ta.enckeylen = ta.encrypter->keydeflen;
     }
 
-    passert(hash->type == OAKLEY_HASH_ALGORITHM);
+    passert(hash->type.oakley == OAKLEY_HASH_ALGORITHM);
     ta.prf_hash = hash->val;               /* OAKLEY_HASH_ALGORITHM */
     ta.prf_hasher = crypto_get_hasher(ta.prf_hash);
     passert(ta.prf_hasher != NULL);
 
-    passert(auth->type == OAKLEY_AUTHENTICATION_METHOD);
+    passert(auth->type.oakley == OAKLEY_AUTHENTICATION_METHOD);
     ta.auth   = auth->val;             /* OAKLEY_AUTHENTICATION_METHOD */
 
-    passert(grp->type == OAKLEY_GROUP_DESCRIPTION);
+    passert(grp->type.oakley == OAKLEY_GROUP_DESCRIPTION);
     ta.group = lookup_group(grp->val); /* OAKLEY_GROUP_DESCRIPTION */
     passert(ta.group != NULL);
 

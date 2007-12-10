@@ -325,7 +325,7 @@ int
 db_attr_add_values(struct db_context *ctx,  u_int16_t type, u_int16_t val)
 {
 	struct db_attr attr;
-	attr.type = type;
+	attr.type.oakley = type;
 	attr.val = val;
 	return db_attr_add (ctx, &attr);
 }

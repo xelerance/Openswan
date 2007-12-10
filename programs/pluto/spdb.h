@@ -25,7 +25,12 @@
  * Note: only "basic" values are represented so far.
  */
 struct db_attr {
-    u_int16_t type;	/* ISAKMP_ATTR_AF_TV is implied; 0 for end */
+    union {
+	enum ikev1_oakley_attr oakley;	/* ISAKMP_ATTR_AF_TV is implied;
+					   0 for end */
+	enum ikev1_ipsec_attr  ipsec;
+	unsigned int ikev2;
+    } type;
     u_int16_t val;
 };
 
@@ -77,12 +82,13 @@ struct db_v2_prop {
 
 /* security association */
 struct db_sa {
-	bool                    dynamic;    /* set if these items were allocated */
-	struct db_prop_conj    *prop_conjs; /* array */
-	unsigned int prop_conj_cnt;         /* number of elements */
-	
-	struct db_v2_prop      *prop_disj;  /* array */
-	unsigned int prop_disj_cnt;         /* number of elements... OR */
+    bool                    dynamic;    /* set if these items were allocated */
+    bool                    parentSA;   /* set if this is a parent/oakley */
+    struct db_prop_conj    *prop_conjs; /* array */
+    unsigned int prop_conj_cnt;         /* number of elements */
+    
+    struct db_v2_prop      *prop_disj;  /* array */
+    unsigned int prop_disj_cnt;         /* number of elements... OR */
 };
 
 /* The oakley sadb is subscripted by a bitset with members
@@ -101,7 +107,8 @@ extern struct db_sa oakley_sadb_am;
 extern struct db_sa ipsec_sadb[1 << 3];
 
 /* for db_sa */
-#define AD_SA(x)    prop_conjs: x, prop_conj_cnt: elemsof(x)	
+#define AD_SAp(x)    prop_conjs: x, prop_conj_cnt: elemsof(x), parentSA:TRUE
+#define AD_SAc(x)    prop_conjs: x, prop_conj_cnt: elemsof(x), parentSA:FALSE
 #define AD_NULL     prop_conjs: NULL, prop_conj_cnt: 0,
 
 /* for db_trans */
@@ -187,3 +194,10 @@ extern bool ikev2_acceptable_group(struct state *st, oakley_group_t group);
 
 
 #endif /*  _SPDB_H_ */
+
+/*
+ * Local Variables:
+ * c-style: pluto
+ * c-basic-offset: 4
+ * End:
+ */

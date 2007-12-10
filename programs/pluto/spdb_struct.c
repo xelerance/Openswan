@@ -66,11 +66,11 @@
  * empty structure, for clone use.
  */
 static struct db_attr otempty[] = {
-	{ OAKLEY_ENCRYPTION_ALGORITHM, -1 },
-	{ OAKLEY_HASH_ALGORITHM,       -1 },
-	{ OAKLEY_AUTHENTICATION_METHOD, -1 },
-	{ OAKLEY_GROUP_DESCRIPTION,    -1 },
-	{ OAKLEY_KEY_LENGTH,    -1 },
+	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, -1 },
+	{ .type.oakley=OAKLEY_HASH_ALGORITHM,       -1 },
+	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, -1 },
+	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION,    -1 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH,    -1 },
 	};
 
 static struct db_trans oakley_trans_empty[] = {
@@ -82,7 +82,7 @@ static struct db_prop oakley_pc_empty[] =
 
 static struct db_prop_conj oakley_props_empty[] = {{ AD_PC(oakley_pc_empty) }};
 
-struct db_sa oakley_empty = { AD_SA(oakley_props_empty) };
+struct db_sa oakley_empty = { AD_SAp(oakley_props_empty) };
 
 /*
  * 	Create an OAKLEY proposal based on alg_info and policy
@@ -204,7 +204,7 @@ oakley_alg_makedb(struct alg_info_ike *ai
 		enc_keylen->val = eklen;
 	    }
 
-	    passert(enc->type == OAKLEY_ENCRYPTION_ALGORITHM);
+	    passert(enc->type.oakley == OAKLEY_ENCRYPTION_ALGORITHM);
 	    if(ealg > 0) {
 		enc->val = ealg;
 	    }
@@ -212,15 +212,15 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	    modp = ike_info->ike_modp;
 	    eklen= ike_info->ike_eklen;
 	    
-	    passert(hash->type == OAKLEY_HASH_ALGORITHM);
+	    passert(hash->type.oakley == OAKLEY_HASH_ALGORITHM);
 	    if(halg > 0) {
 		hash->val = halg;
 	    }
 	    
-	    passert(auth->type == OAKLEY_AUTHENTICATION_METHOD);
+	    passert(auth->type.oakley == OAKLEY_AUTHENTICATION_METHOD);
 	    /* no setting for auth type for IKE */
 	    
-	    passert(grp->type == OAKLEY_GROUP_DESCRIPTION);
+	    passert(grp->type.oakley  == OAKLEY_GROUP_DESCRIPTION);
 	    if(modp > 0) {
 		grp->val = modp;
 	    }
@@ -274,6 +274,8 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	}
 	transcnt++;
     }
+    gsp->parentSA = TRUE;
+
 fail:
     return gsp;
 }

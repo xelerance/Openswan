@@ -579,8 +579,8 @@ kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy, bool logit)
 			"attrs[0].type=%d, attrs[0].val=%d"
 			, tn
 			, t[tn].transid, t[tn].attr_cnt
-			, t[tn].attrs ? t[tn].attrs[0].type : -1
-			, t[tn].attrs ? t[tn].attrs[0].val : -1
+			, t[tn].attrs ? t[tn].attrs[0].type.ipsec : 255
+			, t[tn].attrs ? t[tn].attrs[0].val : 255
 			));
 	}
 	prop->trans_cnt = tn;
@@ -757,6 +757,7 @@ y	if (can_do_IPcomp)
 
 	/* make copy, to keep from freeing the static policies */
 	sadb = sa_copy_sa(sadb, 0);
+	sadb->parentSA = FALSE;
 
 	DBG(DBG_CONTROL, DBG_log("empty esp_info, returning defaults"));
 	return sadb;
@@ -784,6 +785,7 @@ y	if (can_do_IPcomp)
 
     /* make a fresh copy */
     n = sa_copy_sa(&t, 0);
+    n->parentSA = FALSE;
     
     db_destroy(dbnew);
 
