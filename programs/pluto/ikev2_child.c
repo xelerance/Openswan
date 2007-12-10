@@ -56,6 +56,7 @@
 #include "dpd.h"
 #include "udpfromto.h"
 #include "tpm/tpm.h"
+#include "kernel.h"
 
 void ikev2_derive_child_keys(struct state *st UNUSED)
 {
@@ -134,12 +135,40 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 }
 
 
+stf_status ikev2_calc_emit_ts(struct msg_digest *md
+			      , pb_stream *outpbs
+			      , enum phase1_role role UNUSED
+			      , struct connection *c0
+			      , lset_t policy UNUSED)
+{
+    struct state *st = md->st;
+    struct spd_route *sr;
+    stf_status ret;
+    
+    ikev2_derive_child_keys(st);
+    install_inbound_ipsec_sa(st);
+    st->st_childsa = c0;
+
+    for(sr=&c0->spd; sr != NULL; sr = sr->next) {
+	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2TSr
+			    , &sr->this, INITIATOR);
+	if(ret!=STF_OK) return ret;
+	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_NONE
+			    , &sr->that, RESPONDER);
+	if(ret!=STF_OK) return ret;
+    }
+
+    return STF_OK;
+}
+
 stf_status ikev2_child_sa_respond(struct msg_digest *md
+				  , enum phase1_role role
 				  , pb_stream *outpbs)
 {
     struct state      *st = md->st;
-    //struct connection *c  = st->st_connection;
+    struct connection *c  = st->st_connection;
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
+    stf_status ret;
     //struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
     //struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
     
@@ -161,24 +190,20 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	    return STF_FAIL + rn;
     }
 
+    /*
+     * now look at provided TSx, and see if these fit the connection
+     * that we have, and narrow them if necessary.
+     */
+
+    ret = ikev2_calc_emit_ts(md, outpbs, role
+			     , c, c->policy);
+    if(ret != STF_OK) return ret;
+    
+    if(!install_ipsec_sa(st, FALSE))
+`	return STF_FATAL;
+
     return STF_OK;
 }
-
-#if 0 
-    /* process and confirm the SA selected */
-    {
-	struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
-	notification_t rn;
-
-	/* SA body in and out */
-	rn = parse_ikev2_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-				 NULL, FALSE, st);
-	
-	if (rn != NOTHING_WRONG)
-	    return STF_FAIL + rn;
-    }
-#endif
-
 
 /*
  * Local Variables:

@@ -110,5 +110,13 @@ extern stf_status ikev2_emit_ts(struct msg_digest *md
 				, struct end *end    
 				, enum phase1_role role);
 
+extern stf_status ikev2_calc_emit_ts(struct msg_digest *md
+				     , pb_stream *outpbs
+				     , enum phase1_role role UNUSED
+				     , struct connection *c0
+				     , lset_t policy);
+
 extern stf_status ikev2_child_sa_respond(struct msg_digest *md
+					 , enum phase1_role role
 					 , pb_stream *outpbs);
+

@@ -1078,21 +1078,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	struct connection *c0 = first_pending(st, &policy);
 
 	if(c0) {
-	    struct spd_route *sr;
-
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
-	    ikev2_derive_child_keys(st);
-	    install_inbound_ipsec_sa(st);
-	    st->st_childsa = c0;
-
-	    for(sr=&c0->spd; sr != NULL; sr = sr->next) {
-		ret = ikev2_emit_ts(md, &e_pbs_cipher, ISAKMP_NEXT_v2TSr
-				    , &sr->this, INITIATOR);
-		if(ret!=STF_OK) return ret;
-		ret = ikev2_emit_ts(md, &e_pbs_cipher, ISAKMP_NEXT_NONE
-				    , &sr->that, RESPONDER);
-		if(ret!=STF_OK) return ret;
-	    }
+	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, c0, policy);
 	}
     }
 
@@ -1221,6 +1208,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     struct state *const st = md->st;
     struct connection *c   = st->st_connection;
     unsigned char *idhash_in, *idhash_out;
+    unsigned int np;
 
     /* extract calculated values from r */
     finish_dh_v2(st, r);
@@ -1364,14 +1352,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    hmac_final(idhash_out, &id_ctx);
 	}
 
-	/* now send AUTH payload */
-	{
-	    stf_status authstat = ikev2_send_auth(c, st
-						  , RESPONDER, ISAKMP_NEXT_NONE
-						  , idhash_out, &e_pbs_cipher);
-	    if(authstat != STF_OK) return authstat;
-	}
-
 	/* authentication good, see if there is a child SA available */
 	if(md->chain[ISAKMP_NEXT_v2SA] == NULL
 	   || md->chain[ISAKMP_NEXT_v2TSi] == NULL
@@ -1379,10 +1359,22 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    
 	    /* initiator didn't propose anything. Weird. Try unpending out end. */
 	    /* UNPEND XXX */
+	    np = ISAKMP_NEXT_NONE;
 	} else {
-	    /* must have enough to build an CHILD_SA */
-	    ret = ikev2_child_sa_respond(md, &e_pbs_cipher);
+	    np = ISAKMP_NEXT_v2SA;
+	}
 
+	/* now send AUTH payload */
+	{
+	    stf_status authstat = ikev2_send_auth(c, st
+						  , RESPONDER, np
+						  , idhash_out, &e_pbs_cipher);
+	    if(authstat != STF_OK) return authstat;
+	}
+
+	if(np == ISAKMP_NEXT_v2SA) {
+	    /* must have enough to build an CHILD_SA */
+	    ret = ikev2_child_sa_respond(md, RESPONDER, &e_pbs_cipher);
 	    if(ret != STF_OK) return ret;
 	}
 

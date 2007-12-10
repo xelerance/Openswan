@@ -1228,13 +1228,6 @@ ikev2_parse_child_sa_body(
     ta.integ_hasher= (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_INTEG,ta.integ_hash, 0);
     passert(ta.integ_hasher != NULL);
 
-    ta.prf_hash    = itl->prf_transforms[itl->prf_i];
-    ta.prf_hasher  = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH, ta.prf_hash, 0);
-    passert(ta.prf_hasher != NULL);
-
-    ta.groupnum    = itl->dh_transforms[itl->dh_i];
-    ta.group       = lookup_group(ta.groupnum); 
-
 #if 0
     if(!parentSA) {
 	st->st_esp.attrs.spi = itl->spi_values[itl->spi_values_next+-1];
