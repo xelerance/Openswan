@@ -328,37 +328,6 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 |    length: 8
 |    transform type: 4
 |    transform ID: 5
-| ***parse IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    length: 44
-|    prop #: 2
-|    proto ID: 3
-|    spi size: 4
-|    # transforms: 4
-| parsing 4 raw bytes of IKEv2 Proposal Substructure Payload into CHILD SA SPI
-| CHILD SA SPI  34 56 78 12
-| ******emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    prop #: 1
-|    proto ID: 3
-|    spi size: 4
-|    # transforms: 3
-| emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
-| our spi  12 34 56 78
-| *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 1
-|    transform ID: 12
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    transform type: 5
-|    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 36
 | emitting length of IKEv2 Security Association Payload: 40
@@ -487,4 +456,9 @@ reading from file parentR2.pcap, link-type NULL (BSD loopback)
     192.1.2.23.500 > 192.1.2.45.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->c02e7a3031a03188: parent_sa ikev2_auth[]:
     (v2e[C]: len=284
             (v2IDr: len=8 fqdn:east)
-            (v2auth: len=196 method=rsasig authdata=(01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) ))
+            (v2auth: len=196 method=rsasig authdata=(01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) 
+	    (sa[C]: len=40
+		(p: #1 protoid=isakmp transform=4 len=40
+		    (t: #1 type=encr id=aes )
+		    (t: #2 type=integ id=hmac-sha )
+		    (t: #3 type=esn id=disabled )))
