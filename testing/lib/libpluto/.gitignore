@@ -9,6 +9,7 @@ lib-spdbfirst
 lib-spdbmerge
 lib-spdbph1
 lib-spdbv2
+lib-spdbv2c
 lib-spdbtest
 lib-whackmsgtest/OUTPUT
 skeyidcalc
@@ -16,6 +17,7 @@ spdbfirst
 spdbmerge
 spdbph1
 spdbv2
+spdbv2c
 spdbtest
 whackmsgtest
 refineconnection
