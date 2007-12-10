@@ -282,32 +282,51 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 		struct db_trans *tr=&dp->trans[tcc];
 		struct db_trans_flat *dtfone = &dtfset[tot_trans];
 		unsigned int attr_cnt;
-		
-		dtfone->protoid        = dp->protoid;
+
+		if(!f->parentSA) dtfone->encr_transid = tr->transid;
+
+		dtfone->protoid      = dp->protoid;
 		for(attr_cnt=0; attr_cnt<tr->attr_cnt; attr_cnt++) {
 		    struct db_attr *attr = &tr->attrs[attr_cnt];
-		    switch(attr->type) {
-		    case OAKLEY_AUTHENTICATION_METHOD:
-			dtfone->auth_method = attr->val;
-			break;
-			
-		    case OAKLEY_ENCRYPTION_ALGORITHM:
-			dtfone->encr_transid = attr->val;
-			break;
-		    case OAKLEY_HASH_ALGORITHM:
-			if(dtfone->protoid == PROTO_ISAKMP) {
-			    dtfone->prf_transid=attr->val;
-			} else {
-			    dtfone->integ_transid=attr->val;
-			}
-			break;
-			
-		    case OAKLEY_GROUP_DESCRIPTION:
-			dtfone->group_transid = attr->val;
-			break;
 
-		    default:
-			break;
+		    if(f->parentSA) {
+			switch(attr->type.oakley) {
+			case OAKLEY_AUTHENTICATION_METHOD:
+			    dtfone->auth_method = attr->val;
+			    break;
+			    
+			case OAKLEY_ENCRYPTION_ALGORITHM:
+			    dtfone->encr_transid = attr->val;
+			    break;
+
+			case OAKLEY_HASH_ALGORITHM:
+			    dtfone->prf_transid=attr->val;
+			    break;
+			    
+			case OAKLEY_GROUP_DESCRIPTION:
+			    dtfone->group_transid = attr->val;
+			    break;
+			    
+			default:
+			    break;
+			}
+		    } else {
+			switch(attr->type.ipsec) {
+			case AUTH_ALGORITHM:
+			    dtfone->auth_method = attr->val;
+			    break;
+			    
+			case KEY_LENGTH:
+			    /* XXX */
+			    break;
+
+			case ENCAPSULATION_MODE:
+			    /* XXX */
+			    break;
+			    
+			default:
+			    break;
+			}
 		    }
 		}
 		tot_trans++;
