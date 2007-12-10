@@ -711,7 +711,11 @@ ikev2_emit_winning_sa(
 					   , TRUE /* tunnel */);
     }
 		
-    r_proposal.isap_numtrans = 5;
+    if(parentSA) {
+	r_proposal.isap_numtrans = 4;
+    } else {
+	r_proposal.isap_numtrans = 3;
+    }
     r_proposal.isap_np = ISAKMP_NEXT_NONE;
     
     if(!out_struct(&r_proposal, &ikev2_prop_desc
@@ -940,6 +944,8 @@ ikev2_parse_parent_sa_body(
 
     ta.groupnum    = itl->dh_transforms[itl->dh_i];
     ta.group       = lookup_group(ta.groupnum); 
+
+    st->st_oakley = ta;
 
     if (r_sa_pbs != NULL)
     {
