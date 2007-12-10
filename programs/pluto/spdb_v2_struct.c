@@ -480,19 +480,18 @@ ikev2_acceptable_group(struct state *st, oakley_group_t group)
 }
 
 static bool 
-spdb_v2_match(struct db_sa *sadb
+spdb_v2_match_parent(struct db_sa *sadb
 	      , unsigned propnum
 	      , unsigned encr_transform
 	      , unsigned integ_transform
 	      , unsigned prf_transform
-	      , unsigned dh_transform
-	      , unsigned esn_transform)
+	      , unsigned dh_transform)
 {
     struct db_v2_prop *pd;
     unsigned int       pd_cnt;
-    bool encr_matched, integ_matched, prf_matched, dh_matched, esn_matched;
+    bool encr_matched, integ_matched, prf_matched, dh_matched;
 
-    encr_matched=integ_matched=prf_matched=dh_matched=esn_matched=FALSE;
+    encr_matched=integ_matched=prf_matched=dh_matched=FALSE;
 
     for(pd_cnt=0; pd_cnt < sadb->prop_disj_cnt; pd_cnt++) {
 	struct db_v2_prop_conj  *pj;
@@ -502,7 +501,7 @@ spdb_v2_match(struct db_sa *sadb
 
 	pd = &sadb->prop_disj[pd_cnt];
 	encrid = integid = prfid = dhid = esnid = 0;
-	encr_matched=integ_matched=prf_matched=dh_matched=esn_matched=FALSE;
+	encr_matched=integ_matched=prf_matched=dh_matched=FALSE;
 	if(pd->prop_cnt != 1) continue;
 
 	/* In PARENT SAs, we only support one conjunctive item */
@@ -537,12 +536,9 @@ spdb_v2_match(struct db_sa *sadb
 		if(tr->transid == dh_transform)
 		    dh_matched=TRUE;
 		break;
-
-	    case IKEv2_TRANS_TYPE_ESN:
-		esnid = tr->transid;
-		if(tr->transid == esn_transform)
-		    esn_matched=TRUE;
-		break;
+		
+	    default:
+		continue;
 	    }
 
 	    /* esn_matched not tested! */
@@ -592,9 +588,9 @@ struct ikev2_transform_list {
 };
 
 static bool
-ikev2_match_transform_list(struct db_sa *sadb
-			   , unsigned int propnum
-			   , struct ikev2_transform_list *itl)
+ikev2_match_transform_list_parent(struct db_sa *sadb
+				  , unsigned int propnum
+				  , struct ikev2_transform_list *itl)
 {
     if(itl->encr_trans_next < 1) {
 	openswan_log("ignored proposal %u with no cipher transforms",
@@ -616,10 +612,6 @@ ikev2_match_transform_list(struct db_sa *sadb
 		     propnum);
 	return FALSE;
     }
-    if(itl->esn_trans_next == 0) {
-	/* what is the default for IKEv2? */
-	itl->esn_transforms[itl->esn_trans_next++]=IKEv2_ESN_DISABLED;
-    }
     
     /*
      * now that we have a list of all the possibilities, see if any
@@ -632,15 +624,12 @@ ikev2_match_transform_list(struct db_sa *sadb
 	for(itl->integ_i=0; itl->integ_i < itl->integ_trans_next; itl->integ_i++) {
 	    for(itl->prf_i=0; itl->prf_i < itl->prf_trans_next; itl->prf_i++) {
 		for(itl->dh_i=0; itl->dh_i < itl->dh_trans_next; itl->dh_i++) {
-		    for(itl->esn_i=0; itl->esn_i<itl->esn_trans_next; itl->esn_i++) {
-			if(spdb_v2_match(sadb, propnum, 
-					 itl->encr_transforms[itl->encr_i],
-					 itl->integ_transforms[itl->integ_i],
-					 itl->prf_transforms[itl->prf_i],
-					 itl->dh_transforms[itl->dh_i],
-					 itl->esn_transforms[itl->esn_i])) {
-			    return TRUE;
-			}
+		    if(spdb_v2_match_parent(sadb, propnum, 
+					    itl->encr_transforms[itl->encr_i],
+					    itl->integ_transforms[itl->integ_i],
+					    itl->prf_transforms[itl->prf_i],
+					    itl->dh_transforms[itl->dh_i])) {
+			return TRUE;
 		    }
 		}
 	    }
@@ -916,9 +905,9 @@ ikev2_parse_parent_sa_body(
 
 	np = proposal.isap_np;
 
-	if(ikev2_match_transform_list(sadb
-				      , proposal.isap_propnum
-				      , itl)) {
+	if(ikev2_match_transform_list_parent(sadb
+					     , proposal.isap_propnum
+					     , itl)) {
 
 	    winning_prop = proposal;
 	    gotmatch = TRUE;
@@ -974,6 +963,128 @@ ikev2_parse_parent_sa_body(
 				     , winning_prop);
     }
     return NOTHING_WRONG;
+}
+
+static bool 
+spdb_v2_match_child(struct db_sa *sadb
+	      , unsigned propnum
+	      , unsigned encr_transform
+	      , unsigned integ_transform
+	      , unsigned esn_transform)
+{
+    struct db_v2_prop *pd;
+    unsigned int       pd_cnt;
+    bool encr_matched, integ_matched, esn_matched;
+
+    encr_matched=integ_matched=esn_matched=FALSE;
+
+    for(pd_cnt=0; pd_cnt < sadb->prop_disj_cnt; pd_cnt++) {
+	struct db_v2_prop_conj  *pj;
+	struct db_v2_trans      *tr;
+	unsigned int             tr_cnt;
+	int encrid, integid, prfid, dhid, esnid; 
+
+	pd = &sadb->prop_disj[pd_cnt];
+	encrid = integid = prfid = dhid = esnid = 0;
+	encr_matched=integ_matched=esn_matched=FALSE;
+
+	/* XXX need to fix this */
+	if(pd->prop_cnt != 1) continue;
+
+	pj = &pd->props[0];
+	if(pj->protoid == PROTO_ISAKMP) continue;
+
+	for(tr_cnt=0; tr_cnt < pj->trans_cnt; tr_cnt++) {
+
+	    tr = &pj->trans[tr_cnt];
+	    
+	    switch(tr->transform_type) {
+	    case IKEv2_TRANS_TYPE_ENCR:
+		encrid = tr->transid;
+		if(tr->transid == encr_transform)
+		    encr_matched=TRUE;
+		break;
+		
+	    case IKEv2_TRANS_TYPE_INTEG:
+		integid = tr->transid;
+		if(tr->transid == integ_transform)
+		    integ_matched=TRUE;
+		break;
+		
+	    case IKEv2_TRANS_TYPE_ESN:
+		esnid = tr->transid;
+		if(tr->transid == esn_transform)
+		    esn_matched=TRUE;
+		break;
+
+	    default:
+		continue;
+	    }
+
+	    if(esn_matched && integ_matched && encr_matched)
+		return TRUE;
+	}
+	if(DBGP(DBG_CONTROLMORE)) {
+	    DBG_log("proposal %u %s encr= (policy:%s vs offered:%s)"
+		    , propnum
+		    , encr_matched ? "failed" : "     "
+		    , enum_name(&trans_type_encr_names, encrid)
+		    , enum_name(&trans_type_encr_names, encr_transform));
+	    DBG_log("            %s integ=(policy:%s vs offered:%s)"
+		    , integ_matched ? "failed" : "     "
+		    , enum_name(&trans_type_integ_names, integid)
+		    , enum_name(&trans_type_integ_names, integ_transform));
+	    DBG_log("            %s esn=  (policy:%s vs offered:%s)"
+		    , esn_matched ? "failed" : "     "
+		    , enum_name(&trans_type_esn_names, esnid)
+		    , enum_name(&trans_type_esn_names, esn_transform));
+	}
+	
+    }
+    return FALSE;
+}
+
+
+static bool
+ikev2_match_transform_list_child(struct db_sa *sadb
+				 , unsigned int propnum
+				 , struct ikev2_transform_list *itl)
+{
+    if(itl->encr_trans_next < 1) {
+	openswan_log("ignored proposal %u with no cipher transforms",
+		     propnum);
+	return FALSE;
+    }
+    if(itl->integ_trans_next < 1) {
+	openswan_log("ignored proposal %u with no integrity transforms",
+		     propnum);
+	return FALSE;
+    }
+    if(itl->esn_trans_next == 0) {
+	/* what is the default for IKEv2? */
+	itl->esn_transforms[itl->esn_trans_next++]=IKEv2_ESN_DISABLED;
+    }
+    
+    /*
+     * now that we have a list of all the possibilities, see if any
+     * of them fit.
+     *
+     * XXX - have to deal with attributes.
+     *
+     */
+    for(itl->encr_i=0; itl->encr_i < itl->encr_trans_next; itl->encr_i++) {
+	for(itl->integ_i=0; itl->integ_i < itl->integ_trans_next; itl->integ_i++) {
+	    for(itl->esn_i=0; itl->esn_i<itl->esn_trans_next; itl->esn_i++) {
+		if(spdb_v2_match_child(sadb, propnum, 
+				       itl->encr_transforms[itl->encr_i],
+				       itl->integ_transforms[itl->integ_i],
+				       itl->esn_transforms[itl->esn_i])) {
+		    return TRUE;
+		}
+	    }
+	}
+    }
+    return FALSE;
 }
 
 notification_t
@@ -1079,9 +1190,9 @@ ikev2_parse_child_sa_body(
 
 	np = proposal.isap_np;
 
-	if(ikev2_match_transform_list(p2alg
-				      , proposal.isap_propnum
-				      , itl)) {
+	if(ikev2_match_transform_list_child(p2alg
+					    , proposal.isap_propnum
+					    , itl)) {
 
 	    winning_prop = proposal;
 	    gotmatch = TRUE;
