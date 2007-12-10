@@ -1,6 +1,7 @@
 void delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS) {}
 
 bool install_inbound_ipsec_sa(struct state *st) { return TRUE; }
+bool install_ipsec_sa(struct state *st, bool inbound UNUSED) { return TRUE; }
 
 ipsec_spi_t spis[4]={ 0x12345678,
 		      0x34567812,
