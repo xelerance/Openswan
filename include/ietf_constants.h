@@ -537,23 +537,25 @@ typedef u_int16_t cpi_t;
   extern const char *const oakley_attr_bit_names[];
 */
 
-#define OAKLEY_ENCRYPTION_ALGORITHM    1
-#define OAKLEY_HASH_ALGORITHM          2
-#define OAKLEY_AUTHENTICATION_METHOD   3
-#define OAKLEY_GROUP_DESCRIPTION       4
-#define OAKLEY_GROUP_TYPE              5
-#define OAKLEY_GROUP_PRIME             6	/* B/V */
-#define OAKLEY_GROUP_GENERATOR_ONE     7	/* B/V */
-#define OAKLEY_GROUP_GENERATOR_TWO     8	/* B/V */
-#define OAKLEY_GROUP_CURVE_A           9	/* B/V */
-#define OAKLEY_GROUP_CURVE_B          10	/* B/V */
-#define OAKLEY_LIFE_TYPE              11
-#define OAKLEY_LIFE_DURATION          12	/* B/V */
-#define OAKLEY_PRF                    13
-#define OAKLEY_KEY_LENGTH             14
-#define OAKLEY_FIELD_SIZE             15
-#define OAKLEY_GROUP_ORDER            16	/* B/V */
-#define OAKLEY_BLOCK_SIZE             17
+enum ikev1_oakley_attr {
+	OAKLEY_ENCRYPTION_ALGORITHM   =1,
+	OAKLEY_HASH_ALGORITHM         =2,
+	OAKLEY_AUTHENTICATION_METHOD  =3,
+	OAKLEY_GROUP_DESCRIPTION      =4,
+	OAKLEY_GROUP_TYPE             =5,
+	OAKLEY_GROUP_PRIME            =6,	/* B/V */
+	OAKLEY_GROUP_GENERATOR_ONE    =7,	/* B/V */
+	OAKLEY_GROUP_GENERATOR_TWO    =8,	/* B/V */
+	OAKLEY_GROUP_CURVE_A          =9,	/* B/V */
+	OAKLEY_GROUP_CURVE_B         =10,	/* B/V */
+	OAKLEY_LIFE_TYPE             =11,
+	OAKLEY_LIFE_DURATION         =12,	/* B/V */
+	OAKLEY_PRF                   =13,
+	OAKLEY_KEY_LENGTH            =14,
+	OAKLEY_FIELD_SIZE            =15,
+	OAKLEY_GROUP_ORDER           =16,	/* B/V */
+	OAKLEY_BLOCK_SIZE            =17,
+};
 
 /* for each Oakley attribute, which enum_names describes its values? */
 /* extern enum_names *oakley_attr_val_descs[]; */
@@ -564,15 +566,17 @@ typedef u_int16_t cpi_t;
 
 /* extern enum_names ipsec_attr_names; */
 
-#define SA_LIFE_TYPE             1
-#define SA_LIFE_DURATION         2	/* B/V */
-#define GROUP_DESCRIPTION        3
-#define ENCAPSULATION_MODE       4
-#define AUTH_ALGORITHM           5
-#define KEY_LENGTH               6
-#define KEY_ROUNDS               7
-#define COMPRESS_DICT_SIZE       8
-#define COMPRESS_PRIVATE_ALG     9	/* B/V */
+enum ikev1_ipsec_attr {
+	SA_LIFE_TYPE            =1,
+	SA_LIFE_DURATION        =2,	/* B/V */
+	GROUP_DESCRIPTION       =3,
+	ENCAPSULATION_MODE      =4,
+	AUTH_ALGORITHM          =5,
+	KEY_LENGTH              =6,
+	KEY_ROUNDS              =7,
+	COMPRESS_DICT_SIZE      =8,
+	COMPRESS_PRIVATE_ALG    =9,	/* B/V */
+};
 
 /* for each IPsec attribute, which enum_names describes its values? */
 /* extern enum_names *ipsec_attr_val_descs[]; */
