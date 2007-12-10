@@ -305,6 +305,10 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	/* if we  have an OpenPGP certificate we assume an
 	 * OpenPGP peer and have to send the Vendor ID
 	 */
+	if(st->st_sadb->prop_disj_cnt == 0 || st->st_sadb->prop_disj) {
+	    st->st_sadb = sa_v2_convert(st->st_sadb);
+	}
+
 	if (!ikev2_out_sa(&md->rbody
 			  , PROTO_ISAKMP
 			  , st->st_sadb

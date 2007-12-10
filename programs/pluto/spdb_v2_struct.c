@@ -90,9 +90,6 @@ ikev2_out_sa(pb_stream *outs
     }
 
     passert(sadb != NULL);
-    if(sadb->prop_disj_cnt == 0 || sadb->prop_disj) {
-	st->st_sadb = sadb = sa_v2_convert(st->st_sadb);
-    }
 
     /* now send out all the proposals */
     for(pc_cnt=0; pc_cnt < sadb->prop_disj_cnt; pc_cnt++)
@@ -111,7 +108,7 @@ ikev2_out_sa(pb_stream *outs
 	    
 	    memset(&p, 0, sizeof(p));
 	    
-	    /* if there is a next proposal, then the np needs to be set right */
+	    /* if there is a next proposal, then the np needs to be set right*/
 	    if(pr_cnt+1 < vp->prop_cnt || pc_cnt+1 < sadb->prop_disj_cnt) {
 		p.isap_np      = ISAKMP_NEXT_P;
 	    } else {
@@ -1194,8 +1191,8 @@ ikev2_parse_child_sa_body(
 					    , proposal.isap_propnum
 					    , itl)) {
 
-	    winning_prop = proposal;
 	    gotmatch = TRUE;
+	    winning_prop = proposal;
 
 	    if(selection && !gotmatch && np == ISAKMP_NEXT_P) {
 		openswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
