@@ -754,22 +754,20 @@ ikev2_emit_winning_sa(
 	/* Transform - DH hash */
 	r_trans.isat_type= IKEv2_TRANS_TYPE_DH;
 	r_trans.isat_transid = ta.groupnum;
-	r_trans.isat_np = ISAKMP_NEXT_T;
+	r_trans.isat_np = ISAKMP_NEXT_NONE;
 	if(!out_struct(&r_trans, &ikev2_trans_desc
 		       , &r_proposal_pbs, &r_trans_pbs))
 	    impossible();
 	close_output_pbs(&r_trans_pbs);
     } else {
-	if(!parentSA) {
-	    /* Transform - ESN sequence */
-	    r_trans.isat_type= IKEv2_TRANS_TYPE_ESN;
-	    r_trans.isat_transid = IKEv2_ESN_DISABLED;
-	    r_trans.isat_np = ISAKMP_NEXT_NONE;
-	    if(!out_struct(&r_trans, &ikev2_trans_desc
-			   , &r_proposal_pbs, &r_trans_pbs))
-		impossible();
-	    close_output_pbs(&r_trans_pbs);
-	}
+	/* Transform - ESN sequence */
+	r_trans.isat_type= IKEv2_TRANS_TYPE_ESN;
+	r_trans.isat_transid = IKEv2_ESN_DISABLED;
+	r_trans.isat_np = ISAKMP_NEXT_NONE;
+	if(!out_struct(&r_trans, &ikev2_trans_desc
+		       , &r_proposal_pbs, &r_trans_pbs))
+	    impossible();
+	close_output_pbs(&r_trans_pbs);
     }
 
     /* close out the proposal */
@@ -827,6 +825,10 @@ ikev2_parse_parent_sa_body(
 	sadb = st->st_sadb;
     }
     sadb = st->st_sadb = sa_v2_convert(sadb);
+
+    gotmatch = FALSE;
+    conjunction = FALSE;
+    zero(&ta);    
 
     while(np == ISAKMP_NEXT_P) {
 	/*
