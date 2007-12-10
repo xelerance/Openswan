@@ -283,9 +283,9 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 		struct db_trans_flat *dtfone = &dtfset[tot_trans];
 		unsigned int attr_cnt;
 
+		dtfone->protoid      = dp->protoid;
 		if(!f->parentSA) dtfone->encr_transid = tr->transid;
 
-		dtfone->protoid      = dp->protoid;
 		for(attr_cnt=0; attr_cnt<tr->attr_cnt; attr_cnt++) {
 		    struct db_attr *attr = &tr->attrs[attr_cnt];
 
@@ -296,7 +296,7 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 			    break;
 			    
 			case OAKLEY_ENCRYPTION_ALGORITHM:
-			    dtfone->encr_transid = attr->val;
+			    dtfone->encr_transid = v1tov2_encr(attr->val);
 			    break;
 
 			case OAKLEY_HASH_ALGORITHM:
@@ -336,7 +336,7 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
     
     pr=NULL;
     pr_cnt=0;
-    if(tot_trans > 1) {
+    if(tot_trans >= 1) {
 	pr = alloc_bytes(sizeof(struct db_v2_prop), "db_v2_prop");
     }
     dtflast = NULL;
@@ -345,11 +345,14 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
     propnum=1;
     
     for(i=0; i < tot_trans; i++) {
-	int tr_cnt = 4;
+	int tr_cnt;
 	int tr_pos;
 
 	dtfone = &dtfset[i];
 
+	if(dtfone->protoid == PROTO_ISAKMP) tr_cnt = 4;
+	else tr_cnt=3;
+	    
 	if(dtflast != NULL) {
 	    /*
 	     * see if previous protoid is identical to this
@@ -401,13 +404,13 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 	
 	tr_pos = 0;
 	tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_ENCR;
-	tr[tr_pos].transid        = v1tov2_encr(dtfone->encr_transid);
+	tr[tr_pos].transid        = dtfone->encr_transid;
 	tr_pos++;
 
 	if(dtfone->integ_transid == 0) {
 	    tr[tr_pos].transid        = IKEv2_AUTH_HMAC_SHA1_96;
 	} else {
-	    tr[tr_pos].transid        = v1tov2_integ(dtfone->integ_transid);
+	    tr[tr_pos].transid        = dtfone->integ_transid;
 	}
 	tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_INTEG;
 	tr_pos++;
@@ -416,13 +419,10 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 	    tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_PRF;
 	    tr[tr_pos].transid        = dtfone->prf_transid;
 	    tr_pos++;
-	}
-	
-	tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_DH;
-	tr[tr_pos].transid        = dtfone->group_transid;
-	tr_pos++;
-
-	if(dtfone->protoid != PROTO_ISAKMP) {
+	    tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_DH;
+	    tr[tr_pos].transid        = dtfone->group_transid;
+	    tr_pos++;
+	} else {
 	    tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_ESN;
 	    tr[tr_pos].transid        = IKEv2_ESN_DISABLED;
 	    tr_pos++;

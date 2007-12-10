@@ -57,7 +57,7 @@
 #include "spdb.h"
 
 void
-print_sa_attr(struct db_attr *at)
+print_sa_attr_oakley(struct db_attr *at)
 {
     const struct enum_names *en;
 	
@@ -74,18 +74,39 @@ print_sa_attr(struct db_attr *at)
 }
 
 void
-print_sa_trans(struct db_trans *tr)
+print_sa_attr_ipsec(struct db_attr *at)
+{
+    const struct enum_names *en;
+	
+    if(at->type.ipsec == 0) {
+	return;
+    }
+
+    if(at->type.ipsec <= ipsec_attr_val_descs_size) {
+	en = ipsec_attr_val_descs[at->type.ipsec];
+    }
+    printf("        type: %u(%s) val: %u(%s)\n"
+	   , at->type.ipsec, enum_name(&ipsec_attr_names, at->type.ipsec+ISAKMP_ATTR_AF_TV)
+	   , at->val,  en ? enum_name(en, at->val) : "unknown");
+}
+
+void
+print_sa_trans(struct db_sa *f, struct db_trans *tr)
 {
     unsigned int i;
     printf("      transform: %u cnt: %u\n",
 	   tr->transid, tr->attr_cnt);
     for(i=0; i<tr->attr_cnt; i++) {
-	print_sa_attr(&tr->attrs[i]);
+	if(f->parentSA) {
+	    print_sa_attr_oakley(&tr->attrs[i]);
+	} else {
+	    print_sa_attr_ipsec(&tr->attrs[i]);
+	}
     }
 }
 
 void
-print_sa_prop(struct db_prop *dp)
+print_sa_prop(struct db_sa *f, struct db_prop *dp)
 {
     unsigned int i;
     printf("    protoid: %u (%s) cnt: %u\n"
@@ -93,18 +114,18 @@ print_sa_prop(struct db_prop *dp)
 	   , enum_name(&protocol_names, dp->protoid)
 	   , dp->trans_cnt);
     for(i=0; i<dp->trans_cnt; i++) {
-	print_sa_trans(&dp->trans[i]);
+	print_sa_trans(f, &dp->trans[i]);
     }
 }
 
 void
-print_sa_prop_conj(struct db_prop_conj *pc)
+print_sa_prop_conj(struct db_sa *f, struct db_prop_conj *pc)
 {
     unsigned int i;
     printf("  conjunctions cnt: %u\n",
 	   pc->prop_cnt);
     for(i=0; i<pc->prop_cnt; i++) {
-	print_sa_prop(&pc->props[i]);
+	print_sa_prop(f, &pc->props[i]);
     }
 }
 
@@ -115,7 +136,7 @@ sa_print(struct db_sa *f)
     printf("sa disjunct cnt: %u\n",
 	   f->prop_conj_cnt);
     for(i=0; i<f->prop_conj_cnt; i++) {
-	print_sa_prop_conj(&f->prop_conjs[i]);
+	print_sa_prop_conj(f, &f->prop_conjs[i]);
     }
 }
 

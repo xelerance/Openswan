@@ -174,10 +174,11 @@ extern bool out_attr(int type, unsigned long val, struct_desc *attr_desc
 		     , pb_stream *pbs);
 
 /* in spdb_print.c - normally never used in pluto */
-extern void print_sa_attr(struct db_attr *at);
-extern void print_sa_trans(struct db_trans *tr);
-extern void print_sa_prop(struct db_prop *dp);
-extern void print_sa_prop_conj(struct db_prop_conj *pc);
+extern void print_sa_attr_oakley(struct db_attr *at);
+extern void print_sa_attr_ipsec(struct db_attr *at);
+extern void print_sa_trans(struct db_sa *f, struct db_trans *tr);
+extern void print_sa_prop(struct db_sa *f, struct db_prop *dp);
+extern void print_sa_prop_conj(struct db_sa *f, struct db_prop_conj *pc);
 extern void sa_print(struct db_sa *f);
 
 extern void print_sa_v2_trans(struct db_v2_trans *tr);

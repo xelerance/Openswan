@@ -470,6 +470,7 @@ enum_names *ipsec_attr_val_descs[] = {
 	NULL,			/* COMPRESS_DICT_SIZE */
 	NULL,			/* COMPRESS_PRIVATE_ALG */
     };
+const unsigned int ipsec_attr_val_descs_size=elemsof(ipsec_attr_val_descs);
 
 /* SA Lifetime Type attribute */
 

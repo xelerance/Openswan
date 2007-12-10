@@ -191,7 +191,9 @@ db_trans_expand(struct db_context *ctx, int delta_trans)
 	}
 	/* update elem count */
 	ctx->max_trans = max_trans;
-	PFREE_ST(old_trans, db_trans_st);
+	if(old_trans) {
+		PFREE_ST(old_trans, db_trans_st);
+	}
 	ret = 0;
 out:
 	return ret;
@@ -243,7 +245,7 @@ db_attrs_expand(struct db_context *ctx, int delta_attrs)
 	}
 	/* update elem count */
 	ctx->max_attrs = max_attrs;
-	PFREE_ST(old_attrs, db_attrs_st);
+	if(old_attrs) PFREE_ST(old_attrs, db_attrs_st);
 	ret = 0;
 out:
 	return ret;

@@ -744,6 +744,8 @@ kernel_alg_makedb(lset_t policy, struct alg_info_esp *ei, bool logit)
     struct db_prop_conj pc;
     struct db_sa t, *n;
 
+    memset(&t, 0, sizeof(t));
+
     if(ei == NULL) {
 	struct db_sa *sadb;
 	lset_t pm = POLICY_ENCRYPT | POLICY_AUTHENTICATE;
