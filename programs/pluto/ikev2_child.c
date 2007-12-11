@@ -198,9 +198,10 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     ret = ikev2_calc_emit_ts(md, outpbs, role
 			     , c, c->policy);
     if(ret != STF_OK) return ret;
-    
-    if(!install_ipsec_sa(st, FALSE))
-`	return STF_FATAL;
+
+    /* install inbound and outbound test case */
+    if(!install_ipsec_sa(st, TRUE))
+	return STF_FATAL;
 
     return STF_OK;
 }

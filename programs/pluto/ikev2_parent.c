@@ -1494,7 +1494,24 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	/* not really anything to here... but it would be worth unpending again */
 	return STF_OK;
     }
-    
+
+    {
+	notification_t rn;
+	struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
+	
+	rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
+				       NULL, st, FALSE);
+	
+	if(rn != NOTHING_WRONG)
+	    return STF_FAIL + rn;
+    }
+	
+    ikev2_derive_child_keys(st);
+
+    /* now install outbound SA --- inbound was installed in outI2 */
+    if(!install_ipsec_sa(st, FALSE))
+	return STF_FATAL;
+
     return STF_OK;
     
 }
