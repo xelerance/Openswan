@@ -753,6 +753,16 @@ duplicate_state(struct state *st)
     clone_chunk(st_skeyid_e, "st_skeyid_e in duplicate_state");
     clone_chunk(st_enc_key, "st_enc_key in duplicate_state");
 
+    /* v2 duplication of state */
+    clone_chunk(st_skeyseed, "st_skeyseed in duplicate_state");
+    clone_chunk(st_skey_d,   "st_skey_d in duplicate_state");
+    clone_chunk(st_skey_ai,  "st_skey_ai in duplicate_state");
+    clone_chunk(st_skey_ar,  "st_skey_ai in duplicate_state");
+    clone_chunk(st_skey_ei,  "st_skey_ai in duplicate_state");
+    clone_chunk(st_skey_er,  "st_skey_ai in duplicate_state");
+    clone_chunk(st_skey_pi,  "st_skey_ai in duplicate_state");
+    clone_chunk(st_skey_pr,  "st_skey_ai in duplicate_state");
+
 #   undef clone_chunk
 
     nst->st_oakley = st->st_oakley;

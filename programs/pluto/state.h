@@ -144,6 +144,15 @@ struct hidden_variables {
                                   st->st_suspended_md_func=__FUNCTION__; \
                                   st->st_suspended_md_line=__LINE__; } while(0)
 
+struct traffic_selector {
+    u_int8_t  sin_family;
+    u_int8_t  ipprotoid;
+    u_int16_t startport;
+    u_int16_t endport;
+    ip_address low;
+    ip_address high;
+};
+
 /* state object: record the state of a (possibly nascent) SA
  *
  * Invariants (violated only during short transitions):
@@ -239,7 +248,7 @@ struct state
     u_int8_t           st_myuserprotoid;       /* IDcx.protoid */
     u_int16_t          st_myuserport;
 
-  /* his stuff */
+    /* his stuff */
 
     chunk_t            st_rpacket;             /* Received packet */
 
@@ -296,6 +305,7 @@ struct state
     chunk_t            st_skey_pi;       /* KM for ISAKMP encryption */
     chunk_t            st_skey_pr;       /* KM for ISAKMP encryption */
     struct connection *st_childsa;       /* connection included in AUTH */
+    struct traffic_selector st_ts_this, st_ts_that;
 
     u_char             st_iv[MAX_DIGEST_LEN];  /* IV for encryption */
     u_char             st_old_iv[MAX_DIGEST_LEN];  /* IV for encryption */
