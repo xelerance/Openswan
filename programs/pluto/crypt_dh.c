@@ -1,6 +1,6 @@
 /* 
  * Cryptographic helper function - calculate DH
- * Copyright (C) 2004 Michael C. Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007 Michael C. Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,7 +14,6 @@
  *
  * This code was developed with the support of IXIA communications.
  *
- * RCSID $Id: crypt_dh.c,v 1.11 2005/08/14 21:47:29 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -49,6 +48,7 @@
 #include "id.h"
 #include "secrets.h"
 #include "keys.h"
+#include "ikev2_prfplus.h"
 
 /** Compute DH shared secret from our local secret and the peer's public value.
  * We make the leap that the length should be that of the group
@@ -431,70 +431,6 @@ void calc_dh(struct pluto_crypto_req *r)
  * IKEv2 - RFC4306 SKEYSEED - calculation.
  */
 
-struct v2prf_stuff {
-    chunk_t t;
-    const struct hash_desc *prf_hasher;
-    chunk_t *skeyseed;
-    chunk_t ni;
-    chunk_t nr;
-    chunk_t spii;
-    chunk_t spir;
-    u_char counter[1];
-    unsigned int availbytes;
-    unsigned int nextbytes;
-};
-    
-static void
-v2prfplus(struct v2prf_stuff *vps)
-{
-    struct hmac_ctx ctx;
-
-    hmac_init_chunk(&ctx, vps->prf_hasher, *vps->skeyseed);
-    hmac_update_chunk(&ctx, vps->t);
-    hmac_update_chunk(&ctx, vps->ni);
-    hmac_update_chunk(&ctx, vps->nr);
-    hmac_update_chunk(&ctx, vps->spii);
-    hmac_update_chunk(&ctx, vps->spir);
-    hmac_update(&ctx, vps->counter, 1);
-    hmac_final_chunk(vps->t, "skeyseed_t1", &ctx);
-    if(DBGP(DBG_CRYPT)) {
-	char b[20];
-	sprintf(b, "prf+[%u]:", vps->counter[0]);
-	DBG_dump_chunk(b, vps->t);
-    }
-
-    vps->counter[0]++;
-    vps->availbytes  = vps->t.len;
-    vps->nextbytes   = 0;
-}
-
-static void v2genbytes(chunk_t *need
-		       , unsigned int needed, const char *name
-		       , struct v2prf_stuff *vps)
-{
-    u_char *target;
-    need->ptr = alloc_bytes(needed, name);
-    need->len = needed;
-    target = need->ptr;
-
-    while(needed > vps->availbytes) {
-	if(vps->availbytes) {
-	    /* use any bytes which are presently in the buffer */
-	    memcpy(target, &vps->t.ptr[vps->nextbytes], vps->availbytes);
-	    target += vps->availbytes;
-	    needed -= vps->availbytes;
-	    vps->availbytes = 0;
-	}
-	/* generate more bits into t1 */
-	v2prfplus(vps);
-    }
-    passert(needed <= vps->availbytes);
-
-    memcpy(target, &vps->t.ptr[vps->nextbytes], needed);
-    vps->availbytes -= needed;
-    vps->nextbytes  += needed;
-}
-
 static void
 calc_skeyseed_v2(struct pcr_skeyid_q *skq
 		 , chunk_t shared
@@ -529,6 +465,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 
 
     vpss.prf_hasher = crypto_get_hasher(skq->prf_hash);
+    passert(vpss.prf_hasher);
 
     /* generate SKEYSEED from key=(Ni|Nr), hash of shared */
     {
