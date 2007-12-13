@@ -67,13 +67,16 @@ void ikev2_derive_child_keys(struct state *st UNUSED)
  
 
 /* rewrite me with addrbytesptr() */
-static struct traffic_selector ikev2_subnettots(struct end *e)
+struct traffic_selector ikev2_subnettots(struct end *e)
 {
     struct traffic_selector ts;
     struct in6_addr v6mask;
 
+    memset(&ts, 0, sizeof(ts));
+    
     switch(e->client.addr.u.v4.sin_family) {
     case AF_INET:
+	ts.sin_family = AF_INET;
 	ts.low   = e->client.addr;
 	ts.low.u.v4.sin_addr.s_addr  &= bitstomask(e->client.maskbits).s_addr;
 	ts.high  = e->client.addr;
@@ -81,6 +84,7 @@ static struct traffic_selector ikev2_subnettots(struct end *e)
 	break;
 
     case AF_INET6:
+	ts.sin_family = AF_INET6;
 	v6mask = bitstomask6(e->client.maskbits);
 
 	ts.low   = e->client.addr;
@@ -103,12 +107,11 @@ static struct traffic_selector ikev2_subnettots(struct end *e)
 stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 			 , pb_stream *outpbs   
 			 , unsigned int np
-			 , struct end *end       UNUSED
+			 , struct traffic_selector *ts
 			 , enum phase1_role role UNUSED)
 {
     struct ikev2_ts its;
     struct ikev2_ts1 its1;
-    struct traffic_selector ts;
     pb_stream ts_pbs;
     pb_stream ts_pbs2;
 
@@ -119,8 +122,7 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
     if(!out_struct(&its, &ikev2_ts_desc, outpbs, &ts_pbs))
 	return STF_INTERNAL_ERROR;
 
-    ts = ikev2_subnettots(end);
-    switch(end->client.addr.u.v4.sin_family) {
+    switch(ts->sin_family) {
     case AF_INET:
 	its1.isat1_type = ID_IPV4_ADDR_RANGE;
 	break;
@@ -136,15 +138,15 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 	return STF_INTERNAL_ERROR;
     
     /* now do IP addresses */
-    switch(end->client.addr.u.v4.sin_family) {
+    switch(ts->sin_family) {
     case AF_INET:
-	if(!out_raw(&ts.low.u.v4.sin_addr.s_addr, 4, &ts_pbs2, "ipv4 low")
-	   ||!out_raw(&ts.high.u.v4.sin_addr.s_addr, 4,&ts_pbs2,"ipv4 high"))
+	if(!out_raw(&ts->low.u.v4.sin_addr.s_addr, 4, &ts_pbs2, "ipv4 low")
+	   ||!out_raw(&ts->high.u.v4.sin_addr.s_addr, 4,&ts_pbs2,"ipv4 high"))
 	    return STF_INTERNAL_ERROR;
 	break;
     case AF_INET6:
-	if(!out_raw(&ts.low.u.v6.sin6_addr.s6_addr, 16, &ts_pbs2, "ipv6 low")
-	   ||!out_raw(&ts.high.u.v6.sin6_addr.s6_addr,16,&ts_pbs2,"ipv6 high"))
+	if(!out_raw(&ts->low.u.v6.sin6_addr.s6_addr, 16, &ts_pbs2, "ipv6 low")
+	   ||!out_raw(&ts->high.u.v6.sin6_addr.s6_addr,16,&ts_pbs2,"ipv6 high"))
 	    return STF_INTERNAL_ERROR;
 	break;
     }
@@ -158,11 +160,12 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 
 stf_status ikev2_calc_emit_ts(struct msg_digest *md
 			      , pb_stream *outpbs
-			      , enum phase1_role role UNUSED
+			      , enum phase1_role role 
 			      , struct connection *c0
 			      , lset_t policy UNUSED)
 {
     struct state *st = md->st;
+    struct traffic_selector *ts_i, *ts_r;
     struct spd_route *sr;
     stf_status ret;
     
@@ -170,12 +173,20 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     install_inbound_ipsec_sa(st);
     st->st_childsa = c0;
 
+    if(role == INITIATOR) {
+	ts_i = &st->st_ts_this;
+	ts_r = &st->st_ts_that;
+    } else {
+	ts_i = &st->st_ts_that;
+	ts_r = &st->st_ts_this;
+    }
+
     for(sr=&c0->spd; sr != NULL; sr = sr->next) {
 	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2TSr
-			    , &sr->this, INITIATOR);
+			    , ts_i, INITIATOR);
 	if(ret!=STF_OK) return ret;
 	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_NONE
-			    , &sr->that, RESPONDER);
+			    , ts_r, RESPONDER);
 	if(ret!=STF_OK) return ret;
     }
 
@@ -206,18 +217,18 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 		    return -1;
 		
 		array[i].high.u.v4.sin_family = AF_INET;
-		if(!in_raw(&array[i].low.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
+		if(!in_raw(&array[i].high.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
 		    return -1;
 		break;
 
 	    case ID_IPV6_ADDR_RANGE:
 		array[i].sin_family = AF_INET;
-		array[i].low.u.v4.sin_family  = AF_INET;
-		if(!in_raw(&array[i].low.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
+		array[i].low.u.v6.sin6_family  = AF_INET6;
+		if(!in_raw(&array[i].low.u.v6.sin6_addr.s6_addr, 16, &addr, "ipv6 ts"))
 		    return -1;
 		
-		array[i].high.u.v4.sin_family = AF_INET;
-		if(!in_raw(&array[i].low.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
+		array[i].high.u.v6.sin6_family = AF_INET6;
+		if(!in_raw(&array[i].high.u.v6.sin6_addr.s6_addr,16, &addr, "ipv6 ts"))
 		    return -1;
 		break;
 		
@@ -248,20 +259,8 @@ static int ikev2_evaluate_connection_fit(struct connection *d
     int best_tsr, best_tsi; 
     struct end *ei, *er;
 #ifdef DEBUG
-    char s3[SUBNETTOT_BUF],d3[SUBNETTOT_BUF];
+    char ei3[SUBNETTOT_BUF],er3[SUBNETTOT_BUF];
     
-    if (DBGP(DBG_CONTROLMORE))
-    {
-	subnettot(&sr->this.client,  0, s3, sizeof(s3));
-	subnettot(&sr->that.client,  0, d3, sizeof(d3));
-	DBG_log("  ikev2_eval_conn evaluating "
-		"%s:%s:%d/%d %s:%d/%d %s"
-		, d->name, s3, sr->this.protocol, sr->this.port
-		, d3, sr->that.protocol, sr->that.port
-		, is_virtual_connection(d) ? "(virt)" : "");
-    }
-#endif /* DEBUG */
-   
     if(role == INITIATOR) {
 	ei = &sr->this;
 	er = &sr->that;
@@ -270,10 +269,36 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 	er = &sr->this;
     }
 	
+    if (DBGP(DBG_CONTROLMORE))
+    {
+	subnettot(&ei->client,  0, ei3, sizeof(ei3));
+	subnettot(&er->client,  0, er3, sizeof(er3));
+	DBG_log("  ikev2_eval_conn evaluating "
+		"I=%s:%s:%d/%d R=%s:%d/%d %s"
+		, d->name, ei3, ei->protocol, ei->port
+		, er3, er->protocol, er->port
+		, is_virtual_connection(d) ? "(virt)" : "");
+    }
+#endif /* DEBUG */
+   
     /* compare tsi/r array to this/that, evaluating how well it fits */
     for(tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
 	for(tsr_ni=0; tsr_ni<tsr_n; tsr_ni++) {
 	    /* does it fit at all? */
+
+	    if (DBGP(DBG_CONTROLMORE))
+	    {
+		char lbi[ADDRTOT_BUF], hbi[ADDRTOT_BUF];
+		char lbr[ADDRTOT_BUF], hbr[ADDRTOT_BUF];
+		addrtot(&tsi[tsi_ni].low,  0, lbi, sizeof(lbi));
+		addrtot(&tsi[tsi_ni].high, 0, hbi, sizeof(hbi));
+		addrtot(&tsr[tsr_ni].low,  0, lbr, sizeof(lbr));
+		addrtot(&tsr[tsr_ni].high, 0, hbr, sizeof(hbr));
+		
+		DBG_log("    tsi[%u]=%s/%s tsr[%u]=%s/%s "
+			, tsi_ni, lbi, hbi
+			, tsr_ni, lbr, hbr);
+	    }
 
 	    /* do addresses fit into the policy? */
 	    if(addrinsubnet(&tsi[tsi_ni].low, &ei->client)
@@ -298,16 +323,6 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 
 		if (DBGP(DBG_CONTROLMORE))
 		{
-		    char lbi[ADDRTOT_BUF], hbi[ADDRTOT_BUF];
-		    char lbr[ADDRTOT_BUF], hbr[ADDRTOT_BUF];
-		    addrtot(&tsi[tsi_ni].low,  0, lbi, sizeof(lbi));
-		    addrtot(&tsi[tsi_ni].high, 0, hbi, sizeof(hbi));
-		    addrtot(&tsr[tsr_ni].low,  0, lbr, sizeof(lbr));
-		    addrtot(&tsr[tsr_ni].high, 0, hbr, sizeof(hbr));
-
-		    DBG_log("    tsi[%u]=%s/%s tsr[%u]=%s/%s "
-			    , tsi_ni, lbi, hbi
-			    , tsr_ni, lbr, hbr);
 		    DBG_log("      has ts_range1=%u maskbits1=%u ts_range2=%u maskbits2=%u fitbits=%d <> %d"
 			    , ts_range1, maskbits1, ts_range2, maskbits2
 			    , fitbits, bestfit);
@@ -316,6 +331,7 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 		if(fitbits > bestfit) {
 		    best_tsi = tsi_ni;
 		    best_tsr = tsr_ni;
+		    bestfit = fitbits;
 		}
 	    }
 	}
@@ -379,13 +395,18 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	int bestfit, newfit;
 	struct spd_route *sra, *bsr;
 	struct host_pair *hp = NULL;
-	
+
+	bsr = NULL;
 	bestfit = -1;
 	for (sra = &c->spd; sra != NULL; sra = sra->next)
 	{
-	    int bfit=ikev2_evaluate_connection_fit(b,sra,role
+	    int bfit=ikev2_evaluate_connection_fit(c,sra,role
 						   ,tsi,tsr,tsi_n,tsr_n);
-	    if(bfit > bestfit) bfit = bestfit;
+	    if(bfit > bestfit) {
+		bestfit = bfit;
+		b = c;
+		bsr = sra;
+	    }
 	}
 
 	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next)
@@ -394,6 +415,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 				, sra->this.host_port
 				, NULL
 				, sra->that.host_port);
+
 #ifdef DEBUG
 	    if (DBGP(DBG_CONTROLMORE))
 	    {
@@ -407,6 +429,8 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 			, (hp ? "found" : "not found"));
 	    }
 #endif /* DEBUG */
+
+	    if(!hp) continue;
 
 	    for (d = hp->connections; d != NULL; d = d->hp_next)
 	    {

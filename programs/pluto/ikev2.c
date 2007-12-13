@@ -555,6 +555,17 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	/* document IPsec SA details for admin's pleasure */
 	if(IS_CHILD_SA_ESTABLISHED(st->st_state))
 	{
+	    char usubl[128], usubh[128];
+	    char tsubl[128], tsubh[128];
+
+	    addrtot(&st->st_ts_this.low,  0, usubl, sizeof(usubl));
+	    addrtot(&st->st_ts_this.high, 0, usubh, sizeof(usubh));
+	    addrtot(&st->st_ts_that.low,  0, tsubl, sizeof(tsubl));
+	    addrtot(&st->st_ts_that.high, 0, tsubh, sizeof(tsubh));
+	    
+	    openswan_log("negotiated tunnel [%s,%s] -> [%s,%s]"
+			 , usubl, usubh, tsubl, tsubh);
+
 	    fmt_ipsec_sa_established(st,  sadetails,sizeof(sadetails));
 	} else if(IS_PARENT_SA_ESTABLISHED(st->st_state)) {
 	    fmt_isakmp_sa_established(st, sadetails,sizeof(sadetails));

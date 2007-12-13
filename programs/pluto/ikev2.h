@@ -107,7 +107,7 @@ extern void ikev2_derive_child_keys(struct state *st);
 extern stf_status ikev2_emit_ts(struct msg_digest *md 
 				, pb_stream *outpbs   
 				, unsigned int np
-				, struct end *end    
+				, struct traffic_selector *ts
 				, enum phase1_role role);
 
 extern stf_status ikev2_calc_emit_ts(struct msg_digest *md
@@ -120,3 +120,4 @@ extern stf_status ikev2_child_sa_respond(struct msg_digest *md
 					 , enum phase1_role role
 					 , pb_stream *outpbs);
 
+extern struct traffic_selector ikev2_subnettots(struct end *e);

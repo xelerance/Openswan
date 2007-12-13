@@ -28,7 +28,7 @@
 int ikev2_highorder_zerobits(ip_address b)
 {
     unsigned const char *bp;
-    int i, j, val;
+    int i, j;
     u_int32_t mask;
     size_t n;
     int zerobits = 0;
@@ -58,7 +58,6 @@ int ikev2_calc_iprangediff(ip_address low, ip_address high)
     unsigned const char *lp, *t;
     unsigned char *dp;
     ip_address diff;
-    unsigned int h,l;
     size_t n;
     size_t n2;
     int i;
