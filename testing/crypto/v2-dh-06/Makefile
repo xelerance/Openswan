@@ -9,6 +9,7 @@ SOURCES+=${OPENSWANSRCDIR}/programs/pluto/ike_alg.c
 SOURCES+=${OPENSWANSRCDIR}/programs/pluto/rnd.c
 SOURCES+=${OPENSWANSRCDIR}/programs/pluto/crypt_utils.c
 SOURCES+=${OPENSWANSRCDIR}/programs/pluto/crypt_dh.c
+SOURCES+=${OPENSWANSRCDIR}/programs/pluto/ikev2_prfplus.c
 
 PROGRAM=pk-dh
 

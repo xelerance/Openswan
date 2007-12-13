@@ -24,6 +24,7 @@
 #include "../../../programs/pluto/ike_alg_aes.c"
 #include "../../../programs/pluto/crypt_utils.c"
 #include "../../../programs/pluto/crypt_dh.c"
+#include "../../../programs/pluto/ikev2_prfplus.c"
 
 #include "crypto.h"
 
@@ -66,7 +67,8 @@ int main(int argc, char *argv[])
 	skq->thespace.start = 0;
 	skq->thespace.len   = sizeof(skq->space);
 	skq->auth = tc3_auth;
-	skq->hash = tc3_hash;
+	skq->prf_hash = tc3_hash;
+	skq->integ_hash = tc3_hash;
 	skq->oakley_group = tc3_oakleygroup;
 	skq->init = tc3_init;
 	skq->keysize = tc3_encrypter->keydeflen/BITS_PER_BYTE;

@@ -43,20 +43,27 @@
 |   7e 27 9f 00  28 81 21 cb  3d e7 f1 d9  76 fd f1 6c
 |   99 28 db 95  92 38 f7 83  a4 fd 38 75  7e 55 2c e9
 |   2d db d6 f5  0c 1d 35 af  77 34 fc 85  cb 30 b8 09
-| prf+[1]:  ac 97 eb 39  07 53 a4 5d  61 c1 64 ff  ca 25 99 b0
-|   2e 05 3c 7e
-| prf+[2]:  4e a8 e6 62  b0 7c dd 43  0f 69 44 c6  72 3e 4b 82
-|   d5 72 24 18
-| prf+[3]:  51 5b 0b d2  2e 6d 76 b3  4f db 76 0a  a7 bf ad 80
-|   b1 09 b7 5d
-| prf+[4]:  3f 44 bf 47  ca fd 81 50  59 1d eb 08  81 99 fc bf
-|   be db 67 ec
-| prf+[5]:  7d c3 d0 0c  cc ac 42 e7  0c d6 3b de  cc 07 97 44
-|   b4 a3 4e 8a
-| prf+[6]:  0d 2f 27 8b  ee 06 6d 07  a5 a5 75 2e  e9 00 11 7e
-|   41 d4 31 62
-| prf+[7]:  40 b8 63 22  bf 06 9f bc  eb 81 58 e7  6a 49 14 75
-|   56 d3 3c 8e
+| Input to SKEYSEED:   b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
+|   47 e9 f9 25  8c a2 38 58  f6 75 b1 66  b0 2c c2 92
+| PRF+ input
+| Ni  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
+| Nr  47 e9 f9 25  8c a2 38 58  f6 75 b1 66  b0 2c c2 92
+| SPIi  75 46 d3 d6  ea 09 f7 df
+| SPIr  61 a6 78 6a  41 ea 48 06
+| prf+[1]:  e9 c7 4b 23  be 09 1e 7f  ec 5b 53 80  4b b5 ec c8
+|   25 28 38 2f
+| prf+[2]:  49 3c 25 a9  67 a8 60 80  d7 8d 36 ee  4e f2 53 4f
+|   5b c4 da 4e
+| prf+[3]:  a6 a5 b7 47  bd 9b 15 47  1e 40 fb e1  84 3f fe 22
+|   a6 61 05 26
+| prf+[4]:  31 d3 12 22  0a 6b 25 03  8a 98 b9 7d  a6 9b eb b9
+|   b8 0c 0a e5
+| prf+[5]:  a6 a8 1d 8e  cd 2f 00 bb  c5 68 1b 58  27 7c f2 16
+|   6e 26 74 be
+| prf+[6]:  17 08 cb a0  ee df e9 54  78 61 97 af  a1 09 0d 52
+|   47 85 cd fc
+| prf+[7]:  25 18 ce 46  ad 07 8f a2  90 f7 55 16  61 b4 61 b5
+|   fd fd 87 f7
 | shared:    60 76 62 71  0c 76 fe 27  4f 6f 7c 9f  68 cf cf e0
 |   a7 56 44 cb  a1 92 2a b9  c9 c2 16 0e  a7 80 d0 71
 |   50 06 87 10  85 f0 80 30  58 c4 2e c9  d6 ae 4f 53
@@ -69,20 +76,20 @@
 |   7e 27 9f 00  28 81 21 cb  3d e7 f1 d9  76 fd f1 6c
 |   99 28 db 95  92 38 f7 83  a4 fd 38 75  7e 55 2c e9
 |   2d db d6 f5  0c 1d 35 af  77 34 fc 85  cb 30 b8 09
-| skeyseed:  9d 8e 53 96  0b 36 01 f4  c0 d3 29 ee  1e c3 70 27
-|   0d 06 22 17
-| SK_d:  ac 97 eb 39  07 53 a4 5d  61 c1 64 ff  ca 25 99 b0
-|   2e 05 3c 7e
-| SK_ai:  4e a8 e6 62  b0 7c dd 43  0f 69 44 c6  72 3e 4b 82
-|   d5 72 24 18
-| SK_ar:  51 5b 0b d2  2e 6d 76 b3  4f db 76 0a  a7 bf ad 80
-|   b1 09 b7 5d
-| SK_ei:  3f 44 bf 47  ca fd 81 50  59 1d eb 08  81 99 fc bf
-| SK_er:  be db 67 ec  7d c3 d0 0c  cc ac 42 e7  0c d6 3b de
-| SK_pi:  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
-|   a5 a5 75 2e
-| SK_pr:  e9 00 11 7e  41 d4 31 62  40 b8 63 22  bf 06 9f bc
-|   eb 81 58 e7
+| skeyseed:  31 e8 24 40  ab e3 eb 77  38 6b 0e ae  67 0d 66 2c
+|   46 f2 a6 bf
+| SK_d:  e9 c7 4b 23  be 09 1e 7f  ec 5b 53 80  4b b5 ec c8
+|   25 28 38 2f
+| SK_ai:  49 3c 25 a9  67 a8 60 80  d7 8d 36 ee  4e f2 53 4f
+|   5b c4 da 4e
+| SK_ar:  a6 a5 b7 47  bd 9b 15 47  1e 40 fb e1  84 3f fe 22
+|   a6 61 05 26
+| SK_ei:  31 d3 12 22  0a 6b 25 03  8a 98 b9 7d  a6 9b eb b9
+| SK_er:  b8 0c 0a e5  a6 a8 1d 8e  cd 2f 00 bb  c5 68 1b 58
+| SK_pi:  27 7c f2 16  6e 26 74 be  17 08 cb a0  ee df e9 54
+|   78 61 97 af
+| SK_pr:  a1 09 0d 52  47 85 cd fc  25 18 ce 46  ad 07 8f a2
+|   90 f7 55 16
 
 output:
 | shared  60 76 62 71  0c 76 fe 27  4f 6f 7c 9f  68 cf cf e0
@@ -97,18 +104,18 @@ output:
 |   7e 27 9f 00  28 81 21 cb  3d e7 f1 d9  76 fd f1 6c
 |   99 28 db 95  92 38 f7 83  a4 fd 38 75  7e 55 2c e9
 |   2d db d6 f5  0c 1d 35 af  77 34 fc 85  cb 30 b8 09
-| skeyseed  9d 8e 53 96  0b 36 01 f4  c0 d3 29 ee  1e c3 70 27
-|   0d 06 22 17
-| skeyid_d  ac 97 eb 39  07 53 a4 5d  61 c1 64 ff  ca 25 99 b0
-|   2e 05 3c 7e
-| skeyid_ai  4e a8 e6 62  b0 7c dd 43  0f 69 44 c6  72 3e 4b 82
-|   d5 72 24 18
-| skeyid_ar  51 5b 0b d2  2e 6d 76 b3  4f db 76 0a  a7 bf ad 80
-|   b1 09 b7 5d
-| skeyid_ei  3f 44 bf 47  ca fd 81 50  59 1d eb 08  81 99 fc bf
-| skeyid_er  be db 67 ec  7d c3 d0 0c  cc ac 42 e7  0c d6 3b de
-| skeyid_pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
-|   a5 a5 75 2e
-| skeyid_pr  e9 00 11 7e  41 d4 31 62  40 b8 63 22  bf 06 9f bc
-|   eb 81 58 e7
+| skeyseed  31 e8 24 40  ab e3 eb 77  38 6b 0e ae  67 0d 66 2c
+|   46 f2 a6 bf
+| skeyid_d  e9 c7 4b 23  be 09 1e 7f  ec 5b 53 80  4b b5 ec c8
+|   25 28 38 2f
+| skeyid_ai  49 3c 25 a9  67 a8 60 80  d7 8d 36 ee  4e f2 53 4f
+|   5b c4 da 4e
+| skeyid_ar  a6 a5 b7 47  bd 9b 15 47  1e 40 fb e1  84 3f fe 22
+|   a6 61 05 26
+| skeyid_ei  31 d3 12 22  0a 6b 25 03  8a 98 b9 7d  a6 9b eb b9
+| skeyid_er  b8 0c 0a e5  a6 a8 1d 8e  cd 2f 00 bb  c5 68 1b 58
+| skeyid_pi  27 7c f2 16  6e 26 74 be  17 08 cb a0  ee df e9 54
+|   78 61 97 af
+| skeyid_pr  a1 09 0d 52  47 85 cd fc  25 18 ce 46  ad 07 8f a2
+|   90 f7 55 16
 

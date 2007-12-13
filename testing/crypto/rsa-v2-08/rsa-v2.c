@@ -184,6 +184,13 @@ int main(int argc, char *argv[])
 		printf("stf status: %s\n", enum_name(&stfstatus_name, stat));
 	}
 
+	/* now derive the keys for the CHILD_SA */
+	{
+		chunk_t wholekeymat_t;
+
+		
+		
+
 	exit(0);
 }
 
