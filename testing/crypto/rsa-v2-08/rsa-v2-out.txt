@@ -20,8 +20,8 @@ Pre-amble: #!-pluto-whack-file- recorded on west on 2007-10-07 01:40:12
 ./rsa-v2 forgetting secrets
 ./rsa-v2 loading secrets from "../../baseconfigs/east/etc/ipsec.secrets"
 ./rsa-v2 loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x80be980) 1: C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org
-| id type added to secret(0x80be980) 1: %any
+| id type added to secret(0xADDRESS) 1: C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org
+| id type added to secret(0xADDRESS) 1: %any
 ./rsa-v2   loaded private key file '../../baseconfigs/east/etc/ipsec.d/private/east.pem' (963 bytes)
 |   file content is not binary ASN.1
 |   -----BEGIN RSA PRIVATE KEY-----
@@ -49,8 +49,8 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 ./rsa-v2 forgetting secrets
 ./rsa-v2 loading secrets from "../../baseconfigs/east/etc/ipsec.secrets"
 ./rsa-v2 loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x80bf480) 1: C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org
-| id type added to secret(0x80bf480) 1: %any
+| id type added to secret(0xADDRESS) 1: C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org
+| id type added to secret(0xADDRESS) 1: %any
 ./rsa-v2   loaded private key file '../../baseconfigs/east/etc/ipsec.d/private/east.pem' (963 bytes)
 |   file content is not binary ASN.1
 |   -----BEGIN RSA PRIVATE KEY-----
@@ -80,8 +80,8 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | 1: compared key (none) to @east / @west -> 6
 | 2: compared key (none) to @east / @west -> 6
 | line 8: match=6 
-| best_match 0>6 best=0x80beb68 (line=8)
-| concluding with best_match=6 best=0x80beb68 (lineno=8)
+| best_match 0>6 best=0xADDRESS (line=8)
+| concluding with best_match=6 best=0xADDRESS (lineno=8)
 | inputs to hash1 (first packet)
 |   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 01 fc  22 80 00 f4
