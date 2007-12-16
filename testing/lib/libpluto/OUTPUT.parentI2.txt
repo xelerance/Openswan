@@ -176,6 +176,11 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | ikev2 parent inR1outI1: calculating g^{xy}, sending I2
 ../parentI2 ikev2 I 0x0001020304050607 0xc02e7a3031a03188 sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
 ../parentI2 ikev2 R 0x0001020304050607 0xc02e7a3031a03188 sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
+| duplicating state object #1
+| creating state object #2 at 0x4030fad0
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  c0 2e 7a 30  31 a0 31 88
+| state hash entry 30
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
@@ -185,7 +190,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306)
 |    exchange type: ISAKMP_v2_AUTH
 |    flags: ISAKMP_FLAG_INIT
-|    message ID:  00 00 00 00
+|    message ID:  00 00 00 01
 | ***emit IKEv2 Encryption Payload:
 |    next payload type: ISAKMP_NEXT_v2IDi
 |    critical bit: Payload-Critical
@@ -398,9 +403,9 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 ../parentI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 ../parentI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 cipher=aes_128 integ=sha1 prf=oakley_sha group=modp1536}
 | sending reply packet to 192.1.2.23:500 (from port 500)
-sending 476 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using #1)
+sending 476 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using #2)
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
-|   2e 20 23 08  00 00 00 00  00 00 01 dc  23 80 01 c0
+|   2e 20 23 08  00 00 00 01  00 00 01 dc  23 80 01 c0
 |   00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   19 15 f1 05  5d 13 fc 7c  f5 6b 16 12  a6 e9 10 34
 |   b0 78 7d a5  df 6a d3 76  27 49 3e d4  ae ca bf 5f
@@ -430,6 +435,7 @@ sending 476 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using 
 |   e3 31 c1 31  3b 20 a6 8e  55 ff df 56  a4 0c 59 87
 |   72 f7 57 af  c1 c9 49 c1  e2 f4 f4 8e
 | deleting state #1
+| deleting state #2
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
 | state hash entry 30
@@ -535,7 +541,7 @@ IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, b
     (nonce[C]: len=16 nonce=(b5ce8419095c6e2b6b62d3055305b3c4) )
     (v2vid: len=12 vid=OEababababab)
 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 504, bad cksum 0 (->f4ae)!)
-    192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->c02e7a3031a03188: parent_sa ikev2_auth[I]:
+    192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid 00000001 cookie 0001020304050607->c02e7a3031a03188: child_sa  ikev2_auth[I]:
     (v2e[C]: len=444
             (v2IDi: len=8 fqdn:west)
             (v2auth: len=196 method=rsasig authdata=(01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) )
