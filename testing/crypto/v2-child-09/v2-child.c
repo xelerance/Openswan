@@ -95,13 +95,14 @@ void exit_pluto(int code)
 extern struct encrypt_desc algo_aes;
 struct encrypt_desc *tc3_encrypter = &algo_aes;
 #include "../../lib/libpluto/seam_gi_sha1.c"
+#include "../../lib/libpluto/seam_kernelalgs.c"
 
 int main(int argc, char *argv[])
 {
 	struct state st1;
 
 	progname = argv[0];
-	cur_debugging = DBG_CRYPT;
+	cur_debugging = DBG_CRYPT|DBG_KLIPS|DBG_PARSING;
 
 	memset(&st1, 0, sizeof(st1));
 	pluto_shared_secrets_file = "../../baseconfigs/east/etc/ipsec.secrets";
@@ -113,6 +114,8 @@ int main(int argc, char *argv[])
 	init_crypto();
 	load_cryptodev();
 
+	init_seam_kernelalgs();
+
 	/* now derive the keys for the CHILD_SA */
 	{
 		chunk_t ikeymat,rkeymat;
@@ -123,16 +126,20 @@ int main(int argc, char *argv[])
 
 		ipi.attrs.transattrs.encrypt   = IKEv2_ENCR_AES_CBC;
 		ipi.attrs.transattrs.enckeylen = 128;
-		ipi.attrs.transattrs.integ_hash = IKEv2_AUTH_HMAC_SHA1_96;
+		ipi.attrs.transattrs.integ_hash= alg_info_esp_v2tov1aa(IKEv2_AUTH_HMAC_SHA1_96);
 
                 ipi.attrs.transattrs.ei=kernel_alg_esp_info(
-			ipi.attrs.transattrs.encrypt,
+			ipi.attrs.transattrs.encrypt, 
 			ipi.attrs.transattrs.enckeylen,
 			ipi.attrs.transattrs.integ_hash);
 		
 		passert(ipi.attrs.transattrs.ei != NULL);
 
 		memset(&childsacalc, 0, sizeof(childsacalc));
+		childsacalc.prf_hasher = (struct hash_desc *)
+			ike_alg_ikev2_find(IKE_ALG_HASH
+					   , IKEv2_PRF_HMAC_SHA1, 0);
+
 		setchunk(childsacalc.ni, st1.st_ni.ptr, st1.st_ni.len);
 		setchunk(childsacalc.nr, st1.st_nr.ptr, st1.st_nr.len);
 		childsacalc.spii.len=0;
