@@ -768,6 +768,7 @@ ikev2_emit_winning_sa(
 		       , &r_proposal_pbs, &r_trans_pbs))
 	    impossible();
 	close_output_pbs(&r_trans_pbs);
+	st->st_oakley = ta;
     } else {
 	/* Transform - ESN sequence */
 	r_trans.isat_type= IKEv2_TRANS_TYPE_ESN;
@@ -787,9 +788,9 @@ ikev2_emit_winning_sa(
      * We never used it.  From proposal_pbs.start,
      * length pbs_room(&proposal_pbs)
      */
+
+
     
-    /* copy over the results */
-    st->st_oakley = ta;
     return NOTHING_WRONG;
 }
 
@@ -1219,7 +1220,7 @@ ikev2_parse_child_sa_body(
      */
     ta.encrypt   = itl->encr_transforms[itl->encr_i];
 
-    /* this is REALLY now correct, because this is not an IKE algorithm */
+    /* this is REALLY not correct, because this is not an IKE algorithm */
     /* XXX maybe we can leave this to ikev2 child key derivation */
     ta.encrypter = (struct encrypt_desc *)ike_alg_ikev2_find(IKE_ALG_ENCRYPT
 							     , ta.encrypt

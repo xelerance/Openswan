@@ -172,14 +172,6 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     } else {
 	ts_i = &st->st_ts_that;
 	ts_r = &st->st_ts_this;
-
-	/*
-	 * the responder we can do this, on the initiator we
-	 * can not do it yet, because we haven't decided on what
-	 * CHILD_SA to actually build.
-	 */
-	ikev2_derive_child_keys(st);
-	install_inbound_ipsec_sa(st);
     }
 
     for(sr=&c0->spd; sr != NULL; sr = sr->next) {
@@ -472,7 +464,8 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 			     , c, c->policy);
     if(ret != STF_OK) return ret;
 
-    /* install inbound and outbound test case */
+    ikev2_derive_child_keys(st1);
+    /* install inbound and outbound SPI info */
     if(!install_ipsec_sa(st1, TRUE))
 	return STF_FATAL;
 
