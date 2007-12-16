@@ -13,5 +13,6 @@ multilibtest parentR1         good
 multilibtest parentI2         good
 multilibtest parentR2         good
 multilibtest parentI3         good
+multilibtest parentR1duplicate good
 
 
