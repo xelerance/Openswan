@@ -38,6 +38,7 @@ def:
 
 check:
 	@ECHO=: REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; source ${srcdir}TESTLIST
+	@echo */core.*
 
 install install_file_list checkprograms programs:
 	@true

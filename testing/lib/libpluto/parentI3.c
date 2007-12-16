@@ -112,6 +112,10 @@ main(int argc, char *argv[])
 	/* find st involved */
 	st = state_with_serialno(1);
 	delete_state(st);
+
+	/* find st involved */
+	st = state_with_serialno(2);
+	if(st) delete_state(st);
     }
 
     report_leaks();

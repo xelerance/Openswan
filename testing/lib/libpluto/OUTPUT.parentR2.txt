@@ -265,6 +265,9 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 | emitting length of IKEv2 Authentication Payload: 200
 | duplicating state object #1
 | creating state object #2 at 0x402c5010
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  c0 2e 7a 30  31 a0 31 88
+| state hash entry 30
 | *****emit IKEv2 Security Association Payload:
 |    next payload type: ISAKMP_NEXT_v2TSi
 |    critical bit: Payload-Critical
@@ -466,9 +469,6 @@ sending 364 bytes for STATE_PARENT_R1 through eth0:500 to 192.1.2.45:500 (using 
 |   93 f3 59 1e  95 ac f7 8e  88 c9 7a 0a  e8 40 67 7c
 |   1d a9 bd 47  16 c9 c8 b4  d7 d4 f3 a3
 | deleting state #1
-| ICOOKIE:  00 01 02 03  04 05 06 07
-| RCOOKIE:  c0 2e 7a 30  31 a0 31 88
-| state hash entry 30
 ../parentR2 leak: reply packet
 ../parentR2 leak: skeyseed_t1
 ../parentR2 leak: 2 * initiator keys
