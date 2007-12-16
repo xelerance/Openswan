@@ -118,75 +118,29 @@ int main(int argc, char *argv[])
 
 	/* now derive the keys for the CHILD_SA */
 	{
-		chunk_t ikeymat,rkeymat;
-		chunk_t skey_d;
-		struct v2prf_stuff childsacalc;
-		struct ipsec_proto_info ipi;
-		enum phase1_role role = INITIATOR;
-
-		ipi.attrs.transattrs.encrypt   = IKEv2_ENCR_AES_CBC;
-		ipi.attrs.transattrs.enckeylen = 128;
-		ipi.attrs.transattrs.integ_hash= alg_info_esp_v2tov1aa(IKEv2_AUTH_HMAC_SHA1_96);
-
-                ipi.attrs.transattrs.ei=kernel_alg_esp_info(
-			ipi.attrs.transattrs.encrypt, 
-			ipi.attrs.transattrs.enckeylen,
-			ipi.attrs.transattrs.integ_hash);
+		struct ipsec_proto_info *ipi;
 		
-		passert(ipi.attrs.transattrs.ei != NULL);
+		setchunk(st1.st_skey_d, tc3_results_skey_d, sizeof(tc3_results_skey_d));
 
-		memset(&childsacalc, 0, sizeof(childsacalc));
-		childsacalc.prf_hasher = (struct hash_desc *)
-			ike_alg_ikev2_find(IKE_ALG_HASH
-					   , IKEv2_PRF_HMAC_SHA1, 0);
+		ipi = &st1.st_esp;
+		ipi->attrs.transattrs.encrypt   = IKEv2_ENCR_AES_CBC;
+		ipi->attrs.transattrs.enckeylen = 128;
+		ipi->attrs.transattrs.integ_hash= alg_info_esp_v2tov1aa(IKEv2_AUTH_HMAC_SHA1_96);
 
-		setchunk(childsacalc.ni, st1.st_ni.ptr, st1.st_ni.len);
-		setchunk(childsacalc.nr, st1.st_nr.ptr, st1.st_nr.len);
-		childsacalc.spii.len=0;
-		childsacalc.spir.len=0;
-		
-		setchunk(skey_d, tc3_results_skey_d, sizeof(tc3_results_skey_d));
-		childsacalc.skeyseed = &skey_d;
-		
-		ipi.present = TRUE;
-		ipi.keymat_len = ipi.attrs.transattrs.ei->enckeylen+
-			ipi.attrs.transattrs.ei->authkeylen;
+                ipi->attrs.transattrs.ei=kernel_alg_esp_info(
+			ipi->attrs.transattrs.encrypt, 
+			ipi->attrs.transattrs.enckeylen,
+			ipi->attrs.transattrs.integ_hash);
 
+		ikev2_derive_child_keys(&st1);
 
-/*
- *
- * Keying material MUST be taken from the expanded KEYMAT in the
- * following order:
- *
- *    All keys for SAs carrying data from the initiator to the responder
- *    are taken before SAs going in the reverse direction.
- *
- *    If multiple IPsec protocols are negotiated, keying material is
- *    taken in the order in which the protocol headers will appear in
- *    the encapsulated packet.
- *
- *    If a single protocol has both encryption and authentication keys,
- *    the encryption key is taken from the first octets of KEYMAT and
- *    the authentication key is taken from the next octets.
- *
- */
-		
-		v2genbytes(&ikeymat, ipi.keymat_len
-			   , "initiator keys", &childsacalc);
+		DBG_dump("our  keymat: "
+			 , ipi->our_keymat
+			 , ipi->keymat_len);
 
-		v2genbytes(&rkeymat, ipi.keymat_len
-			   , "initiator keys", &childsacalc);
-
-		if(role == INITIATOR) {
-			ipi.our_keymat = ikeymat.ptr;
-			ipi.peer_keymat= rkeymat.ptr;
-		} else {
-			ipi.peer_keymat= ikeymat.ptr;
-			ipi.our_keymat = rkeymat.ptr;
-		}
-
-		DBG_dump_chunk("initiator keymat: ", ikeymat);
-		DBG_dump_chunk("responder keymat: ", rkeymat);
+		DBG_dump("peer keymat: "
+			 , ipi->peer_keymat
+			 , ipi->keymat_len);
 	}
 		
 

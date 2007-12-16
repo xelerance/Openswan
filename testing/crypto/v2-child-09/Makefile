@@ -16,6 +16,7 @@ OBJS+=${OBJDIRTOP}/programs/pluto/keys.o
 OBJS+=${OBJDIRTOP}/programs/pluto/ocf_pk.o
 
 OBJS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
+OBJS+=${OBJDIRTOP}/programs/pluto/ikev2_crypto.o
 
 OBJS+=${OBJDIRTOP}/programs/pluto/hmac.o
 OBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
