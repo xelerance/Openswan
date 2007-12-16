@@ -64,7 +64,7 @@ struct parser_context {
 
 struct esp_info {
         bool     esp_default; 
-	u_int8_t transid;	/* ESP transform */
+	u_int8_t transid;	/* ESP transform (AES, 3DES, etc.)*/
 	u_int16_t auth;		/* AUTH */
 	u_int32_t enckeylen;	/* keylength for ESP transform (bytes)*/
 	u_int32_t authkeylen;	/* keylength for AUTH (bytes)*/
@@ -114,8 +114,12 @@ struct alg_info_ike {
 /*	alg_info_flags bits */
 #define ALG_INFO_F_STRICT	0x01
 
-int alg_info_esp_aa2sadb(int auth);
+extern enum ipsec_authentication_algo
+alg_info_esp_aa2sadb(enum ikev1_auth_attribute auth);
 int alg_info_esp_sadb2aa(int sadb_aalg);
+enum ikev1_auth_attribute
+alg_info_esp_v2tov1aa(enum ikev2_trans_type_integ ti);
+
 void alg_info_free(struct alg_info *alg_info);
 void alg_info_addref(struct alg_info *alg_info);
 void alg_info_delref(struct alg_info **alg_info);

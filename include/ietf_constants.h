@@ -634,15 +634,17 @@ enum ikev1_ipsec_attr {
 
 /* extern enum_names auth_alg_names, extended_auth_alg_names; */
 
-#define AUTH_ALGORITHM_NONE        0	/* our private designation */
-#define AUTH_ALGORITHM_HMAC_MD5    1
-#define AUTH_ALGORITHM_HMAC_SHA1   2
-#define AUTH_ALGORITHM_DES_MAC     3
-#define AUTH_ALGORITHM_KPDK        4
-#define AUTH_ALGORITHM_HMAC_SHA2_256   5
-#define AUTH_ALGORITHM_HMAC_SHA2_384   6
-#define AUTH_ALGORITHM_HMAC_SHA2_512   7
-#define AUTH_ALGORITHM_HMAC_RIPEMD     8
+enum ikev1_auth_attribute {
+	AUTH_ALGORITHM_NONE=0,	/* our private designation */
+	AUTH_ALGORITHM_HMAC_MD5   =1,
+	AUTH_ALGORITHM_HMAC_SHA1  =2,
+	AUTH_ALGORITHM_DES_MAC    =3,
+	AUTH_ALGORITHM_KPDK       =4,
+	AUTH_ALGORITHM_HMAC_SHA2_256=5,
+	AUTH_ALGORITHM_HMAC_SHA2_384=6,
+	AUTH_ALGORITHM_HMAC_SHA2_512=7,
+	AUTH_ALGORITHM_HMAC_RIPEMD=8,
+};
 
 typedef u_int16_t ipsec_auth_t;
 

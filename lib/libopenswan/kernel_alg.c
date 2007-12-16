@@ -104,7 +104,8 @@ kernel_alg_init(void)
 	esp_ealg_num=esp_aalg_num=0;
 }
 
-static int
+/* used by test skaffolding */
+int
 kernel_alg_add(int satype, int exttype, const struct sadb_alg *sadb_alg)
 {
 	struct sadb_alg *alg_p=NULL;
@@ -430,6 +431,14 @@ kernel_alg_esp_info(u_int8_t transid, u_int16_t keylen, u_int16_t auth)
 	} else if(keylen <= esp_ealg[sadb_ealg].sadb_alg_maxbits &&
 		  keylen >= esp_ealg[sadb_ealg].sadb_alg_minbits) {
 	    ei_buf.enckeylen = keylen/BITS_PER_BYTE;
+	} else {
+	    DBG(DBG_PARSING, DBG_log("kernel_alg_esp_info():"
+				     "transid=%d, proposed keylen=%u is invalid, not %u<X<%u "
+				     , transid, keylen
+				     , esp_ealg[sadb_ealg].sadb_alg_maxbits
+				     , esp_ealg[sadb_ealg].sadb_alg_minbits));
+	    /* proposed key length is invalid! */
+	    return NULL;
 	}
 
 	ei_buf.authkeylen=esp_aalg[sadb_aalg].sadb_alg_maxbits/BITS_PER_BYTE;

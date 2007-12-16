@@ -39,26 +39,50 @@
 struct oakley_group_desc;
 
 /* sadb/ESP aa attrib converters */
-int
-alg_info_esp_aa2sadb(int auth)
+enum ipsec_authentication_algo
+alg_info_esp_aa2sadb(enum ikev1_auth_attribute auth)
 {
-	int sadb_aalg=0;
 	switch(auth) {
 		case AUTH_ALGORITHM_HMAC_MD5:
+		    return AH_MD5;
 		case AUTH_ALGORITHM_HMAC_SHA1:
-			sadb_aalg=auth+1;
-			break;
+		    return AH_SHA;
+
 		case AUTH_ALGORITHM_HMAC_SHA2_256:
+		    return AH_SHA2_256;
 		case AUTH_ALGORITHM_HMAC_SHA2_384:
+		    return AH_SHA2_384;
 		case AUTH_ALGORITHM_HMAC_SHA2_512:
+		    return AH_SHA2_512;
 		case AUTH_ALGORITHM_HMAC_RIPEMD:
-			sadb_aalg=auth;
-			break;
+		    return AH_RIPEMD;
+
 		default:
-			/* loose ... */
-			sadb_aalg=auth;
+		    bad_case(auth);
 	}
-	return sadb_aalg;
+	return 0;
+}
+
+/*
+ * should change all algorithms to use IKEv2 numbers, and translate
+ * at edges only
+ */
+enum ikev1_auth_attribute
+alg_info_esp_v2tov1aa(enum ikev2_trans_type_integ ti)
+{
+    switch(ti) {
+    case IKEv2_AUTH_HMAC_MD5_96:
+	return AUTH_ALGORITHM_HMAC_MD5;
+    case IKEv2_AUTH_HMAC_SHA1_96:
+	return AUTH_ALGORITHM_HMAC_SHA1;
+
+    case IKEv2_AUTH_DES_MAC:
+    case IKEv2_AUTH_KPDK_MD5:
+    case IKEv2_AUTH_AES_XCBC_96:
+    case IKEv2_AUTH_INVALID:
+	bad_case(ti);
+    }
+    return 0;
 }
 
 int /* __attribute__ ((unused)) */

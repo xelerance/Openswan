@@ -80,7 +80,8 @@ enum ipsec_authentication_algo {
   AH_DES=4,
   AH_SHA2_256=5,
   AH_SHA2_384=6,
-  AH_SHA2_512=7
+  AH_SHA2_512=7,
+  AH_RIPEMD=8
 };
 
 /* IPsec ESP transform values

@@ -537,20 +537,6 @@ enum pluto_policy {
 #define ENCAPSULATION_MODE_UDP_TRANSPORT_RFC       4
 #endif
 
-/* Auth Algorithm attribute */
-
-
-#define AUTH_ALGORITHM_NONE        0	/* our private designation */
-#define AUTH_ALGORITHM_HMAC_MD5    1
-#define AUTH_ALGORITHM_HMAC_SHA1   2
-#define AUTH_ALGORITHM_DES_MAC     3
-#define AUTH_ALGORITHM_KPDK        4
-#define AUTH_ALGORITHM_HMAC_SHA2_256   5
-#define AUTH_ALGORITHM_HMAC_SHA2_384   6
-#define AUTH_ALGORITHM_HMAC_SHA2_512   7
-#define AUTH_ALGORITHM_HMAC_RIPEMD     8
-
-
 /* Oakley Lifetime Type attribute
  * draft-ietf-ipsec-ike-01.txt appendix A
  * As far as I can see, there is not specification for

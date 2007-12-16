@@ -62,25 +62,25 @@ extern msgid_t generate_msgid(struct state *isakmp_sa);
 struct trans_attrs {
     u_int16_t encrypt;		/* Encryption algorithm */
     u_int16_t enckeylen;	/* encryption key len (bits) */
-    const struct encrypt_desc *encrypter;	/* package of encryption routines */
-
-    oakley_hash_t prf_hash;		/* Hash algorithm for PRF */
-    const struct hash_desc *prf_hasher;	/* package of hashing routines */
-
-
-    oakley_hash_t integ_hash;		  /* Hash algorithm for integ */
-    const struct hash_desc *integ_hasher; /* package of hashing routines */
-
-    oakley_auth_t auth;		/* Authentication method */
+    oakley_hash_t prf_hash;	/* Hash algorithm for PRF */
+    oakley_hash_t integ_hash;	/* Hash algorithm for integ */
+    oakley_auth_t auth;		/* Authentication method (RSA,PSK) */
 #ifdef XAUTH
     u_int16_t xauth;            /* did we negotiate Extended Authentication? */
 #endif
-
     u_int16_t                       groupnum;
-    const struct oakley_group_desc *group;	/* Oakley group */
 
     time_t life_seconds;	/* When this SA expires (seconds) */
     u_int32_t life_kilobytes;	/* When this SA is exhausted (kilobytes) */
+
+    /* used in phase1/PARENT SA */
+    const struct encrypt_desc *encrypter; /* package of encryption routines */
+    const struct hash_desc *prf_hasher;	  /* package of hashing routines */
+    const struct hash_desc *integ_hasher; /* package of hashing routines */
+    const struct oakley_group_desc *group;	/* Oakley group */
+
+    /* used in phase2/CHILD_SA */
+    struct esp_info *ei;
 };
 
 /* IPsec (Phase 2 / Quick Mode) transform and attributes
