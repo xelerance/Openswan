@@ -41,8 +41,6 @@
 
 /* for child sa calculation */
 #include "alg_info.h"
-#include "kernel_alg.h"
-#include "ikev2_prfplus.h"
 
 #include "seam_pending.c"
 #include "whackmsgtestlib.c"
@@ -126,11 +124,6 @@ int main(int argc, char *argv[])
 		ipi->attrs.transattrs.encrypt   = IKEv2_ENCR_AES_CBC;
 		ipi->attrs.transattrs.enckeylen = 128;
 		ipi->attrs.transattrs.integ_hash= alg_info_esp_v2tov1aa(IKEv2_AUTH_HMAC_SHA1_96);
-
-                ipi->attrs.transattrs.ei=kernel_alg_esp_info(
-			ipi->attrs.transattrs.encrypt, 
-			ipi->attrs.transattrs.enckeylen,
-			ipi->attrs.transattrs.integ_hash);
 
 		ikev2_derive_child_keys(&st1);
 

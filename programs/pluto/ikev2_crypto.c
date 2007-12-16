@@ -49,15 +49,21 @@
 #include "ikev2_prfplus.h"
 #include "ike_alg.h"
 #include "alg_info.h"
+#include "kernel_alg.h"
 
 void ikev2_derive_child_keys(struct state *st)
 {
 	struct v2prf_stuff childsacalc;
 	enum phase1_role role = INITIATOR;
 	chunk_t ikeymat,rkeymat;
+	struct ipsec_proto_info *ipi = &st->st_esp;
 	
-	passert(st->st_esp.attrs.transattrs.ei != NULL);
-	
+	ipi->attrs.transattrs.ei=kernel_alg_esp_info(
+		ipi->attrs.transattrs.encrypt, 
+		ipi->attrs.transattrs.enckeylen,
+		ipi->attrs.transattrs.integ_hash);
+
+	passert(ipi->attrs.transattrs.ei != NULL);
 	memset(&childsacalc, 0, sizeof(childsacalc));
 	childsacalc.prf_hasher = (struct hash_desc *)
 		ike_alg_ikev2_find(IKE_ALG_HASH

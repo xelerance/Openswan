@@ -64,6 +64,7 @@ struct trans_attrs {
     u_int16_t enckeylen;	/* encryption key len (bits) */
     oakley_hash_t prf_hash;	/* Hash algorithm for PRF */
     oakley_hash_t integ_hash;	/* Hash algorithm for integ */
+    
     oakley_auth_t auth;		/* Authentication method (RSA,PSK) */
 #ifdef XAUTH
     u_int16_t xauth;            /* did we negotiate Extended Authentication? */

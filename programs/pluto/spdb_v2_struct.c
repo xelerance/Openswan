@@ -1218,26 +1218,26 @@ ikev2_parse_child_sa_body(
      * winning value.
      */
     ta.encrypt   = itl->encr_transforms[itl->encr_i];
+
+    /* this is REALLY now correct, because this is not an IKE algorithm */
+    /* XXX maybe we can leave this to ikev2 child key derivation */
     ta.encrypter = (struct encrypt_desc *)ike_alg_ikev2_find(IKE_ALG_ENCRYPT
 							     , ta.encrypt
 							     , /*keysize*/0);
     passert(ta.encrypter != NULL);
     ta.enckeylen = ta.encrypter->keydeflen;
 
+    /* this is really a mess having so many different numbers for auth
+     * algorithms.
+     */
     ta.integ_hash  = itl->integ_transforms[itl->integ_i];
-    ta.integ_hasher= (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_INTEG,ta.integ_hash, 0);
-    passert(ta.integ_hasher != NULL);
+    ta.integ_hash  = alg_info_esp_v2tov1aa(ta.integ_hash);
 
-#if 0
-    if(!parentSA) {
-	st->st_esp.attrs.spi = itl->spi_values[itl->spi_values_next+-1];
-	st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TUNNEL;
+    st->st_esp.attrs.transattrs = ta;
+    st->st_esp.present = TRUE;
 
-	/* note: translate back to v1 enumeration field */
-	st->st_esp.attrs.auth    = ta.integ_hasher->common.algo_id;
-	st->st_esp.attrs.transid = ta.encrypter->common.algo_id;
-    }
-#endif
+    st->st_esp.attrs.spi = itl->spi_values[itl->spi_values_next+-1];
+    st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TUNNEL;
 
     if (r_sa_pbs != NULL)
     {

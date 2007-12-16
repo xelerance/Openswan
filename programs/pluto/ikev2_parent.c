@@ -771,19 +771,24 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
 				    pb_stream *e_pbs_cipher)
 {
     struct state *st = md->st;
+    struct state *pst = st;
     chunk_t *cipherkey, *authkey;
 
+    if(st->st_clonedfrom != 0) {
+	pst = state_with_serialno(st->st_clonedfrom);
+    }
+
     if(init == INITIATOR) {
-	cipherkey = &st->st_skey_ei;
-	authkey   = &st->st_skey_ai;
+	cipherkey = &pst->st_skey_ei;
+	authkey   = &pst->st_skey_ai;
     } else {
-	cipherkey = &st->st_skey_er;
-	authkey   = &st->st_skey_ar;
+	cipherkey = &pst->st_skey_er;
+	authkey   = &pst->st_skey_ar;
     }
 
     /* pads things up to message size boundary */
     {
-	size_t blocksize = st->st_oakley.encrypter->enc_blocksize;
+	size_t blocksize = pst->st_oakley.encrypter->enc_blocksize;
 	char  *b = alloca(blocksize);
 	unsigned int    i;
 	size_t padding =  pad_up(pbs_offset(e_pbs_cipher), blocksize);
@@ -797,7 +802,7 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
     
     /* encrypt the block */
     {
-	size_t  blocksize = st->st_oakley.encrypter->enc_blocksize;
+	size_t  blocksize = pst->st_oakley.encrypter->enc_blocksize;
 	unsigned char *savediv = alloca(blocksize);
 	unsigned int   cipherlen = e_pbs_cipher->cur - encstart;
 	
@@ -827,7 +832,7 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
 	if(!out_zero(12, e_pbs, "96-bits of truncated HMAC"))
 	    return STF_INTERNAL_ERROR;
 	
-	hmac_init_chunk(&ctx, st->st_oakley.integ_hasher, *authkey);
+	hmac_init_chunk(&ctx, pst->st_oakley.integ_hasher, *authkey);
 	hmac_update(&ctx, iv, b12-iv);
 	hmac_final(b12, &ctx);
 	

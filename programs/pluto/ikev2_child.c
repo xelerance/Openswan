@@ -164,8 +164,6 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     struct spd_route *sr;
     stf_status ret;
     
-    ikev2_derive_child_keys(st);
-    install_inbound_ipsec_sa(st);
     st->st_childsa = c0;
 
     if(role == INITIATOR) {
@@ -174,6 +172,14 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     } else {
 	ts_i = &st->st_ts_that;
 	ts_r = &st->st_ts_this;
+
+	/*
+	 * the responder we can do this, on the initiator we
+	 * can not do it yet, because we haven't decided on what
+	 * CHILD_SA to actually build.
+	 */
+	ikev2_derive_child_keys(st);
+	install_inbound_ipsec_sa(st);
     }
 
     for(sr=&c0->spd; sr != NULL; sr = sr->next) {
