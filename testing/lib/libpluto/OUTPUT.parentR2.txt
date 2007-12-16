@@ -360,6 +360,15 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 |       has ts_range1=8 maskbits1=24 ts_range2=8 maskbits2=24 fitbits=8224 <> -1
 | find_host_pair: comparing to 192.1.2.23:500 192.1.2.45:500 
 |   checking hostpair 192.0.2.0/24 -> 192.0.1.0/24 is not found
+| kernel_alg_esp_info():transid=12, auth=2, ei=0x80cbdd4, enckeylen=16, authkeylen=20, encryptalg=12, authalg=3
+| prf+[0]:  1b c2 c7 bb  61 1e 4a 70  7b a5 60 70  86 8a 23 2a
+|   ff 38 45 b2
+| prf+[1]:  39 f1 e3 e0  ba e2 7f 09  e9 ca 7f 12  40 74 0c 81
+|   79 68 c6 4f
+| prf+[2]:  47 72 9c d3  66 f4 a1 70  9d c8 71 c8  01 64 a7 fa
+|   e5 49 da 1c
+| prf+[3]:  c0 c1 23 75  5a 95 2f b1  d9 83 32 13  b7 7f 0f 3c
+|   ce a3 ed 85
 | *****emit IKEv2 Traffic Selectors:
 |    next payload type: ISAKMP_NEXT_v2TSr
 |    number of TS: 1
@@ -438,7 +447,7 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 | complete v2 state transition with STF_OK
 ../parentR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 ../parentR2 negotiated tunnel [192.0.2.0,192.0.2.255] -> [192.0.1.0,192.0.1.255]
-../parentR2 STATE_PARENT_R2: received v2I2, PARENT SA established tunnel mode {ESP=>0x00000000 <0x12345678 xfrm=_0- NATOA=none NATD=none DPD=none}
+../parentR2 STATE_PARENT_R2: received v2I2, PARENT SA established tunnel mode {ESP=>0x34567812 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
 | sending reply packet to 192.1.2.45:500 (from port 500)
 sending 364 bytes for STATE_PARENT_R1 through eth0:500 to 192.1.2.45:500 (using #2)
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
@@ -469,6 +478,8 @@ sending 364 bytes for STATE_PARENT_R1 through eth0:500 to 192.1.2.45:500 (using 
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
 | state hash entry 30
 ../parentR2 leak: reply packet
+../parentR2 leak: skeyseed_t1
+../parentR2 leak: 2 * initiator keys
 ../parentR2 leak: db_v2_trans
 ../parentR2 leak: db_v2_prop_conj
 ../parentR2 leak: db_v2_prop

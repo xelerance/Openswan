@@ -517,14 +517,16 @@ sending 476 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using 
 |    length: 8
 |    transform type: 5
 |    transform ID: 0
+| kernel_alg_esp_info():transid=12, auth=2, ei=0x80cbdd4, enckeylen=16, authkeylen=20, encryptalg=12, authalg=3
 | complete v2 state transition with STF_OK
 ../parentI3 transition from state STATE_PARENT_I2 to state STATE_PARENT_I3
 ../parentI3 negotiated tunnel [192.0.1.0,192.0.1.255] -> [192.0.2.0,192.0.2.255]
-../parentI3 STATE_PARENT_I3: PARENT SA established tunnel mode {NATOA=none NATD=none DPD=none}
+../parentI3 STATE_PARENT_I3: PARENT SA established tunnel mode {ESP=>0x12345678 <0x78123456 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
 | deleting state #1
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
 | state hash entry 30
+../parentI3 leak: skeyseed_t1
 ../parentI3 leak: db_v2_trans
 ../parentI3 leak: db_v2_prop_conj
 ../parentI3 leak: db_v2_prop

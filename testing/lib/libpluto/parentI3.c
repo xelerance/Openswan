@@ -41,6 +41,7 @@
 #include "seam_keys.c"
 #include "seam_exitlog.c"
 #include "seam_gi_sha1.c"
+#include "seam_kernelalgs.c"
 
 #include "seam_commhandle.c"
 #include "ikev2sendI1.c"
@@ -63,17 +64,18 @@ main(int argc, char *argv[])
     EF_FREE_WIPES  =1;
 
     progname = argv[0];
+    printf("Started %s\n", progname);
+
     leak_detective = 1;
 
     init_crypto();
+    init_seam_kernelalgs();
 
     if(argc != 4) {
 	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapin>\n", progname);
 	exit(10);
     }
     /* argv[1] == "-r" */
-
-    printf("Started %s\n", progname);
 
     tool_init_log();
     init_pluto_vendorid();
