@@ -1457,6 +1457,11 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     struct state *st = md->st;
     //struct connection *c = st->st_connection;
     unsigned char *idhash_in;
+    struct state *pst = st;
+
+    if(st->st_clonedfrom != 0) {
+	pst = state_with_serialno(st->st_clonedfrom);
+    }
 
     /*
      * the initiator sent us an encrypted payload. We need to calculate
@@ -1487,13 +1492,13 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	struct hmac_ctx id_ctx;
 	const pb_stream *id_pbs = &md->chain[ISAKMP_NEXT_v2IDr]->pbs;
 
-	hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher, st->st_skey_pr);
+	hmac_init_chunk(&id_ctx, pst->st_oakley.integ_hasher, pst->st_skey_pr);
 
 	/* calculate hash of IDr for AUTH below */
-	DBG(DBG_CRYPT, DBG_dump_chunk("idhash verify pr", st->st_skey_pr));
+	DBG(DBG_CRYPT, DBG_dump_chunk("idhash verify pr", pst->st_skey_pr));
 	DBG(DBG_CRYPT, DBG_dump("idhash auth R2", id_pbs->start, pbs_room(id_pbs)));
 	hmac_update(&id_ctx, id_pbs->start, pbs_room(id_pbs));
-	idhash_in = alloca(st->st_oakley.integ_hasher->hash_digest_len);
+	idhash_in = alloca(pst->st_oakley.integ_hasher->hash_digest_len);
 	hmac_final(idhash_in, &id_ctx);
     }
 
@@ -1508,7 +1513,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     {
     case v2_AUTH_RSA:
     {
-	stf_status authstat = ikev2_verify_rsa_sha1(st
+	stf_status authstat = ikev2_verify_rsa_sha1(pst
 						    , INITIATOR
 						    , idhash_in
 						    , NULL /* keys from DNS */
@@ -1532,13 +1537,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
      * update the parent state to make sure that it knows we have
      * authenticated properly.
      */
-    {
-	struct state *pst = st;
-	if(st->st_clonedfrom != 0) {
-	    pst = state_with_serialno(st->st_clonedfrom);
-	}
-	pst->st_state = STATE_PARENT_I3;
-    }
+    pst->st_state = STATE_PARENT_I3;
     
     /* authentication good, see if there is a child SA available */
     if(md->chain[ISAKMP_NEXT_v2SA] == NULL
