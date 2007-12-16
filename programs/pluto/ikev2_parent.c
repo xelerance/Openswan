@@ -1528,6 +1528,17 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	return STF_FAIL;
     }
 
+    /*
+     * update the parent state to make sure that it knows we have
+     * authenticated properly.
+     */
+    {
+	struct state *pst = st;
+	if(st->st_clonedfrom != 0) {
+	    pst = state_with_serialno(st->st_clonedfrom);
+	}
+	pst->st_state = STATE_PARENT_I3;
+    }
     
     /* authentication good, see if there is a child SA available */
     if(md->chain[ISAKMP_NEXT_v2SA] == NULL
