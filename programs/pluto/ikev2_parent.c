@@ -1010,8 +1010,12 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     pst = st;
     st = duplicate_state(pst);
+    st->st_msgid = htonl(pst->st_msgid_nextuse);
     insert_state(st);
     md->st = st;
+
+    /* need to force parent state to I2 */
+    pst->st_state = STATE_PARENT_I2;
 
     /* record first packet for later checking of signature */
     clonetochunk(pst->st_firstpacket_him, md->message_pbs.start
@@ -1024,7 +1028,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	r_hdr.isa_np    = ISAKMP_NEXT_v2E;
 	r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
 	r_hdr.isa_flags = ISAKMP_FLAGS_I;
-	r_hdr.isa_msgid = htonl(pst->st_msgid_nextuse);
+	r_hdr.isa_msgid = st->st_msgid;
 	memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
 	memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
 	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
@@ -1305,6 +1309,11 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 				 ,md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type));
 	return STF_FAIL;
     }
+
+    /* good. now create child state */
+    /* note: as we will switch to child state, we force the parent to the
+     * new state now */
+    st->st_state = STATE_PARENT_R2;
     
     /* send response */
     {

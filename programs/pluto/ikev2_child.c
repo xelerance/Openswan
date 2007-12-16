@@ -357,6 +357,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     unsigned int tsi_n, tsr_n;
 
     st1 = duplicate_state(st);
+    insert_state(st1);
     md->st = st1;
 
     /* start of SA out */
