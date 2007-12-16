@@ -61,11 +61,6 @@
 #include "virtual.h"
 #include "hostpair.h"
 
-void ikev2_derive_child_keys(struct state *st UNUSED)
-{
-}
- 
-
 /* rewrite me with addrbytesptr() */
 struct traffic_selector ikev2_subnettots(struct end *e)
 {
