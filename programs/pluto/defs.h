@@ -53,6 +53,7 @@ extern const char* check_expiry(time_t expiration_date,
 
 extern void exit_pluto(int /*status*/) NEVER_RETURNS;
 
+typedef u_int32_t msgid_t;	/* Network order! */
 
 /* zero all bytes */
 #define zero(x) memset((x), '\0', sizeof(*(x)))

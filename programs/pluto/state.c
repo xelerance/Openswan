@@ -743,25 +743,27 @@ duplicate_state(struct state *st)
     nst->st_interface  = st->st_interface;
     nst->st_clonedfrom = st->st_serialno;
     nst->st_import     = st->st_import;
-
+    nst->st_ikev2      = st->st_ikev2;
 
 #   define clone_chunk(ch, name) \
 	clonetochunk(nst->ch, st->ch.ptr, st->ch.len, name)
 
+#if 0
     clone_chunk(st_skeyid_d, "st_skeyid_d in duplicate_state");
     clone_chunk(st_skeyid_a, "st_skeyid_a in duplicate_state");
     clone_chunk(st_skeyid_e, "st_skeyid_e in duplicate_state");
-    clone_chunk(st_enc_key, "st_enc_key in duplicate_state");
+#endif
+    clone_chunk(st_enc_key,  "st_enc_key in duplicate_state");
 
     /* v2 duplication of state */
     clone_chunk(st_skeyseed, "st_skeyseed in duplicate_state");
     clone_chunk(st_skey_d,   "st_skey_d in duplicate_state");
     clone_chunk(st_skey_ai,  "st_skey_ai in duplicate_state");
-    clone_chunk(st_skey_ar,  "st_skey_ai in duplicate_state");
-    clone_chunk(st_skey_ei,  "st_skey_ai in duplicate_state");
-    clone_chunk(st_skey_er,  "st_skey_ai in duplicate_state");
-    clone_chunk(st_skey_pi,  "st_skey_ai in duplicate_state");
-    clone_chunk(st_skey_pr,  "st_skey_ai in duplicate_state");
+    clone_chunk(st_skey_ar,  "st_skey_ar in duplicate_state");
+    clone_chunk(st_skey_ei,  "st_skey_ei in duplicate_state");
+    clone_chunk(st_skey_er,  "st_skey_er in duplicate_state");
+    clone_chunk(st_skey_pi,  "st_skey_pi in duplicate_state");
+    clone_chunk(st_skey_pr,  "st_skey_pr in duplicate_state");
 
 #   undef clone_chunk
 
@@ -825,11 +827,12 @@ find_state_ikev1(const u_char *icookie
 }
 
 /*
- * Find a state object for an IKEv2 state
+ * Find a state object for an IKEv2 state.
+ * Note: only finds parent states.
  */
 struct state *
-find_state_ikev2(const u_char *icookie
-		 , const u_char *rcookie)
+find_state_ikev2_parent(const u_char *icookie
+			, const u_char *rcookie)
 {
     struct state *st = *state_hash(icookie, rcookie);
 
@@ -837,10 +840,47 @@ find_state_ikev2(const u_char *icookie
     {
 	if (memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
 	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0
-	    && st->st_ikev2 == TRUE)
+	    && st->st_ikev2 == TRUE
+	    && st->st_clonedfrom == 0)
 	{
 	    DBG(DBG_CONTROL,
 		DBG_log("v2 peer and cookies match on #%ld"
+			, st->st_serialno));
+	    break;
+	}
+	st = st->st_hashchain_next;
+    }
+
+    DBG(DBG_CONTROL,
+	if (st == NULL)
+	    DBG_log("v2 state object not found");
+	else
+	    DBG_log("v2 state object #%lu found, in %s"
+		, st->st_serialno
+		, enum_show(&state_names, st->st_state)));
+
+    return st;
+}
+
+/*
+ * Find a state object for an IKEv2 state, a response that includes a msgid.
+ */
+struct state *
+find_state_ikev2_child(const u_char *icookie
+		       , const u_char *rcookie
+		       , msgid_t msgid)
+{
+    struct state *st = *state_hash(icookie, rcookie);
+
+    while (st != (struct state *) NULL)
+    {
+	if (memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
+	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0
+	    && st->st_ikev2 == TRUE
+	    && st->st_msgid == msgid)
+	{
+	    DBG(DBG_CONTROL,
+		DBG_log("v2 peer, cookies and msgid match on #%ld"
 			, st->st_serialno));
 	    break;
 	}

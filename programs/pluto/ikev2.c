@@ -300,15 +300,89 @@ process_v2_packet(struct msg_digest **mdp)
      *
      */
 
-    st = find_state_ikev2(md->hdr.isa_icookie, md->hdr.isa_rcookie);
-    if(st == NULL) {
-	st = find_state_ikev2(md->hdr.isa_icookie, zero_cookie);
-	
+    md->msgid_received = ntohl(md->hdr.isa_msgid);
+
+    if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
+	/* then I am the responder */
 	rcookiezero = is_zero_cookie(md->hdr.isa_rcookie);
-	if(st && !rcookiezero) {
-	    unhash_state(st);
-	    memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
-	    insert_state(st);
+
+	md->role = RESPONDER;
+
+	if(rcookiezero && md->msgid_received==MAINMODE_MSGID) {
+	    /* this is the first message, no state expected */
+	    st = NULL; 
+	} else {
+	    st = find_state_ikev2_parent(md->hdr.isa_icookie
+					 , md->hdr.isa_rcookie);
+
+	    if(st->st_msgid_lastrecv >  md->msgid_received){
+		/* this is an OLD retransmit. we can't do anything */
+		openswan_log("received too old retransmit: %u < %u"
+			     , md->msgid_received, st->st_msgid_lastrecv);
+		return;
+	    }
+	    if(st->st_msgid_lastrecv == md->msgid_received){
+		/* this is a recent retransmit. */
+		send_packet(st, "ikev2-responder-retransmit", FALSE);
+		return;
+	    }
+	    /* update lastrecv later on */
+	}
+    } else if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
+	openswan_log("received packet that was neither (I)nitiator or (R)esponder, msgid=%u", md->msgid_received);
+	
+    } else {
+        /* then I am the initiator, and this is a reply */
+	
+	md->role = INITIATOR;
+	
+	if(md->msgid_received==MAINMODE_MSGID) {
+	    st = find_state_ikev2_parent(md->hdr.isa_icookie
+					 , md->hdr.isa_rcookie);
+	    if(st == NULL) {
+		st = find_state_ikev2_parent(md->hdr.isa_icookie, zero_cookie);
+		if(st) {
+		    /* responder inserted it's cookie, record it */
+		    unhash_state(st);
+		    memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
+		    insert_state(st);
+		}
+	    }
+	} else {
+	    st = find_state_ikev2_child(md->hdr.isa_icookie
+					, md->hdr.isa_rcookie
+					, md->hdr.isa_msgid);
+	    
+	    if(st) {
+		/* found this child state, so we'll use it */
+		/* note we update the st->st_msgid_lastack *AFTER* decryption*/
+	    } else {
+		/*
+		 * didn't find something with the msgid, so maybe it's
+		 * not valid?
+		 */
+		st = find_state_ikev2_parent(md->hdr.isa_icookie
+					     , md->hdr.isa_rcookie);
+		if(st) {
+		    /*
+		     * then there is something wrong with the msgid, so
+		     * maybe they retransmitted for some reason. 
+		     * Check if it's an old packet being returned, and
+		     * if so, drop it.
+		     * NOTE: in_struct() changed the byte order.
+		     */
+		    if(md->msgid_received <= st->st_msgid_lastack) {
+			/* it's fine, it's just a retransmit */
+			DBG(DBG_CONTROL, DBG_log("responding peer retransmitted msgid %u"
+						 , md->msgid_received));
+			return;
+		    }
+		    openswan_log("last msgid ack is %u, received: %u"
+				 , st->st_msgid_lastack
+				 , md->msgid_received);
+		    return;
+		}
+	    }
 	}
     }
 	
@@ -523,6 +597,23 @@ send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type)
 #endif
 }
 
+void ikev2_update_counters(struct msg_digest *md)
+{
+    struct state *st = md->st;
+    
+    switch(md->role) {
+    case INITIATOR:
+	/* update lastuse values */
+	st->st_msgid_lastack = md->msgid_received;
+	st->st_msgid_nextuse = st->st_msgid_lastack+1;
+	break;
+	
+    case RESPONDER:
+	st->st_msgid_lastrecv= md->msgid_received;
+	break;
+    }
+}
+
 static void success_v2_state_transition(struct msg_digest **mdp)
 {
     struct msg_digest *md = *mdp;
@@ -541,6 +632,9 @@ static void success_v2_state_transition(struct msg_digest **mdp)
      * New event will be scheduled below.
      */
     delete_event(st);
+
+    ikev2_update_counters(md);
+
 
     /* tell whack and log of progress */
     {

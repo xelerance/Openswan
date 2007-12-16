@@ -472,7 +472,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     if(ret != STF_OK) return ret;
 
     /* install inbound and outbound test case */
-    if(!install_ipsec_sa(st, TRUE))
+    if(!install_ipsec_sa(st1, TRUE))
 	return STF_FATAL;
 
     return STF_OK;

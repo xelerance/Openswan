@@ -705,6 +705,9 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 	    return STF_FAIL + rn;
     }
 
+    /* update state */
+    ikev2_update_counters(md);
+
     /* now. we need to go calculate the g^xy */
     {
 	struct dh_continuation *dh = alloc_thing(struct dh_continuation
@@ -855,6 +858,11 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
     unsigned int   np;
     unsigned char *iv;
     chunk_t       *cipherkey, *authkey;
+    struct state *pst = st;
+
+    if(st->st_clonedfrom != 0) {
+	pst = state_with_serialno(st->st_clonedfrom);
+    }
 
     if(init == INITIATOR) {
 	cipherkey = &st->st_skey_er;
@@ -872,10 +880,10 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
     
     /* start by checking authenticator */
     {
-	unsigned char  *b12 = alloca(st->st_oakley.integ_hasher->hash_digest_len);
+	unsigned char  *b12 = alloca(pst->st_oakley.integ_hasher->hash_digest_len);
 	struct hmac_ctx ctx;
 	
-	hmac_init_chunk(&ctx, st->st_oakley.integ_hasher, *authkey);
+	hmac_init_chunk(&ctx, pst->st_oakley.integ_hasher, *authkey);
 	hmac_update(&ctx, iv, encend-iv);
 	hmac_final(b12, &ctx);
 	
@@ -895,7 +903,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
     
     /* decrypt */
     {
-	size_t         blocksize = st->st_oakley.encrypter->enc_blocksize;
+	size_t         blocksize = pst->st_oakley.encrypter->enc_blocksize;
 	unsigned char *encstart  = iv + blocksize;
 	unsigned int   enclen    = encend - encstart;
 	unsigned int   padlen;
@@ -904,7 +912,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 	    DBG_dump("data before decryption:", encstart, enclen));
 	
 	/* now, decrypt */
-	(st->st_oakley.encrypter->do_crypt)(encstart,
+	(pst->st_oakley.encrypter->do_crypt)(encstart,
 					    enclen,
 					    cipherkey->ptr,
 					    cipherkey->len,
@@ -939,6 +947,12 @@ static stf_status ikev2_send_auth(struct connection *c
 {
     struct ikev2_a a;
     pb_stream      a_pbs;
+    struct state *pst = st;
+
+    if(st->st_clonedfrom != 0) {
+	pst = state_with_serialno(st->st_clonedfrom);
+    }
+
     
     a.isaa_critical = ISAKMP_PAYLOAD_CRITICAL;
     a.isaa_np = np;
@@ -959,7 +973,7 @@ static stf_status ikev2_send_auth(struct connection *c
 	return STF_INTERNAL_ERROR;
     
     if(c->policy & POLICY_RSASIG) {
-	if(!ikev2_calculate_rsa_sha1(st, role, idhash_out, &a_pbs))
+	if(!ikev2_calculate_rsa_sha1(pst, role, idhash_out, &a_pbs))
 	    return STF_FATAL;
 	
     } else if(c->policy & POLICY_PSK) {
@@ -977,8 +991,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 {
     struct dh_continuation *dh = (struct dh_continuation *)pcrc;
     struct msg_digest *md = dh->md;
-    struct state *const st = md->st;
-    struct connection *c   = st->st_connection;
+    struct state *st      = md->st;
+    struct connection *c  = st->st_connection;
     struct ikev2_generic e;
     unsigned char *encstart;
     pb_stream      e_pbs, e_pbs_cipher;
@@ -986,6 +1000,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     int            ivsize;
     stf_status     ret;
     unsigned char *idhash;
+    struct state *pst = st;
 
     finish_dh_v2(st, r);
 
@@ -993,8 +1008,13 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	ikev2_log_parentSA(st);
     }
 
+    pst = st;
+    st = duplicate_state(pst);
+    insert_state(st);
+    md->st = st;
+
     /* record first packet for later checking of signature */
-    clonetochunk(st->st_firstpacket_him, md->message_pbs.start
+    clonetochunk(pst->st_firstpacket_him, md->message_pbs.start
 		 , pbs_offset(&md->message_pbs), "saved first received packet");
 
     /* HDR out */
@@ -1004,6 +1024,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	r_hdr.isa_np    = ISAKMP_NEXT_v2E;
 	r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
 	r_hdr.isa_flags = ISAKMP_FLAGS_I;
+	r_hdr.isa_msgid = htonl(pst->st_msgid_nextuse);
 	memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
 	memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
 	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
@@ -1042,7 +1063,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	unsigned char *id_start;
 	unsigned int   id_len;
 
-	hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher, st->st_skey_pi);
+	hmac_init_chunk(&id_ctx, pst->st_oakley.integ_hasher, pst->st_skey_pi);
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
 	r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
 	r_id.isai_np = ISAKMP_NEXT_v2AUTH;
@@ -1059,10 +1080,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 	/* calculate hash of IDi for AUTH below */
 	id_len = e_pbs_cipher.cur - id_start;
-	DBG(DBG_CRYPT, DBG_dump_chunk("idhash calc pi", st->st_skey_pi));
+	DBG(DBG_CRYPT, DBG_dump_chunk("idhash calc pi", pst->st_skey_pi));
 	DBG(DBG_CRYPT, DBG_dump("idhash calc I2", id_start, id_len));
 	hmac_update(&id_ctx, id_start, id_len);
-	idhash = alloca(st->st_oakley.integ_hasher->hash_digest_len);
+	idhash = alloca(pst->st_oakley.integ_hasher->hash_digest_len);
 	hmac_final(idhash, &id_ctx);
     }
 
@@ -1080,9 +1101,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
      */
     {
 	lset_t policy;
-	struct connection *c0 = first_pending(st, &policy);
+	struct connection *c0 = first_pending(pst, &policy);
 
 	if(c0) {
+	    st->st_connection = c0;
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
 	    
 	    st->st_ts_this = ikev2_subnettots(&c0->spd.this);
@@ -1104,8 +1126,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     /* let TCL hack it before we mark the length. */
     TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
 
-    /* keep it for a retransmit if necessary */
-    clonetochunk(st->st_tpacket, md->reply.start, pbs_offset(&md->reply)
+    /* keep it for a retransmit if necessary, but on initiator
+     * we never do that, but send_packet() uses it.
+     */
+    clonetochunk(pst->st_tpacket, md->reply.start, pbs_offset(&md->reply)
 		 , "reply packet for ikev2_parent_outI1");
 
     /* note: retransimission is driven by initiator */

@@ -121,3 +121,4 @@ extern stf_status ikev2_child_sa_respond(struct msg_digest *md
 					 , pb_stream *outpbs);
 
 extern struct traffic_selector ikev2_subnettots(struct end *e);
+extern void ikev2_update_counters(struct msg_digest *md);

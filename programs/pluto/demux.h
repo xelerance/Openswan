@@ -66,6 +66,10 @@ struct msg_digest {
     const struct state_v2_microcode *svm; /* microcode for initial state (v2)*/
     bool new_iv_set;
     struct state *st;	/* current state object */
+
+    enum phase1_role role;
+    msgid_t          msgid_received;
+    
     pb_stream reply;	/* room for reply */
     pb_stream rbody;	/* room for reply body (after header) */
     notification_t note;	/* reason for failure */

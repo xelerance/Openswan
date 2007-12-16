@@ -42,7 +42,7 @@
  * than specified by draft-jenkins-ipsec-rekeying-06.txt.
  */
 
-typedef u_int32_t msgid_t;	/* Network order! */
+/* msgid_t defined in defs.h */
 #define MAINMODE_MSGID    ((msgid_t) 0)
 #define INVALID_MSGID     0xffffffff
 
@@ -219,11 +219,11 @@ struct state
     struct msgid_list  *st_used_msgids;        /* used-up msgids */
 
     /* IKEv2 things */
-    /* message ID sequence for things we send */
+    /* message ID sequence for things we send (as initiator) */
     msgid_t            st_msgid_lastack;       /* last one peer acknowledged */
     msgid_t            st_msgid_nextuse;       /* next one to use */
 
-    /* message ID sequence for things we receive */
+    /* message ID sequence for things we receive (as responder) */
     msgid_t            st_msgid_lastrecv;      /* last one peer sent */
 
 
@@ -377,9 +377,12 @@ extern struct state
     *find_phase1_state(const struct connection *c, lset_t ok_states),
     *find_sender(size_t packet_len, u_char *packet);
 
-extern struct state *find_state_ikev2(const u_char *icookie
-				      , const u_char *rcookie);
+extern struct state *find_state_ikev2_parent(const u_char *icookie
+					     , const u_char *rcookie);
 
+extern struct state *find_state_ikev2_child(const u_char *icookie
+					    , const u_char *rcookie
+					    , msgid_t msgid);
 
 extern struct state *find_info_state(const u_char *icookie
 				     , const u_char *rcookie
