@@ -620,14 +620,14 @@ static void success_v2_state_transition(struct msg_digest **mdp)
     const struct state_v2_microcode *svm = md->svm;
     enum state_kind from_state = md->from_state;
     struct state *st = md->st;
-    enum rc_type w = RC_NEW_STATE + st->st_state;
+    enum rc_type w;
 
     openswan_log("transition from state %s to state %s"
                  , enum_name(&state_names, from_state)
                  , enum_name(&state_names, svm->next_state));
-	    
     st->st_state = svm->next_state;
-    
+    w = RC_NEW_STATE + st->st_state;    
+
     /* Delete previous retransmission event.
      * New event will be scheduled below.
      */
@@ -718,7 +718,19 @@ static void success_v2_state_transition(struct msg_digest **mdp)
     TCLCALLOUT("adjustTimers", st, st->st_connection, md);
 
     if (w == RC_SUCCESS) {
+	struct state *pst;
+
+	DBG_log("releasing whack for #%lu (sock=%d)"
+		, st->st_serialno, st->st_whack_sock);
 	release_whack(st);
+
+	/* XXX should call unpend again on parent SA */
+	if(st->st_clonedfrom != 0) {
+	    pst = state_with_serialno(st->st_clonedfrom);
+	    DBG_log("releasing whack for #%lu (sock=%d)"
+		    , pst->st_serialno, pst->st_whack_sock);
+	    release_whack(pst);
+	}
     }
 }
 

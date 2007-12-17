@@ -232,6 +232,7 @@ ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
 	complete_v2_state_transition(&ke->md, e);
 	if(ke->md) release_md(ke->md);
     }
+    reset_cur_state();
     reset_globals();
     
     passert(GLOBALS_ARE_RESET());
@@ -1028,7 +1029,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	r_hdr.isa_np    = ISAKMP_NEXT_v2E;
 	r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
 	r_hdr.isa_flags = ISAKMP_FLAGS_I;
-	r_hdr.isa_msgid = st->st_msgid;
+	r_hdr.isa_msgid = st->st_msgid;  
 	memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
 	memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
 	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
@@ -1105,7 +1106,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
      */
     {
 	lset_t policy;
-	struct connection *c0 = first_pending(pst, &policy);
+	struct connection *c0 = first_pending(pst, &policy,&st->st_whack_sock);
 
 	if(c0) {
 	    st->st_connection = c0;

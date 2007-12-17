@@ -527,6 +527,8 @@ sending 476 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using 
 ../parentI3 transition from state STATE_PARENT_I2 to state STATE_PARENT_I3
 ../parentI3 negotiated tunnel [192.0.1.0,192.0.1.255] -> [192.0.2.0,192.0.2.255]
 ../parentI3 STATE_PARENT_I3: PARENT SA established tunnel mode {ESP=>0x12345678 <0x78123456 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
+| releasing whack for #2 (sock=6)
+| releasing whack for #1 (sock=1)
 | deleting state #1
 | deleting state #2
 | ICOOKIE:  00 01 02 03  04 05 06 07

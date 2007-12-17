@@ -194,7 +194,9 @@ unpend(struct state *st)
     }
 }
 
-struct connection *first_pending(struct state *st, lset_t *policy)
+struct connection *first_pending(struct state *st
+				 , lset_t *policy
+				 , int *p_whack_sock)
 {
     struct pending **pp
 	, *p;
@@ -206,6 +208,7 @@ struct connection *first_pending(struct state *st, lset_t *policy)
     {
 	if (p->isakmp_sa == st)
 	{
+	    *p_whack_sock = p->whack_sock;
 	    *policy = p->policy;
 	    return p->connection;
 	}
