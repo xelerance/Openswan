@@ -26,12 +26,16 @@ cleanall::
 	rm -f ${UPDOWN_PROGRAM} ${PROGRAM}
 
 ifeq ($(USE_IPROUTE2),false)
+programs: ${PROGRAM}
 	echo "Cannot build _updown.netkey without USE_IPROUTE2, aborted"
 	exit 1
 else
-	UPDOWN_PROGRAM=_updown.ip2
-endif
+
+programs: ${PROGRAM}
 
 ${PROGRAM}: ${UPDOWN_PROGRAM}
 	cp ${UPDOWN_PROGRAM} ${PROGRAM}
+
+endif
+
 
