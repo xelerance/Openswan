@@ -1,10 +1,12 @@
 east:~#
- TESTNAME=ikev2-01
+ TESTNAME=ikev2-03
 east:~#
  source /testing/pluto/bin/eastlocal.sh
 east:~#
  ipsec setup start
 ipsec_setup: Starting Openswan IPsec VERSION
+east:~#
+ ipsec whack --whackrecord /var/tmp/ikev2.record
 east:~#
  ipsec auto --add  westnet--eastnet-ikev2
 east:~#

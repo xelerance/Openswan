@@ -1,5 +1,5 @@
 west:~#
- TESTNAME=ikev2-01
+ TESTNAME=ikev2-03
 west:~#
  source /testing/pluto/bin/westlocal.sh
 west:~#
@@ -25,12 +25,14 @@ west:~#
  ipsec setup start
 ipsec_setup: Starting Openswan IPsec VERSION
 west:~#
+ ipsec whack --whackrecord /var/tmp/ikev2.record
+west:~#
  ipsec auto --add westnet--eastnet-ikev2
 west:~#
  ipsec auto --status
 000 interface ipsec0/eth1 192.1.2.45
 000 %myid = (none)
-000 debug none
+000 debug raw+crypt+parsing+emitting+control+lifecycle+klips+dns+oppo+controlmore+pfkey+nattraversal+x509
 000  
 000 algorithm ESP encrypt: id=3, name=ESP_3DES, ivlen=64, keysizemin=192, keysizemax=192
 000 algorithm ESP encrypt: id=12, name=ESP_AES, ivlen=128, keysizemin=128, keysizemax=256
@@ -61,7 +63,7 @@ west:~#
 000 "westnet--eastnet-ikev2": 192.0.1.0/24===192.1.2.45<192.1.2.45>[@west]...192.1.2.23<192.1.2.23>[@east]===192.0.2.0/24; unrouted; eroute owner: #0
 000 "westnet--eastnet-ikev2":     myip=unset; hisip=unset;
 000 "westnet--eastnet-ikev2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
-000 "westnet--eastnet-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2; prio: 24,24; interface: eth1; 
+000 "westnet--eastnet-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init; prio: 24,24; interface: eth1; 
 000 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
 000  
 000  
@@ -74,16 +76,10 @@ west:~#
 done
 west:~#
  ipsec auto --up  westnet--eastnet-ikev2
-104 "westnet--eastnet-ikev2" #1: STATE_PARENT_I1: initiate
-104 "westnet--eastnet-ikev2" #1: received invalid IKE version, falling back to IKEv1.
-104 "westnet--eastnet-ikev2" #1: STATE_MAIN_I1: initiate
-003 "westnet--eastnet-ikev2" #1: received Vendor ID payload [Openswan 
-003 "westnet--eastnet-ikev2" #1: received Vendor ID payload [Dead Peer Detection]
-106 "westnet--eastnet-ikev2" #1: STATE_MAIN_I2: sent MI2, expecting MR2
-108 "westnet--eastnet-ikev2" #1: STATE_MAIN_I3: sent MI3, expecting MR3
-004 "westnet--eastnet-ikev2" #1: STATE_MAIN_I4: ISAKMP SA established {auth=OAKLEY_RSA_SIG cipher=aes_128 prf=oakley_sha group=modp1536}
-117 "westnet--eastnet-ikev2" #2: STATE_QUICK_I1: initiate
-004 "westnet--eastnet-ikev2" #2: STATE_QUICK_I2: sent QI2, IPsec SA established tunnel mode
+133 "westnet--eastnet-ikev2" #1: STATE_PARENT_I1: initiate
+133 "westnet--eastnet-ikev2" #1: STATE_PARENT_I1: sent v2I1, expected v2R1
+134 "westnet--eastnet-ikev2" #2: STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 cipher=aes_128 integ=sha1 prf=oakley_sha group=modp1536}
+004 "westnet--eastnet-ikev2" #2: STATE_PARENT_I3: PARENT SA established tunnel mode {ESP=>0x657e8d56 <0xe4ccf18f xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
 west:~#
  ipsec look
 west NOW
@@ -91,8 +87,6 @@ west NOW
 ipsec0->eth1 mtu=16260(9999)->1500
 tun0xTUN#@192.1.2.23 IPIP: dir=out src=192.1.2.45 natencap=none natsport=0 natdport=0  
 esp0xKLIPSPIK@192.1.2.23 ESP_AES_HMAC_SHA1: dir=out src=192.1.2.45 iv_bits=128bits iv=0xIVISFORRANDOM000IVISFORRANDOM000 ooowin=64 alen=160 aklen=160 eklen=128 natencap=none natsport=0 natdport=0  
-esp0xKLIPSPIK@192.1.2.45 ESP_AES_HMAC_SHA1: dir=in  src=192.1.2.23 iv_bits=128bits iv=0xIVISFORRANDOM000IVISFORRANDOM000 ooowin=64 alen=160 aklen=160 eklen=128 natencap=none natsport=0 natdport=0  
-tun0xTUN#@192.1.2.45 IPIP: dir=in  src=192.1.2.23 policy=192.0.2.0/24->192.0.1.0/24 flags=0x8<> natencap=none natsport=0 natdport=0  
 ROUTING TABLE
 192.1.2.0/24 dev eth1  proto kernel  scope link  src 192.1.2.45 
 192.1.2.0/24 dev ipsec0  proto kernel  scope link  src 192.1.2.45 
