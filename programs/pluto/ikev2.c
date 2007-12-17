@@ -515,37 +515,39 @@ void ikev2_log_parentSA(struct state *st)
     }
 	
 
-    datatot(st->st_skey_ei.ptr, st->st_skey_ei.len, 'x', enckeybuf, 256);
-    datatot(st->st_skey_ai.ptr, st->st_skey_ai.len, 'x', authkeybuf, 256);
-    openswan_log("ikev2 I 0x%02x%02x%02x%02x%02x%02x%02x%02x 0x%02x%02x%02x%02x%02x%02x%02x%02x %s:%s %s:%s"
-		 , st->st_icookie[0], st->st_icookie[1]
-		 , st->st_icookie[2], st->st_icookie[3]
-		 , st->st_icookie[4], st->st_icookie[5]
-		 , st->st_icookie[6], st->st_icookie[7]
-		 , st->st_rcookie[0], st->st_rcookie[1]
-		 , st->st_rcookie[2], st->st_rcookie[3]
-		 , st->st_rcookie[4], st->st_rcookie[5]
-		 , st->st_rcookie[6], st->st_rcookie[7]
-		 , authalgo
-		 , authkeybuf
-		 , encalgo
-		 , enckeybuf);
+    if(DBGP(DBG_CRYPTO)) {
+	datatot(st->st_skey_ei.ptr, st->st_skey_ei.len, 'x', enckeybuf, 256);
+	datatot(st->st_skey_ai.ptr, st->st_skey_ai.len, 'x', authkeybuf, 256);
+	DBG_log("ikev2 I 0x%02x%02x%02x%02x%02x%02x%02x%02x 0x%02x%02x%02x%02x%02x%02x%02x%02x %s:%s %s:%s"
+		, st->st_icookie[0], st->st_icookie[1]
+		, st->st_icookie[2], st->st_icookie[3]
+		, st->st_icookie[4], st->st_icookie[5]
+		, st->st_icookie[6], st->st_icookie[7]
+		, st->st_rcookie[0], st->st_rcookie[1]
+		, st->st_rcookie[2], st->st_rcookie[3]
+		, st->st_rcookie[4], st->st_rcookie[5]
+		, st->st_rcookie[6], st->st_rcookie[7]
+		, authalgo
+		, authkeybuf
+		, encalgo
+		, enckeybuf);
 
-    datatot(st->st_skey_er.ptr, st->st_skey_er.len, 'x', enckeybuf, 256);
-    datatot(st->st_skey_ar.ptr, st->st_skey_ar.len, 'x', authkeybuf, 256);
-    openswan_log("ikev2 R 0x%02x%02x%02x%02x%02x%02x%02x%02x 0x%02x%02x%02x%02x%02x%02x%02x%02x %s:%s %s:%s"
-		 , st->st_icookie[0], st->st_icookie[1]
-		 , st->st_icookie[2], st->st_icookie[3]
-		 , st->st_icookie[4], st->st_icookie[5]
-		 , st->st_icookie[6], st->st_icookie[7]
-		 , st->st_rcookie[0], st->st_rcookie[1]
-		 , st->st_rcookie[2], st->st_rcookie[3]
-		 , st->st_rcookie[4], st->st_rcookie[5]
-		 , st->st_rcookie[6], st->st_rcookie[7]
-		 , authalgo
-		 , authkeybuf
-		 , encalgo
-		 , enckeybuf);
+	datatot(st->st_skey_er.ptr, st->st_skey_er.len, 'x', enckeybuf, 256);
+	datatot(st->st_skey_ar.ptr, st->st_skey_ar.len, 'x', authkeybuf, 256);
+	DBG_log("ikev2 R 0x%02x%02x%02x%02x%02x%02x%02x%02x 0x%02x%02x%02x%02x%02x%02x%02x%02x %s:%s %s:%s"
+		, st->st_icookie[0], st->st_icookie[1]
+		, st->st_icookie[2], st->st_icookie[3]
+		, st->st_icookie[4], st->st_icookie[5]
+		, st->st_icookie[6], st->st_icookie[7]
+		, st->st_rcookie[0], st->st_rcookie[1]
+		, st->st_rcookie[2], st->st_rcookie[3]
+		, st->st_rcookie[4], st->st_rcookie[5]
+		, st->st_rcookie[6], st->st_rcookie[7]
+		, authalgo
+		, authkeybuf
+		, encalgo
+		, enckeybuf);
+    }
 }
 
 
