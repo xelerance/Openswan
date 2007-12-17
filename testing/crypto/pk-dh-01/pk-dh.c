@@ -23,6 +23,7 @@
 #include "../../../programs/pluto/ike_alg.c"
 #include "../../../programs/pluto/crypt_utils.c"
 #include "../../../programs/pluto/crypt_dh.c"
+#include "../../../programs/pluto/ikev2_prfplus.c"
 
 #include "crypto.h"
 
@@ -163,8 +164,8 @@ int main(int argc, char *argv[])
 
 	skq->thespace.start = 0;
 	skq->thespace.len   = sizeof(skq->space);
-	skq->auth = tc2_auth;
-	skq->hash = tc2_hash;
+	skq->auth     = tc2_auth;
+	skq->prf_hash = tc2_hash;
 	skq->oakley_group = tc2_oakleygroup;
 	skq->init = tc2_init;
 	skq->keysize = tc2_encrypter->keydeflen/BITS_PER_BYTE;
