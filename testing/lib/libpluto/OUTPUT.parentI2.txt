@@ -174,8 +174,8 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |    transform ID: 5
 | complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI1: calculating g^{xy}, sending I2
-../parentI2 ikev2 I 0x0001020304050607 0xc02e7a3031a03188 sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
-../parentI2 ikev2 R 0x0001020304050607 0xc02e7a3031a03188 sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
+| ikev2 I 0x0001020304050607 0xc02e7a3031a03188 sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
+| ikev2 R 0x0001020304050607 0xc02e7a3031a03188 sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
 | duplicating state object #1
 | creating state object #2 at 0x4030fad0
 | ICOOKIE:  00 01 02 03  04 05 06 07
@@ -244,7 +244,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |    spi size: 4
 |    # transforms: 3
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
-| our spi  34 56 78 12
+| our spi  12 34 56 78
 | *******emit IKEv2 Transform Substructure Payload:
 |    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
@@ -268,7 +268,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |    spi size: 4
 |    # transforms: 3
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
-| our spi  56 78 12 34
+| our spi  12 34 56 78
 | *******emit IKEv2 Transform Substructure Payload:
 |    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
@@ -292,7 +292,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |    spi size: 4
 |    # transforms: 3
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
-| our spi  78 12 34 56
+| our spi  12 34 56 78
 | *******emit IKEv2 Transform Substructure Payload:
 |    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
@@ -357,11 +357,11 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |   00 00 00 00  2c 80 00 94  02 00 00 24  01 03 04 03
 |   12 34 56 78  03 00 00 08  01 00 00 0c  03 00 00 08
 |   03 00 00 02  00 00 00 08  05 00 00 00  02 00 00 24
-|   02 03 04 03  34 56 78 12  03 00 00 08  01 00 00 0c
+|   02 03 04 03  12 34 56 78  03 00 00 08  01 00 00 0c
 |   03 00 00 08  03 00 00 02  00 00 00 08  05 00 00 00
-|   02 00 00 24  03 03 04 03  56 78 12 34  03 00 00 08
+|   02 00 00 24  03 03 04 03  12 34 56 78  03 00 00 08
 |   01 00 00 03  03 00 00 08  03 00 00 02  00 00 00 08
-|   05 00 00 00  00 00 00 24  04 03 04 03  78 12 34 56
+|   05 00 00 00  00 00 00 24  04 03 04 03  12 34 56 78
 |   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
 |   00 00 00 08  05 00 00 00  2d 00 00 18  01 00 00 00
 |   07 00 00 10  00 00 ff ff  c0 00 01 00  c0 00 01 ff
@@ -384,19 +384,19 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |   f9 7d 5b bd  57 61 a4 8c  f6 3e 87 41  49 a8 79 c5
 |   ba 7e cb 85  70 2a a8 17  20 48 ca c2  1e 8c 95 9f
 |   c6 41 2f c2  4d 20 00 13  b9 10 1c 82  bc 70 04 3a
-|   69 a6 8b 79  2d 71 c3 b7  70 e1 5d a7  f7 b3 7e 41
-|   50 ce 5e 9e  36 47 a4 db  52 e2 f7 53  60 c5 59 62
-|   43 ef 5e b2  a1 4e 47 b0  f8 d9 84 ec  95 32 8f 0b
-|   a1 d1 22 8f  e2 71 0d 52  6a b8 c6 63  a6 ba 0e 41
-|   f6 e1 5c 08  26 e5 ed 4c  01 e2 ae 85  c3 ab f8 21
-|   1c 81 01 bd  24 3d fc 37  87 2d 67 f0  24 a9 5b af
-|   98 70 50 80  dd ab 41 88  fc 9a 25 9e  42 45 5e e8
-|   39 aa 6a 52  9a 96 9c 74  0f 32 1f f7  2f 9c a2 37
-|   c8 2f 07 25  5a 2b 90 40  28 b5 b2 be  9d e8 27 fc
-|   e3 31 c1 31  3b 20 a6 8e  55 ff df 56  a4 0c 59 87
+|   07 52 7e 8a  4d 3f 76 0e  68 59 9c 1b  a3 32 fa 04
+|   49 05 4d fa  b7 1b 53 f1  5b 3f 73 20  15 02 83 e4
+|   ef 80 c6 c7  a1 89 d6 ce  42 3c 3e 05  0e 57 f2 ef
+|   e8 d8 4b 0b  69 87 fb 29  ee f7 43 52  33 1b 60 11
+|   91 44 13 9f  5d 8b a1 f8  7a de 4c f6  be de de b0
+|   44 59 e3 ef  e8 a0 26 03  24 6a 3c 6b  68 c9 f9 83
+|   ff 5f 70 6b  2e 90 f5 f7  58 82 3e 20  cf eb 4d 33
+|   dd 83 a6 7a  18 72 4c 25  72 2a b6 46  13 10 19 1d
+|   52 bf d7 83  e3 a2 1b 38  f0 5e b0 33  87 95 bc ff
+|   95 d6 fd 53  b0 0a 3e 72  9a b2 fd c9  33 38 62 ec
 | emitting 12 zero bytes of 96-bits of truncated HMAC into IKEv2 Encryption Payload
 | out calculated auth:
-|   72 f7 57 af  c1 c9 49 c1  e2 f4 f4 8e
+|   b0 10 10 03  23 6c 6e 26  ea e1 64 de
 | emitting length of IKEv2 Encryption Payload: 448
 | emitting length of ISAKMP Message: 476
 | complete v2 state transition with STF_OK
@@ -423,17 +423,17 @@ sending 476 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using 
 |   f9 7d 5b bd  57 61 a4 8c  f6 3e 87 41  49 a8 79 c5
 |   ba 7e cb 85  70 2a a8 17  20 48 ca c2  1e 8c 95 9f
 |   c6 41 2f c2  4d 20 00 13  b9 10 1c 82  bc 70 04 3a
-|   69 a6 8b 79  2d 71 c3 b7  70 e1 5d a7  f7 b3 7e 41
-|   50 ce 5e 9e  36 47 a4 db  52 e2 f7 53  60 c5 59 62
-|   43 ef 5e b2  a1 4e 47 b0  f8 d9 84 ec  95 32 8f 0b
-|   a1 d1 22 8f  e2 71 0d 52  6a b8 c6 63  a6 ba 0e 41
-|   f6 e1 5c 08  26 e5 ed 4c  01 e2 ae 85  c3 ab f8 21
-|   1c 81 01 bd  24 3d fc 37  87 2d 67 f0  24 a9 5b af
-|   98 70 50 80  dd ab 41 88  fc 9a 25 9e  42 45 5e e8
-|   39 aa 6a 52  9a 96 9c 74  0f 32 1f f7  2f 9c a2 37
-|   c8 2f 07 25  5a 2b 90 40  28 b5 b2 be  9d e8 27 fc
-|   e3 31 c1 31  3b 20 a6 8e  55 ff df 56  a4 0c 59 87
-|   72 f7 57 af  c1 c9 49 c1  e2 f4 f4 8e
+|   07 52 7e 8a  4d 3f 76 0e  68 59 9c 1b  a3 32 fa 04
+|   49 05 4d fa  b7 1b 53 f1  5b 3f 73 20  15 02 83 e4
+|   ef 80 c6 c7  a1 89 d6 ce  42 3c 3e 05  0e 57 f2 ef
+|   e8 d8 4b 0b  69 87 fb 29  ee f7 43 52  33 1b 60 11
+|   91 44 13 9f  5d 8b a1 f8  7a de 4c f6  be de de b0
+|   44 59 e3 ef  e8 a0 26 03  24 6a 3c 6b  68 c9 f9 83
+|   ff 5f 70 6b  2e 90 f5 f7  58 82 3e 20  cf eb 4d 33
+|   dd 83 a6 7a  18 72 4c 25  72 2a b6 46  13 10 19 1d
+|   52 bf d7 83  e3 a2 1b 38  f0 5e b0 33  87 95 bc ff
+|   95 d6 fd 53  b0 0a 3e 72  9a b2 fd c9  33 38 62 ec
+|   b0 10 10 03  23 6c 6e 26  ea e1 64 de
 | deleting state #1
 | deleting state #2
 | ICOOKIE:  00 01 02 03  04 05 06 07
@@ -550,15 +550,15 @@ IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 504, b
                     (t: #1 type=encr id=aes )
                     (t: #2 type=integ id=hmac-sha )
                     (t: #3 type=esn id=no-esn ))
-                (p: #2 protoid=ipsec-esp transform=3 len=36 spi=34567812
+                (p: #2 protoid=ipsec-esp transform=3 len=36 spi=12345678
                     (t: #1 type=encr id=aes )
                     (t: #2 type=integ id=hmac-sha )
                     (t: #3 type=esn id=no-esn ))
-                (p: #3 protoid=ipsec-esp transform=3 len=36 spi=56781234
+                (p: #3 protoid=ipsec-esp transform=3 len=36 spi=12345678
                     (t: #1 type=encr id=3des )
                     (t: #2 type=integ id=hmac-sha )
                     (t: #3 type=esn id=no-esn ))
-                (p: #4 protoid=ipsec-esp transform=3 len=36 spi=78123456
+                (p: #4 protoid=ipsec-esp transform=3 len=36 spi=12345678
                     (t: #1 type=encr id=3des )
                     (t: #2 type=integ id=hmac-sha )
                     (t: #3 type=esn id=no-esn )))
