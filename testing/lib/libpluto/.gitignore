@@ -61,3 +61,6 @@ Makefile.depend.whackmsgtestlib.c.linux
 .Makefile.depend.spdbtest.c.linux
 .Makefile.depend.whackmsgtestlib.c.linux
 lib-refineconnection/OUTPUT
+parentR1duplicate
+lib-parentR1duplicate/OUTPUT
+lib-parentR1duplicate/parentR1.pcap
