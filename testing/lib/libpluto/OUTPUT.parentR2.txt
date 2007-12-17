@@ -105,8 +105,8 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 |   bf 00 ca fd  ae 6d e7 14  6d 11 35 f6  5d 93 5f 60
 |   b9 73 0f e0  49 2c 2a f8  c9 04 f6 4c  59 16 90 9d
 |   2b 80 00 14  47 e9 f9 25  8c a2 38 58  f6 75 b1 66
-|   b0 2c c2 92  00 00 00 10  4f 45 73 40  40 7a 4a 56
-|   57 5b 6a 5d
+|   b0 2c c2 92  00 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30
 | *received 476 bytes from 192.1.2.45:500 on eth0 (port=500)
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
 |   2e 20 23 08  00 00 00 01  00 00 01 dc  23 80 01 c0

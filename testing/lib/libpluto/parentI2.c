@@ -24,6 +24,7 @@
 
 #include "whackmsgtestlib.c"
 #include "seam_timer.c"
+#include "seam_vendor.c"
 #include "seam_pending.c"
 #include "seam_ikev1.c"
 #include "seam_crypt.c"
@@ -79,7 +80,7 @@ main(int argc, char *argv[])
     /* argv[1] == "-r" */
 
     tool_init_log();
-    init_pluto_vendorid();
+    init_fake_vendorid();
     
     infile = argv[1];
     conn_name = argv[2];
