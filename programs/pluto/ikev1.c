@@ -915,7 +915,7 @@ process_v1_packet(struct msg_digest **mdp)
 	    }
 #endif 
 #ifdef MODECFG	
-	    if(st->st_state == STATE_MODE_CFG_R2)   /* Have we just give an IP address to peer? */
+	    if(st->st_state == STATE_MODE_CFG_R2)   /* Have we just given an IP address to peer? */
 	    {
 		st->st_state = STATE_MAIN_R3;	    /* ISAKMP is up... */
 	    }
