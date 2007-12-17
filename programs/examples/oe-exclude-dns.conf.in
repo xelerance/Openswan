@@ -1,0 +1,9 @@
+conn let-my-dns-go
+        left=%defaultroute
+        leftnexthop=%defaultroute
+        leftprotoport=17/%any
+        right=0.0.0.0
+        rightsubnet=0.0.0.0/0
+        rightprotoport=17/53
+        type=passthrough
+        auto=route

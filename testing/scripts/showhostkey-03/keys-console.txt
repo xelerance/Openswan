@@ -1,0 +1,7 @@
+east:~#
+ TZ=GMT export TZ
+east:~#
+ ipsec showhostkey --dump
+FIXME
+east:~#
+ ipsec showhostkey --file /testing/pluto/scripts/showhostkey-03/multiple.secrets --left
