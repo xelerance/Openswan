@@ -23,7 +23,7 @@ modules=/proc/modules
 rpfilter1=/proc/sys/net/ipv4/conf
 # %unchanged or setting (0, 1, or 2)
 rpfiltercontrol=0
-kamepfkey=/proc/net/pfkey
+netkey=/proc/net/pfkey
 ipsecversion=/proc/net/ipsec/version
 moduleplace=/lib/modules/`uname -r`/kernel/net/ipsec
 bareversion=`uname -r | sed -e 's/\.nptl//' | sed -e 's/^\(2\.[0-9]\.[1-9][0-9]*-[1-9][0-9]*\(\.[0-9][0-9]*\)*\(\.x\)*\).*$/\1/'`
