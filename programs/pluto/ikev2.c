@@ -515,7 +515,7 @@ void ikev2_log_parentSA(struct state *st)
     }
 	
 
-    if(DBGP(DBG_CRYPTO)) {
+    if(DBGP(DBG_CRYPT)) {
 	datatot(st->st_skey_ei.ptr, st->st_skey_ei.len, 'x', enckeybuf, 256);
 	datatot(st->st_skey_ai.ptr, st->st_skey_ai.len, 'x', authkeybuf, 256);
 	DBG_log("ikev2 I 0x%02x%02x%02x%02x%02x%02x%02x%02x 0x%02x%02x%02x%02x%02x%02x%02x%02x %s:%s %s:%s"
