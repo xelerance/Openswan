@@ -87,9 +87,7 @@
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
 #endif
-#ifdef VIRTUAL_IP
 #include "virtual.h"
-#endif
 #include "dpd.h"
 #include "x509more.h"
 

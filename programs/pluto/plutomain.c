@@ -73,9 +73,7 @@
 #include "vendor.h"
 #include "pluto_crypt.h"
 
-#ifdef VIRTUAL_IP
 #include "virtual.h"
-#endif
 
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
@@ -167,10 +165,8 @@ usage(const char *mess)
 	    " \\\n\t"
             "[--force_keepalive] [--disable_port_floating]"
 #endif
-#ifdef VIRTUAL_IP
 	   " \\\n\t"
 	   "[--virtual_private <network_list>]"
-#endif
 	    "\n"
 	"Openswan %s\n"
 	, ipsec_version_code());
@@ -288,7 +284,6 @@ main(int argc, char **argv)
     unsigned int keep_alive = 0;
     bool force_keepalive = FALSE;
 #endif
-#ifdef VIRTUAL_IP
     /** Overridden by virtual_private= in ipsec.conf */
     char *virtual_private = NULL;
 #endif
@@ -360,9 +355,7 @@ main(int argc, char **argv)
 	    { "debug-nattraversal", no_argument, NULL, '5' },
 	    { "debug-nat-t", no_argument, NULL, '5' },
 #endif
-#ifdef VIRTUAL_IP
 	    { "virtual_private", required_argument, NULL, '6' },
-#endif
 	    { "nhelpers", required_argument, NULL, 'j' },
 #ifdef DEBUG
 	    { "debug-none", no_argument, NULL, 'N' },
@@ -598,11 +591,9 @@ main(int argc, char **argv)
 	    base_debugging |= DBG_NATT;
 	    continue;
 #endif
-#ifdef VIRTUAL_IP
 	case '6':	/* --virtual_private */
 	    virtual_private = optarg;
 	    continue;
-#endif
 
 	default:
 #ifdef DEBUG
@@ -787,9 +778,7 @@ main(int argc, char **argv)
     init_nat_traversal(nat_traversal, keep_alive, force_keepalive, nat_t_spf);
 #endif
 
-#ifdef VIRTUAL_IP
     init_virtual_ip(virtual_private);
-#endif
     init_rnd_pool();
     init_secret();
     init_states();

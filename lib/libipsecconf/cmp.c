@@ -48,9 +48,7 @@ static int starter_cmp_end (struct starter_end *c1, struct starter_end *c2)
 	VARCMP(has_client_wildcard);
 	VARCMP(port);
 	VARCMP(protocol);
-#ifdef VIRTUAL_IP
 	STRCMP(virt);
-#endif
 	return 0;
 }
 
@@ -95,9 +93,7 @@ int starter_cmp_pluto (struct starter_config *c1, struct starter_config *c2)
 	VARCMP(setup.options[KBF_NATTRAVERSAL]);
 	VARCMP(setup.options[KBF_KEEPALIVE]);
 #endif
-#ifdef VIRTUAL_IP
 	STRCMP(setup.strings[KSF_VIRTUALPRIVATE]);
-#endif
 	return 0;
 }
 

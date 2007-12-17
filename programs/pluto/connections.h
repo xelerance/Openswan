@@ -123,16 +123,10 @@ extern void fmt_policy_prio(policy_prio_t pp, char buf[POLICY_PRIO_BUF]);
 #include "certs.h"
 #include "smartcard.h"
 
-#ifdef VIRTUAL_IP
 struct virtual_t;
-#endif
 
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
-#endif
-
-#ifdef VIRTUAL_IP
-struct virtual_t;
 #endif
 
 /* for CIRCLEQ_ENTRY */
@@ -173,9 +167,7 @@ struct end {
     chunk_t ca;			/* CA distinguished name */
     struct ietfAttrList *groups;/* access control groups */
     smartcard_t *sc;		/* smartcard reader and key info */
-/*#ifdef VIRTUAL_IP */
     struct virtual_t *virt;
-/*#endif */
 /*#ifdef XAUTH*/
     bool xauth_server;
     bool xauth_client;

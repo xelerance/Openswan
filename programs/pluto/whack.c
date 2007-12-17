@@ -1305,7 +1305,6 @@ main(int argc, char **argv)
 	    if (end_seen & LELEM(END_CLIENTWITHIN - END_FIRST))
 		diag("--client conflicts with --clientwithin");
 	    tunnel_af_used_by = long_opts[long_index].name;
-#ifdef VIRTUAL_IP
 	    if ( ((strlen(optarg)>=6) && (strncmp(optarg,"vhost:",6)==0)) ||
 		((strlen(optarg)>=5) && (strncmp(optarg,"vnet:",5)==0)) ) {
 		msg.right.virt = optarg;
@@ -1314,10 +1313,6 @@ main(int argc, char **argv)
 		diagq(ttosubnet(optarg, 0, msg.tunnel_addr_family, &msg.right.client), optarg);
 		msg.right.has_client = TRUE;
 	    }
-#else
-	    diagq(ttosubnet(optarg, 0, msg.tunnel_addr_family, &msg.right.client), optarg);
-	    msg.right.has_client = TRUE;
-#endif
 	    msg.policy |= POLICY_TUNNEL;	/* client => tunnel */
 	    continue;
 

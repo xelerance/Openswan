@@ -71,9 +71,7 @@
 #include "nat_traversal.h"
 #endif
 
-#ifdef VIRTUAL_IP
 #include "virtual.h"
-#endif
 
 #include "hostpair.h"
 

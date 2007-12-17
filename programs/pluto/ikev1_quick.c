@@ -82,9 +82,7 @@
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
 #endif
-#ifdef VIRTUAL_IP
 #include "virtual.h"
-#endif
 #include "dpd.h"
 #include "x509more.h"
 #include "tpm/tpm.h"
@@ -1775,7 +1773,6 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 
 
 
-#ifdef VIRTUAL_IP
 	else if (is_virtual_connection(c))
 	{
 	    c->spd.that.client = *his_net;
@@ -1783,7 +1780,6 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	    if (subnetishost(his_net) && addrinsubnet(&c->spd.that.host_addr, his_net))
 		c->spd.that.has_client = FALSE;
 	}
-#endif
     }
     passert((p1st->st_policy & POLICY_PFS)==0 || p1st->st_pfs_group != NULL );
 
