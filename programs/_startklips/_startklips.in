@@ -39,7 +39,7 @@ esac
 
 # since netkey now calls _startnetkey, we know we're called to use klips or mast.
 # so if we find netkey, try to unload it or die
-if test -f $kamepfkey
+if test -f $netkey
 then
 	echo "Warning: found NETKEY stack loaded"
 	echo -n Trying to unload all NETKEY modules:
@@ -279,7 +279,7 @@ logonly() {
 
 
 # load module if possible
-if test -f $ipsecversion && test -f $netkey
+if test ! -f $ipsecversion && test ! -f $netkey
 then
     # both KLIPS and NETKEY code detected, bail out
     echo "FATAL ERROR: Both KLIPS and NETKEY IPsec code is present in kernel"
