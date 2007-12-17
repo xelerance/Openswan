@@ -33,9 +33,16 @@ else
 
 programs: ${PROGRAM}
 
+ifeq ($(USE_IPROUTE2),true)
+UPDOWN_PROGRAM=_updown.ip2
+else
+UPDOWN_PROGRAM=_updown.posix
+endif
+
 ${PROGRAM}: ${UPDOWN_PROGRAM}
 	cp ${UPDOWN_PROGRAM} ${PROGRAM}
 
-endif
+cleanall::
+	rm -f ${UPDOWN_PROGRAM} ${PROGRAM}
 
 
