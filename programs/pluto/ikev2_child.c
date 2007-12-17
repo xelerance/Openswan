@@ -464,7 +464,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 			     , c, c->policy);
     if(ret != STF_OK) return ret;
 
-    ikev2_derive_child_keys(st1);
+    ikev2_derive_child_keys(st1, role);
     /* install inbound and outbound SPI info */
     if(!install_ipsec_sa(st1, TRUE))
 	return STF_FATAL;

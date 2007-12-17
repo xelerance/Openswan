@@ -102,7 +102,8 @@ extern stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 				      , struct connection *c
 				      , lset_t policy);
 
-extern void ikev2_derive_child_keys(struct state *st);
+extern void ikev2_derive_child_keys(struct state *st
+				    , enum phase1_role role);
 
 extern stf_status ikev2_emit_ts(struct msg_digest *md 
 				, pb_stream *outpbs   
@@ -112,7 +113,7 @@ extern stf_status ikev2_emit_ts(struct msg_digest *md
 
 extern stf_status ikev2_calc_emit_ts(struct msg_digest *md
 				     , pb_stream *outpbs
-				     , enum phase1_role role UNUSED
+				     , enum phase1_role role
 				     , struct connection *c0
 				     , lset_t policy);
 

@@ -91,6 +91,13 @@ ikev2_out_sa(pb_stream *outs
 
     passert(sadb != NULL);
 
+    if(!parentSA) {
+	st->st_esp.our_spi = get_ipsec_spi(0 /* avoid this # */
+					   , IPPROTO_ESP
+					   , &st->st_connection->spd
+					   , TRUE /* tunnel */);
+    }
+
     /* now send out all the proposals */
     for(pc_cnt=0; pc_cnt < sadb->prop_disj_cnt; pc_cnt++)
     {
@@ -132,10 +139,6 @@ ikev2_out_sa(pb_stream *outs
 		if(parentSA) {
 		    /* XXX set when rekeying */
 		} else {
-		    st->st_esp.our_spi = get_ipsec_spi(0 /* avoid this # */
-						      , IPPROTO_ESP
-						      , &st->st_connection->spd
-						      , TRUE /* tunnel */);
 		    if(!out_raw(&st->st_esp.our_spi, 4
 				, &t_pbs, "our spi"))
 			return STF_INTERNAL_ERROR;
@@ -1139,9 +1142,14 @@ ikev2_parse_child_sa_body(
 	case PROTO_IPSEC_ESP:
 	    if (proposal.isap_spisize == 4)
 	    {
-		if(!in_raw(&itl->spi_values[itl->spi_values_next++],proposal.isap_spisize
+		unsigned int spival;
+		if(!in_raw(&spival, proposal.isap_spisize
 			   , &proposal_pbs, "CHILD SA SPI"))
 		    return PAYLOAD_MALFORMED;
+
+		DBG(DBG_PARSING
+		    , DBG_log("SPI received: %08x", ntohl(spival)));
+		itl->spi_values[itl->spi_values_next++]=spival;
 	    }
 	    else
 	    {
@@ -1237,7 +1245,10 @@ ikev2_parse_child_sa_body(
     st->st_esp.attrs.transattrs = ta;
     st->st_esp.present = TRUE;
 
-    st->st_esp.attrs.spi = itl->spi_values[itl->spi_values_next+-1];
+    /* if not confirming, then record the SPI value */
+    if(!selection) {
+	st->st_esp.attrs.spi = itl->spi_values[itl->spi_values_next+-1];
+    }
     st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TUNNEL;
 
     if (r_sa_pbs != NULL)

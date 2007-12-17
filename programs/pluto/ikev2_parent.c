@@ -1559,10 +1559,10 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	    return STF_FAIL + rn;
     }
 	
-    ikev2_derive_child_keys(st);
+    ikev2_derive_child_keys(st, md->role);
 
-    /* now install outbound SA --- inbound was installed in outI2 */
-    if(!install_ipsec_sa(st, FALSE))
+    /* now install child SAs */
+    if(!install_ipsec_sa(st, TRUE))
 	return STF_FATAL;
 
     return STF_OK;

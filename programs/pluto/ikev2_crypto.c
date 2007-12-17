@@ -51,10 +51,10 @@
 #include "alg_info.h"
 #include "kernel_alg.h"
 
-void ikev2_derive_child_keys(struct state *st)
+void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 {
 	struct v2prf_stuff childsacalc;
-	enum phase1_role role = INITIATOR;
+	
 	chunk_t ikeymat,rkeymat;
 	struct ipsec_proto_info *ipi = &st->st_esp;
 	
@@ -101,17 +101,26 @@ void ikev2_derive_child_keys(struct state *st)
 	
 	v2genbytes(&ikeymat, st->st_esp.keymat_len
 		   , "initiator keys", &childsacalc);
-	
+
 	v2genbytes(&rkeymat, st->st_esp.keymat_len
-		   , "initiator keys", &childsacalc);
+		   , "responder keys", &childsacalc);
 	
 	if(role == INITIATOR) {
-		st->st_esp.our_keymat = ikeymat.ptr;
-		st->st_esp.peer_keymat= rkeymat.ptr;
+	    if(DBGP(DBG_CRYPT)) {
+		DBG_dump_chunk("our  keymat", ikeymat);
+		DBG_dump_chunk("peer keymat", rkeymat);
+	    }
+	    st->st_esp.our_keymat = ikeymat.ptr;
+	    st->st_esp.peer_keymat= rkeymat.ptr;
 	} else {
-		st->st_esp.peer_keymat= ikeymat.ptr;
-		st->st_esp.our_keymat = rkeymat.ptr;
+	    if(DBGP(DBG_CRYPT)) {
+		DBG_dump_chunk("our  keymat", rkeymat);
+		DBG_dump_chunk("peer keymat", ikeymat);
+	    }
+	    st->st_esp.peer_keymat= ikeymat.ptr;
+	    st->st_esp.our_keymat = rkeymat.ptr;
 	}
+	
 }
  
 
