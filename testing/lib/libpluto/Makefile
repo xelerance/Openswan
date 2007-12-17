@@ -14,7 +14,11 @@
 # RCSID $Id: Makefile,v 1.5 2005/08/05 17:04:54 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+<<<<<<< .merge_file_UwF0mq
 srcdir?=${OPENSWANSRCDIR}/testing/lib/libpluto/
+=======
+srcdir?=${OPENSWANSRCDIR}/testing/lib/libpluto
+>>>>>>> .merge_file_OKfDRp
 include $(OPENSWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
