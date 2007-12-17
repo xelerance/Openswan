@@ -442,6 +442,11 @@ enum pluto_policy {
 	POLICY_IKEV2_ALLOW   = LELEM(25), /* accept IKEv2?   0x0200 0000 */
 	POLICY_IKEV2_PROPOSE = LELEM(26), /* propose IKEv2?  0x0400 0000 */
 	POLICY_IKEV2_MASK = POLICY_IKEV1_DISABLE|POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE,
+
+	POLICY_MODECFGDNS1  = LELEM(27),   /* should we offer a DNS server IP */
+	POLICY_MODECFGDNS2  = LELEM(28),   /* should we offer another DNS server IP */
+	POLICY_MODECFGWINS1 = LELEM(29),   /* should we offer a WINS server IP */
+	POLICY_MODECFGWINS2 = LELEM(30),   /* should we offer another WINS server IP */
 };
 
 /* Any IPsec policy?  If not, a connection description
