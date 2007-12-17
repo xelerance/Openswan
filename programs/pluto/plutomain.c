@@ -286,7 +286,6 @@ main(int argc, char **argv)
 #endif
     /** Overridden by virtual_private= in ipsec.conf */
     char *virtual_private = NULL;
-#endif
 #ifdef LEAK_DETECTIVE
     leak_detective=1;
 #else
