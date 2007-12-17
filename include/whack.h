@@ -37,7 +37,7 @@
  */
 
 #define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 24)
-#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 37)
+#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 38)
 
 /* struct whack_end is a lot like connection.h's struct end
  * It differs because it is going to be shipped down a socket
@@ -167,12 +167,6 @@ struct whack_message {
     bool whack_oppo_initiate;
     ip_address oppo_my_client, oppo_peer_client;
 
-    /* for MODECFG */
-    ip_address modecfg_dns1;
-    ip_address modecfg_dns2;
-    ip_address modecfg_wins1;
-    ip_address modecfg_wins2;
-
     /* for WHACK_TERMINATE: */
     bool whack_terminate;
 
@@ -205,6 +199,12 @@ struct whack_message {
 
     /* for connalias string */
     char *connalias;
+
+    /* for MODECFG */
+    ip_address modecfg_dns1;
+    ip_address modecfg_dns2;
+    ip_address modecfg_wins1;
+    ip_address modecfg_wins2;
 
     /* for use with general option adjustments */
     enum whack_opt_set opt_set;
