@@ -126,6 +126,7 @@ enum ipsec_comp_algo {
  */
 
 enum ipsec_id_type {
+	ID_FROMCERT=         (-3),      /* taken from certificate */
   ID_IMPOSSIBLE=             (-2),	/* private to Pluto */
   ID_MYID=                   (-1),	/* private to Pluto */
   ID_NONE=                     0,	/* private to Pluto */

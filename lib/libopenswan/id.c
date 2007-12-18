@@ -71,6 +71,14 @@ atoid(char *src, struct id *id, bool myid_ok)
     {
 	id->kind = ID_MYID;
     }
+    else if (streq("%fromcert", src))
+    {
+	id->kind = ID_FROMCERT;
+    }
+    else if (streq("%none", src))
+    {
+	id->kind = ID_NONE;
+    }
     else if (strchr(src, '=') != NULL)
     {
 	/* we interpret this as an ASCII X.501 ID_DER_ASN1_DN */
@@ -203,8 +211,14 @@ idtoa(const struct id *id, char *dst, size_t dstlen)
     id = resolve_myid(id);
     switch (id->kind)
     {
+    case ID_MYID:
+	n = snprintf(dst, dstlen, "%s", "%myid");
+	break;
+    case ID_FROMCERT:
+	n = snprintf(dst, dstlen, "%s", "%fromcert");
+	break;
     case ID_NONE:
-	n = snprintf(dst, dstlen, "(none)");
+	n = snprintf(dst, dstlen, "%s", "(none)");
 	break;
     case ID_IPV4_ADDR:
     case ID_IPV6_ADDR:

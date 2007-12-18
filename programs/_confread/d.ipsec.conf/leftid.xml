@@ -12,9 +12,22 @@ syntax)
 or a fully-qualified domain name preceded by
 <emphasis remap='B'>@</emphasis>
 (which is used as a literal string and not resolved).
+
+The magic value
+<emphasis remap='B'>%fromcert</emphasis>
+causes the ID to be set to a DN taken from a certificate that is loaded.
+Prior to 2.5.16, this was the default if a certificate was specified.
+
+The magic value
+<emphasis remap='B'>%none</emphasis>
+sets the ID to no ID. This is included for completeness, as the ID may
+have been set in the default conn, and one wishes for it to default instead
+of being explicitely set.
+
 The magic value
 <emphasis remap='B'>%myid</emphasis>
 stands for the current setting of <emphasis remap='I'>myid</emphasis>.
+
 This is set in <emphasis remap='B'>config setup</emphasis> or by <citerefentry><refentrytitle>ipsec_whack</refentrytitle><manvolnum>8</manvolnum></citerefentry>), or, if not set,
 it is the IP address in <emphasis remap='B'>%defaultroute</emphasis> (if that is supported by a TXT record in its reverse domain), or otherwise
 it is the system's hostname (if that is supported by a TXT record in its forward domain), or otherwise it is undefined.</para>

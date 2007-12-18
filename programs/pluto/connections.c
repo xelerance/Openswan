@@ -777,7 +777,9 @@ load_end_certificate(const char *filename, struct end *dst)
 	break;
 	
     case CERT_X509_SIGNATURE:
-	select_x509cert_id(cert.u.x509, &dst->id);
+	if(dst->id.kind == ID_FROMCERT || dst->id.kind == ID_NONE) {
+	    select_x509cert_id(cert.u.x509, &dst->id);
+	}
 	
 	if (!cached_cert)
 	{
