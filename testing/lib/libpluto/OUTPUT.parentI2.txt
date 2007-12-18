@@ -340,6 +340,9 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | emitting length of IKEv2 Traffic Selectors: 24
 | emitting 8 raw bytes of padding and length into cleartext
 | padding and length  00 01 02 03  04 05 06 07
+| emitting 12 zero bytes of 96-bits of truncated HMAC into IKEv2 Encryption Payload
+| emitting length of IKEv2 Encryption Payload: 448
+| emitting length of ISAKMP Message: 476
 | data before encryption:
 |   27 00 00 0c  02 00 00 00  77 65 73 74  21 00 00 c8
 |   01 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
@@ -394,11 +397,37 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |   dd 83 a6 7a  18 72 4c 25  72 2a b6 46  13 10 19 1d
 |   52 bf d7 83  e3 a2 1b 38  f0 5e b0 33  87 95 bc ff
 |   95 d6 fd 53  b0 0a 3e 72  9a b2 fd c9  33 38 62 ec
-| emitting 12 zero bytes of 96-bits of truncated HMAC into IKEv2 Encryption Payload
+| data being hmac:  00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
+|   2e 20 23 08  00 00 00 01  00 00 01 dc  23 80 01 c0
+|   00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   19 15 f1 05  5d 13 fc 7c  f5 6b 16 12  a6 e9 10 34
+|   b0 78 7d a5  df 6a d3 76  27 49 3e d4  ae ca bf 5f
+|   fd 1b b0 55  64 fa 3d a7  32 85 61 85  95 6b 81 d9
+|   b7 e1 85 00  40 87 dd cd  35 84 f9 a9  0f ea 78 b2
+|   79 53 10 cf  54 d3 03 e6  23 75 81 8d  53 dd 1d 30
+|   38 d5 6e 20  5b a1 08 63  1f 5a 7b 8d  c7 6f 5c a9
+|   b4 69 72 43  f4 09 a0 6e  08 6e 36 00  69 10 a0 a5
+|   31 49 5a 59  66 46 94 a0  ab 6f 8c f6  25 7e 02 8a
+|   d4 69 66 4a  eb 5f 42 d5  76 7f 68 db  1f df a5 b3
+|   c3 fe d6 5a  3d 92 5b 51  21 08 c8 7d  47 e8 74 e7
+|   db 91 23 b8  7f 1c 14 d2  f7 f8 46 c0  7e 89 9f ea
+|   75 37 06 75  1b 74 a9 2a  3e 6f 94 cb  7b af 56 8f
+|   cd 70 58 b4  ec 6d b6 ef  07 02 40 11  f0 65 80 1d
+|   f9 7d 5b bd  57 61 a4 8c  f6 3e 87 41  49 a8 79 c5
+|   ba 7e cb 85  70 2a a8 17  20 48 ca c2  1e 8c 95 9f
+|   c6 41 2f c2  4d 20 00 13  b9 10 1c 82  bc 70 04 3a
+|   07 52 7e 8a  4d 3f 76 0e  68 59 9c 1b  a3 32 fa 04
+|   49 05 4d fa  b7 1b 53 f1  5b 3f 73 20  15 02 83 e4
+|   ef 80 c6 c7  a1 89 d6 ce  42 3c 3e 05  0e 57 f2 ef
+|   e8 d8 4b 0b  69 87 fb 29  ee f7 43 52  33 1b 60 11
+|   91 44 13 9f  5d 8b a1 f8  7a de 4c f6  be de de b0
+|   44 59 e3 ef  e8 a0 26 03  24 6a 3c 6b  68 c9 f9 83
+|   ff 5f 70 6b  2e 90 f5 f7  58 82 3e 20  cf eb 4d 33
+|   dd 83 a6 7a  18 72 4c 25  72 2a b6 46  13 10 19 1d
+|   52 bf d7 83  e3 a2 1b 38  f0 5e b0 33  87 95 bc ff
+|   95 d6 fd 53  b0 0a 3e 72  9a b2 fd c9  33 38 62 ec
 | out calculated auth:
-|   b0 10 10 03  23 6c 6e 26  ea e1 64 de
-| emitting length of IKEv2 Encryption Payload: 448
-| emitting length of ISAKMP Message: 476
+|   ab ae c0 9d  32 ff e4 cb  ff 74 5b 1a
 | complete v2 state transition with STF_OK
 ../parentI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 ../parentI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 cipher=aes_128 integ=sha1 prf=oakley_sha group=modp1536}
@@ -433,7 +462,7 @@ sending 476 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using 
 |   dd 83 a6 7a  18 72 4c 25  72 2a b6 46  13 10 19 1d
 |   52 bf d7 83  e3 a2 1b 38  f0 5e b0 33  87 95 bc ff
 |   95 d6 fd 53  b0 0a 3e 72  9a b2 fd c9  33 38 62 ec
-|   b0 10 10 03  23 6c 6e 26  ea e1 64 de
+|   ab ae c0 9d  32 ff e4 cb  ff 74 5b 1a
 | deleting state #1
 | deleting state #2
 | ICOOKIE:  00 01 02 03  04 05 06 07
