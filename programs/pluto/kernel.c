@@ -1922,9 +1922,15 @@ init_kernel(void)
         struct stat buf;
 
 	/* If we detect NETKEY and KLIPS, we can't continue */
-	passert( (stat("/proc/net/pfkey", &buf) == 0) &&
-		 (stat("/proc/net/pf_key", &buf) == 0) );
-
+	if(stat("/proc/net/pfkey", &buf) == 0 &&
+	   stat("/proc/net/pf_key", &buf) == 0) {
+	    /* we don't die, we just log and go to sleep */
+	    openswan_log("Can not run with both NETKEY and KLIPS in the kernel");
+	    openswan_log("Please check your kernel configuration, or specify a stack");
+	    openswan_log("using protostack={klips,netkey}");
+	    exit_pluto(0);
+	}
+	
 #if 0
 	/* for now, don't automatically pick MASTKLIPS */
         if(stat("/proc/sys/net/ipsec/debug_mast",&buf)==0)
@@ -1992,7 +1998,7 @@ init_kernel(void)
     default:
 	openswan_log("kernel interface '%s' not available"
 		     , enum_name(&kern_interface_names, kern_interface));
-	exit(5);
+	exit_pluto(5);
     }
 
     if (kernel_ops->init)
@@ -2009,6 +2015,15 @@ init_kernel(void)
         event_schedule(EVENT_SHUNT_SCAN, SHUNT_SCAN_INTERVAL, NULL);
     }
 }
+
+void show_kernel_interface()
+{
+    if(kernel_ops) {
+	whack_log(RC_COMMENT, "using kernel interface: %s"
+		  , kernel_ops->kern_name);
+    }
+}
+
 
 /* Note: install_inbound_ipsec_sa is only used by the Responder.
  * The Responder will subsequently use install_ipsec_sa for the outbound.
