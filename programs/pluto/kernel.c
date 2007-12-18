@@ -2016,6 +2016,15 @@ init_kernel(void)
     }
 }
 
+void show_kernel_interface()
+{
+    if(kernel_ops) {
+	whack_log(RC_COMMENT, "using kernel interface: %s"
+		  , kernel_ops->kern_name);
+    }
+}
+
+
 /* Note: install_inbound_ipsec_sa is only used by the Responder.
  * The Responder will subsequently use install_ipsec_sa for the outbound.
  * The Initiator uses install_ipsec_sa to install both at once.
