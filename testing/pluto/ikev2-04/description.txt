@@ -1,0 +1,6 @@
+Basic pluto with IKEv2 on the initiator (west), and on the responder.
+It uses certificates, and it includes a configuration that will work
+on racoon2.
+
+
+

@@ -11,6 +11,9 @@ R	051229021523Z	060829204834Z	0A	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/C
 R	051229021528Z	060829204846Z	0B	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=north.uml.freeswan.org/emailAddress=north@openswan.org
 V	060422015653Z		0C	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=uml1/emailAddress=uml1@xelerance.com
 V	060422015741Z		0D	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=ncp/emailAddress=ncp@xelerance.com
-V	070829204822Z		0E	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=east.uml.freeswan.org/emailAddress=east@openswan.org
-V	070829204836Z		0F	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=west.uml.freeswan.org/emailAddress=west@openswan.org
-V	070829204848Z		10	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=north.uml.freeswan.org/emailAddress=north@openswan.org
+R	070829204822Z	071218220048Z	0E	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=east.uml.freeswan.org/emailAddress=east@openswan.org
+R	070829204836Z	071218220057Z	0F	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=west.uml.freeswan.org/emailAddress=west@openswan.org
+R	070829204848Z	071218220106Z	10	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=north.uml.freeswan.org/emailAddress=north@openswan.org
+V	081217220051Z		11	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=east.uml.freeswan.org/emailAddress=east@openswan.org
+V	081217220059Z		12	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=west.uml.freeswan.org/emailAddress=west@openswan.org
+V	081217220108Z		13	unknown	/C=CA/ST=Ontario/O=Openswan/L=Toronto/CN=north.uml.freeswan.org/emailAddress=north@openswan.org
