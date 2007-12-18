@@ -1187,7 +1187,18 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
         , op, opname);
 }
 
-
+bool
+netlink_shunt_eroute_fake(struct connection *c UNUSED
+                   , struct spd_route *sr UNUSED
+                   , enum routing_t rt_kind
+                   , enum pluto_sadb_operations op UNUSED
+		   , const char *opname)
+{
+	loglog(RC_COMMENT, "request to %s a %s policy with netkey kernel --- not yet implemented"
+		, opname
+		, enum_name(&routing_story, rt_kind));
+	return TRUE;
+}
 
 static void
 netlink_process_raw_ifaces(struct raw_iface *rifaces)
@@ -1440,7 +1451,7 @@ const struct kernel_ops netkey_kernel_ops = {
     docommand: do_command_linux,
 
     /* XXX these needed to be added */
-    shunt_eroute: NULL, /* pfkey_shunt_eroute,*/
+    shunt_eroute: netlink_shunt_eroute_fake,
     sag_eroute: netlink_sag_eroute,   /* pfkey_sag_eroute, */
     eroute_idle: NULL,  /* pfkey_was_eroute_idle,*/
     set_debug: NULL,    /* pfkey_set_debug, */

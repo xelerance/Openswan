@@ -660,11 +660,11 @@ static bool shunt_eroute(struct connection *c
 		  , enum pluto_sadb_operations op
 		  , const char *opname)
 {
-    pexpect(kernel_ops->shunt_eroute != NULL);
     if(kernel_ops->shunt_eroute) {
 	return kernel_ops->shunt_eroute(c, sr, rt_kind, op, opname);
     }
-    return FALSE;
+    loglog(RC_COMMENT, "no shunt_eroute implemented for %s interface", kernel_ops->kern_name);
+    return TRUE;
 }
 
 static bool sag_eroute(struct state *st
@@ -695,11 +695,12 @@ unroute_connection(struct connection *c)
         {
             /* cannot handle a live one */
             passert(sr->routing != RT_ROUTED_TUNNEL);
-	    pexpect(kernel_ops->shunt_eroute != NULL);
 	    if(kernel_ops->shunt_eroute) {
 		kernel_ops->shunt_eroute(c, sr, RT_UNROUTED
 					 , ERO_DELETE, "delete");
 	    }
+	    else loglog(RC_COMMENT, "no shunt_eroute implemented for %s interface"
+				, kernel_ops->kern_name);
         }
 
         sr->routing = RT_UNROUTED;  /* do now so route_owner won't find us */
