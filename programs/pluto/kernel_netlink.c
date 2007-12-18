@@ -1187,7 +1187,7 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
         , op, opname);
 }
 
-bool
+static bool
 netlink_shunt_eroute_fake(struct connection *c UNUSED
                    , struct spd_route *sr UNUSED
                    , enum routing_t rt_kind
