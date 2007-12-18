@@ -767,11 +767,50 @@ ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
     passert(GLOBALS_ARE_RESET());
 }
 
+static void ikev2_padup_pre_encrypt(struct msg_digest *md
+				    , pb_stream *e_pbs_cipher)
+{
+    struct state *st = md->st;
+    struct state *pst = st;
+    
+    if(st->st_clonedfrom != 0) {
+	pst = state_with_serialno(st->st_clonedfrom);
+    }
+
+    /* pads things up to message size boundary */
+    {
+	size_t blocksize = pst->st_oakley.encrypter->enc_blocksize;
+	char  *b = alloca(blocksize);
+	unsigned int    i;
+	size_t padding =  pad_up(pbs_offset(e_pbs_cipher), blocksize);
+	if (padding == 0) padding=blocksize;
+
+	for(i=0; i<padding; i++) {
+	    b[i]=i;
+	}
+	out_raw(b, padding, e_pbs_cipher, "padding and length");
+    }
+}
+
+static unsigned char *ikev2_authloc(struct msg_digest *md UNUSED
+				    , pb_stream *e_pbs)
+{
+    unsigned char *b12;
+	
+    b12 = e_pbs->cur;
+    if(!out_zero(12, e_pbs, "96-bits of truncated HMAC"))
+	return NULL;
+
+    return b12;
+}
+
 static stf_status ikev2_encrypt_msg(struct msg_digest *md,
 				    enum phase1_role init,
+				    unsigned char *authstart,
 				    unsigned char *iv,
 				    unsigned char *encstart,
-				    pb_stream *e_pbs,
+				    unsigned char *authloc,
+				    pb_stream *e_pbs UNUSED,
 				    pb_stream *e_pbs_cipher)
 {
     struct state *st = md->st;
@@ -790,20 +829,6 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
 	authkey   = &pst->st_skey_ar;
     }
 
-    /* pads things up to message size boundary */
-    {
-	size_t blocksize = pst->st_oakley.encrypter->enc_blocksize;
-	char  *b = alloca(blocksize);
-	unsigned int    i;
-	size_t padding =  pad_up(pbs_offset(e_pbs_cipher), blocksize);
-	if (padding == 0) padding=blocksize;
-
-	for(i=0; i<padding; i++) {
-	    b[i]=i;
-	}
-	out_raw(b, padding, e_pbs_cipher, "padding and length");
-    }
-    
     /* encrypt the block */
     {
 	size_t  blocksize = pst->st_oakley.encrypter->enc_blocksize;
@@ -825,26 +850,20 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
 	DBG(DBG_CRYPT,
 	    DBG_dump("data after encryption:", encstart, cipherlen));
     }
-    close_output_pbs(e_pbs_cipher);
     
     /* okay, authenticate from beginning of IV */
     {
-	unsigned char *b12;
 	struct hmac_ctx ctx;
 	
-	b12 = e_pbs->cur;
-	if(!out_zero(12, e_pbs, "96-bits of truncated HMAC"))
-	    return STF_INTERNAL_ERROR;
-	
 	hmac_init_chunk(&ctx, pst->st_oakley.integ_hasher, *authkey);
-	hmac_update(&ctx, iv, b12-iv);
-	hmac_final(b12, &ctx);
+	hmac_update(&ctx, authstart, authloc-authstart);
+	hmac_final(authloc, &ctx);
 	
 	if(DBGP(DBG_PARSING)) {
-	    DBG_dump("out calculated auth:", b12, 12); 
+	    DBG_dump("data being hmac:", authstart, authloc-authstart);
+	    DBG_dump("out calculated auth:", authloc, 12); 
 	}
     }
-    close_output_pbs(e_pbs);
     
     return STF_OK;
 }
@@ -859,6 +878,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
     unsigned int   np;
     unsigned char *iv;
     chunk_t       *cipherkey, *authkey;
+    unsigned char *authstart;
     struct state *pst = st;
 
     if(st->st_clonedfrom != 0) {
@@ -875,7 +895,8 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 
     e_pbs = &md->chain[ISAKMP_NEXT_v2E]->pbs;
     np    = md->chain[ISAKMP_NEXT_v2E]->payload.generic.isag_np;
-    
+
+    authstart=md->packet_pbs.start;
     iv     = e_pbs->cur;
     encend = e_pbs->roof - 12;
     
@@ -885,10 +906,11 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 	struct hmac_ctx ctx;
 	
 	hmac_init_chunk(&ctx, pst->st_oakley.integ_hasher, *authkey);
-	hmac_update(&ctx, iv, encend-iv);
+	hmac_update(&ctx, authstart, encend-authstart);
 	hmac_final(b12, &ctx);
 	
 	if(DBGP(DBG_PARSING)) {
+	    DBG_dump("data being hmac:", authstart, encend-authstart);
 	    DBG_dump("R2 calculated auth:", b12, 12); 
 	    DBG_dump("R2  provided  auth:", encend, 12);
 	}
@@ -1001,6 +1023,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     int            ivsize;
     stf_status     ret;
     unsigned char *idhash;
+    unsigned char *authstart;
     struct state *pst = st;
 
     finish_dh_v2(st, r);
@@ -1021,6 +1044,9 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     /* record first packet for later checking of signature */
     clonetochunk(pst->st_firstpacket_him, md->message_pbs.start
 		 , pbs_offset(&md->message_pbs), "saved first received packet");
+
+    /* beginning of data going out */
+    authstart = md->reply.cur;
 
     /* HDR out */
     {
@@ -1119,14 +1145,29 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	}
     }
 
-    ret = ikev2_encrypt_msg(md, INITIATOR,
-			    iv, encstart,
-			    &e_pbs, &e_pbs_cipher);
-    if(ret != STF_OK) return ret;
+    /*
+     * need to extend the packet so that we will know how big it is
+     * since the length is under the integrity check
+     */
+    ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
+    close_output_pbs(&e_pbs_cipher);
 
+    {
+	unsigned char *authloc = ikev2_authloc(md, &e_pbs);
 
-    close_output_pbs(&md->rbody);
-    close_output_pbs(&md->reply);
+	if(authloc == NULL) return STF_INTERNAL_ERROR;
+
+	close_output_pbs(&e_pbs);
+	close_output_pbs(&md->rbody);
+	close_output_pbs(&md->reply);
+
+	ret = ikev2_encrypt_msg(md, INITIATOR,
+				authstart,
+				iv, encstart, authloc,
+				&e_pbs, &e_pbs_cipher);
+	if(ret != STF_OK) return ret;
+    }
+
 
     /* let TCL hack it before we mark the length. */
     TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
@@ -1246,6 +1287,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     struct state *const st = md->st;
     struct connection *c   = st->st_connection;
     unsigned char *idhash_in, *idhash_out;
+    unsigned char *authstart;
     unsigned int np;
 
     /* extract calculated values from r */
@@ -1316,6 +1358,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
      * new state now */
     st->st_state = STATE_PARENT_R2;
     
+    authstart = md->reply.cur;
     /* send response */
     {
 	unsigned char *encstart;
@@ -1421,14 +1464,27 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    if(ret != STF_OK) return ret;
 	}
 
-	ret = ikev2_encrypt_msg(md, RESPONDER,
-				iv, encstart,
-				&e_pbs, &e_pbs_cipher);
-	if(ret != STF_OK) return ret;
+	ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
+	close_output_pbs(&e_pbs_cipher);
+
+	{
+	    unsigned char *authloc = ikev2_authloc(md, &e_pbs);
+
+	    if(authloc == NULL) return STF_INTERNAL_ERROR;
+
+	    close_output_pbs(&e_pbs);
+
+	    close_output_pbs(&md->rbody);
+	    close_output_pbs(&md->reply);
+
+	    ret = ikev2_encrypt_msg(md, RESPONDER,
+				    authstart, 
+				    iv, encstart, authloc, 
+				    &e_pbs, &e_pbs_cipher);
+	    if(ret != STF_OK) return ret;
+	}
     }
 
-    close_output_pbs(&md->rbody);
-    close_output_pbs(&md->reply);
 
     /* let TCL hack it before we mark the length. */
     TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
