@@ -781,6 +781,7 @@ openswan_DBG_dump(const char *label, const void *p, size_t len)
 void
 show_status(void)
 {
+    show_kernel_interface();
     show_ifaces_status();
     show_myid_status();
     show_debug_status();
