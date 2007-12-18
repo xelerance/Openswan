@@ -24,6 +24,7 @@
 #include "seam_keys.c"
 #include "seam_exitlog.c"
 #include "seam_whack.c"
+#include "seam_kernel.c"
 
 main(int argc, char *argv[])
 {

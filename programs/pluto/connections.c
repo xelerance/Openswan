@@ -1229,10 +1229,12 @@ add_connection(const struct whack_message *wm)
 	    c->spd.this.ca = c->spd.that.ca;
 
 #ifdef MODECFG
+#ifdef MODECFG_DNSWINS
 	c->modecfg_dns1 = wm->modecfg_dns1;
 	c->modecfg_dns2 = wm->modecfg_dns2;
 	c->modecfg_wins1 = wm->modecfg_wins1;
 	c->modecfg_wins2 = wm->modecfg_wins2;
+#endif
 #endif
 
 	default_end(&c->spd.this, &c->spd.that.host_addr);
@@ -2434,9 +2436,9 @@ is_virtual_net_used(struct connection *c, const ip_subnet *peer_net, const struc
 				 , enum_name(&connection_kind_names, d->kind)
 				 , buf);
 
-		    if(!kernel_ops->overlap_supported) {
+		    if(!kernel_overlap_supported()) {
 			openswan_log("Kernel method '%s' does not support overlapping IP ranges"
-				     , kernel_ops->kern_name);
+				     , kernel_if_name());
 			return TRUE;
 
 		    } else if(LIN(POLICY_OVERLAPIP, c->policy)

@@ -16,5 +16,16 @@ ipsec_spi_t get_ipsec_spi(ipsec_spi_t avoid UNUSED
 	return htonl(spis[spinext++]);
 }
 
+bool kernel_overlap_supported()
+{
+    return TRUE;
+}
+
+const char *kernel_if_name()
+{
+    return "kernel_seam";
+}
+
+
 
 

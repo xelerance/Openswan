@@ -2572,6 +2572,16 @@ bool was_eroute_idle(struct state *st, time_t since_when)
     return FALSE;
 }
 
+bool kernel_overlap_supported()
+{
+    return kernel_ops->overlap_supported;
+}
+
+const char *kernel_if_name()
+{
+    return kernel_ops->kern_name;
+}
+
 
 /*
  * Local Variables:
