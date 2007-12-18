@@ -60,7 +60,7 @@ west:~#
 000  
 000 stats db_ops: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0} 
 000  
-000 "westnet--eastnet-ikev2": 192.0.1.0/24===192.1.2.45<192.1.2.45>[@west]...192.1.2.23<192.1.2.23>[@east]===192.0.2.0/24; unrouted; eroute owner: #0
+000 "westnet--eastnet-ikev2": 192.0.1.0/24===192.1.2.45<192.1.2.45>[@west,S=C]...192.1.2.23<192.1.2.23>[@east,S=C]===192.0.2.0/24; unrouted; eroute owner: #0
 000 "westnet--eastnet-ikev2":     myip=unset; hisip=unset;
 000 "westnet--eastnet-ikev2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 3
 000 "westnet--eastnet-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init; prio: 24,24; interface: eth1; 
