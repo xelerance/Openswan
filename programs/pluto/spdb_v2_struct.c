@@ -149,6 +149,12 @@ ikev2_out_sa(pb_stream *outs
 		struct db_v2_trans *tr = &vpc->trans[ts_cnt];
 		struct ikev2_trans t;
 		pb_stream at_pbs;
+
+#if 0
+		XXX;
+		if() {
+		}
+#endif
 	    
 		memset(&t, 0, sizeof(t));
 		if(ts_cnt+1 < vpc->trans_cnt) {
