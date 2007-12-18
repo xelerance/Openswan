@@ -119,9 +119,9 @@ endif
 
 NETKEY_DIST_SRCS=kernel_netlink.c kernel_netlink.h
 ifeq ($(USE_NETKEY),true)
-NETKEY_DEFS=-DNETKEY_SUPPORT -DKERNEL26_HAS_KAME_DUPLICATES 
+NETKEY_DEFS=-DNETKEY_SUPPORT -DKERNEL26_HAS_KAME_DUPLICATES -DPFKEY
 NETKEY_SRCS=${NETKEY_DIST_SRCS}
-NETKEY_OBJS=kernel_netlink.o
+NETKEY_OBJS=kernel_netlink.o 
 endif
 
 KLIPS_DIST_SRCS=kernel_pfkey.c kernel_klips.c kernel_pfkey.h 
