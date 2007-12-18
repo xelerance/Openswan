@@ -134,7 +134,7 @@ if [ -x @IPSEC_LIBDIR@/_updown.${PLUTO_STACK} ]
 then
 	exec @IPSEC_LIBDIR@/_updown.${PLUTO_STACK} $*
 else
-	echo "FATAL: Could not execute @IPSEC_LIBDIR@/_updown.${PLUTO_STACK} $*"
+	echo "FATAL: Could not execute @IPSEC_LIBDIR@/_updown.${PLUTO_STACK} $*" 1>&2
 fi
 
 exit 3;

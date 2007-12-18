@@ -481,8 +481,8 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 
 	kb = alloc_bytes(keybytes, "skeyseed prf key");
 	memset(kb, 0, keybytes);
-	memcpy(kb,              vpss.ni.ptr, keybytes/2);
-	memcpy(kb + keybytes/2, vpss.nr.ptr, keybytes/2);
+	memcpy(kb,               vpss.ni.ptr, vpss.ni.len);
+	memcpy(kb + vpss.ni.len, vpss.nr.ptr, vpss.nr.len);
 
 	/* SKEYSEED */
 	DBG(DBG_CRYPT,
