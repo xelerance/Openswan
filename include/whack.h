@@ -194,17 +194,19 @@ struct whack_message {
     /* for WHACK_REREAD */
     u_char whack_reread;
 
-    /* for WHACK_TCPEVAL */
-    char *tpmeval;
-
-    /* for connalias string */
-    char *connalias;
-
+#ifdef MODECFG_DNSWINS
     /* for MODECFG */
     ip_address modecfg_dns1;
     ip_address modecfg_dns2;
     ip_address modecfg_wins1;
     ip_address modecfg_wins2;
+#endif
+
+    /* for WHACK_TCPEVAL */
+    char *tpmeval;
+
+    /* for connalias string */
+    char *connalias;
 
     /* for use with general option adjustments */
     enum whack_opt_set opt_set;

@@ -1536,6 +1536,7 @@ main(int argc, char **argv)
 	    msg.right.modecfg_server = TRUE;
 	    continue;
 
+#ifdef MODECFG_DNSWINS
 	case CD_MODECFGDNS1:
 	   af_used_by = long_opts[long_index].name; 
 	   diagq(ttoaddr(optarg, 0, msg.addr_family
@@ -1559,6 +1560,7 @@ main(int argc, char **argv)
 	   diagq(ttoaddr(optarg, 0, msg.addr_family
 		, &msg.modecfg_wins2), optarg);
 	   continue;
+#endif
 #endif /* MODECFG */
 
 #else
