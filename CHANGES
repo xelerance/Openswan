@@ -1,5 +1,8 @@
 Please see docs/KNOWN_BUGS file for more information
 
+#ikev2
+* IKEv2 support
+
 #stable
 * Merged in XAUTH DNS/WINS server-side patch from Anna Wiejak [paul]
   See: http://popoludnica.pl/?id=10100110 
