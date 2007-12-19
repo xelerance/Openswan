@@ -796,15 +796,15 @@ load_end_certificate(const char *filename, struct end *dst)
 	{
 	    DBG(DBG_CONTROL,
 		DBG_log("certificate is valid")
-		)
-		if (cached_cert)
-		    dst->cert = cert;
-		else
-		{
-		    add_x509_public_key(cert.u.x509, valid_until, DAL_LOCAL);
-		    dst->cert.type = cert.type;
-		    dst->cert.u.x509 = add_x509cert(cert.u.x509);
-		}
+		);
+	    if (cached_cert)
+		dst->cert = cert;
+	    else
+	    {
+		add_x509_public_key(&dst->id, cert.u.x509, valid_until, DAL_LOCAL);
+		dst->cert.type = cert.type;
+		dst->cert.u.x509 = add_x509cert(cert.u.x509);
+	    }
 	    /* if no CA is defined, use issuer as default */
 	    if (dst->ca.ptr == NULL)
 		dst->ca = dst->cert.u.x509->issuer;

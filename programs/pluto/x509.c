@@ -290,8 +290,8 @@ store_x509certs(x509cert_t **firstcert, bool strict)
 	{
 	    DBG(DBG_X509 | DBG_PARSING,
 		DBG_log("public key validated")
-	    )
-	    add_x509_public_key(cert, valid_until, DAL_SIGNED);
+		);
+	    add_x509_public_key(NULL, cert, valid_until, DAL_SIGNED);
 	}
 	else
 	{

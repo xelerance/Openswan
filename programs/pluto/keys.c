@@ -783,10 +783,10 @@ transfer_to_public_keys(struct gw_info *gateways_from_dns
 
 err_t
 add_public_key(const struct id *id
-, enum dns_auth_level dns_auth_level
-, enum pubkey_alg alg
-, const chunk_t *key
-, struct pubkey_list **head)
+	       , enum dns_auth_level dns_auth_level
+	       , enum pubkey_alg alg
+	       , const chunk_t *key
+	       , struct pubkey_list **head)
 {
     struct pubkey *pk = alloc_thing(struct pubkey, "pubkey");
 
