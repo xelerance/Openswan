@@ -190,7 +190,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | emitting length of IKEv2 Identification Payload: 12
 | idhash calc pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
-| idhash calc I2  27 00 00 0c  02 00 00 00  77 65 73 74
+| idhash calc I2  02 00 00 00  77 65 73 74
 | *****emit IKEv2 Authentication Payload:
 |    next payload type: ISAKMP_NEXT_v2SA
 |    auth method: v2_AUTH_RSA

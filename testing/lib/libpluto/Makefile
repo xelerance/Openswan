@@ -70,3 +70,10 @@ east.record: ${OPENSWANSRCDIR}/programs/pluto/rcv_whack.c
 	(cd ${OPENSWANSRCDIR}/programs/pluto && unset OPENSWANSRCDIR && pl_inst.sh)
 	(cd ${OPENSWANSRCDIR}/testing/pluto/whackrecord-01 && ../../utils/runme.sh )
 	source ${OPENSWANSRCDIR}/umlsetup.sh; cp $$POOLSPACE/east/root/var/tmp/east.record .
+
+updatepcaps:
+	cp lib-parentI1/parentI1.pcap lib-parentR1
+	cp lib-parentR1/parentR1.pcap lib-parentI2
+	cp lib-parentI2/parentI2.pcap lib-parentR2
+	cp lib-parentR2/parentR2.pcap lib-parentI3
+

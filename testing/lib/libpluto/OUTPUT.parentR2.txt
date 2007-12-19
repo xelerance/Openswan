@@ -286,7 +286,7 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 | emitting length of IKEv2 Identification Payload: 12
 | idhash calc pr  e9 00 11 7e  41 d4 31 62  40 b8 63 22  bf 06 9f bc
 |   eb 81 58 e7
-| idhash calc R2  27 00 00 0c  02 00 00 00  65 61 73 74
+| idhash calc R2  02 00 00 00  65 61 73 74
 | *****emit IKEv2 Authentication Payload:
 |    next payload type: ISAKMP_NEXT_v2SA
 |    auth method: v2_AUTH_RSA
