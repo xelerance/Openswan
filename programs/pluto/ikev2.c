@@ -178,14 +178,15 @@ const struct state_v2_microcode *ikev2_parent_firststate()
 /*
  * split up an incoming message into payloads
  */
-void ikev2_process_payloads(struct msg_digest *md,
+stf_status
+ikev2_process_payloads(struct msg_digest *md,
 			    pb_stream    *in_pbs,
 			    unsigned int from_state,
 			    unsigned int np)
 {
     struct payload_digest *pd = md->digest_roof;
     struct state *st = md->st;
-    err_t excuse = "notsure";
+    err_t excuse = "not sure";
     
     //lset_t needed = smc->req_payloads;
 
@@ -195,6 +196,7 @@ void ikev2_process_payloads(struct msg_digest *md,
     {
 	struct_desc *sd = np < ISAKMP_NEXT_ROOF? payload_descs[np] : NULL;
 	int thisp = np;
+	bool unknown_payload = FALSE;
 	
 	memset(pd, 0, sizeof(*pd));
 	
@@ -202,48 +204,34 @@ void ikev2_process_payloads(struct msg_digest *md,
 	{
 	    loglog(RC_LOG_SERIOUS, "more than %d payloads in message; ignored", PAYLIMIT);
 	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
-	    return;
+	    return STF_FAIL;
 	}
 	
 	if (sd == NULL)
 	{
-	    loglog(RC_LOG_SERIOUS, "%smessage ignored because it contains an unknown or"
-		   " unexpected payload type (%s) at the outermost level"
-		   , excuse, enum_show(&payload_names, thisp));
-	    SEND_NOTIFICATION(INVALID_PAYLOAD_TYPE);
-	    return;
+	    unknown_payload = TRUE;
+	    sd = &ikev2_generic_desc;
 	}
-	
-#if 0
-	{
-	    lset_t s = LELEM(thisp);
-	    
-	    if (LDISJOINT(s
-			  , needed | smc->opt_payloads|
-			  LELEM(ISAKMP_NEXT_VID) |
-			  LELEM(ISAKMP_NEXT_N) | LELEM(ISAKMP_NEXT_D)))
-	    {
-		loglog(RC_LOG_SERIOUS, "%smessage ignored because it "
-		       "contains an unexpected payload type (%s)"
-		       , excuse, enum_show(&payload_names, thisp));
-		SEND_NOTIFICATION(INVALID_PAYLOAD_TYPE);
-		return;
-	    }
-	    
-	    DBG(DBG_PARSING
-		, DBG_log("got payload 0x%qx(%s) needed: 0x%qx opt: 0x%qx"
-			  , s, enum_show(&payload_names, thisp)
-			  , needed, smc->opt_payloads));
-	    needed &= ~s;
-	}
-#endif
 	
 	if (!in_struct(&pd->payload, sd, in_pbs, &pd->pbs))
 	{
 	    loglog(RC_LOG_SERIOUS, "%smalformed payload in packet", excuse);
 	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
-	    return;
+	    return STF_FAIL;
 	}
+
+	if(unknown_payload) {
+	    if(pd->payload.v2gen.isag_critical) {
+		/* it was critical */
+		loglog(RC_LOG_SERIOUS, "critical payload (%s) was not understood. Message dropped."
+		       , enum_show(&payload_names, thisp));
+		return STF_FATAL;
+	    } 
+	    loglog(RC_COMMENT, "non-critical payload ignored because it contains an unknown or" 
+		   " unexpected payload type (%s) at the outermost level"
+		   , enum_show(&payload_names, thisp));
+	}
+		
 	
 	DBG(DBG_PARSING
 	    , DBG_log("processing payload: %s (len=%u)\n"
@@ -275,6 +263,7 @@ void ikev2_process_payloads(struct msg_digest *md,
     }
     
     md->digest_roof = pd;
+    return STF_OK;
 }
 
 /*
@@ -416,7 +405,15 @@ process_v2_packet(struct msg_digest **mdp)
 	return;
     }
 
-    ikev2_process_payloads(md, &md->message_pbs, from_state, md->hdr.isa_np);
+    {
+	stf_status stf;
+	stf = ikev2_process_payloads(md, &md->message_pbs
+				     , from_state, md->hdr.isa_np);
+	
+	if(stf != STF_OK) {
+	    complete_v2_state_transition(mdp, stf);
+	}
+    }
 
 
     DBG(DBG_PARSING,
@@ -803,6 +800,14 @@ void complete_v2_state_transition(struct msg_digest **mdp
 		  , "encountered fatal error in state %s"
 		  , enum_name(&state_names, st->st_state));
 	delete_event(st);
+	{
+	    struct state *pst;
+	    release_whack(st);
+	    if(st->st_clonedfrom != 0) {
+		pst = state_with_serialno(st->st_clonedfrom);
+		release_whack(pst);
+	    }
+	}
 	release_pending_whacks(st, "fatal error");
 	delete_state(st);
 	break;

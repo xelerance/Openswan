@@ -790,6 +790,7 @@ union payload {
     struct isakmp_delete delete;
     struct isakmp_nat_oa nat_oa;
     struct isakmp_mode_attr attribute;
+    struct ikev2_generic    v2gen;
     struct ikev2_ke         v2ke;
     struct ikev2_trans      v2trans;
     struct ikev2_prop       v2prop;
