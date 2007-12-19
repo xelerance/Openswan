@@ -1107,6 +1107,9 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	    || !out_chunk(id_b, &r_id_pbs, "my identity"))
 	    return STF_INTERNAL_ERROR;
 
+	/* HASH of ID is not done over common header */
+	id_start += 4;
+
 	close_output_pbs(&r_id_pbs);
 
 	/* calculate hash of IDi for AUTH below */
@@ -1311,13 +1314,15 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     {
 	struct hmac_ctx id_ctx;
 	const pb_stream *id_pbs = &md->chain[ISAKMP_NEXT_v2IDi]->pbs;
+	unsigned char *idstart=id_pbs->start + 4;
+	unsigned int   idlen  =pbs_room(id_pbs)-4;
 
 	hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher, st->st_skey_pi);
 
 	/* calculate hash of IDi for AUTH below */
 	DBG(DBG_CRYPT, DBG_dump_chunk("idhash verify pi", st->st_skey_pi));
-	DBG(DBG_CRYPT, DBG_dump("idhash verify I2", id_pbs->start, pbs_room(id_pbs)));
-	hmac_update(&id_ctx, id_pbs->start, pbs_room(id_pbs));
+	DBG(DBG_CRYPT, DBG_dump("idhash verify I2", idstart, idlen));
+	hmac_update(&id_ctx, idstart, idlen);
 	idhash_in = alloca(st->st_oakley.integ_hasher->hash_digest_len);
 	hmac_final(idhash_in, &id_ctx);
     }
@@ -1428,6 +1433,8 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 		|| !out_chunk(id_b, &r_id_pbs, "my identity"))
 		return STF_INTERNAL_ERROR;
 	    close_output_pbs(&r_id_pbs);
+
+	    id_start += 4;
 
 	    /* calculate hash of IDi for AUTH below */
 	    id_len = e_pbs_cipher.cur - id_start;
@@ -1548,13 +1555,15 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     {
 	struct hmac_ctx id_ctx;
 	const pb_stream *id_pbs = &md->chain[ISAKMP_NEXT_v2IDr]->pbs;
+	unsigned char *idstart=id_pbs->start + 4;
+	unsigned int   idlen  =pbs_room(id_pbs)-4;
 
 	hmac_init_chunk(&id_ctx, pst->st_oakley.integ_hasher, pst->st_skey_pr);
 
 	/* calculate hash of IDr for AUTH below */
 	DBG(DBG_CRYPT, DBG_dump_chunk("idhash verify pr", pst->st_skey_pr));
-	DBG(DBG_CRYPT, DBG_dump("idhash auth R2", id_pbs->start, pbs_room(id_pbs)));
-	hmac_update(&id_ctx, id_pbs->start, pbs_room(id_pbs));
+	DBG(DBG_CRYPT, DBG_dump("idhash auth R2", idstart, idlen));
+	hmac_update(&id_ctx, idstart, idlen);
 	idhash_in = alloca(pst->st_oakley.integ_hasher->hash_digest_len);
 	hmac_final(idhash_in, &id_ctx);
     }
