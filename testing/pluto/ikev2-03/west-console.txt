@@ -3,24 +3,21 @@ west:~#
 west:~#
  source /testing/pluto/bin/westlocal.sh
 west:~#
- ping -n -c 4 192.0.2.254
+ ping -n -c 1 192.0.2.254
 PING 192.0.2.254 (192.0.2.254): 56 data bytes
 64 bytes from 192.0.2.254: icmp_seq=0 ttl=257 time=999 ms
-64 bytes from 192.0.2.254: icmp_seq=1 ttl=257 time=999 ms
-64 bytes from 192.0.2.254: icmp_seq=2 ttl=257 time=999 ms
-64 bytes from 192.0.2.254: icmp_seq=3 ttl=257 time=999 ms
 
 --- 192.0.2.254 ping statistics ---
-4 packets transmitted, 4 packets received, 0% packet loss
+1 packets transmitted, 1 packets received, 0% packet loss
 round-trip min/avg/max = 3.1/4.5/9.26 ms
 west:~#
  iptables -A INPUT -i eth1 -s 192.0.2.0/24 -j DROP
 west:~#
- ping -n -c 4 192.0.2.254
+ ping -n -c 1 192.0.2.254
 PING 192.0.2.254 (192.0.2.254): 56 data bytes
 
 --- 192.0.2.254 ping statistics ---
-4 packets transmitted, 0 packets received, 100% packet loss
+1 packets transmitted, 0 packets received, 100% packet loss
 west:~#
  ipsec setup start
 ipsec_setup: Starting Openswan IPsec VERSION
@@ -30,6 +27,7 @@ west:~#
  ipsec auto --add westnet--eastnet-ikev2
 west:~#
  ipsec auto --status
+000 using kernel interface: klips
 000 interface ipsec0/eth1 192.1.2.45
 000 %myid = (none)
 000 debug raw+crypt+parsing+emitting+control+lifecycle+klips+dns+oppo+controlmore+pfkey+nattraversal+x509
