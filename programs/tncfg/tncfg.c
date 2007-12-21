@@ -221,12 +221,12 @@ main(int argc, char *argv[])
 		case 'C':
 			check_conflict(shc, createdelete);
 			createdelete = SADB_X_PLUMBIF;
-			strncat(virtname, optarg, sizeof(virtname));
+			strncat(virtname, optarg, sizeof(virtname)-1);
 			break;
 		case 'D':
 			check_conflict(shc, createdelete);
 			createdelete = SADB_X_UNPLUMBIF;
-			strncat(virtname, optarg, sizeof(virtname));
+			strncat(virtname, optarg, sizeof(virtname)-1);
 			break;
 
 		case 'V':
