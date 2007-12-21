@@ -1,6 +1,6 @@
 Summary: Openswan IPSEC implementation
 Name: openswan
-Version: 2.5.testing
+Version: 2.6.01
 # Build KLIPS kernel module?
 %{!?buildklips: %{expand: %%define buildklips 0}}
 %{!?buildxen: %{expand: %%define buildxen 0}}
@@ -79,6 +79,9 @@ A dummy package that installs userland and kernel pieces.
 %prep
 rm -rf ${RPM_BUILD_ROOT}
 %setup -q -n openswan-%{srcpkgver}
+sed -i 's/-Werror/#-Werror/' lib/libdns/Makefile
+sed -i 's/-Werror/#-Werror/' lib/libisc/Makefile
+sed -i 's/-Werror/#-Werror/' lib/liblwres/Makefile
 
 %build
 %{__make} \
@@ -120,6 +123,8 @@ FS=$(pwd)
 rm -rf %{buildroot}/usr/share/doc/openswan
 #this needs to be fixed in 'make install'
 rm -rf %{buildroot}/etc/rc.d/rc?.d/*ipsec
+rm -rf %{buildroot}/%{_initrddir}/setup
+
 install -d -m 0700 %{buildroot}%{_localstatedir}/run/pluto
 install -d %{buildroot}%{_sbindir}
 
@@ -144,7 +149,7 @@ rm -rf ${RPM_BUILD_ROOT}
 #%files userland
 %files 
 %defattr(-,root,root)
-%doc BUGS CHANGES COPYING CREDITS README LICENSE ROADMAP.txt
+%doc BUGS CHANGES COPYING CREDITS README LICENSE
 %doc doc/manpage.d/*
 # /usr/share/doc/openswan/*
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.conf
@@ -186,6 +191,10 @@ fi
 /sbin/chkconfig --add ipsec
 
 %changelog
+* Thu Dec 20 2007 Paul Wouters <paul@xelerance.com>
+- Work around for warnings in BIND related code
+- Remove bogus file /etc/init.d/setup at install
+
 * Mon Oct 10 2005 Paul Wouters <paul@xelerance.com> 
 - Updated for klips on xen 
 - added ldconfig for %post klips to obtain ipsec module dependancies
