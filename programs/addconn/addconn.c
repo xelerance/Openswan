@@ -189,7 +189,7 @@ main(int argc, char *argv[])
 
 	case 'R':
 	    printf("setting rootdir=%s\n", optarg);
-	    strncat(rootdir, optarg, sizeof(rootdir));
+	    strncat(rootdir, optarg, sizeof(rootdir)-1);
 	    break;
 
 	case 'd':
