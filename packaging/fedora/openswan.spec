@@ -150,7 +150,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %files 
 %defattr(-,root,root)
 %doc BUGS CHANGES COPYING CREDITS README LICENSE
-%doc doc/manpage.d/*
+#%doc doc/manpage.d/*
 # /usr/share/doc/openswan/*
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.conf
 %attr(0700,root,root) %dir %{_sysconfdir}/ipsec.d
