@@ -1398,54 +1398,6 @@ initiate_ondemand_body(struct find_oppo_bundle *b
     close_any(b->whackfd);
 }
 
-static int
-terminate_a_connection(struct connection *c, void *arg UNUSED)
-{
-    set_cur_connection(c);
-    openswan_log("terminating SAs using this connection");
-    c->policy &= ~POLICY_UP;
-    flush_pending_by_connection(c);
-    delete_states_by_connection(c, FALSE);
-    reset_cur_connection();
-
-    return 1;
-}
-    
-
-void
-terminate_connection(const char *nm)
-{
-    /* Loop because more than one may match (master and instances)
-     * But at least one is required (enforced by con_by_name).
-     */
-    struct connection *c, *n;
-    int count;
-
-    c = con_by_name(nm, TRUE);
-
-    if(c) {
-	for (; c != NULL; c = n)
-	{
-	    n = c->ac_next;	/* grab this before c might disappear */
-	    if (streq(c->name, nm)
-		&& c->kind >= CK_PERMANENT
-		&& !NEVER_NEGOTIATE(c->policy))
-	    {
-		terminate_a_connection(c, NULL);
-	    }
-	}
-	return;
-    } 
-
-    loglog(RC_COMMENT, "terminating all conns with alias='%s'\n", nm);
-    count = foreach_connection_by_alias(nm, terminate_a_connection, NULL);
-
-    if(count == 0) {
-	whack_log(RC_UNKNOWN_NAME
-		  , "no connection named \"%s\"", nm);
-    }
-}
-
 /* check nexthop safety
  * Our nexthop must not be within a routed client subnet, and vice versa.
  * Note: we don't think this is true.  We think that KLIPS will

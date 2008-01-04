@@ -79,7 +79,7 @@ DISTGCRYPT = \
 	smallprime.c
 
 DISTSRC = \
-        connections.c initiate.c connections.h \
+        connections.c initiate.c terminate.c connections.h \
 	pending.c pending.h \
 	foodgroups.c foodgroups.h \
 	cookie.c cookie.h \
@@ -134,7 +134,8 @@ DIST = $(DISTMISC) $(DISTSRC)
 # OBJSGCRYPT =  gcryptfix.o dsa.o elgamal.o primegen.o smallprime.o
 OBJSGCRYPT =
 
-OBJSPLUTO  = connections.o initiate.o pending.o cookie.o crypto.o defs.o dpd.o
+OBJSPLUTO  = connections.o initiate.o terminate.o
+OBJSPLUTO += pending.o cookie.o crypto.o defs.o dpd.o
 OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
 OBJSPLUTO += timer.o hmac.o hostpair.o
 OBJSPLUTO += myid.o ipsec_doi.o
