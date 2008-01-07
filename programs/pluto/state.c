@@ -339,11 +339,12 @@ delete_state(struct state *st)
     /* tell kernel to delete any IPSEC SA
      * ??? we ought to tell peer to delete IPSEC SAs
      */
-    if (IS_IPSEC_SA_ESTABLISHED(st->st_state))
+    if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
+	|| IS_CHILD_SA_ESTABLISHED(st->st_state))
 	delete_ipsec_sa(st, FALSE);
     else if (IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(st->st_state))
 	delete_ipsec_sa(st, TRUE);
-
+ 
     if (c->newest_ipsec_sa == st->st_serialno)
 	c->newest_ipsec_sa = SOS_NOBODY;
 

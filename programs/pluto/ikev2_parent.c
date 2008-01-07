@@ -1362,6 +1362,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     /* note: as we will switch to child state, we force the parent to the
      * new state now */
     st->st_state = STATE_PARENT_R2;
+    c->newest_isakmp_sa = st->st_serialno;
     
     authstart = md->reply.cur;
     /* send response */
@@ -1509,7 +1510,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 /*
  *
  ***************************************************************
- *                       PARENT_inR2                       *****
+ *                       PARENT_inR2    (I3 state)         *****
  ***************************************************************
  *  - there are no cryptographic continuations, but be certain
  *    that there will have to be DNS continuations, but they
@@ -1519,7 +1520,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 stf_status ikev2parent_inR2(struct msg_digest *md)
 {
     struct state *st = md->st;
-    //struct connection *c = st->st_connection;
+    struct connection *c = st->st_connection;
     unsigned char *idhash_in;
     struct state *pst = st;
 
@@ -1604,6 +1605,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
      * authenticated properly.
      */
     pst->st_state = STATE_PARENT_I3;
+    c->newest_isakmp_sa = pst->st_serialno;
     
     /* authentication good, see if there is a child SA available */
     if(md->chain[ISAKMP_NEXT_v2SA] == NULL
@@ -1626,6 +1628,8 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	
     ikev2_derive_child_keys(st, md->role);
 
+    c->newest_ipsec_sa = st->st_serialno;
+
     /* now install child SAs */
     if(!install_ipsec_sa(st, TRUE))
 	return STF_FATAL;
@@ -1643,7 +1647,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
  */
 void ikev2_delete_out(struct state *st UNUSED)
 {
-    abort();
+    /* XXX */
 }
 
 

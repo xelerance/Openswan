@@ -2453,72 +2453,73 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
 void
 delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 {
-switch (kern_interface) {
-   case USE_MASTKLIPS:
-   case USE_KLIPS:
-    if (!inbound_only)
-    {
-        /* If the state is the eroute owner, we must adjust
-         * the routing for the connection.
-         */
-        struct connection *c = st->st_connection;
-        struct spd_route *sr;
+    switch (kern_interface) {
+    case USE_MASTKLIPS:
+    case USE_KLIPS:
+	if (!inbound_only)
+	{
+	    /* If the state is the eroute owner, we must adjust
+	     * the routing for the connection.
+	     */
+	    struct connection *c = st->st_connection;
+	    struct spd_route *sr;
+	    
+	    passert(st->st_connection);
+	    
+	    for (sr = &c->spd; sr; sr = sr->next)
+	    {
+		if (sr->eroute_owner == st->st_serialno
+		    && sr->routing == RT_ROUTED_TUNNEL)
+		{
+		    sr->eroute_owner = SOS_NOBODY;
+		    
+		    /* Routing should become RT_ROUTED_FAILURE,
+		     * but if POLICY_FAIL_NONE, then we just go
+		     * right back to RT_ROUTED_PROSPECTIVE as if no
+		     * failure happened.
+		     */
+		    sr->routing = (c->policy & POLICY_FAIL_MASK) == POLICY_FAIL_NONE
+			? RT_ROUTED_PROSPECTIVE : RT_ROUTED_FAILURE;
+		    
+		    (void) do_command(c, sr, "down", st);
+		    if ((c->policy & POLICY_DONT_REKEY)
+			&& c->kind == CK_INSTANCE)
+		    {
+			/* in this special case, even if the connection
+			 * is still alive (due to an ISAKMP SA),
+			 * we get rid of routing.
+			 * Even though there is still an eroute, the c->routing
+			 * setting will convince unroute_connection to delete it.
+			 * unroute_connection would be upset if c->routing == RT_ROUTED_TUNNEL
+			 */
+			unroute_connection(c);
+		    }
+		    else
+		    {
+			(void) shunt_eroute(c, sr, sr->routing, ERO_REPLACE, "replace with shunt");
+		    }
+		}
+	    }
+	    (void) teardown_half_ipsec_sa(st, FALSE);
+	}
+	(void) teardown_half_ipsec_sa(st, TRUE);
+	break;
 
-        passert(st->st_connection);
-
-        for (sr = &c->spd; sr; sr = sr->next)
-        {
-            if (sr->eroute_owner == st->st_serialno
-            && sr->routing == RT_ROUTED_TUNNEL)
-            {
-                sr->eroute_owner = SOS_NOBODY;
-
-                /* Routing should become RT_ROUTED_FAILURE,
-                 * but if POLICY_FAIL_NONE, then we just go
-                 * right back to RT_ROUTED_PROSPECTIVE as if no
-                 * failure happened.
-                 */
-                sr->routing = (c->policy & POLICY_FAIL_MASK) == POLICY_FAIL_NONE
-                    ? RT_ROUTED_PROSPECTIVE : RT_ROUTED_FAILURE;
-
-                (void) do_command(c, sr, "down", st);
-                if ((c->policy & POLICY_DONT_REKEY)
-                && c->kind == CK_INSTANCE)
-                {
-                    /* in this special case, even if the connection
-                     * is still alive (due to an ISAKMP SA),
-                     * we get rid of routing.
-                     * Even though there is still an eroute, the c->routing
-                     * setting will convince unroute_connection to delete it.
-                     * unroute_connection would be upset if c->routing == RT_ROUTED_TUNNEL
-                     */
-                    unroute_connection(c);
-                }
-                else
-                {
-                    (void) shunt_eroute(c, sr, sr->routing, ERO_REPLACE, "replace with shunt");
-                }
-            }
-        }
-        (void) teardown_half_ipsec_sa(st, FALSE);
-    }
-    (void) teardown_half_ipsec_sa(st, TRUE);
-    break;
    case USE_NETKEY:
-    DBG(DBG_CONTROL, DBG_log("No support (required?) to delete_ipsec_sa with NETKEY"));
-    break;
+       DBG(DBG_CONTROL, DBG_log("No support (required?) to delete_ipsec_sa with NETKEY"));
+       break;
 #if defined(WIN32) && defined(WIN32_NATIVE)
-   case USE_WIN32_NATIVE:
-    DBG(DBG_CONTROL, DBG_log("No support (required?) to delete_ipsec_sa with Win2k"));
-    break;
+    case USE_WIN32_NATIVE:
+	DBG(DBG_CONTROL, DBG_log("No support (required?) to delete_ipsec_sa with Win2k"));
+	break;
 #endif
-   case NO_KERNEL:
-    DBG(DBG_CONTROL, DBG_log("No support required to delete_ipsec_sa with NoKernel support"));
-    break;
-   default:
-    DBG(DBG_CONTROL, DBG_log("Unknown kernel stack in delete_ipsec_sa"));
-    break;
- } /* switch kern_interface */
+    case NO_KERNEL:
+	DBG(DBG_CONTROL, DBG_log("No support required to delete_ipsec_sa with NoKernel support"));
+	break;
+    default:
+	DBG(DBG_CONTROL, DBG_log("Unknown kernel stack in delete_ipsec_sa"));
+	break;
+    } 
 }
 
 #ifdef NAT_TRAVERSAL

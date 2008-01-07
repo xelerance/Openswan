@@ -469,6 +469,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     if(!install_ipsec_sa(st1, TRUE))
 	return STF_FATAL;
 
+    /* mark the connection as now having an IPsec SA associated with it. */
+    st1->st_connection->newest_ipsec_sa = st1->st_serialno;
+
     return STF_OK;
 }
 
