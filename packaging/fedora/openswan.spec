@@ -1,6 +1,6 @@
 Summary: Openswan IPSEC implementation
 Name: openswan
-Version: 2.4.5dr2
+Version: 2.6.01
 # Build KLIPS kernel module?
 %{!?buildklips: %{expand: %%define buildklips 0}}
 %{!?buildxen: %{expand: %%define buildxen 0}}
@@ -10,48 +10,32 @@ Version: 2.4.5dr2
 # This can be overridden by "--define 'kversion x.x.x-y.y.y'"
 %define defkv %(rpm -q kernel kernel-smp| grep -v "not installed" | sed "s/kernel-smp-\\\(.\*\\\)$/\\1smp/"| sed "s/kernel-//"| sort | tail -1)
 %{!?kversion: %{expand: %%define kversion %defkv}}
-%define	krelver		%(echo %{kversion} | tr -s '-' '_')
+%define krelver %(echo %{kversion} | tr -s '-' '_')
+
+# Due to https://bugzilla.redhat.com/show_bug.cgi?id=304121 we cannot
+# build debug packages. Unsure what causes the double slashes. They
+# come from some crypto compiles, eg: 
+#  -I/vol/redhat/BUILD/openswan-2.6.01/lib/libcrypto//libsha2/../include
+%define debug_package %{nil}
 
 # Openswan -pre/-rc nomenclature has to co-exist with hyphen paranoia
-%define srcpkgver	%(echo %{version} | tr -s '_' '-')
+%define srcpkgver %(echo %{version} | tr -s '_' '-')
 %define ourrelease 1
-%define debug_package %{nil}
 Release: %{ourrelease}
-License: GPL
+License: GPLv2
 Url: http://www.openswan.org/
 Source: openswan-%{srcpkgver}.tar.gz
 Group: System Environment/Daemons
-BuildRoot: /var/tmp/%{name}-%{PACKAGE_VERSION}-root
-%define __spec_install_post /usr/lib/rpm/brp-compress || :
-Provides: ipsec-userland
-
-%package userland
-Summary: Openswan IPSEC usermod tools
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Summary: Openswan - An IPsec and IKE implementation
 Group: System Environment/Daemons
-Provides: ipsec-userland
-Obsoletes: freeswan superfreeswan super-freeswan
-Requires: ipsec-kernel, iproute >= 2.6.8, gmp
 BuildRequires: gmp-devel bison flex bind-devel redhat-rpm-config
-Release: %{ourrelease}
+Requires: iproute >= 2.6.8
+Requires(post): /sbin/chkconfig
+Requires(preun): /sbin/chkconfig
+Requires(preun): /sbin/service
 
-%package doc
-Summary: Openswan IPSEC full documentation
-Group: System Environment/Daemons
-Release: %{ourrelease}
-
-%if %{buildklips}
-%package klips
-Summary: Openswan kernel module
-Group:  System Environment/Kernel
-Release: %{krelver}_%{ourrelease}
-Provides: ipsec-kernel
-Requires: kernel = %{kversion}
-# only applies to FC3+, not RH7-9 BuildRequires: kernel-devel
-# do not make the dependancy circular for now.
-#Requires: ipsec-userland
-%endif
-
-%description userland
+%description
 Openswan is a free implementation of IPSEC & IKE for Linux.  IPSEC is 
 the Internet Protocol Security and uses strong cryptography to provide
 both authentication and encryption services.  These services allow you
@@ -61,7 +45,17 @@ decrypted by the gateway at the other end of the tunnel.  The resulting
 tunnel is a virtual private network or VPN.
 
 This package contains the daemons and userland tools for setting up
-Openswan on a freeswan enabled kernel.
+Openswan on a freeswan enabled kernel. It optionally also builds the
+Openswan KLIPS IPsec stack that is an alternative for the NETKEY/XFRM
+IPsec stack that exists in the default Linux kernel.
+
+%if %{buildklips}
+%package klips
+Summary: Openswan kernel module
+Group:  System Environment/Kernel
+Release: %{krelver}_%{ourrelease}
+Requires: kernel = %{kversion}, %{name}-%{version}
+%endif
 
 %if %{buildklips}
 %description klips
@@ -69,16 +63,11 @@ This package contains only the ipsec module for the RedHat/Fedora series of
 kernels.
 %endif
 
-%description doc
-This package contains extensive documentation of the Openswan IPSEC
-system.
-
-%description
-A dummy package that installs userland and kernel pieces.
-
 %prep
-rm -rf ${RPM_BUILD_ROOT}
 %setup -q -n openswan-%{srcpkgver}
+sed -i 's/-Werror/#-Werror/' lib/libdns/Makefile
+sed -i 's/-Werror/#-Werror/' lib/libisc/Makefile
+sed -i 's/-Werror/#-Werror/' lib/liblwres/Makefile
 
 %build
 %{__make} \
@@ -109,6 +98,7 @@ cd packaging/redhat
 %endif
 
 %install
+rm -rf ${RPM_BUILD_ROOT}
 %{__make} \
   DESTDIR=%{buildroot} \
   INC_USRLOCAL=%{_prefix} \
@@ -120,6 +110,9 @@ FS=$(pwd)
 rm -rf %{buildroot}/usr/share/doc/openswan
 #this needs to be fixed in 'make install'
 rm -rf %{buildroot}/etc/rc.d/rc?.d/*ipsec
+rm -rf %{buildroot}/%{_initrddir}/setup
+rm -rf %{buildroot}/etc/ipsec.d/examples
+find %{buildroot}%{_mandir}  -type f | xargs chmod a-x
 install -d -m 0700 %{buildroot}%{_localstatedir}/run/pluto
 install -d %{buildroot}%{_sbindir}
 
@@ -137,22 +130,17 @@ done
 %clean
 rm -rf ${RPM_BUILD_ROOT}
 
-%files doc
-%defattr(-,root,root)
-%doc doc
-
-#%files userland
 %files 
 %defattr(-,root,root)
-%doc BUGS CHANGES COPYING CREDITS README LICENSE ROADMAP.txt
-%doc doc/manpage.d/*
+%doc BUGS CHANGES COPYING CREDITS README LICENSE
+%doc OBJ.linux.*/programs/examples/*.conf
+#%doc doc/manpage.d/*
 # /usr/share/doc/openswan/*
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.conf
 %attr(0700,root,root) %dir %{_sysconfdir}/ipsec.d
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.d/policies/*
-%attr(0644,root,root) %{_sysconfdir}/ipsec.d/examples/*
 %{_localstatedir}/run/pluto
-%config(noreplace) %{_initrddir}/ipsec
+%{_initrddir}/ipsec
 %{_libdir}/ipsec
 %{_sbindir}/ipsec
 %{_libexecdir}/ipsec
@@ -164,20 +152,20 @@ rm -rf ${RPM_BUILD_ROOT}
 /lib/modules/%{kversion}/kernel/net/ipsec
 %endif
 
-%pre 
-%preun 
-if [ $1 = 0 ]; then
-    /sbin/service ipsec stop || :
-    /sbin/chkconfig --del ipsec
+%preun
+if [ $1 -eq 0 ]; then
+        /sbin/service ipsec stop > /dev/null 2>&1
+        /sbin/chkconfig --del ipsec
 fi
 
-%postun userland
+%postun
 if [ $1 -ge 1 ] ; then
-  /sbin/service ipsec stop 2>&1 > /dev/null && /sbin/service ipsec start  2>&1 > /dev/null || :
+ /sbin/service ipsec condrestart 2>&1 >/dev/null
 fi
 
 %if %{buildklips}
 %postun klips
+/sbin/depmod -ae %{kversion}
 %post klips
 /sbin/depmod -ae %{kversion}
 %endif
@@ -186,9 +174,14 @@ fi
 /sbin/chkconfig --add ipsec
 
 %changelog
-* Mon Oct 10 2005 Paul Wouters <paul@xelerance.com> 
+* Thu Dec 20 2007 Paul Wouters <paul@xelerance.com> - 2.6.01-1
+- Work around for warnings in BIND related code
+- Remove bogus file /etc/init.d/setup at install
+- Cleaned up spec file
+
+* Mon Oct 10 2005 Paul Wouters <paul@xelerance.com>
 - Updated for klips on xen 
-- added ldconfig for %post klips to obtain ipsec module dependancies
+- added ldconfig for post klips to obtain ipsec module dependancies
 - Run 'make include' since on FC4 kernel source does not have the links yet.
 
 * Wed Jan  5 2005 Paul Wouters <paul@xelerance.com>

@@ -433,7 +433,7 @@ int main(int argc, char *argv[])
 
 	case 'f':  /* --file arg */
 	    secrets_file[0]='\0';
-	    strncat(secrets_file, optarg, PATH_MAX);
+	    strncat(secrets_file, optarg, PATH_MAX-1);
 	    break;
 
 	case 'i':
