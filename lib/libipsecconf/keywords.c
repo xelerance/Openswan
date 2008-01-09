@@ -112,6 +112,17 @@ struct keyword_enum_values kw_auto_list=
     { kw_auto_values, sizeof(kw_auto_values)/sizeof(struct keyword_enum_value)};
 
 /*
+ * Values for connaddrfamily={ipv4,ipv6}
+ */
+struct keyword_enum_value kw_connaddrfamily_values[]={
+    { "ipv4",   AF_INET },
+    { "ipv6",   AF_INET6 },
+};
+
+struct keyword_enum_values kw_connaddrfamily_list=
+    { kw_connaddrfamily_values, sizeof(kw_connaddrfamily_values)/sizeof(struct keyword_enum_value)};
+
+/*
  * Values for type={tunnel,transport,udpencap}
  */
 struct keyword_enum_value kw_type_values[]={
@@ -306,6 +317,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"auto",           kv_conn|kv_duplicateok, kt_enum,   KBF_AUTO,        &kw_auto_list},
     {"also",           kv_conn,         kt_appendstring, KSF_ALSO,NOT_ENUM},
     {"alsoflip",       kv_conn,         kt_string, KSF_ALSOFLIP,NOT_ENUM},
+    {"connaddrfamily", kv_conn,         kt_enum,   KBF_CONNADDRFAMILY,     &kw_connaddrfamily_list},
     {"type",           kv_conn,         kt_enum,   KBF_TYPE,        &kw_type_list},
     {"authby",         kv_conn|kv_auto, kt_enum,   KBF_AUTHBY,     &kw_authby_list},
     {"keyexchange",    kv_conn|kv_auto, kt_enum,   KBF_KEYEXCHANGE, &kw_keyexchange_list},

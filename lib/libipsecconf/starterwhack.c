@@ -255,7 +255,7 @@ static void set_whack_end(struct starter_config *cfg
 	case KH_DEFAULTROUTE:
 		w->host_addr = cfg->dr;
 		if(addrtypeof(&w->host_addr) == 0) {
-			w->host_addr = *aftoinfo(AF_INET)->any;
+			w->host_addr = *aftoinfo(l->addr_family)->any;
 		}
 		break;
 		
@@ -316,7 +316,7 @@ static void set_whack_end(struct starter_config *cfg
 		w->client = l->subnet;
 	}
 	else {
-		w->client.addr.u.v4.sin_family = AF_INET;
+		w->client.addr.u.v4.sin_family = l->addr_family;
 	}
 	w->updown = l->strings[KSCF_UPDOWN];
 	w->host_port = IKE_UDP_PORT;
@@ -450,8 +450,8 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 	msg.whack_delete = TRUE;      /* always do replace for now */
 	msg.name = connection_name(conn);
 
-	msg.addr_family = AF_INET;
-	msg.tunnel_addr_family = AF_INET;
+	msg.addr_family = conn->left.addr_family;
+	msg.tunnel_addr_family = conn->left.addr_family;
 
 	msg.sa_ike_life_seconds = conn->options[KBF_IKELIFETIME];
 	msg.sa_ipsec_life_seconds = conn->options[KBF_SALIFETIME];

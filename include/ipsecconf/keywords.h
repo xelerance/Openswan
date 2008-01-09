@@ -97,6 +97,7 @@ enum keyword_numeric_config_field {
     KBF_MODECONFIGPULL,
     KBF_FORCEENCAP,
     KBF_IKEv2,       /* 38 */
+    KBF_CONNADDRFAMILY,
     KBF_MAX         
 };
 

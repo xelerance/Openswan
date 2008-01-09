@@ -77,6 +77,8 @@ static void default_values (struct starter_config *cfg)
 	/* now here is a sticker.. we want it on. But pluto has to be smarter first */
 	cfg->conn_default.options[KBF_OPPOENCRYPT] = FALSE;
 
+	cfg->conn_default.options[KBF_CONNADDRFAMILY] = AF_INET;
+
 	cfg->conn_default.left.addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.left.addr);
 	cfg->conn_default.left.nexttype  = KH_NOTSET;
@@ -316,6 +318,7 @@ static int validate_end(struct starter_conn *conn_st
     err_t er = NULL;
     char *err_str = NULL;
     const char *leftright=(left ? "left" : "right");
+    int family = conn_st->options[KBF_CONNADDRFAMILY];
     int err=0;
 
     if(!end->options_set[KNCF_IP]) {
@@ -323,12 +326,13 @@ static int validate_end(struct starter_conn *conn_st
     }
 
     end->addrtype=end->options[KNCF_IP];
+    end->addr_family = family;
 
     /* validate the KSCF_IP/KNCF_IP */
     switch(end->addrtype)
     {
     case KH_ANY:
-	anyaddr(AF_INET, &(end->addr));
+	anyaddr(family, &(end->addr));
 	break;
 
     case KH_IFACE:
@@ -336,7 +340,7 @@ static int validate_end(struct starter_conn *conn_st
 
 	if (end->iface) free(end->iface);
 	end->iface = xstrdup(end->strings[KNCF_IP]);
-	if (starter_iface_find(end->iface, AF_INET, &(end->addr),
+	if (starter_iface_find(end->iface, family, &(end->addr),
 			       &(end->nexthop)) == -1) {
 	    conn_st->state = STATE_INVALID;
 	}
@@ -345,7 +349,7 @@ static int validate_end(struct starter_conn *conn_st
     case KH_IPADDR:
 	assert(end->strings[KSCF_IP] != NULL);
 
-	er = ttoaddr_num(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
+	er = ttoaddr_num(end->strings[KNCF_IP], 0, family, &(end->addr));
 	if(er) {
 	    /* not numeric, so set the type to the string type */
 	    end->addrtype = KH_IPHOSTNAME; 
@@ -395,13 +399,13 @@ static int validate_end(struct starter_conn *conn_st
 	}
 	else {
 	    end->has_client = TRUE;
-	    er = ttosubnet(value, 0, AF_INET, &(end->subnet));
+	    er = ttosubnet(value, 0, family, &(end->subnet));
 	}
 	if (er) ERR_FOUND("bad subnet %ssubnet=%s [%s]", leftright, value, er);
     }
 
     /* set nexthop address to something consistent, by default */
-    anyaddr(AF_INET, &end->nexthop);
+    anyaddr(family, &end->nexthop);
     anyaddr(addrtypeof(&end->addr), &end->nexthop);
 
     /* validate the KSCF_NEXTHOP */
@@ -412,7 +416,7 @@ static int validate_end(struct starter_conn *conn_st
 	if(strcasecmp(value, "%defaultroute")==0) {
 	    end->nexttype=KH_DEFAULTROUTE;
 	} else {
-	    er = ttoaddr(value, 0, AF_INET, &(end->nexthop));
+	    er = ttoaddr(value, 0, family, &(end->nexthop));
 	    if (er) ERR_FOUND("bad addr %snexthop=%s [%s]", leftright, value, er);
 
 	    end->nexttype = KH_IPADDR;
@@ -423,7 +427,7 @@ static int validate_end(struct starter_conn *conn_st
 	    end->nexttype = KH_DEFAULTROUTE;
 	}
 #endif
-	anyaddr(AF_INET, &end->nexthop);
+	anyaddr(family, &end->nexthop);
     }
 
     /* validate the KSCF_ID */
@@ -472,7 +476,7 @@ static int validate_end(struct starter_conn *conn_st
     {
 	char *value = end->strings[KSCF_SOURCEIP];
 	
-	er = ttoaddr(value, 0, AF_INET, &(end->sourceip));
+	er = ttoaddr(value, 0, family, &(end->sourceip));
 	if (er) ERR_FOUND("bad addr %ssourceip=%s [%s]", leftright, value, er);
 
 	if(!end->has_client) {

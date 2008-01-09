@@ -120,13 +120,14 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
     switch(ts->sin_family) {
     case AF_INET:
 	its1.isat1_type = ID_IPV4_ADDR_RANGE;
+	its1.isat1_sellen = 16;
 	break;
     case AF_INET6:
 	its1.isat1_type = ID_IPV6_ADDR_RANGE;
+	its1.isat1_sellen = 40;
 	break;
     }
     its1.isat1_ipprotoid = 0;      /* all protocols */
-    its1.isat1_sellen = 16;        /* for IPv4 */
     its1.isat1_startport = 0;      /* all ports */
     its1.isat1_endport = 65535;  
     if(!out_struct(&its1, &ikev2_ts1_desc, &ts_pbs, &ts_pbs2))
