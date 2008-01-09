@@ -263,7 +263,7 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 ../parentR2 IKEv2 mode peer ID is ID_FQDN: '@west'
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
-| idhash verify I2  27 00 00 0c  02 00 00 00  77 65 73 74
+| idhash verify I2  02 00 00 00  77 65 73 74
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07

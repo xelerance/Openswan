@@ -24,6 +24,7 @@
 #include "seam_xauth.c"
 #include "seam_east.c"
 #include "seam_initiate.c"
+#include "seam_terminate.c"
 #include "seam_alg.c"
 #include "seam_keys.c"
 #include "seam_exitlog.c"

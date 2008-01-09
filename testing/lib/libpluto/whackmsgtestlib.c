@@ -55,7 +55,6 @@ void initiate_ondemand(const ip_address *our_client
 		       , bool held
 		       , int whackfd
 		       , err_t why) {}
-void terminate_connection(const char *nm) {}
 void show_status(void) {}
 
 
