@@ -2456,6 +2456,7 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
     switch (kern_interface) {
     case USE_MASTKLIPS:
     case USE_KLIPS:
+    case USE_NETKEY:
 	if (!inbound_only)
 	{
 	    /* If the state is the eroute owner, we must adjust
@@ -2505,9 +2506,6 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 	(void) teardown_half_ipsec_sa(st, TRUE);
 	break;
 
-   case USE_NETKEY:
-       DBG(DBG_CONTROL, DBG_log("No support (required?) to delete_ipsec_sa with NETKEY"));
-       break;
 #if defined(WIN32) && defined(WIN32_NATIVE)
     case USE_WIN32_NATIVE:
 	DBG(DBG_CONTROL, DBG_log("No support (required?) to delete_ipsec_sa with Win2k"));
