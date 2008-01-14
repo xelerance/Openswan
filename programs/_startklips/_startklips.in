@@ -51,7 +51,7 @@ then
                         rmmod -r $mod 2> /dev/null
                    done
                 echo
-	if test -f $kamepfkey
+	if test -f $netkey
 	then
 		echo "FAILURE to unload NETKEY modules. Use protostack=netkey or recompile kernel without builtin NETKEY support"
 		exit 1
