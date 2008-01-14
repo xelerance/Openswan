@@ -388,9 +388,6 @@ umlplutotest    algo-pluto-04          good
 umlplutotest    algo-pluto-05          good
 umlplutotest    algo-pluto-06          good
 
-# requires testing infrastructure to support protostack=netkey
-umlplutotest    algo-pluto-07          good
-
 #
 # tests for usnig multiple subnets using conn aliases
 #
@@ -407,3 +404,8 @@ umlplutotest	transport-03		bad
 #
 umlplutotest	protoport-01		good
 umlplutotest	protoport-02		good
+
+# requires testing infrastructure to support protostack=netkey
+umlplutotest    algo-pluto-07          good
+umlplutotest    netkey-pluto-01        good
+umlplutotest    netkey-pluto-02        good
