@@ -409,3 +409,11 @@ umlplutotest	protoport-02		good
 umlplutotest    algo-pluto-07          good
 umlplutotest    netkey-pluto-01        good
 umlplutotest    netkey-pluto-02        good
+
+# IKEv2 tests
+umlplutotest	ikev2-01		good
+umlplutotest	ikev2-02		good
+umlplutotest	ikev2-03		good
+umlplutotest	ikev2-04		good
+umlplutotest	ikev2-psk-01		good
+
