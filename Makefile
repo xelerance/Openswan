@@ -17,6 +17,9 @@
 OPENSWANSRCDIR?=$(shell pwd)
 export OPENSWANSRCDIR
 
+TERMCAP=
+export TERMCAP
+
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 srcdir?=$(shell pwd)
