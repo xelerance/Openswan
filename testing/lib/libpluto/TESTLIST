@@ -14,6 +14,7 @@ multilibtest parentI2         good
 multilibtest parentR2         good
 multilibtest parentI3         good
 multilibtest parentI1psk      good
+multilibtest parentR1psk      good
 multilibtest parentI3delete   good
 multilibtest parentR1duplicate good
 
