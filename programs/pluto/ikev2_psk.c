@@ -124,7 +124,7 @@ bool ikev2_calculate_psk_sha1(struct state *st
 
 	/* todo: rework function */
 	return 0;
-
+/*
 	memcpy(signed_octets, der_digestinfo, der_digestinfo_len);
 
 	ikev2_calculate_sighash(st, role, idhash
@@ -145,6 +145,7 @@ bool ikev2_calculate_psk_sha1(struct state *st
 			  , sig_val, sz);
 		out_raw(sig_val, sz, a_pbs, "rsa signature");
 	}
+*/
 	
 	return TRUE;
 }
