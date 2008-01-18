@@ -1001,6 +1001,7 @@ static stf_status ikev2_send_auth(struct connection *c
 	
     } else if(c->policy & POLICY_PSK) {
 	/* todo */
+	if(!ikev2_calculate_psk_sha1(pst, role, idhash_out, &a_pbs))
 	return STF_FAIL;
     } 
     
