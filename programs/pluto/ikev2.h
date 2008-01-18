@@ -102,6 +102,13 @@ extern stf_status ikev2_verify_rsa_sha1(struct state *st
 				   , const struct gw_info *gateways_from_dns
 				   , pb_stream *sig_pbs);
 
+extern stf_status ikev2_verify_psk_sha1(struct state *st
+					, enum phase1_role role
+				   , unsigned char *idhash
+				   , const struct pubkey_list *keys_from_dns
+				   , const struct gw_info *gateways_from_dns
+				   , pb_stream *sig_pbs);
+
 extern stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 				      , pb_stream *outpbs
 				      , unsigned int np
