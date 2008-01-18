@@ -225,7 +225,7 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
 
 
 stf_status
-ikev2_verify_rsa_sha1(struct state *st
+ikev2_verify_psk_sha1(struct state *st
 		      , enum phase1_role role
 			    , unsigned char *idhash
 			    , const struct pubkey_list *keys_from_dns
