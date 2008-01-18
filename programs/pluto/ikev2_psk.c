@@ -114,17 +114,16 @@ bool ikev2_calculate_psk_sha1(struct state *st
 	unsigned char  signed_octets[SHA1_DIGEST_SIZE+16];
 	size_t         signed_len;
 	const struct connection *c = st->st_connection;
-	const struct RSA_private_key *k = get_RSA_private_key(c);
+	const chunk_t *pss = get_preshared_secret(c);
 	unsigned int sz;
 
-	/* todo: adapt this function from rsa to psk */
+	if (pss == NULL)
+	    return 0;	/* failure: no PSK to use */
+
+	DBG_dump_chunk("psk",pss);
+
+	/* todo: rework function */
 	return 0;
-
-
-	if (k == NULL)
-	    return 0;	/* failure: no key to use */
-
-	sz = k->pub.k;
 
 	memcpy(signed_octets, der_digestinfo, der_digestinfo_len);
 
