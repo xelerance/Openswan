@@ -1,0 +1,6 @@
+core.*
+OUTPUT
+.gdbinit
+parentI2psk.pcap
+ike-secrets.txt
+secrets.raw
