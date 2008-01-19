@@ -50,6 +50,8 @@
 #include "seam_rnd.c"
 #include "seam_timer.c"
 #include "seam_initiate.c" 
+#include "seam_terminate.c" 
+#include "seam_kernel.c"
 #include "seam_xauth.c"
 #include "seam_natt.c"
 #include "seam_state.c"
@@ -115,7 +117,7 @@ int main(int argc, char *argv[])
 	cur_debugging = DBG_CRYPT;
 
 	memset(&st1, 0, sizeof(st1));
-	pluto_shared_secrets_file = "../../baseconfigs/east/etc/ipsec.secrets";
+	pluto_shared_secrets_file = "../../pluto/ikev2-psk-01/west.secrets";
 
 	osw_init_ipsecdir("../../baseconfigs/east/etc/ipsec.d");
 	osw_init_rootdir("../../baseconfigs/east");
@@ -130,7 +132,7 @@ int main(int argc, char *argv[])
 	passert(c1!=NULL);
 	show_one_connection(c1);
 
-	init_pbs(&outs, outbuf, 1024, "rsa signature");
+	init_pbs(&outs, outbuf, 1024, "psk signature");
 
 	load_preshared_secrets(NULL_FD);
 
@@ -159,7 +161,7 @@ int main(int argc, char *argv[])
 		int sig_len;
 		sig_len = pbs_offset(&outs);
 		/* rewind outs pbs */
-		init_pbs(&outs, outbuf, sig_len, "rsa signature");
+		init_pbs(&outs, outbuf, sig_len, "psk signature");
 	}
 
 
@@ -174,6 +176,7 @@ int main(int argc, char *argv[])
 	clonetochunk(st1.st_firstpacket_him, packet1+32, packet1_len-32, "R1");
 
 	show_one_connection(c1);
+	exit(0);
 	{
 		stf_status stat = ikev2_verify_psk_sha1(&st1
 							, RESPONDER
