@@ -12,12 +12,6 @@ Version: 2.6.01
 %{!?kversion: %{expand: %%define kversion %defkv}}
 %define krelver %(echo %{kversion} | tr -s '-' '_')
 
-# Due to https://bugzilla.redhat.com/show_bug.cgi?id=304121 we cannot
-# build debug packages. Unsure what causes the double slashes. They
-# come from some crypto compiles, eg: 
-#  -I/vol/redhat/BUILD/openswan-2.6.01/lib/libcrypto//libsha2/../include
-%define debug_package %{nil}
-
 # Openswan -pre/-rc nomenclature has to co-exist with hyphen paranoia
 %define srcpkgver %(echo %{version} | tr -s '_' '-')
 %define ourrelease 1
@@ -174,6 +168,9 @@ fi
 /sbin/chkconfig --add ipsec
 
 %changelog
+* Thu Dec 20 2007 Paul Wouters <paul@xelerance.com> - 2.6.03-1
+- Applied patch by RedHat to allow building with debug package
+
 * Thu Dec 20 2007 Paul Wouters <paul@xelerance.com> - 2.6.01-1
 - Work around for warnings in BIND related code
 - Remove bogus file /etc/init.d/setup at install
