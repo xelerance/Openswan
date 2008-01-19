@@ -1,0 +1,44 @@
+packetsI1psk.o: packetsI1psk.c
+psk-v2.o: psk-v2.c ../../../include/sysqueue.h \
+  ../../../include/oswlog.h ../../../linux/include/openswan.h \
+  ../../../linux/include/openswan/ipsec_kversion.h \
+  ../../../linux/include/openswan/ipsec_param.h \
+  ../../../linux/include/openswan/passert.h \
+  ../../../include/constants.h ../../../include/biglset.h \
+  ../../../linux/include/openswan/passert.h \
+  ../../../include/ietf_constants.h \
+  ../../../include/pluto_constants.h \
+  ../../../include/names_constant.h ../../../include/oswconf.h \
+  ../../../include/packet.h ../../../programs/pluto/defs.h \
+  ../../../include/oswalloc.h ../../../programs/pluto/connections.h \
+  ../../../include/x509.h ../../../include/pgp.h \
+  ../../../include/certs.h \
+  ../../../linux/include/openswan/ipsec_policy.h \
+  ../../../include/secrets.h ../../../include/id.h \
+  ../../../include/x509.h ../../../include/pgp.h \
+  ../../../include/smartcard.h ../../../include/certs.h \
+  ../../../programs/pluto/state.h ../../../programs/pluto/quirks.h \
+  ../../../programs/pluto/keys.h ../../../include/secrets.h \
+  ../../../programs/pluto/crypto.h ../../../include/sha1.h \
+  ../../../include/md5.h ../../../include/mpzfuncs.h \
+  ../../../include/readwhackmsg.h ../../../programs/pluto/ike_alg.h \
+  ../../../programs/pluto/ikev2.h ../../../programs/pluto/ocf_pk.h \
+  ../../../testing/lib/libpluto/seam_pending.c \
+  ../../../testing/lib/libpluto/whackmsgtestlib.c \
+  ../../../include/x509.h ../../../include/ac.h \
+  ../../../programs/pluto/dnskey.h ../../../include/arpa/nameser.h \
+  ../../../programs/pluto/adns.h \
+  ../../../testing/lib/libpluto/efencedef.h \
+  ../../../include/readwhackmsg.h \
+  ../../../testing/lib/libpluto/seam_whack.c \
+  ../../../testing/lib/libpluto/seam_log.c \
+  ../../../testing/lib/libpluto/seam_east.c \
+  ../../../programs/pluto/server.h ../../../include/sysqueue.h \
+  ../../../testing/lib/libpluto/seam_rnd.c \
+  ../../../testing/lib/libpluto/seam_timer.c \
+  ../../../testing/lib/libpluto/seam_initiate.c \
+  ../../../testing/lib/libpluto/seam_xauth.c \
+  ../../../testing/lib/libpluto/seam_natt.c \
+  ../../../testing/lib/libpluto/seam_state.c \
+  ../../../testing/lib/libpluto/seam_kernelops.c packetsI1psk.c \
+  ../../lib/libpluto/seam_gi_sha1.c
