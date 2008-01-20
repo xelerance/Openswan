@@ -107,20 +107,20 @@ static void ikev2_calculate_sighash(struct state *st
 }
 
 bool ikev2_calculate_psk_sha1(struct state *st
-			      , enum phase1_role role
-			      , unsigned char *idhash
-			      , pb_stream *a_pbs)
+			      , enum phase1_role role UNUSED
+			      , unsigned char *idhash UNUSED
+			      , pb_stream *a_pbs UNUSED)
 {
-	unsigned char  signed_octets[SHA1_DIGEST_SIZE+16];
-	size_t         signed_len;
+//	unsigned char  signed_octets[SHA1_DIGEST_SIZE+16];
+//	size_t         signed_len;
 	const struct connection *c = st->st_connection;
 	const chunk_t *pss = get_preshared_secret(c);
-	unsigned int sz;
+//	unsigned int sz;
 
 	if (pss == NULL)
 	    return 0;	/* failure: no PSK to use */
 
-	DBG_dump_chunk("psk",pss);
+	DBG_dump_chunk("psk",*pss);
 
 	/* todo: rework function */
 	return 0;
