@@ -1544,10 +1544,21 @@ void connection_check_phase2(void)
 	    kind = c->kind;
 
 	    p1st = find_phase1_state(c, ISAKMP_SA_ESTABLISHED_STATES|PHASE1_INITIATOR_STATES);
-	    
-	    /* arrange to rekey the phase 1 */
-	    delete_event(p1st);
-	    event_schedule(EVENT_SA_REPLACE, 0, p1st);
+
+	    if(p1st) {
+		/* arrange to rekey the phase 1, if there was one. */
+		delete_event(p1st);
+		event_schedule(EVENT_SA_REPLACE, 0, p1st);
+	    } else {
+		/* start a new connection. Something wanted it up */
+		struct initiate_stuff is;
+
+		is.whackfd   = NULL_FD;
+		is.moredebug = 0;
+		is.importance= pcim_local_crypto;
+		
+		initiate_a_connection(c, &is);
+	    }
 	}
     }
 }
