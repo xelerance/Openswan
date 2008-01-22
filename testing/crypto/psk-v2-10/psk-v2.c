@@ -42,6 +42,7 @@
 #include "ikev2.h"
 #include "ocf_pk.h"
 
+#include "../../../programs/pluto/hmac.c"
 #include "seam_pending.c"
 #include "whackmsgtestlib.c"
 #include "seam_whack.c"
@@ -150,7 +151,7 @@ int main(int argc, char *argv[])
 						       , st1.st_oakley.prf_hash
 						       , 0);
 
-	ikev2_calculate_psk_sha1(&st1,
+	ikev2_calculate_psk_auth(&st1,
 				 INITIATOR,
 				 idhash,
 				 &outs);
@@ -178,7 +179,7 @@ int main(int argc, char *argv[])
 	show_one_connection(c1);
 	exit(0);
 	{
-		stf_status stat = ikev2_verify_psk_sha1(&st1
+		stf_status stat = ikev2_verify_psk_auth(&st1
 							, RESPONDER
 							, idhash
 							, NULL  /* keys from dns */
