@@ -381,6 +381,8 @@ extern struct state
 extern struct state *find_state_ikev2_parent(const u_char *icookie
 					     , const u_char *rcookie);
 
+extern struct state *find_state_ikev2_parent_init(const u_char *icookie);
+
 extern struct state *find_state_ikev2_child(const u_char *icookie
 					    , const u_char *rcookie
 					    , msgid_t msgid);

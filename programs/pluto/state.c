@@ -900,6 +900,40 @@ find_state_ikev2_parent(const u_char *icookie
 }
 
 /*
+ * Find a state object for an IKEv2 state, looking by icookie only.
+ * Note: only finds parent states.
+ */
+struct state *
+find_state_ikev2_parent_init(const u_char *icookie)
+{
+    struct state *st = *state_hash(icookie, zero_cookie);
+
+    while (st != (struct state *) NULL)
+    {
+	if (memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
+	    && st->st_ikev2 == TRUE
+	    && st->st_clonedfrom == 0)
+	{
+	    DBG(DBG_CONTROL,
+		DBG_log("v2 peer and cookies match on #%ld"
+			, st->st_serialno));
+	    break;
+	}
+	st = st->st_hashchain_next;
+    }
+
+    DBG(DBG_CONTROL,
+	if (st == NULL)
+	    DBG_log("v2 state object not found");
+	else
+	    DBG_log("v2 state object #%lu found, in %s"
+		, st->st_serialno
+		, enum_show(&state_names, st->st_state)));
+
+    return st;
+}
+
+/*
  * Find a state object for an IKEv2 state, a response that includes a msgid.
  */
 struct state *

@@ -303,7 +303,7 @@ process_v2_packet(struct msg_digest **mdp)
 
 	if(st == NULL) {
 	    /* first time for this cookie, it's a new state! */
-	    st = find_state_ikev2_parent(md->hdr.isa_icookie, zero_cookie);
+	    st = find_state_ikev2_parent_init(md->hdr.isa_icookie);
 	}
 
 	if(st) {
