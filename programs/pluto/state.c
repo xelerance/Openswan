@@ -259,15 +259,51 @@ insert_state(struct state *st)
 	event_schedule(EVENT_SO_DISCARD, 0, st);
 }
 
+/*
+ * unlink a state object from the hash table that had a zero
+ * rcookie before, and rehash it into the right place
+ */
+void
+rehash_state(struct state *st)
+{
+    /* unlink from forward chain */
+    struct state **p = st->st_hashchain_prev == NULL
+	? state_hash(st->st_icookie, zero_cookie)
+	: &st->st_hashchain_prev->st_hashchain_next;
+
+    /* unlink from forward chain */
+    passert(*p == st);
+    *p = st->st_hashchain_next;
+
+    /* unlink from backward chain */
+    if (st->st_hashchain_next != NULL)
+    {
+	passert(st->st_hashchain_next->st_hashchain_prev == st);
+	st->st_hashchain_next->st_hashchain_prev = st->st_hashchain_prev;
+    }
+
+    st->st_hashchain_next = st->st_hashchain_prev = NULL;
+
+    /* now, re-insert */
+    insert_state(st);
+}
+
 /* unlink a state object from the hash table, but don't free it
  */
 void
 unhash_state(struct state *st)
 {
     /* unlink from forward chain */
-    struct state **p = st->st_hashchain_prev == NULL
-	? state_hash(st->st_icookie, st->st_rcookie)
-	: &st->st_hashchain_prev->st_hashchain_next;
+    struct state **p;
+
+    if(st->st_hashchain_prev == NULL) {
+	p = state_hash(st->st_icookie, st->st_rcookie);
+	if(*p != st) {
+	    p = state_hash(st->st_icookie, zero_cookie);
+	}
+    } else {
+	p = &st->st_hashchain_prev->st_hashchain_next;
+    }
 
     /* unlink from forward chain */
     passert(*p == st);

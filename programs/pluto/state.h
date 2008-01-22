@@ -356,6 +356,7 @@ extern struct state *new_state(void);
 extern void init_states(void);
 extern void insert_state(struct state *st);
 extern void unhash_state(struct state *st);
+extern void rehash_state(struct state *st);
 extern void release_whack(struct state *st);
 extern void state_eroute_usage(ip_subnet *ours, ip_subnet *his
     , unsigned long count, time_t nw);

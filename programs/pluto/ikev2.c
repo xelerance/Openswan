@@ -42,6 +42,7 @@
 #include <security/pam_appl.h>
 #endif
 #include "connections.h"	/* needs id.h */
+#include "cookie.h"
 #include "state.h"
 #include "packet.h"
 #include "md5.h"
@@ -297,13 +298,15 @@ process_v2_packet(struct msg_digest **mdp)
 
 	md->role = RESPONDER;
 
-	if(rcookiezero && md->msgid_received==MAINMODE_MSGID) {
-	    /* this is the first message, no state expected */
-	    st = NULL; 
-	} else {
-	    st = find_state_ikev2_parent(md->hdr.isa_icookie
-					 , md->hdr.isa_rcookie);
+	st = find_state_ikev2_parent(md->hdr.isa_icookie
+				     , md->hdr.isa_rcookie);
 
+	if(st == NULL) {
+	    /* first time for this cookie, it's a new state! */
+	    st = find_state_ikev2_parent(md->hdr.isa_icookie, zero_cookie);
+	}
+
+	if(st) {
 	    if(st->st_msgid_lastrecv >  md->msgid_received){
 		/* this is an OLD retransmit. we can't do anything */
 		openswan_log("received too old retransmit: %u < %u"

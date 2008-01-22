@@ -553,10 +553,9 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     pb_stream *keyex_pbs;
     int    numvidtosend=1;
 
-    unhash_state(st);
+    /* note that we don't update the state here yet */
     memcpy(st->st_icookie, md->hdr.isa_icookie, COOKIE_SIZE);
     get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);
-    insert_state(st);	
 
     /* record first packet for later checking of signature */
     clonetochunk(st->st_firstpacket_him, md->message_pbs.start
@@ -1095,6 +1094,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	unsigned char *id_start;
 	unsigned int   id_len;
 
+	/* XXX probably should be prf_hasher, not integ_hasher */
 	hmac_init_chunk(&id_ctx, pst->st_oakley.integ_hasher, pst->st_skey_pi);
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
 	r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
@@ -1307,6 +1307,11 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	ret = ikev2_decrypt_msg(md, RESPONDER);
 	if(ret != STF_OK) return ret;
     }
+
+    /* if it decrypted okay, then things are good, this packet is
+     * well received, and we should change state.
+     */
+    rehash_state(st);
 
     if(!ikev2_decode_peer_id(md, RESPONDER)) {
 	return STF_FAIL + INVALID_ID_INFORMATION;
