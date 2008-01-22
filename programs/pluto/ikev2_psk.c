@@ -1,8 +1,8 @@
   /* do RSA operations for IKEv2
  *
  * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2008 Michael Richardson <paul@xelerance.com>
- * Copyright (C) 2008 Michael Richardson <antony@xelerance.com>
+ * Copyright (C) 2008 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -61,13 +61,6 @@
 #ifdef HAVE_OCF
 #include "ocf_pk.h"
 #endif
-
-
-static u_char der_digestinfo[]={
-    0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e,
-    0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14
-};
-static int der_digestinfo_len=sizeof(der_digestinfo);
 
 static u_char psk_key_pad_str[] = "Key Pad for IKEv2"; 
 static int psk_key_pad_str_len = sizeof( psk_key_pad_str);
