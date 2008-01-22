@@ -50,6 +50,8 @@
 #include "seam_rnd.c"
 #include "seam_timer.c"
 #include "seam_initiate.c" 
+#include "seam_terminate.c" 
+#include "seam_kernel.c" 
 #include "seam_xauth.c"
 #include "seam_natt.c"
 #include "seam_state.c"
