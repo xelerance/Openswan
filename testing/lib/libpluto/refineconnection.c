@@ -41,6 +41,8 @@ main(int argc, char *argv[])
     EF_PROTECT_FREE=1;
     EF_FREE_WIPES  =1;
 
+    osw_init_rootdir("../../../baseconfigs/all");
+
     progname = argv[0];
     leak_detective = 1;
 
