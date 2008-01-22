@@ -49,7 +49,46 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 |   d0 50 f4 f7  58 f4 99 27  2b 80 00 14  b5 ce 84 19
 |   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  00 00 00 10
 |   4f 45 VENDOR
+| **parse ISAKMP Message:
+|    initiator cookie:
+|   00 01 02 03  04 05 06 07
+|    responder cookie:
+|   00 00 00 00  00 00 00 00
+|    next payload type: ISAKMP_NEXT_v2SA
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306)
+|    exchange type: ISAKMP_v2_SA_INIT
+|    flags: ISAKMP_FLAG_INIT
+|    message ID:  00 00 00 00
+|    length: 508
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34)
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v2 state object not found
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v2 state object not found
+| ***parse IKEv2 Security Association Payload:
+|    next payload type: ISAKMP_NEXT_v2KE
+|    critical bit: Payload-Critical
+|    length: 244
+| processing payload: ISAKMP_NEXT_v2SA (len=244) 
+| ***parse IKEv2 Key Exchange Payload:
+|    next payload type: ISAKMP_NEXT_v2Ni
+|    length: 200
+|    transform type: 5
+| processing payload: ISAKMP_NEXT_v2KE (len=200) 
+| ***parse IKEv2 Nonce Payload:
+|    next payload type: ISAKMP_NEXT_v2V
+|    critical bit: Payload-Critical
+|    length: 20
+| processing payload: ISAKMP_NEXT_v2Ni (len=20) 
+| ***parse IKEv2 Vendor ID Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    critical bit: Payload-Non-Critical
+|    length: 16
+| processing payload: ISAKMP_NEXT_v2V (len=16) 
 | find_host_connection called from ikev2parent_inI1outR1, me=192.1.2.23:500 him=192.1.2.45:500 policy=IKEv2ALLOW
 | find_host_pair: comparing to 192.1.2.23:500 192.1.2.45:500 
 | find_host_pair_conn (find_host_connection2): 192.1.2.23:500 192.1.2.45:500 -> hp:westnet--eastnet-ikev2 
@@ -61,12 +100,6 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| ICOOKIE:  00 01 02 03  04 05 06 07
-| RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 4
-| ICOOKIE:  00 01 02 03  04 05 06 07
-| RCOOKIE:  c0 2e 7a 30  31 a0 31 88
-| state hash entry 30
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
@@ -165,6 +198,9 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
 | state hash entry 30
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
 ../parentR1psk leak: long term secret
 ../parentR1psk leak: ikev2_inI1outR1 KE
 ../parentR1psk leak: msg_digest

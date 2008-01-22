@@ -53,6 +53,10 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | v2 state object not found
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v2 state object not found
 | find_host_connection called from ikev2parent_inI1outR1, me=192.1.2.23:500 him=192.1.2.45:500 policy=IKEv2ALLOW
 | find_host_pair: comparing to 192.1.2.23:500 192.1.2.45:500 
 | find_host_pair_conn (find_host_connection2): 192.1.2.23:500 192.1.2.45:500 -> hp:westnet--eastnet-ikev2 
@@ -66,12 +70,6 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | state hash entry 4
 | complete v2 state transition with STF_SUSPEND
 | ikev2 parent inI1outR1: calculated ke+nonce, sending R1
-| ICOOKIE:  00 01 02 03  04 05 06 07
-| RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 4
-| ICOOKIE:  00 01 02 03  04 05 06 07
-| RCOOKIE:  c0 2e 7a 30  31 a0 31 88
-| state hash entry 30
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
@@ -185,6 +183,9 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
 | state hash entry 30
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
 ../parentR1 leak: long term secret
 ../parentR1 leak: ikev2_inI1outR1 KE
 ../parentR1 leak: msg_digest

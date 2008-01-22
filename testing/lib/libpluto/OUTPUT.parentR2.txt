@@ -53,6 +53,10 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | v2 state object not found
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v2 state object not found
 | find_host_connection called from ikev2parent_inI1outR1, me=192.1.2.23:500 him=192.1.2.45:500 policy=IKEv2ALLOW
 | find_host_pair: comparing to 192.1.2.23:500 192.1.2.45:500 
 | find_host_pair_conn (find_host_connection2): 192.1.2.23:500 192.1.2.45:500 -> hp:westnet--eastnet-ikev2 
@@ -66,12 +70,6 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | state hash entry 4
 | complete v2 state transition with STF_SUSPEND
 | ikev2 parent inI1outR1: calculated ke+nonce, sending R1
-| ICOOKIE:  00 01 02 03  04 05 06 07
-| RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 4
-| ICOOKIE:  00 01 02 03  04 05 06 07
-| RCOOKIE:  c0 2e 7a 30  31 a0 31 88
-| state hash entry 30
 | no IKE algorithms for this connection 
 | DH public value received:
 |   ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
@@ -146,6 +144,10 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
 | state hash entry 30
+| v2 state object not found
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
 | v2 peer and cookies match on #1
 | v2 state object #1 found, in STATE_PARENT_R1
 | ikev2 parent inI2outR2: calculating g^{xy} in order to decrypt I2
@@ -264,6 +266,12 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 |    length: 24
 |    number of TS: 1
 | processing payload: ISAKMP_NEXT_v2TSr (len=24) 
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  c0 2e 7a 30  31 a0 31 88
+| state hash entry 30
 ../parentR2 IKEv2 mode peer ID is ID_FQDN: '@west'
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
