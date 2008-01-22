@@ -47,6 +47,7 @@ void recv_pcap_packet(u_char *user
     struct state *st;
     struct pcr_kenonce *kn = &r->pcr_d.kn;
 
+    /* I'm jacob two-two. I do everything twice! */
     recv_pcap_packet_gen(user, h, bytes);
 
     /* find st involved */
@@ -119,6 +120,8 @@ main(int argc, char *argv[])
 
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
     pcap_close(pt);
+
+    show_states_status();
 
     {
 	struct state *st;

@@ -49,6 +49,10 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 |   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  00 00 00 10
 |   4f 45 VENDOR
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34)
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v2 state object not found
 | find_host_connection called from ikev2parent_inI1outR1, me=192.1.2.23:500 him=192.1.2.45:500 policy=IKEv2ALLOW
 | find_host_pair: comparing to 192.1.2.23:500 192.1.2.45:500 
 | find_host_pair_conn (find_host_connection2): 192.1.2.23:500 192.1.2.45:500 -> hp:westnet--eastnet-ikev2 
