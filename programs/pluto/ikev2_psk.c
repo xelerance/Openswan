@@ -170,7 +170,9 @@ bool ikev2_calculate_psk_auth(struct state *st
 	    , DBG_dump("psk auth octets", signed_octets, 
 	    	        st->st_oakley.prf_hasher->hash_digest_len));
 	
-	
+	out_raw(signed_octets, st->st_oakley.prf_hasher->hash_digest_len, 
+		a_pbs, "psk auth");
+
 	return TRUE;
 }
 
@@ -178,27 +180,24 @@ stf_status
 ikev2_verify_psk_auth(struct state *st
 		      , enum phase1_role role
 			    , unsigned char *idhash
-			    , const struct pubkey_list *keys_from_dns
-			    , const struct gw_info *gateways_from_dns
 			    , pb_stream *sig_pbs)
 {
-    unsigned char calc_hash[SHA1_DIGEST_SIZE];
-    unsigned int  hash_len = SHA1_DIGEST_SIZE;
+    unsigned int  hash_len =  st->st_oakley.prf_hasher->hash_digest_len;
+    unsigned char calc_hash[hash_len];
+    size_t sig_len = pbs_left(sig_pbs);
+
     enum phase1_role invertrole;
 
     invertrole = (role == INITIATOR ? RESPONDER : INITIATOR);
-    
-#if 0
-    ikev2_calculate_sighash(st, invertrole, idhash, st->st_firstpacket_him, calc_hash);
+   
+   if(sig_len != hash_len) {
+    return STF_FAIL ;
+   }
+    ikev2_calculate_psk_sighash(st, invertrole, idhash, st->st_firstpacket_him, calc_hash);
 
-    return RSA_check_signature_gen(st, calc_hash, hash_len
-				   , sig_pbs
-#ifdef USE_KEYRR
-				   , keys_from_dns
-#endif
-				   , gateways_from_dns
-				   , try_RSA_signature_v2);
-#endif    
+   if(memcmp(sig_pbs->cur, calc_hash, hash_len) ) {
+   return STF_FAIL ;
+   }
 }
 
 /*

@@ -182,8 +182,6 @@ int main(int argc, char *argv[])
 		stf_status stat = ikev2_verify_psk_auth(&st1
 							, RESPONDER
 							, idhash
-							, NULL  /* keys from dns */
-							, NULL  /* gateways from dns */
 							, &outs);
 		printf("stf status: %s\n", enum_name(&stfstatus_name, stat));
 	}

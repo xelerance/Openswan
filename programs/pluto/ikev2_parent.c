@@ -1346,7 +1346,20 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 						    , NULL /* gateways from DNS */
 						    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
 	if(authstat != STF_OK) {
-	    openswan_log("authentication failed");
+	    openswan_log("RSA authentication failed");
+	    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
+	    return STF_FAIL;
+	}
+	break;
+    }
+    case v2_AUTH_SHARED:
+    {
+	stf_status authstat = ikev2_verify_psk_auth(st
+						    , RESPONDER
+						    , idhash_in
+						    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
+	if(authstat != STF_OK) {
+	    openswan_log("PSK authentication failed");
 	    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
 	    return STF_FAIL;
 	}
