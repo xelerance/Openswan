@@ -63,6 +63,15 @@ bool ikev2_calculate_rsa_sha1(struct state *st
 	return TRUE;
 }
 
+bool ikev2_calculate_psk_auth(struct state *st
+                              , enum phase1_role role
+                              , unsigned char *idhash
+                              , pb_stream *a_pbs)
+{
+	out_zero(192, a_pbs, "fake psk auth");
+	return TRUE;
+}
+
 stf_status
 ikev2_verify_rsa_sha1(struct state *st
 		      , enum phase1_role role
