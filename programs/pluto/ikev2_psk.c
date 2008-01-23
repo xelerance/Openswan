@@ -1,4 +1,4 @@
-  /* do RSA operations for IKEv2
+   /* do RSA operations for IKEv2
  *
  * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2008 Paul Wouters <paul@xelerance.com>
@@ -66,10 +66,10 @@ static u_char psk_key_pad_str[] = "Key Pad for IKEv2";
 static int psk_key_pad_str_len = sizeof( psk_key_pad_str);
 
 static void ikev2_calculate_psk_sighash(struct state *st
-				    , enum phase1_role role
-				    , unsigned char *idhash
-				    , chunk_t firstpacket
-				    , unsigned char *signed_octets)
+					, enum phase1_role role
+					, unsigned char *idhash
+					, chunk_t firstpacket
+					, unsigned char *signed_octets)
 {
     const chunk_t *nonce;
     const char    *nonce_name;
@@ -93,8 +93,8 @@ static void ikev2_calculate_psk_sighash(struct state *st
 
     DBG(DBG_CRYPT
 	,DBG_log("negotiated prf: %s ", st->st_oakley.prf_hasher->common.name);
-	 DBG_dump("inner prf ouput", prf_psk, 
-		   st->st_oakley.prf_hasher->hash_digest_len););
+	DBG_dump("inner prf ouput", prf_psk, 
+		 st->st_oakley.prf_hasher->hash_digest_len););
     
     
     /* calculate outer prf */
@@ -110,7 +110,7 @@ static void ikev2_calculate_psk_sighash(struct state *st
 
     {
 	struct hmac_ctx id_ctx;
-		
+	
 	hmac_init(&id_ctx, st->st_oakley.prf_hasher, prf_psk, 
 		  st->st_oakley.prf_hasher->hash_digest_len);	
 /*
@@ -129,9 +129,9 @@ static void ikev2_calculate_psk_sighash(struct state *st
 	hmac_update(&id_ctx, idhash, st->st_oakley.prf_hasher->hash_digest_len);
 	signed_octets = alloca(st->st_oakley.prf_hasher->hash_digest_len);
 	hmac_final(signed_octets, &id_ctx);
-	   
+	
     }
-
+    
     DBG(DBG_CRYPT
 	, DBG_dump_chunk("inputs to hash1 (first packet)", firstpacket);
 	DBG_dump_chunk(nonce_name, *nonce);
@@ -144,53 +144,52 @@ bool ikev2_calculate_psk_auth(struct state *st
 			      , unsigned char *idhash
 			      , pb_stream *a_pbs)
 {
-	unsigned char  *signed_octets;
-	size_t         signed_len;
-	const struct connection *c = st->st_connection;
-	const chunk_t *pss = get_preshared_secret(c);
-	
-	if (pss == NULL)
-	    return 0;	/* failure: no PSK to use */
-	 DBG(DBG_CRYPT
-	     , DBG_log("connection:%s", st->st_connection->name, 
-			strlen(st->st_connection->name)+1  );
-	     DBG_log("psk:%s",*pss));
+    unsigned char  *signed_octets;
+    // size_t         signed_len;
+    const struct connection *c = st->st_connection;
+    const chunk_t *pss = get_preshared_secret(c);
+    
+    if (pss == NULL)
+	return 0;	/* failure: no PSK to use */
+    DBG(DBG_CRYPT
+	, DBG_log("connection:%s", st->st_connection->name);
+	DBG_log("psk:%s",pss->ptr));
 
-	ikev2_calculate_psk_sighash(st, role, idhash
+    ikev2_calculate_psk_sighash(st, role, idhash
 				, st->st_firstpacket_me
 				, signed_octets);
-	DBG(DBG_CRYPT
-	    , DBG_dump("psk auth octets", signed_octets, 
-	    	        st->st_oakley.prf_hasher->hash_digest_len));
-	
-	out_raw(signed_octets, st->st_oakley.prf_hasher->hash_digest_len, 
-		a_pbs, "psk auth");
-
-	return TRUE;
+    DBG(DBG_CRYPT
+	, DBG_dump("psk auth octets", signed_octets, 
+		   st->st_oakley.prf_hasher->hash_digest_len));
+    
+    out_raw(signed_octets, st->st_oakley.prf_hasher->hash_digest_len, 
+	    a_pbs, "psk auth");
+    
+    return TRUE;
 }
 
-stf_status
-ikev2_verify_psk_auth(struct state *st
-		      , enum phase1_role role
-			    , unsigned char *idhash
-			    , pb_stream *sig_pbs)
+stf_status ikev2_verify_psk_auth(struct state *st
+				 , enum phase1_role role
+				 , unsigned char *idhash
+				 , pb_stream *sig_pbs)
 {
     unsigned int  hash_len =  st->st_oakley.prf_hasher->hash_digest_len;
     unsigned char calc_hash[hash_len];
     size_t sig_len = pbs_left(sig_pbs);
-
+    
     enum phase1_role invertrole;
-
+    
     invertrole = (role == INITIATOR ? RESPONDER : INITIATOR);
-   
-   if(sig_len != hash_len) {
-    return STF_FAIL ;
-   }
+    
+    if(sig_len != hash_len) {
+	return STF_FAIL ;
+    }
     ikev2_calculate_psk_sighash(st, invertrole, idhash, st->st_firstpacket_him, calc_hash);
-
-   if(memcmp(sig_pbs->cur, calc_hash, hash_len) ) {
-   return STF_FAIL ;
-   }
+    
+    if(memcmp(sig_pbs->cur, calc_hash, hash_len) ) {
+	return STF_FAIL ;
+    }
+    return STF_OK;
 }
 
 /*
