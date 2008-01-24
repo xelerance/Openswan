@@ -177,7 +177,6 @@ int main(int argc, char *argv[])
 	clonetochunk(st1.st_firstpacket_him, packet1+32, packet1_len-32, "R1");
 
 	show_one_connection(c1);
-	exit(0);
 	{
 		stf_status stat = ikev2_verify_psk_auth(&st1
 							, RESPONDER
