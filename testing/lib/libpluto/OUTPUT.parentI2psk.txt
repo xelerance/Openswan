@@ -197,13 +197,249 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | *****emit IKEv2 Authentication Payload:
 |    next payload type: ISAKMP_NEXT_v2SA
 |    auth method: v2_AUTH_SHARED
-| complete v2 state transition with (null)
-RC=200 (null): (null)
-| state transition function for (null) failed: (null)
+| emitting 192 zero bytes of fake psk auth into IKEv2 Authentication Payload
+| emitting length of IKEv2 Authentication Payload: 200
+| empty esp_info, returning defaults
+| *****emit IKEv2 Security Association Payload:
+|    next payload type: ISAKMP_NEXT_v2TSi
+|    critical bit: Payload-Critical
+| ******emit IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_P
+|    prop #: 1
+|    proto ID: 3
+|    spi size: 4
+|    # transforms: 3
+| emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
+| our spi  12 34 56 78
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 1
+|    transform ID: 12
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 3
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    transform type: 5
+|    transform ID: 0
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| emitting length of IKEv2 Proposal Substructure Payload: 36
+| ******emit IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_P
+|    prop #: 2
+|    proto ID: 3
+|    spi size: 4
+|    # transforms: 3
+| emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
+| our spi  12 34 56 78
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 1
+|    transform ID: 12
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 3
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    transform type: 5
+|    transform ID: 0
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| emitting length of IKEv2 Proposal Substructure Payload: 36
+| ******emit IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_P
+|    prop #: 3
+|    proto ID: 3
+|    spi size: 4
+|    # transforms: 3
+| emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
+| our spi  12 34 56 78
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 1
+|    transform ID: 3
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 3
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    transform type: 5
+|    transform ID: 0
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| emitting length of IKEv2 Proposal Substructure Payload: 36
+| ******emit IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    prop #: 4
+|    proto ID: 3
+|    spi size: 4
+|    # transforms: 3
+| emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
+| our spi  12 34 56 78
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 1
+|    transform ID: 3
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 3
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    transform type: 5
+|    transform ID: 0
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| emitting length of IKEv2 Proposal Substructure Payload: 36
+| emitting length of IKEv2 Security Association Payload: 148
+| *****emit IKEv2 Traffic Selectors:
+|    next payload type: ISAKMP_NEXT_v2TSr
+|    number of TS: 1
+| ******emit IKEv2 Traffic Selectors:
+|    TS type: ID_IPV4_ADDR_RANGE
+|    IP Protocol ID: 0
+|    start port: 0
+|    end port: 65535
+| emitting 4 raw bytes of ipv4 low into IKEv2 Traffic Selectors
+| ipv4 low  c0 00 01 00
+| emitting 4 raw bytes of ipv4 high into IKEv2 Traffic Selectors
+| ipv4 high  c0 00 01 ff
+| emitting length of IKEv2 Traffic Selectors: 16
+| emitting length of IKEv2 Traffic Selectors: 24
+| *****emit IKEv2 Traffic Selectors:
+|    next payload type: ISAKMP_NEXT_NONE
+|    number of TS: 1
+| ******emit IKEv2 Traffic Selectors:
+|    TS type: ID_IPV4_ADDR_RANGE
+|    IP Protocol ID: 0
+|    start port: 0
+|    end port: 65535
+| emitting 4 raw bytes of ipv4 low into IKEv2 Traffic Selectors
+| ipv4 low  c0 00 02 00
+| emitting 4 raw bytes of ipv4 high into IKEv2 Traffic Selectors
+| ipv4 high  c0 00 02 ff
+| emitting length of IKEv2 Traffic Selectors: 16
+| emitting length of IKEv2 Traffic Selectors: 24
+| emitting 8 raw bytes of padding and length into cleartext
+| padding and length  00 01 02 03  04 05 06 07
+| emitting 12 zero bytes of 96-bits of truncated HMAC into IKEv2 Encryption Payload
+| emitting length of IKEv2 Encryption Payload: 448
+| emitting length of ISAKMP Message: 476
+| data before encryption:
+|   27 00 00 0c  02 00 00 00  77 65 73 74  21 00 00 c8
+|   02 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  2c 80 00 94  02 00 00 24  01 03 04 03
+|   12 34 56 78  03 00 00 08  01 00 00 0c  03 00 00 08
+|   03 00 00 02  00 00 00 08  05 00 00 00  02 00 00 24
+|   02 03 04 03  12 34 56 78  03 00 00 08  01 00 00 0c
+|   03 00 00 08  03 00 00 02  00 00 00 08  05 00 00 00
+|   02 00 00 24  03 03 04 03  12 34 56 78  03 00 00 08
+|   01 00 00 03  03 00 00 08  03 00 00 02  00 00 00 08
+|   05 00 00 00  00 00 00 24  04 03 04 03  12 34 56 78
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
+|   00 00 00 08  05 00 00 00  2d 00 00 18  01 00 00 00
+|   07 00 00 10  00 00 ff ff  c0 00 01 00  c0 00 01 ff
+|   00 00 00 18  01 00 00 00  07 00 00 10  00 00 ff ff
+|   c0 00 02 00  c0 00 02 ff  00 01 02 03  04 05 06 07
+| data after encryption:
+|   19 15 f1 05  5d 13 fc 7c  f5 6b 16 12  a6 e9 10 34
+|   3c 2f 16 c2  28 a4 e5 ef  c1 05 41 7b  df 74 b5 b3
+|   76 73 13 c2  78 f5 b2 d8  a6 00 06 45  4a 0c db 77
+|   91 b4 a7 b6  1f ed 1e fa  a7 67 31 f8  c1 d5 b8 3d
+|   ca 6b 22 c5  1f 79 61 56  ff 28 35 02  76 1c 83 7e
+|   f1 57 c2 61  8c 62 ad 2f  62 ad db e6  75 7c f1 60
+|   a5 a7 56 f9  98 f6 09 c8  19 c1 e1 a6  00 7b a1 ba
+|   ab 23 40 ce  6c b4 0d 17  52 43 a6 ad  42 e6 f3 55
+|   dd 8e f7 01  e8 d2 8b 81  e7 1a 0f c1  7e 57 76 0f
+|   5e 3a 1e 03  e0 6d 6a 86  a0 a0 f7 44  ed 8e fb 4d
+|   ea e8 c6 18  4c 51 6e 0f  c2 3c 6d d1  50 54 06 ee
+|   8c 4e 98 0c  62 54 2d 09  b2 b7 a1 f4  b2 08 99 45
+|   40 68 d2 cc  60 04 8d 6a  d2 4e d0 ae  10 b1 f6 c8
+|   16 1b b4 14  d0 95 7d 67  9c 7e bc 46  d3 a3 8b b6
+|   41 4d 2e c3  0b e7 e6 81  e7 e9 90 fd  53 dd e3 85
+|   b3 9d 1f 9a  e0 34 77 74  76 e8 26 ff  8b 7c ad 94
+|   9e 97 e9 b8  78 5d c3 fc  1f c1 a5 99  c7 75 0c 99
+|   9f 88 3e 7f  0e 40 24 76  ad 99 84 66  c7 04 78 b1
+|   18 09 98 43  99 40 00 a3  1d ee b5 82  48 19 3b b9
+|   11 9e dd 1c  fe 80 83 f5  d1 c9 f7 0f  d5 21 d9 e8
+|   52 b3 80 64  e8 3c 1e e5  2c 13 6b c5  60 00 e5 a1
+|   0d fa 9f d5  c1 d5 c9 25  2b 46 d5 73  60 42 7a 0b
+|   2b 28 08 23  b2 70 f8 94  54 31 b7 e4  55 81 2c 7f
+|   98 c1 4d 3f  96 36 fd d2  09 2d d2 c2  d4 2c 2d 96
+|   70 a3 3e df  02 dc c6 04  2c 97 67 f9  8c ab 72 26
+|   23 80 d9 85  f1 c5 80 ba  2f 1b 41 f0  5d 3a eb 6c
+| complete v2 state transition with STF_OK
+../parentI2psk transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
+../parentI2psk STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 cipher=aes_128 integ=sha1 prf=oakley_sha group=modp1536}
+| sending reply packet to 192.1.2.23:500 (from port 500)
+sending 476 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using #2)
+|   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
+|   2e 20 23 08  00 00 00 01  00 00 01 dc  23 80 01 c0
+|   00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   19 15 f1 05  5d 13 fc 7c  f5 6b 16 12  a6 e9 10 34
+|   3c 2f 16 c2  28 a4 e5 ef  c1 05 41 7b  df 74 b5 b3
+|   76 73 13 c2  78 f5 b2 d8  a6 00 06 45  4a 0c db 77
+|   91 b4 a7 b6  1f ed 1e fa  a7 67 31 f8  c1 d5 b8 3d
+|   ca 6b 22 c5  1f 79 61 56  ff 28 35 02  76 1c 83 7e
+|   f1 57 c2 61  8c 62 ad 2f  62 ad db e6  75 7c f1 60
+|   a5 a7 56 f9  98 f6 09 c8  19 c1 e1 a6  00 7b a1 ba
+|   ab 23 40 ce  6c b4 0d 17  52 43 a6 ad  42 e6 f3 55
+|   dd 8e f7 01  e8 d2 8b 81  e7 1a 0f c1  7e 57 76 0f
+|   5e 3a 1e 03  e0 6d 6a 86  a0 a0 f7 44  ed 8e fb 4d
+|   ea e8 c6 18  4c 51 6e 0f  c2 3c 6d d1  50 54 06 ee
+|   8c 4e 98 0c  62 54 2d 09  b2 b7 a1 f4  b2 08 99 45
+|   40 68 d2 cc  60 04 8d 6a  d2 4e d0 ae  10 b1 f6 c8
+|   16 1b b4 14  d0 95 7d 67  9c 7e bc 46  d3 a3 8b b6
+|   41 4d 2e c3  0b e7 e6 81  e7 e9 90 fd  53 dd e3 85
+|   b3 9d 1f 9a  e0 34 77 74  76 e8 26 ff  8b 7c ad 94
+|   9e 97 e9 b8  78 5d c3 fc  1f c1 a5 99  c7 75 0c 99
+|   9f 88 3e 7f  0e 40 24 76  ad 99 84 66  c7 04 78 b1
+|   18 09 98 43  99 40 00 a3  1d ee b5 82  48 19 3b b9
+|   11 9e dd 1c  fe 80 83 f5  d1 c9 f7 0f  d5 21 d9 e8
+|   52 b3 80 64  e8 3c 1e e5  2c 13 6b c5  60 00 e5 a1
+|   0d fa 9f d5  c1 d5 c9 25  2b 46 d5 73  60 42 7a 0b
+|   2b 28 08 23  b2 70 f8 94  54 31 b7 e4  55 81 2c 7f
+|   98 c1 4d 3f  96 36 fd d2  09 2d d2 c2  d4 2c 2d 96
+|   70 a3 3e df  02 dc c6 04  2c 97 67 f9  8c ab 72 26
+|   23 80 d9 85  f1 c5 80 ba  2f 1b 41 f0  5d 3a eb 6c
+|   76 4f 97 cd  0a 26 20 23  13 c2 2a 83
 | deleting state #2
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
 | state hash entry 30
+../parentI2psk leak: db_v2_trans
+../parentI2psk leak: db_v2_prop_conj
+../parentI2psk leak: db_v2_prop
+../parentI2psk leak: db_v2_trans
+../parentI2psk leak: db_v2_prop_conj
+../parentI2psk leak: db_v2_trans
+../parentI2psk leak: db_v2_prop_conj
+../parentI2psk leak: db_v2_trans
+../parentI2psk leak: db_v2_prop_conj
+../parentI2psk leak: 4 * sa copy attrs array
+../parentI2psk leak: sa copy trans array
+../parentI2psk leak: sa copy prop array
+../parentI2psk leak: sa copy prop conj array
+../parentI2psk leak: sa copy prop_conj
 ../parentI2psk leak: ikev2_inR1outI2 KE
 ../parentI2psk leak: long term secret
 ../parentI2psk leak: db_v2_trans
@@ -289,3 +525,27 @@ IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, b
     (v2ke: len=192 group=modp1536)
     (nonce[C]: len=16 nonce=(b5ce8419095c6e2b6b62d3055305b3c4) )
     (v2vid: len=12 vid=OEababababab)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 504, bad cksum 0 (->f4ae)!)
+    192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid 00000001 cookie 0001020304050607->c02e7a3031a03188: child_sa  ikev2_auth[I]:
+    (v2e[C]: len=444
+            (v2IDi: len=8 fqdn:west)
+            (v2auth: len=196 method=shared-secret authdata=(000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) )
+            (sa[C]: len=144
+                (p: #1 protoid=ipsec-esp transform=3 len=36 spi=12345678
+                    (t: #1 type=encr id=aes )
+                    (t: #2 type=integ id=hmac-sha )
+                    (t: #3 type=esn id=no-esn ))
+                (p: #2 protoid=ipsec-esp transform=3 len=36 spi=12345678
+                    (t: #1 type=encr id=aes )
+                    (t: #2 type=integ id=hmac-sha )
+                    (t: #3 type=esn id=no-esn ))
+                (p: #3 protoid=ipsec-esp transform=3 len=36 spi=12345678
+                    (t: #1 type=encr id=3des )
+                    (t: #2 type=integ id=hmac-sha )
+                    (t: #3 type=esn id=no-esn ))
+                (p: #4 protoid=ipsec-esp transform=3 len=36 spi=12345678
+                    (t: #1 type=encr id=3des )
+                    (t: #2 type=integ id=hmac-sha )
+                    (t: #3 type=esn id=no-esn )))
+            (v2TSi: len=20)
+            (v2TSr: len=20))
