@@ -1,5 +1,5 @@
 core.*
-parentR2.pcap
+parentR2psk.pcap
 OUTPUT
 ike-secrets.txt
 secrets.raw
