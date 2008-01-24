@@ -1,4 +1,4 @@
-/* 
+ /* 
  * IKEv2 parent SA creation routines
  * Copyright (C) 2007  Michael Richardson <mcr@xelerance.com>
  *
@@ -1607,6 +1607,20 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	}
 	break;
     }
+    case v2_AUTH_SHARED:
+    {
+	stf_status authstat = ikev2_verify_psk_auth(st
+						    , INITIATOR 
+						    , idhash_in
+						    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
+	if(authstat != STF_OK) {
+	    openswan_log("PSK authentication failed");
+	    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
+	    return STF_FAIL;
+	}
+	break;
+    }
+    
     default:
 	openswan_log("authentication method: %s not supported"
 		     , enum_name(&ikev2_auth_names
