@@ -78,7 +78,7 @@ ikev2_verify_psk_auth(struct state *st
 		      , unsigned char *idhash
 		      , pb_stream *sig_pbs)
 {
-	return STF_OK;
+	return STF_OK; 
 }
 
 stf_status
