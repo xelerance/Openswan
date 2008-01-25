@@ -66,8 +66,6 @@ west:~#
 000  
 000  
 west:~#
- ipsec whack --debug-control --debug-controlmore --debug-parsing --debug-crypt
-west:~#
  /testing/pluto/bin/wait-until-pluto-started
 west:~#
  echo done
