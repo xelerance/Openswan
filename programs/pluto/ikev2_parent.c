@@ -1609,19 +1609,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     }
     case v2_AUTH_SHARED:
     {
-	
-	const chunk_t *nr;
-	const chunk_t *ni;
-	
-	nr = &st->st_nr;
-	ni = &st->st_ni;
-
-	DBG(DBG_CRYPT 
-	    ,DBG_dump_chunk("initiator nonce: ikev2parent_inR2 ", *ni);
-	    DBG_dump_chunk("responder nonce: ikev2parent_inR2  ", *nr)
-	    );
-	    
-	stf_status authstat = ikev2_verify_psk_auth(st
+	stf_status authstat = ikev2_verify_psk_auth(pst
 						    , INITIATOR 
 						    , idhash_in
 						    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
