@@ -8,11 +8,12 @@ The following people have contributed patches to Openswan 2.x
 	Mathieu Lafon <mlafon@arkoon.net> - NAT-T Support
 	Michael Richardson <mcr@xelerance.com> - testing, integration.
 	Nate Carlson - Force NAT-T framework, KLIPS for 2.6, etc...
-	Paul Wouters <paul@xelerance.com> - documentation.
+	Paul Wouters <paul@xelerance.com> - packaging, IKEv2, integration, porting, support
 	Stephen Bevan <stephen@dino.dnsalias.com> - RFC2409 port selectors
-	Tuomo Soini <tis@foobar.fi>
-	willy@w.ods.org
+	Tuomo Soini <tis@foobar.fi> - NETKEY, KLIPS, _updown scripts and more
 	Matthew Galgoci <mgalgoci@redhat.com>
+	Antony Antony <antony@phenome.org> - IKEv2 work
+	willy@w.ods.org
 
 Openswan is a fork of the FreeS/WAN 2.04 codebase.
 Please see the doc/CREDITS.freeswan file from FreeS/WAN for details on
