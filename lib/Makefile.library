@@ -4,7 +4,7 @@ MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
 
 LEX=flex
 ifeq ($(USE_YACC),true)
-BISON="yacc -b parser"
+BISON=yacc -b parser
 else
 BISON=bison
 endif
