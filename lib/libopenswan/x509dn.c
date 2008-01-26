@@ -1885,6 +1885,9 @@ parse_x509crl(chunk_t blob, u_int level0, x509crl_t *crl)
     chunk_t object;
     u_int level;
     u_int objectID = 0;
+   
+   userCertificate.len = 0;
+   userCertificate.ptr = NULL;
 
     asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
 
@@ -1933,6 +1936,9 @@ parse_x509crl(chunk_t blob, u_int level0, x509crl_t *crl)
 		   with revocedCertificates pointing to the first revoked certificate */
 
 		revokedCert_t *revokedCert = alloc_thing(revokedCert_t, "revokedCert");
+		/* since it is assumed here that CRL_OBJ_USER_CERTIFICATE is reached
+		   before CRL_OBJ_REVOCATION_DATE */
+		passert(userCertificate.ptr == NULL);
 		revokedCert->userCertificate = userCertificate;
 		revokedCert->revocationDate = parse_time(object, level);
 		revokedCert->next = crl->revokedCertificates;
