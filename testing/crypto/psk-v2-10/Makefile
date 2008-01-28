@@ -53,7 +53,8 @@ programs checkprograms: ${UNITTEST}
 
 include ${OPENSWANSRCDIR}/programs/Makefile.program
 
-packetsI1psk.c: ../../lib/libpluto/lib-parentI1psk/parentI1.pcap
+packetsI1psk.c: ../../lib/libpluto/lib-parentI1psk/parentI1psk.pcap
+
 	../../utils/pcap2skb/pcap2skb $< >packetsI1psk.c
 
 #psk-v2.o: ${SOURCES}

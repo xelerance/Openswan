@@ -102,10 +102,10 @@ main(int argc, char *argv[])
      */
     st = sendI1(c1, 0);
 
-    cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING;
+    cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING|DBG_PRIVATE;
     pcap_dispatch(pt, 1, recv_pcap_packet1, NULL);
 
-    cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING;
+    cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING|DBG_PRIVATE;
     pcap_dispatch(pt, 1, recv_pcap_packet1, NULL);
 
     {
