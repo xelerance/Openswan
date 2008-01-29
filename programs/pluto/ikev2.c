@@ -458,7 +458,7 @@ ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
     struct id peer;
 
     if(!id_him) {
-	openswan_log("IKEv2 mode no peer ID (hisID");
+	openswan_log("IKEv2 mode no peer ID (hisID)");
 	return FALSE;
     }
 
