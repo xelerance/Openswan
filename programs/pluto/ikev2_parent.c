@@ -1009,6 +1009,15 @@ static stf_status ikev2_send_auth(struct connection *c
     return STF_OK;
 }
 
+/* Send v2CERT and v2CERTREQ */
+static stf_status ikev2_send_cert(struct connection *c
+                                  , struct state *st
+                                  , enum phase1_role role
+                                  , unsigned int np
+                                  , pb_stream *outpbs)
+{
+/* TODO */
+}
 static stf_status
 ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 			    , struct pluto_crypto_req *r)
@@ -1026,6 +1035,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     unsigned char *idhash;
     unsigned char *authstart;
     struct state *pst = st;
+    bool send_cr = FALSE;
 
     finish_dh_v2(st, r);
 
@@ -1099,11 +1109,15 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
 	r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
 
-	/* (AA if the connection is cert ) 
-	r_id.isai_np = ISAKMP_NEXT_v2CERT;
+	/* If the connection is cert */
+	send_cr = !no_cr_send
+	   && (c->policy & POLICY_RSASIG) 
+           && !has_preloaded_public_key(st)
+           && st->st_connection->spd.that.ca.ptr != NULL;
+	if(send_cr) 
+		r_id.isai_np = ISAKMP_NEXT_v2CERT;
 	else  
-	*/
-	r_id.isai_np = ISAKMP_NEXT_v2AUTH; 
+		r_id.isai_np = ISAKMP_NEXT_v2AUTH; 
 
 	id_start = e_pbs_cipher.cur;
 	if (!out_struct(&r_id
@@ -1127,14 +1141,17 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_final(idhash, &id_ctx);
     } 
 
-    /* AA if CERT {
-     send CERT payload RFC 4306 3.6, and  1.2  
-    stf_status certstat = ikev2_send_cert(c, st
+    {
+	/* send CR if auth is RSA and no preloaded RSA public key exists
+         * send CERT payload RFC 4306 3.6, and  1.2  
+	 */
+	   if(send_cr) {
+           	stf_status certstat = ikev2_send_cert(c, st
 					  , INITIATOR, ISAKMP_NEXT_v2AUTH
 					  , &e_pbs_cipher);
-	if(authstat != STF_OK) return certstat;
+	   	if(certstat != STF_OK) return certstat;
+	   }
     } 
-    */
 
     /* send out the AUTH payload */
     {
