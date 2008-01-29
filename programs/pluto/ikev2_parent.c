@@ -1099,9 +1099,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
 	r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
 
-	(AA if the connection is cert )
+	/* (AA if the connection is cert ) 
 	r_id.isai_np = ISAKMP_NEXT_v2CERT;
-	else 
+	else  
+	*/
 	r_id.isai_np = ISAKMP_NEXT_v2AUTH; 
 
 	id_start = e_pbs_cipher.cur;
@@ -1126,13 +1127,14 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_final(idhash, &id_ctx);
     } 
 
-    AA if CERT {
-    /* send CERT payload RFC 4306 3.6, and  1.2  */
+    /* AA if CERT {
+     send CERT payload RFC 4306 3.6, and  1.2  
     stf_status certstat = ikev2_send_cert(c, st
 					  , INITIATOR, ISAKMP_NEXT_v2AUTH
 					  , &e_pbs_cipher);
 	if(authstat != STF_OK) return certstat;
-    }
+    } 
+    */
 
     /* send out the AUTH payload */
     {
