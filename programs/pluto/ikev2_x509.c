@@ -55,6 +55,7 @@
 #include "vendor.h"
 #include "dpd.h"
 #include "keys.h"
+#include "ipsec_doi.h"	
 
 #ifdef HAVE_OCF
 #include "ocf_pk.h"
@@ -166,7 +167,7 @@ doi_log_cert_thinking(struct msg_digest *md UNUSED
 	&& ((st->st_connection->spd.this.sendcert == cert_sendifasked
 	     && st->hidden_variables.st_got_certrequest)
 	    || st->st_connection->spd.this.sendcert==cert_alwayssend
-	    || st->st_con`nection->spd.this.sendcert==cert_forcedtype);
+	    || st->st_connection->spd.this.sendcert==cert_forcedtype);
    
     /* log the steps led to the decision */
 
