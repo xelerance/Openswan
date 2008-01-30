@@ -99,7 +99,7 @@ DISTSRC = \
 	${KLIPS_SRCS} ${MAST_SRCS} ${WIN2K_SRCS} ${FUNK_SRCS} \
 	kernel_noklips.c kernel_noklips.h \
 	ike_alg.c ike_alg_status.c ike_alg.h ikeping.c \
-	ike_alg_aes.c ike_alginit.c ikev2_rsa.c ikev2_psk.c \
+	ike_alg_aes.c ike_alginit.c ikev2_rsa.c ikev2_psk.c ikev2_x509.c \
 	rcv_whack.c rcv_whack.h \
 	$(IPSECPOLICY_DIST_SRCS) \
 	${EXTRA_CRYPTO_SRCS} \

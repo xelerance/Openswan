@@ -1009,78 +1009,6 @@ static stf_status ikev2_send_auth(struct connection *c
     return STF_OK;
 }
 
-/* Send v2CERT and v2CERTREQ */
-static stf_status ikev2_send_cert( struct state *st
-				  , unsigned int np
-                                  , pb_stream *outpbs)
-{
-    struct ikev2_cert cert;
-    // struct state *pst = st;
-    bool send_certreq = FALSE; // flag : to send a certificate request aka CERTREQ
-    cert_t mycert = st->st_connection->spd.this.cert;
-    /* [CERT,] [CERTREQ,] [IDr,] */
-    
-    
-    /* decide the next payload; 
-     * send a CERTREQ if auth is RSA and no preloaded RSA public key exists 
-     */
-    
-    send_certreq = !has_preloaded_public_key(st); 
-    DBG(DBG_CONTROL
-	, DBG_log(" I am %ssending a certificate request"
-		  , send_certreq ? "" : "not "));
-    
-    if(send_certreq){
-	cert.isaa_np = ISAKMP_NEXT_v2CERTREQ;	
-    }
-    else {
-	cert.isaa_critical = ISAKMP_PAYLOAD_CRITICAL;
-	cert.isaa_np = np;
-	// AA TBD cert.isaa_np = ISAKMP_NEXT_v2IDr;	
-    }
-    
-    {
-    /*   send own (Initiator CERT)  next payload is CERTREQ */
-	pb_stream cert_pbs;
-	struct isakmp_cert cert_hd;
-	cert_hd.isacert_type = mycert.type;
-	
-        DBG_log("I am sending my cert");
-
-        if (!out_struct(&cert
-                        , &ikev2_certificate_desc
-                        , outpbs //AA check this was md
-                        , &cert_pbs))
-            return STF_INTERNAL_ERROR;
-	
-        if(mycert.forced) {
-	    if (!out_chunk(mycert.u.blob, &cert_pbs, "forced CERT"))
-		return STF_INTERNAL_ERROR;
-        } else {
-	    if (!out_chunk(get_mycert(mycert), &cert_pbs, "CERT"))
-		return STF_INTERNAL_ERROR;
-        }
-        close_output_pbs(&cert_pbs);
-    }
-
-#if 0
-    
-    if(send_certreq) { 
-	/* send CERTREQ  */
-	// struct ikev2_certreq certreq;
-    }
-    
-    {
-	struct ikev2_id idr;
-	/* send IDr */
-	idr.isai_np = np;	
-    }
-// TODO 
-#endif
-
-    return STF_OK;
-}
-
 static stf_status
 ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 			    , struct pluto_crypto_req *r)
@@ -1171,21 +1099,9 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_init_chunk(&id_ctx, pst->st_oakley.integ_hasher, pst->st_skey_pi);
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
 	r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
-	{ /* 
-	   * Decide the next payload
-	   * If the connection is cert and config allow it send a CERT
-	   */
+	{  /* decide to send CERT payload */
+	    send_cert = doi_send_ikev2_cert_thinking(st);
 	    
-	    cert_t mycert = st->st_connection->spd.this.cert;
-	    
-	    send_cert = st->st_oakley.auth == OAKLEY_RSA_SIG  // AA Paul check. OAKLEY_RSA_SIG is still valid in ikev2
-		&& mycert.type != CERT_NONE
-		&& ((st->st_connection->spd.this.sendcert == cert_sendifasked
-		     && st->hidden_variables.st_got_certrequest)
-		    || st->st_connection->spd.this.sendcert==cert_alwayssend
-		    || st->st_connection->spd.this.sendcert==cert_forcedtype);
-	    // how to log this complex logic : copy doi_log?
-
 	    if(send_cert) 
 		r_id.isai_np = ISAKMP_NEXT_v2CERT;
 	    else  

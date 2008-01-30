@@ -134,3 +134,9 @@ extern stf_status ikev2_child_sa_respond(struct msg_digest *md
 
 extern struct traffic_selector ikev2_subnettots(struct end *e);
 extern void ikev2_update_counters(struct msg_digest *md);
+
+extern bool doi_send_ikev2_cert_thinking( struct state *st);
+
+extern stf_status ikev2_send_cert( struct state *st
+				   , unsigned int np
+				   , pb_stream *outpbs);
