@@ -1,4 +1,4 @@
- /* 
+  /* 
  * IKEv2 parent SA creation routines
  * Copyright (C) 2007  Michael Richardson <mcr@xelerance.com>
  *
@@ -1010,51 +1010,74 @@ static stf_status ikev2_send_auth(struct connection *c
 }
 
 /* Send v2CERT and v2CERTREQ */
-static stf_status ikev2_send_cert(struct connection *c
-                                  , struct state *st
-                                  , enum phase1_role role
-                                  , unsigned int np
+static stf_status ikev2_send_cert( struct state *st
+				  , unsigned int np
                                   , pb_stream *outpbs)
 {
-    struct ikev2_a a;
-    // pb_stream      a_pbs;
+    struct ikev2_cert cert;
     // struct state *pst = st;
-    bool send_cr = FALSE; // flag : to send a certificate request aka CERTREQ
-    
+    bool send_certreq = FALSE; // flag : to send a certificate request aka CERTREQ
+    cert_t mycert = st->st_connection->spd.this.cert;
     /* [CERT,] [CERTREQ,] [IDr,] */
     
     
     /* decide the next payload; 
-     * send CR if auth is RSA and no preloaded RSA public key exists 
+     * send a CERTREQ if auth is RSA and no preloaded RSA public key exists 
      */
     
-    send_cr = !no_cr_send && !has_preloaded_public_key(st); 
+    send_certreq = !has_preloaded_public_key(st); 
     DBG(DBG_CONTROL
 	, DBG_log(" I am %ssending a certificate request"
-		  , send_cr ? "" : "not "));
+		  , send_certreq ? "" : "not "));
     
-    if(send_cr){
-	a.isaa_np = ISAKMP_NEXT_v2CERTREQ;	
+    if(send_certreq){
+	cert.isaa_np = ISAKMP_NEXT_v2CERTREQ;	
     }
     else {
-	a.isaa_critical = ISAKMP_PAYLOAD_CRITICAL; 
-	a.isaa_np = ISAKMP_NEXT_v2IDr;	
+	cert.isaa_critical = ISAKMP_PAYLOAD_CRITICAL;
+	cert.isaa_np = np;
+	// AA TBD cert.isaa_np = ISAKMP_NEXT_v2IDr;	
     }
-	
-    /*   send own (Initiator CERT)  next payload is CERTREQ */
     
-    if(send_cr) { 
-	/* send CERTREQ */
-	
-    }
-      
     {
-	/* send IDr */
+    /*   send own (Initiator CERT)  next payload is CERTREQ */
+	pb_stream cert_pbs;
+	struct isakmp_cert cert_hd;
+	cert_hd.isacert_type = mycert.type;
 	
-	a.isaa_critical = ISAKMP_PAYLOAD_CRITICAL; 
-	a.isaa_np = np;	
+        DBG_log("I am sending my cert");
+
+        if (!out_struct(&cert
+                        , &ikev2_certificate_desc
+                        , outpbs //AA check this was md
+                        , &cert_pbs))
+            return STF_INTERNAL_ERROR;
+	
+        if(mycert.forced) {
+	    if (!out_chunk(mycert.u.blob, &cert_pbs, "forced CERT"))
+		return STF_INTERNAL_ERROR;
+        } else {
+	    if (!out_chunk(get_mycert(mycert), &cert_pbs, "CERT"))
+		return STF_INTERNAL_ERROR;
+        }
+        close_output_pbs(&cert_pbs);
     }
-    /* TODO */
+
+#if 0
+    
+    if(send_certreq) { 
+	/* send CERTREQ  */
+	// struct ikev2_certreq certreq;
+    }
+    
+    {
+	struct ikev2_id idr;
+	/* send IDr */
+	idr.isai_np = np;	
+    }
+// TODO 
+#endif
+
     return STF_OK;
 }
 
@@ -1155,7 +1178,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	    
 	    cert_t mycert = st->st_connection->spd.this.cert;
 	    
-	    send_cert = st->st_oakley.auth == OAKLEY_RSA_SIG  // AA Paul check if this exist.
+	    send_cert = st->st_oakley.auth == OAKLEY_RSA_SIG  // AA Paul check. OAKLEY_RSA_SIG is still valid in ikev2
 		&& mycert.type != CERT_NONE
 		&& ((st->st_connection->spd.this.sendcert == cert_sendifasked
 		     && st->hidden_variables.st_got_certrequest)
@@ -1192,15 +1215,13 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     } 
 
     {
+
+	/* send CERT payload RFC 4306 3.6, 1.2:([CERT,] [CERTREQ,] [IDr,]) */
 	
-	/* 
-	 *  send CERT payload RFC 4306 3.6, 1.2:([CERT,] [CERTREQ,] [IDr,])
-	 */
 	if(send_cert) {
-	    stf_status certstat = ikev2_send_cert(c, st
-						  , INITIATOR 
-						  ,ISAKMP_NEXT_v2AUTH
-						  , &e_pbs_cipher);
+	    stf_status certstat = ikev2_send_cert( st
+						   ,ISAKMP_NEXT_v2AUTH
+						   , &e_pbs_cipher);
 	    if(certstat != STF_OK) return certstat;
 	}
     } 
