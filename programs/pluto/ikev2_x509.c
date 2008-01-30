@@ -154,15 +154,17 @@ doi_log_cert_thinking(struct msg_digest *md UNUSED
 
 */
 {
-    u_int16_t auth = st->st_oakley.auth;
+   
     cert_t mycert = st->st_connection->spd.this.cert;
     enum ipsec_cert_type certtype = mycert.type;
     enum certpolicy policy = st->st_connection->spd.this.sendcert;
     bool gotcertrequest = st->hidden_variables.st_got_certrequest;
     bool send_cert	 = FALSE;
+
+    struct connection *c  = st->st_connection;
     
     /* decide to send_cert or not */
-    send_cert = st->st_oakley.auth == OAKLEY_RSA_SIG  // AA Paul check. OAKLEY_RSA_SIG is still valid in ikev2
+    send_cert = (c->policy & POLICY_RSASIG)
 	&& mycert.type != CERT_NONE
 	&& ((st->st_connection->spd.this.sendcert == cert_sendifasked
 	     && st->hidden_variables.st_got_certrequest)
@@ -172,12 +174,15 @@ doi_log_cert_thinking(struct msg_digest *md UNUSED
     /* log the steps led to the decision */
 
     DBG(DBG_CONTROL
-	, DBG_log("thinking about whether to send my certificate:"));
+	, DBG_log("IKEv2 thinking about whether to send my certificate:"));
+
+    DBG(DBG_CONTROL
+   	, DBG_log("My policy is : %s", prettypolicy(c->policy)));
     
     DBG(DBG_CONTROL
 	, DBG_log("  I have RSA key: %s cert.type: %s "
-		  , enum_show(&oakley_auth_names, auth)
-		  , enum_show(&cert_type_names, certtype)));
+		  , enum_show(&ikev2_auth_names, auth)
+		  , enum_show(&ikev2_cert_type_names, certtype)));
 
     DBG(DBG_CONTROL
 	, DBG_log("  sendcert: %s and I did%s get a certificate request "
