@@ -183,7 +183,7 @@ conn road-east-base
 	rightid=@east
 	rightrsasigkey=0sAQN3cn11FrBVbZhWGwRnFDAf8O9FHBmBIyIvmvt0kfkI2UGDDq8k+vYgRkwBZDviLd1p3SkL30LzuV0rqG3vBriqaAUUGoCQ0UMgsuX+k01bROLsqGB1QNXYvYiPLsnoDhKd2Gx9MUMHEjwwEZeyskMT5k91jvoAZvdEkg+9h7urbJ+kRQ4e+IHkMUrreDGwGVptV/hYQVCD54RZep6xp5ymaKRCDgMpzWvlzO80fP7JDjSZf9LI/MMu6c+qwXIKnWoNha75IhFyLWniVczxK2RdhmMhLsi0kC0CoOwWDSIEOb+5zbECDjjud+SF5tT8qRCWnSomX8jtbCdZ50WraQlL
 	rightnexthop=192.1.2.45
-	leftid=@road.uml.freeswan.org
+	leftid=@road.testing.xelerance.com
         leftrsasigkey=0sAQNxbOBmDqiNrUmn5q4kzBQ6I6pW/g2c8iDh3Y/KDtELBC6G0dASaaa95lV0cZT2kla681hVLzRF4MUCmFkH5ih514Nrwc5aptte49/70WotqcbvAhXeBX0zbg78gUPaT7CcUEAYxHoqHubao4mmfWlSrOnpf4crE/q3J6zH+8Z3bfsTGnpThgfNCItHpH7jkHPUYDilHsk0Zfd5fxjVDbl8JbQoT3P1KrdmpK7M1sXQhug12ocq8HlrXa3smJIq5b4T0rF+MYrThrNytNIEn53phuj6S8qmONin4usCqpUw50i2VqaBNQSY++/B57AqThFZNqt7TjqqT0CQ7tPRELgXwRvWA04GDhqBHHWoOrLdsR0p
 
 conn westnet-eastnet-x509
@@ -195,28 +195,28 @@ conn west-east-x509
         # Left security gateway, subnet behind it, next hop toward right.
         left=192.1.2.45
         leftrsasigkey=%cert
-        leftcert=west.uml.freeswan.org.cert  
+        leftcert=west.crt
         leftnexthop=192.1.2.23
-        leftid="C=CA, ST=Ontario, O=Openswan, L=Toronto, CN=west.uml.freeswan.org, E=west@openswan.org"
+        leftid="C=ca, ST=Ontario, O=Xelerance, OU=Test Department, CN=west.testing.xelerance.com, E=testing@xelerance.com"
         # Right security gateway, subnet behind it, next hop toward left.
         right=192.1.2.23
-        rightid="C=CA, ST=Ontario, O=Openswan, L=Toronto, CN=east.uml.openswan.org, E=east@openswan.org"
+        rightid="C=ca, ST=Ontario, O=Xelerance, OU=Test Department, CN=east.testing.xelerance.com, E=testing@xelerance.com"
         rightrsasigkey=%cert
-        rightcert=east.uml.freeswan.org.cert
+        rightcert=east.crt
         rightnexthop=192.1.2.45
 
 conn north-east-x509
 	# Left security gateway, subnet behind it, next hop toward right.
 	left=192.1.2.49
         leftrsasigkey=%cert
-        leftcert=north.uml.freeswan.org.cert  
+        leftcert=north.crt  
 	leftnexthop=192.1.2.23
-	leftid="C=CA/ST=Ontario/O=Openswan/CN=west.uml.freeswan.org/Email=west@openswan.org"
+	leftid="C=ca, ST=Ontario, O=Xelerance, OU=Test Department, CN=north.testing.xelerance.com, E=testing@xelerance.com"
 	# Right security gateway, subnet behind it, next hop toward left.
 	right=192.1.2.23
-	rightid="C=CA/ST=Ontario/O=Openswan/CN=east.uml.freeswan.org/Email=east@openswan.org"
+	rightid="C=ca, ST=Ontario, O=Xelerance, OU=Test Department, CN=east.testing.xelerance.com, E=testing@xelerance.com"
         rightrsasigkey=%cert
-	rightcert=east.uml.freeswan.org.cert
+	rightcert=east.crt
 	rightnexthop=192.1.2.49
 
 conn north-east
