@@ -14,7 +14,7 @@ will accept anything that is signed by a specific CA.
 
 
 North will transmit its certificate to east via nic. 
-North's certificate  is issued by a CA east accepts (cacerts/caCert.pem), and
+North's certificate  is issued by a CA east accepts (cacerts/ca.crt), and
 so should be accepted.
 
 East has a CRL list that shows that north's certificate is okay.
