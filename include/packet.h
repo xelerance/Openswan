@@ -745,6 +745,39 @@ struct ikev2_a
 };
 extern struct_desc ikev2_a_desc;
 
+
+/* rfc4306 section 3.6 CERT Payload */
+struct ikev2_cert 
+{
+    u_int8_t  isaa_np;	    /* Next payload */
+    u_int8_t  isaa_critical;
+    u_int16_t isaa_length;	    /* Payload length */
+};
+
+
+/* NOTE: this packet type has a fixed portion that is not a
+ * multiple of 4 octets.  This means that sizeof(struct isakmp_cr)
+ * yields the wrong value for the length.
+ */
+#define IKEV2_CERT_SIZE		5
+extern struct_desc ikev2_certificate_desc;
+
+/* rfc4306 section 3.6 CERTREQ Payload */
+struct ikev2_certreq 
+{
+    u_int8_t  isaa_np;	    /* Next payload */
+    u_int8_t  isaa_critical;
+    u_int16_t isaa_length;	    /* Payload length */
+};
+
+
+/* NOTE: this packet type has a fixed portion that is not a
+ * multiple of 4 octets.  This means that sizeof(struct isakmp_cr)
+ * yields the wrong value for the length.
+ */
+#define IKEV2_CERTREQ_SIZE		5
+// extern struct_desc  ikev2_certificate_req_desc;
+
 /* rfc4306, section 3.9, nonce, uses generic header */
 extern struct_desc ikev2_nonce_desc;
 
