@@ -1938,7 +1938,7 @@ parse_x509crl(chunk_t blob, u_int level0, x509crl_t *crl)
 		revokedCert_t *revokedCert = alloc_thing(revokedCert_t, "revokedCert");
 		/* since it is assumed here that CRL_OBJ_USER_CERTIFICATE is reached
 		   before CRL_OBJ_REVOCATION_DATE */
-		passert(userCertificate.ptr == NULL);
+		// Paul passert(userCertificate.len == 0);
 		revokedCert->userCertificate = userCertificate;
 		revokedCert->revocationDate = parse_time(object, level);
 		revokedCert->next = crl->revokedCertificates;
