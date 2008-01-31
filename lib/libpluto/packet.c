@@ -1047,15 +1047,14 @@ struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
     &ikev2_sa_desc,                     /* 33 */
     &ikev2_ke_desc,                     /* 34 */
     &ikev2_id_desc, &ikev2_id_desc,     /* 35,36 */
-    NULL, NULL,                         /* 37, 38*/
+    &ikev2_certificate_desc,            /* 37 */
+    &ikev2_certificate_req_desc,	/* 38*/
     &ikev2_a_desc,                      /* 39 */
     &ikev2_nonce_desc,                  /* 40 */
     NULL, NULL,                         /* 41,42 */
     &ikev2_vendor_id_desc,              /* 43 */
     &ikev2_ts_desc, &ikev2_ts_desc,     /* 44, 45 */
     &ikev2_e_desc,                      /* 46 */
-    &ikev2_certificate_desc,            /* 47 CERT */
-    &ikev2_certificate_req_desc,        /* 48 CERT */
 };
 
 void
