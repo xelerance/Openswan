@@ -67,8 +67,9 @@ stf_status ikev2_send_cert( struct state *st
                                   , pb_stream *outpbs)
 {
     struct ikev2_cert cert;
-    // struct state *pst = st;
-    bool send_certreq = FALSE; // flag : to send a certificate request aka CERTREQ
+    /*  flag : to send a certificate request aka CERTREQ */
+    bool send_certreq = FALSE; 
+    
     cert_t mycert = st->st_connection->spd.this.cert;
     /* [CERT,] [CERTREQ,] [IDr,] */
     
@@ -79,7 +80,10 @@ stf_status ikev2_send_cert( struct state *st
     
     send_certreq = !has_preloaded_public_key(st); 
     DBG(DBG_CONTROL
-	, DBG_log("I am %ssending a certificate request"
+	, DBG_log("has %spreloaded a public key from st"
+		  , send_certreq ? "" : "not "));
+    DBG(DBG_CONTROL
+	, DBG_log("my next payload will %sbe a certificate request"
 		  , send_certreq ? "" : "not "));
     
     if(send_certreq){
@@ -92,7 +96,7 @@ stf_status ikev2_send_cert( struct state *st
     }
     
     {
-    /*   send own (Initiator CERT)  next payload is CERTREQ */
+	/*   send own (Initiator CERT)  next payload is CERTREQ */
 	pb_stream cert_pbs;
 	struct isakmp_cert cert_hd;
 	cert_hd.isacert_type = mycert.type;
