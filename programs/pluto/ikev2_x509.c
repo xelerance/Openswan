@@ -86,13 +86,15 @@ stf_status ikev2_send_cert( struct state *st
 	, DBG_log("my next payload will %sbe a certificate request"
 		  , send_certreq ? "" : "not "));
     
-    cert.isaa_critical = ISAKMP_PAYLOAD_CRITICAL;
+    cert.isac_critical = ISAKMP_PAYLOAD_CRITICAL;
+    cert.isac_enc = mycert.type;
+
     if(send_certreq){
-	cert.isaa_np = ISAKMP_NEXT_v2CERTREQ;	
+	cert.isac_np = ISAKMP_NEXT_v2CERTREQ;	
     }
     else {
-	cert.isaa_np = np;
-	// AA TBD cert.isaa_np = ISAKMP_NEXT_v2IDr;	
+	cert.isac_np = np;
+	// AA TBD cert.isac_np = ISAKMP_NEXT_v2IDr;	
     }
     
     {
