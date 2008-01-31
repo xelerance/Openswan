@@ -205,7 +205,7 @@ load_authcerts(const char *type, const char *path, u_char auth_flags)
     else
     {
 	openswan_log("Changing to directory '%s'", path);
-	n = scandir(path, &filelist, file_select, alphasort);
+	n = scandir("./", &filelist, file_select, alphasort);
 
 	if (n < 0)
 	    openswan_log("  scandir() error");
