@@ -73,12 +73,13 @@ stf_status ikev2_send_cert( struct state *st
     cert_t mycert = st->st_connection->spd.this.cert;
     /* [CERT,] [CERTREQ,] [IDr,] */
     
-    
+    {
     /* decide the next payload; 
      * send a CERTREQ if auth is RSA and no preloaded RSA public key exists 
      */
-    
-    send_certreq = !has_preloaded_public_key(st); 
+    send_certreq = FALSE;
+    /* TBD    send_certreq = !has_preloaded_public_key(st);  */
+    }
     DBG(DBG_CONTROL
 	, DBG_log("has %spreloaded a public key from st"
 		  , send_certreq ? "" : "not "));
@@ -88,8 +89,9 @@ stf_status ikev2_send_cert( struct state *st
     
     cert.isac_critical = ISAKMP_PAYLOAD_CRITICAL;
     cert.isac_enc = mycert.type;
-
+    
     if(send_certreq){
+        cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 	cert.isac_np = ISAKMP_NEXT_v2CERTREQ;	
     }
     else {
@@ -128,7 +130,7 @@ stf_status ikev2_send_cert( struct state *st
     }
 
 #if 0
-    
+// TODO 
     if(send_certreq) { 
 	/* send CERTREQ  */
 	// struct ikev2_certreq certreq;
@@ -139,7 +141,6 @@ stf_status ikev2_send_cert( struct state *st
 	/* send IDr */
 	idr.isai_np = np;	
     }
-// TODO 
 #endif
 
     return STF_OK;
