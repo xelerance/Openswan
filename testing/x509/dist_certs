@@ -308,6 +308,11 @@ openssl ca -gencrl -crldays 15 -out crls/cacrlvalid.pem -keyfile keys/ca.key -ce
 
 
 # Copy to the same places as CA/dist_certs did
+mkdir ../baseconfigs/all/etc/ipsec.d/certs
+mkdir ../baseconfigs/all/etc/ipsec.d/cacerts 
+mkdir ../baseconfigs/all/etc/ipsec.d/crls
+mkdir ../baseconfigs/all/etc/ipsec.d/private
+
 cp certs/* ../baseconfigs/all/etc/ipsec.d/certs
 cp cacerts/* ../baseconfigs/all/etc/ipsec.d/cacerts
 cp crls/* ../baseconfigs/all/etc/ipsec.d/crls
