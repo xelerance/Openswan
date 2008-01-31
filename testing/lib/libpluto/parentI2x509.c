@@ -40,10 +40,13 @@
 #include "seam_demux.c"
 #include "seam_whack.c"
 #include "seam_natt.c"
-#include "seam_keys.c"
 #include "seam_exitlog.c"
 #include "seam_gi_sha1.c"
 #include "seam_kernelalgs.c"
+#include "seam_dns.c"
+#include "seam_connections.c"
+#include "seam_defs.c"
+#include "seam_oscp.c"
 
 #include "seam_commhandle.c"
 #include "ikev2sendI1.c"
@@ -51,6 +54,8 @@
 int add_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PRIVATE|DBG_CRYPT;
 
 #include "seam_recv1i.c"
+
+long crl_check_interval = 0;
 
 main(int argc, char *argv[])
 {
@@ -71,8 +76,18 @@ main(int argc, char *argv[])
 
     leak_detective = 1;
 
+	pluto_shared_secrets_file = "../../../baseconfigs/west/etc/ipsec.secrets";
+
+        osw_init_ipsecdir("../../../baseconfigs/west/etc/ipsec.d");
+        osw_init_rootdir("../../../baseconfigs/west");
+
+
     init_crypto();
-    init_seam_kernelalgs();
+    init_seam_kernelalgs(); 
+
+
+	load_authcerts("CA cert",
+		"../../../baseconfigs/all/etc/ipsec.d/cacerts", AUTH_CA);
 
     if(argc != 4) {
 	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapin>\n", progname);
@@ -85,7 +100,7 @@ main(int argc, char *argv[])
     
     infile = argv[1];
     conn_name = argv[2];
-
+    load_preshared_secrets(NULL_FD);
     readwhackmsg(infile);
 
     send_packet_setup_pcap("parentI2x509.pcap");
