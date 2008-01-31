@@ -804,7 +804,7 @@ static field_desc ikev2_cert_fields[] = {
   { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
   { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
-  { ft_enum, 8/BITS_PER_BYTE, "cert encoding", &ikev2_cert_type_names },
+  { ft_enum, 8/BITS_PER_BYTE, "ikev2 cert encoding", &ikev2_cert_type_names },
   { ft_end,  0, NULL, NULL }
 };
 
@@ -831,7 +831,7 @@ static field_desc ikev2_cert_req_fields[] = {
   { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
   { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
-  { ft_enum, 8/BITS_PER_BYTE, "cert encoding", &ikev2_cert_type_names },
+  { ft_enum, 8/BITS_PER_BYTE, "ikev2 cert encoding", &ikev2_cert_type_names },
   { ft_end,  0, NULL, NULL }
 };
 
