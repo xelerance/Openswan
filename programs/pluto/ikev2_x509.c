@@ -178,11 +178,6 @@ doi_log_cert_thinking(struct msg_digest *md UNUSED
 
     DBG(DBG_CONTROL
    	, DBG_log("My policy is : %s", prettypolicy(c->policy)));
-    
-    DBG(DBG_CONTROL
-	, DBG_log("  I have RSA key: %s cert.type: %s "
-		  , enum_show(&ikev2_auth_names, auth)
-		  , enum_show(&ikev2_cert_type_names, certtype)));
 
     DBG(DBG_CONTROL
 	, DBG_log("  sendcert: %s and I did%s get a certificate request "
