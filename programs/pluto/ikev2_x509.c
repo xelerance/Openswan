@@ -94,7 +94,13 @@ stf_status ikev2_send_cert( struct state *st
     }
     else {
 	cert.isac_np = np;
-	// AA TBD cert.isac_np = ISAKMP_NEXT_v2IDr;	
+	/*
+	 * If we have a remote id configured in the conn,
+	 * we can send it here to signal we insist on it.
+	 * if (st->st_connection->spd.that.id)
+	 *   cert.isaa_np = ISAKMP_NEXT_v2IDr;
+	 */
+
     }
     
     {
