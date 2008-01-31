@@ -79,7 +79,7 @@ stf_status ikev2_send_cert( struct state *st
     
     send_certreq = !has_preloaded_public_key(st); 
     DBG(DBG_CONTROL
-	, DBG_log(" I am %ssending a certificate request"
+	, DBG_log("I am %ssending a certificate request"
 		  , send_certreq ? "" : "not "));
     
     if(send_certreq){
