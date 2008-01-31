@@ -276,8 +276,10 @@ load_host_cert(enum ipsec_cert_type certtype, const char *filename,
 
     if (*filename == '/')	/* absolute pathname */
     	strncpy(path, filename, ASN1_BUF_LEN);
-    else			/* relative pathname */
-	snprintf(path, ASN1_BUF_LEN, "%s/%s", oco->certs_dir, filename);
+    else 			/* relative pathname */
+	snprintf(path, ASN1_BUF_LEN, "%s/%s", 
+		(!oco->certs_dir ? "." : oco->certs_dir)
+		,filename);
 
     return load_cert(certtype, path, verbose, "host cert", cert);
 }
