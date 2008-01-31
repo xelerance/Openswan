@@ -749,9 +749,10 @@ extern struct_desc ikev2_a_desc;
 /* rfc4306 section 3.6 CERT Payload */
 struct ikev2_cert 
 {
-    u_int8_t  isaa_np;	    /* Next payload */
-    u_int8_t  isaa_critical;
-    u_int16_t isaa_length;	    /* Payload length */
+    u_int8_t  isac_np;	    /* Next payload */
+    u_int8_t  isac_critical;
+    u_int16_t isac_length;	    /* Payload length */
+    u_int8_t  isac_enc;            /* encoding type */
 };
 
 
@@ -765,9 +766,10 @@ extern struct_desc ikev2_certificate_desc;
 /* rfc4306 section 3.6 CERTREQ Payload */
 struct ikev2_certreq 
 {
-    u_int8_t  isaa_np;	    /* Next payload */
-    u_int8_t  isaa_critical;
-    u_int16_t isaa_length;	    /* Payload length */
+    u_int8_t  isacertreq_np;	    /* Next payload */
+    u_int8_t  isacertreq_critical;
+    u_int16_t isacertreq_length;	  /* Payload length */
+    u_int8_t  isacertreq_enc;            /* encoding type */
 };
 
 
