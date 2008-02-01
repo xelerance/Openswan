@@ -1348,6 +1348,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	idhash_in = alloca(st->st_oakley.integ_hasher->hash_digest_len);
 	hmac_final(idhash_in, &id_ctx);
     }
+
     /* AA TBD  process CERT payload */
     {
     if(md->chain[ISAKMP_NEXT_v2CERT])
