@@ -117,7 +117,7 @@ main(int argc, char *argv[])
 
     readwhackmsg(infile);
 
-    send_packet_setup_pcap("parentR2.pcap");
+    send_packet_setup_pcap("parentR2x509.pcap");
     pt = pcap_open_offline(argv[3], eb1);
     if(!pt) {
 	perror(argv[3]);
