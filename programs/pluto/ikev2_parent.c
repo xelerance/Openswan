@@ -1348,7 +1348,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_final(idhash_in, &id_ctx);
     }
 
-#ifdef 0
+#if 0
    
     /* AA TBD  process CERT payload */
     if(md->chain[ISAKMP_NEXT_v2CERT])
@@ -1359,7 +1359,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    */
 	    /* in v1 code it is  decode_cert(struct msg_digest *md) */
 	    
-	    decode_cert(cert_pbs);
+	    decode_cert(cert_pbs); 
 	}
     }
 #endif
