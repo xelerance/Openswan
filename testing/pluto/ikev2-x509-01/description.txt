@@ -1,9 +1,13 @@
 Basic pluto X.509 test, with send_cr.
 
 East does *NOT* have West's X.509 Cert locally.
-west is FORCED to send it.
+west is FORCED to send it. And visa versa.
 
-"westnet-eastnet": 192.0.1.0/24===192.1.2.45[CN=west.testing.openswan.org]...192.1.2.23[CN=east.testing.openswan.org]===192.0.2.0/24
+Configuration has been tuned to work around the refine_connection
+bug, or another bug with CA's. These bugs require us to specify
+the leftid and rightid (otherwise RSA key for IPv4 address is not found).
 
-Otherwise, identical to x509-pluto-01.
+We also need to set leftsendcert=/rightsendcert.
 
+We also need to set rightca="%any" and leftca="%any" or else the CA is
+not found
