@@ -204,6 +204,62 @@ decode_cert(struct msg_digest *md)
     }
 }
 
+/* Decode IKEV2 CERT Payload */
+
+void
+ikev2_decode_cert(struct msg_digest *md)
+{
+    struct payload_digest *p;
+
+    for (p = md->chain[ISAKMP_NEXT_v2CERT]; p != NULL; p = p->next)
+    {
+	struct ikev2_cert *const v2cert = &p->payload.v2cert;
+	chunk_t blob;
+	time_t valid_until;
+	blob.ptr = p->pbs.cur;
+	blob.len = pbs_left(&p->pbs);
+	if (v2cert->isac_enc == CERT_X509_SIGNATURE)
+	{
+	    x509cert_t cert2 = empty_x509cert;
+	    if (parse_x509cert(blob, 0, &cert2))
+	    {
+		if (verify_x509cert(&cert2, strict_crl_policy, &valid_until))
+		{
+		    DBG(DBG_X509 | DBG_PARSING,
+			DBG_log("Public key validated")
+		    )
+			add_x509_public_key(NULL, &cert2, valid_until, DAL_SIGNED);
+		}
+		else
+		{
+		    plog("X.509 certificate rejected");
+		}
+		free_generalNames(cert2.subjectAltName, FALSE);
+		free_generalNames(cert2.crlDistributionPoints, FALSE);
+	    }
+	    else
+		plog("Syntax error in X.509 certificate");
+	}
+	else if (v2cert->isac_enc == CERT_PKCS7_WRAPPED_X509)
+	{
+	    x509cert_t *cert2 = NULL;
+
+	    if (parse_pkcs7_cert(blob, &cert2))
+		store_x509certs(&cert2, strict_crl_policy);
+	    else
+		plog("Syntax error in PKCS#7 wrapped X.509 certificates");
+	}
+	else
+	{
+	    loglog(RC_LOG_SERIOUS, "ignoring %s certificate payload",
+		   enum_show(&cert_type_names, v2cert->isac_enc));
+	    DBG_cond_dump_chunk(DBG_PARSING, "CERT:\n", blob);
+	}
+    }
+}
+
+
+
 /*
  * Decode the CR payload of Phase 1.
  */
