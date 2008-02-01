@@ -11,4 +11,7 @@ ipsec setup start
 ipsec whack --whackrecord /var/tmp/ikev2.record
 ipsec auto --add ikev2-westnet-eastnet-x509-cr
 
-/testing/pluto/basic-pluto-01/eroutewait.sh trap
+S=5
+echo "sleep ${S} sec"
+sleep 5
+echo "done"
