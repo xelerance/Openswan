@@ -63,6 +63,7 @@
 
 /* Send v2CERT and v2 CERT */
 stf_status ikev2_send_cert( struct state *st
+				  , enum phase1_role role
 				  , unsigned int np
                                   , pb_stream *outpbs)
 {
@@ -77,8 +78,8 @@ stf_status ikev2_send_cert( struct state *st
     /* decide the next payload; 
      * send a CERTREQ if auth is RSA and no preloaded RSA public key exists 
      */
-    send_certreq = FALSE;
-    /* TBD    send_certreq = !has_preloaded_public_key(st);  */
+    send_certreq = !has_preloaded_public_key(st) && (role == INITIATOR);  
+    send_certreq = FALSE; /* sending CERTREQ is not implemented yet */
     }
     DBG(DBG_CONTROL
 	, DBG_log("has %spreloaded a public key from st"

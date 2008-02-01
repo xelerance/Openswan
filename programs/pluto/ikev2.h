@@ -138,5 +138,6 @@ extern void ikev2_update_counters(struct msg_digest *md);
 extern bool doi_send_ikev2_cert_thinking( struct state *st);
 
 extern stf_status ikev2_send_cert( struct state *st
+				   , enum phase1_role role
 				   , unsigned int np
 				   , pb_stream *outpbs);
