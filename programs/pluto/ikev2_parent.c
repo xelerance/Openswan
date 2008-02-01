@@ -1,4 +1,4 @@
-  /* 
+ /* 
  * IKEv2 parent SA creation routines
  * Copyright (C) 2007  Michael Richardson <mcr@xelerance.com>
  *
@@ -1347,9 +1347,23 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	idhash_in = alloca(st->st_oakley.integ_hasher->hash_digest_len);
 	hmac_final(idhash_in, &id_ctx);
     }
+
+#ifdef 0
    
     /* AA TBD  process CERT payload */
-    
+    if(md->chain[ISAKMP_NEXT_v2CERT])
+	{
+	    
+	    /* first check if should accept a cert payload
+	       has_preloaded_public_key(st)
+	    */
+	    /* in v1 code it is  decode_cert(struct msg_digest *md) */
+	    
+	    decode_cert(cert_pbs);
+	}
+    }
+#endif
+
     /* process AUTH payload */
     if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
 	openswan_log("no authentication payload found");
