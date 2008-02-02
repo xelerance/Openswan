@@ -1518,4 +1518,28 @@ sending 1724 bytes for STATE_PARENT_R1 through eth0:500 to 192.1.2.45:500 (using
 ../parentR2x509 leak: override ipsec.d
 ../parentR2x509 leak: 7 * default conf
 TCPDUMP output
-./testlist.sh: line 4: tcpdump: command not found
+reading from file parentR2x509.pcap, link-type NULL (BSD loopback)
+19:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 336, bad cksum 0 (->f556)!)
+    192.1.2.23.500 > 192.1.2.45.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->c02e7a3031a03188: parent_sa ikev2_init[]:
+    (sa[C]: len=40
+        (p: #1 protoid=isakmp transform=4 len=40
+            (t: #1 type=encr id=aes )
+            (t: #2 type=integ id=hmac-sha )
+            (t: #3 type=prf id=hmac-sha )
+            (t: #4 type=dh id=modp1536 )))
+    (v2ke: len=192 group=modp1536)
+    (nonce[C]: len=16 nonce=(47e9f9258ca23858f675b166b02cc292) )
+    (v2vid: len=12 vid=OEababababab)
+19:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 1752, bad cksum 0 (->efce)!)
+    192.1.2.23.500 > 192.1.2.45.500: [no cksum] isakmp 2.0 msgid 00000001 cookie 0001020304050607->c02e7a3031a03188: child_sa  ikev2_auth[]:
+    (v2e[C]: len=1692
+            (v2IDr: len=143 dn:308188310b30090603550406130263613110300e060355040813074f6e746172696f31123010060355040a130958656c6572616e63653110300e06035504071307546f726f6e746f311b301906035504031312656173742e78656c6572616e63652e636f6d3124302206092a864886f70d010901161574657374696e674078656c6572616e63652e636f6d)
+            (v2cert[C]: len=1217)
+            (v2auth: len=196 method=rsasig authdata=(000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) )
+            (sa[C]: len=36
+                (p: #1 protoid=ipsec-esp transform=3 len=36 spi=12345678
+                    (t: #1 type=encr id=aes )
+                    (t: #2 type=integ id=hmac-sha )
+                    (t: #3 type=esn id=no-esn )))
+            (v2TSi: len=20)
+            (v2TSr: len=20))
