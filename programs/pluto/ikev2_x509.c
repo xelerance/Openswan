@@ -61,25 +61,28 @@
 #include "ocf_pk.h"
 #endif
 
+static stf_status 
+ikev2_send_certreq( struct state *st, enum phase1_role role
+		    , unsigned int np, pb_stream *outpbs);
+
 /* Send v2CERT and v2 CERT */
-stf_status ikev2_send_cert( struct state *st
-				  , enum phase1_role role
-				  , unsigned int np
-                                  , pb_stream *outpbs)
+stf_status 
+ikev2_send_cert( struct state *st, enum phase1_role role
+		 , unsigned int np, pb_stream *outpbs)
 {
     struct ikev2_cert cert;
     /*  flag : to send a certificate request aka CERTREQ */
     bool send_certreq = FALSE; 
     
     cert_t mycert = st->st_connection->spd.this.cert;
-    /* [CERT,] [CERTREQ,] [IDr,] */
-    
     {
-    /* decide the next payload; 
-     * send a CERTREQ if auth is RSA and no preloaded RSA public key exists 
-     */
-    send_certreq = !has_preloaded_public_key(st) && (role == INITIATOR);  
-    send_certreq = FALSE; /* sending CERTREQ is not implemented yet */
+	/* decide the next payload; 
+	 * send a CERTREQ no preloaded public key exists
+	 */
+	send_certreq = !has_preloaded_public_key(st) 
+	               && (role == INITIATOR)
+	               && st->st_connection->spd.that.ca.ptr != NULL;
+	send_certreq = FALSE; /* sending CERTREQ is not implemented yet */
     }
     DBG(DBG_CONTROL
 	, DBG_log("has %spreloaded a public key from st"
@@ -88,7 +91,7 @@ stf_status ikev2_send_cert( struct state *st
 	, DBG_log("my next payload will %sbe a certificate request"
 		  , send_certreq ? "" : "not "));
     
-    cert.isac_critical = ISAKMP_PAYLOAD_CRITICAL;
+    cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
     cert.isac_enc = mycert.type;
     
     if(send_certreq){
@@ -103,21 +106,19 @@ stf_status ikev2_send_cert( struct state *st
 	 * if (st->st_connection->spd.that.id)
 	 *   cert.isaa_np = ISAKMP_NEXT_v2IDr;
 	 */
-
+	
     }
     
+    /*   send own (Initiator CERT) */
     {
-	/*   send own (Initiator CERT)  next payload is CERTREQ */
 	pb_stream cert_pbs;
 	struct isakmp_cert cert_hd;
 	cert_hd.isacert_type = mycert.type;
 	
         DBG_log("I am sending my cert");
-
-        if (!out_struct(&cert
-                        , &ikev2_certificate_desc
-                        , outpbs //AA check this was md
-                        , &cert_pbs))
+	
+        if (!out_struct(&cert, &ikev2_certificate_desc
+                        , outpbs , &cert_pbs))
             return STF_INTERNAL_ERROR;
 	
         if(mycert.forced) {
@@ -129,14 +130,16 @@ stf_status ikev2_send_cert( struct state *st
         }
         close_output_pbs(&cert_pbs);
     }
-
-#if 0
-// TODO 
+    
+    /* send CERTREQ  */
     if(send_certreq) { 
-	/* send CERTREQ  */
-	// struct ikev2_certreq certreq;
+	DBG(DBG_CONTROL
+	    , DBG_log("going to send a certreq"));
+	ikev2_send_certreq(st, role, np, outpbs);
     }
     
+#if 0
+    // TODO 
     {
 	struct ikev2_id idr;
 	/* send IDr */
@@ -144,6 +147,49 @@ stf_status ikev2_send_cert( struct state *st
     }
 #endif
 
+    return STF_OK;
+}
+
+static stf_status 
+ikev2_send_certreq( struct state *st, enum phase1_role role
+		 , unsigned int np, pb_stream *outpbs)
+{
+#if 0
+    // TODO
+
+    struct ikev2_certreq certreq;    
+    if (st->st_connection->kind == CK_PERMANENT)
+	{
+	    if (!build_and_ship_CR(CERT_X509_SIGNATURE
+				   , st->st_connection->spd.that.ca
+				   , &md->rbody, ISAKMP_NEXT_NONE))
+		return STF_INTERNAL_ERROR;
+	}
+    else
+	{
+	    generalName_t *ca = NULL;
+
+	    if (collect_rw_ca_candidates(md, &ca))
+		{
+		    generalName_t *gn;
+		    
+		    for (gn = ca; gn != NULL; gn = gn->next)
+			{
+			    if (!build_and_ship_CR(CERT_X509_SIGNATURE, 
+						   gn->name, &md->rbody
+		    , gn->next == NULL ? ISAKMP_NEXT_NONE : ISAKMP_NEXT_CR))
+				return STF_INTERNAL_ERROR;
+			}
+		    free_generalNames(ca, FALSE);
+		}
+	    else
+		{
+		    if (!build_and_ship_CR(CERT_X509_SIGNATURE, empty_chunk
+					   , &md->rbody, ISAKMP_NEXT_NONE))
+			return STF_INTERNAL_ERROR;
+		}
+	}
+#endif
     return STF_OK;
 }
 
@@ -167,8 +213,7 @@ doi_log_cert_thinking(struct msg_digest *md UNUSED
 
 
 */
-{
-   
+{   
     cert_t mycert = st->st_connection->spd.this.cert;
     enum ipsec_cert_type certtype = mycert.type;
     enum certpolicy policy = st->st_connection->spd.this.sendcert;
