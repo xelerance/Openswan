@@ -9,7 +9,7 @@ void send_packet_setup_pcap(char *file)
 {
 	pcap_t *pt;
 
-	pt = pcap_open_dead(DLT_NULL, 1500);
+	pt = pcap_open_dead(DLT_NULL, 9000);
 	packet_save = pcap_dump_open(pt, file);
 }
 
@@ -36,7 +36,7 @@ send_packet(struct state *st, const char *where, bool verbose)
     DBG_dump(NULL, ptr, len);
 
     if(packet_save) {
-	    char buf[1600];
+	    char buf[9000];
 	    struct pcap_pkthdr pp;
 	    struct iphdr  *ip;
 	    struct udphdr *udp;
