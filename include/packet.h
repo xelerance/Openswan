@@ -778,7 +778,7 @@ struct ikev2_certreq
  * yields the wrong value for the length.
  */
 #define IKEV2_CERTREQ_SIZE		5
-// extern struct_desc  ikev2_certificate_req_desc;
+extern struct_desc  ikev2_certificate_req_desc;
 
 /* rfc4306, section 3.9, nonce, uses generic header */
 extern struct_desc ikev2_nonce_desc;
