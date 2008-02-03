@@ -152,23 +152,21 @@ ikev2_send_cert( struct state *st, enum phase1_role role
 
 static stf_status 
 ikev2_send_certreq( struct state *st, enum phase1_role role
-		 , unsigned int np, pb_stream *outpbs)
+		    , unsigned int np, pb_stream *outpbs)
 {
-#if 0
-    // TODO
-
     struct ikev2_certreq certreq;    
     if (st->st_connection->kind == CK_PERMANENT)
 	{
 	    if (!build_and_ship_CR(CERT_X509_SIGNATURE
 				   , st->st_connection->spd.that.ca
-				   , &md->rbody, ISAKMP_NEXT_NONE))
+				   , outpbs, np))
 		return STF_INTERNAL_ERROR;
 	}
+#if 0
     else
 	{
 	    generalName_t *ca = NULL;
-
+	    
 	    if (collect_rw_ca_candidates(md, &ca))
 		{
 		    generalName_t *gn;
@@ -176,8 +174,8 @@ ikev2_send_certreq( struct state *st, enum phase1_role role
 		    for (gn = ca; gn != NULL; gn = gn->next)
 			{
 			    if (!build_and_ship_CR(CERT_X509_SIGNATURE, 
-						   gn->name, &md->rbody
-		    , gn->next == NULL ? ISAKMP_NEXT_NONE : ISAKMP_NEXT_CR))
+						   gn->name, oubpbs
+		       ,gn->next == NULL ? ISAKMP_NEXT_NONE : ISAKMP_NEXT_CR))
 				return STF_INTERNAL_ERROR;
 			}
 		    free_generalNames(ca, FALSE);
@@ -185,7 +183,7 @@ ikev2_send_certreq( struct state *st, enum phase1_role role
 	    else
 		{
 		    if (!build_and_ship_CR(CERT_X509_SIGNATURE, empty_chunk
-					   , &md->rbody, ISAKMP_NEXT_NONE))
+					   , outpbs, ISAKMP_NEXT_NONE))
 			return STF_INTERNAL_ERROR;
 		}
 	}

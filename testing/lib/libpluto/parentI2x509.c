@@ -75,20 +75,18 @@ main(int argc, char *argv[])
     printf("Started %s\n", progname);
 
     leak_detective = 1;
-
-	pluto_shared_secrets_file = "../../../baseconfigs/west/etc/ipsec.secrets";
-
-        osw_init_ipsecdir("../../../baseconfigs/west/etc/ipsec.d");
-        osw_init_rootdir("../../../baseconfigs/west");
-
+    
+    pluto_shared_secrets_file = "../../../baseconfigs/west/etc/ipsec.secrets";
+    
+    osw_init_ipsecdir("../../../baseconfigs/west/etc/ipsec.d");
+    osw_init_rootdir("../../../baseconfigs/west");
+    
 
     init_crypto();
     init_seam_kernelalgs(); 
-
-
-	load_authcerts("CA cert",
-		"../../../baseconfigs/all/etc/ipsec.d/cacerts", AUTH_CA);
-
+    
+    load_authcerts("CA cert",
+		  "../../../baseconfigs/west/etc/ipsec.d/cacerts", AUTH_CA);
     if(argc != 4) {
 	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapin>\n", progname);
 	exit(10);
