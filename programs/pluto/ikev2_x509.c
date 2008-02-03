@@ -35,6 +35,7 @@
 #include "cookie.h"
 #include "id.h"
 #include "x509.h"
+#include "x509more.h"
 #include "pgp.h"
 #include "certs.h"
 #include "smartcard.h"
@@ -82,13 +83,18 @@ ikev2_send_cert( struct state *st, enum phase1_role role
 	send_certreq = !has_preloaded_public_key(st) 
 	               && (role == INITIATOR)
 	               && st->st_connection->spd.that.ca.ptr != NULL;
-	send_certreq = FALSE; /* sending CERTREQ is not implemented yet */
+	//send_certreq = FALSE; /* sending CERTREQ is not implemented yet */
     }
     DBG(DBG_CONTROL
-	, DBG_log("has %spreloaded a public key from st"
-		  , send_certreq ? "" : "not "));
+	, DBG_log("thinking! to send a CERTREQ or not"));
     DBG(DBG_CONTROL
-	, DBG_log("my next payload will %sbe a certificate request"
+	, DBG_log(" has %spreloaded a public key from st"
+		  , !has_preloaded_public_key(st) ? "not " : "")); 
+    DBG(DBG_CONTROL
+	, DBG_log(" that CA is %s empty"
+		  , st->st_connection->spd.that.ca.ptr  ? "not " : "")); 
+    DBG(DBG_CONTROL
+	, DBG_log(" my next payload will %sbe a certificate request"
 		  , send_certreq ? "" : "not "));
     
     cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
@@ -151,13 +157,12 @@ ikev2_send_cert( struct state *st, enum phase1_role role
 }
 
 static stf_status 
-ikev2_send_certreq( struct state *st, enum phase1_role role
+ikev2_send_certreq( struct state *st, enum phase1_role role UNUSED
 		    , unsigned int np, pb_stream *outpbs)
 {
-    struct ikev2_certreq certreq;    
     if (st->st_connection->kind == CK_PERMANENT)
 	{
-	    if (!build_and_ship_CR(CERT_X509_SIGNATURE
+	    if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE
 				   , st->st_connection->spd.that.ca
 				   , outpbs, np))
 		return STF_INTERNAL_ERROR;
@@ -231,7 +236,7 @@ doi_log_cert_thinking(struct msg_digest *md UNUSED
     /* log the steps led to the decision */
 
     DBG(DBG_CONTROL
-	, DBG_log("IKEv2 thinking about whether to send my certificate:"));
+	, DBG_log("IKEv2 thinking whether to send my certificate:"));
 
     DBG(DBG_CONTROL
    	, DBG_log("My policy is : %s", prettypolicy(c->policy)));
