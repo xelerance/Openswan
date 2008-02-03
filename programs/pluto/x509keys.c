@@ -331,6 +331,28 @@ build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
 }
 
 bool
+ikev2_build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
+{
+    pb_stream cr_pbs;
+    struct ikev2_certreq  cr_hd;
+    cr_hd.isacertreq_critical =  ISAKMP_PAYLOAD_NONCRITICAL;
+    cr_hd.isacertreq_np= np;
+    cr_hd.isacertreq_enc = type;
+
+    /* build CR header */
+    if (!out_struct(&cr_hd, &ikev2_certificate_req_desc, outs, &cr_pbs))
+	return FALSE;
+
+    if (ca.ptr != NULL)
+    {
+	/* build CR body containing the distinguished name of the CA */
+	if (!out_chunk(ca, &cr_pbs, "CA"))
+	    return FALSE;
+    }
+    close_output_pbs(&cr_pbs);
+    return TRUE;
+}
+bool
 collect_rw_ca_candidates(struct msg_digest *md, generalName_t **top)
 {
     struct connection *d = find_host_connection(&md->iface->ip_addr
