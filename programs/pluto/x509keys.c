@@ -252,7 +252,7 @@ ikev2_decode_cert(struct msg_digest *md)
 	else
 	{
 	    loglog(RC_LOG_SERIOUS, "ignoring %s certificate payload",
-		   enum_show(&cert_type_names, v2cert->isac_enc));
+		   enum_show(&ikev2_cert_type_names, v2cert->isac_enc));
 	    DBG_cond_dump_chunk(DBG_PARSING, "CERT:\n", blob);
 	}
     }
@@ -305,6 +305,54 @@ decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 	else
 	    loglog(RC_LOG_SERIOUS, "ignoring %s certificate request payload",
 		   enum_show(&cert_type_names, cr->isacr_type));
+    }
+}
+
+/*
+ * Decode the IKEv2 CR payload of Phase 1.
+ */
+void
+ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca)
+{
+    struct payload_digest *p;
+
+    for (p = md->chain[ISAKMP_NEXT_v2CERTREQ]; p != NULL; p = p->next)
+    {
+	struct ikev2_certreq *const cr = &p->payload.v2certreq;
+	chunk_t ca_name;
+	
+	ca_name.len = pbs_left(&p->pbs);
+	ca_name.ptr = (ca_name.len > 0)? p->pbs.cur : NULL;
+
+	DBG_cond_dump_chunk(DBG_PARSING, "CR", ca_name);
+
+	if (cr->isacertreq_enc == CERT_X509_SIGNATURE)
+	{
+	    char buf[IDTOA_BUF];
+
+	    if (ca_name.len > 0)
+	    {
+		generalName_t *gn;
+		
+		if (!is_asn1(ca_name))
+		    continue;
+
+		gn = alloc_thing(generalName_t, "generalName");
+		clonetochunk(ca_name, ca_name.ptr,ca_name.len, "ca name");
+		gn->kind = GN_DIRECTORY_NAME;
+		gn->name = ca_name;
+		gn->next = *requested_ca;
+		*requested_ca = gn;
+	    }
+
+	    DBG(DBG_PARSING | DBG_CONTROL,
+		dntoa_or_null(buf, IDTOA_BUF, ca_name, "%any");
+		DBG_log("requested CA: '%s'", buf);
+	    )
+	}
+	else
+	    loglog(RC_LOG_SERIOUS, "ignoring %s certificate request payload",
+		   enum_show(&ikev2_cert_type_names, cr->isacertreq_enc));
     }
 }
 

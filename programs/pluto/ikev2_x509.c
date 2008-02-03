@@ -1,4 +1,4 @@
- /* do PSK operations for IKEv2
+/* do PSK operations for IKEv2
  *
  * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
  *
@@ -75,26 +75,25 @@ ikev2_send_cert( struct state *st, enum phase1_role role
     /*  flag : to send a certificate request aka CERTREQ */
     bool send_certreq = FALSE; 
     
+    struct connection *c  = st->st_connection;
     cert_t mycert = st->st_connection->spd.this.cert;
     {
 	/* decide the next payload; 
 	 * send a CERTREQ no preloaded public key exists
 	 */
-	send_certreq = !has_preloaded_public_key(st) 
-	               && (role == INITIATOR)
-	               && st->st_connection->spd.that.ca.ptr != NULL;
+	send_certreq = (c->policy & POLICY_RSASIG)
+		       && !has_preloaded_public_key(st) 
+	               && (role == INITIATOR);
 	//send_certreq = FALSE; /* sending CERTREQ is not implemented yet */
     }
     DBG(DBG_CONTROL
-	, DBG_log("thinking! to send a CERTREQ or not"));
-    DBG(DBG_CONTROL
-	, DBG_log(" has %spreloaded a public key from st"
-		  , !has_preloaded_public_key(st) ? "not " : "")); 
-    DBG(DBG_CONTROL
-	, DBG_log(" that CA is %s empty"
-		  , st->st_connection->spd.that.ca.ptr  ? "not " : "")); 
-    DBG(DBG_CONTROL
-	, DBG_log(" my next payload will %sbe a certificate request"
+	, DBG_log("thinking! to send a CERTREQ or not");
+   	DBG_log("  my policy is : %s", prettypolicy(c->policy));
+	DBG_log("  has %spreloaded a public key from st"
+		  , !has_preloaded_public_key(st) ? "not " : ""); 
+	DBG_log("  my role is %s. (only an INITIATOR send a CERTREQ)"
+		  , role == INITIATOR ? "INITIATOR" : "RESPONDER"); 
+	DBG_log(" my next payload will %sbe a certificate request"
 		  , send_certreq ? "" : "not "));
     
     cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
@@ -239,10 +238,10 @@ doi_log_cert_thinking(struct msg_digest *md UNUSED
 	, DBG_log("IKEv2 thinking whether to send my certificate:"));
 
     DBG(DBG_CONTROL
-   	, DBG_log("My policy is : %s", prettypolicy(c->policy)));
+   	, DBG_log("  my policy is : %s", prettypolicy(c->policy)));
 
     DBG(DBG_CONTROL
-	, DBG_log("  sendcert: %s and I did%s get a certificate request "
+	, DBG_log(" sendcert: %s and I did%s get a certificate request "
 		  , enum_show(&certpolicy_type_names, policy)
 		  , gotcertrequest ? "" : " not"));
 

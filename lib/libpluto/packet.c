@@ -829,7 +829,7 @@ struct_desc ikev2_certificate_desc = { "IKEv2 Certificate Payload", ikev2_cert_f
 
 static field_desc ikev2_cert_req_fields[] = {
   { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-  { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+  { ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names },
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
   { ft_enum, 8/BITS_PER_BYTE, "ikev2 cert encoding", &ikev2_cert_type_names },
   { ft_end,  0, NULL, NULL }

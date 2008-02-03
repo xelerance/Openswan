@@ -1349,6 +1349,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_final(idhash_in, &id_ctx);
     }
 
+    /* process CERT payload */
     {
     if(md->chain[ISAKMP_NEXT_v2CERT])
 	{
@@ -1357,10 +1358,20 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	     */ 
 	    /* in v1 code it is  decode_cert(struct msg_digest *md) */
 	    DBG(DBG_CONTROLMORE
-		, DBG_log("has a v2_CERT payload going to decode it"));	  
+		, DBG_log("has a v2_CERT payload going to process it "));	  
 	    ikev2_decode_cert(md); 
 	}
      }
+
+    /* process CERTREQ payload */
+    if(md->chain[ISAKMP_NEXT_v2CERTREQ]) 
+    {
+	    DBG(DBG_CONTROLMORE
+		,DBG_log("has a v2CERTREQ payload going to decode it",
+		md->chain[ISAKMP_NEXT_v2CERTREQ]->pbs.name));
+	    ikev2_decode_cr(md, &st->st_connection->requested_ca);
+    }
+
     /* process AUTH payload */
     if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
 	openswan_log("no authentication payload found");
