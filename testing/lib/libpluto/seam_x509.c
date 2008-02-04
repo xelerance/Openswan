@@ -16,8 +16,15 @@ stf_status ikev2_send_cert( struct state *st
 {
 return STF_OK;
 }
+
 void
 ikev2_decode_cert(struct msg_digest *md)
+{
+}
+
+/* Decode the IKEv2 CR payload of Phase 1. */
+ void
+ ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 {
 }
 bool
