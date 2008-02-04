@@ -3,13 +3,12 @@
 TEST_PURPOSE=regress
 TEST_TYPE=umlXhost
 
-TESTNAME=fail-x509-02
+TESTNAME=x509-fail-02
 
 XHOST_LIST="NIC NORTH EAST"
 
-REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
+REF_CONSOLE_FIXUPS="kern-list-fixups.sed script-only.sed nocr.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS east-prompt-splitline.pl"
-REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS script-only.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS cutout.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-debug-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-setup-sanitize.sed"
@@ -19,7 +18,6 @@ REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS pluto-whack-sanitize.sed"
 
 NORTH_PLAY=../../klips/inputs/08-pole-sunrise-ping.pcap
 REF_EAST_OUTPUT=east-cleartext.txt
-REF26_EAST_OUTPUT=east-cleartext.txt
 
 EASTHOST=east
 EAST_INIT_SCRIPT=eastinit.sh
@@ -36,3 +34,4 @@ REF26_NORTH_CONSOLE_OUTPUT=north-console.txt
 
 NICHOST=nic
 
+NETJIG_EXTRA=debugpublic.txt

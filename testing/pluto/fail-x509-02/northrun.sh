@@ -1,3 +1,3 @@
-ipsec whack --name north-east-x509-pluto-02 --impair-die-oninfo --debug-control --initiate
+ipsec auto --up north-east-x509-fail-02
 echo done
 
