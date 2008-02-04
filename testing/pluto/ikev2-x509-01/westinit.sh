@@ -2,6 +2,9 @@
 TESTNAME=ikev2-x509-01
 source /testing/pluto/bin/westlocal.sh
 
+rm -f /tmp/$TESTNAME/ipsec.d/certs/east*
+rm -f /tmp/$TESTNAME/ipsec.d/crls/nic.crl
+
 # confirm that the network is alive
  ping -n -c 4 192.0.2.254
 # make sure that clear text does not get through
