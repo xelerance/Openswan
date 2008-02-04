@@ -116,7 +116,7 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 				    ixs->skb->nh.iph->daddr,
 				    ixs->pass ? 0 : ixs->skb->nh.iph->saddr,
 				    RT_TOS(ixs->skb->nh.iph->tos),
-				    ixs->physdev->iflink /* rgb: should this be 0? */))) {
+				    ixs->physdev->ifindex /* rgb: should this be 0? */))) {
 		ixs->stats->tx_errors++;
 		KLIPS_PRINT(debug_mast & DB_MAST_XMIT,
 			    "klips_debug:ipsec_xmit_send: "
