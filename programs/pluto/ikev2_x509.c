@@ -89,14 +89,14 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 		       && (st->st_connection->spd.that.ca.ptr != NULL);
     }
     DBG(DBG_CONTROL
-	, DBG_log("thinking! to send a CERTREQ or not");
+	, DBG_log("Thinking about sending a certificate request (CERTREQ)");
    	DBG_log("  my policy is : %s", prettypolicy(c->policy));
 	DBG_log(" my next payload will %sbe a certificate request"
 		  , send_certreq ? "" : "not ")); 
         if(!send_certreq)
 	{
 	   DBG(DBG_CONTROL
-		,DBG_log("I did not send a certificate request because"));
+		,DBG_log("I did not send a certificate request (CERTREQ) because"));
 	   if(!(c->policy & POLICY_RSASIG))
 	    	{ DBG(DBG_CONTROL
 			,DBG_log("  RSA digital signatures are not being used. (PSK)"));}
@@ -111,7 +111,7 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 		 	, DBG_log("  no known CA for the other end"));}
 	     else 
 		{ DBG(DBG_CONTROL, 
-	    	      DBG_log("  should say this. a bad day? don't feel like sending a CERTREQ"));}
+	    	      DBG_log(" we reached an unexecpted state - a bad day? I don't feel like sending a certificate request (CERTREQ)"));}
         }
     cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
     cert.isac_enc = mycert.type;
@@ -137,7 +137,7 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 	struct isakmp_cert cert_hd;
 	cert_hd.isacert_type = mycert.type;
 	
-        DBG_log("I am sending my cert");
+        DBG_log("I am sending my certificate");
 	
         if (!out_struct(&cert, &ikev2_certificate_desc
                         , outpbs , &cert_pbs))
@@ -180,7 +180,7 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md
     if (st->st_connection->kind == CK_PERMANENT)
 	{	
 	DBG(DBG_CONTROL
-	    , DBG_log("connection->kind is CK_PERMANENT so one CERTREQ"));
+	    , DBG_log("connection->kind is CK_PERMANENT so send CERTREQ"));
 
 	    if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE
 				   , st->st_connection->spd.that.ca
@@ -190,7 +190,7 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md
     else
 	{
 	DBG(DBG_CONTROL
-	    , DBG_log("connection->kind is no CK_PERMANENT collect CAs"));
+	    , DBG_log("connection->kind is not CK_PERMANENT (instance), so collect CAs"));
 	    generalName_t *ca = NULL;
 	    
 	    if (collect_rw_ca_candidates(md, &ca))
@@ -211,7 +211,7 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md
 	    else
 		{
 	            DBG(DBG_CONTROL
-	                , DBG_log("send empty CA in CERTREQ"));
+	                , DBG_log("Not a roadwarrior instance, sending empty CA in CERTREQ"));
 		    if (!build_and_ship_CR(CERT_X509_SIGNATURE, empty_chunk
 					   , outpbs, np))
 			return STF_INTERNAL_ERROR;
