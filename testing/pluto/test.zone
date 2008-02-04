@@ -1,10 +1,10 @@
-; example.com zone for FreeS/WAN testing
+; example.com zone for Openswan testing
 ; This file belongs in /var/named/test.zone
 ; RCSID $Id: test.zone,v 1.5 2003/10/31 04:50:40 dhr Exp $
 
 ; add to /etc/named.conf:
 
-;;;// forward for FreeS/WAN testing:
+;;;// forward for Openswan testing:
 ;;;zone "example.com" {
 ;;;	type master;
 ;;;	file "test.zone";
