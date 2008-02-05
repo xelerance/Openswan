@@ -748,8 +748,6 @@ void complete_v2_state_transition(struct msg_digest **mdp
 
     cur_state = st = md->st;	/* might have changed */
 
-    from_state   = st->st_state;
-
     md->result = result;
     TCLCALLOUT("v2AdjustFailure", st, (st ? st->st_connection : NULL), md);
     result = md->result;
@@ -793,6 +791,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	 */
 	set_suspended(st, NULL);
 	pexpect(st->st_calculating == FALSE);
+    	from_state   = st->st_state;
 	openswan_log("message in state %s ignored due to cryptographic overload"
 		     , enum_name(&state_names, from_state));
 	break;
@@ -834,6 +833,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	}
 #endif
 	
+    	from_state   = st->st_state;
 	DBG(DBG_CONTROL,
 	    DBG_log("state transition function for %s failed: %s"
 		    , enum_name(&state_names, from_state)
