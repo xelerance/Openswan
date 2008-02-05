@@ -1,9 +1,19 @@
-Basic pluto X.509 test, with send_cr.
+The network is configured as follows:
 
-East does *NOT* have West's X.509 Cert locally.
-west is FORCED to send it.
+    POLE
+      |
+    NORTH
+      |
+      NIC---EAST--SUNRISE
 
-"westnet-eastnet": 192.0.1.0/24===192.1.2.45[CN=west.testing.xelerance.com]...192.1.2.23[CN=east.testing.xelerance.com]===192.0.2.0/24
+East does not have north's certificate cached. East will send a CR to north, 
+and north will transmit its certificate to east via nic. North's certificate
+is issued by a CA east accepts (cacerts/caCert.pem), and so should be
+accepted.
 
-Otherwise, identical to x509-pluto-01.
+East has to set "leftca=" so that it will know which CA to ask for.
 
+NIC serves as a simple router between NORTH and EAST.
+
+The simple test is to connect the POLE and SUNRISE networks
+together. This is tested with a ping, a la "basic-pluto-03"
