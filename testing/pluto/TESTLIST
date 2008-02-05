@@ -348,11 +348,26 @@ umlplutotest	basic-pluto-09		good
 umlplutotest	basic-pluto-10		skip
 
 #
-# a test case of what happens to X.509 based authorization system
-# when a certificate is not sent, because it has expired and can not
-# be loaded.
+# test cases of what happens to X.509 based authorization system
+# when certain error conditions are met or parts of the CA are
+# missing or CRL's expired, etc.
+# 
 #
+umlplutotest	fail-x509-01		good
 umlplutotest	fail-x509-02		good
+
+# not implemented yet
+#umlplutotest	fail-x509-03		good
+#umlplutotest	fail-x509-04		good
+#umlplutotest	fail-x509-05		good
+
+umlplutotest	fail-x509-06		good
+umlplutotest	fail-x509-07		good
+umlplutotest	fail-x509-08		good
+umlplutotest	fail-x509-09		good
+umlplutotest	fail-x509-10		good
+umlplutotest	fail-x509-11		good
+umlplutotest	fail-x509-12		good
 
 #
 # this tests rekeys (--down/--up) when behind a NAT. a --replace
