@@ -425,6 +425,9 @@ umlplutotest    algo-pluto-07          good
 umlplutotest    netkey-pluto-01        good
 umlplutotest    netkey-pluto-02        good
 
+# Testing algo loading of proper algo sizes
+umlplutotest	ike-algo-02		good
+
 # IKEv2 tests
 umlplutotest	ikev2-01		good
 umlplutotest	ikev2-02		good
