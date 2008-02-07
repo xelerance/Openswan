@@ -445,7 +445,7 @@ kernel_alg_esp_info(u_int8_t transid, u_int16_t keylen, u_int16_t auth)
 	ei_buf.encryptalg=sadb_ealg;
 	ei_buf.authalg=sadb_aalg;
 	DBG(DBG_PARSING, DBG_log("kernel_alg_esp_info():"
-		"transid=%d, auth=%d, ei=%p, "
+		"transid=%d, auth=%d, ei=%0p, "
 		"enckeylen=%d, authkeylen=%d, encryptalg=%d, authalg=%d",
 		transid, auth, &ei_buf,
 		(int)ei_buf.enckeylen, (int)ei_buf.authkeylen,
