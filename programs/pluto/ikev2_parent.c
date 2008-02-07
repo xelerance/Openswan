@@ -1648,6 +1648,60 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 /*
  *
  ***************************************************************
+ *                       NOTIFICATION_OUT                  *****
+ ***************************************************************
+ *
+ */
+
+void
+send_v2_notification(struct state *p1st, u_int16_t type
+		     , struct state *encst
+		     , msgid_t msgid UNUSED
+		     , u_char *icookie UNUSED
+		     , u_char *rcookie UNUSED)
+{
+    u_char buffer[1024];
+    pb_stream pbs;
+
+    /*
+     * no complex timers like in IKEv1, because notifications are
+     * only sent in the responder, in response to a request.
+     */
+
+    openswan_log("sending %snotification %s to %s:%u"
+		 , encst ? "encrypted " : ""
+		 , enum_name(&ipsec_notification_names, type)
+		 , ip_str(&p1st->st_remoteaddr)
+		 , p1st->st_remoteport);
+
+    memset(buffer, 0, sizeof(buffer));
+    init_pbs(&pbs, buffer, sizeof(buffer), "notification msg");
+
+#if 0
+    /* HDR* */
+    {
+	hdr.isa_version = ISAKMP_MAJOR_VERSION << ISA_MAJ_SHIFT | ISAKMP_MINOR_VERSION;
+	hdr.isa_np = encst ? ISAKMP_NEXT_HASH : ISAKMP_NEXT_N;
+	hdr.isa_xchg = ISAKMP_XCHG_INFO;
+	hdr.isa_msgid = msgid;
+	hdr.isa_flags = encst ? ISAKMP_FLAG_ENCRYPTION : 0;
+	if (icookie)
+	    memcpy(hdr.isa_icookie, icookie, COOKIE_SIZE);
+	if (rcookie)
+	    memcpy(hdr.isa_rcookie, rcookie, COOKIE_SIZE);
+	if (!out_struct(&hdr, &isakmp_hdr_desc, &pbs, &r_hdr_pbs))
+	    impossible();
+    }
+#endif
+
+    /* XXX */
+    return;
+}
+		     
+
+/*
+ *
+ ***************************************************************
  *                       DELETE_OUT                        *****
  ***************************************************************
  *

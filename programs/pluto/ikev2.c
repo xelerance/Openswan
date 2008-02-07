@@ -554,7 +554,6 @@ void ikev2_log_parentSA(struct state *st)
     }
 }
 
-
 void
 send_v2_notification_from_state(struct state *st, enum state_kind state,
 				u_int16_t type)
@@ -564,12 +563,16 @@ send_v2_notification_from_state(struct state *st, enum state_kind state,
     if (state == STATE_UNDEFINED)
 	state = st->st_state;
 
-    openswan_log("Sending notification %u", type);
+    send_v2_notification(st, type, NULL, 0
+			 , st->st_icookie, st->st_rcookie);
 }
 
 void
 send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type)
 {
+    struct state st;
+    struct connection cnx;
+
     /**
      * Create a dummy state to be able to use send_packet in
      * send_notification
@@ -579,13 +582,6 @@ send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type)
      *   st_connection->that.host_port
      *   st_connection->interface
      */
-    openswan_log("Sending notification %u", type);
-
-#if 0
-    struct state st;
-    struct connection cnx;
-
-
     passert(md);
 
     memset(&st, 0, sizeof(st));
@@ -598,9 +594,8 @@ send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type)
     cnx.interface = md->iface;
     st.st_interface = md->iface;
 
-    send_notification(&st, type, NULL, 0,
-	md->hdr.isa_icookie, md->hdr.isa_rcookie, NULL, 0, PROTO_ISAKMP);
-#endif
+    send_v2_notification(&st, type, NULL, 0,
+			 md->hdr.isa_icookie, md->hdr.isa_rcookie);
 }
 
 void ikev2_update_counters(struct msg_digest *md)

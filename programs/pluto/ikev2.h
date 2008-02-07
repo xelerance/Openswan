@@ -136,3 +136,8 @@ extern stf_status ikev2_child_sa_respond(struct msg_digest *md
 
 extern struct traffic_selector ikev2_subnettots(struct end *e);
 extern void ikev2_update_counters(struct msg_digest *md);
+
+extern void send_v2_notification(struct state *p1st, u_int16_t type
+				 , struct state *encst, msgid_t msgid
+				 , u_char *icookie
+				 , u_char *rcookie);
