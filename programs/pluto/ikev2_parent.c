@@ -94,6 +94,7 @@ ikev2parent_outI1(int whack_sock
 
 
     /* set up new state */
+    get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
     initialize_new_state(st, c, policy, try, whack_sock, importance);
     st->st_ikev2 = TRUE;
     st->st_state = STATE_PARENT_I1;
@@ -447,6 +448,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
     if(!st) {
 	st = new_state();
 	/* set up new state */
+	memcpy(st->st_icookie, md->hdr.isa_icookie, COOKIE_SIZE);
 	initialize_new_state(st, c, policy, 0, NULL_FD, pcim_stranger_crypto);
 	st->st_ikev2 = TRUE;
 	st->st_state = STATE_PARENT_R1;

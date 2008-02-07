@@ -702,7 +702,6 @@ void initialize_new_state(struct state *st
 	}
     }
 
-    get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
     insert_state(st);	/* needs cookies, connection */
 
 #ifdef DEBUG

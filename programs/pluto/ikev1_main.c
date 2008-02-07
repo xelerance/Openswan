@@ -129,6 +129,7 @@ main_outI1(int whack_sock
 #endif
 
     /* set up new state */
+    get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
     initialize_new_state(st, c, policy, try, whack_sock, importance);
     st->st_state = STATE_MAIN_I1;
 
