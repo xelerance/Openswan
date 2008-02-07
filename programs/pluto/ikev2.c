@@ -608,7 +608,12 @@ void ikev2_update_counters(struct msg_digest *md)
     struct state *pst= md->pst;
     struct state *st = md->st;
 
-    if(pst==NULL) pst = st;
+    if(pst==NULL) {
+	if(st->st_clonedfrom != 0) {
+	    pst = state_with_serialno(st->st_clonedfrom);
+	}
+	if(pst == NULL) pst = st;
+    }
     
     switch(md->role) {
     case INITIATOR:
