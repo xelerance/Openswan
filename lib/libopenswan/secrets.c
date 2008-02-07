@@ -482,7 +482,7 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 		    /* two good matches are equally good:
 		     * do they agree?
 		     */
-		    bool same;
+		    bool same=0;
 
 		    switch (kind)
 		    {

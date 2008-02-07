@@ -1103,7 +1103,12 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_init_chunk(&id_ctx, pst->st_oakley.integ_hasher, pst->st_skey_pi);
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
 	r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
-	r_id.isai_np = ISAKMP_NEXT_v2AUTH;
+
+	/* (AA if the connection is cert ) 
+	r_id.isai_np = ISAKMP_NEXT_v2CERT;
+	else  
+	*/
+	r_id.isai_np = ISAKMP_NEXT_v2AUTH; 
 
 	id_start = e_pbs_cipher.cur;
 	if (!out_struct(&r_id
@@ -1125,7 +1130,16 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_update(&id_ctx, id_start, id_len);
 	idhash = alloca(pst->st_oakley.integ_hasher->hash_digest_len);
 	hmac_final(idhash, &id_ctx);
-    }
+    } 
+
+    /* AA if CERT {
+     send CERT payload RFC 4306 3.6, and  1.2  
+    stf_status certstat = ikev2_send_cert(c, st
+					  , INITIATOR, ISAKMP_NEXT_v2AUTH
+					  , &e_pbs_cipher);
+	if(authstat != STF_OK) return certstat;
+    } 
+    */
 
     /* send out the AUTH payload */
     {
@@ -1337,7 +1351,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	idhash_in = alloca(st->st_oakley.integ_hasher->hash_digest_len);
 	hmac_final(idhash_in, &id_ctx);
     }
-
+   
+    /* AA TBD  process CERT payload */
+    
     /* process AUTH payload */
     if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
 	openswan_log("no authentication payload found");

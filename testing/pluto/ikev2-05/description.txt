@@ -1,0 +1,6 @@
+Basic pluto with IKEv2 on the initiator (west).
+
+This test does not actually do IKEv2, it just *tries*.
+
+The responder (east) does not have ANY conn loaded, and aborts. The
+initiator may not crash. this is bug #890
