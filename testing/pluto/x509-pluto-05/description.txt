@@ -13,7 +13,7 @@ East also doesn't have a specific policy for north, but rather,
 will accept anything that is signed by a specific CA.
 
 North will transmit its certificate to east via nic. 
-North's certificate  is issued by a CA east accepts (cacerts/caCert.pem), and
+North's certificate  is issued by a CA east accepts (cacerts/ca.crt), and
 so should be accepted.
 
 NIC serves as a simple router between NORTH and EAST.

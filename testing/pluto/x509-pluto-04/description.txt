@@ -10,7 +10,7 @@ East does not have north's certificate cached. East will send a null
 CR to north, which means to send all of its certificates.
 
 North will transmit its certificate to east via nic. North's certificate 
-is issued by a CA east accepts (cacerts/caCert.pem), and so should be
+is issued by a CA east accepts (cacerts/cacrl), and so should be
 accepted.
 
 NIC serves as a simple router between NORTH and EAST.

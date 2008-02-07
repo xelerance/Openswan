@@ -340,6 +340,33 @@ static const char *const cert_type_name[] = {
 enum_names cert_type_names =
     { CERT_NONE, CERT_X509_ATTRIBUTE, cert_type_name, NULL };
 
+/* Certificate type values RFC 4306 3.6*/
+
+static const char *const ikev2_cert_type_name[] = {
+        "CERT_RESERVED",
+        "CERT_PKCS7_WRAPPED_X509",
+        "CERT_PGP",
+        "CERT_DNS_SIGNED_KEY",
+	"CERT_X509_SIGNATURE",
+	"CERT_UNUSED", /* 5 is missing did IETF drop it ? it was in IKEv1 RFC2408 */
+	"CERT_KERBEROS_TOKENS",
+	"CERT_CRL",
+	"CERT_ARL",
+	"CERT_SPKI",
+	"CERT_X509_ATTRIBUTE",
+	"CERT_RAW_RSA",
+	"CERT_X509_CERT_URL",
+	"CERT_X509_BUNDLE_URL", /* 13 */
+
+	/* AA How do I add thse ?
+	   RESERVED to IANA                  14 - 200
+           PRIVATE USE                      201 - 255
+	*/
+};
+
+enum_names ikev2_cert_type_names =
+    { CERT_NONE, CERT_X509_ATTRIBUTE, ikev2_cert_type_name, NULL };
+
 /*
  * certificate request payload policy
  */

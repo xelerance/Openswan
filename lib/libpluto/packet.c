@@ -367,7 +367,6 @@ static field_desc isacert_fields[] = {
  * sizeof(struct isakmp_cert) because that will rounded up for padding.
  */
  struct_desc isakmp_ipsec_certificate_desc = { "ISAKMP Certificate Payload", isacert_fields, ISAKMP_CERT_SIZE };
-
 /* ISAKMP Certificate Request Payload: oddball field beyond the generic ones.
  * layout from RFC 2408 "ISAKMP" section 3.10
  * Variable length Certificate Types and Certificate Authorities follow.
@@ -772,6 +771,7 @@ struct_desc ikev2_ke_desc = { "IKEv2 Key Exchange Payload",
  *
  *             Figure 11:  Identification Payload Format
  */
+
 static field_desc ikev2id_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
@@ -785,6 +785,57 @@ static field_desc ikev2id_fields[] = {
 struct_desc ikev2_id_desc = { "IKEv2 Identification Payload",
 			      ikev2id_fields, sizeof(struct ikev2_id) };
 
+/* section 3.6
+ * The Certificate Payload is defined as follows:
+ *
+ *                          1                   2                   3
+ *      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *     ! Next Payload  !C!  RESERVED   !         Payload Length        !
+ *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *     ! Cert Encoding !                                               !
+ *     +-+-+-+-+-+-+-+-+                                               !
+ *     ~                       Certificate Data                        ~
+ *     !                                                               !
+ *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ */
+static field_desc ikev2_cert_fields[] = {
+  { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+  { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+  { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+  { ft_enum, 8/BITS_PER_BYTE, "cert encoding", &ikev2_cert_type_names },
+  { ft_end,  0, NULL, NULL }
+};
+
+struct_desc ikev2_certificate_desc = { "IKEv2 Certificate Payload", ikev2_cert_fields, IKEV2_CERT_SIZE };
+
+/* section 3.7
+ * 
+ * The Certificate Request Payload is defined as follows:
+ *
+ *                          1                   2                   3
+ *      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *     ! Next Payload  !C!  RESERVED   !         Payload Length        !
+ *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *     ! Cert Encoding !                                               !
+ *     +-+-+-+-+-+-+-+-+                                               !
+ *     ~                    Certification Authority                    ~
+ *     !                                                               !
+ *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ */
+
+static field_desc ikev2_cert_req_fields[] = {
+  { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+  { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+  { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+  { ft_enum, 8/BITS_PER_BYTE, "cert encoding", &ikev2_cert_type_names },
+  { ft_end,  0, NULL, NULL }
+};
+
+struct_desc ikev2_certificate_req_desc = { "IKEv2 Certificate Request Payload", ikev2_cert_fields, IKEV2_CERT_SIZE };
 
 /*
  * 3.8.  Authentication Payload
@@ -816,9 +867,6 @@ static field_desc ikev2a_fields[] = {
 
 struct_desc ikev2_a_desc = { "IKEv2 Authentication Payload",
 			     ikev2a_fields, sizeof(struct ikev2_a) };
-
-
-
 /* 
  * 3.9.  Nonce Payload
  * 
@@ -1006,6 +1054,8 @@ struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
     &ikev2_vendor_id_desc,              /* 43 */
     &ikev2_ts_desc, &ikev2_ts_desc,     /* 44, 45 */
     &ikev2_e_desc,                      /* 46 */
+    &ikev2_certificate_desc,            /* 47 CERT */
+    &ikev2_certificate_req_desc,        /* 48 CERT */
 };
 
 void

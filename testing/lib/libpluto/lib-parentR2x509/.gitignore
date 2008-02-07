@@ -1,0 +1,4 @@
+core.*
+OUTPUT
+ike-secrets.txt
+secrets.raw

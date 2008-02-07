@@ -1,0 +1,5 @@
+core.*
+OUTPUT
+.gdbinit
+ike-secrets.txt
+secrets.raw

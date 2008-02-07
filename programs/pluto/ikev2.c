@@ -256,6 +256,9 @@ ikev2_process_payloads(struct msg_digest *md,
 	case ISAKMP_NEXT_v2E:
 	    np = ISAKMP_NEXT_NONE;
 	    break;
+	case ISAKMP_NEXT_v2N:
+	    openswan_log("Paul: NOTIFY message should be logged here");
+	    break;
 	default:   /* nothing special */
 	    break;
 	}
@@ -465,6 +468,7 @@ ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
     struct id peer;
 
     if(!id_him) {
+	openswan_log("IKEv2 mode no peer ID (hisID)");
 	return FALSE;
     }
 
@@ -473,6 +477,7 @@ ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
     peer.kind = id->isai_type;
 
     if(!extract_peer_id(&peer, id_pbs)) {
+	openswan_log("IKEv2 mode peer ID extraction failed");
 	return FALSE;
     }
     
