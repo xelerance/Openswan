@@ -1,6 +1,8 @@
 /* 
  * IKEv2 parent SA creation routines
  * Copyright (C) 2007  Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008  Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008  Antony Antony <antony@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1002,7 +1004,7 @@ static stf_status ikev2_send_auth(struct connection *c
 	
     } else if(c->policy & POLICY_PSK) {
 	/* todo */
-	if(!ikev2_calculate_psk_sha1(pst, role, idhash_out, &a_pbs))
+	if(!ikev2_calculate_psk_auth(pst, role, idhash_out, &a_pbs))
 	return STF_FAIL;
     } 
     
@@ -1354,7 +1356,20 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 						    , NULL /* gateways from DNS */
 						    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
 	if(authstat != STF_OK) {
-	    openswan_log("authentication failed");
+	    openswan_log("RSA authentication failed");
+	    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
+	    return STF_FAIL;
+	}
+	break;
+    }
+    case v2_AUTH_SHARED:
+    {
+	stf_status authstat = ikev2_verify_psk_auth(st
+						    , RESPONDER
+						    , idhash_in
+						    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
+	if(authstat != STF_OK) {
+	    openswan_log("PSK authentication failed");
 	    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
 	    return STF_FAIL;
 	}
@@ -1602,6 +1617,20 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	}
 	break;
     }
+    case v2_AUTH_SHARED:
+    {
+	stf_status authstat = ikev2_verify_psk_auth(pst
+						    , INITIATOR 
+						    , idhash_in
+						    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
+	if(authstat != STF_OK) {
+	    openswan_log("PSK authentication failed");
+	    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
+	    return STF_FAIL;
+	}
+	break;
+    }
+    
     default:
 	openswan_log("authentication method: %s not supported"
 		     , enum_name(&ikev2_auth_names

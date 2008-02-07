@@ -37,8 +37,8 @@ EXTRALIBS="${EXTRALIBS} ${LIBSHA2} ${LIBBLOWFISH}"
 EXTRALIBS="${EXTRALIBS} ${OSWLOGLIB} ${OPENSWANLIB} ${OSWLOGLIB}"
 EXTRALIBS="${EXTRALIBS} -lgmp -lefence -lpcap"
 
-UNITTESTARGS="ikev2.record westnet--eastnet-ikev2 ../lib-parentI1psk/parentI1psk.pcap"
+UNITTESTARGS="../lib-parentR1/ikev2.record westnet--eastnet-ikev2 ../lib-parentI2psk/parentI2psk.pcap"
 
 # Local Variables:
-# compile-command: "make TEST=parentR1psk one"
+# compile-command: "make TEST=parentR2psk one"
 # End:

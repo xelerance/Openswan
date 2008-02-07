@@ -95,7 +95,7 @@ main(int argc, char *argv[])
 
     readwhackmsg(infile);
 
-    send_packet_setup_pcap("parentR1.pcap");
+    send_packet_setup_pcap("parentR1psk.pcap");
  
     c1 = con_by_name(conn_name, TRUE);
 
@@ -129,6 +129,6 @@ main(int argc, char *argv[])
  * Local Variables:
  * c-style: pluto
  * c-basic-offset: 4
- * compile-command: "make TEST=parentR1 one"
+ * compile-command: "make TEST=parentR1psk one"
  * End:
  */

@@ -37,7 +37,8 @@ void readwhackmsg(char *infile)
 	abuflen = (plen + 3) & ~0x3;
 
 	if(abuflen > sizeof(m1)) {
-	    fprintf(stderr, "whackmsg file has too big a record=%u > %u\n", abuflen, sizeof(m1));
+	    fprintf(stderr, "whackmsg file has too big a record=%u > %lu\n"
+		    , abuflen, (long unsigned) sizeof(m1));
 	    exit(6);
 	}
 
@@ -76,3 +77,10 @@ void readwhackmsg(char *infile)
 	perror(infile);
     }
 }
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

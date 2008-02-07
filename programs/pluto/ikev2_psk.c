@@ -1,8 +1,8 @@
-/* do RSA operations for IKEv2
+/* do PSK operations for IKEv2
  *
  * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2008 Michael Richardson <paul@xelerance.com>
- * Copyright (C) 2008 Michael Richardson <antony@xelerance.com>
+ * Copyright (C) 2008 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -62,192 +62,147 @@
 #include "ocf_pk.h"
 #endif
 
+static u_char psk_key_pad_str[] = "Key Pad for IKEv2"; 
+static int psk_key_pad_str_len = sizeof( psk_key_pad_str);
 
-static u_char der_digestinfo[]={
-    0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e,
-    0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14
-};
-static int der_digestinfo_len=sizeof(der_digestinfo);
-
-static void ikev2_calculate_sighash(struct state *st
-				    , enum phase1_role role
-				    , unsigned char *idhash
-				    , chunk_t firstpacket
-				    , unsigned char *sig_octets)
+static bool ikev2_calculate_psk_sighash(struct state *st
+					, enum phase1_role role
+					, unsigned char *idhash
+					, chunk_t firstpacket
+					, unsigned char *signed_octets)
 {
-	SHA1_CTX       ctx_sha1;
-	const chunk_t *nonce;
-	const char    *nonce_name;
+    const chunk_t *nonce;
+    const char    *nonce_name;
+    const struct connection *c = st->st_connection;
+    const chunk_t *pss = get_preshared_secret(c);
+    unsigned int  hash_len =  st->st_oakley.prf_hasher->hash_digest_len;
+    unsigned char prf_psk[hash_len];
+    
 
-	if(role == INITIATOR) {
-	    /* on initiator, we need to hash responders nonce */
-	    nonce = &st->st_nr;
-	    nonce_name = "inputs to hash2 (responder nonce)";
-	} else {
-	    nonce = &st->st_ni;
-	    nonce_name = "inputs to hash2 (initiator nonce)";
-	}
-	    
-	DBG(DBG_CRYPT
-	    , DBG_dump_chunk("inputs to hash1 (first packet)", firstpacket);
-	      DBG_dump_chunk(nonce_name, *nonce);
-	    DBG_dump("idhash", idhash, st->st_oakley.prf_hasher->hash_digest_len));
-				
-	SHA1Init(&ctx_sha1);
-	SHA1Update(&ctx_sha1
-		   , firstpacket.ptr
-		   , firstpacket.len);
-	SHA1Update(&ctx_sha1, nonce->ptr, nonce->len);
-
-	/* we took the PRF(SK_d,ID[ir]'), so length is prf hash length */
-	SHA1Update(&ctx_sha1, idhash
-		   , st->st_oakley.prf_hasher->hash_digest_len);
-
-	SHA1Final(sig_octets, &ctx_sha1);
-}
-
-bool ikev2_calculate_psk_sha1(struct state *st
-			      , enum phase1_role role UNUSED
-			      , unsigned char *idhash UNUSED
-			      , pb_stream *a_pbs UNUSED)
-{
-//	unsigned char  signed_octets[SHA1_DIGEST_SIZE+16];
-//	size_t         signed_len;
-	const struct connection *c = st->st_connection;
-	const chunk_t *pss = get_preshared_secret(c);
-//	unsigned int sz;
-
-	if (pss == NULL)
-	    return 0;	/* failure: no PSK to use */
-
-	DBG_dump_chunk("psk",*pss);
-
-	/* todo: rework function */
-	return 0;
-#if 0
-	memcpy(signed_octets, der_digestinfo, der_digestinfo_len);
-
-	ikev2_calculate_sighash(st, role, idhash
-				, st->st_firstpacket_me
-				, signed_octets+der_digestinfo_len);
-	signed_len = der_digestinfo_len + SHA1_DIGEST_SIZE;
-
-	passert(RSA_MIN_OCTETS <= sz && 4 + signed_len < sz && sz <= RSA_MAX_OCTETS);
-
-	DBG(DBG_CRYPT
-	    , DBG_dump("v2rsa octets", signed_octets, signed_len));
-				
-	{
-		u_char sig_val[RSA_MAX_OCTETS];
-
-		/* now generate signature blob */
-		sign_hash(k, signed_octets, signed_len
-			  , sig_val, sz);
-		out_raw(sig_val, sz, a_pbs, "rsa signature");
-	}
-#endif
 	
-	return TRUE;
+    if (pss == NULL){
+	openswan_log("No matching PSK found for connection:%s", 
+		     st->st_connection->name);
+	return FALSE;	/* failure: no PSK to use */
+    }
+
+    /*	RFC 4306  2:15
+	AUTH = prf(prf(Shared Secret,"Key Pad for IKEv2"), <msg octets>)
+    */
+
+    /* calculate inner prf */
+    {
+	struct hmac_ctx id_ctx;
+	hmac_init_chunk(&id_ctx, st->st_oakley.prf_hasher, *pss);	
+	hmac_update(&id_ctx, psk_key_pad_str, psk_key_pad_str_len);
+	hmac_final(prf_psk, &id_ctx);
+    }
+
+    DBG(DBG_CRYPT
+	,DBG_log("negotiated prf: %s hash length: %lu", 
+		 st->st_oakley.prf_hasher->common.name, 
+		 (long unsigned) hash_len);
+	DBG_dump("inner prf ouput", prf_psk, hash_len));
+    
+    /* calculate outer prf */
+    if(role == INITIATOR) {
+	/* on initiator, we need to hash responders nonce */
+	nonce = &st->st_nr;
+	nonce_name = "inputs to hash2 (responder nonce)";
+    } else {
+	nonce = &st->st_ni;
+	nonce_name = "inputs to hash2 (initiator nonce)";
+    }
+	
+
+    {
+	struct hmac_ctx id_ctx;
+	
+	hmac_init(&id_ctx, st->st_oakley.prf_hasher, prf_psk, hash_len); 
+	
+/*
+ *  For the responder, the octets to
+ *  be signed start with the first octet of the first SPI in the header
+ *  of the second message and end with the last octet of the last payload
+ *  in the second message.  Appended to this (for purposes of computing
+ *  the signature) are the initiator's nonce Ni (just the value, not the
+ *  payload containing it), and the value prf(SK_pr,IDr') where IDr' is
+ *  the responder's ID payload excluding the fixed header.  Note that
+ *  neither the nonce Ni nor the value prf(SK_pr,IDr') are transmitted.
+ */
+
+	hmac_update(&id_ctx, firstpacket.ptr, firstpacket.len);
+	hmac_update(&id_ctx, nonce->ptr, nonce->len);
+	hmac_update(&id_ctx, idhash, hash_len);
+	hmac_final(signed_octets, &id_ctx);
+	
+    }
+    
+    DBG(DBG_CRYPT
+	, DBG_dump_chunk("inputs to hash1 (first packet)", firstpacket);
+	DBG_dump_chunk(nonce_name, *nonce);
+	
+	DBG_dump("idhash", idhash, hash_len));
+
+    return TRUE;
 }
 
-static err_t
-try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
-		     , size_t hash_len
-		     , const pb_stream *sig_pbs, struct pubkey *kr
-		     , struct state *st)
+bool ikev2_calculate_psk_auth(struct state *st
+			      , enum phase1_role role
+			      , unsigned char *idhash
+			      , pb_stream *a_pbs)
 {
-    const u_char *sig_val = sig_pbs->cur;
+    unsigned int  hash_len =  st->st_oakley.prf_hasher->hash_digest_len;
+    unsigned char  signed_octets[hash_len];
+    
+    if(!ikev2_calculate_psk_sighash(st, role, idhash
+				    , st->st_firstpacket_me
+				    , signed_octets))
+	return FALSE;
+    DBG(DBG_CRYPT
+	, DBG_dump("psk auth octets", signed_octets, hash_len ));
+    
+    out_raw(signed_octets, hash_len, a_pbs, "psk auth");
+    
+    return TRUE;
+}
+
+stf_status ikev2_verify_psk_auth(struct state *st
+				 , enum phase1_role role
+				 , unsigned char *idhash
+				 , pb_stream *sig_pbs)
+{
+    unsigned int  hash_len =  st->st_oakley.prf_hasher->hash_digest_len;
+    unsigned char calc_hash[hash_len];
     size_t sig_len = pbs_left(sig_pbs);
-    u_char s[RSA_MAX_OCTETS];	/* for decrypted sig_val */
-    u_char *sig;
-    const struct RSA_public_key *k = &kr->u.rsa;
-    unsigned int padlen;
     
-    if (k == NULL)
-	return "1""no key available";	/* failure: no key to use */
-
-    /* decrypt the signature -- reversing RSA_sign_hash */
-    if (sig_len != k->k)
-    {
-	return "1""SIG length does not match public key length";
-    }
-	
-    /* actual exponentiation; see PKCS#1 v2.0 5.1 */
-    {
-	chunk_t temp_s;
-	MP_INT c;
-
-	n_to_mpz(&c, sig_val, sig_len);
-	cryptodev.mod_exp(&c, &c, &k->e, &k->n);
-
-	temp_s = mpz_to_n(&c, sig_len);	/* back to octets */
-	memcpy(s, temp_s.ptr, sig_len);
-	pfree(temp_s.ptr);
-	mpz_clear(&c);
-    }
-
-    /* check signature contents */
-    /* verify padding */
-    padlen = sig_len - 3 - (hash_len+der_digestinfo_len);
-    /* now check padding */
-    sig = s;
-
-    if(sig[0]    != 0x00
-       || sig[1] != 0x01
-       || sig[padlen+2] != 0x00) {
-	return "2""SIG padding does not check out";
-    }
-
-    /* skip padding */
-    sig += padlen+3;
-
-    /* 2 verify that the has was done with SHA1 */
-    if(memcmp(der_digestinfo, sig, der_digestinfo_len)!=0) {
-	return "SIG not performed with SHA1";
-    }
-
-    sig += der_digestinfo_len;
-
-    if(DBGP(DBG_CRYPT)) {
-	DBG_dump("v2rsa decrypted SIG:", hash_val, hash_len);
-	DBG_dump("v2rsa computed hash:", sig, hash_len);
-    }
-	
-    if(memcmp(sig, hash_val, hash_len) != 0) {
-	return "9""authentication failure: received SIG does not match computed HASH, but message is well-formed";
-    }
-    
-    unreference_key(&st->st_peer_pubkey);
-    st->st_peer_pubkey = reference_key(kr);
-
-    return NULL;
-}
-
-
-stf_status
-ikev2_verify_psk_sha1(struct state *st
-		      , enum phase1_role role
-			    , unsigned char *idhash
-			    , const struct pubkey_list *keys_from_dns
-			    , const struct gw_info *gateways_from_dns
-			    , pb_stream *sig_pbs)
-{
-    unsigned char calc_hash[SHA1_DIGEST_SIZE];
-    unsigned int  hash_len = SHA1_DIGEST_SIZE;
     enum phase1_role invertrole;
-
+    
     invertrole = (role == INITIATOR ? RESPONDER : INITIATOR);
     
-    ikev2_calculate_sighash(st, invertrole, idhash, st->st_firstpacket_him, calc_hash);
-
-    return RSA_check_signature_gen(st, calc_hash, hash_len
-				   , sig_pbs
-#ifdef USE_KEYRR
-				   , keys_from_dns
-#endif
-				   , gateways_from_dns
-				   , try_RSA_signature_v2);
+    if(sig_len != hash_len) {
+	openswan_log("negotiated prf: %s ", 
+		     st->st_oakley.prf_hasher->common.name);
+	openswan_log("I2 hash length:%lu does not match with PRF hash len %lu",
+		     (long unsigned) sig_len,  (long unsigned) hash_len);
+	return STF_FAIL ;
+    }
     
+    if(!ikev2_calculate_psk_sighash(st, invertrole, idhash,
+				    st->st_firstpacket_him, calc_hash))
+	return STF_FAIL;
+    
+    DBG(DBG_CRYPT
+	,DBG_dump("Received psk auth octets",sig_pbs->cur, sig_len); 
+	DBG_dump("Calculated psk auth octets", calc_hash, hash_len));
+    
+    if(memcmp(sig_pbs->cur, calc_hash, hash_len) ) {
+	openswan_log("AUTH mismatch: Received AUTH != computed AUTH");
+	return STF_FAIL ;
+    }
+    else {
+	return STF_OK;
+    }
 }
 
 /*

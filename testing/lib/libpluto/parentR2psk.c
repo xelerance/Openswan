@@ -1,5 +1,5 @@
 /*
- * PARENT I2 test case actually invokes the parent I1 test case
+ * PARENT R2 PSK  test case actually invokes the parent R1 test case
  * to get all of the states into the right order.
  *
  */
@@ -32,7 +32,7 @@
 #include "seam_rnd.c"
 #include "seam_log.c"
 #include "seam_xauth.c"
-#include "seam_west.c"
+#include "seam_east.c"
 #include "seam_initiate.c"
 #include "seam_terminate.c"
 #include "seam_x509.c"
@@ -46,11 +46,25 @@
 #include "seam_kernelalgs.c"
 
 #include "seam_commhandle.c"
-#include "ikev2sendI1.c"
 
-int add_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PRIVATE|DBG_CRYPT;
+#include "seam_recv1r.c"
 
-#include "seam_recv1i.c"
+void recv_pcap_packet2(u_char *user
+		      , const struct pcap_pkthdr *h
+		      , const u_char *bytes)
+{
+    struct state *st;
+    struct pcr_kenonce *kn = &r->pcr_d.kn;
+
+    recv_pcap_packet_gen(user, h, bytes);
+
+    /* find st involved */
+    st = state_with_serialno(1);
+    st->st_connection->extra_debugging = DBG_PRIVATE|DBG_CRYPT|DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+
+    run_continuation(r);
+
+}
 
 main(int argc, char *argv[])
 {
@@ -61,8 +75,8 @@ main(int argc, char *argv[])
     struct connection *c1;
     pcap_t *pt;
     char   eb1[256];
-    struct state *st;
 
+    EF_PROTECT_BELOW=1;
     EF_PROTECT_FREE=1;
     EF_FREE_WIPES  =1;
 
@@ -88,7 +102,7 @@ main(int argc, char *argv[])
 
     readwhackmsg(infile);
 
-    send_packet_setup_pcap("parentI2psk.pcap");
+    send_packet_setup_pcap("parentR2psk.pcap");
     pt = pcap_open_offline(argv[3], eb1);
     if(!pt) {
 	perror(argv[3]);
@@ -98,13 +112,14 @@ main(int argc, char *argv[])
     c1 = con_by_name(conn_name, TRUE);
     show_one_connection(c1);
 
-    /* now, send the I1 packet, really just so that we are in the right
-     * state to receive the R1 packet and process it.
-     */
-    st = sendI1(c1, 0);
+    pt = pcap_open_offline(argv[3], eb1);
 
-    cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING|DBG_PRIVATE|DBG_CRYPT;
+    cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+    /* process first packet */
     pcap_dispatch(pt, 1, recv_pcap_packet1, NULL);
+
+    /* process second packet */
+    pcap_dispatch(pt, 1, recv_pcap_packet2, NULL);
 
     {
 	struct state *st;
@@ -112,10 +127,6 @@ main(int argc, char *argv[])
 	/* find st involved */
 	st = state_with_serialno(1);
 	delete_state(st);
-
-	/* find st involved */
-	st = state_with_serialno(2);
-	if(st) delete_state(st);
     }
 
     report_leaks();
@@ -129,6 +140,6 @@ main(int argc, char *argv[])
  * Local Variables:
  * c-style: pluto
  * c-basic-offset: 4
- * compile-command: "make TEST=parentI2psk one"
+ * compile-command: "make TEST=parentR2psk one"
  * End:
  */

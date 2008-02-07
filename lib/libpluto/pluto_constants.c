@@ -341,3 +341,10 @@ prettypolicy(lset_t policy)
     return pbitnamesbuf;
 }
 
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

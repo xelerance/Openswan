@@ -458,10 +458,10 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     setchunk_fromwire(vpss.spir, &skq->rcookie, skq);
 
     DBG(DBG_CONTROLMORE
-	, DBG_log("calculating skeyseed using prf=%s integ=%s cipherkey=%u"
+	, DBG_log("calculating skeyseed using prf=%s integ=%s cipherkey=%lu"
 		  , enum_name(&trans_type_prf_names, skq->prf_hash)
 		  , enum_name(&trans_type_integ_names, skq->integ_hash)
-		  , keysize));
+		  , (long unsigned)keysize));
 
 
     vpss.prf_hasher = crypto_get_hasher(skq->prf_hash);
