@@ -68,6 +68,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
+| inserting state object #1 on chain 4
 | complete v2 state transition with STF_SUSPEND
 | ikev2 parent inI1outR1: calculated ke+nonce, sending R1
 | no IKE algorithms for this connection 
@@ -269,9 +270,11 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
+| rehashing state object #1, removed from chain 4
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
 | state hash entry 30
+| inserting state object #1 on chain 30
 ../parentR2 IKEv2 mode peer ID is ID_FQDN: '@west'
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
@@ -309,6 +312,7 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
 | state hash entry 30
+| inserting state object #2 on chain 30
 | *****emit IKEv2 Security Association Payload:
 |    next payload type: ISAKMP_NEXT_v2TSi
 |    critical bit: Payload-Critical

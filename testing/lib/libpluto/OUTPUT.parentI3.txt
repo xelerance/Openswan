@@ -24,6 +24,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
+| inserting state object #1 on chain 4
 ../parentI3 initiating v2 parent SA
 RC=133 STATE_PARENT_I1: initiate
 | no IKE algorithms for this connection 
@@ -111,6 +112,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
 | state hash entry 30
+| inserting state object #1 on chain 30
 | ***parse IKEv2 Security Association Payload:
 |    next payload type: ISAKMP_NEXT_v2KE
 |    critical bit: Payload-Critical
@@ -168,6 +170,7 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
 | state hash entry 30
+| inserting state object #2 on chain 30
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07

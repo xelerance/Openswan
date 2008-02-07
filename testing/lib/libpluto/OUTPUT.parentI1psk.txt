@@ -11,6 +11,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
+| inserting state object #1 on chain 4
 ../parentI1psk initiating v2 parent SA
 RC=133 STATE_PARENT_I1: initiate
 | ikev2 parent outI1: calculated ke+nonce, sending I1
