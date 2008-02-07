@@ -1,5 +1,6 @@
-/* information about connections between hosts and clients
+/* shutdown connections: IKEv1/IKEv2
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 2008 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
