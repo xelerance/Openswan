@@ -355,26 +355,30 @@ process_v2_packet(struct msg_digest **mdp)
 		 */
 		st = find_state_ikev2_parent(md->hdr.isa_icookie
 					     , md->hdr.isa_rcookie);
-		if(st) {
-		    /*
-		     * then there is something wrong with the msgid, so
-		     * maybe they retransmitted for some reason. 
-		     * Check if it's an old packet being returned, and
-		     * if so, drop it.
-		     * NOTE: in_struct() changed the byte order.
-		     */
-		    if(md->msgid_received <= st->st_msgid_lastack) {
-			/* it's fine, it's just a retransmit */
-			DBG(DBG_CONTROL, DBG_log("responding peer retransmitted msgid %u"
-						 , md->msgid_received));
-			return;
-		    }
-		    openswan_log("last msgid ack is %u, received: %u"
-				 , st->st_msgid_lastack
-				 , md->msgid_received);
-		    return;
-		}
 	    }
+	}
+
+	if(st) {
+	    /*
+	     * then there is something wrong with the msgid, so
+	     * maybe they retransmitted for some reason. 
+	     * Check if it's an old packet being returned, and
+	     * if so, drop it.
+	     * NOTE: in_struct() changed the byte order.
+	     */
+	    if(st->st_msgid_lastack != INVALID_MSGID
+	       && md->msgid_received <= st->st_msgid_lastack) {
+		/* it's fine, it's just a retransmit */
+		DBG(DBG_CONTROL, DBG_log("responding peer retransmitted msgid %u"
+					 , md->msgid_received));
+		return;
+	    }
+#if 0
+	    openswan_log("last msgid ack is %u, received: %u"
+			 , st->st_msgid_lastack
+			 , md->msgid_received);
+	    return;
+#endif
 	}
     }
 	
@@ -601,17 +605,20 @@ send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type)
 
 void ikev2_update_counters(struct msg_digest *md)
 {
+    struct state *pst= md->pst;
     struct state *st = md->st;
+
+    if(pst==NULL) pst = st;
     
     switch(md->role) {
     case INITIATOR:
 	/* update lastuse values */
-	st->st_msgid_lastack = md->msgid_received;
-	st->st_msgid_nextuse = st->st_msgid_lastack+1;
+	pst->st_msgid_lastack = md->msgid_received;
+	pst->st_msgid_nextuse = pst->st_msgid_lastack+1;
 	break;
 	
     case RESPONDER:
-	st->st_msgid_lastrecv= md->msgid_received;
+	pst->st_msgid_lastrecv= md->msgid_received;
 	break;
     }
 }
@@ -680,7 +687,6 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	       , story
 	       , sadetails);
     }
-
 
     /* free previous transmit packet */
     freeanychunk(st->st_tpacket);

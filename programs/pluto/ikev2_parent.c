@@ -770,7 +770,7 @@ static void ikev2_padup_pre_encrypt(struct msg_digest *md
 				    , pb_stream *e_pbs_cipher)
 {
     struct state *st = md->st;
-    struct state *pst = st;
+    struct state *pst= st;
     
     if(st->st_clonedfrom != 0) {
 	pst = state_with_serialno(st->st_clonedfrom);
@@ -1037,6 +1037,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     st->st_msgid = htonl(pst->st_msgid_nextuse);
     insert_state(st);
     md->st = st;
+    md->pst= pst;
 
     /* need to force parent state to I2 */
     pst->st_state = STATE_PARENT_I2;

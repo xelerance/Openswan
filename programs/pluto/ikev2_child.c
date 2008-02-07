@@ -352,6 +352,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     st1 = duplicate_state(st);
     insert_state(st1);
     md->st = st1;
+    md->pst= st;
 
     /* start of SA out */
     {
