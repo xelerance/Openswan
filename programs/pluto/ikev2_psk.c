@@ -63,7 +63,7 @@
 #endif
 
 static u_char psk_key_pad_str[] = "Key Pad for IKEv2"; 
-static int psk_key_pad_str_len = sizeof( psk_key_pad_str);
+static int psk_key_pad_str_len = 17; /* sizeof( psk_key_pad_str); -1 */
 
 static bool ikev2_calculate_psk_sighash(struct state *st
 					, enum phase1_role role
