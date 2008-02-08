@@ -1,0 +1,21 @@
+Basic pluto with IKEv2 using PSK on the initiator (west), and on the responder.
+
+This time, one end has an ike=aes128-sha1-modp2048 specified. This will
+cause a negotiation failure in 2.6.06 and earlier, visible in the logs with:
+
+|                   prf=  (policy:prf-hmac-md5 vs offered:prf-hmac-sha1)
+|                   dh=   (policy:(null) vs offered:OAKLEY_GROUP_MODP2048)
+| proposal 1       encr= (policy:3des vs offered:aes-cbc)
+|             failed integ=(policy:auth-hmac-sha1-96 vs offered:auth-hmac-sha1-96)
+|             failed prf=  (policy:prf-hmac-sha1 vs offered:prf-hmac-sha1)
+|                   dh=   (policy:(null) vs offered:OAKLEY_GROUP_MODP2048)
+| proposal 1       encr= (policy:3des vs offered:aes-cbc)
+|             failed integ=(policy:auth-hmac-sha1-96 vs offered:auth-hmac-sha1-96)
+|                   prf=  (policy:prf-hmac-md5 vs offered:prf-hmac-sha1)
+|                   dh=   (policy:(null) vs offered:OAKLEY_GROUP_MODP2048)
+| complete v2 state transition with (null)
+| state transition function for STATE_PARENT_R1 failed: NO_PROPOSAL_CHOSEN
+
+
+
+

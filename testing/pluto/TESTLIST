@@ -438,3 +438,4 @@ umlplutotest	ikev2-psk-01		good
 umlplutotest	ikev2-x509-01		good
 umlplutotest	ikev2-x509-02		good
 
+umlplutotest	ikev2-algo-01		good
