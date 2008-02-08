@@ -171,7 +171,7 @@ ikev2parent_outI1(int whack_sock
 	}
     }
     if(groupnum == 0) {
-	groupnum = OAKLEY_GROUP_MODP1536;
+	groupnum = OAKLEY_GROUP_MODP2048;
     }
     st->st_oakley.group=lookup_group(groupnum); 
 
@@ -684,7 +684,7 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 
     DBG(DBG_CONTROLMORE
 	, DBG_log("ikev2 parent inR1: calculating g^{xy} in order to send I2"));
-  
+ 
     /* KE in */
     keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
     RETURN_STF_FAILURE(accept_KE(&st->st_gr, "Gr", st->st_oakley.group, keyex_pbs));

@@ -1,13 +1,7 @@
-This test is identical to x509-pluto-06, except that the policy is set to
-strict, and there is no CRL. So it fails.
-
-The network is configured as follows:
-
-    POLE
-      |
-    NORTH
-      |
-      NIC---EAST--SUNRISE
+This test except that with a CRL policy set to strict, and no available
+CRL, the connection fails. In this case the CRL is not available.
+See fail-x509-11/12/13 for testcases with CRL expired, not yet valid and
+both valid and invalid's loaded.
 
 East does not have north's certificate cached. 
 East will send a CR to north.
@@ -15,27 +9,8 @@ East will send a CR to north.
 East also doesn't have a specific policy for north, but rather, 
 will accept anything that is signed by a specific CA.
 
-
 North will transmit its certificate to east via nic. 
-North's certificate  is issued by a CA east accepts (cacerts/caCert.pem), and
+North's certificate  is issued by a CA east accepts (cacerts/ca.crt), and
 so should be accepted.
-
-East has a CRL list that shows that north's certificate is okay.
-East has a strict policy, so it must have the CRL, but the CRL is absent.
-
-NIC serves as a simple router between NORTH and EAST.
-
-The simple test is to connect the POLE and SUNRISE networks
-together. This is tested with a ping, a la "basic-pluto-03"
-
-
-
-
-
-
-
-
-
-
 
 

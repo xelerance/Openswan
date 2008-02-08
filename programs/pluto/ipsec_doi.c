@@ -218,6 +218,9 @@ accept_KE(chunk_t *dest, const char *val_name
 	  , const struct oakley_group_desc *gr
 	  , pb_stream *pbs)
 {
+    /* To figure out which function calls us without a pbs */
+    passert(pbs != NULL);
+
     if (pbs_left(pbs) != gr->bytes)
     {
 	loglog(RC_LOG_SERIOUS, "KE has %u byte DH public value; %u required"

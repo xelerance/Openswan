@@ -1,40 +1,37 @@
 #!/bin/sh
 
 TEST_PURPOSE=regress
-TEST_PROB_REPORT=0
-TEST_TYPE=umlplutotest
+TEST_TYPE=umlXhost
 
-TESTNAME=fail-x509-08
-EASTHOST=east
-WESTHOST=west
+TESTNAME=x509-fail-08
 
-EAST_INPUT=../../klips/inputs/01-sunrise-sunset-ping.pcap
-REF_WEST_OUTPUT=../../klips/west-icmp-01/spi1-cleartext.txt
-WEST_ARPREPLY=true
+XHOST_LIST="NIC NORTH EAST"
 
-#THREEEIGHT=true
-
-REF_EAST_CONSOLE_OUTPUT=east-console.txt
-REF_WEST_CONSOLE_OUTPUT=west-console.txt
-
-REF_CONSOLE_FIXUPS="kern-list-fixups.sed nocr.sed"
+REF_CONSOLE_FIXUPS="kern-list-fixups.sed script-only.sed nocr.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS east-prompt-splitline.pl"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS cutout.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS klips-debug-sanitize.sed"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-setup-sanitize.sed"
+REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-lwdnsq-sanitize.pl"
 REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS pluto-whack-sanitize.sed"
-REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS host-ping-sanitize.sed"
-REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-look-esp-sanitize.pl"
 
+
+NORTH_PLAY=../../klips/inputs/08-pole-sunrise-ping.pcap
+REF_EAST_OUTPUT=east-cleartext.txt
+
+EASTHOST=east
 EAST_INIT_SCRIPT=eastinit.sh
-WEST_INIT_SCRIPT=westinit.sh
+EAST_FINAL_SCRIPT=final.sh
+REF_EAST_CONSOLE_OUTPUT=east-console.txt
+REF26_EAST_CONSOLE_OUTPUT=east-console.txt
 
-WEST_RUN_SCRIPT=../x509-pluto-03/westrun.sh
+NORTHHOST=north
+NORTH_INIT_SCRIPT=northinit.sh
+NORTH_RUN_SCRIPT=northrun.sh
+NORTH_FINAL_SCRIPT=final.sh
+REF_NORTH_CONSOLE_OUTPUT=north-console.txt
+REF26_NORTH_CONSOLE_OUTPUT=north-console.txt
 
-EAST_FINAL_SCRIPT=../x509-pluto-03/final.sh
-WEST_FINAL_SCRIPT=../x509-pluto-03/final.sh
+NICHOST=nic
 
-NETJIG_EXTRA=../x509-pluto-03/debugpublic.txt
-
-
-
+NETJIG_EXTRA=debugpublic.txt

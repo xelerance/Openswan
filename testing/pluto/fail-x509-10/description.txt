@@ -5,3 +5,4 @@ is forced to load it by using the arbitrary cert payload feature.
 
 East should refuse to believe the expired certificate.
 
+TODO: This old test is *identical* to fail-x509-02. Why does it exist?
