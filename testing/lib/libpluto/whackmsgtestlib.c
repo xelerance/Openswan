@@ -4,10 +4,10 @@ char *progname;
 
 void flush_pending_by_connection(struct connection *c) {}
 void unroute_connection(struct connection *c) {}
-void release_cert(cert_t cert) {}
 bool trap_connection(struct connection *c) { return TRUE; }
-void free_ietfAttrList(ietfAttrList_t* list) {}
 void perpeer_logfree(struct connection *c) {}
+#ifndef  NO_X509_SEAM
+void release_cert(cert_t cert) {}
 void add_pgp_public_key(pgpcert_t *cert , time_t until, enum dns_auth_level dns_auth_level) {}
 pgpcert_t*pluto_add_pgpcert(pgpcert_t *cert) { return NULL; }
 void add_x509_public_key(struct id *keyid, x509cert_t *cert , time_t until
@@ -19,6 +19,8 @@ void decode_groups(char *groups, ietfAttrList_t **listp) {}
 void load_acerts(void) {}
 void list_acerts(bool utc) {}
 void list_groups(bool utc) {}
+void free_ietfAttrList(ietfAttrList_t* list) {}
+#endif
 
 #include "dnskey.h"
 err_t start_adns_query(const struct id *id	/* domain to query */
@@ -36,11 +38,13 @@ void reset_adns_restart_count(void) {}
 /* server.c SEAM */
 void find_ifaces(void) {}
 
+#ifndef  NO_X509_SEAM
 /* x509.c SEAM */
 void load_crls(void) {}
 void list_certs(bool utc) {}
 void list_authcerts(const char *caption, u_char auth_flags, bool utc) {}
 void list_crls(bool utc, bool strict) {}
+#endif
 
 /* timer.c SEAM */
 void timer_list(void) {}

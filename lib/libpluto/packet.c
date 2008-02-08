@@ -802,7 +802,7 @@ struct_desc ikev2_id_desc = { "IKEv2 Identification Payload",
  */
 static field_desc ikev2_cert_fields[] = {
   { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-  { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+  { ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names },
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
   { ft_enum, 8/BITS_PER_BYTE, "ikev2 cert encoding", &ikev2_cert_type_names },
   { ft_end,  0, NULL, NULL }
@@ -1047,15 +1047,14 @@ struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
     &ikev2_sa_desc,                     /* 33 */
     &ikev2_ke_desc,                     /* 34 */
     &ikev2_id_desc, &ikev2_id_desc,     /* 35,36 */
-    NULL, NULL,                         /* 37, 38*/
+    &ikev2_certificate_desc,            /* 37 */
+    &ikev2_certificate_req_desc,	/* 38*/
     &ikev2_a_desc,                      /* 39 */
     &ikev2_nonce_desc,                  /* 40 */
     NULL, NULL,                         /* 41,42 */
     &ikev2_vendor_id_desc,              /* 43 */
     &ikev2_ts_desc, &ikev2_ts_desc,     /* 44, 45 */
     &ikev2_e_desc,                      /* 46 */
-    &ikev2_certificate_desc,            /* 47 CERT */
-    &ikev2_certificate_req_desc,        /* 48 CERT */
 };
 
 void

@@ -67,32 +67,46 @@ stf_status ikev2_send_cert( struct state *st
                                   , pb_stream *outpbs)
 {
     struct ikev2_cert cert;
-    // struct state *pst = st;
-    bool send_certreq = FALSE; // flag : to send a certificate request aka CERTREQ
+    /*  flag : to send a certificate request aka CERTREQ */
+    bool send_certreq = FALSE; 
+    
     cert_t mycert = st->st_connection->spd.this.cert;
     /* [CERT,] [CERTREQ,] [IDr,] */
     
-    
+    {
     /* decide the next payload; 
      * send a CERTREQ if auth is RSA and no preloaded RSA public key exists 
      */
-    
-    send_certreq = !has_preloaded_public_key(st); 
+    send_certreq = FALSE;
+    /* TBD    send_certreq = !has_preloaded_public_key(st);  */
+    }
     DBG(DBG_CONTROL
-	, DBG_log("I am %ssending a certificate request"
+	, DBG_log("has %spreloaded a public key from st"
+		  , send_certreq ? "" : "not "));
+    DBG(DBG_CONTROL
+	, DBG_log("my next payload will %sbe a certificate request"
 		  , send_certreq ? "" : "not "));
     
+    cert.isac_critical = ISAKMP_PAYLOAD_CRITICAL;
+    cert.isac_enc = mycert.type;
+    
     if(send_certreq){
-	cert.isaa_np = ISAKMP_NEXT_v2CERTREQ;	
+        cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+	cert.isac_np = ISAKMP_NEXT_v2CERTREQ;	
     }
     else {
-	cert.isaa_critical = ISAKMP_PAYLOAD_CRITICAL;
-	cert.isaa_np = np;
-	// AA TBD cert.isaa_np = ISAKMP_NEXT_v2IDr;	
+	cert.isac_np = np;
+	/*
+	 * If we have a remote id configured in the conn,
+	 * we can send it here to signal we insist on it.
+	 * if (st->st_connection->spd.that.id)
+	 *   cert.isaa_np = ISAKMP_NEXT_v2IDr;
+	 */
+
     }
     
     {
-    /*   send own (Initiator CERT)  next payload is CERTREQ */
+	/*   send own (Initiator CERT)  next payload is CERTREQ */
 	pb_stream cert_pbs;
 	struct isakmp_cert cert_hd;
 	cert_hd.isacert_type = mycert.type;
@@ -116,7 +130,7 @@ stf_status ikev2_send_cert( struct state *st
     }
 
 #if 0
-    
+// TODO 
     if(send_certreq) { 
 	/* send CERTREQ  */
 	// struct ikev2_certreq certreq;
@@ -127,7 +141,6 @@ stf_status ikev2_send_cert( struct state *st
 	/* send IDr */
 	idr.isai_np = np;	
     }
-// TODO 
 #endif
 
     return STF_OK;
