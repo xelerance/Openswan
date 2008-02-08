@@ -205,8 +205,8 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | *****emit IKEv2 Authentication Payload:
 |    next payload type: ISAKMP_NEXT_v2SA
 |    auth method: v2_AUTH_SHARED
-| emitting 192 zero bytes of fake psk auth into IKEv2 Authentication Payload
-| emitting length of IKEv2 Authentication Payload: 200
+| emitting 20 zero bytes of fake psk auth into IKEv2 Authentication Payload
+| emitting length of IKEv2 Authentication Payload: 28
 | empty esp_info, returning defaults
 | *****emit IKEv2 Security Association Payload:
 |    next payload type: ISAKMP_NEXT_v2TSi
@@ -336,100 +336,67 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 | ipv4 high  c0 00 02 ff
 | emitting length of IKEv2 Traffic Selectors: 16
 | emitting length of IKEv2 Traffic Selectors: 24
-| emitting 8 raw bytes of padding and length into cleartext
-| padding and length  00 01 02 03  04 05 06 07
+| emitting 4 raw bytes of padding and length into cleartext
+| padding and length  00 01 02 03
 | emitting 12 zero bytes of 96-bits of truncated HMAC into IKEv2 Encryption Payload
-| emitting length of IKEv2 Encryption Payload: 448
-| emitting length of ISAKMP Message: 476
+| emitting length of IKEv2 Encryption Payload: 272
+| emitting length of ISAKMP Message: 300
 | data before encryption:
-|   27 00 00 0c  02 00 00 00  77 65 73 74  21 00 00 c8
+|   27 00 00 0c  02 00 00 00  77 65 73 74  21 00 00 1c
 |   02 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  2c 80 00 94  02 00 00 24  01 03 04 03
-|   12 34 56 78  03 00 00 08  01 00 00 0c  03 00 00 08
-|   03 00 00 02  00 00 00 08  05 00 00 00  02 00 00 24
-|   02 03 04 03  12 34 56 78  03 00 00 08  01 00 00 0c
+|   00 00 00 00  00 00 00 00  2c 80 00 94  02 00 00 24
+|   01 03 04 03  12 34 56 78  03 00 00 08  01 00 00 0c
 |   03 00 00 08  03 00 00 02  00 00 00 08  05 00 00 00
-|   02 00 00 24  03 03 04 03  12 34 56 78  03 00 00 08
-|   01 00 00 03  03 00 00 08  03 00 00 02  00 00 00 08
-|   05 00 00 00  00 00 00 24  04 03 04 03  12 34 56 78
+|   02 00 00 24  02 03 04 03  12 34 56 78  03 00 00 08
+|   01 00 00 0c  03 00 00 08  03 00 00 02  00 00 00 08
+|   05 00 00 00  02 00 00 24  03 03 04 03  12 34 56 78
 |   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
-|   00 00 00 08  05 00 00 00  2d 00 00 18  01 00 00 00
-|   07 00 00 10  00 00 ff ff  c0 00 01 00  c0 00 01 ff
-|   00 00 00 18  01 00 00 00  07 00 00 10  00 00 ff ff
-|   c0 00 02 00  c0 00 02 ff  00 01 02 03  04 05 06 07
+|   00 00 00 08  05 00 00 00  00 00 00 24  04 03 04 03
+|   12 34 56 78  03 00 00 08  01 00 00 03  03 00 00 08
+|   03 00 00 02  00 00 00 08  05 00 00 00  2d 00 00 18
+|   01 00 00 00  07 00 00 10  00 00 ff ff  c0 00 01 00
+|   c0 00 01 ff  00 00 00 18  01 00 00 00  07 00 00 10
+|   00 00 ff ff  c0 00 02 00  c0 00 02 ff  00 01 02 03
 | data after encryption:
-|   19 15 f1 05  5d 13 fc 7c  f5 6b 16 12  a6 e9 10 34
-|   3c 2f 16 c2  28 a4 e5 ef  c1 05 41 7b  df 74 b5 b3
-|   76 73 13 c2  78 f5 b2 d8  a6 00 06 45  4a 0c db 77
-|   91 b4 a7 b6  1f ed 1e fa  a7 67 31 f8  c1 d5 b8 3d
-|   ca 6b 22 c5  1f 79 61 56  ff 28 35 02  76 1c 83 7e
-|   f1 57 c2 61  8c 62 ad 2f  62 ad db e6  75 7c f1 60
-|   a5 a7 56 f9  98 f6 09 c8  19 c1 e1 a6  00 7b a1 ba
-|   ab 23 40 ce  6c b4 0d 17  52 43 a6 ad  42 e6 f3 55
-|   dd 8e f7 01  e8 d2 8b 81  e7 1a 0f c1  7e 57 76 0f
-|   5e 3a 1e 03  e0 6d 6a 86  a0 a0 f7 44  ed 8e fb 4d
-|   ea e8 c6 18  4c 51 6e 0f  c2 3c 6d d1  50 54 06 ee
-|   8c 4e 98 0c  62 54 2d 09  b2 b7 a1 f4  b2 08 99 45
-|   40 68 d2 cc  60 04 8d 6a  d2 4e d0 ae  10 b1 f6 c8
-|   16 1b b4 14  d0 95 7d 67  9c 7e bc 46  d3 a3 8b b6
-|   41 4d 2e c3  0b e7 e6 81  e7 e9 90 fd  53 dd e3 85
-|   b3 9d 1f 9a  e0 34 77 74  76 e8 26 ff  8b 7c ad 94
-|   9e 97 e9 b8  78 5d c3 fc  1f c1 a5 99  c7 75 0c 99
-|   9f 88 3e 7f  0e 40 24 76  ad 99 84 66  c7 04 78 b1
-|   18 09 98 43  99 40 00 a3  1d ee b5 82  48 19 3b b9
-|   11 9e dd 1c  fe 80 83 f5  d1 c9 f7 0f  d5 21 d9 e8
-|   52 b3 80 64  e8 3c 1e e5  2c 13 6b c5  60 00 e5 a1
-|   0d fa 9f d5  c1 d5 c9 25  2b 46 d5 73  60 42 7a 0b
-|   2b 28 08 23  b2 70 f8 94  54 31 b7 e4  55 81 2c 7f
-|   98 c1 4d 3f  96 36 fd d2  09 2d d2 c2  d4 2c 2d 96
-|   70 a3 3e df  02 dc c6 04  2c 97 67 f9  8c ab 72 26
-|   23 80 d9 85  f1 c5 80 ba  2f 1b 41 f0  5d 3a eb 6c
+|   52 de 7e 61  b3 e8 0c d9  33 11 27 15  f6 9a 5e 21
+|   c7 a5 71 f6  ec 54 bf 85  c2 de 76 a5  8c 3e e8 e2
+|   e0 c8 59 ce  ea 04 15 03  d7 60 67 6b  d8 3f 3f fc
+|   02 5a 8e 53  20 6b 2c 98  fa ed 9a 9a  2f 96 b4 30
+|   a7 7b fb cd  14 a2 a0 b7  b6 a9 02 68  05 2e b7 e3
+|   4b bf 30 03  79 da 81 53  b3 6e fa e3  51 50 b3 b5
+|   5f f8 59 23  0b 3d d6 0e  92 73 03 35  68 99 55 3f
+|   99 eb 09 3b  04 e1 73 8f  b1 7a e2 49  66 20 e0 99
+|   88 2c 19 19  c8 34 7d ca  15 6c 38 ce  59 47 e6 71
+|   e9 86 53 dd  79 d3 cf f9  09 66 d9 6e  b7 a5 aa b8
+|   a8 a4 e6 ea  9a e7 00 20  f1 45 09 ea  99 6c 64 09
+|   ef 10 66 a5  af f7 54 0e  60 cb 1d f8  c8 0b 29 77
+|   bd f0 8b db  ab 93 de 57  69 ba 3d fe  16 4c d0 11
+|   e4 4c 58 d3  32 7b 0c ba  2c d9 aa 39  ab e3 b8 2e
+|   b7 c0 d1 f1  a9 34 7d e5  04 c7 e6 e7  ee ea 9c 55
 | complete v2 state transition with STF_OK
 ../parentI2psk transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 ../parentI2psk STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 cipher=aes_128 integ=sha1 prf=oakley_sha group=modp1536}
 | sending reply packet to 192.1.2.23:500 (from port 500)
-sending 476 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using #2)
+sending 300 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using #2)
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
-|   2e 20 23 08  00 00 00 01  00 00 01 dc  23 80 01 c0
+|   2e 20 23 08  00 00 00 01  00 00 01 2c  23 80 01 10
 |   00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   19 15 f1 05  5d 13 fc 7c  f5 6b 16 12  a6 e9 10 34
-|   3c 2f 16 c2  28 a4 e5 ef  c1 05 41 7b  df 74 b5 b3
-|   76 73 13 c2  78 f5 b2 d8  a6 00 06 45  4a 0c db 77
-|   91 b4 a7 b6  1f ed 1e fa  a7 67 31 f8  c1 d5 b8 3d
-|   ca 6b 22 c5  1f 79 61 56  ff 28 35 02  76 1c 83 7e
-|   f1 57 c2 61  8c 62 ad 2f  62 ad db e6  75 7c f1 60
-|   a5 a7 56 f9  98 f6 09 c8  19 c1 e1 a6  00 7b a1 ba
-|   ab 23 40 ce  6c b4 0d 17  52 43 a6 ad  42 e6 f3 55
-|   dd 8e f7 01  e8 d2 8b 81  e7 1a 0f c1  7e 57 76 0f
-|   5e 3a 1e 03  e0 6d 6a 86  a0 a0 f7 44  ed 8e fb 4d
-|   ea e8 c6 18  4c 51 6e 0f  c2 3c 6d d1  50 54 06 ee
-|   8c 4e 98 0c  62 54 2d 09  b2 b7 a1 f4  b2 08 99 45
-|   40 68 d2 cc  60 04 8d 6a  d2 4e d0 ae  10 b1 f6 c8
-|   16 1b b4 14  d0 95 7d 67  9c 7e bc 46  d3 a3 8b b6
-|   41 4d 2e c3  0b e7 e6 81  e7 e9 90 fd  53 dd e3 85
-|   b3 9d 1f 9a  e0 34 77 74  76 e8 26 ff  8b 7c ad 94
-|   9e 97 e9 b8  78 5d c3 fc  1f c1 a5 99  c7 75 0c 99
-|   9f 88 3e 7f  0e 40 24 76  ad 99 84 66  c7 04 78 b1
-|   18 09 98 43  99 40 00 a3  1d ee b5 82  48 19 3b b9
-|   11 9e dd 1c  fe 80 83 f5  d1 c9 f7 0f  d5 21 d9 e8
-|   52 b3 80 64  e8 3c 1e e5  2c 13 6b c5  60 00 e5 a1
-|   0d fa 9f d5  c1 d5 c9 25  2b 46 d5 73  60 42 7a 0b
-|   2b 28 08 23  b2 70 f8 94  54 31 b7 e4  55 81 2c 7f
-|   98 c1 4d 3f  96 36 fd d2  09 2d d2 c2  d4 2c 2d 96
-|   70 a3 3e df  02 dc c6 04  2c 97 67 f9  8c ab 72 26
-|   23 80 d9 85  f1 c5 80 ba  2f 1b 41 f0  5d 3a eb 6c
-|   76 4f 97 cd  0a 26 20 23  13 c2 2a 83
+|   52 de 7e 61  b3 e8 0c d9  33 11 27 15  f6 9a 5e 21
+|   c7 a5 71 f6  ec 54 bf 85  c2 de 76 a5  8c 3e e8 e2
+|   e0 c8 59 ce  ea 04 15 03  d7 60 67 6b  d8 3f 3f fc
+|   02 5a 8e 53  20 6b 2c 98  fa ed 9a 9a  2f 96 b4 30
+|   a7 7b fb cd  14 a2 a0 b7  b6 a9 02 68  05 2e b7 e3
+|   4b bf 30 03  79 da 81 53  b3 6e fa e3  51 50 b3 b5
+|   5f f8 59 23  0b 3d d6 0e  92 73 03 35  68 99 55 3f
+|   99 eb 09 3b  04 e1 73 8f  b1 7a e2 49  66 20 e0 99
+|   88 2c 19 19  c8 34 7d ca  15 6c 38 ce  59 47 e6 71
+|   e9 86 53 dd  79 d3 cf f9  09 66 d9 6e  b7 a5 aa b8
+|   a8 a4 e6 ea  9a e7 00 20  f1 45 09 ea  99 6c 64 09
+|   ef 10 66 a5  af f7 54 0e  60 cb 1d f8  c8 0b 29 77
+|   bd f0 8b db  ab 93 de 57  69 ba 3d fe  16 4c d0 11
+|   e4 4c 58 d3  32 7b 0c ba  2c d9 aa 39  ab e3 b8 2e
+|   b7 c0 d1 f1  a9 34 7d e5  04 c7 e6 e7  ee ea 9c 55
+|   75 c6 9b 0a  bb 1c 32 9a  24 48 a6 8c
 | deleting state #2
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  c0 2e 7a 30  31 a0 31 88
@@ -533,11 +500,11 @@ IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, b
     (v2ke: len=192 group=modp1536)
     (nonce[C]: len=16 nonce=(b5ce8419095c6e2b6b62d3055305b3c4) )
     (v2vid: len=12 vid=OEababababab)
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 504, bad cksum 0 (->f4ae)!)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 328, bad cksum 0 (->f55e)!)
     192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid 00000001 cookie 0001020304050607->c02e7a3031a03188: child_sa  ikev2_auth[I]:
-    (v2e[C]: len=444
+    (v2e[C]: len=268
             (v2IDi: len=8 fqdn:west)
-            (v2auth: len=196 method=shared-secret authdata=(000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) )
+            (v2auth: len=24 method=shared-secret authdata=(0000000000000000000000000000000000000000) )
             (sa[C]: len=144
                 (p: #1 protoid=ipsec-esp transform=3 len=36 spi=12345678
                     (t: #1 type=encr id=aes )
