@@ -277,8 +277,7 @@ load_host_cert(enum ipsec_cert_type certtype, const char *filename,
     if (*filename == '/')	/* absolute pathname */
     	strncpy(path, filename, ASN1_BUF_LEN);
     else if(oco->certs_dir == NULL) /* pathname relative to cwd */
-	snprintf(path, ASN1_BUF_LEN, "./%s", oco->rootdir
-		 ,filename);
+	snprintf(path, ASN1_BUF_LEN, "./%s", filename);
     else 			/* pathname relative to rootdir */
 	snprintf(path, ASN1_BUF_LEN, "%s%s/%s", oco->rootdir
 		 , oco->certs_dir, filename);
