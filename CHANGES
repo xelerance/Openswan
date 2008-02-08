@@ -1,7 +1,16 @@
 Please see docs/KNOWN_BUGS file for more information
 
+V2.6.06
+* Added IKEv2 X.509 CERTREQ
+* Interop fix for IKEv2 PSK - Use correct IETF Key Pad without \0
+* Fixed a few IKEv2 related crashers on receiving a NOTIFY in R1
+
+v2.6.05
+* Added IKEv2 X.509 CERT
+
 v2.6.04
 * Added IKEv2 PSK AUTH
+
 v2.6.03
 * Added IKEv2 RSA AUTH
 

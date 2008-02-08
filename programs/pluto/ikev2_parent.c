@@ -1004,7 +1004,6 @@ static stf_status ikev2_send_auth(struct connection *c
 	    return STF_FATAL;
 	
     } else if(c->policy & POLICY_PSK) {
-	/* todo */
 	if(!ikev2_calculate_psk_auth(pst, role, idhash_out, &a_pbs))
 	return STF_FAIL;
     } 
@@ -1412,7 +1411,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 						    , idhash_in
 						    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
 	if(authstat != STF_OK) {
-	    openswan_log("PSK authentication failed");
+	    openswan_log("PSK authentication failed AUTH mismatch!");
 	    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
 	    return STF_FAIL;
 	}

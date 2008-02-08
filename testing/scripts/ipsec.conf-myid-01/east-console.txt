@@ -11,6 +11,7 @@ east:~#
  /testing/pluto/bin/wait-until-pluto-started
 east:~#
  ipsec auto --status
+000 using kernel interface: klips
 000 interface ipsec0/eth1 192.1.2.23
 000 %myid = (none)
 000 debug none
@@ -60,6 +61,7 @@ east:~#
  /testing/pluto/bin/wait-until-pluto-started
 east:~#
  ipsec auto --status
+000 using kernel interface: klips
 000 interface ipsec0/eth1 192.1.2.23
 000 %myid = @freeswan.org
 000 debug none

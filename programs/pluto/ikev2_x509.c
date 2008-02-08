@@ -159,19 +159,8 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 	    , DBG_log("going to send a certreq"));
 	ikev2_send_certreq(st, md, role, np, outpbs);
     }
-    
-#if 0
-    // TODO 
-    {
-	struct ikev2_id idr;
-	/* send IDr */
-	idr.isai_np = np;	
-    }
-#endif
-
     return STF_OK;
 }
-
 static stf_status 
 ikev2_send_certreq( struct state *st, struct msg_digest *md
 		    , enum phase1_role role UNUSED
