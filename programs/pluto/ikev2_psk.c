@@ -62,7 +62,7 @@
 #include "ocf_pk.h"
 #endif
 
-static u_char psk_key_pad_str[] = "Key Pad for IKEv2"; 
+static u_char psk_key_pad_str[] = "Key Pad for IKEv2"; /* 4306  2:15 */
 static int psk_key_pad_str_len = 17; /* sizeof( psk_key_pad_str); -1 */
 
 static bool ikev2_calculate_psk_sighash(struct state *st
@@ -77,8 +77,6 @@ static bool ikev2_calculate_psk_sighash(struct state *st
     const chunk_t *pss = get_preshared_secret(c);
     unsigned int  hash_len =  st->st_oakley.prf_hasher->hash_digest_len;
     unsigned char prf_psk[hash_len];
-    
-
 	
     if (pss == NULL){
 	openswan_log("No matching PSK found for connection:%s", 
@@ -101,10 +99,16 @@ static bool ikev2_calculate_psk_sighash(struct state *st
     DBG(DBG_CRYPT
 	,DBG_log("negotiated prf: %s hash length: %lu", 
 		 st->st_oakley.prf_hasher->common.name, 
-		 (long unsigned) hash_len);
-	DBG_dump("inner prf ouput", prf_psk, hash_len));
+		 (long unsigned) hash_len));
+     DBG(DBG_PRIVATE
+	 ,DBG_log("PSK , secret, used %s, length %lu"
+	          ,pss->ptr,  (long unsigned) pss->len);
+	 DBG_log("keypad used \"%s\", length %d", psk_key_pad_str
+	 	  ,psk_key_pad_str_len));
+     DBG(DBG_CRYPT
+    	,DBG_dump("inner prf ouput", prf_psk, hash_len));
     
-    /* calculate outer prf */
+    /* decide nonce based on the role */
     if(role == INITIATOR) {
 	/* on initiator, we need to hash responders nonce */
 	nonce = &st->st_nr;
@@ -113,8 +117,8 @@ static bool ikev2_calculate_psk_sighash(struct state *st
 	nonce = &st->st_ni;
 	nonce_name = "inputs to hash2 (initiator nonce)";
     }
-	
 
+    /* calculate outer prf */
     {
 	struct hmac_ctx id_ctx;
 	
@@ -141,7 +145,6 @@ static bool ikev2_calculate_psk_sighash(struct state *st
     DBG(DBG_CRYPT
 	, DBG_dump_chunk("inputs to hash1 (first packet)", firstpacket);
 	DBG_dump_chunk(nonce_name, *nonce);
-	
 	DBG_dump("idhash", idhash, hash_len));
 
     return TRUE;
@@ -160,9 +163,9 @@ bool ikev2_calculate_psk_auth(struct state *st
 				    , signed_octets))
 	return FALSE;
     DBG(DBG_CRYPT
-	, DBG_dump("psk auth octets", signed_octets, hash_len ));
+	, DBG_dump("PSK auth octets", signed_octets, hash_len ));
     
-    out_raw(signed_octets, hash_len, a_pbs, "psk auth");
+    out_raw(signed_octets, hash_len, a_pbs, "PSK auth");
     
     return TRUE;
 }
@@ -193,8 +196,8 @@ stf_status ikev2_verify_psk_auth(struct state *st
 	return STF_FAIL;
     
     DBG(DBG_CRYPT
-	,DBG_dump("Received psk auth octets",sig_pbs->cur, sig_len); 
-	DBG_dump("Calculated psk auth octets", calc_hash, hash_len));
+	,DBG_dump("Received PSK auth octets",sig_pbs->cur, sig_len); 
+	DBG_dump("Calculated PSK auth octets", calc_hash, hash_len));
     
     if(memcmp(sig_pbs->cur, calc_hash, hash_len) ) {
 	openswan_log("AUTH mismatch: Received AUTH != computed AUTH");
