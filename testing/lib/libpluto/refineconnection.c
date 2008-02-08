@@ -14,6 +14,7 @@
 #include "../../programs/pluto/connections.c"
 
 #include "whackmsgtestlib.c"
+#include "seam_x509.c"
 #include "seam_timer.c"
 #include "seam_ipsecdoi.c"
 #include "seam_pending.c"

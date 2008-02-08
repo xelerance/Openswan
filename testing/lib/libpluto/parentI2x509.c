@@ -35,7 +35,6 @@
 #include "seam_west.c"
 #include "seam_initiate.c"
 #include "seam_terminate.c"
-#include "seam_x509.c"
 #include "seam_spdbstruct.c"
 #include "seam_demux.c"
 #include "seam_whack.c"
