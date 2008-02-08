@@ -34,7 +34,8 @@
 #include "connections.h"	
 
 #include "crypto.h" /* requires sha1.h and md5.h */
-
+#include "x509.h"
+#include "x509more.h"
 #include "ike_alg.h"
 #include "kernel_alg.h"
 #include "plutoalg.h"
@@ -1141,6 +1142,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	
 	if(send_cert) {
 	    stf_status certstat = ikev2_send_cert( st
+	    					   , INITIATOR
 						   ,ISAKMP_NEXT_v2AUTH
 						   , &e_pbs_cipher);
 	    if(certstat != STF_OK) return certstat;
@@ -1357,9 +1359,20 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	idhash_in = alloca(st->st_oakley.integ_hasher->hash_digest_len);
 	hmac_final(idhash_in, &id_ctx);
     }
-   
-    /* AA TBD  process CERT payload */
-    
+
+    {
+	if(md->chain[ISAKMP_NEXT_v2CERT])
+	{
+	    /* should we check if we should accept a cert payload ?
+	     *  has_preloaded_public_key(st)
+	     */ 
+	    /* in v1 code it is  decode_cert(struct msg_digest *md) */
+	    DBG(DBG_CONTROLMORE
+		, DBG_log("has a v2_CERT payload going to decode it"));	  
+	    ikev2_decode_cert(md); 
+	}
+    }
+
     /* process AUTH payload */
     if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
 	openswan_log("no authentication payload found");
@@ -1419,6 +1432,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	struct ikev2_generic e;
 	pb_stream      e_pbs, e_pbs_cipher;
 	stf_status     ret;
+	bool send_cert = FALSE;
 
 	/* HDR out */
 	{
@@ -1456,6 +1470,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	e_pbs_cipher.cur = e_pbs.cur;
 	encstart = e_pbs_cipher.cur;
 	
+	/* decide to send CERT payload before we generate IDr */
+	send_cert = doi_send_ikev2_cert_thinking(st);
+	    
 	/* send out the IDr payload */
 	{
 	    struct ikev2_id r_id;
@@ -1470,7 +1487,12 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b,
 			     &c->spd.this);
 	    r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
-	    r_id.isai_np = ISAKMP_NEXT_v2AUTH;
+
+	    if(send_cert) 
+		r_id.isai_np = ISAKMP_NEXT_v2CERT;
+	    else  
+		r_id.isai_np = ISAKMP_NEXT_v2AUTH; 
+
 	    id_start = e_pbs_cipher.cur;
 	    
 	    if (!out_struct(&r_id
@@ -1492,6 +1514,18 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    hmac_final(idhash_out, &id_ctx);
 	}
 
+	DBG(DBG_CONTROLMORE
+	    , DBG_log("assembled IDr payload -- CERT next"));	  
+
+	/* send CERT payload RFC 4306 3.6, 1.2:([CERT,] ) */
+	if(send_cert) {
+	    stf_status certstat = ikev2_send_cert(st
+						  , RESPONDER
+						  , ISAKMP_NEXT_v2AUTH
+						  , &e_pbs_cipher);
+	    if(certstat != STF_OK) return certstat;
+    	} 
+
 	/* authentication good, see if there is a child SA available */
 	if(md->chain[ISAKMP_NEXT_v2SA] == NULL
 	   || md->chain[ISAKMP_NEXT_v2TSi] == NULL
@@ -1503,6 +1537,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	} else {
 	    np = ISAKMP_NEXT_v2SA;
 	}
+	DBG(DBG_CONTROLMORE
+	    , DBG_log("going to assmemble AUTH payload"));	  
+
+	ikev2_decode_cert(md); 
 
 	/* now send AUTH payload */
 	{
@@ -1613,6 +1651,16 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	hmac_update(&id_ctx, idstart, idlen);
 	idhash_in = alloca(pst->st_oakley.integ_hasher->hash_digest_len);
 	hmac_final(idhash_in, &id_ctx);
+    }
+
+    if(md->chain[ISAKMP_NEXT_v2CERT]) {
+	/* should we check if we should accept a cert payload ?
+	 *  has_preloaded_public_key(st)
+	 */ 
+	/* in v1 code it is  decode_cert(struct msg_digest *md) */
+	DBG(DBG_CONTROLMORE
+	    , DBG_log("has a v2_CERT payload going to decode it"));	  
+	ikev2_decode_cert(md); 
     }
 
     /* process AUTH payload */

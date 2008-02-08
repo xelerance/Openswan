@@ -75,6 +75,9 @@ parentR1psk
 parentI2psk
 parentR2psk
 parentI3psk
+parentI2x509
+parentR2x509
 parentI2duplicate
 parentR2duplicate
 parentI3duplicate
+
