@@ -171,7 +171,7 @@ ikev2parent_outI1(int whack_sock
 	}
     }
     if(groupnum == 0) {
-	groupnum = OAKLEY_GROUP_MODP2048;
+	groupnum = OAKLEY_GROUP_MODP1536;
     }
     st->st_oakley.group=lookup_group(groupnum); 
 

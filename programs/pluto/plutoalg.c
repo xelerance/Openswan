@@ -142,8 +142,8 @@ __alg_info_ike_add (struct alg_info_ike *alg_info
  * 	merging alg_info (ike_info) contents
  */
 static int default_ike_groups[] = { 
-	OAKLEY_GROUP_MODP2048,
-	OAKLEY_GROUP_MODP1536
+	OAKLEY_GROUP_MODP1536,
+	OAKLEY_GROUP_MODP1024
 };
 
 /*	
