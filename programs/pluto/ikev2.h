@@ -139,3 +139,10 @@ extern void send_v2_notification(struct state *p1st, u_int16_t type
 				 , struct state *encst, msgid_t msgid
 				 , u_char *icookie
 				 , u_char *rcookie);
+
+extern bool doi_send_ikev2_cert_thinking( struct state *st);
+
+extern stf_status ikev2_send_cert( struct state *st
+				   , unsigned int np
+				   , pb_stream *outpbs);
+
