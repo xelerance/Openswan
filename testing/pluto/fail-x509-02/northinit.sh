@@ -2,10 +2,9 @@
 
 : ==== start ====
 
-TESTNAME=fail-x509-02
-source /testing/pluto/bin/northlocal.sh
+TESTNAME=x509-fail-02
 
 ipsec setup start
 /testing/pluto/bin/wait-until-pluto-started
-ipsec auto --add north-east-x509-pluto-02
+ipsec auto --add north-east-x509-fail-02
 echo done

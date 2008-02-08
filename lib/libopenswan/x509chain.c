@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <time.h>
@@ -200,15 +201,20 @@ load_authcerts(const char *type, const char *path, u_char auth_flags)
 
     if (chdir(path))
     {
-	openswan_log("Could not change to directory '%s'", path);
+	char buff[256];
+	strerror_r(errno, buff, 256 );
+	openswan_log("Could not change to directory '%s': %s", path, buf);
     }
     else
     {
-	openswan_log("Changing to directory '%s'", path);
+	openswan_log("Changed path to directory '%s'", path);
 	n = scandir(".", &filelist, file_select, alphasort);
 
-	if (n < 0)
-	    openswan_log("  scandir() error");
+	if (n < 0){
+	    char buff[256];
+	    strerror_r(errno, buff, 256 );
+	    openswan_log("  scandir() ./ error: %s", buff);
+	}
 	else
 	{
 	    while (n--)
@@ -223,9 +229,11 @@ load_authcerts(const char *type, const char *path, u_char auth_flags)
 	    }
 	    free(filelist);
 	}
+	
+	/* restore directory path */
+	chdir(save_dir);
     }
-    /* restore directory path */
-    chdir(save_dir);
+   
 }
 
 /********************** auth cert lists **********/

@@ -1,5 +1,5 @@
 : ==== start ====
-TESTNAME=ikev2-01
+TESTNAME=ikev2-05
 source /testing/pluto/bin/westlocal.sh
 
 # make sure that clear text does not get through

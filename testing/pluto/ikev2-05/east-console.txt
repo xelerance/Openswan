@@ -1,5 +1,5 @@
 east:~#
- TESTNAME=ikev2-01
+ TESTNAME=ikev2-05
 east:~#
  source /testing/pluto/bin/eastlocal.sh
 east:~#

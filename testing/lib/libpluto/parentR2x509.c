@@ -90,7 +90,7 @@ main(int argc, char *argv[])
 
     leak_detective = 1;
    
-    /* not sure if these works alll case east.crt should be in cwd */
+    /* not sure if these works all case east.crt should be in cwd */
     pluto_shared_secrets_file = "../../../baseconfigs/east/etc/ipsec.secrets";
     osw_init_ipsecdir("../../../baseconfigs/east/etc/ipsec.d");
     osw_init_rootdir("../../../baseconfigs/east");
@@ -100,7 +100,7 @@ main(int argc, char *argv[])
     init_seam_kernelalgs();
 
     load_authcerts("CA cert",
-                    "../../../baseconfigs/all/etc/ipsec.d/cacerts", AUTH_CA);
+                    "../../../baseconfigs/east/etc/ipsec.d/cacerts", AUTH_CA);
 
     if(argc != 4) {
 	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapin>\n", progname);

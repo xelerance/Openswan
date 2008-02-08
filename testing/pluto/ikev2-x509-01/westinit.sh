@@ -2,8 +2,11 @@
 TESTNAME=ikev2-x509-01
 source /testing/pluto/bin/westlocal.sh
 
+rm -f /tmp/$TESTNAME/ipsec.d/certs/east*
+rm -f /tmp/$TESTNAME/ipsec.d/crls/nic.crl
+
 # confirm that the network is alive
-ping -n -c 4 192.0.2.254
+ ping -n -c 4 192.0.2.254
 # make sure that clear text does not get through
 iptables -A INPUT -i eth1 -s 192.0.2.0/24 -j DROP
 # confirm with a ping to east-in
@@ -13,6 +16,7 @@ ipsec setup start
 ipsec whack --whackrecord /var/tmp/ikev2.record
 ipsec auto --add ikev2-westnet-eastnet-x509-cr
 ipsec auto --status
-/testing/pluto/basic-pluto-01/eroutewait.sh trap
-echo done
-
+S=5
+echo "sleep ${S} sec"
+sleep 5
+echo "done"

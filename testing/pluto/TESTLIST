@@ -418,4 +418,5 @@ umlplutotest	ikev2-04		good
 umlplutotest	ikev2-05		good
 umlplutotest	ikev2-psk-01		good
 umlplutotest	ikev2-x509-01		good
+umlplutotest	ikev2-x509-02		good
 

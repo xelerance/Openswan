@@ -1113,7 +1113,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	    else  
 		r_id.isai_np = ISAKMP_NEXT_v2AUTH; 
 	}
-
+	
 	id_start = e_pbs_cipher.cur;
 	if (!out_struct(&r_id
 			, &ikev2_id_desc
@@ -1136,12 +1136,11 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_final(idhash, &id_ctx);
     } 
 
+    /* send [CERT,] payload RFC 4306 3.6, 1.2) */
     {
-
-	/* send CERT payload RFC 4306 3.6, 1.2:([CERT,] [CERTREQ,] [IDr,]) */
 	
 	if(send_cert) {
-	    stf_status certstat = ikev2_send_cert( st
+	    stf_status certstat = ikev2_send_cert( st, md
 	    					   , INITIATOR
 						   ,ISAKMP_NEXT_v2AUTH
 						   , &e_pbs_cipher);
@@ -1244,7 +1243,7 @@ stf_status ikev2parent_inI2outR2(struct msg_digest *md)
 
     DBG(DBG_CONTROLMORE
 	, DBG_log("ikev2 parent inI2outR2: calculating g^{xy} in order to decrypt I2"));
-
+    
     /* verify that there is in fact an encrypted payload */
     if(!md->chain[ISAKMP_NEXT_v2E]) {
 	openswan_log("R2 state should receive an encrypted payload");
@@ -1360,6 +1359,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_final(idhash_in, &id_ctx);
     }
 
+    /* process CERT payload */
     {
 	if(md->chain[ISAKMP_NEXT_v2CERT])
 	{
@@ -1368,9 +1368,17 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	     */ 
 	    /* in v1 code it is  decode_cert(struct msg_digest *md) */
 	    DBG(DBG_CONTROLMORE
-		, DBG_log("has a v2_CERT payload going to decode it"));	  
+		, DBG_log("has a v2_CERT payload going to process it "));	  
 	    ikev2_decode_cert(md); 
 	}
+    }
+
+    /* process CERTREQ payload */
+    if(md->chain[ISAKMP_NEXT_v2CERTREQ]) 
+    {
+	    DBG(DBG_CONTROLMORE
+		,DBG_log("has a v2CERTREQ payload going to decode it"));
+	    ikev2_decode_cr(md, &st->st_connection->requested_ca);
     }
 
     /* process AUTH payload */
@@ -1519,7 +1527,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
 	/* send CERT payload RFC 4306 3.6, 1.2:([CERT,] ) */
 	if(send_cert) {
-	    stf_status certstat = ikev2_send_cert(st
+	    stf_status certstat = ikev2_send_cert(st, md
 						  , RESPONDER
 						  , ISAKMP_NEXT_v2AUTH
 						  , &e_pbs_cipher);
@@ -1537,10 +1545,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	} else {
 	    np = ISAKMP_NEXT_v2SA;
 	}
-	DBG(DBG_CONTROLMORE
-	    , DBG_log("going to assmemble AUTH payload"));	  
 
-	ikev2_decode_cert(md); 
+	DBG(DBG_CONTROLMORE
+	    , DBG_log("going to assemble AUTH payload"));	  
 
 	/* now send AUTH payload */
 	{
