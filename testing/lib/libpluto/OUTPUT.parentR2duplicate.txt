@@ -293,10 +293,10 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 |    next payload type: ISAKMP_NEXT_v2IDr
 |    critical bit: Payload-Critical
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
-| IKEv2 thinking about whether to send my certificate:
-| My policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
-|   sendcert: CERT_SENDIFASKED and I did not get a certificate request 
-|   so do not send cert.
+| IKEv2 thinking whether to send my certificate:
+|  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
+|  sendcert: CERT_SENDIFASKED and I did not get a certificate request 
+|  so do not send cert.
 | I did not send a certificate because I do not have one.
 | *****emit IKEv2 Identification Payload:
 |    next payload type: ISAKMP_NEXT_v2AUTH
@@ -308,7 +308,7 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 |   eb 81 58 e7
 | idhash calc R2  02 00 00 00  65 61 73 74
 | assembled IDr payload -- CERT next
-| going to assmemble AUTH payload
+| going to assemble AUTH payload
 | *****emit IKEv2 Authentication Payload:
 |    next payload type: ISAKMP_NEXT_v2SA
 |    auth method: v2_AUTH_RSA

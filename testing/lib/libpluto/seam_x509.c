@@ -28,26 +28,32 @@ decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 {
 }
 
-/* Send v2CERT and v2 CERT */
-stf_status ikev2_send_cert( struct state *st
-                                  , enum phase1_role role
-                                  , unsigned int np
-                                  , pb_stream *outpbs)
-{
-	return STF_OK;
-}
-
 void
 ikev2_decode_cert(struct msg_digest *md)
 {
 }
 
 /* Decode the IKEv2 CR payload of Phase 1. */
- void
- ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca)
+void
+ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 {
 }
+
 bool
-doi_send_ikev2_cert_thinking( struct state *st) {
+ikev2_build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs
+			, u_int8_t np)
+{
+	return FALSE;
+}
+
+bool
+collect_rw_ca_candidates(struct msg_digest *md, generalName_t **top)
+{
+	return FALSE;
+}
+
+bool
+build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
+{
 	return FALSE;
 }
