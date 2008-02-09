@@ -538,7 +538,7 @@ spdb_v2_match_parent(struct db_sa *sadb
 		break;
 		
 	    case IKEv2_TRANS_TYPE_DH:
-		esnid = tr->transid;
+		dhid = tr->transid;
 		if(tr->transid == dh_transform)
 		    dh_matched=TRUE;
 		break;
