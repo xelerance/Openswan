@@ -107,12 +107,27 @@ static struct db_attr otpsk1536des3md5[] = {
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
 	};
 
+static struct db_attr otpsk2048des3md5[] = {
+	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_3DES_CBC },
+	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
+	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
+	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP2048 },
+	};
+
 static struct db_attr otpsk1536aesmd5[] = {
 	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
-	};
+	}; 
+
+static struct db_attr otpsk2048aesmd5[] = {
+	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
+	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
+	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
+	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP2048 },
+	}; 
+
 
 static struct db_attr otpsk1536aessha1[] = {
 	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
@@ -120,6 +135,7 @@ static struct db_attr otpsk1536aessha1[] = {
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
 	};
+
 static struct db_attr otpsk2048aessha1[] = {
 	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA1 },
@@ -139,6 +155,13 @@ static struct db_attr otpsk1536des3sha1[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
+	};
+
+static struct db_attr otpsk2048des3sha1[] = {
+	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_3DES_CBC },
+	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA },
+	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
+	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP2048 },
 	};
 
 /* arrays of attributes for transforms, preshared key, Xauth version */
@@ -386,6 +409,9 @@ static struct db_trans oakley_trans_psk[] = {
 	{ AD_TR(KEY_IKE,otpsk1024des3tiger) },
 #endif
 	{ AD_TR(KEY_IKE,otpsk2048aessha1) },
+	{ AD_TR(KEY_IKE,otpsk2048aesmd5) },
+	{ AD_TR(KEY_IKE,otpsk2048des3sha1) },
+	{ AD_TR(KEY_IKE,otpsk2048des3md5) },
 	{ AD_TR(KEY_IKE,otpsk1536aessha1) },
 	{ AD_TR(KEY_IKE,otpsk1536aesmd5) },
 	{ AD_TR(KEY_IKE,otpsk1536des3sha1) },
