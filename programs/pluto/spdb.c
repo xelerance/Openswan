@@ -120,6 +120,12 @@ static struct db_attr otpsk1536aessha1[] = {
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
 	};
+static struct db_attr otpsk2048aessha1[] = {
+	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
+	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA1 },
+	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
+	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP2048 },
+	};
 
 static struct db_attr otpsk1024des3sha1[] = {
 	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_3DES_CBC },
@@ -379,6 +385,7 @@ static struct db_trans oakley_trans_psk[] = {
 #ifdef TEST_INDECENT_PROPOSAL
 	{ AD_TR(KEY_IKE,otpsk1024des3tiger) },
 #endif
+	{ AD_TR(KEY_IKE,otpsk2048aessha1) },
 	{ AD_TR(KEY_IKE,otpsk1536aessha1) },
 	{ AD_TR(KEY_IKE,otpsk1536aesmd5) },
 	{ AD_TR(KEY_IKE,otpsk1536des3sha1) },
