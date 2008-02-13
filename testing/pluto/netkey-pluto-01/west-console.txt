@@ -46,9 +46,19 @@ west:~#
 117 "westnet-eastnet" #2: STATE_QUICK_I1: initiate
 004 "westnet-eastnet" #2: STATE_QUICK_I2: sent QI2, IPsec SA established
 west:~#
- ipsec look
+ ip xfrm state
+west:~#
+ ip xfrm policy
+west:~#
+ route -n
 west NOW
 ROUTING TABLE
+west:~#
+ ipsec auto --down westnet-eastnet
+west:~#
+ ip xfrm state
+west:~#
+ ip xfrm policy
 west:~#
  echo done
 done
