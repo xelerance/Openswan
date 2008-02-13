@@ -1,0 +1,17 @@
+east:~#
+ TESTNAME=interop-ikev2-strongswan-01
+east:~#
+ source /testing/pluto/bin/eastlocal.sh
+east:~#
+ ipsec start
+ipsec_setup: Starting FIXME IPsec VERSION
+east:~#
+ /testing/pluto/bin/wait-until-pluto-started
+east:~#
+ 
+
+east:~#
+east:~#
+ if [ -f /tmp/core ]; then echo CORE FOUND; mv /tmp/core /var/tmp; fi
+east:~#
+
