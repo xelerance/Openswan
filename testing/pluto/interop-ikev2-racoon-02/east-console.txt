@@ -1,0 +1,18 @@
+east:~#
+ TESTNAME=interop-ikev2-racoon-02
+east:~#
+ source /testing/pluto/bin/eastlocal.sh
+east:~#
+ /usr/local/racoon2/etc/init.d/spmd start
+east:~#
+ /usr/local/racoon2/etc/init.d/iked start
+east:~#
+ sleep 3
+east:~#
+ 
+
+east:~#
+east:~#
+ if [ -f /tmp/core ]; then echo CORE FOUND; mv /tmp/core /var/tmp; fi
+east:~#
+
