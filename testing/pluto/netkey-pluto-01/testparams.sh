@@ -10,6 +10,9 @@ WESTHOST=west
 
 WEST_ARPREPLY=1
 
+# west gets a netkey kernel
+WEST_NETKEY=true
+
 EAST_INPUT=../../klips/inputs/01-sunrise-sunset-ping.pcap
 REF_WEST_OUTPUT=../../klips/west-icmp-01/spi1-cleartext.txt
 WEST_ARPREPLY=true
