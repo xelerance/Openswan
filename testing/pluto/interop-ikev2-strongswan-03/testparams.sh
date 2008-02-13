@@ -4,15 +4,20 @@ TEST_PURPOSE=regress
 TEST_PROB_REPORT=0
 TEST_TYPE=umlplutotest
 
-TESTNAME=ikev2-05
+TESTNAME=interop-ikev2-strongswan-03
 EASTHOST=east
 WESTHOST=west
+
+EAST_NETKEY=true
 
 WEST_ARPREPLY=1
 
 EAST_INPUT=../../klips/inputs/01-sunrise-sunset-ping.pcap
 REF_WEST_OUTPUT=../../klips/west-icmp-01/spi1-cleartext.txt
+REF_WEST_FILTER="no-arp-pcap2.pl"
 WEST_ARPREPLY=true
+
+
 
 #THREEEIGHT=true
 
