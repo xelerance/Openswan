@@ -1,6 +1,6 @@
 ping -c 3 192.1.2.45
 
 ip xfrm state
-ipxfrm policy
+ip xfrm policy
 
 echo done
