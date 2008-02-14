@@ -1,5 +1,5 @@
 west:~#
- TESTNAME=interop-ikev2-racoon-03
+ TESTNAME=interop-ikev2-racoon-04
 west:~#
  source /testing/pluto/bin/westlocal.sh
 west:~#

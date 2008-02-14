@@ -1,5 +1,5 @@
 : ==== start ====
-TESTNAME=interop-ikev2-racoon-03
+TESTNAME=interop-ikev2-racoon-04
 source /testing/pluto/bin/westlocal.sh
 
 # confirm that the network is alive

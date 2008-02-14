@@ -4,7 +4,7 @@ TEST_PURPOSE=regress
 TEST_PROB_REPORT=0
 TEST_TYPE=umlplutotest
 
-TESTNAME=interop-ikev2-strongswan-03
+TESTNAME=interop-ikev2-racoon-04
 EASTHOST=east
 WESTHOST=west
 
@@ -40,7 +40,7 @@ REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-look-esp-sanitize.pl"
 EAST_INIT_SCRIPT=eastinit.sh
 WEST_INIT_SCRIPT=westinit.sh
 
-WEST_RUN_SCRIPT=westrun.sh
+#WEST_RUN_SCRIPT=westrun.sh
 EAST_RUN_SCRIPT=eastrun.sh
 
 EAST_FINAL_SCRIPT=final.sh

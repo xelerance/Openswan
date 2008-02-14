@@ -1,5 +1,5 @@
 east:~#
- TESTNAME=interop-ikev2-racoon-03
+ TESTNAME=interop-ikev2-racoon-04
 east:~#
  source /testing/pluto/bin/eastlocal.sh
 east:~#

@@ -1,5 +1,5 @@
 : ==== start ====
-TESTNAME=interop-ikev2-racoon-03
+TESTNAME=interop-ikev2-racoon-04
 source /testing/pluto/bin/eastlocal.sh
 
 /usr/local/racoon2/etc/init.d/spmd start
