@@ -79,7 +79,7 @@ setup_host_make() {
     echo "$TAB (cd ${BASICROOT} && find var -print | cpio -pd $POOLSPACE/$hostroot 2>/dev/null )"
 
     # make sure that we have /dev, /tmp and /var/run
-    echo "$TAB mkdir -p $hostroot/dev $hostroot/tmp $hostroot/var/run $hostroot/usr/share $hostroot/proc $hostroot/var/log/pluto/peer"
+    echo "$TAB mkdir -p $hostroot/dev $hostroot/tmp $hostroot/var/run $hostroot/usr/share $hostroot/proc $hostroot/var/log/pluto/peer $hostroot/var/run/racoon2"
     echo "$TAB rm -f $hostroot/dev/console $hostroot/dev/null"
     echo "$TAB touch $hostroot/dev/console $hostroot/dev/null"
 
