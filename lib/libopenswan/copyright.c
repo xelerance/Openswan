@@ -17,12 +17,13 @@
 #include "openswan.h"
 
 static const char *co[] = {
- "Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006 ",
+ "Copyright (C) 1999 - 2008 ",
  "    Henry Spencer, Richard Guy Briggs, Sam Sgro",
  "    D. Hugh Redelmeier, Sandy Harris, Claudia Schmeing,",
  "    Michael C. Richardson, Angelos D. Keromytis, John Ioannidis.",
  "    Ken Bantoft, Andreas Steffen, Mathieu Lafon, Tuomo Soini",
  "    Paul Wouters, JuanJo Ciarlante, Bart Trojanowski, Herbert Xu",
+ "    Antony Antony",
  "",
  "This program is free software; you can redistribute it and/or modify it",
  "under the terms of the GNU General Public License as published by the",
