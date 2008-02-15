@@ -8,7 +8,7 @@ initiator may not crash. This is bug #890.
 It seems that openswan does not send any R1 reply to the
 I1 packet as responder with no connection, and thus R1 does not
 crash on an unexpected NOTIFY packet. To reproduce this, we need to
-have to start racoon as the responder, which does send out an
+have to start strongswan as the responder, which does send out an
 R1 packet when it has no conns loaded. It is not known yet what racoon
 does.
 
