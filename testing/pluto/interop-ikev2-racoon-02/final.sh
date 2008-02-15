@@ -3,8 +3,7 @@ if [ -n "`pidof pluto`" ]
 then
 	ipsec auto --status
 	cat /tmp/pluto.log
-fi
-if [ -n "`pidof iked`" ]
+elif [ -n "`pidof iked`" ]
 then
 	cat /tmp/racoon.log
 fi
