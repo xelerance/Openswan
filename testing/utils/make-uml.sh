@@ -143,19 +143,31 @@ do
 done
 
 # build a plain kernel if we need it!
-if $NEED_plain && [ ! -x $UMLPLAIN/linux ]
+if $NEED_plain && [ ! -x $UMLPLAIN/linux ] || [ ! -x $UMLPLAIN/linux-netkey ] 
 then
     cd $UMLPLAIN
 
     lndirkerndirnogit $KERNPOOL .
 
     applypatches
-
+ 
+    if [ ! -x  $UMLPLAIN/linux-netkey ] 
+     then 
+       #Antony  Make netkey kernel in there.
+       echo "make a net-key enabled kernel"
+       echo "Copying kernel config ${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config"
+       (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=umlnetkey${KERNVER}.config && make CC=${CC} ARCH=um linux) || exit 1 </dev/null
+       echo "copyint linux to linux-netky  "; 
+       mv $UMLPLAIN/linux $UMLPLAIN/linux-netkey; 
+   fi
+   if [ ! -x  $UMLPLAIN/linux ]
+    then
     echo Copying kernel config ${TESTINGROOT}/kernelconfigs/umlplain${KERNVER}.config 
     rm -f .config
     cp ${TESTINGROOT}/kernelconfigs/umlplain${KERNVER}.config .config
     
-    (make CC=${CC} ARCH=um $NONINTCONFIG && make CC=${CC} ARCH=um dep && make ARCH=um CC=${CC} linux ) || exit 1 </dev/null 
+    (make CC=${CC} ARCH=um $NONINTCONFIG && make ARCH=um CC=${CC} linux ) || exit 1 </dev/null 
+    fi
 fi
 
 BUILD_MODULES=${BUILD_MODULES-true}
