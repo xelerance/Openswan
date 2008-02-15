@@ -283,6 +283,12 @@ prerunsetup() {
 	else 
 	  EAST_START=${EAST_START-$POOLSPACE/$EASTHOST/start.sh}
 	fi
+	if [ -n "$WEST_NETKEY" ] 
+	 then
+	  WEST_START=${WEST_START-$POOLSPACE/$WESTHOST/start-netkey.sh}
+	else 
+	  WEST_START=${WEST_START-$POOLSPACE/$WESTHOST/start.sh}
+	fi
 	WEST_START=${WEST_START-$POOLSPACE/$WESTHOST/start.sh}
 	REPORT_NAME=${TESTNAME}
     fi

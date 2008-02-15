@@ -420,11 +420,6 @@ umlplutotest	transport-03		bad
 umlplutotest	protoport-01		good
 umlplutotest	protoport-02		good
 
-# requires testing infrastructure to support protostack=netkey
-umlplutotest    algo-pluto-07          good
-umlplutotest    netkey-pluto-01        good
-umlplutotest    netkey-pluto-02        good
-
 # Testing algo loading of proper algo sizes
 umlplutotest	ike-algo-02		good
 
@@ -439,3 +434,22 @@ umlplutotest	ikev2-x509-01		good
 umlplutotest	ikev2-x509-02		good
 
 umlplutotest	ikev2-algo-01		good
+
+# Tests below require testing infrastructure with netkey support
+umlplutotest    algo-pluto-07          good
+umlplutotest    netkey-pluto-01        good
+umlplutotest    netkey-pluto-02        good
+
+# empty, psk-i, psk-r, x509-i, x509-r
+umlplutotest    interop-ikev2-racoon-01        good
+umlplutotest    interop-ikev2-racoon-02        good
+umlplutotest    interop-ikev2-racoon-03        good
+#umlplutotest    interop-ikev2-racoon-04        good
+#umlplutotest    interop-ikev2-racoon-05        good
+
+# empty, psk-i, psk-r, x509-i, x509-r
+umlplutotest    interop-ikev2-strongswan-01        good
+#umlplutotest    interop-ikev2-strongswan-02        good
+#umlplutotest    interop-ikev2-strongswan-03        good
+#umlplutotest    interop-ikev2-strongswan-04        good
+#umlplutotest    interop-ikev2-strongswan-05        good
