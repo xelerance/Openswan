@@ -11,7 +11,7 @@ ping -n -c 1 192.0.2.254
 
 ipsec setup start
 ipsec whack --whackrecord /var/tmp/ikev2.record
-ipsec auto --add westnet--eastnet-ikev2
+ipsec auto --add west--east-ikev2
 ipsec auto --status
 /testing/pluto/bin/wait-until-pluto-started
 

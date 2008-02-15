@@ -1,5 +1,5 @@
 : ==== start ====
-TESTNAME=interop-ikev2-racoon-02
+TESTNAME=interop-ikev2-racoon-05
 
 #source /testing/pluto/bin/eastlocal.sh
 mkdir /tmp/racoon2 /var/run/racoon2

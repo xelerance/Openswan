@@ -40,8 +40,7 @@ REF_CONSOLE_FIXUPS="$REF_CONSOLE_FIXUPS ipsec-look-esp-sanitize.pl"
 EAST_INIT_SCRIPT=eastinit.sh
 WEST_INIT_SCRIPT=westinit.sh
 
-#WEST_RUN_SCRIPT=westrun.sh
-EAST_RUN_SCRIPT=eastrun.sh
+WEST_RUN_SCRIPT=westrun.sh
 
 EAST_FINAL_SCRIPT=final.sh
 WEST_FINAL_SCRIPT=final.sh
