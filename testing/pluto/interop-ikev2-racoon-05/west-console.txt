@@ -1,0 +1,17 @@
+west:~#
+ TESTNAME=interop-ikev2-racoon-05
+west:~#
+ source /testing/pluto/bin/westlocal.sh
+west:~#
+ /testing/pluto/bin/wait-until-pluto-started
+west:~#
+ echo done
+done
+west:~#
+ 
+
+west:~#
+west:~#
+ if [ -f /tmp/core ]; then echo CORE FOUND; mv /tmp/core /var/tmp; fi
+west:~#
+
