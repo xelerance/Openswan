@@ -1,4 +1,4 @@
-#!/bin/sh
+!/bin/sh
 #
 # 
 # $Id: make-uml.sh,v 1.51 2005/11/21 08:44:57 mcr Exp $
@@ -143,7 +143,7 @@ do
 done
 
 # build a plain kernel if we need it!
-if $NEED_plain && [ ! -x $UMLPLAIN/linux ] || [ ! -x $UMLPLAIN/linux-netkey ] 
+if $NEED_plain && [ ! -x $UMLPLAIN/linux ] 
 then
     cd $UMLPLAIN
 
@@ -151,24 +151,32 @@ then
 
     applypatches
  
-    if [ ! -x  $UMLPLAIN/linux-netkey ] 
-     then 
-       #Antony  Make netkey kernel in there.
-       echo "make a net-key enabled kernel"
-       echo "Copying kernel config ${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config"
-       (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=umlnetkey${KERNVER}.config && make CC=${CC} ARCH=um linux) || exit 1 </dev/null
-       echo "copyint linux to linux-netky  "; 
-       mv $UMLPLAIN/linux $UMLPLAIN/linux-netkey; 
-   fi
-   if [ ! -x  $UMLPLAIN/linux ]
-    then
     echo Copying kernel config ${TESTINGROOT}/kernelconfigs/umlplain${KERNVER}.config 
     rm -f .config
     cp ${TESTINGROOT}/kernelconfigs/umlplain${KERNVER}.config .config
     
     (make CC=${CC} ARCH=um $NONINTCONFIG && make ARCH=um CC=${CC} linux ) || exit 1 </dev/null 
-    fi
+fi 
+
+UMLNETKEY=$POOLSPACE/netkey${KERNVER}
+mkdir -p $UMLNETKEY
+NETKEYKERNEL=$UMLNETKEY/linux
+
+if [ ! -x $NETKEYKERNEL ] 
+  then
+   cd $UMLNETKEY
+
+    lndirkerndirnogit $KERNPOOL .
+
+    applypatches
+ 
+    #Antony  Make netkey kernel in there.
+    echo "make a net-key enabled kernel" 
+    NETKEYCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
+    echo "using $NETKEYCONF for umlnetkey "
+     (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$NETKEYCONF && make CC=${CC} ARCH=um linux) || exit 1 </dev/null
 fi
+
 
 BUILD_MODULES=${BUILD_MODULES-true}
 if $NEED_plain
@@ -223,7 +231,7 @@ do
     fi
     echo Using kernel: $UMLKERNEL for $host
 
-    setup_host_make $host $UMLKERNEL openswan ${KERNVER} $NEED_plain >>$UMLMAKE
+    setup_host_make $host $UMLKERNEL openswan ${KERNVER} $NEED_plain $NETKEYKERNEL  >>$UMLMAKE
 done
 
 if $NEED_swan && [ ! -x $UMLSWAN/linux ]
@@ -441,4 +449,4 @@ cd $POOLSPACE && make $OPENSWANHOSTS
 # Revision 1.1  2001/09/25 00:52:16  mcr
 # 	a script to build a UML+FreeSWAN testing environment.
 #
-#    
+   
