@@ -53,10 +53,11 @@ setup_host_make() {
     host=$1
     KERNEL=$2
     #hardcoded for now...
-    NETKEY_KERNEL="/home/build/linux-netkey"
     HOSTTYPE=$3
     KERNVER=$4
     domodules=$5          # true or false
+    NETKEY_KERNEL=$6
+
     KERNDIR=`dirname $KERNEL`
     TAB="	@"
     hostroot=$host/root
@@ -209,21 +210,23 @@ setup_host_make() {
 	fi
     fi
 
-    # make startup script for NETKEY uml (no modules)
-    startscript=$POOLSPACE/$host/start-netkey.sh
-    echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh initrd.uml"
-    echo "$TAB echo '#!/bin/sh' >$startscript"
-    echo "$TAB echo ''          >>$startscript"
-    echo "$TAB echo '# get $net value from baseconfig'          >>$startscript"
-    echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
-    echo "$TAB echo ''          >>$startscript"
-    echo "$TAB # the umlroot= is a local hack >>$startscript"
-    echo "$TAB echo '$NETKEY_KERNEL initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  init=/linuxrc \$\$*' >>$startscript"
-    echo "$TAB echo 'if [ -n \"\$\$UML_SLEEP\" ]; then eval \$\$UML_SLEEP; fi'  >>$startscript"
-    echo "$TAB chmod +x $startscript"
-    echo
-    depends="$depends $startscript"
-
+    if [ -x $NETKEY_KERNEL ] 
+    then 
+     # make startup script for NETKEY uml (no modules)
+     startscript=$POOLSPACE/$host/start-netkey.sh
+     echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh initrd.uml"
+     echo "$TAB echo '#!/bin/sh' >$startscript"
+     echo "$TAB echo ''          >>$startscript"
+     echo "$TAB echo '# get $net value from baseconfig'          >>$startscript"
+     echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
+     echo "$TAB echo ''          >>$startscript"
+     echo "$TAB # the umlroot= is a local hack >>$startscript"
+     echo "$TAB echo '$NETKEY_KERNEL initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  init=/linuxrc \$\$*' >>$startscript"
+     echo "$TAB echo 'if [ -n \"\$\$UML_SLEEP\" ]; then eval \$\$UML_SLEEP; fi'  >>$startscript"
+     echo "$TAB chmod +x $startscript"
+     echo
+     depends="$depends $startscript"
+    fi
     # make startup script for KLIPS uml (no modules)
     startscript=$POOLSPACE/$host/start.sh
     echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh initrd.uml"
