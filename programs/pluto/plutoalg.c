@@ -663,7 +663,7 @@ void kernel_alg_show_status(void)
 void
 kernel_alg_show_connection(struct connection *c, const char *instance)
 {
-	char buf[256];
+	char buf[1024];
 	struct state *st;
 	const char *satype;
 
