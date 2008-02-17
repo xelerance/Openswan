@@ -871,22 +871,37 @@ alg_info_snprint(char *buf, int buflen
 			    , (int)esp_info->esp_ealg_keylen
 			    , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
 			    , esp_info->esp_aalg_id);
-		ptr+=np;
-		buflen-=np;
-		if ( cnt > 0) {
-			np=snprintf(ptr, buflen, ", ");
+		if(np < buflen) {
 			ptr+=np;
 			buflen-=np;
+		} else {
+			ptr+=buflen;
+			buflen=0;
+               }
+		if ( cnt > 0) {
+			np=snprintf(ptr, buflen, ", ");
+			if(np < buflen) {
+				ptr+=np;
+				buflen-=np;
+			} else {
+				ptr+=buflen;
+				buflen=0;
+			}
 		}
-		if(buflen<0) goto out;
+		if(buflen <= 0) goto out;
 	    }
 	    if (alg_info_esp->esp_pfsgroup) {
 		np=snprintf(ptr, buflen, "; pfsgroup=%s(%d)"
 			, enum_name(&oakley_group_names, alg_info_esp->esp_pfsgroup)+ sizeof("OAKLEY_GROUP")
 		        , alg_info_esp->esp_pfsgroup);
-		ptr+=np;
-		buflen-=np;
-		if(buflen<0) goto out;
+		if(np < buflen) {
+			ptr+=np;
+			buflen-=np;
+		} else {
+			ptr+=buflen;
+			buflen=0;
+		}
+		if(buflen <= 0) goto out;
 	    }
 	    break;
 	}
@@ -901,16 +916,26 @@ alg_info_snprint(char *buf, int buflen
 			    , (int)esp_info->esp_ealg_keylen
 			    , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
 			    , esp_info->esp_aalg_id);
-		ptr+=np;
-		buflen-=np;
-		if(buflen<0) goto out;
+		if(np < buflen) {
+			ptr+=np;
+			buflen-=np;
+		} else {
+			ptr+=buflen;
+			buflen=0;
+		}
+		if(buflen <= 0) goto out;
 	    }
 	    if (alg_info_esp->esp_pfsgroup) {
 		np=snprintf(ptr, buflen, "; pfsgroup=%d; "
 			    , alg_info_esp->esp_pfsgroup);
-		ptr+=np;
-		buflen-=np;
-		if(buflen<0) goto out;
+		if(np < buflen) {
+			ptr+=np;
+			buflen-=np;
+		} else {
+			ptr+=buflen;
+			buflen=0;
+		}
+		if(buflen <= 0) goto out;
 	    }
 	    break;
         }
@@ -926,14 +951,24 @@ alg_info_snprint(char *buf, int buflen
 			    , ike_info->ike_halg
 			    , enum_name(&oakley_group_names, ike_info->ike_modp)+ sizeof("OAKLEY_GROUP")
 			    , ike_info->ike_modp);
-		ptr+=np;
-		buflen-=np;
+		if(np < buflen) {
+			ptr+=np;
+			buflen-=np;
+		} else {
+			ptr+=buflen;
+			buflen=0;
+               }
                 if ( cnt > 0) {
                         np=snprintf(ptr, buflen, ", ");
-                        ptr+=np;
-                        buflen-=np;
+			if(np < buflen) {
+				ptr+=np;
+				buflen-=np;
+			} else {
+				ptr+=buflen;
+				buflen=0;
+                        }
                 }
-		if(buflen<0) goto out;
+		if(buflen <= 0) goto out;
 	    }
 	    break;
 	}
@@ -942,15 +977,27 @@ alg_info_snprint(char *buf, int buflen
     default:
 	np=snprintf(buf, buflen, "INVALID protoid=%d\n",
 		    alg_info->alg_info_protoid);
-	ptr+=np;
-	buflen-=np;
+	if(np < buflen) {
+		ptr+=np;
+		buflen-=np;
+	} else {
+		ptr+=buflen;
+		buflen=0;
+        }
 	goto out;
     }
-    np=snprintf(ptr, buflen, "; flags=%s",
+    if(buflen > 0){
+	np=snprintf(ptr, buflen, "; flags=%s",
 		alg_info->alg_info_flags&ALG_INFO_F_STRICT?
 		"strict":"-strict");
-    ptr+=np;
-    buflen-=np;
+    	if(np < buflen) {
+		ptr+=np;
+		buflen-=np;
+    	} else {
+		ptr+=buflen;
+		buflen=0;
+    	}
+    }
 
  out:
     passert(buflen >= 0);
