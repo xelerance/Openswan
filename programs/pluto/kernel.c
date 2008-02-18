@@ -535,8 +535,8 @@ could_route(struct connection *c)
     {
         loglog(RC_LOG_SERIOUS, "cannot route -- route already in use for \"%s\""
             , ro->name);
-        return route_impossible;  /* another connection already
-                                     using the eroute */
+        return route_impossible;  /* another connection already using the
+				     eroute. TODO: NETKEY can do this? */
     }
 
     /* if there is an eroute for another connection, there is a problem */
@@ -622,7 +622,8 @@ could_route(struct connection *c)
             loglog(RC_LOG_SERIOUS
                 , "cannot install eroute -- it is in use for \"%s\"%s #%lu"
                 , ero->name, inst, esr->eroute_owner);
-            return FALSE;       /* another connection already using the eroute */
+            return FALSE;       /* another connection already using the eroute,
+				   TODO: NETKEY apparently can do this though */
         }
     }
     return route_easy;
@@ -2456,6 +2457,7 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 switch (kern_interface) {
    case USE_MASTKLIPS:
    case USE_KLIPS:
+   case USE_NETKEY:
     if (!inbound_only)
     {
         /* If the state is the eroute owner, we must adjust
@@ -2503,9 +2505,6 @@ switch (kern_interface) {
         (void) teardown_half_ipsec_sa(st, FALSE);
     }
     (void) teardown_half_ipsec_sa(st, TRUE);
-    break;
-   case USE_NETKEY:
-    DBG(DBG_CONTROL, DBG_log("No support (required?) to delete_ipsec_sa with NETKEY"));
     break;
 #if defined(WIN32) && defined(WIN32_NATIVE)
    case USE_WIN32_NATIVE:
