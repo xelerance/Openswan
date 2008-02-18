@@ -295,9 +295,9 @@ static const struct state_microcode state_microcode_table[] = {
     { STATE_MAIN_R1, STATE_MAIN_R2
     , SMF_PSK_AUTH | SMF_DS_AUTH | SMF_REPLY
 #ifdef NAT_TRAVERSAL
-    , P(KE) | P(NONCE), P(VID) | P(CR) | P(NATD_RFC), PT(KE)
+    , P(KE) | P(NONCE), P(VID) | P(CR) | P(NATD_RFC), PT(NONE)
 #else
-    , P(KE) | P(NONCE), P(VID) | P(CR), PT(KE)
+    , P(KE) | P(NONCE), P(VID) | P(CR), PT(NONE)
 #endif
     , EVENT_RETRANSMIT, main_inI2_outR2 },
 
