@@ -13,3 +13,5 @@ touch /tmp/strongswan/etc/ipsec.secrets
 # note: ikev2 is done by charon, but ikev1 by pluto, so hopefully
 # the below script is still good to use 
 /testing/pluto/bin/wait-until-pluto-started
+
+echo done
