@@ -18,6 +18,7 @@ elif [ "$WEST_USERLAND" == "racoon2" ]
 then
         # setup racoon
         # note: tests do this manual - needs to be merged in
+	echo "racoon2 not yet merged into local scripts"
 else
 	# setup openswan
 	mkdir -p /tmp/$TESTNAME
