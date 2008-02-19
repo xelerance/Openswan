@@ -11,4 +11,5 @@ chmod 700 /tmp/racoon2/psk/test.psk
 # no conns are loaded
 /usr/local/racoon2/etc/init.d/iked start
 sleep 3
-# 
+
+echo done

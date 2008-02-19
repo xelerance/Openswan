@@ -11,3 +11,5 @@ chmod 700 /tmp/racoon2/psk/test.psk
 /usr/local/racoon2/etc/init.d/iked start
 
 sleep 3
+
+echo done
