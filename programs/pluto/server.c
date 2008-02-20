@@ -272,6 +272,7 @@ free_dead_ifaces(void)
 	struct iface_port **pp;
 
 	release_dead_interfaces();
+	delete_states_dead_interfaces();
 	for (pp = &interfaces; (p = *pp) != NULL; )
 	{
 	    if (p->change == IFN_DELETE)

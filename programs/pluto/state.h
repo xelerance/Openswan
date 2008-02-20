@@ -360,6 +360,7 @@ extern void set_state_ike_endpoints(struct state *st
 				    , struct connection *c);
 
 extern void delete_cryptographic_continuation(struct state *st);
+extern void delete_states_dead_interfaces(void);
 
 #endif /* _STATE_H */
 
