@@ -12,7 +12,6 @@ WEST_ARPREPLY=1
 
 # use the linux netkey kernel for strongswan
 EAST_NETKEY=true
-EAST_USERLAND=strongswan
 
 EAST_INPUT=../../klips/inputs/01-sunrise-sunset-ping.pcap
 REF_WEST_OUTPUT=../../klips/west-icmp-01/spi1-cleartext.txt

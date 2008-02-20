@@ -1,5 +1,6 @@
 : ==== start ====
 TESTNAME=interop-ikev2-strongswan-01
+EAST_USERLAND=strongswan
 source /testing/pluto/bin/eastlocal.sh
 
 #strongswan way of starting
