@@ -2694,7 +2694,12 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
 	&& !has_preloaded_public_key(st)
 	&& st->st_connection->spd.that.ca.ptr != NULL;
 
-    /* HDR out done */
+    /* HDR out.
+     * We can't leave this to process_packet() because the state
+     * may be suspended for crypto.
+     * See herbert Xu's comment on bug #460
+     */
+    echo_hdr(md, FALSE, ISAKMP_NEXT_KE);
 
     /* KE out */
     if (!ship_KE(st, r, &st->st_gr
