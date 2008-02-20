@@ -3,6 +3,7 @@ Please see docs/KNOWN_BUGS file for more information
 * Bugtracker bugs fixed
   #460: Fix bogus header with delayed MAIN I2->R2 [Herbert Xu]
   #496: kernel_alg_esp_auth_ok() call fixed - [gernot]
+  #761: pluto crashes after removing interface [Tillman Baumann]
   #897/731: crash in alg_info_snprint() - ["Deep Throat"]
   #889: backport from #ikev2 branch to fix ipsec_delete_sa with NETKEY [mcr]
 
