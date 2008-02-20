@@ -1,6 +1,8 @@
 : ==== start ====
 TESTNAME=interop-ikev2-strongswan-03
 source /testing/pluto/bin/westlocal.sh
+# avoid errors from other secrets done by westlocal.sh, create just our own
+cat /testing/pluto/$TESTNAME/west.secrets >/tmp/$TESTNAME/ipsec.secrets
 
 # confirm that the network is alive
 ping -n -c 1 192.0.2.254
