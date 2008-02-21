@@ -1,6 +1,6 @@
 : ==== start ====
 TESTNAME=interop-ikev2-strongswan-03
-source /testing/pluto/bin/westlocal.sh
+source /testing/pluto/bin/westnlocal.sh
 # avoid errors from other secrets done by westlocal.sh, create just our own
 cat /testing/pluto/$TESTNAME/west.secrets >/tmp/$TESTNAME/ipsec.secrets
 

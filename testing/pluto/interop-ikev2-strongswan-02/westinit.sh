@@ -1,6 +1,6 @@
 : ==== start ====
 TESTNAME=interop-ikev2-strongswan-02
-source /testing/pluto/bin/westlocal.sh
+source /testing/pluto/bin/westnlocal.sh
 
 # confirm that the network is alive
 ping -n -c 1 192.0.2.254
