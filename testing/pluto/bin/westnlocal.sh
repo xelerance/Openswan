@@ -32,7 +32,7 @@ else
 	# rather than append.
 	if [ -f /testing/pluto/$TESTNAME/west.secrets ] 
 	then
-	    	cp /testing/pluto/$TESTNAME/west.secrets >>/tmp/$TESTNAME/ipsec.secrets
+	    	cp /testing/pluto/$TESTNAME/west.secrets /tmp/$TESTNAME/ipsec.secrets
 	fi
 
 	mkdir -p /tmp/$TESTNAME/ipsec.d/policies
