@@ -4,13 +4,13 @@ TEST_PURPOSE=regress
 TEST_PROB_REPORT=0
 TEST_TYPE=umlplutotest
 
-TESTNAME=interop-ikev2-strongswan-01
+TESTNAME=interop-ikev2-racoon-01-noconn
 EASTHOST=east
 WESTHOST=west
 
 WEST_ARPREPLY=1
 
-# use the linux netkey kernel for strongswan
+# use the linux netkey kernel for racoon
 EAST_NETKEY=true
 
 EAST_INPUT=../../klips/inputs/01-sunrise-sunset-ping.pcap

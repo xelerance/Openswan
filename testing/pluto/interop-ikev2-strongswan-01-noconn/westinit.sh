@@ -1,5 +1,5 @@
 : ==== start ====
-TESTNAME=interop-ikev2-racoon-01
+TESTNAME=interop-ikev2-strongswan-01-noconn
 source /testing/pluto/bin/westnlocal.sh
 
 # make sure that clear text does not get through
@@ -9,7 +9,6 @@ ipsec setup start
 ipsec whack --whackrecord /var/tmp/ikev2.record
 ipsec auto --add westnet--eastnet-ikev2
 ipsec auto --status
-ipsec whack --debug-control --debug-controlmore --debug-parsing --debug-crypt
 /testing/pluto/bin/wait-until-pluto-started
 
 echo done

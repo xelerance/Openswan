@@ -1,5 +1,5 @@
 : ==== start ====
-TESTNAME=interop-ikev2-racoon-01
+TESTNAME=interop-ikev2-racoon-01-noconn
 
 mkdir /tmp/racoon2 /var/run/racoon2
 chmod 700 /var/run/racoon2

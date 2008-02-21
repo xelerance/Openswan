@@ -140,7 +140,7 @@ east:~# echo Finished loading module
 Finished loading module
 east:~# klogd -c 4 -x -f /tmp/klog.log
 east:~# : ==== start ====
-east:~# TESTNAME=interop-ikev2-racoon-01
+east:~# TESTNAME=interop-ikev2-racoon-01-noconn
 east:~# mkdir /tmp/racoon2
 east:~# cp -r /testing/pluto/$TESTNAME/east-racoon/* /tmp/racoon2/
 east:~# chmod 700 /tmp/racoon2/psk/test.psk   

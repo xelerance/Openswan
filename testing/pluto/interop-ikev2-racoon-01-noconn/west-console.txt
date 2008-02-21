@@ -142,7 +142,7 @@ west:~# echo Finished loading module
 Finished loading module
 west:~# klogd -c 4 -x -f /tmp/klog.log
 west:~# : ==== start ====
-west:~# TESTNAME=interop-ikev2-racoon-01
+west:~# TESTNAME=interop-ikev2-racoon-01-noconn
 west:~# source /testing/pluto/bin/westlocal.sh
 west:~# iptables -A INPUT -i eth1 -s 192.0.2.0/24 -j DROP
 west:~# ipsec setup start
