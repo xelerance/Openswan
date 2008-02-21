@@ -439,20 +439,18 @@ umlplutotest    algo-pluto-07          good
 umlplutotest    netkey-pluto-01        good
 umlplutotest    netkey-pluto-02        good
 
-# empty, psk-i, psk-r, x509-i, x509-r
-umlplutotest    interop-ikev2-racoon-01        good
-umlplutotest    interop-ikev2-racoon-02        good
-umlplutotest    interop-ikev2-racoon-03        good
-#umlplutotest    interop-ikev2-racoon-04        good
-#umlplutotest    interop-ikev2-racoon-05        good
+umlplutotest    interop-ikev2-racoon-01-noconn			good
+umlplutotest    interop-ikev2-racoon-02-psk-responder		good
+umlplutotest    interop-ikev2-racoon-03-psk-initiator		good
+umlplutotest    interop-ikev2-racoon-04-x509-responder		good
+umlplutotest    interop-ikev2-racoon-05-x509-initiator		good
 
-# empty, psk-i, psk-r, x509-i, x509-r
-umlplutotest    interop-ikev2-strongswan-01        good
-#umlplutotest    interop-ikev2-strongswan-02        good
-#umlplutotest    interop-ikev2-strongswan-03        good
-#umlplutotest    interop-ikev2-strongswan-04        good
-#umlplutotest    interop-ikev2-strongswan-05        good
+umlplutotest    interop-ikev2-strongswan-01-noconn		good
+umlplutotest    interop-ikev2-strongswan-02-psk-responder	good
+umlplutotest    interop-ikev2-strongswan-03-psk-initiator	good
+umlplutotest    interop-ikev2-strongswan-04-x509-responder	good
+umlplutotest    interop-ikev2-strongswan-05-x509-initiator	good
 
 # trying out bug 888
-umlplutotest	phase1-expire-01-reconnect-klips	good
-umlplutotest	phase1-expire-02-reconnect-netkey	good
+umlplutotest	phase1-expire-01-reconnect-klips		good
+umlplutotest	phase1-expire-02-reconnect-netkey		good
