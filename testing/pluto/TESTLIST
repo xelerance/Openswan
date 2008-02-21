@@ -453,3 +453,7 @@ umlplutotest    interop-ikev2-strongswan-01        good
 #umlplutotest    interop-ikev2-strongswan-03        good
 #umlplutotest    interop-ikev2-strongswan-04        good
 #umlplutotest    interop-ikev2-strongswan-05        good
+
+# trying out bug 888
+umlplutotest	phase1-expire-01-reconnect-klips	good
+umlplutotest	phase1-expire-02-reconnect-netkey	good
