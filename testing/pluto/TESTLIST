@@ -423,22 +423,30 @@ umlplutotest	protoport-02		good
 # Testing algo loading of proper algo sizes
 umlplutotest	ike-algo-02		good
 
-# IKEv2 tests
-umlplutotest	ikev2-01-fallback-ikev1			good
-umlplutotest	ikev2-02-responder-send-notify		good
-umlplutotest	ikev2-03-basic-rawrsa			good
-umlplutotest	ikev2-04-basic-x509			good
-umlplutotest	ikev2-05-basic-psk			good
-umlplutotest	ikev2-x509-01		good
-umlplutotest	ikev2-x509-02		good
-umlplutotest	ikev2-algo-01-modp2048-initiator	good
-umlplutotest	ikev2-algo-02-modp2048-responder	good
-
 # Tests below require testing infrastructure with netkey support
 umlplutotest    algo-pluto-07          good
 umlplutotest    netkey-pluto-01        good
 umlplutotest    netkey-pluto-02        good
 
+#################################################################
+# IKEv2 tests
+#################################################################
+umlplutotest	ikev2-01-fallback-ikev1			good
+umlplutotest	ikev2-02-responder-send-notify		good
+umlplutotest	ikev2-03-basic-rawrsa			good
+umlplutotest	ikev2-04-basic-x509			good
+umlplutotest	ikev2-05-basic-psk			good
+
+umlplutotest	ikev2-x509-01		good
+umlplutotest	ikev2-x509-02		good
+
+# modp tests for checking if we deal with sending different KE's
+umlplutotest	ikev2-algo-01-modp2048-initiator	good
+umlplutotest	ikev2-algo-02-modp2048-responder	good
+
+#################################################################
+# Interop tests
+#################################################################
 umlplutotest    interop-ikev2-racoon-01-noconn			good
 umlplutotest    interop-ikev2-racoon-02-psk-responder		good
 umlplutotest    interop-ikev2-racoon-03-psk-initiator		good
@@ -451,6 +459,9 @@ umlplutotest    interop-ikev2-strongswan-03-psk-initiator	good
 umlplutotest    interop-ikev2-strongswan-04-x509-responder	good
 umlplutotest    interop-ikev2-strongswan-05-x509-initiator	good
 
-# trying out bug 888
+#################################################################
+# Specific bug tests
+#################################################################
+# trying out bug #888
 umlplutotest	phase1-expire-01-reconnect-klips		good
 umlplutotest	phase1-expire-02-reconnect-netkey		good
