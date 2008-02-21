@@ -3,8 +3,8 @@ TESTNAME=interop-ikev2-racoon-01
 
 mkdir /tmp/racoon2 /var/run/racoon2
 chmod 700 /var/run/racoon2
-cp -a /testing/pluto/$TESTNAME/east-racoon/* /tmp/racoon2/
-chmod 700 /tmp/racoon2/psk/test.psk   
+cp -r /testing/pluto/$TESTNAME/east-racoon/* /tmp/racoon2/
+chmod 700 /tmp/racoon2/psk/test.psk /tmp/racoon2/spmd.pwd
 
 #racoon way of starting
 /usr/local/racoon2/etc/init.d/spmd start
