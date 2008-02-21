@@ -424,16 +424,15 @@ umlplutotest	protoport-02		good
 umlplutotest	ike-algo-02		good
 
 # IKEv2 tests
-umlplutotest	ikev2-01		good
-umlplutotest	ikev2-02		good
-umlplutotest	ikev2-03		good
-umlplutotest	ikev2-04		good
-umlplutotest	ikev2-05		good
-umlplutotest	ikev2-psk-01		good
+umlplutotest	ikev2-01-fallback-ikev1			good
+umlplutotest	ikev2-02-responder-send-notify		good
+umlplutotest	ikev2-03-basic-rawrsa			good
+umlplutotest	ikev2-04-basic-x509			good
+umlplutotest	ikev2-05-basic-psk			good
 umlplutotest	ikev2-x509-01		good
 umlplutotest	ikev2-x509-02		good
-
-umlplutotest	ikev2-algo-01		good
+umlplutotest	ikev2-algo-01-modp2048-initiator	good
+umlplutotest	ikev2-algo-02-modp2048-responder	good
 
 # Tests below require testing infrastructure with netkey support
 umlplutotest    algo-pluto-07          good
