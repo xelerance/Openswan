@@ -3,7 +3,7 @@ TESTNAME=interop-ikev2-racoon-01
 
 mkdir /tmp/racoon2 /var/run/racoon2
 chmod 700 /var/run/racoon2
-cp -r /testing/pluto/$TESTNAME/east-racoon/* /tmp/racoon2/
+cp -a /testing/pluto/$TESTNAME/east-racoon/* /tmp/racoon2/
 chmod 700 /tmp/racoon2/psk/test.psk   
 
 #racoon way of starting
