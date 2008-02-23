@@ -1,9 +1,6 @@
 : ==== start ====
 TESTNAME=ikev2-x509-01
-source /testing/pluto/bin/westlocal.sh
-
-rm -f /tmp/$TESTNAME/ipsec.d/certs/east*
-rm -f /tmp/$TESTNAME/ipsec.d/crls/nic.crl
+source /testing/pluto/bin/westnlocal.sh
 
 # confirm that the network is alive
  ping -n -c 4 192.0.2.254
@@ -15,8 +12,7 @@ ping -n -c 4 192.0.2.254
 ipsec setup start
 ipsec whack --whackrecord /var/tmp/ikev2.record
 ipsec auto --add ikev2-westnet-eastnet-x509-cr
-ipsec auto --status
-S=5
-echo "sleep ${S} sec"
-sleep 5
+
+/testing/pluto/bin/wait-until-pluto-started
+
 echo "done"
