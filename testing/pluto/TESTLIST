@@ -424,9 +424,10 @@ umlplutotest	protoport-02		good
 umlplutotest	ike-algo-02		good
 
 # Tests below require testing infrastructure with netkey support
-umlplutotest    algo-pluto-07          good
-umlplutotest    netkey-pluto-01        good
-umlplutotest    netkey-pluto-02        good
+umlplutotest    algo-pluto-07			good
+umlplutotest    netkey-pluto-01			good
+umlplutotest    netkey-pluto-02			good
+umlplutotest    netkey-pluto-03-sourceip        good
 
 #################################################################
 # IKEv2 tests
