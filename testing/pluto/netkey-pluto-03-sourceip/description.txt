@@ -1,6 +1,8 @@
-Same as netkey-pluto-03, but now west uses leftsourceip=192.0.1.254, which
-should cause a route to appear, and the ping command should work without
-specifying a source address, when pinging 192.0.2.254
+Standard east-west, but with leftsubnet=10.199.199.0/24. Now west uses
+leftsourceip=10.199.199.254, which should cause a route to appear:
 
-"westnet-eastnet": 192.0.1.0/24===192.1.2.45[@west]...192.1.2.23[@east]===192.0.2.0/24
 
+
+We are using 10.199.199.0/24 to avoid conflicts with the standard subnets
+and their routing via other ethX devices (east-west share multiple subnets
+on different interfaces)
