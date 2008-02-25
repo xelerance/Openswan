@@ -745,6 +745,18 @@ struct ikev2_a
 };
 extern struct_desc ikev2_a_desc;
 
+/* rfc4306 section 3.10 NOTIFY Payload */
+struct ikev2_notify 
+{
+    u_int8_t  isac_np;	    /* Next payload */
+    u_int8_t  isac_critical;
+    u_int16_t isac_length;	    /* Payload length */
+    u_int8_t  isac_proto;     /* Protocol ID: noSA=0,IKE=1,AH=2,ESP=3 */
+    u_int8_t  isac_spisize;   /* SPI size: 0 for IKE_SA
+    u_int16_t isac_type;      /* Notification type */
+    u_int32_t isac_type;      /* SPI */
+    u_int32_t isac_data;      /* Notification data */
+};
 
 /* rfc4306 section 3.6 CERT Payload */
 struct ikev2_cert 
