@@ -121,6 +121,7 @@ struct starter_config {
 	bool strictcrlpolicy;
 	bool nocrsend;
 	bool nat_traversal;
+	bool force_busy;
 	unsigned int keep_alive;
 	char *virtual_private;
     } setup;

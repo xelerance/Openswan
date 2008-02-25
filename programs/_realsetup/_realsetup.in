@@ -313,6 +313,7 @@ case "$1" in
 		perform ipsec _plutorun $re \
 			--debug "\"$IPSECplutodebug\"" \
 			--uniqueids "\"$IPSECuniqueids\"" \
+			--force_busy "\"$IPSECforce_busy\"" \
 			--nocrsend "\"$IPSECnocrsend\"" \
 			--strictcrlpolicy "\"$IPSECstrictcrlpolicy\"" \
 			--nat_traversal "\"$IPSECnat_traversal\"" \

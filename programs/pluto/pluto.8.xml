@@ -12,7 +12,7 @@
 
     <manvolnum>8</manvolnum>
 
-    <refmiscinfo class="date">26 October 2006</refmiscinfo>
+    <refmiscinfo class="date">25 February 2008</refmiscinfo>
   </refmeta>
 
   <refnamediv id="name">
@@ -60,6 +60,8 @@
       <replaceable>delay_sec</replaceable></arg>
 
       <arg choice="opt">--force_keepalive</arg>
+
+      <arg choice="opt">--force_busy</arg>
 
       <arg choice="opt">--disable_port_floating</arg>
 
@@ -3209,6 +3211,20 @@
             different Peer IP address is unoriented (causing all its SAs to be
             deleted). This helps clean up dangling SAs when a connection is
             lost and then regained at another IP address.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--force_busy</option></term>
+
+          <listitem>
+            <para>if this option has been selected, pluto will be forced
+            to be "busy". In this state, which happens when there is a
+            Denial of Service attack, will force pluto to use cookies
+            before accepting new incoming IKE packets. Cookies are send
+            and required in ikev1 Aggressive Mode and in ikev2.
+            This option is mostly used for testing purposes, but can
+            be selected by paranoid administrators as well.</para>
           </listitem>
         </varlistentry>
 

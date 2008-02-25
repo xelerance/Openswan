@@ -42,6 +42,7 @@ do
 	--nocrsend)	         nocrsend="$2" ; shift	;;
 	--strictcrlpolicy)	 strictcrlpolicy="$2" ; shift	;;
 	--crlcheckinterval)	 crlcheckinterval="$2"; shift	;;
+	--force_busy)		 force_busy="$2"; shift	;;
         --ocspuri)               ocspuri="$2"; shift    ;;
 	--dump)	                 dumpdir="$2" ; shift	;;
 	--opts)	                 popts="$2" ; shift	;;
@@ -90,6 +91,11 @@ case "$uniqueids" in
 yes)	popts="$popts --uniqueids"	;;
 no|'')				;;
 *)	echo "unknown uniqueids value (not yes/no) \`$IPSECuniqueids'"	;;
+esac
+case "$force_busy" in
+yes)  popts="$popts --force_busy"       ;;
+no|'')                                ;;
+*)    echo "unknown force_busy value (not yes/no) \`$IPSECforce_busy'"    ;;
 esac
 case "$nocrsend" in
 yes)  popts="$popts --nocrsend"       ;;
