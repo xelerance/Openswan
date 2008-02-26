@@ -318,19 +318,15 @@ umlXhost	xauth-pluto-08		good
 #
 # Aggressive Mode Pluto Tests
 #
-umlplutotest	aggr-pluto-01	good
-#
-umlplutotest	aggr-pluto-02	good
-#
-umlplutotest	aggr-pluto-03	good
-
+umlplutotest	aggr-pluto-01		good
+umlplutotest	aggr-pluto-02		good
+umlplutotest	aggr-pluto-03		good
+umlplutotest	aggr-pluto-04-cookies	good
 
 #
 # Aggressive Mode Unit Tests
-#
-ctltest	aggr-unit-01	good
-#
-ctltest	aggr-unit-02	good
+ctltest	aggr-unit-01			good
+ctltest	aggr-unit-02			good
 
 
 
@@ -424,9 +420,10 @@ umlplutotest	protoport-02		good
 umlplutotest	ike-algo-02		good
 
 # Tests below require testing infrastructure with netkey support
-umlplutotest    algo-pluto-07          good
-umlplutotest    netkey-pluto-01        good
-umlplutotest    netkey-pluto-02        good
+umlplutotest    algo-pluto-07			good
+umlplutotest    netkey-pluto-01			good
+umlplutotest    netkey-pluto-02			good
+umlplutotest    netkey-pluto-03-sourceip        good
 
 #################################################################
 # IKEv2 tests
@@ -436,6 +433,7 @@ umlplutotest	ikev2-02-responder-send-notify		good
 umlplutotest	ikev2-03-basic-rawrsa			good
 umlplutotest	ikev2-04-basic-x509			good
 umlplutotest	ikev2-05-basic-psk			good
+umlplutotest	ikev2-06-6msg				good
 
 umlplutotest	ikev2-x509-01		good
 umlplutotest	ikev2-x509-02		good

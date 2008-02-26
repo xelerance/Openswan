@@ -113,6 +113,7 @@ usage(const char *mess)
 	    " \\\n\t"
 	    "[--nofork]"
 	    " [--stderrlog]"
+	    " [--force_busy]"
 	    " [--nocrsend]"
 	    " [--strictcrlpolicy]"
 	    " [--crlcheckinterval]"
@@ -260,6 +261,9 @@ bool strict_crl_policy = FALSE;
 /** by default pluto does not check crls dynamically */
 long crl_check_interval = 0;
 
+/** by default pluto sends no cookies in ikev2 or ikev1 aggrmode */
+bool force_busy = FALSE;
+
 /* whether or not to use klips */
 enum kernel_interface kern_interface = AUTO_PICK;
 
@@ -317,6 +321,7 @@ main(int argc, char **argv)
 	    { "noklips", no_argument, NULL, 'n' },
 	    { "use-nostack",  no_argument, NULL, 'n' },
 	    { "use-none",     no_argument, NULL, 'n' },
+	    { "force_busy", no_argument, NULL, 'D' },
 	    { "nocrsend", no_argument, NULL, 'c' },
 	    { "strictcrlpolicy", no_argument, NULL, 'r' },
 	    { "crlcheckinterval", required_argument, NULL, 'x'},
@@ -471,6 +476,11 @@ main(int argc, char **argv)
 	case 'n':	/* --use-nostack */
 	    kern_interface = NO_KERNEL;
 	    continue;
+
+	case 'D':	/* --force_busy */
+	    force_busy = TRUE;
+	    continue
+	    ;
 
 	case 'c':	/* --nocrsend */
 	    no_cr_send = TRUE;

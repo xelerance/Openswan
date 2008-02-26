@@ -113,6 +113,9 @@ int starter_start_pluto (struct starter_config *cfg, int debug)
 	if (cfg->setup.options[KBF_UNIQUEIDS]) {
 		arg[argc++] = "--uniqueids";
 	}
+	if (cfg->setup.force_busy) {
+		arg[argc++] = "--force_busy";
+	}
 	if(cfg->setup.options[KBF_PLUTODEBUG] & DBG_ALL)
 	{
 	    arg[argc++] = "--debug-all";

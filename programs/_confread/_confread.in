@@ -172,7 +172,7 @@ awk 'BEGIN {
 	good = good " overridemtu"
 	good = good " nocrsend strictcrlpolicy crlcheckinterval ocspuri"
 	good = good " nat_traversal keep_alive force_keepalive"
-	good = good " disable_port_floating virtual_private"	
+	good = good " disable_port_floating virtual_private force_busy"	
 	n = split(good, g)
 	for (i = 1; i <= n; i++)
 		goodnames["config:" g[i]] = 1

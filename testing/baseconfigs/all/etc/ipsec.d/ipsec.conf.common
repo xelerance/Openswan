@@ -140,6 +140,10 @@ conn westnet-eastnet-ipcomp
 	compress=yes
 	also=westnet-eastnet
 
+conn westnet-eastnet-sourceip
+	leftsourceip=192.0.1.254
+	also=westnet-eastnet
+
 conn westnet-eastnet
 	also=west-east-base
 	also=westnet

@@ -1,0 +1,8 @@
+Standard east-west, but with leftsubnet=10.199.199.0/24. Now west uses
+leftsourceip=10.199.199.254, which should cause a route to appear:
+
+
+
+We are using 10.199.199.0/24 to avoid conflicts with the standard subnets
+and their routing via other ethX devices (east-west share multiple subnets
+on different interfaces)

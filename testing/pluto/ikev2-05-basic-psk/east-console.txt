@@ -15,7 +15,7 @@ Checking syscall emulation patch for ptrace...OK
 Checking advanced syscall emulation patch for ptrace...OK
 Linux version 2.6.18.6 (antony@cyclops) (gcc version 4.1.2 20061115 (prerelease) (Debian 4.1.1-21)) #1 Mon Jan 14 16:26:00 EST 2008
 Built 1 zonelists.  Total pages: 8192
-Kernel command line: initrd=/btmp/antony/ikev2/2008_01_14/UMLPOOL/initrd.uml umlroot=/btmp/antony/ikev2/2008_01_14/UMLPOOL/east/root root=/dev/ram0 rw ssl=pty eth0=daemon,10:00:00:dc:bc:ff,unix,/tmp/umlEV4Tk1.d/east/ctl,/tmp/umlEV4Tk1.d/east/data eth1=daemon,10:00:00:64:64:23,unix,/tmp/umlEV4Tk1.d/public/ctl,/tmp/umlEV4Tk1.d/public/data eth2=daemon,10:00:00:32:64:23,unix,/tmp/umlEV4Tk1.d/admin/ctl,/tmp/umlEV4Tk1.d/admin/data init=/linuxrc single
+Kernel command line: initrd=/btmp/antony/ikev2/2008_01_14/UMLPOOL/initrd.uml umlroot=/btmp/antony/ikev2/2008_01_14/UMLPOOL/east/root root=/dev/ram0 rw ssl=pty eth0=daemon,10:00:00:dc:bc:ff,unix,/tmp/uml6bcyGN.d/east/ctl,/tmp/uml6bcyGN.d/east/data eth1=daemon,10:00:00:64:64:23,unix,/tmp/uml6bcyGN.d/public/ctl,/tmp/uml6bcyGN.d/public/data eth2=daemon,10:00:00:32:64:23,unix,/tmp/uml6bcyGN.d/admin/ctl,/tmp/uml6bcyGN.d/admin/data init=/linuxrc single
 PID hash table entries: 256 (order: 8, 1024 bytes)
 Dentry cache hash table entries: 4096 (order: 2, 16384 bytes)
 Inode-cache hash table entries: 2048 (order: 1, 8192 bytes)
@@ -28,8 +28,6 @@ Checking that host ptys support SIGIO on close...No, enabling workaround
 checking if image is initramfs...it isn't (bad gzip magic numbers); looks like an initrd
 Freeing initrd memory: 1212k freed
 Using 2.6 host AIO
-umid "east" is already in use by pid 8098
-Failed to initialize umid "east", trying with a random umid
 NET: Registered protocol family 16
 NET: Registered protocol family 2
 IP route cache hash table entries: 256 (order: -2, 1024 bytes)
@@ -45,13 +43,13 @@ ipsec_aes_init(alg_type=15 alg_id=12 name=aes): ret=0
 ipsec_aes_init(alg_type=14 alg_id=9 name=aes_mac): ret=0
 ipsec_3des_init(alg_type=15 alg_id=3 name=3des): ret=0
 daemon_setup : Ignoring data socket specification
-Netdevice 0 (10:00:00:dc:bc:ff) : daemon backend (uml_switch version 3) - unix:/tmp/umlEV4Tk1.d/east/ctl
+Netdevice 0 (10:00:00:dc:bc:ff) : daemon backend (uml_switch version 3) - unix:/tmp/uml6bcyGN.d/east/ctl
 daemon_setup : Ignoring data socket specification
-Netdevice 1 (10:00:00:64:64:23) : daemon backend (uml_switch version 3) - unix:/tmp/umlEV4Tk1.d/public/ctl
+Netdevice 1 (10:00:00:64:64:23) : daemon backend (uml_switch version 3) - unix:/tmp/uml6bcyGN.d/public/ctl
 daemon_setup : Ignoring data socket specification
-Netdevice 2 (10:00:00:32:64:23) : daemon backend (uml_switch version 3) - unix:/tmp/umlEV4Tk1.d/admin/ctl
+Netdevice 2 (10:00:00:32:64:23) : daemon backend (uml_switch version 3) - unix:/tmp/uml6bcyGN.d/admin/ctl
 Checking host MADV_REMOVE support...OK
-mconsole (version 2) initialized on /home/antony/.uml/bK5Wo4/mconsole
+mconsole (version 2) initialized on /home/antony/.uml/east/mconsole
 Host TLS support detected
 Detected host type: i386
 VFS: Disk quotas dquot_6.5.1
@@ -96,7 +94,7 @@ Mounting a tmpfs over /dev...done.
 Creating initial device nodes...done.
 Invoked with Arguments: single
 Creating initial device nodes...done.
-crw-r--r--    1 root     root       5,   1 Feb 21 21:53 /dev/console
+crw-r--r--    1 root     root       5,   1 Feb 23 15:01 /dev/console
 line_ioctl: tty0: ioctl KDSIGACCEPT called
 INIT: version 2.78 booting
 /dev/root on / type hostfs (rw)
@@ -111,7 +109,7 @@ none on /usr/obj type hostfs (ro,/home/antony/ikev2/OBJ.linux.i386)
 none on /usr/local type hostfs (rw,/btmp/antony/ikev2/2008_01_14/UMLPOOL/east/root/usr/local)
 none on /var/tmp type hostfs (rw,/btmp/antony/ikev2/2008_01_14/UMLPOOL/east/root/var/tmp)
 none on /proc type proc (rw)
-crw-r--r--    1 root     root       5,   1 Feb 21 21:53 /dev/console
+crw-r--r--    1 root     root       5,   1 Feb 23 15:01 /dev/console
 mount: proc already mounted
 Activating swap...
 Checking all file systems...
@@ -143,7 +141,7 @@ Finished loading module
 east:~# klogd -c 4 -x -f /tmp/klog.log
 east:~# : ==== start ====
 east:~# TESTNAME=ikev2-05-basic-psk
-east:~# source /testing/pluto/bin/eastlocal.sh
+east:~# source /testing/pluto/bin/eastnlocal.sh
 east:~# ipsec setup start
 ipsec_setup: Starting Openswan IPsec U2.5.testing-g43bc1d6c-dirty/K2.5.testing-g70d71a2f-dirty...
 east:~# ipsec whack --whackrecord /var/tmp/ikev2.record
@@ -193,10 +191,10 @@ east:~# ipsec auto --status
 000 "westnet--eastnet-ikev2":   IKE algorithm newest: _128-SHA1-MODP2048
 000  
 000 #2: "westnet--eastnet-ikev2":500 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; newest IPSEC; eroute owner; nodpd; idle; import:respond to stranger
-000 #1: "westnet--eastnet-ikev2":500 STATE_PARENT_R2 (received v2I2, PARENT SA established); EVENT_CRYPTO_FAILED in 294s; newest ISAKMP; nodpd; idle; import:respond to stranger
+000 #1: "westnet--eastnet-ikev2":500 STATE_PARENT_R2 (received v2I2, PARENT SA established); EVENT_CRYPTO_FAILED in 293s; newest ISAKMP; nodpd; idle; import:respond to stranger
 000  
 east:~# cat /tmp/pluto.log
-Plutorun started on Thu Feb 21 21:53:33 GMT 2008
+Plutorun started on Sat Feb 23 15:01:18 GMT 2008
 Starting Pluto (Openswan Version 2.5.testing-g43bc1d6c-dirty; Vendor ID OEqjE\177pQ\134kpL) pid:913
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -213,6 +211,8 @@ ike_alg_register_enc(): Activating OAKLEY_BLOWFISH_CBC: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 starting up 1 cryptographic helpers
+| opening /dev/urandom
+using /dev/urandom as source of random entropy
 started helper pid=914 (fd:6)
 Using KLIPS IPsec interface code on 2.6.18.6
 | process 913 listening for PF_KEY_V2 on file descriptor 7
@@ -1768,16 +1768,14 @@ crl issuer cacert not found for (file:///tmp/ikev2-05-basic-psk/ipsec.d/crls/cac
 |   47 53 78 b3  35 e6 44 db  13 b3 11 93  d4 22 0c f9
 |   11
 crl issuer cacert not found for (file:///tmp/ikev2-05-basic-psk/ipsec.d/crls/cacrlexpired.pem)
-| inserting event EVENT_LOG_DAILY, timeout in 7587 seconds
+| inserting event EVENT_LOG_DAILY, timeout in 32322 seconds
 | next event EVENT_SHUNT_SCAN in 120 seconds
-| opening /dev/urandom
-using /dev/urandom as source of random entropy
+! helper 0 waiting on fd: 7
 |  
 | *received whack message
 | started recording whack messages to /var/tmp/ikev2.record 
 | * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 119 seconds
-! helper 0 waiting on fd: 7
+| next event EVENT_SHUNT_SCAN in 120 seconds
 |  
 | *received whack message
 listening for IKE messages
@@ -1792,33 +1790,11 @@ adding interface ipsec0/eth1 192.1.2.23:500
 | IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
 | could not open /proc/net/if_inet6
 loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81422e0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81422e0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81422e0) 1: @east
-| id type added to secret(0x81422e0) 1: @west
-| Processing PSK at line 26: passed
+| id type added to secret(0x813fa50) 1: @east
+| id type added to secret(0x813fa50) 1: @west
+| Processing PSK at line 1: passed
 | * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 119 seconds
+| next event EVENT_SHUNT_SCAN in 120 seconds
 |  
 | *received whack message
 | Added new connection westnet--eastnet-ikev2 with policy PSK+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
@@ -1844,815 +1820,14 @@ listening for IKE messages
 | could not open /proc/net/if_inet6
 forgetting secrets
 loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
+| id type added to secret(0x813fa50) 1: @east
+| id type added to secret(0x813fa50) 1: @west
+| Processing PSK at line 1: passed
 | * processed 0 messages from cryptographic helpers 
 | next event EVENT_SHUNT_SCAN in 119 seconds
 |  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 117 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 115 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 113 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 110 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 108 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 106 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 104 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 102 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 100 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 98 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 96 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 94 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 92 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 90 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 87 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 85 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 83 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x81421d0) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x81421d0) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x81421d0) 1: @east
-| id type added to secret(0x81421d0) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 81 seconds
-|  
-| *received whack message
-listening for IKE messages
-| found ipsec0 with address 192.1.2.23
-| found eth0 with address 192.0.2.254
-| found eth1 with address 192.1.2.23
-| found eth2 with address 192.9.2.23
-| found lo with address 127.0.0.1
-| IP interface lo 127.0.0.1 has no matching ipsec* interface -- ignored
-| IP interface eth2 192.9.2.23 has no matching ipsec* interface -- ignored
-| IP interface eth0 192.0.2.254 has no matching ipsec* interface -- ignored
-| could not open /proc/net/if_inet6
-forgetting secrets
-loading secrets from "/tmp/ikev2-05-basic-psk/ipsec.secrets"
-loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0x814f270) 1: C=ca, ST=Ontario, O=Xelerance, CN=east.xelerance.com, E=testing@xelerance.com
-| id type added to secret(0x814f270) 1: %any
-  loaded private key file '/etc/ipsec.d/private/east.key' (464 bytes)
-|   file content is not binary ASN.1
-|   -----BEGIN RSA PRIVATE KEY-----
-|   Proc-Type: 4,ENCRYPTED
-|   DEK-Info: DES-EDE3-CBC,26A612D386C07FE0
-|   -----END RSA PRIVATE KEY-----
-|   decrypting file using 'DES-EDE3-CBC'
-|   file coded in PEM format
-| L0 - RSAPrivateKey:
-| L1 - version:
-| L1 - modulus:
-| L1 - publicExponent:
-| L1 - privateExponent:
-| L1 - prime1:
-| L1 - prime2:
-| L1 - exponent1:
-| L1 - exponent2:
-| L1 - coefficient:
-"/tmp/ikev2-05-basic-psk/ipsec.secrets" line 26: RSA modulus too small for security: less than 512 bits
-| id type added to secret(0x814f270) 1: @east
-| id type added to secret(0x814f270) 1: @west
-| Processing PSK at line 26: passed
-| * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 79 seconds
-|  
 | *received 732 bytes from 192.1.2.45:500 on eth1 (port=500)
-|   e8 05 90 ca  d2 3a ee 04  00 00 00 00  00 00 00 00
+|   1d 56 aa 77  a7 e4 a2 b3  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 02 dc  22 80 01 94
 |   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
 |   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
@@ -2679,28 +1854,28 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |   00 00 00 08  04 00 00 02  00 00 00 28  0a 01 00 04
 |   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
 |   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
-|   28 00 01 08  00 0e 00 00  fa 16 28 78  76 7c 83 55
-|   bd 3d c9 94  b8 f4 6f a7  5f a6 91 77  cc 4a eb 65
-|   49 32 2c 03  63 35 ee 02  c8 64 ca 5e  2e 6e 54 8d
-|   c3 0f dc a8  a5 33 2d 7f  ee 3b 5b a7  7e 87 0f a4
-|   43 86 8a d7  bd bc 62 65  a5 da 06 36  d5 67 b7 9d
-|   e5 e5 10 5c  4e f2 55 d9  24 ed 20 a5  b9 db 69 7f
-|   4a 7c 3f 32  d5 db 26 50  31 a7 5a e2  a8 7a 56 77
-|   72 d0 68 8c  60 e4 12 37  21 86 92 35  ff d6 ac 09
-|   ad 1d 80 6f  bf 0e 84 d3  55 21 41 5d  76 a9 11 0b
-|   29 d3 0e 8c  f4 36 44 b2  0a 6f 35 a9  70 7c f2 5c
-|   66 00 67 a3  83 73 44 15  ce a5 41 58  04 c1 06 e2
-|   77 c3 b3 83  b9 1b d0 8a  ca 4e 19 c7  f6 13 17 30
-|   ba 2a f0 8c  55 c5 1e 37  c9 84 07 68  ae 9c bc ee
-|   68 5c ce eb  d4 be a7 18  80 8d 9e e3  52 00 bc 6d
-|   91 87 d6 a8  81 7a a2 0a  aa 36 f6 fa  9d 0c 51 e3
-|   bf 63 6b 2b  25 c9 cb 38  26 99 1b 03  1d 66 50 ed
-|   9e 71 a3 df  11 77 7b 89  2b 80 00 14  6b 98 11 b2
-|   fe e7 5c 89  de 6a 5f 3d  14 83 b6 25  00 00 00 10
+|   28 00 01 08  00 0e 00 00  11 a2 55 e4  76 51 88 07
+|   03 9a da a5  f8 7c 84 c8  39 95 cd 28  c4 60 32 f2
+|   1b 6a 78 72  8e 6b cc 06  82 24 c1 a4  33 af 01 53
+|   21 99 b6 fe  e1 14 73 88  5e 23 c7 00  87 c8 20 91
+|   a9 9a a1 30  7d cb 2a 3e  21 9a d3 7d  87 ec b5 dd
+|   86 e4 1a 51  b6 a6 01 ef  03 89 d3 77  34 18 92 76
+|   9c fa 57 be  ea 34 2a cd  eb 1f 8d 69  6a 86 28 03
+|   6f 1f 3c d7  2f ee 84 eb  1c 9f 9e 56  90 68 98 14
+|   62 b2 7b 76  d1 e8 36 be  55 fd 8d 18  18 a7 bb 60
+|   30 d0 f5 e3  ed a2 e8 ea  11 fa bf 52  4b 2d be f2
+|   da 18 d5 6f  92 1f 4a cc  51 77 a7 00  82 e0 8a 7b
+|   21 f7 5b bd  0f 63 47 ea  86 5d b5 5e  39 bc 63 1b
+|   62 66 e1 c4  44 fb b1 a1  9f 3b e2 79  c7 b8 14 0c
+|   3a 17 7b d0  4c e8 1d f7  c8 39 a4 57  39 31 67 20
+|   10 be dc f6  6f 97 47 cb  15 b0 42 8a  c4 08 b8 49
+|   f5 4d 79 d6  8f 18 c6 19  ea 7b 39 60  8a b1 a8 6e
+|   f4 4b 81 54  3c 5b 77 2f  2b 80 00 14  22 91 12 b0
+|   c2 41 9a 9a  2f 75 85 cc  3a 1e 1c 27  00 00 00 10
 |   4f 45 71 6a  45 7f 70 51  5c 6b 70 4c
 | **parse ISAKMP Message:
 |    initiator cookie:
-|   e8 05 90 ca  d2 3a ee 04
+|   1d 56 aa 77  a7 e4 a2 b3
 |    responder cookie:
 |   00 00 00 00  00 00 00 00
 |    next payload type: ISAKMP_NEXT_v2SA
@@ -2710,13 +1885,13 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |    message ID:  00 00 00 00
 |    length: 732
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34)
-| ICOOKIE:  e8 05 90 ca  d2 3a ee 04
+| ICOOKIE:  1d 56 aa 77  a7 e4 a2 b3
 | RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 5
+| state hash entry 20
 | v2 state object not found
-| ICOOKIE:  e8 05 90 ca  d2 3a ee 04
+| ICOOKIE:  1d 56 aa 77  a7 e4 a2 b3
 | RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 5
+| state hash entry 20
 | v2 state object not found
 | ***parse IKEv2 Security Association Payload:
 |    next payload type: ISAKMP_NEXT_v2KE
@@ -2744,12 +1919,12 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | searching for policy=IKEv2ALLOW, found=IKEv2ALLOW (westnet--eastnet-ikev2)
 | find_host_connection returns westnet--eastnet-ikev2
 | found connection: westnet--eastnet-ikev2 
-| creating state object #1 at 0x814ff78
+| creating state object #1 at 0x81432a0
 | processing connection westnet--eastnet-ikev2
-| ICOOKIE:  e8 05 90 ca  d2 3a ee 04
+| ICOOKIE:  1d 56 aa 77  a7 e4 a2 b3
 | RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 5
-| inserting state object #1 on chain 5
+| state hash entry 20
+| inserting state object #1 on chain 20
 | inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
 | processing connection westnet--eastnet-ikev2
 | 0: w->pcw_dead: 0 w->pcw_work: 0 cnt: 1
@@ -2758,31 +1933,31 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | inserting event EVENT_CRYPTO_FAILED, timeout in 300 seconds for #1
 | complete v2 state transition with STF_SUSPEND
 | * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 63 seconds
+| next event EVENT_SHUNT_SCAN in 105 seconds
 ! helper 0 read 2664+4/2668 bytesfd: 7
 ! helper 0 doing build_kenonce op id: 1
 ! Local DH secret:
-!   a9 c7 8f f2  63 1c 1f 5e  52 3c 25 50  cc a5 a5 d8
-!   c1 7a f3 04  da 1c 61 69  cd c4 c6 11  8a b1 24 12
+!   5d 87 a1 a4  b0 36 45 4b  80 93 c1 78  ee 61 ad 4c
+!   a4 9a ec 23  4b 1b 11 61  e2 5a 99 d8  7a 34 79 1f
 ! Public DH value sent:
-!   50 92 aa f6  39 24 85 8a  ef c2 9a 4c  8e 7c 85 17
-!   1f 4a 76 46  6a e2 02 0b  5a 92 73 32  48 e9 1e e9
-!   03 83 c2 2f  10 7c 3e e5  8a 33 11 d7  81 a8 ba 5a
-!   d9 44 db f9  70 f1 34 66  f7 da 2e 05  d0 74 39 35
-!   83 4a 27 b6  58 54 93 2a  19 27 d2 c2  fa bf 86 d9
-!   4e 20 2a 26  ae 43 5a 01  e8 fd 1d 76  85 9d 82 2c
-!   94 b7 cf 24  3d 6a fc 16  26 64 83 a1  e7 e1 95 db
-!   61 35 62 08  83 84 cd 17  b5 4e 47 8c  90 b0 d0 fa
-!   01 2b d4 c5  bc 2e 28 0c  ae 69 fb 0a  3c e7 a6 b1
-!   09 1d ef 3f  11 79 13 82  34 e0 46 79  30 2a 73 4b
-!   4c ed 15 1b  da e6 3f 1f  33 05 68 2c  01 92 1a 47
-!   4f a2 2a 3f  4c 62 99 73  8b 47 be 3e  d5 ba ea 6c
-!   a8 d5 b4 2e  31 d9 24 3c  23 be 3a d2  13 5d e9 6b
-!   d7 c5 f9 ea  f0 0a b0 56  eb a2 38 2b  2d 30 11 a5
-!   22 6d bd 34  89 e2 bd 2f  7e 73 0f 15  20 1b 5f 33
-!   9b e3 b4 6d  4c 32 e1 b8  80 5b a1 25  d7 1a 5b 9b
+!   0f 2d 6a 12  c9 f9 85 72  77 55 f9 b4  5b 9d 56 7b
+!   b7 c3 d8 4a  65 32 78 e3  83 60 2f ab  75 d9 70 47
+!   e5 98 b0 c0  77 ce 91 2d  21 83 25 67  a1 95 37 f7
+!   78 59 90 90  6e 90 51 5d  c3 7e da f9  68 c8 49 61
+!   6d 46 c7 d5  4b 86 d7 08  09 5f f6 01  f6 6b 15 5c
+!   f7 7b 95 6e  87 72 9b c6  2d f7 d0 85  b8 5f d2 5e
+!   20 0c 19 db  9c 7f 2f 98  5a 99 13 af  87 e4 0a 20
+!   3a 51 d7 0d  50 0a 13 b9  4b c9 19 fb  73 07 6b f0
+!   1e 81 30 73  05 be e1 a7  0a 5a 82 5c  fc 2b 61 bc
+!   53 2b 05 64  0a 92 ef aa  02 8a f5 65  b0 87 66 af
+!   1a 18 d5 3f  dd 0c 13 73  0c 76 e3 24  b7 f4 c0 2b
+!   3c 91 e5 3f  d8 16 76 9d  ef 11 27 1e  71 94 51 a1
+!   42 a1 1c 25  ad b1 c6 2f  10 07 e4 94  84 54 84 03
+!   9d f2 c2 fa  21 49 d1 7c  de 17 cf 72  8d 99 65 43
+!   f4 48 cf b1  79 dc 48 86  15 3f cb 0d  91 c0 89 8b
+!   8b 4a 1b 87  75 30 d6 6d  f8 59 19 8a  15 3a 1a b0
 ! Generated nonce:
-!   1d 2e ea bc  d0 50 3f 27  63 ea 99 08  de fa b8 f4
+!   a2 e0 24 24  00 da 41 57  93 8d f1 ec  a4 5e 4d 1d
 |  
 | helper 0 has finished work (cnt now 1)
 | helper 0 replies to id: q#1
@@ -2791,9 +1966,9 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | processing connection westnet--eastnet-ikev2
 | **emit ISAKMP Message:
 |    initiator cookie:
-|   e8 05 90 ca  d2 3a ee 04
+|   1d 56 aa 77  a7 e4 a2 b3
 |    responder cookie:
-|   cc da 96 3d  aa 0f fc 9f
+|   65 fc 37 f1  7e 24 da 76
 |    next payload type: ISAKMP_NEXT_v2SA
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306)
 |    exchange type: ISAKMP_v2_SA_INIT
@@ -2866,48 +2041,48 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | emitting length of IKEv2 Security Association Payload: 44
 | DH public value received:
-|   fa 16 28 78  76 7c 83 55  bd 3d c9 94  b8 f4 6f a7
-|   5f a6 91 77  cc 4a eb 65  49 32 2c 03  63 35 ee 02
-|   c8 64 ca 5e  2e 6e 54 8d  c3 0f dc a8  a5 33 2d 7f
-|   ee 3b 5b a7  7e 87 0f a4  43 86 8a d7  bd bc 62 65
-|   a5 da 06 36  d5 67 b7 9d  e5 e5 10 5c  4e f2 55 d9
-|   24 ed 20 a5  b9 db 69 7f  4a 7c 3f 32  d5 db 26 50
-|   31 a7 5a e2  a8 7a 56 77  72 d0 68 8c  60 e4 12 37
-|   21 86 92 35  ff d6 ac 09  ad 1d 80 6f  bf 0e 84 d3
-|   55 21 41 5d  76 a9 11 0b  29 d3 0e 8c  f4 36 44 b2
-|   0a 6f 35 a9  70 7c f2 5c  66 00 67 a3  83 73 44 15
-|   ce a5 41 58  04 c1 06 e2  77 c3 b3 83  b9 1b d0 8a
-|   ca 4e 19 c7  f6 13 17 30  ba 2a f0 8c  55 c5 1e 37
-|   c9 84 07 68  ae 9c bc ee  68 5c ce eb  d4 be a7 18
-|   80 8d 9e e3  52 00 bc 6d  91 87 d6 a8  81 7a a2 0a
-|   aa 36 f6 fa  9d 0c 51 e3  bf 63 6b 2b  25 c9 cb 38
-|   26 99 1b 03  1d 66 50 ed  9e 71 a3 df  11 77 7b 89
+|   11 a2 55 e4  76 51 88 07  03 9a da a5  f8 7c 84 c8
+|   39 95 cd 28  c4 60 32 f2  1b 6a 78 72  8e 6b cc 06
+|   82 24 c1 a4  33 af 01 53  21 99 b6 fe  e1 14 73 88
+|   5e 23 c7 00  87 c8 20 91  a9 9a a1 30  7d cb 2a 3e
+|   21 9a d3 7d  87 ec b5 dd  86 e4 1a 51  b6 a6 01 ef
+|   03 89 d3 77  34 18 92 76  9c fa 57 be  ea 34 2a cd
+|   eb 1f 8d 69  6a 86 28 03  6f 1f 3c d7  2f ee 84 eb
+|   1c 9f 9e 56  90 68 98 14  62 b2 7b 76  d1 e8 36 be
+|   55 fd 8d 18  18 a7 bb 60  30 d0 f5 e3  ed a2 e8 ea
+|   11 fa bf 52  4b 2d be f2  da 18 d5 6f  92 1f 4a cc
+|   51 77 a7 00  82 e0 8a 7b  21 f7 5b bd  0f 63 47 ea
+|   86 5d b5 5e  39 bc 63 1b  62 66 e1 c4  44 fb b1 a1
+|   9f 3b e2 79  c7 b8 14 0c  3a 17 7b d0  4c e8 1d f7
+|   c8 39 a4 57  39 31 67 20  10 be dc f6  6f 97 47 cb
+|   15 b0 42 8a  c4 08 b8 49  f5 4d 79 d6  8f 18 c6 19
+|   ea 7b 39 60  8a b1 a8 6e  f4 4b 81 54  3c 5b 77 2f
 | ***emit IKEv2 Key Exchange Payload:
 |    next payload type: ISAKMP_NEXT_v2Ni
 |    transform type: 14
 | emitting 256 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
-| ikev2 g^x  50 92 aa f6  39 24 85 8a  ef c2 9a 4c  8e 7c 85 17
-| ikev2 g^x  1f 4a 76 46  6a e2 02 0b  5a 92 73 32  48 e9 1e e9
-| ikev2 g^x  03 83 c2 2f  10 7c 3e e5  8a 33 11 d7  81 a8 ba 5a
-| ikev2 g^x  d9 44 db f9  70 f1 34 66  f7 da 2e 05  d0 74 39 35
-| ikev2 g^x  83 4a 27 b6  58 54 93 2a  19 27 d2 c2  fa bf 86 d9
-| ikev2 g^x  4e 20 2a 26  ae 43 5a 01  e8 fd 1d 76  85 9d 82 2c
-| ikev2 g^x  94 b7 cf 24  3d 6a fc 16  26 64 83 a1  e7 e1 95 db
-| ikev2 g^x  61 35 62 08  83 84 cd 17  b5 4e 47 8c  90 b0 d0 fa
-| ikev2 g^x  01 2b d4 c5  bc 2e 28 0c  ae 69 fb 0a  3c e7 a6 b1
-| ikev2 g^x  09 1d ef 3f  11 79 13 82  34 e0 46 79  30 2a 73 4b
-| ikev2 g^x  4c ed 15 1b  da e6 3f 1f  33 05 68 2c  01 92 1a 47
-| ikev2 g^x  4f a2 2a 3f  4c 62 99 73  8b 47 be 3e  d5 ba ea 6c
-| ikev2 g^x  a8 d5 b4 2e  31 d9 24 3c  23 be 3a d2  13 5d e9 6b
-| ikev2 g^x  d7 c5 f9 ea  f0 0a b0 56  eb a2 38 2b  2d 30 11 a5
-| ikev2 g^x  22 6d bd 34  89 e2 bd 2f  7e 73 0f 15  20 1b 5f 33
-| ikev2 g^x  9b e3 b4 6d  4c 32 e1 b8  80 5b a1 25  d7 1a 5b 9b
+| ikev2 g^x  0f 2d 6a 12  c9 f9 85 72  77 55 f9 b4  5b 9d 56 7b
+| ikev2 g^x  b7 c3 d8 4a  65 32 78 e3  83 60 2f ab  75 d9 70 47
+| ikev2 g^x  e5 98 b0 c0  77 ce 91 2d  21 83 25 67  a1 95 37 f7
+| ikev2 g^x  78 59 90 90  6e 90 51 5d  c3 7e da f9  68 c8 49 61
+| ikev2 g^x  6d 46 c7 d5  4b 86 d7 08  09 5f f6 01  f6 6b 15 5c
+| ikev2 g^x  f7 7b 95 6e  87 72 9b c6  2d f7 d0 85  b8 5f d2 5e
+| ikev2 g^x  20 0c 19 db  9c 7f 2f 98  5a 99 13 af  87 e4 0a 20
+| ikev2 g^x  3a 51 d7 0d  50 0a 13 b9  4b c9 19 fb  73 07 6b f0
+| ikev2 g^x  1e 81 30 73  05 be e1 a7  0a 5a 82 5c  fc 2b 61 bc
+| ikev2 g^x  53 2b 05 64  0a 92 ef aa  02 8a f5 65  b0 87 66 af
+| ikev2 g^x  1a 18 d5 3f  dd 0c 13 73  0c 76 e3 24  b7 f4 c0 2b
+| ikev2 g^x  3c 91 e5 3f  d8 16 76 9d  ef 11 27 1e  71 94 51 a1
+| ikev2 g^x  42 a1 1c 25  ad b1 c6 2f  10 07 e4 94  84 54 84 03
+| ikev2 g^x  9d f2 c2 fa  21 49 d1 7c  de 17 cf 72  8d 99 65 43
+| ikev2 g^x  f4 48 cf b1  79 dc 48 86  15 3f cb 0d  91 c0 89 8b
+| ikev2 g^x  8b 4a 1b 87  75 30 d6 6d  f8 59 19 8a  15 3a 1a b0
 | emitting length of IKEv2 Key Exchange Payload: 264
 | ***emit IKEv2 Nonce Payload:
 |    next payload type: ISAKMP_NEXT_v2V
 |    critical bit: Payload-Critical
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
-| IKEv2 nonce  1d 2e ea bc  d0 50 3f 27  63 ea 99 08  de fa b8 f4
+| IKEv2 nonce  a2 e0 24 24  00 da 41 57  93 8d f1 ec  a4 5e 4d 1d
 | emitting length of IKEv2 Nonce Payload: 20
 | ***emit ISAKMP Vendor ID Payload:
 |    next payload type: ISAKMP_NEXT_NONE
@@ -2920,58 +2095,58 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 "westnet--eastnet-ikev2" #1: STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 cipher=aes_128 integ=sha1 prf=oakley_sha group=modp2048}
 | sending reply packet to 192.1.2.45:500 (from port 500)
 | sending 372 bytes for STATE_IKEv2_START through eth1:500 to 192.1.2.45:500 (using #1)
-|   e8 05 90 ca  d2 3a ee 04  cc da 96 3d  aa 0f fc 9f
+|   1d 56 aa 77  a7 e4 a2 b3  65 fc 37 f1  7e 24 da 76
 |   21 20 22 20  00 00 00 00  00 00 01 74  22 80 00 2c
 |   00 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
 |   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
 |   00 00 00 08  04 00 00 0e  28 00 01 08  00 0e 00 00
-|   50 92 aa f6  39 24 85 8a  ef c2 9a 4c  8e 7c 85 17
-|   1f 4a 76 46  6a e2 02 0b  5a 92 73 32  48 e9 1e e9
-|   03 83 c2 2f  10 7c 3e e5  8a 33 11 d7  81 a8 ba 5a
-|   d9 44 db f9  70 f1 34 66  f7 da 2e 05  d0 74 39 35
-|   83 4a 27 b6  58 54 93 2a  19 27 d2 c2  fa bf 86 d9
-|   4e 20 2a 26  ae 43 5a 01  e8 fd 1d 76  85 9d 82 2c
-|   94 b7 cf 24  3d 6a fc 16  26 64 83 a1  e7 e1 95 db
-|   61 35 62 08  83 84 cd 17  b5 4e 47 8c  90 b0 d0 fa
-|   01 2b d4 c5  bc 2e 28 0c  ae 69 fb 0a  3c e7 a6 b1
-|   09 1d ef 3f  11 79 13 82  34 e0 46 79  30 2a 73 4b
-|   4c ed 15 1b  da e6 3f 1f  33 05 68 2c  01 92 1a 47
-|   4f a2 2a 3f  4c 62 99 73  8b 47 be 3e  d5 ba ea 6c
-|   a8 d5 b4 2e  31 d9 24 3c  23 be 3a d2  13 5d e9 6b
-|   d7 c5 f9 ea  f0 0a b0 56  eb a2 38 2b  2d 30 11 a5
-|   22 6d bd 34  89 e2 bd 2f  7e 73 0f 15  20 1b 5f 33
-|   9b e3 b4 6d  4c 32 e1 b8  80 5b a1 25  d7 1a 5b 9b
-|   2b 80 00 14  1d 2e ea bc  d0 50 3f 27  63 ea 99 08
-|   de fa b8 f4  00 00 00 10  4f 45 71 6a  45 7f 70 51
+|   0f 2d 6a 12  c9 f9 85 72  77 55 f9 b4  5b 9d 56 7b
+|   b7 c3 d8 4a  65 32 78 e3  83 60 2f ab  75 d9 70 47
+|   e5 98 b0 c0  77 ce 91 2d  21 83 25 67  a1 95 37 f7
+|   78 59 90 90  6e 90 51 5d  c3 7e da f9  68 c8 49 61
+|   6d 46 c7 d5  4b 86 d7 08  09 5f f6 01  f6 6b 15 5c
+|   f7 7b 95 6e  87 72 9b c6  2d f7 d0 85  b8 5f d2 5e
+|   20 0c 19 db  9c 7f 2f 98  5a 99 13 af  87 e4 0a 20
+|   3a 51 d7 0d  50 0a 13 b9  4b c9 19 fb  73 07 6b f0
+|   1e 81 30 73  05 be e1 a7  0a 5a 82 5c  fc 2b 61 bc
+|   53 2b 05 64  0a 92 ef aa  02 8a f5 65  b0 87 66 af
+|   1a 18 d5 3f  dd 0c 13 73  0c 76 e3 24  b7 f4 c0 2b
+|   3c 91 e5 3f  d8 16 76 9d  ef 11 27 1e  71 94 51 a1
+|   42 a1 1c 25  ad b1 c6 2f  10 07 e4 94  84 54 84 03
+|   9d f2 c2 fa  21 49 d1 7c  de 17 cf 72  8d 99 65 43
+|   f4 48 cf b1  79 dc 48 86  15 3f cb 0d  91 c0 89 8b
+|   8b 4a 1b 87  75 30 d6 6d  f8 59 19 8a  15 3a 1a b0
+|   2b 80 00 14  a2 e0 24 24  00 da 41 57  93 8d f1 ec
+|   a4 5e 4d 1d  00 00 00 10  4f 45 71 6a  45 7f 70 51
 |   5c 6b 70 4c
 | * processed 1 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 63 seconds
+| next event EVENT_SHUNT_SCAN in 105 seconds
 |  
 | *received 300 bytes from 192.1.2.45:500 on eth1 (port=500)
-|   e8 05 90 ca  d2 3a ee 04  cc da 96 3d  aa 0f fc 9f
+|   1d 56 aa 77  a7 e4 a2 b3  65 fc 37 f1  7e 24 da 76
 |   2e 20 23 08  00 00 00 01  00 00 01 2c  23 80 01 10
-|   87 95 00 af  38 2a 57 82  05 39 66 01  b9 96 95 ce
-|   59 4a 80 f2  31 64 64 1f  a3 a4 b1 fe  ab 9f 8c 2e
-|   61 12 72 ec  68 7f 47 15  89 c9 d7 f1  12 d3 d1 38
-|   19 50 25 24  f2 1a 6e 76  30 f0 be f0  8a ff 35 7f
-|   a2 e7 be 50  bc 54 7c ec  77 b8 d7 68  13 03 04 36
-|   2c dc cb ae  00 c6 f6 8d  88 5f 70 ce  65 ac 6b f0
-|   60 4a e6 18  2e db 70 5b  20 15 47 7d  b6 1f 62 4f
-|   96 e9 8a 65  b4 b2 51 be  53 27 83 89  f2 a5 22 69
-|   81 f1 b0 07  40 eb 64 28  3f 40 d1 65  28 84 c7 93
-|   44 2d 87 8e  4e 95 6b ba  b8 7c f1 00  dd d4 34 3a
-|   14 ec 78 fb  f4 51 2b 4d  f1 ca 9b 8b  eb ed 19 89
-|   c7 22 d5 45  57 55 d4 0e  ee 4d 6e f8  63 c7 3a 5a
-|   93 2e 00 fa  b2 d7 eb 08  ff 9c d7 a8  28 6e 87 94
-|   be 47 02 b0  5b ee 48 8a  05 bb f8 e2  46 53 b8 bc
-|   11 45 cc 9a  da 77 b8 01  22 37 c8 a3  58 0c 95 4a
-|   8c 02 dd 0a  58 4c d9 fb  fc 4d 55 b2  4c eb 66 ea
-|   56 aa 2a fb  fb d9 73 78  94 20 de 27
+|   bc 09 64 fc  7f 1c 35 5b  18 7b 62 2d  5d c0 fb 68
+|   93 e1 c4 80  8a a3 6b 6d  ee 24 45 51  9f 7b b8 98
+|   35 bf e4 d0  b0 c2 45 9c  31 44 50 7f  7f 7c 24 4a
+|   20 65 5c 6a  82 7a 8f 73  fd 75 21 cc  34 1b b6 ce
+|   13 65 33 2c  f9 29 8e c9  a6 05 fa a5  6a 7b d0 5f
+|   2c 1c b2 96  1f 2d 4e 9d  b0 e6 73 11  92 21 af b1
+|   ae 7a f1 9f  39 01 30 c8  06 93 22 f5  49 13 ff 89
+|   c2 55 91 17  b2 4e c7 1c  88 77 de 2d  31 97 1d d0
+|   31 94 44 d4  76 88 ed 5a  59 d1 94 6c  ff a4 60 60
+|   47 27 1d 82  89 40 4b 0a  2a 0c 90 ff  f2 0b d1 a4
+|   87 a4 70 84  9c 7e ef 8f  34 db 7a 29  f6 eb 50 bf
+|   ed 02 5b 23  74 b5 c8 ed  02 e3 1c e1  43 a3 d1 90
+|   90 6a 94 7f  bd 48 8f b6  a1 dc bf a6  21 bc 59 22
+|   3b 69 8d d2  20 45 8e 8c  ba a3 f5 d1  fa 41 99 33
+|   e5 7d 12 a3  12 ab fb ad  80 03 6e d1  ab d5 53 d9
+|   91 42 4b 11  75 31 9c 13  00 25 38 06  d7 f7 c5 72
+|   23 c3 6a a6  8a fe d8 10  8e 9d 48 83
 | **parse ISAKMP Message:
 |    initiator cookie:
-|   e8 05 90 ca  d2 3a ee 04
+|   1d 56 aa 77  a7 e4 a2 b3
 |    responder cookie:
-|   cc da 96 3d  aa 0f fc 9f
+|   65 fc 37 f1  7e 24 da 76
 |    next payload type: ISAKMP_NEXT_v2E
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306)
 |    exchange type: ISAKMP_v2_AUTH
@@ -2979,13 +2154,13 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |    message ID:  00 00 00 01
 |    length: 300
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35)
-| ICOOKIE:  e8 05 90 ca  d2 3a ee 04
-| RCOOKIE:  cc da 96 3d  aa 0f fc 9f
-| state hash entry 18
+| ICOOKIE:  1d 56 aa 77  a7 e4 a2 b3
+| RCOOKIE:  65 fc 37 f1  7e 24 da 76
+| state hash entry 23
 | v2 state object not found
-| ICOOKIE:  e8 05 90 ca  d2 3a ee 04
+| ICOOKIE:  1d 56 aa 77  a7 e4 a2 b3
 | RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 5
+| state hash entry 20
 | v2 peer and cookies match on #1
 | v2 state object #1 found, in STATE_PARENT_R1
 | ***parse IKEv2 Encryption Payload:
@@ -3001,135 +2176,135 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | inserting event EVENT_CRYPTO_FAILED, timeout in 300 seconds for #1
 | complete v2 state transition with STF_SUSPEND
 | * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 63 seconds
+| next event EVENT_SHUNT_SCAN in 105 seconds
 ! helper 0 read 2664+4/2668 bytesfd: 7
 ! helper 0 doing compute dh(v2) op id: 2
-! long term secret:   a9 c7 8f f2  63 1c 1f 5e  52 3c 25 50  cc a5 a5 d8
-! long term secret:   c1 7a f3 04  da 1c 61 69  cd c4 c6 11  8a b1 24 12
-! calc_dh_shared(): time elapsed (OAKLEY_GROUP_MODP2048): 5286 usec
+! long term secret:   5d 87 a1 a4  b0 36 45 4b  80 93 c1 78  ee 61 ad 4c
+! long term secret:   a4 9a ec 23  4b 1b 11 61  e2 5a 99 d8  7a 34 79 1f
+! calc_dh_shared(): time elapsed (OAKLEY_GROUP_MODP2048): 5768 usec
 ! DH shared-secret:
-!   42 40 ea 40  74 7d 6d db  b0 af 17 d5  5d 18 f8 27
-!   b0 ec 74 27  06 f8 49 30  0d 50 ea e5  a2 2a 37 f1
-!   a2 11 cc 92  6f 46 4a a5  7e de b3 2f  5f bb e2 87
-!   e9 9b bc 61  ae ae 8e a1  b2 a6 d9 51  42 3e 91 21
-!   c1 9e ac 30  8a a3 10 ea  dc bf 5f df  98 a3 50 fa
-!   90 00 8e 6f  3d 52 b6 01  ad d1 70 96  bb 40 5c a1
-!   f3 3a c4 6b  5b 8e a7 1c  6b cf bb b6  95 13 20 5b
-!   90 f0 49 72  be 57 2d aa  ed 16 00 8a  d7 1f 3e 75
-!   24 a7 96 77  20 27 e1 66  2b 75 85 03  3c 42 73 b2
-!   a0 a7 e4 07  2d fa 25 3f  8f d0 0f d3  12 b9 cc 8a
-!   74 37 78 53  06 83 a4 19  1c 86 40 ff  5f 7b 77 de
-!   00 03 2a a8  6e 15 be 5f  0a ac 8a c5  cc 28 47 45
-!   a8 fe c6 17  08 b5 a4 f5  4d bb a7 ec  1a 38 de 99
-!   fe eb 92 20  46 7c 95 86  4a d3 21 1c  96 c1 bc ab
-!   4d 1b ce 1a  0b f6 25 25  4e 41 0f 20  4d b6 00 51
-!   ab 23 82 c4  1f 04 86 6c  b7 6c 45 ae  59 ee 5d c2
+!   ae c4 a2 04  3d aa b8 d1  aa 10 9c 0b  a3 d6 85 6b
+!   56 e8 cb 88  3f 4f a2 c0  1e b1 01 86  45 4a ab 34
+!   ee 8b fb 27  68 af a7 29  66 f9 7d c3  fb 5d 5d 04
+!   63 76 31 05  88 21 ea cc  34 ad 77 b6  97 60 26 1d
+!   b0 7a 4f 8c  4c 8e 2e fc  f6 c0 c0 ef  1f 60 1e b8
+!   e0 02 fb 42  f3 73 5b 30  ca 6c da d6  53 e4 ee b4
+!   a5 38 a4 8c  e1 ed a2 69  49 f5 ba 47  1a 6a d9 37
+!   3e f8 65 8b  9a d7 5a fc  4c fc 0d 1a  6f 42 00 81
+!   a8 43 26 6b  ef 20 11 34  a5 63 ae 66  d2 60 f3 2f
+!   10 e3 6e 37  51 fd bb 4c  d5 c0 27 e0  b6 0a a7 f3
+!   df 2a c5 96  39 78 ac ab  30 f1 ea 91  7e 1b f1 e0
+!   5d 2e fe a1  55 74 4c 5a  1e 78 8c 18  7b 79 c6 70
+!   06 4c 46 73  8f a1 4e 71  e6 df e9 b9  91 68 e1 d1
+!   6d 21 b0 dc  d5 9b 2b c6  68 a5 f4 82  c4 1c a4 54
+!   e3 ce ee 4e  2a d3 c6 92  1c 25 8c 0d  9c ca 9c de
+!   ce 16 3a 0b  ff 32 34 37  22 ea 5e ef  b8 e2 7d 0d
 ! calculating skeyseed using prf=prf-hmac-sha1 integ=auth-hmac-sha1-96 cipherkey=16
-! Input to SKEYSEED:   6b 98 11 b2  fe e7 5c 89  de 6a 5f 3d  14 83 b6 25
-! Input to SKEYSEED:   1d 2e ea bc  d0 50 3f 27  63 ea 99 08  de fa b8 f4
+! Input to SKEYSEED:   22 91 12 b0  c2 41 9a 9a  2f 75 85 cc  3a 1e 1c 27
+! Input to SKEYSEED:   a2 e0 24 24  00 da 41 57  93 8d f1 ec  a4 5e 4d 1d
 ! PRF+ input
-! Ni  6b 98 11 b2  fe e7 5c 89  de 6a 5f 3d  14 83 b6 25
-! Nr  1d 2e ea bc  d0 50 3f 27  63 ea 99 08  de fa b8 f4
-! SPIi  e8 05 90 ca  d2 3a ee 04
-! SPIr  cc da 96 3d  aa 0f fc 9f
-! prf+[1]:  f5 96 f7 ec  7e 04 ea 1e  fa 91 5b 39  cc 65 95 cc
-! prf+[1]:  92 53 86 0c
-! prf+[2]:  01 96 d5 4d  59 35 3a 31  9a cb 8f 6a  01 a2 99 f2
-! prf+[2]:  6b 4f d5 3d
-! prf+[3]:  5c 29 cb e7  b3 78 f0 68  f5 88 43 1e  60 df 39 81
-! prf+[3]:  f7 4d 56 3d
-! prf+[4]:  d7 27 15 9e  4e d2 97 27  40 e3 ae 1e  de 9d f9 81
-! prf+[4]:  0b f7 fa a1
-! prf+[5]:  a8 34 7a 6e  b4 57 b8 0a  15 03 5c 08  0a 40 34 78
-! prf+[5]:  af 08 e7 2a
-! prf+[6]:  28 55 9f a8  74 91 ab 52  ec 9f 64 da  18 b0 54 eb
-! prf+[6]:  b8 59 68 dc
-! prf+[7]:  66 60 31 2f  52 a6 e5 66  dd 1c f2 57  2c c8 5a ed
-! prf+[7]:  cd 2c 0a 21
-! shared:    42 40 ea 40  74 7d 6d db  b0 af 17 d5  5d 18 f8 27
-! shared:    b0 ec 74 27  06 f8 49 30  0d 50 ea e5  a2 2a 37 f1
-! shared:    a2 11 cc 92  6f 46 4a a5  7e de b3 2f  5f bb e2 87
-! shared:    e9 9b bc 61  ae ae 8e a1  b2 a6 d9 51  42 3e 91 21
-! shared:    c1 9e ac 30  8a a3 10 ea  dc bf 5f df  98 a3 50 fa
-! shared:    90 00 8e 6f  3d 52 b6 01  ad d1 70 96  bb 40 5c a1
-! shared:    f3 3a c4 6b  5b 8e a7 1c  6b cf bb b6  95 13 20 5b
-! shared:    90 f0 49 72  be 57 2d aa  ed 16 00 8a  d7 1f 3e 75
-! shared:    24 a7 96 77  20 27 e1 66  2b 75 85 03  3c 42 73 b2
-! shared:    a0 a7 e4 07  2d fa 25 3f  8f d0 0f d3  12 b9 cc 8a
-! shared:    74 37 78 53  06 83 a4 19  1c 86 40 ff  5f 7b 77 de
-! shared:    00 03 2a a8  6e 15 be 5f  0a ac 8a c5  cc 28 47 45
-! shared:    a8 fe c6 17  08 b5 a4 f5  4d bb a7 ec  1a 38 de 99
-! shared:    fe eb 92 20  46 7c 95 86  4a d3 21 1c  96 c1 bc ab
-! shared:    4d 1b ce 1a  0b f6 25 25  4e 41 0f 20  4d b6 00 51
-! shared:    ab 23 82 c4  1f 04 86 6c  b7 6c 45 ae  59 ee 5d c2
-! skeyseed:  bf b0 a0 a3  cb dc 6d b6  86 df 21 2e  15 b9 5b 76
-! skeyseed:  a8 ac 03 c0
-! SK_d:  f5 96 f7 ec  7e 04 ea 1e  fa 91 5b 39  cc 65 95 cc
-! SK_d:  92 53 86 0c
-! SK_ai:  01 96 d5 4d  59 35 3a 31  9a cb 8f 6a  01 a2 99 f2
-! SK_ai:  6b 4f d5 3d
-! SK_ar:  5c 29 cb e7  b3 78 f0 68  f5 88 43 1e  60 df 39 81
-! SK_ar:  f7 4d 56 3d
-! SK_ei:  d7 27 15 9e  4e d2 97 27  40 e3 ae 1e  de 9d f9 81
-! SK_er:  0b f7 fa a1  a8 34 7a 6e  b4 57 b8 0a  15 03 5c 08
-! SK_pi:  0a 40 34 78  af 08 e7 2a  28 55 9f a8  74 91 ab 52
-! SK_pi:  ec 9f 64 da
-! SK_pr:  18 b0 54 eb  b8 59 68 dc  66 60 31 2f  52 a6 e5 66
-! SK_pr:  dd 1c f2 57
+! Ni  22 91 12 b0  c2 41 9a 9a  2f 75 85 cc  3a 1e 1c 27
+! Nr  a2 e0 24 24  00 da 41 57  93 8d f1 ec  a4 5e 4d 1d
+! SPIi  1d 56 aa 77  a7 e4 a2 b3
+! SPIr  65 fc 37 f1  7e 24 da 76
+! prf+[1]:  ec 1b 3a fd  b7 30 07 d5  96 8d f7 43  a7 cb a3 2c
+! prf+[1]:  27 36 04 e0
+! prf+[2]:  0e ca 41 c6  12 3c 9b 14  c3 3a 6c ee  c1 31 b0 84
+! prf+[2]:  36 d5 3e c3
+! prf+[3]:  4d 08 b9 f8  40 37 a3 25  39 fb 39 ce  f3 73 31 53
+! prf+[3]:  0e d8 45 d2
+! prf+[4]:  3a 42 10 3f  c2 9f 53 b7  e0 d3 52 bb  9c 7f 4f be
+! prf+[4]:  14 5d 81 3d
+! prf+[5]:  14 3b c6 1b  90 3f 9e 2a  8b 08 5b cf  37 53 26 ba
+! prf+[5]:  fb 58 63 fd
+! prf+[6]:  f8 ba fc 6b  5d 42 3d 90  eb 80 6f ed  ff 54 d3 b0
+! prf+[6]:  96 0a 91 4f
+! prf+[7]:  45 ef 75 ed  06 72 60 c7  ff 3f 46 fb  c3 1d 6c 4f
+! prf+[7]:  43 b1 64 23
+! shared:    ae c4 a2 04  3d aa b8 d1  aa 10 9c 0b  a3 d6 85 6b
+! shared:    56 e8 cb 88  3f 4f a2 c0  1e b1 01 86  45 4a ab 34
+! shared:    ee 8b fb 27  68 af a7 29  66 f9 7d c3  fb 5d 5d 04
+! shared:    63 76 31 05  88 21 ea cc  34 ad 77 b6  97 60 26 1d
+! shared:    b0 7a 4f 8c  4c 8e 2e fc  f6 c0 c0 ef  1f 60 1e b8
+! shared:    e0 02 fb 42  f3 73 5b 30  ca 6c da d6  53 e4 ee b4
+! shared:    a5 38 a4 8c  e1 ed a2 69  49 f5 ba 47  1a 6a d9 37
+! shared:    3e f8 65 8b  9a d7 5a fc  4c fc 0d 1a  6f 42 00 81
+! shared:    a8 43 26 6b  ef 20 11 34  a5 63 ae 66  d2 60 f3 2f
+! shared:    10 e3 6e 37  51 fd bb 4c  d5 c0 27 e0  b6 0a a7 f3
+! shared:    df 2a c5 96  39 78 ac ab  30 f1 ea 91  7e 1b f1 e0
+! shared:    5d 2e fe a1  55 74 4c 5a  1e 78 8c 18  7b 79 c6 70
+! shared:    06 4c 46 73  8f a1 4e 71  e6 df e9 b9  91 68 e1 d1
+! shared:    6d 21 b0 dc  d5 9b 2b c6  68 a5 f4 82  c4 1c a4 54
+! shared:    e3 ce ee 4e  2a d3 c6 92  1c 25 8c 0d  9c ca 9c de
+! shared:    ce 16 3a 0b  ff 32 34 37  22 ea 5e ef  b8 e2 7d 0d
+! skeyseed:  98 aa d4 3b  7a 1a 9d 07  3a 95 fc 4e  a3 27 46 9d
+! skeyseed:  4f 2b 12 18
+! SK_d:  ec 1b 3a fd  b7 30 07 d5  96 8d f7 43  a7 cb a3 2c
+! SK_d:  27 36 04 e0
+! SK_ai:  0e ca 41 c6  12 3c 9b 14  c3 3a 6c ee  c1 31 b0 84
+! SK_ai:  36 d5 3e c3
+! SK_ar:  4d 08 b9 f8  40 37 a3 25  39 fb 39 ce  f3 73 31 53
+! SK_ar:  0e d8 45 d2
+! SK_ei:  3a 42 10 3f  c2 9f 53 b7  e0 d3 52 bb  9c 7f 4f be
+! SK_er:  14 5d 81 3d  14 3b c6 1b  90 3f 9e 2a  8b 08 5b cf
+! SK_pi:  37 53 26 ba  fb 58 63 fd  f8 ba fc 6b  5d 42 3d 90
+! SK_pi:  eb 80 6f ed
+! SK_pr:  ff 54 d3 b0  96 0a 91 4f  45 ef 75 ed  06 72 60 c7
+! SK_pr:  ff 3f 46 fb
 |  
 | helper 0 has finished work (cnt now 1)
 | helper 0 replies to id: q#2
 | calling callback function 0x8078271
 | ikev2 parent inI2outR2: calculating g^{xy}, sending R2
 | processing connection westnet--eastnet-ikev2
-| data being hmac:  e8 05 90 ca  d2 3a ee 04  cc da 96 3d  aa 0f fc 9f
+| data being hmac:  1d 56 aa 77  a7 e4 a2 b3  65 fc 37 f1  7e 24 da 76
 | data being hmac:  2e 20 23 08  00 00 00 01  00 00 01 2c  23 80 01 10
-| data being hmac:  87 95 00 af  38 2a 57 82  05 39 66 01  b9 96 95 ce
-| data being hmac:  59 4a 80 f2  31 64 64 1f  a3 a4 b1 fe  ab 9f 8c 2e
-| data being hmac:  61 12 72 ec  68 7f 47 15  89 c9 d7 f1  12 d3 d1 38
-| data being hmac:  19 50 25 24  f2 1a 6e 76  30 f0 be f0  8a ff 35 7f
-| data being hmac:  a2 e7 be 50  bc 54 7c ec  77 b8 d7 68  13 03 04 36
-| data being hmac:  2c dc cb ae  00 c6 f6 8d  88 5f 70 ce  65 ac 6b f0
-| data being hmac:  60 4a e6 18  2e db 70 5b  20 15 47 7d  b6 1f 62 4f
-| data being hmac:  96 e9 8a 65  b4 b2 51 be  53 27 83 89  f2 a5 22 69
-| data being hmac:  81 f1 b0 07  40 eb 64 28  3f 40 d1 65  28 84 c7 93
-| data being hmac:  44 2d 87 8e  4e 95 6b ba  b8 7c f1 00  dd d4 34 3a
-| data being hmac:  14 ec 78 fb  f4 51 2b 4d  f1 ca 9b 8b  eb ed 19 89
-| data being hmac:  c7 22 d5 45  57 55 d4 0e  ee 4d 6e f8  63 c7 3a 5a
-| data being hmac:  93 2e 00 fa  b2 d7 eb 08  ff 9c d7 a8  28 6e 87 94
-| data being hmac:  be 47 02 b0  5b ee 48 8a  05 bb f8 e2  46 53 b8 bc
-| data being hmac:  11 45 cc 9a  da 77 b8 01  22 37 c8 a3  58 0c 95 4a
-| data being hmac:  8c 02 dd 0a  58 4c d9 fb  fc 4d 55 b2  4c eb 66 ea
-| R2 calculated auth:  56 aa 2a fb  fb d9 73 78  94 20 de 27
-| R2  provided  auth:  56 aa 2a fb  fb d9 73 78  94 20 de 27
+| data being hmac:  bc 09 64 fc  7f 1c 35 5b  18 7b 62 2d  5d c0 fb 68
+| data being hmac:  93 e1 c4 80  8a a3 6b 6d  ee 24 45 51  9f 7b b8 98
+| data being hmac:  35 bf e4 d0  b0 c2 45 9c  31 44 50 7f  7f 7c 24 4a
+| data being hmac:  20 65 5c 6a  82 7a 8f 73  fd 75 21 cc  34 1b b6 ce
+| data being hmac:  13 65 33 2c  f9 29 8e c9  a6 05 fa a5  6a 7b d0 5f
+| data being hmac:  2c 1c b2 96  1f 2d 4e 9d  b0 e6 73 11  92 21 af b1
+| data being hmac:  ae 7a f1 9f  39 01 30 c8  06 93 22 f5  49 13 ff 89
+| data being hmac:  c2 55 91 17  b2 4e c7 1c  88 77 de 2d  31 97 1d d0
+| data being hmac:  31 94 44 d4  76 88 ed 5a  59 d1 94 6c  ff a4 60 60
+| data being hmac:  47 27 1d 82  89 40 4b 0a  2a 0c 90 ff  f2 0b d1 a4
+| data being hmac:  87 a4 70 84  9c 7e ef 8f  34 db 7a 29  f6 eb 50 bf
+| data being hmac:  ed 02 5b 23  74 b5 c8 ed  02 e3 1c e1  43 a3 d1 90
+| data being hmac:  90 6a 94 7f  bd 48 8f b6  a1 dc bf a6  21 bc 59 22
+| data being hmac:  3b 69 8d d2  20 45 8e 8c  ba a3 f5 d1  fa 41 99 33
+| data being hmac:  e5 7d 12 a3  12 ab fb ad  80 03 6e d1  ab d5 53 d9
+| data being hmac:  91 42 4b 11  75 31 9c 13  00 25 38 06  d7 f7 c5 72
+| R2 calculated auth:  23 c3 6a a6  8a fe d8 10  8e 9d 48 83
+| R2  provided  auth:  23 c3 6a a6  8a fe d8 10  8e 9d 48 83
 | authenticator matched
 | data before decryption:
-|   59 4a 80 f2  31 64 64 1f  a3 a4 b1 fe  ab 9f 8c 2e
-|   61 12 72 ec  68 7f 47 15  89 c9 d7 f1  12 d3 d1 38
-|   19 50 25 24  f2 1a 6e 76  30 f0 be f0  8a ff 35 7f
-|   a2 e7 be 50  bc 54 7c ec  77 b8 d7 68  13 03 04 36
-|   2c dc cb ae  00 c6 f6 8d  88 5f 70 ce  65 ac 6b f0
-|   60 4a e6 18  2e db 70 5b  20 15 47 7d  b6 1f 62 4f
-|   96 e9 8a 65  b4 b2 51 be  53 27 83 89  f2 a5 22 69
-|   81 f1 b0 07  40 eb 64 28  3f 40 d1 65  28 84 c7 93
-|   44 2d 87 8e  4e 95 6b ba  b8 7c f1 00  dd d4 34 3a
-|   14 ec 78 fb  f4 51 2b 4d  f1 ca 9b 8b  eb ed 19 89
-|   c7 22 d5 45  57 55 d4 0e  ee 4d 6e f8  63 c7 3a 5a
-|   93 2e 00 fa  b2 d7 eb 08  ff 9c d7 a8  28 6e 87 94
-|   be 47 02 b0  5b ee 48 8a  05 bb f8 e2  46 53 b8 bc
-|   11 45 cc 9a  da 77 b8 01  22 37 c8 a3  58 0c 95 4a
-|   8c 02 dd 0a  58 4c d9 fb  fc 4d 55 b2  4c eb 66 ea
+|   93 e1 c4 80  8a a3 6b 6d  ee 24 45 51  9f 7b b8 98
+|   35 bf e4 d0  b0 c2 45 9c  31 44 50 7f  7f 7c 24 4a
+|   20 65 5c 6a  82 7a 8f 73  fd 75 21 cc  34 1b b6 ce
+|   13 65 33 2c  f9 29 8e c9  a6 05 fa a5  6a 7b d0 5f
+|   2c 1c b2 96  1f 2d 4e 9d  b0 e6 73 11  92 21 af b1
+|   ae 7a f1 9f  39 01 30 c8  06 93 22 f5  49 13 ff 89
+|   c2 55 91 17  b2 4e c7 1c  88 77 de 2d  31 97 1d d0
+|   31 94 44 d4  76 88 ed 5a  59 d1 94 6c  ff a4 60 60
+|   47 27 1d 82  89 40 4b 0a  2a 0c 90 ff  f2 0b d1 a4
+|   87 a4 70 84  9c 7e ef 8f  34 db 7a 29  f6 eb 50 bf
+|   ed 02 5b 23  74 b5 c8 ed  02 e3 1c e1  43 a3 d1 90
+|   90 6a 94 7f  bd 48 8f b6  a1 dc bf a6  21 bc 59 22
+|   3b 69 8d d2  20 45 8e 8c  ba a3 f5 d1  fa 41 99 33
+|   e5 7d 12 a3  12 ab fb ad  80 03 6e d1  ab d5 53 d9
+|   91 42 4b 11  75 31 9c 13  00 25 38 06  d7 f7 c5 72
 | decrypted payload:  27 00 00 0c  02 00 00 00  77 65 73 74  21 00 00 1c
-| decrypted payload:  02 00 00 00  ad 69 56 f3  ec 93 3b 29  21 d1 7a 87
-| decrypted payload:  2c cb 92 a5  7b 57 91 ea  2c 80 00 94  02 00 00 24
-| decrypted payload:  01 03 04 03  79 ac bc 7a  03 00 00 08  01 00 00 0c
+| decrypted payload:  02 00 00 00  85 9e ca 5a  f5 16 d2 24  eb 97 5a dc
+| decrypted payload:  85 c8 fd bf  d5 56 92 c6  2c 80 00 94  02 00 00 24
+| decrypted payload:  01 03 04 03  d2 ef c0 71  03 00 00 08  01 00 00 0c
 | decrypted payload:  03 00 00 08  03 00 00 02  00 00 00 08  05 00 00 00
-| decrypted payload:  02 00 00 24  02 03 04 03  79 ac bc 7a  03 00 00 08
+| decrypted payload:  02 00 00 24  02 03 04 03  d2 ef c0 71  03 00 00 08
 | decrypted payload:  01 00 00 0c  03 00 00 08  03 00 00 02  00 00 00 08
-| decrypted payload:  05 00 00 00  02 00 00 24  03 03 04 03  79 ac bc 7a
+| decrypted payload:  05 00 00 00  02 00 00 24  03 03 04 03  d2 ef c0 71
 | decrypted payload:  03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
 | decrypted payload:  00 00 00 08  05 00 00 00  00 00 00 24  04 03 04 03
-| decrypted payload:  79 ac bc 7a  03 00 00 08  01 00 00 03  03 00 00 08
+| decrypted payload:  d2 ef c0 71  03 00 00 08  01 00 00 03  03 00 00 08
 | decrypted payload:  03 00 00 02  00 00 00 08  05 00 00 00  2d 00 00 18
 | decrypted payload:  01 00 00 00  07 00 00 10  00 00 ff ff  c0 00 01 00
 | decrypted payload:  c0 00 01 ff  00 00 00 18  01 00 00 00  07 00 00 10
@@ -3160,32 +2335,31 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |    length: 24
 |    number of TS: 1
 | processing payload: ISAKMP_NEXT_v2TSr (len=24) 
-| ICOOKIE:  e8 05 90 ca  d2 3a ee 04
+| ICOOKIE:  1d 56 aa 77  a7 e4 a2 b3
 | RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 5
-| rehashing state object #1, removed from chain 5
-| ICOOKIE:  e8 05 90 ca  d2 3a ee 04
-| RCOOKIE:  cc da 96 3d  aa 0f fc 9f
-| state hash entry 18
-| inserting state object #1 on chain 18
+| state hash entry 20
+| rehashing state object #1, removed from chain 20
+| ICOOKIE:  1d 56 aa 77  a7 e4 a2 b3
+| RCOOKIE:  65 fc 37 f1  7e 24 da 76
+| state hash entry 23
+| inserting state object #1 on chain 23
 "westnet--eastnet-ikev2" #1: IKEv2 mode peer ID is ID_FQDN: '@west'
-| idhash verify pi  0a 40 34 78  af 08 e7 2a  28 55 9f a8  74 91 ab 52
-| idhash verify pi  ec 9f 64 da
+| idhash verify pi  37 53 26 ba  fb 58 63 fd  f8 ba fc 6b  5d 42 3d 90
+| idhash verify pi  eb 80 6f ed
 | idhash verify I2  02 00 00 00  77 65 73 74
 | started looking for secret for @east->@west of kind PPK_PSK
 | actually looking for secret for @east->@west of kind PPK_PSK
-| line 26: key type PPK_PSK(@east) to type PPK_PSK 
+| line 1: key type PPK_PSK(@east) to type PPK_PSK 
 | 1: compared key @west to @east / @west -> 2
 | 2: compared key @east to @east / @west -> 6
-| line 26: match=6 
-| best_match 0>6 best=0x814f270 (line=26)
-| line 8: key type PPK_PSK(@east) to type PPK_RSA 
-| concluding with best_match=6 best=0x814f270 (lineno=26)
+| line 1: match=6 
+| best_match 0>6 best=0x813fa50 (line=1)
+| concluding with best_match=6 best=0x813fa50 (lineno=1)
 | negotiated prf: oakley_sha hash length: 20
 | inner prf ouput  32 1f 3f cb  b0 71 c5 e9  cf fb 04 98  9e 4d 6e e6
 | inner prf ouput  e1 34 7b 93
 | inputs to hash1 (first packet)
-|   e8 05 90 ca  d2 3a ee 04  00 00 00 00  00 00 00 00
+|   1d 56 aa 77  a7 e4 a2 b3  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 02 dc  22 80 01 94
 |   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
 |   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
@@ -3212,40 +2386,40 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |   00 00 00 08  04 00 00 02  00 00 00 28  0a 01 00 04
 |   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
 |   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
-|   28 00 01 08  00 0e 00 00  fa 16 28 78  76 7c 83 55
-|   bd 3d c9 94  b8 f4 6f a7  5f a6 91 77  cc 4a eb 65
-|   49 32 2c 03  63 35 ee 02  c8 64 ca 5e  2e 6e 54 8d
-|   c3 0f dc a8  a5 33 2d 7f  ee 3b 5b a7  7e 87 0f a4
-|   43 86 8a d7  bd bc 62 65  a5 da 06 36  d5 67 b7 9d
-|   e5 e5 10 5c  4e f2 55 d9  24 ed 20 a5  b9 db 69 7f
-|   4a 7c 3f 32  d5 db 26 50  31 a7 5a e2  a8 7a 56 77
-|   72 d0 68 8c  60 e4 12 37  21 86 92 35  ff d6 ac 09
-|   ad 1d 80 6f  bf 0e 84 d3  55 21 41 5d  76 a9 11 0b
-|   29 d3 0e 8c  f4 36 44 b2  0a 6f 35 a9  70 7c f2 5c
-|   66 00 67 a3  83 73 44 15  ce a5 41 58  04 c1 06 e2
-|   77 c3 b3 83  b9 1b d0 8a  ca 4e 19 c7  f6 13 17 30
-|   ba 2a f0 8c  55 c5 1e 37  c9 84 07 68  ae 9c bc ee
-|   68 5c ce eb  d4 be a7 18  80 8d 9e e3  52 00 bc 6d
-|   91 87 d6 a8  81 7a a2 0a  aa 36 f6 fa  9d 0c 51 e3
-|   bf 63 6b 2b  25 c9 cb 38  26 99 1b 03  1d 66 50 ed
-|   9e 71 a3 df  11 77 7b 89  2b 80 00 14  6b 98 11 b2
-|   fe e7 5c 89  de 6a 5f 3d  14 83 b6 25  00 00 00 10
+|   28 00 01 08  00 0e 00 00  11 a2 55 e4  76 51 88 07
+|   03 9a da a5  f8 7c 84 c8  39 95 cd 28  c4 60 32 f2
+|   1b 6a 78 72  8e 6b cc 06  82 24 c1 a4  33 af 01 53
+|   21 99 b6 fe  e1 14 73 88  5e 23 c7 00  87 c8 20 91
+|   a9 9a a1 30  7d cb 2a 3e  21 9a d3 7d  87 ec b5 dd
+|   86 e4 1a 51  b6 a6 01 ef  03 89 d3 77  34 18 92 76
+|   9c fa 57 be  ea 34 2a cd  eb 1f 8d 69  6a 86 28 03
+|   6f 1f 3c d7  2f ee 84 eb  1c 9f 9e 56  90 68 98 14
+|   62 b2 7b 76  d1 e8 36 be  55 fd 8d 18  18 a7 bb 60
+|   30 d0 f5 e3  ed a2 e8 ea  11 fa bf 52  4b 2d be f2
+|   da 18 d5 6f  92 1f 4a cc  51 77 a7 00  82 e0 8a 7b
+|   21 f7 5b bd  0f 63 47 ea  86 5d b5 5e  39 bc 63 1b
+|   62 66 e1 c4  44 fb b1 a1  9f 3b e2 79  c7 b8 14 0c
+|   3a 17 7b d0  4c e8 1d f7  c8 39 a4 57  39 31 67 20
+|   10 be dc f6  6f 97 47 cb  15 b0 42 8a  c4 08 b8 49
+|   f5 4d 79 d6  8f 18 c6 19  ea 7b 39 60  8a b1 a8 6e
+|   f4 4b 81 54  3c 5b 77 2f  2b 80 00 14  22 91 12 b0
+|   c2 41 9a 9a  2f 75 85 cc  3a 1e 1c 27  00 00 00 10
 |   4f 45 71 6a  45 7f 70 51  5c 6b 70 4c
 | inputs to hash2 (responder nonce)
-|   1d 2e ea bc  d0 50 3f 27  63 ea 99 08  de fa b8 f4
-| idhash  a6 8a 92 85  35 78 1a 40  37 d0 15 e3  94 1a ae 58
-| idhash  41 e8 5e c1
+|   a2 e0 24 24  00 da 41 57  93 8d f1 ec  a4 5e 4d 1d
+| idhash  cc 6c 95 26  ff c4 f5 17  8e 68 6b c9  50 55 16 da
+| idhash  21 b9 e7 8b
 | Received PSK auth octets
-|   ad 69 56 f3  ec 93 3b 29  21 d1 7a 87  2c cb 92 a5
-|   7b 57 91 ea
+|   85 9e ca 5a  f5 16 d2 24  eb 97 5a dc  85 c8 fd bf
+|   d5 56 92 c6
 | Calculated PSK auth octets
-|   ad 69 56 f3  ec 93 3b 29  21 d1 7a 87  2c cb 92 a5
-|   7b 57 91 ea
+|   85 9e ca 5a  f5 16 d2 24  eb 97 5a dc  85 c8 fd bf
+|   d5 56 92 c6
 | **emit ISAKMP Message:
 |    initiator cookie:
-|   e8 05 90 ca  d2 3a ee 04
+|   1d 56 aa 77  a7 e4 a2 b3
 |    responder cookie:
-|   cc da 96 3d  aa 0f fc 9f
+|   65 fc 37 f1  7e 24 da 76
 |    next payload type: ISAKMP_NEXT_v2E
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306)
 |    exchange type: ISAKMP_v2_AUTH
@@ -3266,8 +2440,8 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | emitting 4 raw bytes of my identity into IKEv2 Identification Payload
 | my identity  65 61 73 74
 | emitting length of IKEv2 Identification Payload: 12
-| idhash calc pr  18 b0 54 eb  b8 59 68 dc  66 60 31 2f  52 a6 e5 66
-| idhash calc pr  dd 1c f2 57
+| idhash calc pr  ff 54 d3 b0  96 0a 91 4f  45 ef 75 ed  06 72 60 c7
+| idhash calc pr  ff 3f 46 fb
 | idhash calc R2  02 00 00 00  65 61 73 74
 | assembled IDr payload -- CERT next
 | going to assemble AUTH payload
@@ -3276,57 +2450,56 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |    auth method: v2_AUTH_SHARED
 | started looking for secret for @east->@west of kind PPK_PSK
 | actually looking for secret for @east->@west of kind PPK_PSK
-| line 26: key type PPK_PSK(@east) to type PPK_PSK 
+| line 1: key type PPK_PSK(@east) to type PPK_PSK 
 | 1: compared key @west to @east / @west -> 2
 | 2: compared key @east to @east / @west -> 6
-| line 26: match=6 
-| best_match 0>6 best=0x814f270 (line=26)
-| line 8: key type PPK_PSK(@east) to type PPK_RSA 
-| concluding with best_match=6 best=0x814f270 (lineno=26)
+| line 1: match=6 
+| best_match 0>6 best=0x813fa50 (line=1)
+| concluding with best_match=6 best=0x813fa50 (lineno=1)
 | negotiated prf: oakley_sha hash length: 20
 | inner prf ouput  32 1f 3f cb  b0 71 c5 e9  cf fb 04 98  9e 4d 6e e6
 | inner prf ouput  e1 34 7b 93
 | inputs to hash1 (first packet)
-|   e8 05 90 ca  d2 3a ee 04  cc da 96 3d  aa 0f fc 9f
+|   1d 56 aa 77  a7 e4 a2 b3  65 fc 37 f1  7e 24 da 76
 |   21 20 22 20  00 00 00 00  00 00 01 74  22 80 00 2c
 |   00 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
 |   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
 |   00 00 00 08  04 00 00 0e  28 00 01 08  00 0e 00 00
-|   50 92 aa f6  39 24 85 8a  ef c2 9a 4c  8e 7c 85 17
-|   1f 4a 76 46  6a e2 02 0b  5a 92 73 32  48 e9 1e e9
-|   03 83 c2 2f  10 7c 3e e5  8a 33 11 d7  81 a8 ba 5a
-|   d9 44 db f9  70 f1 34 66  f7 da 2e 05  d0 74 39 35
-|   83 4a 27 b6  58 54 93 2a  19 27 d2 c2  fa bf 86 d9
-|   4e 20 2a 26  ae 43 5a 01  e8 fd 1d 76  85 9d 82 2c
-|   94 b7 cf 24  3d 6a fc 16  26 64 83 a1  e7 e1 95 db
-|   61 35 62 08  83 84 cd 17  b5 4e 47 8c  90 b0 d0 fa
-|   01 2b d4 c5  bc 2e 28 0c  ae 69 fb 0a  3c e7 a6 b1
-|   09 1d ef 3f  11 79 13 82  34 e0 46 79  30 2a 73 4b
-|   4c ed 15 1b  da e6 3f 1f  33 05 68 2c  01 92 1a 47
-|   4f a2 2a 3f  4c 62 99 73  8b 47 be 3e  d5 ba ea 6c
-|   a8 d5 b4 2e  31 d9 24 3c  23 be 3a d2  13 5d e9 6b
-|   d7 c5 f9 ea  f0 0a b0 56  eb a2 38 2b  2d 30 11 a5
-|   22 6d bd 34  89 e2 bd 2f  7e 73 0f 15  20 1b 5f 33
-|   9b e3 b4 6d  4c 32 e1 b8  80 5b a1 25  d7 1a 5b 9b
-|   2b 80 00 14  1d 2e ea bc  d0 50 3f 27  63 ea 99 08
-|   de fa b8 f4  00 00 00 10  4f 45 71 6a  45 7f 70 51
+|   0f 2d 6a 12  c9 f9 85 72  77 55 f9 b4  5b 9d 56 7b
+|   b7 c3 d8 4a  65 32 78 e3  83 60 2f ab  75 d9 70 47
+|   e5 98 b0 c0  77 ce 91 2d  21 83 25 67  a1 95 37 f7
+|   78 59 90 90  6e 90 51 5d  c3 7e da f9  68 c8 49 61
+|   6d 46 c7 d5  4b 86 d7 08  09 5f f6 01  f6 6b 15 5c
+|   f7 7b 95 6e  87 72 9b c6  2d f7 d0 85  b8 5f d2 5e
+|   20 0c 19 db  9c 7f 2f 98  5a 99 13 af  87 e4 0a 20
+|   3a 51 d7 0d  50 0a 13 b9  4b c9 19 fb  73 07 6b f0
+|   1e 81 30 73  05 be e1 a7  0a 5a 82 5c  fc 2b 61 bc
+|   53 2b 05 64  0a 92 ef aa  02 8a f5 65  b0 87 66 af
+|   1a 18 d5 3f  dd 0c 13 73  0c 76 e3 24  b7 f4 c0 2b
+|   3c 91 e5 3f  d8 16 76 9d  ef 11 27 1e  71 94 51 a1
+|   42 a1 1c 25  ad b1 c6 2f  10 07 e4 94  84 54 84 03
+|   9d f2 c2 fa  21 49 d1 7c  de 17 cf 72  8d 99 65 43
+|   f4 48 cf b1  79 dc 48 86  15 3f cb 0d  91 c0 89 8b
+|   8b 4a 1b 87  75 30 d6 6d  f8 59 19 8a  15 3a 1a b0
+|   2b 80 00 14  a2 e0 24 24  00 da 41 57  93 8d f1 ec
+|   a4 5e 4d 1d  00 00 00 10  4f 45 71 6a  45 7f 70 51
 |   5c 6b 70 4c
 | inputs to hash2 (initiator nonce)
-|   6b 98 11 b2  fe e7 5c 89  de 6a 5f 3d  14 83 b6 25
-| idhash  93 60 42 65  bf c3 7e 83  f4 b1 fb 55  07 9d fb f9
-| idhash  46 bc 66 64
-| PSK auth octets  a1 be 03 d7  3e 62 4c 0f  37 f0 90 7c  bf 7b 8a 88
-| PSK auth octets  44 46 ca c4
+|   22 91 12 b0  c2 41 9a 9a  2f 75 85 cc  3a 1e 1c 27
+| idhash  f5 4f 6b 57  3f 34 58 a9  4f 20 63 f1  65 97 89 cb
+| idhash  96 25 7b 14
+| PSK auth octets  de 48 5b 76  35 7b 98 58  19 48 95 0b  f8 0a 83 3c
+| PSK auth octets  ad 43 0b b4
 | emitting 20 raw bytes of PSK auth into IKEv2 Authentication Payload
-| PSK auth  a1 be 03 d7  3e 62 4c 0f  37 f0 90 7c  bf 7b 8a 88
-| PSK auth  44 46 ca c4
+| PSK auth  de 48 5b 76  35 7b 98 58  19 48 95 0b  f8 0a 83 3c
+| PSK auth  ad 43 0b b4
 | emitting length of IKEv2 Authentication Payload: 28
 | duplicating state object #1
-| creating state object #2 at 0x8150e68
-| ICOOKIE:  e8 05 90 ca  d2 3a ee 04
-| RCOOKIE:  cc da 96 3d  aa 0f fc 9f
-| state hash entry 18
-| inserting state object #2 on chain 18
+| creating state object #2 at 0x8144610
+| ICOOKIE:  1d 56 aa 77  a7 e4 a2 b3
+| RCOOKIE:  65 fc 37 f1  7e 24 da 76
+| state hash entry 23
+| inserting state object #2 on chain 23
 | inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #2
 | *****emit IKEv2 Security Association Payload:
 |    next payload type: ISAKMP_NEXT_v2TSi
@@ -3340,8 +2513,8 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |    spi size: 4
 |    # transforms: 3
 | parsing 4 raw bytes of IKEv2 Proposal Substructure Payload into CHILD SA SPI
-| CHILD SA SPI  79 ac bc 7a
-| SPI received: 79acbc7a
+| CHILD SA SPI  d2 ef c0 71
+| SPI received: d2efc071
 | ****parse IKEv2 Transform Substructure Payload:
 |    next payload type: ISAKMP_NEXT_T
 |    length: 8
@@ -3365,9 +2538,9 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |    spi size: 4
 |    # transforms: 3
 | parsing 4 raw bytes of IKEv2 Proposal Substructure Payload into CHILD SA SPI
-| CHILD SA SPI  79 ac bc 7a
-| SPI received: 79acbc7a
-| generate SPI:  b3 74 a8 93
+| CHILD SA SPI  d2 ef c0 71
+| SPI received: d2efc071
+| generate SPI:  09 26 0e f3
 | ******emit IKEv2 Proposal Substructure Payload:
 |    next payload type: ISAKMP_NEXT_NONE
 |    prop #: 1
@@ -3375,7 +2548,7 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |    spi size: 4
 |    # transforms: 3
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
-| our spi  b3 74 a8 93
+| our spi  09 26 0e f3
 | *******emit IKEv2 Transform Substructure Payload:
 |    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
@@ -3447,26 +2620,26 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | emitting length of IKEv2 Traffic Selectors: 16
 | emitting length of IKEv2 Traffic Selectors: 24
 | kernel_alg_esp_info():transid=12, auth=2, ei=0x812b6b4, enckeylen=16, authkeylen=20, encryptalg=12, authalg=3
-| prf+[0]:  07 6b 0e 42  e0 43 31 94  b9 97 43 b9  c6 54 95 12
-| prf+[0]:  15 f4 2f 7e
-| prf+[1]:  46 be 45 19  09 8c 8f c3  31 82 96 f9  c6 2c cd 19
-| prf+[1]:  8e f1 14 da
-| prf+[2]:  b0 af 93 f9  c5 b0 b8 1b  3b ec 3b 0b  19 44 96 e1
-| prf+[2]:  f3 c4 09 63
-| prf+[3]:  4d 30 f9 cb  46 b8 c7 41  eb c5 f3 8c  ab 07 f4 15
-| prf+[3]:  71 15 e0 19
-| our  keymat  8e f1 14 da  b0 af 93 f9  c5 b0 b8 1b  3b ec 3b 0b
-| our  keymat  19 44 96 e1  f3 c4 09 63  4d 30 f9 cb  46 b8 c7 41
-| our  keymat  eb c5 f3 8c
-| peer keymat  07 6b 0e 42  e0 43 31 94  b9 97 43 b9  c6 54 95 12
-| peer keymat  15 f4 2f 7e  46 be 45 19  09 8c 8f c3  31 82 96 f9
-| peer keymat  c6 2c cd 19
+| prf+[0]:  0c 28 75 b0  25 c2 fb ef  5c 65 1b 0f  ce db 6f 50
+| prf+[0]:  ce a2 41 85
+| prf+[1]:  47 44 c4 14  77 80 52 f6  cc 9a c4 72  72 e4 3f fb
+| prf+[1]:  5a f7 e0 22
+| prf+[2]:  cb 74 36 4f  6d ee 4d 92  9c 69 34 fd  79 96 a5 78
+| prf+[2]:  76 95 d7 b8
+| prf+[3]:  87 a4 85 c9  57 f0 6c a1  4f e1 58 b8  58 b5 c3 9b
+| prf+[3]:  29 8b 7c 8e
+| our  keymat  5a f7 e0 22  cb 74 36 4f  6d ee 4d 92  9c 69 34 fd
+| our  keymat  79 96 a5 78  76 95 d7 b8  87 a4 85 c9  57 f0 6c a1
+| our  keymat  4f e1 58 b8
+| peer keymat  0c 28 75 b0  25 c2 fb ef  5c 65 1b 0f  ce db 6f 50
+| peer keymat  ce a2 41 85  47 44 c4 14  77 80 52 f6  cc 9a c4 72
+| peer keymat  72 e4 3f fb
 | install_ipsec_sa() for #2: inbound and outbound
 | route owner of "westnet--eastnet-ikev2" unrouted: NULL; eroute owner: NULL
 | could_route called for westnet--eastnet-ikev2 (kind=CK_PERMANENT)
 | pfkey_lib_debug:pfkey_msg_hdr_build: 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf7f2940 pfkey_ext=0p0xbf7f3a34 *pfkey_ext=0p(nil). 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf7f2940 pfkey_ext=0p0xbf7f3a34 *pfkey_ext=0p0x81515f0. 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf41f560 pfkey_ext=0p0xbf420654 *pfkey_ext=0p(nil). 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf41f560 pfkey_ext=0p0xbf420654 *pfkey_ext=0p0x8144da8. 
 | pfkey_lib_debug:pfkey_sa_build: spi=00001001 replay=0 sa_state=1 auth=0 encrypt=0 flags=0 
 | pfkey_lib_debug:pfkey_address_build: exttype=5 proto=0 prefixlen=0 
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
@@ -3476,7 +2649,7 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
 | pfkey_lib_debug:pfkey_address_build: found address=192.1.2.45:0. 
 | pfkey_lib_debug:pfkey_address_build: successful created len: 3. 
-| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x8151648 allocated 88 bytes, &(extensions[0])=0p0xbf7f3a34 
+| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x8144e00 allocated 88 bytes, &(extensions[0])=0p0xbf420654 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[1] (type=1) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[5] (type=5) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[6] (type=6) 
@@ -3486,16 +2659,16 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_msg_parse: remain=9 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=9. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0p0x8151658 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0p0x8144e10 with parser pfkey_sa_parse. 
 | pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=00001001 replay=0 state=1 auth=0 encrypt=0 flags=0 ref=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 1(security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=5(source-address) remain=6. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=5(source-address) ext_len=3 parsing ext 0p0x8151670 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=5(source-address) ext_len=3 parsing ext 0p0x8144e28 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=5(source-address) family=2(AF_INET) address=192.1.2.23 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 5(source-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=6(destination-address) remain=3. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x8151688 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x8144e40 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.45 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 6(destination-address) parsed. 
@@ -3513,16 +2686,16 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_msg_parse: remain=9 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=9. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0p0xbf7f2a44 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0p0xbf41f664 with parser pfkey_sa_parse. 
 | pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=00001001 replay=0 state=1 auth=0 encrypt=0 flags=0 ref=3. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 1(security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=5(source-address) remain=6. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=5(source-address) ext_len=3 parsing ext 0p0xbf7f2a5c with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=5(source-address) ext_len=3 parsing ext 0p0xbf41f67c with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=5(source-address) family=2(AF_INET) address=192.1.2.23 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 5(source-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=6(destination-address) remain=3. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 parsing ext 0p0xbf7f2a74 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 parsing ext 0p0xbf41f694 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.45 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 6(destination-address) parsed. 
@@ -3542,9 +2715,9 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | checking transid: 12 keylen: 16 auth: 1 
 | checking transid: 12 keylen: 16 auth: 2 
 | pfkey_lib_debug:pfkey_msg_hdr_build: 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf7f2940 pfkey_ext=0p0xbf7f3a34 *pfkey_ext=0p(nil). 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf7f2940 pfkey_ext=0p0xbf7f3a34 *pfkey_ext=0p0x81515f0. 
-| pfkey_lib_debug:pfkey_sa_build: spi=79acbc7a replay=64 sa_state=1 auth=3 encrypt=12 flags=0 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf41f560 pfkey_ext=0p0xbf420654 *pfkey_ext=0p(nil). 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf41f560 pfkey_ext=0p0xbf420654 *pfkey_ext=0p0x8144c80. 
+| pfkey_lib_debug:pfkey_sa_build: spi=d2efc071 replay=64 sa_state=1 auth=3 encrypt=12 flags=0 
 | pfkey_lib_debug:pfkey_address_build: exttype=5 proto=0 prefixlen=0 
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
 | pfkey_lib_debug:pfkey_address_build: found address=192.1.2.23:0. 
@@ -3555,7 +2728,7 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_address_build: successful created len: 3. 
 | pfkey_lib_debug:pfkey_key_build: 
 | pfkey_lib_debug:pfkey_key_build: 
-| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x8151690 allocated 144 bytes, &(extensions[0])=0p0xbf7f3a34 
+| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x8144e30 allocated 144 bytes, &(extensions[0])=0p0xbf420654 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[1] (type=1) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[5] (type=5) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[6] (type=6) 
@@ -3567,74 +2740,74 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_msg_parse: remain=16 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=16. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=16 ext_type=1(security-association) ext_len=3 parsing ext 0p0x81516a0 with parser pfkey_sa_parse. 
-| pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=79acbc7a replay=64 state=1 auth=3 encrypt=12 flags=0 ref=0. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=16 ext_type=1(security-association) ext_len=3 parsing ext 0p0x8144e40 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=d2efc071 replay=64 state=1 auth=3 encrypt=12 flags=0 ref=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 1(security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=5(source-address) remain=13. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=13 ext_type=5(source-address) ext_len=3 parsing ext 0p0x81516b8 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=13 ext_type=5(source-address) ext_len=3 parsing ext 0p0x8144e58 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=5(source-address) family=2(AF_INET) address=192.1.2.23 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 5(source-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=6(destination-address) remain=10. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=10 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x81516d0 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=10 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x8144e70 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.45 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 6(destination-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=8(authentication-key) remain=7. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=7 ext_type=8(authentication-key) ext_len=4 parsing ext 0p0x81516e8 with parser pfkey_key_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=7 ext_type=8(authentication-key) ext_len=4 parsing ext 0p0x8144e88 with parser pfkey_key_parse. 
 | pfkey_lib_debug:pfkey_key_parse: success, found len=4 exttype=8(authentication-key) bits=160 reserved=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 8(authentication-key) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=9(cipher-key) remain=3. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=9(cipher-key) ext_len=3 parsing ext 0p0x8151708 with parser pfkey_key_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=9(cipher-key) ext_len=3 parsing ext 0p0x8144ea8 with parser pfkey_key_parse. 
 | pfkey_lib_debug:pfkey_key_parse: success, found len=3 exttype=9(cipher-key) bits=128 reserved=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 9(cipher-key) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=78001ffb, seen=00000363, required=00000063. 
-| finish_pfkey_msg: SADB_ADD message 6 for Add SA esp.79acbc7a@192.1.2.45
+| finish_pfkey_msg: SADB_ADD message 6 for Add SA esp.d2efc071@192.1.2.45
 |   02 03 00 03  12 00 00 00  06 00 00 00  91 03 00 00
-|   03 00 01 00  79 ac bc 7a  40 01 03 0c  00 00 00 00
+|   03 00 01 00  d2 ef c0 71  40 01 03 0c  00 00 00 00
 |   00 00 00 00  00 00 00 00  03 00 05 00  00 00 00 00
 |   02 00 00 00  c0 01 02 17  00 00 00 00  00 00 00 00
 |   03 00 06 00  00 00 00 00  02 00 00 00  c0 01 02 2d
 |   00 00 00 00  00 00 00 00  04 00 08 00  a0 00 00 00
-|   15 f4 2f 7e  46 be 45 19  09 8c 8f c3  31 82 96 f9
-|   c6 2c cd 19  00 00 00 00  03 00 09 00  80 00 00 00
-|   07 6b 0e 42  e0 43 31 94  b9 97 43 b9  c6 54 95 12
+|   ce a2 41 85  47 44 c4 14  77 80 52 f6  cc 9a c4 72
+|   72 e4 3f fb  00 00 00 00  03 00 09 00  80 00 00 00
+|   0c 28 75 b0  25 c2 fb ef  5c 65 1b 0f  ce db 6f 50
 | pfkey_get: SADB_ADD message 6
 | pfkey_lib_debug:pfkey_msg_parse: parsing message ver=2, type=3(add), errno=0, satype=3(ESP), len=11, res=0, seq=6, pid=913. 
 | pfkey_lib_debug:pfkey_msg_parse: satype 3(ESP) conversion to proto gives 50 for msg_type 3(add). 
 | pfkey_lib_debug:pfkey_msg_parse: remain=9 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=9. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0p0xbf7f2a44 with parser pfkey_sa_parse. 
-| pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=79acbc7a replay=64 state=1 auth=3 encrypt=12 flags=0 ref=4. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0p0xbf41f664 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=d2efc071 replay=64 state=1 auth=3 encrypt=12 flags=0 ref=4. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 1(security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=5(source-address) remain=6. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=5(source-address) ext_len=3 parsing ext 0p0xbf7f2a5c with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=5(source-address) ext_len=3 parsing ext 0p0xbf41f67c with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=5(source-address) family=2(AF_INET) address=192.1.2.23 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 5(source-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=6(destination-address) remain=3. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 parsing ext 0p0xbf7f2a74 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 parsing ext 0p0xbf41f694 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.45 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 6(destination-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=78001ffb, seen=00000063, required=00000063. 
-| grouping unk0.79acbc7a@192.1.2.45 (ref=0) and unk0.1001@192.1.2.45 (ref=0)
+| grouping unk0.d2efc071@192.1.2.45 (ref=0) and unk0.1001@192.1.2.45 (ref=0)
 | pfkey_lib_debug:pfkey_msg_hdr_build: 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf7f39f0 pfkey_ext=0p0xbf7f3a44 *pfkey_ext=0p(nil). 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf7f39f0 pfkey_ext=0p0xbf7f3a44 *pfkey_ext=0p0x81515f0. 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf420610 pfkey_ext=0p0xbf420664 *pfkey_ext=0p(nil). 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf420610 pfkey_ext=0p0xbf420664 *pfkey_ext=0p0x8144c80. 
 | pfkey_lib_debug:pfkey_sa_build: spi=00001001 replay=0 sa_state=0 auth=0 encrypt=0 flags=0 
 | pfkey_lib_debug:pfkey_address_build: exttype=6 proto=0 prefixlen=0 
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
 | pfkey_lib_debug:pfkey_address_build: found address=192.1.2.45:0. 
 | pfkey_lib_debug:pfkey_address_build: successful created len: 3. 
 | pfkey_lib_debug:pfkey_x_satype_build: 
-| pfkey_lib_debug:pfkey_sa_build: spi=79acbc7a replay=0 sa_state=0 auth=0 encrypt=0 flags=0 
+| pfkey_lib_debug:pfkey_sa_build: spi=d2efc071 replay=0 sa_state=0 auth=0 encrypt=0 flags=0 
 | pfkey_lib_debug:pfkey_address_build: exttype=20 proto=0 prefixlen=0 
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
 | pfkey_lib_debug:pfkey_address_build: found address=192.1.2.45:0. 
 | pfkey_lib_debug:pfkey_address_build: successful created len: 3. 
-| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x81516a0 allocated 120 bytes, &(extensions[0])=0p0xbf7f3a44 
+| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x8144e08 allocated 120 bytes, &(extensions[0])=0p0xbf420664 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[1] (type=1) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[6] (type=6) 
 | pfkey_lib_debug:pfkey_msg_build: copying 8 bytes from extensions[18] (type=18) 
@@ -3646,25 +2819,25 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_msg_parse: remain=13 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=001c0043, required=00000043. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=13. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=13 ext_type=1(security-association) ext_len=3 parsing ext 0p0x81516b0 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=13 ext_type=1(security-association) ext_len=3 parsing ext 0p0x8144e18 with parser pfkey_sa_parse. 
 | pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=00001001 replay=0 state=0 auth=0 encrypt=0 flags=0 ref=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 1(security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=6(destination-address) remain=10. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=10 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x81516c8 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=10 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x8144e30 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.45 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 6(destination-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=18(X-satype2) remain=7. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=7 ext_type=18(X-satype2) ext_len=1 parsing ext 0p0x81516e0 with parser pfkey_x_satype_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=7 ext_type=18(X-satype2) ext_len=1 parsing ext 0p0x8144e48 with parser pfkey_x_satype_parse. 
 | pfkey_lib_debug:pfkey_x_satype_parse: enter 
 | pfkey_lib_debug:pfkey_x_satype_parse: len=1 ext=18(X-satype2) satype=3(ESP) res=0,0,0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 18(X-satype2) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=19(X-security-association) remain=6. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=19(X-security-association) ext_len=3 parsing ext 0p0x81516e8 with parser pfkey_sa_parse. 
-| pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=19(X-security-association) spi=79acbc7a replay=0 state=0 auth=0 encrypt=0 flags=0 ref=0. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=19(X-security-association) ext_len=3 parsing ext 0p0x8144e50 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=19(X-security-association) spi=d2efc071 replay=0 state=0 auth=0 encrypt=0 flags=0 ref=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 19(X-security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=20(X-destination-address2) remain=3. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=20(X-destination-address2) ext_len=3 parsing ext 0p0x8151700 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=20(X-destination-address2) ext_len=3 parsing ext 0p0x8144e68 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=20(X-destination-address2) family=2(AF_INET) address=192.1.2.45 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 20(X-destination-address2) parsed. 
@@ -3674,15 +2847,15 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |   03 00 01 00  00 00 10 01  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  03 00 06 00  00 00 00 00
 |   02 00 00 00  c0 01 02 2d  00 00 00 00  00 00 00 00
-|   01 00 12 00  03 00 00 00  03 00 13 00  79 ac bc 7a
+|   01 00 12 00  03 00 00 00  03 00 13 00  d2 ef c0 71
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   03 00 14 00  00 00 00 00  02 00 00 00  c0 01 02 2d
 |   00 00 00 00  00 00 00 00
 | pfkey_get: K_SADB_X_GRPSA message 7
 | set up outoing SA, ref=0/4294901761
 | pfkey_lib_debug:pfkey_msg_hdr_build: 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf7f2940 pfkey_ext=0p0xbf7f3a34 *pfkey_ext=0p(nil). 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf7f2940 pfkey_ext=0p0xbf7f3a34 *pfkey_ext=0p0x81515f0. 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf41f560 pfkey_ext=0p0xbf420654 *pfkey_ext=0p(nil). 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf41f560 pfkey_ext=0p0xbf420654 *pfkey_ext=0p0x8144c80. 
 | pfkey_lib_debug:pfkey_sa_build: spi=00001002 replay=0 sa_state=1 auth=0 encrypt=0 flags=0 
 | pfkey_lib_debug:pfkey_address_build: exttype=5 proto=0 prefixlen=0 
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
@@ -3692,7 +2865,7 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
 | pfkey_lib_debug:pfkey_address_build: found address=192.1.2.23:0. 
 | pfkey_lib_debug:pfkey_address_build: successful created len: 3. 
-| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x81516a0 allocated 88 bytes, &(extensions[0])=0p0xbf7f3a34 
+| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x8144de8 allocated 88 bytes, &(extensions[0])=0p0xbf420654 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[1] (type=1) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[5] (type=5) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[6] (type=6) 
@@ -3702,16 +2875,16 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_msg_parse: remain=9 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=9. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0p0x81516b0 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0p0x8144df8 with parser pfkey_sa_parse. 
 | pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=00001002 replay=0 state=1 auth=0 encrypt=0 flags=0 ref=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 1(security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=5(source-address) remain=6. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=5(source-address) ext_len=3 parsing ext 0p0x81516c8 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=5(source-address) ext_len=3 parsing ext 0p0x8144e10 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=5(source-address) family=2(AF_INET) address=192.1.2.45 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 5(source-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=6(destination-address) remain=3. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x81516e0 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x8144e28 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.23 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 6(destination-address) parsed. 
@@ -3729,16 +2902,16 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_msg_parse: remain=9 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=9. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0p0xbf7f2a44 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0p0xbf41f664 with parser pfkey_sa_parse. 
 | pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=00001002 replay=0 state=1 auth=0 encrypt=0 flags=1 ref=5. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 1(security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=5(source-address) remain=6. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=5(source-address) ext_len=3 parsing ext 0p0xbf7f2a5c with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=5(source-address) ext_len=3 parsing ext 0p0xbf41f67c with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=5(source-address) family=2(AF_INET) address=192.1.2.45 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 5(source-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=6(destination-address) remain=3. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 parsing ext 0p0xbf7f2a74 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 parsing ext 0p0xbf41f694 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.23 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 6(destination-address) parsed. 
@@ -3757,9 +2930,9 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | checking transid: 12 keylen: 16 auth: 1 
 | checking transid: 12 keylen: 16 auth: 2 
 | pfkey_lib_debug:pfkey_msg_hdr_build: 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf7f2940 pfkey_ext=0p0xbf7f3a34 *pfkey_ext=0p(nil). 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf7f2940 pfkey_ext=0p0xbf7f3a34 *pfkey_ext=0p0x81515f0. 
-| pfkey_lib_debug:pfkey_sa_build: spi=b374a893 replay=64 sa_state=1 auth=3 encrypt=12 flags=0 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf41f560 pfkey_ext=0p0xbf420654 *pfkey_ext=0p(nil). 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf41f560 pfkey_ext=0p0xbf420654 *pfkey_ext=0p0x8144c80. 
+| pfkey_lib_debug:pfkey_sa_build: spi=09260ef3 replay=64 sa_state=1 auth=3 encrypt=12 flags=0 
 | pfkey_lib_debug:pfkey_address_build: exttype=5 proto=0 prefixlen=0 
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
 | pfkey_lib_debug:pfkey_address_build: found address=192.1.2.45:0. 
@@ -3770,7 +2943,7 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_address_build: successful created len: 3. 
 | pfkey_lib_debug:pfkey_key_build: 
 | pfkey_lib_debug:pfkey_key_build: 
-| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x81516a0 allocated 144 bytes, &(extensions[0])=0p0xbf7f3a34 
+| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x8144e30 allocated 144 bytes, &(extensions[0])=0p0xbf420654 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[1] (type=1) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[5] (type=5) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[6] (type=6) 
@@ -3782,62 +2955,62 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_msg_parse: remain=16 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=16. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=16 ext_type=1(security-association) ext_len=3 parsing ext 0p0x81516b0 with parser pfkey_sa_parse. 
-| pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=b374a893 replay=64 state=1 auth=3 encrypt=12 flags=0 ref=0. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=16 ext_type=1(security-association) ext_len=3 parsing ext 0p0x8144e40 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=09260ef3 replay=64 state=1 auth=3 encrypt=12 flags=0 ref=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 1(security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=5(source-address) remain=13. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=13 ext_type=5(source-address) ext_len=3 parsing ext 0p0x81516c8 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=13 ext_type=5(source-address) ext_len=3 parsing ext 0p0x8144e58 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=5(source-address) family=2(AF_INET) address=192.1.2.45 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 5(source-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=6(destination-address) remain=10. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=10 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x81516e0 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=10 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x8144e70 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.23 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 6(destination-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=8(authentication-key) remain=7. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=7 ext_type=8(authentication-key) ext_len=4 parsing ext 0p0x81516f8 with parser pfkey_key_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=7 ext_type=8(authentication-key) ext_len=4 parsing ext 0p0x8144e88 with parser pfkey_key_parse. 
 | pfkey_lib_debug:pfkey_key_parse: success, found len=4 exttype=8(authentication-key) bits=160 reserved=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 8(authentication-key) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=9(cipher-key) remain=3. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=9(cipher-key) ext_len=3 parsing ext 0p0x8151718 with parser pfkey_key_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=9(cipher-key) ext_len=3 parsing ext 0p0x8144ea8 with parser pfkey_key_parse. 
 | pfkey_lib_debug:pfkey_key_parse: success, found len=3 exttype=9(cipher-key) bits=128 reserved=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 9(cipher-key) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=78001ffb, seen=00000363, required=00000063. 
-| finish_pfkey_msg: SADB_ADD message 9 for Add SA esp.b374a893@192.1.2.23
+| finish_pfkey_msg: SADB_ADD message 9 for Add SA esp.9260ef3@192.1.2.23
 |   02 03 00 03  12 00 00 00  09 00 00 00  91 03 00 00
-|   03 00 01 00  b3 74 a8 93  40 01 03 0c  00 00 00 00
+|   03 00 01 00  09 26 0e f3  40 01 03 0c  00 00 00 00
 |   00 00 00 00  00 00 00 00  03 00 05 00  00 00 00 00
 |   02 00 00 00  c0 01 02 2d  00 00 00 00  00 00 00 00
 |   03 00 06 00  00 00 00 00  02 00 00 00  c0 01 02 17
 |   00 00 00 00  00 00 00 00  04 00 08 00  a0 00 00 00
-|   19 44 96 e1  f3 c4 09 63  4d 30 f9 cb  46 b8 c7 41
-|   eb c5 f3 8c  00 00 00 00  03 00 09 00  80 00 00 00
-|   8e f1 14 da  b0 af 93 f9  c5 b0 b8 1b  3b ec 3b 0b
+|   79 96 a5 78  76 95 d7 b8  87 a4 85 c9  57 f0 6c a1
+|   4f e1 58 b8  00 00 00 00  03 00 09 00  80 00 00 00
+|   5a f7 e0 22  cb 74 36 4f  6d ee 4d 92  9c 69 34 fd
 | pfkey_get: SADB_ADD message 9
 | pfkey_lib_debug:pfkey_msg_parse: parsing message ver=2, type=3(add), errno=0, satype=3(ESP), len=11, res=0, seq=9, pid=913. 
 | pfkey_lib_debug:pfkey_msg_parse: satype 3(ESP) conversion to proto gives 50 for msg_type 3(add). 
 | pfkey_lib_debug:pfkey_msg_parse: remain=9 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=78001ffb, required=00000063. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=9. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0p0xbf7f2a44 with parser pfkey_sa_parse. 
-| pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=b374a893 replay=64 state=1 auth=3 encrypt=12 flags=1 ref=6. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=1(security-association) ext_len=3 parsing ext 0p0xbf41f664 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=09260ef3 replay=64 state=1 auth=3 encrypt=12 flags=1 ref=6. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 1(security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=5(source-address) remain=6. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=5(source-address) ext_len=3 parsing ext 0p0xbf7f2a5c with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=5(source-address) ext_len=3 parsing ext 0p0xbf41f67c with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=5(source-address) family=2(AF_INET) address=192.1.2.45 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 5(source-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=6(destination-address) remain=3. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 parsing ext 0p0xbf7f2a74 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=6(destination-address) ext_len=3 parsing ext 0p0xbf41f694 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.23 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 6(destination-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=78001ffb, seen=00000063, required=00000063. 
 | add inbound eroute 192.0.1.0/24:0 --0-> 192.0.2.0/24:0 => tun.1002@192.1.2.23 (raw_eroute)
 | pfkey_lib_debug:pfkey_msg_hdr_build: 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf7f3810 pfkey_ext=0p0xbf7f38ec *pfkey_ext=0p(nil). 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf7f3810 pfkey_ext=0p0xbf7f38ec *pfkey_ext=0p0x81515f0. 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf420430 pfkey_ext=0p0xbf42050c *pfkey_ext=0p(nil). 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf420430 pfkey_ext=0p0xbf42050c *pfkey_ext=0p0x8144c80. 
 | pfkey_lib_debug:pfkey_sa_build: spi=00001002 replay=0 sa_state=0 auth=0 encrypt=0 flags=8 
 | pfkey_lib_debug:pfkey_address_build: exttype=5 proto=0 prefixlen=0 
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
@@ -3863,7 +3036,7 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
 | pfkey_lib_debug:pfkey_address_build: found address=255.255.255.0:0. 
 | pfkey_lib_debug:pfkey_address_build: successful created len: 3. 
-| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x8151700 allocated 184 bytes, &(extensions[0])=0p0xbf7f38ec 
+| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x8144e68 allocated 184 bytes, &(extensions[0])=0p0xbf42050c 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[1] (type=1) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[5] (type=5) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[6] (type=6) 
@@ -3877,36 +3050,36 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_msg_parse: remain=21 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=05e00c63, required=01e00043. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=21. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=21 ext_type=1(security-association) ext_len=3 parsing ext 0p0x8151710 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=21 ext_type=1(security-association) ext_len=3 parsing ext 0p0x8144e78 with parser pfkey_sa_parse. 
 | pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=00001002 replay=0 state=0 auth=0 encrypt=0 flags=8 ref=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 1(security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=5(source-address) remain=18. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=18 ext_type=5(source-address) ext_len=3 parsing ext 0p0x8151728 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=18 ext_type=5(source-address) ext_len=3 parsing ext 0p0x8144e90 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=5(source-address) family=2(AF_INET) address=192.1.2.45 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 5(source-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=6(destination-address) remain=15. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=15 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x8151740 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=15 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x8144ea8 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.23 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 6(destination-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=21(X-source-flow-address) remain=12. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=12 ext_type=21(X-source-flow-address) ext_len=3 parsing ext 0p0x8151758 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=12 ext_type=21(X-source-flow-address) ext_len=3 parsing ext 0p0x8144ec0 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=21(X-source-flow-address) family=2(AF_INET) address=192.0.1.0 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 21(X-source-flow-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=22(X-dest-flow-address) remain=9. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=22(X-dest-flow-address) ext_len=3 parsing ext 0p0x8151770 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=22(X-dest-flow-address) ext_len=3 parsing ext 0p0x8144ed8 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=22(X-dest-flow-address) family=2(AF_INET) address=192.0.2.0 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 22(X-dest-flow-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=23(X-source-mask) remain=6. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=23(X-source-mask) ext_len=3 parsing ext 0p0x8151788 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=23(X-source-mask) ext_len=3 parsing ext 0p0x8144ef0 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=23(X-source-mask) family=2(AF_INET) address=255.255.255.0 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 23(X-source-mask) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=24(X-dest-mask) remain=3. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=24(X-dest-mask) ext_len=3 parsing ext 0p0x81517a0 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=24(X-dest-mask) ext_len=3 parsing ext 0p0x8144f08 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=24(X-dest-mask) family=2(AF_INET) address=255.255.255.0 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 24(X-dest-mask) parsed. 
@@ -3923,25 +3096,25 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |   88 ad 07 08  b8 b0 07 08  03 00 17 00  00 00 00 00
 |   02 00 00 00  ff ff ff 00  02 00 00 00  0a 00 00 00
 |   03 00 18 00  00 00 00 00  02 00 00 00  ff ff ff 00
-|   7a 38 7f bf  b8 38 7f bf
+|   9a 04 42 bf  d8 04 42 bf
 | pfkey_get: K_SADB_X_ADDFLOW message 10
 | raw_eroute result=1 
-| grouping unk0.b374a893@192.1.2.23 (ref=0) and unk0.1002@192.1.2.23 (ref=0)
+| grouping unk0.9260ef3@192.1.2.23 (ref=0) and unk0.1002@192.1.2.23 (ref=0)
 | pfkey_lib_debug:pfkey_msg_hdr_build: 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf7f39f0 pfkey_ext=0p0xbf7f3a44 *pfkey_ext=0p(nil). 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf7f39f0 pfkey_ext=0p0xbf7f3a44 *pfkey_ext=0p0x81515f0. 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf420610 pfkey_ext=0p0xbf420664 *pfkey_ext=0p(nil). 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf420610 pfkey_ext=0p0xbf420664 *pfkey_ext=0p0x8144c80. 
 | pfkey_lib_debug:pfkey_sa_build: spi=00001002 replay=0 sa_state=0 auth=0 encrypt=0 flags=0 
 | pfkey_lib_debug:pfkey_address_build: exttype=6 proto=0 prefixlen=0 
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
 | pfkey_lib_debug:pfkey_address_build: found address=192.1.2.23:0. 
 | pfkey_lib_debug:pfkey_address_build: successful created len: 3. 
 | pfkey_lib_debug:pfkey_x_satype_build: 
-| pfkey_lib_debug:pfkey_sa_build: spi=b374a893 replay=0 sa_state=0 auth=0 encrypt=0 flags=0 
+| pfkey_lib_debug:pfkey_sa_build: spi=09260ef3 replay=0 sa_state=0 auth=0 encrypt=0 flags=0 
 | pfkey_lib_debug:pfkey_address_build: exttype=20 proto=0 prefixlen=0 
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
 | pfkey_lib_debug:pfkey_address_build: found address=192.1.2.23:0. 
 | pfkey_lib_debug:pfkey_address_build: successful created len: 3. 
-| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x8151700 allocated 120 bytes, &(extensions[0])=0p0xbf7f3a44 
+| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x8144e08 allocated 120 bytes, &(extensions[0])=0p0xbf420664 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[1] (type=1) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[6] (type=6) 
 | pfkey_lib_debug:pfkey_msg_build: copying 8 bytes from extensions[18] (type=18) 
@@ -3953,25 +3126,25 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_msg_parse: remain=13 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=001c0043, required=00000043. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=13. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=13 ext_type=1(security-association) ext_len=3 parsing ext 0p0x8151710 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=13 ext_type=1(security-association) ext_len=3 parsing ext 0p0x8144e18 with parser pfkey_sa_parse. 
 | pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=00001002 replay=0 state=0 auth=0 encrypt=0 flags=0 ref=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 1(security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=6(destination-address) remain=10. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=10 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x8151728 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=10 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x8144e30 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.23 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 6(destination-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=18(X-satype2) remain=7. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=7 ext_type=18(X-satype2) ext_len=1 parsing ext 0p0x8151740 with parser pfkey_x_satype_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=7 ext_type=18(X-satype2) ext_len=1 parsing ext 0p0x8144e48 with parser pfkey_x_satype_parse. 
 | pfkey_lib_debug:pfkey_x_satype_parse: enter 
 | pfkey_lib_debug:pfkey_x_satype_parse: len=1 ext=18(X-satype2) satype=3(ESP) res=0,0,0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 18(X-satype2) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=19(X-security-association) remain=6. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=19(X-security-association) ext_len=3 parsing ext 0p0x8151748 with parser pfkey_sa_parse. 
-| pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=19(X-security-association) spi=b374a893 replay=0 state=0 auth=0 encrypt=0 flags=0 ref=0. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=19(X-security-association) ext_len=3 parsing ext 0p0x8144e50 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=19(X-security-association) spi=09260ef3 replay=0 state=0 auth=0 encrypt=0 flags=0 ref=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 19(X-security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=20(X-destination-address2) remain=3. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=20(X-destination-address2) ext_len=3 parsing ext 0p0x8151760 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=20(X-destination-address2) ext_len=3 parsing ext 0p0x8144e68 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=20(X-destination-address2) family=2(AF_INET) address=192.1.2.23 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 20(X-destination-address2) parsed. 
@@ -3981,7 +3154,7 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |   03 00 01 00  00 00 10 02  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  03 00 06 00  00 00 00 00
 |   02 00 00 00  c0 01 02 17  00 00 00 00  00 00 00 00
-|   01 00 12 00  03 00 00 00  03 00 13 00  b3 74 a8 93
+|   01 00 12 00  03 00 00 00  03 00 13 00  09 26 0e f3
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   03 00 14 00  00 00 00 00  02 00 00 00  c0 01 02 17
 |   00 00 00 00  00 00 00 00
@@ -3992,8 +3165,8 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | route_and_eroute with c: westnet--eastnet-ikev2 (next: none) ero:null esr:{(nil)} ro:null rosr:{(nil)} and state: 2
 | eroute_connection add eroute 192.0.2.0/24:0 --0-> 192.0.1.0/24:0 => tun.1001@192.1.2.45 (raw_eroute)
 | pfkey_lib_debug:pfkey_msg_hdr_build: 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf7f3890 pfkey_ext=0p0xbf7f396c *pfkey_ext=0p(nil). 
-| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf7f3890 pfkey_ext=0p0xbf7f396c *pfkey_ext=0p0x81515f0. 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_entry &pfkey_ext=0p0xbf4204b0 pfkey_ext=0p0xbf42058c *pfkey_ext=0p(nil). 
+| pfkey_lib_debug:pfkey_msg_hdr_build: on_exit &pfkey_ext=0p0xbf4204b0 pfkey_ext=0p0xbf42058c *pfkey_ext=0p0x8144c80. 
 | pfkey_lib_debug:pfkey_sa_build: spi=00001001 replay=0 sa_state=0 auth=0 encrypt=0 flags=0 
 | pfkey_lib_debug:pfkey_address_build: exttype=5 proto=0 prefixlen=0 
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
@@ -4019,7 +3192,7 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_address_build: found address family AF_INET. 
 | pfkey_lib_debug:pfkey_address_build: found address=255.255.255.0:0. 
 | pfkey_lib_debug:pfkey_address_build: successful created len: 3. 
-| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x8151700 allocated 184 bytes, &(extensions[0])=0p0xbf7f396c 
+| pfkey_lib_debug:pfkey_msg_build: pfkey_msg=0p0x8144e68 allocated 184 bytes, &(extensions[0])=0p0xbf42058c 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[1] (type=1) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[5] (type=5) 
 | pfkey_lib_debug:pfkey_msg_build: copying 24 bytes from extensions[6] (type=6) 
@@ -4033,36 +3206,36 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | pfkey_lib_debug:pfkey_msg_parse: remain=21 
 | pfkey_lib_debug:pfkey_msg_parse: extensions permitted=05e00c63, required=01e00043. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=1(security-association) remain=21. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=21 ext_type=1(security-association) ext_len=3 parsing ext 0p0x8151710 with parser pfkey_sa_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=21 ext_type=1(security-association) ext_len=3 parsing ext 0p0x8144e78 with parser pfkey_sa_parse. 
 | pfkey_lib_debug:pfkey_sa_parse: successfully found len=3 exttype=1(security-association) spi=00001001 replay=0 state=0 auth=0 encrypt=0 flags=0 ref=0. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 1(security-association) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=5(source-address) remain=18. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=18 ext_type=5(source-address) ext_len=3 parsing ext 0p0x8151728 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=18 ext_type=5(source-address) ext_len=3 parsing ext 0p0x8144e90 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=5(source-address) family=2(AF_INET) address=192.1.2.23 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 5(source-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=6(destination-address) remain=15. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=15 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x8151740 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=15 ext_type=6(destination-address) ext_len=3 parsing ext 0p0x8144ea8 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=6(destination-address) family=2(AF_INET) address=192.1.2.45 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 6(destination-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=21(X-source-flow-address) remain=12. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=12 ext_type=21(X-source-flow-address) ext_len=3 parsing ext 0p0x8151758 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=12 ext_type=21(X-source-flow-address) ext_len=3 parsing ext 0p0x8144ec0 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=21(X-source-flow-address) family=2(AF_INET) address=192.0.2.0 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 21(X-source-flow-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=22(X-dest-flow-address) remain=9. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=22(X-dest-flow-address) ext_len=3 parsing ext 0p0x8151770 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=9 ext_type=22(X-dest-flow-address) ext_len=3 parsing ext 0p0x8144ed8 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=22(X-dest-flow-address) family=2(AF_INET) address=192.0.1.0 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 22(X-dest-flow-address) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=23(X-source-mask) remain=6. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=23(X-source-mask) ext_len=3 parsing ext 0p0x8151788 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=6 ext_type=23(X-source-mask) ext_len=3 parsing ext 0p0x8144ef0 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=23(X-source-mask) family=2(AF_INET) address=255.255.255.0 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 23(X-source-mask) parsed. 
 | pfkey_lib_debug:pfkey_msg_parse: parsing ext type=24(X-dest-mask) remain=3. 
-| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=24(X-dest-mask) ext_len=3 parsing ext 0p0x81517a0 with parser pfkey_address_parse. 
+| pfkey_lib_debug:pfkey_msg_parse: remain=3 ext_type=24(X-dest-mask) ext_len=3 parsing ext 0p0x8144f08 with parser pfkey_address_parse. 
 | pfkey_lib_debug:pfkey_address_parse: found exttype=24(X-dest-mask) family=2(AF_INET) address=255.255.255.0 proto=0 port=0. 
 | pfkey_lib_debug:pfkey_address_parse: successful. 
 | pfkey_lib_debug:pfkey_msg_parse: Extension 24(X-dest-mask) parsed. 
@@ -4079,7 +3252,7 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |   c8 91 07 08  48 af 07 08  03 00 17 00  00 00 00 00
 |   02 00 00 00  ff ff ff 00  02 00 00 00  0a 00 00 00
 |   03 00 18 00  00 00 00 00  02 00 00 00  ff ff ff 00
-|   fa 38 7f bf  38 39 7f bf
+|   1a 05 42 bf  58 05 42 bf
 | pfkey_get: K_SADB_X_ADDFLOW message 12
 | raw_eroute result=1 
 | command executing up-client
@@ -4089,7 +3262,7 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | executing prepare-client: 2>&1 PLUTO_VERB='prepare-client' PLUTO_VERSION='2.0' PLUTO_CONNECTION='westnet--eastnet-ikev2' PLUTO_INTERFACE='ipsec0' PLUTO_NEXT_HOP='192.1.2.45' PLUTO_ME='192.1.2.23' PLUTO_MY_ID='@east' PLUTO_MY_CLIENT='192.0.2.0/24' PLUTO_MY_CLIENT_NET='192.0.2.0' PLUTO_MY_CLIENT_MASK='255.255.255.0' PLUTO_MY_PORT='0' PLUTO_MY_PROTOCOL='0' PLUTO_PEER='192.1.2.45' PLUTO_PEER_ID='@west' PLUTO_PEER_CLIENT='192.0.1.0/24' PLUTO_PEER_CLIENT_NET='192.0.1.0' PLUTO_PEER_CLIENT_MASK='255.255.255.0' PLUTO_PEER_PORT='0' PLUTO_PEER_PROTOCOL='0' PLUTO_PEER_CA='' PLUTO_STACK='klips' PLUTO_CONN_POLICY='PSK+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init' PLUTO_XAUTH_USERNAME=''  ipsec _updown
 | command executing route-client
 | executing route-client: 2>&1 PLUTO_VERB='route-client' PLUTO_VERSION='2.0' PLUTO_CONNECTION='westnet--eastnet-ikev2' PLUTO_INTERFACE='ipsec0' PLUTO_NEXT_HOP='192.1.2.45' PLUTO_ME='192.1.2.23' PLUTO_MY_ID='@east' PLUTO_MY_CLIENT='192.0.2.0/24' PLUTO_MY_CLIENT_NET='192.0.2.0' PLUTO_MY_CLIENT_MASK='255.255.255.0' PLUTO_MY_PORT='0' PLUTO_MY_PROTOCOL='0' PLUTO_PEER='192.1.2.45' PLUTO_PEER_ID='@west' PLUTO_PEER_CLIENT='192.0.1.0/24' PLUTO_PEER_CLIENT_NET='192.0.1.0' PLUTO_PEER_CLIENT_MASK='255.255.255.0' PLUTO_PEER_PORT='0' PLUTO_PEER_PROTOCOL='0' PLUTO_PEER_CA='' PLUTO_STACK='klips' PLUTO_CONN_POLICY='PSK+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init' PLUTO_XAUTH_USERNAME=''  ipsec _updown
-| route_and_eroute: instance "westnet--eastnet-ikev2", setting eroute_owner {spd=0x81427b8,sr=0x81427b8} to #2 (was #0) (newest_ipsec_sa=#0)
+| route_and_eroute: instance "westnet--eastnet-ikev2", setting eroute_owner {spd=0x8141d00,sr=0x8141d00} to #2 (was #0) (newest_ipsec_sa=#0)
 | emitting 16 raw bytes of padding and length into cleartext
 | padding and length  00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 | emitting 12 zero bytes of 96-bits of truncated HMAC into IKEv2 Encryption Payload
@@ -4097,65 +3270,65 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 | emitting length of ISAKMP Message: 204
 | data before encryption:
 |   27 00 00 0c  02 00 00 00  65 61 73 74  21 00 00 1c
-|   02 00 00 00  a1 be 03 d7  3e 62 4c 0f  37 f0 90 7c
-|   bf 7b 8a 88  44 46 ca c4  2c 80 00 28  00 00 00 24
-|   01 03 04 03  b3 74 a8 93  03 00 00 08  01 00 00 0c
+|   02 00 00 00  de 48 5b 76  35 7b 98 58  19 48 95 0b
+|   f8 0a 83 3c  ad 43 0b b4  2c 80 00 28  00 00 00 24
+|   01 03 04 03  09 26 0e f3  03 00 00 08  01 00 00 0c
 |   03 00 00 08  03 00 00 02  00 00 00 08  05 00 00 00
 |   2d 00 00 18  01 00 00 00  07 00 00 10  00 00 ff ff
 |   c0 00 01 00  c0 00 01 ff  00 00 00 18  01 00 00 00
 |   07 00 00 10  00 00 ff ff  c0 00 02 00  c0 00 02 ff
 |   00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 | data after encryption:
-|   1e 66 04 ae  99 bf 7b 22  10 be 34 89  2d ff aa 79
-|   82 48 8f 40  df 3e 4d 22  04 ac b7 5b  da 45 f3 ed
-|   45 c1 40 bd  d3 31 6e 7a  cb 96 8b e2  9c 82 b8 ca
-|   67 77 f2 ef  65 1b c7 87  50 51 e3 8e  35 55 1a 68
-|   ca 95 cf f5  a4 45 0b 7e  65 65 3d 96  b7 95 9e 9e
-|   8f 8c 27 dc  63 7b ea 9b  dd b0 1f ec  13 61 d3 94
-|   7b 49 30 42  29 fa eb 70  15 b9 5f 28  e5 6a a6 83
-|   a9 3d 17 04  e8 04 b1 1f  70 31 82 6b  4b 78 ce 74
-|   21 4b 88 ca  c7 5f 96 84  05 21 58 bf  4b 18 da ab
-| data being hmac:  e8 05 90 ca  d2 3a ee 04  cc da 96 3d  aa 0f fc 9f
+|   bd 47 e8 6d  95 0f d2 8d  7f 38 5e 05  5b 3f 09 bf
+|   ca 64 e7 ad  87 7b 73 c7  92 0f 28 67  bd 2a 9e 8a
+|   c8 8e 5a b1  69 84 7e e9  50 86 72 06  d9 47 67 7d
+|   b5 52 43 0a  c9 29 4a bd  ee d2 3d 88  39 95 4a c3
+|   4d 50 04 98  48 03 c5 52  8c 3a 2b 27  fa c4 25 bb
+|   28 04 6b 49  f6 32 2d bc  9b 7e 6c 25  c8 d6 51 98
+|   ed 55 25 df  f5 aa 32 f9  cd 69 85 b2  3c 38 04 ca
+|   ed d1 b0 b2  e1 6b e7 5a  3a 35 7f 89  5a 19 33 8a
+|   7c e8 39 ad  68 39 a4 df  42 0e 8c f6  73 73 0a 31
+| data being hmac:  1d 56 aa 77  a7 e4 a2 b3  65 fc 37 f1  7e 24 da 76
 | data being hmac:  2e 20 23 20  00 00 00 01  00 00 00 cc  24 80 00 b0
-| data being hmac:  98 52 d4 19  22 48 de dd  31 96 05 86  68 ec 29 8e
-| data being hmac:  1e 66 04 ae  99 bf 7b 22  10 be 34 89  2d ff aa 79
-| data being hmac:  82 48 8f 40  df 3e 4d 22  04 ac b7 5b  da 45 f3 ed
-| data being hmac:  45 c1 40 bd  d3 31 6e 7a  cb 96 8b e2  9c 82 b8 ca
-| data being hmac:  67 77 f2 ef  65 1b c7 87  50 51 e3 8e  35 55 1a 68
-| data being hmac:  ca 95 cf f5  a4 45 0b 7e  65 65 3d 96  b7 95 9e 9e
-| data being hmac:  8f 8c 27 dc  63 7b ea 9b  dd b0 1f ec  13 61 d3 94
-| data being hmac:  7b 49 30 42  29 fa eb 70  15 b9 5f 28  e5 6a a6 83
-| data being hmac:  a9 3d 17 04  e8 04 b1 1f  70 31 82 6b  4b 78 ce 74
-| data being hmac:  21 4b 88 ca  c7 5f 96 84  05 21 58 bf  4b 18 da ab
+| data being hmac:  49 af c7 e2  56 75 ad 5e  0c 12 46 5b  51 71 74 4e
+| data being hmac:  bd 47 e8 6d  95 0f d2 8d  7f 38 5e 05  5b 3f 09 bf
+| data being hmac:  ca 64 e7 ad  87 7b 73 c7  92 0f 28 67  bd 2a 9e 8a
+| data being hmac:  c8 8e 5a b1  69 84 7e e9  50 86 72 06  d9 47 67 7d
+| data being hmac:  b5 52 43 0a  c9 29 4a bd  ee d2 3d 88  39 95 4a c3
+| data being hmac:  4d 50 04 98  48 03 c5 52  8c 3a 2b 27  fa c4 25 bb
+| data being hmac:  28 04 6b 49  f6 32 2d bc  9b 7e 6c 25  c8 d6 51 98
+| data being hmac:  ed 55 25 df  f5 aa 32 f9  cd 69 85 b2  3c 38 04 ca
+| data being hmac:  ed d1 b0 b2  e1 6b e7 5a  3a 35 7f 89  5a 19 33 8a
+| data being hmac:  7c e8 39 ad  68 39 a4 df  42 0e 8c f6  73 73 0a 31
 | out calculated auth:
-|   b4 5e 34 4c  13 d6 87 4f  3a bd 87 b6
+|   be 4f c0 04  c6 5a 24 e1  42 8e 5e 4f
 | complete v2 state transition with STF_OK
 "westnet--eastnet-ikev2" #2: transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 "westnet--eastnet-ikev2" #2: negotiated tunnel [192.0.2.0,192.0.2.255] -> [192.0.1.0,192.0.1.255]
-"westnet--eastnet-ikev2" #2: STATE_PARENT_R2: received v2I2, PARENT SA established tunnel mode {ESP=>0x79acbc7a <0xb374a893 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
+"westnet--eastnet-ikev2" #2: STATE_PARENT_R2: received v2I2, PARENT SA established tunnel mode {ESP=>0xd2efc071 <0x09260ef3 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
 | sending reply packet to 192.1.2.45:500 (from port 500)
 | sending 204 bytes for STATE_PARENT_R1 through eth1:500 to 192.1.2.45:500 (using #2)
-|   e8 05 90 ca  d2 3a ee 04  cc da 96 3d  aa 0f fc 9f
+|   1d 56 aa 77  a7 e4 a2 b3  65 fc 37 f1  7e 24 da 76
 |   2e 20 23 20  00 00 00 01  00 00 00 cc  24 80 00 b0
-|   98 52 d4 19  22 48 de dd  31 96 05 86  68 ec 29 8e
-|   1e 66 04 ae  99 bf 7b 22  10 be 34 89  2d ff aa 79
-|   82 48 8f 40  df 3e 4d 22  04 ac b7 5b  da 45 f3 ed
-|   45 c1 40 bd  d3 31 6e 7a  cb 96 8b e2  9c 82 b8 ca
-|   67 77 f2 ef  65 1b c7 87  50 51 e3 8e  35 55 1a 68
-|   ca 95 cf f5  a4 45 0b 7e  65 65 3d 96  b7 95 9e 9e
-|   8f 8c 27 dc  63 7b ea 9b  dd b0 1f ec  13 61 d3 94
-|   7b 49 30 42  29 fa eb 70  15 b9 5f 28  e5 6a a6 83
-|   a9 3d 17 04  e8 04 b1 1f  70 31 82 6b  4b 78 ce 74
-|   21 4b 88 ca  c7 5f 96 84  05 21 58 bf  4b 18 da ab
-|   b4 5e 34 4c  13 d6 87 4f  3a bd 87 b6
+|   49 af c7 e2  56 75 ad 5e  0c 12 46 5b  51 71 74 4e
+|   bd 47 e8 6d  95 0f d2 8d  7f 38 5e 05  5b 3f 09 bf
+|   ca 64 e7 ad  87 7b 73 c7  92 0f 28 67  bd 2a 9e 8a
+|   c8 8e 5a b1  69 84 7e e9  50 86 72 06  d9 47 67 7d
+|   b5 52 43 0a  c9 29 4a bd  ee d2 3d 88  39 95 4a c3
+|   4d 50 04 98  48 03 c5 52  8c 3a 2b 27  fa c4 25 bb
+|   28 04 6b 49  f6 32 2d bc  9b 7e 6c 25  c8 d6 51 98
+|   ed 55 25 df  f5 aa 32 f9  cd 69 85 b2  3c 38 04 ca
+|   ed d1 b0 b2  e1 6b e7 5a  3a 35 7f 89  5a 19 33 8a
+|   7c e8 39 ad  68 39 a4 df  42 0e 8c f6  73 73 0a 31
+|   be 4f c0 04  c6 5a 24 e1  42 8e 5e 4f
 | releasing whack for #2 (sock=-1)
 | releasing whack for #1 (sock=-1)
 | * processed 1 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 63 seconds
+| next event EVENT_SHUNT_SCAN in 105 seconds
 |  
 | *received whack message
 | * processed 0 messages from cryptographic helpers 
-| next event EVENT_SHUNT_SCAN in 57 seconds
+| next event EVENT_SHUNT_SCAN in 98 seconds
 east:~# : ==== tuc ====
 east:~# if [ -f /tmp/core ]; then echo CORE FOUND; mv /tmp/core /var/tmp; fi
 east:~# : ==== end ====
@@ -4168,12 +3341,12 @@ klogd 1.3-3#33.1, log source = /proc/kmsg started.
 <7>On node 0 totalpages: 8192
 <7>  DMA zone: 8192 pages, LIFO batch:1
 <4>Built 1 zonelists.  Total pages: 8192
-<5>Kernel command line: initrd=/btmp/antony/ikev2/2008_01_14/UMLPOOL/initrd.uml umlroot=/btmp/antony/ikev2/2008_01_14/UMLPOOL/east/root root=/dev/ram0 rw ssl=pty eth0=daemon,10:00:00:dc:bc:ff,unix,/tmp/umlEV4Tk1.d/east/ctl,/tmp/umlEV4Tk1.d/east/data eth1=daemon,10:00:00:64:64:23,unix,/tmp/umlEV4Tk1.d/public/ctl,/tmp/umlEV4Tk1.d/public/data eth2=daemon,10:00:00:32:64:23,unix,/tmp/umlEV4Tk1.d/admin/ctl,/tmp/umlEV4Tk1.d/admin/data init=/linuxrc single
+<5>Kernel command line: initrd=/btmp/antony/ikev2/2008_01_14/UMLPOOL/initrd.uml umlroot=/btmp/antony/ikev2/2008_01_14/UMLPOOL/east/root root=/dev/ram0 rw ssl=pty eth0=daemon,10:00:00:dc:bc:ff,unix,/tmp/uml6bcyGN.d/east/ctl,/tmp/uml6bcyGN.d/east/data eth1=daemon,10:00:00:64:64:23,unix,/tmp/uml6bcyGN.d/public/ctl,/tmp/uml6bcyGN.d/public/data eth2=daemon,10:00:00:32:64:23,unix,/tmp/uml6bcyGN.d/admin/ctl,/tmp/uml6bcyGN.d/admin/data init=/linuxrc single
 <4>PID hash table entries: 256 (order: 8, 1024 bytes)
 <4>Dentry cache hash table entries: 4096 (order: 2, 16384 bytes)
 <4>Inode-cache hash table entries: 2048 (order: 1, 8192 bytes)
 <6>Memory: 27292k available
-<7>Calibrating delay loop... 3827.30 BogoMIPS (lpj=19136512)
+<7>Calibrating delay loop... 3761.76 BogoMIPS (lpj=18808832)
 <4>Mount-cache hash table entries: 512
 <4>Checking for host processor cmov support...Yes
 <4>Checking for host processor xmm support...No
@@ -4182,8 +3355,6 @@ klogd 1.3-3#33.1, log source = /proc/kmsg started.
 <6>checking if image is initramfs...it isn't (bad gzip magic numbers); looks like an initrd
 <4>Freeing initrd memory: 1212k freed
 <4>Using 2.6 host AIO
-<4>umid "east" is already in use by pid 8098
-<4>Failed to initialize umid "east", trying with a random umid
 <6>NET: Registered protocol family 16
 <6>NET: Registered protocol family 2
 <4>IP route cache hash table entries: 256 (order: -2, 1024 bytes)
@@ -4199,13 +3370,13 @@ klogd 1.3-3#33.1, log source = /proc/kmsg started.
 <4>ipsec_aes_init(alg_type=14 alg_id=9 name=aes_mac): ret=0
 <4>ipsec_3des_init(alg_type=15 alg_id=3 name=3des): ret=0
 <4>daemon_setup : Ignoring data socket specification
-<6>Netdevice 0 (10:00:00:dc:bc:ff) : daemon backend (uml_switch version 3) - unix:/tmp/umlEV4Tk1.d/east/ctl
+<6>Netdevice 0 (10:00:00:dc:bc:ff) : daemon backend (uml_switch version 3) - unix:/tmp/uml6bcyGN.d/east/ctl
 <4>daemon_setup : Ignoring data socket specification
-<6>Netdevice 1 (10:00:00:64:64:23) : daemon backend (uml_switch version 3) - unix:/tmp/umlEV4Tk1.d/public/ctl
+<6>Netdevice 1 (10:00:00:64:64:23) : daemon backend (uml_switch version 3) - unix:/tmp/uml6bcyGN.d/public/ctl
 <4>daemon_setup : Ignoring data socket specification
-<6>Netdevice 2 (10:00:00:32:64:23) : daemon backend (uml_switch version 3) - unix:/tmp/umlEV4Tk1.d/admin/ctl
+<6>Netdevice 2 (10:00:00:32:64:23) : daemon backend (uml_switch version 3) - unix:/tmp/uml6bcyGN.d/admin/ctl
 <4>Checking host MADV_REMOVE support...OK
-<4>mconsole (version 2) initialized on /home/antony/.uml/bK5Wo4/mconsole
+<4>mconsole (version 2) initialized on /home/antony/.uml/east/mconsole
 <6>Host TLS support detected
 <6>Detected host type: i386
 <5>VFS: Disk quotas dquot_6.5.1
