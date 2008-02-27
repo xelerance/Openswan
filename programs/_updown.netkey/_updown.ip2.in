@@ -191,7 +191,7 @@ addsource() {
 doroute() {
     st=0
     # skip routing if it's not enabled or necessary
-    if [ " $PLUTO_MY_SOURCEIP" = " " -a " $ROUTING" != " yes" ]; then
+    if [ " $PLUTO_MY_SOURCEIP" = " " -a " $ROUTE" != " yes" ]; then
 	return 0
     fi
     parms="$PLUTO_PEER_CLIENT"
