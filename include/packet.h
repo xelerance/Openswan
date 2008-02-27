@@ -745,19 +745,6 @@ struct ikev2_a
 };
 extern struct_desc ikev2_a_desc;
 
-/* rfc4306 section 3.10 NOTIFY Payload */
-struct ikev2_notify 
-{
-    u_int8_t  isac_np;		/* Next payload */
-    u_int8_t  isac_critical;
-    u_int16_t isac_length;	/* Payload length */
-    u_int8_t  isac_proto;	/* Protocol ID: noSA=0,IKE=1,AH=2,ESP=3 */
-    u_int8_t  isac_spisize;	/* SPI size: 0 for IKE_SA */
-    u_int16_t isac_type;	/* Notification type, see notification_t */
-    u_int32_t isac_spi;		/* SPI */
-    u_int32_t isac_data;	/* Notification data */
-};
-
 /* rfc4306 section 3.6 CERT Payload */
 struct ikev2_cert 
 {
@@ -794,6 +781,17 @@ extern struct_desc  ikev2_certificate_req_desc;
 
 /* rfc4306, section 3.9, nonce, uses generic header */
 extern struct_desc ikev2_nonce_desc;
+
+/* rfc4306 section 3.10 NOTIFY Payload */
+struct ikev2_notify 
+{
+    u_int8_t  isan_np;		/* Next payload */
+    u_int8_t  isan_critical;
+    u_int16_t isan_length;	/* Payload length */
+    u_int8_t  isan_protoid;	/* Protocol ID: noSA=0,IKE=1,AH=2,ESP=3 */
+    u_int8_t  isan_spisize;	/* SPI size: 0 for IKE_SA */
+    u_int16_t isan_type;	/* Notification type, see notification_t */
+};
 
 /* rfc4306, section 3.12, vendor ID, uses generic header */
 extern struct_desc ikev2_vendor_id_desc;

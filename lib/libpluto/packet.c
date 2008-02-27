@@ -867,6 +867,8 @@ static field_desc ikev2a_fields[] = {
 
 struct_desc ikev2_a_desc = { "IKEv2 Authentication Payload",
 			     ikev2a_fields, sizeof(struct ikev2_a) };
+
+
 /* 
  * 3.9.  Nonce Payload
  * 
@@ -892,6 +894,39 @@ struct_desc ikev2_a_desc = { "IKEv2 Authentication Payload",
 struct_desc ikev2_nonce_desc = { "IKEv2 Nonce Payload",
 				 ikev2generic_fields,
 				 sizeof(struct ikev2_generic) };
+
+
+/*    3.10 Notify Payload  
+ *
+ *    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    ! Next Payload  !C!  RESERVED   !         Payload Length        !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !  Protocol ID  !   SPI Size    !      Notify Message Type      !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !                                                               !
+ *    ~                Security Parameter Index (SPI)                 ~
+ *    !                                                               !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    !                                                               !
+ *    ~                       Notification Data                       ~
+ *    !                                                               !
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ */ 
+static field_desc ikev2_notify_fields[] = {
+  { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+  { ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names },
+  { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+  { ft_enum, 8/BITS_PER_BYTE, "Protocol ID", &ikev2_protoid_names },
+  { ft_len,  8/BITS_PER_BYTE, "SPI size", NULL},
+  { ft_enum, 16/BITS_PER_BYTE, "Notify Message Type", &ikev2_notify_type_names},
+  { ft_end,  0, NULL, NULL }
+};
+
+
+struct_desc ikev2_notify_desc = { "IKEv2 Notify Payload",
+			     ikev2_notify_fields, sizeof(struct ikev2_notify) };
 
 
 /* 
@@ -1051,7 +1086,8 @@ struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
     &ikev2_certificate_req_desc,	/* 38*/
     &ikev2_a_desc,                      /* 39 */
     &ikev2_nonce_desc,                  /* 40 */
-    NULL, NULL,                         /* 41,42 */
+    &ikev2_notify_desc,                 /* 41 */
+    NULL,                               /* 42 */
     &ikev2_vendor_id_desc,              /* 43 */
     &ikev2_ts_desc, &ikev2_ts_desc,     /* 44, 45 */
     &ikev2_e_desc,                      /* 46 */

@@ -290,7 +290,10 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 
 	zero(&hdr);	/* default to 0 */
 	hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
-	hdr.isa_np   = ISAKMP_NEXT_v2SA;
+	if(st->st_dcookie)
+		hdr.isa_np   = ISAKMP_NEXT_v2N; 
+	else
+		hdr.isa_np   = ISAKMP_NEXT_v2SA; 
 	hdr.isa_xchg = ISAKMP_v2_SA_INIT;
 	hdr.isa_flags = ISAKMP_FLAGS_I;
 	memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
@@ -302,7 +305,12 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	    return STF_INTERNAL_ERROR;
 	}
     }
+    /* send an anti DDOS cookie, 4306 2.6, if we have received one from the 
+     * responder 
+     */
+    {
 
+    }
     /* SA out */
     {
 	u_char *sa_start = md->rbody.cur;
