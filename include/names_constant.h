@@ -71,6 +71,7 @@ extern enum_names trans_type_esn_names;
 extern enum_names *ikev2_transid_val_descs[];
 extern const unsigned int ikev2_transid_val_descs_size;
 extern enum_names ikev2_cert_type_names;
+extern enum_names ikev2_notify_names;
 
 /* socket address family info */
 

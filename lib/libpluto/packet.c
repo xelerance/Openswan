@@ -918,16 +918,15 @@ static field_desc ikev2_notify_fields[] = {
   { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
   { ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names },
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
-  { ft_enum, 8/BITS_PER_BYTE, "Protocol ID", &ikev2_protoid_names },
+  { ft_enum, 8/BITS_PER_BYTE, "Protocol ID", &protocol_names },
+  /* names used are v1 names may be we should use 4306 3.3.1 names */
   { ft_len,  8/BITS_PER_BYTE, "SPI size", NULL},
-  { ft_enum, 16/BITS_PER_BYTE, "Notify Message Type", &ikev2_notify_type_names},
+  { ft_enum, 16/BITS_PER_BYTE, "Notify Message Type", &ikev2_notify_names},
   { ft_end,  0, NULL, NULL }
 };
 
-
 struct_desc ikev2_notify_desc = { "IKEv2 Notify Payload",
 			     ikev2_notify_fields, sizeof(struct ikev2_notify) };
-
 
 /* 
  * 3.12.  Vendor ID Payload

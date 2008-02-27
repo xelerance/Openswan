@@ -340,8 +340,9 @@ static const char *const cert_type_name[] = {
 enum_names cert_type_names =
     { CERT_NONE, CERT_X509_ATTRIBUTE, cert_type_name, NULL };
 
-/* Certificate type values RFC 4306 3.6*/
-
+/* Certificate type values RFC 4306 3.6 */
+/* TBD AA don't know how to add v2 sepecific ones, now it is mix of v1 & v2 */
+ 
 static const char *const ikev2_cert_type_name[] = {
         "CERT_RESERVED",
         "CERT_PKCS7_WRAPPED_X509",
@@ -365,7 +366,7 @@ static const char *const ikev2_cert_type_name[] = {
 };
 
 enum_names ikev2_cert_type_names =
-    { CERT_NONE, CERT_X509_ATTRIBUTE, ikev2_cert_type_name, NULL };
+    { CERT_NONE, CERT_RAW_RSA, ikev2_cert_type_name, NULL };
 
 /*
  * certificate request payload policy
@@ -839,6 +840,13 @@ enum_names ipsec_notification_names =
     { IPSEC_RESPONDER_LIFETIME, IPSEC_INITIAL_CONTACT,
 	ipsec_notification_name, &notification_status_names };
 
+static const char *ikev2_notify_name[] = {
+	   "v2N_RESERVED",
+	   "v2N_UNSUPPORTED_CRITICAL_PAYLOAD",
+ 	}; 
+
+enum_names ikev2_notify_names = 
+    { 0, 1, ikev2_notify_name, NULL};
 /* MODECFG */
 /*
  * From draft-dukes-ike-mode-cfg
