@@ -1,5 +1,8 @@
 Please see docs/KNOWN_BUGS file for more information
 
+v2.5.17
+* Implemented netlink_shunt_eroute() [paul]
+* Simplified _updown.netkey [tuomo]
 * Bugtracker bugs fixed
   #460: Fix bogus header with delayed MAIN I2->R2 [Herbert Xu]
   #496: kernel_alg_esp_auth_ok() call fixed - [gernot]
