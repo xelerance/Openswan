@@ -56,9 +56,14 @@
 
 #include "tpm/tpm.h"
 
+#define SEND_NOTIFICATION_AA(t, d) \
+    if (st) send_v2_notification_from_state(st, st->st_state, t, d); \
+    else send_v2_notification_from_md(md, t, d); 
+
+
 #define SEND_NOTIFICATION(t) \
-    if (st) send_v2_notification_from_state(st, st->st_state, t); \
-    else send_v2_notification_from_md(md, t); 
+    if (st) send_v2_notification_from_state(st, st->st_state, t, NULL); \
+    else send_v2_notification_from_md(md, t, NULL); 
 
 static void ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
 				, struct pluto_crypto_req *r
@@ -67,6 +72,9 @@ static void ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
 static stf_status ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 						, struct pluto_crypto_req *r);
 
+static bool ikev2_get_dcookie(u_char *dcookie, chunk_t st_ni
+	,ip_address *addr, u_int8_t *spiI);
+static int force_busy;
 /*
  *
  ***************************************************************
@@ -467,6 +475,28 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	st->st_msgid_nextuse = 0;
 	md->st = st;
 	md->from_state = STATE_IKEv2_BASE;
+    }
+	
+    /* if we are being DOSed check if the incoming packet has dcookie *?
+     */
+   if(force_busy) 
+   { 
+     	if(md->chain[ISAKMP_NEXT_v2KE] && !(md->chain[ISAKMP_NEXT_v2N]))
+	{
+		/* is an I1 packet with v2N in it,	 */
+		/* check v2N type is COOKIE */
+ 	}
+        else 
+	{
+		u_char dcookie[SHA1_DIGEST_SIZE];
+		chunk_t dc;
+		dc.ptr = dcookie;
+		dc.len = SHA1_DIGEST_SIZE;
+		ikev2_get_dcookie( dcookie, st->st_ni, &md->sender, 
+		                 st->st_icookie);
+		SEND_NOTIFICATION_AA(COOKIE, &dc); 
+     		delete_state(st);
+	}
     }
 
     /*
@@ -1761,6 +1791,39 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 }
 
 /*
+ * Cookie = <VersionIDofSecret> | Hash(Ni | IPi | SPIi | <secret>)
+ * where <secret> is a randomly generated secret known only to the
+ * in OSW implementation <VersionIDofSecret> is not used.
+ */
+static bool ikev2_get_dcookie(u_char *dcookie,  chunk_t st_ni
+	,ip_address *addr, u_int8_t *spiI)
+{
+    	size_t addr_length;
+	SHA1_CTX	ctx_sha1;
+	unsigned char addr_buff[
+		sizeof(union {struct in_addr A; struct in6_addr B;})];
+	
+	addr_length = addrbytesof(addr, addr_buff, sizeof(addr_buff));
+	SHA1Init(&ctx_sha1);
+	SHA1Update(&ctx_sha1, st_ni.ptr, st_ni.len);
+	SHA1Update(&ctx_sha1, addr_buff, addr_length);
+	SHA1Update(&ctx_sha1, spiI, sizeof(spiI));
+	SHA1Update(&ctx_sha1, ikev2_secret_of_the_day
+		 , SHA1_DIGEST_SIZE);
+	SHA1Final(dcookie, &ctx_sha1);
+#if 0
+	ikev2_secrets_recycle++;
+	if(ikev2_secrets_recycle >= 32768) {
+		/* handed out too many cookies, cycle secrets */
+		ikev2_secrets_recycle = 0;
+		/* can we call init_secrets() without adding an EVENT? */
+		init_secrets();
+	}
+#endif
+	return TRUE;
+}
+
+/*
  *
  ***************************************************************
  *                       NOTIFICATION_OUT                  *****
@@ -1771,12 +1834,13 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 void
 send_v2_notification(struct state *p1st, u_int16_t type
 		     , struct state *encst
-		     , msgid_t msgid UNUSED
-		     , u_char *icookie UNUSED
-		     , u_char *rcookie UNUSED)
+		     , u_char *icookie 
+		     , u_char *rcookie 
+		     , chunk_t *n_data)
 {
     u_char buffer[1024];
     pb_stream pbs;
+    pb_stream hdr_pbs;
 
     /*
      * no complex timers like in IKEv1, because notifications are
@@ -1792,25 +1856,60 @@ send_v2_notification(struct state *p1st, u_int16_t type
     memset(buffer, 0, sizeof(buffer));
     init_pbs(&pbs, buffer, sizeof(buffer), "notification msg");
 
-#if 0
-    /* HDR* */
+    /* HDR out */
     {
-	hdr.isa_version = ISAKMP_MAJOR_VERSION << ISA_MAJ_SHIFT | ISAKMP_MINOR_VERSION;
-	hdr.isa_np = encst ? ISAKMP_NEXT_HASH : ISAKMP_NEXT_N;
-	hdr.isa_xchg = ISAKMP_XCHG_INFO;
-	hdr.isa_msgid = msgid;
-	hdr.isa_flags = encst ? ISAKMP_FLAG_ENCRYPTION : 0;
-	if (icookie)
-	    memcpy(hdr.isa_icookie, icookie, COOKIE_SIZE);
-	if (rcookie)
-	    memcpy(hdr.isa_rcookie, rcookie, COOKIE_SIZE);
-	if (!out_struct(&hdr, &isakmp_hdr_desc, &pbs, &r_hdr_pbs))
-	    impossible();
+	struct isakmp_hdr n_hdr ;
+	zero(&n_hdr);     /* default to 0 */  /* AAA should we copy from MD? */
+	n_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+	memcpy(n_hdr.isa_rcookie, rcookie, COOKIE_SIZE);
+	memcpy(n_hdr.isa_icookie, icookie, COOKIE_SIZE);
+	n_hdr.isa_xchg = ISAKMP_v2_SA_INIT;  // AAA check what is for v2N
+	n_hdr.isa_np = ISAKMP_NEXT_v2N;
+	n_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
+	n_hdr.isa_flags |=  ISAKMP_FLAGS_R;
+	if (!out_struct(&n_hdr, &isakmp_hdr_desc, &pbs, &hdr_pbs)) 
+	{
+    	    openswan_log("error initializing hdr for notify message");
+	    return;
+	}
+		
     }
-#endif
 
-    /* XXX */
-    return;
+   {
+    DBG(DBG_CONTROL
+    	,DBG_log("Adding a v2N Payload"));  
+    struct ikev2_notify n;
+    pb_stream n_pbs;
+    n.isan_np =  ISAKMP_NEXT_NONE;
+    n.isan_critical = ISAKMP_PAYLOAD_CRITICAL;
+    n.isan_protoid = 
+    n.isan_spisize = COOKIE_SIZE;
+    n.isan_type = type;
+
+    if (!out_struct(&n, &ikev2_notify_desc,&pbs , &n_pbs))
+    {
+	openswan_log("error initializing notify payload for notify message");
+   	return;
+    }
+
+    if (!out_raw(rcookie, COOKIE_SIZE, &n_pbs, "SPI "))
+    {
+	openswan_log("error writing SPI to  notify payload for notify message");
+   	return;
+    }
+    if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notifiy data"))
+    {
+	openswan_log("error writing notify payload for notify message");
+   	return;
+    }
+    close_output_pbs(&n_pbs);
+   }
+   // !out_struct(&n_hdr, &isakmp_hdr_desc, &pbs, &hdr_pbs)) 
+   // !out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
+   close_message(&hdr_pbs);
+   close_output_pbs(&pbs); 
+
+   send_packet(p1st, __FUNCTION__, TRUE);
 }
 		     
 

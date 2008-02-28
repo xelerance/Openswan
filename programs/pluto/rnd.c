@@ -192,6 +192,7 @@ init_rnd_pool(void)
 }
 
 u_char    secret_of_the_day[SHA1_DIGEST_SIZE];
+u_char    ikev2_secret_of_the_day[SHA1_DIGEST_SIZE];
 
 void
 init_secret(void)

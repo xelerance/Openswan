@@ -67,10 +67,9 @@
 #include "udpfromto.h"
 #include "tpm/tpm.h"
 
-#define SEND_NOTIFICATION(t) { 					\
-    if (st) send_v2_notification_from_state(st, from_state, t); \
-    else send_v2_notification_from_md(md, t); }
-
+#define SEND_NOTIFICATION(t) { \
+	if (st) send_v2_notification_from_state(st, from_state, t, NULL); \
+	else send_v2_notification_from_md(md, t, NULL); }
 
 struct state_v2_microcode {
     enum state_kind state, next_state;
@@ -561,19 +560,19 @@ void ikev2_log_parentSA(struct state *st)
 
 void
 send_v2_notification_from_state(struct state *st, enum state_kind state,
-				u_int16_t type)
+				u_int16_t type, chunk_t *data)
 {
     passert(st);
 
     if (state == STATE_UNDEFINED)
 	state = st->st_state;
 
-    send_v2_notification(st, type, NULL, 0
-			 , st->st_icookie, st->st_rcookie);
+    send_v2_notification(st, type, NULL, st->st_icookie, st->st_rcookie, data);
 }
 
 void
-send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type)
+send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type
+			     , chunk_t *data)
 {
     struct state st;
     struct connection cnx;
@@ -599,8 +598,8 @@ send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type)
     cnx.interface = md->iface;
     st.st_interface = md->iface;
 
-    send_v2_notification(&st, type, NULL, 0,
-			 md->hdr.isa_icookie, md->hdr.isa_rcookie);
+    send_v2_notification(&st, type, NULL,
+			 md->hdr.isa_icookie, md->hdr.isa_rcookie, data);
 }
 
 void ikev2_update_counters(struct msg_digest *md)

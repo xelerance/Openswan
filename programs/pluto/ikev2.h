@@ -73,9 +73,10 @@ extern notification_t parse_ikev2_sa_body(pb_stream *sa_pbs
 
 extern void send_v2_notification_from_state(struct state *st
 					    , enum state_kind state
-					    , u_int16_t type);
+					    , u_int16_t type, chunk_t *data);
 
-extern void send_v2_notification_from_md(struct msg_digest *md,u_int16_t type);
+extern void send_v2_notification_from_md(struct msg_digest *md,u_int16_t type
+   					 , chunk_t *data);
 extern stf_status ikev2_process_payloads(struct msg_digest *md,
 					 pb_stream   *in_pbs,
 					 unsigned int from_state,
@@ -136,9 +137,10 @@ extern struct traffic_selector ikev2_subnettots(struct end *e);
 extern void ikev2_update_counters(struct msg_digest *md);
 
 extern void send_v2_notification(struct state *p1st, u_int16_t type
-				 , struct state *encst, msgid_t msgid
+				 , struct state *encst 
 				 , u_char *icookie
-				 , u_char *rcookie);
+				 , u_char *rcookie
+				 , chunk_t *data);
 
 extern bool doi_send_ikev2_cert_thinking( struct state *st);
 

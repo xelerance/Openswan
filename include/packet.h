@@ -792,6 +792,7 @@ struct ikev2_notify
     u_int8_t  isan_spisize;	/* SPI size: 0 for IKE_SA */
     u_int16_t isan_type;	/* Notification type, see notification_t */
 };
+extern struct_desc ikev2_notify_desc;
 
 /* rfc4306, section 3.12, vendor ID, uses generic header */
 extern struct_desc ikev2_vendor_id_desc;
