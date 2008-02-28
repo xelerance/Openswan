@@ -436,16 +436,16 @@ static struct db_trans oakley_trans_psk[] = {
 #ifdef TEST_INDECENT_PROPOSAL
 	{ AD_TR(KEY_IKE,otpsk1024des3tiger) },
 #endif
-	{ AD_TR(KEY_IKE,otpsk2048aessha1) },
-	{ AD_TR(KEY_IKE,otpsk2048aesmd5) },
-	{ AD_TR(KEY_IKE,otpsk2048des3sha1) },
-	{ AD_TR(KEY_IKE,otpsk2048des3md5) },
 	{ AD_TR(KEY_IKE,otpsk1536aessha1) },
 	{ AD_TR(KEY_IKE,otpsk1536aesmd5) },
 	{ AD_TR(KEY_IKE,otpsk1536des3sha1) },
 	{ AD_TR(KEY_IKE,otpsk1536des3md5) },
 	{ AD_TR(KEY_IKE,otpsk1024des3sha1) },
 	{ AD_TR(KEY_IKE,otpsk1024des3md5) },
+	{ AD_TR(KEY_IKE,otpsk2048aessha1) },
+	{ AD_TR(KEY_IKE,otpsk2048aesmd5) },
+	{ AD_TR(KEY_IKE,otpsk2048des3sha1) },
+	{ AD_TR(KEY_IKE,otpsk2048des3md5) },
     };
 
 #ifdef XAUTH
