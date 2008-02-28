@@ -66,6 +66,7 @@ main(int argc, char *argv[])
 {
     int   len;
     char *infile;
+    char *outfile;
     char *conn_name;
     int  lineno=0;
     struct connection *c1;
@@ -81,8 +82,8 @@ main(int argc, char *argv[])
 
     init_crypto();
 
-    if(argc != 4) {
-	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapin>\n", progname);
+    if(argc != 5) {
+	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapin> <pcpout>\n", progname);
 	exit(10);
     }
     /* argv[1] == "-r" */
@@ -92,10 +93,11 @@ main(int argc, char *argv[])
     
     infile = argv[1];
     conn_name = argv[2];
+    outfile = argv[4];
 
     readwhackmsg(infile);
 
-    send_packet_setup_pcap("parentR1psk.pcap");
+    send_packet_setup_pcap(outfile);
  
     c1 = con_by_name(conn_name, TRUE);
 
