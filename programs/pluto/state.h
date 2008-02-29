@@ -239,8 +239,8 @@ struct state
     u_int8_t           st_rcookie[COOKIE_SIZE];/* Responder Cookie */
     chunk_t            st_nr;                  /* Nr nonce */
 
-    /* Denial of Service  cookie send from responder */
-    unsigned char      st_dcookie[SHA1_DIGEST_SIZE];
+    /* Denial of Service  cookie send by responder */
+    unsigned char      *st_dcookie;
 
     /* my stuff */
     chunk_t            st_tpacket;             /* Transmitted packet */

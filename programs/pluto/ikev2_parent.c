@@ -74,7 +74,6 @@ static stf_status ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 
 static bool ikev2_get_dcookie(u_char *dcookie, chunk_t st_ni
 	,ip_address *addr, u_int8_t *spiI);
-static bool force_busy = FALSE; /* AAA this is temp. it is an extern */
 /*
  *
  ***************************************************************
@@ -298,11 +297,9 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 
 	zero(&hdr);	/* default to 0 */
 	hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
-	/* AAA fix this 
 	if(st->st_dcookie)
 		hdr.isa_np   = ISAKMP_NEXT_v2N; 
 	else 
-	*/
 		hdr.isa_np   = ISAKMP_NEXT_v2SA; 
 	hdr.isa_xchg = ISAKMP_v2_SA_INIT;
 	hdr.isa_flags = ISAKMP_FLAGS_I;
