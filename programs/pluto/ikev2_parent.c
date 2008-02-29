@@ -497,7 +497,8 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 		ikev2_get_dcookie( dcookie, st->st_ni, &md->sender, 
 		                 st->st_icookie);
 		SEND_NOTIFICATION_AA(COOKIE, &dc); 
-     		delete_state(st);
+     	//	delete_state(st);
+		return STF_FAIL;
 	}
     }
 
@@ -1840,7 +1841,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 		     , u_char *rcookie 
 		     , chunk_t *n_data)
 {
-    u_char buffer[1400];
+    u_char buffer[1024];
     pb_stream reply;
     pb_stream rbody;
 
@@ -1912,6 +1913,9 @@ send_v2_notification(struct state *p1st, u_int16_t type
    // !out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
    close_message(&rbody);
    close_output_pbs(&reply); 
+
+   clonetochunk(p1st->st_tpacket, reply.start, pbs_offset(&reply)
+		                    , "notification packet");
 
    send_packet(p1st, __FUNCTION__, TRUE);
 }
