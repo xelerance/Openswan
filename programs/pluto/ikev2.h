@@ -149,4 +149,5 @@ extern stf_status ikev2_send_cert( struct state *st
 				   , enum phase1_role role
 				   , unsigned int np
 				   , pb_stream *outpbs);
-extern bool force_busy;  /* config option to emulate responder under DOS*/
+extern bool force_busy;  /* config option to emulate responder under DOS */
+

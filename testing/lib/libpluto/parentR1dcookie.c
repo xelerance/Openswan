@@ -90,7 +90,7 @@ main(int argc, char *argv[])
     outfile = argv[4];
 
     readwhackmsg(infile);
-
+	force_busy = TRUE;
     send_packet_setup_pcap(outfile);
  
     c1 = con_by_name(conn_name, TRUE);
@@ -103,7 +103,7 @@ main(int argc, char *argv[])
 	exit(50);
     }
 
-    cur_debugging = DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+    cur_debugging = DBG_PARSING|DBG_EMITTING|DBG_PRIVATE|DBG_CONTROL|DBG_CONTROLMORE;
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
 
     {

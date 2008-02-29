@@ -52,6 +52,7 @@ bool nat_traversal_enabled=TRUE;
 int whack_log_fd = 1;
 bool listening = TRUE;
 bool strict_crl_policy = FALSE;
+bool force_busy = FALSE;
 
 #include "efencedef.h"
 

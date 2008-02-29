@@ -73,7 +73,8 @@ static stf_status ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 						, struct pluto_crypto_req *r);
 
 static bool ikev2_get_dcookie(u_char *dcookie, chunk_t st_ni
-	,ip_address *addr, u_int8_t *spiI);
+	,ip_address *addr, u_int8_t *spiI); 
+
 /*
  *
  ***************************************************************
@@ -488,8 +489,8 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 		dc.ptr = dcookie;
 		dc.len = SHA1_DIGEST_SIZE;
 
-   		/* check if I1 packet contian v2N payload with type COOKIE */
-       	if ( md->chain[ISAKMP_NEXT_v2KE] &&  
+   		/* check if I1 packet contian KE and a v2N payload with type COOKIE */
+       	if ( md->chain[ISAKMP_NEXT_v2KE] &&   md->chain[ISAKMP_NEXT_v2N] &&
        	     (md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == COOKIE))
 		{
 			DBG(DBG_CONTROLMORE
@@ -517,6 +518,10 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 			SEND_NOTIFICATION_AA(COOKIE, &dc); 
 			return STF_FAIL;
 		}
+	}
+	else {
+			DBG(DBG_CONTROLMORE ,DBG_log("will not send/process a dcookie"));
+
 	}
 
     /*
@@ -736,7 +741,8 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     pb_stream *keyex_pbs;
 	
     /* check if the responder replied with v2N with DOS COOKIE */
-    if(md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type ==  COOKIE)
+    if( md->chain[ISAKMP_NEXT_v2N]
+		&& md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type ==  COOKIE)
     {
 	DBG(DBG_CONTROLMORE 
     	    ,DBG_log("inR1OutI2 received a DOS COOKIE from the responder");
@@ -1831,6 +1837,7 @@ static bool ikev2_get_dcookie(u_char *dcookie,  chunk_t st_ni
 	unsigned char addr_buff[
 		sizeof(union {struct in_addr A; struct in6_addr B;})];
 	
+
 	addr_length = addrbytesof(addr, addr_buff, sizeof(addr_buff));
 	SHA1Init(&ctx_sha1);
 	SHA1Update(&ctx_sha1, st_ni.ptr, st_ni.len);
@@ -1839,6 +1846,14 @@ static bool ikev2_get_dcookie(u_char *dcookie,  chunk_t st_ni
 	SHA1Update(&ctx_sha1, ikev2_secret_of_the_day
 		 , SHA1_DIGEST_SIZE);
 	SHA1Final(dcookie, &ctx_sha1);
+	DBG(DBG_PRIVATE
+		,DBG_log("ikev2 secret_of_the_day used %s, length %d"
+							               , ikev2_secret_of_the_day 
+										   , SHA1_DIGEST_SIZE););
+
+	DBG(DBG_CRYPT
+		,DBG_dump("computed dcookie: HASH(Ni | IPi | SPIi | <secret>)"
+				, dcookie, SHA1_DIGEST_SIZE));
 #if 0
 	ikev2_secrets_recycle++;
 	if(ikev2_secrets_recycle >= 32768) {
@@ -1854,7 +1869,7 @@ static bool ikev2_get_dcookie(u_char *dcookie,  chunk_t st_ni
 /*
  *
  ***************************************************************
- *                       NOTIFICATION_OUT                  *****
+ *                       NOTIFICATION_OUT Complete packet  *****
  ***************************************************************
  *
  */
@@ -1869,19 +1884,27 @@ send_v2_notification(struct state *p1st, u_int16_t type
     u_char buffer[1024];
     pb_stream reply;
     pb_stream rbody;
-
-    /*
-     * no complex timers like in IKEv1, because notifications are
-     * only sent in the responder, in response to a request.
-     */
+	/* this function is not generic enough yet just enough for 6msg 
+	 * TBD HDR FLAGS are always R 
+	 * TBD when there is a child SA use that SPI in the notify paylod.
+	 * TBD support encrypted notifications
+	 * TBD accept Critical bit as an argument. now it is always set 
+	 * TBD accept exchanged type as an arg, isa_xchg = ISAKMP_v2_SA_INIT
+	 * do we need to send a notify with empty data?
+	 * do we need to support Protocol ID?
+	 */
 
     openswan_log("sending %snotification %s to %s:%u"
 		 , encst ? "encrypted " : ""
-		 , enum_name(&ipsec_notification_names, type)
+		 , enum_name(&ikev2_notify_name, type)
 		 , ip_str(&p1st->st_remoteaddr)
 		 , p1st->st_remoteport);
-    if(n_data == NULL)
-    	return;
+    if(n_data == NULL) { 
+    DBG(DBG_CONTROLMORE
+    	,DBG_log("don't send packet when notification data empty"));  
+    	return; 
+	}
+
     memset(buffer, 0, sizeof(buffer));
     init_pbs(&reply, buffer, sizeof(buffer), "notification msg");
 
@@ -1904,9 +1927,9 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	}
 		
     }
-
+   /* add notify payload to the packet */
    {
-    DBG(DBG_CONTROL
+    DBG(DBG_CONTROLMORE
     	,DBG_log("Adding a v2N Payload"));  
     struct ikev2_notify n;
     pb_stream n_pbs;
@@ -1934,8 +1957,6 @@ send_v2_notification(struct state *p1st, u_int16_t type
     }
     close_output_pbs(&n_pbs);
    }
-   // !out_struct(&n_hdr, &isakmp_hdr_desc, &pbs, &hdr_pbs)) 
-   // !out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
    close_message(&rbody);
    close_output_pbs(&reply); 
 
