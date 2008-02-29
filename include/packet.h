@@ -846,6 +846,7 @@ union payload {
     struct ikev2_ts         v2ts;
     struct ikev2_cert       v2cert;
     struct ikev2_certreq    v2certreq;
+    struct ikev2_notify     v2n;
 };
 
 
