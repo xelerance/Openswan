@@ -225,6 +225,7 @@ const char *const sit_bit_names[] = {
 /* Protocol IDs (RFC 2407 "IPsec DOI" section 4.4.1) */
 
 static const char *const protocol_name[] = {
+    	"PROTO_RESERVED",
 	"PROTO_ISAKMP",
 	"PROTO_IPSEC_AH",
 	"PROTO_IPSEC_ESP",
@@ -232,7 +233,7 @@ static const char *const protocol_name[] = {
     };
 
 enum_names protocol_names =
-    { PROTO_ISAKMP, PROTO_IPCOMP, protocol_name, NULL };
+    { PROTO_RESERVED, PROTO_IPCOMP, protocol_name, NULL };
 
 static const char *const ikev2_protocol_name[] = {
     	"PROTO_v2_RESERVED"

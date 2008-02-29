@@ -421,10 +421,11 @@ extern const char *const sit_bit_names[];
  * extern enum_names protocol_names;
  * same in IKEv1 and IKEv2.
  */
+#define PROTO_RESERVED           0  /* only in IKEv2 */
 #define PROTO_ISAKMP             1
 #define PROTO_IPSEC_AH           2
 #define PROTO_IPSEC_ESP          3
-#define PROTO_IPCOMP             4
+#define PROTO_IPCOMP             4  /* only in IKEv1 */
 
 /*
  * IKEv2 proposal,

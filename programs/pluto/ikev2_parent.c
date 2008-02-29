@@ -718,9 +718,8 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     /* check if the responder replied with v2N with DOS COOKIE */
     if(md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type ==  COOKIE)
     {
-
 	DBG(DBG_CONTROLMORE 
-    	    ,DBG_log("inR1OutI2 see responder send us a DOS COOKIE");
+    	    ,DBG_log("inR1OutI2 received a DOS COOKIE from the responder");
     	    DBG_log("should to resend the I1 with cookie"));
 	 return STF_FAIL;	
     }
