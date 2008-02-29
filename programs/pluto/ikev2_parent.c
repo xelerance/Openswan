@@ -480,10 +480,33 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
      */
    if(force_busy == TRUE) 
    { 
-     	if(!(md->chain[ISAKMP_NEXT_v2KE]) && (md->chain[ISAKMP_NEXT_v2N]))
+
+        if ( md->chain[ISAKMP_NEXT_v2KE] &&  
+		(md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type ==  COOKIE))
 	{
-		/* is an I1 packet with v2N in it,	 */
-		/* check v2N type is COOKIE */
+		u_char dcookie[SHA1_DIGEST_SIZE];
+		ikev2_get_dcookie( dcookie, st->st_ni, &md->sender, 
+		                 st->st_icookie);
+	
+
+		u_int8_t spisize = md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_spisize;
+	        const pb_stream *dc_pbs = &md->chain[ISAKMP_NEXT_v2N]->pbs;
+		chunk_t blob; 
+		blob.ptr = dc_pbs->cur + spisize;
+		blob.len = pbs_left(dc_pbs) - spisize;
+		DBG(DBG_CONTROL
+	            ,DBG_dump_chunk("dcookie received in I1 Packet", blob);
+	           DBG_dump("dcookie computed", dcookie, SHA1_DIGEST_SIZE);
+	     	); 
+
+		if(memcmp(blob.ptr, dcookie, SHA1_DIGEST_SIZE)!=0) {
+			chunk_t dc;
+			dc.ptr = dcookie;
+			dc.len = SHA1_DIGEST_SIZE;
+			SEND_NOTIFICATION_AA(COOKIE, &dc); 
+			return STF_FAIL;
+		}
+
  	}
         else 
 	{
@@ -494,7 +517,6 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 		ikev2_get_dcookie( dcookie, st->st_ni, &md->sender, 
 		                 st->st_icookie);
 		SEND_NOTIFICATION_AA(COOKIE, &dc); 
-     	//	delete_state(st);
 		return STF_FAIL;
 	}
     }
@@ -720,7 +742,7 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     {
 	DBG(DBG_CONTROLMORE 
     	    ,DBG_log("inR1OutI2 received a DOS COOKIE from the responder");
-    	    DBG_log("should to resend the I1 with cookie"));
+    	    DBG_log("resend the I1 with cookie, tbd"));
 	 return STF_FAIL;	
     }
 
@@ -1412,7 +1434,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    /* should we check if we should accept a cert payload ?
 	     *  has_preloaded_public_key(st)
 	     */ 
-	    /* in v1 code it is  decode_cert(struct msg_digest *md) */
 	    DBG(DBG_CONTROLMORE
 		, DBG_log("has a v2_CERT payload going to process it "));	  
 	    ikev2_decode_cert(md); 
