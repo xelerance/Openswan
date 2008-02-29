@@ -475,51 +475,49 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	md->st = st;
 	md->from_state = STATE_IKEv2_BASE;
     }
-	
-    /* if we are being DOSed check if the incoming packet has dcookie *?
-     */
-   if(force_busy == TRUE) 
-   { 
 
-        if ( md->chain[ISAKMP_NEXT_v2KE] &&  
-		(md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type ==  COOKIE))
-	{
-		u_char dcookie[SHA1_DIGEST_SIZE];
-		ikev2_get_dcookie( dcookie, st->st_ni, &md->sender, 
-		                 st->st_icookie);
-	
+    /* check,as a responder, are we under dos attack or not 
+	 * if yes go to 6 message exchange mode. it is a config option for now.
+	 * TBD set force_busy dynamically
+	 */ 
+	if(force_busy == TRUE) 
+	{ 
+	    u_char dcookie[SHA1_DIGEST_SIZE];
+		chunk_t dc;
+		ikev2_get_dcookie( dcookie, st->st_ni, &md->sender, st->st_icookie);
+		dc.ptr = dcookie;
+		dc.len = SHA1_DIGEST_SIZE;
 
-		u_int8_t spisize = md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_spisize;
+   		/* check if I1 packet contian v2N payload with type COOKIE */
+       	if ( md->chain[ISAKMP_NEXT_v2KE] &&  
+       	     (md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == COOKIE))
+		{
+			DBG(DBG_CONTROLMORE
+	        	, DBG_log("received a DOS cookie in I1 verify it"));
+	       	/* we received dcookie we send earlier verify it */
+			u_int8_t spisize 
+					= md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_spisize;
 	        const pb_stream *dc_pbs = &md->chain[ISAKMP_NEXT_v2N]->pbs;
-		chunk_t blob; 
-		blob.ptr = dc_pbs->cur + spisize;
-		blob.len = pbs_left(dc_pbs) - spisize;
-		DBG(DBG_CONTROL
+			chunk_t blob; 
+			blob.ptr = dc_pbs->cur + spisize;
+			blob.len = pbs_left(dc_pbs) - spisize;
+			DBG(DBG_CONTROLMORE
 	            ,DBG_dump_chunk("dcookie received in I1 Packet", blob);
-	           DBG_dump("dcookie computed", dcookie, SHA1_DIGEST_SIZE);
-	     	); 
+				DBG_dump("dcookie computed", dcookie, SHA1_DIGEST_SIZE)); 
 
-		if(memcmp(blob.ptr, dcookie, SHA1_DIGEST_SIZE)!=0) {
-			chunk_t dc;
-			dc.ptr = dcookie;
-			dc.len = SHA1_DIGEST_SIZE;
+			if(memcmp(blob.ptr, dcookie, SHA1_DIGEST_SIZE)!=0) {
+				openswan_log("mismatch in DOS COOKIE,send a new one");
+				SEND_NOTIFICATION_AA(COOKIE, &dc); 
+				return STF_FAIL;
+			}
+ 		}
+        else 
+		{
+			/* we are under DOS attack I1 contains no DOS COOKIE */
 			SEND_NOTIFICATION_AA(COOKIE, &dc); 
 			return STF_FAIL;
 		}
-
- 	}
-        else 
-	{
-		u_char dcookie[SHA1_DIGEST_SIZE];
-		chunk_t dc;
-		dc.ptr = dcookie;
-		dc.len = SHA1_DIGEST_SIZE;
-		ikev2_get_dcookie( dcookie, st->st_ni, &md->sender, 
-		                 st->st_icookie);
-		SEND_NOTIFICATION_AA(COOKIE, &dc); 
-		return STF_FAIL;
 	}
-    }
 
     /*
      * We have to agree to the DH group before we actually know who
