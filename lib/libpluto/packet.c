@@ -920,7 +920,7 @@ static field_desc ikev2_notify_fields[] = {
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
   { ft_enum, 8/BITS_PER_BYTE, "Protocol ID", &protocol_names },
   /* names used are v1 names may be we should use 4306 3.3.1 names */
-  { ft_len,  8/BITS_PER_BYTE, "SPI size", NULL},
+  { ft_nat,  8/BITS_PER_BYTE, "SPI size", NULL},
   { ft_enum, 16/BITS_PER_BYTE, "Notify Message Type", &ikev2_notify_names},
   { ft_end,  0, NULL, NULL }
 };

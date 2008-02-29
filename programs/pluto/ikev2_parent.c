@@ -74,7 +74,7 @@ static stf_status ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 
 static bool ikev2_get_dcookie(u_char *dcookie, chunk_t st_ni
 	,ip_address *addr, u_int8_t *spiI);
-static int force_busy;
+static bool force_busy = TRUE;
 /*
  *
  ***************************************************************
@@ -298,9 +298,11 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 
 	zero(&hdr);	/* default to 0 */
 	hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+	/* AAA fix this 
 	if(st->st_dcookie)
 		hdr.isa_np   = ISAKMP_NEXT_v2N; 
-	else
+	else 
+	*/
 		hdr.isa_np   = ISAKMP_NEXT_v2SA; 
 	hdr.isa_xchg = ISAKMP_v2_SA_INIT;
 	hdr.isa_flags = ISAKMP_FLAGS_I;
@@ -479,9 +481,9 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	
     /* if we are being DOSed check if the incoming packet has dcookie *?
      */
-   if(force_busy) 
+   if(force_busy == TRUE) 
    { 
-     	if(md->chain[ISAKMP_NEXT_v2KE] && !(md->chain[ISAKMP_NEXT_v2N]))
+     	if(!(md->chain[ISAKMP_NEXT_v2KE]) && (md->chain[ISAKMP_NEXT_v2N]))
 	{
 		/* is an I1 packet with v2N in it,	 */
 		/* check v2N type is COOKIE */
@@ -1838,9 +1840,9 @@ send_v2_notification(struct state *p1st, u_int16_t type
 		     , u_char *rcookie 
 		     , chunk_t *n_data)
 {
-    u_char buffer[1024];
-    pb_stream pbs;
-    pb_stream hdr_pbs;
+    u_char buffer[1400];
+    pb_stream reply;
+    pb_stream rbody;
 
     /*
      * no complex timers like in IKEv1, because notifications are
@@ -1852,9 +1854,10 @@ send_v2_notification(struct state *p1st, u_int16_t type
 		 , enum_name(&ipsec_notification_names, type)
 		 , ip_str(&p1st->st_remoteaddr)
 		 , p1st->st_remoteport);
-
+    if(n_data == NULL)
+    	return;
     memset(buffer, 0, sizeof(buffer));
-    init_pbs(&pbs, buffer, sizeof(buffer), "notification msg");
+    init_pbs(&reply, buffer, sizeof(buffer), "notification msg");
 
     /* HDR out */
     {
@@ -1865,9 +1868,10 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	memcpy(n_hdr.isa_icookie, icookie, COOKIE_SIZE);
 	n_hdr.isa_xchg = ISAKMP_v2_SA_INIT;  // AAA check what is for v2N
 	n_hdr.isa_np = ISAKMP_NEXT_v2N;
-	n_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
+	//n_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
+	//n_hdr.isa_flags |=  ISAKMP_FLAGS_R;
 	n_hdr.isa_flags |=  ISAKMP_FLAGS_R;
-	if (!out_struct(&n_hdr, &isakmp_hdr_desc, &pbs, &hdr_pbs)) 
+	if (!out_struct(&n_hdr, &isakmp_hdr_desc, &reply, &rbody)) 
 	{
     	    openswan_log("error initializing hdr for notify message");
 	    return;
@@ -1882,11 +1886,11 @@ send_v2_notification(struct state *p1st, u_int16_t type
     pb_stream n_pbs;
     n.isan_np =  ISAKMP_NEXT_NONE;
     n.isan_critical = ISAKMP_PAYLOAD_CRITICAL;
-    n.isan_protoid = 
+    n.isan_protoid =  PROTO_ISAKMP;
     n.isan_spisize = COOKIE_SIZE;
     n.isan_type = type;
 
-    if (!out_struct(&n, &ikev2_notify_desc,&pbs , &n_pbs))
+    if (!out_struct(&n, &ikev2_notify_desc, &rbody, &n_pbs))
     {
 	openswan_log("error initializing notify payload for notify message");
    	return;
@@ -1906,8 +1910,8 @@ send_v2_notification(struct state *p1st, u_int16_t type
    }
    // !out_struct(&n_hdr, &isakmp_hdr_desc, &pbs, &hdr_pbs)) 
    // !out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody))
-   close_message(&hdr_pbs);
-   close_output_pbs(&pbs); 
+   close_message(&rbody);
+   close_output_pbs(&reply); 
 
    send_packet(p1st, __FUNCTION__, TRUE);
 }

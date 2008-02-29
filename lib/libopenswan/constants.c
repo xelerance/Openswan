@@ -234,6 +234,20 @@ static const char *const protocol_name[] = {
 enum_names protocol_names =
     { PROTO_ISAKMP, PROTO_IPCOMP, protocol_name, NULL };
 
+static const char *const ikev2_protocol_name[] = {
+    	"PROTO_v2_RESERVED"
+	"PROTO_v2_IKE",
+	"PROTO_v2_AH",
+	"PROTO_v2_ESP",
+    };
+
+enum_names ikev2_protocol_names =
+    { 0, PROTO_IPSEC_ESP, ikev2_protocol_name, NULL };
+
+
+
+
+
 /* IPsec ISAKMP transform values */
 
 static const char *const isakmp_transform_name[] = {
