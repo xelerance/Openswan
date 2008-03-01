@@ -298,7 +298,7 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 
 	zero(&hdr);	/* default to 0 */
 	hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
-	if(st->st_dcookie)
+	if(st->st_dcookie.ptr)
 		hdr.isa_np   = ISAKMP_NEXT_v2N; 
 	else 
 		hdr.isa_np   = ISAKMP_NEXT_v2SA; 
@@ -313,7 +313,7 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	    return STF_INTERNAL_ERROR;
 	}
     }
-    /* send an anti DDOS cookie, 4306 2.6, if we have received one from the 
+    /* send an anti DOS cookie, 4306 2.6, if we have received one from the 
      * responder 
      */
     {
@@ -744,10 +744,18 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     if( md->chain[ISAKMP_NEXT_v2N]
 		&& md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type ==  COOKIE)
     {
-	DBG(DBG_CONTROLMORE 
+		DBG(DBG_CONTROLMORE 
     	    ,DBG_log("inR1OutI2 received a DOS COOKIE from the responder");
-    	    DBG_log("resend the I1 with cookie, tbd"));
-	 return STF_FAIL;	
+    	    DBG_log("resend the I1 with a cookie payload, tbd"));
+		u_int8_t spisize = md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_spisize;
+	    const pb_stream *dc_pbs = &md->chain[ISAKMP_NEXT_v2N]->pbs;
+    	clonetochunk(st->st_dcookie,  (dc_pbs->cur + spisize)
+		 , (pbs_left(dc_pbs) - spisize), "saved first received dcookie");
+
+		DBG(DBG_CONTROLMORE
+	        ,DBG_dump_chunk("dcookie received (instead of a R1):",
+						    st->st_dcookie));
+	 	return STF_FAIL;	
     }
 
     /*
@@ -1885,24 +1893,24 @@ send_v2_notification(struct state *p1st, u_int16_t type
     pb_stream reply;
     pb_stream rbody;
 	/* this function is not generic enough yet just enough for 6msg 
-	 * TBD HDR FLAGS are always R 
+	 * TBD accept HDR FLAGS as arg. default ISAKMP_FLAGS_R
 	 * TBD when there is a child SA use that SPI in the notify paylod.
-	 * TBD support encrypted notifications
-	 * TBD accept Critical bit as an argument. now it is always set 
-	 * TBD accept exchanged type as an arg, isa_xchg = ISAKMP_v2_SA_INIT
+	 * TBD support encrypted notifications payloads.
+	 * TBD accept Critical bit as an argument. default is set.
+	 * TBD accept exchange type as an arg, default is ISAKMP_v2_SA_INIT
 	 * do we need to send a notify with empty data?
-	 * do we need to support Protocol ID?
+	 * do we need to support more Protocol ID? more than PROTO_ISAKMP
 	 */
 
     openswan_log("sending %snotification %s to %s:%u"
 		 , encst ? "encrypted " : ""
-		 , enum_name(&ikev2_notify_name, type)
+		 , enum_name(&ikev2_notify_names, type)
 		 , ip_str(&p1st->st_remoteaddr)
 		 , p1st->st_remoteport);
     if(n_data == NULL) { 
     DBG(DBG_CONTROLMORE
     	,DBG_log("don't send packet when notification data empty"));  
-    	return; 
+		return; 
 	}
 
     memset(buffer, 0, sizeof(buffer));
@@ -1915,7 +1923,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	n_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
 	memcpy(n_hdr.isa_rcookie, rcookie, COOKIE_SIZE);
 	memcpy(n_hdr.isa_icookie, icookie, COOKIE_SIZE);
-	n_hdr.isa_xchg = ISAKMP_v2_SA_INIT;  // AAA check what is for v2N
+	n_hdr.isa_xchg = ISAKMP_v2_SA_INIT;  
 	n_hdr.isa_np = ISAKMP_NEXT_v2N;
 	//n_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
 	//n_hdr.isa_flags |=  ISAKMP_FLAGS_R;
@@ -1928,34 +1936,34 @@ send_v2_notification(struct state *p1st, u_int16_t type
 		
     }
    /* add notify payload to the packet */
-   {
-    DBG(DBG_CONTROLMORE
-    	,DBG_log("Adding a v2N Payload"));  
-    struct ikev2_notify n;
-    pb_stream n_pbs;
-    n.isan_np =  ISAKMP_NEXT_NONE;
-    n.isan_critical = ISAKMP_PAYLOAD_CRITICAL;
-    n.isan_protoid =  PROTO_ISAKMP;
-    n.isan_spisize = COOKIE_SIZE;
-    n.isan_type = type;
+	{
+		DBG(DBG_CONTROLMORE
+    		,DBG_log("Adding a v2N Payload"));  
+    	struct ikev2_notify n;
+    	pb_stream n_pbs;
+    	n.isan_np =  ISAKMP_NEXT_NONE;
+    	n.isan_critical = ISAKMP_PAYLOAD_CRITICAL;
+   		n.isan_protoid =  PROTO_ISAKMP;
+    	n.isan_spisize = COOKIE_SIZE;
+    	n.isan_type = type;
 
-    if (!out_struct(&n, &ikev2_notify_desc, &rbody, &n_pbs))
-    {
-	openswan_log("error initializing notify payload for notify message");
-   	return;
-    }
+    	if (!out_struct(&n, &ikev2_notify_desc, &rbody, &n_pbs))
+    	{
+			openswan_log("error initializing notify payload for notify message");
+   			return;
+    	}
 
-    if (!out_raw(rcookie, COOKIE_SIZE, &n_pbs, "SPI "))
-    {
-	openswan_log("error writing SPI to  notify payload for notify message");
-   	return;
-    }
-    if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notifiy data"))
-    {
-	openswan_log("error writing notify payload for notify message");
-   	return;
-    }
-    close_output_pbs(&n_pbs);
+    	if (!out_raw(rcookie, COOKIE_SIZE, &n_pbs, "SPI "))
+    	{
+			openswan_log("error writing SPI to  notify payload for notify message");
+   			return;
+    	}
+    	if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notifiy data"))
+    	{
+			openswan_log("error writing notify payload for notify message");
+   			return;
+    	}
+    	close_output_pbs(&n_pbs);
    }
    close_message(&rbody);
    close_output_pbs(&reply); 
