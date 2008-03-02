@@ -316,8 +316,14 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
     /* send an anti DOS cookie, 4306 2.6, if we have received one from the 
      * responder 
      */
-    {
-
+	if(st->st_dcookie.ptr)
+	{
+		chunk_t child_spi;
+		child_spi.ptr = NULL;
+		child_spi.len = 0;
+		ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_CRITICAL, PROTO_ISAKMP,
+				    &child_spi, 
+					COOKIE, &st->st_dcookie, &md->rbody);
     }
     /* SA out */
     {
@@ -750,7 +756,7 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 		u_int8_t spisize = md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_spisize;
 	    const pb_stream *dc_pbs = &md->chain[ISAKMP_NEXT_v2N]->pbs;
     	clonetochunk(st->st_dcookie,  (dc_pbs->cur + spisize)
-		 , (pbs_left(dc_pbs) - spisize), "saved first received dcookie");
+		 , (pbs_left(dc_pbs) - spisize), "saved received dcookie");
 
 		DBG(DBG_CONTROLMORE
 	        ,DBG_dump_chunk("dcookie received (instead of a R1):",
@@ -1925,9 +1931,8 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	memcpy(n_hdr.isa_icookie, icookie, COOKIE_SIZE);
 	n_hdr.isa_xchg = ISAKMP_v2_SA_INIT;  
 	n_hdr.isa_np = ISAKMP_NEXT_v2N;
-	//n_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
-	//n_hdr.isa_flags |=  ISAKMP_FLAGS_R;
-	n_hdr.isa_flags |=  ISAKMP_FLAGS_R;
+	n_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
+	n_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
 	if (!out_struct(&n_hdr, &isakmp_hdr_desc, &reply, &rbody)) 
 	{
     	    openswan_log("error initializing hdr for notify message");
@@ -1936,8 +1941,8 @@ send_v2_notification(struct state *p1st, u_int16_t type
 		
     } 
 	chunk_t child_spi;
-	child_spi.ptr = rcookie;
-	child_spi.len = COOKIE_SIZE; 
+	child_spi.ptr = NULL;
+	child_spi.len = 0;
 
 	/* build and add v2N payload to the packet */
 	ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_CRITICAL, PROTO_ISAKMP,
