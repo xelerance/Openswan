@@ -315,13 +315,14 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
     }
     /* send an anti DOS cookie, 4306 2.6, if we have received one from the 
      * responder 
-     */
+     */ 
+
 	if(st->st_dcookie.ptr)
 	{
 		chunk_t child_spi;
 		child_spi.ptr = NULL;
 		child_spi.len = 0;
-		ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_CRITICAL, PROTO_ISAKMP,
+		ship_v2N (ISAKMP_NEXT_v2SA, ISAKMP_PAYLOAD_CRITICAL, PROTO_ISAKMP,
 				    &child_spi, 
 					COOKIE, &st->st_dcookie, &md->rbody);
     }
@@ -1977,12 +1978,16 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
 		openswan_log("error initializing notify payload for notify message");
    		return FALSE;
     }
+	
+	if(spi->len > 0)
+	{
+   		if (!out_raw(spi->ptr, spi->len, &n_pbs, "SPI "))
+   		{
+			openswan_log("error writing SPI to notify payload");
+   			return FALSE;
 
-   	if (!out_raw(spi->ptr, spi->len, &n_pbs, "SPI "))
-   	{
-		openswan_log("error writing SPI to  notify payload for notify message");
-   		return FALSE;
-   	}
+   		}
+    }
    	if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notifiy data"))
    	{
 		openswan_log("error writing notify payload for notify message");
