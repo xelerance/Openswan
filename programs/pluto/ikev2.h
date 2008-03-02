@@ -149,5 +149,9 @@ extern stf_status ikev2_send_cert( struct state *st
 				   , enum phase1_role role
 				   , unsigned int np
 				   , pb_stream *outpbs);
+extern bool ship_v2N (unsigned int np, u_int8_t  critical,
+				    u_int8_t protoid, chunk_t *spi, 
+					u_int16_t type, chunk_t *n_data, pb_stream *rbody);
+
 extern bool force_busy;  /* config option to emulate responder under DOS */
 

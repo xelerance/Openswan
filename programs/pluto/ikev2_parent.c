@@ -1934,37 +1934,16 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	    return;
 	}
 		
-    }
-   /* add notify payload to the packet */
-	{
-		DBG(DBG_CONTROLMORE
-    		,DBG_log("Adding a v2N Payload"));  
-    	struct ikev2_notify n;
-    	pb_stream n_pbs;
-    	n.isan_np =  ISAKMP_NEXT_NONE;
-    	n.isan_critical = ISAKMP_PAYLOAD_CRITICAL;
-   		n.isan_protoid =  PROTO_ISAKMP;
-    	n.isan_spisize = COOKIE_SIZE;
-    	n.isan_type = type;
+    } 
+	chunk_t child_spi;
+	child_spi.ptr = rcookie;
+	child_spi.len = COOKIE_SIZE; 
 
-    	if (!out_struct(&n, &ikev2_notify_desc, &rbody, &n_pbs))
-    	{
-			openswan_log("error initializing notify payload for notify message");
-   			return;
-    	}
+	/* build and add v2N payload to the packet */
+	ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_CRITICAL, PROTO_ISAKMP,
+				    &child_spi, 
+					type, n_data, &rbody);
 
-    	if (!out_raw(rcookie, COOKIE_SIZE, &n_pbs, "SPI "))
-    	{
-			openswan_log("error writing SPI to  notify payload for notify message");
-   			return;
-    	}
-    	if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notifiy data"))
-    	{
-			openswan_log("error writing notify payload for notify message");
-   			return;
-    	}
-    	close_output_pbs(&n_pbs);
-   }
    close_message(&rbody);
    close_output_pbs(&reply); 
 
@@ -1973,7 +1952,41 @@ send_v2_notification(struct state *p1st, u_int16_t type
 
    send_packet(p1st, __FUNCTION__, TRUE);
 }
-		     
+/* add notify payload to the rbody */
+bool ship_v2N (unsigned int np, u_int8_t  critical,
+				    u_int8_t protoid, chunk_t *spi, 
+					u_int16_t type, chunk_t *n_data, pb_stream *rbody)
+{
+	DBG(DBG_CONTROLMORE
+   		,DBG_log("Adding a v2N Payload"));  
+   	struct ikev2_notify n;
+   	pb_stream n_pbs;
+   	n.isan_np =  np;
+   	n.isan_critical = critical;
+   	n.isan_protoid =  protoid;
+   	n.isan_spisize = spi->len;
+   	n.isan_type = type;
+
+    if (!out_struct(&n, &ikev2_notify_desc, rbody, &n_pbs))
+    {
+		openswan_log("error initializing notify payload for notify message");
+   		return FALSE;
+    }
+
+   	if (!out_raw(spi->ptr, spi->len, &n_pbs, "SPI "))
+   	{
+		openswan_log("error writing SPI to  notify payload for notify message");
+   		return FALSE;
+   	}
+   	if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notifiy data"))
+   	{
+		openswan_log("error writing notify payload for notify message");
+   		return FALSE;
+    }
+    close_output_pbs(&n_pbs);
+	return TRUE;
+}
+	     
 
 /*
  *
