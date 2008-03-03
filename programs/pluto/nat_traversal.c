@@ -871,6 +871,21 @@ static int nat_traversal_new_mapping(struct state *st
 	}
 #endif
 
+	addrtot(src, 0, srca, ADDRTOT_BUF);
+	addrtot(dst, 0, dsta, ADDRTOT_BUF);
+
+	if (!sameaddr(src, dst)) {
+		loglog(RC_LOG_SERIOUS, "nat_traversal_new_mapping: "
+			"address change currently not supported [%s:%d,%s:%d]",
+			srca, sport, dsta, dport);
+		return -1;
+	}
+
+	if (sport == dport) {
+		/* no change */
+		return 0;
+	}
+
 	nfo.st    = st;
 	nfo.addr  = *nsrc;
 	nfo.port  = nsrcport;
@@ -1045,105 +1060,3 @@ void process_pfkey_nat_t_new_mapping(
 
 #endif
 
-/*
- * $Log: nat_traversal.c,v $
- * Revision 1.32  2005/10/03 19:59:11  mcr
- * 	fixed english typo.
- * Revision 1.26.2.11  2007/10/28 07:00:22  paul
- * Added draft-ietf-ipsec-nat-t-ike-05 (80d0bb3def54565ee84645d4c85ce3ee)
- * used in OSX.
- *
- * Revision 1.26.2.10  2007/07/09 23:08:47  paul
- * Ensured two debug lines only appear when plutodebug=control is specified.
- *
- * Revision 1.26.2.9  2007/01/22 22:42:43  paul
- * Second part of Delta Yeh's patch of nat_traversal with aggressive mode,
- * posted in bug #491.
- *
- * Revision 1.26.2.8  2007/01/22 20:46:59  paul
- * Fix for Aggressive Mode and NAT-T port floating, based on RedHat patch.
- *
- * Revision 1.26.2.7  2006/04/04 22:05:07  ken
- * Fix NAT Detection when initiator is behind NAT
- *
- * Revision 1.26.2.6  2006/01/04 18:57:52  ken
- * Send 02_N too
- *
- * Revision 1.26.2.5  2005/11/24 05:30:37  ken
- * MCR's refactored natd_lookup function for multi-NAT-D Hash
- *
- * Revision 1.26.2.4  2005/09/27 04:30:20  paul
- * Backport of HEAD's patch, adopted from Peter Van der Beken's
- * (peterv@propagandism.org) MacOSX interop patch.
- *
- * Revision 1.31  2005/10/02 22:01:10  mcr
- * 	change indentation, and make sure that port hash is calculated
- * 	over the port that the packet was received upon vs the port
- * 	that the policy was declared for.
- *
- * Revision 1.30  2005/09/26 23:35:28  mcr
- * 	http://bugs.xelerance.com/view.php?id=448
- * 	ADC Problem ID: 4274347
- * 	Created Date: 26-Sep-2005 06:36 PM
- *
- * Revision 1.29  2005/08/26 20:07:21  mcr
- * 	added /proc/net/ipsec/natt file to indicate if NAT-T was compiled
- * 	into KLIPS.
- *
- * Revision 1.28  2005/08/05 19:12:10  mcr
- * 	adjustments for signed issues.
- * 	use sysdep.h.
- *
- * Revision 1.27  2005/07/26 01:14:58  mcr
- * 	switch from i->interface to st->st_interface.
- * 	cleaned up some diagnostic, and canonicalized to "NAT-Traversal"
- *
- * Revision 1.26  2005/06/14 22:38:06  mcr
- * 	changed definition of interface such that we can now compare if
- * 	a NAT vs non-NAT interface are considered the "same"
- *
- * Revision 1.25  2005/05/08 13:25:48  paul
- * fixed typo
- *
- * Revision 1.24  2005/04/21 21:58:06  mcr
- * 	log correct address/port for NAT-KA.
- *
- * Revision 1.23  2005/04/20 15:30:28  mcr
- * 	additional debugging of NAT-KA and DPD messages.
- *
- * Revision 1.22  2005/04/08 18:29:52  mcr
- * 	use natt_defines.h to get definitions.
- *
- * Revision 1.21  2005/04/06 17:56:04  mcr
- * 	log where/who the DPD R_U_THERE sent to.
- *
- * Revision 1.20  2005/03/20 23:16:16  mcr
- * 	fixed typo in case.
- *
- * Revision 1.19  2005/02/14 18:27:27  mcr
- * 	additional debugging of when NAT-T is enabled, and when the
- * 	VID is actually being sent.
- *
- * Revision 1.18  2005/01/28 06:22:52  mcr
- * 	additional debugging of whether or not NAT-T vendor
- * 	IDs are inserted.
- *
- * Revision 1.17  2005/01/24 03:35:22  mcr
- * 	fixed selection of interface for various states
- * 	of NAT "floating"
- *
- * Revision 1.16  2005/01/23 19:16:15  mcr
- * 	moved nat varibales to "hidden_variables"
- * 	added for RFC3947 NAT code.
- *
- * Revision 1.15  2004/11/30 02:31:14  mcr
- * 	oops, function didn't match prototype.
- *
- * Revision 1.14  2004/11/30 02:26:59  mcr
- * 	additional debugging of port-floating enabling/disabling.
- *
- * Revision 1.13  2004/11/05 00:14:50  mcr
- * 	added log info.
- *
- *
- */
