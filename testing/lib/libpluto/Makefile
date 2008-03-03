@@ -15,7 +15,6 @@
 
 OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
 srcdir?=${OPENSWANSRCDIR}/testing/lib/libpluto/
-include $(OPENSWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
 SRCDIR=${srcdir}
@@ -44,7 +43,7 @@ install install_file_list checkprograms programs:
 	@true
 
 clean:
-	cat ${srcdir}TESTLIST | while read testtype name status; \
+	cat TESTLIST | while read testtype name status; \
 	do\
 		rm -rf `basename $$name .c`;\
 	done
@@ -63,7 +62,7 @@ realclean: clean
 depend:
 	(source ${UTILS}/functions.sh; ls *.c | (while read file; do echo 'Calculating depends for '$$file >&2; ECHO=':' MOREFLAGS=-MM complibtest .Makefile.depend.$$file.${OSDEP} $$file >&2; cat .Makefile.depend.$$file.${OSDEP}; done) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP})
 
--include ${srcdir}Makefile.depend.${OSDEP}
+-include Makefile.depend.${OSDEP}
 
 
 east.record: ${OPENSWANSRCDIR}/programs/pluto/rcv_whack.c

@@ -201,10 +201,18 @@ conn west-east-x509
         leftrsasigkey=%cert
         leftcert=west.crt
         leftnexthop=192.1.2.23
+<<<<<<< HEAD:testing/baseconfigs/all/etc/ipsec.d/ipsec.conf.common
         leftid="C=ca, ST=Ontario, O=Xelerance, OU=Test Department, CN=west.testing.xelerance.com, E=testing@xelerance.com"
+=======
+        leftid="C=ca, ST=Ontario, O=Xelerance, L=Toronto, CN=west.testing.xelerance.com, E=testing@xelerance.com"
+>>>>>>> d24ee3c:testing/baseconfigs/all/etc/ipsec.d/ipsec.conf.common
         # Right security gateway, subnet behind it, next hop toward left.
         right=192.1.2.23
+<<<<<<< HEAD:testing/baseconfigs/all/etc/ipsec.d/ipsec.conf.common
         rightid="C=ca, ST=Ontario, O=Xelerance, OU=Test Department, CN=east.testing.xelerance.com, E=testing@xelerance.com"
+=======
+        rightid="C=ca, ST=Ontario, O=Xelerance, L=Toronto, CN=east.testing.xelerance.com, E=testing@xelerance.com"
+>>>>>>> d24ee3c:testing/baseconfigs/all/etc/ipsec.d/ipsec.conf.common
         rightrsasigkey=%cert
         rightcert=east.crt
         rightnexthop=192.1.2.45
@@ -215,10 +223,18 @@ conn north-east-x509
         leftrsasigkey=%cert
         leftcert=north.crt  
 	leftnexthop=192.1.2.23
+<<<<<<< HEAD:testing/baseconfigs/all/etc/ipsec.d/ipsec.conf.common
 	leftid="C=ca, ST=Ontario, O=Xelerance, OU=Test Department, CN=north.testing.xelerance.com, E=testing@xelerance.com"
+=======
+	leftid="C=ca, ST=Ontario, O=Xelerance, L=Toronto, CN=north.testing.xelerance.com, E=testing@xelerance.com"
+>>>>>>> d24ee3c:testing/baseconfigs/all/etc/ipsec.d/ipsec.conf.common
 	# Right security gateway, subnet behind it, next hop toward left.
 	right=192.1.2.23
+<<<<<<< HEAD:testing/baseconfigs/all/etc/ipsec.d/ipsec.conf.common
 	rightid="C=ca, ST=Ontario, O=Xelerance, OU=Test Department, CN=east.testing.xelerance.com, E=testing@xelerance.com"
+=======
+	rightid="C=ca, ST=Ontario, O=Xelerance, L=Toronto, CN=east.testing.xelerance.com, E=testing@xelerance.com"
+>>>>>>> d24ee3c:testing/baseconfigs/all/etc/ipsec.d/ipsec.conf.common
         rightrsasigkey=%cert
 	rightcert=east.crt
 	rightnexthop=192.1.2.49
