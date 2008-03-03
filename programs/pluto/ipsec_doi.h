@@ -111,6 +111,7 @@ extern stf_status
 send_isakmp_notification(struct state *st
 			 , u_int16_t type, const void *data, size_t len);
 
+<<<<<<< HEAD:programs/pluto/ipsec_doi.h
 extern bool has_preloaded_public_key(struct state *st);
 
 extern bool extract_peer_id(struct id *peer, const pb_stream const* id_pbs);
@@ -129,3 +130,5 @@ extern char pluto_vendorid[];
 
 
 
+=======
+>>>>>>> 47e1291:programs/pluto/ipsec_doi.h

@@ -62,7 +62,7 @@ static struct starter_comments_list *_parser_comments;
 	struct keyword k;
 }
 %token EQUAL FIRST_SPACES EOL CONFIG SETUP CONN INCLUDE VERSION 
-%token DEFAULT  TIMEWORD
+%token DEFAULT TIMEWORD
 %token <dblnum> NUMBER
 %token <s>      STRING
 %token <num>    INTEGER
@@ -486,6 +486,7 @@ struct config_parsed *parser_load_conf (const char *file, err_t *perr)
 	int err = 0;
 	FILE *f;
 
+	extern void parser_y_init (const char *fn);
 	extern FILE *yyin;
 
 	memset(parser_errstring, 0, ERRSTRING_LEN+1);
@@ -497,7 +498,7 @@ struct config_parsed *parser_load_conf (const char *file, err_t *perr)
 		f = fopen(file, "r");
 		if (f) {
 			yyin = f;
-			parser_y_init(file, f);
+			parser_y_init(file);
 			_save_errors_=1;
 			TAILQ_INIT(&cfg->sections);
 			TAILQ_INIT(&cfg->comments);
@@ -520,6 +521,8 @@ struct config_parsed *parser_load_conf (const char *file, err_t *perr)
 				 * Config valid
 				 */
 			}
+
+			fclose(f);
 		}
 		else {
 			snprintf(parser_errstring, ERRSTRING_LEN, "can't load file '%s'",

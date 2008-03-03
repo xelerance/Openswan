@@ -17,15 +17,19 @@ static struct db_attr otempty[] = {
 	};
 
 static struct db_trans oakley_trans_empty[] = {
-    { AD_TR(KEY_IKE, otempty) },
+	{ KEY_IKE, AD(otempty) },
     };
 
 static struct db_prop oakley_pc_empty[] =
-{ { AD_PR(PROTO_ISAKMP, oakley_trans_empty) } };
+    { { PROTO_ISAKMP, AD(oakley_trans_empty) } };
 
-static struct db_prop_conj oakley_props_empty[] = { { AD_PC(oakley_pc_empty) } };
+static struct db_prop_conj oakley_props_empty[] = { { AD(oakley_pc_empty) } };
 
+<<<<<<< HEAD:testing/lib/libpluto/spdbfirst.c
 struct db_sa oakley_empty = { AD_SAp(oakley_props_empty) };
+=======
+struct db_sa oakley_empty = { AD(oakley_props_empty) };
+>>>>>>> 47e1291:testing/lib/libpluto/spdbfirst.c
 
 char *progname;
 
@@ -70,6 +74,5 @@ main(int argc, char *argv[])
  * Local Variables:
  * c-style: pluto
  * c-basic-offset: 4
- * compile-command: "make spdbfirst"
  * End:
  */

@@ -63,7 +63,7 @@ struct oe_conn oe_packet_default = {
 	.oe_cn = "packetdefault",
 	.oe_sc = {
 		.policy = POLICY_TUNNEL|POLICY_RSASIG|POLICY_ENCRYPT|POLICY_PFS|
-		POLICY_OPPO|POLICY_FAIL_PASS|POLICY_IKEV2_ALLOW,
+		POLICY_OPPO|POLICY_FAIL_PASS,
 		
 		.options[KBF_REKEY]=FALSE,
 		.options_set[KBF_REKEY]=TRUE,
@@ -195,7 +195,7 @@ struct oe_conn oe_clear_or_private = {
 	.oe_sc = {
 		.policy = POLICY_RSASIG|POLICY_ENCRYPT|POLICY_TUNNEL|POLICY_PFS|
 		POLICY_DONT_REKEY|POLICY_OPPO|POLICY_GROUP|POLICY_GROUTED|
-		POLICY_SHUNT_PASS|POLICY_FAIL_PASS|POLICY_IKEV2_ALLOW,
+		POLICY_SHUNT_PASS|POLICY_FAIL_PASS,
 		
 		.options[KBF_KEYINGTRIES]=3,
 		.options_set[KBF_KEYINGTRIES]=TRUE,
@@ -268,7 +268,7 @@ struct oe_conn oe_private_or_clear = {
 	.oe_sc = {
 		.policy = POLICY_RSASIG|POLICY_ENCRYPT|POLICY_TUNNEL|POLICY_PFS|
 		POLICY_DONT_REKEY|POLICY_OPPO|POLICY_GROUP|POLICY_GROUTED|
-		POLICY_FAIL_PASS|POLICY_IKEV2_ALLOW,
+		POLICY_FAIL_PASS,
 		
 		.desired_state = STARTUP_ROUTE,
 		
@@ -341,7 +341,7 @@ struct oe_conn oe_private = {
 	.oe_sc = {
 		.policy = POLICY_RSASIG|POLICY_ENCRYPT|POLICY_TUNNEL|POLICY_PFS|
 		POLICY_OPPO|POLICY_GROUP|POLICY_GROUTED|
-		POLICY_FAIL_DROP|POLICY_IKEV2_ALLOW,
+		POLICY_FAIL_DROP,
 		
 		.options[KBF_REKEY]=FALSE,    /* really want REKEY if used */
 		.options_set[KBF_REKEY]=TRUE,
@@ -414,8 +414,7 @@ struct oe_conn oe_block = {
 	.oe_cn = "block",
 	.oe_sc = {
 		.policy = POLICY_TUNNEL|POLICY_PFS|
-		POLICY_GROUP|POLICY_GROUTED|POLICY_SHUNT_REJECT|
-		POLICY_IKEV2_ALLOW,
+		POLICY_GROUP|POLICY_GROUTED|POLICY_SHUNT_REJECT,
 		
 		.desired_state = STARTUP_ROUTE,
 		

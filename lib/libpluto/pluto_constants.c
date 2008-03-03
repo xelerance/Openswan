@@ -283,9 +283,6 @@ const char *const sa_policy_bit_names[] = {
 	"SUBHOST",
 	"PERPROTO",
 	"OVERLAPIP",
-	"!IKEv1",
-	"IKEv2ALLOW",
-	"IKEv2Init",
 	NULL
     };
 

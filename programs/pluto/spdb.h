@@ -36,21 +36,34 @@ struct db_attr {
 
 /* transform */
 struct db_trans {
+<<<<<<< HEAD:programs/pluto/spdb.h
 	u_int16_t     transid;  /* Transform-Id */
 	struct db_attr *attrs;	/* array */
 	unsigned int attr_cnt;  /* number of elements */
+=======
+    u_int8_t transid;	/* Transform-Id */
+    struct db_attr *attrs;	/* array */
+    int attr_cnt;	/* number of elements */
+>>>>>>> 47e1291:programs/pluto/spdb.h
 };
 
-/* proposal - IKEv1 */
+/* proposal */
 struct db_prop {
+<<<<<<< HEAD:programs/pluto/spdb.h
     u_int8_t         protoid;	/* Protocol-Id */
     struct db_trans *trans;	/* array (disjunction-OR) */
     unsigned int trans_cnt;	/* number of elements */
+=======
+    u_int8_t protoid;	/* Protocol-Id */
+    struct db_trans *trans;	/* array (disjunction) */
+    int trans_cnt;	/* number of elements */
+>>>>>>> 47e1291:programs/pluto/spdb.h
     /* SPI size and value isn't part of DB */
 };
 
-/* conjunction (AND) of proposals - IKEv1 */
+/* conjunction of proposals */
 struct db_prop_conj {
+<<<<<<< HEAD:programs/pluto/spdb.h
 	struct db_prop *props;	/* array */
 	unsigned int prop_cnt;	/* number of elements */
 };
@@ -78,10 +91,15 @@ struct db_v2_prop_conj {
 struct db_v2_prop {
 	struct db_v2_prop_conj  *props;	/* array */
 	unsigned int prop_cnt;	        /* number of elements... AND*/
+=======
+    struct db_prop *props;	/* array */
+    int prop_cnt;	/* number of elements */
+>>>>>>> 47e1291:programs/pluto/spdb.h
 };
 
 /* security association */
 struct db_sa {
+<<<<<<< HEAD:programs/pluto/spdb.h
     bool                    dynamic;    /* set if these items were allocated */
     bool                    parentSA;   /* set if this is a parent/oakley */
     struct db_prop_conj    *prop_conjs; /* array */
@@ -89,6 +107,14 @@ struct db_sa {
     
     struct db_v2_prop      *prop_disj;  /* array */
     unsigned int prop_disj_cnt;         /* number of elements... OR */
+=======
+    struct db_prop_conj *prop_conjs;	/* array */
+    int prop_conj_cnt;	/* number of elements */
+    /* Hardwired for now;
+     * DOI: ISAKMP_DOI_IPSEC
+     * Situation: SIT_IDENTITY_ONLY
+     */
+>>>>>>> 47e1291:programs/pluto/spdb.h
 };
 
 /* The oakley sadb is subscripted by a bitset with members
@@ -106,6 +132,7 @@ extern struct db_sa oakley_sadb_am;
  */
 extern struct db_sa ipsec_sadb[1 << 3];
 
+<<<<<<< HEAD:programs/pluto/spdb.h
 /* for db_sa */
 #define AD_SAp(x)    prop_conjs: x, prop_conj_cnt: elemsof(x), parentSA:TRUE
 #define AD_SAc(x)    prop_conjs: x, prop_conj_cnt: elemsof(x), parentSA:FALSE
@@ -121,6 +148,8 @@ extern struct db_sa ipsec_sadb[1 << 3];
 #define AD_PC(x) props: x, prop_cnt: elemsof(x)	
 
 
+=======
+>>>>>>> 47e1291:programs/pluto/spdb.h
 extern bool out_sa(
     pb_stream *outs,
     struct db_sa *sadb,
@@ -181,6 +210,7 @@ extern void print_sa_prop(struct db_sa *f, struct db_prop *dp);
 extern void print_sa_prop_conj(struct db_sa *f, struct db_prop_conj *pc);
 extern void sa_print(struct db_sa *f);
 
+<<<<<<< HEAD:programs/pluto/spdb.h
 extern void print_sa_v2_trans(struct db_v2_trans *tr);
 extern void print_sa_v2_prop_conj(struct db_v2_prop_conj *dp);
 extern void print_sa_v2_prop(struct db_v2_prop *pc);
@@ -193,6 +223,8 @@ extern enum ikev2_trans_type_integ v1tov2_integ(int oakley);
 extern bool ikev2_acceptable_group(struct state *st, oakley_group_t group);
 
 
+=======
+>>>>>>> 47e1291:programs/pluto/spdb.h
 
 #endif /*  _SPDB_H_ */
 

@@ -68,7 +68,7 @@ enum keyword_numeric_config_field {
     KBF_FORWARDCONTROL,
     KBF_OVERRIDEMTU,
     KBF_STRICTCRLPOLICY,
-    KBF_NOCRSEND,     /* 10 */
+    KBF_NOCRSEND,
     KBF_NATTRAVERSAL,
     KBF_KEEPALIVE,
     KBF_PLUTORESTARTONCRASH,
@@ -78,8 +78,8 @@ enum keyword_numeric_config_field {
     KBF_PLUTODEBUG,
     KBF_NHELPERS,
     KBF_OPPOENCRYPT,
-    KBF_DPDDELAY,     /* 20 */
-    KBF_DPDTIMEOUT,   
+    KBF_DPDDELAY,
+    KBF_DPDTIMEOUT,
     KBF_PHASE2,
     KBF_AUTHBY,
     KBF_KEYEXCHANGE,
@@ -88,9 +88,9 @@ enum keyword_numeric_config_field {
     KBF_SALIFETIME,
     KBF_REKEY,
     KBF_REKEYMARGIN,
-    KBF_REKEYFUZZ,   /* 30 */
+    KBF_REKEYFUZZ,
     KBF_COMPRESS,
-    KBF_KEYINGTRIES, 
+    KBF_KEYINGTRIES,
     KBF_ARRIVALCHECK,
     KBF_IKELIFETIME,
     KBF_AGGRMODE,

@@ -21,6 +21,7 @@ SUBDIRS=
 SRCDIR=${srcdir}
 UTILS=${OPENSWANSRCDIR}/testing/utils
 
+<<<<<<< HEAD:testing/lib/libpluto/Makefile
 TESTS=$(shell awk '{print $$2;}' ${srcdir}TESTLIST)
 
 all: ${TESTS}
@@ -29,9 +30,17 @@ all: ${TESTS}
 one:
 	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`
 
+=======
+>>>>>>> 47e1291:testing/lib/libpluto/Makefile
 refineconnection: refineconnection.c lib-refineconnection/testlist.sh OUTPUT.refineconnection.txt FLAGS.refineconnection
 	source ${UTILS}/functions.sh; multilibtest `basename $< .c`
 
+<<<<<<< HEAD:testing/lib/libpluto/Makefile
+=======
+%: %.c OUTPUT.%.txt FLAGS.%
+	source ${UTILS}/functions.sh; libtest `basename $< .c`
+
+>>>>>>> 47e1291:testing/lib/libpluto/Makefile
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
 	@false

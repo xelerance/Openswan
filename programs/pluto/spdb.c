@@ -55,6 +55,8 @@
 #include "kernel_alg.h"
 #include "ike_alg.h"
 #include "db_ops.h"
+#define AD(x) x, elemsof(x)	/* Array Description */
+#define AD_NULL NULL, 0
 
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
@@ -434,8 +436,9 @@ static struct db_attr otpsk1024des3tiger[] = {
 
 static struct db_trans oakley_trans_psk[] = {
 #ifdef TEST_INDECENT_PROPOSAL
-	{ AD_TR(KEY_IKE,otpsk1024des3tiger) },
+	{ KEY_IKE, AD(otpsk1024des3tiger) },
 #endif
+<<<<<<< HEAD:programs/pluto/spdb.c
 	{ AD_TR(KEY_IKE,otpsk1536aessha1) },
 	{ AD_TR(KEY_IKE,otpsk1536aesmd5) },
 	{ AD_TR(KEY_IKE,otpsk1536des3sha1) },
@@ -446,28 +449,37 @@ static struct db_trans oakley_trans_psk[] = {
 	{ AD_TR(KEY_IKE,otpsk2048aesmd5) },
 	{ AD_TR(KEY_IKE,otpsk2048des3sha1) },
 	{ AD_TR(KEY_IKE,otpsk2048des3md5) },
+=======
+	{ KEY_IKE, AD(otpsk1536aessha1) },
+	{ KEY_IKE, AD(otpsk1536aesmd5) },
+	{ KEY_IKE, AD(otpsk1536des3sha1) },
+	{ KEY_IKE, AD(otpsk1536des3md5) },
+	{ KEY_IKE, AD(otpsk1024des3sha1) },
+	{ KEY_IKE, AD(otpsk1024des3md5) },
+>>>>>>> 47e1291:programs/pluto/spdb.c
     };
 
 #ifdef XAUTH
 static struct db_trans oakley_trans_psk_xauthc[] = {
-	{ AD_TR(KEY_IKE,otpsk1536aesmd5_xauthc) },
-	{ AD_TR(KEY_IKE,otpsk1536aessha1_xauthc) },
-	{ AD_TR(KEY_IKE,otpsk1536des3sha1_xauthc) },
-	{ AD_TR(KEY_IKE,otpsk1536des3md5_xauthc) },
-	{ AD_TR(KEY_IKE,otpsk1024des3sha1_xauthc) },
-	{ AD_TR(KEY_IKE,otpsk1024des3md5_xauthc) },
+	{ KEY_IKE, AD(otpsk1536aesmd5_xauthc) },
+	{ KEY_IKE, AD(otpsk1536aessha1_xauthc) },
+	{ KEY_IKE, AD(otpsk1536des3sha1_xauthc) },
+	{ KEY_IKE, AD(otpsk1536des3md5_xauthc) },
+	{ KEY_IKE, AD(otpsk1024des3sha1_xauthc) },
+	{ KEY_IKE, AD(otpsk1024des3md5_xauthc) },
     };
 static struct db_trans oakley_trans_psk_xauths[] = {
-	{ AD_TR(KEY_IKE,otpsk1536aessha1_xauths) },
-	{ AD_TR(KEY_IKE,otpsk1536aesmd5_xauths) },
-	{ AD_TR(KEY_IKE,otpsk1536des3sha1_xauths) },
-	{ AD_TR(KEY_IKE,otpsk1536des3md5_xauths) },
-	{ AD_TR(KEY_IKE,otpsk1024des3sha1_xauths) },
-	{ AD_TR(KEY_IKE,otpsk1024des3md5_xauths) },
+	{ KEY_IKE, AD(otpsk1536aessha1_xauths) },
+	{ KEY_IKE, AD(otpsk1536aesmd5_xauths) },
+	{ KEY_IKE, AD(otpsk1536des3sha1_xauths) },
+	{ KEY_IKE, AD(otpsk1536des3md5_xauths) },
+	{ KEY_IKE, AD(otpsk1024des3sha1_xauths) },
+	{ KEY_IKE, AD(otpsk1024des3md5_xauths) },
     };
 #endif
 
 static struct db_trans oakley_trans_rsasig[] = {
+<<<<<<< HEAD:programs/pluto/spdb.c
 	{ AD_TR(KEY_IKE,otrsasig2048aessha1) },
 	{ AD_TR(KEY_IKE,otrsasig2048aesmd5) },
 	{ AD_TR(KEY_IKE,otrsasig2048des3sha1) },
@@ -478,24 +490,32 @@ static struct db_trans oakley_trans_rsasig[] = {
 	{ AD_TR(KEY_IKE,otrsasig1536des3md5) },
 	{ AD_TR(KEY_IKE,otrsasig1024des3sha1) },
 	{ AD_TR(KEY_IKE,otrsasig1024des3md5) },
+=======
+	{ KEY_IKE, AD(otrsasig1536aessha1) },
+	{ KEY_IKE, AD(otrsasig1536aesmd5) },
+	{ KEY_IKE, AD(otrsasig1536des3sha1) },
+	{ KEY_IKE, AD(otrsasig1536des3md5) },
+	{ KEY_IKE, AD(otrsasig1024des3sha1) },
+	{ KEY_IKE, AD(otrsasig1024des3md5) },
+>>>>>>> 47e1291:programs/pluto/spdb.c
     };
 
 #ifdef XAUTH
 static struct db_trans oakley_trans_rsasig_xauthc[] = {
-	{ AD_TR(KEY_IKE,otrsasig1536aessha1_xauthc) },
-	{ AD_TR(KEY_IKE,otrsasig1536aesmd5_xauthc) },
-	{ AD_TR(KEY_IKE,otrsasig1536des3sha1_xauthc) },
-	{ AD_TR(KEY_IKE,otrsasig1536des3md5_xauthc) },
-	{ AD_TR(KEY_IKE,otrsasig1024des3sha1_xauthc) },
-	{ AD_TR(KEY_IKE,otrsasig1024des3md5_xauthc) },
+	{ KEY_IKE, AD(otrsasig1536aessha1_xauthc) },
+	{ KEY_IKE, AD(otrsasig1536aesmd5_xauthc) },
+	{ KEY_IKE, AD(otrsasig1536des3sha1_xauthc) },
+	{ KEY_IKE, AD(otrsasig1536des3md5_xauthc) },
+	{ KEY_IKE, AD(otrsasig1024des3sha1_xauthc) },
+	{ KEY_IKE, AD(otrsasig1024des3md5_xauthc) },
     };
 static struct db_trans oakley_trans_rsasig_xauths[] = {
-	{ AD_TR(KEY_IKE,otrsasig1536aessha1_xauths) },
-	{ AD_TR(KEY_IKE,otrsasig1536aesmd5_xauths) },
-	{ AD_TR(KEY_IKE,otrsasig1536des3sha1_xauths) },
-	{ AD_TR(KEY_IKE,otrsasig1536des3md5_xauths) },
-	{ AD_TR(KEY_IKE,otrsasig1024des3sha1_xauths) },
-	{ AD_TR(KEY_IKE,otrsasig1024des3md5_xauths) },
+	{ KEY_IKE, AD(otrsasig1536aessha1_xauths) },
+	{ KEY_IKE, AD(otrsasig1536aesmd5_xauths) },
+	{ KEY_IKE, AD(otrsasig1536des3sha1_xauths) },
+	{ KEY_IKE, AD(otrsasig1536des3md5_xauths) },
+	{ KEY_IKE, AD(otrsasig1024des3sha1_xauths) },
+	{ KEY_IKE, AD(otrsasig1024des3md5_xauths) },
     };
 #endif
 
@@ -504,39 +524,39 @@ static struct db_trans oakley_trans_rsasig_xauths[] = {
  */
 static struct db_trans oakley_trans_pskrsasig[] = {
 #ifdef TEST_INDECENT_PROPOSAL
-	{ AD_TR(KEY_IKE,otpsk1024des3tiger) },
+	{ KEY_IKE, AD(otpsk1024des3tiger) },
 #endif
-	{ AD_TR(KEY_IKE,otrsasig1536des3md5) },
-	{ AD_TR(KEY_IKE,otpsk1536des3md5) },
-	{ AD_TR(KEY_IKE,otrsasig1536des3sha1) },
-	{ AD_TR(KEY_IKE,otpsk1536des3sha1) },
-	{ AD_TR(KEY_IKE,otrsasig1024des3sha1) },
-	{ AD_TR(KEY_IKE,otpsk1024des3sha1) },
-	{ AD_TR(KEY_IKE,otrsasig1024des3md5) },
-	{ AD_TR(KEY_IKE,otpsk1024des3md5) },
+	{ KEY_IKE, AD(otrsasig1536des3md5) },
+	{ KEY_IKE, AD(otpsk1536des3md5) },
+	{ KEY_IKE, AD(otrsasig1536des3sha1) },
+	{ KEY_IKE, AD(otpsk1536des3sha1) },
+	{ KEY_IKE, AD(otrsasig1024des3sha1) },
+	{ KEY_IKE, AD(otpsk1024des3sha1) },
+	{ KEY_IKE, AD(otrsasig1024des3md5) },
+	{ KEY_IKE, AD(otpsk1024des3md5) },
     };
 
 #ifdef XAUTH
 static struct db_trans oakley_trans_pskrsasig_xauthc[] = {
-	{ AD_TR(KEY_IKE,otrsasig1536des3md5_xauthc) },
-	{ AD_TR(KEY_IKE,otpsk1536des3md5_xauthc) },
-	{ AD_TR(KEY_IKE,otrsasig1536des3sha1_xauthc) },
-	{ AD_TR(KEY_IKE,otpsk1536des3sha1_xauthc) },
-	{ AD_TR(KEY_IKE,otrsasig1024des3sha1_xauthc) },
-	{ AD_TR(KEY_IKE,otpsk1024des3sha1_xauthc) },
-	{ AD_TR(KEY_IKE,otrsasig1024des3md5_xauthc) },
-	{ AD_TR(KEY_IKE,otpsk1024des3md5_xauthc) },
+	{ KEY_IKE, AD(otrsasig1536des3md5_xauthc) },
+	{ KEY_IKE, AD(otpsk1536des3md5_xauthc) },
+	{ KEY_IKE, AD(otrsasig1536des3sha1_xauthc) },
+	{ KEY_IKE, AD(otpsk1536des3sha1_xauthc) },
+	{ KEY_IKE, AD(otrsasig1024des3sha1_xauthc) },
+	{ KEY_IKE, AD(otpsk1024des3sha1_xauthc) },
+	{ KEY_IKE, AD(otrsasig1024des3md5_xauthc) },
+	{ KEY_IKE, AD(otpsk1024des3md5_xauthc) },
     };
 
 static struct db_trans oakley_trans_pskrsasig_xauths[] = {
-	{ AD_TR(KEY_IKE,otrsasig1536des3md5_xauths) },
-	{ AD_TR(KEY_IKE,otpsk1536des3md5_xauths) },
-	{ AD_TR(KEY_IKE,otrsasig1536des3sha1_xauths) },
-	{ AD_TR(KEY_IKE,otpsk1536des3sha1_xauths) },
-	{ AD_TR(KEY_IKE,otrsasig1024des3sha1_xauths) },
-	{ AD_TR(KEY_IKE,otpsk1024des3sha1_xauths) },
-	{ AD_TR(KEY_IKE,otrsasig1024des3md5_xauths) },
-	{ AD_TR(KEY_IKE,otpsk1024des3md5_xauths) },
+	{ KEY_IKE, AD(otrsasig1536des3md5_xauths) },
+	{ KEY_IKE, AD(otpsk1536des3md5_xauths) },
+	{ KEY_IKE, AD(otrsasig1536des3sha1_xauths) },
+	{ KEY_IKE, AD(otpsk1536des3sha1_xauths) },
+	{ KEY_IKE, AD(otrsasig1024des3sha1_xauths) },
+	{ KEY_IKE, AD(otpsk1024des3sha1_xauths) },
+	{ KEY_IKE, AD(otrsasig1024des3md5_xauths) },
+	{ KEY_IKE, AD(otpsk1024des3md5_xauths) },
     };
 #endif
 
@@ -545,70 +565,88 @@ static struct db_trans oakley_trans_pskrsasig_xauths[] = {
  * AND of protocols.
  */
 static struct db_prop oakley_pc_psk[] =
-    { { AD_PR(PROTO_ISAKMP,oakley_trans_psk) } };
+    { { PROTO_ISAKMP, AD(oakley_trans_psk) } };
 
 static struct db_prop oakley_pc_rsasig[] =
-    { { AD_PR(PROTO_ISAKMP,oakley_trans_rsasig) } };
+    { { PROTO_ISAKMP, AD(oakley_trans_rsasig) } };
 
 static struct db_prop oakley_pc_pskrsasig[] =
-    { { AD_PR(PROTO_ISAKMP,oakley_trans_pskrsasig) } };
+    { { PROTO_ISAKMP, AD(oakley_trans_pskrsasig) } };
 
 #ifdef XAUTH
 static struct db_prop oakley_pc_psk_xauths[] =
-    { { AD_PR(PROTO_ISAKMP,oakley_trans_psk_xauths) } };
+    { { PROTO_ISAKMP, AD(oakley_trans_psk_xauths) } };
 
 static struct db_prop oakley_pc_rsasig_xauths[] =
-    { { AD_PR(PROTO_ISAKMP,oakley_trans_rsasig_xauths) } };
+    { { PROTO_ISAKMP, AD(oakley_trans_rsasig_xauths) } };
 
 static struct db_prop oakley_pc_pskrsasig_xauths[] =
-    { { AD_PR(PROTO_ISAKMP,oakley_trans_pskrsasig_xauths) } };
+    { { PROTO_ISAKMP, AD(oakley_trans_pskrsasig_xauths) } };
 
 static struct db_prop oakley_pc_psk_xauthc[] =
-    { { AD_PR(PROTO_ISAKMP,oakley_trans_psk_xauthc) } };
+    { { PROTO_ISAKMP, AD(oakley_trans_psk_xauthc) } };
 
 static struct db_prop oakley_pc_rsasig_xauthc[] =
-    { { AD_PR(PROTO_ISAKMP,oakley_trans_rsasig_xauthc) } };
+    { { PROTO_ISAKMP, AD(oakley_trans_rsasig_xauthc) } };
 
 static struct db_prop oakley_pc_pskrsasig_xauthc[] =
-    { { AD_PR(PROTO_ISAKMP,oakley_trans_pskrsasig_xauthc) } };
+    { { PROTO_ISAKMP, AD(oakley_trans_pskrsasig_xauthc) } };
 #endif
 
 /* array of proposal conjuncts (can only be one) (OR of protocol) */
-static struct db_prop_conj oakley_props_psk[] = { { AD_PC(oakley_pc_psk) } };
+static struct db_prop_conj oakley_props_psk[] = { { AD(oakley_pc_psk) } };
 
-static struct db_prop_conj oakley_props_rsasig[] = { { AD_PC(oakley_pc_rsasig) } };
+static struct db_prop_conj oakley_props_rsasig[] = { { AD(oakley_pc_rsasig) } };
 
-static struct db_prop_conj oakley_props_pskrsasig[] = { { AD_PC(oakley_pc_pskrsasig) } };
+static struct db_prop_conj oakley_props_pskrsasig[] = { { AD(oakley_pc_pskrsasig) } };
 
 #ifdef XAUTH
-static struct db_prop_conj oakley_props_psk_xauthc[] = { { AD_PC(oakley_pc_psk_xauthc) } };
+static struct db_prop_conj oakley_props_psk_xauthc[] = { { AD(oakley_pc_psk_xauthc) } };
 
-static struct db_prop_conj oakley_props_rsasig_xauthc[] = { { AD_PC(oakley_pc_rsasig_xauthc) } };
+static struct db_prop_conj oakley_props_rsasig_xauthc[] = { { AD(oakley_pc_rsasig_xauthc) } };
 
-static struct db_prop_conj oakley_props_pskrsasig_xauthc[] = { { AD_PC(oakley_pc_pskrsasig_xauthc) } };
+static struct db_prop_conj oakley_props_pskrsasig_xauthc[] = { { AD(oakley_pc_pskrsasig_xauthc) } };
 
-static struct db_prop_conj oakley_props_psk_xauths[] = { { AD_PC(oakley_pc_psk_xauths) } };
+static struct db_prop_conj oakley_props_psk_xauths[] = { { AD(oakley_pc_psk_xauths) } };
 
-static struct db_prop_conj oakley_props_rsasig_xauths[] = { { AD_PC(oakley_pc_rsasig_xauths) } };
+static struct db_prop_conj oakley_props_rsasig_xauths[] = { { AD(oakley_pc_rsasig_xauths) } };
 
-static struct db_prop_conj oakley_props_pskrsasig_xauths[] = { { AD_PC(oakley_pc_pskrsasig_xauths) } };
+static struct db_prop_conj oakley_props_pskrsasig_xauths[] = { { AD(oakley_pc_pskrsasig_xauths) } };
 #endif
 
 /* the sadb entry, subscripted by POLICY_PSK and POLICY_RSASIG bits */
 struct db_sa oakley_sadb[] = {
     { AD_NULL },	                /* none */
+<<<<<<< HEAD:programs/pluto/spdb.c
     { AD_SAp(oakley_props_psk) },	/* POLICY_PSK */
     { AD_SAp(oakley_props_rsasig) },	/* POLICY_RSASIG */
     { AD_SAp(oakley_props_pskrsasig) },	/* POLICY_PSK + POLICY_RSASIG */
+=======
+    { AD(oakley_props_psk) },	        /* POLICY_PSK */
+    { AD(oakley_props_rsasig) },	/* POLICY_RSASIG */
+    { AD(oakley_props_pskrsasig) },	/* POLICY_PSK + POLICY_RSASIG */
+>>>>>>> 47e1291:programs/pluto/spdb.c
 #ifdef XAUTH
     { AD_NULL },                        /* POLICY_XAUTHSERVER + none */
+<<<<<<< HEAD:programs/pluto/spdb.c
     { AD_SAp(oakley_props_psk_xauths) },    /* POLICY_XAUTHSERVER + PSK */
     { AD_SAp(oakley_props_rsasig_xauths) }, /* POLICY_XAUTHSERVER + RSA */
     { AD_SAp(oakley_props_pskrsasig_xauths)},/* POLICY_XAUTHSERVER + RSA+PSK */
+=======
+    { AD(oakley_props_psk_xauths) },    /* POLICY_XAUTHSERVER + PSK */
+    { AD(oakley_props_rsasig_xauths) }, /* POLICY_XAUTHSERVER + RSA */
+    { AD(oakley_props_pskrsasig_xauths)},/* POLICY_XAUTHSERVER + RSA+PSK */
+>>>>>>> 47e1291:programs/pluto/spdb.c
     { AD_NULL },                        /* POLICY_XAUTHCLIENT + none */
+<<<<<<< HEAD:programs/pluto/spdb.c
     { AD_SAp(oakley_props_psk_xauthc) },    /* POLICY_XAUTHCLIENT + PSK */
     { AD_SAp(oakley_props_rsasig_xauthc)},  /* POLICY_XAUTHCLIENT + RSA */
     { AD_SAp(oakley_props_pskrsasig_xauthc)},/* POLICY_XAUTHCLIENT + RSA+PSK */
+=======
+    { AD(oakley_props_psk_xauthc) },    /* POLICY_XAUTHCLIENT + PSK */
+    { AD(oakley_props_rsasig_xauthc)},  /* POLICY_XAUTHCLIENT + RSA */
+    { AD(oakley_props_pskrsasig_xauthc)},/* POLICY_XAUTHCLIENT + RSA+PSK */
+>>>>>>> 47e1291:programs/pluto/spdb.c
     { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + none */
     { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + PSK */
     { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + RSA */
@@ -643,64 +681,64 @@ struct db_sa oakley_sadb[] = {
 
 /* tables of transforms, in preference order (select based on AUTH) */
 static struct db_trans oakley_am_trans_psk[] = {
-	{ AD_TR(KEY_IKE, otpsk1536des3sha1) },
+	{ KEY_IKE, AD(otpsk1536des3sha1) },
     };
 
 static struct db_trans oakley_am_trans_psk_xauthc[] = {
-	{ AD_TR(KEY_IKE, otpsk1536des3sha1_xauthc) },
+	{ KEY_IKE, AD(otpsk1536des3sha1_xauthc) },
     };
 static struct db_trans oakley_am_trans_psk_xauths[] = {
-	{ AD_TR(KEY_IKE, otpsk1536des3sha1_xauths) },
+	{ KEY_IKE, AD(otpsk1536des3sha1_xauths) },
     };
 
 static struct db_trans oakley_am_trans_rsasig[] = {
-	{ AD_TR(KEY_IKE, otrsasig1536des3sha1) },
+	{ KEY_IKE, AD(otrsasig1536des3sha1) },
     };
 
 static struct db_trans oakley_am_trans_rsasig_xauthc[] = {
-	{ AD_TR(KEY_IKE, otrsasig1536des3sha1_xauthc) },
+	{ KEY_IKE, AD(otrsasig1536des3sha1_xauthc) },
     };
 static struct db_trans oakley_am_trans_rsasig_xauths[] = {
-	{ AD_TR(KEY_IKE, otrsasig1536des3sha1_xauths) },
+	{ KEY_IKE, AD(otrsasig1536des3sha1_xauths) },
     };
 
 /* array of proposals to be conjoined (can only be one for Oakley) */
 static struct db_prop oakley_am_pc_psk[] =
-    { { AD_PR(PROTO_ISAKMP, oakley_am_trans_psk) } };
+    { { PROTO_ISAKMP, AD(oakley_am_trans_psk) } };
 
 static struct db_prop oakley_am_pc_rsasig[] =
-    { { AD_PR(PROTO_ISAKMP, oakley_am_trans_rsasig) } };
+    { { PROTO_ISAKMP, AD(oakley_am_trans_rsasig) } };
 
 static struct db_prop oakley_am_pc_psk_xauths[] =
-    { { AD_PR(PROTO_ISAKMP, oakley_am_trans_psk_xauths) } };
+    { { PROTO_ISAKMP, AD(oakley_am_trans_psk_xauths) } };
 
 static struct db_prop oakley_am_pc_rsasig_xauths[] =
-    { { AD_PR(PROTO_ISAKMP, oakley_am_trans_rsasig_xauths) } };
+    { { PROTO_ISAKMP, AD(oakley_am_trans_rsasig_xauths) } };
 
 static struct db_prop oakley_am_pc_psk_xauthc[] =
-    { { AD_PR(PROTO_ISAKMP, oakley_am_trans_psk_xauthc) } };
+    { { PROTO_ISAKMP, AD(oakley_am_trans_psk_xauthc) } };
 
 static struct db_prop oakley_am_pc_rsasig_xauthc[] =
-    { { AD_PR(PROTO_ISAKMP, oakley_am_trans_rsasig_xauthc) } };
+    { { PROTO_ISAKMP, AD(oakley_am_trans_rsasig_xauthc) } };
 
 /* array of proposal conjuncts (can only be one) */
 static struct db_prop_conj oakley_am_props_psk[] =
-    { { AD_PC(oakley_am_pc_psk) } };
+    { { AD(oakley_am_pc_psk) } };
 
 static struct db_prop_conj oakley_am_props_rsasig[] =
-    { { AD_PC(oakley_am_pc_rsasig) } };
+    { { AD(oakley_am_pc_rsasig) } };
 
 static struct db_prop_conj oakley_am_props_psk_xauthc[] =
-    { { AD_PC(oakley_am_pc_psk_xauthc) } };
+    { { AD(oakley_am_pc_psk_xauthc) } };
 
 static struct db_prop_conj oakley_am_props_rsasig_xauthc[] =
-    { { AD_PC(oakley_am_pc_rsasig_xauthc) } };
+    { { AD(oakley_am_pc_rsasig_xauthc) } };
 
 static struct db_prop_conj oakley_am_props_psk_xauths[] =
-    { { AD_PC(oakley_am_pc_psk_xauths) } };
+    { { AD(oakley_am_pc_psk_xauths) } };
 
 static struct db_prop_conj oakley_am_props_rsasig_xauths[] =
-    { { AD_PC(oakley_am_pc_rsasig_xauths) } };
+    { { AD(oakley_am_pc_rsasig_xauths) } };
 
 /*
  * the sadb entry, subscripted
@@ -709,16 +747,31 @@ static struct db_prop_conj oakley_am_props_rsasig_xauths[] =
 struct db_sa oakley_am_sadb[] = {
     /* STRONG ALGORITHMS */
     { AD_NULL },	                /* none */
+<<<<<<< HEAD:programs/pluto/spdb.c
     { AD_SAp(oakley_am_props_psk) },	/* POLICY_PSK */
     { AD_SAp(oakley_am_props_rsasig) },	/* POLICY_RSASIG */
+=======
+    { AD(oakley_am_props_psk) },	/* POLICY_PSK */
+    { AD(oakley_am_props_rsasig) },	/* POLICY_RSASIG */
+>>>>>>> 47e1291:programs/pluto/spdb.c
     { AD_NULL }, 	                /* PSK + RSASIG => invalid in AM */
     { AD_NULL },                        /* POLICY_XAUTHSERVER + none */
+<<<<<<< HEAD:programs/pluto/spdb.c
     { AD_SAp(oakley_am_props_psk_xauths) },    /* POLICY_XAUTHSERVER + PSK */
     { AD_SAp(oakley_am_props_rsasig_xauths) }, /* POLICY_XAUTHSERVER + RSA */
+=======
+    { AD(oakley_am_props_psk_xauths) },    /* POLICY_XAUTHSERVER + PSK */
+    { AD(oakley_am_props_rsasig_xauths) }, /* POLICY_XAUTHSERVER + RSA */
+>>>>>>> 47e1291:programs/pluto/spdb.c
     { AD_NULL },                        /* XAUTHSERVER + RSA+PSK=>invalid */
     { AD_NULL },                        /* POLICY_XAUTHCLIENT + none */
+<<<<<<< HEAD:programs/pluto/spdb.c
     { AD_SAp(oakley_am_props_psk_xauthc) },    /* POLICY_XAUTHCLIENT + PSK */
     { AD_SAp(oakley_am_props_rsasig_xauthc)},  /* POLICY_XAUTHCLIENT + RSA */
+=======
+    { AD(oakley_am_props_psk_xauthc) },    /* POLICY_XAUTHCLIENT + PSK */
+    { AD(oakley_am_props_rsasig_xauthc)},  /* POLICY_XAUTHCLIENT + RSA */
+>>>>>>> 47e1291:programs/pluto/spdb.c
     { AD_NULL },                        /* XAUTHCLIENT + RSA+PSK=>invalid */
     { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + none */
     { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + PSK */
@@ -727,17 +780,35 @@ struct db_sa oakley_am_sadb[] = {
 #if 0
     /* weaker ALGORITHMS */
     { AD_NULL },	                /* none */
+<<<<<<< HEAD:programs/pluto/spdb.c
     { AD_SAp(oakley_am_props_psk) },	/* POLICY_PSK */
     { AD_SAp(oakley_am_props_rsasig) },	/* POLICY_RSASIG */
     { AD_SAp(oakley_am_props_pskrsasig) },	/* POLICY_PSK + POLICY_RSASIG */
+=======
+    { AD(oakley_am_props_psk) },	/* POLICY_PSK */
+    { AD(oakley_am_props_rsasig) },	/* POLICY_RSASIG */
+    { AD(oakley_am_props_pskrsasig) },	/* POLICY_PSK + POLICY_RSASIG */
+>>>>>>> 47e1291:programs/pluto/spdb.c
     { AD_NULL },                        /* POLICY_XAUTHSERVER + none */
+<<<<<<< HEAD:programs/pluto/spdb.c
     { AD_SAp(oakley_am_props_psk_xauths) },    /* POLICY_XAUTHSERVER + PSK */
     { AD_SAp(oakley_am_props_rsasig_xauths) }, /* POLICY_XAUTHSERVER + RSA */
     { AD_SAp(oakley_am_props_pskrsasig_xauths)},/* POLICY_XAUTHSERVER + RSA+PSK */
+=======
+    { AD(oakley_am_props_psk_xauths) },    /* POLICY_XAUTHSERVER + PSK */
+    { AD(oakley_am_props_rsasig_xauths) }, /* POLICY_XAUTHSERVER + RSA */
+    { AD(oakley_am_props_pskrsasig_xauths)},/* POLICY_XAUTHSERVER + RSA+PSK */
+>>>>>>> 47e1291:programs/pluto/spdb.c
     { AD_NULL },                        /* POLICY_XAUTHCLIENT + none */
+<<<<<<< HEAD:programs/pluto/spdb.c
     { AD_SAp(oakley_am_props_psk_xauthc) },    /* POLICY_XAUTHCLIENT + PSK */
     { AD_SAp(oakley_am_props_rsasig_xauthc)},  /* POLICY_XAUTHCLIENT + RSA */
     { AD_SAp(oakley_am_props_pskrsasig_xauthc)},/* POLICY_XAUTHCLIENT + RSA+PSK */
+=======
+    { AD(oakley_am_props_psk_xauthc) },    /* POLICY_XAUTHCLIENT + PSK */
+    { AD(oakley_am_props_rsasig_xauthc)},  /* POLICY_XAUTHCLIENT + RSA */
+    { AD(oakley_am_props_pskrsasig_xauthc)},/* POLICY_XAUTHCLIENT + RSA+PSK */
+>>>>>>> 47e1291:programs/pluto/spdb.c
     { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + none */
     { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + PSK */
     { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + RSA */
@@ -770,111 +841,111 @@ static struct db_attr ah_HMAC_SHA1_attr[] = {
 /* arrays of transforms, each in in preference order */
 
 static struct db_trans espa_trans[] = {
-    { AD_TR(ESP_AES, espsha1_attr) },
-    { AD_TR(ESP_AES, espmd5_attr) },
-    { AD_TR(ESP_3DES,espsha1_attr) },
-    { AD_TR(ESP_3DES,espmd5_attr) },
+    { ESP_AES,  AD(espsha1_attr) },
+    { ESP_AES,  AD(espmd5_attr) },
+    { ESP_3DES,    AD(espsha1_attr) },
+    { ESP_3DES,    AD(espmd5_attr) },
     };
 
 static struct db_trans esp_trans[] = {
-    { transid: ESP_3DES, attrs: NULL },
+    { ESP_3DES, AD_NULL },
     };
 
 #ifdef SUPPORT_ESP_NULL
 static struct db_trans espnull_trans[] = {
-    { AD_TR(ESP_NULL, espsha1_attr) },
-    { AD_TR(ESP_NULL, espmd5_attr) },
+    { ESP_NULL, AD(espsha1_attr) },
+    { ESP_NULL, AD(espmd5_attr) },
     };
 #endif /* SUPPORT_ESP_NULL */
 
 static struct db_trans ah_trans[] = {
-    { AD_TR(AH_SHA, ah_HMAC_SHA1_attr) },
-    { AD_TR(AH_MD5, ah_HMAC_MD5_attr) },
+    { AH_SHA, AD(ah_HMAC_SHA1_attr) },
+    { AH_MD5, AD(ah_HMAC_MD5_attr) },
     };
 
 static struct db_trans ipcomp_trans[] = {
-    { transid: IPCOMP_DEFLATE, attrs: NULL },
+    { IPCOMP_DEFLATE, AD_NULL },
     };
 
 /* arrays of proposals to be conjoined */
 
 static struct db_prop ah_pc[] = {
-    { AD_PR(PROTO_IPSEC_AH, ah_trans) },
+    { PROTO_IPSEC_AH, AD(ah_trans) },
     };
 
 #ifdef SUPPORT_ESP_NULL
 static struct db_prop espnull_pc[] = {
-    { AD_PR(PROTO_IPSEC_ESP, espnull_trans) },
+    { PROTO_IPSEC_ESP, AD(espnull_trans) },
     };
 #endif /* SUPPORT_ESP_NULL */
 
 static struct db_prop esp_pc[] = {
-    { AD_PR(PROTO_IPSEC_ESP, espa_trans) },
+    { PROTO_IPSEC_ESP, AD(espa_trans) },
     };
 
 static struct db_prop ah_esp_pc[] = {
-    { AD_PR(PROTO_IPSEC_AH, ah_trans) },
-    { AD_PR(PROTO_IPSEC_ESP, esp_trans) },
+    { PROTO_IPSEC_AH, AD(ah_trans) },
+    { PROTO_IPSEC_ESP, AD(esp_trans) },
     };
 
 static struct db_prop compress_pc[] = {
-    { AD_PR(PROTO_IPCOMP, ipcomp_trans) },
+    { PROTO_IPCOMP, AD(ipcomp_trans) },
     };
 
 static struct db_prop ah_compress_pc[] = {
-    { AD_PR(PROTO_IPSEC_AH, ah_trans) },
-    { AD_PR(PROTO_IPCOMP, ipcomp_trans) },
+    { PROTO_IPSEC_AH, AD(ah_trans) },
+    { PROTO_IPCOMP, AD(ipcomp_trans) },
     };
 
 #ifdef SUPPORT_ESP_NULL
 static struct db_prop espnull_compress_pc[] = {
-    { AD_PR(PROTO_IPSEC_ESP, espnull_trans) },
-    { AD_PR(PROTO_IPCOMP, ipcomp_trans) },
+    { PROTO_IPSEC_ESP, AD(espnull_trans) },
+    { PROTO_IPCOMP, AD(ipcomp_trans) },
     };
 #endif /* SUPPORT_ESP_NULL */
 
 static struct db_prop esp_compress_pc[] = {
-    { AD_PR(PROTO_IPSEC_ESP, espa_trans) },
-    { AD_PR(PROTO_IPCOMP, ipcomp_trans) },
+    { PROTO_IPSEC_ESP, AD(espa_trans) },
+    { PROTO_IPCOMP, AD(ipcomp_trans) },
     };
 
 static struct db_prop ah_esp_compress_pc[] = {
-    { AD_PR(PROTO_IPSEC_AH, ah_trans) },
-    { AD_PR(PROTO_IPSEC_ESP, esp_trans) },
-    { AD_PR(PROTO_IPCOMP, ipcomp_trans) },
+    { PROTO_IPSEC_AH, AD(ah_trans) },
+    { PROTO_IPSEC_ESP, AD(esp_trans) },
+    { PROTO_IPCOMP, AD(ipcomp_trans) },
     };
 
 /* arrays of proposal alternatives (each element is a conjunction) */
 
 static struct db_prop_conj ah_props[] = {
-    { AD_PC(ah_pc) },
+    { AD(ah_pc) },
 #ifdef SUPPORT_ESP_NULL
-    { AD_PC(espnull_pc) }
+    { AD(espnull_pc) }
 #endif
     };
 
 static struct db_prop_conj esp_props[] =
-    { { AD_PC(esp_pc) } };
+    { { AD(esp_pc) } };
 
 static struct db_prop_conj ah_esp_props[] =
-    { { AD_PC(ah_esp_pc) } };
+    { { AD(ah_esp_pc) } };
 
 static struct db_prop_conj compress_props[] = {
-    { AD_PC(compress_pc) },
+    { AD(compress_pc) },
     };
 
 static struct db_prop_conj ah_compress_props[] = {
-    { AD_PC(ah_compress_pc) },
+    { AD(ah_compress_pc) },
 #ifdef SUPPORT_ESP_NULL
-    { AD_PC(espnull_compress_pc) }
+    { AD(espnull_compress_pc) }
 #endif
     };
 
 static struct db_prop_conj esp_compress_props[] =
-    { { AD_PC(esp_compress_pc) } };
+    { { AD(esp_compress_pc) } };
 
 static struct db_prop_conj ah_esp_compress_props[] =
-    { { AD_PC(ah_esp_compress_pc) } };
+    { { AD(ah_esp_compress_pc) } };
 
 /* The IPsec sadb is subscripted by a bitset (subset of policy)
  * with members from { POLICY_ENCRYPT, POLICY_AUTHENTICATE, POLICY_COMPRESS }
@@ -882,6 +953,7 @@ static struct db_prop_conj ah_esp_compress_props[] =
  */
 struct db_sa ipsec_sadb[1 << 3] = {
     { AD_NULL },	/* none */
+<<<<<<< HEAD:programs/pluto/spdb.c
     { AD_SAc(esp_props) },	/* POLICY_ENCRYPT */
     { AD_SAc(ah_props) },	/* POLICY_AUTHENTICATE */
     { AD_SAc(ah_esp_props) },	/* POLICY_ENCRYPT+POLICY_AUTHENTICATE */
@@ -889,6 +961,15 @@ struct db_sa ipsec_sadb[1 << 3] = {
     { AD_SAc(esp_compress_props) },	/* POLICY_ENCRYPT+POLICY_COMPRESS */
     { AD_SAc(ah_compress_props) },	/* POLICY_AUTHENTICATE+POLICY_COMPRESS */
     { AD_SAc(ah_esp_compress_props) },	/* POLICY_ENCRYPT+POLICY_AUTHENTICATE+POLICY_COMPRESS */
+=======
+    { AD(esp_props) },	/* POLICY_ENCRYPT */
+    { AD(ah_props) },	/* POLICY_AUTHENTICATE */
+    { AD(ah_esp_props) },	/* POLICY_ENCRYPT+POLICY_AUTHENTICATE */
+    { AD(compress_props) },	/* POLICY_COMPRESS */
+    { AD(esp_compress_props) },	/* POLICY_ENCRYPT+POLICY_COMPRESS */
+    { AD(ah_compress_props) },	/* POLICY_AUTHENTICATE+POLICY_COMPRESS */
+    { AD(ah_esp_compress_props) },	/* POLICY_ENCRYPT+POLICY_AUTHENTICATE+POLICY_COMPRESS */
+>>>>>>> 47e1291:programs/pluto/spdb.c
     };
 
 #undef AD

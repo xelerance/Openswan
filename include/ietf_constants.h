@@ -214,16 +214,13 @@
 
 #define IKE_UDP_PORT	500
 
-/* Version numbers - IKEv1 */
+/* Version numbers */
+
 #define ISAKMP_MAJOR_VERSION   0x1
 #define ISAKMP_MINOR_VERSION   0x0
 
-/* version numbers - IKEv2 */
-#define IKEv2_MAJOR_VERSION    0x2
-#define IKEv2_MINOR_VERSION    0x0
-
-
 /* Domain of Interpretation */
+
 #define ISAKMP_DOI_ISAKMP          0
 #define ISAKMP_DOI_IPSEC           1
 
@@ -251,6 +248,7 @@
  * Private USE 128-255
  */
 
+<<<<<<< HEAD:include/ietf_constants.h
 enum next_payload_types {
 	ISAKMP_NEXT_NONE     =  0,	/* No other payload following */
 	ISAKMP_NEXT_SA       =  1,	/* Security Association */
@@ -296,6 +294,30 @@ enum next_payload_types {
 	ISAKMP_NEXT_NATD_DRAFTS  = 130,   /* NAT-Traversal: NAT-D (drafts) */
 	ISAKMP_NEXT_NATOA_DRAFTS = 131   /* NAT-Traversal: NAT-OA (drafts) */
 };
+=======
+#define ISAKMP_NEXT_NONE       0	/* No other payload following */
+#define ISAKMP_NEXT_SA         1	/* Security Association */
+#define ISAKMP_NEXT_P          2	/* Proposal */
+#define ISAKMP_NEXT_T          3	/* Transform */
+#define ISAKMP_NEXT_KE         4	/* Key Exchange */
+#define ISAKMP_NEXT_ID         5	/* Identification */
+#define ISAKMP_NEXT_CERT       6	/* Certificate */
+#define ISAKMP_NEXT_CR         7	/* Certificate Request */
+#define ISAKMP_NEXT_HASH       8	/* Hash */
+#define ISAKMP_NEXT_SIG        9	/* Signature */
+#define ISAKMP_NEXT_NONCE      10	/* Nonce */
+#define ISAKMP_NEXT_N          11	/* Notification */
+#define ISAKMP_NEXT_D          12	/* Delete */
+#define ISAKMP_NEXT_VID        13	/* Vendor ID */
+#define ISAKMP_NEXT_ATTR       14       /* Mode config Attribute */
+#define ISAKMP_NEXT_NATD_BADDRAFTS   15 /* NAT-Traversal: NAT-D (bad drafts) */
+                                        /* !!! Conflicts with RFC 3547 */
+#define ISAKMP_NEXT_NATD_RFC   20       /* NAT-Traversal: NAT-D (rfc) */
+#define ISAKMP_NEXT_NATOA_RFC  21       /* NAT-Traversal: NAT-OA (rfc) */
+#define ISAKMP_NEXT_ROOF       22	/* roof on payload types */
+#define ISAKMP_NEXT_NATD_DRAFTS   130   /* NAT-Traversal: NAT-D (drafts) */
+#define ISAKMP_NEXT_NATOA_DRAFTS  131   /* NAT-Traversal: NAT-OA (drafts) */
+>>>>>>> 47e1291:include/ietf_constants.h
 
 /* These values are to be used within the Type field of an Attribute (14) 
  *    ISAKMP payload.  */
@@ -359,6 +381,7 @@ enum next_payload_types {
   extern enum_names exchange_names;
 */
 
+<<<<<<< HEAD:include/ietf_constants.h
 enum isakmp_xchg_types {
 	ISAKMP_XCHG_NONE=0,
 	ISAKMP_XCHG_BASE=1,
@@ -367,116 +390,103 @@ enum isakmp_xchg_types {
 	ISAKMP_XCHG_AGGR=4,	/* Aggressive */
 	ISAKMP_XCHG_INFO=5,	/* Informational */
 	ISAKMP_XCHG_MODE_CFG=6,      /* Mode Config */
+=======
+#define ISAKMP_XCHG_NONE       0
+#define ISAKMP_XCHG_BASE       1
+#define ISAKMP_XCHG_IDPROT     2	/* ID Protection */
+#define ISAKMP_XCHG_AO         3	/* Authentication Only */
+#define ISAKMP_XCHG_AGGR       4	/* Aggressive */
+#define ISAKMP_XCHG_INFO       5	/* Informational */
+#define ISAKMP_XCHG_MODE_CFG   6        /* Mode Config */
+>>>>>>> 47e1291:include/ietf_constants.h
 
+<<<<<<< HEAD:include/ietf_constants.h
         /* Private exchanges to pluto -- tried to write an RFC */
 	ISAKMP_XCHG_ECHOREQUEST=30,    /* Echo Request */
 	ISAKMP_XCHG_ECHOREPLY=31,      /* Echo Reply   */
+=======
+/* Extra exchange types, defined by Oakley
+ * RFC2409 "The Internet Key Exchange (IKE)", near end of Appendix A
+ */
+#define ISAKMP_XCHG_QUICK      32	/* Oakley Quick Mode */
+#define ISAKMP_XCHG_NGRP       33	/* Oakley New Group Mode */
+/* added in draft-ietf-ipsec-ike-01.txt, near end of Appendix A */
+#define ISAKMP_XCHG_ACK_INFO   34	/* Oakley Acknowledged Informational */
+>>>>>>> 47e1291:include/ietf_constants.h
 
+<<<<<<< HEAD:include/ietf_constants.h
         /* Extra exchange types, defined by Oakley
          * RFC2409 "The Internet Key Exchange (IKE)", near end of Appendix A
          */
 	ISAKMP_XCHG_QUICK=32,	/* Oakley Quick Mode */
 	ISAKMP_XCHG_NGRP=33,	/* Oakley New Group Mode */
+=======
+>>>>>>> 47e1291:include/ietf_constants.h
 
+<<<<<<< HEAD:include/ietf_constants.h
         /* IKEv2 things */
 	ISAKMP_v2_SA_INIT=34,
 	ISAKMP_v2_AUTH=35,
 	ISAKMP_v2_CHILD_SA=36,
 	ISAKMP_v2_INFORMATIONAL=37,
+=======
+/* Private exchanges to pluto */
+#define ISAKMP_XCHG_ECHOREQUEST 30      /* Echo Request */
+#define ISAKMP_XCHG_ECHOREPLY   31      /* Echo Reply   */
+>>>>>>> 47e1291:include/ietf_constants.h
 
+<<<<<<< HEAD:include/ietf_constants.h
 	ISAKMP_XCHG_ECHOREQUEST_PRIVATE=244,     /* Private Echo Request */
 	ISAKMP_XCHG_ECHOREPLY_PRIVATE=245,     /* Private Echo Reply   */
 };
+=======
+#define ISAKMP_XCHG_ECHOREQUEST_PRIVATE 244     /* Private Echo Request */
+#define ISAKMP_XCHG_ECHOREPLY_PRIVATE   245     /* Private Echo Reply   */
+>>>>>>> 47e1291:include/ietf_constants.h
 
 /* Flag bits */
-#define ISAKMP_FLAGS_E         (1<<0)     /* bit 0 of flags --- encrypt  */
-#define ISAKMP_FLAGS_C         (1<<1)     /* bit 1 of flags --- commit   */
-#define ISAKMP_FLAGS_I         (1<<3)     /* bit 3 of flags --- initiator */
-#define ISAKMP_FLAGS_V         (1<<4)     /* bit 4 of flags --- version */
-#define ISAKMP_FLAGS_R         (1<<5)     /* bit 5 of flags --- response */
+
 extern const char *const flag_bit_names[];
 
-#define ISAKMP_FLAG_ENCRYPTION   0x1  /* repeat of above */
+#define ISAKMP_FLAG_ENCRYPTION   0x1
 #define ISAKMP_FLAG_COMMIT       0x2
 
-
 /* Situation definition for IPsec DOI */
+
 extern const char *const sit_bit_names[];
 
 #define SIT_IDENTITY_ONLY        0x01
 #define SIT_SECRECY              0x02
 #define SIT_INTEGRITY            0x04
 
+<<<<<<< HEAD:include/ietf_constants.h
 
 /* Critical bit in each payload */
 /* extern enum_names critical_names; */
 #define ISAKMP_PAYLOAD_NONCRITICAL  0x00
 #define ISAKMP_PAYLOAD_CRITICAL     0x80
 
+=======
+>>>>>>> 47e1291:include/ietf_constants.h
 /* Protocol IDs
  * RFC2407 The Internet IP security Domain of Interpretation for ISAKMP 4.4.1
  */
 
 /*
+<<<<<<< HEAD:include/ietf_constants.h
  * extern enum_names protocol_names;
  * same in IKEv1 and IKEv2.
  */
 #define PROTO_RESERVED           0  /* only in IKEv2 */
+=======
+  extern enum_names protocol_names;
+*/
+
+>>>>>>> 47e1291:include/ietf_constants.h
 #define PROTO_ISAKMP             1
 #define PROTO_IPSEC_AH           2
 #define PROTO_IPSEC_ESP          3
 #define PROTO_IPCOMP             4  /* only in IKEv1 */
-
-/*
- * IKEv2 proposal,
- * extern enum_names trans_type_names;
- */
-enum ikev2_trans_type {
-	IKEv2_TRANS_TYPE_ENCR = 1,
-	IKEv2_TRANS_TYPE_PRF  = 2,
-	IKEv2_TRANS_TYPE_INTEG= 3,
-	IKEv2_TRANS_TYPE_DH   = 4,   /* same as in IKEv1 */
-	IKEv2_TRANS_TYPE_ESN  = 5,
-};
-
-enum ikev2_trans_type_encr {
-	IKEv2_ENCR_DES_IV64 = 1,
-	IKEv2_ENCR_DES      = 2,
-	IKEv2_ENCR_3DES     = 3,
-	IKEv2_ENCR_RC5      = 4,
-	IKEv2_ENCR_IDEA     = 5,
-	IKEv2_ENCR_CAST     = 6,
-	IKEv2_ENCR_BLOWFISH = 7,
-	IKEv2_ENCR_3IDEA    = 8,
-	IKEv2_ENCR_DES_IV32 = 9,
-	IKEv2_ENCR_RES10    = 10,
-	IKEv2_ENCR_NULL     = 11,
-	IKEv2_ENCR_AES_CBC  = 12,
-	IKEv2_ENCR_AES_CTR  = 13,
-	IKEv2_ENCR_INVALID  = 65536
-};
-
-enum ikev2_trans_type_prf {
-	IKEv2_PRF_HMAC_MD5  = 1,
-	IKEv2_PRF_HMAC_SHA1 = 2,
-	IKEv2_PRF_HMAC_TIGER= 3,
-	IKEv2_PRF_AES128_XCBC=4,
-};
-
-enum ikev2_trans_type_integ {
-	IKEv2_AUTH_HMAC_MD5_96 =1,
-	IKEv2_AUTH_HMAC_SHA1_96=2,
-	IKEv2_AUTH_DES_MAC     =3,
-	IKEv2_AUTH_KPDK_MD5    =4,
-	IKEv2_AUTH_AES_XCBC_96 =5,
-	IKEv2_AUTH_INVALID     =65536
-};
-
-enum ikev2_trans_type_esn {
-	IKEv2_ESN_DISABLED = 0,
-	IKEv2_ESN_ENABLED  = 1,
-};
-	
 
 /* many transform values are moved to openswan/ipsec_policy.h
  * including all of the following, which are here so that
@@ -680,7 +690,7 @@ typedef u_int16_t ipsec_auth_t;
  * and from http://www.isi.edu/in-notes/iana/assignments/ipsec-registry
  */
 
-/* extern enum_names oakley_enc_names; (IKEv1 only) */
+/* extern enum_names oakley_enc_names; */
 
 #define OAKLEY_DES_CBC          1
 #define OAKLEY_IDEA_CBC         2
@@ -763,22 +773,19 @@ enum ikev2_auth_method {
  */
 /* extern enum_names oakley_group_names; */
 
-typedef enum ike_trans_type_dh oakley_group_t;
+typedef u_int16_t oakley_group_t;
+#define OAKLEY_GROUP_MODP768       1
+#define OAKLEY_GROUP_MODP1024      2
+#define OAKLEY_GROUP_GP155         3
+#define OAKLEY_GROUP_GP185         4
+#define OAKLEY_GROUP_MODP1536      5
 
+#define OAKLEY_GROUP_MODP2048      14
+#define OAKLEY_GROUP_MODP3072      15
+#define OAKLEY_GROUP_MODP4096      16
+#define OAKLEY_GROUP_MODP6144      17
+#define OAKLEY_GROUP_MODP8192      18
 /*	you must also touch: constants.c, crypto.c */
-enum ike_trans_type_dh {
-	OAKLEY_GROUP_MODP768      = 1,
-	OAKLEY_GROUP_MODP1024     = 2,
-	OAKLEY_GROUP_GP155        = 3,
-	OAKLEY_GROUP_GP185        = 4,
-	OAKLEY_GROUP_MODP1536     = 5,
-
-	OAKLEY_GROUP_MODP2048     = 14,
-	OAKLEY_GROUP_MODP3072     = 15,
-	OAKLEY_GROUP_MODP4096     = 16,
-	OAKLEY_GROUP_MODP6144     = 17,
-	OAKLEY_GROUP_MODP8192     = 18,
-};
 
 /* Oakley Group Type attribute
  * draft-ietf-ipsec-ike-01.txt appendix A

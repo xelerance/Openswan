@@ -1,4 +1,3 @@
-/Electric/d
 /^#setting/d
 s;\(opening file: \).*\(testing/.*\);\1DIR/\2;
 s;\(including file \).*\(testing/.* from line \).*\(testing/.*:.*\);\1DIR/\2DIR/\3;

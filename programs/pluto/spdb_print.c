@@ -59,11 +59,16 @@
 void
 print_sa_attr_oakley(struct db_attr *at)
 {
+<<<<<<< HEAD:programs/pluto/spdb_print.c
     const struct enum_names *en;
 	
     if(at->type.oakley == 0) {
+=======
+    if(at->type == 0) {
+>>>>>>> 47e1291:programs/pluto/spdb_print.c
 	return;
     }
+<<<<<<< HEAD:programs/pluto/spdb_print.c
 
     if(at->type.oakley <= oakley_attr_val_descs_size) {
 	en = oakley_attr_val_descs[at->type.oakley];
@@ -71,11 +76,16 @@ print_sa_attr_oakley(struct db_attr *at)
     printf("        type: %u(%s) val: %u(%s)\n"
 	   , at->type.oakley, enum_name(&oakley_attr_names, at->type.oakley+ISAKMP_ATTR_AF_TV)
 	   , at->val,  en ? enum_name(en, at->val) : "unknown");
+=======
+    
+    printf("        type: %u val: %d\n", at->type, at->val);
+>>>>>>> 47e1291:programs/pluto/spdb_print.c
 }
 
 void
 print_sa_attr_ipsec(struct db_attr *at)
 {
+<<<<<<< HEAD:programs/pluto/spdb_print.c
     const struct enum_names *en;
 	
     if(at->type.ipsec == 0) {
@@ -95,6 +105,10 @@ print_sa_trans(struct db_sa *f, struct db_trans *tr)
 {
     unsigned int i;
     printf("      transform: %u cnt: %u\n",
+=======
+    int i;
+    printf("      transform: %d cnt: %d\n",
+>>>>>>> 47e1291:programs/pluto/spdb_print.c
 	   tr->transid, tr->attr_cnt);
     for(i=0; i<tr->attr_cnt; i++) {
 	if(f->parentSA) {
@@ -108,11 +122,17 @@ print_sa_trans(struct db_sa *f, struct db_trans *tr)
 void
 print_sa_prop(struct db_sa *f, struct db_prop *dp)
 {
+<<<<<<< HEAD:programs/pluto/spdb_print.c
     unsigned int i;
     printf("    protoid: %u (%s) cnt: %u\n"
 	   , dp->protoid
 	   , enum_name(&protocol_names, dp->protoid)
 	   , dp->trans_cnt);
+=======
+    int i;
+    printf("    protoid: %d cnt: %d\n",
+	   dp->protoid, dp->trans_cnt);
+>>>>>>> 47e1291:programs/pluto/spdb_print.c
     for(i=0; i<dp->trans_cnt; i++) {
 	print_sa_trans(f, &dp->trans[i]);
     }
@@ -121,8 +141,13 @@ print_sa_prop(struct db_sa *f, struct db_prop *dp)
 void
 print_sa_prop_conj(struct db_sa *f, struct db_prop_conj *pc)
 {
+<<<<<<< HEAD:programs/pluto/spdb_print.c
     unsigned int i;
     printf("  conjunctions cnt: %u\n",
+=======
+    int i;
+    printf("  conjunctions cnt: %d\n",
+>>>>>>> 47e1291:programs/pluto/spdb_print.c
 	   pc->prop_cnt);
     for(i=0; i<pc->prop_cnt; i++) {
 	print_sa_prop(f, &pc->props[i]);
@@ -132,14 +157,20 @@ print_sa_prop_conj(struct db_sa *f, struct db_prop_conj *pc)
 void
 sa_print(struct db_sa *f)
 {
+<<<<<<< HEAD:programs/pluto/spdb_print.c
     unsigned int i;
     printf("sa disjunct cnt: %u\n",
+=======
+    int i;
+    printf("sa disjunct cnt: %d\n",
+>>>>>>> 47e1291:programs/pluto/spdb_print.c
 	   f->prop_conj_cnt);
     for(i=0; i<f->prop_conj_cnt; i++) {
 	print_sa_prop_conj(f, &f->prop_conjs[i]);
     }
 }
 
+<<<<<<< HEAD:programs/pluto/spdb_print.c
 static void
 print_sa_v2_attr(struct db_attr *at)
 {
@@ -218,3 +249,5 @@ sa_v2_print(struct db_sa *f)
  * c-basic-offset: 4
  * End:
  */
+=======
+>>>>>>> 47e1291:programs/pluto/spdb_print.c

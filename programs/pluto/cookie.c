@@ -36,8 +36,7 @@ const u_char zero_cookie[COOKIE_SIZE];	/* guaranteed 0 */
  * Length SHOULD be a multiple of sizeof(u_int32_t).
  */
 void
-get_cookie(bool initiator, u_int8_t *cookie
-	   , int length, const ip_address *addr)
+get_cookie(bool initiator, u_int8_t *cookie, int length, const ip_address *addr)
 {
     u_char buffer[SHA1_DIGEST_SIZE];
     SHA1_CTX ctx;

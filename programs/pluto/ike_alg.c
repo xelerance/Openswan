@@ -121,8 +121,7 @@ return_out:
 /* 
  * ML: make F_STRICT logic consider enc,hash/auth,modp algorithms 
  */
-bool ike_alg_ok_final(int ealg, unsigned key_len, int aalg,
-		      unsigned group, struct alg_info_ike *alg_info_ike)
+bool ike_alg_ok_final(int ealg, unsigned key_len, int aalg, int group, struct alg_info_ike *alg_info_ike)
 {
 	/* 
 	 * simple test to toss low key_len, will accept it only

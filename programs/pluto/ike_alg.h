@@ -56,9 +56,7 @@ void ike_alg_show_connection(struct connection *c, const char *instance);
 bool ike_alg_enc_present(int ealg);
 bool ike_alg_hash_present(int halg);
 bool ike_alg_enc_ok(int ealg, unsigned key_len, struct alg_info_ike *alg_info_ike, const char **);
-bool ike_alg_ok_final(int ealg, unsigned key_len
-		      , int aalg, unsigned group
-		      , struct alg_info_ike *alg_info_ike);
+bool ike_alg_ok_final(int ealg, unsigned key_len, int aalg, int group, struct alg_info_ike *alg_info_ike);
 
 int ike_alg_init(void);
 

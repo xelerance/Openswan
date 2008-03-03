@@ -1,3 +1,0 @@
-This is a test of processing ikev2= keywords in config files, this time with it
-set to propose.
-

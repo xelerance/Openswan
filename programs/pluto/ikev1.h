@@ -10,7 +10,7 @@ extern void complete_v1_state_transition(struct msg_digest **mdp, stf_status res
 extern void process_v1_packet(struct msg_digest **mdp);
 
 /*
- * IKEv1 functions: that ikev1_main.c provides and ikev1_aggr.c
+ * IKEv1 functions: that ipsec_doi.c provides and ikev1_aggr.c
  * needs.
  */
 
@@ -40,6 +40,7 @@ extern bool ship_KE(struct state *st
 		    , chunk_t *g
 		    , pb_stream *outs, u_int8_t np);
 
+<<<<<<< HEAD:programs/pluto/ikev1.h
 /* **MAIN MODE FUNCTIONS** in ikev1_main.c */
 extern stf_status main_outI1(int whack_sock
 			     , struct connection *c
@@ -47,6 +48,11 @@ extern stf_status main_outI1(int whack_sock
 			     , lset_t policy
 			     , unsigned long try
 			     , enum crypto_importance importance);
+=======
+extern notification_t accept_nonce(struct msg_digest *md
+				   , chunk_t *dest, const char *name);
+
+>>>>>>> 47e1291:programs/pluto/ikev1.h
 
 extern stf_status aggr_outI1(int whack_sock,
 			     struct connection *c,
@@ -61,9 +67,6 @@ extern stf_status aggr_not_present(int whack_sock,
 			     lset_t policy,
 			     unsigned long try
 			     , enum crypto_importance importance);
-
-extern void ikev1_delete_out(struct state *st);
-
 
 extern bool
 decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode);

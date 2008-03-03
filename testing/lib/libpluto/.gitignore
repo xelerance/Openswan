@@ -1,23 +1,32 @@
+<<<<<<< HEAD:testing/lib/libpluto/.gitignore
 lib-refineconnection
 parentI1
 parentR1
 parentR2
 parentI2
 parentI3
+=======
+>>>>>>> 47e1291:testing/lib/libpluto/.gitignore
 lib-skeyidcalc
 lib-spdbfirst
 lib-spdbmerge
 lib-spdbph1
+<<<<<<< HEAD:testing/lib/libpluto/.gitignore
 lib-spdbv2
 lib-spdbv2c
+=======
+>>>>>>> 47e1291:testing/lib/libpluto/.gitignore
 lib-spdbtest
 lib-whackmsgtest/OUTPUT
 skeyidcalc
 spdbfirst
 spdbmerge
 spdbph1
+<<<<<<< HEAD:testing/lib/libpluto/.gitignore
 spdbv2
 spdbv2c
+=======
+>>>>>>> 47e1291:testing/lib/libpluto/.gitignore
 spdbtest
 whackmsgtest
 refineconnection

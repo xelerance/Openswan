@@ -7,24 +7,24 @@
 ../spdbph1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 (PROTO_ISAKMP) cnt: 4
+    protoid: 1 cnt: 4
       transform: 1 cnt: 4
-        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
-        type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
-        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
-        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 5(OAKLEY_GROUP_MODP1536)
+        type: 1 val: 5
+        type: 2 val: 1
+        type: 3 val: 3
+        type: 4 val: 5
       transform: 1 cnt: 4
-        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
-        type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
-        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
-        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 5(OAKLEY_GROUP_MODP1536)
+        type: 1 val: 5
+        type: 2 val: 2
+        type: 3 val: 3
+        type: 4 val: 5
       transform: 1 cnt: 4
-        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
-        type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
-        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
-        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 2(OAKLEY_GROUP_MODP1024)
+        type: 1 val: 5
+        type: 2 val: 1
+        type: 3 val: 3
+        type: 4 val: 2
       transform: 1 cnt: 4
-        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
-        type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
-        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
-        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 2(OAKLEY_GROUP_MODP1024)
+        type: 1 val: 5
+        type: 2 val: 2
+        type: 3 val: 3
+        type: 4 val: 2

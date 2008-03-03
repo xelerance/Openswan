@@ -18,7 +18,6 @@ extern const char *const sa_policy_bit_names[];
 extern enum_names oakley_attr_names;
 extern const char *const oakley_attr_bit_names[];
 extern enum_names *oakley_attr_val_descs[];
-extern const unsigned int  oakley_attr_val_descs_size;
 extern enum_names ipsec_attr_names;
 extern enum_names *ipsec_attr_val_descs[];
 extern const unsigned int  ipsec_attr_val_descs_size;
@@ -60,6 +59,7 @@ extern enum_names oakley_group_type_names;
 extern enum_names notification_names;
 extern enum_names ipsec_notification_names;
 
+<<<<<<< HEAD:include/names_constant.h
 /* IKEv2 */
 extern enum_names critical_names;
 extern enum_names ikev2_auth_names;
@@ -72,6 +72,8 @@ extern enum_names *ikev2_transid_val_descs[];
 extern const unsigned int ikev2_transid_val_descs_size;
 extern enum_names ikev2_cert_type_names;
 extern enum_names ikev2_notify_names;
+=======
+>>>>>>> 47e1291:include/names_constant.h
 
 /* socket address family info */
 

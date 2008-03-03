@@ -17,7 +17,7 @@
 OPENSWANSRCDIR?=$(shell cd ..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-srcdir?=${OPENSWANSRCDIR}/lib/
+srcdir?=$(shell pwd)/
 
 SUBDIRS=libopenswan libpluto libcrypto libwhack libipsecconf
 
