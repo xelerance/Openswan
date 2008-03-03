@@ -200,7 +200,7 @@ extern bool invoke_command(const char *verb, const char *verb_suffix, char *cmd)
 extern bool do_command_darwin(struct connection *c, struct spd_route *sr
 			       , const char *verb, struct state *st);
 extern bool invoke_command(const char *verb, const char *verb_suffix, char *cmd);
-
+#endif
 
 #if defined(__CYGWIN32__)
 extern bool do_command_cygwin(struct connection *c, struct spd_route *sr
