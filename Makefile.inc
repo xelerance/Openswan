@@ -167,6 +167,9 @@ INSTBINFLAGS=-b --suffix=.old
 INSTSUIDFLAGS=--mode=u+rxs,g+rx,o+rx --group=root -b --suffix=.old
 INSTMANFLAGS=
 INSTCONFFLAGS=
+# For OSX use
+#INSTBINFLAGS=-b -B .old
+#INSTSUIDFLAGS=--mode=u+rxs,g+rx,o+rx --group=root -b -B .old
 
 
 ### misc configuration, included here in hopes that other files will not
@@ -383,9 +386,6 @@ USE_BASH?=true
 # you need at least swig 1.3.24, as well as tcl libraries and includes
 USE_TAPROOM?=false
 
-# On MAC OSX , we have to use YACC and not BISON.
-USE_YACC?=false
-
 X509_VERSION=X.509-1.5.4
 NONINTCONFIG=oldconfig
 
@@ -412,9 +412,9 @@ IPSECVERSION:=${IPSECBASEVERSION}$(shell ${OPENSWANSRCDIR}/packaging/utils/setlo
 export IPSECVERSION
 
 # include OSDEP/ARCH specific makefiles, if any.
-# OSDEP=linux,bsd,cygwin
+# OSDEP=linux,bsd,cygwin,darwin
 # 
-# but, BUILDENV could be mingw32-linux, or mingw32, etc..
+# but, BUILDENV could be mingw32-linux, darwin, or mingw32, etc..
 ifeq ($(BUILDENV),)
 BUILDENV=$(shell uname -s | tr 'A-Z' 'a-z' | sed -e 's/\(.*\)-.*/\1/')
 endif
@@ -422,6 +422,14 @@ export BUILDENV
 export OSDEP
 include ${OPENSWANSRCDIR}/packaging/defaults/${BUILDENV}
 -include ${OPENSWANSRCDIR}/packaging/defaults/${BUILDENV}.${ARCH}
+
+# On MAC OSX , we have to use YACC and not BISON. And use different backup
+# file suffix.
+ifeq ($(BUILDENV),"darwin")
+USE_YACC?=true
+INSTBINFLAGS=-b -B .old
+INSTSUIDFLAGS=--mode=u+rxs,g+rx,o+rx --group=root -b -B .old
+endif
 
 ifeq ($(USE_OBJDIR),true)
 OBJDIR=OBJ.${BUILDENV}.${ARCH}
