@@ -871,21 +871,6 @@ static int nat_traversal_new_mapping(struct state *st
 	}
 #endif
 
-	addrtot(src, 0, srca, ADDRTOT_BUF);
-	addrtot(dst, 0, dsta, ADDRTOT_BUF);
-
-	if (!sameaddr(src, dst)) {
-		loglog(RC_LOG_SERIOUS, "nat_traversal_new_mapping: "
-			"address change currently not supported [%s:%d,%s:%d]",
-			srca, sport, dsta, dport);
-		return -1;
-	}
-
-	if (sport == dport) {
-		/* no change */
-		return 0;
-	}
-
 	nfo.st    = st;
 	nfo.addr  = *nsrc;
 	nfo.port  = nsrcport;
