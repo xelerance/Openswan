@@ -64,11 +64,6 @@ enum known_vendorid {
   VID_VISTA_AUTHIP2	    =52,
   VID_VISTA_AUTHIP3	    =53,
 
-<<<<<<< HEAD:programs/pluto/vendor.h
-=======
-
->>>>>>> 47e1291:programs/pluto/vendor.h
-
   /* 101 - 200 : NAT-Traversal */
   VID_NATT_STENBERG_01       =101,
   VID_NATT_STENBERG_02       =102,

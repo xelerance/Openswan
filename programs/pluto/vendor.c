@@ -274,15 +274,12 @@ static struct vid_struct _vid_tab[] = {
  	DEC_MD5_VID(VISTA_AUTHIP2, "IKE CGA version 1")
 	DEC_MD5_VID(VISTA_AUTHIP3, "MS-MamieExists")
 
-<<<<<<< HEAD:programs/pluto/vendor.c
 	/**
 	 * Cisco VPN 3000
 	 */
 	{ VID_MISC_FRAGMENTATION, VID_MD5HASH | VID_SUBSTRING_DUMPHEXA,
 		"FRAGMENTATION", NULL, NULL, 0 },
 
-=======
->>>>>>> 47e1291:programs/pluto/vendor.c
 	/*
 	 * NCP.de
 	 */
