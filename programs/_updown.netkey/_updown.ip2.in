@@ -204,7 +204,7 @@ doroute() {
     # old: route via pluto_interface
     # parms2="$parms2 dev ${PLUTO_INTERFACE%:*} $IPROUTEARGS"
     # new: route via proper interface according to routing table
-    PLUTO_PEER_INTERFACE=`ip -o route get $PLUTO_PEER | awk '{ print $5 }'`
+    PLUTO_PEER_INTERFACE=`ip -o route get $PLUTO_PEER | sed "s/^.*dev \([^ ]*\) .*/\1/"'`
     if [ -z "$PLUTO_PEER_INTERFACE" ]; then
 	PLUTO_PEER_INTERFACE=$PLUTO_INTERFACE
     fi
