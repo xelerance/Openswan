@@ -7,8 +7,8 @@
 # Setup a variety of X509 certificates for testcases
 #
 
-#OUTDIR=`dirname $0`
-#pushd $OUTDIR
+OUTDIR=`dirname $0`
+pushd $OUTDIR
 
 # Clean
 rm -f reqs/* certs/* keys/* newcerts/* cacerts/* crls/* pkcs12/* index.txt* serial*
@@ -22,7 +22,6 @@ export OPENSSL_CONF=./openssl.cnf
 # Get some useful dates. Blame openssl for not being Y2K compatible with its -startdate
 YEAR=`date +%y`
 MONTH=`date +%m`
-MONTHMINONE=$MONTH
 DAY=`date +%d`
 DAYMINONE=`expr $DAY - 2`
 if [ $DAYMINONE -lt 10 ]
@@ -53,29 +52,16 @@ END="$TWODAYSAGO"235959Z
 FUTURE="12$MONTH$DAY"000000Z
 FUTUREEND="15$MONTH$DAY"000000Z
 
-echo "------------------------------------------"
-echo "Certificate dates being used for this run:"
-echo ""
-echo "Today: $TODAY"
-echo "Two days ago: $TWODAYSAGO"
-echo "Start: $START"
-echo "End: $END"
-echo "Future: $FUTURE"
-echo "Year: $YEAR"
-echo "Month: $MONTH"
-echo "Day: $DAY"
-echo "Month-1: $MONTHMINONE"
-echo "Day-1: $DAYMINONE"
-echo "------------------------------------------"
-echo ""
 
 # Generate CA's
 for cauth in ca otherca
 do
+openssl genrsa -passout pass:foobar -des3 -out keys/$cauth.key 1024 
+openssl rsa -in keys/$cauth.key -out keys/$cauth.key -passin pass:foobar
 # use defaults to ensure the same values for all certs based on openssl.cnf
 # req -x509 does not accept -startdate, this might invalidate certs? 
 expect  <<EOF
-spawn openssl req -x509 -days 3650 -newkey rsa:1024 -keyout keys/$cauth.key.locked -out cacerts/$cauth.crt -passout pass:foobar
+spawn openssl req -x509 -days 3650 -newkey rsa:1024 -keyout keys/$cauth.key -out cacerts/$cauth.crt -passin pass:foobar -passout pass:foobar
 expect "Country Name"
 send "\n"
 expect "State"
@@ -93,8 +79,6 @@ send "testing@xelerance.com\n"
 expect ""
 send "\n"
 EOF
-openssl rsa -in keys/$cauth.key.locked -out keys/$cauth.key -passin pass:foobar
-rm keys/$cauth.key.locked
 done
 
 # Generate machine keys/certs
@@ -308,23 +292,10 @@ openssl ca -gencrl -crldays 15 -out crls/cacrlvalid.pem -keyfile keys/ca.key -ce
 
 
 # Copy to the same places as CA/dist_certs did
-mkdir -p ../baseconfigs/all/etc/ipsec.d/certs
-mkdir -p ../baseconfigs/west/etc/ipsec.d/certs
-mkdir -p ../baseconfigs/east/etc/ipsec.d/certs
-mkdir -p ../baseconfigs/all/etc/ipsec.d/cacerts 
-mkdir -p ../baseconfigs/east/etc/ipsec.d/cacerts 
-mkdir -p ../baseconfigs/west/etc/ipsec.d/cacerts 
-mkdir -p ../baseconfigs/all/etc/ipsec.d/crls
-mkdir -p ../baseconfigs/all/etc/ipsec.d/private
-mkdir -p ../baseconfigs/west/etc/ipsec.d/private
-mkdir -p ../baseconfigs/east/etc/ipsec.d/private
-
 cp certs/* ../baseconfigs/all/etc/ipsec.d/certs
 cp cacerts/* ../baseconfigs/all/etc/ipsec.d/cacerts
-cp cacerts/* ../baseconfigs/west/etc/ipsec.d/cacerts
-cp cacerts/* ../baseconfigs/east/etc/ipsec.d/cacerts
 cp crls/* ../baseconfigs/all/etc/ipsec.d/crls
-cp keys/* ../baseconfigs/all/etc/ipsec.d/private
+cp keys/* ../baseconfigs/all/etc/ipsec.d/
 
 # Copy private keys to individual baseconfig directories
 cd keys
@@ -337,13 +308,6 @@ do
 		cp ../reqs/$HOST.req ../pkcs12/$HOST.p12 ../../baseconfigs/$HOST/etc/ipsec.d/private
 	fi
 done
-cd ../certs
-for i in *.crt
-do
-	HOST=`echo $i|sed "s/.crt$//"`
-	if [ -d ../../baseconfigs/$HOST/etc/ipsec.d/certs ]
-	then
-		cp $i ../../baseconfigs/$HOST/etc/ipsec.d/certs
-	fi
-done
 cd ..
+# back to original directory
+popd
