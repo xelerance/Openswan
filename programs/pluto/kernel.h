@@ -196,6 +196,12 @@ extern bool do_command_freebsd(struct connection *c, struct spd_route *sr
 extern bool invoke_command(const char *verb, const char *verb_suffix, char *cmd);
 #endif
 
+#if defined(macintosh) || (defined(__MACH__) && defined(__APPLE__))
+extern bool do_command_darwin(struct connection *c, struct spd_route *sr
+			       , const char *verb, struct state *st);
+extern bool invoke_command(const char *verb, const char *verb_suffix, char *cmd);
+
+
 #if defined(__CYGWIN32__)
 extern bool do_command_cygwin(struct connection *c, struct spd_route *sr
 			      , const char *verb, struct state *st);
