@@ -42,6 +42,7 @@ v2.6.03
   #590: serpent lib used private kernel header [paul]
   #544: the following error should only show up for x509 debugging: ... [paul]
   #185: Deadlock in function "scx_release()" daemon pluto.(SMARTCARD) [Kurodo]
+* incorporated changes between 2.4.8 and 2.4.9
 
 v2.5.15
    change ipsec_breakroute to permit non-existant eroute's to be replaced.  
@@ -147,6 +148,15 @@ v2.5.00
     MAJOR: always use OBJDIRs, and compile on Windows (no kernel)
     MAJOR: includes "Taproom" code --- TCL call outs from pluto at IKE
 		transition states. 
+v2.4.9
+* Fix for Aggressive Mode with NAT-T (no negotiation in aggrmode) [mcr]
+* Integrated most openwrt workarounds - tested on whiterussian  [paul]
+* Typofix for smartcard support [andreas zwicker]
+* Fix for when responder PSK incorrectly uses pfs and has nhelpers=0
+  [Matthias Haas]
+  #801: Patch for fixing type-punned compiler warnings [Alin Nastac]
+  #811: Patch for using custom algs with CONFIG_KLIPS_ALG [iamscard]
+  #812: Bogus defaultroute nexthop for PPPoE (& PPP?) [BruceS]
 
 v2.4.10
 * Fix for sock.sk_stamp type change in 2.6.22 [dhr]
