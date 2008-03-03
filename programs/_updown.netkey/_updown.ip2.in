@@ -200,8 +200,16 @@ doroute() {
     if [ -n "$PLUTO_NEXT_HOP" -a "$PLUTO_NEXT_HOP" != "$PLUTO_PEER" ]; then
 	parms2="via $PLUTO_NEXT_HOP"
     fi
-    # route via pluto_interface
-    parms2="$parms2 dev ${PLUTO_INTERFACE%:*} $IPROUTEARGS"
+
+    # old: route via pluto_interface
+    # parms2="$parms2 dev ${PLUTO_INTERFACE%:*} $IPROUTEARGS"
+    # new: route via proper interface according to routing table
+    PLUTO_PEER_INTERFACE=`ip -o route get $PLUTO_PEER | awk '{ print $3 }'`
+    if [ -z "$PLUTO_PEER_INTERFACE" ]; then
+	PLUTO_PEER_INTERFACE=$PLUTO_INTERFACE
+    fi
+    parms2="$parms2 dev ${PLUTO_PEER_INTERFACE%:*} $IPROUTEARGS"
+
     # make sure whe have sourceip locally in this machine
     if [ "$1" = "replace" -a -n "$PLUTO_MY_SOURCEIP" ]; then
 	addsource
