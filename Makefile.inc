@@ -171,6 +171,9 @@ INSTCONFFLAGS=
 #INSTBINFLAGS=-b -B .old
 #INSTSUIDFLAGS=--mode=u+rxs,g+rx,o+rx --group=root -b -B .old
 
+# flags for bison, overrode in packages/default/foo
+BISONOSFLAGS=
+
 
 ### misc configuration, included here in hopes that other files will not
 ### have to be changed for common customizations.

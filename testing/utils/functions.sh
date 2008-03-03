@@ -1177,6 +1177,7 @@ libtest() {
 	    ${ECHO} "   "Running $testobj
 	    ( ulimit -c unlimited; cd lib-$testobj && eval ../$testobj ${UNITTESTARGS} >OUTPUT${KLIPS_MODULE}/$testobj.txt 2>&1 )
 
+
 	    stat=$?
 	    ${ECHO} "   "Exit code $stat
 	    if [ $stat -gt 128 ]

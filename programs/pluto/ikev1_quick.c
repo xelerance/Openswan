@@ -545,11 +545,11 @@ decode_net_id(struct isakmp_ipsec_id *id
 /* like decode, but checks that what is received matches what was sent */
 static bool
 check_net_id(struct isakmp_ipsec_id *id
-, pb_stream *id_pbs
-, u_int8_t *protoid
-, u_int16_t *port
-, ip_subnet *net
-, const char *which)
+	     , pb_stream *id_pbs
+	     , u_int8_t *protoid
+	     , u_int16_t *port
+	     , ip_subnet *net
+	     , const char *which)
 {
     ip_subnet net_temp;
     bool bad_proposal=FALSE;
@@ -557,19 +557,18 @@ check_net_id(struct isakmp_ipsec_id *id
     if (!decode_net_id(id, id_pbs, &net_temp, which))
 	return FALSE;
 
-    if (!samesubnet(net, &net_temp)) {
-	char subrec[SUBNETTOT_BUF];
-	char subxmt[SUBNETTOT_BUF];
-	subnettot(net, 0, subxmt, sizeof(subxmt));
-	subnettot(&net_temp, 0, subrec, sizeof(subrec));
-	loglog(RC_LOG_SERIOUS, "%s subnet returned doesn't match my proposal - us:%s vs them:%s",
-		which,subxmt,subrec);
-#ifdef ALLOW_MICROSOFT_BAD_PROPOSAL
-	loglog(RC_LOG_SERIOUS, "Allowing questionable proposal anyway [ALLOW_MICROSOFT_BAD_PROPOSAL]");
-	bad_proposal = FALSE;
-#else
-	bad_proposal = TRUE;
-#endif
+    /* 
+     * workaround for #802- "our client ID returned doesn't match my proposal"
+     * until such time as #849 is properly fixed.
+     */
+    if (!samesubnet(net, &net_temp)
+	|| *protoid != id->isaiid_protoid
+	|| (*port    != id->isaiid_port
+	    && *port != 0 && id->isaiid_port!=1701)
+	)
+    {
+	loglog(RC_LOG_SERIOUS, "%s ID returned doesn't match my proposal", which);
+	return FALSE;
     }
     if(*protoid != id->isaiid_protoid) {
 	loglog(RC_LOG_SERIOUS, "%s peer returned protocol id does not match my proposal - us%d vs them: %d"
@@ -2325,11 +2324,10 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 	    /* ??? we are assuming IPSEC_DOI */
 
 	    /* IDci (we are initiator) */
-
 	    if (!check_net_id(&IDci->payload.ipsec_id, &IDci->pbs
-	    , &st->st_myuserprotoid, &st->st_myuserport
-	    , &st->st_connection->spd.this.client
-	    , "our client"))
+			      , &st->st_myuserprotoid, &st->st_myuserport
+			      , &st->st_connection->spd.this.client
+			      , "our client"))
 		return STF_FAIL + INVALID_ID_INFORMATION;
 
 	    /* we checked elsewhere that we got two of them */
@@ -2339,9 +2337,9 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 	    /* IDcr (responder is peer) */
 
 	    if (!check_net_id(&IDcr->payload.ipsec_id, &IDcr->pbs
-	    , &st->st_peeruserprotoid, &st->st_peeruserport
-	    , &st->st_connection->spd.that.client
-	    , "peer client"))
+			      , &st->st_peeruserprotoid, &st->st_peeruserport
+			      , &st->st_connection->spd.that.client
+			      , "peer client"))
 		return STF_FAIL + INVALID_ID_INFORMATION;
 
 	    /*
