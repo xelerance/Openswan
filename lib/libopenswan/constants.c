@@ -33,22 +33,22 @@
 
 /* version */
 
-<<<<<<< HEAD:lib/libopenswan/constants.c
 static const char *const version_name_1[] = {
 	"ISAKMP Version 1.0 (rfc2407)",
 };
 static const char *const version_name_2[] = {
 	"IKEv2 version 2.0 (rfc4306)",
-=======
-static const char *const version_name[] = {
-	"ISAKMP Version 1.0",
->>>>>>> 47e1291:lib/libopenswan/constants.c
 };
 
-enum_names version_names =
+enum_names version_names_1 =
     { ISAKMP_MAJOR_VERSION<<ISA_MAJ_SHIFT | ISAKMP_MINOR_VERSION,
 	ISAKMP_MAJOR_VERSION<<ISA_MAJ_SHIFT | ISAKMP_MINOR_VERSION,
-	version_name, NULL };
+	version_name_1, NULL };
+
+enum_names version_names =
+    { IKEv2_MAJOR_VERSION<<ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION,
+	IKEv2_MAJOR_VERSION<<ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION,
+	version_name_2, &version_names_1 };
 
 /* Domain of Interpretation */
 
@@ -141,12 +141,39 @@ const char *const payload_name[] = {
 	NULL
     };
 
-const char *const payload_name_nat_d[] = { "ISAKMP_NEXT_NAT-D",
-	"ISAKMP_NEXT_NAT-OA", NULL };
+const char *const payload_names_ikev2[] = {
+    "ISAKMP_NEXT_v2SA",            /* 33 */
+    "ISAKMP_NEXT_v2KE",
+    "ISAKMP_NEXT_v2IDi",
+    "ISAKMP_NEXT_v2IDr",
+    "ISAKMP_NEXT_v2CERT",  
+    "ISAKMP_NEXT_v2CERTREQ",
+    "ISAKMP_NEXT_v2AUTH",
+    "ISAKMP_NEXT_v2Ni",
+    "ISAKMP_NEXT_v2N",
+    "ISAKMP_NEXT_v2D",
+    "ISAKMP_NEXT_v2V",
+    "ISAKMP_NEXT_v2TSi",
+    "ISAKMP_NEXT_v2TSr",
+    "ISAKMP_NEXT_v2E",
+    "ISAKMP_NEXT_v2CP",
+    "ISAKMP_NEXT_v2EAP",
+    NULL
+};
+
+const char *const payload_name_nat_d[] = {
+    "ISAKMP_NEXT_NAT-D",
+    "ISAKMP_NEXT_NAT-OA",
+    NULL
+};
+
 static enum_names payload_names_nat_d =
-	{ ISAKMP_NEXT_NATD_DRAFTS, ISAKMP_NEXT_NATOA_DRAFTS, payload_name_nat_d, NULL };
+{ ISAKMP_NEXT_NATD_DRAFTS, ISAKMP_NEXT_NATOA_DRAFTS, payload_name_nat_d, NULL };
+static enum_names payload_names_ikev2_d =
+{ ISAKMP_NEXT_v2SA, ISAKMP_NEXT_v2EAP, payload_names_ikev2, &payload_names_nat_d };
+
 enum_names payload_names =
-    { ISAKMP_NEXT_NONE, ISAKMP_NEXT_NATOA_RFC, payload_name, &payload_names_nat_d };
+{ ISAKMP_NEXT_NONE, ISAKMP_NEXT_NATOA_RFC, payload_name, &payload_names_ikev2_d };
 
 
 /* Exchange types (note: two discontinuous ranges) */
@@ -164,19 +191,26 @@ static const char *const exchange_name[] = {
 static const char *const exchange_name2[] = {
 	"ISAKMP_XCHG_QUICK",
 	"ISAKMP_XCHG_NGRP",
-	"ISAKMP_XCHG_ACK_INFO",
+	"ISAKMP_v2_SA_INIT",
+	"ISAKMP_v2_AUTH",
+	"ISAKMP_v2_CHILD_SA",
+	"ISAKMP_v2_INFORMATIONAL",
     };
 
 static enum_names exchange_desc2 =
-    { ISAKMP_XCHG_QUICK, ISAKMP_XCHG_ACK_INFO, exchange_name2, NULL };
+    { ISAKMP_XCHG_QUICK, ISAKMP_v2_INFORMATIONAL, exchange_name2, NULL };
 
 enum_names exchange_names =
     { ISAKMP_XCHG_NONE, ISAKMP_XCHG_MODE_CFG, exchange_name, &exchange_desc2 };
 /* Flag BITS */
 const char *const flag_bit_names[] = {
-	"ISAKMP_FLAG_ENCRYPTION",
-	"ISAKMP_FLAG_COMMIT",
-	NULL
+    "ISAKMP_FLAG_ENCRYPTION",         /* bit 0 */
+    "ISAKMP_FLAG_COMMIT",             /* bit 1 */
+    "bit 2",                          /* bit 2 */
+    "ISAKMP_FLAG_INIT",               /* bit 3 */
+    "ISAKMP_FLAG_VERSION",            /* bit 4 */
+    "ISAKMP_FLAG_RESPONSE",           /* bit 5 */
+    NULL
     };
 
 /* Situation BITS definition for IPsec DOI */
@@ -430,6 +464,7 @@ enum_names *oakley_attr_val_descs[] = {
 	NULL,			/* OAKLEY_FIELD_SIZE */
 	NULL,			/* OAKLEY_GROUP_ORDER */
     };
+const unsigned int oakley_attr_val_descs_size = elemsof(oakley_attr_val_descs);
 
 /* IPsec DOI attributes (RFC 2407 "IPsec DOI" section 4.5) */
 
@@ -843,7 +878,6 @@ const char *const attr_msg_type_name[] = {
 enum_names attr_msg_type_names =
     { 0 , ISAKMP_CFG_ACK, attr_msg_type_name , NULL };
 
-<<<<<<< HEAD:lib/libopenswan/constants.c
 /*
  * IKEv2 CRITICAL BYTE "enum"
  */
@@ -927,8 +961,6 @@ enum_names *ikev2_transid_val_descs[] = {
 const unsigned int ikev2_transid_val_descs_size = elemsof(ikev2_transid_val_descs);
     
 
-=======
->>>>>>> 47e1291:lib/libopenswan/constants.c
 /* socket address family info */
 
 static const char *const af_inet_name[] = {
