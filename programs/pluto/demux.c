@@ -1799,6 +1799,31 @@ void process_packet_tail(struct msg_digest **mdp)
 		return;
 	    }
 
+#ifdef NAT_TRAVERSAL
+	    /*
+	     * only do this in main mode. In aggressive mode, there
+	     * is no negotiation of NAT-T method. Get it right.
+	     */
+	    if(st != NULL && st->st_connection != NULL
+	       && (st->st_connection->policy & POLICY_AGGRESSIVE)==0) {
+		switch (np)
+		{
+		case ISAKMP_NEXT_NATD_RFC:
+		case ISAKMP_NEXT_NATOA_RFC:
+		    if ((!st) || (!(st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES))) {
+			/*
+			 * don't accept NAT-D/NAT-OA reloc directly in message,
+			 * unless we're using NAT-T RFC
+			 */
+			DBG_log("st_nat_traversal was: %u\n",
+				st->hidden_variables.st_nat_traversal);
+			sd = NULL;
+		    }
+		    break;
+		}
+	    }
+#endif
+		
 	    if (sd == NULL)
 	    {
 		/* payload type is out of range or requires special handling */
