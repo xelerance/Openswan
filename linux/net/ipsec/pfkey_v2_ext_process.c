@@ -141,7 +141,9 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	case IPPROTO_ESP:
 		ipsp->ips_authalg = pfkey_sa->sadb_sa_auth;
 		ipsp->ips_encalg = pfkey_sa->sadb_sa_encrypt;
+#ifdef CONFIG_KLIPS_ALG
 		ipsec_alg_sa_init(ipsp);
+#endif
 		break;
 	case IPPROTO_IPIP:
 		ipsp->ips_authalg = AH_NONE;
