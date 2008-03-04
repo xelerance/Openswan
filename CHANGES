@@ -293,8 +293,3 @@ v2.1.0
   while travelling.  This is based on Tuomo Soini's Advanced Routing 
   patch.
 
-<<<<<<< HEAD:CHANGES
-RCSID $Id: CHANGES,v 1.326.2.31 2005/11/24 05:35:43 ken Exp $
-=======
-RCSID $Id: CHANGES,v 1.326.2.118 2007/07/09 23:11:56 paul Exp $
->>>>>>> 1121e33... changes for 2.4.9:CHANGES

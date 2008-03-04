@@ -220,7 +220,9 @@ struct connection {
     bool instance_initiation_ok;	/* this is an instance of a policy that mandates initiate */
     enum connection_kind kind;
     const struct iface_port *interface;	/* filled in iff oriented */
+
     bool initiated;
+    bool failed_ikev2;                  /* tried ikev2, but failed */
 
     so_serial_t	/* state object serial number */
 	newest_isakmp_sa,

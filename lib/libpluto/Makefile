@@ -16,8 +16,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.20 2005/09/17 21:57:45 mcr Exp $
 
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
@@ -25,11 +23,8 @@ OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 include ${OPENSWANSRCDIR}/Makefile.ver
 
-<<<<<<< HEAD:lib/libpluto/Makefile
 srcdir?=${OPENSWANSRCDIR}/lib/libpluto/
 
-=======
->>>>>>> 47e1291:lib/libpluto/Makefile
 LIBRARY=pluto
 LIB=lib${LIBRARY}.a
 MANDIR=$(MANTREE)/man3

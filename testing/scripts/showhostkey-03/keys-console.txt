@@ -1,8 +1,7 @@
+FIXME
 east:~#
  TZ=GMT export TZ
 east:~#
-<<<<<<< HEAD:testing/scripts/showhostkey-03/keys-console.txt
-=======
  ipsec showhostkey
 You must specify some operation
 Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--right ]
@@ -22,9 +21,7 @@ Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--right ]
                          [ --keynum count ] [ --id identity ]
                          [ --rsaid keyid ] [--verbose] [--version]
 east:~#
->>>>>>> b443c04:testing/scripts/showhostkey-03/keys-console.txt
  ipsec showhostkey --dump
-<<<<<<< HEAD:testing/scripts/showhostkey-03/keys-console.txt
 FIXME
 =======
 25(1): RSA keyid: AwEAAaFHY with id: %any
@@ -174,11 +171,7 @@ Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--right ]
                          [ --file secretfile ] 
                          [ --keynum count ] [ --id identity ]
                          [ --rsaid keyid ] [--verbose] [--version]
->>>>>>> b443c04:testing/scripts/showhostkey-03/keys-console.txt
 east:~#
-<<<<<<< HEAD:testing/scripts/showhostkey-03/keys-console.txt
- ipsec showhostkey --file /testing/pluto/scripts/showhostkey-03/multiple.secrets --left
-=======
  ipsec showhostkey --file /testing/baseconfigs/west/etc/ipsec.secrets --x509cert
 You must specify some operation
 Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--right ]
@@ -189,4 +182,3 @@ Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--right ]
                          [ --keynum count ] [ --id identity ]
                          [ --rsaid keyid ] [--verbose] [--version]
 
->>>>>>> b443c04:testing/scripts/showhostkey-03/keys-console.txt

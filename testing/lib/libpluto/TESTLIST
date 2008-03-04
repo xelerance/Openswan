@@ -3,13 +3,9 @@ libtest spdbmerge good
 libtest spdbfirst good
 libtest skeyidcalc good
 libtest spdbph1 good
-<<<<<<< HEAD:testing/lib/libpluto/TESTLIST
 libtest spdbv2  good
 libtest spdbv2c good
-=======
->>>>>>> 47e1291:testing/lib/libpluto/TESTLIST
 
-<<<<<<< HEAD:testing/lib/libpluto/TESTLIST
 libtest      whackmsgtest     good
 multilibtest refineconnection bad
 multilibtest parentI1         good
@@ -29,9 +25,3 @@ multilibtest parentR2x509     good
 multilibtest parentR1duplicate good
 multilibtest parentI2duplicate good
 multilibtest parentR2duplicate good
-=======
-libtest whackmsgtest good
-multilibtest refineconnection good
-
-
->>>>>>> 47e1291:testing/lib/libpluto/TESTLIST

@@ -405,10 +405,6 @@ main(int argc, char **argv)
 
   switch(afamily) {
   case AF_INET:
-<<<<<<< HEAD:programs/ikeping/ikeping.c
-<<<<<<< HEAD:programs/ikeping/ikeping.c
-=======
->>>>>>> 6abc588:programs/ikeping/ikeping.c
 	  laddr.u.v4.sin_family= AF_INET;
 	  laddr.u.v4.sin_port = htons(lport);
 	  if(bind(s, (struct sockaddr *)&laddr.u.v4, sizeof(laddr.u.v4)) < 0) {
@@ -416,24 +412,8 @@ main(int argc, char **argv)
 		  exit(5);
 	  }
 	  break;
-<<<<<<< HEAD:programs/ikeping/ikeping.c
-=======
-      laddr.u.v4.sin_family = afamily;
-      laddr.u.v4.sin_port = htons(lport);
-      if(bind(s, (struct sockaddr *)&laddr.u.v4, sizeof(laddr.u.v4)) < 0) {
-	  perror("v4 bind");
-	  exit(5);
-      }
-      break;
->>>>>>> e50689d:programs/ikeping/ikeping.c
-=======
->>>>>>> 6abc588:programs/ikeping/ikeping.c
 	  
   case AF_INET6:
-<<<<<<< HEAD:programs/ikeping/ikeping.c
-<<<<<<< HEAD:programs/ikeping/ikeping.c
-=======
->>>>>>> 6abc588:programs/ikeping/ikeping.c
 	  laddr.u.v6.sin6_family= AF_INET6;
 	  laddr.u.v6.sin6_port = htons(lport);
 	  if(bind(s, (struct sockaddr *)&laddr.u.v6, sizeof(laddr.u.v6)) < 0) {
@@ -441,18 +421,6 @@ main(int argc, char **argv)
 		  exit(5);
 	  }
 	  break;
-<<<<<<< HEAD:programs/ikeping/ikeping.c
-=======
-      laddr.u.v6.sin_family = afamily;
-      laddr.u.v6.sin6_port = htons(lport);
-      if(bind(s, (struct sockaddr *)&laddr.u.v6, sizeof(laddr.u.v6)) < 0) {
-	  perror("v6 bind");
-	  exit(5);
-      }
-      break;
->>>>>>> e50689d:programs/ikeping/ikeping.c
-=======
->>>>>>> 6abc588:programs/ikeping/ikeping.c
   }
 
   if(natt) {

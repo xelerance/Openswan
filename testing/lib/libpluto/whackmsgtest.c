@@ -22,14 +22,11 @@
 #include "seam_terminate.c"
 #include "seam_xauth.c"
 #include "seam_alg.c" 
-<<<<<<< HEAD:testing/lib/libpluto/whackmsgtest.c
 #include "seam_spdb.c"
 #include "seam_keys.c"
 #include "seam_exitlog.c"
 #include "seam_whack.c"
 #include "seam_kernel.c"
-=======
->>>>>>> 47e1291:testing/lib/libpluto/whackmsgtest.c
 
 main(int argc, char *argv[])
 {

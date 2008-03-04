@@ -86,18 +86,14 @@ DISTSRC = \
 	crypto.h crypto.c \
 	db_ops.c \
 	defs.h defs.c \
-	demux.c demux.h \
+	demux.c demux.h msgdigest.c \
 	dnskey.c dnskey.h \
 	dpd.c dpd.h \
 	myid.c hmac.c \
 	hostpair.c \
-<<<<<<< HEAD:programs/pluto/Makefile
 	ipsec_doi.c ipsec_doi.h ikev1.c ikev1_quick.c ikev1_continuations.h \
         ikev2.c ikev2_parent.c ikev2_child.c ikev2_crypto.c \
 	ikev2_prfplus.c spdb_v2_struct.c \
-=======
-	ipsec_doi.c ipsec_doi.h ikev1_quick.c ikev1_continuations.h \
->>>>>>> 47e1291:programs/pluto/Makefile
 	kernel.c kernel.h \
 	${NETKEY_SRCS} \
 	${KLIPS_SRCS} ${MAST_SRCS} ${WIN2K_SRCS} ${FUNK_SRCS} \
@@ -142,17 +138,13 @@ OBJSPLUTO  = connections.o initiate.o terminate.o
 OBJSPLUTO += pending.o cookie.o crypto.o defs.o dpd.o
 OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
 OBJSPLUTO += timer.o hmac.o hostpair.o
-<<<<<<< HEAD:programs/pluto/Makefile
 OBJSPLUTO += myid.o ipsec_doi.o
 OBJSPLUTO += ikev1.o ikev1_main.o   ikev1_quick.o 
 OBJSPLUTO += ikev2.o ikev2_parent.o ikev2_child.o spdb_v2_struct.o
 OBJSPLUTO += ikeping.o kernel.o 
-=======
-OBJSPLUTO += myid.o ipsec_doi.o ikev1_quick.o ikeping.o kernel.o 
->>>>>>> 47e1291:programs/pluto/Makefile
 OBJSPLUTO += $(NETKEY_OBJS) ${KLIPS_OBJS} ${MAST_OBJS} ${WIN2K_OBJS} ${FUNK_OBJS}
 OBJSPLUTO += kernel_noklips.o rcv_whack.o 
-OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o keys.o dnskey.o
+OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o msgdigest.o keys.o dnskey.o
 OBJSPLUTO += pluto_crypt.o crypt_utils.o crypt_ke.o crypt_dh.o crypt_start_dh.o
 OBJSPLUTO += ikev2_crypto.o ikev2_prfplus.o 
 OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_v1_struct.o spdb_print.o 

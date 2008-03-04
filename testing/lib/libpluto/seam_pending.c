@@ -1,7 +1,6 @@
 void flush_pending_by_state(struct state *st) {}
 void show_pending_phase2(const struct connection *c, const struct state *st) {}
 
-<<<<<<< HEAD:testing/lib/libpluto/seam_pending.c
 static struct connection *pending_c;
 static int pending_whack_sock;
 static lset_t pending_policy;
@@ -32,7 +31,5 @@ struct connection *first_pending(struct state *st, lset_t *policy, int *p_whack_
 	*p_whack_sock = pending_whack_sock;
 	return pending_c;
 }
-=======
->>>>>>> 47e1291:testing/lib/libpluto/seam_pending.c
 
 

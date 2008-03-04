@@ -2,14 +2,7 @@ Basic pluto X.509 test
 
 East does *NOT* have West's X.509 Cert locally.  east is FORCED to send it.
 
-<<<<<<< HEAD:testing/pluto/fail-x509-08/description.txt
 identical to fail-x509-07, but the rightca on both is setup wrong.
 this results in an invalid packet. (??)
-=======
-"westnet-eastnet": 192.0.1.0/24===192.1.2.45[CN=west.testing.xelerance.com]...192.1.2.23[CN=east.testing.xelerance.com]===192.0.2.0/24
-
-identical to fail-pluto-07, but the rightca on both is setup wrong.
-this results in an invalid packet.
->>>>>>> 0500a7b:testing/pluto/fail-x509-08/description.txt
 
 

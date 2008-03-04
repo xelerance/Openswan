@@ -13,16 +13,4 @@ North will transmit its certificate to east via nic.
 North's certificate  is issued by a CA east accepts (cacerts/ca.crt), and
 so should be accepted.
 
-<<<<<<< HEAD:testing/pluto/fail-x509-06/description.txt
-=======
-East has a CRL list that shows that north's certificate is okay.
-East has a strict policy, so it must have the CRL, but the CRL is absent.
-
-NIC serves as a simple router between NORTH and EAST.
-
-The simple test is to connect the POLE and SUNRISE networks
-together. This is tested with a ping, a la "basic-pluto-03"
-
-
->>>>>>> 0500a7b:testing/pluto/fail-x509-06/description.txt
 

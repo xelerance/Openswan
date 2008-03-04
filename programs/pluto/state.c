@@ -53,6 +53,7 @@
 
 #include "sha1.h"
 #include "md5.h"
+#include "cookie.h"
 #include "crypto.h" /* requires sha1.h and md5.h */
 #include "spdb.h"
 
@@ -837,23 +838,24 @@ void for_each_state(void *(f)(struct state *, void *data), void *data)
 #endif
 
 /*
- * Find a state object.
+ * Find a state object for an IKEv1 state
  */
 struct state *
-find_state(const u_char *icookie
-, const u_char *rcookie
-, const ip_address *peer UNUSED
-, msgid_t /*network order*/ msgid)
+find_state_ikev1(const u_char *icookie
+		 , const u_char *rcookie
+		 , const ip_address *peer UNUSED
+		 , msgid_t /*network order*/ msgid)
 {
     struct state *st = *state_hash(icookie, rcookie, NULL);
 
     while (st != (struct state *) NULL)
     {
 	if (memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
-	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0)
+	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0
+	    && st->st_ikev2 == FALSE)
 	{
 	    DBG(DBG_CONTROL,
-		DBG_log("peer and cookies match on #%ld, provided msgid %08lx vs %08lx"
+		DBG_log("v1 peer and cookies match on #%ld, provided msgid %08lx vs %08lx"
 			, st->st_serialno
 			, (long unsigned)ntohl(msgid)
 			, (long unsigned)ntohl(st->st_msgid)));
@@ -865,7 +867,6 @@ find_state(const u_char *icookie
 
     DBG(DBG_CONTROL,
 	if (st == NULL)
-<<<<<<< HEAD:programs/pluto/state.c
 	    DBG_log("v1 state object not found");
 	else
 	    DBG_log("v1 state object #%lu found, in %s"
@@ -937,11 +938,8 @@ find_state_ikev2_parent_init(const u_char *icookie)
     DBG(DBG_CONTROL,
 	if (st == NULL)
 	    DBG_log("v2 state object not found");
-=======
-	    DBG_log("state object not found");
->>>>>>> 47e1291:programs/pluto/state.c
 	else
-	    DBG_log("state object #%lu found, in %s"
+	    DBG_log("v2 state object #%lu found, in %s"
 		, st->st_serialno
 		, enum_show(&state_names, st->st_state)));
 
