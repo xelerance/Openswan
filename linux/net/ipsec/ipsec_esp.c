@@ -152,6 +152,7 @@ ipsec_rcv_esp_authcalc(struct ipsec_rcv_state *irs,
 		SHA1_CTX	sha1;
 	} tctx;
 
+#ifdef CONFIG_KLIPS_ALG
 	if (irs->ipsp->ips_alg_auth) {
 		KLIPS_PRINT(debug_rcv,
 				"klips_debug:ipsec_rcv: "
@@ -165,6 +166,7 @@ ipsec_rcv_esp_authcalc(struct ipsec_rcv_state *irs,
 		}
 		return IPSEC_RCV_BADPROTO;
 	}
+#endif
 	aa = irs->authfuncs;
 
 	/* copy the initialized keying material */
@@ -210,6 +212,7 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	struct sk_buff *skb;
 	struct ipsec_alg_enc *ixt_e=NULL;
 
+#ifdef CONFIG_KLIPS_ALG
 	skb=irs->skb;
 
 	idat = skb_transport_header(skb);
@@ -249,6 +252,7 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 			irs->stats->rx_errors++;
 		}
 		return IPSEC_RCV_BAD_DECRYPT;
+#endif /* CONFIG_KLIPS_ALG */
 	} 
 
 	ESP_DMP("postdecrypt", idat, irs->ilen);
