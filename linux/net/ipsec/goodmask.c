@@ -20,6 +20,13 @@
 #define	ABITS	32	/* bits in an IPv4 address */
 #endif
 
+/* This file does not use sysdep.h, otherwise this should go into
+ * ports/darwin/include/sysdep.h
+ */
+#ifndef s6_addr32
+#define s6_addr32 __u6_addr.__u6_addr32
+#endif
+
 /*
  - goodmask - is this a good (^1*0*$) subnet mask?
  * You are not expected to understand this.  See Henry S. Warren Jr, 
