@@ -6,8 +6,8 @@
 #
 
 exe=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
-conf="--config ${ROOTDIR}/testing/scripts/readwriteconf-22/ikecrasher.conf"
-args="--rootdir=${ROOTDIR}/testing/scripts/readwriteconf-22 $conf "
+conf="--config ${ROOTDIR}/testing/scripts/readwriteconf-23/comments.conf"
+args="--rootdir=${ROOTDIR}/testing/scripts/readwriteconf-23 $conf "
 #args="$args --verbose --verbose --verbose --verbose"
 echo "file $exe" >.gdbinit
 echo "set args $args " >>.gdbinit
