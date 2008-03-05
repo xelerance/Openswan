@@ -21,7 +21,6 @@ sysflags=/proc/sys/net/ipsec
 modules=/proc/modules
 # full rp_filter path is $rpfilter1/interface/$rpfilter2
 rpfilter1=/proc/sys/net/ipv4/conf
-rpfilter2=rp_filter
 # %unchanged or setting (0, 1, or 2)
 rpfiltercontrol=0
 netkey=/proc/net/pfkey
