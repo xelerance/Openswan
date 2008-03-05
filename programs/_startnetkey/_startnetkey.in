@@ -76,7 +76,7 @@ fi
 		echo Trying hardware random, this may fail, which is okay.
 		@@MODPROBE@@ -qv hw_random 2>/dev/null
 		@@MODPROBE@@ -qv hwrng 2>/dev/null
-		modprove -qv amd-rng 2>/dev/null
+		@@MODPROBE@@ -qv amd-rng 2>/dev/null
 		@@MODPROBE@@ -qv intel-rng 2>/dev/null
 
 		
