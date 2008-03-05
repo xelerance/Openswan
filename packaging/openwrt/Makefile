@@ -3,19 +3,17 @@
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
-#
-# $Id: Makefile 9651 2007-12-03 19:48:11Z nbd $
 
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=openswan
-PKG_VERSION:=IPSECBASEVERSION
+PKG_VERSION:IPSECBASEVERSION
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://www.openswan.org/download
-PKG_MD5SUM:=2b36785342c74d524d8d86bde89a445f
+PKG_MD5SUM:=calculate_me
 
 include $(INCLUDE_DIR)/package.mk
 
