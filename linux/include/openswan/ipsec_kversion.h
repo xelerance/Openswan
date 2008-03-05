@@ -151,7 +151,18 @@
  * patches to linux/skbuff.h, making it look like 2.6.18 version 
  */
 #ifdef CONFIG_XEN
-#define HAVE_NEW_SKB_LINEARIZE
+# HAVE_NEW_SKB_LINEARIZE
+#endif
+
+/* And the same for SuSe kernels who have it before it got into the
+ * linus kernel.
+ */
+#ifdef SLE_VERSION_CODE
+# if SLE_VERSION_CODE >= 655616
+#  define HAVE_NEW_SKB_LINEARIZE
+# else
+#  warning "A Suse kernel was detected, but we are unsure if it requires HAVE_NEW_SKB_LINEARIZE"
+# endif
 #endif
 
 /* And the same for SuSe kernels who have it before it got into the
