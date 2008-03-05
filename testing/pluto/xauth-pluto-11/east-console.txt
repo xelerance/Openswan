@@ -12,6 +12,3 @@ east:~#
 done.
 east:~#
  
-
-east:~#
-
