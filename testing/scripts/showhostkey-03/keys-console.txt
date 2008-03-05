@@ -2,28 +2,8 @@ FIXME
 east:~#
  TZ=GMT export TZ
 east:~#
- ipsec showhostkey
-You must specify some operation
-Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--right ]
-                         [--dump ] [--list ] [--x509self]
-                         [--x509req ] [--x509cert ]      
-                         [ --txt gateway ] [--dhclient ] 
-                         [ --file secretfile ] 
-                         [ --keynum count ] [ --id identity ]
-                         [ --rsaid keyid ] [--verbose] [--version]
-east:~#
- ipsec showhostkey --help
-Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--right ]
-                         [--dump ] [--list ] [--x509self]
-                         [--x509req ] [--x509cert ]      
-                         [ --txt gateway ] [--dhclient ] 
-                         [ --file secretfile ] 
-                         [ --keynum count ] [ --id identity ]
-                         [ --rsaid keyid ] [--verbose] [--version]
-east:~#
  ipsec showhostkey --dump
 FIXME
-=======
 25(1): RSA keyid: AwEAAaFHY with id: %any
 25(2): RSA keyid: AwEAAaFHY with id: E=testing@xelerance.com
 25(3): RSA keyid: AwEAAaFHY with id: CN=east.testing.xelerance.com
@@ -172,13 +152,4 @@ Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--right ]
                          [ --keynum count ] [ --id identity ]
                          [ --rsaid keyid ] [--verbose] [--version]
 east:~#
- ipsec showhostkey --file /testing/baseconfigs/west/etc/ipsec.secrets --x509cert
-You must specify some operation
-Usage: ipsec showhostkey [--ipseckey {gateway}][--left ] [--right ]
-                         [--dump ] [--list ] [--x509self]
-                         [--x509req ] [--x509cert ]      
-                         [ --txt gateway ] [--dhclient ] 
-                         [ --file secretfile ] 
-                         [ --keynum count ] [ --id identity ]
-                         [ --rsaid keyid ] [--verbose] [--version]
-
+ ipsec showhostkey --file /testing/pluto/scripts/showhostkey-03/multiple.secrets --left
