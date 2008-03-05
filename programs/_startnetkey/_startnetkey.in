@@ -46,7 +46,6 @@ done
 
 logger -p $log -t ipsec_setup "Using NETKEY(XFRM) stack"
 
-
 # log only to syslog, not to stdout/stderr
 logonly() {
 	logger -p $log -t ipsec_setup
@@ -76,9 +75,8 @@ fi
 		echo Trying hardware random, this may fail, which is okay.
 		@@MODPROBE@@ -qv hw_random 2>/dev/null
 		@@MODPROBE@@ -qv hwrng 2>/dev/null
-		modprove -qv amd-rng 2>/dev/null
+		@@MODPROBE@@ -qv amd-rng 2>/dev/null
 		@@MODPROBE@@ -qv intel-rng 2>/dev/null
-
 		
 		# load all NETKEY modules
 		echo -n Trying to load all NETKEY modules:
@@ -90,10 +88,8 @@ fi
 			@@MODPROBE@@ -qv $mod 2> /dev/null
 		   done
 		echo
-
 		# xfrm_user is the old name for xfrm4_tunnel - backwards compatibility
 		@@MODPROBE@@ -qv xfrm_user 2> /dev/null
-
 
 		# padlock must load before aes module
 		echo Trying VIA padlock driver, this may fail, which is okay.
