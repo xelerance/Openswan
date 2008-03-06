@@ -2517,7 +2517,7 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
     default:
 	DBG(DBG_CONTROL, DBG_log("Unknown kernel stack in delete_ipsec_sa"));
 	break;
-    } 
+ } /* switch kern_interface */
 }
 
 #ifdef NAT_TRAVERSAL

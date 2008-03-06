@@ -279,7 +279,7 @@ logonly() {
 
 
 # load module if possible
-if test -f $ipsecversion && test -f $netkey
+if test ! -f $ipsecversion && test ! -f $netkey
 then
     # both KLIPS and NETKEY code detected, bail out
     echo "FATAL ERROR: Both KLIPS and NETKEY IPsec code is present in kernel"
