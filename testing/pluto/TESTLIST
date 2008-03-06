@@ -396,6 +396,7 @@ umlplutotest    algo-pluto-04          good
 umlplutotest    algo-pluto-05          good
 umlplutotest    algo-pluto-06          good
 
+umlplutotest    algo-pluto-09          good
 #
 # tests for usnig multiple subnets using conn aliases
 #

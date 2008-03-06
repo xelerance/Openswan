@@ -1,11 +1,10 @@
 #ifndef __LINUX_RTNETLINK_H
 #define __LINUX_RTNETLINK_H
 
-#include "netlink.h"
-#include <stdint.h>
-
-#define RTNL_DEBUG 1
-
+#include <linux/netlink.h>
+#include <linux/if_link.h>
+#include <linux/if_addr.h>
+#include <linux/neighbour.h>
 
 /****
  *		Routing/neighbour discovery messages.
@@ -13,45 +12,104 @@
 
 /* Types of messages */
 
-#define RTM_BASE	0x10
+enum {
+	RTM_BASE	= 16,
+#define RTM_BASE	RTM_BASE
 
-#define	RTM_NEWLINK	(RTM_BASE+0)
-#define	RTM_DELLINK	(RTM_BASE+1)
-#define	RTM_GETLINK	(RTM_BASE+2)
-#define	RTM_SETLINK	(RTM_BASE+3)
+	RTM_NEWLINK	= 16,
+#define RTM_NEWLINK	RTM_NEWLINK
+	RTM_DELLINK,
+#define RTM_DELLINK	RTM_DELLINK
+	RTM_GETLINK,
+#define RTM_GETLINK	RTM_GETLINK
+	RTM_SETLINK,
+#define RTM_SETLINK	RTM_SETLINK
 
-#define	RTM_NEWADDR	(RTM_BASE+4)
-#define	RTM_DELADDR	(RTM_BASE+5)
-#define	RTM_GETADDR	(RTM_BASE+6)
+	RTM_NEWADDR	= 20,
+#define RTM_NEWADDR	RTM_NEWADDR
+	RTM_DELADDR,
+#define RTM_DELADDR	RTM_DELADDR
+	RTM_GETADDR,
+#define RTM_GETADDR	RTM_GETADDR
 
-#define	RTM_NEWROUTE	(RTM_BASE+8)
-#define	RTM_DELROUTE	(RTM_BASE+9)
-#define	RTM_GETROUTE	(RTM_BASE+10)
+	RTM_NEWROUTE	= 24,
+#define RTM_NEWROUTE	RTM_NEWROUTE
+	RTM_DELROUTE,
+#define RTM_DELROUTE	RTM_DELROUTE
+	RTM_GETROUTE,
+#define RTM_GETROUTE	RTM_GETROUTE
 
-#define	RTM_NEWNEIGH	(RTM_BASE+12)
-#define	RTM_DELNEIGH	(RTM_BASE+13)
-#define	RTM_GETNEIGH	(RTM_BASE+14)
+	RTM_NEWNEIGH	= 28,
+#define RTM_NEWNEIGH	RTM_NEWNEIGH
+	RTM_DELNEIGH,
+#define RTM_DELNEIGH	RTM_DELNEIGH
+	RTM_GETNEIGH,
+#define RTM_GETNEIGH	RTM_GETNEIGH
 
-#define	RTM_NEWRULE	(RTM_BASE+16)
-#define	RTM_DELRULE	(RTM_BASE+17)
-#define	RTM_GETRULE	(RTM_BASE+18)
+	RTM_NEWRULE	= 32,
+#define RTM_NEWRULE	RTM_NEWRULE
+	RTM_DELRULE,
+#define RTM_DELRULE	RTM_DELRULE
+	RTM_GETRULE,
+#define RTM_GETRULE	RTM_GETRULE
 
-#define	RTM_NEWQDISC	(RTM_BASE+20)
-#define	RTM_DELQDISC	(RTM_BASE+21)
-#define	RTM_GETQDISC	(RTM_BASE+22)
+	RTM_NEWQDISC	= 36,
+#define RTM_NEWQDISC	RTM_NEWQDISC
+	RTM_DELQDISC,
+#define RTM_DELQDISC	RTM_DELQDISC
+	RTM_GETQDISC,
+#define RTM_GETQDISC	RTM_GETQDISC
 
-#define	RTM_NEWTCLASS	(RTM_BASE+24)
-#define	RTM_DELTCLASS	(RTM_BASE+25)
-#define	RTM_GETTCLASS	(RTM_BASE+26)
+	RTM_NEWTCLASS	= 40,
+#define RTM_NEWTCLASS	RTM_NEWTCLASS
+	RTM_DELTCLASS,
+#define RTM_DELTCLASS	RTM_DELTCLASS
+	RTM_GETTCLASS,
+#define RTM_GETTCLASS	RTM_GETTCLASS
 
-#define	RTM_NEWTFILTER	(RTM_BASE+28)
-#define	RTM_DELTFILTER	(RTM_BASE+29)
-#define	RTM_GETTFILTER	(RTM_BASE+30)
+	RTM_NEWTFILTER	= 44,
+#define RTM_NEWTFILTER	RTM_NEWTFILTER
+	RTM_DELTFILTER,
+#define RTM_DELTFILTER	RTM_DELTFILTER
+	RTM_GETTFILTER,
+#define RTM_GETTFILTER	RTM_GETTFILTER
 
-#define	RTM_MAX		(RTM_BASE+31)
+	RTM_NEWACTION	= 48,
+#define RTM_NEWACTION   RTM_NEWACTION
+	RTM_DELACTION,
+#define RTM_DELACTION   RTM_DELACTION
+	RTM_GETACTION,
+#define RTM_GETACTION   RTM_GETACTION
+
+	RTM_NEWPREFIX	= 52,
+#define RTM_NEWPREFIX	RTM_NEWPREFIX
+
+	RTM_GETMULTICAST = 58,
+#define RTM_GETMULTICAST RTM_GETMULTICAST
+
+	RTM_GETANYCAST	= 62,
+#define RTM_GETANYCAST	RTM_GETANYCAST
+
+	RTM_NEWNEIGHTBL	= 64,
+#define RTM_NEWNEIGHTBL	RTM_NEWNEIGHTBL
+	RTM_GETNEIGHTBL	= 66,
+#define RTM_GETNEIGHTBL	RTM_GETNEIGHTBL
+	RTM_SETNEIGHTBL,
+#define RTM_SETNEIGHTBL	RTM_SETNEIGHTBL
+
+	RTM_NEWNDUSEROPT = 68,
+#define RTM_NEWNDUSEROPT RTM_NEWNDUSEROPT
+
+	__RTM_MAX,
+#define RTM_MAX		(((__RTM_MAX + 3) & ~3) - 1)
+};
+
+#define RTM_NR_MSGTYPES	(RTM_MAX + 1 - RTM_BASE)
+#define RTM_NR_FAMILIES	(RTM_NR_MSGTYPES >> 2)
+#define RTM_FAM(cmd)	(((cmd) - RTM_BASE) >> 2)
 
 /* 
-   Generic structure for encapsulation optional route information.
+   Generic structure for encapsulation of optional route information.
    It is reminiscent of sockaddr, but with sa_family replaced
    with attribute type.
  */
@@ -66,7 +124,8 @@ struct rtattr
 
 #define RTA_ALIGNTO	4
 #define RTA_ALIGN(len) ( ((len)+RTA_ALIGNTO-1) & ~(RTA_ALIGNTO-1) )
-#define RTA_OK(rta,len) ((len) > 0 && (rta)->rta_len >= sizeof(struct rtattr) && \
+#define RTA_OK(rta,len) ((len) >= (int)sizeof(struct rtattr) && \
+			 (rta)->rta_len >= sizeof(struct rtattr) && \
 			 (rta)->rta_len <= (len))
 #define RTA_NEXT(rta,attrlen)	((attrlen) -= RTA_ALIGN((rta)->rta_len), \
 				 (struct rtattr*)(((char*)(rta)) + RTA_ALIGN((rta)->rta_len)))
@@ -79,7 +138,7 @@ struct rtattr
 
 
 /******************************************************************************
- *		Definitions used in routing table administation.
+ *		Definitions used in routing table administration.
  ****/
 
 struct rtmsg
@@ -115,9 +174,10 @@ enum
 	RTN_THROW,		/* Not in this table		*/
 	RTN_NAT,		/* Translate this address	*/
 	RTN_XRESOLVE,		/* Use external resolver	*/
+	__RTN_MAX
 };
 
-#define RTN_MAX RTN_XRESOLVE
+#define RTN_MAX (__RTN_MAX - 1)
 
 
 /* rtm_protocol */
@@ -130,18 +190,20 @@ enum
 #define RTPROT_STATIC	4	/* Route installed by administrator	*/
 
 /* Values of protocol >= RTPROT_STATIC are not interpreted by kernel;
-   they just passed from user and back as is.
+   they are just passed from user and back as is.
    It will be used by hypothetical multiple routing daemons.
    Note that protocol values should be standardized in order to
    avoid conflicts.
  */
 
 #define RTPROT_GATED	8	/* Apparently, GateD */
-#define RTPROT_RA	9	/* RDISC/ND router advertisments */
+#define RTPROT_RA	9	/* RDISC/ND router advertisements */
 #define RTPROT_MRT	10	/* Merit MRT */
 #define RTPROT_ZEBRA	11	/* Zebra */
 #define RTPROT_BIRD	12	/* BIRD */
 #define RTPROT_DNROUTED	13	/* DECnet routing daemon */
+#define RTPROT_XORP	14	/* XORP */
+#define RTPROT_NTK	15	/* Netsukuku */
 
 /* rtm_scope
 
@@ -169,6 +231,7 @@ enum rt_scope_t
 #define RTM_F_NOTIFY		0x100	/* Notify user of route change	*/
 #define RTM_F_CLONED		0x200	/* This route is cloned		*/
 #define RTM_F_EQUALIZE		0x400	/* Multipath equalizer: NI	*/
+#define RTM_F_PREFIX		0x800	/* Prefix addresses		*/
 
 /* Reserved table identifiers */
 
@@ -178,10 +241,9 @@ enum rt_class_t
 /* User defined values */
 	RT_TABLE_DEFAULT=253,
 	RT_TABLE_MAIN=254,
-	RT_TABLE_LOCAL=255
+	RT_TABLE_LOCAL=255,
+	RT_TABLE_MAX=0xFFFFFFFF
 };
-#define RT_TABLE_MAX RT_TABLE_LOCAL
-
 
 
 /* Routing message attributes */
@@ -202,17 +264,20 @@ enum rtattr_type_t
 	RTA_FLOW,
 	RTA_CACHEINFO,
 	RTA_SESSION,
+	RTA_MP_ALGO, /* no longer used */
+	RTA_TABLE,
+	__RTA_MAX
 };
 
-#define RTA_MAX RTA_SESSION
+#define RTA_MAX (__RTA_MAX - 1)
 
 #define RTM_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct rtmsg))))
 #define RTM_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct rtmsg))
 
 /* RTM_MULTIPATH --- array of struct rtnexthop.
  *
- * "struct rtnexthop" describres all necessary nexthop information,
- * i.e. parameters of path to a destination via this nextop.
+ * "struct rtnexthop" describes all necessary nexthop information,
+ * i.e. parameters of path to a destination via this nexthop.
  *
  * At the moment it is impossible to set different prefsrc, mtu, window
  * and rtt for different paths from multipath.
@@ -247,16 +312,16 @@ struct rtnexthop
 
 struct rta_cacheinfo
 {
-	uint32_t	rta_clntref;
-	uint32_t	rta_lastuse;
-	int32_t	rta_expires;
-	uint32_t	rta_error;
-	uint32_t	rta_used;
+	__u32	rta_clntref;
+	__u32	rta_lastuse;
+	__s32	rta_expires;
+	__u32	rta_error;
+	__u32	rta_used;
 
 #define RTNETLINK_HAVE_PEERINFO 1
-	uint32_t	rta_id;
-	uint32_t	rta_ts;
-	uint32_t	rta_tsage;
+	__u32	rta_id;
+	__u32	rta_ts;
+	__u32	rta_tsage;
 };
 
 /* RTM_METRICS --- array of struct rtattr with types of RTAX_* */
@@ -283,142 +348,44 @@ enum
 #define RTAX_ADVMSS RTAX_ADVMSS
 	RTAX_REORDERING,
 #define RTAX_REORDERING RTAX_REORDERING
+	RTAX_HOPLIMIT,
+#define RTAX_HOPLIMIT RTAX_HOPLIMIT
+	RTAX_INITCWND,
+#define RTAX_INITCWND RTAX_INITCWND
+	RTAX_FEATURES,
+#define RTAX_FEATURES RTAX_FEATURES
+	RTAX_RTO_MIN,
+#define RTAX_RTO_MIN RTAX_RTO_MIN
+	__RTAX_MAX
 };
 
-#define RTAX_MAX RTAX_REORDERING
+#define RTAX_MAX (__RTAX_MAX - 1)
+
+#define RTAX_FEATURE_ECN	0x00000001
+#define RTAX_FEATURE_SACK	0x00000002
+#define RTAX_FEATURE_TIMESTAMP	0x00000004
+#define RTAX_FEATURE_ALLFRAG	0x00000008
 
 struct rta_session
 {
-	uint8_t	proto;
+	__u8	proto;
+	__u8	pad1;
+	__u16	pad2;
 
 	union {
 		struct {
-			uint16_t	sport;
-			uint16_t	dport;
+			__u16	sport;
+			__u16	dport;
 		} ports;
 
 		struct {
-			uint8_t		type;
-			uint8_t		code;
-			uint16_t	ident;
+			__u8	type;
+			__u8	code;
+			__u16	ident;
 		} icmpt;
 
-		uint32_t		spi;
+		__u32		spi;
 	} u;
-};
-
-
-/*********************************************************
- *		Interface address.
- ****/
-
-struct ifaddrmsg
-{
-	unsigned char	ifa_family;
-	unsigned char	ifa_prefixlen;	/* The prefix length		*/
-	unsigned char	ifa_flags;	/* Flags			*/
-	unsigned char	ifa_scope;	/* See above			*/
-	int		ifa_index;	/* Link index			*/
-};
-
-enum
-{
-	IFA_UNSPEC,
-	IFA_ADDRESS,
-	IFA_LOCAL,
-	IFA_LABEL,
-	IFA_BROADCAST,
-	IFA_ANYCAST,
-	IFA_CACHEINFO
-};
-
-#define IFA_MAX IFA_CACHEINFO
-
-/* ifa_flags */
-
-#define IFA_F_SECONDARY		0x01
-#define IFA_F_TEMPORARY		IFA_F_SECONDARY
-
-#define IFA_F_DEPRECATED	0x20
-#define IFA_F_TENTATIVE		0x40
-#define IFA_F_PERMANENT		0x80
-
-struct ifa_cacheinfo
-{
-	int32_t	ifa_prefered;
-	int32_t	ifa_valid;
-};
-
-
-#define IFA_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct ifaddrmsg))))
-#define IFA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ifaddrmsg))
-
-/*
-   Important comment:
-   IFA_ADDRESS is prefix address, rather than local interface address.
-   It makes no difference for normally configured broadcast interfaces,
-   but for point-to-point IFA_ADDRESS is DESTINATION address,
-   local address is supplied in IFA_LOCAL attribute.
- */
-
-/**************************************************************
- *		Neighbour discovery.
- ****/
-
-struct ndmsg
-{
-	unsigned char	ndm_family;
-	unsigned char	ndm_pad1;
-	unsigned short	ndm_pad2;
-	int		ndm_ifindex;	/* Link index			*/
-	uint16_t	ndm_state;
-	uint8_t		ndm_flags;
-	uint8_t		ndm_type;
-};
-
-enum
-{
-	NDA_UNSPEC,
-	NDA_DST,
-	NDA_LLADDR,
-	NDA_CACHEINFO
-};
-
-#define NDA_MAX NDA_CACHEINFO
-
-#define NDA_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct ndmsg))))
-#define NDA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ndmsg))
-
-/*
- *	Neighbor Cache Entry Flags
- */
-
-#define NTF_PROXY	0x08	/* == ATF_PUBL */
-#define NTF_ROUTER	0x80
-
-/*
- *	Neighbor Cache Entry States.
- */
-
-#define NUD_INCOMPLETE	0x01
-#define NUD_REACHABLE	0x02
-#define NUD_STALE	0x04
-#define NUD_DELAY	0x08
-#define NUD_PROBE	0x10
-#define NUD_FAILED	0x20
-
-/* Dummy states */
-#define NUD_NOARP	0x40
-#define NUD_PERMANENT	0x80
-#define NUD_NONE	0x00
-
-
-struct nda_cacheinfo
-{
-	uint32_t		ndm_confirmed;
-	uint32_t		ndm_used;
-	uint32_t		ndm_updated;
-	uint32_t		ndm_refcnt;
 };
 
 /****
@@ -449,60 +416,38 @@ struct ifinfomsg
 	unsigned	ifi_change;		/* IFF_* change mask */
 };
 
-enum
+/********************************************************************
+ *		prefix information 
+ ****/
+
+struct prefixmsg
 {
-	IFLA_UNSPEC,
-	IFLA_ADDRESS,
-	IFLA_BROADCAST,
-	IFLA_IFNAME,
-	IFLA_MTU,
-	IFLA_LINK,
-	IFLA_QDISC,
-	IFLA_STATS,
-	IFLA_COST,
-#define IFLA_COST IFLA_COST
-	IFLA_PRIORITY,
-#define IFLA_PRIORITY IFLA_PRIORITY
-	IFLA_MASTER,
-#define IFLA_MASTER IFLA_MASTER
-	IFLA_WIRELESS,		/* Wireless Extension event - see wireless.h */
-#define IFLA_WIRELESS IFLA_WIRELESS
+	unsigned char	prefix_family;
+	unsigned char	prefix_pad1;
+	unsigned short	prefix_pad2;
+	int		prefix_ifindex;
+	unsigned char	prefix_type;
+	unsigned char	prefix_len;
+	unsigned char	prefix_flags;
+	unsigned char	prefix_pad3;
 };
 
+enum 
+{
+	PREFIX_UNSPEC,
+	PREFIX_ADDRESS,
+	PREFIX_CACHEINFO,
+	__PREFIX_MAX
+};
 
-#define IFLA_MAX IFLA_WIRELESS
+#define PREFIX_MAX	(__PREFIX_MAX - 1)
 
-#define IFLA_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct ifinfomsg))))
-#define IFLA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ifinfomsg))
+struct prefix_cacheinfo
+{
+	__u32	preferred_time;
+	__u32	valid_time;
+};
 
-/* ifi_flags.
-
-   IFF_* flags.
-
-   The only change is:
-   IFF_LOOPBACK, IFF_BROADCAST and IFF_POINTOPOINT are
-   more not changeable by user. They describe link media
-   characteristics and set by device driver.
-
-   Comments:
-   - Combination IFF_BROADCAST|IFF_POINTOPOINT is invalid
-   - If neiher of these three flags are set;
-     the interface is NBMA.
-
-   - IFF_MULTICAST does not mean anything special:
-   multicasts can be used on all not-NBMA links.
-   IFF_MULTICAST means that this media uses special encapsulation
-   for multicast frames. Apparently, all IFF_POINTOPOINT and
-   IFF_BROADCAST devices are able to use multicasts too.
- */
-
-/* IFLA_LINK.
-   For usual devices it is equal ifi_index.
-   If it is a "virtual interface" (f.e. tunnel), ifi_link
-   can point to real physical interface (f.e. for bandwidth calculations),
-   or maybe 0, what means, that real media is unknown (usual
-   for IPIP tunnels, when route to endpoint is allowed to change)
- */
 
 /*****************************************************************
  *		Traffic control messages.
@@ -514,9 +459,9 @@ struct tcmsg
 	unsigned char	tcm__pad1;
 	unsigned short	tcm__pad2;
 	int		tcm_ifindex;
-	uint32_t	tcm_handle;
-	uint32_t	tcm_parent;
-	uint32_t	tcm_info;
+	__u32		tcm_handle;
+	__u32		tcm_parent;
+	__u32		tcm_info;
 };
 
 enum
@@ -527,20 +472,44 @@ enum
 	TCA_STATS,
 	TCA_XSTATS,
 	TCA_RATE,
+	TCA_FCNT,
+	TCA_STATS2,
+	__TCA_MAX
 };
 
-#define TCA_MAX TCA_RATE
+#define TCA_MAX (__TCA_MAX - 1)
 
 #define TCA_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct tcmsg))))
 #define TCA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct tcmsg))
 
+/********************************************************************
+ *		Neighbor Discovery userland options
+ ****/
 
-/* SUMMARY: maximal rtattr understood by kernel */
+struct nduseroptmsg
+{
+	unsigned char	nduseropt_family;
+	unsigned char	nduseropt_pad1;
+	unsigned short	nduseropt_opts_len;	/* Total length of options */
+	int		nduseropt_ifindex;
+	__u8		nduseropt_icmp_type;
+	__u8		nduseropt_icmp_code;
+	unsigned short	nduseropt_pad2;
+	unsigned int	nduseropt_pad3;
+	/* Followed by one or more ND options */
+};
 
-#define RTATTR_MAX		RTA_MAX
+enum
+{
+	NDUSEROPT_UNSPEC,
+	NDUSEROPT_SRCADDR,
+	__NDUSEROPT_MAX
+};
 
-/* RTnetlink multicast groups */
+#define NDUSEROPT_MAX	(__NDUSEROPT_MAX - 1)
 
+#ifndef __KERNEL__
+/* RTnetlink multicast groups - backwards compatibility for userspace */
 #define RTMGRP_LINK		1
 #define RTMGRP_NOTIFY		2
 #define RTMGRP_NEIGH		4
@@ -549,14 +518,261 @@ enum
 #define RTMGRP_IPV4_IFADDR	0x10
 #define RTMGRP_IPV4_MROUTE	0x20
 #define RTMGRP_IPV4_ROUTE	0x40
+#define RTMGRP_IPV4_RULE	0x80
 
 #define RTMGRP_IPV6_IFADDR	0x100
 #define RTMGRP_IPV6_MROUTE	0x200
 #define RTMGRP_IPV6_ROUTE	0x400
+#define RTMGRP_IPV6_IFINFO	0x800
 
 #define RTMGRP_DECnet_IFADDR    0x1000
 #define RTMGRP_DECnet_ROUTE     0x4000
 
+#define RTMGRP_IPV6_PREFIX	0x20000
+#endif
+
+/* RTnetlink multicast groups */
+enum rtnetlink_groups {
+	RTNLGRP_NONE,
+#define RTNLGRP_NONE		RTNLGRP_NONE
+	RTNLGRP_LINK,
+#define RTNLGRP_LINK		RTNLGRP_LINK
+	RTNLGRP_NOTIFY,
+#define RTNLGRP_NOTIFY		RTNLGRP_NOTIFY
+	RTNLGRP_NEIGH,
+#define RTNLGRP_NEIGH		RTNLGRP_NEIGH
+	RTNLGRP_TC,
+#define RTNLGRP_TC		RTNLGRP_TC
+	RTNLGRP_IPV4_IFADDR,
+#define RTNLGRP_IPV4_IFADDR	RTNLGRP_IPV4_IFADDR
+	RTNLGRP_IPV4_MROUTE,
+#define	RTNLGRP_IPV4_MROUTE	RTNLGRP_IPV4_MROUTE
+	RTNLGRP_IPV4_ROUTE,
+#define RTNLGRP_IPV4_ROUTE	RTNLGRP_IPV4_ROUTE
+	RTNLGRP_IPV4_RULE,
+#define RTNLGRP_IPV4_RULE	RTNLGRP_IPV4_RULE
+	RTNLGRP_IPV6_IFADDR,
+#define RTNLGRP_IPV6_IFADDR	RTNLGRP_IPV6_IFADDR
+	RTNLGRP_IPV6_MROUTE,
+#define RTNLGRP_IPV6_MROUTE	RTNLGRP_IPV6_MROUTE
+	RTNLGRP_IPV6_ROUTE,
+#define RTNLGRP_IPV6_ROUTE	RTNLGRP_IPV6_ROUTE
+	RTNLGRP_IPV6_IFINFO,
+#define RTNLGRP_IPV6_IFINFO	RTNLGRP_IPV6_IFINFO
+	RTNLGRP_DECnet_IFADDR,
+#define RTNLGRP_DECnet_IFADDR	RTNLGRP_DECnet_IFADDR
+	RTNLGRP_NOP2,
+	RTNLGRP_DECnet_ROUTE,
+#define RTNLGRP_DECnet_ROUTE	RTNLGRP_DECnet_ROUTE
+	RTNLGRP_DECnet_RULE,
+#define RTNLGRP_DECnet_RULE	RTNLGRP_DECnet_RULE
+	RTNLGRP_NOP4,
+	RTNLGRP_IPV6_PREFIX,
+#define RTNLGRP_IPV6_PREFIX	RTNLGRP_IPV6_PREFIX
+	RTNLGRP_IPV6_RULE,
+#define RTNLGRP_IPV6_RULE	RTNLGRP_IPV6_RULE
+	RTNLGRP_ND_USEROPT,
+#define RTNLGRP_ND_USEROPT	RTNLGRP_ND_USEROPT
+	__RTNLGRP_MAX
+};
+#define RTNLGRP_MAX	(__RTNLGRP_MAX - 1)
+
+/* TC action piece */
+struct tcamsg
+{
+	unsigned char	tca_family;
+	unsigned char	tca__pad1;
+	unsigned short	tca__pad2;
+};
+#define TA_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct tcamsg))))
+#define TA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct tcamsg))
+#define TCA_ACT_TAB 1 /* attr type must be >=1 */	
+#define TCAA_MAX 1
+
 /* End of information exported to user level */
+
+#ifdef __KERNEL__
+
+#include <linux/mutex.h>
+
+extern size_t rtattr_strlcpy(char *dest, const struct rtattr *rta, size_t size);
+static __inline__ int rtattr_strcmp(const struct rtattr *rta, const char *str)
+{
+	int len = strlen(str) + 1;
+	return len > rta->rta_len || memcmp(RTA_DATA(rta), str, len);
+}
+
+extern int rtattr_parse(struct rtattr *tb[], int maxattr, struct rtattr *rta, int len);
+extern int __rtattr_parse_nested_compat(struct rtattr *tb[], int maxattr,
+				        struct rtattr *rta, int len);
+
+#define rtattr_parse_nested(tb, max, rta) \
+	rtattr_parse((tb), (max), RTA_DATA((rta)), RTA_PAYLOAD((rta)))
+
+#define rtattr_parse_nested_compat(tb, max, rta, data, len) \
+({	data = RTA_PAYLOAD(rta) >= len ? RTA_DATA(rta) : NULL; \
+	__rtattr_parse_nested_compat(tb, max, rta, len); })
+
+extern int rtnetlink_send(struct sk_buff *skb, u32 pid, u32 group, int echo);
+extern int rtnl_unicast(struct sk_buff *skb, u32 pid);
+extern int rtnl_notify(struct sk_buff *skb, u32 pid, u32 group,
+		       struct nlmsghdr *nlh, gfp_t flags);
+extern void rtnl_set_sk_err(u32 group, int error);
+extern int rtnetlink_put_metrics(struct sk_buff *skb, u32 *metrics);
+extern int rtnl_put_cacheinfo(struct sk_buff *skb, struct dst_entry *dst,
+			      u32 id, u32 ts, u32 tsage, long expires,
+			      u32 error);
+
+extern void __rta_fill(struct sk_buff *skb, int attrtype, int attrlen, const void *data);
+
+#define RTA_PUT(skb, attrtype, attrlen, data) \
+({	if (unlikely(skb_tailroom(skb) < (int)RTA_SPACE(attrlen))) \
+		 goto rtattr_failure; \
+   	__rta_fill(skb, attrtype, attrlen, data); }) 
+
+#define RTA_APPEND(skb, attrlen, data) \
+({	if (unlikely(skb_tailroom(skb) < (int)(attrlen))) \
+		goto rtattr_failure; \
+	memcpy(skb_put(skb, attrlen), data, attrlen); })
+
+#define RTA_PUT_NOHDR(skb, attrlen, data) \
+({	RTA_APPEND(skb, RTA_ALIGN(attrlen), data); \
+	memset(skb_tail_pointer(skb) - (RTA_ALIGN(attrlen) - attrlen), 0, \
+	       RTA_ALIGN(attrlen) - attrlen); })
+
+#define RTA_PUT_U8(skb, attrtype, value) \
+({	u8 _tmp = (value); \
+	RTA_PUT(skb, attrtype, sizeof(u8), &_tmp); })
+
+#define RTA_PUT_U16(skb, attrtype, value) \
+({	u16 _tmp = (value); \
+	RTA_PUT(skb, attrtype, sizeof(u16), &_tmp); })
+
+#define RTA_PUT_U32(skb, attrtype, value) \
+({	u32 _tmp = (value); \
+	RTA_PUT(skb, attrtype, sizeof(u32), &_tmp); })
+
+#define RTA_PUT_U64(skb, attrtype, value) \
+({	u64 _tmp = (value); \
+	RTA_PUT(skb, attrtype, sizeof(u64), &_tmp); })
+
+#define RTA_PUT_SECS(skb, attrtype, value) \
+	RTA_PUT_U64(skb, attrtype, (value) / HZ)
+
+#define RTA_PUT_MSECS(skb, attrtype, value) \
+	RTA_PUT_U64(skb, attrtype, jiffies_to_msecs(value))
+
+#define RTA_PUT_STRING(skb, attrtype, value) \
+	RTA_PUT(skb, attrtype, strlen(value) + 1, value)
+
+#define RTA_PUT_FLAG(skb, attrtype) \
+	RTA_PUT(skb, attrtype, 0, NULL);
+
+#define RTA_NEST(skb, type) \
+({	struct rtattr *__start = (struct rtattr *)skb_tail_pointer(skb); \
+	RTA_PUT(skb, type, 0, NULL); \
+	__start;  })
+
+#define RTA_NEST_END(skb, start) \
+({	(start)->rta_len = skb_tail_pointer(skb) - (unsigned char *)(start); \
+	(skb)->len; })
+
+#define RTA_NEST_COMPAT(skb, type, attrlen, data) \
+({	struct rtattr *__start = (struct rtattr *)skb_tail_pointer(skb); \
+	RTA_PUT(skb, type, attrlen, data); \
+	RTA_NEST(skb, type); \
+	__start; })
+
+#define RTA_NEST_COMPAT_END(skb, start) \
+({	struct rtattr *__nest = (void *)(start) + NLMSG_ALIGN((start)->rta_len); \
+	(start)->rta_len = skb_tail_pointer(skb) - (unsigned char *)(start); \
+	RTA_NEST_END(skb, __nest); \
+	(skb)->len; })
+
+#define RTA_NEST_CANCEL(skb, start) \
+({	if (start) \
+		skb_trim(skb, (unsigned char *) (start) - (skb)->data); \
+	-1; })
+
+#define RTA_GET_U8(rta) \
+({	if (!rta || RTA_PAYLOAD(rta) < sizeof(u8)) \
+		goto rtattr_failure; \
+	*(u8 *) RTA_DATA(rta); })
+
+#define RTA_GET_U16(rta) \
+({	if (!rta || RTA_PAYLOAD(rta) < sizeof(u16)) \
+		goto rtattr_failure; \
+	*(u16 *) RTA_DATA(rta); })
+
+#define RTA_GET_U32(rta) \
+({	if (!rta || RTA_PAYLOAD(rta) < sizeof(u32)) \
+		goto rtattr_failure; \
+	*(u32 *) RTA_DATA(rta); })
+
+#define RTA_GET_U64(rta) \
+({	u64 _tmp; \
+	if (!rta || RTA_PAYLOAD(rta) < sizeof(u64)) \
+		goto rtattr_failure; \
+	memcpy(&_tmp, RTA_DATA(rta), sizeof(_tmp)); \
+	_tmp; })
+
+#define RTA_GET_FLAG(rta) (!!(rta))
+
+#define RTA_GET_SECS(rta) ((unsigned long) RTA_GET_U64(rta) * HZ)
+#define RTA_GET_MSECS(rta) (msecs_to_jiffies((unsigned long) RTA_GET_U64(rta)))
+		
+static inline struct rtattr *
+__rta_reserve(struct sk_buff *skb, int attrtype, int attrlen)
+{
+	struct rtattr *rta;
+	int size = RTA_LENGTH(attrlen);
+
+	rta = (struct rtattr*)skb_put(skb, RTA_ALIGN(size));
+	rta->rta_type = attrtype;
+	rta->rta_len = size;
+	memset(RTA_DATA(rta) + attrlen, 0, RTA_ALIGN(size) - size);
+	return rta;
+}
+
+#define __RTA_PUT(skb, attrtype, attrlen) \
+({ 	if (unlikely(skb_tailroom(skb) < (int)RTA_SPACE(attrlen))) \
+		goto rtattr_failure; \
+   	__rta_reserve(skb, attrtype, attrlen); })
+
+extern void rtmsg_ifinfo(int type, struct net_device *dev, unsigned change);
+
+/* RTNL is used as a global lock for all changes to network configuration  */
+extern void rtnl_lock(void);
+extern void rtnl_unlock(void);
+extern int rtnl_trylock(void);
+
+extern void rtnetlink_init(void);
+extern void __rtnl_unlock(void);
+
+#define ASSERT_RTNL() do { \
+	if (unlikely(rtnl_trylock())) { \
+		rtnl_unlock(); \
+		printk(KERN_ERR "RTNL: assertion failed at %s (%d)\n", \
+		       __FILE__,  __LINE__); \
+		dump_stack(); \
+	} \
+} while(0)
+
+#define BUG_TRAP(x) do { \
+	if (unlikely(!(x))) { \
+		printk(KERN_ERR "KERNEL: assertion (%s) failed at %s (%d)\n", \
+			#x,  __FILE__ , __LINE__); \
+	} \
+} while(0)
+
+static inline u32 rtm_get_table(struct rtattr **rta, u8 table)
+{
+	return RTA_GET_U32(rta[RTA_TABLE-1]);
+rtattr_failure:
+	return table;
+}
+
+#endif /* __KERNEL__ */
+
 
 #endif	/* __LINUX_RTNETLINK_H */
