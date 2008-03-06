@@ -171,7 +171,6 @@ fi
 %changelog
 * Thu Dec 20 2007 Paul Wouters <paul@xelerance.com> - 2.6.03-1
 - Applied patch by RedHat to allow building with debug package
-
 * Thu Dec 20 2007 Paul Wouters <paul@xelerance.com> - 2.6.01-1
 - Work around for warnings in BIND related code
 - Remove bogus file /etc/init.d/setup at install
