@@ -17,6 +17,9 @@ v2.6.04
 v2.6.03
 * Added IKEv2 RSA AUTH [mcr]
 
+#ikev2 (v2.6.01)
+* IKEv2 support
+
 #stable
 * Merged in XAUTH DNS/WINS server-side patch from Anna Wiejak [paul]
   See: http://popoludnica.pl/?id=10100110 
