@@ -2,6 +2,9 @@ Please see docs/KNOWN_BUGS file for more information
 
 v2.6.07
 * IKEv2 retransmit fixes [mcr]
+* Bugtracker bugs fixed
+  #496: kernel_alg_esp_auth_ok() call fixed - patch by gernot
+  #897/731: crash in alg_info_snprint() - patch by "Deep Throat"
 
 v2.6.06
 * Added IKEv2 X.509 CERTREQ [antony]
@@ -18,6 +21,9 @@ v2.6.03
 * Added IKEv2 RSA AUTH [mcr]
 
 #ikev2 (v2.6.01)
+=======
+#ikev2
+>>>>>>> b77287f:CHANGES
 * IKEv2 support
 
 #stable

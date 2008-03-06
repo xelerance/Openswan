@@ -569,7 +569,7 @@ ipsec_tunnel_send(struct ipsec_xmit_state*ixs)
 	/* new route/dst cache code from James Morris */
 	ixs->skb->dev = ixs->physdev;
 #ifdef NETDEV_25
- 	fl.oif = ixs->physdev->iflink;
+ 	fl.oif = ixs->physdev->ifindex;
  	fl.nl_u.ip4_u.daddr = ip_hdr(ixs->skb)->daddr;
 	fl.nl_u.ip4_u.saddr = ixs->pass ? 0 : ip_hdr(ixs->skb)->saddr;
 	fl.nl_u.ip4_u.tos = RT_TOS(ip_hdr(ixs->skb)->tos);
