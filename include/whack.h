@@ -167,12 +167,6 @@ struct whack_message {
     bool whack_oppo_initiate;
     ip_address oppo_my_client, oppo_peer_client;
 
-    /* for MODECFG */
-    ip_address modecfg_dns1;
-    ip_address modecfg_dns2;
-    ip_address modecfg_wins1;
-    ip_address modecfg_wins2;
-
     /* for WHACK_TERMINATE: */
     bool whack_terminate;
 
@@ -213,6 +207,12 @@ struct whack_message {
 
     /* for connalias string */
     char *connalias;
+
+    /* for MODECFG */
+    ip_address modecfg_dns1;
+    ip_address modecfg_dns2;
+    ip_address modecfg_wins1;
+    ip_address modecfg_wins2;
 
     /* for use with general option adjustments */
     enum whack_opt_set opt_set;
