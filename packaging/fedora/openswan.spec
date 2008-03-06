@@ -107,6 +107,7 @@ rm -rf %{buildroot}/etc/rc.d/rc?.d/*ipsec
 rm -rf %{buildroot}/%{_initrddir}/setup
 rm -rf %{buildroot}/etc/ipsec.d/examples
 find %{buildroot}%{_mandir}  -type f | xargs chmod a-x
+
 install -d -m 0700 %{buildroot}%{_localstatedir}/run/pluto
 install -d %{buildroot}%{_sbindir}
 
