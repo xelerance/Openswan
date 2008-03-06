@@ -1,5 +1,8 @@
 Please see docs/KNOWN_BUGS file for more information
 
+v2.6.XX
+* Merged in #testing v2.5.17 [paul]
+
 v2.6.07
 * IKEv2 retransmit fixes [mcr]
 * Bugtracker bugs fixed
@@ -24,9 +27,6 @@ v2.6.03
 * Added IKEv2 RSA AUTH [mcr]
 
 #ikev2 (v2.6.01)
-=======
-#ikev2
->>>>>>> b77287f:CHANGES
 * IKEv2 support
 
 #stable
@@ -54,6 +54,10 @@ v2.6.03
   #590: serpent lib used private kernel header [paul]
   #544: the following error should only show up for x509 debugging: ... [paul]
   #185: Deadlock in function "scx_release()" daemon pluto.(SMARTCARD) [Kurodo]
+
+v2.5.17
+* Implemented netlink_shunt_eroute() [paul]
+* Simplified _updown.netkey [tuomo]
 
 v2.5.15
    change ipsec_breakroute to permit non-existant eroute's to be replaced.  
