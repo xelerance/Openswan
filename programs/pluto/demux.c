@@ -190,7 +190,6 @@ comm_handle(const struct iface_port *ifp)
 {
     static struct msg_digest *md;
 
-#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
     /* Even though select(2) says that there is a message,
      * it might only be a MSG_ERRQUEUE message.  At least
      * sometimes that leads to a hanging recvfrom.  To avoid
