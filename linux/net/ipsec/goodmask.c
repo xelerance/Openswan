@@ -99,8 +99,6 @@ int n;
 	return result;
 }
 
-#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
-Needs fixing for OSX
 /*
  - bitstomask6 - return a mask with this many high bits on
  */
@@ -143,4 +141,3 @@ int n;
 
 	return result;
 }
-#endif
