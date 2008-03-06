@@ -18,12 +18,13 @@
  * for more details.
  *
  */
-#define __NO_VERSION__
-
-#if defined (MODULE)
-#include <linux/module.h>
+#ifndef AUTOCONF_INCLUDED
+#include <linux/config.h>
 #endif
+#include <linux/version.h>
 
+#define __NO_VERSION__
+#include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
 
 #include <linux/netdevice.h>   /* struct device, and other headers */

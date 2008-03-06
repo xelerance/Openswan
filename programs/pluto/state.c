@@ -563,6 +563,30 @@ static bool same_phase1_sa_relations(struct state *this
 }
 
 /*
+ * Delete all states that have somehow not ben deleted yet
+ * but using interfaces that are going down
+ */
+ 
+void delete_states_dead_interfaces(void)
+{
+    struct state *st = NULL;
+    int i;
+
+    for (i = 0; st == NULL && i < STATE_TABLE_SIZE; i++)
+	for (st = statetable[i]; st != NULL;){
+	    struct state *this = st;
+	    st = st->st_hashchain_next;	/* before this is deleted */
+	    if (this->st_interface && this->st_interface->change == IFN_DELETE )
+	    {
+		openswan_log("deleting lasting state #%lu on interface (%s) which is shutting down",
+			this->st_serialno,
+			this->st_interface->ip_dev->id_vname);
+		delete_state(this);
+	    }
+	}
+}
+
+/*
  * delete all states that were created for a given connection.
  * if relations == TRUE, then also delete states that share
  * the same phase 1 SA.
