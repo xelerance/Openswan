@@ -38,7 +38,7 @@ while(<IPSXP>) {
         $src .= "/32" if $src !~ m/\//;
         $dst .= "/32" if $dst !~ m/\//;
         printf("%3s %-18s -> %-18s => tun0x%s@%s\n",
-            $dir,$src,$dst,$spi,$remotegw) unless $remotegw eq '0.0.0.0';;
+            $dir,$src,$dst,$spi,$remotegw) unless $remotegw eq '0.0.0.0';
         $dir = '';
         $remotegw = '';
         $spi = '';

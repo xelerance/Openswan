@@ -52,6 +52,22 @@
 #include <security/pam_appl.h>
 #endif
 
+const struct pfkey_proto_info null_proto_info[2];
+
+static const struct pfkey_proto_info broad_proto_info[2] = { 
+        {
+                proto: IPPROTO_ESP,
+                encapsulation: ENCAPSULATION_MODE_TUNNEL,
+                reqid: 0
+        },
+        {
+                proto: 0,
+                encapsulation: 0,
+                reqid: 0
+        }
+};
+
+
 /* Minimum priority number in SPD used by pluto. */
 #define MIN_SPD_PRIORITY 1024
 
@@ -1194,16 +1210,109 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
 }
 
 static bool
-netlink_shunt_eroute_fake(struct connection *c UNUSED
-                   , struct spd_route *sr UNUSED
+netlink_shunt_eroute(struct connection *c 
+                   , struct spd_route *sr 
                    , enum routing_t rt_kind
-                   , enum pluto_sadb_operations op UNUSED
+                   , enum pluto_sadb_operations op 
 		   , const char *opname)
 {
-	loglog(RC_COMMENT, "request to %s a %s policy with netkey kernel --- not yet implemented"
+	loglog(RC_COMMENT, "request to %s a %s policy with netkey kernel --- experimental"
 		, opname
 		, enum_name(&routing_story, rt_kind));
-	return TRUE;
+
+    /* We are constructing a special SAID for the eroute.
+     * The destination doesn't seem to matter, but the family does.
+     * The protocol is SA_INT -- mark this as shunt.
+     * The satype has no meaning, but is required for PF_KEY header!
+     * The SPI signifies the kind of shunt.
+     */
+    ipsec_spi_t spi = shunt_policy_spi(c, rt_kind == RT_ROUTED_PROSPECTIVE);
+
+    if (spi == 0)
+    {
+        /* we're supposed to end up with no eroute: rejig op and opname */
+        switch (op)
+        {
+        case ERO_REPLACE:
+            /* replace with nothing == delete */
+            op = ERO_DELETE;
+            opname = "delete";
+            break;
+        case ERO_ADD:
+            /* add nothing == do nothing */
+            return TRUE;
+        case ERO_DELETE:
+            /* delete remains delete */
+            break;
+
+	case ERO_ADD_INBOUND:
+		break;;
+
+	case ERO_DEL_INBOUND:
+		break;;
+
+        default:
+            bad_case(op);
+        }
+    }
+    if (sr->routing == RT_ROUTED_ECLIPSED && c->kind == CK_TEMPLATE)
+    {
+        /* We think that we have an eroute, but we don't.
+         * Adjust the request and account for eclipses.
+         */
+        passert(eclipsable(sr));
+        switch (op)
+        {
+        case ERO_REPLACE:
+            /* really an add */
+            op = ERO_ADD;
+            opname = "replace eclipsed";
+            eclipse_count--;
+            break;
+        case ERO_DELETE:
+            /* delete unnecessary: we don't actually have an eroute */
+            eclipse_count--;
+            return TRUE;
+        case ERO_ADD:
+        default:
+            bad_case(op);
+        }
+    }
+    else if (eclipse_count > 0 && op == ERO_DELETE && eclipsable(sr))
+    {
+        /* maybe we are uneclipsing something */
+        struct spd_route *esr;
+        struct connection *ue = eclipsed(c, &esr);
+
+        if (ue != NULL)
+        {
+            esr->routing = RT_ROUTED_PROSPECTIVE;
+            return netlink_shunt_eroute(ue, esr
+                                , RT_ROUTED_PROSPECTIVE, ERO_REPLACE, "restoring eclipsed");
+        }
+    }
+
+    {
+      const ip_address *peer = &sr->that.host_addr;
+      char buf2[256];
+      const struct af_info *fam = aftoinfo(addrtypeof(peer));
+      
+      if(fam == NULL) {
+	      fam=aftoinfo(AF_INET);
+      }
+      
+      snprintf(buf2, sizeof(buf2)
+	       , "eroute_connection %s", opname);
+
+      return netlink_raw_eroute(&sr->this.host_addr, &sr->this.client
+			      , fam->any
+			      , &sr->that.client
+			      , htonl(spi)
+			      , SA_INT
+			      , sr->this.protocol
+			      , SADB_X_SATYPE_INT
+			      , null_proto_info, 0, op, buf2);
+    }
 }
 
 static void
@@ -1457,7 +1566,7 @@ const struct kernel_ops netkey_kernel_ops = {
     docommand: do_command_linux,
 
     /* XXX these needed to be added */
-    shunt_eroute: netlink_shunt_eroute_fake,
+    shunt_eroute: netlink_shunt_eroute,
     sag_eroute: netlink_sag_eroute,   /* pfkey_sag_eroute, */
     eroute_idle: NULL,  /* pfkey_was_eroute_idle,*/
     set_debug: NULL,    /* pfkey_set_debug, */
