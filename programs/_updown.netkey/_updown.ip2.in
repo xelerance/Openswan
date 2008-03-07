@@ -91,8 +91,8 @@ export LC_ALL
 #		is the IP address of our peer.
 #
 #	PLUTO_PEER_CLIENT
-#		is the IP address / count of the peer's client sub­
-#		net.   If the client is just the peer, this will be
+#		is the IP address / count of the peer's client subnet.
+#		If the client is just the peer, this will be
 #		the peer's own IP address / max (where	max  is	 32
 #		for IPv4 and 128 for IPv6).
 #
