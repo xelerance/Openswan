@@ -1508,8 +1508,11 @@ ISAKMP_SA_established(struct connection *c, so_serial_t serial)
 #endif
 	)
 {
-	/* for all connections: if the same Phase 1 peer ID is used
-	 * for a different IP address, unorient that connection.
+	/* 
+	 * for all connections: if the same Phase 1 IDs are used
+	 * for different IP addresses, unorient that connection.
+	 * We also check ports, since different Phase 1 ID's can
+	 * exist for the same IP when NAT is involved
 	 */
 	struct connection *d;
 
@@ -1518,8 +1521,10 @@ ISAKMP_SA_established(struct connection *c, so_serial_t serial)
 	    struct connection *next = d->ac_next;	/* might move underneath us */
 
 	    if (d->kind >= CK_PERMANENT
+	    && same_id(&c->spd.this.id, &d->spd.this.id)
 	    && same_id(&c->spd.that.id, &d->spd.that.id)
-	    && !sameaddr(&c->spd.that.host_addr, &d->spd.that.host_addr))
+	    && (!sameaddr(&c->spd.that.host_addr, &d->spd.that.host_addr)
+		|| (c->spd.that.host_port != d->spd.that.host_port)))
 	    {
 		release_connection(d, FALSE);
 	    }
