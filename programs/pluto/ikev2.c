@@ -255,9 +255,6 @@ ikev2_process_payloads(struct msg_digest *md,
 	case ISAKMP_NEXT_v2E:
 	    np = ISAKMP_NEXT_NONE;
 	    break;
-	case ISAKMP_NEXT_v2N:
-	    openswan_log("Paul: NOTIFY message should be logged here");
-	    break;
 	default:   /* nothing special */
 	    break;
 	}

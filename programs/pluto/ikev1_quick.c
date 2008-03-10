@@ -255,7 +255,7 @@ compute_proto_keymat(struct state *st
 		break;
 	    default:
 #ifdef KERNEL_ALG
-	      if (kernel_alg_esp_auth_ok(pi->attrs.transattrs.integ_hash, NULL)) {
+	      if (kernel_alg_esp_auth_ok(pi->attrs.transattrs.integ_hash, NULL) == NULL) {
 		  needed_len += kernel_alg_esp_auth_keylen(pi->attrs.transattrs.integ_hash);
 		  break;
 	      } 

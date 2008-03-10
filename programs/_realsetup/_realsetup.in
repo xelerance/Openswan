@@ -80,7 +80,12 @@ auto)
     
 klips)  netkey=false; klips=true;  mast=false;;
 mast)   netkey=false; klips=false; mast=true;;
-netkey) netkey=true;  klips=false; mast=false;;
+netkey) 
+        if test \! -f $kamepfkey
+        then
+                @MODPROBE@ af_key;
+	fi;
+	netkey=true;  klips=false; mast=false;;
 none)   netkey=false; klips=false; mast=false;;
 nostack) netkey=false; klips=false; mast=false;;
 esac
