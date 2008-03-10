@@ -86,9 +86,9 @@ event_schedule(enum event_type type, time_t tm, struct state *st)
                     passert(st->st_dpd_event == NULL);
                     st->st_dpd_event = ev;
             } else {
-        passert(st->st_event == NULL);
-        st->st_event = ev;
-    }
+		passert(st->st_event == NULL);
+		st->st_event = ev;
+	    }
     }
 
     DBG(DBG_CONTROL,
@@ -139,8 +139,6 @@ handle_timer_event(void)
     time_t tm;
     struct event *ev = evlist;
     int type;
-    struct state *st;
-    ip_address peer;
 
     if (ev == (struct event *) NULL)    /* Just paranoid */
     {
@@ -149,8 +147,6 @@ handle_timer_event(void)
     }
 
     type = ev->ev_type;
-    st = ev->ev_state;
-
     tm = now();
 
     if (tm < ev->ev_time)
@@ -165,6 +161,24 @@ handle_timer_event(void)
 	 * order in call_server(), the packet processing will happen first,
 	 * and the event will be removed.
 	 */
+	return;
+    }
+
+    handle_next_timer_event();
+}
+
+void
+handle_next_timer_event(void)
+{
+    time_t tm;
+    tm = now();
+    struct event *ev = evlist;
+    int type;
+    struct state *st;
+    ip_address peer;
+
+    if (ev == (struct event *) NULL)    
+    {
 	return;
     }
 
