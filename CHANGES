@@ -1,5 +1,8 @@
 Please see docs/KNOWN_BUGS file for more information
 
+v2.6.09
+* Completed IKEv2 6msg exchange support [antony]
+
 v2.6.08
 * IKEv2 6msg exchange (responder, partially for initiator) [antony]
 * IKEv2 notify support [antony]
@@ -7,6 +10,7 @@ v2.6.08
 * Added force_busy option for testing 6msg exchange [paul]
 * OSX compile fixes [paul]
 * sourceip= option fixed with NETKEY [paul]
+* ipsec setup restart with NETKEY fix [paul]
 * NETKEY, strongswan, racoon2 support in test harnass [paul/antony]
 
 v2.6.07
