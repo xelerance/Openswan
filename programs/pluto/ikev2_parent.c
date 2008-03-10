@@ -75,6 +75,9 @@ static stf_status ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 static bool ikev2_get_dcookie(u_char *dcookie, chunk_t st_ni
 	,ip_address *addr, u_int8_t *spiI); 
 
+static stf_status ikev2_parent_outI1_common(struct msg_digest *md
+					    , struct state *st);
+
 /*
  *
  ***************************************************************
@@ -182,6 +185,7 @@ ikev2parent_outI1(int whack_sock
 	groupnum = OAKLEY_GROUP_MODP1536;
     }
     st->st_oakley.group=lookup_group(groupnum); 
+    st->st_oakley.groupnum=groupnum; 
 
     /* now. we need to go calculate the nonce, and the KE */
     {
@@ -252,23 +256,35 @@ ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
 
 
 /*
+ * unpack the calculate KE value, store it in state.
+ * used by IKEv2: parent, child (PFS)
+ */
+static int 
+unpack_v2KE(struct state *st
+	    , struct pluto_crypto_req *r
+	    , chunk_t *g)
+{
+    struct pcr_kenonce *kn = &r->pcr_d.kn;
+
+    unpack_KE(st, r, g);
+    return kn->oakley_group;
+}
+
+/*
  * package up the calculate KE value, and emit it as a KE payload.
  * used by IKEv2: parent, child (PFS)
  */
 static bool
-ship_v2KE(struct state *st
-	  , struct pluto_crypto_req *r
-	  , chunk_t *g
-	  , pb_stream *outs, u_int8_t np)
+justship_v2KE(struct state *st UNUSED
+	      , chunk_t *g, unsigned int oakley_group
+	      , pb_stream *outs, u_int8_t np)
 {
     struct ikev2_ke v2ke;
-    struct pcr_kenonce *kn = &r->pcr_d.kn;
     pb_stream kepbs;
 
     memset(&v2ke, 0, sizeof(v2ke));
-    v2ke.isak_np = np;
-    v2ke.isak_group   = kn->oakley_group;
-    unpack_KE(st, r, g);
+    v2ke.isak_np      = np;
+    v2ke.isak_group   = oakley_group;
     if(!out_struct(&v2ke, &ikev2_ke_desc, outs, &kepbs)) {
 	return FALSE;
     }
@@ -279,6 +295,16 @@ ship_v2KE(struct state *st
     return TRUE;
 }
 
+static bool
+ship_v2KE(struct state *st
+	  , struct pluto_crypto_req *r
+	  , chunk_t *g
+	  , pb_stream *outs, u_int8_t np)
+{
+    int oakley_group = unpack_v2KE(st, r, g);
+    return justship_v2KE(st, g, oakley_group, outs, np);
+}
+
 static stf_status
 ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 			      , struct pluto_crypto_req *r)
@@ -286,6 +312,17 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
     struct ke_continuation *ke = (struct ke_continuation *)pcrc;
     struct msg_digest *md = ke->md;
     struct state *const st = md->st;
+
+    unpack_v2KE(st, r, &st->st_gi);
+    unpack_nonce(&st->st_ni, r);
+    return ikev2_parent_outI1_common(md, st);
+}
+
+
+static stf_status
+ikev2_parent_outI1_common(struct msg_digest *md
+			  , struct state *st)
+{
     /* struct connection *c = st->st_connection; */
     int numvidtosend = 1;  /* we always send Openswan VID */
 
@@ -320,8 +357,7 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	if(st->st_dcookie.ptr)
 	{
 		chunk_t child_spi;
-		child_spi.ptr = NULL;
-		child_spi.len = 0;
+		memset(&child_spi, 0, sizeof(child_spi));
 		ship_v2N (ISAKMP_NEXT_v2SA, ISAKMP_PAYLOAD_CRITICAL, PROTO_ISAKMP,
 				    &child_spi, 
 					COOKIE, &st->st_dcookie, &md->rbody);
@@ -348,18 +384,19 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	    return STF_INTERNAL_ERROR;
 	}
 	/* save initiator SA for later HASH */
-	passert(st->st_p1isa.ptr == NULL);	/* no leak!  (MUST be first time) */
-	clonetochunk(st->st_p1isa, sa_start, md->rbody.cur - sa_start
-	    , "sa in main_outI1");
+	if(st->st_p1isa.ptr == NULL)	/* no leak!  (MUST be first time) */
+	{
+		clonetochunk(st->st_p1isa, sa_start, md->rbody.cur - sa_start
+	    	, "sa in main_outI1");
+	}
     }
 
     /* send KE */
-    if(!ship_v2KE(st, r, &st->st_gi, &md->rbody, ISAKMP_NEXT_v2Ni))
+    if(!justship_v2KE(st, &st->st_gi, st->st_oakley.groupnum,  &md->rbody, ISAKMP_NEXT_v2Ni))
 	return STF_INTERNAL_ERROR;
 
     
     /* send NONCE */
-    unpack_nonce(&st->st_ni, r);
     {
 	int np = numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
 	struct ikev2_generic in;
@@ -480,6 +517,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	st->st_state = STATE_PARENT_R1;
 	st->st_msgid_lastack = INVALID_MSGID;
 	st->st_msgid_nextuse = 0;
+
 	md->st = st;
 	md->from_state = STATE_IKEv2_BASE;
     }
@@ -518,10 +556,15 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 				SEND_NOTIFICATION_AA(COOKIE, &dc); 
 				return STF_FAIL;
 			}
+			DBG(DBG_CONTROLMORE
+	            ,DBG_log("dcookie received match with computed one"));
  		}
         else 
 		{
 			/* we are under DOS attack I1 contains no DOS COOKIE */
+			DBG(DBG_CONTROLMORE
+	            ,DBG_log("busy mode on. receieved I1 without a valid dcookie");
+	            DBG_log("send a dcookie and forget this state"));
 			SEND_NOTIFICATION_AA(COOKIE, &dc); 
 			return STF_FAIL;
 		}
@@ -752,8 +795,8 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 		&& md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type ==  COOKIE)
     {
 		DBG(DBG_CONTROLMORE 
-    	    ,DBG_log("inR1OutI2 received a DOS COOKIE from the responder");
-    	    DBG_log("resend the I1 with a cookie payload, tbd"));
+			,DBG_log("inR1OutI2 received a DOS COOKIE from the responder");
+    	    DBG_log("resend the I1 with a cookie payload"));
 		u_int8_t spisize = md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_spisize;
 	    const pb_stream *dc_pbs = &md->chain[ISAKMP_NEXT_v2N]->pbs;
     	clonetochunk(st->st_dcookie,  (dc_pbs->cur + spisize)
@@ -761,8 +804,17 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 
 		DBG(DBG_CONTROLMORE
 	        ,DBG_dump_chunk("dcookie received (instead of a R1):",
-						    st->st_dcookie));
-	 	return STF_FAIL;	
+						    st->st_dcookie);
+	        DBG_log("next STATE_PARENT_I1 resend I1 with the dcookie"));
+
+		md->svm = ikev2_parent_firststate();
+
+		st->st_state = STATE_PARENT_I1;
+    	st->st_msgid_lastack = INVALID_MSGID;
+	 	md->msgid_received = INVALID_MSGID;  //AAA hack 
+    	st->st_msgid_nextuse = 0;
+
+		return ikev2_parent_outI1_common(md, st);  
     }
 
     /*
