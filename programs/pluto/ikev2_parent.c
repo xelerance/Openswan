@@ -366,10 +366,13 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
 
     /* let TCL hack it before we mark the length and copy it */
     TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
+
+    freeanychunk(st->st_tpacket);
     clonetochunk(st->st_tpacket, md->reply.start, pbs_offset(&md->reply)
-       , "reply packet for ikev2_parent_outI1");
+		 , "reply packet for ikev2_parent_outI1_tail");
 
     /* save packet for later signing */
+    freeanychunk(st->st_firstpacket_me);
     clonetochunk(st->st_firstpacket_me, md->reply.start
 		 , pbs_offset(&md->reply), "saved first packet");
 
@@ -384,7 +387,7 @@ ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
  tpm_ignore:
 #endif
     delete_event(st);
-    event_schedule(EVENT_RETRANSMIT, EVENT_RETRANSMIT_DELAY_0, st);
+    event_schedule(EVENT_v2_RETRANSMIT, EVENT_RETRANSMIT_DELAY_0, st);
 
     reset_cur_state();
     return STF_OK;
@@ -641,10 +644,12 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
 
     /* keep it for a retransmit if necessary */
+    freeanychunk(st->st_tpacket);
     clonetochunk(st->st_tpacket, md->reply.start, pbs_offset(&md->reply)
-		 , "reply packet for ikev2_parent_outI1");
+		 , "reply packet for ikev2_parent_inI1outR1_tail")
 
     /* save packet for later signing */
+    freeanychunk(st->st_firstpacket_me);
     clonetochunk(st->st_firstpacket_me, md->reply.start
 		 , pbs_offset(&md->reply), "saved first packet");
 
@@ -1204,10 +1209,15 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     /* keep it for a retransmit if necessary, but on initiator
      * we never do that, but send_packet() uses it.
      */
+    freeanychunk(pst->st_tpacket);
     clonetochunk(pst->st_tpacket, md->reply.start, pbs_offset(&md->reply)
 		 , "reply packet for ikev2_parent_outI1");
 
-    /* note: retransimission is driven by initiator */
+    /*
+     * Delete previous retransmission event.
+     */
+    delete_event(st);
+    event_schedule(EVENT_v2_RETRANSMIT, EVENT_RETRANSMIT_DELAY_0, st);
 
     return STF_OK;
     
@@ -1588,8 +1598,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
 
     /* keep it for a retransmit if necessary */
+    freeanychunk(st->st_tpacket);
     clonetochunk(st->st_tpacket, md->reply.start, pbs_offset(&md->reply)
-		 , "reply packet for ikev2_parent_outI1");
+		 , "reply packet for ikev2_parent_inI2outR2_tail");
 
     /* note: retransimission is driven by initiator */
 
@@ -1726,6 +1737,11 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	|| md->chain[ISAKMP_NEXT_v2TSi] == NULL
 	|| md->chain[ISAKMP_NEXT_v2TSr] == NULL) {
 	/* not really anything to here... but it would be worth unpending again */
+
+	/*
+	 * Delete previous retransmission event.
+	 */
+	delete_event(st);
 	return STF_OK;
     }
 
@@ -1747,6 +1763,11 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     /* now install child SAs */
     if(!install_ipsec_sa(st, TRUE))
 	return STF_FATAL;
+
+    /*
+     * Delete previous retransmission event.
+     */
+    delete_event(st);
 
     return STF_OK;
     

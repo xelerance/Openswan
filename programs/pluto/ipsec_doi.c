@@ -294,12 +294,11 @@ close_message(pb_stream *pbs)
     close_output_pbs(pbs);
 }
 
-static initiator_function *pick_initiator(struct connection *c, lset_t policy)
+static initiator_function *pick_initiator(struct connection *c UNUSED, lset_t policy)
 {
-    if(policy & POLICY_IKEV2_PROPOSE
-       && !c->failed_ikev2) {
+    if(policy & POLICY_IKEV2_PROPOSE)
 	return ikev2parent_outI1;
-    } else if((policy & POLICY_IKEV1_DISABLE)==0) {
+    else if((policy & POLICY_IKEV1_DISABLE)==0) {
 	if(policy & POLICY_AGGRESSIVE) {
 #if defined(AGGRESSIVE)	    
 	    return aggr_outI1;
@@ -381,7 +380,9 @@ ipsecdoi_initiate(int whack_sock
  * Does not delete the old state -- someone else will do that.
  */
 void
-ipsecdoi_replace(struct state *st, unsigned long try)
+ipsecdoi_replace(struct state *st
+		 , lset_t policy_add, lset_t policy_del
+		 , unsigned long try)
 {
     int whack_sock = dup_any(st->st_whack_sock);
     lset_t policy = st->st_policy;
@@ -389,7 +390,11 @@ ipsecdoi_replace(struct state *st, unsigned long try)
     if (IS_PHASE1(st->st_state) || IS_PHASE15(st->st_state))
     {
 	struct connection *c = st->st_connection;
-	initiator_function *initiator = pick_initiator(c, c->policy);
+	policy = c->policy;
+	policy = policy & ~policy_del;
+	policy = policy | policy_add;
+
+	initiator_function *initiator = pick_initiator(c, policy);
 	passert(!HAS_IPSEC_POLICY(policy));
 	(void) initiator(whack_sock, st->st_connection, st, policy
 			 , try, st->st_import);

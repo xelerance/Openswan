@@ -24,3 +24,4 @@ multilibtest parentR2x509     good
 multilibtest parentR1duplicate good
 multilibtest parentI2duplicate good
 multilibtest parentR2duplicate good
+multilibtest parentI1retrans   good

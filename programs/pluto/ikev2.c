@@ -642,11 +642,6 @@ static void success_v2_state_transition(struct msg_digest **mdp)
     st->st_state = svm->next_state;
     w = RC_NEW_STATE + st->st_state;    
 
-    /* Delete previous retransmission event.
-     * New event will be scheduled below.
-     */
-    delete_event(st);
-
     ikev2_update_counters(md);
 
 
@@ -693,13 +688,13 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	       , sadetails);
     }
 
-    /* free previous transmit packet */
-    freeanychunk(st->st_tpacket);
-
     /* if requested, send the new reply packet */
     if (svm->flags & SMF2_REPLY)
     {
 	char buf[ADDRTOT_BUF];
+
+	/* free previously transmitted packet */
+	freeanychunk(st->st_tpacket);
 
 	if(nat_traversal_enabled) {
 	    /* adjust our destination port if necessary */

@@ -80,4 +80,7 @@ parentR2x509
 parentI2duplicate
 parentR2duplicate
 parentI3duplicate
-
+lib-parentI1retrans/OUTPUT
+lib-parentI1retrans/core.*
+lib-parentI1retrans/parentI1.pcap
+parentI1retrans

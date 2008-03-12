@@ -427,25 +427,25 @@ delete_state(struct state *st)
     if (st->st_sec_in_use)
 	mpz_clear(&(st->st_sec));
 
-    pfreeany(st->st_firstpacket_me.ptr);
-    pfreeany(st->st_firstpacket_him.ptr);
-    pfreeany(st->st_tpacket.ptr);
-    pfreeany(st->st_rpacket.ptr);
-    pfreeany(st->st_p1isa.ptr);
-    pfreeany(st->st_gi.ptr);
-    pfreeany(st->st_gr.ptr);
-    pfreeany(st->st_shared.ptr);
-    pfreeany(st->st_ni.ptr);
-    pfreeany(st->st_nr.ptr);
-    pfreeany(st->st_skeyid.ptr);
-    pfreeany(st->st_skey_d.ptr);
-    pfreeany(st->st_skey_ai.ptr);
-    pfreeany(st->st_skey_ar.ptr);
-    pfreeany(st->st_skey_ei.ptr);
-    pfreeany(st->st_skey_er.ptr);
-    pfreeany(st->st_skey_pi.ptr);
-    pfreeany(st->st_skey_pr.ptr);
-    pfreeany(st->st_enc_key.ptr);
+    freeanychunk(st->st_firstpacket_me);
+    freeanychunk(st->st_firstpacket_him);
+    freeanychunk(st->st_tpacket);
+    freeanychunk(st->st_rpacket);
+    freeanychunk(st->st_p1isa);
+    freeanychunk(st->st_gi);
+    freeanychunk(st->st_gr);
+    freeanychunk(st->st_shared);
+    freeanychunk(st->st_ni);
+    freeanychunk(st->st_nr);
+    freeanychunk(st->st_skeyid);
+    freeanychunk(st->st_skey_d);
+    freeanychunk(st->st_skey_ai);
+    freeanychunk(st->st_skey_ar);
+    freeanychunk(st->st_skey_ei);
+    freeanychunk(st->st_skey_er);
+    freeanychunk(st->st_skey_pi);
+    freeanychunk(st->st_skey_pr);
+    freeanychunk(st->st_enc_key);
     pfreeany(st->st_ah.our_keymat);
     pfreeany(st->st_ah.peer_keymat);
     pfreeany(st->st_esp.our_keymat);
@@ -749,7 +749,7 @@ delete_states_by_peer(ip_address *peer)
 				  , "peer %s for connection %s crashed, replacing"
 				  , peerstr
 				  , c->name);
-			ipsecdoi_replace(st, 1);
+			ipsecdoi_replace(st, LEMPTY, LEMPTY, 1);
 		    } else {
 			delete_event(this);
 			event_schedule(EVENT_SA_REPLACE, 0, this);
