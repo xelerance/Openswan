@@ -154,10 +154,15 @@ retransmit_v1_msg(struct state *st)
     time_t delay = 0;
     struct connection *c;
     ip_address peer;
+    unsigned long try;
+    unsigned long try_limit;
 	
     passert(st != NULL);
     c = st->st_connection;
     
+    try       = st->st_try;
+    try_limit = c->sa_keying_tries;
+	
     DBG(DBG_CONTROL, DBG_log(
 	    "handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
 	    , ip_str(&peer), c->name, st->st_serialno));
@@ -172,6 +177,21 @@ retransmit_v1_msg(struct state *st)
 	     && st->st_retransmit < MAXIMUM_RETRANSMISSIONS_QUICK_R1)
 	delay = EVENT_RETRANSMIT_DELAY_0 << MAXIMUM_RETRANSMISSIONS;
     
+    if((try%3)==0
+       && (c->policy & POLICY_IKEV1_DISABLE)==0
+       && (c->policy & POLICY_IKEV2_ALLOW)==0) {
+	/* so, let's retry with IKEv1, alternating every three messages */
+
+	if(c->failed_ikev2) {
+	    c->failed_ikev2 = FALSE;
+	    ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
+	} else {
+	    c->failed_ikev2 = TRUE;
+	    ipsecdoi_replace(st, POLICY_IKEV1_DISABLE, LEMPTY, try);
+	}
+	return;
+    }
+
     if (delay != 0)
     {
 	st->st_retransmit++;
@@ -188,8 +208,6 @@ retransmit_v1_msg(struct state *st)
 	 * st->st_try == 0 means that this should be the only try.
 	 * c->sa_keying_tries == 0 means that there is no limit.
 	 */
-	unsigned long try = st->st_try;
-	unsigned long try_limit = c->sa_keying_tries;
 	const char *details = "";
 	
 	switch (st->st_state)
@@ -262,6 +280,7 @@ retransmit_v2_msg(struct state *st)
     c = st->st_connection;
     try_limit = c->sa_keying_tries;
     try = st->st_try;
+    try++;
     
     DBG(DBG_CONTROL, DBG_log(
 	    "handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
@@ -292,15 +311,18 @@ retransmit_v2_msg(struct state *st)
 	return;
     }
 
-    if(try > 5 && (c->policy & POLICY_IKEV1_DISABLE)==0) {
-	/* so, let's retry with IKEv1 */
+    if((try%3)==0 && (c->policy & POLICY_IKEV1_DISABLE)==0) {
+	/* so, let's retry with IKEv1, alternating every three messages */
 
-	c->failed_ikev2 = TRUE;
-	ipsecdoi_replace(st, POLICY_IKEV1_DISABLE, 0, try);
+	if(c->failed_ikev2) {
+	    c->failed_ikev2 = FALSE;
+	    ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
+	} else {
+	    c->failed_ikev2 = TRUE;
+	    ipsecdoi_replace(st, POLICY_IKEV1_DISABLE, LEMPTY, try);
+	}
 	return;
     }
-    
-    try_limit = c->sa_keying_tries;
 
     /* check if we've tried rekeying enough times.
      * st->st_try == 0 means that this should be the only try.
@@ -334,7 +356,6 @@ retransmit_v2_msg(struct state *st)
 	 */
 	char story[80];	/* arbitrary limit */
 	
-	try++;
 	snprintf(story, sizeof(story), try_limit == 0
 		 ? "starting keying attempt %ld of an unlimited number"
 		 : "starting keying attempt %ld of at most %ld"
@@ -353,6 +374,7 @@ retransmit_v2_msg(struct state *st)
 	    openswan_log("%s", story);
 	}
 	ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
+	return;
     }
 
     /* give up */

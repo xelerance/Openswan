@@ -103,6 +103,7 @@ ikev2parent_outI1(int whack_sock
     st->st_state = STATE_PARENT_I1;
     st->st_msgid_lastack = INVALID_MSGID;
     st->st_msgid_nextuse = 0;
+    st->st_try   = try;
 
     if (HAS_IPSEC_POLICY(policy))
 	add_pending(dup_any(whack_sock), st, c, policy, 1
