@@ -26,3 +26,4 @@ multilibtest parentI2duplicate good
 multilibtest parentR2duplicate good
 multilibtest parentI1retrans   good
 multilibtest parentI2retrans   good
+multilibtest parentI1fallback  good
