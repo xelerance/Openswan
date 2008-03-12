@@ -643,7 +643,6 @@ sending 364 bytes for ikev2-responder-retransmit through eth0:500 to 192.1.2.45:
 ../parentR2duplicate leak: st_enc_key in duplicate_state
 ../parentR2duplicate leak: struct state in new_state()
 ../parentR2duplicate leak: ikev2_inI2outR2 KE
-../parentR2duplicate leak: reply packet
 ../parentR2duplicate leak: long term secret
 ../parentR2duplicate leak: ikev2_inI1outR1 KE
 ../parentR2duplicate leak: msg_digest

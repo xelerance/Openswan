@@ -468,7 +468,6 @@ sending 204 bytes for STATE_PARENT_R1 through eth0:500 to 192.1.2.45:500 (using 
 ../parentR2psk leak: st_enc_key in duplicate_state
 ../parentR2psk leak: struct state in new_state()
 ../parentR2psk leak: ikev2_inI2outR2 KE
-../parentR2psk leak: reply packet
 ../parentR2psk leak: long term secret
 ../parentR2psk leak: ikev2_inI1outR1 KE
 ../parentR2psk leak: msg_digest

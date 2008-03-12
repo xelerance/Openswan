@@ -28,6 +28,9 @@ const char *kernel_if_name()
     return "kernel_seam";
 }
 
+void scan_proc_shunts(void) {}
+
+
 
 
 
