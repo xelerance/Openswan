@@ -80,8 +80,8 @@ const char *const debug_bit_names[] = {
 	"nattraversal",
 	"x509",               /* 12 */
 	"dpd",
-	"res14",
-	"res15",
+	"oppoinfo",           /* 14 */
+	"whackwatch",
 	"res16",
 	"res17",
 	"res18",

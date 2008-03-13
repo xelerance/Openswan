@@ -141,6 +141,8 @@
       <arg choice="opt">--debug-dns</arg>
 
       <arg choice="opt">--debug-oppo</arg>
+      <arg choice="opt">--debug-oppoinfo</arg>
+      <arg choice="opt">--debug-whackwatch</arg>
 
       <arg choice="opt">--debug-private</arg>
     </cmdsynopsis>
@@ -616,6 +618,10 @@
       <arg choice="opt">--debug-natt</arg>
 
       <arg choice="opt">--debug-oppo</arg>
+
+      <arg choice="opt">--debug-oppoinfo</arg>
+
+      <arg choice="opt">--debug-whackwatch</arg>
 
       <arg choice="opt">--debug-private</arg>
 
@@ -3383,6 +3389,22 @@
             <para>show why <emphasis remap="B">pluto</emphasis> didn't find a
             suitable DNS TXT record to authorize opportunistic
             initiation</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--debug-oppoinfo</option></term>
+
+          <listitem>
+            <para>log when connections are initiated due to acquires from the kernel.  This is often useful to know, but can be extremely chatty on a busy system. </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--debug-whackwatch</option></term>
+
+          <listitem>
+            <para>if set, causes pluto not to release the whack --initiate channel until the SA is completely up.  This will cause the requestor to possibly wait forever while pluto unsuccessfully negotiates.  Used often in test cases.</para>
           </listitem>
         </varlistentry>
 

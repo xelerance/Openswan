@@ -159,6 +159,7 @@ typedef enum {
 #define DBG_X509        LELEM(12)       /* X.509/pkix verify, cert retrival */
 #define DBG_DPD         LELEM(13)       /* DPD items */
 #define DBG_OPPOINFO    LELEM(14)       /* log various informational things about oppo/%trap-keying */
+#define DBG_WHACKWATCH  LELEM(15)       /* never let WHACK go */
 #define DBG_PRIVATE	LELEM(20)	/* private information: DANGER! */
 
 #define IMPAIR0	21	/* first bit for IMPAIR_* */
