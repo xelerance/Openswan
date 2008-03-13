@@ -474,11 +474,12 @@ sending 476 bytes for STATE_PARENT_I1 through eth0:500 to 192.1.2.23:500 (using 
 |   52 bf d7 83  e3 a2 1b 38  f0 5e b0 33  87 95 bc ff
 |   95 d6 fd 53  b0 0a 3e 72  9a b2 fd c9  33 38 62 ec
 |   ab ae c0 9d  32 ff e4 cb  ff 74 5b 1a
+| inserting event EVENT_SA_REPLACE, timeout in 27807 seconds for #2
 | handling event EVENT_v2_RETRANSMIT
-| event after this is EVENT_v2_RETRANSMIT in 10 seconds
-| handling event EVENT_RETRANSMIT for <invalid> "westnet--eastnet-ikev2" #2
+| event after this is EVENT_SA_REPLACE in 27807 seconds
+| handling event EVENT_RETRANSMIT for <invalid> "westnet--eastnet-ikev2" #1
 RC=10 STATE_PARENT_I2: retransmission; will wait 20s for response
-sending 476 bytes for EVENT_v2_RETRANSMIT through eth0:500 to 192.1.2.23:500 (using #2)
+sending 476 bytes for EVENT_v2_RETRANSMIT through eth0:500 to 192.1.2.23:500 (using #1)
 |   00 01 02 03  04 05 06 07  c0 2e 7a 30  31 a0 31 88
 |   2e 20 23 08  00 00 00 01  00 00 01 dc  23 80 01 c0
 |   00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -509,7 +510,7 @@ sending 476 bytes for EVENT_v2_RETRANSMIT through eth0:500 to 192.1.2.23:500 (us
 |   52 bf d7 83  e3 a2 1b 38  f0 5e b0 33  87 95 bc ff
 |   95 d6 fd 53  b0 0a 3e 72  9a b2 fd c9  33 38 62 ec
 |   ab ae c0 9d  32 ff e4 cb  ff 74 5b 1a
-| inserting event EVENT_v2_RETRANSMIT, timeout in 20 seconds for #2
+| inserting event EVENT_v2_RETRANSMIT, timeout in 20 seconds for #1
 | deleting state #1
 | deleting state #2
 | ICOOKIE:  00 01 02 03  04 05 06 07
