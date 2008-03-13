@@ -302,25 +302,27 @@ retransmit_v2_msg(struct state *st)
     if (delay != 0)
     {
 	st->st_retransmit++;
+
+	if((st->st_retransmit % 3)==0
+	   && (c->policy & POLICY_IKEV1_DISABLE)==0) {
+
+	    /* so, let's retry with IKEv1, alternating every three messages */
+	    if(c->failed_ikev2) {
+		c->failed_ikev2 = FALSE;
+		ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
+	    } else {
+		c->failed_ikev2 = TRUE;
+		ipsecdoi_replace(st, POLICY_IKEV1_DISABLE, LEMPTY, try);
+	    }
+	    return;
+	}
+
 	whack_log(RC_RETRANSMISSION
 		  , "%s: retransmission; will wait %lus for response"
 		  , enum_name(&state_names, st->st_state)
 		  , (unsigned long)delay);
 	send_packet(st, "EVENT_v2_RETRANSMIT", TRUE);
 	event_schedule(EVENT_v2_RETRANSMIT, delay, st);
-	return;
-    }
-
-    if((try%3)==0 && (c->policy & POLICY_IKEV1_DISABLE)==0) {
-	/* so, let's retry with IKEv1, alternating every three messages */
-
-	if(c->failed_ikev2) {
-	    c->failed_ikev2 = FALSE;
-	    ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
-	} else {
-	    c->failed_ikev2 = TRUE;
-	    ipsecdoi_replace(st, POLICY_IKEV1_DISABLE, LEMPTY, try);
-	}
 	return;
     }
 
