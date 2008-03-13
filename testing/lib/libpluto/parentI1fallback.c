@@ -40,6 +40,8 @@ u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
 #include "ikev2sendI1.c"
 
+extern unsigned int maximum_retransmissions_initial;
+
 main(int argc, char *argv[])
 {
     int   len;
@@ -73,26 +75,43 @@ main(int argc, char *argv[])
  
     c1 = con_by_name(conn_name, TRUE);
     c1->sa_keying_tries = 0;  /* for this test case, make retries infinite */
+    maximum_retransmissions_initial = 2;
 
     show_one_connection(c1);
 
-    st = sendI1(c1,DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE);
+    st = sendI1(c1,DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_WHACKWATCH);
     
     run_continuation(r);
 
     /* after three-retransmits, we fallback to trying IKEv1, if necessary */
     handle_next_timer_event();
+    run_continuation(r);
     handle_next_timer_event();
+    run_continuation(r);
     handle_next_timer_event();
+    run_continuation(r);
+    handle_next_timer_event();
+    run_continuation(r);
+    handle_next_timer_event();
+    run_continuation(r);
+    handle_next_timer_event();
+    run_continuation(r);
+    handle_next_timer_event();
+    run_continuation(r);
+    handle_next_timer_event();
+    run_continuation(r);
+    handle_next_timer_event();
+    run_continuation(r);
 
     /* after three more retransmits, we go back to IKEv2 */
     handle_next_timer_event();
+    run_continuation(r);
     handle_next_timer_event();
+    run_continuation(r);
     handle_next_timer_event();
+    run_continuation(r);
 
-    /* clean up so that we can see any leaks */
-    delete_state(st);
-
+    /* as the state will have been renewed, it's hard to clean up */
     report_leaks();
 
     tool_close_log();
