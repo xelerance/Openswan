@@ -2076,7 +2076,7 @@ main_inI3_outR3_tail(struct msg_digest *md
     /* IKEv2 NOTIFY payload */
     np = ISAKMP_NEXT_NONE;
     if(st->st_connection->policy & POLICY_IKEV2_ALLOW) {
-	np = ISAKMP_NEXT_N;
+	np = ISAKMP_NEXT_VID;
     }
 
     /* HASH_R or SIG_R out */
@@ -2111,15 +2111,8 @@ main_inI3_outR3_tail(struct msg_digest *md
     }
 
     if(st->st_connection->policy & POLICY_IKEV2_ALLOW) {
-        struct isakmp_notification isan;
-
-        isan.isan_np = ISAKMP_NEXT_NONE;
-        isan.isan_doi = ISAKMP_DOI_IPSEC;
-        isan.isan_protoid = PROTO_ISAKMP;
-        isan.isan_spisize = 0;
-        isan.isan_type = PLUTO_PRIVATE_CAN_IKEV2;
-        if (!out_struct(&isan, &isakmp_notification_desc, &md->rbody, NULL))
-            return STF_INTERNAL_ERROR;
+	if(!out_vid(ISAKMP_NEXT_NONE, &md->rbody, VID_MISC_IKEv2))
+	    return STF_INTERNAL_ERROR;
     }
 
 
