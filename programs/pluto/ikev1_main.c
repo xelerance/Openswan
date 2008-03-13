@@ -1980,6 +1980,7 @@ main_inI3_outR3_tail(struct msg_digest *md
     pb_stream r_id_pbs;	/* ID Payload; also used for hash calculation */
     cert_t mycert;
     bool send_cert;
+    unsigned int np;
 
     /* ID and HASH_I or SIG_I in
      * Note: this may switch the connection being used!
@@ -2072,6 +2073,12 @@ main_inI3_outR3_tail(struct msg_digest *md
     }
 #endif
 
+    /* IKEv2 NOTIFY payload */
+    np = ISAKMP_NEXT_NONE;
+    if(st->st_connection->policy & POLICY_IKEV2_ALLOW) {
+	np = ISAKMP_NEXT_N;
+    }
+
     /* HASH_R or SIG_R out */
     {
 	u_char hash_val[MAX_DIGEST_LEN];
@@ -2080,7 +2087,7 @@ main_inI3_outR3_tail(struct msg_digest *md
 	if (auth_payload == ISAKMP_NEXT_HASH)
 	{
 	    /* HASH_R out */
-	    if (!out_generic_raw(ISAKMP_NEXT_NONE, &isakmp_hash_desc, &md->rbody
+	    if (!out_generic_raw(np, &isakmp_hash_desc, &md->rbody
 	    , hash_val, hash_len, "HASH_R"))
 		return STF_INTERNAL_ERROR;
 	}
@@ -2097,11 +2104,24 @@ main_inI3_outR3_tail(struct msg_digest *md
 		return STF_FAIL + AUTHENTICATION_FAILED;
 	    }
 
-	    if (!out_generic_raw(ISAKMP_NEXT_NONE, &isakmp_signature_desc
+	    if (!out_generic_raw(np, &isakmp_signature_desc
 	    , &md->rbody, sig_val, sig_len, "SIG_R"))
 		return STF_INTERNAL_ERROR;
 	}
     }
+
+    if(st->st_connection->policy & POLICY_IKEV2_ALLOW) {
+        struct isakmp_notification isan;
+
+        isan.isan_np = ISAKMP_NEXT_NONE;
+        isan.isan_doi = ISAKMP_DOI_IPSEC;
+        isan.isan_protoid = PROTO_ISAKMP;
+        isan.isan_spisize = 0;
+        isan.isan_type = PLUTO_PRIVATE_CAN_IKEV2;
+        if (!out_struct(&isan, &isakmp_notification_desc, &md->rbody, NULL))
+            return STF_INTERNAL_ERROR;
+    }
+
 
     /* encrypt message, sans fixed part of header */
 

@@ -823,9 +823,17 @@ static const char *const notification_dpd_name[] = {
         "R_U_THERE_ACK",
 };
 
+static const char *const notification_pluto_name[] = {
+    "CAN_IKEv2",
+};
+
+enum_names notification_pluto_names =
+{ PLUTO_PRIVATE_CAN_IKEV2, PLUTO_PRIVATE_CAN_IKEV2,
+  notification_pluto_name, NULL };
+
 enum_names notification_dpd_names =
     { R_U_THERE, R_U_THERE_ACK,
-        notification_dpd_name, NULL };
+        notification_dpd_name, &notification_pluto_names };
 
 enum_names notification_names =
     { INVALID_PAYLOAD_TYPE, UNEQUAL_PAYLOAD_LENGTHS,
