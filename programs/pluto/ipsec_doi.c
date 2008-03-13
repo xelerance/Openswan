@@ -390,7 +390,7 @@ ipsecdoi_replace(struct state *st
     int whack_sock = dup_any(st->st_whack_sock);
     lset_t policy = st->st_policy;
 
-    if (IS_PHASE1(st->st_state) || IS_PARENT_SA(st->st_state) || IS_PHASE15(st->st_state))
+    if (IS_PHASE1(st->st_state) || IS_PARENT_SA(st) || IS_PHASE15(st->st_state))
     {
 	struct connection *c = st->st_connection;
 	policy = c->policy & ~POLICY_IPSEC_MASK;

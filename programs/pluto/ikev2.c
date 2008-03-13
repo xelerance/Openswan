@@ -142,6 +142,7 @@ static const struct state_v2_microcode state_microcode_table[] = {
       .flags = SMF2_INITIATOR|SMF2_STATENEEDED|SMF2_REPLY,
       .processor  = ikev2parent_inR1outI2,
       .recv_type  = ISAKMP_v2_SA_INIT,
+      .timeout_event = EVENT_SA_REPLACE,
     },
 
     { .state      = STATE_PARENT_I2,
@@ -163,6 +164,7 @@ static const struct state_v2_microcode state_microcode_table[] = {
       .flags = SMF2_RESPONDER|SMF2_STATENEEDED|SMF2_REPLY,
       .processor  = ikev2parent_inI2outR2,
       .recv_type  = ISAKMP_v2_AUTH,
+      .timeout_event = EVENT_SA_REPLACE,
     },
 
     /* last entry */
@@ -738,6 +740,98 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	    DBG_log("releasing whack for #%lu (sock=%d)"
 		    , pst->st_serialno, pst->st_whack_sock);
 	    release_whack(pst);
+	}
+    }
+
+    /* Schedule for whatever timeout is specified */
+    {
+	time_t delay;
+	enum event_type kind = svm->timeout_event;
+	bool agreed_time = FALSE;
+	struct connection *c = st->st_connection;
+
+	switch (kind)
+	{
+	case EVENT_SA_REPLACE:	/* SA replacement event */
+	    if (IS_PARENT_SA(st))
+	    {
+		/* Note: we will defer to the "negotiated" (dictated)
+		 * lifetime if we are POLICY_DONT_REKEY.
+		 * This allows the other side to dictate
+		 * a time we would not otherwise accept
+		 * but it prevents us from having to initiate
+		 * rekeying.  The negative consequences seem
+		 * minor.
+		 */
+		delay = c->sa_ike_life_seconds;
+	    }
+	    else
+	    {
+		/* Delay is what the user said, no negotiation.
+		 */
+		delay = c->sa_ipsec_life_seconds;
+	    }
+	    
+	    /* By default, we plan to rekey.
+	     *
+	     * If there isn't enough time to rekey, plan to
+	     * expire.
+	     *
+	     * If we are --dontrekey, a lot more rules apply.
+	     * If we are the Initiator, use REPLACE_IF_USED.
+	     * If we are the Responder, and the dictated time
+	     * was unacceptable (too large), plan to REPLACE
+	     * (the only way to ratchet down the time).
+	     * If we are the Responder, and the dictated time
+	     * is acceptable, plan to EXPIRE.
+	     *
+	     * Important policy lies buried here.
+	     * For example, we favour the initiator over the
+	     * responder by making the initiator start rekeying
+	     * sooner.  Also, fuzz is only added to the
+	     * initiator's margin.
+	     *
+	     * Note: for ISAKMP SA, we let the negotiated
+	     * time stand (implemented by earlier logic).
+	     */
+	    if (agreed_time
+		&& (c->policy & POLICY_DONT_REKEY))
+	    {
+		kind = (svm->flags & SMF2_INITIATOR)
+		    ? EVENT_SA_REPLACE_IF_USED
+		    : EVENT_SA_EXPIRE;
+	    }
+	    if (kind != EVENT_SA_EXPIRE)
+	    {
+		unsigned long marg = c->sa_rekey_margin;
+		
+		if (svm->flags & SMF2_INITIATOR)
+		    marg += marg
+			* c->sa_rekey_fuzz / 100.E0
+			* (rand() / (RAND_MAX + 1.E0));
+		else
+		    marg /= 2;
+		
+		if ((unsigned long)delay > marg)
+		{
+			    delay -= marg;
+			    st->st_margin = marg;
+		}
+		else
+		{
+		    kind = EVENT_SA_EXPIRE;
+		}
+	    }
+	    delete_event(st);
+	    event_schedule(kind, delay, st);
+	    break;
+	    
+	case EVENT_NULL:
+	    break;
+
+	case EVENT_REINIT_SECRET:	/* Refresh cookie secret */
+	default:
+	    bad_case(kind);
 	}
     }
 }

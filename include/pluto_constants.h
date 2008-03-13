@@ -308,11 +308,12 @@ enum phase1_role {
 #define IS_MODE_CFG_ESTABLISHED(s) ((s) == STATE_MODE_CFG_R2)
 #endif
 
-#define IS_PARENT_SA(s)             ((s) == STATE_PARENT_I1)
 #define IS_PARENT_SA_ESTABLISHED(s) ((s) == STATE_PARENT_I2 || (s) == STATE_PARENT_R1)
 #define IS_CHILD_SA_ESTABLISHED(s)  ((s) == STATE_PARENT_I3 || (s) == STATE_PARENT_R2)
 
 
+#define IS_PARENT_SA(st) ((st)->st_clonedfrom == SOS_NOBODY)
+#define IS_CHILD_SA(st)  ((st)->st_clonedfrom != SOS_NOBODY)
 
 
 /* kind of struct connection
