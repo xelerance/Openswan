@@ -62,6 +62,11 @@
 
 static struct event *evlist = (struct event *) NULL;
 
+unsigned int event_retransmit_delay_0 = EVENT_RETRANSMIT_DELAY_0;
+unsigned int maximum_retransmissions  = MAXIMUM_RETRANSMISSIONS;
+unsigned int maximum_retransmissions_initial =MAXIMUM_RETRANSMISSIONS_INITIAL;
+unsigned int maximum_retransmissions_quick_r1=MAXIMUM_RETRANSMISSIONS_QUICK_R1;
+
 /*
  * This routine places an event in the event list.
  */
@@ -167,31 +172,16 @@ retransmit_v1_msg(struct state *st)
 	    "handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
 	    , ip_str(&peer), c->name, st->st_serialno));
     
-    if (st->st_retransmit < MAXIMUM_RETRANSMISSIONS)
-	delay = EVENT_RETRANSMIT_DELAY_0 << (st->st_retransmit + 1);
+    if (st->st_retransmit < maximum_retransmissions)
+	delay = event_retransmit_delay_0 << (st->st_retransmit + 1);
     else if ((st->st_state == STATE_MAIN_I1 || st->st_state == STATE_AGGR_I1)
 	     && c->sa_keying_tries == 0
-	     && st->st_retransmit < MAXIMUM_RETRANSMISSIONS_INITIAL)
-	delay = EVENT_RETRANSMIT_DELAY_0 << MAXIMUM_RETRANSMISSIONS;
+	     && st->st_retransmit < maximum_retransmissions_initial)
+	delay = event_retransmit_delay_0 << maximum_retransmissions;
     else if (st->st_state == STATE_QUICK_R1
-	     && st->st_retransmit < MAXIMUM_RETRANSMISSIONS_QUICK_R1)
-	delay = EVENT_RETRANSMIT_DELAY_0 << MAXIMUM_RETRANSMISSIONS;
+	     && st->st_retransmit < maximum_retransmissions_quick_r1)
+	delay = event_retransmit_delay_0 << maximum_retransmissions;
     
-    if((try%3)==0
-       && (c->policy & POLICY_IKEV1_DISABLE)==0
-       && (c->policy & POLICY_IKEV2_ALLOW)==0) {
-	/* so, let's retry with IKEv1, alternating every three messages */
-
-	if(c->failed_ikev2) {
-	    c->failed_ikev2 = FALSE;
-	    ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
-	} else {
-	    c->failed_ikev2 = TRUE;
-	    ipsecdoi_replace(st, POLICY_IKEV1_DISABLE, LEMPTY, try);
-	}
-	return;
-    }
-
     if (delay != 0)
     {
 	st->st_retransmit++;
@@ -248,19 +238,39 @@ retransmit_v1_msg(struct state *st)
 		     : "starting keying attempt %ld of at most %ld"
 		     , try, try_limit);
 	    
-	    if (st->st_whack_sock != NULL_FD)
-	    {
-		/* Release whack because the observer will get bored. */
-		loglog(RC_COMMENT, "%s, but releasing whack"
-		       , story);
-		release_pending_whacks(st, story);
+	    if(!DBGP(DBG_WHACKWATCH)) {
+		if (st->st_whack_sock != NULL_FD)
+		{
+		    /* Release whack because the observer will get bored. */
+		    loglog(RC_COMMENT, "%s, but releasing whack"
+			   , story);
+		    release_pending_whacks(st, story);
+		}
+		else
+		{
+		    /* no whack: just log to syslog */
+		    openswan_log("%s", story);
+		}
+	    } else {
+		loglog(RC_COMMENT, "%s", story);
 	    }
-	    else
-	    {
-		/* no whack: just log to syslog */
-		openswan_log("%s", story);
+
+	    if((try % 3)==0
+	       && (c->policy & POLICY_IKEV2_ALLOW)!=0) {
+		/* so, let's retry with IKEv2, alternating every three messages */
+		if(c->failed_ikev2) {
+		    c->failed_ikev2 = FALSE;
+		    loglog(RC_COMMENT, "next attempt will be IKEv2");
+		    ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
+		} else {
+		    c->failed_ikev2 = TRUE;
+		    loglog(RC_COMMENT, "next attempt will be IKEv1");
+		    ipsecdoi_replace(st, POLICY_IKEV1_DISABLE, LEMPTY, try);
+		}
+	    } else {
+		/* no, just retry with this policy */
+		ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
 	    }
-	    ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
 	}
 	delete_state(st);
     }
@@ -286,36 +296,22 @@ retransmit_v2_msg(struct state *st)
 	    "handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
 	    , ip_str(&peer), c->name, st->st_serialno));
     
-    if (st->st_retransmit < MAXIMUM_RETRANSMISSIONS)
-	delay = EVENT_RETRANSMIT_DELAY_0 << (st->st_retransmit + 1);
+    if (st->st_retransmit < maximum_retransmissions)
+	delay = event_retransmit_delay_0 << (st->st_retransmit + 1);
 
     else if (st->st_state == STATE_PARENT_I1
 	     && c->sa_keying_tries == 0
-	     && st->st_retransmit < MAXIMUM_RETRANSMISSIONS_INITIAL) {
-	delay = EVENT_RETRANSMIT_DELAY_0 << MAXIMUM_RETRANSMISSIONS;
+	     && st->st_retransmit < maximum_retransmissions_initial) {
+	delay = event_retransmit_delay_0 << maximum_retransmissions;
     }
     else if ((st->st_state == STATE_PARENT_I2
 	      || st->st_state == STATE_PARENT_I3)
-	     && st->st_retransmit < MAXIMUM_RETRANSMISSIONS_QUICK_R1)
-	delay = EVENT_RETRANSMIT_DELAY_0 << MAXIMUM_RETRANSMISSIONS;
+	     && st->st_retransmit < maximum_retransmissions_quick_r1)
+	delay = event_retransmit_delay_0 << maximum_retransmissions;
     
     if (delay != 0)
     {
 	st->st_retransmit++;
-
-	if((st->st_retransmit % 3)==0
-	   && (c->policy & POLICY_IKEV1_DISABLE)==0) {
-
-	    /* so, let's retry with IKEv1, alternating every three messages */
-	    if(c->failed_ikev2) {
-		c->failed_ikev2 = FALSE;
-		ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
-	    } else {
-		c->failed_ikev2 = TRUE;
-		ipsecdoi_replace(st, POLICY_IKEV1_DISABLE, LEMPTY, try);
-	    }
-	    return;
-	}
 
 	whack_log(RC_RETRANSMISSION
 		  , "%s: retransmission; will wait %lus for response"
@@ -362,24 +358,41 @@ retransmit_v2_msg(struct state *st)
 		 ? "starting keying attempt %ld of an unlimited number"
 		 : "starting keying attempt %ld of at most %ld"
 		 , try, try_limit);
-	
-	if (st->st_whack_sock != NULL_FD)
-	{
-	    /* Release whack because the observer will get bored. */
-	    loglog(RC_COMMENT, "%s, but releasing whack"
-		   , story);
-	    release_pending_whacks(st, story);
-	}
-	else
-	{
-	    /* no whack: just log to syslog */
-	    openswan_log("%s", story);
-	}
-	ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
-	return;
-    }
 
-    /* give up */
+	if(!DBGP(DBG_WHACKWATCH)) {
+	    if (st->st_whack_sock != NULL_FD)
+	    {
+		/* Release whack because the observer will get bored. */
+		loglog(RC_COMMENT, "%s, but releasing whack"
+		       , story);
+		release_pending_whacks(st, story);
+	    }
+	    else
+	    {
+		/* no whack: just log to syslog */
+		openswan_log("%s", story);
+	    }
+	} else {
+	    loglog(RC_COMMENT, "%s", story);
+	}
+
+	if((try % 3)==0
+	   && (c->policy & POLICY_IKEV1_DISABLE)==0) {
+
+	    /* so, let's retry with IKEv1, alternating every three messages */
+	    if(c->failed_ikev2) {
+		c->failed_ikev2 = FALSE;
+		loglog(RC_COMMENT, "next attempt will be IKEv2");
+		ipsecdoi_replace(st, POLICY_IKEV1_DISABLE, LEMPTY, try);
+	    } else {
+		c->failed_ikev2 = TRUE;
+		loglog(RC_COMMENT, "next attempt will be IKEv1");
+		ipsecdoi_replace(st, LEMPTY, POLICY_IKEV2_PROPOSE, try);
+	    }
+	} else {
+	    ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
+	}
+    }
 
     delete_state(st);
 }
@@ -785,6 +798,37 @@ timer_list(void)
 	}
 
 	ev = ev->ev_next;
+    }
+}
+
+/*
+ * XXX --- hack alert, but I want to avoid adding new pluto-level
+ *   command line arguments for now --- they need to all be whack
+ * level items, and all command line arguments go away.
+*/
+void 
+init_timer(void)
+{
+    char *valstr;
+
+    valstr = getenv("PLUTO_EVENT_RETRANSMIT_DELAY");
+    if(valstr) {
+	event_retransmit_delay_0 = atoi(valstr);
+    }
+
+    valstr = getenv("PLUTO_MAXIMUM_RETRANSMISSIONS");
+    if(valstr) {
+	maximum_retransmissions  = atoi(valstr);
+    }
+
+    valstr = getenv("PLUTO_MAXIMUM_RETRANSMISSIONS_INITIAL");
+    if(valstr) {
+	maximum_retransmissions_initial = atoi(valstr);
+    }
+
+    valstr = getenv("PLUTO_MAXIMUM_RETRANSMISSIONS_QUICK_R1");
+    if(valstr) {
+	maximum_retransmissions_quick_r1= atoi(valstr);
     }
 }
 

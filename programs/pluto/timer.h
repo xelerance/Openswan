@@ -34,6 +34,7 @@ extern long next_event(void);
 extern void delete_event(struct state *st);
 extern void daily_log_event(void);
 extern void handle_next_timer_event(void);
+extern void init_timer(void);
 
 /* extra debugging of dpd event removal */
 extern void _delete_dpd_event(struct state *st, const char *file, int lineno);

@@ -297,7 +297,7 @@ close_message(pb_stream *pbs)
 static initiator_function *pick_initiator(struct connection *c UNUSED, lset_t policy)
 {
     if((policy & POLICY_IKEV1_DISABLE) == 0 &&
-       (policy & POLICY_IKEV2_PROPOSE) == 0) {
+       (c->failed_ikev2 || (policy & POLICY_IKEV2_PROPOSE)==0))  {
 	if(policy & POLICY_AGGRESSIVE) {
 #if defined(AGGRESSIVE)	    
 	    return aggr_outI1;
