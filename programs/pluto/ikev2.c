@@ -749,6 +749,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
     //const struct state_v2_microcode *svm=md->svm;
     struct state *st;
     enum state_kind from_state;
+    const char *from_state_name;
 
     cur_state = st = md->st;	/* might have changed */
 
@@ -827,8 +828,15 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	/* FALL THROUGH ... */
 
     case STF_FAIL:
+	if(st) {
+	    from_state_name = enum_name(&state_names, st->st_state);
+	} else {
+	    from_state_name = "no-state";
+	}
+	    
 	whack_log(RC_NOTIFICATION + md->note
-		  , "%s: %s", enum_name(&state_names, st->st_state)
+		  , "%s: %s"
+		  , from_state_name
 		  , enum_name(&ipsec_notification_names, md->note));
 
 #if 0
@@ -837,10 +845,9 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	}
 #endif
 	
-    	from_state   = st->st_state;
 	DBG(DBG_CONTROL,
 	    DBG_log("state transition function for %s failed: %s"
-		    , enum_name(&state_names, from_state)
+		    , from_state_name
 		    , enum_name(&ipsec_notification_names, md->note)));
     }
 }
