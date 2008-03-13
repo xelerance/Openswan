@@ -17,7 +17,7 @@ main_outI1(int whack_sock
 	   , unsigned long try
 	   , enum crypto_importance importance)
 {
-	abort();
+	DBG_log("MAIN OUTi1()\n");
 }
 
 stf_status
