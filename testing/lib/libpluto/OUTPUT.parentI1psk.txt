@@ -164,7 +164,7 @@ RC=133 STATE_PARENT_I1: initiate
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
+|    next payload type: ISAKMP_NEXT_P
 |    prop #: 6
 |    proto ID: 1
 |    spi size: 0
@@ -190,7 +190,115 @@ RC=133 STATE_PARENT_I1: initiate
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
-| emitting length of IKEv2 Security Association Payload: 244
+| ****emit IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_P
+|    prop #: 7
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 1
+|    transform ID: 12
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 3
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 2
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    transform type: 4
+|    transform ID: 14
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| emitting length of IKEv2 Proposal Substructure Payload: 40
+| ****emit IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_P
+|    prop #: 8
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 1
+|    transform ID: 12
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 3
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 2
+|    transform ID: 1
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    transform type: 4
+|    transform ID: 14
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| emitting length of IKEv2 Proposal Substructure Payload: 40
+| ****emit IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_P
+|    prop #: 9
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 1
+|    transform ID: 3
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 3
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 2
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    transform type: 4
+|    transform ID: 14
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| emitting length of IKEv2 Proposal Substructure Payload: 40
+| ****emit IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    prop #: 10
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 1
+|    transform ID: 3
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 3
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 2
+|    transform ID: 1
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    transform type: 4
+|    transform ID: 14
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| emitting length of IKEv2 Proposal Substructure Payload: 40
+| emitting length of IKEv2 Security Association Payload: 404
 | ***emit IKEv2 Key Exchange Payload:
 |    next payload type: ISAKMP_NEXT_v2Ni
 |    transform type: 5
@@ -219,10 +327,10 @@ RC=133 STATE_PARENT_I1: initiate
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
-| emitting length of ISAKMP Message: 508
-sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500 (using #1)
+| emitting length of ISAKMP Message: 668
+sending 668 bytes for ikev2_parent_outI1_common through eth0:500 to 192.1.2.23:500 (using #1)
 |   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 01 fc  22 80 00 f4
+|   21 20 22 08  00 00 00 00  00 00 02 9c  22 80 01 94
 |   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
 |   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
 |   00 00 00 08  04 00 00 05  02 00 00 28  02 01 00 04
@@ -235,9 +343,19 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 |   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
 |   02 00 00 28  05 01 00 04  03 00 00 08  01 00 00 03
 |   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 02  00 00 00 28  06 01 00 04
+|   00 00 00 08  04 00 00 02  02 00 00 28  06 01 00 04
 |   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
 |   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
+|   02 00 00 28  07 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   00 00 00 08  04 00 00 0e  02 00 00 28  08 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  03 00 00 02
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 0e
+|   02 00 00 28  09 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   00 00 00 08  04 00 00 0e  00 00 00 28  0a 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 0e
 |   28 00 00 c8  00 05 00 00  ff bc 6a 92  a6 b9 55 9b
 |   05 fa 96 a7  a4 35 07 b4  c1 e1 c0 86  1a 58 71 d9
 |   ba 73 a1 63  11 37 88 c0  de bb 39 79  e7 ff 0c 52
@@ -274,6 +392,14 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 ../parentI1psk leak: db_v2_prop_conj
 ../parentI1psk leak: db_v2_trans
 ../parentI1psk leak: db_v2_prop_conj
+../parentI1psk leak: db_v2_trans
+../parentI1psk leak: db_v2_prop_conj
+../parentI1psk leak: db_v2_trans
+../parentI1psk leak: db_v2_prop_conj
+../parentI1psk leak: db_v2_trans
+../parentI1psk leak: db_v2_prop_conj
+../parentI1psk leak: db_v2_trans
+../parentI1psk leak: db_v2_prop_conj
 ../parentI1psk leak: host_pair
 ../parentI1psk leak: host ip
 ../parentI1psk leak: keep id name
@@ -292,9 +418,9 @@ sending 508 bytes for ikev2_parent_outI1_tail through eth0:500 to 192.1.2.23:500
 ../parentI1psk leak: 7 * default conf
 TCPDUMP output
 reading from file parentI1psk.pcap, link-type NULL (BSD loopback)
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, bad cksum 0 (->f48e)!)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 696, bad cksum 0 (->f3ee)!)
     192.1.2.45.500 > 192.1.2.23.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->0000000000000000: parent_sa ikev2_init[I]:
-    (sa[C]: len=240
+    (sa[C]: len=400
         (p: #1 protoid=isakmp transform=4 len=40
             (t: #1 type=encr id=aes )
             (t: #2 type=integ id=hmac-sha )
@@ -324,7 +450,27 @@ IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 536, b
             (t: #1 type=encr id=3des )
             (t: #2 type=integ id=hmac-sha )
             (t: #3 type=prf id=hmac-md5 )
-            (t: #4 type=dh id=modp1024 )))
+            (t: #4 type=dh id=modp1024 ))
+        (p: #7 protoid=isakmp transform=4 len=40
+            (t: #1 type=encr id=aes )
+            (t: #2 type=integ id=hmac-sha )
+            (t: #3 type=prf id=hmac-sha )
+            (t: #4 type=dh id=modp2048 ))
+        (p: #8 protoid=isakmp transform=4 len=40
+            (t: #1 type=encr id=aes )
+            (t: #2 type=integ id=hmac-sha )
+            (t: #3 type=prf id=hmac-md5 )
+            (t: #4 type=dh id=modp2048 ))
+        (p: #9 protoid=isakmp transform=4 len=40
+            (t: #1 type=encr id=3des )
+            (t: #2 type=integ id=hmac-sha )
+            (t: #3 type=prf id=hmac-sha )
+            (t: #4 type=dh id=modp2048 ))
+        (p: #10 protoid=isakmp transform=4 len=40
+            (t: #1 type=encr id=3des )
+            (t: #2 type=integ id=hmac-sha )
+            (t: #3 type=prf id=hmac-md5 )
+            (t: #4 type=dh id=modp2048 )))
     (v2ke: len=192 group=modp1536)
     (nonce[C]: len=16 nonce=(b5ce8419095c6e2b6b62d3055305b3c4) )
     (v2vid: len=12 vid=OEababababab)
