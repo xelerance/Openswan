@@ -275,7 +275,7 @@ RC=0 #1: "westnet--eastnet-ikev2":500 STATE_PARENT_R1 (received v2I1, sent v2R1)
 Pre-amble: #!-pluto-whack-file- recorded on east on 2007-10-31 06:13:08
 TCPDUMP output
 reading from file parentR1.pcap, link-type NULL (BSD loopback)
-19:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 336, bad cksum 0 (->f556)!)
+00:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 336, bad cksum 0 (->f556)!)
     192.1.2.23.500 > 192.1.2.45.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->c02e7a3031a03188: parent_sa ikev2_init[]:
     (sa[C]: len=40
         (p: #1 protoid=isakmp transform=4 len=40
@@ -286,7 +286,7 @@ reading from file parentR1.pcap, link-type NULL (BSD loopback)
     (v2ke: len=192 group=modp1536)
     (nonce[C]: len=16 nonce=(47e9f9258ca23858f675b166b02cc292) )
     (v2vid: len=12 vid=OEababababab)
-19:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 336, bad cksum 0 (->f556)!)
+00:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 336, bad cksum 0 (->f556)!)
     192.1.2.23.500 > 192.1.2.45.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->c02e7a3031a03188: parent_sa ikev2_init[]:
     (sa[C]: len=40
         (p: #1 protoid=isakmp transform=4 len=40

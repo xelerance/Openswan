@@ -61,6 +61,7 @@ enum event_type {
     EVENT_LOG_DAILY,    /* reset certain log events/stats */
     EVENT_CRYPTO_FAILED,/* after some time, give up on crypto helper */
     EVENT_PENDING_PHASE2,  /* do not make pending phase2 wait forever */
+    EVENT_v2_RETRANSMIT,   /* Retransmit v2 packet */
 };
 
 #define EVENT_REINIT_SECRET_DELAY		3600 /* 1 hour */
@@ -158,6 +159,7 @@ typedef enum {
 #define DBG_X509        LELEM(12)       /* X.509/pkix verify, cert retrival */
 #define DBG_DPD         LELEM(13)       /* DPD items */
 #define DBG_OPPOINFO    LELEM(14)       /* log various informational things about oppo/%trap-keying */
+#define DBG_WHACKWATCH  LELEM(15)       /* never let WHACK go */
 #define DBG_PRIVATE	LELEM(20)	/* private information: DANGER! */
 
 #define IMPAIR0	21	/* first bit for IMPAIR_* */
@@ -307,9 +309,11 @@ enum phase1_role {
 #endif
 
 #define IS_PARENT_SA_ESTABLISHED(s) ((s) == STATE_PARENT_I2 || (s) == STATE_PARENT_R1)
-#define IS_CHILD_SA_ESTABLISHED(s)  ((s) == STATE_PARENT_I3 || (s) == STATE_PARENT_R2)
+#define IS_CHILD_SA_ESTABLISHED(st) (((st->st_state) == STATE_PARENT_I3 || (st->st_state) == STATE_PARENT_R2) && (st->st_childsa != NULL))
 
 
+#define IS_PARENT_SA(st) ((st)->st_clonedfrom == SOS_NOBODY)
+#define IS_CHILD_SA(st)  ((st)->st_clonedfrom != SOS_NOBODY)
 
 
 /* kind of struct connection

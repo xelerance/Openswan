@@ -3,3 +3,7 @@ void get_rnd_bytes(u_char *buffer, int length) { int i; for(i=0;i<length;i++) bu
 
 u_char    secret_of_the_day[SHA1_DIGEST_SIZE] = "abcdabcdabcd";
 u_char    ikev2_secret_of_the_day[SHA1_DIGEST_SIZE] = "abcdabcdabcd";
+void init_secret(void)
+{
+	
+}

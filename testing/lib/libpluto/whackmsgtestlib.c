@@ -23,9 +23,6 @@ void reset_adns_restart_count(void) {}
 /* server.c SEAM */
 void find_ifaces(void) {}
 
-/* timer.c SEAM */
-void timer_list(void) {}
-
 /* initiate.c SEAM */
 void initiate_connection(const char *name, int whackfd
 			 , lset_t moredebug

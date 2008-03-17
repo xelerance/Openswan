@@ -62,6 +62,11 @@
 
 static struct event *evlist = (struct event *) NULL;
 
+unsigned int event_retransmit_delay_0 = EVENT_RETRANSMIT_DELAY_0;
+unsigned int maximum_retransmissions  = MAXIMUM_RETRANSMISSIONS;
+unsigned int maximum_retransmissions_initial =MAXIMUM_RETRANSMISSIONS_INITIAL;
+unsigned int maximum_retransmissions_quick_r1=MAXIMUM_RETRANSMISSIONS_QUICK_R1;
+
 /*
  * This routine places an event in the event list.
  */
@@ -86,9 +91,9 @@ event_schedule(enum event_type type, time_t tm, struct state *st)
                     passert(st->st_dpd_event == NULL);
                     st->st_dpd_event = ev;
             } else {
-        passert(st->st_event == NULL);
-        st->st_event = ev;
-    }
+		passert(st->st_event == NULL);
+		st->st_event = ev;
+	    }
     }
 
     DBG(DBG_CONTROL,
@@ -101,8 +106,9 @@ event_schedule(enum event_type type, time_t tm, struct state *st)
 		, ev->ev_state->st_serialno));
 
     if (evlist == (struct event *) NULL
-    || evlist->ev_time >= ev->ev_time)
+	|| evlist->ev_time >= ev->ev_time)
     {
+	DBG(DBG_CONTROLMORE, DBG_log("event added at head of queue"));
 	ev->ev_next = evlist;
 	evlist = ev;
     }
@@ -114,8 +120,7 @@ event_schedule(enum event_type type, time_t tm, struct state *st)
 	    if (evt->ev_next->ev_time >= ev->ev_time)
 		break;
 
-#ifdef NEVER	/* this seems to be overkill */
-	DBG(DBG_CONTROL,
+	DBG(DBG_CONTROLMORE,
 	    if (evt->ev_state == NULL)
 		DBG_log("event added after event %s"
 		    , enum_show(&timer_event_names, evt->ev_type));
@@ -123,12 +128,274 @@ event_schedule(enum event_type type, time_t tm, struct state *st)
 		DBG_log("event added after event %s for #%lu"
 		    , enum_show(&timer_event_names, evt->ev_type)
 		    , evt->ev_state->st_serialno));
-#endif /* NEVER */
 
 	ev->ev_next = evt->ev_next;
 	evt->ev_next = ev;
     }
 }
+
+
+/* Time to retransmit, or give up.
+ *
+ * Generally, we'll only try to send the message
+ * MAXIMUM_RETRANSMISSIONS times.  Each time we double
+ * our patience.
+ *
+ * As a special case, if this is the first initiating message
+ * of a Main Mode exchange, and we have been directed to try
+ * forever, we'll extend the number of retransmissions to
+ * MAXIMUM_RETRANSMISSIONS_INITIAL times, with all these
+ * extended attempts having the same patience.  The intention
+ * is to reduce the bother when nobody is home.
+ *
+ * Since IKEv1 is not reliable for the Quick Mode responder,
+ * we'll extend the number of retransmissions as well to
+ * improve the reliability.
+ */
+static void
+retransmit_v1_msg(struct state *st)
+{
+    time_t delay = 0;
+    struct connection *c;
+    ip_address peer;
+    unsigned long try;
+    unsigned long try_limit;
+	
+    passert(st != NULL);
+    c = st->st_connection;
+    
+    try       = st->st_try;
+    try_limit = c->sa_keying_tries;
+	
+    DBG(DBG_CONTROL, DBG_log(
+	    "handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
+	    , ip_str(&peer), c->name, st->st_serialno));
+    
+    if (st->st_retransmit < maximum_retransmissions)
+	delay = event_retransmit_delay_0 << (st->st_retransmit + 1);
+    else if ((st->st_state == STATE_MAIN_I1 || st->st_state == STATE_AGGR_I1)
+	     && c->sa_keying_tries == 0
+	     && st->st_retransmit < maximum_retransmissions_initial)
+	delay = event_retransmit_delay_0 << maximum_retransmissions;
+    else if (st->st_state == STATE_QUICK_R1
+	     && st->st_retransmit < maximum_retransmissions_quick_r1)
+	delay = event_retransmit_delay_0 << maximum_retransmissions;
+    
+    if (delay != 0)
+    {
+	st->st_retransmit++;
+	whack_log(RC_RETRANSMISSION
+		  , "%s: retransmission; will wait %lus for response"
+		  , enum_name(&state_names, st->st_state)
+		  , (unsigned long)delay);
+	send_packet(st, "EVENT_RETRANSMIT", TRUE);
+	event_schedule(EVENT_RETRANSMIT, delay, st);
+    }
+    else
+    {
+	/* check if we've tried rekeying enough times.
+	 * st->st_try == 0 means that this should be the only try.
+	 * c->sa_keying_tries == 0 means that there is no limit.
+	 */
+	const char *details = "";
+	
+	switch (st->st_state)
+	{
+	case STATE_MAIN_I3:
+	    details = ".  Possible authentication failure:"
+		" no acceptable response to our"
+		" first encrypted message";
+	    break;
+	case STATE_MAIN_I1:
+	    details = ".  No response (or no acceptable response) to our"
+		" first IKE message";
+	    break;
+	case STATE_QUICK_I1:
+	    if (c->newest_ipsec_sa == SOS_NOBODY)
+		details = ".  No acceptable response to our"
+		    " first Quick Mode message:"
+		    " perhaps peer likes no proposal";
+	    break;
+	default:
+	    break;
+	}
+	loglog(RC_NORETRANSMISSION
+	       , "max number of retransmissions (%d) reached %s%s"
+	       , st->st_retransmit
+	       , enum_show(&state_names, st->st_state), details);
+	if (try != 0 && try != try_limit)
+	{
+	    /* A lot like EVENT_SA_REPLACE, but over again.
+	     * Since we know that st cannot be in use,
+	     * we can delete it right away.
+	     */
+	    char story[80];	/* arbitrary limit */
+	    
+	    try++;
+	    snprintf(story, sizeof(story), try_limit == 0
+		     ? "starting keying attempt %ld of an unlimited number"
+		     : "starting keying attempt %ld of at most %ld"
+		     , try, try_limit);
+	    
+	    if(!DBGP(DBG_WHACKWATCH)) {
+		if (st->st_whack_sock != NULL_FD)
+		{
+		    /* Release whack because the observer will get bored. */
+		    loglog(RC_COMMENT, "%s, but releasing whack"
+			   , story);
+		    release_pending_whacks(st, story);
+		}
+		else
+		{
+		    /* no whack: just log to syslog */
+		    openswan_log("%s", story);
+		}
+	    } else {
+		loglog(RC_COMMENT, "%s", story);
+	    }
+
+	    if((try % 3)==0
+	       && (c->policy & POLICY_IKEV2_ALLOW)!=0) {
+		/* so, let's retry with IKEv2, alternating every three messages */
+		if(c->failed_ikev2) {
+		    c->failed_ikev2 = FALSE;
+		    loglog(RC_COMMENT, "next attempt will be IKEv2");
+		    ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
+		} else {
+		    c->failed_ikev2 = TRUE;
+		    loglog(RC_COMMENT, "next attempt will be IKEv1");
+		    ipsecdoi_replace(st, POLICY_IKEV1_DISABLE, LEMPTY, try);
+		}
+	    } else {
+		/* no, just retry with this policy */
+		ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
+	    }
+	}
+	delete_state(st);
+    }
+}
+
+static void
+retransmit_v2_msg(struct state *st)
+{
+    time_t delay = 0;
+    struct connection *c;
+    ip_address peer;
+    unsigned long try;
+    unsigned long try_limit;
+    const char *details = "";
+    
+    passert(st != NULL);
+    c = st->st_connection;
+    try_limit = c->sa_keying_tries;
+    try = st->st_try;
+    try++;
+    
+    DBG(DBG_CONTROL, DBG_log(
+	    "handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
+	    , ip_str(&peer), c->name, st->st_serialno));
+    
+    if (st->st_retransmit < maximum_retransmissions)
+	delay = event_retransmit_delay_0 << (st->st_retransmit + 1);
+
+    else if (st->st_state == STATE_PARENT_I1
+	     && c->sa_keying_tries == 0
+	     && st->st_retransmit < maximum_retransmissions_initial) {
+	delay = event_retransmit_delay_0 << maximum_retransmissions;
+    }
+    else if ((st->st_state == STATE_PARENT_I2
+	      || st->st_state == STATE_PARENT_I3)
+	     && st->st_retransmit < maximum_retransmissions_quick_r1)
+	delay = event_retransmit_delay_0 << maximum_retransmissions;
+    
+    if (delay != 0)
+    {
+	st->st_retransmit++;
+
+	whack_log(RC_RETRANSMISSION
+		  , "%s: retransmission; will wait %lus for response"
+		  , enum_name(&state_names, st->st_state)
+		  , (unsigned long)delay);
+	send_packet(st, "EVENT_v2_RETRANSMIT", TRUE);
+	event_schedule(EVENT_v2_RETRANSMIT, delay, st);
+	return;
+    }
+
+    /* check if we've tried rekeying enough times.
+     * st->st_try == 0 means that this should be the only try.
+     * c->sa_keying_tries == 0 means that there is no limit.
+     */
+    switch (st->st_state)
+    {
+    case STATE_PARENT_I2:
+	details = ".  Possible authentication failure:"
+	    " no acceptable response to our"
+	    " first encrypted message";
+	break;
+    case STATE_PARENT_I1:
+	details = ".  No response (or no acceptable response) to our"
+	    " first IKE message";
+	break;
+    default:
+	break;
+    }
+
+    loglog(RC_NORETRANSMISSION
+	   , "max number of retransmissions (%d) reached %s%s"
+	   , st->st_retransmit
+	   , enum_show(&state_names, st->st_state), details);
+
+    if (try != 0 && try != try_limit)
+    {
+	/* A lot like EVENT_SA_REPLACE, but over again.
+	 * Since we know that st cannot be in use,
+	 * we can delete it right away.
+	 */
+	char story[80];	/* arbitrary limit */
+	
+	snprintf(story, sizeof(story), try_limit == 0
+		 ? "starting keying attempt %ld of an unlimited number"
+		 : "starting keying attempt %ld of at most %ld"
+		 , try, try_limit);
+
+	if(!DBGP(DBG_WHACKWATCH)) {
+	    if (st->st_whack_sock != NULL_FD)
+	    {
+		/* Release whack because the observer will get bored. */
+		loglog(RC_COMMENT, "%s, but releasing whack"
+		       , story);
+		release_pending_whacks(st, story);
+	    }
+	    else
+	    {
+		/* no whack: just log to syslog */
+		openswan_log("%s", story);
+	    }
+	} else {
+	    loglog(RC_COMMENT, "%s", story);
+	}
+
+	if((try % 3)==0
+	   && (c->policy & POLICY_IKEV1_DISABLE)==0) {
+
+	    /* so, let's retry with IKEv1, alternating every three messages */
+	    if(c->failed_ikev2) {
+		c->failed_ikev2 = FALSE;
+		loglog(RC_COMMENT, "next attempt will be IKEv2");
+		ipsecdoi_replace(st, POLICY_IKEV1_DISABLE, LEMPTY, try);
+	    } else {
+		c->failed_ikev2 = TRUE;
+		loglog(RC_COMMENT, "next attempt will be IKEv1");
+		ipsecdoi_replace(st, LEMPTY, POLICY_IKEV2_PROPOSE, try);
+	    }
+	} else {
+	    ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
+	}
+    }
+
+    delete_state(st);
+}
+
 
 /*
  * Handle the first event on the list.
@@ -139,8 +406,6 @@ handle_timer_event(void)
     time_t tm;
     struct event *ev = evlist;
     int type;
-    struct state *st;
-    ip_address peer;
 
     if (ev == (struct event *) NULL)    /* Just paranoid */
     {
@@ -149,8 +414,6 @@ handle_timer_event(void)
     }
 
     type = ev->ev_type;
-    st = ev->ev_state;
-
     tm = now();
 
     if (tm < ev->ev_time)
@@ -168,7 +431,27 @@ handle_timer_event(void)
 	return;
     }
 
+    handle_next_timer_event();
+}
+
+void
+handle_next_timer_event(void)
+{
+    time_t tm;
+    tm = now();
+    struct event *ev = evlist;
+    int type;
+    struct state *st;
+    ip_address peer;
+
+    if (ev == (struct event *) NULL)    
+    {
+	return;
+    }
+
     evlist = evlist->ev_next;		/* Ok, we'll handle this event */
+    type = ev->ev_type;
+    st = ev->ev_state;
 
     DBG(DBG_CONTROL, DBG_log("handling event %s"
 			     , enum_show(&timer_event_names, type)));
@@ -232,119 +515,11 @@ handle_timer_event(void)
 	    break;
 
 	case EVENT_RETRANSMIT:
-	    /* Time to retransmit, or give up.
-	     *
-	     * Generally, we'll only try to send the message
-	     * MAXIMUM_RETRANSMISSIONS times.  Each time we double
-	     * our patience.
-	     *
-	     * As a special case, if this is the first initiating message
-	     * of a Main Mode exchange, and we have been directed to try
-	     * forever, we'll extend the number of retransmissions to
-	     * MAXIMUM_RETRANSMISSIONS_INITIAL times, with all these
-	     * extended attempts having the same patience.  The intention
-	     * is to reduce the bother when nobody is home.
-	     *
-	     * Since IKEv1 is not reliable for the Quick Mode responder,
-	     * we'll extend the number of retransmissions as well to
-	     * improve the reliability.
-	     */
-	    {
-		time_t delay = 0;
-		struct connection *c;
+	    retransmit_v1_msg(st);
+	    break;
 
-		passert(st != NULL);
-		c = st->st_connection;
-
-		DBG(DBG_CONTROL, DBG_log(
-		    "handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
-		    , ip_str(&peer), c->name, st->st_serialno));
-
-		if (st->st_retransmit < MAXIMUM_RETRANSMISSIONS)
-		    delay = EVENT_RETRANSMIT_DELAY_0 << (st->st_retransmit + 1);
-		else if ((st->st_state == STATE_MAIN_I1 || st->st_state == STATE_AGGR_I1)
-		&& c->sa_keying_tries == 0
-		&& st->st_retransmit < MAXIMUM_RETRANSMISSIONS_INITIAL)
-		    delay = EVENT_RETRANSMIT_DELAY_0 << MAXIMUM_RETRANSMISSIONS;
-		else if (st->st_state == STATE_QUICK_R1
-		&& st->st_retransmit < MAXIMUM_RETRANSMISSIONS_QUICK_R1)
-		    delay = EVENT_RETRANSMIT_DELAY_0 << MAXIMUM_RETRANSMISSIONS;
-
-		if (delay != 0)
-		{
-		    st->st_retransmit++;
-		    whack_log(RC_RETRANSMISSION
-			, "%s: retransmission; will wait %lus for response"
-			, enum_name(&state_names, st->st_state)
-			, (unsigned long)delay);
-		    send_packet(st, "EVENT_RETRANSMIT", TRUE);
-		    event_schedule(EVENT_RETRANSMIT, delay, st);
-		}
-		else
-		{
-		    /* check if we've tried rekeying enough times.
-		     * st->st_try == 0 means that this should be the only try.
-		     * c->sa_keying_tries == 0 means that there is no limit.
-		     */
-		    unsigned long try = st->st_try;
-		    unsigned long try_limit = c->sa_keying_tries;
-		    const char *details = "";
-
-		    switch (st->st_state)
-		    {
-		    case STATE_MAIN_I3:
-			details = ".  Possible authentication failure:"
-			    " no acceptable response to our"
-			    " first encrypted message";
-			break;
-		    case STATE_MAIN_I1:
-			details = ".  No response (or no acceptable response) to our"
-			    " first IKE message";
-			break;
-		    case STATE_QUICK_I1:
-			if (c->newest_ipsec_sa == SOS_NOBODY)
-			    details = ".  No acceptable response to our"
-				" first Quick Mode message:"
-				" perhaps peer likes no proposal";
-			break;
-		    default:
-			break;
-		    }
-		    loglog(RC_NORETRANSMISSION
-			, "max number of retransmissions (%d) reached %s%s"
-			, st->st_retransmit
-			, enum_show(&state_names, st->st_state), details);
-		    if (try != 0 && try != try_limit)
-		    {
-			/* A lot like EVENT_SA_REPLACE, but over again.
-			 * Since we know that st cannot be in use,
-			 * we can delete it right away.
-			 */
-			char story[80];	/* arbitrary limit */
-
-			try++;
-			snprintf(story, sizeof(story), try_limit == 0
-			    ? "starting keying attempt %ld of an unlimited number"
-			    : "starting keying attempt %ld of at most %ld"
-			    , try, try_limit);
-
-			if (st->st_whack_sock != NULL_FD)
-			{
-			    /* Release whack because the observer will get bored. */
-			    loglog(RC_COMMENT, "%s, but releasing whack"
-				, story);
-			    release_pending_whacks(st, story);
-			}
-			else
-			{
-			    /* no whack: just log to syslog */
-			    openswan_log("%s", story);
-			}
-			ipsecdoi_replace(st, try);
-		    }
-		    delete_state(st);
-		}
-	    }
+	case EVENT_v2_RETRANSMIT:
+	    retransmit_v2_msg(st);
 	    break;
 
 	case EVENT_SA_REPLACE:
@@ -397,7 +572,7 @@ handle_timer_event(void)
 		    DBG(DBG_LIFECYCLE
 			, openswan_log("replacing stale %s SA"
 			    , IS_PHASE1(st->st_state)? "ISAKMP" : "IPsec"));
-		    ipsecdoi_replace(st, 1);
+		    ipsecdoi_replace(st, LEMPTY, LEMPTY, 1);
 		}
 		delete_dpd_event(st);
 		event_schedule(EVENT_SA_EXPIRE, st->st_margin, st);
@@ -491,8 +666,10 @@ next_event(void)
 {
     time_t tm;
 
-    if (evlist == (struct event *) NULL)
+    if (evlist == (struct event *) NULL) {
+	DBG(DBG_CONTROLMORE, DBG_log("no pending events"));
 	return -1;
+    }
 
     tm = now();
 
@@ -519,6 +696,7 @@ next_event(void)
 void
 delete_event(struct state *st)
 {
+    DBG(DBG_CONTROLMORE, DBG_log("deleting event for #%ld", st->st_serialno));
     if (st->st_event != (struct event *) NULL)
     {
 	struct event **ev;
@@ -622,6 +800,37 @@ timer_list(void)
 	}
 
 	ev = ev->ev_next;
+    }
+}
+
+/*
+ * XXX --- hack alert, but I want to avoid adding new pluto-level
+ *   command line arguments for now --- they need to all be whack
+ * level items, and all command line arguments go away.
+*/
+void 
+init_timer(void)
+{
+    char *valstr;
+
+    valstr = getenv("PLUTO_EVENT_RETRANSMIT_DELAY");
+    if(valstr) {
+	event_retransmit_delay_0 = atoi(valstr);
+    }
+
+    valstr = getenv("PLUTO_MAXIMUM_RETRANSMISSIONS");
+    if(valstr) {
+	maximum_retransmissions  = atoi(valstr);
+    }
+
+    valstr = getenv("PLUTO_MAXIMUM_RETRANSMISSIONS_INITIAL");
+    if(valstr) {
+	maximum_retransmissions_initial = atoi(valstr);
+    }
+
+    valstr = getenv("PLUTO_MAXIMUM_RETRANSMISSIONS_QUICK_R1");
+    if(valstr) {
+	maximum_retransmissions_quick_r1= atoi(valstr);
     }
 }
 

@@ -1828,10 +1828,14 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 
 	    st->st_state = smc->next_state;
 
-	    /* Delete previous retransmission event.
-	     * New event will be scheduled below.
-	     */
-	    delete_event(st);
+	    /* Schedule for whatever timeout is specified */
+	    if(!md->event_already_set)
+	    {
+		/* Delete previous retransmission event.
+		 * New event will be scheduled below.
+		 */
+		delete_event(st);
+	    }
 
 	    /* update the previous packet history */
 	    update_retransmit_history(st, md);
@@ -1874,6 +1878,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	    TCLCALLOUT("adjustTimers", st, st->st_connection, md);
 
 	    /* Schedule for whatever timeout is specified */
+	    if(!md->event_already_set)
 	    {
 		time_t delay;
 		enum event_type kind = smc->timeout_event;
@@ -2125,6 +2130,10 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 		  break;
 	      }
 #endif
+
+	    if(st->st_rekeytov2) {
+		break;
+	    }
 
 	    DBG(DBG_CONTROL
 		, DBG_log("phase 1 is done, looking for phase 2 to unpend"));
