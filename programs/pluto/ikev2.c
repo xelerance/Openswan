@@ -658,7 +658,7 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	sadetails[0]='\0';
 
 	/* document IPsec SA details for admin's pleasure */
-	if(IS_CHILD_SA_ESTABLISHED(st->st_state))
+	if(IS_CHILD_SA_ESTABLISHED(st))
 	{
 	    char usubl[128], usubh[128];
 	    char tsubl[128], tsubh[128];
@@ -676,7 +676,7 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	    fmt_isakmp_sa_established(st, sadetails,sizeof(sadetails));
 	}
 	
-	if (IS_CHILD_SA_ESTABLISHED(st->st_state))
+	if (IS_CHILD_SA_ESTABLISHED(st))
 	{
 	    /* log our success */
 	    w = RC_SUCCESS;

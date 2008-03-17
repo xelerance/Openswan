@@ -309,7 +309,7 @@ enum phase1_role {
 #endif
 
 #define IS_PARENT_SA_ESTABLISHED(s) ((s) == STATE_PARENT_I2 || (s) == STATE_PARENT_R1)
-#define IS_CHILD_SA_ESTABLISHED(s)  ((s) == STATE_PARENT_I3 || (s) == STATE_PARENT_R2)
+#define IS_CHILD_SA_ESTABLISHED(st) (((st->st_state) == STATE_PARENT_I3 || (st->st_state) == STATE_PARENT_R2) && (st->st_childsa != NULL))
 
 
 #define IS_PARENT_SA(st) ((st)->st_clonedfrom == SOS_NOBODY)
