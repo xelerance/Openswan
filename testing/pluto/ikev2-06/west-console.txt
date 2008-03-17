@@ -9,6 +9,8 @@ west:~#
 west:~#
  iptables -A INPUT -i eth1 -s 192.0.2.0/24 -j DROP
 west:~#
+ iptables -F OUTPUT
+west:~#
  iptables -A OUTPUT -o eth1 -p udp --dport 500 -m recent --rcheck --hitcount 6 -j ACCEPT
 west:~#
  iptables -A OUTPUT -o eth1 -p udp --dport 500 -m recent --set -j DROP
@@ -60,7 +62,7 @@ west:~#
 000  
 000  
 west:~#
- ipsec whack --debug-control --debug-controlmore --debug-parsing --debug-crypt
+ ipsec whack --debug-control --debug-controlmore 
 west:~#
  /testing/pluto/bin/wait-until-pluto-started
 west:~#
@@ -111,16 +113,23 @@ west:~#
 002 "westnet--eastnet-ikev2" #3: extra debugging enabled for connection: whackwatch
 108 "westnet--eastnet-ikev2" #3: STATE_MAIN_I3: sent MI3, expecting MR3
 002 "westnet--eastnet-ikev2" #3: extra debugging enabled for connection: whackwatch
-003 "westnet--eastnet-ikev2" #3: ignoring Vendor ID payload [CAN-IKEv2]
+003 "westnet--eastnet-ikev2" #3: received Vendor ID payload [CAN-IKEv2]
 002 "westnet--eastnet-ikev2" #3: Main mode peer ID is ID_FQDN: '@east'
+002 "westnet--eastnet-ikev2" #3: Bid-down to IKEv1 attack detected, attempting to rekey connection with IKEv2
 004 "westnet--eastnet-ikev2" #3: STATE_MAIN_I4: ISAKMP SA established {auth=OAKLEY_RSA_SIG cipher=aes_128 prf=oakley_sha group=modp1536}
+002 "westnet--eastnet-ikev2" #3: extra debugging enabled for connection: whackwatch
 002 "westnet--eastnet-ikev2" #4: extra debugging enabled for connection: none
-002 "westnet--eastnet-ikev2" #4: initiating Quick Mode RSASIG+ENCRYPT+TUNNEL+PFS+UP+IKEv2ALLOW+IKEv2Init
+002 "westnet--eastnet-ikev2" #4: initiating v2 parent SA to replace #3
+133 "westnet--eastnet-ikev2" #4: STATE_PARENT_I1: initiate, replacing #3
+002 "westnet--eastnet-ikev2" #3: extra debugging enabled for connection: whackwatch
+002 "westnet--eastnet-ikev2" #3: ISAKMP SA expired (LATEST!)
+002 "westnet--eastnet-ikev2" #3: extra debugging enabled for connection: none
 002 "westnet--eastnet-ikev2" #4: extra debugging enabled for connection: whackwatch
-117 "westnet--eastnet-ikev2" #4: STATE_QUICK_I1: initiate
+133 "westnet--eastnet-ikev2" #4: STATE_PARENT_I1: sent v2I1, expected v2R1
 002 "westnet--eastnet-ikev2" #4: extra debugging enabled for connection: whackwatch
-002 "westnet--eastnet-ikev2" #4: extra debugging enabled for connection: whackwatch
-004 "westnet--eastnet-ikev2" #4: STATE_QUICK_I2: sent QI2, IPsec SA established tunnel mode
+134 "westnet--eastnet-ikev2" #5: STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 cipher=aes_128 integ=sha1 prf=oakley_sha group=modp1536}
+002 "westnet--eastnet-ikev2" #5: negotiated tunnel [192.0.1.0,192.0.1.255] -> [192.0.2.0,192.0.2.255]
+004 "westnet--eastnet-ikev2" #5: STATE_PARENT_I3: PARENT SA established tunnel mode
 west:~#
  ipsec look
 west NOW
