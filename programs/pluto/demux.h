@@ -75,6 +75,8 @@ struct msg_digest {
     pb_stream rbody;	/* room for reply body (after header) */
     notification_t note;	/* reason for failure */
     bool dpd;           /* Peer supports RFC 3706 DPD */
+    bool ikev2;         /* Peer supports IKEv2 */
+    bool event_already_set;
     stf_status result;  /* temporary stored here for access by Tcl */
 
 

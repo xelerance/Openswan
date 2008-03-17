@@ -395,7 +395,7 @@ void init_vendorid(void)
  * @param st State Structure (Hopefully initialized)
  * @return void
  */
-static void handle_known_vendorid (struct msg_digest *md UNUSED
+static void handle_known_vendorid (struct msg_digest *md 
 				   , const char *vidstr
 				   , size_t len
 				   , struct vid_struct *vid
@@ -462,6 +462,11 @@ static void handle_known_vendorid (struct msg_digest *md UNUSED
 	    md->dpd = 1;
 	    vid_usefull = 1;
             break;
+
+	case VID_MISC_IKEv2:
+	    md->ikev2 = TRUE;
+	    vid_usefull = 1;
+	    break;
 
 /* We only need these when dealing with XAUTH */
 #ifdef XAUTH
