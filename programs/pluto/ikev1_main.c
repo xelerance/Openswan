@@ -2213,8 +2213,9 @@ main_inR3_tail(struct msg_digest *md
 	    
 	    /* schedule an event to do this as soon as possible */
 	    md->event_already_set = TRUE;
+	    st->st_rekeytov2 = TRUE;
 	    delete_event(st);
-	    event_schedule(EVENT_SA_REPLACE, 1, st);
+	    event_schedule(EVENT_SA_REPLACE, 0, st);
 	}
     }
 

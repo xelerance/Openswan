@@ -2131,6 +2131,10 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	      }
 #endif
 
+	    if(st->st_rekeytov2) {
+		break;
+	    }
+
 	    DBG(DBG_CONTROL
 		, DBG_log("phase 1 is done, looking for phase 2 to unpend"));
 
