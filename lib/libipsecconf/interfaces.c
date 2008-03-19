@@ -33,7 +33,9 @@
 #include "ipsecconf/files.h"
 #include "ipsecconf/starterlog.h"
 
-#define MIN(a,b) ( ((a)>(b)) ? (b) : (a) )
+#ifndef MIN
+# define MIN(a,b) ( ((a)>(b)) ? (b) : (a) )
+#endif
 
 char *starter_find_physical_iface(int sock, char *iface)
 {
