@@ -855,13 +855,69 @@ enum_names ipsec_notification_names =
     { IPSEC_RESPONDER_LIFETIME, IPSEC_INITIAL_CONTACT,
 	ipsec_notification_name, &notification_status_names };
 
-static const char *ikev2_notify_name[] = {
-	   "v2N_RESERVED",
-	   "v2N_UNSUPPORTED_CRITICAL_PAYLOAD",
+static const char *const ikev2_notify_name_16384[] = {
+	   "v2N_INITIAL_CONTACT",
+	   "v2N_SET_WINDOW_SIZE", 
+	   "v2N_ADDITIONAL_TS_POSSIBLE",
+	   "v2N_IPCOMP_SUPPORTED",
+	   "v2N_NAT_DETECTION_SOURCE_IP",
+	   "v2N_NAT_DETECTION_DESTINATION_IP",
+	   "v2N_COOKIE",
+	   "v2N_USE_TRANSPORT_MODE",
+	   "v2N_HTTP_CERT_LOOKUP_SUPPORTED",
+	   "v2N_REKEY_SA",
+	   "v2N_ESP_TFC_PADDING_NOT_SUPPORTED",
+	   "v2N_NON_FIRST_FRAGMENTS_ALSO",
  	}; 
 
+static const char *const ikev2_notify_name[] = {
+	   "v2N_RESERVED",
+	   "v2N_UNSUPPORTED_CRITICAL_PAYLOAD",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_INVALID_IKE_SPI",
+	   "v2N_INVALID_MAJOR_VERSION",
+	   "v2N_UNUSED",
+	   "v2N_INVALID_SYNTAX",
+	   "v2N_UNUSED",
+	   "v2N_INVALID_MESSAGE_ID",
+	   "v2N_UNUSED",
+	   "v2N_INVALID_SPI",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_NO_PROPOSAL_CHOSEN",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_INVALID_KE_PAYLOAD",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_AUTHENTICATION_FAILED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_SINGLE_PAIR_REQUIRED",
+	   "v2N_NO_ADDITIONAL_SAS",
+	   "v2N_INTERNAL_ADDRESS_FAILURE",
+	   "v2N_FAILED_CP_REQUIRED",
+	   "v2N_TS_UNACCEPTABLE",
+	   "v2N_INVALID_SELECTORS",
+ 	}; 
+
+enum_names ikev2_notify_names_16384 = 
+    { INITIAL_CONTACT, NON_FIRST_FRAGMENTS_ALSO, ikev2_notify_name_16384, NULL};
+
 enum_names ikev2_notify_names = 
-    { 0, 1, ikev2_notify_name, NULL};
+    { 0, INVALID_SELECTORS, ikev2_notify_name, &ikev2_notify_names_16384};
 /* MODECFG */
 /*
  * From draft-dukes-ike-mode-cfg
