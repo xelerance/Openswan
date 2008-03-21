@@ -846,7 +846,6 @@ typedef enum {
     R_U_THERE =       36136,
     R_U_THERE_ACK =   36137,
 
-
     /* IKEv2 */
     UNSUPPORTED_CRITICAL_PAYLOAD = 1,
     INVALID_IKE_SPI              = 4,

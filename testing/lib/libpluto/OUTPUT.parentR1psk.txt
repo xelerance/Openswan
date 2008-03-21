@@ -226,7 +226,7 @@ sending 308 bytes for STATE_IKEv2_START through eth0:500 to 192.1.2.45:500 (usin
 ../parentR1psk leak: 2 * hasher name
 TCPDUMP output
 reading from file parentR1psk.pcap, link-type NULL (BSD loopback)
-19:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 336, bad cksum 0 (->f556)!)
+00:00:00.000000 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 336, bad cksum 0 (->f556)!)
     192.1.2.23.500 > 192.1.2.45.500: [no cksum] isakmp 2.0 msgid 00000000 cookie 0001020304050607->c02e7a3031a03188: parent_sa ikev2_init[]:
     (sa[C]: len=40
         (p: #1 protoid=isakmp transform=4 len=40

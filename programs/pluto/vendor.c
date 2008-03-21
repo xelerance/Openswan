@@ -253,6 +253,8 @@ static struct vid_struct _vid_tab[] = {
 		"\xaf\xca\xd7\x13\x68\xa1\xf1\xc9\x6b\x86\x96\xfc\x77\x57\x01\x00",
 		16 },
 
+	{ VID_MISC_IKEv2, VID_STRING|VID_KEEP, "IKEv2", "CAN-IKEv2", NULL, 0},
+
 	/**
 	 * Netscreen:
 	 * 4865617274426561745f4e6f74696679386b0100  (HeartBeat_Notify + 386b0100)
