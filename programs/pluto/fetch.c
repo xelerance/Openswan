@@ -41,6 +41,7 @@
 #include "whack.h"
 #include "ocsp.h"
 #include "fetch.h"
+#include "oswtime.h"
 
 #ifdef LIBCURL
 #define LIBCURL_UNUSED 

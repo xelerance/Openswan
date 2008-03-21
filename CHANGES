@@ -1,5 +1,9 @@
 Please see docs/KNOWN_BUGS file for more information
 
+v2.5.18
+* Bugtracker bugs fixed
+ #917: pluto fails to compile when using pam. xauth [folti]
+
 v2.5.17
 * Implemented netlink_shunt_eroute() [paul]
 * Simplified _updown.netkey [tuomo]
