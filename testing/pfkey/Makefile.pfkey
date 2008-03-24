@@ -1,0 +1,34 @@
+include ${srcdir}../Makefile.unit-settings
+
+INCLUDES+=-I${OPENSWANSRCDIR} -I${KLIPSINC} -I${OPENSWANSRCDIR}/include
+UCFLAGS+=${USERCOMPILE} ${PORTINCLUDE} ${INCLUDES}
+
+all:	check
+
+${TESTCASE}:	${TESTCASE}.o ${IPSEC_OBJS} Makefile
+	${CC} -g -o ${TESTCASE} ${TESTCASE}.o ${IPSEC_OBJS} ${KUTILLIB} ${OPENSWANLIB} ${OSWLOGLIB} ${OPENSWANLIB} -lefence
+
+${TESTCASE}.o: ${srcdir}${TESTCASE}.c 
+	${CC} ${UCFLAGS} -c -o ${TESTCASE}.o ${srcdir}${TESTCASE}.c
+
+# build version.c using version number from Makefile.ver
+version.c:	${KLIPSSRC}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
+	sed '/"/s/xxx/$(IPSECVERSION)/' ${KLIPSSRC}/version.in.c >$@
+
+ifneq (${PACKFILE},)
+${TESTCASE}.o: ${PACKFILE}.c 
+endif
+
+${PACKFILE}.c: ${INPUTS}
+	${PCAP2SKB} ${INPUTS} >$*.c
+
+clean:
+	rm -rf *.o ${PACKFILE}.c ${TESTCASE}
+
+check:	${TESTCASE}
+	-rm -f pfkey.out
+	./${TESTCASE}-run.sh | sed -f ${srcdir}../conup.sed | tee ${TESTCASE}.conn.new  | diff - ${srcdir}${TESTCASE}.conn
+	hexdump -C pfkey.out | sed -f ${srcdir}../fixup.sed | tee ${TESTCASE}.out.new | diff - ${srcdir}${TESTCASE}.out
+
+install:	
+	@true

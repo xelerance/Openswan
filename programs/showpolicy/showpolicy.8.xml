@@ -19,6 +19,12 @@
     <arg choice='plain'><replaceable>showpolicy</replaceable></arg>
     <sbr/>
 </cmdsynopsis>
+<cmdsynopsis>
+  <command>ipsec showpolicy</command>    
+    <arg choice='plain'>--udp<replaceable>port</replaceable> --sockpolicy</arg>
+    <arg choice='plain'>--packetcount<replaceable>num</replaceable> </arg>
+    <sbr/>
+</cmdsynopsis>
 </refsynopsisdiv>
 
 
@@ -30,15 +36,22 @@ function on the file description which is its stdin.</para>
 
 <para>It then dumps the resulting query in a human readable form.</para>
 
+<para>With the --udp option, it opens a UDP port, and dumps policy on
+each packet received on that port using the IP_IPSEC_RECVREF socket option.</para> 
+
+<para>The --maxpacket option causes the program to exit after processing that many packets. This can be used in test cases.</para>
+
 <para>This is a test program. One might run it from inetd, via:</para>
-<variablelist remap='TP'>
-  <varlistentry>
-  <term>discard stream tcp nowait nobody /usr/local/libexec/ipsec/showpolicy showpolicy</term>
-  <listitem>
-<para></para> <!-- FIXME: blank list item -->
-  </listitem>
-  </varlistentry>
-</variablelist>
+<para>
+  discard stream tcp nowait nobody /usr/local/libexec/ipsec/showpolicy showpolicy
+</para>
+
+<para>One could also run it from the command line via:</para>
+<para>
+  ipsec showpolicy --udp 9 --sockpolicy --maxpacket 2
+</para>
+
+
 </refsect1>
 
 <refsect1 id='files'><title>FILES</title>

@@ -7,8 +7,9 @@ ac.o: ac.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/passert.h \
   ../../include/ietf_constants.h \
   ../../include/pluto_constants.h \
-  ../../include/names_constant.h ../../include/constants.h \
-  ../../include/oswlog.h ../../include/oswtime.h defs.h \
+  ../../include/names_constant.h \
+  ../../include/constants.h ../../include/oswlog.h \
+  ../../include/oswtime.h defs.h \
   ../../include/oswalloc.h ../../include/asn1.h \
   ../../include/oid.h ../../include/ac.h \
   ../../include/id.h ../../include/x509.h \
@@ -935,6 +936,7 @@ plutoalg.o: plutoalg.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
   ../../linux/include/openswan/pfkeyv2.h \
+  ../../include/linux/pfkeyv2.h \
   ../../linux/include/openswan/passert.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../ports/linux/include/sysdep.h \
@@ -1055,8 +1057,7 @@ rnd.o: rnd.c ../../linux/include/openswan.h \
   ../../include/oswalloc.h ../../include/constants.h rnd.h \
   log.h ../../include/oswlog.h timer.h \
   ../../include/oswtime.h
-server.o: server.c ../../include/arpa/nameser.h \
-  ../../linux/include/openswan.h \
+smallprime.o: smallprime.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
   ../../ports/linux/include/sysdep.h \

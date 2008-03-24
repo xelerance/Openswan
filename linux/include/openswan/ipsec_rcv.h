@@ -88,6 +88,7 @@ struct ipsec_rcv_state {
 	int authlen;                   /* how big is the auth data at end */
 	int hard_header_len;           /* layer 2 size */
 	int iphlen;                    /* how big is IP header */
+	unsigned int   transport_direct:1;
 	struct auth_alg *authfuncs;
 	ip_said said;
 	char   sa[SATOT_BUF];

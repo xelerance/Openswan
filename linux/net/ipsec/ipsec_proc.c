@@ -106,6 +106,20 @@ struct ipsec_birth_reply ipsec_ipv6_birth_packet;
 #ifdef CONFIG_KLIPS_DEBUG
 int debug_esp = 0;
 int debug_ah = 0;
+int sysctl_ipsec_inbound_policy_check = 1;
+int debug_tunnel = 0;
+int debug_xmit = 0;
+int debug_xform = 0;
+int debug_eroute = 0;
+int debug_spi = 0;
+int debug_radij = 0;
+int debug_pfkey = 0;
+int debug_rcv = 0;
+int debug_netlink = 0;
+int sysctl_ipsec_debug_verbose = 0;
+int sysctl_ipsec_debug_ipcomp =0;
+int sysctl_ipsec_icmp = 0;
+int sysctl_ipsec_tos = 0;
 #endif /* CONFIG_KLIPS_DEBUG */
 
 #define DECREMENT_UNSIGNED(X, amount) ((amount < (X)) ? (X)-amount : 0)
@@ -177,7 +191,7 @@ ipsec_spi_get_info(char *buffer,
 		for (sa_p = ipsec_sadb_hash[i];
 		     sa_p;
 		     sa_p = sa_p->ips_hnext) {
-			atomic_inc(&sa_p->ips_refcount);
+			ipsec_sa_get(sa_p);
 			sa_len = satot(&sa_p->ips_said, 'x', sa, sizeof(sa));
 			len += ipsec_snprintf(buffer+len, length-len, "%s ",
 				       sa_len ? sa : " (error)");
@@ -376,11 +390,20 @@ ipsec_spi_get_info(char *buffer,
 			len += ipsec_snprintf(buffer + len, length-len, " natencap=na");
 #endif /* CONFIG_IPSEC_NAT_TRAVERSAL */
 				
+			/* we decrement by one, because this SA has been referenced in order to dump this info */
 			len += ipsec_snprintf(buffer + len,length-len, " refcount=%d",
-				       atomic_read(&sa_p->ips_refcount));
+				       atomic_read(&sa_p->ips_refcount)-1);
 
 			len += ipsec_snprintf(buffer+len, length-len, " ref=%d",
 				       sa_p->ips_ref);
+			len += ipsec_snprintf(buffer+len, length-len, " refhim=%d",
+				       sa_p->ips_refhim);
+
+			if(sa_p->ips_out) {
+				len += ipsec_snprintf(buffer+len, length-len, " outif=%s:%d",
+						      sa_p->ips_out->name,
+						      sa_p->ips_transport_direct);
+			}
 #ifdef CONFIG_KLIPS_DEBUG
 			if(debug_xform) {
 			len += ipsec_snprintf(buffer+len, length-len, " reftable=%lu refentry=%lu",
@@ -391,7 +414,7 @@ ipsec_spi_get_info(char *buffer,
 
 			len += ipsec_snprintf(buffer+len, length-len, "\n");
 
-                        atomic_dec(&sa_p->ips_refcount);   
+                        ipsec_sa_put(sa_p);   
                        
                         if (len >= max_content) {
                                /* we've done all that can fit -- stop loops */
@@ -450,39 +473,35 @@ ipsec_spigrp_get_info(char *buffer,
 		     sa_p != NULL;
 		     sa_p = sa_p->ips_hnext)
 		{
-			atomic_inc(&sa_p->ips_refcount);
-			if(sa_p->ips_inext == NULL) {
-				sa_p2 = sa_p;
-				while(sa_p2 != NULL) {
-					atomic_inc(&sa_p2->ips_refcount);
-					sa_len = satot(&sa_p2->ips_said,
-						       'x', sa, sizeof(sa));
-					
-					len += ipsec_snprintf(buffer+len, length-len, "%s ",
-						       sa_len ? sa : " (error)");
-					atomic_dec(&sa_p2->ips_refcount);
-					sa_p2 = sa_p2->ips_onext;
-				}
-				len += ipsec_snprintf(buffer+len, length-len, "\n");
-                       }
-
-                       atomic_dec(&sa_p->ips_refcount);
-                                        
-                       if (len >= max_content) {
-                               /* we've done all that can fit -- stop loops */
-                               len = max_content;      /* truncate crap */
-                               goto done_spigrp_i;
-                       } else {
-                               const off_t pos = begin + len;
-
-                               if (pos <= offset) {
-                                       /* all is before first interesting character:
-                                        * discard, but note where we are.
-                                        */
+			sa_p2 = sa_p;
+			while(sa_p2 != NULL) {
+				struct ipsec_sa *sa2n;
+				sa_len = satot(&sa_p2->ips_said,
+					       'x', sa, sizeof(sa));
+				
+				len += ipsec_snprintf(buffer+len, length-len, "%s ",
+						      sa_len ? sa : " (error)");
+				
+				sa2n = sa_p2->ips_next;
+				sa_p2 = sa2n;
+			}
+			len += ipsec_snprintf(buffer+len, length-len, "\n");
+			
+			if (len >= max_content) {
+				/* we've done all that can fit -- stop loops */
+				len = max_content;      /* truncate crap */
+				goto done_spigrp_i;
+			} else {
+				const off_t pos = begin + len;
+				
+				if (pos <= offset) {
+					/* all is before first interesting character:
+					 * discard, but note where we are.
+					 */
                                         len = 0;
                                         begin = pos;
-                               }
-                       }
+				}
+			}
 		}
 	}
 

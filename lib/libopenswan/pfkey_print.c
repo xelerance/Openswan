@@ -60,7 +60,7 @@ pfkey_print(struct sadb_msg *msg, FILE *out)
 	switch(se->sadb_ext_type) {
 	case SADB_EXT_SA:
 	  {
-	    struct sadb_sa *sa = (struct sadb_sa *)se;
+	    struct k_sadb_sa *sa = (struct k_sadb_sa *)se;
 	    fprintf(out, "spi=%08x replay=%d state=%d auth=%d encrypt=%d flags=%08x ref=%08x}",
 		    (int)sa->sadb_sa_spi,
 		    sa->sadb_sa_replay,
@@ -113,12 +113,11 @@ pfkey_print(struct sadb_msg *msg, FILE *out)
 	  {
 	    struct sadb_lifetime *life = (struct sadb_lifetime *)se;
 
-	    fprintf(out, "allocations=%d bytes=%qd addtime=%qd usetime=%qd packets=%d",
+	    fprintf(out, "allocations=%d bytes=%qd addtime=%qd usetime=%qd",
 		    (int)life->sadb_lifetime_allocations,
 		    (long long)life->sadb_lifetime_bytes,
 		    (long long)life->sadb_lifetime_addtime,
-		    (long long)life->sadb_lifetime_usetime,
-		    (int)life->sadb_x_lifetime_packets);
+		    (long long)life->sadb_lifetime_usetime);
 	    fprintf(out, " } ");
 	  }
 	  break;

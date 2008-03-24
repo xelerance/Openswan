@@ -1,3 +1,7 @@
+INFO:klips_debug:ipsec_sadb_init: initialising main table of size 16 (2 ^ 4).
+INFO:klips_debug:ipsec_SArefSubTable_alloc: allocating 16384 bytes for table 0 of 16.
+INFO:klips_debug:ipsec_SArefSubTable_alloc: initialising 4096 elements (2 ^ 12) of table 0.
+INFO:klips_debug:ipsec_saref_freelist_init: initialising 256 elements of FreeList.
 INFO:klips_info:ipsec_alg_init: KLIPS alg v=0.8.1-0 (EALG_MAX=255, AALG_MAX=251)
 INFO:klips_info:ipsec_alg_init: calling ipsec_alg_static_init()
 ERR;pfkey_list_insert_supported returned -1. Loading anyway.
@@ -5,13 +9,31 @@ ipsec_aes_init(alg_type=15 alg_id=12 name=aes): ret=0
 DEBUG:klips_debug: experimental ipsec_alg_AES_MAC not registered [Ok] (auth_id=0)
 ERR;pfkey_list_insert_supported returned -1. Loading anyway.
 ipsec_3des_init(alg_type=15 alg_id=3 name=3des): ret=0
+INFO:klips_debug:ipsec_sa_get: ipsec_sa SA:unk0:0@<invalid>, ref:0 reference count incremented.
+INFO:klips_debug:ipsec_SAref_alloc: SAref requested... head=0, cont=1, tail=0, listsize=256.
+INFO:klips_debug:ipsec_SAref_alloc: FreeList empty, recycling...
+INFO:klips_debug:ipsec_SAref_recycle: recycling, continuing from SAref=1 (0p(nil)), table=0, entry=1.
+INFO:klips_debug:ipsec_SAref_recycle: SArefFreeList refilled.
+INFO:klips_debug:ipsec_SAref_alloc: allocating SAref=1, table=0, entry=1 of 65536.
+INFO:ipsec_sa_alloc: allocated 532 bytes for ipsec_sa struct=0p0xABCDABCD ref=0.
+INFO:klips_debug:ipsec_sa_get: ipsec_sa SA:unk0:0@<invalid>, ref:1 reference count incremented.
+INFO:ipsec_sa_alloc: SAref[1]=0xABCDABCD
+INFO:klips_debug:ipsec_sa_get: ipsec_sa SA:unk0:0@<invalid>, ref:0 reference count incremented.
+INFO:klips_debug:ipsec_SAref_alloc: SAref requested... head=2, cont=256, tail=255, listsize=256.
+INFO:klips_debug:ipsec_SAref_alloc: allocating SAref=2, table=0, entry=2 of 65536.
+INFO:ipsec_sa_alloc: allocated 532 bytes for ipsec_sa struct=0p0xABCDABCD ref=0.
+INFO:klips_debug:ipsec_sa_get: ipsec_sa SA:unk0:0@<invalid>, ref:2 reference count incremented.
+INFO:ipsec_sa_alloc: SAref[2]=0xABCDABCD
+INFO:klips_debug:ipsec_sa_get: ipsec_sa SA:esp.12345678@192.1.2.45, ref:2 reference count incremented.
+INFO:ipsec_sa_put: ipsec_sa 0xBCBCBCBC SA:esp.12345678@192.1.2.45, ref:2 reference count decremented.
+INFO:klips_debug:ipsec_sa_getbyid: linked entry in ipsec_sa table for hash=130 of SA:esp.12345678@192.1.2.45 requested.
+INFO:klips_debug:ipsec_sa_get: ipsec_sa SA:esp.12345678@192.1.2.45, ref:2 reference count incremented.
 INFO:klips_debug:ipsec_xmit_encap_bundle: found ipsec_sa -- SA:<ESP_3DES_HMAC_MD5> esp.12345678@192.1.2.45
 INFO:klips_debug:ipsec_xmit_encap_bundle: calling room for <ESP_3DES_HMAC_MD5>, SA:esp.12345678@192.1.2.45
 INFO:klips_debug:ipsec_xmit_encap_bundle: Required head,tailroom: 16,20
 INFO:klips_debug:ipsec_xmit_encap_bundle: existing head,tailroom: 78,64 before applying xforms with head,tailroom: 16,20 .
 INFO:klips_debug:ipsec_xmit_encap_bundle: mtu:1500 physmtu:1500 tothr:16 tottr:20 mtudiff:36 ippkttotlen:84
 INFO:klips_info:ipsec_xmit_encap_bundle: dev ifX mtu of 1500 decreased by 37 to 1463
-INFO:klips_debug:ipsec_tunnel_start_xmit: NAT-T & TRANSPORT: non TCP/UDP packet -- do nothing
 INFO:klips_debug:ipsec_xmit_encap_bundle: hard header already stripped.
 INFO:klips_debug:ipsec_xmit_encap_bundle: data fits in existing skb
 INFO:klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:84 id:0 DF frag_off:0 ttl:62 proto:1 (ICMP) chk:47526 saddr:192.0.2.1 daddr:192.0.1.1 type:code=8:0
@@ -58,7 +80,7 @@ INFO:klips_debug:   @040: 85 9b c7 cb 55 0a db 28 8f 0b 2e fa 99 11 f3 fd
 INFO:klips_debug:   @050: db ba a9 3e de 0c 02 ba
 INFO:klips_dmp: at ictx hash, len=20:
 INFO:klips_debug:   @000: f8 d2 6e a8 0d de 7d a8 0b c1 e4 0f ad 38 01 d3
-INFO:klips_debug:   @010: f0 3d 1b 40
+INFO:klips_debug:   @010: IV IV IV IV
 INFO:klips_dmp: at octx, len=88:
 INFO:klips_debug:   @000: df 34 22 04 0b 3c 66 d4 7c 72 c3 77 48 0f 0e 2e
 INFO:klips_debug:   @010: 00 02 00 00 00 00 00 00 db 39 db 39 db 39 db 39
@@ -75,7 +97,7 @@ INFO:klips_debug:   @040: 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c 5c
 INFO:klips_debug:   @050: 5c 5c 5c 5c 5c 5c 5c 5c
 INFO:klips_dmp: at octx hash, len=20:
 INFO:klips_debug:   @000: c2 6c 9e 92 75 a1 a1 f9 9f bd 91 82 fb c5 bd ca
-INFO:klips_debug:   @010: f0 3d 1b 40
+INFO:klips_debug:   @010: IV IV IV IV
 INFO:klips_debug:ipsec_xmit_encap_once: after <ESP_3DES_HMAC_MD5>, SA:esp.12345678@192.1.2.45:
 INFO:klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:120 id:0 DF frag_off:0 ttl:62 proto:50 chk:47441 saddr:192.0.2.1 daddr:192.0.1.1
 INFO:klips_dmp: at ip_print, len=100:
@@ -95,6 +117,7 @@ INFO:klips_debug:   @030: 8f 0b 2e fa 99 11 f3 fd db ba a9 3e de 0c 02 ba
 INFO:klips_debug:   @040: c8 4c 57 8d 56 4a 24 e8 be a8 68 a6 05 c1 4f 42
 INFO:klips_debug:   @050: 3c 87 e6 23 90 61 15 f7 c2 6c 9e 92 75 a1 a1 f9
 INFO:klips_debug:   @060: 9f bd 91 82
+INFO:ipsec_sa_put: ipsec_sa 0xBCBCBCBC SA:esp.12345678@192.1.2.45, ref:2 reference count decremented.
 INFO:klips_debug:   IP: ihl:20 ver:4 tos:0 tlen:120 id:0 DF frag_off:0 ttl:62 proto:50 chk:47441 saddr:192.0.2.1 daddr:192.0.1.1
 INFO:klips_dmp: at ip_print, len=100:
 INFO:klips_debug:   @000: 12 34 56 78 00 00 00 01 97 ab 8a 1b f0 af b9 61

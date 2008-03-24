@@ -7,3 +7,4 @@ UMLPOOL
 testing/.*/OUTPUT
 testing/.*/OUTPUT/.*
 umlsetup.sh
+*~

@@ -80,7 +80,9 @@ struct kernel_sa {
 	unsigned enckeylen;
 	unsigned char *enckey;
 
-	IPsecSAref_t ref, refhim;
+	int outif;
+	IPsecSAref_t ref;
+	IPsecSAref_t refhim;
 
 	int encapsulation;
 #ifdef NAT_TRAVERSAL
@@ -137,12 +139,12 @@ struct kernel_ops {
 			 , enum pluto_sadb_operations op
 			 , const char *opname);
     bool (*sag_eroute)(struct state *st, struct spd_route *sr
-		       , unsigned op, const char *opname);
+		       , enum pluto_sadb_operations op, const char *opname);
     bool (*eroute_idle)(struct state *st, time_t idle_max);
     void (*remove_orphaned_holds)(int transportproto
 				  , const ip_subnet *ours
 				  , const ip_subnet *his);
-    bool (*add_sa)(const struct kernel_sa *sa, bool replace);
+    bool (*add_sa)(struct kernel_sa *sa, bool replace);
     bool (*grp_sa)(const struct kernel_sa *sa_outer,
 		   const struct kernel_sa *sa_inner);
     bool (*del_sa)(const struct kernel_sa *sa);
@@ -167,6 +169,7 @@ extern int create_socket(struct raw_iface *ifp, const char *v_name, int port);
 # define IPSECDEVPREFIX "ipsec"
 #endif
 
+extern int useful_mastno;
 #ifndef MASTDEVPREFIX
 # define MASTDEVPREFIX  "mast"
 #endif

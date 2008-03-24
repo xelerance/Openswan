@@ -79,17 +79,17 @@ char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.53 2005/11/09 00:30
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
 void
-pfkey_extensions_init(struct sadb_ext *extensions[SADB_EXT_MAX + 1])
+pfkey_extensions_init(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 {
 	int i;
 	
-	for (i = 0; i != SADB_EXT_MAX + 1; i++) {
+	for (i = 0; i != K_SADB_EXT_MAX + 1; i++) {
 		extensions[i] = NULL;
 	}
 }
 
 void
-pfkey_extensions_free(struct sadb_ext *extensions[SADB_EXT_MAX + 1])
+pfkey_extensions_free(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 {
 	int i;
 	
@@ -103,7 +103,7 @@ pfkey_extensions_free(struct sadb_ext *extensions[SADB_EXT_MAX + 1])
 		extensions[0] = NULL;
 	}
 	
-	for (i = 1; i != SADB_EXT_MAX + 1; i++) {
+	for (i = 1; i != K_SADB_EXT_MAX + 1; i++) {
 		if(extensions[i]) {
 			memset(extensions[i], 0, extensions[i]->sadb_ext_len * IPSEC_PFKEYv2_ALIGN);
 			FREE(extensions[i]);
@@ -145,30 +145,26 @@ pfkey_msg_hdr_build(struct sadb_ext**	pfkey_ext,
 		*pfkey_ext);
 	/* sanity checks... */
 	if(pfkey_msg) {
-		DEBUGGING(PF_KEY_DEBUG_BUILD,
-			"pfkey_msg_hdr_build: "
+		ERROR("pfkey_msg_hdr_build: "
 			"why is pfkey_msg already pointing to something?\n");
 		SENDERR(EINVAL);
 	}
 
 	if(!msg_type) {
-		DEBUGGING(PF_KEY_DEBUG_BUILD,
-			"pfkey_msg_hdr_build: "
+		ERROR("pfkey_msg_hdr_build: "
 			"msg type not set, must be non-zero..\n");
 		SENDERR(EINVAL);
 	}
 
-	if(msg_type > SADB_MAX) {
-		DEBUGGING(PF_KEY_DEBUG_BUILD,
-			"pfkey_msg_hdr_build: "
+	if(msg_type > K_SADB_MAX) {
+		ERROR("pfkey_msg_hdr_build: "
 			"msg type too large:%d.\n",
 			msg_type);
 		SENDERR(EINVAL);
 	}
 
-	if(satype > SADB_SATYPE_MAX) {
-		DEBUGGING(PF_KEY_DEBUG_BUILD,
-			"pfkey_msg_hdr_build: "
+	if(satype > K_SADB_SATYPE_MAX) {
+		ERROR("pfkey_msg_hdr_build: "
 			"satype %d > max %d\n", 
 			satype, SADB_SATYPE_MAX);
 		SENDERR(EINVAL);
@@ -178,8 +174,7 @@ pfkey_msg_hdr_build(struct sadb_ext**	pfkey_ext,
 	*pfkey_ext = (struct sadb_ext*)pfkey_msg;
 	
 	if(pfkey_msg == NULL) {
-		DEBUGGING(PF_KEY_DEBUG_BUILD,
-			"pfkey_msg_hdr_build: "
+		ERROR("pfkey_msg_hdr_build: "
 			"memory allocation failed\n");
 		SENDERR(ENOMEM);
 	}
@@ -205,29 +200,23 @@ errlab:
 	return error;
 }	
 
+
 int
-pfkey_sa_ref_build(struct sadb_ext **		pfkey_ext,
-		   uint16_t			exttype,
-		   uint32_t			spi,
-		   uint8_t			replay_window,
-		   uint8_t			sa_state,
-		   uint8_t			auth,
-		   uint8_t			encrypt,
-		   uint32_t			flags,
-		   uint32_t/*IPsecSAref_t*/	ref)
+pfkey_sa_builds(struct sadb_ext **pfkey_ext,
+		struct sadb_builds sab)
 {
 	int error = 0;
-	struct sadb_sa *pfkey_sa = (struct sadb_sa *)*pfkey_ext;
+	struct k_sadb_sa *pfkey_sa = (struct k_sadb_sa *)*pfkey_ext;
 
 	DEBUGGING(PF_KEY_DEBUG_BUILD,
 		    "pfkey_sa_build: "
 		    "spi=%08x replay=%d sa_state=%d auth=%d encrypt=%d flags=%d\n",
-		    ntohl(spi), /* in network order */
-		    replay_window,
-		    sa_state,
-		    auth,
-		    encrypt,
-		    flags);
+		    ntohl(sab.sa_base.sadb_sa_spi), /* in network order */
+		    sab.sa_base.sadb_sa_replay,
+		    sab.sa_base.sadb_sa_state,
+		    sab.sa_base.sadb_sa_auth,
+		    sab.sa_base.sadb_sa_encrypt,
+		    sab.sa_base.sadb_sa_flags);
 	/* sanity checks... */
 	if(pfkey_sa) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
@@ -236,72 +225,72 @@ pfkey_sa_ref_build(struct sadb_ext **		pfkey_ext,
 		SENDERR(EINVAL);
 	}
 
-	if(exttype != SADB_EXT_SA &&
-	   exttype != SADB_X_EXT_SA2) {
+	if(sab.sa_base.sadb_sa_exttype != SADB_EXT_SA &&
+	   sab.sa_base.sadb_sa_exttype != K_SADB_X_EXT_SA2) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"invalid exttype=%d.\n",
-			exttype);
+			sab.sa_base.sadb_sa_exttype);
 		SENDERR(EINVAL);
 	}
 
-	if(replay_window > 64) {
+	if(sab.sa_base.sadb_sa_replay > 64) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"replay window size: %d -- must be 0 <= size <= 64\n",
-			replay_window);
+			sab.sa_base.sadb_sa_replay);
 		SENDERR(EINVAL);
 	}
 
-	if(auth > SADB_AALG_MAX) {
+	if(sab.sa_base.sadb_sa_auth > SADB_AALG_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"auth=%d > SADB_AALG_MAX=%d.\n",
-			auth,
+			sab.sa_base.sadb_sa_auth,
 			SADB_AALG_MAX);
 		SENDERR(EINVAL);
 	}
 
-#if SADB_EALG_MAX < 255	
-	if(encrypt > SADB_EALG_MAX) {
+#if K_SADB_EALG_MAX < 255	
+	if(sab.sa_base.sadb_sa_encrypt > K_SADB_EALG_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
-			"encrypt=%d > SADB_EALG_MAX=%d.\n",
-			encrypt,
-			SADB_EALG_MAX);
+			"encrypt=%d > K_SADB_EALG_MAX=%d.\n",
+			sab.sa_base.sadb_sa_encrypt,
+			K_SADB_EALG_MAX);
 		SENDERR(EINVAL);
 	}
 #endif
 
-	if(sa_state > K_SADB_SASTATE_MAX) {
+	if(sab.sa_base.sadb_sa_state > K_SADB_SASTATE_MAX) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"sa_state=%d exceeds MAX=%d.\n",
-			sa_state,
+			sab.sa_base.sadb_sa_state,
 			K_SADB_SASTATE_MAX);
 		SENDERR(EINVAL);
 	}
 
-	if(sa_state == K_SADB_SASTATE_DEAD) {
+	if(sab.sa_base.sadb_sa_state == K_SADB_SASTATE_DEAD) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			"pfkey_sa_build: "
 			"sa_state=%d is DEAD=%d is not allowed.\n",
-			sa_state,
+			sab.sa_base.sadb_sa_state,
 			K_SADB_SASTATE_DEAD);
 		SENDERR(EINVAL);
 	}
 	
-	if((IPSEC_SAREF_NULL != ref) && (ref >= (1 << IPSEC_SA_REF_TABLE_IDX_WIDTH))) {
+	if((IPSEC_SAREF_NULL != sab.sa_base.sadb_x_sa_ref) && (sab.sa_base.sadb_x_sa_ref >= (1 << IPSEC_SA_REF_TABLE_IDX_WIDTH))) {
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
 			  "pfkey_sa_build: "
 			  "SAref=%d must be (SAref == IPSEC_SAREF_NULL(%d) || SAref < IPSEC_SA_REF_TABLE_NUM_ENTRIES(%d)).\n",
-			  ref,
+			  sab.sa_base.sadb_x_sa_ref,
 			  IPSEC_SAREF_NULL,
 			  IPSEC_SA_REF_TABLE_NUM_ENTRIES);
 		SENDERR(EINVAL);
 	}
 	
-	pfkey_sa = (struct sadb_sa*)MALLOC(sizeof(struct sadb_sa));
+	pfkey_sa = (struct k_sadb_sa*)MALLOC(sizeof(struct k_sadb_sa));
 	*pfkey_ext = (struct sadb_ext*)pfkey_sa;
 
 	if(pfkey_sa == NULL) {
@@ -310,17 +299,10 @@ pfkey_sa_ref_build(struct sadb_ext **		pfkey_ext,
 			"memory allocation failed\n");
 		SENDERR(ENOMEM);
 	}
-	memset(pfkey_sa, 0, sizeof(struct sadb_sa));
-	
+	memset(pfkey_sa, 0, sizeof(struct k_sadb_sa));
+
+	*pfkey_sa = sab.sa_base;
 	pfkey_sa->sadb_sa_len = sizeof(*pfkey_sa) / IPSEC_PFKEYv2_ALIGN;
-	pfkey_sa->sadb_sa_exttype = exttype;
-	pfkey_sa->sadb_sa_spi = spi;
-	pfkey_sa->sadb_sa_replay = replay_window;
-	pfkey_sa->sadb_sa_state = sa_state;
-	pfkey_sa->sadb_sa_auth = auth;
-	pfkey_sa->sadb_sa_encrypt = encrypt;
-	pfkey_sa->sadb_sa_flags = flags;
-	pfkey_sa->sadb_x_sa_ref = ref;  
 
 errlab:
 	return error;
@@ -336,15 +318,19 @@ pfkey_sa_build(struct sadb_ext **	pfkey_ext,
 	       uint8_t			encrypt,
 	       uint32_t			flags)
 {
-	return pfkey_sa_ref_build(pfkey_ext,
-			   exttype,
-			   spi,
-			   replay_window,
-			   sa_state,
-			   auth,
-			   encrypt,
-			   flags,
-			   IPSEC_SAREF_NULL);
+	struct sadb_builds sab;
+	
+	memset(&sab, 0, sizeof(sab));
+	sab.sa_base.sadb_sa_exttype = exttype;
+	sab.sa_base.sadb_sa_spi     = spi;
+	sab.sa_base.sadb_sa_replay  = replay_window;
+	sab.sa_base.sadb_sa_state   = sa_state;
+	sab.sa_base.sadb_sa_auth    = auth;
+	sab.sa_base.sadb_sa_encrypt = encrypt;
+	sab.sa_base.sadb_sa_flags   = flags;
+	sab.sa_base.sadb_x_sa_ref   = IPSEC_SAREF_NULL;
+
+	return pfkey_sa_builds(pfkey_ext, sab);
 }
 
 int
@@ -396,7 +382,6 @@ pfkey_lifetime_build(struct sadb_ext **	pfkey_ext,
 	pfkey_lifetime->sadb_lifetime_bytes = bytes;
 	pfkey_lifetime->sadb_lifetime_addtime = addtime;
 	pfkey_lifetime->sadb_lifetime_usetime = usetime;
-	pfkey_lifetime->sadb_x_lifetime_packets = packets;
 
 errlab:
 	return error;
@@ -436,13 +421,13 @@ pfkey_address_build(struct sadb_ext**	pfkey_ext,
 	case SADB_EXT_ADDRESS_SRC:
 	case SADB_EXT_ADDRESS_DST:
 	case SADB_EXT_ADDRESS_PROXY:
-	case SADB_X_EXT_ADDRESS_DST2:
-	case SADB_X_EXT_ADDRESS_SRC_FLOW:
-	case SADB_X_EXT_ADDRESS_DST_FLOW:
-	case SADB_X_EXT_ADDRESS_SRC_MASK:
-	case SADB_X_EXT_ADDRESS_DST_MASK:
+	case K_SADB_X_EXT_ADDRESS_DST2:
+	case K_SADB_X_EXT_ADDRESS_SRC_FLOW:
+	case K_SADB_X_EXT_ADDRESS_DST_FLOW:
+	case K_SADB_X_EXT_ADDRESS_SRC_MASK:
+	case K_SADB_X_EXT_ADDRESS_DST_MASK:
 #ifdef NAT_TRAVERSAL
-	case SADB_X_EXT_NAT_T_OA:
+	case K_SADB_X_EXT_NAT_T_OA:
 #endif	
 		break;
 	default:
@@ -1000,7 +985,7 @@ pfkey_x_kmprivate_build(struct sadb_ext**	pfkey_ext)
         pfkey_x_kmprivate->sadb_x_kmprivate_len =
 		sizeof(struct sadb_x_kmprivate) / IPSEC_PFKEYv2_ALIGN;
 
-        pfkey_x_kmprivate->sadb_x_kmprivate_exttype = SADB_X_EXT_KMPRIVATE;
+        pfkey_x_kmprivate->sadb_x_kmprivate_exttype = K_SADB_X_EXT_KMPRIVATE;
         pfkey_x_kmprivate->sadb_x_kmprivate_reserved = 0;
 errlab:
 	return error;
@@ -1029,10 +1014,10 @@ pfkey_x_satype_build(struct sadb_ext**	pfkey_ext,
 		SENDERR(EINVAL);
 	}
 
-	if(satype > SADB_SATYPE_MAX) {
+	if(satype > K_SADB_SATYPE_MAX) {
 		ERROR("pfkey_x_satype_build: "
 			"satype %d > max %d\n", 
-			satype, SADB_SATYPE_MAX);
+			satype, K_SADB_SATYPE_MAX);
 		SENDERR(EINVAL);
 	}
 
@@ -1051,7 +1036,7 @@ pfkey_x_satype_build(struct sadb_ext**	pfkey_ext,
 	
         pfkey_x_satype->sadb_x_satype_len = sizeof(struct sadb_x_satype) / IPSEC_PFKEYv2_ALIGN;
 
-	pfkey_x_satype->sadb_x_satype_exttype = SADB_X_EXT_SATYPE2;
+	pfkey_x_satype->sadb_x_satype_exttype = K_SADB_X_EXT_SATYPE2;
 	pfkey_x_satype->sadb_x_satype_satype = satype;
 	for(i=0; i<3; i++) {
 		pfkey_x_satype->sadb_x_satype_reserved[i] = 0;
@@ -1111,7 +1096,7 @@ pfkey_x_debug_build(struct sadb_ext**	pfkey_ext,
 #endif
 	
         pfkey_x_debug->sadb_x_debug_len = sizeof(struct sadb_x_debug) / IPSEC_PFKEYv2_ALIGN;
-	pfkey_x_debug->sadb_x_debug_exttype = SADB_X_EXT_DEBUG;
+	pfkey_x_debug->sadb_x_debug_exttype = K_SADB_X_EXT_DEBUG;
 
 	pfkey_x_debug->sadb_x_debug_tunnel = tunnel;
 	pfkey_x_debug->sadb_x_debug_netlink = netlink;
@@ -1169,7 +1154,7 @@ pfkey_x_nat_t_type_build(struct sadb_ext**	pfkey_ext,
 	}
 	
 	pfkey_x_nat_t_type->sadb_x_nat_t_type_len = sizeof(struct sadb_x_nat_t_type) / IPSEC_PFKEYv2_ALIGN;
-	pfkey_x_nat_t_type->sadb_x_nat_t_type_exttype = SADB_X_EXT_NAT_T_TYPE;
+	pfkey_x_nat_t_type->sadb_x_nat_t_type_exttype = K_SADB_X_EXT_NAT_T_TYPE;
 	pfkey_x_nat_t_type->sadb_x_nat_t_type_type = type;
 	for(i=0; i<3; i++) {
 		pfkey_x_nat_t_type->sadb_x_nat_t_type_reserved[i] = 0;
@@ -1178,6 +1163,7 @@ pfkey_x_nat_t_type_build(struct sadb_ext**	pfkey_ext,
 errlab:
 	return error;
 }
+
 int
 pfkey_x_nat_t_port_build(struct sadb_ext**	pfkey_ext,
 		    uint16_t         exttype,
@@ -1197,8 +1183,8 @@ pfkey_x_nat_t_port_build(struct sadb_ext**	pfkey_ext,
 	}
 	
 	switch(exttype) {	
-	case SADB_X_EXT_NAT_T_SPORT:
-	case SADB_X_EXT_NAT_T_DPORT:
+	case K_SADB_X_EXT_NAT_T_SPORT:
+	case K_SADB_X_EXT_NAT_T_DPORT:
 		break;
 	default:
 		DEBUGGING(PF_KEY_DEBUG_BUILD,
@@ -1249,8 +1235,8 @@ int pfkey_x_protocol_build(struct sadb_ext **pfkey_ext,
 		SENDERR(ENOMEM);
 	}
 	*pfkey_ext = (struct sadb_ext *)p;
-	p->sadb_protocol_len = sizeof(*p) / sizeof(uint64_t);
-	p->sadb_protocol_exttype = SADB_X_EXT_PROTOCOL;
+	p->sadb_protocol_len = sizeof(*p) / IPSEC_PFKEYv2_ALIGN;
+	p->sadb_protocol_exttype = K_SADB_X_EXT_PROTOCOL;
 	p->sadb_protocol_proto = protocol;
 	p->sadb_protocol_flags = 0;
 	p->sadb_protocol_reserved2 = 0;
@@ -1279,8 +1265,32 @@ int pfkey_outif_build(struct sadb_ext **pfkey_ext,
 }
 
 
+int pfkey_saref_build(struct sadb_ext **pfkey_ext,
+		      IPsecSAref_t in, IPsecSAref_t out)
+{
+	int error = 0;
+	struct sadb_x_saref* s;
+	
+	/* +4 because sadb_x_saref is not a multiple of 8 bytes */
+
+	if ((s = (struct sadb_x_saref*)MALLOC(sizeof(*s)+4)) == 0) {
+		ERROR("pfkey_build: memory allocation failed\n");
+		SENDERR(ENOMEM);
+	}
+	*pfkey_ext = (struct sadb_ext *)s;
+
+	s->sadb_x_saref_len = IPSEC_PFKEYv2_WORDS(sizeof(*s));
+	s->sadb_x_saref_exttype = K_SADB_X_EXT_SAREF;
+	s->sadb_x_saref_me  = in;
+	s->sadb_x_saref_him = out;
+
+ errlab:
+	return error;
+}
+
+
 #if defined(I_DONT_THINK_THIS_WILL_BE_USEFUL) && I_DONT_THINK_THIS_WILL_BE_USEFUL
-int (*ext_default_builders[SADB_EXT_MAX +1])(struct sadb_msg*, struct sadb_ext*)
+int (*ext_default_builders[K_SADB_EXT_MAX +1])(struct sadb_msg*, struct sadb_ext*)
  =
 {
 	NULL, /* pfkey_msg_build, */
@@ -1319,9 +1329,9 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 	unsigned ext;
 	unsigned total_size;
 	struct sadb_ext *pfkey_ext;
-	int extensions_seen = 0;
+	pfkey_ext_track extensions_seen = 0;
 #ifndef __KERNEL__	
-	struct sadb_ext *extensions_check[SADB_EXT_MAX + 1];
+	struct sadb_ext *extensions_check[K_SADB_EXT_MAX + 1];
 #endif
 	
 	if(!extensions[0]) {
@@ -1332,7 +1342,7 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 
 	/* figure out the total size for all the requested extensions */
 	total_size = IPSEC_PFKEYv2_WORDS(sizeof(struct sadb_msg));
-	for(ext = 1; ext <= SADB_EXT_MAX; ext++) {
+	for(ext = 1; ext <= K_SADB_EXT_MAX; ext++) {
 		if(extensions[ext]) {
 			total_size += (extensions[ext])->sadb_ext_len;
 		}
@@ -1366,18 +1376,14 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 	 */
 	pfkey_ext = (struct sadb_ext*)(((char*)(*pfkey_msg)) + sizeof(struct sadb_msg));
 
-	for(ext = 1; ext <= SADB_EXT_MAX; ext++) {
+	for(ext = 1; ext <= K_SADB_EXT_MAX; ext++) {
 		/* copy from extension[ext] to buffer */
 		if(extensions[ext]) {    
 			/* Is this type of extension permitted for this type of message? */
-			if(!(extensions_bitmaps[dir][EXT_BITS_PERM][(*pfkey_msg)->sadb_msg_type] &
-			     1<<ext)) {
-				ERROR("pfkey_msg_build: "
-					"ext type %d not permitted for %d/%d/%d, exts_perm=%08x, 1<<type=%08x\n", 
-					ext,
-				      dir,EXT_BITS_PERM,(*pfkey_msg)->sadb_msg_type,
-					extensions_bitmaps[dir][EXT_BITS_PERM][(*pfkey_msg)->sadb_msg_type],
-					1<<ext);
+			if(!pfkey_permitted_extension(dir,(*pfkey_msg)->sadb_msg_type,ext)) {
+				ERROR("ext type %d not permitted for %d/%d (build)\n", 
+				      ext,
+				      dir,(*pfkey_msg)->sadb_msg_type);
 				SENDERR(EINVAL);
 			}
 
@@ -1388,53 +1394,42 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 				  ext,
 				  extensions[ext]->sadb_ext_type);
 
-			memcpy(pfkey_ext,
-			       extensions[ext],
-			       (extensions[ext])->sadb_ext_len * IPSEC_PFKEYv2_ALIGN);
 			{
 			  char *pfkey_ext_c = (char *)pfkey_ext;
 
 			  pfkey_ext_c += (extensions[ext])->sadb_ext_len * IPSEC_PFKEYv2_ALIGN;
+
+#if 0
+			  printf("memcpy(%p,%p,%d) -> %p %p:%p\n", pfkey_ext, 
+				 extensions[ext],
+				 (extensions[ext])->sadb_ext_len * IPSEC_PFKEYv2_ALIGN,
+				 pfkey_ext_c, (*pfkey_msg), (char *)(*pfkey_msg)+(total_size*IPSEC_PFKEYv2_ALIGN));
+#endif
+			  memcpy(pfkey_ext,
+				 extensions[ext],
+				 (extensions[ext])->sadb_ext_len * IPSEC_PFKEYv2_ALIGN);
 			  pfkey_ext = (struct sadb_ext *)pfkey_ext_c;
 			}
 
-			/* Mark that we have seen this extension and remember the header location */
-			extensions_seen |= ( 1 << ext );
+			/* Mark that we have seen this extension */
+			pfkey_mark_extension(ext,&extensions_seen);
 		}
 	}
 
-	/* check required extensions */
-	DEBUGGING(PF_KEY_DEBUG_BUILD,
-		"pfkey_msg_build: "
-		"extensions permitted=%08x, seen=%08x, required=%08x.\n",
-		extensions_bitmaps[dir][EXT_BITS_PERM][(*pfkey_msg)->sadb_msg_type],
-		extensions_seen,
-		extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type]);
-
-#if 0	
-	if((extensions_seen &
-	    extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type]) !=
-	   extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type]) {
-		ERROR(PF_KEY_DEBUG_BUILD,
-			"pfkey_msg_build: "
-			"required extensions missing:%08x.\n",
-			extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type] -
-			(extensions_seen &
-			 extensions_bitmaps[dir][EXT_BITS_REQ][(*pfkey_msg)->sadb_msg_type]) );
+	if(pfkey_extensions_missing(dir,(*pfkey_msg)->sadb_msg_type,extensions_seen)) {
+		ERROR("required extensions missing. seen=%08llx\n", (unsigned long long)extensions_seen);
 		SENDERR(EINVAL);
 	}
-#endif
 
 #ifndef __KERNEL__	
 /*
  * this is silly, there is no need to reparse the message that we just built.
  *
  */
-	if((error = pfkey_msg_parse(*pfkey_msg, NULL, extensions_check, dir))) {
-		ERROR(
-			"pfkey_msg_build: "
-			"Trouble parsing newly built pfkey message, error=%d.\n",
-			error);
+	if((error = pfkey_msg_parse(*pfkey_msg,NULL,extensions_check, dir))) {
+		ERROR("pfkey_msg_build: "
+		      "Trouble parsing newly built pfkey message, error=%d.\n",
+		      error);
 		SENDERR(-error);
 	}
 #endif
@@ -1445,198 +1440,9 @@ errlab:
 }
 
 /*
- * $Log: pfkey_v2_build.c,v $
- * Revision 1.53  2005/11/09 00:30:37  mcr
- * 	adjusted signed-ness and look.in
  *
- * Revision 1.52  2005/08/14 21:41:15  mcr
- * 	augment error message when an extension is not permitted.
- *
- * Revision 1.51  2004/10/03 01:26:36  mcr
- * 	fixes for gcc 3.4 compilation.
- *
- * Revision 1.50  2004/07/10 07:48:35  mcr
- * Moved from linux/lib/libfreeswan/pfkey_v2_build.c,v
- *
- * Revision 1.49  2004/04/12 02:59:06  mcr
- *     erroneously moved pfkey_v2_build.c
- *
- * Revision 1.48  2004/04/09 18:00:40  mcr
- * Moved from linux/lib/libfreeswan/pfkey_v2_build.c,v
- *
- * Revision 1.47  2004/03/08 01:59:08  ken
- * freeswan.h -> openswan.h
- *
- * Revision 1.46  2003/12/10 01:20:19  mcr
- * 	NAT-traversal patches to KLIPS.
- *
- * Revision 1.45  2003/12/04 23:01:12  mcr
- * 	removed ipsec_netlink.h
- *
- * Revision 1.44  2003/10/31 02:27:12  mcr
- * 	pulled up port-selector patches and sa_id elimination.
- *
- * Revision 1.43.4.2  2003/10/29 01:11:32  mcr
- * 	added debugging for pfkey library.
- *
- * Revision 1.43.4.1  2003/09/21 13:59:44  mcr
- * 	pre-liminary X.509 patch - does not yet pass tests.
- *
- * Revision 1.43  2003/05/07 17:29:17  mcr
- * 	new function pfkey_debug_func added for us in debugging from
- * 	pfkey library.
- *
- * Revision 1.42  2003/01/30 02:32:09  rgb
- *
- * Rename SAref table macro names for clarity.
- * Convert IPsecSAref_t from signed to unsigned to fix apparent SAref exhaustion bug.
- *
- * Revision 1.41  2002/12/13 18:16:02  mcr
- * 	restored sa_ref code
- *
- * Revision 1.40  2002/12/13 18:06:52  mcr
- * 	temporarily removed sadb_x_sa_ref reference for 2.xx
- *
- * Revision 1.39  2002/12/13 17:43:28  mcr
- * 	commented out access to sadb_x_sa_ref for 2.xx branch
- *
- * Revision 1.38  2002/10/09 03:12:05  dhr
- *
- * [kenb+dhr] 64-bit fixes
- *
- * Revision 1.37  2002/09/20 15:40:39  rgb
- * Added new function pfkey_sa_ref_build() to accomodate saref parameter.
- *
- * Revision 1.36  2002/09/20 05:01:22  rgb
- * Generalise for platform independance: fix (ia64) using unsigned for sizes.
- *
- * Revision 1.35  2002/07/24 18:44:54  rgb
- * Type fiddling to tame ia64 compiler.
- *
- * Revision 1.34  2002/05/23 07:14:11  rgb
- * Cleaned up %p variants to 0p%p for test suite cleanup.
- *
- * Revision 1.33  2002/04/24 07:55:32  mcr
- * 	#include patches and Makefiles for post-reorg compilation.
- *
- * Revision 1.32  2002/04/24 07:36:40  mcr
- * Moved from ./lib/pfkey_v2_build.c,v
- *
- * Revision 1.31  2002/01/29 22:25:35  rgb
- * Re-add ipsec_kversion.h to keep MALLOC happy.
- *
- * Revision 1.30  2002/01/29 01:59:09  mcr
- * 	removal of kversions.h - sources that needed it now use ipsec_param.h.
- * 	updating of IPv6 structures to match latest in6.h version.
- * 	removed dead code from openswan.h that also duplicated kversions.h
- * 	code.
- *
- * Revision 1.29  2001/12/19 21:06:09  rgb
- * Added port numbers to pfkey_address_build() debugging.
- *
- * Revision 1.28  2001/11/06 19:47:47  rgb
- * Added packet parameter to lifetime and comb structures.
- *
- * Revision 1.27  2001/10/18 04:45:24  rgb
- * 2.4.9 kernel deprecates linux/malloc.h in favour of linux/slab.h,
- * lib/openswan.h version macros moved to lib/kversions.h.
- * Other compiler directive cleanups.
- *
- * Revision 1.26  2001/09/08 21:13:34  rgb
- * Added pfkey ident extension support for ISAKMPd. (NetCelo)
- *
- * Revision 1.25  2001/06/14 19:35:16  rgb
- * Update copyright date.
- *
- * Revision 1.24  2001/03/20 03:49:45  rgb
- * Ditch superfluous debug_pfkey declaration.
- * Move misplaced openswan.h inclusion for kernel case.
- *
- * Revision 1.23  2001/03/16 07:41:50  rgb
- * Put openswan.h include before pluto includes.
- *
- * Revision 1.22  2001/02/27 22:24:56  rgb
- * Re-formatting debug output (line-splitting, joining, 1arg/line).
- * Check for satoa() return codes.
- *
- * Revision 1.21  2000/11/17 18:10:30  rgb
- * Fixed bugs mostly relating to spirange, to treat all spi variables as
- * network byte order since this is the way PF_KEYv2 stored spis.
- *
- * Revision 1.20  2000/10/12 00:02:39  rgb
- * Removed 'format, ##' nonsense from debug macros for RH7.0.
- *
- * Revision 1.19  2000/10/10 20:10:20  rgb
- * Added support for debug_ipcomp and debug_verbose to klipsdebug.
- *
- * Revision 1.18  2000/09/12 18:59:54  rgb
- * Added Gerhard's IPv6 support to pfkey parts of libopenswan.
- *
- * Revision 1.17  2000/09/12 03:27:00  rgb
- * Moved DEBUGGING definition to compile kernel with debug off.
- *
- * Revision 1.16  2000/09/08 19:22:12  rgb
- * Fixed pfkey_prop_build() parameter to be only single indirection.
- * Fixed struct alg copy.
- *
- * Revision 1.15  2000/08/20 21:40:01  rgb
- * Added an address parameter sanity check to pfkey_address_build().
- *
- * Revision 1.14  2000/08/15 17:29:23  rgb
- * Fixes from SZI to untested pfkey_prop_build().
- *
- * Revision 1.13  2000/06/02 22:54:14  rgb
- * Added Gerhard Gessler's struct sockaddr_storage mods for IPv6 support.
- *
- * Revision 1.12  2000/05/10 19:24:01  rgb
- * Fleshed out sensitivity, proposal and supported extensions.
- *
- * Revision 1.11  2000/03/16 14:07:23  rgb
- * Renamed ALIGN macro to avoid fighting with others in kernel.
- *
- * Revision 1.10  2000/01/24 21:14:35  rgb
- * Added disabled pluto pfkey lib debug flag.
- *
- * Revision 1.9  2000/01/21 06:27:32  rgb
- * Added address cases for eroute flows.
- * Removed unused code.
- * Dropped unused argument to pfkey_x_satype_build().
- * Indented compiler directives for readability.
- * Added klipsdebug switching capability.
- * Fixed SADB_EXT_MAX bug not permitting last extension access.
- *
- * Revision 1.8  1999/12/29 21:17:41  rgb
- * Changed pfkey_msg_build() I/F to include a struct sadb_msg**
- * parameter for cleaner manipulation of extensions[] and to guard
- * against potential memory leaks.
- * Changed the I/F to pfkey_msg_free() for the same reason.
- *
- * Revision 1.7  1999/12/09 23:12:20  rgb
- * Removed unused cruft.
- * Added argument to pfkey_sa_build() to do eroutes.
- * Fixed exttype check in as yet unused pfkey_lifetime_build().
- *
- * Revision 1.6  1999/12/07 19:54:29  rgb
- * Removed static pluto debug flag.
- * Added functions for pfkey message and extensions initialisation
- * and cleanup.
- *
- * Revision 1.5  1999/12/01 22:20:06  rgb
- * Changed pfkey_sa_build to accept an SPI in network byte order.
- * Added <string.h> to quiet userspace compiler.
- * Moved pfkey_lib_debug variable into the library.
- * Removed SATYPE check from pfkey_msg_hdr_build so FLUSH will work.
- * Added extension assembly debugging.
- * Isolated assignment with brackets to be sure of scope.
- *
- * Revision 1.4  1999/11/27 11:57:35  rgb
- * Added ipv6 headers.
- * Remove over-zealous algorithm sanity checkers from pfkey_sa_build.
- * Debugging error messages added.
- * Fixed missing auth and encrypt assignment bug.
- * Add argument to pfkey_msg_parse() for direction.
- * Move parse-after-build check inside pfkey_msg_build().
- * Consolidated the 4 1-d extension bitmap arrays into one 4-d array.
- * Add CVS log entry to bottom of file.
+ * Local Variables:
+ * c-file-style: "linux"
+ * End:
  *
  */

@@ -2568,6 +2568,17 @@ static void fmt_ipsec_sa_established(struct state *st, char *sadetails, int sad_
 	fin = "}";
     }
     
+    if(st->st_ref || st->st_refhim)
+    {
+	snprintf(b, sizeof(sadetails)-(b-sadetails)-1
+		 , "%sref=%lu refhim=%lu"
+		 , ini
+		 , (unsigned long)st->st_ref
+		 , (unsigned long)st->st_refhim);
+	ini = " ";
+	fin = "}";
+    }
+
     /* advance b to end of string */
     b = b + strlen(b);
 #ifdef NAT_TRAVERSAL		    

@@ -65,14 +65,11 @@ char spi_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp $";
 
 struct encap_msghdr *em;
 
-/* 	
- * 	Manual conn support for ipsec_alg (modular algos).
- * 	Rather ugly to include from pluto dir but avoids
- * 	code duplication.
- */
 char *progname;
 int debug = 0;
-int saref = 0;
+int dumpsaref = 0;
+int saref_him = 0;
+int saref_me  = 0;
 char *command;
 extern char *optarg;
 extern int optind, opterr, optopt;
@@ -142,6 +139,10 @@ spi --esp <algo> <SA> [<life> ][ --replay_window <replay-window> ] --enckey <eke
 	where <algo> is:	3des\n\
 spi --comp <algo> <SA>\n\
 	where <algo> is:	deflate\n\
+[ --sarefme=XXX ]  set the saref to use for this SA\n\
+[ --sarefhim=XXX ] set the saref to use for paired SA\n\
+[ --dumpsaref ] show the saref allocated\n\
+[ --outif=XXX ] set the outgoing interface to use \n\
 [ --debug ] is optional to any spi command.\n\
 [ --label <label> ] is optional to any spi command.\n\
 [ --listenreply ]   is optional, and causes the command to stick\n\
@@ -309,7 +310,7 @@ pfkey_register(uint8_t satype) {
 	/* for registering SA types that can be negotiated */
 	int error;
 	ssize_t wlen;
-	struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	struct sadb_msg *pfkey_msg;
 
 	pfkey_extensions_init(extensions);
@@ -386,7 +387,13 @@ static struct option const longopts[] =
 	{"debug", 0, 0, 'g'},
 	{"optionsfrom", 1, 0, '+'},
 	{"life", 1, 0, 'f'},
-	{"saref", 0, 0, 'r'},
+	{"outif",     required_argument, NULL, 'O'},
+	{"saref",     required_argument, NULL, 'b'},
+	{"sarefme",   required_argument, NULL, 'b'},
+	{"sarefhim",  required_argument, NULL, 'B'},
+	{"saref_me",  required_argument, NULL, 'b'},
+	{"saref_him", required_argument, NULL, 'B'},
+	{"dumpsaref", no_argument,       NULL, 'r'},
 	{"listenreply", 0, 0, 'R'},
 	{0, 0, 0, 0}
 };
@@ -396,7 +403,7 @@ static bool
 pfkey_build(int error
 	    , const char *description
 	    , const char *text_said
-	    , struct sadb_ext *extensions[SADB_EXT_MAX + 1])
+	    , struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 {
     if (error == 0)
     {
@@ -495,6 +502,7 @@ main(int argc, char *argv[])
 	char ipaddr_txt[ADDRTOT_BUF];
 	char ipsaid_txt[SATOT_BUF];
 
+	int outif = 0;
 	int error = 0;
 	ssize_t io_error;
 	int argcount = argc;
@@ -502,7 +510,7 @@ main(int argc, char *argv[])
 	int listenreply = 0;
 
 	unsigned char authalg, encryptalg;
-	struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	struct sadb_msg *pfkey_msg;
 	char *iv_opt, *akey_opt, *ekey_opt, *alg_opt, *edst_opt, *spi_opt, *proto_opt, *af_opt, *said_opt, *dst_opt, *src_opt;
 #if 0
@@ -550,7 +558,37 @@ main(int argc, char *argv[])
 			break;
 
 		case 'r':
-			saref = 1;
+			dumpsaref = 1;
+			argcount--;
+			break;
+
+		case 'b':  /* set the SAref to use */
+			saref_me = strtoul(optarg, &endptr, 0);
+			if(!(endptr == optarg + strlen(optarg))) {
+				fprintf(stderr, "%s: Invalid character in SAREFi parameter: %s\n",
+					progname, optarg);
+				exit (1);
+			}
+			argcount--;
+			break;
+
+		case 'B':  /* set the SAref to use for outgoing packets */
+			saref_him = strtoul(optarg, &endptr, 0);
+			if(!(endptr == optarg + strlen(optarg))) {
+				fprintf(stderr, "%s: Invalid character in SAREFo parameter: %s\n",
+					progname, optarg);
+				exit (1);
+			}
+			argcount--;
+			break;
+
+		case 'O':  /* set interface from which packet should arrive */
+			outif = strtoul(optarg, &endptr, 0);
+			if(!(endptr == optarg + strlen(optarg))) {
+				fprintf(stderr, "%s: Invalid character in outif parameter: %s\n",
+					progname, optarg);
+				exit (1);
+			}
 			argcount--;
 			break;
 
@@ -1273,78 +1311,102 @@ main(int argc, char *argv[])
 		encryptalg = SADB_EALG_NONE;
 	}
 	if(!(alg == XF_CLR /* IE: pfkey_msg->sadb_msg_type == SADB_FLUSH */)) {
-		if((error = pfkey_sa_build(&extensions[SADB_EXT_SA],
-					   SADB_EXT_SA,
-					   htonl(spi), /* in network order */
-					   replay_window,
-					   K_SADB_SASTATE_MATURE,
-					   authalg,
-					   encryptalg,
-					   0))) {
-			fprintf(stderr, "%s: Trouble building sa extension, error=%d.\n",
-				progname, error);
-			pfkey_extensions_free(extensions);
-			exit(1);
-		}
-		if(debug) {
-			fprintf(stdout, "%s: extensions[0]=0p%p previously set with msg_hdr.\n",
-				progname,
-				extensions[0]);
-		}
-		if(debug) {
-			fprintf(stdout, "%s: assembled SA extension, pfkey msg authalg=%d encalg=%d.\n",
-				progname,
-				authalg,
-				encryptalg);
-		}
-		
-		if(debug) {
-			int i,j;
-			for(i = 0; i < life_maxsever; i++) {
-				for(j = 0; j < life_maxtype; j++) {
-					fprintf(stdout, "%s: i=%d, j=%d, life_opt[%d][%d]=0p%p, life[%d][%d]=%d\n",
-						progname,
-						i, j, i, j, life_opt[i][j], i, j, life[i][j]);
-				}
-			}
-		}
-		if(life_opt[life_soft][life_alloc] != NULL ||
-		   life_opt[life_soft][life_bytes] != NULL ||
-		   life_opt[life_soft][life_addtime] != NULL ||
-		   life_opt[life_soft][life_usetime] != NULL ||
-		   life_opt[life_soft][life_packets] != NULL) {
-			if((error = pfkey_lifetime_build(&extensions[SADB_EXT_LIFETIME_SOFT],
-							 SADB_EXT_LIFETIME_SOFT,
-							 life[life_soft][life_alloc],/*-1,*/		/*allocations*/
-							 life[life_soft][life_bytes],/*-1,*/		/*bytes*/
-							 life[life_soft][life_addtime],/*-1,*/		/*addtime*/
-							 life[life_soft][life_usetime],/*-1,*/		/*usetime*/
-							 life[life_soft][life_packets]/*-1*/))) {	/*packets*/
-				fprintf(stderr, "%s: Trouble building lifetime_s extension, error=%d.\n",
-					progname, error);
-				pfkey_extensions_free(extensions);
-				exit(1);
-			}
-			if(debug) {
-				fprintf(stdout, "%s: lifetime_s extension assembled.\n",
-					progname);
-			}
-		}
+	    struct sadb_builds sab = {
+		.sa_base.sadb_sa_exttype = SADB_EXT_SA,
+		.sa_base.sadb_sa_spi     = htonl(spi),
+		.sa_base.sadb_sa_replay  = replay_window,
+		.sa_base.sadb_sa_state   = K_SADB_SASTATE_MATURE,
+		.sa_base.sadb_sa_auth    = authalg,
+		.sa_base.sadb_sa_encrypt = encryptalg,
+		.sa_base.sadb_sa_flags   = 0,
+		.sa_base.sadb_x_sa_ref   = IPSEC_SAREF_NULL,
+	    };
 
-		if(life_opt[life_hard][life_alloc] != NULL ||
-		   life_opt[life_hard][life_bytes] != NULL ||
-		   life_opt[life_hard][life_addtime] != NULL ||
-		   life_opt[life_hard][life_usetime] != NULL ||
-		   life_opt[life_hard][life_packets] != NULL) {
-			if((error = pfkey_lifetime_build(&extensions[SADB_EXT_LIFETIME_HARD],
-							 SADB_EXT_LIFETIME_HARD,
-							 life[life_hard][life_alloc],/*-1,*/		/*allocations*/
-							 life[life_hard][life_bytes],/*-1,*/		/*bytes*/
-							 life[life_hard][life_addtime],/*-1,*/		/*addtime*/
-							 life[life_hard][life_usetime],/*-1,*/		/*usetime*/
-							 life[life_hard][life_packets]/*-1*/))) {	/*packets*/
-				fprintf(stderr, "%s: Trouble building lifetime_h extension, error=%d.\n",
-					progname, error);
+	    if((error = pfkey_sa_builds(&extensions[SADB_EXT_SA],sab))) {
+		fprintf(stderr, "%s: Trouble building sa extension, error=%d.\n",
+			progname, error);
+		pfkey_extensions_free(extensions);
+		exit(1);
+	    }
+
+	    if(saref_me || saref_him) {
+		error = pfkey_saref_build(&extensions[K_SADB_X_EXT_SAREF],saref_me,saref_him);
+		if(error) {
+		    fprintf(stderr, "%s: Trouble building saref extension, error=%d.\n",
+			    progname, error);
+		    pfkey_extensions_free(extensions);
+		    exit(1);
+		}
+	    }
+		    
+	    if(outif != 0) {
+		if((error = pfkey_outif_build(&extensions[SADB_X_EXT_PLUMBIF],outif))) {
+		    fprintf(stderr, "%s: Trouble building outif extension, error=%d.\n",
+			    progname, error);
+		    pfkey_extensions_free(extensions);
+		    exit(1);
+		}
+	    }
+
+	    if(debug) {
+		fprintf(stdout, "%s: extensions[0]=0p%p previously set with msg_hdr.\n",
+			progname,
+			extensions[0]);
+	    }
+	    if(debug) {
+		fprintf(stdout, "%s: assembled SA extension, pfkey msg authalg=%d encalg=%d.\n",
+			progname,
+			authalg,
+			encryptalg);
+	    }
+		
+	    if(debug) {
+		int i,j;
+		for(i = 0; i < life_maxsever; i++) {
+		    for(j = 0; j < life_maxtype; j++) {
+			fprintf(stdout, "%s: i=%d, j=%d, life_opt[%d][%d]=0p%p, life[%d][%d]=%d\n",
+				progname,
+				i, j, i, j, life_opt[i][j], i, j, life[i][j]);
+		    }
+		}
+	    }
+	    if(life_opt[life_soft][life_alloc] != NULL ||
+	       life_opt[life_soft][life_bytes] != NULL ||
+	       life_opt[life_soft][life_addtime] != NULL ||
+	       life_opt[life_soft][life_usetime] != NULL ||
+	       life_opt[life_soft][life_packets] != NULL) {
+		if((error = pfkey_lifetime_build(&extensions[SADB_EXT_LIFETIME_SOFT],
+						 SADB_EXT_LIFETIME_SOFT,
+						 life[life_soft][life_alloc],/*-1,*/		/*allocations*/
+						 life[life_soft][life_bytes],/*-1,*/		/*bytes*/
+						 life[life_soft][life_addtime],/*-1,*/		/*addtime*/
+						 life[life_soft][life_usetime],/*-1,*/		/*usetime*/
+						 life[life_soft][life_packets]/*-1*/))) {	/*packets*/
+		    fprintf(stderr, "%s: Trouble building lifetime_s extension, error=%d.\n",
+			    progname, error);
+		    pfkey_extensions_free(extensions);
+		    exit(1);
+		}
+		if(debug) {
+		    fprintf(stdout, "%s: lifetime_s extension assembled.\n",
+			    progname);
+		}
+	    }
+	    
+	    if(life_opt[life_hard][life_alloc] != NULL ||
+	       life_opt[life_hard][life_bytes] != NULL ||
+	       life_opt[life_hard][life_addtime] != NULL ||
+	       life_opt[life_hard][life_usetime] != NULL ||
+	       life_opt[life_hard][life_packets] != NULL) {
+		if((error = pfkey_lifetime_build(&extensions[SADB_EXT_LIFETIME_HARD],
+						 SADB_EXT_LIFETIME_HARD,
+						 life[life_hard][life_alloc],/*-1,*/		/*allocations*/
+						 life[life_hard][life_bytes],/*-1,*/		/*bytes*/
+						 life[life_hard][life_addtime],/*-1,*/		/*addtime*/
+						 life[life_hard][life_usetime],/*-1,*/		/*usetime*/
+						 life[life_hard][life_packets]/*-1*/))) {	/*packets*/
+		    fprintf(stderr, "%s: Trouble building lifetime_h extension, error=%d.\n",
+			    progname, error);
 				pfkey_extensions_free(extensions);
 				exit(1);
 			}
@@ -1501,7 +1563,7 @@ main(int argc, char *argv[])
 
 	  int err;
 
-	  err = pfkey_x_nat_t_type_build(&extensions[SADB_X_EXT_NAT_T_TYPE]
+	  err = pfkey_x_nat_t_type_build(&extensions[K_SADB_X_EXT_NAT_T_TYPE]
 					 , natt);
 	  success = pfkey_build(err
 				, "pfkey_nat_t_type Add ESP SA"
@@ -1510,8 +1572,8 @@ main(int argc, char *argv[])
 	  if(debug) fprintf(stderr, "setting natt_type to %d\n", natt);
 	  
 	  if(sport != 0) {
-	    err = pfkey_x_nat_t_port_build(&extensions[SADB_X_EXT_NAT_T_SPORT]
-					   , SADB_X_EXT_NAT_T_SPORT
+	    err = pfkey_x_nat_t_port_build(&extensions[K_SADB_X_EXT_NAT_T_SPORT]
+					   , K_SADB_X_EXT_NAT_T_SPORT
 					   , sport);
 	    success = pfkey_build(err
 				  , "pfkey_nat_t_sport Add ESP SA"
@@ -1521,8 +1583,8 @@ main(int argc, char *argv[])
 	  }
 	  
 	  if(dport != 0) {
-	    err = pfkey_x_nat_t_port_build(&extensions[SADB_X_EXT_NAT_T_DPORT]
-					   , SADB_X_EXT_NAT_T_DPORT
+	    err = pfkey_x_nat_t_port_build(&extensions[K_SADB_X_EXT_NAT_T_DPORT]
+					   , K_SADB_X_EXT_NAT_T_DPORT
 					   , dport);
 	    success = pfkey_build(err
 				  , "pfkey_nat_t_dport Add ESP SA"
@@ -1656,13 +1718,13 @@ main(int argc, char *argv[])
 		free(iv);
 	}
 
-	if(listenreply || saref) {
+	if(listenreply || saref_me || dumpsaref)  {
 		ssize_t readlen;
 		unsigned char pfkey_buf[PFKEYv2_MAX_MSGSIZE];
 		
 		while((readlen = read(pfkey_sock, pfkey_buf, sizeof(pfkey_buf))) > 0) {
-			struct sadb_ext *extensions2[SADB_EXT_MAX + 1];
-			pfkey_extensions_init(extensions2);
+			struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
+			pfkey_extensions_init(extensions);
 			pfkey_msg = (struct sadb_msg *)pfkey_buf;
 			
 			/* first, see if we got enough for an sadb_msg */
@@ -1701,7 +1763,7 @@ main(int argc, char *argv[])
 				continue;
 			}
 			
-			if (pfkey_msg_parse(pfkey_msg, NULL, extensions2, EXT_BITS_OUT)) {
+			if (pfkey_msg_parse(pfkey_msg, NULL, extensions, EXT_BITS_OUT)) {
 				if(debug) {
 					printf("%s: unparseable PF_KEY message.\n",
 					       progname);
@@ -1714,14 +1776,15 @@ main(int argc, char *argv[])
 				}
 			}
 			if((pid_t)pfkey_msg->sadb_msg_pid == mypid) {
-				if(saref) {
-					printf("%s: saref=%d\n",
-					       progname,
-					       (extensions2[SADB_EXT_SA] != NULL)
-					       ? ((struct sadb_sa*)(extensions2[SADB_EXT_SA]))->sadb_x_sa_ref
-					       : IPSEC_SAREF_NULL);
+			    if(saref_me || dumpsaref) {
+				struct sadb_x_saref *s = (struct sadb_x_saref *)extensions[K_SADB_X_EXT_SAREF];
+				if(s) {
+				    printf("%s: saref=%d/%d\n",progname,
+					   s->sadb_x_saref_me,
+					   s->sadb_x_saref_him);
 				}
-				break;
+			    }
+			    break;
 			}
 		}
 	}
@@ -1738,214 +1801,8 @@ void exit_tool(int x)
 }
 
 /*
- * $Log: spi.c,v $
- * Revision 1.114  2005/08/18 14:04:40  ken
- * Patch from mt@suse.de to avoid GCC warnings with system() calls
- *
- * Revision 1.113  2005/08/05 08:42:45  mcr
- * 	signed/unsigned adjustments.
- *
- * Revision 1.112  2005/07/08 02:55:55  paul
- * fuck vault
- *
- * Revision 1.111  2005/05/12 03:08:23  mcr
- * 	do not mess with keysize for 3des/des.
- *
- * Revision 1.110  2005/04/06 17:56:24  mcr
- * 	document the --natt options.
- *
- * Revision 1.109  2005/03/29 03:49:36  ken
- * Cast to int to make x86_64 happy
- *
- * Revision 1.108  2005/02/14 04:45:46  ken
- * int -> size_t compile fix for SuSE 8.x
- *
- * Revision 1.107  2005/01/26 01:27:33  mcr
- * 	added nat-t parameters to manual keying.
- *
- * Revision 1.106  2004/04/29 04:08:28  mcr
- * 	broke out decode_esp() function, and use new
- * 	libopenswan code.
- *
- * Revision 1.105  2004/04/26 05:05:04  ken
- * Cast properly on 64bit platforms
- *
- * Revision 1.104  2004/04/18 03:08:02  mcr
- * 	use common files from libopenswan.
- *
- * Revision 1.103  2004/04/06 03:04:54  mcr
- * 	pullup of algo code from alg-branch.
- *
- * Revision 1.102  2004/04/04 01:53:13  ken
- * Use openswan includes
- *
- * Revision 1.101.4.2  2004/04/06 00:53:06  mcr
- * 	code adjusted to compile on branch
- *
- * Revision 1.101.4.1  2003/12/22 15:25:53  jjo
- *      Merged algo-0.8.1-rc11-test1 into alg-branch
- *
- * Revision 1.101  2003/12/05 16:44:19  mcr
- * 	patches to avoid ipsec_netlink.h, which has been obsolete for
- * 	some time now.
- *
- * Revision 1.100  2003/09/10 00:01:38  mcr
- * 	fixes for gcc 3.3 from Matthias Bethke <Matthias.Bethke@gmx.net>
- *
- * Revision 1.99  2003/06/07 16:42:10  dhr
- *
- * adjust spi.c to conform to stronger type checking of GCC 3.3
- *
- * Revision 1.98  2003/01/30 02:33:07  rgb
- *
- * Added ENOSPC for no room in SAref table and ESPIPE for SAref internal error.
- *
- * Revision 1.97  2002/12/13 18:16:08  mcr
- * 	restored sa_ref code
- *
- * Revision 1.96  2002/12/13 18:05:19  mcr
- * 	temporarily removed sadb_x_sa_ref reference for 2.xx
- *
- * Revision 1.95  2002/10/09 03:12:05  dhr
- *
- * [kenb+dhr] 64-bit fixes
- *
- * Revision 1.94  2002/09/26 15:46:34  dhr
- *
- * C labels must be on statements.
- *
- * Revision 1.93  2002/09/20 15:41:24  rgb
- * Added --saref option to print out saref returned by pfkey.
- * Fixed argcount bug introduced by --listenreply option.
- *
- * Revision 1.92  2002/09/20 05:02:21  rgb
- * Updated copyright date.
- * Cruft clean-out.
- * Cleaned up pfkey_lib_debug usage.
- * Added program_name to beginning of all output for consistency.
- *
- * Revision 1.91  2002/09/11 20:29:40  mcr
- * 	turn off automatic printing of reply unless --listenreply
- * 	is added.
- *
- * Revision 1.90  2002/09/11 18:48:26  mcr
- * 	have spi program read from the pfkey socket until it sees
- * 	a message with its own PID, then exit.
- *
- * Revision 1.89  2002/07/24 18:44:54  rgb
- * Type fiddling to tame ia64 compiler.
- *
- * Revision 1.88  2002/07/23 02:58:58  rgb
- * Fixed "opening" speeling mistake.
- *
- * Revision 1.87  2002/05/23 07:14:11  rgb
- * Cleaned up %p variants to 0p%p for test suite cleanup.
- *
- * Revision 1.86  2002/04/24 07:55:32  mcr
- * 	#include patches and Makefiles for post-reorg compilation.
- *
- * Revision 1.85  2002/04/24 07:35:40  mcr
- * Moved from ./klips/utils/spi.c,v
- *
- * Revision 1.84  2002/03/08 21:44:04  rgb
- * Update for all GNU-compliant --version strings.
- *
- * Revision 1.83  2002/02/20 00:01:53  rgb
- * Cleaned out unused code.
- *
- * Revision 1.82  2001/11/09 02:16:37  rgb
- * Fixed bug that erroneously required explicit af parameter for --said.
- * Fixed missing SA message on delete.
- *
- * Revision 1.81  2001/11/06 20:18:47  rgb
- * Added lifetime parameters.
- *
- * Revision 1.80  2001/10/25 06:57:10  rgb
- * Added space as legal delimiter in lifetime parameter list.
- *
- * Revision 1.79  2001/10/24 03:23:55  rgb
- * Moved lifetime option parsing to a seperate function and allowed for
- * comma-seperated lists of lifetime parameters.
- * Moved SATYPE registrations to a seperate function.
- *
- * Revision 1.78  2001/10/22 19:49:35  rgb
- * Added lifetime parameter capabilities.
- *
- * Revision 1.77  2001/10/02 17:17:17  rgb
- * Check error return for all "tto*" calls and report errors.  This, in
- * conjuction with the fix to "tto*" will detect AF not set.
- *
- * Revision 1.76  2001/09/08 21:13:35  rgb
- * Added pfkey ident extension support for ISAKMPd. (NetCelo)
- *
- * Revision 1.75  2001/09/07 22:24:42  rgb
- * Added EAFNOSUPPORT socket open error code in case KLIPS is not loaded.
- *
- * Revision 1.74  2001/06/14 19:35:14  rgb
- * Update copyright date.
- *
- * Revision 1.73  2001/05/30 08:14:05  rgb
- * Removed vestiges of esp-null transforms.
- *
- * Revision 1.72  2001/05/21 02:02:55  rgb
- * Eliminate 1-letter options.
- *
- * Revision 1.71  2001/05/16 05:07:20  rgb
- * Fixed --label option in KLIPS manual utils to add the label to the
- * command name rather than replace it in error text.
- * Fix 'print table' non-option in KLIPS manual utils to deal with --label
- * and --debug options.
- *
- * Revision 1.70  2000/11/06 04:36:57  rgb
- * Display conversion on replay_window failure.
- * Don't register SATYPEs for manual.
- *
- * Revision 1.69  2000/09/28 00:37:20  rgb
- * Swapped order of pfkey_registration of IPCOMP and IPIP.
- *
- * Revision 1.68  2000/09/17 18:56:48  rgb
- * Added IPCOMP support.
- *
- * Revision 1.67  2000/09/12 22:36:45  rgb
- * Gerhard's IPv6 support.
- *
- * Revision 1.66  2000/09/08 19:17:31  rgb
- * Removed all references to CONFIG_IPSEC_PFKEYv2.
- *
- * Revision 1.65  2000/08/30 05:34:54  rgb
- * Minor clean-up.
- *
- * Revision 1.64  2000/08/27 01:50:51  rgb
- * Update copyright dates and fix replay window endian bug.
- *
- * Revision 1.63  2000/08/18 21:19:27  rgb
- * Removed no longer used resolve_ip() code.
- *
- * Revision 1.62  2000/08/01 14:51:53  rgb
- * Removed _all_ remaining traces of DES.
- *
- * Revision 1.61  2000/07/26 20:48:42  rgb
- * Fixed typo that caused compile failure.
- *
- * Revision 1.60  2000/07/26 03:41:46  rgb
- * Changed all printf's to fprintf's.  Fixed tncfg's usage to stderr.
- *
- * Revision 1.59  2000/06/21 16:51:27  rgb
- * Added no additional argument option to usage text.
- *
- * Revision 1.58  2000/03/16 06:40:49  rgb
- * Hardcode PF_KEYv2 support.
- *
- * Revision 1.57  2000/01/22 23:22:46  rgb
- * Use new function proto2satype().
- *
- * Revision 1.56  2000/01/21 09:42:32  rgb
- * Replace resolve_ip() with atoaddr() from freeswanlib.
- *
- * Revision 1.55  2000/01/21 06:24:57  rgb
- * Blasted any references in usage and code to deleted algos.
- * Removed DES usage.
- * Changed usage of memset on extensions to pfkey_extensions_init().
- *
- *
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
  */

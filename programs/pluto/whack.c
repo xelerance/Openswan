@@ -415,8 +415,9 @@ enum option_enums {
     END_CERTTYPE,
     END_SRCIP,
     END_UPDOWN,
+    END_TUNDEV,
     	
-#define END_LAST  END_UPDOWN	/* last end description*/
+#define END_LAST  END_TUNDEV	/* last end description*/
 
 /* Connection Description options -- segregated */
 
@@ -607,6 +608,7 @@ static const struct option long_opts[] = {
     { "dnskeyondemand", no_argument, NULL, END_DNSKEYONDEMAND + OO },
     { "srcip",  required_argument, NULL, END_SRCIP + OO },
     { "updown", required_argument, NULL, END_UPDOWN + OO },
+    { "tundev", required_argument, NULL, END_TUNDEV + OO + NUMERIC_ARG },
 
 
     /* options for a connection description */
@@ -1331,7 +1333,6 @@ main(int argc, char **argv)
 	    tunnel_af_used_by = long_opts[long_index].name;
 	    diagq(ttosubnet(optarg, 0, msg.tunnel_addr_family, &msg.right.client), optarg);
 	    msg.right.has_client = TRUE;
-	    msg.policy |= POLICY_TUNNEL;	/* client => tunnel */
 	    msg.right.has_client_wildcard = TRUE;
 	    continue;
 
@@ -1348,6 +1349,9 @@ main(int argc, char **argv)
 	    msg.right.updown = optarg;
 	    continue;
 
+	case END_TUNDEV:	/* --tundev <mast#> */
+	    msg.right.tundev = opt_whole;
+	    continue;
 
 	case CD_TO:		/* --to */
 	    /* process right end, move it to left, reset it */

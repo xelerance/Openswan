@@ -296,14 +296,14 @@ USE_KLIPS?=true
 USE_PFKEYv2?=true
 
 # Build support for 2.6 KLIPS/MAST variation in pluto
-USE_MAST?=false
+USE_MAST?=true
 
 # MAST is generally a prerequisite for SAREF support in applications
-USE_SAREF_KERNEL=false
+USE_SAREF_KERNEL=true
 
 # Build support for Linux NETKEY (XFRM) kernel level IPsec support for
 # pluto (aka "native", "kame")
-USE_NETKEY?=true
+USE_NETKEY?=false
 
 # Whether or not to use iproute2 based commands.
 # On Kernel 2.0, and early 2.2 systems you may need to either install the

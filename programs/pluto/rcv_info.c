@@ -283,7 +283,7 @@ info_handle(int infoctlfd)
 	struct ipsec_policy_cmd_query ipcq;
 
 	infofd = accept(infoctlfd, (struct sockaddr *)&info_client_addr
-	    , &info_addr_len);
+			, &info_addr_len);
 
 	if (infofd < 0)
 	{

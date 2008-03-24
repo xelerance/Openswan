@@ -1,6 +1,7 @@
 /*
- * FreeS/WAN specific PF_KEY headers
+ * Openswan specific PF_KEY headers
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs.
+ * Copyright (C) 2006-2007 Michael Richardson <mcr@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -17,6 +18,8 @@
 
 #ifndef __NET_IPSEC_PF_KEY_H
 #define __NET_IPSEC_PF_KEY_H
+
+#include "pfkeyv2.h"
 #ifdef __KERNEL__
 extern struct proto_ops pfkey_proto_ops;
 typedef struct sock pfkey_sock;
@@ -66,6 +69,9 @@ struct pfkey_extracted_data
 	struct ipsec_sa* ips;
 	struct ipsec_sa* ips2;
 	struct eroute *eroute;
+	int            outif;
+	IPsecSAref_t   sarefme;
+	IPsecSAref_t   sarefhim;
 };
 
 /* forward reference */
@@ -163,7 +169,7 @@ struct key_opt
 #define ALIGN_N(x,y) (DIVUP(x,y) * y) /* align on y boundary */
 
 #define IPSEC_PFKEYv2_LEN(x)   ((x) * IPSEC_PFKEYv2_ALIGN)
-#define IPSEC_PFKEYv2_WORDS(x) ((x) / IPSEC_PFKEYv2_ALIGN)
+#define IPSEC_PFKEYv2_WORDS(x) (DIVUP(x,IPSEC_PFKEYv2_ALIGN))
 
 
 #define PFKEYv2_MAX_MSGSIZE 4096
@@ -176,13 +182,34 @@ struct pf_key_ext_parsers_def {
 	char  *parser_name;
 };
 
+enum pfkey_ext_required {
+	EXT_BITS_IN=0,
+	EXT_BITS_OUT=1
+};
 
-#define SADB_EXTENSIONS_MAX 31
-extern unsigned int extensions_bitmaps[2/*in/out*/][2/*perm/req*/][SADB_EXTENSIONS_MAX];
-#define EXT_BITS_IN 0
-#define EXT_BITS_OUT 1
-#define EXT_BITS_PERM 0
-#define EXT_BITS_REQ 1
+enum pfkey_ext_perm {
+	EXT_BITS_PERM=0,
+	EXT_BITS_REQ=1
+};
+
+
+typedef uint64_t pfkey_ext_track;
+static inline void pfkey_mark_extension(enum sadb_extension_t exttype,
+					pfkey_ext_track *exten_track)
+{
+	*exten_track |= (1 << exttype);
+}
+	
+extern int pfkey_extensions_missing(enum pfkey_ext_required inout,
+				    enum sadb_msg_t sadb_operation,
+				    pfkey_ext_track extensions_seen);
+extern int pfkey_required_extension(enum pfkey_ext_required inout,
+				    enum sadb_msg_t sadb_operation,
+				    enum sadb_extension_t exttype);
+extern int pfkey_permitted_extension(enum pfkey_ext_required inout,
+				    enum sadb_msg_t sadb_operation,
+				    enum sadb_extension_t exttype);
+
 
 extern void pfkey_extensions_init(struct sadb_ext *extensions[]);
 extern void pfkey_extensions_free(struct sadb_ext *extensions[]);
@@ -227,6 +254,10 @@ pfkey_sa_build(struct sadb_ext **	pfkey_ext,
 	       uint8_t			auth,
 	       uint8_t			encrypt,
 	       uint32_t			flags);
+
+extern int
+pfkey_saref_build(struct sadb_ext **pfkey_ext,
+		  IPsecSAref_t in, IPsecSAref_t out);
 
 int
 pfkey_lifetime_build(struct sadb_ext **	pfkey_ext,
@@ -335,6 +366,14 @@ pfkey_v2_sadb_ext_string(int extnum);
 
 const char *
 pfkey_v2_sadb_type_string(int sadb_type);
+
+struct sadb_builds {
+	struct k_sadb_sa       sa_base;
+};
+
+int
+pfkey_sa_builds(struct sadb_ext **pfkey_ext,
+		struct sadb_builds sab);
 
 extern int
 pfkey_outif_build(struct sadb_ext **pfkey_ext,

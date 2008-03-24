@@ -149,7 +149,7 @@ set netjig1 [netjigstart]
 netjigsetup $netjig1
 
 foreach net $managednets {
-    newswitch $netjig1 $net
+    newswitch $netjig1 "$net"
 }
 
 if {[info exists netjig_extra]} {

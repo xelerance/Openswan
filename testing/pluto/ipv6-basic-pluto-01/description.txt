@@ -1,0 +1,9 @@
+Basic pluto test using IPv6 (and NETKEY):
+
+"westnet-eastnet": XXXXXXXXX/XX===XXXXXXXXXX[@west]...XXXXXXXXXX[@east]===XXXXXXXXX/24
+
+1) west XXXXXXX ping6's east-in/east-eth0/east XXXXXXX on eastnet XXXXXX/XX
+2) west adds an iptable rule to block plaintext from eastnet
+3) west pings XXXXXXXXX again, but pong should be dropped by rule
+4) west initiates connection "westnet-eastnet"; east XXXXXXX responds
+5) netjig sends ping packets from westnet to eastnet

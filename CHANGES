@@ -104,7 +104,24 @@ v2.5.04
     zero peer_ca to avoid crashes.
     (include glob's may still not work correctly)
 
+v2.5.0sbs5
+    fixed issues with libwhack not getting built with VIRTUAL_IP.
+    adjusted programs/pluto/Makefile to depend upon libraries better
+
+v2.5.0sbs4
+    When a template conn is instantiated for a phase 1 configuration, it
+	may still need to be adjusted to a virtual IP address. In addition,
+	change the order of the virtual IP address setting and the
+	port-wildcard processing.
+        This patch also provides some additional debugging of the proposal
+	which actually processed by the machinery.
+
+    tests for L2TP+X.509 L2TP configuration --- 2 clients behind the
+        same NAT with certificates that need to have their connection both
+        instantiated (in phase 1) and virtualized (in phase 2).
+
 v2.5.03
+
     ipsec.conf parsing should ignore keywords that start with x-
 	they are a form of structured comment.
     added in forceencaps= keyword.
@@ -283,8 +300,3 @@ v2.1.0
   while travelling.  This is based on Tuomo Soini's Advanced Routing 
   patch.
 
-<<<<<<< HEAD:CHANGES
-RCSID $Id: CHANGES,v 1.326.2.31 2005/11/24 05:35:43 ken Exp $
-=======
-RCSID $Id: CHANGES,v 1.326.2.118 2007/07/09 23:11:56 paul Exp $
->>>>>>> 1121e33... changes for 2.4.9:CHANGES

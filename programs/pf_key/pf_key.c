@@ -71,7 +71,7 @@ void
 pfkey_register(uint8_t satype) {
 	/* for registering SA types that can be negotiated */
 	int error = 0;
-	struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	struct sadb_msg *pfkey_msg;
 
 	pfkey_extensions_init(extensions);
@@ -207,16 +207,16 @@ main(int argc, char *argv[])
 		}
 		
 		if(ah_register) {
-			pfkey_register(SADB_SATYPE_AH);
+			pfkey_register(K_SADB_SATYPE_AH);
 		}
 		if(esp_register) {
-			pfkey_register(SADB_SATYPE_ESP);
+			pfkey_register(K_SADB_SATYPE_ESP);
 		}
 		if(ipip_register) {
-			pfkey_register(SADB_X_SATYPE_IPIP);
+			pfkey_register(K_SADB_X_SATYPE_IPIP);
 		}
 		if(ipcomp_register) {
-			pfkey_register(SADB_X_SATYPE_COMP);
+			pfkey_register(K_SADB_X_SATYPE_COMP);
 		}
 
 		if(fork_after_register) {

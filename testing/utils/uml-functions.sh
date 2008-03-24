@@ -352,7 +352,6 @@ applypatches() {
 		cat $patch | patch -p1
 	    fi
 	done
-	mkdir -p arch/um/.PATCHAPPLIED
 
 	if $NATTPATCH
 	then
@@ -361,6 +360,16 @@ applypatches() {
 	else
             echo Not applying the NAT-Traversal patch
 	fi
+
+	if $NGPATCH
+	then
+	    echo Applying the klipsNG patch
+	    (cd $OPENSWANSRCDIR && make ngpatch${KERNVERSION} ) | patch -p1
+	else
+            echo Not applying the klipsNG patch
+	fi
+
+	mkdir -p arch/um/.PATCHAPPLIED
     fi
 }
 
