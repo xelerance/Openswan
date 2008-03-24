@@ -1106,8 +1106,14 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 	
 	init_pbs(&md->clr_pbs, encstart, enclen - (padlen+1), "cleartext");
     }
-    
-    ikev2_process_payloads(md, &md->clr_pbs, st->st_state, np);
+
+    { stf_status ret;
+	ret = ikev2_process_payloads(md, &md->clr_pbs, st->st_state, np);
+	if(ret != STF_OK) {
+	    return ret;
+	}
+    }
+	    
     return STF_OK;
 }
 
@@ -1189,6 +1195,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     insert_state(st);
     md->st = st;
     md->pst= pst;
+
+    /* parent had crypto failed, replace it with rekey! */
+    delete_event(pst);
+    event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, pst);
 
     /* need to force parent state to I2 */
     pst->st_state = STATE_PARENT_I2;
@@ -1287,7 +1297,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	if(send_cert) {
 	    stf_status certstat = ikev2_send_cert( st, md
 	    					   , INITIATOR
-						   ,ISAKMP_NEXT_v2AUTH
+						   , ISAKMP_NEXT_v2AUTH
 						   , &e_pbs_cipher);
 	    if(certstat != STF_OK) return certstat;
 	}
@@ -1295,20 +1305,19 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* send out the AUTH payload */
     {
+	lset_t policy;
+	struct connection *c0= first_pending(pst, &policy,&st->st_whack_sock);
+	unsigned int np = (c0 ? ISAKMP_NEXT_v2SA : ISAKMP_NEXT_NONE);
 	stf_status authstat = ikev2_send_auth(c, st
-					      , INITIATOR, ISAKMP_NEXT_v2SA
+					      , INITIATOR
+					      , np
 					      , idhash, &e_pbs_cipher);
 	if(authstat != STF_OK) return authstat;
-    }
 
-    /*
-     * now, find an eligible child SA from the pending list, and emit
-     * SA2i, TSi and TSr for it.
-     */
-    {
-	lset_t policy;
-	struct connection *c0 = first_pending(pst, &policy,&st->st_whack_sock);
-
+	/*
+	 * now, find an eligible child SA from the pending list, and emit
+	 * SA2i, TSi and TSr for it.
+	 */
 	if(c0) {
 	    st->st_connection = c0;
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
@@ -1317,6 +1326,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	    st->st_ts_that = ikev2_subnettots(&c0->spd.that);
 	    
 	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, c0, policy);
+	} else {
+	    openswan_log("no pending SAs found, PARENT SA keyed only");
 	}
     }
 
@@ -1621,7 +1632,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	get_rnd_bytes(iv, ivsize);
 	
 	/* note where cleartext starts */
-	init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
+	init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof-e_pbs.cur, "cleartext");
 	e_pbs_cipher.container = &e_pbs;
 	e_pbs_cipher.desc = NULL;
 	e_pbs_cipher.cur = e_pbs.cur;
@@ -1683,13 +1694,14 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    if(certstat != STF_OK) return certstat;
     	} 
 
-	/* authentication good, see if there is a child SA available */
+	/* authentication good, see if there is a child SA being proposed */
 	if(md->chain[ISAKMP_NEXT_v2SA] == NULL
 	   || md->chain[ISAKMP_NEXT_v2TSi] == NULL
 	   || md->chain[ISAKMP_NEXT_v2TSr] == NULL) {
 	    
 	    /* initiator didn't propose anything. Weird. Try unpending out end. */
 	    /* UNPEND XXX */
+	    openswan_log("No CHILD SA proposals received.");
 	    np = ISAKMP_NEXT_NONE;
 	} else {
 	    np = ISAKMP_NEXT_v2SA;

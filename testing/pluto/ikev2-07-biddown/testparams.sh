@@ -4,7 +4,7 @@ TEST_PURPOSE=regress
 TEST_PROB_REPORT=0
 TEST_TYPE=umlplutotest
 
-TESTNAME=ikev2-06
+TESTNAME=ikev2-07-biddown
 EASTHOST=east
 WESTHOST=west
 

@@ -106,8 +106,9 @@ event_schedule(enum event_type type, time_t tm, struct state *st)
 		, ev->ev_state->st_serialno));
 
     if (evlist == (struct event *) NULL
-    || evlist->ev_time >= ev->ev_time)
+	|| evlist->ev_time >= ev->ev_time)
     {
+	DBG(DBG_CONTROLMORE, DBG_log("event added at head of queue"));
 	ev->ev_next = evlist;
 	evlist = ev;
     }
@@ -119,8 +120,7 @@ event_schedule(enum event_type type, time_t tm, struct state *st)
 	    if (evt->ev_next->ev_time >= ev->ev_time)
 		break;
 
-#ifdef NEVER	/* this seems to be overkill */
-	DBG(DBG_CONTROL,
+	DBG(DBG_CONTROLMORE,
 	    if (evt->ev_state == NULL)
 		DBG_log("event added after event %s"
 		    , enum_show(&timer_event_names, evt->ev_type));
@@ -128,7 +128,6 @@ event_schedule(enum event_type type, time_t tm, struct state *st)
 		DBG_log("event added after event %s for #%lu"
 		    , enum_show(&timer_event_names, evt->ev_type)
 		    , evt->ev_state->st_serialno));
-#endif /* NEVER */
 
 	ev->ev_next = evt->ev_next;
 	evt->ev_next = ev;
@@ -667,8 +666,10 @@ next_event(void)
 {
     time_t tm;
 
-    if (evlist == (struct event *) NULL)
+    if (evlist == (struct event *) NULL) {
+	DBG(DBG_CONTROLMORE, DBG_log("no pending events"));
 	return -1;
+    }
 
     tm = now();
 
@@ -695,6 +696,7 @@ next_event(void)
 void
 delete_event(struct state *st)
 {
+    DBG(DBG_CONTROLMORE, DBG_log("deleting event for #%ld", st->st_serialno));
     if (st->st_event != (struct event *) NULL)
     {
 	struct event **ev;

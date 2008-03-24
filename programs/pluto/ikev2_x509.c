@@ -209,26 +209,24 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md
     return STF_OK;
 }
 
-bool
-doi_send_ikev2_cert_thinking( struct state *st)
-
 /* just for ref copy from ikev1_main.c 
- doi_log_cert_thinking(md , st->st_oakley.auth
+
+     doi_log_cert_thinking(md , st->st_oakley.auth
 			  , mycert.type
 			  , st->st_connection->spd.this.sendcert
 			  , st->hidden_variables.st_got_certrequest 
 			  , send_cert);
 
-static void 
-doi_log_cert_thinking(struct msg_digest *md UNUSED
-		      , u_int16_t auth
+     doi_log_cert_thinking(struct msg_digest *md UNUSED
+	  	      , u_int16_t auth
 		      , enum ipsec_cert_type certtype
 		      , enum certpolicy policy
 		      , bool gotcertrequest
 		      , bool send_cert)
-
-
 */
+
+bool
+doi_send_ikev2_cert_thinking(struct state *st)
 {   
     cert_t mycert = st->st_connection->spd.this.cert;
     enum ipsec_cert_type certtype = mycert.type;

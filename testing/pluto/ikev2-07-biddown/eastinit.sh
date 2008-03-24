@@ -1,5 +1,5 @@
 : ==== start ====
-TESTNAME=ikev2-06
+TESTNAME=ikev2-07-biddown
 source /testing/pluto/bin/eastlocal.sh
 
 ipsec setup start

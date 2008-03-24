@@ -8,3 +8,6 @@ The responder will indicate with a notify that it could have done IKEv2,
 and as a result, the initiator will immediately replace the SA with an IKEv2
 SA.
 
+This test could be extended to drop more packets --- and a second test should
+be created that considers what happens if the IKEv2 fails to get established.
+

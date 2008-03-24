@@ -389,7 +389,7 @@ delete_state(struct state *st)
      * ??? we ought to tell peer to delete IPSEC SAs
      */
     if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
-	|| IS_CHILD_SA_ESTABLISHED(st->st_state))
+	|| IS_CHILD_SA_ESTABLISHED(st))
 	delete_ipsec_sa(st, FALSE);
     else if (IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(st->st_state))
 	delete_ipsec_sa(st, TRUE);
@@ -794,6 +794,7 @@ duplicate_state(struct state *st)
     nst->st_clonedfrom = st->st_serialno;
     nst->st_import     = st->st_import;
     nst->st_ikev2      = st->st_ikev2;
+    nst->st_event      = NULL;
 
 #   define clone_chunk(ch, name) \
 	clonetochunk(nst->ch, st->ch.ptr, st->ch.len, name)

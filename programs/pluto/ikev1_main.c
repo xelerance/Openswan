@@ -2206,7 +2206,18 @@ main_inR3_tail(struct msg_digest *md
     
     update_iv(st);	/* finalize our Phase 1 IV */
 
-    
+    if(md->ikev2) {
+	if(st->st_connection->policy & POLICY_IKEV2_ALLOW) {
+	    openswan_log("Bid-down to IKEv1 attack detected, attempting to rekey connection with IKEv2");
+	    st->st_connection->failed_ikev2 = FALSE;
+	    
+	    /* schedule an event to do this as soon as possible */
+	    md->event_already_set = TRUE;
+	    st->st_rekeytov2 = TRUE;
+	    delete_event(st);
+	    event_schedule(EVENT_SA_REPLACE, 0, st);
+	}
+    }
 
     return STF_OK;
 }
