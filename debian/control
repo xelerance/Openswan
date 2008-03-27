@@ -3,8 +3,7 @@ Section: net
 Priority: optional
 Maintainer: Rene Mayrhofer <rmayr@debian.org>
 Standards-Version: 3.6.1.0
-Build-Depends: debhelper (>= 4.1.16), libgmp3-dev, libssl-dev, htmldoc, man2html, libcurl3-dev | libcurl2-dev, libopensc1-dev | libopensc0-dev, libldap2-dev, libpam0g-dev, bison, flex, lynx
-
+Build-Depends:  debhelper (>= 4.1.16), libgmp3-dev, libssl-dev, htmldoc, man2html, libcurl4-dev | libcurl3-dev | libcurl2-dev, libopensc2-dev | libopensc1-dev | libopensc0-dev, libldap2-dev, libpam0g-dev, bison, flex, lynx
 Package: openswan
 Architecture: any
 Pre-Depends: debconf
