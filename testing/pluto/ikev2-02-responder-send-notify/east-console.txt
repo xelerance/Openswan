@@ -1,5 +1,5 @@
 east:~#
- TESTNAME=ikev2-02-02-responder-send-notify
+ TESTNAME=ikev2-02-responder-send-notify
 east:~#
  source /testing/pluto/bin/eastlocal.sh
 east:~#

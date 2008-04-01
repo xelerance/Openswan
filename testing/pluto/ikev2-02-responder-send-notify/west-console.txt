@@ -1,5 +1,5 @@
 west:~#
- TESTNAME=ikev2-02-02-responder-send-notify
+ TESTNAME=ikev2-02-responder-send-notify
 west:~#
  source /testing/pluto/bin/westlocal.sh
 west:~#
