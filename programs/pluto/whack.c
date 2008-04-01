@@ -493,7 +493,7 @@ enum option_enums {
     DBGOPT_X509,        /* same order as DBG_* */
     DBGOPT_DPD,         /* same order as DBG_* */
     DBGOPT_OPPOINFO,
-    DBGOPT_RES15,
+    DBGOPT_WHACKWATCH,
     DBGOPT_RES16,
     DBGOPT_RES17,
     DBGOPT_RES18,
@@ -691,6 +691,7 @@ static const struct option long_opts[] = {
     { "debug-dns", no_argument, NULL, DBGOPT_DNS + OO },
     { "debug-oppo", no_argument, NULL, DBGOPT_OPPO + OO },
     { "debug-oppoinfo", no_argument, NULL, DBGOPT_OPPOINFO + OO },
+    { "debug-whackwatch",  no_argument, NULL, DBGOPT_WHACKWATCH + OO },
     { "debug-controlmore", no_argument, NULL, DBGOPT_CONTROLMORE + OO },
     { "debug-pfkey",   no_argument, NULL, DBGOPT_PFKEY + OO },
     { "debug-nattraversal", no_argument, NULL, DBGOPT_NATT + OO },
@@ -1619,6 +1620,7 @@ main(int argc, char **argv)
 	case DBGOPT_X509:       /* --debug-pfkey */
 	case DBGOPT_DPD:        /* --debug-dpd */
 	case DBGOPT_OPPOINFO:	/* --debug-oppoinfo */
+	case DBGOPT_WHACKWATCH:	/* --debug-whackwatch */
 	case DBGOPT_PRIVATE:	/* --debug-private */
 	case DBGOPT_IMPAIR_DELAY_ADNS_KEY_ANSWER:	/* --impair-delay-adns-key-answer */
 	case DBGOPT_IMPAIR_DELAY_ADNS_TXT_ANSWER:	/* --impair-delay-adns-txt-answer */

@@ -112,7 +112,9 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | state hash entry 4
 | inserting state object #1 on chain 4
 | ikev2 secret_of_the_day used abcdabcdabcd, length 20
-../parentR1dcookie sending notification (null) to 192.1.2.45:500
+| busy mode on. receieved I1 without a valid dcookie
+| send a dcookie and forget this state
+../parentR1dcookie sending notification v2N_COOKIE to 192.1.2.45:500
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
@@ -129,7 +131,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 |    critical bit: Payload-Critical
 |    Protocol ID: PROTO_ISAKMP
 |    SPI size: 0
-|    Notify Message Type: 16390??
+|    Notify Message Type: v2N_COOKIE
 | emitting 20 raw bytes of Notifiy data into IKEv2 Notify Payload
 | Notifiy data  1e f3 91 b5  a5 e2 49 40  b9 31 35 70  9f a1 19 3d
 |   44 2d 0a bc

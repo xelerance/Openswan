@@ -1,3 +1,5 @@
+export TZ=UTC
+
 (../parentR2duplicate ../lib-parentR1/ikev2.record westnet--eastnet-ikev2 ../lib-parentR2/parentI2.pcap 2>&1 | tee secrets.raw
     grep '^| ikev2 [IR]' secrets.raw | cut -c3- >ike-secrets.txt
     echo TCPDUMP output

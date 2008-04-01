@@ -376,8 +376,14 @@ applypatches() {
 
 	if $NATTPATCH
 	then
-	    echo Applying the NAT-Traversal patch
-	    (cd $OPENSWANSRCDIR && make nattpatch${KERNVERSION} ) | patch -p1
+	    if [ ! -d arch/um/.NATPATCHAPPLIED ] 
+	    then
+		echo Applying the NAT-Traversal patch
+		(cd $OPENSWANSRCDIR && make nattpatch${KERNVERSION} ) | patch -p1
+		mkdir -p arch/um/.NATPATCHAPPLIED
+	    else
+		echo "NAT-Traversal patch already applied"
+	    fi
 	else
             echo Not applying the NAT-Traversal patch
 	fi

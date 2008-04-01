@@ -1,3 +1,4 @@
 OUTPUT
-core*
+core.*
 parentI1.pcap
+.gdbinit

@@ -1,5 +1,9 @@
 Please see docs/KNOWN_BUGS file for more information
 
+* includes fallback from IKEv2->v1 [mcr]
+* IKEv2 bid-down attack recovery [mcr]
+* changes to I1 retransmission timers [mcr]
+
 v2.6.09
 * Completed IKEv2 6msg exchange support [antony]
 

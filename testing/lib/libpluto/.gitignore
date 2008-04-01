@@ -81,4 +81,10 @@ parentI2duplicate
 parentR2duplicate
 parentI3duplicate
 parentR1dcookie
-
+lib-parentI1retrans/OUTPUT
+lib-parentI1retrans/core.*
+lib-parentI1retrans/parentI1.pcap
+parentI1retrans
+parentI2retrans
+parentI1fallback
+parentI1i1
