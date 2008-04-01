@@ -1,4 +1,32 @@
-These notes apply to Openswan 2.4.2 
+These notes apply to Openswan 2.5.x
+
+1.	The targets module26 and m26install are obsoleted. Just use the
+	regular 'make module' and 'make module_install'
+
+2.      Kernel's up to 2.6.23 are supported for KLIPS (and NETKEY). updown
+        scripts are now seperate for KLIPS and NETKEY. Select your stack
+        with the new keyword protostack=netkey|klips
+
+3.	parsing scripts have been phased out for a parsing library,
+	see lib/libipsecconf and programs/addcon/
+
+4.	The ipsec "starter" code has been fully integrated and is obsolete
+
+5.	XAUTH DNS/WINS support
+
+6.      new keyword: subnets=
+
+7.      XAUTH can now store username in the conn, and password in
+        ipsec.secrets [insecure, but people insist]
+
+8.	The updown.protostack scripts handle most required NETKEY routes
+	automatically now (eg when leftsourceip= is specified)
+
+*************************************************************************
+Please see CHANGES for a full updated changelog. This file is not as well
+maintained as it should be.
+*************************************************************************
+These notes apply to Openswan 2.4.2
 
 
 1.   Aggressive Mode support is included.  You enable it by:
