@@ -830,6 +830,12 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 
     DBG(DBG_CONTROLMORE
 	, DBG_log("ikev2 parent inR1: calculating g^{xy} in order to send I2"));
+
+    if(st->st_gr.len == 0) {
+	/* Remote end did not send us Gr in R1 - likely a NOTIFY message */
+	openswan_log("No responder Gr found in R1 packet");
+	return PAYLOAD_MALFORMED;
+    }
  
     /* KE in */
     keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
