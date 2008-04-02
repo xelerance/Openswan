@@ -517,7 +517,8 @@ spdb_v2_match_parent(struct db_sa *sadb
 	for(tr_cnt=0; tr_cnt < pj->trans_cnt; tr_cnt++) {
 
 	    tr = &pj->trans[tr_cnt];
-	    
+
+/* shouldn't these assignments of tr->transid be inside their if statements? */	    
 	    switch(tr->transform_type) {
 	    case IKEv2_TRANS_TYPE_ENCR:
 		encrid = tr->transid;
@@ -544,7 +545,7 @@ spdb_v2_match_parent(struct db_sa *sadb
 		break;
 		
 	    default:
-		continue;
+		continue; /* could be clearer as a break */
 	    }
 
 	    /* esn_matched not tested! */
@@ -554,19 +555,19 @@ spdb_v2_match_parent(struct db_sa *sadb
 	if(DBGP(DBG_CONTROLMORE)) {
 	    DBG_log("proposal %u %s encr= (policy:%s vs offered:%s)"
 		    , propnum
-		    , encr_matched ? "failed" : "     "
+		    , encr_matched ? "succeeded" : "failed"
 		    , enum_name(&trans_type_encr_names, encrid)
 		    , enum_name(&trans_type_encr_names, encr_transform));
 	    DBG_log("            %s integ=(policy:%s vs offered:%s)"
-		    , integ_matched ? "failed" : "     "
+		    , integ_matched ? "succeeded" : "failed"
 		    , enum_name(&trans_type_integ_names, integid)
 		    , enum_name(&trans_type_integ_names, integ_transform));
 	    DBG_log("            %s prf=  (policy:%s vs offered:%s)"
-		    , prf_matched ? "failed" : "     "
+		    , prf_matched ? "succeeded" : "failed"
 		    , enum_name(&trans_type_prf_names, prfid)
 		    , enum_name(&trans_type_prf_names, prf_transform));
 	    DBG_log("            %s dh=   (policy:%s vs offered:%s)"
-		    , dh_matched ? "failed" : "     "
+		    , dh_matched ? "succeeded" : "failed"
 		    , enum_name(&oakley_group_names, dhid)
 		    , enum_name(&oakley_group_names, dh_transform));
 	}
@@ -666,7 +667,7 @@ ikev2_process_transforms(struct ikev2_prop *prop
 	case IKEv2_TRANS_TYPE_ENCR:
 	    if(itl->encr_trans_next < MAX_TRANS_LIST) {
 		itl->encr_transforms[itl->encr_trans_next++]=trans.isat_transid;
-	    }
+	    } /* show failure with else */
 	    break;
 	    
 	case IKEv2_TRANS_TYPE_INTEG:
@@ -1253,7 +1254,7 @@ ikev2_parse_child_sa_body(
 
     /* if not confirming, then record the SPI value */
     if(!selection) {
-	st->st_esp.attrs.spi = itl->spi_values[itl->spi_values_next+-1];
+	st->st_esp.attrs.spi = itl->spi_values[itl->spi_values_next -1];
     }
     st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TUNNEL;
 
