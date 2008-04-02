@@ -197,16 +197,19 @@ umlXhost	pluto-rekey-01		good
 #
 # a test of using X.509 keys
 #
-umlplutotest	x509-pluto-01		good
+# incomplete test - disabled
+#umlplutotest	x509-pluto-01		good
 
 #
 # a test of sending and validating an X.509 cert
 #
-umlXhost	x509-pluto-02		good
+# incomplete test - disabled
+#umlXhost	x509-pluto-02		good
 
 # a test of sending and validating an X.509 cert
 #
-umlplutotest	x509-pluto-03		good
+# incomplete test - disabled
+#umlplutotest	x509-pluto-03		good
 
 
 #
