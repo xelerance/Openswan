@@ -2207,7 +2207,16 @@ main_inR3_tail(struct msg_digest *md
     update_iv(st);	/* finalize our Phase 1 IV */
 
     if(md->ikev2) {
-	if(st->st_connection->policy & POLICY_IKEV2_ALLOW) {
+	/* 
+	 * We cannot use POLICY_IKEV2_ALLOW here, since this will
+	 * cause two IKEv2 capable but not ikev2= configured endpoints
+	 * to falsely detect a bid down attack.
+	 * Also, only the side that proposed IKEv2 can figure out there
+	 * was a bid down attack to begin with. The side that did not propose
+	 * cannot distinguish attack from regular ikev1 operation.
+	 * if(st->st_connection->policy & POLICY_IKEV2_ALLOW) {
+	 */
+	if(st->st_connection->policy & POLICY_IKEV2_PROPOSE) {
 	    openswan_log("Bid-down to IKEv1 attack detected, attempting to rekey connection with IKEv2");
 	    st->st_connection->failed_ikev2 = FALSE;
 	    
