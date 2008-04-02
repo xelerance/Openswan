@@ -1892,7 +1892,10 @@ ipsec_xmit_state_cache_init (void)
 
         spin_lock_init(&ixs_cache_lock);
 #ifdef HAVE_KMEM_CACHE_MACRO
-	ixs_cache_allocator = KMEM_CACHE(ipsec_ixs,0);
+	/* ixs_cache_allocator = KMEM_CACHE(ipsec_ixs,0); */
+        ixs_cache_allocator = kmem_cache_create ("ipsec_ixs",
+                sizeof (struct ipsec_xmit_state), 0,
+                0, NULL );
 #else
         ixs_cache_allocator = kmem_cache_create ("ipsec_ixs",
                 sizeof (struct ipsec_xmit_state), 0,
