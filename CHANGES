@@ -1,8 +1,13 @@
 Please see docs/KNOWN_BUGS file for more information
 
-* includes fallback from IKEv2->v1 [mcr]
+v2.6.10
+* Includes fallback from IKEv2->IKEv1 [mcr]
 * IKEv2 bid-down attack recovery [mcr]
 * changes to I1 retransmission timers [mcr]
+* Only check for bid-down when POLICY_IKEV2_PROPOSE to avoid two ikev2
+  capable ikev1 instances from false detecting a biddown [paul]
+* Fix ikev2_trans struct (redhat bug #438826) [dhr/paul]
+* Revisit of 2.6.06 NOTIFY crasher - fixed again [paul]
 
 v2.6.09
 * Completed IKEv2 6msg exchange support [antony]
