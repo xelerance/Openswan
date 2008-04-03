@@ -706,7 +706,7 @@ struct ikev2_trans
 	u_int16_t isat_length;	    /* Payload length */
 	u_int8_t  isat_type;        /* transform type */
 	u_int8_t  isat_res2;
-	u_int8_t  isat_transid;     /* ID */
+	u_int16_t  isat_transid;     /* ID */
 };
 extern struct_desc ikev2_trans_desc;
 
