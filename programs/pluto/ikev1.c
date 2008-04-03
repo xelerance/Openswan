@@ -2132,6 +2132,8 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 #endif
 
 	    if(st->st_rekeytov2) {
+	    DBG(DBG_CONTROL
+		, DBG_log("waiting for IKEv1 -> IKEv2 rekey"));
 		break;
 	    }
 
