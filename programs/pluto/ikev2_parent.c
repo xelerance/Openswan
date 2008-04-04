@@ -529,6 +529,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
     /* check,as a responder, are we under dos attack or not 
 	 * if yes go to 6 message exchange mode. it is a config option for now.
 	 * TBD set force_busy dynamically
+	 * Paul: Can we check for STF_TOOMUCHCRYPTO ?
 	 */ 
 	if(force_busy == TRUE) 
 	{ 
