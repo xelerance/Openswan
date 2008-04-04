@@ -293,6 +293,12 @@ process_v2_packet(struct msg_digest **mdp)
 
     md->msgid_received = ntohl(md->hdr.isa_msgid);
 
+	/* TODO: this code allows a packet to both set ISAKMP_FLAGS_I and ISAKMP_FLAGS_R */
+
+    if( (md->hdr.isa_flags & ISAKMP_FLAGS_I) && (md->hdr.isa_flags & ISAKMP_FLAGS_R) ) {
+	openswan_log("received packet that claimed to be  both (I)nitiator and (R)esponder, msgid=%u", md->msgid_received);
+}
+
     if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
 	/* then I am the responder */
 	rcookiezero = is_zero_cookie(md->hdr.isa_rcookie);
@@ -335,7 +341,7 @@ process_v2_packet(struct msg_digest **mdp)
 	    if(st == NULL) {
 		st = find_state_ikev2_parent(md->hdr.isa_icookie, zero_cookie);
 		if(st) {
-		    /* responder inserted it's cookie, record it */
+		    /* responder inserted its cookie, record it */
 		    unhash_state(st);
 		    memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
 		    insert_state(st);
@@ -397,6 +403,13 @@ process_v2_packet(struct msg_digest **mdp)
 	}
 	if(svm->state != from_state) continue;
 	if(svm->recv_type != ix) continue;
+
+	/* I1 receiving NO_PROPOSAL ened up picking the wrong STATE_UNDEFINED state
+ 	   Since the wrong state is a responder, we just add a check for initiator,
+	   so we hit STATE_IKEv2_ROOF
+	 */
+	if ( ((svm->flags&SMF2_INITIATOR) != 0) != ((md->hdr.isa_flags & ISAKMP_FLAGS_R) != 0) )
+                continue;
 	
 	/* must be the right state */
 	break;
