@@ -249,11 +249,13 @@ static const char *const stfstatus_names[] = {
 	"STF_SUSPEND",
 	"STF_OK",
 	"STF_INTERNAL_ERROR",
-	"STF_FAIL",
-	"STF_FATAL"
+	"STF_TOOMUCHCRYPTO",
+	"STF_FATAL",
+	"STF_STOLEN",
+	"STF_FAIL"
 };
 enum_names stfstatus_name =
-  {STF_IGNORE, STF_FATAL, stfstatus_names, NULL};
+  {STF_IGNORE, STF_FAIL, stfstatus_names, NULL};
 
 /* Goal BITs for establishing an SA
  * Note: we drop the POLICY_ prefix so that logs are more concise.
