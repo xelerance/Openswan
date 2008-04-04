@@ -1,5 +1,9 @@
 Please see docs/KNOWN_BUGS file for more information
 
+v2.6.11
+* Fixes to state machine on NO_PROPOSAL on retransmit [dhr/paul/antony]
+* Fixes to some enum tables that caused (null)'s in logs [dhr/paul]
+
 v2.6.10
 * Includes fallback from IKEv2->IKEv1 [mcr]
 * IKEv2 bid-down attack recovery [mcr]
