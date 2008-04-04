@@ -825,6 +825,20 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     }
 
     /*
+     * If we did not get a KE payload, we cannot continue. There * should be
+     * a Notify telling us why. We inform the user, but continue to try this
+     * connection via regular retransmit intervals.
+     */
+    if( md->chain[ISAKMP_NEXT_v2N]  && (md->chain[ISAKMP_NEXT_v2KE] == NULL)) {
+	const char *from_state_name = enum_name(&state_names, st->st_state);
+	openswan_log("%s: received %s"
+		, from_state_name
+		, enum_name(&notification_names, 
+			md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type));
+               return STF_IGNORE;
+       }
+
+    /*
      * the responder sent us back KE, Gr, Nr, and it's our time to calculate
      * the shared key values.
      */
