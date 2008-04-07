@@ -1,8 +1,11 @@
 Please see docs/KNOWN_BUGS file for more information
 
 v2.5.18
+* Do not use the KMEM_CACHE macro for now, so KLIPS works on 2.6.23 [paul]
+* Sha2 support for X.509 certificates in pluto [Daniel Mueller]
 * Bugtracker bugs fixed
  #917: pluto fails to compile when using pam. xauth [folti]
+ #919: Invalid memory access in show_dnskey of showhostkey.c [paul]
 
 v2.5.17
 * Implemented netlink_shunt_eroute() [paul]
@@ -13,9 +16,6 @@ v2.5.17
   #761: pluto crashes after removing interface [Tillman Baumann]
   #897/731: crash in alg_info_snprint() - ["Deep Throat"]
   #889: backport from #ikev2 branch to fix ipsec_delete_sa with NETKEY [mcr]
-
-#ikev2
-* IKEv2 support
 
 #stable
 * Merged in XAUTH DNS/WINS server-side patch from Anna Wiejak [paul]
