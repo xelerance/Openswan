@@ -1,9 +1,9 @@
 west:~#
  TESTNAME=interop-ikev2-strongswan-01-noconn
 west:~#
- export PLUTO_EVENT_RETRANSMIT_DELAY=3
+ PLUTO_EVENT_RETRANSMIT_DELAY=3
 west:~#
- export PLUTO_MAXIMUM_RETRANSMISSIONS_INITIAL=4
+ PLUTO_MAXIMUM_RETRANSMISSIONS_INITIAL=4
 west:~#
  source /testing/pluto/bin/westnlocal.sh
 west:~#
