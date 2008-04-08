@@ -829,14 +829,15 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
      * a Notify telling us why. We inform the user, but continue to try this
      * connection via regular retransmit intervals.
      */
-    if( md->chain[ISAKMP_NEXT_v2N]  && (md->chain[ISAKMP_NEXT_v2KE] == NULL)) {
-	const char *from_state_name = enum_name(&state_names, st->st_state);
-	openswan_log("%s: received %s"
-		, from_state_name
-		, enum_name(&notification_names, 
-			md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type));
-               return STF_FAIL + NO_PROPOSAL_CHOSEN;
-       }
+    if( md->chain[ISAKMP_NEXT_v2N]  && (md->chain[ISAKMP_NEXT_v2KE] == NULL)) 
+	{
+		const char *from_state_name = enum_name(&state_names, st->st_state);
+		const u_int16_t isan_type =  md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type;
+		openswan_log("%s: received %s"
+					, from_state_name 
+					, enum_name(&ikev2_notify_names , isan_type));
+		return STF_FAIL + isan_type;
+	}
 
     /*
      * the responder sent us back KE, Gr, Nr, and it's our time to calculate
