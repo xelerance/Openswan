@@ -506,7 +506,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	 */
 	DBG_log("no connection found\n");
 	//SEND_NOTIFICATION(NO_PROPOSAL_CHOSEN);
-	return STF_FAIL;
+	return STF_FAIL + NO_PROPOSAL_CHOSEN;
     }
 	
 
