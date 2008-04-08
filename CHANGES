@@ -1,8 +1,17 @@
 Please see docs/KNOWN_BUGS file for more information
 
 v2.6.11
-* Fixes to state machine on NO_PROPOSAL on retransmit [dhr/paul/antony]
+* Fix state machine to pick proper Responder STATE_UNDEFINED state
+  when receiving R1 NO_PROPOSAL_CHOSEN [dhr/paul/antony]
 * Fixes to some enum tables that caused (null)'s in logs [dhr/paul]
+* Starting the prf+ counter from 1 instead of 0 [herbert]
+* Removed wrong Gr check [antony]
+* Added IKEv2 NO_PROPOSAL_CHOSEN processing [antony]
+* Clone st_ni/st_nr chunks for child SA [herbert]
+* Various smal logging changes - mostly to fix (null)'s [paul/dhr]
+* AUTH_ALGORITHM_HMAC_SHA2_* are now logged properly [paul]
+* interop-* testcase output updated [paul]
+
 
 v2.6.10
 * Includes fallback from IKEv2->IKEv1 [mcr]
