@@ -559,19 +559,19 @@ spdb_v2_match_parent(struct db_sa *sadb
 		    , propnum
 		    , encr_matched ? "succeeded" : "failed"
 		    , enum_name(&trans_type_encr_names, encrid)
-		    , enum_name(&trans_type_encr_names, encr_transform));
+		    , enum_show(&trans_type_encr_names, encr_transform));
 	    DBG_log("            %s integ=(policy:%s vs offered:%s)"
 		    , integ_matched ? "succeeded" : "failed"
 		    , enum_name(&trans_type_integ_names, integid)
-		    , enum_name(&trans_type_integ_names, integ_transform));
+		    , enum_show(&trans_type_integ_names, integ_transform));
 	    DBG_log("            %s prf=  (policy:%s vs offered:%s)"
 		    , prf_matched ? "succeeded" : "failed"
 		    , enum_name(&trans_type_prf_names, prfid)
-		    , enum_name(&trans_type_prf_names, prf_transform));
+		    , enum_show(&trans_type_prf_names, prf_transform));
 	    DBG_log("            %s dh=   (policy:%s vs offered:%s)"
 		    , dh_matched ? "succeeded" : "failed"
 		    , enum_name(&oakley_group_names, dhid)
-		    , enum_name(&oakley_group_names, dh_transform));
+		    , enum_show(&oakley_group_names, dh_transform));
 	}
 	
     }
