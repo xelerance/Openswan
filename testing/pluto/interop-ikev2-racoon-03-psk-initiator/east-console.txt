@@ -13,23 +13,23 @@ east:~#
 Starting spmd.
 east:~#
  /usr/local/racoon2/etc/init.d/iked start
-Starting iked2008-04-03 02:38:57 [INFO]: main.c:300:main(): starting iked for racoon2 20071227e
-2008-04-03 02:38:57 [INFO]: main.c:303:main(): OPENSSLDIR: "/usr/lib/ssl"
-2008-04-03 02:38:57 [INFO]: main.c:314:main(): reading config /tmp/racoon2/racoon2.conf
-2008-04-03 02:38:57 [DEBUG]: algorithm.c:499:alg_oakley_encdef(): encryption(aes)
-2008-04-03 02:38:57 [DEBUG]: algorithm.c:499:alg_oakley_encdef(): encryption(3des)
-2008-04-03 02:38:57 [INTERNAL_WARN]: ike_conf.c:3769:ike_conf_check_ikev2(): remote (default) ikev2 ipsec_sa_nego_time_limit configuration field support is unimplemented, ignored
-2008-04-03 02:38:57 [DEBUG]: algorithm.c:499:alg_oakley_encdef(): encryption(aes)
-2008-04-03 02:38:57 [DEBUG]: algorithm.c:499:alg_oakley_encdef(): encryption(aes)
-2008-04-03 02:38:57 [DEBUG]: algorithm.c:499:alg_oakley_encdef(): encryption(3des)
-2008-04-03 02:38:57 [INTERNAL_WARN]: ike_conf.c:4218:ike_conf_check_consistency(): configuration errors: 0, warnings: 1
-2008-04-03 02:38:57 [DEBUG]: if_spmd.c:354: spmd I/F connection ok: 220 7BF9893EC248855B43B0D6B318E513D4454E2C99
-2008-04-03 02:38:57 [DEBUG]: cfsetup.c:3837: read 16 bytes
-2008-04-03 02:38:57 [DEBUG]: if_spmd.c:416: spmd LOGIN ok: 250 OK
-2008-04-03 02:38:57 [DEBUG]: isakmp.c:529:isakmp_open_address(): socket 5 bind 192.0.2.254[500]
-2008-04-03 02:38:57 [DEBUG]: isakmp.c:529:isakmp_open_address(): socket 6 bind 192.1.2.23[500]
-2008-04-03 02:38:57 [DEBUG]: isakmp.c:529:isakmp_open_address(): socket 7 bind 192.9.2.23[500]
-2008-04-03 02:38:57 [DEBUG]: isakmp.c:529:isakmp_open_address(): socket 8 bind 127.0.0.1[500]
+Starting iked2008-04-08 07:20:46 [INFO]: main.c:300:main(): starting iked for racoon2 20071227e
+2008-04-08 07:20:46 [INFO]: main.c:303:main(): OPENSSLDIR: "/usr/lib/ssl"
+2008-04-08 07:20:46 [INFO]: main.c:314:main(): reading config /tmp/racoon2/racoon2.conf
+2008-04-08 07:20:46 [DEBUG]: algorithm.c:499:alg_oakley_encdef(): encryption(aes)
+2008-04-08 07:20:46 [DEBUG]: algorithm.c:499:alg_oakley_encdef(): encryption(3des)
+2008-04-08 07:20:46 [INTERNAL_WARN]: ike_conf.c:3769:ike_conf_check_ikev2(): remote (default) ikev2 ipsec_sa_nego_time_limit configuration field support is unimplemented, ignored
+2008-04-08 07:20:46 [DEBUG]: algorithm.c:499:alg_oakley_encdef(): encryption(aes)
+2008-04-08 07:20:46 [DEBUG]: algorithm.c:499:alg_oakley_encdef(): encryption(aes)
+2008-04-08 07:20:46 [DEBUG]: algorithm.c:499:alg_oakley_encdef(): encryption(3des)
+2008-04-08 07:20:46 [INTERNAL_WARN]: ike_conf.c:4218:ike_conf_check_consistency(): configuration errors: 0, warnings: 1
+2008-04-08 07:20:46 [DEBUG]: if_spmd.c:354: spmd I/F connection ok: 220 8CD3865EFC8C71B7BA171114DA2C92E818CE4EA2
+2008-04-08 07:20:46 [DEBUG]: cfsetup.c:3837: read 16 bytes
+2008-04-08 07:20:46 [DEBUG]: if_spmd.c:416: spmd LOGIN ok: 250 OK
+2008-04-08 07:20:46 [DEBUG]: isakmp.c:529:isakmp_open_address(): socket 5 bind 192.0.2.254[500]
+2008-04-08 07:20:46 [DEBUG]: isakmp.c:529:isakmp_open_address(): socket 6 bind 192.1.2.23[500]
+2008-04-08 07:20:46 [DEBUG]: isakmp.c:529:isakmp_open_address(): socket 7 bind 192.9.2.23[500]
+2008-04-08 07:20:46 [DEBUG]: isakmp.c:529:isakmp_open_address(): socket 8 bind 127.0.0.1[500]
 .
 east:~#
  sleep 3
@@ -48,6 +48,9 @@ PING 192.0.1.254 (192.0.1.254): 56 data bytes
 round-trip min/avg/max = 3.1/4.5/9.26 ms
 east:~#
  ip xfrm state
+================================================================
+There should be some ip xfrm state output!!! This is a real bug!
+================================================================
 east:~#
  ip xfrm policy
 src 192.0.1.0/24 dst 192.0.2.0/24 
