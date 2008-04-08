@@ -971,9 +971,13 @@ const char *const trans_type_prf_name[]={
     "prf-hmac-sha1",
     "prf-hmac-tiger",
     "prf-hmac-aes128-xcbc",
+    /* RFC 4868 Section 4 */
+    "prf-hmac-sha2-256",
+    "prf-hmac-sha2-384",
+    "prf-hmac-sha2-512",
 };
 enum_names trans_type_prf_names =
-{ IKEv2_PRF_HMAC_MD5, IKEv2_PRF_AES128_XCBC, trans_type_prf_name, NULL};
+{ IKEv2_PRF_HMAC_MD5, IKEv2_PRF_HMAC_SHA2_512, trans_type_prf_name, NULL};
 
 /* Transform-type Integrity */
 const char *const trans_type_integ_name[]={

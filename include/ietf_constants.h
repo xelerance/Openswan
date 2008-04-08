@@ -461,6 +461,10 @@ enum ikev2_trans_type_prf {
 	IKEv2_PRF_HMAC_SHA1 = 2,
 	IKEv2_PRF_HMAC_TIGER= 3,
 	IKEv2_PRF_AES128_XCBC=4,
+	/* RFC 4868 Section 4 */
+	IKEv2_PRF_HMAC_SHA2_256=5,
+	IKEv2_PRF_HMAC_SHA2_384=6,
+	IKEv2_PRF_HMAC_SHA2_512=7,
 };
 
 enum ikev2_trans_type_integ {
@@ -469,6 +473,10 @@ enum ikev2_trans_type_integ {
 	IKEv2_AUTH_DES_MAC     =3,
 	IKEv2_AUTH_KPDK_MD5    =4,
 	IKEv2_AUTH_AES_XCBC_96 =5,
+	/* RFC 4868 Section 4 */
+	IKEv2_AUTH_HMAC_SHA2_256_128=12
+	IKEv2_AUTH_HMAC_SHA2_384_192=13
+	IKEv2_AUTH_HMAC_SHA2_512_256=14
 	IKEv2_AUTH_INVALID     =65536
 };
 
