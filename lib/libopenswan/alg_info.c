@@ -75,6 +75,12 @@ alg_info_esp_v2tov1aa(enum ikev2_trans_type_integ ti)
 	return AUTH_ALGORITHM_HMAC_MD5;
     case IKEv2_AUTH_HMAC_SHA1_96:
 	return AUTH_ALGORITHM_HMAC_SHA1;
+    case IKEv2_AUTH_HMAC_SHA2_256_128: 
+	return AUTH_ALGORITHM_HMAC_SHA2_256;
+    case IKEv2_AUTH_HMAC_SHA2_384_192: 
+	return AUTH_ALGORITHM_HMAC_SHA2_256;
+    case IKEv2_AUTH_HMAC_SHA2_512_256: 
+	return AUTH_ALGORITHM_HMAC_SHA2_256;
 
     case IKEv2_AUTH_DES_MAC:
     case IKEv2_AUTH_KPDK_MD5:
