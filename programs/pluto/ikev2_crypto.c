@@ -74,6 +74,7 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	childsacalc.spii.len=0;
 	childsacalc.spir.len=0;
 	
+	childsacalc.counter[0] = 1;
 	childsacalc.skeyseed = &st->st_skey_d;
 	
 	st->st_esp.present = TRUE;
