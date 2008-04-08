@@ -815,6 +815,8 @@ duplicate_state(struct state *st)
     clone_chunk(st_skey_er,  "st_skey_er in duplicate_state");
     clone_chunk(st_skey_pi,  "st_skey_pi in duplicate_state");
     clone_chunk(st_skey_pr,  "st_skey_pr in duplicate_state");
+    clone_chunk(st_ni,       "st_ni in duplicate_state");
+    clone_chunk(st_nr,       "st_nr in duplicate_state");
 
 #   undef clone_chunk
 
