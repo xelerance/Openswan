@@ -1,9 +1,11 @@
 west:~#
  TESTNAME=interop-ikev2-racoon-01-noconn
 west:~#
- source /testing/pluto/bin/westnlocal.sh
+ export PLUTO_EVENT_RETRANSMIT_DELAY=3
 west:~#
- iptables -A INPUT -i eth1 -s 192.0.2.0/24 -j DROP
+ export PLUTO_MAXIMUM_RETRANSMISSIONS_INITIAL=4
+west:~#
+ source /testing/pluto/bin/westnlocal.sh
 west:~#
  ipsec setup start
 ipsec_setup: Starting Openswan IPsec VERSION
@@ -62,9 +64,9 @@ west:~#
  ipsec auto --up  westnet--eastnet-ikev2
 133 "westnet--eastnet-ikev2" #1: STATE_PARENT_I1: initiate
 133 "westnet--eastnet-ikev2" #1: STATE_PARENT_I1: sent v2I1, expected v2R1
-208 "westnet--eastnet-ikev2" #1: STATE_PARENT_I1: INVALID_FLAGS
-208 "westnet--eastnet-ikev2" #1: STATE_PARENT_I1: INVALID_FLAGS
-208 "westnet--eastnet-ikev2" #1: STATE_PARENT_I1: INVALID_FLAGS
+214 "westnet--eastnet-ikev2" #1: STATE_PARENT_I1: NO_PROPOSAL_CHOSEN
+214 "westnet--eastnet-ikev2" #1: STATE_PARENT_I1: NO_PROPOSAL_CHOSEN
+214 "westnet--eastnet-ikev2" #1: STATE_PARENT_I1: NO_PROPOSAL_CHOSEN
 031 "westnet--eastnet-ikev2" #1: max number of retransmissions (2) reached STATE_PARENT_I1.  No response (or no acceptable response) to our first IKE message
 000 "westnet--eastnet-ikev2" #1: starting keying attempt 2 of at most 3, but releasing whack
 west:~#
