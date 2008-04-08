@@ -82,6 +82,9 @@ PING 192.0.2.254 (192.0.2.254): 56 data bytes
 
 --- 192.0.2.254 ping statistics ---
 1 packets transmitted, 0 packets received, 100% packet loss
+===================================
+FIXME - this ping should work!!!!
+===================================
 west:~#
  ipsec look
 west NOW
