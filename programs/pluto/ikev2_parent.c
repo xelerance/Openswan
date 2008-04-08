@@ -559,7 +559,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 			if(memcmp(blob.ptr, dcookie, SHA1_DIGEST_SIZE)!=0) {
 				openswan_log("mismatch in DOS COOKIE,send a new one");
 				SEND_NOTIFICATION_AA(COOKIE, &dc); 
-				return STF_FAIL;
+				return STF_FAIL + INVALID_COOKIE;
 			}
 			DBG(DBG_CONTROLMORE
 	            ,DBG_log("dcookie received match with computed one"));
@@ -835,7 +835,7 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 		, from_state_name
 		, enum_name(&notification_names, 
 			md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type));
-               return STF_IGNORE;
+               return STF_FAIL + NO_PROPOSAL_CHOSEN;
        }
 
     /*
@@ -1168,11 +1168,11 @@ static stf_status ikev2_send_auth(struct connection *c
     
     if(c->policy & POLICY_RSASIG) {
 	if(!ikev2_calculate_rsa_sha1(pst, role, idhash_out, &a_pbs))
-	    return STF_FATAL;
+	    return STF_FATAL + AUTHENTICATION_FAILED;
 	
     } else if(c->policy & POLICY_PSK) {
 	if(!ikev2_calculate_psk_auth(pst, role, idhash_out, &a_pbs))
-	return STF_FAIL;
+	return STF_FAIL + AUTHENTICATION_FAILED;
     } 
     
     close_output_pbs(&a_pbs);
