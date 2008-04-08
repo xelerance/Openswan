@@ -7,7 +7,7 @@ sa disjunct cnt: 0
 main mode oakley: 1
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 (PROTO_ISAKMP) cnt: 6
+    protoid: 1 (PROTO_ISAKMP) cnt: 10
       transform: 1 cnt: 4
         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
@@ -38,10 +38,30 @@ sa disjunct cnt: 1
         type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 1(OAKLEY_PRESHARED_KEY)
         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 2(OAKLEY_GROUP_MODP1024)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 1(OAKLEY_PRESHARED_KEY)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 1(OAKLEY_PRESHARED_KEY)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 1(OAKLEY_PRESHARED_KEY)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 1(OAKLEY_PRESHARED_KEY)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
 copy 2
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 (PROTO_ISAKMP) cnt: 6
+    protoid: 1 (PROTO_ISAKMP) cnt: 10
       transform: 1 cnt: 4
         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
@@ -72,11 +92,51 @@ sa disjunct cnt: 1
         type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 1(OAKLEY_PRESHARED_KEY)
         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 2(OAKLEY_GROUP_MODP1024)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 1(OAKLEY_PRESHARED_KEY)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 1(OAKLEY_PRESHARED_KEY)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 1(OAKLEY_PRESHARED_KEY)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 1(OAKLEY_PRESHARED_KEY)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
 
 main mode oakley: 2
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 (PROTO_ISAKMP) cnt: 6
+    protoid: 1 (PROTO_ISAKMP) cnt: 10
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
       transform: 1 cnt: 4
         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
@@ -110,7 +170,27 @@ sa disjunct cnt: 1
 copy 2
 sa disjunct cnt: 1
   conjunctions cnt: 1
-    protoid: 1 (PROTO_ISAKMP) cnt: 6
+    protoid: 1 (PROTO_ISAKMP) cnt: 10
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+      transform: 1 cnt: 4
+        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
+        type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
+        type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
       transform: 1 cnt: 4
         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
