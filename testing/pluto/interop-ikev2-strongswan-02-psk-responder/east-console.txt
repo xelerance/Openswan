@@ -1,203 +1,66 @@
-Starting UML /btmp/antony/ikev2/2008_01_14/UMLPOOL/east/start-netkey.sh
-spawn /btmp/antony/ikev2/2008_01_14/UMLPOOL/east/start-netkey.sh single
-Checking that ptrace can change system call numbers...OK
-Checking syscall emulation patch for ptrace...OK
-Checking advanced syscall emulation patch for ptrace...OK
-Checking for tmpfs mount on /dev/shm...OK
-Checking PROT_EXEC mmap in /dev/shm/...OK
-Checking for the skas3 patch in the host:
-  - /proc/mm...not found
-  - PTRACE_FAULTINFO...not found
-  - PTRACE_LDT...not found
-UML running in SKAS0 mode
-Checking that ptrace can change system call numbers...OK
-Checking syscall emulation patch for ptrace...OK
-Checking advanced syscall emulation patch for ptrace...OK
-Linux version 2.6.18.6 (antony@sal) (gcc version 4.2.3 20080114 (prerelease) (Debian 4.2.2-7)) #6 Wed Feb 13 11:18:26 EST 2008
-Built 1 zonelists.  Total pages: 8192
-Kernel command line: initrd=/btmp/antony/ikev2/2008_01_14/UMLPOOL/initrd.uml umlroot=/btmp/antony/ikev2/2008_01_14/UMLPOOL/east/root root=/dev/ram0 rw ssl=pty eth0=daemon,10:00:00:dc:bc:ff,unix,/tmp/umlPSAkus.d/east/ctl,/tmp/umlPSAkus.d/east/data eth1=daemon,10:00:00:64:64:23,unix,/tmp/umlPSAkus.d/public/ctl,/tmp/umlPSAkus.d/public/data eth2=daemon,10:00:00:32:64:23,unix,/tmp/umlPSAkus.d/admin/ctl,/tmp/umlPSAkus.d/admin/data init=/linuxrc single
-PID hash table entries: 256 (order: 8, 1024 bytes)
-Dentry cache hash table entries: 4096 (order: 2, 16384 bytes)
-Inode-cache hash table entries: 2048 (order: 1, 8192 bytes)
-Memory: 27028k available
-Mount-cache hash table entries: 512
-Checking for host processor cmov support...Yes
-Checking for host processor xmm support...No
-Checking that host ptys support output SIGIO...Yes
-Checking that host ptys support SIGIO on close...No, enabling workaround
-checking if image is initramfs...it isn't (bad gzip magic numbers); looks like an initrd
-Freeing initrd memory: 1212k freed
-Using 2.6 host AIO
-umid "east" is already in use by pid 15618
-Failed to initialize umid "east", trying with a random umid
-NET: Registered protocol family 16
-NET: Registered protocol family 2
-IP route cache hash table entries: 256 (order: -2, 1024 bytes)
-TCP established hash table entries: 1024 (order: 0, 4096 bytes)
-TCP bind hash table entries: 512 (order: -1, 2048 bytes)
-TCP: Hash tables configured (established 1024 bind 512)
-TCP reno registered
-daemon_setup : Ignoring data socket specification
-Netdevice 0 (10:00:00:dc:bc:ff) : daemon backend (uml_switch version 3) - unix:/tmp/umlPSAkus.d/east/ctl
-daemon_setup : Ignoring data socket specification
-Netdevice 1 (10:00:00:64:64:23) : daemon backend (uml_switch version 3) - unix:/tmp/umlPSAkus.d/public/ctl
-daemon_setup : Ignoring data socket specification
-Netdevice 2 (10:00:00:32:64:23) : daemon backend (uml_switch version 3) - unix:/tmp/umlPSAkus.d/admin/ctl
-Checking host MADV_REMOVE support...OK
-mconsole (version 2) initialized on /home/antony/.uml/avFNih/mconsole
-Host TLS support detected
-Detected host type: i386
-VFS: Disk quotas dquot_6.5.1
-Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
-Initializing Cryptographic API
-io scheduler noop registered
-io scheduler anticipatory registered (default)
-io scheduler deadline registered
-io scheduler cfq registered
-RAMDISK driver initialized: 16 RAM disks of 4096K size 1024 blocksize
-loop: loaded (max 8 devices)
-nbd: registered device at major 43
-PPP generic driver version 2.4.2
-SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256).
-tun: Universal TUN/TAP device driver, 1.6
-tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
-Netfilter messages via NETLINK v0.30.
-IPv4 over IPv4 tunneling driver
-GRE over IPv4 tunneling driver
-ip_conntrack version 2.4 (211 buckets, 1688 max) - 224 bytes per conntrack
-ctnetlink v0.90: registering with nfnetlink.
-ip_conntrack_pptp version 3.1 loaded
-ip_nat_pptp version 3.0 loaded
-ip_tables: (C) 2000-2006 Netfilter Core Team
-ClusterIP Version 0.8 loaded successfully
-arp_tables: (C) 2002 David S. Miller
-TCP bic registered
-TCP westwood registered
-TCP highspeed registered
-TCP hybla registered
-TCP htcp registered
-TCP vegas registered
-TCP scalable registered
-Initializing IPsec netlink socket
-NET: Registered protocol family 1
-NET: Registered protocol family 17
-NET: Registered protocol family 15
-Initialized stdio console driver
-Console initialized on /dev/tty0
-Initializing software serial port version 1
-Failed to open 'root_fs', errno = 2
-RAMDISK: cramfs filesystem found at block 0
-RAMDISK: Loading 1212KiB [1 disk] into ram disk... |/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\done.
-VFS: Mounted root (cramfs filesystem) readonly.
-MOUNTING /btmp/antony/ikev2/2008_01_14/UMLPOOL/east/root for UML testing root.
-Mounting a tmpfs over /dev...done.
-Creating initial device nodes...done.
-Invoked with Arguments: single
-Creating initial device nodes...done.
-crw-r--r--    1 root     root       5,   1 Feb 20 15:12 /dev/console
-line_ioctl: tty0: ioctl KDSIGACCEPT called
-INIT: version 2.78 booting
-/dev/root on / type hostfs (rw)
-proc on /proc type proc (rw)
-devpts on /dev/pts type devpts (rw,gid=5,mode=620)
-/dev/shm on /tmp type tmpfs (rw)
-/dev/shm on /var/run type tmpfs (rw)
-none on /usr/share type hostfs (ro)
-none on /testing type hostfs (ro,/home/antony/ikev2/testing)
-none on /usr/src type hostfs (ro,/home/antony/ikev2)
-none on /usr/obj type hostfs (ro,/home/antony/ikev2/OBJ.linux.i386)
-none on /usr/local type hostfs (rw,/btmp/antony/ikev2/2008_01_14/UMLPOOL/east/root/usr/local)
-none on /var/tmp type hostfs (rw,/btmp/antony/ikev2/2008_01_14/UMLPOOL/east/root/var/tmp)
-none on /proc type proc (rw)
-crw-r--r--    1 root     root       5,   1 Feb 20 15:12 /dev/console
-mount: proc already mounted
-Activating swap...
-Checking all file systems...
-Parallelizing fsck version 1.18 (11-Nov-1999)
-Setting kernel variables.
-Mounting local filesystems...
-mount: devpts already mounted on /dev/pts
-/dev/shm on /tmp type tmpfs (rw)
-/dev/shm on /var/run type tmpfs (rw)
-none on /usr/share type hostfs (ro)
-none on /testing type hostfs (ro,/home/antony/ikev2/testing)
-none on /usr/src type hostfs (ro,/home/antony/ikev2)
-none on /usr/obj type hostfs (ro,/home/antony/ikev2/OBJ.linux.i386)
-none on /usr/local type hostfs (rw,/btmp/antony/ikev2/2008_01_14/UMLPOOL/east/root/usr/local)
-none on /var/tmp type hostfs (rw,/btmp/antony/ikev2/2008_01_14/UMLPOOL/east/root/var/tmp)
-Enabling packet forwarding: done.
-Configuring network interfaces: done.
-Cleaning: /tmp /var/lock /var/run.
-Initializing random number generator... done.
-Recovering nvi editor sessions... done.
-Give root password for maintenance
-(or type Control-D for normal startup): 
-east:~# echo Starting loading module
-Starting loading module
-east:~# exec bash --noediting
-east:~# ulimit -c unlimited
-east:~# echo Finished loading module
-Finished loading module
-east:~# klogd -c 4 -x -f /tmp/klog.log
-east:~# : ==== start ====
-east:~# TESTNAME=interop-ikev2-strongswan-02-psk-responder
-east:~# EAST_USERLAND="strongswan"
-east:~# source /testing/pluto/bin/eastlocal.sh
-east:~# /usr/local/strongswan/sbin/ipsec start
+east:~#
+ TESTNAME=interop-ikev2-strongswan-02-psk-responder
+east:~#
+ EAST_USERLAND="strongswan"
+east:~#
+ source /testing/pluto/bin/eastlocal.sh
+east:~#
+ /usr/local/strongswan/sbin/ipsec start
 Starting strongSwan 4.1.10 IPsec [starter]...
-ipsec_starter[849]: Starting strongSwan 4.1.10 IPsec [starter]...
+ipsec_starter[849]: Starting strongSwan 4.1.10 IPsec [starter]...
 FATAL: Could not load /lib/modules/2.6.18.6/modules.dep: No such file or directory
 FATAL: Could not load /lib/modules/2.6.18.6/modules.dep: No such file or directory
 FATAL: Could not load /lib/modules/2.6.18.6/modules.dep: No such file or directory
 FATAL: Could not load /lib/modules/2.6.18.6/modules.dep: No such file or directory
 FATAL: Could not load /lib/modules/2.6.18.6/modules.dep: No such file or directory
-pluto[857]: Starting Pluto (strongSwan Version 4.1.10 THREADS VENDORID)
-pluto[857]:   including NAT-Traversal patch (Version 0.6c) [disabled]
-pluto[857]: ike_alg: Activating OAKLEY_AES_CBC encryption: Ok
-pluto[857]: ike_alg: Activating OAKLEY_BLOWFISH_CBC encryption: Ok
-pluto[857]: ike_alg: Activating OAKLEY_SERPENT_CBC encryption: Ok
-pluto[857]: ike_alg: Activating OAKLEY_SHA2_256 hash: Ok
-pluto[857]: ike_alg: Activating OAKLEY_SHA2_384 hash: Ok
-pluto[857]: ike_alg: Activating OAKLEY_SHA2_512 hash: Ok
-pluto[857]: ike_alg: Activating OAKLEY_TWOFISH_CBC encryption: Ok
-pluto[857]: ike_alg: Activating OAKLEY_TWOFISH_CBC_SSH encryption: Ok
-pluto[857]: Testing registered IKE encryption algorithms:
-east:~# pluto[857]:   OAKLEY_BLOWFISH_CBC self-test not available
-pluto[857]:   OAKLEY_3DES_CBC self-test not available
-pluto[857]:   OAKLEY_AES_CBC self-test not available
-pluto[857]:   OAKLEY_SERPENT_CBC self-test not available
-pluto[857]:   OAKLEY_TWOFISH_CBC self-test not available
-pluto[857]:   OAKLEY_TWOFISH_CBC_SSH self-test not available
-pluto[857]: Testing registered IKE hash algorithms:
-pluto[857]:   OAKLEY_MD5 hash self-test passed
-pluto[857]:   OAKLEY_MD5 hmac self-test passed
-pluto[857]:   OAKLEY_SHA hash self-test passed
-pluto[857]:   OAKLEY_SHA hmac self-test passed
-pluto[857]:   OAKLEY_SHA2_256 hash self-test passed
-pluto[857]:   OAKLEY_SHA2_256 hmac self-test passed
-pluto[857]:   OAKLEY_SHA2_384 hash self-test passed
-pluto[857]:   OAKLEY_SHA2_384 hmac self-test passed
-pluto[857]:   OAKLEY_SHA2_512 hash self-test passed
-pluto[857]:   OAKLEY_SHA2_512 hmac self-test passed
-pluto[857]: All crypto self-tests passed
-pluto[857]: Using Linux 2.6 IPsec interface code
-pluto[857]: Changing to directory '/tmp/strongswan/etc/ipsec.d/cacerts'
-pluto[857]: Changing to directory '/tmp/strongswan/etc/ipsec.d/aacerts'
-pluto[857]: Changing to directory '/tmp/strongswan/etc/ipsec.d/ocspcerts'
-pluto[857]: Changing to directory '/tmp/strongswan/etc/ipsec.d/crls'
-/testing/pluto/bin/wait-until-pluto-started
-pluto[857]: listening for IKE messages
-pluto[857]: adding interface lo/lo 127.0.0.1:500
-pluto[857]: adding interface eth2/eth2 192.9.2.23:500
-pluto[857]: adding interface eth1/eth1 192.1.2.23:500
-pluto[857]: adding interface eth0/eth0 192.0.2.254:500
-pluto[857]: loading secrets from "/tmp/strongswan/etc/ipsec.secrets"
-pluto[857]:   loaded shared key for @west @east 
-pluto[857]: added connection description "westnet--eastnet-ikev2"
-east:~# echo done
+pluto[857]: Starting Pluto (strongSwan Version 4.1.10 THREADS VENDORID)
+pluto[857]:   including NAT-Traversal patch (Version 0.6c) [disabled]
+pluto[857]: ike_alg: Activating OAKLEY_AES_CBC encryption: Ok
+pluto[857]: ike_alg: Activating OAKLEY_BLOWFISH_CBC encryption: Ok
+pluto[857]: ike_alg: Activating OAKLEY_SERPENT_CBC encryption: Ok
+pluto[857]: ike_alg: Activating OAKLEY_SHA2_256 hash: Ok
+pluto[857]: ike_alg: Activating OAKLEY_SHA2_384 hash: Ok
+pluto[857]: ike_alg: Activating OAKLEY_SHA2_512 hash: Ok
+pluto[857]: ike_alg: Activating OAKLEY_TWOFISH_CBC encryption: Ok
+pluto[857]: ike_alg: Activating OAKLEY_TWOFISH_CBC_SSH encryption: Ok
+pluto[857]: Testing registered IKE encryption algorithms:
+pluto[857]:   OAKLEY_BLOWFISH_CBC self-test not available
+pluto[857]:   OAKLEY_3DES_CBC self-test not available
+pluto[857]:   OAKLEY_AES_CBC self-test not available
+pluto[857]:   OAKLEY_SERPENT_CBC self-test not available
+pluto[857]:   OAKLEY_TWOFISH_CBC self-test not available
+pluto[857]:   OAKLEY_TWOFISH_CBC_SSH self-test not available
+pluto[857]: Testing registered IKE hash algorithms:
+pluto[857]:   OAKLEY_MD5 hash self-test passed
+pluto[857]:   OAKLEY_MD5 hmac self-test passed
+pluto[857]:   OAKLEY_SHA hash self-test passed
+pluto[857]:   OAKLEY_SHA hmac self-test passed
+pluto[857]:   OAKLEY_SHA2_256 hash self-test passed
+pluto[857]:   OAKLEY_SHA2_256 hmac self-test passed
+pluto[857]:   OAKLEY_SHA2_384 hash self-test passed
+pluto[857]:   OAKLEY_SHA2_384 hmac self-test passed
+pluto[857]:   OAKLEY_SHA2_512 hash self-test passed
+pluto[857]:   OAKLEY_SHA2_512 hmac self-test passed
+pluto[857]: All crypto self-tests passed
+pluto[857]: Using Linux 2.6 IPsec interface code
+east:~#
+ /testing/pluto/bin/wait-until-pluto-started
+pluto[857]: listening for IKE messages
+pluto[857]: adding interface lo/lo 127.0.0.1:500
+pluto[857]: adding interface eth2/eth2 192.9.2.23:500
+pluto[857]: adding interface eth1/eth1 192.1.2.23:500
+pluto[857]: adding interface eth0/eth0 192.0.2.254:500
+pluto[857]: loading secrets from "/tmp/strongswan/etc/ipsec.secrets"
+pluto[857]:   loaded shared key for @west @east 
+pluto[857]: added connection description "westnet--eastnet-ikev2"
+east:~#
+ echo done
 done
-east:~# : === NETJIG start of WEST westrun.sh 
-east:~# 
+east:~#
+ 
 
-east:~# : ==== cut ====
-east:~# if [ -n "`pidof pluto`" ]
+east:~#
+east:~#
+ if [ -f /tmp/core ]; then echo CORE FOUND; mv /tmp/core /var/tmp; fi
+east:~#
+
