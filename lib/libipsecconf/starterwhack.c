@@ -483,7 +483,7 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 		   conn->options_set[KBF_DPDTIMEOUT]||
 		   conn->options_set[KBF_DPDACTION])
 		{
-			starter_log(LOG_LEVEL_ERR, "conn: \"%s\" warning dpd settings are not ignored unless dpdtimeout= and dpddelay= are set"
+			starter_log(LOG_LEVEL_ERR, "conn: \"%s\" warning dpd settings are ignored unless both dpdtimeout= and dpddelay= are set"
 				    , conn->name);
 		}
 	}
