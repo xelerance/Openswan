@@ -553,6 +553,8 @@ spdb_v2_match_parent(struct db_sa *sadb
 		return TRUE;
 	}
 	if(DBGP(DBG_CONTROLMORE)) {
+	/* note: enum_show uses a static buffer so more than one call per
+	   statement is dangerous */
 	    DBG_log("proposal %u %s encr= (policy:%s vs offered:%s)"
 		    , propnum
 		    , encr_matched ? "succeeded" : "failed"
