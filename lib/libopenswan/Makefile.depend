@@ -450,4 +450,4 @@ x509dn.o: x509dn.c ../../linux/include/openswan.h \
   ../../include/id.h ../../include/x509.h \
   ../../include/pgp.h ../../include/secrets.h \
   ../../include/md2.h ../../include/md5.h \
-  ../../include/sha1.h
+  ../../include/sha1.h ../../lib/libcrypto/libsha2/sha2.h
