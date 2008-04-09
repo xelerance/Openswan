@@ -46,6 +46,9 @@
 #include "md2.h"
 #include "md5.h"
 #include "sha1.h"
+#ifdef USE_SHA2
+# include "sha2.h"
+#endif
 
 /* ASN.1 definition of a basicConstraints extension */
 
@@ -1186,6 +1189,41 @@ compute_digest(chunk_t tbs, int alg, chunk_t *digest)
 	    digest->len = SHA1_DIGEST_SIZE;
 	    return TRUE;
 	}
+#ifdef SHA2
+	case OID_SHA256:
+	case OID_SHA256_WITH_RSA:
+	{
+	   sha256_context context;
+	   sha256_init(&context);
+	   sha256_write(&context, tbs.ptr, tbs.len);
+	   sha256_final(&context);
+	   memcpy(digest->ptr, context.sha_out, SHA2_256_DIGEST_SIZE);
+	   digest->len = SHA2_256_DIGEST_SIZE;
+	   return TRUE;
+	}
+	case OID_SHA384:
+	case OID_SHA384_WITH_RSA:
+	{
+	   sha512_context context;
+	   sha384_init(&context);
+	   sha512_write(&context, tbs.ptr, tbs.len);
+	   sha512_final(&context);
+	   memcpy(digest->ptr, context.sha_out, SHA2_384_DIGEST_SIZE);
+	   digest->len = SHA2_384_DIGEST_SIZE;
+	   return TRUE;
+	}
+	case OID_SHA512:
+	case OID_SHA512_WITH_RSA:
+	{
+	   sha512_context context;
+	   sha512_init(&context);
+	   sha512_write(&context, tbs.ptr, tbs.len);
+	   sha512_final(&context);
+	   memcpy(digest->ptr, context.sha_out, SHA2_512_DIGEST_SIZE);
+	   digest->len = SHA2_512_DIGEST_SIZE;
+	   return TRUE;
+	}
+#endif
 	default:
 	    digest->len = 0;
 	    return FALSE;

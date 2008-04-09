@@ -185,7 +185,6 @@
 /* need to include ip.h early, no longer pick it up in skbuff.h */
 #include <linux/ip.h>
 #  define HAVE_KERNEL_TSTAMP
-#  define HAVE_KMEM_CACHE_MACRO
 /* type of sock.sk_stamp changed from timeval to ktime  */
 #  define grab_socket_timeval(tv, sock)  { (tv) = ktime_to_timeval((sock).sk_stamp); }
 #else
@@ -208,6 +207,11 @@
 #define ipsec_skb_offset(skb, ptr) (((unsigned char *)(ptr)) - (skb)->data)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,23)
+/* the macro got introduced in 2,6,22 but it does not work properly, and
+ * still uses the old number of arguments. 
+ */
+#  define HAVE_KMEM_CACHE_MACRO
+
 /* Try using the new kernel encaps hook for nat-t, instead of udp.c */
 #ifdef NOT_YET_FINISHED
 # define HAVE_UDP_ENCAP_CONVERT
