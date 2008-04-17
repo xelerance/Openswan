@@ -1,5 +1,8 @@
 Please see docs/KNOWN_BUGS file for more information
 
+v2.6.12
+* Add aes-*-modp1024 proposals to default responder policy db
+
 v2.6.11
 * Fix state machine to pick proper Responder STATE_UNDEFINED state
   when receiving R1 NO_PROPOSAL_CHOSEN [dhr/paul/antony]
