@@ -710,9 +710,7 @@ check_msg_errqueue(const struct iface_port *ifp, short interest)
 	    struct sockaddr_in6 sa_in6;
 	} from;
 
-	int from_len = sizeof(from);
-
-	int packet_len;
+	ssize_t packet_len;
 
 	struct msghdr emh;
 	struct iovec eiov;
@@ -729,7 +727,6 @@ check_msg_errqueue(const struct iface_port *ifp, short interest)
 	struct state *sender = NULL;
 
 	zero(&from.sa);
-	from_len = sizeof(from);
 
 	emh.msg_name = &from.sa;	/* ??? filled in? */
 	emh.msg_namelen = sizeof(from);
@@ -1290,7 +1287,7 @@ read_packet(struct msg_digest *md)
 	from_ugh = undisclosed;
     }
     else if (from_len
-    < (int) (offsetof(struct sockaddr, sa_family) + sizeof(from.sa.sa_family)))
+    <  (offsetof(struct sockaddr, sa_family) + sizeof(from.sa.sa_family)))
     {
 	from_ugh = "truncated";
     }
@@ -3145,3 +3142,4 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
  * c-style: pluto
  * End:
  */
+
