@@ -203,8 +203,8 @@ ikev2parent_outI1(int whack_sock
 	if (!st->st_sec_in_use) {
 	    ke->ke_pcrc.pcrc_func = ikev2_parent_outI1_continue;
 	    e = build_ke(&ke->ke_pcrc, st, st->st_oakley.group, importance);
-	    if(e != STF_SUSPEND && e != STF_INLINE) {
-	      loglog(RC_CRYPTOFAILED, "system too busy");
+	    if( (e != STF_SUSPEND && e != STF_INLINE) || (e == STF_TOOMUCHCRYPTO) {
+	      loglog(RC_CRYPTOFAILED, "system too busy - Enabling dcookies [TODO]");
 	      delete_state(st);
 	    }
 	} else {
