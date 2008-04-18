@@ -1060,7 +1060,7 @@ process_answer_section(pb_stream *pbs
 
 	if (rrf.type == type && rrf.class == ns_c_in)
 	{
-	    err_t ugh;
+	    err_t ugh = NULL;
 
 	    switch (type)
 	    {
