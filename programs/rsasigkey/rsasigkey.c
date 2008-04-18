@@ -446,7 +446,7 @@ unsigned char *buf;			/* known to be big enough */
 {
 	size_t ndone;
 	int dev;
-	size_t got;
+	ssize_t got;
 
 	dev = open(device, 0);
 	if (dev < 0) {
