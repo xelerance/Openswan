@@ -445,7 +445,7 @@ main(int argc, char **argv)
 
                 if (*endptr != '\0' || endptr == optarg
 		    || count < -1)
-                    usage("<interval-time> must be a positive number, 0 or -1");
+                    usage("<nhelpers> must be a positive number, 0 or -1");
                 nhelpers = count;
             }
 	    continue;
