@@ -453,6 +453,9 @@ enum ikev2_trans_type_encr {
 	IKEv2_ENCR_NULL     = 11,
 	IKEv2_ENCR_AES_CBC  = 12,
 	IKEv2_ENCR_AES_CTR  = 13,
+	IKEv2_ENCR_AES_CCM_8  = 14,
+	IKEv2_ENCR_AES_CCM_12  = 15,
+	IKEv2_ENCR_AES_CCM_16  = 16,
 	IKEv2_ENCR_INVALID  = 65536
 };
 
