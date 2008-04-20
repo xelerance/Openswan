@@ -2,6 +2,7 @@
  * @(#) routines to makes kernel 2.4 compatible with 2.6 usage.
  *
  * Copyright (C) 2004 Michael Richardson <mcr@sandelman.ottawa.on.ca>
+ * Copyright (C) 2005 - 2008 Paul Wouters <paul@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -13,7 +14,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_kern24.h,v 1.5 2005/08/05 08:48:38 mcr Exp $
  */
 
 #ifndef _IPSEC_KERN24_H
@@ -42,8 +42,15 @@
 #define device net_device
 #endif
 #endif
-# define ipsec_dev_get dev_get_by_name
-# define __ipsec_dev_get __dev_get_by_name
+
+# if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#  define __ipsec_dev_get(x) __dev_get_by_name(&init_net, x)
+#  define ipsec_dev_get(x) dev_get_by_name(&init_net, x)
+# else
+#  define ipsec_dev_get(x) __dev_get_by_name(x)
+#  define __ipsec_dev_get(x) __dev_get_by_name(x)
+# endif
+
 # define ipsec_dev_put(x) dev_put(x)
 # define __ipsec_dev_put(x) __dev_put(x)
 # define ipsec_dev_hold(x) dev_hold(x)
