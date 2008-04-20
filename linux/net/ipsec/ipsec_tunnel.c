@@ -1214,6 +1214,7 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 	prv->hard_start_xmit = physdev->hard_start_xmit;
 	prv->get_stats = physdev->get_stats;
 
+#ifdef HAVE_DEV_HARD_HEADER
 	if (physdev->hard_header) {
 		prv->hard_header = physdev->hard_header;
 		dev->hard_header = ipsec_tunnel_hard_header;
@@ -1245,6 +1246,7 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 		dev->header_cache_update = ipsec_tunnel_cache_update;
 	} else
 		dev->header_cache_update = NULL;
+#endif /* HAVE_DEV_HARD_HEADER */
 
 	dev->hard_header_len = physdev->hard_header_len;
 
@@ -1718,13 +1720,15 @@ ipsec_tunnel_init(struct net_device *dev)
 
 	dev->set_multicast_list = NULL;
 	dev->do_ioctl		= ipsec_tunnel_ioctl;
+#ifdef HAVE_DEV_HARD_HEADER
 	dev->hard_header	= NULL;
 	dev->rebuild_header 	= NULL;
 	dev->set_mac_address 	= NULL;
+	dev->header_cache_update= NULL;
+#endif
 #ifndef NET_21
 	dev->header_cache_bind 	= NULL;
 #endif /* !NET_21 */
-	dev->header_cache_update= NULL;
 
 #ifdef NET_21
 /*	prv->neigh_setup        = NULL; */
