@@ -3,6 +3,7 @@
  * header file for FreeS/WAN library functions
  * Copyright (C) 1998, 1999, 2000  Henry Spencer.
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs
+ * Copyright (C) 2003 - 2008  Paul Wouters <paul@xelerance.com>
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
@@ -215,13 +216,11 @@
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
-/* we can probably swithc on earlier kernels, but from here on
- * we cannot use the old style proc_net but need to use the new seq_file
+/* we can switch on earlier kernels, but from here on we have no choice
+ * but to abandon the old style proc_net and use seq_file
  */
 #define HAVE_SEQ_FILE
-#define LINUX_PROCNET init_net.proc_net
 #else
-#define LINUX_PROCNET proc_net
 /* removed */
 #define HAVE_DEV_HARD_HEADER
 #endif
