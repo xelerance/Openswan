@@ -1,7 +1,10 @@
 Please see docs/KNOWN_BUGS file for more information
 
 v2.6.12
-* Add aes-*-modp1024 proposals to default responder policy db
+* Add aes-*-modp1024 proposals to default responder policy db [antony]
+* modprobe the AES ccm kernel module on startup [paul]
+* Fix for ikev1 continuation segfault (only the first helper's continuations
+  were cleaned up properly (eg. on dpd, sa expires..) [Anthony Tong]
 
 v2.6.11
 * Fix state machine to pick proper Responder STATE_UNDEFINED state
