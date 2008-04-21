@@ -214,6 +214,18 @@
 # endif
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+/* we can probably swithc on earlier kernels, but from here on
+ * we cannot use the old style proc_net but need to use the new seq_file
+ */
+#define HAVE_SEQ_FILE
+#define LINUX_PROCNET init_net.proc_net
+#else
+#define LINUX_PROCNET proc_net
+/* removed */
+#define HAVE_DEV_HARD_HEADER
+#endif
+
 #ifdef NET_21
 #  include <linux/in6.h>
 #else
