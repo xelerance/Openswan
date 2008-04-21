@@ -2,6 +2,7 @@
  * @(#) routines to makes kernel 2.4 compatible with 2.6 usage.
  *
  * Copyright (C) 2004 Michael Richardson <mcr@sandelman.ottawa.on.ca>
+ * Copyright (C) 2005 - 2008 Paul Wouters <paul@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -13,7 +14,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_kern24.h,v 1.5 2005/08/05 08:48:38 mcr Exp $
  */
 
 #ifndef _IPSEC_KERN24_H

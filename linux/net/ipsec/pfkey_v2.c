@@ -59,6 +59,9 @@
 #ifdef CONFIG_PROC_FS
 # include <linux/proc_fs.h>
 #endif /* CONFIG_PROC_FS */
+#ifdef HAVE_SEQ_FILE
+# include <linux/seq_file.h>
+#endif
 
 #include <linux/types.h>
  
