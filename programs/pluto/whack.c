@@ -35,6 +35,7 @@
 #include <openswan.h>
 
 #include "sysdep.h"
+#include "socket.h"
 #include "constants.h"
 #include "oswlog.h"
 
@@ -1827,7 +1828,7 @@ main(int argc, char **argv)
     }
     else
     {
-	int sock = socket(AF_UNIX, SOCK_STREAM, 0);
+	int sock = safe_socket(AF_UNIX, SOCK_STREAM, 0);
 	int exit_status = 0;
 	ssize_t len = wp.str_next - (unsigned char *)&msg;
 

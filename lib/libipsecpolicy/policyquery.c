@@ -30,6 +30,8 @@
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
 
+#include "socket.h"
+
 #include "libipsecpolicy.h"
 
 static int policy_query_socket = -1;
@@ -48,7 +50,7 @@ err_t ipsec_policy_init(void)
     return NULL;
   }
 
-  policy_query_socket = socket(PF_UNIX, SOCK_STREAM, 0);
+  policy_query_socket = safe_socket(PF_UNIX, SOCK_STREAM, 0);
   if(policy_query_socket == -1) {
     return "failed to open policy socket";
   }

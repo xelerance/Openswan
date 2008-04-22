@@ -46,6 +46,8 @@
 #include <openswan/pfkeyv2.h>
 #include <openswan/pfkey.h>
 
+#include "socket.h"
+
 char *progname;
 uint32_t pfkey_seq = 0;
 int pfkey_sock;
@@ -189,7 +191,7 @@ main(int argc, char *argv[])
 	if(infilename  == NULL &&
 	   outfilename == NULL)
 	{
-		if((pfkey_sock = socket(PF_KEY, SOCK_RAW, PF_KEY_V2) ) < 0)
+		if((pfkey_sock = safe_socket(PF_KEY, SOCK_RAW, PF_KEY_V2) ) < 0)
 		{
 			fprintf(stderr, "%s: failed to open PF_KEY family socket: %s\n",
 				progname, strerror(errno));

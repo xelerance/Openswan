@@ -39,6 +39,7 @@
 #include <openswan/ipsec_policy.h>
 
 #include "sysdep.h"
+#include "socket.h"
 #include "constants.h"
 #include "oswlog.h"
 
@@ -203,7 +204,7 @@ find_raw_ifaces4(void)
     struct ifreq *buf;	     /* for list of interfaces -- arbitrary limit */
     struct ifreq *bp;   /* cursor into buf */
     struct raw_iface *rifaces = NULL;
-    int master_sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);    /* Get a UDP socket */
+    int master_sock = safe_socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);    /* Get a UDP socket */
 
     /* get list of interfaces with assigned IPv4 addresses from system */
 

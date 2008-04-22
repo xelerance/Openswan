@@ -39,6 +39,7 @@
 #define _GNU_SOURCE 1
 #include <getopt.h>
 
+#include "socket.h"
 #include "pcap.h"
 #include <sys/queue.h>
 
@@ -202,7 +203,7 @@ int still_used(struct sockaddr_un *sun)
 {
   int test_fd, ret = 1;
 
-  if((test_fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0){
+  if((test_fd = safe_socket(PF_UNIX, SOCK_STREAM, 0)) < 0){
     perror("socket");
     exit(1);
   }
@@ -510,7 +511,7 @@ struct nethub *init_nethub(struct netjig_state *ns,
 		}
 	} 
 
-	if((nh->ctl_listen_fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0){
+	if((nh->ctl_listen_fd = safe_socket(PF_UNIX, SOCK_STREAM, 0)) < 0){
 		perror("socket");
 		exit(1);
 	}
@@ -526,7 +527,7 @@ struct nethub *init_nethub(struct netjig_state *ns,
 		exit(1);
 	}
 	
-	if((nh->data_fd = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0){
+	if((nh->data_fd = safe_socket(PF_UNIX, SOCK_DGRAM, 0)) < 0){
 		perror("socket");
 		exit(1);
 	}

@@ -38,7 +38,7 @@ char tncfg_c_version[] = "RCSID $Id: tncfg.c,v 1.1 2005/03/20 02:59:24 mcr Exp $
 #include <sys/types.h>
 #include <errno.h>
 #include <getopt.h>
-
+#include "socket.h"
 #include "openswan/ipsec_tunnel.h"
 
 static void
@@ -56,7 +56,7 @@ main(int argc, char *argv[])
 	memset(&ifr, 0, sizeof(ifr));
 	program_name = argv[0];
 
-	s=socket(AF_INET, SOCK_DGRAM,0);
+	s=safe_socket(AF_INET, SOCK_DGRAM,0);
 	if(s==-1)
 	{
 		fprintf(stderr, "%s: Socket creation failed:%s "

@@ -30,6 +30,8 @@
 #include "ipsecconf/files.h"
 #include "ipsecconf/starterlog.h"
 
+#include "socket.h"
+
 #ifndef _OPENSWAN_H
 #include <openswan.h>  /** FIXME: ugly include lines **/
 #include "constants.h"
@@ -184,7 +186,7 @@ static int send_whack_msg (struct whack_message *msg, char *ctlbase)
 	/**
 	 * Connect to pluto ctl
 	 */
-	sock = socket(AF_UNIX, SOCK_STREAM, 0);
+	sock = safe_socket(AF_UNIX, SOCK_STREAM, 0);
 	if (sock < 0) {
 		starter_log(LOG_LEVEL_ERR, "socket() failed: %s", strerror(errno));
 		return -1;

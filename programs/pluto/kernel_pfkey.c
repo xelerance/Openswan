@@ -37,6 +37,7 @@
 #include <openswan/pfkey.h>
 
 #include "sysdep.h"
+#include "socket.h"
 #include "constants.h"
 #include "oswlog.h"
 
@@ -152,7 +153,7 @@ init_pfkey(void)
 
     /* open PF_KEY socket */
 
-    pfkeyfd = socket(PF_KEY, SOCK_RAW, PF_KEY_V2);
+    pfkeyfd = safe_socket(PF_KEY, SOCK_RAW, PF_KEY_V2);
 
     if (pfkeyfd == -1)
 	exit_log_errno((e, "socket() in init_pfkeyfd()"));

@@ -26,6 +26,7 @@ char showpolicy_version[] = "RCSID $Id: showpolicy.c,v 1.5 2004/04/04 01:50:56 k
 #include "openswan.h"
 #include "openswan/ipsec_policy.h"
 #include "sysdep.h"
+#include "socket.h"
 
 char *program_name;
 
@@ -76,7 +77,7 @@ int open_udp_sock(unsigned short port)
 	struct sockaddr_in s;
 	int fd;
 
-	fd = socket(PF_INET, SOCK_DGRAM, 0);
+	fd = safe_socket(PF_INET, SOCK_DGRAM, 0);
 	if(fd == -1) {
 		perror("socket");
 		exit(10);

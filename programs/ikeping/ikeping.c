@@ -32,6 +32,7 @@
 #include <poll.h>
 
 #include <openswan.h>
+#include "socket.h"
 #include "openswan/pfkeyv2.h"
 
 #include "constants.h"
@@ -397,7 +398,7 @@ main(int argc, char **argv)
       }
   }
 
-  s=socket(pfamily, SOCK_DGRAM, IPPROTO_UDP);
+  s=safe_socket(pfamily, SOCK_DGRAM, IPPROTO_UDP);
   if(s < 0) {
     perror("socket");
     exit(3);

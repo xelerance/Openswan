@@ -47,6 +47,7 @@ char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.58 2005/08/18 14:04:3
 #include <openswan/pfkeyv2.h>
 #include <openswan/pfkey.h>
 
+#include "socket.h"
 #include "oswlog.h"
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
@@ -280,7 +281,7 @@ main(int argc, char **argv)
 		usage(program_name);
 	}
 
-	if((pfkey_sock = socket(PF_KEY, SOCK_RAW, PF_KEY_V2) ) < 0) {
+	if((pfkey_sock = safe_socket(PF_KEY, SOCK_RAW, PF_KEY_V2) ) < 0) {
 		fprintf(stderr, "%s: Trouble opening PF_KEY family socket with error: ",
 			program_name);
 		switch(errno) {

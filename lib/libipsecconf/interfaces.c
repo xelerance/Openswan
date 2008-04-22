@@ -26,6 +26,7 @@
 #include <openswan.h>
 
 #include "sysdep.h"
+#include "socket.h"
 #include "openswan/ipsec_tunnel.h"
 
 #include "ipsecconf/interfaces.h"
@@ -103,7 +104,7 @@ int starter_iface_find(char *iface, int af, ip_address *dst, ip_address *nh)
 
 	if (!iface) return -1;
 
-	sock = socket(af, SOCK_DGRAM, 0);
+	sock = safe_socket(af, SOCK_DGRAM, 0);
 	if (sock < 0) return -1;
 
 	phys = starter_find_physical_iface(sock, iface);

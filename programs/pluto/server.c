@@ -51,6 +51,7 @@
 #include <openswan.h>
 
 #include "sysdep.h"
+#include "socket.h"
 #include "constants.h"
 #include "defs.h"
 #include "state.h"
@@ -126,7 +127,7 @@ init_ctl_socket(void)
     LIST_INIT(&interface_dev);
 
     delete_ctl_socket();	/* preventative medicine */
-    ctl_fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    ctl_fd = safe_socket(AF_UNIX, SOCK_STREAM, 0);
     if (ctl_fd == -1)
 	failed = "create";
     else if (fcntl(ctl_fd, F_SETFD, FD_CLOEXEC) == -1)
@@ -188,7 +189,7 @@ init_info_socket(void)
     err_t failed = NULL;
 
     delete_info_socket();	/* preventative medicine */
-    info_fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    info_fd = safe_socket(AF_UNIX, SOCK_STREAM, 0);
     if (info_fd == -1)
 	failed = "create";
     else if (fcntl(info_fd, F_SETFD, FD_CLOEXEC) == -1)

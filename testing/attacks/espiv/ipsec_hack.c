@@ -1,3 +1,4 @@
+#include "socket.h"
 #include "ipsec_hack.h"
 
 int listen_s;
@@ -446,7 +447,7 @@ int main(int argc, char *argv[]) {
 
 	
 	/* Open socket for sending and listening */
-	listen_s = socket(AF_INET, SOCK_PACKET, htons (ETH_P_ALL));
+	listen_s = safe_socket(AF_INET, SOCK_PACKET, htons (ETH_P_ALL));
 	if (listen_s < 0) {
 		perror ("socket");
 		exit(1);
@@ -473,7 +474,7 @@ int main(int argc, char *argv[]) {
 		(ifr.ifr_hwaddr.sa_family == ARPHRD_ETHER) ? " (ethernet)" : "");
 	
 	/* Now the send if */
-	send_s = socket(AF_INET, SOCK_PACKET, htons (ETH_P_ALL));
+	send_s = safe_socket(AF_INET, SOCK_PACKET, htons (ETH_P_ALL));
 	if (send_s < 0) {
 		perror ("socket");
 		exit(1);

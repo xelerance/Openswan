@@ -20,14 +20,14 @@
 #include <stdlib.h>
 #include "openswan.h"
 #include <openswan/pfkeyv2.h>
-
+#include "socket.h"
 extern char *progname;
 
 int pfkey_open_sock_with_error(void)
 {
 	int pfkey_sock;
 
-	if((pfkey_sock = socket(PF_KEY, SOCK_RAW, PF_KEY_V2) ) < 0) {
+	if((pfkey_sock = safe_socket(PF_KEY, SOCK_RAW, PF_KEY_V2) ) < 0) {
 		fprintf(stderr, "%s: Trouble opening PF_KEY family socket with error: ",
 			progname);
 		switch(errno) {

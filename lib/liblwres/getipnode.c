@@ -32,6 +32,7 @@
 #include <lwres/net.h>
 #include <lwres/netdb.h>	/* XXX #include <netdb.h> */
 
+#include "socket.h"
 #include "assert_p.h"
 
 #ifndef INADDRSZ
@@ -430,7 +431,7 @@ scan_interfaces6(int *have_v4, int *have_v6) {
 	/*
 	 * Get interface list from system.
 	 */
-	if ((s = socket(AF_INET6, SOCK_DGRAM, 0)) == -1)
+	if ((s = safe_socket(AF_INET6, SOCK_DGRAM, 0)) == -1)
 		goto err_ret;
 
 	/*
@@ -584,7 +585,7 @@ scan_interfaces(int *have_v4, int *have_v6) {
 	/*
 	 * Get interface list from system.
 	 */
-	if ((s = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+	if ((s = safe_socket(AF_INET, SOCK_DGRAM, 0)) == -1)
 		goto err_ret;
 
 	/*
