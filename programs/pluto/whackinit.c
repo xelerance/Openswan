@@ -32,7 +32,7 @@
 #include <assert.h>
 
 #include <openswan.h>
-#include "socket.h"
+#include "socketwrapper.h"
 #include "constants.h"
 #include "oswlog.h"
 

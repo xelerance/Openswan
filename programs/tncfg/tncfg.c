@@ -39,7 +39,7 @@ char tncfg_c_version[] = "RCSID $Id: tncfg.c,v 1.33 2005/07/08 02:56:38 paul Exp
 #include <sys/types.h>
 #include <errno.h>
 #include <getopt.h>
-#include "socket.h"
+#include "socketwrapper.h"
 #include "oswlog.h"
 
 #include "openswan/pfkeyv2.h"

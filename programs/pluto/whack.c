@@ -35,7 +35,7 @@
 #include <openswan.h>
 
 #include "sysdep.h"
-#include "socket.h"
+#include "socketwrapper.h"
 #include "constants.h"
 #include "oswlog.h"
 

@@ -32,7 +32,7 @@
 #include <lwres/net.h>
 #include <lwres/netdb.h>	/* XXX #include <netdb.h> */
 
-#include "socket.h"
+#include "socketwrapper.h"
 #include "assert_p.h"
 
 #ifndef INADDRSZ

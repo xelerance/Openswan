@@ -44,7 +44,7 @@
  * See the README file for full details.
  * 
  */
-#include "socket.h"
+#include "socketwrapper.h"
 #include "ike-scan.h"
 
 static const char rcsid[] = "$Id: ike-scan.c,v 1.1.1.1 2005/01/13 18:45:15 mcr Exp $";   /* RCS ID for ident(1) */

@@ -46,7 +46,7 @@
 #include <openswan/pfkeyv2.h>
 #include <openswan/pfkey.h>
 
-#include "socket.h"
+#include "socketwrapper.h"
 
 char *progname;
 uint32_t pfkey_seq = 0;

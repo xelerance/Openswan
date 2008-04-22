@@ -52,7 +52,7 @@ static const char rcsid[] = "$Id: udpfromto.c,v 1.2 2005/01/25 20:06:40 mcr Exp 
 #include "udpfromto.h"
 #include "openswan.h"
 #include "oswlog.h"
-#include "socket.h"
+#include "socketwrapper.h"
 
 int udpfromto_init(int s)
 {

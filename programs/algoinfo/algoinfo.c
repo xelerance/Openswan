@@ -48,7 +48,7 @@ char spi_c_version[] = "RCSID $Id: algoinfo.c,v 1.1 2004/04/29 04:13:02 mcr Exp 
      #include <openswan/pfkeyv2.h>
      #include <openswan/pfkey.h>
 
-#include "socket.h"
+#include "socketwrapper.h"
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
 #include "openswan/ipsec_xform.h"

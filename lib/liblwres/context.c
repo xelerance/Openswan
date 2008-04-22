@@ -39,7 +39,7 @@
 #include <sys/select.h>
 #endif
 
-#include "socket.h"
+#include "socketwrapper.h"
 #include "context_p.h"
 #include "assert_p.h"
 

@@ -26,7 +26,7 @@
 #include <openswan.h>
 
 #include "sysdep.h"
-#include "socket.h"
+#include "socketwrapper.h"
 #include "openswan/ipsec_tunnel.h"
 
 #include "ipsecconf/interfaces.h"

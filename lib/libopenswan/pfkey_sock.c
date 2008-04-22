@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include "openswan.h"
 #include <openswan/pfkeyv2.h>
-#include "socket.h"
+#include "socketwrapper.h"
 extern char *progname;
 
 int pfkey_open_sock_with_error(void)

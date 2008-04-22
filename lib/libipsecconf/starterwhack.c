@@ -30,7 +30,7 @@
 #include "ipsecconf/files.h"
 #include "ipsecconf/starterlog.h"
 
-#include "socket.h"
+#include "socketwrapper.h"
 
 #ifndef _OPENSWAN_H
 #include <openswan.h>  /** FIXME: ugly include lines **/

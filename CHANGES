@@ -1,7 +1,7 @@
 Please see docs/KNOWN_BUGS file for more information
 
 v2.6.13
-* Close on file descriptors on exev (fixes SElinux avc denials) [Neil Horman]
+* Close on file descriptors on exec (fixes SElinux avc denials) [Neil Horman]
   This is https://bugzilla.redhat.com/show_bug.cgi?id=442333
 
 v2.6.12

@@ -47,7 +47,7 @@ char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.58 2005/08/18 14:04:3
 #include <openswan/pfkeyv2.h>
 #include <openswan/pfkey.h>
 
-#include "socket.h"
+#include "socketwrapper.h"
 #include "oswlog.h"
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"

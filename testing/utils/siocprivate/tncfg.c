@@ -38,7 +38,7 @@ char tncfg_c_version[] = "RCSID $Id: tncfg.c,v 1.1 2005/03/20 02:59:24 mcr Exp $
 #include <sys/types.h>
 #include <errno.h>
 #include <getopt.h>
-#include "socket.h"
+#include "socketwrapper.h"
 #include "openswan/ipsec_tunnel.h"
 
 static void

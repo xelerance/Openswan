@@ -30,7 +30,7 @@
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
 
-#include "socket.h"
+#include "socketwrapper.h"
 
 #include "libipsecpolicy.h"
 

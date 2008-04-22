@@ -39,7 +39,7 @@
 #define _GNU_SOURCE 1
 #include <getopt.h>
 
-#include "socket.h"
+#include "socketwrapper.h"
 #include "pcap.h"
 #include <sys/queue.h>
 
