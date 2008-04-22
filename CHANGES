@@ -2,9 +2,14 @@ Please see docs/KNOWN_BUGS file for more information
 
 v2.6.12
 * Add aes-*-modp1024 proposals to default responder policy db [antony]
+  This is bug https://bugzilla.redhat.com/show_bug.cgi?id=439985
 * modprobe the AES ccm kernel module on startup [paul]
 * Fix for ikev1 continuation segfault (only the first helper's continuations
   were cleaned up properly (eg. on dpd, sa expires..) [Anthony Tong]
+* Redid fix for https://bugzilla.redhat.com/show_bug.cgi?id=432821 [paul]
+* Added work around for INITIATOR/RESPONDER keys being swapped [herbert]
+* Preliminary work to support IKEv2_ENCR_AES_CCM__* algos [paul]
+
 
 v2.6.11
 * Fix state machine to pick proper Responder STATE_UNDEFINED state
