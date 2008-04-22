@@ -1726,8 +1726,6 @@ ipsec_tunnel_init(struct net_device *dev)
 	dev->header_cache_update= NULL;
 #endif
 	dev->set_mac_address 	= NULL;
-	dev->header_cache_update= NULL;
-#endif
 #ifndef NET_21
 	dev->header_cache_bind 	= NULL;
 #endif /* !NET_21 */
