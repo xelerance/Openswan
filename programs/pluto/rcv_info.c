@@ -19,6 +19,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -281,6 +282,7 @@ info_handle(int infoctlfd)
 	int infofd;
 	err_t err;
 	struct ipsec_policy_cmd_query ipcq;
+	unsigned long fcntl_arg;
 
 	infofd = accept(infoctlfd, (struct sockaddr *)&info_client_addr
 	    , &info_addr_len);
@@ -299,6 +301,13 @@ info_handle(int infoctlfd)
 	    close(infofd);
 	    return;
 	}
+
+	/*
+	 * set CLOEXEC it to suppress selenux avc denials on exec
+	 */
+	fcntl_arg = fcntl(infofd, F_GETFD);
+	fcntl_arg |= FD_CLOEXEC;
+	fcntl(infofd, F_SETFD, fcntl_arg);
 
 	switch (ipcq.head.ipm_msg_type)
 	{
