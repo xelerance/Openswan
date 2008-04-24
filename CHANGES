@@ -3,6 +3,7 @@ Please see docs/KNOWN_BUGS file for more information
 v2.6.13
 * Close on file descriptors on exec (fixes SElinux avc denials) [Neil Horman]
   This is https://bugzilla.redhat.com/show_bug.cgi?id=442333
+* Fix a memory leak by removing unused variables alg_esp and alg_ike [dhr]
 
 v2.6.12
 * Add aes-*-modp1024 proposals to default responder policy db [antony]
