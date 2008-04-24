@@ -59,7 +59,6 @@ east:~#
 002 "west--east-psk-1des": extra debugging enabled for connection: impair-die-oninfo
 002 "west--east-psk-1des" #1: extra debugging enabled for connection: none
 002 "west--east-psk-1des" #1: initiating Main Mode
-034 "west--east-psk-1des" #1: ike algorithm string: "des" results in no permitted algorithms
 002 "west--east-psk-1des" #1: outsa fail
 002 "west--east-psk-1des" #1: extra debugging enabled for connection: impair-die-oninfo
 002 "west--east-psk-1des" #1: extra debugging enabled for connection: none
@@ -131,7 +130,6 @@ added connection description "west--east-psk-1des"
 "west--east-psk-1des": extra debugging enabled for connection: impair-die-oninfo
 "west--east-psk-1des" #1: extra debugging enabled for connection: none
 "west--east-psk-1des" #1: initiating Main Mode
-"west--east-psk-1des" #1: ike algorithm string: "des" results in no permitted algorithms
 "west--east-psk-1des" #1: outsa fail
 "west--east-psk-1des" #1: extra debugging enabled for connection: impair-die-oninfo
 "west--east-psk-1des" #1: extra debugging enabled for connection: none
