@@ -20,9 +20,9 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include "sysdep.h"
-#include "crypto/aes.h"
-#include "crypto/aes_cbc.h"
-#include "crypto/ocf_assist.h"
+#include "klips-crypto/aes.h"
+#include "klips-crypto/aes_cbc.h"
+#include "klips-crypto/ocf_assist.h"
 #if defined(macintosh) || (defined(__MACH__) && defined(__APPLE__))
 #include "openswan.h"
 #endif

@@ -18,9 +18,9 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include "sysdep.h"
-#include "crypto/des.h"
+#include "klips-crypto/des.h"
 #include "des/des_locl.h"
-#include "crypto/ocf_assist.h"
+#include "klips-crypto/ocf_assist.h"
 
 /****************************************************************************/
 
