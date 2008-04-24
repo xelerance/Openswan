@@ -238,8 +238,7 @@ struct connection {
 				       next one to apply */
 
     struct gw_info *gw_info;
-    char                *alg_esp;    /* string the admin provided */
-    char                *alg_ike;    /* ditto. may be NULL */
+    char                *alg_ike;    /* string the admin provided, may be NULL */
     struct alg_info_esp *alg_info_esp;
     struct alg_info_ike *alg_info_ike;
 
