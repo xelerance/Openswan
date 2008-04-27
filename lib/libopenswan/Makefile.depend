@@ -271,7 +271,7 @@ oswtime.o: oswtime.c ../../linux/include/openswan.h \
 pem.o: pem.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
-  ../../linux/include/crypto/des.h \
+  ../../linux/include/klips-crypto/des.h \
   ../../ports/linux/include/sysdep.h ../../include/sysqueue.h \
   ../../include/constants.h ../../include/biglset.h \
   ../../linux/include/openswan/passert.h \

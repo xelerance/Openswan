@@ -117,7 +117,7 @@ crypt_utils.o: crypt_utils.c ../../linux/include/openswan.h \
   ../../include/sha1.h ../../include/md5.h \
   ../../lib/libcrypto/libsha2/sha2.h ../../include/mpzfuncs.h
 crypto.o: crypto.c ../../linux/include/openswan.h \
-  ../../linux/include/crypto/des.h ../../include/constants.h \
+  ../../linux/include/klips-crypto/des.h ../../include/constants.h \
   ../../include/biglset.h \
   ../../linux/include/openswan/passert.h \
   ../../include/ietf_constants.h \
@@ -329,8 +329,8 @@ ike_alg_aes.o: ike_alg_aes.c ../../linux/include/openswan.h \
   ../../include/pluto_constants.h \
   ../../include/names_constant.h defs.h \
   ../../include/oswalloc.h ../../include/constants.h log.h \
-  ../../include/oswlog.h ../../linux/include/crypto/aes_cbc.h \
-  ../../linux/include/crypto/aes.h ../../include/alg_info.h \
+  ../../include/oswlog.h ../../linux/include/klips-crypto/aes_cbc.h \
+  ../../linux/include/klips-crypto/aes.h ../../include/alg_info.h \
   ike_alg.h
 ike_alg_blowfish.o: ike_alg_blowfish.c \
   ../../linux/include/openswan.h ../../include/constants.h \

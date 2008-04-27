@@ -196,7 +196,7 @@ crypt_utils.o: crypt_utils.c \
   ../../include/dev/hifn/vulcanpk_funcs.h
 crypto.o: crypto.c \
   ../../linux/include/openswan.h \
-  ../../linux/include/crypto/des.h \
+  ../../linux/include/klips-crypto/des.h \
   ../../include/constants.h \
   ../../include/biglset.h \
   ../../linux/include/openswan/passert.h \
@@ -491,8 +491,8 @@ ike_alg_aes.o: ike_alg_aes.c \
   ../../include/oswalloc.h \
   ../../include/constants.h log.h \
   ../../include/oswlog.h \
-  ../../linux/include/crypto/aes_cbc.h \
-  ../../linux/include/crypto/aes.h \
+  ../../linux/include/klips-crypto/aes_cbc.h \
+  ../../linux/include/klips-crypto/aes.h \
   ../../include/alg_info.h ike_alg.h
 ike_alg_blowfish.o: ike_alg_blowfish.c \
   ../../linux/include/openswan.h \
