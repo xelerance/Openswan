@@ -202,7 +202,8 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	    if(eklen > 0) {
 		enc_keylen = &trans->attrs[4];
 		enc_keylen->val = eklen;
-	    }
+	    } else
+		trans->attr_cnt = 4;
 
 	    passert(enc->type.oakley == OAKLEY_ENCRYPTION_ALGORITHM);
 	    if(ealg > 0) {
