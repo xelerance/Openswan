@@ -488,6 +488,9 @@ enum ikev2_trans_type_esn {
 	IKEv2_ESN_ENABLED  = 1,
 };
 	
+enum ikev2_trans_attr {
+	IKEv2_KEY_LENGTH = 14,
+};
 
 /* many transform values are moved to openswan/ipsec_policy.h
  * including all of the following, which are here so that
