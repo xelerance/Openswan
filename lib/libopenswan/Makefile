@@ -225,6 +225,6 @@ checkprograms:
 
 # Gather dependencies caused by explicit #includes within .c files
 depend:
-	(ls $(wildcard $(SRCS)) $(wildcard $(addprefix ${KLIPSSRCDIR}/,$(SRCS))) $(wildcard $(LOGSRCS)) | grep '\.c' | xargs gcc -MM ${CFLAGS} ${PORTINCLUDE} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
+	(ls $(wildcard $(SRCS)) $(wildcard $(addprefix ${KLIPSSRCDIR}/,$(SRCS))) $(wildcard $(LOGSRCS)) | grep '\.c' | xargs $(GCC) -MM ${CFLAGS} ${PORTINCLUDE} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
 
 -include ${srcdir}Makefile.depend
