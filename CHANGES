@@ -5,7 +5,7 @@ v2.6.13
   This is https://bugzilla.redhat.com/show_bug.cgi?id=442333
 * Fix a memory leak by removing unused variables alg_esp and alg_ike [dhr]
 * linux/include/crypto renamed to linux/include/klips-crypto [paul]
-* Fix for IKEv1-only policies attempting bogus IKEv2 rekeys [ruben]
+* Fix for IKEv1-only policies attempting bogus IKEv2 rekeys [Miloslav Trmac]
 
 v2.6.12
 * Add aes-*-modp1024 proposals to default responder policy db [antony]
