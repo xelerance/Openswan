@@ -255,21 +255,13 @@ retransmit_v1_msg(struct state *st)
 	    }
 
 	    if((try % 3)==0
-	       && (c->policy & POLICY_IKEV2_ALLOW)!=0) {
+		&& ((c->policy & (POLICY_IKEV2_ALLOW | POLICY_IKEV2_PROPOSE))
+		     == (POLICY_IKEV2_ALLOW | POLICY_IKEV2_PROPOSE)) ) {
 		/* so, let's retry with IKEv2, alternating every three messages */
-		if(c->failed_ikev2) {
-		    c->failed_ikev2 = FALSE;
-		    loglog(RC_COMMENT, "next attempt will be IKEv2");
-		    ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
-		} else {
-		    c->failed_ikev2 = TRUE;
-		    loglog(RC_COMMENT, "next attempt will be IKEv1");
-		    ipsecdoi_replace(st, POLICY_IKEV1_DISABLE, LEMPTY, try);
-		}
-	    } else {
-		/* no, just retry with this policy */
-		ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
+		c->failed_ikev2 = FALSE;
+		loglog(RC_COMMENT, "next attempt will be IKEv2");
 	    }
+	    ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
 	}
 	delete_state(st);
     }
@@ -379,18 +371,10 @@ retransmit_v2_msg(struct state *st)
 	   && (c->policy & POLICY_IKEV1_DISABLE)==0) {
 
 	    /* so, let's retry with IKEv1, alternating every three messages */
-	    if(c->failed_ikev2) {
-		c->failed_ikev2 = FALSE;
-		loglog(RC_COMMENT, "next attempt will be IKEv2");
-		ipsecdoi_replace(st, POLICY_IKEV1_DISABLE, LEMPTY, try);
-	    } else {
-		c->failed_ikev2 = TRUE;
-		loglog(RC_COMMENT, "next attempt will be IKEv1");
-		ipsecdoi_replace(st, LEMPTY, POLICY_IKEV2_PROPOSE, try);
-	    }
-	} else {
-	    ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
+	    c->failed_ikev2 = TRUE;
+	    loglog(RC_COMMENT, "next attempt will be IKEv1");
 	}
+	ipsecdoi_replace(st, LEMPTY, LEMPTY, try);
     }
 
     delete_state(st);
