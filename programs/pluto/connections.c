@@ -2959,6 +2959,10 @@ show_connections_status(void)
     {
 	count++;
     }
+    if(count == 0) 
+	/* abort early to avoid a malloc(0) that uclibc does not like */
+	return;
+
     array = alloc_bytes(sizeof(struct connection *)*count, "connection array");
 
     count=0;
