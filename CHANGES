@@ -3,6 +3,8 @@ Please see docs/KNOWN_BUGS file for more information
 v2.5.18
 * Do not use the KMEM_CACHE macro for now, so KLIPS works on 2.6.23 [paul]
 * Sha2 support for X.509 certificates in pluto [Daniel Mueller]
+* Various memory leaks
+* uclibc workaround for malloc(0) abort. Fixes to not malloc 0 [paul]
 * Bugtracker bugs fixed
  #917: pluto fails to compile when using pam. xauth [folti]
  #919: Invalid memory access in show_dnskey of showhostkey.c [paul]
