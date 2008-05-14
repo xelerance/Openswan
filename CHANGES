@@ -1,11 +1,22 @@
 Please see docs/KNOWN_BUGS file for more information
 
 v2.6.13
+* RFC4306 SEction 3.3.5 IKEv2 Attribute KEY_LENGTH support [herbert/paul]
+  See:
+   https://bugzilla.redhat.com/show_bug.cgi?id=444166
+   https://bugzilla.redhat.com/show_bug.cgi?id=439771
 * Close on file descriptors on exec (fixes SElinux avc denials) [Neil Horman]
-  This is https://bugzilla.redhat.com/show_bug.cgi?id=442333
+  See:
+   https://bugzilla.redhat.com/show_bug.cgi?id=442333
 * Fix a memory leak by removing unused variables alg_esp and alg_ike [dhr]
 * linux/include/crypto renamed to linux/include/klips-crypto [paul]
 * Fix for IKEv1-only policies attempting bogus IKEv2 rekeys [Miloslav Trmac]
+* Bugtracker bugs fixed:
+  #198: Connection not coming up automatically, plutowait=yes workaround [bleve]
+  #622: pluto memory leak [dhr]
+  #916: KLIPS kmod fails to compile 2.6.22 based kernel (...) [paul]
+  #917: pluto fails to compile when using pam. xauth [Tamas Pal]
+  #922: pluto crashes on rekey failure [Miloslav Trmac]
 
 v2.6.12
 * Add aes-*-modp1024 proposals to default responder policy db [antony]
