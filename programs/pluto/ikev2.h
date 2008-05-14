@@ -13,6 +13,12 @@ extern stf_status ikev2parent_outI1(int whack_sock
 
 extern void ikev2_delete_out(struct state *st);
 
+bool ikev2_out_attr(int type
+        , unsigned long val
+        , struct_desc *attr_desc
+        , enum_names **attr_val_descs USED_BY_DEBUG
+        , pb_stream *pbs);
+
 extern bool ikev2_out_sa(pb_stream *outs
 			 , unsigned int protoid
 			 , struct db_sa *sadb
