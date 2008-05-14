@@ -487,10 +487,12 @@ enum ikev2_trans_type_esn {
 	IKEv2_ESN_DISABLED = 0,
 	IKEv2_ESN_ENABLED  = 1,
 };
-	
-enum ikev2_trans_attr {
+
+/* RFC 4306 Section 3.3.5 */	
+enum ikev2_trans_attr_type {
 	IKEv2_KEY_LENGTH = 14,
 };
+
 
 /* many transform values are moved to openswan/ipsec_policy.h
  * including all of the following, which are here so that
