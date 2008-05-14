@@ -68,6 +68,8 @@ extern enum_names trans_type_encr_names;
 extern enum_names trans_type_prf_names;
 extern enum_names trans_type_integ_names;
 extern enum_names trans_type_esn_names;
+extern enum_names ikev2_trans_attr_descs;
+extern enum_names *ikev2_trans_attr_val_descs[];
 extern enum_names *ikev2_transid_val_descs[];
 extern const unsigned int ikev2_transid_val_descs_size;
 extern enum_names ikev2_cert_type_names;
