@@ -211,7 +211,7 @@ endif
 # if we use pam for password checking then add it too
 ifeq ($(USE_XAUTHPAM),true)
 XAUTHPAM_DEFS=-DXAUTH_USEPAM
-XAUTHPAM_LLIBS=-lpam -ldl
+XAUTHPAM_LIBS=-lpam -ldl
 endif
 endif
 
