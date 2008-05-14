@@ -706,6 +706,29 @@ static field_desc ikev2trans_fields[] = {
 struct_desc ikev2_trans_desc = { "IKEv2 Transform Substructure Payload",
 			      ikev2trans_fields, sizeof(struct ikev2_trans) };
 
+/*
+ * 3.3.5.   [Transform] Attribute substructure
+ *
+ *                          1                   2                   3
+ *      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *     !A!       Attribute Type        !    AF=0  Attribute Length     !
+ *     !F!                             !    AF=1  Attribute Value      !
+ *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *     !                   AF=0  Attribute Value                       !
+ *     !                   AF=1  Not Transmitted                       !
+ *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ */
+static field_desc ikev2_trans_attr_fields[] = {
+    { ft_af_enum, 16/BITS_PER_BYTE, "af+type", &ikev2_trans_attr_descs },
+    { ft_lv,      16/BITS_PER_BYTE, "length/value", NULL },
+    { ft_end,     0, NULL, NULL }
+};
+
+struct_desc ikev2_trans_attr_desc = {
+    "IKEv2 Attribute Substructure Payload",
+    ikev2_trans_attr_fields, sizeof(struct ikev2_trans_attr) };
 
 /* 3.4.  Key Exchange Payload
  *
