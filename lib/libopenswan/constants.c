@@ -1019,7 +1019,37 @@ enum_names *ikev2_transid_val_descs[] = {
     &trans_type_esn_names,  /* 5 */
 };
 const unsigned int ikev2_transid_val_descs_size = elemsof(ikev2_transid_val_descs);
-    
+
+/* Transform Attributes */
+const char *const ikev2_trans_attr_name[]={
+    "KEY_LENGTH",
+};
+
+enum_names ikev2_trans_attr_descs = {
+    IKEv2_KEY_LENGTH + ISAKMP_ATTR_AF_TV,
+    IKEv2_KEY_LENGTH + ISAKMP_ATTR_AF_TV,
+    ikev2_trans_attr_name, NULL };
+
+/* for each IKEv2 attribute, which enum_names describes its values? */
+enum_names *ikev2_trans_attr_val_descs[] = {
+	NULL,			/* 0 */
+	NULL,			/* 1 */
+	NULL,			/* 2 */
+	NULL,			/* 3 */
+	NULL,			/* 4 */
+	NULL,			/* 5 */
+	NULL,			/* 6 */
+	NULL,			/* 7 */
+	NULL,			/* 8 */
+	NULL,			/* 9 */
+	NULL,			/* 10 */
+	NULL,			/* 11 */
+	NULL,			/* 12 */
+	NULL,			/* 13 */
+	&ikev2_trans_attr_descs,/* KEY_LENGTH */
+    };
+const unsigned int ikev2_trans_attr_val_descs_size=elemsof(ikev2_trans_attr_val_descs);
+
 
 /* socket address family info */
 
