@@ -557,10 +557,14 @@ static struct db_trans oakley_trans_pskrsasig[] = {
 #ifdef TEST_INDECENT_PROPOSAL
 	{ AD_TR(KEY_IKE,otpsk1024des3tiger) },
 #endif
-	{ AD_TR(KEY_IKE,otrsasig1536des3md5) },
-	{ AD_TR(KEY_IKE,otpsk1536des3md5) },
+	{ AD_TR(KEY_IKE,otrsasig2048des3sha1) },
+	{ AD_TR(KEY_IKE,otpsk2048des3sha1) },
+	{ AD_TR(KEY_IKE,otrsasig2048des3md5) },
+	{ AD_TR(KEY_IKE,otpsk2048des3md5) },
 	{ AD_TR(KEY_IKE,otrsasig1536des3sha1) },
 	{ AD_TR(KEY_IKE,otpsk1536des3sha1) },
+	{ AD_TR(KEY_IKE,otrsasig1536des3md5) },
+	{ AD_TR(KEY_IKE,otpsk1536des3md5) },
 	{ AD_TR(KEY_IKE,otrsasig1024des3sha1) },
 	{ AD_TR(KEY_IKE,otpsk1024des3sha1) },
 	{ AD_TR(KEY_IKE,otrsasig1024des3md5) },
