@@ -564,7 +564,7 @@ void accept_connection(struct netjig_state *ns,
    * set CLOEXEC it to suppress selenux avc denials on exec
    */
   fcntl_arg = fcntl(new, F_GETFD);
-  fcntl_arg |= F_CLOEXEC;
+  fcntl_arg |= FD_CLOEXEC;
   fcntl(new, F_SETFD, fcntl_arg);
 
 #if 0
