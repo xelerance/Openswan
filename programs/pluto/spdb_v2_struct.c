@@ -1045,7 +1045,8 @@ ikev2_parse_parent_sa_body(
      * winning value.
      */
     ta.encrypt   = itl->encr_transforms[itl->encr_i];
-    ta.enckeylen = itl->encr_keylens[itl->encr_i];
+    ta.enckeylen = itl->encr_keylens[itl->encr_i] > 0 ?
+			itl->encr_keylens[itl->encr_i] : 0;
     ta.encrypter = (struct encrypt_desc *)ike_alg_ikev2_find(IKE_ALG_ENCRYPT
 							     , ta.encrypt
 							     , ta.enckeylen);
@@ -1347,7 +1348,8 @@ ikev2_parse_child_sa_body(
      * winning value.
      */
     ta.encrypt   = itl->encr_transforms[itl->encr_i];
-    ta.enckeylen = itl->encr_keylens[itl->encr_i];
+    ta.enckeylen = itl->encr_keylens[itl->encr_i] > 0 ?
+			itl->encr_keylens[itl->encr_i] : 0;
 
     /* this is REALLY not correct, because this is not an IKE algorithm */
     /* XXX maybe we can leave this to ikev2 child key derivation */
