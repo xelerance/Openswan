@@ -56,6 +56,8 @@ alg_info_esp_aa2sadb(enum ikev1_auth_attribute auth)
 		    return AH_SHA2_512;
 		case AUTH_ALGORITHM_HMAC_RIPEMD:
 		    return AH_RIPEMD;
+		case AUTH_ALGORITHM_NONE:
+		    return AH_NONE;
 
 		default:
 		    bad_case(auth);
@@ -193,6 +195,12 @@ aalg_getbyname_esp(const char *const str, int len)
 	if (ret>=0) goto out;
 	ret=alg_enum_search_prefix(&auth_alg_names,"AUTH_ALGORITHM_",str,len);
 	if (ret>=0) goto out;
+
+	/* Special value for no authentication since zero is already used. */
+	ret = INT_MAX;
+	if (!strncasecmp(str, "null", len))
+		goto out;
+
 	sscanf(str, "id%d%n", &ret, &num);
 	if (ret >=0 && num!=strlen(str))
 		ret=-1;
@@ -267,6 +275,8 @@ alg_info_esp_add (struct alg_info *alg_info,
 	    if(aalg_id > 0 ||
 	       (permit_manconn && aalg_id == 0))
 		{
+			if (aalg_id == INT_MAX)
+				aalg_id = 0;
 			__alg_info_esp_add((struct alg_info_esp *)alg_info,
 					ealg_id, ek_bits,
 					aalg_id, ak_bits);
@@ -899,7 +909,7 @@ alg_info_snprint(char *buf, int buflen
 			    , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP")
 			    , esp_info->esp_ealg_id
 			    , (int)esp_info->esp_ealg_keylen
-			    , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
+			    , enum_name(&auth_alg_names, esp_info->esp_aalg_id) + (esp_info->esp_aalg_id ? sizeof("AUTH_ALGORITHM_HMAC") : sizeof("AUTH_ALGORITHM"))
 			    , esp_info->esp_aalg_id);
 		ptr+=np;
 		buflen-=np;

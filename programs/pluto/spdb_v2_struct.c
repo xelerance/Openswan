@@ -356,7 +356,7 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 			    break;
 			
 			case OAKLEY_HASH_ALGORITHM:
-			    dtfone->prf_transid=attr->val;
+			    dtfone->integ_transid = attr->val;
 			    break;
 			    
 			case OAKLEY_GROUP_DESCRIPTION:
@@ -374,7 +374,7 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 		    } else {
 			switch(attr->type.ipsec) {
 			case AUTH_ALGORITHM:
-			    dtfone->auth_method = attr->val;
+			    dtfone->integ_transid = attr->val;
 			    break;
 			    
 			case KEY_LENGTH:
@@ -475,17 +475,14 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 	}
 	tr_pos++;
 
-	if(dtfone->integ_transid == 0) {
-	    tr[tr_pos].transid        = IKEv2_AUTH_HMAC_SHA1_96;
-	} else {
-	    tr[tr_pos].transid        = dtfone->integ_transid;
-	}
+	tr[tr_pos].transid        = dtfone->integ_transid;
 	tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_INTEG;
 	tr_pos++;
 	
 	if(dtfone->protoid == PROTO_ISAKMP) {
+	    /* XXX Let the user set the PRF.*/
 	    tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_PRF;
-	    tr[tr_pos].transid        = dtfone->prf_transid;
+	    tr[tr_pos].transid        = IKEv2_PRF_HMAC_SHA1;
 	    tr_pos++;
 	    tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_DH;
 	    tr[tr_pos].transid        = dtfone->group_transid;

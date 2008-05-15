@@ -229,7 +229,7 @@ alg_info_snprint_esp(char *buf, int buflen, struct alg_info_esp *alg_info)
 			 , sep
 			 , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP")
 			 , esp_info->esp_ealg_id, eklen
-			 , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
+			 , enum_name(&auth_alg_names, esp_info->esp_aalg_id) + (esp_info->esp_aalg_id ? sizeof("AUTH_ALGORITHM_HMAC") : sizeof("AUTH_ALGORITHM"))
 			 , esp_info->esp_aalg_id, aklen);
 	    ptr+=ret;
 	    buflen-=ret;
@@ -464,9 +464,11 @@ kernel_alg_db_add(struct db_context *db_ctx
 	    /*	open new transformation */
 	    db_trans_add(db_ctx, ealg_i);
 
-	    /* add ESP auth attr */
-	    db_attr_add_values(db_ctx, 
-			       AUTH_ALGORITHM, esp_info->esp_aalg_id);
+	    /* add ESP auth attr (if present) */
+	    if (esp_info->esp_aalg_id != AUTH_ALGORITHM_NONE) {
+		db_attr_add_values(db_ctx, 
+				   AUTH_ALGORITHM, esp_info->esp_aalg_id);
+	    }
 
 	    /*	add keylegth if specified in esp= string */
 	    if (esp_info->esp_ealg_keylen) {

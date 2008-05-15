@@ -471,6 +471,7 @@ enum ikev2_trans_type_prf {
 };
 
 enum ikev2_trans_type_integ {
+	IKEv2_AUTH_NONE        =0,
 	IKEv2_AUTH_HMAC_MD5_96 =1,
 	IKEv2_AUTH_HMAC_SHA1_96=2,
 	IKEv2_AUTH_DES_MAC     =3,

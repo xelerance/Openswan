@@ -75,6 +75,7 @@ enum ipsec_bandwidth_quality {
  * and in http://www.iana.org/assignments/isakmp-registry
  */
 enum ipsec_authentication_algo {
+  AH_NONE=0,
   AH_MD5=2,
   AH_SHA=3,
   AH_DES=4,

@@ -547,7 +547,7 @@ enum_names enc_mode_names =
 /* Auth Algorithm attribute */
 
 static const char *const auth_alg_name[] = {
-	"unspecified AUTH_ALGORITHM",
+	"AUTH_ALGORITHM_NONE",
 	"AUTH_ALGORITHM_HMAC_MD5",
 	"AUTH_ALGORITHM_HMAC_SHA1",
 	"AUTH_ALGORITHM_DES_MAC",
@@ -567,7 +567,7 @@ static const char *const auth_alg_name[] = {
 
 enum_names
     auth_alg_names =
-	{ AUTH_ALGORITHM_HMAC_MD5, 15 /* AUTH_ALGORITHM_HMAC_RIPEMD */, auth_alg_name + 1, NULL },
+	{ AUTH_ALGORITHM_NONE, 15 /* AUTH_ALGORITHM_HMAC_RIPEMD */, auth_alg_name, NULL },
     extended_auth_alg_names =
 	{ AUTH_ALGORITHM_NONE, AUTH_ALGORITHM_KPDK, auth_alg_name, NULL };
 
@@ -981,6 +981,7 @@ enum_names trans_type_prf_names =
 
 /* Transform-type Integrity */
 const char *const trans_type_integ_name[]={
+    "auth-none",
     "auth-hmac-md5-96",
     "auth-hmac-sha1-96",
     "auth-des-mac",
@@ -988,7 +989,7 @@ const char *const trans_type_integ_name[]={
     "auth-aes-xcbc-96",
 };
 enum_names trans_type_integ_names =
-{ IKEv2_AUTH_HMAC_MD5_96, IKEv2_AUTH_AES_XCBC_96, trans_type_integ_name, NULL};
+{ IKEv2_AUTH_NONE, IKEv2_AUTH_AES_XCBC_96, trans_type_integ_name, NULL};
 
 /* Transform-type Integrity */
 const char *const trans_type_esn_name[]={
