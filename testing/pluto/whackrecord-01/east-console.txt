@@ -29,7 +29,7 @@ east:~#
 east:~#
  ipsec setup stop
 ipsec_setup: Stopping Openswan IPsec...
-ipsec_setup: stop ordered, but IPsec does not appear to be running!
+ipsec_setup: stop ordered, but IPsec appears to be already stopped!
 ipsec_setup: doing cleanup anyway...
 east:~#
  kill `cat /var/run/klogd.pid`; cat /tmp/klog.log

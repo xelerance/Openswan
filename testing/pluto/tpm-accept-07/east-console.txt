@@ -77,7 +77,7 @@ east:~#
 east:~#
  ipsec setup stop
 ipsec_setup: Stopping Openswan IPsec...
-ipsec_setup: stop ordered, but IPsec does not appear to be running!
+ipsec_setup: stop ordered, but IPsec appears to be already stopped!
 ipsec_setup: doing cleanup anyway...
 [1]+  Done                    ( cd /tmp && /usr/local/libexec/ipsec/pluto --nofork --secretsfile /tmp/$TESTNAME/ipsec.secrets --ipsecdir /tmp/$TESTNAME/ipsec.d --use-nostack --uniqueids --nhelpers 0 --stderrlog 2>/tmp/pluto.log )
 east:~#
