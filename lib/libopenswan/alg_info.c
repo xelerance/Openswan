@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <limits.h>
 
 #include <ctype.h>
 #include <openswan.h>
