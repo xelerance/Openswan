@@ -106,6 +106,8 @@
 #define LINUX_KERNEL_HAS_SNPRINTF
 #endif                                                                         
 
+/* API changes are documented at: http://lwn.net/Articles/2.6-kernel-api/ */
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,0)
 #define HAVE_NETDEV_PRINTK 1
 #define NET_26
@@ -143,7 +145,36 @@
 #define SYSCTL_IPSEC_DEFAULT_TTL IPSEC_DEFAULT_TTL
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,17)
+/*
+   The obsolete MODULE_PARM() macro is gone forevermore. 
+   Zero-filled memory can now be allocated from slab caches with
+    kmem_cache_zalloc(). There is also a new slab debugging option
+    to produce a /proc/slab_allocators file with detailed allocation
+    information.
+ */
+#define MODULE_PARM(a,b)  module_param(a,int,0)
+#endif
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,18)
+/*
+   The skb_linearize() function has been reworked, and no longer has a
+    GFP flags argument. There is also a new skb_linearize_cow() function
+    which ensures that the resulting SKB is writable.
+   Network drivers should no longer manipulate the xmit_lock  spinlock
+    in the net_device structure; instead, the following new functions
+    should be used:
+     int netif_tx_lock(struct net_device *dev);
+     int netif_tx_lock_bh(struct net_device *dev);
+     void netif_tx_unlock(struct net_device *dev);
+     void netif_tx_unlock_bh(struct net_device *dev);
+     int netif_tx_trylock(struct net_device *dev);
+   A number of crypto API changes have been merged, the biggest being
+    a change to most algorithm-specific functions to take a pointer to
+    the crypto_tfm structure, rather than the old "context" pointer. This
+    change was necessary to support parameterized algorithms.
+*/
+
 #define HAVE_NEW_SKB_LINEARIZE
 #endif
 
@@ -175,6 +206,11 @@
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,21)
+/*
+   Significant changes have been made to the crypto support interface.
+   The sysctl code has been heavily reworked, leading to a number of
+    internal API changes. 
+*/
 #define ipsec_register_sysctl_table(a,b) register_sysctl_table(a)
 #define CTL_TABLE_PARENT
 #else
@@ -182,6 +218,27 @@
 #endif
  
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22)
+/*
+   The eth_type_trans() function now sets the skb->dev field, consistent
+    with how similar functions for other link types operate. As a result,
+    many Ethernet drivers have been changed to remove the (now) redundant
+    assignment.
+   The header fields in the sk_buff structure have been renamed
+    and are no longer unions. Networking code and drivers can
+    now just use skb->transport_header, skb->network_header, and
+    skb->skb_mac_header. There are new functions for finding specific
+    headers within packets: tcp_hdr(), udp_hdr(), ipip_hdr(), and
+    ipipv6_hdr().
+   The crypto API has a new set of functions for use with asynchronous
+    block ciphers. There is also a new cryptd kernel thread which can
+    run any synchronous cipher in an asynchronous mode.
+   A new macro has been added to make the creation of slab caches easier:
+    struct kmem_cache KMEM_CACHE(struct-type, flags);
+    The result is the creation of a cache holding objects of the given
+     struct_type, named after that type, and with the additional slab
+     flags (if any). 
+*/
+
 /* need to include ip.h early, no longer pick it up in skbuff.h */
 #include <linux/ip.h>
 #  define HAVE_KERNEL_TSTAMP
@@ -210,6 +267,11 @@
 /* the macro got introduced in 2,6,22 but it does not work properly, and
  * still uses the old number of arguments. 
  */
+ /*
+    The destructor argument has been removed from kmem_cache_create(), as
+    destructors are no longer supported. All in-kernel callers have been
+    updated
+  */
 #  define HAVE_KMEM_CACHE_MACRO
 
 /* Try using the new kernel encaps hook for nat-t, instead of udp.c */
@@ -217,6 +279,21 @@
 # define HAVE_UDP_ENCAP_CONVERT
 # endif
 #endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+/*
+   The hard_header() method has been removed from struct net_device;
+    it has been replaced by a per-protocol header_ops structure pointer. 
+
+   The prototype for slab constructor callbacks has changed to:
+    void (*ctor)(struct kmem_cache *cache, void *object);
+   The unused flags argument has been removed and the order of the other
+    two arguments has been reversed to match other slab functions. 
+*/
+#endif
+
+
+
 
 #ifdef NET_21
 #  include <linux/in6.h>
