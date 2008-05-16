@@ -73,6 +73,8 @@ enum ikev1_auth_attribute
 alg_info_esp_v2tov1aa(enum ikev2_trans_type_integ ti)
 {
     switch(ti) {
+    case IKEv2_AUTH_NONE:
+	return AUTH_ALGORITHM_NONE;
     case IKEv2_AUTH_HMAC_MD5_96:
 	return AUTH_ALGORITHM_HMAC_MD5;
     case IKEv2_AUTH_HMAC_SHA1_96:
