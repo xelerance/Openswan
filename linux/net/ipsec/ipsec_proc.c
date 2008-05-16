@@ -634,11 +634,7 @@ unsigned int natt_available = 1;
 #else
 unsigned int natt_available = 0;
 #endif
-#ifdef module_param
-module_param(natt_available, int, 0444);
-#else
 MODULE_PARM("natt_available","i");
-#endif
 
 IPSEC_PROCFS_DEBUG_NO_STATIC
 int

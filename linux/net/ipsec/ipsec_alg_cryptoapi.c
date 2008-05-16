@@ -100,15 +100,9 @@ MODULE_AUTHOR("Juanjo Ciarlante, Harpo MAxx, Luciano Ruete");
 static int debug_crypto=0;
 static int test_crypto=0;
 static int excl_crypto=0;
-#ifdef module_param
-module_param(debug_crypto, int, 0664);
-module_param(test_crypto, int, 0664);
-module_param(excl_crypto, int, 0664);
-#else
 MODULE_PARM(debug_crypto, "i");
 MODULE_PARM(test_crypto, "i");
 MODULE_PARM(excl_crypto, "i");
-#endif
 
 static int noauto = 0;
 MODULE_PARM(noauto,"i");
