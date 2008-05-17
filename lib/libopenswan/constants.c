@@ -557,20 +557,17 @@ static const char *const auth_alg_name[] = {
 	"AUTH_ALGORITHM_HMAC_SHA2_512",
 	"AUTH_ALGORITHM_HMAC_RIPEMD",
 	"AUTH_ALGORITHM_AES_CBC",
-	"AUTH_ALGORITHM_ID10",
-	"AUTH_ALGORITHM_ID11",
-	"AUTH_ALGORITHM_ID12",
-	"AUTH_ALGORITHM_ID13",
-	"AUTH_ALGORITHM_ID14",
-	"AUTH_ALGORITHM_ID15",
+    };
+
+static const char *const null_auth_alg_name[] = {
 	"AUTH_ALGORITHM_NULL", /* 251 */
     };
 
 enum_names
+    null_auth_alg_names =
+	{ AUTH_ALGORITHM_NULL, AUTH_ALGORITHM_NULL, null_auth_alg_name, NULL },
     auth_alg_names =
-	{ AUTH_ALGORITHM_NONE, 15 /* AUTH_ALGORITHM_HMAC_RIPEMD */, auth_alg_name, NULL },
-    extended_auth_alg_names =
-	{ AUTH_ALGORITHM_NONE, AUTH_ALGORITHM_NULL, auth_alg_name, NULL };
+	{ AUTH_ALGORITHM_NONE, AUTH_ALGORITHM_AES_CBC , auth_alg_name, &null_auth_alg_names };
 
 /* From draft-beaulieu-ike-xauth */
 const char *const xauth_attr_name[] = {
