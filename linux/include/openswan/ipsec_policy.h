@@ -82,7 +82,9 @@ enum ipsec_authentication_algo {
   AH_SHA2_256=5,
   AH_SHA2_384=6,
   AH_SHA2_512=7,
-  AH_RIPEMD=8
+  AH_RIPEMD=8,
+  AH__AES_XCBC_MAC=9,
+  AH_RSA=10
 };
 
 /* IPsec ESP transform values
@@ -104,6 +106,17 @@ enum ipsec_cipher_algo {
   ESP_RC4=10,
   ESP_NULL=11,
   ESP_AES=12,         /* 128 bit AES */
+  ESP_AES_CTR=13,
+  ESP_AES_CCM_8=14,
+  ESP_AES_CCM_12=15,
+  ESP_AES_CCM_16=16,
+  /* unassigned=17 */
+  ESP_AES_GCM_8=18,
+  ESP_AES_GCM_12=19,
+  ESP_AES_GCM_16=20,
+  ESP_SEED_CBC=21,
+  ESP_CAMELLIA=22,
+  /* 249-255 reserved for private use */
 };
 
 /* IPCOMP transform values
