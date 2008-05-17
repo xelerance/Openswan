@@ -1,10 +1,14 @@
 Please see docs/KNOWN_BUGS file for more information
 
 v2.6.13
-* RFC4306 SEction 3.3.5 IKEv2 Attribute KEY_LENGTH support [herbert/paul]
+* RFC4306 Section 3.3.5 IKEv2 Attribute KEY_LENGTH support [herbert/paul]
   See:
    https://bugzilla.redhat.com/show_bug.cgi?id=444166
    https://bugzilla.redhat.com/show_bug.cgi?id=439771
+* Support for ESP_NULL and AH_NULL [herbert/paul]
+  See:
+   https://bugzilla.redhat.com/show_bug.cgi?id=442955
+   https://bugzilla.redhat.com/show_bug.cgi?id=442956
 * Close on file descriptors on exec (fixes SElinux avc denials) [Neil Horman]
   See:
    https://bugzilla.redhat.com/show_bug.cgi?id=442333
