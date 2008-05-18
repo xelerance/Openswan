@@ -312,8 +312,8 @@ enum phase1_role {
 #define IS_CHILD_SA_ESTABLISHED(st) (((st->st_state) == STATE_PARENT_I3 || (st->st_state) == STATE_PARENT_R2) && (st->st_childsa != NULL))
 
 
-#define IS_PARENT_SA(st) ((st)->st_clonedfrom == SOS_NOBODY)
 #define IS_CHILD_SA(st)  ((st)->st_clonedfrom != SOS_NOBODY)
+#define IS_PARENT_SA(st) (!IS_CHILD_SA(st))
 
 
 /* kind of struct connection
