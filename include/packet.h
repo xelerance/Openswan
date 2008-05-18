@@ -716,7 +716,7 @@ struct ikev2_trans_attr
 {
 	u_int16_t isatr_type;	     /* Attribute Type */
 	u_int16_t isatr_lv;	     /* Length (AF=0) or Value (AF=1) */
-	/* u_int16_t isatr_value;      Value (AF=0) or not transmitted (AF=1) */
+	/* u_intXX_t isatr_value;      Value if AF=0, absent if AF=1 */
 };
 extern struct_desc ikev2_trans_attr_desc;
 
