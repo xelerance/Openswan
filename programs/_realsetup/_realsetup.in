@@ -238,21 +238,16 @@ case "$1" in
 	perform ">" $info
 
 	# overridemtu is ignored on 2.6, so warn the user.
+	# no longer warn about %defaultroute, because it has some use on
+	# netkey for orienting ourselves when using left=%defaultroute
 	if $netkey
 	then
         	if test $IPSECoverridemtu
         	then
                 	echo "WARNING: overridemtu= is ignored when using the NETKEY stack"
         	fi
-		if test $IPSECinterfaces
-		then
-			echo "WARNING: interfaces= is ignored when using the NETKEY stack"
-		fi 
-	fi
 
 
-	if $netkey
-	then
 		perform ipsec _startnetkey \
 				--info $info \
 				--debug "\"$IPSECklipsdebug\"" \
