@@ -1,8 +1,16 @@
 Please see docs/KNOWN_BUGS file for more information
 
 v2.6.14
-* integ vs prf mixup fix [herbert/antony] 
+* Fix for integ vs prf mixup [herbert/antony] 
+  See:
+   https://bugzilla.redhat.com/show_bug.cgi?id=439771
 * Updated "clear" policy file for L root nameserver's new IP for OE. [paul]
+* Added testcase interop-ikev2-strongswan-06-aes192 [paul]
+* Removed "interfaces= is ignored when using the NETKEY stack" warning
+  as it caused confusion and a wrong patch in Fedora 9. [paul]
+  See:
+   https://bugzilla.redhat.com/show_bug.cgi?id=445179
+* Fix for a few warnings of using "en" uninitialised [dhr]
 
 v2.6.13
 * RFC4306 Section 3.3.5 IKEv2 Attribute KEY_LENGTH support [herbert/paul]
