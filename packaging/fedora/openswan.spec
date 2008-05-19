@@ -39,9 +39,11 @@ decrypted by the gateway at the other end of the tunnel.  The resulting
 tunnel is a virtual private network or VPN.
 
 This package contains the daemons and userland tools for setting up
-Openswan on a freeswan enabled kernel. It optionally also builds the
-Openswan KLIPS IPsec stack that is an alternative for the NETKEY/XFRM
-IPsec stack that exists in the default Linux kernel.
+Openswan. It optionally also builds the Openswan KLIPS IPsec stack that
+is an alternative for the NETKEY/XFRM IPsec stack that exists in the
+default Linux kernel.
+
+Openswan 2.6.x also supports IKEv2 (RFC4309)
 
 %if %{buildklips}
 %package klips
