@@ -1,5 +1,9 @@
 Please see docs/KNOWN_BUGS file for more information
 
+v2.6.14
+* integ vs prf mixup fix [herbert/antony] 
+* Updated "clear" policy file for L root nameserver's new IP for OE. [paul]
+
 v2.6.13
 * RFC4306 Section 3.3.5 IKEv2 Attribute KEY_LENGTH support [herbert/paul]
   See:
