@@ -1272,8 +1272,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	unsigned char *id_start;
 	unsigned int   id_len;
 
-	/* XXX probably should be prf_hasher, not integ_hasher */
-	hmac_init_chunk(&id_ctx, pst->st_oakley.integ_hasher, pst->st_skey_pi);
+	hmac_init_chunk(&id_ctx, pst->st_oakley.prf_hasher, pst->st_skey_pi);
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
 	r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
 	{  /* decide to send CERT payload */
@@ -1303,7 +1302,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	DBG(DBG_CRYPT, DBG_dump_chunk("idhash calc pi", pst->st_skey_pi));
 	DBG(DBG_CRYPT, DBG_dump("idhash calc I2", id_start, id_len));
 	hmac_update(&id_ctx, id_start, id_len);
-	idhash = alloca(pst->st_oakley.integ_hasher->hash_digest_len);
+	idhash = alloca(pst->st_oakley.prf_hasher->hash_digest_len);
 	hmac_final(idhash, &id_ctx);
     } 
 
@@ -1526,13 +1525,13 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	unsigned char *idstart=id_pbs->start + 4;
 	unsigned int   idlen  =pbs_room(id_pbs)-4;
 
-	hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher, st->st_skey_pi);
+	hmac_init_chunk(&id_ctx, st->st_oakley.prf_hasher, st->st_skey_pi);
 
 	/* calculate hash of IDi for AUTH below */
 	DBG(DBG_CRYPT, DBG_dump_chunk("idhash verify pi", st->st_skey_pi));
 	DBG(DBG_CRYPT, DBG_dump("idhash verify I2", idstart, idlen));
 	hmac_update(&id_ctx, idstart, idlen);
-	idhash_in = alloca(st->st_oakley.integ_hasher->hash_digest_len);
+	idhash_in = alloca(st->st_oakley.prf_hasher->hash_digest_len);
 	hmac_final(idhash_in, &id_ctx);
     }
 
@@ -1666,7 +1665,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    unsigned char *id_start;
 	    unsigned int   id_len;
 	    
-	    hmac_init_chunk(&id_ctx, st->st_oakley.integ_hasher
+	    hmac_init_chunk(&id_ctx, st->st_oakley.prf_hasher
 			    , st->st_skey_pr);
 	    build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b,
 			     &c->spd.this);
@@ -1694,7 +1693,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    DBG(DBG_CRYPT, DBG_dump_chunk("idhash calc pr", st->st_skey_pr));
 	    DBG(DBG_CRYPT, DBG_dump("idhash calc R2",id_start, id_len));
 	    hmac_update(&id_ctx, id_start, id_len);
-	    idhash_out = alloca(st->st_oakley.integ_hasher->hash_digest_len);
+	    idhash_out = alloca(st->st_oakley.prf_hasher->hash_digest_len);
 	    hmac_final(idhash_out, &id_ctx);
 	}
 
@@ -1828,13 +1827,13 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	unsigned char *idstart=id_pbs->start + 4;
 	unsigned int   idlen  =pbs_room(id_pbs)-4;
 
-	hmac_init_chunk(&id_ctx, pst->st_oakley.integ_hasher, pst->st_skey_pr);
+	hmac_init_chunk(&id_ctx, pst->st_oakley.prf_hasher, pst->st_skey_pr);
 
 	/* calculate hash of IDr for AUTH below */
 	DBG(DBG_CRYPT, DBG_dump_chunk("idhash verify pr", pst->st_skey_pr));
 	DBG(DBG_CRYPT, DBG_dump("idhash auth R2", idstart, idlen));
 	hmac_update(&id_ctx, idstart, idlen);
-	idhash_in = alloca(pst->st_oakley.integ_hasher->hash_digest_len);
+	idhash_in = alloca(pst->st_oakley.prf_hasher->hash_digest_len);
 	hmac_final(idhash_in, &id_ctx);
     }
 
