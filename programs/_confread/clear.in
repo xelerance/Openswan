@@ -3,8 +3,6 @@
 #
 # See @FINALDOCDIR@/policygroups.html for details.
 #
-# $Id: clear.in,v 1.5 2005/10/27 01:46:51 mcr Exp $
-#
 
 # root name servers should be in the clear
 192.58.128.30/32
@@ -18,5 +16,5 @@
 128.63.2.53/32
 192.36.148.17/32
 193.0.14.129/32
-198.32.64.12/32
+199.7.83.42/32
 202.12.27.33/32
