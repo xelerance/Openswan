@@ -1177,7 +1177,6 @@ add_connection(const struct whack_message *wm)
 				, ugh? ugh : "Unknown");
 			return;
 		}
-		c->alg_esp = clone_str(wm->esp, "esp string");
 	}
 #endif	
 
@@ -1206,7 +1205,6 @@ add_connection(const struct whack_message *wm)
 		       , ugh? ugh : "Unknown");
 		return;
 	    }
-	    c->alg_ike = clone_str(wm->ike, "ike string");
 	}
 #endif
 	c->sa_ike_life_seconds = wm->sa_ike_life_seconds;

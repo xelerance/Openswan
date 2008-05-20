@@ -30,6 +30,8 @@
 #include "ipsecconf/files.h"
 #include "ipsecconf/starterlog.h"
 
+#include "socketwrapper.h"
+
 #ifndef _OPENSWAN_H
 #include <openswan.h>  /** FIXME: ugly include lines **/
 #include "constants.h"
@@ -184,7 +186,7 @@ static int send_whack_msg (struct whack_message *msg, char *ctlbase)
 	/**
 	 * Connect to pluto ctl
 	 */
-	sock = socket(AF_UNIX, SOCK_STREAM, 0);
+	sock = safe_socket(AF_UNIX, SOCK_STREAM, 0);
 	if (sock < 0) {
 		starter_log(LOG_LEVEL_ERR, "socket() failed: %s", strerror(errno));
 		return -1;
@@ -483,7 +485,7 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 		   conn->options_set[KBF_DPDTIMEOUT]||
 		   conn->options_set[KBF_DPDACTION])
 		{
-			starter_log(LOG_LEVEL_ERR, "conn: \"%s\" warning dpd settings are not ignored unless dpdtimeout= and dpddelay= are set"
+			starter_log(LOG_LEVEL_ERR, "conn: \"%s\" warning dpd settings are ignored unless both dpdtimeout= and dpddelay= are set"
 				    , conn->name);
 		}
 	}

@@ -146,7 +146,6 @@ east:~# TESTNAME=netkey-pluto-02
 east:~# source /testing/pluto/bin/eastlocal.sh
 east:~# ipsec setup start
 ipsec_setup: Starting Openswan IPsec U2.5.testing-g21680e0d-dirty/K2.6.18.6...
-ipsec_setup: WARNING: interfaces= is ignored when using the NETKEY stack
 ipsec_setup: Trying hardware random, this may fail, which is okay.
 ipsec_setup: Trying to load all NETKEY modules:xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro xfrm6_mode_transport xfrm4_mode_transport xfrm4_mode_tunnel xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 ipcomp ipcomp6 af_key 
 ipsec_setup: Trying VIA padlock driver, this may fail, which is okay.

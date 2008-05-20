@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <limits.h>
 
 #include <ctype.h>
 #include <openswan.h>
@@ -56,6 +57,10 @@ alg_info_esp_aa2sadb(enum ikev1_auth_attribute auth)
 		    return AH_SHA2_512;
 		case AUTH_ALGORITHM_HMAC_RIPEMD:
 		    return AH_RIPEMD;
+		/* XXX should we distinguish these two? */
+		case AUTH_ALGORITHM_NULL:
+		case AUTH_ALGORITHM_NONE:
+		    return AH_NONE;
 
 		default:
 		    bad_case(auth);
@@ -71,10 +76,18 @@ enum ikev1_auth_attribute
 alg_info_esp_v2tov1aa(enum ikev2_trans_type_integ ti)
 {
     switch(ti) {
+    case IKEv2_AUTH_NONE:
+	return AUTH_ALGORITHM_NONE;
     case IKEv2_AUTH_HMAC_MD5_96:
 	return AUTH_ALGORITHM_HMAC_MD5;
     case IKEv2_AUTH_HMAC_SHA1_96:
 	return AUTH_ALGORITHM_HMAC_SHA1;
+    case IKEv2_AUTH_HMAC_SHA2_256_128: 
+	return AUTH_ALGORITHM_HMAC_SHA2_256;
+    case IKEv2_AUTH_HMAC_SHA2_384_192: 
+	return AUTH_ALGORITHM_HMAC_SHA2_256;
+    case IKEv2_AUTH_HMAC_SHA2_512_256: 
+	return AUTH_ALGORITHM_HMAC_SHA2_256;
 
     case IKEv2_AUTH_DES_MAC:
     case IKEv2_AUTH_KPDK_MD5:
@@ -187,6 +200,12 @@ aalg_getbyname_esp(const char *const str, int len)
 	if (ret>=0) goto out;
 	ret=alg_enum_search_prefix(&auth_alg_names,"AUTH_ALGORITHM_",str,len);
 	if (ret>=0) goto out;
+
+	/* Special value for no authentication since zero is already used. */
+	ret = INT_MAX;
+	if (!strncasecmp(str, "null", len))
+		goto out;
+
 	sscanf(str, "id%d%n", &ret, &num);
 	if (ret >=0 && num!=strlen(str))
 		ret=-1;
@@ -261,6 +280,8 @@ alg_info_esp_add (struct alg_info *alg_info,
 	    if(aalg_id > 0 ||
 	       (permit_manconn && aalg_id == 0))
 		{
+			if (aalg_id == INT_MAX)
+				aalg_id = 0;
 			__alg_info_esp_add((struct alg_info_esp *)alg_info,
 					ealg_id, ek_bits,
 					aalg_id, ak_bits);
@@ -893,7 +914,7 @@ alg_info_snprint(char *buf, int buflen
 			    , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP")
 			    , esp_info->esp_ealg_id
 			    , (int)esp_info->esp_ealg_keylen
-			    , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
+			    , enum_name(&auth_alg_names, esp_info->esp_aalg_id) + (esp_info->esp_aalg_id ? sizeof("AUTH_ALGORITHM_HMAC") : sizeof("AUTH_ALGORITHM"))
 			    , esp_info->esp_aalg_id);
 		if(np < buflen) {
 			ptr+=np;

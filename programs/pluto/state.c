@@ -389,7 +389,7 @@ delete_state(struct state *st)
      * ??? we ought to tell peer to delete IPSEC SAs
      */
     if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
-	|| IS_CHILD_SA_ESTABLISHED(st->st_state))
+	|| IS_CHILD_SA_ESTABLISHED(st))
 	delete_ipsec_sa(st, FALSE);
     else if (IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(st->st_state))
 	delete_ipsec_sa(st, TRUE);
@@ -427,25 +427,25 @@ delete_state(struct state *st)
     if (st->st_sec_in_use)
 	mpz_clear(&(st->st_sec));
 
-    pfreeany(st->st_firstpacket_me.ptr);
-    pfreeany(st->st_firstpacket_him.ptr);
-    pfreeany(st->st_tpacket.ptr);
-    pfreeany(st->st_rpacket.ptr);
-    pfreeany(st->st_p1isa.ptr);
-    pfreeany(st->st_gi.ptr);
-    pfreeany(st->st_gr.ptr);
-    pfreeany(st->st_shared.ptr);
-    pfreeany(st->st_ni.ptr);
-    pfreeany(st->st_nr.ptr);
-    pfreeany(st->st_skeyid.ptr);
-    pfreeany(st->st_skey_d.ptr);
-    pfreeany(st->st_skey_ai.ptr);
-    pfreeany(st->st_skey_ar.ptr);
-    pfreeany(st->st_skey_ei.ptr);
-    pfreeany(st->st_skey_er.ptr);
-    pfreeany(st->st_skey_pi.ptr);
-    pfreeany(st->st_skey_pr.ptr);
-    pfreeany(st->st_enc_key.ptr);
+    freeanychunk(st->st_firstpacket_me);
+    freeanychunk(st->st_firstpacket_him);
+    freeanychunk(st->st_tpacket);
+    freeanychunk(st->st_rpacket);
+    freeanychunk(st->st_p1isa);
+    freeanychunk(st->st_gi);
+    freeanychunk(st->st_gr);
+    freeanychunk(st->st_shared);
+    freeanychunk(st->st_ni);
+    freeanychunk(st->st_nr);
+    freeanychunk(st->st_skeyid);
+    freeanychunk(st->st_skey_d);
+    freeanychunk(st->st_skey_ai);
+    freeanychunk(st->st_skey_ar);
+    freeanychunk(st->st_skey_ei);
+    freeanychunk(st->st_skey_er);
+    freeanychunk(st->st_skey_pi);
+    freeanychunk(st->st_skey_pr);
+    freeanychunk(st->st_enc_key);
     pfreeany(st->st_ah.our_keymat);
     pfreeany(st->st_ah.peer_keymat);
     pfreeany(st->st_esp.our_keymat);
@@ -773,7 +773,7 @@ delete_states_by_peer(ip_address *peer)
 				  , "peer %s for connection %s crashed, replacing"
 				  , peerstr
 				  , c->name);
-			ipsecdoi_replace(st, 1);
+			ipsecdoi_replace(st, LEMPTY, LEMPTY, 1);
 		    } else {
 			delete_event(this);
 			event_schedule(EVENT_SA_REPLACE, 0, this);
@@ -818,6 +818,7 @@ duplicate_state(struct state *st)
     nst->st_clonedfrom = st->st_serialno;
     nst->st_import     = st->st_import;
     nst->st_ikev2      = st->st_ikev2;
+    nst->st_event      = NULL;
 
 #   define clone_chunk(ch, name) \
 	clonetochunk(nst->ch, st->ch.ptr, st->ch.len, name)
@@ -838,6 +839,8 @@ duplicate_state(struct state *st)
     clone_chunk(st_skey_er,  "st_skey_er in duplicate_state");
     clone_chunk(st_skey_pi,  "st_skey_pi in duplicate_state");
     clone_chunk(st_skey_pr,  "st_skey_pr in duplicate_state");
+    clone_chunk(st_ni,       "st_ni in duplicate_state");
+    clone_chunk(st_nr,       "st_nr in duplicate_state");
 
 #   undef clone_chunk
 

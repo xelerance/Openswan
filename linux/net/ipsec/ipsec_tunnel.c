@@ -1214,6 +1214,7 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 	prv->hard_start_xmit = physdev->hard_start_xmit;
 	prv->get_stats = physdev->get_stats;
 
+#ifdef HAVE_DEV_HARD_HEADER
 	if (physdev->hard_header) {
 		prv->hard_header = physdev->hard_header;
 		dev->hard_header = ipsec_tunnel_hard_header;
@@ -1245,6 +1246,7 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 		dev->header_cache_update = ipsec_tunnel_cache_update;
 	} else
 		dev->header_cache_update = NULL;
+#endif /* HAVE_DEV_HARD_HEADER */
 
 	dev->hard_header_len = physdev->hard_header_len;
 
@@ -1718,19 +1720,23 @@ ipsec_tunnel_init(struct net_device *dev)
 
 	dev->set_multicast_list = NULL;
 	dev->do_ioctl		= ipsec_tunnel_ioctl;
+#ifdef HAVE_DEV_HARD_HEADER
 	dev->hard_header	= NULL;
 	dev->rebuild_header 	= NULL;
+	dev->header_cache_update= NULL;
+#endif
 	dev->set_mac_address 	= NULL;
 #ifndef NET_21
 	dev->header_cache_bind 	= NULL;
 #endif /* !NET_21 */
-	dev->header_cache_update= NULL;
 
 #ifdef NET_21
 /*	prv->neigh_setup        = NULL; */
 	dev->neigh_setup        = ipsec_tunnel_neigh_setup_dev;
 #endif /* NET_21 */
+#ifdef HAVE_DEV_HARD_HEADER
 	dev->hard_header_len 	= 0;
+#endif
 	dev->mtu		= 0;
 	dev->addr_len		= 0;
 	dev->type		= ARPHRD_VOID; /* ARPHRD_TUNNEL; */ /* ARPHRD_ETHER; */
@@ -1892,7 +1898,10 @@ ipsec_xmit_state_cache_init (void)
 
         spin_lock_init(&ixs_cache_lock);
 #ifdef HAVE_KMEM_CACHE_MACRO
-	ixs_cache_allocator = KMEM_CACHE(ipsec_ixs,0);
+	/* ixs_cache_allocator = KMEM_CACHE(ipsec_ixs,0); */
+        ixs_cache_allocator = kmem_cache_create ("ipsec_ixs",
+                sizeof (struct ipsec_xmit_state), 0,
+                0, NULL );
 #else
         ixs_cache_allocator = kmem_cache_create ("ipsec_ixs",
                 sizeof (struct ipsec_xmit_state), 0,

@@ -1,9 +1,9 @@
 : ==== start ====
 TESTNAME=interop-ikev2-strongswan-01-noconn
-source /testing/pluto/bin/westnlocal.sh
+PLUTO_EVENT_RETRANSMIT_DELAY=3
+PLUTO_MAXIMUM_RETRANSMISSIONS_INITIAL=4
 
-# make sure that clear text does not get through
-iptables -A INPUT -i eth1 -s 192.0.2.0/24 -j DROP
+source /testing/pluto/bin/westnlocal.sh
 
 ipsec setup start
 ipsec whack --whackrecord /var/tmp/ikev2.record

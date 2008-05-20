@@ -59,7 +59,7 @@
 void
 print_sa_attr_oakley(struct db_attr *at)
 {
-    const struct enum_names *en;
+    const struct enum_names *en = NULL;
 	
     if(at->type.oakley == 0) {
 	return;
@@ -76,7 +76,7 @@ print_sa_attr_oakley(struct db_attr *at)
 void
 print_sa_attr_ipsec(struct db_attr *at)
 {
-    const struct enum_names *en;
+    const struct enum_names *en = NULL;
 	
     if(at->type.ipsec == 0) {
 	return;
@@ -143,7 +143,7 @@ sa_print(struct db_sa *f)
 static void
 print_sa_v2_attr(struct db_attr *at)
 {
-    const struct enum_names *en;
+    const struct enum_names *en = NULL;
 	
     if(at->type.ikev2 == 0) {
 	return;
@@ -159,7 +159,7 @@ void
 print_sa_v2_trans(struct db_v2_trans *tr)
 {
     unsigned int i;
-    const struct enum_names *en;
+    const struct enum_names *en = NULL;
 
     if(tr->transform_type <= ikev2_transid_val_descs_size) {
 	en = ikev2_transid_val_descs[tr->transform_type];

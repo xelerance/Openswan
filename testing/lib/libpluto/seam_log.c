@@ -17,3 +17,5 @@ pexpect_log(const char *pred_str, const char *file_str, unsigned long line_no)
     loglog(RC_LOG_SERIOUS, "EXPECTATION FAILED at %s:%lu: %s", file_str, line_no, pred_str);
 }
 
+void daily_log_event(void) {}
+

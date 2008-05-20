@@ -84,11 +84,12 @@ static const char *const timer_event_name[] = {
 	"EVENT_DPD_TIMEOUT",
 	"EVENT_LOG_DAILY",
 	"EVENT_CRYPTO_FAILED",
-	"EVENT_PENDING_PHASE2"
+	"EVENT_PENDING_PHASE2",
+	"EVENT_v2_RETRANSMIT"
     };
 
 enum_names timer_event_names =
-    { EVENT_NULL, EVENT_PENDING_PHASE2, timer_event_name, NULL };
+    { EVENT_NULL, EVENT_v2_RETRANSMIT, timer_event_name, NULL };
 
 /* State of exchanges */
 static const char *const state_name[] = {
@@ -248,11 +249,13 @@ static const char *const stfstatus_names[] = {
 	"STF_SUSPEND",
 	"STF_OK",
 	"STF_INTERNAL_ERROR",
-	"STF_FAIL",
-	"STF_FATAL"
+	"STF_TOOMUCHCRYPTO",
+	"STF_FATAL",
+	"STF_STOLEN",
+	"STF_FAIL"
 };
 enum_names stfstatus_name =
-  {STF_IGNORE, STF_FATAL, stfstatus_names, NULL};
+  {STF_IGNORE, STF_FAIL, stfstatus_names, NULL};
 
 /* Goal BITs for establishing an SA
  * Note: we drop the POLICY_ prefix so that logs are more concise.

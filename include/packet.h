@@ -230,7 +230,8 @@ struct isakmp_attribute
 
 extern struct_desc
     isakmp_oakley_attribute_desc,
-    isakmp_ipsec_attribute_desc;
+    isakmp_ipsec_attribute_desc,
+    ikev2_trans_attr_desc;
 
 /* ISAKMP Security Association Payload
  * layout from RFC 2408 "ISAKMP" section 3.4
@@ -706,9 +707,18 @@ struct ikev2_trans
 	u_int16_t isat_length;	    /* Payload length */
 	u_int8_t  isat_type;        /* transform type */
 	u_int8_t  isat_res2;
-	u_int8_t  isat_transid;     /* ID */
+	u_int16_t  isat_transid;     /* ID */
 };
 extern struct_desc ikev2_trans_desc;
+
+/* rfc4306, section 3.3.5 */
+struct ikev2_trans_attr
+{
+	u_int16_t isatr_type;	     /* Attribute Type */
+	u_int16_t isatr_lv;	     /* Length (AF=0) or Value (AF=1) */
+	/* u_intXX_t isatr_value;      Value if AF=0, absent if AF=1 */
+};
+extern struct_desc ikev2_trans_attr_desc;
 
 /* rfc4306, section 3.4 */
 struct ikev2_ke

@@ -22,6 +22,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <limits.h>
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>

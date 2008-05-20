@@ -60,3 +60,5 @@ bool orient(struct connection *c)
 	return TRUE;
 }
 
+void connection_check_phase2(void) {}
+

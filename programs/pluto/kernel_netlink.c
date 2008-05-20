@@ -34,6 +34,7 @@
 #include <openswan/pfkey.h>
 
 #include "sysdep.h"
+#include "socketwrapper.h"
 #include "constants.h"
 #include "defs.h"
 #include "id.h"
@@ -160,7 +161,7 @@ static void init_netlink(void)
 {
     struct sockaddr_nl addr;
 
-    netlinkfd = socket(AF_NETLINK, SOCK_DGRAM, NETLINK_XFRM);
+    netlinkfd = safe_socket(AF_NETLINK, SOCK_DGRAM, NETLINK_XFRM);
 
     if (netlinkfd < 0)
 	exit_log_errno((e, "socket() in init_netlink()"));
@@ -168,7 +169,7 @@ static void init_netlink(void)
     if (fcntl(netlinkfd, F_SETFD, FD_CLOEXEC) != 0)
 	exit_log_errno((e, "fcntl(FD_CLOEXEC) in init_netlink()"));
 
-    netlink_bcast_fd = socket(AF_NETLINK, SOCK_DGRAM, NETLINK_XFRM);
+    netlink_bcast_fd = safe_socket(AF_NETLINK, SOCK_DGRAM, NETLINK_XFRM);
 
     if (netlink_bcast_fd < 0)
 	exit_log_errno((e, "socket() for bcast in init_netlink()"));

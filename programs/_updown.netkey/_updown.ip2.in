@@ -91,8 +91,8 @@ export LC_ALL
 #		is the IP address of our peer.
 #
 #	PLUTO_PEER_CLIENT
-#		is the IP address / count of the peer's client sub­
-#		net.   If the client is just the peer, this will be
+#		is the IP address / count of the peer's client subnet.
+#		If the client is just the peer, this will be
 #		the peer's own IP address / max (where	max  is	 32
 #		for IPv4 and 128 for IPv6).
 #
@@ -244,38 +244,8 @@ doroute() {
 # the big choice
 case "$PLUTO_VERB" in
     prepare-host|prepare-client)
-	# delete possibly-existing route (preliminary to adding a route)
-	case "$PLUTO_PEER_CLIENT" in
-	    "0.0.0.0/0")
-		# need to provide route that eclipses default, without 
-		# replacing it.
-		parms1="0.0.0.0/1"
-		parms2="128.0.0.0/1"
-		it="ip route del $parms1 $IPROUTEARGS 2>&1 ; ip route del $parms2 $IPROUTEARGS 2>&1"
-		oops="`ip route del $parms1 $IPROUTEARGS 2>&1 ; ip route del $parms2 $IPROUTEARGS 2>&1`"
-		;;
-	    *)
-		parms="$PLUTO_PEER_CLIENT $IPROUTEARGS"
-		it="ip route del $parms 2>&1"
-		oops="`ip route del $parms 2>&1`"
-		;;
-	esac
-	status="$?"
-	if [ " $oops" = " " -a " $status" != " 0" ]; then
-		oops="silent error, exit status $status"
-	fi
-	case "$oops" in
-	    *'RTNETLINK answers: No such process'*)	
-		# This is what route (currently -- not documented!) gives
-		# for "could not find such a route".
-		oops=
-		status=0
-		;;
-	esac
-	if [ " $oops" != " " -o " $status" != " 0" ]; then
-	    echo "$0: \`$it' failed ($oops)" >&2
-	fi
-	exit $status
+	# Delete possibly-existing route (preliminary to adding a route)
+	# Not used for NETKEY
 	;;
     route-host|route-client)
 	# connection to me or my client subnet being routed

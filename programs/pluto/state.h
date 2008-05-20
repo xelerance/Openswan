@@ -168,6 +168,8 @@ struct state
     int                st_usage;
 
     bool               st_ikev2;             /* is this an IKEv2 state? */
+    bool               st_rekeytov2;         /* true if this IKEv1 is about
+					      * to be replaced with IKEv2 */
 
     struct connection *st_connection;        /* connection for this SA */
     int                st_whack_sock;        /* fd for our Whack TCP socket.
@@ -238,9 +240,7 @@ struct state
     chunk_t            st_gr;                  /* Responder public value */
     u_int8_t           st_rcookie[COOKIE_SIZE];/* Responder Cookie */
     chunk_t            st_nr;                  /* Nr nonce */
-
-    /* Denial of Service  cookie send by responder */
-    unsigned char      *st_dcookie;
+    chunk_t			   st_dcookie;             /* DOS cookie of responder */
 
     /* my stuff */
     chunk_t            st_tpacket;             /* Transmitted packet */

@@ -30,7 +30,7 @@ ctltest	pluto-dontreky-expiry-01 good
 # these set up a food group, then run a ping from sunrise-sunset
 
 # clear peer
-umlplutotest	food-groups-clear-01	good
+# OE TEMP DISABLED umlplutotest	food-groups-clear-01	good
 # oe peer
 #
 # this test is disabled because the OE peer (west) is not 
@@ -38,7 +38,7 @@ umlplutotest	food-groups-clear-01	good
 #umlplutotest	food-groups-clear-02	bad
 
 # clear peer
-umlplutotest	food-groups-clear-or-oe-01	good
+# OE TEMP DISABLED umlplutotest	food-groups-clear-or-oe-01	good
 
 # oe peer
 #
@@ -47,7 +47,7 @@ umlplutotest	food-groups-clear-or-oe-01	good
 #umlplutotest	food-groups-clear-or-oe-02	bad
 
 # clear peer
-umlplutotest	food-groups-never-01	good
+# OE TEMP DISABLED umlplutotest	food-groups-never-01	good
 
 # oe peer
 # This test is disabled, since no packets should ever arrive at west, so
@@ -56,7 +56,7 @@ umlplutotest	food-groups-never-01	good
 #umlplutotest	food-groups-never-02	bad
 
 # oe peer
-umlplutotest	food-groups-oe-or-clear-01	good
+# OE TEMP DISABLED umlplutotest	food-groups-oe-or-clear-01	good
 
 # clear peer
 #
@@ -65,7 +65,7 @@ umlplutotest	food-groups-oe-or-clear-01	good
 #umlplutotest	food-groups-oe-or-clear-02	bad
 
 # oe peer
-umlplutotest	food-groups-oe-or-die-01	good
+# OE TEMP DISABLED umlplutotest	food-groups-oe-or-die-01	good
 
 # clear peer
 #
@@ -75,13 +75,13 @@ umlplutotest	food-groups-oe-or-die-01	good
 
 # Foodgroups bug: used to forget name of target when target is
 # preserved across --listen.
-umlplutotest	food-groups-bug-01	good
+# OE TEMP DISABLED umlplutotest	food-groups-bug-01	good
 
 # bug: OE should not be attempted if our private key is missing
-umlplutotest	oe-fail-without-private-key-01	good
+# OE TEMP DISABLED umlplutotest	oe-fail-without-private-key-01	good
 
 # bug: pluto and _pluto_adns can deadlock in a flood
-umlplutotest	oe-flood-deadlock-01	good
+# OE TEMP DISABLED umlplutotest	oe-flood-deadlock-01	good
 
 # Foodgroups orderly transition: policy groups must be transitioned properly
 # when changed
@@ -111,14 +111,14 @@ umlplutotest	delete-sa-01	good
 #
 # oe-snat-01 - do Source address NAT and then OE
 #
-umlplutotest	oe-snat-01	good
+# OE TEMP DISABLED umlplutotest	oe-snat-01	good
 
 #
 # oe-fail-without-resp-client-txt-01 - when responding using an OE 
 # connection, checks that there is a TXT (and possibly KEY) record 
 # that delegates this security gateway to act for the client on our 
 # side.
-umlplutotest	oe-fail-without-resp-client-txt-01	good
+# OE TEMP DISABLED umlplutotest	oe-fail-without-resp-client-txt-01	good
 
 #
 # whack --status output should be sorted.
@@ -128,33 +128,33 @@ ctltest		whack-status-01		good
 #
 # co-terminal-02 - wavesec+OE, with wavesec started first
 #
-umlXhost	co-terminal-02		good
+# OE TEMP DISABLED umlXhost	co-terminal-02		good
 
 #
 # co-terminal-03 - wavesec+OE, with OE started first
 #
-umlXhost	co-terminal-03		good
+# OE TEMP DISABLED umlXhost	co-terminal-03		good
 
 #
 # tests of OE from road warriors (no gateways)
 # full OE test
 #
-umlXhost	oe-road-01		good
+# OE TEMP DISABLED umlXhost	oe-road-01		good
 
 #
 # FQDN OE test with TXT RR, no KEY
 #
-umlXhost	oe-road-02		good
+# OE TEMP DISABLED umlXhost	oe-road-02		good
 
 #
 # FQDN OE test with TXT, mangled
 #
-umlXhost	oe-road-03		good
+# OE TEMP DISABLED umlXhost	oe-road-03		good
 
 #
 # FQDN OE test with KEY, no TXT
 #
-umlXhost	oe-road-04		good
+# OE TEMP DISABLED umlXhost	oe-road-04		good
 
 #
 # test for using %dns in VPN conns
@@ -164,46 +164,49 @@ ctltest	 	vpn-dns-01		good
 # tests of OE from road warriors (no gateways)
 # full OE test
 #
-umlXhost	myid-road-01		good
+# OE TEMP DISABLED umlXhost	myid-road-01		good
 
 #
 # FQDN OE test with TXT RR, no KEY
 #
-umlXhost	myid-road-02		good
+# OE TEMP DISABLED umlXhost	myid-road-02		good
 
 #
 # FQDN OE test with TXT, mangled
 #
-umlXhost	myid-road-03		good
+# OE TEMP DISABLED umlXhost	myid-road-03		good
 
 #
 # FQDN OE test with KEY, no TXT
 #
-umlXhost	myid-road-04		good
+# OE TEMP DISABLED umlXhost	myid-road-04		good
 
 #
 # FQDN OE with trailing dot
 #
-umlXhost	myid-road-05		good
+# OE TEMP DISABLED umlXhost	myid-road-05		good
 
 #
 # a test of rekeying an OE connection
 #
-umlXhost	pluto-rekey-01		good
+# OE TEMP DISABLED umlXhost	pluto-rekey-01		good
 
 #
 # a test of using X.509 keys
 #
-umlplutotest	x509-pluto-01		good
+# incomplete test - disabled
+#umlplutotest	x509-pluto-01		good
 
 #
 # a test of sending and validating an X.509 cert
 #
-umlXhost	x509-pluto-02		good
+# incomplete test - disabled
+#umlXhost	x509-pluto-02		good
 
 # a test of sending and validating an X.509 cert
 #
-umlplutotest	x509-pluto-03		good
+# incomplete test - disabled
+#umlplutotest	x509-pluto-03		good
 
 
 #

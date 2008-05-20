@@ -132,26 +132,13 @@ out_sa(pb_stream *outs
 
 
     if(oakley_mode) {
-	const char *modestr;
-	const char *alginfo;
-
 	revised_sadb=oakley_alg_makedb(st->st_connection->alg_info_ike
 				       , sadb
 				       , aggressive_mode ? 1 : -1);
-	modestr = "ike";
-	alginfo = st->st_connection->alg_ike;
-
-	/* this is really checked upon load, but we double check here. */
-	if(revised_sadb == NULL && alginfo!=NULL) {
-	    loglog(RC_NOALGO, "%s algorithm string: \"%s\" results in no permitted algorithms"
-		   , modestr, alginfo);
-	    return FALSE;
-	}
     } else {
 	revised_sadb=kernel_alg_makedb(st->st_connection->policy
 				       , st->st_connection->alg_info_esp
 				       , TRUE);
-
     }
 
     /* more sanity */
@@ -1036,7 +1023,7 @@ parse_isakmp_sa_body(
 		    ta.group = lookup_group(val);
 		    if (ta.group == NULL)
 		    {
-			ugh = "only OAKLEY_GROUP_MODP1024 and OAKLEY_GROUP_MODP1536 supported";
+			ugh = builddiag("OAKLEY_GROUP %d not supported",val);
 			break;
 		    }
 		    break;
@@ -1536,7 +1523,7 @@ parse_ipsec_transform(struct isakmp_transform *trans
 		pfs_group = lookup_group(val);
 		if (pfs_group == NULL)
 		{
-		    loglog(RC_LOG_SERIOUS, "only OAKLEY_GROUP_MODP1024 and OAKLEY_GROUP_MODP1536 supported for PFS");
+		    loglog(RC_LOG_SERIOUS, "OAKLEY_GROUP %d not supported for PFS",val);
 		    return FALSE;
 		}
 		break;

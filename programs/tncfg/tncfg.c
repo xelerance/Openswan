@@ -39,6 +39,7 @@ char tncfg_c_version[] = "RCSID $Id: tncfg.c,v 1.33 2005/07/08 02:56:38 paul Exp
 #include <sys/types.h>
 #include <errno.h>
 #include <getopt.h>
+#include "socketwrapper.h"
 #include "oswlog.h"
 
 #include "openswan/pfkeyv2.h"
@@ -288,7 +289,7 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
-	s=socket(AF_INET, SOCK_DGRAM,0);
+	s=safe_socket(AF_INET, SOCK_DGRAM,0);
 	if(s==-1)
 	{
 		fprintf(stderr, "%s: Socket creation failed -- ", progname);

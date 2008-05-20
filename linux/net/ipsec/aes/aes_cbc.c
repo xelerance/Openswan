@@ -23,8 +23,8 @@
 #else
 #include <sys/types.h>
 #endif
-#include "crypto/aes_cbc.h"
-#include "crypto/cbc_generic.h"
+#include "klips-crypto/aes_cbc.h"
+#include "klips-crypto/cbc_generic.h"
 
 /* returns bool success */
 int AES_set_key(aes_context *aes_ctx, const u_int8_t *key, int keysize) {

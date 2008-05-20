@@ -109,7 +109,7 @@ oakley_alg_makedb(struct alg_info_ike *ai
     if (!ai) {
 	DBG(DBG_CRYPT,DBG_log("no IKE algorithms for this connection "));
 	
-	goto fail;
+	return NULL;
     }
 
     gsp = NULL;
@@ -202,7 +202,8 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	    if(eklen > 0) {
 		enc_keylen = &trans->attrs[4];
 		enc_keylen->val = eklen;
-	    }
+	    } else
+		trans->attr_cnt = 4;
 
 	    passert(enc->type.oakley == OAKLEY_ENCRYPTION_ALGORITHM);
 	    if(ealg > 0) {
@@ -276,7 +277,6 @@ oakley_alg_makedb(struct alg_info_ike *ai
     }
     gsp->parentSA = TRUE;
 
-fail:
     return gsp;
 }
 

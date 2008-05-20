@@ -1,3 +1,5 @@
+export TZ=UTC
+
 d() {
     expected=$1
     tee $expected.raw | sed -f canonicalize.sed | tee $expected.sane | diff -u - $expected | tee OUTPUT/$expected.diff

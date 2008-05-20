@@ -80,8 +80,8 @@ const char *const debug_bit_names[] = {
 	"nattraversal",
 	"x509",               /* 12 */
 	"dpd",
-	"res14",
-	"res15",
+	"oppoinfo",           /* 14 */
+	"whackwatch",
 	"res16",
 	"res17",
 	"res18",
@@ -547,7 +547,7 @@ enum_names enc_mode_names =
 /* Auth Algorithm attribute */
 
 static const char *const auth_alg_name[] = {
-	"unspecified AUTH_ALGORITHM",
+	"AUTH_ALGORITHM_NONE", /* our own value, not standard */
 	"AUTH_ALGORITHM_HMAC_MD5",
 	"AUTH_ALGORITHM_HMAC_SHA1",
 	"AUTH_ALGORITHM_DES_MAC",
@@ -557,19 +557,17 @@ static const char *const auth_alg_name[] = {
 	"AUTH_ALGORITHM_HMAC_SHA2_512",
 	"AUTH_ALGORITHM_HMAC_RIPEMD",
 	"AUTH_ALGORITHM_AES_CBC",
-	"AUTH_ALGORITHM_ID10",
-	"AUTH_ALGORITHM_ID11",
-	"AUTH_ALGORITHM_ID12",
-	"AUTH_ALGORITHM_ID13",
-	"AUTH_ALGORITHM_ID14",
-	"AUTH_ALGORITHM_ID15",
+    };
+
+static const char *const null_auth_alg_name[] = {
+	"AUTH_ALGORITHM_NULL", /* 251 */
     };
 
 enum_names
+    null_auth_alg_names =
+	{ AUTH_ALGORITHM_NULL, AUTH_ALGORITHM_NULL, null_auth_alg_name, NULL },
     auth_alg_names =
-	{ AUTH_ALGORITHM_HMAC_MD5, 15 /* AUTH_ALGORITHM_HMAC_RIPEMD */, auth_alg_name + 1, NULL },
-    extended_auth_alg_names =
-	{ AUTH_ALGORITHM_NONE, AUTH_ALGORITHM_KPDK, auth_alg_name, NULL };
+	{ AUTH_ALGORITHM_NONE, AUTH_ALGORITHM_AES_CBC , auth_alg_name, &null_auth_alg_names };
 
 /* From draft-beaulieu-ike-xauth */
 const char *const xauth_attr_name[] = {
@@ -841,7 +839,7 @@ static const char *const notification_dpd_name[] = {
 
 enum_names notification_dpd_names =
     { R_U_THERE, R_U_THERE_ACK,
-        notification_dpd_name, NULL };
+      notification_dpd_name, NULL };
 
 enum_names notification_names =
     { INVALID_PAYLOAD_TYPE, UNEQUAL_PAYLOAD_LENGTHS,
@@ -855,13 +853,69 @@ enum_names ipsec_notification_names =
     { IPSEC_RESPONDER_LIFETIME, IPSEC_INITIAL_CONTACT,
 	ipsec_notification_name, &notification_status_names };
 
-static const char *ikev2_notify_name[] = {
-	   "v2N_RESERVED",
-	   "v2N_UNSUPPORTED_CRITICAL_PAYLOAD",
+static const char *const ikev2_notify_name_16384[] = {
+	   "v2N_INITIAL_CONTACT",
+	   "v2N_SET_WINDOW_SIZE", 
+	   "v2N_ADDITIONAL_TS_POSSIBLE",
+	   "v2N_IPCOMP_SUPPORTED",
+	   "v2N_NAT_DETECTION_SOURCE_IP",
+	   "v2N_NAT_DETECTION_DESTINATION_IP",
+	   "v2N_COOKIE",
+	   "v2N_USE_TRANSPORT_MODE",
+	   "v2N_HTTP_CERT_LOOKUP_SUPPORTED",
+	   "v2N_REKEY_SA",
+	   "v2N_ESP_TFC_PADDING_NOT_SUPPORTED",
+	   "v2N_NON_FIRST_FRAGMENTS_ALSO",
  	}; 
 
+static const char *const ikev2_notify_name[] = {
+	   "v2N_RESERVED",
+	   "v2N_UNSUPPORTED_CRITICAL_PAYLOAD",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_INVALID_IKE_SPI",
+	   "v2N_INVALID_MAJOR_VERSION",
+	   "v2N_UNUSED",
+	   "v2N_INVALID_SYNTAX",
+	   "v2N_UNUSED",
+	   "v2N_INVALID_MESSAGE_ID",
+	   "v2N_UNUSED",
+	   "v2N_INVALID_SPI",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_NO_PROPOSAL_CHOSEN",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_INVALID_KE_PAYLOAD",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_AUTHENTICATION_FAILED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_UNUSED",
+	   "v2N_SINGLE_PAIR_REQUIRED",
+	   "v2N_NO_ADDITIONAL_SAS",
+	   "v2N_INTERNAL_ADDRESS_FAILURE",
+	   "v2N_FAILED_CP_REQUIRED",
+	   "v2N_TS_UNACCEPTABLE",
+	   "v2N_INVALID_SELECTORS",
+ 	}; 
+
+enum_names ikev2_notify_names_16384 = 
+    { INITIAL_CONTACT, NON_FIRST_FRAGMENTS_ALSO, ikev2_notify_name_16384, NULL};
+
 enum_names ikev2_notify_names = 
-    { 0, 1, ikev2_notify_name, NULL};
+    { 0, INVALID_SELECTORS, ikev2_notify_name, &ikev2_notify_names_16384};
 /* MODECFG */
 /*
  * From draft-dukes-ike-mode-cfg
@@ -915,12 +969,17 @@ const char *const trans_type_prf_name[]={
     "prf-hmac-sha1",
     "prf-hmac-tiger",
     "prf-hmac-aes128-xcbc",
+    /* RFC 4868 Section 4 */
+    "prf-hmac-sha2-256",
+    "prf-hmac-sha2-384",
+    "prf-hmac-sha2-512",
 };
 enum_names trans_type_prf_names =
-{ IKEv2_PRF_HMAC_MD5, IKEv2_PRF_AES128_XCBC, trans_type_prf_name, NULL};
+{ IKEv2_PRF_HMAC_MD5, IKEv2_PRF_HMAC_SHA2_512, trans_type_prf_name, NULL};
 
 /* Transform-type Integrity */
 const char *const trans_type_integ_name[]={
+    "auth-none",
     "auth-hmac-md5-96",
     "auth-hmac-sha1-96",
     "auth-des-mac",
@@ -928,7 +987,7 @@ const char *const trans_type_integ_name[]={
     "auth-aes-xcbc-96",
 };
 enum_names trans_type_integ_names =
-{ IKEv2_AUTH_HMAC_MD5_96, IKEv2_AUTH_AES_XCBC_96, trans_type_integ_name, NULL};
+{ IKEv2_AUTH_NONE, IKEv2_AUTH_AES_XCBC_96, trans_type_integ_name, NULL};
 
 /* Transform-type Integrity */
 const char *const trans_type_esn_name[]={
@@ -959,7 +1018,37 @@ enum_names *ikev2_transid_val_descs[] = {
     &trans_type_esn_names,  /* 5 */
 };
 const unsigned int ikev2_transid_val_descs_size = elemsof(ikev2_transid_val_descs);
-    
+
+/* Transform Attributes */
+const char *const ikev2_trans_attr_name[]={
+    "KEY_LENGTH",
+};
+
+enum_names ikev2_trans_attr_descs = {
+    IKEv2_KEY_LENGTH + ISAKMP_ATTR_AF_TV,
+    IKEv2_KEY_LENGTH + ISAKMP_ATTR_AF_TV,
+    ikev2_trans_attr_name, NULL };
+
+/* for each IKEv2 attribute, which enum_names describes its values? */
+enum_names *ikev2_trans_attr_val_descs[] = {
+	NULL,			/* 0 */
+	NULL,			/* 1 */
+	NULL,			/* 2 */
+	NULL,			/* 3 */
+	NULL,			/* 4 */
+	NULL,			/* 5 */
+	NULL,			/* 6 */
+	NULL,			/* 7 */
+	NULL,			/* 8 */
+	NULL,			/* 9 */
+	NULL,			/* 10 */
+	NULL,			/* 11 */
+	NULL,			/* 12 */
+	NULL,			/* 13 */
+	&ikev2_trans_attr_descs,/* KEY_LENGTH */
+    };
+const unsigned int ikev2_trans_attr_val_descs_size=elemsof(ikev2_trans_attr_val_descs);
+
 
 /* socket address family info */
 

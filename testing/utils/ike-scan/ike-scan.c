@@ -44,7 +44,7 @@
  * See the README file for full details.
  * 
  */
-
+#include "socketwrapper.h"
 #include "ike-scan.h"
 
 static const char rcsid[] = "$Id: ike-scan.c,v 1.1.1.1 2005/01/13 18:45:15 mcr Exp $";   /* RCS ID for ident(1) */
@@ -495,12 +495,12 @@ main(int argc, char *argv[]) {
    if (tcp_flag) {
       const int on = 1;	/* for setsockopt() */
 
-      if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+      if ((sockfd = safe_socket(AF_INET, SOCK_STREAM, 0)) < 0)
          err_sys("ERROR: socket");
       if ((setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on))) < 0)
          err_sys("ERROR: setsockopt() failed");
    } else {
-      if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+      if ((sockfd = safe_socket(AF_INET, SOCK_DGRAM, 0)) < 0)
          err_sys("ERROR: socket");
    }
 

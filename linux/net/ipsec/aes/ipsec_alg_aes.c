@@ -49,7 +49,7 @@
 
 /*	Low freeswan header coupling	*/
 #include "openswan/ipsec_alg.h"
-#include "crypto/aes_cbc.h"
+#include "klips-crypto/aes_cbc.h"
 
 #define CONFIG_KLIPS_ENC_AES_MAC 1
 
@@ -77,7 +77,7 @@ MODULE_PARM(keymaxbits, "i");
 #endif
 
 #if CONFIG_KLIPS_ENC_AES_MAC
-#include "crypto/aes_xcbc_mac.h"
+#include "klips-crypto/aes_xcbc_mac.h"
 
 /*	
  *	Not IANA number yet (draft-ietf-ipsec-ciph-aes-xcbc-mac-00.txt).

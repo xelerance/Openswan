@@ -73,11 +73,11 @@ fi
 	then
 		# load hardware random related modules - some changed names over time
 		echo Trying hardware random, this may fail, which is okay.
-		@@MODPROBE@@ -qv hw_random 2>/dev/null
-		@@MODPROBE@@ -qv hwrng 2>/dev/null
-		@@MODPROBE@@ -qv amd-rng 2>/dev/null
-		@@MODPROBE@@ -qv intel-rng 2>/dev/null
-		
+		@@MODPROBE@@ -q hw_random 2>/dev/null
+		@@MODPROBE@@ -q hwrng 2>/dev/null
+		@@MODPROBE@@ -q amd-rng 2>/dev/null
+		@@MODPROBE@@ -q intel-rng 2>/dev/null
+
 		# load all NETKEY modules
 		echo -n Trying to load all NETKEY modules:
 		for mod in xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro \
@@ -85,24 +85,24 @@ fi
 			xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 ipcomp ipcomp6 af_key
 		   do
 			echo -n "$mod "
-			@@MODPROBE@@ -qv $mod 2> /dev/null
+			@@MODPROBE@@ -q $mod 2> /dev/null
 		   done
 		echo
 
 		# xfrm_user is the old name for xfrm4_tunnel - backwards compatibility
-		@@MODPROBE@@ -qv xfrm_user 2> /dev/null
+		@@MODPROBE@@ -q xfrm_user 2> /dev/null
 
 		# padlock must load before aes module
 		echo Trying VIA padlock driver, this may fail, which is okay.
-		@@MODPROBE@@ -qv padlock 2>/dev/null
+		@@MODPROBE@@ -q padlock 2>/dev/null
 
 		# load the most common ciphers/algo's
 		# aes-x86_64 has higher priority in via crypto api
 		echo Trying to load Crypto API modules, some may fail, which is okay.
-		for crypto in aes-x86_64 aes des sha512 sha256 md5 cbc xcbc ecb twofish blowfish serpent 
+		for crypto in aes-x86_64 aes des sha512 sha256 md5 cbc xcbc ecb twofish blowfish serpent ccm
 		   do
 			echo -n "$crypto "
-			@@MODPROBE@@ -qv $crypto 2> /dev/null
+			@@MODPROBE@@ -q $crypto 2> /dev/null
 		   done
 		echo
 	fi

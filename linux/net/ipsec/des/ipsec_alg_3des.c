@@ -42,7 +42,7 @@
 /*	Low freeswan header coupling	*/
 #include "openswan/ipsec_xform.h"
 #include "openswan/ipsec_alg.h"
-#include "crypto/des.h"
+#include "klips-crypto/des.h"
 #include "openswan/ipsec_alg_3des.h"
 
 #define AES_CONTEXT_T aes_context

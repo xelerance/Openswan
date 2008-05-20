@@ -66,6 +66,7 @@
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "ocsp.h"
 #include "fetch.h"
+#include "timer.h"
 
 #include "sha1.h"
 #include "md5.h"
@@ -269,7 +270,7 @@ enum kernel_interface kern_interface = AUTO_PICK;
 
 char **global_argv;
 int    global_argc;
-bool log_to_stderr_desired = FALSE;
+bool   log_to_stderr_desired = FALSE;
 
 int
 main(int argc, char **argv)
@@ -444,7 +445,7 @@ main(int argc, char **argv)
 
                 if (*endptr != '\0' || endptr == optarg
 		    || count < -1)
-                    usage("<interval-time> must be a positive number, 0 or -1");
+                    usage("<nhelpers> must be a positive number, 0 or -1");
                 nhelpers = count;
             }
 	    continue;
@@ -789,6 +790,7 @@ main(int argc, char **argv)
 
     init_virtual_ip(virtual_private);
     init_rnd_pool();
+    init_timer();
     init_secret();
     init_states();
     init_connections();

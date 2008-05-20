@@ -1,7 +1,87 @@
 Please see docs/KNOWN_BUGS file for more information
 
-v2.6.XX
-* Merged in #testing v2.5.17 [paul]
+v2.6.14
+* Fix for integ vs prf mixup [herbert/antony] 
+  See:
+   https://bugzilla.redhat.com/show_bug.cgi?id=439771
+* Merged in #testing v2.5.17 (see 2.5.17 entry below) [paul]
+* Updated "clear" policy file for L root nameserver's new IP for OE. [paul]
+* Added testcase interop-ikev2-strongswan-06-aes192 [paul]
+* Removed "interfaces= is ignored when using the NETKEY stack" warning
+  as it caused confusion and a wrong patch in Fedora 9. [paul]
+  See:
+   https://bugzilla.redhat.com/show_bug.cgi?id=445179
+* Fix for a few warnings of using "en" uninitialised [dhr]
+
+v2.6.13
+* RFC4306 Section 3.3.5 IKEv2 Attribute KEY_LENGTH support [herbert/paul]
+  See:
+   https://bugzilla.redhat.com/show_bug.cgi?id=444166
+   https://bugzilla.redhat.com/show_bug.cgi?id=439771
+* Support for ESP_NULL and AH_NULL [herbert/paul]
+  See:
+   https://bugzilla.redhat.com/show_bug.cgi?id=442955
+   https://bugzilla.redhat.com/show_bug.cgi?id=442956
+* Close on file descriptors on exec (fixes SElinux avc denials) [Neil Horman]
+  See:
+   https://bugzilla.redhat.com/show_bug.cgi?id=442333
+* Fix a memory leak by removing unused variables alg_esp and alg_ike [dhr]
+* linux/include/crypto renamed to linux/include/klips-crypto [paul]
+* Fix for IKEv1-only policies attempting bogus IKEv2 rekeys [Miloslav Trmac]
+* Bugtracker bugs fixed:
+  #198: Connection not coming up automatically, plutowait=yes workaround [bleve]
+  #622: pluto memory leak [dhr]
+  #916: KLIPS kmod fails to compile 2.6.22 based kernel (...) [paul]
+  #917: pluto fails to compile when using pam. xauth [Tamas Pal]
+  #922: pluto crashes on rekey failure [Miloslav Trmac]
+
+v2.6.12
+* Add aes-*-modp1024 proposals to default responder policy db [antony]
+  This is bug https://bugzilla.redhat.com/show_bug.cgi?id=439985
+* Fix for ikev1 continuation segfault (only the first helper's continuations
+  were cleaned up properly (eg. on dpd, sa expires..) [Anthony Tong]
+* Redid fix for leftsourceip/rightsourceip getting deleted [paul]
+  This is bug https://bugzilla.redhat.com/show_bug.cgi?id=432821
+* As per RFC 4309, use modp2048 as default for PSK with IKEv2 [paul]
+  Relates to https://bugzilla.redhat.com/show_bug.cgi?id=441588
+* Added workaround for INITIATOR/RESPONDER keys being swapped [herbert]
+* Preliminary work to support IKEv2_ENCR_AES_CCM__* algos [paul]
+* modprobe the AES ccm kernel module on startup [paul]
+
+v2.6.11
+* Fix state machine to pick proper Responder STATE_UNDEFINED state
+  when receiving R1 NO_PROPOSAL_CHOSEN [dhr/paul/antony]
+* Fixes to some enum tables that caused (null)'s in logs [dhr/paul]
+* Starting the prf+ counter from 1 instead of 0 [herbert]
+* Removed wrong Gr check [antony]
+* Added IKEv2 NO_PROPOSAL_CHOSEN processing [antony]
+* Clone st_ni/st_nr chunks for child SA [herbert]
+* Various smal logging changes - mostly to fix (null)'s [paul/dhr]
+* AUTH_ALGORITHM_HMAC_SHA2_* are now logged properly [paul]
+* interop-* testcase output updated [paul]
+
+
+v2.6.10
+* Includes fallback from IKEv2->IKEv1 [mcr]
+* IKEv2 bid-down attack recovery [mcr]
+* changes to I1 retransmission timers [mcr]
+* Only check for bid-down when POLICY_IKEV2_PROPOSE to avoid two ikev2
+  capable ikev1 instances from false detecting a biddown [paul]
+* Fix ikev2_trans struct (redhat bug #438826) [dhr/paul]
+* Revisit of 2.6.06 NOTIFY crasher - fixed again [paul]
+
+v2.6.09
+* Completed IKEv2 6msg exchange support [antony]
+
+v2.6.08
+* IKEv2 6msg exchange (responder, partially for initiator) [antony]
+* IKEv2 notify support [antony]
+* Some pullups from #testing related to NETKEY [paul/bleve]
+* Added force_busy option for testing 6msg exchange [paul]
+* OSX compile fixes [paul]
+* sourceip= option fixed with NETKEY [paul]
+* ipsec setup restart with NETKEY fix [paul]
+* NETKEY, strongswan, racoon2 support in test harnass [paul/antony]
 
 v2.6.07
 * IKEv2 retransmit fixes [mcr]

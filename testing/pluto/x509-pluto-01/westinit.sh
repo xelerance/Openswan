@@ -1,4 +1,6 @@
 : ==== start ====
+TESTNAME=x509-pluto-01
+source /testing/pluto/bin/westlocal.sh
 
 # confirm that the network is alive
 ping -n -c 4 192.0.2.254

@@ -44,6 +44,7 @@
  * draft-ietf-ipsec-doi-tc-mib-02.txt
  */
 
+/* why are these hardcoded here? See ipsec_policy.h for their enums -- Paul*/
 #define AH_NONE			0
 #define AH_MD5			2
 #define AH_SHA			3
@@ -52,7 +53,9 @@
 #define AH_SHA2_384		6
 #define AH_SHA2_512		7
 #define AH_RIPEMD		8
-#define AH_MAX			15
+#define AH_AES			9
+#define AH_NULL			251
+#define AH_MAX			251
 
 /* IPsec ESP transform values */
 

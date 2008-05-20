@@ -300,13 +300,13 @@ if test -f $netkey
 then
 	if test -f $modules
 	then
-		@MODPROBE@ -qv ah4
-		@MODPROBE@ -qv esp4
-		@MODPROBE@ -qv ipcomp
+		@MODPROBE@ -q ah4
+		@MODPROBE@ -q esp4
+		@MODPROBE@ -q ipcomp
 		#  xfrm4_tunnel is needed by ipip and ipcomp
-		@MODPROBE@ -qv xfrm4_tunnel
+		@MODPROBE@ -q xfrm4_tunnel
 		# xfrm_user contains netlink support for IPsec 
-		@MODPROBE@ -qv xfrm_user
+		@MODPROBE@ -q xfrm_user
 
 		echo Trying hardware random, this may fail, which is okay.
 		@MODPROBE@ -q hw_random 2>/dev/null
@@ -316,10 +316,10 @@ then
 		@MODPROBE@ -q padlock 2>/dev/null
 
 		# load the most common ciphers/algo's
-		@MODPROBE@ -qv sha1
-		@MODPROBE@ -qv md5
-		@MODPROBE@ -qv des
-		@MODPROBE@ -qv aes
+		@MODPROBE@ -q sha1
+		@MODPROBE@ -q md5
+		@MODPROBE@ -q des
+		@MODPROBE@ -q aes
 	fi
 fi
 

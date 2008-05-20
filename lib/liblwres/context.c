@@ -39,6 +39,7 @@
 #include <sys/select.h>
 #endif
 
+#include "socketwrapper.h"
 #include "context_p.h"
 #include "assert_p.h"
 
@@ -237,7 +238,7 @@ context_connect(lwres_context_t *ctx) {
 	} else
 		return (LWRES_R_IOERROR);
 
-	s = socket(domain, SOCK_DGRAM, IPPROTO_UDP);
+	s = safe_socket(domain, SOCK_DGRAM, IPPROTO_UDP);
 	if (s < 0)
 		return (LWRES_R_IOERROR);
 

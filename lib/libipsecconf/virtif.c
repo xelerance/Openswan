@@ -26,6 +26,7 @@
 #include <openswan.h>
 
 #include "sysdep.h"
+#include "socketwrapper.h"
 #include "openswan/ipsec_tunnel.h"
 
 #include "ipsecconf/interfaces.h"
@@ -219,7 +220,7 @@ void starter_ifaces_clear (void)
 	int sock;
 	unsigned int i;
 
-	sock = socket(AF_INET, SOCK_DGRAM, 0);
+	sock = safe_socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock < 0) return;
 
 	for (i=0; i<N_IPSEC_IF; i++) {
@@ -238,7 +239,7 @@ int starter_ifaces_load (char **ifaces, unsigned int omtu, int nat_t)
 
 	starter_log(LOG_LEVEL_DEBUG, "starter_ifaces_load()");
 
-	sock = socket(AF_INET, SOCK_DGRAM, 0);
+	sock = safe_socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock < 0) return -1;
 
 	for (j=0; j<N_IPSEC_IF; j++) {

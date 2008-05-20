@@ -7,7 +7,7 @@
 #include "constants.h"
 #include "defs.h"
 #include "log.h"
-#include "crypto/aes_cbc.h"
+#include "klips-crypto/aes_cbc.h"
 #include "alg_info.h"
 #include "ike_alg.h"
 

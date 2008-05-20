@@ -551,6 +551,7 @@ void accept_connection(struct netjig_state *ns,
   struct sockaddr addr;
   struct port *new_port;
   int len, new;
+  unsigned long fcntl_arg;
 
   len = sizeof(addr);
   new = accept(nh->ctl_listen_fd, &addr, &len);
@@ -558,6 +559,13 @@ void accept_connection(struct netjig_state *ns,
     perror("accept");
     return;
   }
+
+  /*
+   * set CLOEXEC it to suppress selenux avc denials on exec
+   */
+  fcntl_arg = fcntl(new, F_GETFD);
+  fcntl_arg |= FD_CLOEXEC;
+  fcntl(new, F_SETFD, fcntl_arg);
 
 #if 0
   if(fcntl(new, F_SETFL, O_NONBLOCK) < 0){

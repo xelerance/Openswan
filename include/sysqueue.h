@@ -31,6 +31,7 @@
 
 #if !defined(_SYS_QUEUE_H) && !defined(_SYS_QUEUE_H_)
 #define	_SYS_QUEUE_H 1
+#define	_SYS_QUEUE_H_ 1
 
 /*
  * This file defines three types of data structures: lists, tail queues,

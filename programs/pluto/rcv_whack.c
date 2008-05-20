@@ -621,7 +621,7 @@ void whack_process(int whackfd, struct whack_message msg)
 	    whack_log(RC_DEAF, "need --listen before --initiate");
 	else
 	    initiate_connection(msg.name
-				, msg.whack_async? NULL_FD : dup_any(whackfd)
+				, msg.whack_async ? NULL_FD : dup_any(whackfd)
 				, msg.debugging
 				, pcim_demand_crypto);
     }

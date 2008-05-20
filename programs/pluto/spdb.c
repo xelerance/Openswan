@@ -112,13 +112,22 @@ static struct db_attr otpsk2048des3md5[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP2048 },
-	};
+	}; 
+
+static struct db_attr otpsk1024aesmd5[] = {
+	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
+	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
+	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
+	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1024 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
+	}; 
 
 static struct db_attr otpsk1536aesmd5[] = {
 	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	}; 
 
 static struct db_attr otpsk2048aesmd5[] = {
@@ -126,14 +135,23 @@ static struct db_attr otpsk2048aesmd5[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP2048 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	}; 
 
+static struct db_attr otpsk1024aessha1[] = {
+	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
+	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA1 },
+	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
+	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1024 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
+	};
 
 static struct db_attr otpsk1536aessha1[] = {
 	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA1 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 
 static struct db_attr otpsk2048aessha1[] = {
@@ -141,6 +159,7 @@ static struct db_attr otpsk2048aessha1[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA1 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP2048 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 
 static struct db_attr otpsk1024des3sha1[] = {
@@ -199,6 +218,7 @@ static struct db_attr otpsk1536aesmd5_xauthc[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=XAUTHInitPreShared },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 
 static struct db_attr otpsk1536aessha1_xauthc[] = {
@@ -206,6 +226,7 @@ static struct db_attr otpsk1536aessha1_xauthc[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA1 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=XAUTHInitPreShared },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 
 static struct db_attr otpsk1024des3md5_xauths[] = {
@@ -241,6 +262,7 @@ static struct db_attr otpsk1536aesmd5_xauths[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=XAUTHRespPreShared },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 
 static struct db_attr otpsk1536aessha1_xauths[] = {
@@ -248,16 +270,26 @@ static struct db_attr otpsk1536aessha1_xauths[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA1 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=XAUTHRespPreShared },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 #endif
 
 /* arrays of attributes for transforms, RSA signatures */
+
+static struct db_attr otrsasig1024aesmd5[] = {
+	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
+	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
+	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_RSA_SIG },
+	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1024 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
+	};
 
 static struct db_attr otrsasig1536aesmd5[] = {
 	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_RSA_SIG },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 
 static struct db_attr otrsasig2048aesmd5[] = {
@@ -265,6 +297,15 @@ static struct db_attr otrsasig2048aesmd5[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_RSA_SIG },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP2048 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
+	};
+
+static struct db_attr otrsasig1024aessha1[] = {
+	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
+	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA1 },
+	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_RSA_SIG },
+	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1024 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 
 static struct db_attr otrsasig1536aessha1[] = {
@@ -272,6 +313,7 @@ static struct db_attr otrsasig1536aessha1[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA1 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_RSA_SIG },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 
 static struct db_attr otrsasig2048aessha1[] = {
@@ -279,6 +321,7 @@ static struct db_attr otrsasig2048aessha1[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA1 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_RSA_SIG },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP2048 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 
 static struct db_attr otrsasig1024des3md5[] = {
@@ -345,6 +388,7 @@ static struct db_attr otrsasig1536aesmd5_xauthc[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=XAUTHInitRSA },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 
 static struct db_attr otrsasig1536aessha1_xauthc[] = {
@@ -352,6 +396,7 @@ static struct db_attr otrsasig1536aessha1_xauthc[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA1 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=XAUTHInitRSA },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 
 static struct db_attr otrsasig1024des3sha1_xauthc[] = {
@@ -393,6 +438,7 @@ static struct db_attr otrsasig1536aesmd5_xauths[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=XAUTHInitRSA },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 
 static struct db_attr otrsasig1024des3sha1_xauths[] = {
@@ -414,6 +460,7 @@ static struct db_attr otrsasig1536aessha1_xauths[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_SHA1 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=XAUTHRespRSA },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
+	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
 	};
 #endif
 
@@ -436,16 +483,18 @@ static struct db_trans oakley_trans_psk[] = {
 #ifdef TEST_INDECENT_PROPOSAL
 	{ AD_TR(KEY_IKE,otpsk1024des3tiger) },
 #endif
-	{ AD_TR(KEY_IKE,otpsk1536aessha1) },
-	{ AD_TR(KEY_IKE,otpsk1536aesmd5) },
-	{ AD_TR(KEY_IKE,otpsk1536des3sha1) },
-	{ AD_TR(KEY_IKE,otpsk1536des3md5) },
-	{ AD_TR(KEY_IKE,otpsk1024des3sha1) },
-	{ AD_TR(KEY_IKE,otpsk1024des3md5) },
 	{ AD_TR(KEY_IKE,otpsk2048aessha1) },
 	{ AD_TR(KEY_IKE,otpsk2048aesmd5) },
 	{ AD_TR(KEY_IKE,otpsk2048des3sha1) },
 	{ AD_TR(KEY_IKE,otpsk2048des3md5) },
+	{ AD_TR(KEY_IKE,otpsk1536aessha1) },
+	{ AD_TR(KEY_IKE,otpsk1536aesmd5) },
+	{ AD_TR(KEY_IKE,otpsk1536des3sha1) },
+	{ AD_TR(KEY_IKE,otpsk1536des3md5) },
+	{ AD_TR(KEY_IKE,otpsk1024aessha1) },
+	{ AD_TR(KEY_IKE,otpsk1024aesmd5) },
+	{ AD_TR(KEY_IKE,otpsk1024des3sha1) },
+	{ AD_TR(KEY_IKE,otpsk1024des3md5) },
     };
 
 #ifdef XAUTH
@@ -478,6 +527,8 @@ static struct db_trans oakley_trans_rsasig[] = {
 	{ AD_TR(KEY_IKE,otrsasig1536des3md5) },
 	{ AD_TR(KEY_IKE,otrsasig1024des3sha1) },
 	{ AD_TR(KEY_IKE,otrsasig1024des3md5) },
+	{ AD_TR(KEY_IKE,otrsasig1024aessha1) },
+	{ AD_TR(KEY_IKE,otrsasig1024aesmd5) },
     };
 
 #ifdef XAUTH
@@ -506,10 +557,14 @@ static struct db_trans oakley_trans_pskrsasig[] = {
 #ifdef TEST_INDECENT_PROPOSAL
 	{ AD_TR(KEY_IKE,otpsk1024des3tiger) },
 #endif
-	{ AD_TR(KEY_IKE,otrsasig1536des3md5) },
-	{ AD_TR(KEY_IKE,otpsk1536des3md5) },
+	{ AD_TR(KEY_IKE,otrsasig2048des3sha1) },
+	{ AD_TR(KEY_IKE,otpsk2048des3sha1) },
+	{ AD_TR(KEY_IKE,otrsasig2048des3md5) },
+	{ AD_TR(KEY_IKE,otpsk2048des3md5) },
 	{ AD_TR(KEY_IKE,otrsasig1536des3sha1) },
 	{ AD_TR(KEY_IKE,otpsk1536des3sha1) },
+	{ AD_TR(KEY_IKE,otrsasig1536des3md5) },
+	{ AD_TR(KEY_IKE,otpsk1536des3md5) },
 	{ AD_TR(KEY_IKE,otrsasig1024des3sha1) },
 	{ AD_TR(KEY_IKE,otpsk1024des3sha1) },
 	{ AD_TR(KEY_IKE,otrsasig1024des3md5) },
@@ -751,6 +806,16 @@ struct db_sa oakley_am_sadb[] = {
 
 /* arrays of attributes for transforms */
 
+static struct db_attr espamd5_attr[] = {
+    { .type.ipsec=AUTH_ALGORITHM, AUTH_ALGORITHM_HMAC_MD5 },
+    { .type.ipsec=KEY_LENGTH, 128 },
+    };
+
+static struct db_attr espasha1_attr[] = {
+    { .type.ipsec=AUTH_ALGORITHM, AUTH_ALGORITHM_HMAC_SHA1 },
+    { .type.ipsec=KEY_LENGTH, 128 },
+    };
+
 static struct db_attr espmd5_attr[] = {
     { .type.ipsec=AUTH_ALGORITHM, AUTH_ALGORITHM_HMAC_MD5 },
     };
@@ -770,8 +835,8 @@ static struct db_attr ah_HMAC_SHA1_attr[] = {
 /* arrays of transforms, each in in preference order */
 
 static struct db_trans espa_trans[] = {
-    { AD_TR(ESP_AES, espsha1_attr) },
-    { AD_TR(ESP_AES, espmd5_attr) },
+    { AD_TR(ESP_AES, espasha1_attr) },
+    { AD_TR(ESP_AES, espamd5_attr) },
     { AD_TR(ESP_3DES,espsha1_attr) },
     { AD_TR(ESP_3DES,espmd5_attr) },
     };

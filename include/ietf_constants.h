@@ -453,6 +453,9 @@ enum ikev2_trans_type_encr {
 	IKEv2_ENCR_NULL     = 11,
 	IKEv2_ENCR_AES_CBC  = 12,
 	IKEv2_ENCR_AES_CTR  = 13,
+	IKEv2_ENCR_AES_CCM_8  = 14,
+	IKEv2_ENCR_AES_CCM_12  = 15,
+	IKEv2_ENCR_AES_CCM_16  = 16,
 	IKEv2_ENCR_INVALID  = 65536
 };
 
@@ -461,14 +464,23 @@ enum ikev2_trans_type_prf {
 	IKEv2_PRF_HMAC_SHA1 = 2,
 	IKEv2_PRF_HMAC_TIGER= 3,
 	IKEv2_PRF_AES128_XCBC=4,
+	/* RFC 4868 Section 4 */
+	IKEv2_PRF_HMAC_SHA2_256=5,
+	IKEv2_PRF_HMAC_SHA2_384=6,
+	IKEv2_PRF_HMAC_SHA2_512=7,
 };
 
 enum ikev2_trans_type_integ {
+	IKEv2_AUTH_NONE        =0,
 	IKEv2_AUTH_HMAC_MD5_96 =1,
 	IKEv2_AUTH_HMAC_SHA1_96=2,
 	IKEv2_AUTH_DES_MAC     =3,
 	IKEv2_AUTH_KPDK_MD5    =4,
 	IKEv2_AUTH_AES_XCBC_96 =5,
+	/* RFC 4868 Section 4 */
+	IKEv2_AUTH_HMAC_SHA2_256_128=12,
+	IKEv2_AUTH_HMAC_SHA2_384_192=13,
+	IKEv2_AUTH_HMAC_SHA2_512_256=14,
 	IKEv2_AUTH_INVALID     =65536
 };
 
@@ -476,7 +488,12 @@ enum ikev2_trans_type_esn {
 	IKEv2_ESN_DISABLED = 0,
 	IKEv2_ESN_ENABLED  = 1,
 };
-	
+
+/* RFC 4306 Section 3.3.5 */	
+enum ikev2_trans_attr_type {
+	IKEv2_KEY_LENGTH = 14,
+};
+
 
 /* many transform values are moved to openswan/ipsec_policy.h
  * including all of the following, which are here so that
@@ -645,6 +662,8 @@ enum ikev1_auth_attribute {
 	AUTH_ALGORITHM_HMAC_SHA2_384=6,
 	AUTH_ALGORITHM_HMAC_SHA2_512=7,
 	AUTH_ALGORITHM_HMAC_RIPEMD=8,
+	AUTH_ALGORITHM_AES_CBC=9,
+	AUTH_ALGORITHM_NULL=251,
 };
 
 typedef u_int16_t ipsec_auth_t;
@@ -845,7 +864,6 @@ typedef enum {
     /* RFC 3706 DPD */ 
     R_U_THERE =       36136,
     R_U_THERE_ACK =   36137,
-
 
     /* IKEv2 */
     UNSUPPORTED_CRITICAL_PAYLOAD = 1,

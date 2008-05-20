@@ -515,9 +515,7 @@ void delete_cryptographic_continuation(struct state *st)
 	    cn = cn->pcrc_list.tqe_next);
 		
 	if(cn == NULL) {
-	    DBG(DBG_CRYPT, DBG_log("no suspended cryptographic state for %lu\n"
-				   , st->st_serialno));
-	    return;
+	    continue;
 	}
 
 	/* unlink it, and free it */
@@ -533,6 +531,8 @@ void delete_cryptographic_continuation(struct state *st)
 	    pfree(cn);
 	}
     }
+    DBG(DBG_CRYPT, DBG_log("no suspended cryptographic state for %lu\n"
+				   , st->st_serialno));
 }
 	
 /*

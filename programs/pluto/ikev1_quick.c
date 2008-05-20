@@ -256,8 +256,8 @@ compute_proto_keymat(struct state *st
 	    default:
 #ifdef KERNEL_ALG
 	      if (kernel_alg_esp_auth_ok(pi->attrs.transattrs.integ_hash, NULL) == NULL) {
-		needed_len += kernel_alg_esp_auth_keylen(pi->attrs.transattrs.integ_hash);
-		break;
+		  needed_len += kernel_alg_esp_auth_keylen(pi->attrs.transattrs.integ_hash);
+		  break;
 	      } 
 #endif
 	    case AUTH_ALGORITHM_DES_MAC:

@@ -7,7 +7,7 @@ japan:~# : just for when we run it interactively
 japan:~# ipsec setup $CFG stop
 + ipsec setup --config /testing/pluto/co-terminal-02/japan.conf stop
 ipsec_setup: Stopping Openswan IPsec...
-ipsec_setup: stop ordered, but IPsec does not appear to be running!
+ipsec_setup: stop ordered, but IPsec appears to be already stopped!
 ipsec_setup: doing cleanup anyway...
 japan:~# rndc stop >/dev/null 2>&1
 + rndc stop

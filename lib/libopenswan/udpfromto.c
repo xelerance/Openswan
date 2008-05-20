@@ -52,6 +52,7 @@ static const char rcsid[] = "$Id: udpfromto.c,v 1.2 2005/01/25 20:06:40 mcr Exp 
 #include "udpfromto.h"
 #include "openswan.h"
 #include "oswlog.h"
+#include "socketwrapper.h"
 
 int udpfromto_init(int s)
 {
@@ -244,6 +245,7 @@ int sendfromto(int s, void *buf, size_t len, int flags,
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "socket.h"
 
 #define DEF_PORT 20000		/* default port to listen on */
 #define DESTIP "127.0.0.1"	/* send packet to localhost per default */
@@ -279,7 +281,7 @@ int main(int argc, char **argv)
 	}
 
 	/* parent: server */
-	server_socket = socket(PF_INET, SOCK_DGRAM, 0);
+	server_socket = safe_socket(PF_INET, SOCK_DGRAM, 0);
 	if (udpfromto_init(server_socket) != 0) {
 		perror("udpfromto_init\n");
 		waitpid(pid, NULL, WNOHANG);
@@ -320,7 +322,7 @@ int main(int argc, char **argv)
 
 client:
 	close(server_socket);
-	client_socket = socket(PF_INET, SOCK_DGRAM, 0);
+	client_socket = safe_socket(PF_INET, SOCK_DGRAM, 0);
 	if (udpfromto_init(client_socket) != 0) {
 		perror("udpfromto_init");
 		_exit(0);

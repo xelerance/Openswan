@@ -1,4 +1,4 @@
-ping -c 3 192.1.2.45
+ping -c1 -I 192.0.2.254 192.0.1.254
 
 ip xfrm state
 ip xfrm policy
