@@ -114,12 +114,14 @@ DEBUG_NO_STATIC int pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int s
 #endif
 
 struct net_proto_family pfkey_family_ops = {
-	PF_KEY,
-	pfkey_create
+        .owner  = THIS_MODULE, 
+        .family = PF_KEY,
+        .create = pfkey_create
 };
 
 struct proto_ops SOCKOPS_WRAPPED(pfkey_ops) = {
 #ifdef NETDEV_23
+        owner:          THIS_MODULE,
 	family:		PF_KEY,
 	release:	pfkey_release,
 	bind:		sock_no_bind,
