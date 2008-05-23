@@ -1,9 +1,10 @@
-/* common routines for interfaces that use pfkey to talk to kernel
+/*
+ * common routines for interfaces that use pfkey to talk to kernel
  *
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  * Copyright (C) 2003 Herbert Xu.
- * Copyright (C) 2003-2006  Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2007  Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -79,17 +80,17 @@ static pid_t pid;
 #define NE(x) { x, #x }	/* Name Entry -- shorthand for sparse_names */
 
 static sparse_names pfkey_type_names = {
-	NE(SADB_RESERVED),
-	NE(SADB_GETSPI),
-	NE(SADB_UPDATE),
-	NE(SADB_ADD),
-	NE(SADB_DELETE),
-	NE(SADB_GET),
-	NE(SADB_ACQUIRE),
-	NE(SADB_REGISTER),
-	NE(SADB_EXPIRE),
-	NE(SADB_FLUSH),
-	NE(SADB_DUMP),
+	NE(K_SADB_RESERVED),
+	NE(K_SADB_GETSPI),
+	NE(K_SADB_UPDATE),
+	NE(K_SADB_ADD),
+	NE(K_SADB_DELETE),
+	NE(K_SADB_GET),
+	NE(K_SADB_ACQUIRE),
+	NE(K_SADB_REGISTER),
+	NE(K_SADB_EXPIRE),
+	NE(K_SADB_FLUSH),
+	NE(K_SADB_DUMP),
 	NE(K_SADB_X_PROMISC),
 	NE(K_SADB_X_PCHANGE),
 	NE(K_SADB_X_GRPSA),
@@ -97,9 +98,9 @@ static sparse_names pfkey_type_names = {
 	NE(K_SADB_X_DELFLOW),
 	NE(K_SADB_X_DEBUG),
 	NE(K_SADB_X_NAT_T_NEW_MAPPING),
-/*	NE(K_SADB_X_PLUMBIF),   */
-/*	NE(K_SADB_X_UNPLUMBIF), */
-	NE(SADB_MAX),	
+	NE(K_SADB_X_PLUMBIF),
+	NE(K_SADB_X_UNPLUMBIF),
+	NE(K_SADB_MAX),	
 	{ 0, sparse_end }
 };
 
@@ -356,14 +357,14 @@ klips_pfkey_register_response(const struct sadb_msg *msg)
      */
     switch (msg->sadb_msg_satype)
     {
-    case SADB_SATYPE_AH:
+    case K_SADB_SATYPE_AH:
 	break;
-    case SADB_SATYPE_ESP:
+    case K_SADB_SATYPE_ESP:
 #ifdef KERNEL_ALG
 	kernel_alg_register_pfkey(msg, sizeof (pfkey_buf));
 #endif
 	break;
-    case SADB_X_SATYPE_COMP:
+    case K_SADB_X_SATYPE_COMP:
 	/* ??? There ought to be an extension to list the
 	 * supported algorithms, but RFC 2367 doesn't
 	 * list one for IPcomp.  KLIPS uses K_SADB_X_CALG_DEFLATE.
@@ -371,7 +372,7 @@ klips_pfkey_register_response(const struct sadb_msg *msg)
 	 */
 	can_do_IPcomp = TRUE;
 	break;
-    case SADB_X_SATYPE_IPIP:
+    case K_SADB_X_SATYPE_IPIP:
 	break;
     default:
 	break;
@@ -571,9 +572,9 @@ pfkeyext_address(u_int16_t exttype
 /* pfkey_build + pfkey_x_protocol_build */
 static bool
 pfkeyext_protocol(int transport_proto
-, const char *description
-, const char *text_said
-, struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
+		  , const char *description
+		  , const char *text_said
+		  , struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 {
     return (transport_proto == 0)
         ? TRUE
@@ -798,11 +799,11 @@ static int kernelop2klips(enum pluto_sadb_operations op)
 
 void klips_pfkey_register(void)
 {
-    klips_register_proto(SADB_SATYPE_AH, "AH");
-    klips_register_proto(SADB_SATYPE_ESP, "ESP");
+    klips_register_proto(K_SADB_SATYPE_AH, "AH");
+    klips_register_proto(K_SADB_SATYPE_ESP, "ESP");
     can_do_IPcomp = FALSE;  /* until we get a response from KLIPS */
-    klips_register_proto(SADB_X_SATYPE_COMP, "IPCOMP");
-    klips_register_proto(SADB_X_SATYPE_IPIP, "IPIP");
+    klips_register_proto(K_SADB_X_SATYPE_COMP, "IPCOMP");
+    klips_register_proto(K_SADB_X_SATYPE_IPIP, "IPIP");
 }
 
 bool
@@ -902,7 +903,7 @@ pfkey_raw_eroute(const ip_address *this_host
     return finish_pfkey_msg(extensions, "flow", text_said, NULL);
 }
 
-bool pfkey_add_sa(const struct kernel_sa *sa, bool replace)
+bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 {
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
     pfkey_buf pfb;
@@ -953,6 +954,13 @@ bool pfkey_add_sa(const struct kernel_sa *sa, bool replace)
     }
 #endif
 	
+    if(sa->outif != -1) {
+	    success = pfkey_outif_build(&extensions[K_SADB_X_EXT_PLUMBIF],sa->outif);
+	    success = pfkey_build(success, "pfkey_outif_build", sa->text_said, extensions);
+	    
+	    if(!success) return FALSE;
+    }
+ 
     if(sa->enckeylen != 0) {
 	success = pfkey_build(pfkey_key_build(&extensions[K_SADB_EXT_KEY_ENCRYPT]
 					      , K_SADB_EXT_KEY_ENCRYPT
@@ -1019,7 +1027,6 @@ bool pfkey_add_sa(const struct kernel_sa *sa, bool replace)
 	    int error;
 
 	    error = pfkey_msg_parse(&pfb.msg, NULL, replies, EXT_BITS_IN);
-
 #ifdef KLIPS_MAST	    
 	    if(replies[K_SADB_X_EXT_SAREF]) {
 		    struct sadb_x_saref *sar = (struct sadb_x_saref *)replies[K_SADB_X_EXT_SAREF];
@@ -1231,7 +1238,7 @@ pfkey_shunt_eroute(struct connection *c
 			      , htonl(spi)
 			      , SA_INT
 			      , sr->this.protocol
-			      , SADB_X_SATYPE_INT
+			      , K_SADB_X_SATYPE_INT
 			      , null_proto_info, 0, op, buf2);
     }
 }
@@ -1291,7 +1298,7 @@ pfkey_sag_eroute(struct state *st, struct spd_route *sr
     {
         inner_spi = st->st_ipcomp.attrs.spi;
         inner_proto = SA_COMP;
-        inner_satype = SADB_X_SATYPE_COMP;
+        inner_satype = K_SADB_X_SATYPE_COMP;
 
         i--;
         proto_info[i].proto = IPPROTO_COMP;
@@ -1311,7 +1318,7 @@ pfkey_sag_eroute(struct state *st, struct spd_route *sr
 
         inner_spi = st->st_tunnel_out_spi;
         inner_proto = SA_IPIP;
-        inner_satype = SADB_X_SATYPE_IPIP;
+        inner_satype = K_SADB_X_SATYPE_IPIP;
 
         proto_info[i].encapsulation = ENCAPSULATION_MODE_TUNNEL;
         for (j = i + 1; proto_info[j].proto; j++)
@@ -1488,7 +1495,7 @@ scan_proc_shunts(void)
             if (ff != field)
             {
                 context = "count field is malformed: ";
-                ugh = ttoul((char *)field[0].ptr, field[0].len, 10, &eri.count);
+                ugh = ttoul((char *)field[0].ptr, field[0].len, 10,&eri.count);
                 if (ugh != NULL)
                     break;
             }

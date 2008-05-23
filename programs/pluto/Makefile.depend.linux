@@ -5,8 +5,9 @@ ac.o: ac.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/passert.h \
   ../../include/ietf_constants.h \
   ../../include/pluto_constants.h \
-  ../../include/names_constant.h ../../include/constants.h \
-  ../../include/oswlog.h ../../include/oswtime.h defs.h \
+  ../../include/names_constant.h \
+  ../../include/constants.h ../../include/oswlog.h \
+  ../../include/oswtime.h defs.h \
   ../../include/oswalloc.h ../../include/asn1.h \
   ../../include/oid.h ../../include/ac.h \
   ../../include/id.h ../../include/x509.h \
@@ -998,6 +999,7 @@ pluto_crypt.o: pluto_crypt.c ../../linux/include/openswan.h \
   ../../include/secrets.h ocf_pk.h
 plutoalg.o: plutoalg.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/pfkeyv2.h \
+  ../../include/linux/pfkeyv2.h \
   ../../linux/include/openswan/passert.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../ports/linux/include/sysdep.h ../../include/sysqueue.h \
@@ -1096,18 +1098,26 @@ rcv_whack.o: rcv_whack.c ../../include/arpa/nameser.h \
   ../../include/kernel_alg.h \
   ../../linux/include/openswan/pfkeyv2.h ike_alg.h
 rnd.o: rnd.c ../../linux/include/openswan.h \
+  ../../linux/include/openswan/ipsec_kversion.h \
+  ../../linux/include/openswan/ipsec_param.h \
   ../../include/sha1.h ../../include/constants.h \
   ../../include/biglset.h \
   ../../linux/include/openswan/passert.h \
   ../../include/ietf_constants.h \
   ../../include/pluto_constants.h \
   ../../include/names_constant.h defs.h \
-  ../../include/oswalloc.h ../../include/constants.h rnd.h \
+  ../../include/oswalloc.h rnd.h \
   log.h ../../include/oswlog.h timer.h ../../include/oswtime.h
 server.o: server.c ../../include/arpa/nameser.h \
   ../../linux/include/openswan.h \
   ../../ports/linux/include/sysdep.h ../../include/sysqueue.h \
-  ../../include/constants.h ../../include/biglset.h \
+  ../../include/constants.h ../../include/biglset.h 
+smallprime.o: smallprime.c ../../linux/include/openswan.h \
+  ../../linux/include/openswan/ipsec_kversion.h \
+  ../../linux/include/openswan/ipsec_param.h \
+  ../../ports/linux/include/sysdep.h \
+  ../../include/sysqueue.h ../../include/constants.h \
+  ../../include/biglset.h \
   ../../linux/include/openswan/passert.h \
   ../../include/ietf_constants.h \
   ../../include/pluto_constants.h \

@@ -1,3 +1,4 @@
+: ==== start ====
 TESTNAME=l2tp-01
 source /testing/pluto/bin/northlocal.sh
 
@@ -7,25 +8,19 @@ iptables -F INPUT
 iptables -F OUTPUT
 ipsec setup stop
 
-# confirm that the network is alive
-ping -n -c 4 192.0.2.254
-
 # make sure that clear text does not get through
 iptables -A INPUT -i eth1 -s 192.1.2.23 -p udp --sport 1701 -j REJECT
 iptables -A OUTPUT -o eth1 -d 192.1.2.23 -p udp --dport 1701 -j REJECT
-
-# confirm with a ping to east-in
-ping -n -c 4 192.0.2.254
 
 ipsec setup restart
 ipsec auto --add north--east-l2tp
 ipsec auto --add north--east-pass
 /testing/pluto/bin/wait-until-pluto-started
 ipsec auto --route north--east-pass
-ipsec whack --debug-control --debug-controlmore --debug-parsing --debug-crypt
+ipsec whack --debug-control --debug-controlmore --debug-natt
 
-mount --bind /testing/pluto/l2tp-01 /etc/ppp
-l2tpd -c north.l2tpd.conf -D 2>/tmp/l2tpd.log &
+if [ ! -f /etc/ppp/chap-secrets ]; then mount --bind /testing/pluto/l2tp-01 /etc/ppp; fi
+(cd /tmp && l2tpd -c /testing/pluto/l2tp-01/north.l2tpd.conf -D 2>/tmp/l2tpd.log ) &
 
 ipsec auto --route north--east-l2tp
 

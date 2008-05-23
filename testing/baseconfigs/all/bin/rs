@@ -3,4 +3,9 @@
 ipsec setup stop
 umount /usr/local
 mount /usr/local
-source ${HOSTNAME}init.sh
+source testparams.sh
+HOST=`echo $HOSTNAME | tr 'a-z' 'A-Z'`
+var=${HOST}_INIT_SCRIPT
+script=${!var}
+echo RUNNING $script
+source ${script}

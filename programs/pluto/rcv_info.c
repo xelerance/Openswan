@@ -285,7 +285,7 @@ info_handle(int infoctlfd)
 	unsigned long fcntl_arg;
 
 	infofd = accept(infoctlfd, (struct sockaddr *)&info_client_addr
-	    , &info_addr_len);
+			, &info_addr_len);
 
 	if (infofd < 0)
 	{

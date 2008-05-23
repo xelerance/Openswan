@@ -7,4 +7,3 @@ UMLPOOL
 testing/*/OUTPUT/*
 testing/*/*/OUTPUT
 umlsetup.sh
-testing/scripts/readwriteconf-*/OUTPUT

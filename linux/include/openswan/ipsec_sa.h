@@ -136,8 +136,6 @@ struct ipsec_sa
 	struct ipsec_sa	*ips_next;	 	/* pointer to next xform */
 
 	struct ipsec_sa	*ips_hnext;		/* next in hash chain */
-	struct ipsec_sa	*ips_inext;	 	/* pointer to next xform */
-	struct ipsec_sa	*ips_onext;	 	/* pointer to prev xform */
 
 	struct ifnet	*ips_rcvif;	 	/* related rcv encap interface */
 
@@ -223,7 +221,6 @@ struct ipsec_sa
 #endif
 	struct ipsec_alg_enc *ips_alg_enc;
 	struct ipsec_alg_auth *ips_alg_auth;
-//IPsecSAref_t	ips_ref_rel;
 };
 
 struct IPsecSArefSubTable
@@ -260,10 +257,11 @@ extern int ipsec_sa_add(struct ipsec_sa *ips);
 extern void ipsec_sa_rm(struct ipsec_sa *ips);
 extern int ipsec_sadb_cleanup(__u8 proto);
 extern int ipsec_sadb_free(void);
+extern int ipsec_sa_wipe(struct ipsec_sa *ips);
 extern int ipsec_sa_intern(struct ipsec_sa *ips);
-extern void ipsec_sa_untern(struct ipsec_sa *ips);
 extern struct ipsec_sa *ipsec_sa_getbyref(IPsecSAref_t ref);
 
+extern void ipsec_sa_untern(struct ipsec_sa *ips);
 #endif /* __KERNEL__ */
 
 enum ipsec_direction {

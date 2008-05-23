@@ -109,6 +109,15 @@ config KLIPS_DEBUG
 	   Debugging connections without access to kernel level debugging is
 	   essentially impossible. Leave this on.
 
+config KLIPS_IF_MAX
+	int 'Maximum number of virtual interfaces'
+	default 64
+	range 4 256
+	help
+	   KLIPS creates virtual interfaces for tunnel purposes. At present
+	   it keeps track of certain items in an array (FIX ME), and needs
+	   to preallocate this array. Only a pointer is used per item.
+
 endmenu
 
 #

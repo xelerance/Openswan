@@ -100,7 +100,7 @@ static int _3des_cbc_encrypt(struct ipsec_alg_enc *alg,
 	memcpy(&miv, iv, sizeof(miv));
 
 	if (debug_3des > 0)
-		printk(KERN_DEBUG "klips_debug:_aes_cbc_encrypt:"
+		printk(KERN_DEBUG "klips_debug:_3des_cbc_encrypt:"
 				"key_e=%p in=%p ilen=%d iv=%p encrypt=%d\n",
 				key_e, in, ilen, iv, encrypt);
 
@@ -156,7 +156,7 @@ IPSEC_ALG_MODULE_INIT_STATIC( ipsec_3des_init )
 				ipsec_alg_3DES.ixt_common.ixt_support.ias_exttype,
 				ipsec_alg_3DES.ixt_common.ixt_support.ias_id, 
 				test_3des);
-		printk("ipsec_aes_init(alg_type=%d alg_id=%d): test_ret=%d\n", 
+		printk("ipsec_3des_init(alg_type=%d alg_id=%d): test_ret=%d\n", 
 				ipsec_alg_3DES.ixt_common.ixt_support.ias_exttype, 
 				ipsec_alg_3DES.ixt_common.ixt_support.ias_id, 
 				test_ret);

@@ -11,9 +11,6 @@
 #include "alg_info.h"
 #include "ike_alg.h"
 
-#define  SHA2_256_DIGEST_SIZE	(256/BITS_PER_BYTE)
-#define  SHA2_512_DIGEST_SIZE	(512/BITS_PER_BYTE)
-
 static void sha256_hash_final(u_char *hash, sha256_context *ctx)
 {
 	sha256_final(ctx);

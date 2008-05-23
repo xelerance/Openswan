@@ -118,9 +118,10 @@ LC_ALL=C export LC_ALL
 #	PLUTO_STACK
 #		IPsec stack used by pluto (eg protostack= values)
 
-exec >/tmp/_updown.m$$
-exec 2>&1
-set -x
+# for debugging of the script
+#exec >/tmp/_updown.m$$
+#exec 2>&1
+#set -x
 
 # Import default _updown configs from the /etc/sysconfig/pluto_updown file
 #
@@ -185,12 +186,16 @@ checkipsec() {
 	ip route add 0.0.0.0/0 dev $PLUTO_INTERFACE table 50
     fi
 
-    # now look for -j IPSEC in OUTPUT and FORWARD chains.
-    if (iptables -n -L OUTPUT | grep -q '^IPSEC')
+    # now look for -j IPSEC in OUTPUT chains.
+    if (iptables -n -t mangle -L OUTPUT | grep -q '^IPSEC')
     then
 	: found it
     else
-	iptables -A OUTPUT -t mangle -j IPSEC
+	iptables -t mangle -I OUTPUT 1 -j IPSEC
+	#iptables -t mangle -I OUTPUT 1 -p udp --sport 500 -j ACCEPT
+	#iptables -t mangle -I OUTPUT 1 -p udp --dport 500 -j ACCEPT
+	#iptables -t mangle -I OUTPUT 1 -p udp --sport 4500 -j ACCEPT
+	#iptables -t mangle -I OUTPUT 1 -p udp --dport 4500 -j ACCEPT
     fi
 
     # now look for -j IPSEC in OUTPUT and FORWARD chains.
@@ -398,21 +403,22 @@ dorule() {
 	return $st
 }
 
-
-# the purpose of this command is to add an entry to the IPSEC chain in the iptables
-# system. It grabs the right packets and does a --set-mark on them. An advanced routing
-# rule then directs the packets to the appropriate device with the right mark.
+# the purpose of this command is to add an entry to the IPSEC chain in
+# the iptables system. It grabs the right packets and does a --set-mark
+# on them. An advanced routing rule then directs the packets to the
+# appropriate device with the right mark. 
 #
-# This is not be done for OE packets --- they are supposed to get a new netfilter
-# module instead.
+# This is not be done for OE packets --- they are supposed to get a
+# new netfilter module instead.
 doipsecrule() {
 
-    set -x
 	saref=$PLUTO_PEER_REF
 	nf_saref=$(printf "%d" $(( ($saref * 65536) | 0x80000000 )))
 
 	srcnet=$PLUTO_MY_CLIENT_NET/$PLUTO_MY_CLIENT_MASK
 	dstnet=$PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK
+
+	#echo SAref: $saref '->' $nf_saref
 
 	case $1 in
 	    add) it="iptables -I IPSEC 1 -t mangle --src $srcnet --dst $dstnet -j MARK --set-mark $nf_saref"

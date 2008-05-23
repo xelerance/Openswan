@@ -1,10 +1,16 @@
-Please see docs/KNOWN_BUGS file for more information
+
+Note that listings are in chronological order of release times, not in order
+of version numbers, so yo will find 2.5.x and 2.6.x releases intersperced.
+
+See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.14
 * Fix for integ vs prf mixup [herbert/antony] 
   See:
    https://bugzilla.redhat.com/show_bug.cgi?id=439771
-* Merged in #testing v2.5.17 (see 2.5.17 entry below) [paul]
+* Merged in v2.5.18 (see entries below) [paul]
+* Merged in v2.5.17 (see entries below) [paul]
+* Merged in v2.5.12-v2.5.16 (see entries below) [paul]
 * Updated "clear" policy file for L root nameserver's new IP for OE. [paul]
 * Added testcase interop-ikev2-strongswan-06-aes192 [paul]
 * Removed "interfaces= is ignored when using the NETKEY stack" warning
@@ -85,6 +91,19 @@ v2.6.08
 
 v2.6.07
 * IKEv2 retransmit fixes [mcr]
+
+v2.5.18
+* Do not use the KMEM_CACHE macro for now, so KLIPS works on 2.6.23 [paul]
+* Sha2 support for X.509 certificates in pluto [Daniel Mueller]
+* Various memory leaks
+* uclibc workaround for malloc(0) abort. Fixes to not malloc 0 [paul]
+* Bugtracker bugs fixed
+ #917: pluto fails to compile when using pam. xauth [folti]
+ #919: Invalid memory access in show_dnskey of showhostkey.c [paul]
+
+v2.5.17
+* Implemented netlink_shunt_eroute() [paul]
+* Simplified _updown.netkey [tuomo]
 * Bugtracker bugs fixed
   #460: Fix bogus header with delayed MAIN I2->R2 [Herbert Xu]
   #496: kernel_alg_esp_auth_ok() call fixed - [gernot]
@@ -135,7 +154,7 @@ v2.6.03
   #544: the following error should only show up for x509 debugging: ... [paul]
   #185: Deadlock in function "scx_release()" daemon pluto.(SMARTCARD) [Kurodo]
 
-v2.5.17
+v2.5.16
 * Implemented netlink_shunt_eroute() [paul]
 * Simplified _updown.netkey [tuomo]
 
@@ -200,7 +219,24 @@ v2.5.04
     zero peer_ca to avoid crashes.
     (include glob's may still not work correctly)
 
+v2.5.0sbs5
+    fixed issues with libwhack not getting built with VIRTUAL_IP.
+    adjusted programs/pluto/Makefile to depend upon libraries better
+
+v2.5.0sbs4
+    When a template conn is instantiated for a phase 1 configuration, it
+	may still need to be adjusted to a virtual IP address. In addition,
+	change the order of the virtual IP address setting and the
+	port-wildcard processing.
+        This patch also provides some additional debugging of the proposal
+	which actually processed by the machinery.
+
+    tests for L2TP+X.509 L2TP configuration --- 2 clients behind the
+        same NAT with certificates that need to have their connection both
+        instantiated (in phase 1) and virtualized (in phase 2).
+
 v2.5.03
+
     ipsec.conf parsing should ignore keywords that start with x-
 	they are a form of structured comment.
     added in forceencaps= keyword.

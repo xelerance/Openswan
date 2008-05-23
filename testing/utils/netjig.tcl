@@ -605,6 +605,7 @@ proc process_net {net} {
     global umlid
     global env
 
+    netjigdebug "Processing network $net"
     # upcase me
     set upnet [string toupper $net]
 

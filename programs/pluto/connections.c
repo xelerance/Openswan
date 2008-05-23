@@ -892,6 +892,15 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
     dst->host_nexthop = src->host_nexthop;
     dst->host_srcip = src->host_srcip;
     dst->client = src->client;
+
+#ifdef HAVE_SIN_LEN
+    /* XXX need to fix this for v6 */
+    dst->client.addr.u.v4.sin_len  = sizeof(struct sockaddr_in);
+    dst->host_addr.u.v4.sin_len    = sizeof(struct sockaddr_in);
+    dst->host_nexthop.u.v4.sin_len = sizeof(struct sockaddr_in);
+    dst->host_srcip.u.v4.sin_len   = sizeof(struct sockaddr_in);
+#endif
+    
 #ifdef MODECFG
     dst->modecfg_server = src->modecfg_server;
     dst->modecfg_client = src->modecfg_client;
@@ -2202,6 +2211,8 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 
     psk = NULL;
 
+    zero(&peer_ca);
+
     our_pathlen = peer_pathlen = 0;
     best_our_pathlen  = 0;
     best_peer_pathlen = 0;
@@ -2955,6 +2966,10 @@ show_connections_status(void)
     {
 	count++;
     }
+    if(count == 0) 
+	/* abort early to avoid a malloc(0) that uclibc does not like */
+	return;
+
     array = alloc_bytes(sizeof(struct connection *)*count, "connection array");
 
     count=0;

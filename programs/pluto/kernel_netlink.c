@@ -23,6 +23,8 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <stdint.h>
+#include <linux/pfkeyv2.h>
 #include <unistd.h>
 
 #include "kameipsec.h"
@@ -43,6 +45,7 @@
 #include "kernel.h"
 #include "server.h"
 #include "nat_traversal.h"
+#include "state.h"
 #include "kernel_netlink.h"
 #include "kernel_pfkey.h"
 #include "log.h"
@@ -431,7 +434,7 @@ netlink_raw_eroute(const ip_address *this_host
 
     policy = IPSEC_POLICY_IPSEC;
 
-    if (satype == SADB_X_SATYPE_INT)
+    if (satype == K_SADB_X_SATYPE_INT)
     {
 	/* shunt route */
 	switch (ntohl(spi))
@@ -584,7 +587,7 @@ netlink_raw_eroute(const ip_address *this_host
 	    break;
 	}
 	else if (proto_info[0].encapsulation != ENCAPSULATION_MODE_TUNNEL
-	&& satype != SADB_X_SATYPE_INT)
+		 && satype != K_SADB_X_SATYPE_INT)
 	{
 	    break;
 	}
@@ -606,7 +609,7 @@ netlink_raw_eroute(const ip_address *this_host
  * @return bool True if successfull
  */
 static bool
-netlink_add_sa(const struct kernel_sa *sa, bool replace)
+netlink_add_sa(struct kernel_sa *sa, bool replace)
 {
     struct {
 	struct nlmsghdr n;
@@ -689,7 +692,7 @@ netlink_add_sa(const struct kernel_sa *sa, bool replace)
 	attr = (struct rtattr *)((char *)attr + attr->rta_len);
     }
 
-    if (sa->satype == SADB_X_SATYPE_COMP)
+    if (sa->satype == SADB_X_SATYPE_IPCOMP)
     {
 	struct xfrm_algo algo;
 	const char *name;
@@ -1176,7 +1179,7 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
     {
         inner_spi = st->st_ipcomp.attrs.spi;
         inner_proto = SA_COMP;
-        inner_satype = SADB_X_SATYPE_COMP;
+        inner_satype = K_SADB_X_SATYPE_COMP;
 
         i--;
         proto_info[i].proto = IPPROTO_COMP;
@@ -1196,7 +1199,7 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
 
         inner_spi = st->st_tunnel_out_spi;
         inner_proto = SA_IPIP;
-        inner_satype = SADB_X_SATYPE_IPIP;
+        inner_satype = K_SADB_X_SATYPE_IPIP;
 
         proto_info[i].encapsulation = ENCAPSULATION_MODE_TUNNEL;
         for (j = i + 1; proto_info[j].proto; j++)
@@ -1311,7 +1314,7 @@ netlink_shunt_eroute(struct connection *c
 			      , htonl(spi)
 			      , SA_INT
 			      , sr->this.protocol
-			      , SADB_X_SATYPE_INT
+			      , K_SADB_X_SATYPE_INT
 			      , null_proto_info, 0, op, buf2);
     }
 }
@@ -1546,6 +1549,7 @@ add_entry:
     }
 }
 
+
 const struct kernel_ops netkey_kernel_ops = {
     kern_name: "netkey",
     type: USE_NETKEY,
@@ -1565,6 +1569,7 @@ const struct kernel_ops netkey_kernel_ops = {
     grp_sa: NULL,
     get_spi: netlink_get_spi,
     docommand: do_command_linux,
+    process_ifaces: netlink_process_raw_ifaces,
 
     /* XXX these needed to be added */
     shunt_eroute: netlink_shunt_eroute,
@@ -1572,7 +1577,5 @@ const struct kernel_ops netkey_kernel_ops = {
     eroute_idle: NULL,  /* pfkey_was_eroute_idle,*/
     set_debug: NULL,    /* pfkey_set_debug, */
     remove_orphaned_holds: NULL, /* pfkey_remove_orphaned_holds,*/
-
-    process_ifaces: netlink_process_raw_ifaces,
 };
 #endif /* linux && NETKEY_SUPPORT */

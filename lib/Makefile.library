@@ -92,7 +92,7 @@ cleanall::
 
 # Gather dependencies caused by explicit #includes within .c files
 depend: ${DISTSRC}
-	@(ls $(DISTSRC) | grep '\.c' | xargs gcc -MM ${PORTINCLUDE} ${INCLUDES} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP}
+	@(ls $(DISTSRC) | grep '\.c' | xargs $(GCC) -MM ${PORTINCLUDE} ${INCLUDES} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP}
 
 -include ${srcdir}Makefile.depend.${OSDEP}
 

@@ -76,6 +76,7 @@
 #include "openswan/ipsec_radij.h"
 #include "openswan/ipsec_xform.h"
 #include "openswan/ipsec_tunnel.h"
+#include "openswan/ipsec_mast.h"
 
 #include "openswan/ipsec_rcv.h"
 #include "openswan/ipsec_xmit.h"
@@ -114,12 +115,6 @@
 #ifdef MODULE_LICENSE
 MODULE_LICENSE("GPL");
 #endif
-
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_eroute = 0;
-int debug_spi = 0;
-int debug_netlink = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
 
 struct prng ipsec_prng;
 
@@ -272,6 +267,8 @@ ipsec_klips_init(void)
 	error |= ipsec_tunnel_init_devices();
         if (error)
                 goto error_tunnel_init_devices;
+
+	error |= ipsec_mast_init_devices();
 
 #if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
 	/* register our ESP-UDP handler */

@@ -1666,7 +1666,9 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 		, buf);
 	    return STF_FAIL + INVALID_ID_INFORMATION;
 	}
-	else if (p != c)
+
+	/* did we find a better connection? */
+	if (p != c)
 	{
 	    /* We've got a better connection: it can support the
 	     * specified clients.  But it may need instantiation.
@@ -1752,11 +1754,18 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 #endif
 	    c = p;
 	}
+
 	/* fill in the client's true ip address/subnet */
-	if (p->spd.that.has_client_wildcard)
+	DBG(DBG_CONTROLMORE
+	    , DBG_log("client wildcard: %s  port wildcard: %s  virtual: %s"
+		      , c->spd.that.has_client_wildcard ? "yes" : "no"
+		      , c->spd.that.has_port_wildcard  ? "yes" : "no"
+		      , is_virtual_connection(c) ? "yes" : "no"));
+
+	if (c->spd.that.has_client_wildcard)
 	{
-	    p->spd.that.client = *his_net;
-	    p->spd.that.has_client_wildcard = FALSE;
+	    c->spd.that.client = *his_net;
+	    c->spd.that.has_client_wildcard = FALSE;
 	}
 
         /* fill in the client's true port */
@@ -1775,10 +1784,22 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 
 	else if (is_virtual_connection(c))
 	{
+	    char cthat[END_BUF];
+
 	    c->spd.that.client = *his_net;
+	    c->spd.that.has_client = TRUE;
 	    c->spd.that.virt = NULL;
-	    if (subnetishost(his_net) && addrinsubnet(&c->spd.that.host_addr, his_net))
+
+	    if (subnetishost(his_net)
+		&& addrinsubnet(&c->spd.that.host_addr, his_net)) {
+
 		c->spd.that.has_client = FALSE;
+	    }
+
+	    format_end(cthat, sizeof(cthat), &c->spd.that, NULL, TRUE, LEMPTY);
+	    DBG(DBG_CONTROLMORE
+		, DBG_log("setting phase 2 virtual values to %s"
+			  , cthat));
 	}
     }
     passert((p1st->st_policy & POLICY_PFS)==0 || p1st->st_pfs_group != NULL );
@@ -2068,8 +2089,18 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 	loglog(RC_LOG_SERIOUS, "we require PFS but Quick I1 SA specifies no GROUP_DESCRIPTION");
 	return STF_FAIL + NO_PROPOSAL_CHOSEN;	/* ??? */
     }
-    
-    openswan_log("responding to Quick Mode {msgid:%08x}", st->st_msgid);
+
+    openswan_log("responding to Quick Mode proposal {msgid:%08x}", st->st_msgid);
+    {
+	char instbuf[END_BUF];
+	struct connection *c = st->st_connection;
+	struct spd_route *sr = &c->spd;
+
+	format_end(instbuf, sizeof(instbuf),&sr->this,&sr->that,TRUE, LEMPTY);
+	openswan_log("    us: %s", instbuf);
+	
+	format_end(instbuf, sizeof(instbuf),&sr->that,&sr->this,FALSE, LEMPTY);	openswan_log("  them: %s", instbuf);
+    }
 
     /**** finish reply packet: Nr [, KE ] [, IDci, IDcr ] ****/
     

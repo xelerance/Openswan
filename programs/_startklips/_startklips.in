@@ -254,18 +254,13 @@ defaultinterface() {
 		echo "no default route, %defaultroute cannot cope!!!"
 		exit 1
 	fi
-	#if test `echo " $phys" | wc -l` -gt 1
-	#then
-	#	echo "multiple default routes, %defaultroute cannot cope!!!"
-	#	exit 1
-	#fi
 	next=`netstat -nr |
 		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $2; exit 0 }'`
-	if [ "$next" = "0.0.0.0" ]
-	then
-		next=`ip addr list $phys | grep -E "^ +inet6*.*scope global $phys" |
-		   awk '{ print $2}' | awk -F / '{ print $1 }'`
-	fi
+        if test `echo " $phys" | wc -l` -gt 1
+        then
+                echo "multiple default routes, %defaultroute using: $next"
+        fi
+
 	if $klips
 	then
 	    klipsinterface "ipsec0=$phys" $next

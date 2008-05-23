@@ -105,7 +105,7 @@ out:
 }
 
 static void
-__alg_info_ike_add (struct alg_info_ike *alg_info, int ealg_id, unsigned ek_bits, int aalg_id, unsigned ak_bits, int modp_id)
+__alg_info_ike_add (struct alg_info_ike *alg_info, int ealg_id, unsigned ek_bits, int aalg_id, unsigned ak_bits, unsigned int modp_id)
 {
 	struct ike_info *ike_info=alg_info->ike;
 	unsigned cnt=alg_info->alg_info_cnt, i;

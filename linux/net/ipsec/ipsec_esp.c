@@ -500,7 +500,9 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
 
 
 struct xform_functions esp_xform_funcs[]={
-	{	rcv_checks:         ipsec_rcv_esp_checks,
+	{
+		protocol:           IPPROTO_ESP,
+		rcv_checks:         ipsec_rcv_esp_checks,
 		rcv_setup_auth:     ipsec_rcv_esp_decrypt_setup,
 		rcv_calc_auth:      ipsec_rcv_esp_authcalc,
 		rcv_decrypt:        ipsec_rcv_esp_decrypt,
@@ -537,3 +539,9 @@ struct inet_protocol esp_protocol =
 
 #endif /* !CONFIG_KLIPS_ESP */
 
+/*
+ * Local variables:
+ * c-file-style: "linux"
+ * End:
+ *
+ */

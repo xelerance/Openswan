@@ -66,11 +66,6 @@
 
 #include "openswan/ipsec_proto.h"
 
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_ipcomp = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
-
-
 #ifdef CONFIG_KLIPS_IPCOMP
 enum ipsec_rcv_value
 ipsec_rcv_ipcomp_checks(struct ipsec_rcv_state *irs,
@@ -113,7 +108,7 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 	}
 
 	if(sysctl_ipsec_inbound_policy_check &&
-	   ((((ntohl(ipsp->ips_said.spi) & 0x0000ffff) != ntohl(irs->said.spi)) &&
+	   ((((ntohl(ipsp->ips_said.spi) & 0x0000ffff) != (ntohl(irs->said.spi) & 0x0000ffff)) &&
 	     (ipsp->ips_encalg != ntohl(irs->said.spi))   /* this is a workaround for peer non-compliance with rfc2393 */
 		    ))) {
 		char sa2[SATOT_BUF];
@@ -222,11 +217,13 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
 }
 
 struct xform_functions ipcomp_xform_funcs[]={
-	{rcv_checks:  ipsec_rcv_ipcomp_checks,
-	 rcv_decrypt: ipsec_rcv_ipcomp_decomp,
-	 xmit_setup:  ipsec_xmit_ipcomp_setup,
-	 xmit_headroom: 0,
-	 xmit_needtailroom: 0,
+	{
+		protocol:           IPPROTO_COMP,
+		rcv_checks:  ipsec_rcv_ipcomp_checks,
+		rcv_decrypt: ipsec_rcv_ipcomp_decomp,
+		xmit_setup:  ipsec_xmit_ipcomp_setup,
+		xmit_headroom: 0,
+		xmit_needtailroom: 0,
 	},
 };
 

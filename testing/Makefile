@@ -21,6 +21,8 @@ srcdir?=${OPENSWANSRCDIR}/testing/
 SUBDIRS=lib utils 
 SUBDIRS+=klips 
 SUBDIRS+=pluto dnssec scripts packaging
+#SUBDIRS+=kunit
+SUBDIRS+=pfkey
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"

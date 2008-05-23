@@ -85,6 +85,12 @@ void *alloc_bytes1(size_t size, const char *name, int leak_detective)
 {
     union mhdr *p;
 
+    if(size == 0) {
+	/* uclibc returns NULL on malloc(0) */
+	openswan_log("alloc_bytes1() was mistakenly asked to malloc 0 bytes for %s, please report to dev@openswan.org",name);
+	size = 1;
+    }
+
     if(leak_detective) {
 	p = malloc(sizeof(union mhdr) + size);
     } else {

@@ -89,10 +89,6 @@
 
 static __u32 zeroes[64];
 
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_tunnel = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
-
 DEBUG_NO_STATIC int
 ipsec_tunnel_open(struct net_device *dev)
 {
@@ -503,52 +499,7 @@ ipsec_tunnel_restore_hard_header(struct ipsec_xmit_state*ixs)
 			}
 		}
 	}
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
-	if (ixs->natt_type && ixs->natt_head) {
-		struct iphdr *ipp = ip_hdr(ixs->skb);
-		struct udphdr *udp;
-		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_tunnel_start_xmit: "
-			    "encapsuling packet into UDP (NAT-Traversal) (%d %d)\n",
-			    ixs->natt_type, ixs->natt_head);
 
-		ixs->iphlen = ipp->ihl << 2;
-		ipp->tot_len =
-			htons(ntohs(ipp->tot_len) + ixs->natt_head);
-		if(skb_tailroom(ixs->skb) < ixs->natt_head) {
-			printk(KERN_WARNING "klips_error:ipsec_tunnel_start_xmit: "
-				"tried to skb_put %d, %d available. "
-				"This should never happen, please report.\n",
-				ixs->natt_head,
-				skb_tailroom(ixs->skb));
-			ixs->stats->tx_errors++;
-			return IPSEC_XMIT_ESPUDP;
-		}
-		skb_put(ixs->skb, ixs->natt_head);
-
-		udp = (struct udphdr *)((char *)ipp + ixs->iphlen);
-
-		/* move ESP hdr after UDP hdr */
-		memmove((void *)((char *)udp + ixs->natt_head),
-			(void *)(udp),
-			ntohs(ipp->tot_len) - ixs->iphlen - ixs->natt_head);
-
-		/* clear UDP & Non-IKE Markers (if any) */
-		memset(udp, 0, ixs->natt_head);
-
-		/* fill UDP with usefull informations ;-) */
-		udp->source = htons(ixs->natt_sport);
-		udp->dest = htons(ixs->natt_dport);
-		udp->len = htons(ntohs(ipp->tot_len) - ixs->iphlen);
-
-		/* set protocol */
-		ipp->protocol = IPPROTO_UDP;
-
-		/* fix IP checksum */
-		ipp->check = 0;
-		ipp->check = ip_fast_csum((unsigned char *)ipp, ipp->ihl);
-	}
-#endif	
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
 		    "klips_debug:ipsec_xmit_restore_hard_header: "
 		    "With hard_header, final head,tailroom: %d,%d\n",
@@ -556,130 +507,6 @@ ipsec_tunnel_restore_hard_header(struct ipsec_xmit_state*ixs)
 		    skb_tailroom(ixs->skb));
 
 	return IPSEC_XMIT_OK;
-}
-
-enum ipsec_xmit_value
-ipsec_tunnel_send(struct ipsec_xmit_state*ixs)
-{
-	int err;
-#ifdef NETDEV_25
-	struct flowi fl;
-#endif
-  
-	/* new route/dst cache code from James Morris */
-	ixs->skb->dev = ixs->physdev;
-#ifdef NETDEV_25
- 	fl.oif = ixs->physdev->ifindex;
- 	fl.nl_u.ip4_u.daddr = ip_hdr(ixs->skb)->daddr;
-	fl.nl_u.ip4_u.saddr = ixs->pass ? 0 : ip_hdr(ixs->skb)->saddr;
-	fl.nl_u.ip4_u.tos = RT_TOS(ip_hdr(ixs->skb)->tos);
-	fl.proto = ip_hdr(ixs->skb)->protocol;
- 	if ((ixs->error = ip_route_output_key(&ixs->route, &fl))) {
-#else
-	/*skb_orphan(ixs->skb);*/
-	if((ixs->error = ip_route_output(&ixs->route,
-				    ixs->skb->nh.iph->daddr,
-				    ixs->pass ? 0 : ip_hdr(ixs->skb)->saddr,
-				    RT_TOS(ip_hdr(ixs->skb)->tos),
-                                    /* mcr->rgb: should this be 0 instead? */
-				    ixs->physdev->iflink))) {
-#endif
-		ixs->stats->tx_errors++;
-		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_xmit_send: "
-			    "ip_route_output failed with error code %d, rt->u.dst.dev=%s, dropped\n",
-			    ixs->error,
-			    ixs->route->u.dst.dev->name);
-		return IPSEC_XMIT_ROUTEERR;
-	}
-
-	if(ixs->dev == ixs->route->u.dst.dev) {
-		ip_rt_put(ixs->route);
-		/* This is recursion, drop it. */
-		ixs->stats->tx_errors++;
-		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_xmit_send: "
-			    "suspect recursion, dev=rt->u.dst.dev=%s, dropped\n",
-			    ixs->dev->name);
-		return IPSEC_XMIT_RECURSDETECT;
-	}
-	dst_release(ixs->skb->dst);
-	ixs->skb->dst = &ixs->route->u.dst;
-
-	ixs->stats->tx_bytes += ixs->skb->len;
-	if(ixs->skb->len < skb_network_header(ixs->skb) - ixs->skb->data) {
-		ixs->stats->tx_errors++;
-		printk(KERN_WARNING
-		       "klips_error:ipsec_xmit_send: "
-		       "tried to __skb_pull nh-data=%ld, %d available.  This should never happen, please report.\n",
-		       (unsigned long)(skb_network_header(ixs->skb) - ixs->skb->data),
-		       ixs->skb->len);
-		return IPSEC_XMIT_PUSHPULLERR;
-	}
-	__skb_pull(ixs->skb, skb_network_header(ixs->skb) - ixs->skb->data);
-#ifdef SKB_RESET_NFCT
-	if(!ixs->pass) {
-		nf_conntrack_put(ixs->skb->nfct);
-		ixs->skb->nfct = NULL;
-	}
-#if defined(CONFIG_NETFILTER_DEBUG) && defined(HAVE_SKB_NF_DEBUG)
-	ixs->skb->nf_debug = 0;
-#endif /* CONFIG_NETFILTER_DEBUG */
-#endif /* SKB_RESET_NFCT */
-	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-		    "klips_debug:ipsec_xmit_send: "
-		    "...done, calling ip_send() on device:%s\n",
-		    ixs->skb->dev ? ixs->skb->dev->name : "NULL");
-	KLIPS_IP_PRINT(debug_tunnel & DB_TN_XMIT, ip_hdr(ixs->skb));
-
-	if(ixs->pass) {
-		err = ipsec_tunnel_xmit2(ixs->skb);
-	} else {
-		err = NF_HOOK(PF_INET, NF_IP_LOCAL_OUT, ixs->skb, NULL, ixs->route->u.dst.dev,
-			      ipsec_tunnel_xmit2);
-	}
-	if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {
-		if(net_ratelimit())
-			printk(KERN_ERR
-			       "klips_error:ipsec_xmit_send: "
-			       "ip_send() failed, err=%d\n", 
-			       -err);
-		ixs->stats->tx_errors++;
-		ixs->stats->tx_aborted_errors++;
-		ixs->skb = NULL;
-		return IPSEC_XMIT_IPSENDFAILURE;
-	}
-
-	ixs->stats->tx_packets++;
-
-	ixs->skb = NULL;
-	
-	return IPSEC_XMIT_OK;
-}
-
-void
-ipsec_tunnel_cleanup(struct ipsec_xmit_state*ixs)
-{
-#if defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE)
-	netif_wake_queue(ixs->dev);
-#else /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
-	ixs->dev->tbusy = 0;
-#endif /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
-	if(ixs->saved_header) {
-		kfree(ixs->saved_header);
-	}
-	if(ixs->skb) {
-		dev_kfree_skb(ixs->skb, FREE_WRITE);
-	}
-	if(ixs->oskb) {
-		dev_kfree_skb(ixs->oskb, FREE_WRITE);
-	}
-	if (ixs->ips.ips_ident_s.data) {
-		kfree(ixs->ips.ips_ident_s.data);
-	}
-	if (ixs->ips.ips_ident_d.data) {
-		kfree(ixs->ips.ips_ident_d.data);
-	}
 }
 
 /* management of buffers */
@@ -697,6 +524,13 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct ipsec_xmit_state *ixs = NULL;
 	enum ipsec_xmit_value stat;
 
+	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+		    "\n\nipsec_tunnel_start_xmit: STARTING");
+
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+	ixs->natt_type = 0, ixs->natt_head = 0;
+	ixs->natt_sport = 0, ixs->natt_dport = 0;
+#endif
         stat = IPSEC_XMIT_ERRMEMALLOC;
         ixs = ipsec_xmit_state_new ();
         if (! ixs) {
@@ -772,6 +606,11 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		ixs->outgoing_said.dst.u.v4.sin_addr.s_addr &&
 		ixs->eroute);
 	
+	stat = ipsec_nat_encap(ixs);
+	if(stat != IPSEC_XMIT_OK) {
+		goto cleanup;
+	}
+
 	stat = ipsec_tunnel_restore_hard_header(ixs);
 	if(stat != IPSEC_XMIT_OK) {
 		goto cleanup;
@@ -781,7 +620,7 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	stat = ipsec_tunnel_send(ixs);
 
  cleanup:
-	ipsec_tunnel_cleanup(ixs);
+	ipsec_xmit_cleanup(ixs);
 
         ipsec_xmit_state_delete (ixs);
 alloc_error:
@@ -1746,18 +1585,6 @@ ipsec_tunnel_init(struct net_device *dev)
 	/* New-style flags. */
 	dev->flags		= IFF_NOARP /* 0 */ /* Petr Novak */;
 
-#if 0
-#ifdef NET_21
-	dev_init_buffers(dev);
-#else /* NET_21 */
-	dev->family		= AF_INET;
-	dev->pa_addr		= 0;
-	dev->pa_brdaddr 	= 0;
-	dev->pa_mask		= 0;
-	dev->pa_alen		= 4;
-#endif /* NET_21 */
-#endif
-
 	/* We're done.  Have I forgotten anything? */
 	return 0;
 }
@@ -1773,14 +1600,93 @@ ipsec_tunnel_probe(struct net_device *dev)
 	return 0;
 }
 
-struct net_device *ipsecdevices[IPSEC_NUM_IF];
+struct net_device *ipsecdevices[IPSEC_NUM_IFMAX];
+int ipsecdevices_max=-1;
+
+
+int
+ipsec_tunnel_createnum(int ifnum)
+{
+	char name[IFNAMSIZ];
+	struct net_device *dev_ipsec;
+	int vifentry;
+
+	if(ifnum > IPSEC_NUM_IFMAX) {
+		return -ENOENT;
+	}
+
+	if(ipsecdevices[ifnum]!=NULL) {
+		return -EEXIST;
+	}
+	
+	/* no identical device */
+	if(ifnum > ipsecdevices_max) {
+		ipsecdevices_max=ifnum;
+	}
+	vifentry = ifnum;
+	
+	KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
+		    "klips_debug:ipsec_tunnel_init_devices: "
+		    "creating and registering IPSEC_NUM_IF=%u device\n",
+		    ifnum);
+
+	sprintf(name, IPSEC_DEV_FORMAT, ifnum);
+	dev_ipsec = (struct net_device*)kmalloc(sizeof(struct net_device), GFP_KERNEL);
+	if (dev_ipsec == NULL) {
+		printk(KERN_ERR "klips_debug:ipsec_tunnel_init_devices: "
+		       "failed to allocate memory for device %s, quitting device init.\n",
+		       name);
+		return -ENOMEM;
+	}
+	memset((caddr_t)dev_ipsec, 0, sizeof(struct net_device));
+#ifdef NETDEV_23
+	strncpy(dev_ipsec->name, name, sizeof(dev_ipsec->name));
+#else /* NETDEV_23 */
+	dev_ipsec->name = (char*)kmalloc(IFNAMSIZ, GFP_KERNEL);
+	if (dev_ipsec->name == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
+			    "klips_debug:ipsec_tunnel_init_devices: "
+			    "failed to allocate memory for device %s name, quitting device init.\n",
+			    name);
+		return -ENOMEM;
+	}
+	memset((caddr_t)dev_ipsec->name, 0, IFNAMSIZ);
+	strncpy(dev_ipsec->name, name, IFNAMSIZ);
+#endif /* NETDEV_23 */
+#ifdef PAUL_FIXME
+	dev_ipsec->next = NULL;
+#endif
+	dev_ipsec->init = &ipsec_tunnel_probe;
+	KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
+		    "klips_debug:ipsec_tunnel_init_devices: "
+		    "registering device %s\n",
+		    dev_ipsec->name);
+	
+	/* reference and hold the device reference */
+	dev_hold(dev_ipsec);
+	ipsecdevices[vifentry]=dev_ipsec;
+	
+	if (register_netdev(dev_ipsec) != 0) {
+		KLIPS_PRINT(1 || debug_tunnel & DB_TN_INIT,
+			    "klips_debug:ipsec_tunnel_init_devices: "
+			    "registering device %s failed, quitting device init.\n",
+			    dev_ipsec->name);
+		return -EIO;
+	} else {
+		KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
+			    "klips_debug:ipsec_tunnel_init_devices: "
+			    "registering device %s succeeded, continuing...\n",
+			    dev_ipsec->name);
+	}
+	return 0;
+}
+	
 
 int 
 ipsec_tunnel_init_devices(void)
 {
 	int i;
-	char name[IFNAMSIZ];
-	struct net_device *dev_ipsec;
+	int error;
 	
 	KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
 		    "klips_debug:ipsec_tunnel_init_devices: "
@@ -1790,58 +1696,62 @@ ipsec_tunnel_init_devices(void)
 		    IFNAMSIZ);
 
 	for(i = 0; i < IPSEC_NUM_IF; i++) {
-		sprintf(name, IPSEC_DEV_FORMAT, i);
-		dev_ipsec = (struct net_device*)kmalloc(sizeof(struct net_device), GFP_KERNEL);
-		if (dev_ipsec == NULL) {
-			KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
-				    "klips_debug:ipsec_tunnel_init_devices: "
-				    "failed to allocate memory for device %s, quitting device init.\n",
-				    name);
-			return -ENOMEM;
-		}
-		memset((caddr_t)dev_ipsec, 0, sizeof(struct net_device));
-#ifdef NETDEV_23
-		strncpy(dev_ipsec->name, name, sizeof(dev_ipsec->name));
-#else /* NETDEV_23 */
-		dev_ipsec->name = (char*)kmalloc(IFNAMSIZ, GFP_KERNEL);
-		if (dev_ipsec->name == NULL) {
-			KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
-				    "klips_debug:ipsec_tunnel_init_devices: "
-				    "failed to allocate memory for device %s name, quitting device init.\n",
-				    name);
-			return -ENOMEM;
-		}
-		memset((caddr_t)dev_ipsec->name, 0, IFNAMSIZ);
-		strncpy(dev_ipsec->name, name, IFNAMSIZ);
-#endif /* NETDEV_23 */
-#ifdef HAVE_DEV_NEXT
-		dev_ipsec->next = NULL;
-#endif
-		dev_ipsec->init = &ipsec_tunnel_probe;
-		KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
-			    "klips_debug:ipsec_tunnel_init_devices: "
-			    "registering device %s\n",
-			    dev_ipsec->name);
-
-		/* reference and hold the device reference */
-		dev_hold(dev_ipsec);
-		ipsecdevices[i]=dev_ipsec;
-
-		if (register_netdev(dev_ipsec) != 0) {
-			KLIPS_PRINT(1 || debug_tunnel & DB_TN_INIT,
-				    "klips_debug:ipsec_tunnel_init_devices: "
-				    "registering device %s failed, quitting device init.\n",
-				    dev_ipsec->name);
-			return -EIO;
-		} else {
-			KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
-				    "klips_debug:ipsec_tunnel_init_devices: "
-				    "registering device %s succeeded, continuing...\n",
-				    dev_ipsec->name);
-		}
+		error = ipsec_tunnel_createnum(i);
+		
+		if(error) break;
 	}
 	return 0;
 }
+
+int
+ipsec_tunnel_deletenum(int vifnum)
+{
+	struct net_device *dev_ipsec;
+	
+	if(vifnum > IPSEC_NUM_IFMAX) {
+		return -ENOENT;
+	}
+
+	dev_ipsec = ipsecdevices[vifnum];
+	if(dev_ipsec == NULL) {
+		return -ENOENT;
+	}
+
+	/* release reference */
+	ipsecdevices[vifnum]=NULL;
+	ipsec_dev_put(dev_ipsec);
+	
+	KLIPS_PRINT(debug_tunnel, "Unregistering %s (refcnt=%d)\n",
+		    dev_ipsec->name,
+		    atomic_read(&dev_ipsec->refcnt));
+	unregister_netdev(dev_ipsec);
+	KLIPS_PRINT(debug_tunnel, "Unregisted %s\n", dev_ipsec->name);
+#ifndef NETDEV_23
+	kfree(dev_ipsec->name);
+	dev_ipsec->name=NULL;
+#endif /* !NETDEV_23 */
+	kfree(dev_ipsec->priv);
+	dev_ipsec->priv=NULL;
+
+	return 0;
+}
+
+
+struct net_device *
+ipsec_tunnel_get_device(int vifnum)
+{
+	struct net_device *nd;
+	
+	if(vifnum < ipsecdevices_max) {
+		nd = ipsecdevices[vifnum];
+
+		if(nd) dev_hold(nd);
+		return nd;
+	} else {
+		return NULL;
+	}
+}
+
 
 /* void */
 int
@@ -1901,7 +1811,7 @@ ipsec_xmit_state_cache_init (void)
 	/* ixs_cache_allocator = KMEM_CACHE(ipsec_ixs,0); */
         ixs_cache_allocator = kmem_cache_create ("ipsec_ixs",
                 sizeof (struct ipsec_xmit_state), 0,
-                0, NULL );
+                0, NULL);
 #else
         ixs_cache_allocator = kmem_cache_create ("ipsec_ixs",
                 sizeof (struct ipsec_xmit_state), 0,

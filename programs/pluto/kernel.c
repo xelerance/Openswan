@@ -470,7 +470,8 @@ enum routability {
     route_impossible = 0,
     route_easy = 1,
     route_nearconflict = 2,
-    route_farconflict = 3
+    route_farconflict = 3,
+    route_unnecessary = 4
 };
 
 static enum routability
@@ -490,6 +491,14 @@ could_route(struct connection *c)
     {
         loglog(RC_ROUTE, "cannot route an ISAKMP-only connection");
         return route_impossible;
+    }
+
+    /*
+     * if this is a transport SA, and overlapping SAs are supported, then
+     * this route is not necessary at all.
+     */
+    if(kernel_ops->overlap_supported && !LIN(POLICY_TUNNEL, c->policy)) {
+	return route_unnecessary;
     }
 
     /* if this is a Road Warrior template, we cannot route.
@@ -650,6 +659,9 @@ trap_connection(struct connection *c)
 
     case route_farconflict:
         return FALSE;
+
+    case route_unnecessary:
+        return TRUE;
     }
 
     return FALSE;
@@ -909,7 +921,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                                        , null_host, &that_broad_client
                                        , htonl(shunt_spi), SA_INT
                                        , transport_proto
-                                       , SADB_X_SATYPE_INT, null_proto_info
+                                       , K_SADB_X_SATYPE_INT, null_proto_info
                                        , SHUNT_PATIENCE, ERO_REPLACE, why))
                             {
                                 struct bare_shunt *bs = alloc_thing(struct bare_shunt, "bare shunt");
@@ -937,7 +949,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                        , htonl(shunt_spi)
                        , SA_INT
                        , transport_proto
-                       , SADB_X_SATYPE_INT, null_proto_info
+                       , K_SADB_X_SATYPE_INT, null_proto_info
                        , SHUNT_PATIENCE, ERO_ADD, why))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client, &that_client
@@ -960,7 +972,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
         if (raw_eroute(null_host, &this_client, null_host, &that_client
                        , htonl(shunt_spi), SA_INT
                        , 0 /* transport_proto */
-                       , SADB_X_SATYPE_INT, null_proto_info
+                       , K_SADB_X_SATYPE_INT, null_proto_info
                        , SHUNT_PATIENCE, op, why))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client
@@ -1075,18 +1087,26 @@ assign_hold(struct connection *c USED_BY_DEBUG
          */
         if (rn != ro)
         {
-            if (erouted(ro)
-            ? !eroute_connection(sr, htonl(SPI_HOLD), SA_INT, SADB_X_SATYPE_INT
-                                 , null_proto_info
-                                 , ERO_REPLACE
-                                 , "replace %trap with broad %hold")
-            : !eroute_connection(sr, htonl(SPI_HOLD), SA_INT, SADB_X_SATYPE_INT
-                                 , null_proto_info
-                , ERO_ADD, "add broad %hold"))
-            {
+	    int op;
+	    const char *reason;
+
+	    if(erouted(ro)) {
+		op = ERO_REPLACE;
+		reason= "replace %trap with broad %hold";
+	    } else {
+		op = ERO_ADD;
+		reason= "add broad %hold";
+	    }
+
+            if(!eroute_connection(sr, htonl(SPI_HOLD)
+				  , SA_INT, K_SADB_X_SATYPE_INT
+				  , null_proto_info
+				  , op
+				  , reason)) {
                 return FALSE;
             }
         }
+
         if (!replace_bare_shunt(src, dst
                                 , BOTTOM_PRIO
                                 , SPI_HOLD
@@ -1164,7 +1184,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     bool replace;
     bool outgoing_ref_set = FALSE;
     bool incoming_ref_set = FALSE;
-    IPsecSAref_t refhim = st->refhim;
+    IPsecSAref_t refhim = st->st_refhim;
     IPsecSAref_t new_refhim = IPSEC_SAREF_NULL;
 
     /* SPIs, saved for spigrouping or undoing, if necessary */
@@ -1244,9 +1264,23 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->spi = ipip_spi;
-        said_next->satype = SADB_X_SATYPE_IPIP;
+        said_next->satype = K_SADB_X_SATYPE_IPIP;
         said_next->text_said = text_said;
 	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
+
+	said_next->outif   = -1;
+
+	if(inbound) {
+	    /*
+	     * set corresponding outbound SA. We can do this on
+	     * each SA in the bundle without harm.
+	     */
+	    said_next->refhim = refhim;
+	} else if (!outgoing_ref_set) {
+	    /* on outbound, pick up the SAref if not already done */
+	    said_next->ref    = refhim;
+	    outgoing_ref_set  = TRUE;
+	}
 
 	if(inbound) {
 	    /*
@@ -1280,14 +1314,14 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	    }
 	}
 	if(!incoming_ref_set && inbound) {
-	    st->ref = said_next->ref;
+	    st->st_ref = said_next->ref;
 	    incoming_ref_set=TRUE;
 	}
         said_next++;
 
         inner_spi = ipip_spi;
         proto = SA_IPIP;
-        satype = SADB_X_SATYPE_IPIP;
+        satype = K_SADB_X_SATYPE_IPIP;
     }
 
     /* set up IPCOMP SA, if any */
@@ -1316,12 +1350,26 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->spi = ipcomp_spi;
-        said_next->satype = SADB_X_SATYPE_COMP;
+        said_next->satype = K_SADB_X_SATYPE_COMP;
         said_next->encalg = compalg;
         said_next->encapsulation = encapsulation;
         said_next->reqid = c->spd.reqid + 2;
         said_next->text_said = text_said;
 	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
+
+	said_next->outif   = -1;
+
+	if(inbound) {
+	    /*
+	     * set corresponding outbound SA. We can do this on
+	     * each SA in the bundle without harm.
+	     */
+	    said_next->refhim = refhim;
+	} else if (!outgoing_ref_set) {
+	    /* on outbound, pick up the SAref if not already done */
+	    said_next->ref    = refhim;
+	    outgoing_ref_set  = TRUE;
+	}
 
 	if(inbound) {
 	    /*
@@ -1352,7 +1400,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	    }
 	}
 	if(!incoming_ref_set && inbound) {
-	    st->ref = said_next->ref;
+	    st->st_ref = said_next->ref;
 	    incoming_ref_set=TRUE;
 	}
         said_next++;
@@ -1540,7 +1588,11 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->transid = st->st_esp.attrs.transattrs.encrypt;
         said_next->natt_type = natt_type;
         said_next->natt_oa = &natt_oa;
-#endif  
+#endif
+	said_next->outif   = -1;
+	if(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT && useful_mastno != -1) {
+	    said_next->outif = MASTTRANSPORT_OFFSET+useful_mastno;
+	}
         said_next->text_said = text_said;
 	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
 
@@ -1548,6 +1600,18 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	DBG_dump("esp enckey:",  said_next->enckey,  said_next->enckeylen);
 	DBG_dump("esp authkey:", said_next->authkey, said_next->authkeylen);
 #endif
+
+	if(inbound) {
+	    /*
+	     * set corresponding outbound SA. We can do this on
+	     * each SA in the bundle without harm.
+	     */
+	    said_next->refhim = refhim;
+	} else if (!outgoing_ref_set) {
+	    /* on outbound, pick up the SAref if not already done */
+	    said_next->ref    = refhim;
+	    outgoing_ref_set  = TRUE;
+	}
 
 	if(inbound) {
 	    /*
@@ -1576,7 +1640,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	    }
 	}
 	if(!incoming_ref_set && inbound) {
-	    st->ref = said_next->ref;
+	    st->st_ref = said_next->ref;
 	    incoming_ref_set=TRUE;
 	}
         said_next++;
@@ -1627,10 +1691,19 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->reqid = c->spd.reqid;
         said_next->text_said = text_said;
 	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
+	said_next->outif   = -1;
 
-#ifdef DIVULGE_KEYS
-	DBG_dump("ah authkey:", said_next->authkey, said_next->authkeylen);
-#endif
+	if(inbound) {
+	    /*
+	     * set corresponding outbound SA. We can do this on
+	     * each SA in the bundle without harm.
+	     */
+	    said_next->refhim = refhim;
+	} else if (!outgoing_ref_set) {
+	    /* on outbound, pick up the SAref if not already done */
+	    said_next->ref    = refhim;
+	    outgoing_ref_set  = TRUE;
+	}
 
 	if(inbound) {
 	    /*
@@ -1659,7 +1732,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	    }
 	}
 	if(!incoming_ref_set && inbound) {
-	    st->ref = said_next->ref;
+	    st->st_ref = said_next->ref;
 	    incoming_ref_set=TRUE;
 	}
         said_next++;
@@ -1774,7 +1847,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     }
 
     if(new_refhim != IPSEC_SAREF_NULL) {
-	st->refhim = new_refhim;
+	st->st_refhim = new_refhim;
     }
 
 #ifdef DEBUG
@@ -2025,6 +2098,33 @@ void show_kernel_interface()
     }
 }
 
+/*
+ * see if the attached connection refers to an older state.
+ * if it does, then initiate this state with the appropriate outgoing
+ * references, such that we won't break any userland applications
+ * that are using the conn with REFINFO.
+ */
+static void look_for_replacement_state(struct state *st)
+{
+    struct connection *c = st->st_connection;
+    struct state *ost = state_with_serialno(c->newest_ipsec_sa);
+    
+    DBG(DBG_CONTROL,
+	DBG_log("checking if this is a replacement state");
+	DBG_log("  st=%p ost=%p st->serialno=#%lu ost->serialno=#%lu "
+		, st, ost, st->st_serialno, ost?ost->st_serialno : 0));
+
+    if(ost && ost != st && ost->st_serialno != st->st_serialno) {
+	/*
+	 * then there is an old state associated, and it is
+	 * different then the new one.
+	 */
+	openswan_log("keeping refhim=%lu during rekey"
+		     , (unsigned long)ost->st_refhim);
+	st->st_refhim = ost->st_refhim;
+    }
+}
+
 
 /* Note: install_inbound_ipsec_sa is only used by the Responder.
  * The Responder will subsequently use install_ipsec_sa for the outbound.
@@ -2049,20 +2149,26 @@ install_inbound_ipsec_sa(struct state *st)
             struct spd_route *esr;
             struct connection *o = route_owner(c, &esr, NULL, NULL);
 
-            if (o == NULL)
-                break;  /* nobody has a route */
+            if (o == NULL || c==o)
+                break;  /* nobody interesting has a route */
 
             /* note: we ignore the client addresses at this end */
             if (sameaddr(&o->spd.that.host_addr, &c->spd.that.host_addr)
-            && o->interface == c->interface)
+		&& o->interface == c->interface)
                 break;  /* existing route is compatible */
 
             if (o->kind == CK_TEMPLATE && streq(o->name, c->name))
                 break;  /* ??? is this good enough?? */
 
-            loglog(RC_LOG_SERIOUS, "route to peer's client conflicts with \"%s\" %s; releasing old connection to free the route"
-                , o->name, ip_str(&o->spd.that.host_addr));
-            release_connection(o, FALSE);
+	    if(kernel_ops->overlap_supported
+	       && !LIN(POLICY_TUNNEL, c->policy)
+	       && !LIN(POLICY_TUNNEL, o->policy)) {
+		break;
+	    }
+		
+	    loglog(RC_LOG_SERIOUS, "route to peer's client conflicts with \"%s\" %s; releasing old connection to free the route"		
+		   , o->name, ip_str(&o->spd.that.host_addr));
+	    release_connection(o, FALSE);
         }
     }
 
@@ -2072,24 +2178,36 @@ install_inbound_ipsec_sa(struct state *st)
     {
     case route_easy:
     case route_nearconflict:
+	DBG(DBG_CONTROL
+	    , DBG_log("   routing is easy, or has resolvable near-conflict"));
+	break;
+
+    case route_unnecessary:
+	/*
+	 * in this situation, we should look and see if there is a state
+	 * that our connection references, that we are in fact replacing.
+	 */
         break;
 
     default:
         return FALSE;
     }
 
-    /* we now have to set up the outgoing SA first, so that
+    look_for_replacement_state(st);
+
+    /*
+     * we now have to set up the outgoing SA first, so that
      * we can refer to it in the incoming SA.
      */
-    if(st->refhim == IPSEC_SAREF_NULL) {
+    if(st->st_refhim == IPSEC_SAREF_NULL && !st->st_outbound_done) {
+	DBG(DBG_CONTROL, DBG_log("installing outgoing SA now as refhim=%u", st->st_refhim));
 	if(!setup_half_ipsec_sa(st, FALSE)) {
-	    DBG_log("failed to install outgoing SA: %u", st->refhim);
+	    DBG_log("failed to install outgoing SA: %u", st->st_refhim);
 	    return FALSE;
 	}
+	st->st_outbound_done = TRUE;
     }
-#if 0
-    DBG_log("outgoing SA has refhim=%u", st->refhim);
-#endif
+    DBG(DBG_CONTROL, DBG_log("outgoing SA has refhim=%u", st->st_refhim));
 
     /* (attempt to) actually set up the SAs */
     return setup_half_ipsec_sa(st, TRUE);
@@ -2335,7 +2453,7 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
                     , bs->said.spi      /* network order */
                     , SA_INT            /* proto */
                     , 0                 /* transport_proto */
-                    , SADB_X_SATYPE_INT
+                    , K_SADB_X_SATYPE_INT
                     , null_proto_info
                     , SHUNT_PATIENCE
                     , ERO_REPLACE, "restore");
@@ -2383,15 +2501,18 @@ bool
 install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
 {
     struct spd_route *sr;
+    enum routability rb;
 
     DBG(DBG_CONTROL, DBG_log("install_ipsec_sa() for #%ld: %s"
                              , st->st_serialno
                              , inbound_also?
                              "inbound and outbound" : "outbound only"));
 
-    switch (could_route(st->st_connection))
+    rb = could_route(st->st_connection);
+    switch (rb)
     {
     case route_easy:
+    case route_unnecessary:
     case route_nearconflict:
         break;
 
@@ -2402,19 +2523,24 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
     /* (attempt to) actually set up the SA group */
 
     /* setup outgoing SA if we haven't already */
-    if(st->refhim == IPSEC_SAREF_NULL) {
+    if(!st->st_outbound_done) {
 	if(!setup_half_ipsec_sa(st, FALSE)) {
 	    return FALSE;
 	}
-	DBG(DBG_KLIPS, DBG_log("set up outoing SA, ref=%u/%u", st->ref, st->refhim));
+	DBG(DBG_KLIPS, DBG_log("set up outoing SA, ref=%u/%u", st->st_ref, st->st_refhim));
+	st->st_outbound_done = TRUE;
     }
 
     /* now setup inbound SA */
-    if(st->ref == IPSEC_SAREF_NULL && inbound_also) {
+    if(st->st_ref == IPSEC_SAREF_NULL && inbound_also) {
 	if(!setup_half_ipsec_sa(st, TRUE)) {
 	    return FALSE;
 	}
-	DBG(DBG_KLIPS, DBG_log("set up incoming SA, ref=%u/%u", st->ref, st->refhim));
+	DBG(DBG_KLIPS, DBG_log("set up incoming SA, ref=%u/%u", st->st_ref, st->st_refhim));
+    }
+
+    if(rb == route_unnecessary) {
+	return TRUE;
     }
 
     for (sr = &st->st_connection->spd; sr != NULL; sr = sr->next)

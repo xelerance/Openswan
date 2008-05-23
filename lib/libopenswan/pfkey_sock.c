@@ -25,7 +25,7 @@ extern char *progname;
 
 int pfkey_open_sock_with_error(void)
 {
-	int pfkey_sock;
+	int pfkey_sock = -1;
 
 	if((pfkey_sock = safe_socket(PF_KEY, SOCK_RAW, PF_KEY_V2) ) < 0) {
 		fprintf(stderr, "%s: Trouble opening PF_KEY family socket with error: ",

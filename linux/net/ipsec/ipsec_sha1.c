@@ -168,52 +168,10 @@ void SHA1Final(unsigned char digest[20], void *vcontext)
 #endif
 }
 
-
 /*
- * $Log: ipsec_sha1.c,v $
- * Revision 1.9  2004/04/06 02:49:26  mcr
- * 	pullup of algo code from alg-branch.
  *
- * Revision 1.8  2002/09/10 01:45:14  mcr
- * 	changed type of MD5_CTX and SHA1_CTX to void * so that
- * 	the function prototypes would match, and could be placed
- * 	into a pointer to a function.
- *
- * Revision 1.7  2002/04/24 07:55:32  mcr
- * 	#include patches and Makefiles for post-reorg compilation.
- *
- * Revision 1.6  2002/04/24 07:36:30  mcr
- * Moved from ./klips/net/ipsec/ipsec_sha1.c,v
- *
- * Revision 1.5  1999/12/13 13:59:13  rgb
- * Quick fix to argument size to Update bugs.
- *
- * Revision 1.4  1999/04/11 00:29:00  henry
- * GPL boilerplate
- *
- * Revision 1.3  1999/04/06 04:54:27  rgb
- * Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
- * patch shell fixes.
- *
- * Revision 1.2  1999/01/22 06:55:50  rgb
- * 64-bit clean-up.
- *
- * Revision 1.1  1998/06/18 21:27:50  henry
- * move sources from klips/src to klips/net/ipsec, to keep stupid
- * kernel-build scripts happier in the presence of symlinks
- *
- * Revision 1.2  1998/04/23 20:54:04  rgb
- * Fixed md5 and sha1 include file nesting issues, to be cleaned up when
- * verified.
- *
- * Revision 1.1  1998/04/09 03:06:11  henry
- * sources moved up from linux/net/ipsec
- *
- * Revision 1.1.1.1  1998/04/08 05:35:05  henry
- * RGB's ipsec-0.8pre2.tar.gz ipsec-0.8
- *
- * Revision 0.4  1997/01/15 01:28:15  ji
- * New transform
- *
+ * Local Variables:
+ * c-file-style: "linux"
+ * End:
  *
  */

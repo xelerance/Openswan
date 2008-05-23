@@ -67,6 +67,13 @@ void confwrite_int(FILE *out,
 	if(k->validity & kv_policy) continue;
 	if(k->validity & kv_processed) continue;
 
+	/* do not output aliases */
+	if(k->validity & kv_alias) continue;
+	
+	/* do not output policy settings handled elsewhere */
+	if(k->validity & kv_policy) continue;
+	if(k->validity & kv_processed) continue;
+
 #if 0
 	printf("#side: %s  %s validity: %08x & %08x=%08x vs %08x\n", side,
 	       k->keyname, k->validity, KV_CONTEXT_MASK, k->validity&KV_CONTEXT_MASK, context);

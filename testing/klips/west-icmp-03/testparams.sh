@@ -5,6 +5,7 @@ TESTHOST=west
 TEST_TYPE=klipstest
 TEST_PURPOSE=regress
 EXITONEMPTY=--exitonempty
+
 PRIVATE_ARPREPLY=true
 
 PUB_INPUT=../inputs/08-east-west-esp-ipcomp.pcap

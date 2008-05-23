@@ -41,6 +41,9 @@
 #endif
 
 #include <linux/module.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
+# include <linux/moduleparam.h>
+#endif
 #include <linux/init.h>
 
 #include <linux/kernel.h> /* printk() */
@@ -100,18 +103,12 @@ MODULE_AUTHOR("Juanjo Ciarlante, Harpo MAxx, Luciano Ruete");
 static int debug_crypto=0;
 static int test_crypto=0;
 static int excl_crypto=0;
-#ifdef module_param
-module_param(debug_crypto, int, 0664);
-module_param(test_crypto, int, 0664);
-module_param(excl_crypto, int, 0664);
-#else
-MODULE_PARM(debug_crypto, "i");
-MODULE_PARM(test_crypto, "i");
-MODULE_PARM(excl_crypto, "i");
-#endif
-
 static int noauto = 0;
-MODULE_PARM(noauto,"i");
+module_parm(debug_crypto,int,0666);
+module_parm(test_crypto,int,0666);
+module_parm(excl_crypto,int,0666);
+module_parm(noauto,int,0666);
+
 MODULE_PARM_DESC(noauto, "Dont try all known algos, just setup enabled ones");
 
 #ifdef CONFIG_KLIPS_ENC_1DES
@@ -124,27 +121,16 @@ static int cast[] = {-1, -1};
 static int serpent[] = {-1, -1};
 static int twofish[] = {-1, -1};
 
-#ifdef module_param_array
 #ifdef CONFIG_KLIPS_ENC_1DES
-module_param_array(des_ede1,int,NULL,0);
+module_param_array(des_ede1,int,NULL,0444);
 #endif
-module_param_array(des_ede3,int,NULL,0);
-module_param_array(aes,int,NULL,0);
-module_param_array(blowfish,int,NULL,0);
-module_param_array(cast,int,NULL,0);
-module_param_array(serpent,int,NULL,0);
-module_param_array(twofish,int,NULL,0);
-#else
-#ifdef CONFIG_KLIPS_ENC_1DES
-MODULE_PARM(des_ede1,"1-2i");
-#endif
-MODULE_PARM(des_ede3,"1-2i");
-MODULE_PARM(aes,"1-2i");
-MODULE_PARM(blowfish,"1-2i");
-MODULE_PARM(cast,"1-2i");
-MODULE_PARM(serpent,"1-2i");
-MODULE_PARM(twofish,"1-2i");
-#endif
+module_param_array(des_ede3,int,NULL,0444);
+module_param_array(aes,int,NULL,0444);
+module_param_array(blowfish,int,NULL,0444);
+module_param_array(cast,int,NULL,0444);
+module_param_array(serpent,int,NULL,0444);
+module_param_array(twofish,int,NULL,0444);
+
 MODULE_PARM_DESC(des_ede1, "0: disable | 1: force_enable | min,max: dontuse");
 MODULE_PARM_DESC(des_ede3, "0: disable | 1: force_enable | min,max: dontuse");
 MODULE_PARM_DESC(aes, "0: disable | 1: force_enable | min,max: keybitlens");

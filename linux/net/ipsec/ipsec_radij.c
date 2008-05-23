@@ -63,10 +63,6 @@
 
 #include "openswan/ipsec_proto.h"
 
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_radij = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
-
 struct radij_node_head *rnh = NULL;
 #ifdef SPINLOCK
 spinlock_t eroute_lock = SPIN_LOCK_UNLOCKED;
@@ -549,3 +545,10 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 	return 0;
 }
 
+/*
+ *
+ * Local Variables:
+ * c-file-style: "linux"
+ * End:
+ *
+ */

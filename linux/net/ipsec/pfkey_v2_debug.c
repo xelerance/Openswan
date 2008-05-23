@@ -58,43 +58,46 @@ extern int debug_pfkey;
  */
 
 static char *pfkey_sadb_ext_strings[]={
-  "reserved",                     /* SADB_EXT_RESERVED             0 */
-  "security-association",         /* SADB_EXT_SA                   1 */
-  "lifetime-current",             /* SADB_EXT_LIFETIME_CURRENT     2 */
-  "lifetime-hard",                /* SADB_EXT_LIFETIME_HARD        3 */
-  "lifetime-soft",                /* SADB_EXT_LIFETIME_SOFT        4 */
-  "source-address",               /* SADB_EXT_ADDRESS_SRC          5 */
-  "destination-address",          /* SADB_EXT_ADDRESS_DST          6 */
-  "proxy-address",                /* SADB_EXT_ADDRESS_PROXY        7 */
-  "authentication-key",           /* SADB_EXT_KEY_AUTH             8 */
-  "cipher-key",                   /* SADB_EXT_KEY_ENCRYPT          9 */
-  "source-identity",              /* SADB_EXT_IDENTITY_SRC         10 */
-  "destination-identity",         /* SADB_EXT_IDENTITY_DST         11 */
-  "sensitivity-label",            /* SADB_EXT_SENSITIVITY          12 */
-  "proposal",                     /* SADB_EXT_PROPOSAL             13 */
-  "supported-auth",               /* SADB_EXT_SUPPORTED_AUTH       14 */
-  "supported-cipher",             /* SADB_EXT_SUPPORTED_ENCRYPT    15 */
-  "spi-range",                    /* SADB_EXT_SPIRANGE             16 */
-  "X-kmpprivate",                 /* SADB_X_EXT_KMPRIVATE          17 */
-  "X-satype2",                    /* SADB_X_EXT_SATYPE2            18 */
-  "X-security-association",       /* SADB_X_EXT_SA2                19 */
-  "X-destination-address2",       /* SADB_X_EXT_ADDRESS_DST2       20 */
-  "X-source-flow-address",        /* SADB_X_EXT_ADDRESS_SRC_FLOW   21 */
-  "X-dest-flow-address",          /* SADB_X_EXT_ADDRESS_DST_FLOW   22 */
-  "X-source-mask",                /* SADB_X_EXT_ADDRESS_SRC_MASK   23 */
-  "X-dest-mask",                  /* SADB_X_EXT_ADDRESS_DST_MASK   24 */
-  "X-set-debug",                  /* SADB_X_EXT_DEBUG              25 */
+  "reserved",                     /* K_SADB_EXT_RESERVED             0 */
+  "security-association",         /* K_SADB_EXT_SA                   1 */
+  "lifetime-current",             /* K_SADB_EXT_LIFETIME_CURRENT     2 */
+  "lifetime-hard",                /* K_SADB_EXT_LIFETIME_HARD        3 */
+  "lifetime-soft",                /* K_SADB_EXT_LIFETIME_SOFT        4 */
+  "source-address",               /* K_SADB_EXT_ADDRESS_SRC          5 */
+  "destination-address",          /* K_SADB_EXT_ADDRESS_DST          6 */
+  "proxy-address",                /* K_SADB_EXT_ADDRESS_PROXY        7 */
+  "authentication-key",           /* K_SADB_EXT_KEY_AUTH             8 */
+  "cipher-key",                   /* K_SADB_EXT_KEY_ENCRYPT          9 */
+  "source-identity",              /* K_SADB_EXT_IDENTITY_SRC         10 */
+  "destination-identity",         /* K_SADB_EXT_IDENTITY_DST         11 */
+  "sensitivity-label",            /* K_SADB_EXT_SENSITIVITY          12 */
+  "proposal",                     /* K_SADB_EXT_PROPOSAL             13 */
+  "supported-auth",               /* K_SADB_EXT_SUPPORTED_AUTH       14 */
+  "supported-cipher",             /* K_SADB_EXT_SUPPORTED_ENCRYPT    15 */
+  "spi-range",                    /* K_SADB_EXT_SPIRANGE             16 */
+  "X-kmpprivate",                 /* K_SADB_X_EXT_KMPRIVATE          17 */
+  "X-satype2",                    /* K_SADB_X_EXT_SATYPE2            18 */
+  "X-security-association",       /* K_SADB_X_EXT_SA2                19 */
+  "X-destination-address2",       /* K_SADB_X_EXT_ADDRESS_DST2       20 */
+  "X-source-flow-address",        /* K_SADB_X_EXT_ADDRESS_SRC_FLOW   21 */
+  "X-dest-flow-address",          /* K_SADB_X_EXT_ADDRESS_DST_FLOW   22 */
+  "X-source-mask",                /* K_SADB_X_EXT_ADDRESS_SRC_MASK   23 */
+  "X-dest-mask",                  /* K_SADB_X_EXT_ADDRESS_DST_MASK   24 */
+  "X-set-debug",                  /* K_SADB_X_EXT_DEBUG              25 */
   /* NAT_TRAVERSAL */
-  "X-NAT-T-type",                 /* SADB_X_EXT_NAT_T_TYPE         26 */
-  "X-NAT-T-sport",                /* SADB_X_EXT_NAT_T_SPORT        27 */
-  "X-NAT-T-dport",                /* SADB_X_EXT_NAT_T_DPORT        28 */
-  "X-NAT-T-OA",                   /* SADB_X_EXT_NAT_T_OA           29 */
+  "X-ext-protocol",               /* K_SADB_X_EXT_PROTOCOL           26 */
+  "X-NAT-T-type",                 /* K_SADB_X_EXT_NAT_T_TYPE         27 */
+  "X-NAT-T-sport",                /* K_SADB_X_EXT_NAT_T_SPORT        28 */
+  "X-NAT-T-dport",                /* K_SADB_X_EXT_NAT_T_DPORT        29 */
+  "X-NAT-T-OA",                   /* K_SADB_X_EXT_NAT_T_OA           30 */
+  "X-plumbif",                    /* K_SADB_X_EXT_PLUMBIF            31 */
+  "X-saref",                      /* K_SADB_X_EXT_SAREF              32 */
 };
 
 const char *
 pfkey_v2_sadb_ext_string(int ext)
 {
-  if(ext <= SADB_EXT_MAX) {
+  if(ext <= K_SADB_EXT_MAX) {
     return pfkey_sadb_ext_strings[ext];
   } else {
     return "unknown-ext";
@@ -103,82 +106,38 @@ pfkey_v2_sadb_ext_string(int ext)
 
 
 static char *pfkey_sadb_type_strings[]={
-	"reserved",                     /* SADB_RESERVED      */
-	"getspi",                       /* SADB_GETSPI        */
-	"update",                       /* SADB_UPDATE        */
-	"add",                          /* SADB_ADD           */
-	"delete",                       /* SADB_DELETE        */
-	"get",                          /* SADB_GET           */
-	"acquire",                      /* SADB_ACQUIRE       */
-	"register",                     /* SADB_REGISTER      */
-	"expire",                       /* SADB_EXPIRE        */
-	"flush",                        /* SADB_FLUSH         */
-	"dump",                         /* SADB_DUMP          */
-	"x-promisc",                    /* SADB_X_PROMISC     */
-	"x-pchange",                    /* SADB_X_PCHANGE     */
-	"x-groupsa",                    /* SADB_X_GRPSA       */
-	"x-addflow(eroute)",            /* SADB_X_ADDFLOW     */
-	"x-delflow(eroute)",            /* SADB_X_DELFLOW     */
-	"x-debug",                      /* SADB_X_DEBUG       */
+	"reserved",                     /* K_SADB_RESERVED      */
+	"getspi",                       /* K_SADB_GETSPI        */
+	"update",                       /* K_SADB_UPDATE        */
+	"add",                          /* K_SADB_ADD           */
+	"delete",                       /* K_SADB_DELETE        */
+	"get",                          /* K_SADB_GET           */
+	"acquire",                      /* K_SADB_ACQUIRE       */
+	"register",                     /* K_SADB_REGISTER      */
+	"expire",                       /* K_SADB_EXPIRE        */
+	"flush",                        /* K_SADB_FLUSH         */
+	"dump",                         /* K_SADB_DUMP          */
+	"x-promisc",                    /* K_SADB_X_PROMISC     */
+	"x-pchange",                    /* K_SADB_X_PCHANGE     */
+	"x-groupsa",                    /* K_SADB_X_GRPSA       */
+	"x-addflow(eroute)",            /* K_SADB_X_ADDFLOW     */
+	"x-delflow(eroute)",            /* K_SADB_X_DELFLOW     */
+	"x-debug",                      /* K_SADB_X_DEBUG       */
 };
 
 const char *
 pfkey_v2_sadb_type_string(int sadb_type)
 {
-  if(sadb_type <= SADB_MAX) {
+  if(sadb_type <= K_SADB_MAX) {
     return pfkey_sadb_type_strings[sadb_type];
   } else {
     return "unknown-sadb-type";
   }
 }
 
-
-
-
 /*
- * $Log: pfkey_v2_debug.c,v $
- * Revision 1.11  2005/04/06 17:45:16  mcr
- * 	always include NAT-T names.
  *
- * Revision 1.10  2004/07/10 07:48:35  mcr
- * Moved from linux/lib/libfreeswan/pfkey_v2_debug.c,v
- *
- * Revision 1.9  2004/03/08 01:59:08  ken
- * freeswan.h -> openswan.h
- *
- * Revision 1.8  2003/12/10 01:20:19  mcr
- * 	NAT-traversal patches to KLIPS.
- *
- * Revision 1.7  2002/09/20 05:01:26  rgb
- * Fixed limit inclusion error in both type and ext string conversion.
- *
- * Revision 1.6  2002/04/24 07:55:32  mcr
- * 	#include patches and Makefiles for post-reorg compilation.
- *
- * Revision 1.5  2002/04/24 07:36:40  mcr
- * Moved from ./lib/pfkey_v2_debug.c,v
- *
- * Revision 1.4  2002/01/29 22:25:36  rgb
- * Re-add ipsec_kversion.h to keep MALLOC happy.
- *
- * Revision 1.3  2002/01/29 01:59:09  mcr
- * 	removal of kversions.h - sources that needed it now use ipsec_param.h.
- * 	updating of IPv6 structures to match latest in6.h version.
- * 	removed dead code from openswan.h that also duplicated kversions.h
- * 	code.
- *
- * Revision 1.2  2002/01/20 20:34:50  mcr
- * 	added pfkey_v2_sadb_type_string to decode sadb_type to string.
- *
- * Revision 1.1  2001/11/27 05:30:06  mcr
- * 	initial set of debug strings for pfkey debugging.
- * 	this will eventually only be included for debug builds.
- *
- * Revision 1.1  2001/09/21 04:12:03  mcr
- * 	first compilable version.
- *
- *
- * Local variables:
+ * Local Variables:
  * c-file-style: "linux"
  * End:
  *

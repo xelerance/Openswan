@@ -21,6 +21,7 @@ INIT_SCRIPT=alloctest3.sh
 # do not store this in CVS, but generate it the first time.
 if [ ! -f alloctest2.sh ]
 then
+    pwd
     perl genallocfile.pl >alloctest2.sh
 fi
 

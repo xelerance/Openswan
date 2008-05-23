@@ -76,11 +76,7 @@
 
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_kern24.h"
-
-#ifdef CONFIG_KLIPS_DEBUG
-int debug_pfkey = 0;
-extern int sysctl_ipsec_debug_verbose;
-#endif /* CONFIG_KLIPS_DEBUG */
+#include "openswan/ipsec_sysctl.h"
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
@@ -97,12 +93,12 @@ static atomic_t pfkey_sock_users = ATOMIC_INIT(0);
 struct sock *pfkey_sock_list = NULL;
 #endif
 
-struct supported_list *pfkey_supported_list[SADB_SATYPE_MAX+1];
+struct supported_list *pfkey_supported_list[K_SADB_SATYPE_MAX+1];
 
 struct socket_list *pfkey_open_sockets = NULL;
-struct socket_list *pfkey_registered_sockets[SADB_SATYPE_MAX+1];
+struct socket_list *pfkey_registered_sockets[K_SADB_SATYPE_MAX+1];
 
-int pfkey_msg_interp(struct sock *, struct sadb_msg *, struct sadb_msg **);
+int pfkey_msg_interp(struct sock *, struct sadb_msg *);
 
 DEBUG_NO_STATIC int pfkey_create(struct socket *sock, int protocol);
 DEBUG_NO_STATIC int pfkey_shutdown(struct socket *sock, int mode);
@@ -771,7 +767,7 @@ pfkey_release(struct socket *sock, struct socket *peersock)
 	/* Try to flush out this socket. Throw out buffers at least */
 	pfkey_destroy_socket(sk);
 	pfkey_list_remove_socket(sock, &pfkey_open_sockets);
-	for(i = SADB_SATYPE_UNSPEC; i <= SADB_SATYPE_MAX; i++) {
+	for(i = K_SADB_SATYPE_UNSPEC; i <= K_SADB_SATYPE_MAX; i++) {
 		pfkey_list_remove_socket(sock, &(pfkey_registered_sockets[i]));
 	}
 
@@ -931,20 +927,6 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 		SENDERR(EMSGSIZE);
 	}
 
-#if 0
-	/* This check is questionable, since a downward message could be
-	   the result of an ACQUIRE either from kernel (PID==0) or
-	   userspace (some other PID). */
-	/* check PID */
-	if(pfkey_msg->sadb_msg_pid != current->pid) {
-		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:pfkey_sendmsg: "
-			    "pid (%d) does not equal sending process pid (%d).\n",
-			    pfkey_msg->sadb_msg_pid, current->pid);
-		SENDERR(EINVAL);
-	}
-#endif
-
 	if(pfkey_msg->sadb_msg_reserved) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
@@ -953,7 +935,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 		SENDERR(EINVAL);
 	}
 	
-	if((pfkey_msg->sadb_msg_type > SADB_MAX) || (!pfkey_msg->sadb_msg_type)){
+	if((pfkey_msg->sadb_msg_type > K_SADB_MAX) || (!pfkey_msg->sadb_msg_type)){
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
 			    "msg type too large or small:%d.\n",
@@ -965,7 +947,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 		    "klips_debug:pfkey_sendmsg: "
 		    "msg sent for parsing.\n");
 	
-	if((error = pfkey_msg_interp(sk, pfkey_msg, &pfkey_reply))) {
+	if((error = pfkey_msg_interp(sk, pfkey_msg))) {
 		struct socket_list *pfkey_socketsp;
 
 		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_sendmsg: "
@@ -1229,7 +1211,7 @@ pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
 	len += ipsec_snprintf(buffer, length,
 		      "satype exttype alg_id ivlen minbits maxbits name\n");
 	
-	for(satype = SADB_SATYPE_UNSPEC; satype <= SADB_SATYPE_MAX; satype++) {
+	for(satype = K_SADB_SATYPE_UNSPEC; satype <= K_SADB_SATYPE_MAX; satype++) {
 		ps = pfkey_supported_list[satype];
 		while(ps) {
 			struct ipsec_alg_supported *alg = ps->supportedp;
@@ -1288,7 +1270,7 @@ pfkey_registered_get_info(char *buffer, char **start, off_t offset, int length
 	len += ipsec_snprintf(buffer, length,
 		      "satype   socket   pid       sk\n");
 	
-	for(satype = SADB_SATYPE_UNSPEC; satype <= SADB_SATYPE_MAX; satype++) {
+	for(satype = K_SADB_SATYPE_UNSPEC; satype <= K_SADB_SATYPE_MAX; satype++) {
 		pfkey_sockets = pfkey_registered_sockets[satype];
 		while(pfkey_sockets) {
 			len += ipsec_snprintf(buffer+len, length-len,
@@ -1423,34 +1405,34 @@ pfkey_init(void)
 	
 	static struct ipsec_alg_supported supported_init_ah[] = {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
-		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_MD5HMAC, 0, 128, 128},
+		{K_SADB_EXT_SUPPORTED_AUTH, K_SADB_AALG_MD5HMAC, 0, 128, 128},
 #endif /* CONFIG_KLIPS_AUTH_HMAC_MD5 */
 #ifdef CONFIG_KLIPS_AUTH_HMAC_SHA1
-		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_SHA1HMAC, 0, 160, 160}
+		{K_SADB_EXT_SUPPORTED_AUTH, K_SADB_AALG_SHA1HMAC, 0, 160, 160}
 #endif /* CONFIG_KLIPS_AUTH_HMAC_SHA1 */
 	};
 	static struct ipsec_alg_supported supported_init_esp[] = {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
-		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_MD5HMAC, 0, 128, 128},
+		{K_SADB_EXT_SUPPORTED_AUTH, K_SADB_AALG_MD5HMAC, 0, 128, 128},
 #endif /* CONFIG_KLIPS_AUTH_HMAC_MD5 */
 #ifdef CONFIG_KLIPS_AUTH_HMAC_SHA1
-		{SADB_EXT_SUPPORTED_AUTH, SADB_AALG_SHA1HMAC, 0, 160, 160},
+		{K_SADB_EXT_SUPPORTED_AUTH, K_SADB_AALG_SHA1HMAC, 0, 160, 160},
 #endif /* CONFIG_KLIPS_AUTH_HMAC_SHA1 */
 #ifdef CONFIG_KLIPS_ENC_3DES
-		{SADB_EXT_SUPPORTED_ENCRYPT, SADB_EALG_3DESCBC, 64, 168, 168},
+		{K_SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_EALG_3DESCBC, 64, 168, 168},
 #endif /* CONFIG_KLIPS_ENC_3DES */
 	};
 	static struct ipsec_alg_supported supported_init_ipip[] = {
-		{SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_X_TALG_IPv4_in_IPv4, 0, 32, 32}
+		{K_SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_X_TALG_IPv4_in_IPv4, 0, 32, 32}
 #if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
-		, {SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_X_TALG_IPv6_in_IPv4, 0, 128, 32}
-		, {SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_X_TALG_IPv4_in_IPv6, 0, 32, 128}
-		, {SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_X_TALG_IPv6_in_IPv6, 0, 128, 128}
+		, {K_SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_X_TALG_IPv6_in_IPv4, 0, 128, 32}
+		, {K_SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_X_TALG_IPv4_in_IPv6, 0, 32, 128}
+		, {K_SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_X_TALG_IPv6_in_IPv6, 0, 128, 128}
 #endif /* defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE) */
 	};
 #ifdef CONFIG_KLIPS_IPCOMP
 	static struct ipsec_alg_supported supported_init_ipcomp[] = {
-		{SADB_EXT_SUPPORTED_ENCRYPT, SADB_X_CALG_DEFLATE, 0, 1, 1}
+		{K_SADB_EXT_SUPPORTED_ENCRYPT, SADB_X_CALG_DEFLATE, 0, 1, 1}
 	};
 #endif /* CONFIG_KLIPS_IPCOMP */
 
@@ -1460,17 +1442,17 @@ pfkey_init(void)
 	       "FreeS/WAN: initialising PF_KEYv2 domain sockets.\n");
 #endif
 
-	for(i = SADB_SATYPE_UNSPEC; i <= SADB_SATYPE_MAX; i++) {
+	for(i = K_SADB_SATYPE_UNSPEC; i <= K_SADB_SATYPE_MAX; i++) {
 		pfkey_registered_sockets[i] = NULL;
 		pfkey_supported_list[i] = NULL;
 	}
 
-	error |= supported_add_all(SADB_SATYPE_AH, supported_init_ah, sizeof(supported_init_ah));
-	error |= supported_add_all(SADB_SATYPE_ESP, supported_init_esp, sizeof(supported_init_esp));
+	error |= supported_add_all(K_SADB_SATYPE_AH, supported_init_ah, sizeof(supported_init_ah));
+	error |= supported_add_all(K_SADB_SATYPE_ESP, supported_init_esp, sizeof(supported_init_esp));
 #ifdef CONFIG_KLIPS_IPCOMP
-	error |= supported_add_all(SADB_X_SATYPE_COMP, supported_init_ipcomp, sizeof(supported_init_ipcomp));
+	error |= supported_add_all(K_SADB_X_SATYPE_COMP, supported_init_ipcomp, sizeof(supported_init_ipcomp));
 #endif /* CONFIG_KLIPS_IPCOMP */
-	error |= supported_add_all(SADB_X_SATYPE_IPIP, supported_init_ipip, sizeof(supported_init_ipip));
+	error |= supported_add_all(K_SADB_X_SATYPE_IPIP, supported_init_ipip, sizeof(supported_init_ipip));
 
         error |= sock_register(&pfkey_family_ops);
 
@@ -1505,15 +1487,15 @@ pfkey_cleanup(void)
 #ifdef VOID_SOCK_UNREGISTER
 	sock_unregister(PF_KEY);
 #else
-        sock_unregister(PF_KEY);
+        error |= sock_unregister(PF_KEY);
 #endif
 
-	error |= supported_remove_all(SADB_SATYPE_AH);
-	error |= supported_remove_all(SADB_SATYPE_ESP);
+	error |= supported_remove_all(K_SADB_SATYPE_AH);
+	error |= supported_remove_all(K_SADB_SATYPE_ESP);
 #ifdef CONFIG_KLIPS_IPCOMP
-	error |= supported_remove_all(SADB_X_SATYPE_COMP);
+	error |= supported_remove_all(K_SADB_X_SATYPE_COMP);
 #endif /* CONFIG_KLIPS_IPCOMP */
-	error |= supported_remove_all(SADB_X_SATYPE_IPIP);
+	error |= supported_remove_all(K_SADB_X_SATYPE_IPIP);
 
 #ifdef CONFIG_PROC_FS
 #  ifndef PROC_FS_2325
@@ -1560,3 +1542,10 @@ void pfkey_proto_init(struct net_protocol *pro)
 }
 #endif /* MODULE */
 
+/*
+ *
+ * Local Variables:
+ * c-file-style: "linux"
+ * End:
+ *
+ */

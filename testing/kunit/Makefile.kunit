@@ -1,34 +1,4 @@
-PCAP2SKB=${OPENSWANSRCDIR}/testing/utils/pcap2skb/pcap2skb
-KLIPS_FLAGS=-I${srcdir}../include
-KLIPS_FLAGS+=-I../include
-KLIPS_FLAGS+=-I${KLIPS_TOP}/include 
-
-#UMLPLAIN=$(shell source ${OPENSWANSRCDIR}/umlsetup.sh; echo $${POOLSPACE}/plain$${KERNVER})
-#KLIPS_FLAGS+=-I${UMLPLAIN}/include
-#KLIPS_FLAGS+=-I${UMLPLAIN}/arch/um/include
-#KLIPS_FLAGS+=-I${UMLPLAIN}/arch/um/kernel/tt/include
-#KLIPS_FLAGS+=-I${UMLPLAIN}/arch/um/kernel/skas/include
-
-KLIPS_FLAGS+=-D__KERNEL__ -DKUNIT
-KLIPS_FLAGS+=-g -O2 -U__i386__ -Ui386  -D__arch_um__ -DSUBARCH=\"i386\" 
-KLIPS_FLAGS+=-D_LARGEFILE64_SOURCE 
-KLIPS_FLAGS+=-Wall -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing
-KLIPS_FLAGS+=-fno-common -ffreestanding -fomit-frame-pointer
-
-KLIPS_FLAGS+=-DCONFIG_NETFILTER
-
-UCFLAGS=-I. -I${srcdir} ${KLIPS_FLAGS} 
-
-#KCFLAGS+=-nostdinc -isystem /usr/lib/gcc-lib/i486-linux/3.3.5/include
-KCFLAGS+=${KLIPS_FLAGS} 
-KCFLAGS+=-DHASH_DEBUG
-KCFLAGS+=-include ${OPENSWANSRCDIR}/packaging/linus/config-all.h
-KCFLAGS+=-DIPCOMP_PREFIX  -DMODULE -DKBUILD_MODNAME=rcv01test
-
-KLIPS_TOP:= ${OPENSWANSRCDIR}/linux
-KLIPSSRC=${KLIPS_TOP}/net/ipsec
-KUTILLIB=../libkern/libkern.a
-
+include ${srcdir}../Makefile.unit-settings
 
 ${TESTCASE}:	${TESTCASE}.o ${IPSEC_OBJS} Makefile
 	${CC} -g -o ${TESTCASE} ${TESTCASE}.o ${IPSEC_OBJS} ${KUTILLIB} ${OPENSWANLIB} -lefence
@@ -52,7 +22,10 @@ ${TESTCASE}.o: ${srcdir}${TESTCASE}.c
 version.c:	${KLIPSSRC}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
 	sed '/"/s/xxx/$(IPSECVERSION)/' ${KLIPSSRC}/version.in.c >$@
 
+ifneq (${PACKFILE},)
 ${TESTCASE}.o: ${PACKFILE}.c 
+endif
+
 ${PACKFILE}.c: ${INPUTS}
 	${PCAP2SKB} ${INPUTS} >$*.c
 

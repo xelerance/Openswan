@@ -12,3 +12,4 @@ echo "set args $args >OUTPUT/west-flat.conf-out" >>.gdbinit
 
 eval ${OBJDIRTOP}/programs/readwriteconf/readwriteconf $args 2>&1
 
+
