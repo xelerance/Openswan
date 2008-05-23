@@ -99,6 +99,7 @@ enum keyword_numeric_config_field {
     KBF_IKEv2,
     KBF_CONNADDRFAMILY,
     KBF_FORCEBUSY, /* 40 */
+    KBF_OVERLAPIP,
     KBF_MAX         
 };
 
