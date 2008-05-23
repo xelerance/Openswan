@@ -216,15 +216,15 @@ klipsinterface() {
 
 # check an interface for problems
 checkif() {
-    $klips || return 0
-    rpf=$rpfilter1/$1/$rpfilter2
-    if test -f $rpf
+	$klips || return 0
+	rpf=$rpfilter1/$1/$rpfilter2
+	if test -f $rpf
 	then
-	r="`cat $rpf`"
-	if test " $r" != " 0"
-	    then
-	    case "$r-$rpfiltercontrol" in
-		        0-%unchanged|0-0|1-1|2-2)
+		r="`cat $rpf`"
+		if test " $r" != " 0"
+		then
+			case "$r-$rpfiltercontrol" in
+			0-%unchanged|0-0|1-1|2-2)
 				# happy state
 				;;
 			*-%unchanged)
@@ -274,7 +274,7 @@ logonly() {
 
 
 # load module if possible
-if test ! -f $ipsecversion && test ! -f $netkey
+if test -f $ipsecversion && test -f $netkey
 then
     # both KLIPS and NETKEY code detected, bail out
     echo "FATAL ERROR: Both KLIPS and NETKEY IPsec code is present in kernel"
@@ -291,7 +291,7 @@ then
 	@MODPROBE@ -v af_key
 fi
 
-if test -f $netkey
+if -f $netkey
 then
 	if test -f $modules
 	then
