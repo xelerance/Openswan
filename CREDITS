@@ -1,18 +1,21 @@
 The following people have contributed patches to Openswan 2.x
 
+	Michael Richardson <mcr@xelerance.com> - IKEv2, testing, integration.
+	Paul Wouters <paul@xelerance.com> - IKEv2, packaging, porting, support
+	Antony Antony <antony@xelerance.com> - IKEv2, testing
+	Ken Bantoft <ken@xelerance.com> - DPD, cross compiling, integration
+	Herbert Xu <herbert@gondor.apana.org.au> - NETKEY / XFRM, IKEv2, NAT-T
+	David McCullough <David_Mccullough@securecomputing.com> - KLIPS, OCF
+	D. Hugh Redelmeier <hugh@mimosa.com> - Bug fixer extraordinaire
 	Andreas Steffen <andreas.steffen@strongsec.com> - X.509 Certificates
 	Dr{Who} on Freenode - Porting NAT-T + XAUTH to Openswan 2.x 
-	Herbert Xu - Support for 26sec, NAT-T on 26sec, etc...
 	Jacco de Leeuw <jacco2@dds.nl> - Fixes for MS Interop
-	Ken Bantoft <ken@xelerance.com> - RFC3706 DPD, cross compiling, etc...
 	Mathieu Lafon <mlafon@arkoon.net> - NAT-T Support
-	Michael Richardson <mcr@xelerance.com> - IKEv2, testing, integration.
 	Nate Carlson - Force NAT-T framework, KLIPS for 2.6, etc...
-	Paul Wouters <paul@xelerance.com> - packaging, IKEv2, porting, support
 	Stephen Bevan <stephen@dino.dnsalias.com> - RFC2409 port selectors
 	Tuomo Soini <tis@foobar.fi> - NETKEY, KLIPS, _updown scripts and more
-	Matthew Galgoci <mgalgoci@redhat.com>
-	Antony Antony <antony@phenome.org> - IKEv2, testing
+	Matthew Galgoci <mgalgoci@redhat.com> 
+	Miloslav Trmac <mitr@redhat.com>
 	willy@w.ods.org
 
 Openswan is a fork of the FreeS/WAN 2.04 codebase.
@@ -22,3 +25,7 @@ original work.
 IXIA Communications (http://www.ixiacom.com/) sponsored the cryptographic
 refit in pluto, which permitted Aggressive mode to be incorporated safely.
 
+RedHat (http://www.redhat.com/) sponsored the development of IKEv2
+
+Xelerance (http://www.xelerance.com) has sponsored the continued development
+of Openswan since version 1.0
