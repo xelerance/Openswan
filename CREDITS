@@ -1,9 +1,10 @@
 The following people have contributed patches to Openswan 2.x
 
-	Michael Richardson <mcr@xelerance.com> - IKEv2, testing, integration.
+	Michael Richardson <mcr@xelerance.com> - KLIPS, OCF, IKEv2, testing
 	Paul Wouters <paul@xelerance.com> - IKEv2, packaging, porting, support
 	Antony Antony <antony@xelerance.com> - IKEv2, testing
 	Ken Bantoft <ken@xelerance.com> - DPD, cross compiling, integration
+	Bart Trojanowski <bart@xelerance.com> - OCF, KLIPS
 	Herbert Xu <herbert@gondor.apana.org.au> - NETKEY / XFRM, IKEv2, NAT-T
 	David McCullough <David_Mccullough@securecomputing.com> - KLIPS, OCF
 	D. Hugh Redelmeier <hugh@mimosa.com> - Bug fixer extraordinaire
