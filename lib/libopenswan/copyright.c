@@ -23,7 +23,7 @@ static const char *co[] = {
  "    Michael C. Richardson, Angelos D. Keromytis, John Ioannidis.",
  "    Ken Bantoft, Andreas Steffen, Mathieu Lafon, Tuomo Soini",
  "    Paul Wouters, JuanJo Ciarlante, Bart Trojanowski, Herbert Xu",
- "    Antony Antony",
+ "    Antony Antony, David McCullough",
  "",
  "This program is free software; you can redistribute it and/or modify it",
  "under the terms of the GNU General Public License as published by the",
