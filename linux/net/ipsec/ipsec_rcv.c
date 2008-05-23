@@ -362,7 +362,7 @@ ipsec_rcv_decap_lookup(struct ipsec_rcv_state *irs
 	return IPSEC_RCV_OK;
 }
 
-#ifdef NGPATCH_NOT_INCLUDED
+#ifdef HAVE_IPSEC_SAREF
 void ip_cmsg_recv_ipsec(struct msghdr *msg, struct sk_buff *skb)
 {
 	struct ipsec_sa *sa1;
