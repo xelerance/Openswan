@@ -19,6 +19,7 @@ config setup
 	#
 	# NAT-TRAVERSAL support, see README.NAT-Traversal
 	nat_traversal=yes
+	# exclude networks used on server side by adding %v4:!a.b.c.0/24
 	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%4:172.16.0.0/12
 	# OE is now off by default. Uncomment and change to on, to enable.
 	OE=off
