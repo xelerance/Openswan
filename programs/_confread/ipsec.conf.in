@@ -22,6 +22,8 @@ config setup
 	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%4:172.16.0.0/12
 	# OE is now off by default. Uncomment and change to on, to enable.
 	OE=off
+	# which IPsec stack to use. netkey,klips,mast,auto or none
+	protostack=netkey
 	
 
 # Add connections here
