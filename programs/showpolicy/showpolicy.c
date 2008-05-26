@@ -119,7 +119,7 @@ int udp_recv_loop(int udpsock)
 	int packetcount =0;
 	
 	do {
-		unsigned int pktref[2];
+		unsigned int pktref[1];
 
 		memset(&from, 0, sizeof(from));
 		memset(&to,   0, sizeof(to));
