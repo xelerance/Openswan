@@ -502,7 +502,7 @@ kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy, bool logit)
 	struct db_context *ctx_new=NULL;
 	struct db_trans *t;
 	struct db_prop  *prop;
-	unsigned int trans_cnt;
+	unsigned int trans_cnt = 0;
 	bool success = TRUE;
 	int protoid = 0;
 
