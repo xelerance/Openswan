@@ -504,7 +504,7 @@ kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy, bool logit)
 	struct db_prop  *prop;
 	unsigned int trans_cnt;
 	bool success = TRUE;
-	int protoid;
+	int protoid = 0;
 
 	if(policy & POLICY_ENCRYPT) {
 	    trans_cnt=(esp_ealg_num*esp_aalg_num);
