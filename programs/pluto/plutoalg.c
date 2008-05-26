@@ -428,7 +428,7 @@ kernel_alg_db_add(struct db_context *db_ctx
 		  , lset_t policy
 		  , bool logit)
 {
-	int ealg_i, aalg_i;
+	int ealg_i=0, aalg_i;
 
 	if(policy & POLICY_ENCRYPT) {
 	    ealg_i=esp_info->esp_ealg_id;
