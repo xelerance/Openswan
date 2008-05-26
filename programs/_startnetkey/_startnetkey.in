@@ -46,11 +46,39 @@ done
 
 logger -p $log -t ipsec_setup "Using NETKEY(XFRM) stack"
 
+
 # log only to syslog, not to stdout/stderr
 logonly() {
 	logger -p $log -t ipsec_setup
 }
 
+defaultinterface() {
+	phys=`ip ro li 0.0.0.0/0 | awk '{print $5;}'`
+	next=`ip ro li 0.0.0.0/0 | awk '{print $3;}'`
+	if test `echo " $phys" | wc -l` -gt 1
+        then
+		phys=`echo "$phys"|head -1`
+		next=`echo "$next"|head -1`
+                echo "multiple default routes, %defaultroute using: $next on $phys"
+        fi
+	# determine type
+	ipline=`ip addr show dev $phys`
+	if test -n "`echo " $ipline " | grep POINTOPOINT`"
+	then
+		type="pointopoint"
+	elif test -n "`echo " $ipline " | grep BROADCAST`"
+	then
+		type="broadcast"
+	else
+		type="unknown"
+	fi
+	defaultip=`echo " $ipline " | grep inet|head -1 | awk '{print $2;}'| sed "s/\/.*$//"`
+	# simulate old silly output
+	echo "defaulroutephys=$phys" >> $info
+	echo "defaulroutevirt=none" >> $info
+	echo "defaulrouteaddr=$defaultip" >> $info
+	echo "defaulroutenexthop=$next" >> $info
+}
 
 # main line
 
@@ -133,5 +161,15 @@ fi
                 	logger -s -p daemon.error -t ipsec_setup
 	fi
 
+# figure out interfaces for defaultroute
+for i
+do
+        case "$i" in
+        %defaultroute)  defaultinterface        ;;
+        *)      echo "interface \`$i' not understood"
+                exit 1
+                ;;
+        esac
+done
 
 exit 0
