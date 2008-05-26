@@ -591,7 +591,7 @@ get_preshared_secret(const struct connection *c)
 					    , &c->spd.this.id
 					    , &c->spd.that.id
 					    , PPK_PSK, FALSE);
-    const struct private_key_stuff *pks;
+    const struct private_key_stuff *pks = NULL;
     
     if(s != NULL) pks = osw_get_pks(s);
 
