@@ -336,7 +336,6 @@ extern bool eroute_connection(struct spd_route *sr
 extern const struct kernel_ops klips_kernel_ops;
 extern const struct kernel_ops mast_kernel_ops;
 
-extern bool kernel_overlap_supported(void);
 extern const char *kernel_if_name(void);
 extern void show_kernel_interface(void);
 

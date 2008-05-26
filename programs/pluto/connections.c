@@ -2452,7 +2452,7 @@ is_virtual_net_used(struct connection *c, const ip_subnet *peer_net, const struc
 				 , enum_name(&connection_kind_names, d->kind)
 				 , buf);
 
-		    if(!kernel_overlap_supported()) {
+		    if(!kernel_ops->overlap_supported) {
 			openswan_log("Kernel method '%s' does not support overlapping IP ranges"
 				     , kernel_if_name());
 			return TRUE;
