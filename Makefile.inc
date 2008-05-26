@@ -296,7 +296,7 @@ USE_KLIPS?=true
 USE_PFKEYv2?=true
 
 # Build support for 2.6 KLIPS/MAST variation in pluto
-USE_MAST?=false
+USE_MAST?=true
 
 # MAST is generally a prerequisite for SAREF support in applications
 USE_SAREF_KERNEL=false
