@@ -102,7 +102,11 @@ int starter_whack_read_reply(int sock,
 		    }
 		    
 		    le++;	/* include NL in line */
-		    write(1, ls, le - ls);
+		    if(write(1, ls, le - ls) == -1) {
+			int e = errno;
+			starter_log(LOG_LEVEL_ERR, "whack: write() failed (%d %s), and ignored.\n",
+		    		e, strerror(e));
+		    }
 		    fsync(1);
 		    
 		    /* figure out prefix number
