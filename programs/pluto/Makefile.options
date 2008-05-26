@@ -34,10 +34,6 @@ ifeq ($(USE_AGGRESSIVE),true)
 AGGRESSIVE=1
 endif
 
-ifeq ($(USE_HWRANDOM),true)
-HW_DEFS+=-DHWRANDOM
-endif
-
 ifeq ($(USE_XAUTH),true)
 XAUTH=1
 # compile with PAM support will increase the size of the distribution
@@ -285,7 +281,6 @@ DEFINES = $(EXTRA_DEFINES) \
 	${NAT_DEFS} ${CURL_DEFS}\
 	${WEAK_DEFS} \
 	${SINGLE_CONF_DIR} ${HAVE_OCF_OPENSSL_DEFS} \
-	${HW_DEFS} \
 	# -DLEAK_DETECTIVE
 
 # libefence is a free memory allocation debugger

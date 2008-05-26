@@ -313,9 +313,6 @@ USE_IPROUTE2?=true
 # Build support for sending Openswan Vendor IDs
 USE_VENDORID?=true
 
-# Use /dev/hwrandom if available (EG: VIA Padlock)
-USE_HWRANDOM?=true
-
 # Build aggressive mode authentication system code - both Server and Client.
 # This is off by default, since aggressive mode leads to denial of service
 # attacks.
