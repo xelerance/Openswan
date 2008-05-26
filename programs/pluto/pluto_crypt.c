@@ -164,15 +164,14 @@ helper_passert_fail(const char *pred_str
 		    , const char *file_str
 		    , unsigned long line_no)
 {
-    static bool dying_breath = 0;
 
     /* we will get a possibly unplanned prefix.  Hope it works */
     loglog(RC_LOG_SERIOUS, "ASSERTION FAILED at %s:%lu: %s", file_str, line_no, pred_str);
-    if (!dying_breath)
-    {
-	dying_breath = TRUE;
+    if(chdir("helper") == -1) {
+	int e = errno;
+	loglog(RC_LOG_SERIOUS,"pluto: chdir() to "helper" failed (%d %s)\n",
+                    e, strerror(e));
     }
-    chdir("helper");
     abort();
 }
 
