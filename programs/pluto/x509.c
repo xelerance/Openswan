@@ -461,7 +461,10 @@ load_crls(void)
 	}
     }
     /* restore directory path */
-    chdir(save_dir);
+    if(!chdir(save_dir))
+        openswan_log("Changing back to directory '%s' failed - divine interventi
+on?");
+ 
 }
 
 /*
