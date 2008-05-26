@@ -425,7 +425,7 @@ format_end(char *buf
     char host_port[sizeof(":65535")];
     char host_id[IDTOA_BUF + 2];
     char hop[ADDRTOT_BUF];
-    char endopts[sizeof("MS+MC+XS+XC")+1];
+    char endopts[sizeof("MS+MC+XS+XC+Sxx")+1];
     const char *hop_sep = "";
     const char *open_brackets  = "";
     const char *close_brackets = "";
@@ -542,7 +542,7 @@ format_end(char *buf
        || this->xauth_server || this->xauth_client
        || this->sendcert != cert_defaultcertpolicy)
     {
-	const char *plus = "";
+	const char *plus = "+";
 	endopts[0]='\0';
 
 	if(id_obrackets && id_obrackets[0]=='[')
@@ -554,34 +554,29 @@ format_end(char *buf
 	}
 
 	if(this->modecfg_server) {
-	    strncat(endopts, plus, sizeof(endopts));
-	    strncat(endopts, "MS", sizeof(endopts));
-	    plus="+";
+	    strncat(endopts, "MS", sizeof(endopts) - strlen(endopts)-1);
 	}
 
 	if(this->modecfg_client) {
-	    strncat(endopts, plus, sizeof(endopts));
-	    strncat(endopts, "MC", sizeof(endopts));
-	    plus="+";
+	    strncat(endopts, plus, sizeof(endopts) - strlen(endopts)-1);
+	    strncat(endopts, "MC", sizeof(endopts) - strlen(endopts)-1);
 	}
 
 	if(this->xauth_server) {
-	    strncat(endopts, plus, sizeof(endopts));
-	    strncat(endopts, "XS", sizeof(endopts));
-	    plus="+";
+	    strncat(endopts, plus, sizeof(endopts) - strlen(endopts)-1);
+	    strncat(endopts, "XS", sizeof(endopts) - strlen(endopts)-1);
 	}
 	    
 	if(this->xauth_client) {
-	    strncat(endopts, plus, sizeof(endopts));
-	    strncat(endopts, "XC", sizeof(endopts));
-	    plus="+";
+	    strncat(endopts, plus, sizeof(endopts) - strlen(endopts)-1);
+	    strncat(endopts, "XC", sizeof(endopts) - strlen(endopts)-1);
 	}
 
 	{
 	    const char *send_cert = "";
 	    char s[32];
 
-	    send_cert="";
+	    send_cert=""; // Length 3 because cert.type is 1-11
 	    
 	    switch(this->sendcert) {
 	    case cert_neversend:
@@ -598,9 +593,8 @@ format_end(char *buf
 		send_cert=s;
 		break;
 	    }
-	    strncat(endopts, plus, sizeof(endopts));
-	    strncat(endopts, send_cert, sizeof(endopts));
-	    plus="+";
+	    strncat(endopts, plus, sizeof(endopts) - strlen(endopts)-1);
+	    strncat(endopts, send_cert, sizeof(endopts) - strlen(endopts)-1);
 	}
     }
 #endif
