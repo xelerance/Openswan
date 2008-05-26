@@ -20,6 +20,7 @@ v2.6.14
 * Fix for a few warnings of using "en" uninitialised [dhr]
 * Various fixes on strnat, chdir, fwrite, fgets, etc. [paul]
 * Fix for a potential crasher when displaying status using certs [paul]
+* Removed obsoleted and unused  hardware random related defines [paul]
 * Bugtracker bugs fixed:
   #930: 'best.len' and 'cur.len' may be uninitialised. [Michal Nazarewicz]
   #781: %defaultroute detection broken on netkey for 2.5.x [paul]
