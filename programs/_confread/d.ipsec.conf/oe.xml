@@ -1,24 +1,11 @@
   <varlistentry>
   <term><emphasis remap='B'>oe</emphasis></term>
   <listitem>
-<para>a boolean (yes/no) that determines if Opportunistic Encryption will
-be enabled. Opportunistic Encryption is the term to describe using IPsec
-tunnels without prearrangement. It uses IPSECKEY or TXT records to
-announce public RSA keys for certain IP's or identities.
+<para>Whether or not to attempt Opportunistic Encryption (IPsec authentication
+based on DNS IPSEC or TXT/KEY records). OE currently does not work with
+the NETKEY IPsec stack. Valid values are 
+<emphasis remap='B'>off</emphasis> and 
+<emphasis remap='B'>on</emphasis>
 </para>
-<para>
-For a complete description see /doc/draft-richardson-ipsec-opportunistic.txt,
-doc/opportunism-spec.txt and doc/opportunism.howto. See also the IETF BTNS
-working group and RFC4025.
-</para>
-<para>
-The default is no. 
-</para>
-<para>
-This feature is only available with kernel drivers that support the caching of
-packets (%hold eroutes or equivalent) that allows us to respond to a packet
-from an unknown IP address.
-At present only the (klips)mast protocol stack supports this feature.
-</para>
-</listitem>
+  </listitem>
   </varlistentry>
