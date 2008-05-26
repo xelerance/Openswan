@@ -1522,14 +1522,14 @@ main(int argc, char **argv)
 	    msg.right.xauth_name = optarg;
 	    gotxauthname = TRUE;
 	    xauthname[0]='\0';
-	    strncat(xauthname, optarg, sizeof(xauthname));
+	    strncat(xauthname, optarg, sizeof(xauthname) - strlen(xauthname)-1);
 	    xauthnamelen = strlen(xauthname)+1;
 	    continue;
 
 	case OPT_XAUTHPASS:
 	  gotxauthpass = TRUE;
 	  xauthpass[0]='\0';
-	  strncat(xauthpass, optarg, sizeof(xauthpass));
+	  strncat(xauthpass, optarg, sizeof(xauthpass) - strlen(xauthpass)-1);
 	  xauthpasslen = strlen(xauthpass)+1;
 	  continue;
 
