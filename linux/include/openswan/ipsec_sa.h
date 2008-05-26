@@ -99,9 +99,6 @@ typedef unsigned short int IPsecRefTableUnusedCount;
 #define IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES (1 << IPSEC_SA_REF_SUBTABLE_IDX_WIDTH)
 
 #ifdef CONFIG_NETFILTER
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,20)
-#define		nfmark  mark
-#endif
 #define IPSEC_SA_REF_HOST_FIELD(x) ((struct sk_buff*)(x))->nfmark
 #define IPSEC_SA_REF_HOST_FIELD_TYPE typeof(IPSEC_SA_REF_HOST_FIELD(NULL))
 #else /* CONFIG_NETFILTER */
