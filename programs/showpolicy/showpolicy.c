@@ -187,9 +187,12 @@ int udp_recv_loop(int udpsock)
 			cmsg->cmsg_type  = IP_IPSEC_REFINFO;
 			cmsg->cmsg_len   = CMSG_LEN(sizeof(unsigned int));
 			
-			printf("     sending with saref=%d\n", pktref[1]);
-			refp = (unsigned int *)CMSG_DATA(cmsg);
-			*refp = pktref[1];
+			if(pktref[1]) {
+				/* why are we setting refp, we don't use it? */
+				printf("     sending with saref=%d\n", pktref[1]);
+				refp = (unsigned int *)CMSG_DATA(cmsg);
+				*refp = pktref[1];
+			}
 			
 			iov.iov_base = buf;
 			iov.iov_len  = readlen;
