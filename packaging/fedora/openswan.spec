@@ -77,7 +77,7 @@ FS=$(pwd)
 %if %{buildklips}
 mkdir -p BUILD.%{_target_cpu}
 
-cd packaging/redhat
+cd packaging/fedora
 # rpm doesn't know we're compiling kernel code. optflags will give us -m64
 %{__make} -C $FS MOD26BUILDDIR=$FS/BUILD.%{_target_cpu} \
     OPENSWANSRCDIR=$FS \
@@ -88,8 +88,8 @@ cd packaging/redhat
 %else
     ARCH=%{_arch} \
 %endif
-    MODULE_DEF_INCLUDE=$FS/packaging/redhat/config-%{_target_cpu}.h \
-    MODULE_EXTRA_INCLUDE=$FS/packaging/redhat/extra_%{krelver}.h \
+    MODULE_DEF_INCLUDE=$FS/packaging/fedora/config-%{_target_cpu}.h \
+    MODULE_EXTRA_INCLUDE=$FS/packaging/fedora/extra_%{krelver}.h \
     include module
 %endif
 
