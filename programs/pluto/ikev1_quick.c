@@ -196,7 +196,7 @@ compute_proto_keymat(struct state *st
 		     , struct ipsec_proto_info *pi
 		     , const char *satypename)
 {
-    size_t needed_len; /* bytes of keying material needed */
+    size_t needed_len = 0; /* bytes of keying material needed */
 
     /* Add up the requirements for keying material
      * (It probably doesn't matter if we produce too much!)
@@ -217,7 +217,6 @@ compute_proto_keymat(struct state *st
 		break;
 	    case ESP_AES:
 		needed_len = AES_CBC_BLOCK_SIZE;
-
 		/* if an attribute is set, then use that! */
 		if(st->st_esp.attrs.transattrs.enckeylen) {
 		    needed_len = st->st_esp.attrs.transattrs.enckeylen/8;
