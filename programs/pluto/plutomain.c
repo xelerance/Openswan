@@ -623,8 +623,11 @@ main(int argc, char **argv)
     reset_debugging();
 
     /* if a core dir was set, chdir there */
-    if(coredir) {
-	chdir(coredir);
+    if(coredir) 
+	if(chdir(coredir) == -1) {
+	   int e = errno;
+	   openswan_log("pluto: chdir() do dumpdir failed (%d %s)\n",
+                    e, strerror(e));
     }
 
     oco = osw_init_options();
