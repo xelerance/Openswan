@@ -17,7 +17,8 @@ void readwhackmsg(char *infile)
     }
 
     /* okay, eat first line, it's a comment, but log it. */
-    fgets(b1, sizeof(b1), record);
+    if(fgets(b1, sizeof(b1), record)==NULL)
+	DBG_log(DBG_PARSING, "readwhackmsg: fgets returned NULL");
     printf("Pre-amble: %s", b1);
     
     plen=0;
@@ -28,7 +29,8 @@ void readwhackmsg(char *infile)
 	struct whack_message m1;
 	int abuflen;
 
-	fread(&a, 4, 2, record);  /* eat time stamp */
+	if(fread(&a, 4, 2, record) == NULL) ; /* eat time stamp */
+		DBG_log(DBG_PARSING, "readwhackmsg: fread returned NULL");
 	
 	/* account for this header we just consumed */
 	plen -= 12;
