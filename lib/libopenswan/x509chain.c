@@ -231,7 +231,11 @@ load_authcerts(const char *type, const char *path, u_char auth_flags)
 	}
 	
 	/* restore directory path */
-	chdir(save_dir);
+	if(chdir(save_dir) != 0) {
+	    char buff[256];
+	    strerror_r(errno, buff, 256 );
+	    openswan_log("  chdir() ./ error: %s", buff);
+	}
     }
    
 }
