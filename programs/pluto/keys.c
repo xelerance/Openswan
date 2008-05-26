@@ -634,7 +634,7 @@ get_RSA_private_key(const struct connection *c)
     struct secret *s = osw_get_secret(c
 					, &c->spd.this.id, &c->spd.that.id
 					, PPK_RSA, TRUE);
-    const struct private_key_stuff *pks;
+    const struct private_key_stuff *pks = NULL;
     
     if(s != NULL) pks = osw_get_pks(s);
 
