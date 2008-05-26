@@ -1,6 +1,6 @@
 #ifndef _OPENSWAN_KVERSIONS_H
 /*
- * header file for FreeS/WAN library functions
+ * header file for Openswan library functions
  * Copyright (C) 1998, 1999, 2000  Henry Spencer.
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs
  * Copyright (C) 2003 - 2008  Paul Wouters <paul@xelerance.com>
