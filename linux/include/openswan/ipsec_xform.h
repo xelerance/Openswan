@@ -45,6 +45,7 @@
  */
 
 /* why are these hardcoded here? See ipsec_policy.h for their enums -- Paul*/
+/* ---------- These really need to go from here ------------------ */
 #define AH_NONE			0
 #define AH_MD5			2
 #define AH_SHA			3
@@ -70,6 +71,16 @@
 #define ESP_RC4			10
 #define ESP_NULL		11
 #define ESP_AES			12
+#define ESP_AES_CTR		13
+#define ESP_AES_CCM_A		14
+#define ESP_AES_CCM_B		15
+#define ESP_AES_CCM_C		16
+#define ESP_ID17		17
+#define ESP_AES_GCM_A		18
+#define ESP_AES_GCM_B		19
+#define ESP_AES_GCM_C		20
+#define ESP_SEED_CBC		21
+#define ESP_CAMELLIA		22
 
 /* as draft-ietf-ipsec-ciph-aes-cbc-02.txt */
 #define ESP_MARS		249
