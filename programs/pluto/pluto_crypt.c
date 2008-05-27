@@ -169,7 +169,7 @@ helper_passert_fail(const char *pred_str
     loglog(RC_LOG_SERIOUS, "ASSERTION FAILED at %s:%lu: %s", file_str, line_no, pred_str);
     if(chdir("helper") == -1) {
 	int e = errno;
-	loglog(RC_LOG_SERIOUS,"pluto: chdir() to "helper" failed (%d %s)\n",
+	loglog(RC_LOG_SERIOUS,"pluto: chdir() to 'helper' failed (%d %s)\n",
                     e, strerror(e));
     }
     abort();
