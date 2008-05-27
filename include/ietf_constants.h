@@ -432,8 +432,8 @@ extern const char *const sit_bit_names[];
 #define PROTO_IPCOMP             4  /* only in IKEv1 */
 
 /*
- * IKEv2 proposal,
- * extern enum_names trans_type_names;
+ * IKEv2 proposal
+ * See http://www.iana.org/assignments/ikev2-parameters */
  */
 enum ikev2_trans_type {
 	IKEv2_TRANS_TYPE_ENCR = 1,
@@ -458,33 +458,50 @@ enum ikev2_trans_type_encr {
 	IKEv2_ENCR_AES_CBC  = 12,
 	IKEv2_ENCR_AES_CTR  = 13,
 	IKEv2_ENCR_AES_CCM_8  = 14,
-	IKEv2_ENCR_AES_CCM_12  = 15,
-	IKEv2_ENCR_AES_CCM_16  = 16,
+	IKEv2_ENCR_AES_CCM_12 = 15,
+	IKEv2_ENCR_AES_CCM_16 = 16,
+	IKEv2_UNASSIGNED_17   = 17,
+	IKEv2_ENCR_AES_GCM_8  = 18,
+	IKEv2_ENCR_AES_GCM_12 = 19,
+	IKEv2_ENCR_AES_GCM_16 = 20,
+	IKEv2_ENC_NULL_AUTH_AES_GMAC = 21,
+	IKEv2_RESERVED_IEEE_P1619_XTS_AES = 22,
+	/* 23 - 1023 Reserved to IANA */
+	/* 1024 - 65535 Private Use */
 	IKEv2_ENCR_INVALID  = 65536
 };
 
 enum ikev2_trans_type_prf {
-	IKEv2_PRF_HMAC_MD5  = 1,
-	IKEv2_PRF_HMAC_SHA1 = 2,
-	IKEv2_PRF_HMAC_TIGER= 3,
-	IKEv2_PRF_AES128_XCBC=4,
-	/* RFC 4868 Section 4 */
-	IKEv2_PRF_HMAC_SHA2_256=5,
-	IKEv2_PRF_HMAC_SHA2_384=6,
-	IKEv2_PRF_HMAC_SHA2_512=7,
+	IKEv2_PRF_HMAC_MD5      = 1, /* RFC2104 */
+	IKEv2_PRF_HMAC_SHA1     = 2, /* RFC2104 */
+	IKEv2_PRF_HMAC_TIGER    = 3, /* RFC2104 */
+	IKEv2_PRF_AES128_XCBC   = 4, /* RFC4434 */
+	IKEv2_PRF_HMAC_SHA2_256 = 5, /* RFC4868 */
+	IKEv2_PRF_HMAC_SHA2_384 = 6, /* RFC4868 */
+	IKEv2_PRF_HMAC_SHA2_512 = 7, /* RFC4868 */
+	IKEv2_PRF_AES128_CMAC   = 8, /* RFC4615 */
+	/* 9 - 1023 Reserved to IANA    RFC4306 */
+	/* 1024 - 65535 Private Use     RFC4306 */
 };
 
 enum ikev2_trans_type_integ {
-	IKEv2_AUTH_NONE        =0,
-	IKEv2_AUTH_HMAC_MD5_96 =1,
-	IKEv2_AUTH_HMAC_SHA1_96=2,
-	IKEv2_AUTH_DES_MAC     =3,
-	IKEv2_AUTH_KPDK_MD5    =4,
-	IKEv2_AUTH_AES_XCBC_96 =5,
-	/* RFC 4868 Section 4 */
-	IKEv2_AUTH_HMAC_SHA2_256_128=12,
-	IKEv2_AUTH_HMAC_SHA2_384_192=13,
-	IKEv2_AUTH_HMAC_SHA2_512_256=14,
+	IKEv2_AUTH_NONE              = 0,  /* RFC4306 */
+	IKEv2_AUTH_HMAC_MD5_96       = 1,  /* RFC2403 */
+	IKEv2_AUTH_HMAC_SHA1_96      = 2,  /* RFC2404 */
+	IKEv2_AUTH_DES_MAC           = 3,  /* RFC4306 */
+	IKEv2_AUTH_KPDK_MD5          = 4,  /* RFC1826 */
+	IKEv2_AUTH_AES_XCBC_96       = 5,  /* RFC3566 */
+	IKEv2_AUTH_HMAC_MD5_128      = 6,  /* RFC4595 */
+	IKEv2_AUTH_HMAC_SHA1_160     = 7,  /* RFC4595 */
+	IKEv2_AUTH_AES_CMAC_96       = 8,  /* RFC4494 */
+	IKEv2_AUTH_AES_128_GMAC      = 9,  /* RFC4543 */
+	IKEv2_AUTH_AES_192_GMAC      = 10, /* RFC4543 */
+	IKEv2_AUTH_AES_256_GMAC      = 11, /* RFC4543 */
+	IKEv2_AUTH_HMAC_SHA2_256_128 = 12, /* RFC4595 */
+	IKEv2_AUTH_HMAC_SHA2_384_192 = 13, /* RFC4306 */
+	IKEv2_AUTH_HMAC_SHA2_512_256 = 14, /* RFC4306 */
+	/* 15 - 1023 Reserved to IANA         RFC4306 */
+	/* 1024 - 65535 Private Use           RFC4306 */
 	IKEv2_AUTH_INVALID     =65536
 };
 
