@@ -286,7 +286,18 @@ static const char *const esp_transform_name[] = {
 	"ESP_DES_IV32",
 	"ESP_RC4",
 	"ESP_NULL",
-	"ESP_AES"
+	"ESP_AES",
+	"ESP_AES_CTR",
+	"ESP_AES_CCM_A",
+	"ESP_AES_CCM_B",
+	"ESP_AES_CCM_C",
+	"ESP_UNASSIGNED_ID17",
+	"ESP_AES_GCM_A",
+	"ESP_AES_GCM_B",
+	"ESP_AES_GCM_C",
+	"ESP_SEED_CBC",
+	"ESP_CAMELLIA",
+
 };
 
 /*
@@ -295,7 +306,7 @@ static const char *const esp_transform_name[] = {
  */
 static const char *const esp_transform_name_high[] = {
 	/* id=248 */	"ESP_ID248","ESP_MARS","ESP_RC6","ESP_ID251",
-	/* id=252 */	"ESP_SERPENT", "ESP_TWOFISH", "ESP_CAMELLIA", "ESP_ID255",
+	/* id=252 */	"ESP_SERPENT", "ESP_TWOFISH", "ESP_ID254", "ESP_ID255",
 	/* id=256 */	"ESP_ID256"
     };
 
@@ -303,7 +314,7 @@ enum_names esp_transformid_names_high =
     { 248, 256, esp_transform_name_high, NULL };
 
 enum_names esp_transformid_names =
-    { ESP_DES_IV64, ESP_AES, esp_transform_name, &esp_transformid_names_high };
+    { ESP_DES_IV64, ESP_CAMELLIA, esp_transform_name, &esp_transformid_names_high };
 
 /* IPCOMP transform values */
 
