@@ -51,7 +51,7 @@
 #include "log.h"
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 #include "kernel_alg.h"
-#include "crypto/aes_cbc.h"
+#include "klips-crypto/aes_cbc.h"
 #include "ike_alg.h"
 
 #ifdef XAUTH_USEPAM
