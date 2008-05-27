@@ -253,7 +253,7 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
 	{
 	    strncat(ipcq->credentials[0].ii_credential.ipsec_dns_signed.dns_sig
 		, p1st->st_peer_pubkey->dns_sig
-		, sizeof(ipcq->credentials[0].ii_credential.ipsec_dns_signed.dns_sig) - strlen(ipcq->credentials[0].ii_credential.ipsec_dns_signed.dns_sig -1);
+		, sizeof(ipcq->credentials[0].ii_credential.ipsec_dns_signed.dns_sig) - strlen(ipcq->credentials[0].ii_credential.ipsec_dns_signed.dns_sig -1));
 	}
 	break;
 
