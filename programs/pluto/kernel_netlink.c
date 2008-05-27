@@ -51,6 +51,8 @@
 #include "log.h"
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 #include "kernel_alg.h"
+#include "crypto/aes_cbc.h"
+#include "ike_alg.h"
 
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
@@ -74,6 +76,12 @@ static const struct pfkey_proto_info broad_proto_info[2] = {
 
 /* Minimum priority number in SPD used by pluto. */
 #define MIN_SPD_PRIORITY 1024
+
+struct aead_alg {
+	int id;
+	int icvlen;
+	const char *name;
+};
 
 static int netlinkfd = NULL_FD;
 static int netlink_bcast_fd = NULL_FD;
@@ -128,6 +136,8 @@ static sparse_names ealg_list = {
 	{ SADB_X_EALG_CASTCBC, "cast128" },
 	{ SADB_X_EALG_BLOWFISHCBC, "blowfish" },
 	{ SADB_X_EALG_AESCBC, "aes" },
+	{ SADB_X_EALG_AESCTR, "ctr(aes)" },
+	{ SADB_X_EALG_CAMELLIACBC, "cbc(camellia)" },
 	{ 0, sparse_end }
 };
 
@@ -138,6 +148,26 @@ static sparse_names calg_list = {
 	{ SADB_X_CALG_LZJH, "lzjh" },
 	{ 0, sparse_end }
 };
+
+static struct aead_alg aead_algs[] =
+{
+	{ .id = SADB_X_EALG_AES_CCM_ICV8, .icvlen = 8, .name = "rfc4309(ccm(aes))" },
+	{ .id = SADB_X_EALG_AES_CCM_ICV12, .icvlen = 12, .name = "rfc4309(ccm(aes))" },
+	{ .id = SADB_X_EALG_AES_CCM_ICV16, .icvlen = 16, .name = "rfc4309(ccm(aes))" },
+	{ .id = SADB_X_EALG_AES_GCM_ICV8, .icvlen = 8, .name = "rfc4106(gcm(aes))" },
+	{ .id = SADB_X_EALG_AES_GCM_ICV12, .icvlen = 12, .name = "rfc4106(gcm(aes))" },
+	{ .id = SADB_X_EALG_AES_GCM_ICV16, .icvlen = 16, .name = "rfc4106(gcm(aes))" },
+};
+
+static struct aead_alg *get_aead_alg(int algid)
+{
+    unsigned int i;
+
+    for (i = 0; i < sizeof(aead_algs) / sizeof(aead_algs[0]); i++)
+	if (aead_algs[i].id == algid)
+		return aead_algs + i;
+    return NULL;
+}
 
 /** ip2xfrm - Take an IP address and convert to an xfrm.
  *
@@ -617,6 +647,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	char data[1024];
     } req;
     struct rtattr *attr;
+    struct aead_alg *aead;
 
     memset(&req, 0, sizeof(req));
     req.n.nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK;
@@ -692,6 +723,26 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	attr = (struct rtattr *)((char *)attr + attr->rta_len);
     }
 
+    aead = get_aead_alg(sa->encalg);
+    if (aead)
+    {
+	struct xfrm_algo_aead algo;
+
+	strcpy(algo.alg_name, aead->name);
+	algo.alg_key_len = sa->enckeylen * BITS_PER_BYTE;
+	algo.alg_icv_len = aead->icvlen * BITS_PER_BYTE;
+
+	attr->rta_type = XFRMA_ALG_AEAD;
+	attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->enckeylen);
+
+	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
+	memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->enckey
+	    , sa->enckeylen);
+
+	req.n.nlmsg_len += attr->rta_len;
+	attr = (struct rtattr *)((char *)attr + attr->rta_len);
+    }
+    else
     if (sa->satype == SADB_X_SATYPE_IPCOMP)
     {
 	struct xfrm_algo algo;
@@ -768,6 +819,125 @@ netlink_del_sa(const struct kernel_sa *sa)
     return send_netlink_msg(&req.n, NULL, 0, "Del SA", sa->text_said);
 }
 
+/* XXX Move these elsewhere */
+#define  AES_KEY_MIN_LEN       128
+#define  AES_KEY_DEF_LEN       128
+#define  AES_KEY_MAX_LEN       256
+
+struct encrypt_desc algo_aes_ccm_8 =
+{
+	common: {
+	  name: "aes_ccm_8",
+	  officname: "aes_ccm_8",
+	  algo_type:    IKE_ALG_ENCRYPT,
+	  algo_v2id:    IKEv2_ENCR_AES_CCM_8,
+	  algo_next:    NULL, },
+	enc_blocksize:  AES_CBC_BLOCK_SIZE,
+	keyminlen:      AES_KEY_MIN_LEN + 3,
+	keydeflen:      AES_KEY_DEF_LEN + 3,
+	keymaxlen:      AES_KEY_MAX_LEN + 3,
+};
+
+struct encrypt_desc algo_aes_ccm_12 =
+{
+	common: {
+	  name: "aes_ccm_12",
+	  officname: "aes_ccm_12",
+	  algo_type:    IKE_ALG_ENCRYPT,
+	  algo_v2id:    IKEv2_ENCR_AES_CCM_12,
+	  algo_next:    NULL, },
+	enc_blocksize:  AES_CBC_BLOCK_SIZE,
+	keyminlen:      AES_KEY_MIN_LEN + 3,
+	keydeflen:      AES_KEY_DEF_LEN + 3,
+	keymaxlen:      AES_KEY_MAX_LEN + 3,
+};
+
+struct encrypt_desc algo_aes_ccm_16 =
+{
+	common: {
+	  name: "aes_ccm_16",
+	  officname: "aes_ccm_16",
+	  algo_type: 	IKE_ALG_ENCRYPT,
+	  algo_v2id:    IKEv2_ENCR_AES_CCM_16,
+	  algo_next: 	NULL, },
+	enc_blocksize: 	AES_CBC_BLOCK_SIZE,
+	keyminlen: 	AES_KEY_MIN_LEN + 3,
+	keydeflen: 	AES_KEY_DEF_LEN + 3,
+	keymaxlen: 	AES_KEY_MAX_LEN + 3,
+};
+
+struct encrypt_desc algo_aes_gcm_8 =
+{
+	common: {
+	  name: "aes_gcm_8",
+	  officname: "aes_gcm_8",
+	  algo_type: 	IKE_ALG_ENCRYPT,
+	  algo_v2id:    IKEv2_ENCR_AES_GCM_8,
+	  algo_next: 	NULL, },
+	enc_blocksize: 	AES_CBC_BLOCK_SIZE,
+	keyminlen: 	AES_KEY_MIN_LEN + 3,
+	keydeflen: 	AES_KEY_DEF_LEN + 3,
+	keymaxlen: 	AES_KEY_MAX_LEN + 3,
+};
+
+struct encrypt_desc algo_aes_gcm_12 =
+{
+	common: {
+	  name: "aes_gcm_12",
+	  officname: "aes_gcm_12",
+	  algo_type: 	IKE_ALG_ENCRYPT,
+	  algo_v2id:    IKEv2_ENCR_AES_GCM_12,
+	  algo_next: 	NULL, },
+	enc_blocksize: 	AES_CBC_BLOCK_SIZE,
+	keyminlen: 	AES_KEY_MIN_LEN + 3,
+	keydeflen: 	AES_KEY_DEF_LEN + 3,
+	keymaxlen: 	AES_KEY_MAX_LEN + 3,
+};
+
+struct encrypt_desc algo_aes_gcm_16 =
+{
+	common: {
+	  name: "aes_gcm_16",
+	  officname: "aes_gcm_16",
+	  algo_type: 	IKE_ALG_ENCRYPT,
+	  algo_v2id:    IKEv2_ENCR_AES_GCM_16,
+	  algo_next: 	NULL, },
+	enc_blocksize: 	AES_CBC_BLOCK_SIZE,
+	keyminlen: 	AES_KEY_MIN_LEN + 3,
+	keydeflen: 	AES_KEY_DEF_LEN + 3,
+	keymaxlen: 	AES_KEY_MAX_LEN + 3,
+};
+
+static void
+linux_pfkey_add_aead(void)
+{
+	struct sadb_alg alg;
+
+	alg.sadb_alg_ivlen = 8;
+	alg.sadb_alg_minbits = 128;
+	alg.sadb_alg_maxbits = 256;
+
+	alg.sadb_alg_id = SADB_X_EALG_AES_GCM_ICV8;
+	kernel_alg_add(SADB_SATYPE_ESP, SADB_EXT_SUPPORTED_ENCRYPT, &alg);
+	alg.sadb_alg_id = SADB_X_EALG_AES_GCM_ICV12;
+	kernel_alg_add(SADB_SATYPE_ESP, SADB_EXT_SUPPORTED_ENCRYPT, &alg);
+	alg.sadb_alg_id = SADB_X_EALG_AES_GCM_ICV16;
+	kernel_alg_add(SADB_SATYPE_ESP, SADB_EXT_SUPPORTED_ENCRYPT, &alg);
+	alg.sadb_alg_id = SADB_X_EALG_AES_CCM_ICV8;
+	kernel_alg_add(SADB_SATYPE_ESP, SADB_EXT_SUPPORTED_ENCRYPT, &alg);
+	alg.sadb_alg_id = SADB_X_EALG_AES_CCM_ICV12;
+	kernel_alg_add(SADB_SATYPE_ESP, SADB_EXT_SUPPORTED_ENCRYPT, &alg);
+	alg.sadb_alg_id = SADB_X_EALG_AES_CCM_ICV16;
+	kernel_alg_add(SADB_SATYPE_ESP, SADB_EXT_SUPPORTED_ENCRYPT, &alg);
+
+	ike_alg_register_enc(&algo_aes_ccm_8);
+	ike_alg_register_enc(&algo_aes_ccm_12);
+	ike_alg_register_enc(&algo_aes_ccm_16);
+	ike_alg_register_enc(&algo_aes_gcm_8);
+	ike_alg_register_enc(&algo_aes_gcm_12);
+	ike_alg_register_enc(&algo_aes_gcm_16);
+}
+
 static void
 linux_pfkey_register_response(const struct sadb_msg *msg)
 {
@@ -777,6 +947,8 @@ linux_pfkey_register_response(const struct sadb_msg *msg)
 #ifdef KERNEL_ALG
 	    kernel_alg_register_pfkey(msg, msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN);
 #endif
+	    /* XXX Need to grab list from the kernel. */
+	    linux_pfkey_add_aead();
 	    break;
     case SADB_X_SATYPE_IPCOMP:
 	can_do_IPcomp = TRUE;
