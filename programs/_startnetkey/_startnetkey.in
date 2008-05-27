@@ -1,6 +1,7 @@
 #!/bin/sh
 # Netkey startup script
-# Copyright (C) 2007 Ken Bantoft, Paul Wouters
+# Copyright (C) 2007 Ken Bantoft <ken@xelerance.com>
+# Copyright (C) 2007 - 2008 Paul Wouters <paul@xelerance.com>
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -74,10 +75,10 @@ defaultinterface() {
 	fi
 	defaultip=`echo " $ipline " | grep inet|head -1 | awk '{print $2;}'| sed "s/\/.*$//"`
 	# simulate old silly output
-	echo "defaulroutephys=$phys" >> $info
-	echo "defaulroutevirt=none" >> $info
-	echo "defaulrouteaddr=$defaultip" >> $info
-	echo "defaulroutenexthop=$next" >> $info
+	echo "defaultroutephys=$phys" >> $info
+	echo "defaultroutevirt=none" >> $info
+	echo "defaultrouteaddr=$defaultip" >> $info
+	echo "defaultroutenexthop=$next" >> $info
 }
 
 # main line
