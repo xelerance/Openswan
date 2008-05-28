@@ -433,7 +433,7 @@ extern const char *const sit_bit_names[];
 
 /*
  * IKEv2 proposal
- * See http://www.iana.org/assignments/ikev2-parameters */
+ * See http://www.iana.org/assignments/ikev2-parameters 
  */
 enum ikev2_trans_type {
 	IKEv2_TRANS_TYPE_ENCR = 1,

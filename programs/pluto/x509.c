@@ -462,8 +462,7 @@ load_crls(void)
     }
     /* restore directory path */
     if(!chdir(save_dir))
-        openswan_log("Changing back to directory '%s' failed - divine interventi
-on?");
+        openswan_log("Changing back to directory '%s' failed - divine intervention?", save_dir);
  
 }
 
