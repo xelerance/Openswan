@@ -729,6 +729,7 @@ typedef u_int16_t ipsec_auth_t;
 #define OAKLEY_3DES_CBC         5
 #define OAKLEY_CAST_CBC         6
 #define OAKLEY_AES_CBC          7
+#define OAKLEY_CAMELLIA_CBC	8
 #define OAKLEY_SERPENT_CBC              65004
 #define OAKLEY_TWOFISH_CBC              65005
 #define OAKLEY_TWOFISH_CBC_SSH          65289
