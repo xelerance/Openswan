@@ -1,0 +1,7 @@
+Basic pluto with IKEv2 using PSK on the initiator (west), and on the responder.
+
+This test uses AES-CCM, using esp=aes-ccm-a-152-null, where a/b/c means ICV
+lengths 8, 12 and 16, and 152 is the AES key length 128 plus a fixed 24 bits
+of nonce (and the null needs to be there to prevent Openswan from sticking in
+an additional auth algorithm).
+
