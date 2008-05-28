@@ -765,7 +765,7 @@ load_acerts(void)
     }
     /* restore directory path */
     if(!chdir(save_dir)) 
-	openswan_log("Changing back to directory '%s' failed - divine intervention?");
+	openswan_log("Changing back to directory '%s' failed - divine intervention?",save_dir);
 }
 
 /*
