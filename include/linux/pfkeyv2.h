@@ -5,8 +5,9 @@
 
 #ifndef _LINUX_PFKEY2_H
 #define _LINUX_PFKEY2_H
-
-#include <linux/types.h>
+#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
+# include <linux/types.h>
+#endif
 
 #define PF_KEY_V2		2
 #define PFKEYV2_REVISION	199806L
