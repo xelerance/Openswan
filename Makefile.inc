@@ -310,6 +310,9 @@ USE_NETKEY?=true
 # iproute2 package, or set this to false. Required for USE_NETKEY.
 USE_IPROUTE2?=true
 
+# include support for BSD/KAME IPsec in pluto (on *BSD)
+USE_BSDKAME?=false
+
 # Build support for sending Openswan Vendor IDs
 USE_VENDORID?=true
 

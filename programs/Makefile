@@ -33,6 +33,10 @@ ifeq ($(USE_IPSECPOLICY),true)
 SUBDIRS+=showpolicy
 endif
 
+ifeq ($(USE_BSDKAME),true)
+SUBDIRS+=_realsetup.bsd _updown.bsdkame
+endif
+
 SUBDIRS+=proc pluto addconn 
 SUBDIRS+=_confread _copyright _include _keycensor _plutoload _plutorun
 SUBDIRS+=_realsetup _secretcensor _startklips _updown _updown.klips _updown.mast
