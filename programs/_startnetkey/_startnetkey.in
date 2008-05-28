@@ -93,7 +93,7 @@ then
 
 	if test -f $ipsecpfkey
 	then
-		echo "FAILURE to unload KLIPS/MAST module. Use protostack=klsips or protostack=mast, or recompile kernel without builtin KLIPS/MAST support"
+		echo "FAILURE to unload KLIPS/MAST module. Use protostack=klips or protostack=mast, or recompile kernel without builtin KLIPS/MAST support"
                 exit 1
         fi
 fi
