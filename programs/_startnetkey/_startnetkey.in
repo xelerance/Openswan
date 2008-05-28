@@ -101,7 +101,6 @@ fi
 	if test -f $modules
 	then
 		# load hardware random related modules - some changed names over time
-		echo Trying hardware random, this may fail, which is okay.
 		@@MODPROBE@@ -q hw_random 2>/dev/null
 		@@MODPROBE@@ -q hwrng 2>/dev/null
 		@@MODPROBE@@ -q amd-rng 2>/dev/null
@@ -127,7 +126,7 @@ fi
 
 		# load the most common ciphers/algo's
 		# aes-x86_64 has higher priority in via crypto api
-		echo Trying to load Crypto API modules, some may fail, which is okay.
+		echo Trying to load all CryptoAPI modules
 		for crypto in aes-x86_64 aes des sha512 sha256 md5 cbc xcbc ecb twofish blowfish serpent ccm
 		   do
 			echo -n "$crypto "
