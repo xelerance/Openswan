@@ -11,3 +11,9 @@
 # define HOST_NAME_MAX _POSIX_HOST_NAME_MAX
 #endif
 
+/* 
+ * This normally comes in via bind9/config.h 
+ * Fixes a warning in lib/libisc/random.c:44 
+ */
+#define HAVE_SYS_TYPES_H 1
+#define HAVE_UNISTD_H 1
