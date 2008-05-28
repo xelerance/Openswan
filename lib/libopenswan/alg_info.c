@@ -89,10 +89,17 @@ alg_info_esp_v2tov1aa(enum ikev2_trans_type_integ ti)
     case IKEv2_AUTH_HMAC_SHA2_512_256: 
 	return AUTH_ALGORITHM_HMAC_SHA2_256;
 
+    /* invalid or not yet supported */
     case IKEv2_AUTH_DES_MAC:
     case IKEv2_AUTH_KPDK_MD5:
     case IKEv2_AUTH_AES_XCBC_96:
     case IKEv2_AUTH_INVALID:
+    case IKEv2_AUTH_HMAC_MD5_128:
+    case IKEv2_AUTH_HMAC_SHA1_160:
+    case IKEv2_AUTH_AES_CMAC_96:
+    case IKEv2_AUTH_AES_128_GMAC:
+    case IKEv2_AUTH_AES_192_GMAC:
+    case IKEv2_AUTH_AES_256_GMAC:
 	bad_case(ti);
     }
     return 0;
