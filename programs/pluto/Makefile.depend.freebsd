@@ -771,7 +771,7 @@ kernel.o: kernel.c \
   ../../linux/include/openswan/pfkeyv2.h
 kernel_bsdkame.o: kernel_bsdkame.c \
   ../../linux/include/openswan.h \
-  ../../ports/freebsd/include/libpfkey.h \
+  ../../include/libbsdkame/libpfkey.h \
   ../../ports/freebsd/include/sysdep.h \
   ../../include/sysqueue.h \
   ../../include/constants.h \
