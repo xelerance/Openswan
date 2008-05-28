@@ -3,6 +3,7 @@
 #include "constants.h"
 #include "oswalloc.h"
 #include "whack.h"
+#include "oswlog.h"
 
 void readwhackmsg(char *infile)
 {
@@ -29,8 +30,8 @@ void readwhackmsg(char *infile)
 	struct whack_message m1;
 	int abuflen;
 
-	if(fread(&a, 4, 2, record) == NULL) ; /* eat time stamp */
-		DBG_log(DBG_PARSING, "readwhackmsg: fread returned NULL");
+	if(fread(&a, 4, 2, record) == 0) ; /* eat time stamp */
+		DBG_log(DBG_PARSING, "readwhackmsg: fread returned 0");
 	
 	/* account for this header we just consumed */
 	plen -= 12;
