@@ -286,12 +286,12 @@ then
 	@MODPROBE@ ipsec 2> /dev/null
 fi
 
-if test ! -f $ipsecversion && test ! -f $netkey && @MODPROBE@ -q af_key
+if test ! -f $ipsecversion && test ! -f $netkey
 then
-	@MODPROBE@ -v af_key
+	@MODPROBE@ -q af_key
 fi
 
-if -f $netkey
+if test -f $netkey
 then
 	if test -f $modules
 	then
