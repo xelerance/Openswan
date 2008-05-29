@@ -697,6 +697,26 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	attr = (struct rtattr *)((char *)attr + attr->rta_len);
     }
 
+    aead = get_aead_alg(sa->encalg);
+    if (aead)
+    {
+	struct xfrm_algo_aead algo;
+
+	strcpy(algo.alg_name, aead->name);
+	algo.alg_key_len = sa->enckeylen * BITS_PER_BYTE;
+	algo.alg_icv_len = aead->icvlen * BITS_PER_BYTE;
+
+	attr->rta_type = XFRMA_ALG_AEAD;
+	attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->enckeylen);
+
+	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
+	memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->enckey
+	    , sa->enckeylen);
+
+	req.n.nlmsg_len += attr->rta_len;
+	attr = (struct rtattr *)((char *)attr + attr->rta_len);
+    }
+    else
     if (sa->enckeylen)
     {
 	struct xfrm_algo algo;
@@ -723,26 +743,6 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	attr = (struct rtattr *)((char *)attr + attr->rta_len);
     }
 
-    aead = get_aead_alg(sa->encalg);
-    if (aead)
-    {
-	struct xfrm_algo_aead algo;
-
-	strcpy(algo.alg_name, aead->name);
-	algo.alg_key_len = sa->enckeylen * BITS_PER_BYTE;
-	algo.alg_icv_len = aead->icvlen * BITS_PER_BYTE;
-
-	attr->rta_type = XFRMA_ALG_AEAD;
-	attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->enckeylen);
-
-	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
-	memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->enckey
-	    , sa->enckeylen);
-
-	req.n.nlmsg_len += attr->rta_len;
-	attr = (struct rtattr *)((char *)attr + attr->rta_len);
-    }
-    else
     if (sa->satype == SADB_X_SATYPE_IPCOMP)
     {
 	struct xfrm_algo algo;
