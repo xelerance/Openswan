@@ -442,6 +442,7 @@ umlplutotest	ikev2-x509-02		good
 # modp tests for checking if we deal with sending different KE's
 umlplutotest	ikev2-algo-01-modp2048-initiator	good
 umlplutotest	ikev2-algo-02-modp2048-responder	good
+umlplutotest	ikev2-algo-03-aes-ccm			good
 
 #################################################################
 # Interop tests
