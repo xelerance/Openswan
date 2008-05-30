@@ -1755,6 +1755,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	    c = p;
 	}
 
+	/* XXX Though c == p, they are used intermixed in the below section */
 	/* fill in the client's true ip address/subnet */
 	DBG(DBG_CONTROLMORE
 	    , DBG_log("client wildcard: %s  port wildcard: %s  virtual: %s"
