@@ -64,6 +64,7 @@ static void default_values (struct starter_config *cfg)
 	cfg->conn_default.options[KBF_TYPE] = KS_TUNNEL;
 
 	cfg->conn_default.policy = POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
+	cfg->conn_default.policy |= POLICY_IKEV2_ALLOW;
 
 	cfg->conn_default.options[KBF_IKELIFETIME] = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
 	cfg->conn_default.options[KBF_SALIFETIME]  = SA_LIFE_DURATION_DEFAULT;
