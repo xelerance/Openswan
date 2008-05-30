@@ -458,6 +458,7 @@ LWRESDIR=${OPENSWANSRCDIR}/lib/liblwres
 LIBLWRES=${OBJDIRTOP}/lib/liblwres/liblwres.a
 LIBDNS=${OBJDIRTOP}/lib/libdns/libdns.a
 LIBISC=${OBJDIRTOP}/lib/libisc/libisc.a
+LIBBSDPFKEY=${OBJDIRTOP}/lib/libbsdpfkey/libbsdpfkey.a
 ISCARCH?=unix
 ISCHOSTARCH?=unix
 
