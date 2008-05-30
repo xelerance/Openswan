@@ -269,17 +269,6 @@ oswtime.o: oswtime.c ../../linux/include/openswan.h \
   ../../include/names_constant.h \
   ../../include/oswtime.h ../../include/oswlog.h \
   ../../include/constants.h
-packet.o: packet.c ../../linux/include/openswan.h \
-  ../../linux/include/openswan/ipsec_kversion.h \
-  ../../linux/include/openswan/ipsec_param.h \
-  ../../ports/linux/include/sysdep.h ../../include/sysqueue.h \
-  ../../include/constants.h ../../include/biglset.h \
-  ../../linux/include/openswan/passert.h \
-  ../../include/ietf_constants.h \
-  ../../include/pluto_constants.h \
-  ../../include/names_constant.h ../../include/oswtime.h \
-  ../../include/oswlog.h ../../include/constants.h \
-  ../../include/packet.h
 pem.o: pem.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
