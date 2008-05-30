@@ -985,6 +985,28 @@ static int load_conn (struct starter_config *cfg
 	conn->policy |= conn->options[KBF_PHASE2];
     }
 
+    if(conn->options_set[KBF_IKEv2]) {
+	switch(conn->options[KBF_IKEv2]) {
+	case fo_never:
+	    conn->policy &= ~POLICY_IKEV2_ALLOW;
+	    break;
+	    
+	case fo_permit:
+	    /* this is the default for now */
+	    conn->policy |= POLICY_IKEV2_ALLOW;
+	    break;
+	    
+	case fo_propose:
+	    conn->policy |= POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE;
+	    break;
+	    
+	case fo_insist:
+	    conn->policy |= POLICY_IKEV1_DISABLE;
+	    conn->policy |= POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE;
+	    break;
+	}
+    }
+
     err += validate_end(conn, &conn->left,  TRUE,  resolvip, perr);
     err += validate_end(conn, &conn->right, FALSE, resolvip, perr);
 
