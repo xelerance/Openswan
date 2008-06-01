@@ -49,6 +49,8 @@ struct sadb_lifetime {
 	uint64_t	sadb_lifetime_bytes;
 	uint64_t	sadb_lifetime_addtime;
 	uint64_t	sadb_lifetime_usetime;
+	uint32_t sadb_x_lifetime_packets;
+	uint32_t sadb_x_lifetime_reserved;
 } __attribute__((packed));
 /* sizeof(struct sadb_lifetime) == 32 */
 

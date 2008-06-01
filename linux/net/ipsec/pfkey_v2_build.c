@@ -382,6 +382,7 @@ pfkey_lifetime_build(struct sadb_ext **	pfkey_ext,
 	pfkey_lifetime->sadb_lifetime_bytes = bytes;
 	pfkey_lifetime->sadb_lifetime_addtime = addtime;
 	pfkey_lifetime->sadb_lifetime_usetime = usetime;
+        pfkey_lifetime->sadb_x_lifetime_packets = packets;
 
 errlab:
 	return error;
