@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 #include <dirent.h>
 #include <time.h>
 #include <limits.h>
@@ -464,7 +465,7 @@ load_crls(void)
     if(!chdir(save_dir)) {
         int e = errno;
         openswan_log("Changing back to directory '%s' failed - (%d %s)",
-                save_dir, e, strerror(e)););
+                save_dir, e, strerror(e));
     } 
 }
 
