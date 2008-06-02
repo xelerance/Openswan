@@ -2713,7 +2713,6 @@ bool update_ipsec_sa (struct state *st USED_BY_KLIPS)
 
 bool was_eroute_idle(struct state *st, time_t since_when)
 {
-    pexpect(kernel_ops->eroute_idle != NULL);
     if(kernel_ops->eroute_idle) {
 	return kernel_ops->eroute_idle(st, since_when);
     }
