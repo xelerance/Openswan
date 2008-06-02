@@ -60,12 +60,6 @@
 #include <openswan/pfkeyv2.h>
 #include <openswan/pfkey.h>
 
-#ifdef SPINLOCK
-spinlock_t tdb_lock = SPIN_LOCK_UNLOCKED;
-#else /* SPINLOCK */
-spinlock_t tdb_lock;
-#endif /* SPINLOCK */
-
 /*
  *
  * Local Variables:
