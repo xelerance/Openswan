@@ -121,7 +121,11 @@
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,12)
 # define HAVE_SOCK_ZAPPED
-# define NET_26_12_SKALLOC
+# if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#  define NET_26_24_SKALLOC
+# else
+#  define NET_26_12_SKALLOC
+# endif
 #endif
 
 /* see <linux/security.h> */
@@ -207,6 +211,8 @@
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,20)
 /* skb->nfmark changed to skb->mark in 2.6.20 */
 # define nfmark mark
+#else
+# define HAVE_KMEM_CACHE_T
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,21)
@@ -290,20 +296,40 @@
 /*
  * We can switch on earlier kernels, but from here on we have no choice
  * but to abandon the old style proc_net and use seq_file
- */
-# define HAVE_SEQ_FILE
-#else
-/*
-   The hard_header() method has been removed from struct net_device;
+ * The hard_header() method has been removed from struct net_device;
     it has been replaced by a per-protocol header_ops structure pointer. 
 
    The prototype for slab constructor callbacks has changed to:
     void (*ctor)(struct kmem_cache *cache, void *object);
    The unused flags argument has been removed and the order of the other
     two arguments has been reversed to match other slab functions. 
-*/
-# define HAVE_DEV_HARD_HEADER
+ */
+# define        PROC_NET        init_net.proc_net
+
+# define __ipsec_dev_get(x) __dev_get_by_name(&init_net, x)
+# define ipsec_dev_get(x) dev_get_by_name(&init_net, x)
+#else
+
+# define        PROC_NET        proc_net
+
+# define ipsec_dev_get(x) __dev_get_by_name(x)
+# define __ipsec_dev_get(x) __dev_get_by_name(x)
 #endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,25)
+# define ip_chk_addr(a) inet_addr_type(&init_net, a)
+#else
+# define ip_chk_addr inet_addr_type
+#endif
+
+#ifndef NETDEV_TX_BUSY
+# ifdef NETDEV_XMIT_CN
+#  define NETDEV_TX_BUSY NETDEV_XMIT_CN
+# else
+#  define NETDEV_TX_BUSY 1
+# endif
+#endif
+
 
 #ifdef NET_21
 # include <linux/in6.h>
