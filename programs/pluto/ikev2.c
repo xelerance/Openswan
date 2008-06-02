@@ -141,7 +141,6 @@ static const struct state_v2_microcode state_microcode_table[] = {
       .flags = SMF2_INITIATOR|SMF2_STATENEEDED|SMF2_REPLY,
       .processor  = ikev2parent_inR1outI2,
       .recv_type  = ISAKMP_v2_SA_INIT,
-      .timeout_event = EVENT_SA_REPLACE,
     },
 
     { .state      = STATE_PARENT_I2,
@@ -149,6 +148,7 @@ static const struct state_v2_microcode state_microcode_table[] = {
       .flags = SMF2_INITIATOR|SMF2_STATENEEDED,
       .processor  = ikev2parent_inR2,
       .recv_type  = ISAKMP_v2_AUTH,
+      .timeout_event = EVENT_SA_REPLACE,
     },
 
     { .state      = STATE_UNDEFINED,
