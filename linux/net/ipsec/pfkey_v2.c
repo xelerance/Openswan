@@ -100,7 +100,11 @@ struct socket_list *pfkey_registered_sockets[K_SADB_SATYPE_MAX+1];
 
 int pfkey_msg_interp(struct sock *, struct sadb_msg *);
 
+#ifdef NET_26_24_SKALLOC
+DEBUG_NO_STATIC int pfkey_create(struct net *net, struct socket *sock, int protocol);
+#else
 DEBUG_NO_STATIC int pfkey_create(struct socket *sock, int protocol);
+#endif
 DEBUG_NO_STATIC int pfkey_shutdown(struct socket *sock, int mode);
 DEBUG_NO_STATIC int pfkey_release(struct socket *sock);
 
@@ -629,7 +633,8 @@ pfkey_upmsg(struct socket *sock, struct sadb_msg *pfkey_msg)
 	return error;
 }
 
-#ifdef NET_26_12_SKALLOC
+#if defined(NET_26_12_SKALLOC) || defined(NET_26_24_SKALLOC)
+
 static struct proto key_proto = {
 	.name	  = "KEY",
 	.owner	  = THIS_MODULE,
@@ -637,9 +642,13 @@ static struct proto key_proto = {
 	
 };
 #endif
-
+#ifdef NET_26_24_SKALLOC
+DEBUG_NO_STATIC int
+pfkey_create(struct net *net, struct socket *sock, int protocol)
+#else
 DEBUG_NO_STATIC int
 pfkey_create(struct socket *sock, int protocol)
+#endif
 {
 	struct sock *sk;
 
@@ -684,10 +693,14 @@ pfkey_create(struct socket *sock, int protocol)
 	KLIPS_INC_USE;
 
 #ifdef NET_26
+#ifdef NET_26_24_SKALLOC
+       sk=(struct sock *)sk_alloc(net, PF_KEY, GFP_KERNEL, &key_proto);
+#else
 #ifdef NET_26_12_SKALLOC
 	sk=(struct sock *)sk_alloc(PF_KEY, GFP_KERNEL, &key_proto, 1);
 #else
 	sk=(struct sock *)sk_alloc(PF_KEY, GFP_KERNEL, 1, NULL);
+#endif
 #endif
 #else
 	/* 2.4 interface */
@@ -1470,9 +1483,15 @@ pfkey_init(void)
 	error |= proc_register_dynamic(&proc_net, &proc_net_pfkey_registered);
 #    endif /* PROC_FS_21 */
 #  else /* !PROC_FS_2325 */
+#    if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24)
 	proc_net_create ("pf_key", 0, pfkey_get_info);
 	proc_net_create ("pf_key_supported", 0, pfkey_supported_get_info);
 	proc_net_create ("pf_key_registered", 0, pfkey_registered_get_info);
+#    else
+	create_proc_entry ("pf_key", 0, init_net.proc_net);
+	create_proc_entry ("pf_key_supported", 0, init_net.proc_net);
+	create_proc_entry ("pf_key_registered", 0, init_net.proc_net);
+#    endif
 #  endif /* !PROC_FS_2325 */
 #endif /* CONFIG_PROC_FS */
 
@@ -1511,9 +1530,16 @@ pfkey_cleanup(void)
 		printk("klips_debug:pfkey_cleanup: "
 		       "cannot unregister /proc/net/pf_key_registered\n");
 #  else /* !PROC_FS_2325 */
+#  if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24)
 	proc_net_remove ("pf_key");
 	proc_net_remove ("pf_key_supported");
 	proc_net_remove ("pf_key_registered");
+#  else
+	proc_net_remove (&init_net, "pf_key");
+	proc_net_remove (&init_net, "pf_key_supported");
+	proc_net_remove (&init_net, "pf_key_registered");
+#    endif
+
 #  endif /* !PROC_FS_2325 */
 #endif /* CONFIG_PROC_FS */
 
