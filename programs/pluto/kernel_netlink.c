@@ -717,7 +717,6 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	attr = (struct rtattr *)((char *)attr + attr->rta_len);
     }
     else
-    if (sa->enckeylen)
     {
 	struct xfrm_algo algo;
 	const char *name;

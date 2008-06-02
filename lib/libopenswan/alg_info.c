@@ -57,8 +57,6 @@ alg_info_esp_aa2sadb(enum ikev1_auth_attribute auth)
 		    return AH_SHA2_512;
 		case AUTH_ALGORITHM_HMAC_RIPEMD:
 		    return AH_RIPEMD;
-		/* XXX should we distinguish these two? */
-		case AUTH_ALGORITHM_NULL:
 		case AUTH_ALGORITHM_NONE:
 		    return AH_NONE;
 

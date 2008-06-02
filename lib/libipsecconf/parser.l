@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <glob.h>
+#include <ctype.h>
 
 #include "ipsecconf/keywords.h"
 #include "ipsecconf/parser.h"
@@ -36,6 +37,7 @@
 char rootdir[PATH_MAX];      /* when evaluating paths, prefix this to them */
 char rootdir2[PATH_MAX];     /* or... try this one too */
 
+int parser_y_eof(void);
 
 /* we want no actual output! */
 #define ECHO 
@@ -79,31 +81,38 @@ int  parser_cur_lineno(void)
 void parser_y_error(char *b, int size, const char *s)
 {
 #if defined(SOMETHING_FOR_SOME_ARCH)
-	extern char *yytext;
+       extern char *yytext;
 #endif
-
-	snprintf(b, size, "%s:%d: %s [%s]",
-		 stacktop->filename ? stacktop->filename : "<none>",
-		 stacktop->line,
-		 s, yytext);
+       snprintf(b, size, "%s:%d: %s [%s]",
+		stacktop->filename ? stacktop->filename : "<none>",
+                stacktop->line,
+                s, yytext);
 }
 
-void parser_y_init (const char *f)
+void parser_y_init (const char *name, FILE *f)
 {
 	memset(&ic_private, 0, sizeof(ic_private));
 	ic_private.stack[0].line = 1;
-	ic_private.stack[0].filename = strdup(f);
+	ic_private.stack[0].file = f;
+	ic_private.stack[0].filename = strdup(name);
 	stacktop = &ic_private.stack[0];
+	ic_private.stack_ptr = 0;
 }
 
 void parser_y_close(struct ic_inputsource *iis)
 {
-	if (iis->filename)
+	if (iis->filename) {
 		free(iis->filename);
-	if (iis->file)
+		iis->filename=NULL;
+	}
+	if (iis->file) {
 		fclose(iis->file);
-	if (iis->fileglob.gl_pathv)
+		iis->file=NULL;
+	}
+	if (iis->fileglob.gl_pathv) {
 		globfree(&iis->fileglob);
+		iis->fileglob.gl_pathv=NULL;
+	}
 }
 
 void parser_y_fini (void)
@@ -136,21 +145,21 @@ int parser_y_nextglobfile(struct ic_inputsource *iis)
 	/* increment for next time  */
 	fcnt = iis->fileglobcnt++;
 
+	if(iis->file)     { fclose(iis->file);   iis->file=NULL; }
+	if(iis->filename) { free(iis->filename); iis->filename=NULL;}
+
+	iis->line  = 1;
+	iis->filename = strdup(iis->fileglob.gl_pathv[fcnt]);
+
 	/* open the file */
-	f = fopen(iis->fileglob.gl_pathv[fcnt], "r");
+	f = fopen(iis->filename, "r");
 	if (!f) {
                 char ebuf[128];
-		snprintf(ebuf, 128, "can't open include filename: '%s'", iis->fileglob.gl_pathv[fcnt]);
+		snprintf(ebuf, 128, "can not open include filename: '%s'", iis->fileglob.gl_pathv[fcnt]);
                 yyerror(ebuf);
 		return -1;
 	}
-
-	if(iis->file) fclose(iis->file);
-	if(iis->filename) free(iis->filename);
-
 	iis->file  = f;
-	iis->line  = 1;
-	iis->filename = strdup(iis->fileglob.gl_pathv[fcnt]);
 
 	yy_switch_to_buffer(yy_create_buffer(f, YY_BUF_SIZE));
 
@@ -159,36 +168,52 @@ int parser_y_nextglobfile(struct ic_inputsource *iis)
 
 int parser_y_include (const char *filename)
 {
+	const char *try;
 	char newname[PATH_MAX];
+	char newname2[PATH_MAX];
         glob_t globbuf;
+	int globresult;
 
 	globbuf.gl_offs = 0;
+
+	try = filename;
+	newname[0]='\0';
+	newname2[0]='\0';
+
+	/*
+	 * order of operations is: try rootdir, and then rootdir2
+	 * only if it starts with /.
+	 * We never try plain name in that situation.
+	 *
+	 * glob() returns a match if that file exists, even without
+	 * having to do any globbing.
+	 */
 
 	if(rootdir[0]!='\0' && filename[0]=='/')
         {
 	    snprintf(newname, PATH_MAX, "%s%s", rootdir, filename);
+	    try = newname;
 
-            if(access(newname, R_OK)!=0) {
-		    if(rootdir2[0]!='\0') {
-			    snprintf(newname, PATH_MAX, "%s%s", rootdir2, filename);
-		    }
+	    globresult = glob(try, GLOB_BRACE, NULL, &globbuf);
+	    if(globresult == GLOB_NOMATCH && rootdir2[0]!='\0') {
+		    /* now try with rootdir2 */
+		    snprintf(newname2, PATH_MAX,
+			     "%s%s", rootdir2, filename);
+		    try = newname2;
+			    
+		    globresult = glob(try, GLOB_BRACE|GLOB_NOMAGIC, NULL, &globbuf);
 	    }
-	    filename=newname;
+	} else {
+		/* try globbing plain name now.. */
+		globresult = glob(try, GLOB_BRACE|GLOB_NOMAGIC, NULL, &globbuf);
 	}
-		
-	if(glob(filename, GLOB_BRACE|GLOB_NOMAGIC, NULL, &globbuf) == GLOB_NOMATCH) {
-		/* no files found. maybe try rootdir2 now */
-                char ebuf[128];
 
-		if(strchr(filename, '*')) {
-		   /* be quiet about missing files */
-		   return 0;
-                }
-
-		snprintf(ebuf, 128, "can't open include filename: '%s'", filename);
-                yyerror(ebuf);
+	if(globresult == GLOB_NOMATCH)
+	{
+		/* no files found... */
+		starter_log(LOG_LEVEL_INFO, "could not open include filename: '%s' (tried %s and %s)", filename, newname, newname2);
 		globfree(&globbuf);
-		return 1;
+		return 0;
 	}
 
 	if (ic_private.stack_ptr >= MAX_INCLUDE_DEPTH)
@@ -199,8 +224,8 @@ int parser_y_include (const char *filename)
 
 	if(verbose)
 	{
-		starter_log(LOG_LEVEL_DEBUG, "including file '%s' from line %s:%d\n"
-			    , filename
+		starter_log(LOG_LEVEL_DEBUG, "including file '%s'(%s) from line %s:%d\n"
+			    , filename, try
 			    , stacktop->filename
 			    , stacktop->line);
 	}
@@ -213,14 +238,14 @@ int parser_y_include (const char *filename)
 	stacktop->file = NULL;
 	stacktop->filename=NULL;
 
-	(void)parser_y_nextglobfile(stacktop);
-	
-	return 0;
+	return parser_y_eof();
 }
 
 int parser_y_eof(void)
 {
-	yy_delete_buffer(YY_CURRENT_BUFFER);
+	if(stacktop->state != YY_CURRENT_BUFFER) {
+		yy_delete_buffer(YY_CURRENT_BUFFER);
+	}
 
 	if(parser_y_nextglobfile(stacktop) == -1) {
 		/* no more glob'ed files to process */
@@ -229,13 +254,19 @@ int parser_y_eof(void)
 		{
 			int stackp = ic_private.stack_ptr;
 			starter_log(LOG_LEVEL_DEBUG,
-				    "end of file %s, resuming %s line %d\n"
-				    , stacktop->filename
-				    , (stackp > 0 ? ic_private.stack[stackp-1].filename : "<none>")
-				    , (stackp > 0 ? ic_private.stack[stackp-1].line : -1));
+				    "end of file %s\n",stacktop->filename);
+
+			if(stackp > 0) {
+				starter_log(LOG_LEVEL_DEBUG,
+					    "resuming %s line %d\n"
+					    , ic_private.stack[stackp-1].filename 
+					    , ic_private.stack[stackp-1].line);
+			}
 		}
 		
-		yy_switch_to_buffer(stacktop->state);
+		if(stacktop->state != YY_CURRENT_BUFFER)  {
+			yy_switch_to_buffer(stacktop->state);
+		}
 
 		parser_y_close(stacktop);
 		

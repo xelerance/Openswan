@@ -846,7 +846,7 @@ ikev2_emit_winning_sa(
     if(!out_struct(&r_trans, &ikev2_trans_desc
 		   , &r_proposal_pbs, &r_trans_pbs))
 	impossible();
-    if (ta.encrypter->keyminlen != ta.encrypter->keymaxlen)
+    if (ta.encrypter && ta.encrypter->keyminlen != ta.encrypter->keymaxlen)
 	ikev2_out_attr(IKEv2_KEY_LENGTH, ta.enckeylen
 		, &ikev2_trans_attr_desc, ikev2_trans_attr_val_descs
 		, &r_trans_pbs);
@@ -1356,9 +1356,12 @@ ikev2_parse_child_sa_body(
     ta.encrypter = (struct encrypt_desc *)ike_alg_ikev2_find(IKE_ALG_ENCRYPT
 							     , ta.encrypt
 							     , ta.enckeylen);
-    passert(ta.encrypter != NULL);
-    if (!ta.enckeylen)
-	ta.enckeylen = ta.encrypter->keydeflen;
+    if (ta.encrypter)
+    {
+	if (!ta.enckeylen)
+		ta.enckeylen = ta.encrypter->keydeflen;
+    } else
+	passert(ta.encrypt == IKEv2_ENCR_NULL);
 
     /* this is really a mess having so many different numbers for auth
      * algorithms.

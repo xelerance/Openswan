@@ -570,15 +570,9 @@ static const char *const auth_alg_name[] = {
 	"AUTH_ALGORITHM_AES_CBC",
     };
 
-static const char *const null_auth_alg_name[] = {
-	"AUTH_ALGORITHM_NULL", /* 251 */
-    };
-
 enum_names
-    null_auth_alg_names =
-	{ AUTH_ALGORITHM_NULL, AUTH_ALGORITHM_NULL, null_auth_alg_name, NULL },
     auth_alg_names =
-	{ AUTH_ALGORITHM_NONE, AUTH_ALGORITHM_AES_CBC , auth_alg_name, &null_auth_alg_names };
+	{ AUTH_ALGORITHM_NONE, AUTH_ALGORITHM_AES_CBC , auth_alg_name, NULL };
 
 /* From draft-beaulieu-ike-xauth */
 const char *const xauth_attr_name[] = {

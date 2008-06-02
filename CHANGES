@@ -28,6 +28,12 @@ v2.6.14
 * Bugtracker bugs fixed:
   #930: 'best.len' and 'cur.len' may be uninitialised. [Michal Nazarewicz]
   #781: %defaultroute detection broken on netkey for 2.5.x [paul]
+* Above 2.5.x merges brings in userland IPsec SAref support. Requires
+  kernel support, currently only supported with USE_MAST.(KLIPSNG)
+  Also requires kernel modification to add IP_IPSEC_REFINFO support 
+  This adds support for overlapip, allowing multiple clients behind the
+  same NAT router and multi clients on identical IP's behind different
+  NAT routers. For possible deployments, see doc/ipsecsaref.png
 
 v2.6.13
 * RFC4306 Section 3.3.5 IKEv2 Attribute KEY_LENGTH support [herbert/paul]
