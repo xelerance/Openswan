@@ -203,15 +203,7 @@ sub udp500check {
 	run "/bin/ls /proc/sys/net/ipv4/conf";
 	foreach $net (grep !/(lo|all|default|ipsec|vmnet)/, @check=@out)
 	{
-	    if ( -e "/proc/net/ip_fwchains" )
-	    {
-		chomp($net);
-		printfun "Checking IPchains port 500 hole ($defaultsrcip on $net)";
-		run "ipchains --check input -p udp --src $defaultsrcip 500 --dst 2.3.4.5 500 -i $net";
-		chomp($out[0]);
-		if( $out[0] eq "accepted" ) { errchk "$out[0]"; } else { errchk "","BLOCKED"; }
-	    }
-	    elsif( -e "/proc/net/ip_tables_names" )
+	    if( -e "/proc/net/ip_tables_names" )
 	    {
 		# iptables --check will never happen, hack it outselves
 		# use tcpdump? nmap? custom rule? at least check outgoing 500? ping outside activeOE box?

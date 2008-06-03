@@ -305,9 +305,6 @@ _________________________ iptables-nat
 	iptables -t nat -L -v -n
 _________________________ iptables-mangle
 	iptables -t mangle -L -v -n
-elif test -r /sbin/ipchains
-then
-	echo "Warning: no iptables or ipchains found. no firewalling capabilities found."
 fi
 _________________________ /proc/modules
 if test -f /proc/modules

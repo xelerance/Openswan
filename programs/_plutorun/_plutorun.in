@@ -205,24 +205,6 @@ then
     ) &
 fi
 
-# 
-# make sure that the isakmp port is open!
-#
-if test -f /etc/sysconfig/ipchains
-then
-    if egrep -q 500:500 /etc/sysconfig/ipchains
-    then
-	:
-    else
-	ipchains -I input 1 -p udp -s 0.0.0.0/0.0.0.0 -d 0.0.0.0/0.0.0.0 500:500 -j ACCEPT
-	# if it redhat, then save the rules again.
-	if [ -f /etc/redhat-release ]
-	then
-	    sh /etc/rc.d/init.d/ipchains save
-	fi
-    fi
-fi
-
 # spin off into the background, with our own logging
 echo "$verb Pluto subsystem..." | logger -p authpriv.error -t ipsec__plutorun
 execdir=${IPSEC_EXECDIR-@IPSEC_EXECDIR@}
