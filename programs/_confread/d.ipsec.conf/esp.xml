@@ -8,7 +8,9 @@ The format is identical to the <emphasis remap='B'>ike</emphasis> option listed 
 The options must be suitable as a value of
 <citerefentry><refentrytitle>ipsec_spi</refentrytitle><manvolnum>8</manvolnum></citerefentry>'s
 <option>--esp</option> option. The default is to use ESP. The default values are the same as for ike=
-Note also that not all ciphers available to the kernel (eg through CryptoAPI) are necessarilly supported here.
+Note also that not all ciphers available to the kernel (eg through CryptoAPI) are necessarilly supported here.</para>
+<para>Example use: "3des-md5" or "aes256-sha1;modp2048" or "aes-sha1,aes-md5".
+
 </para>
   </listitem>
   </varlistentry>
