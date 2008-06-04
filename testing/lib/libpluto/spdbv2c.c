@@ -97,13 +97,13 @@ main(int argc, char *argv[])
 
     {
 	int algo;
-	for(algo=1; algo <= SADB_EALG_MAX; algo++) {
+	for(algo=1; algo <= K_SADB_EALG_MAX; algo++) {
 	    esp_ealg[(algo)].sadb_alg_id=(algo);
 	}
     }
     {
 	int algo;
-	for(algo=1; algo <= SADB_AALG_MAX; algo++) {
+	for(algo=1; algo <= K_SADB_AALG_MAX; algo++) {
 	    esp_aalg[(algo)].sadb_alg_id=(algo);
 	}
     }
