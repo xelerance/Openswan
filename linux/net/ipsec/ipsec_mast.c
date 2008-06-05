@@ -662,10 +662,14 @@ ipsec_mast_probe(struct net_device *dev)
 	
 	dev->set_multicast_list = NULL;
 	dev->do_ioctl		= ipsec_mast_ioctl;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+	dev->header_ops = NULL;
+#else
 	dev->hard_header	= NULL;
 	dev->rebuild_header 	= NULL;
-	dev->set_mac_address 	= NULL;
 	dev->header_cache_update= NULL;
+#endif
+	dev->set_mac_address 	= NULL;
 	dev->neigh_setup        = ipsec_mast_neigh_setup_dev;
 	dev->hard_header_len 	= 8+20+20+8;
 	dev->mtu		= 0;

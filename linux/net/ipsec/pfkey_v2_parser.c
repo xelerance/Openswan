@@ -55,7 +55,6 @@
 #ifdef NET_21
 # include <net/route.h>          /* inet_addr_type */
 # include <linux/in6.h>
-# define ip_chk_addr inet_addr_type
 # define IS_MYADDR RTN_LOCAL
 #endif
 

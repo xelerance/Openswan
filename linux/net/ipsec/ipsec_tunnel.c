@@ -47,7 +47,6 @@
 
 #ifdef NET_21
 # include <linux/in6.h>
-# define ip_chk_addr inet_addr_type
 # define IS_MYADDR RTN_LOCAL
 # include <net/dst.h>
 # undef dev_kfree_skb
@@ -57,6 +56,7 @@
 
 #include <net/icmp.h>		/* icmp_send() */
 #include <net/ip.h>
+#include <net/arp.h>
 #ifdef NETDEV_23
 # include <linux/netfilter_ipv4.h>
 #endif /* NETDEV_23 */
@@ -200,7 +200,7 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 	 * The spinlock is to prevent any other process from accessing or deleting
 	 * the eroute while we are using and updating it.
 	 */
-	spin_lock(&eroute_lock);
+	spin_lock_bh(&eroute_lock);
 	
 	ixs->eroute = ipsec_findroute(&ixs->matcher);
 
@@ -411,7 +411,7 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 			ixs->eroute->er_last = ixs->skb;
 			ixs->skb = NULL;
 			ixs->stats->tx_dropped++;
-			spin_unlock(&eroute_lock);
+			spin_unlock_bh(&eroute_lock);
 			return IPSEC_XMIT_STOLEN;
 		}
 		ixs->outgoing_said = ixs->eroute->er_said;
@@ -438,7 +438,7 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 					       "Failed, tried to allocate %d bytes for source ident.\n", 
 					       len);
 					ixs->stats->tx_dropped++;
-					spin_unlock(&eroute_lock);
+					spin_unlock_bh(&eroute_lock);
 					return IPSEC_XMIT_ERRMEMALLOC;
 				}
 				memcpy(ixs->ips.ips_ident_s.data, ixs->eroute->er_ident_s.data, len);
@@ -458,7 +458,7 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 					       "Failed, tried to allocate %d bytes for dest ident.\n", 
 					       len);
 					ixs->stats->tx_dropped++;
-					spin_unlock(&eroute_lock);
+					spin_unlock_bh(&eroute_lock);
 					return IPSEC_XMIT_ERRMEMALLOC;
 				}
 				memcpy(ixs->ips.ips_ident_d.data, ixs->eroute->er_ident_d.data, len);
@@ -466,7 +466,7 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 		}
 	}
 
-	spin_unlock(&eroute_lock);
+	spin_unlock_bh(&eroute_lock);
 	return IPSEC_XMIT_OK;
 }
 
@@ -583,7 +583,7 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		ixs->matcher.sen_proto = ixs->iph->protocol;
 		ipsec_extract_ports(ixs->iph, &ixs->matcher);
 
-		spin_lock(&eroute_lock);
+		spin_lock_bh(&eroute_lock);
 		ixs->eroute = ipsec_findroute(&ixs->matcher);
 		if(ixs->eroute) {
 			ixs->outgoing_said = ixs->eroute->er_said;
@@ -591,7 +591,7 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 			ixs->eroute->er_count++;
 			ixs->eroute->er_lasttime = jiffies/HZ;
 		}
-		spin_unlock(&eroute_lock);
+		spin_unlock_bh(&eroute_lock);
 
 		KLIPS_PRINT((debug_tunnel & DB_TN_XMIT) &&
 			    /* ((ixs->orgdst != ixs->newdst) || (ixs->orgsrc != ixs->newsrc)) */
@@ -699,7 +699,12 @@ ipsec_tunnel_hard_header(struct sk_buff *skb, struct net_device *dev,
 	if(type != ETH_P_IPV6) {
 		/* execute this only, if we don't have to build the
 		   header for a IPv6 packet */
-		if(!prv->hard_header) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+               if(!prv->header_ops->create)
+#else
+               if(!prv->hard_header)
+#endif
+               {
 			KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
 				    "klips_debug:ipsec_tunnel_hard_header: "
 				    "physical device has been detached, packet dropped 0p%p->0p%p len=%d type=%d dev=%s->NULL ",
@@ -752,7 +757,11 @@ ipsec_tunnel_hard_header(struct sk_buff *skb, struct net_device *dev,
 	}                                                                       
 	tmp = skb->dev;
 	skb->dev = prv->dev;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+       ret = prv->header_ops->create(skb, prv->dev, type, (void *)daddr, (void *)saddr, len);
+#else
 	ret = prv->hard_header(skb, prv->dev, type, (void *)daddr, (void *)saddr, len);
+#endif
 	skb->dev = tmp;
 	return ret;
 }
@@ -795,8 +804,12 @@ ipsec_tunnel_rebuild_header(void *buff, struct net_device *dev,
 		stats->tx_dropped++;
 		return -ENODEV;
 	}
-
-	if(!prv->rebuild_header) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+	if(!prv->header_ops->rebuild)
+#else
+	if(!prv->rebuild_header)
+#endif
+	{
 		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
 			    "klips_debug:ipsec_tunnel_rebuild_header: "
 			    "physical device has been detached, packet dropped skb->dev=%s->NULL ",
@@ -833,12 +846,16 @@ ipsec_tunnel_rebuild_header(void *buff, struct net_device *dev,
 #endif /* NET_21 */
 	tmp = skb->dev;
 	skb->dev = prv->dev;
-	
-#ifdef NET_21
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+	ret = prv->header_ops->rebuild(skb);
+#else
+# ifdef NET_21
 	ret = prv->rebuild_header(skb);
-#else /* NET_21 */
+# else /* NET_21 */
 	ret = prv->rebuild_header(buff, prv->dev, raddr, skb);
-#endif /* NET_21 */
+# endif /* NET_21 */
+#endif
 	skb->dev = tmp;
 	return ret;
 }
@@ -978,7 +995,12 @@ ipsec_tunnel_cache_update(struct hh_cache *hh, struct net_device *dev, unsigned 
 		return;
 	}
 
-	if(!prv->header_cache_update) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+	if(!prv->header_ops->cache_update)
+#else
+	if(!prv->header_cache_update)
+#endif
+       {
 		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
 			    "klips_debug:ipsec_tunnel_cache_update: "
 			    "physical device has been detached, cannot set - skb->dev=%s->NULL\n",
@@ -989,9 +1011,21 @@ ipsec_tunnel_cache_update(struct hh_cache *hh, struct net_device *dev, unsigned 
 	KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
 		    "klips_debug:ipsec_tunnel: "
 		    "Revectored cache_update\n");
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+	prv->header_ops->cache_update(hh, prv->dev, haddr);
+#else
 	prv->header_cache_update(hh, prv->dev, haddr);
+#endif
 	return;
 }
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+const struct header_ops ipsec_tunnel_header_ops = {
+	.create         = ipsec_tunnel_hard_header,
+	.rebuild        = ipsec_tunnel_rebuild_header,
+	.cache_update   = ipsec_tunnel_cache_update,
+};
+#endif
 
 #ifdef NET_21
 DEBUG_NO_STATIC int
@@ -1053,10 +1087,16 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 	prv->hard_start_xmit = physdev->hard_start_xmit;
 	prv->get_stats = physdev->get_stats;
 
-#ifdef HAVE_DEV_HARD_HEADER
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+	if (physdev->header_ops) {
+		prv->header_ops = physdev->header_ops;
+		dev->header_ops = &ipsec_tunnel_header_ops;
+	} else
+		dev->header_ops = NULL;
+#else
 	if (physdev->hard_header) {
 		prv->hard_header = physdev->hard_header;
-		dev->hard_header = ipsec_tunnel_hard_header;
+		dev->hard_header = &ipsec_tunnel_hard_header;
 	} else
 		dev->hard_header = NULL;
 	
@@ -1065,12 +1105,6 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 		dev->rebuild_header = ipsec_tunnel_rebuild_header;
 	} else
 		dev->rebuild_header = NULL;
-	
-	if (physdev->set_mac_address) {
-		prv->set_mac_address = physdev->set_mac_address;
-		dev->set_mac_address = ipsec_tunnel_set_mac_address;
-	} else
-		dev->set_mac_address = NULL;
 	
 #ifndef NET_21
 	if (physdev->header_cache_bind) {
@@ -1085,7 +1119,13 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 		dev->header_cache_update = ipsec_tunnel_cache_update;
 	} else
 		dev->header_cache_update = NULL;
-#endif /* HAVE_DEV_HARD_HEADER */
+#endif
+
+	if (physdev->set_mac_address) {
+		prv->set_mac_address = physdev->set_mac_address;
+		dev->set_mac_address = ipsec_tunnel_set_mac_address;
+	} else
+		dev->set_mac_address = NULL;
 
 	dev->hard_header_len = physdev->hard_header_len;
 
@@ -1155,43 +1195,38 @@ ipsec_tunnel_detach(struct net_device *dev)
 	prv->hard_start_xmit = NULL;
 	prv->get_stats = NULL;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+	prv->header_ops = NULL;
+#else
 	prv->hard_header = NULL;
-#ifdef DETACH_AND_DOWN
-	dev->hard_header = NULL;
-#endif /* DETACH_AND_DOWN */
-	
 	prv->rebuild_header = NULL;
-#ifdef DETACH_AND_DOWN
-	dev->rebuild_header = NULL;
-#endif /* DETACH_AND_DOWN */
-	
-	prv->set_mac_address = NULL;
-#ifdef DETACH_AND_DOWN
-	dev->set_mac_address = NULL;
-#endif /* DETACH_AND_DOWN */
-	
+	prv->header_cache_update = NULL;
 #ifndef NET_21
 	prv->header_cache_bind = NULL;
-#ifdef DETACH_AND_DOWN
-	dev->header_cache_bind = NULL;
-#endif /* DETACH_AND_DOWN */
-#endif /* !NET_21 */
-
-	prv->header_cache_update = NULL;
-#ifdef DETACH_AND_DOWN
-	dev->header_cache_update = NULL;
-#endif /* DETACH_AND_DOWN */
-
-#ifdef NET_21
-/*	prv->neigh_setup        = NULL; */
-#ifdef DETACH_AND_DOWN
-	dev->neigh_setup        = NULL;
-#endif /* DETACH_AND_DOWN */
-#endif /* NET_21 */
+#else
+/*     prv->neigh_setup        = NULL; */
+#endif
+#endif
+	prv->set_mac_address = NULL;
 	dev->hard_header_len = 0;
+
 #ifdef DETACH_AND_DOWN
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+	dev->header_ops = NULL;
+#else
+	dev->hard_header = NULL;
+	dev->rebuild_header = NULL;
+	dev->header_cache_update = NULL;
+#ifndef NET_21
+	dev->header_cache_bind = NULL;
+#else
+	dev->neigh_setup        = NULL;
+#endif
+#endif
+	dev->set_mac_address = NULL;
 	dev->mtu = 0;
 #endif /* DETACH_AND_DOWN */
+
 	prv->mtu = 0;
 	for (i=0; i<MAX_ADDR_LEN; i++) {
 		dev->dev_addr[i] = 0;
@@ -1559,23 +1594,23 @@ ipsec_tunnel_init(struct net_device *dev)
 
 	dev->set_multicast_list = NULL;
 	dev->do_ioctl		= ipsec_tunnel_ioctl;
-#ifdef HAVE_DEV_HARD_HEADER
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+	dev->header_ops         = NULL;
+#else
 	dev->hard_header	= NULL;
 	dev->rebuild_header 	= NULL;
-	dev->header_cache_update= NULL;
-#endif
 	dev->set_mac_address 	= NULL;
 #ifndef NET_21
 	dev->header_cache_bind 	= NULL;
 #endif /* !NET_21 */
+	dev->header_cache_update= NULL;
+#endif
 
 #ifdef NET_21
 /*	prv->neigh_setup        = NULL; */
 	dev->neigh_setup        = ipsec_tunnel_neigh_setup_dev;
 #endif /* NET_21 */
-#ifdef HAVE_DEV_HARD_HEADER
 	dev->hard_header_len 	= 0;
-#endif
 	dev->mtu		= 0;
 	dev->addr_len		= 0;
 	dev->type		= ARPHRD_VOID; /* ARPHRD_TUNNEL; */ /* ARPHRD_ETHER; */
@@ -1599,6 +1634,12 @@ ipsec_tunnel_probe(struct net_device *dev)
 	ipsec_tunnel_init(dev); 
 	return 0;
 }
+
+#ifdef alloc_netdev
+static void ipsec_tunnel_netdev_setup(struct net_device *dev)
+{
+}
+#endif
 
 struct net_device *ipsecdevices[IPSEC_NUM_IFMAX];
 int ipsecdevices_max=-1;
@@ -1631,13 +1672,18 @@ ipsec_tunnel_createnum(int ifnum)
 		    ifnum);
 
 	sprintf(name, IPSEC_DEV_FORMAT, ifnum);
+#ifdef alloc_netdev
+	dev_ipsec = alloc_netdev(0, name, ipsec_tunnel_netdev_setup);
+#else
 	dev_ipsec = (struct net_device*)kmalloc(sizeof(struct net_device), GFP_KERNEL);
+#endif
 	if (dev_ipsec == NULL) {
 		printk(KERN_ERR "klips_debug:ipsec_tunnel_init_devices: "
 		       "failed to allocate memory for device %s, quitting device init.\n",
 		       name);
 		return -ENOMEM;
 	}
+#ifndef alloc_netdev
 	memset((caddr_t)dev_ipsec, 0, sizeof(struct net_device));
 #ifdef NETDEV_23
 	strncpy(dev_ipsec->name, name, sizeof(dev_ipsec->name));
@@ -1656,6 +1702,7 @@ ipsec_tunnel_createnum(int ifnum)
 #ifdef PAUL_FIXME
 	dev_ipsec->next = NULL;
 #endif
+#endif /* alloc_netdev */
 	dev_ipsec->init = &ipsec_tunnel_probe;
 	KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
 		    "klips_debug:ipsec_tunnel_init_devices: "
@@ -1726,11 +1773,15 @@ ipsec_tunnel_deletenum(int vifnum)
 		    atomic_read(&dev_ipsec->refcnt));
 	unregister_netdev(dev_ipsec);
 	KLIPS_PRINT(debug_tunnel, "Unregisted %s\n", dev_ipsec->name);
+#ifdef alloc_netdev
+	free_netdev(dev_ipsec);
+#else
 #ifndef NETDEV_23
 	kfree(dev_ipsec->name);
 	dev_ipsec->name=NULL;
 #endif /* !NETDEV_23 */
 	kfree(dev_ipsec->priv);
+#endif /* alloc_netdev */
 	dev_ipsec->priv=NULL;
 
 	return 0;

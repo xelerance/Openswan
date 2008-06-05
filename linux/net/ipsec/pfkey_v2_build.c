@@ -382,7 +382,10 @@ pfkey_lifetime_build(struct sadb_ext **	pfkey_ext,
 	pfkey_lifetime->sadb_lifetime_bytes = bytes;
 	pfkey_lifetime->sadb_lifetime_addtime = addtime;
 	pfkey_lifetime->sadb_lifetime_usetime = usetime;
+#ifdef NOT_YET
+	/* XXX it is defined in struct sadb_lifetime, but not found?? */
         pfkey_lifetime->sadb_x_lifetime_packets = packets;
+#endif
 
 errlab:
 	return error;

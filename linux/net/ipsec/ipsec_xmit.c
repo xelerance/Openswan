@@ -25,6 +25,7 @@
 
 #include "openswan/ipsec_param.h"
 
+
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
 #else /* MALLOC_SLAB */
@@ -1792,18 +1793,23 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	int error;
   
 #ifdef NETDEV_25
-	fl->nl_u.ip4_u.daddr = ixs->iph->daddr;
-	fl->nl_u.ip4_u.saddr = ixs->pass ? 0 : ixs->iph->saddr;
-	fl->nl_u.ip4_u.tos = RT_TOS(ixs->iph->tos);
-	fl->proto = ixs->iph->protocol;
+	fl->nl_u.ip4_u.daddr = ip_hdr(ixs->skb)->daddr;
+	fl->nl_u.ip4_u.saddr = ixs->pass ? 0 : ip_hdr(ixs->skb)->saddr;
+	fl->nl_u.ip4_u.tos = RT_TOS(ip_hdr(ixs->skb)->tos);
+	fl->proto = ip_hdr(ixs->skb)->protocol;
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,24)
+	error = ip_route_output_key(&ixs->route, &fl);
+#else
+	error = ip_route_output_key(&init_net, &ixs->route, &fl);
+#endif
+	if (error) {
 
-	if ((error = ip_route_output_key(&ixs->route, fl))) {
 #else
 	/*skb_orphan(ixs->skb);*/
 	if((error = ip_route_output(&ixs->route,
-				    ixs->skb->nh.iph->daddr,
-				    ixs->pass ? 0 : ixs->skb->nh.iph->saddr,
-				    RT_TOS(ixs->skb->nh.iph->tos),
+				    ip_hdr(ixs->skb)->daddr,
+				    ixs->pass ? 0 : ip_hdr(ixs->skb)->saddr,
+				    RT_TOS(ip_hdr(ixs->skb)->tos),
                                     /* mcr->rgb: should this be 0 instead? */
 				    ixs->physdev->iflink))) {
 #endif
@@ -1863,6 +1869,11 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	{
 		int err;
 
+/* XXX huh, we include linux/netfilter_ipv4.h where NF_IP_LOCAL_OUT is defined as 3 */
+#ifndef NF_IP_LOCAL_OUT
+#warning I dont understand why NF_IP_LOCAL_OUT is undefined when including linux/netfilter_ipv4.h
+#define NF_IP_LOCAL_OUT 3
+#endif
 		err = NF_HOOK(PF_INET, NF_IP_LOCAL_OUT, ixs->skb, NULL,
 			      ixs->route->u.dst.dev,
 			      ipsec_xmit_send2);

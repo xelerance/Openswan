@@ -14,7 +14,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_tunnel.h,v 1.33 2005/06/04 16:06:05 mcr Exp $
  */
 
 
@@ -65,6 +64,10 @@ struct ipsecpriv
 	char locked;
 	int  (*hard_start_xmit) (struct sk_buff *skb,
 		struct net_device *dev);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+	struct header_ops *header_ops;
+#else
+
 	int  (*hard_header) (struct sk_buff *skb,
 		struct net_device *dev,
 		unsigned short type,
@@ -77,12 +80,13 @@ struct ipsecpriv
 	int  (*rebuild_header)(void *buff, struct net_device *dev,
 			unsigned long raddr, struct sk_buff *skb);
 #endif /* NET_21 */
-	int  (*set_mac_address)(struct net_device *dev, void *addr);
 #ifndef NET_21
 	void (*header_cache_bind)(struct hh_cache **hhp, struct net_device *dev,
 				 unsigned short htype, __u32 daddr);
 #endif /* !NET_21 */
 	void (*header_cache_update)(struct hh_cache *hh, struct net_device *dev, unsigned char *  haddr);
+#endif
+	int  (*set_mac_address)(struct net_device *dev, void *addr);
 	struct net_device_stats *(*get_stats)(struct net_device *dev);
 	struct net_device_stats mystats;
 	int mtu;	/* What is the desired MTU? */
