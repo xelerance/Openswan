@@ -836,6 +836,8 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	    break;
 	    
 	case EVENT_NULL:
+	    /* XXX: Is there really no case where we want to set no timer? */
+	    /* dos_cookie is one 'valid' event, but it is used more? */
 	    break;
 
 	case EVENT_REINIT_SECRET:	/* Refresh cookie secret */
