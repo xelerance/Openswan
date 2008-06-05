@@ -2346,7 +2346,7 @@ pfkey_expire(struct ipsec_sa *ipsp, int hard)
 				  extensions))) {
 		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_expire: "
 			    "failed to build the expire message extensions\n");
-		spin_unlock(&tdb_lock);
+		spin_unlock_bh(&tdb_lock);
 		goto errlab;
 	}
 	
