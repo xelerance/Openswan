@@ -11,6 +11,7 @@ v2.6.14
 * Merged in v2.5.18 (see entries below) [paul]
 * Merged in v2.5.17 (see entries below) [paul]
 * Merged in v2.5.12-v2.5.16 (see entries below) [paul]
+* NETKEY and crypto modules did not get loaded automatically [paul]
 * Updated "clear" policy file for L root nameserver's new IP for OE. [paul]
 * Added testcase interop-ikev2-strongswan-06-aes192 [paul]
 * Removed "interfaces= is ignored when using the NETKEY stack" warning
@@ -22,14 +23,18 @@ v2.6.14
 * Fix for a potential crasher when displaying status using certs [paul]
 * Removed obsoleted and unused  hardware random related defines [paul]
 * Maintanance on IKEv2 properties and names [paul]
+* IKEv2 rekey fix for initiator [herbert]
+* KLIPS fixes to compile on 2.6.24+ [david/paul]
 * Added AES-CCM support [herbert]
   See:
    https://bugzilla.redhat.com/show_bug.cgi?id=441383
 * Support for KLIPS on 2.6.24+ [david]
 * Bugtracker bugs fixed:
+  #943: Openswan 2.6.14rc5 pluto crash at ikev1_main.c:1145 
   #936: EXPECTATION FAILED kernel_ops->eroute_idle != NULL [paul]
   #930: 'best.len' and 'cur.len' may be uninitialised. [Michal Nazarewicz]
   #781: %defaultroute detection broken on netkey for 2.5.x [paul]
+
 
 * Above 2.5.x merges brings in userland IPsec SAref support. Requires
   kernel support, currently only supported with USE_MAST.(KLIPSNG)
