@@ -45,9 +45,13 @@
 #include <net/xfrm.h>
 #include <linux/skbuff.h>
 #include <openswan.h>
+
 #ifdef SPINLOCK
 # ifdef SPINLOCK_23
 #  include <linux/spinlock.h> /* *lock* */
+#  ifdef NEED_SPINLOCK_TYPES
+#   include <linux/spinlock_types.h> 
+#  endif
 # else /* SPINLOCK_23 */
 #  include <asm/spinlock.h> /* *lock* */
 # endif /* SPINLOCK_23 */

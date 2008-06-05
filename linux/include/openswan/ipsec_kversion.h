@@ -113,6 +113,7 @@
 # define HAVE_NETDEV_PRINTK 1
 # define NET_26
 # define NETDEV_25
+# define NEED_SPINLOCK_TYPES
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,8)
