@@ -19,7 +19,7 @@ void readwhackmsg(char *infile)
 
     /* okay, eat first line, it's a comment, but log it. */
     if(fgets(b1, sizeof(b1), record)==NULL)
-	DBG_log(DBG_PARSING, "readwhackmsg: fgets returned NULL");
+	DBG(DBG_PARSING, DBG_log("readwhackmsg: fgets returned NULL"));
     printf("Pre-amble: %s", b1);
     
     plen=0;
@@ -31,7 +31,7 @@ void readwhackmsg(char *infile)
 	int abuflen;
 
 	if(fread(&a, 4, 2, record) == 0) ; /* eat time stamp */
-		DBG_log(DBG_PARSING, "readwhackmsg: fread returned 0");
+		DBG(DBG_PARSING, DBG_log( "readwhackmsg: fread returned 0"));
 	
 	/* account for this header we just consumed */
 	plen -= 12;
