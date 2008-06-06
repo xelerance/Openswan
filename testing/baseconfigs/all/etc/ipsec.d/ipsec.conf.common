@@ -219,7 +219,6 @@ conn north-east-x509
 	# Right security gateway, subnet behind it, next hop toward left.
 	right=192.1.2.23
 	rightid="C=ca, ST=Ontario, O=Xelerance, OU=Test Department, CN=east.testing.xelerance.com, E=testing@xelerance.com"
-	rightid="C=ca, ST=Ontario, O=Xelerance, L=Toronto, CN=east.testing.xelerance.com, E=testing@xelerance.com"
         rightrsasigkey=%cert
 	rightcert=east.crt
 	rightnexthop=192.1.2.49
