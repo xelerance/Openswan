@@ -23,7 +23,7 @@
 #include <linux/module.h>
 #include <linux/version.h>
 #ifndef AUTOCONF_INCLUDED
-#include <linux/config.h>
+# include <linux/config.h>
 #endif
 #include <linux/kernel.h>
 
@@ -49,7 +49,9 @@
 #else /* MALLOC_SLAB */
 # include <linux/malloc.h> /* kmalloc() */
 #endif /* MALLOC_SLAB */
-#include <asm/segment.h>
+#ifdef CONFIG_X86
+# include <asm/segment.h>
+#endif
 #include <linux/skbuff.h>
 #include <linux/netdevice.h>
 #include <net/sock.h> /* struct sock */
