@@ -28,6 +28,7 @@
 #include <openswan.h>
 
 #ifdef LDAP_VER
+#define LDAP_DEPRECATED 1
 #include <ldap.h>
 #endif
 
