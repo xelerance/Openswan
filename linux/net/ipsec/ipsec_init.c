@@ -164,14 +164,22 @@ openswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
 static inline int
 openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol)
 {
+#ifdef IPSKB_XFRM_TUNNEL_SIZE
+	inet_add_protocol(prot, protocol);
+#else
 	inet_add_protocol(prot);
+#endif
 	return 0;
 }
 
 static inline int
 openswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
 {
+#ifdef IPSKB_XFRM_TUNNEL_SIZE
+	inet_del_protocol(prot, protocol);
+#else
 	inet_del_protocol(prot);
+#endif
 	return 0;
 }
 
