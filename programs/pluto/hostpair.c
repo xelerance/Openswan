@@ -132,6 +132,8 @@ find_host_pair(const ip_address *myaddr
 
     /* default hisaddr to an appropriate any */
     if (hisaddr == NULL) {
+#if 0
+	/* broken */
 	const struct af_info *af = aftoinfo(addrtypeof(myaddr));
 
 	if(af == NULL) {
@@ -141,6 +143,9 @@ find_host_pair(const ip_address *myaddr
 	if(af) {
 	    hisaddr = af->any;
 	}
+#else
+	hisaddr = aftoinfo(addrtypeof(myaddr))->any;
+#endif
     }
 
     /*
