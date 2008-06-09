@@ -111,6 +111,8 @@ rm -rf %{buildroot}/etc/ipsec.d/examples
 find %{buildroot}%{_mandir}  -type f | xargs chmod a-x
 
 install -d -m 0700 %{buildroot}%{_localstatedir}/run/pluto
+# used when setting --perpeerlog without --perpeerlogbase 
+install -d -m 0700 %{buildroot}%{_localstatedir}/log/pluto/peer
 install -d %{buildroot}%{_sbindir}
 
 %if %{buildklips}
@@ -135,6 +137,7 @@ rm -rf ${RPM_BUILD_ROOT}
 # /usr/share/doc/openswan/*
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.conf
 %attr(0700,root,root) %dir %{_sysconfdir}/ipsec.d
+%attr(0700,root,root) %dir %{_localstatedir}/log/pluto/peer
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.d/policies/*
 %{_localstatedir}/run/pluto
 %{_initrddir}/ipsec
