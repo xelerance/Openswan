@@ -2076,10 +2076,10 @@ find_host_connection2(const char *func
     struct connection *c;
     char mebuf[ADDRTOT_BUF], himbuf[ADDRTOT_BUF];
     DBG(DBG_CONTROLMORE,
-	DBG_log("find_host_connection called from %s, me=%s:%d him=%s:%d policy=%s", func
+	DBG_log("find_host_connection2 called from %s, me=%s:%d him=%s:%d policy=%s", func
 		, (addrtot(me,  0, mebuf,  sizeof(mebuf)),mebuf),   my_port
-		, (addrtot(him, 0, himbuf, sizeof(himbuf)),himbuf), his_port
-		, bitnamesof(sa_policy_bit_names, policy)));
+		, him ?  (addrtot(him, 0, himbuf, sizeof(himbuf)),himbuf) : "%any"
+		, his_port , bitnamesof(sa_policy_bit_names, policy)));
     c = find_host_pair_connections(__FUNCTION__, me, my_port, him, his_port);
 
     if (policy != LEMPTY) {
