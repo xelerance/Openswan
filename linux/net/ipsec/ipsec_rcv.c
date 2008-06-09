@@ -1061,7 +1061,7 @@ ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 			irs->stats->rx_errors++;
 		}
 		decap_stat = IPSEC_RCV_BADPROTO;
-		goto rcvleave;
+		goto no_skb;
 	}
 
 	/* look up the first SA -- we need the protocol functions to figure
@@ -1109,7 +1109,7 @@ ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 				    "klips_debug:ipsec_rcv: decap_once failed: %d\n",
 				    decap_stat);
 		
-			goto rcvleave;
+			goto no_skb;
 		}
 
 		/* okay, acted on this SA, so free any previous SA, and record a new one*/
@@ -1259,6 +1259,11 @@ ipsec_rcv_decap(struct ipsec_rcv_state *irs)
 		    "netif_rx(%s) called.\n", skb->dev->name);
 	netif_rx(skb);
 	skb=NULL;
+
+  return 0;
+
+ no_skb:
+   skb=irs->skb;
 
  rcvleave:
 	if(lastipsp) {
