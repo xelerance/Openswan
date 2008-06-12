@@ -6,7 +6,7 @@ supported anymore. If you need to create static SAs, then you can use
 <emphasis remap='B'>ipsec spi</emphasis> and
 <emphasis remap='B'>ipsec eroute</emphasis> when using KLIPS or
 <emphasis remap='B'>ip xfrm </emphasis> or <emphasis remap='B'>setkey</emphasis>
-when using NETKEY.<para>
+when using NETKEY.</para>
 <para>No rational person uses static keys. They are not easier to use. REPEAT: they
 are not easier to use.</para>
 </refsect2>
