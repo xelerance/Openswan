@@ -15,6 +15,10 @@ KLIPS_TOP := ${OPENSWANSRCDIR}/linux
 
 # include file with .h-style macros that would otherwise be created by
 # config. Must occur before other includes.
+ifneq ($(strip $(MODULE_EXTRA_INCLUDE)),)
+EXTRA_CFLAGS += -include ${MODULE_EXTRA_INCLUDE}
+endif
+
 ifneq ($(strip $(MODULE_DEF_INCLUDE)),)
 EXTRA_CFLAGS += -include ${MODULE_DEF_INCLUDE}
 endif
