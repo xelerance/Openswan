@@ -1597,12 +1597,12 @@ static stf_status
 quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 			    , struct pluto_crypto_req *r);
 
-static void
+static stf_status
 quick_inI1_outR1_cryptocontinue2(struct pluto_crypto_req_cont *pcrc
 			      , struct pluto_crypto_req *r
 				 , err_t ugh);
 
-static void
+static stf_status
 quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 				 , struct pluto_crypto_req *r
 				 , err_t ugh);
@@ -1935,7 +1935,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
     }
 }
 
-static void
+static stf_status
 quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 				 , struct pluto_crypto_req *r
 				 , err_t ugh)
@@ -2007,7 +2007,7 @@ quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 	
 }
 
-static void
+static stf_status
 quick_inI1_outR1_cryptocontinue2(struct pluto_crypto_req_cont *pcrc
 			      , struct pluto_crypto_req *r
 			      , err_t ugh)

@@ -114,7 +114,6 @@ fi
 			#echo -n "$mod "
 			@MODPROBE@ -q $mod 2> /dev/null
 		   done
-		echo
 
 		# xfrm_user is the old name for xfrm4_tunnel - backwards compatibility
 		@MODPROBE@ -q xfrm_user 2> /dev/null
@@ -129,7 +128,6 @@ fi
 			#echo -n "$crypto "
 			@MODPROBE@ -q $crypto 2> /dev/null
 		   done
-		echo
 	fi
 
 
