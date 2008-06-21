@@ -54,6 +54,7 @@ IPSECplutowait=${IPSECplutowait:-no}
 # IPSEChidetos	"yes"
 IPSECrp_filter=${IPSECrp_filter:-0}
 IPSECuniqueids=${IPSECuniqueids:-yes}
+IPSECdisable_port_floating=${IPSECdisable_port_floating:-no}
 IPSECcrlcheckinterval=${IPSECcrlcheckinterval:-0}
 IPSECprotostack=${IPSECprotostack:-auto}
 # IPSECoverridemtu	""
