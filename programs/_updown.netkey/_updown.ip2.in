@@ -118,6 +118,10 @@ export LC_ALL
 #	PLUTO_PROTO_STACK
 #		is the local IPsec kernel stack used, eg KLIPS, NETKEY,
 #		NOSTACK
+if [ -f /etc/sysconfig/pluto_updown ]
+then
+    . /etc/sysconfig/pluto_updown
+fi
 
 # Ignore parameter custom
 if [ " $1" = " custom" ]; then
@@ -189,6 +193,11 @@ addsource() {
 
 
 doroute() {
+    if [ -z "$PLUTO_MY_SOURCEIP" ] && [ -n "$DEFAULTSOURCE" ]
+    then
+	PLUTO_MY_SOURCEIP="${DEFAULTSOURCE%/*}"
+    fi
+
     st=0
     # skip routing if it's not enabled or necessary
     if [ " $PLUTO_MY_SOURCEIP" = " " -a " $ROUTE" != " yes" ]; then
