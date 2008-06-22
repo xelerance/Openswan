@@ -364,7 +364,7 @@ main(int argc, char **argv)
 	    { "nhelpers", required_argument, NULL, 'j' },
 #ifdef DEBUG
 	    { "debug-none", no_argument, NULL, 'N' },
-	    { "debug-all]", no_argument, NULL, 'A' },
+	    { "debug-all", no_argument, NULL, 'A' },
 
 	    { "debug-raw", no_argument, NULL, DBG_RAW + DBG_OFFSET },
 	    { "debug-crypt", no_argument, NULL, DBG_CRYPT + DBG_OFFSET },
