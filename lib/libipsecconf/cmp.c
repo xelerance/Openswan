@@ -1,5 +1,7 @@
-/* FreeS/WAN comparisons functions (cmp.c)
+/* Openswan comparisons functions (cmp.c)
  * Copyright (C) 2001-2002 Mathieu Lafon - Arkoon Network Security
+ * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007-2008 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: cmp.c,v 1.7 2004/12/01 07:33:14 ken Exp $
  */
 
 #include <sys/queue.h>
@@ -92,6 +93,7 @@ int starter_cmp_pluto (struct starter_config *c1, struct starter_config *c2)
 	VARCMP(setup.options[KBF_NHELPERS]);
 #ifdef NAT_TRAVERSAL
 	VARCMP(setup.options[KBF_NATTRAVERSAL]);
+	VARCMP(setup.options[KBF_DISABLEPORTFLOATING]);
 	VARCMP(setup.options[KBF_KEEPALIVE]);
 #endif
 	STRCMP(setup.strings[KSF_VIRTUALPRIVATE]);

@@ -1,6 +1,7 @@
 /* Openswan config file parser (parser.h)
  * Copyright (C) 2001-2002 Mathieu Lafon - Arkoon Network Security
- * Copyright (C) 2003-2006 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007-2008 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,7 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keywords.h,v 1.16 2004/12/02 16:26:02 ken Exp $
  */
 
 #ifndef _KEYWORDS_H_
@@ -70,6 +70,7 @@ enum keyword_numeric_config_field {
     KBF_STRICTCRLPOLICY,
     KBF_NOCRSEND,
     KBF_NATTRAVERSAL,
+    KBF_DISABLEPORTFLOATING,
     KBF_KEEPALIVE,
     KBF_PLUTORESTARTONCRASH,
     KBF_RPFILTER,
