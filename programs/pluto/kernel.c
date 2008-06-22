@@ -1590,9 +1590,11 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->natt_oa = &natt_oa;
 #endif
 	said_next->outif   = -1;
+#ifdef KLIPS_MAST
 	if(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT && useful_mastno != -1) {
 	    said_next->outif = MASTTRANSPORT_OFFSET+useful_mastno;
 	}
+#endif
         said_next->text_said = text_said;
 	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
 
@@ -2721,7 +2723,7 @@ bool was_eroute_idle(struct state *st, time_t since_when)
     return FALSE;
 }
 
-/* This wrapper is to make the seam_* files in testing/ easier
+/* This wrapper is to make the seam_* files in testing/ easier */
 bool kernel_overlap_supported()
 {
    return kernel_ops->overlap_supported;
