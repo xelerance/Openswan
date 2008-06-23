@@ -281,13 +281,23 @@ find_raw_ifaces4(void)
 		, "ioctl(SIOCGIFFLAGS) for %s in find_raw_ifaces4()"
 		, ri.name));
 	if (!(auxinfo.ifr_flags & IFF_UP))
+	   {
+		DBG(DBG_CONTROL, DBG_log("Ignored interface %s - it is not up"
+	    , ri.name));
 	    continue;	/* ignore an interface that isn't UP */
+	   }
         if (auxinfo.ifr_flags & IFF_SLAVE)
+	   {
+		DBG(DBG_CONTROL, DBG_log("Ignored interface %s - it is a slave interface"
             continue;   /* ignore slave interfaces; they share IPs with their master */
+	   }
 
 	/* ignore unconfigured interfaces */
 	if (rs->sin_addr.s_addr == 0)
+	   {
+		DBG(DBG_CONTROL, DBG_log("Ignored interface %s - it is unconfigured"
 	    continue;
+	   }
 
 	happy(initaddr((const void *)&rs->sin_addr, sizeof(struct in_addr)
 	    , AF_INET, &ri.addr));
