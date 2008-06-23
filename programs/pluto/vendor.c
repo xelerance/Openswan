@@ -196,7 +196,7 @@ static struct vid_struct _vid_tab[] = {
 	  NULL, "Cisco IOS Device", "\x3e\x98\x40\x48", 4},
 
 
-	/**
+	/*
 	 * Timestep VID seen:
 	 *   - 54494d455354455020312053475720313532302033313520322e303145303133
 	 *     = 'TIMESTEP 1 SGW 1520 315 2.01E013'
@@ -255,14 +255,14 @@ static struct vid_struct _vid_tab[] = {
 
 	{ VID_MISC_IKEv2, VID_STRING|VID_KEEP, "IKEv2", "CAN-IKEv2", NULL, 0},
 
-	/**
+	/*
 	 * Netscreen:
 	 * 4865617274426561745f4e6f74696679386b0100  (HeartBeat_Notify + 386b0100)
 	 */
 	{ VID_MISC_HEARTBEAT_NOTIFY, VID_STRING | VID_SUBSTRING_DUMPHEXA,
 		"HeartBeat_Notify", "HeartBeat Notify", NULL, 0 },
 
-	/**
+	/*
 	 * MacOS X
 	 */
 	{ VID_MACOSX, VID_STRING|VID_SUBSTRING_DUMPHEXA, "Mac OSX 10.x",
@@ -275,6 +275,72 @@ static struct vid_struct _vid_tab[] = {
  	DEC_MD5_VID(VISTA_AUTHIP,  "MS-Negotiation Discovery Capable")
  	DEC_MD5_VID(VISTA_AUTHIP2, "IKE CGA version 1")
 	DEC_MD5_VID(VISTA_AUTHIP3, "MS-MamieExists")
+
+	/*
+	 * strongSwan
+	 */
+	DEC_MD5_VID(STRONGSWAN_4_0_0, "strongSwan 4.0.0")
+	DEC_MD5_VID(STRONGSWAN_4_0_1, "strongSwan 4.0.1")
+	DEC_MD5_VID(STRONGSWAN_4_0_2, "strongSwan 4.0.2")
+	DEC_MD5_VID(STRONGSWAN_4_0_3, "strongSwan 4.0.3")
+	DEC_MD5_VID(STRONGSWAN_4_0_4, "strongSwan 4.0.4")
+	DEC_MD5_VID(STRONGSWAN_4_0_5, "strongSwan 4.0.5")
+	DEC_MD5_VID(STRONGSWAN_4_0_6, "strongSwan 4.0.6")
+	DEC_MD5_VID(STRONGSWAN_4_0_7, "strongSwan 4.0.7")
+	DEC_MD5_VID(STRONGSWAN_4_1_0, "strongSwan 4.1.0")
+	DEC_MD5_VID(STRONGSWAN_4_1_1, "strongSwan 4.1.1")
+	DEC_MD5_VID(STRONGSWAN_4_1_2, "strongSwan 4.1.2")
+	DEC_MD5_VID(STRONGSWAN_4_1_3, "strongSwan 4.1.3")
+	DEC_MD5_VID(STRONGSWAN_4_1_4, "strongSwan 4.1.4")
+	DEC_MD5_VID(STRONGSWAN_4_1_5, "strongSwan 4.1.5")
+	DEC_MD5_VID(STRONGSWAN_4_1_6, "strongSwan 4.1.6")
+	DEC_MD5_VID(STRONGSWAN_4_1_7, "strongSwan 4.1.7")
+	DEC_MD5_VID(STRONGSWAN_4_1_8, "strongSwan 4.1.8")
+	DEC_MD5_VID(STRONGSWAN_4_1_9, "strongSwan 4.1.9")
+	DEC_MD5_VID(STRONGSWAN_4_1_10, "strongSwan 4.1.10")
+	DEC_MD5_VID(STRONGSWAN_4_1_11, "strongSwan 4.1.11")
+	DEC_MD5_VID(STRONGSWAN_4_2_0, "strongSwan 4.2.0")
+	DEC_MD5_VID(STRONGSWAN_4_2_1, "strongSwan 4.2.1")
+	DEC_MD5_VID(STRONGSWAN_4_2_2, "strongSwan 4.2.2")
+	DEC_MD5_VID(STRONGSWAN_4_2_3, "strongSwan 4.2.3")
+
+	DEC_MD5_VID(STRONGSWAN_2_8_8, "strongSwan 2.8.8")
+	DEC_MD5_VID(STRONGSWAN_2_8_7, "strongSwan 2.8.7")
+	DEC_MD5_VID(STRONGSWAN_2_8_6, "strongSwan 2.8.6")
+	DEC_MD5_VID(STRONGSWAN_2_8_5, "strongSwan 2.8.5")
+	DEC_MD5_VID(STRONGSWAN_2_8_4, "strongSwan 2.8.4")
+	DEC_MD5_VID(STRONGSWAN_2_8_3, "strongSwan 2.8.3")
+	DEC_MD5_VID(STRONGSWAN_2_8_2, "strongSwan 2.8.2")
+	DEC_MD5_VID(STRONGSWAN_2_8_1, "strongSwan 2.8.1")
+	DEC_MD5_VID(STRONGSWAN_2_8_0, "strongSwan 2.8.0")
+	DEC_MD5_VID(STRONGSWAN_2_7_3, "strongSwan 2.7.3")
+	DEC_MD5_VID(STRONGSWAN_2_7_2, "strongSwan 2.7.2")
+	DEC_MD5_VID(STRONGSWAN_2_7_1, "strongSwan 2.7.1")
+	DEC_MD5_VID(STRONGSWAN_2_7_0, "strongSwan 2.7.0")
+	DEC_MD5_VID(STRONGSWAN_2_6_4, "strongSwan 2.6.4")
+	DEC_MD5_VID(STRONGSWAN_2_6_3, "strongSwan 2.6.3")
+	DEC_MD5_VID(STRONGSWAN_2_6_2, "strongSwan 2.6.2")
+	DEC_MD5_VID(STRONGSWAN_2_6_1, "strongSwan 2.6.1")
+	DEC_MD5_VID(STRONGSWAN_2_6_0, "strongSwan 2.6.0")
+	DEC_MD5_VID(STRONGSWAN_2_5_7, "strongSwan 2.5.7")
+	DEC_MD5_VID(STRONGSWAN_2_5_6, "strongSwan 2.5.6")
+	DEC_MD5_VID(STRONGSWAN_2_5_5, "strongSwan 2.5.5")
+	DEC_MD5_VID(STRONGSWAN_2_5_4, "strongSwan 2.5.4")
+	DEC_MD5_VID(STRONGSWAN_2_5_3, "strongSwan 2.5.3")
+	DEC_MD5_VID(STRONGSWAN_2_5_2, "strongSwan 2.5.2")
+	DEC_MD5_VID(STRONGSWAN_2_5_1, "strongSwan 2.5.1")
+	DEC_MD5_VID(STRONGSWAN_2_5_0, "strongSwan 2.5.0")
+	DEC_MD5_VID(STRONGSWAN_2_4_4, "strongSwan 2.4.4")
+	DEC_MD5_VID(STRONGSWAN_2_4_3, "strongSwan 2.4.3")
+	DEC_MD5_VID(STRONGSWAN_2_4_2, "strongSwan 2.4.2")
+	DEC_MD5_VID(STRONGSWAN_2_4_1, "strongSwan 2.4.1")
+	DEC_MD5_VID(STRONGSWAN_2_4_0, "strongSwan 2.4.0")
+	DEC_MD5_VID(STRONGSWAN_2_3_2, "strongSwan 2.3.2")
+	DEC_MD5_VID(STRONGSWAN_2_3_1, "strongSwan 2.3.1")
+	DEC_MD5_VID(STRONGSWAN_2_3_0, "strongSwan 2.3.0")
+	DEC_MD5_VID(STRONGSWAN_2_2_2, "strongSwan 2.2.2")
+	DEC_MD5_VID(STRONGSWAN_2_2_1, "strongSwan 2.2.1")
+	DEC_MD5_VID(STRONGSWAN_2_2_0, "strongSwan 2.2.0")
 
 	/**
 	 * Cisco VPN 3000
