@@ -432,6 +432,8 @@ static u_char oid_I[]   = {0x55, 0x04, 0x2B};
 static u_char oid_ID[]  = {0x55, 0x04, 0x2D};
 static u_char oid_E[]   = {0x2A, 0x86, 0x48, 0x86, 0xF7,
 			   0x0D, 0x01, 0x09, 0x01};
+static u_char oid_UN[]  = {0x2A, 0x86, 0x48, 0x86, 0xF7,
+			   0x0D, 0x01, 0x09, 0x02};
 static u_char oid_TCGID[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x89,
 			     0x31, 0x01, 0x01, 0x02, 0x02, 0x4B};
 
@@ -457,10 +459,12 @@ static const x501rdn_t x501rdns[] = {
   {"E"            , {oid_E,      9}, ASN1_IA5STRING},
   {"Email"        , {oid_E,      9}, ASN1_IA5STRING},
   {"emailAddress" , {oid_E,      9}, ASN1_IA5STRING},
+  {"UN"              , {oid_UN,     9}, ASN1_IA5STRING},
+  {"unstructuredName", {oid_UN,     9}, ASN1_IA5STRING},
   {"TCGID"        , {oid_TCGID, 12}, ASN1_PRINTABLESTRING}
 };
 
-#define X501_RDN_ROOF   22
+#define X501_RDN_ROOF   24
 
 /* Maximum length of ASN.1 distinquished name */
 #define ASN1_BUF_LEN	      512

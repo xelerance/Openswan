@@ -1,7 +1,7 @@
 Installation and Configuration Guide
 ------------------------------------
 
-     X.509 - Version 1.4.8
+     X.509 - based on version 1.4.8
 
 Contents
 
@@ -416,6 +416,10 @@ The following RDNs are supported by the X.509 patch
 | UID          User ID                          |
 |-----------------------------------------------|
 | TCGID        [Siemens] Trust Center Global ID |
+|-----------------------------------------------|
+| unstructuredName Unstructured Name            |
+|-----------------------------------------------|
+| UN               Unstructured Name            |
 +-----------------------------------------------+
 
 With the roadwarrior connection definition listed above, an IPsec SA for
