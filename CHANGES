@@ -4,6 +4,16 @@ of version numbers, so yo will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
+v2.6.15
+* Patch to support NETKEY backport on Debian kernels [Rene Mayrhofer]
+* Fix a crasher when using right=%any with plutodebug=controlmore [paul]
+* Revert af family code in find_host_pair causing some connections to not
+  be found in find_host_connection2() [paul]
+* Fixes to _updown.mast, _realsetup (mast) and startklips [paul]
+* Bugtracker bugs fixed:
+  #784 / #928 : openswan (pfs=yes) to vista (pfs=no) crasher [paul]
+  #934: mem leak in klips:ipsec_rcv_decap [Wolfgang Nothdurft]
+
 v2.6.14
 * Fix for integ vs prf mixup [herbert/antony] 
   See:
