@@ -289,6 +289,7 @@ find_raw_ifaces4(void)
         if (auxinfo.ifr_flags & IFF_SLAVE)
 	   {
 		DBG(DBG_CONTROL, DBG_log("Ignored interface %s - it is a slave interface"
+	    , ri.name));
             continue;   /* ignore slave interfaces; they share IPs with their master */
 	   }
 
@@ -296,6 +297,7 @@ find_raw_ifaces4(void)
 	if (rs->sin_addr.s_addr == 0)
 	   {
 		DBG(DBG_CONTROL, DBG_log("Ignored interface %s - it is unconfigured"
+	    , ri.name));
 	    continue;
 	   }
 
