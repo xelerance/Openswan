@@ -1,5 +1,7 @@
-/* FreeS/WAN Pluto launcher (pluto.c)
+/* Openswan Pluto launcher (pluto.c)
  * Copyright (C) 2001-2002 Mathieu Lafon - Arkoon Network Security
+ * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007-2008 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: invokepluto.c,v 1.6 2005/08/18 14:16:08 ken Exp $
  */
 
 #include <sys/types.h>
@@ -147,6 +148,9 @@ int starter_start_pluto (struct starter_config *cfg, int debug)
 		static char ka[15];
 		if (cfg->setup.nat_traversal) {
 			arg[argc++] = "--nat_traversal";
+		}
+		if (cfg->setup.disable_port_floating) {
+			arg[argc++] = "--disable_port_floating";
 		}
 		if (cfg->setup.keep_alive) {
 			arg[argc++] = "--keep_alive";

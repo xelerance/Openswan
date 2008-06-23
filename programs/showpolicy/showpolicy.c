@@ -95,10 +95,13 @@ int open_udp_sock(unsigned short port)
 	}
 
 	one = 1;
+
+#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
 	if(setsockopt(fd, SOL_IP, IP_IPSEC_REFINFO, &one, sizeof(one)) != 0) {
 		perror("setsockopt recvref");
 		exit(12);
 	}
+#endif
 	return fd;
 }
 
@@ -183,7 +186,9 @@ int udp_recv_loop(int udpsock)
 			msgh.msg_controllen = sizeof(cbuf);
 
 			cmsg = CMSG_FIRSTHDR(&msgh);
+#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
 			cmsg->cmsg_level = SOL_IP;
+#endif
 			cmsg->cmsg_type  = IP_IPSEC_REFINFO;
 			cmsg->cmsg_len   = CMSG_LEN(sizeof(unsigned int));
 			
