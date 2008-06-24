@@ -65,7 +65,6 @@ enum keyword_numeric_config_field {
     KBF_HIDETOS,
     KBF_UNIQUEIDS,
     KBF_PLUTOWAIT,
-    KBF_FORWARDCONTROL,
     KBF_OVERRIDEMTU,
     KBF_STRICTCRLPOLICY,
     KBF_NOCRSEND,
@@ -73,7 +72,6 @@ enum keyword_numeric_config_field {
     KBF_DISABLEPORTFLOATING,
     KBF_KEEPALIVE,
     KBF_PLUTORESTARTONCRASH,
-    KBF_RPFILTER,
     KBF_CRLCHECKINTERVAL,
     KBF_KLIPSDEBUG,
     KBF_PLUTODEBUG,
@@ -101,6 +99,7 @@ enum keyword_numeric_config_field {
     KBF_CONNADDRFAMILY,
     KBF_FORCEBUSY, /* 40 */
     KBF_OVERLAPIP,
+    KBF_WARNIGNORE, /* to ignore obsoleted keywords */
     KBF_MAX         
 };
 
@@ -219,6 +218,7 @@ enum keyword_type {
     kt_idtype,             /* an ID type */
     kt_bitstring,          /* an encryption/authentication key */
     kt_comment,            /* a value which is a cooked comment */
+    kt_obsolete,           /* option that is obsoleted, allow keyword but warn and ignore */
 };
 
 #define NOT_ENUM NULL

@@ -389,6 +389,10 @@ main(int argc, char *argv[])
 		printf("'\n");
 		break;
 
+	    case kt_obsolete:
+		printf("# obsolete option '%s%s' ignored\n", varprefix, kd->keyname);
+		break;
+
 	    default:
 		if(cfg->setup.options[kd->field]) {
 		    printf("export %s%s='%d'\n",

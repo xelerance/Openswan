@@ -269,7 +269,6 @@ struct keyword_enum_values kw_sendcert_list=
 /* MASTER KEYWORD LIST */
 struct keyword_def ipsec_conf_keywords_v2[]={
     {"interfaces",     kv_config, kt_string,    KSF_INTERFACES,NOT_ENUM},
-    {"forwardcontrol", kv_config, kt_bool,      KBF_FORWARDCONTROL,NOT_ENUM},
     {"myid",           kv_config, kt_string,    KSF_MYID,NOT_ENUM},
     {"syslog",         kv_config, kt_string,    KSF_SYSLOG,NOT_ENUM},
     {"klipsdebug",     kv_config, kt_list,      KBF_KLIPSDEBUG, &kw_klipsdebug_list},
@@ -286,7 +285,6 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"postpluto",      kv_config, kt_filename,  KSF_POSTPLUTO,NOT_ENUM},
     {"fragicmp",       kv_config, kt_bool,      KBF_FRAGICMP,NOT_ENUM},
     {"hidetos",        kv_config, kt_bool,      KBF_HIDETOS,NOT_ENUM},
-    {"rp_filter",      kv_config, kt_enum,      KBF_RPFILTER,NOT_ENUM},
     {"uniqueids",      kv_config, kt_bool,      KBF_UNIQUEIDS,NOT_ENUM},
     {"overridemtu",    kv_config, kt_number,    KBF_OVERRIDEMTU,NOT_ENUM},
     {"nocrsend",       kv_config, kt_bool,      KBF_NOCRSEND,NOT_ENUM},
@@ -300,6 +298,10 @@ struct keyword_def ipsec_conf_keywords_v2[]={
 #endif
     {"protostack",     kv_config, kt_string,    KSF_PROTOSTACK, &kw_proto_stack},
     {"nhelpers",kv_config,kt_number, KBF_NHELPERS, NOT_ENUM},
+
+    /* these two options are obsoleted. Don't die on them */
+    {"forwardcontrol", kv_config, kt_obsolete, KBF_WARNIGNORE,NOT_ENUM},
+    {"rp_filter",      kv_config, kt_obsolete, KBF_WARNIGNORE,NOT_ENUM},
 
     /* this is "left=" and "right=" */
     {"",               kv_conn|kv_leftright, kt_loose_enum, KSCF_IP, &kw_host_list},  
