@@ -512,6 +512,7 @@ const struct kernel_ops mast_kernel_ops = {
     add_sa: pfkey_add_sa,
     grp_sa: pfkey_grp_sa,
     del_sa: pfkey_del_sa,
+    get_sa: NULL,
     get_spi: NULL,
     eroute_idle: pfkey_was_eroute_idle,
     inbound_eroute: FALSE,

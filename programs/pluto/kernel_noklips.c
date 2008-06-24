@@ -143,6 +143,7 @@ const struct kernel_ops noklips_kernel_ops = {
     add_sa: noklips_add_sa,
     grp_sa: noklips_grp_sa,
     del_sa: noklips_del_sa,
+    get_sa: NULL,
     sag_eroute: noklips_sag_eroute,
     shunt_eroute: noklips_shunt_eroute,
     get_spi: NULL,

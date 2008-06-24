@@ -147,6 +147,7 @@ struct kernel_ops {
     bool (*grp_sa)(const struct kernel_sa *sa_outer,
 		   const struct kernel_sa *sa_inner);
     bool (*del_sa)(const struct kernel_sa *sa);
+    bool (*get_sa)(const struct kernel_sa *sa, u_int *bytes);
     ipsec_spi_t (*get_spi)(const ip_address *src,
 			   const ip_address *dst,
 			   int proto,
@@ -321,6 +322,7 @@ extern bool route_and_eroute(struct connection *c
 			     , struct state *st);
 
 extern bool was_eroute_idle(struct state *st, time_t idle_max);
+extern bool get_sa_info(struct state *st, bool inbound, time_t *ago);
 
 #ifdef NAT_TRAVERSAL
 extern bool update_ipsec_sa(struct state *st);

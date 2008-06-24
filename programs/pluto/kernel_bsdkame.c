@@ -1103,6 +1103,7 @@ const struct kernel_ops bsdkame_kernel_ops = {
     add_sa: bsdkame_add_sa,
     grp_sa: NULL,
     del_sa: bsdkame_del_sa,
+    get_sa: NULL,
     get_spi: NULL,
     eroute_idle: bsdkame_was_eroute_idle,
     inbound_eroute: FALSE,

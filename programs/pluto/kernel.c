@@ -1299,6 +1299,8 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
             goto fail;
 	}
 
+	time((inbound)? &st->st_esp.our_lastused : &st->st_esp.peer_lastused);
+
 	DBG(DBG_KLIPS, DBG_log("added tunnel with ref=%u", said_next->ref));
 
 	/*
@@ -2735,7 +2737,76 @@ const char *kernel_if_name()
     return kernel_ops->kern_name;
 }
 
+/*
+ * get information about a given sa - needs merging with was_eroute_idle
+ */
+bool
+get_sa_info(struct state *st, bool inbound, time_t *ago)
+{
+    char text_said[SATOT_BUF];
+    u_int proto;
+    u_int bytes;
+    time_t now;
+    ipsec_spi_t spi;
+    const ip_address *src, *dst;
+    struct kernel_sa sa;
 
+    struct connection *c = st->st_connection;
+
+    if (kernel_ops->get_sa == NULL || !st->st_esp.present)
+	return FALSE;
+
+    proto = SA_ESP;
+
+    if (inbound)
+    {
+	src = &c->spd.that.host_addr;
+	dst = &c->spd.this.host_addr;
+	spi = st->st_esp.our_spi;
+    }
+    else
+    {
+	src = &c->spd.this.host_addr;
+	dst = &c->spd.that.host_addr;
+	spi = st->st_esp.attrs.spi;
+    }
+    set_text_said(text_said, dst, spi, proto);
+
+    memset(&sa, 0, sizeof(sa));
+    sa.spi = spi;
+    sa.proto = proto;
+    sa.src = src;
+    sa.dst = dst;
+    sa.text_said = text_said;
+
+    DBG(DBG_KLIPS,
+	DBG_log("get %s", text_said)
+    )
+    if (!kernel_ops->get_sa(&sa, &bytes))
+	return FALSE;
+
+    time(&now);
+
+    if (inbound)
+    {
+	if (bytes > st->st_esp.our_bytes)
+	{
+	    st->st_esp.our_bytes = bytes;
+	    st->st_esp.our_lastused = now;
+	}
+	*ago = now - st->st_esp.our_lastused;
+    }
+    else
+    {
+	if (bytes > st->st_esp.peer_bytes)
+	{
+	    st->st_esp.peer_bytes = bytes;
+	    st->st_esp.peer_lastused = now;
+	}
+	*ago = now - st->st_esp.peer_lastused;
+    }
+    return TRUE;
+}
 /*
  * Local Variables:
  * c-basic-offset:4

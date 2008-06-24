@@ -155,6 +155,7 @@ const struct kernel_ops win2k_kernel_ops = {
     raw_eroute:  win2k_raw_eroute,
     add_sa: win2k_add_sa,
     del_sa: win2k_del_sa,
+    get_sa: NULL,
     process_queue: NULL,
     grp_sa: NULL,
     get_spi: win2k_get_spi,

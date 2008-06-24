@@ -1274,8 +1274,21 @@ void fmt_state(struct state *st, time_t n
 	}
 	if (st->st_esp.present)
 	{
+	    time_t ago;
+
 	    add_said(&c->spd.that.host_addr, st->st_esp.attrs.spi, SA_ESP);
+	    if (get_sa_info(st, FALSE, &ago))
+	    {
+		snprintf(state_buf2, state_buf2_len,
+		  " (%'u bytes)" , st->st_esp.peer_bytes);
+	    }
 	    add_said(&c->spd.this.host_addr, st->st_esp.our_spi, SA_ESP);
+	    if (get_sa_info(st, TRUE, &ago))
+	    {
+		snprintf(state_buf2, state_buf2_len,
+		  " (%'u bytes)" , st->st_esp.our_bytes);
+	    }
+
 	}
 	if (st->st_ipcomp.present)
 	{

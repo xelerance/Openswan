@@ -1384,6 +1384,23 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
         , op, opname);
 }
 
+/* Check if there was traffic on given SA during the last idle_max
+ * seconds. If TRUE, the SA was idle and DPD exchange should be performed.
+ * If FALSE, DPD is not necessary. We also return TRUE for errors, as they
+ * could mean that the SA is broken and needs to be replace anyway.
+ */
+static bool
+netlink_eroute_idle(struct state *st, time_t idle_max)
+{
+    time_t idle_time;
+
+    passert(st != NULL);
+    if(!get_sa_info(st, TRUE, &idle_time)) 
+    	return TRUE;
+    else
+	return (idle_time >= idle_max);
+}
+
 static bool
 netlink_shunt_eroute(struct connection *c 
                    , struct spd_route *sr 
@@ -1720,6 +1737,44 @@ add_entry:
     }
 }
 
+/* netlink_get_sa - Get SA information from the kernel
+ *
+ * @param sa Kernel SA to be queried
+ * @return bool True if successful
+ */
+static bool
+netlink_get_sa(const struct kernel_sa *sa, u_int *bytes)
+{
+    struct {
+	struct nlmsghdr n;
+	struct xfrm_usersa_id id;
+    } req;
+
+    struct {
+	struct nlmsghdr n;
+	struct xfrm_usersa_info info;
+	char data[1024];
+    } rsp;
+
+     memset(&req, 0, sizeof(req));
+    req.n.nlmsg_flags = NLM_F_REQUEST;
+    req.n.nlmsg_type = XFRM_MSG_GETSA;
+
+    ip2xfrm(sa->dst, &req.id.daddr);
+
+    req.id.spi = sa->spi;
+    req.id.family = sa->src->u.v4.sin_family;
+    req.id.proto = sa->proto;
+
+    req.n.nlmsg_len = NLMSG_ALIGN(NLMSG_LENGTH(sizeof(req.id)));
+    rsp.n.nlmsg_type = XFRM_MSG_NEWSA;
+
+    if (!send_netlink_msg(&req.n, &rsp.n, sizeof(rsp), "Get SA", sa->text_said))
+	return FALSE;
+
+    *bytes = (u_int) rsp.info.curlft.bytes;
+    return TRUE;
+}
 
 const struct kernel_ops netkey_kernel_ops = {
     kern_name: "netkey",
@@ -1736,6 +1791,7 @@ const struct kernel_ops netkey_kernel_ops = {
     raw_eroute: netlink_raw_eroute,
     add_sa: netlink_add_sa, 
     del_sa: netlink_del_sa,
+    get_sa: netlink_get_sa,
     process_queue: NULL,
     grp_sa: NULL,
     get_spi: netlink_get_spi,
@@ -1745,7 +1801,7 @@ const struct kernel_ops netkey_kernel_ops = {
     /* XXX these needed to be added */
     shunt_eroute: netlink_shunt_eroute,
     sag_eroute: netlink_sag_eroute,   /* pfkey_sag_eroute, */
-    eroute_idle: NULL,  /* pfkey_was_eroute_idle,*/
+    eroute_idle: netlink_eroute_idle,  /* pfkey_was_eroute_idle,*/
     set_debug: NULL,    /* pfkey_set_debug, */
     remove_orphaned_holds: NULL, /* pfkey_remove_orphaned_holds,*/
 };

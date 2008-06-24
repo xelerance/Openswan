@@ -112,6 +112,10 @@ struct ipsec_proto_info {
     u_int16_t keymat_len;	/* same for both */
     u_char *our_keymat;
     u_char *peer_keymat;
+    u_int our_bytes;
+    u_int peer_bytes;
+    time_t our_lastused;
+    time_t peer_lastused;
 };
 
 /*
