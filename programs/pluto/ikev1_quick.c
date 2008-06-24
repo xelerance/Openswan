@@ -2004,7 +2004,7 @@ quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 	}
     }
     reset_cur_state();
-	
+    return STF_OK;
 }
 
 static stf_status
@@ -2042,6 +2042,7 @@ quick_inI1_outR1_cryptocontinue2(struct pluto_crypto_req_cont *pcrc
     }
 
     reset_cur_state();
+    return STF_OK;
 }
 
 static stf_status
