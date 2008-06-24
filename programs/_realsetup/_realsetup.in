@@ -48,6 +48,7 @@ IPSECinterfaces=${IPSECinterfaces:-%defaultroute}
 # IPSECmanualstart	""
 # IPSECpluto	"yes"
 IPSECplutowait=${IPSECplutowait:-no}
+IPSECplutorestartoncrash=${IPSECplutorestartoncrash:-yes}
 # IPSECprepluto	""
 # IPSECpostpluto	""
 # IPSECfragicmp	"yes"
