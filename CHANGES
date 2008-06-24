@@ -8,11 +8,18 @@ v2.6.15
 * Patch to support NETKEY backport on Debian kernels [Rene Mayrhofer]
 * Fix a crasher when using right=%any with plutodebug=controlmore [paul]
 * Added disable_port_floating support to scripts and parser [paul]
+* Change (back) defaults of plutorestartoncrash and uniqueids from
+  no to yes. The new parser mistakenly did not set these [paul]
 * Revert af family code in find_host_pair causing some connections to not
   be found in find_host_connection2() [paul]
 * Fixes to _updown.mast, _realsetup (mast) and startklips [paul]
 * Fixed to saref code so we can build on OSX again [paul]
 * Use PREROUTING instead of OUTPUT/FORWARD for mast [mcr]
+* NETKEY support for eroute_idle using get_sa_info() [herbert/andreas]
+* Do not send DPD "R_Y_THERE" when eroute not idle [andreas]
+* Support for Relative Distinguished Name "unstructuredName"/"UN"
+  in ID_DER_ASN1_DN identities (eg leftid="UN=John Doe") [andreas]
+
 * Bugtracker bugs fixed:
   #784 / #928 : openswan (pfs=yes) to vista (pfs=no) crasher [paul]
   #934: mem leak in klips:ipsec_rcv_decap [Wolfgang Nothdurft]
