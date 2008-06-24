@@ -19,10 +19,6 @@ me='ipsec _startklips'		# for messages
 # KLIPS-related paths
 sysflags=/proc/sys/net/ipsec
 modules=/proc/modules
-# full rp_filter path is $rpfilter1/interface/$rpfilter2
-rpfilter1=/proc/sys/net/ipv4/conf
-# %unchanged or setting (0, 1, or 2)
-rpfiltercontrol=0
 netkey=/proc/net/pfkey
 ipsecversion=/proc/net/ipsec/version
 moduleplace=/lib/modules/`uname -r`/kernel/net/ipsec
@@ -85,7 +81,6 @@ do
 	--omtu)		omtu="$2" ; shift	;;
 	--fragicmp)	fragicmp="$2" ; shift	;;
 	--hidetos)	hidetos="$2" ; shift	;;
-	--rpfilter)	rpfiltercontrol="$2" ; shift	;;
 	--)	shift ; break	;;
 	-*)	echo "$me: unknown option \`$1'" >&2 ; exit 2	;;
 	*)	break	;;
@@ -210,39 +205,6 @@ klipsinterface() {
 		echo '#dr: no default route' >>$info
 	fi
 
-	# check for rp_filter trouble
-	checkif $phys			# thought to be a problem only on phys
-}
-
-# check an interface for problems
-checkif() {
-	$klips || return 0
-	rpf=$rpfilter1/$1/$rpfilter2
-	if test -f $rpf
-	then
-		r="`cat $rpf`"
-		if test " $r" != " 0"
-		then
-			case "$r-$rpfiltercontrol" in
-			0-%unchanged|0-0|1-1|2-2)
-				# happy state
-				;;
-			*-%unchanged)
-				echo "WARNING: $1 has route filtering turned on; KLIPS may not work ($rpf is $r)"
-				;;
-			[012]-[012])
-				echo "WARNING: changing route filtering on $1 (changing $rpf from $r to $rpfiltercontrol)"
-				echo "$rpfiltercontrol" >$rpf
-				;;
-			[012]-*)
-				echo "ERROR: unknown rpfilter setting: $rpfiltercontrol"
-				;;
-			*)
-				echo "ERROR: unknown $rpf value $r"
-				;;
-			esac
-		fi
-	fi
 }
 
 # interfaces=%defaultroute:  put ipsec0 on top of default route's interface

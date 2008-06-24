@@ -162,17 +162,19 @@ awk 'BEGIN {
 	for (i = 1; i <= n; i++)
 		goodnames["conn:" g[i]] = 1
 
-	good = "also interfaces forwardcontrol myid"
+	good = "also interfaces myid"
 	good = good " syslog klipsdebug plutodebug plutoopts plutostderrlog"
 	good = good " plutorestartoncrash"
 	good = good " dumpdir manualstart pluto"
 	good = good " protostack"
 	good = good " plutowait prepluto postpluto nhelpers"
-	good = good " fragicmp hidetos rp_filter uniqueids"
+	good = good " fragicmp hidetos uniqueids"
 	good = good " overridemtu"
 	good = good " nocrsend strictcrlpolicy crlcheckinterval ocspuri"
 	good = good " nat_traversal keep_alive force_keepalive"
 	good = good " disable_port_floating virtual_private force_busy"	
+	# obsoleted options, not good but not worth dying for either
+	good = good " forwardcontrol rp_filter"
 	n = split(good, g)
 	for (i = 1; i <= n; i++)
 		goodnames["config:" g[i]] = 1

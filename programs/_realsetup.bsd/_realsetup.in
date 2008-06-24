@@ -44,7 +44,6 @@ IPSECplutowait=${IPSECplutowait:-no}
 # IPSECpostpluto	""
 # IPSECfragicmp	"yes"
 # IPSEChidetos	"yes"
-IPSECrp_filter=${IPSECrp_filter:-0}
 IPSECuniqueids=${IPSECuniqueids:-yes}
 IPSECcrlcheckinterval=${IPSECcrlcheckinterval:-0}
 IPSECprotostack=${IPSECprotostack:-bsdkame}

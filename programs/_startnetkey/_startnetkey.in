@@ -17,11 +17,6 @@
 me='ipsec _startnetkey'		# for messages
 
 modules=/proc/modules
-# full rp_filter path is $rpfilter1/interface/$rpfilter2
-rpfilter1=/proc/sys/net/ipv4/conf
-rpfilter2=rp_filter
-# %unchanged or setting (0, 1, or 2)
-rpfiltercontrol=0
 kamepfkey=/proc/net/pfkey
 ipsecpfkey=/proc/net/ipsec/version
 
@@ -36,7 +31,6 @@ do
 	--omtu)		omtu="$2" ; shift	;;
 	--fragicmp)	fragicmp="$2" ; shift	;;
 	--hidetos)	hidetos="$2" ; shift	;;
-	--rpfilter)	rpfiltercontrol="$2" ; shift	;;
 	--)	shift ; break	;;
 	-*)	echo "$me: unknown option \`$1'" >&2 ; exit 2	;;
 	*)	break	;;

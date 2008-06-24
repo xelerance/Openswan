@@ -23,7 +23,6 @@ lock=/var/run/pluto/ipsec_setup.pid
 info=/var/run/pluto/ipsec.info
 sysflags=/proc/sys/net/ipsec
 modules=/proc/modules
-ipforward=/proc/sys/net/ipv4/ip_forward
 ipsecversion=/proc/net/ipsec_version
 kamepfkey=/proc/net/pfkey
 
@@ -44,7 +43,6 @@ fi
 #######################################################################
 IPSECinterfaces=${IPSECinterfaces:-%defaultroute}
 	if test " $IPSECinterfaces" = " %none" ; then IPSECinterfaces= ; fi
-# IPSECforwardcontrol	"no"
 # IPSECsyslog	"daemon.error"
 # IPSECklipsdebug	"none"
 # IPSECplutodebug	"none"
@@ -56,7 +54,6 @@ IPSECplutowait=${IPSECplutowait:-no}
 # IPSECpostpluto	""
 # IPSECfragicmp	"yes"
 # IPSEChidetos	"yes"
-IPSECrp_filter=${IPSECrp_filter:-0}
 IPSECuniqueids=${IPSECuniqueids:-yes}
 IPSECdisable_port_floating=${IPSECdisable_port_floating:-no}
 IPSECcrlcheckinterval=${IPSECcrlcheckinterval:-0}
@@ -251,7 +248,6 @@ case "$1" in
 				--omtu "\"$IPSECoverridemtu\"" \
 				--fragicmp "\"$IPSECfragicmp\"" \
 				--hidetos "\"$IPSEChidetos\"" \
-				--rpfilter "\"$IPSECrp_filter\"" \
 				--log "\"$IPSECsyslog\"" \
 				$IPSECinterfaces "||" \
 			"{" rm -f $lock ";" exit 1 ";" "}"
@@ -266,7 +262,6 @@ case "$1" in
 				--omtu "\"$IPSECoverridemtu\"" \
 				--fragicmp "\"$IPSECfragicmp\"" \
 				--hidetos "\"$IPSEChidetos\"" \
-				--rpfilter "\"$IPSECrp_filter\"" \
 				--log "\"$IPSECsyslog\"" \
 				$IPSECinterfaces "||" \
 			"{" rm -f $lock ";" exit 1 ";" "}"
@@ -284,14 +279,6 @@ case "$1" in
 
 	perform test -d `dirname $subsyslock` "&&" touch $subsyslock
 
-	if test " $IPSECforwardcontrol" = " yes"
-	then
-		perform grep '"^0"' $ipforward ">" /dev/null "&&" "{" \
-			echo "\"enabling IP forwarding:\"" "|" $LOGONLY ";" \
-			echo "\"ipforwardingwas=$fw\"" ">>" $info ";" \
-			echo 1 ">" $ipforward ";" \
-			"}"
-	fi
 	manualconns
 
 	plutorestartoncrash=""
@@ -353,13 +340,6 @@ case "$1" in
 			echo "\"doing cleanup anyway...\"" ";" \
 			status=0 ";" \
 		fi
-	if test " $IPSECforwardcontrol" = " yes"
-	then
-		perform test "\"X\$ipforwardingwas\"" = "\"X0\"" "&&" "{" \
-			echo "\"disabling IP forwarding:\"" "|" $LOGONLY ";" \
-			echo 0 ">" $ipforward ";" \
-			"}"
-	fi
 
 	if [ -f /var/run/pluto.pid -a ! -f /var/run/pluto/pluto.pid ]
 	then
