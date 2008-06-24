@@ -38,6 +38,10 @@ fi
 
 # defaults for "config setup" items
 
+#######################################################################
+### WARNING: some of these defaults are set using addconn --configsetup
+###          This will go away!
+#######################################################################
 IPSECinterfaces=${IPSECinterfaces:-%defaultroute}
 	if test " $IPSECinterfaces" = " %none" ; then IPSECinterfaces= ; fi
 # IPSECforwardcontrol	"no"
@@ -48,7 +52,6 @@ IPSECinterfaces=${IPSECinterfaces:-%defaultroute}
 # IPSECmanualstart	""
 # IPSECpluto	"yes"
 IPSECplutowait=${IPSECplutowait:-no}
-IPSECplutorestartoncrash=${IPSECplutorestartoncrash:-yes}
 # IPSECprepluto	""
 # IPSECpostpluto	""
 # IPSECfragicmp	"yes"
