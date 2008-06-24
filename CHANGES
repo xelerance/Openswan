@@ -7,7 +7,8 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.15
 * Patch to support NETKEY backport on Debian kernels [Rene Mayrhofer]
 * Fix a crasher when using right=%any with plutodebug=controlmore [paul]
-* Added disable_port_floating support to scripts and parser [paul]
+* Added disable_port_floating support to scripts and parser and
+  repair the default back to allow port floating [paul]
 * Change (back) defaults of plutorestartoncrash and uniqueids from
   no to yes. The new parser mistakenly did not set these [paul]
 * Revert af family code in find_host_pair causing some connections to not
@@ -24,10 +25,12 @@ v2.6.15
 * Bugtracker bugs fixed:
   #784 / #928 : openswan (pfs=yes) to vista (pfs=no) crasher [paul]
   #934: mem leak in klips:ipsec_rcv_decap [Wolfgang Nothdurft]
+  #935: 935: Openswan 2.6.14rc5 refuses to start after carsh  [paul]
   #939: Openswan 2.6.14rc5 crashes on startup if dns is not reachable [andreas]
         (curl issue on 64bit platforms when dns is not available)
   #953: disable_port_floating defaults to yes and config parser... [paul]
   #954: patch to support DEFAULT_SOURCE using netkey [mdw21]
+  #957: pluto always gets --disable_port_floating parameter... [paul]
 
 v2.6.14
 * Fix for integ vs prf mixup [herbert/antony] 
