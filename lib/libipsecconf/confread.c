@@ -61,7 +61,7 @@ static void default_values (struct starter_config *cfg)
 	cfg->setup.options[KBF_FRAGICMP] = TRUE;
 	cfg->setup.options[KBF_HIDETOS]  = TRUE;
 	cfg->setup.options[KBF_PLUTORESTARTONCRASH]  = TRUE;
-	cfg->setup.options[KBF_UNIQUEIDS]= FALSE;
+	cfg->setup.options[KBF_UNIQUEIDS]= TRUE;
 	cfg->conn_default.options[KBF_TYPE] = KS_TUNNEL;
 
 	cfg->conn_default.policy = POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
