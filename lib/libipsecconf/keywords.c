@@ -189,6 +189,7 @@ struct keyword_enum_value kw_plutodebug_values[]={
     { "all",      DBG_ALL },
     { "raw",      DBG_RAW },
     { "crypt",    DBG_CRYPT },
+    { "crypto",   DBG_CRYPT },
     { "parsing",  DBG_PARSING },
     { "emitting", DBG_EMITTING },
     { "control",  DBG_CONTROL },
