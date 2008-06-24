@@ -330,7 +330,7 @@ fetch_curl(chunk_t url LIBCURL_UNUSED, chunk_t *blob LIBCURL_UNUSED)
         curl_easy_cleanup(curl);
         pfree(uri);
         /* not using freeanychunk because of realloc (no leak detective) */
-        free(response.ptr);
+        curl_free(response.ptr);
     }
     return strlen(errorbuffer) > 0 ? "libcurl error" : NULL;
 #else
@@ -666,7 +666,7 @@ fetch_ocsp_status(ocsp_location_t* location LIBCURL_UNUSED)
 	curl_easy_cleanup(curl);
 	pfree(uri);
 	/* not using freeanychunk because of realloc (no leak detective) */
-	free(response.ptr);
+	curl_free(response.ptr);
     }
     freeanychunk(location->nonce);
     freeanychunk(request);
