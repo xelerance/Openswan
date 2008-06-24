@@ -166,6 +166,9 @@ struct keyword_enum_value kw_proto_stack_list[]={
     { "mast",         USE_MASTKLIPS }, 
     { "netkey",       USE_NETKEY },
     { "native",       USE_NETKEY },
+    { "bsd",          USE_BSD },
+    { "kame",         USE_BSD },
+    { "bsdkame",      USE_BSD },
     { "win2k",        USE_WIN2K },
     { "funk",         USE_FUNK },
 };
