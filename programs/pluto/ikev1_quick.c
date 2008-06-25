@@ -1597,12 +1597,12 @@ static stf_status
 quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 			    , struct pluto_crypto_req *r);
 
-static stf_status
+static void
 quick_inI1_outR1_cryptocontinue2(struct pluto_crypto_req_cont *pcrc
 			      , struct pluto_crypto_req *r
 				 , err_t ugh);
 
-static stf_status
+static void
 quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 				 , struct pluto_crypto_req *r
 				 , err_t ugh);
@@ -1935,7 +1935,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
     }
 }
 
-static stf_status
+static void
 quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 				 , struct pluto_crypto_req *r
 				 , err_t ugh)
@@ -1993,21 +1993,20 @@ quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 	dh.md=md;
 
 	e = quick_inI1_outR1_cryptotail(&dh, NULL);
-	if(e != STF_OK)
-	   /* return error further down -- and hope they check it! */
-	   return e;
+	if(e == STF_OK) {
 
-	if(dh.md != NULL) {
-	    /* note: use qke-> pointer */
-	    complete_v1_state_transition(&qke->md, e);
-	    if(dh.md) release_md(qke->md);
+		if(dh.md != NULL) {
+	    		/* note: use qke-> pointer */
+	    		complete_v1_state_transition(&qke->md, e);
+	    		if(dh.md)
+				release_md(qke->md);
+		}
 	}
     }
     reset_cur_state();
-    return STF_OK;
 }
 
-static stf_status
+static void
 quick_inI1_outR1_cryptocontinue2(struct pluto_crypto_req_cont *pcrc
 			      , struct pluto_crypto_req *r
 			      , err_t ugh)
@@ -2032,17 +2031,15 @@ quick_inI1_outR1_cryptocontinue2(struct pluto_crypto_req_cont *pcrc
     set_suspended(st, NULL);
 
     e = quick_inI1_outR1_cryptotail(dh, r);
-    if(e != STF_OK)
-	/* return error further down -- and hope they check it! */
-	return e;
-
-    if(dh->md != NULL) {
-	complete_v1_state_transition(&dh->md, e);
-	if(dh->md) release_md(dh->md);
+    if(e == STF_OK) {
+    	if(dh->md != NULL) {
+		complete_v1_state_transition(&dh->md, e);
+		if(dh->md) 
+			release_md(dh->md);
+	}
     }
 
     reset_cur_state();
-    return STF_OK;
 }
 
 static stf_status
