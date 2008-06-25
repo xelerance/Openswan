@@ -40,6 +40,8 @@ OBJS=${SRCS:.c=.o}
 
 include ${srcdir}../Makefile.library
 
+keywords.c: parser.tab.h
+
 lex.yy.c: parser.tab.c parser.l parser.y 
 	$(LEX) ${srcdir}parser.l
 
