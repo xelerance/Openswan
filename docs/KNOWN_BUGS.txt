@@ -1,10 +1,10 @@
 
-1)	we are pretty certain that we have not consistently broken SMP
-	support in KLIPS. It compiled, but it almost certainly locks up. This
-	is probably an improvement, since before, it only sometimes locked up,
-	and we didn't really know why.
+0)	This file needs updating, see also bugs.openswan.org
 
-	We do not have an ETA on a fix, although it is important to us.
+1)	There is some regression with the new parser and recognising
+	"time values" (eg 3600, 1h, 10m) when they are just integers.
+	So where keylife=3600 will not work, keylife="3600" or keylife=1h
+	will work.
 
 2)	We are aware of problems where more than 10 initiations/second may
 	cause the system to fail to negotiate ANY SAs. We are not certain
@@ -12,9 +12,4 @@
 	Note that our previous record for SA setups/second was 11/second, so
 	it may well be availability of entropy.
 	
-3)	We are aware that there may be other problems, as yet not clearly
-	documented.
-	We think that this release is miles above the 2.3.1 release, and
-	it is high time to get something out.
-
-4)	There are some interop issues with IKEv2
+3)	There are some interop issues with IKEv2

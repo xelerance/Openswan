@@ -23,7 +23,7 @@ v2.6.15
 * Removed forwardcontrol= and rp_filter= options. Ignore if present
   in config file. Use /etc/sysctl.conf [paul]
 * Bugtracker bugs fixed:
-  #784 / #928 : openswan (pfs=yes) to vista (pfs=no) crasher [paul]
+  #784 / #928 : openswan (pfs=yes) to vista (pfs=no) crasher [paul/dhr]
   #934: mem leak in klips:ipsec_rcv_decap [Wolfgang Nothdurft]
   #935: 935: Openswan 2.6.14rc5 refuses to start after carsh  [paul]
   #939: Openswan 2.6.14rc5 crashes on startup if dns is not reachable [andreas]
