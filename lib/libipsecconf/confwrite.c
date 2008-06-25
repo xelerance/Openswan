@@ -151,6 +151,9 @@ void confwrite_int(FILE *out,
 
 	case kt_comment:
 	    continue;
+
+	case kt_obsolete:
+	    continue;
 	}
 
 	if(options_set[k->field]) {
@@ -218,6 +221,9 @@ void confwrite_str(FILE *out,
 	    continue;
 
 	case kt_comment:
+	    continue;
+
+	case kt_obsolete:
 	    continue;
 	}
 

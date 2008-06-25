@@ -195,6 +195,9 @@ statement_kw:
 
            	    case kt_comment:
                         break;
+
+           	    case kt_obsolete:
+                        break;
 		    }	
 		    new->next = NULL;
 
@@ -262,6 +265,8 @@ statement_kw:
 			assert(!(kw.keydef->type == kt_bool));
 			break;
            	    case kt_comment:
+                        break;
+           	    case kt_obsolete:
                         break;
 		    }	
 		    new->next = NULL;
