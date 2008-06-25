@@ -22,6 +22,7 @@ v2.6.15
   in ID_DER_ASN1_DN identities (eg leftid="UN=John Doe") [andreas]
 * Removed forwardcontrol= and rp_filter= options. Ignore if present
   in config file. Use /etc/sysctl.conf [paul]
+* Fix paralel bugs (eg make -j4) [tuomo]
 * Bugtracker bugs fixed:
   #784 / #928 : openswan (pfs=yes) to vista (pfs=no) crasher [paul/dhr]
   #934: mem leak in klips:ipsec_rcv_decap [Wolfgang Nothdurft]
@@ -88,7 +89,7 @@ v2.6.13
 * linux/include/crypto renamed to linux/include/klips-crypto [paul]
 * Fix for IKEv1-only policies attempting bogus IKEv2 rekeys [Miloslav Trmac]
 * Bugtracker bugs fixed:
-  #198: Connection not coming up automatically, plutowait=yes workaround [bleve]
+  #198: Connection not coming up automatically, plutowait=yes workaround [tuomo]
   #622: pluto memory leak [dhr]
   #916: KLIPS kmod fails to compile 2.6.22 based kernel (...) [paul]
   #917: pluto fails to compile when using pam. xauth [Tamas Pal]
@@ -135,7 +136,7 @@ v2.6.09
 v2.6.08
 * IKEv2 6msg exchange (responder, partially for initiator) [antony]
 * IKEv2 notify support [antony]
-* Some pullups from #testing related to NETKEY [paul/bleve]
+* Some pullups from #testing related to NETKEY [paul/tuomo]
 * Added force_busy option for testing 6msg exchange [paul]
 * OSX compile fixes [paul]
 * sourceip= option fixed with NETKEY [paul]
@@ -356,7 +357,7 @@ v2.4.10
   #708: vanilla kernel-2.6.19, KLIPS compile error (sock_unregister) [sergeil]
   #796: can't compile 2.4.8 on kernel 2.4.34 (module_param fix) [sergeil]
   #802: Error: "our client ID returned doesn't match my proposal" [mcr/paul]
-  #813: incorporate bleve's lsb patch [tuomo]
+  #813: incorporate tuomo's lsb patch [tuomo]
   #824: defaultroute detection fails with PPP default route [sergeil]
   (this is also the bug introduced in 2.4.9 that causes failed subnet tunnels)
   #855: Pluto restart impossible on busybox [paul]
@@ -394,7 +395,7 @@ v2.4.10
   #708: vanilla kernel-2.6.19, KLIPS compile error (sock_unregister) [sergeil]
   #796: can't compile 2.4.8 on kernel 2.4.34 (module_param fix) [sergeil]
   #802: Error: "our client ID returned doesn't match my proposal" [mcr/paul]
-  #813: incorporate bleve's lsb patch [tuomo]
+  #813: incorporate tuomo's lsb patch [tuomo]
   #824: defaultroute detection fails with PPP default route [sergeil]
   (this is also the bug introduced in 2.4.9 that causes failed subnet tunnels)
   #855: Pluto restart impossible on busybox [paul]
