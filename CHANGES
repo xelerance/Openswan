@@ -22,7 +22,7 @@ v2.6.15
   in ID_DER_ASN1_DN identities (eg leftid="UN=John Doe") [andreas]
 * Removed forwardcontrol= and rp_filter= options. Ignore if present
   in config file. Use /etc/sysctl.conf [paul]
-* Fix paralel bugs (eg make -j4) [tuomo]
+* Fix for KLIPS on SMP systems (missing SOCKOPS_WRAP for pfkey_ops) [dhr/paul]
 * Bugtracker bugs fixed:
   #784 / #928 : openswan (pfs=yes) to vista (pfs=no) crasher [paul/dhr]
   #934: mem leak in klips:ipsec_rcv_decap [Wolfgang Nothdurft]
@@ -33,6 +33,7 @@ v2.6.15
   #954: patch to support DEFAULT_SOURCE using netkey [mdw21]
   #957: pluto always gets --disable_port_floating parameter... [paul]
   #963: rp_filter=%unchanged option causes assertion failure  [paul]
+  #964: make -j4 programs fail [tuomo]
 
 v2.6.14
 * Fix for integ vs prf mixup [herbert/antony] 
