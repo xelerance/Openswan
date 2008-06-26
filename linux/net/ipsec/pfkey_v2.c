@@ -82,9 +82,14 @@
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
+/* only useful for pre 2.4 kernels, but we believe it might get
+ * obsoleted soon on 2.6. kernels
+ */
 #ifndef SOCKOPS_WRAPPED
 #define SOCKOPS_WRAPPED(name) name
 #endif /* SOCKOPS_WRAPPED */
+
+extern struct proto_ops SOCKOPS_WRAPPED(pfkey_ops);
 
 #ifdef NET_26
 static rwlock_t pfkey_sock_lock = RW_LOCK_UNLOCKED;
@@ -126,7 +131,6 @@ struct net_proto_family pfkey_family_ops = {
 };
 
 struct proto_ops SOCKOPS_WRAPPED(pfkey_ops) = {
-#ifdef NETDEV_23
         owner:          THIS_MODULE,
 	family:		PF_KEY,
 	release:	pfkey_release,
@@ -144,31 +148,10 @@ struct proto_ops SOCKOPS_WRAPPED(pfkey_ops) = {
 	sendmsg:	pfkey_sendmsg,
 	recvmsg:	pfkey_recvmsg,
 	mmap:		sock_no_mmap,
-#else /* NETDEV_23 */
-	PF_KEY,
-	sock_no_dup,
-	pfkey_release,
-	sock_no_bind,
-	sock_no_connect,
-	sock_no_socketpair,
-	sock_no_accept,
-	sock_no_getname,
-	datagram_poll,
-	sock_no_ioctl,
-	sock_no_listen,
-	pfkey_shutdown,
-	sock_no_setsockopt,
-	sock_no_getsockopt,
-	sock_no_fcntl,
-	pfkey_sendmsg,
-	pfkey_recvmsg
-#endif /* NETDEV_23 */
 };
 
-#ifdef NETDEV_23
 #include <linux/smp_lock.h>
 SOCKOPS_WRAP(pfkey, PF_KEY);
-#endif  /* NETDEV_23 */
 
 #ifdef NET_26
 static void pfkey_sock_list_grab(void)
@@ -722,7 +705,7 @@ pfkey_create(struct socket *sock, int protocol)
 
 	sk->sk_destruct = NULL;
 	sk->sk_reuse = 1;
-	sock->ops = &pfkey_ops;
+	sock->ops = &SOCKOPS_WRAPPED(pfkey_ops);
 
 	sk->sk_family = PF_KEY;
 /*	sk->num = protocol; */
