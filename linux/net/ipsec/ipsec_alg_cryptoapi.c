@@ -346,7 +346,14 @@ setup_cipher_list (struct ipsec_alg_capi_cipher* clist)
 					, cptr->parm[0]
 					, cptr->parm[1]);
 			continue;
-		}
+		} else {
+ 			if (debug_crypto>0)
+ 				printk(KERN_INFO "setup_cipher_list(): going to init ciphername=%s: noauto=%d parm[0]=%d parm[1]=%d\n",
+ 				, cptr->ciphername
+				, noauto
+				, cptr->parm[0]
+				, cptr->parm[1]);
+			}
 		/* 
 		 * 	use a local ci to avoid touching cptr->ci,
 		 * 	if register ipsec_alg success then bind cipher
