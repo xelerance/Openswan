@@ -2,6 +2,7 @@
 # Netkey startup script
 # Copyright (C) 2007 Ken Bantoft <ken@xelerance.com>
 # Copyright (C) 2007 - 2008 Paul Wouters <paul@xelerance.com>
+# Copyright (C) 2008 Tuomo Soini <tis@foobar.fi>
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -48,30 +49,99 @@ logonly() {
 }
 
 defaultinterface() {
-	phys=`ip ro li 0.0.0.0/0 | awk '{print $5;}'`
-	next=`ip ro li 0.0.0.0/0 | awk '{print $3;}'`
-	if test `echo " $phys" | wc -l` -gt 1
-        then
-		phys=`echo "$phys"|head -1`
-		next=`echo "$next"|head -1`
-                echo "multiple default routes, %defaultroute using: $next on $phys"
-        fi
-	# determine type
-	ipline=`ip addr show dev $phys`
-	if test -n "`echo " $ipline " | grep POINTOPOINT`"
+	local getphysdev getifaddr addr phys next multiaddr multidefault
+	addr=
+	phys=
+	next=
+	multiaddr=
+	multidefault=
+
+	getphysdev() {
+	    local phys next addr
+	    phys=
+	    next=
+	    addr=
+	    while test $# -gt 0
+	      do
+	      case $1 in
+		  dev)
+		      phys=$2
+		      shift; shift;
+		      ;;
+		  via)
+		      next=$2
+		      shift; shift;
+		      ;;
+		  src)
+		      addr=$2
+		      shift; shift
+		      ;;
+		  *)
+		      shift
+		      ;;
+	      esac
+	    done
+	    echo "phys=$phys"
+	    echo "next=$next"
+	    echo "addr=$addr"
+	}
+
+	getifaddr() {
+	    local addr peer
+	    addr=
+	    peer=
+	    while test $# -gt 0
+	      do
+	      case $1 in
+		  inet)
+		      addr=$2
+		      shift; shift
+		      ;;
+		  peer)
+		      peer=$2
+		      shift; shift
+		      ;;
+		  *)
+		      shift
+		      ;;
+	      esac
+	    done
+	    if test -n "$peer"
+	    then
+		echo "next=${peer%/*}"
+	    fi
+	    echo "addr=${addr%/*}"
+	}
+
+	iproutedefault=`ip route list 0.0.0.0/0`
+	if test `echo "$iproutedefault" | wc -l` -gt 1
 	then
-		type="pointopoint"
-	elif test -n "`echo " $ipline " | grep BROADCAST`"
-	then
-		type="broadcast"
-	else
-		type="unknown"
+	    multidefault=1
+	    iproutedefault=`echo $iproutedefault | head -1`
 	fi
-	defaultip=`echo " $ipline " | grep inet|head -1 | awk '{print $2;}'| sed "s/\/.*$//"`
+	eval `getphysdev $iproutedefault`
+	if test -z "$next" -o -z "$addr" -a -n "$phys"
+	then
+	    ipaddrlist=`ip -o -f inet addr list dev $phys` 
+	    if test `echo "$ipaddrlist" | wc -l` -gt 1
+	    then
+		multiaddr=1
+		ipaddrlist=`echo "$ipaddrlist" | head -1`
+	    fi
+	    eval `getifaddr $ipaddrlist`
+	fi
+	if test -n "$multidefault"
+	then
+	    echo "multiple default routes, using $next on $phys"
+	fi
+	if test -n "$multiaddr"
+	then
+	    echo "multiple ip addresses, using  $addr on $phys"
+	fi
 	# simulate old silly output
 	echo "defaultroutephys=$phys" >> $info
 	echo "defaultroutevirt=none" >> $info
-	echo "defaultrouteaddr=$defaultip" >> $info
+	echo "defaultrouteaddr=$addr" >> $info
 	echo "defaultroutenexthop=$next" >> $info
 }
 
