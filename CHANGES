@@ -1,6 +1,6 @@
 
 Note that listings are in chronological order of release times, not in order
-of version numbers, so yo will find 2.5.x and 2.6.x releases intersperced.
+of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
@@ -22,6 +22,7 @@ v2.6.15
   in ID_DER_ASN1_DN identities (eg leftid="UN=John Doe") [andreas]
 * Removed forwardcontrol= and rp_filter= options. Ignore if present
   in config file. Use /etc/sysctl.conf [paul]
+* Fix for left="%defaultroute" when using NETKEY [tuomo]
 * Fix for KLIPS on SMP systems (missing SOCKOPS_WRAP for pfkey_ops) [dhr/paul]
 * Bugtracker bugs fixed:
   #784 / #928 : openswan (pfs=yes) to vista (pfs=no) crasher [paul/dhr]
