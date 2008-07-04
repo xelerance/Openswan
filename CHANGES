@@ -8,6 +8,8 @@ v2.6.17 [will be skipped due to bad tag]
 
 v2.6.16
 * dpdaction=restart_by_peer support added [david]
+* dynamic dns support (do dns lookup at restart conn, eg after dpd) [david]
+
 
 v2.6.15
 * Patch to support NETKEY backport on Debian kernels [Rene Mayrhofer]
