@@ -175,7 +175,7 @@ test-%: %.c
 	${CC} ${CFLAGS} -D`echo $* | tr 'a-z' 'A-Z'`_MAIN $*.c -o test-$*
 
 cleanall:
-	rm -f $(LIB) *.o try* core *.core $(EXTHDRS) $(EXTLIBS) version.c
+	rm -f $(LIBA) $(LIB) *.o try* core *.core $(EXTHDRS) $(EXTLIBS) version.c
 
 
 # developer-only stuff
