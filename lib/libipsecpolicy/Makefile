@@ -30,7 +30,7 @@ KLIPSD=${OPENSWANSRCDIR}/linux/include
 
 LIB=libipsecpolicy.a
 # Original flags
-CFLAGS=-I. -I${KLIPSD} -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include $(USERCOMPILE) ${PORTINCLUDE}
+CFLAGS+=-I. -I${KLIPSD} -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include $(USERCOMPILE) ${PORTINCLUDE}
 CFLAGS+= -Wall
 CFLAGS+= -Wpointer-arith
 CFLAGS+= -Wcast-qual

@@ -31,7 +31,7 @@ LIBA=libtpm.a
 include ${srcdir}../Makefile.options
 
 # Original flags
-CFLAGS=${DEFINES} -I${srcdir}.. -I${srcdir}
+CFLAGS+=${DEFINES} -I${srcdir}.. -I${srcdir}
 CFLAGS+=${USERCOMPILE} 
 GENINC=${PORTINCLUDE} -I${OPENSWANSRCDIR}/include -I${OPENSWANSRCDIR}/linux/include 
 CFLAGS+=${GENINC} 

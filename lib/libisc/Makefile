@@ -20,11 +20,12 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 CINCLUDES =	-I${srcdir}${ISCARCH}/include \
 		-I${srcdir}nothreads/include \
-		-I. -I./include -I${srcdir}include 
+		-I. -I./include -I${srcdir}include \
+		$(PORTINCLUDE) -I${OPENSWANSRCDIR}/include
 CDEFINES = -g -DHAVE_STRERROR ${USERCOMPILE} ${PORTINCLUDE}
-CWARNINGS = -Werror
+# CWARNINGS = -Werror
 
-CFLAGS=${CINCLUDES} ${CDEFINES} ${CWARNINGS}
+CFLAGS+=${CINCLUDES} ${CDEFINES} ${CWARNINGS}
 
 VERSION="@(\#) openswan-hacking-9.3-for-osw2"
 LIBINTERFACE=2

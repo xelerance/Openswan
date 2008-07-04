@@ -105,7 +105,7 @@ $(LIB): $(OBJS)
 $(OBJS):	$(HDRS)
 
 cleanall:
-	rm -rf ${OBJS}
+	rm -rf ${OBJS} $(LIB)
 
 # Gather dependencies caused by explicit #includes within .c files
 depend: ${DISTSRC}

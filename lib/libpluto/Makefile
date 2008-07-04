@@ -34,7 +34,7 @@ SRCS=pluto_constants.c x509support.c packet.c
 SRCS+=readwhackmsg.c
 
 #enable to get lots more debugging about semantics.
-#CFLAGS=-DPARSER_TYPE_DEBUG
+#CFLAGS+=-DPARSER_TYPE_DEBUG
 
 OBJS=${SRCS:.c=.o} 
 
