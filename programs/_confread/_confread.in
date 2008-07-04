@@ -1,6 +1,8 @@
 #!/bin/sh
 # configuration-file reader utility
 # Copyright (C) 1999-2002  Henry Spencer.
+# Copyright (C) 2005-2007  Michael Richardson
+# Copyright (C) 2006-2008  Paul Wouters
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -11,8 +13,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: _confread.in,v 1.81 2005/06/13 23:10:49 mcr Exp $
 #
 # Extract configuration info from /etc/ipsec.conf, repackage as assignments
 # to shell variables or tab-delimited fields.  Success or failure is reported
@@ -518,6 +518,7 @@ END {
 	if (failed)
 		exit 1
 
+	if ("@USE_DEFAULT_CONNS@" != "no") {
 	# supply default conns if relevant and not found
 	if (type == "conn") {
 		if (jam("packetdefault", "route")) {
@@ -573,6 +574,7 @@ END {
 			output(o_parm, "right", "%group")
 			output(o_parm, "rightnexthop", "%defaultroute")
 		}
+	}
 	}
 
 	filename = originalfilename
