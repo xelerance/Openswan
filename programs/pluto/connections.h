@@ -402,14 +402,14 @@ extern void show_connections_status(void);
 extern int  connection_compare(const struct connection *ca
 			       , const struct connection *cb);
 #ifdef NAT_TRAVERSAL
-void
+extern void
 update_host_pair(const char *why, struct connection *c,
        const ip_address *myaddr, u_int16_t myport ,
        const ip_address *hisaddr, u_int16_t hisport);
 #endif /* NAT_TRAVERSAL */
 
 /* export to pending.c */
-void host_pair_enqueue_pending(const struct connection *c
+extern void host_pair_enqueue_pending(const struct connection *c
 			       , struct pending *p
 			       , struct pending **pnext);
 struct pending **host_pair_first_pending(const struct connection *c);
@@ -430,7 +430,7 @@ extern int foreach_connection_by_alias(const char *alias
 				       , void *arg);
 
 
-struct connection *unoriented_connections;
+extern struct connection *unoriented_connections;
 
 /*
  * Local Variables:

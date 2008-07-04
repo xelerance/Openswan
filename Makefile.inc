@@ -333,7 +333,7 @@ USE_XAUTH?=true
 
 # When doing XAUTH, include PAM support as well, requires HAVE_THREADS be
 # true as well
-USE_XAUTHPAM?=false
+USE_XAUTHPAM?=true
 
 # whether to support NAT Traversal (aka NAT-T)
 USE_NAT_TRAVERSAL?=true
