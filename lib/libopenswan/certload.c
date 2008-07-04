@@ -141,7 +141,8 @@ load_coded_file(const char *filename, prompt_pass_t *pass,
 	}
 
 	/* a conversion error has occured */
-	openswan_log("  %s", ugh);
+	if (verbose)
+		openswan_log("  %s", ugh);
 	pfree(blob->ptr);
 	*blob = empty_chunk;
     }
