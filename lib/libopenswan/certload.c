@@ -89,6 +89,15 @@ load_coded_file(const char *filename, prompt_pass_t *pass,
 	int bytes;
 	fseek(fd, 0, SEEK_END );
 	blob->len = ftell(fd);
+
+	if (blob->len <= 0) {
+	   if (verbose)
+		openswan_log("  discarded %s file '%s', bad size %d bytes",
+			type, filename, blob->len);
+	   fclose(fd);
+	   return FALSE;
+	}
+
 	rewind(fd);
 	blob->ptr = alloc_bytes(blob->len, type);
 	bytes = fread(blob->ptr, 1, blob->len, fd);
