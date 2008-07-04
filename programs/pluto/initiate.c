@@ -255,6 +255,29 @@ initiate_connection(const char *name, int whackfd
     close_any(is.whackfd);
 }
 
+void
+restart_connections_by_peer(struct connection *c)
+{
+    struct connection *d;
+
+    d = c->host_pair->connections;
+    for (; d != NULL; d = d->hp_next) {
+	   if (
+		sameaddr(&d->spd.that.host_addr, &c->spd.that.host_addr)
+	)
+	       terminate_connection(d->name);
+    }
+
+    if (c->host_pair == NULL)
+    	   return;
+    d = c->host_pair->connections;
+    for (; d != NULL; d = d->hp_next) {
+    	   if (
+	sameaddr(&d->spd.that.host_addr, &c->spd.that.host_addr)
+	)
+	       initiate_connection(d->name, NULL_FD, 0, pcim_demand_crypto);
+    }
+}
 
 /* (Possibly) Opportunistic Initiation:
  * Knowing clients (single IP addresses), try to build an tunnel.

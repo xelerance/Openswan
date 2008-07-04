@@ -279,6 +279,7 @@ extern void initiate_connection(const char *name
 				, int whackfd
 				, lset_t moredebug
 				, enum crypto_importance importance);
+extern void restart_connections_by_peer(struct connection *c);
 extern void initiate_ondemand(const ip_address *our_client
 			      , const ip_address *peer_client
 			      , int transport_proto
