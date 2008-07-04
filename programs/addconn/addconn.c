@@ -77,7 +77,7 @@ static void usage(void)
     exit(10);
 }
 
-char rootdir[PATH_MAX];       /* when evaluating paths, prefix this to them */
+extern char rootdir[PATH_MAX];       /* when evaluating paths, prefix this to them */
 
 static struct option const longopts[] =
 {
