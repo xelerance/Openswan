@@ -130,9 +130,7 @@ extern int ipsec_device_event(struct notifier_block *dnot, unsigned long event, 
  * disabled (ifconfig up and down).
  */
 static struct notifier_block ipsec_dev_notifier={
-	ipsec_device_event,
-	NULL,
-	0
+	.notifier_call = ipsec_device_event
 };
 
 #ifdef CONFIG_SYSCTL
