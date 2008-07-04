@@ -22,6 +22,7 @@
 
 #include <stdlib.h>
 #include <time.h>		/* Required for time(). */
+#include "sysdep.h"
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
