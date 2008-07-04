@@ -263,18 +263,36 @@ restart_connections_by_peer(struct connection *c)
     d = c->host_pair->connections;
     for (; d != NULL; d = d->hp_next) {
 	   if (
+#ifdef DYNAMICDNS
+	       (c->dnshostname && d->dnshostname && (strcmp(c->dnshostname, d->dnshostname) == 0))
+	   	|| (c->dnshostname == NULL && d->dnshostname == NULL && 
+#endif /* DYNAMICDNS */
 		sameaddr(&d->spd.that.host_addr, &c->spd.that.host_addr)
-	)
+#ifdef DYNAMICDNS
+		)
+#endif /* DYNAMICDNS */
+		)
 	       terminate_connection(d->name);
     }
+
+#ifdef DYNAMICDNS
+    update_host_pairs(c);
+#endif /* DYNAMICDNS */
 
     if (c->host_pair == NULL)
     	   return;
     d = c->host_pair->connections;
     for (; d != NULL; d = d->hp_next) {
     	   if (
-	sameaddr(&d->spd.that.host_addr, &c->spd.that.host_addr)
-	)
+#ifdef DYNAMICDNS
+	       (c->dnshostname && d->dnshostname && (strcmp(c->dnshostname, d->dnshostname) == 0))
+	   	|| (c->dnshostname == NULL && d->dnshostname == NULL && 
+#endif /* DYNAMICDNS */
+		sameaddr(&d->spd.that.host_addr, &c->spd.that.host_addr)
+#ifdef DYNAMICDNS
+		)
+#endif /* DYNAMICDNS */
+		)
 	       initiate_connection(d->name, NULL_FD, 0, pcim_demand_crypto);
     }
 }
@@ -1499,7 +1517,12 @@ ISAKMP_SA_established(struct connection *c, so_serial_t serial)
 	    && same_id(&c->spd.this.id, &d->spd.this.id)
 	    && same_id(&c->spd.that.id, &d->spd.that.id)
 	    && (!sameaddr(&c->spd.that.host_addr, &d->spd.that.host_addr)
-		|| (c->spd.that.host_port != d->spd.that.host_port)))
+		|| (c->spd.that.host_port != d->spd.that.host_port))
+#ifdef DYNAMICDNS
+	    && !(c->dnshostname && d->dnshostname && (strcmp(c->dnshostname, d->dnshostname) == 0))
+#endif /* DYNAMICDNS */            
+	       )
+
 	    {
 		release_connection(d, FALSE);
 	    }
@@ -1575,8 +1598,18 @@ void connection_check_phase2(void)
 
 	    if(p1st) {
 		/* arrange to rekey the phase 1, if there was one. */
+#ifdef DYNAMICDNS
+	    if (c->dnshostname != NULL)
+		restart_connections_by_peer(c);
+	    else 
+	    {
+#endif /* DYNAMICDNS */
 		delete_event(p1st);
 		event_schedule(EVENT_SA_REPLACE, 0, p1st);
+#ifdef DYNAMICDNS
+	    }
+#endif /* DYNAMICDNS */
+
 	    } else {
 		/* start a new connection. Something wanted it up */
 		struct initiate_stuff is;

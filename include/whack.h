@@ -195,14 +195,6 @@ struct whack_message {
     /* for WHACK_REREAD */
     u_char whack_reread;
 
-#ifdef MODECFG_DNSWINS
-    /* for MODECFG */
-    ip_address modecfg_dns1;
-    ip_address modecfg_dns2;
-    ip_address modecfg_wins1;
-    ip_address modecfg_wins2;
-#endif
-
     /* for WHACK_TCPEVAL */
     char *tpmeval;
 
@@ -214,6 +206,9 @@ struct whack_message {
     ip_address modecfg_dns2;
     ip_address modecfg_wins1;
     ip_address modecfg_wins2;
+
+    /* for DYNAMICDNS */
+    char *dnshostname;
 
     /* for use with general option adjustments */
     enum whack_opt_set opt_set;
@@ -249,6 +244,7 @@ struct whack_message {
      * 24 genstring1  - used with opt_set 
      * 25 genstring2
      * 26 genstring3
+     * 27 dnshostname
      * plus keyval (limit: 8K bits + overhead), a chunk.
      */
     size_t str_size;

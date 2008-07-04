@@ -719,6 +719,11 @@ static const struct option long_opts[] = {
     { 0,0,0,0 }
 };
 
+#ifdef DYNAMICDNS
+static const char namechars[] = "abcdefghijklmnopqrstuvwxyz"
+				"ABCDEFGHIJKLMNOPQRSTUVWXYZ-_";
+#endif /* DYNAMICDNS */
+
 struct sockaddr_un ctl_addr = {
     .sun_family = AF_UNIX,
     .sun_path   = DEFAULT_CTLBASE CTL_SUFFIX,
@@ -872,6 +877,10 @@ main(int argc, char **argv)
     clear_end(&msg.right);	/* left set from this after --to */
 
     msg.name = NULL;
+#ifdef DYNAMICDNS
+    msg.dnshostname = NULL;
+#endif /* DYNAMICDNS */
+
     msg.keyid = NULL;
     msg.keyval.ptr = NULL;
     msg.esp = NULL;
@@ -1211,6 +1220,24 @@ main(int argc, char **argv)
 	    }
 	    else
 	    {
+#ifdef DYNAMICDNS
+		if (msg.left.id != NULL) {
+		    int strlength = 0;
+		    int n = 0;
+		    const char *cp;
+		    int dnshostname = 0;
+
+		    strlength = strlen(optarg);
+		    for (cp = optarg, n = strlength; n > 0; cp++, n--) {
+			    if (strchr(namechars, *cp) != NULL) {
+				    dnshostname = 1;
+				    break;
+			    }
+		    }
+		    if (dnshostname)
+		    	msg.dnshostname = optarg;
+		}
+#endif /* DYNAMICDNS */
 		diagq(ttoaddr(optarg, 0, msg.addr_family
 		    , &msg.right.host_addr), optarg);
 	    }

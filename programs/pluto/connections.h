@@ -250,6 +250,9 @@ struct connection {
 #ifdef XAUTH_USEPAM 
     pam_handle_t  *pamh;		/*  PAM handle for that connection  */
 #endif
+#ifdef DYNAMICDNS
+    char *dnshostname;
+#endif /* DYNAMICDNS */
 #ifdef MODECFG
     ip_address modecfg_dns1;
     ip_address modecfg_dns2;
