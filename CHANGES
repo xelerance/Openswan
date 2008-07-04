@@ -4,6 +4,11 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
+v2.6.17 [will be skipped due to bad tag]
+
+v2.6.16
+* dpdaction=restart_by_peer support added [david]
+
 v2.6.15
 * Patch to support NETKEY backport on Debian kernels [Rene Mayrhofer]
 * Fix a crasher when using right=%any with plutodebug=controlmore [paul]
