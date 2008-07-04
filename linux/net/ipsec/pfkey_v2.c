@@ -82,12 +82,11 @@
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
-/* only useful for pre 2.4 kernels, but we believe it might get
- * obsoleted soon on 2.6. kernels
- */
+#if 0
 #ifndef SOCKOPS_WRAPPED
 #define SOCKOPS_WRAPPED(name) name
 #endif /* SOCKOPS_WRAPPED */
+#endif
 
 extern struct proto_ops SOCKOPS_WRAPPED(pfkey_ops);
 
@@ -550,8 +549,6 @@ pfkey_destroy_socket(struct sock *sk)
 int
 pfkey_upmsg(struct socket *sock, struct sadb_msg *pfkey_msg)
 {
-	int error = 0;
-	struct sk_buff * skb = NULL;
 	struct sock *sk;
 
 	if(sock == NULL) {
@@ -569,6 +566,13 @@ pfkey_upmsg(struct socket *sock, struct sadb_msg *pfkey_msg)
 	}
 
 	sk = sock->sk;
+	return pfkey_upmsgsk(sk, pfkey_msg);
+}
+int
+pfkey_upmsgsk(struct sock *sk, struct sadb_msg *pfkey_msg)
+{
+	int error = 0;
+	struct sk_buff * skb = NULL;
 
 	if(sk == NULL) {
 		KLIPS_PRINT(debug_pfkey,
