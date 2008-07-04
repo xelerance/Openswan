@@ -24,6 +24,8 @@ v2.6.15
   in config file. Use /etc/sysctl.conf [paul]
 * Fix for left="%defaultroute" when using NETKEY [tuomo]
 * Fix for KLIPS on SMP systems (missing SOCKOPS_WRAP for pfkey_ops) [dhr/paul]
+* Merged in some IPsec SAref related code [mcr/paul]
+* Merged in packaging/suse for building rpms on SLES [paul]
 * Bugtracker bugs fixed:
   #784 / #928 : openswan (pfs=yes) to vista (pfs=no) crasher [paul/dhr]
   #934: mem leak in klips:ipsec_rcv_decap [Wolfgang Nothdurft]
