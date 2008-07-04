@@ -126,7 +126,7 @@ help(void)
 	    " [--forceencaps]"
             " \\\n   "
             " [--dpddelay <seconds> --dpdtimeout <seconds>]"
-            " [--dpdaction (clear|hold|restart)]"
+            " [--dpdaction (clear|hold|restart|restart_by_peer)]"
             " \\\n   "
 
 #ifdef XAUTH
@@ -1443,6 +1443,9 @@ main(int argc, char **argv)
             if( strcmp(optarg, "restart") == 0) {
                     msg.dpd_action = DPD_ACTION_RESTART;
             }
+            if( strcmp(optarg, "restart_by_peer") == 0) {
+                    msg.dpd_action = DPD_ACTION_RESTART_BY_PEER;
+            }
             continue;
 
 	case CD_IKE:	/* --ike <ike_alg1,ike_alg2,...> */
@@ -1783,8 +1786,9 @@ main(int argc, char **argv)
             diag("dpddelay specified, but dpdtimeout is zero, both should be specified");
     if(!msg.dpd_delay && msg.dpd_timeout)
             diag("dpdtimeout specified, but dpddelay is zero, both should be specified");
-    if(msg.dpd_action != DPD_ACTION_CLEAR && msg.dpd_action != DPD_ACTION_HOLD && msg.dpd_action != DPD_ACTION_RESTART) {
-            diag("dpdaction can only be \"clear\", \"hold\" or \"restart\", defaulting to \"hold\"");
+    if(msg.dpd_action != DPD_ACTION_CLEAR && msg.dpd_action != DPD_ACTION_HOLD
+         && msg.dpd_action != DPD_ACTION_RESTART && msg.dpd_action != DPD_ACTION_RESTART_BY_PEER) {
+            diag("dpdaction can only be \"clear\", \"hold\", \"restart\" or \"restart_by_peer\", defaulting to \"hold\"");
             msg.dpd_action = DPD_ACTION_HOLD;
     }
 
