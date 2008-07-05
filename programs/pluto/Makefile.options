@@ -17,7 +17,6 @@
 # All of the USE_ and HAVE_ variables are controlled from openswan/Makefile.inc
 
 ifeq ($(USE_DYNAMICDNS),true)
-DYNAMICDNS=1
 DYNAMICDNSDEF=-DDYNAMICDNS
 endif
 
@@ -197,6 +196,10 @@ HAVE_OCF_DIST_OBJS=ocf_pk.o
 HAVE_OCF_DIST_SRCS=ocf_pk.c ocf_pk.h
 endif
 
+ifeq ($(HAVE_STATSD),true)
+HAVE_STATSD_DEFS=-DHAVE_STATSD
+endif
+
 ifeq ($(USE_SMARTCARD),true)
 # smartcard functions are compiled in whether or not we have -lopensc,
 # but ifndef SMARTCARD, they are dummy functions.
@@ -294,6 +297,7 @@ DEFINES = $(EXTRA_DEFINES) \
 	${NAT_DEFS} ${CURL_DEFS}\
 	${WEAK_DEFS} \
 	${SINGLE_CONF_DIR} ${HAVE_OCF_OPENSSL_DEFS} \
+	${HAVE_STATSD_DEFS} \
 	# -DLEAK_DETECTIVE
 
 # libefence is a free memory allocation debugger
