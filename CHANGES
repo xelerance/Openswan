@@ -7,6 +7,8 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.17 [will be skipped due to bad tag]
 
 v2.6.16
+* Merged in David McCullough's OCF patch [david/paul]
+  Requires kernel patch, see http://ocf-linux.sourceforge.net/
 * dpdaction=restart_by_peer support added [david]
 * dynamic dns support (do dns lookup at restart conn, eg after dpd) [david]
   Uses USE_DYNAMICDNS=
@@ -14,7 +16,7 @@ v2.6.16
 * KLIPS support for 2.6.24 / 2.6.25 [david]
 * Added HAVE_STATSD= support to log state changes (for webgui etc) [david]
 * Wrapper to handle more then 2048 NETKEY tunnels [david]
-* Merged in David McCullough's OCF patch [david/paul]
+* fixes for parser warnings [dhr]
 
 v2.6.15
 * Patch to support NETKEY backport on Debian kernels [Rene Mayrhofer]
