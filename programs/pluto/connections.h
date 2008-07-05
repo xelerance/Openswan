@@ -432,6 +432,8 @@ extern int foreach_connection_by_alias(const char *alias
 
 extern struct connection *unoriented_connections;
 
+extern void update_host_pairs(struct connection *c);
+
 /*
  * Local Variables:
  * c-basic-offset:4

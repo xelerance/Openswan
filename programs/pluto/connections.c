@@ -147,7 +147,7 @@ void
 update_host_pairs(struct connection *c)
 {
     struct connection *d = NULL, *conn_next_tmp = NULL, *conn_list = NULL;
-    struct host_pair *p = NULL, *hp_next_tmp;
+    struct host_pair *p = NULL;
     ip_address new_addr;
     char *dnshostname;
 
@@ -164,9 +164,9 @@ update_host_pairs(struct connection *c)
     /* remember this dnshostname */
     dnshostname = c->dnshostname;
 
-    for (; d != NULL; d = hp_next_tmp)
+    for (; d != NULL; d = conn_next_tmp)
     {
-	hp_next_tmp = d->hp_next;
+	conn_next_tmp = d->hp_next;
 	if (d->dnshostname && strcmp(d->dnshostname, dnshostname) == 0)
 	{
 	      /* 
@@ -187,8 +187,8 @@ update_host_pairs(struct connection *c)
 	for (; d != NULL; d = conn_next_tmp)
 	{
 	    /* 
-	    * connect the connection to the new host_pair
-	    */
+	     * connect the connection to the new host_pair
+	     */
 	    conn_next_tmp = d->hp_next;
 	    connect_to_host_pair(d);
 	}
