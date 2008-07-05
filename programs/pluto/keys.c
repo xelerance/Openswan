@@ -89,7 +89,11 @@ void load_preshared_secrets(int whackfd)
     pass.prompt = whack_log;
     pass.fd = whackfd;
     osw_load_preshared_secrets(&pluto_secrets
+#ifdef SINGLE_CONF_DIR
+			       , FALSE /* to much log noise in a shared directory mode */
+#else
 			       , TRUE
+#endif
 			       , pluto_shared_secrets_file
 			       , &pass);
 }

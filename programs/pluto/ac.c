@@ -747,7 +747,12 @@ load_acerts(void)
 		bool pgp = FALSE;
 
 		if (load_coded_file(filelist[n]->d_name, NULL,
-				    TRUE, "acert", &blob, &pgp))
+#ifdef SINGLE_CONF_DIR
+				FALSE, /* too verbose in a shared dir */
+#else
+				TRUE,
+#endif
+				    "acert", &blob, &pgp))
 		{
 		    x509acert_t *ac = alloc_thing(x509acert_t, "x509acert");
 		    

@@ -447,7 +447,13 @@ load_crls(void)
 		chunk_t blob = empty_chunk;
 		char *filename = filelist[n]->d_name;
 
-		if (load_coded_file(filename, NULL, TRUE, "crl", &blob, &pgp))
+		if (load_coded_file(filename, NULL, 
+#ifdef SINGLE_CONF_DIR
+			FALSE, /* too verbose in a shared dir */
+#else
+			TRUE,
+#endif
+				"crl", &blob, &pgp))
 		{
 		    chunk_t crl_uri;
                     crl_uri.len = 8 + strlen(oco->crls_dir) + strlen(filename);
