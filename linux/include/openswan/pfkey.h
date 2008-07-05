@@ -45,7 +45,7 @@ struct ipsec_alg_supported
 	uint8_t  ias_ivlen;
 	uint16_t ias_keyminbits;
 	uint16_t ias_keymaxbits;
-        char    *ias_name;
+        const char    *ias_name;
 };
 
 extern struct supported_list *pfkey_supported_list[];
