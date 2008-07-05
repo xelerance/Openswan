@@ -178,7 +178,7 @@ ocf_aes_cryptodev_internal(
     cop.src = (char *)fixed_src;
     cop.dst = (char *)dst;
     cop.len = fixed_len;
-    cop.iv = (char *)iv;
+    cop.iv = iv;
     if (ioctl(crypto_fd, CIOCCRYPT, &cop) < 0) {
         /* fprintf(stderr, "%s CIOCCRYPT failed\n", __FUNCTION__);  */
 		goto failed;
