@@ -1227,7 +1227,7 @@ pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
 		ps = pfkey_supported_list[satype];
 		while(ps) {
 			struct ipsec_alg_supported *alg = ps->supportedp;
-			unsigned char *n = alg->ias_name;
+			const char *n = alg->ias_name;
 			if(n == NULL) n = "unknown";
 
 			len += ipsec_snprintf(buffer+len, length-len,
@@ -1363,7 +1363,7 @@ supported_add_all(int satype, struct ipsec_alg_supported supported[], int size)
 
 	for(i = 0; i < size / sizeof(struct ipsec_alg_supported); i++) {
 
-		unsigned char *n = supported[i].ias_name;
+		const char *n = supported[i].ias_name;
 		if(n == NULL) n="unknown";
 
 		KLIPS_PRINT(debug_pfkey,
@@ -1391,7 +1391,7 @@ supported_remove_all(int satype)
 	struct ipsec_alg_supported*supportedp;
 
 	while(pfkey_supported_list[satype]) {
-		unsigned char *n;
+		const char *n;
 		supportedp = pfkey_supported_list[satype]->supportedp;
 
 		n = supportedp->ias_name;
@@ -1418,7 +1418,7 @@ pfkey_init(void)
 {
 	int error = 0;
 	int i;
-#if HAVE_PROC_DIR_ENTRY
+#ifdef HAVE_PROC_DIR_ENTRY
 	struct proc_dir_entry* entry;
 #endif
 
