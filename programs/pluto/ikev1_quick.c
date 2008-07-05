@@ -743,7 +743,7 @@ quick_outI1(int whack_sock
     st->st_peeruserport = c->spd.that.port;
 
     st->st_msgid = generate_msgid(isakmp_sa);
-    st->st_state = STATE_QUICK_I1;
+    change_state(st, STATE_QUICK_I1);
 
     insert_state(st);	/* needs cookies, connection, and msgid */
 
@@ -1850,7 +1850,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	st->st_myuserprotoid = b->my.proto;
 	st->st_myuserport = b->my.port;
 
-	st->st_state = STATE_QUICK_R0;
+	change_state(st, STATE_QUICK_R0);
 
 	insert_state(st);	/* needs cookies, connection, and msgid */
 

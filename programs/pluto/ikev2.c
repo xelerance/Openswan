@@ -650,7 +650,7 @@ static void success_v2_state_transition(struct msg_digest **mdp)
     openswan_log("transition from state %s to state %s"
                  , enum_name(&state_names, from_state)
                  , enum_name(&state_names, svm->next_state));
-    st->st_state = svm->next_state;
+    change_state(st, svm->next_state);
     w = RC_NEW_STATE + st->st_state;    
 
     ikev2_update_counters(md);

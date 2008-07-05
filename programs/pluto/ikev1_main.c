@@ -131,7 +131,7 @@ main_outI1(int whack_sock
     /* set up new state */
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
     initialize_new_state(st, c, policy, try, whack_sock, importance);
-    st->st_state = STATE_MAIN_I1;
+    change_state(st, STATE_MAIN_I1);
 
     if (HAS_IPSEC_POLICY(policy))
 	add_pending(dup_any(whack_sock), st, c, policy, 1
@@ -805,7 +805,7 @@ main_inI1_outR1(struct msg_digest *md)
     set_cur_state(st);	/* (caller will reset cur_state) */
     st->st_try = 0;	/* not our job to try again from start */
     st->st_policy = c->policy & ~POLICY_IPSEC_MASK;	/* only as accurate as connection */
-    st->st_state = STATE_MAIN_R0;
+    change_state(st, STATE_MAIN_R0);
 
     memcpy(st->st_icookie, md->hdr.isa_icookie, COOKIE_SIZE);
     get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);

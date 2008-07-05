@@ -495,7 +495,7 @@ stf_status modecfg_send_set(struct state *st)
 	/* set up reply */
 	init_pbs(&reply, buf, sizeof(buf), "ModecfgR1");
 
-	st->st_state = STATE_MODE_CFG_R1;
+	change_state(st, STATE_MODE_CFG_R1);
 	/* HDR out */
 	{
 		struct isakmp_hdr hdr;
@@ -585,7 +585,7 @@ stf_status xauth_send_request(struct state *st)
 
     /* this is the beginning of a new exchange */
     st->st_msgid_phase15 = generate_msgid(st);
-    st->st_state = STATE_XAUTH_R0;
+    change_state(st, STATE_XAUTH_R0);
 
     /* HDR out */
     {
@@ -675,7 +675,7 @@ stf_status modecfg_send_request(struct state *st)
 
     /* this is the beginning of a new exchange */
     st->st_msgid_phase15 = generate_msgid(st);
-    st->st_state = STATE_MODE_CFG_I1;
+    change_state(st, STATE_MODE_CFG_I1);
 
     /* HDR out */
     {
@@ -838,7 +838,7 @@ stf_status xauth_send_status(struct state *st, int status)
 
     send_packet(st, "XAUTH: status", TRUE);
 
-    st->st_state = STATE_XAUTH_R1;
+    change_state(st, STATE_XAUTH_R1);
 
     return STF_OK;
 }
@@ -1094,7 +1094,7 @@ static void * do_authentication(void *varg)
          *  and reset state to XAUTH_R0 */
         openswan_log("XAUTH: User %s: Authentication Failed: Incorrect Username or Password", arg->name.ptr);
         xauth_send_status(st,0);	
-        st->st_state = STATE_XAUTH_R0;        
+        change_state(st, STATE_XAUTH_R0);
     }   
     
     freeanychunk(arg->password);
@@ -2319,7 +2319,7 @@ xauth_inI1(struct msg_digest *md)
     {
 	/* oops, something seriously wrong */
 	openswan_log("did not get status attribute in xauth_inI1, looking for new challenge.");
-	st->st_state = STATE_XAUTH_I0;
+	change_state(st, STATE_XAUTH_I0);
 	return xauth_inI0(md);
     }
 

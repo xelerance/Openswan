@@ -265,6 +265,8 @@ insert_state(struct state *st)
      */
     if (st->st_event == NULL)
 	event_schedule(EVENT_SO_DISCARD, 0, st);
+
+	refresh_state(st);
 }
 
 /*
@@ -350,7 +352,7 @@ delete_state(struct state *st)
 
     DBG(DBG_CONTROL, DBG_log("deleting state #%lu", st->st_serialno));
 
-    set_cur_state(st);
+    change_state(st, STATE_UNDEFINED);
 
     /* If DPD is enabled on this state object, clear any pending events */
     if(st->st_dpd_event != NULL)

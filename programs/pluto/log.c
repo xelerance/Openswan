@@ -1,6 +1,7 @@
 /* error logging functions
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 2008 David McCullough.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -845,6 +846,146 @@ daily_log_event(void)
 
     daily_log_reset();
 }
+
+#ifdef HAVE_STATSD
+/*
+ * we store runtime info for stats/status this way,
+ * you may be able to do something similar using these hooks
+ */
+
+struct log_conn_info {
+	struct connection *conn;
+	struct state *ignore;		/* ignore this state */
+
+	/* best completed state of connection */
+
+	enum {
+		tun_down=0,
+		tun_phase1,
+		tun_phase1up,
+		tun_phase15,
+		tun_phase2,
+		tun_up
+	} tunnel;
+
+	/* best uncompleted state info for each phase */
+
+	enum {
+		p1_none=0,
+		p1_init,
+		p1_encrypt,
+		p1_auth
+	} phase1;
+
+	enum {
+		p2_none=0,
+		p2_neg
+	} phase2;
+};
+
+static void
+connection_state(struct state *st, void *data)
+{
+	struct log_conn_info *lc = data;
+
+	if (!st || st == lc->ignore || st->st_connection != lc->conn)
+		return;
+
+	/* ignore undefined states (ie., just deleted) */
+	if (st->st_state == STATE_UNDEFINED)
+		return;
+
+	if (IS_PHASE1(st->st_state)) {
+		if (lc->tunnel < tun_phase1)
+			lc->tunnel = tun_phase1;
+		if (IS_ISAKMP_SA_ESTABLISHED(st->st_state)) {
+			if (lc->tunnel < tun_phase1up)
+				lc->tunnel = tun_phase1up;
+		} else {
+			if (lc->phase1 < p1_init)
+				lc->phase1 = p1_init;
+			if (IS_ISAKMP_ENCRYPTED(st->st_state) && lc->phase1 < p1_encrypt)
+				lc->phase1 = p1_encrypt;
+			if (IS_ISAKMP_AUTHENTICATED(st->st_state) && lc->phase1 < p1_auth)
+				lc->phase1 = p1_auth;
+		}
+	}
+
+
+	if (IS_PHASE15(st->st_state)) {
+		if (lc->tunnel < tun_phase15)
+			lc->tunnel = tun_phase15;
+	}
+
+	if (IS_QUICK(st->st_state)) {
+		if (lc->tunnel < tun_phase2)
+			lc->tunnel = tun_phase2;
+		if (IS_IPSEC_SA_ESTABLISHED(st->st_state)) {
+		   	if (lc->tunnel < tun_up)
+				lc->tunnel = tun_up;
+		} else {
+		   	if (lc->phase2 < p2_neg)
+				lc->phase2 = p2_neg;
+		}
+	}
+}
+
+void
+log_state(struct state *st, enum state_kind state)
+{
+	char buf[1024];
+	struct log_conn_info lc;
+	struct connection *conn;
+	const char *tun = NULL, *p1 = NULL, *p2 = NULL;
+	enum state_kind save_state;
+
+	if (!st || !st->st_connection || !st->st_connection->name)
+		return;
+
+	conn = st->st_connection;
+
+	memset(&lc, 0, sizeof(lc));
+	lc.conn = conn;
+	save_state = st->st_state;
+	st->st_state = state;
+	for_each_state((void *)connection_state, &lc);
+	st->st_state = save_state;
+
+	switch (lc.tunnel) {
+	case tun_phase1:  tun = "phase1";  break;
+	case tun_phase1up:tun = "phase1up";break;
+	case tun_phase15: tun = "phase15"; break;
+	case tun_phase2:  tun = "phase2";  break;
+	case tun_up:      tun = "up";      break;
+	default:          tun = "unknown"; break;
+	}
+
+	switch (lc.phase1) {
+	case p1_init:     p1 = "init";    break;
+	case p1_encrypt:  p1 = "encrypt"; break;
+	case p1_auth:     p1 = "auth";    break;
+	default:          p1 = "unknown"; break;
+	}
+
+	switch (lc.phase2) {
+	case p2_neg:      p2 = "neg";     break;
+	default:          p2 = "unknown";  break;
+	}
+
+	snprintf(buf, sizeof(buf), "/bin/statsd "
+			"%s ipsec-tunnel-%s if_stats /proc/net/dev/%s \\; "
+			"%s ipsec-tunnel-%s tunnel %s \\; "
+			"%s ipsec-tunnel-%s phase1 %s \\; "
+			"%s ipsec-tunnel-%s phase2 %s",
+			conn->interface ? "push" : "drop", conn->name,
+		   			conn->interface ? conn->interface->ip_dev->id_vname : "",
+			tun ? "push" : "drop", conn->name, tun ? tun : "",
+			p1  ? "push" : "drop", conn->name, p1  ? p1  : "",
+			p2  ? "push" : "drop", conn->name, p2  ? p2  : "");
+	system(buf);
+}
+
+#endif
 
 /*
  * Local Variables:

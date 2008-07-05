@@ -430,6 +430,24 @@ extern void set_state_ike_endpoints(struct state *st
 extern void delete_cryptographic_continuation(struct state *st);
 extern void delete_states_dead_interfaces(void);
 
+/*
+ * use this guy to change state, this gives us a handle on all state changes
+ * which is good for tracking bugs, logging and anything else you might like
+ */
+#ifdef HAVE_STATSD
+#define refresh_state(st) log_state(st, st->st_state)
+#define change_state(st,new_state) \
+	do { \
+		if ((new_state) != (st)->st_state) { \
+			log_state((st), (new_state)); \
+			(st)->st_state = (new_state); \
+		} \
+	   } while(0)
+#else
+#define refresh_state(st) /* do nothing */
+#define change_state(st, new_state) do { (st)->st_state=(new_state); } while(0)
+#endif
+
 #endif /* _STATE_H */
 
 /*

@@ -383,6 +383,10 @@ HAVE_THREADS?=false
 # Do we have OCF available?
 HAVE_OCF?=true
 
+# Do we have an external stats daemon we can push state changes to?
+# Currently hardcoded to /bin/statsd
+HAVE_STATSD?=true
+
 # Do we have Openssl libraries available for BIGNUM support?
 HAVE_OPENSSL?=true
 

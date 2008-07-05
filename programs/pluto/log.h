@@ -74,6 +74,11 @@ extern void passert_fail(const char *pred_str
 			 , const char *file_str
 			 , unsigned long line_no) NEVER_RETURNS;
 
+#ifdef HAVE_STATSD
+/* for pushing state to other subsystems */
+extern void log_state(struct state *st, enum state_kind state);
+#endif
+
 #ifdef DEBUG
 
   extern void extra_debugging(const struct connection *c);

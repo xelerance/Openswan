@@ -111,7 +111,7 @@ ikev2parent_outI1(int whack_sock
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
     initialize_new_state(st, c, policy, try, whack_sock, importance);
     st->st_ikev2 = TRUE;
-    st->st_state = STATE_PARENT_I1;
+    change_state(st, STATE_PARENT_I1);
     st->st_msgid_lastack = INVALID_MSGID;
     st->st_msgid_nextuse = 0;
     st->st_try   = try;
@@ -518,7 +518,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	memcpy(st->st_icookie, md->hdr.isa_icookie, COOKIE_SIZE);
 	initialize_new_state(st, c, policy, 0, NULL_FD, pcim_stranger_crypto);
 	st->st_ikev2 = TRUE;
-	st->st_state = STATE_PARENT_R1;
+	change_state(st, STATE_PARENT_R1);
 	st->st_msgid_lastack = INVALID_MSGID;
 	st->st_msgid_nextuse = 0;
 
@@ -816,7 +816,7 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 
 		md->svm = ikev2_parent_firststate();
 
-		st->st_state = STATE_PARENT_I1;
+		change_state(st, STATE_PARENT_I1);
     	st->st_msgid_lastack = INVALID_MSGID;
 	 	md->msgid_received = INVALID_MSGID;  //AAA hack 
     	st->st_msgid_nextuse = 0;
@@ -1217,7 +1217,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, pst);
 
     /* need to force parent state to I2 */
-    pst->st_state = STATE_PARENT_I2;
+    change_state(pst, STATE_PARENT_I2);
 
     /* record first packet for later checking of signature */
     clonetochunk(pst->st_firstpacket_him, md->message_pbs.start
@@ -1603,7 +1603,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     /* good. now create child state */
     /* note: as we will switch to child state, we force the parent to the
      * new state now */
-    st->st_state = STATE_PARENT_R2;
+    change_state(st, STATE_PARENT_R2);
     c->newest_isakmp_sa = st->st_serialno;
     
     authstart = md->reply.cur;
@@ -1896,7 +1896,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
      * update the parent state to make sure that it knows we have
      * authenticated properly.
      */
-    pst->st_state = STATE_PARENT_I3;
+    change_state(pst, STATE_PARENT_I3);
     c->newest_isakmp_sa = pst->st_serialno;
     
     /* authentication good, see if there is a child SA available */

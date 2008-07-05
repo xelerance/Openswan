@@ -917,7 +917,7 @@ process_v1_packet(struct msg_digest **mdp)
 #ifdef MODECFG	
 	    if(st->st_state == STATE_MODE_CFG_R2)   /* Have we just given an IP address to peer? */
 	    {
-		st->st_state = STATE_MAIN_R3;	    /* ISAKMP is up... */
+		change_state(st, STATE_MAIN_R3);    /* ISAKMP is up... */
 	    }
 
 #ifdef SOFTREMOTE_CLIENT_WORKAROUND
@@ -1096,7 +1096,7 @@ process_v1_packet(struct msg_digest **mdp)
 	       && IS_PHASE1(st->st_state))	/* Switch from Phase1 to Mode Config */
 	    {
 		openswan_log("We were in phase 1, with no state, so we went to XAUTH_R0");
-		st->st_state = STATE_XAUTH_R0;
+		change_state(st, STATE_XAUTH_R0);
 	    }
 
 	    /* otherweise, this is fine, we continue in the state we are in */
@@ -1826,7 +1826,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 		st->st_reserve_msgid=TRUE;
 	    }
 
-	    st->st_state = smc->next_state;
+	    change_state(st, smc->next_state);
 
 	    /* Schedule for whatever timeout is specified */
 	    if(!md->event_already_set)
@@ -2101,7 +2101,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	       && !st->hidden_variables.st_modecfg_vars_set 
 	       && !(st->st_connection->policy & POLICY_MODECFG_PULL))
 	    {
-		    st->st_state = STATE_MODE_CFG_R1;
+		    change_state(st, STATE_MODE_CFG_R1);
 		    set_cur_state(st);
 		    openswan_log("Sending MODE CONFIG set");
 		    modecfg_start_set(st);
@@ -2114,7 +2114,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 		&& IS_MODE_CFG_ESTABLISHED(st->st_state)
 		&& (st->st_seen_vendorid & LELEM(VID_NORTEL))) 
 	    {
-		st->st_state = STATE_MAIN_R3;	    /* ISAKMP is up... */
+		change_state(st, STATE_MAIN_R3);    /* ISAKMP is up... */
 	        set_cur_state(st);
 	        quick_outI1(st->st_whack_sock, st, st->st_connection, st->st_connection->policy, 1, SOS_NOBODY);
 		break;

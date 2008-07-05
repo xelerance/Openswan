@@ -260,7 +260,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
     st->st_remoteaddr = md->sender;
     st->st_remoteport = md->sender_port;
     st->st_interface  = md->iface;
-    st->st_state = STATE_AGGR_R1;
+    change_state(st, STATE_AGGR_R1);
 
     /* until we have clue who this is, then be conservative about allocating
      * them any crypto bandwidth */
@@ -922,7 +922,7 @@ aggr_outI1(int whack_sock,
     st->st_policy = policy & ~POLICY_IPSEC_MASK;
     st->st_whack_sock = whack_sock;
     st->st_try = try;
-    st->st_state = STATE_AGGR_I1;
+    change_state(st, STATE_AGGR_I1);
 
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
 
