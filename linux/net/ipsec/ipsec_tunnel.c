@@ -3,6 +3,10 @@
  * Copyright (C) 1996, 1997  John Ioannidis.
  * Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003  Richard Guy Briggs.
  * 
+ * OCF/receive state machine written by
+ * David McCullough <dmccullough@cyberguard.com>
+ * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -53,6 +57,14 @@
 # define dev_kfree_skb(a,b) kfree_skb(a)
 # define PHYSDEV_TYPE
 #endif /* NET_21 */
+
+#ifndef NETDEV_TX_BUSY
+# ifdef NETDEV_XMIT_CN
+#  define NETDEV_TX_BUSY NETDEV_XMIT_CN
+# else
+#  define NETDEV_TX_BUSY 1
+# endif
+#endif
 
 #include <net/icmp.h>		/* icmp_send() */
 #include <net/ip.h>
@@ -509,9 +521,75 @@ ipsec_tunnel_restore_hard_header(struct ipsec_xmit_state*ixs)
 	return IPSEC_XMIT_OK;
 }
 
-/* management of buffers */
-static struct ipsec_xmit_state * ipsec_xmit_state_new (void);
-static void ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs);
+
+/*
+ * when encap processing is complete it call this for us to continue
+ */
+
+void
+ipsec_tunnel_xsm_complete(
+	struct ipsec_xmit_state *ixs,
+	enum ipsec_xmit_value stat)
+{
+	if(stat != IPSEC_XMIT_OK) {
+		if(stat == IPSEC_XMIT_PASS) {
+			goto bypass;
+		}
+		
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+				"klips_debug:ipsec_tunnel_start_xmit: encap_bundle failed: %d\n",
+				stat);
+		goto cleanup;
+	}
+
+	ixs->matcher.sen_ip_src.s_addr = ixs->iph->saddr;
+	ixs->matcher.sen_ip_dst.s_addr = ixs->iph->daddr;
+	ixs->matcher.sen_proto = ixs->iph->protocol;
+	ipsec_extract_ports(ixs->iph, &ixs->matcher);
+
+	spin_lock_bh(&eroute_lock);
+	ixs->eroute = ipsec_findroute(&ixs->matcher);
+	if(ixs->eroute) {
+		ixs->outgoing_said = ixs->eroute->er_said;
+		ixs->eroute_pid = ixs->eroute->er_pid;
+		ixs->eroute->er_count++;
+		ixs->eroute->er_lasttime = jiffies/HZ;
+	}
+	spin_unlock_bh(&eroute_lock);
+
+	KLIPS_PRINT((debug_tunnel & DB_TN_XMIT) &&
+			/* ((ixs->orgdst != ixs->newdst) || (ixs->orgsrc != ixs->newsrc)) */
+			(ixs->orgedst != ixs->outgoing_said.dst.u.v4.sin_addr.s_addr) &&
+			ixs->outgoing_said.dst.u.v4.sin_addr.s_addr &&
+			ixs->eroute,
+			"klips_debug:ipsec_tunnel_start_xmit: "
+			"We are recursing here.\n");
+
+	if (/*((ixs->orgdst != ixs->newdst) || (ixs->orgsrc != ixs->newsrc))*/
+			(ixs->orgedst != ixs->outgoing_said.dst.u.v4.sin_addr.s_addr) &&
+			ixs->outgoing_said.dst.u.v4.sin_addr.s_addr &&
+			ixs->eroute) {
+		ipsec_xsm(ixs);
+		return;
+	}
+
+	stat = ipsec_nat_encap(ixs);
+	if(stat != IPSEC_XMIT_OK) {
+		goto cleanup;
+	}
+
+	stat = ipsec_tunnel_restore_hard_header(ixs);
+	if(stat != IPSEC_XMIT_OK) {
+		goto cleanup;
+	}
+
+bypass:
+	stat = ipsec_tunnel_send(ixs);
+
+cleanup:
+	ipsec_xmit_cleanup(ixs);
+	ipsec_xmit_state_delete(ixs);
+}
 
 
 /*
@@ -527,15 +605,11 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 		    "\n\nipsec_tunnel_start_xmit: STARTING");
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
-	ixs->natt_type = 0, ixs->natt_head = 0;
-	ixs->natt_sport = 0, ixs->natt_dport = 0;
-#endif
-        stat = IPSEC_XMIT_ERRMEMALLOC;
-        ixs = ipsec_xmit_state_new ();
-        if (! ixs) {
-                goto alloc_error;
-        }
+	stat = IPSEC_XMIT_ERRMEMALLOC;
+	ixs = ipsec_xmit_state_new();
+	if (! ixs) {
+		goto alloc_error;
+	}
 
 	ixs->dev = dev;
 	ixs->skb = skb;
@@ -564,65 +638,15 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 	
 	ixs->innersrc = ixs->iph->saddr;
-	/* start encapsulation loop here XXX */
-	do {
- 		stat = ipsec_xmit_encap_bundle(ixs);
-	 	if(stat != IPSEC_XMIT_OK) {
-			if(stat == IPSEC_XMIT_PASS) {
-				goto bypass;
-			}
-			
-			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-				    "klips_debug:ipsec_tunnel_start_xmit: encap_bundle failed: %d\n",
-				    stat);
- 			goto cleanup;
-	 	}
 
-		ixs->matcher.sen_ip_src.s_addr = ixs->iph->saddr;
-		ixs->matcher.sen_ip_dst.s_addr = ixs->iph->daddr;
-		ixs->matcher.sen_proto = ixs->iph->protocol;
-		ipsec_extract_ports(ixs->iph, &ixs->matcher);
+	ixs->xsm_complete = ipsec_tunnel_xsm_complete;
 
-		spin_lock_bh(&eroute_lock);
-		ixs->eroute = ipsec_findroute(&ixs->matcher);
-		if(ixs->eroute) {
-			ixs->outgoing_said = ixs->eroute->er_said;
-			ixs->eroute_pid = ixs->eroute->er_pid;
-			ixs->eroute->er_count++;
-			ixs->eroute->er_lasttime = jiffies/HZ;
-		}
-		spin_unlock_bh(&eroute_lock);
-
-		KLIPS_PRINT((debug_tunnel & DB_TN_XMIT) &&
-			    /* ((ixs->orgdst != ixs->newdst) || (ixs->orgsrc != ixs->newsrc)) */
-			    (ixs->orgedst != ixs->outgoing_said.dst.u.v4.sin_addr.s_addr) &&
-			    ixs->outgoing_said.dst.u.v4.sin_addr.s_addr &&
-			    ixs->eroute,
-			    "klips_debug:ipsec_tunnel_start_xmit: "
-			    "We are recursing here.\n");
-
-	} while(/*((ixs->orgdst != ixs->newdst) || (ixs->orgsrc != ixs->newsrc))*/
-		(ixs->orgedst != ixs->outgoing_said.dst.u.v4.sin_addr.s_addr) &&
-		ixs->outgoing_said.dst.u.v4.sin_addr.s_addr &&
-		ixs->eroute);
-	
-	stat = ipsec_nat_encap(ixs);
-	if(stat != IPSEC_XMIT_OK) {
-		goto cleanup;
-	}
-
-	stat = ipsec_tunnel_restore_hard_header(ixs);
-	if(stat != IPSEC_XMIT_OK) {
-		goto cleanup;
-	}
-
- bypass:
-	stat = ipsec_tunnel_send(ixs);
+	ipsec_xsm(ixs);
+	return 0;
 
  cleanup:
 	ipsec_xmit_cleanup(ixs);
-
-        ipsec_xmit_state_delete (ixs);
+	ipsec_xmit_state_delete(ixs);
 alloc_error:
 	return 0;
 }
@@ -640,7 +664,7 @@ ipsec_tunnel_get_stats(struct net_device *dev)
 
 DEBUG_NO_STATIC int
 ipsec_tunnel_hard_header(struct sk_buff *skb, struct net_device *dev,
-	unsigned short type, void *daddr, void *saddr, unsigned len)
+	unsigned short type, const void *daddr, const void *saddr, unsigned len)
 {
 	struct ipsecpriv *prv = dev->priv;
 	struct net_device *tmp;
@@ -700,11 +724,11 @@ ipsec_tunnel_hard_header(struct sk_buff *skb, struct net_device *dev,
 		/* execute this only, if we don't have to build the
 		   header for a IPv6 packet */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
-               if(!prv->header_ops->create)
+		if(!prv->header_ops->create)
 #else
-               if(!prv->hard_header)
+		if(!prv->hard_header)
 #endif
-               {
+		{
 			KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
 				    "klips_debug:ipsec_tunnel_hard_header: "
 				    "physical device has been detached, packet dropped 0p%p->0p%p len=%d type=%d dev=%s->NULL ",
@@ -758,7 +782,7 @@ ipsec_tunnel_hard_header(struct sk_buff *skb, struct net_device *dev,
 	tmp = skb->dev;
 	skb->dev = prv->dev;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
-       ret = prv->header_ops->create(skb, prv->dev, type, (void *)daddr, (void *)saddr, len);
+	ret = prv->header_ops->create(skb, prv->dev, type, (void *)daddr, (void *)saddr, len);
 #else
 	ret = prv->hard_header(skb, prv->dev, type, (void *)daddr, (void *)saddr, len);
 #endif
@@ -804,6 +828,7 @@ ipsec_tunnel_rebuild_header(void *buff, struct net_device *dev,
 		stats->tx_dropped++;
 		return -ENODEV;
 	}
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
 	if(!prv->header_ops->rebuild)
 #else
@@ -850,11 +875,11 @@ ipsec_tunnel_rebuild_header(void *buff, struct net_device *dev,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
 	ret = prv->header_ops->rebuild(skb);
 #else
-# ifdef NET_21
+#ifdef NET_21
 	ret = prv->rebuild_header(skb);
-# else /* NET_21 */
+#else /* NET_21 */
 	ret = prv->rebuild_header(buff, prv->dev, raddr, skb);
-# endif /* NET_21 */
+#endif /* NET_21 */
 #endif
 	skb->dev = tmp;
 	return ret;
@@ -963,7 +988,8 @@ ipsec_tunnel_cache_bind(struct hh_cache **hhp, struct net_device *dev,
 
 
 DEBUG_NO_STATIC void
-ipsec_tunnel_cache_update(struct hh_cache *hh, struct net_device *dev, unsigned char *  haddr)
+ipsec_tunnel_cache_update(struct hh_cache *hh, const struct net_device *dev,
+				const unsigned char *  haddr)
 {
 	struct ipsecpriv *prv = dev->priv;
 	
@@ -1000,7 +1026,7 @@ ipsec_tunnel_cache_update(struct hh_cache *hh, struct net_device *dev, unsigned 
 #else
 	if(!prv->header_cache_update)
 #endif
-       {
+	{
 		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
 			    "klips_debug:ipsec_tunnel_cache_update: "
 			    "physical device has been detached, cannot set - skb->dev=%s->NULL\n",
@@ -1021,9 +1047,9 @@ ipsec_tunnel_cache_update(struct hh_cache *hh, struct net_device *dev, unsigned 
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
 const struct header_ops ipsec_tunnel_header_ops = {
-	.create         = ipsec_tunnel_hard_header,
-	.rebuild        = ipsec_tunnel_rebuild_header,
-	.cache_update   = ipsec_tunnel_cache_update,
+	.create		= ipsec_tunnel_hard_header,
+	.rebuild	= ipsec_tunnel_rebuild_header,
+	.cache_update	= ipsec_tunnel_cache_update,
 };
 #endif
 
@@ -1120,7 +1146,7 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 	} else
 		dev->header_cache_update = NULL;
 #endif
-
+	
 	if (physdev->set_mac_address) {
 		prv->set_mac_address = physdev->set_mac_address;
 		dev->set_mac_address = ipsec_tunnel_set_mac_address;
@@ -1204,7 +1230,7 @@ ipsec_tunnel_detach(struct net_device *dev)
 #ifndef NET_21
 	prv->header_cache_bind = NULL;
 #else
-/*     prv->neigh_setup        = NULL; */
+/*	prv->neigh_setup        = NULL; */
 #endif
 #endif
 	prv->set_mac_address = NULL;
@@ -1226,7 +1252,7 @@ ipsec_tunnel_detach(struct net_device *dev)
 	dev->set_mac_address = NULL;
 	dev->mtu = 0;
 #endif /* DETACH_AND_DOWN */
-
+	
 	prv->mtu = 0;
 	for (i=0; i<MAX_ADDR_LEN; i++) {
 		dev->dev_addr[i] = 0;
@@ -1595,7 +1621,7 @@ ipsec_tunnel_init(struct net_device *dev)
 	dev->set_multicast_list = NULL;
 	dev->do_ioctl		= ipsec_tunnel_ioctl;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
-	dev->header_ops         = NULL;
+	dev->header_ops		= NULL;
 #else
 	dev->hard_header	= NULL;
 	dev->rebuild_header 	= NULL;
@@ -1643,7 +1669,6 @@ static void ipsec_tunnel_netdev_setup(struct net_device *dev)
 
 struct net_device *ipsecdevices[IPSEC_NUM_IFMAX];
 int ipsecdevices_max=-1;
-
 
 int
 ipsec_tunnel_createnum(int ifnum)
@@ -1803,7 +1828,6 @@ ipsec_tunnel_get_device(int vifnum)
 	}
 }
 
-
 /* void */
 int
 ipsec_tunnel_cleanup_devices(void)
@@ -1827,11 +1851,15 @@ ipsec_tunnel_cleanup_devices(void)
 			    atomic_read(&dev_ipsec->refcnt));
 		unregister_netdev(dev_ipsec);
 		KLIPS_PRINT(debug_tunnel, "Unregisted %s\n", dev_ipsec->name);
+#ifdef alloc_netdev
+		free_netdev(dev_ipsec);
+#else
 #ifndef NETDEV_23
 		kfree(dev_ipsec->name);
 		dev_ipsec->name=NULL;
 #endif /* !NETDEV_23 */
 		kfree(dev_ipsec->priv);
+#endif /* alloc_netdev */
 		dev_ipsec->priv=NULL;
 	}
 	return error;
@@ -1848,12 +1876,21 @@ static kmem_cache_t *ixs_cache_allocator = NULL;
 #endif
 static unsigned  ixs_cache_allocated_count = 0;
 
+#if !defined(MODULE_PARM) && defined(module_param)
+/*
+ * As of 2.6.17 MODULE_PARM no longer exists, use module_param instead.
+ */
+#define	MODULE_PARM(a,b)	module_param(a,int,0644)
+#endif
+
+int ipsec_ixs_cache_allocated_count_max = 1000;
+MODULE_PARM(ipsec_ixs_cache_allocated_count_max, "i");
+MODULE_PARM_DESC(ipsec_ixs_cache_allocated_count_max,
+	"Maximum outstanding transmit packets");
+
 int
 ipsec_xmit_state_cache_init (void)
 {
-#ifdef HAVE_KMEM_CACHE_MACRO
-	struct ipsec_xmit_state ipsec_ixs;
-#endif
         if (ixs_cache_allocator)
                 return -EBUSY;
 
@@ -1887,12 +1924,21 @@ ipsec_xmit_state_cache_cleanup (void)
         ixs_cache_allocated_count = 0;
 }
 
-static struct ipsec_xmit_state *
+struct ipsec_xmit_state *
 ipsec_xmit_state_new (void)
 {
 	struct ipsec_xmit_state *ixs;
 
         spin_lock_bh (&ixs_cache_lock);
+
+	if (ixs_cache_allocated_count >= ipsec_ixs_cache_allocated_count_max) {
+		spin_unlock_bh (&ixs_cache_lock);
+		KLIPS_PRINT(debug_tunnel,
+			"klips_debug:ipsec_xmit_state_new: "
+			"exceeded maximum outstanding TX packet cnt %d\n",
+			ixs_cache_allocated_count);
+		return NULL;
+	}
 
         ixs = kmem_cache_alloc (ixs_cache_allocator, GFP_ATOMIC);
 
@@ -1905,13 +1951,39 @@ ipsec_xmit_state_new (void)
                 goto bail;
 
         // initialize the object
-        memset((caddr_t)ixs, 0, sizeof(*ixs));
+#if 1 /* optimised to only clear the required bits */
+		memset((caddr_t)ixs, 0, sizeof(*ixs));
+#else
+		ixs->pass = 0;
+		ixs->state = 0;
+		ixs->next_state = 0;
+		ixs->ipsp = NULL;
+		ixs->sa_len = 0;
+		ixs->stats = NULL;
+		ixs->ips.ips_ident_s.data = NULL;
+		ixs->ips.ips_ident_d.data = NULL;
+		ixs->outgoing_said.proto = 0;
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+		ixs->natt_type = 0, ixs->natt_head = 0;
+		ixs->natt_sport = 0, ixs->natt_dport = 0;
+#endif
+		ixs->tot_headroom = 0;
+		ixs->tot_tailroom = 0;
+		ixs->eroute = NULL;
+		ixs->hard_header_stripped = 0;
+		ixs->hard_header_len = 0;
+		ixs->cur_mtu = 0; /* FIXME: can we do something better ? */
+
+		ixs->oskb = NULL;
+		ixs->saved_header = NULL;	/* saved copy of the hard header */
+		ixs->route = NULL;
+#endif /* memset */
 
 bail:
         return ixs;
 }
 
-static void
+void
 ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs)
 {
         if (unlikely (! ixs))
@@ -1926,7 +1998,6 @@ ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs)
 }
 
 /*
- *
  * Local Variables:
  * c-style: linux
  * End:

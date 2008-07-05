@@ -98,7 +98,7 @@ struct ipsec_alg_enc {
 	int (*ixt_e_set_key)(struct ipsec_alg_enc *alg, __u8 *key_e, const __u8 *key, size_t keysize);
 	__u8 *(*ixt_e_new_key)(struct ipsec_alg_enc *alg, const __u8 *key, size_t keysize);
 	void (*ixt_e_destroy_key)(struct ipsec_alg_enc *alg, __u8 *key_e);
-	int (*ixt_e_cbc_encrypt)(struct ipsec_alg_enc *alg, __u8 *key_e, __u8 *in, int ilen, const __u8 *iv, int encrypt);
+	int (*ixt_e_cbc_encrypt)(struct ipsec_alg_enc *alg, __u8 *key_e, __u8 *in, int ilen, __u8 *iv, int encrypt);
 };
 struct ipsec_alg_auth {
 	struct ipsec_alg ixt_common;
@@ -155,7 +155,7 @@ int ipsec_alg_enc_key_create(struct ipsec_sa *sa_p);
  * 	ipsec_alg_esp_encrypt(): encrypt ilen bytes in idat returns
  * 	0 or ERR<0
  */
-int ipsec_alg_esp_encrypt(struct ipsec_sa *sa_p, __u8 *idat, int ilen, const __u8 *iv, int action);
+int ipsec_alg_esp_encrypt(struct ipsec_sa *sa_p, __u8 *idat, int ilen, __u8 *iv, int action);
 
 /***************************************************************
  *

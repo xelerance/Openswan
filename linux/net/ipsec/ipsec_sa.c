@@ -77,6 +77,8 @@
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
 
+#include "ipsec_ocf.h"
+
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
@@ -1030,12 +1032,14 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 	ips->ips_key_a = NULL;
 
 	if(ips->ips_key_e != NULL) {
+#ifdef CONFIG_KLIPS_ALG
 		if (ips->ips_alg_enc &&
 		    ips->ips_alg_enc->ixt_e_destroy_key)
 		{
 			ips->ips_alg_enc->ixt_e_destroy_key(ips->ips_alg_enc, 
 							    ips->ips_key_e);
 		} else
+#endif
 		{
 			memset((caddr_t)(ips->ips_key_e), 0, ips->ips_key_e_size);
 			kfree(ips->ips_key_e);
@@ -1048,6 +1052,11 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 		kfree(ips->ips_iv);
 	}
 	ips->ips_iv = NULL;
+
+#ifdef CONFIG_KLIPS_OCF
+	if (ips->ocf_in_use)
+		ipsec_ocf_sa_free(ips);
+#endif
 
 	if(ips->ips_ident_s.data != NULL) {
 		memset((caddr_t)(ips->ips_ident_s.data),
@@ -1065,9 +1074,11 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
         }
 	ips->ips_ident_d.data = NULL;
 
+#ifdef CONFIG_KLIPS_ALG
 	if (ips->ips_alg_enc||ips->ips_alg_auth) {
 		ipsec_alg_sa_wipe(ips);
 	}
+#endif
 	
 	BUG_ON(atomic_read(&ips->ips_refcount) != 0);
 
@@ -1082,7 +1093,6 @@ extern int sysctl_ipsec_debug_verbose;
 
 int ipsec_sa_init(struct ipsec_sa *ipsp)
 {
-        int i;
         int error = 0;
         char sa[SATOT_BUF];
 	size_t sa_len;
@@ -1091,8 +1101,11 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 #if defined (CONFIG_KLIPS_AUTH_HMAC_MD5) || defined (CONFIG_KLIPS_AUTH_HMAC_SHA1)
 	unsigned char kb[AHMD596_BLKLEN];
 #endif
+#ifdef CONFIG_KLIPS_ALG
 	struct ipsec_alg_enc *ixt_e = NULL;
 	struct ipsec_alg_auth *ixt_a = NULL;
+        int i;
+#endif
 
 	if(ipsp == NULL) {
 		KLIPS_PRINT(debug_pfkey,
@@ -1134,8 +1147,13 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 
 #ifdef CONFIG_KLIPS_AH
 	case IPPROTO_AH:
-		ipsp->ips_xformfuncs = ah_xform_funcs;
 
+#ifdef CONFIG_KLIPS_OCF
+		if (ipsec_ocf_sa_init(ipsp, ipsp->ips_authalg, 0))
+		    break;
+#endif
+
+		ipsp->ips_xformfuncs = ah_xform_funcs;
 		switch(ipsp->ips_authalg) {
 # ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 		case AH_MD5: {
@@ -1317,6 +1335,12 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 		unsigned int aks;
 #endif
 
+#ifdef CONFIG_KLIPS_OCF
+		if (ipsec_ocf_sa_init(ipsp, ipsp->ips_authalg, ipsp->ips_encalg))
+		    break;
+#endif
+
+#ifdef CONFIG_KLIPS_ALG
 		ipsec_alg_sa_init(ipsp);
 		ixt_e=ipsp->ips_alg_enc;
 
@@ -1351,6 +1375,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 			if ((error=ipsec_alg_auth_key_create(ipsp)) < 0)
 				SENDERR(-error);
 		} else	
+#endif /* CONFIG_KLIPS_ALG */
 		
 		switch(ipsp->ips_authalg) {
 # ifdef CONFIG_KLIPS_AUTH_HMAC_MD5

@@ -2,6 +2,9 @@
  * @(#) RFC2367 PF_KEYv2 Key management API message parser
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs <rgb@freeswan.org>
  * 
+ * OCF support written by David McCullough <dmccullough@cyberguard.com>
+ * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -87,6 +90,8 @@
 #include "openswan/ipsec_alg.h"
 
 #include "openswan/ipsec_kern24.h"
+
+#include "ipsec_ocf.h"
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 

@@ -46,6 +46,10 @@
 #include <linux/version.h>
 #include <openswan.h>
 
+#ifdef CONFIG_KLIPS_OCF
+#include <cryptodev.h>
+#endif
+
 #define IPSEC_BIRTH_TEMPLATE_MAXLEN 256
 
 struct ipsec_birth_reply {
@@ -57,6 +61,7 @@ extern struct ipsec_birth_reply ipsec_ipv4_birth_packet;
 extern struct ipsec_birth_reply ipsec_ipv6_birth_packet;
 
 enum ipsec_rcv_value {
+	IPSEC_RCV_PENDING=2,
 	IPSEC_RCV_LASTPROTO=1,
 	IPSEC_RCV_OK=0,
 	IPSEC_RCV_BADPROTO=-1,
@@ -75,14 +80,34 @@ enum ipsec_rcv_value {
 	IPSEC_RCV_REPLAYFAILED=-15,
 	IPSEC_RCV_AUTHFAILED=-16,
 	IPSEC_RCV_REPLAYROLLED=-17,
-	IPSEC_RCV_BAD_DECRYPT=-18
+	IPSEC_RCV_BAD_DECRYPT=-18,
+	IPSEC_RCV_REALLYBAD=-19
 };
+
+/*
+ * state machine states
+ */
+
+#define IPSEC_RSM_INIT			0	/* make it easy, starting state is 0 */
+#define	IPSEC_RSM_DECAP_INIT	1
+#define	IPSEC_RSM_DECAP_LOOKUP	2
+#define	IPSEC_RSM_AUTH_INIT		3
+#define	IPSEC_RSM_AUTH_DECAP	4
+#define	IPSEC_RSM_AUTH_CALC		5
+#define	IPSEC_RSM_AUTH_CHK		6
+#define	IPSEC_RSM_DECRYPT		7
+#define	IPSEC_RSM_DECAP_CONT	8	/* do we restart at IPSEC_RSM_DECAP_INIT */
+#define	IPSEC_RSM_CLEANUP		9
+#define	IPSEC_RSM_IPCOMP		10
+#define	IPSEC_RSM_COMPLETE		11
+#define IPSEC_RSM_DONE 			100
 
 struct ipsec_rcv_state {
 	struct sk_buff *skb;
 	struct net_device_stats *stats;
 	struct iphdr    *ipp;          /* the IP header */
 	struct ipsec_sa *ipsp;         /* current SA being processed */
+	struct ipsec_sa *lastipsp;     /* last SA that was processed */
 	int len;                       /* length of packet */
 	int ilen;                      /* length of inner payload (-authlen) */
 	int authlen;                   /* how big is the auth data at end */
@@ -118,7 +143,44 @@ struct ipsec_rcv_state {
 	__u16		natt_dport;
 	int             natt_len; 
 #endif  
+
+	/*
+	 * rcv state machine use
+	 */
+	int		state;
+	int		next_state;
+	int		auth_checked;
+
+#ifdef CONFIG_KLIPS_OCF
+	struct work_struct	workq;
+#ifdef DECLARE_TASKLET
+	struct tasklet_struct	tasklet;
+#endif
+#endif
+#ifndef NET_21
+	struct net_device *devp;
+	struct inet_protocol *protop;
+#endif
+	struct xform_functions *proto_funcs;
+	__u8 proto;
+	int replay;
+	unsigned char *authenticator;
+	int esphlen;
+#ifdef CONFIG_KLIPS_ALG
+	struct ipsec_alg_auth *ixt_a;
+#endif
+	__u8 ttl, tos;
+	__u16 frag_off, check;
 };
+
+extern void ipsec_rsm(struct ipsec_rcv_state *irs);
+#ifdef HAVE_KMEM_CACHE_T
+extern kmem_cache_t *ipsec_irs_cache;
+#else
+extern struct kmem_cache *ipsec_irs_cache;
+#endif
+extern int ipsec_irs_max;
+extern atomic_t ipsec_irs_cnt;
 
 extern int
 #ifdef PROTO_HANDLER_SINGLE_PARM

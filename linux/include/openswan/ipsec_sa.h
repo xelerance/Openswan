@@ -218,6 +218,9 @@ struct ipsec_sa
 #endif
 	struct ipsec_alg_enc *ips_alg_enc;
 	struct ipsec_alg_auth *ips_alg_auth;
+
+	int		ocf_in_use;
+	int64_t		ocf_cryptoid;
 };
 
 struct IPsecSArefSubTable

@@ -90,6 +90,10 @@
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
 
+#ifdef CONFIG_KLIPS_OCF
+#include "ipsec_ocf.h"
+#endif
+
 #include <openswan/pfkeyv2.h>
 #include <openswan/pfkey.h>
 
@@ -117,7 +121,6 @@ MODULE_LICENSE("GPL");
 #endif
 
 struct prng ipsec_prng;
-
 
 #if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
 xfrm4_rcv_encap_t klips_old_encap = NULL;
@@ -284,18 +287,22 @@ ipsec_klips_init(void)
 	}
 #endif	
 
-
 #ifdef CONFIG_SYSCTL
         error |= ipsec_sysctl_register();
         if (error)
                 goto error_sysctl_register;
 #endif                                                                          
 
+#ifdef CONFIG_KLIPS_ALG
 	ipsec_alg_init();
+#endif
+
+#ifdef CONFIG_KLIPS_OCF
+	ipsec_ocf_init();
+#endif
 
 	get_random_bytes((void *)seed, sizeof(seed));
 	prng_init(&ipsec_prng, seed, sizeof(seed));
-
 	return error;
 
         // undo ipsec_sysctl_register
@@ -407,11 +414,8 @@ ipsec_cleanup(void)
 		    "calling pfkey_cleanup.\n");
 	error |= pfkey_cleanup();
 
-        ipsec_rcv_state_cache_cleanup ();
-        ipsec_xmit_state_cache_cleanup ();
-
-        ipsec_rcv_state_cache_cleanup ();
-        ipsec_xmit_state_cache_cleanup ();
+	ipsec_rcv_state_cache_cleanup ();
+	ipsec_xmit_state_cache_cleanup ();
 
 	ipsec_proc_cleanup();
 

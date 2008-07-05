@@ -62,6 +62,7 @@ obj-${CONFIG_KLIPS} += ipsec.o
 ipsec-objs += ${base-klips-objs}
 
 ipsec-$(CONFIG_KLIPS_ESP)     += ipsec_esp.o
+ipsec-$(CONFIG_KLIPS_OCF)     += ipsec_ocf.o
 ipsec-$(CONFIG_KLIPS_IPCOMP)  += ipsec_ipcomp.o
 ipsec-$(CONFIG_KLIPS_AUTH_HMAC_MD5)  += ipsec_md5c.o
 ipsec-$(CONFIG_KLIPS_AUTH_HMAC_SHA1) += ipsec_sha1.o
@@ -69,7 +70,7 @@ ipsec-$(CONFIG_KLIPS_AUTH_HMAC_SHA1) += ipsec_sha1.o
 # AH, if you really think you need it.
 ipsec-$(CONFIG_KLIPS_AH)   += ipsec_ah.o
 
-ipsec-y += ipsec_alg.o 
+ipsec-$(CONFIG_KLIPS_ALG) += ipsec_alg.o 
 
 # include code from DES subdir
 crypto-$(CONFIG_KLIPS_ENC_3DES) += des/ipsec_alg_3des.o
@@ -140,6 +141,7 @@ base-ipcomp-objs += ${asm-ipcomp-obj-y}
 ipsec-$(CONFIG_KLIPS_IPCOMP) += ${base-ipcomp-objs}
 
 EXTRA_CFLAGS += -DIPCOMP_PREFIX -DKLIPS
+EXTRA_CFLAGS += -Icrypto/ocf
 
 #
 # $Log: Makefile.fs2_6,v $

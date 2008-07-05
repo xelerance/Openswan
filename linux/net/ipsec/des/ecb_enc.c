@@ -116,6 +116,13 @@ int enc;
 	register unsigned char *in,*out;
 	DES_LONG ll[2];
 
+#ifdef OCF_ASSIST
+	if (ocf_des_assist() & OCF_PROVIDES_DES_3DES) {
+		ocf_des_ecb_encrypt(input, output, ks, enc);
+		return;
+	}
+#endif
+
 	in=(unsigned char *)input;
 	out=(unsigned char *)output;
 	c2l(in,l); ll[0]=l;

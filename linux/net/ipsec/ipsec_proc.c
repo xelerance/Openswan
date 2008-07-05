@@ -127,8 +127,10 @@ int sysctl_ipsec_tos = 0;
 
 #define DECREMENT_UNSIGNED(X, amount) ((amount < (X)) ? (X)-amount : 0)
 
+#ifdef CONFIG_KLIPS_ALG
 extern int ipsec_xform_get_info(char *buffer, char **start,
 				off_t offset, int length IPSEC_PROC_LAST_ARG);
+#endif
 
 IPSEC_PROCFS_DEBUG_NO_STATIC
 int
@@ -236,6 +238,16 @@ ipsec_spi_get_info(char *buffer,
 				len += ipsec_snprintf(buffer+len, length-len, " iv_bits=%dbits iv=0x",
 					       sa_p->ips_iv_bits);
 
+#ifdef CONFIG_KLIPS_OCF
+				if (!sa_p->ips_iv) {
+					/* ocf doesn't set the IV, fake it for the UML tests */
+					len += ipsec_snprintf(buffer+len, length-len, "0cf0");
+					for (j = 0; j < (sa_p->ips_iv_bits / 8) - 2; j++) {
+						len += ipsec_snprintf(buffer+len, length-len, "%02x",
+								   (int) ((((long)sa_p) >> j) & 0xff));
+					}
+				} else
+#endif
 				for(j = 0; j < sa_p->ips_iv_bits / 8; j++) {
 					len += ipsec_snprintf(buffer+len, length-len, "%02x",
 						       (__u32)((__u8*)(sa_p->ips_iv))[j]);
@@ -869,7 +881,10 @@ static struct ipsec_proc_list proc_items[]={
 	{"ipv4",       &proc_birth_dir,     NULL,             ipsec_birth_info, ipsec_birth_set, (void *)&ipsec_ipv4_birth_packet},
 	{"ipv6",       &proc_birth_dir,     NULL,             ipsec_birth_info, ipsec_birth_set, (void *)&ipsec_ipv6_birth_packet},
 	{"tncfg",      &proc_net_ipsec_dir, NULL,             ipsec_tncfg_get_info,      NULL, NULL},
+#ifdef CONFIG_KLIPS_ALG
+
 	{"xforms",     &proc_net_ipsec_dir, NULL,             ipsec_xform_get_info,      NULL, NULL},
+#endif
 	{"stats",      &proc_net_ipsec_dir, &proc_stats_dir,  NULL,      NULL, NULL},
 	{"trap_count", &proc_stats_dir,     NULL,             ipsec_stats_get_int_info, NULL, &ipsec_xmit_trap_count},
 	{"trap_sendcount", &proc_stats_dir, NULL,             ipsec_stats_get_int_info, NULL, &ipsec_xmit_trap_sendcount},

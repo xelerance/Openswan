@@ -67,6 +67,10 @@
 #include "ocf_pk.h"
 #endif
 
+#ifdef HAVE_OCF_AND_OPENSSL
+#include "ocf_cryptodev.h"
+#endif
+
 /* chained lists of X.509 host/user and ca certificates and crls */
 
 static x509cert_t *x509certs   = NULL;

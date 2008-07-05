@@ -63,6 +63,8 @@
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_proto.h"
 
+#include "ipsec_ocf.h"
+
 __u32 zeroes[AH_AMAX];
 
 enum ipsec_rcv_value
@@ -135,6 +137,11 @@ ipsec_rcv_ah_authcalc(struct ipsec_rcv_state *irs,
 	} tctx;
 	struct iphdr ipo;
 	int ahhlen;
+
+#ifdef CONFIG_KLIPS_OCF
+	if (irs->ipsp->ocf_in_use)
+		return(ipsec_ocf_rcv(irs));
+#endif
 
 	aa = irs->authfuncs;
 
@@ -224,6 +231,7 @@ ipsec_xmit_ah_setup(struct ipsec_xmit_state *ixs)
 {
   struct iphdr ipo;
   struct ahhdr *ahp;
+#if defined(CONFIG_KLIPS_AUTH_HMAC_MD5) || defined(CONFIG_KLIPS_AUTH_HMAC_SHA1)
   __u8 hash[AH_AMAX];
   union {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
@@ -233,6 +241,7 @@ ipsec_xmit_ah_setup(struct ipsec_xmit_state *ixs)
     SHA1_CTX sha1;
 #endif /* CONFIG_KLIPS_AUTH_HMAC_SHA1 */
   } tctx;
+#endif
   unsigned char *dat = (unsigned char *)ixs->iph;
 
   ahp = (struct ahhdr *)(dat + ixs->iphlen);

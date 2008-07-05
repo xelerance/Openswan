@@ -256,7 +256,7 @@ static void ipsec_alg_put(struct ipsec_alg *ixt) {
  * 	ipsec_tunnel_start_xmit with encrypt=IPSEC_ALG_ENCRYPT
  */
 int ipsec_alg_esp_encrypt(struct ipsec_sa *sa_p, __u8 * idat,
-			  int ilen, const __u8 * iv, int encrypt)
+			  int ilen, __u8 * iv, int encrypt)
 {
 	int ret;
 	struct ipsec_alg_enc *ixt_e=sa_p->ips_alg_enc;

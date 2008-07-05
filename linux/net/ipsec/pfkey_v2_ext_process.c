@@ -84,6 +84,10 @@
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
 
+#ifdef CONFIG_KLIPS_OCF
+#include "ipsec_ocf.h"
+#endif
+
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
 /* returns 0 on success */
@@ -140,11 +144,21 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	case IPPROTO_AH:
 		ipsp->ips_authalg = pfkey_sa->sadb_sa_auth;
 		ipsp->ips_encalg = K_SADB_EALG_NONE;
+#ifdef CONFIG_KLIPS_OCF
+		if (ipsec_ocf_sa_init(ipsp, ipsp->ips_authalg, 0))
+		    break;
+#endif
 		break;
 	case IPPROTO_ESP:
 		ipsp->ips_authalg = pfkey_sa->sadb_sa_auth;
 		ipsp->ips_encalg = pfkey_sa->sadb_sa_encrypt;
+#ifdef CONFIG_KLIPS_OCF
+		if (ipsec_ocf_sa_init(ipsp, ipsp->ips_authalg, ipsp->ips_encalg))
+		    break;
+#endif
+#ifdef CONFIG_KLIPS_ALG
 		ipsec_alg_sa_init(ipsp);
+#endif
 		break;
 	case IPPROTO_IPIP:
 		ipsp->ips_authalg = AH_NONE;

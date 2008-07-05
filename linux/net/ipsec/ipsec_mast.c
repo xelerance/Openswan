@@ -192,13 +192,9 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 		return IPSEC_XMIT_PUSHPULLERR;
 	}
 	__skb_pull(ixs->skb, ixs->skb->nh.raw - ixs->skb->data);
-#ifdef SKB_RESET_NFCT
-	nf_conntrack_put(ixs->skb->nfct);
-	ixs->skb->nfct = NULL;
-#ifdef CONFIG_NETFILTER_DEBUG
-	ixs->skb->nf_debug = 0;
-#endif /* CONFIG_NETFILTER_DEBUG */
-#endif /* SKB_RESET_NFCT */
+
+	ipsec_nf_reset(ixs->skb);
+
 	KLIPS_PRINT(debug_mast & DB_MAST_XMIT,
 		    "klips_debug:ipsec_xmit_send: "
 		    "...done, calling ip_send() on device:%s\n",
@@ -228,6 +224,46 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 }
 #endif
 
+static void
+ipsec_mast_xsm_complete(
+	struct ipsec_xmit_state *ixs,
+	enum ipsec_xmit_value stat)
+{
+	if (stat != IPSEC_XMIT_OK) {
+		KLIPS_PRINT(debug_mast,
+				"klips_debug:ipsec_mast_xsm_complete: ipsec_xsm failed: %d\n",
+				stat);
+		goto cleanup;
+	}
+
+	/* do any final NAT-encapsulation */
+	stat = ipsec_nat_encap(ixs);
+	if(stat != IPSEC_XMIT_OK) {
+		goto cleanup;
+	}
+
+	/* now send the packet again */
+	{
+		struct flowi fl;
+		
+		memset(&fl, 0, sizeof(fl));
+		ipsec_xmit_send(ixs, &fl);
+	}
+
+cleanup:
+	ipsec_xmit_cleanup(ixs);
+
+	if(ixs->ipsp) {
+		ipsec_sa_put(ixs->ipsp);
+		ixs->ipsp=NULL;
+	}
+	if(ixs->skb) {
+		ipsec_kfree_skb(ixs->skb);
+		ixs->skb=NULL;
+	}
+	ipsec_xmit_state_delete(ixs);
+}
+
 /*
  *	This function assumes it is being called from dev_queue_xmit()
  *	and that skb is filled properly by that function.
@@ -235,9 +271,7 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 int
 ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
-	struct ipsec_xmit_state ixs_mem;
-	struct ipsec_xmit_state *ixs = &ixs_mem;
-	enum ipsec_xmit_value stat = IPSEC_XMIT_OK;
+	struct ipsec_xmit_state *ixs;
 	IPsecSAref_t SAref;
 
 	if(skb == NULL) {
@@ -245,7 +279,11 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		return 0;
 	}
 		
-	memset(&ixs_mem, 0, sizeof(struct ipsec_xmit_state));
+	ixs = ipsec_xmit_state_new();
+	if(ixs == NULL) {
+		printk("mast failed to allocate IXS\n");
+		return 0;
+	}
 
 	ixs->skb = skb;
 	SAref = 0;
@@ -282,40 +320,12 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	ixs->cur_mtu = 1460;
 	ixs->physmtu = 1460;
 
-	stat = ipsec_xmit_encap_bundle_2(ixs);
+	ixs->xsm_complete = ipsec_mast_xsm_complete;
+	ixs->state = IPSEC_XSM_INIT2;	/* we start later in the process */
 
-	if(stat != IPSEC_XMIT_OK) {
-		/* SA processing failed */
-		/* log it somehow */
-		goto failed;
-	}
-
-	/* do any final NAT-encapsulation */
-	stat = ipsec_nat_encap(ixs);
-	if(stat != IPSEC_XMIT_OK) {
-		goto failed;
-	}
-
-	/* now send the packet again */
-	{
-		struct flowi fl;
-		
-		memset(&fl, 0, sizeof(fl));
-		ipsec_xmit_send(ixs, &fl);
-	}
-
-failed:
-	ipsec_xmit_cleanup(ixs);
-
-	if(ixs->ipsp) {
-		ipsec_sa_put(ixs->ipsp);
-		ixs->ipsp=NULL;
-	}
-	if(ixs->skb) {
-		ipsec_kfree_skb(ixs->skb);
-		ixs->skb=NULL;
-	}
+	ipsec_xsm(ixs);
 	return 0;
+
 }
 
 DEBUG_NO_STATIC struct net_device_stats *
@@ -685,6 +695,11 @@ ipsec_mast_probe(struct net_device *dev)
 	return 0;
 }
 
+#ifdef alloc_netdev
+static void ipsec_mast_netdev_setup(struct net_device *dev)
+{
+}
+#endif
 struct net_device *mastdevices[IPSEC_NUM_IFMAX];
 int mastdevices_max=-1;
 
@@ -692,6 +707,7 @@ int ipsec_mast_createnum(int vifnum)
 {
 	struct net_device *im;
 	int vifentry;
+	char name[IFNAMSIZ];
 
 	if(vifnum > IPSEC_NUM_IFMAX) {
 		return -ENOENT;
@@ -706,19 +722,24 @@ int ipsec_mast_createnum(int vifnum)
 		mastdevices_max=vifnum;
 	}
 	vifentry = vifnum;
+
+	snprintf(name, IFNAMSIZ, MAST_DEV_FORMAT, vifnum);
 	
+#ifdef alloc_netdev
+	im = alloc_netdev(0, name, ipsec_mast_netdev_setup);
+#else
 	im = (struct net_device *)kmalloc(sizeof(struct net_device),GFP_KERNEL);
+#endif
 	if(im == NULL) {
 		printk(KERN_ERR "failed to allocate space for mast%d device\n", vifnum);
 		return -ENOMEM;
 	}
-		
-	memset((caddr_t)im, 0, sizeof(struct net_device));
-	snprintf(im->name, IFNAMSIZ, MAST_DEV_FORMAT, vifnum);
 
-#ifdef HAVE_NEXT_DEV
-	im->next = NULL;
+#ifndef alloc_netdev
+	memset((caddr_t)im, 0, sizeof(struct net_device));
+	memcpy(im->name, name, IFNAMSIZ);
 #endif
+		
 	im->init = ipsec_mast_probe;
 
 	if(register_netdev(im) != 0) {

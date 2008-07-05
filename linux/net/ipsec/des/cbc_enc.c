@@ -73,6 +73,13 @@ int enc;
 	DES_LONG tin[2];
 	unsigned char *iv;
 
+#ifdef OCF_ASSIST
+	if (ocf_des_assist() & OCF_PROVIDES_DES_3DES) {
+		ocf_des_cbc_encrypt(input, output, length, schedule, ivec, enc);
+		return;
+	}
+#endif
+
 	in=(unsigned char *)input;
 	out=(unsigned char *)output;
 	iv=(unsigned char *)ivec;

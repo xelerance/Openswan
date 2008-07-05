@@ -65,7 +65,7 @@ struct ipsecpriv
 	int  (*hard_start_xmit) (struct sk_buff *skb,
 		struct net_device *dev);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
-	struct header_ops *header_ops;
+	const struct header_ops *header_ops;
 #else
 
 	int  (*hard_header) (struct sk_buff *skb,
@@ -131,6 +131,8 @@ extern struct net_device *ipsec_tunnel_get_device(int vifnum);
 /* manage ipsec xmit state objects */
 extern int ipsec_xmit_state_cache_init (void);
 extern void ipsec_xmit_state_cache_cleanup (void);
+struct ipsec_xmit_state *ipsec_xmit_state_new (void);
+void ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs);
 
 /*
  * $Log: ipsec_tunnel.h,v $

@@ -44,6 +44,8 @@ bool '   IPsec: IP Compression' CONFIG_KLIPS_IPCOMP
 
 bool '   IPsec Debugging Option' CONFIG_KLIPS_DEBUG
 
+bool '   IPsec: OCF HW Acceleration support' CONFIG_KLIPS_OCF
+
 #
 #
 # $Log: Config.in.os2_4,v $

@@ -90,7 +90,7 @@ static int _3des_set_key(struct ipsec_alg_enc *alg,
 
 static int _3des_cbc_encrypt(struct ipsec_alg_enc *alg,
 			     __u8 * key_e,
-			     __u8 * in,
+			     const __u8 * in,
 			     int ilen, const __u8 * iv,
 			     int encrypt)
 {
