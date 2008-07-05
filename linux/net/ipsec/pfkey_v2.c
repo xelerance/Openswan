@@ -1108,6 +1108,10 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 #ifndef  PROC_NO_DUMMY
 , int dummy
 #endif /* !PROC_NO_DUMMY */
+#ifdef  PROC_EOF_DATA
+, int *eof
+, void *data
+#endif
 )
 {
 	const int max_content = length > 0? length-1 : 0;	/* limit of useful snprintf output */
@@ -1203,6 +1207,10 @@ pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
 #ifndef  PROC_NO_DUMMY
 , int dummy
 #endif /* !PROC_NO_DUMMY */
+#ifdef  PROC_EOF_DATA
+, int *eof
+, void *data
+#endif
 )
 {
 	/* limit of useful snprintf output */
@@ -1263,6 +1271,10 @@ pfkey_registered_get_info(char *buffer, char **start, off_t offset, int length
 #ifndef  PROC_NO_DUMMY
 , int dummy
 #endif /* !PROC_NO_DUMMY */
+#ifdef  PROC_EOF_DATA
+, int *eof
+, void *data
+#endif
 )
 {
 	const int max_content = length > 0? length-1 : 0;	/* limit of useful snprintf output */
@@ -1406,6 +1418,10 @@ pfkey_init(void)
 {
 	int error = 0;
 	int i;
+#if HAVE_PROC_DIR_ENTRY
+	struct proc_dir_entry* entry;
+#endif
+
 	
 	static struct ipsec_alg_supported supported_init_ah[] = {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
@@ -1477,9 +1493,12 @@ pfkey_init(void)
 	proc_net_create ("pf_key_supported", 0, pfkey_supported_get_info);
 	proc_net_create ("pf_key_registered", 0, pfkey_registered_get_info);
 #    else
-	create_proc_entry ("pf_key", 0, init_net.proc_net);
-	create_proc_entry ("pf_key_supported", 0, init_net.proc_net);
-	create_proc_entry ("pf_key_registered", 0, init_net.proc_net);
+	entry = create_proc_entry ("pf_key", 0, init_net.proc_net);
+	entry->read_proc = pfkey_get_info;
+	entry = create_proc_entry ("pf_key_supported", 0, init_net.proc_net);
+	entry->read_proc = pfkey_supported_get_info;
+	entry = create_proc_entry ("pf_key_registered", 0, init_net.proc_net);
+	entry->read_proc = pfkey_registered_get_info;
 #    endif
 #  endif /* !PROC_FS_2325 */
 #endif /* CONFIG_PROC_FS */

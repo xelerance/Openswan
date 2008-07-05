@@ -311,6 +311,7 @@
    The unused flags argument has been removed and the order of the other
     two arguments has been reversed to match other slab functions. 
  */
+# define HAVE_PROC_DIR_ENTRY
 # define        PROC_NET        init_net.proc_net
 
 # define __ipsec_dev_get(x) __dev_get_by_name(&init_net, x)
