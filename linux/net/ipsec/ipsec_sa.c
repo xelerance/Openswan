@@ -641,13 +641,20 @@ __ipsec_sa_get(struct ipsec_sa *ips, const char *func, int line)
 
 	atomic_inc(&ips->ips_refcount);
 
+#if 0
+	/*
+	 * DAVIDM: if we include this code it means the SA is freed immediately
+	 * on creation and then reused ! Not sure why it is here.
+	*/
+
 	if(atomic_dec_and_test(&ips->ips_refcount)) {
 		KLIPS_PRINT(debug_xform,
-			    "ipsec_sa_put: freeing %p\n",
+			    "ipsec_sa_get: freeing %p\n",
 			    ips);
 		/* it was zero */
 		ipsec_sa_wipe(ips);
 	}
+#endif
 
         return ips;
 }
