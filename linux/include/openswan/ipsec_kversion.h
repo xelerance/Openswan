@@ -74,16 +74,6 @@
 # define IP_SELECT_IDENT
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,50)
-# if(LINUX_VERSION_CODE < KERNEL_VERSION(2,6,23) && defined(CONFIG_NETFILTER))
-#  define SKB_RESET_NFCT
-# elif LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,23)
-#  if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
-#   define SKB_RESET_NFCT
-#  endif
-# endif
-#endif
-
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,2)
 # define IP_SELECT_IDENT_NEW
 #endif
@@ -128,12 +118,28 @@
 #  define NET_26_12_SKALLOC
 # endif
 #endif
+#endif
 
 /* see <linux/security.h> */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,13)
 # define HAVE_SOCK_SECURITY
 /* skb->nf_debug disappared completely in 2.6.13 */
-# define HAVE_SKB_NF_DEBUG
+# define ipsec_nf_debug_reset(skb)	((skb)->nf_debug = 0)
+#else
+# define ipsec_nf_debug_reset(skb)
+#endif
+
+/* how to reset an skb we are reusing after encrpytion/decryption etc */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,17)
+# define ipsec_nf_reset(skb)	nf_reset((skb))
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,50) && defined(CONFIG_NETFILTER)
+# define ipsec_nf_reset(skb)	do { \
+									nf_conntrack_put((skb)->nfct); \
+									(skb)->nfct=NULL; \
+									ipsec_nf_debug_reset(skb); \
+								} while(0)
+#else
+# define ipsec_nf_reset(skb)	/**/
 #endif
 
 /* skb->stamp changed to skb->tstamp in 2.6.14 */
@@ -144,11 +150,11 @@
 # define HAVE_SKB_LIST 
 #endif
 
-#define SYSCTL_IPSEC_DEFAULT_TTL sysctl_ip_default_ttl                      
 /* it seems 2.6.14 accidentally removed sysctl_ip_default_ttl */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,14)
-# undef  SYSCTL_IPSEC_DEFAULT_TTL
 # define SYSCTL_IPSEC_DEFAULT_TTL IPSEC_DEFAULT_TTL
+#else
+# define SYSCTL_IPSEC_DEFAULT_TTL sysctl_ip_default_ttl                      
 #endif
 
 /*
@@ -331,6 +337,76 @@
 # endif
 #endif
 
+
+#ifdef NET_21
+# define ipsec_kfree_skb(a) kfree_skb(a)
+#else /* NET_21 */
+# define ipsec_kfree_skb(a) kfree_skb(a, FREE_WRITE)
+#endif /* NET_21 */
+
+#ifdef NETDEV_23
+
+#ifndef SPINLOCK
+#  include <linux/bios32.h>
+     /* simulate spin locks and read/write locks */
+     typedef struct {
+       volatile char lock;
+     } spinlock_t;
+
+     typedef struct {
+       volatile unsigned int lock;
+     } rwlock_t;                                                                     
+
+#  define spin_lock_init(x) { (x)->lock = 0;}
+#  define rw_lock_init(x) { (x)->lock = 0; }
+
+#  define spin_lock(x) { while ((x)->lock) barrier(); (x)->lock=1;}
+#  define spin_lock_irq(x) { cli(); spin_lock(x);}
+#  define spin_lock_irqsave(x,flags) { save_flags(flags); spin_lock_irq(x);}
+
+#  define spin_unlock(x) { (x)->lock=0;}
+#  define spin_unlock_irq(x) { spin_unlock(x); sti();}
+#  define spin_unlock_irqrestore(x,flags) { spin_unlock(x); restore_flags(flags);}
+
+#  define read_lock(x) spin_lock(x)
+#  define read_lock_irq(x) spin_lock_irq(x)
+#  define read_lock_irqsave(x,flags) spin_lock_irqsave(x,flags)
+
+#  define read_unlock(x) spin_unlock(x)
+#  define read_unlock_irq(x) spin_unlock_irq(x)
+#  define read_unlock_irqrestore(x,flags) spin_unlock_irqrestore(x,flags)
+
+#  define write_lock(x) spin_lock(x)
+#  define write_lock_irq(x) spin_lock_irq(x)
+#  define write_lock_irqsave(x,flags) spin_lock_irqsave(x,flags)
+
+#  define write_unlock(x) spin_unlock(x)
+#  define write_unlock_irq(x) spin_unlock_irq(x)
+#  define write_unlock_irqrestore(x,flags) spin_unlock_irqrestore(x,flags)
+#endif /* !SPINLOCK */
+
+#ifndef SPINLOCK_23
+#  define spin_lock_bh(x)  spin_lock_irq(x)
+#  define spin_unlock_bh(x)  spin_unlock_irq(x)
+
+#  define read_lock_bh(x)  read_lock_irq(x)
+#  define read_unlock_bh(x)  read_unlock_irq(x)
+
+#  define write_lock_bh(x)  write_lock_irq(x)
+#  define write_unlock_bh(x)  write_unlock_irq(x)
+#endif /* !SPINLOCK_23 */
+
+#ifndef HAVE_NETDEV_PRINTK
+#define netdev_printk(sevlevel, netdev, msglevel, format, arg...) \
+	printk(sevlevel "%s: " format , netdev->name , ## arg)
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#define	PROC_NET	init_net.proc_net
+#define	PROC_EOF_DATA
+#else
+#define	PROC_NET	proc_net
+#endif
 
 #ifdef NET_21
 # include <linux/in6.h>
