@@ -326,8 +326,14 @@
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,25)
 # define ip_chk_addr(a) inet_addr_type(&init_net, a)
+
+# define l_inet_addr_type(a)	inet_addr_type(&init_net, a)
+
 #else
 # define ip_chk_addr inet_addr_type
+
+#define l_inet_addr_type	inet_addr_type
+
 #endif
 
 #ifndef NETDEV_TX_BUSY
