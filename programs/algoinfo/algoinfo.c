@@ -59,6 +59,7 @@ char spi_c_version[] = "RCSID $Id: algoinfo.c,v 1.1 2004/04/29 04:13:02 mcr Exp 
 
 #include "alg_info.h"
 #include "kernel_alg.h"
+#include "osw_select.h"
 
 struct encap_msghdr *em;
 
@@ -99,7 +100,7 @@ char sa[SATOT_BUF];
 
 extern unsigned int pfkey_lib_debug; /* used by libfreeswan/pfkey_v2_build */
 int pfkey_sock;
-fd_set pfkey_socks;
+osw_fd_set pfkey_socks;
 uint32_t pfkey_seq = 0;
 enum life_severity {
 	life_soft = 0,

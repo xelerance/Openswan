@@ -61,6 +61,8 @@
 #include "ocf_pk.h"
 #endif
 
+#include "osw_select.h"
+
 TAILQ_HEAD(req_queue, pluto_crypto_req_cont);
 
 struct pluto_crypto_worker {
@@ -856,7 +858,7 @@ void init_crypto_helpers(int nhelpers)
 
 }
 
-void pluto_crypto_helper_sockets(fd_set *readfds)
+void pluto_crypto_helper_sockets(osw_fd_set *readfds)
 {
     int cnt;
     struct pluto_crypto_worker *w = pc_workers;
@@ -865,12 +867,12 @@ void pluto_crypto_helper_sockets(fd_set *readfds)
 	if(w->pcw_pid != -1 && !w->pcw_dead) {
 	    passert(w->pcw_pipe > 0);
 
-	    FD_SET(w->pcw_pipe, readfds);
+	    OSW_FD_SET(w->pcw_pipe, readfds);
 	}
     }
 }
 
-int pluto_crypto_helper_ready(fd_set *readfds)
+int pluto_crypto_helper_ready(osw_fd_set *readfds)
 {
     int cnt;
     struct pluto_crypto_worker *w = pc_workers;
@@ -882,7 +884,7 @@ int pluto_crypto_helper_ready(fd_set *readfds)
 	if(w->pcw_pid != -1 && !w->pcw_dead) {
 	    passert(w->pcw_pipe > 0);
 
-	    if(FD_ISSET(w->pcw_pipe, readfds)) {
+	    if(OSW_FD_ISSET(w->pcw_pipe, readfds)) {
 		handle_helper_comm(w);
 		ndes++;
 	    }

@@ -71,6 +71,7 @@
 
 #include "constants.h"
 #include "adns.h"	/* needs <resolv.h> */
+#include "osw_select.h"
 
 /* shared by all processes */
 
@@ -520,22 +521,22 @@ master(void)
 {
     for (;;)
     {
-	fd_set readfds;
+	osw_fd_set readfds;
 	int maxfd = PLUTO_QFD;		/* approximate lower bound */
 	int ndes = 0;
 	struct worker_info *w;
 
-	FD_ZERO(&readfds);
+	OSW_FD_ZERO(&readfds);
 	if (!eof_from_pluto)
 	{
-	    FD_SET(PLUTO_QFD, &readfds);
+	    OSW_FD_SET(PLUTO_QFD, &readfds);
 	    ndes++;
 	}
 	for (w = wi; w != wi_roof; w++)
 	{
 	    if (w->busy)
 	    {
-		FD_SET(w->afd, &readfds);
+		OSW_FD_SET(w->afd, &readfds);
 		ndes++;
 		if (maxfd < w->afd)
 		    maxfd = w->afd;
@@ -546,7 +547,7 @@ master(void)
 	    return HES_OK;	/* done! */
 
 	do {
-	    ndes = select(maxfd + 1, &readfds, NULL, NULL, NULL);
+	    ndes = osw_select(maxfd + 1, &readfds, NULL, NULL, NULL);
 	} while (ndes == -1 && errno == EINTR);
 	if (ndes == -1)
 	{
@@ -555,14 +556,14 @@ master(void)
 	}
 	else if (ndes > 0)
 	{
-	    if (FD_ISSET(PLUTO_QFD, &readfds))
+	    if (OSW_FD_ISSET(PLUTO_QFD, &readfds))
 	    {
 		query();
 		ndes--;
 	    }
 	    for (w = wi; ndes > 0 && w != wi_roof; w++)
 	    {
-		if (w->busy && FD_ISSET(w->afd, &readfds))
+		if (w->busy && OSW_FD_ISSET(w->afd, &readfds))
 		{
 		    answer(w);
 		    ndes--;

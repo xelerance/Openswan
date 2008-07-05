@@ -59,13 +59,13 @@ char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.58 2005/08/18 14:04:3
 #include <stdio.h>
 #include <getopt.h>
 
+#include "osw_select.h"
 #include "oswlog.h"
-
 __u32 bigbuf[1024];
 char *program_name;
 
 int pfkey_sock;
-fd_set pfkey_socks;
+osw_fd_set pfkey_socks;
 uint32_t pfkey_seq = 0;
 
 char copyright[] =

@@ -56,6 +56,7 @@
 #include "nat_traversal.h"
 #endif
 
+#include "osw_select.h"
 #include "alg_info.h"
 #include "kernel_alg.h"
 
@@ -207,18 +208,18 @@ static pfkey_item *pfkey_iq_tail;	/* youngest */
 static bool
 pfkey_input_ready(void)
 {
-    fd_set readfds;
+    osw_fd_set readfds;
     int ndes;
     struct timeval tm;
 
     tm.tv_sec = 0;	/* don't wait at all */
     tm.tv_usec = 0;
 
-    FD_ZERO(&readfds);	/* we only care about pfkeyfd */
-    FD_SET(pfkeyfd, &readfds);
+    OSW_FD_ZERO(&readfds);	/* we only care about pfkeyfd */
+    OSW_FD_SET(pfkeyfd, &readfds);
 
     do {
-	ndes = select(pfkeyfd + 1, &readfds, NULL, NULL, &tm);
+	ndes = osw_select(pfkeyfd + 1, &readfds, NULL, NULL, &tm);
     } while (ndes == -1 && errno == EINTR);
 
     if (ndes < 0)
@@ -230,7 +231,7 @@ pfkey_input_ready(void)
     if (ndes == 0)
 	return FALSE;	/* nothing to read */
 
-    passert(ndes == 1 && FD_ISSET(pfkeyfd, &readfds));
+    passert(ndes == 1 && OSW_FD_ISSET(pfkeyfd, &readfds));
     return TRUE;
 }
 

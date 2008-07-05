@@ -51,6 +51,8 @@ char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.67 2005/08/18 14:04:39 ken Ex
 #include "oswlog.h"
 #include "pfkey_help.h"
 
+#include "osw_select.h"
+
 #include <stdio.h>
 #include <getopt.h>
 
@@ -63,7 +65,7 @@ char *transport_proto_opt, *src_port_opt, *dst_port_opt;
 int action_type = 0;
 
 int pfkey_sock;
-fd_set pfkey_socks;
+osw_fd_set pfkey_socks;
 uint32_t pfkey_seq = 0;
 
 #define EMT_IFADDR	1	/* set enc if addr */
