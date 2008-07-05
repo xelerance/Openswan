@@ -157,6 +157,7 @@ sign_hash(const struct RSA_private_key *k
     chunk_t ch;
 #if defined(HAVE_OCF) && 0
     mpz_t t1;
+    BIGNUM r0;
 #else
     mpz_t t1, t2;
 #endif
