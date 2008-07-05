@@ -1,9 +1,11 @@
 /* -*- flex-mode -*- */
 %option nounput
+%option noinput
 %{ 
-/* FreeS/WAN config file parser (parser.l)
+/* Openswan config file parser (parser.l)
  * Copyright (C) 2001 Mathieu Lafon - Arkoon Network Security
  * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008 D. Hugh Redelmeier <hugh@mimosa.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -280,6 +282,15 @@ int parser_y_eof(void)
 
 %}
 
+    /* lexical states:
+     *
+     * INITIAL
+     * USERDEF: after "="
+     * BOOLEAN: after keyword with BOOLWORD attribute, until \n
+     * COMMENTEQUAL: after keyword "x-comment"
+     * COMMENTSTRING: after = in COMMENTEQUAL state, until \n
+     */
+
 %x USERDEF BOOLEAN COMMENTEQUAL COMMENTSTRING
 
 %%
@@ -290,19 +301,13 @@ int parser_y_eof(void)
 	}
 }
 
-^\n		        { /* eat totally blank lines */
+^[\t ]*#.*\n	        { /* eat comment lines */
                           stacktop->line++;
 		        }
 
-^#.*\n		        { /* eat comment lines */
+^[\t ]*\n	        { /* eat blank lines */
                           stacktop->line++;
 		        }
-
-^[\t ]+#.*\n            { /* eat comment lines inside of stanzas */
-                          stacktop->line++;
-		        }
-
-^[\t ]+\n		/* ignore lines that just have combinations of spaces on them */
 
 ^[\t ]+			return FIRST_SPACES;
 
@@ -445,7 +450,7 @@ include			return INCLUDE;
 			   return tok;
 			}
 
-#.*		        /* eat comment lines */ {
+#.*		        /* eat comment to end of line */ {
                         }
 
 .			yyerror(yytext);

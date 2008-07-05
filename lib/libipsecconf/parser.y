@@ -62,7 +62,6 @@ static struct starter_comments_list *_parser_comments;
 	struct keyword k;
 }
 %token EQUAL FIRST_SPACES EOL CONFIG SETUP CONN INCLUDE VERSION 
-%token DEFAULT  TIMEWORD
 %token <dblnum> NUMBER
 %token <s>      STRING
 %token <num>    INTEGER
