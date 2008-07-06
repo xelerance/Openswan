@@ -1,6 +1,4 @@
 CVSROOT
-Makefile.inc
-Makefile.ver
 OBJ.Windows_NT.i386
 OBJ.cygwin.i386
 OBJ.cygwin32-linux.i386
