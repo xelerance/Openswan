@@ -33,7 +33,7 @@
  * See: http://osdir.com/ml/network.freeswan.devel/2003-11/msg00009.html
  */
 #ifdef __UCLIBC__
-# ifndef MALLOC_GLIBC_COMPAT
+# if !defined(__MALLOC_GLIBC_COMPAT__) && !defined(MALLOC_GLIBC_COMPAT)
 #  warning Please compile uclibc with GLIBC_COMPATIBILITY defined
 # endif
 #endif
