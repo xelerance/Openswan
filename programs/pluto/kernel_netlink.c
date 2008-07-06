@@ -58,7 +58,7 @@
 #include <security/pam_appl.h>
 #endif
 
-const struct pfkey_proto_info null_proto_info[2];
+extern const struct pfkey_proto_info null_proto_info[2];
 
 static const struct pfkey_proto_info broad_proto_info[2] = { 
         {

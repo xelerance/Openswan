@@ -74,7 +74,7 @@ static pfkey_seq_t pfkey_seq = 0;	/* sequence number for our PF_KEY messages */
  */
 struct eroute_info *orphaned_holds = NULL;
 
-const struct pfkey_proto_info null_proto_info[2];
+extern const struct pfkey_proto_info null_proto_info[2];
 
 static pid_t pid;
 
