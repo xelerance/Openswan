@@ -17,6 +17,8 @@ v2.6.16
 * Added HAVE_STATSD= support to log state changes (for webgui etc) [david]
 * Wrapper to handle more then 2048 NETKEY tunnels [david]
 * fixes for parser warnings [dhr]
+* Bugtracker bugs fixed:
+  #965: xmlto man fails to generate ipsec.conf.5 man page  [bleve]
 
 v2.6.15
 * Patch to support NETKEY backport on Debian kernels [Rene Mayrhofer]
