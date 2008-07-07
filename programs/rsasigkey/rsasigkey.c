@@ -31,6 +31,13 @@
 #include <gmp.h>
 
 #ifndef DEVICE
+/* To the openwrt people: Do not chance /dev/random to /dev/urandom. The
+ * /dev/random device is ONLY used for generating long term keys, which
+ * should NEVER be done with /dev/urandom. If people use X.509, PSK or
+ * even raw RSA keys generated on other systems, changing this will have
+ * 0 effect. It's better to fail or bail out of generating a key, then
+ * generate a bad one.
+ */
 #define	DEVICE	"/dev/random"
 #endif
 #ifndef MAXBITS
