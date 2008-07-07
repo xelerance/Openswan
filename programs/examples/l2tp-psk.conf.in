@@ -25,8 +25,7 @@ conn L2TP-PSK-noNAT
 	# l2tp-over-ipsec is transport mode
 	type=transport
 	#
-	left=%defaultroute
-	# or you can use: left=YourIPAddress
+	left=YourGatewayIP
 	#
 	# For updated Windows 2000/XP clients,
 	# to support old clients as well, use leftprotoport=17/%any
@@ -40,4 +39,18 @@ conn L2TP-PSK-noNAT
 	# high port, but propose "0" instead of their port.
 	rightprotoport=17/0
 
+# Normally, KLIPS drops all plaintext traffic from IP's it has a crypted
+# connection with. With L2TP clients behind NAT, that's not really what
+# you want. The connection below allows both l2tp/ipsec and plaintext
+# connections from behind the same NAT router. 
+# The l2tpd use a leftprotoport, so they are more specific and will be used
+# first. Then, packets for the host on different ports and protocols (eg ssh)
+# will match this passthrough conn.
+conn passthrough-for-non-l2tp
+        type=passthrough
+        left=YourServerIP
+        leftnexthop=YourGwIP
+        right=0.0.0.0
+        rightsubnet=0.0.0.0/0
+        auto=route
 

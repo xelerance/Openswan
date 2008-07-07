@@ -19,8 +19,8 @@ conn l2tp-X.509
 	# See http://bugs.xelerance.com/view.php?id=466
 	type=transport
 	#
-	left=%defaultroute
-	# or you can use: left=YourIPAddress
+	left=YourServerIP
+	leftid=%fromcert
 	leftrsasigkey=%cert
 	leftcert=/etc/ipsec.d/certs/YourGatewayCertHere.pem
 	leftprotoport=17/1701
@@ -32,7 +32,24 @@ conn l2tp-X.509
 	rightrsasigkey=%cert
 	# Using the magic port of "0" means "any one single port". This is
 	# a work around required for Apple OSX clients that use a randomly
-	# high port, but propose "0" instead of their port.
+	# high port, but propose "0" instead of their port. If that does
+	# not work, try 17/%any (or fall back to 17/1701 for just Windows
+	# clients.
 	rightprotoport=17/0
 	rightsubnet=vhost:%priv,%no
+
+# Normally, KLIPS drops all plaintext traffic from IP's it has a crypted
+# connection with. With L2TP clients behind NAT, that's not really what
+# you want. The connection below allows both l2tp/ipsec and plaintext
+# connections from behind the same NAT router. 
+# The l2tpd use a leftprotoport, so they are more specific and will be used
+# first. Then, packets for the host on different ports and protocols (eg ssh)
+# will match this passthrough conn.
+conn passthrough-for-non-l2tp
+        type=passthrough
+        left=YourServerIP
+        leftnexthop=YourGwIP
+        right=0.0.0.0
+        rightsubnet=0.0.0.0/0
+        auto=route
 
