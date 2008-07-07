@@ -420,7 +420,7 @@ setup_cipher_list (struct ipsec_alg_capi_cipher* clist)
 			continue;
 		} else {
  			if (debug_crypto>0)
- 				printk(KERN_INFO "setup_cipher_list(): going to init ciphername=%s: noauto=%d parm[0]=%d parm[1]=%d\n",
+ 				printk(KERN_INFO "setup_cipher_list(): going to init ciphername=%s: noauto=%d parm[0]=%d parm[1]=%d\n"
  				, cptr->ciphername
 				, noauto
 				, cptr->parm[0]
