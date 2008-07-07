@@ -29,6 +29,12 @@
 #include <openswan.h>
 
 #ifndef DEVICE
+/*
+ * To the openwrt people: Do not chance /dev/random to /dev/urandom. The
+ * /dev/random device is ONLY used for generating long term keys, which
+ * should NEVER be done with /dev/urandom.
+ */
+
 #define	DEVICE	"/dev/random"
 #endif
 #ifndef QDEVICE
