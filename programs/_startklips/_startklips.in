@@ -70,7 +70,9 @@ nostack) klips=false; mast=false;;
     fi;;
 esac
 
-info=/dev/null
+#should this not be /var/run/pluto/ipsec.info?
+#info=/dev/null
+info=/var/run/pluto/ipsec.info
 log=daemon.error
 for dummy
 do
@@ -249,21 +251,22 @@ fi
 
 if test ! -f $ipsecversion 
 then
-	echo "No KLIPS support found"
+	echo "No KLIPS support found while requested, desperately falling back to netkey"
 	@MODPROBE@ -q af_key
+
+	if test ! -f $netkey
+	then
+		echo "Even NETKEY support is not there, aborting"
+		exit 1
+	else
+		echo "NETKEY support found. Use protostack=netkey in /etc/ipsec.conf to avoid attempts to use KLIPS. Attempting to continue with NETKEY"
+		exec ipsec _startnetkey
+	fi
 fi
 
-if test ! -f $netkey
+if test ! -f $ipsecversion
 then
-	echo "NO NETKEY support found"
-else
-	echo "NETKEY support found. Use protostack=netkey in /etc/ipsec.conf to avoid attempts to use KLIPS. Attempting to continue with NETKEY"
-	exec ipsec _startnetkey
-fi
-
-if test -f $ipsecversion
-then
-	echo "kernel appears to lack IPsec support (neither CONFIG_KLIPS or CONFIG_NET_KEY are set)"
+	echo "kernel appears to lack IPsec support (neither CONFIG_KLIPS or CONFIG_NET_KEY were found)"
 	exit 1
 fi
 
@@ -319,32 +322,6 @@ then
 	# clear tables out in case dregs have been left over
 	ipsec eroute --clear
 	ipsec spi --clear
-elif $netkey
-then
-	if ip xfrm state > /dev/null 2>&1
-	then
-		ip xfrm state flush
-		ip xfrm policy flush
-	elif type setkey > /dev/null 2>&1
-	then
-	 	# Check that the setkey command is available.
-         	setkeycmd= 	 
-         	PATH=$PATH:/usr/local/sbin 	 
-         	for dir in `echo $PATH | tr ':' ' '` 	 
-         	do 	 
-                	if test -f $dir/setkey -a -x $dir/setkey 	 
-                 	then
-                         	setkeycmd=$dir/setkey
-                         	break                   # NOTE BREAK OUT 
-                	fi
-         	done
-        	$setkeycmd -F
-        	$setkeycmd -FP
-	else
-	
-        	echo "WARNING: cannot flush state/policy database -- \`$1'. Install a newer version of iproute/iproute2 or install the ipsec-tools package to obtain the setkey command." |
-                	logger -s -p daemon.error -t ipsec_setup
-	fi
 fi
 
 # figure out interfaces
