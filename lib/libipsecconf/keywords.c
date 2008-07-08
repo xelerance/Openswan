@@ -436,7 +436,7 @@ int parser_find_keyword(const char *s, YYSTYPE *lval)
 
     lval->s = NULL;
     /* if we found nothing */
-    if(k->keyname == NULL && (s[0]=='x' || s[0]=='X') && s[1]=='-')
+    if(k->keyname == NULL && (s[0]=='x' || s[0]=='X') && (s[1]=='-' || s[1] =='_'))
     {
 	k = &ipsec_conf_keyword_comment;
 	lval->k.string = strdup(s);
