@@ -166,7 +166,7 @@ awk 'BEGIN {
 	good = good " syslog klipsdebug plutodebug plutoopts plutostderrlog"
 	good = good " plutorestartoncrash"
 	good = good " dumpdir manualstart pluto"
-	good = good " protostack"
+	good = good " protostack oe"
 	good = good " plutowait prepluto postpluto nhelpers"
 	good = good " fragicmp hidetos uniqueids"
 	good = good " overridemtu"
