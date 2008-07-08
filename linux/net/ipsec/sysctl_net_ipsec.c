@@ -28,7 +28,6 @@
 
 #ifdef CONFIG_SYSCTL
 
-#define NET_IPSEC 2112 /* Random number */                                        
 #ifdef CONFIG_KLIPS_DEBUG
 extern int       debug_ah;
 extern int       debug_esp;
@@ -54,6 +53,7 @@ extern int sysctl_ipsec_tos;
 int sysctl_ipsec_regress_pfkey_lossage;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#define NET_IPSEC CTL_UNNUMBERED
 #ifdef CONFIG_KLIPS_DEBUG
 	#define NET_IPSEC_DEBUG_AH		CTL_UNNUMBERED
 	#define NET_IPSEC_DEBUG_ESP		CTL_UNNUMBERED
@@ -76,6 +76,9 @@ int sysctl_ipsec_regress_pfkey_lossage;
 	#define NET_IPSEC_DEBUG_XMIT		CTL_UNNUMBERED
 #else
 enum {
+
+#define NET_IPSEC 2112 /* Random number - if not blame linux sysctl people */ 
+
 #ifdef CONFIG_KLIPS_DEBUG
 	NET_IPSEC_DEBUG_AH=1,
 	NET_IPSEC_DEBUG_ESP=2,
