@@ -14,6 +14,8 @@ v2.6.16
   Uses USE_DYNAMICDNS=
 * Added USE_SINGLE_CONF_DIR= [david]
 * KLIPS support for 2.6.24 / 2.6.25 [david]
+* Fix for "Unknown sysctl binary path" [david]
+* rekeyfuzz is percentage, not integer [david]
 * Added HAVE_STATSD= support to log state changes (for webgui etc) [david]
 * Wrapper to handle more then 2048 NETKEY tunnels [david]
 * fixes for parser warnings [dhr]
