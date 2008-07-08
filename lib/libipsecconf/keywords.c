@@ -340,7 +340,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"overlapip",      kv_conn|kv_auto, kt_bool,   KBF_OVERLAPIP, NOT_ENUM},
     {"rekey",          kv_conn|kv_auto, kt_bool,   KBF_REKEY, NOT_ENUM},
     {"rekeymargin",    kv_conn|kv_auto, kt_time,   KBF_REKEYMARGIN,NOT_ENUM},
-    {"rekeyfuzz",      kv_conn|kv_auto, kt_time,   KBF_REKEYFUZZ,NOT_ENUM},
+    {"rekeyfuzz",      kv_conn|kv_auto, kt_percent,   KBF_REKEYFUZZ,NOT_ENUM},
     {"keyingtries",    kv_conn|kv_auto, kt_number, KBF_KEYINGTRIES,NOT_ENUM},
     {"ikelifetime",    kv_conn|kv_auto, kt_time,   KBF_IKELIFETIME,NOT_ENUM},
     {"disablearrivalcheck", kv_conn|kv_auto, kt_invertbool, KBF_ARRIVALCHECK,NOT_ENUM},
