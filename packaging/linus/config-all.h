@@ -72,9 +72,11 @@
 #define CONFIG_KLIPS_ALG_CRYPTOAPI #error
 #define CONFIG_KLIPS_ALG_AES #error
 
+#if 0
 /* off by default requiers kernel patch */
 #ifndef CONFIG_KLIPS_OCF
 #define CONFIG_KLIPS_OCF 0
+#endif
 #endif
 
 #ifndef CONFIG_KLIPS_ALG_AES_MAC
