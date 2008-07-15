@@ -510,7 +510,7 @@ foreach_states_by_connection_func(struct connection *c
 		st = st->st_hashchain_next;	/* before this is deleted */
 
 		/* on pass 2, ignore phase2 states */
- 		if(pass == 2 && IS_ISAKMP_SA_ESTABLISHED(this->st_state)) {
+ 		if(pass == 1 && IS_ISAKMP_SA_ESTABLISHED(this->st_state)) {
 		    continue;
 		}
 
