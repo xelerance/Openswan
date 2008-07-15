@@ -3,6 +3,9 @@ Note that listings are in chronological order of release times, not in order
 of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
+v2.6.18
+* Fix in deleting connections that might have caused some of our Delete
+  Notifies to have gotten lost. Introduced in openswan 2.5.01 [paul]
 
 v2.6.17 [will be skipped due to bad tag]
 
