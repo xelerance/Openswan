@@ -738,8 +738,12 @@ rekey_p2states_by_connection(struct connection *c)
 }
 
 
-/* Walk through the state table, and delete each state whose phase 1 (IKE)
+/*
+ * Walk through the state table, and delete each state whose phase 1 (IKE)
  * peer is among those given.
+ * TODO: This function is only called for ipsec whack --crash peer, but
+ * it currently does not work for IKEv2, since IS_PHASE1() only works on IKEv1
+ * Filed as bug http://bugs.xelerance.com/view.php?id=971
  */
 void
 delete_states_by_peer(ip_address *peer)
