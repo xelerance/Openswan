@@ -373,7 +373,7 @@ case "$1" in
 			xfrm6_mode_transport xfrm4_mode_transport xfrm4_mode_tunnel  xfrm_user \
 			xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 ipcomp ipcomp6 af_key
 		    do
-			lsmod 2>&1 | grep "^$mod" > /dev/null && rmmod -s $mod
+			lsmod 2>&1 | grep "^$mod" > /dev/null && rmmod  $mod
 		    done
 	fi 
 
