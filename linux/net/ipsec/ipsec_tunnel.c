@@ -573,10 +573,12 @@ ipsec_tunnel_xsm_complete(
 		return;
 	}
 
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 	stat = ipsec_nat_encap(ixs);
 	if(stat != IPSEC_XMIT_OK) {
 		goto cleanup;
 	}
+#endif
 
 	stat = ipsec_tunnel_restore_hard_header(ixs);
 	if(stat != IPSEC_XMIT_OK) {
