@@ -637,6 +637,15 @@ ipkg: programs install ipkg_strip ipkg_module
 	@echo "Generating ipkg..."; 
 	DESTDIR=${DESTDIR} OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} IPSECVERSION=${IPSECVERSION} ./packaging/ipkg/generate-ipkg
 
+tarpkg:
+	@echo "Generating tar.gz package to install"
+	@rm -rf /var/tmp/openswan-${USER}
+	@make DESTDIR=/var/tmp/openswan-${USER} programs install
+	@(cd /var/tmp/openswan-${USER} && tar czf - . ) >openswan${VENDOR}-${IPSECVERSION}.tgz 
+	@ls -l openswan${VENDOR}-${IPSECVERSION}.tgz
+	@rm -rf /var/tmp/openswan-${USER}
+	
+
 
 env:
 	@env | sed -e "s/'/'\\\\''/g" -e "s/\([^=]*\)=\(.*\)/\1='\2'/"

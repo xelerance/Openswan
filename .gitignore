@@ -4,6 +4,7 @@ OBJ.*
 *.bak
 TAGS
 UMLPOOL
+modobj26
 testing/*/OUTPUT/*
 testing/*/*/OUTPUT
 umlsetup.sh
