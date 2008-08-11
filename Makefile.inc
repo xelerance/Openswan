@@ -453,7 +453,7 @@ INSTSUIDFLAGS=--mode=u+rxs,g+rx,o+rx --group=root -b -B .old
 endif
 
 ifeq ($(USE_OBJDIR),true)
-OBJDIR=OBJ.${BUILDENV}.${ARCH}
+OBJDIR?=OBJ.${BUILDENV}.${ARCH}
 OBJDIRTOP=${OPENSWANSRCDIR}/${OBJDIR}
 endif
 
