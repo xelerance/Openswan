@@ -243,7 +243,6 @@ install:: checkv199install
 clean::
 	rm -rf $(RPMTMPDIR) $(RPMDEST)
 	rm -f out.*build out.*install	# but leave out.kpatch
-	rm -f rpm.spec
 
 # proxies for major kernel make operations
 
@@ -603,8 +602,9 @@ buildready:
 	cd doc ; $(MAKE) -s
 
 rpm:
-	@echo please cd packaging/redhat and
-	@echo run "${MAKE} RH_KERNELSRC=/some/path/to/kernel/src rpm"
+	@echo To build an rpm, use: rpmbuild -ba packaging/XXX/openswan.spec
+	@echo where XXX is your rpm based vendor 
+	rpmbuild -bs packaging/centos5/bluerose.spec
 
 ipkg_strip:
 	@echo "Minimizing size for ipkg binaries..."
