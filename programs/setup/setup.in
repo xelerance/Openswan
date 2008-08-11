@@ -2,6 +2,8 @@
 # IPsec startup and shutdown script
 # Copyright (C) 1998, 1999, 2001  Henry Spencer.
 # Copyright (C) 2002              Michael Richardson <mcr@freeswan.org>
+# Copyright (C) 2006              Michael Richardson <mcr@xelerance.com>
+# Copyright (C) 2008              Michael Richardson <mcr@sandelman.ca>
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
