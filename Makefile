@@ -641,6 +641,7 @@ tarpkg:
 	@echo "Generating tar.gz package to install"
 	@rm -rf /var/tmp/openswan-${USER}
 	@make DESTDIR=/var/tmp/openswan-${USER} programs install
+	@rm /var/tmp/openswan-${USER}/etc/ipsec.conf
 	@(cd /var/tmp/openswan-${USER} && tar czf - . ) >openswan${VENDOR}-${IPSECVERSION}.tgz 
 	@ls -l openswan${VENDOR}-${IPSECVERSION}.tgz
 	@rm -rf /var/tmp/openswan-${USER}
