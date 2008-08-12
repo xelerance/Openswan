@@ -20,8 +20,10 @@ v2.6.16
 * Fix for "Unknown sysctl binary path" [david]
 * rekeyfuzz is percentage, not integer [david]
 * Added HAVE_STATSD= support to log state changes (for webgui etc) [david]
+  (disabled per default)
 * Wrapper to handle more then 2048 NETKEY tunnels [david]
 * fixes for parser warnings [dhr]
+* Fix rmmod calls not to use -s since busybox rmmod does not support it [paul]
 * Bugtracker bugs fixed:
   #965: xmlto man fails to generate ipsec.conf.5 man page  [bleve]
 
