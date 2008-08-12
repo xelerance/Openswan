@@ -28,6 +28,7 @@ v2.6.16
 v2.6.15
 * Patch to support NETKEY backport on Debian kernels [Rene Mayrhofer]
 * Fix a crasher when using right=%any with plutodebug=controlmore [paul]
+* Fix a crasher when deleting connections in NETKEY [ken]
 * Added disable_port_floating support to scripts and parser and
   repair the default back to allow port floating [paul]
 * Change (back) defaults of plutorestartoncrash and uniqueids from
