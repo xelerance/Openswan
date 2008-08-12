@@ -352,7 +352,6 @@ delete_state(struct state *st)
 
     DBG(DBG_CONTROL, DBG_log("deleting state #%lu", st->st_serialno));
 
-    change_state(st, STATE_UNDEFINED);
 
     /* If DPD is enabled on this state object, clear any pending events */
     if(st->st_dpd_event != NULL)
@@ -405,6 +404,8 @@ delete_state(struct state *st)
     st->st_connection = NULL;	/* we might be about to free it */
     cur_state = old_cur_state;	/* without st_connection, st isn't complete */
     connection_discard(c);
+
+    change_state(st, STATE_UNDEFINED);
 
     release_whack(st);
 
