@@ -45,7 +45,7 @@ KERNELREL=$(shell ${KVSHORTUTIL} ${KERNELSRC}/Makefile)
 # directories visited by all recursion
 
 # declaration for make's benefit
-.PHONY:	def insert kpatch patches _patches _patches2.2 _patches2.4 \
+.PHONY:	def insert kpatch patches _patches _patches2.4 \
 	klipsdefaults programs install clean distclean \
 	ogo oldgo menugo xgo \
 	omod menumod xmod \
@@ -102,75 +102,6 @@ _patches:
 	echo "===============" >>out.kpatch
 	echo "`date` `cd $(KERNELSRC) ; pwd`" >>out.kpatch
 	$(MAKE) __patches$(KERNELREL) >>out.kpatch
-
-# Linux-2.0.x version
-__patches __patches2.0:
-	@$(PATCHER) -v $(KERNELSRC) Documentation/Configure.help \
-	  'CONFIG_KLIPS' $(PATCHES)/Documentation/Configure.help.fs2_0.patch
-	@$(PATCHER) -v $(KERNELSRC) net/Config.in \
-	  'CONFIG_KLIPS' $(PATCHES)/net/Config.in.fs2_0.patch
-	@$(PATCHER) -v $(KERNELSRC) net/Makefile \
-	  'CONFIG_KLIPS' $(PATCHES)/net/Makefile.fs2_0.patch
-	@$(PATCHER) -v $(KERNELSRC) net/ipv4/af_inet.c \
-	  'CONFIG_KLIPS' $(PATCHES)/net/ipv4/af_inet.c.fs2_0.patch
-# Removed patches, will unpatch automatically.
-	@$(PATCHER) -v $(KERNELSRC) include/linux/proc_fs.h
-	@$(PATCHER) -v $(KERNELSRC) net/core/dev.c
-	@$(PATCHER) -v $(KERNELSRC) net/ipv4/protocol.c
-	@$(PATCHER) -v $(KERNELSRC) drivers/net/Space.c
-	@$(PATCHER) -v $(KERNELSRC) net/netlink.c
-	@$(PATCHER) -v $(KERNELSRC) drivers/isdn/isdn_net.c
-
-# Linux-2.2.x version
-PATCHES24=klips/patches2.3
-__patches2.2:
-	@$(PATCHER) -v -c $(KERNELSRC) Documentation/Configure.help \
-	  'CONFIG_KLIPS' $(PATCHES)/Documentation/Configure.help.fs2_2.patch
-	@$(PATCHER) -v $(KERNELSRC) net/Config.in \
-		'CONFIG_KLIPS' $(PATCHES)/net/Config.in.fs2_2.patch
-	@$(PATCHER) -v $(KERNELSRC) net/Makefile \
-		'CONFIG_KLIPS' $(PATCHES)/net/Makefile.fs2_2.patch
-	@$(PATCHER) -v $(KERNELSRC) net/ipv4/af_inet.c \
-		'CONFIG_KLIPS' $(PATCHES)/net/ipv4/af_inet.c.fs2_2.patch
-	@$(PATCHER) -v $(KERNELSRC) net/ipv4/udp.c \
-		'CONFIG_KLIPS' $(PATCHES)/net/ipv4/udp.c.fs2_2.patch
-	@$(PATCHER) -v $(KERNELSRC) include/net/sock.h \
-		'CONFIG_KLIPS' $(PATCHES)/include/net/sock.h.fs2_2.patch
-# Removed patches, will unpatch automatically.
-	@$(PATCHER) -v $(KERNELSRC) include/linux/proc_fs.h
-	@$(PATCHER) -v $(KERNELSRC) net/core/dev.c
-	@$(PATCHER) -v $(KERNELSRC) net/ipv4/protocol.c
-	@$(PATCHER) -v $(KERNELSRC) drivers/net/Space.c
-	@$(PATCHER) -v $(KERNELSRC) include/linux/netlink.h
-	@$(PATCHER) -v $(KERNELSRC) net/netlink/af_netlink.c
-	@$(PATCHER) -v $(KERNELSRC) net/netlink/netlink_dev.c
-	@$(PATCHER) -v $(KERNELSRC) include/linux/socket.h
-	@$(PATCHER) -v $(KERNELSRC) drivers/isdn/isdn_net.c
-
-# Linux-2.4.0 version
-PATCHES22=klips/patches2.2
-__patches2.3 __patches2.4:
-	@$(PATCHER) -v -c $(KERNELSRC) Documentation/Configure.help \
-		'CONFIG_KLIPS' $(PATCHES)/Documentation/Configure.help.fs2_2.patch
-	@$(PATCHER) -v $(KERNELSRC) net/Config.in \
-		'CONFIG_KLIPS' $(PATCHES)/net/Config.in.fs2_4.patch
-	@$(PATCHER) -v $(KERNELSRC) net/Makefile \
-		'CONFIG_KLIPS' $(PATCHES)/net/Makefile.fs2_4.patch
-	@$(PATCHER) -v $(KERNELSRC) net/ipv4/af_inet.c \
-		'CONFIG_KLIPS' $(PATCHES)/net/ipv4/af_inet.c.fs2_4.patch
-	@$(PATCHER) -v $(KERNELSRC) net/ipv4/udp.c \
-		'CONFIG_KLIPS' $(PATCHES)/net/ipv4/udp.c.fs2_4.patch
-	@$(PATCHER) -v $(KERNELSRC) include/net/sock.h \
-		'CONFIG_KLIPS' $(PATCHES)/include/net/sock.h.fs2_4.patch
-# Removed patches, will unpatch automatically.
-	@$(PATCHER) -v $(KERNELSRC) include/linux/proc_fs.h
-	@$(PATCHER) -v $(KERNELSRC) net/core/dev.c
-	@$(PATCHER) -v $(KERNELSRC) net/ipv4/protocol.c
-	@$(PATCHER) -v $(KERNELSRC) drivers/net/Space.c
-	@$(PATCHER) -v $(KERNELSRC) include/linux/netlink.h
-	@$(PATCHER) -v $(KERNELSRC) net/netlink/af_netlink.c
-	@$(PATCHER) -v $(KERNELSRC) net/netlink/netlink_dev.c
-	@$(PATCHER) -v $(KERNELSRC) drivers/isdn/isdn_net.c
 
 klipsdefaults:
 	@KERNELDEFCONFIG=$(KERNELSRC)/arch/$(ARCH)/defconfig ; \

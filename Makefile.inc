@@ -455,11 +455,11 @@ endif
 ifeq ($(USE_OBJDIR),true)
 OBJDIR?=OBJ.${BUILDENV}.${ARCH}
 OBJDIRTOP=${OPENSWANSRCDIR}/${OBJDIR}
-endif
-
+else
 # where to place the object files which are built 
 OBJDIR?=.
 OBJDIRTOP?=${OPENSWANSRCDIR}
+endif
 
 ### paths within the source tree
 
