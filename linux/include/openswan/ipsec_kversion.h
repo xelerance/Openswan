@@ -166,7 +166,9 @@
     information.
  */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
-# define module_param(a,b,c)  MODULE_PARM(#a,"i")
+# ifndef module_param
+#  define module_param(a,b,c)  MODULE_PARM(#a,"i")
+# endif
 /* note below is only true for our current calls to module_param_array */
 # define module_param_array(a,b,c,d)  MODULE_PARM(#a,"1-2i")
 #endif
