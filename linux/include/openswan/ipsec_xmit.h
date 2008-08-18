@@ -180,6 +180,9 @@ extern atomic_t ipsec_ixs_cnt;
 
 extern void ipsec_extract_ports(struct iphdr * iph, struct sockaddr_encap * er);
 
+/* avoid forward reference complain on < 2.5 */
+struct flowi;
+
 extern enum ipsec_xmit_value
 ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl);
 
