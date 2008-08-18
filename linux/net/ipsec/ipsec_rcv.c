@@ -27,6 +27,9 @@
 
 #define __NO_VERSION__
 #include <linux/module.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
+# include <linux/moduleparam.h>
+#endif
 #include <linux/kernel.h> /* printk() */
 
 #include "openswan/ipsec_param.h"
@@ -46,7 +49,9 @@
 
 #include <net/tcp.h>
 #include <net/udp.h>
-#include <net/xfrm.h>
+#ifdef NET_26
+# include <net/xfrm.h>
+#endif
 #include <linux/skbuff.h>
 #include <openswan.h>
 
