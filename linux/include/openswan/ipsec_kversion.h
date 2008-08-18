@@ -121,7 +121,7 @@
 #endif
 
 /* see <linux/security.h> */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,13)
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,13)) && defined(CONFIG_NETFILTER_DEBUG)
 # define HAVE_SOCK_SECURITY
 /* skb->nf_debug disappared completely in 2.6.13 */
 # define ipsec_nf_debug_reset(skb)	((skb)->nf_debug = 0)
