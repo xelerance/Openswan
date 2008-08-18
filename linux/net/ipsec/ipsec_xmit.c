@@ -601,8 +601,7 @@ ipsec_xmit_encap_init(struct ipsec_xmit_state *ixs)
 #endif /* CONFIG_KLIPS_OCF */
 #ifdef CONFIG_KLIPS_ALG
 
-		ixs->ixt_a=ixs->ipsp->ips_alg_auth;
-		if (ixs->ixt_a) {
+		if ((ixs->ixt_a=ixs->ipsp->ips_alg_auth)) {
 			ixs->tailroom += AHHMAC_HASHLEN;
 			ixs->authlen = AHHMAC_HASHLEN;
 		} else 
@@ -1565,8 +1564,7 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 			} else
 #endif /* CONFIG_KLIPS_OCF */
 #ifdef CONFIG_KLIPS_ALG
-			ixs->ixt_e=ixs->ipsp->ips_alg_enc;
-			if (ixs->ixt_e) {
+			if ((ixs->ixt_e=ixs->ipsp->ips_alg_enc)) {
 				ixs->blocksize = ixs->ixt_e->ixt_common.ixt_blocksize;
 				ixs->headroom += ESP_HEADER_LEN + ixs->ixt_e->ixt_common.ixt_support.ias_ivlen/8;
 			} else
