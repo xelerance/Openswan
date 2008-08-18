@@ -1305,6 +1305,10 @@ ipsec_tunnel_clear(void)
 	return 0;
 }
 
+/* 
+ * Used mostly for KLIPS to setup interface, for also with NETKEY when using
+ * 2.6.23+ UDP XFRM code to mark sockets UDP_ENCAP_ESPINUDP_NON_IKE
+ */
 DEBUG_NO_STATIC int
 ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
@@ -1329,6 +1333,7 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 		    cmd,
 		    dev->name ? dev->name : "NULL");
 	switch (cmd) {
+#if defined(KLIPS)
 	/* attach a virtual ipsec? device to a physical device */
 	case IPSEC_SET_DEV:
 		KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
@@ -1391,6 +1396,7 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 			    "klips_debug:ipsec_tunnel_ioctl: "
 			    "calling ipsec_tunnel_clear.\n");
 		return ipsec_tunnel_clear();
+#endif /* KLIPS */
 
 #ifdef HAVE_UDP_ENCAP_CONVERT
 	case IPSEC_UDP_ENCAP_CONVERT:
@@ -1419,7 +1425,8 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 		fput_light(sock->file, fput_needed);
 	encap_out:
 		return err;
-#endif
+	}
+#endif /* HAVE_UDP_ENCAP_CONVERT */
 
 	default:
 		KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
@@ -1427,6 +1434,7 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 			    "unknown command %d.\n",
 			    cmd);
 		return -EOPNOTSUPP;
+
 	}
 }
 
