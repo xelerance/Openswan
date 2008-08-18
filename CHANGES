@@ -24,6 +24,7 @@ v2.6.16
 * Wrapper to handle more then 2048 NETKEY tunnels [david]
 * fixes for parser warnings [dhr]
 * Fix rmmod calls not to use -s since busybox rmmod does not support it [paul]
+* Fixes to KLIPS for newer 2.4 kernels [greg/davidm]
 * Bugtracker bugs fixed:
   #965: xmlto man fails to generate ipsec.conf.5 man page  [bleve]
 
