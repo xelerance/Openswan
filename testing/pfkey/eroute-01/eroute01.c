@@ -12,11 +12,6 @@ main(int argc, char **argv)
 	eroute01main(argc,argv);
 }
 
-int exit_tool(int ex)
-{
-	exit(ex);
-}
-
 int eroute01getpid()
 {
 	return 9999;
