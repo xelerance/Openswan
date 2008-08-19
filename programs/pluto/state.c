@@ -1284,17 +1284,22 @@ void fmt_state(struct state *st, time_t n
 	    time_t ago;
 
 	    add_said(&c->spd.that.host_addr, st->st_esp.attrs.spi, SA_ESP);
+/* needs proper fix, via kernel_ops? */
+#if defined(linux) && defined(NETKEY_SUPPORT)
 	    if (get_sa_info(st, FALSE, &ago))
 	    {
 		snprintf(state_buf2, state_buf2_len,
 		  " (%'u bytes)" , st->st_esp.peer_bytes);
 	    }
+#endif
 	    add_said(&c->spd.this.host_addr, st->st_esp.our_spi, SA_ESP);
+#if defined(linux) && defined(NETKEY_SUPPORT)
 	    if (get_sa_info(st, TRUE, &ago))
 	    {
 		snprintf(state_buf2, state_buf2_len,
 		  " (%'u bytes)" , st->st_esp.our_bytes);
 	    }
+#endif
 
 	}
 	if (st->st_ipcomp.present)
