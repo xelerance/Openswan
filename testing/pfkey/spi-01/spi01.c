@@ -10,7 +10,7 @@ main(int argc, char **argv)
 {
 	extern int EF_PROTECT_BELOW;
 	extern int EF_PROTECT_FREE;
-	extern int EF_FREE_WIPES;
+/*	extern  */ int EF_FREE_WIPES; 
 
 	debug=1;
 	EF_PROTECT_BELOW=0;
