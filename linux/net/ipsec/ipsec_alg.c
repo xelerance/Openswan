@@ -260,10 +260,8 @@ int ipsec_alg_esp_encrypt(struct ipsec_sa *sa_p, __u8 * idat,
 {
 	int ret;
 	struct ipsec_alg_enc *ixt_e=sa_p->ips_alg_enc;
-#ifdef CONFIG_KLIPS_DEBUG
 	int debug_flag = (encrypt==IPSEC_ALG_ENCRYPT ?
 			  debug_tunnel : debug_rcv);
-#endif
 
 	KLIPS_PRINT(debug_flag,
 		    "klips_debug:ipsec_alg_esp_encrypt: "

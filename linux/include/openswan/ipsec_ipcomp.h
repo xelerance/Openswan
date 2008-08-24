@@ -30,9 +30,7 @@
 #define IPPROTO_COMP 108
 #endif /* IPPROTO_COMP */
 
-#ifdef CONFIG_KLIPS_DEBUG
 extern int sysctl_ipsec_debug_ipcomp;
-#endif /* CONFIG_KLIPS_DEBUG */
 
 struct ipcomphdr {			/* IPCOMP header */
     __u8    ipcomp_nh;		/* Next header (protocol) */

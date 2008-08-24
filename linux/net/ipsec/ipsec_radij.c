@@ -119,7 +119,6 @@ ipsec_breakroute(struct sockaddr_encap *eaddr,
 	struct eroute *ro;
 	struct radij_node *rn;
 	int error;
-#ifdef CONFIG_KLIPS_DEBUG
 	
 	if (debug_eroute) {
                 char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
@@ -131,7 +130,6 @@ ipsec_breakroute(struct sockaddr_encap *eaddr,
 			    buf1, ntohs(eaddr->sen_sport),
 			    buf2, ntohs(eaddr->sen_dport), eaddr->sen_proto);
 	}
-#endif /* CONFIG_KLIPS_DEBUG */
 
 	spin_lock_bh(&eroute_lock);
 
@@ -199,8 +197,6 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 	char sa[SATOT_BUF];
 	size_t sa_len;
 
-#ifdef CONFIG_KLIPS_DEBUG
-	
 	if (debug_eroute) {
 
 		{
@@ -241,7 +237,6 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
                 }
 
 	}
-#endif /* CONFIG_KLIPS_DEBUG */
 
 	retrt = (struct eroute *)kmalloc(sizeof (struct eroute), GFP_ATOMIC);
 	if (retrt == NULL) {
@@ -341,7 +336,6 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 		return error;
 	}
 
-#ifdef CONFIG_KLIPS_DEBUG
 	if (debug_eroute) {
 		char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
 /*
@@ -365,7 +359,6 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 			    buf2,
 			    sa_len ? sa : " (error)");
 	}
-#endif /* CONFIG_KLIPS_DEBUG */
 	KLIPS_PRINT(debug_eroute,
 		    "klips_debug:ipsec_makeroute: "
 		    "succeeded.\n");
@@ -376,7 +369,6 @@ struct eroute *
 ipsec_findroute(struct sockaddr_encap *eaddr)
 {
 	struct radij_node *rn;
-#ifdef CONFIG_KLIPS_DEBUG
 	char buf1[ADDRTOA_BUF], buf2[ADDRTOA_BUF];
 	
 	if (debug_radij & DB_RJ_FINDROUTE) {
@@ -389,7 +381,6 @@ ipsec_findroute(struct sockaddr_encap *eaddr)
 			    buf2, ntohs(eaddr->sen_dport),
 			    eaddr->sen_proto);
 	}
-#endif /* CONFIG_KLIPS_DEBUG */
 	rn = rj_match((caddr_t)eaddr, rnh);
 	if(rn) {
 		KLIPS_PRINT(debug_eroute && sysctl_ipsec_debug_verbose,
@@ -507,7 +498,6 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 	if(!key || !mask) {
 		return -ENODATA;
 	}
-#ifdef CONFIG_KLIPS_DEBUG
 	if(debug_radij)	{
 		char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
 		subnettoa(key->sen_ip_src, mask->sen_ip_src, 0, buf1, sizeof(buf1));
@@ -518,7 +508,6 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 			    buf1,
 			    buf2);
 	}
-#endif /* CONFIG_KLIPS_DEBUG */
 
 	if((error = rj_delete(key, mask, rnh, &rn2))) {
 		KLIPS_PRINT(debug_radij,

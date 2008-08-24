@@ -223,7 +223,6 @@ static inline void ipsec_rcv_redodebug(struct ipsec_rcv_state *irs)
 }
 
 
-#ifdef CONFIG_KLIPS_DEBUG
 DEBUG_NO_STATIC char *
 ipsec_rcv_err(int err)
 {
@@ -254,7 +253,6 @@ ipsec_rcv_err(int err)
 	snprintf(tmp, sizeof(tmp), "%d", err);
 	return tmp;
 }
-#endif
 
 /*
  * here is a state machine to handle receiving ipsec packets.

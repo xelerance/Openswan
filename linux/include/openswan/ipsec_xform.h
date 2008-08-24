@@ -14,7 +14,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_xform.h,v 1.42 2005/08/05 08:50:45 mcr Exp $
  */
 
 #ifndef _IPSEC_XFORM_H_
@@ -99,11 +98,6 @@
 #define XFT_AUTH		0x0001
 #define XFT_CONF		0x0100
 
-/* available if CONFIG_KLIPS_DEBUG is defined */
-#ifndef DB_XF_INIT
-# define DB_XF_INIT		0x0001
-#endif
-
 #define PROTO2TXT(x) \
 	(x) == IPPROTO_AH ? "AH" : \
 	(x) == IPPROTO_ESP ? "ESP" : \
@@ -173,106 +167,12 @@ struct xform_functions {
 
 #endif /* __KERNEL__ */
 
-#ifdef CONFIG_KLIPS_DEBUG
 extern void ipsec_dmp(char *s, caddr_t bb, int len);
-#else /* CONFIG_KLIPS_DEBUG */
-#define ipsec_dmp(_x, _y, _z) 
-#endif /* CONFIG_KLIPS_DEBUG */
-
 
 #define _IPSEC_XFORM_H_
 #endif /* _IPSEC_XFORM_H_ */
 
 /*
- * $Log: ipsec_xform.h,v $
- * Revision 1.42  2005/08/05 08:50:45  mcr
- * 	move #include of skbuff.h to a place where
- * 	we know it will be kernel only code.
- *
- * Revision 1.41  2004/07/10 19:08:41  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.40  2004/04/06 02:49:08  mcr
- * 	pullup of algo code from alg-branch.
- *
- * Revision 1.39  2004/04/05 19:55:07  mcr
- * Moved from linux/include/freeswan/ipsec_xform.h,v
- *
- * Revision 1.38  2004/04/05 19:41:05  mcr
- * 	merged alg-branch code.
- *
- * Revision 1.37  2003/12/13 19:10:16  mcr
- * 	refactored rcv and xmit code - same as FS 2.05.
- *
- * Revision 1.36.34.1  2003/12/22 15:25:52  jjo
- *      Merged algo-0.8.1-rc11-test1 into alg-branch
- *
- * Revision 1.36  2002/04/24 07:36:48  mcr
- * Moved from ./klips/net/ipsec/ipsec_xform.h,v
- *
- * Revision 1.35  2001/11/26 09:23:51  rgb
- * Merge MCR's ipsec_sa, eroute, proc and struct lifetime changes.
- *
- * Revision 1.33.2.1  2001/09/25 02:24:58  mcr
- * 	struct tdb -> struct ipsec_sa.
- * 	sa(tdb) manipulation functions renamed and moved to ipsec_sa.c
- * 	ipsec_xform.c removed. header file still contains useful things.
- *
- * Revision 1.34  2001/11/06 19:47:17  rgb
- * Changed lifetime_packets to uint32 from uint64.
- *
- * Revision 1.33  2001/09/08 21:13:34  rgb
- * Added pfkey ident extension support for ISAKMPd. (NetCelo)
- *
- * Revision 1.32  2001/07/06 07:40:01  rgb
- * Reformatted for readability.
- * Added inbound policy checking fields for use with IPIP SAs.
- *
- * Revision 1.31  2001/06/14 19:35:11  rgb
- * Update copyright date.
- *
- * Revision 1.30  2001/05/30 08:14:03  rgb
- * Removed vestiges of esp-null transforms.
- *
- * Revision 1.29  2001/01/30 23:42:47  rgb
- * Allow pfkey msgs from pid other than user context required for ACQUIRE
- * and subsequent ADD or UDATE.
- *
- * Revision 1.28  2000/11/06 04:30:40  rgb
- * Add Svenning's adaptive content compression.
- *
- * Revision 1.27  2000/09/19 00:38:25  rgb
- * Fixed algorithm name bugs introduced for ipcomp.
- *
- * Revision 1.26  2000/09/17 21:36:48  rgb
- * Added proto2txt macro.
- *
- * Revision 1.25  2000/09/17 18:56:47  rgb
- * Added IPCOMP support.
- *
- * Revision 1.24  2000/09/12 19:34:12  rgb
- * Defined XF_IP6 from Gerhard for ipv6 tunnel support.
- *
- * Revision 1.23  2000/09/12 03:23:14  rgb
- * Cleaned out now unused tdb_xform and tdb_xdata members of struct tdb.
- *
- * Revision 1.22  2000/09/08 19:12:56  rgb
- * Change references from DEBUG_IPSEC to CONFIG_IPSEC_DEBUG.
- *
- * Revision 1.21  2000/09/01 18:32:43  rgb
- * Added (disabled) sensitivity members to tdb struct.
- *
- * Revision 1.20  2000/08/30 05:31:01  rgb
- * Removed all the rest of the references to tdb_spi, tdb_proto, tdb_dst.
- * Kill remainder of tdb_xform, tdb_xdata, xformsw.
- *
- * Revision 1.19  2000/08/01 14:51:52  rgb
- * Removed _all_ remaining traces of DES.
- *
- * Revision 1.18  2000/01/21 06:17:45  rgb
- * Tidied up spacing.
- *
- *
  * Local variables:
  * c-file-style: "linux"
  * End:

@@ -778,7 +778,6 @@ rj_walktree(h, f, w)
 	while (rn->rj_b >= 0)
 		rn = rn->rj_l;
 	for (;;) {
-#ifdef CONFIG_KLIPS_DEBUG
 		if(debug_radij) {
 			printk("klips_debug:rj_walktree: "
 			       "for: rn=0p%p rj_b=%d rj_flags=%x",
@@ -793,7 +792,6 @@ rj_walktree(h, f, w)
 				       (u_int)ntohl(((struct sockaddr_encap *)rn->rj_key)->sen_ip_dst.s_addr))
 				;
 		}
-#endif /* CONFIG_KLIPS_DEBUG */
 		base = rn;
 		/* If at right child go back up, otherwise, go right */
 		while (rn->rj_p->rj_r == rn && (rn->rj_flags & RJF_ROOT) == 0)
@@ -802,7 +800,6 @@ rj_walktree(h, f, w)
 		for (rn = rn->rj_p->rj_r; rn->rj_b >= 0;)
 			rn = rn->rj_l;
 		next = rn;
-#ifdef CONFIG_KLIPS_DEBUG
 		if(debug_radij) {
 			printk("klips_debug:rj_walktree: "
 			       "processing leaves, rn=0p%p rj_b=%d rj_flags=%x",
@@ -817,11 +814,9 @@ rj_walktree(h, f, w)
 				       (u_int)ntohl(((struct sockaddr_encap *)rn->rj_key)->sen_ip_dst.s_addr))
 				;
 		}
-#endif /* CONFIG_KLIPS_DEBUG */
 		/* Process leaves */
 		while ((rn = base)) {
 			base = rn->rj_dupedkey;
-#ifdef CONFIG_KLIPS_DEBUG
 			if(debug_radij) {
 				printk("klips_debug:rj_walktree: "
 				       "while: base=0p%p rn=0p%p rj_b=%d rj_flags=%x",
@@ -837,7 +832,6 @@ rj_walktree(h, f, w)
 					       (u_int)ntohl(((struct sockaddr_encap *)rn->rj_key)->sen_ip_dst.s_addr))
 					;
 			}
-#endif /* CONFIG_KLIPS_DEBUG */
 			if (!(rn->rj_flags & RJF_ROOT) && (error = (*f)(rn, w)))
 				return (-error);
 		}

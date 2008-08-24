@@ -133,12 +133,7 @@ static __u32 zeroes[64];
 int ipsec_xmit_trap_count = 0;
 int ipsec_xmit_trap_sendcount = 0;
 
-#ifdef CONFIG_KLIPS_DEBUG
 #define dmp(_x,_y,_z) if(debug_xmit && sysctl_ipsec_debug_verbose) ipsec_dmp_block(_x,_y,_z)
-#else /* CONFIG_KLIPS_DEBUG */
-#define dmp(_x, _y, _z) 
-#endif /* CONFIG_KLIPS_DEBUG */
-
 
 #if !defined(SKB_COPY_EXPAND) || defined(KLIPS_UNIT_TESTS)
 /*
@@ -262,7 +257,6 @@ skb_copy_expand(const struct sk_buff *skb, int headroom,
 }
 #endif /* !SKB_COPY_EXPAND */
 
-#ifdef CONFIG_KLIPS_DEBUG
 void
 ipsec_print_ip(struct iphdr *ip)
 {
@@ -324,7 +318,6 @@ ipsec_print_ip(struct iphdr *ip)
 		ipsec_dmp_block("ip_print", c, len);
 	}
 }
-#endif /* CONFIG_KLIPS_DEBUG */
 
 #ifdef MSS_HACK
 /*
@@ -376,7 +369,6 @@ ipsec_adjust_mss(struct sk_buff *skb, struct tcphdr *tcph, u_int16_t mtu)
 }
 #endif	/* MSS_HACK */
 
-#ifdef CONFIG_KLIPS_DEBUG
 DEBUG_NO_STATIC char *
 ipsec_xmit_err(int err)
 {
@@ -418,7 +410,6 @@ ipsec_xmit_err(int err)
 	snprintf(tmp, sizeof(tmp), "%d", err);
 	return tmp;
 }
-#endif
                                                         
 /*
  * Sanity checks
@@ -765,11 +756,9 @@ ipsec_xmit_esp(struct ipsec_xmit_state *ixs)
 		return IPSEC_XMIT_ESP_BADALG;
 	}
 	
-#ifdef CONFIG_KLIPS_DEBUG		
 	if(debug_tunnel & DB_TN_ENCAP) {
 		dmp("pre-encrypt", ixs->dat, ixs->len);
 	}
-#endif
 
 	/*
 	 * Do all operations here:
@@ -1028,14 +1017,10 @@ ipsec_xmit_ipip(struct ipsec_xmit_state *ixs)
 enum ipsec_xmit_value
 ipsec_xmit_ipcomp(struct ipsec_xmit_state *ixs)
 {
-#ifdef CONFIG_KLIPS_DEBUG
 	unsigned int old_tot_len;
-#endif
 	int flags = 0;
 
-#ifdef CONFIG_KLIPS_DEBUG
 	old_tot_len = ntohs(ixs->iph->tot_len);
-#endif /* CONFIG_KLIPS_DEBUG */
 
 	ixs->ipsp->ips_comp_ratio_dbytes += ntohs(ixs->iph->tot_len);
 	ixs->skb = skb_compress(ixs->skb, ixs->ipsp, &flags);
@@ -1048,7 +1033,6 @@ ipsec_xmit_ipcomp(struct ipsec_xmit_state *ixs)
 
 	ixs->ipsp->ips_comp_ratio_cbytes += ntohs(ixs->iph->tot_len);
 
-#ifdef CONFIG_KLIPS_DEBUG
 	if (debug_tunnel & DB_TN_CROUT)
 	{
 		if (old_tot_len > ntohs(ixs->iph->tot_len))
@@ -1065,7 +1049,6 @@ ipsec_xmit_ipcomp(struct ipsec_xmit_state *ixs)
 					"packet did not compress (flags = %d).\n",
 					flags);
 	}
-#endif /* CONFIG_KLIPS_DEBUG */
 	return IPSEC_XMIT_OK;
 }
 
@@ -1207,7 +1190,6 @@ static int create_hold_eroute(struct eroute *origtrap,
 	  }
 	}
 
-#ifdef CONFIG_KLIPS_DEBUG
 	if (debug_pfkey) {
 		char buf1[64], buf2[64];
 		subnettoa(hold_eroute.er_eaddr.sen_ip_src,
@@ -1221,7 +1203,6 @@ static int create_hold_eroute(struct eroute *origtrap,
 			    buf2, ntohs(hold_eroute.er_eaddr.sen_dport),
 			    hold_eroute.er_eaddr.sen_proto);
 	}
-#endif /* CONFIG_KLIPS_DEBUG */
 
 	if (ipsec_breakroute(&(hold_eroute.er_eaddr), &(hold_eroute.er_emask),
 			     &first, &last)) {
@@ -1318,9 +1299,7 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 		case SPI_TRAPSUBNET:
 		{
 			struct sockaddr_in src, dst;
-#ifdef CONFIG_KLIPS_DEBUG
 			char bufsrc[ADDRTOA_BUF], bufdst[ADDRTOA_BUF];
-#endif /* CONFIG_KLIPS_DEBUG */
 
 			/* Signal all listening KMds with a PF_KEY ACQUIRE */
 
@@ -1888,11 +1867,9 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 			    skb_headroom(ixs->skb), skb_tailroom(ixs->skb));
 	}
 		
-#ifdef CONFIG_KLIPS_DEBUG
 	if(debug_tunnel & DB_TN_ENCAP) {
 		ipsec_print_ip(ixs->iph);
 	}
-#endif
 
 cleanup:
 	return bundle_stat;

@@ -69,11 +69,7 @@
 #include "openswan/ipsec_alg.h"
 #include "ipsec_ocf.h"
 
-#ifdef CONFIG_KLIPS_DEBUG
 #define ESP_DMP(_x,_y,_z) if(debug_rcv && sysctl_ipsec_debug_verbose) ipsec_dmp_block(_x,_y,_z)
-#else
-#define ESP_DMP(_x,_y,_z)
-#endif
 
 #ifdef CONFIG_KLIPS_ESP
 enum ipsec_rcv_value
@@ -249,7 +245,6 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	if (ipsec_alg_esp_encrypt(ipsp, 
 				  idat, irs->ilen, espp->esp_iv, 
 				  IPSEC_ALG_DECRYPT) <= 0) {
-#ifdef CONFIG_KLIPS_DEBUG
 		KLIPS_ERROR(debug_rcv, "klips_error:ipsec_rcv: "
 			    "got packet with esplen = %d "
 			    "from %s -- should be on "
@@ -258,7 +253,6 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 			    irs->ilen,
 			    irs->ipsaddr_txt,
 			    ipsp->ips_encalg);
-#endif
 		if(irs->stats) {
 			irs->stats->rx_errors++;
 		}

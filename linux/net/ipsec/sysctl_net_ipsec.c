@@ -12,12 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: sysctl_net_ipsec.c,v 1.17.10.2 2007/10/30 21:42:25 paul Exp $
- */
-
-/* -*- linux-c -*-
- *
- * Initiated April 3, 1998, Richard Guy Briggs <rgb@conscoop.ottawa.on.ca>
  */
 
 #include <linux/version.h>
@@ -28,7 +22,6 @@
 
 #ifdef CONFIG_SYSCTL
 
-#ifdef CONFIG_KLIPS_DEBUG
 extern int       debug_ah;
 extern int       debug_esp;
 extern int       debug_mast;
@@ -45,7 +38,6 @@ extern int sysctl_ipsec_debug_verbose;
 #ifdef CONFIG_KLIPS_IPCOMP
 extern int sysctl_ipsec_debug_ipcomp;
 #endif /* CONFIG_KLIPS_IPCOMP */
-#endif /* CONFIG_KLIPS_DEBUG */
 
 extern int sysctl_ipsec_icmp;
 extern int sysctl_ipsec_inbound_policy_check;
@@ -54,7 +46,6 @@ int sysctl_ipsec_regress_pfkey_lossage;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
 #define NET_IPSEC CTL_UNNUMBERED
-#ifdef CONFIG_KLIPS_DEBUG
 	#define NET_IPSEC_DEBUG_AH		CTL_UNNUMBERED
 	#define NET_IPSEC_DEBUG_ESP		CTL_UNNUMBERED
 	#define NET_IPSEC_DEBUG_TUNNEL		CTL_UNNUMBERED
@@ -67,7 +58,6 @@ int sysctl_ipsec_regress_pfkey_lossage;
 	#define NET_IPSEC_DEBUG_PFKEY		CTL_UNNUMBERED
 	#define NET_IPSEC_DEBUG_VERBOSE		CTL_UNNUMBERED
 	#define NET_IPSEC_DEBUG_IPCOMP		CTL_UNNUMBERED
-#endif /* CONFIG_KLIPS_DEBUG */
 	#define NET_IPSEC_ICMP			CTL_UNNUMBERED
 	#define NET_IPSEC_INBOUND_POLICY_CHECK	CTL_UNNUMBERED
 	#define NET_IPSEC_TOS			CTL_UNNUMBERED
@@ -79,7 +69,6 @@ enum {
 
 #define NET_IPSEC 2112 /* Random number - if not blame linux sysctl people */ 
 
-#ifdef CONFIG_KLIPS_DEBUG
 	NET_IPSEC_DEBUG_AH=1,
 	NET_IPSEC_DEBUG_ESP=2,
 	NET_IPSEC_DEBUG_TUNNEL=3,
@@ -92,7 +81,7 @@ enum {
 	NET_IPSEC_DEBUG_PFKEY=10,
 	NET_IPSEC_DEBUG_VERBOSE=11,
 	NET_IPSEC_DEBUG_IPCOMP=12,
-#endif /* CONFIG_KLIPS_DEBUG */
+
 	NET_IPSEC_ICMP=13,
 	NET_IPSEC_INBOUND_POLICY_CHECK=14,
 	NET_IPSEC_TOS=15,
@@ -104,7 +93,6 @@ enum {
 
 static ctl_table ipsec_table[] = {
 
-#ifdef CONFIG_KLIPS_DEBUG
 #ifdef CTL_TABLE_PARENT
        { .ctl_name = NET_IPSEC_DEBUG_AH,
          .procname = "debug_ah",
@@ -250,7 +238,6 @@ static ctl_table ipsec_table[] = {
 	{ NET_IPSEC_DEBUG_VERBOSE, "debug_verbose",&sysctl_ipsec_debug_verbose,
 	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
 #endif /* CTL_TABLE_PARENT */
-#endif /* CONFIG_KLIPS_DEBUG */
 
 #ifdef CONFIG_KLIPS_IPCOMP
 #ifdef CTL_TABLE_PARENT

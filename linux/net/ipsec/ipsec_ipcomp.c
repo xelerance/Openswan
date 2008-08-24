@@ -56,6 +56,7 @@
 #include "openswan/ipsec_xform.h"
 #include "openswan/ipsec_tunnel.h"
 #include "openswan/ipsec_rcv.h"
+extern int sysctl_ipsec_inbound_policy_check;
 #include "openswan/ipsec_xmit.h"
 
 #include "openswan/ipsec_auth.h"
@@ -177,9 +178,7 @@ enum ipsec_xmit_value
 ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
 {
   unsigned int flags = 0;
-#ifdef CONFIG_KLIPS_DEBUG
   unsigned int old_tot_len = ntohs(ixs->iph->tot_len);
-#endif /* CONFIG_KLIPS_DEBUG */
 
   ixs->ipsp->ips_comp_ratio_dbytes += ntohs(ixs->iph->tot_len);
 
@@ -193,7 +192,6 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
   
   ixs->ipsp->ips_comp_ratio_cbytes += ntohs(ixs->iph->tot_len);
   
-#ifdef CONFIG_KLIPS_DEBUG
   if (debug_tunnel & DB_TN_CROUT)
     {
       if (old_tot_len > ntohs(ixs->iph->tot_len))
@@ -210,7 +208,6 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
 		    "packet did not compress (flags = %d).\n",
 		    flags);
     }
-#endif /* CONFIG_KLIPS_DEBUG */
 
   return IPSEC_XMIT_OK;
 }

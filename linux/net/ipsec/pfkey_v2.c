@@ -470,7 +470,6 @@ pfkey_destroy_socket(struct sock *sk)
 		    sk->sk_receive_queue.prev);
 
 	while(sk && ((skb=skb_dequeue(&(sk->sk_receive_queue)))!=NULL)) {
-#ifdef CONFIG_KLIPS_DEBUG
 		if(debug_pfkey && sysctl_ipsec_debug_verbose) {
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_destroy_socket: "
@@ -531,7 +530,6 @@ pfkey_destroy_socket(struct sock *sk)
 			printk(" destructor:0p%p", skb->destructor);
 			printk("\n");
 		}
-#endif /* CONFIG_KLIPS_DEBUG */
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_destroy_socket: "
 			    "skb=0p%p freed.\n",
@@ -1126,23 +1124,17 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 	int len=0;
 	struct sock *sk;
 	
-#ifdef CONFIG_KLIPS_DEBUG
 	if(!sysctl_ipsec_debug_verbose) {
-#endif /* CONFIG_KLIPS_DEBUG */
 	len += ipsec_snprintf(buffer, length,
 		      "    sock   pid   socket     next     prev e n p sndbf    Flags     Type St\n");
-#ifdef CONFIG_KLIPS_DEBUG
 	} else {
 	len += ipsec_snprintf(buffer, length,
 		      "    sock   pid d    sleep   socket     next     prev e r z n p sndbf    stamp    Flags     Type St\n");
 	}
-#endif /* CONFIG_KLIPS_DEBUG */
 
 	sk_for_each(sk, node, &pfkey_sock_list) {
 
-#ifdef CONFIG_KLIPS_DEBUG
 		if(!sysctl_ipsec_debug_verbose) {
-#endif /* CONFIG_KLIPS_DEBUG */
 		  len += ipsec_snprintf(buffer+len, length-len,
 					"%8p %5d %8p %d %d %5d %08lX %8X %2X\n",
 					sk,
@@ -1154,7 +1146,6 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 					sk->sk_socket->flags,
 					sk->sk_socket->type,
 					sk->sk_socket->state);
-#ifdef CONFIG_KLIPS_DEBUG
 		} else {
 		  struct timeval t;
 		  grab_socket_timeval(t, *sk);
@@ -1180,7 +1171,6 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 					sk->sk_socket->type,
 					sk->sk_socket->state);
 		}
-#endif /* CONFIG_KLIPS_DEBUG */
 		
 		if (len >= max_content) {
 			/* we've done all that can fit -- stop loop */

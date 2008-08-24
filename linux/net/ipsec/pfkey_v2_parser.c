@@ -1486,9 +1486,7 @@ pfkey_expire_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 {
 	int error = 0;
 	struct socket_list *pfkey_socketsp;
-#ifdef CONFIG_KLIPS_DEBUG
 	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
-#endif /* CONFIG_KLIPS_DEBUG */
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_expire_parse: .\n");
@@ -1835,9 +1833,6 @@ DEBUG_NO_STATIC int
 pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extracted_data* extr)
 {
 	int error = 0;
-#ifdef CONFIG_KLIPS_DEBUG
-	char buf1[64], buf2[64];
-#endif /* CONFIG_KLIPS_DEBUG */
 	struct sadb_ext *extensions_reply[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
@@ -1870,8 +1865,8 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 	srcmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_src;
 	dstmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_dst;
 
-#ifdef CONFIG_KLIPS_DEBUG
 	if (debug_pfkey) {
+		char buf1[64], buf2[64];
 		subnettoa(extr->eroute->er_eaddr.sen_ip_src,
 			  extr->eroute->er_emask.sen_ip_src, 0, buf1, sizeof(buf1));
 		subnettoa(extr->eroute->er_eaddr.sen_ip_dst,
@@ -1881,7 +1876,6 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 			    "calling breakeroute and/or makeroute for %s->%s\n",
 			    buf1, buf2);
 	}
-#endif /* CONFIG_KLIPS_DEBUG */
 	if(extr->ips->ips_flags & SADB_X_SAFLAGS_INFLOW) {
 /*	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) */ 
 		struct ipsec_sa *ipsp, *ipsq;
@@ -2087,9 +2081,6 @@ DEBUG_NO_STATIC int
 pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extracted_data* extr)
 {
 	int error = 0;
-#ifdef CONFIG_KLIPS_DEBUG
-	char buf1[64], buf2[64];
-#endif /* CONFIG_KLIPS_DEBUG */
 	struct sadb_ext *extensions_reply[K_SADB_EXT_MAX+1];
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
@@ -2142,8 +2133,8 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		srcmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_src;
 		dstmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_dst;
 
-#ifdef CONFIG_KLIPS_DEBUG
 		if (debug_pfkey) {
+			char buf1[64], buf2[64];
 			subnettoa(extr->eroute->er_eaddr.sen_ip_src,
 				  extr->eroute->er_emask.sen_ip_src, 0, buf1, sizeof(buf1));
 			subnettoa(extr->eroute->er_eaddr.sen_ip_dst,
@@ -2153,7 +2144,6 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 				    "calling breakeroute for %s->%s\n",
 				    buf1, buf2);
 		}
-#endif /* CONFIG_KLIPS_DEBUG */
 		error = ipsec_breakroute(&(extr->eroute->er_eaddr),
 					     &(extr->eroute->er_emask),
 					     &first, &last);

@@ -421,10 +421,9 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 
 		if (portp != 0)
 			*portp = ((struct sockaddr_in*)s)->sin_port;
-#ifdef CONFIG_KLIPS_DEBUG
 		if(extr->eroute) {
-			char buf1[64], buf2[64];
 			if (debug_pfkey) {
+				char buf1[64], buf2[64];
 				subnettoa(extr->eroute->er_eaddr.sen_ip_src,
 					  extr->eroute->er_emask.sen_ip_src, 0, buf1, sizeof(buf1));
 				subnettoa(extr->eroute->er_eaddr.sen_ip_dst,
@@ -438,7 +437,6 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 					    ntohs(extr->eroute->er_eaddr.sen_dport));
 			}
 		}
-#endif /* CONFIG_KLIPS_DEBUG */
 	}
 
 	ipsp = extr->ips;
@@ -821,7 +819,6 @@ pfkey_x_debug_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_x_debug_process: .\n");
 
-#ifdef CONFIG_KLIPS_DEBUG
 		if(pfkey_x_debug->sadb_x_debug_netlink >>
 		   (sizeof(pfkey_x_debug->sadb_x_debug_netlink) * 8 - 1)) {
 			pfkey_x_debug->sadb_x_debug_netlink &=
@@ -862,11 +859,6 @@ pfkey_x_debug_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 #endif /* CONFIG_KLIPS_IPCOMP */
 			sysctl_ipsec_debug_verbose &= pfkey_x_debug->sadb_x_debug_verbose;
 		}
-#else /* CONFIG_KLIPS_DEBUG */
-		printk("klips_debug:pfkey_x_debug_process: "
-		       "debugging not enabled\n");
-		SENDERR(EINVAL);
-#endif /* CONFIG_KLIPS_DEBUG */
 	
 errlab:
 	return error;

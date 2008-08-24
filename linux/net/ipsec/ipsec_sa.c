@@ -590,7 +590,6 @@ __ipsec_sa_put(struct ipsec_sa *ips, const char *func, int line)
 		return;
 	}
 
-#ifdef CONFIG_KLIPS_DEBUG
 	if(debug_xform) {
 		char sa[SATOT_BUF];
 		size_t sa_len;
@@ -605,7 +604,6 @@ __ipsec_sa_put(struct ipsec_sa *ips, const char *func, int line)
 			    atomic_read(&ips->ips_refcount),
 			    func, line);
 	}
-#endif
 
 	if(atomic_dec_and_test(&ips->ips_refcount)) {
 		KLIPS_PRINT(debug_xform,
@@ -624,7 +622,6 @@ __ipsec_sa_get(struct ipsec_sa *ips, const char *func, int line)
         if (ips == NULL)
                 return NULL;
 
-#ifdef CONFIG_KLIPS_DEBUG
 	if(debug_xform) {
 		char sa[SATOT_BUF];
 		size_t sa_len;
@@ -639,7 +636,6 @@ __ipsec_sa_get(struct ipsec_sa *ips, const char *func, int line)
 		      atomic_read(&ips->ips_refcount),
 		      func, line);
 	}
-#endif
 
 	atomic_inc(&ips->ips_refcount);
 

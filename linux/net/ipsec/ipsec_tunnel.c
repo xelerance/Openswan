@@ -163,7 +163,6 @@ ipsec_tunnel_strip_hard_header(struct ipsec_xmit_state *ixs)
 		ixs->hard_header_len = ixs->physdev->hard_header_len;
 	}
 
-#ifdef CONFIG_KLIPS_DEBUG
 	if (debug_tunnel & DB_TN_XMIT) {
 		int i;
 		char c;
@@ -178,7 +177,6 @@ ipsec_tunnel_strip_hard_header(struct ipsec_xmit_state *ixs)
 		}
 		printk(" \n");
 	}
-#endif /* CONFIG_KLIPS_DEBUG */
 
 	KLIPS_IP_PRINT(debug_tunnel & DB_TN_XMIT, ixs->iph);
 
@@ -1172,7 +1170,6 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 	for (i=0; i<dev->addr_len; i++) {
 		dev->dev_addr[i] = physdev->dev_addr[i];
 	}
-#ifdef CONFIG_KLIPS_DEBUG
 	if(debug_tunnel & DB_TN_INIT) {
 		printk(KERN_INFO "klips_debug:ipsec_tunnel_attach: "
 		       "physical device %s being attached has HW address: %2x",
@@ -1182,7 +1179,6 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 		}
 		printk("\n");
 	}
-#endif /* CONFIG_KLIPS_DEBUG */
 
 	return 0;
 }

@@ -13,7 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_xmit.h,v 1.14 2005/05/11 01:00:26 mcr Exp $
  */
 
 #include "openswan/ipsec_sa.h"
@@ -198,73 +197,11 @@ extern void ipsec_xmit_cleanup(struct ipsec_xmit_state*ixs);
 extern int ipsec_xmit_trap_count;
 extern int ipsec_xmit_trap_sendcount;
 
-#ifdef CONFIG_KLIPS_DEBUG
 extern int debug_xmit;
 extern int debug_mast;
 
 #define ipsec_xmit_dmp(_x,_y, _z) if (debug_xmit && sysctl_ipsec_debug_verbose) ipsec_dmp_block(_x,_y,_z)
-#else
-#define ipsec_xmit_dmp(_x,_y, _z) do {} while(0)
-
-#endif /* CONFIG_KLIPS_DEBUG */
 
 extern int sysctl_ipsec_debug_verbose;
 extern int sysctl_ipsec_icmp;
 extern int sysctl_ipsec_tos;
-
-
-/*
- * $Log: ipsec_xmit.h,v $
- * Revision 1.14  2005/05/11 01:00:26  mcr
- * 	do not call debug routines if !defined KLIPS_DEBUG.
- *
- * Revision 1.13  2005/04/29 05:01:38  mcr
- * 	use ipsec_dmp_block.
- * 	added cur_mtu to ixs instead of using ixs->dev.
- *
- * Revision 1.12  2004/08/20 21:45:37  mcr
- * 	CONFIG_KLIPS_NAT_TRAVERSAL is not used in an attempt to
- * 	be 26sec compatible. But, some defines where changed.
- *
- * Revision 1.11  2004/08/03 18:18:21  mcr
- * 	in 2.6, use "net_device" instead of #define device->net_device.
- * 	this probably breaks 2.0 compiles.
- *
- * Revision 1.10  2004/07/10 19:08:41  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.9  2004/04/06 02:49:08  mcr
- * 	pullup of algo code from alg-branch.
- *
- * Revision 1.8  2004/04/05 19:55:07  mcr
- * Moved from linux/include/freeswan/ipsec_xmit.h,v
- *
- * Revision 1.7  2004/02/03 03:11:40  mcr
- * 	new xmit type if the UDP encapsulation is wrong.
- *
- * Revision 1.6  2003/12/13 19:10:16  mcr
- * 	refactored rcv and xmit code - same as FS 2.05.
- *
- * Revision 1.5  2003/12/10 01:20:06  mcr
- * 	NAT-traversal patches to KLIPS.
- *
- * Revision 1.4  2003/12/06 16:37:04  mcr
- * 	1.4.7a X.509 patch applied.
- *
- * Revision 1.3  2003/10/31 02:27:05  mcr
- * 	pulled up port-selector patches and sa_id elimination.
- *
- * Revision 1.2.4.2  2003/10/29 01:10:19  mcr
- * 	elimited "struct sa_id"
- *
- * Revision 1.2.4.1  2003/09/21 13:59:38  mcr
- * 	pre-liminary X.509 patch - does not yet pass tests.
- *
- * Revision 1.2  2003/06/20 01:42:13  mcr
- * 	added counters to measure how many ACQUIREs we send to pluto,
- * 	and how many are successfully sent.
- *
- * Revision 1.1  2003/02/12 19:31:03  rgb
- * Refactored from ipsec_tunnel.c
- *
- */

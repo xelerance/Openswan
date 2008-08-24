@@ -139,10 +139,8 @@ ipsec_eroute_get_info(char *buffer,
 {
 	struct wsbuf w = {buffer, length, offset, 0, 0};
 
-#ifdef CONFIG_KLIPS_DEBUG
 	if (debug_radij & DB_RJ_DUMPTREES)
 	  rj_dumptrees();			/* XXXXXXXXX */
-#endif /* CONFIG_KLIPS_DEBUG */
 
 	KLIPS_PRINT(debug_tunnel & DB_TN_PROCFS,
 		    "klips_debug:ipsec_eroute_get_info: "
@@ -417,13 +415,11 @@ ipsec_spi_get_info(char *buffer,
 						      sa_p->ips_out->name,
 						      sa_p->ips_transport_direct);
 			}
-#ifdef CONFIG_KLIPS_DEBUG
 			if(debug_xform) {
 			len += ipsec_snprintf(buffer+len, length-len, " reftable=%lu refentry=%lu",
 				       (unsigned long)IPsecSAref2table(sa_p->ips_ref),
 				       (unsigned long)IPsecSAref2entry(sa_p->ips_ref));
 			}
-#endif /* CONFIG_KLIPS_DEBUG */
 
 			len += ipsec_snprintf(buffer+len, length-len, "\n");
 
@@ -728,7 +724,6 @@ ipsec_birth_set(struct file *file, const char *buffer,
 }
 
 
-#ifdef CONFIG_KLIPS_DEBUG
 IPSEC_PROCFS_DEBUG_NO_STATIC
 int
 ipsec_klipsdebug_get_info(char *buffer,
@@ -763,7 +758,6 @@ ipsec_klipsdebug_get_info(char *buffer,
 		len = length;
 	return len;
 }
-#endif /* CONFIG_KLIPS_DEBUG */
 
 IPSEC_PROCFS_DEBUG_NO_STATIC
 int
@@ -842,7 +836,6 @@ struct proc_dir_entry ipsec_version =
 	NULL, NULL, NULL, NULL, NULL
 };
 
-#ifdef CONFIG_KLIPS_DEBUG
 struct proc_dir_entry ipsec_klipsdebug =
 {
 	0,
@@ -852,7 +845,6 @@ struct proc_dir_entry ipsec_klipsdebug =
 	ipsec_klipsdebug_get_info,
 	NULL, NULL, NULL, NULL, NULL
 };
-#endif /* CONFIG_KLIPS_DEBUG */
 #endif /* !PROC_FS_2325 */
 #endif /* CONFIG_PROC_FS */
 
@@ -866,9 +858,7 @@ struct ipsec_proc_list {
 	void                   *data;
 };
 static struct ipsec_proc_list proc_items[]={
-#ifdef CONFIG_KLIPS_DEBUG
 	{"klipsdebug", &proc_net_ipsec_dir, NULL,             ipsec_klipsdebug_get_info, NULL, NULL},
-#endif
 	{"eroute",     &proc_net_ipsec_dir, &proc_eroute_dir, NULL, NULL, NULL},
 	{"all",        &proc_eroute_dir,    NULL,             ipsec_eroute_get_info,     NULL, NULL},
 	{"spi",        &proc_net_ipsec_dir, &proc_spi_dir,    NULL, NULL, NULL},
@@ -914,9 +904,7 @@ ipsec_proc_init()
 	error |= proc_register_dynamic(&PROC_NET, &ipsec_spigrp);
 	error |= proc_register_dynamic(&PROC_NET, &ipsec_tncfg);
 	error |= proc_register_dynamic(&PROC_NET, &ipsec_version);
-#ifdef CONFIG_KLIPS_DEBUG
 	error |= proc_register_dynamic(&PROC_NET, &ipsec_klipsdebug);
-#endif /* CONFIG_KLIPS_DEBUG */
 #endif
 
 	/* for 2.2 kernels */
@@ -926,9 +914,7 @@ ipsec_proc_init()
 	error |= proc_register(PROC_NET, &ipsec_spigrp);
 	error |= proc_register(PROC_NET, &ipsec_tncfg);
 	error |= proc_register(PROC_NET, &ipsec_version);
-#ifdef CONFIG_KLIPS_DEBUG
 	error |= proc_register(PROC_NET, &ipsec_klipsdebug);
-#endif /* CONFIG_KLIPS_DEBUG */
 #endif
 
 	/* for 2.4 kernels */
@@ -991,11 +977,9 @@ ipsec_proc_cleanup()
 	/* for 2.0 and 2.2 kernels */
 #if !defined(PROC_FS_2325) 
 
-#ifdef CONFIG_KLIPS_DEBUG
 	if (proc_net_unregister(ipsec_klipsdebug.low_ino) != 0)
 		printk("klips_debug:ipsec_cleanup: "
 		       "cannot unregister /proc/net/ipsec_klipsdebug\n");
-#endif /* CONFIG_KLIPS_DEBUG */
 
 	if (proc_net_unregister(ipsec_version.low_ino) != 0)
 		printk("klips_debug:ipsec_cleanup: "
@@ -1033,9 +1017,7 @@ ipsec_proc_cleanup()
 	}
 
 
-#ifdef CONFIG_KLIPS_DEBUG
 	remove_proc_entry("ipsec_klipsdebug", PROC_NET);
-#endif /* CONFIG_KLIPS_DEBUG */
 	remove_proc_entry("ipsec_eroute",     PROC_NET);
 	remove_proc_entry("ipsec_spi",        PROC_NET);
 	remove_proc_entry("ipsec_spigrp",     PROC_NET);
