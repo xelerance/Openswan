@@ -684,9 +684,7 @@ rcvleave:
 static enum ipsec_rcv_value
 ipsec_rcv_init(struct ipsec_rcv_state *irs)
 {
-#ifdef CONFIG_KLIPS_DEBUG
 	struct net_device *dev;
-#endif /* CONFIG_KLIPS_DEBUG */
 	unsigned char protoc;
 	struct iphdr *ipp;
 	struct net_device_stats *stats = NULL;		/* This device's statistics */
