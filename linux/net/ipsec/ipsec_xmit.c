@@ -2082,9 +2082,12 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	{
 		int err;
 
-/* XXX huh, we include linux/netfilter_ipv4.h where NF_IP_LOCAL_OUT is defined as 3 */
+/*
+ * XXX: We include linux/netfilter_ipv4.h where NF_IP_LOCAL_OUT is defined as 3,
+ * but an ifndef __KERNEL__ prevents us from using it. There must be a reason? 
+ */
 #ifndef NF_IP_LOCAL_OUT
-#warning I dont understand why NF_IP_LOCAL_OUT is undefined when including linux/netfilter_ipv4.h
+#warning NF_IP_LOCAL_OUT hardcoded to 3 - from linux/netfilter_ipv4.h which does not allow including in kernel mode
 #define NF_IP_LOCAL_OUT 3
 #endif
 		err = NF_HOOK(PF_INET, NF_IP_LOCAL_OUT, ixs->skb, NULL,
