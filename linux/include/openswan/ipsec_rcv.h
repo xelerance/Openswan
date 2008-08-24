@@ -13,7 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_rcv.h,v 1.28.2.1 2006/07/10 15:52:20 paul Exp $
  */
 
 #ifndef IPSEC_RCV_H
@@ -190,12 +189,10 @@ ipsec_rcv(struct sk_buff *skb,
 	  unsigned short xlen);
 #endif /* PROTO_HANDLER_SINGLE_PARM */
 
-#ifdef CONFIG_KLIPS_DEBUG
 extern int debug_rcv;
 #define ipsec_rcv_dmp(_x,_y, _z) if (debug_rcv && sysctl_ipsec_debug_verbose) ipsec_dmp_block(_x,_y,_z)
 #else
 #define ipsec_rcv_dmp(_x,_y, _z) do {} while(0)
-#endif /* CONFIG_KLIPS_DEBUG */
 
 extern int sysctl_ipsec_inbound_policy_check;
 #endif /* __KERNEL__ */
@@ -208,54 +205,5 @@ extern int ipsec_rcv_state_cache_init (void);
 extern void ipsec_rcv_state_cache_cleanup (void);
 
 #endif /* IPSEC_RCV_H */
-
-/*
- * $Log: ipsec_rcv.h,v $
- * Revision 1.28.2.1  2006/07/10 15:52:20  paul
- * Fix for bug #642 by Bart Trojanowski
- *
- * Revision 1.28  2005/05/11 00:59:45  mcr
- * 	do not call debug routines if !defined KLIPS_DEBUG.
- *
- * Revision 1.27  2005/04/29 04:59:46  mcr
- * 	use ipsec_dmp_block.
- *
- * Revision 1.26  2005/04/13 22:48:35  mcr
- * 	added comments, and removed some log.
- * 	removed Linux 2.0 support.
- *
- * Revision 1.25  2005/04/08 18:25:37  mcr
- * 	prototype klips26 encap receive function
- *
- * Revision 1.24  2004/08/20 21:45:37  mcr
- * 	CONFIG_KLIPS_NAT_TRAVERSAL is not used in an attempt to
- * 	be 26sec compatible. But, some defines where changed.
- *
- * Revision 1.23  2004/08/03 18:17:40  mcr
- * 	in 2.6, use "net_device" instead of #define device->net_device.
- * 	this probably breaks 2.0 compiles.
- *
- * Revision 1.22  2004/07/10 19:08:41  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.21  2004/04/06 02:49:08  mcr
- * 	pullup of algo code from alg-branch.
- *
- * Revision 1.20  2004/04/05 19:55:06  mcr
- * Moved from linux/include/freeswan/ipsec_rcv.h,v
- *
- * Revision 1.19  2003/12/15 18:13:09  mcr
- * 	when compiling with NAT traversal, don't assume that the
- * 	kernel has been patched, unless CONFIG_IPSEC_NAT_NON_ESP
- * 	is set.
- *
- * history elided 2005-04-12.
- *
- * Local Variables:
- * c-basic-offset:8
- * c-style:linux
- * End:
- *
- */
 
 
