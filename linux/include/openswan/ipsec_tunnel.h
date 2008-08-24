@@ -112,7 +112,6 @@ extern int sysctl_ipsec_debug_verbose;
 #endif /* CONFIG_KLIPS_DEBUG */
 #endif /* __KERNEL__ */
 
-#ifdef CONFIG_KLIPS_DEBUG
 #define DB_TN_INIT	0x0001
 #define DB_TN_PROCFS	0x0002
 #define DB_TN_XMIT	0x0010
@@ -121,7 +120,6 @@ extern int sysctl_ipsec_debug_verbose;
 #define DB_TN_OXFS	0x0080
 #define DB_TN_REVEC	0x0100
 #define DB_TN_ENCAP     0x0200
-#endif /* CONFIG_KLIPS_DEBUG */
 
 extern int ipsec_tunnel_deletenum(int vifnum);
 extern int ipsec_tunnel_createnum(int vifnum);
