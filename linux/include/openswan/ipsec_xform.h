@@ -100,7 +100,9 @@
 #define XFT_CONF		0x0100
 
 /* available if CONFIG_KLIPS_DEBUG is defined */
-#define DB_XF_INIT		0x0001
+#ifndef DB_XF_INIT
+# define DB_XF_INIT		0x0001
+#endif
 
 #define PROTO2TXT(x) \
 	(x) == IPPROTO_AH ? "AH" : \
