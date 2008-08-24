@@ -106,7 +106,6 @@ static struct proc_dir_entry *proc_stats_dir     = NULL;
 struct ipsec_birth_reply ipsec_ipv4_birth_packet;
 struct ipsec_birth_reply ipsec_ipv6_birth_packet;
 
-#ifdef CONFIG_KLIPS_DEBUG
 int debug_esp = 0;
 int debug_ah = 0;
 int sysctl_ipsec_inbound_policy_check = 1;
@@ -123,7 +122,6 @@ int sysctl_ipsec_debug_verbose = 0;
 int sysctl_ipsec_debug_ipcomp =0;
 int sysctl_ipsec_icmp = 0;
 int sysctl_ipsec_tos = 0;
-#endif /* CONFIG_KLIPS_DEBUG */
 
 #define DECREMENT_UNSIGNED(X, amount) ((amount < (X)) ? (X)-amount : 0)
 
