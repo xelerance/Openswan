@@ -24,6 +24,16 @@ const char *kernel_if_name()
 
 void scan_proc_shunts(void) {}
 
+bool kernel_overlap_supported()
+{
+	return 1;
+}
+
+bool get_sa_info(struct state *st, bool inbound, time_t *ago)
+{
+	return FALSE;
+}
+
 
 
 
