@@ -7,6 +7,12 @@ v2.6.18
 * Fix in deleting connections that might have caused some of our Delete
   Notifies to have gotten lost. Introduced in openswan 2.5.01 [paul]
 * Rekey= inverted yes/no, causing rekey=no to be rekey=yes [Shingo Yamawaki]
+* Some meory leaks / refcount fixes [Shingo Yamawaki]
+* Removed most of #ifdef CONFIG_KLIPS_DEBUG conditionals. We now always
+  compile in DEBUG support. [paul]
+* No longer use the assembly version of des_encrypt (dx86unix.S). It
+  is i386-i686 specific, requires framepointers and does not work with
+  CONFIG_REGPARM=y, which is the unconditional default for 2.6.17+ [paul]
 
 v2.6.17 [will be skipped due to bad tag]
 
