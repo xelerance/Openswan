@@ -1906,6 +1906,10 @@ ipsec_xmit_cleanup(struct ipsec_xmit_state*ixs)
 		kfree(ixs->ips.ips_ident_d.data);
 		ixs->ips.ips_ident_d.data=NULL;
 	}
+	if(ixs->ipsp) {
+			ipsec_sa_put(ixs->ipsp);
+			ixs->ipsp=NULL;
+	}
 }
 
 #ifdef NETDEV_23
