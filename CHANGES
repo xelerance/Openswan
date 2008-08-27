@@ -13,6 +13,8 @@ v2.6.18
 * No longer use the assembly version of des_encrypt (dx86unix.S). It
   is i386-i686 specific, requires framepointers and does not work with
   CONFIG_REGPARM=y, which is the unconditional default for 2.6.17+ [paul]
+* Bugtracker bugs fixed:
+  #978: ipsec.conf man page has typo in virtual_private sample line [tuomo]
 
 v2.6.17 [will be skipped due to bad tag]
 
@@ -32,8 +34,9 @@ v2.6.16
 * fixes for parser warnings [dhr]
 * Fix rmmod calls not to use -s since busybox rmmod does not support it [paul]
 * Fixes to KLIPS for newer 2.4 kernels [greg/davidm]
+* Road Warrior behind NAT - Aggressive Mode: wrong NAT-T decision [hiren joshi]
 * Bugtracker bugs fixed:
-  #965: xmlto man fails to generate ipsec.conf.5 man page  [bleve]
+  #965: xmlto man fails to generate ipsec.conf.5 man page  [tuomo]
 
 v2.6.15
 * Patch to support NETKEY backport on Debian kernels [Rene Mayrhofer]
