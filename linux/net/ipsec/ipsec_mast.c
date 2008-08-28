@@ -163,10 +163,9 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 				    ixs->physdev->ifindex /* rgb: should this be 0? */))) {
 		ixs->stats->tx_errors++;
 		KLIPS_PRINT(debug_mast & DB_MAST_XMIT,
-			    "klips_debug:ipsec_xmit_send: "
-			    "ip_route_output failed with error code %d, rt->u.dst.dev=%s, dropped\n",
-			    ixs->error,
-			    ixs->route->u.dst.dev->name);
+			    "klips_debug:ipsec_mast_send: "
+			    "ip_route_output failed with error code %d, dropped\n",
+			    ixs->error);
 		return IPSEC_XMIT_ROUTEERR;
 	}
 	if(ixs->dev == ixs->route->u.dst.dev) {
@@ -174,7 +173,7 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 		/* This is recursion, drop it. */
 		ixs->stats->tx_errors++;
 		KLIPS_PRINT(debug_mast & DB_MAST_XMIT,
-			    "klips_debug:ipsec_xmit_send: "
+			    "klips_debug:ipsec_mast_send: "
 			    "suspect recursion, dev=rt->u.dst.dev=%s, dropped\n",
 			    ixs->dev->name);
 		return IPSEC_XMIT_RECURSDETECT;
@@ -185,7 +184,7 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 	if(ixs->skb->len < ixs->skb->nh.raw - ixs->skb->data) {
 		ixs->stats->tx_errors++;
 		printk(KERN_WARNING
-		       "klips_error:ipsec_xmit_send: "
+		       "klips_error:ipsec_mast_send: "
 		       "tried to __skb_pull nh-data=%ld, %d available.  This should never happen, please report.\n",
 		       (unsigned long)(ixs->skb->nh.raw - ixs->skb->data),
 		       ixs->skb->len);
@@ -196,7 +195,7 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 	ipsec_nf_reset(ixs->skb);
 
 	KLIPS_PRINT(debug_mast & DB_MAST_XMIT,
-		    "klips_debug:ipsec_xmit_send: "
+		    "klips_debug:ipsec_mast_send: "
 		    "...done, calling ip_send() on device:%s\n",
 		    ixs->skb->dev ? ixs->skb->dev->name : "NULL");
 	KLIPS_IP_PRINT(debug_mast & DB_MAST_XMIT, ixs->skb->nh.iph);
@@ -208,7 +207,7 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 		if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {
 			if(net_ratelimit())
 				printk(KERN_ERR
-				       "klips_error:ipsec_xmit_send: "
+				       "klips_error:ipsec_mast_send: "
 				       "ip_send() failed, err=%d\n", 
 				       -err);
 			ixs->stats->tx_errors++;
