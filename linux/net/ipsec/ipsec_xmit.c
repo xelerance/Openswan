@@ -1092,7 +1092,13 @@ ipsec_xmit_cont(struct ipsec_xmit_state *ixs)
 	ixs->ipsp->ips_life.ipl_usetime.ipl_last = jiffies / HZ;
 	ixs->ipsp->ips_life.ipl_packets.ipl_count++; 
 
+	/* we are done with this SA */
+	ipsec_sa_put(ixs->ipsp); 
+
+	/* move to the next SA */
 	ixs->ipsp = ixs->ipsp->ips_next;
+	if (ixs->ipsp)
+		ipsec_sa_get(ixs->ipsp);
 
 	/*
 	 * start again if we have more work to do
@@ -1220,9 +1226,9 @@ static int create_hold_eroute(struct eroute *origtrap,
 			    hold_eroute.er_eaddr.sen_proto);
 	}
 	if (first != NULL)
-		kfree_skb(first);
+		ipsec_kfree_skb(first);
 	if (last != NULL)
-		kfree_skb(last);
+		ipsec_kfree_skb(last);
 
 	error = ipsec_makeroute(&(hold_eroute.er_eaddr),
 				&(hold_eroute.er_emask),
@@ -1891,11 +1897,11 @@ ipsec_xmit_cleanup(struct ipsec_xmit_state*ixs)
 		ixs->saved_header = NULL;
 	}
 	if(ixs->skb) {
-		dev_kfree_skb(ixs->skb);
+		ipsec_kfree_skb(ixs->skb);
 		ixs->skb=NULL;
 	}
 	if(ixs->oskb) {
-		dev_kfree_skb(ixs->oskb);
+		ipsec_kfree_skb(ixs->oskb);
 		ixs->oskb=NULL;
 	}
 	if (ixs->ips.ips_ident_s.data) {
@@ -2188,17 +2194,25 @@ ipsec_xsm(struct ipsec_xmit_state *ixs)
 	 * hasn't gone away while we were waiting for a task to complete
 	 */
 
-	if (ixs->ipsp && ipsec_sa_getbyid(&ixs->outgoing_said) == NULL) {
-		KLIPS_PRINT(debug_tunnel,
-			    "klips_debug:ipsec_xsm: "
-			    "no ipsec_sa for SA:%s: outgoing packet with no SA dropped\n",
-			    ixs->sa_len ? ixs->sa_txt : " (error)");
-		if (ixs->stats)
-			ixs->stats->tx_dropped++;
+	if (ixs->ipsp) {
+		struct ipsec_sa *ipsp;
+		ipsp = ipsec_sa_getbyid(&ixs->outgoing_said);
+		if (unlikely(ipsp == NULL)) {
+			KLIPS_PRINT(debug_tunnel,
+				"klips_debug:ipsec_xsm: "
+				"no ipsec_sa for SA:%s: "
+				"outgoing packet with no SA dropped\n",
+				ixs->sa_len ? ixs->sa_txt : " (error)");
+			if (ixs->stats)
+				ixs->stats->tx_dropped++;
 
-		/* drop through and cleanup */
-		stat = IPSEC_XMIT_SAIDNOTFOUND;
-		ixs->state = IPSEC_XSM_DONE;
+			/* drop through and cleanup */
+			stat = IPSEC_XMIT_SAIDNOTFOUND;
+			ixs->state = IPSEC_XSM_DONE;
+		} else {
+			/* put the ref count back */
+			ipsec_sa_put(ipsp);
+		}
 	}
 
 	while (ixs->state != IPSEC_XSM_DONE) {
@@ -2231,12 +2245,6 @@ ipsec_xsm(struct ipsec_xmit_state *ixs)
 	 * all done with anything needing locks
 	 */
 	spin_unlock_bh(&tdb_lock);
-
-	/* we are done with this SA */
-	if (ixs->ipsp) {
-		ipsec_sa_put(ixs->ipsp); 
-		ixs->ipsp = NULL;
-	}
 
 	/*
 	 * let the caller continue with their processing

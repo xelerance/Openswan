@@ -456,9 +456,8 @@ void ip_cmsg_recv_ipsec(struct msghdr *msg, struct sk_buff *skb)
 	sa1 = ipsec_sa_getbyref(sp->ref);
 	if(sa1) {
 		refs[1]= sa1->ips_refhim;
-	}
 	} else {
-		refs[1]=0;
+		refs[1]= 0;
 	}
 	refs[0]=sp->ref;
 
@@ -494,7 +493,7 @@ void ipsec_rcv_setoutif(struct ipsec_rcv_state *irs)
 static enum ipsec_rcv_value
 ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 {
-	struct ipsec_sa *ipsp = NULL;
+	struct ipsec_sa *ipsp;
 	struct ipsec_sa* ipsnext = NULL;
 	struct iphdr *ipp;
 	struct sk_buff *skb;
@@ -875,6 +874,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 	irs->stats= stats;
 	irs->ipp  = ipp;
 	irs->ipsp = NULL;
+	irs->lastipsp = NULL;
 	irs->ilen = 0;
 	irs->authlen=0;
 	irs->authfuncs=NULL;
@@ -1073,7 +1073,16 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 #endif		 
 	}
 
-	irs->ipsp=newipsp;
+	if (newipsp != irs->ipsp) {
+		if(irs->lastipsp) {
+			ipsec_sa_put(irs->lastipsp);
+		}
+		irs->lastipsp = irs->ipsp;
+		irs->ipsp=newipsp;
+	} else {
+		/* we already have a refcount for it */
+		ipsec_sa_put(newipsp);
+	}
 
 	return IPSEC_RCV_OK;
 }
@@ -1090,7 +1099,7 @@ ipsec_rcv_auth_decap(struct ipsec_rcv_state *irs)
 	if (irs->proto_funcs->protocol != irs->ipp->protocol) {
 		if(irs->proto_funcs->protocol == IPPROTO_COMP) {
 			/* looks like an IPCOMP that we can skip */
-			struct ipsec_sa *newipsp = NULL;
+			struct ipsec_sa *newipsp;
 
 			newipsp = irs->ipsp->ips_next;
 			if(newipsp) {
@@ -1567,7 +1576,7 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 
 	/* okay, acted on this SA, so free any previous SA, and record a new one */
 	if(irs->ipsp) {
-		struct ipsec_sa *newipsp = NULL;
+		struct ipsec_sa *newipsp;
 		newipsp = irs->ipsp->ips_next;
 		if(newipsp) {
 			ipsec_sa_get(newipsp);
@@ -1763,16 +1772,23 @@ ipsec_rsm(struct ipsec_rcv_state *irs)
 	 * hasn't gone away while we were waiting for a task to complete
 	 */
 
-	if (irs->said.proto && ipsec_sa_getbyid(&irs->said) == NULL) {
-		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
-			    "no ipsec_sa for SA:%s: incoming packet with no SA dropped\n",
-			    irs->sa_len ? irs->sa : " (error)");
-		if (irs->stats)
-			irs->stats->rx_dropped++;
-
-		/* drop through and cleanup */
-		irs->state = IPSEC_RSM_DONE;
+	if (irs->said.proto) {
+		struct ipsec_sa *ipsp;
+		ipsp = ipsec_sa_getbyid(&irs->said);
+		if (ipsp == NULL) {
+			KLIPS_PRINT(debug_rcv,
+				"klips_debug:ipsec_rcv: "
+				"no ipsec_sa for SA:%s: "
+				"incoming packet with no SA dropped\n",
+				irs->sa_len ? irs->sa : " (error)");
+			if (irs->stats)
+				irs->stats->rx_dropped++;
+			/* drop through and cleanup */
+			irs->state = IPSEC_RSM_DONE;
+		} else {
+			/* set the refcount back */
+			ipsec_sa_put(ipsp);
+		}
 	}
 
 	while (irs->state != IPSEC_RSM_DONE) {
@@ -2102,6 +2118,7 @@ ipsec_rcv_state_new (void)
 #endif
 
 		irs->lastipsp = NULL;
+		irs->ipsp = NULL;
 #endif
 
 bail:
