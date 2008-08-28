@@ -2010,7 +2010,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 				    ixs->pass ? 0 : ip_hdr(ixs->skb)->saddr,
 				    RT_TOS(ip_hdr(ixs->skb)->tos),
                                     /* mcr->rgb: should this be 0 instead? */
-				    ixs->physdev->iflink))) {
+				    ixs->physdev->ifindex))) {
 #endif
 		ixs->stats->tx_errors++;
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
