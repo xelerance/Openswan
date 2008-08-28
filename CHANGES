@@ -35,7 +35,11 @@ v2.6.16
 * Fix rmmod calls not to use -s since busybox rmmod does not support it [paul]
 * Fixes to KLIPS for newer 2.4 kernels [greg/davidm]
 * Road Warrior behind NAT - Aggressive Mode: wrong NAT-T decision [hiren joshi]
+* Added documentation for leftxauthusername= and XAUTH passwd support [paul]
 * Bugtracker bugs fixed:
+  #977: KLIPS doesn't work when wan interface is a tagged vlan interface
+        Regression from 2.4? [Tino Keitel / Krisztian KOVACS]
+  #972: Aggressive mode connection breaks after DPD timeout for NATed peer
   #965: xmlto man fails to generate ipsec.conf.5 man page  [tuomo]
 
 v2.6.15
