@@ -13,6 +13,9 @@ v2.6.18
 * No longer use the assembly version of des_encrypt (dx86unix.S). It
   is i386-i686 specific, requires framepointers and does not work with
   CONFIG_REGPARM=y, which is the unconditional default for 2.6.17+ [paul]
+* Fix memory leak when we run out of descriptors [David McCullough]
+* Update stats to show dropped packets [David McCullough]
+
 * Bugtracker bugs fixed:
   #978: ipsec.conf man page has typo in virtual_private sample line [tuomo]
 
