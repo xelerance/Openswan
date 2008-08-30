@@ -171,7 +171,7 @@ install-openswan-modules-source: patch-stamp
 	cp -r Makefile Makefile.top Makefile.inc Makefile.ver linux/ \
 		"$(BUILDDIR)/modules/openswan"
 	cp -r lib/libcrypto "$(BUILDDIR)/modules/openswan/lib/"
-	cp -r packaging/makefiles packaging/linus packaging/linus packaging/defaults \
+	cp -r packaging/makefiles packaging/linus packaging/utils packaging/defaults \
 		"$(BUILDDIR)/modules/openswan/packaging/"
 	find "$(BUILDDIR)/modules/openswan/lib/" -name "*.o" | xargs --no-run-if-empty rm
 	install --mode=644 debian/openswan-modules-source.kernel-config "$(BUILDDIR)/modules/openswan/config-all.h"
