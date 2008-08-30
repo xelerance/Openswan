@@ -15,8 +15,8 @@ v2.6.18
   CONFIG_REGPARM=y, which is the unconditional default for 2.6.17+ [paul]
 * Fix memory leak when we run out of descriptors [David McCullough]
 * Update stats to show dropped packets [David McCullough]
-
 * Bugtracker bugs fixed:
+  #979: Two errors in debian/ packaging files (fix included) [ruben]
   #978: ipsec.conf man page has typo in virtual_private sample line [tuomo]
 
 v2.6.17 [will be skipped due to bad tag]
