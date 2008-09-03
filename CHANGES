@@ -18,6 +18,7 @@ v2.6.18
 * Bugtracker bugs fixed:
   #979: Two errors in debian/ packaging files (fix included) [ruben]
   #978: ipsec.conf man page has typo in virtual_private sample line [tuomo]
+  #228: Problems with %any matching in ipsec.secrets? [David McCullough]
 
 v2.6.17 [will be skipped due to bad tag]
 
