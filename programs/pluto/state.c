@@ -427,8 +427,10 @@ delete_state(struct state *st)
     free_sa(st->st_sadb);
     st->st_sadb=NULL;
 
-    if (st->st_sec_in_use)
+    if (st->st_sec_in_use) {
 	mpz_clear(&(st->st_sec));
+	pfreeany(st->st_sec_chunk.ptr);
+    }
 
     freeanychunk(st->st_firstpacket_me);
     freeanychunk(st->st_firstpacket_him);
