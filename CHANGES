@@ -14,6 +14,9 @@ v2.6.18
   is i386-i686 specific, requires framepointers and does not work with
   CONFIG_REGPARM=y, which is the unconditional default for 2.6.17+ [paul]
 * Fix memory leak when we run out of descriptors [David McCullough]
+* Various memory leak fixes for pluto (from #macosx) [Ilia Sotnikov]
+* LEAK_DETECTIVE should report better now [Ilia Sotnikov]
+* Add support for USE_DMALLOC [Ilia Sotnikov]
 * Update stats to show dropped packets [David McCullough]
 * Bugtracker bugs fixed:
   #979: Two errors in debian/ packaging files (fix included) [ruben]
