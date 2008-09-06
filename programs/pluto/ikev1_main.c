@@ -664,9 +664,25 @@ encrypt_message(pb_stream *pbs, struct state *st)
 /* Handle a Main Mode Oakley first packet (responder side).
  * HDR;SA --> HDR;SA
  */
+
+#ifdef DMALLOC
+static unsigned long _dm_mark = 0;
+static unsigned long _dm_initialized = 0;
+#endif
+
 stf_status
 main_inI1_outR1(struct msg_digest *md)
 {
++#ifdef DMALLOC
+     if (_dm_initialized != 0) {
+	/* log unfreed pointers that have been added to the heap since mark */
+	dmalloc_log_changed(_dm_mark, 1, 0, 1);
+	dmalloc_log_stats ();
+     }
+     _dm_mark = dmalloc_mark() ;
+     _dm_initialized = 1;
+#endif
+
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_SA];
     struct state *st;
     struct connection *c;
