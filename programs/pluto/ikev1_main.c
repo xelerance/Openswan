@@ -1238,6 +1238,9 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
     update_iv(st);
+    /* XXX: Do we need to free dh here? If so, how about the other exits?
+     * pfree(dh); dh = NULL;
+     */
 
     /*
      * if there was a packet received while we were calculating, then
@@ -1384,6 +1387,11 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
      *
      */
     {
+    /* Looks like we missed perform_dh() declared at
+     * programs/pluto/pluto_crypt.h as external and implemented nowhere.
+     * Following code regarding dh_continuation allocation seems useless
+     * as it's never used. At least, we should free it.
+     */
 	struct dh_continuation *dh = alloc_thing(struct dh_continuation
 						 , "main_inI2_outR2_tail");
 	stf_status e;
