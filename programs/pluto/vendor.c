@@ -77,6 +77,9 @@
  *  3e984048101e66cc659fd002b0ed3655 (From a Cisco 1800 IOS device)
  *  ade1e70e9953c1328373ebf0257b85ed (From a Cisco PIX)
  *
+ * Lucent VPN Gateway:
+ *  4c5647392e322e3234353a425249434b3a392e322e323435
+ *
  * Microsoft L2TP (???):
  * (This could be the MSL2TP client, which is a stripped version of SafeNet)
  *
