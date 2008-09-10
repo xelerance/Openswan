@@ -78,7 +78,8 @@
  *  ade1e70e9953c1328373ebf0257b85ed (From a Cisco PIX)
  *
  * Lucent VPN Gateway:
- *  4c5647392e322e3234353a425249434b3a392e322e323435
+ *  4c5647392e322e3234353a425249434b3a392e322e323435 = "LVG9.1.255:BRICK:9.1.255" (no exact md5sum match)
+ *  4C5643372E312E323A5850 = "LVC7.1.2:XP" (no exact md5sum match)
  *
  * Microsoft L2TP (???):
  * (This could be the MSL2TP client, which is a stripped version of SafeNet)
