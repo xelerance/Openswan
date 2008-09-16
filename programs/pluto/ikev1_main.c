@@ -673,7 +673,7 @@ static unsigned long _dm_initialized = 0;
 stf_status
 main_inI1_outR1(struct msg_digest *md)
 {
-+#ifdef DMALLOC
+#ifdef DMALLOC
      if (_dm_initialized != 0) {
 	/* log unfreed pointers that have been added to the heap since mark */
 	dmalloc_log_changed(_dm_mark, 1, 0, 1);
