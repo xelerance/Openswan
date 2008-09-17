@@ -486,6 +486,7 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 		    break;
 		/* FALLTHROUGH */
 	    case match_default:	/* default all */
+	    case match_any:	/* a wildcard */
 	    case match_me | match_default:	/* default peer */
 	    case match_me | match_any:	/* %any/0.0.0.0 and me */
 	    case match_him | match_any:	/* %any/0.0.0.0 and peer */
