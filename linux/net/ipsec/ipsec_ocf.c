@@ -272,6 +272,16 @@ ipsec_ocf_rcv_cb(struct cryptop *crp)
 
 	irs->state = IPSEC_RSM_DONE; /* assume it went badly */
 	if (crp->crp_etype) {
+		if (crp->crp_etype == EAGAIN) {
+			/* Session has been migrated. Store the new session id and retry */
+			KLIPS_PRINT(debug_rcv,
+				"klips_debug:ipsec_ocf_rcv_cb: crypto session migrated\n");
+			irs->ipsp->ocf_cryptoid = crp->crp_sid;
+			/* resubmit request */
+			if (crypto_dispatch(crp) == 0)
+				return 0;
+			/* resubmit failed */
+		}
 		KLIPS_PRINT(debug_rcv, "klips_debug:ipsec_ocf_rcv_cb: "
 				"error in processing 0x%x\n", crp->crp_etype);
 	} else {
@@ -354,6 +364,11 @@ ipsec_ocf_rcv(struct ipsec_rcv_state *irs)
 		crda->crd_key          = ipsp->ips_key_a;
 		crda->crd_klen         = ipsp->ips_key_bits_a;
 		crda->crd_inject       = irs->authenticator - irs->skb->data;
+
+		/* OCF needs cri_mlen initialized in order to properly migrate the
+		 * session to another driver */
+		crda->crd_mlen = 12;
+
 		/* Copy the authenticator to check aganinst later */
 		memcpy(irs->hash, irs->authenticator, 12);
 
@@ -433,10 +448,17 @@ ipsec_ocf_rcv(struct ipsec_rcv_state *irs)
 	crp->crp_callback = ipsec_ocf_rcv_cb;
 	crp->crp_sid = ipsp->ocf_cryptoid;
 	crp->crp_opaque = (caddr_t) irs;
+  rcv_migrate:
 	if (crypto_dispatch(crp)){
 		crypto_freereq(crp);
 		return IPSEC_RCV_REALLYBAD;
 	}
+	if (crp->crp_etype == EAGAIN) {
+		/* Session has been migrated. Store the new session id and retry */
+		ipsp->ocf_cryptoid = crp->crp_sid;
+		goto rcv_migrate;
+	}
+
 	return(IPSEC_RCV_PENDING);
 }
 
@@ -474,8 +496,19 @@ ipsec_ocf_xmit_cb(struct cryptop *crp)
 
 	ixs->state = IPSEC_XSM_DONE; /* assume bad xmit */
 	if (crp->crp_etype) {
-		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT, "klips_debug:ipsec_ocf_xmit_cb: "
-				"error in processing 0x%x\n", crp->crp_etype);
+		if (crp->crp_etype == EAGAIN) {
+			/* Session has been migrated. Store the new session id and retry */
+			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+				"klips_debug:ipsec_ocf_xmit_cb: crypto session migrated\n");
+			ixs->ipsp->ocf_cryptoid = crp->crp_sid;
+			/* resubmit request */
+			if (crypto_dispatch(crp) == 0)
+				return 0;
+			/* resubmit failed */
+		}
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+			"klips_debug:ipsec_ocf_xmit_cb: error in processing 0x%x\n",
+			crp->crp_etype);
 	} else {
 		if (!ixs->ipsp->ips_encalg) {
 			/* AH post processing, put back fields we had to zero */
@@ -563,6 +596,11 @@ ipsec_ocf_xmit(struct ipsec_xmit_state *ixs)
 			crda->crd_inject   = ixs->len - ixs->authlen;
 			crda->crd_len      = ixs->len - ixs->iphlen - ixs->authlen;
 		}
+
+		/* OCF needs cri_mlen initialized in order to properly migrate
+		 * the session to another driver */
+		crda->crd_mlen = 12;
+
 		crda->crd_key    = ipsp->ips_key_a;
 		crda->crd_klen   = ipsp->ips_key_bits_a;
 	}
@@ -598,10 +636,17 @@ ipsec_ocf_xmit(struct ipsec_xmit_state *ixs)
 	crp->crp_callback = ipsec_ocf_xmit_cb;
 	crp->crp_sid = ipsp->ocf_cryptoid;
 	crp->crp_opaque = (caddr_t) ixs;
+  xmit_migrate:
 	if (crypto_dispatch(crp)){
 		crypto_freereq(crp);
 		return IPSEC_XMIT_ERRMEMALLOC;
 	}
+	if (crp->crp_etype == EAGAIN) { 
+		/* Session has been migrated. Store the new session id */
+		ipsp->ocf_cryptoid = crp->crp_sid;
+		goto xmit_migrate;
+	}
+
 	return(IPSEC_XMIT_PENDING);
 }
 
