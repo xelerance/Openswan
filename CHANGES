@@ -19,6 +19,8 @@ v2.6.18
 * LEAK_DETECTIVE should report better now [Ilia Sotnikov]
 * Add support for USE_DMALLOC [Ilia Sotnikov]
 * Update stats to show dropped packets [David McCullough]
+* Allow session migration of OCF devices [Brad Vrabete]
+* DNS/WINS ModeConfig fixes [David McCullough]
 * Bugtracker bugs fixed:
   #979: Two errors in debian/ packaging files (fix included) [ruben]
   #978: ipsec.conf man page has typo in virtual_private sample line [tuomo]
