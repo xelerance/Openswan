@@ -53,7 +53,7 @@ actual local machine's (NAT'ed) IP address, and if the remote (eg right=)
 is NAT'ed as well, the remote's public (<emphasis remap='B'>not</emphasis>
 NAT'ed) IP address. Note that this makes the configuration no longer
 symmetrical on both sides, so you cannot use an identical configuration
-file on both.</para>
+file on both hosts.</para>
 
   </listitem>
   </varlistentry>
