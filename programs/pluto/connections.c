@@ -247,6 +247,15 @@ delete_connection(struct connection *c, bool relations)
 #ifdef DEBUG
     lset_t old_cur_debugging = cur_debugging;
 #endif
+	union {
+		struct alg_info**     ppai;
+#ifdef KERNEL_ALG
+		struct alg_info_esp** ppai_esp;
+#endif
+#ifdef IKE_ALG
+		struct alg_info_ike** ppai_ike;
+#endif
+	} palg_info;
 
     set_cur_connection(c);
 
@@ -323,10 +332,12 @@ delete_connection(struct connection *c, bool relations)
 
     gw_delref(&c->gw_info);
 #ifdef KERNEL_ALG
-    alg_info_delref((struct alg_info **)&c->alg_info_esp);
+    palg_info.ppai_esp = &c->alg_info_esp;
+    alg_info_delref(palg_info.ppai);
 #endif
 #ifdef IKE_ALG
-    alg_info_delref((struct alg_info **)&c->alg_info_ike);
+    palg_info.ppai_ike = &c->alg_info_ike;
+    alg_info_delref(palg_info.ppai);
 #endif
     pfree(c);
 }

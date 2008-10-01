@@ -44,6 +44,6 @@ typedef struct {
 #define OSW_FD_ISSET(d, s)   ((OSW_FDS_BITS (s)[OSW_FDELT(d)] & OSW_FDMASK(d)) != 0)
 
 #define osw_select(max, r, f, e, t) \
-		select(max, (fd_set *)(r), (fd_set *)(f), (fd_set *)(e), t)
+		select(max, (fd_set *)(void *)(r), (fd_set *)(void *)(f), (fd_set *)(void *)(e), t)
 
 #endif /* _OSW_SELECT_H_ */
