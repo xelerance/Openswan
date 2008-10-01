@@ -2294,8 +2294,6 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 
     psk = NULL;
 
-    zero(&peer_ca);
-
     our_pathlen = peer_pathlen = 0;
     best_our_pathlen  = 0;
     best_peer_pathlen = 0;
@@ -2303,7 +2301,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 
     /* zero it, so because we will test it later, to see if we found
      * something, and the get_peer_ca code is uncertain. */
-    memset(&peer_ca, 0, sizeof(peer_ca));
+    zero(&peer_ca);
 
     DBG(DBG_CONTROLMORE
 	 , DBG_log("refine_connection: starting with %s"
