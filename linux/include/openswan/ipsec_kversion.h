@@ -326,7 +326,7 @@
 
 # define        PROC_NET        proc_net
 
-# define ipsec_dev_get(x) __dev_get_by_name(x)
+# define ipsec_dev_get(x) dev_get_by_name(x)
 # define __ipsec_dev_get(x) __dev_get_by_name(x)
 #endif
 
