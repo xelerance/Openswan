@@ -43,7 +43,7 @@ enum sadb_msg_t {
 	K_SADB_X_NAT_T_NEW_MAPPING=17,
 	K_SADB_X_PLUMBIF=18,
 	K_SADB_X_UNPLUMBIF=19,
-	K_SADB_MAX=20
+	K_SADB_MAX=19
 };
 
 #define SADB_X_GRPSA	    K_SADB_X_GRPSA		    
