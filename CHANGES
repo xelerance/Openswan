@@ -3,6 +3,10 @@ Note that listings are in chronological order of release times, not in order
 of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
+
+v2.6.19
+* Fix for ERROR: Module xfrm6_tunnel is in use by ipcomp6 [paul]
+
 v2.6.18
 * Fix for compiling KLIPS on RHEL/Centos 2.6.18-92.1.10.el5 [dhr/paul]
 * Fix in deleting connections that might have caused some of our Delete
