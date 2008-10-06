@@ -171,9 +171,9 @@ fi
 		@MODPROBE@ -q intel-rng 2>/dev/null
 
 		# load all NETKEY modules
-		for mod in xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro \
+		for mod in ipcomp6 ipcomp xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro \
 			xfrm6_mode_transport xfrm4_mode_transport xfrm4_mode_tunnel \
-			xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 ipcomp ipcomp6 af_key
+			xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 iaf_key
 		   do
 			#echo -n "$mod "
 			@MODPROBE@ -q $mod 2> /dev/null

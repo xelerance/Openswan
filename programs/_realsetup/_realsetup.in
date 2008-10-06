@@ -369,9 +369,9 @@ case "$1" in
 
 	# When we exit we clean up (remove) the modules we are using, even the kame'ish ones
 	if test -e ${kamepfkey}; then
-		for mod in xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro \
+		for mod in ipcomp ipcomp6 xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro \
 			xfrm6_mode_transport xfrm4_mode_transport xfrm4_mode_tunnel  xfrm_user \
-			xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 ipcomp ipcomp6 af_key
+			xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 af_key
 		    do
 			lsmod 2>&1 | grep "^$mod" > /dev/null && rmmod  $mod
 		    done

@@ -39,9 +39,9 @@ if test -f $netkey
 then
 	echo "Warning: found NETKEY stack loaded"
 	echo -n Trying to unload all NETKEY modules:
-                for mod in xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro \
+                for mod in ipcomp ipcomp6 xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro \
                         xfrm6_mode_transport xfrm4_mode_transport xfrm4_mode_tunnel \
-                        xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 ipcomp ipcomp6 af_key xfrm_user
+                        xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 af_key xfrm_user
                    do
                         echo -n "$mod "
                         rmmod -a $mod 2> /dev/null
