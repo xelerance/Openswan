@@ -247,6 +247,15 @@ delete_connection(struct connection *c, bool relations)
 #ifdef DEBUG
     lset_t old_cur_debugging = cur_debugging;
 #endif
+	union {
+		struct alg_info**     ppai;
+#ifdef KERNEL_ALG
+		struct alg_info_esp** ppai_esp;
+#endif
+#ifdef IKE_ALG
+		struct alg_info_ike** ppai_ike;
+#endif
+	} palg_info;
 
     set_cur_connection(c);
 
@@ -323,10 +332,12 @@ delete_connection(struct connection *c, bool relations)
 
     gw_delref(&c->gw_info);
 #ifdef KERNEL_ALG
-    alg_info_delref((struct alg_info **)&c->alg_info_esp);
+    palg_info.ppai_esp = &c->alg_info_esp;
+    alg_info_delref(palg_info.ppai);
 #endif
 #ifdef IKE_ALG
-    alg_info_delref((struct alg_info **)&c->alg_info_ike);
+    palg_info.ppai_ike = &c->alg_info_ike;
+    alg_info_delref(palg_info.ppai);
 #endif
     pfree(c);
 }
@@ -2194,7 +2205,6 @@ find_host_connection2(const char *func
     return c;
 }
 
-#if 0
 /*
  * extracts the peer's ca from the chained list of public keys
  */
@@ -2214,7 +2224,6 @@ get_peer_ca(const struct id *peer_id)
     }
     return empty_chunk;
 }
-#endif
 
 
 
@@ -2296,8 +2305,6 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 
     psk = NULL;
 
-    zero(&peer_ca);
-
     our_pathlen = peer_pathlen = 0;
     best_our_pathlen  = 0;
     best_peer_pathlen = 0;
@@ -2305,18 +2312,14 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 
     /* zero it, so because we will test it later, to see if we found
      * something, and the get_peer_ca code is uncertain. */
-    memset(&peer_ca, 0, sizeof(peer_ca));
+    zero(&peer_ca);
 
     DBG(DBG_CONTROLMORE
 	 , DBG_log("refine_connection: starting with %s"
 		   , c->name));
 
-#if 0
     peer_ca = get_peer_ca(peer_id);
 
-    /* XXX I think that this code should be done later on, or maybe not
-     * at all, since we should conclude the same thing below.
-     */
     if (same_id(&c->spd.that.id, peer_id)
 	&& (peer_ca.ptr != NULL)
 	&& trusted_ca(peer_ca, c->spd.that.ca, &peer_pathlen)
@@ -2331,7 +2334,6 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 
 	return c;	/* peer ID matches current connection -- look no further */
     }
-#endif
 
 #if defined(XAUTH)
     auth = xauth_calcbaseauth(auth);

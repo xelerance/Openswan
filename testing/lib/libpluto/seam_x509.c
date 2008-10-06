@@ -5,6 +5,9 @@ void add_x509_public_key(struct id *keyid, x509cert_t *cert , time_t until
 			 , enum dns_auth_level dns_auth_level) {}
 x509cert_t*add_x509cert(x509cert_t *cert) { return NULL; }
 
+/* fetch.c SEAM */
+void list_crl_fetch_requests(bool utc) {}
+
 /* ac.c SEAM */
 void decode_groups(char *groups, ietfAttrList_t **listp) {}
 void load_acerts(void) {}

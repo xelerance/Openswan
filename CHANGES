@@ -8,7 +8,7 @@ v2.6.18
 * Fix in deleting connections that might have caused some of our Delete
   Notifies to have gotten lost. Introduced in openswan 2.5.01 [paul]
 * Rekey= inverted yes/no, causing rekey=no to be rekey=yes [Shingo Yamawaki]
-* Some meory leaks / refcount fixes [Shingo Yamawaki]
+* Some memory leaks / refcount fixes [Shingo Yamawaki]
 * Removed most of #ifdef CONFIG_KLIPS_DEBUG conditionals. We now always
   compile in DEBUG support. [paul]
 * No longer use the assembly version of des_encrypt (dx86unix.S). It
@@ -21,11 +21,20 @@ v2.6.18
 * Update stats to show dropped packets [David McCullough]
 * Allow session migration of OCF devices [Brad Vrabete]
 * DNS/WINS ModeConfig fixes [David McCullough]
+* refineconnection bug fix. This might cover various problems where
+  the right conn was not picked (eg rightca="%any" workaround, but
+  perhaps also some rekey issues) [paul]
+* unregister_netdevice: waiting for ppp2 to become free. Usage
+  count = -1 on kernels < 2.6.24 [Martin Schiller]
+* Fix for parallel building, eg with rpmbuild [tuomo]
 * Bugtracker bugs fixed:
+  #989: Patch for fixing type-punned compiler warnings [Alin Nastac]
   #979: Two errors in debian/ packaging files (fix included) [ruben]
   #978: ipsec.conf man page has typo in virtual_private sample line [tuomo]
+  #975: ipsec_setup: Unknown socket write error 96. [paul]
   #231: In Aggressive Mode with NAT-T,initiator should switch port [hiren joshi]
   #228: Problems with %any matching in ipsec.secrets? [David McCullough]
+  #984: OpenSwan 2.4.13: Wrong ipsec_dev_get(x) function for Kernels < 2.6.24 
 
 v2.6.17 [will be skipped due to bad tag]
 
