@@ -6,6 +6,7 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.19
 * Fix for ERROR: Module xfrm6_tunnel is in use by ipcomp6 [paul]
+* Fix for pluto not starting with plutodebub=all [paul]
 
 v2.6.18
 * Fix for compiling KLIPS on RHEL/Centos 2.6.18-92.1.10.el5 [dhr/paul]
