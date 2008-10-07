@@ -401,7 +401,6 @@ USE_TAPROOM?=false
 # Use dmalloc. Requires -DLEAK_DETECTIVE to be set in programs/pluto/Makefile
 USE_DMALLOC?=false
 
-X509_VERSION=X.509-1.5.4
 NONINTCONFIG=oldconfig
 
 # Should we build with object directories?
