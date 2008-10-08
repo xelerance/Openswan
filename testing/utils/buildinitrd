@@ -16,7 +16,7 @@ cat $list | (cd ${basicroot} && cpio --format=crc -o) | (cd initrd && cpio -id )
 mknod initrd/dev/console c 5 1
 mknod initrd/dev/null c 1 3
 ls -l initrd/dev
-cp $srctree/testing/utils/linuxrc-uml.sh initrd/linuxrc
+cp $srctree/testing/utils/linuxrc-uml-x86_64.sh initrd/linuxrc
 mkcramfs initrd initrd.uml
 
 # make a cpio archive too. we might use it for initramfs.

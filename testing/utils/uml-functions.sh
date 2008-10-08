@@ -44,8 +44,8 @@ setup_make() {
     fi
 
     # now describe how to build the initrd.
-    echo "initrd.uml: ${OPENSWANSRCDIR}/testing/utils/initrd.list"
-    echo "$TAB fakeroot ${OPENSWANSRCDIR}/testing/utils/buildinitrd ${OPENSWANSRCDIR}/testing/utils/initrd.list ${OPENSWANSRCDIR} ${BASICROOT}" 
+    echo "initrd.uml: ${OPENSWANSRCDIR}/testing/utils/initrd-x86_64.list"
+    echo "$TAB fakeroot ${OPENSWANSRCDIR}/testing/utils/buildinitrd ${OPENSWANSRCDIR}/testing/utils/initrd-x86_64.list ${OPENSWANSRCDIR} ${BASICROOT}" 
 }
 
 # output should directed to a Makefile
@@ -203,7 +203,7 @@ setup_host_make() {
 	    echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
 	    echo "$TAB echo ''          >>$startscript"
 	    echo "$TAB # the umlroot= is a local hack >>$startscript"
-	    echo "$TAB echo '$POOLSPACE/plain${KERNVER}/linux initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot testname=$TESTNAME root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  init=/linuxrc gim\$\$*' >>$startscript"
+	    echo "$TAB echo '$POOLSPACE/plain${KERNVER}/linux load_ramdisk=1 ramdisk_size=98304 mem=256M initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot testname=$TESTNAME root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  init=/linuxrc gim\$\$*' >>$startscript"
 	    echo "$TAB chmod +x $startscript"
 	    echo
 	    depends="$depends $startscript"
@@ -221,7 +221,7 @@ setup_host_make() {
      echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
      echo "$TAB echo ''          >>$startscript"
      echo "$TAB # the umlroot= is a local hack >>$startscript"
-     echo "$TAB echo '$NETKEY_KERNEL initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot testname=$TESTNAME root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  init=/linuxrc \$\$*' >>$startscript"
+     echo "$TAB echo '$NETKEY_KERNEL load_ramdisk=1 ramdisk_size=98304 mem=256M initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot testname=$TESTNAME root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  init=/linuxrc \$\$*' >>$startscript"
      echo "$TAB echo 'if [ -n \"\$\$UML_SLEEP\" ]; then eval \$\$UML_SLEEP; fi'  >>$startscript"
      echo "$TAB chmod +x $startscript"
      echo
@@ -236,7 +236,7 @@ setup_host_make() {
     echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
     echo "$TAB echo ''          >>$startscript"
     echo "$TAB # the umlroot= is a local hack >>$startscript"
-    echo "$TAB echo '$KERNEL initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot testname=$TESTNAME root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  init=/linuxrc \$\$*' >>$startscript"
+    echo "$TAB echo '$KERNEL load_ramdisk=1 ramdisk_size=98304 mem=256M initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot testname=$TESTNAME root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  init=/linuxrc \$\$*' >>$startscript"
     echo "$TAB echo 'if [ -n \"\$\$UML_SLEEP\" ]; then eval \$\$UML_SLEEP; fi'  >>$startscript"
     echo "$TAB chmod +x $startscript"
     echo
