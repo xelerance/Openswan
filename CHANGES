@@ -6,8 +6,13 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.19
 * Fix for ERROR: Module xfrm6_tunnel is in use by ipcomp6 [paul]
-* Fix for pluto not starting with plutodebub=all [paul]
 * Enable all wins/dns options as specified in man pages [david]
+* build support for all WINS/DNS options as mentioned in
+  the man pages [david]
+* Bugtracker bugs fixed:
+  #992: keyingretries default changed from %forever to 3 [ken]
+        (bug was introduced in 2.6.x)
+  #981: plutodebug=all klipsdebug=all not operate. [paul]
 
 v2.6.18
 * Fix for compiling KLIPS on RHEL/Centos 2.6.18-92.1.10.el5 [dhr/paul]

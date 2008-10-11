@@ -16,7 +16,7 @@ Version: IPSECBASEVERSION
 %define srcpkgver %(echo %{version} | tr -s '_' '-')
 %define ourrelease 1
 Release: %{ourrelease}
-License: GPLv2
+License: GPLv2, some BSD
 Url: http://www.openswan.org/
 Source: openswan-%{srcpkgver}.tar.gz
 Group: System Environment/Daemons
@@ -25,6 +25,8 @@ Summary: Openswan - An IPsec and IKE implementation
 Group: System Environment/Daemons
 BuildRequires: gmp-devel bison flex bind-devel redhat-rpm-config
 Requires: iproute >= 2.6.8
+Requires(post): coreutils bash
+Requires(preun): initscripts chkconfig
 Requires(post): /sbin/chkconfig
 Requires(preun): /sbin/chkconfig
 Requires(preun): /sbin/service
@@ -61,19 +63,21 @@ kernels.
 
 %prep
 %setup -q -n openswan-%{srcpkgver}
-sed -i 's/-Werror/#-Werror/' lib/libdns/Makefile
-sed -i 's/-Werror/#-Werror/' lib/libisc/Makefile
-sed -i 's/-Werror/#-Werror/' lib/liblwres/Makefile
+#sed -i 's/-Werror/#-Werror/' lib/libdns/Makefile
+#sed -i 's/-Werror/#-Werror/' lib/libisc/Makefile
+#sed -i 's/-Werror/#-Werror/' lib/liblwres/Makefile
 
 %build
 %{__make} \
-  USERCOMPILE="-g %{optflags}" \
+  USERCOMPILE="-g %{optflags} -fPIE -pie" \
+  USERLINK="-g -pie" \
   INC_USRLOCAL=%{_prefix} \
   FINALLIBDIR=%{_libdir}/ipsec \
   MANTREE=%{_mandir} \
   INC_RCDEFAULT=%{_initrddir} \
   programs
 FS=$(pwd)
+
 %if %{buildklips}
 mkdir -p BUILD.%{_target_cpu}
 

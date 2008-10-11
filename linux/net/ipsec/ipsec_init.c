@@ -319,8 +319,10 @@ error_openswan_inet_add_protocol_comp:
 	openswan_inet_del_protocol(&comp_protocol, IPPROTO_COMP);
 #endif /* CONFIG_KLIPS_IPCOMP */
 #endif
+#ifdef CONFIG_KLIPS_AH
 error_openswan_inet_add_protocol_ah:
 	openswan_inet_del_protocol(&ah_protocol, IPPROTO_AH);
+#endif
 error_openswan_inet_add_protocol_esp:
 	openswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP);
 #endif
