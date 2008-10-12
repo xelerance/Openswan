@@ -163,6 +163,7 @@ setup_host_make() {
     echo "$TAB echo none	   /usr/obj		     hostfs   defaults,ro,\${OBJDIRTOP} 0 0 >>$hostroot/etc/fstab"
     echo "$TAB echo none	   /usr/local		     hostfs   defaults,rw,${POOLSPACE}/${hostroot}/usr/local 0 0 >>$hostroot/etc/fstab"
     echo "$TAB echo none	   /var/tmp		     hostfs   defaults,rw,${POOLSPACE}/${hostroot}/var/tmp 0 0 >>$hostroot/etc/fstab"
+    echo "$TAB echo /var/lib/swapfile none  swap    sw              0       0  >>$hostroot/etc/fstab"
     depends="$depends $hostroot/etc/fstab"
 
     # split Debian "interfaces" file into RH ifcfg-* file
@@ -298,6 +299,7 @@ setup_host() {
 
     # setup the mount of /usr/share
     echo "none	   /usr/share		     hostfs   defaults,ro,$SHAREROOT 0 0" >>$hostroot/etc/fstab
+    echo "$TAB echo /var/lib/swapfile  none  swap    sw              0       0  >>$hostroot/etc/fstab"
 
     # split Debian "interfaces" file into RH ifcfg-* file
     mkdir -p $hostroot/etc/sysconfig/network-scripts
