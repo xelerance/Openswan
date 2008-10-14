@@ -9,7 +9,7 @@ it will use its <emphasis remap='B'>nearest</emphasis> IP address, which is
 its public IP address. This option is mostly used when defining subnet-subnet
 connections, so that the gateways can talk to each other and the subnet at
 the other end, without the need to build additional host-subnet, subnet-host
-and host-host tunnels.
+and host-host tunnels. Both IPv4 and IPv6 addresses are supported.
 </para>
   </listitem>
   </varlistentry>
