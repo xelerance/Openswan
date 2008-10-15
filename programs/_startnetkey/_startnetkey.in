@@ -165,10 +165,10 @@ fi
 	if test -f $modules
 	then
 		# load hardware random related modules - some changed names over time
-		@MODPROBE@ -q hw_random 2>/dev/null
-		@MODPROBE@ -q hwrng 2>/dev/null
-		@MODPROBE@ -q amd-rng 2>/dev/null
-		@MODPROBE@ -q intel-rng 2>/dev/null
+		@MODPROBE@ hw_random 2>/dev/null
+		@MODPROBE@ hwrng 2>/dev/null
+		@MODPROBE@ amd-rng 2>/dev/null
+		@MODPROBE@ intel-rng 2>/dev/null
 
 		# load all NETKEY modules
 		for mod in ipcomp6 ipcomp xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro \
@@ -176,21 +176,21 @@ fi
 			xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 iaf_key
 		   do
 			#echo -n "$mod "
-			@MODPROBE@ -q $mod 2> /dev/null
+			@MODPROBE@ $mod 2> /dev/null
 		   done
 
 		# xfrm_user is the old name for xfrm4_tunnel - backwards compatibility
-		@MODPROBE@ -q xfrm_user 2> /dev/null
+		@MODPROBE@ xfrm_user 2> /dev/null
 
 		# padlock must load before aes module
-		@MODPROBE@ -q padlock 2>/dev/null
+		@MODPROBE@ padlock 2>/dev/null
 
 		# load the most common ciphers/algo's
 		# aes-x86_64 has higher priority in via crypto api
 		for crypto in aes-x86_64 aes aes_generic des sha512 sha256 md5 cbc xcbc ecb twofish blowfish serpent ccm
 		   do
 			#echo -n "$crypto "
-			@MODPROBE@ -q $crypto 2> /dev/null
+			@MODPROBE@ $crypto 2> /dev/null
 		   done
 	fi
 

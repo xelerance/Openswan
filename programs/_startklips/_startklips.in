@@ -252,7 +252,7 @@ fi
 if test ! -f $ipsecversion 
 then
 	echo "No KLIPS support found while requested, desperately falling back to netkey"
-	@MODPROBE@ -q af_key
+	@MODPROBE@ af_key
 
 	if test ! -f $netkey
 	then
