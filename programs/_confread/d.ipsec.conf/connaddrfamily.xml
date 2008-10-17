@@ -7,5 +7,6 @@ values are
 (the default); or
 <emphasis remap='B'>ipv6</emphasis>,
 </para>
+<para>The ipv6 family is currently only supported using the NETKEY stack.
   </listitem>
   </varlistentry>

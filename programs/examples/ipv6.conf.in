@@ -1,0 +1,40 @@
+# Example as taken from John Denker's IPv6 IPsec page at:
+# http://www.av8n.com/computer/htm/ipv6-howto.htm#htoc19
+#
+# Note that IPv6 only works with the NETKEY stack
+#
+# (keys have not been fully written out in the examples)
+
+config setup
+	protostack=netkey
+	interfaces="%none"
+
+conn ipv6-host-host
+	connaddrfamily=ipv6
+	auto=add
+	#
+	leftid="@sunset.example.net"
+	left="2002:4a6b:e723:3:205:4eff:fe4b:c8cf"
+	leftrsasigkey="0sAQNM....hIp"
+	leftnexthop="fe80::201:2ff:fe29:564d"  
+	#
+	rightid="east.example.net"
+	right="2002:4387:d370::"
+	rightrsasigkey="0sAQP....LMsP"
+
+conn ipv6-subnet-subnet
+	auto=add
+	connaddrfamily=ipv6
+	#
+	leftid="@sunset.example.net"
+	left="2002:4a6b:e723:3:205:4eff:fe4b:c8cf"
+	leftrsasigkey="0sAQNM....hIp"
+	leftnexthop="fe80::201:2ff:fe29:564d"  
+	leftsubnet="2002:4a6b:e723:8003:205:4eff:fe4b:c8cf/128"
+	leftsourceip="2002:4a6b:e723:8003:205:4eff:fe4b:c8cf"
+	#
+	rightid="east.example.net"
+	right="2002:4387:d370::"
+	rightrsasigkey="0sAQP....LMsP"
+	rightsubnet="2002:4387:d370:8000::/128"
+

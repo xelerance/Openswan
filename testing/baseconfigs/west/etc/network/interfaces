@@ -47,8 +47,8 @@ iface eth1 inet static
      network 192.1.2.0
      netmask 255.255.255.0
      broadcast 192.1.2.255
-	gateway 192.1.2.254
-	up route add -net 192.0.2.0 netmask 255.255.255.0 gw 192.1.2.23
+     gateway 192.1.2.254
+     up route add -net 192.0.2.0 netmask 255.255.255.0 gw 192.1.2.23
 
 iface eth2 inet static
      address 192.9.4.45

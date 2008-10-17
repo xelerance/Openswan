@@ -13,7 +13,7 @@ and then act as if the value was ``<emphasis remap='B'>ipsec0=</emphasis><emphas
 <emphasis remap='B'>%defaultroute</emphasis>
 is the default;
 <emphasis remap='B'>%none</emphasis>
-must be used to denote no interfaces.
+must be used to denote no interfaces, or when using the NETKEY stack.
 If
 <emphasis remap='B'>%defaultroute</emphasis>
 is used (implicitly or explicitly)

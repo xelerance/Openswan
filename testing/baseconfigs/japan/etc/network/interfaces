@@ -30,7 +30,8 @@
 # We always want the loopback interface. Whether we want ifup/ifdown to
 # know about is another matter, perhaps.
 #
- iface lo inet loopback
+iface lo inet loopback
+auto eth0
 
 # An example ethernet card setup: (broadcast and gateway are optional)
 #
