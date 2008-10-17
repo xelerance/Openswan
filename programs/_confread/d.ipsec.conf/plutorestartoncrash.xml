@@ -1,9 +1,11 @@
   <varlistentry>
   <term><emphasis remap='B'>plutorestartoncrash</emphasis></term>
   <listitem>
-<para>prevent pluto from restarting after it crashed. This option should only be used when a
-post-mortem of a core file is desired. It prevents pluto from restarting and possibly overwriting
-an older core file.</para>
+<para>prevent pluto from restarting after it crashed. This option should only be used when debugging a crasher. It will prevent overwriting a core file on
+ a new start, or a cascade of core files. This option is also required if
+ used with plutostderrlog= to avoid clearing the logs of the crasher. Values
+can be yes (the default) or no.
+</para>
   </listitem>
   </varlistentry>
 
