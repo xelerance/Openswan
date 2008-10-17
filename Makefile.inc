@@ -151,7 +151,7 @@ VERFILE=$(KERNELSRC)/include/linux/version.h
 OSMOD_DESTDIR?=net/ipsec
 
 # What command to use to load the modules. openwrt does not have modprobe
-MODPROBE?='modprobe -q '
+MODPROBE?=modprobe -q
 
 ### misc installation stuff
 
