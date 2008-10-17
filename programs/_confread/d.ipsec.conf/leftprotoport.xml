@@ -27,7 +27,7 @@ must still be based on firewall rules activated by an updown script. The
 variablees $PLUTO_MY_PROTOCOL, $PLUTO_PEER_PROTOCOL, $PLUTO_MY_PORT, and
 $PLUTO_PEER_PORT are available for use in <emphasis remap='I'>updown</emphasis>
 scripts. Older workarounds for bugs involved a setting of <emphasis remap='I'>17/0</emphasis>
-to denote all ports were allowed. This notation should no longer be used.
+to denote <emphasis remap='I'>any single UDP port</I> (not UDP port 0). Some clients, most notably OSX, uses a random high port, instead of port 1705 for L2TP.
 </para>
   </listitem>
   </varlistentry>
