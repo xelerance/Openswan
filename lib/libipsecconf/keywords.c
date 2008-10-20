@@ -313,12 +313,16 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"subnets",        kv_conn|kv_auto|kv_leftright, kt_appendlist, KSCF_SUBNETS,NOT_ENUM}, 
     {"sourceip",       kv_conn|kv_auto|kv_leftright, kt_ipaddr, KSCF_SOURCEIP,NOT_ENUM}, 
     {"nexthop",        kv_conn|kv_auto|kv_leftright, kt_ipaddr, KSCF_NEXTHOP,NOT_ENUM},
+#ifdef OBSOLETE
     {"firewall",       kv_conn|kv_auto|kv_leftright, kt_bool,   KNCF_FIREWALL,NOT_ENUM},
+#endif
     {"updown",         kv_conn|kv_auto|kv_leftright, kt_filename, KSCF_UPDOWN,NOT_ENUM},
     {"id",             kv_conn|kv_auto|kv_leftright, kt_idtype, KSCF_ID,NOT_ENUM},
     {"rsasigkey",      kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY1, &kw_rsasigkey_list},
     {"rsasigkey2",     kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY2, &kw_rsasigkey_list},
+#ifdef USE_MANUAL_KEYING
     {"spibase",        kv_conn|kv_auto|kv_leftright, kt_number, KNCF_SPIBASE,NOT_ENUM},
+#endif
     {"cert",           kv_conn|kv_auto|kv_leftright, kt_filename, KSCF_CERT,NOT_ENUM},
     {"sendcert",       kv_conn|kv_auto|kv_leftright, kt_enum,   KNCF_SENDCERT, &kw_sendcert_list},
     {"ca",             kv_conn|kv_auto|kv_leftright, kt_string, KSCF_CA,NOT_ENUM},
@@ -378,10 +382,12 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"modecfgwins1", kv_conn|kv_auto|kv_leftright, kt_ipaddr, KSCF_MODECFGWINS1,NOT_ENUM},
     {"modecfgwins2", kv_conn|kv_auto|kv_leftright, kt_ipaddr, KSCF_MODECFGWINS2,NOT_ENUM},
     /* things for manual keying only */
+#ifdef USE_MANUAL_KEYING
     {"spi",            kv_conn|kv_leftright|kv_manual, kt_number, KNCF_SPI,NOT_ENUM},
     {"espenckey",      kv_conn|kv_leftright|kv_manual, kt_bitstring, KSCF_ESPENCKEY,NOT_ENUM},
     {"espauthkey",     kv_conn|kv_leftright|kv_manual, kt_bitstring, KSCF_ESPAUTHKEY,NOT_ENUM},
     {"espreplay_window",kv_conn|kv_leftright|kv_manual, kt_number, KNCF_ESPREPLAYWINDOW,NOT_ENUM}, 
+#endif
     {NULL, 0, 0, 0, NOT_ENUM}
 };
 
