@@ -10,6 +10,8 @@ v2.6.19
 * Enable all wins/dns options as specified in man pages [david]
 * build support for all WINS/DNS options as mentioned in
   the man pages [david]
+* Removed obsolete keywords: firewall (linux 2.0), spibase, spi,espenckey,
+  espauthkey and espreplay_window (manual keying) [paul]
 * Bugtracker bugs fixed:
   #992: keyingretries default changed from %forever to 3 [ken]
         (bug was introduced in 2.6.x)
