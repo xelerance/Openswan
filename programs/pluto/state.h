@@ -436,6 +436,7 @@ extern void delete_states_dead_interfaces(void);
  */
 #ifdef HAVE_STATSD
 #define refresh_state(st) log_state(st, st->st_state)
+#define fake_state(st,new_state) log_state(st, new_state)
 #define change_state(st,new_state) \
 	do { \
 		if ((new_state) != (st)->st_state) { \
@@ -445,6 +446,7 @@ extern void delete_states_dead_interfaces(void);
 	   } while(0)
 #else
 #define refresh_state(st) /* do nothing */
+#define fake_state(st,new_state) /* do nothing */
 #define change_state(st, new_state) do { (st)->st_state=(new_state); } while(0)
 #endif
 

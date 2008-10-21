@@ -401,6 +401,13 @@ delete_state(struct state *st)
     if (c->newest_isakmp_sa == st->st_serialno)
 	c->newest_isakmp_sa = SOS_NOBODY;
 
+    /*
+     * fake a state change here while we are still associated with a
+     * connection.  Without this the state logging (when enabled) cannot
+     * work out what happened.
+     */
+    fake_state(st, STATE_UNDEFINED);
+
     st->st_connection = NULL;	/* we might be about to free it */
     cur_state = old_cur_state;	/* without st_connection, st isn't complete */
     connection_discard(c);

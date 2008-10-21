@@ -874,12 +874,14 @@ struct log_conn_info {
 		p1_none=0,
 		p1_init,
 		p1_encrypt,
-		p1_auth
+		p1_auth,
+		p1_up,
 	} phase1;
 
 	enum {
 		p2_none=0,
-		p2_neg
+		p2_neg,
+		p2_up,
 	} phase2;
 };
 
@@ -901,6 +903,7 @@ connection_state(struct state *st, void *data)
 		if (IS_ISAKMP_SA_ESTABLISHED(st->st_state)) {
 			if (lc->tunnel < tun_phase1up)
 				lc->tunnel = tun_phase1up;
+			lc->phase1 = p1_up;
 		} else {
 			if (lc->phase1 < p1_init)
 				lc->phase1 = p1_init;
@@ -923,6 +926,7 @@ connection_state(struct state *st, void *data)
 		if (IS_IPSEC_SA_ESTABLISHED(st->st_state)) {
 		   	if (lc->tunnel < tun_up)
 				lc->tunnel = tun_up;
+			lc->phase2 = p2_up;
 		} else {
 		   	if (lc->phase2 < p2_neg)
 				lc->phase2 = p2_neg;
