@@ -635,7 +635,7 @@ int cmdparse(struct netjig_state *ns,
 
 	ce=cmds;
 	if(strcasecmp("help", argv[0]) == 0) {
-		fprintf(ns->cmdproto_out, "FAIL %d LINES\n",
+		fprintf(ns->cmdproto_out, "FAIL %lu LINES\n",
 			(sizeof(cmds)/sizeof(struct cmd_entry))-1);
 		while(ce->cmdname != NULL) {
 			fprintf(ns->cmdproto_out, "\t%s\n", ce->cmdname);
