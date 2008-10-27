@@ -12,6 +12,8 @@ v2.6.19
   the man pages [david]
 * Removed obsolete keywords: firewall (linux 2.0), spibase, spi,espenckey,
   espauthkey and espreplay_window (manual keying) [paul]
+* Fix unneccesary and bogus connection switching with NAT [Shingo Yamawaki]
+  (this might relate to several reported bugs in the tracker)
 * Bugtracker bugs fixed:
   #992: keyingretries default changed from %forever to 3 [ken]
         (bug was introduced in 2.6.x)
