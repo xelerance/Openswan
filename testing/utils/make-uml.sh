@@ -55,8 +55,9 @@ esac
 echo Setting up for kernel KERNVER=$KERNVER and KERNVERSION=$KERNVERSION
 
 
-# set the default for this
+# set the default for these
 NATTPATCH=${NATTPATCH-true}
+NGPATCH=${NGPATCH-false}
 
 # make absolute so that we can reference it from POOLSPACE
 OPENSWANSRCDIR=`cd $OPENSWANSRCDIR && pwd`;export OPENSWANSRCDIR
