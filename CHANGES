@@ -15,6 +15,7 @@ v2.6.19
 * Fix unneccesary and bogus connection switching with NAT [Shingo Yamawaki]
   (this might relate to several reported bugs in the tracker)
 * Added cisco-decrypt utility for PCF obfuscation in contrib/ [paul]
+* Fix for crasher when the leftcert= filename was not found [paul]
 * Bugtracker bugs fixed:
   #992: keyingretries default changed from %forever to 3 [ken]
         (bug was introduced in 2.6.x)
