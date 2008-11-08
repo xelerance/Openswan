@@ -23,7 +23,7 @@ Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: Openswan - An IPsec and IKE implementation
 Group: System Environment/Daemons
-BuildRequires: gmp-devel bison flex bind-devel redhat-rpm-config
+BuildRequires: gmp-devel bison flex bind-devel redhat-rpm-config xmlto
 Requires: iproute >= 2.6.8
 Requires(post): coreutils bash
 Requires(preun): initscripts chkconfig
