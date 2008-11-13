@@ -318,7 +318,7 @@ void show_confkey(struct secret *s
     unsigned int keybloblen;
 
     if(pks->kind != PPK_RSA) {
-        char *enumstr;
+        char *enumstr = "gcc is crazy";
         switch (pks->kind) {
         case PPK_PSK:
                 enumstr = "PPK_PSK";
