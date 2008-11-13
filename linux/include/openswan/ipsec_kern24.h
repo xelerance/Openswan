@@ -26,14 +26,6 @@
 #endif
 #endif
 
-# if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
-#  define __ipsec_dev_get(x) __dev_get_by_name(&init_net, x)
-#  define ipsec_dev_get(x) dev_get_by_name(&init_net, x)
-# else
-#  define ipsec_dev_get(x) __dev_get_by_name(x)
-#  define __ipsec_dev_get(x) __dev_get_by_name(x)
-# endif
-
 # define ipsec_dev_put(x) dev_put(x)
 # define __ipsec_dev_put(x) __dev_put(x)
 # define ipsec_dev_hold(x) dev_hold(x)
