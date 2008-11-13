@@ -184,6 +184,8 @@ fi
 
 		# padlock must load before aes module
 		@MODPROBE@ padlock 2>/dev/null
+		@MODPROBE@ padlock-aes 2>/dev/null
+		@MODPROBE@ padlock-sha 2>/dev/null
 
 		# load the most common ciphers/algo's
 		# aes-x86_64 has higher priority in via crypto api
