@@ -842,6 +842,8 @@ load_end_certificate(const char *filename, struct end *dst)
 	    if(!valid_cert) {
 		whack_log(RC_FATAL, "can not load certificate file %s\n"
 			  , filename);
+		/* clear the ID, we're expecting it via %fromcert */
+		dst->id.kind = ID_NONE;
 		return;
 	    }
 	}
@@ -2089,6 +2091,14 @@ route_owner(struct connection *c
 		    continue;
 		if (src->that.port != srd->that.port)
 		    continue;
+
+		/* with old eroutes/routing, we could not do this. This
+		 * allows a host with two IP's to talk to 1 oter host
+		 * with both IP's using two different tunnels.
+		 */
+		if (!sameaddr(&src->this.host_addr, &srd->this.host_addr))
+			continue;
+
 		passert(oriented(*d));
 		if (srd->routing > best_routing)
 		{
