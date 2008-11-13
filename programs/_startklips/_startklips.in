@@ -236,8 +236,20 @@ logonly() {
 	logger -p $log -t ipsec_setup
 }
 
+# first load any crypto modules we might need for acceleration
+	@MODPROBE@ padlock 2>/dev/null
+	@MODPROBE@ padlock-aes 2>/dev/null
+	@MODPROBE@ padlock-sha 2>/dev/null
+	# load the most common ciphers/algo's
+	# aes-x86_64 has higher priority in via crypto api
+	for crypto in aes-x86_64 aes aes_generic des sha512 sha256 md5 cbc xcbc ecb twofish blowfish serpent ccm
+		do
+			#echo -n "$crypto "
+			@MODPROBE@ $crypto 2> /dev/null
+		done
 
-# load module if possible
+
+# load IPsec module if possible
 if test -f $ipsecversion && test -f $netkey
 then
     # both KLIPS and NETKEY code detected, bail out
