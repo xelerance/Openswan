@@ -29,7 +29,7 @@ Summary: Openswan - An IPsec and IKE implementation
 Provides: pluto klips ipsec VPN freeswan
 Obsoletes: freeswan
 PreReq: gmp %insserv_prereq %fillup_prereq perl
-BuildRequires: gmp-devel bison flex bind-devel 
+BuildRequires: gmp-devel bison flex bind-devel xmlto
 Requires: iproute2 >= 2.6.8
 AutoReqProv:    on
 
