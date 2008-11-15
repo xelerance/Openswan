@@ -1,25 +1,34 @@
 .\"     Title: _STARTNETKEY
 .\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.71.0 <http://docbook.sf.net/>
-.\"      Date: 05/11/2007
-.\"    Manual: 25 Apr 2002
-.\"    Source: 25 Apr 2002
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 11/14/2008
+.\"    Manual: 27 Nov 2007
+.\"    Source: 27 Nov 2007
 .\"
-.TH "_STARTNETKEY" "8" "05/11/2007" "25 Apr 2002" "25 Apr 2002"
+.TH "_STARTNETKEY" "8" "11/14/2008" "27 Nov 2007" "27 Nov 2007"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-ipsec _startnetkey \- internal script to bring up kernel components for 2.6 netkey
+ipsec _startnetkey - internal script to bring up kernel components for netkey (xfrm)
 .SH "DESCRIPTION"
 .PP
 \fI_startnetkey\fR
-brings up the Openswan kernel component. This involves loading any required modules.
+brings up the Openswan kernel component\. This involves loading any required modules\.
 .SH "SEE ALSO"
 .PP
-\fBipsec\fR(8),
-\fBipsec_tncfg\fR(8).
+\fBip\fR(8),
+\fBipsec_tncfg\fR(8)\.
+.SH "BUGS"
+.PP
+The
+\fIip xfrm\fR
+commands are not documented in the man page\. Ask linux\-net people, but do not hold your breath\. See
+\fIip xfrm state help\fR
+and
+\fIip xfrm policy help\fR
+for the magic words\.
 .SH "HISTORY"
 .PP
-Man page written for the Linux Openswan project <\fIhttp://www.openswan.org/\fR> by Michael Richardson.
+Man page written for the Linux Openswan project <\fIhttp://www\.openswan\.org/\fR> by Michael Richardson\.

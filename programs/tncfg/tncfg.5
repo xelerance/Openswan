@@ -1,85 +1,110 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "IPSEC_TNCFG" "5" "11/23/2006" "27 Jun 2000" "27 Jun 2000"
+.\"     Title: IPSEC_TNCFG
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 11/14/2008
+.\"    Manual: 27 Jun 2000
+.\"    Source: 27 Jun 2000
+.\"
+.TH "IPSEC_TNCFG" "5" "11/14/2008" "27 Jun 2000" "27 Jun 2000"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-ipsec_tncfg \- lists IPSEC virtual interfaces attached to real interfaces
+ipsec_tncfg - lists IPSEC virtual interfaces attached to real interfaces
 .SH "SYNOPSIS"
 .HP 6
 \fBipsec\fR \fItncfg\fR
 .br
- \fIcat/proc/net/ipsec_tncfg\fR
+\fIcat/proc/net/ipsec_tncfg\fR
 .SH "OBSOLETE"
 .PP
-Note that tncfg is only supported on the classic KLIPS stack. It is not supported on any other stack and will be completely removed in future versions. A replacement command still needs to be designed
+Note that tncfg is only supported on the classic KLIPS stack\. It is not supported on any other stack and will be completely removed in future versions\. A replacement command still needs to be designed
 .SH "DESCRIPTION"
 .PP
 \fI/proc/net/ipsec_tncfg\fR
-is a read\-only file which lists which IPSEC virtual interfaces are attached to which real interfaces, through which packets will be forwarded once processed by IPSEC.
+is a read\-only file which lists which IPSEC virtual interfaces are attached to which real interfaces, through which packets will be forwarded once processed by IPSEC\.
 .PP
-Each line lists one ipsec I/F. A table entry consists of:
-.TP
+Each line lists one ipsec I/F\. A table entry consists of:
+.PP
 +
+.RS 4
 an ipsec virtual I/F name
-.TP
+.RE
+.PP
 +
-a visual and machine parsable separator '\->', separating the virtual I/F and the physical I/F,
-.TP
+.RS 4
+a visual and machine parsable separator \'\->\', separating the virtual I/F and the physical I/F,
+.RE
+.PP
 +
+.RS 4
 a physical I/F name, to which the ipsec virtual I/F is attached or NULL if it is not attached,
-.TP
+.RE
+.PP
 +
+.RS 4
 the keyword
-\fImtu=\fR,
-.TP
+\fBmtu=\fR,
+.RE
+.PP
 +
+.RS 4
 the MTU of the ipsec virtual I/F,
-.TP
+.RE
+.PP
 +
+.RS 4
 the automatically adjusted effective MTU for PMTU discovery, in brackets,
-.TP
+.RE
+.PP
 +
-a visual and machine parsable separator '\->', separating the virtual I/F MTU and the physical I/F MTU,
-.TP
+.RS 4
+a visual and machine parsable separator \'\->\', separating the virtual I/F MTU and the physical I/F MTU,
+.RE
+.PP
 +
-the MTU of the attached physical I/F.
+.RS 4
+the MTU of the attached physical I/F\.
+.RE
 .SH "EXAMPLES"
-.TP
+.PP
 \fBipsec2 \-> eth3 mtu=16260(1443) \-> 1500\fR
+.RS 4
+.RE
 .PP
 shows that virtual device
-\fIipsec2\fR
+\fBipsec2\fR
 with an MTU of
 16260
 is connected to physical device
-\fIeth3\fR
+\fBeth3\fR
 with an MTU of
 1500
 and that the effective MTU as a result of PMTU discovery has been automatically set to
-1443.
-.TP
+1443\.
+.PP
 \fBipsec0 \-> wvlan0 mtu=1400(16260) \-> 1500\fR
+.RS 4
+.RE
 .PP
 shows that virtual device
-\fIipsec0\fR
+\fBipsec0\fR
 with an MTU of
 1400
 is connected to physical device
-\fIwvlan0\fR
+\fBwvlan0\fR
 with an MTU of
 1500
-and no PMTU packets have gotten far enough to bump down the effective MTU from its default of 16260.
-.TP
+and no PMTU packets have gotten far enough to bump down the effective MTU from its default of 16260\.
+.PP
 \fBipsec3 \-> NULL mtu=0(0) \-> 0\fR
+.RS 4
+.RE
 .PP
 shows that virtual device
-\fIipsec3\fR
-is not connected to any physical device.
+\fBipsec3\fR
+is not connected to any physical device\.
 .SH "FILES"
 .PP
 /proc/net/ipsec_tncfg, /usr/local/bin/ipsec
@@ -88,8 +113,4 @@ is not connected to any physical device.
 ipsec(8), ipsec_manual(8), ipsec_eroute(5), ipsec_spi(5), ipsec_spigrp(5), ipsec_klipsdebug(5), ipsec_tncfg(8), ipsec_version(5), ipsec_pf_key(5)
 .SH "HISTORY"
 .PP
-Written for the Linux FreeS/WAN project <[1]\&\fIhttp://www.freeswan.org/\fR> by Richard Guy Briggs.
-.SH "REFERENCES"
-.TP 3
-1.\ http://www.freeswan.org/
-\%http://www.freeswan.org/
+Written for the Linux FreeS/WAN project <\fIhttp://www\.freeswan\.org/\fR> by Richard Guy Briggs\.

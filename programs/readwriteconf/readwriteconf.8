@@ -1,0 +1,24 @@
+.\"     Title: ipsec readwriteconf
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 11/14/2008
+.\"    Manual: 
+.\"    Source: 
+.\"
+.TH "IPSEC READWRITECONF" "8" "11/14/2008" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+ipsec readwriteconf - validate and output an Openswan IPsec configuration file
+.SH "SYNOPSIS"
+.HP 20
+\fBipsec readwriteconf \fR [\-\-config\ \fBfile\fR] [\-\-debug] [\-\-verbose] [\-\-rootdir\ \fBdir\fR]
+.SH "DESCRIPTION"
+.PP
+This program reads the given ipsec\.conf style configuration file, interpreting the also= options, and outputs an equivalent ipsec\.conf file\. The purpose of this program is to validate the input processing\. This can also be used to validate the syntax of a configuration file\.
+.PP
+The options \-\-debug and \-\-verbose are currently synonums\.
+.PP
+The \-\-rootdir option changes the programs idea of what "/" is when processing include directives\. This is useful when validating a configuration which is not installed on a target system yet\.

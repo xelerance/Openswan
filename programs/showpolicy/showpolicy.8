@@ -1,43 +1,54 @@
-.TH IPSEC_SHOWPOLICY 8 "7 May 2003"
+.\"     Title: IPSEC_SHOWPOLICY
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 11/14/2008
+.\"    Manual: 7 May 2003
+.\"    Source: 7 May 2003
 .\"
-.\" RCSID $Id: showpolicy.8,v 1.2 2005/01/11 17:52:50 ken Exp $
-.\"
-.SH NAME
-ipsec showpolicy \- dump policy of socket found as stdin
-.SH SYNOPSIS
+.TH "IPSEC_SHOWPOLICY" "8" "11/14/2008" "7 May 2003" "7 May 2003"
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+ipsec showpolicy - dump policy of socket found as stdin
+.SH "SYNOPSIS"
+.HP 6
+\fBipsec\fR \fIshowpolicy\fR
+.br
+
+.HP 17
+\fBipsec showpolicy\fR \-\-udp\fIport\fR\ \-\-sockpolicy \-\-packetcount\fInum\fR
+.br
+
+.SH "DESCRIPTION"
 .PP
-.B ipsec
-.B showpolicy
+\fIshowpolicy\fR
+calls the
+\fBipsec_policy_lookup\fR(3)
+function on the file description which is its stdin\.
 .PP
-.SH DESCRIPTION
-.I showpolicy
-calls the 
-.IR ipsec_policy_lookup (3) 
-function on the file description which is its stdin.
+It then dumps the resulting query in a human readable form\.
 .PP
-It then dumps the resulting query in a human readable form.
+With the \-\-udp option, it opens a UDP port, and dumps policy on each packet received on that port using the IP_IPSEC_RECVREF socket option\.
 .PP
-This is a test program. One might run it from inetd, via:
-.TP
+The \-\-maxpacket option causes the program to exit after processing that many packets\. This can be used in test cases\.
+.PP
+This is a test program\. One might run it from inetd, via:
+.PP
 discard stream tcp nowait nobody /usr/local/libexec/ipsec/showpolicy showpolicy
-.SH FILES
-/var/run/pluto/ipsecpolicy.ctl
+.PP
+One could also run it from the command line via:
+.PP
+ipsec showpolicy \-\-udp 9 \-\-sockpolicy \-\-maxpacket 2
+.SH "FILES"
+.PP
+/var/run/pluto/ipsecpolicy\.ctl
 .SH "SEE ALSO"
-ipsec(8), ipsec_policy_query(3), ipsec_pluto(8)
-.SH HISTORY
-Written for the Linux FreeS/WAN project
-<http://www.freeswan.org/>
-by Michael Richardson
-.SH BUGS
-.\"
-.\" $Log: showpolicy.8,v $
-.\" Revision 1.2  2005/01/11 17:52:50  ken
-.\" Move plutos runtime files from /var/run/pluto.* to /var/run/pluto/pluto.*
-.\"
-.\" This was done with find . -type f -print0 | xargs -0 perl -pi -e 's#/var/run/#/var/run/pluto/#g'
-.\"
-.\" Revision 1.1  2003/05/11 00:45:08  mcr
-.\" 	program to interogate ipsec policy of stdin.
-.\" 	run this from inetd.
-.\"
-.\"
+.PP
+\fBipsec\fR(8),
+\fBipsec_policy_query\fR(3),
+\fBipsec_pluto\fR(8)
+.SH "HISTORY"
+.PP
+Written for the Linux FreeS/WAN project <\fIhttp://www\.freeswan\.org/\fR> by Michael Richardson

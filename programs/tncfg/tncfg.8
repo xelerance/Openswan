@@ -1,64 +1,95 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "IPSEC_TNCFG" "8" "11/23/2006" "21 Jun 2000" "21 Jun 2000"
+.\"     Title: IPSEC_TNCFG
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 11/14/2008
+.\"    Manual: 21 Jun 2000
+.\"    Source: 21 Jun 2000
+.\"
+.TH "IPSEC_TNCFG" "8" "11/14/2008" "21 Jun 2000" "21 Jun 2000"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-ipsec tncfg \- associate IPSEC virtual interface with physical interface
+ipsec tncfg - manipulate KLIPS virtual interfaces
 .SH "SYNOPSIS"
 .HP 6
-\fBipsec\fR \fItncfg\fR
+\fBipsec\fR tncfg
 .br
- \fIipsectncfg\fR \-\-attach \-\-virtual \fIvirtual\fR \-\-physical \fIphysical\fR
+ipsec\ tncfg \-\-create \fIvirtual\fR
 .br
- \fIipsectncfg\fR \-\-detach \-\-virtual \fIvirtual\fR
+ipsec\ tncfg \-\-delete \fIvirtual\fR
 .br
- \fIipsectncfg\fR \-\-clear
+ipsec\ tncfg \-\-attach \-\-virtual \fIvirtual\fR \-\-physical \fIphysical\fR
 .br
- \fIipsectncfg\fR \-\-version
+ipsec\ tncfg \-\-detach \-\-virtual \fIvirtual\fR
 .br
- \fIipsectncfg\fR \-\-help
+ipsec\ tncfg \-\-clear
+.br
+ipsec\ tncfg \-\-version
+.br
+ipsec\ tncfg \-\-help
 .SH "OBSOLETE"
 .PP
-Note that tncfg is only supported on the classic KLIPS stack. It is not supported on any other stack and will be completely removed in future versions. A replacement command still needs to be designed
+Note that tncfg is only supported on the classic KLIPS stack\. It is not supported on any other stack and will be completely removed in future versions\. A replacement command still needs to be designed
 .SH "DESCRIPTION"
 .PP
-\fITncfg\fR
-attaches/detaches IPSEC virtual interfaces to/from physical interfaces, through which packets will be forwarded once processed by IPSEC.
+The historical use of
+\fItncfg\fR
+is to attach/detach IPsec virtual interfaces (e\.g\. ipsec0) to/from physical interfaces (e\.g\. eth0) through which packets will be forwarded once processed by KLIPS\.
 .PP
-The form with no additional arguments lists the contents of /proc/net/ipsec_tncfg. The format of /proc/net/ipsec_tncfg is discussed in ipsec_tncfg(5). The
+The modern use of tncfg is to create and delete virtual interfaces known as mastXXX\. mast stands for Mooring and XXX\.
+.PP
+The form with no additional arguments lists the contents of /proc/net/ipsec_tncfg\. The format of /proc/net/ipsec_tncfg is discussed in ipsec_tncfg(5)\.
+.PP
+The
 \fB\-\-attach\fR
 form attaches the
 \fIvirtual\fR
 interface to the
 \fIphysical\fR
-one. The
+one\.
+.PP
+The
 \fB\-\-detach\fR
 form detaches the
 \fIvirtual\fR
-interface from whichever physical interface it is attached to. The
+interface from whichever physical interface it is attached to\.
+.PP
+The
 \fB\-\-clear\fR
 form clears all the
 \fIvirtual\fR
-interfaces from whichever physical interfaces they were attached to.
+interfaces from whichever physical interfaces they were attached to\.
 .PP
 Virtual interfaces typically have names like
-\fIipsec0\fR, while physical interfaces typically have names like
-\fIeth0\fR
+\fBipsec0\fR
 or
-\fIppp0\fR.
+\fBmast0\fR
+while physical interfaces typically have names like
+\fBeth0\fR
+or
+\fBppp0\fR\.
 .SH "EXAMPLES"
-.TP
-\fIipsec tncfg \-\-attach \-\-virtual ipsec0 \-\-physical eth0\fR
+.PP
+\fBipsec tncfg \-\-create mast12\fR
+.RS 4
+creates the mast12 device\.
+.RE
+.PP
+\fBipsec tncfg \-\-create ipsec4\fR
+.RS 4
+creates an ipsec4 device, but does not attach it\.
+.RE
+.PP
+\fBipsec tncfg \-\-attach \-\-virtual ipsec0 \-\-physical eth0\fR
+.RS 4
 attaches the
-\fIipsec0\fR
+\fBipsec0\fR
 virtual device to the
-\fIeth0\fR
-physical device.
+\fBeth0\fR
+physical device\.
+.RE
 .SH "FILES"
 .PP
 /proc/net/ipsec_tncfg, /usr/local/bin/ipsec
@@ -67,8 +98,4 @@ physical device.
 ipsec(8), ipsec_manual(8), ipsec_eroute(8), ipsec_spi(8), ipsec_spigrp(8), ipsec_klipsdebug(8), ipsec_tncfg(5)
 .SH "HISTORY"
 .PP
-Written for the Linux FreeS/WAN project <[1]\&\fIhttp://www.freeswan.org/\fR> by Richard Guy Briggs.
-.SH "REFERENCES"
-.TP 3
-1.\ http://www.freeswan.org/
-\%http://www.freeswan.org/
+Written for the Linux FreeS/WAN project <\fIhttp://www\.freeswan\.org/\fR> by Richard Guy Briggs\.

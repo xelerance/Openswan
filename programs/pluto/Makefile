@@ -174,7 +174,6 @@ all: $(BINNAMEPLUTO) $(BINNAMEADNSIFNEEDED) $(BINNAMEWHACK) #$(BINNAMEWHACKINIT)
 programs: $(BINNAMEPLUTO) $(BINNAMEADNSIFNEEDED) $(BINNAMEWHACK) #$(BINNAMEWHACKINIT)
 clean:	cleanall
 install: doinstall
-
 endif
 
 doinstall: all
@@ -190,6 +189,7 @@ doinstall: all
 	$(INSTALL) $(INSTBINFLAGS) $(BINNAMEPLUTO) $(BINNAMEWHACK) $(LIBEXECDIR)
 	#$(INSTALL) $(INSTSUIDFLAGS) $(BINNAMEWHACKINIT) $(LIBEXECDIR)
 	if $(USE_ADNS) ; then $(INSTALL) $(INSTBINFLAGS) $(BINNAMEADNS)  $(LIBEXECDIR) ; fi
+	( cd ${OPENSWANSRCDIR}/programs/pluto ; xmlto man pluto.8.xml ; mv ipsec_pluto.8 pluto.8; xmlto man ipsec.secrets.5.xml)
 	$(INSTALL) $(INSTMANFLAGS) ${srcdir}pluto.8 $(PMANDIR)/ipsec_pluto.8
 	sh ${OPENSWANSRCDIR}/packaging/utils/manlink ${srcdir}pluto.8 | \
 		while read from to ; \
@@ -245,7 +245,8 @@ cleanall:
 	$(RM) $(RMFLAGS) *.core core *~ a.out ktrace.out \
 		$(OBJSPLUTO) $(BINNAMEPLUTO) \
 		$(OBJSWHACK) $(BINNAMEWHACK) \
-		$(OBJSADNS) $(BINNAMEADNS)
+		$(OBJSADNS) $(BINNAMEADNS) \
+		pluto.8 ipsec_pluto.8 ipsec.secrets.5
 
 distclean: clean
 
