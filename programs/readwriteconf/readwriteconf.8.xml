@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!-- lifted from troff+man by doclifter -->
 <refentry>
   <refmeta>
     <refentrytitle>ipsec readwriteconf</refentrytitle>
@@ -6,14 +9,14 @@
     <manvolnum>8</manvolnum>
   </refmeta>
 
-  <refnamediv>
+  <refnamediv id='name'>
     <refname>ipsec readwriteconf</refname>
 
     <refpurpose>validate and output an Openswan IPsec configuration
     file</refpurpose>
   </refnamediv>
 
-  <refsynopsisdiv>
+  <refsynopsisdiv id='synopsis'>
     <cmdsynopsis>
       <command>ipsec readwriteconf </command>
 
@@ -27,8 +30,7 @@
     </cmdsynopsis>
   </refsynopsisdiv>
 
-  <refsection>
-    <title>Description</title>
+<refsect1 id='description'><title>DESCRIPTION</title>
 
     <para>This program reads the given ipsec.conf style configuration file,
     interpreting the also= options, and outputs an equivalent ipsec.conf file.
@@ -41,6 +43,5 @@
     processing include directives. This is useful when validating a
     configuration which is not installed on a target system yet.</para>
 
-    <para></para>
-  </refsection>
+  </refsect1>
 </refentry>
