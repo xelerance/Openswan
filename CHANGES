@@ -18,6 +18,8 @@ v2.6.19
 * Fix for crasher when the leftcert= filename was not found [paul]
 * Patch for "route already in use" when using two different IP's
   to talk to the same remote IP using two tunnels [Avesh Agarwal]
+* Fixes to init scripts [Avesh/Tuomo]
+  See also: RedHat bugzilla #466861.
 * Bugtracker bugs fixed:
   #992: keyingretries default changed from %forever to 3 [ken]
         (bug was introduced in 2.6.x)
