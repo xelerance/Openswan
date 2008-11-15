@@ -61,7 +61,7 @@ SAMPLEMAN=${HMANDIR}/ipsec.8.html
 
 programs: ${alldocs} ${SAMPLEMAN}
 
-all: #$(howto) index.html
+all: #$(howto) 
 
 # default, build HTML only
 # dependencies build most of it
@@ -72,7 +72,7 @@ index.html: ${SAMPLEMAN} ${OPENSWANSRCDIR}/doc/src/index.html
 ${SAMPLEMAN}: $(SCRIPTDIR)/mkhtmlman
 	-@$(SCRIPTDIR)/mkhtmlman $(HMANDIR) `find ${OPENSWANSRCDIR}/programs ${OPENSWANSRCDIR}/lib ${OPENSWANSRCDIR}/linux -type f -name '*.[1-8]' -print | grep -v lwres | grep -v CVS`
 
-real-all: $(howto) index.html
+real-all: $(howto) 
 remake: $(alldocs) 
 
 realclean:
