@@ -118,69 +118,90 @@ umask 022
 
 mkdir -p /var/run/pluto
 
+RETVAL=0
 
-# do it
-case "$1" in
-  start|--start|stop|--stop|_autostop|_autostart)
+start_stop() {
 	# remove for: @cygwin_START@ 
 	# portable way for checking for root
 	if [ ! -w / ]
 	then
-		
 		echo "permission denied (must be superuser)" |
 			logger -s -p $IPSECsyslog -t ipsec_setup 2>&1
 		exit 1
 	fi
 	# remove for: @cygwin_END@
-	tmp=/var/run/pluto/ipsec_setup.st
-	outtmp=/var/run/pluto/ipsec_setup.out
 	(
-		ipsec _realsetup $1
-		echo "$?" >$tmp
-	) > ${outtmp} 2>&1
-	st=$?
-	if test -f $tmp
-	then
-		st=`cat $tmp`
-		rm -f $tmp
-	fi
-	if [ -f ${outtmp} ]; then
-		cat ${outtmp} | logger -s -p $IPSECsyslog -t ipsec_setup 2>&1
-		rm -f ${outtmp}
-	fi
-	exit $st
+	ipsec _realsetup $1
+	RETVAL="$?" 
+	) 2>&1 | logger -s -p $IPSECsyslog -t ipsec_setup 2>&1  
+
+	return $RETVAL
+}
+
+
+restart_reload() {
+	$0 $IPSEC_setupflags stop
+	$0 $IPSEC_setupflags start
+}
+
+
+autorestart() {
+	$0 $IPSEC_setupflags _autostop
+	$0 $IPSEC_setupflags _autostart
+}
+
+status() {
+	ipsec _realsetup $1
+	RETVAL=$?
+	return $RETVAL
+}
+
+
+version() {
+	ipsec version
+	RETVAL=$?
+	return $RETVAL
+}
+
+
+show_help() {
+	echo "Usage: $me [ --showonly ] {--start|--stop|--restart}"
+	echo "       $me --status"
+	RETVAL=0
+	return $RETVAL
+}
+
+# do it
+case "$1" in
+  start|--start|stop|--stop|_autostop|_autostart)
+	start_stop $1
 	;;
 
   restart|--restart|force-reload)
-	$0 $IPSEC_setupflags stop
-	$0 $IPSEC_setupflags start
+	restart_reload
 	;;
 
   _autorestart)			# for internal use only
-	$0 $IPSEC_setupflags _autostop
-	$0 $IPSEC_setupflags _autostart
+	autorestart
 	;;
 
   status|--status)
 	ipsec _realsetup $1
-	exit
+	RETVAL=$?
 	;;
 
-  --version)
-	echo "$me $IPSEC_VERSION"
-	exit 0
+  version|--version)
+	version
 	;;
 
-  --help)
-	echo "Usage: $me [ --showonly ] {--start|--stop|--restart}"
-	echo "       $me --status"
-	exit 0
+  help|--help)
+	show_help
 	;;
 
   *)
 	echo "Usage: $me [ --showonly ] {--start|--stop|--restart}"
 	echo "       $me --status"
-	exit 2
+	RETVAL=2
 esac
 
-exit 0
+exit $RETVAL
