@@ -150,13 +150,6 @@ autorestart() {
 	$0 $IPSEC_setupflags _autostart
 }
 
-status() {
-	ipsec _realsetup $1
-	RETVAL=$?
-	return $RETVAL
-}
-
-
 version() {
 	ipsec version
 	RETVAL=$?
