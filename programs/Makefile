@@ -42,7 +42,7 @@ SUBDIRS+=_confread _copyright _include _keycensor _plutoload _plutorun
 SUBDIRS+=_realsetup _secretcensor _startklips _updown _updown.klips _updown.mast
 SUBDIRS+=auto barf verify ipsec look newhostkey ranbits secrets
 SUBDIRS+=rsasigkey setup showdefaults showhostkey 
-SUBDIRS+=ikeping examples livetest
+SUBDIRS+=ikeping examples 
 ifeq ($(USE_KLIPS),true)
 SUBDIRS+= _startklips _updown.klips 
 endif
