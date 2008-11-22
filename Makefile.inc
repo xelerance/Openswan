@@ -269,13 +269,6 @@ USE_LWRES?=true
 # but it could be a potential security issue if receiving spoofed dns.
 USE_DYNAMICDNS?=false
 
-# what kind of firewalling to use:
-#  2.0 	- ipfwadm
-#  2.2  - ipchains
-#  2.4  - iptables or ipchains
-#  2.6  - iptables
-IPSEC_FIREWALLTYPE=iptables
-
 # Do we want all the configuration files like ipsec.conf and ipsec.secrets
 # and any certificates to be in a single directory defined by 
 # FINALCONFDDIR?
