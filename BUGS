@@ -51,12 +51,6 @@ For a detailed list, see http://bugs.openswan.org/
   exposure can be reduced using the forwardcontrol parameter, or by using
   iptables start/stop scripts at the appropriate times.
 
-* A similar leak occurs because there is no simple way to *replace* a
-  route using the Linux 2.2.xx route(8) command.  It has to be done with a
-  delete/add sequence, which leaves a timing window in which there is no
-  route for the destination.  Workarounds are complex; firewalling is
-  probably the best countermeasure right now.
-
 * Yet another potential leak arises because the PF_KEYv2 replace form of
   addroute command is non-atomic.  There is a possibility for packets to
   slip through the eroute table to a more general eroute between deletion
