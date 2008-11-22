@@ -5,6 +5,9 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.19
+* Fix for L2TP/IPsec with Windows machines having their packets
+  disgarded by accident [Hiren Joshi]
+* Fixes to interop with SoftRemote/aggressive mode [David McCullough]
 * Fix for ERROR: Module xfrm6_tunnel is in use by ipcomp6 [paul]
 * Fix for using MODPROBE=insmod where insmod does not support -q [paul]
 * Enable all wins/dns options as specified in man pages [david]
