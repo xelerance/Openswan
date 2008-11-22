@@ -2170,8 +2170,10 @@ install_inbound_ipsec_sa(struct state *st)
 		&& o->interface == c->interface)
                 break;  /* existing route is compatible */
 
+#if 0	    /* this stops us removing certain RW routes, and later we fail */
             if (o->kind == CK_TEMPLATE && streq(o->name, c->name))
                 break;  /* ??? is this good enough?? */
+#endif
 
 	    if(kernel_ops->overlap_supported
 	       && !LIN(POLICY_TUNNEL, c->policy)

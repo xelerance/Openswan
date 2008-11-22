@@ -816,6 +816,11 @@ aggr_inI2_tail(struct msg_digest *md
 	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.that);
 	init_pbs(&pbs, buffer, sizeof(buffer), "identity payload");
 	id_hd.isaiid_np = ISAKMP_NEXT_NONE;
+
+	/* interop ID for SoftRemote & maybe others ? */
+	id_hd.isaiid_protoid = st->st_peeridentity_protocol;
+	id_hd.isaiid_port = htons(st->st_peeridentity_port);
+
 	if (!out_struct(&id_hd, &isakmp_ipsec_identification_desc, &pbs, &id_pbs)
 		|| !out_chunk(id_b, &id_pbs, "my identity"))
 	    return STF_INTERNAL_ERROR;

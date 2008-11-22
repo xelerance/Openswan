@@ -265,6 +265,14 @@ struct state
     u_int16_t          st_peeruserport;
 
     /* end of symmetric stuff */
+
+    /* Support quirky feature of Phase 1 ID payload for peer
+     * We don't support this wart for ourselves.
+     * Currently used in Aggressive mode for interop.
+     */
+    u_int8_t           st_peeridentity_protocol;
+    u_int16_t          st_peeridentity_port;
+
     u_int8_t           st_sec_in_use;      /* bool: does st_sec hold a value */
     MP_INT             st_sec;             /* Our local secret value */
     chunk_t            st_sec_chunk;       /* copy of above */

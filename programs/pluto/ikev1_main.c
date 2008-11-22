@@ -280,7 +280,6 @@ main_outI1(int whack_sock
  * This will *not* generate other hash payloads (eg. Phase II or Quick Mode,
  * New Group Mode, or ISAKMP Informational Exchanges).
  * If the hashi argument is TRUE, generate HASH_I; if FALSE generate HASH_R.
- * If hashus argument is TRUE, we're generating a hash for our end.
  * See RFC2409 IKE 5.
  *
  * Generating the SIG_I and SIG_R for DSS is an odd perversion of this:
@@ -1781,7 +1780,7 @@ oakley_id_and_auth(struct msg_digest *md
     /* ID Payload in.
      * Note: this may switch the connection being used!
      */
-    if (!decode_peer_id(md, initiator, aggrmode))
+    if (!aggrmode && !decode_peer_id(md, initiator, FALSE))
 	return STF_FAIL + INVALID_ID_INFORMATION;
 
     /* Hash the ID Payload.
