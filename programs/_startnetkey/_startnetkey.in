@@ -183,6 +183,7 @@ fi
 		@MODPROBE@ xfrm_user 2> /dev/null
 
 		# padlock must load before aes module
+		# padlock-aes must load before padlock-sha for some reason
 		@MODPROBE@ padlock 2>/dev/null
 		@MODPROBE@ padlock-aes 2>/dev/null
 		@MODPROBE@ padlock-sha 2>/dev/null
