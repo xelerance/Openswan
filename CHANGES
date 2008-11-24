@@ -7,6 +7,7 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.19
 * Fix for L2TP/IPsec with Windows machines having their packets
   disgarded by accident [Hiren Joshi]
+* Workaround for bad "%v:" virtual_private= entries [paul]
 * Fixes to interop with SoftRemote/aggressive mode [David McCullough]
 * Fix for ERROR: Module xfrm6_tunnel is in use by ipcomp6 [paul]
 * Fix for using MODPROBE=insmod where insmod does not support -q [paul]
@@ -24,9 +25,10 @@ v2.6.19
 * Fixes to init scripts [Avesh/Tuomo]
   See also: RedHat bugzilla #466861.
 * Bugtracker bugs fixed:
-  #992: keyingretries default changed from %forever to 3 [ken]
-        (bug was introduced in 2.6.x)
-  #981: plutodebug=all klipsdebug=all not operate. [paul]
+   #992: keyingretries default changed from %forever to 3 [ken]
+         (bug was introduced in 2.6.x)
+   #981: plutodebug=all klipsdebug=all not operate. [paul]
+  #1003: virtual_private broken? [paul]
 
 v2.6.18
 * Fix for compiling KLIPS on RHEL/Centos 2.6.18-92.1.10.el5 [dhr/paul]
