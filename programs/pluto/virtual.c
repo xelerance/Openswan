@@ -72,20 +72,27 @@ _read_subnet(const char *src, size_t len, ip_subnet *dst, ip_subnet *dstko,
 {
     bool ok;
     int af;
-
+    /* workaround for typo "%4:" instead of "%v4:" introduced in old openswan release*/
+    int offset=0;
+   
     if ((len > 4) && (strncmp(src, "%v4:", 4)==0)) {
 	af = AF_INET;
     }
     else if ((len > 4) && (strncmp(src, "%v6:", 4)==0)) {
 	af = AF_INET6;
     }
+    else if ((len > 4) && (strncmp(src, "%4:", 3)==0)) {
+	af = AF_INET;
+	offset=-1;
+	loglog(RC_LOG_SERIOUS, "fixup for bad virtual_private entry '%s', please fix your virtual_private line!",src);
+    }
     else {
 	return FALSE;
     }
 
-    ok = (src[4] == '!') ? FALSE : TRUE;
-    src += ok ? 4 : 5;
-    len -= ok ? 4 : 5;
+    ok = (src[4+offset] == '!') ? FALSE : TRUE;
+    src += ok ? (4+offset) : (5+offset);
+    len -= ok ? (4+offset) : (5+offset);
 
     if (!len) return FALSE;
     if ((!ok) && (!dstko)) return FALSE;
@@ -93,6 +100,7 @@ _read_subnet(const char *src, size_t len, ip_subnet *dst, ip_subnet *dstko,
     passert ( ((ok)?(dst):(dstko))!=NULL );
 
     if (ttosubnet(src, len, af, ((ok)?(dst):(dstko)))) {
+	loglog(RC_LOG_SERIOUS,"fail in ttosubnet ?");
 	return FALSE;
     }
     if (isok) *isok = ok;
@@ -395,7 +403,9 @@ show_virtual_private()
 	char all_ok[256] = ""; // arbitrary limit
 	char all_ko[256] = ""; // arbitrary limit
 	int i,truncok=0,truncko=0;
-	for (i=0;i<private_net_ok_len;i++) {
+
+	if (private_net_ok!=NULL) {
+	   for (i=0;i<private_net_ok_len;i++) {
 		subnettot(&private_net_ok[i], 0, allowed, sizeof(allowed));
 		if(i!=0)
 			strcat(all_ok, ", ");
@@ -405,8 +415,11 @@ show_virtual_private()
 			truncok = 1;
 			i = private_net_ok_len;
 		}
-	};
-	for (i=0;i<private_net_ko_len;i++) {
+	   };
+        } else all_ok[0] = '\0';
+
+	if (private_net_ko!=NULL) {
+	   for (i=0;i<private_net_ko_len;i++) {
 		subnettot(&private_net_ko[i], 0, disallowed, sizeof(disallowed));
 		if(i!=0)
 			strcat(all_ko, ", ");
@@ -416,7 +429,8 @@ show_virtual_private()
 			truncko = 1;
 			i = private_net_ko_len;
 		};
-	};
+	   };
+        } else all_ko[0] = '\0';
 
 	whack_log(RC_COMMENT, "virtual_private (%%priv):");
 	whack_log(RC_COMMENT, "- allowed %d subnet%s: %s",
@@ -428,4 +442,7 @@ show_virtual_private()
 		(private_net_ko_len == 1) ? "" : "s", all_ko );
 	if (truncok || truncko)
 		whack_log(RC_COMMENT, "WARNING: some virtual_private entries were not shown, do you really need that many?");
+	if (!truncok && !truncko)
+		whack_log(RC_COMMENT, "WARNING: Either virtual_private= was not specified, or there was a syntax\n");
+		whack_log(RC_COMMENT, "         error in that line. 'left/rightsubnet=%%priv' will not work!");
 }
