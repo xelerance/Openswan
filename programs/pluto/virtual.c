@@ -387,4 +387,45 @@ is_virtual_net_allowed(const struct connection *c, const ip_subnet *peer_net,
     return why;
 }
 
+void
+show_virtual_private() 
+{
+	char allowed[SUBNETTOT_BUF];
+	char disallowed[SUBNETTOT_BUF];
+	char all_ok[256] = ""; // arbitrary limit
+	char all_ko[256] = ""; // arbitrary limit
+	int i,truncok=0,truncko=0;
+	for (i=0;i<private_net_ok_len;i++) {
+		subnettot(&private_net_ok[i], 0, allowed, sizeof(allowed));
+		if(i!=0)
+			strcat(all_ok, ", ");
+		if( (strlen(all_ok) + strlen(allowed)) <= 255)
+			strcat(all_ok, allowed);
+		else {
+			truncok = 1;
+			i = private_net_ok_len;
+		}
+	};
+	for (i=0;i<private_net_ko_len;i++) {
+		subnettot(&private_net_ko[i], 0, disallowed, sizeof(disallowed));
+		if(i!=0)
+			strcat(all_ko, ", ");
+		if( (strlen(all_ko) + strlen(disallowed)) <= 255)
+			strcat(all_ko, disallowed);
+		else {
+			truncko = 1;
+			i = private_net_ko_len;
+		};
+	};
 
+	whack_log(RC_COMMENT, "virtual_private (%%priv):");
+	whack_log(RC_COMMENT, "- allowed %d subnet%s: %s",
+		private_net_ok_len,
+		(private_net_ok_len == 1) ? "" : "s", all_ok );
+	
+	whack_log(RC_COMMENT, "- disallowed %d subnet%s: %s",
+		private_net_ko_len,
+		(private_net_ko_len == 1) ? "" : "s", all_ko );
+	if (truncok || truncko)
+		whack_log(RC_COMMENT, "WARNING: some virtual_private entries were not shown, do you really need that many?");
+}

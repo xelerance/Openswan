@@ -787,6 +787,8 @@ show_status(void)
     show_myid_status();
     show_debug_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
+    show_virtual_private();
+    whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
 #ifdef KERNEL_ALG
     kernel_alg_show_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
