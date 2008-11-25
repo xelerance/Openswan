@@ -732,7 +732,7 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 			, pluto_ifn_inst, n);
 
 	if(getenv("PLUTO_CRYPTO_HELPER_DEBUG")) {
-	    sprintf(global_argv[0], arg_len,
+	    snprintf(global_argv[0], arg_len,
 	    	    "pluto helper %s #%3d (waiting for GDB) ",
 		    pluto_ifn_inst, n);
 	    sleep(60); /* for debugger to attach */
