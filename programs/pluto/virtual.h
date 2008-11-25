@@ -17,7 +17,7 @@
 #ifndef _VIRTUAL_IP_H
 #define _VIRTUAL_IP_H
 
-extern void show_virtual_private();
+extern void show_virtual_private(void);
 
 extern void init_virtual_ip(const char *private_list);
 
