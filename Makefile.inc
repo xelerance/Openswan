@@ -256,6 +256,9 @@ RH_KERNELSRC?=/lib/modules/2.6.9-1.681_FC3/build
 # HAVE_ variables let you tell Openswan what system related libraries
 #       you may or maynot have
 
+#Support for NSS crypto library
+USE_LIBNSS?=false
+
 # LWRES is the lightweight resolver, part of BIND9
 # We test with LWRES, but ship with it off, as it requires
 # additional headers not present on most systems.

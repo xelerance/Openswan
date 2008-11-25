@@ -4,18 +4,42 @@
 #else
 #include <sys/types.h>
 #include <string.h>
+#ifdef HAVE_LIBNSS
+#include <pk11pub.h>
+#endif
 #endif
 #include "hmac_generic.h"
 #include "sha2.h"
 #include "hmac_sha2.h"
 
+
+
+
 void inline sha256_result(sha256_context *ctx, u_int8_t * hash, int hashlen) {
+#ifdef HAVE_LIBNSS
+	unsigned int len;
+	SECStatus s;
+	s=PK11_DigestFinal(ctx->DigestContext, hash, &len, hashlen);
+	PR_ASSERT(len==hashlen);
+	PR_ASSERT(s==SECSuccess);
+	PK11_DestroyContext(ctx->DigestContext, PR_TRUE);
+#else
 	sha256_final(ctx);
 	memcpy(hash, &ctx->sha_out[0], hashlen);
+#endif
 }
 void inline sha512_result(sha512_context *ctx, u_int8_t * hash, int hashlen) {
+#ifdef HAVE_LIBNSS
+	unsigned int len;
+	SECStatus s;
+	s=PK11_DigestFinal(ctx->DigestContext, hash, &len, hashlen);
+	PR_ASSERT(len==hashlen);
+	PR_ASSERT(s==SECSuccess);
+	PK11_DestroyContext(ctx->DigestContext, PR_TRUE);
+#else
 	sha512_final(ctx);
 	memcpy(hash, &ctx->sha_out[0], hashlen);
+#endif
 }
 HMAC_SET_KEY_IMPL (sha256_hmac_set_key, 
 		sha256_hmac_context, SHA256_BLOCKSIZE, 

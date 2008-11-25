@@ -13,6 +13,9 @@
 #else
 #include <string.h>
 #include <sys/types.h>
+#ifdef HAVE_LIBNSS
+#include <pk11pub.h>
+#endif
 #endif
 #include "sha2.h"
 
@@ -98,9 +101,18 @@ static const u_int64_t sha512_K[80] = {
 #if defined(SHA256_NEEDED)
 void sha256_init(sha256_context *ctx)
 {
+#ifdef HAVE_LIBNSS
+	SECStatus status;
+	ctx->DigestContext=NULL;
+	ctx->DigestContext = PK11_CreateDigestContext(SEC_OID_SHA256);
+	PR_ASSERT(ctx->DigestContext!=NULL);
+	status=PK11_DigestBegin(ctx->DigestContext);
+	PR_ASSERT(status==SECSuccess);
+#else
     memcpy(&ctx->sha_H[0], &sha256_hashInit[0], sizeof(ctx->sha_H));
     ctx->sha_blocks = 0;
     ctx->sha_bufCnt = 0;
+#endif
 }
 
 #define S(x,y)      (((y) >> (x)) | ((y) << (32 - (x))))
@@ -109,6 +121,7 @@ void sha256_init(sha256_context *ctx)
 #define lSig0(x)    ((S(7,(x))) ^ (S(18,(x))) ^ (R(3,(x))))
 #define lSig1(x)    ((S(17,(x))) ^ (S(19,(x))) ^ (R(10,(x))))
 
+#ifndef HAVE_LIBNSS
 static void sha256_transform(sha256_context *ctx, const unsigned char *datap)
 {
     register int    j;
@@ -161,9 +174,15 @@ static void sha256_transform(sha256_context *ctx, const unsigned char *datap)
 
     ctx->sha_blocks++;
 }
+#endif
 
 void sha256_write(sha256_context *ctx, const unsigned char *datap, int length)
 {
+#ifdef HAVE_LIBNSS
+	SECStatus status;
+	status=PK11_DigestOp(ctx->DigestContext, datap, length);
+	PR_ASSERT(status==SECSuccess);
+#else
     while(length > 0) {
         if(!ctx->sha_bufCnt) {
             while(length >= sizeof(ctx->sha_out)) {
@@ -180,8 +199,9 @@ void sha256_write(sha256_context *ctx, const unsigned char *datap, int length)
             ctx->sha_bufCnt = 0;
         }
     }
+#endif
 }
-
+#ifndef HAVE_LIBNSS
 void sha256_final(sha256_context *ctx)
 {
     register int    j;
@@ -225,7 +245,7 @@ void sha256_final(sha256_context *ctx)
     /* clear sensitive information */
     memset(&ctx->sha_out[32], 0, sizeof(sha256_context) - 32);
 }
-
+#endif
 void sha256_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
 {
     sha256_context ctx;
@@ -235,9 +255,18 @@ void sha256_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
     if(ole > 32) ole = 32;
     sha256_init(&ctx);
     sha256_write(&ctx, ib, ile);
+#ifdef HAVE_LIBNSS
+	unsigned int length;
+	SECStatus status;
+	status=PK11_DigestFinal(ctx.DigestContext, ob, &length, ole);
+	PR_ASSERT(length==ole);
+	PR_ASSERT(status==SECSuccess);
+	PK11_DestroyContext(ctx.DigestContext, PR_TRUE);
+#else
     sha256_final(&ctx);
     memcpy(ob, &ctx.sha_out[0], ole);
     memset(&ctx, 0, sizeof(ctx));
+#endif
 }
 
 #endif
@@ -245,10 +274,19 @@ void sha256_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
 #if defined(SHA512_NEEDED)
 void sha512_init(sha512_context *ctx)
 {
+#ifdef HAVE_LIBNSS
+	SECStatus status;
+	ctx->DigestContext=NULL;
+	ctx->DigestContext = PK11_CreateDigestContext(SEC_OID_SHA512);
+	PR_ASSERT(ctx->DigestContext!=NULL);
+	status=PK11_DigestBegin(ctx->DigestContext);
+	PR_ASSERT(status==SECSuccess);
+#else
     memcpy(&ctx->sha_H[0], &sha512_hashInit[0], sizeof(ctx->sha_H));
     ctx->sha_blocks = 0;
     ctx->sha_blocksMSB = 0;
     ctx->sha_bufCnt = 0;
+#endif
 }
 #endif
 
@@ -263,7 +301,7 @@ void sha512_init(sha512_context *ctx)
 #define uSig1(x)    ((S(14,(x))) ^ (S(18,(x))) ^ (S(41,(x))))
 #define lSig0(x)    ((S(1,(x))) ^ (S(8,(x))) ^ (R(7,(x))))
 #define lSig1(x)    ((S(19,(x))) ^ (S(61,(x))) ^ (R(6,(x))))
-
+#ifndef HAVE_LIBNSS
 static void sha512_transform(sha512_context *ctx, const unsigned char *datap)
 {
     register int    j;
@@ -319,9 +357,14 @@ static void sha512_transform(sha512_context *ctx, const unsigned char *datap)
     ctx->sha_blocks++;
     if(!ctx->sha_blocks) ctx->sha_blocksMSB++;
 }
-
+#endif
 void sha512_write(sha512_context *ctx, const unsigned char *datap, int length)
 {
+#ifdef HAVE_LIBNSS
+	SECStatus status;
+	status=PK11_DigestOp(ctx->DigestContext, datap, length);
+	PR_ASSERT(status==SECSuccess);
+#else
     while(length > 0) {
         if(!ctx->sha_bufCnt) {
             while(length >= sizeof(ctx->sha_out)) {
@@ -338,8 +381,9 @@ void sha512_write(sha512_context *ctx, const unsigned char *datap, int length)
             ctx->sha_bufCnt = 0;
         }
     }
+#endif
 }
-
+#ifndef HAVE_LIBNSS
 void sha512_final(sha512_context *ctx)
 {
     register int    j;
@@ -396,7 +440,7 @@ void sha512_final(sha512_context *ctx)
     /* clear sensitive information */
     memset(&ctx->sha_out[64], 0, sizeof(sha512_context) - 64);
 }
-
+#endif
 void sha512_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
 {
     sha512_context ctx;
@@ -406,19 +450,37 @@ void sha512_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
     if(ole > 64) ole = 64;
     sha512_init(&ctx);
     sha512_write(&ctx, ib, ile);
+#ifdef HAVE_LIBNSS
+	unsigned int length;
+	SECStatus status;
+	status=PK11_DigestFinal(ctx.DigestContext, ob, &length, ole);
+	PR_ASSERT(length==ole);
+	PR_ASSERT(status==SECSuccess);
+	PK11_DestroyContext(ctx.DigestContext, PR_TRUE);
+#else
     sha512_final(&ctx);
     memcpy(ob, &ctx.sha_out[0], ole);
     memset(&ctx, 0, sizeof(ctx));
+#endif
 }
 #endif
 
 #if defined(SHA384_NEEDED)
 void sha384_init(sha512_context *ctx)
 {
+#ifdef HAVE_LIBNSS
+	SECStatus status;
+	ctx->DigestContext=NULL;
+	ctx->DigestContext = PK11_CreateDigestContext(SEC_OID_SHA384);
+	PR_ASSERT(ctx->DigestContext!=NULL);
+	status=PK11_DigestBegin(ctx->DigestContext);
+	PR_ASSERT(status==SECSuccess);
+#else
     memcpy(&ctx->sha_H[0], &sha384_hashInit[0], sizeof(ctx->sha_H));
     ctx->sha_blocks = 0;
     ctx->sha_blocksMSB = 0;
     ctx->sha_bufCnt = 0;
+#endif
 }
 
 void sha384_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
@@ -429,9 +491,20 @@ void sha384_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
     memset(ob, 0, ole);
     if(ole > 48) ole = 48;
     sha384_init(&ctx);
+#ifdef HAVE_LIBNSS
+	unsigned int length;
+	SECStatus status;
+	status=PK11_DigestOp(ctx.DigestContext, ib, ile);
+	PR_ASSERT(status==SECSuccess);
+	status=PK11_DigestFinal(ctx.DigestContext, ob, &length, ole);
+	PR_ASSERT(length==ole);
+	PR_ASSERT(status==SECSuccess);
+	PK11_DestroyContext(ctx.DigestContext, PR_TRUE);
+#else
     sha512_write(&ctx, ib, ile);
     sha512_final(&ctx);
     memcpy(ob, &ctx.sha_out[0], ole);
     memset(&ctx, 0, sizeof(ctx));
+#endif
 }
 #endif

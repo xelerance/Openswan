@@ -50,6 +50,12 @@
 # include "sha2.h"
 #endif
 
+#ifdef HAVE_LIBNSS
+#include <pk11pub.h>
+#endif
+
+
+
 /* ASN.1 definition of a basicConstraints extension */
 
 static const asn1Object_t basicConstraintsObjects[] = {
@@ -1200,8 +1206,17 @@ compute_digest(chunk_t tbs, int alg, chunk_t *digest)
 	   sha256_context context;
 	   sha256_init(&context);
 	   sha256_write(&context, tbs.ptr, tbs.len);
+#ifdef HAVE_LIBNSS
+	   unsigned int len;
+	   SECStatus s;	
+	   s=PK11_DigestFinal(context.DigestContext, digest->ptr, &len, SHA2_256_DIGEST_SIZE);
+	   passert(len==SHA2_256_DIGEST_SIZE);
+	   passert(s==SECSuccess);
+	   PK11_DestroyContext(context.DigestContext, PR_TRUE);
+#else
 	   sha256_final(&context);
 	   memcpy(digest->ptr, context.sha_out, SHA2_256_DIGEST_SIZE);
+#endif
 	   digest->len = SHA2_256_DIGEST_SIZE;
 	   return TRUE;
 	}
@@ -1210,9 +1225,20 @@ compute_digest(chunk_t tbs, int alg, chunk_t *digest)
 	{
 	   sha512_context context;
 	   sha384_init(&context);
+#ifdef HAVE_LIBNSS
+	   unsigned int len;
+	   SECStatus s;
+	   s=PK11_DigestOp(ctx.DigestContext, tbs.ptr, tbs.len);
+	   passert(s==SECSuccess);
+	   s=PK11_DigestFinal(ctx.DigestContext, digest->ptr, &len, SHA2_384_DIGEST_SIZE);
+	   passert(len==SHA2_384_DIGEST_SIZE);
+	   passert(s==SECSuccess);
+	   PK11_DestroyContext(ctx.DigestContext, PR_TRUE);
+#else
 	   sha512_write(&context, tbs.ptr, tbs.len);
 	   sha512_final(&context);
 	   memcpy(digest->ptr, context.sha_out, SHA2_384_DIGEST_SIZE);
+#endif
 	   digest->len = SHA2_384_DIGEST_SIZE;
 	   return TRUE;
 	}
@@ -1222,8 +1248,18 @@ compute_digest(chunk_t tbs, int alg, chunk_t *digest)
 	   sha512_context context;
 	   sha512_init(&context);
 	   sha512_write(&context, tbs.ptr, tbs.len);
+
+#ifdef HAVE_LIBNSS
+	   unsigned int len;
+	   SECStatus s;
+	   s=PK11_DigestFinal(context.DigestContext, digest->ptr, &len, SHA2_512_DIGEST_SIZE);
+	   passert(len==SHA2_512_DIGEST_SIZE);
+	   passert(s==SECSuccess);
+	   PK11_DestroyContext(context.DigestContext, PR_TRUE);
+#else
 	   sha512_final(&context);
 	   memcpy(digest->ptr, context.sha_out, SHA2_512_DIGEST_SIZE);
+#endif
 	   digest->len = SHA2_512_DIGEST_SIZE;
 	   return TRUE;
 	}

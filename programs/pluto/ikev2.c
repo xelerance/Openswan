@@ -433,6 +433,7 @@ process_v2_packet(struct msg_digest **mdp)
 	
 	if(stf != STF_OK) {
 	    complete_v2_state_transition(mdp, stf);
+	    return;
 	}
     }
 

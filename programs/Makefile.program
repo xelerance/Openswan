@@ -64,6 +64,10 @@ CFLAGS+=-DDMALLOC
 LIBS+= -ldmalloc
 endif
 
+ifeq ($(USE_LIBNSS),true)
+LIBS+= -lnspr4 -lnss3
+endif
+
 MANDIR8=$(MANTREE)/man8
 MANDIR5=$(MANTREE)/man5
 

@@ -15,6 +15,9 @@ A million repetitions of "a"
 /* #define LITTLE_ENDIAN * This should be #define'd already, if true. */
 /* #define SHA1HANDSOFF * Copies data before messing with it. */
 
+#ifdef HAVE_LIBNSS
+#include <pk11pub.h>
+#endif
 #define SHA1HANDSOFF
 
 #include <string.h>
@@ -55,6 +58,7 @@ typedef union {
     unsigned char c[64];
     u_int32_t l[16];
 } CHAR64LONG16;
+
 #ifdef SHA1HANDSOFF
 CHAR64LONG16 block[1];  /* use array to appear as a pointer */
     memcpy(block, buffer, 64);
@@ -111,6 +115,14 @@ CHAR64LONG16* block = (const CHAR64LONG16*)buffer;
 
 void SHA1Init(SHA1_CTX* context)
 {
+#ifdef HAVE_LIBNSS
+SECStatus status;
+	context->DigestContext=NULL;
+	context->DigestContext = PK11_CreateDigestContext(SEC_OID_SHA1);
+	PR_ASSERT(context->DigestContext!=NULL);
+	status=PK11_DigestBegin(context->DigestContext);
+	PR_ASSERT(status==SECSuccess);
+#else
     /* SHA1 initialization constants */
     context->state[0] = 0x67452301;
     context->state[1] = 0xEFCDAB89;
@@ -118,6 +130,7 @@ void SHA1Init(SHA1_CTX* context)
     context->state[3] = 0x10325476;
     context->state[4] = 0xC3D2E1F0;
     context->count[0] = context->count[1] = 0;
+#endif
 }
 
 
@@ -125,6 +138,11 @@ void SHA1Init(SHA1_CTX* context)
 
 void SHA1Update(SHA1_CTX* context, const unsigned char* data, u_int32_t len)
 {
+#ifdef HAVE_LIBNSS
+	SECStatus status;
+	status=PK11_DigestOp(context->DigestContext, data, len);
+	PR_ASSERT(status==SECSuccess);
+#else
 u_int32_t i;
 u_int32_t j;
 
@@ -143,6 +161,7 @@ u_int32_t j;
     }
     else i = 0;
     memcpy(&context->buffer[j], &data[i], len - i);
+#endif
 }
 
 
@@ -150,6 +169,14 @@ u_int32_t j;
 
 void SHA1Final(unsigned char digest[20], SHA1_CTX* context)
 {
+#ifdef HAVE_LIBNSS
+	unsigned int length;
+	SECStatus status;
+	status=PK11_DigestFinal(context->DigestContext, digest, &length, sizeof digest);
+	PR_ASSERT(length == sizeof digest);
+	PR_ASSERT(status==SECSuccess);
+	PK11_DestroyContext(context->DigestContext, PR_TRUE);
+#else
 unsigned i;
 unsigned char finalcount[8];
 unsigned char c;
@@ -190,4 +217,5 @@ unsigned char c;
     /* Wipe variables */
     memset(context, '\0', sizeof(*context));
     memset(&finalcount, '\0', sizeof(finalcount));
+#endif
 }

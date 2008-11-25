@@ -306,8 +306,12 @@ compute_proto_keymat(struct state *st
 	size_t i;
 
 	hmac_init_chunk(&ctx_me, st->st_oakley.prf_hasher, st->st_skeyid_d);
+#ifdef HAVE_LIBNSS
+	 /*PK11Context * DigestContext makes hmac not allowable for copy*/
+	hmac_init_chunk(&ctx_peer, st->st_oakley.prf_hasher, st->st_skeyid_d);
+#else
 	ctx_peer = ctx_me;	/* duplicate initial conditions */
-
+#endif
 	needed_space = needed_len + pad_up(needed_len, ctx_me.hmac_digest_len);
 	replace(pi->our_keymat, alloc_bytes(needed_space, "keymat in compute_keymat()"));
 	replace(pi->peer_keymat, alloc_bytes(needed_space, "peer_keymat in quick_inI1_outR1()"));

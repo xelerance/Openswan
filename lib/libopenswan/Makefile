@@ -54,7 +54,6 @@ PFKEYV2_SRCS+=pfkey_v2_build.c pfkey_v2_ext_bits.c pfkey_v2_parse.c
 PFKEYV2_SRCS+=pfkey_v2_debug.c 
 endif
 
-
 LOGSRCS=oswlog.c oswid.c
 
 
@@ -97,6 +96,11 @@ endif
 
 ifeq ($(USE_DMALLOC),true)
 CFLAGS+= -DDMALLOC
+endif
+
+ifeq ($(USE_LIBNSS),true)
+CFLAGS+=-DHAVE_LIBNSS
+CFLAGS+=-I/usr/include/nspr4 -I/usr/include/nss3
 endif
 
 CFLAGS+=-DFINALCONFDIR=\"${FINALCONFDIR}\"

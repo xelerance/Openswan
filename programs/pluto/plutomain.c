@@ -93,6 +93,10 @@
 #define IPSECDIR "/etc/ipsec.d"
 #endif
 
+#ifdef HAVE_LIBNSS
+#include <nss.h>
+#endif
+
 const char *ctlbase = "/var/run/pluto";
 
 openswan_passert_fail_t openswan_passert_fail = passert_fail;
@@ -795,6 +799,16 @@ main(int argc, char **argv)
     init_nat_traversal(nat_traversal, keep_alive, force_keepalive, nat_t_spf);
 #endif
 
+#if defined(HAVE_LIBNSS)
+	SECStatus nss_init_status= NSS_NoDB_Init(".");
+	if (nss_init_status != SECSuccess){
+    	loglog(RC_LOG_SERIOUS, "NSS initialization failed (err %d)\n", PR_GetError());
+  	}
+	else{
+	loglog(RC_LOG_SERIOUS, "NSS Initialized");
+	}
+#endif
+
     init_virtual_ip(virtual_private);
     init_rnd_pool();
     init_timer();
@@ -875,6 +889,9 @@ exit_pluto(int status)
     free_ifaces();          /* free interface list from memory */
     stop_adns();            /* Stop async DNS process (if running) */
     free_md_pool();         /* free the md pool */
+#ifdef HAVE_LIBNSS
+    NSS_Shutdown();
+#endif
     delete_lock();          /* delete any lock files */
     close_log();            /* close the logfiles */
     exit(status);           /* exit, with our error code */

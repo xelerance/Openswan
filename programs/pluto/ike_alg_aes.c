@@ -11,6 +11,12 @@
 #include "alg_info.h"
 #include "ike_alg.h"
 
+#ifdef HAVE_LIBNSS
+#include <pk11pub.h>
+#include <prmem.h>
+#include <prerror.h>
+#endif
+
 #define  AES_KEY_MIN_LEN	128
 #define  AES_KEY_DEF_LEN	128
 #define  AES_KEY_MAX_LEN	256
@@ -18,6 +24,80 @@
 static void
 do_aes(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc)
 {
+
+#ifdef HAVE_LIBNSS
+    u_int8_t iv_bak[AES_CBC_BLOCK_SIZE];
+    u_int8_t *new_iv = NULL;        /* logic will avoid copy to NULL */
+    u_int8_t *tmp_buf; 
+    
+    CK_MECHANISM_TYPE  cipherMech;
+    PK11SlotInfo*      slot = NULL;
+    SECItem            keyItem, ivItem;
+    SECItem*           SecParam = NULL;
+    PK11SymKey*        SymKey = NULL;
+    PK11Context*       EncContext = NULL;
+    SECStatus          rv;
+    int                tmp_outlen;
+
+
+    cipherMech = CKM_AES_CBC; /*openswan provides padding*/
+    slot = PK11_GetBestSlot(cipherMech, NULL);
+	
+    keyItem.type = siBuffer;
+    keyItem.data = key;
+    keyItem.len = key_size;
+
+    if (slot == NULL){
+      loglog(RC_LOG_SERIOUS, "do_aes: Unable to find security device (err %d)\n", PR_GetError());
+      goto out;
+    }
+
+    SymKey = PK11_ImportSymKey(slot, cipherMech, PK11_OriginUnwrap,enc? CKA_ENCRYPT:CKA_DECRYPT,&keyItem, NULL);
+  
+    if (SymKey == NULL){
+     loglog(RC_LOG_SERIOUS, "do_aes: Failure to import key into NSS (err %d)\n", PR_GetError());
+     goto out;
+    }
+
+    ivItem.type = siBuffer;
+    ivItem.data = iv;
+    ivItem.len = AES_CBC_BLOCK_SIZE;
+
+    SecParam = PK11_ParamFromIV(cipherMech, &ivItem);
+    if (SecParam == NULL){
+      loglog(RC_LOG_SERIOUS, "do_aes: Failure to set up PKCS11 param (err %d)\n",PR_GetError());
+      goto out;
+   }
+
+   tmp_outlen = 0;
+   tmp_buf= PR_Malloc((PRUint32)buf_len);
+
+    if (!enc){
+    memcpy(new_iv=iv_bak,(char*) buf + buf_len-AES_CBC_BLOCK_SIZE,AES_CBC_BLOCK_SIZE);
+    }
+	
+    EncContext = PK11_CreateContextBySymKey(cipherMech, enc? CKA_ENCRYPT : CKA_DECRYPT, SymKey, SecParam); 
+    rv = PK11_CipherOp(EncContext, tmp_buf, &tmp_outlen, buf_len, buf, buf_len);
+    passert(rv==SECSuccess);
+    PK11_DestroyContext(EncContext, PR_TRUE);
+    memcpy(buf,tmp_buf,buf_len);  
+
+    if(enc){
+    new_iv = (char*) buf + buf_len-AES_CBC_BLOCK_SIZE;
+    }
+
+    memcpy(iv, new_iv, AES_CBC_BLOCK_SIZE);
+    PR_Free(tmp_buf);
+
+out:
+ 
+ if (SymKey)
+    PK11_FreeSymKey(SymKey);
+
+ if (SecParam)
+    SECITEM_FreeItem(SecParam, PR_TRUE);
+
+#else
     aes_context aes_ctx;
     char iv_bak[AES_CBC_BLOCK_SIZE];
     char *new_iv = NULL;	/* logic will avoid copy to NULL */
@@ -40,6 +120,8 @@ do_aes(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *
 	    new_iv = (char*) buf + buf_len-AES_CBC_BLOCK_SIZE;
 
     memcpy(iv, new_iv, AES_CBC_BLOCK_SIZE);
+#endif
+
 }
 
 struct encrypt_desc algo_aes =

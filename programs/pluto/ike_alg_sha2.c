@@ -11,15 +11,37 @@
 #include "alg_info.h"
 #include "ike_alg.h"
 
+#ifdef HAVE_LIBNSS
+#include <pk11pub.h>
+#endif
+
 static void sha256_hash_final(u_char *hash, sha256_context *ctx)
 {
+#ifdef HAVE_LIBNSS
+	unsigned int len;
+	SECStatus s;
+	s=PK11_DigestFinal(ctx->DigestContext, hash, &len, SHA2_256_DIGEST_SIZE);
+	PR_ASSERT(len==SHA2_256_DIGEST_SIZE);
+	PR_ASSERT(s==SECSuccess);
+	PK11_DestroyContext(ctx->DigestContext, PR_TRUE);
+#else
 	sha256_final(ctx);
 	memcpy(hash, &ctx->sha_out[0], SHA2_256_DIGEST_SIZE);
+#endif
 }
 static void sha512_hash_final(u_char *hash, sha512_context *ctx)
 {
+#ifdef HAVE_LIBNSS
+	unsigned int len;
+	SECStatus s;
+	s=PK11_DigestFinal(ctx->DigestContext, hash, &len, SHA2_512_DIGEST_SIZE);
+	PR_ASSERT(len==SHA2_512_DIGEST_SIZE);
+	PR_ASSERT(s==SECSuccess);
+	PK11_DestroyContext(ctx->DigestContext, PR_TRUE);
+#else
 	sha512_final(ctx);
 	memcpy(hash, &ctx->sha_out[0], SHA2_512_DIGEST_SIZE);
+#endif
 }
 struct hash_desc hash_desc_sha2_256 = {
 	common:{officname:  "sha256",

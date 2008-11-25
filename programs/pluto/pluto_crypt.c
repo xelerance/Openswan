@@ -52,6 +52,10 @@
 #include "rnd.h"
 #include "pluto_crypt.h"
 
+#ifdef HAVE_LIBNSS
+#include <nss.h>
+#endif
+
 #ifdef HAVE_OCF
 #include "id.h"
 #include "pgp.h"
@@ -748,6 +752,17 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 	}
 	
 	pluto_init_log();
+
+
+#if defined(HAVE_LIBNSS)
+       NSS_Shutdown();
+       SECStatus nss_init_status= NSS_NoDB_Init(".");
+       if (nss_init_status != SECSuccess)
+       {
+       loglog(RC_LOG_SERIOUS, "NSS initialization failed in crypto helper(err %d)\n", PR_GetError());
+       }
+#endif
+
 	init_rnd_pool();
 #ifdef HAVE_OCF
 	load_cryptodev();
@@ -757,6 +772,10 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 	debug_prefix='!';
 
 	pluto_crypto_helper(fds[1], n);
+
+#if defined(HAVE_LIBNSS)
+      NSS_Shutdown();
+#endif
 	exit(0);
 	/* NOTREACHED */
     }
