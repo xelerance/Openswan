@@ -390,13 +390,13 @@ dpd_inI_outR(struct state *p1st
     {
         /* RFC states we *SHOULD* check cookies, not MUST.  So invalid
            cookies are technically valid, as per Geoffrey Huang */
-        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE has invalid icookie (broken Cisco?)");
+        loglog(RC_LOG_SERIOUS, "DPD Warning: R_U_THERE has invalid icookie (broken Cisco?)");
     }
     pbs->cur += COOKIE_SIZE;
     
     if (memcmp(pbs->cur, p1st->st_rcookie, COOKIE_SIZE) != 0)
     {
-        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE has invalid rcookie (broken Cisco?)");      
+        loglog(RC_LOG_SERIOUS, "DPD Warning: R_U_THERE has invalid rcookie (broken Cisco?)");      
     }
     pbs->cur += COOKIE_SIZE;
 
