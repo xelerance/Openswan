@@ -4,6 +4,10 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
+v2.6.20
+* Added support for USE_NSS (default false) [Avesh Agarwal]
+* Fix sprintf warning in init_crypto_helper [Owen Jacobson]
+
 v2.6.19
 * Fix for L2TP/IPsec with Windows machines having their packets
   disgarded by accident [Hiren Joshi]
