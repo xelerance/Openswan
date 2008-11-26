@@ -7,6 +7,11 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.20
 * Added support for USE_NSS (default false) [Avesh Agarwal]
 * Fix sprintf warning in init_crypto_helper [Owen Jacobson]
+* KLIPS could not be unloaded [David McCullough]
+* Fix crasher with disassociated pending (async) crypto requests [David]
+* Added "metric=" keyword to the conn seciont to allow host failover
+  from another interface tp ipsec using route management. [David]
+* Make pluto more verbose on aborting for embedded systems [David]
 
 v2.6.19
 * Fix for L2TP/IPsec with Windows machines having their packets
