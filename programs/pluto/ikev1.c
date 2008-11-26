@@ -1296,7 +1296,7 @@ void process_packet_tail(struct msg_digest **mdp)
 	if (st->st_skey_ei.ptr == (u_char *) NULL)
 	{
 	    loglog(RC_LOG_SERIOUS, "discarding encrypted message"
-		" because we haven't yet negotiated keying materiel");
+		" because we haven't yet negotiated keying material");
 	    SEND_NOTIFICATION(INVALID_FLAGS);
 	    return;
 	}
