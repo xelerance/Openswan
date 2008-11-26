@@ -974,6 +974,14 @@ main_inR1_outI2_continue(struct pluto_crypto_req_cont *pcrc
     DBG(DBG_CONTROLMORE
 	, DBG_log("main inR1_outI2: calculated ke+nonce, sending I2"));
 
+    if (st == NULL) {
+	loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+		__FUNCTION__);
+	if (ke->md)
+	    release_md(ke->md);
+	return;
+    }
+
     /* XXX should check out ugh */
     passert(ugh == NULL);
     passert(cur_state == NULL);
@@ -1157,6 +1165,14 @@ main_inI2_outR2_continue(struct pluto_crypto_req_cont *pcrc
     DBG(DBG_CONTROLMORE
 	, DBG_log("main inI2_outR2: calculated ke+nonce, sending R2"));
 
+    if (st == NULL) {
+	loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+		__FUNCTION__);
+	if (ke->md)
+	    release_md(ke->md);
+	return;
+    }
+
     /* XXX should check out ugh */
     passert(ugh == NULL);
     passert(cur_state == NULL);
@@ -1304,7 +1320,7 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
     if (!ship_KE(st, r, &st->st_gr
 		 , &md->rbody, ISAKMP_NEXT_NONCE))
 	{
-	    abort();
+	    osw_abort();
 	return STF_INTERNAL_ERROR;
 	}
 
@@ -1690,6 +1706,14 @@ main_inR2_outI3_cryptotail(struct pluto_crypto_req_cont *pcrc
   
   DBG(DBG_CONTROLMORE
       , DBG_log("main inR2_outI3: calculated DH, sending R1"));
+
+  if (st == NULL) {
+      loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+	      __FUNCTION__);
+      if (dh->md)
+          release_md(dh->md);
+      return;
+  }
   
   passert(cur_state == NULL);
   passert(st != NULL);

@@ -29,6 +29,6 @@ int printk(char *fmt, ...)
 void barf(const char *msg)
 {
   printf("barf: %s\n", msg);
-  abort();
+  osw_abort();
 }
 

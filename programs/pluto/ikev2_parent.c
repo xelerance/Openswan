@@ -231,6 +231,14 @@ ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
     DBG(DBG_CONTROLMORE
 	, DBG_log("ikev2 parent outI1: calculated ke+nonce, sending I1"));
   
+    if (st == NULL) {
+	loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+		__FUNCTION__);
+	if (ke->md)
+	    release_md(ke->md);
+	return;
+    }
+
     /* XXX should check out ugh */
     passert(ugh == NULL);
     passert(cur_state == NULL);
@@ -642,6 +650,14 @@ ikev2_parent_inI1outR1_continue(struct pluto_crypto_req_cont *pcrc
     DBG(DBG_CONTROLMORE
 	, DBG_log("ikev2 parent inI1outR1: calculated ke+nonce, sending R1"));
   
+    if (st == NULL) {
+	loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+		__FUNCTION__);
+	if (ke->md)
+	    release_md(ke->md);
+	return;
+    }
+
     /* XXX should check out ugh */
     passert(ugh == NULL);
     passert(cur_state == NULL);
@@ -910,6 +926,14 @@ ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
     DBG(DBG_CONTROLMORE
 	, DBG_log("ikev2 parent inR1outI1: calculating g^{xy}, sending I2"));
   
+    if (st == NULL) {
+	loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+		__FUNCTION__);
+	if (dh->md)
+	    release_md(dh->md);
+	return;
+    }
+
     /* XXX should check out ugh */
     passert(ugh == NULL);
     passert(cur_state == NULL);
@@ -1461,6 +1485,14 @@ ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
     DBG(DBG_CONTROLMORE
 	, DBG_log("ikev2 parent inI2outR2: calculating g^{xy}, sending R2"));
   
+    if (st == NULL) {
+	loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+		__FUNCTION__);
+	if (dh->md)
+	    release_md(dh->md);
+	return;
+    }
+
     /* XXX should check out ugh */
     passert(ugh == NULL);
     passert(cur_state == NULL);

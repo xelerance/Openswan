@@ -6,7 +6,7 @@ aggr_outI1(int whack_sock,
 	   unsigned long try
 	   , enum crypto_importance importance)
 {
-	abort();
+	osw_abort();
 }
 
 stf_status
@@ -28,7 +28,7 @@ quick_outI1(int whack_sock
 	    , unsigned long try
 	    , so_serial_t replacing)
 {
-	abort();
+	osw_abort();
 }
 
 void
@@ -51,5 +51,5 @@ send_notification_from_md(struct msg_digest *md, u_int16_t type)
 void
 process_v1_packet(struct msg_digest **mdp)
 {
-	abort();
+	osw_abort();
 }

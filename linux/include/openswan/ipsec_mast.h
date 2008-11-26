@@ -47,6 +47,7 @@ struct mastpriv
 };
 
 extern int ipsec_mast_init_devices(void);
+extern int ipsec_mast_cleanup_devices(void);
 extern int ipsec_mast_deletenum(int vifnum);
 extern int ipsec_mast_createnum(int vifnum);
 extern struct net_device *ipsec_mast_get_device(int vifnum);

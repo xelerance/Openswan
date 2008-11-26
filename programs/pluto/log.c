@@ -527,6 +527,13 @@ openswan_exit_log_errno_routine(int e, const char *message, ...)
     exit_pluto(1);
 }
 
+void
+openswan_log_abort(const char *file_str, int line_no)
+{
+	loglog(RC_LOG_SERIOUS, "ABORT at %s:%lu", file_str, line_no);
+	abort();
+}
+
 /* emit message to whack.
  * form is "ddd statename text" where
  * - ddd is a decimal status code (RC_*) as described in whack.h
@@ -623,7 +630,7 @@ passert_fail(const char *pred_str, const char *file_str, unsigned long line_no)
 	dying_breath = TRUE;
 	show_status();
     }
-    abort();	/* exiting correctly doesn't always work */
+    osw_abort();	/* exiting correctly doesn't always work */
 }
 
 void

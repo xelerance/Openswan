@@ -602,10 +602,12 @@ handle_next_timer_event(void)
 	    /* FALLTHROUGH */
 	case EVENT_SO_DISCARD:
 	    /* Delete this state object.  It must be in the hash table. */
+#if 0 /* delete_state will take care of this better ? */
 	    if(st->st_suspended_md) {
 		release_md(st->st_suspended_md);
 		st->st_suspended_md=NULL;
 	    }
+#endif
 	    delete_state(st);
 	    break;
 

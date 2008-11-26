@@ -190,7 +190,6 @@ struct keyword_enum_value kw_plutodebug_values[]={
     { "all",      DBG_ALL },
     { "raw",      DBG_RAW },
     { "crypt",    DBG_CRYPT },
-    { "crypto",   DBG_CRYPT },
     { "parsing",  DBG_PARSING },
     { "emitting", DBG_EMITTING },
     { "control",  DBG_CONTROL },
@@ -361,6 +360,8 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"auth",           kv_conn|kv_auto|kv_manual|kv_policy|kv_alias,  kt_enum, KBF_PHASE2, &kw_phase2types_list},
     {"compress",       kv_conn|kv_auto, kt_bool,   KBF_COMPRESS,NOT_ENUM},
 
+    /* route metric */
+    {"metric",         kv_conn|kv_auto, kt_number, KBF_METRIC, NOT_ENUM},
 
     /* DPD */ 
     {"dpddelay", kv_conn|kv_auto,kt_number, KBF_DPDDELAY, NOT_ENUM},

@@ -207,6 +207,9 @@ struct whack_message {
     ip_address modecfg_wins1;
     ip_address modecfg_wins2;
 
+	/* what metric to put on ipsec routes */
+	int metric;
+
     /* for DYNAMICDNS */
     char *dnshostname;
 

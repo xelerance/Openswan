@@ -893,7 +893,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	break;
 	
     case STF_INTERNAL_ERROR:
-	abort();
+	osw_abort();
 	break;
 
     case STF_TOOMUCHCRYPTO:

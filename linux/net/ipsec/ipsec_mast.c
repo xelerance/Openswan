@@ -851,6 +851,7 @@ ipsec_mast_cleanup_devices(void)
 	for(i = 0; i <= mastdevices_max; i++) {
 		if(mastdevices[i]!=NULL) {
 			dev_mast = mastdevices[i];
+			ipsec_dev_put(dev_mast);
 			unregister_netdev(dev_mast);
 			kfree(dev_mast->priv);
 			dev_mast->priv=NULL;

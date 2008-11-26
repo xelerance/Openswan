@@ -26,12 +26,12 @@
 +  return 0;
 +}
 +
-+int udp4_unregister_esp_rcvencap(xfrm4_rcv_encap_t func)
++int udp4_unregister_esp_rcvencap(xfrm4_rcv_encap_t func, xfrm4_rcv_encap_t old)
 +{
 +  if(xfrm4_rcv_encap_func != func)
 +    return -1;
 +
-+  xfrm4_rcv_encap_func = NULL;
++  xfrm4_rcv_encap_func = old;
 +  return 0;
 +}
 +#endif /* CONFIG_XFRM_MODULE || CONFIG_IPSEC_NAT_TRAVERSAL */

@@ -79,6 +79,7 @@ enum keyword_numeric_config_field {
     KBF_OPPOENCRYPT,
     KBF_DPDDELAY,
     KBF_DPDTIMEOUT,
+    KBF_METRIC,
     KBF_PHASE2,
     KBF_AUTHBY,
     KBF_KEYEXCHANGE,
