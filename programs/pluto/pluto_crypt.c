@@ -178,7 +178,7 @@ helper_passert_fail(const char *pred_str
 	loglog(RC_LOG_SERIOUS,"pluto: chdir() to 'helper' failed (%d %s)\n",
                     e, strerror(e));
     }
-    abort();
+    osw_abort();
 }
 
 

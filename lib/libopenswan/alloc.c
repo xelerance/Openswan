@@ -100,7 +100,7 @@ void *alloc_bytes1(size_t size, const char *name, int leak_detective)
     if (p == NULL) {
 	if(getenv("OPENSWAN_SNAPSHOT_MALLOC_FAIL")) {
 	    if(fork()==0) { /* in child */
-		abort();
+		osw_abort();
 	    }
 	}
 	if(exit_log_func) {

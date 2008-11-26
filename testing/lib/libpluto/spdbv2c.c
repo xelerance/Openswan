@@ -21,19 +21,19 @@ bool can_do_IPcomp = TRUE;
 
 void exit_log(const char *msg, ...)
 {
-    abort();
+    osw_abort();
 }
 
 struct state *
 state_with_serialno(so_serial_t sn)
 {
-    abort();
+    osw_abort();
     return NULL;
 }
 
 void whack_log(int rc, const char *msg, ...)
 {
-    abort();
+    osw_abort();
 }
 
 void exit_tool(int stat)
@@ -44,7 +44,7 @@ void exit_tool(int stat)
 const chunk_t *
 get_preshared_secret(const struct connection *c)
 {
-    abort();
+    osw_abort();
     return NULL;
 }
 

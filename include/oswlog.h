@@ -30,7 +30,7 @@
 extern int openswan_log(const char *message, ...) PRINTF_LIKE(1);
 extern void openswan_loglog(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 extern void openswan_exit_log(const char *message, ...) PRINTF_LIKE(1);
-
+extern void openswan_log_abort(const char *file_str, int line_no);
 
 #if !defined(NO_DEBUG)
 
@@ -54,6 +54,7 @@ extern void tool_init_log(void);
 extern void tool_close_log(void);
 extern void set_debugging(lset_t deb);
 
+#define	osw_abort()	openswan_log_abort(__FILE__, __LINE__)
 
 #else /*!DEBUG*/
 
@@ -64,6 +65,8 @@ extern void set_debugging(lset_t deb);
 #define DBG_log(...) do { } while(0)
 extern void tool_init_log(void);
 extern void tool_close_log(void);
+
+#define	osw_abort()	abort()
 
 #endif /*!DEBUG*/
 

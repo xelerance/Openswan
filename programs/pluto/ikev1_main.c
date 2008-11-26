@@ -1304,7 +1304,7 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
     if (!ship_KE(st, r, &st->st_gr
 		 , &md->rbody, ISAKMP_NEXT_NONCE))
 	{
-	    abort();
+	    osw_abort();
 	return STF_INTERNAL_ERROR;
 	}
 

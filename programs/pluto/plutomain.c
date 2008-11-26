@@ -744,11 +744,11 @@ main(int argc, char **argv)
 
 	/* make sure that stdin, stdout, stderr are reserved */
 	if (open("/dev/null", O_RDONLY) != 0)
-	    abort();
+	    osw_abort();
 	if (dup2(0, 1) != 1)
-	    abort();
+	    osw_abort();
 	if (!log_to_stderr && dup2(0, 2) != 2)
-	    abort();
+	    osw_abort();
     }
 
     init_constants();
