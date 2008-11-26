@@ -347,8 +347,11 @@ error_xmit_state_cache:
 }	
 
 
-/* void */
+#ifdef NET_26
+void
+#else
 int
+#endif
 ipsec_cleanup(void)
 {
 	int error = 0;
@@ -357,10 +360,12 @@ ipsec_cleanup(void)
         ipsec_sysctl_unregister();
 #endif                                                                          
 #if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
-	if(udp4_unregister_esp_rcvencap(klips_old_encap) < 0) {
+	if(udp4_unregister_esp_rcvencap(klips26_rcv_encap, klips_old_encap) < 0) {
 		printk(KERN_ERR "KLIPS: can not unregister klips_rcv_encap function\n");
 	}
 #endif
+
+	error |= ipsec_mast_cleanup_devices();
 
 	KLIPS_PRINT(debug_netlink, /* debug_tunnel & DB_TN_INIT, */
 		    "klips_debug:ipsec_cleanup: "
@@ -423,10 +428,19 @@ ipsec_cleanup(void)
 
 	prng_final(&ipsec_prng);
 
+#ifdef NET_26
+	if (error)
+		printk("ipsec_cleanup: error %d\n", error);
+#else
 	return error;
+#endif
 }
 
 #ifdef MODULE
+#ifdef NET_26
+module_init(ipsec_klips_init);
+module_exit(ipsec_cleanup);
+#else
 int
 init_module(void)
 {
@@ -437,7 +451,6 @@ init_module(void)
 	return error;
 }
 
-#ifndef NET_26
 void
 cleanup_module(void)
 {

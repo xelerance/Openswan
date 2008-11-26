@@ -7,4 +7,5 @@
 typedef int (*xfrm4_rcv_encap_t)(struct sk_buff *skb, __u16 encap_type);
 extern int udp4_register_esp_rcvencap(xfrm4_rcv_encap_t func
 				      , xfrm4_rcv_encap_t *oldfunc);
-extern int udp4_unregister_esp_rcvencap(xfrm4_rcv_encap_t func);
+extern int udp4_unregister_esp_rcvencap(xfrm4_rcv_encap_t func
+				      , xfrm4_rcv_encap_t oldfunc);
