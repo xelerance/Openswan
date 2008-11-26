@@ -8,6 +8,7 @@ How to use UML testing with Openswan
    or write a xen HVM config file
    or use virt-install
 - Boot the machine and login as "build" with password "openswan"
+  (if for some reason you want to login as root, it uses the same password)
 - cd openswan-2.6
 
 To run ALL testsm use:
