@@ -289,6 +289,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	myclientmask_str[ADDRTOT_BUF],
 	peer_str[ADDRTOT_BUF],
 	peerid_str[IDTOA_BUF],
+	metric_str[sizeof("PLUTO_METRIC")+5],
 	peerclient_str[SUBNETTOT_BUF],
 	peerclientnet_str[ADDRTOT_BUF],
 	peerclientmask_str[ADDRTOT_BUF],
@@ -329,7 +330,11 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
     addrtot(&ta, 0, peerclientnet_str, sizeof(peerclientnet_str));
     maskof(&sr->that.client, &ta);
     addrtot(&ta, 0, peerclientmask_str, sizeof(peerclientmask_str));
-    
+
+    metric_str[0]='\0';
+    if (c->metric)
+    	snprintf(metric_str, sizeof(metric_str), "PLUTO_METRIC=%d", c->metric);
+
     secure_xauth_username_str[0]='\0';
     if (st != NULL && st->st_xauth_username) {
 	size_t len;
@@ -397,6 +402,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    "PLUTO_PEER_PROTOCOL='%u' "
 		    "PLUTO_PEER_CA='%s' "
 		    "PLUTO_STACK='%s' "
+		    "%s "           /* possible metric */
 		    "PLUTO_CONN_POLICY='%s' "
 		    "%s "           /* XAUTH username */
 		    "%s "           /* PLUTO_MY_SRCIP */
@@ -419,6 +425,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    , sr->that.protocol
 		    , secure_peerca_str
 		    , kernel_ops->kern_name
+		    , metric_str
 		    , prettypolicy(c->policy)
 		    , secure_xauth_username_str
 		    , srcip_str);

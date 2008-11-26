@@ -439,6 +439,7 @@ do_command_linux(struct connection *c, struct spd_route *sr
             myclientnet_str[ADDRTOT_BUF],
             myclientmask_str[ADDRTOT_BUF],
             peer_str[ADDRTOT_BUF],
+            metric_str[sizeof("PLUTO_METRIC=") + 5],
             peerid_str[IDTOA_BUF],
             peerclient_str[SUBNETTOT_BUF],
             peerclientnet_str[ADDRTOT_BUF],
@@ -479,6 +480,10 @@ do_command_linux(struct connection *c, struct spd_route *sr
         addrtot(&ta, 0, peerclientnet_str, sizeof(peerclientnet_str));
         maskof(&sr->that.client, &ta);
         addrtot(&ta, 0, peerclientmask_str, sizeof(peerclientmask_str));
+
+	metric_str[0]='\0';
+	if (c->metric)
+	    snprintf(metric_str, sizeof(metric_str), "PLUTO_METRIC=%d", c->metric);
 	
 	secure_xauth_username_str[0]='\0';
 	if (st != NULL && st->st_xauth_username) {
@@ -549,6 +554,7 @@ do_command_linux(struct connection *c, struct spd_route *sr
 			   "PLUTO_PEER_PROTOCOL='%u' "
 			   "PLUTO_PEER_CA='%s' "
 			   "PLUTO_STACK='%s' "
+			   "%s"        /* possible metric */
 			   "PLUTO_CONN_POLICY='%s' "
 			   "%s "
 			   "%s "       /* PLUTO_MY_SRCIP */                    
@@ -573,6 +579,7 @@ do_command_linux(struct connection *c, struct spd_route *sr
 			   , sr->that.protocol
 			   , secure_peerca_str
 			   , kernel_ops->kern_name
+			   , metric_str
 			   , prettypolicy(c->policy)
 			   , secure_xauth_username_str
 			   , srcip_str

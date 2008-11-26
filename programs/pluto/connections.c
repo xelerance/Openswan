@@ -1325,6 +1325,8 @@ add_connection(const struct whack_message *wm)
         c->dpd_timeout = wm->dpd_timeout;
         c->dpd_action = wm->dpd_action;
 
+	c->metric = wm->metric;
+
 	c->forceencaps = wm->forceencaps;
 
 	c->addr_family = wm->addr_family;

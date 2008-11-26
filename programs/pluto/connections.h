@@ -259,6 +259,7 @@ struct connection {
     ip_address modecfg_wins1;
     ip_address modecfg_wins2;
 #endif
+    u_int8_t metric;              /* metric for tunnel routes */
 };
 
 #define oriented(c) ((c).interface != NULL)
