@@ -361,6 +361,8 @@ delete_state(struct state *st)
     if (st->st_suspended_md != NULL)
     {
 	passert(st->st_suspended_md->st == st);
+	DBG(DBG_CONTROL, DBG_log("disconnecting state #%lu from md",
+	    st->st_serialno));
 	st->st_suspended_md->st = NULL;
     }
 

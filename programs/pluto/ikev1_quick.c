@@ -700,6 +700,14 @@ quick_outI1_continue(struct pluto_crypto_req_cont *pcrc
     DBG(DBG_CONTROLMORE
 	, DBG_log("quick outI1: calculated ke+nonce, sending I1"));
 
+    if (st == NULL) {
+	loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+		__FUNCTION__);
+	if (qke->md)
+	    release_md(qke->md);
+	return;
+    }
+
     st->st_calculating = FALSE;
 
     /* XXX should check out ugh */
@@ -1952,6 +1960,14 @@ quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
     DBG(DBG_CONTROLMORE
 	, DBG_log("quick inI1_outR1: calculated ke+nonce, calculating DH"));
 
+    if (st == NULL) {
+	loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+		__FUNCTION__);
+	if (qke->md)
+	    release_md(qke->md);
+	return;
+    }
+
     /* XXX should check out ugh */
     passert(ugh == NULL);
     passert(cur_state == NULL);
@@ -2022,6 +2038,14 @@ quick_inI1_outR1_cryptocontinue2(struct pluto_crypto_req_cont *pcrc
 
     DBG(DBG_CONTROLMORE
 	, DBG_log("quick inI1_outR1: calculated DH, sending R1"));
+
+    if (st == NULL) {
+	loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+		__FUNCTION__);
+	if (dh->md)
+	    release_md(dh->md);
+	return;
+    }
 
     /* XXX should check out ugh */
     passert(ugh == NULL);
@@ -2287,6 +2311,7 @@ quick_inR1_outI2(struct msg_digest *md)
 
 	/* set up DH calculation */
 	dh->md = md;
+    passert(st != NULL);
 	set_suspended(st, md);
 	dh->dh_pcrc.pcrc_func = quick_inR1_outI2_continue;
 	return start_dh_secret(&dh->dh_pcrc, st
@@ -2314,6 +2339,14 @@ quick_inR1_outI2_continue(struct pluto_crypto_req_cont *pcrc
 
     DBG(DBG_CONTROLMORE
 	, DBG_log("quick inI1_outR1: calculated ke+nonce, calculating DH"));
+
+    if (st == NULL) {
+	loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+		__FUNCTION__);
+	if (dh->md)
+	    release_md(dh->md);
+	return;
+    }
 
     /* XXX should check out ugh */
     passert(ugh == NULL);

@@ -1258,7 +1258,12 @@ process_v1_packet(struct msg_digest **mdp)
 	/* if there was a previous packet, let it go, and go with most
 	 * recent one.
 	 */
-	if(st->st_suspended_md) { release_md(st->st_suspended_md); }
+	if(st->st_suspended_md) {
+	    DBG(DBG_CONTROL
+	    	, DBG_log("releasing suspended operation before completion: %p"
+			, st->st_suspended_md));
+	    release_md(st->st_suspended_md);
+	}
 
 	set_suspended(st, md);
 	*mdp = NULL;
