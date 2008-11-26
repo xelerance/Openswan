@@ -12,6 +12,7 @@ v2.6.20
 * Added "metric=" keyword to the conn seciont to allow host failover
   from another interface tp ipsec using route management. [David]
 * Make pluto more verbose on aborting for embedded systems [David]
+* Fix for ipsec_kversion.h on kernels > 2.6.22 non-RHEL/SLE [David]
 
 v2.6.19
 * Fix for L2TP/IPsec with Windows machines having their packets
