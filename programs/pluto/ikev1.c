@@ -812,7 +812,13 @@ process_v1_packet(struct msg_digest **mdp)
 	{
 	    if (st == NULL)
 	    {
-		openswan_log("Informational Exchange is for an unknown (expired?) SA");
+		openswan_log("Informational Exchange is for an unknown (expired?) SA with MSGID:0x%08lx",
+			     (unsigned long)md->hdr.isa_msgid);
+		/* Let's try and log some info about these to track them down */
+		DBG(DBG_PARSING ,
+		DBG_dump("- unknown SA's md->hdr.isa_icookie:", md->hdr.isa_icookie, COOKIE_SIZE);
+		DBG_dump("- unknown SA's md->hdr.isa_rcookie:", md->hdr.isa_rcookie, COOKIE_SIZE) );
+
 		/* XXX Could send notification back */
 		return;
 	    }
