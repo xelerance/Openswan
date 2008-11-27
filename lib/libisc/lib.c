@@ -73,6 +73,6 @@ isc_lib_initmsgcat(void) {
 				       ISC_MSG_FATALERROR, "fatal error"),
 			isc_msgcat_get(isc_msgcat, ISC_MSGSET_GENERAL,
 				       ISC_MSG_FAILED, "failed"));
-		osw_abort();
+		abort();
 	}
 }
