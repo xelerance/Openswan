@@ -38,8 +38,7 @@ static size_t reverse6(const unsigned char *s, size_t len, char *b, char **dp);
  */
 
 static char *
-ipsec_strstr(s, find)
-	const char *s, *find;
+ipsec_strstr(const char *s, const char *find)
 {
 	char c, sc;
 	size_t len;

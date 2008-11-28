@@ -221,7 +221,9 @@ ipsec_rcv_esp_authcalc(struct ipsec_rcv_state *irs,
 enum ipsec_rcv_value
 ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 {
+#if defined(CONFIG_KLIPS_ALG) || defined(CONFIG_KLIPS_OCF)
 	struct ipsec_sa *ipsp = irs->ipsp;
+#endif
 #ifdef CONFIG_KLIPS_ALG
 	struct esphdr *espp = irs->protostuff.espstuff.espp;
 	__u8 *idat;	/* pointer to content to be decrypted/authenticated */

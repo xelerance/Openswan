@@ -397,23 +397,6 @@ out:
 
 }
 
-static void
-dummytest(u_int8_t *buf, size_t buf_len
-        , u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc)
-{
-    des_key_schedule ks[3];
-
-    passert(key != NULL);
-    passert(key_size==(DES_CBC_BLOCK_SIZE * 3));
-    (void) des_set_key((des_cblock *)key + 0, ks[0]);
-    (void) des_set_key((des_cblock *)key + 1, ks[1]);
-    (void) des_set_key((des_cblock *)key + 2, ks[2]);
-
-    des_ede3_cbc_encrypt((des_cblock *)buf, (des_cblock *)buf, buf_len,
-                         ks[0], ks[1], ks[2],
-                         (des_cblock *)iv, enc);
-}
-
 /* hash and prf routines */
 /*========================================================== 
  *

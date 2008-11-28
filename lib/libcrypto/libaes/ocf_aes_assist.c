@@ -125,10 +125,10 @@ ocf_aes_cryptodev_internal(
     char (*key),
     u_int32_t keylen,
     u_int32_t operation,
-    __u8 (*src),
+    const __u8 (*src),
     __u8 (*dst),
     long len,
-    __u8 (*iv),
+    const __u8 (*iv),
     u_int32_t iv_len)
 {
     struct session_op sop;

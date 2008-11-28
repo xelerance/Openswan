@@ -1103,11 +1103,11 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 	char ipaddr2_txt[ADDRTOA_BUF];
 #if defined (CONFIG_KLIPS_AUTH_HMAC_MD5) || defined (CONFIG_KLIPS_AUTH_HMAC_SHA1)
 	unsigned char kb[AHMD596_BLKLEN];
+	int i;
 #endif
 #ifdef CONFIG_KLIPS_ALG
 	struct ipsec_alg_enc *ixt_e = NULL;
 	struct ipsec_alg_auth *ixt_a = NULL;
-        int i;
 #endif
 
 	if(ipsp == NULL) {
