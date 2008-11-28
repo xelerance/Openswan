@@ -53,7 +53,11 @@ typedef int bool;
 #define dup_any(fd) ((fd) == NULL_FD? NULL_FD : dup(fd))
 #define close_any(fd) { if ((fd) != NULL_FD) { close(fd); (fd) = NULL_FD; } }
 
-#define BITS_PER_BYTE	8
+
+/* Also comes in via <nspr4/prcpucfg.h> with USE_NSS */
+#ifndef BITS_PER_BYTE
+# define BITS_PER_BYTE	8
+#endif
 #define BYTES_FOR_BITS(b)   (((b) + BITS_PER_BYTE - 1) / BITS_PER_BYTE)
 
 #define streq(a, b) (strcmp((a), (b)) == 0)	/* clearer shorthand */
