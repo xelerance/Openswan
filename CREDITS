@@ -1,4 +1,6 @@
-The following people have contributed patches to Openswan 2.x
+The following people have contributed major resources and/or significant patches
+to Openswan 2.x. There are many more unlisted contributors. If you feel you or
+your company are missing, please contact paul@xelerance.com
 
 	Michael Richardson <mcr@xelerance.com> - KLIPS, OCF, IKEv2, testing
 	Paul Wouters <paul@xelerance.com> - IKEv2, packaging, porting, support
@@ -17,16 +19,35 @@ The following people have contributed patches to Openswan 2.x
 	Tuomo Soini <tis@foobar.fi> - NETKEY, KLIPS, _updown scripts and more
 	Matthew Galgoci <mgalgoci@redhat.com> 
 	Miloslav Trmac <mitr@redhat.com>
+	Avesh Agarwal <avagarwa@redhat.com>, USE_LIBNSS, SElinux
+	Hiren Joshi Cyberoam [www.cyberoam.com] - Various fixes
+	Shingo Yamawaki <Shingo.Yamawaki@jp.sony.com> - Various KLIPS patches
 	willy@w.ods.org
 
 Openswan is a fork of the FreeS/WAN 2.04 codebase.
 Please see the doc/CREDITS.freeswan file from FreeS/WAN for details on
 original work.
 
+Xelerance (http://www.xelerance.com) has sponsored the continued development
+of Openswan since version 1.0
+
+RedHat (http://www.redhat.com/) sponsored the development of IKEv2, USE_LIBNSS
+and various fixes related to NETKEY.
+
+Secure Computing / Snapgear contributed OCF integration, DYNDNS support and many
+other KLIPS and userland related fixes.
+
 IXIA Communications (http://www.ixiacom.com/) sponsored the cryptographic
 refit in pluto, which permitted Aggressive mode to be incorporated safely.
 
-RedHat (http://www.redhat.com/) sponsored the development of IKEv2
+Sony Japan contributed many fixes to KLIPS, and sponsored IPsec/L2TP development
 
-Xelerance (http://www.xelerance.com) has sponsored the continued development
-of Openswan since version 1.0
+Siemens Germany sponsored IPsec/L2TP development
+
+Emagister sponsored IPsec/L2TP development
+
+Astaro (http://www.astaro.de/) contributed patches and hardware
+
+HP (http://www.hp.com/) donated hardware
+
+Cyberoam (http://www.cyberoam.com/) contributed various patches
