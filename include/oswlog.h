@@ -30,7 +30,7 @@
 extern int openswan_log(const char *message, ...) PRINTF_LIKE(1);
 extern void openswan_loglog(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 extern void openswan_exit_log(const char *message, ...) PRINTF_LIKE(1);
-extern void openswan_log_abort(const char *file_str, int line_no);
+extern void openswan_log_abort(const char *file_str, int line_no) NEVER_RETURNS;
 
 #if !defined(NO_DEBUG)
 
