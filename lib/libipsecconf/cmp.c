@@ -96,8 +96,8 @@ int starter_cmp_pluto (struct starter_config *c1, struct starter_config *c2)
 	VARCMP(setup.options[KBF_DISABLEPORTFLOATING]);
 	VARCMP(setup.options[KBF_FORCE_KEEPALIVE]);
 	VARCMP(setup.options[KBF_KEEPALIVE]);
-#endif
 	STRCMP(setup.strings[KSF_VIRTUALPRIVATE]);
+#endif
 	return 0;
 }
 
