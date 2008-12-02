@@ -94,6 +94,7 @@ int starter_cmp_pluto (struct starter_config *c1, struct starter_config *c2)
 #ifdef NAT_TRAVERSAL
 	VARCMP(setup.options[KBF_NATTRAVERSAL]);
 	VARCMP(setup.options[KBF_DISABLEPORTFLOATING]);
+	VARCMP(setup.options[KBF_FORCE_KEEPALIVE]);
 	VARCMP(setup.options[KBF_KEEPALIVE]);
 #endif
 	STRCMP(setup.strings[KSF_VIRTUALPRIVATE]);
