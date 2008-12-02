@@ -246,7 +246,7 @@ static struct ipsec_alg_capi_cipher alg_capi_darray[] = {
  */
 int setup_cipher(const char *ciphername)
 {
-	return crypto_has_blkcipher(ciphername, 0, CRYPTO_ALG_ASYNC);
+	return crypto_has_blkcipher(ciphername, 0, 0);
 }
 
 /*
@@ -338,7 +338,7 @@ _capi_new_key (struct ipsec_alg_enc *alg, const __u8 *key, size_t keylen)
 	/*	
 	 *	alloc tfm
 	 */
-	tfm = crypto_blkcipher_tfm(crypto_alloc_blkcipher(cptr->ciphername, 0, CRYPTO_ALG_ASYNC));
+	tfm = crypto_blkcipher_tfm(crypto_alloc_blkcipher(cptr->ciphername, 0, 0));
 	if (!tfm) {
 		printk(KERN_ERR "_capi_new_key(): "
 				"NULL tfm for \"%s\" cryptoapi (\"%s\") algo\n" 
@@ -369,6 +369,12 @@ _capi_cbc_encrypt(struct ipsec_alg_enc *alg, __u8 * key_e, __u8 * in, int ilen, 
 	struct crypto_tfm *tfm=(struct crypto_tfm *)key_e;
 	struct scatterlist sg;
 	struct blkcipher_desc desc;
+	int ivsize = crypto_blkcipher_ivsize(crypto_blkcipher_cast(tfm));
+	char ivp[ivsize];
+
+	/* we do not want them copying back the IV in place so copy it */
+	memcpy(ivp, iv, ivsize);
+
 	if (debug_crypto > 1)
 		printk(KERN_DEBUG "klips_debug:_capi_cbc_encrypt:"
 				"key_e=%p "
@@ -381,7 +387,7 @@ _capi_cbc_encrypt(struct ipsec_alg_enc *alg, __u8 * key_e, __u8 * in, int ilen, 
 
 	memset(&desc, 0, sizeof(desc));
 	desc.tfm = crypto_blkcipher_cast(tfm);
-	desc.info = (void *) iv;
+	desc.info = (void *) &ivp[0];
 
 	if (encrypt)
 		error = crypto_blkcipher_encrypt_iv (&desc, &sg, &sg, ilen);
