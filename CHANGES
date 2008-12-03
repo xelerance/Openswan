@@ -13,7 +13,11 @@ v2.6.20
   from another interface tp ipsec using route management. [David]
 * Make pluto more verbose on aborting for embedded systems [David]
 * Fix for ipsec_kversion.h on kernels > 2.6.22 non-RHEL/SLE [David]
-* Parser was missing keep_alive= and force_keepalive= options [paul]
+* Parser was missing keep_alive= and force_keepalive= options [Paul]
+* Fix for ipsec whack --listevents [Shingo Yamawaki]
+* Split crypto calls off into liboswcrypto for easier FIPS handling [David]
+* Fix compiling without OCF [David]
+* Fix for using kernel cryptoapi algs causing bad packets [David]
 
 v2.6.19
 * Fix for L2TP/IPsec with Windows machines having their packets
