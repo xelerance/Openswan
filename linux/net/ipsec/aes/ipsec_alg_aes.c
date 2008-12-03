@@ -127,7 +127,7 @@ static int _aes_set_key(struct ipsec_alg_enc *alg,
 }
 
 static int _aes_cbc_encrypt(struct ipsec_alg_enc *alg, __u8 * key_e,
-			    const __u8 * in, int ilen, const __u8 * iv,
+			    __u8 * in, int ilen, __u8 * iv,
 			    int encrypt)
 {
 	AES_CONTEXT_T *ctx=(AES_CONTEXT_T*)key_e;
