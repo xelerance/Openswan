@@ -23,6 +23,8 @@ ifeq ($(USE_EXTRACRYPTO),true)
 SUBDIRS+=libblowfish libtwofish libserpent libsha2
 endif
 
+SUBDIRS+=liboswcrypto
+
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
 	@false

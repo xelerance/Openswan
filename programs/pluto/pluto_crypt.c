@@ -56,15 +56,7 @@
 #include <nss.h>
 #endif
 
-#ifdef HAVE_OCF
-#include "id.h"
-#include "pgp.h"
-#include "x509.h"
-#include "certs.h"
-#include "keys.h"
-#include "ocf_pk.h"
-#endif
-
+#include "oswcrypto.h"
 #include "osw_select.h"
 
 TAILQ_HEAD(req_queue, pluto_crypto_req_cont);
@@ -764,9 +756,7 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 #endif
 
 	init_rnd_pool();
-#ifdef HAVE_OCF
-	load_cryptodev();
-#endif
+	load_oswcrypto();
 	free_preshared_secrets();
 	openswan_passert_fail = helper_passert_fail;
 	debug_prefix='!';

@@ -56,10 +56,7 @@
 #include "dpd.h"
 #include "keys.h"
 
-#ifdef HAVE_OCF
-#include "ocf_pk.h"
-#endif
-
+#include "oswcrypto.h"
 
 static u_char der_digestinfo[]={
     0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e,
@@ -172,7 +169,7 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
 	MP_INT c;
 
 	n_to_mpz(&c, sig_val, sig_len);
-	cryptodev.mod_exp(&c, &c, &k->e, &k->n);
+	oswcrypto.mod_exp(&c, &c, &k->e, &k->n);
 
 	temp_s = mpz_to_n(&c, sig_len);	/* back to octets */
 	memcpy(s, temp_s.ptr, sig_len);

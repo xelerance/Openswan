@@ -74,9 +74,6 @@
 #endif
 
 #include "klips-crypto/des.h"
-#ifdef OCF_ASSIST
-#include "klips-crypto/ocf_assist.h"
-#endif
 
 #ifndef DES_DEFAULT_OPTIONS
 /* the following is tweaked from a config script, that is why it is a

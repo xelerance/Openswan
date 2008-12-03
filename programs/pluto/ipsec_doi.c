@@ -93,10 +93,6 @@
 
 #include "tpm/tpm.h"
 
-#ifdef HAVE_OCF
-#include "ocf_pk.h"
-#endif
-
 /* Pluto's Vendor ID
  *
  * Note: it is a NUL-terminated ASCII string, but NUL won't go on the wire.

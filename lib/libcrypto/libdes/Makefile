@@ -12,14 +12,7 @@ OPTS0= -DLIBDES_LIT
 
 OPTS= $(OPTS0) $(OPTS1) $(OPTS2) $(OPTS3) $(OPTS4)
 
-OBJS=des_enc.o cbc_enc.o set_key.o ecb_enc.o
-ifeq ($(HAVE_OCF),true)
-	CFLAGS += -DOCF_ASSIST=1
-	CFLAGS += -DNO_FCRYPT=1
-	OBJS   += ocf_des_assist.o
-endif
-
-OBJS += fcrypt_b.o
+OBJS=des_enc.o cbc_enc.o set_key.o ecb_enc.o fcrypt_b.o
 FCRYPT = fcrypt.o
 ONEFILE=fcrypt.c
 LIBRARY=crypto/libdes

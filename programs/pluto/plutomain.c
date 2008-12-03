@@ -85,9 +85,7 @@
 #include "tpm/tpm.h"
 #endif
 
-#ifdef HAVE_OCF
-#include "ocf_pk.h"
-#endif
+#include "oswcrypto.h"
 
 #ifndef IPSECDIR
 #define IPSECDIR "/etc/ipsec.d"
@@ -817,9 +815,7 @@ main(int argc, char **argv)
     init_connections();
     init_crypto();
     init_crypto_helpers(nhelpers);
-#ifdef HAVE_OCF
-    load_cryptodev();
-#endif
+    load_oswcrypto();
     init_demux();
     init_kernel();
     init_adns();
