@@ -176,11 +176,6 @@ des_key_schedule schedule;
 			return(-2);
 		}
 
-#ifdef OCF_ASSIST
-	if (ocf_des_assist() & OCF_PROVIDES_DES_3DES)
-		return(ocf_des_set_key(key, schedule));
-#endif
-
 	k=(DES_LONG *)schedule;
 	in=(unsigned char *)key;
 

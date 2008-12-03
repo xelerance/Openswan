@@ -28,8 +28,6 @@
 
 #include <openswan.h>
 #define HEADER_DES_LOCL_H   /* stupid trick to force prototype decl in <des.h> */
-#include <klips-crypto/des.h>
-
 #include "sysdep.h"
 #include "constants.h"
 #include "oswalloc.h"
@@ -37,6 +35,8 @@
 #include "oswlog.h"
 #include "md5.h"
 #include "pem.h"
+
+#include "oswcrypto.h"
 
 /*
  * check the presence of a pattern in a character string
@@ -209,13 +209,13 @@ pem_decrypt_3des(chunk_t *blob, chunk_t *iv, const char *passphrase)
 
     memcpy(key + MD5_DIGEST_SIZE, digest, 24 - MD5_DIGEST_SIZE);
 
-    (void) des_set_key(&deskey[0], ks[0]);
-    (void) des_set_key(&deskey[1], ks[1]);
-    (void) des_set_key(&deskey[2], ks[2]);
+    (void) oswcrypto.des_set_key(&deskey[0], ks[0]);
+    (void) oswcrypto.des_set_key(&deskey[1], ks[1]);
+    (void) oswcrypto.des_set_key(&deskey[2], ks[2]);
 
     /* decrypt data block */
     memcpy(des_iv, iv->ptr, DES_CBC_BLOCK_SIZE);
-    des_ede3_cbc_encrypt((des_cblock *)blob->ptr, (des_cblock *)blob->ptr,
+    oswcrypto.des_ede3_cbc_encrypt((des_cblock *)blob->ptr, (des_cblock *)blob->ptr,
 	blob->len, ks[0], ks[1], ks[2], (des_cblock *)des_iv, FALSE);
 
     /* determine amount of padding */

@@ -58,10 +58,6 @@
 #include "dpd.h"
 #include "keys.h"
 
-#ifdef HAVE_OCF
-#include "ocf_pk.h"
-#endif
-
 static u_char psk_key_pad_str[] = "Key Pad for IKEv2"; /* 4306  2:15 */
 static int psk_key_pad_str_len = 17; /* sizeof( psk_key_pad_str); -1 */
 

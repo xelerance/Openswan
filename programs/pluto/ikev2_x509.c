@@ -58,10 +58,6 @@
 #include "keys.h"
 #include "ipsec_doi.h"	
 
-#ifdef HAVE_OCF
-#include "ocf_pk.h"
-#endif
-
 static stf_status 
 ikev2_send_certreq( struct state *st, struct msg_digest *md
 		    , enum phase1_role role

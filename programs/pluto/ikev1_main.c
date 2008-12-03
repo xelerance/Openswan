@@ -79,6 +79,8 @@
 #include "ikev1.h"
 #include "ikev1_continuations.h"
 
+#include "oswcrypto.h"
+
 #ifdef XAUTH
 #include "xauth.h"
 #endif
@@ -93,10 +95,6 @@
 #include "x509more.h"
 
 #include "tpm/tpm.h"
-
-#ifdef HAVE_OCF
-#include "ocf_pk.h"
-#endif
 
 /* Initiate an Oakley Main Mode exchange.
  * --> HDR;SA
@@ -479,7 +477,7 @@ try_RSA_signature_v1(const u_char hash_val[MAX_DIGEST_LEN], size_t hash_len
 	MP_INT c;
 
 	n_to_mpz(&c, sig_val, sig_len);
-	cryptodev.mod_exp(&c, &c, &k->e, &k->n);
+	oswcrypto.mod_exp(&c, &c, &k->e, &k->n);
 
 	temp_s = mpz_to_n(&c, sig_len);	/* back to octets */
 	memcpy(s, temp_s.ptr, sig_len);

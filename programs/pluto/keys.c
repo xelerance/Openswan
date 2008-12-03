@@ -67,9 +67,7 @@
 #include "fetch.h"
 #include "x509more.h"
 
-#ifdef HAVE_OCF
-#include "ocf_pk.h"
-#endif
+#include "oswcrypto.h"
 
 /* Maximum length of filename and passphrase buffer */
 #define BUF_LEN		256
@@ -155,12 +153,7 @@ sign_hash(const struct RSA_private_key *k
 	  , u_char *sig_val, size_t sig_len)
 {
     chunk_t ch;
-#if defined(HAVE_OCF) && 0
     mpz_t t1;
-    BIGNUM r0;
-#else
-    mpz_t t1, t2;
-#endif
     size_t padlen;
     u_char *p = sig_val;
 
@@ -185,33 +178,13 @@ sign_hash(const struct RSA_private_key *k
      * There are two methods, depending on the form of the private key.
      * We use the one based on the Chinese Remainder Theorem.
      */
-#if defined(HAVE_OCF) && 0
-    cryptodev.rsa_mod_exp_crt(&t1, &t1, &r0);
-#else
-    mpz_init(t2);
-
-    mpz_powm(t2, t1, &k->dP, &k->p);	/* m1 = c^dP mod p */
-
-    mpz_powm(t1, t1, &k->dQ, &k->q);	/* m2 = c^dQ mod Q */
-
-    mpz_sub(t2, t2, t1);	/* h = qInv (m1 - m2) mod p */
-    mpz_mod(t2, t2, &k->p);
-    mpz_mul(t2, t2, &k->qInv);
-    mpz_mod(t2, t2, &k->p);
-
-    mpz_mul(t2, t2, &k->q);	/* m = m2 + h q */
-    mpz_add(t1, t1, t2);
-
-#endif
+    oswcrypto.rsa_mod_exp_crt(t1, t1, &k->p, &k->dP, &k->q, &k->dQ, &k->qInv);
     /* PKCS#1 v1.5 8.4 integer-to-octet-string conversion */
     ch = mpz_to_n(t1, sig_len);
     memcpy(sig_val, ch.ptr, sig_len);
     pfree(ch.ptr);
 
     mpz_clear(t1);
-#if !defined(HAVE_OCF) && 0
-    mpz_clear(t2);
-#endif
 }
 
 /* Check signature against all RSA public keys we can find.

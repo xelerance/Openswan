@@ -50,14 +50,7 @@
 #include "log.h"
 #include "timer.h"
 
-#ifdef HAVE_OCF
-#include "id.h"
-#include "pgp.h"
-#include "x509.h"
-#include "certs.h"
-#include "keys.h"
-#include "ocf_pk.h"
-#endif
+#include "oswcrypto.h"
 
 void calc_ke(struct pluto_crypto_req *r)
 {
@@ -78,7 +71,7 @@ void calc_ke(struct pluto_crypto_req *r)
     n_to_mpz(&secret, wire_chunk_ptr(kn, &(kn->secret)), LOCALSECRETSIZE);
     
     mpz_init(&mp_g);
-    cryptodev.mod_exp(&mp_g, &groupgenerator, &secret, group->modulus);
+    oswcrypto.mod_exp(&mp_g, &groupgenerator, &secret, group->modulus);
     
     gi = mpz_to_n(&mp_g, group->bytes);
     

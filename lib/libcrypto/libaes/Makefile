@@ -20,7 +20,6 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 include ${OPENSWANSRCDIR}/Makefile.ver
 
 LIBRARY=crypto/libaes
-ONEFILE=ocf_aes_assist.c
 
 AES_CORE_OBJ:=aes.o
 AES_CORE_SRC:=aes.c
@@ -35,11 +34,6 @@ endif
 BASE_SRCS=aes_xcbc_mac.c aes_cbc.o 
 SRCS=${BASE_SRCS} ${AES_CORE_SRC}
 
-ifeq ($(HAVE_OCF),true)
-	CFLAGS += -DOCF_ASSIST=1
-	AES_CORE_OBJ += ocf_aes_assist.o
-endif
-
 OBJS=${BASE_SRCS:.c=.o} ${AES_CORE_OBJ}
 
 HDRS=	
@@ -49,7 +43,7 @@ VPATH += ${SRCDIR}
 
 LIB=libaes.a
 LIBRARY=crypto/libaes
-ONEFILE=ocf_aes_assist.c
+ONEFILE=test_main.c
 
 include ${srcdir}../../Makefile.library
 

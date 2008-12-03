@@ -37,7 +37,6 @@
 #include "readwhackmsg.h"
 #include "ike_alg.h"
 #include "ikev2.h"
-#include "ocf_pk.h"
 
 /* for child sa calculation */
 #include "alg_info.h"
@@ -110,7 +109,7 @@ int main(int argc, char *argv[])
 
 	/* initialize list of moduli */
 	init_crypto();
-	load_cryptodev();
+	load_oswcrypto();
 
 	init_seam_kernelalgs();
 

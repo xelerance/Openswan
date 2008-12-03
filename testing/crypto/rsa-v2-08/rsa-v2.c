@@ -40,7 +40,6 @@
 #include "readwhackmsg.h"
 #include "ike_alg.h"
 #include "ikev2.h"
-#include "ocf_pk.h"
 
 #include "seam_pending.c"
 #include "whackmsgtestlib.c"
@@ -124,7 +123,7 @@ int main(int argc, char *argv[])
 
 	/* initialize list of moduli */
 	init_crypto();
-	load_cryptodev();
+	load_oswcrypto();
 
 	readwhackmsg("../../lib/libpluto/lib-parentI1/ikev2.record");
 	c1 = con_by_name("westnet--eastnet-ikev2", TRUE);

@@ -34,10 +34,6 @@
 
 #include "klips-crypto/aes.h"
 
-#ifdef OCF_ASSIST
-#include "klips-crypto/ocf_assist.h"
-#endif
-
 // CONFIGURATION OPTIONS (see also aes.h)
 //
 // 1.  Define UNROLL for full loop unrolling in encryption and decryption.
@@ -967,14 +963,6 @@ void aes_set_key(aes_context *cx, const unsigned char in_key[], int n_bytes, con
 
 #if !defined(FIXED_TABLES)
     if(!tab_gen) { gen_tabs(); tab_gen = 1; }
-#endif
-
-/* only need to do a special set_key for the cryptodev hw acceleration */
-#ifdef OCF_ASSIST
-	if (ocf_aes_assist() & OCF_PROVIDES_AES) {
-		ocf_aes_set_key(cx, in_key, n_bytes, f);
-		return;
-	}
 #endif
 
     switch(n_bytes) {
