@@ -20,6 +20,7 @@ v2.6.20
 * Fix for using kernel cryptoapi algs causing bad packets [David]
 * Bugtracker bugs fixed:
    #1015: no building of ipsec.conf.5 manpage on 2.6.20dr2 
+   #1004: ipsec/l2tp server behind NAT/port forward broken [Paul]
 
 v2.6.19
 * Fix for L2TP/IPsec with Windows machines having their packets
