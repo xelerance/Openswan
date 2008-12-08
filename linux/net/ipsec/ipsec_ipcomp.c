@@ -121,11 +121,11 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 			    "klips_debug:ipsec_rcv: "
 			    "Incoming packet with SA(IPCA):%s does not match policy SA(IPCA):%s cpi=%04x cpi->spi=%08x spi=%08x, spi->cpi=%04x for SA grouping, dropped.\n",
 			    irs->sa_len ? irs->sa : " (error)",
-			    ipsp != NULL ? (sa_len2 ? sa2 : " (error)") : "NULL",
+			    sa_len2 ? sa2 : " (error)",
 			    ntohs(irs->protostuff.ipcompstuff.compp->ipcomp_cpi),
 			    (__u32)ntohl(irs->said.spi),
-			    ipsp != NULL ? (__u32)ntohl((ipsp->ips_said.spi)) : 0,
-			    ipsp != NULL ? (__u16)(ntohl(ipsp->ips_said.spi) & 0x0000ffff) : 0);
+			    (__u32)ntohl((ipsp->ips_said.spi)),
+			    (__u16)(ntohl(ipsp->ips_said.spi) & 0x0000ffff));
 		if(irs->stats) {
 			irs->stats->rx_dropped++;
 		}
