@@ -502,7 +502,10 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 	ipp  = irs->ipp;
 	ipsp = irs->ipsp;
 	skb  = irs->skb;
-	irs->sa_len = satot(&irs->said, 0, irs->sa, sizeof(irs->sa));
+	if (debug_rcv)
+		irs->sa_len = satot(&irs->said, 0, irs->sa, sizeof(irs->sa));
+	else
+		irs->sa_len = 0;
 	if((ipp->protocol != IPPROTO_IPIP) && 
 	   (ipp->protocol != IPPROTO_ATT_HEARTBEAT)) {  /* AT&T heartbeats to SIG/GIG */
 		KLIPS_PRINT(debug_rcv,
@@ -1112,7 +1115,7 @@ ipsec_rcv_auth_decap(struct ipsec_rcv_state *irs)
 			irs->ipsp=newipsp;
 
 			/* come back into here with the next transform */
-			irs->next_state = IPSEC_RSM_AUTH_DECAP;
+			irs->next_state = IPSEC_RSM_DECAP_INIT;
 			return IPSEC_RCV_OK;
 		}
 
@@ -1574,20 +1577,6 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 	}
 #endif /* CONFIG_NETFILTER */
 
-	/* okay, acted on this SA, so free any previous SA, and record a new one */
-	if(irs->ipsp) {
-		struct ipsec_sa *newipsp;
-		newipsp = irs->ipsp->ips_next;
-		if(newipsp) {
-			ipsec_sa_get(newipsp);
-		}
-		if(irs->lastipsp) {
-			ipsec_sa_put(irs->lastipsp);
-		}
-		irs->lastipsp = irs->ipsp;
-		irs->ipsp=newipsp;
-	}
-
 	/* do we need to do more decapsulation */
 	if ((irs->ipp->protocol == IPPROTO_ESP ||
 			irs->ipp->protocol == IPPROTO_AH ||
@@ -1595,7 +1584,7 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 			irs->ipp->protocol == IPPROTO_COMP ||
 #endif /* CONFIG_KLIPS_IPCOMP */
 			0) && irs->ipsp != NULL) {
-		irs->next_state = IPSEC_RSM_AUTH_DECAP;
+		irs->next_state = IPSEC_RSM_DECAP_INIT;
 	}
 	return IPSEC_RCV_OK;
 }
@@ -1611,15 +1600,29 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 	KLIPS_PRINT(debug_rcv, "klips_debug: %s(st=%d,nxt=%d)\n", __FUNCTION__,
 			irs->state, irs->next_state);
 
+	/* okay, acted on all SA's, so free the last SA, and move to the next */
+	if(irs->ipsp) {
+		struct ipsec_sa *newipsp;
+		newipsp = irs->ipsp->ips_next;
+		if(newipsp) {
+			ipsec_sa_get(newipsp);
+		}
+		if(irs->lastipsp) {
+			ipsec_sa_put(irs->lastipsp);
+		}
+		irs->lastipsp = irs->ipsp;
+		irs->ipsp=newipsp;
+	}
+
 	/* set up for decap loop */
 	ipp  = irs->ipp;
 	ipsp = irs->ipsp;
 	skb = irs->skb;
 
+#ifdef CONFIG_KLIPS_IPCOMP
 	/* if there is an IPCOMP, but we don't have an IPPROTO_COMP,
 	 * then we can just skip it
 	 */
-#ifdef CONFIG_KLIPS_IPCOMP
 	if(irs->ipsp && irs->ipsp->ips_said.proto == IPPROTO_COMP) {
 		struct ipsec_sa *newipsp = NULL;
 		newipsp = irs->ipsp->ips_next;
@@ -1631,6 +1634,7 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 		}
 		irs->lastipsp = irs->ipsp;
 		irs->ipsp=newipsp;
+		irs->sa_len = 0;
 	}
 #endif /* CONFIG_KLIPS_IPCOMP */
 
