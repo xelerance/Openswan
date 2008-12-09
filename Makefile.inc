@@ -376,15 +376,16 @@ USE_EXTRACRYPTO?=true
 # 
 HAVE_THREADS?=false
 
-# Do we have OCF available?
-HAVE_OCF?=true
-
 # Do we have an external stats daemon we can push state changes to?
 # Currently hardcoded to /bin/statsd
 HAVE_STATSD?=false
 
 # Do we have Openssl libraries available for BIGNUM support?
-HAVE_OPENSSL?=true
+# Required of HAVE_OCF support
+HAVE_OPENSSL?=false
+
+# Do we have OCF available?
+HAVE_OCF?=false
 
 # Do we assume that the /bin/sh is BASH?
 # if so, then internationalization code is retained in the shell scripts
