@@ -8,6 +8,7 @@ v2.6.20
 * Added support for USE_NSS (default false) [Avesh Agarwal]
 * Fix sprintf warning in init_crypto_helper [Owen Jacobson]
 * KLIPS could not be unloaded [David McCullough]
+  (requires updated nat-t patch
 * Fix crasher with disassociated pending (async) crypto requests [David]
 * Added "metric=" keyword to the conn seciont to allow host failover
   from another interface tp ipsec using route management. [David]
@@ -48,6 +49,7 @@ v2.6.19
    #992: keyingretries default changed from %forever to 3 [ken]
          (bug was introduced in 2.6.x)
    #981: plutodebug=all klipsdebug=all not operate. [paul]
+   #994: Not having leftid=%fromcert results in a pluto segmentation [paul]
   #1003: virtual_private broken? [paul]
 
 v2.6.18
