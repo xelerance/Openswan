@@ -10,11 +10,11 @@ v2.6.20
 * KLIPS could not be unloaded [David McCullough]
   (requires updated nat-t patch
 * Fix crasher with disassociated pending (async) crypto requests [David]
-* Added "metric=" keyword to the conn seciont to allow host failover
-  from another interface tp ipsec using route management. [David]
+* Added "metric=" keyword to the conn section to allow host failover
+  from another interface to ipsec using route management. [David]
 * Make pluto more verbose on aborting for embedded systems [David]
 * Fix for ipsec_kversion.h on kernels > 2.6.22 non-RHEL/SLE [David]
-* Parser was missing keep_alive= and force_keepalive= options [Paul]
+* New parser was missing keep_alive= and force_keepalive= options [Paul]
 * Fix for ipsec whack --listevents [Shingo Yamawaki]
 * Split crypto calls off into liboswcrypto for easier FIPS handling [David]
 * Fix compiling without OCF [David]
@@ -22,7 +22,7 @@ v2.6.20
 * Fix ESP+IPCOMP processing [David]
 * Bugtracker bugs fixed:
    #1015: no building of ipsec.conf.5 manpage on 2.6.20dr2 
-   #1004: ipsec/l2tp server behind NAT/port forward broken [Paul]
+   #1004: [partial fix] ipsec/l2tp server behind NAT/port forward broken [Paul]
    #1014: compress=yes on initiator does not propose IPcomp [David]
    #0982: kernel panic with compression=yes  [Florian Westphal]
 
