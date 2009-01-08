@@ -605,7 +605,7 @@ handle_next_timer_event(void)
 #if 0 /* delete_state will take care of this better ? */
 	    if(st->st_suspended_md) {
 		release_md(st->st_suspended_md);
-		st->st_suspended_md=NULL;
+		set_suspended(st, NULL);
 	    }
 #endif
 	    delete_state(st);
