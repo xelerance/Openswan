@@ -369,7 +369,7 @@ err:
 static int
 cryptodev_des_set_key(des_cblock (*key), des_key_schedule schedule)
 {
-	if (cryptodev_fd >= 0) {
+	if (cryptodev_fd != -1) {
 		memcpy(schedule, key, sizeof(*key));
 		return(0);
 	}
@@ -808,7 +808,7 @@ void load_cryptodev(void)
 	int assisted = 0;
 	u_int32_t feat;
 
-	if ((cryptodev_fd = get_dev_crypto()) < 0) {
+	if ((cryptodev_fd = get_dev_crypto()) == -1) {
 		openswan_log("OCF assist disabled: is the cryptodev module loaded ?");
 		return;
 	}
@@ -867,8 +867,10 @@ void load_cryptodev(void)
 		}
 	}
 
-	if (assisted == 0)
+	if (assisted == 0) {
 		close(cryptodev_fd);
+		cryptodev_fd = -1;
+	}
 }
 
 /****************************************************************************/
