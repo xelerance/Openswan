@@ -1329,13 +1329,14 @@ do_kernel_patch_test() {
 	exit 99
     fi
 
-    # okay, we got some source code to play with!
-    mkdir OUTPUT${KLIPS_MODULE}/$kernel_var_name
-
     # get ourselves a kernel source tree.
-    if (cd OUTPUT${KLIPS_MODULE}/$kernel_var_name && lndir -silent $KERNEL_SRC . )
+    # use git clone, if it's a git tree.
+    if [ -d ${KERNEL_SRC}/.git ]; then
+	echo git clone --shared $KERNEL_SRC OUTPUT${KLIPS_MODULE}/$kernel_var_name
+	git clone --quiet --shared $KERNEL_SRC OUTPUT${KLIPS_MODULE}/$kernel_var_name
+    elif (mkdir -p OUTPUT${KLIPS_MODULE}/$kernel_var_name && cd OUTPUT${KLIPS_MODULE}/$kernel_var_name && lndir -silent $KERNEL_SRC . )
     then
-	:
+	 :
     else
         echo Unable to link in kernel source.
 	exit 99
