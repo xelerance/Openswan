@@ -34,7 +34,7 @@ doversion() {
     lines=$1
     
     # get IPSECVERSION
-    source Makefile.ver
+    eval $(cd ${OPENSWANSRCDIR} && make env | grep IPSECVERSION)
 
     echo '--- /dev/null   Tue Mar 11 13:02:56 2003'
     echo "+++ $target     Mon Feb  9 13:51:03 2004"
