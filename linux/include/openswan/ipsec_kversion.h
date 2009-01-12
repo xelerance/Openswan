@@ -244,7 +244,13 @@
 #  define grab_socket_timeval(tv, sock)  { (tv) = (sock).sk_stamp; }
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22) || (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(5,2))
+/* needs to be defined for the next line */
+#if !defined(RHEL_RELEASE_CODE) 
+#define RHEL_RELEASE_CODE 0
+#define RHEL_RELEASE_VERSION(x,y) 10
+#endif
+	
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22) || (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(5,2)) 
 /* need to include ip.h early, no longer pick it up in skbuff.h */
 #include <linux/ip.h>
 /* type of sock.sk_stamp changed from timeval to ktime  */
@@ -285,10 +291,7 @@
 # define HAVE_KMEM_CACHE_MACRO
 
 /* Try using the new kernel encaps hook for nat-t, instead of udp.c */
-# ifdef NOT_YET_FINISHED
-#  define HAVE_UDP_ENCAP_CONVERT
-# endif
-
+# define HAVE_UDP_ENCAP_CONVERT 1
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
