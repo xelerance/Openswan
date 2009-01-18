@@ -20,6 +20,9 @@ v2.6.20
 * Fix compiling without OCF [David]
 * Fix for using kernel cryptoapi algs causing bad packets [David]
 * Fix ESP+IPCOMP processing [David]
+* Fix NETKEY with transport mode and NAT-T [Paul]
+  (does not yet fully fix bug #1004)
+* Using Main and Aggressive mode could pick the wrong policy and fail [David]
 * Bugtracker bugs fixed:
    #1015: no building of ipsec.conf.5 manpage on 2.6.20dr2 
    #1004: ipsec/l2tp server behind NAT/port forward broken [Paul]
