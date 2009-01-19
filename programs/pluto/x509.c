@@ -424,7 +424,7 @@ load_crls(void)
 
     /* change directory to specified path */
     save_dir = getcwd(buf, PATH_MAX);
-    if (chdir(oco->crls_dir))
+    if (chdir(oco->crls_dir) == -1)
     {
 	openswan_log("Could not change to directory '%s'", oco->crls_dir);
     }
@@ -464,7 +464,7 @@ load_crls(void)
 	}
     }
     /* restore directory path */
-    if(!chdir(save_dir)) {
+    if(chdir(save_dir) == -1) {
         int e = errno;
         openswan_log("Changing back to directory '%s' failed - (%d %s)",
                 save_dir, e, strerror(e));
