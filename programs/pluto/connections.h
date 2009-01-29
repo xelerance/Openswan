@@ -260,6 +260,9 @@ struct connection {
     ip_address modecfg_wins2;
 #endif
     u_int8_t metric;              /* metric for tunnel routes */
+#ifdef HAVE_STATSD
+    u_int32_t statsval;			/* track what we have told statsd */
+#endif
 };
 
 #define oriented(c) ((c).interface != NULL)
