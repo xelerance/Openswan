@@ -92,6 +92,7 @@ static bool read_packet(struct msg_digest *md);
  * that when a suspended STF resumes, its reply message buffer
  * must be at the same location -- there are pointers into it.
  */
+pb_stream reply_stream;
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
 /* process an input packet, possibly generating a reply.

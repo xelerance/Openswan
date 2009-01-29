@@ -42,6 +42,9 @@ typedef struct wire_chunk {
 
 #define KENONCE_SIZE 1280
 struct pcr_kenonce {
+  wire_chunk_t thespace;
+  unsigned char space[KENONCE_SIZE];
+
   /* inputs */
   u_int16_t oakley_group;
   
@@ -49,18 +52,18 @@ struct pcr_kenonce {
   wire_chunk_t secret;
   wire_chunk_t gi;
   wire_chunk_t n;
-
-  wire_chunk_t thespace;
-  unsigned char space[KENONCE_SIZE];
 };
 
 #define DHCALC_SIZE 2560
 struct pcr_skeyid_q {
+  wire_chunk_t thespace;
+  unsigned char space[DHCALC_SIZE];
+
   /* inputs */
-    u_int16_t     oakley_group;
-    oakley_auth_t auth;	            
-    oakley_hash_t integ_hash;
-    oakley_hash_t prf_hash;               
+  u_int16_t     oakley_group;
+  oakley_auth_t auth;	            
+  oakley_hash_t integ_hash;
+  oakley_hash_t prf_hash;               
   enum phase1_role init;
   size_t        keysize;     /* of encryptor */
   wire_chunk_t gi;
@@ -71,12 +74,12 @@ struct pcr_skeyid_q {
   wire_chunk_t icookie;
   wire_chunk_t rcookie;
   wire_chunk_t secret;
-
-  wire_chunk_t thespace;
-  unsigned char space[DHCALC_SIZE];
 };
 
 struct pcr_skeyid_r {
+  wire_chunk_t thespace;
+  unsigned char space[DHCALC_SIZE];
+
   /* outputs */
   wire_chunk_t shared;
   wire_chunk_t skeyid;          /* output */
@@ -85,27 +88,23 @@ struct pcr_skeyid_r {
   wire_chunk_t skeyid_e;        /* output */
   wire_chunk_t new_iv;          
   wire_chunk_t enc_key;
-
-  wire_chunk_t thespace;
-  unsigned char space[DHCALC_SIZE];
 };
 
 struct pcr_skeycalc_v2 {
-    /* outputs */
-    wire_chunk_t shared;
-    wire_chunk_t skeyseed;        /* output */
-    wire_chunk_t skeyid_d;        /* output */
-    wire_chunk_t skeyid_ai;       /* output */
-    wire_chunk_t skeyid_ar;       /* output */
-    wire_chunk_t skeyid_ei;       /* output */
-    wire_chunk_t skeyid_er;       /* output */
-    wire_chunk_t skeyid_pi;       /* output */
-    wire_chunk_t skeyid_pr;       /* output */
+  wire_chunk_t thespace;
+  unsigned char space[DHCALC_SIZE];
 
-    wire_chunk_t thespace;
-    unsigned char space[DHCALC_SIZE];
+  /* outputs */
+  wire_chunk_t shared;
+  wire_chunk_t skeyseed;        /* output */
+  wire_chunk_t skeyid_d;        /* output */
+  wire_chunk_t skeyid_ai;       /* output */
+  wire_chunk_t skeyid_ar;       /* output */
+  wire_chunk_t skeyid_ei;       /* output */
+  wire_chunk_t skeyid_er;       /* output */
+  wire_chunk_t skeyid_pi;       /* output */
+  wire_chunk_t skeyid_pr;       /* output */
 };
-
 
 #define space_chunk_ptr(SPACE, wire) ((void *)&((SPACE)[(wire)->start]))
 #define wire_chunk_ptr(k, wire) space_chunk_ptr((k)->space, wire)
@@ -141,12 +140,14 @@ typedef void (*crypto_req_func)(struct pluto_crypto_req_cont *
 				, err_t ugh);
 
 struct pluto_crypto_req_cont {
-	TAILQ_ENTRY(pluto_crypto_req_cont) pcrc_list;
+  TAILQ_ENTRY(pluto_crypto_req_cont) pcrc_list;
   struct pluto_crypto_req      *pcrc_pcr;
   so_serial_t                   pcrc_serialno;
   pcr_req_id                    pcrc_id;
   crypto_req_func               pcrc_func;
   crypto_req_func               pcrc_free;
+  pb_stream			pcrc_reply_stream;
+  u_int8_t		       *pcrc_reply_buffer;
 };
 
   
@@ -241,10 +242,34 @@ static inline void clonetowirechunk(wire_chunk_t  *thespace,
     memcpy(gip, origdat, origlen);
 }
 
-static inline void pcr_init(struct pluto_crypto_req *r)
+static inline void pcr_init(struct pluto_crypto_req *r
+	, enum pluto_crypto_requests pcr_type
+	, enum crypto_importance pcr_pcim)
 {
-    r->pcr_d.kn.thespace.start = 0;
-    r->pcr_d.kn.thespace.len   = sizeof(r->pcr_d.kn.space);
+    memset(r, 0, sizeof(r));
+    r->pcr_len  = sizeof(struct pluto_crypto_req);
+    r->pcr_type = pcr_type;
+    r->pcr_pcim = pcr_pcim;
+
+    switch (r->pcr_type) {
+    case pcr_build_kenonce:
+    case pcr_build_nonce:
+	r->pcr_d.kn.thespace.start = 0;
+	r->pcr_d.kn.thespace.len   = sizeof(r->pcr_d.kn.space);
+	break;
+    case pcr_compute_dh_iv:
+    case pcr_compute_dh:
+    case pcr_compute_dh_v2:
+	r->pcr_d.dhq.thespace.start = 0;
+	r->pcr_d.dhq.thespace.len   = sizeof(r->pcr_d.dhq.space);
+	break;
+    case pcr_rsa_sign:
+    case pcr_rsa_check:
+    case pcr_x509cert_fetch:
+    case pcr_x509crl_fetch:
+	passert(0);
+	break;
+    }
 }
 
 #endif /* _PLUTO_CRYPT_H */

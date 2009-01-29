@@ -720,10 +720,10 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 		      , st->st_remoteport
 		      , st->st_interface->port));
 
-	close_output_pbs(&md->reply);   /* good form, but actually a no-op */
+	close_output_pbs(&reply_stream);   /* good form, but actually a no-op */
 
-	clonetochunk(st->st_tpacket, md->reply.start
-		     , pbs_offset(&md->reply), "reply packet");
+	clonetochunk(st->st_tpacket, reply_stream.start
+		     , pbs_offset(&reply_stream), "reply packet");
 
 	/* actually send the packet
 	 * Note: this is a great place to implement "impairments"

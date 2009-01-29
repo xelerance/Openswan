@@ -167,7 +167,7 @@ echo_hdr(struct msg_digest *md, bool enc, u_int8_t np)
 	r_hdr.isa_flags |= ISAKMP_FLAG_ENCRYPTION;
     /* some day, we may have to set r_hdr.isa_version */
     r_hdr.isa_np = np;
-    if (!out_struct(&r_hdr, &isakmp_hdr_desc, &md->reply, &md->rbody)) {
+    if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody)) {
 	impossible();	/* surely must have room and be well-formed */
     }
 }

@@ -850,7 +850,7 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
 #endif
 
     /* set up reply */
-    init_pbs(&reply, reply_buffer, sizeof(reply_buffer), "reply packet");
+    init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
 
     /* HDR* out */
     {
@@ -863,7 +863,7 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	hdr.isa_flags = ISAKMP_FLAG_ENCRYPTION;
 	memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
 	memcpy(hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
-	if (!out_struct(&hdr, &isakmp_hdr_desc, &reply, &rbody))
+	if (!out_struct(&hdr, &isakmp_hdr_desc, &reply_stream, &rbody))
 	{
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
@@ -985,7 +985,7 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
     }
 
     /* save packet, now that we know its size */
-    clonetochunk(st->st_tpacket, reply.start, pbs_offset(&reply)
+    clonetochunk(st->st_tpacket, reply_stream.start, pbs_offset(&reply_stream)
 	, "reply packet from quick_outI1");
 
     /* send the packet */
