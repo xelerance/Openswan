@@ -55,8 +55,6 @@
 #include "kernel_alg.h"
 #include "ike_alg.h"
 #include "plutoalg.h"
-#include "virtual.h"
-
 #include "virtual.h" /* for show_virtual_private */
 
 #ifndef NO_DB_OPS_STATS
