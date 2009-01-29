@@ -20,14 +20,24 @@ v2.6.20
 * Fix compiling without OCF [David]
 * Fix for using kernel cryptoapi algs causing bad packets [David]
 * Fix ESP+IPCOMP processing [David]
+* Only calculate (expensive) irs->sa_len when debug is enabled [David]
+* Repaired missing code responsible for sending IPCOMP request to peer [David]
+* Make sure we only set NEXT_NONE on the last VID entry that we add [David]
 * Fix NETKEY with transport mode and NAT-T [Paul]
   (does not yet fully fix bug #1004)
+* Send the remote host address to PAM during XAUTH so that it may be used
+  for better logging/authentication purposes at the PAM end. [Ken Wilson]
 * Using Main and Aggressive mode could pick the wrong policy and fail [David]
+* Fix for main_inI2_outR2_tail() when compiled without DEBUG [Shingo Yamawaki]
+* Fix for bogus "discarding packet received during asynchronous work
+  (DNS or crypto)". We were queueing/dropping packets that were needed to
+  get the tunnel going [David]
 * Bugtracker bugs fixed:
    #1015: no building of ipsec.conf.5 manpage on 2.6.20dr2 
    #1004: [partial fix] ipsec/l2tp server behind NAT/port forward broken [Paul]
    #1014: compress=yes on initiator does not propose IPcomp [David]
    #0982: kernel panic with compression=yes  [Florian Westphal]
+   #0949: not able to set nhelpers=0 [Shingo Yamawaki]
 
 v2.6.19
 * Fix for L2TP/IPsec with Windows machines having their packets
