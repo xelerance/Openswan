@@ -79,6 +79,14 @@ calc_dh_shared(chunk_t *shared, const chunk_t g
 		, enum_show(&oakley_group_names, group->group)
 		, tv_diff);
        );
+#if 0
+    /*
+     * note,  a 533 MHz Xscale will exceed this test,  and that is a fast
+     * processor by embedded standards.  Disabling for now so we don't
+     * pollute the logs with nasty warnings that are actually perfectly
+     * normal operation.
+     */
+
     /* if took more than 200 msec ... */
     if (tv_diff > 200000) {
 	loglog(RC_LOG_SERIOUS, "WARNING: calc_dh_shared(): for %s took "
@@ -86,6 +94,7 @@ calc_dh_shared(chunk_t *shared, const chunk_t g
 		, enum_show(&oakley_group_names, group->group)
 		, tv_diff);
     }
+#endif
 
     DBG_cond_dump_chunk(DBG_CRYPT, "DH shared-secret:\n", *shared);
 }
