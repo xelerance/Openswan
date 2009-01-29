@@ -415,7 +415,16 @@ handle_timer_event(void)
 	return;
     }
 
-    handle_next_timer_event();
+    /*
+     * we can get behind, try and catch up all expired events
+     */
+    while (ev && tm >= ev->ev_time) {
+
+	handle_next_timer_event();
+
+	tm = now();
+    	ev = evlist;
+    }
 }
 
 void
@@ -645,7 +654,7 @@ handle_next_timer_event(void)
 
 /*
  * Return the time until the next event in the queue
- * expires (never negative), or -1 if no jobs in queue.
+ * expires (never negative = 0 if one has expired), or -1 if no jobs in queue.
  */
 long
 next_event(void)

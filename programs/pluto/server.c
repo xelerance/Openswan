@@ -702,21 +702,9 @@ call_server(void)
 	}
 		    
 	/* figure out what is interesting */
+	/* do FD's before events are processed */
 
-	if (ndes == 0)
-	{
-	    /* timer event */
-
-	    if(!no_retransmits)
-	    {
-		DBG(DBG_CONTROL,
-		    DBG_log("*time to handle event"));
-		
-		handle_timer_event();
-		passert(GLOBALS_ARE_RESET());
-	    }
-	}
-	else
+	if (ndes > 0)
 	{
 	    /* at least one file descriptor is ready */
 
@@ -797,6 +785,13 @@ call_server(void)
 	    }
 
 	    passert(ndes == 0);
+	}
+	if (next_event() == 0 && !no_retransmits)
+	{
+	    /* timer event ready */
+	    DBG(DBG_CONTROL, DBG_log("*time to handle event"));
+	    handle_timer_event();
+	    passert(GLOBALS_ARE_RESET());
 	}
     }
 }
