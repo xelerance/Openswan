@@ -200,6 +200,10 @@ ifeq ($(HAVE_STATSD),true)
 HAVE_STATSD_DEFS=-DHAVE_STATSD
 endif
 
+ifeq ($(USE_IPSEC_CONNECTION_LIMIT),true)
+IPSEC_CONNECTION_LIMIT_DEFS=-DIPSEC_CONNECTION_LIMIT=$(IPSEC_CONNECTION_LIMIT)
+endif
+
 ifeq ($(USE_SMARTCARD),true)
 # smartcard functions are compiled in whether or not we have -lopensc,
 # but ifndef SMARTCARD, they are dummy functions.
@@ -298,6 +302,7 @@ DEFINES = $(EXTRA_DEFINES) \
 	${WEAK_DEFS} \
 	${SINGLE_CONF_DIR} \
 	${HAVE_STATSD_DEFS} \
+	${IPSEC_CONNECTION_LIMIT_DEFS} \
 	# -DLEAK_DETECTIVE
 
 # libefence is a free memory allocation debugger

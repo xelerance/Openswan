@@ -93,6 +93,9 @@ const struct pfkey_proto_info null_proto_info[2] = {
 };
 
 static struct bare_shunt *bare_shunts = NULL;
+#ifdef IPSEC_CONNECTION_LIMIT
+static int num_ipsec_eroute = 0;
+#endif
 
 #ifdef DEBUG
 void
@@ -722,6 +725,9 @@ unroute_connection(struct connection *c)
 	    }
 	    else loglog(RC_COMMENT, "no shunt_eroute implemented for %s interface"
 				, kernel_ops->kern_name);
+#ifdef IPSEC_CONNECTION_LIMIT
+	    num_ipsec_eroute--;
+#endif
         }
 
         sr->routing = RT_UNROUTED;  /* do now so route_owner won't find us */
@@ -2253,6 +2259,9 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
     bool eroute_installed = FALSE
         , firewall_notified = FALSE
         , route_installed = FALSE;
+#ifdef IPSEC_CONNECTION_LIMIT
+    bool new_eroute = FALSE;
+#endif
 
     struct connection *ero_top;
     struct bare_shunt **bspp;
@@ -2318,6 +2327,15 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
     else
     {
         /* we're adding an eroute */
+#ifdef IPSEC_CONNECTION_LIMIT
+	if (num_ipsec_eroute == IPSEC_CONNECTION_LIMIT) {
+	    loglog(RC_LOG_SERIOUS
+	    	, "Maximum number of IPSec connections reached (%d)"
+		, IPSEC_CONNECTION_LIMIT);
+	    return FALSE;
+	}
+	new_eroute = TRUE;
+#endif
 
         /* if no state provided, then install a shunt for later */
         if (st == NULL)
@@ -2445,6 +2463,15 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
                         , st->st_connection->newest_ipsec_sa));
             sr->eroute_owner = st->st_serialno;
         }
+
+#ifdef IPSEC_CONNECTION_LIMIT
+	if (new_eroute) {
+	    num_ipsec_eroute++;
+	    loglog(RC_COMMENT
+		, "%d IPSec connections are currently being managed"
+		, num_ipsec_eroute);
+	}
+#endif
 
         return TRUE;
     }
