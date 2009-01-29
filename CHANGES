@@ -6,17 +6,20 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.20
 * Added support for USE_NSS (default false) [Avesh Agarwal]
-* Fix sprintf warning in init_crypto_helper [Owen Jacobson]
-* KLIPS could not be unloaded [David McCullough]
-  (requires updated nat-t patch
-* Fix crasher with disassociated pending (async) crypto requests [David]
+* USE_IPSEC_CONNECTION_LIMIT (default false) support for those who have to
+  deal with export restrictions [David]
 * Added "metric=" keyword to the conn section to allow host failover
   from another interface to ipsec using route management. [David]
+* Split crypto calls off into liboswcrypto for easier FIPS handling [David]
+
+* Fix sprintf warning in init_crypto_helper [Owen Jacobson]
+* KLIPS could not be unloaded [David McCullough]
+  (requires updated nat-t patch)
+* Fix crasher with disassociated pending (async) crypto requests [David]
 * Make pluto more verbose on aborting for embedded systems [David]
 * Fix for ipsec_kversion.h on kernels > 2.6.22 non-RHEL/SLE [David]
 * New parser was missing keep_alive= and force_keepalive= options [Paul]
 * Fix for ipsec whack --listevents [Shingo Yamawaki]
-* Split crypto calls off into liboswcrypto for easier FIPS handling [David]
 * Fix compiling without OCF [David]
 * Fix for using kernel cryptoapi algs causing bad packets [David]
 * Fix ESP+IPCOMP processing [David]
@@ -32,6 +35,10 @@ v2.6.20
 * Fix for bogus "discarding packet received during asynchronous work
   (DNS or crypto)". We were queueing/dropping packets that were needed to
   get the tunnel going [David]
+* The pluto event loop behaves more predictable under heavy load.
+* Fix for sending wrong state/cookies with async crypto  [David]
+* Do not sent duplicate status changes to the stats daemon [David]
+* Disable the warning if DH operations take more than 200ms [David]
 * Bugtracker bugs fixed:
    #1015: no building of ipsec.conf.5 manpage on 2.6.20dr2 
    #1004: [partial fix] ipsec/l2tp server behind NAT/port forward broken [Paul]
