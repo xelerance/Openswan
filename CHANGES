@@ -6,6 +6,8 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.21
 * Fix remaining SADB_EXT_MAX -> K_SADB_EXT_MAX entries. ["bencsathb"]
+* Bugtracker bugs fixed:
+   #1016: rightid=%fromcert without rightcert causes crash 
 
 v2.6.20
 * Added support for USE_NSS (default false) [Avesh Agarwal]
