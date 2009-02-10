@@ -284,6 +284,7 @@ int
 fmt_common_shell_out(char *buf, int blen, struct connection *c
 		     , struct spd_route *sr, struct state *st)
 {
+    int result;
     char
 	me_str[ADDRTOT_BUF],
 	myid_str2[IDTOA_BUF],
@@ -385,7 +386,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	}
     }
     
-    return snprintf(buf, blen,
+    result = snprintf(buf, blen,
 		    "PLUTO_VERSION='2.0' "  /* change VERSION when interface spec changes */
 		    "PLUTO_CONNECTION='%s' "
 		    "PLUTO_INTERFACE='%s' "
@@ -433,6 +434,11 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    , prettypolicy(c->policy)
 		    , secure_xauth_username_str
 		    , srcip_str);
+	/* 
+	 * works for both old and new way of snprintf() returning
+	 * eiter -1 or the output length  -- by Carsten Schlote
+	 */
+	return ((result>=blen) || (result<0))? -1 : result;
 }
 
 static bool
