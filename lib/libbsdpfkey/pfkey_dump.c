@@ -206,7 +206,7 @@ void
 pfkey_sadump(m)
 	struct sadb_msg *m;
 {
-	caddr_t mhp[SADB_EXT_MAX + 1];
+	caddr_t mhp[K_SADB_EXT_MAX + 1];
 	struct sadb_sa *m_sa;
 	struct sadb_x_sa2 *m_sa2;
 	struct sadb_lifetime *m_lftc, *m_lfth, *m_lfts;
@@ -366,7 +366,7 @@ pfkey_spdump(m)
 	struct sadb_msg *m;
 {
 	char pbuf[NI_MAXSERV];
-	caddr_t mhp[SADB_EXT_MAX + 1];
+	caddr_t mhp[K_SADB_EXT_MAX + 1];
 	struct sadb_address *m_saddr, *m_daddr;
 	struct sadb_x_policy *m_xpl;
 	struct sadb_lifetime *m_lftc = NULL, *m_lfth = NULL;

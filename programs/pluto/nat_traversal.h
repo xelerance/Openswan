@@ -141,7 +141,7 @@ void nat_traversal_change_port_lookup(struct msg_digest *md, struct state *st);
 #ifdef __PFKEY_V2_H
 void process_pfkey_nat_t_new_mapping(
 	struct sadb_msg *,
-	struct sadb_ext *[SADB_EXT_MAX + 1]);
+	struct sadb_ext *[K_SADB_EXT_MAX + 1]);
 #endif
 
 /**

@@ -322,7 +322,7 @@ test2sub(so)
 	int so;
 {
 	struct sadb_msg *msg;
-	caddr_t mhp[SADB_EXT_MAX + 1];
+	caddr_t mhp[K_SADB_EXT_MAX + 1];
 
 	if ((msg = pfkey_recv(so)) == NULL)
 		errx(1, "ERROR: pfkey_recv failure.");

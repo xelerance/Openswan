@@ -304,7 +304,7 @@ pfkey_register(uint8_t satype) {
 	/* for registering SA types that can be negotiated */
 	int error;
 	ssize_t wlen;
-	struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	struct sadb_msg *pfkey_msg;
 
 	pfkey_extensions_init(extensions);
@@ -403,7 +403,7 @@ main(int argc, char *argv[])
 	int listenreply = 0;
 
 	unsigned char authalg, encryptalg;
-	struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	struct sadb_msg *pfkey_msg;
 	char *iv_opt, *akey_opt, *ekey_opt, *alg_opt, *edst_opt, *spi_opt, *proto_opt, *af_opt, *said_opt, *dst_opt, *src_opt;
 #if 0
@@ -1616,7 +1616,7 @@ main(int argc, char *argv[])
 		unsigned char pfkey_buf[PFKEYv2_MAX_MSGSIZE];
 		
 		while((readlen = read(pfkey_sock, pfkey_buf, sizeof(pfkey_buf))) > 0) {
-			struct sadb_ext *extensions[SADB_EXT_MAX + 1];
+			struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 			pfkey_extensions_init(extensions);
 			pfkey_msg = (struct sadb_msg *)pfkey_buf;
 			

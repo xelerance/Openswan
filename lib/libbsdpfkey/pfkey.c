@@ -1767,7 +1767,7 @@ pfkey_send(so, msg, len)
  * set the pointer to each header in this message buffer.
  * IN:	msg: pointer to message buffer.
  *	mhp: pointer to the buffer initialized like below:
- *		caddr_t mhp[SADB_EXT_MAX + 1];
+ *		caddr_t mhp[K_SADB_EXT_MAX + 1];
  * OUT:	-1: invalid.
  *	 0: valid.
  *
@@ -1790,7 +1790,7 @@ pfkey_align(msg, mhp)
 	}
 
 	/* initialize */
-	for (i = 0; i < SADB_EXT_MAX + 1; i++)
+	for (i = 0; i < K_SADB_EXT_MAX + 1; i++)
 		mhp[i] = NULL;
 
 	mhp[0] = (caddr_t)msg;
@@ -1864,7 +1864,7 @@ pfkey_align(msg, mhp)
  * IN:	msg: pointer to message buffer.
  *	mhp: pointer to the buffer initialized like below:
  *
- *		caddr_t mhp[SADB_EXT_MAX + 1];
+ *		caddr_t mhp[K_SADB_EXT_MAX + 1];
  *
  * OUT:	-1: invalid.
  *	 0: valid.
