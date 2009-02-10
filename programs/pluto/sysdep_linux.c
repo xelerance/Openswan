@@ -102,6 +102,17 @@ bool invoke_command(const char *verb, const char *verb_suffix, char *cmd)
 {
     DBG(DBG_CONTROL, DBG_log("executing %s%s: %s"
         , verb, verb_suffix, cmd));
+    {
+       char tmp[100];
+       int slen,i;
+       memset(tmp,0,sizeof(tmp));
+       slen=strlen(cmd);
+       DBG(DBG_CONTROL, DBG_log("popen(): cmd is %d chars long", slen));
+       for(i=0; i<slen; i+=80) {
+               strncpy(tmp,&cmd[i],80);
+               DBG(DBG_CONTROL, DBG_log("cmd(%4d):%s:", i, tmp));
+       }
+    }
 
     {
         /* invoke the script, catching stderr and stdout
@@ -399,201 +410,6 @@ find_raw_ifaces6(void)
     return rifaces;
 }
 
-bool
-do_command_linux(struct connection *c, struct spd_route *sr
-		 , const char *verb, struct state *st)
-{
-    char cmd[1536];     /* arbitrary limit on shell command length */
-    const char *verb_suffix;
-
-    /* figure out which verb suffix applies */
-    {
-        const char *hs, *cs;
-
-        switch (addrtypeof(&sr->this.host_addr))
-        {
-            case AF_INET:
-                hs = "-host";
-                cs = "-client";
-                break;
-            case AF_INET6:
-                hs = "-host-v6";
-                cs = "-client-v6";
-                break;
-            default:
-                loglog(RC_LOG_SERIOUS, "unknown address family");
-                return FALSE;
-        }
-        verb_suffix = subnetisaddr(&sr->this.client, &sr->this.host_addr)
-            ? hs : cs;
-    }
-
-    /* form the command string */
-    {
-        char
-            nexthop_str[sizeof("PLUTO_NEXT_HOP='' ")+ADDRTOT_BUF],
-            me_str[ADDRTOT_BUF],
-            myid_str2[IDTOA_BUF],
-            srcip_str[ADDRTOT_BUF+sizeof("PLUTO_MY_SOURCEIP=")+4],
-            myclient_str[SUBNETTOT_BUF],
-            myclientnet_str[ADDRTOT_BUF],
-            myclientmask_str[ADDRTOT_BUF],
-            peer_str[ADDRTOT_BUF],
-            metric_str[sizeof("PLUTO_METRIC=") + 5],
-            peerid_str[IDTOA_BUF],
-            peerclient_str[SUBNETTOT_BUF],
-            peerclientnet_str[ADDRTOT_BUF],
-            peerclientmask_str[ADDRTOT_BUF],
-            secure_myid_str[IDTOA_BUF] = "",
-            secure_peerid_str[IDTOA_BUF] = "",
-            secure_peerca_str[IDTOA_BUF] = "",
-            secure_xauth_username_str[IDTOA_BUF] = "";
-	    
-        ip_address ta;
-
-	nexthop_str[0]='\0';
-	if(addrbytesptr(&sr->this.host_nexthop, NULL)
-	   && !isanyaddr(&sr->this.host_nexthop))
-	{
-	    char *n;
-	    strcpy(nexthop_str, "PLUTO_NEXT_HOP='");
-	    n = nexthop_str + strlen(nexthop_str);
-	    addrtot(&sr->this.host_nexthop, 0,
-		    n, sizeof(nexthop_str)-strlen(nexthop_str));
-	    strncat(nexthop_str, "' ", sizeof(nexthop_str));
-	}
-
-        addrtot(&sr->this.host_addr, 0, me_str, sizeof(me_str));
-        idtoa(&sr->this.id, myid_str2, sizeof(myid_str2));
-        escape_metachar(myid_str2, secure_myid_str, sizeof(secure_myid_str));
-        subnettot(&sr->this.client, 0, myclient_str, sizeof(myclientnet_str));
-        networkof(&sr->this.client, &ta);
-        addrtot(&ta, 0, myclientnet_str, sizeof(myclientnet_str));
-        maskof(&sr->this.client, &ta);
-        addrtot(&ta, 0, myclientmask_str, sizeof(myclientmask_str));
-
-        addrtot(&sr->that.host_addr, 0, peer_str, sizeof(peer_str));
-        idtoa(&sr->that.id, peerid_str, sizeof(peerid_str));
-        escape_metachar(peerid_str, secure_peerid_str, sizeof(secure_peerid_str));
-        subnettot(&sr->that.client, 0, peerclient_str, sizeof(peerclientnet_str));
-        networkof(&sr->that.client, &ta);
-        addrtot(&ta, 0, peerclientnet_str, sizeof(peerclientnet_str));
-        maskof(&sr->that.client, &ta);
-        addrtot(&ta, 0, peerclientmask_str, sizeof(peerclientmask_str));
-
-	metric_str[0]='\0';
-	if (c->metric)
-	    snprintf(metric_str, sizeof(metric_str), "PLUTO_METRIC=%d", c->metric);
-	
-	secure_xauth_username_str[0]='\0';
-	if (st != NULL && st->st_xauth_username) {
-		size_t len;
-	 	strcpy(secure_xauth_username_str, "PLUTO_XAUTH_USERNAME='");
-
-		len = strlen(secure_xauth_username_str);
-		remove_metachar((unsigned char *)st->st_xauth_username
-				,secure_xauth_username_str+len
-				,sizeof(secure_xauth_username_str)-(len+2));
-		strncat(secure_xauth_username_str, "'", sizeof(secure_xauth_username_str)-1);
-	}
-
-        srcip_str[0]='\0';
-        if(addrbytesptr(&sr->this.host_srcip, NULL) != 0
-           && !isanyaddr(&sr->this.host_srcip))
-        {
-            char *p;
-            int   l;
-            strncat(srcip_str, "PLUTO_MY_SOURCEIP=", sizeof(srcip_str));
-            strncat(srcip_str, "'", sizeof(srcip_str));
-            l = strlen(srcip_str);
-            p = srcip_str + l;
-            
-            addrtot(&sr->this.host_srcip, 0, p, sizeof(srcip_str));
-            strncat(srcip_str, "'", sizeof(srcip_str));
-        }
-
-        {
-            struct pubkey_list *p;
-            char peerca_str[IDTOA_BUF];
-
-            for (p = pluto_pubkeys; p != NULL; p = p->next)
-                {
-                    struct pubkey *key = p->key;
-                    int pathlen;
-                    
-                    if (key->alg == PUBKEY_ALG_RSA && same_id(&sr->that.id, &key->id)
-                        && trusted_ca(key->issuer, sr->that.ca, &pathlen))
-                        {
-                            dntoa_or_null(peerca_str, IDTOA_BUF, key->issuer, "");
-                            escape_metachar(peerca_str, secure_peerca_str, sizeof(secure_peerca_str));
-                            break;
-                        }
-                }
-        }
-
-        if (-1 == snprintf(cmd, sizeof(cmd)
-			   , "2>&1 "   /* capture stderr along with stdout */
-			   "PLUTO_VERSION='2.0' "    /* change VERSION when interface spec changes */
-			   "PLUTO_VERB='%s%s' "
-			   "PLUTO_CONNECTION='%s' "
-			   "%s"      /* possible PLUTO_NEXT_HOP */
-			   "PLUTO_INTERFACE='%s' "
-			   "PLUTO_ME='%s' "
-			   "PLUTO_MY_ID='%s' "
-			   "PLUTO_MY_CLIENT='%s' "
-			   "PLUTO_MY_CLIENT_NET='%s' "
-			   "PLUTO_MY_CLIENT_MASK='%s' "
-			   "PLUTO_MY_PORT='%u' "
-			   "PLUTO_MY_PROTOCOL='%u' "
-			   "PLUTO_PEER='%s' "
-			   "PLUTO_PEER_ID='%s' "
-			   "PLUTO_PEER_CLIENT='%s' "
-			   "PLUTO_PEER_CLIENT_NET='%s' "
-			   "PLUTO_PEER_CLIENT_MASK='%s' "
-			   "PLUTO_PEER_PORT='%u' "
-			   "PLUTO_PEER_PROTOCOL='%u' "
-			   "PLUTO_PEER_CA='%s' "
-			   "PLUTO_STACK='%s' "
-			   "%s"        /* possible metric */
-			   "PLUTO_CONN_POLICY='%s' "
-			   "%s "
-			   "%s "       /* PLUTO_MY_SRCIP */                    
-			   "%s"        /* actual script */
-			   , verb, verb_suffix
-			   , c->name
-			   , nexthop_str
-			   , c->interface->ip_dev->id_vname
-			   , me_str
-			   , secure_myid_str
-			   , myclient_str
-			   , myclientnet_str
-			   , myclientmask_str
-			   , sr->this.port
-			   , sr->this.protocol
-			   , peer_str
-			   , secure_peerid_str
-			   , peerclient_str
-			   , peerclientnet_str
-			   , peerclientmask_str
-			   , sr->that.port
-			   , sr->that.protocol
-			   , secure_peerca_str
-			   , kernel_ops->kern_name
-			   , metric_str
-			   , prettypolicy(c->policy)
-			   , secure_xauth_username_str
-			   , srcip_str
-			   , sr->this.updown == NULL? DEFAULT_UPDOWN : sr->this.updown))
-        {
-            loglog(RC_LOG_SERIOUS, "%s%s command too long!", verb, verb_suffix);
-            return FALSE;
-        }
-    }
-
-    return invoke_command(verb, verb_suffix, cmd);
-}
-
-
 /* Called to handle --interface <ifname>
  * Semantics: if specified, only these (real) interfaces are considered.
  */
@@ -614,3 +430,5 @@ use_interface(const char *rifn)
 	return TRUE;
     }
 }
+
+

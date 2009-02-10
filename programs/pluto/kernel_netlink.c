@@ -58,6 +58,10 @@
 #include <security/pam_appl.h>
 #endif
 
+#ifndef DEFAULT_UPDOWN
+# define DEFAULT_UPDOWN "ipsec _updown"
+#endif
+
 extern const struct pfkey_proto_info null_proto_info[2];
 
 static const struct pfkey_proto_info broad_proto_info[2] = { 
@@ -1776,6 +1780,57 @@ netlink_get_sa(const struct kernel_sa *sa, u_int *bytes)
     return TRUE;
 }
 
+static bool
+netkey_do_command(struct connection *c, struct spd_route *sr
+		 , const char *verb, struct state *st)
+{
+    char cmd[2048];     /* arbitrary limit on shell command length */
+    char common_shell_out_str[2048];
+    const char *verb_suffix;
+
+    /* figure out which verb suffix applies */
+    {
+        const char *hs, *cs;
+
+        switch (addrtypeof(&sr->this.host_addr))
+        {
+            case AF_INET:
+                hs = "-host";
+                cs = "-client";
+                break;
+            case AF_INET6:
+                hs = "-host-v6";
+                cs = "-client-v6";
+                break;
+            default:
+                loglog(RC_LOG_SERIOUS, "unknown address family");
+                return FALSE;
+        }
+        verb_suffix = subnetisaddr(&sr->this.client, &sr->this.host_addr)
+            ? hs : cs;
+    }
+
+    if(fmt_common_shell_out(common_shell_out_str, sizeof(common_shell_out_str), c, sr, st)==-1) {
+	loglog(RC_LOG_SERIOUS, "%s%s command too long!", verb, verb_suffix);
+	return FALSE;
+    }
+
+    if (-1 == snprintf(cmd, sizeof(cmd)
+		       , "2>&1 "   /* capture stderr along with stdout */
+		       "PLUTO_VERB='%s%s' "
+		       "%s"        /* other stuff   */
+		       "%s"        /* actual script */
+		       , verb, verb_suffix
+		       , common_shell_out_str
+		       , sr->this.updown == NULL? DEFAULT_UPDOWN : sr->this.updown))
+    {
+	loglog(RC_LOG_SERIOUS, "%s%s command too long!", verb, verb_suffix);
+	return FALSE;
+    }
+
+    return invoke_command(verb, verb_suffix, cmd);
+}
+
 const struct kernel_ops netkey_kernel_ops = {
     kern_name: "netkey",
     type: USE_NETKEY,
@@ -1795,7 +1850,7 @@ const struct kernel_ops netkey_kernel_ops = {
     process_queue: NULL,
     grp_sa: NULL,
     get_spi: netlink_get_spi,
-    docommand: do_command_linux,
+    docommand: netkey_do_command,
     process_ifaces: netlink_process_raw_ifaces,
 
     /* XXX these needed to be added */

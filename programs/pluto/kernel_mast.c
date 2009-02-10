@@ -376,8 +376,8 @@ static bool
 mast_do_command(struct connection *c, struct spd_route *sr
 		, const char *verb, struct state *st)
 {
-    char cmd[1536];     /* arbitrary limit on shell command length */
-    char common_shell_out_str[1024];
+    char cmd[2048];     /* arbitrary limit on shell command length */
+    char common_shell_out_str[2048];
     const char *verb_suffix;
     IPsecSAref_t ref,refhim;
 

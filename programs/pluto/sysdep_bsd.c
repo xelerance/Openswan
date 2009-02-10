@@ -316,7 +316,7 @@ bool
 do_command_freebsd(struct connection *c, struct spd_route *sr
 		   , const char *verb, struct state *st)
 {
-    char cmd[1536];     /* arbitrary limit on shell command length */
+    char cmd[2048];     /* arbitrary limit on shell command length */
     const char *verb_suffix;
 
     /* figure out which verb suffix applies */
