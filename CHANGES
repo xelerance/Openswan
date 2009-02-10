@@ -4,6 +4,9 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
+v2.6.21
+* Fix remaining SADB_EXT_MAX -> K_SADB_EXT_MAX entries. ["bencsathb"]
+
 v2.6.20
 * Added support for USE_NSS (default false) [Avesh Agarwal]
 * USE_IPSEC_CONNECTION_LIMIT (default false) support for those who have to
