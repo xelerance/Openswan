@@ -11,10 +11,8 @@ v2.6.20
 * Added "metric=" keyword to the conn section to allow host failover
   from another interface to ipsec using route management. [David]
 * Split crypto calls off into liboswcrypto for easier FIPS handling [David]
-
 * Fix sprintf warning in init_crypto_helper [Owen Jacobson]
-* KLIPS could not be unloaded [David McCullough]
-  (requires updated nat-t patch)
+* KLIPS could not be unloaded (requires updated nat-t patch) [David]
 * Fix crasher with disassociated pending (async) crypto requests [David]
 * Make pluto more verbose on aborting for embedded systems [David]
 * Fix for ipsec_kversion.h on kernels > 2.6.22 non-RHEL/SLE [David]
@@ -27,7 +25,8 @@ v2.6.20
 * Repaired missing code responsible for sending IPCOMP request to peer [David]
 * Make sure we only set NEXT_NONE on the last VID entry that we add [David]
 * Fix NETKEY with transport mode and NAT-T [Paul]
-  (does not yet fully fix bug #1004)
+  (does not yet fully fix bug #1004, as the wrong IP (inside vs outsid)
+   is used in the policy)
 * Send the remote host address to PAM during XAUTH so that it may be used
   for better logging/authentication purposes at the PAM end. [Ken Wilson]
 * Using Main and Aggressive mode could pick the wrong policy and fail [David]
@@ -39,8 +38,11 @@ v2.6.20
 * Fix for sending wrong state/cookies with async crypto  [David]
 * Do not sent duplicate status changes to the stats daemon [David]
 * Disable the warning if DH operations take more than 200ms [David]
+* Use K_SADB_EXT_MAX, not SADB_EXT_MAX in eroute.c [Carsten Schlote]
+* Fix for fmt_common_shell_out() using long PLUTO* vars [Carsten Schlote]
 * Bugtracker bugs fixed:
    #1015: no building of ipsec.conf.5 manpage on 2.6.20dr2 
+   #1018: ipsec eroute --clear segfaults (KLIPS) [Carsten Schlote]
    #1004: [partial fix] ipsec/l2tp server behind NAT/port forward broken [Paul]
    #1014: compress=yes on initiator does not propose IPcomp [David]
    #0982: kernel panic with compression=yes  [Florian Westphal]
