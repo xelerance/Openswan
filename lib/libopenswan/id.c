@@ -327,6 +327,7 @@ unshare_id_content(struct id *id)
     case ID_DER_ASN1_DN:
     case ID_KEY_ID:
 	id->name.ptr = clone_bytes(id->name.ptr, id->name.len, "keep id name");
+	/* Somehow assert we have a valid id here? */
 	break;
     case ID_MYID:
     case ID_NONE:

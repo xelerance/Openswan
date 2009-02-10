@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: id.h,v 1.24 2005/08/05 19:10:43 mcr Exp $
  */
 
 #ifndef _ID_H
@@ -68,7 +66,6 @@ extern int id_count_wildcards(const struct id *id);
 struct isakmp_ipsec_id;	/* forward declaration of tag (defined in packet.h) */
 extern void
     build_id_payload(struct isakmp_ipsec_id *hd, chunk_t *tl, struct end *end);
-
 
 /* ip_str: a simple to use variant of addrtot.
  * It stores its result in a static buffer.
