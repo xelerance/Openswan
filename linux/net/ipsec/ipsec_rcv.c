@@ -1949,6 +1949,10 @@ int klips26_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
 int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 {
 	struct ipsec_rcv_state *irs = NULL;
+	char name[IFNAMSIZ];
+	struct net_device *ipsecdev = NULL, *prvdev = NULL;
+	struct ipsecpriv *prv = NULL;
+	int i;
 
 	/* Don't unlink in the middle of a turnaround */
 	KLIPS_INC_USE;
@@ -1975,13 +1979,36 @@ int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 		goto rcvleave;
 	}
 
-	/* XXX fudge it so that all nat-t stuff comes from ipsec0    */
-	/*     eventually, the SA itself will determine which device
-	 *     it comes from
-	 */ 
-	{
-	  skb->dev = ipsec_get_device(0);
-	}
+	if(skb->dev)
+	  {
+	   KLIPS_PRINT(debug_rcv, "klips_debug:klips26_rcv_encap: <<< Info -- ");
+	   KLIPS_PRINTMORE(debug_rcv, "skb->dev=%s ",
+		skb->dev->name ? skb->dev->name : "NULL");
+	   KLIPS_PRINTMORE(debug_rcv, "\n");
+
+	   if(skb->dev->name) 
+	     {
+		for(i = 0; i < IPSEC_NUM_IF; i++) 
+		   {
+		    snprintf(name, IFNAMSIZ, IPSEC_DEV_FORMAT, i);
+		    ipsecdev = __ipsec_dev_get(name);
+		    prv = ipsecdev ? (struct ipsecpriv *)(ipsecdev->priv) : NULL;
+		    prvdev = prv ? (struct net_device *)(prv->dev) : NULL;
+		    if(prvdev && !strncmp(prvdev->name, skb->dev->name, IFNAMSIZ))
+			{
+			 skb->dev = ipsecdev;
+			 KLIPS_PRINT(debug_rcv && prvdev, "klips_debug:klips26_rcv_encap: "
+			    "assigning packet ownership to virtual device %s from physical device %s.\n",
+			    name, prvdev->name);
+			  break;
+			}
+		   }
+	     }
+	  } else {
+		   KLIPS_PRINT(debug_rcv, "klips_debug:klips26_rcv_encap: "
+			"device supplied with skb is NULL\n");
+		 }
+
 	irs->hard_header_len = skb->dev->hard_header_len;
 
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
