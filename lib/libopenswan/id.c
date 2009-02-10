@@ -330,6 +330,7 @@ unshare_id_content(struct id *id)
 	/* Somehow assert we have a valid id here? */
 	break;
     case ID_MYID:
+    case ID_FROMCERT:
     case ID_NONE:
     case ID_IPV4_ADDR:
     case ID_IPV6_ADDR:
@@ -351,6 +352,7 @@ free_id_content(struct id *id)
 	freeanychunk(id->name);
 	break;
     case ID_MYID:
+    case ID_FROMCERT:
     case ID_NONE:
     case ID_IPV4_ADDR:
     case ID_IPV6_ADDR:
