@@ -6,6 +6,7 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.21
 * Fix remaining SADB_EXT_MAX -> K_SADB_EXT_MAX entries. ["bencsathb"]
+* Fix ipsec setup --status not showing amount of tunnels with netkey [Tuomo]
 * Bugtracker bugs fixed:
    #1016: rightid=%fromcert without rightcert causes crash 
 
