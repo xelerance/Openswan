@@ -107,6 +107,10 @@
  *
  * Zyxel Zywall 2 / Zywall 30w
  * 625027749d5ab97f5616c1602765cf480a3b7d0b
+ *
+ * Astaro ?
+ * 7f50cc4ebf04c2d9da73abfd69b77aa2
+ *
  */
 
 #define MAX_LOG_VID_LEN            32
