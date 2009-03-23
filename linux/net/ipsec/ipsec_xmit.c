@@ -2003,7 +2003,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	fl->nl_u.ip4_u.tos = RT_TOS(ip_hdr(ixs->skb)->tos);
 	fl->proto = ip_hdr(ixs->skb)->protocol;
 #if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,24)
-	error = ip_route_output_key(&ixs->route, &fl);
+	error = ip_route_output_key(&ixs->route, fl);
 #else
 	error = ip_route_output_key(&init_net, &ixs->route, fl);
 #endif
