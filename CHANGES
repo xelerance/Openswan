@@ -5,6 +5,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.21
+* Fix for CVE-2009-0790 DPD crasher [Gerd v. Egidy/Paul]
 * Fix remaining SADB_EXT_MAX -> K_SADB_EXT_MAX entries. ["bencsathb"]
 * Fix ipsec setup --status not showing amount of tunnels with netkey [Tuomo]
 * Bugtracker bugs fixed:
