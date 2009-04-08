@@ -17,6 +17,7 @@ rm -f reqs/* certs/* keys/* newcerts/* cacerts/* crls/* pkcs12/* index.txt* seri
 mkdir -p certs crls newcerts keys reqs pkcs12 cacerts
 /usr/bin/touch index.txt
 echo "01" > serial
+echo "01" > crlnumber
 export OPENSSL_CONF=./openssl.cnf
 
 # Get some useful dates. Blame openssl for not being Y2K compatible with its -startdate
