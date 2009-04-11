@@ -193,10 +193,13 @@ char *filename;
 	int sawpr1 = 0;
 	int sawpr2 = 0;
 	int nbits;
+	char fsin[2];
+	fsin[0]='-'; /*file stdin*/
+	fsin[1]='\0';
 
 	nbits = 0;
  
-	if (STREQ(filename, "-"))
+	if (STREQ(filename, fsin))
 		f = stdin;
 	else
 		f = fopen(filename, "r");
