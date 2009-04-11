@@ -265,7 +265,7 @@ main(int argc, char *argv[])
 
 	{ 
 			FILE *newerr;
-			newerr = fopen("/var/tmp/lwdnsq.log", "a+");
+			newerr = fopen("/var/run/pluto/lwdnsq.log", "a+");
 			if(newerr) {
 				close(2);
 				dup2(fileno(newerr), 2);
