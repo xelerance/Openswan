@@ -256,21 +256,18 @@ RH_KERNELSRC?=/lib/modules/2.6.9-1.681_FC3/build
 # HAVE_ variables let you tell Openswan what system related libraries
 #       you may or maynot have
 
-#Support for NSS crypto library
-USE_LIBNSS?=false
-
 # LWRES is the lightweight resolver, part of BIND9
 # We test with LWRES, but ship with it off, as it requires
 # additional headers not present on most systems.
 # Note you need a locally running bind9 nameserver with lwres{} enabled
 # to use this, or have the "lwres" package installed and running.
 # This only affects conns that use DNS for keys in lookups.
-USE_LWRES?=true
+USE_LWRES?=false
 
 # Do a new lookup every time a connection is (re)started. This works better
 # on hosts with some dyndns service, since DPD will cause a new dns lookup,
 # but it could be a potential security issue if receiving spoofed dns.
-USE_DYNAMICDNS?=false
+USE_DYNAMICDNS?=true
 
 # Do we want all the configuration files like ipsec.conf and ipsec.secrets
 # and any certificates to be in a single directory defined by 
@@ -331,6 +328,15 @@ USE_XAUTH?=true
 # true as well
 USE_XAUTHPAM?=false
 
+# Support for integrity check for binaries (requires fipscheck-devel)
+USE_FIPSCHECK?=false
+
+# Support for NSS crypto library (requires USE_FIPSCHECK and HAVE_THREADS)
+USE_LIBNSS?=false
+ifeq ($(USE_FIPSCHECK),true)
+USE_LIBNSS?=true
+endif
+
 # whether to support NAT Traversal (aka NAT-T)
 USE_NAT_TRAVERSAL?=true
 
@@ -376,7 +382,7 @@ USE_IPSEC_CONNECTION_LIMIT?=false
 IPSEC_CONNECTION_LIMIT?=250
 
 # Do we have pthreads available?  Only yes if you need it for XAUTH+PAM,
-# or if you need it for CRL fetching.
+# or if you need it for CRL fetching or if you need it for USE_NSS
 # 
 HAVE_THREADS?=false
 
