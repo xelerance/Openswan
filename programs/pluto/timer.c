@@ -497,6 +497,13 @@ handle_next_timer_event(void)
 	    break;
 #endif
 
+#ifdef DYNAMICDNS
+        case EVENT_PENDING_DDNS:
+	    passert(st == NULL);
+	    connection_check_ddns();
+	    break;
+#endif
+
         case EVENT_PENDING_PHASE2:
 	    passert(st == NULL);
 	    connection_check_phase2();

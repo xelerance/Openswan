@@ -64,6 +64,8 @@ enum event_type {
     EVENT_CRYPTO_FAILED,/* after some time, give up on crypto helper */
     EVENT_PENDING_PHASE2,  /* do not make pending phase2 wait forever */
     EVENT_v2_RETRANSMIT,   /* Retransmit v2 packet */
+
+    EVENT_PENDING_DDNS, /* try to start connections where DNS failed at init */
 };
 
 #define EVENT_REINIT_SECRET_DELAY		3600 /* 1 hour */
