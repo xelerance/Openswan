@@ -236,36 +236,25 @@
 # define ipsec_register_sysctl_table(a,b) register_sysctl_table(a,b)
 #endif
  
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22)
-/*
-   The eth_type_trans() function now sets the skb->dev field, consistent
-    with how similar functions for other link types operate. As a result,
-    many Ethernet drivers have been changed to remove the (now) redundant
-    assignment.
-   The header fields in the sk_buff structure have been renamed
-    and are no longer unions. Networking code and drivers can
-    now just use skb->transport_header, skb->network_header, and
-    skb->skb_mac_header. There are new functions for finding specific
-    headers within packets: tcp_hdr(), udp_hdr(), ipip_hdr(), and
-    ipipv6_hdr().
-   The crypto API has a new set of functions for use with asynchronous
-    block ciphers. There is also a new cryptd kernel thread which can
-    run any synchronous cipher in an asynchronous mode.
-   A new macro has been added to make the creation of slab caches easier:
-    struct kmem_cache KMEM_CACHE(struct-type, flags);
-    The result is the creation of a cache holding objects of the given
-     struct_type, named after that type, and with the additional slab
-     flags (if any). 
-*/
-
-/* need to include ip.h early, no longer pick it up in skbuff.h */
-# include <linux/ip.h>
-# define HAVE_KERNEL_TSTAMP
-/* type of sock.sk_stamp changed from timeval to ktime  */
-# define grab_socket_timeval(tv, sock)  { (tv) = ktime_to_timeval((sock).sk_stamp); }
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22) 
+#  define HAVE_KERNEL_TSTAMP
+#  define HAVE_KMEM_CACHE_MACRO
+#  define grab_socket_timeval(tv, sock)  { (tv) = ktime_to_timeval((sock).sk_stamp); }
 #else
-# define grab_socket_timeval(tv, sock)  { (tv) = (sock).sk_stamp; }
+#  define grab_socket_timeval(tv, sock)  { (tv) = (sock).sk_stamp; }
+#endif
 
+/* needs to be defined for the next line */
+#if !defined(RHEL_RELEASE_CODE) 
+#define RHEL_RELEASE_CODE 0
+#define RHEL_RELEASE_VERSION(x,y) 10
+#endif
+	
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22) || (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(5,2)) 
+/* need to include ip.h early, no longer pick it up in skbuff.h */
+#include <linux/ip.h>
+/* type of sock.sk_stamp changed from timeval to ktime  */
+#else
 /* internals of struct skbuff changed */
 /* but RedHat ported some of this back to their RHEL kernel, so check for that */
 # if !defined(RHEL_MAJOR) || !defined(RHEL_MINOR) || !(RHEL_MAJOR == 5 && RHEL_MINOR == 2)
@@ -302,10 +291,7 @@
 # define HAVE_KMEM_CACHE_MACRO
 
 /* Try using the new kernel encaps hook for nat-t, instead of udp.c */
-# ifdef NOT_YET_FINISHED
-#  define HAVE_UDP_ENCAP_CONVERT
-# endif
-
+# define HAVE_UDP_ENCAP_CONVERT 1
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)

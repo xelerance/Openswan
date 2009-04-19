@@ -11,27 +11,26 @@ then
 fi
 
 mkdir -p ${OBJDIR}
-OBJDIR=`(cd ${OBJDIR};pwd)`
 OBJDIRTOP=`(cd ${OBJDIR};pwd)`
 
-if [ -f "${OBJDIR}/Makefile" ]
+if [ -f "${OBJDIRTOP}/Makefile" ]
 then
-    : echo "Will not overwrite ${OBJDIR}/Makefile"
+    : echo "Will not overwrite ${OBJDIRTOP}/Makefile"
 else
-	echo 'srcdir='${srcdir}/ 		 >${OBJDIR}/Makefile
-	echo 'OBJDIR='${OBJDIR}                 >>${OBJDIR}/Makefile
-	echo 'OBJDIRTOP='${OBJDIRTOP}           >>${OBJDIR}/Makefile
-	echo 'VPATH+=${srcdir}' 		>>${OBJDIR}/Makefile
-	echo 'OSDEP='${OSDEP}                   >>${OBJDIR}/Makefile
-	echo 'BUILDENV='${BUILDENV}             >>${OBJDIR}/Makefile
-	echo 'OPENSWANSRCDIR='${srcdir}         >>${OBJDIR}/Makefile
-	echo 'include ${srcdir}Makefile.top'   >>${OBJDIR}/Makefile
+	echo 'srcdir='${srcdir}/ 		 >${OBJDIRTOP}/Makefile
+	echo 'OBJDIR='${OBJDIR}                 >>${OBJDIRTOP}/Makefile
+	echo 'OBJDIRTOP='${OBJDIRTOP}           >>${OBJDIRTOP}/Makefile
+	echo 'VPATH+=${srcdir}' 		>>${OBJDIRTOP}/Makefile
+	echo 'OSDEP='${OSDEP}                   >>${OBJDIRTOP}/Makefile
+	echo 'BUILDENV='${BUILDENV}             >>${OBJDIRTOP}/Makefile
+	echo 'OPENSWANSRCDIR='${srcdir}         >>${OBJDIRTOP}/Makefile
+	echo 'include ${srcdir}Makefile.top'   >>${OBJDIRTOP}/Makefile
 
-	echo 'programs install clean checkprograms:: ' >>${OBJDIR}/Makefile
-	echo '	@for d in $(SUBDIRS) ; \'                                >>${OBJDIR}/Makefile
-	echo '	do \'                                                    >>${OBJDIR}/Makefile
-	echo '		(cd $$d && $(MAKE) OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \'  >>${OBJDIR}/Makefile
-	echo '	done; '                                                  >>${OBJDIR}/Makefile
+	echo 'programs install clean checkprograms:: ' >>${OBJDIRTOP}/Makefile
+	echo '	@for d in $(SUBDIRS) ; \'                                >>${OBJDIRTOP}/Makefile
+	echo '	do \'                                                    >>${OBJDIRTOP}/Makefile
+	echo '		(cd $$d && $(MAKE) OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \'  >>${OBJDIRTOP}/Makefile
+	echo '	done; '                                                  >>${OBJDIRTOP}/Makefile
 fi
 
 

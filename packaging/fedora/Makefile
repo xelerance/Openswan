@@ -44,7 +44,7 @@ clean:
 	rm -rf ${RPMDEST} 
 	rm -f $(shell echo `pwd`/rpm.spec)
 
-rpm:	rpm_userland rpm_modules rpm.spec final_rpm
+rpm:	rpm_userland rpm_modules final_rpm
 
 # RPM-build userland install in temporary directory
 rpm_userland: clean
@@ -55,7 +55,7 @@ rpm_userland: clean
 	done
 
 rpm_modules:
-	@if [ ! -d ${RH_KERNELSRC}/configs ]; then echo "Please fix RH_KERNELSRC in Makefile.inc (${RH_KERNELSRC})"; exit 1; fi
+	@if [ ! -d ${RH_KERNELSRC}/arch ]; then echo "Please fix RH_KERNELSRC in Makefile.inc (${RH_KERNELSRC})"; exit 1; fi
 	@KV=`${KVUTIL} $(RH_KERNELSRC)/Makefile | sed -e 's/custom//'` ; \
 	MD=${RPMTMPDIR}/lib/modules/$$KV/kernel/net/ipsec; mkdir -p $$MD; \
 	echo Installing into $$MD for $$KV; \
@@ -67,34 +67,19 @@ rpm_modules:
 	    BUILDDIR=`pwd`/BUILD.$$kerneltype; \
 	    HERE=`pwd` ;\
 	    echo Building $$KV-$$kerneltype in $$BUILDDIR; \
-	    ${MAKE} -C ${OPENSWANSRCDIR} MODBUILDDIR=$$BUILDDIR KERNELSRC=${RH_KERNELSRC} ARCH=$$arch SUBARCH=$$subarch MODULE_DEF_INCLUDE=$$HERE/config-$$kerneltype.h module26;\
+	    echo ${MAKE} -C ${OPENSWANSRCDIR} MODBUILDDIR=$$BUILDDIR MOD26BUILDDIR=$$BUILDDIR KERNELSRC=${RH_KERNELSRC} ARCH=$$arch SUBARCH=$$subarch MODULE_EXTRA_INCLUDE=$$HERE/nonat.h MODULE_DEF_INCLUDE=$$HERE/config-$$kerneltype.h module26;\
+	    ${MAKE} -C ${OPENSWANSRCDIR} MODBUILDDIR=$$BUILDDIR MOD26BUILDDIR=$$BUILDDIR KERNELSRC=${RH_KERNELSRC} ARCH=$$arch SUBARCH=$$subarch MODULE_EXTRA_INCLUDE=$$HERE/nonat.h MODULE_DEF_INCLUDE=$$HERE/config-$$kerneltype.h module26;\
 	    cp $$BUILDDIR/ipsec.ko $$MD/ipsec.ko-$$kerneltype; \
-	    goo="`nm -ao $$BUILDDIR/ipsec.ko | ${OPENSWANSRCDIR}/programs/calcgoo/calcgoo`"; \
-	    (cd $$MD && ln -f ipsec.ko-$$kerneltype $$goo); \
 	done
 
-# build spec file for building RPMs
-rpm.spec:	rpm.in $(RH_KERNELSRC)/Makefile
-	KVORIG=`${KVUTIL} $(RH_KERNELSRC)/Makefile | sed -e 's/custom//'` ; \
-	KV=`echo $$KVORIG | sed -e 's/-/_/g' ` ; \
-	IPSECVERSIONFIXED=`echo ${IPSECVERSION} | sed -e 's/-/_/g'`; \
-	echo KVORIG: $$KVORIG KV: $$KV IV: $$IPSECVERSIONFIXED; \
-	sed -e "/@KERNELVERSION@/s;;$$KV;" \
-		-e "/@KERNELVERSIONORIG@/s;;$$KVORIG;" \
-		-e "/@IPSECVERSION@/s;;$$IPSECVERSIONFIXED;" \
-		-e '/@PUBDIR@/s;;$(PUBDIR);' \
-		-e '/@FINALBINDIR@/s;;$(FINALBINDIR);' \
-		-e '/@FINALLIBDIR@/s;;$(FINALLIBDIR);' \
-		-e '/@FINALCONFDDIR@/s;;$(FINALCONFDDIR);' \
-		-e '/@FINALCONFDIR@/s;;$(FINALCONFDIR);' \
-		-e '/@FINALEXAMPLECONFDIR@/s;;$(FINALEXAMPLECONFDIR);' \
-		-e '/@MANTREE@/s;;$(MANTREE);' rpm.in > rpm.spec
-
 # build RPMs
-final_rpm:	rpm.spec
+final_rpm:	openswan.spec
 	mkdir -p $(RPMDEST)
 	cd $(RPMDEST) ; mkdir -p SRPMS BUILD RPMS SPECS SOURCES
 	cd $(RPMDEST)/RPMS ; mkdir -p $(ARCH) noarch
-	$(RPMBUILD) -bb --define "buildroot $(RPMTMPDIR)" \
-		--define "_topdir $(RPMDEST)" rpm.spec
+	touch ${RPMDEST}/SOURCES/openswan-${IPSECVERSION}.tar.gz
+	ln -s -f `pwd`/../.. rpms/BUILD/openswan-${IPSECVERSION}
+	$(RPMBUILD) -bi --short-circuit --define "buildroot $(RPMTMPDIR)" \
+		--define "_topdir $(RPMDEST)" openswan.spec
 	# that has, incidentally, gotten rid of $(RPMTMPDIR)
+	-cp ${RPMDEST}/RPMS/i386/*.rpm .

@@ -208,7 +208,7 @@ addsource() {
 	# Instead of a /32 it seems better to use the netmask of the remote
 	# (peer) network for the sourceip as suggested by Patrick McHardy.
 	#
-	cidr=${PLUTO_PEER_CLIENT##*/}
+	cidr=${PLUTO_MY_CLIENT##*/}
 	snet=${PLUTO_MY_SOURCEIP%/*}/32
 	if test "${PLUTO_PEER_CLIENT}" != "${cidr}"
 	then

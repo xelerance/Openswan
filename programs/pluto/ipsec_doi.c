@@ -318,6 +318,7 @@ static initiator_function *pick_initiator(struct connection *c UNUSED, lset_t po
 	return ikev2parent_outI1;
 
     } else {
+	openswan_log("Neither IKEv1 nor IKEv2 allowed");
 	/*
 	 * tried IKEv2, if allowed, and failed,
 	 * and tried IKEv1, if allowed, and got nowhere.
@@ -405,8 +406,10 @@ ipsecdoi_replace(struct state *st
 
 	initiator_function *initiator = pick_initiator(c, policy);
 	passert(!HAS_IPSEC_POLICY(policy));
-	(void) initiator(whack_sock, st->st_connection, st, policy
-			 , try, st->st_import);
+	if(initiator) {
+	    (void) initiator(whack_sock, st->st_connection, st, policy
+			     , try, st->st_import);
+	}
     }
     else
     {

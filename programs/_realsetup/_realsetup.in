@@ -26,6 +26,11 @@ modules=/proc/modules
 ipsecversion=/proc/net/ipsec_version
 kamepfkey=/proc/net/pfkey
 
+# customize some things
+if [ -f ${IPSEC_EXECDIR}/vendor ]; then
+    VENDOR=`cat ${IPSEC_EXECDIR}/vendor`
+fi
+
 # make sure output of (e.g.) ifconfig is in English
 unset LANG LANGUAGE LC_ALL LC_MESSAGES
 
@@ -196,7 +201,7 @@ case "$1" in
   start|--start|_autostart)
 	# First, does it seem to be going already?
 	perform test ! -f $lock "||" "{" \
-		echo "\"Openswan IPsec apparently already active, start aborted\"" ";" \
+		echo "\"Openswan ${VENDOR}IPsec apparently already active, start aborted\"" ";" \
 		exit 0 ";" \
 		"}"
 
@@ -204,8 +209,8 @@ case "$1" in
 	# (Warning, changes to this log message may affect barf.)
 	version="`ipsec --version | awk 'NR == 1 { print $(3) }' | sed -e 's/^U\(.*\)\/K(.*/\1/'`"
 	case "$1" in
-	start|--start)	perform echo "\"Starting Openswan IPsec $version...\""	;;
-	_autostart)	perform echo "\"Restarting Openswan IPsec $version...\""	;;
+	start|--start)	perform echo "\"Starting Openswan ${VENDOR}IPsec $version...\""	;;
+	_autostart)	perform echo "\"Restarting Openswan ${VENDOR}IPsec $version...\""	;;
 	esac
 
 	# preliminaries
@@ -216,7 +221,7 @@ case "$1" in
 	for f in /dev/random /dev/urandom
 	do
 		perform test -r $f "||" "{" \
-			echo "\"...unable to start Openswan IPsec, no $f!\"" ";" \
+			echo "\"...unable to start Openswan ${VENDOR}IPsec, no $f!\"" ";" \
 			exit 1 ";" \
 			"}"
         done
@@ -324,12 +329,12 @@ case "$1" in
 	fi
 
 	# done!
-	perform echo "\"...Openswan IPsec started\"" "|" $LOGONLY
+	perform echo "\"...Openswan ${VENDOR}IPsec started\"" "|" $LOGONLY
 	;;
 
   stop|--stop|_autostop)		# _autostop is same as stop
 	# Shut things down.
-	perform echo "\"Stopping Openswan IPsec...\""
+	perform echo "\"Stopping Openswan ${VENDOR}IPsec...\""
 	perform \
 		if test -r $lock ";" \
 		then \
@@ -380,7 +385,7 @@ case "$1" in
 	perform test -d `dirname $subsyslock` "&&" rm -f $subsyslock
 
 	perform rm -f $info $lock $plutopid
-	perform echo "...Openswan IPsec stopped" "|" $LOGONLY
+	perform echo "...Openswan ${VENDOR}IPsec stopped" "|" $LOGONLY
 	perform exit \$status
 	;;
 
