@@ -1578,7 +1578,7 @@ static void connection_check_ddns1(struct connection *c)
 {
     struct connection *d;
     ip_address new_addr;
-    const struct af_info *afi;
+    /* const struct af_info afi; */
     const char *e;
 
     if (NEVER_NEGOTIATE(c->policy))
