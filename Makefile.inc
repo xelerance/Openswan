@@ -328,11 +328,12 @@ USE_XAUTH?=true
 # true as well
 USE_XAUTHPAM?=false
 
-# Support for integrity check for binaries (requires fipscheck-devel)
+# Support for integrity check for binaries (requires USE_LIBNSS and fipscheck-devel)
 USE_FIPSCHECK?=false
 
-# Support for NSS crypto library (requires USE_FIPSCHECK and HAVE_THREADS)
+# Support for NSS crypto library (requires HAVE_THREADS)
 USE_LIBNSS?=false
+
 ifeq ($(USE_FIPSCHECK),true)
 USE_LIBNSS?=true
 endif
