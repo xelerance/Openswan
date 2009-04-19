@@ -3,7 +3,9 @@
  *
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
- * Copyright (C) 2003-2005  Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2008  Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -321,8 +323,18 @@ compute_proto_keymat(struct state *st
 	    if (st->st_shared.ptr != NULL)
 	    {
 		/* PFS: include the g^xy */
+#ifdef HAVE_LIBNSS
+		PK11SymKey *st_shared;
+		memcpy(&st_shared, st->st_shared.ptr, st->st_shared.len);
+
+		SECStatus s = PK11_DigestKey(ctx_me.ctx_nss ,st_shared);
+		PR_ASSERT(s==SECSuccess);
+		s = PK11_DigestKey(ctx_peer.ctx_nss,st_shared);
+		PR_ASSERT(s==SECSuccess);
+#else
 		hmac_update_chunk(&ctx_me, st->st_shared);
 		hmac_update_chunk(&ctx_peer, st->st_shared);
+#endif
 	    }
 	    hmac_update(&ctx_me, &protoid, sizeof(protoid));
 	    hmac_update(&ctx_peer, &protoid, sizeof(protoid));
@@ -344,9 +356,13 @@ compute_proto_keymat(struct state *st
 		break;
 
 	    /* more keying material needed: prepare to go around again */
-
+#ifdef HAVE_LIBNSS
+            hmac_init_chunk(&ctx_me, st->st_oakley.prf_hasher, st->st_skeyid_d); 
+            hmac_init_chunk(&ctx_peer, st->st_oakley.prf_hasher, st->st_skeyid_d);           
+#else
 	    hmac_reinit(&ctx_me);
 	    hmac_reinit(&ctx_peer);
+#endif
 
 	    hmac_update(&ctx_me, pi->our_keymat + i - ctx_me.hmac_digest_len
 		, ctx_me.hmac_digest_len);
@@ -824,7 +840,6 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
     struct state *st = qke->st;
     struct connection *c = st->st_connection;
     struct state *isakmp_sa = qke->isakmp_sa;
-    pb_stream reply;	/* not really a reply */
     pb_stream rbody;
     u_char	/* set by START_HASH_PAYLOAD: */
 	*r_hashval,	/* where in reply to jam hash value */
