@@ -1,5 +1,8 @@
 /* crypto interfaces
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 2003-2008 Michael C. Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +14,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: crypto.c,v 1.41 2005/10/06 19:41:27 mcr Exp $
  */
 
 #include <stdio.h>
@@ -39,16 +41,11 @@
 
 #include "oswcrypto.h"
 
-
 #ifdef HAVE_LIBNSS
-#include <pk11pub.h>
-#include <prmem.h>
-#include <prerror.h>
+# include "pem.h"
 #endif
 
-
 /* moduli and generator. */
-
 
 static MP_INT
 #if defined(USE_VERYWEAK_DH1) 	/* modp768 not sufficiently strong */
@@ -311,77 +308,7 @@ do_3des(u_int8_t *buf, size_t buf_len
     passert(key_size==(DES_CBC_BLOCK_SIZE * 3));
 
 #ifdef HAVE_LIBNSS
-    u_int8_t *tmp_buf;
-    u_int8_t *new_iv;	
-
-    CK_MECHANISM_TYPE  cipherMech;
-    PK11SlotInfo*      slot = NULL;
-    SECItem            keyItem, ivItem;
-    SECItem*           SecParam = NULL;
-    PK11SymKey*        SymKey = NULL;
-    PK11Context*       EncContext = NULL;
-    SECStatus          rv;
-    int                tmp_outlen;
-
-    cipherMech = CKM_DES3_CBC; /*openswan provides padding*/
-    slot = PK11_GetBestSlot(cipherMech, NULL);
-
-    if (slot == NULL) {
-    loglog(RC_LOG_SERIOUS, "do_3des:Unable to find security device (err %d)\n", PR_GetError());
-    goto out;
-    }
-
-    keyItem.type = siBuffer;
-    keyItem.data = key;
-    keyItem.len = key_size;    
-
-    SymKey = PK11_ImportSymKey(slot, cipherMech, PK11_OriginUnwrap, enc ? CKA_ENCRYPT: CKA_DECRYPT,&keyItem, NULL);
-
-    if (SymKey == NULL){
-    loglog(RC_LOG_SERIOUS, "do_3des: Failure to import key into NSS (err %d)\n", PR_GetError());
-    goto out;
-    }
-
-    ivItem.type = siBuffer;
-    ivItem.data = iv;
-    ivItem.len = DES_CBC_BLOCK_SIZE;
-
-    SecParam = PK11_ParamFromIV(cipherMech, &ivItem);
-    if (SecParam == NULL){
-    loglog(RC_LOG_SERIOUS, "do_aes: Failure to set up PKCS11 param (err %d)\n",PR_GetError());
-    goto out;
-    }
-
-    tmp_outlen = 0;
-    tmp_buf= PR_Malloc((PRUint32)buf_len);
-    new_iv=(u_int8_t*)PR_Malloc((PRUint32)DES_CBC_BLOCK_SIZE);
-
-    if (!enc){
-    memcpy(new_iv, (char*) buf + buf_len-DES_CBC_BLOCK_SIZE, DES_CBC_BLOCK_SIZE);
-    }
-
-    EncContext = PK11_CreateContextBySymKey(cipherMech, enc? CKA_ENCRYPT: CKA_DECRYPT, SymKey, SecParam);
-    rv = PK11_CipherOp(EncContext, tmp_buf, &tmp_outlen, buf_len, buf, buf_len);
-    passert(rv==SECSuccess);
-    
-    if(enc){    
-    memcpy(new_iv, (char*) tmp_buf + buf_len-DES_CBC_BLOCK_SIZE, DES_CBC_BLOCK_SIZE);
-    }
-
-    memcpy(buf,tmp_buf,buf_len);
-    memcpy(iv,new_iv,DES_CBC_BLOCK_SIZE);
-    PK11_DestroyContext(EncContext, PR_TRUE);
-    PR_Free(tmp_buf);
-    PR_Free(new_iv);
-
-out:
-
-    if (SymKey)
-    PK11_FreeSymKey(SymKey);
-
-    if (SecParam)
-    SECITEM_FreeItem(SecParam, PR_TRUE);
-
+	do_3des_nss(buf, buf_len, key, key_size, iv, enc);
 #else
 
     des_key_schedule ks[3];
@@ -393,9 +320,7 @@ out:
     oswcrypto.des_ede3_cbc_encrypt((des_cblock *)buf, (des_cblock *)buf, buf_len,
                          ks[0], ks[1], ks[2],
                          (des_cblock *)iv, enc);
-    
 #endif
-
 }
 
 /* hash and prf routines */

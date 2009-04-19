@@ -1,6 +1,8 @@
 /* Certificate support for IKE authentication
  * Copyright (C) 2002-2004 Andreas Steffen, Zuercher Hochschule Winterthur
- * Copyright (C) 2006 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2008 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,7 +14,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: certs.h,v 1.6 2004/06/27 20:43:41 mcr Exp $
  */
 
 #ifndef _CERTS_H
@@ -89,6 +90,12 @@ extern rsa_privkey_t* load_rsa_private_key(const char* filename
 extern bool load_coded_file(const char *filename, prompt_pass_t *pass
 			    , int verbose
 			    , const char *type, chunk_t *blob, bool *pgp);
+
+#ifdef HAVE_LIBNSS
+extern bool load_cert_from_nss(bool forcedtype, const char *nssHostCertNickName
+		, int verbose, const char *label, cert_t *cert);
+extern void load_authcerts_from_nss(const char *type, u_char auth_flags);
+#endif
 
 #endif /* _CERTS_H */
 

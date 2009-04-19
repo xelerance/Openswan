@@ -1,6 +1,8 @@
 /* 
  * Cryptographic helper function - calculate DH
- * Copyright (C) 2006 Michael C. Richardson <mcr@xelerance.com>
+ * Copyright (C) 2006-2008 Michael C. Richardson <mcr@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2009 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,7 +16,6 @@
  *
  * This code was developed with the support of IXIA communications.
  *
- * RCSID $Id: crypt_dh.c,v 1.11 2005/08/14 21:47:29 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -92,6 +93,13 @@ stf_status start_dh_secretiv(struct pluto_crypto_req_cont *cn
     pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->gr,  st->st_gr);
     pluto_crypto_copychunk(&dhq->thespace, dhq->space
 			   , &dhq->secret, st->st_sec_chunk);
+
+#ifdef HAVE_LIBNSS
+    /*coying required encryption algo*/
+    /* Avesh: ?? dhq->encrypter = st->st_oakley.encrypt; */
+    DBG(DBG_CRYPT, DBG_log("Coying DH pub key pointer to be sent to a thread helper"));
+    pluto_crypto_copychunk(&dhq->thespace, dhq->space , &dhq->pubk, st->pubk);
+#endif
 
     pluto_crypto_allocchunk(&dhq->thespace, &dhq->icookie, COOKIE_SIZE);
     memcpy(wire_chunk_ptr(dhq, &dhq->icookie)
@@ -186,6 +194,15 @@ stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
     pluto_crypto_copychunk(&dhq->thespace, dhq->space
 			   , &dhq->secret, st->st_sec_chunk);
 
+#ifdef HAVE_LIBNSS
+    /*coying required encryption algo*/
+    /* XXX Avesh: you commented this out on purpose or by accident ?? */
+    /*dhq->encrypter = st->st_oakley.encrypter;*/
+    DBG(DBG_CRYPT, DBG_log("Coying DH pub key pointer to be sent to a thread helper"));
+    pluto_crypto_copychunk(&dhq->thespace, dhq->space
+                          , &dhq->pubk, st->pubk);
+#endif
+
     pluto_crypto_allocchunk(&dhq->thespace, &dhq->icookie, COOKIE_SIZE);
     memcpy(wire_chunk_ptr(&r.pcr_d.dhq, &dhq->icookie)
 	   , st->st_icookie, COOKIE_SIZE);
@@ -220,7 +237,7 @@ void finish_dh_secret(struct state *st,
 		      struct pluto_crypto_req *r)
 {
     struct pcr_skeyid_r *dhr = &r->pcr_d.dhr;
-			
+
     clonetochunk(st->st_shared,   wire_chunk_ptr(dhr, &(dhr->shared))
 		 , dhr->shared.len,   "calculated shared secret");
 }
@@ -267,6 +284,14 @@ stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
     pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->gr,  st->st_gr);
     pluto_crypto_copychunk(&dhq->thespace, dhq->space
 			   , &dhq->secret, st->st_sec_chunk);
+
+#ifdef HAVE_LIBNSS
+    /*coying required encryption algo*/
+    dhq->encrypt_algo = st->st_oakley.encrypt;
+    DBG(DBG_CRYPT, DBG_log("Coying DH pub key pointer to be sent to a thread helper"));
+    pluto_crypto_copychunk(&dhq->thespace, dhq->space
+                          , &dhq->pubk, st->pubk);
+#endif
 
     pluto_crypto_allocchunk(&dhq->thespace, &dhq->icookie, COOKIE_SIZE);
     memcpy(wire_chunk_ptr(dhq, &dhq->icookie)

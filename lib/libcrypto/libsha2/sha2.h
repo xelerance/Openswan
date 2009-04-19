@@ -10,18 +10,18 @@
  */
 
 #ifdef __KERNEL__
-#include <linux/types.h>
+# include <linux/types.h>
 #else
-#include <sys/types.h>
-#ifdef HAVE_LIBNSS
-#include <nss.h>
-#include <pk11pub.h>
-#endif
+# include <sys/types.h>
+# ifdef HAVE_LIBNSS
+#  include <nss.h>
+#  include <pk11pub.h>
+# endif
 #endif
 
 typedef struct {
 #ifdef HAVE_LIBNSS
-    PK11Context* DigestContext;
+    PK11Context     *ctx_nss;
 #else
     unsigned char   sha_out[64];    /* results are here, bytes 0...31 */
     u_int32_t       sha_H[8];
@@ -32,7 +32,7 @@ typedef struct {
 
 typedef struct {
 #ifdef HAVE_LIBNSS
-    PK11Context* DigestContext;
+    PK11Context     *ctx_nss;
 #else
     unsigned char   sha_out[128];   /* results are here, bytes 0...63 */
     u_int64_t       sha_H[8];

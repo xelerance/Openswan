@@ -1,6 +1,10 @@
 /* routines for state objects
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,7 +16,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: state.c,v 1.154 2005/08/12 16:51:02 mcr Exp $
  */
 
 #include <stdio.h>
@@ -437,7 +440,17 @@ delete_state(struct state *st)
     st->st_sadb=NULL;
 
     if (st->st_sec_in_use) {
+#ifdef HAVE_LIBNSS
+	SECKEYPrivateKey *privk;
+	SECKEYPublicKey   *pubk;
+	memcpy(&pubk,st->pubk.ptr,st->pubk.len);
+	SECKEY_DestroyPublicKey(pubk);
+	freeanychunk(st->pubk);
+	memcpy(&privk,st->st_sec_chunk.ptr,st->st_sec_chunk.len);
+	SECKEY_DestroyPrivateKey(privk);        
+#else
 	mpz_clear(&(st->st_sec));
+#endif
 	pfreeany(st->st_sec_chunk.ptr);
     }
 

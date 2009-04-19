@@ -11,7 +11,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: connections.h,v 1.104 2005/08/25 02:24:45 paul Exp $
  */
 
 /* There are two kinds of connections:
@@ -442,6 +441,10 @@ extern int foreach_connection_by_alias(const char *alias
 extern struct connection *unoriented_connections;
 
 extern void update_host_pairs(struct connection *c);
+
+#ifdef HAVE_LIBNSS
+extern void load_authcerts_from_nss(const char *type, u_char auth_flags);
+#endif
 
 /*
  * Local Variables:

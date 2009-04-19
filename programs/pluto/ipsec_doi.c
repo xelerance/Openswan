@@ -2,6 +2,8 @@
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  * Copyright (C) 2003-2006  Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -13,12 +15,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- *
  * Modifications to use OCF interface written by
  * Daniel Djamaludin <danield@cyberguard.com>
- * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ * Copyright (C) 2004-2005 Intel Corporation.
  *
- * RCSID $Id: ipsec_doi.c,v 1.304.2.11 2006/04/16 02:24:19 mcr Exp $
  */
 
 #include <stdio.h>
@@ -190,13 +190,23 @@ unpack_KE(struct state *st
 	
 	clonetochunk(*g, wire_chunk_ptr(kn, &(kn->gi))
 		     , kn->gi.len, "saved gi value");
+#ifdef HAVE_LIBNSS
+	DBG(DBG_CRYPT, DBG_log("saving DH priv (local secret) and pub key into state struc"));
+	clonetochunk(st->st_sec_chunk
+		     , wire_chunk_ptr(kn, &(kn->secret))
+		     , kn->secret.len, "pointer to DH private key (secret)");
 
+	clonetochunk(st->pubk
+		     , wire_chunk_ptr(kn, &(kn->pubk))
+		     , kn->pubk.len, "pointer to DH public key");
+#else
 	n_to_mpz(&st->st_sec
 		 , wire_chunk_ptr(kn, &(kn->secret))
 		 , kn->secret.len);
 	clonetochunk(st->st_sec_chunk
 		     , wire_chunk_ptr(kn, &(kn->secret))
 		     , kn->secret.len, "long term secret");
+#endif
     }
 }
 

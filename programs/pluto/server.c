@@ -1,6 +1,10 @@
 /* get-next-event loop
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,7 +16,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: server.c,v 1.113 2005/08/27 05:51:00 paul Exp $
  */
 
 #include <stdio.h>
@@ -523,8 +526,10 @@ reapchildren(void)
     while((child = wait3(&status, WNOHANG, &r)) > 0) {
 	/* got a child to reap */
 	if(adns_reapchild(child, status)) continue;
+       /*Threads are created instead of child processes when using LIBNSS*/
+#ifndef HAVE_LIBNSS
 	if(pluto_crypt_handle_dead_child(child, status)) continue;
-	
+#endif
 	openswan_log("child pid=%d (status=%d) is not my child!", child, status);
     }
     

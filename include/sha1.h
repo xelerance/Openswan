@@ -8,14 +8,13 @@ By Steve Reid <steve@edmweb.com>
 */
 
 #ifdef HAVE_LIBNSS
-#include <nss.h>
-#include <pk11pub.h>
+# include <nss.h>
+# include <pk11pub.h>
 #endif
-
 
 typedef struct {
 #ifdef HAVE_LIBNSS
-PK11Context* DigestContext;
+    PK11Context* ctx_nss;
 #else
     u_int32_t state[5];
     u_int32_t count[2];

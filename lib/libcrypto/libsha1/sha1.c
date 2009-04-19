@@ -16,8 +16,10 @@ A million repetitions of "a"
 /* #define SHA1HANDSOFF * Copies data before messing with it. */
 
 #ifdef HAVE_LIBNSS
-#include <pk11pub.h>
+# include <pk11pub.h>
+# include "oswlog.h"
 #endif
+
 #define SHA1HANDSOFF
 
 #include <string.h>
@@ -116,12 +118,15 @@ CHAR64LONG16* block = (const CHAR64LONG16*)buffer;
 void SHA1Init(SHA1_CTX* context)
 {
 #ifdef HAVE_LIBNSS
-SECStatus status;
-	context->DigestContext=NULL;
-	context->DigestContext = PK11_CreateDigestContext(SEC_OID_SHA1);
-	PR_ASSERT(context->DigestContext!=NULL);
-	status=PK11_DigestBegin(context->DigestContext);
-	PR_ASSERT(status==SECSuccess);
+    SECStatus status;
+
+    DBG(DBG_CRYPT, DBG_log("NSS: sha1 init start"));
+    context->ctx_nss=NULL;
+    context->ctx_nss = PK11_CreateDigestContext(SEC_OID_SHA1);
+    PR_ASSERT(context->ctx_nss!=NULL);
+    status=PK11_DigestBegin(context->ctx_nss);
+    PR_ASSERT(status==SECSuccess);
+    DBG(DBG_CRYPT, DBG_log("NSS: sha1 init end"));
 #else
     /* SHA1 initialization constants */
     context->state[0] = 0x67452301;
@@ -139,9 +144,9 @@ SECStatus status;
 void SHA1Update(SHA1_CTX* context, const unsigned char* data, u_int32_t len)
 {
 #ifdef HAVE_LIBNSS
-	SECStatus status;
-	status=PK11_DigestOp(context->DigestContext, data, len);
+	SECStatus status=PK11_DigestOp(context->ctx_nss, data, len);
 	PR_ASSERT(status==SECSuccess);
+	DBG(DBG_CRYPT, DBG_log("NSS: sha1 update end"));
 #else
 u_int32_t i;
 u_int32_t j;
@@ -172,10 +177,11 @@ void SHA1Final(unsigned char digest[20], SHA1_CTX* context)
 #ifdef HAVE_LIBNSS
 	unsigned int length;
 	SECStatus status;
-	status=PK11_DigestFinal(context->DigestContext, digest, &length, sizeof digest);
-	PR_ASSERT(length == sizeof digest);
+	status=PK11_DigestFinal(context->ctx_nss, digest, &length, sizeof(digest));
+	PR_ASSERT(length==SHA1_DIGEST_SIZE);
 	PR_ASSERT(status==SECSuccess);
-	PK11_DestroyContext(context->DigestContext, PR_TRUE);
+	PK11_DestroyContext(context->ctx_nss, PR_TRUE);
+	DBG(DBG_CRYPT, DBG_log("NSS: sha1 final end"));
 #else
 unsigned i;
 unsigned char finalcount[8];

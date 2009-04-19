@@ -1,5 +1,7 @@
 /* misc functions to get compile time and runtime options
  * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,13 +13,17 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: oswalloc.h,v 1.3 2004/10/16 23:42:13 mcr Exp $
  */
 
 #ifndef _OSW_CONF_H
 #define _OSW_CONF_H
 
 #include "constants.h"
+
+#ifdef HAVE_LIBNSS
+# include <nss.h>
+# include <pk11pub.h>
+#endif
 
 struct paththing {
   char    *path;
@@ -50,9 +56,27 @@ struct osw_conf_options {
     char *ocspcerts_dir;          /* "/etc/ipsec.d/ocspcerts" */
 };
 
+#ifdef HAVE_LIBNSS
+typedef struct {
+    enum {
+      PW_NONE = 0,      /* no password */
+      PW_FROMFILE = 1,  /* password data in a text file */
+      PW_PLAINTEXT = 2, /* password data in the clear in memory buffer */
+      PW_EXTERNAL = 3   /* external source, user will be prompted */
+    } source ;
+    char *data;
+} secuPWData;
+#endif
+
 extern const struct osw_conf_options *osw_init_options(void);
 extern const struct osw_conf_options *osw_init_ipsecdir(const char *ipsec_dir);
 extern const struct osw_conf_options *osw_init_rootdir(const char *root_dir);
+
+#ifdef HAVE_LIBNSS
+extern secuPWData *osw_return_nss_password_file_info(void);
+extern char *getNSSPassword(PK11SlotInfo *slot, PRBool retry, void *arg);
+extern bool Pluto_IsFIPS(void);
+#endif
 
 #endif /* _OSW_ALLOC_H_ */
 

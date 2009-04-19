@@ -1,6 +1,9 @@
 /* do RSA operations for IKEv2
  *
  * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -162,7 +165,13 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
     {
 	return "1""SIG length does not match public key length";
     }
-	
+
+#ifdef HAVE_LIBNSS
+    err_t ugh = RSA_signature_verify_nss (k,hash_val,hash_len,sig_val,sig_len);
+    if(ugh!=NULL) {
+	return ugh;
+    }
+#else
     /* actual exponentiation; see PKCS#1 v2.0 5.1 */
     {
 	chunk_t temp_s;
@@ -207,7 +216,8 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
     if(memcmp(sig, hash_val, hash_len) != 0) {
 	return "9""authentication failure: received SIG does not match computed HASH, but message is well-formed";
     }
-    
+#endif
+
     unreference_key(&st->st_peer_pubkey);
     st->st_peer_pubkey = reference_key(kr);
 

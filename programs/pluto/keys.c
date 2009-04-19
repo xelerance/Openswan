@@ -3,6 +3,10 @@
  * for now, just stupid wrappers!
  *
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 2003-2008  Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -16,7 +20,7 @@
  *
  * Modifications to use OCF interface written by
  * Daniel Djamaludin <danield@cyberguard.com>
- * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ * Copyright (C) 2004-2005 Intel Corporation.
  *
  */
 
@@ -75,6 +79,23 @@
 #ifdef NAT_TRAVERSAL
 #define PB_STREAM_UNDEFINED
 #include "nat_traversal.h"
+#endif
+
+#ifdef HAVE_LIBNSS
+ /* nspr */
+# include <prerror.h>
+# include <prinit.h>
+# include <prmem.h>
+ /* nss */
+# include <key.h>
+# include <keyt.h>
+# include <nss.h>
+# include <pk11pub.h>
+# include <seccomon.h>
+# include <secerr.h>
+# include <secport.h>
+# include <time.h>
+# include "oswconf.h"
 #endif
 
 const char *pluto_shared_secrets_file = SHARED_SECRETS_FILE;
@@ -152,6 +173,9 @@ sign_hash(const struct RSA_private_key *k
 	  , const u_char *hash_val, size_t hash_len
 	  , u_char *sig_val, size_t sig_len)
 {
+#ifdef HAVE_LIBNSS
+    sign_hash_nss(k,hash_val,hash_len,sig_val,sig_len);
+#else
     chunk_t ch;
     mpz_t t1;
     size_t padlen;
@@ -185,7 +209,149 @@ sign_hash(const struct RSA_private_key *k
     pfree(ch.ptr);
 
     mpz_clear(t1);
+#endif
 }
+
+#ifdef HAVE_LIBNSS
+void sign_hash_nss(const struct RSA_private_key *k
+	, const u_char *hash_val, size_t hash_len
+	, u_char *sig_val, size_t sig_len)
+{
+    SECKEYPrivateKey *privateKey = NULL;
+    SECItem signature;
+    SECItem data;
+    SECItem ckaId;
+    PK11SlotInfo *slot = NULL;
+
+    DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: Started using NSS"));  
+
+    ckaId.type=siBuffer;
+    ckaId.len=k->ckaid_len;
+    ckaId.data=k->ckaid;
+
+    DBG(DBG_CRYPT, DBG_dump("RSA_sign_hash NSS CKA_ID:\n", ckaId.data, ckaId.len));
+
+    slot = PK11_GetInternalKeySlot();
+    if (slot == NULL) {
+	loglog(RC_LOG_SERIOUS, "RSA_sign_hash: Unable to find (slot security) device (err %d)\n", PR_GetError());
+	return 0;
+    }
+
+    privateKey = PK11_FindKeyByKeyID(slot, &ckaId, osw_return_nss_password_file_info());
+    if(privateKey==NULL) {
+	if(k->pub.nssCert != NULL) {
+	   privateKey = PK11_FindKeyByAnyCert(k->pub.nssCert,  osw_return_nss_password_file_info()); 
+	   DBG(DBG_CRYPT, DBG_log("Can't find the private key from the NSS CKA_ID\n"));
+	}
+    }
+
+    if (!privateKey) {
+	loglog(RC_LOG_SERIOUS, "Can't find the private key from the NSS CERT (err %d)\n", PR_GetError());
+	PK11_FreeSlot(slot);
+	return 0;
+    }
+
+   if(slot) {
+	PK11_FreeSlot(slot);
+   }
+
+   data.type=siBuffer;
+   data.len=hash_len;
+   data.data=hash_val;
+
+   /*signature.len=PK11_SignatureLen(privateKey);*/
+   signature.len=sig_len;
+   signature.data=sig_val;
+
+   SECStatus s = PK11_Sign(privateKey, &signature, &data);
+   if(s!=SECSuccess) {
+	loglog(RC_LOG_SERIOUS, "RSA_sign_hash: sign function failed (%d)\n", PR_GetError());
+	return 0;
+   }
+
+   DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: input_sig_len=%d, output_signature-len=%d", sig_len, signature.len));
+   DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: Ended using NSS"));
+   /*return signature.len;*/
+}
+
+err_t RSA_signature_verify_nss(const struct RSA_public_key *k
+                              , const u_char *hash_val, size_t hash_len
+                               ,const u_char *sig_val, size_t sig_len)
+{
+   SECKEYPublicKey *publicKey;
+   PRArenaPool *arena;
+   SECStatus retVal = SECSuccess;
+   SECItem nss_n, nss_e;
+   SECItem signature, data;    
+   chunk_t n,e;
+
+    /*Converting n and e to form public key in SECKEYPublicKey data structure*/
+
+    arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
+    if (arena == NULL) {
+	PORT_SetError (SEC_ERROR_NO_MEMORY);
+	return "10" "NSS error: Not enough memory to create arena";
+    }
+
+    publicKey = (SECKEYPublicKey *) PORT_ArenaZAlloc (arena, sizeof (SECKEYPublicKey));
+    if (!publicKey) {
+	PORT_FreeArena (arena, PR_FALSE);
+	PORT_SetError (SEC_ERROR_NO_MEMORY);
+	return "11" "NSS error: Not enough memory to create publicKey";
+    }
+
+    publicKey->arena = arena;
+    publicKey->keyType = rsaKey;
+    publicKey->pkcs11Slot = NULL;    
+    publicKey->pkcs11ID = CK_INVALID_HANDLE;
+
+    /*Converting n(modulus) and e(exponent) from mpz_t form to chunk_t*/
+    n = mpz_to_n2(&k->n);
+    e = mpz_to_n2(&k->e);
+
+    /*Converting n and e to nss_n and nss_e*/
+    nss_n.data = n.ptr;
+    nss_n.len = (unsigned int)n.len;
+    nss_n.type = siBuffer;
+
+    nss_e.data = e.ptr;
+    nss_e.len = (unsigned int)e.len;
+    nss_e.type = siBuffer;
+
+    retVal = SECITEM_CopyItem(arena, &publicKey->u.rsa.modulus, &nss_n);
+    if (retVal == SECSuccess) {
+	retVal = SECITEM_CopyItem (arena, &publicKey->u.rsa.publicExponent, &nss_e);
+    }
+
+    if(retVal != SECSuccess) {
+	pfree(n.ptr);
+	pfree(e.ptr);
+	SECKEY_DestroyPublicKey (publicKey);       
+	return "12" "NSS error: Not able to copy modulus or exponent or both while forming SECKEYPublicKey structure";
+    }
+    signature.type = siBuffer;
+    signature.data = sig_val;
+    signature.len  = (unsigned int)sig_len;
+
+    data.type = siBuffer;
+    data.data = hash_val;
+    data.len  = (unsigned int)hash_len;
+       
+    /*Verifying RSA signature*/
+     retVal = PK11_Verify(publicKey,&signature,&data,osw_return_nss_password_file_info());
+
+    pfree(n.ptr);
+    pfree(e.ptr);
+    SECKEY_DestroyPublicKey (publicKey);
+
+    if(retVal != SECSuccess) {
+	loglog(RC_LOG_SERIOUS, "RSA Signature NOT verified");
+    }
+    DBG(DBG_CRYPT, DBG_log("RSA Signature verified"));
+
+    return NULL;
+}
+#endif
 
 /* Check signature against all RSA public keys we can find.
  * If we need keys from DNS KEY records, and they haven't been fetched,

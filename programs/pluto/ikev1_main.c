@@ -1,7 +1,9 @@
 /* IPsec DOI and Oakley resolution routines
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
- * Copyright (C) 2003-2006  Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2008 Michael C. Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -13,12 +15,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- *
  * Modifications to use OCF interface written by
  * Daniel Djamaludin <danield@cyberguard.com>
- * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ * Copyright (C) 2004-2005 Intel Corporation.
  *
- * RCSID $Id: ipsec_doi.c,v 1.304.2.11 2006/04/16 02:24:19 mcr Exp $
  */
 
 #include <stdio.h>
@@ -348,7 +348,11 @@ main_mode_hash(struct state *st
     struct hmac_ctx ctx;
 
     hmac_init_chunk(&ctx, st->st_oakley.prf_hasher, st->st_skeyid);
+#ifdef HAVE_LIBNSS
+    main_mode_hash_body(st, hashi, idpl, &ctx, NULL);
+#else
     main_mode_hash_body(st, hashi, idpl, &ctx.hash_ctx, ctx.h->hash_update);
+#endif
     hmac_final(hash_val, &ctx);
     return ctx.hmac_digest_len;
 }
@@ -448,6 +452,9 @@ RSA_sign_hash(struct connection *c
  * 1	SIG length doesn't match key length -- wrong key
  * 2-8	malformed ECB after decryption -- probably wrong key
  * 9	decrypted hash != computed hash -- probably correct key
+ * 10   NSS error
+ * 11   NSS error
+ * 12   NSS error
  *
  * Although the math should be the same for generating and checking signatures,
  * it is not: the knowledge of the private key allows more efficient (i.e.
@@ -471,6 +478,12 @@ try_RSA_signature_v1(const u_char hash_val[MAX_DIGEST_LEN], size_t hash_len
 	return "1" "SIG length does not match public key length";
     }
 
+#ifdef HAVE_LIBNSS
+    err_t ugh = RSA_signature_verify_nss (k,hash_val,hash_len,sig_val,sig_len);
+    if(ugh!=NULL) {
+	return ugh;
+    }
+#else
     /* actual exponentiation; see PKCS#1 v2.0 5.1 */
     {
 	chunk_t temp_s;
@@ -551,6 +564,7 @@ try_RSA_signature_v1(const u_char hash_val[MAX_DIGEST_LEN], size_t hash_len
 	/* XXX notification: INVALID_HASH_INFORMATION */
 	return "9" "authentication failure: received SIG does not match computed HASH, but message is well-formed";
     }
+#endif
 
     /* Success: copy successful key into state.
      * There might be an old one if we previously aborted this
@@ -702,6 +716,14 @@ main_inI1_outR1(struct msg_digest *md)
 	numvidtosend++;
     }
 #endif
+
+#ifdef HAVE_LIBNSS
+       if(PK11_IsFIPS())
+       {
+#define SEND_PLUTO_VID 0
+       }
+#endif
+
 #if SEND_PLUTO_VID || defined(openpgp_peer)
     numvidtosend++;
 #endif

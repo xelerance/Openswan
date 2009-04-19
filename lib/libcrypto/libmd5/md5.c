@@ -46,6 +46,11 @@ documentation and/or software.
 #include "md5.h"
 #include "oswendian.h" /* sets BYTE_ORDER, LITTLE_ENDIAN, and BIG_ENDIAN */
 
+#ifdef HAVE_LIBNSS
+# include <pk11pub.h>
+# include "oswlog.h"
+#endif
+
 #define HAVEMEMCOPY 1	/* use ISO C's memcpy and memset */
 
 /* Constants for MD5Transform routine.
@@ -141,6 +146,16 @@ Rotation is separate from addition to prevent recomputation.
 void osMD5Init (context)
 MD5_CTX *context;                                        /* context */
 {
+#ifdef HAVE_LIBNSS
+  DBG(DBG_CRYPT, DBG_log("NSS: md5 init start"));
+  SECStatus status;
+  context->ctx_nss=NULL;
+  context->ctx_nss = PK11_CreateDigestContext(SEC_OID_MD5);
+  PR_ASSERT(context->ctx_nss!=NULL);
+  status=PK11_DigestBegin(context->ctx_nss);
+  PR_ASSERT(status==SECSuccess);
+  DBG(DBG_CRYPT, DBG_log("NSS: md5 init end"));
+#else
   context->count[0] = context->count[1] = 0;
   /* Load magic initialization constants.
 */
@@ -148,6 +163,7 @@ MD5_CTX *context;                                        /* context */
   context->state[1] = 0xefcdab89;
   context->state[2] = 0x98badcfe;
   context->state[3] = 0x10325476;
+#endif
 }
 
 /* MD5 block update operation. Continues an MD5 message-digest
@@ -159,6 +175,11 @@ MD5_CTX *context;                                        /* context */
 const unsigned char *input;                          /* input block */
 UINT4 inputLen;                            /* length of input block */
 {
+#ifdef HAVE_LIBNSS
+  SECStatus status=PK11_DigestOp(context->ctx_nss, input, inputLen);
+  PR_ASSERT(status==SECSuccess);
+  DBG(DBG_CRYPT, DBG_log("NSS: md5 update end")); 
+#else
   UINT4 i;
   unsigned int myindex, partLen;
 
@@ -187,6 +208,7 @@ UINT4 inputLen;                            /* length of input block */
 
   /* Buffer remaining input */
   MD5_memcpy((POINTER)&context->buffer[myindex], (CONSTPOINTER)&input[i], inputLen-i);
+#endif
 }
 
 /* MD5 finalization. Ends an MD5 message-digest operation, writing the
@@ -196,6 +218,15 @@ void osMD5Final (digest, context)
 unsigned char digest[16];                         /* message digest */
 MD5_CTX *context;                                       /* context */
 {
+#ifdef HAVE_LIBNSS
+  unsigned int length;
+  SECStatus status;
+  status=PK11_DigestFinal(context->ctx_nss, digest, &length, MD5_DIGEST_SIZE);
+  PR_ASSERT(length==MD5_DIGEST_SIZE);
+  PR_ASSERT(status==SECSuccess);
+  PK11_DestroyContext(context->ctx_nss, PR_TRUE);
+  DBG(DBG_CRYPT, DBG_log("NSS: md5 final end"));
+#else
   unsigned char bits[8];
   unsigned int myindex, padLen;
 
@@ -220,6 +251,7 @@ MD5_CTX *context;                                       /* context */
 	   */
 	  MD5_memset ((POINTER)context, 0, sizeof (*context));
   }
+#endif
 }
 
 /* MD5 basic transformation. Transforms state based on block.

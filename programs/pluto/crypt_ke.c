@@ -1,6 +1,8 @@
 /* 
  * Cryptographic helper function - calculate KE and nonce
  * Copyright (C) 2004 Michael C. Richardson <mcr@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2009 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -16,9 +18,8 @@
  *
  * Modifications to use OCF interface written by
  * Daniel Djamaludin <danield@cyberguard.com>
- * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ * Copyright (C) 2004-2005 Intel Corporation. 
  *
- * RCSID $Id: crypt_ke.c,v 1.11.2.2 2005/08/19 17:52:42 ken Exp $
  */
 
 #include <stdlib.h>
@@ -52,16 +53,33 @@
 
 #include "oswcrypto.h"
 
+#ifdef HAVE_LIBNSS
+# include <nss.h>
+# include <pk11pub.h>
+# include <keyhi.h>
+# include "oswconf.h"
+#endif
+
 void calc_ke(struct pluto_crypto_req *r)
 {
+#ifndef HAVE_LIBNSS
     MP_INT mp_g;
     MP_INT secret;
-    const struct oakley_group_desc *group;
     chunk_t gi;
+#else
+    chunk_t  prime;
+    chunk_t  base;
+    SECKEYDHParams      dhp;
+    PK11SlotInfo *slot = NULL;
+    SECKEYPrivateKey *privk;
+    SECKEYPublicKey   *pubk; 
+#endif
     struct pcr_kenonce *kn = &r->pcr_d.kn;
-    
+    const struct oakley_group_desc *group;
+
     group = lookup_group(kn->oakley_group);
-    
+
+#ifndef HAVE_LIBNSS    
     pluto_crypto_allocchunk(&kn->thespace
 			    , &kn->secret
 			    , LOCALSECRETSIZE);
@@ -93,6 +111,64 @@ void calc_ke(struct pluto_crypto_req *r)
     mpz_clear(&mp_g);
     mpz_clear(&secret);
     freeanychunk(gi);
+#else
+    base  = mpz_to_n2(&groupgenerator);
+    prime = mpz_to_n2(group->modulus);
+
+    dhp.prime.data=prime.ptr;
+    dhp.prime.len=prime.len;
+    dhp.base.data=base.ptr;
+    dhp.base.len=base.len;
+
+    slot = PK11_GetBestSlot(CKM_DH_PKCS_KEY_PAIR_GEN,osw_return_nss_password_file_info());
+    if(!slot) {
+	loglog(RC_LOG_SERIOUS, "NSS: slot for DH key gen is NULL");
+    }
+    PR_ASSERT(slot!=NULL);
+
+    privk = PK11_GenerateKeyPair(slot, CKM_DH_PKCS_KEY_PAIR_GEN, &dhp, &pubk, PR_FALSE, PR_TRUE, osw_return_nss_password_file_info());
+    if(!privk) {
+	loglog(RC_LOG_SERIOUS, "NSS: DH private key creation failed");
+    }
+    PR_ASSERT(privk!=NULL);
+    pluto_crypto_allocchunk(&kn->thespace, &kn->secret, sizeof(SECKEYPrivateKey*));
+    {
+	char *gip = wire_chunk_ptr(kn, &(kn->secret));
+	memcpy(gip, &privk, sizeof(SECKEYPrivateKey *));
+    }
+
+    pluto_crypto_allocchunk(&kn->thespace, &kn->gi, pubk->u.dh.publicValue.len);
+    {
+	char *gip = wire_chunk_ptr(kn, &(kn->gi));
+	memcpy(gip, pubk->u.dh.publicValue.data, pubk->u.dh.publicValue.len);
+    }
+
+    pluto_crypto_allocchunk(&kn->thespace, &kn->pubk, sizeof(SECKEYPublicKey*));
+    {
+	char *gip = wire_chunk_ptr(kn, &(kn->pubk));
+	memcpy(gip, &pubk, sizeof(SECKEYPublicKey*));
+    }
+    
+    DBG(DBG_CRYPT,
+       DBG_dump("NSS: Local DH secret:\n"
+                , wire_chunk_ptr(kn, &(kn->secret))
+                , sizeof(SECKEYPrivateKey*));
+       DBG_dump("NSS: Public DH value sent(computed in NSS):\n", wire_chunk_ptr(kn, &(kn->gi)),pubk->u.dh.publicValue.len));
+
+    DBG(DBG_CRYPT,
+        DBG_dump("NSS: Local DH public value (pointer):\n"
+                 , wire_chunk_ptr(kn, &(kn->pubk))
+                 , sizeof(SECKEYPublicKey*)));
+
+    /* clean up after ourselves */
+    if (slot) {
+	PK11_FreeSlot(slot);
+    }
+    //if (privk){SECKEY_DestroyPrivateKey(privk);}
+    //if (pubk){SECKEY_DestroyPublicKey(pubk);}
+    freeanychunk(prime);
+    freeanychunk(base);
+#endif
 }
 
 void calc_nonce(struct pluto_crypto_req *r)

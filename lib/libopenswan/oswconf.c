@@ -1,5 +1,6 @@
 /* misc functions to get compile time and runtime options
  * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: oswalloc.h,v 1.3 2004/10/16 23:42:13 mcr Exp $
  */
 
 #include <unistd.h>
@@ -22,8 +22,19 @@
 #include "oswconf.h"
 #include "oswalloc.h"
 
+#ifdef HAVE_LIBNSS
+# include <string.h>
+# include <nss.h>
+# include <nspr.h>
+# include <pk11pub.h>
+#endif
+
 static struct osw_conf_options global_oco;
 static bool setup=FALSE;
+
+#ifdef HAVE_LIBNSS
+static secuPWData NSSPassword;
+#endif
 
 #ifdef SINGLE_CONF_DIR
 #define SUBDIRNAME(X) ""
@@ -111,9 +122,14 @@ void osw_conf_setdefault(void)
     global_oco.confdir = ipsec_conf_dir;
     global_oco.conffile = conffile;
 
+#ifdef HAVE_LIBNSS
+    /* path to NSS password file */
+    snprintf(buf, sizeof(buf), "%s/nsspassword", global_oco.confddir);
+    NSSPassword.data = clone_str(buf, "nss password file path");
+    NSSPassword.source =  PW_FROMFILE;
+#endif
     //DBG_log("default setting of ipsec.d to %s", global_oco.confddir);
 }
-
 
 const struct osw_conf_options *osw_init_options(void)
 {
@@ -147,6 +163,76 @@ const struct osw_conf_options *osw_init_ipsecdir(const char *ipsec_dir)
 
     return &global_oco;
 }
+
+#ifdef HAVE_LIBNSS
+secuPWData *osw_return_nss_password_file_info(void)
+{
+    return &NSSPassword;
+}
+
+bool Pluto_IsFIPS(void)
+{
+     char fips_flag[2];
+     int n;
+     FILE *fd=fopen("/proc/sys/crypto/fips_enabled","r");
+
+     if(fd == NULL) {
+	openswan_log("Not able to open /proc/sys/crypto/fips_enabled, returning non-fips mode");
+	return FALSE;
+     }
+     n = fread ((void *)fips_flag, 1, 1, fd);
+     if(n==1) {
+	if(fips_flag[0]=='1') {
+	   openswan_log("fips mode is set in /proc/sys/crypto/fips_enabled");
+	   return TRUE;
+	} else {
+	   openswan_log("Non-fips mode set in /proc/sys/crypto/fips_enabled");
+	   return FALSE;
+	  }
+     } 
+     openswan_log("error in reading /proc/sys/crypto/fips_enabled, returning non-fips mode");
+     return FALSE;
+}
+
+char *getNSSPassword(PK11SlotInfo *slot, PRBool retry, void *arg)
+{
+     secuPWData *pwdInfo = (secuPWData *)arg;
+     PRFileDesc *fd;
+     PRInt32 nb; /*number of bytes*/
+     char* password;
+     const long maxPwdFileSize = 4096;
+
+     if(retry) return 0;
+
+     if(pwdInfo->source == PW_FROMFILE) {
+	if(pwdInfo->data !=NULL) {
+	   fd = PR_Open(pwdInfo->data, PR_RDONLY, 0);
+	   if (!fd) {
+		openswan_log("No password file \"%s\" exists.", pwdInfo->data);
+		return 0;
+	   }
+
+	   password=PORT_ZAlloc(maxPwdFileSize);
+	   nb = PR_Read(fd, password, maxPwdFileSize);
+	   PR_Close(fd);
+
+	   if(nb == 0) {
+		openswan_log("password file contains no data");
+		PORT_Free(password);
+		return 0;
+	   }
+	   password[nb-1]='\0';
+	   openswan_log("Password passed to NSS is %s", password);
+	   return password;
+	} else {
+		openswan_log("File with Password to NSS DB is not provided");
+		return 0;
+	  }
+     }
+     openswan_log("nss password source is not specified as file");
+     return 0;
+}
+#endif
     
 /*
  * Local Variables:

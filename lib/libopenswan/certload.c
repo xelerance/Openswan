@@ -1,6 +1,6 @@
 /* Certificate support for IKE authentication
  * Copyright (C) 2002-2004 Andreas Steffen, Zuercher Hochschule Winterthur
- * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2005-2008 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: certs.c,v 1.8 2004/06/27 20:43:41 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -36,6 +35,12 @@
 #include "certs.h"
 #include "pkcs.h"
 #include "pem.h"
+
+#ifdef HAVE_LIBNSS
+# include <nss.h>
+# include <pk11pub.h>
+# include <cert.h>
+#endif
 
 #define ASN1_BUF_LEN		256
 
@@ -322,6 +327,96 @@ share_cert(cert_t cert)
 	break;
     }
 }
+
+#ifdef HAVE_LIBNSS
+bool
+load_cert_from_nss(bool forcedtype, const char *nssHostCertNickName, int verbose,
+                  const char *label, cert_t *cert)
+{
+    chunk_t blob = empty_chunk;
+    CERTCertificate *nssCert;
+
+    /* initialize cert struct */
+    cert->forced = forcedtype;
+    cert->u.x509 = NULL;
+
+    nssCert=CERT_FindCertByNicknameOrEmailAddr(CERT_GetDefaultCertDB(), nssHostCertNickName);
+
+    if(nssCert==NULL) {
+	nssCert=PK11_FindCertFromNickname(nssHostCertNickName, osw_return_nss_password_file_info());
+    }
+
+    if(nssCert == NULL) {
+	openswan_log("    could not open %s with nick name '%s' in NSS DB", label, nssHostCertNickName);
+	return FALSE;
+    }
+    else {
+	DBG(DBG_CRYPT, DBG_log("Found pointer to cert %s now giving it to further processing",nssHostCertNickName));
+    }
+
+    if(forcedtype) {
+	cert->u.blob.len=nssCert->derCert.len;
+	cert->u.blob.ptr = alloc_bytes(cert->u.blob.len, label);
+	memcpy(cert->u.blob.ptr,nssCert->derCert.data,cert->u.blob.len);
+	/*I think it should return TRUE, however as in load_cert, FALSE is returned when forcedtype is TRUE so returning FALSE*/
+	return FALSE;
+    }
+
+    blob.len=nssCert->derCert.len;
+    blob.ptr = alloc_bytes(blob.len, label);
+    memcpy(blob.ptr,nssCert->derCert.data,blob.len);
+
+    if (is_asn1(blob)) {
+	DBG(DBG_PARSING, DBG_log("file coded in DER format"));
+
+	x509cert_t *x509cert = alloc_thing(x509cert_t, "x509cert");
+	*x509cert = empty_x509cert;
+
+	if (parse_x509cert(blob, 0, x509cert)) {
+		cert->forced = FALSE;
+		cert->type = CERT_X509_SIGNATURE;
+		cert->u.x509 = x509cert;
+		return TRUE;
+	} else {
+		openswan_log("  error in X.509 certificate");
+		pfree(blob.ptr);
+		free_x509cert(x509cert);
+		return FALSE;
+	}
+    }
+
+    if(verbose)
+	openswan_log("  cert read from NSS db is not in DER format");
+    pfree(blob.ptr);
+    return FALSE;
+}
+
+void
+load_authcerts_from_nss(const char *type, u_char auth_flags) 
+{
+    CERTCertList *list = NULL;
+    CERTCertListNode *node;
+
+    list = PK11_ListCerts(PK11CertListCA,  osw_return_nss_password_file_info());
+
+    if(list) {
+		for (node = CERT_LIST_HEAD(list); !CERT_LIST_END(node, list);
+			node = CERT_LIST_NEXT(node)) {
+
+			cert_t cert;
+			if(load_cert_from_nss(CERT_NONE, node->cert->nickname,
+#ifdef SINGLE_CONF_DIR
+				FALSE, /* too verbose in single conf dir */
+#else
+				TRUE,
+#endif
+				type, &cert)) {
+			     add_authcert(cert.u.x509, auth_flags);
+				}
+			}
+	     }
+}
+#endif
 
 /*
  * Local Variables:

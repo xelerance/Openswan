@@ -1,5 +1,7 @@
 /* Loading of PEM encoded files with optional encryption
  * Copyright (C) 2001-2004 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2003-2005 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pem.c,v 1.9 2005/08/05 19:12:10 mcr Exp $
  */
 
 /* decrypt a PEM encoded data block using DES-EDE3-CBC
@@ -35,6 +36,13 @@
 #include "oswlog.h"
 #include "md5.h"
 #include "pem.h"
+
+#ifdef HAVE_LIBNSS
+# include <pk11pub.h>
+# include <prmem.h>
+# include <prerror.h>
+# include "oswconf.h"
+#endif
 
 #include "oswcrypto.h"
 
@@ -200,7 +208,6 @@ pem_decrypt_3des(chunk_t *blob, chunk_t *iv, const char *passphrase)
     osMD5Final(digest, &context);
 
     memcpy(key, digest, MD5_DIGEST_SIZE);
-
     osMD5Init(&context);
     osMD5Update(&context, digest, MD5_DIGEST_SIZE);
     osMD5Update(&context, (const unsigned char *)passphrase, strlen(passphrase));
@@ -209,6 +216,9 @@ pem_decrypt_3des(chunk_t *blob, chunk_t *iv, const char *passphrase)
 
     memcpy(key + MD5_DIGEST_SIZE, digest, 24 - MD5_DIGEST_SIZE);
 
+#ifdef HAVE_LIBNSS
+   do_3des_nss(blob->ptr, blob->len, key, DES_CBC_BLOCK_SIZE * 3 , iv, FALSE);
+#else
     (void) oswcrypto.des_set_key(&deskey[0], ks[0]);
     (void) oswcrypto.des_set_key(&deskey[1], ks[1]);
     (void) oswcrypto.des_set_key(&deskey[2], ks[2]);
@@ -217,6 +227,7 @@ pem_decrypt_3des(chunk_t *blob, chunk_t *iv, const char *passphrase)
     memcpy(des_iv, iv->ptr, DES_CBC_BLOCK_SIZE);
     oswcrypto.des_ede3_cbc_encrypt((des_cblock *)blob->ptr, (des_cblock *)blob->ptr,
 	blob->len, ks[0], ks[1], ks[2], (des_cblock *)des_iv, FALSE);
+#endif
 
     /* determine amount of padding */
     last_padding_pos = blob->ptr + blob->len - 1;
@@ -461,3 +472,71 @@ pemtobin(chunk_t *blob, prompt_pass_t *pass, const char* label, bool *pgp)
     else
 	return NULL;
 }
+
+#ifdef HAVE_LIBNSS
+void do_3des_nss(u_int8_t *buf, size_t buf_len
+       , u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc)
+{
+    passert(key != NULL);
+    //passert(key_size==(DES_CBC_BLOCK_SIZE * 3));
+
+    u_int8_t *tmp_buf;
+    u_int8_t *new_iv;
+
+    CK_MECHANISM_TYPE  ciphermech;
+    SECItem            ivitem;
+    SECItem*           secparam = NULL;
+    PK11SymKey*        symkey = NULL;
+    PK11Context*       enccontext = NULL;
+    SECStatus          rv;
+    int                outlen;
+
+    DBG(DBG_CRYPT, DBG_log("NSS: do_3des init start"));
+    ciphermech = CKM_DES3_CBC; /*openswan provides padding*/
+
+    memcpy(&symkey, key, key_size);
+    if (symkey == NULL) {
+	loglog(RC_LOG_SERIOUS, "do_3des: NSS derived enc key is NULL \n");
+	goto out;
+    }
+
+    ivitem.type = siBuffer;
+    ivitem.data = iv;
+    ivitem.len = DES_CBC_BLOCK_SIZE;
+
+    secparam = PK11_ParamFromIV(ciphermech, &ivitem);
+    if (secparam == NULL) {
+	loglog(RC_LOG_SERIOUS, "do_3des: Failure to set up PKCS11 param (err %d)\n",PR_GetError());
+	goto out;
+    }
+
+    outlen = 0;
+    tmp_buf= PR_Malloc((PRUint32)buf_len);
+    new_iv=(u_int8_t*)PR_Malloc((PRUint32)DES_CBC_BLOCK_SIZE);
+
+    if (!enc) {
+	memcpy(new_iv, (char*) buf + buf_len-DES_CBC_BLOCK_SIZE, DES_CBC_BLOCK_SIZE);
+    }
+
+    enccontext = PK11_CreateContextBySymKey(ciphermech, enc? CKA_ENCRYPT: CKA_DECRYPT, symkey, secparam);
+    rv = PK11_CipherOp(enccontext, tmp_buf, &outlen, buf_len, buf, buf_len);
+    passert(rv==SECSuccess);
+
+    if(enc) {
+	memcpy(new_iv, (char*) tmp_buf + buf_len-DES_CBC_BLOCK_SIZE, DES_CBC_BLOCK_SIZE);
+    }
+
+    memcpy(buf,tmp_buf,buf_len);
+    memcpy(iv,new_iv,DES_CBC_BLOCK_SIZE);
+    PK11_DestroyContext(enccontext, PR_TRUE);
+    PR_Free(tmp_buf);
+    PR_Free(new_iv);
+
+out:
+    if (secparam) {
+	SECITEM_FreeItem(secparam, PR_TRUE);
+    }
+
+    DBG(DBG_CRYPT, DBG_log("NSS: do_3des init end"));
+}
+#endif

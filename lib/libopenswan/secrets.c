@@ -5,6 +5,7 @@
  *
  * Copyright (C) 1998-2004  D. Hugh Redelmeier.
  * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -16,7 +17,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keys.c,v 1.104 2005/08/19 04:03:02 mcr Exp $
  */
 
 #include <stddef.h>
@@ -53,6 +53,15 @@
 #include "lex.h"
 #include "mpzfuncs.h"
 
+#ifdef HAVE_LIBNSS
+# include <nss.h>
+# include <pk11pub.h>
+# include <prerror.h>
+# include <cert.h>
+# include <key.h>
+# include "oswconf.h"
+#endif
+
 /* Maximum length of filename and passphrase buffer */
 #define BUF_LEN		256
 
@@ -75,6 +84,10 @@ static const struct fld RSA_private_field[] =
     { "Exponent1", offsetof(struct RSA_private_key, dP) },
     { "Exponent2", offsetof(struct RSA_private_key, dQ) },
     { "Coefficient", offsetof(struct RSA_private_key, qInv) },
+#ifdef HAVE_LIBNSS
+    { "CKAIDNSS", offsetof(struct RSA_private_key, ckaid) },
+#endif
+
 };
 
 static err_t osw_process_psk_secret(const struct secret *secrets
@@ -125,6 +138,30 @@ RSA_show_public_key(struct RSA_public_key *k)
 }
 #endif
 
+#ifdef HAVE_LIBNSS
+static const char *
+RSA_public_key_sanity(struct RSA_private_key *k)
+{
+    /* note that the *last* error found is reported */
+    err_t ugh = NULL;
+
+#ifdef DEBUG    /* debugging info that compromises security */
+    DBG(DBG_PRIVATE, RSA_show_public_key(&k->pub));
+#endif
+
+    /* PKCS#1 1.5 section 6 requires modulus to have at least 12 octets.
+ *      * We actually require more (for security).
+ *           */
+    if (k->pub.k < RSA_MIN_OCTETS)
+        return RSA_MIN_OCTETS_UGH;
+
+    /* we picked a max modulus size to simplify buffer allocation */
+    if (k->pub.k > RSA_MAX_OCTETS)
+        return RSA_MAX_OCTETS_UGH;
+
+   return ugh;
+}
+#else
 static const char *
 RSA_private_key_sanity(struct RSA_private_key *k)
 {
@@ -202,6 +239,7 @@ RSA_private_key_sanity(struct RSA_private_key *k)
     mpz_clear(q1);
     return ugh;
 }
+#endif
 
 struct secret {
     struct secret  *next;
@@ -262,6 +300,24 @@ form_keyid(chunk_t e, chunk_t n, char* keyid, unsigned *keysize)
     *keysize = n.len;
 }
 
+#ifdef HAVE_LIBNSS
+void static
+form_keyid_from_nss(SECItem e, SECItem n, char* keyid, unsigned *keysize)
+{
+    /* eliminate leading zero byte in modulus from ASN.1 coding */
+    if (*n.data == 0x00)
+    {
+	n.data++;  n.len--;
+    }
+
+    /* form the FreeS/WAN keyid */
+    keyid[0] = '\0';    /* in case of splitkeytoid failure */
+    splitkeytoid(e.data, e.len, n.data, n.len, keyid, KEYID_BUF);
+
+    /* return the RSA modulus size in octets */
+    *keysize = n.len;
+}
+#endif
 
 struct pubkey*
 allocate_RSA_public_key(const cert_t cert)
@@ -576,6 +632,69 @@ bool osw_has_private_key(struct secret *secrets, cert_t cert)
     return has_key;
 }
 
+#ifdef HAVE_LIBNSS
+static err_t extract_and_add_secret_from_nss_cert_file(struct RSA_private_key *rsak, char *nssHostCertNickName)
+{
+    err_t ugh = NULL;
+    SECItem *certCKAID;
+    SECKEYPublicKey *pubk;
+    CERTCertificate *nssCert;
+
+    DBG(DBG_CRYPT, DBG_log("NSS: extract_and_add_secret_from_nss_cert_file  start"));
+
+    nssCert=CERT_FindCertByNicknameOrEmailAddr(CERT_GetDefaultCertDB(), nssHostCertNickName);
+
+    if(nssCert==NULL) {
+	nssCert=PK11_FindCertFromNickname(nssHostCertNickName, osw_return_nss_password_file_info());
+    }
+
+    if(nssCert == NULL) {
+	openswan_log("    could not open host cert with nick name '%s' in NSS DB", nssHostCertNickName);
+	ugh = "NSS certficate not found";
+	goto error;
+    }
+    DBG(DBG_CRYPT, DBG_log("NSS: extract_and_add_secret_from_nss_cert_file: NSS Cert found"));
+
+    pubk=CERT_ExtractPublicKey(nssCert);
+    if(pubk == NULL) {
+	loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nsscert: can not find cert's public key (err %d)", PR_GetError());
+	ugh = "NSS cert found, pub key not found";
+	goto error;
+    }
+    DBG(DBG_CRYPT, DBG_log("NSS: extract_and_add_secret_from_nss_cert_file: public key found"));
+
+    //certCKAID=PK11_GetLowLevelKeyIDForCert(nssCert->slot,nssCert,  osw_return_nss_password_file_info()); /*does not return any lowkeyid*/
+    certCKAID=PK11_GetLowLevelKeyIDForCert(NULL,nssCert, osw_return_nss_password_file_info());
+    if(certCKAID == NULL) {
+	loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nsscert: can not find cert's low level CKA ID (err %d)", PR_GetError());
+	ugh = "cert cka id not found";
+	goto error2;
+    }
+    DBG(DBG_CRYPT, DBG_log("NSS: extract_and_add_secret_from_nss_cert_file: ckaid found"));
+
+    rsak->pub.nssCert=nssCert;
+
+    rsak->ckaid_len=certCKAID->len;
+    memcpy(rsak->ckaid,certCKAID->data,certCKAID->len);
+
+    n_to_mpz(&rsak->pub.e, pubk->u.rsa.publicExponent.data, pubk->u.rsa.publicExponent.len);
+    n_to_mpz(&rsak->pub.n, pubk->u.rsa.modulus.data, pubk->u.rsa.modulus.len);
+
+    form_keyid_from_nss(pubk->u.rsa.publicExponent,pubk->u.rsa.modulus, rsak->pub.keyid, &rsak->pub.k);
+
+    //loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nsscert: before free (value of k %d)",rsak->pub.k);
+    SECITEM_FreeItem(certCKAID, PR_TRUE);
+
+error2:
+    //loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nss_cert_file: before freeing public key");
+    SECKEY_DestroyPublicKey(pubk);
+    //loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nss_cert_file: end retune fine");
+error:
+   DBG(DBG_CRYPT, DBG_log("NSS: extract_and_add_secret_from_nss_cert_file: end"));
+    return ugh;
+}
+#endif
+
 /* check the existence of an RSA private key matching an RSA public
  */
 bool osw_has_private_rawkey(struct secret *secrets, struct pubkey *pk)
@@ -647,7 +766,9 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 {
     char filename[BUF_LEN];
     err_t ugh = NULL;
+#ifndef HAVE_LIBNSS
     rsa_privkey_t *key = NULL;
+#endif
 
     memset(filename,'\0', BUF_LEN);
     memset(pass->secret,'\0', sizeof(pass->secret));
@@ -678,8 +799,11 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 	    ugh = "RSA private key file -- unexpected token after passphrase";
     }
 
+#ifdef HAVE_LIBNSS
+    ugh = extract_and_add_secret_from_nss_cert_file(rsak, filename);
+    if(ugh==NULL) return RSA_public_key_sanity(rsak);
+#else
     key = load_rsa_private_key(filename, verbose, pass);
-
     if (key == NULL)
 	ugh = "error loading RSA private key file";
     else
@@ -730,6 +854,7 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 	pfree(key->keyobject.ptr);
 	pfree(key);
     }
+#endif
     return ugh;
 }
 
@@ -853,6 +978,13 @@ osw_process_rsa_secret(const struct secret *secrets
 	}
 	else
 	{
+#ifdef HAVE_LIBNSS
+	    if(strcmp(p->name,"CKAIDNSS")==0) {
+		memcpy(rsak->ckaid,buf,sz);
+		rsak->ckaid_len=sz;
+	    }
+           else {
+#endif
 	    MP_INT *n = (MP_INT *) ((char *)rsak + p->offset);
 
 	    n_to_mpz(n, buf, sz);
@@ -876,6 +1008,9 @@ osw_process_rsa_secret(const struct secret *secrets
 
 		loglog(RC_LOG_SERIOUS, "%s: %s", p->name, buf);
 	    }
+#endif
+#ifdef HAVE_LIBNSS
+         }
 #endif
 	}
     }
@@ -902,7 +1037,11 @@ osw_process_rsa_secret(const struct secret *secrets
 	splitkeytoid(pub_bytes[1].ptr, pub_bytes[1].len
 	    , pub_bytes[0].ptr, pub_bytes[0].len
 	    , rsak->pub.keyid, sizeof(rsak->pub.keyid));
+#ifdef HAVE_LIBNSS
+	return RSA_public_key_sanity(rsak);
+#else
 	return RSA_private_key_sanity(rsak);
+#endif
     }
 }
 
@@ -1172,6 +1311,10 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	    setchunk(s->pks.u.preshared_secret, NULL, 0);
 	    s->secretlineno=flp->lino;
 	    s->next = NULL;
+
+#ifdef HAVE_LIBNSS
+	    s->pks.u.RSA_private_key.pub.nssCert = NULL;
+#endif
 
 	    while(s != NULL)
 	    {
@@ -1505,10 +1648,14 @@ bool
 same_RSA_public_key(const struct RSA_public_key *a
     , const struct RSA_public_key *b)
 {
+#ifdef HAVE_LIBNSS
+    DBG(DBG_CRYPT, DBG_log("k did %smatch", (a->k == b->k) ? "" : "NOT "));
+    DBG(DBG_CRYPT, DBG_log("n did %smatch", (mpz_cmp(&a->n, &b->n) == 0) ? "" : "NOT "));
+    DBG(DBG_CRYPT, DBG_log("e did %smatch", (mpz_cmp(&a->e, &b->e) == 0) ? "" : "NOT "));
+#endif
     return a == b
     || (a->k == b->k && mpz_cmp(&a->n, &b->n) == 0 && mpz_cmp(&a->e, &b->e) == 0);
 }
-
 
 void
 install_public_key(struct pubkey *pk, struct pubkey_list **head)

@@ -3,7 +3,9 @@
  * inside of pluto. Common code is in ../../include/secrets.h and libopenswan.
  *
  * Copyright (C) 1998-2005  D. Hugh Redelmeier.
- * Copyright (C0 2005 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2007  Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2009 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,7 +17,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: keys.h,v 1.35 2005/02/15 01:52:30 mcr Exp $
  */
 #ifndef _KEYS_H
 #define _KEYS_H
@@ -28,6 +29,14 @@ struct connection;
 
 extern void sign_hash(const struct RSA_private_key *k, const u_char *hash_val
 		      , size_t hash_len, u_char *sig_val, size_t sig_len);
+
+#ifdef HAVE_LIBNSS
+extern void sign_hash_nss(const struct RSA_private_key *k, const u_char *hash_val
+				, size_t hash_len, u_char *sig_val, size_t sig_len);
+extern err_t RSA_signature_verify_nss(const struct RSA_public_key *k
+					, const u_char *hash_val, size_t hash_len
+					,const u_char *sig_val, size_t sig_len);
+#endif
 
 extern const struct RSA_private_key *get_RSA_private_key(const struct connection *c);
 

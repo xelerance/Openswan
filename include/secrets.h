@@ -1,5 +1,8 @@
 /* mechanisms for preshared keys (public, private, and preshared secrets)
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 2003-2008 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -10,14 +13,17 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: keys.h,v 1.35 2005/02/15 01:52:30 mcr Exp $
  */
 #ifndef _SECRETS_H
 #define _SECRETS_H
 
 #include <gmp.h>    /* GNU MP library */
 #include "id.h"
+
+#ifdef HAVE_LIBNSS
+# include <nss.h>
+# include <pk11pub.h>
+#endif
 
 #ifndef SHARED_SECRETS_FILE
 # define SHARED_SECRETS_FILE  "/etc/ipsec.secrets"
@@ -37,6 +43,9 @@ struct RSA_public_key
     MP_INT
 	n,	/* modulus: p * q */
 	e;	/* exponent: relatively prime to (p-1) * (q-1) [probably small] */
+#ifdef HAVE_LIBNSS
+    CERTCertificate *nssCert;
+#endif
 };
 
 struct RSA_private_key {
@@ -50,6 +59,10 @@ struct RSA_private_key {
 	dP,	/* first factor's exponent: (e^-1) mod (p-1) == d mod (p-1) */
 	dQ,	/* second factor's exponent: (e^-1) mod (q-1) == d mod (q-1) */
 	qInv;	/* (q^-1) mod p */
+#ifdef HAVE_LIBNSS
+    unsigned char ckaid[HMAC_BUFSIZE];  /*ckaid for use in NSS*/
+    unsigned int  ckaid_len;	
+#endif
 };
 
 extern void free_RSA_public_content(struct RSA_public_key *rsa);
@@ -136,7 +149,6 @@ extern void form_keyid(chunk_t e, chunk_t n, char* keyid, unsigned *keysize);
 extern struct pubkey *reference_key(struct pubkey *pk);
 extern void unreference_key(struct pubkey **pkp);
 
-
 extern err_t add_public_key(const struct id *id
     , enum dns_auth_level dns_auth_level
     , enum pubkey_alg alg
@@ -145,7 +157,6 @@ extern err_t add_public_key(const struct id *id
 
 extern bool same_RSA_public_key(const struct RSA_public_key *a
     , const struct RSA_public_key *b);
-
 extern void install_public_key(struct pubkey *pk, struct pubkey_list **head);
 
 extern void free_public_key(struct pubkey *pk);

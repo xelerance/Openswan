@@ -8,14 +8,15 @@
  */
 
 #ifdef __KERNEL__
-#include <linux/string.h>
-#include <linux/types.h>
+# include <linux/string.h>
+# include <linux/types.h>
 #else
-#include <string.h>
-#include <sys/types.h>
-#ifdef HAVE_LIBNSS
-#include <pk11pub.h>
-#endif
+# include <string.h>
+# include <sys/types.h>
+# ifdef HAVE_LIBNSS
+#  include <pk11pub.h>
+#  include "oswlog.h"
+# endif
 #endif
 #include "sha2.h"
 
@@ -102,12 +103,15 @@ static const u_int64_t sha512_K[80] = {
 void sha256_init(sha256_context *ctx)
 {
 #ifdef HAVE_LIBNSS
-	SECStatus status;
-	ctx->DigestContext=NULL;
-	ctx->DigestContext = PK11_CreateDigestContext(SEC_OID_SHA256);
-	PR_ASSERT(ctx->DigestContext!=NULL);
-	status=PK11_DigestBegin(ctx->DigestContext);
-	PR_ASSERT(status==SECSuccess);
+    SECStatus status;
+    
+    DBG(DBG_CRYPT, DBG_log("NSS: sha256 init end"));
+    ctx->ctx_nss = NULL;
+    ctx->ctx_nss = PK11_CreateDigestContext(SEC_OID_SHA256);
+    PR_ASSERT(ctx->ctx_nss!=NULL);
+    status=PK11_DigestBegin(ctx->ctx_nss);
+    PR_ASSERT(status==SECSuccess);
+    DBG(DBG_CRYPT, DBG_log("NSS: sha256 init end"));
 #else
     memcpy(&ctx->sha_H[0], &sha256_hashInit[0], sizeof(ctx->sha_H));
     ctx->sha_blocks = 0;
@@ -179,9 +183,9 @@ static void sha256_transform(sha256_context *ctx, const unsigned char *datap)
 void sha256_write(sha256_context *ctx, const unsigned char *datap, int length)
 {
 #ifdef HAVE_LIBNSS
-	SECStatus status;
-	status=PK11_DigestOp(ctx->DigestContext, datap, length);
+	SECStatus status = PK11_DigestOp(ctx->ctx_nss, datap, length);
 	PR_ASSERT(status==SECSuccess);
+	DBG(DBG_CRYPT, DBG_log("NSS: sha256 write end"));
 #else
     while(length > 0) {
         if(!ctx->sha_bufCnt) {
@@ -201,6 +205,7 @@ void sha256_write(sha256_context *ctx, const unsigned char *datap, int length)
     }
 #endif
 }
+
 #ifndef HAVE_LIBNSS
 void sha256_final(sha256_context *ctx)
 {
@@ -256,12 +261,12 @@ void sha256_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
     sha256_init(&ctx);
     sha256_write(&ctx, ib, ile);
 #ifdef HAVE_LIBNSS
-	unsigned int length;
-	SECStatus status;
-	status=PK11_DigestFinal(ctx.DigestContext, ob, &length, ole);
-	PR_ASSERT(length==ole);
-	PR_ASSERT(status==SECSuccess);
-	PK11_DestroyContext(ctx.DigestContext, PR_TRUE);
+    unsigned int length;
+    SECStatus status=PK11_DigestFinal(ctx.ctx_nss, ob, &length, ole);
+    PR_ASSERT(length==ole);
+    PR_ASSERT(status==SECSuccess);
+    PK11_DestroyContext(ctx.ctx_nss, PR_TRUE);
+    DBG(DBG_CRYPT, DBG_log("NSS: sha256 final end"));
 #else
     sha256_final(&ctx);
     memcpy(ob, &ctx.sha_out[0], ole);
@@ -275,12 +280,14 @@ void sha256_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
 void sha512_init(sha512_context *ctx)
 {
 #ifdef HAVE_LIBNSS
-	SECStatus status;
-	ctx->DigestContext=NULL;
-	ctx->DigestContext = PK11_CreateDigestContext(SEC_OID_SHA512);
-	PR_ASSERT(ctx->DigestContext!=NULL);
-	status=PK11_DigestBegin(ctx->DigestContext);
-	PR_ASSERT(status==SECSuccess);
+    DBG(DBG_CRYPT, DBG_log("NSS: sha512 init start"));
+    SECStatus status;
+    ctx->ctx_nss = NULL;
+    ctx->ctx_nss = PK11_CreateDigestContext(SEC_OID_SHA512);
+    PR_ASSERT(ctx->ctx_nss!=NULL);
+    status = PK11_DigestBegin(ctx->ctx_nss);
+    PR_ASSERT(status==SECSuccess);
+    DBG(DBG_CRYPT, DBG_log("NSS: sha512 init end"));
 #else
     memcpy(&ctx->sha_H[0], &sha512_hashInit[0], sizeof(ctx->sha_H));
     ctx->sha_blocks = 0;
@@ -361,9 +368,9 @@ static void sha512_transform(sha512_context *ctx, const unsigned char *datap)
 void sha512_write(sha512_context *ctx, const unsigned char *datap, int length)
 {
 #ifdef HAVE_LIBNSS
-	SECStatus status;
-	status=PK11_DigestOp(ctx->DigestContext, datap, length);
+       SECStatus status=PK11_DigestOp(ctx->ctx_nss, datap, length);
 	PR_ASSERT(status==SECSuccess);
+       DBG(DBG_CRYPT, DBG_log("NSS: sha512 write end"));
 #else
     while(length > 0) {
         if(!ctx->sha_bufCnt) {
@@ -451,12 +458,12 @@ void sha512_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
     sha512_init(&ctx);
     sha512_write(&ctx, ib, ile);
 #ifdef HAVE_LIBNSS
-	unsigned int length;
-	SECStatus status;
-	status=PK11_DigestFinal(ctx.DigestContext, ob, &length, ole);
-	PR_ASSERT(length==ole);
-	PR_ASSERT(status==SECSuccess);
-	PK11_DestroyContext(ctx.DigestContext, PR_TRUE);
+    unsigned int length;
+    SECStatus status = PK11_DigestFinal(ctx.ctx_nss, ob, &length, ole);
+    PR_ASSERT(length==ole);
+    PR_ASSERT(status==SECSuccess);
+    PK11_DestroyContext(ctx.ctx_nss, PR_TRUE);
+    DBG(DBG_CRYPT, DBG_log("NSS: sha512 final end"));
 #else
     sha512_final(&ctx);
     memcpy(ob, &ctx.sha_out[0], ole);
@@ -469,12 +476,14 @@ void sha512_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
 void sha384_init(sha512_context *ctx)
 {
 #ifdef HAVE_LIBNSS
-	SECStatus status;
-	ctx->DigestContext=NULL;
-	ctx->DigestContext = PK11_CreateDigestContext(SEC_OID_SHA384);
-	PR_ASSERT(ctx->DigestContext!=NULL);
-	status=PK11_DigestBegin(ctx->DigestContext);
-	PR_ASSERT(status==SECSuccess);
+    DBG(DBG_CRYPT, DBG_log("NSS: sha384 init start"));
+    SECStatus status;
+    ctx->ctx_nss = NULL;
+    ctx->ctx_nss = PK11_CreateDigestContext(SEC_OID_SHA384);
+    PR_ASSERT(ctx->ctx_nss!=NULL);
+    status=PK11_DigestBegin(ctx->ctx_nss);
+    PR_ASSERT(status==SECSuccess);
+    DBG(DBG_CRYPT, DBG_log("NSS: sha384 init end"));
 #else
     memcpy(&ctx->sha_H[0], &sha384_hashInit[0], sizeof(ctx->sha_H));
     ctx->sha_blocks = 0;
@@ -492,14 +501,14 @@ void sha384_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
     if(ole > 48) ole = 48;
     sha384_init(&ctx);
 #ifdef HAVE_LIBNSS
-	unsigned int length;
-	SECStatus status;
-	status=PK11_DigestOp(ctx.DigestContext, ib, ile);
-	PR_ASSERT(status==SECSuccess);
-	status=PK11_DigestFinal(ctx.DigestContext, ob, &length, ole);
-	PR_ASSERT(length==ole);
-	PR_ASSERT(status==SECSuccess);
-	PK11_DestroyContext(ctx.DigestContext, PR_TRUE);
+    unsigned int length;
+    SECStatus status = PK11_DigestOp(ctx.ctx_nss, ib, ile);
+    PR_ASSERT(status==SECSuccess);
+    status=PK11_DigestFinal(ctx.ctx_nss, ob, &length, ole);
+    PR_ASSERT(length==ole);
+    PR_ASSERT(status==SECSuccess);
+    PK11_DestroyContext(ctx.ctx_nss, PR_TRUE);
+    DBG(DBG_CRYPT, DBG_log("NSS: sha384 init end"));
 #else
     sha512_write(&ctx, ib, ile);
     sha512_final(&ctx);

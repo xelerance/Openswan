@@ -3,6 +3,10 @@
  * Copyright (C) 2001 Marco Bertossa, Andreas Schleiss
  * Copyright (C) 2002 Mario Strasser
  * Copyright (C) 2000-2004 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
+ * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,7 +18,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: x509.c,v 1.26 2005/09/13 19:43:19 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -51,7 +54,10 @@
 #endif
 
 #ifdef HAVE_LIBNSS
-#include <pk11pub.h>
+# include <nss.h>
+# include <pk11pub.h>
+# include <secerr.h>
+# include "oswconf.h"
 #endif
 
 
@@ -1209,10 +1215,10 @@ compute_digest(chunk_t tbs, int alg, chunk_t *digest)
 #ifdef HAVE_LIBNSS
 	   unsigned int len;
 	   SECStatus s;	
-	   s=PK11_DigestFinal(context.DigestContext, digest->ptr, &len, SHA2_256_DIGEST_SIZE);
+	   s = PK11_DigestFinal(context.ctx_nss, digest->ptr, &len, SHA2_256_DIGEST_SIZE);
 	   passert(len==SHA2_256_DIGEST_SIZE);
 	   passert(s==SECSuccess);
-	   PK11_DestroyContext(context.DigestContext, PR_TRUE);
+	   PK11_DestroyContext(context.ctx_nss, PR_TRUE);
 #else
 	   sha256_final(&context);
 	   memcpy(digest->ptr, context.sha_out, SHA2_256_DIGEST_SIZE);
@@ -1228,12 +1234,12 @@ compute_digest(chunk_t tbs, int alg, chunk_t *digest)
 #ifdef HAVE_LIBNSS
 	   unsigned int len;
 	   SECStatus s;
-	   s=PK11_DigestOp(ctx.DigestContext, tbs.ptr, tbs.len);
+	   s = PK11_DigestOp(ctx.ctx_nss, tbs.ptr, tbs.len);
 	   passert(s==SECSuccess);
-	   s=PK11_DigestFinal(ctx.DigestContext, digest->ptr, &len, SHA2_384_DIGEST_SIZE);
+	   s=PK11_DigestFinal(ctx.ctx_nss, digest->ptr, &len, SHA2_384_DIGEST_SIZE);
 	   passert(len==SHA2_384_DIGEST_SIZE);
 	   passert(s==SECSuccess);
-	   PK11_DestroyContext(ctx.DigestContext, PR_TRUE);
+	   PK11_DestroyContext(ctx.ctx_nss, PR_TRUE);
 #else
 	   sha512_write(&context, tbs.ptr, tbs.len);
 	   sha512_final(&context);
@@ -1252,10 +1258,10 @@ compute_digest(chunk_t tbs, int alg, chunk_t *digest)
 #ifdef HAVE_LIBNSS
 	   unsigned int len;
 	   SECStatus s;
-	   s=PK11_DigestFinal(context.DigestContext, digest->ptr, &len, SHA2_512_DIGEST_SIZE);
+	   s=PK11_DigestFinal(context.ctx_nss, digest->ptr, &len, SHA2_512_DIGEST_SIZE);
 	   passert(len==SHA2_512_DIGEST_SIZE);
 	   passert(s==SECSuccess);
-	   PK11_DestroyContext(context.DigestContext, PR_TRUE);
+	   PK11_DestroyContext(context.ctx_nss, PR_TRUE);
 #else
 	   sha512_final(&context);
 	   memcpy(digest->ptr, context.sha_out, SHA2_512_DIGEST_SIZE);
@@ -1292,6 +1298,35 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 	    mpz_t s;
 	    mpz_t e;
 	    mpz_t n;
+	    chunk_t nc, ec, sc;
+
+#ifdef HAVE_LIBNSS
+	chunk_t dsigc;
+	SECKEYPublicKey *publicKey;
+	PRArenaPool *arena;
+	SECStatus retVal = SECSuccess;
+	SECItem nss_n, nss_e, dsig;
+	SECItem signature, data;
+
+	arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
+	if (arena == NULL) {
+		PORT_SetError (SEC_ERROR_NO_MEMORY);
+		return FALSE;
+	}
+
+	publicKey = (SECKEYPublicKey *) PORT_ArenaZAlloc (arena, sizeof (SECKEYPublicKey));
+	if (!publicKey) {
+		PORT_FreeArena (arena, PR_FALSE);
+		PORT_SetError (SEC_ERROR_NO_MEMORY);
+		DBG(DBG_PARSING, DBG_log("NSS: error in allocating memory to public key"));
+		return FALSE;
+	}
+
+	publicKey->arena = arena;
+	publicKey->keyType = rsaKey;
+	publicKey->pkcs11Slot = NULL;
+	publicKey->pkcs11ID = CK_INVALID_HANDLE;
+#endif
 
 	    n_to_mpz(s, sig.ptr, sig.len);
 	    n_to_mpz(e, issuer_cert->publicExponent.ptr,
@@ -1299,13 +1334,12 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 	    n_to_mpz(n, issuer_cert->modulus.ptr,
 			issuer_cert->modulus.len);
 
+#ifndef HAVE_LIBNSS
 	    /* decrypt the signature s = s^e mod n */
 	    mpz_powm(s, s, e, n);
 	    /* convert back to bytes */
 	    decrypted = mpz_to_n(s, issuer_cert->modulus.len);
-	    DBG(DBG_PARSING,
-		DBG_dump_chunk("  decrypted signature: ", decrypted)
-	    )
+	    DBG(DBG_CRYPT, DBG_dump_chunk("decrypt_sig() decrypted signature: ", decrypted))
 
 	    /*  copy the least significant bits of decrypted signature
 	     *  into the digest string
@@ -1315,17 +1349,87 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 
 	    /* free memory */
 	    pfree(decrypted.ptr);
+#endif
+	    nc = mpz_to_n2(&n);
+	    ec = mpz_to_n2(&e);
+	    sc = mpz_to_n2(&s);
+
+	    DBG(DBG_CRYPT, DBG_dump_chunk("decrypt_sig() cert: modulus : ", nc ))
+	    DBG(DBG_CRYPT, DBG_dump_chunk("decrypt_sig() cert: exponent : ", ec ))
+	    DBG(DBG_CRYPT, DBG_dump_chunk("decrypt_sig() cert: input signature : ", sc))
 	    mpz_clear(s);
 	    mpz_clear(e);
 	    mpz_clear(n);
+
+#ifdef HAVE_LIBNSS
+	    /*Converting n and e to nss_n and nss_e*/
+	   nss_n.data = nc.ptr;
+	   nss_n.len = (unsigned int) nc.len;
+	   nss_n.type = siBuffer;
+
+	   nss_e.data = ec.ptr;
+	   nss_e.len  = (unsigned int)ec.len;
+	   nss_e.type = siBuffer;
+
+	   retVal = SECITEM_CopyItem(arena, &publicKey->u.rsa.modulus, &nss_n);
+	   if (retVal == SECSuccess) {
+		retVal = SECITEM_CopyItem (arena, &publicKey->u.rsa.publicExponent, &nss_e);
+	   }
+
+	   if(retVal != SECSuccess) {
+		pfree(nc.ptr);
+		pfree(ec.ptr);
+		pfree(sc.ptr);
+		SECKEY_DestroyPublicKey (publicKey);
+		DBG_log("NSS x509dn.c: error in creating public key");
+		return FALSE;
+	   }
+
+	   signature.type = siBuffer;
+	   signature.data = sc.ptr;
+	   signature.len  = (unsigned int)sc.len;
+
+	   data.type = siBuffer;
+	   data.data = digest->ptr;
+	   data.len  = (unsigned int)digest->len;
+
+	   dsigc.len = (unsigned int)sc.len;
+	   dsigc.ptr = alloc_bytes(dsigc.len, "NSS decrypted signature");
+	   dsig.type = siBuffer;
+	   dsig.data = dsigc.ptr;
+	   dsig.len  = (unsigned int)dsigc.len;
+
+	   /*Verifying RSA signature*/
+	   if(PK11_VerifyRecover(publicKey,&signature,&dsig,osw_return_nss_password_file_info()) == SECSuccess )
+	   {
+		DBG(DBG_PARSING, DBG_dump("NSS decrypted sig: ", dsig.data, dsig.len))
+		DBG_log("NSS: length of decrypted sig = %d", dsig.len);
+		return FALSE;
+           }
+
+	   pfree(nc.ptr);
+	   pfree(ec.ptr);
+	   pfree(sc.ptr);
+	   SECKEY_DestroyPublicKey (publicKey);
+
+	   if(memcmp(dsig.data+dsig.len-digest->len,digest->ptr, digest->len)==0)
+	   {
+		pfree(dsigc.ptr);
+		DBG_log("NSS : RSA Signature verified, hash values matched");
+		return TRUE;
+	   }
+	   pfree(dsigc.ptr);
+	   DBG_log("NSS : RSA Signature NOT verified");
+	   return FALSE;
+#else
 	    return TRUE;
+#endif
 	}
 	default:
 	    digest->len = 0;
 	    return FALSE;
     }
 }
-
 /*
  *   Check if a signature over binary blob is genuine
  */
@@ -1362,6 +1466,15 @@ check_signature(chunk_t tbs, chunk_t sig, int algorithm,
 	DBG_dump_chunk("  digest:", digest)
     )
 
+#ifdef HAVE_LIBNSS
+    if (!decrypt_sig(sig, algorithm, issuer_cert, &digest))
+    {
+	openswan_log(" NSS: failure in verifying signature");
+	return FALSE;
+    }
+    return TRUE;
+#else
+
     decrypted.len = digest.len; /* we want the same digest length */
 
     if (!decrypt_sig(sig, algorithm, issuer_cert, &decrypted))
@@ -1372,6 +1485,7 @@ check_signature(chunk_t tbs, chunk_t sig, int algorithm,
 
     /* check if digests are equal */
     return !memcmp(decrypted.ptr, digest.ptr, digest.len);
+#endif
 }
 
 /*

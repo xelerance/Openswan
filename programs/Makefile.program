@@ -65,6 +65,7 @@ LIBS+= -ldmalloc
 endif
 
 ifeq ($(USE_LIBNSS),true)
+CFLAGS+=-lnspr4 -lnss3
 LIBS+= -lnspr4 -lnss3
 endif
 

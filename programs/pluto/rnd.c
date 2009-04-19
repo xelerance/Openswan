@@ -1,6 +1,9 @@
 /* randomness machinery
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 2006-2007 Michael C Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007-2008 Antony Antony <antony@xelerance.com>
+ * Copyright (C) 2007-2008 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,7 +15,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: rnd.c,v 1.26 2005/09/26 03:21:55 mcr Exp $
  */
 
 /* A true random number generator (we hope)
@@ -68,6 +70,11 @@
 #include "log.h"
 #include "timer.h"
 
+#ifdef HAVE_LIBNSS
+# include <nss.h>
+# include <pk11pub.h>
+#endif
+
 /*
  * we have removed /dev/hw_random, as it can produce very low quality
  * entropy. One must run rngd to verify the entropy and feed it into
@@ -76,7 +83,10 @@
  * You have been warned.
  *
  */
+#ifndef HAVE_LIBNSS
 static int random_fd = -1;
+#endif
+
 const char *random_devices[]={
 /* Default on Linux + OSX is to use /dev/urandom as 1st choice, and fall back to /dev/random if /dev/urandom doesn't exist */
 #if defined(linux) 
@@ -95,6 +105,7 @@ const char *random_devices[]={
  * rather than this file
  */
 
+#ifndef HAVE_LIBNSS
 #define RANDOM_POOL_SIZE   SHA1_DIGEST_SIZE
 static u_char random_pool[RANDOM_POOL_SIZE];
 
@@ -109,9 +120,6 @@ generate_rnd_byte(void)
 
     return c;
 }
-
-#define RANDOM_POOL_SIZE   SHA1_DIGEST_SIZE
-static u_char random_pool[RANDOM_POOL_SIZE];
 
 static void
 mix_pool(void)
@@ -134,15 +142,25 @@ get_rnd_byte(void)
     mix_pool();
     return random_pool[0];
 }
+#endif
 
 
 void
 get_rnd_bytes(u_char *buffer, int length)
 {
+#ifdef HAVE_LIBNSS
+   SECStatus rv; 
+   rv = PK11_GenerateRandom(buffer,length);
+   if(rv !=SECSuccess) {
+	loglog(RC_LOG_SERIOUS,"NSS RNG failed");
+   }
+   passert(rv==SECSuccess);
+#else
     int i;
 
     for (i = 0; i < length; i++)
 	buffer[i] = get_rnd_byte();
+#endif
 }
 
 /*
@@ -151,6 +169,7 @@ get_rnd_bytes(u_char *buffer, int length)
 void
 init_rnd_pool(void)
 {
+#ifndef HAVE_LIBNSS
     unsigned int i;
     unsigned int max_rnd_devices = elemsof(random_devices)+1;
     const char *rnd_dev;
@@ -188,6 +207,7 @@ init_rnd_pool(void)
 	get_rnd_bytes((void *)&seed, sizeof(seed));
 	srand(seed);
     }
+#endif
 }
 
 u_char    secret_of_the_day[SHA1_DIGEST_SIZE];

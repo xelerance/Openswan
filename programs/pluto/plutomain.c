@@ -1,7 +1,11 @@
 /* Pluto main program
  * Copyright (C) 1997      Angelos D. Keromytis.
  * Copyright (C) 1998-2001 D. Hugh Redelmeier.
- * Copyright (C) 2003-2004 Xelerance Corporation
+ * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2007 Ken Bantoft <ken@xelerance.com>
+ * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,7 +19,7 @@
  *
  * Modifications to use OCF interface written by
  * Daniel Djamaludin <danield@cyberguard.com>
- * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
+ * Copyright (C) 2004-2005 Intel Corporation. 
  *
  */
 
@@ -92,7 +96,11 @@
 #endif
 
 #ifdef HAVE_LIBNSS
-#include <nss.h>
+# include <nss.h>
+# include <nspr.h>
+# ifdef FIPS_CHECK
+#  include <fipscheck.h>
+# endif
 #endif
 
 const char *ctlbase = "/var/run/pluto";
@@ -752,11 +760,39 @@ main(int argc, char **argv)
     init_constants();
     pluto_init_log();
 
+#if defined(HAVE_LIBNSS)
+    {
+	char buf[100];
+	snprintf(buf, sizeof(buf), "sql:%s",oco->confddir);
+	loglog(RC_LOG_SERIOUS,"nss directory plutomain: %s",buf);
+	SECStatus nss_init_status= NSS_InitReadWrite(buf);
+	if (nss_init_status != SECSuccess) {
+	    loglog(RC_LOG_SERIOUS, "NSS initialization failed (err %d)\n", PR_GetError());
+	} else {
+	    loglog(RC_LOG_SERIOUS, "NSS Initialized");
+	    PK11_SetPasswordFunc(getNSSPassword);
+#ifdef FIPS_CHECK
+	    if (Pluto_IsFIPS() && !FIPSCHECK_verify(NULL, NULL)) {
+		loglog(RC_LOG_SERIOUS, "FIPS integrity verification test failed");
+		exit_pluto(10);
+	    }
+#endif
+
+        }
+    }
+#endif
+
     /* Note: some scripts may look for this exact message -- don't change
      * ipsec barf was one, but it no longer does.
      */
     {
 #ifdef PLUTO_SENDS_VENDORID
+# ifdef HAVE_LIBNSS
+	if(PK11_IsFIPS()) {
+	openswan_log("Starting Pluto (Openswan Version %s%s) pid:%u"
+		, ipsec_version_code() , compile_time_interop_options, getpid());
+	} else {
+# endif
         const char *v = init_pluto_vendorid();
 	const char *vc = ipsec_version_code();
 
@@ -781,6 +817,11 @@ main(int argc, char **argv)
 	     */
 	    openswan_log("@(#) built on "__DATE__":" __TIME__ " by " BUILDER);
 	}
+#ifdef HAVE_LIBNSS
+#ifdef PLUTO_SENDS_VENDORID
+	}
+#endif
+#endif
 
 #if defined(USE_1DES)
 	openswan_log("WARNING: 1DES is enabled");
@@ -795,16 +836,6 @@ main(int argc, char **argv)
 
 #ifdef NAT_TRAVERSAL
     init_nat_traversal(nat_traversal, keep_alive, force_keepalive, nat_t_spf);
-#endif
-
-#if defined(HAVE_LIBNSS)
-	SECStatus nss_init_status= NSS_NoDB_Init(".");
-	if (nss_init_status != SECSuccess){
-    	loglog(RC_LOG_SERIOUS, "NSS initialization failed (err %d)\n", PR_GetError());
-  	}
-	else{
-	loglog(RC_LOG_SERIOUS, "NSS Initialized");
-	}
 #endif
 
     init_virtual_ip(virtual_private);
@@ -842,6 +873,11 @@ main(int argc, char **argv)
     load_crls();
     /* loading attribute certificates (experimental) */
     load_acerts();
+
+#ifdef HAVE_LIBNSS
+    /*Loading CA certs from NSS DB*/
+    load_authcerts_from_nss("CA cert",  AUTH_CA);
+#endif
 
     daily_log_event();
     call_server();

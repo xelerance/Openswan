@@ -1,8 +1,11 @@
 /* manifest constants
  *
- * Copyright (C) 2004       Michael Richardson <mcr@xelerance.com>
- * COpyright (C) 1997       Angelos D. Keromytis.
+ * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 2004-2008  Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2004-2009  Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,7 +17,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: constants.h,v 1.5 2005/09/05 20:58:23 mcr Exp $
  */
 
 #ifndef _CONSTANTS_H_
@@ -54,7 +56,10 @@ typedef int bool;
 #define close_any(fd) { if ((fd) != NULL_FD) { close(fd); (fd) = NULL_FD; } }
 
 
-/* Also comes in via <nspr4/prcpucfg.h> with USE_NSS */
+#ifdef HAVE_LIBNSS
+# include <prcpucfg.h>
+#endif
+
 #ifndef BITS_PER_BYTE
 # define BITS_PER_BYTE	8
 #endif
