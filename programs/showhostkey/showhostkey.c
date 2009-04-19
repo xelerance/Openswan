@@ -1,7 +1,11 @@
 /*
  * show the host keys in various formats
  * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
- * 
+ * Copyright (C) 1999, 2000, 2001  Henry Spencer.
+ * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -14,7 +18,6 @@
  *
  * replaces a shell script.
  *
- * RCSID $Id: ranbits.c,v 1.12 2004/04/04 01:50:56 ken Exp $
  */
 
 #include <sys/types.h>
@@ -39,6 +42,12 @@
 #include "oswconf.h"
 #include "secrets.h"
 #include "mpzfuncs.h"
+
+#ifdef HAVE_LIBNSS
+# include <nss.h>
+# include <prerror.h>
+# include <prinit.h>
+#endif
 
 char usage[] = "Usage: ipsec showhostkey [--ipseckey {gateway}] [--left ] [--right ]\n"
              "                         [--dump ] [--list ] [--x509self]\n"
@@ -478,8 +487,31 @@ int main(int argc, char *argv[])
     /* now load file from indicated location */
     pass.prompt=showhostkey_log;
     pass.fd = 2; /* stderr */
+
+#ifdef HAVE_LIBNSS
+    PRBool nss_initialized = PR_FALSE;
+    SECStatus rv;
+    char buf[100];
+    snprintf(buf, sizeof(buf), "sql:%s",oco->confddir);
+    loglog(RC_LOG_SERIOUS,"nss directory showhostkey: %s",buf);
+    PR_Init(PR_USER_THREAD, PR_PRIORITY_NORMAL, 1);
+    if ((rv = NSS_InitReadWrite(buf)) != SECSuccess) {
+	fprintf(stderr, "%s: NSS_InitReadWrite returned %d\n",progname, PR_GetError());
+	exit(1);
+    }
+   nss_initialized = PR_TRUE; 
+   PK11_SetPasswordFunc(getNSSPassword); 
+#endif
+
     osw_load_preshared_secrets(&host_secrets, verbose>0?TRUE:FALSE,
 			       secrets_file, &pass);
+
+#ifdef HAVE_LIBNSS
+    if (nss_initialized) {
+	NSS_Shutdown();
+    }
+    PR_Cleanup();
+#endif
 
     /* options that apply to entire files */
     if(dump_flg) {

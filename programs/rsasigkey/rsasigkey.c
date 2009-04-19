@@ -1,7 +1,10 @@
 /*
  * RSA signature key generation
  * Copyright (C) 1999, 2000, 2001  Henry Spencer.
- * 
+ * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -11,8 +14,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: rsasigkey.c,v 1.27 2004/05/23 21:32:03 paul Exp $
  */
 
 #include <sys/types.h>
@@ -30,8 +31,33 @@
 #include <openswan.h>
 #include <gmp.h>
 
+#ifdef HAVE_LIBNSS
+  /* nspr */
+# include <prerror.h>
+# include <prinit.h>
+# include <prmem.h>
+  /* nss */
+# include <key.h>
+# include <keyt.h>
+# include <nss.h>
+# include <pk11pub.h>
+# include <seccomon.h>
+# include <secerr.h>
+# include <secport.h>
+# include <time.h>
+
+# include "constants.h"
+# include "oswalloc.h"
+# include "oswlog.h"
+# include "oswconf.h"
+
+# ifdef FIPS_CHECK
+#  include <fipscheck.h>
+# endif
+#endif
+
 #ifndef DEVICE
-/* To the openwrt people: Do not chance /dev/random to /dev/urandom. The
+/* To the openwrt people: Do not change /dev/random to /dev/urandom. The
  * /dev/random device is ONLY used for generating long term keys, which
  * should NEVER be done with /dev/urandom. If people use X.509, PSK or
  * even raw RSA keys generated on other systems, changing this will have
@@ -47,8 +73,13 @@
 /* the code in getoldkey() knows about this */
 #define	E	3		/* standard public exponent */
 
+#ifdef HAVE_LIBNSS
+//#define F4   65537   /* preferred public exponent, Fermat's 4th number */
+char usage[] = "rsasigkey [--verbose] [--random device] [--configdir dir] [--password password] nbits";
+#else
 char usage[] = "rsasigkey [--verbose] [--random device] nbits";
 char usage2[] = "rsasigkey [--verbose] --oldkey filename";
+#endif
 struct option opts[] = {
   {"verbose",	0,	NULL,	'v',},
   {"random",	1,	NULL,	'r',},
@@ -58,6 +89,10 @@ struct option opts[] = {
   {"noopt",	0,	NULL,	'n',},
   {"help",		0,	NULL,	'h',},
   {"version",	0,	NULL,	'V',},
+#ifdef HAVE_LIBNSS
+  {"configdir",        1,      NULL,   'c' },
+  {"password", 1,      NULL,   'P' },
+#endif
   {0,		0,	NULL,	0,}
 };
 int verbose = 0;		/* narrate the action? */
@@ -72,7 +107,11 @@ char me[] = "ipsec rsasigkey";	/* for messages */
 
 /* forwards */
 int getoldkey(char *filename);
+#ifdef HAVE_LIBNSS
+void rsasigkey(int nbits, char *configdir, char *password);
+#else
 void rsasigkey(int nbits, int useoldkey);
+#endif
 void initprime(mpz_t var, int nbits, int eval);
 void initrandom(mpz_t var, int nbits);
 void getrandom(size_t nbytes, unsigned char *buf);
@@ -80,6 +119,189 @@ unsigned char *bundle(int e, mpz_t n, size_t *sizep);
 char *conv(unsigned char *bits, size_t nbytes, int format);
 char *hexout(mpz_t var);
 void report(char *msg);
+
+#ifdef HAVE_LIBNSS
+
+/*#define NUM_KEYSTROKES 120*/
+#define RAND_BUF_SIZE 60
+
+#define GEN_BREAK(e) rv=e; break;
+
+/* getModulus - returns modulus of the RSA public key */
+SECItem *getModulus(SECKEYPublicKey *pk) { return &pk->u.rsa.modulus; }
+
+/* getPublicExponent - returns public exponent of the RSA public key */
+SECItem *getPublicExponent(SECKEYPublicKey *pk) { return &pk->u.rsa.publicExponent; }
+
+/* Caller must ensure that dst is at least item->len*2+1 bytes long */
+void SECItemToHex(const SECItem * item, char * dst)
+{
+    if (dst && item && item->data) {
+	unsigned char * src = item->data;
+	unsigned int    len = item->len;
+	for (; len > 0; --len, dst += 2) {
+		sprintf(dst, "%02x", *src++);
+	}
+	*dst = '\0';
+    }
+}
+
+/*
+ * hexOut - prepare hex output, guaranteeing even number of digits
+ * The current OpenSWAN conversion routines expect an even digit count,
+ * but the is no guarantee the data will have such length.
+ * hexOut is like hexout but takes a SECItem *.
+ */
+char *hexOut(SECItem *data)
+{
+    unsigned i;
+    static char hexbuf[3 + MAXBITS/4 + 1];
+    char *hexp;
+
+    memset(hexbuf, 0, 3 + MAXBITS/4 + 1);
+    for (i = 0, hexp = hexbuf+3; i < data->len; i++, hexp += 2) {
+	sprintf(hexp, "%02x", data->data[i]);
+    }
+    *hexp='\0';     
+
+    hexp = hexbuf+1;
+    hexp[0] = '0';
+    hexp[1] = 'x';
+
+    return hexp;
+}
+
+/* UpdateRNG - Updates NSS's PRNG with user generated entropy. */
+void UpdateNSS_RNG(void)
+{
+    SECStatus rv;
+    unsigned char buf[RAND_BUF_SIZE];
+    getrandom(RAND_BUF_SIZE, buf);
+    rv = PK11_RandomUpdate(buf, sizeof buf);
+    assert(rv == SECSuccess);
+    memset(buf, 0, sizeof buf);
+}
+
+/*  Returns the password passed in in the text file.
+ *  Uses the password once and nulls it out the prevent
+ *  PKCS11 from calling us forever.
+ */
+char *GetFilePasswd(PK11SlotInfo *slot, PRBool retry, void *arg)
+{
+    char* phrases, *phrase;
+    PRFileDesc *fd;
+    PRInt32 nb;
+    const char *pwFile = (const char *)arg;
+    int i;
+    const long maxPwdFileSize = 4096;
+    char* tokenName = NULL;
+    int tokenLen = 0;
+
+    if (!pwFile) {
+	return 0;
+    }
+
+    if (retry) {
+	return 0;  /* no good retrying - the files contents will be the same */
+    }
+
+    phrases = PORT_ZAlloc(maxPwdFileSize);
+
+    if (!phrases) {
+	return 0; /* out of memory */
+    }
+
+    fd = PR_Open(pwFile, PR_RDONLY, 0);
+    if (!fd) {
+	fprintf(stderr, "No password file \"%s\" exists.\n", pwFile);
+	PORT_Free(phrases);
+	return NULL;
+    }
+    nb = PR_Read(fd, phrases, maxPwdFileSize);
+
+    PR_Close(fd);
+
+    if (nb == 0) {
+	fprintf(stderr,"password file contains no data\n");
+	PORT_Free(phrases);
+	return NULL;
+    }
+
+    if (slot) {
+	tokenName = PK11_GetTokenName(slot);
+	if (tokenName) {
+	    tokenLen = PORT_Strlen(tokenName);
+	}
+    }
+    i = 0;
+    do {
+	int startphrase = i;
+	int phraseLen;
+	/* handle the Windows EOL case */
+	while (phrases[i] != '\r' && phrases[i] != '\n' && i < nb) i++;
+	/* terminate passphrase */
+	phrases[i++] = '\0';
+	/* clean up any EOL before the start of the next passphrase */
+	while ( (i<nb) && (phrases[i] == '\r' || phrases[i] == '\n')) {
+		phrases[i++] = '\0';
+	}
+	/* now analyze the current passphrase */
+	phrase = &phrases[startphrase];
+	if (!tokenName)
+		break;
+	if (PORT_Strncmp(phrase, tokenName, tokenLen)) continue;
+	phraseLen = PORT_Strlen(phrase);
+	if (phraseLen < (tokenLen+1)) continue;
+	if (phrase[tokenLen] != ':') continue;
+	phrase = &phrase[tokenLen+1];
+	break;
+    } while (i<nb);
+
+    phrase = PORT_Strdup((char*)phrase);
+    PORT_Free(phrases);
+    return phrase;
+}
+
+char *GetModulePassword(PK11SlotInfo *slot, PRBool retry, void *arg)
+{
+    secuPWData *pwdata = (secuPWData *)arg;
+    secuPWData pwnull = { PW_NONE, 0 };
+    secuPWData pwxtrn = { PW_EXTERNAL, "external" };
+    char *pw;
+
+    if (pwdata == NULL) {
+	pwdata = &pwnull;
+    }
+
+    if (PK11_ProtectedAuthenticationPath(slot)) {
+	pwdata = &pwxtrn;
+    }
+    if (retry && pwdata->source != PW_NONE) {
+	fprintf(stderr, "%s: Incorrect password/PIN entered.\n", me);
+	return NULL;
+    }
+
+    switch (pwdata->source) {
+	case PW_FROMFILE:
+		/* Instead of opening and closing the file every time, get the pw
+		* once, then keep it in memory (duh).
+		*/
+		pw = GetFilePasswd(slot, retry, pwdata->data);
+		pwdata->source = PW_PLAINTEXT;
+		pwdata->data = PL_strdup(pw);
+		/* it's already been dup'ed */
+		return pw;
+	case PW_PLAINTEXT:
+		return PL_strdup(pwdata->data);
+	default: /* cases PW_NONE and PW_EXTERNAL not supported */
+		fprintf(stderr, "Unknown or unsupported case in GetModulePassword");
+		break;
+    }
+
+    fprintf(stderr, "%s: Password check failed:  No password found.\n", me);
+    return NULL;
+}
+#endif /* HAVE_LIBNSS */
 
 /*
  - main - mostly argument parsing
@@ -93,6 +315,10 @@ int main(int argc, char *argv[])
 	int i;
 	int nbits;
 	char *oldkeyfile = NULL;
+#ifdef HAVE_LIBNSS
+	char *configdir = NULL; /* where the NSS databases reside */
+	char *password = NULL;  /* password for token authentication */
+#endif
 
 	while ((opt = getopt_long(argc, argv, "", opts, NULL)) != EOF)
 		switch (opt) {
@@ -120,25 +346,42 @@ int main(int argc, char *argv[])
 			break;
 		case 'h':	/* help */
 			printf("Usage:\t%s\n", usage);
+#ifndef HAVE_LIBNSS
 			printf("\tor\n");
 			printf("\t%s\n", usage2);
+#endif
 			exit(0);
 			break;
 		case 'V':	/* version */
 			printf("%s %s\n", me, ipsec_version_code());
 			exit(0);
 			break;
+#ifdef HAVE_LIBNSS
+		case 'c':       /* nss configuration directory */
+			configdir = optarg;
+			break;
+		case 'P':       /* token authentication password */
+			password = optarg;
+			break;
+#endif
 		case '?':
 		default:
 			errflg = 1;
 			break;
 		}
+#ifdef HAVE_LIBNSS
+	if (errflg || optind != argc-1) {
+		printf("Usage:\t%s\n", usage);
+		exit(2);
+	}
+#else
 	if (errflg || optind != ((oldkeyfile != NULL) ? argc : argc-1)) {
 		printf("Usage:\t%s\n", usage);
 		printf("\tor\n");
 		printf("\t%s\n", usage2);
 		exit(2);
 	}
+#endif
 
 	if (outputhostname[0] == '\0') {
 		i = gethostname(outputhostname, sizeof(outputhostname));
@@ -169,7 +412,11 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
+#ifdef HAVE_LIBNSS
+	rsasigkey(nbits, configdir, password);
+#else
 	rsasigkey(nbits, (oldkeyfile == NULL) ? 0 : 1);
+#endif
 	exit(0);
 }
 
@@ -283,6 +530,144 @@ char *filename;
  * keys were to be used for encryption, but for signatures there are some
  * real speed advantages.
  */
+
+#ifdef HAVE_LIBNSS
+/* Generates an RSA signature key using nss.
+ * Curretly e is fixed at 3, but we may change that.  We may
+ * use F4 if preformance doesn't degrade much realative to 3.
+ * Notice that useoldkey is not yet supported.
+ */
+void
+rsasigkey(int nbits, char *configdir, char *password)
+{
+    SECStatus rv;
+    PRBool nss_initialized          = PR_FALSE;
+    PK11RSAGenParams rsaparams      = { nbits, (long) E };
+    secuPWData  pwdata              = { PW_NONE, NULL };
+    PK11SlotInfo *slot              = NULL;
+    SECKEYPrivateKey *privkey       = NULL;
+    SECKEYPublicKey *pubkey         = NULL;
+    unsigned char *bundp            = NULL;
+    mpz_t n;
+    mpz_t e;
+    size_t bs;
+    char n_str[3 + MAXBITS/4 + 1];
+    char buf[100];
+    time_t now = time((time_t *)NULL);
+
+    mpz_init(n);
+    mpz_init(e);
+
+    pwdata.source = password ? PW_PLAINTEXT : PW_NONE;
+    pwdata.data = password ? password : NULL;
+
+    do {
+	if (!configdir) {
+		fprintf(stderr, "%s: configdir is required\n", me);
+		return;
+	}
+
+	PR_Init(PR_USER_THREAD, PR_PRIORITY_NORMAL, 1);
+	snprintf(buf, sizeof(buf), "sql:%s",configdir);
+	if ((rv = NSS_InitReadWrite(buf)) != SECSuccess) {
+		fprintf(stderr, "%s: NSS_InitReadWrite returned %d\n", me, PR_GetError());
+		break;
+	}
+#ifdef FIPS_CHECK
+	if (PK11_IsFIPS() && !FIPSCHECK_verify(NULL, NULL)) {
+		printf("FIPS integrity verification test failed.\n");
+		exit(1);
+	}
+#endif 
+
+	if (PK11_IsFIPS() && !password) {
+		fprintf(stderr, "%s: On FIPS mode a password is required\n", me);
+		break;
+	}
+
+	PK11_SetPasswordFunc(GetModulePassword);
+	nss_initialized = PR_TRUE;
+
+	/* Good for now but someone may want to use a hardware token */
+	slot = PK11_GetInternalKeySlot();
+	/* In which case this may be better
+	slot = PK11_GetBestSlot(CKM_RSA_PKCS_KEY_PAIR_GEN, password ? &pwdata : NULL);
+	or the user may specify the name of a token.
+	*/
+
+	if (PK11_IsFIPS() || !PK11_IsInternal(slot)) {
+		rv = PK11_Authenticate(slot, PR_FALSE, &pwdata);
+		if (rv != SECSuccess) {
+			fprintf(stderr, "%s: could not authenticate to token '%s'\n",
+				me, PK11_GetTokenName(slot));
+			GEN_BREAK(SECFailure);
+		}
+	}
+
+	/* Do some random-number initialization. */
+	UpdateNSS_RNG();
+	/* Log in to the token */
+	if (password) {
+	    rv = PK11_Authenticate(slot, PR_FALSE, &pwdata);
+	    if (rv != SECSuccess) {
+		fprintf(stderr, "%s: could not authenticate to token '%s'\n",
+			me, PK11_GetTokenName(slot));
+		GEN_BREAK(SECFailure);
+	    }
+	}
+	privkey = PK11_GenerateKeyPair(slot
+		, CKM_RSA_PKCS_KEY_PAIR_GEN, &rsaparams, &pubkey
+		, configdir ? PR_TRUE : PR_FALSE, password ? PR_TRUE : PR_FALSE, &pwdata);
+	/* inTheToken, isSensitive, passwordCallbackFunction */
+	if (!privkey) {
+		fprintf(stderr, "%s: key pair generation failed: \"%d\"\n", me, PORT_GetError());
+		GEN_BREAK(SECFailure);
+	}
+
+	privkey->wincx = &pwdata;
+	PORT_Assert(pubkey != NULL);
+	if (configdir) {
+		fprintf(stderr, "Generated RSA key pair using the NSS database\n");
+	}
+       
+	SECItemToHex(getModulus(pubkey), n_str);
+	assert(!mpz_set_str(n, n_str, 16));
+
+	/* and the output */
+	/* note, getoldkey() knows about some of this */
+	report("output...\n");          /* deliberate extra newline */
+	printf("\t# RSA %d bits   %s   %s", nbits, outputhostname, ctime(&now));
+                                                       /* ctime provides \n */
+	printf("\t# for signatures only, UNSAFE FOR ENCRYPTION\n");
+	bundp = bundle(E, n, &bs);
+	printf("\t#pubkey=%s\n", conv(bundp, bs, 's')); /* RFC2537ish format */
+	printf("\tModulus: %s\n", hexOut(getModulus(pubkey)));
+	printf("\tPublicExponent: %s\n", hexOut(getPublicExponent(pubkey)));
+
+	SECItem *ckaID=PK11_MakeIDFromPubKey(getModulus(pubkey));
+	if(ckaID!=NULL) {
+		printf("\t# everything after this point is CKA_ID in hex format when using NSS\n");
+		printf("\tPrivateExponent: %s\n", hexOut(ckaID));
+		printf("\tPrime1: %s\n", hexOut(ckaID));
+		printf("\tPrime2: %s\n", hexOut(ckaID));
+		printf("\tExponent1: %s\n", hexOut(ckaID));
+		printf("\tExponent2: %s\n", hexOut(ckaID));
+		printf("\tCoefficient: %s\n", hexOut(ckaID));
+		printf("\tCKAIDNSS: %s\n", hexOut(ckaID));
+		SECITEM_FreeItem(ckaID, PR_TRUE);
+	}
+
+	} while(0);
+
+    if (privkey) SECKEY_DestroyPrivateKey(privkey);
+    if (pubkey) SECKEY_DestroyPublicKey(pubkey);    
+
+    if (nss_initialized) {
+	(void) NSS_Shutdown();
+    }
+    (void) PR_Cleanup();
+}
+#else
 void
 rsasigkey(nbits, useoldkey)
 int nbits;
@@ -378,7 +763,9 @@ int useoldkey;			/* take primes from old key? */
 	printf("\tExponent2: %s\n", hexout(exp2));
 	printf("\tCoefficient: %s\n", hexout(coeff));
 }
+#endif
 
+#ifndef HAVE_LIBNSS
 /*
  - initprime - initialize an mpz_t to a random prime of specified size
  * Efficiency tweak:  we reject candidates that are 1 higher than a multiple
@@ -445,6 +832,7 @@ int nbits;			/* known to be a multiple of CHAR_BIT */
 		exit(1);
 	}
 }
+#endif
 
 /*
  - getrandom - get some random bytes from /dev/random (or wherever)

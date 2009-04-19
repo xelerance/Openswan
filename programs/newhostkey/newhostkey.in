@@ -15,14 +15,16 @@
 # RCSID $Id: newhostkey.in,v 1.8 2005/08/18 12:11:19 ken Exp $
 
 me="ipsec newhostkey"
-usage="Usage: $me --output filename [--bits n] [--quiet] [--hostname host]
+usage="Usage: $me --output filename [--bits n] [--quiet] [--hostname host] [--configdir nssdbdir] [--password password] 
          or
-       $me --output - [--bits n] [--quiet] [--verbose] [--hostname host] >filename"
+       $me --output - [--bits n] [--quiet] [--verbose] [--hostname host]  [--configdir nssdbdir] [--password password] >filename"
 
 bits=2192
 verbose=
 host=
 output=
+configdir=
+password=
 for dummy
 do
 	case "$1" in
@@ -33,6 +35,8 @@ do
 	--verbose)	verbose=--verbose 	;;
 	--version)	echo "$me $IPSEC_VERSION" ; exit 0	;;
 	--random)	host="$host --random $2" ; shift	;;
+        --configdir)    configdir="--configdir $2" ;    shift   ;;
+        --password)     password="--password $2" ;      shift   ;;
 	--help)	echo "$usage" ; exit 0	;;
 	--)	shift ; break		;;
 	-*)	echo "$me: unknown option \`$1'" >&2 ; exit 2	;;
@@ -57,7 +61,7 @@ fi
 
 (
 	echo ': RSA	{'
-	ipsec rsasigkey $verbose $host $bits
+	ipsec rsasigkey $verbose $configdir $password $host $bits 
 	echo '	}'
 	echo '# do not change the indenting of that "}"'
 ) |

@@ -20,6 +20,8 @@
     <arg choice='opt'>--verbose </arg>
     <arg choice='opt'>--random <replaceable>filename</replaceable></arg>
     <arg choice='opt'>--rounds <replaceable>nr</replaceable></arg>
+    <arg choice='opt'>--configdir <replaceable>nssdbdir</replaceable></arg>
+    <arg choice='opt'>--password <replaceable>nsspassword</replaceable></arg>
     <arg choice='opt'>--hostname <replaceable>hostname</replaceable></arg>
     <arg choice='opt'>--noopt </arg>
     <arg choice='plain'>nbits </arg>
@@ -28,6 +30,8 @@
   <command>ipsec</command>    
     <arg choice='plain'><replaceable>rsasigkey</replaceable></arg>
     <arg choice='opt'>--verbose </arg>
+    <arg choice='opt'>--configdir <replaceable>nssdbdir</replaceable></arg>
+    <arg choice='opt'>--password <replaceable>nsspassword</replaceable></arg>
     <arg choice='opt'>--hostname <replaceable>hostname</replaceable></arg>
     <arg choice='opt'>--noopt </arg>
     <arg choice='opt'>--oldkey <replaceable>filename</replaceable></arg>
@@ -66,6 +70,13 @@ funnel randomness from <filename>/dev/hw_random</filename> into <filename>/dev/r
 <para>The <option>--rounds</option> option specifies the number of rounds to
 be done by the pz_probab_prime_p probabilistic primality checker. The default,
 30, is fairly rigorous and should not normally have to be overridden.</para>
+
+<para>The <option>--Configdir</option> option specifies the nss configuration directory to use.
+This is the directory where the NSS certificate, key and security modules databases reside.</para>
+
+<para>The <option>--password</option> option specifies the nss cryptographic module authentication
+password if the NSS module has been configured to require it.  A password is required by hardware
+tokens and also by the internal softotken module when configured to run in FIPS mode.</para>
 
 <para>The <option>--hostname</option> option specifies what host name to use in the first line
 of the output (see below); the default is what
