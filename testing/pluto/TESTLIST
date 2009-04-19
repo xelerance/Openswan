@@ -208,6 +208,10 @@ ctltest	 	vpn-dns-01		good
 # incomplete test - disabled
 #umlplutotest	x509-pluto-03		good
 
+# a test for using nss with X.509 cert
+#
+# incomplete test - disabled
+#umlplutotest	x509-nss-01		good
 
 #
 # Test of XAUTH client to XAUTH server
