@@ -4,6 +4,19 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
+v2.6.22
+* NSS support via USE_LIBNSS updated [Avesh Agarwal]
+* Added USE_FIPSCHECK. [Avesh Agarwal]
+* Enabled USE_DYNAMICDNS per default. Disabled USE_LWRES. [Paul]
+* Fix for gcc 4.4 errors [Avesh Agarwal]
+* AVC Denail with /var/tmp and openswan ipsec service [Avesh Agarwal]
+  (see https://bugzilla.redhat.com/show_bug.cgi?id=489113)
+* misc. fixes to the build system [mcr]
+* Updated various Copyrights [Paul]
+* Fix for DYNAMICDNS when dns name was unknown on initial load [David]
+* Fix for ttoaddr when passing AF_INET/AF_INET6 [David]
+* newer CA's (openssl) now use a crlnumber. Create one with 01 [Paul]
+
 v2.6.21
 * Fix for CVE-2009-0790 DPD crasher [Gerd v. Egidy/Paul]
 * Fix remaining SADB_EXT_MAX -> K_SADB_EXT_MAX entries. ["bencsathb"]
