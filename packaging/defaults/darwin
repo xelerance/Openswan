@@ -12,6 +12,12 @@ USE_LWRES=true
 # no longer needed now the bison/yacc options got updated
 USE_YACC=false
 
+USE_BSDKAME=true
+
+# build modules, etc. for KLIPS.
+BUILD_KLIPS=false
+
+
 ISCARCH=unix
 ISCHOSTARCH=unix
 
