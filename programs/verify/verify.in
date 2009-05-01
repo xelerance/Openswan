@@ -467,6 +467,11 @@ else
 		if($oe_disabled_temp == 1) {
 			$oe_disabled = 1;
 		}
+		$oe_disabled_temp = `cat $configfiles[$n2]| grep -i 'oe=off'`;
+		if($oe_disabled_temp) {
+			$oe_disabled = 1;
+		}
+
 	}
 	if( $oe_disabled) {
 		printfun "Opportunistic Encryption Support";
