@@ -16,6 +16,9 @@ v2.6.22
 * Fix for DYNAMICDNS when dns name was unknown on initial load [David]
 * Fix for ttoaddr when passing AF_INET/AF_INET6 [David]
 * newer CA's (openssl) now use a crlnumber. Create one with 01 [Paul]
+* Fixes to new nat-t code (HAVE_UDP_ENCAP_CONVERT ) [mcr]
+* Some ipsec_tunnel KLIPS cleanups [mcr]
+
 
 v2.6.21
 * Fix for CVE-2009-0790 DPD crasher [Gerd v. Egidy/Paul]

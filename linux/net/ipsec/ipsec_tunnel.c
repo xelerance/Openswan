@@ -35,6 +35,7 @@
 #endif /* MALLOC_SLAB */
 #include <linux/errno.h>  /* error codes */
 #include <linux/types.h>  /* size_t */
+#include <linux/file.h> 
 #include <linux/interrupt.h> /* mark_bh */
 
 #include <net/tcp.h>
@@ -49,14 +50,10 @@
 
 #include <openswan.h>
 
-#ifdef NET_21
 # include <linux/in6.h>
 # define IS_MYADDR RTN_LOCAL
 # include <net/dst.h>
-# undef dev_kfree_skb
-# define dev_kfree_skb(a,b) kfree_skb(a)
 # define PHYSDEV_TYPE
-#endif /* NET_21 */
 
 #ifndef NETDEV_TX_BUSY
 # ifdef NETDEV_XMIT_CN
@@ -86,6 +83,7 @@
 #include "openswan/ipsec_sa.h"
 #include "openswan/ipsec_tunnel.h"
 #include "openswan/ipsec_xmit.h"
+#include "openswan/ipsec_rcv.h"
 #include "openswan/ipsec_ipe4.h"
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_esp.h"
@@ -925,7 +923,7 @@ ipsec_tunnel_set_mac_address(struct net_device *dev, void *addr)
 		return -ENODEV;
 	}
 
-	if(!prv->set_mac_address) {
+	if(!prv->dev) {
 		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
 			    "klips_debug:ipsec_tunnel_set_mac_address: "
 			    "physical device has been detached, cannot set - skb->dev=%s->NULL\n",
@@ -1116,6 +1114,7 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 		return -ENODATA;
 	}
 
+	dev->set_mac_address = ipsec_tunnel_set_mac_address;
 	prv->dev = physdev;
 	prv->hard_start_xmit = physdev->hard_start_xmit;
 	prv->get_stats = physdev->get_stats;
@@ -1405,27 +1404,24 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 	case IPSEC_UDP_ENCAP_CONVERT:
 	{
 		unsigned int *socknum =(unsigned int *)&ifr->ifr_data;
-		struct socket *sock;
-		int err, fput_needed;
+		const struct socket *sock;
+		int err = 0;
 
-		/* that's a static function in socket.c 
- 		 * sock = sockfd_lookup_light(*socknum, &err, &fput_needed); */
+ 		/* translate # to socket structure */
 		sock = sockfd_lookup(*socknum, &err);
 		if (!sock)
 			goto encap_out;
 
 		/* check that it's a UDP socket */
-		udp_sk(sk)->encap_type = UDP_ENCAP_ESPINUDP_NON_IKE;
-		udp_sk(sk)->encap_rcv  = klips26_udp_encap_rcv;
+		udp_sk(sock->sk)->encap_type = UDP_ENCAP_ESPINUDP_NON_IKE;
+		udp_sk(sock->sk)->encap_rcv  = klips26_udp_encap_rcv;
 
 		KLIPS_PRINT(debug_tunnel
 			    , "UDP socket: %u set to NON-IKE encap mode\n"
-			    , socknum);
+			    , *socknum);
 		       
 		err = 0;
 
-	encap_output:
-		fput_light(sock->file, fput_needed);
 	encap_out:
 		return err;
 	}

@@ -279,6 +279,7 @@ ipsec_klips_init(void)
 
 	error |= ipsec_mast_init_devices();
 
+/* This is no longer needed for >= 2.6.23. We use HAVE_UDP_ENCAP_CONVERT */
 #if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
 	/* register our ESP-UDP handler */
 	if(udp4_register_esp_rcvencap(klips26_rcv_encap
