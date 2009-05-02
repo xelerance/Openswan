@@ -48,6 +48,7 @@
 #include "kernel_netlink.h"
 #include "kernel_pfkey.h"
 #include "kernel_noklips.h"
+#include "kernel_bsdkame.h"
 #include "packet.h"
 #include "x509.h"
 #include "log.h"
