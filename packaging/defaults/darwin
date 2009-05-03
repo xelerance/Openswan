@@ -1,7 +1,7 @@
 CC=gcc
 PORTINCLUDE+=-I${OPENSWANSRCDIR}/ports/darwin/include 
 PORTINCLUDE+=-g -O3 -I/opt/local/include -L/opt/local/lib
-USERLINK=-L/usr/local/lib
+USERLINK=-L/usr/local/lib -L/opt/local/lib
 
 USE_MAST=false
 USE_KLIPS=false
