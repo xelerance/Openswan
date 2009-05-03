@@ -839,7 +839,7 @@ raw_eroute(const ip_address *this_host
            , ipsec_spi_t spi
            , unsigned int proto
            , unsigned int transport_proto
-           , unsigned int satype
+           , enum eroute_type esatype
            , const struct pfkey_proto_info *proto_info
            , time_t use_lifetime
            , enum pluto_sadb_operations op
@@ -868,7 +868,7 @@ raw_eroute(const ip_address *this_host
                                   , that_host, that_client
                                   , spi, proto
                                   , transport_proto
-                                  , satype, proto_info
+                                  , esatype, proto_info
                                   , use_lifetime, op, text_said);
     
     if(result == FALSE || DBGP(DBG_CONTROL|DBG_KLIPS)) {
@@ -942,7 +942,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                                        , null_host, &that_broad_client
                                        , htonl(shunt_spi), SA_INT
                                        , transport_proto
-                                       , K_SADB_X_SATYPE_INT, null_proto_info
+                                       , ET_INT, null_proto_info
                                        , SHUNT_PATIENCE, ERO_REPLACE, why))
                             {
                                 struct bare_shunt *bs = alloc_thing(struct bare_shunt, "bare shunt");
@@ -970,7 +970,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                        , htonl(shunt_spi)
                        , SA_INT
                        , transport_proto
-                       , K_SADB_X_SATYPE_INT, null_proto_info
+                       , ET_INT, null_proto_info
                        , SHUNT_PATIENCE, ERO_ADD, why))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client, &that_client
@@ -993,7 +993,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
         if (raw_eroute(null_host, &this_client, null_host, &that_client
                        , htonl(shunt_spi), SA_INT
                        , 0 /* transport_proto */
-                       , K_SADB_X_SATYPE_INT, null_proto_info
+                       , ET_INT, null_proto_info
                        , SHUNT_PATIENCE, op, why))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client
@@ -1031,7 +1031,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
 
 bool eroute_connection(struct spd_route *sr
 		       , ipsec_spi_t spi, unsigned int proto
-		       , unsigned int satype
+		       , enum eroute_type esatype
 		       , const struct pfkey_proto_info *proto_info
 		       , unsigned int op, const char *opname)
 {
@@ -1050,7 +1050,7 @@ bool eroute_connection(struct spd_route *sr
                       , spi
                       , proto
                       , sr->this.protocol
-                      , satype
+                      , esatype
                       , proto_info, 0, op, buf2);
 }
 
@@ -1201,7 +1201,8 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     ip_subnet src, dst;
     ip_subnet src_client, dst_client;
     ipsec_spi_t inner_spi = 0;
-    unsigned int proto = 0, satype = 0;
+    unsigned int proto = 0;
+    enum eroute_type esatype = 0;
     bool replace;
     bool outgoing_ref_set = FALSE;
     bool incoming_ref_set = FALSE;
@@ -1252,7 +1253,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     {
         inner_spi = 256;
         proto = SA_IPIP;
-        satype = SADB_SATYPE_UNSPEC;
+        esatype = ET_IPIP;
     }
     else if (encapsulation == ENCAPSULATION_MODE_TUNNEL)
     {
@@ -1285,7 +1286,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->spi = ipip_spi;
-        said_next->satype = K_SADB_X_SATYPE_IPIP;
+        said_next->esatype = ET_IPIP;
         said_next->text_said = text_said;
 	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
 
@@ -1344,7 +1345,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
         inner_spi = ipip_spi;
         proto = SA_IPIP;
-        satype = K_SADB_X_SATYPE_IPIP;
+        esatype = ET_IPIP;
     }
 
     /* set up IPCOMP SA, if any */
@@ -1373,7 +1374,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->spi = ipcomp_spi;
-        said_next->satype = K_SADB_X_SATYPE_COMP;
+        said_next->esatype = ET_IPCOMP;
         said_next->encalg = compalg;
         said_next->encapsulation = encapsulation;
         said_next->reqid = c->spd.reqid + 2;
@@ -1593,7 +1594,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->spi = esp_spi;
-        said_next->satype = SADB_SATYPE_ESP;
+        said_next->esatype = ET_ESP;
         said_next->replay_window = kernel_ops->replay_window;
         said_next->authalg = ei->authalg;
         said_next->authkeylen = ei->authkeylen;
@@ -1707,7 +1708,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->spi = ah_spi;
-        said_next->satype = SADB_SATYPE_AH;
+        said_next->esatype = ET_AH;
         said_next->replay_window = kernel_ops->replay_window;
         said_next->authalg = authalg;
         said_next->authkeylen = st->st_ah.keymat_len;
@@ -1829,7 +1830,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
                               , inner_spi              /* spi */
 			      , proto                  /* proto */
                               , c->spd.this.protocol   /* transport_proto */
-                              , satype                 /* satype */
+                              , esatype                 /* satype */
                               , proto_info             /* " */
 			      , 0                      /* lifetime */
                               , ERO_ADD_INBOUND        /* op */
@@ -1924,7 +1925,7 @@ teardown_half_ipsec_sa(struct state *st, bool inbound)
                           , 256
 			  , IPSEC_PROTO_ANY
                           , c->spd.this.protocol
-                          , SADB_SATYPE_UNSPEC
+                          , ET_UNSPEC
                           , null_proto_info, 0
                           , ERO_DEL_INBOUND, "delete inbound");
     }
@@ -2510,7 +2511,7 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
                     , bs->said.spi      /* network order */
                     , SA_INT            /* proto */
                     , 0                 /* transport_proto */
-                    , K_SADB_X_SATYPE_INT
+                    , ET_INT
                     , null_proto_info
                     , SHUNT_PATIENCE
                     , ERO_REPLACE, "restore");
