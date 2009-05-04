@@ -1,1 +1,1 @@
-IPSECBASEVERSION=2.6.ikev2-$(shell date +%Y%V).git
+IPSECBASEVERSION=2.6.gsoc-$(shell date +%Y%V).git
