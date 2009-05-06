@@ -1,7 +1,8 @@
 #!/usr/bin/perl
-# mail OE DNS RR info to relevent administrator
 #
 # Copyright (C) 2003 Sam Sgro <sam@freeswan.org> 
+# Copyright (C) 2005-2008 Michael Richardson <mcr@xelerance.com>
+# Copyright (C) 2005-2009 Paul Wouters <paul@xelerance.com>
 #
 # Based on "verify" from the FreeS/WAN distribution, (C) 2001 Michael 
 # Richardson <mcr@freeswan.org>
@@ -246,12 +247,19 @@ sub installstartcheck {
 	errchk "$test";
 
 # This requires KLIPS NAT-T patch > 2.4.x
-        if ( -e "/proc/net/ipsec_eroute") {
-        printfun "KLIPS detected, checking for NAT Traversal support";
-        open("cat", "/sys/module/ipsec/parameters/natt_available");
-        if(<cat> == "1")
-		{ $nattest = "1" }
-	errchk "$nattest"; 
+	if ( -e "/proc/net/ipsec_eroute") {
+	  printfun "KLIPS detected, checking for NAT Traversal support";
+	  if ( -e "/sys/module/ipsec/parameters/natt_available") {
+		run "cat /sys/module/ipsec/parameters/natt_available";
+		if("@out" =="1\n")
+		   { warnchk "", "OLD STYLE"; }
+		else {
+		   if("@out" == "2\n")
+			{ errchk "OK"; }
+		   else
+			{ warnchk "", "UNKNOWN"; }
+		}
+	   } else { warnchk "","UNKNOWN"; }
 	}
 
         if ( -e "/selinux/enforce") {
@@ -467,6 +475,11 @@ else
 		if($oe_disabled_temp == 1) {
 			$oe_disabled = 1;
 		}
+		$oe_disabled_temp = `cat $configfiles[$n2]| grep -i 'oe=off'`;
+		if($oe_disabled_temp) {
+			$oe_disabled = 1;
+		}
+
 	}
 	if( $oe_disabled) {
 		printfun "Opportunistic Encryption Support";

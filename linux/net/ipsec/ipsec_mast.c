@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_mast_c_version[] = "RCSID $Id: ipsec_mast.c,v 1.7 2005/04/29 05:10:22 mcr Exp $";
+char ipsec_mast_c_version[] = "RCSID $Id: $";
 
 #define __NO_VERSION__
 #include <linux/module.h>

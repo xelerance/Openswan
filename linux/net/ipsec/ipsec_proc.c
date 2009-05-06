@@ -637,6 +637,8 @@ ipsec_version_get_info(char *buffer,
 
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 unsigned int natt_available = 1;
+#elif defined (HAVE_UDP_ENCAP_CONVERT)
+unsigned int natt_available = 2;
 #else
 unsigned int natt_available = 0;
 #endif
@@ -653,13 +655,7 @@ ipsec_natt_get_info(char *buffer,
 	off_t begin = 0;
 
 	len += ipsec_snprintf(buffer + len,
-			      length-len, "%d\n",
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
-			      1
-#else
-			      0
-#endif
-		);
+			      length-len, "%d\n", natt_available);
 
 	*start = buffer + (offset - begin);	/* Start of wanted data */
 	len -= (offset - begin);			/* Start slop */
