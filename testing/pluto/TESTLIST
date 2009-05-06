@@ -430,6 +430,10 @@ umlplutotest    netkey-pluto-01			good
 umlplutotest    netkey-pluto-02			good
 umlplutotest    netkey-pluto-03-sourceip        good
 
+# sourceip tests
+umlplutotest	sourceip-01			good
+umlplutotest	sourceip-02			good
+
 #################################################################
 # IKEv2 tests
 #################################################################
