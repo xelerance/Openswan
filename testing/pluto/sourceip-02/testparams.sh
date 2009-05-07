@@ -8,6 +8,9 @@ TESTNAME=sourceip-02
 EASTHOST=east
 WESTHOST=west
 
+# west gets a netkey kernel
+WEST_NETKEY=true
+
 REF_PUB_OUTPUT=westnet--ping.txt
 
 REF_WEST_FILTER=../../klips/fixups/no-arp-pcap2.pl
