@@ -105,6 +105,9 @@ umlplutotest	dpd-05	good
 # RFC 3706 DPD test
 umlplutotest	dpd-06	good
 
+# RFC 3706 DPD test
+umlplutotest	dpd-07	good
+
 # Delete SA test.
 umlplutotest	delete-sa-01	good
 
