@@ -332,7 +332,7 @@ USE_XAUTHPAM?=false
 USE_FIPSCHECK?=false
 
 # Support for NSS crypto library (requires HAVE_THREADS)
-USE_LIBNSS?=false
+USE_LIBNSS?=true
 
 ifeq ($(USE_FIPSCHECK),true)
 USE_LIBNSS?=true
