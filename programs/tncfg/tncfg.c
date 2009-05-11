@@ -176,7 +176,7 @@ int
 main(int argc, char *argv[])
 {
 	struct ifreq ifr;
-	struct ipsectunnelconf *shc=(struct ipsectunnelconf *)ifr.ifr_data;
+	struct ipsectunnelconf *shc=(struct ipsectunnelconf *)&ifr.ifr_data;
 	int s;
 	int c, previous = -1;
 	int argcount = argc;
