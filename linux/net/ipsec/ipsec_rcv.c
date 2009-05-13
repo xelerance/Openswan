@@ -660,7 +660,7 @@ rcvleave:
 }
 
 /*
- * get all the initial checking and setup done.  Not of this can be off
+ * get all the initial checking and setup done.  None of this can be off
  * loaded by any currently support hardware
  *
  * the following things should be setup when we exit this function.
