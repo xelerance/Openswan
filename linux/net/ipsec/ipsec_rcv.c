@@ -854,8 +854,20 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 		}
 
 		if(ipsecdev) {
+			KLIPS_PRINT(debug_rcv && prvdev,
+					"klips_debug:klips26_rcv_encap: "
+					"assigning packet ownership to "
+					"virtual device %s from "
+					"physical device %s.\n",
+				ipsecdev->name, skb->dev->name);
 			skb->dev = ipsecdev;
 		} else {
+			KLIPS_PRINT(debug_rcv,
+					"klips_debug:klips26_rcv_encap: "
+					"assigning packet ownership to "
+					"virtual device mast0 from "
+					"physical device %s.\n",
+				skb->dev->name);
 			skb->dev = ipsec_mast_get_device(0);
 			
 			/* ipsec_mast_get takes the device */
@@ -865,7 +877,10 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 		if(prvdev) {
 			stats = (struct net_device_stats *) &(prvdev->mystats);
 		}
-	} 
+	} else {
+		KLIPS_PRINT(debug_rcv, "klips_debug:klips26_rcv_encap: "
+				"device supplied with skb is NULL\n");
+	}
 
 	if(stats) {
 		stats->rx_packets++;
@@ -1978,36 +1993,6 @@ int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 				"failled to allocate a rcv state object\n");
 		goto rcvleave;
 	}
-
-	if(skb->dev)
-	  {
-	   KLIPS_PRINT(debug_rcv, "klips_debug:klips26_rcv_encap: <<< Info -- ");
-	   KLIPS_PRINTMORE(debug_rcv, "skb->dev=%s ",
-		skb->dev->name ? skb->dev->name : "NULL");
-	   KLIPS_PRINTMORE(debug_rcv, "\n");
-
-	   if(skb->dev->name) 
-	     {
-		for(i = 0; i < IPSEC_NUM_IF; i++) 
-		   {
-		    snprintf(name, IFNAMSIZ, IPSEC_DEV_FORMAT, i);
-		    ipsecdev = __ipsec_dev_get(name);
-		    prv = ipsecdev ? (struct ipsecpriv *)(ipsecdev->priv) : NULL;
-		    prvdev = prv ? (struct net_device *)(prv->dev) : NULL;
-		    if(prvdev && !strncmp(prvdev->name, skb->dev->name, IFNAMSIZ))
-			{
-			 skb->dev = ipsecdev;
-			 KLIPS_PRINT(debug_rcv && prvdev, "klips_debug:klips26_rcv_encap: "
-			    "assigning packet ownership to virtual device %s from physical device %s.\n",
-			    name, prvdev->name);
-			  break;
-			}
-		   }
-	     }
-	  } else {
-		   KLIPS_PRINT(debug_rcv, "klips_debug:klips26_rcv_encap: "
-			"device supplied with skb is NULL\n");
-		 }
 
 	irs->hard_header_len = skb->dev->hard_header_len;
 
