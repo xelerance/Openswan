@@ -189,12 +189,11 @@ ipsec_rcv(struct sk_buff *skb,
 	  unsigned short xlen);
 #endif /* PROTO_HANDLER_SINGLE_PARM */
 
+extern int sysctl_ipsec_inbound_policy_check;
 extern int debug_rcv;
 #define ipsec_rcv_dmp(_x,_y, _z) if (debug_rcv && sysctl_ipsec_debug_verbose) ipsec_dmp_block(_x,_y,_z)
 #else
 #define ipsec_rcv_dmp(_x,_y, _z) do {} while(0)
-
-extern int sysctl_ipsec_inbound_policy_check;
 #endif /* __KERNEL__ */
 
 extern int klips26_udp_encap_rcv(struct sock *sk, struct sk_buff *skb);
