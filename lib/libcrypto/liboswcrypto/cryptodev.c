@@ -86,6 +86,13 @@
 
 static int cryptodev_fd = -1;
 
+/*
+ * save a copy of the SW versions in case we get a HW error, we can revert
+ * to running SW instead.
+ */
+static struct oswcrypto_meth soft_meth;
+static int soft_meth_loaded = 0;
+
 /****************************************************************************/
 /*
  * Convert a BIGNUM to the representation that /dev/crypto needs.
@@ -309,15 +316,19 @@ cryptodev_rsa_mod_exp_crt(
 	kop.crk_iparams = 6;
 
 	if (cryptodev_asym(&kop, BN_num_bytes(&D), &D, 0, NULL) == -1) {
-		openswan_log("OCF CRK_MOD_EXP_CRT failed %d\n", errno);
+		openswan_log("OCF CRK_MOD_EXP_CRT failed %d, using SW\n", errno);
 		goto err;
 	}
 
 	bn2mp(&D, dst);
+	zapparams(&kop);
+	BN_CTX_free(ctx);
+	return;
 
 err:
 	zapparams(&kop);
 	BN_CTX_free(ctx);
+	soft_meth.rsa_mod_exp_crt(dst, src, p, dP, q, dQ, qInv);
 }
 
 /*
@@ -351,15 +362,20 @@ cryptodev_mod_exp(mpz_t dst, const mpz_t mp_g, const mpz_t secret,
 	kop.crk_iparams = 3;
 
 	if (cryptodev_asym(&kop, BN_num_bytes(&m), &r0, 0, NULL) == -1) {
-		openswan_log("OCF CRK_MOD_EXP failed %d\n", errno);
+		openswan_log("OCF CRK_MOD_EXP failed %d, using SW\n", errno);
 		goto err;
 	}
 
 	bn2mp(&r0, dst);
 
+	zapparams(&kop);
+	BN_CTX_free(ctx);
+	return;
+
 err:
 	zapparams(&kop);
 	BN_CTX_free(ctx);
+	soft_meth.mod_exp(dst, mp_g, secret, modulus);
 }
 
 /****************************************************************************/
@@ -807,6 +823,7 @@ void load_cryptodev(void)
 	struct session_op ses;
 	int assisted = 0;
 	u_int32_t feat;
+	struct oswcrypto_meth old_meth = oswcrypto;
 
 	if ((cryptodev_fd = get_dev_crypto()) == -1) {
 		openswan_log("OCF assist disabled: is the cryptodev module loaded ?");
@@ -870,6 +887,9 @@ void load_cryptodev(void)
 	if (assisted == 0) {
 		close(cryptodev_fd);
 		cryptodev_fd = -1;
+	} else if (!soft_meth_loaded) {
+		soft_meth_loaded = 1;
+		soft_meth = old_meth;
 	}
 }
 
