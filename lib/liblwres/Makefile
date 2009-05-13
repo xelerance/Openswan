@@ -55,7 +55,7 @@ ONEFILE=async.c
 all: programs
 
 version.o: version.c
-	${LIBTOOL} ${CC} ${CFLAGS} \
+	${LIBTOOL} --mode=compile ${CC} ${CFLAGS} \
 		-DVERSION=\"${VERSION}\" \
 		-DLIBINTERFACE=${LIBINTERFACE} \
 		-DLIBREVISION=${LIBREVISION} \
