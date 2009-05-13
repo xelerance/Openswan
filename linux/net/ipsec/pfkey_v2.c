@@ -672,7 +672,7 @@ pfkey_create(struct socket *sock, int protocol)
 		return -EPROTONOSUPPORT;
 	}
 
-	if((current->uid != 0)) {
+	if(!capable(CAP_NET_ADMIN)) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_create: "
 			    "must be root to open pfkey sockets.\n");
@@ -872,7 +872,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 		SENDERR(-error);
 	}
 
-	if((current->uid != 0)) {
+	if(!capable(CAP_NET_ADMIN)) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
 			    "must be root to send messages to pfkey sockets.\n");

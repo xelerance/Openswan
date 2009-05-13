@@ -833,7 +833,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 
 		for(i = 0; i <= ipsecdevices_max; i++) {
 			if(ipsecdevices[i] == NULL) continue;
-			prvdev = ipsecdevices[i]->priv;
+			prvdev = netdev_priv(ipsecdevices[i]);
 			
 			if(prvdev == NULL) continue;
 
