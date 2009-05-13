@@ -437,9 +437,9 @@ ipsec_cleanup(void)
 #endif
 }
 
-#ifdef MODULE
-#ifdef NET_26
-module_init(ipsec_klips_init);
+#if defined(MODULE) || LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,0)
+#if defined(NET_26) || LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,0)
+late_initcall(ipsec_klips_init);
 module_exit(ipsec_cleanup);
 #else
 int

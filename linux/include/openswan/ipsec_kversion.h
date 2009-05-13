@@ -410,6 +410,10 @@
 #define	PROC_NET	proc_net
 #endif
 
+#ifndef late_initcall
+#define	late_initcall(x)	module_init(x)
+#endif
+
 #ifdef NET_21
 # include <linux/in6.h>
 #else
