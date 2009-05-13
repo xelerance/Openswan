@@ -425,7 +425,7 @@ ipsec_xmit_sanity_check_dev(struct ipsec_xmit_state *ixs)
 		return IPSEC_XMIT_NODEV;
 	}
 
-	ixs->prv = ixs->dev->priv;
+	ixs->prv = netdev_priv(ixs->dev);
 	if (ixs->prv == NULL) {
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 			    "klips_error:ipsec_xmit_sanity_check_dev: "
