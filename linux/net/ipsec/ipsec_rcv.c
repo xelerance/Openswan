@@ -684,7 +684,6 @@ rcvleave:
 static enum ipsec_rcv_value
 ipsec_rcv_init(struct ipsec_rcv_state *irs)
 {
-	struct net_device *dev;
 	unsigned char protoc;
 	struct iphdr *ipp;
 	struct net_device_stats *stats = NULL;		/* This device's statistics */
@@ -704,7 +703,6 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 		KLIPS_PRINT(debug_rcv, "klips_debug:ipsec_rcv_init: NULL skb.");
 		return IPSEC_RCV_REALLYBAD;
 	}
-	dev = skb->dev;
 
 	if (skb->data == NULL) {
 		KLIPS_PRINT(debug_rcv,
@@ -802,15 +800,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 		    "<<< Info -- ");
 	KLIPS_PRINTMORE(debug_rcv && skb->dev, "skb->dev=%s ",
 			skb->dev->name ? skb->dev->name : "NULL");
-	KLIPS_PRINTMORE(debug_rcv && dev, "dev=%s ",
-			dev->name ? dev->name : "NULL");
 	KLIPS_PRINTMORE(debug_rcv, "\n");
-
-	KLIPS_PRINT(debug_rcv && !(skb->dev && dev && (skb->dev == dev)),
-		    "klips_debug:ipsec_rcv: "
-		    "Informational -- **if this happens, find out why** skb->dev:%s is not equal to dev:%s\n",
-		    skb->dev ? (skb->dev->name ? skb->dev->name : "NULL") : "NULL",
-		    dev ? (dev->name ? dev->name : "NULL") : "NULL");
 
 	protoc = ipp->protocol;
 #ifndef NET_21
