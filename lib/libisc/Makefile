@@ -50,7 +50,7 @@ SRCS +=		rwlock.c random.c inet_aton.c inet_ntop.c
 programs all: ${LIB}.a
 
 version.o: version.c
-	${LIBTOOL} ${CC} ${ALL_CFLAGS} \
+	${LIBTOOL} --mode=compile ${CC} ${ALL_CFLAGS} \
 		-DVERSION=\"${VERSION}\" \
 		-DLIBINTERFACE=${LIBINTERFACE} \
 		-DLIBREVISION=${LIBREVISION} \

@@ -18,6 +18,13 @@ v2.6.22
 * newer CA's (openssl) now use a crlnumber. Create one with 01 [Paul]
 * Fixes to new nat-t code (HAVE_UDP_ENCAP_CONVERT ) [mcr]
 * Some ipsec_tunnel KLIPS cleanups [mcr]
+* Implement a fallback to SW for failed HW requests [David]
+* Make sure that ipsec starts after the crypto layer [David]
+* Fix compilation without OCF and cryptoapi instead [David]
+* Fixes to compile with 2.6.29 [David]
+* Fix for the default assigned of "ipsec0" to all packets [David]
+* Bugtracker bugs fixed:
+   #1031: Fail to compile KLIPS module on RHEL5.3 or CentOS5.3
 
 
 v2.6.21

@@ -257,7 +257,7 @@
 #else
 /* internals of struct skbuff changed */
 /* but RedHat ported some of this back to their RHEL kernel, so check for that */
-# if !defined(RHEL_MAJOR) || !defined(RHEL_MINOR) || !(RHEL_MAJOR == 5 && RHEL_MINOR == 2)
+# if !defined(RHEL_MAJOR) || !defined(RHEL_MINOR) || !(RHEL_MAJOR == 5 && RHEL_MINOR >= 2)
 #  define        HAVE_DEV_NEXT
 #  define ip_hdr(skb)  ((skb)->nh.iph)
 #  define skb_tail_pointer(skb)  ((skb)->tail)
@@ -408,6 +408,10 @@
 #define	PROC_EOF_DATA
 #else
 #define	PROC_NET	proc_net
+#endif
+
+#ifndef late_initcall
+#define	late_initcall(x)	module_init(x)
 #endif
 
 #ifdef NET_21
