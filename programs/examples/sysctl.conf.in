@@ -33,3 +33,6 @@ net.ipv4.conf.default.accept_redirects = 0
 net.ipv4.neigh.default.gc_thresh1 = 1024
 net.ipv4.neigh.default.gc_thresh2 = 2048
 net.ipv4.neigh.default.gc_thresh3 = 4096
+
+# for enableing core dumps, see
+# http://fcp.surfsite.org/modules/smartfaq/faq.php?faqid=2746
