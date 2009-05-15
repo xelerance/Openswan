@@ -5,7 +5,7 @@
 
 Openswan is an IPsec implementation for Linux. It has support for most 
 of the extensions (RFC + IETF drafts) related to IPsec, including 
-X.509 Digital Certificates, NAT Traversal, and many others.
+IKEv2, X.509 Digital Certificates, NAT Traversal, and many others.
 
 Openswan was originally based on FreeS/WAN 2.04 CVS, along with some
 minor bug fixes from 2.05 and 2.06.  See CREDITS for the history.
