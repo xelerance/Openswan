@@ -12,6 +12,8 @@ USE_LWRES=false
 # no longer needed now the bison/yacc options got updated
 USE_YACC=false
 
+USE_LIBNSS?=true
+
 USE_BSDKAME=true
 
 # build modules, etc. for KLIPS.
