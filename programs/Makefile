@@ -21,10 +21,6 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 SUBDIRS=
 
-ifeq ($(USE_KLIPS),true)
-SUBDIRS+=spi eroute spigrp tncfg klipsdebug pf_key
-endif
-
 ifeq ($(USE_LWRES),true)
 SUBDIRS+=lwdnsq
 endif
@@ -33,18 +29,16 @@ ifeq ($(USE_IPSECPOLICY),true)
 SUBDIRS+=showpolicy
 endif
 
-ifeq ($(USE_BSDKAME),true)
-SUBDIRS+=_realsetup.bsd _updown.bsdkame
-endif
-
 SUBDIRS+=proc pluto addconn 
 SUBDIRS+=_confread _copyright _include _keycensor _plutoload _plutorun
-SUBDIRS+=_realsetup _secretcensor _startklips _updown _updown.klips _updown.mast
+SUBDIRS+=_secretcensor _startklips _updown 
 SUBDIRS+=auto barf verify ipsec look newhostkey ranbits secrets
 SUBDIRS+=rsasigkey setup showdefaults showhostkey 
 SUBDIRS+=ikeping examples 
+
 ifeq ($(USE_KLIPS),true)
 SUBDIRS+= _startklips _updown.klips 
+SUBDIRS+=spi eroute spigrp tncfg klipsdebug pf_key
 endif
 ifeq ($(USE_MAST),true)
 SUBDIRS+= _updown.mast 
@@ -52,6 +46,10 @@ endif
 ifeq ($(USE_NETKEY),true)
 SUBDIRS+= _startnetkey _updown.netkey
 endif
+ifeq ($(USE_BSDKAME),true)
+SUBDIRS+=_realsetup.bsd _updown.bsdkame
+endif
+
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
