@@ -2088,14 +2088,6 @@ init_kernel(void)
 #endif
 
 
-#if defined(BSD_KAME) 
-    case USE_BSDKAME:
-	openswan_log("Using BSD/KAME IPsec interface code on %s"
-			, kversion);
-	kernel_ops = &bsdkame_kernel_ops;
-	break;
-#endif
-
 #if defined(WIN32) && defined(WIN32_NATIVE) 
     case USE_WIN32_NATIVE:
 	openswan_log("Using Win2K native IPsec interface code on %s"
