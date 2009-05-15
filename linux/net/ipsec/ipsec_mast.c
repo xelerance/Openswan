@@ -87,7 +87,7 @@ static __u32 zeroes[64];
 DEBUG_NO_STATIC int
 ipsec_mast_open(struct net_device *dev)
 {
-        struct mastpriv *prv = dev->priv; 
+        struct mastpriv *prv = netdev_priv(dev); 
 
 	prv = prv;
 
@@ -307,8 +307,8 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	ixs->ipsp = ipsec_sa_getbyref(SAref);
 	if(ixs->ipsp == NULL) {
-		KLIPS_ERROR(debug_mast, "%s: no SA for saref=%d (sp=%p)\n",
-			    dev->name, SAref, skb->sp);
+		KLIPS_ERROR(debug_mast, "%s: no SA for saref=%d\n",
+			    dev->name, SAref);
 		ipsec_kfree_skb(skb);
 		ipsec_xmit_cleanup(ixs);
 		ipsec_xmit_state_delete(ixs);
@@ -334,7 +334,7 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 DEBUG_NO_STATIC struct net_device_stats *
 ipsec_mast_get_stats(struct net_device *dev)
 {
-	return &(((struct mastpriv *)(dev->priv))->mystats);
+	return &(((struct mastpriv *)netdev_priv(dev))->mystats);
 }
 
 #if 0
@@ -346,7 +346,7 @@ DEBUG_NO_STATIC int
 ipsec_mast_hard_header(struct sk_buff *skb, struct net_device *dev,
 	unsigned short type, void *daddr, void *saddr, unsigned len)
 {
-	struct mastpriv *prv = dev->priv;
+	struct mastpriv *prv = (struct mastpriv *)netdev_priv(dev);
 	struct net_device_stats *stats;	/* This device's statistics */
 	int ret = 0;
 	
@@ -420,7 +420,7 @@ ipsec_mast_hard_header(struct sk_buff *skb, struct net_device *dev,
 DEBUG_NO_STATIC int
 ipsec_mast_rebuild_header(struct sk_buff *skb)
 {
-	struct mastpriv *prv = skb->dev->priv;
+	struct mastpriv *prv = (struct mastpriv *)netdev_priv(skb->dev);
 
 	prv = prv;
 	return 0;
@@ -429,7 +429,7 @@ ipsec_mast_rebuild_header(struct sk_buff *skb)
 DEBUG_NO_STATIC int
 ipsec_mast_set_mac_address(struct net_device *dev, void *addr)
 {
-	struct mastpriv *prv = dev->priv;
+	struct mastpriv *prv = (struct mastpriv *)netdev_priv(dev);
 	
 	prv = prv;
 	return 0;
@@ -439,7 +439,7 @@ ipsec_mast_set_mac_address(struct net_device *dev, void *addr)
 DEBUG_NO_STATIC void
 ipsec_mast_cache_update(struct hh_cache *hh, struct net_device *dev, unsigned char *  haddr)
 {
-	struct mastpriv *prv = dev->priv;
+	struct mastpriv *prv = (struct mastpriv *)netdev_priv(dev);
 	
 	if(dev == NULL) {
 		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
@@ -496,7 +496,7 @@ DEBUG_NO_STATIC int
 ipsec_mast_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
 	struct ipsecmastconf *cf = (struct ipsecmastconf *)&ifr->ifr_data;
-	struct ipsecpriv *prv = dev->priv;
+	struct ipsecpriv *prv = netdev_priv(dev);
 
 	cf = cf;
 	prv=prv;
@@ -529,7 +529,7 @@ int
 ipsec_mast_device_event(struct notifier_block *unused, unsigned long event, void *ptr)
 {
 	struct net_device *dev = ptr;
-	struct mastpriv *priv = dev->priv;
+	struct mastpriv *priv = netdev_priv(dev);
 
 	priv = priv;
 
@@ -664,10 +664,12 @@ ipsec_mast_probe(struct net_device *dev)
 	dev->hard_start_xmit	= ipsec_mast_start_xmit;
 	dev->get_stats		= ipsec_mast_get_stats;
 
+#ifndef alloc_netdev
 	dev->priv = kmalloc(sizeof(struct mastpriv), GFP_KERNEL);
 	if (dev->priv == NULL)
 		return -ENOMEM;
-	memset((caddr_t)(dev->priv), 0, sizeof(struct mastpriv));
+#endif
+	memset(netdev_priv(dev), 0, sizeof(struct mastpriv));
 
 	for(i = 0; i < sizeof(zeroes); i++) {
 		((__u8*)(zeroes))[i] = 0;
@@ -729,7 +731,7 @@ int ipsec_mast_createnum(int vifnum)
 	snprintf(name, IFNAMSIZ, MAST_DEV_FORMAT, vifnum);
 	
 #ifdef alloc_netdev
-	im = alloc_netdev(0, name, ipsec_mast_netdev_setup);
+	im = alloc_netdev(sizeof(struct mastpriv), name, ipsec_mast_netdev_setup);
 #else
 	im = (struct net_device *)kmalloc(sizeof(struct net_device),GFP_KERNEL);
 #endif
@@ -785,8 +787,10 @@ ipsec_mast_deletenum(int vifnum)
 	kfree(dev_ipsec->name);
 	dev_ipsec->name=NULL;
 #endif /* !NETDEV_23 */
+#ifndef alloc_netdev
 	kfree(dev_ipsec->priv);
 	dev_ipsec->priv=NULL;
+#endif
 
 	return 0;
 }
@@ -853,8 +857,10 @@ ipsec_mast_cleanup_devices(void)
 			dev_mast = mastdevices[i];
 			ipsec_dev_put(dev_mast);
 			unregister_netdev(dev_mast);
+#ifndef alloc_netdev
 			kfree(dev_mast->priv);
 			dev_mast->priv=NULL;
+#endif
 			dev_put(mastdevices[i]);
 			mastdevices[i]=NULL;
 		}

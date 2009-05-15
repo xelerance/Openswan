@@ -102,7 +102,7 @@ static __u32 zeroes[64];
 DEBUG_NO_STATIC int
 ipsec_tunnel_open(struct net_device *dev)
 {
-	struct ipsecpriv *prv = dev->priv;
+	struct ipsecpriv *prv = netdev_priv(dev);
 	
 	/*
 	 * Can't open until attached.
@@ -608,7 +608,7 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (! ixs) {
 		struct ipsecpriv *prv;
 		struct net_device_stats *stats;
-		prv = dev->priv;
+		prv = netdev_priv(dev);
 		stats = (struct net_device_stats *) &(prv->mystats);
 		stats->tx_dropped++;
 		goto alloc_error;
@@ -659,7 +659,7 @@ alloc_error:
 DEBUG_NO_STATIC struct net_device_stats *
 ipsec_tunnel_get_stats(struct net_device *dev)
 {
-	return &(((struct ipsecpriv *)(dev->priv))->mystats);
+	return &(((struct ipsecpriv *)netdev_priv(dev))->mystats);
 }
 
 /*
@@ -671,7 +671,7 @@ DEBUG_NO_STATIC int
 ipsec_tunnel_hard_header(struct sk_buff *skb, struct net_device *dev,
 	unsigned short type, const void *daddr, const void *saddr, unsigned len)
 {
-	struct ipsecpriv *prv = dev->priv;
+	struct ipsecpriv *prv = netdev_priv(dev);
 	struct net_device *tmp;
 	int ret;
 	struct net_device_stats *stats;	/* This device's statistics */
@@ -803,7 +803,7 @@ ipsec_tunnel_rebuild_header(void *buff, struct net_device *dev,
 			unsigned long raddr, struct sk_buff *skb)
 #endif /* NET_21 */
 {
-	struct ipsecpriv *prv = skb->dev->priv;
+	struct ipsecpriv *prv = netdev_priv(skb->dev);
 	struct net_device *tmp;
 	int ret;
 	struct net_device_stats *stats;	/* This device's statistics */
@@ -893,7 +893,7 @@ ipsec_tunnel_rebuild_header(void *buff, struct net_device *dev,
 DEBUG_NO_STATIC int
 ipsec_tunnel_set_mac_address(struct net_device *dev, void *addr)
 {
-	struct ipsecpriv *prv = dev->priv;
+	struct ipsecpriv *prv = netdev_priv(dev);
 	
 	struct net_device_stats *stats;	/* This device's statistics */
 	
@@ -944,7 +944,7 @@ DEBUG_NO_STATIC void
 ipsec_tunnel_cache_bind(struct hh_cache **hhp, struct net_device *dev,
 				 unsigned short htype, __u32 daddr)
 {
-	struct ipsecpriv *prv = dev->priv;
+	struct ipsecpriv *prv = (struct ipsecpriv *) netdev_priv(dev);
 	
 	struct net_device_stats *stats;	/* This device's statistics */
 	
@@ -996,7 +996,7 @@ DEBUG_NO_STATIC void
 ipsec_tunnel_cache_update(struct hh_cache *hh, const struct net_device *dev,
 				const unsigned char *  haddr)
 {
-	struct ipsecpriv *prv = dev->priv;
+	struct ipsecpriv *prv = netdev_priv(dev);
 	
 	struct net_device_stats *stats;	/* This device's statistics */
 	
@@ -1097,7 +1097,7 @@ DEBUG_NO_STATIC int
 ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 {
         int i;
-	struct ipsecpriv *prv = dev->priv;
+	struct ipsecpriv *prv = netdev_priv(dev);
 
 	if(dev == NULL) {
 		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
@@ -1197,7 +1197,7 @@ DEBUG_NO_STATIC int
 ipsec_tunnel_detach(struct net_device *dev)
 {
         int i;
-	struct ipsecpriv *prv = dev->priv;
+	struct ipsecpriv *prv = netdev_priv(dev);
 
 	if(dev == NULL) {
 		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
@@ -1286,7 +1286,7 @@ ipsec_tunnel_clear(void)
 	for(i = 0; i < IPSEC_NUM_IF; i++) {
    	        ipsecdev = ipsecdevices[i];
 		if(ipsecdev != NULL) {
-			if((prv = (struct ipsecpriv *)(ipsecdev->priv))) {
+			if((prv = (struct ipsecpriv *)netdev_priv(ipsecdev))) {
 				prvdev = (struct net_device *)(prv->dev);
 				if(prvdev) {
 					KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
@@ -1315,7 +1315,7 @@ DEBUG_NO_STATIC int
 ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
 	struct ipsectunnelconf *cf = (struct ipsectunnelconf *)&ifr->ifr_data;
-	struct ipsecpriv *prv = dev->priv;
+	struct ipsecpriv *prv = netdev_priv(dev);
 	struct net_device *them; /* physical device */
 #ifdef CONFIG_IP_ALIAS
 	char *colon;
@@ -1506,7 +1506,7 @@ ipsec_device_event(struct notifier_block *unused, unsigned long event, void *ptr
 			ipsec_dev = ipsecdevices[i];
 
 			if(ipsec_dev) {
-				priv = (struct ipsecpriv *)(ipsec_dev->priv);
+				priv = (struct ipsecpriv *)netdev_priv(ipsec_dev);
 				if(priv) {
 					;
 					if(((struct net_device *)(priv->dev)) == dev) {
@@ -1612,10 +1612,12 @@ ipsec_tunnel_init(struct net_device *dev)
 	dev->hard_start_xmit	= ipsec_tunnel_start_xmit;
 	dev->get_stats		= ipsec_tunnel_get_stats;
 
+#ifndef alloc_netdev
 	dev->priv = kmalloc(sizeof(struct ipsecpriv), GFP_KERNEL);
 	if (dev->priv == NULL)
 		return -ENOMEM;
-	memset((caddr_t)(dev->priv), 0, sizeof(struct ipsecpriv));
+#endif
+	memset(netdev_priv(dev), 0, sizeof(struct ipsecpriv));
 
 	for(i = 0; i < sizeof(zeroes); i++) {
 		((__u8*)(zeroes))[i] = 0;
@@ -1707,7 +1709,7 @@ ipsec_tunnel_createnum(int ifnum)
 
 	sprintf(name, IPSEC_DEV_FORMAT, ifnum);
 #ifdef alloc_netdev
-	dev_ipsec = alloc_netdev(0, name, ipsec_tunnel_netdev_setup);
+	dev_ipsec = alloc_netdev(sizeof(struct ipsecpriv), name, ipsec_tunnel_netdev_setup);
 #else
 	dev_ipsec = (struct net_device*)kmalloc(sizeof(struct net_device), GFP_KERNEL);
 #endif
@@ -1815,8 +1817,8 @@ ipsec_tunnel_deletenum(int vifnum)
 	dev_ipsec->name=NULL;
 #endif /* !NETDEV_23 */
 	kfree(dev_ipsec->priv);
-#endif /* alloc_netdev */
 	dev_ipsec->priv=NULL;
+#endif /* alloc_netdev */
 
 	return 0;
 }
@@ -1868,8 +1870,8 @@ ipsec_tunnel_cleanup_devices(void)
 		dev_ipsec->name=NULL;
 #endif /* !NETDEV_23 */
 		kfree(dev_ipsec->priv);
-#endif /* alloc_netdev */
 		dev_ipsec->priv=NULL;
+#endif /* alloc_netdev */
 	}
 	return error;
 }

@@ -425,7 +425,7 @@ ipsec_xmit_sanity_check_dev(struct ipsec_xmit_state *ixs)
 		return IPSEC_XMIT_NODEV;
 	}
 
-	ixs->prv = ixs->dev->priv;
+	ixs->prv = netdev_priv(ixs->dev);
 	if (ixs->prv == NULL) {
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 			    "klips_error:ipsec_xmit_sanity_check_dev: "
@@ -2068,15 +2068,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	{
 		int err;
 
-/*
- * XXX: We include linux/netfilter_ipv4.h where NF_IP_LOCAL_OUT is defined as 3,
- * but an ifndef __KERNEL__ prevents us from using it. There must be a reason? 
- */
-#ifndef NF_IP_LOCAL_OUT
-#warning NF_IP_LOCAL_OUT hardcoded to 3 - from linux/netfilter_ipv4.h which does not allow including in kernel mode
-#define NF_IP_LOCAL_OUT 3
-#endif
-		err = NF_HOOK(PF_INET, NF_INET_LOCAL_OUT, ixs->skb, NULL,
+		err = NF_HOOK(PF_INET, NF_IP_LOCAL_OUT, ixs->skb, NULL,
 			      ixs->route->u.dst.dev,
 			      ipsec_xmit_send2);
 		if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {
