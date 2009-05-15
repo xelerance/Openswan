@@ -36,6 +36,7 @@
 # include <prerror.h>
 # include <prinit.h>
 # include <prmem.h>
+# include <plstr.h>
   /* nss */
 # include <key.h>
 # include <keyt.h>
@@ -288,11 +289,11 @@ char *GetModulePassword(PK11SlotInfo *slot, PRBool retry, void *arg)
 		*/
 		pw = GetFilePasswd(slot, retry, pwdata->data);
 		pwdata->source = PW_PLAINTEXT;
-		pwdata->data = PL_strdup(pw);
+		pwdata->data = strdup(pw);
 		/* it's already been dup'ed */
 		return pw;
 	case PW_PLAINTEXT:
-		return PL_strdup(pwdata->data);
+		return strdup(pwdata->data);
 	default: /* cases PW_NONE and PW_EXTERNAL not supported */
 		fprintf(stderr, "Unknown or unsupported case in GetModulePassword");
 		break;
