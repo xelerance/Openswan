@@ -1,8 +1,9 @@
 /* interface to fake kernel interface, used for testing pluto in-vitro.
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
- * Copyright (C) 2003 Michael Richardson <mcr@freeswan.org>
+ * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2003 Herbert Xu.
+ * Copyright (C) 2008 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -13,8 +14,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: kernel_noklips.c,v 1.11 2005/08/14 21:58:09 mcr Exp $
  */
 
 #include <errno.h>

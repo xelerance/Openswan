@@ -13,7 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: sysdep_cygwin.c,v 1.1 2005/08/05 19:17:50 mcr Exp $
  */
 
 #include <stddef.h>

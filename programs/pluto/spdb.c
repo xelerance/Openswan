@@ -1,5 +1,9 @@
 /* Security Policy Data Base (such as it is)
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2006 Bart Trojanowski <bart@jukie.net>
+ * Copyright (C) 2008-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -10,8 +14,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: spdb.c,v 1.121 2005/08/05 19:16:48 mcr Exp $
  */
 
 #include <stdio.h>

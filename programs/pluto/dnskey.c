@@ -1,5 +1,7 @@
 /* Find public key in DNS
  * Copyright (C) 2000-2002  D. Hugh Redelmeier.
+ * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007-2008 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -10,8 +12,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: dnskey.c,v 1.87 2005/11/02 01:17:03 paul Exp $
  */
 
 #include <stdlib.h>
