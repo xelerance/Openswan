@@ -1,6 +1,8 @@
 /* Dynamic fetching of X.509 CRLs
  * Copyright (C) 2002 Stephane Laroche <stephane.laroche@colubris.com>
  * Copyright (C) 2002-2004 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2003-2008 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,7 +14,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: fetch.c,v 1.6 2004/06/14 02:01:32 mcr Exp $
  */
 
 #include <stdlib.h>

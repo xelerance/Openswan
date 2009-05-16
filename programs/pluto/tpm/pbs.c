@@ -11,7 +11,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pbs.c,v 1.4 2005/10/09 20:30:12 mcr Exp $
  */
 
 #include <stdio.h>

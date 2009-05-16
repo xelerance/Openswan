@@ -1,6 +1,9 @@
 /* error logging functions
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 2005-2007 Michael Richardson
+ * Copyright (C) 2006 Bart Trojanowski
+ * Copyright (C) 2008 Paul Wouters
  * Copyright (C) 2008 David McCullough.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -13,7 +16,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: log.c,v 1.99 2005/09/18 01:59:52 mcr Exp $
  */
 
 #include <stdio.h>

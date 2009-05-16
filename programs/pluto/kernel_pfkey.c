@@ -4,7 +4,9 @@
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  * Copyright (C) 2003 Herbert Xu.
+ * Copyright (C) 2006 Bart Trojanowski <bart@jukie.net>
  * Copyright (C) 2003-2007  Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007-2008  Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -16,7 +18,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: kernel_pfkey.c,v 1.25 2005/08/24 22:50:50 mcr Exp $
  */
 
 #ifdef PFKEY

@@ -385,7 +385,8 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     chunk_t rcookie;
 #ifdef HAVE_LIBNSS
     PK11SymKey *shared, *skeyid, *skeyid_d, *skeyid_a, *skeyid_e, *enc_key; 
-    const struct encrypt_desc *encrypter = crypto_get_encrypter(skq->encrypt_algo);
+    /* const struct encrypt_desc *encrypter = crypto_get_encrypter(skq->encrypt_algo);*/
+    const struct encrypt_desc *encrypter = skq->encrypter;
 #endif
 
     /* this doesn't take any memory */
@@ -1116,14 +1117,8 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     passert(hasher);
     DBG(DBG_CRYPT, DBG_log("NSS ikev2: found hasher\n"));
 
-/* 
- * Avesh: skq has no member encrypter?
- *  const struct encrypt_desc *encrypter = skq->encrypter; 
- *  passert(encrypter);
-*/
-    struct encrypt_desc *encrypter = NULL;
-
-
+    const struct encrypt_desc *encrypter = skq->encrypter; 
+    passert(encrypter);
     DBG(DBG_CRYPT, DBG_log("NSS ikev2: found encrypter\n"));
 
     hmac_opad = hmac_pads(HMAC_OPAD,HMAC_BUFSIZE);

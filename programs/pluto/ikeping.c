@@ -1,5 +1,5 @@
 /* decode incoming IKE echo request messages
- * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2005-2007 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,7 +11,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikeping.c,v 1.2 2005/08/05 19:10:43 mcr Exp $
  */
 
 #include <stdio.h>

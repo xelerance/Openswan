@@ -1,5 +1,9 @@
 /* identity representation, as in IKE ID Payloads (RFC 2407 DOI 4.6.2.1)
  * Copyright (C) 1999-2001  D. Hugh Redelmeier
+ * Copyright (C) 2006 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
+ *
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -10,8 +14,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: id.c,v 1.47 2005/08/05 19:10:43 mcr Exp $
  */
 
 #include <stdlib.h>

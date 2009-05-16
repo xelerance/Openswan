@@ -1,5 +1,6 @@
 /* information about connections between hosts and clients
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -10,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: pending.c,v 1.6 2005/08/05 19:13:47 mcr Exp $
  */
 
 #include <string.h>

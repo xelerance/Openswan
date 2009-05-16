@@ -1,8 +1,10 @@
 /*
  * routines that are Linux specific
  *
- * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 2005-2006 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 David McCullough <david_mccullough@securecomputing.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -13,8 +15,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: sysdep_linux.c,v 1.3 2005/08/05 19:18:47 mcr Exp $
  */
 
 #include <stddef.h>

@@ -1,6 +1,9 @@
 /* routines that interface with the kernel's IPsec mechanism
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 2003-2008 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,8 +14,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: kernel.c,v 1.237 2005/11/02 01:17:43 paul Exp $
  */
 
 #include <stddef.h>
