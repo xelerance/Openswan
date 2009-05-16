@@ -1350,9 +1350,9 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 	    /* free memory */
 	    pfree(decrypted.ptr);
 #endif
-	    nc = mpz_to_n2(&n);
-	    ec = mpz_to_n2(&e);
-	    sc = mpz_to_n2(&s);
+	    nc = mpz_to_n2((const MP_INT *)&n);
+	    ec = mpz_to_n2((const MP_INT *)&e);
+	    sc = mpz_to_n2((const MP_INT *)&s);
 
 	    DBG(DBG_CRYPT, DBG_dump_chunk("decrypt_sig() cert: modulus : ", nc ))
 	    DBG(DBG_CRYPT, DBG_dump_chunk("decrypt_sig() cert: exponent : ", ec ))
