@@ -11,8 +11,8 @@ RJZ-LNX UDP501 # cat UDP501encap.c
   *
   * modprobe ip_queue
   * UDP501encap &
-  * iptables -A OUTPUT -d 135.244.223.254 -j QUEUE
-  * iptables -A INPUT -s 135.244.223.254 -j QUEUE
+  * iptables -A OUTPUT -d IPofLucentGW -j QUEUE
+  * iptables -A INPUT -s IPofLucentGW -j QUEUE
   */
 
 #include <netinet/in.h>
