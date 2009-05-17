@@ -1,6 +1,28 @@
 
 helper program to interop with non-rfc IPsec implementation of Lucent.
 
+From Rolando:
+
+Lucent's way to work around NATing is to change this:
+
+   | IP | whatever L4 proto | Payload |
+
+where IP has the (IP source; IP dest) within it into this:
+
+   | IP | UDP:XXX | IP | whatever L4 proto | Payload |
+
+where IP have the same (IP source; IP dest) within them and XXX is the
+configurable UDP port (default=501)
+
+In a nutshell, they "tunnelize" all the traffic to/from the client and
+the gateway into a IP/UDP:XXX header
+
+May be there are better ways to do it but using iptables QUEUE is the
+one we used to encapsulate/decapsulate. I thougth about adding it to
+OSW code as well as some code to make it manipulate iptables QUEUE stuff
+but got lost on it. :-(
+
+
 ---------- Forwarded message ----------
 Date: Sun, 5 Apr 2009 10:36:54 -0700 (PDT)
 From: Rolando Zappacosta <zappacor@yahoo.com.ar>
