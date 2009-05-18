@@ -23,6 +23,8 @@ v2.6.22
 * Fix compilation without OCF and cryptoapi instead [David]
 * Fixes to compile with 2.6.29 [David]
 * Fix for the default assigned of "ipsec0" to all packets [David]
+* Fix for concurrent ISAKMP negotiations from different hosts to a
+  single host with nhelpers>=1 [Anthony Tong]
 * Bugtracker bugs fixed:
    #1031: Fail to compile KLIPS module on RHEL5.3 or CentOS5.3
 
