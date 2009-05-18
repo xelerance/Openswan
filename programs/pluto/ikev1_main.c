@@ -1334,7 +1334,8 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
 	&& !has_preloaded_public_key(st)
 	&& st->st_connection->spd.that.ca.ptr != NULL;
 
-    /* HDR out done */
+    /* HDR out */
+    echo_hdr(md, FALSE, ISAKMP_NEXT_KE);
 
     /* KE out */
     if (!ship_KE(st, r, &st->st_gr
