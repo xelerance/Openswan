@@ -25,9 +25,10 @@ v2.6.22
 * Fix for the default assigned of "ipsec0" to all packets [David]
 * Fix for concurrent ISAKMP negotiations from different hosts to a
   single host with nhelpers>=1 [Anthony Tong]
+* UDP port 501 encaps to interop with Lucent in contrib/lucent
+  Contributed by  Rolando Zappacosta <zappacor@yahoo.com.ar>
 * Bugtracker bugs fixed:
    #1031: Fail to compile KLIPS module on RHEL5.3 or CentOS5.3
-
 
 v2.6.21
 * Fix for CVE-2009-0790 DPD crasher [Gerd v. Egidy/Paul]
