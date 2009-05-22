@@ -1,8 +1,8 @@
 CC=gcc
-PORTINCLUDE+=-I${OPENSWANSRCDIR}/ports/darwin/include -I/opt/local/include -I/opt/local/include/nspr -I/opt/local/include/nss
-USERLINK=-L/usr/local/lib -L/opt/local/lib -L/opt/local/lib/nspr -L/opt/local/lib/nss
+PORTINCLUDE+=-I${OPENSWANSRCDIR}/ports/darwin/include -I/opt/local/include 
+USERLINK=-L/usr/local/lib -L/opt/local/lib 
 
-USE_LIBNSS=true
+USE_LIBNSS=false
 USE_MAST=false
 USE_KLIPS=false
 USE_NETKEY=false
@@ -11,8 +11,6 @@ BUILD_KLIPS=false
 USE_LWRES=false
 # no longer needed now the bison/yacc options got updated
 USE_YACC=false
-
-USE_LIBNSS?=true
 
 USE_BSDKAME=true
 
