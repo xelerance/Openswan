@@ -209,8 +209,9 @@ void pluto_crypto_helper(int fd, int helpernum)
     struct pluto_crypto_req *r;
 
 #ifdef HAVE_LIBNSS
-    int status=pthread_setschedprio(pthread_self(), 10);
-    DBG(DBG_CONTROL, DBG_log("status value returned by setting the priority of this thread (id=%d) %d",helpernum,status));
+    // TODO Make this conditional for OS X - does not have pthread_setschedprio
+    //int status=pthread_setschedprio(pthread_self(), 10);
+    //DBG(DBG_CONTROL, DBG_log("status value returned by setting the priority of this thread (id=%d) %d",helpernum,status));
 #else
     signal(SIGHUP, catchhup);
     signal(SIGUSR1, catchusr1);

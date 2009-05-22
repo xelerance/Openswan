@@ -1,0 +1,58 @@
+# $Id: Portfile 49105 2009-04-04 00:41:21Z jeremyhu@macports.org $
+
+PortSystem	1.0
+
+name		nspr
+version		4.7.4
+revision	1
+categories	devel
+maintainers	jeremyhu openmaintainer
+platforms	darwin
+description	A platform-neutral API for system level and libc like functions.
+
+long_description ${description}
+
+homepage	http://www.mozilla.org/projects/nspr
+master_sites	http://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v${version}/src/ \
+		ftp://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v${version}/src/
+checksums	md5     ec1a991fc211450085149905c5e340da
+
+worksrcdir	${worksrcdir}/mozilla/nsprpub
+
+post-patch {
+	reinplace "s|@executable_path|${prefix}/lib/nspr|g" \
+		${worksrcpath}/configure.in \
+		${worksrcpath}/configure
+}
+
+universal_variant no
+
+configure.args \
+	--disable-debug \
+	--enable-optimize='-O2' \
+	--enable-strip \
+	--libdir=${prefix}/lib/nspr
+
+variant debug description "build with debugging symbols" {
+    configure.args-delete   --disable-debug \
+                            --enable-optimize='-O2' \
+                            --enable-strip
+
+    configure.args-append   --enable-debug='-ggdb3' \
+                            --disable-optimize \
+                            --disable-strip
+
+    configure.cflags ""
+}
+
+post-destroot {
+	file mkdir ${destroot}${prefix}/lib/pkgconfig
+	copy ${filespath}/nspr.pc ${destroot}${prefix}/lib/pkgconfig
+	reinplace "s|@@prefix@@|${prefix}|" ${destroot}${prefix}/lib/pkgconfig/nspr.pc
+	set mylibs [exec ${destroot}${prefix}/bin/nspr-config --libs]
+	set mycflags [exec ${destroot}${prefix}/bin/nspr-config --cflags]
+	set myversion [exec ${destroot}${prefix}/bin/nspr-config --version]
+	reinplace "s|@@FULL_NSPR_LIBS@@|${mylibs}|" ${destroot}${prefix}/lib/pkgconfig/nspr.pc
+	reinplace "s|@@FULL_NSPR_CFLAGS@@|${mycflags}|" ${destroot}${prefix}/lib/pkgconfig/nspr.pc
+	reinplace "s|@@NSPR_VERSION@@|${myversion}|" ${destroot}${prefix}/lib/pkgconfig/nspr.pc
+}

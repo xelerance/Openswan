@@ -2063,6 +2063,14 @@ init_kernel(void)
 	break;
 #endif
 
+#if defined(BSD_KAME) 
+    case USE_BSDKAME:
+	openswan_log("Using BSD/KAME IPsec interface code on %s"
+			, kversion);
+	kernel_ops = &bsdkame_kernel_ops;
+	break;
+#endif
+
 #if defined(KLIPS_MAST) 
     case USE_MASTKLIPS:
 	openswan_log("Using KLIPSng (mast) IPsec interface code on %s"
@@ -2079,14 +2087,6 @@ init_kernel(void)
 	break;
 #endif
 
-
-#if defined(BSD_KAME) 
-    case USE_BSDKAME:
-	openswan_log("Using BSD/KAME IPsec interface code on %s"
-			, kversion);
-	kernel_ops = &bsdkame_kernel_ops;
-	break;
-#endif
 
 #if defined(WIN32) && defined(WIN32_NATIVE) 
     case USE_WIN32_NATIVE:
