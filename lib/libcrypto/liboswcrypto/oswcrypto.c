@@ -31,7 +31,8 @@
 
 #include <oswcrypto.h>
 
-struct oswcrypto_meth oswcrypto;
+/* leave the {0}, it is required on OSX */
+struct oswcrypto_meth oswcrypto = {0};
 
 /*
  * Do the modular exponentiation with Chinese Remainder Theorem in sofware
