@@ -107,6 +107,10 @@ int recvfromto(int s, void *buf, size_t len, int flags,
 		socklen_t l = sizeof(si);
 
 		((struct sockaddr_in *)to)->sin_family = AF_INET;
+#ifdef NEED_SIN_LEN
+		((struct sockaddr_in *)to)->sin_len = sizeof( struct sockaddr_in );
+#endif
+
 		((struct sockaddr_in *)to)->sin_port = 0;
 		l = sizeof(si);
 		if (getsockname(s, (struct sockaddr *)&si, &l) == 0) {
@@ -264,6 +268,9 @@ int main(int argc, char **argv)
 	if (argc > 2) port = atoi(argv[2]);
 
 	in.sin_family = AF_INET;
+#ifdef NEED_SIN_LEN
+	in.sin_len = sizeof( struct sockaddr_in );
+#endif
 	in.sin_addr.s_addr = INADDR_ANY;
 	in.sin_port = htons(port);
 	fl = tl = sizeof(struct sockaddr_in);
