@@ -1,18 +1,19 @@
 -*- emacs-wiki -*-
 
 1. install the software. git and cogito.
-   Update each of them by grabbing the latest from the git trees for git and cogito.
+   Update each of them by grabbing the latest from the git trees for git
    On Xelerance machines, you should edit the Makefile to set
    prefix=/xelerance rather than $HOME.
 
 2. From public repository
-        cd /some/place
-        cg-clone http://git.openswan.org/public/scm/openswan.git/.git
-        (no commits. send patches, or PostToYourOwnGitTree)
+   git clone git://git.openswan.org/public/scm/openswan.public openswan-2
+   cd openswan-2
+   git branch ikev2 origin/ikev2
+   git checkout ikev2
 
-   From private repository
-        cd /some/place
-        cg-clone git+ssh://vault.xelerance.com/xelerance/MASTER/git-master/openswan.git/
-        
+and to update it later on:
+
+   git pull
+
 3. fill in more now.
    
