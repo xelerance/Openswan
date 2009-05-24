@@ -11,7 +11,7 @@
 
 @interface Model : NSObject {
 		
-	NSString* selectedLeftIP;
+	NSMutableString* selectedLeftIP;
 	NSString* selectedRightIP;
 	NSString* selectedKeySetupMode;
 	NSString* selectedKey;
@@ -25,13 +25,13 @@
 	NSArray* popupAuto;
 }
 
-@property (readwrite, copy) NSString *selectedLeftIP, *selectedRightIP, *selectedKeySetupMode;
+@property (readwrite, copy) NSMutableString *selectedLeftIP;
+@property (readwrite, copy) NSString *selectedRightIP, *selectedKeySetupMode;
 @property (readwrite, copy) NSString *selectedKey, *selectedType, *selectedAuto;
 @property (readwrite, copy) NSString *selectedLeftRSAsig , *selectedRightRSAsig;
 @property (readwrite, copy) NSArray *popupType, *popupAuto;
 
 - (id) init;
-/*
-- (void) saveToFile:(NSString*) name;
-*/
+- (IBAction)saveToFile: (id)sender;
+- (IBAction)setDefault: (id)sender;
 @end

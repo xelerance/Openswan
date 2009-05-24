@@ -23,6 +23,15 @@
 	popupType = [NSArray arrayWithObjects: @"Tunnel", @"Transport", @"Pass Through", nil];
 	popupAuto = [NSArray arrayWithObjects: @"Start", @"Add", @"Ignore", @"Manual", @"Route", nil];
 	
+	//initialize selectedLedtIP
+	selectedLeftIP = [[NSMutableString alloc] init];
+	
+	[self setValue:@"192.168.0.0" forKey:@"selectedLeftIP"];
+	
+	NSMutableString *s = [self valueForKey:@"selectedLeftIP"];
+	NSLog(@"Set value for selectedLeftIP = %@", s);
+	
+	//Are these initializations wrong? (maybe should be done as the one above)
 	selectedType = @"Tunnel";
 	selectedAuto = @"Start";
 	selectedKeySetupMode = @"Automatic";
@@ -32,26 +41,30 @@
     return self;
 }
 
-/*
-- (void) saveToFile:(NSString*) name{
+- (IBAction)setDefault: (id)sender
+{
+	NSLog(@"setting selectedLeftIP to default");
+	[self setSelectedLeftIP:@"192.168.0.0"]; 
+}
+
+- (IBAction)saveToFile: (id)sender {
 	
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
     
     NSError *error;
     
     //store them into a file
-    NSString *mutstr = [[NSMutableString alloc] init];
+    NSMutableString *mutstr = [[NSMutableString alloc] init];
     
-	mutstr = selectedLeftIP;
-	//[mutstr appendFormat:@"\n"];
-	
+	[mutstr setString:selectedLeftIP];
 	
     //write to file
-    [mutstr writeToFile:@"CARAI.txt" atomically:YES encoding:NSUnicodeStringEncoding error:&error];
+    [mutstr writeToFile:@"WriteToFileTest.txt" atomically:YES encoding:NSUnicodeStringEncoding error:&error];
     
+	NSLog(@"wrote to file");
+	
     [pool drain];
-
 }
-*/
+
 
 @end

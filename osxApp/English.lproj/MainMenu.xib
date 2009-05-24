@@ -2,14 +2,14 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.03">
 	<data>
 		<int key="IBDocument.SystemTarget">1050</int>
-		<string key="IBDocument.SystemVersion">9G55</string>
+		<string key="IBDocument.SystemVersion">9J61</string>
 		<string key="IBDocument.InterfaceBuilderVersion">677</string>
-		<string key="IBDocument.AppKitVersion">949.43</string>
+		<string key="IBDocument.AppKitVersion">949.46</string>
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="453"/>
 			<integer value="29"/>
+			<integer value="947"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1135,7 +1135,7 @@
 								<object class="NSTabViewItem" id="154932223">
 									<string key="NSIdentifier">2</string>
 									<object class="NSView" key="NSView" id="80243286">
-										<reference key="NSNextResponder" ref="221324988"/>
+										<nil key="NSNextResponder"/>
 										<int key="NSvFlags">256</int>
 										<object class="NSMutableArray" key="NSSubviews">
 											<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1762,7 +1762,6 @@
 											</object>
 										</object>
 										<string key="NSFrame">{{10, 33}, {847, 375}}</string>
-										<reference key="NSSuperview" ref="221324988"/>
 									</object>
 									<string key="NSLabel">Global Options</string>
 									<reference key="NSColor" ref="937605084"/>
@@ -1771,7 +1770,7 @@
 								<object class="NSTabViewItem" id="645539529">
 									<string key="NSIdentifier">1</string>
 									<object class="NSView" key="NSView" id="391925262">
-										<nil key="NSNextResponder"/>
+										<reference key="NSNextResponder" ref="221324988"/>
 										<int key="NSvFlags">256</int>
 										<object class="NSMutableArray" key="NSSubviews">
 											<bool key="EncodedWithXMLCoder">YES</bool>
@@ -2512,7 +2511,7 @@
 												<reference key="NSSuperview" ref="391925262"/>
 												<bool key="NSEnabled">YES</bool>
 												<object class="NSButtonCell" key="NSCell" id="75705620">
-													<int key="NSCellFlags">67239424</int>
+													<int key="NSCellFlags">-2080244224</int>
 													<int key="NSCellFlags2">134217728</int>
 													<string key="NSContents">Default</string>
 													<reference key="NSSupport" ref="984259723"/>
@@ -2549,6 +2548,7 @@
 											</object>
 										</object>
 										<string key="NSFrame">{{10, 33}, {847, 375}}</string>
+										<reference key="NSSuperview" ref="221324988"/>
 									</object>
 									<string key="NSLabel">Connection Options</string>
 									<reference key="NSColor" ref="937605084"/>
@@ -4317,14 +4317,14 @@
 									<reference key="NSTabView" ref="221324988"/>
 								</object>
 							</object>
-							<reference key="NSSelectedTabViewItem" ref="154932223"/>
+							<reference key="NSSelectedTabViewItem" ref="645539529"/>
 							<reference key="NSFont" ref="984259723"/>
 							<int key="NSTvFlags">0</int>
 							<bool key="NSAllowTruncatedLabels">YES</bool>
 							<bool key="NSDrawsBackground">YES</bool>
 							<object class="NSMutableArray" key="NSSubviews">
 								<bool key="EncodedWithXMLCoder">YES</bool>
-								<reference ref="80243286"/>
+								<reference ref="391925262"/>
 							</object>
 						</object>
 					</object>
@@ -5019,22 +5019,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: selection.selectedLeftIP</string>
-						<reference key="source" ref="750611190"/>
-						<reference key="destination" ref="172163123"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="750611190"/>
-							<reference key="NSDestination" ref="172163123"/>
-							<string key="NSLabel">value: selection.selectedLeftIP</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">selection.selectedLeftIP</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">632</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
 						<string key="label">selectedObject: selectedType</string>
 						<reference key="source" ref="508447580"/>
 						<reference key="destination" ref="526732472"/>
@@ -5066,6 +5050,38 @@
 						</object>
 					</object>
 					<int key="connectionID">639</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">saveToFile:</string>
+						<reference key="source" ref="526732472"/>
+						<reference key="destination" ref="467820302"/>
+					</object>
+					<int key="connectionID">1115</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selectedLeftIP</string>
+						<reference key="source" ref="750611190"/>
+						<reference key="destination" ref="526732472"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="750611190"/>
+							<reference key="NSDestination" ref="526732472"/>
+							<string key="NSLabel">value: selectedLeftIP</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selectedLeftIP</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">1117</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">setDefault:</string>
+						<reference key="source" ref="526732472"/>
+						<reference key="destination" ref="75705620"/>
+					</object>
+					<int key="connectionID">1118</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -9637,8 +9653,8 @@
 					<reference ref="9"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="9"/>
-					<string>{{32, 319}, {893, 437}}</string>
-					<string>{{32, 319}, {893, 437}}</string>
+					<string>{{31, 313}, {893, 437}}</string>
+					<string>{{31, 313}, {893, 437}}</string>
 					<reference ref="9"/>
 					<string>{{33, 99}, {480, 360}}</string>
 					<string>{3.40282e+38, 3.40282e+38}</string>
@@ -10012,7 +10028,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">1114</int>
+			<int key="maxID">1118</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -10020,6 +10036,19 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">Model</string>
 					<string key="superclassName">NSObject</string>
+					<object class="NSMutableDictionary" key="actions">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSMutableArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>saveToFile:</string>
+							<string>setDefault:</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+						</object>
+					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">Model.h</string>
