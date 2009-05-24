@@ -699,6 +699,9 @@ ipsec_mast_probe(struct net_device *dev)
 	/* New-style flags. */
 	dev->flags		= IFF_NOARP;
 
+	/* pick a random ethernet address for now. */
+	random_ether_addr(dev->dev_addr);
+
 	/* We're done.  Have I forgotten anything? */
 	return 0;
 }
