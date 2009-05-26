@@ -1,3 +1,4 @@
+./bin/busybox
 ./bin/sh
 ./bin/cat
 ./bin/echo
@@ -10,6 +11,8 @@
 ./bin/mknod
 ./bin/chmod
 ./bin/rm
+./usr/sbin/chroot
+./usr/bin/strace
 ./lib/libpthread.so.0
 ./lib/libpthread-0.10.so
 ./lib/libuuid.so.1

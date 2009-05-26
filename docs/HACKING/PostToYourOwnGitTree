@@ -13,7 +13,7 @@ your web server.
 
 So, you start by doing this on your laptop/desktop:
      cd /someplace
-     cg-clone http://git.openswan.org/public/scm/openswan.git/
+     git clone git://git.openswan.org/public/scm/openswan.public openswan.git
 
 This creates a directory openswan.git, and sets up the "origin" branch to
 point to the above url. To do the equivalent of "cvs update", you run
@@ -28,8 +28,8 @@ Next, you login to your web server, and do:
 
 On your laptop you can now do:
      cd /someplace/openswan.git
-     cg-branch-add public git+ssh://mywebserver/var/www/scm/openswan.git
-     cg-push public
+     git remote add public git+ssh://mywebserver/var/www/scm/openswan.git
+     git push public master
      (it should copy everything to your web server)
 
 

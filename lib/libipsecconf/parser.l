@@ -44,6 +44,8 @@ int parser_y_eof(void);
 /* we want no actual output! */
 #define ECHO 
 
+/* do not define this function, as it is not used, and fails -Werror */
+#define YY_NO_INPUT
 /*    
 #define YY_NO_UNPUT
 */

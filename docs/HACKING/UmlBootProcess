@@ -15,5 +15,13 @@ then exec's the real /sbin/init.
 It seems to work, but in order for the script to start, we have to have
 something as /dev/console, and an empty file will do for now.
 
+After 2.6.18, initramfs was better, and this requires that the script works
+differently.  Those changes now use "mount --move" instead of "pivot_root".
+
+Openswan uml uses some 64bit specific things to buildan initrd, so it is
+recommended to use a 64bit machine to run uml on.
+
+It is likely that UML just does not work in 2.6.26. This is being worked on.
+
 
 
