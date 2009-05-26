@@ -1059,7 +1059,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 				    irs->sa_len ? irs->sa : " (error)");
 		}
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
                 if (irs->proto == IPPROTO_ESP) {
                         KLIPS_PRINT(debug_rcv,
                                 "klips_debug:ipsec_rcv: "
@@ -1177,7 +1177,7 @@ ipsec_rcv_auth_decap(struct ipsec_rcv_state *irs)
 	 *      if skb->sk is guaranteed to be valid here.
 	 *  2005-04-16: mcr@xelerance.com
 	 */
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 	/*
 	 *
 	 * XXX we should ONLY update pluto if the SA passes all checks,
@@ -1643,7 +1643,7 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 	}
 #endif /* CONFIG_KLIPS_IPCOMP */
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 	if ((irs->natt_type) && (ipp->protocol != IPPROTO_IPIP)) {
 	  /**
 	   * NAT-Traversal and Transport Mode:
@@ -1948,7 +1948,114 @@ ipsec_rcv(struct sk_buff *skb
  */
 int klips26_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
 {
-	return klips26_rcv_encap(skb, udp_sk(sk)->encap_type);
+	struct udp_sock *up = udp_sk(sk);
+	struct udphdr *uh;
+	struct iphdr *iph;
+	int iphlen, len;
+	int ret;
+
+	__u8 *udpdata;
+	__be32 *udpdata32;
+	__u16 encap_type = up->encap_type;
+
+	/* if this is not encapsulated socket, then just return now */
+	if (!encap_type)
+		return 1;
+
+	/* If this is a paged skb, make sure we pull up
+	* whatever data we need to look at. */
+	len = skb->len - sizeof(struct udphdr);
+	if (!pskb_may_pull(skb, sizeof(struct udphdr) + min(len, 8)))
+		return 1;
+
+	/* Now we can get the pointers */
+	uh = udp_hdr(skb);
+	udpdata = (__u8 *)(uh + 1);
+	udpdata32 = (__be32 *)udpdata;
+
+	switch (encap_type) {
+	default:
+	case UDP_ENCAP_ESPINUDP:
+		KLIPS_PRINT(debug_rcv, "UDP_ENCAP_ESPINUDP_NON_IKE: len=%d 0x%x\n",
+				len, udpdata32[0]);
+		/* Check if this is a keepalive packet.  If so, eat it. */
+		if (len == 1 && udpdata[0] == 0xff) {
+			KLIPS_PRINT(debug_rcv,
+					"UDP_ENCAP_ESPINUDP: keepalive packet detected\n");
+			goto drop;
+		} else if (len > sizeof(struct ip_esp_hdr) && udpdata32[0] != 0) {
+			KLIPS_PRINT(debug_rcv,
+					"UDP_ENCAP_ESPINUDP: ESP IN UDP packet detected\n");
+			/* ESP Packet without Non-ESP header */
+			len = sizeof(struct udphdr);
+		} else {
+			/* Must be an IKE packet.. pass it through */
+			KLIPS_PRINT(debug_rcv,
+					"UDP_ENCAP_ESPINUDP: IKE packet detected\n");
+			return 1;
+		}
+		break;
+	case UDP_ENCAP_ESPINUDP_NON_IKE:
+		KLIPS_PRINT(debug_rcv, "UDP_ENCAP_ESPINUDP_NON_IKE: len=%d 0x%x\n",
+				len, udpdata32[0]);
+		/* Check if this is a keepalive packet.  If so, eat it. */
+		if (len == 1 && udpdata[0] == 0xff) {
+			KLIPS_PRINT(debug_rcv,
+					"UDP_ENCAP_ESPINUDP_NON_IKE: keepalive packet detected\n");
+			goto drop;
+		} else if (len > 2 * sizeof(u32) + sizeof(struct ip_esp_hdr) &&
+				udpdata32[0] == 0 && udpdata32[1] == 0) {
+			KLIPS_PRINT(debug_rcv,
+					"UDP_ENCAP_ESPINUDP_NON_IKE: ESP IN UDP NON IKE packet detected\n");
+			/* ESP Packet with Non-IKE marker */
+			len = sizeof(struct udphdr) + 2 * sizeof(u32);
+		} else {
+			/* Must be an IKE packet.. pass it through */
+			KLIPS_PRINT(debug_rcv,
+					"UDP_ENCAP_ESPINUDP_NON_IKE: IKE packet detected\n");
+			return 1;
+		}
+		break;
+	}
+
+	/* At this point we are sure that this is an ESPinUDP packet,
+	 * so we need to remove 'len' bytes from the packet (the UDP
+	 * header and optional ESP marker bytes) and then modify the
+	 * protocol to ESP, and then call into the transform receiver.
+	 */
+	if (skb_cloned(skb) && pskb_expand_head(skb, 0, 0, GFP_ATOMIC)) {
+		KLIPS_PRINT(debug_rcv, "clone or expand problem\n");
+		goto drop;
+	}
+
+	/* Now we can update and verify the packet length... */
+	iph = ip_hdr(skb);
+	iphlen = iph->ihl << 2;
+	iph->tot_len = htons(ntohs(iph->tot_len) - len);
+	if (skb->len < iphlen + len) {
+		/* packet is too small!?! */
+		KLIPS_PRINT(debug_rcv, "packet too small\n");
+		goto drop;
+	}
+
+	/* pull the data buffer up to the ESP header and set the
+	 * transport header to point to ESP.  Keep UDP on the stack
+	 * for later.
+	 */
+	__skb_pull(skb, len);
+	skb_reset_transport_header(skb);
+
+	/* modify the protocol (it's ESP!) */
+	iph->protocol = IPPROTO_ESP;
+
+	/* process ESP */
+	KLIPS_PRINT(debug_rcv, "starting processing ESP packet\n");
+	ret = klips26_rcv_encap(skb, encap_type);
+	return ret;
+
+drop:
+	kfree_skb(skb);
+	return 0;
 }
 
 int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
@@ -1986,7 +2093,7 @@ int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 
 	irs->hard_header_len = skb->dev->hard_header_len;
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 	switch(encap_type) {
 	case UDP_ENCAP_ESPINUDP:
 	  irs->natt_type = ESPINUDP_WITH_NON_ESP;
@@ -2003,7 +2110,7 @@ int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 	  }
 	  goto rcvleave;
 	}
-#endif /* NAT_T */
+#endif /* NAT_TRAVERSAL */
 
 	irs->skb = skb;
 
@@ -2115,7 +2222,7 @@ ipsec_rcv_state_new (void)
         irs->said.proto = 0;
 
         irs->hard_header_len = 0;
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
         irs->natt_type = 0;
         irs->natt_len = 0;
 #endif

@@ -235,7 +235,7 @@ ipsec_mast_xsm_complete(
 		goto cleanup;
 	}
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 	/* do any final NAT-encapsulation */
 	stat = ipsec_nat_encap(ixs);
 	if(stat != IPSEC_XMIT_OK) {

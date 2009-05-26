@@ -124,7 +124,7 @@ struct ipsec_xmit_state
 #endif /* NET_21 */
 	uint32_t eroute_pid;
 	struct ipsec_sa ips;
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 	uint8_t natt_type;
 	uint8_t natt_head;
 	uint16_t natt_sport;

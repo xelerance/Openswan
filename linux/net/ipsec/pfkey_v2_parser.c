@@ -405,7 +405,7 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 	struct sadb_msg *pfkey_reply = NULL;
 	struct socket_list *pfkey_socketsp;
 	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 	struct ipsec_sa *nat_t_ips_saved = NULL;
 #endif
 	KLIPS_PRINT(debug_pfkey,
@@ -453,7 +453,7 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		    sa_len ? sa : " (error)",
 		    extr->ips->ips_flags & EMT_INBOUND ? "in" : "out");
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 	if (extr->ips->ips_natt_sport || extr->ips->ips_natt_dport) {
 		KLIPS_PRINT(debug_pfkey,
 			"klips_debug:pfkey_update_parse: only updating NAT-T ports "
@@ -622,7 +622,7 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 			    pfkey_socketsp->socketp);
 	}
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 	if (nat_t_ips_saved) {
 		/**
 		 * As we _really_ update existing SA, we keep tdbq and need to delete
@@ -2547,7 +2547,7 @@ pfkey_acquire(struct ipsec_sa *ipsp)
 	return error;
 }
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 int
 pfkey_nat_t_new_mapping(struct ipsec_sa *ipsp, struct sockaddr *ipaddr,
 	__u16 sport)
@@ -2707,7 +2707,7 @@ DEBUG_NO_STATIC int (*ext_processors[K_SADB_EXT_MAX+1])(struct sadb_ext *pfkey_e
         pfkey_address_process,
 	pfkey_x_debug_process,
         pfkey_x_protocol_process,
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 	pfkey_x_nat_t_type_process,
 	pfkey_x_nat_t_port_process,
 	pfkey_x_nat_t_port_process,
@@ -2812,7 +2812,7 @@ DEBUG_NO_STATIC int (*msg_parsers[K_SADB_MAX +1])(struct sock *sk, struct sadb_e
 	pfkey_x_addflow_parse,
 	pfkey_x_delflow_parse,
 	pfkey_x_msg_debug_parse,
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 	pfkey_x_nat_t_new_mapping_parse,
 #else
 	NULL,
