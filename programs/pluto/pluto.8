@@ -1,161 +1,13 @@
+'\" t
 .\"     Title: IPSEC_PLUTO
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
-.\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
+.\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
 .\"      Date: 26 October 2006
 .\"    Manual: [FIXME: manual]
 .\"    Source: [FIXME: source]
 .\"  Language: English
 .\"
 .TH "IPSEC_PLUTO" "8" "26 October 2006" "[FIXME: source]" "[FIXME: manual]"
-.\" -----------------------------------------------------------------
-.\" * (re)Define some macros
-.\" -----------------------------------------------------------------
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" toupper - uppercase a string (locale-aware)
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de toupper
-.tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
-\\$*
-.tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SH-xref - format a cross-reference to an SH section
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de SH-xref
-.ie n \{\
-.\}
-.toupper \\$*
-.el \{\
-\\$*
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SH - level-one heading that works better for non-TTY output
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de1 SH
-.\" put an extra blank line of space above the head in non-TTY output
-.if t \{\
-.sp 1
-.\}
-.sp \\n[PD]u
-.nr an-level 1
-.set-an-margin
-.nr an-prevailing-indent \\n[IN]
-.fi
-.in \\n[an-margin]u
-.ti 0
-.HTML-TAG ".NH \\n[an-level]"
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-\." make the size of the head bigger
-.ps +3
-.ft B
-.ne (2v + 1u)
-.ie n \{\
-.\" if n (TTY output), use uppercase
-.toupper \\$*
-.\}
-.el \{\
-.nr an-break-flag 0
-.\" if not n (not TTY), use normal case (not uppercase)
-\\$1
-.in \\n[an-margin]u
-.ti 0
-.\" if not n (not TTY), put a border/line under subheading
-.sp -.6
-\l'\n(.lu'
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SS - level-two heading that works better for non-TTY output
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de1 SS
-.sp \\n[PD]u
-.nr an-level 1
-.set-an-margin
-.nr an-prevailing-indent \\n[IN]
-.fi
-.in \\n[IN]u
-.ti \\n[SN]u
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-.ps \\n[PS-SS]u
-\." make the size of the head bigger
-.ps +2
-.ft B
-.ne (2v + 1u)
-.if \\n[.$] \&\\$*
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" BB/BE - put background/screen (filled box) around block of text
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de BB
-.if t \{\
-.sp -.5
-.br
-.in +2n
-.ll -2n
-.gcolor red
-.di BX
-.\}
-..
-.de EB
-.if t \{\
-.if "\\$2"adjust-for-leading-newline" \{\
-.sp -1
-.\}
-.br
-.di
-.in
-.ll
-.gcolor
-.nr BW \\n(.lu-\\n(.i
-.nr BH \\n(dn+.5v
-.ne \\n(BHu+.5v
-.ie "\\$2"adjust-for-leading-newline" \{\
-\M[\\$1]\h'1n'\v'+.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
-.\}
-.el \{\
-\M[\\$1]\h'1n'\v'-.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
-.\}
-.in 0
-.sp -.5v
-.nf
-.BX
-.in
-.sp .5v
-.fi
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" BM/EM - put colored marker in margin next to block of text
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de BM
-.if t \{\
-.br
-.ll -2n
-.gcolor red
-.di BX
-.\}
-..
-.de EM
-.if t \{\
-.br
-.di
-.ll
-.gcolor
-.nr BH \\n(dn
-.ne \\n(BHu
-\M[\\$1]\D'P -.75n 0 0 \\n(BHu -(\\n[.i]u - \\n(INu - .75n) 0 0 -\\n(BHu'\M[]
-.in 0
-.nf
-.BX
-.in
-.fi
-.\}
-..
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -166,22 +18,15 @@
 .\" -----------------------------------------------------------------
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
-.SH "Name"
+.SH "NAME"
 ipsec_pluto \- ipsec whack : IPsec IKE keying daemon and control interface
-.SH "Synopsis"
-.fam C
+.SH "SYNOPSIS"
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIpluto\fR [\-\-help] [\-\-version] [\-\-optionsfrom\ \fIfilename\fR] [\-\-nofork] [\-\-stderrlog] [\-\-use\-auto] [\-\-use\-klips] [\-\-use\-netkey] [\-\-use\-nostack] [\-\-uniqueids] [\-\-nat_traversal] [\-\-virtual_private\ \fInetwork_list\fR] [\-\-keep_alive\ \fIdelay_sec\fR] [\-\-force_keepalive] [\-\-force_busy] [\-\-disable_port_floating] [\-\-nocrsend] [\-\-strictcrlpolicy] [\-\-crlcheckinterval] [\-\-ocspuri] [\-\-interface\ \fIinterfacename\fR] [\-\-ikeport\ \fIportnumber\fR] [\-\-ctlbase\ \fIpath\fR] [\-\-secretsfile\ \fIsecrets\-file\fR] [\-\-adns\ \fIpathname\fR] [\-\-nhelpers\ \fInumber\fR] [\-\-lwdnsq\ \fIpathname\fR] [\-\-perpeerlog] [\-\-perpeerlogbase\ \fIdirname\fR] [\-\-ipsecdir\ \fIdirname\fR] [\-\-coredir\ \fIdirname\fR] [\-\-noretransmits]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR [\-\-help] [\-\-version]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR [\-\-debug\-none] [\-\-debug\-all] [\-\-debug\-raw] [\-\-debug\-crypt] [\-\-debug\-parsing] [\-\-debug\-emitting] [\-\-debug\-control] [\-\-debug\-lifecycle] [\-\-debug\-klips] [\-\-debug\-pfkey] [\-\-debug\-nat\-t] [\-\-debug\-dpd] [\-\-debug\-dns] [\-\-debug\-oppo] [\-\-debug\-oppoinfo] [\-\-debug\-whackwatch] [\-\-debug\-private]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-name\ \fIconnection\-name\fR [[\-\-ipv4] | [\-\-ipv6]] [[\-\-tunnelipv4] | [\-\-tunnelipv6]]
 .br
@@ -200,79 +45,42 @@ ipsec_pluto \- ipsec whack : IPsec IKE keying daemon and control interface
 
 .br
 [\-\-tunnel] [\-\-psk] [\-\-rsasig] [\-\-encrypt] [\-\-authenticate] [\-\-compress] [\-\-pfs] [\-\-pfsgroup\ [modp1024]\ |\ [modp1536]\ |\ [modp2048]\ |\ [modp3072]\ |\ [modp4096]\ |\ [modp6144]\ |\ [modp8192]] [\-\-disablearrivalcheck] [\-\-ikelifetime\ \fIseconds\fR] [\-\-ipseclifetime\ \fIseconds\fR] [\-\-rekeymargin\ \fIseconds\fR] [\-\-rekeyfuzz\ \fIpercentage\fR] [\-\-keyingtries\ \fIcount\fR] [\-\-esp\ \fIesp\-algos\fR] [\-\-dontrekey] [\-\-aggrmode] [\-\-modecfgpull] [[\-\-dpddelay\ \fIseconds\fR] | [\-\-dpdtimeout\ \fIseconds\fR]] [\-\-dpdaction\ [clear]\ |\ [hold]\ |\ [restart]] [\-\-forceencaps] [[\-\-initiateontraffic]\ |\ [\-\-pass]\ |\ [\-\-drop]\ |\ [\-\-reject]] [[\-\-failnone]\ |\ [\-\-failpass]\ |\ [\-\-faildrop]\ |\ [\-\-failreject]] [\-\-ctlbase\ \fIpath\fR] [\-\-optionsfrom\ \fIfilename\fR] [\-\-label\ \fIstring\fR]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-keyid\ \fIid\fR [\-\-addkey] [\-\-pubkeyrsa\ \fIkey\fR] [\-\-ctlbase\ \fIpath\fR] [\-\-optionsfrom\ \fIfilename\fR] [\-\-label\ \fIstring\fR]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-myid\ \fIid\fR
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-listen | \-\-unlisten  [\-\-ctlbase\ \fIpath\fR] [\-\-optionsfrom\ \fIfilename\fR] [\-\-label\ \fIstring\fR]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-route | \-\-unroute  \-\-name\ \fIconnection\-name\fR [\-\-ctlbase\ \fIpath\fR] [\-\-optionsfrom\ \fIfilename\fR] [\-\-label\ \fIstring\fR]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-initiate | \-\-terminate  \-\-name\ \fIconnection\-name\fR [\-\-xauthuser\ \fIuser\fR] [\-\-xauthpass\ \fIpass\fR] [\-\-asynchronous] [\-\-ctlbase\ \fIpath\fR] [\-\-optionsfrom\ \fIfilename\fR] [\-\-label\ \fIstring\fR]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR [[\-\-tunnelipv4] | [\-\-tunnelipv6]] \-\-oppohere\ \fIip\-address\fR \-\-oppothere\ \fIip\-address\fR
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-crash [ipaddress]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-whackrecord [filename]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-whackstoprecord
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-name\ \fIconnection\-name\fR \-\-delete [\-\-ctlbase\ \fIpath\fR] [\-\-optionsfrom\ \fIfilename\fR] [\-\-label\ \fIstring\fR]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-deletestate\ \fIstate\-number\fR [\-\-ctlbase\ \fIpath\fR] [\-\-optionsfrom\ \fIfilename\fR] [\-\-label\ \fIstring\fR]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR [\-\-name\ \fIconnection\-name\fR] [\-\-debug\-none] [\-\-debug\-all] [\-\-debug\-raw] [\-\-debug\-crypt] [\-\-debug\-parsing] [\-\-debug\-emitting] [\-\-debug\-control] [\-\-debug\-controlmore] [\-\-debug\-lifecycle] [\-\-debug\-klips] [\-\-debug\-pfkey] [\-\-debug\-dns] [\-\-debug\-dpd] [\-\-debug\-natt] [\-\-debug\-oppo] [\-\-debug\-oppoinfo] [\-\-debug\-whackwatch] [\-\-debug\-private] [\-\-impair\-delay\-adns\-key\-answer] [\-\-impair\-delay\-adns\-txt\-answer] [\-\-impair\-bust\-mi2] [\-\-impair\-bust\-mr2] [\-\-impair\-sa\-fail] [\-\-impair\-die\-oninfo] [\-\-impair\-jacob\-two\-two]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR [\-\-utc] [\-\-listall] [\-\-listpubkeys] [\-\-listcerts] [\-\-listcacerts] [\-\-listacerts] [\-\-listaacerts] [\-\-listocspcerts] [\-\-listgroups] [\-\-listcrls] [\-\-listocsp] [\-\-listcards]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR [\-\-utc] [\-\-rereadsecrets] [\-\-rereadall] [\-\-rereadcacerts] [\-\-rereadacerts] [\-\-rereadaacerts] [\-\-rereadocspcerts] [\-\-rereadcrls]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-purgeocsp
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-listevents
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-status [\-\-ctlbase\ \fIpath\fR] [\-\-optionsfrom\ \fIfilename\fR] [\-\-label\ \fIstring\fR]
-.fam
-.fam C
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-shutdown [\-\-ctlbase\ \fIpath\fR] [\-\-optionsfrom\ \fIfilename\fR] [\-\-label\ \fIstring\fR]
-.fam
 .SH "DESCRIPTION"
 .PP
 \fBpluto\fR
@@ -370,7 +178,7 @@ supports multiple public networks (that is, networks that are considered insecur
 option can be used to limit the interfaces considered)\&. It does this only when
 \fBwhack\fR
 tells it to \-\-listen, so the interfaces must be configured by then\&. Each interface with a name of the form
-\fBipsec\fR[\FC0\F[]\-\FC9\F[]] is taken as a
+\fBipsec\fR[0\-9] is taken as a
 \fBKLIPS\fR
 virtual public interface\&. Another network interface with the same IP address (the first one found will be used) is taken as the corresponding real public interface\&.
 \fBifconfig\fR(8)
@@ -397,7 +205,7 @@ supports has two security gateways negotiating on behalf of client subnets\&. Th
 \fIklips/doc/rgb_setup\&.txt\fR)\&.
 .PP
 The file
-\FCINSTALL\F[]
+INSTALL
 in the base directory of this distribution explains how to start setting up the whole system, including
 \fBKLIPS\fR\&.
 .PP
@@ -426,7 +234,7 @@ daemon and another IKE daemon (for example, another instance of
 \fBpluto\fR\&.
 .PP
 The file
-\FC/etc/ipsec\&.secrets\F[]
+/etc/ipsec\&.secrets
 is used to keep preshared secret keys, RSA private keys, X\&.509 encoded keyfiles and smartcard PIN\'s for authentication with other IKE daemons\&. For debugging, there is an argument to the
 \fBpluto\fR
 command to use a different file\&. This file is described in
@@ -465,13 +273,13 @@ option\&.
 Pluto supports the use of X\&.509 certificates and sends it certificate when needed\&. This can confuse IKE implementations that do not implement this, such as the old FreeS/WAN implementation\&. The
 \fB\-\-nocrsend\fR
 prevents pluto from sending these\&. At startup, pluto loads all the X\&.509 related files from the directories
-\FC/etc/ipsec\&.d/certs\F[],
-\FC/etc/ipsec\&.d/cacerts\F[],
-\FC/etc/ipsec\&.d/aacerts\F[],
-\FC/etc/ipsec\&.d/ocspcerts\F[],
-\FC/etc/ipsec\&.d/private\F[]
+/etc/ipsec\&.d/certs,
+/etc/ipsec\&.d/cacerts,
+/etc/ipsec\&.d/aacerts,
+/etc/ipsec\&.d/ocspcerts,
+/etc/ipsec\&.d/private
 and
-\FC/etc/ipsec\&.d/crls\F[]\&. The
+/etc/ipsec\&.d/crls\&. The
 \fICertificate Revocation Lists\fR
 can also be retrieved from an URL\&. The option
 \fB\-\-crlcheckinterval\fR
@@ -511,7 +319,7 @@ tells pluto to perform the above calculation\&. Any other value forces the numbe
 .PP
 \fBpluto\fR
 attempts to create a lockfile with the name
-\FC/var/run/pluto/pluto\&.pid\F[]\&. If the lockfile cannot be created,
+/var/run/pluto/pluto\&.pid\&. If the lockfile cannot be created,
 \fBpluto\fR
 exits \- this prevents multiple
 \fBpluto\fRs from competing Any \(lqleftover\(rq lockfile must be removed before
@@ -607,7 +415,7 @@ is used to command a running
 uses a UNIX domain socket to speak to
 \fBpluto\fR
 (by default,
-\FC/var/pluto\&.ctl\F[])\&.
+/var/pluto\&.ctl)\&.
 .PP
 \fBwhack\fR
 has an intricate argument syntax\&. This syntax allows many different functions to be specified\&. The help form shows the usage or version information\&. The connection form gives
@@ -724,7 +532,7 @@ the IP address of the end (generally the public interface)\&. If
 is to act as a responder for IKE negotiations initiated from unknown IP addresses (the \(lqRoad Warrior\(rq case), the IP address should be specified as
 \fB%any\fR
 (currently, the obsolete notation
-\FC0\&.0\&.0\&.0\F[]
+0\&.0\&.0\&.0
 is also accepted for this)\&. If
 \fBpluto\fR
 is to opportunistically initiate the connection, use
@@ -784,7 +592,7 @@ where to route packets for the peer\'s client (presumably for the peer too, but 
 \fBpluto\fR
 installs an IPsec SA, it issues a route command\&. It uses the nexthop as the gateway\&. The default is the peer\'s IP address (this can be explicitly written as
 \fB%direct\fR; the obsolete notation
-\FC0\&.0\&.0\&.0\F[]
+0\&.0\&.0\&.0
 is accepted)\&. This option is necessary if
 \fBpluto\fR\'s host\'s interface used for sending packets to the peer is neither point\-to\-point nor directly connected to the peer\&.
 .RE
@@ -1702,7 +1510,7 @@ Be sure to specify an appropriate nexthop for the responder to send a message to
 has no way of guessing it (if forwarding isn\'t required, use an explicit
 \fB%direct\fR
 as the nexthop and the IP address of the initiator will be filled in; the obsolete notation
-\FC0\&.0\&.0\&.0\F[]
+0\&.0\&.0\&.0
 is still accepted)\&.
 .PP
 \fBpluto\fR
@@ -1748,13 +1556,13 @@ communicates with
 \fIpath\fR\&.pid is the lockfile to prevent multiple
 \fBpluto\fR
 instances\&. The default is
-\FC/var/run/pluto/pluto\F[])\&.
+/var/run/pluto/pluto)\&.
 .RE
 .PP
 \fB\-\-secretsfile\fR \fIfile\fR
 .RS 4
 specifies the file for authentication secrets (default:
-\FC/etc/ipsec\&.secrets\F[])\&. This name is subject to \(lqglobbing\(rq as in
+/etc/ipsec\&.secrets)\&. This name is subject to \(lqglobbing\(rq as in
 \fBsh\fR(1), so every file with a matching name is processed\&. Quoting is generally needed to prevent the shell from doing the globbing\&.
 .RE
 .PP
@@ -2082,17 +1890,17 @@ detects a problem, it will return an exit status of 1\&. If it received progress
 \fBpluto\fR, it returns as status the value of the numeric prefix from the last such message that was not a message sent to syslog or a comment (but the prefix for success is treated as 0)\&. Otherwise, the exit status is 0\&.
 .SH "FILES"
 .PP
-\FC/var/run/pluto/pluto\&.pid\F[]
+/var/run/pluto/pluto\&.pid
 
-\FC/var/run/pluto/pluto\&.ctl\F[]
+/var/run/pluto/pluto\&.ctl
 
-\FC/etc/ipsec\&.secrets\F[]
+/etc/ipsec\&.secrets
 
 \fI$IPSEC_LIBDIR/_pluto_adns\fR
 
 \fI$IPSEC_EXECDIR/lwdnsq\fR
 
-\FC/dev/urandom\F[]
+/dev/urandom
 .SH "ENVIRONMENT"
 .PP
 \fIIPSEC_LIBDIR\fR

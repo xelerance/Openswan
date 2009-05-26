@@ -9,7 +9,7 @@
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<integer value="29"/>
-			<integer value="947"/>
+			<integer value="371"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -4338,7 +4338,7 @@
 				<string key="NSClassName">NSFontManager</string>
 			</object>
 			<object class="NSCustomObject" id="526732472">
-				<string key="NSClassName">Model</string>
+				<string key="NSClassName">Connection</string>
 			</object>
 			<object class="NSObjectController" id="172163123">
 				<object class="NSMutableArray" key="NSDeclaredKeys">
@@ -4378,6 +4378,9 @@
 				<bool key="NSSelectsInsertedObjects">YES</bool>
 				<bool key="NSFilterRestrictsInsertion">YES</bool>
 				<bool key="NSClearsFilterPredicateOnInsertion">YES</bool>
+			</object>
+			<object class="NSCustomObject" id="625679428">
+				<string key="NSClassName">Controller</string>
 			</object>
 		</object>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
@@ -5060,28 +5063,28 @@
 					<int key="connectionID">1115</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">setDefault:</string>
+						<reference key="source" ref="625679428"/>
+						<reference key="destination" ref="75705620"/>
+					</object>
+					<int key="connectionID">1122</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: selectedLeftIP</string>
+						<string key="label">value: current.selectedLeftIP</string>
 						<reference key="source" ref="750611190"/>
-						<reference key="destination" ref="526732472"/>
+						<reference key="destination" ref="625679428"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="750611190"/>
-							<reference key="NSDestination" ref="526732472"/>
-							<string key="NSLabel">value: selectedLeftIP</string>
+							<reference key="NSDestination" ref="625679428"/>
+							<string key="NSLabel">value: current.selectedLeftIP</string>
 							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">selectedLeftIP</string>
+							<string key="NSKeyPath">current.selectedLeftIP</string>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">1117</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">setDefault:</string>
-						<reference key="source" ref="526732472"/>
-						<reference key="destination" ref="75705620"/>
-					</object>
-					<int key="connectionID">1118</int>
+					<int key="connectionID">1127</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -8797,6 +8800,11 @@
 						<reference key="object" ref="677158193"/>
 						<reference key="parent" ref="771479437"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">1119</int>
+						<reference key="object" ref="625679428"/>
+						<reference key="parent" ref="1049"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -8925,6 +8933,7 @@
 					<string>1112.IBPluginDependency</string>
 					<string>1113.IBPluginDependency</string>
 					<string>1114.IBPluginDependency</string>
+					<string>1119.IBPluginDependency</string>
 					<string>112.IBPluginDependency</string>
 					<string>112.ImportedFromIB2</string>
 					<string>124.IBPluginDependency</string>
@@ -9529,6 +9538,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="9"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="9"/>
@@ -9653,8 +9663,8 @@
 					<reference ref="9"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="9"/>
-					<string>{{31, 313}, {893, 437}}</string>
-					<string>{{31, 313}, {893, 437}}</string>
+					<string>{{32, 319}, {893, 437}}</string>
+					<string>{{32, 319}, {893, 437}}</string>
 					<reference ref="9"/>
 					<string>{{33, 99}, {480, 360}}</string>
 					<string>{3.40282e+38, 3.40282e+38}</string>
@@ -10028,38 +10038,33 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">1118</int>
+			<int key="maxID">1127</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<bool key="EncodedWithXMLCoder">YES</bool>
 				<object class="IBPartialClassDescription">
-					<string key="className">Model</string>
+					<string key="className">Connection</string>
 					<string key="superclassName">NSObject</string>
 					<object class="NSMutableDictionary" key="actions">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSMutableArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>saveToFile:</string>
-							<string>setDefault:</string>
-						</object>
-						<object class="NSMutableArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
-							<string>id</string>
-						</object>
+						<string key="NS.key.0">saveToFile:</string>
+						<string key="NS.object.0">id</string>
 					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">Model.h</string>
+						<string key="minorKey">Connection.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">Model</string>
+					<string key="className">Controller</string>
 					<string key="superclassName">NSObject</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">setDefault:</string>
+						<string key="NS.object.0">id</string>
+					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBUserSource</string>
-						<string key="minorKey"/>
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">Controller.h</string>
 					</object>
 				</object>
 			</object>
