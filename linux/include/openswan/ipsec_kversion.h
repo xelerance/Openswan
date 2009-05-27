@@ -411,7 +411,10 @@
 #endif
 
 #ifndef late_initcall
-#define	late_initcall(x)	module_init(x)
+# include <linux/init.h>
+# ifndef late_initcall
+#  define	late_initcall(x)	module_init(x)
+# endif
 #endif
 
 #ifdef NET_21
