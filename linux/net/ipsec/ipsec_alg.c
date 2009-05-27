@@ -3,10 +3,6 @@
  *
  * Author: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
  * 
- * Version: 0.8.1
- *
- * ipsec_alg.c,v 1.1.2.1 2003/11/21 18:12:23 jjo Exp
- *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -293,10 +289,12 @@ int ipsec_alg_esp_encrypt(struct ipsec_sa *sa_p, __u8 * idat,
  * 	called from pfkey_v2_parser.c:pfkey_ips_init() 
  */
 int ipsec_alg_enc_key_create(struct ipsec_sa *sa_p) {
-	int ret=-EINVAL;
+	int ret = 0;
 	int keyminbits, keymaxbits;
-	caddr_t ekp;
-	struct ipsec_alg_enc *ixt_e=sa_p->ips_alg_enc;
+	caddr_t ekp = NULL;
+	struct ipsec_alg_enc *ixt_e = 
+		(struct ipsec_alg_enc *)ipsec_alg_get(IPSEC_ALG_TYPE_ENCRYPT,
+						      sa_p->ips_encalg);
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:ipsec_alg_enc_key_create: "
@@ -324,43 +322,75 @@ int ipsec_alg_enc_key_create(struct ipsec_sa *sa_p) {
 	if(sa_p->ips_key_bits_e<keyminbits || 
 			sa_p->ips_key_bits_e>keymaxbits) {
 		KLIPS_PRINT(debug_pfkey,
-				"klips_debug:ipsec_alg_enc_key_create: "
-				"incorrect encryption key size for id=%d: %d bits -- "
-				"must be between %d,%d bits\n" /*octets (bytes)\n"*/,
-				ixt_e->ixt_common.ixt_support.ias_id,
-				sa_p->ips_key_bits_e, keyminbits, keymaxbits);
-		ret=-EINVAL;
+			    "klips_debug:ipsec_alg_enc_key_create: "
+			    "incorrect encryption key size for id=%d: %d bits -- "
+			    "must be between %d,%d bits\n" /*octets (bytes)\n"*/,
+			    ixt_e->ixt_common.ixt_support.ias_id,
+			    sa_p->ips_key_bits_e, keyminbits, keymaxbits);
+		ret = -EINVAL;
 		goto ixt_out;
 	}
-	/* save encryption key pointer */
-	ekp = sa_p->ips_key_e;
-
 
 	if (ixt_e->ixt_e_new_key) {
-		sa_p->ips_key_e = ixt_e->ixt_e_new_key(ixt_e,
-				ekp, sa_p->ips_key_bits_e/8);
-		ret =  (sa_p->ips_key_e)? 0 : -EINVAL;
-	} else {
-		if((sa_p->ips_key_e = (caddr_t)
-		    kmalloc((sa_p->ips_key_e_size = ixt_e->ixt_e_ctx_size),
+		KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:ipsec_alg_enc_key_create: "
+			    "using ixt_e_new_key to generate key\n");
+
+		if ((ekp = ixt_e->ixt_e_new_key(ixt_e,
+				sa_p->ips_key_e, 
+				sa_p->ips_key_bits_e/8)) == NULL) {
+			ret = -EINVAL;
+			goto ixt_out;
+		}
+	} else if (ixt_e->ixt_e_set_key) {
+		KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:ipsec_alg_enc_key_create: "
+			    "using ixt_e_set_key to generate key context\n");
+
+		if ((ekp = (caddr_t)kmalloc(ixt_e->ixt_e_ctx_size,
 			    GFP_ATOMIC)) == NULL) {
-			ret=-ENOMEM;
+			ret = -ENOMEM;
 			goto ixt_out;
 		}
 		/* zero-out key_e */
-		memset(sa_p->ips_key_e, 0, sa_p->ips_key_e_size);
+		memset(sa_p->ips_key_e, 0, ixt_e->ixt_e_ctx_size);
 
 		/* I cast here to allow more decoupling in alg module */
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:ipsec_alg_enc_key_create: about to call:"
-				    "set_key(key_e=%p, ekp=%p, key_size=%d)\n",
-				    (caddr_t)sa_p->ips_key_e, ekp, sa_p->ips_key_bits_e/8);
-		ret = ixt_e->ixt_e_set_key(ixt_e, (caddr_t)sa_p->ips_key_e, ekp, sa_p->ips_key_bits_e/8);
+			    "set_key(key_ctx=%p, key=%p, key_size=%d)\n",
+			    ekp, (caddr_t)sa_p->ips_key_e, sa_p->ips_key_bits_e/8);
+
+		ret = ixt_e->ixt_e_set_key(ixt_e,
+			ekp, (caddr_t)sa_p->ips_key_e, sa_p->ips_key_bits_e/8);
+		if (ret < 0) {
+			kfree(ekp);
+			goto ixt_out;
+		}
+	} else {
+		KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:ipsec_alg_enc_key_create: "
+			    "no function available to generate a key!\n");
+
+		ret = -EPROTO;
+		goto ixt_out;
 	}
-	/* paranoid */
-	memset(ekp, 0, sa_p->ips_key_bits_e/8);
-	kfree(ekp);
+
+	if (sa_p->ips_key_e) {
+		memset(sa_p->ips_key_e, 0, sa_p->ips_key_bits_e/8);
+		kfree(sa_p->ips_key_e);
+	}
+
+	sa_p->ips_key_e = ekp;
+	sa_p->ips_key_e_size = ixt_e->ixt_e_ctx_size;
+
+	sa_p->ips_alg_enc = ixt_e;
+	ixt_e = NULL;
+
 ixt_out:
+	if (ixt_e)
+		ipsec_alg_put((struct ipsec_alg *)ixt_e);
+
 	return ret;
 }
 
@@ -375,11 +405,13 @@ ixt_out:
  * 	called from pfkey_v2_parser.c:pfkey_ips_init() 
  */
 int ipsec_alg_auth_key_create(struct ipsec_sa *sa_p) {
-	int ret=-EINVAL;
-	struct ipsec_alg_auth *ixt_a=sa_p->ips_alg_auth;
+	int ret = 0;
 	int keyminbits, keymaxbits;
-	unsigned char *akp;
-	unsigned int aks;
+	caddr_t akp = NULL;
+	struct ipsec_alg_auth *ixt_a = 
+		(struct ipsec_alg_auth *)ipsec_alg_get(IPSEC_ALG_TYPE_AUTH,
+						       sa_p->ips_authalg);
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:ipsec_alg_auth_key_create: "
 		    "entering with authalg=%d ixt_a=%p\n",
@@ -400,24 +432,53 @@ int ipsec_alg_auth_key_create(struct ipsec_sa *sa_p) {
 		ret=-EINVAL;
 		goto ixt_out;
 	}
-	/* save auth key pointer */
-	sa_p->ips_auth_bits = ixt_a->ixt_a_keylen * 8; /* XXX XXX */
-	akp = sa_p->ips_key_a;
-	aks = sa_p->ips_key_a_size;
 
 	/* will hold: 2 ctx and a blocksize buffer: kb */
-	sa_p->ips_key_a_size = ixt_a->ixt_a_ctx_size;
-	if((sa_p->ips_key_a = 
-		(caddr_t) kmalloc(sa_p->ips_key_a_size, GFP_ATOMIC)) == NULL) {
-		ret=-ENOMEM;
+	if ((akp = (caddr_t)kmalloc(ixt_a->ixt_a_ctx_size,
+			GFP_ATOMIC)) == NULL) {
+		ret = -ENOMEM;
 		goto ixt_out;
 	}
-	ixt_a->ixt_a_hmac_set_key(ixt_a, sa_p->ips_key_a, akp, sa_p->ips_key_bits_a/8); /* XXX XXX */
-	ret=0;
-	memset(akp, 0, aks);
-	kfree(akp);
-			
+
+	KLIPS_PRINT(debug_pfkey,
+		    "klips_debug:ipsec_alg_auth_key_create: about to call:"
+		    "hmac_set_key(key_ctx=%p, key=%p, key_size=%d)\n",
+		    akp, (caddr_t)sa_p->ips_key_a, sa_p->ips_key_bits_a/8);
+
+	if (ixt_a->ixt_a_hmac_set_key) {
+		ret = ixt_a->ixt_a_hmac_set_key(ixt_a, 
+			akp, sa_p->ips_key_a, sa_p->ips_key_bits_a/8); /* XXX XXX */
+		if (ret < 0) {
+			kfree(akp);
+			goto ixt_out;
+		}
+	} else {
+		KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:ipsec_alg_auth_key_create: "
+			    "no hmac_set_key function available!\n");
+
+		ret = -EPROTO;
+		goto ixt_out;
+	}
+
+	if (sa_p->ips_key_a) {
+		memset(sa_p->ips_key_a, 0, sa_p->ips_key_bits_a/8);
+		kfree(sa_p->ips_key_a);
+	}
+
+	sa_p->ips_key_a = akp;
+	sa_p->ips_key_a_size = ixt_a->ixt_a_ctx_size;
+
+	sa_p->ips_auth_bits = ixt_a->ixt_a_keylen * 8; /* XXX XXX */
+
+	sa_p->ips_alg_auth = ixt_a;
+	ixt_a = NULL;
+
 ixt_out:
+	if (ixt_a) {
+		ipsec_alg_put((struct ipsec_alg *)ixt_a);
+	}
+
 	return ret;
 }
 
