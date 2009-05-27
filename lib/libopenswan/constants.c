@@ -649,7 +649,6 @@ enum_names oakley_prf_names =
 /* Oakley Encryption Algorithm attribute */
 
 static const char *const oakley_enc_name[] = {
-	"OAKLEY_NULL_CIPHER",
 	"OAKLEY_DES_CBC",
 	"OAKLEY_IDEA_CBC",
 	"OAKLEY_BLOWFISH_CBC",
@@ -657,7 +656,6 @@ static const char *const oakley_enc_name[] = {
 	"OAKLEY_3DES_CBC",
 	"OAKLEY_CAST_CBC",
 	"OAKLEY_AES_CBC",
-	"OAKLEY_CAMELLIA_CBC",
     };
 
 #ifdef NO_EXTRA_IKE
@@ -679,7 +677,7 @@ enum_names oakley_enc_names_ssh =
 enum_names oakley_enc_names_draft_aes_cbc_02 =
     { 65001, 65005, oakley_enc_name_draft_aes_cbc_02, &oakley_enc_names_ssh };
 enum_names oakley_enc_names =
-    { OAKLEY_NULL_CIPHER, OAKLEY_CAMELLIA_CBC, oakley_enc_name, &oakley_enc_names_draft_aes_cbc_02 };
+    { OAKLEY_DES_CBC, OAKLEY_AES_CBC, oakley_enc_name, &oakley_enc_names_draft_aes_cbc_02 };
 #endif
 
 /* Oakley Hash Algorithm attribute */

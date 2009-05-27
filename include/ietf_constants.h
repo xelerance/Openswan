@@ -721,7 +721,6 @@ typedef u_int16_t ipsec_auth_t;
 
 /* extern enum_names oakley_enc_names; (IKEv1 only) */
 
-#define OAKLEY_NULL_CIPHER	0 /* 0 might be a problem with enum_name(), but its the number netkey uses for null encryption */
 #define OAKLEY_DES_CBC          1
 #define OAKLEY_IDEA_CBC         2
 #define OAKLEY_BLOWFISH_CBC     3
@@ -730,12 +729,9 @@ typedef u_int16_t ipsec_auth_t;
 #define OAKLEY_CAST_CBC         6
 #define OAKLEY_AES_CBC          7
 #define OAKLEY_CAMELLIA_CBC	8
-#define OAKLEY_MARS_CBC         65001
-#define OAKLEY_RC6_CBC          65002
-#define OAKLEY_ID_65003         65003
-#define OAKLEY_SERPENT_CBC      65004
-#define OAKLEY_TWOFISH_CBC      65005
-#define OAKLEY_TWOFISH_CBC_SSH  65289
+#define OAKLEY_SERPENT_CBC              65004
+#define OAKLEY_TWOFISH_CBC              65005
+#define OAKLEY_TWOFISH_CBC_SSH          65289
 
 #define OAKLEY_ENCRYPT_MAX      65535	/* pretty useless :) */
 
