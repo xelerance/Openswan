@@ -10,14 +10,14 @@
 #import "Connection.h"
 
 @interface Controller : NSObject {
-	Connection* current;
-	NSMutableDictionary* connections;
+	//Connection* current;
+	NSMutableArray* connections;
 }
 
-@property (readwrite, copy) Connection* current;
-@property (readwrite, copy) NSMutableDictionary* connections;
+//@property (readwrite, copy) Connection* current;
+@property (readwrite, copy) NSMutableArray* connections;
 
 - (id)init;
-- (IBAction)setDefault: (id)sender;
+//- (IBAction)setDefault: (id)sender;
 
 @end

@@ -13,13 +13,15 @@
 @synthesize selectedLeftIP, selectedRightIP, selectedKeySetupMode;
 @synthesize selectedKey, selectedType, selectedAuto;
 @synthesize selectedLeftRSAsig , selectedRightRSAsig;
-@synthesize popupType, popupAuto;
+@synthesize popupType, popupAuto, connName;
 
-- (id) init
+- (id) initWithName:(NSString*)name
 {
     /* first initialize the base class */
     self = [super init]; 
     /* then initialize the instance variables */
+	
+	connName = [NSString stringWithString:name];
     
 	popupType = [NSArray arrayWithObjects: @"Tunnel", @"Transport", @"Pass Through", nil];
 	popupAuto = [NSArray arrayWithObjects: @"Start", @"Add", @"Ignore", @"Manual", @"Route", nil];
@@ -27,7 +29,9 @@
 	//initialize selectedLedtIP
 	selectedLeftIP = [[NSMutableString alloc] init];
 	
-	[self setValue:@"192.168.0.0" forKey:@"selectedLeftIP"];
+	NSString* ss = [NSString stringWithFormat: @"192.128.%@", name];
+	
+	[self setValue:ss forKey:@"selectedLeftIP"];
 	
 	NSMutableString *s = [self valueForKey:@"selectedLeftIP"];
 	NSLog(@"Set value for selectedLeftIP = %@", s);
@@ -61,6 +65,10 @@
     [pool drain];
 }
 
+- (NSString*)description
+{
+	return connName;
+}
 
 @end
 

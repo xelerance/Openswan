@@ -11,6 +11,7 @@
 
 @interface Connection : NSObject {
 
+	NSString* connName;
 	NSMutableString* selectedLeftIP;
 	NSString* selectedRightIP;
 	NSString* selectedKeySetupMode;
@@ -26,12 +27,12 @@
 }
 
 @property (readwrite, copy) NSMutableString *selectedLeftIP;
-@property (readwrite, copy) NSString *selectedRightIP, *selectedKeySetupMode;
+@property (readwrite, copy) NSString *selectedRightIP, *selectedKeySetupMode, *connName;
 @property (readwrite, copy) NSString *selectedKey, *selectedType, *selectedAuto;
 @property (readwrite, copy) NSString *selectedLeftRSAsig , *selectedRightRSAsig;
 @property (readwrite, copy) NSArray *popupType, *popupAuto;
 
-- (id) init;
+- (id) initWithName:(NSString*)name;
 - (IBAction)saveToFile: (id)sender;
 //- (IBAction)setDefault: (id)sender;
 @end
