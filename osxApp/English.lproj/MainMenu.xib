@@ -5216,7 +5216,7 @@
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">1255</int>
+					<int key="connectionID">1262</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -8942,6 +8942,7 @@
 						<int key="objectID">1128</int>
 						<reference key="object" ref="854294737"/>
 						<reference key="parent" ref="1049"/>
+						<string key="objectName">Connections Controller</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">1210</int>
@@ -10234,7 +10235,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">1255</int>
+			<int key="maxID">1262</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">

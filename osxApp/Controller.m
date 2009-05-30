@@ -30,7 +30,7 @@
 	
 	//[[connections objectForKey:@"test1"] setSelectedLeftIP:@"192.111.111.111"];
 	
-	//current = [connections objectForKey:@"test1"];
+	//current = [Connection alloc];
 	
 	//[connections retain];
 	return self;
