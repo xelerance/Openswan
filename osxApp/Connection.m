@@ -13,7 +13,7 @@
 @synthesize selectedLeftIP, selectedRightIP, selectedKeySetupMode;
 @synthesize selectedKey, selectedType, selectedAuto;
 @synthesize selectedLeftRSAsig , selectedRightRSAsig;
-@synthesize popupType, popupAuto, connName;
+@synthesize connName;
 
 - (id) initWithName:(NSString*)name
 {
@@ -22,9 +22,6 @@
     /* then initialize the instance variables */
 	
 	connName = [NSString stringWithString:name];
-    
-	popupType = [NSArray arrayWithObjects: @"Tunnel", @"Transport", @"Pass Through", nil];
-	popupAuto = [NSArray arrayWithObjects: @"Start", @"Add", @"Ignore", @"Manual", @"Route", nil];
 	
 	//initialize selectedLedtIP
 	selectedLeftIP = [[NSMutableString alloc] init];
@@ -36,33 +33,8 @@
 	NSMutableString *s = [self valueForKey:@"selectedLeftIP"];
 	NSLog(@"Set value for selectedLeftIP = %@", s);
 	
-	//Are these initializations wrong? (maybe should be done as the one above)
-	selectedType = @"Tunnel";
-	selectedAuto = @"Start";
-	selectedKeySetupMode = @"Automatic";
-	selectedKey = @"RSA";
-	
     /* finally return the object */
     return self;
-}
-
-- (IBAction)saveToFile: (id)sender {
-	
-	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    
-    NSError *error;
-    
-    //store them into a file
-    NSMutableString *mutstr = [[NSMutableString alloc] init];
-    
-	[mutstr setString:selectedLeftIP];
-	
-    //write to file
-    [mutstr writeToFile:@"WriteToFileTest.txt" atomically:YES encoding:NSUnicodeStringEncoding error:&error];
-    
-	NSLog(@"wrote to file");
-	
-    [pool drain];
 }
 
 - (NSString*)description

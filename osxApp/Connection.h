@@ -20,19 +20,12 @@
 	NSString* selectedAuto;
 	NSString* selectedLeftRSAsig;
 	NSString* selectedRightRSAsig;
-	//Type pop-up
-	NSArray* popupType;
-	//Auto pop-up
-	NSArray* popupAuto;
 }
 
 @property (readwrite, copy) NSMutableString *selectedLeftIP;
 @property (readwrite, copy) NSString *selectedRightIP, *selectedKeySetupMode, *connName;
 @property (readwrite, copy) NSString *selectedKey, *selectedType, *selectedAuto;
 @property (readwrite, copy) NSString *selectedLeftRSAsig , *selectedRightRSAsig;
-@property (readwrite, copy) NSArray *popupType, *popupAuto;
 
 - (id) initWithName:(NSString*)name;
-- (IBAction)saveToFile: (id)sender;
-//- (IBAction)setDefault: (id)sender;
 @end

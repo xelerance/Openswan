@@ -10,14 +10,16 @@
 #import "Connection.h"
 
 @interface Controller : NSObject {
-	//Connection* current;
 	NSMutableArray* connections;
+	//Type pop-up
+	NSArray* popupType;
+	//Auto pop-up
+	NSArray* popupAuto;
 }
 
-//@property (readwrite, copy) Connection* current;
 @property (readwrite, copy) NSMutableArray* connections;
+@property (readwrite, copy) NSArray *popupType, *popupAuto;
 
 - (id)init;
-//- (IBAction)setDefault: (id)sender;
 
 @end
