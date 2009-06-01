@@ -11,14 +11,17 @@
 
 @interface Controller : NSObject {
 	NSMutableArray* connections;
-	//Type pop-up
-	NSArray* popupType;
-	//Auto pop-up
-	NSArray* popupAuto;
+	NSArray* Type;
+	NSArray* Auto;
+	NSArray* phase2;
+	NSArray* leftSendCert; 
+	NSArray* rightSendCert; 
+	NSArray* dpdAction;
+	NSArray* plutoDebug;
 }
 
 @property (readwrite, copy) NSMutableArray* connections;
-@property (readwrite, copy) NSArray *popupType, *popupAuto;
+@property (readwrite, copy) NSArray *Type, *Auto, *phase2, *leftSendCert, *rightSendCert, *dpdAction, *plutoDebug;
 
 - (id)init;
 
