@@ -31,8 +31,27 @@
 	dpdAction = [NSArray arrayWithObjects: @"Hold",@"Clear", nil];
 	plutoDebug = [NSArray arrayWithObjects: @"None",@"All", @"...", nil];
 	
-
+	window = [[NSWindow alloc] retain];
+	
 	return self;
+}
+
+- (IBAction)advancedOpt: (id) sender
+{
+
+	NSRect rect = [window frame];
+	NSLog(@"my height %f, my orig %f", rect.size.height, rect.origin.y);
+	if([sender state] == YES)
+	{
+		rect.size.height = 744;
+	}
+	else
+	{
+		rect.size.height = 616;
+		rect.origin.x = 0;
+		rect.origin.y = 162;
+	}
+	[window setFrame:rect display:YES];
 }
 
 @end

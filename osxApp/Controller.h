@@ -18,11 +18,15 @@
 	NSArray* rightSendCert; 
 	NSArray* dpdAction;
 	NSArray* plutoDebug;
+	
+	IBOutlet NSWindow* window;
 }
 
 @property (readwrite, copy) NSMutableArray* connections;
 @property (readwrite, copy) NSArray *Type, *Auto, *phase2, *leftSendCert, *rightSendCert, *dpdAction, *plutoDebug;
 
 - (id)init;
+
+- (IBAction)advancedOpt: (id) sender;
 
 @end
