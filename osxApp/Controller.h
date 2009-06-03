@@ -18,15 +18,20 @@
 	NSArray* rightSendCert; 
 	NSArray* dpdAction;
 	NSArray* plutoDebug;
+	NSArray* authBy;
+	NSArray* endUserOpts;
 	
 	IBOutlet NSWindow* window;
+	IBOutlet NSButton* forceEncaps;
 }
 
 @property (readwrite, copy) NSMutableArray* connections;
-@property (readwrite, copy) NSArray *Type, *Auto, *phase2, *leftSendCert, *rightSendCert, *dpdAction, *plutoDebug;
+@property (readwrite, copy) NSArray *Type, *Auto, *phase2, *leftSendCert, *rightSendCert, *dpdAction, *plutoDebug, *authBy, *endUserOpts;
 
 - (id)init;
 
 - (IBAction)advancedOpt: (id) sender;
+- (IBAction)natTraversal: (id) sender;
+- (IBAction)authByAction: (id) sender;
 
 @end
