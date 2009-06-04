@@ -23,6 +23,12 @@
 	
 	IBOutlet NSWindow* window;
 	IBOutlet NSButton* forceEncaps;
+	IBOutlet NSPopUpButton* authByButton;
+	IBOutlet NSPopUpButton* userOpts;
+	IBOutlet NSTextField* rawRSAText;
+	IBOutlet NSView* PSKView;
+	IBOutlet NSView* X509View;
+	IBOutlet NSView* rawRSAView;
 }
 
 @property (readwrite, copy) NSMutableArray* connections;
@@ -33,5 +39,6 @@
 - (IBAction)advancedOpt: (id) sender;
 - (IBAction)natTraversal: (id) sender;
 - (IBAction)authByAction: (id) sender;
+- (IBAction)selectedEndUserOpt: (id)sender;
 
 @end

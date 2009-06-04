@@ -30,11 +30,18 @@
 	rightSendCert = [NSArray arrayWithObjects: @"Always", @"If asked",@"Never", nil];
 	dpdAction = [NSArray arrayWithObjects: @"Hold",@"Clear", nil];
 	plutoDebug = [NSArray arrayWithObjects: @"None",@"All", @"...", nil];
-	authBy = [NSArray arrayWithObjects: @"Certificate", @"RSA", nil];
+	authBy = [NSArray arrayWithObjects: @"RSA Sig Key", @"Secret", nil];
 	endUserOpts = [NSArray arrayWithObjects: @"Raw RSA", @"X.509", @"PSK", nil];
 	
 	window = [[NSWindow alloc] retain];
-	forceEncaps = [[NSButton alloc] retain];
+	forceEncaps = [[NSButton alloc] init];
+	authByButton = [[NSPopUpButton alloc] init];
+	userOpts = [[NSPopUpButton alloc] init];
+	rawRSAText = [[NSTextField alloc] init];
+	
+	PSKView = [[NSView alloc] init];
+	X509View = [[NSView alloc] init];
+	rawRSAView = [[NSView alloc] init];
 	
 	return self;
 }
@@ -73,7 +80,48 @@
 
 - (IBAction)authByAction: (id) sender
 {
-	NSLog(@"slected item in authBy: %@", [sender titleOfSelectedItem]);
+	NSLog(@"selected item in authBy: %@", [sender titleOfSelectedItem]);
+}
+
+- (IBAction)selectedEndUserOpt: (id)sender
+{
+	NSString* selected = [NSString stringWithString:[sender titleOfSelectedItem]];
+	
+	if([selected isEqualToString:@"Raw RSA"]){
+		NSLog(@"user selected option Raw RSA");
+		[authByButton selectItemWithTitle:@"RSA Sig Key"];
+		[authByButton setEnabled:NO];
+		
+		[rawRSAView setHidden:NO];
+		[X509View setHidden:YES];
+		[PSKView setHidden:YES];
+	}
+	else{
+		if([selected isEqualToString:@"X.509"]){
+			NSLog(@"user selected option X.509");
+			[authByButton selectItemWithTitle:@"RSA Sig Key"];
+			[authByButton setEnabled:NO];
+			
+			[X509View setHidden:NO];
+			[rawRSAView setHidden:YES];
+			[PSKView setHidden:YES];
+		}
+		else{//PSK
+			NSLog(@"user selected option PSK");
+			[authByButton selectItemWithTitle:@"Secret"];
+			[authByButton setEnabled:NO];
+			
+			[PSKView setHidden:NO];
+			[X509View setHidden:YES];
+			[rawRSAView setHidden:YES];
+		}
+	}
+}
+
+- (void)awakeFromNib
+{
+	[X509View setHidden:YES];
+	[PSKView setHidden:YES];
 }
 
 @end
