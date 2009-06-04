@@ -2068,7 +2068,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	{
 		int err;
 
-		err = NF_HOOK(PF_INET, NF_INET_LOCAL_OUT, ixs->skb, NULL,
+		err = NF_HOOK(PF_INET, NF_IP_LOCAL_OUT, ixs->skb, NULL,
 			      ixs->route->u.dst.dev,
 			      ipsec_xmit_send2);
 		if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {
