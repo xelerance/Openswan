@@ -10,7 +10,7 @@
 
 @implementation Controller
 @synthesize connections;
-@synthesize Type, Auto, phase2, leftSendCert, rightSendCert, dpdAction, plutoDebug, authBy, endUserOpts;
+@synthesize Type, Auto, phase2, leftSendCert, rightSendCert, dpdAction, plutoDebug, authBy, endUserOpts, mode;
 
 - (id) init
 {
@@ -32,6 +32,7 @@
 	plutoDebug = [NSArray arrayWithObjects: @"None",@"All", @"...", nil];
 	authBy = [NSArray arrayWithObjects: @"RSA Sig Key", @"Secret", nil];
 	endUserOpts = [NSArray arrayWithObjects: @"Raw RSA", @"X.509", @"PSK", nil];
+	mode = [NSArray arrayWithObjects: @"Main",@"Aggressive",@"IKEv2", nil];
 	
 	window = [[NSWindow alloc] retain];
 	forceEncaps = [[NSButton alloc] init];

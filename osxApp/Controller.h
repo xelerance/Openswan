@@ -20,6 +20,7 @@
 	NSArray* plutoDebug;
 	NSArray* authBy;
 	NSArray* endUserOpts;
+	NSArray* mode;
 	
 	IBOutlet NSWindow* window;
 	IBOutlet NSButton* forceEncaps;
@@ -32,7 +33,7 @@
 }
 
 @property (readwrite, copy) NSMutableArray* connections;
-@property (readwrite, copy) NSArray *Type, *Auto, *phase2, *leftSendCert, *rightSendCert, *dpdAction, *plutoDebug, *authBy, *endUserOpts;
+@property (readwrite, copy) NSArray *Type, *Auto, *phase2, *leftSendCert, *rightSendCert, *dpdAction, *plutoDebug, *authBy, *endUserOpts, *mode;
 
 - (id)init;
 
