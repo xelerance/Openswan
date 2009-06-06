@@ -27,10 +27,10 @@
 		32CA4F630368D1EE00C91783 /* Openswan_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Openswan_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Openswan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Openswan.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		99805F2C0FCC7B2F002E243B /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Connection.h; path = Xelerance/openswan.gsoc/osxApp/Connection.h; sourceTree = DEVELOPER_DIR; };
-		99805F2D0FCC7B2F002E243B /* Connection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Connection.m; path = Xelerance/openswan.gsoc/osxApp/Connection.m; sourceTree = DEVELOPER_DIR; };
-		99805F3A0FCC7C11002E243B /* Controller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Controller.h; path = Xelerance/openswan.gsoc/osxApp/Controller.h; sourceTree = DEVELOPER_DIR; };
-		99805F3B0FCC7C11002E243B /* Controller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Controller.m; path = Xelerance/openswan.gsoc/osxApp/Controller.m; sourceTree = DEVELOPER_DIR; };
+		99805F2C0FCC7B2F002E243B /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = SOURCE_ROOT; };
+		99805F2D0FCC7B2F002E243B /* Connection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Connection.m; sourceTree = SOURCE_ROOT; };
+		99805F3A0FCC7C11002E243B /* Controller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Controller.h; sourceTree = SOURCE_ROOT; };
+		99805F3B0FCC7C11002E243B /* Controller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Controller.m; sourceTree = SOURCE_ROOT; };
 		99C2E30B0F95FE9F00AA9274 /* APPL.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = APPL.icns; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
