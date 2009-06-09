@@ -96,7 +96,8 @@ stf_status start_dh_secretiv(struct pluto_crypto_req_cont *cn
 
 #ifdef HAVE_LIBNSS
     /*coying required encryption algo*/
-    dhq->encrypter = st->st_oakley.encrypt; 
+    /*dhq->encrypt_algo = st->st_oakley.encrypt;*/
+    dhq->encrypter = st->st_oakley.encrypter;
     DBG(DBG_CRYPT, DBG_log("Coying DH pub key pointer to be sent to a thread helper"));
     pluto_crypto_copychunk(&dhq->thespace, dhq->space , &dhq->pubk, st->pubk);
 #endif
@@ -287,7 +288,8 @@ stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
 
 #ifdef HAVE_LIBNSS
     /*coying required encryption algo*/
-    dhq->encrypter = st->st_oakley.encrypt;
+    /*dhq->encrypt_algo = st->st_oakley.encrypter->common.algo_v2id;*/
+    dhq->encrypter = st->st_oakley.encrypter;
     DBG(DBG_CRYPT, DBG_log("Coying DH pub key pointer to be sent to a thread helper"));
     pluto_crypto_copychunk(&dhq->thespace, dhq->space
                           , &dhq->pubk, st->pubk);

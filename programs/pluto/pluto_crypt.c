@@ -166,6 +166,7 @@ void pluto_do_crypto_op(struct pluto_crypto_req *r)
     case pcr_x509crl_fetch:
 	break;
     }
+ loglog(RC_LOG_SERIOUS, "pluto_do_crypto: helper (%d) is  exiting\n", pc_helper_num);
 }
 
 static void catchhup(int signo UNUSED)
@@ -203,24 +204,86 @@ helper_passert_fail(const char *pred_str
 
 void pluto_crypto_helper(int fd, int helpernum)
 {
+#ifdef HAVE_LIBNSS
     FILE *in  = fdopen(fd, "rb");
     FILE *out = fdopen(fd, "wb");
     long reqbuf[PCR_REQ_SIZE/sizeof(long)];
     struct pluto_crypto_req *r;
 
-#ifdef HAVE_LIBNSS
     int status=pthread_setschedprio(pthread_self(), 10);
     DBG(DBG_CONTROL, DBG_log("status value returned by setting the priority of this thread (id=%d) %d",helpernum,status));
+
+    DBG(DBG_CONTROL, DBG_log("helper %d waiting on fd: %d"
+			     , helpernum, fileno(in)));
+
+    memset(reqbuf, 0, sizeof(reqbuf));
+    while(fread((char*)reqbuf, sizeof(r->pcr_len), 1, in) == 1) {
+	int restlen;
+	int actnum;
+	unsigned char *reqrest = ((unsigned char *)reqbuf)+sizeof(r->pcr_len);
+
+	r = (struct pluto_crypto_req *)reqbuf;
+	restlen = r->pcr_len-sizeof(r->pcr_len);
+	
+	passert(restlen < (signed)PCR_REQ_SIZE);
+	passert(restlen > 0);
+
+	actnum = fread(reqrest, 1, restlen, in);
+	/* okay, got a basic size, read the rest of it */
+
+	DBG(DBG_CONTROL, DBG_log("helper %d read %d+4/%d bytes fd: %d"
+				 , helpernum, actnum, (int)r->pcr_len, fileno(in)));
+
+	if(actnum != restlen) {
+	    /* faulty read. die, parent will restart us */
+
+	    loglog(RC_LOG_SERIOUS, "cryptographic helper(%d) fread(%d)=%d failed: %s\n",
+		   (int)pthread_self(), restlen, actnum, strerror(errno));
+
+	   loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper (%d) is error exiting\n",helpernum);
+	    goto error; 
+	}
+
+	pluto_do_crypto_op(r,helpernum);
+
+	actnum = fwrite((unsigned char *)r, r->pcr_len, 1, out);
+	fflush(out);
+
+	if(actnum != 1) {
+	    loglog(RC_LOG_SERIOUS, "failed to write answer: %d", actnum);
+	    goto error;
+	}
+	memset(reqbuf, 0, sizeof(reqbuf));
+    }
+
+    if(!feof(in)) {
+	loglog(RC_LOG_SERIOUS, "helper %d got error: %s", helpernum, strerror(ferror(in)));
+        goto error;
+    }
+
+    /* probably normal EOF */
+    /*loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper (%d) is  (possibly) normal exiting\n",helpernum);*/
+
+error:
+    fclose(in);
+    fclose(out);
+    /*pthread_exit();*/
 #else
+    FILE *in  = fdopen(fd, "rb");
+    FILE *out = fdopen(fd, "wb");
+    long reqbuf[PCR_REQ_SIZE/sizeof(long)];
+    struct pluto_crypto_req *r;
+
     signal(SIGHUP, catchhup);
     signal(SIGUSR1, catchusr1);
 
     pc_worker_num = helpernum;
     /* make us lower priority that average */
     setpriority(PRIO_PROCESS, 0, 10);
-#endif
+
     DBG(DBG_CONTROL, DBG_log("helper %d waiting on fd: %d"
 			     , helpernum, fileno(in)));
+
     memset(reqbuf, 0, sizeof(reqbuf));
     while(fread((char*)reqbuf, sizeof(r->pcr_len), 1, in) == 1) {
 	int restlen;
@@ -241,13 +304,9 @@ void pluto_crypto_helper(int fd, int helpernum)
 
 	if(actnum != restlen) {
 	    /* faulty read. die, parent will restart us */
+
 	    loglog(RC_LOG_SERIOUS, "cryptographic helper(%d) fread(%d)=%d failed: %s\n",
-#ifdef HAVE_LIBNSS
-		   (int)pthread_self(),
-#else
-		   getpid(),
-#endif
-		   restlen, actnum, strerror(errno));
+		   getpid(), restlen, actnum, strerror(errno));
 
 #ifdef DEBUG
 	    if(getenv("PLUTO_CRYPTO_HELPER_COREDUMP")) {
@@ -256,21 +315,17 @@ void pluto_crypto_helper(int fd, int helpernum)
 		}
 	    }
 #endif
+	loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper (%d) is error exiting\n",helpernum);
 	    exit(1);
 	}
 
-#ifdef HAVE_LIBNSS
-	pluto_do_crypto_op(r,helpernum);
-#else
 	pluto_do_crypto_op(r);
-#endif
+
 	actnum = fwrite((unsigned char *)r, r->pcr_len, 1, out);
 	fflush(out);
 
 	if(actnum != 1) {
 	    loglog(RC_LOG_SERIOUS, "failed to write answer: %d", actnum);
-	    fclose(in);
-	    fclose(out);
 	    exit(2);
 	}
 	memset(reqbuf, 0, sizeof(reqbuf));
@@ -283,7 +338,9 @@ void pluto_crypto_helper(int fd, int helpernum)
     /* probably normal EOF */
     fclose(in);
     fclose(out);
+    loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper (%d) is  normal exiting\n",helpernum);
     exit(0);
+#endif
 }
 
 
@@ -931,7 +988,7 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 #endif
 }
 
-#if defined(HAVE_LIBNSS)
+#ifdef HAVE_LIBNSS
 void *
 pluto_helper_thread(void *w) {
     struct pluto_crypto_worker *helper;

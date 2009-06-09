@@ -58,11 +58,11 @@ hmac_init(struct hmac_ctx *ctx,
 #ifndef HAVE_LIBNSS
     int k;
 #endif
-    DBG(DBG_CRYPT, DBG_log("hmac_init() start"));
     ctx->h = h;
     ctx->hmac_digest_len = h->hash_digest_len;
 
 #ifdef HAVE_LIBNSS
+    DBG(DBG_CRYPT, DBG_log("NSS: hmac init"));
     SECStatus status;
     PK11SymKey *symkey=NULL; 
     PK11SymKey *tkey1=NULL;
@@ -244,7 +244,6 @@ static SECOidTag nss_hash_oid(const struct hash_desc *hasher)
 	case OAKLEY_SHA2_256:  mechanism = SEC_OID_SHA256; break;
 	case OAKLEY_SHA2_384:  mechanism = SEC_OID_SHA384; break;
 	case OAKLEY_SHA2_512:  mechanism = SEC_OID_SHA512; break;
-	/*should not reach here*/
 	default: DBG(DBG_CRYPT, DBG_log("NSS: key derivation mechanism not supported")); break; 
     }
     return mechanism;
@@ -260,7 +259,6 @@ static CK_MECHANISM_TYPE nss_hash_mech(const struct hash_desc *hasher)
 	case OAKLEY_SHA2_256:  mechanism = CKM_SHA256; break;
 	case OAKLEY_SHA2_384:  mechanism = CKM_SHA384; break;
 	case OAKLEY_SHA2_512:  mechanism = CKM_SHA512; break;
-	/*should not reach here*/
 	default:  DBG(DBG_CRYPT, DBG_log("NSS: key derivation mechanism not supported")); break;
     }
     return mechanism;
@@ -311,7 +309,7 @@ chunk_t hmac_pads(u_char val, unsigned int len)
     return ret;
 }
 
-void nss_symkey_log(PK11SymKey *key, char *msg)
+void nss_symkey_log(PK11SymKey *key, const char *msg)
 {
     if(key!=NULL) {
 	DBG(DBG_CRYPT, DBG_log("computed key %s with length =%d", msg

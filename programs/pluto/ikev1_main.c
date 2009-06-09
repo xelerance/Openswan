@@ -306,34 +306,59 @@ main_mode_hash_body(struct state *st
 
     if (hashi)
     {
+#ifdef HAVE_LIBNSS
+        hmac_update_chunk(ctx, st->st_gi);
+        hmac_update_chunk(ctx, st->st_gr);
+        hmac_update(ctx, st->st_icookie, COOKIE_SIZE);
+        hmac_update(ctx, st->st_rcookie, COOKIE_SIZE);
+#else
 	hash_update_chunk(ctx, st->st_gi);
 	hash_update_chunk(ctx, st->st_gr);
 	hash_update(ctx, st->st_icookie, COOKIE_SIZE);
 	hash_update(ctx, st->st_rcookie, COOKIE_SIZE);
+#endif
     }
     else
     {
+#ifdef HAVE_LIBNSS
+        hmac_update_chunk(ctx, st->st_gr);
+        hmac_update_chunk(ctx, st->st_gi);
+        hmac_update(ctx, st->st_rcookie, COOKIE_SIZE);
+        hmac_update(ctx, st->st_icookie, COOKIE_SIZE);	
+#else
 	hash_update_chunk(ctx, st->st_gr);
 	hash_update_chunk(ctx, st->st_gi);
 	hash_update(ctx, st->st_rcookie, COOKIE_SIZE);
 	hash_update(ctx, st->st_icookie, COOKIE_SIZE);
+#endif
     }
 
     DBG(DBG_CRYPT, DBG_log("hashing %lu bytes of SA"
 	, (unsigned long) (st->st_p1isa.len - sizeof(struct isakmp_generic))));
 
     /* SA_b */
+#ifdef HAVE_LIBNSS
+    hmac_update(ctx, st->st_p1isa.ptr + sizeof(struct isakmp_generic)
+        , st->st_p1isa.len - sizeof(struct isakmp_generic));
+#else
     hash_update(ctx, st->st_p1isa.ptr + sizeof(struct isakmp_generic)
 	, st->st_p1isa.len - sizeof(struct isakmp_generic));
+#endif
 
     /* Hash identification payload, without generic payload header.
      * We used to reconstruct ID Payload for this purpose, but now
      * we use the bytes as they appear on the wire to avoid
      * "spelling problems".
      */
+#ifdef HAVE_LIBNSS
+    hmac_update(ctx
+        , idpl->start + sizeof(struct isakmp_generic)
+        , pbs_offset(idpl) - sizeof(struct isakmp_generic));
+#else
     hash_update(ctx
 	, idpl->start + sizeof(struct isakmp_generic)
 	, pbs_offset(idpl) - sizeof(struct isakmp_generic));
+#endif
 
 #   undef hash_update_chunk
 #   undef hash_update
@@ -721,7 +746,12 @@ main_inI1_outR1(struct msg_digest *md)
        if(PK11_IsFIPS())
        {
 #define SEND_PLUTO_VID 0
-       }
+	}
+	else
+	{
+#define SEND_PLUTO_VID 1
+	}
+
 #endif
 
 #if SEND_PLUTO_VID || defined(openpgp_peer)

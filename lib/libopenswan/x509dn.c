@@ -1279,6 +1279,148 @@ compute_digest(chunk_t tbs, int alg, chunk_t *digest)
 /*
  *  decrypts an RSA signature using the issuer's certificate
  */
+#ifdef HAVE_LIBNSS
+static bool
+decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
+	    chunk_t *digest)
+{
+    switch (alg)
+    {
+	case OID_RSA_ENCRYPTION:
+	case OID_MD2_WITH_RSA:
+	case OID_MD5_WITH_RSA:
+	case OID_SHA1_WITH_RSA:
+	case OID_SHA1_WITH_RSA_OIW:
+	case OID_SHA256_WITH_RSA:
+	case OID_SHA384_WITH_RSA:
+	case OID_SHA512_WITH_RSA:
+	{
+
+	   SECKEYPublicKey *publicKey;
+	   PRArenaPool *arena;
+	   SECStatus retVal = SECSuccess;
+	   SECItem nss_n, nss_e, dsig;
+	   SECItem signature, data;
+           mpz_t e;
+           mpz_t n;
+	   mpz_t s;
+	   chunk_t nc, ec, sc, dsigc;
+
+	    arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
+	    if (arena == NULL) {
+	        PORT_SetError (SEC_ERROR_NO_MEMORY);
+	        return FALSE;
+	    }
+
+	    publicKey = (SECKEYPublicKey *) PORT_ArenaZAlloc (arena, sizeof (SECKEYPublicKey));
+	    if (!publicKey) {
+	        PORT_FreeArena (arena, PR_FALSE);
+	        PORT_SetError (SEC_ERROR_NO_MEMORY);
+		DBG(DBG_PARSING, DBG_log("NSS: error in allocating memory to public key"));
+	        return FALSE;
+	    }
+
+	    publicKey->arena = arena;
+	    publicKey->keyType = rsaKey;
+	    publicKey->pkcs11Slot = NULL;
+	    publicKey->pkcs11ID = CK_INVALID_HANDLE;
+
+            n_to_mpz(s, sig.ptr, sig.len);
+            n_to_mpz(e, issuer_cert->publicExponent.ptr,
+                        issuer_cert->publicExponent.len);
+            n_to_mpz(n, issuer_cert->modulus.ptr,
+                        issuer_cert->modulus.len);
+
+
+	    nc = mpz_to_n2((const MP_INT *)&n);
+            ec = mpz_to_n2((const MP_INT *)&e);
+	    sc = mpz_to_n2((const MP_INT *)&s);
+
+            DBG(DBG_PARSING,
+                DBG_dump_chunk("NSS cert: modulus : ", nc)
+            )
+
+            DBG(DBG_PARSING,
+                DBG_dump_chunk("NSS cert: exponent : ", ec)
+            )
+
+            DBG(DBG_PARSING,
+                DBG_dump_chunk("NSS: input signature : ", sc)
+            )
+
+            mpz_clear(e);
+            mpz_clear(n);
+            mpz_clear(s);
+
+    /*Converting n and e to nss_n and nss_e*/
+	    nss_n.data = nc.ptr;
+	    nss_n.len = (unsigned int) nc.len;
+	    nss_n.type = siBuffer;
+
+	    nss_e.data = ec.ptr;
+	    nss_e.len  = (unsigned int)ec.len;
+	    nss_e.type = siBuffer;
+
+	    retVal = SECITEM_CopyItem(arena, &publicKey->u.rsa.modulus, &nss_n);
+            if (retVal == SECSuccess) {
+              retVal = SECITEM_CopyItem (arena, &publicKey->u.rsa.publicExponent, &nss_e);
+            }
+
+	    if(retVal != SECSuccess){
+	    pfree(nc.ptr);
+	    pfree(ec.ptr);
+	    pfree(sc.ptr);
+	    SECKEY_DestroyPublicKey (publicKey);
+            DBG_log("NSS x509dn.c: error in creating public key");
+	    return FALSE;
+	    }
+
+	    signature.type = siBuffer;
+	    signature.data = sc.ptr;
+	    signature.len  = (unsigned int)sc.len;
+
+	    data.type = siBuffer;
+	    data.data = digest->ptr;
+	    data.len  = (unsigned int)digest->len;
+
+	    dsigc.len = (unsigned int)sc.len;
+	    dsigc.ptr = alloc_bytes(dsigc.len, "NSS decrypted signature");
+            dsig.type = siBuffer;
+            dsig.data = dsigc.ptr;
+            dsig.len  = (unsigned int)dsigc.len;
+
+    	    /*Verifying RSA signature*/
+	    if(PK11_VerifyRecover(publicKey,&signature,&dsig,osw_return_nss_password_file_info()) == SECSuccess )
+	    {
+            DBG(DBG_PARSING,
+                DBG_dump("NSS decrypted sig: ", dsig.data, dsig.len)
+            )
+            DBG_log("NSS: length of decrypted sig = %d", dsig.len);
+	    }
+
+            pfree(nc.ptr);
+            pfree(ec.ptr);
+	    pfree(sc.ptr);
+	    SECKEY_DestroyPublicKey (publicKey);
+
+	   if(memcmp(dsig.data+dsig.len-digest->len,digest->ptr, digest->len)==0)
+	   {
+            pfree(dsigc.ptr);
+            DBG_log("NSS : RSA Signature verified, hash values matched");
+	    return TRUE;
+	   }
+
+           pfree(dsigc.ptr);
+	   DBG_log("NSS : RSA Signature NOT verified");
+	   return FALSE;
+	}
+	default:
+	    digest->len = 0;
+	    return FALSE;
+    }
+
+}
+#else
 static bool
 decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 	    chunk_t *digest)
@@ -1298,35 +1440,6 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 	    mpz_t s;
 	    mpz_t e;
 	    mpz_t n;
-	    chunk_t nc, ec, sc;
-
-#ifdef HAVE_LIBNSS
-	chunk_t dsigc;
-	SECKEYPublicKey *publicKey;
-	PRArenaPool *arena;
-	SECStatus retVal = SECSuccess;
-	SECItem nss_n, nss_e, dsig;
-	SECItem signature, data;
-
-	arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
-	if (arena == NULL) {
-		PORT_SetError (SEC_ERROR_NO_MEMORY);
-		return FALSE;
-	}
-
-	publicKey = (SECKEYPublicKey *) PORT_ArenaZAlloc (arena, sizeof (SECKEYPublicKey));
-	if (!publicKey) {
-		PORT_FreeArena (arena, PR_FALSE);
-		PORT_SetError (SEC_ERROR_NO_MEMORY);
-		DBG(DBG_PARSING, DBG_log("NSS: error in allocating memory to public key"));
-		return FALSE;
-	}
-
-	publicKey->arena = arena;
-	publicKey->keyType = rsaKey;
-	publicKey->pkcs11Slot = NULL;
-	publicKey->pkcs11ID = CK_INVALID_HANDLE;
-#endif
 
 	    n_to_mpz(s, sig.ptr, sig.len);
 	    n_to_mpz(e, issuer_cert->publicExponent.ptr,
@@ -1334,7 +1447,6 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 	    n_to_mpz(n, issuer_cert->modulus.ptr,
 			issuer_cert->modulus.len);
 
-#ifndef HAVE_LIBNSS
 	    /* decrypt the signature s = s^e mod n */
 	    mpz_powm(s, s, e, n);
 	    /* convert back to bytes */
@@ -1349,87 +1461,17 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 
 	    /* free memory */
 	    pfree(decrypted.ptr);
-#endif
-	    nc = mpz_to_n2((const MP_INT *)&n);
-	    ec = mpz_to_n2((const MP_INT *)&e);
-	    sc = mpz_to_n2((const MP_INT *)&s);
-
-	    DBG(DBG_CRYPT, DBG_dump_chunk("decrypt_sig() cert: modulus : ", nc ))
-	    DBG(DBG_CRYPT, DBG_dump_chunk("decrypt_sig() cert: exponent : ", ec ))
-	    DBG(DBG_CRYPT, DBG_dump_chunk("decrypt_sig() cert: input signature : ", sc))
 	    mpz_clear(s);
 	    mpz_clear(e);
 	    mpz_clear(n);
-
-#ifdef HAVE_LIBNSS
-	    /*Converting n and e to nss_n and nss_e*/
-	   nss_n.data = nc.ptr;
-	   nss_n.len = (unsigned int) nc.len;
-	   nss_n.type = siBuffer;
-
-	   nss_e.data = ec.ptr;
-	   nss_e.len  = (unsigned int)ec.len;
-	   nss_e.type = siBuffer;
-
-	   retVal = SECITEM_CopyItem(arena, &publicKey->u.rsa.modulus, &nss_n);
-	   if (retVal == SECSuccess) {
-		retVal = SECITEM_CopyItem (arena, &publicKey->u.rsa.publicExponent, &nss_e);
-	   }
-
-	   if(retVal != SECSuccess) {
-		pfree(nc.ptr);
-		pfree(ec.ptr);
-		pfree(sc.ptr);
-		SECKEY_DestroyPublicKey (publicKey);
-		DBG_log("NSS x509dn.c: error in creating public key");
-		return FALSE;
-	   }
-
-	   signature.type = siBuffer;
-	   signature.data = sc.ptr;
-	   signature.len  = (unsigned int)sc.len;
-
-	   data.type = siBuffer;
-	   data.data = digest->ptr;
-	   data.len  = (unsigned int)digest->len;
-
-	   dsigc.len = (unsigned int)sc.len;
-	   dsigc.ptr = alloc_bytes(dsigc.len, "NSS decrypted signature");
-	   dsig.type = siBuffer;
-	   dsig.data = dsigc.ptr;
-	   dsig.len  = (unsigned int)dsigc.len;
-
-	   /*Verifying RSA signature*/
-	   if(PK11_VerifyRecover(publicKey,&signature,&dsig,osw_return_nss_password_file_info()) == SECSuccess )
-	   {
-		DBG(DBG_PARSING, DBG_dump("NSS decrypted sig: ", dsig.data, dsig.len))
-		DBG_log("NSS: length of decrypted sig = %d", dsig.len);
-		return FALSE;
-           }
-
-	   pfree(nc.ptr);
-	   pfree(ec.ptr);
-	   pfree(sc.ptr);
-	   SECKEY_DestroyPublicKey (publicKey);
-
-	   if(memcmp(dsig.data+dsig.len-digest->len,digest->ptr, digest->len)==0)
-	   {
-		pfree(dsigc.ptr);
-		DBG_log("NSS : RSA Signature verified, hash values matched");
-		return TRUE;
-	   }
-	   pfree(dsigc.ptr);
-	   DBG_log("NSS : RSA Signature NOT verified");
-	   return FALSE;
-#else
 	    return TRUE;
-#endif
 	}
 	default:
 	    digest->len = 0;
 	    return FALSE;
     }
 }
+#endif
 /*
  *   Check if a signature over binary blob is genuine
  */
@@ -1437,11 +1479,15 @@ bool
 check_signature(chunk_t tbs, chunk_t sig, int algorithm,
 		const x509cert_t *issuer_cert)
 {
+#ifdef HAVE_LIBNSS
+    u_char digest_buf[MAX_DIGEST_LEN];
+    chunk_t digest = {digest_buf, MAX_DIGEST_LEN};
+#else
     u_char digest_buf[MAX_DIGEST_LEN];
     u_char decrypted_buf[MAX_DIGEST_LEN];
     chunk_t digest = {digest_buf, MAX_DIGEST_LEN};
     chunk_t decrypted = {decrypted_buf, MAX_DIGEST_LEN};
-
+#endif
 
     if (algorithm != OID_UNKNOWN)
     {

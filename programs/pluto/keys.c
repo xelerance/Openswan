@@ -270,6 +270,7 @@ void sign_hash_nss(const struct RSA_private_key *k
    }
 
    DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: input_sig_len=%d, output_signature-len=%d", sig_len, signature.len));
+   DBG(DBG_CRYPT, DBG_dump("RSA_sign_hash signature:\n", signature.data, signature.len));
    DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: Ended using NSS"));
    /*return signature.len;*/
 }

@@ -453,10 +453,10 @@ void whack_process(int whackfd, struct whack_message msg)
     if (msg.whack_reread & REREAD_CACERTS)
     {
 	load_authcerts("CA cert", oco->cacerts_dir, AUTH_CA);
-    }
 #ifdef HAVE_LIBNSS
        load_authcerts_from_nss("CA cert", AUTH_CA);
 #endif
+     }
 
     if (msg.whack_reread & REREAD_AACERTS)
     {

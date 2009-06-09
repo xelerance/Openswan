@@ -64,11 +64,6 @@ CFLAGS+=-DDMALLOC
 LIBS+= -ldmalloc
 endif
 
-ifeq ($(USE_LIBNSS),true)
-CFLAGS+=-lnspr4 -lnss3
-LIBS+= -lnspr4 -lnss3
-endif
-
 MANDIR8=$(MANTREE)/man8
 MANDIR5=$(MANTREE)/man5
 
@@ -179,10 +174,19 @@ endif
 LOADLIBS=${OBJS} 
 
 # ${LIBS} is repeated due to possible circular dependancies among libraries
+ifeq ($(USE_LIBNSS),false)
 LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} -lgmp
+else
+LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} -lgmp -lnspr4 -lnss3
+endif
+
 
 %: %.o $(OBJS) ${LIBS}
+ifeq ($(USE_LIBNSS),true)
+	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LDLIBS) $(USERLINK) -lnspr4 -lnss3
+else
 	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LDLIBS) $(USERLINK)
+endif
 
 # cancel direct version
 %: %.c

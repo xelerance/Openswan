@@ -305,11 +305,12 @@ do_3des(u_int8_t *buf, size_t buf_len
 	, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc)
 {
     passert(key != NULL);
-    passert(key_size==(DES_CBC_BLOCK_SIZE * 3));
 
 #ifdef HAVE_LIBNSS
 	do_3des_nss(buf, buf_len, key, key_size, iv, enc);
 #else
+
+    passert(key_size==(DES_CBC_BLOCK_SIZE * 3));
 
     des_key_schedule ks[3];
 
