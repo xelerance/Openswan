@@ -30,6 +30,8 @@
 	IBOutlet NSView* PSKView;
 	IBOutlet NSView* X509View;
 	IBOutlet NSView* rawRSAView;
+	IBOutlet NSView* natView;
+	IBOutlet NSView* oeView;
 }
 
 @property (readwrite, copy) NSMutableArray* connections;
@@ -38,8 +40,10 @@
 - (id)init;
 
 - (IBAction)advancedOpt: (id) sender;
-- (IBAction)natTraversal: (id) sender;
 - (IBAction)authByAction: (id) sender;
 - (IBAction)selectedEndUserOpt: (id)sender;
+- (IBAction)natTraversal: (id) sender;
+- (IBAction)oe: (id) sender;
+
 
 @end

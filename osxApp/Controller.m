@@ -24,7 +24,7 @@
 				   [connections addObjectsFromArray:values];
 	
 	Type = [NSArray arrayWithObjects: @"Tunnel", @"Transport", @"Pass Through",@"Drop", @"Reject", nil];
-	Auto = [NSArray arrayWithObjects: @"Start", @"Add", @"Ignore", @"Manual", @"Route", nil];
+	Auto = [NSArray arrayWithObjects: @"Start", @"Add", @"Ignore", @"Route", nil];
 	phase2 = [NSArray arrayWithObjects: @"ESP", @"AH", nil];
 	leftSendCert = [NSArray arrayWithObjects: @"Always", @"If asked",@"Never", nil];
 	rightSendCert = [NSArray arrayWithObjects: @"Always", @"If asked",@"Never", nil];
@@ -43,6 +43,9 @@
 	PSKView = [[NSView alloc] init];
 	X509View = [[NSView alloc] init];
 	rawRSAView = [[NSView alloc] init];
+	
+	natView = [[NSView alloc] init];
+	oeView = [[NSView alloc] init];
 	
 	return self;
 }
@@ -71,11 +74,39 @@
 {
 	if([sender state] == YES)
 	{
-		[forceEncaps setEnabled:YES];
+		NSArray* subViews = [natView subviews];
+		int i = [subViews count];
+		while ( i-- ) {
+			[[subViews objectAtIndex:i] setEnabled:YES];
+		}
 	}
 	else
 	{
-		[forceEncaps setEnabled:NO];
+		NSArray* subViews = [natView subviews];
+		int i = [subViews count];
+		while ( i-- ) {
+			[[subViews objectAtIndex:i] setEnabled:NO];
+		}
+	}
+}
+
+- (IBAction)oe: (id) sender
+{
+	if([sender state] == YES)
+	{
+		NSArray* subViews = [oeView subviews];
+		int i = [subViews count];
+		while ( i-- ) {
+			[[subViews objectAtIndex:i] setEnabled:YES];
+		}
+	}
+	else
+	{
+		NSArray* subViews = [oeView subviews];
+		int i = [subViews count];
+		while ( i-- ) {
+			[[subViews objectAtIndex:i] setEnabled:NO];
+		}
 	}
 }
 
