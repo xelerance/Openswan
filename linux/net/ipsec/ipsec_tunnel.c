@@ -569,7 +569,7 @@ ipsec_tunnel_xsm_complete(
 		return;
 	}
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 	stat = ipsec_nat_encap(ixs);
 	if(stat != IPSEC_XMIT_OK) {
 		goto cleanup;
@@ -1401,24 +1401,32 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 #endif /* KLIPS */
 
 #ifdef HAVE_UDP_ENCAP_CONVERT
+	/*
+	 * we get two int args in ifr_data, the socket fd (0)
+	 * and the type of encapsulation needed (1).
+	 */
 	case IPSEC_UDP_ENCAP_CONVERT:
 	{
-		unsigned int *socknum =(unsigned int *)&ifr->ifr_data;
+		unsigned int *ifp =(unsigned int *)&ifr->ifr_data;
 		const struct socket *sock;
 		int err = 0;
 
  		/* translate # to socket structure */
-		sock = sockfd_lookup(*socknum, &err);
+		sock = sockfd_lookup(ifp[0], &err);
 		if (!sock)
 			goto encap_out;
 
 		/* check that it's a UDP socket */
-		udp_sk(sock->sk)->encap_type = UDP_ENCAP_ESPINUDP_NON_IKE;
+		udp_sk(sock->sk)->encap_type = ifp[1];
 		udp_sk(sock->sk)->encap_rcv  = klips26_udp_encap_rcv;
 
 		KLIPS_PRINT(debug_tunnel
-			    , "UDP socket: %u set to NON-IKE encap mode\n"
-			    , *socknum);
+			    , "UDP socket: %u set to %s (0x%x) encap mode\n"
+			    , ifp[0]
+				, ifp[1] == UDP_ENCAP_ESPINUDP_NON_IKE ?
+					"UDP_ENCAP_ESPINUDP_NON_IKE" : "UDP_ENCAP_ESPINUDP_NON_ESP"
+				, ifp[1]
+				);
 		       
 		err = 0;
 
@@ -1974,7 +1982,7 @@ ipsec_xmit_state_new (void)
 		ixs->ips.ips_ident_s.data = NULL;
 		ixs->ips.ips_ident_d.data = NULL;
 		ixs->outgoing_said.proto = 0;
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 		ixs->natt_type = 0, ixs->natt_head = 0;
 		ixs->natt_sport = 0, ixs->natt_dport = 0;
 #endif

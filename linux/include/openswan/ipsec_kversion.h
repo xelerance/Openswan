@@ -290,7 +290,7 @@
   */
 # define HAVE_KMEM_CACHE_MACRO
 
-/* Try using the new kernel encaps hook for nat-t, instead of udp.c */
+/* Try using the new klips encaps hook for nat-t, instead of udp.c */
 # define HAVE_UDP_ENCAP_CONVERT 1
 #endif
 
@@ -411,7 +411,10 @@
 #endif
 
 #ifndef late_initcall
-#define	late_initcall(x)	module_init(x)
+# include <linux/init.h>
+# ifndef late_initcall
+#  define	late_initcall(x)	module_init(x)
+# endif
 #endif
 
 #ifdef NET_21
@@ -424,6 +427,15 @@
 # define uint16_t __u16 
 # define uint32_t __u32 
 # define uint64_t __u64 
+#endif
+
+#if defined(CONFIG_IPSEC_NAT_TRAVERSAL) && CONFIG_IPSEC_NAT_TRAVERSAL
+# define NAT_TRAVERSAL 1
+#else
+#undef CONFIG_IPSEC_NAT_TRAVERSAL
+# if defined(HAVE_UDP_ENCAP_CONVERT)
+#  define NAT_TRAVERSAL 1
+# endif
 #endif
 
 #if __KERNEL__

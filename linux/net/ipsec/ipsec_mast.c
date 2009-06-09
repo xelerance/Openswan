@@ -235,7 +235,7 @@ ipsec_mast_xsm_complete(
 		goto cleanup;
 	}
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 	/* do any final NAT-encapsulation */
 	stat = ipsec_nat_encap(ixs);
 	if(stat != IPSEC_XMIT_OK) {
@@ -663,6 +663,9 @@ ipsec_mast_probe(struct net_device *dev)
 	dev->stop		= ipsec_mast_close;
 	dev->hard_start_xmit	= ipsec_mast_start_xmit;
 	dev->get_stats		= ipsec_mast_get_stats;
+#ifdef alloc_netdev
+	dev->destructor         = free_netdev;
+#endif
 
 #ifndef alloc_netdev
 	dev->priv = kmalloc(sizeof(struct mastpriv), GFP_KERNEL);
@@ -695,6 +698,9 @@ ipsec_mast_probe(struct net_device *dev)
 
 	/* New-style flags. */
 	dev->flags		= IFF_NOARP;
+
+	/* pick a random ethernet address for now. */
+	random_ether_addr(dev->dev_addr);
 
 	/* We're done.  Have I forgotten anything? */
 	return 0;

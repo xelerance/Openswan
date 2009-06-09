@@ -1597,7 +1597,7 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 			ixs->tailroom += ixs->blocksize != 1 ?
 				((ixs->blocksize - ((ixs->pyldsz + 2) % ixs->blocksize)) % ixs->blocksize) + 2 :
 				((4 - ((ixs->pyldsz + 2) % 4)) % 4) + 2;
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 		if ((ixs->ipsp->ips_natt_type) && (!ixs->natt_type)) {
 			ixs->natt_type = ixs->ipsp->ips_natt_type;
 			ixs->natt_sport = ixs->ipsp->ips_natt_sport;
@@ -1762,7 +1762,7 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 	}
 #endif /* MSS_HACK */
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
       if ((ixs->natt_type) && (ixs->outgoing_said.proto != IPPROTO_IPIP)) {
 	      /**
 	       * NAT-Traversal and Transport Mode:
@@ -1782,7 +1782,7 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 	      ipp->check = 0;
 	      ipp->check = ip_fast_csum((unsigned char *)ipp, ipp->ihl);
       }
-#endif /* CONFIG_IPSEC_NAT_TRAVERSAL */
+#endif /* NAT_TRAVERSAL */
 
 	if(!ixs->hard_header_stripped && ixs->hard_header_len>0) {
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
@@ -1929,7 +1929,7 @@ static inline int ipsec_xmit_send2(struct sk_buff *skb)
 }
 #endif /* NETDEV_23 */
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 enum ipsec_xmit_value ipsec_nat_encap(struct ipsec_xmit_state *ixs)
 {
 	if (ixs->natt_type && ixs->natt_head) {
@@ -2068,7 +2068,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	{
 		int err;
 
-		err = NF_HOOK(PF_INET, NF_IP_LOCAL_OUT, ixs->skb, NULL,
+		err = NF_HOOK(PF_INET, NF_INET_LOCAL_OUT, ixs->skb, NULL,
 			      ixs->route->u.dst.dev,
 			      ipsec_xmit_send2);
 		if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {

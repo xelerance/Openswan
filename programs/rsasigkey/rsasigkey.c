@@ -74,7 +74,7 @@
 #define	E	3		/* standard public exponent */
 
 #ifdef HAVE_LIBNSS
-//#define F4   65537   /* preferred public exponent, Fermat's 4th number */
+/*#define F4	65537*/	/* preferred public exponent, Fermat's 4th number */
 char usage[] = "rsasigkey [--verbose] [--random device] [--configdir dir] [--password password] nbits";
 #else
 char usage[] = "rsasigkey [--verbose] [--random device] nbits";
@@ -588,21 +588,20 @@ rsasigkey(int nbits, char *configdir, char *password)
 	PK11_SetPasswordFunc(GetModulePassword);
 	nss_initialized = PR_TRUE;
 
-	/* Good for now but someone may want to use a hardware token */
-	slot = PK11_GetInternalKeySlot();
-	/* In which case this may be better
+	/* Good for now but someone may want to use a hardware token
+	 *slot = PK11_GetInternalKeySlot();
+	 * In which case this may be better */
 	slot = PK11_GetBestSlot(CKM_RSA_PKCS_KEY_PAIR_GEN, password ? &pwdata : NULL);
-	or the user may specify the name of a token.
-	*/
+	/*or the user may specify the name of a token.*/
 
-	if (PK11_IsFIPS() || !PK11_IsInternal(slot)) {
+	/*if (PK11_IsFIPS() || !PK11_IsInternal(slot)) {
 		rv = PK11_Authenticate(slot, PR_FALSE, &pwdata);
 		if (rv != SECSuccess) {
 			fprintf(stderr, "%s: could not authenticate to token '%s'\n",
 				me, PK11_GetTokenName(slot));
 			GEN_BREAK(SECFailure);
 		}
-	}
+	}*/
 
 	/* Do some random-number initialization. */
 	UpdateNSS_RNG();
@@ -624,7 +623,7 @@ rsasigkey(int nbits, char *configdir, char *password)
 		GEN_BREAK(SECFailure);
 	}
 
-	privkey->wincx = &pwdata;
+	/*privkey->wincx = &pwdata;*/
 	PORT_Assert(pubkey != NULL);
 	if (configdir) {
 		fprintf(stderr, "Generated RSA key pair using the NSS database\n");

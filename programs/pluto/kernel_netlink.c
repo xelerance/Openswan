@@ -1,7 +1,15 @@
 /* netlink interface to the kernel's IPsec mechanism
  *
- * Copyright (C) 2003 Herbert Xu.
- * Copyright (C) 2006 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003,2008 Herbert Xu.
+ * Copyright (C) 2006-2008 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2006 Ken Bantoft <ken@xelerance.com>
+ * Copyright (C) 2007 Bart Trojanowski <bart@jukie.net>
+ * Copyright (C) 2007 Ilia Sotnikov
+ * Copyright (C) 2009 Carsten Schlote <c.schlote@konzeptpark.de>
+ * Copyright (C) 2008 Andreas Steffen
+ * Copyright (C) 2008 Neil Horman <nhorman@redhat.com>
+ * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2006-2009 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,8 +20,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: kernel_netlink.c,v 1.31 2005/08/14 21:58:09 mcr Exp $
  */
 
 #if defined(linux) && defined(NETKEY_SUPPORT)

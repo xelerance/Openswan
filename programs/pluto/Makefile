@@ -224,7 +224,7 @@ alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypt
 ${LIBTPM}: $(wildcard ${srcdir}tpm/*.c) $(wildcard ${srcdir}tpm/*.h) $(wildcard ${srcdir}tpm/*.i)
 	@(cd tpm && ${MAKE} srcdir=${srcdir}tpm/ libtpm.a )
 
-$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) $(OPENSWANLIB) ${LIBTPM} ${LIBSPLUTO}
+$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) $(OPENSWANLIB) ${LIBTPM} 
 	$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(USERLINK) $(OBJSPLUTO) $(LIBSPLUTO) ${PLUTOMINUSL} $(LIBDESLITE)
 
 $(BINNAMEADNS): $(OBJSADNS) ${LIBSPLUTO}

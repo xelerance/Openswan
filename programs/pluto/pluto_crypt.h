@@ -79,7 +79,8 @@ struct pcr_skeyid_q {
   wire_chunk_t rcookie;
   wire_chunk_t secret;
 #ifdef HAVE_LIBNSS
-  u_int16_t encrypt_algo;
+  /* u_int16_t encrypt_algo; */
+  struct encrypt_desc *encrypter;
   wire_chunk_t   pubk;
 #endif
 };

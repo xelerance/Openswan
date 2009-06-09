@@ -11,7 +11,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: tpm.c,v 1.10 2005/10/06 19:40:19 mcr Exp $
  */
 
 #include <stdio.h>

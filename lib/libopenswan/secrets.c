@@ -301,7 +301,7 @@ form_keyid(chunk_t e, chunk_t n, char* keyid, unsigned *keysize)
 }
 
 #ifdef HAVE_LIBNSS
-void static
+void
 form_keyid_from_nss(SECItem e, SECItem n, char* keyid, unsigned *keysize)
 {
     /* eliminate leading zero byte in modulus from ASN.1 coding */
@@ -633,9 +633,9 @@ bool osw_has_private_key(struct secret *secrets, cert_t cert)
 }
 
 #ifdef HAVE_LIBNSS
-static err_t extract_and_add_secret_from_nss_cert_file(struct RSA_private_key *rsak, char *nssHostCertNickName)
+err_t extract_and_add_secret_from_nss_cert_file(struct RSA_private_key *rsak, char *nssHostCertNickName)
 {
-    err_t ugh = NULL;
+    err_t ugh = NULL; 
     SECItem *certCKAID;
     SECKEYPublicKey *pubk;
     CERTCertificate *nssCert;
@@ -663,7 +663,7 @@ static err_t extract_and_add_secret_from_nss_cert_file(struct RSA_private_key *r
     }
     DBG(DBG_CRYPT, DBG_log("NSS: extract_and_add_secret_from_nss_cert_file: public key found"));
 
-    //certCKAID=PK11_GetLowLevelKeyIDForCert(nssCert->slot,nssCert,  osw_return_nss_password_file_info()); /*does not return any lowkeyid*/
+    /*certCKAID=PK11_GetLowLevelKeyIDForCert(nssCert->slot,nssCert,  osw_return_nss_password_file_info());*/ /*does not return any lowkeyid*/
     certCKAID=PK11_GetLowLevelKeyIDForCert(NULL,nssCert, osw_return_nss_password_file_info());
     if(certCKAID == NULL) {
 	loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nsscert: can not find cert's low level CKA ID (err %d)", PR_GetError());
@@ -682,13 +682,13 @@ static err_t extract_and_add_secret_from_nss_cert_file(struct RSA_private_key *r
 
     form_keyid_from_nss(pubk->u.rsa.publicExponent,pubk->u.rsa.modulus, rsak->pub.keyid, &rsak->pub.k);
 
-    //loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nsscert: before free (value of k %d)",rsak->pub.k);
+    /*loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nsscert: before free (value of k %d)",rsak->pub.k);*/
     SECITEM_FreeItem(certCKAID, PR_TRUE);
 
-error2:
-    //loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nss_cert_file: before freeing public key");
+error2:    
+    /*loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nss_cert_file: before freeing public key");*/
     SECKEY_DestroyPublicKey(pubk);
-    //loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nss_cert_file: end retune fine");
+    /*loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nss_cert_file: end retune fine");*/
 error:
    DBG(DBG_CRYPT, DBG_log("NSS: extract_and_add_secret_from_nss_cert_file: end"));
     return ugh;

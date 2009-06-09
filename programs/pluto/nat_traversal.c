@@ -24,11 +24,15 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>     /* used only if MSG_NOSIGNAL not defined */
+#include <net/if.h>
+#include <sys/ioctl.h>
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
 #include <openswan/pfkeyv2.h>
 #include <openswan/pfkey.h>
+#include <openswan/ipsec_tunnel.h>
+#include <openswan/ipsec_param.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -667,13 +671,51 @@ void nat_traversal_show_result (u_int32_t nt, u_int16_t sport)
 int nat_traversal_espinudp_socket (int sk, const char *fam, u_int32_t type)
 {
 	int r;
-	r = setsockopt(sk, SOL_UDP, UDP_ESPINUDP, &type, sizeof(type));
-	if ((r<0) && (errno == ENOPROTOOPT)) {
+	static enum { auto_style, new_style, old_style } style = auto_style;
+
+	if (style == auto_style || style == new_style) {
+		struct ifreq ifr;
+		int *fdp = (int *) &ifr.ifr_data;
+
+		if (style == auto_style)
+			loglog(RC_LOG_SERIOUS, "NAT-Traversal: Trying new style NAT-T");
+
+		memset(&ifr, 0, sizeof(ifr));
+		strcpy(ifr.ifr_name, "ipsec0");
+		fdp[0] = sk;
+		fdp[1] = type;
+		r = ioctl(sk, IPSEC_UDP_ENCAP_CONVERT, &ifr);
+		if (r == -1)
+			loglog(RC_LOG_SERIOUS,
+				   "NAT-Traversal: ESPINUDP(%d) setup failed for "
+				   "new style NAT-T family %s (errno=%d)"
+				   , type, fam, errno);
+		else
+			style = new_style;
+	}
+
+	if (style == auto_style || style == old_style) {
+
+		if (style == auto_style)
+			loglog(RC_LOG_SERIOUS, "NAT-Traversal: Trying old style NAT-T");
+
+		r = setsockopt(sk, SOL_UDP, UDP_ESPINUDP, &type, sizeof(type));
+		if (r == -1)
+			loglog(RC_LOG_SERIOUS,
+				   "NAT-Traversal: ESPINUDP(%d) setup failed for "
+				   "old style NAT-T family %s (errno=%d)"
+				   , type, fam, errno);
+		else
+			style = old_style;
+	}
+
+	if (r == -1 && (errno == ENOPROTOOPT)) {
 		loglog(RC_LOG_SERIOUS,
 		       "NAT-Traversal: ESPINUDP(%d) not supported by kernel for family %s"
 		       , type, fam);
 		disable_nat_traversal(type);
 	}
+
 	return r;
 }
 

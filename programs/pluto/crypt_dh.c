@@ -385,7 +385,8 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     chunk_t rcookie;
 #ifdef HAVE_LIBNSS
     PK11SymKey *shared, *skeyid, *skeyid_d, *skeyid_a, *skeyid_e, *enc_key; 
-    const struct encrypt_desc *encrypter = crypto_get_encrypter(skq->encrypt_algo);
+    /* const struct encrypt_desc *encrypter = crypto_get_encrypter(skq->encrypt_algo);*/
+    const struct encrypt_desc *encrypter = skq->encrypter;
 #endif
 
     /* this doesn't take any memory */
@@ -454,8 +455,9 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 
     PR_ASSERT(tkey1!=NULL);
 
-    // DBG(DBG_CRYPT, DBG_log("Started key computation: 1, length=%d\n", PK11_GetKeyLength(tkey1)));
-    //nss_symkey_log(tkey1, "1");
+    /*DBG(DBG_CRYPT, DBG_log("Started key computation: 1, length=%d\n", PK11_GetKeyLength(tkey1)));
+     *nss_symkey_log(tkey1, "1");
+     */
 
     PK11SymKey *tkey2 = pk11_derive_wrapper_osw(tkey1, CKM_XOR_BASE_AND_DATA
                                                 , hmac_ipad, CKM_CONCATENATE_BASE_AND_KEY, CKA_DERIVE, 0);
@@ -476,6 +478,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     PK11SymKey *tkey5 = pk11_derive_wrapper_osw(tkey4, CKM_CONCATENATE_BASE_AND_DATA
                                                 , rcookie, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
 
+    PR_ASSERT(tkey5!=NULL);
 
     PK11SymKey *tkey6 = pk11_derive_wrapper_osw(tkey5, CKM_CONCATENATE_BASE_AND_DATA
                                                 , hmac_zerobyte, nss_key_derivation_mech(hasher), CKA_DERIVE, 0);
@@ -496,7 +499,6 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 
     PK11SymKey *tkey9 = PK11_Derive(tkey8, CKM_CONCATENATE_BASE_AND_KEY, &param, nss_key_derivation_mech(hasher), CKA_DERIVE, 0);
     PR_ASSERT(tkey9!=NULL);
- DBG(DBG_CRYPT, DBG_log("Started key computation: 9\n"));
 
     skeyid_d = PK11_Derive(tkey9, nss_key_derivation_mech(hasher), NULL, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
     PR_ASSERT(skeyid_d!=NULL);
@@ -558,6 +560,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     keyhandle=PK11_GetSymKeyHandle(shared);
     param.data=&keyhandle;
     param.len=sizeof(keyhandle);
+
     PK11SymKey *tkey18 = PK11_Derive(tkey17, CKM_CONCATENATE_BASE_AND_KEY, &param, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
     PR_ASSERT(tkey18!=NULL);
 
@@ -696,7 +699,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 
                        PK11SymKey *tkey39 = PK11_Derive(keymat, CKM_CONCATENATE_BASE_AND_KEY, &param, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);
                        PR_ASSERT(tkey39!=NULL);
-                       //nss_symkey_log(tkey39, "tkey39");
+
                         DBG(DBG_CRYPT, DBG_log("NSS: encrypter= %d, keysize =%d\n", nss_encryption_mech(encrypter), keysize));
 
                        enc_key = PK11_DeriveWithFlags(tkey39, CKM_EXTRACT_KEY_FROM_KEY, &param1
@@ -798,7 +801,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
    PK11_FreeSymKey(tkey21);
    PK11_FreeSymKey(tkey22);
    PK11_FreeSymKey(tkey23);
-   //PK11_FreeSymKey(tkey24);
+
    DBG(DBG_CRYPT, DBG_log("NSS: Freed symkeys 1-23 (24 does not exists)\n"));
 
    freeanychunk(hmac_opad);
@@ -893,7 +896,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 	}
 	clonereplacechunk(*enc_key_chunk, k, keysize, "st_enc_key");
     }
-#endif
+
 
     DBG(DBG_CRYPT,
 	DBG_dump_chunk("Skeyid:  ", *skeyid_chunk);
@@ -902,6 +905,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 	DBG_dump_chunk("Skeyid_e:", *skeyid_e_chunk);
 	DBG_dump_chunk("enc key:",  *enc_key_chunk);
 	DBG_dump_chunk("IV:",       *new_iv));
+#endif
 }
 
 void calc_dh_iv(struct pluto_crypto_req *r)
@@ -957,10 +961,12 @@ void calc_dh_iv(struct pluto_crypto_req *r)
     }
 
     DBG(DBG_CRYPT,
-	DBG_dump_chunk("peer's g: ", g);
-	DBG_dump_chunk("long term secret: ", ltsecret));
+	DBG_dump_chunk("peer's g: ", g));
+	
 
 #ifndef HAVE_LIBNSS
+    DBG(DBG_CRYPT,
+    DBG_dump_chunk("long term secret: ", ltsecret));
     calc_dh_shared(&shared, g, &sec, group);
     mpz_clear (&sec);
 #else
@@ -1095,7 +1101,6 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     DBG(DBG_CRYPT, DBG_log("NSS: Started key computation\n"));
 
     PK11SymKey *skeyseed_k, *SK_d_k, *SK_ai_k, *SK_ar_k, *SK_ei_k, *SK_er_k, *SK_pi_k, *SK_pr_k;
-    memset(&vpss, 0, sizeof(vpss));
 #endif
     /* this doesn't take any memory, it's just moving pointers around */
     setchunk_fromwire(gi,      &skq->gi, skq);
@@ -1116,14 +1121,8 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     passert(hasher);
     DBG(DBG_CRYPT, DBG_log("NSS ikev2: found hasher\n"));
 
-/* 
- * Avesh: skq has no member encrypter?
- *  const struct encrypt_desc *encrypter = skq->encrypter; 
- *  passert(encrypter);
-*/
-    struct encrypt_desc *encrypter = NULL;
-
-
+    const struct encrypt_desc *encrypter = skq->encrypter; 
+    passert(encrypter);
     DBG(DBG_CRYPT, DBG_log("NSS ikev2: found encrypter\n"));
 
     hmac_opad = hmac_pads(HMAC_OPAD,HMAC_BUFSIZE);
@@ -1183,10 +1182,15 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	/* SK_e needs keysize*2 key bits */
 	/* SK_a needs hash's key bits size */
 	const struct hash_desc *integ_hasher = crypto_get_hasher(skq->integ_hash);
-	int skd_bytes = vpss.prf_hasher->hash_key_size;
+#ifdef HAVE_LIBNSS
+       int skd_bytes = hasher->hash_key_size;
+       int skp_bytes = hasher->hash_key_size;       
+#else
+       int skd_bytes = vpss.prf_hasher->hash_key_size;
+       int skp_bytes = vpss.prf_hasher->hash_key_size;
+#endif
 	int ska_bytes = integ_hasher->hash_key_size;
 	int ske_bytes = keysize;
-	int skp_bytes = vpss.prf_hasher->hash_key_size;
 
 	vpss.counter[0]=0x01;
 	vpss.t.len = 0;

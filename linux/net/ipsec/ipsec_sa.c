@@ -1011,7 +1011,7 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 	}
 	ips->ips_addr_p = NULL;
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 	if(ips->ips_natt_oa) {
 		memset((caddr_t)(ips->ips_natt_oa), 0, ips->ips_natt_oa_size);
 		kfree(ips->ips_natt_oa);
@@ -1072,6 +1072,9 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 	if (ips->ips_alg_enc||ips->ips_alg_auth) {
 		ipsec_alg_sa_wipe(ips);
 	}
+	ips->ips_alg_enc = NULL;
+	ips->ips_alg_auth = NULL;
+
 #endif
 	if (ips->ips_next) {
 		ipsec_sa_put(ips->ips_next);
@@ -1104,10 +1107,6 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 #if defined (CONFIG_KLIPS_AUTH_HMAC_MD5) || defined (CONFIG_KLIPS_AUTH_HMAC_SHA1)
 	unsigned char kb[AHMD596_BLKLEN];
 	int i;
-#endif
-#ifdef CONFIG_KLIPS_ALG
-	struct ipsec_alg_enc *ixt_e = NULL;
-	struct ipsec_alg_auth *ixt_a = NULL;
 #endif
 
 	if(ipsp == NULL) {
@@ -1333,54 +1332,31 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 	case IPPROTO_ESP:
 		ipsp->ips_xformfuncs = esp_xform_funcs;
 	{
-#if defined (CONFIG_KLIPS_AUTH_HMAC_MD5) || defined (CONFIG_KLIPS_AUTH_HMAC_SHA1)
-		unsigned char *akp;
-		unsigned int aks;
-#endif
-
 #ifdef CONFIG_KLIPS_OCF
 		if (ipsec_ocf_sa_init(ipsp, ipsp->ips_authalg, ipsp->ips_encalg))
 		    break;
 #endif
 
 #ifdef CONFIG_KLIPS_ALG
-		ipsec_alg_sa_init(ipsp);
-		ixt_e=ipsp->ips_alg_enc;
-
-		if (ixt_e == NULL) {
-			if(printk_ratelimit()) {
-				printk(KERN_ERR
-				       "ipsec_sa_init: "
-				       "encalg=%d support not available in the kernel",
-				       ipsp->ips_encalg);
-			}
-			SENDERR(ENOENT);
-		}
-
-		ipsp->ips_iv_size = ixt_e->ixt_common.ixt_support.ias_ivlen/8;
-
-		/* Create IV */
-		if (ipsp->ips_iv_size) {
-			if((ipsp->ips_iv = (caddr_t)
-			    kmalloc(ipsp->ips_iv_size, GFP_ATOMIC)) == NULL) {
-				SENDERR(ENOMEM);
-			}
-			prng_bytes(&ipsec_prng,
-				   (char *)ipsp->ips_iv,
-				   ipsp->ips_iv_size);
-			ipsp->ips_iv_bits = ipsp->ips_iv_size * 8;
-		}
-		
-		if ((error=ipsec_alg_enc_key_create(ipsp)) < 0)
+		error = ipsec_alg_enc_key_create(ipsp);
+		if (error < 0)
 			SENDERR(-error);
 
-		if ((ixt_a=ipsp->ips_alg_auth)) {
-			if ((error=ipsec_alg_auth_key_create(ipsp)) < 0)
-				SENDERR(-error);
-		} else	
-#endif /* CONFIG_KLIPS_ALG */
+		error = ipsec_alg_auth_key_create(ipsp);
+		if ((error < 0) && (error != -EPROTO))
+			SENDERR(-error);
 		
+		if (error == -EPROTO) {
+			/* perform manual key generation, 
+			   ignore this particular error */
+			error = 0;
+#endif /* CONFIG_KLIPS_ALG */
+
 		switch(ipsp->ips_authalg) {
+#if defined (CONFIG_KLIPS_AUTH_HMAC_MD5) || defined (CONFIG_KLIPS_AUTH_HMAC_SHA1)
+		unsigned char *akp;
+		unsigned int aks;
+#endif
 # ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 		case AH_MD5: {
 			MD5_CTX *ictx;
@@ -1545,8 +1521,25 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 				    ipsp->ips_authalg);
 			SENDERR(EINVAL);
 		}
+#ifdef CONFIG_KLIPS_ALG
+		/* closure of the -EPROTO condition above */
+		}
+#endif
+
+		ipsp->ips_iv_size = ipsp->ips_alg_enc->ixt_common.ixt_support.ias_ivlen/8;
+
+		/* Create IV */
+		if (ipsp->ips_iv_size) {
+			if ((ipsp->ips_iv = 
+			     (caddr_t)kmalloc(ipsp->ips_iv_size, GFP_ATOMIC)) == NULL) {
+				SENDERR(ENOMEM);
+			}
+			prng_bytes(&ipsec_prng, (char *)ipsp->ips_iv, 
+				   ipsp->ips_iv_size);
+			ipsp->ips_iv_bits = ipsp->ips_iv_size * 8;
+		}
 	}
-			break;
+	break;
 #endif /* !CONFIG_KLIPS_ESP */
 #ifdef CONFIG_KLIPS_IPCOMP
 	case IPPROTO_COMP:
@@ -1564,7 +1557,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 		SENDERR(EINVAL);
 	}
 	
- errlab:
+errlab:
 	return(error);
 }
 

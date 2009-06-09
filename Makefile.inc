@@ -383,7 +383,7 @@ USE_IPSEC_CONNECTION_LIMIT?=false
 IPSEC_CONNECTION_LIMIT?=250
 
 # Do we have pthreads available?  Only yes if you need it for XAUTH+PAM,
-# or if you need it for CRL fetching or if you need it for USE_NSS
+# or if you need it for CRL fetching or if you need it for USE_LIBNSS
 # 
 HAVE_THREADS?=false
 

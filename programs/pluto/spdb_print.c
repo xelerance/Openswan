@@ -1,5 +1,6 @@
 /* Security Policy Data Base debugging routines
- * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2005-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -10,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: spdb_print.c,v 1.2 2005/08/05 19:16:48 mcr Exp $
  */
 
 #include <stdio.h>

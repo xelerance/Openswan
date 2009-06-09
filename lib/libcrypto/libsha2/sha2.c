@@ -103,9 +103,8 @@ static const u_int64_t sha512_K[80] = {
 void sha256_init(sha256_context *ctx)
 {
 #ifdef HAVE_LIBNSS
+    DBG(DBG_CRYPT, DBG_log("NSS: sha256 init start"));
     SECStatus status;
-    
-    DBG(DBG_CRYPT, DBG_log("NSS: sha256 init end"));
     ctx->ctx_nss = NULL;
     ctx->ctx_nss = PK11_CreateDigestContext(SEC_OID_SHA256);
     PR_ASSERT(ctx->ctx_nss!=NULL);

@@ -152,13 +152,6 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	case IPPROTO_ESP:
 		ipsp->ips_authalg = pfkey_sa->sadb_sa_auth;
 		ipsp->ips_encalg = pfkey_sa->sadb_sa_encrypt;
-#ifdef CONFIG_KLIPS_OCF
-		if (ipsec_ocf_sa_init(ipsp, ipsp->ips_authalg, ipsp->ips_encalg))
-		    break;
-#endif
-#ifdef CONFIG_KLIPS_ALG
-		ipsec_alg_sa_init(ipsp);
-#endif
 		break;
 	case IPPROTO_IPIP:
 		ipsp->ips_authalg = AH_NONE;
@@ -716,7 +709,7 @@ errlab:
 }
 
 
-#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#ifdef NAT_TRAVERSAL
 int
 pfkey_x_nat_t_type_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 {

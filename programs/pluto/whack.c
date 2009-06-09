@@ -1,8 +1,10 @@
 /* command interface to Pluto
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2003  D. Hugh Redelmeier.
- * Copyright (C) 2004 Michael Richardson <mcr@sandelman.ottawa.on.ca>
- * Copyright (C) 2007 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2004-2008 Michael Richardson <mcr@sandelman.ottawa.on.ca>
+ * Copyright (C) 2007-2008 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 Shingo Yamawaki
+ * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -13,8 +15,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: whack.c,v 1.152 2005/10/02 22:30:59 mcr Exp $
  */
 
 #include <stdio.h>

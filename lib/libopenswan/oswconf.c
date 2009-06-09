@@ -175,23 +175,25 @@ bool Pluto_IsFIPS(void)
      char fips_flag[2];
      int n;
      FILE *fd=fopen("/proc/sys/crypto/fips_enabled","r");
-
-     if(fd == NULL) {
-	openswan_log("Not able to open /proc/sys/crypto/fips_enabled, returning non-fips mode");
-	return FALSE;
+     
+     if(fd!=NULL) {
+	    n = fread ((void *)fips_flag, 1, 1, fd);
+		if(n==1) {
+		    if(fips_flag[0]=='1') {
+	            return TRUE;	         	
+            }
+		    else {
+		    openswan_log("Non-fips mode set in /proc/sys/crypto/fips_enabled");
+		    }
+	    }
+	    else {
+			openswan_log("error in reading /proc/sys/crypto/fips_enabled, returning non-fips mode");
+	    } 
      }
-     n = fread ((void *)fips_flag, 1, 1, fd);
-     if(n==1) {
-	if(fips_flag[0]=='1') {
-	   openswan_log("fips mode is set in /proc/sys/crypto/fips_enabled");
-	   return TRUE;
-	} else {
-	   openswan_log("Non-fips mode set in /proc/sys/crypto/fips_enabled");
-	   return FALSE;
-	  }
-     } 
-     openswan_log("error in reading /proc/sys/crypto/fips_enabled, returning non-fips mode");
-     return FALSE;
+     else {
+     	openswan_log("Not able to open /proc/sys/crypto/fips_enabled, returning non-fips mode"); 
+     }
+return FALSE;
 }
 
 char *getNSSPassword(PK11SlotInfo *slot, PRBool retry, void *arg)
@@ -203,34 +205,36 @@ char *getNSSPassword(PK11SlotInfo *slot, PRBool retry, void *arg)
      const long maxPwdFileSize = 4096;
 
      if(retry) return 0;
+     
 
      if(pwdInfo->source == PW_FROMFILE) {
-	if(pwdInfo->data !=NULL) {
-	   fd = PR_Open(pwdInfo->data, PR_RDONLY, 0);
-	   if (!fd) {
-		openswan_log("No password file \"%s\" exists.", pwdInfo->data);
-		return 0;
-	   }
+     	if(pwdInfo->data !=NULL) {
+        fd = PR_Open(pwdInfo->data, PR_RDONLY, 0);
+			if (!fd) {
+			openswan_log("No password file \"%s\" exists.", pwdInfo->data);
+			return 0;
+		    }
 
-	   password=PORT_ZAlloc(maxPwdFileSize);
-	   nb = PR_Read(fd, password, maxPwdFileSize);
-	   PR_Close(fd);
+	    password=PORT_ZAlloc(maxPwdFileSize);
+	    nb = PR_Read(fd, password, maxPwdFileSize);
+	    PR_Close(fd);
 
-	   if(nb == 0) {
-		openswan_log("password file contains no data");
-		PORT_Free(password);
-		return 0;
-	   }
-	   password[nb-1]='\0';
-	   openswan_log("Password passed to NSS is %s", password);
-	   return password;
-	} else {
-		openswan_log("File with Password to NSS DB is not provided");
-		return 0;
-	  }
+			if (nb == 0) {
+        	openswan_log("password file contains no data");
+        	PORT_Free(password);
+        	return 0;
+        	}
+	    password[nb-1]='\0'; 
+        openswan_log("Password passed to NSS is %s", password);
+        return password;
+	    }
+	    else {
+	    openswan_log("File with Password to NSS DB is not provided");
+        return 0;
+	    }
      }
-     openswan_log("nss password source is not specified as file");
-     return 0;
+openswan_log("nss password source is not specified as file");
+return 0;
 }
 #endif
     

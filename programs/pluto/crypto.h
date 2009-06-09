@@ -143,7 +143,7 @@ extern void hmac_final(u_char *output, struct hmac_ctx *ctx);
 
 #ifdef HAVE_LIBNSS
 extern CK_MECHANISM_TYPE nss_key_derivation_mech(const struct hash_desc *hasher);
-extern void nss_symkey_log(PK11SymKey *key, char *msg);
+extern void nss_symkey_log(PK11SymKey *key, const char *msg);
 extern chunk_t hmac_pads(u_char val, unsigned int len);
 extern PK11SymKey *pk11_derive_wrapper_osw(PK11SymKey *base, CK_MECHANISM_TYPE mechanism
                                            , chunk_t data, CK_MECHANISM_TYPE target

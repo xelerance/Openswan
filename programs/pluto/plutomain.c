@@ -760,14 +760,14 @@ main(int argc, char **argv)
     init_constants();
     pluto_init_log();
 
-#if defined(HAVE_LIBNSS)
-    {
+#ifdef HAVE_LIBNSS
 	char buf[100];
 	snprintf(buf, sizeof(buf), "sql:%s",oco->confddir);
 	loglog(RC_LOG_SERIOUS,"nss directory plutomain: %s",buf);
 	SECStatus nss_init_status= NSS_InitReadWrite(buf);
 	if (nss_init_status != SECSuccess) {
 	    loglog(RC_LOG_SERIOUS, "NSS initialization failed (err %d)\n", PR_GetError());
+        exit_pluto(10);
 	} else {
 	    loglog(RC_LOG_SERIOUS, "NSS Initialized");
 	    PK11_SetPasswordFunc(getNSSPassword);
@@ -777,9 +777,7 @@ main(int argc, char **argv)
 		exit_pluto(10);
 	    }
 #endif
-
-        }
-    }
+      }
 #endif
 
     /* Note: some scripts may look for this exact message -- don't change

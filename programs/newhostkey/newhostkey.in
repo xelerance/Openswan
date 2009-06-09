@@ -35,8 +35,8 @@ do
 	--verbose)	verbose=--verbose 	;;
 	--version)	echo "$me $IPSEC_VERSION" ; exit 0	;;
 	--random)	host="$host --random $2" ; shift	;;
-        --configdir)    configdir="--configdir $2" ;    shift   ;;
-        --password)     password="--password $2" ;      shift   ;;
+    --configdir)    configdir="--configdir $2" ;    shift   ;;
+    --password)     password="--password $2" ;      shift   ;;
 	--help)	echo "$usage" ; exit 0	;;
 	--)	shift ; break		;;
 	-*)	echo "$me: unknown option \`$1'" >&2 ; exit 2	;;
