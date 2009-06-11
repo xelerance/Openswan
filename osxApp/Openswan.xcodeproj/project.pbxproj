@@ -11,9 +11,14 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		99604D0C0FE15ECD008769D4 /* AdvancedMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 99604D0B0FE15ECD008769D4 /* AdvancedMenu.xib */; };
+		99604D1C0FE16026008769D4 /* AdvMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99604D1B0FE16026008769D4 /* AdvMenuController.m */; };
+		99604D420FE1617B008769D4 /* MainMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99604D410FE1617B008769D4 /* MainMenuController.m */; };
 		99805F2E0FCC7B2F002E243B /* Connection.m in Sources */ = {isa = PBXBuildFile; fileRef = 99805F2D0FCC7B2F002E243B /* Connection.m */; };
 		99805F3C0FCC7C11002E243B /* Controller.m in Sources */ = {isa = PBXBuildFile; fileRef = 99805F3B0FCC7C11002E243B /* Controller.m */; };
 		99C2E30C0F95FE9F00AA9274 /* APPL.icns in Resources */ = {isa = PBXBuildFile; fileRef = 99C2E30B0F95FE9F00AA9274 /* APPL.icns */; };
+		99FBA11B0FE13F540038B2EE /* PreferenceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99FBA11A0FE13F540038B2EE /* PreferenceController.m */; };
+		99FBA11F0FE13F980038B2EE /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 99FBA11E0FE13F980038B2EE /* Preferences.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,11 +32,19 @@
 		32CA4F630368D1EE00C91783 /* Openswan_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Openswan_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Openswan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Openswan.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		99604D0B0FE15ECD008769D4 /* AdvancedMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AdvancedMenu.xib; sourceTree = SOURCE_ROOT; };
+		99604D1A0FE16026008769D4 /* AdvMenuController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvMenuController.h; sourceTree = SOURCE_ROOT; };
+		99604D1B0FE16026008769D4 /* AdvMenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvMenuController.m; sourceTree = SOURCE_ROOT; };
+		99604D400FE1617B008769D4 /* MainMenuController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainMenuController.h; sourceTree = SOURCE_ROOT; };
+		99604D410FE1617B008769D4 /* MainMenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainMenuController.m; sourceTree = SOURCE_ROOT; };
 		99805F2C0FCC7B2F002E243B /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = SOURCE_ROOT; };
 		99805F2D0FCC7B2F002E243B /* Connection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Connection.m; sourceTree = SOURCE_ROOT; };
 		99805F3A0FCC7C11002E243B /* Controller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Controller.h; sourceTree = SOURCE_ROOT; };
 		99805F3B0FCC7C11002E243B /* Controller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Controller.m; sourceTree = SOURCE_ROOT; };
 		99C2E30B0F95FE9F00AA9274 /* APPL.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = APPL.icns; sourceTree = "<group>"; };
+		99FBA1190FE13F540038B2EE /* PreferenceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceController.h; sourceTree = SOURCE_ROOT; };
+		99FBA11A0FE13F540038B2EE /* PreferenceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceController.m; sourceTree = SOURCE_ROOT; };
+		99FBA11E0FE13F980038B2EE /* Preferences.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +66,12 @@
 				99805F2D0FCC7B2F002E243B /* Connection.m */,
 				99805F3A0FCC7C11002E243B /* Controller.h */,
 				99805F3B0FCC7C11002E243B /* Controller.m */,
+				99FBA1190FE13F540038B2EE /* PreferenceController.h */,
+				99FBA11A0FE13F540038B2EE /* PreferenceController.m */,
+				99604D1A0FE16026008769D4 /* AdvMenuController.h */,
+				99604D1B0FE16026008769D4 /* AdvMenuController.m */,
+				99604D400FE1617B008769D4 /* MainMenuController.h */,
+				99604D410FE1617B008769D4 /* MainMenuController.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -108,9 +127,11 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				99FBA11E0FE13F980038B2EE /* Preferences.xib */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
+				99604D0B0FE15ECD008769D4 /* AdvancedMenu.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -170,6 +191,8 @@
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
 				99C2E30C0F95FE9F00AA9274 /* APPL.icns in Resources */,
+				99FBA11F0FE13F980038B2EE /* Preferences.xib in Resources */,
+				99604D0C0FE15ECD008769D4 /* AdvancedMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -183,6 +206,9 @@
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				99805F2E0FCC7B2F002E243B /* Connection.m in Sources */,
 				99805F3C0FCC7C11002E243B /* Controller.m in Sources */,
+				99FBA11B0FE13F540038B2EE /* PreferenceController.m in Sources */,
+				99604D1C0FE16026008769D4 /* AdvMenuController.m in Sources */,
+				99604D420FE1617B008769D4 /* MainMenuController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

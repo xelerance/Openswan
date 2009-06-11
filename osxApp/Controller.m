@@ -7,6 +7,7 @@
 //
 
 #import "Controller.h"
+#import "PreferenceController.h"
 
 @implementation Controller
 @synthesize connections;
@@ -154,6 +155,16 @@
 {
 	[X509View setHidden:YES];
 	[PSKView setHidden:YES];
+}
+
+- (IBAction)showPreferencePanel: (id)sender
+{
+	//Is preferenceController nil?
+	if(!preferenceController){
+		preferenceController = [[PreferenceController alloc] init];
+	}
+	NSLog(@"Showing %@", preferenceController);
+	[preferenceController showWindow: self];
 }
 
 @end

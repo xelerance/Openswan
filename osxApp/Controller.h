@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "Connection.h"
+@class PreferenceController;
 
 @interface Controller : NSObject {
 	NSMutableArray* connections;
@@ -32,6 +33,8 @@
 	IBOutlet NSView* rawRSAView;
 	IBOutlet NSView* natView;
 	IBOutlet NSView* oeView;
+	
+	PreferenceController *preferenceController;
 }
 
 @property (readwrite, copy) NSMutableArray* connections;
@@ -45,5 +48,6 @@
 - (IBAction)natTraversal: (id) sender;
 - (IBAction)oe: (id) sender;
 
+- (IBAction)showPreferencePanel: (id)sender;
 
 @end
