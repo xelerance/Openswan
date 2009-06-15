@@ -12,20 +12,28 @@
 @interface Connection : NSObject {
 
 	NSString* connName;
-	NSMutableString* selectedLeftIP;
-	NSString* selectedRightIP;
-	NSString* selectedKeySetupMode;
-	NSString* selectedKey;
-	NSString* selectedType;
-	NSString* selectedAuto;
-	NSString* selectedLeftRSAsig;
-	NSString* selectedRightRSAsig;
+	
+	NSMutableString* selLocalHost;
+	NSMutableString* selRemoteHost;
+	NSMutableString* selAuthBy;
+	NSMutableString* selAuto;
+	
+	NSArray* Type;
+	NSArray* Auto;
+	NSArray* phase2;
+	NSArray* sendCert; 
+	NSArray* dpdAction;
+	NSArray* plutoDebug;
+	NSArray* authBy;
+	NSArray* endUserOpts;
+	NSArray* mode;
+
 }
 
-@property (readwrite, copy) NSMutableString *selectedLeftIP;
-@property (readwrite, copy) NSString *selectedRightIP, *selectedKeySetupMode, *connName;
-@property (readwrite, copy) NSString *selectedKey, *selectedType, *selectedAuto;
-@property (readwrite, copy) NSString *selectedLeftRSAsig , *selectedRightRSAsig;
+@property (readwrite, copy) NSMutableString *selLocalHost, *selRemoteHost, *selAuthBy, *selAuto;
+@property (readwrite, copy) NSArray *Type, *Auto, *phase2, *sendCert, *dpdAction;
+@property (readwrite, copy) NSArray *plutoDebug, *authBy, *endUserOpts, *mode;
+@property (readwrite, copy) NSString *connName;
 
 - (id) initWithName:(NSString*)name;
 @end

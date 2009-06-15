@@ -7,10 +7,31 @@
 //
 
 #import <Cocoa/Cocoa.h>
-
+#import "Connection.h"
+@class PreferenceController;
 
 @interface AdvMenuController : NSWindowController {
-
+	NSMutableArray* connections;
+	
+	IBOutlet NSPopUpButton* authByButton;
+	IBOutlet NSTextField* rawRSAText;
+	IBOutlet NSView* PSKView;
+	IBOutlet NSView* X509View;
+	IBOutlet NSView* rawRSAView;
+	IBOutlet NSView* natView;
+	IBOutlet NSView* oeView;
+	
+	PreferenceController *preferenceController;
 }
+
+@property (readwrite, copy) NSMutableArray* connections;
+
+- (IBAction)advancedOpt: (id) sender;
+- (IBAction)authByAction: (id) sender;
+- (IBAction)selectedEndUserOpt: (id)sender;
+- (IBAction)natTraversal: (id) sender;
+- (IBAction)oe: (id) sender;
+
+- (IBAction)showPreferencePanel: (id)sender;
 
 @end

@@ -10,10 +10,27 @@
 
 
 @implementation Connection
-@synthesize selectedLeftIP, selectedRightIP, selectedKeySetupMode;
-@synthesize selectedKey, selectedType, selectedAuto;
-@synthesize selectedLeftRSAsig , selectedRightRSAsig;
+@synthesize selLocalHost, selRemoteHost, selAuthBy, selAuto;
 @synthesize connName;
+@synthesize Type, Auto, phase2, sendCert, dpdAction, plutoDebug, authBy, endUserOpts, mode;
+
+- (id) init
+{
+    /* first initialize the base class */
+    self = [super init];
+	
+	Type = [NSArray arrayWithObjects: @"Tunnel", @"Transport", @"Pass Through",@"Drop", @"Reject", nil];
+	Auto = [NSArray arrayWithObjects: @"Start", @"Add", @"Ignore", @"Route", nil];
+	phase2 = [NSArray arrayWithObjects: @"ESP", @"AH", nil];
+	sendCert = [NSArray arrayWithObjects: @"Always", @"If asked",@"Never", nil];
+	dpdAction = [NSArray arrayWithObjects: @"Hold",@"Clear", nil];
+	plutoDebug = [NSArray arrayWithObjects: @"None",@"All", @"...", nil];
+	authBy = [NSArray arrayWithObjects: @"RSA Sig Key", @"Secret", nil];
+	endUserOpts = [NSArray arrayWithObjects: @"Raw RSA", @"X.509", @"PSK", nil];
+	mode = [NSArray arrayWithObjects: @"Main",@"Aggressive",@"IKEv2", nil];
+	
+	return self;
+}
 
 - (id) initWithName:(NSString*)name
 {
@@ -24,14 +41,14 @@
 	connName = [NSString stringWithString:name];
 	
 	//initialize selectedLedtIP
-	selectedLeftIP = [[NSMutableString alloc] init];
+	selLocalHost = [[NSMutableString alloc] init];
 	
 	NSString* ss = [NSString stringWithFormat: @"192.128.%@", name];
 	
-	[self setValue:ss forKey:@"selectedLeftIP"];
+	[self setValue:ss forKey:@"selLocalHost"];
 	
-	NSMutableString *s = [self valueForKey:@"selectedLeftIP"];
-	NSLog(@"Set value for selectedLeftIP = %@", s);
+	NSMutableString *s = [self valueForKey:@"selLocalHost"];
+	NSLog(@"Set value for selLocalHost = %@", s);
 	
     /* finally return the object */
     return self;
