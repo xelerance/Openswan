@@ -21,10 +21,11 @@
 	IBOutlet NSView* natView;
 	IBOutlet NSView* oeView;
 	
-	PreferenceController *preferenceController;
+	IBOutlet NSPopUpButton* selConn;
 }
 
 @property (readwrite, copy) NSMutableArray* connections;
+@property (readwrite, assign) NSPopUpButton* selConn;
 
 - (IBAction)advancedOpt: (id) sender;
 - (IBAction)authByAction: (id) sender;
@@ -32,6 +33,6 @@
 - (IBAction)natTraversal: (id) sender;
 - (IBAction)oe: (id) sender;
 
-- (IBAction)showPreferencePanel: (id)sender;
+- (IBAction)save: (id)sender;
 
 @end

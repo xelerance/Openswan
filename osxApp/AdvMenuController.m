@@ -10,7 +10,7 @@
 #import "PreferenceController.h"
 
 @implementation AdvMenuController
-@synthesize connections;
+@synthesize connections, selConn;
 
 - (id)init
 {
@@ -147,14 +147,12 @@
 	[PSKView setHidden:YES];
 }
 
-- (IBAction)showPreferencePanel: (id)sender
+- (IBAction)save: (id)sender
 {
-	//Is preferenceController nil?
-	if(!preferenceController){
-		preferenceController = [[PreferenceController alloc] init];
-	}
-	NSLog(@"Showing %@", preferenceController);
-	[preferenceController showWindow: self];
+	Connection* selectedConn = [connections objectAtIndex:[selConn indexOfSelectedItem]];
+	NSLog(@"saving connection: %@", [selectedConn connName]);
+	NSLog(@"local host: %@",[selectedConn selLocalHost]);
+	NSLog(@"remote host: %@",[selectedConn selRemoteHost]);
+	NSLog(@"Auto: %d", [[selectedConn selAuto] indexOfSelectedItem]);
 }
-
 @end

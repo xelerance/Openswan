@@ -8,6 +8,7 @@
 
 #import "MainMenuController.h"
 #import "AdvMenuController.h"
+#import "PreferenceController.h"
 #import <AppKit/NSCell.h>
 
 @implementation MainMenuController
@@ -19,6 +20,8 @@
 		advMenuController = [[AdvMenuController alloc] init];
 	}
 	NSLog(@"Showing %@", advMenuController);
+	//NSNumber* index = [NSNumber numberWithInt: [selConn indexOfSelectedItem]];
+	[[advMenuController selConn] selectItemAtIndex:[selConn indexOfSelectedItem]];
 	[advMenuController showWindow: self];
 }
 
@@ -38,6 +41,16 @@
 {
 	[connView setHidden:NO];
 	[discView setHidden:YES];
+}
+
+- (IBAction)showPreferencePanel: (id)sender
+{
+	//Is preferenceController nil?
+	if(!preferenceController){
+		preferenceController = [[PreferenceController alloc] init];
+	}
+	NSLog(@"Showing %@", preferenceController);
+	[preferenceController showWindow: self];
 }
 
 @end

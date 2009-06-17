@@ -29,6 +29,9 @@
 	endUserOpts = [NSArray arrayWithObjects: @"Raw RSA", @"X.509", @"PSK", nil];
 	mode = [NSArray arrayWithObjects: @"Main",@"Aggressive",@"IKEv2", nil];
 	
+	//selAuto = [[NSPopUpButton alloc] init];
+	//selAuthBy = [[NSPopUpButton alloc] init];
+	
 	return self;
 }
 
@@ -49,6 +52,9 @@
 	
 	NSMutableString *s = [self valueForKey:@"selLocalHost"];
 	NSLog(@"Set value for selLocalHost = %@", s);
+	
+	selAuto = [[NSPopUpButton alloc] init];
+	selAuthBy = [[NSPopUpButton alloc] init];
 	
     /* finally return the object */
     return self;

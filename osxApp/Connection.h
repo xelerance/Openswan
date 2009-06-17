@@ -15,8 +15,8 @@
 	
 	NSMutableString* selLocalHost;
 	NSMutableString* selRemoteHost;
-	NSMutableString* selAuthBy;
-	NSMutableString* selAuto;
+	IBOutlet NSPopUpButton* selAuthBy;
+	IBOutlet NSPopUpButton* selAuto;
 	
 	NSArray* Type;
 	NSArray* Auto;
@@ -30,10 +30,11 @@
 
 }
 
-@property (readwrite, copy) NSMutableString *selLocalHost, *selRemoteHost, *selAuthBy, *selAuto;
+@property (readwrite, copy) NSMutableString *selLocalHost, *selRemoteHost;
 @property (readwrite, copy) NSArray *Type, *Auto, *phase2, *sendCert, *dpdAction;
 @property (readwrite, copy) NSArray *plutoDebug, *authBy, *endUserOpts, *mode;
 @property (readwrite, copy) NSString *connName;
+@property (readwrite, assign) NSPopUpButton *selAuthBy, *selAuto;
 
 - (id) initWithName:(NSString*)name;
 @end
