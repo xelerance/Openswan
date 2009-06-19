@@ -2,6 +2,10 @@
  * Modular extensions service and registration functions
  *
  * Author: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
+ *
+ * Michael Richardson <mcr@xelerance.com>
+ * Paul Wouters <paul@xelerance.com>
+ * Nick Jones <nick.jones@network-box.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -319,47 +323,46 @@ int ipsec_alg_enc_key_create(struct ipsec_sa *sa_p) {
 			keyminbits=ixt_e->ixt_common.ixt_support.ias_keyminbits;
 			keymaxbits=ixt_e->ixt_common.ixt_support.ias_keymaxbits;
 	}
-	if(sa_p->ips_key_bits_e<keyminbits || 
-			sa_p->ips_key_bits_e>keymaxbits) {
+	if (sa_p->ips_key_bits_e<keyminbits ||
+		sa_p->ips_key_bits_e>keymaxbits) {
 		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:ipsec_alg_enc_key_create: "
-			    "incorrect encryption key size for id=%d: %d bits -- "
-			    "must be between %d,%d bits\n" /*octets (bytes)\n"*/,
-			    ixt_e->ixt_common.ixt_support.ias_id,
-			    sa_p->ips_key_bits_e, keyminbits, keymaxbits);
-		ret = -EINVAL;
+			"klips_debug:ipsec_alg_enc_key_create: "
+			"incorrect encryption key size for id=%d: %d bits -- "
+			"must be between %d,%d bits\n" /*octets (bytes)\n"*/,
+			ixt_e->ixt_common.ixt_support.ias_id,
+			sa_p->ips_key_bits_e, keyminbits, keymaxbits);
+		ret=-EINVAL;
 		goto ixt_out;
 	}
 
 	if (ixt_e->ixt_e_new_key) {
 		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:ipsec_alg_enc_key_create: "
-			    "using ixt_e_new_key to generate key\n");
+			"klips_debug:ipsec_alg_enc_key_create: "
+			"using ixt_e_new_key to generate key\n");
 
 		if ((ekp = ixt_e->ixt_e_new_key(ixt_e,
-				sa_p->ips_key_e, 
-				sa_p->ips_key_bits_e/8)) == NULL) {
+			sa_p->ips_key_e,
+			sa_p->ips_key_bits_e/8)) == NULL) {
 			ret = -EINVAL;
 			goto ixt_out;
 		}
 	} else if (ixt_e->ixt_e_set_key) {
 		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:ipsec_alg_enc_key_create: "
-			    "using ixt_e_set_key to generate key context\n");
+			"klips_debug:ipsec_alg_enc_key_create: "
+			"using ixt_e_set_key to generate key context\n");
 
 		if ((ekp = (caddr_t)kmalloc(ixt_e->ixt_e_ctx_size,
-			    GFP_ATOMIC)) == NULL) {
+			GFP_ATOMIC)) == NULL) {
 			ret = -ENOMEM;
 			goto ixt_out;
 		}
 		/* zero-out key_e */
-		memset(sa_p->ips_key_e, 0, sa_p->ips_key_e_size);
+		memset(ekp, 0, ixt_e->ixt_e_ctx_size);
 
 		/* I cast here to allow more decoupling in alg module */
 		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:ipsec_alg_enc_key_create: about to call:"
-			    "set_key(key_ctx=%p, key=%p, key_size=%d)\n",
-			    ekp, (caddr_t)sa_p->ips_key_e, sa_p->ips_key_bits_e/8);
+			"set_key(key_ctx=%p, key=%p, key_size=%d)\n",
+			ekp, (caddr_t)sa_p->ips_key_e, sa_p->ips_key_bits_e/8);
 
 		ret = ixt_e->ixt_e_set_key(ixt_e,
 			ekp, (caddr_t)sa_p->ips_key_e, sa_p->ips_key_bits_e/8);
@@ -369,8 +372,8 @@ int ipsec_alg_enc_key_create(struct ipsec_sa *sa_p) {
 		}
 	} else {
 		KLIPS_PRINT(debug_pfkey,
-			    "klips_debug:ipsec_alg_enc_key_create: "
-			    "no function available to generate a key!\n");
+			"klips_debug:ipsec_alg_enc_key_create: "
+			"no function available to generate a key!\n");
 
 		ret = -EPROTO;
 		goto ixt_out;
@@ -422,9 +425,11 @@ int ipsec_alg_auth_key_create(struct ipsec_sa *sa_p) {
 			    "NULL ipsec_alg_auth object\n");
 		return -EPROTO;
 	}
+
 	keyminbits=ixt_a->ixt_common.ixt_support.ias_keyminbits;
 	keymaxbits=ixt_a->ixt_common.ixt_support.ias_keymaxbits;
-	if(sa_p->ips_key_bits_a<keyminbits || sa_p->ips_key_bits_a>keymaxbits) {
+	if (sa_p->ips_key_bits_a<keyminbits ||
+	    sa_p->ips_key_bits_a>keymaxbits) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:ipsec_alg_auth_key_create: incorrect auth"
 			    "key size: %d bits -- must be between %d,%d bits\n"/*octets (bytes)\n"*/,
