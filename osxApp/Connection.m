@@ -10,27 +10,8 @@
 
 
 @implementation Connection
-@synthesize selLocalHost, selRemoteHost, selAuthBy, selAuto, selLocalRSASigKey, selRemoteRSASigKey, test;
 @synthesize connName;
-@synthesize Type, Auto, phase2, sendCert, dpdAction, plutoDebug, authBy, endUserOpts, mode;
-
-- (id) init
-{
-    /* first initialize the base class */
-    self = [super init];
-	
-	Type = [NSArray arrayWithObjects: @"Tunnel", @"Transport", @"Pass Through",@"Drop", @"Reject", nil];
-	Auto = [NSArray arrayWithObjects: @"Start", @"Add", @"Ignore", @"Route", nil];
-	phase2 = [NSArray arrayWithObjects: @"ESP", @"AH", nil];
-	sendCert = [NSArray arrayWithObjects: @"Always", @"If asked",@"Never", nil];
-	dpdAction = [NSArray arrayWithObjects: @"Hold",@"Clear", nil];
-	plutoDebug = [NSArray arrayWithObjects: @"None",@"All", @"...", nil];
-	authBy = [NSArray arrayWithObjects: @"RSA Sig Key", @"Secret", nil];
-	endUserOpts = [NSArray arrayWithObjects: @"Raw RSA", @"X.509", @"PSK", nil];
-	mode = [NSArray arrayWithObjects: @"Main",@"Aggressive",@"IKEv2", nil];
-	
-	return self;
-}
+@synthesize selLocalHost, selRemoteHost, selAuthBy, selAuto, selLocalRSASigKey, selRemoteRSASigKey;
 
 - (id) initWithName:(NSString*)name
 {
@@ -50,14 +31,21 @@
 	NSMutableString *s = [self valueForKey:@"selLocalHost"];
 	NSLog(@"Set value for selLocalHost = %@", s);
 	
-	selAuto = [[NSPopUpButton alloc] init];
-	selAuthBy = [[NSPopUpButton alloc] init];
+	//selAuthBy = [[NSPopUpButton alloc] init];
 	
-	test = [[NSMutableString alloc] init];
+	selAuto = [[NSMutableString alloc] init];
 	
-	NSMutableString* tmp = [NSString stringWithFormat: @"Add"];
+	NSMutableString* tmp = [NSString stringWithFormat:@"Add"];
 	
-	[self setValue:tmp forKey:@"test"];
+	[self setValue:tmp forKey:@"selAuto"];
+	
+	selAuthBy= [[NSMutableString alloc] init];
+	
+	NSMutableString* tmp2 = [NSString stringWithFormat:@"RSA Sig Key"];
+	
+	[selAuthBy setString:tmp2];
+	
+	//[self setValue:tmp2 forKey:@"selAuthBy"];
 	
     /* finally return the object */
     return self;

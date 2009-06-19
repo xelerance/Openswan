@@ -13,7 +13,6 @@
 @interface AdvMenuController : NSWindowController {
 	NSMutableArray* connections;
 	
-	IBOutlet NSPopUpButton* authByButton;
 	IBOutlet NSTextField* rawRSAText;
 	IBOutlet NSView* PSKView;
 	IBOutlet NSView* X509View;
@@ -28,7 +27,6 @@
 @property (readwrite, assign) NSPopUpButton* selConn;
 
 - (IBAction)advancedOpt: (id) sender;
-- (IBAction)authByAction: (id) sender;
 - (IBAction)selectedEndUserOpt: (id)sender;
 - (IBAction)natTraversal: (id) sender;
 - (IBAction)oe: (id) sender;

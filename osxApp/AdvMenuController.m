@@ -23,7 +23,6 @@
     connections = [[NSMutableArray alloc] init];
 	[connections addObjectsFromArray:values];
 	
-	authByButton = [[NSPopUpButton alloc] init];
 	rawRSAText = [[NSTextField alloc] init];
 	
 	PSKView = [[NSView alloc] init];
@@ -101,19 +100,14 @@
 	}
 }
 
-- (IBAction)authByAction: (id) sender
-{
-	NSLog(@"selected item in authBy: %@", [sender titleOfSelectedItem]);
-}
-
 - (IBAction)selectedEndUserOpt: (id)sender
 {
 	NSString* selected = [NSString stringWithString:[sender titleOfSelectedItem]];
+	Connection* selectedConn = [connections objectAtIndex:[selConn indexOfSelectedItem]];
 	
 	if([selected isEqualToString:@"Raw RSA"]){
 		NSLog(@"user selected option Raw RSA");
-		[authByButton selectItemWithTitle:@"RSA Sig Key"];
-		[authByButton setEnabled:NO];
+		[selectedConn setSelAuthBy:@"RSA Sig Key"];
 		
 		[rawRSAView setHidden:NO];
 		[X509View setHidden:YES];
@@ -122,8 +116,7 @@
 	else{
 		if([selected isEqualToString:@"X.509"]){
 			NSLog(@"user selected option X.509");
-			[authByButton selectItemWithTitle:@"RSA Sig Key"];
-			[authByButton setEnabled:NO];
+			[selectedConn setSelAuthBy:@"RSA Sig Key"];
 			
 			[X509View setHidden:NO];
 			[rawRSAView setHidden:YES];
@@ -131,8 +124,7 @@
 		}
 		else{//PSK
 			NSLog(@"user selected option PSK");
-			[authByButton selectItemWithTitle:@"Secret"];
-			[authByButton setEnabled:NO];
+			[selectedConn setSelAuthBy:@"Secret"];
 			
 			[PSKView setHidden:NO];
 			[X509View setHidden:YES];
@@ -153,6 +145,7 @@
 	NSLog(@"saving connection: %@", [selectedConn connName]);
 	NSLog(@"local host: %@",[selectedConn selLocalHost]);
 	NSLog(@"remote host: %@",[selectedConn selRemoteHost]);
-	NSLog(@"Auto: %d", [[selectedConn selAuto] indexOfSelectedItem]);
+	NSLog(@"Auto: %@", [selectedConn selAuto]);
+	NSLog(@"Auto: %@", [selectedConn selAuthBy]);
 }
 @end

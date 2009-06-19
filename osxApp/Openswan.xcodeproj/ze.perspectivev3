@@ -274,7 +274,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>4</integer>
+									<integer>7</integer>
 									<integer>2</integer>
 									<integer>0</integer>
 								</array>
@@ -311,7 +311,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>99C2E2ED0F95FA3800AA9274</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>Connection.m</string>
+								<string>AdvMenuController.h</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -319,24 +319,24 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>99C2E2EE0F95FA3800AA9274</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>Connection.m</string>
+										<string>AdvMenuController.h</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>999910C10FEBCCD600DE1431</string>
+										<string>999911830FEBE57600DE1431</string>
 										<key>history</key>
 										<array>
 											<string>99050D730F9CB39200EA0FCE</string>
 											<string>995A28F30F9CFCB200147E13</string>
 											<string>99805FCD0FCC8501002E243B</string>
 											<string>9942F3CD0FE6A493004F18CA</string>
-											<string>99990FFB0FE8204500DE1431</string>
-											<string>999910570FE9470E00DE1431</string>
-											<string>999910580FE9470E00DE1431</string>
-											<string>999910590FE9470E00DE1431</string>
-											<string>9999106C0FE997A800DE1431</string>
-											<string>999910B50FE9A0B800DE1431</string>
-											<string>999910BD0FE9A0CB00DE1431</string>
+											<string>999910D10FEBDC0000DE1431</string>
+											<string>999911390FEBE21100DE1431</string>
+											<string>9999114C0FEBE2A100DE1431</string>
+											<string>999911580FEBE38400DE1431</string>
+											<string>999911720FEBE44F00DE1431</string>
+											<string>9999117B0FEBE49C00DE1431</string>
+											<string>9999117C0FEBE49C00DE1431</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -439,6 +439,44 @@
 											<string>999910840FE99D1A00DE1431</string>
 											<string>999910B70FE9A0B800DE1431</string>
 											<string>999910B80FE9A0B800DE1431</string>
+											<string>999910CB0FEBD43E00DE1431</string>
+											<string>999910CC0FEBD43E00DE1431</string>
+											<string>999910D50FEBDC0000DE1431</string>
+											<string>999910D60FEBDC0000DE1431</string>
+											<string>999910D70FEBDC0000DE1431</string>
+											<string>999910D80FEBDC0000DE1431</string>
+											<string>999910D90FEBDC0000DE1431</string>
+											<string>999910DA0FEBDC0000DE1431</string>
+											<string>999910DB0FEBDC0000DE1431</string>
+											<string>999910E20FEBDCA600DE1431</string>
+											<string>999910E30FEBDCA600DE1431</string>
+											<string>999910E90FEBDCE400DE1431</string>
+											<string>999910EA0FEBDCE400DE1431</string>
+											<string>999910F70FEBDD7B00DE1431</string>
+											<string>999911000FEBDE2600DE1431</string>
+											<string>999911010FEBDE2600DE1431</string>
+											<string>999911020FEBDE2600DE1431</string>
+											<string>999911030FEBDE2600DE1431</string>
+											<string>9999110C0FEBDE9000DE1431</string>
+											<string>9999110D0FEBDE9000DE1431</string>
+											<string>9999110E0FEBDE9000DE1431</string>
+											<string>999911170FEBE00900DE1431</string>
+											<string>999911180FEBE00900DE1431</string>
+											<string>9999111E0FEBE05700DE1431</string>
+											<string>999911260FEBE09200DE1431</string>
+											<string>999911320FEBE1D700DE1431</string>
+											<string>9999113B0FEBE21100DE1431</string>
+											<string>9999113C0FEBE21100DE1431</string>
+											<string>9999113D0FEBE21100DE1431</string>
+											<string>9999113E0FEBE21100DE1431</string>
+											<string>9999114E0FEBE2A100DE1431</string>
+											<string>9999115A0FEBE38400DE1431</string>
+											<string>999911630FEBE3FB00DE1431</string>
+											<string>999911640FEBE3FB00DE1431</string>
+											<string>9999116B0FEBE40100DE1431</string>
+											<string>999911740FEBE44F00DE1431</string>
+											<string>999911750FEBE44F00DE1431</string>
+											<string>9999117D0FEBE49C00DE1431</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -616,7 +654,7 @@
 						<key>Frame</key>
 						<string>{{0, 0}, {1180, 119}}</string>
 						<key>RubberWindowFrame</key>
-						<string>1383 149 1180 653 1280 -35 1440 900 </string>
+						<string>1390 127 1180 653 1280 -35 1440 900 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugCLIModule</string>
@@ -692,10 +730,10 @@
 							<key>Frame</key>
 							<string>{{576, 0}, {604, 238}}</string>
 							<key>RubberWindowFrame</key>
-							<string>1383 149 1180 653 1280 -35 1440 900 </string>
+							<string>1390 127 1180 653 1280 -35 1440 900 </string>
 						</dict>
 						<key>RubberWindowFrame</key>
-						<string>1383 149 1180 653 1280 -35 1440 900 </string>
+						<string>1390 127 1180 653 1280 -35 1440 900 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugSessionModule</string>
@@ -760,7 +798,7 @@
 		<string>/Developer/Xelerance/openswan.gsoc/osxApp/Openswan.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>1383 149 1180 653 1280 -35 1440 900 </string>
+	<string>1390 127 1180 653 1280 -35 1440 900 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>

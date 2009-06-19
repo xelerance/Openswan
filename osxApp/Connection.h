@@ -15,30 +15,15 @@
 	
 	NSMutableString* selLocalHost;
 	NSMutableString* selRemoteHost;
-	IBOutlet NSPopUpButton* selAuthBy;
-	IBOutlet NSPopUpButton* selAuto;
-	
+	NSMutableString* selAuthBy;
+	NSMutableString* selAuto;
 	NSMutableString* selLocalRSASigKey;
 	NSMutableString* selRemoteRSASigKey;
-	
-	NSArray* Type;
-	NSArray* Auto;
-	NSArray* phase2;
-	NSArray* sendCert; 
-	NSArray* dpdAction;
-	NSArray* plutoDebug;
-	NSArray* authBy;
-	NSArray* endUserOpts;
-	NSArray* mode;
-	
-	NSMutableString* test;
 }
 
-@property (readwrite, copy) NSMutableString *selLocalHost, *selRemoteHost, *selLocalRSASigKey, *selRemoteRSASigKey, *test;
-@property (readwrite, copy) NSArray *Type, *Auto, *phase2, *sendCert, *dpdAction;
-@property (readwrite, copy) NSArray *plutoDebug, *authBy, *endUserOpts, *mode;
 @property (readwrite, copy) NSString *connName;
-@property (readwrite, assign) NSPopUpButton *selAuthBy, *selAuto;
+@property (readwrite, copy) NSMutableString *selLocalHost, *selRemoteHost, *selLocalRSASigKey, *selRemoteRSASigKey, *selAuto;
+@property (readwrite, copy) NSMutableString *selAuthBy;
 
 - (id) initWithName:(NSString*)name;
 @end
