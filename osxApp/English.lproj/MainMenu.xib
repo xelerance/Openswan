@@ -8,7 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="1635"/>
+			<integer value="1609"/>
 			<integer value="57"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
@@ -1371,7 +1371,7 @@
 									</object>
 								</object>
 							</object>
-							<string key="NSFrame">{{95, 59}, {212, 78}}</string>
+							<string key="NSFrame">{{116, 54}, {232, 78}}</string>
 							<reference key="NSSuperview" ref="730065647"/>
 							<string key="NSClassName">NSView</string>
 						</object>
@@ -1463,13 +1463,13 @@
 								<object class="NSTextField" id="389938540">
 									<reference key="NSNextResponder" ref="341023690"/>
 									<int key="NSvFlags">268</int>
-									<string key="NSFrame">{{76, 0}, {99, 17}}</string>
+									<string key="NSFrame">{{76, 0}, {159, 17}}</string>
 									<reference key="NSSuperview" ref="341023690"/>
 									<bool key="NSEnabled">YES</bool>
 									<object class="NSTextFieldCell" key="NSCell" id="408858241">
 										<int key="NSCellFlags">68288064</int>
 										<int key="NSCellFlags2">272630784</int>
-										<string key="NSContents">192.168.10.01</string>
+										<string key="NSContents"/>
 										<reference key="NSSupport" ref="984259723"/>
 										<reference key="NSControlView" ref="389938540"/>
 										<reference key="NSBackgroundColor" ref="937605084"/>
@@ -1477,7 +1477,7 @@
 									</object>
 								</object>
 							</object>
-							<string key="NSFrame">{{115, 65}, {172, 67}}</string>
+							<string key="NSFrame">{{116, 60}, {237, 67}}</string>
 							<reference key="NSSuperview" ref="730065647"/>
 							<string key="NSClassName">NSView</string>
 						</object>
@@ -1491,7 +1491,7 @@
 			<object class="NSCustomObject" id="568172198">
 				<string key="NSClassName">MainMenuController</string>
 			</object>
-			<object class="NSArrayController" id="825475865">
+			<object class="NSArrayController" id="568027323">
 				<object class="NSMutableArray" key="NSDeclaredKeys">
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>selectedLeftIP</string>
@@ -1511,7 +1511,7 @@
 				<bool key="NSFilterRestrictsInsertion">YES</bool>
 				<bool key="NSClearsFilterPredicateOnInsertion">YES</bool>
 			</object>
-			<object class="NSCustomObject" id="825010441">
+			<object class="NSCustomObject" id="624436722">
 				<string key="NSClassName">AdvMenuController</string>
 			</object>
 		</object>
@@ -2082,10 +2082,10 @@
 					<object class="IBBindingConnection" key="connection">
 						<string key="label">contentValues: arrangedObjects</string>
 						<reference key="source" ref="366285975"/>
-						<reference key="destination" ref="825475865"/>
-						<object class="NSNibBindingConnector" key="connector" id="232978962">
+						<reference key="destination" ref="568027323"/>
+						<object class="NSNibBindingConnector" key="connector" id="1062439303">
 							<reference key="NSSource" ref="366285975"/>
-							<reference key="NSDestination" ref="825475865"/>
+							<reference key="NSDestination" ref="568027323"/>
 							<string key="NSLabel">contentValues: arrangedObjects</string>
 							<string key="NSBinding">contentValues</string>
 							<string key="NSKeyPath">arrangedObjects</string>
@@ -2098,14 +2098,14 @@
 					<object class="IBBindingConnection" key="connection">
 						<string key="label">selectedIndex: selectionIndex</string>
 						<reference key="source" ref="366285975"/>
-						<reference key="destination" ref="825475865"/>
+						<reference key="destination" ref="568027323"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="366285975"/>
-							<reference key="NSDestination" ref="825475865"/>
+							<reference key="NSDestination" ref="568027323"/>
 							<string key="NSLabel">selectedIndex: selectionIndex</string>
 							<string key="NSBinding">selectedIndex</string>
 							<string key="NSKeyPath">selectionIndex</string>
-							<reference key="NSPreviousConnector" ref="232978962"/>
+							<reference key="NSPreviousConnector" ref="1062439303"/>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
@@ -2113,28 +2113,12 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">contentArray: connections</string>
-						<reference key="source" ref="825475865"/>
-						<reference key="destination" ref="825010441"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="825475865"/>
-							<reference key="NSDestination" ref="825010441"/>
-							<string key="NSLabel">contentArray: connections</string>
-							<string key="NSBinding">contentArray</string>
-							<string key="NSKeyPath">connections</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">1660</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
 						<string key="label">value: selection.connName</string>
 						<reference key="source" ref="121865417"/>
-						<reference key="destination" ref="825475865"/>
+						<reference key="destination" ref="568027323"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="121865417"/>
-							<reference key="NSDestination" ref="825475865"/>
+							<reference key="NSDestination" ref="568027323"/>
 							<string key="NSLabel">value: selection.connName</string>
 							<string key="NSBinding">value</string>
 							<string key="NSKeyPath">selection.connName</string>
@@ -2155,10 +2139,10 @@
 					<object class="IBBindingConnection" key="connection">
 						<string key="label">value: selection.selLocalHost</string>
 						<reference key="source" ref="389938540"/>
-						<reference key="destination" ref="825475865"/>
+						<reference key="destination" ref="568027323"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="389938540"/>
-							<reference key="NSDestination" ref="825475865"/>
+							<reference key="NSDestination" ref="568027323"/>
 							<string key="NSLabel">value: selection.selLocalHost</string>
 							<string key="NSBinding">value</string>
 							<string key="NSKeyPath">selection.selLocalHost</string>
@@ -2166,6 +2150,22 @@
 						</object>
 					</object>
 					<int key="connectionID">1666</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">contentArray: connections</string>
+						<reference key="source" ref="568027323"/>
+						<reference key="destination" ref="624436722"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="568027323"/>
+							<reference key="NSDestination" ref="624436722"/>
+							<string key="NSLabel">contentArray: connections</string>
+							<string key="NSBinding">contentArray</string>
+							<string key="NSKeyPath">connections</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">1674</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -3346,13 +3346,13 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">1651</int>
-						<reference key="object" ref="825475865"/>
+						<reference key="object" ref="568027323"/>
 						<reference key="parent" ref="1049"/>
 						<string key="objectName">Connections Controller</string>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">1656</int>
-						<reference key="object" ref="825010441"/>
+						<int key="objectID">1670</int>
+						<reference key="object" ref="624436722"/>
 						<reference key="parent" ref="1049"/>
 					</object>
 				</object>
@@ -3444,7 +3444,7 @@
 					<string>1646.IBPluginDependency</string>
 					<string>1647.IBPluginDependency</string>
 					<string>1651.IBPluginDependency</string>
-					<string>1656.IBPluginDependency</string>
+					<string>1670.IBPluginDependency</string>
 					<string>19.IBPluginDependency</string>
 					<string>19.ImportedFromIB2</string>
 					<string>195.IBPluginDependency</string>
@@ -3912,7 +3912,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">1666</int>
+			<int key="maxID">1674</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">

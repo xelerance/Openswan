@@ -8,6 +8,7 @@
 
 #import "AdvMenuController.h"
 #import "PreferenceController.h"
+#import "ConnectionsDB.h" 
 
 @implementation AdvMenuController
 @synthesize connections, selConn;
@@ -17,11 +18,8 @@
 	if(![super initWithWindowNibName:@"AdvancedMenu"])
 		return nil;
 	
-	NSArray* values = [NSArray arrayWithObjects: [[Connection alloc] initWithName:@"Default"],[[Connection alloc] initWithName:@"Connection1"], 
-					   @"Rename Connection...",@"Delete Connection...", nil];
-    
     connections = [[NSMutableArray alloc] init];
-	[connections addObjectsFromArray:values];
+	connections = [[ConnectionsDB sharedInstance] connDB];
 	
 	rawRSAText = [[NSTextField alloc] init];
 	
@@ -31,7 +29,7 @@
 	
 	natView = [[NSView alloc] init];
 	oeView = [[NSView alloc] init];
-	
+		
 	return self;
 }
 
@@ -135,8 +133,10 @@
 
 - (void)awakeFromNib
 {
+	connections = [[ConnectionsDB sharedInstance] connDB];
 	[X509View setHidden:YES];
 	[PSKView setHidden:YES];
+
 }
 
 - (IBAction)save: (id)sender

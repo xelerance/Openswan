@@ -15,6 +15,7 @@
 		99604D1C0FE16026008769D4 /* AdvMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99604D1B0FE16026008769D4 /* AdvMenuController.m */; };
 		99604D420FE1617B008769D4 /* MainMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99604D410FE1617B008769D4 /* MainMenuController.m */; };
 		99805F2E0FCC7B2F002E243B /* Connection.m in Sources */ = {isa = PBXBuildFile; fileRef = 99805F2D0FCC7B2F002E243B /* Connection.m */; };
+		999911910FEBFD9800DE1431 /* ConnectionsDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 999911900FEBFD9800DE1431 /* ConnectionsDB.m */; };
 		99C2E30C0F95FE9F00AA9274 /* APPL.icns in Resources */ = {isa = PBXBuildFile; fileRef = 99C2E30B0F95FE9F00AA9274 /* APPL.icns */; };
 		99FBA11B0FE13F540038B2EE /* PreferenceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99FBA11A0FE13F540038B2EE /* PreferenceController.m */; };
 		99FBA11F0FE13F980038B2EE /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 99FBA11E0FE13F980038B2EE /* Preferences.xib */; };
@@ -38,6 +39,8 @@
 		99604D410FE1617B008769D4 /* MainMenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainMenuController.m; sourceTree = SOURCE_ROOT; };
 		99805F2C0FCC7B2F002E243B /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = SOURCE_ROOT; };
 		99805F2D0FCC7B2F002E243B /* Connection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Connection.m; sourceTree = SOURCE_ROOT; };
+		9999118F0FEBFD9800DE1431 /* ConnectionsDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionsDB.h; sourceTree = SOURCE_ROOT; };
+		999911900FEBFD9800DE1431 /* ConnectionsDB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectionsDB.m; sourceTree = SOURCE_ROOT; };
 		99C2E30B0F95FE9F00AA9274 /* APPL.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = APPL.icns; sourceTree = "<group>"; };
 		99FBA1190FE13F540038B2EE /* PreferenceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceController.h; sourceTree = SOURCE_ROOT; };
 		99FBA11A0FE13F540038B2EE /* PreferenceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceController.m; sourceTree = SOURCE_ROOT; };
@@ -67,6 +70,8 @@
 				99604D1B0FE16026008769D4 /* AdvMenuController.m */,
 				99604D400FE1617B008769D4 /* MainMenuController.h */,
 				99604D410FE1617B008769D4 /* MainMenuController.m */,
+				9999118F0FEBFD9800DE1431 /* ConnectionsDB.h */,
+				999911900FEBFD9800DE1431 /* ConnectionsDB.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -203,6 +208,7 @@
 				99FBA11B0FE13F540038B2EE /* PreferenceController.m in Sources */,
 				99604D1C0FE16026008769D4 /* AdvMenuController.m in Sources */,
 				99604D420FE1617B008769D4 /* MainMenuController.m in Sources */,
+				999911910FEBFD9800DE1431 /* ConnectionsDB.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
