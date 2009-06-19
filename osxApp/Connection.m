@@ -10,7 +10,7 @@
 
 
 @implementation Connection
-@synthesize selLocalHost, selRemoteHost, selAuthBy, selAuto;
+@synthesize selLocalHost, selRemoteHost, selAuthBy, selAuto, selLocalRSASigKey, selRemoteRSASigKey, test;
 @synthesize connName;
 @synthesize Type, Auto, phase2, sendCert, dpdAction, plutoDebug, authBy, endUserOpts, mode;
 
@@ -28,9 +28,6 @@
 	authBy = [NSArray arrayWithObjects: @"RSA Sig Key", @"Secret", nil];
 	endUserOpts = [NSArray arrayWithObjects: @"Raw RSA", @"X.509", @"PSK", nil];
 	mode = [NSArray arrayWithObjects: @"Main",@"Aggressive",@"IKEv2", nil];
-	
-	//selAuto = [[NSPopUpButton alloc] init];
-	//selAuthBy = [[NSPopUpButton alloc] init];
 	
 	return self;
 }
@@ -55,6 +52,12 @@
 	
 	selAuto = [[NSPopUpButton alloc] init];
 	selAuthBy = [[NSPopUpButton alloc] init];
+	
+	test = [[NSMutableString alloc] init];
+	
+	NSMutableString* tmp = [NSString stringWithFormat: @"Add"];
+	
+	[self setValue:tmp forKey:@"test"];
 	
     /* finally return the object */
     return self;

@@ -18,6 +18,9 @@
 	IBOutlet NSPopUpButton* selAuthBy;
 	IBOutlet NSPopUpButton* selAuto;
 	
+	NSMutableString* selLocalRSASigKey;
+	NSMutableString* selRemoteRSASigKey;
+	
 	NSArray* Type;
 	NSArray* Auto;
 	NSArray* phase2;
@@ -27,10 +30,11 @@
 	NSArray* authBy;
 	NSArray* endUserOpts;
 	NSArray* mode;
-
+	
+	NSMutableString* test;
 }
 
-@property (readwrite, copy) NSMutableString *selLocalHost, *selRemoteHost;
+@property (readwrite, copy) NSMutableString *selLocalHost, *selRemoteHost, *selLocalRSASigKey, *selRemoteRSASigKey, *test;
 @property (readwrite, copy) NSArray *Type, *Auto, *phase2, *sendCert, *dpdAction;
 @property (readwrite, copy) NSArray *plutoDebug, *authBy, *endUserOpts, *mode;
 @property (readwrite, copy) NSString *connName;
