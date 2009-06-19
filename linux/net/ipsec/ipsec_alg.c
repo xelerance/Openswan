@@ -353,7 +353,7 @@ int ipsec_alg_enc_key_create(struct ipsec_sa *sa_p) {
 			goto ixt_out;
 		}
 		/* zero-out key_e */
-		memset(sa_p->ips_key_e, 0, ixt_e->ixt_e_ctx_size);
+		memset(sa_p->ips_key_e, 0, sa_p->ips_key_e_size);
 
 		/* I cast here to allow more decoupling in alg module */
 		KLIPS_PRINT(debug_pfkey,

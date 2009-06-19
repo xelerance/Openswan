@@ -943,8 +943,10 @@ ipsec_proc_init()
 				item->read_proc  = it->readthing;
 				item->write_proc = it->writething;
 				item->data       = it->data;
-#ifdef MODULE
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,30)
+# ifdef MODULE
 				item->owner = THIS_MODULE;
+# endif
 #endif
 			} else {
 				error |= 1;
