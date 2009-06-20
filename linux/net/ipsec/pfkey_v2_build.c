@@ -96,7 +96,7 @@ pfkey_extensions_free(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 	}
 
 	if(extensions[0]) {
-		DEBUGGING(PF_KEY_DEBUG_BUILD,"%s:Free extention %d (%ld)\n","pfkey_extensions_free",0, sizeof(struct sadb_msg));
+		DEBUGGING(PF_KEY_DEBUG_BUILD,"%s:Free extention %d (%zu)\n","pfkey_extensions_free",0, sizeof(struct sadb_msg));
 		memset(extensions[0], 0, sizeof(struct sadb_msg));
 		FREE(extensions[0]);
 		extensions[0] = NULL;
@@ -104,7 +104,7 @@ pfkey_extensions_free(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1])
 	
 	for (i = 1; i != K_SADB_EXT_MAX + 1; i++) {
 		if(extensions[i]) {
-			DEBUGGING(PF_KEY_DEBUG_BUILD,"%s:Free extention %d (%ld)\n","pfkey_extensions_free",i, extensions[i]->sadb_ext_len * IPSEC_PFKEYv2_ALIGN);
+			DEBUGGING(PF_KEY_DEBUG_BUILD,"%s:Free extention %d (%zu)\n","pfkey_extensions_free",i, extensions[i]->sadb_ext_len * IPSEC_PFKEYv2_ALIGN);
 			memset(extensions[i], 0, extensions[i]->sadb_ext_len * IPSEC_PFKEYv2_ALIGN);
 			FREE(extensions[i]);
 			extensions[i] = NULL;
@@ -1346,13 +1346,13 @@ pfkey_msg_build(struct sadb_msg **pfkey_msg, struct sadb_ext *extensions[], int 
 
 	/* figure out the total size for all the requested extensions */
 	total_size = IPSEC_PFKEYv2_WORDS(sizeof(struct sadb_msg));
-	DEBUGGING(PF_KEY_DEBUG_BUILD,"pfkey_msg_build: extentions[%d] needs %ld bytes\n", 0,total_size * IPSEC_PFKEYv2_ALIGN);
+	DEBUGGING(PF_KEY_DEBUG_BUILD,"pfkey_msg_build: extentions[%d] needs %zu bytes\n", 0,total_size * IPSEC_PFKEYv2_ALIGN);
 	for(ext = 1; ext <= K_SADB_EXT_MAX; ext++) {
 		if(extensions[ext]) {
 			total_size += (extensions[ext])->sadb_ext_len;
-			DEBUGGING(PF_KEY_DEBUG_BUILD,"pfkey_msg_build: extentions[%d] needs %ld bytes\n",ext,(extensions[ext])->sadb_ext_len * IPSEC_PFKEYv2_ALIGN);
+			DEBUGGING(PF_KEY_DEBUG_BUILD,"pfkey_msg_build: extentions[%d] needs %zu bytes\n",ext,(extensions[ext])->sadb_ext_len * IPSEC_PFKEYv2_ALIGN);
 		}
-        }                
+	}
 
 	/* allocate that much space */
 	*pfkey_msg = (struct sadb_msg*)MALLOC(total_size * IPSEC_PFKEYv2_ALIGN);
