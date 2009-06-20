@@ -172,7 +172,7 @@ init_rnd_pool(void)
 #ifndef HAVE_LIBNSS
     unsigned int i;
     unsigned int max_rnd_devices = elemsof(random_devices)+1;
-    const char *rnd_dev;
+    const char *rnd_dev = NULL;
 
     if(random_fd != -1) close(random_fd);
     random_fd = -1;

@@ -670,7 +670,7 @@ void nat_traversal_show_result (u_int32_t nt, u_int16_t sport)
 
 int nat_traversal_espinudp_socket (int sk, const char *fam, u_int32_t type)
 {
-	int r;
+	int r = 0;
 	static enum { auto_style, new_style, old_style } style = auto_style;
 
 	if (style == auto_style || style == new_style) {
