@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface Connection : NSObject {
+@interface Connection : NSObject <NSCoding> {
 
 	NSString* connName;
 	

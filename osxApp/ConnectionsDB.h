@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface ConnectionsDB : NSObject {
+@interface ConnectionsDB : NSObject <NSCoding> {
 	NSMutableArray* connDB;
 }
 

@@ -136,8 +136,17 @@
 	connections = [[ConnectionsDB sharedInstance] connDB];
 	[X509View setHidden:YES];
 	[PSKView setHidden:YES];
-
+	
+	//[NSApp setDelegate: self];    
+	//[self loadDataFromDisk];
 }
+
+/*
+- (void) applicationWillTerminate: (NSNotification *)note
+{
+	[self saveDataToDisk];
+}
+*/
 
 - (IBAction)save: (id)sender
 {
@@ -148,4 +157,42 @@
 	NSLog(@"Auto: %@", [selectedConn selAuto]);
 	NSLog(@"Auto: %@", [selectedConn selAuthBy]);
 }
+
+//Saving and loading data
+- (NSString *) pathForDataFile
+{
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+	NSString *folder = @"~/Library/Application Support/Openswan/";
+	folder = [folder stringByExpandingTildeInPath];
+	
+	if ([fileManager fileExistsAtPath: folder] == NO)
+	{
+		[fileManager createDirectoryAtPath: folder attributes: nil];
+	}
+    
+	NSString *fileName = @"Openswan.data";
+	return [folder stringByAppendingPathComponent: fileName];
+}
+
+- (void) saveDataToDisk
+{
+	NSString * path = [self pathForDataFile];
+	
+	NSMutableDictionary * rootObject;
+	rootObject = [NSMutableDictionary dictionary];
+    
+	[rootObject setValue: [self connections] forKey:@"connections"];
+	[NSKeyedArchiver archiveRootObject:rootObject toFile:path];
+}
+
+- (void) loadDataFromDisk
+{
+	NSString     * path        = [self pathForDataFile];
+	NSDictionary * rootObject;
+    
+	rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];    
+	[self setConnections:[rootObject valueForKey:@"connections"]];
+}
+
 @end

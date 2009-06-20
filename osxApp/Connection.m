@@ -56,5 +56,31 @@
 	return connName;
 }
 
+- (void)encodeWithCoder:(NSCoder*)coder
+{		
+
+	[coder encodeObject:connName forKey:@"connName"];
+	[coder encodeObject:selLocalHost forKey:@"selLocalHost"];
+	[coder encodeObject:selRemoteHost forKey:@"selRemoteHost"];
+	[coder encodeObject:selAuthBy forKey:@"selAuthBy"];
+	[coder encodeObject:selAuto forKey:@"selAuto"];
+	[coder encodeObject:selLocalRSASigKey forKey:@"selLocalRSASigKey"];
+	[coder encodeObject:selRemoteRSASigKey forKey:@"selRemoteRSASigKey"];
+}
+
+- (id)initWithCoder:(NSCoder*)coder
+{
+	[super init];
+	connName = [coder decodeObjectForKey:@"connName"];
+	selLocalHost = [coder decodeObjectForKey:@"selLocalHost"];
+	selRemoteHost = [coder decodeObjectForKey:@"selRemoteHost"];
+	selAuthBy = [coder decodeObjectForKey:@"selAuthBy"];
+	selAuto = [coder decodeObjectForKey:@"selAuto"];
+	selLocalRSASigKey = [coder decodeObjectForKey:@"selLocalRSASigKey"];
+	selRemoteRSASigKey = [coder decodeObjectForKey:@"selRemoteRSASigKey"];
+	return self;
+}
+
+
 @end
 

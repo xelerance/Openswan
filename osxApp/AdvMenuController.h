@@ -30,7 +30,10 @@
 - (IBAction)selectedEndUserOpt: (id)sender;
 - (IBAction)natTraversal: (id) sender;
 - (IBAction)oe: (id) sender;
-
 - (IBAction)save: (id)sender;
+
+- (NSString *) pathForDataFile;
+- (void) saveDataToDisk;
+- (void) loadDataFromDisk;
 
 @end
