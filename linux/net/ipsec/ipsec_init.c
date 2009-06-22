@@ -309,11 +309,7 @@ ipsec_klips_init(void)
 	return error;
 
         // undo ipsec_sysctl_register
-#ifdef CONFIG_SYSCTL
-#ifdef CONFIG_KLIPS_SYSCTL
 error_sysctl_register:
-#endif
-#endif                                                                          
 	ipsec_tunnel_cleanup_devices();
 error_tunnel_init_devices:
 #ifdef CONFIG_XFRM_ALTERNATE_STACK
