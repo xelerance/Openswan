@@ -15,12 +15,11 @@
 
 - (IBAction)showAdvMenu: (id)sender
 {
-	//Is preferenceController nil?
+	//Is advMenuController nil?
 	if(!advMenuController){
 		advMenuController = [[AdvMenuController alloc] init];
 	}
 	NSLog(@"Showing %@", advMenuController);
-	//NSNumber* index = [NSNumber numberWithInt: [selConn indexOfSelectedItem]];
 	[[advMenuController selConn] selectItemAtIndex:[selConn indexOfSelectedItem]];
 	[advMenuController showWindow: self];
 }

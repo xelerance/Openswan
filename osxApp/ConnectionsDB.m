@@ -67,7 +67,6 @@ static ConnectionsDB *sharedConnDB = nil;
 
 - (id)autorelease { return self; }
 
-
 - (void)encodeWithCoder:(NSCoder*)coder
 {		
 	[coder encodeObject:connDB forKey:@"connDB"];

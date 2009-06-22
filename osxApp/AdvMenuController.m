@@ -11,15 +11,17 @@
 #import "ConnectionsDB.h" 
 
 @implementation AdvMenuController
-@synthesize connections, selConn;
+@synthesize connections, selConn, db;
 
 - (id)init
 {
 	if(![super initWithWindowNibName:@"AdvancedMenu"])
 		return nil;
 	
+	db = [ConnectionsDB sharedInstance];
+	
     connections = [[NSMutableArray alloc] init];
-	connections = [[ConnectionsDB sharedInstance] connDB];
+	connections = [db connDB];
 	
 	rawRSAText = [[NSTextField alloc] init];
 	
@@ -139,6 +141,7 @@
 	
 	//[NSApp setDelegate: self];    
 	//[self loadDataFromDisk];
+	//connections = [db connDB];
 }
 
 /*
@@ -147,7 +150,6 @@
 	[self saveDataToDisk];
 }
 */
-
 - (IBAction)save: (id)sender
 {
 	Connection* selectedConn = [connections objectAtIndex:[selConn indexOfSelectedItem]];
@@ -182,7 +184,7 @@
 	NSMutableDictionary * rootObject;
 	rootObject = [NSMutableDictionary dictionary];
     
-	[rootObject setValue: [self connections] forKey:@"connections"];
+	[rootObject setValue:[self db] forKey:@"db"];
 	[NSKeyedArchiver archiveRootObject:rootObject toFile:path];
 }
 
@@ -192,7 +194,17 @@
 	NSDictionary * rootObject;
     
 	rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];    
-	[self setConnections:[rootObject valueForKey:@"connections"]];
+	[self setDb:[rootObject valueForKey:@"db"]];
+	[self setConnections:[db connDB]];
+}
+
+- (IBAction)saveData: (id)sender
+{
+	[self saveDataToDisk];
+}
+- (IBAction)loadData: (id)sender
+{
+	[self loadDataFromDisk];
 }
 
 @end
