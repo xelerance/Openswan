@@ -5,6 +5,8 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.22
+* Malicious X.509 certificates could crash the asn.1 parser.
+  Found by Orange Labs vulnerability research team.
 * NSS support via USE_LIBNSS updated [Avesh Agarwal]
 * Added USE_FIPSCHECK. [Avesh Agarwal]
 * NAT-T cleanup (no nat-t patch needed for >= 2.6.23) [Harald Jenny/David]
