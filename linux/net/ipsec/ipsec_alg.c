@@ -224,7 +224,8 @@ static int ipsec_alg_delete(struct ipsec_alg *ixt) {
  * 	here @user context (read-only when @kernel bh context) 
  * 	-> no bh disabling
  *
- * 	called from ipsec_sa_init() -> ipsec_alg_sa_init()
+ * 	called from ipsec_alg_enc_key_create(), ipsec_alg_auth_key_create()
+ * 	ipsec_alg_test_encrypt() and ipsec_alg_test_auth()
  */
 static struct ipsec_alg *ipsec_alg_get(int alg_type, int alg_id)
 {
@@ -941,41 +942,6 @@ int ipsec_alg_init(void) {
  * 	INTERFACE for ipsec_sa init and wipe
  *
  **********************************************/
-
-/*	
- *	Called from pluto -> pfkey_v2_parser.c:pfkey_ipsec_sa_init()	
- */
-int ipsec_alg_sa_init(struct ipsec_sa *sa_p) {
-	struct ipsec_alg_enc *ixt_e;
-	struct ipsec_alg_auth *ixt_a;
-
-	/*	Only ESP for now ... */
-	if (sa_p->ips_said.proto != IPPROTO_ESP)
-		return -EPROTONOSUPPORT;
-
-	KLIPS_PRINT(debug_pfkey, "klips_debug: ipsec_alg_sa_init() :"
-			"entering for encalg=%d, authalg=%d\n",
-			    sa_p->ips_encalg, sa_p->ips_authalg);
-
-	if ((ixt_e=(struct ipsec_alg_enc *)
-		ipsec_alg_get(IPSEC_ALG_TYPE_ENCRYPT, sa_p->ips_encalg))) {
-		KLIPS_PRINT(debug_pfkey,
-		    "klips_debug: ipsec_alg_sa_init() :"
-		    "found ipsec_alg (ixt_e=%p) for encalg=%d\n",
-		    ixt_e, sa_p->ips_encalg);
-		sa_p->ips_alg_enc=ixt_e;
-	}
-
-	if ((ixt_a=(struct ipsec_alg_auth *)
-		ipsec_alg_get(IPSEC_ALG_TYPE_AUTH, sa_p->ips_authalg))) {
-		KLIPS_PRINT(debug_pfkey,
-		    "klips_debug: ipsec_alg_sa_init() :"
-		    "found ipsec_alg (ixt_a=%p) for auth=%d\n",
-		    ixt_a, sa_p->ips_authalg);
-		sa_p->ips_alg_auth=ixt_a;
-	}
-	return 0;
-}
 
 /*	
  *	Called from pluto -> ipsec_sa.c:ipsec_sa_delchain()
