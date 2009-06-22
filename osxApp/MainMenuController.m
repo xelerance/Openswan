@@ -9,6 +9,7 @@
 #import "MainMenuController.h"
 #import "AdvMenuController.h"
 #import "PreferenceController.h"
+#import "ConnectionsDB.h"
 #import <AppKit/NSCell.h>
 
 @implementation MainMenuController
@@ -52,5 +53,13 @@
 	[preferenceController showWindow: self];
 }
 
+- (IBAction)saveData: (id)sender
+{
+	[[ConnectionsDB sharedInstance] saveDataToDisk];
+}
+- (IBAction)loadData: (id)sender
+{
+	[[ConnectionsDB sharedInstance] loadDataFromDisk];
+}
 
 @end

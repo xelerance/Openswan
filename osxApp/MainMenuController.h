@@ -23,4 +23,7 @@
 - (IBAction)connDisc: (id) sender;
 - (IBAction)showPreferencePanel: (id)sender;
 
+- (IBAction)saveData: (id)sender;
+- (IBAction)loadData: (id)sender;
+
 @end

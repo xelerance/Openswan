@@ -11,17 +11,15 @@
 #import "ConnectionsDB.h" 
 
 @implementation AdvMenuController
-@synthesize connections, selConn, db;
+@synthesize connections, selConn;
 
 - (id)init
 {
 	if(![super initWithWindowNibName:@"AdvancedMenu"])
 		return nil;
 	
-	db = [ConnectionsDB sharedInstance];
-	
     connections = [[NSMutableArray alloc] init];
-	connections = [db connDB];
+	connections = [[ConnectionsDB sharedInstance] connDB];
 	
 	rawRSAText = [[NSTextField alloc] init];
 	
@@ -138,18 +136,8 @@
 	connections = [[ConnectionsDB sharedInstance] connDB];
 	[X509View setHidden:YES];
 	[PSKView setHidden:YES];
-	
-	//[NSApp setDelegate: self];    
-	//[self loadDataFromDisk];
-	//connections = [db connDB];
 }
 
-/*
-- (void) applicationWillTerminate: (NSNotification *)note
-{
-	[self saveDataToDisk];
-}
-*/
 - (IBAction)save: (id)sender
 {
 	Connection* selectedConn = [connections objectAtIndex:[selConn indexOfSelectedItem]];
@@ -158,53 +146,6 @@
 	NSLog(@"remote host: %@",[selectedConn selRemoteHost]);
 	NSLog(@"Auto: %@", [selectedConn selAuto]);
 	NSLog(@"Auto: %@", [selectedConn selAuthBy]);
-}
-
-//Saving and loading data
-- (NSString *) pathForDataFile
-{
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-	NSString *folder = @"~/Library/Application Support/Openswan/";
-	folder = [folder stringByExpandingTildeInPath];
-	
-	if ([fileManager fileExistsAtPath: folder] == NO)
-	{
-		[fileManager createDirectoryAtPath: folder attributes: nil];
-	}
-    
-	NSString *fileName = @"Openswan.data";
-	return [folder stringByAppendingPathComponent: fileName];
-}
-
-- (void) saveDataToDisk
-{
-	NSString * path = [self pathForDataFile];
-	
-	NSMutableDictionary * rootObject;
-	rootObject = [NSMutableDictionary dictionary];
-    
-	[rootObject setValue:[self db] forKey:@"db"];
-	[NSKeyedArchiver archiveRootObject:rootObject toFile:path];
-}
-
-- (void) loadDataFromDisk
-{
-	NSString     * path        = [self pathForDataFile];
-	NSDictionary * rootObject;
-    
-	rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];    
-	[self setDb:[rootObject valueForKey:@"db"]];
-	[self setConnections:[db connDB]];
-}
-
-- (IBAction)saveData: (id)sender
-{
-	[self saveDataToDisk];
-}
-- (IBAction)loadData: (id)sender
-{
-	[self loadDataFromDisk];
 }
 
 @end

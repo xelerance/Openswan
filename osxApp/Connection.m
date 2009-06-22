@@ -57,8 +57,7 @@
 }
 
 - (void)encodeWithCoder:(NSCoder*)coder
-{		
-
+{
 	[coder encodeObject:connName forKey:@"connName"];
 	[coder encodeObject:selLocalHost forKey:@"selLocalHost"];
 	[coder encodeObject:selRemoteHost forKey:@"selRemoteHost"];

@@ -67,10 +67,12 @@ static ConnectionsDB *sharedConnDB = nil;
 
 - (id)autorelease { return self; }
 
+/*
 - (void)encodeWithCoder:(NSCoder*)coder
 {		
 	[coder encodeObject:connDB forKey:@"connDB"];
 }
+
 
 - (id)initWithCoder:(NSCoder*)coder
 {
@@ -78,6 +80,43 @@ static ConnectionsDB *sharedConnDB = nil;
 	connDB = [coder decodeObjectForKey:@"connDB"];
 	return self;
 }
+*/
 
+//Saving and loading data
+- (NSString *) pathForDataFile
+{
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+	NSString *folder = @"~/Library/Application Support/Openswan/";
+	folder = [folder stringByExpandingTildeInPath];
+	
+	if ([fileManager fileExistsAtPath: folder] == NO)
+	{
+		[fileManager createDirectoryAtPath: folder attributes: nil];
+	}
+    
+	NSString *fileName = @"Openswan.data";
+	return [folder stringByAppendingPathComponent: fileName];
+}
+
+- (void) saveDataToDisk
+{
+	NSString * path = [self pathForDataFile];
+	
+	NSMutableDictionary * rootObject;
+	rootObject = [NSMutableDictionary dictionary];
+    
+	[rootObject setValue:[self connDB] forKey:@"connDB"];
+	[NSKeyedArchiver archiveRootObject:rootObject toFile:path];
+}
+
+- (void) loadDataFromDisk
+{
+	NSString     * path        = [self pathForDataFile];
+	NSDictionary * rootObject;
+    
+	rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+	[self setConnDB:[rootObject valueForKey:@"connDB"]];
+}
 
 @end
