@@ -5,6 +5,9 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.22
+* Malicious X.509 certificates could crash the asn.1 parser.
+  Found by Orange Labs vulnerability research team. Patches via
+  an irresponsible 0-day public announcement by Andreas Steffen 
 * NSS support via USE_LIBNSS updated [Avesh Agarwal]
 * Added USE_FIPSCHECK. [Avesh Agarwal]
 * NAT-T cleanup (no nat-t patch needed for >= 2.6.23) [Harald Jenny/David]
@@ -32,6 +35,8 @@ v2.6.22
 * Bugtracker bugs fixed:
    #1031: Fail to compile KLIPS module on RHEL5.3 or CentOS5.3 [Mark Keir]
    #1030: aggressive mode & dead peer detection fails [Tim Horsburgh]
+   #1023: Oops due to improper ipsec_sa destruction [Nick Jones]
+   #1036: sysctl variables are not correctly set anymore [David]
 
 v2.6.21
 * Fix for CVE-2009-0790 DPD crasher [Gerd v. Egidy/Paul]

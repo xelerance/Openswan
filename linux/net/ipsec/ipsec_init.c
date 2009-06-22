@@ -289,11 +289,9 @@ ipsec_klips_init(void)
 #endif	
 
 #ifdef CONFIG_SYSCTL
-#ifdef CONFIG_KLIPS_SYSCTL
         error |= ipsec_sysctl_register();
         if (error)
                 goto error_sysctl_register;
-#endif
 #endif                                                                          
 
 #ifdef CONFIG_KLIPS_ALG
@@ -309,11 +307,7 @@ ipsec_klips_init(void)
 	return error;
 
         // undo ipsec_sysctl_register
-#ifdef CONFIG_SYSCTL
-#ifdef CONFIG_KLIPS_SYSCTL
 error_sysctl_register:
-#endif
-#endif                                                                          
 	ipsec_tunnel_cleanup_devices();
 error_tunnel_init_devices:
 #ifdef CONFIG_XFRM_ALTERNATE_STACK
@@ -364,9 +358,7 @@ ipsec_cleanup(void)
 	int error = 0;
 
 #ifdef CONFIG_SYSCTL
-#ifdef CONFIG_KLIPS_SYSCTL
         ipsec_sysctl_unregister();
-#endif
 #endif                                                                          
 #if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
 	if(udp4_unregister_esp_rcvencap(klips26_rcv_encap, klips_old_encap) < 0) {
