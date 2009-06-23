@@ -585,7 +585,7 @@ ipkg_module:
 ipkg_clean:
 	rm -rf $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/
 	rm -rf $(OPENSWANSRCDIR)/packaging/ipkg/ipkg/
-	rm -f $(OPENSWANSRCDIR)/packaging/ipkg/control-oprnswan
+	rm -f $(OPENSWANSRCDIR)/packaging/ipkg/control-openswan
 	rm -f $(OPENSWANSRCDIR)/packaging/ipkg/control-openswan-module
 
 
