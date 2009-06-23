@@ -95,10 +95,10 @@ stf_status start_dh_secretiv(struct pluto_crypto_req_cont *cn
 			   , &dhq->secret, st->st_sec_chunk);
 
 #ifdef HAVE_LIBNSS
-    /*coying required encryption algo*/
+    /*copying required encryption algo*/
     /*dhq->encrypt_algo = st->st_oakley.encrypt;*/
     dhq->encrypter = st->st_oakley.encrypter;
-    DBG(DBG_CRYPT, DBG_log("Coying DH pub key pointer to be sent to a thread helper"));
+    DBG(DBG_CRYPT, DBG_log("Copying DH pub key pointer to be sent to a thread helper"));
     pluto_crypto_copychunk(&dhq->thespace, dhq->space , &dhq->pubk, st->pubk);
 #endif
 
@@ -196,10 +196,10 @@ stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
 			   , &dhq->secret, st->st_sec_chunk);
 
 #ifdef HAVE_LIBNSS
-    /*coying required encryption algo*/
+    /*copying required encryption algo*/
     /* XXX Avesh: you commented this out on purpose or by accident ?? */
     /*dhq->encrypter = st->st_oakley.encrypter;*/
-    DBG(DBG_CRYPT, DBG_log("Coying DH pub key pointer to be sent to a thread helper"));
+    DBG(DBG_CRYPT, DBG_log("Copying DH pub key pointer to be sent to a thread helper"));
     pluto_crypto_copychunk(&dhq->thespace, dhq->space
                           , &dhq->pubk, st->pubk);
 #endif
@@ -287,10 +287,10 @@ stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
 			   , &dhq->secret, st->st_sec_chunk);
 
 #ifdef HAVE_LIBNSS
-    /*coying required encryption algo*/
+    /*copying required encryption algo*/
     /*dhq->encrypt_algo = st->st_oakley.encrypter->common.algo_v2id;*/
     dhq->encrypter = st->st_oakley.encrypter;
-    DBG(DBG_CRYPT, DBG_log("Coying DH pub key pointer to be sent to a thread helper"));
+    DBG(DBG_CRYPT, DBG_log("Copying DH pub key pointer to be sent to a thread helper"));
     pluto_crypto_copychunk(&dhq->thespace, dhq->space
                           , &dhq->pubk, st->pubk);
 #endif

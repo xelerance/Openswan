@@ -257,7 +257,7 @@ asn1totime(const chunk_t *utctime, asn1_t type)
 
 	if (sscanf(eot+1, "%2d%2d", &tz_hour, &tz_min) != 2)
 	{
-	     eturn 0; /* error in negative timezone offset format */
+	     return 0; /* error in negative timezone offset format */
 	}
 	tz_offset = -3600*tz_hour - 60*tz_min;  /* negative time zone offset */
     }
@@ -306,7 +306,7 @@ asn1totime(const chunk_t *utctime, asn1_t type)
 	t.tm_year += 100;
     }
 
-    if (tm_mon < 1 || tm_mon > 12)
+    if (t.tm_mon < 1 || t.tm_mon > 12)
     {
 	return 0; /* error in month format */
     }

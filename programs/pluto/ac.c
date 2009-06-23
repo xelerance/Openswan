@@ -737,7 +737,7 @@ load_acerts(void)
 	int n;
 
 	openswan_log("Changing to directory '%s'", oco->acerts_dir);
-	n = scandir(oco->acerts_dir, &filelist, file_select, alphasort);
+	n = scandir(oco->acerts_dir, &filelist, (void *) file_select, alphasort);
 
 	if (n > 0)
 	{

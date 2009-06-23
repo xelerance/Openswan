@@ -2061,10 +2061,6 @@ drop:
 int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 {
 	struct ipsec_rcv_state *irs = NULL;
-	char name[IFNAMSIZ];
-	struct net_device *ipsecdev = NULL, *prvdev = NULL;
-	struct ipsecpriv *prv = NULL;
-	int i;
 
 	/* Don't unlink in the middle of a turnaround */
 	KLIPS_INC_USE;
