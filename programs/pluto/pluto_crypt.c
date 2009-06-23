@@ -166,7 +166,6 @@ void pluto_do_crypto_op(struct pluto_crypto_req *r)
     case pcr_x509crl_fetch:
 	break;
     }
- loglog(RC_LOG_SERIOUS, "pluto_do_crypto: helper (%d) is  exiting\n", pc_helper_num);
 }
 
 static void catchhup(int signo UNUSED)
@@ -262,7 +261,7 @@ void pluto_crypto_helper(int fd, int helpernum)
     }
 
     /* probably normal EOF */
-    /*loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper (%d) is  (possibly) normal exiting\n",helpernum);*/
+    loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper (%d) is  normal exiting\n",helpernum);
 
 error:
     fclose(in);
