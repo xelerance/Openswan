@@ -174,6 +174,9 @@ ipsec_ocf_sa_init(struct ipsec_sa *ipsp, int authalg, int encalg)
 		return 1;
 	}
 
+	if (ipsp->ocf_in_use)
+		printk("KLIPS: ipsec_ocf_sa_init received SA is already initted?\n");
+
 	memset(&crie, 0, sizeof(crie));
 	memset(&cria, 0, sizeof(cria));
 
@@ -233,6 +236,8 @@ int
 ipsec_ocf_sa_free(struct ipsec_sa *ipsp)
 {
 	KLIPS_PRINT(debug_pfkey, "klips_debug:ipsec_ocf_sa_free()\n");
+	if (!ipsp->ocf_in_use)
+		printk("KLIPS: ipsec_ocf_sa_free received SA that is not initted?\n");
 	crypto_freesession(ipsp->ocf_cryptoid);
 	ipsp->ocf_cryptoid = -1;
 	ipsp->ocf_in_use = 0;
