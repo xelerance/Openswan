@@ -438,6 +438,10 @@
 # endif
 #endif
 
+#ifndef NF_INET_LOCAL_OUT
+# define NF_INET_LOCAL_OUT NF_IP_LOCAL_OUT
+#endif
+
 #if __KERNEL__
 # if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,0)
 #  if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,0) 
