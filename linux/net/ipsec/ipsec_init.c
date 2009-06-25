@@ -361,9 +361,16 @@ ipsec_cleanup(void)
         ipsec_sysctl_unregister();
 #endif                                                                          
 #if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
+# ifndef HAVE_UDP_ENCAP_CONVERT
+	/* unfortunately we have two versions of this function, one with one
+	 * argument and one with two. But we cannot know which one. Let's hope
+	 * not many people use an old nat-t patch on a new kernel with
+	 * openswan klips >= 2.6.22
+	 */
 	if(udp4_unregister_esp_rcvencap(klips26_rcv_encap, klips_old_encap) < 0) {
 		printk(KERN_ERR "KLIPS: can not unregister klips_rcv_encap function\n");
 	}
+# endif
 #endif
 
 	error |= ipsec_mast_cleanup_devices();
