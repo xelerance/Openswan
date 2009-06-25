@@ -76,8 +76,15 @@ asn1_length(chunk_t *blob)
     n = *blob->ptr++;
     blob->len--;
 
-    if ((n & 0x80) == 0) /* single length octet */
+    if ((n & 0x80) == 0) { /* single length octet */
+	if (n > blob->len) {
+	    DBG(DBG_PARSING,
+		DBG_log("number of length octets is larger than ASN.1 object")
+	    )
+	    return ASN1_INVALID_LENGTH;
+	}
 	return n;
+    }
 
     /* composite length, determine number of length octets */
     n &= 0x7f;
@@ -243,7 +250,6 @@ asn1totime(const chunk_t *utctime, asn1_t type)
     {
 	int tz_hour, tz_min;
 
-	sscanf(eot+1, "%2d%2d", &tz_hour, &tz_min);
 	if (sscanf(eot+1, "%2d%2d", &tz_hour, &tz_min) != 2)
 	{
 	    return 0; /* error in positive timezone offset format */
@@ -411,7 +417,7 @@ extract_object(asn1Object_t const *objects,
 
     blob1->len = asn1_length(blob);
 
-    if (blob1->len == ASN1_INVALID_LENGTH || blob->len < blob1->len)
+    if (blob1->len == ASN1_INVALID_LENGTH)
     {
 	DBG(DBG_PARSING,
 	    DBG_log("L%d - %s:  length of ASN1 object invalid or too large",
