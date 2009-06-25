@@ -118,6 +118,7 @@ rm -rf ${RPM_BUILD_ROOT}
   FINALLIBDIR=%{_libdir}/ipsec \
   MANTREE=%{buildroot}%{_mandir} \
   INC_RCDEFAULT=%{_initrddir} \
+  USE_LWRES="true" \
   install
 FS=$(pwd)
 rm -rf %{buildroot}/usr/share/doc/openswan
