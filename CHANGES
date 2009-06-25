@@ -5,7 +5,10 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.23
-* The ipsec init script was mistakenly installed twice, once as 'setup' [paul/harald]
+* The ipsec init script was mistakenly installed twice, once as 'setup' [Paul/Harald]
+* Bugtracker bugs fixed:
+   #1044: fedora openswan.spec file builds an RPM that is missing lwdnsq [Joe Steele]
+
 
 v2.6.22
 * Malicious X.509 certificates could crash the asn.1 parser.
