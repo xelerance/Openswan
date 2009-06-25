@@ -8,16 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface ConnectionsDB : NSObject /*<NSCoding>*/ {
+@interface ConnectionsDB : NSObject <NSCoding> {
 	NSMutableArray* connDB;
 }
 
-@property (readwrite, copy) NSMutableArray* connDB;
+@property (readwrite, retain) NSMutableArray* connDB;
 
 + (ConnectionsDB*)sharedInstance;
-
-- (NSString *) pathForDataFile;
-- (void) saveDataToDisk;
-- (void) loadDataFromDisk;
 
 @end

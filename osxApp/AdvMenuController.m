@@ -8,18 +8,20 @@
 
 #import "AdvMenuController.h"
 #import "PreferenceController.h"
-#import "ConnectionsDB.h" 
 
 @implementation AdvMenuController
-@synthesize connections, selConn;
+@synthesize connections, selConn, db;
 
 - (id)init
 {
 	if(![super initWithWindowNibName:@"AdvancedMenu"])
 		return nil;
 	
-    connections = [[NSMutableArray alloc] init];
-	connections = [[ConnectionsDB sharedInstance] connDB];
+	//db = [[ConnectionsDB alloc] init];
+	db = [ConnectionsDB sharedInstance];
+	
+    //connections = [[NSMutableArray alloc] init];
+	connections = [db connDB];
 	
 	rawRSAText = [[NSTextField alloc] init];
 	
@@ -133,7 +135,7 @@
 
 - (void)awakeFromNib
 {
-	connections = [[ConnectionsDB sharedInstance] connDB];
+	connections = [db connDB];
 	[X509View setHidden:YES];
 	[PSKView setHidden:YES];
 }
@@ -147,5 +149,57 @@
 	NSLog(@"Auto: %@", [selectedConn selAuto]);
 	NSLog(@"Auto: %@", [selectedConn selAuthBy]);
 }
+
+//Saving and loading data
+- (NSString *) pathForDataFile
+{
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+	NSString *folder = @"~/Library/Application Support/Openswan/";
+	folder = [folder stringByExpandingTildeInPath];
+	
+	if ([fileManager fileExistsAtPath: folder] == NO)
+	{
+		[fileManager createDirectoryAtPath: folder attributes: nil];
+	}
+    
+	NSString *fileName = @"Openswan.data";
+	return [folder stringByAppendingPathComponent: fileName];
+}
+
+- (void) saveDataToDisk
+{
+	NSLog(@"running saveDataToDisk");
+	NSString* path = [self pathForDataFile];
+	
+	NSMutableDictionary* rootObject;
+	rootObject = [NSMutableDictionary dictionary];
+    
+	[rootObject setValue:[self db] forKey:@"db"];
+	[NSKeyedArchiver archiveRootObject:rootObject toFile:path];
+}
+
+- (void) loadDataFromDisk
+{
+	NSLog(@"running loadDataFromDisk");
+	NSString* path        = [self pathForDataFile];
+	NSDictionary* rootObject;
+    
+	rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+	[self setDb:[rootObject valueForKey:@"db"]];
+	[self setConnections:[db connDB]];
+}
+
+- (IBAction)saveData: (id)sender
+{
+	NSLog(@"running saveData");
+	[self saveDataToDisk];
+}
+- (IBAction)loadData: (id)sender
+{
+	NSLog(@"running loadData");
+	[self loadDataFromDisk];
+}
+
 
 @end

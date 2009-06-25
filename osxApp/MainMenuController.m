@@ -53,13 +53,4 @@
 	[preferenceController showWindow: self];
 }
 
-- (IBAction)saveData: (id)sender
-{
-	[[ConnectionsDB sharedInstance] saveDataToDisk];
-}
-- (IBAction)loadData: (id)sender
-{
-	[[ConnectionsDB sharedInstance] loadDataFromDisk];
-}
-
 @end

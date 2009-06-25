@@ -8,7 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="81"/>
+			<integer value="1686"/>
 			<integer value="1609"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
@@ -258,6 +258,15 @@
 									<reference key="NSMenu" ref="720053764"/>
 									<string key="NSTitle">Save</string>
 									<string key="NSKeyEquiv">s</string>
+									<int key="NSKeyEquivModMask">1048576</int>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
+								<object class="NSMenuItem" id="811545808">
+									<reference key="NSMenu" ref="720053764"/>
+									<string key="NSTitle">Load</string>
+									<string key="NSKeyEquiv">l</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
@@ -2156,19 +2165,19 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">loadData:</string>
-						<reference key="source" ref="568172198"/>
-						<reference key="destination" ref="722745758"/>
+						<string key="label">saveData:</string>
+						<reference key="source" ref="624436722"/>
+						<reference key="destination" ref="1023925487"/>
 					</object>
-					<int key="connectionID">1682</int>
+					<int key="connectionID">1684</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">saveData:</string>
-						<reference key="source" ref="568172198"/>
-						<reference key="destination" ref="1023925487"/>
+						<string key="label">loadData:</string>
+						<reference key="source" ref="624436722"/>
+						<reference key="destination" ref="811545808"/>
 					</object>
-					<int key="connectionID">1683</int>
+					<int key="connectionID">1687</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -2278,6 +2287,7 @@
 							<reference ref="425164168"/>
 							<reference ref="579971712"/>
 							<reference ref="1010469920"/>
+							<reference ref="811545808"/>
 						</object>
 						<reference key="parent" ref="379814623"/>
 					</object>
@@ -3363,6 +3373,11 @@
 						<reference key="object" ref="60468620"/>
 						<reference key="parent" ref="1049"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">1686</int>
+						<reference key="object" ref="811545808"/>
+						<reference key="parent" ref="720053764"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -3455,6 +3470,7 @@
 					<string>1651.IBPluginDependency</string>
 					<string>1670.IBPluginDependency</string>
 					<string>1675.IBPluginDependency</string>
+					<string>1686.IBPluginDependency</string>
 					<string>19.IBPluginDependency</string>
 					<string>19.ImportedFromIB2</string>
 					<string>195.IBPluginDependency</string>
@@ -3679,9 +3695,10 @@
 					<reference ref="9"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="9"/>
-					<string>{{1642, 497}, {419, 183}}</string>
-					<string>{{1642, 497}, {419, 183}}</string>
+					<string>{{1749, 483}, {419, 183}}</string>
+					<string>{{1749, 483}, {419, 183}}</string>
 					<boolean value="YES"/>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3892,7 +3909,7 @@
 					<reference ref="9"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="9"/>
-					<string>{{1466, 587}, {199, 203}}</string>
+					<string>{{1466, 567}, {199, 223}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="9"/>
 					<string>{{145, 474}, {199, 203}}</string>
@@ -3924,7 +3941,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">1683</int>
+			<int key="maxID">1687</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3937,13 +3954,17 @@
 						<object class="NSMutableArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>advancedOpt:</string>
+							<string>loadData:</string>
 							<string>natTraversal:</string>
 							<string>oe:</string>
 							<string>save:</string>
+							<string>saveData:</string>
 							<string>selectedEndUserOpt:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -3995,15 +4016,11 @@
 						<object class="NSMutableArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>connDisc:</string>
-							<string>loadData:</string>
-							<string>saveData:</string>
 							<string>showAdvMenu:</string>
 							<string>showPreferencePanel:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
-							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>

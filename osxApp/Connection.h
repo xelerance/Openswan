@@ -21,9 +21,9 @@
 	NSMutableString* selRemoteRSASigKey;
 }
 
-@property (readwrite, copy) NSString *connName;
-@property (readwrite, copy) NSMutableString *selLocalHost, *selRemoteHost, *selLocalRSASigKey, *selRemoteRSASigKey, *selAuto;
-@property (readwrite, copy) NSMutableString *selAuthBy;
+@property (readwrite, retain) NSString *connName;
+@property (readwrite, retain) NSMutableString *selLocalHost, *selRemoteHost, *selLocalRSASigKey, *selRemoteRSASigKey, *selAuto;
+@property (readwrite, retain) NSMutableString *selAuthBy;
 
 - (id) initWithName:(NSString*)name;
 @end

@@ -23,6 +23,7 @@
 	
 	//initialize selectedLedtIP
 	selLocalHost = [[NSMutableString alloc] init];
+	selRemoteHost = [[NSMutableString alloc] init];
 	
 	NSString* ss = [NSString stringWithFormat: @"192.128.%@", name];
 	
@@ -58,25 +59,27 @@
 
 - (void)encodeWithCoder:(NSCoder*)coder
 {
-	[coder encodeObject:connName forKey:@"connName"];
-	[coder encodeObject:selLocalHost forKey:@"selLocalHost"];
-	[coder encodeObject:selRemoteHost forKey:@"selRemoteHost"];
-	[coder encodeObject:selAuthBy forKey:@"selAuthBy"];
-	[coder encodeObject:selAuto forKey:@"selAuto"];
-	[coder encodeObject:selLocalRSASigKey forKey:@"selLocalRSASigKey"];
-	[coder encodeObject:selRemoteRSASigKey forKey:@"selRemoteRSASigKey"];
+	[coder encodeObject:[self connName] forKey:@"connName"];
+	[coder encodeObject:[self selLocalHost] forKey:@"selLocalHost"];
+	[coder encodeObject:[self selRemoteHost] forKey:@"selRemoteHost"];
+	NSLog(@"the saved value is %@", [self selLocalHost]);
+	[coder encodeObject:[self selAuthBy] forKey:@"selAuthBy"];
+	[coder encodeObject:[self selAuto] forKey:@"selAuto"];
+	//[coder encodeObject:selLocalRSASigKey forKey:@"selLocalRSASigKey"];
+	//[coder encodeObject:selRemoteRSASigKey forKey:@"selRemoteRSASigKey"];
 }
 
 - (id)initWithCoder:(NSCoder*)coder
 {
 	[super init];
-	connName = [coder decodeObjectForKey:@"connName"];
-	selLocalHost = [coder decodeObjectForKey:@"selLocalHost"];
-	selRemoteHost = [coder decodeObjectForKey:@"selRemoteHost"];
-	selAuthBy = [coder decodeObjectForKey:@"selAuthBy"];
-	selAuto = [coder decodeObjectForKey:@"selAuto"];
-	selLocalRSASigKey = [coder decodeObjectForKey:@"selLocalRSASigKey"];
-	selRemoteRSASigKey = [coder decodeObjectForKey:@"selRemoteRSASigKey"];
+	[self setConnName:[coder decodeObjectForKey:@"connName"]];
+	[self setSelLocalHost:[coder decodeObjectForKey:@"selLocalHost"]];
+	NSLog(@"the loaded value is %@", [coder decodeObjectForKey:@"selLocalHost"]);
+	[self setSelRemoteHost:[coder decodeObjectForKey:@"selRemoteHost"]];
+	[self setSelAuthBy:[coder decodeObjectForKey:@"selAuthBy"]];
+	[self setSelAuto:[coder decodeObjectForKey:@"selAuto"]];
+	//selLocalRSASigKey = [coder decodeObjectForKey:@"selLocalRSASigKey"];
+	//selRemoteRSASigKey = [coder decodeObjectForKey:@"selRemoteRSASigKey"];
 	return self;
 }
 
