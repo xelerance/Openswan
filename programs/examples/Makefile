@@ -16,7 +16,7 @@ OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 CONFDSUBDIR=examples
-CONFDFILES=l2tp-cert.conf l2tp-psk.conf linux-linux.conf sysctl.conf xauth.conf ipv6.conf
+CONFDFILES=l2tp-cert.conf l2tp-psk.conf linux-linux.conf sysctl.conf xauth.conf ipv6.conf hub-spoke.conf oe-exclude-dns.conf
 
 include ${srcdir}../Makefile.program
 
