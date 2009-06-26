@@ -1,0 +1,38 @@
+# If you are using a hub-spoke scenario with NETKEY, you run into a
+# nasty bug.  Example: Your head office is 10.0.0.0/8. Your branch offices
+# are all ranges taken from there, eg office1 is 10.0.1.0/24, office2 is
+# 10.0.2.0/24. etc
+
+Your subnet conn will be something like:
+
+conn office1-headoffice
+	left=someip
+	leftsubnet=10.0.1.0/24 
+	right=someip
+	rightsubnet=10.0.0.0/8
+	[...]
+
+With NETKEY, since it does not do any longest prefix first matching, your
+ipsec gateway on 10.0.1.1 will now send packets for 10.0.1.2 over the VPN!
+In other words, you lose all connectivity with the LAN.
+
+The work around is to add:
+
+conn netkeybug
+        left=10.0.1.1
+        leftsubnet=10.0.1.0/24
+        right=0.0.0.0
+        rightsubnet=10.0.1.0/24
+        authby=never
+        type=passthrough
+        auto=route
+
+Note that due to https://bugs.xelerance.com/issues/907, you will need
+to use either openswan 2.4.x or openswan 2.6.23 or higher if you need
+such a passthrough route.
+
+KLIPS does a longest prefix match first, and does not run into this bug.
+However, people tend to run netkey on the spokes, since otherwise they
+will need to update/compile klips for every new kernel release on all the
+spokes, which is an administrative burden.
+
