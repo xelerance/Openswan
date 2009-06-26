@@ -3587,10 +3587,7 @@
 				<bool key="NSFilterRestrictsInsertion">YES</bool>
 				<bool key="NSClearsFilterPredicateOnInsertion">YES</bool>
 			</object>
-			<object class="NSCustomObject" id="684504211">
-				<string key="NSClassName">Connection</string>
-			</object>
-			<object class="NSCustomObject" id="233321452">
+			<object class="NSCustomObject" id="454145091">
 				<string key="NSClassName">ConnectionsDB</string>
 			</object>
 		</object>
@@ -3838,10 +3835,10 @@
 					<object class="IBBindingConnection" key="connection">
 						<string key="label">contentArray: connDB</string>
 						<reference key="source" ref="828641870"/>
-						<reference key="destination" ref="233321452"/>
+						<reference key="destination" ref="454145091"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="828641870"/>
-							<reference key="NSDestination" ref="233321452"/>
+							<reference key="NSDestination" ref="454145091"/>
 							<string key="NSLabel">contentArray: connDB</string>
 							<string key="NSBinding">contentArray</string>
 							<string key="NSKeyPath">connDB</string>
@@ -6222,11 +6219,6 @@
 						<reference key="parent" ref="1031091331"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">415</int>
-						<reference key="object" ref="684504211"/>
-						<reference key="parent" ref="1002"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">273</int>
 						<reference key="object" ref="489094522"/>
 						<object class="NSMutableArray" key="children">
@@ -6622,7 +6614,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">547</int>
-						<reference key="object" ref="233321452"/>
+						<reference key="object" ref="454145091"/>
 						<reference key="parent" ref="1002"/>
 					</object>
 				</object>
@@ -6933,7 +6925,6 @@
 					<string>39.IBPluginDependency</string>
 					<string>40.IBPluginDependency</string>
 					<string>41.IBPluginDependency</string>
-					<string>415.IBPluginDependency</string>
 					<string>42.IBPluginDependency</string>
 					<string>43.IBPluginDependency</string>
 					<string>44.IBPluginDependency</string>
@@ -7325,7 +7316,6 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>{{1413, 367}, {888, 387}}</string>
 					<string>{{1413, 367}, {888, 387}}</string>
 					<integer value="1"/>
@@ -7431,17 +7421,13 @@
 						<object class="NSMutableArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>advancedOpt:</string>
-							<string>loadData:</string>
 							<string>natTraversal:</string>
 							<string>oe:</string>
 							<string>save:</string>
-							<string>saveData:</string>
 							<string>selectedEndUserOpt:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
-							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -7475,14 +7461,6 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">AdvMenuController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">Connection</string>
-					<string key="superclassName">NSObject</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">Connection.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

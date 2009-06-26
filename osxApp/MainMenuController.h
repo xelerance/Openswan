@@ -7,6 +7,8 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "ConnectionsDB.h"
+
 @class AdvMenuController;
 @class PreferenceController;
 
@@ -14,13 +16,24 @@
 	AdvMenuController* advMenuController;
 	PreferenceController *preferenceController;
 	
+	ConnectionsDB* db;
+	
 	IBOutlet NSView* discView;
 	IBOutlet NSView* connView;
 	IBOutlet NSPopUpButton* selConn;
 }
 
+@property (readwrite, retain) ConnectionsDB* db;
+
 - (IBAction)showAdvMenu: (id)sender;
 - (IBAction)connDisc: (id) sender;
 - (IBAction)showPreferencePanel: (id)sender;
+
+- (NSString *) pathForDataFile;
+- (void) saveDataToDisk;
+- (void) loadDataFromDisk;
+
+- (IBAction)saveData: (id)sender;
+- (IBAction)loadData: (id)sender;
 
 @end

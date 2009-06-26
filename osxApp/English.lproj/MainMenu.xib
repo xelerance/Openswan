@@ -8,7 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="1686"/>
+			<integer value="29"/>
 			<integer value="1609"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
@@ -1520,9 +1520,6 @@
 				<bool key="NSFilterRestrictsInsertion">YES</bool>
 				<bool key="NSClearsFilterPredicateOnInsertion">YES</bool>
 			</object>
-			<object class="NSCustomObject" id="624436722">
-				<string key="NSClassName">AdvMenuController</string>
-			</object>
 			<object class="NSCustomObject" id="60468620">
 				<string key="NSClassName">ConnectionsDB</string>
 			</object>
@@ -2148,22 +2145,6 @@
 					<int key="connectionID">1666</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">saveData:</string>
-						<reference key="source" ref="624436722"/>
-						<reference key="destination" ref="1023925487"/>
-					</object>
-					<int key="connectionID">1684</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">loadData:</string>
-						<reference key="source" ref="624436722"/>
-						<reference key="destination" ref="811545808"/>
-					</object>
-					<int key="connectionID">1687</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
 						<string key="label">contentArray: connDB</string>
 						<reference key="source" ref="568027323"/>
@@ -2178,6 +2159,22 @@
 						</object>
 					</object>
 					<int key="connectionID">1690</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">saveData:</string>
+						<reference key="source" ref="568172198"/>
+						<reference key="destination" ref="1023925487"/>
+					</object>
+					<int key="connectionID">1691</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">loadData:</string>
+						<reference key="source" ref="568172198"/>
+						<reference key="destination" ref="811545808"/>
+					</object>
+					<int key="connectionID">1692</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -3364,11 +3361,6 @@
 						<string key="objectName">Connections Controller</string>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">1670</int>
-						<reference key="object" ref="624436722"/>
-						<reference key="parent" ref="1049"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">1675</int>
 						<reference key="object" ref="60468620"/>
 						<reference key="parent" ref="1049"/>
@@ -3468,7 +3460,6 @@
 					<string>1646.IBPluginDependency</string>
 					<string>1647.IBPluginDependency</string>
 					<string>1651.IBPluginDependency</string>
-					<string>1670.IBPluginDependency</string>
 					<string>1675.IBPluginDependency</string>
 					<string>1686.IBPluginDependency</string>
 					<string>19.IBPluginDependency</string>
@@ -3740,7 +3731,6 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="9"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="9"/>
@@ -3941,65 +3931,11 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">1690</int>
+			<int key="maxID">1692</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<bool key="EncodedWithXMLCoder">YES</bool>
-				<object class="IBPartialClassDescription">
-					<string key="className">AdvMenuController</string>
-					<string key="superclassName">NSWindowController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSMutableArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>advancedOpt:</string>
-							<string>loadData:</string>
-							<string>natTraversal:</string>
-							<string>oe:</string>
-							<string>save:</string>
-							<string>saveData:</string>
-							<string>selectedEndUserOpt:</string>
-						</object>
-						<object class="NSMutableArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
-							<string>id</string>
-							<string>id</string>
-							<string>id</string>
-							<string>id</string>
-							<string>id</string>
-							<string>id</string>
-						</object>
-					</object>
-					<object class="NSMutableDictionary" key="outlets">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSMutableArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>PSKView</string>
-							<string>X509View</string>
-							<string>natView</string>
-							<string>oeView</string>
-							<string>rawRSAText</string>
-							<string>rawRSAView</string>
-							<string>selConn</string>
-						</object>
-						<object class="NSMutableArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>NSView</string>
-							<string>NSView</string>
-							<string>NSView</string>
-							<string>NSView</string>
-							<string>NSTextField</string>
-							<string>NSView</string>
-							<string>NSPopUpButton</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">AdvMenuController.h</string>
-					</object>
-				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">ConnectionsDB</string>
 					<string key="superclassName">NSObject</string>
@@ -4016,11 +3952,15 @@
 						<object class="NSMutableArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>connDisc:</string>
+							<string>loadData:</string>
+							<string>saveData:</string>
 							<string>showAdvMenu:</string>
 							<string>showPreferencePanel:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>

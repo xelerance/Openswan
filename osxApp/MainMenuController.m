@@ -14,6 +14,8 @@
 
 @implementation MainMenuController
 
+@synthesize db;
+
 - (IBAction)showAdvMenu: (id)sender
 {
 	//Is advMenuController nil?
@@ -39,8 +41,16 @@
 
 - (void)awakeFromNib
 {
+	[NSApp setDelegate: self];
+	[self loadDataFromDisk];
+	
 	[connView setHidden:NO];
 	[discView setHidden:YES];
+}
+
+- (void) applicationWillTerminate: (NSNotification *)note
+{
+	[self saveDataToDisk];
 }
 
 - (IBAction)showPreferencePanel: (id)sender
@@ -51,6 +61,61 @@
 	}
 	NSLog(@"Showing %@", preferenceController);
 	[preferenceController showWindow: self];
+}
+
+#pragma mark archiving
+
+- (NSString *) pathForDataFile
+{
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+	NSString *folder = @"~/Library/Application Support/Openswan/";
+	folder = [folder stringByExpandingTildeInPath];
+	
+	if ([fileManager fileExistsAtPath: folder] == NO)
+	{
+		[fileManager createDirectoryAtPath: folder attributes: nil];
+	}
+    
+	NSString *fileName = @"Openswan.data";
+	return [folder stringByAppendingPathComponent: fileName];
+}
+
+- (void) saveDataToDisk
+{
+	NSLog(@"Saving data to disk");
+	NSString* path = [self pathForDataFile];
+	
+	NSMutableDictionary* rootObject;
+	rootObject = [NSMutableDictionary dictionary];
+    
+	[rootObject setValue:[self db] forKey:@"db"];
+	[NSKeyedArchiver archiveRootObject:rootObject toFile:path];
+}
+
+- (void) loadDataFromDisk
+{
+	NSLog(@"Loading data from disk");
+	NSString* path        = [self pathForDataFile];
+	NSDictionary* rootObject;
+    
+	rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+	[self setDb:[rootObject valueForKey:@"db"]];
+	
+	//If there is no previously saved data
+	if(db==NULL)
+	{
+		[self setDb:[ConnectionsDB sharedInstance]];	
+	}	
+}
+
+- (IBAction)saveData: (id)sender
+{
+	[self saveDataToDisk];
+}
+- (IBAction)loadData: (id)sender
+{
+	[self loadDataFromDisk];
 }
 
 @end

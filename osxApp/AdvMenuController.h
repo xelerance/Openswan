@@ -14,7 +14,6 @@
 
 @interface AdvMenuController : NSWindowController {
 	NSMutableArray* connections;
-	ConnectionsDB* db;
 	
 	IBOutlet NSTextField* rawRSAText;
 	IBOutlet NSView* PSKView;
@@ -27,7 +26,6 @@
 }
 
 @property (readwrite, retain) NSMutableArray* connections;
-@property (readwrite, retain) ConnectionsDB* db;
 @property (readwrite, retain) NSPopUpButton* selConn;
 
 - (IBAction)advancedOpt: (id) sender;
@@ -35,12 +33,5 @@
 - (IBAction)natTraversal: (id) sender;
 - (IBAction)oe: (id) sender;
 - (IBAction)save: (id)sender;
-
-- (NSString *) pathForDataFile;
-- (void) saveDataToDisk;
-- (void) loadDataFromDisk;
-
-- (IBAction)saveData: (id)sender;
-- (IBAction)loadData: (id)sender;
 
 @end

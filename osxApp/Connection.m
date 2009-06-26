@@ -32,8 +32,6 @@
 	NSMutableString *s = [self valueForKey:@"selLocalHost"];
 	NSLog(@"Set value for selLocalHost = %@", s);
 	
-	//selAuthBy = [[NSPopUpButton alloc] init];
-	
 	selAuto = [[NSMutableString alloc] init];
 	
 	NSMutableString* tmp = [NSString stringWithFormat:@"Add"];
@@ -45,8 +43,6 @@
 	NSMutableString* tmp2 = [NSString stringWithFormat:@"RSA Sig Key"];
 	
 	[selAuthBy setString:tmp2];
-	
-	//[self setValue:tmp2 forKey:@"selAuthBy"];
 	
     /* finally return the object */
     return self;
@@ -62,11 +58,10 @@
 	[coder encodeObject:[self connName] forKey:@"connName"];
 	[coder encodeObject:[self selLocalHost] forKey:@"selLocalHost"];
 	[coder encodeObject:[self selRemoteHost] forKey:@"selRemoteHost"];
-	NSLog(@"the saved value is %@", [self selLocalHost]);
 	[coder encodeObject:[self selAuthBy] forKey:@"selAuthBy"];
 	[coder encodeObject:[self selAuto] forKey:@"selAuto"];
-	//[coder encodeObject:selLocalRSASigKey forKey:@"selLocalRSASigKey"];
-	//[coder encodeObject:selRemoteRSASigKey forKey:@"selRemoteRSASigKey"];
+	[coder encodeObject:[self selLocalRSASigKey] forKey:@"selLocalRSASigKey"];
+	[coder encodeObject:[self selRemoteRSASigKey] forKey:@"selRemoteRSASigKey"];
 }
 
 - (id)initWithCoder:(NSCoder*)coder
@@ -74,12 +69,11 @@
 	[super init];
 	[self setConnName:[coder decodeObjectForKey:@"connName"]];
 	[self setSelLocalHost:[coder decodeObjectForKey:@"selLocalHost"]];
-	NSLog(@"the loaded value is %@", [coder decodeObjectForKey:@"selLocalHost"]);
 	[self setSelRemoteHost:[coder decodeObjectForKey:@"selRemoteHost"]];
 	[self setSelAuthBy:[coder decodeObjectForKey:@"selAuthBy"]];
 	[self setSelAuto:[coder decodeObjectForKey:@"selAuto"]];
-	//selLocalRSASigKey = [coder decodeObjectForKey:@"selLocalRSASigKey"];
-	//selRemoteRSASigKey = [coder decodeObjectForKey:@"selRemoteRSASigKey"];
+	[self setSelLocalRSASigKey:[coder decodeObjectForKey:@"selLocalRSASigKey"]];
+	[self setSelRemoteRSASigKey:[coder decodeObjectForKey:@"selRemoteRSASigKey"]];
 	return self;
 }
 
