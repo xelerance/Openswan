@@ -187,7 +187,9 @@
     
 	rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
 	[self setDb:[rootObject valueForKey:@"db"]];
-	[self setConnections:[db connDB]];
+	[self setConnections:[[self db] connDB]];
+	//[self setConnections:NULL];
+
 }
 
 - (IBAction)saveData: (id)sender
