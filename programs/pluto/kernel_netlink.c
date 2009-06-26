@@ -1506,6 +1506,31 @@ netlink_shunt_eroute(struct connection *c
       snprintf(buf2, sizeof(buf2)
 	       , "eroute_connection %s", opname);
 
+      if( ! netlink_raw_eroute(&sr->this.host_addr, &sr->this.client
+			      , fam->any
+			      , &sr->that.client
+			      , htonl(spi)
+			      , SA_INT
+			      , sr->this.protocol
+			      , K_SADB_X_SATYPE_INT
+			      , null_proto_info, 0, op, buf2) )
+      { return FALSE; }
+
+      switch (op)
+      {
+      case ERO_ADD:
+          op = ERO_ADD_INBOUND;
+          break;
+      case ERO_DELETE:
+          op = ERO_DEL_INBOUND;
+          break;
+      default:
+          return TRUE;
+      }
+
+      snprintf(buf2, sizeof(buf2)
+	       , "eroute_connection %s inbound", opname);
+
       return netlink_raw_eroute(&sr->this.host_addr, &sr->this.client
 			      , fam->any
 			      , &sr->that.client
