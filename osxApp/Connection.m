@@ -13,25 +13,19 @@
 @synthesize connName;
 @synthesize selLocalHost, selRemoteHost, selAuthBy, selAuto, selLocalRSASigKey, selRemoteRSASigKey;
 
-- (id) initWithName:(NSString*)name
+
+- (id)init
 {
-    /* first initialize the base class */
+	//first initialize the base class
     self = [super init]; 
-    /* then initialize the instance variables */
+    //then initialize the instance variables
 	
-	connName = [NSString stringWithString:name];
+	connName = [NSString stringWithString:@"New Connection"];
 	
 	//initialize selectedLedtIP
 	selLocalHost = [[NSMutableString alloc] init];
 	selRemoteHost = [[NSMutableString alloc] init];
-	
-	NSString* ss = [NSString stringWithFormat: @"192.128.%@", name];
-	
-	[self setValue:ss forKey:@"selLocalHost"];
-	
-	NSMutableString *s = [self valueForKey:@"selLocalHost"];
-	NSLog(@"Set value for selLocalHost = %@", s);
-	
+
 	selAuto = [[NSMutableString alloc] init];
 	
 	NSMutableString* tmp = [NSString stringWithFormat:@"Add"];
@@ -44,7 +38,7 @@
 	
 	[selAuthBy setString:tmp2];
 	
-    /* finally return the object */
+    // finally return the object
     return self;
 }
 

@@ -25,5 +25,4 @@
 @property (readwrite, retain) NSMutableString *selLocalHost, *selRemoteHost, *selLocalRSASigKey, *selRemoteRSASigKey, *selAuto;
 @property (readwrite, retain) NSMutableString *selAuthBy;
 
-- (id) initWithName:(NSString*)name;
 @end

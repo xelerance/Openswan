@@ -42,8 +42,7 @@ static ConnectionsDB *sharedConnDB = nil;
             if (self = [super init]) {
                 sharedConnDB = self;
                 // custom initialization here
-				NSArray* values = [NSArray arrayWithObjects: [[Connection alloc] initWithName:@"Connection1"],
-								   [[Connection alloc] initWithName:@"Connection2"], nil];
+				NSArray* values = [NSArray arrayWithObjects: [[Connection alloc] init], nil];
 
 				NSMutableArray* tmpArray = [[NSMutableArray alloc] init];
 				[tmpArray retain];
