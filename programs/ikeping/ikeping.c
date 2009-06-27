@@ -58,7 +58,7 @@ help(void)
 	    " [--version]    just dump version number and exit\n"
 	    " [--nat-t]      enabled NONESP encapsulation on port\n"
 	    " [--exchangenum num]    use num instead of 244 for the exchange type.\n"
-	    " [--wait seconds]    time to wait for replies, defaults to 10 seconds.\n"
+	    " [--wait seconds]    time to wait for replies, defaults to 3 seconds.\n"
 	    " host/port ...\n\n"
 	"Openswan %s\n",
 	ipsec_version_code());
@@ -314,7 +314,7 @@ main(int argc, char **argv)
   pfamily=PF_INET;
   lport=500;
   dport=500;
-  waitTime=10*1000;
+  waitTime=3*1000;
   verbose=0;
   natt=0;
   listen_only=0;
@@ -328,7 +328,7 @@ main(int argc, char **argv)
 	  return 0;	/* GNU coding standards say to stop here */
 	  
       case 'V':               /* --version */
-	  fprintf(stderr, "FreeS/WAN %s\n", ipsec_version_code());
+	  fprintf(stderr, "Openswan %s\n", ipsec_version_code());
 	  return 0;	/* GNU coding standards say to stop here */
 	  
       case 'v':	/* --label <string> */
@@ -515,8 +515,7 @@ main(int argc, char **argv)
 	  numSenders, 
 	  numReceived,
 	  numSenders > 0 ? 100-numReceived*100/numSenders : 0);
-
-   exit(0);
+   exit(numSenders - numReceived);
 }
 
 /*
