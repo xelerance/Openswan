@@ -17,6 +17,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
+$reterr = 0;
 $me="ipsec verify";
 $ENV{'PATH'}="/sbin:/usr/bin:/usr/local/sbin:@IPSEC_SBINDIR@:$ENV{'PATH'}";
 if($ENV{'IPSEC_CONFS'}) { $conf=$ENV{'IPSEC_CONFS'} } else { $conf= `ipsec --confdir`; chomp($conf); }
@@ -54,7 +55,7 @@ sub run {
         close parent_read; close parent_write;
 	open STDOUT,">&child_write"; 
         open STDERR,">&err_write";
-        exec $command; print STDERR "Cannot execute command \"$command\": $!\n";
+        exec $command; $reterr = 1 ; print STDERR "Cannot execute command \"$command\": $!\n";
     }
 }
 
@@ -71,12 +72,14 @@ sub errchk {
 	    else 
 	    { 
 		print "FAILED"; 
+		$reterr = 1;
 	    }
 	    if($colour) { print "\e[0;39m"; } 
 	    print "]\n";
 	    if(@err) 
 	    { 
 		print "  @err"; 
+		$reterr = 1;
 	    }
 	}
 	else
@@ -102,12 +105,14 @@ sub warnchk {
             else
             {
                 print "FAILED";
+		$reterr = 1;
             }
             if($colour) { print "\e[0;39m"; }
             print "]\n";
             if(@err)
             {
                 print "  @err";
+		$reterr = 1;
             }
         }
         else
@@ -190,27 +195,34 @@ sub checkdnsip {
 }
 
 sub udp500check {
-    run "netstat -an";
-    # Flaw: Only taking the first IP address found listening...
-    ($listen)=grep /:500/, @out;
+    printfun "Pluto listening for IKE on udp 500";
+    run "lsof -i UDP:500";
+    #run "netstat -an";
+    ($listen)=grep /pluto/, @out;
     if(!$listen)
     { 
-	printfun "Pluto not listening on port udp 500. Check interfaces defintion in ipsec.conf.";	
+	errchk "", "FAILED";
+	$reterr = 1;
     }
     else
     {
-	( $rest, $rest, $rest, $defaultsrcip, $rest)=split(' ',$listen); 
-	$defaultsrcip=~ s/:500//;
-	run "/bin/ls /proc/sys/net/ipv4/conf";
-	foreach $net (grep !/(lo|all|default|ipsec|vmnet)/, @check=@out)
-	{
-	    if( -e "/proc/net/ip_tables_names" )
-	    {
-		# iptables --check will never happen, hack it outselves
-		# use tcpdump? nmap? custom rule? at least check outgoing 500? ping outside activeOE box?
-		# print "Cannot check if IPtables has port 500 hole ($defaultsrcip on $net)";
-	    }
-	}
+	errchk "1";
+    }
+}
+
+sub udp4500check {
+    printfun "Pluto listening for NAT-T on udp 4500";
+    run "lsof -i UDP:4500";
+    #run "netstat -an";
+    ($listen)=grep /pluto/, @out;
+    if(!$listen)
+    { 
+	errchk "", "FAILED";
+	$reterr = 1;
+    }
+    else
+    {
+	errchk "1";
     }
 }
 
@@ -225,11 +237,13 @@ sub checktunnel {
 	if(((($source eq $csource) || ($source eq $all)) && (($dest eq $cdest) || ($dest = $all))) && $target eq "ACCEPT")
 	{ 
 	    errchk "@out";
+	    $reterr = 1;
 	}
 	else
 	{
 	    @err="$target from $source to $dest kills tunnel $source -> $cdest\n";
 	    errchk "","FAILED";
+	    $reterr = 1;
 	}
     }
 }
@@ -270,6 +284,7 @@ sub installstartcheck {
                 errchk "";
                 print "\n  SElinux is running in 'enforced' mode. Since no working SElinux\n  policies exist for Openswan, SElinux should be disabled.\n";
 		print "\n  echo \"0\" > /selinux/enforce (or edit /etc/sysconfig/selinux)\n\n";
+	        $reterr = 1;
             }
         else { errchk "1"; }
         }
@@ -283,6 +298,7 @@ sub installstartcheck {
         else {
                 errchk "";
                 print "\n  Hardware RNG is present but 'rngd' is not running.\n  No harware random used!\n\n";
+	        $reterr = 1;
              }
         }
 
@@ -292,6 +308,7 @@ sub installstartcheck {
 	if(<cat> == "1")
 	    {
 		errchk "";
+	        $reterr = 1;
 		print "\n  Please disable /proc/sys/net/ipv4/conf/*/send_redirects\n  or NETKEY will cause the sending of bogus ICMP redirects!\n\n"; 
 	    }
 	else { errchk "1"; } 
@@ -300,6 +317,7 @@ sub installstartcheck {
         open("cat", "/proc/sys/net/ipv4/conf/default/accept_redirects");
 	if(<cat> == "1")
 	    {
+	        $reterr = 1;
 		errchk "";
 		print "\n  Please disable /proc/sys/net/ipv4/conf/*/accept_redirects\n  or NETKEY will accept bogus ICMP redirects!\n\n"; 
 	    }
@@ -317,6 +335,7 @@ sub installstartcheck {
 	if (grep /interface/, @out)
 	{
 	    udp500check;
+	    udp4500check;
 	}
 }
 
@@ -328,6 +347,7 @@ sub tunnelchecks {
         open("cat", "/proc/sys/net/ipv4/ip_forward");
 	if(<cat> == "0") 
 	{ 
+	    $reterr = 1;
 	    errchk ""; 
 	} 
 	else 
@@ -418,7 +438,7 @@ use Getopt::Long;
 GetOptions(\%optctl, "host=s" ,"ip=s", "colour!");
 
 # Exit if we get passed an option we don't recognize.
-if($Getopt::Long::error) { exit; }
+if($Getopt::Long::error) { exit 1; }
 
 
 # If you've passed --host or --ip, do only those checks.
@@ -497,4 +517,4 @@ else
         }
     }
 }
-
+exit $reterr
