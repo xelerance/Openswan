@@ -43,15 +43,13 @@
 	NSLog(@"my height %f, my orig %f", rect.size.height, rect.origin.y);
 	if([sender state] == YES)
 	{
-		rect.size.height = 679;
-		rect.origin.x = 0;
-		rect.origin.y = 101;
+		rect.size.height = rect.size.height + 270;
+		rect.origin.y = rect.origin.y - 270;
 	}
 	else
 	{
-		rect.size.height = 409;
-		rect.origin.x = 0;
-		rect.origin.y = 369;
+		rect.size.height = rect.size.height - 270;
+		rect.origin.y = rect.origin.y + 270;
 	}
 	[[super window] setFrame:rect display:YES];
 }

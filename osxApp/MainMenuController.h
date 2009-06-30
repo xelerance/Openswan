@@ -21,9 +21,19 @@
 	IBOutlet NSView* discView;
 	IBOutlet NSView* connView;
 	IBOutlet NSPopUpButton* selConn;
+	
+	NSDate* connTime;
+	NSTimer* timer;
+	NSTimeInterval connDuration;
+	NSMutableString* connDurationPrint;
 }
 
 @property (readwrite, retain) ConnectionsDB* db;
+@property (readwrite, retain) NSDate* connTime;
+@property (readwrite, retain) NSMutableString* connDurationPrint;
+@property (readwrite) NSTimeInterval connDuration;
+@property (nonatomic, assign) NSTimer* timer;
+
 
 - (IBAction)showAdvMenu: (id)sender;
 - (IBAction)connDisc: (id) sender;
@@ -35,5 +45,8 @@
 
 - (IBAction)saveData: (id)sender;
 - (IBAction)loadData: (id)sender;
+
+- (void)updateConnDuration: (NSTimer*)aTimer;
+- (IBAction)connect: (id)sender;
 
 @end

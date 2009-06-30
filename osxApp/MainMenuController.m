@@ -14,7 +14,7 @@
 
 @implementation MainMenuController
 
-@synthesize db;
+@synthesize db, connTime, connDuration, timer, connDurationPrint;
 
 - (IBAction)showAdvMenu: (id)sender
 {
@@ -46,6 +46,7 @@
 	
 	[connView setHidden:NO];
 	[discView setHidden:YES];
+	[self setConnDurationPrint:[NSString stringWithString:@"0:0:0"]];
 }
 
 - (void) applicationWillTerminate: (NSNotification *)note
@@ -116,6 +117,47 @@
 - (IBAction)loadData: (id)sender
 {
 	[self loadDataFromDisk];
+}
+
+- (IBAction)connect: (id)sender
+{	
+	if([self timer] == nil) {
+		[self setConnTime:[NSDate date]];
+		
+		NSTimer *tmpTimer = [NSTimer scheduledTimerWithTimeInterval:1
+															 target:self 
+														   selector:@selector(updateConnDuration:)
+														   userInfo:nil 
+															repeats:YES];
+		[self setTimer:tmpTimer];
+	}
+	else {
+		[[self timer] invalidate];
+		//[[self timer] release];
+		[self setTimer:nil];
+		[self setConnDuration:0];
+		[self setConnDurationPrint:[NSString stringWithString:@"0:0:0"]];
+	}
+	if([sender state] == NSOnState){
+		[connView setHidden:YES];
+		[discView setHidden:NO];
+	}
+	else{
+		[connView setHidden:NO];
+		[discView setHidden:YES];
+	}
+}
+
+- (void)updateConnDuration: (NSTimer*)aTimer
+{
+	NSDate* now = [NSDate date];
+	[self setConnDuration:[now timeIntervalSinceDate: connTime]];
+	int hours = (NSInteger)connDuration / 30;
+	[self setConnDuration:(NSInteger)connDuration % 30];
+	int mins = (NSInteger)connDuration / 10;
+	[self setConnDuration:(NSInteger)connDuration % 10];
+	int secs = (NSInteger)connDuration;
+	[self setConnDurationPrint:[NSString stringWithFormat:@"%d:%d:%d", hours, mins, secs]];
 }
 
 @end
