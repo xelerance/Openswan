@@ -17,9 +17,24 @@
 		99805F2E0FCC7B2F002E243B /* Connection.m in Sources */ = {isa = PBXBuildFile; fileRef = 99805F2D0FCC7B2F002E243B /* Connection.m */; };
 		999911910FEBFD9800DE1431 /* ConnectionsDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 999911900FEBFD9800DE1431 /* ConnectionsDB.m */; };
 		99C2E30C0F95FE9F00AA9274 /* APPL.icns in Resources */ = {isa = PBXBuildFile; fileRef = 99C2E30B0F95FE9F00AA9274 /* APPL.icns */; };
+		99E671E00FFBC78C00C5AECE /* Growl-WithInstaller.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */; };
+		99E671EF0FFBC83C00C5AECE /* Growl-WithInstaller.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */; };
 		99FBA11B0FE13F540038B2EE /* PreferenceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99FBA11A0FE13F540038B2EE /* PreferenceController.m */; };
 		99FBA11F0FE13F980038B2EE /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 99FBA11E0FE13F980038B2EE /* Preferences.xib */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		99E671F90FFBC84B00C5AECE /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				99E671EF0FFBC83C00C5AECE /* Growl-WithInstaller.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -42,6 +57,7 @@
 		9999118F0FEBFD9800DE1431 /* ConnectionsDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionsDB.h; sourceTree = SOURCE_ROOT; };
 		999911900FEBFD9800DE1431 /* ConnectionsDB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectionsDB.m; sourceTree = SOURCE_ROOT; };
 		99C2E30B0F95FE9F00AA9274 /* APPL.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = APPL.icns; sourceTree = "<group>"; };
+		99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = "Growl-WithInstaller.framework"; sourceTree = SOURCE_ROOT; };
 		99FBA1190FE13F540038B2EE /* PreferenceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceController.h; sourceTree = SOURCE_ROOT; };
 		99FBA11A0FE13F540038B2EE /* PreferenceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceController.m; sourceTree = SOURCE_ROOT; };
 		99FBA11E0FE13F980038B2EE /* Preferences.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = SOURCE_ROOT; };
@@ -53,6 +69,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+				99E671E00FFBC78C00C5AECE /* Growl-WithInstaller.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,6 +156,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -155,6 +173,7 @@
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
+				99E671F90FFBC84B00C5AECE /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -239,6 +258,11 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"/Volumes/Growl 1.1.5 SDK/Frameworks\"",
+					"\"$(DEVELOPER_DIR)/Xelerance/openswan.gsoc/osxApp\"",
+				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -256,6 +280,11 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"/Volumes/Growl 1.1.5 SDK/Frameworks\"",
+					"\"$(DEVELOPER_DIR)/Xelerance/openswan.gsoc/osxApp\"",
+				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Openswan_Prefix.pch;

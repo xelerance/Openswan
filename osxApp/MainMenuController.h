@@ -7,12 +7,13 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <Growl-WithInstaller/Growl.h>
 #import "ConnectionsDB.h"
 
 @class AdvMenuController;
 @class PreferenceController;
 
-@interface MainMenuController : NSWindowController {
+@interface MainMenuController : NSWindowController <GrowlApplicationBridgeDelegate> {
 	AdvMenuController* advMenuController;
 	PreferenceController *preferenceController;
 	
@@ -48,5 +49,8 @@
 
 - (void)updateConnDuration: (NSTimer*)aTimer;
 - (IBAction)connect: (id)sender;
+
+//Growl
+- (NSDictionary*) registrationDictionaryForGrowl;
 
 @end

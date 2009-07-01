@@ -42,6 +42,9 @@
 - (void)awakeFromNib
 {
 	[NSApp setDelegate: self];
+	
+	[GrowlApplicationBridge setGrowlDelegate:self];
+	
 	[self loadDataFromDisk];
 	
 	[connView setHidden:NO];
@@ -141,10 +144,27 @@
 	if([sender state] == NSOnState){
 		[connView setHidden:YES];
 		[discView setHidden:NO];
+		[GrowlApplicationBridge
+		 notifyWithTitle:@"Connected" 
+		 description:@"Connection was established" 
+		 notificationName:@"Openswan Growl Notification" 
+		 iconData:nil 
+		 priority:0 
+		 isSticky:NO 
+		 clickContext:nil];
 	}
 	else{
 		[connView setHidden:NO];
 		[discView setHidden:YES];
+		
+		[GrowlApplicationBridge
+		 notifyWithTitle:@"Disconnected" 
+		 description:@"Connection was closed" 
+		 notificationName:@"Openswan Growl Notification" 
+		 iconData:nil 
+		 priority:0 
+		 isSticky:NO 
+		 clickContext:nil];
 	}
 }
 
@@ -158,6 +178,20 @@
 	[self setConnDuration:(NSInteger)connDuration % 10];
 	int secs = (NSInteger)connDuration;
 	[self setConnDurationPrint:[NSString stringWithFormat:@"%d:%d:%d", hours, mins, secs]];
+}
+
+//Growl
+- (NSDictionary*) registrationDictionaryForGrowl
+{
+	NSArray *notifications;
+	notifications = [NSArray arrayWithObject:@"Openswan Growl Notification"];
+	
+	NSDictionary *dict;
+	dict = [NSDictionary dictionaryWithObjectsAndKeys:
+			notifications, GROWL_NOTIFICATIONS_ALL,
+			notifications, GROWL_NOTIFICATIONS_DEFAULT, nil];
+	
+	return dict;
 }
 
 @end
