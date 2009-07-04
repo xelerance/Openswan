@@ -111,6 +111,31 @@ i)You need not have "private" or "certs" directory.
 
 ii) If you obtain a CA certificate from outside, and it is not inside NSS database, then you need to put the certificate inside "cacerts" directory, so that Pluto can read it. If the CA certificate is created in the NSS database, or imported from outside inside the NSS database, you need not have "cacerts" directory,as Pluto can read the CA cert from the database.
 
+Migrating Certificates
+----------------------
+openssl pkcs12 -export -in cert.pem -inkey key.pem -certfile cacert.pem -out
+certkey.p12
+
+You will get one file in PKCS#12 format containing all the required 
+information. You could also use -name parameter to give a name to the 
+certificate. If you leve it empty the following nss utils will pick one from
+the data in certificate.
+
+export NSS_DEFAULT_DB_TYPE="sql"
+# to use sql format of nss db which fedora's openswan expects
+
+certutil -N -d /etc/ipsec.d
+# use empty passwords
+
+pk12util -i certkey.p12 -d /etc/ipsec.d
+# remember the name of the imported certificate pk12utils picked, if you 
+specified it before it should be the same, if not the util picked one
+
+create file /etc/ipsec.d/nss.certs with the following:
+@fqdn: RSA "name of certificate in nss db" ""
+
+edit your connection and replace the leftcert/rightcert with the certifiate 
+name with the same name of certificate in nss db.
 
 Things not supported
 ---------------------
