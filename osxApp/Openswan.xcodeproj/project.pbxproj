@@ -16,6 +16,14 @@
 		99604D420FE1617B008769D4 /* MainMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99604D410FE1617B008769D4 /* MainMenuController.m */; };
 		99805F2E0FCC7B2F002E243B /* Connection.m in Sources */ = {isa = PBXBuildFile; fileRef = 99805F2D0FCC7B2F002E243B /* Connection.m */; };
 		999911910FEBFD9800DE1431 /* ConnectionsDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 999911900FEBFD9800DE1431 /* ConnectionsDB.m */; };
+		99C02D2310053A0100179127 /* HelperTool in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99C02D171005396400179127 /* HelperTool */; };
+		99C02D2510053A1500179127 /* InstallTool in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99C02D101005395700179127 /* InstallTool */; };
+		99C02D3B10053B2300179127 /* BetterAuthorizationSampleLib.c in Sources */ = {isa = PBXBuildFile; fileRef = 99C02D3A10053B2300179127 /* BetterAuthorizationSampleLib.c */; };
+		99C02D3C10053B2300179127 /* BetterAuthorizationSampleLib.c in Sources */ = {isa = PBXBuildFile; fileRef = 99C02D3A10053B2300179127 /* BetterAuthorizationSampleLib.c */; };
+		99C02D4410053B7300179127 /* BetterAuthorizationSampleLibInstallTool.c in Sources */ = {isa = PBXBuildFile; fileRef = 99C02D4310053B7300179127 /* BetterAuthorizationSampleLibInstallTool.c */; };
+		99C02D4810053BE000179127 /* Common.c in Sources */ = {isa = PBXBuildFile; fileRef = 99C02D4710053BE000179127 /* Common.c */; };
+		99C02D4910053BE000179127 /* Common.c in Sources */ = {isa = PBXBuildFile; fileRef = 99C02D4710053BE000179127 /* Common.c */; };
+		99C02D5D1005480000179127 /* AuthorizationPrompt.strings in Resources */ = {isa = PBXBuildFile; fileRef = 99C02D5B1005480000179127 /* AuthorizationPrompt.strings */; };
 		99C2E30C0F95FE9F00AA9274 /* APPL.icns in Resources */ = {isa = PBXBuildFile; fileRef = 99C2E30B0F95FE9F00AA9274 /* APPL.icns */; };
 		99E671E00FFBC78C00C5AECE /* Growl-WithInstaller.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */; };
 		99E671EF0FFBC83C00C5AECE /* Growl-WithInstaller.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */; };
@@ -23,7 +31,35 @@
 		99FBA11F0FE13F980038B2EE /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 99FBA11E0FE13F980038B2EE /* Preferences.xib */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		99C02D1B1005398000179127 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 99C02D0F1005395700179127;
+			remoteInfo = InstallTool;
+		};
+		99C02D1D1005398200179127 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 99C02D161005396400179127;
+			remoteInfo = HelperTool;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
+		99C02D22100539E400179127 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				99C02D2510053A1500179127 /* InstallTool in CopyFiles */,
+				99C02D2310053A0100179127 /* HelperTool in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		99E671F90FFBC84B00C5AECE /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -56,6 +92,14 @@
 		99805F2D0FCC7B2F002E243B /* Connection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Connection.m; sourceTree = SOURCE_ROOT; };
 		9999118F0FEBFD9800DE1431 /* ConnectionsDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionsDB.h; sourceTree = SOURCE_ROOT; };
 		999911900FEBFD9800DE1431 /* ConnectionsDB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectionsDB.m; sourceTree = SOURCE_ROOT; };
+		99C02D101005395700179127 /* InstallTool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = InstallTool; sourceTree = BUILT_PRODUCTS_DIR; };
+		99C02D171005396400179127 /* HelperTool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HelperTool; sourceTree = BUILT_PRODUCTS_DIR; };
+		99C02D3A10053B2300179127 /* BetterAuthorizationSampleLib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = BetterAuthorizationSampleLib.c; sourceTree = SOURCE_ROOT; };
+		99C02D4310053B7300179127 /* BetterAuthorizationSampleLibInstallTool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = BetterAuthorizationSampleLibInstallTool.c; sourceTree = SOURCE_ROOT; };
+		99C02D4510053B8800179127 /* BetterAuthorizationSampleLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BetterAuthorizationSampleLib.h; sourceTree = SOURCE_ROOT; };
+		99C02D4610053BE000179127 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Common.h; path = Xelerance/openswan.gsoc/osxApp/Common.h; sourceTree = DEVELOPER_DIR; };
+		99C02D4710053BE000179127 /* Common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Common.c; path = Xelerance/openswan.gsoc/osxApp/Common.c; sourceTree = DEVELOPER_DIR; };
+		99C02D5C1005480000179127 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AuthorizationPrompt.strings; sourceTree = SOURCE_ROOT; };
 		99C2E30B0F95FE9F00AA9274 /* APPL.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = APPL.icns; sourceTree = "<group>"; };
 		99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = "Growl-WithInstaller.framework"; sourceTree = SOURCE_ROOT; };
 		99FBA1190FE13F540038B2EE /* PreferenceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceController.h; sourceTree = SOURCE_ROOT; };
@@ -70,6 +114,20 @@
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				99E671E00FFBC78C00C5AECE /* Growl-WithInstaller.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		99C02D0E1005395700179127 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		99C02D151005396400179127 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,6 +173,8 @@
 			isa = PBXGroup;
 			children = (
 				8D1107320486CEB800E47090 /* Openswan.app */,
+				99C02D101005395700179127 /* InstallTool */,
+				99C02D171005396400179127 /* HelperTool */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -123,6 +183,7 @@
 			isa = PBXGroup;
 			children = (
 				99C2E30B0F95FE9F00AA9274 /* APPL.icns */,
+				99C02D3E10053B4900179127 /* HelperTool */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -163,6 +224,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		99C02D3E10053B4900179127 /* HelperTool */ = {
+			isa = PBXGroup;
+			children = (
+				99C02D4510053B8800179127 /* BetterAuthorizationSampleLib.h */,
+				99C02D4310053B7300179127 /* BetterAuthorizationSampleLibInstallTool.c */,
+				99C02D3A10053B2300179127 /* BetterAuthorizationSampleLib.c */,
+				99C02D4610053BE000179127 /* Common.h */,
+				99C02D4710053BE000179127 /* Common.c */,
+				99C02D5B1005480000179127 /* AuthorizationPrompt.strings */,
+			);
+			name = HelperTool;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -174,16 +248,51 @@
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
 				99E671F90FFBC84B00C5AECE /* CopyFiles */,
+				99C02D22100539E400179127 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				99C02D1C1005398000179127 /* PBXTargetDependency */,
+				99C02D1E1005398200179127 /* PBXTargetDependency */,
 			);
 			name = Openswan;
 			productInstallPath = "$(HOME)/Applications";
 			productName = Openswan;
 			productReference = 8D1107320486CEB800E47090 /* Openswan.app */;
 			productType = "com.apple.product-type.application";
+		};
+		99C02D0F1005395700179127 /* InstallTool */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 99C02D1F100539A000179127 /* Build configuration list for PBXNativeTarget "InstallTool" */;
+			buildPhases = (
+				99C02D0D1005395700179127 /* Sources */,
+				99C02D0E1005395700179127 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = InstallTool;
+			productName = InstallTool;
+			productReference = 99C02D101005395700179127 /* InstallTool */;
+			productType = "com.apple.product-type.tool";
+		};
+		99C02D161005396400179127 /* HelperTool */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 99C02D20100539A000179127 /* Build configuration list for PBXNativeTarget "HelperTool" */;
+			buildPhases = (
+				99C02D141005396400179127 /* Sources */,
+				99C02D151005396400179127 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HelperTool;
+			productName = HelperTool;
+			productReference = 99C02D171005396400179127 /* HelperTool */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -193,11 +302,20 @@
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Openswan" */;
 			compatibilityVersion = "Xcode 3.1";
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+				en,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* Openswan */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				8D1107260486CEB800E47090 /* Openswan */,
+				99C02D0F1005395700179127 /* InstallTool */,
+				99C02D161005396400179127 /* HelperTool */,
 			);
 		};
 /* End PBXProject section */
@@ -212,6 +330,7 @@
 				99C2E30C0F95FE9F00AA9274 /* APPL.icns in Resources */,
 				99FBA11F0FE13F980038B2EE /* Preferences.xib in Resources */,
 				99604D0C0FE15ECD008769D4 /* AdvancedMenu.xib in Resources */,
+				99C02D5D1005480000179127 /* AuthorizationPrompt.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,10 +347,42 @@
 				99604D1C0FE16026008769D4 /* AdvMenuController.m in Sources */,
 				99604D420FE1617B008769D4 /* MainMenuController.m in Sources */,
 				999911910FEBFD9800DE1431 /* ConnectionsDB.m in Sources */,
+				99C02D3B10053B2300179127 /* BetterAuthorizationSampleLib.c in Sources */,
+				99C02D4810053BE000179127 /* Common.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		99C02D0D1005395700179127 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				99C02D4410053B7300179127 /* BetterAuthorizationSampleLibInstallTool.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		99C02D141005396400179127 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				99C02D3C10053B2300179127 /* BetterAuthorizationSampleLib.c in Sources */,
+				99C02D4910053BE000179127 /* Common.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		99C02D1C1005398000179127 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 99C02D0F1005395700179127 /* InstallTool */;
+			targetProxy = 99C02D1B1005398000179127 /* PBXContainerItemProxy */;
+		};
+		99C02D1E1005398200179127 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 99C02D161005396400179127 /* HelperTool */;
+			targetProxy = 99C02D1D1005398200179127 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {
@@ -250,9 +401,78 @@
 			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
+		99C02D5B1005480000179127 /* AuthorizationPrompt.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				99C02D5C1005480000179127 /* en */,
+			);
+			name = AuthorizationPrompt.strings;
+			path = en.lproj;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		99C02D121005395800179127 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = InstallTool;
+			};
+			name = Debug;
+		};
+		99C02D131005395800179127 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = InstallTool;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		99C02D191005396500179127 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = HelperTool;
+			};
+			name = Debug;
+		};
+		99C02D1A1005396500179127 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = HelperTool;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -323,6 +543,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		99C02D1F100539A000179127 /* Build configuration list for PBXNativeTarget "InstallTool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				99C02D121005395800179127 /* Debug */,
+				99C02D131005395800179127 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		99C02D20100539A000179127 /* Build configuration list for PBXNativeTarget "HelperTool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				99C02D191005396500179127 /* Debug */,
+				99C02D1A1005396500179127 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Openswan" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
