@@ -122,84 +122,12 @@
 	[self loadDataFromDisk];
 }
 
-- (IBAction)connect: (id)sender
-{	
-	if([self timer] == nil) {
-		[self setConnTime:[NSDate date]];
-		
-		NSTimer *tmpTimer = [NSTimer scheduledTimerWithTimeInterval:1
-															 target:self 
-														   selector:@selector(updateConnDuration:)
-														   userInfo:nil 
-															repeats:YES];
-		[self setTimer:tmpTimer];
-	}
-	else {
-		[[self timer] invalidate];
-		//[[self timer] release];
-		[self setTimer:nil];
-		[self setConnDuration:0];
-		[self setConnDurationPrint:[NSString stringWithString:@"0:0:0"]];
-	}
-	if([sender state] == NSOnState){
-		[connView setHidden:YES];
-		[discView setHidden:NO];
-		
-		DoConnect();
-		
-		[GrowlApplicationBridge
-		 notifyWithTitle:@"Connected" 
-		 description:@"Connection was established" 
-		 notificationName:@"Openswan Growl Notification" 
-		 iconData:nil 
-		 priority:0 
-		 isSticky:NO 
-		 clickContext:nil];
-	}
-	else{
-		[connView setHidden:NO];
-		[discView setHidden:YES];
-		
-		[GrowlApplicationBridge
-		 notifyWithTitle:@"Disconnected" 
-		 description:@"Connection was closed" 
-		 notificationName:@"Openswan Growl Notification" 
-		 iconData:nil 
-		 priority:0 
-		 isSticky:NO 
-		 clickContext:nil];
-	}
-}
-
-- (void)updateConnDuration: (NSTimer*)aTimer
-{
-	NSDate* now = [NSDate date];
-	[self setConnDuration:[now timeIntervalSinceDate: connTime]];
-	int hours = (NSInteger)connDuration / 30;
-	[self setConnDuration:(NSInteger)connDuration % 30];
-	int mins = (NSInteger)connDuration / 10;
-	[self setConnDuration:(NSInteger)connDuration % 10];
-	int secs = (NSInteger)connDuration;
-	[self setConnDurationPrint:[NSString stringWithFormat:@"%d:%d:%d", hours, mins, secs]];
-}
-
-//Growl
-- (NSDictionary*) registrationDictionaryForGrowl
-{
-	NSArray *notifications;
-	notifications = [NSArray arrayWithObject:@"Openswan Growl Notification"];
-	
-	NSDictionary *dict;
-	dict = [NSDictionary dictionaryWithObjectsAndKeys:
-			notifications, GROWL_NOTIFICATIONS_ALL,
-			notifications, GROWL_NOTIFICATIONS_DEFAULT, nil];
-	
-	return dict;
-}
-
 //Helper Tool
 
-static OSStatus DoConnect()
+static OSStatus DoConnect(
+Boolean						forceFailure, 
+int							fdArray[]
+)
 // This code shows how to do a typical BetterAuthorizationSample privileged operation 
 // in straight C.  In this case, it does the low-numbered ports operation, which 
 // returns three file descriptors that are bound to low-numbered TCP ports.
@@ -217,10 +145,10 @@ static OSStatus DoConnect()
     
     // Pre-conditions
     
-    //assert(fdArray != NULL);
-    //assert(fdArray[0] == -1);
-    //assert(fdArray[1] == -1);
-    //assert(fdArray[2] == -1);
+    assert(fdArray != NULL);
+    assert(fdArray[0] == -1);
+    assert(fdArray[1] == -1);
+    assert(fdArray[2] == -1);
     
     // Get our bundle information.
     
@@ -240,6 +168,12 @@ static OSStatus DoConnect()
     keys[keyCount]   = CFSTR(kBASCommandKey);
     values[keyCount] = CFSTR(kConnectCommand);
     keyCount += 1;
+    
+    if (forceFailure) {
+        keys[keyCount]   = CFSTR(kSampleLowNumberedPortsForceFailure);
+        values[keyCount] = kCFBooleanTrue;
+        keyCount += 1;
+    }
     
     request = CFDictionaryCreate(
 								 NULL, 
@@ -315,8 +249,7 @@ static OSStatus DoConnect()
         
         descArray = (CFArrayRef) CFDictionaryGetValue(response, CFSTR(kBASDescriptorArrayKey));
         assert( descArray != NULL );
-        /*
-		assert( CFGetTypeID(descArray) == CFArrayGetTypeID() );
+        assert( CFGetTypeID(descArray) == CFArrayGetTypeID() );
 		
         arrayCount = CFArrayGetCount(descArray);
         assert(arrayCount == kNumberOfLowNumberedPorts);
@@ -328,20 +261,171 @@ static OSStatus DoConnect()
             
             success = CFNumberGetValue(thisNum, kCFNumberIntType, &fdArray[arrayIndex]);
             assert(success);
-		 
         }
-		 */
     }
     
     if (response != NULL) {
         CFRelease(response);
     }
     
-    //assert( (err == noErr) == (fdArray[0] >= 0) );
-    //assert( (err == noErr) == (fdArray[1] >= 0) );
-    //assert( (err == noErr) == (fdArray[2] >= 0) );
+    assert( (err == noErr) == (fdArray[0] >= 0) );
+    assert( (err == noErr) == (fdArray[1] >= 0) );
+    assert( (err == noErr) == (fdArray[2] >= 0) );
     
     return err;
 }
+
+- (IBAction)connect: (id)sender
+{	
+	if([self timer] == nil) {
+		[self setConnTime:[NSDate date]];
+		
+		NSTimer *tmpTimer = [NSTimer scheduledTimerWithTimeInterval:1
+															 target:self 
+														   selector:@selector(updateConnDuration:)
+														   userInfo:nil 
+															repeats:YES];
+		[self setTimer:tmpTimer];
+	}
+	else {
+		[[self timer] invalidate];
+		//[[self timer] release];
+		[self setTimer:nil];
+		[self setConnDuration:0];
+		[self setConnDurationPrint:[NSString stringWithString:@"0:0:0"]];
+	}
+	if([sender state] == NSOnState){
+		[connView setHidden:YES];
+		[discView setHidden:NO];
+		
+		///////////////
+		OSStatus    err;
+		int         junk;
+		int         descriptors[kNumberOfLowNumberedPorts] = { -1, -1, -1 };
+		uint16_t    ports[kNumberOfLowNumberedPorts];
+		int         portIndex;
+		
+		// Call the C code to do the real work.
+		
+		err = DoConnect( NO, descriptors );
+		
+		// Log our results.
+		
+		if (err == noErr) {
+			// Get the port numbers for each descriptor.
+			
+			for (portIndex = 0; portIndex < kNumberOfLowNumberedPorts; portIndex++) {
+				int                 sockErr;
+				struct sockaddr_in  boundAddr;
+				socklen_t           boundAddrLen;
+				
+				memset(&boundAddr, 0, sizeof(boundAddr));
+				boundAddrLen = sizeof(boundAddr);
+				
+				sockErr = getsockname(descriptors[portIndex], (struct sockaddr *) &boundAddr, &boundAddrLen);
+				assert(sockErr == 0);
+				assert(boundAddrLen == sizeof(boundAddr));
+				ports[portIndex] = ntohs(boundAddr.sin_port);
+			}
+			
+			// Log it.
+			
+			NSLog(@"ports[0] = %u, port[1] = %u, port[2] = %u\n", 
+				  (unsigned int) ports[0], 
+				  (unsigned int) ports[1], 
+				  (unsigned int) ports[2]);
+			
+			// Close the descriptors.
+			
+			for (portIndex = 0; portIndex < kNumberOfLowNumberedPorts; portIndex++) {
+				junk = close(descriptors[portIndex]);
+				assert(junk == 0);
+			}
+		} else {
+			NSLog(@"Failed with error %ld.\n", (long) err);
+		}
+			
+		//////////////
+		
+		[GrowlApplicationBridge
+		 notifyWithTitle:@"Connected" 
+		 description:@"Connection was established" 
+		 notificationName:@"Openswan Growl Notification" 
+		 iconData:nil 
+		 priority:0 
+		 isSticky:NO 
+		 clickContext:nil];
+	}
+	else{
+		[connView setHidden:NO];
+		[discView setHidden:YES];
+		
+		[GrowlApplicationBridge
+		 notifyWithTitle:@"Disconnected" 
+		 description:@"Connection was closed" 
+		 notificationName:@"Openswan Growl Notification" 
+		 iconData:nil 
+		 priority:0 
+		 isSticky:NO 
+		 clickContext:nil];
+	}
+}
+
+- (void)updateConnDuration: (NSTimer*)aTimer
+{
+	NSDate* now = [NSDate date];
+	[self setConnDuration:[now timeIntervalSinceDate: connTime]];
+	int hours = (NSInteger)connDuration / 30;
+	[self setConnDuration:(NSInteger)connDuration % 30];
+	int mins = (NSInteger)connDuration / 10;
+	[self setConnDuration:(NSInteger)connDuration % 10];
+	int secs = (NSInteger)connDuration;
+	[self setConnDurationPrint:[NSString stringWithFormat:@"%d:%d:%d", hours, mins, secs]];
+}
+
+//Growl
+- (NSDictionary*) registrationDictionaryForGrowl
+{
+	NSArray *notifications;
+	notifications = [NSArray arrayWithObject:@"Openswan Growl Notification"];
+	
+	NSDictionary *dict;
+	dict = [NSDictionary dictionaryWithObjectsAndKeys:
+			notifications, GROWL_NOTIFICATIONS_ALL,
+			notifications, GROWL_NOTIFICATIONS_DEFAULT, nil];
+	
+	return dict;
+}
+
+int main(int argc, char *argv[])
+{
+    OSStatus    junk;
+    
+    // Create the AuthorizationRef that we'll use through this application.  We ignore 
+    // any error from this.  A failure from AuthorizationCreate is very unusual, and if it 
+    // happens there's no way to recover; Authorization Services just won't work.
+	
+    junk = AuthorizationCreate(NULL, NULL, kAuthorizationFlagDefaults, &gAuth);
+    assert(junk == noErr);
+    assert( (junk == noErr) == (gAuth != NULL) );
+	
+	// For each of our commands, check to see if a right specification exists and, if not,
+    // create it.
+    //
+    // The last parameter is the name of a ".strings" file that contains the localised prompts 
+    // for any custom rights that we use.
+    
+	BASSetDefaultRules(
+					   gAuth, 
+					   kCommandSet, 
+					   CFBundleGetIdentifier(CFBundleGetMainBundle()), 
+					   CFSTR("AuthorizationPrompts")
+					   );
+    
+    // And now, the miracle that is Cocoa...
+    
+    return NSApplicationMain(argc,  (const char **) argv);
+}
+
 
 @end

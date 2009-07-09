@@ -25,8 +25,10 @@
 		99C02D4910053BE000179127 /* Common.c in Sources */ = {isa = PBXBuildFile; fileRef = 99C02D4710053BE000179127 /* Common.c */; };
 		99C02D5D1005480000179127 /* AuthorizationPrompt.strings in Resources */ = {isa = PBXBuildFile; fileRef = 99C02D5B1005480000179127 /* AuthorizationPrompt.strings */; };
 		99C2E30C0F95FE9F00AA9274 /* APPL.icns in Resources */ = {isa = PBXBuildFile; fileRef = 99C2E30B0F95FE9F00AA9274 /* APPL.icns */; };
-		99CF0BC01006530D001EBC90 /* HelperTool.c in Sources */ = {isa = PBXBuildFile; fileRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */; };
 		99CF0BC210065B41001EBC90 /* HelperTool.c in Sources */ = {isa = PBXBuildFile; fileRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */; };
+		99CF0C1910065F4B001EBC90 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99CF0C1810065F4B001EBC90 /* CoreFoundation.framework */; };
+		99CF0C1D10065F54001EBC90 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99CF0C1C10065F54001EBC90 /* Security.framework */; };
+		99CF0C2E10066112001EBC90 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99CF0C1C10065F54001EBC90 /* Security.framework */; };
 		99E671E00FFBC78C00C5AECE /* Growl-WithInstaller.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */; };
 		99E671EF0FFBC83C00C5AECE /* Growl-WithInstaller.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */; };
 		99FBA11B0FE13F540038B2EE /* PreferenceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99FBA11A0FE13F540038B2EE /* PreferenceController.m */; };
@@ -104,6 +106,8 @@
 		99C02D5C1005480000179127 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AuthorizationPrompt.strings; sourceTree = SOURCE_ROOT; };
 		99C2E30B0F95FE9F00AA9274 /* APPL.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = APPL.icns; sourceTree = "<group>"; };
 		99CF0BBF1006530D001EBC90 /* HelperTool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HelperTool.c; sourceTree = SOURCE_ROOT; };
+		99CF0C1810065F4B001EBC90 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		99CF0C1C10065F54001EBC90 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = "Growl-WithInstaller.framework"; sourceTree = SOURCE_ROOT; };
 		99FBA1190FE13F540038B2EE /* PreferenceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceController.h; sourceTree = SOURCE_ROOT; };
 		99FBA11A0FE13F540038B2EE /* PreferenceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceController.m; sourceTree = SOURCE_ROOT; };
@@ -117,6 +121,7 @@
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				99E671E00FFBC78C00C5AECE /* Growl-WithInstaller.framework in Frameworks */,
+				99CF0C2E10066112001EBC90 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,6 +136,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				99CF0C1910065F4B001EBC90 /* CoreFoundation.framework in Frameworks */,
+				99CF0C1D10065F54001EBC90 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -192,6 +199,8 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				99CF0C1810065F4B001EBC90 /* CoreFoundation.framework */,
+				99CF0C1C10065F54001EBC90 /* Security.framework */,
 			);
 			name = Openswan;
 			sourceTree = "<group>";
@@ -353,7 +362,6 @@
 				999911910FEBFD9800DE1431 /* ConnectionsDB.m in Sources */,
 				99C02D3B10053B2300179127 /* BetterAuthorizationSampleLib.c in Sources */,
 				99C02D4810053BE000179127 /* Common.c in Sources */,
-				99CF0BC01006530D001EBC90 /* HelperTool.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
