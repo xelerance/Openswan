@@ -6,7 +6,7 @@
 <refmeta>
 <refentrytitle>IPSEC_IKEPING</refentrytitle>
 <manvolnum>8</manvolnum>
-<refmiscinfo class='date'>23 Feb 2002</refmiscinfo>
+<refmiscinfo class='date'>8 Jul 2009</refmiscinfo>
 </refmeta>
 <refnamediv id='name'>
 <refname>ipsec ikeping</refname>
@@ -41,7 +41,11 @@ does for ICMP echo request/reply packets.</para>
 
 <para>
 At the time of this writing, the ISAKMP echo request/reply exchange is still
-an internet-draft, and is therefore completely non-standard.
+an internet-draft (draft-richardson-ipsec-ikeping-00), and is therefore
+completely non-standard. The Openswan IKE daemon pluto does implement this
+draft, so ikeping can be used to test connectivity to an openswan ipsec
+server.
+
 </para>
 
 <para><emphasis remap='I'>Ikeping</emphasis>
@@ -61,7 +65,7 @@ then listens for replies, printing them as they are received. Replies
 are of exchange type 245 or the specified exchange number plus 1.
 <emphasis remap='I'>Ikeping</emphasis>
 will keep listening until it either receives as many echo responses as it sent,
-or until the timeout period (10 seconds) has been reached. Receipt of a
+or until the timeout period (5 seconds) has been reached. Receipt of a
 packet will reset the timer. The 
 <option>--wait</option>
 option can be used to specify a different timeout period.</para> 
@@ -88,10 +92,6 @@ This is only useful in listen mode.</para>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
 <para><citerefentry><refentrytitle>ping</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_pluto</refentrytitle><manvolnum>8</manvolnum></citerefentry></para>
-</refsect1>
-
-<refsect1 id='bugs'><title>BUGS</title>
-<para><citerefentry><refentrytitle>ipsec_pluto</refentrytitle><manvolnum>8</manvolnum></citerefentry> does not support the ikeping packet yet, and cannot be used as a listener. Therefor, one needs to stop pluto and start an ikeping in listen mode to test a remote site.</para>
 </refsect1>
 
 <refsect1 id='history'><title>HISTORY</title>

@@ -367,7 +367,8 @@ main(int argc, char **argv)
 	  continue;
 	  
       case 'w':
-	  waitTime=strtol(optarg, &foo, 0);
+	  /* convert msec to sec */
+	  waitTime=strtol(optarg, &foo, 0)*500;
 	  if(optarg==foo || waitTime < 0) {
 	      fprintf(stderr, "Invalid waittime number '%s' (should be 0<=x)\n",
 		      optarg);
