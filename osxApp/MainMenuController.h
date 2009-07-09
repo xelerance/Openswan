@@ -10,8 +10,21 @@
 #import <Growl-WithInstaller/Growl.h>
 #import "ConnectionsDB.h"
 
+#include <unistd.h>
+#include <netinet/in.h>
+
+#include "BetterAuthorizationSampleLib.h"
+
+#include "Common.h"
+
 @class AdvMenuController;
 @class PreferenceController;
+
+/////////////////////////////////////////////////////////////////
+#pragma mark ***** Globals
+
+static AuthorizationRef gAuth;
+
 
 @interface MainMenuController : NSWindowController <GrowlApplicationBridgeDelegate> {
 	AdvMenuController* advMenuController;

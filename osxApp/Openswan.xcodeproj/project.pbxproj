@@ -25,6 +25,8 @@
 		99C02D4910053BE000179127 /* Common.c in Sources */ = {isa = PBXBuildFile; fileRef = 99C02D4710053BE000179127 /* Common.c */; };
 		99C02D5D1005480000179127 /* AuthorizationPrompt.strings in Resources */ = {isa = PBXBuildFile; fileRef = 99C02D5B1005480000179127 /* AuthorizationPrompt.strings */; };
 		99C2E30C0F95FE9F00AA9274 /* APPL.icns in Resources */ = {isa = PBXBuildFile; fileRef = 99C2E30B0F95FE9F00AA9274 /* APPL.icns */; };
+		99CF0BC01006530D001EBC90 /* HelperTool.c in Sources */ = {isa = PBXBuildFile; fileRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */; };
+		99CF0BC210065B41001EBC90 /* HelperTool.c in Sources */ = {isa = PBXBuildFile; fileRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */; };
 		99E671E00FFBC78C00C5AECE /* Growl-WithInstaller.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */; };
 		99E671EF0FFBC83C00C5AECE /* Growl-WithInstaller.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */; };
 		99FBA11B0FE13F540038B2EE /* PreferenceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99FBA11A0FE13F540038B2EE /* PreferenceController.m */; };
@@ -97,10 +99,11 @@
 		99C02D3A10053B2300179127 /* BetterAuthorizationSampleLib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = BetterAuthorizationSampleLib.c; sourceTree = SOURCE_ROOT; };
 		99C02D4310053B7300179127 /* BetterAuthorizationSampleLibInstallTool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = BetterAuthorizationSampleLibInstallTool.c; sourceTree = SOURCE_ROOT; };
 		99C02D4510053B8800179127 /* BetterAuthorizationSampleLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BetterAuthorizationSampleLib.h; sourceTree = SOURCE_ROOT; };
-		99C02D4610053BE000179127 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Common.h; path = Xelerance/openswan.gsoc/osxApp/Common.h; sourceTree = DEVELOPER_DIR; };
-		99C02D4710053BE000179127 /* Common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Common.c; path = Xelerance/openswan.gsoc/osxApp/Common.c; sourceTree = DEVELOPER_DIR; };
+		99C02D4610053BE000179127 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = SOURCE_ROOT; };
+		99C02D4710053BE000179127 /* Common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Common.c; sourceTree = SOURCE_ROOT; };
 		99C02D5C1005480000179127 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AuthorizationPrompt.strings; sourceTree = SOURCE_ROOT; };
 		99C2E30B0F95FE9F00AA9274 /* APPL.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = APPL.icns; sourceTree = "<group>"; };
+		99CF0BBF1006530D001EBC90 /* HelperTool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HelperTool.c; sourceTree = SOURCE_ROOT; };
 		99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = "Growl-WithInstaller.framework"; sourceTree = SOURCE_ROOT; };
 		99FBA1190FE13F540038B2EE /* PreferenceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceController.h; sourceTree = SOURCE_ROOT; };
 		99FBA11A0FE13F540038B2EE /* PreferenceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceController.m; sourceTree = SOURCE_ROOT; };
@@ -233,6 +236,7 @@
 				99C02D4610053BE000179127 /* Common.h */,
 				99C02D4710053BE000179127 /* Common.c */,
 				99C02D5B1005480000179127 /* AuthorizationPrompt.strings */,
+				99CF0BBF1006530D001EBC90 /* HelperTool.c */,
 			);
 			name = HelperTool;
 			sourceTree = "<group>";
@@ -349,6 +353,7 @@
 				999911910FEBFD9800DE1431 /* ConnectionsDB.m in Sources */,
 				99C02D3B10053B2300179127 /* BetterAuthorizationSampleLib.c in Sources */,
 				99C02D4810053BE000179127 /* Common.c in Sources */,
+				99CF0BC01006530D001EBC90 /* HelperTool.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,6 +369,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				99CF0BC210065B41001EBC90 /* HelperTool.c in Sources */,
 				99C02D3C10053B2300179127 /* BetterAuthorizationSampleLib.c in Sources */,
 				99C02D4910053BE000179127 /* Common.c in Sources */,
 			);
