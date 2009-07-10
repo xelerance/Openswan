@@ -14,6 +14,8 @@
 		99604D0C0FE15ECD008769D4 /* AdvancedMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 99604D0B0FE15ECD008769D4 /* AdvancedMenu.xib */; };
 		99604D1C0FE16026008769D4 /* AdvMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99604D1B0FE16026008769D4 /* AdvMenuController.m */; };
 		99604D420FE1617B008769D4 /* MainMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99604D410FE1617B008769D4 /* MainMenuController.m */; };
+		996499B2100799B300C7224D /* Growl-WithInstaller.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 996499B1100799B300C7224D /* Growl-WithInstaller.framework */; };
+		996499BD100799FA00C7224D /* Growl-WithInstaller.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 996499B1100799B300C7224D /* Growl-WithInstaller.framework */; };
 		99805F2E0FCC7B2F002E243B /* Connection.m in Sources */ = {isa = PBXBuildFile; fileRef = 99805F2D0FCC7B2F002E243B /* Connection.m */; };
 		999911910FEBFD9800DE1431 /* ConnectionsDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 999911900FEBFD9800DE1431 /* ConnectionsDB.m */; };
 		99C02D2310053A0100179127 /* HelperTool in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99C02D171005396400179127 /* HelperTool */; };
@@ -51,6 +53,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		996499BC100799EE00C7224D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				996499BD100799FA00C7224D /* Growl-WithInstaller.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		99C02D22100539E400179127 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -59,15 +71,6 @@
 			files = (
 				99C02D2510053A1500179127 /* InstallTool in CopyFiles */,
 				99C02D2310053A0100179127 /* HelperTool in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		99E671F90FFBC84B00C5AECE /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,6 +92,7 @@
 		99604D1B0FE16026008769D4 /* AdvMenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvMenuController.m; sourceTree = SOURCE_ROOT; };
 		99604D400FE1617B008769D4 /* MainMenuController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainMenuController.h; sourceTree = SOURCE_ROOT; };
 		99604D410FE1617B008769D4 /* MainMenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainMenuController.m; sourceTree = SOURCE_ROOT; };
+		996499B1100799B300C7224D /* Growl-WithInstaller.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = "Growl-WithInstaller.framework"; sourceTree = "<group>"; };
 		99805F2C0FCC7B2F002E243B /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = SOURCE_ROOT; };
 		99805F2D0FCC7B2F002E243B /* Connection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Connection.m; sourceTree = SOURCE_ROOT; };
 		9999118F0FEBFD9800DE1431 /* ConnectionsDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionsDB.h; sourceTree = SOURCE_ROOT; };
@@ -117,6 +121,7 @@
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				99CF0C2E10066112001EBC90 /* Security.framework in Frameworks */,
+				996499B2100799B300C7224D /* Growl-WithInstaller.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,6 +192,7 @@
 		29B97314FDCFA39411CA2CEA /* Openswan */ = {
 			isa = PBXGroup;
 			children = (
+				996499B1100799B300C7224D /* Growl-WithInstaller.framework */,
 				99C2E30B0F95FE9F00AA9274 /* APPL.icns */,
 				99C02D3E10053B4900179127 /* HelperTool */,
 				080E96DDFE201D6D7F000001 /* Classes */,
@@ -254,8 +260,8 @@
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
-				99E671F90FFBC84B00C5AECE /* CopyFiles */,
 				99C02D22100539E400179127 /* CopyFiles */,
+				996499BC100799EE00C7224D /* CopyFiles */,
 			);
 			buildRules = (
 			);
