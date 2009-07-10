@@ -29,8 +29,7 @@
 		99CF0C1910065F4B001EBC90 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99CF0C1810065F4B001EBC90 /* CoreFoundation.framework */; };
 		99CF0C1D10065F54001EBC90 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99CF0C1C10065F54001EBC90 /* Security.framework */; };
 		99CF0C2E10066112001EBC90 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99CF0C1C10065F54001EBC90 /* Security.framework */; };
-		99E671E00FFBC78C00C5AECE /* Growl-WithInstaller.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */; };
-		99E671EF0FFBC83C00C5AECE /* Growl-WithInstaller.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */; };
+		99CF0CCA10078FE0001EBC90 /* Growl-WithInstaller.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */; };
 		99FBA11B0FE13F540038B2EE /* PreferenceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99FBA11A0FE13F540038B2EE /* PreferenceController.m */; };
 		99FBA11F0FE13F980038B2EE /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 99FBA11E0FE13F980038B2EE /* Preferences.xib */; };
 /* End PBXBuildFile section */
@@ -70,7 +69,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				99E671EF0FFBC83C00C5AECE /* Growl-WithInstaller.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,8 +117,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				99CF0CCA10078FE0001EBC90 /* Growl-WithInstaller.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
-				99E671E00FFBC78C00C5AECE /* Growl-WithInstaller.framework in Frameworks */,
 				99CF0C2E10066112001EBC90 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
