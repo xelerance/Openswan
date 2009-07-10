@@ -29,7 +29,6 @@
 		99CF0C1910065F4B001EBC90 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99CF0C1810065F4B001EBC90 /* CoreFoundation.framework */; };
 		99CF0C1D10065F54001EBC90 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99CF0C1C10065F54001EBC90 /* Security.framework */; };
 		99CF0C2E10066112001EBC90 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99CF0C1C10065F54001EBC90 /* Security.framework */; };
-		99CF0CCA10078FE0001EBC90 /* Growl-WithInstaller.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */; };
 		99FBA11B0FE13F540038B2EE /* PreferenceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99FBA11A0FE13F540038B2EE /* PreferenceController.m */; };
 		99FBA11F0FE13F980038B2EE /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 99FBA11E0FE13F980038B2EE /* Preferences.xib */; };
 /* End PBXBuildFile section */
@@ -106,7 +105,6 @@
 		99CF0BBF1006530D001EBC90 /* HelperTool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HelperTool.c; sourceTree = SOURCE_ROOT; };
 		99CF0C1810065F4B001EBC90 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		99CF0C1C10065F54001EBC90 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = "Growl-WithInstaller.framework"; sourceTree = SOURCE_ROOT; };
 		99FBA1190FE13F540038B2EE /* PreferenceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceController.h; sourceTree = SOURCE_ROOT; };
 		99FBA11A0FE13F540038B2EE /* PreferenceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceController.m; sourceTree = SOURCE_ROOT; };
 		99FBA11E0FE13F980038B2EE /* Preferences.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = SOURCE_ROOT; };
@@ -117,7 +115,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				99CF0CCA10078FE0001EBC90 /* Growl-WithInstaller.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				99CF0C2E10066112001EBC90 /* Security.framework in Frameworks */,
 			);
@@ -227,7 +224,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				99E671DF0FFBC78C00C5AECE /* Growl-WithInstaller.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -494,6 +490,7 @@
 					"$(inherited)",
 					"\"/Volumes/Growl 1.1.5 SDK/Frameworks\"",
 					"\"$(DEVELOPER_DIR)/Xelerance/openswan.gsoc/osxApp\"",
+					"\"$(SRCROOT)\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -516,6 +513,7 @@
 					"$(inherited)",
 					"\"/Volumes/Growl 1.1.5 SDK/Frameworks\"",
 					"\"$(DEVELOPER_DIR)/Xelerance/openswan.gsoc/osxApp\"",
+					"\"$(SRCROOT)\"",
 				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
