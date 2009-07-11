@@ -5,8 +5,12 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.23
+* PSK support with USE_LIBNSS [Avesh Agarwal]
+* Added fipschecks _realsetup [Avesh Agarwal]
+* passthrough routes on NETKEY where missing a a policy [Michael H. Warfield]
 * The init script was mistakenly installed twice, once as 'setup' [Paul/Harald]
 * Fix for old style nat-t patch on newstyle 2.6.23+ kernel [Paul]
+* ipsec verify now returns non-zero when an error is encountered [Paul]
 * Bugtracker bugs fixed:
    #1044: fedora openswan.spec file builds an RPM that is missing lwdnsq [Joe Steele]
 
