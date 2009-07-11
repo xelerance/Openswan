@@ -786,7 +786,7 @@ main(int argc, char **argv)
     {
 #ifdef PLUTO_SENDS_VENDORID
 # ifdef HAVE_LIBNSS
-	if(PK11_IsFIPS()) {
+	if(Pluto_IsFIPS()) {
 	openswan_log("Starting Pluto (Openswan Version %s%s) pid:%u"
 		, ipsec_version_code() , compile_time_interop_options, getpid());
 	} else {

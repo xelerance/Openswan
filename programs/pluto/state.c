@@ -60,6 +60,12 @@
 #include "crypto.h" /* requires sha1.h and md5.h */
 #include "spdb.h"
 
+#ifdef HAVE_LIBNSS
+# include <nss.h>
+# include <pk11pub.h>
+# include <keyhi.h>
+#endif
+
 /*
  * Global variables: had to go somewhere, might as well be this file.
  */

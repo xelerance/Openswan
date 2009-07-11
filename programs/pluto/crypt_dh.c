@@ -58,6 +58,9 @@
 # include <keyhi.h>
 # include "oswconf.h"
 
+#define PK11_Derive(base, mechanism, param, target, operation, keysize)  \
+	PK11_Derive_osw(base, mechanism, param, target, operation, keysize)
+
 static PK11SymKey *pk11_extract_derive_wrapper_osw(PK11SymKey *base, CK_EXTRACT_PARAMS bs
 		, CK_MECHANISM_TYPE target , CK_ATTRIBUTE_TYPE operation, int keySize)
 {
@@ -67,7 +70,7 @@ static PK11SymKey *pk11_extract_derive_wrapper_osw(PK11SymKey *base, CK_EXTRACT_
 
     return PK11_Derive(base, CKM_EXTRACT_KEY_FROM_KEY, &param, target, operation, keySize);
 }
-
+/*
 static CK_MECHANISM_TYPE nss_hmac_mech(const struct hash_desc *hasher)
 {
     CK_MECHANISM_TYPE mechanism;
@@ -78,21 +81,22 @@ static CK_MECHANISM_TYPE nss_hmac_mech(const struct hash_desc *hasher)
 	case OAKLEY_SHA2_256:  mechanism = CKM_SHA256_HMAC; break;
 	case OAKLEY_SHA2_384:  mechanism = CKM_SHA384_HMAC; break;
 	case OAKLEY_SHA2_512:  mechanism = CKM_SHA512_HMAC; break;
-	default: loglog(RC_LOG_SERIOUS,"NSS: undefined hmac mechanism"); break; /*should not reach here*/
+	default: loglog(RC_LOG_SERIOUS,"NSS: undefined hmac mechanism"); break;
     }
     return mechanism;
 }
+*/
 
 static CK_MECHANISM_TYPE nss_encryption_mech(const struct encrypt_desc *encrypter)
 {
-    CK_MECHANISM_TYPE mechanism;
+CK_MECHANISM_TYPE mechanism=0x80000000;
 
-    switch(encrypter->common.algo_id) {
-	case OAKLEY_3DES_CBC:   mechanism = CKM_DES3_CBC; break;
-	case OAKLEY_AES_CBC:  mechanism = CKM_AES_CBC; break;
-	default: loglog(RC_LOG_SERIOUS,"NSS: Unsupported encryption mechanism"); break; /*should not reach here*/
+    switch(encrypter->common.algo_id){
+    case OAKLEY_3DES_CBC:   mechanism = CKM_DES3_CBC; break;
+    case OAKLEY_AES_CBC:  mechanism = CKM_AES_CBC; break;
+    default: loglog(RC_LOG_SERIOUS,"NSS: Unsupported encryption mechanism"); break; /*should not reach here*/
     }
-    return mechanism;
+return mechanism;
 }
 #endif
 
@@ -111,13 +115,10 @@ calc_dh_shared(chunk_t *shared, const chunk_t g
     unsigned long tv_diff;
     SECKEYPublicKey   *remote_pubk, *local_pubk;
     SECKEYPrivateKey *privk;
-    SECItem nss_g,param1;
+    SECItem nss_g;
     PK11SymKey *dhshared;
     PRArenaPool *arena;
     SECStatus status;
-
-    DBG_cond_dump_chunk(DBG_CRYPT, "NSS: DH pubk pointer:\n", pubk);
-    DBG_cond_dump_chunk(DBG_CRYPT, "NSS: DH priv key pointer:\n", secret);
 
     memcpy(&local_pubk,pubk.ptr,pubk.len);
     memcpy(&privk,secret.ptr,secret.len);
@@ -129,11 +130,8 @@ calc_dh_shared(chunk_t *shared, const chunk_t g
     arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
     PR_ASSERT(arena!=NULL);
 
-    DBG(DBG_CRYPT, DBG_log("Started DH shared-secret computation in NSS:created arena\n"));
 
     remote_pubk = (SECKEYPublicKey *) PORT_ArenaZAlloc (arena, sizeof (SECKEYPublicKey));
-
-    DBG(DBG_CRYPT, DBG_log("Started DH shared-secret computation in NSS:created remote pubk\n"));
 
     remote_pubk->arena = arena;
     remote_pubk->keyType = dhKey;
@@ -153,17 +151,12 @@ calc_dh_shared(chunk_t *shared, const chunk_t g
     status = SECITEM_CopyItem(remote_pubk->arena, &remote_pubk->u.dh.publicValue, &nss_g);
     PR_ASSERT(status==SECSuccess);
 
-    DBG(DBG_CRYPT, DBG_log("Started DH shared-secret computation in NSS:created remote pubk data\n"));
 
     dhshared=PK11_PubDerive(privk,remote_pubk,PR_FALSE, NULL, NULL
                          , CKM_DH_PKCS_DERIVE, CKM_CONCATENATE_DATA_AND_BASE
                          , CKA_DERIVE, group->bytes
                          , osw_return_nss_password_file_info());
     PR_ASSERT(dhshared!=NULL);
-
-    nss_symkey_log(dhshared,"DH Shared Secret");
-
-    DBG(DBG_CRYPT, DBG_log("Started DH shared-secret computation in NSS:created dh shared secret\n"));
 
     shared->len=sizeof(PK11SymKey *);
     shared->ptr = alloc_bytes(shared->len, "calculated shared secret");
@@ -247,17 +240,115 @@ calc_dh_shared(chunk_t *shared, const chunk_t g
 /* SKEYID for preshared keys.
  * See draft-ietf-ipsec-ike-01.txt 4.1
  */
+
+#ifdef HAVE_LIBNSS
+static void
+skeyid_preshared(const chunk_t pss
+                 , const chunk_t ni
+                 , const chunk_t nr
+                 , const chunk_t shared_chunk
+                 , const struct hash_desc *hasher
+                 , chunk_t *skeyid_chunk)
+#else
 static void
 skeyid_preshared(const chunk_t pss
 		 , const chunk_t ni
 		 , const chunk_t nr
 		 , const struct hash_desc *hasher
 		 , chunk_t *skeyid)
+#endif
 {
     struct hmac_ctx ctx;
 
     passert(hasher != NULL);
 
+#ifdef HAVE_LIBNSS
+    chunk_t nir;
+    int k;
+    CK_MECHANISM_TYPE mechanism;
+    u_char buf1[HMAC_BUFSIZE], buf2[HMAC_BUFSIZE];
+    chunk_t buf1_chunk, buf2_chunk;
+    PK11SymKey *shared, *skeyid;
+
+    DBG(DBG_CRYPT,
+        DBG_log("NSS: skeyid inputs (pss+NI+NR+shared) hasher: %s", hasher->common.name);
+        DBG_dump_chunk("shared-secret: ", shared_chunk);
+        DBG_dump_chunk("ni: ", ni);
+        DBG_dump_chunk("nr: ", nr));
+
+     memcpy(&shared, shared_chunk.ptr, shared_chunk.len);
+
+    /* We need to hmac_init with the concatenation of Ni_b and Nr_b,
+     * so we have to build a temporary concatentation.
+     */
+
+    nir.len = ni.len + nr.len;
+    nir.ptr = alloc_bytes(nir.len, "Ni + Nr in skeyid_preshared");
+    memcpy(nir.ptr, ni.ptr, ni.len);
+    memcpy(nir.ptr+ ni.len, nr.ptr, nr.len);
+
+    memset(buf1, '\0', HMAC_BUFSIZE);
+
+    if (pss.len <= HMAC_BUFSIZE)
+    {
+        memcpy(buf1, pss.ptr, pss.len);
+    }
+    else
+    {
+        hasher->hash_init(&ctx.hash_ctx);
+        hasher->hash_update(&ctx.hash_ctx, pss.ptr, pss.len);
+        hasher->hash_final(buf1, &ctx.hash_ctx);
+    }
+
+    memcpy(buf2, buf1, HMAC_BUFSIZE);
+
+    for (k = 0; k < HMAC_BUFSIZE; k++)
+    {
+        buf1[k] ^= HMAC_IPAD;
+        buf2[k] ^= HMAC_OPAD;
+    }
+
+    //pfree(nir.ptr);
+
+    mechanism=nss_key_derivation_mech(hasher);
+    buf1_chunk.ptr=buf1;
+    buf1_chunk.len=HMAC_BUFSIZE;
+
+    buf2_chunk.ptr=buf2;
+    buf2_chunk.len=HMAC_BUFSIZE;
+
+    PK11SymKey *tkey4 = pk11_derive_wrapper_osw(shared, CKM_CONCATENATE_DATA_AND_BASE, buf1_chunk, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);
+    //nss_symkey_log(tkey4, "pss+ipad+shared");
+
+    CK_EXTRACT_PARAMS bs=0;
+    PK11SymKey *tkey5 = pk11_extract_derive_wrapper_osw(tkey4, bs, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, HMAC_BUFSIZE);
+    //nss_symkey_log(tkey5, "pss+ipad");
+
+    PK11SymKey *tkey6 = pk11_derive_wrapper_osw(tkey5, CKM_CONCATENATE_BASE_AND_DATA, nir, mechanism, CKA_DERIVE, 0);
+    pfree(nir.ptr);
+    //nss_symkey_log(tkey6, "pss+ipad+nir");
+
+    //PK11SymKey *tkey1 = pk11_derive_wrapper_osw(shared, CKM_CONCATENATE_DATA_AND_BASE, buf1_chunk, mechanism, CKA_DERIVE, 0);
+    PK11SymKey *tkey2 = PK11_Derive(tkey6, mechanism, NULL, CKM_CONCATENATE_DATA_AND_BASE, CKA_DERIVE, 0);
+    //nss_symkey_log(tkey2, "pss : tkey2");
+
+    PK11SymKey *tkey3 = pk11_derive_wrapper_osw(tkey2, CKM_CONCATENATE_DATA_AND_BASE, buf2_chunk, mechanism, CKA_DERIVE, 0);
+    skeyid = PK11_Derive(tkey3, mechanism, NULL, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
+    //nss_symkey_log(tkey2, "pss : tkey3");
+
+    skeyid_chunk->len = sizeof(PK11SymKey *);
+    skeyid_chunk->ptr = alloc_bytes(skeyid_chunk->len, "calculated skeyid(pss)");
+    memcpy(skeyid_chunk->ptr, &skeyid, skeyid_chunk->len);
+
+    PK11_FreeSymKey(tkey4);
+    PK11_FreeSymKey(tkey5);
+    PK11_FreeSymKey(tkey6);
+    PK11_FreeSymKey(tkey2);
+    PK11_FreeSymKey(tkey3);
+
+    DBG(DBG_CRYPT,
+        DBG_dump_chunk("NSS: st_skeyid in skeyid_preshared(): ", *skeyid_chunk));
+#else
     DBG(DBG_CRYPT,
 	DBG_log("Skey inputs (PSK+NI+NR)");
 	DBG_dump_chunk("ni: ", ni);
@@ -269,6 +360,7 @@ skeyid_preshared(const chunk_t pss
     hmac_final_chunk(*skeyid, "st_skeyid in skeyid_preshared()", &ctx);
     DBG(DBG_CRYPT,
 	DBG_dump_chunk("keyid: ", *skeyid));
+#endif
 }
 
 static void
@@ -406,8 +498,8 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     {
 	case OAKLEY_PRESHARED_KEY:
 #ifdef HAVE_LIBNSS
-	    loglog(RC_LOG_SERIOUS,"OAKLEY_PRESHARED_KEY: Not Supported with NSS");
-	    bad_case(auth);
+	    setchunk_fromwire(pss,    &skq->pss, skq);
+	    skeyid_preshared(pss, ni, nr, shared_chunk, hasher, skeyid_chunk);
 #else
 	    setchunk_fromwire(pss,    &skq->pss, skq);
 	    skeyid_preshared(pss, ni, nr, hasher, skeyid_chunk);
@@ -465,7 +557,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     PR_ASSERT(tkey2!=NULL);
 
     keyhandle=PK11_GetSymKeyHandle(shared);
-    param.data=&keyhandle;
+    param.data=(unsigned char *) &keyhandle;
     param.len=sizeof(keyhandle);
 
     PK11SymKey *tkey3 = PK11_Derive(tkey2, CKM_CONCATENATE_BASE_AND_KEY, &param, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
@@ -494,7 +586,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 
 
     keyhandle=PK11_GetSymKeyHandle(tkey7);
-    param.data=&keyhandle;
+    param.data=(unsigned char*)&keyhandle;
     param.len=sizeof(keyhandle);
 
     PK11SymKey *tkey9 = PK11_Derive(tkey8, CKM_CONCATENATE_BASE_AND_KEY, &param, nss_key_derivation_mech(hasher), CKA_DERIVE, 0);
@@ -508,14 +600,14 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 
     /*Deriving SKEYID_a = hmac_xxx(SKEYID, SKEYID_d | g^xy | CKY-I | CKY-R | 1)*/
     keyhandle=PK11_GetSymKeyHandle(skeyid_d);
-    param.data=&keyhandle;
+    param.data=(unsigned char*)&keyhandle;
     param.len=sizeof(keyhandle);
 
     PK11SymKey *tkey10 = PK11_Derive(tkey2, CKM_CONCATENATE_BASE_AND_KEY, &param, CKM_CONCATENATE_BASE_AND_KEY, CKA_DERIVE, 0);
     PR_ASSERT(tkey10!=NULL);
 
     keyhandle=PK11_GetSymKeyHandle(shared);
-    param.data=&keyhandle;
+    param.data=(unsigned char*)&keyhandle;
     param.len=sizeof(keyhandle);
 
     PK11SymKey *tkey11 = PK11_Derive(tkey10, CKM_CONCATENATE_BASE_AND_KEY, &param, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
@@ -537,7 +629,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     PR_ASSERT(tkey15!=NULL);
 
     keyhandle=PK11_GetSymKeyHandle(tkey15);
-    param.data=&keyhandle;
+    param.data=(unsigned char*)&keyhandle;
     param.len=sizeof(keyhandle);
 
     PK11SymKey *tkey16 = PK11_Derive(tkey8, CKM_CONCATENATE_BASE_AND_KEY, &param, nss_key_derivation_mech(hasher), CKA_DERIVE, 0);
@@ -551,14 +643,14 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 
     /*Deriving SKEYID_e = prf(SKEYID, SKEYID_a | g^xy | CKY-I | CKY-R | 2)*/
     keyhandle=PK11_GetSymKeyHandle(skeyid_a);
-    param.data=&keyhandle;
+    param.data=(unsigned char*)&keyhandle;
     param.len=sizeof(keyhandle);
 
     PK11SymKey *tkey17 = PK11_Derive(tkey2, CKM_CONCATENATE_BASE_AND_KEY, &param, CKM_CONCATENATE_BASE_AND_KEY, CKA_DERIVE, 0);
     PR_ASSERT(tkey17!=NULL);
 
     keyhandle=PK11_GetSymKeyHandle(shared);
-    param.data=&keyhandle;
+    param.data=(unsigned char*)&keyhandle;
     param.len=sizeof(keyhandle);
 
     PK11SymKey *tkey18 = PK11_Derive(tkey17, CKM_CONCATENATE_BASE_AND_KEY, &param, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
@@ -580,28 +672,27 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     PR_ASSERT(tkey22!=NULL);
 
     keyhandle=PK11_GetSymKeyHandle(tkey22);
-    param.data=&keyhandle;
+    param.data=(unsigned char*)&keyhandle;
     param.len=sizeof(keyhandle);
 
     PK11SymKey *tkey23 = PK11_Derive(tkey8, CKM_CONCATENATE_BASE_AND_KEY, &param, nss_key_derivation_mech(hasher), CKA_DERIVE, 0);
     PR_ASSERT(tkey23!=NULL);
 
-    DBG(DBG_CRYPT, DBG_log("NSS: enc keysize=%d\n",keysize));
+    DBG(DBG_CRYPT, DBG_log("NSS: enc keysize=%d\n",(int)keysize));
     /*Deriving encryption key from SKEYID_e*/
     /* Oakley Keying Material
      * Derived from Skeyid_e: if it is not big enough, generate more
      * using the PRF.
      * See RFC 2409 "IKE" Appendix B*/
 
-      CK_EXTRACT_PARAMS bitstart = 0;
-      param1.data = &bitstart;
+      CK_EXTRACT_PARAMS bitstart = 0; 
+      param1.data = (unsigned char*)&bitstart;
       param1.len = sizeof (bitstart);
 
        if(keysize <= hasher->hash_digest_len){
        skeyid_e = PK11_Derive(tkey23, nss_key_derivation_mech(hasher), NULL, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);
        PR_ASSERT(skeyid_e!=NULL);
 
-       nss_symkey_log(skeyid_e, "skeyid_e");
 
        enc_key = PK11_DeriveWithFlags(skeyid_e, CKM_EXTRACT_KEY_FROM_KEY, &param1
                                       , nss_encryption_mech(encrypter), CKA_FLAGS_ONLY, keysize, CKF_ENCRYPT|CKF_DECRYPT);
@@ -617,7 +708,6 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 
         skeyid_e = PK11_Derive(tkey23, nss_key_derivation_mech(hasher), NULL, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
         PR_ASSERT(skeyid_e!=NULL);
-       nss_symkey_log(skeyid_e, "skeyid_e");
 
         PK11SymKey *tkey25 = pk11_derive_wrapper_osw(skeyid_e, CKM_CONCATENATE_BASE_AND_DATA
                                                 , hmac_pad,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, HMAC_BUFSIZE);
@@ -640,7 +730,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
         PR_ASSERT(tkey29!=NULL);
 
         keyhandle=PK11_GetSymKeyHandle(tkey28);
-        param.data=&keyhandle;
+        param.data=(unsigned char*)&keyhandle;
         param.len=sizeof(keyhandle);
 
         PK11SymKey *tkey30 = PK11_Derive(tkey29, CKM_CONCATENATE_BASE_AND_KEY, &param, nss_key_derivation_mech(hasher), CKA_DERIVE, 0);
@@ -668,7 +758,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
                for(;;){
 
                keyhandle=PK11_GetSymKeyHandle(tkey31);
-               param.data=&keyhandle;
+               param.data=(unsigned char*)&keyhandle;
                param.len=sizeof(keyhandle);
 
                PK11SymKey *tkey34 = PK11_Derive(tkey33, CKM_CONCATENATE_BASE_AND_KEY, &param, nss_key_derivation_mech(hasher), CKA_DERIVE, 0);
@@ -679,7 +769,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
                PR_ASSERT(tkey35!=NULL);
 
                keyhandle=PK11_GetSymKeyHandle(tkey35);
-               param.data=&keyhandle;
+               param.data=(unsigned char*)&keyhandle;
                param.len=sizeof(keyhandle);
 
                PK11SymKey *tkey37 = PK11_Derive(tkey36, CKM_CONCATENATE_BASE_AND_KEY, &param, nss_key_derivation_mech(hasher), CKA_DERIVE, 0);
@@ -694,13 +784,11 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 
                        /*concatenating K1 and K2 */
                        keyhandle=PK11_GetSymKeyHandle(tkey38);
-                       param.data=&keyhandle;
+                       param.data=(unsigned char*)&keyhandle;
                        param.len=sizeof(keyhandle);
 
                        PK11SymKey *tkey39 = PK11_Derive(keymat, CKM_CONCATENATE_BASE_AND_KEY, &param, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);
                        PR_ASSERT(tkey39!=NULL);
-
-                        DBG(DBG_CRYPT, DBG_log("NSS: encrypter= %d, keysize =%d\n", nss_encryption_mech(encrypter), keysize));
 
                        enc_key = PK11_DeriveWithFlags(tkey39, CKM_EXTRACT_KEY_FROM_KEY, &param1
                                               , nss_encryption_mech(encrypter), CKA_FLAGS_ONLY, /*0*/ keysize, CKF_ENCRYPT|CKF_DECRYPT);
@@ -731,7 +819,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
                        else{
 
                        keyhandle=PK11_GetSymKeyHandle(tkey38);
-                       param.data=&keyhandle;
+                       param.data=(unsigned char*)&keyhandle;
                        param.len=sizeof(keyhandle);
 
                        PK11SymKey *tkey39=PK11_Derive(keymat,CKM_CONCATENATE_BASE_AND_KEY, &param,CKM_CONCATENATE_BASE_AND_KEY, CKA_DERIVE, 0);
@@ -1119,18 +1207,16 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 #ifdef HAVE_LIBNSS
     const struct hash_desc *hasher = crypto_get_hasher(skq->prf_hash);
     passert(hasher);
-    DBG(DBG_CRYPT, DBG_log("NSS ikev2: found hasher\n"));
+
 
     const struct encrypt_desc *encrypter = skq->encrypter; 
     passert(encrypter);
-    DBG(DBG_CRYPT, DBG_log("NSS ikev2: found encrypter\n"));
+
 
     hmac_opad = hmac_pads(HMAC_OPAD,HMAC_BUFSIZE);
     hmac_ipad = hmac_pads(HMAC_IPAD,HMAC_BUFSIZE);
     hmac_pad_prf  = hmac_pads(0x00,HMAC_BUFSIZE-hasher->hash_digest_len);
 
-    DBG(DBG_CRYPT, DBG_log("NSS ikev2: computed required pads\n"));
-    DBG(DBG_CRYPT, DBG_log("NSS ikev2: Started computing SKEYSEED\n"));
 
     /* generate SKEYSEED from key=(Ni|Nr), hash of shared */
     {
@@ -1138,8 +1224,6 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
         memcpy(&skeyseed_k, skeyseed->ptr, skeyseed->len);
     }
     passert(skeyseed_k);
-    nss_symkey_log(skeyseed_k, "skeyseed");
-    DBG(DBG_CRYPT, DBG_log("NSS ikev2: Computed SKEYSEED\n"));
 
 #else
     vpss.prf_hasher = crypto_get_hasher(skq->prf_hash);
@@ -1202,19 +1286,18 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	    DBG_dump_chunk("Nr", vpss.nr);
 	    DBG_dump_chunk("SPIi", vpss.spii);
 	    DBG_dump_chunk("SPIr", vpss.spir);
-	    DBG_log("Total keysize needed %ld", total_keysize);
+	    DBG_log("Total keysize needed %d", (int)total_keysize);
 	}
 #ifdef HAVE_LIBNSS
 	counter.ptr = &vpss.counter[0];
 	counter.len =1;
 
-	DBG(DBG_CRYPT, DBG_log("NSS ikev2: Started computing key material for IKEv2 SA\n"));
 
 	PK11SymKey *finalkey;
 	PK11SymKey *tkey1 = pk11_derive_wrapper_osw(skeyseed_k, CKM_CONCATENATE_BASE_AND_DATA
 		, hmac_pad_prf,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, HMAC_BUFSIZE);
 	PR_ASSERT(tkey1!=NULL);
-	nss_symkey_log(tkey1, "1");
+
 
 	for(;;)
 	{
@@ -1224,7 +1307,6 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 		PK11SymKey *tkey2 = pk11_derive_wrapper_osw(tkey1, CKM_XOR_BASE_AND_DATA
 			, hmac_ipad, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
 		PR_ASSERT(tkey2!=NULL);
-		nss_symkey_log(tkey2, "2");
 
 		tkey3 = pk11_derive_wrapper_osw(tkey2, CKM_CONCATENATE_BASE_AND_DATA
 			, vpss.ni, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
@@ -1233,16 +1315,15 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 		PK11SymKey *tkey2 = pk11_derive_wrapper_osw(tkey1, CKM_XOR_BASE_AND_DATA
 			, hmac_ipad, CKM_CONCATENATE_BASE_AND_KEY, CKA_DERIVE, 0);
 		PR_ASSERT(tkey2!=NULL);
-		nss_symkey_log(tkey2, "2");
+	
 
 		keyhandle=PK11_GetSymKeyHandle(tkey11);
-		param.data=&keyhandle;
+		param.data=(unsigned char*)&keyhandle;
 		param.len=sizeof(keyhandle);
 
 		PK11SymKey *tkey12 = PK11_Derive(tkey2, CKM_CONCATENATE_BASE_AND_KEY
 			, &param, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
 		PR_ASSERT(tkey12!=NULL);
-		nss_symkey_log(tkey12, "tkey12");
 
 		tkey3 = pk11_derive_wrapper_osw(tkey12, CKM_CONCATENATE_BASE_AND_DATA
 			, vpss.ni, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
@@ -1252,70 +1333,67 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	   }       
 
 	   PR_ASSERT(tkey3!=NULL);
-	   nss_symkey_log(tkey3, "3");
+
        
 	   PK11SymKey *tkey4 = pk11_derive_wrapper_osw(tkey3, CKM_CONCATENATE_BASE_AND_DATA
 			, vpss.nr, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
 	   PR_ASSERT(tkey4!=NULL);
-	   nss_symkey_log(tkey4, "4");
+
 
 	   PK11SymKey *tkey5 = pk11_derive_wrapper_osw(tkey4, CKM_CONCATENATE_BASE_AND_DATA
 			, vpss.spii, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
 	   PR_ASSERT(tkey5!=NULL);
-	   nss_symkey_log(tkey5, "5");
+
 
 	   PK11SymKey *tkey6 = pk11_derive_wrapper_osw(tkey5, CKM_CONCATENATE_BASE_AND_DATA
 			, vpss.spir, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
 	   PR_ASSERT(tkey6!=NULL);
-	   nss_symkey_log(tkey6, "6");
+
 
 	   PK11SymKey *tkey7 = pk11_derive_wrapper_osw(tkey6, CKM_CONCATENATE_BASE_AND_DATA
 			, counter, nss_key_derivation_mech(hasher), CKA_DERIVE, 0);
 	   PR_ASSERT(tkey7!=NULL);
-	   nss_symkey_log(tkey7, "7");
+
 
 	   PK11SymKey *tkey8 = PK11_Derive(tkey7, nss_key_derivation_mech(hasher), NULL, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
 	   PR_ASSERT(tkey8!=NULL);
-	   nss_symkey_log(tkey8, "8");
+
 
 	   PK11SymKey *tkey9 = pk11_derive_wrapper_osw(tkey1, CKM_XOR_BASE_AND_DATA
 			, hmac_opad, CKM_CONCATENATE_BASE_AND_KEY, CKA_DERIVE, 0);
 	   PR_ASSERT(tkey9!=NULL);
-	   nss_symkey_log(tkey9, "9");
+
 
 	   keyhandle=PK11_GetSymKeyHandle(tkey8);
-	   param.data=&keyhandle;
+	   param.data=(unsigned char*)&keyhandle;
 	   param.len=sizeof(keyhandle);
 
 	   PK11SymKey *tkey10 = PK11_Derive(tkey9, CKM_CONCATENATE_BASE_AND_KEY, &param, nss_key_derivation_mech(hasher), CKA_DERIVE, 0);
 	   PR_ASSERT(tkey10!=NULL);
-	   nss_symkey_log(tkey10, "10");
+
 
 	   if(vpss.counter[0]== 0x01) {
 		finalkey = PK11_Derive(tkey10, nss_key_derivation_mech(hasher), NULL, CKM_CONCATENATE_BASE_AND_KEY, CKA_DERIVE, 0);
 		PR_ASSERT(finalkey!=NULL);
-		nss_symkey_log(finalkey, "finalkey");
+
 
 		tkey11 = PK11_Derive(tkey10, nss_key_derivation_mech(hasher), NULL, CKM_CONCATENATE_BASE_AND_KEY, CKA_DERIVE, 0);
 		PR_ASSERT(tkey11!=NULL);
-		nss_symkey_log(tkey11, "tkey11");
 	   } else {
 		tkey11 = PK11_Derive(tkey10, nss_key_derivation_mech(hasher), NULL, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);
 		PR_ASSERT(tkey11!=NULL);
-		nss_symkey_log(tkey11, "tkey11");
+
 
 		keyhandle=PK11_GetSymKeyHandle(tkey11);
-		param.data=&keyhandle;
+		param.data=(unsigned char*)&keyhandle;
 		param.len=sizeof(keyhandle);
 
 		if( total_keysize <= (PK11_GetKeyLength(finalkey)+PK11_GetKeyLength(tkey11)) ) {
 		   finalkey = PK11_Derive(finalkey, CKM_CONCATENATE_BASE_AND_KEY, &param, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);
 		   PR_ASSERT(finalkey!=NULL);
-		   nss_symkey_log(finalkey, "finalkey");
 		} else {
 		   finalkey = PK11_Derive(finalkey, CKM_CONCATENATE_BASE_AND_KEY, &param, CKM_CONCATENATE_BASE_AND_KEY, CKA_DERIVE, 0);
 		   PR_ASSERT(finalkey!=NULL);
-		   nss_symkey_log(finalkey, "finalkey");
 		}
 	   }
 
@@ -1340,37 +1418,37 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	DBG(DBG_CRYPT, DBG_log("NSS ikev2: finished computing key material for IKEv2 SA\n"));
 	CK_EXTRACT_PARAMS bs=0;
 	SK_d_k = pk11_extract_derive_wrapper_osw(finalkey, bs, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, skd_bytes);
-	nss_symkey_log(SK_d_k, "SK_d_k");
+
 
 	bs= skd_bytes*BITS_PER_BYTE;
 	SK_ai_k = pk11_extract_derive_wrapper_osw(finalkey, bs, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, ska_bytes);
-	nss_symkey_log(SK_ai_k, "SK_ai_k");
+
 
 	bs= (skd_bytes + ska_bytes)*BITS_PER_BYTE;
 	SK_ar_k = pk11_extract_derive_wrapper_osw(finalkey, bs, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, ska_bytes);
-	nss_symkey_log(SK_ar_k, "SK_ar_k");
+
 
 	bs= (skd_bytes + (2*ska_bytes))*BITS_PER_BYTE;
 	param1.data =(unsigned char*)&bs;
 	param1.len = sizeof(bs);
 	SK_ei_k = PK11_DeriveWithFlags(finalkey, CKM_EXTRACT_KEY_FROM_KEY, &param1
 		, nss_encryption_mech(encrypter), CKA_FLAGS_ONLY, ske_bytes, CKF_ENCRYPT|CKF_DECRYPT);
-	nss_symkey_log(SK_ei_k, "SK_ei_k");
+
 
 	bs= (skd_bytes + (2*ska_bytes) + ske_bytes)*BITS_PER_BYTE;
 	param1.data =(unsigned char*)&bs;
 	param1.len = sizeof(bs);
 	SK_er_k = PK11_DeriveWithFlags(finalkey, CKM_EXTRACT_KEY_FROM_KEY, &param1
 		, nss_encryption_mech(encrypter), CKA_FLAGS_ONLY, ske_bytes, CKF_ENCRYPT|CKF_DECRYPT);
-	nss_symkey_log(SK_er_k, "SK_er_k");
+
 
 	bs= (skd_bytes + (2*ska_bytes) + (2*ske_bytes))*BITS_PER_BYTE;
 	SK_pi_k = pk11_extract_derive_wrapper_osw(finalkey, bs, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, skp_bytes);
-	nss_symkey_log(SK_pi_k, "SK_pi_k");
+
 
 	bs= (skd_bytes + (2*ska_bytes) + (2*ske_bytes)+skp_bytes)*BITS_PER_BYTE;
 	SK_pr_k = pk11_extract_derive_wrapper_osw(finalkey, bs, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, skp_bytes);
-	nss_symkey_log(SK_pr_k, "SK_pr_k");
+
 
 
 	DBG(DBG_CRYPT, DBG_log("NSS ikev2: finished computing individual keys for IKEv2 SA\n"));
@@ -1380,37 +1458,37 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	SK_d->len = sizeof(PK11SymKey *);
 	SK_d->ptr = alloc_bytes(SK_d->len, "SK_d");
 	memcpy(SK_d->ptr, &SK_d_k, SK_d->len);   
-	DBG(DBG_CRYPT, DBG_log("NSS: copied SK_d\n"));
+
 
 	SK_ai->len = sizeof(PK11SymKey *);
 	SK_ai->ptr = alloc_bytes(SK_ai->len, "SK_ai");
 	memcpy(SK_ai->ptr, &SK_ai_k, SK_ai->len);   
-	DBG(DBG_CRYPT, DBG_log("NSS: copied SK_ai\n"));
+
 
 	SK_ar->len = sizeof(PK11SymKey *);
 	SK_ar->ptr = alloc_bytes(SK_ar->len, "SK_ar");
 	memcpy(SK_ar->ptr, &SK_ar_k, SK_ar->len);   
-	DBG(DBG_CRYPT, DBG_log("NSS: copied SK_ar\n"));
+
 
 	SK_ei->len = sizeof(PK11SymKey *);
 	SK_ei->ptr = alloc_bytes(SK_ei->len, "SK_ei");
 	memcpy(SK_ei->ptr, &SK_ei_k, SK_ei->len);   
-	DBG(DBG_CRYPT, DBG_log("NSS: copied SK_ei\n"));
+
 
 	SK_er->len = sizeof(PK11SymKey *);
 	SK_er->ptr = alloc_bytes(SK_er->len, "SK_er");
 	memcpy(SK_er->ptr, &SK_er_k, SK_er->len);   
-	DBG(DBG_CRYPT, DBG_log("NSS: copied SK_er\n"));
+
 
 	SK_pi->len = sizeof(PK11SymKey *);
 	SK_pi->ptr = alloc_bytes(SK_pi->len, "SK_pi");
 	memcpy(SK_pi->ptr, &SK_pi_k, SK_pi->len);   
-	DBG(DBG_CRYPT, DBG_log("NSS: copied SK_pi\n"));
+
 
 	SK_pr->len = sizeof(PK11SymKey *);
 	SK_pr->ptr = alloc_bytes(SK_pr->len, "SK_pr");
 	memcpy(SK_pr->ptr, &SK_pr_k, SK_pr->len);   
-	DBG(DBG_CRYPT, DBG_log("NSS: copied SK_pr\n"));
+
 
 	freeanychunk(hmac_opad);
 	freeanychunk(hmac_ipad);

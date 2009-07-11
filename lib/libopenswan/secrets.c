@@ -121,11 +121,13 @@ RSA_show_key_fields(struct RSA_private_key *k, int fieldcnt)
 }
 
 /* debugging info that compromises security! */
+#ifndef HAVE_LIBNSS
 static void
 RSA_show_private_key(struct RSA_private_key *k)
 {
     RSA_show_key_fields(k, elemsof(RSA_private_field));
 }
+#endif
 
 static void
 RSA_show_public_key(struct RSA_public_key *k)

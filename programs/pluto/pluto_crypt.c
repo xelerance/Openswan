@@ -71,7 +71,8 @@ TAILQ_HEAD(req_queue, pluto_crypto_req_cont);
 struct pluto_crypto_worker {
     int   pcw_helpernum;
 #ifdef HAVE_LIBNSS
-    pthread_t pcw_pid;
+   //pthread_t pcw_pid;
+   long int pcw_pid;
 #else
     pid_t pcw_pid;
 #endif
@@ -168,6 +169,7 @@ void pluto_do_crypto_op(struct pluto_crypto_req *r)
     }
 }
 
+#ifndef HAVE_LIBNSS
 static void catchhup(int signo UNUSED)
 {
     /* socket closed die */
@@ -178,6 +180,7 @@ static void catchusr1(int signo UNUSED)
 {
     return;
 }
+#endif
 
 static void
 helper_passert_fail(const char *pred_str
@@ -885,7 +888,7 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 	return;  
     }
     else{
-	openswan_log("started helper (thread) pid=%d (fd:%d)", w->pcw_pid,  w->pcw_pipe);
+	openswan_log("started helper (thread) pid=%ld (fd:%d)", w->pcw_pid,  w->pcw_pipe);
     }
 #else
     w->pcw_pid = fork();
@@ -934,22 +937,6 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 	
 	pluto_init_log();
 
-/* XXX Paul: this is never reaches anymore? */
-#ifdef HAVE_LIBNSS 
-	NSS_Shutdown();
-	const struct osw_conf_options *oco;
-	char buf[100];
-	oco=osw_init_options();
-	snprintf(buf, sizeof(buf), "sql:%s",oco->confddir);  
-	loglog(RC_LOG_SERIOUS,"nss directory crypt helper: %s",buf);
-	SECStatus nss_init_status=NSS_InitReadWrite(buf);
-	if(nss_init_status != SECSuccess) {
-	   loglog(RC_LOG_SERIOUS, "NSS initialization failed in crypto helper(err %d)\n", PR_GetError());
-	} else{
-		loglog(RC_LOG_SERIOUS, "NSS initialized in crypto helper\n");
-		PK11_SetPasswordFunc(getNSSPassword);
-       }
-#endif
 
 	init_rnd_pool();
 	load_oswcrypto();
@@ -959,10 +946,6 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 
 	pluto_crypto_helper(fds[1], n);
 
-#if defined(HAVE_LIBNSS)
-	NSS_Shutdown();
-	loglog(RC_LOG_SERIOUS, "init_crypto_helper: helper (%d) is exiting\n",n);
-#endif
 	exit(0);
 	/* NOTREACHED */
     }

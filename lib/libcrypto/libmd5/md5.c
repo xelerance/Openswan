@@ -75,7 +75,9 @@ documentation and/or software.
 
 #define MD5Transform _MD5Transform
 
+#ifndef HAVE_LIBNSS
 static void MD5Transform PROTO_LIST ((UINT4 [4], const unsigned char [64]));
+#endif
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 #define Encode MD5_memcpy
@@ -100,11 +102,13 @@ static void MD5_memcpy PROTO_LIST ((POINTER, POINTER, unsigned int));
 static void MD5_memset PROTO_LIST ((POINTER, int, unsigned int));
 #endif
 #endif
+#ifndef HAVE_LIBNSS
 static unsigned char PADDING[64] = {
   0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
+#endif
 
 /* F, G, H and I are basic MD5 functions.
  */
@@ -147,14 +151,12 @@ void osMD5Init (context)
 MD5_CTX *context;                                        /* context */
 {
 #ifdef HAVE_LIBNSS
-  DBG(DBG_CRYPT, DBG_log("NSS: md5 init start"));
   SECStatus status;
   context->ctx_nss=NULL;
   context->ctx_nss = PK11_CreateDigestContext(SEC_OID_MD5);
   PR_ASSERT(context->ctx_nss!=NULL);
   status=PK11_DigestBegin(context->ctx_nss);
   PR_ASSERT(status==SECSuccess);
-  DBG(DBG_CRYPT, DBG_log("NSS: md5 init end"));
 #else
   context->count[0] = context->count[1] = 0;
   /* Load magic initialization constants.
@@ -178,7 +180,6 @@ UINT4 inputLen;                            /* length of input block */
 #ifdef HAVE_LIBNSS
   SECStatus status=PK11_DigestOp(context->ctx_nss, input, inputLen);
   PR_ASSERT(status==SECSuccess);
-  DBG(DBG_CRYPT, DBG_log("NSS: md5 update end")); 
 #else
   UINT4 i;
   unsigned int myindex, partLen;
@@ -225,7 +226,6 @@ MD5_CTX *context;                                       /* context */
   PR_ASSERT(length==MD5_DIGEST_SIZE);
   PR_ASSERT(status==SECSuccess);
   PK11_DestroyContext(context->ctx_nss, PR_TRUE);
-  DBG(DBG_CRYPT, DBG_log("NSS: md5 final end"));
 #else
   unsigned char bits[8];
   unsigned int myindex, padLen;
@@ -256,6 +256,7 @@ MD5_CTX *context;                                       /* context */
 
 /* MD5 basic transformation. Transforms state based on block.
  */
+#ifndef HAVE_LIBNSS
 static void MD5Transform (state, block)
 UINT4 state[4];
 const unsigned char block[64];
@@ -345,6 +346,7 @@ const unsigned char block[64];
 */
   MD5_memset ((POINTER)x, 0, sizeof (x));
 }
+#endif
 
 #if BYTE_ORDER != LITTLE_ENDIAN
 

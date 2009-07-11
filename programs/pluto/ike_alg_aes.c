@@ -78,7 +78,7 @@ do_aes(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *
     memcpy(buf,tmp_buf,buf_len);  
 
     if(enc){
-    new_iv = (char*) buf + buf_len-AES_CBC_BLOCK_SIZE;
+    new_iv = (u_int8_t*) buf + buf_len-AES_CBC_BLOCK_SIZE;
     }
 
     memcpy(iv, new_iv, AES_CBC_BLOCK_SIZE);

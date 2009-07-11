@@ -32,6 +32,11 @@
 #include "ipsecconf/starterlog.h"
 #include "ipsecconf/oeconns.h"
 
+#ifdef HAVE_LIBNSS
+//#ifdef FIPS_CHECK
+#include "oswconf.h"
+#endif
+
 static char _tmp_err[512];
 
 /** 
@@ -969,6 +974,18 @@ static int load_conn (struct starter_config *cfg
     /* reset authby flags */
     if(conn->options_set[KBF_AUTHBY]) {
 	conn->policy &= ~(POLICY_ID_AUTH_MASK);
+
+#ifdef HAVE_LIBNSS
+//#ifdef FIPS_CHECK
+        if(Pluto_IsFIPS()) {
+		if((conn->options[KBF_AUTHBY] & POLICY_PSK) == POLICY_PSK){
+		starter_log(LOG_LEVEL_INFO
+                        ,"while loading conn '%s', PSK not allowed in FIPS mode with NSS", conn->name);
+		return 1;
+		}      
+	}
+#endif
+
 	conn->policy |= conn->options[KBF_AUTHBY];
 
 #if STARTER_POLICY_DEBUG

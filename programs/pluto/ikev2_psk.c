@@ -58,6 +58,11 @@
 #include "dpd.h"
 #include "keys.h"
 
+#ifdef HAVE_LIBNSS
+#include <nss.h>
+#include <pk11pub.h>
+#endif
+
 static u_char psk_key_pad_str[] = "Key Pad for IKEv2"; /* 4306  2:15 */
 static int psk_key_pad_str_len = 17; /* sizeof( psk_key_pad_str); -1 */
 
@@ -80,6 +85,14 @@ static bool ikev2_calculate_psk_sighash(struct state *st
 	return FALSE;	/* failure: no PSK to use */
     }
 
+#ifdef HAVE_LIBNSS
+        PK11SymKey *shared;
+        CK_EXTRACT_PARAMS bs;
+        SECItem param;
+
+        memcpy(&shared, st->st_shared.ptr, st->st_shared.len);
+#endif
+
     /*	RFC 4306  2:15
 	AUTH = prf(prf(Shared Secret,"Key Pad for IKEv2"), <msg octets>)
     */
@@ -87,7 +100,30 @@ static bool ikev2_calculate_psk_sighash(struct state *st
     /* calculate inner prf */
     {
 	struct hmac_ctx id_ctx;
+#ifdef HAVE_LIBNSS
+	chunk_t pss_chunk;
+
+	PK11SymKey *tkey1 = pk11_derive_wrapper_osw(shared, CKM_CONCATENATE_DATA_AND_BASE, *pss, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);	
+	PR_ASSERT(tkey1!=NULL);
+
+	bs=0;
+	param.data = (unsigned char*)&bs;
+	param.len = sizeof (bs);
+	PK11SymKey *tkey2 = PK11_Derive(tkey1, CKM_EXTRACT_KEY_FROM_KEY, &param, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, pss->len);
+	PR_ASSERT(tkey2!=NULL);
+
+	pss_chunk.len = sizeof(PK11SymKey *);
+	pss_chunk.ptr = alloc_bytes(pss_chunk.len, "ikev2_calculate_psk_sighash: calculated pss_chunk");
+	memcpy(pss_chunk.ptr, &tkey2, pss_chunk.len);
+
+	hmac_init_chunk(&id_ctx, st->st_oakley.prf_hasher, pss_chunk);
+	
+	PK11_FreeSymKey(tkey1);
+	PK11_FreeSymKey(tkey2);
+	pfree(pss_chunk.ptr);
+#else
 	hmac_init_chunk(&id_ctx, st->st_oakley.prf_hasher, *pss);	
+#endif
 	hmac_update(&id_ctx, psk_key_pad_str, psk_key_pad_str_len);
 	hmac_final(prf_psk, &id_ctx);
     }
@@ -117,8 +153,33 @@ static bool ikev2_calculate_psk_sighash(struct state *st
     /* calculate outer prf */
     {
 	struct hmac_ctx id_ctx;
+#ifdef HAVE_LIBNSS
+        chunk_t pp_chunk, pps_chunk;
 	
-	hmac_init(&id_ctx, st->st_oakley.prf_hasher, prf_psk, hash_len); 
+	pp_chunk.ptr = prf_psk;
+	pp_chunk.len = hash_len;
+
+        PK11SymKey *tkey1 = pk11_derive_wrapper_osw(shared, CKM_CONCATENATE_DATA_AND_BASE, pp_chunk, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);      
+        PR_ASSERT(tkey1!=NULL);
+
+        bs=0;
+        param.data = (unsigned char*)&bs;
+        param.len = sizeof (bs);
+        PK11SymKey *tkey2 = PK11_Derive(tkey1, CKM_EXTRACT_KEY_FROM_KEY, &param, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, hash_len);
+        PR_ASSERT(tkey2!=NULL);
+
+        pps_chunk.len = sizeof(PK11SymKey *);
+        pps_chunk.ptr = alloc_bytes(pps_chunk.len, "ikev2_calculate_psk_sighash: calculated pss_chunk");
+        memcpy(pps_chunk.ptr, &tkey2, pps_chunk.len);
+
+        hmac_init_chunk(&id_ctx, st->st_oakley.prf_hasher, pps_chunk);
+
+        PK11_FreeSymKey(tkey1);
+        PK11_FreeSymKey(tkey2);
+        pfree(pps_chunk.ptr);
+#else
+        hmac_init(&id_ctx, st->st_oakley.prf_hasher, prf_psk, hash_len);
+#endif
 	
 /*
  *  For the responder, the octets to

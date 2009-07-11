@@ -213,7 +213,7 @@ sign_hash(const struct RSA_private_key *k
 }
 
 #ifdef HAVE_LIBNSS
-void sign_hash_nss(const struct RSA_private_key *k
+int sign_hash_nss(const struct RSA_private_key *k
 	, const u_char *hash_val, size_t hash_len
 	, u_char *sig_val, size_t sig_len)
 {
@@ -229,13 +229,18 @@ void sign_hash_nss(const struct RSA_private_key *k
     ckaId.len=k->ckaid_len;
     ckaId.data=k->ckaid;
 
-    DBG(DBG_CRYPT, DBG_dump("RSA_sign_hash NSS CKA_ID:\n", ckaId.data, ckaId.len));
-
     slot = PK11_GetInternalKeySlot();
     if (slot == NULL) {
 	loglog(RC_LOG_SERIOUS, "RSA_sign_hash: Unable to find (slot security) device (err %d)\n", PR_GetError());
 	return 0;
     }
+
+	if( PK11_Authenticate(slot, PR_FALSE,osw_return_nss_password_file_info()) == SECSuccess ) {
+	DBG(DBG_CRYPT, DBG_log("NSS: Authentication to NSS successful\n"));	
+	} 
+	else {
+	DBG(DBG_CRYPT, DBG_log("NSS: Authentication to NSS either failed or not required,if NSS DB without password\n"));
+	}
 
     privateKey = PK11_FindKeyByKeyID(slot, &ckaId, osw_return_nss_password_file_info());
     if(privateKey==NULL) {
@@ -269,10 +274,8 @@ void sign_hash_nss(const struct RSA_private_key *k
 	return 0;
    }
 
-   DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: input_sig_len=%d, output_signature-len=%d", sig_len, signature.len));
-   DBG(DBG_CRYPT, DBG_dump("RSA_sign_hash signature:\n", signature.data, signature.len));
    DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: Ended using NSS"));
-   /*return signature.len;*/
+   return signature.len;
 }
 
 err_t RSA_signature_verify_nss(const struct RSA_public_key *k
@@ -334,20 +337,31 @@ err_t RSA_signature_verify_nss(const struct RSA_public_key *k
     signature.data = sig_val;
     signature.len  = (unsigned int)sig_len;
 
+    data.len = (unsigned int)sig_len;
+    data.data = alloc_bytes(data.len, "NSS decrypted signature");
     data.type = siBuffer;
-    data.data = hash_val;
-    data.len  = (unsigned int)hash_len;
-       
-    /*Verifying RSA signature*/
-     retVal = PK11_Verify(publicKey,&signature,&data,osw_return_nss_password_file_info());
 
+    if(PK11_VerifyRecover(publicKey, &signature, &data, osw_return_nss_password_file_info()) == SECSuccess ) {
+	DBG(DBG_CRYPT,DBG_dump("NSS RSA verify: decrypted sig: ", data.data, data.len));
+    }
+    else {
+        DBG(DBG_CRYPT,DBG_log("NSS RSA verify: decrypting signature is failed"));
+        return "13" "NSS error: Not able to decrypt";
+    }
+
+    if(memcmp(data.data+data.len-hash_len, hash_val, hash_len)!=0) {
+	pfree(data.data);
+	loglog(RC_LOG_SERIOUS, "RSA Signature NOT verified");
+	return "14" "NSS error: Not able to verify";
+    }
+
+    DBG(DBG_CRYPT,DBG_dump("NSS RSA verify: hash value: ", hash_val, hash_len));
+
+    pfree(data.data);
     pfree(n.ptr);
     pfree(e.ptr);
     SECKEY_DestroyPublicKey (publicKey);
 
-    if(retVal != SECSuccess) {
-	loglog(RC_LOG_SERIOUS, "RSA Signature NOT verified");
-    }
     DBG(DBG_CRYPT, DBG_log("RSA Signature verified"));
 
     return NULL;

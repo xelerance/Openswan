@@ -195,10 +195,13 @@ pem_decrypt_3des(chunk_t *blob, chunk_t *iv, const char *passphrase)
 {
     MD5_CTX context;
     u_char digest[MD5_DIGEST_SIZE];
-    u_char des_iv[DES_CBC_BLOCK_SIZE];
     u_char key[24];
+
+#ifndef HAVE_LIBNSS
+    u_char des_iv[DES_CBC_BLOCK_SIZE];
     des_cblock *deskey = (des_cblock *)key;
     des_key_schedule ks[3];
+#endif
     u_char padding, *last_padding_pos, *first_padding_pos;
 
     /* Convert passphrase to 3des key */
@@ -217,7 +220,8 @@ pem_decrypt_3des(chunk_t *blob, chunk_t *iv, const char *passphrase)
     memcpy(key + MD5_DIGEST_SIZE, digest, 24 - MD5_DIGEST_SIZE);
 
 #ifdef HAVE_LIBNSS
-   do_3des_nss(blob->ptr, blob->len, key, DES_CBC_BLOCK_SIZE * 3 , iv, FALSE);
+   do_3des_nss(blob->ptr, blob->len, 
+        key, DES_CBC_BLOCK_SIZE * 3 , (u_int8_t*)iv, FALSE);
 #else
     (void) oswcrypto.des_set_key(&deskey[0], ks[0]);
     (void) oswcrypto.des_set_key(&deskey[1], ks[1]);

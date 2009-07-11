@@ -148,6 +148,9 @@ extern chunk_t hmac_pads(u_char val, unsigned int len);
 extern PK11SymKey *pk11_derive_wrapper_osw(PK11SymKey *base, CK_MECHANISM_TYPE mechanism
                                            , chunk_t data, CK_MECHANISM_TYPE target
                                            , CK_ATTRIBUTE_TYPE operation, int keySize);
+extern PK11SymKey *PK11_Derive_osw(PK11SymKey *base, CK_MECHANISM_TYPE mechanism
+                                           , SECItem *param, CK_MECHANISM_TYPE target
+                                           , CK_ATTRIBUTE_TYPE operation, int keySize);
 #endif
 
 #endif /* _CRYPTO_H */

@@ -588,10 +588,10 @@ rsasigkey(int nbits, char *configdir, char *password)
 	PK11_SetPasswordFunc(GetModulePassword);
 	nss_initialized = PR_TRUE;
 
-	/* Good for now but someone may want to use a hardware token
-	 *slot = PK11_GetInternalKeySlot();
-	 * In which case this may be better */
-	slot = PK11_GetBestSlot(CKM_RSA_PKCS_KEY_PAIR_GEN, password ? &pwdata : NULL);
+	/* Good for now but someone may want to use a hardware token*/
+	 slot = PK11_GetInternalKeySlot();
+	 /* In which case this may be better */
+	//slot = PK11_GetBestSlot(CKM_RSA_PKCS_KEY_PAIR_GEN, password ? &pwdata : NULL);
 	/*or the user may specify the name of a token.*/
 
 	/*if (PK11_IsFIPS() || !PK11_IsInternal(slot)) {

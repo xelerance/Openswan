@@ -2,12 +2,11 @@ Title: Using NSS crypto library with Pluto (Openswan)
 Author: Avesh Agarwal email: avagarwa@redhat.com
 Version:0.0
 
-
 About NSS crypto library
 --------------------------
 Please visit http://www.mozilla.org/projects/security/pki/nss/
  
-NSS crypto library is user space library. It is only used with Pluto (user space IKE daemon) for cryptographic operations. When using NSS, it does not impact the way IPSEC kernel (KLIPS or NETKEY) works. The usefulness of using NSS lies in the fact that the secret information (like private keys or anything else) never comes out of NSS database.
+NSS crypto library is user space library. It is only used with Pluto (user space IKE daemon) for cryptographic operations. When using NSS, it does not impact the way IPSEC kernel (KLIPS or NETKEY) works. The usefulness of using NSS lies in the fact that the secret information (like private keys or anything else) never comes out of NSS database. Openswan with NSS supports IKEV1, IKEv2, authentication using PSK, Raw RSA Sig key, and Digital Certs.
 
 
 How to enable NSS crypto library with Openswan
@@ -49,9 +48,9 @@ About the password file "nsspassword"
 If you create the database with a password, and want to run NSS in FIPS mode, you must create a password file with the name "nsspassword" in the /etc/ipsec.d before running pluto with NSS. The "nsspassword" file must contain the password you provided when creating NSS database. 
 
 Important thing to note: 
-i) You only need the "nsspassword" file if you run pluto in FIPS. In other way, if you run pluto in normal or NonFIPS mode and even if you create the NSS database with a password, you need not create a "nsspassword" file. 
+i) You only need the "nsspassword" file if you run pluto in FIPS. In other way, if you run pluto in normal or NonFIPS mode, then you can create the NSS database without password, and you need not create a "nsspassword" file. However, if the NSS db is created with a password, the "nsspassword" file must also be provided.
 
-ii) If you create he "nsspassword" file, it must contain only the password nothing else.  
+ii) If you create the "nsspassword" file, it must contain only the password nothing else.  
 
 
 Generating RSA keys when using NSS
@@ -60,7 +59,7 @@ You can still use ipsec newhostkey and ipsec rsasigkey tools for creating RSA ke
 
 ipsec newhostkey --configdir /etc/ipsec.d [--password password] --output /etc/ipsec.d/ipsec.secrets 
 
-A password is only required if NSS database is used in FIPS mode. If you use NSS and create RSA keys (private/public), you will notice that the contents of the ipsec.secrets are different than what used to be before. 
+A password is only required if NSS database created with password. If you use NSS and create RSA keys (private/public), you will notice that the contents of the ipsec.secrets are different than what used to be before. 
 
 Public key information in ipsec.secrets is stored in the same way as before. However, all the fields of the Private key information contain just a similar ID. This ID is called CKA ID, which is used to locate private keys inside NSS database during the IKE negotiation.
 
@@ -90,9 +89,9 @@ It creates a user cert with nick name "user-cert-nickname" with attributes "u,u,
 Important thing to note: You must provided a nick name when creating a user cert, because Pluto reads the user cert from the NSS database nased on the user cert's nickname. 
 
 
-Changes in the certitificates usage with Pluto
+Changes in the certificates usage with Pluto
 ------------------------------------------------
-1) ipsec.comf changes
+1) ipsec.conf changes
 
 The only change is "leftcert" field must contain the nick name of the user cert. For example if the nickname of the user cert is "xyz", then it can be  "leftid=xyz".
 
@@ -109,7 +108,7 @@ There is no need to provide private key file information or its password.
 3) changes in the directories in /etc/ipsec.d/ (cacerts, certs, private)  
 i)You need not have "private" or "certs" directory.
 
-ii) If you obtain a CA certificate from outside, and it is not inside NSS database, then you need to put the certificate inside "cacerts" directory, so that Pluto can read it. If the CA certificate is created in the NSS database, or imported from outside inside the NSS database, you need not have "cacerts" directory,as Pluto can read the CA cert from the database.
+ii) If you obtain a CA certificate from outside, and it is not inside NSS database, then you need to put the certificate inside "cacerts" directory, so that Pluto can read it. If the CA certificate is created in the NSS database, or imported from outside inside the NSS database, you need not have "cacerts" directory, as Pluto can read the CA cert from the database.
 
 Migrating Certificates
 ----------------------
@@ -137,6 +136,108 @@ create file /etc/ipsec.d/nss.certs with the following:
 edit your connection and replace the leftcert/rightcert with the certifiate 
 name with the same name of certificate in nss db.
 
-Things not supported
----------------------
-PSK: It is not supported when using NSS, because it required both pluto peers to have a mutual keys created outside the NSS database. So It should not be configured with NSS. 
+An example Scenario: To setup ipsec with certs in tunnel mode using NSS
+------------------------------------------------------------
+
+GW Machine 1: w1.x1.y1.z1 
+GW Machine 2: w2.x2.y2.z2 
+
+w1.x1.y1.z1 <---> w2.x2.y2.z2
+
+Note: In this example setup, both machines are using NSS. If you want to use 
+NSS only at one machine, say machine 1, you can use the following procedure 
+only at machine 1, and you can use traditional ipsec setup at machine 2.
+
+1. Create a new (if not already) nss db on both machines as follows:
+
+certutil -N -d <path-to-ipsec.d dir>/ipsec.d
+
+2. Creating CA certs at both machines:
+
+On machine 1:
+certutil -S -k rsa -n cacert1 -s "CN=cacert1" -v 12 -d . -t "C,C,C" -x -d 
+<path-to-ipsec.d dir>/ipsec.d
+
+As we want to use the same certificate  "cacert1" at machine 2, it needs to be
+exported first. To export the cacert1, do the following at machine 1: 
+
+pk12util -o cacert1.p12 -n cacert1 -d /etc/ipsec.d
+
+Copy the file "cacert1.p12" to the machine2 in "/etc/ipsec.d" directory.
+
+On machine 2:
+Import the "cacert1" as follows:
+
+cd /etc/ipsec.d
+pk12util -i cacert1.p12 -d /etc/ipsec.d
+certutil -M -n cacert1 -t "C, C, C" -d /etc/ipsec.d 
+
+Now machine 2 also has the CA certificates "cacert1" in its NSS database.
+
+3. Creating user certs at both machines:
+
+On machine 1:
+certutil -S -k rsa -c cacert1 -n usercert1 -s "CN=usercert1" -v 12 -t "u,u,u" 
+-d /etc/ipsec.d
+(Note this cert is signed by "cacert1")
+
+On machine 2:
+certutil -S -k rsa -c cacert1 -n usercert2 -s "CN=usercert2" -v 12 -t "u,u,u" 
+-d /etc/ipsec.d
+(Note this cert is signed by "cacert1" too)
+
+4. Preparing ipsec.conf at both machines 
+
+ipsec.conf at machine 1:
+
+
+conn    pluto-1-2
+        left=w1.x1.y1.z1
+        leftid="CN=usercert1"
+        leftsourceip=w1.x1.y1.z1
+        leftrsasigkey=%cert
+        leftcert=usercert1
+        leftnexthop=w2.x2.y2.z2
+        right=w2.x2.y2.z2
+        rightid="CN=usercert2"
+        rightsourceip=w2.x2.y2.z2
+        rightrsasigkey=%cert
+        rightnexthop=w1.x1.y1.z1
+        rekey=no
+        esp="aes-sha1"
+        ike="aes-sha1"
+        auto=add
+
+
+ipsec.conf at machine 2:
+
+
+conn    pluto-1-2
+        left=w2.x2.y2.z2
+        leftid="CN=usercert2"
+        leftsourceip=w2.x2.y2.z2
+        leftrsasigkey=%cert
+        leftcert=usercert2
+        leftnexthop=w1.x1.y1.z1
+        right=w1.x1.y1.z1
+        rightid="CN=usercert1"
+        rightsourceip=w1.x1.y1.z1
+        rightrsasigkey=%cert
+        rightnexthop=w2.x2.y2.z2
+        rekey=no
+        esp="aes-sha1"
+        ike="aes-sha1"
+        auto=add
+
+5. Preparing ipsec.secrets at both machines 
+
+ipsec.secrets at machine 1:
+
+ : RSA usercert1
+
+
+ipsec.secrets at machine 1:
+
+ : RSA usercert2
+  
+  

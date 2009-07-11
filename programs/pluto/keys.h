@@ -31,7 +31,7 @@ extern void sign_hash(const struct RSA_private_key *k, const u_char *hash_val
 		      , size_t hash_len, u_char *sig_val, size_t sig_len);
 
 #ifdef HAVE_LIBNSS
-extern void sign_hash_nss(const struct RSA_private_key *k, const u_char *hash_val
+extern int sign_hash_nss(const struct RSA_private_key *k, const u_char *hash_val
 				, size_t hash_len, u_char *sig_val, size_t sig_len);
 extern err_t RSA_signature_verify_nss(const struct RSA_public_key *k
 					, const u_char *hash_val, size_t hash_len

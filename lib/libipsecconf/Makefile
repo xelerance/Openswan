@@ -32,6 +32,13 @@ SRCS+=interfaces.c
 #enable to get lots more debugging about semantics.
 #CFLAGS+=-DPARSER_TYPE_DEBUG
 
+#ifeq ($(USE_FIPSCHECK),true)
+#CFLAGS+=-DFIPS_CHECK
+ifeq ($(USE_LIBNSS),true)
+CFLAGS+=-DHAVE_LIBNSS
+CFLAGS+=-I/usr/include/nspr4 -I/usr/include/nss3
+endif
+
 ifeq ($(USE_KLIPS),true)
 SRCS+=virtif.c
 endif

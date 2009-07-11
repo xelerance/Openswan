@@ -79,10 +79,7 @@ struct keyword_enum_values kw_fourvalued_list=
 struct keyword_enum_value kw_authby_values[]={
     { "never",     0},
     { "rsasig",    POLICY_RSASIG},
-/* You cannot have a PSK in an nss database */
-#ifndef HAVE_LIBNSS
     { "secret",    POLICY_PSK},
-#endif
 };
 
 struct keyword_enum_values kw_authby_list=

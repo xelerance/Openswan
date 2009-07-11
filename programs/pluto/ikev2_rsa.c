@@ -152,10 +152,12 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
 {
     const u_char *sig_val = sig_pbs->cur;
     size_t sig_len = pbs_left(sig_pbs);
+#ifndef HAVE_LIBNSS
     u_char s[RSA_MAX_OCTETS];	/* for decrypted sig_val */
     u_char *sig;
-    const struct RSA_public_key *k = &kr->u.rsa;
     unsigned int padlen;
+#endif
+    const struct RSA_public_key *k = &kr->u.rsa;
     
     if (k == NULL)
 	return "1""no key available";	/* failure: no key to use */

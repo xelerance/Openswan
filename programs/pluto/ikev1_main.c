@@ -286,13 +286,23 @@ main_outI1(int whack_sock
  * See draft-ietf-ipsec-ike-01.txt 4.1 and 6.1.1.2
  */
 
+#ifdef HAVE_LIBNSS
+void
+main_mode_hash_body(struct state *st
+                    , bool hashi        /* Initiator? */
+                    , const pb_stream *idpl     /* ID payload, as PBS */
+                    , struct hmac_ctx *ctx 
+                    , hash_update_t hash_update_void)
+#else
 void
 main_mode_hash_body(struct state *st
 		    , bool hashi	/* Initiator? */
 		    , const pb_stream *idpl	/* ID payload, as PBS */
 		    , union hash_ctx *ctx
 		    , hash_update_t hash_update_void)
+#endif
 {
+#ifndef HAVE_LIBNSS
 #define HASH_UPDATE_T (union hash_ctx *, const u_char *input, unsigned int len)
     hash_update_t hash_update=(hash_update_t)  hash_update_void;
 #if 0	/* if desperate to debug hashing */
@@ -303,6 +313,9 @@ main_mode_hash_body(struct state *st
 #endif
 
 #   define hash_update_chunk(ctx, ch) hash_update((ctx), (ch).ptr, (ch).len)
+#else
+ hash_update_void = NULL;
+#endif
 
     if (hashi)
     {
@@ -492,8 +505,10 @@ try_RSA_signature_v1(const u_char hash_val[MAX_DIGEST_LEN], size_t hash_len
 {
     const u_char *sig_val = sig_pbs->cur;
     size_t sig_len = pbs_left(sig_pbs);
+#ifndef HAVE_LIBNSS
     u_char s[RSA_MAX_OCTETS];	/* for decrypted sig_val */
     u_char *hash_in_s = &s[sig_len - hash_len];
+#endif
     const struct RSA_public_key *k = &kr->u.rsa;
 
     /* decrypt the signature -- reversing RSA_sign_hash */
@@ -740,18 +755,6 @@ main_inI1_outR1(struct msg_digest *md)
 	DBG(DBG_NATT, DBG_log("nat-t detected, sending nat-t VID"));
 	numvidtosend++;
     }
-#endif
-
-#ifdef HAVE_LIBNSS
-       if(PK11_IsFIPS())
-       {
-#define SEND_PLUTO_VID 0
-	}
-	else
-	{
-#define SEND_PLUTO_VID 1
-	}
-
 #endif
 
 #if SEND_PLUTO_VID || defined(openpgp_peer)
