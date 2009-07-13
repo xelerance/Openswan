@@ -804,13 +804,13 @@ delete_states_by_peer(ip_address *peer)
 		DBG_log("comparing %s to %s\n", ra, peerstr);
 
 		if(sameaddr(&this->st_remoteaddr, peer)) {
-		    if(ph1==0 && IS_PHASE1(st->st_state)) {
+		    if(ph1==0 && IS_PHASE1(this->st_state)) {
 			
 			whack_log(RC_COMMENT
 				  , "peer %s for connection %s crashed, replacing"
 				  , peerstr
 				  , c->name);
-			ipsecdoi_replace(st, LEMPTY, LEMPTY, 1);
+			ipsecdoi_replace(this, LEMPTY, LEMPTY, 1);
 		    } else {
 			delete_event(this);
 			event_schedule(EVENT_SA_REPLACE, 0, this);
