@@ -144,5 +144,20 @@
 	NSLog(@"Auto: %@", [selectedConn selAuthBy]);
 }
 
+- (IBAction)showChangeNameSheet:(id)sender{
+
+	[NSApp beginSheet:changeNameSheet
+		   modalForWindow:[self window]
+		modalDelegate:nil
+	   didEndSelector:NULL
+		  contextInfo:NULL];
+}
+
+- (IBAction)endChangeNameSheet:(id)sender{
+	[NSApp endSheet:changeNameSheet];
+	
+	[changeNameSheet orderOut:sender];
+}
+
 
 @end

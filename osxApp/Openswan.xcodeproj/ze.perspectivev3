@@ -322,10 +322,18 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>99E2889F100E3956006BB70F</string>
+										<string>991692641010E2E30070D04B</string>
 										<key>history</key>
 										<array>
-											<string>99E2889D100E3956006BB70F</string>
+											<string>9916925D1010E2E30070D04B</string>
+											<string>9916925E1010E2E30070D04B</string>
+										</array>
+										<key>prevStack</key>
+										<array>
+											<string>9916925F1010E2E30070D04B</string>
+											<string>991692601010E2E30070D04B</string>
+											<string>991692611010E2E30070D04B</string>
+											<string>991692621010E2E30070D04B</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -444,11 +452,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>99E28878100E28F4006BB70F</string>
+				<string>991692541010DD640070D04B</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>99E28879100E28F4006BB70F</string>
+				<string>991692551010DD640070D04B</string>
 				<string>99D2C47210079C4600410944</string>
-				<string>99E2887A100E28F4006BB70F</string>
+				<string>991692561010DD640070D04B</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
@@ -501,7 +509,7 @@
 						<key>Frame</key>
 						<string>{{0, 0}, {1080, 174}}</string>
 						<key>RubberWindowFrame</key>
-						<string>1402 84 1080 625 1280 -35 1440 900 </string>
+						<string>1457 159 1080 625 1280 -35 1440 900 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugCLIModule</string>
@@ -577,10 +585,10 @@
 							<key>Frame</key>
 							<string>{{527, 0}, {553, 198}}</string>
 							<key>RubberWindowFrame</key>
-							<string>1402 84 1080 625 1280 -35 1440 900 </string>
+							<string>1457 159 1080 625 1280 -35 1440 900 </string>
 						</dict>
 						<key>RubberWindowFrame</key>
-						<string>1402 84 1080 625 1280 -35 1440 900 </string>
+						<string>1457 159 1080 625 1280 -35 1440 900 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugSessionModule</string>
@@ -603,14 +611,14 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>99E2887B100E28F4006BB70F</string>
+				<string>991692471010DC2E0070D04B</string>
 				<string>1CCC7628064C1048000F2A68</string>
 				<string>1CCC7629064C1048000F2A68</string>
-				<string>99E2887C100E28F4006BB70F</string>
-				<string>99E2887D100E28F4006BB70F</string>
-				<string>99E2887E100E28F4006BB70F</string>
-				<string>99E2887F100E28F4006BB70F</string>
-				<string>99E28873100E28E8006BB70F</string>
+				<string>991692481010DC2E0070D04B</string>
+				<string>991692491010DC2E0070D04B</string>
+				<string>9916924A1010DC2E0070D04B</string>
+				<string>9916924B1010DC2E0070D04B</string>
+				<string>9916924C1010DC2E0070D04B</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
@@ -643,7 +651,7 @@
 		<string>/Developer/Xelerance/openswan.gsoc/osxApp/Openswan.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>1402 84 1080 625 1280 -35 1440 900 </string>
+	<string>1457 159 1080 625 1280 -35 1440 900 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>

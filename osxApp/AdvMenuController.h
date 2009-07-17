@@ -23,6 +23,8 @@
 	IBOutlet NSView* oeView;
 	
 	IBOutlet NSPopUpButton* selConn;
+	
+	IBOutlet NSWindow *changeNameSheet;
 }
 
 @property (readwrite, retain) NSMutableArray* connections;
@@ -33,5 +35,8 @@
 - (IBAction)natTraversal: (id) sender;
 - (IBAction)oe: (id) sender;
 - (IBAction)save: (id)sender;
+
+- (IBAction)showChangeNameSheet:(id)sender;
+- (IBAction)endChangeNameSheet:(id)sender;
 
 @end
