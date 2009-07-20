@@ -82,7 +82,7 @@
 	}
     
 	NSString *fileName = @"Openswan.data";
-	return [folder stringByAppendingPathComponent: fileName];
+	return [folder stringByAppendingPathComponent:fileName];
 }
 
 - (void) saveDataToDisk
@@ -277,6 +277,7 @@ int							fdArray[]
 
 - (IBAction)connect: (id)sender
 {	
+	[self saveConnToFile];
 	if([self timer] == nil) {
 		[self setConnTime:[NSDate date]];
 		
@@ -425,6 +426,34 @@ int main(int argc, char *argv[])
     // And now, the miracle that is Cocoa...
     
     return NSApplicationMain(argc,  (const char **) argv);
+}
+
+//writing to file
+
+- (void) saveConnToFile {
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	//NSString *path = @"~/Desktop/test";
+	NSString *string = @"testing ";
+	NSError *error;
+	NSString *origFileName = [[[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]] connName];
+	NSString *fileName = [origFileName stringByAppendingFormat:@".conn"];
+	
+	NSString *origPath = @"~/Library/Application Support/Openswan";
+	NSString *filePath = [origPath stringByAppendingPathComponent:fileName];
+	NSString *path = [filePath stringByStandardizingPath];
+	
+	if ([fileManager fileExistsAtPath: path] == NO)
+	{
+		[fileManager createFileAtPath:path contents:nil attributes: nil];
+	}
+	
+	BOOL ok = [string writeToFile:path atomically:YES
+						 encoding:NSUnicodeStringEncoding error:&error];
+	if (!ok) {
+		// an error occurred
+		NSLog(@"Error writing file at %@\n%@",
+              path, [error localizedFailureReason]);
+	}
 }
 
 

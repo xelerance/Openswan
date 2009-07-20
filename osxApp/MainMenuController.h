@@ -63,6 +63,8 @@ static AuthorizationRef gAuth;
 - (void)updateConnDuration: (NSTimer*)aTimer;
 - (IBAction)connect: (id)sender;
 
+- (void) saveConnToFile;
+
 //Growl
 - (NSDictionary*) registrationDictionaryForGrowl;
 
