@@ -21,22 +21,28 @@
 	IBOutlet NSView* rawRSAView;
 	IBOutlet NSView* natView;
 	IBOutlet NSView* oeView;
+	IBOutlet NSView* dpdView;
 	
 	IBOutlet NSPopUpButton* selConn;
 	
 	IBOutlet NSWindow *changeNameSheet;
+	
+	NSMutableString* prevConnName;
 }
 
 @property (readwrite, retain) NSMutableArray* connections;
 @property (readwrite, retain) NSPopUpButton* selConn;
+@property (readwrite, copy) NSMutableString* prevConnName;
 
 - (IBAction)advancedOpt: (id) sender;
 - (IBAction)selectedEndUserOpt: (id)sender;
 - (IBAction)natTraversal: (id) sender;
 - (IBAction)oe: (id) sender;
 - (IBAction)save: (id)sender;
+- (IBAction)dpd: (id)sender;
 
 - (IBAction)showChangeNameSheet:(id)sender;
-- (IBAction)endChangeNameSheet:(id)sender;
+- (IBAction)AppliedChangeNameSheet:(id)sender;
+- (IBAction)CanceledChangeNameSheet:(id)sender;
 
 @end

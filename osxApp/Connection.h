@@ -11,7 +11,7 @@
 
 @interface Connection : NSObject <NSCoding> {
 
-	NSString* connName;
+	NSMutableString* connName;
 	
 	NSMutableString* selLocalHost;
 	NSMutableString* selRemoteHost;
@@ -21,7 +21,7 @@
 	NSMutableString* selRemoteRSASigKey;
 }
 
-@property (readwrite, retain) NSString *connName;
+@property (readwrite, retain) NSMutableString *connName;
 @property (readwrite, retain) NSMutableString *selLocalHost, *selRemoteHost, *selLocalRSASigKey, *selRemoteRSASigKey, *selAuto;
 @property (readwrite, retain) NSMutableString *selAuthBy;
 

@@ -10,7 +10,7 @@
 #import "PreferenceController.h"
 
 @implementation AdvMenuController
-@synthesize connections, selConn;
+@synthesize connections, selConn, prevConnName;
 
 - (id)init
 {
@@ -27,6 +27,9 @@
 	
 	natView = [[NSView alloc] init];
 	oeView = [[NSView alloc] init];
+	dpdView = [[NSView alloc] init];
+	
+	prevConnName = [[NSMutableString alloc] init];
 		
 	return self;
 }
@@ -94,6 +97,26 @@
 	}
 }
 
+- (IBAction)dpd: (id) sender
+{
+	if([sender state] == YES)
+	{
+		NSArray* subViews = [dpdView subviews];
+		int i = [subViews count];
+		while ( i-- ) {
+			[[subViews objectAtIndex:i] setEnabled:YES];
+		}
+	}
+	else
+	{
+		NSArray* subViews = [dpdView subviews];
+		int i = [subViews count];
+		while ( i-- ) {
+			[[subViews objectAtIndex:i] setEnabled:NO];
+		}
+	}
+}
+
 - (IBAction)selectedEndUserOpt: (id)sender
 {
 	NSString* selected = [NSString stringWithString:[sender titleOfSelectedItem]];
@@ -146,6 +169,10 @@
 
 - (IBAction)showChangeNameSheet:(id)sender{
 
+	Connection* selectedConn = [connections objectAtIndex:[selConn indexOfSelectedItem]];
+
+	[self setPrevConnName:[selectedConn connName]];
+	
 	[NSApp beginSheet:changeNameSheet
 		   modalForWindow:[self window]
 		modalDelegate:nil
@@ -153,8 +180,16 @@
 		  contextInfo:NULL];
 }
 
-- (IBAction)endChangeNameSheet:(id)sender{
+- (IBAction)AppliedChangeNameSheet:(id)sender{
 	[NSApp endSheet:changeNameSheet];
+	[changeNameSheet orderOut:sender];
+}
+
+- (IBAction)CanceledChangeNameSheet:(id)sender{
+	[NSApp endSheet:changeNameSheet];
+	
+	Connection* selectedConn = [connections objectAtIndex:[selConn indexOfSelectedItem]];
+	[selectedConn setConnName:[self prevConnName]];
 	
 	[changeNameSheet orderOut:sender];
 }
