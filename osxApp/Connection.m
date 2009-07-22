@@ -11,7 +11,7 @@
 
 @implementation Connection
 @synthesize connName;
-@synthesize selLocalHost, selRemoteHost, selAuthBy, selAuto, selLocalRSASigKey, selRemoteRSASigKey;
+@synthesize selLocalHost, selRemoteHost, selAuthBy, selAuto, selLocalRSASigKey, selRemoteRSASigKey, selPSK;
 
 
 - (id)init
@@ -25,6 +25,7 @@
 	//initialize selectedLedtIP
 	selLocalHost = [[NSMutableString alloc] init];
 	selRemoteHost = [[NSMutableString alloc] init];
+	selPSK = [[NSMutableString alloc] init];
 
 	selAuto = [[NSMutableString alloc] init];
 	
@@ -56,6 +57,7 @@
 	[coder encodeObject:[self selAuto] forKey:@"selAuto"];
 	[coder encodeObject:[self selLocalRSASigKey] forKey:@"selLocalRSASigKey"];
 	[coder encodeObject:[self selRemoteRSASigKey] forKey:@"selRemoteRSASigKey"];
+	[coder encodeObject:[self selPSK] forKey:@"selPSK"];
 }
 
 - (id)initWithCoder:(NSCoder*)coder
@@ -68,6 +70,7 @@
 	[self setSelAuto:[coder decodeObjectForKey:@"selAuto"]];
 	[self setSelLocalRSASigKey:[coder decodeObjectForKey:@"selLocalRSASigKey"]];
 	[self setSelRemoteRSASigKey:[coder decodeObjectForKey:@"selRemoteRSASigKey"]];
+	[self setSelPSK:[coder decodeObjectForKey:@"selPSK"]];
 	return self;
 }
 

@@ -10,6 +10,7 @@
 #import "AdvMenuController.h"
 #import "PreferenceController.h"
 #import "ConnectionsDB.h"
+#import "Connection.h"
 #import <AppKit/NSCell.h>
 
 @implementation MainMenuController
@@ -277,7 +278,6 @@ int							fdArray[]
 
 - (IBAction)connect: (id)sender
 {	
-	[self saveConnToFile];
 	if([self timer] == nil) {
 		[self setConnTime:[NSDate date]];
 		
@@ -298,6 +298,8 @@ int							fdArray[]
 	if([sender state] == NSOnState){
 		[connView setHidden:YES];
 		[discView setHidden:NO];
+		
+		[self saveConnToFile];
 		
 		///////////////
 		OSStatus    err;
@@ -361,6 +363,22 @@ int							fdArray[]
 		[connView setHidden:NO];
 		[discView setHidden:YES];
 		
+		//Delete conn file?
+		/*
+		Connection *conn = [[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]];
+		NSString *origFileName = [conn connName];
+		NSString *fileName = [origFileName stringByAppendingFormat:@".conf"];
+		NSString *origPath = @"~/Library/Application Support/Openswan";
+		NSString *filePath = [origPath stringByAppendingPathComponent:fileName];
+		NSString *path = [filePath stringByStandardizingPath];
+		
+		NSFileManager *fileManager = [NSFileManager defaultManager];
+		if ([fileManager fileExistsAtPath: path] == YES)
+		{
+			[fileManager removeFileAtPath:path handler:nil];
+		}
+		*/
+		
 		[GrowlApplicationBridge
 		 notifyWithTitle:@"Disconnected" 
 		 description:@"Connection was closed" 
@@ -376,10 +394,10 @@ int							fdArray[]
 {
 	NSDate* now = [NSDate date];
 	[self setConnDuration:[now timeIntervalSinceDate: connTime]];
-	int hours = (NSInteger)connDuration / 30;
-	[self setConnDuration:(NSInteger)connDuration % 30];
-	int mins = (NSInteger)connDuration / 10;
-	[self setConnDuration:(NSInteger)connDuration % 10];
+	int hours = (NSInteger)connDuration / 3600;
+	[self setConnDuration:(NSInteger)connDuration % 3600];
+	int mins = (NSInteger)connDuration / 60;
+	[self setConnDuration:(NSInteger)connDuration % 60];
 	int secs = (NSInteger)connDuration;
 	[self setConnDurationPrint:[NSString stringWithFormat:@"%d:%d:%d", hours, mins, secs]];
 }
@@ -431,12 +449,21 @@ int main(int argc, char *argv[])
 //writing to file
 
 - (void) saveConnToFile {
+	
+	Connection *conn = [[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]];
+	
+	NSMutableString *wholeOutput = @"//File with ipsec.conf syntax \n\n";
+	
+	wholeOutput = (NSMutableString*)[wholeOutput stringByAppendingFormat:@"Local Host: %@ \n", [conn selLocalHost]];
+	wholeOutput = (NSMutableString*)[wholeOutput stringByAppendingFormat:@"Remote Host: %@ \n", [conn selRemoteHost]];
+	wholeOutput = (NSMutableString*)[wholeOutput stringByAppendingFormat:@"Auto: %@ \n", [conn selAuto]];
+	wholeOutput = (NSMutableString*)[wholeOutput stringByAppendingFormat:@"Authby: %@ \n", [conn selAuthBy]];
+	wholeOutput = (NSMutableString*)[wholeOutput stringByAppendingFormat:@"PSK: %@ \n", [conn selPSK]];
+	
 	NSFileManager *fileManager = [NSFileManager defaultManager];
-	//NSString *path = @"~/Desktop/test";
-	NSString *string = @"testing ";
 	NSError *error;
-	NSString *origFileName = [[[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]] connName];
-	NSString *fileName = [origFileName stringByAppendingFormat:@".conn"];
+	NSString *origFileName = [conn connName];
+	NSString *fileName = [origFileName stringByAppendingFormat:@".conf"];
 	
 	NSString *origPath = @"~/Library/Application Support/Openswan";
 	NSString *filePath = [origPath stringByAppendingPathComponent:fileName];
@@ -447,7 +474,7 @@ int main(int argc, char *argv[])
 		[fileManager createFileAtPath:path contents:nil attributes: nil];
 	}
 	
-	BOOL ok = [string writeToFile:path atomically:YES
+	BOOL ok = [wholeOutput writeToFile:path atomically:YES
 						 encoding:NSUnicodeStringEncoding error:&error];
 	if (!ok) {
 		// an error occurred

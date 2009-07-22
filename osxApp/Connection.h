@@ -19,10 +19,11 @@
 	NSMutableString* selAuto;
 	NSMutableString* selLocalRSASigKey;
 	NSMutableString* selRemoteRSASigKey;
+	NSMutableString* selPSK;
 }
 
 @property (readwrite, retain) NSMutableString *connName;
 @property (readwrite, retain) NSMutableString *selLocalHost, *selRemoteHost, *selLocalRSASigKey, *selRemoteRSASigKey, *selAuto;
-@property (readwrite, retain) NSMutableString *selAuthBy;
+@property (readwrite, retain) NSMutableString *selAuthBy, *selPSK;
 
 @end
