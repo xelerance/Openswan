@@ -1,7 +1,7 @@
 #!/bin/sh
 # IPsec startup and shutdown script
 #
-#### BEGIN INIT INFO
+### BEGIN INIT INFO
 # Provides:          openswan
 # Required-Start:    $network $syslog $named
 # Required-Stop:     $syslog
