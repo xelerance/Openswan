@@ -100,6 +100,9 @@
 # include <nspr.h>
 # ifdef FIPS_CHECK
 #  include <fipscheck.h>
+   /* hardcoded path needs fixing! */
+#  define IPSECLIBDIR "/usr/libexec/ipsec"
+#  define IPSECSBINDIR "/usr/sbin"
 # endif
 #endif
 
@@ -771,12 +774,57 @@ main(int argc, char **argv)
 	} else {
 	    loglog(RC_LOG_SERIOUS, "NSS Initialized");
 	    PK11_SetPasswordFunc(getNSSPassword);
+
 #ifdef FIPS_CHECK
-	    if (Pluto_IsFIPS() && !FIPSCHECK_verify(NULL, NULL)) {
-		loglog(RC_LOG_SERIOUS, "FIPS integrity verification test failed");
-		exit_pluto(10);
-	    }
+	const char *package_files[]= { IPSECLIBDIR"/setup",
+				        IPSECLIBDIR"/addconn",
+				        IPSECLIBDIR"/auto",
+				        IPSECLIBDIR"/barf",
+				        IPSECLIBDIR"/_copyright",
+				        IPSECLIBDIR"/eroute",
+  				        IPSECLIBDIR"/ikeping",
+				        IPSECLIBDIR"/_include",
+					IPSECLIBDIR"/_keycensor",
+					IPSECLIBDIR"/klipsdebug",
+					IPSECLIBDIR"/look",
+					IPSECLIBDIR"/newhostkey",
+					IPSECLIBDIR"/pf_key",
+					IPSECLIBDIR"/_pluto_adns",
+					IPSECLIBDIR"/_plutoload",
+					IPSECLIBDIR"/_plutorun",
+					IPSECLIBDIR"/ranbits",
+					IPSECLIBDIR"/_realsetup",
+					IPSECLIBDIR"/rsasigkey",
+					IPSECLIBDIR"/pluto",
+					IPSECLIBDIR"/_secretcensor",
+					IPSECLIBDIR"/secrets",
+					IPSECLIBDIR"/showdefaults",
+					IPSECLIBDIR"/showhostkey",
+					IPSECLIBDIR"/showpolicy",
+					IPSECLIBDIR"/spi",
+					IPSECLIBDIR"/spigrp",
+					IPSECLIBDIR"/_startklips",
+					IPSECLIBDIR"/_startklips.old",
+					IPSECLIBDIR"/_startnetkey",
+					IPSECLIBDIR"/tncfg",
+					IPSECLIBDIR"/_updown",
+					IPSECLIBDIR"/_updown.klips",
+					IPSECLIBDIR"/_updown.klips.old",
+					IPSECLIBDIR"/_updown.mast",
+					IPSECLIBDIR"/_updown.mast.old",
+					IPSECLIBDIR"/_updown.netkey", 
+					IPSECLIBDIR"/verify",
+					IPSECLIBDIR"/whack",
+					IPSECSBINDIR"/ipsec",
+					NULL
+					};
+
+       if (Pluto_IsFIPS() && !FIPSCHECK_verify_files(package_files)) {
+             loglog(RC_LOG_SERIOUS, "FIPS integrity verification test failed");
+             exit_pluto(10);
+        }
 #endif
+
       }
 #endif
 
