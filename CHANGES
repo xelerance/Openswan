@@ -5,12 +5,17 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.23
+* Additional ASN.1 parser checks by David McCullough [David]
+  (this is CVE-2009-XXXX)
 * PSK support with USE_LIBNSS [Avesh Agarwal]
-* Added fipschecks _realsetup [Avesh Agarwal]
+* Extended fipschecks [Avesh Agarwal]
+* auto=route tunnels could fail due to an Opportunstic Encryption bug [David]
 * passthrough routes on NETKEY where missing a a policy [Michael H. Warfield]
 * The init script was mistakenly installed twice, once as 'setup' [Paul/Harald]
+* LSB compliance error in initscript (debian bug#537335) [Petter Reinholdtsen]
 * Fix for old style nat-t patch on newstyle 2.6.23+ kernel [Paul]
 * ipsec verify now returns non-zero when an error is encountered [Paul]
+* Fix for ipsec whack --crash <IP> crasher [David]
 * Bugtracker bugs fixed:
    #1044: fedora openswan.spec file builds an RPM that is missing lwdnsq [Joe Steele]
 
@@ -19,6 +24,7 @@ v2.6.22
 * Malicious X.509 certificates could crash the asn.1 parser.
   Found by Orange Labs vulnerability research team. Patches via
   an irresponsible 0-day public announcement by Andreas Steffen 
+  (this is CVE-2009-2185)
 * NSS support via USE_LIBNSS updated [Avesh Agarwal]
 * Added USE_FIPSCHECK. [Avesh Agarwal]
 * NAT-T cleanup (no nat-t patch needed for >= 2.6.23) [Harald Jenny/David]
