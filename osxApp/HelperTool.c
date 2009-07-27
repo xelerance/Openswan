@@ -81,12 +81,23 @@ static OSStatus OpenAndBindDescAndAppendToArray(
 		CFArrayAppendValue(descArray, descNum);
 	}
     if (retval == noErr) {
-        err = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, "Opened port %u", (unsigned int) port);
+        err = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, "OOOOOOOOpened port %u", (unsigned int) port);
     } else {
         errno = BASOSStatusToErrno(retval);                         // so that %m can pick it up
         err = asl_log(asl, aslMsg, ASL_LEVEL_ERR, "Failed to open port %u: %m", (unsigned int) port);
     }
     assert(err == 0);
+	
+#pragma mark testing
+	int err2;
+	
+	/*
+	int ret;
+	char *cmd[] = {"ls", "-l", "/Users/ze/Desktop", (char *)0};	
+	ret = execv("/bin/ls", cmd);
+	*/
+	
+	err2 = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, "Run ls -l");
 	
 	// Clean up.
 	

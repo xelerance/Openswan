@@ -1176,7 +1176,7 @@ static int HandleConnection(
             commandProcStatus = commandProcs[commandIndex](auth, commands[commandIndex].userData, request, response, asl, aslMsg);
 
             if (commandProcStatus == noErr) {
-                junkInt = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, "Command callback succeeded");
+                junkInt = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, "CCCCCCCCCCCommand callback succeeded");
                 assert(junkInt == 0);
             } else {
                 junkInt = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, "Command callback failed: %ld", (long) commandProcStatus);
