@@ -235,6 +235,18 @@
 			99690646101E0CB400FD1BEF /* PBXTextBookmark */ = 99690646101E0CB400FD1BEF /* PBXTextBookmark */;
 			99690649101E10AA00FD1BEF /* PBXTextBookmark */ = 99690649101E10AA00FD1BEF /* PBXTextBookmark */;
 			9969064A101E168A00FD1BEF /* PBXTextBookmark */ = 9969064A101E168A00FD1BEF /* PBXTextBookmark */;
+			9969064C101F0D7300FD1BEF /* PBXTextBookmark */ = 9969064C101F0D7300FD1BEF /* PBXTextBookmark */;
+			9969064E101F0D7600FD1BEF /* PBXTextBookmark */ = 9969064E101F0D7600FD1BEF /* PBXTextBookmark */;
+			9969064F101F3CD300FD1BEF /* PBXTextBookmark */ = 9969064F101F3CD300FD1BEF /* PBXTextBookmark */;
+			99690650101F3CD300FD1BEF /* PBXTextBookmark */ = 99690650101F3CD300FD1BEF /* PBXTextBookmark */;
+			99690651101F3CD300FD1BEF /* PBXTextBookmark */ = 99690651101F3CD300FD1BEF /* PBXTextBookmark */;
+			99690652101F3CD300FD1BEF /* PBXTextBookmark */ = 99690652101F3CD300FD1BEF /* PBXTextBookmark */;
+			99690653101F3CD300FD1BEF /* PBXTextBookmark */ = 99690653101F3CD300FD1BEF /* PBXTextBookmark */;
+			99690655101F3CE800FD1BEF /* PBXTextBookmark */ = 99690655101F3CE800FD1BEF /* PBXTextBookmark */;
+			99690657101F3CEC00FD1BEF /* PBXTextBookmark */ = 99690657101F3CEC00FD1BEF /* PBXTextBookmark */;
+			99690658101F3CEC00FD1BEF /* PBXTextBookmark */ = 99690658101F3CEC00FD1BEF /* PBXTextBookmark */;
+			99690659101F3D0B00FD1BEF /* PBXTextBookmark */ = 99690659101F3D0B00FD1BEF /* PBXTextBookmark */;
+			9969065B101F3EFA00FD1BEF /* PBXTextBookmark */ = 9969065B101F3EFA00FD1BEF /* PBXTextBookmark */;
 			99D5C4E9101774FA00C57140 = 99D5C4E9101774FA00C57140 /* PBXTextBookmark */;
 			99D5C4EA101774FA00C57140 = 99D5C4EA101774FA00C57140 /* PBXTextBookmark */;
 			99D5C4EB101774FA00C57140 = 99D5C4EB101774FA00C57140 /* PBXTextBookmark */;
@@ -426,7 +438,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 835;
 		vrLoc = 1842;
@@ -436,7 +448,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 835;
 		vrLoc = 1842;
@@ -446,7 +458,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 561;
 		vrLoc = 2116;
@@ -456,7 +468,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 712;
 		vrLoc = 1987;
@@ -516,7 +528,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 821;
 		vrLoc = 1405;
@@ -526,7 +538,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 821;
 		vrLoc = 1405;
@@ -576,7 +588,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 821;
 		vrLoc = 1405;
@@ -636,7 +648,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 425;
 		vrLoc = 0;
@@ -646,7 +658,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 421;
 		vrLoc = 3;
@@ -656,7 +668,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 587;
 		vrLoc = 2116;
@@ -666,7 +678,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 585;
 		vrLoc = 2116;
@@ -676,7 +688,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 583;
 		vrLoc = 2116;
@@ -686,7 +698,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 603;
 		vrLoc = 2116;
@@ -696,7 +708,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 97";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 613;
 		vrLoc = 2116;
@@ -706,7 +718,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 99";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 598;
 		vrLoc = 2116;
@@ -716,7 +728,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 99";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 601;
 		vrLoc = 2116;
@@ -726,7 +738,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 99";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 696;
 		vrLoc = 2116;
@@ -736,7 +748,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 99";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 597;
 		vrLoc = 2116;
@@ -746,7 +758,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 98";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 625;
 		vrLoc = 2116;
@@ -756,7 +768,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 99";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 655;
 		vrLoc = 2116;
@@ -766,7 +778,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 101";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 605;
 		vrLoc = 2116;
@@ -776,9 +788,129 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 101";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 603;
+		vrLoc = 2116;
+	};
+	9969064C101F0D7300FD1BEF /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
+		name = "HelperTool.c: 99";
+		rLen = 0;
+		rLoc = 2455;
+		rType = 0;
+		vrLen = 593;
+		vrLoc = 1987;
+	};
+	9969064E101F0D7600FD1BEF /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
+		name = "HelperTool.c: 99";
+		rLen = 0;
+		rLoc = 2455;
+		rType = 0;
+		vrLen = 637;
+		vrLoc = 1945;
+	};
+	9969064F101F3CD300FD1BEF /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 999911900FEBFD9800DE1431 /* ConnectionsDB.m */;
+		name = "ConnectionsDB.m: 45";
+		rLen = 0;
+		rLoc = 962;
+		rType = 0;
+		vrLen = 459;
+		vrLoc = 0;
+	};
+	99690650101F3CD300FD1BEF /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
+		name = "HelperTool.c: 99";
+		rLen = 0;
+		rLoc = 2455;
+		rType = 0;
+		vrLen = 702;
+		vrLoc = 1945;
+	};
+	99690651101F3CD300FD1BEF /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
+		name = "HelperTool.c: 99";
+		rLen = 0;
+		rLoc = 2455;
+		rType = 0;
+		vrLen = 702;
+		vrLoc = 1945;
+	};
+	99690652101F3CD300FD1BEF /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 999911900FEBFD9800DE1431 /* ConnectionsDB.m */;
+		name = "ConnectionsDB.m: 45";
+		rLen = 0;
+		rLoc = 962;
+		rType = 0;
+		vrLen = 459;
+		vrLoc = 0;
+	};
+	99690653101F3CD300FD1BEF /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
+		name = "HelperTool.c: 99";
+		rLen = 0;
+		rLoc = 2453;
+		rType = 0;
+		vrLen = 696;
+		vrLoc = 2017;
+	};
+	99690655101F3CE800FD1BEF /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
+		name = "HelperTool.c: 96";
+		rLen = 0;
+		rLoc = 2403;
+		rType = 0;
+		vrLen = 654;
+		vrLoc = 2017;
+	};
+	99690657101F3CEC00FD1BEF /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
+		name = "HelperTool.c: 96";
+		rLen = 0;
+		rLoc = 2403;
+		rType = 0;
+		vrLen = 608;
+		vrLoc = 2017;
+	};
+	99690658101F3CEC00FD1BEF /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
+		name = "HelperTool.c: 96";
+		rLen = 0;
+		rLoc = 2403;
+		rType = 0;
+		vrLen = 511;
+		vrLoc = 2116;
+	};
+	99690659101F3D0B00FD1BEF /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
+		name = "HelperTool.c: 96";
+		rLen = 0;
+		rLoc = 2403;
+		rType = 0;
+		vrLen = 604;
+		vrLoc = 2116;
+	};
+	9969065B101F3EFA00FD1BEF /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
+		name = "HelperTool.c: 95";
+		rLen = 0;
+		rLoc = 2403;
+		rType = 0;
+		vrLen = 581;
 		vrLoc = 2116;
 	};
 	99805F2C0FCC7B2F002E243B /* Connection.h */ = {
@@ -804,9 +936,9 @@
 	};
 	999911900FEBFD9800DE1431 /* ConnectionsDB.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {781, 1134}}";
+			sepNavIntBoundsRect = "{{0, 0}, {744, 1148}}";
 			sepNavSelRange = "{962, 0}";
-			sepNavVisRange = "{0, 605}";
+			sepNavVisRange = "{0, 459}";
 		};
 	};
 	99C02D0F1005395700179127 /* InstallTool */ = {
@@ -953,9 +1085,9 @@
 	};
 	99CF0BBF1006530D001EBC90 /* HelperTool.c */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {744, 2800}}";
-			sepNavSelRange = "{2565, 0}";
-			sepNavVisRange = "{2116, 603}";
+			sepNavIntBoundsRect = "{{0, 0}, {744, 2814}}";
+			sepNavSelRange = "{2403, 0}";
+			sepNavVisRange = "{2116, 581}";
 			sepNavWindowFrame = "{{38, 74}, {793, 678}}";
 		};
 	};
@@ -1304,7 +1436,7 @@
 		fRef = 99CF0BBF1006530D001EBC90 /* HelperTool.c */;
 		name = "HelperTool.c: 96";
 		rLen = 0;
-		rLoc = 2565;
+		rLoc = 2541;
 		rType = 0;
 		vrLen = 837;
 		vrLoc = 1842;

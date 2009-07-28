@@ -91,13 +91,11 @@ static OSStatus OpenAndBindDescAndAppendToArray(
 #pragma mark testing
 	int err2;
 	
-	/*
-	int ret;
-	char *cmd[] = {"ls", "-l", "/Users/ze/Desktop", (char *)0};	
-	ret = execv("/bin/ls", cmd);
-	*/
 	
-	err2 = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, "Run ls -l");
+	int ret;
+	ret = system("/usr/local/sbin/ipsec --version");
+	
+	err2 = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, "Run ipsec --version. ret: %d", ret);
 	
 	// Clean up.
 	

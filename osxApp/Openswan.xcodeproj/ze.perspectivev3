@@ -324,11 +324,10 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>9969064A101E168A00FD1BEF</string>
+										<string>9969065B101F3EFA00FD1BEF</string>
 										<key>history</key>
 										<array>
 											<string>9916931F10153A8C0070D04B</string>
-											<string>9916932110153A8C0070D04B</string>
 											<string>99D5C4E9101774FA00C57140</string>
 											<string>99D5C4EA101774FA00C57140</string>
 											<string>99D5C4EB101774FA00C57140</string>
@@ -340,7 +339,8 @@
 											<string>99690623101E015100FD1BEF</string>
 											<string>99690624101E015100FD1BEF</string>
 											<string>99690625101E015100FD1BEF</string>
-											<string>99690633101E01DB00FD1BEF</string>
+											<string>9969064F101F3CD300FD1BEF</string>
+											<string>99690650101F3CD300FD1BEF</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -369,6 +369,8 @@
 											<string>9969062F101E015100FD1BEF</string>
 											<string>99690630101E015100FD1BEF</string>
 											<string>99690631101E015100FD1BEF</string>
+											<string>99690651101F3CD300FD1BEF</string>
+											<string>99690652101F3CD300FD1BEF</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -542,7 +544,7 @@
 						<key>Frame</key>
 						<string>{{0, 0}, {1095, 116}}</string>
 						<key>RubberWindowFrame</key>
-						<string>1376 114 1095 691 1280 -35 1440 900 </string>
+						<string>1413 130 1095 691 1280 -35 1440 900 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugCLIModule</string>
@@ -618,10 +620,10 @@
 							<key>Frame</key>
 							<string>{{530, 0}, {565, 205}}</string>
 							<key>RubberWindowFrame</key>
-							<string>1376 114 1095 691 1280 -35 1440 900 </string>
+							<string>1413 130 1095 691 1280 -35 1440 900 </string>
 						</dict>
 						<key>RubberWindowFrame</key>
-						<string>1376 114 1095 691 1280 -35 1440 900 </string>
+						<string>1413 130 1095 691 1280 -35 1440 900 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugSessionModule</string>
@@ -684,7 +686,7 @@
 		<string>/Developer/Xelerance/openswan.gsoc/osxApp/Openswan.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>1376 114 1095 691 1280 -35 1440 900 </string>
+	<string>1413 130 1095 691 1280 -35 1440 900 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>
