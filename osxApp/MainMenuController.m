@@ -247,6 +247,11 @@ int							fdArray[]
         CFIndex         arrayIndex;
         CFIndex         arrayCount;
         CFNumberRef     thisNum;
+		CFStringRef testString;
+		
+		testString = (CFStringRef) CFDictionaryGetValue(response, CFSTR(kBASTestString));
+		
+		NSLog(@"Test String: %@", testString);
         
         descArray = (CFArrayRef) CFDictionaryGetValue(response, CFSTR(kBASDescriptorArrayKey));
         assert( descArray != NULL );

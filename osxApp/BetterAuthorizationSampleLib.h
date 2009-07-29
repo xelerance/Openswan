@@ -239,6 +239,22 @@ typedef struct BASCommandSpec BASCommandSpec;
 
 #define kBASDescriptorArrayKey "com.apple.dts.BetterAuthorizationSample.descriptors"	// CFArray of CFNumber
 
+	
+	/*!
+	 @define         kBASTestString
+	 
+	 @abstract       Key for a file descriptor array within the response dictionary.
+	 
+	 @discussion     Within a response, this key, if present, must reference an array 
+	 of numbers, which are the file descriptors being returned with 
+	 the response.  The numbers are interpreted as ints.
+	 */
+	
+#define kBASTestString "com.apple.dts.BetterAuthorizationSample.testString"	// CFArray of CFNumber
+	
+	
+	
+	
 /////////////////////////////////////////////////////////////////
 #pragma mark ***** Helper Tool Routines
 

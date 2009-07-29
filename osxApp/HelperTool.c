@@ -81,21 +81,12 @@ static OSStatus OpenAndBindDescAndAppendToArray(
 		CFArrayAppendValue(descArray, descNum);
 	}
     if (retval == noErr) {
-        err = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, "OOOOOOOOpened port %u", (unsigned int) port);
+        err = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, "Opened port %u", (unsigned int) port);
     } else {
         errno = BASOSStatusToErrno(retval);                         // so that %m can pick it up
         err = asl_log(asl, aslMsg, ASL_LEVEL_ERR, "Failed to open port %u: %m", (unsigned int) port);
     }
     assert(err == 0);
-	
-#pragma mark testing
-	int err2;
-	
-	
-	int ret;
-	ret = system("/usr/local/sbin/ipsec --version");
-	
-	err2 = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, "Run ipsec --version. ret: %d", ret);
 	
 	// Clean up.
 	
@@ -124,6 +115,9 @@ static OSStatus DoConnect(
 {	
 	OSStatus					retval = noErr;
 	CFMutableArrayRef			descArray = NULL;
+	CFStringRef					testString = CFStringCreateWithCString(NULL, 
+																	   "I am passing a string as response now\n", 
+																	   CFStringGetSystemEncoding());
 	
 	// Pre-conditions
     
@@ -133,6 +127,12 @@ static OSStatus DoConnect(
 	assert(response != NULL);
     // asl may be NULL
     // aslMsg may be NULL
+	
+#pragma mark ipsec
+	int err2;
+	int ret;
+	ret = system("/usr/local/sbin/ipsec --version");
+	err2 = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, "Run ipsec --version. ret: %d", ret);
 	
 	descArray = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
 	if (descArray == NULL) {
@@ -152,10 +152,17 @@ static OSStatus DoConnect(
             retval = OpenAndBindDescAndAppendToArray(132, descArray, asl, aslMsg);
         }
 	}
-	
+	/*
+	CFArrayAppendValue(descArray, 130);
+	CFArrayAppendValue(descArray, 131);
+	CFArrayAppendValue(descArray, 132);
+	*/
 	if (retval == noErr) {
         CFDictionaryAddValue(response, CFSTR(kBASDescriptorArrayKey), descArray);
 	}
+	
+	CFDictionaryAddValue(response, CFSTR(kBASTestString), testString);
+	
 	
     // Clean up.
     
