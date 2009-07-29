@@ -126,15 +126,14 @@
 //Helper Tool
 
 static OSStatus DoConnect(
-Boolean						forceFailure, 
-int							fdArray[]
+Boolean						forceFailure
 )
 // This code shows how to do a typical BetterAuthorizationSample privileged operation 
 // in straight C.  In this case, it does the low-numbered ports operation, which 
 // returns three file descriptors that are bound to low-numbered TCP ports.
 {
     OSStatus        err;
-    Boolean         success;
+    //Boolean         success;
     CFBundleRef     bundle;
     CFStringRef     bundleID;
     CFIndex         keyCount;
@@ -145,12 +144,8 @@ int							fdArray[]
     BASFailCode     failCode;
     
     // Pre-conditions
-    
-    assert(fdArray != NULL);
-    assert(fdArray[0] == -1);
-    assert(fdArray[1] == -1);
-    assert(fdArray[2] == -1);
-    
+
+	
     // Get our bundle information.
     
     bundle = CFBundleGetMainBundle();
@@ -243,41 +238,17 @@ int							fdArray[]
     // Extract the descriptors from the response and copy them out to our caller.
     
     if (err == noErr) {
-        CFArrayRef      descArray;
-        CFIndex         arrayIndex;
-        CFIndex         arrayCount;
-        CFNumberRef     thisNum;
 		CFStringRef testString;
 		
 		testString = (CFStringRef) CFDictionaryGetValue(response, CFSTR(kBASTestString));
-		
 		NSLog(@"Test String: %@", testString);
-        
-        descArray = (CFArrayRef) CFDictionaryGetValue(response, CFSTR(kBASDescriptorArrayKey));
-        assert( descArray != NULL );
-        assert( CFGetTypeID(descArray) == CFArrayGetTypeID() );
-		
-        arrayCount = CFArrayGetCount(descArray);
-        assert(arrayCount == kNumberOfLowNumberedPorts);
-        
-        for (arrayIndex = 0; arrayIndex < kNumberOfLowNumberedPorts; arrayIndex++) {
-            thisNum = CFArrayGetValueAtIndex(descArray, arrayIndex);
-            assert(thisNum != NULL);
-            assert( CFGetTypeID(thisNum) == CFNumberGetTypeID() );
-            
-            success = CFNumberGetValue(thisNum, kCFNumberIntType, &fdArray[arrayIndex]);
-            assert(success);
-        }
     }
+		 
     
     if (response != NULL) {
         CFRelease(response);
     }
-    
-    assert( (err == noErr) == (fdArray[0] >= 0) );
-    assert( (err == noErr) == (fdArray[1] >= 0) );
-    assert( (err == noErr) == (fdArray[2] >= 0) );
-    
+
     return err;
 }
 
@@ -308,51 +279,15 @@ int							fdArray[]
 		
 		///////////////
 		OSStatus    err;
-		int         junk;
-		int         descriptors[kNumberOfLowNumberedPorts] = { -1, -1, -1 };
-		uint16_t    ports[kNumberOfLowNumberedPorts];
-		int         portIndex;
 		
 		// Call the C code to do the real work.
 		
-		err = DoConnect( NO, descriptors );
+		err = DoConnect(NO);
 		
 		// Log our results.
+
 		
-		if (err == noErr) {
-			// Get the port numbers for each descriptor.
-			
-			for (portIndex = 0; portIndex < kNumberOfLowNumberedPorts; portIndex++) {
-				int                 sockErr;
-				struct sockaddr_in  boundAddr;
-				socklen_t           boundAddrLen;
-				
-				memset(&boundAddr, 0, sizeof(boundAddr));
-				boundAddrLen = sizeof(boundAddr);
-				
-				sockErr = getsockname(descriptors[portIndex], (struct sockaddr *) &boundAddr, &boundAddrLen);
-				assert(sockErr == 0);
-				assert(boundAddrLen == sizeof(boundAddr));
-				ports[portIndex] = ntohs(boundAddr.sin_port);
-			}
-			
-			// Log it.
-			
-			NSLog(@"ports[0] = %u, port[1] = %u, port[2] = %u\n", 
-				  (unsigned int) ports[0], 
-				  (unsigned int) ports[1], 
-				  (unsigned int) ports[2]);
-			
-			// Close the descriptors.
-			
-			for (portIndex = 0; portIndex < kNumberOfLowNumberedPorts; portIndex++) {
-				junk = close(descriptors[portIndex]);
-				assert(junk == 0);
-			}
-		} else {
-			NSLog(@"Failed with error %ld.\n", (long) err);
-		}
-			
+		
 		//////////////
 		
 		[GrowlApplicationBridge

@@ -275,8 +275,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>10</integer>
-									<integer>3</integer>
+									<integer>19</integer>
+									<integer>11</integer>
 									<integer>0</integer>
 								</array>
 							</array>
@@ -312,7 +312,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>99D2C47210079C4600410944</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>HelperTool.c</string>
+								<string>MainMenuController.m</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -320,11 +320,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>99D2C47310079C4600410944</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>HelperTool.c</string>
+										<string>MainMenuController.m</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>995C0E641020BC32004AFE22</string>
+										<string>995C0E991020C07F004AFE22</string>
 										<key>history</key>
 										<array>
 											<string>99D5C4E9101774FA00C57140</string>
@@ -334,13 +334,13 @@
 											<string>9969064F101F3CD300FD1BEF</string>
 											<string>995C0E091020B83D004AFE22</string>
 											<string>995C0E0A1020B83D004AFE22</string>
-											<string>995C0E0B1020B83D004AFE22</string>
 											<string>995C0E0C1020B83D004AFE22</string>
-											<string>995C0E0D1020B83D004AFE22</string>
-											<string>995C0E1C1020B8FC004AFE22</string>
 											<string>995C0E531020BBAA004AFE22</string>
-											<string>995C0E5E1020BC2E004AFE22</string>
-											<string>995C0E5F1020BC2E004AFE22</string>
+											<string>995C0E841020BF2E004AFE22</string>
+											<string>995C0E901020C07F004AFE22</string>
+											<string>995C0E911020C07F004AFE22</string>
+											<string>995C0E921020C07F004AFE22</string>
+											<string>995C0E931020C07F004AFE22</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -361,6 +361,14 @@
 											<string>995C0E551020BBAA004AFE22</string>
 											<string>995C0E561020BBAA004AFE22</string>
 											<string>995C0E601020BC2E004AFE22</string>
+											<string>995C0E6B1020BDCD004AFE22</string>
+											<string>995C0E7A1020BE80004AFE22</string>
+											<string>995C0E861020BF2E004AFE22</string>
+											<string>995C0E871020BF2E004AFE22</string>
+											<string>995C0E941020C07F004AFE22</string>
+											<string>995C0E951020C07F004AFE22</string>
+											<string>995C0E961020C07F004AFE22</string>
+											<string>995C0E971020C07F004AFE22</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -374,16 +382,16 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {805, 548}}</string>
+								<string>{{0, 0}, {805, 358}}</string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>548pt</string>
+							<string>358pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>97pt</string>
+							<string>287pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -413,7 +421,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {805, 484}}</string>
+										<string>{{10, 27}, {805, 260}}</string>
 									</dict>
 									<key>Module</key>
 									<string>PBXProjectFindModule</string>
@@ -451,7 +459,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {857, 92}}</string>
+										<string>{{10, 27}, {805, 70}}</string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -536,7 +544,7 @@
 						<key>Frame</key>
 						<string>{{0, 0}, {1095, 116}}</string>
 						<key>RubberWindowFrame</key>
-						<string>1394 96 1095 691 1280 -35 1440 900 </string>
+						<string>1399 110 1095 691 1280 -35 1440 900 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugCLIModule</string>
@@ -612,10 +620,10 @@
 							<key>Frame</key>
 							<string>{{530, 0}, {565, 205}}</string>
 							<key>RubberWindowFrame</key>
-							<string>1394 96 1095 691 1280 -35 1440 900 </string>
+							<string>1399 110 1095 691 1280 -35 1440 900 </string>
 						</dict>
 						<key>RubberWindowFrame</key>
-						<string>1394 96 1095 691 1280 -35 1440 900 </string>
+						<string>1399 110 1095 691 1280 -35 1440 900 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugSessionModule</string>
@@ -678,7 +686,7 @@
 		<string>/Developer/Xelerance/openswan.gsoc/osxApp/Openswan.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>1394 96 1095 691 1280 -35 1440 900 </string>
+	<string>1399 110 1095 691 1280 -35 1440 900 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>
