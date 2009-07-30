@@ -13,17 +13,46 @@
 
 	NSMutableString* connName;
 	
-	NSMutableString* selLocalHost;
-	NSMutableString* selRemoteHost;
-	NSMutableString* selAuthBy;
+	//Connection Options
 	NSMutableString* selAuto;
+	NSMutableString* selType;
+	NSMutableString* selMode;
+	
+	NSMutableString* selLocalHost;
+	NSMutableString* selLocalID;
+	NSMutableString* selLocalSubnets;
+	NSMutableString* selLocalProtocolPort;
+	
+	NSMutableString* selRemoteHost;
+	NSMutableString* selRemoteID;
+	NSMutableString* selRemoteSubnets;
+	NSMutableString* selRemoteProtocolPort;
+	
+	//Auth Options
+	
+	//Global Options
+	
+	NSMutableString* selAuthBy;
 	NSMutableString* selLocalRSASigKey;
 	NSMutableString* selRemoteRSASigKey;
 	NSMutableString* selPSK;
 }
 
 @property (readwrite, retain) NSMutableString *connName;
-@property (readwrite, retain) NSMutableString *selLocalHost, *selRemoteHost, *selLocalRSASigKey, *selRemoteRSASigKey, *selAuto;
+@property (readwrite, retain) NSMutableString	*selAuto,
+												*selType,
+												*selMode,
+												*selLocalHost,
+												*selLocalID,
+												*selLocalSubnets,
+												*selLocalProtocolPort,
+												*selRemoteHost,
+												*selRemoteID,
+												*selRemoteSubnets,
+												*selRemoteProtocolPort;
+
+@property (readwrite, retain) NSMutableString *selLocalRSASigKey, *selRemoteRSASigKey;
 @property (readwrite, retain) NSMutableString *selAuthBy, *selPSK;
+
 
 @end

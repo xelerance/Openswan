@@ -11,7 +11,19 @@
 
 @implementation Connection
 @synthesize connName;
-@synthesize selLocalHost, selRemoteHost, selAuthBy, selAuto, selLocalRSASigKey, selRemoteRSASigKey, selPSK;
+@synthesize selAuto,
+			selType,
+			selMode,
+			selLocalHost,
+			selLocalID,
+			selLocalSubnets,
+			selLocalProtocolPort,
+			selRemoteHost,
+			selRemoteID,
+			selRemoteSubnets,
+			selRemoteProtocolPort;
+
+@synthesize selAuthBy, selLocalRSASigKey, selRemoteRSASigKey, selPSK;
 
 
 - (id)init
@@ -22,22 +34,13 @@
 	
 	connName = [NSString stringWithString:@"New Connection"];
 	
-	//initialize selectedLedtIP
-	selLocalHost = [[NSMutableString alloc] init];
-	selRemoteHost = [[NSMutableString alloc] init];
-	selPSK = [[NSMutableString alloc] init];
+	//Connection Options
+	selAuto = [NSString stringWithString:@"Start"];
+	selType = [NSString stringWithString:@"Tunnel"];
+	selMode = [NSString stringWithString:@"IKEv2"];
 
-	selAuto = [[NSMutableString alloc] init];
-	
-	NSMutableString* tmp = [NSString stringWithFormat:@"Add"];
-	
-	[self setValue:tmp forKey:@"selAuto"];
-	
-	selAuthBy= [[NSMutableString alloc] init];
-	
-	NSMutableString* tmp2 = [NSString stringWithFormat:@"RSA Sig Key"];
-	
-	[selAuthBy setString:tmp2];
+	//Auth Options
+	selAuthBy= [NSString stringWithString:@"RSA Sig Key"];
 	
     // finally return the object
     return self;
@@ -51,10 +54,21 @@
 - (void)encodeWithCoder:(NSCoder*)coder
 {
 	[coder encodeObject:[self connName] forKey:@"connName"];
-	[coder encodeObject:[self selLocalHost] forKey:@"selLocalHost"];
-	[coder encodeObject:[self selRemoteHost] forKey:@"selRemoteHost"];
-	[coder encodeObject:[self selAuthBy] forKey:@"selAuthBy"];
+	
+	//Connection Options
 	[coder encodeObject:[self selAuto] forKey:@"selAuto"];
+	[coder encodeObject:[self selType] forKey:@"selType"];
+	[coder encodeObject:[self selMode] forKey:@"selMode"];
+	[coder encodeObject:[self selLocalHost] forKey:@"selLocalHost"];
+	[coder encodeObject:[self selLocalID] forKey:@"selLocalID"];
+	[coder encodeObject:[self selLocalSubnets] forKey:@"selLocalSubnets"];
+	[coder encodeObject:[self selLocalProtocolPort] forKey:@"selLocalProtocolPort"];
+	[coder encodeObject:[self selRemoteHost] forKey:@"selRemoteHost"];
+	[coder encodeObject:[self selRemoteID] forKey:@"selRemoteID"];
+	[coder encodeObject:[self selRemoteSubnets] forKey:@"selRemoteSubnets"];
+	[coder encodeObject:[self selRemoteProtocolPort] forKey:@"selRemoteProtocolPort"];
+	
+	[coder encodeObject:[self selAuthBy] forKey:@"selAuthBy"];
 	[coder encodeObject:[self selLocalRSASigKey] forKey:@"selLocalRSASigKey"];
 	[coder encodeObject:[self selRemoteRSASigKey] forKey:@"selRemoteRSASigKey"];
 	[coder encodeObject:[self selPSK] forKey:@"selPSK"];
@@ -64,10 +78,21 @@
 {
 	[super init];
 	[self setConnName:[coder decodeObjectForKey:@"connName"]];
-	[self setSelLocalHost:[coder decodeObjectForKey:@"selLocalHost"]];
-	[self setSelRemoteHost:[coder decodeObjectForKey:@"selRemoteHost"]];
-	[self setSelAuthBy:[coder decodeObjectForKey:@"selAuthBy"]];
+	
+	//Connection Options
 	[self setSelAuto:[coder decodeObjectForKey:@"selAuto"]];
+	[self setSelType:[coder decodeObjectForKey:@"selType"]];
+	[self setSelMode:[coder decodeObjectForKey:@"selMode"]];
+	[self setSelLocalHost:[coder decodeObjectForKey:@"selLocalHost"]];
+	[self setSelLocalID:[coder decodeObjectForKey:@"selLocalID"]];
+	[self setSelLocalSubnets:[coder decodeObjectForKey:@"selLocalSubnets"]];
+	[self setSelLocalProtocolPort:[coder decodeObjectForKey:@"selLocalProtocolPort"]];
+	[self setSelRemoteHost:[coder decodeObjectForKey:@"selRemoteHost"]];
+	[self setSelRemoteID:[coder decodeObjectForKey:@"selRemoteID"]];
+	[self setSelRemoteSubnets:[coder decodeObjectForKey:@"selRemoteSubnets"]];
+	[self setSelRemoteProtocolPort:[coder decodeObjectForKey:@"selRemoteProtocolPort"]];
+	
+	[self setSelAuthBy:[coder decodeObjectForKey:@"selAuthBy"]];
 	[self setSelLocalRSASigKey:[coder decodeObjectForKey:@"selLocalRSASigKey"]];
 	[self setSelRemoteRSASigKey:[coder decodeObjectForKey:@"selRemoteRSASigKey"]];
 	[self setSelPSK:[coder decodeObjectForKey:@"selPSK"]];

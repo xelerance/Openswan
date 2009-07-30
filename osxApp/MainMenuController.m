@@ -125,15 +125,12 @@
 
 //Helper Tool
 
-static OSStatus DoConnect(
-Boolean						forceFailure
-)
+static OSStatus DoConnect()
 // This code shows how to do a typical BetterAuthorizationSample privileged operation 
 // in straight C.  In this case, it does the low-numbered ports operation, which 
 // returns three file descriptors that are bound to low-numbered TCP ports.
 {
     OSStatus        err;
-    //Boolean         success;
     CFBundleRef     bundle;
     CFStringRef     bundleID;
     CFIndex         keyCount;
@@ -164,13 +161,7 @@ Boolean						forceFailure
     keys[keyCount]   = CFSTR(kBASCommandKey);
     values[keyCount] = CFSTR(kConnectCommand);
     keyCount += 1;
-    
-    if (forceFailure) {
-        keys[keyCount]   = CFSTR(kSampleLowNumberedPortsForceFailure);
-        values[keyCount] = kCFBooleanTrue;
-        keyCount += 1;
-    }
-    
+	
     request = CFDictionaryCreate(
 								 NULL, 
 								 (const void **) keys, 
@@ -282,7 +273,7 @@ Boolean						forceFailure
 		
 		// Call the C code to do the real work.
 		
-		err = DoConnect(NO);
+		err = DoConnect();
 		
 		// Log our results.
 
