@@ -11,19 +11,40 @@
 
 @implementation Connection
 @synthesize connName;
-@synthesize selAuto,
-			selType,
-			selMode,
-			selLocalHost,
-			selLocalID,
-			selLocalSubnets,
-			selLocalProtocolPort,
-			selRemoteHost,
-			selRemoteID,
-			selRemoteSubnets,
-			selRemoteProtocolPort;
-
-@synthesize selAuthBy, selLocalRSASigKey, selRemoteRSASigKey, selPSK;
+//Connection Options
+@synthesize 
+selAuto,
+selType,
+selMode,
+selLocalHost,
+selLocalID,
+selLocalSubnets,
+selLocalProtocolPort,
+selRemoteHost,
+selRemoteID,
+selRemoteSubnets,
+selRemoteProtocolPort;
+//Auth Options
+@synthesize 
+selAuthBy,
+selPSK,
+selPKCS,
+selSendCert,
+selLocalRSASigKey,
+selRemoteRSASigKey;
+//Global Options
+@synthesize
+selVirtualPrivate,
+selForceKeepAlive,
+selKeepAlive,
+selCrlCheckIntvl,
+selMyID,
+selPlutoDebug,
+selForceEncaps,
+selNatTEnable,
+selStrictCrlEnable,
+selOppEncEnable,
+selUniqueIDs;
 
 
 - (id)init
@@ -41,6 +62,10 @@
 
 	//Auth Options
 	selAuthBy= [NSString stringWithString:@"RSA Sig Key"];
+	selSendCert = [NSString stringWithString:@"Always"];
+	
+	//Global Options
+	selPlutoDebug = [NSString stringWithString:@"None"];
 	
     // finally return the object
     return self;
@@ -68,10 +93,26 @@
 	[coder encodeObject:[self selRemoteSubnets] forKey:@"selRemoteSubnets"];
 	[coder encodeObject:[self selRemoteProtocolPort] forKey:@"selRemoteProtocolPort"];
 	
+	//AuthOptions
 	[coder encodeObject:[self selAuthBy] forKey:@"selAuthBy"];
+	[coder encodeObject:[self selPSK] forKey:@"selPSK"];
+	[coder encodeObject:[self selPKCS] forKey:@"selPKCS"];
+	[coder encodeObject:[self selSendCert] forKey:@"selSendCert"];
 	[coder encodeObject:[self selLocalRSASigKey] forKey:@"selLocalRSASigKey"];
 	[coder encodeObject:[self selRemoteRSASigKey] forKey:@"selRemoteRSASigKey"];
-	[coder encodeObject:[self selPSK] forKey:@"selPSK"];
+	
+	//Global Options
+	[coder encodeObject:[self selVirtualPrivate] forKey:@"selVirtualPrivate"];
+	[coder encodeObject:[self selForceKeepAlive] forKey:@"selForceKeepAlive"];
+	[coder encodeObject:[self selKeepAlive] forKey:@"selKeepAlive"];
+	[coder encodeObject:[self selCrlCheckIntvl] forKey:@"selCrlCheckIntvl"];
+	[coder encodeObject:[self selMyID] forKey:@"selMyID"];
+	[coder encodeObject:[self selPlutoDebug] forKey:@"selPlutoDebug"];
+	[coder encodeObject:[self selForceEncaps] forKey:@"selForceEncaps"];
+	[coder encodeObject:[self selNatTEnable] forKey:@"selNatTEnable"];
+	[coder encodeObject:[self selStrictCrlEnable] forKey:@"selStrictCrlEnable"];
+	[coder encodeObject:[self selOppEncEnable] forKey:@"selOppEncEnable"];
+	[coder encodeObject:[self selUniqueIDs] forKey:@"selUniqueIDs"];
 }
 
 - (id)initWithCoder:(NSCoder*)coder
@@ -92,10 +133,27 @@
 	[self setSelRemoteSubnets:[coder decodeObjectForKey:@"selRemoteSubnets"]];
 	[self setSelRemoteProtocolPort:[coder decodeObjectForKey:@"selRemoteProtocolPort"]];
 	
+	//Auth Options
 	[self setSelAuthBy:[coder decodeObjectForKey:@"selAuthBy"]];
+	[self setSelPSK:[coder decodeObjectForKey:@"selPSK"]];
+	[self setSelPKCS:[coder decodeObjectForKey:@"selPKCS"]];
+	[self setSelSendCert:[coder decodeObjectForKey:@"selSendCert"]];
 	[self setSelLocalRSASigKey:[coder decodeObjectForKey:@"selLocalRSASigKey"]];
 	[self setSelRemoteRSASigKey:[coder decodeObjectForKey:@"selRemoteRSASigKey"]];
-	[self setSelPSK:[coder decodeObjectForKey:@"selPSK"]];
+	
+	//Global Options
+	[self setSelVirtualPrivate:[coder decodeObjectForKey:@"selVirtualPrivate"]];
+	[self setSelForceKeepAlive:[coder decodeObjectForKey:@"selForceKeepAlive"]];
+	[self setSelKeepAlive:[coder decodeObjectForKey:@"selKeepAlive"]];
+	[self setSelCrlCheckIntvl:[coder decodeObjectForKey:@"selCrlCheckIntvl"]];
+	[self setSelMyID:[coder decodeObjectForKey:@"selMyID"]];
+	[self setSelPlutoDebug:[coder decodeObjectForKey:@"selPlutoDebug"]];
+	[self setSelForceEncaps:[coder decodeObjectForKey:@"selForceEncaps"]];
+	[self setSelNatTEnable:[coder decodeObjectForKey:@"selNatTEnable"]];
+	[self setSelStrictCrlEnable:[coder decodeObjectForKey:@"selStrictCrlEnable"]];
+	[self setSelOppEncEnable:[coder decodeObjectForKey:@"selOppEncEnable"]];
+	[self setSelUniqueIDs:[coder decodeObjectForKey:@"selUniqueIDs"]];
+	
 	return self;
 }
 
