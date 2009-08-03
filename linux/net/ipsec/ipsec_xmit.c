@@ -1093,12 +1093,12 @@ ipsec_xmit_cont(struct ipsec_xmit_state *ixs)
 	ixs->ipsp->ips_life.ipl_packets.ipl_count++; 
 
 	/* we are done with this SA */
-	ipsec_sa_put(ixs->ipsp); 
+	ipsec_sa_put(ixs->ipsp, IPSEC_REFTX); 
 
 	/* move to the next SA */
 	ixs->ipsp = ixs->ipsp->ips_next;
 	if (ixs->ipsp)
-		ipsec_sa_get(ixs->ipsp);
+		ipsec_sa_get(ixs->ipsp, IPSEC_REFTX);
 
 	/*
 	 * start again if we have more work to do
@@ -1393,7 +1393,7 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 		return IPSEC_XMIT_STOLEN;
 	} /* if (ixs->outgoing_said.proto == IPPROTO_INT) */
 	
-	ixs->ipsp = ipsec_sa_getbyid(&ixs->outgoing_said);
+	ixs->ipsp = ipsec_sa_getbyid(&ixs->outgoing_said, IPSEC_REFTX);
 	ixs->sa_len = KLIPS_SATOT(debug_tunnel, &ixs->outgoing_said, 0, ixs->sa_txt, sizeof(ixs->sa_txt));
 
 	if (ixs->ipsp == NULL) {
@@ -1913,7 +1913,7 @@ ipsec_xmit_cleanup(struct ipsec_xmit_state*ixs)
 		ixs->ips.ips_ident_d.data=NULL;
 	}
 	if(ixs->ipsp) {
-			ipsec_sa_put(ixs->ipsp);
+			ipsec_sa_put(ixs->ipsp, IPSEC_REFTX);
 			ixs->ipsp=NULL;
 	}
 }
@@ -2188,7 +2188,7 @@ ipsec_xsm(struct ipsec_xmit_state *ixs)
 
 	if (ixs->ipsp) {
 		struct ipsec_sa *ipsp;
-		ipsp = ipsec_sa_getbyid(&ixs->outgoing_said);
+		ipsp = ipsec_sa_getbyid(&ixs->outgoing_said, IPSEC_REFTX);
 		if (unlikely(ipsp == NULL)) {
 			KLIPS_PRINT(debug_tunnel,
 				"klips_debug:ipsec_xsm: "
@@ -2203,7 +2203,7 @@ ipsec_xsm(struct ipsec_xmit_state *ixs)
 			ixs->state = IPSEC_XSM_DONE;
 		} else {
 			/* put the ref count back */
-			ipsec_sa_put(ipsp);
+			ipsec_sa_put(ipsp, IPSEC_REFTX);
 		}
 	}
 

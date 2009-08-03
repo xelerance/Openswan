@@ -453,7 +453,7 @@ void ip_cmsg_recv_ipsec(struct msghdr *msg, struct sk_buff *skb)
 	KLIPS_PRINT(debug_rcv, "retrieving saref=%u from skb=%p\n",
 		    sp->ref, skb);
 
-	sa1 = ipsec_sa_getbyref(sp->ref);
+	sa1 = ipsec_sa_getbyref(sp->ref, IPSEC_REFOTHER);
 	if(sa1) {
 		refs[1]= sa1->ips_refhim;
 	} else {
@@ -464,7 +464,7 @@ void ip_cmsg_recv_ipsec(struct msghdr *msg, struct sk_buff *skb)
 	put_cmsg(msg, SOL_IP, IP_IPSEC_REFINFO,
 		 sizeof(xfrm_sec_unique_t)*2, &refs);
 	if(sa1) {
-		ipsec_sa_put(sa1);
+		ipsec_sa_put(sa1, IPSEC_REFOTHER);
 	}
 }
 #endif
@@ -976,7 +976,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 	} else
 		irs->sa_len = 0;
 
-	newipsp = ipsec_sa_getbyid(&irs->said);
+	newipsp = ipsec_sa_getbyid(&irs->said, IPSEC_REFRX);
 	if (newipsp == NULL) {
 		KLIPS_PRINT(debug_rcv,
 			    "klips_debug:ipsec_rcv: "
@@ -996,7 +996,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 		if(irs->stats) {
 			irs->stats->rx_dropped++;
 		}
-		ipsec_sa_put(newipsp);
+		ipsec_sa_put(newipsp, IPSEC_REFRX);
 		return IPSEC_RCV_SAIDNOTLIVE;
 	}
 
@@ -1007,7 +1007,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 		if(irs->stats) {
 			irs->stats->rx_dropped++;
 		}
-		ipsec_sa_put(newipsp);
+		ipsec_sa_put(newipsp, IPSEC_REFRX);
 		return IPSEC_RCV_SAIDNOTLIVE;
 	}
 
@@ -1021,7 +1021,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 			if(irs->stats) {
 				irs->stats->rx_dropped++;
 			}
-			ipsec_sa_put(newipsp);
+			ipsec_sa_put(newipsp, IPSEC_REFRX);
 			return IPSEC_RCV_FAILEDINBOUND;
 		}
 
@@ -1045,7 +1045,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 				if(irs->stats) {
 					irs->stats->rx_dropped++;
 				}
-				ipsec_sa_put(newipsp);
+				ipsec_sa_put(newipsp, IPSEC_REFRX);
 				return IPSEC_RCV_FAILEDINBOUND;
 			}
 			KLIPS_PRINT(debug_rcv,
@@ -1074,7 +1074,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
                                 if(irs->stats) {
                                         irs->stats->rx_dropped++;
                                 }
-                                ipsec_sa_put(newipsp);
+                                ipsec_sa_put(newipsp, IPSEC_REFRX);
                                 return IPSEC_RCV_FAILEDINBOUND;
                         }
                 }
@@ -1083,13 +1083,13 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 
 	if (newipsp != irs->ipsp) {
 		if(irs->lastipsp) {
-			ipsec_sa_put(irs->lastipsp);
+			ipsec_sa_put(irs->lastipsp, IPSEC_REFRX);
 		}
 		irs->lastipsp = irs->ipsp;
 		irs->ipsp=newipsp;
 	} else {
 		/* we already have a refcount for it */
-		ipsec_sa_put(newipsp);
+		ipsec_sa_put(newipsp, IPSEC_REFRX);
 	}
 
 	return IPSEC_RCV_OK;
@@ -1111,10 +1111,10 @@ ipsec_rcv_auth_decap(struct ipsec_rcv_state *irs)
 
 			newipsp = irs->ipsp->ips_next;
 			if(newipsp) {
-				ipsec_sa_get(newipsp);
+				ipsec_sa_get(newipsp, IPSEC_REFRX);
 			}
 			if(irs->lastipsp) {
-				ipsec_sa_put(irs->lastipsp);
+				ipsec_sa_put(irs->lastipsp, IPSEC_REFRX);
 			}
 			irs->lastipsp = irs->ipsp;
 			irs->ipsp=newipsp;
@@ -1610,10 +1610,10 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 		struct ipsec_sa *newipsp;
 		newipsp = irs->ipsp->ips_next;
 		if(newipsp) {
-			ipsec_sa_get(newipsp);
+			ipsec_sa_get(newipsp, IPSEC_REFRX);
 		}
 		if(irs->lastipsp) {
-			ipsec_sa_put(irs->lastipsp);
+			ipsec_sa_put(irs->lastipsp, IPSEC_REFRX);
 		}
 		irs->lastipsp = irs->ipsp;
 		irs->ipsp=newipsp;
@@ -1632,10 +1632,10 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 		struct ipsec_sa *newipsp = NULL;
 		newipsp = irs->ipsp->ips_next;
 		if(newipsp) {
-			ipsec_sa_get(newipsp);
+			ipsec_sa_get(newipsp, IPSEC_REFRX);
 		}
 		if(irs->lastipsp) {
-			ipsec_sa_put(irs->lastipsp);
+			ipsec_sa_put(irs->lastipsp, IPSEC_REFRX);
 		}
 		irs->lastipsp = irs->ipsp;
 		irs->ipsp=newipsp;
@@ -1783,7 +1783,7 @@ ipsec_rsm(struct ipsec_rcv_state *irs)
 
 	if (irs->said.proto) {
 		struct ipsec_sa *ipsp;
-		ipsp = ipsec_sa_getbyid(&irs->said);
+		ipsp = ipsec_sa_getbyid(&irs->said, IPSEC_REFRX);
 		if (ipsp == NULL) {
 			KLIPS_PRINT(debug_rcv,
 				"klips_debug:ipsec_rcv: "
@@ -1796,7 +1796,7 @@ ipsec_rsm(struct ipsec_rcv_state *irs)
 			irs->state = IPSEC_RSM_DONE;
 		} else {
 			/* set the refcount back */
-			ipsec_sa_put(ipsp);
+			ipsec_sa_put(ipsp, IPSEC_REFRX);
 		}
 	}
 
@@ -1833,12 +1833,12 @@ ipsec_rsm(struct ipsec_rcv_state *irs)
 	spin_unlock_bh(&tdb_lock);
 
 	if (irs->lastipsp) {
-		ipsec_sa_put(irs->lastipsp);
+		ipsec_sa_put(irs->lastipsp, IPSEC_REFRX);
 		irs->lastipsp=NULL;
 	}
 
 	if (irs->ipsp) {
-		ipsec_sa_put(irs->ipsp);
+		ipsec_sa_put(irs->ipsp, IPSEC_REFRX);
 		irs->ipsp=NULL;
 	}
 
