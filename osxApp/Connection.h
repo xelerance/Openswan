@@ -51,40 +51,93 @@
 	
 	NSMutableString* selPlutoDebug;
 	NSButton* selUniqueIDs;
+	
+	//Advanced Options
+	NSButton* selDPDEnable;
+	NSMutableString* selDPDDelay;
+	NSMutableString* selDPDTimeout;
+	NSMutableString* selDPDAction;
+	
+	NSMutableString* selIKE1Enc;
+	NSMutableString* selIKE1Hash;
+	NSMutableString* selIKE2Enc;
+	NSMutableString* selIKE2Hash;
+	
+	NSMutableString* selIKEv2;
+	NSMutableString* selIKELifetime;
+	
+	NSButton* selCompressEnable;
+	NSButton* selPfsEnable;
+	NSButton* selRekeyEnable;
+	
+	NSMutableString* selPhase2;
+	NSMutableString* selPhase2Alg;
+	NSMutableString* selSALifetime;
+	NSMutableString* selRekeyMargin;
+	NSMutableString* selRekeyFuzz;
+	NSMutableString* selKeyingTries;
 }
 
 @property (readwrite, retain) NSMutableString *connName;
 //Connection Options
-@property (readwrite, retain) NSMutableString	*selAuto,
-												*selType,
-												*selMode,
-												*selLocalHost,
-												*selLocalID,
-												*selLocalSubnets,
-												*selLocalProtocolPort,
-												*selRemoteHost,
-												*selRemoteID,
-												*selRemoteSubnets,
-												*selRemoteProtocolPort;
+@property (readwrite, retain) NSMutableString	
+*selAuto,
+*selType,
+*selMode,
+*selLocalHost,
+*selLocalID,
+*selLocalSubnets,
+*selLocalProtocolPort,
+*selRemoteHost,
+*selRemoteID,
+*selRemoteSubnets,
+*selRemoteProtocolPort;
 //Auth Options
-@property (readwrite, retain) NSMutableString	*selAuthBy,
-												*selPSK,
-												*selPKCS,
-												*selSendCert,
-												*selLocalRSASigKey,
-												*selRemoteRSASigKey;
+@property (readwrite, retain) NSMutableString	
+*selAuthBy,
+*selPSK,
+*selPKCS,
+*selSendCert,
+*selLocalRSASigKey,
+*selRemoteRSASigKey;
 //Global Options
-@property (readwrite, retain) NSMutableString *selVirtualPrivate,
+@property (readwrite, retain) NSMutableString 
+*selVirtualPrivate,
 *selForceKeepAlive,
 *selKeepAlive,
 *selCrlCheckIntvl,
 *selMyID,
 *selPlutoDebug;
 
-@property (readwrite, retain) NSButton *selForceEncaps,
+@property (readwrite, retain) NSButton 
+*selForceEncaps,
 *selNatTEnable,
 *selStrictCrlEnable,
 *selOppEncEnable,
 *selUniqueIDs;
+
+//Advanced Options
+@property (readwrite, retain) NSMutableString 
+*selDPDDelay,
+*selDPDTimeout,
+*selDPDAction,
+*selIKE1Enc,
+*selIKE1Hash,
+*selIKE2Enc,
+*selIKE2Hash,
+*selIKEv2,
+*selIKELifetime,
+*selPhase2,
+*selPhase2Alg,
+*selSALifetime,
+*selRekeyMargin,
+*selRekeyFuzz,
+*selKeyingTries;
+
+@property (readwrite, retain) NSButton
+*selDPDEnable,
+*selCompressEnable,
+*selPfsEnable,
+*selRekeyEnable;
 
 @end

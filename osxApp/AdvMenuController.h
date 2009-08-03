@@ -36,10 +36,7 @@
 
 - (IBAction)advancedOpt: (id) sender;
 - (IBAction)selectedEndUserOpt: (id)sender;
-- (IBAction)natTraversal: (id) sender;
-- (IBAction)oe: (id) sender;
 - (IBAction)save: (id)sender;
-- (IBAction)dpd: (id)sender;
 
 - (IBAction)showChangeNameSheet:(id)sender;
 - (IBAction)AppliedChangeNameSheet:(id)sender;

@@ -9,7 +9,7 @@
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<integer value="601"/>
-			<integer value="324"/>
+			<integer value="43"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -3376,7 +3376,7 @@
 																	<object class="NSTextField" id="113635901">
 																		<reference key="NSNextResponder" ref="63220688"/>
 																		<int key="NSvFlags">268</int>
-																		<string key="NSFrame">{{-4, 87}, {95, 17}}</string>
+																		<string key="NSFrame">{{25, 87}, {66, 17}}</string>
 																		<reference key="NSSuperview" ref="63220688"/>
 																		<bool key="NSEnabled">YES</bool>
 																		<object class="NSTextFieldCell" key="NSCell" id="550803506">
@@ -3409,7 +3409,7 @@
 																	<object class="NSTextField" id="550459215">
 																		<reference key="NSNextResponder" ref="63220688"/>
 																		<int key="NSvFlags">268</int>
-																		<string key="NSFrame">{{-4, 59}, {95, 17}}</string>
+																		<string key="NSFrame">{{9, 59}, {82, 17}}</string>
 																		<reference key="NSSuperview" ref="63220688"/>
 																		<bool key="NSEnabled">YES</bool>
 																		<object class="NSTextFieldCell" key="NSCell" id="776786449">
@@ -3699,6 +3699,25 @@
 					<string>selPlutoDebug</string>
 					<string>selUniqueIDs</string>
 					<string>selOppEncEnable</string>
+					<string>selDPDEnable</string>
+					<string>selDPDAction</string>
+					<string>selDPDDelay</string>
+					<string>selDPDTimeout</string>
+					<string>selIKE1Enc</string>
+					<string>selIKE2Enc</string>
+					<string>selIKE1Hash</string>
+					<string>selIKE2Hash</string>
+					<string>selIKEv2</string>
+					<string>selIKELifetime</string>
+					<string>selCompressEnable</string>
+					<string>selPfsEnable</string>
+					<string>selRekeyEnable</string>
+					<string>selPhase2</string>
+					<string>selPhase2Alg</string>
+					<string>selSALifetime</string>
+					<string>selRekeyMargin</string>
+					<string>selRekeyFuzz</string>
+					<string>selKeyingTries</string>
 				</object>
 				<string key="NSObjectClassName">Connection</string>
 				<bool key="NSEditable">YES</bool>
@@ -3865,22 +3884,6 @@
 						<reference key="destination" ref="1021433915"/>
 					</object>
 					<int key="connectionID">461</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">natTraversal:</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="212501812"/>
-					</object>
-					<int key="connectionID">463</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">oe:</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="157787517"/>
-					</object>
-					<int key="connectionID">464</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -4086,14 +4089,6 @@
 						<reference key="destination" ref="63220688"/>
 					</object>
 					<int key="connectionID">665</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">dpd:</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="236861745"/>
-					</object>
-					<int key="connectionID">666</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -4478,6 +4473,550 @@
 						</object>
 					</object>
 					<int key="connectionID">724</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selNatTEnable</string>
+						<reference key="source" ref="334863453"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="334863453"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selNatTEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selNatTEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">726</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selNatTEnable</string>
+						<reference key="source" ref="197311583"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="197311583"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selNatTEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selNatTEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">728</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selNatTEnable</string>
+						<reference key="source" ref="40060554"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="40060554"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selNatTEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selNatTEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">729</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selNatTEnable</string>
+						<reference key="source" ref="310484801"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="310484801"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selNatTEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selNatTEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">730</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selNatTEnable</string>
+						<reference key="source" ref="1052035092"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="1052035092"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selNatTEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selNatTEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">731</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selNatTEnable</string>
+						<reference key="source" ref="750194580"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="750194580"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selNatTEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selNatTEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">732</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selNatTEnable</string>
+						<reference key="source" ref="227152772"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="227152772"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selNatTEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selNatTEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">734</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selOppEncEnable</string>
+						<reference key="source" ref="118225582"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="118225582"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selOppEncEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selOppEncEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">736</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selOppEncEnable</string>
+						<reference key="source" ref="939571598"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="939571598"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selOppEncEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selOppEncEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">738</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.selDPDEnable</string>
+						<reference key="source" ref="236861745"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="236861745"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">value: selection.selDPDEnable</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.selDPDEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">740</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selDPDEnable</string>
+						<reference key="source" ref="113635901"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="113635901"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selDPDEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selDPDEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">743</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selDPDEnable</string>
+						<reference key="source" ref="570720570"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="570720570"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selDPDEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selDPDEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">744</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selDPDEnable</string>
+						<reference key="source" ref="550459215"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="550459215"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selDPDEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selDPDEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">745</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selDPDEnable</string>
+						<reference key="source" ref="556395864"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="556395864"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selDPDEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selDPDEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">746</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selDPDEnable</string>
+						<reference key="source" ref="1022131959"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="1022131959"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selDPDEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selDPDEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">747</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: selection.selDPDEnable</string>
+						<reference key="source" ref="647724812"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="647724812"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">enabled: selection.selDPDEnable</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">selection.selDPDEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">749</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectedValue: selection.selDPDAction</string>
+						<reference key="source" ref="647724812"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="647724812"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">selectedValue: selection.selDPDAction</string>
+							<string key="NSBinding">selectedValue</string>
+							<string key="NSKeyPath">selection.selDPDAction</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">751</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.selDPDDelay</string>
+						<reference key="source" ref="570720570"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="570720570"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">value: selection.selDPDDelay</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.selDPDDelay</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">753</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.selDPDTimeout</string>
+						<reference key="source" ref="556395864"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="556395864"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">value: selection.selDPDTimeout</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.selDPDTimeout</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">755</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectedValue: selection.selIKE1Enc</string>
+						<reference key="source" ref="455554444"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="455554444"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">selectedValue: selection.selIKE1Enc</string>
+							<string key="NSBinding">selectedValue</string>
+							<string key="NSKeyPath">selection.selIKE1Enc</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">757</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectedValue: selection.selIKE2Enc</string>
+						<reference key="source" ref="93011740"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="93011740"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">selectedValue: selection.selIKE2Enc</string>
+							<string key="NSBinding">selectedValue</string>
+							<string key="NSKeyPath">selection.selIKE2Enc</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">759</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectedValue: selection.selIKE1Hash</string>
+						<reference key="source" ref="1041433951"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="1041433951"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">selectedValue: selection.selIKE1Hash</string>
+							<string key="NSBinding">selectedValue</string>
+							<string key="NSKeyPath">selection.selIKE1Hash</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">761</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectedValue: selection.selIKE2Hash</string>
+						<reference key="source" ref="224158351"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="224158351"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">selectedValue: selection.selIKE2Hash</string>
+							<string key="NSBinding">selectedValue</string>
+							<string key="NSKeyPath">selection.selIKE2Hash</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">763</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectedValue: selection.selIKEv2</string>
+						<reference key="source" ref="428035234"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="428035234"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">selectedValue: selection.selIKEv2</string>
+							<string key="NSBinding">selectedValue</string>
+							<string key="NSKeyPath">selection.selIKEv2</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">765</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.selIKELifetime</string>
+						<reference key="source" ref="610970679"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="610970679"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">value: selection.selIKELifetime</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.selIKELifetime</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">767</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.selCompressEnable</string>
+						<reference key="source" ref="908497058"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="908497058"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">value: selection.selCompressEnable</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.selCompressEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">769</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.selPfsEnable</string>
+						<reference key="source" ref="967596337"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="967596337"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">value: selection.selPfsEnable</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.selPfsEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">770</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.selRekeyEnable</string>
+						<reference key="source" ref="18771057"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="18771057"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">value: selection.selRekeyEnable</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.selRekeyEnable</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">772</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectedValue: selection.selPhase2</string>
+						<reference key="source" ref="943673094"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="943673094"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">selectedValue: selection.selPhase2</string>
+							<string key="NSBinding">selectedValue</string>
+							<string key="NSKeyPath">selection.selPhase2</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">774</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.selPhase2Alg</string>
+						<reference key="source" ref="664404411"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="664404411"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">value: selection.selPhase2Alg</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.selPhase2Alg</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">776</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.selSALifetime</string>
+						<reference key="source" ref="156482891"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="156482891"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">value: selection.selSALifetime</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.selSALifetime</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">778</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.selRekeyMargin</string>
+						<reference key="source" ref="590637126"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="590637126"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">value: selection.selRekeyMargin</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.selRekeyMargin</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">780</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.selRekeyFuzz</string>
+						<reference key="source" ref="494534649"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="494534649"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">value: selection.selRekeyFuzz</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.selRekeyFuzz</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">782</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: selection.selKeyingTries</string>
+						<reference key="source" ref="881762789"/>
+						<reference key="destination" ref="828641870"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="881762789"/>
+							<reference key="NSDestination" ref="828641870"/>
+							<string key="NSLabel">value: selection.selKeyingTries</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">selection.selKeyingTries</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">784</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -8049,8 +8588,8 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{1314, 498}, {773, 311}}</string>
-					<string>{{1314, 498}, {773, 311}}</string>
+					<string>{{1438, 532}, {773, 311}}</string>
+					<string>{{1438, 532}, {773, 311}}</string>
 					<integer value="1"/>
 					<string>{{33, 99}, {480, 360}}</string>
 					<string>{3.40282e+38, 3.40282e+38}</string>
@@ -8196,7 +8735,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">724</int>
+			<int key="maxID">784</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -8211,18 +8750,12 @@
 							<string>AppliedChangeNameSheet:</string>
 							<string>CanceledChangeNameSheet:</string>
 							<string>advancedOpt:</string>
-							<string>dpd:</string>
-							<string>natTraversal:</string>
-							<string>oe:</string>
 							<string>save:</string>
 							<string>selectedEndUserOpt:</string>
 							<string>showChangeNameSheet:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
-							<string>id</string>
-							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
