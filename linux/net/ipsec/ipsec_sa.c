@@ -366,6 +366,9 @@ ipsec_sa_print(struct ipsec_sa *ips)
 	if(ips->ips_next != NULL) {
 		printk(" next=0p%p", ips->ips_next);
 	}
+	if(ips->ips_prev != NULL) {
+		printk(" prev=0p%p", ips->ips_prev);
+	}
 	sa_len = satot(&ips->ips_said, 0, sa, sizeof(sa));
 	printk(" said=%s", sa_len ? sa : " (error)");
 	if(ips->ips_seq) {
@@ -1076,10 +1079,14 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 	ips->ips_alg_auth = NULL;
 
 #endif
+	if (ips->ips_prev)
+		ips->ips_prev->ips_next = ips->ips_next;
 	if (ips->ips_next) {
+		ips->ips_next->ips_prev = ips->ips_prev;
 		ipsec_sa_put(ips->ips_next);
 	}
 	ips->ips_next = NULL;
+	ips->ips_prev = NULL;
 
 	if (ips->ips_hnext) {
 		ipsec_sa_put(ips->ips_hnext);
