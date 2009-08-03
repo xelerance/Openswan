@@ -76,6 +76,35 @@
 	NSMutableString* selRekeyMargin;
 	NSMutableString* selRekeyFuzz;
 	NSMutableString* selKeyingTries;
+	
+	NSButton* selLocalXauthServer;
+	NSButton* selLocalXauthClient;
+	NSButton* selLocalModeCfgServer;
+	NSButton* selLocalModeCfgClient;
+	NSMutableString* selLocalXauthUsername;
+	
+	NSButton* selRemoteXauthServer;
+	NSButton* selRemoteXauthClient;
+	NSButton* selRemoteModeCfgServer;
+	NSButton* selRemoteModeCfgClient;
+	NSMutableString* selRemoteXauthUsername;
+	
+	NSMutableString* selModeCfgDNS1;
+	NSMutableString* selModeCfgDNS2;
+	NSMutableString* selModeCfgWins1;
+	NSMutableString* selModeCfgWins2;
+	
+	NSButton* selModeCfgPullEnable;
+	
+	NSMutableString* selNHelpers;
+	NSMutableString* selSyslog;
+	NSMutableString* selPlutoOpts;
+	NSMutableString* selPlutoStdErrLog;
+	NSMutableString* selPlutoRestartOnCrash;
+	NSMutableString* selNextHop;
+	NSMutableString* selSourceIP;
+	NSMutableString* selUpdownScript;
+	
 }
 
 @property (readwrite, retain) NSMutableString *connName;
@@ -132,12 +161,36 @@
 *selSALifetime,
 *selRekeyMargin,
 *selRekeyFuzz,
-*selKeyingTries;
+*selKeyingTries,
+*selRemoteXauthUsername,
+*selLocalXauthUsername,
+*selModeCfgDNS1,
+*selModeCfgDNS2,
+*selModeCfgWins1,
+*selModeCfgWins2,
+*selNHelpers,
+*selSyslog,
+*selPlutoOpts,
+*selPlutoStdErrLog,
+*selPlutoRestartOnCrash,
+*selNextHop,
+*selSourceIP,
+*selUpdownScript;
 
 @property (readwrite, retain) NSButton
 *selDPDEnable,
 *selCompressEnable,
 *selPfsEnable,
-*selRekeyEnable;
+*selRekeyEnable,
+*selLocalXauthServer,
+*selLocalXauthClient,
+*selLocalModeCfgServer,
+*selLocalModeCfgClient,
+*selRemoteXauthServer,
+*selRemoteXauthClient,
+*selRemoteModeCfgServer,
+*selRemoteModeCfgClient,
+*selModeCfgPullEnable;
+
 
 @end

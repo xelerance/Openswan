@@ -66,7 +66,31 @@ selRekeyFuzz,
 selKeyingTries,
 selCompressEnable,
 selPfsEnable,
-selRekeyEnable;
+selRekeyEnable,
+selRemoteXauthUsername,
+selLocalXauthUsername,
+selModeCfgDNS1,
+selModeCfgDNS2,
+selModeCfgWins1,
+selModeCfgWins2,
+selLocalXauthServer,
+selLocalXauthClient,
+selLocalModeCfgServer,
+selLocalModeCfgClient,
+selRemoteXauthServer,
+selRemoteXauthClient,
+selRemoteModeCfgServer,
+selRemoteModeCfgClient,
+selModeCfgPullEnable,
+selNHelpers,
+selSyslog,
+selPlutoOpts,
+selPlutoStdErrLog,
+selPlutoRestartOnCrash,
+selNextHop,
+selSourceIP,
+selUpdownScript;
+
 
 - (id)init
 {
@@ -166,6 +190,31 @@ selRekeyEnable;
 	[coder encodeObject:[self selCompressEnable] forKey:@"selCompressEnable"];
 	[coder encodeObject:[self selPfsEnable] forKey:@"selPfsEnable"];
 	[coder encodeObject:[self selRekeyEnable] forKey:@"selRekeyEnable"];
+	
+	[coder encodeObject:[self selRemoteXauthUsername] forKey:@"selRemoteXauthUsername"];
+	[coder encodeObject:[self selLocalXauthUsername] forKey:@"selLocalXauthUsername"];
+	[coder encodeObject:[self selModeCfgDNS1] forKey:@"selModeCfgDNS1"];
+	[coder encodeObject:[self selModeCfgDNS2] forKey:@"selModeCfgDNS2"];
+	[coder encodeObject:[self selModeCfgWins1] forKey:@"selModeCfgWins1"];
+	[coder encodeObject:[self selModeCfgWins2] forKey:@"selModeCfgWins2"];
+	[coder encodeObject:[self selLocalXauthServer] forKey:@"selLocalXauthServer"];
+	[coder encodeObject:[self selLocalXauthClient] forKey:@"selLocalXauthClient"];
+	[coder encodeObject:[self selLocalModeCfgServer] forKey:@"selLocalModeCfgServer"];
+	[coder encodeObject:[self selLocalModeCfgClient] forKey:@"selLocalModeCfgClient"];
+	[coder encodeObject:[self selRemoteXauthServer] forKey:@"selRemoteXauthServer"];
+	[coder encodeObject:[self selRemoteXauthClient] forKey:@"selRemoteXauthClient"];
+	[coder encodeObject:[self selRemoteModeCfgServer] forKey:@"selRemoteModeCfgServer"];
+	[coder encodeObject:[self selRemoteModeCfgClient] forKey:@"selRemoteModeCfgClient"];
+	[coder encodeObject:[self selModeCfgPullEnable] forKey:@"selModeCfgPullEnable"];
+	
+	[coder encodeObject:[self selNHelpers] forKey:@"selNHelpers"];
+	[coder encodeObject:[self selSyslog] forKey:@"selSyslog"];
+	[coder encodeObject:[self selPlutoOpts] forKey:@"selPlutoOpts"];
+	[coder encodeObject:[self selPlutoStdErrLog] forKey:@"selPlutoStdErrLog"];
+	[coder encodeObject:[self selPlutoRestartOnCrash] forKey:@"selPlutoRestartOnCrash"];
+	[coder encodeObject:[self selNextHop] forKey:@"selNextHop"];
+	[coder encodeObject:[self selSourceIP] forKey:@"selSourceIP"];
+	[coder encodeObject:[self selUpdownScript] forKey:@"selUpdownScript"];
 }
 
 - (id)initWithCoder:(NSCoder*)coder
@@ -228,6 +277,31 @@ selRekeyEnable;
 	[self setSelCompressEnable:[coder decodeObjectForKey:@"selCompressEnable"]];
 	[self setSelPfsEnable:[coder decodeObjectForKey:@"selPfsEnable"]];
 	[self setSelRekeyEnable:[coder decodeObjectForKey:@"selRekeyEnable"]];
+	
+	[self setSelRemoteXauthUsername:[coder decodeObjectForKey:@"selRemoteXauthUsername"]];
+	[self setSelLocalXauthUsername:[coder decodeObjectForKey:@"selLocalXauthUsername"]];
+	[self setSelModeCfgDNS1:[coder decodeObjectForKey:@"selModeCfgDNS1"]];
+	[self setSelModeCfgDNS2:[coder decodeObjectForKey:@"selModeCfgDNS2"]];
+	[self setSelModeCfgWins1:[coder decodeObjectForKey:@"selModeCfgWins1"]];
+	[self setSelModeCfgWins2:[coder decodeObjectForKey:@"selModeCfgWins2"]];
+	[self setSelLocalXauthServer:[coder decodeObjectForKey:@"selLocalXauthServer"]];
+	[self setSelLocalXauthClient:[coder decodeObjectForKey:@"selLocalXauthClient"]];
+	[self setSelLocalModeCfgServer:[coder decodeObjectForKey:@"selLocalModeCfgServer"]];
+	[self setSelLocalModeCfgClient:[coder decodeObjectForKey:@"selLocalModeCfgClient"]];
+	[self setSelRemoteXauthServer:[coder decodeObjectForKey:@"selRemoteXauthServer"]];
+	[self setSelRemoteXauthClient:[coder decodeObjectForKey:@"selRemoteXauthClient"]];
+	[self setSelRemoteModeCfgServer:[coder decodeObjectForKey:@"selRemoteModeCfgServer"]];
+	[self setSelRemoteModeCfgClient:[coder decodeObjectForKey:@"selRemoteModeCfgClient"]];
+	[self setSelModeCfgPullEnable:[coder decodeObjectForKey:@"selModeCfgPullEnable"]];
+	
+	[self setSelNHelpers:[coder decodeObjectForKey:@"selNHelpers"]];
+	[self setSelSyslog:[coder decodeObjectForKey:@"selSyslog"]];
+	[self setSelPlutoOpts:[coder decodeObjectForKey:@"selPlutoOpts"]];
+	[self setSelPlutoStdErrLog:[coder decodeObjectForKey:@"selPlutoStdErrLog"]];
+	[self setSelPlutoRestartOnCrash:[coder decodeObjectForKey:@"selPlutoRestartOnCrash"]];
+	[self setSelNextHop:[coder decodeObjectForKey:@"selNextHop"]];
+	[self setSelSourceIP:[coder decodeObjectForKey:@"selSourceIP"]];
+	[self setSelUpdownScript:[coder decodeObjectForKey:@"selUpdownScript"]];
 	
 	return self;
 }
