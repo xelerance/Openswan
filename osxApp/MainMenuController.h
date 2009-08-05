@@ -42,6 +42,7 @@ static AuthorizationRef gAuth;
 	NSMutableString* connDurationPrint;
 }
 
+@property (readwrite, retain) NSPopUpButton* selConn;
 @property (readwrite, retain) ConnectionsDB* db;
 @property (readwrite, retain) NSDate* connTime;
 @property (readwrite, retain) NSMutableString* connDurationPrint;

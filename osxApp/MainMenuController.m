@@ -15,7 +15,7 @@
 
 @implementation MainMenuController
 
-@synthesize db, connTime, connDuration, timer, connDurationPrint;
+@synthesize db, connTime, connDuration, timer, connDurationPrint, selConn;
 
 - (IBAction)showAdvMenu: (id)sender
 {
@@ -24,7 +24,7 @@
 		advMenuController = [[AdvMenuController alloc] init];
 	}
 	NSLog(@"Showing %@", advMenuController);
-	[[advMenuController selConn] selectItemAtIndex:[selConn indexOfSelectedItem]];
+	[[advMenuController selConn] selectItemAtIndex:[[self selConn] indexOfSelectedItem]];
 	[advMenuController showWindow: self];
 }
 

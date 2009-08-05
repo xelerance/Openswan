@@ -10,14 +10,12 @@
 #import "PreferenceController.h"
 
 @implementation AdvMenuController
-@synthesize connections, selConn, prevConnName;
+@synthesize selConn, prevConnName;
 
 - (id)init
 {
 	if(![super initWithWindowNibName:@"AdvancedMenu"])
 		return nil;
-	
-	connections = [[ConnectionsDB sharedInstance] connDB];
 	
 	rawRSAText = [[NSTextField alloc] init];
 	
@@ -60,7 +58,7 @@
 - (IBAction)selectedEndUserOpt: (id)sender
 {
 	NSString* selected = [NSString stringWithString:[sender titleOfSelectedItem]];
-	Connection* selectedConn = [connections objectAtIndex:[selConn indexOfSelectedItem]];
+	Connection* selectedConn = [[self connections] objectAtIndex:[selConn indexOfSelectedItem]];
 	
 	if([selected isEqualToString:@"Raw RSA"]){
 		NSLog(@"user selected option Raw RSA");
@@ -91,25 +89,13 @@
 }
 
 - (void)awakeFromNib
-{
-	connections = [[ConnectionsDB sharedInstance] connDB];
-	[X509View setHidden:YES];
+{	[X509View setHidden:YES];
 	[PSKView setHidden:YES];
-}
-
-- (IBAction)save: (id)sender
-{
-	Connection* selectedConn = [connections objectAtIndex:[selConn indexOfSelectedItem]];
-	NSLog(@"saving connection: %@", [selectedConn connName]);
-	NSLog(@"local host: %@",[selectedConn selLocalHost]);
-	NSLog(@"remote host: %@",[selectedConn selRemoteHost]);
-	NSLog(@"Auto: %@", [selectedConn selAuto]);
-	NSLog(@"Auto: %@", [selectedConn selAuthBy]);
 }
 
 - (IBAction)showChangeNameSheet:(id)sender{
 
-	Connection* selectedConn = [connections objectAtIndex:[selConn indexOfSelectedItem]];
+	Connection* selectedConn = [[self connections] objectAtIndex:[selConn indexOfSelectedItem]];
 
 	[self setPrevConnName:[selectedConn connName]];
 	
@@ -128,10 +114,14 @@
 - (IBAction)CanceledChangeNameSheet:(id)sender{
 	[NSApp endSheet:changeNameSheet];
 	
-	Connection* selectedConn = [connections objectAtIndex:[selConn indexOfSelectedItem]];
+	Connection* selectedConn = [[self connections] objectAtIndex:[selConn indexOfSelectedItem]];
 	[selectedConn setConnName:[self prevConnName]];
 	
 	[changeNameSheet orderOut:sender];
+}
+
+- (NSMutableArray*)connections{
+	return [[ConnectionsDB sharedInstance] connDB];
 }
 
 

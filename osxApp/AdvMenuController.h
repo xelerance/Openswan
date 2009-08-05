@@ -13,8 +13,6 @@
 @class PreferenceController;
 
 @interface AdvMenuController : NSWindowController {
-	NSMutableArray* connections;
-	
 	IBOutlet NSTextField* rawRSAText;
 	IBOutlet NSView* PSKView;
 	IBOutlet NSView* X509View;
@@ -30,16 +28,16 @@
 	NSMutableString* prevConnName;
 }
 
-@property (readwrite, retain) NSMutableArray* connections;
 @property (readwrite, retain) NSPopUpButton* selConn;
 @property (readwrite, copy) NSMutableString* prevConnName;
 
 - (IBAction)advancedOpt: (id) sender;
 - (IBAction)selectedEndUserOpt: (id)sender;
-- (IBAction)save: (id)sender;
 
 - (IBAction)showChangeNameSheet:(id)sender;
 - (IBAction)AppliedChangeNameSheet:(id)sender;
 - (IBAction)CanceledChangeNameSheet:(id)sender;
+
+- (NSMutableArray*)connections;
 
 @end
