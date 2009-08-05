@@ -10,7 +10,7 @@
 #import "PreferenceController.h"
 
 @implementation AdvMenuController
-@synthesize selConn, prevConnName;
+@synthesize selConn, prevConnName, selItemIndex;
 
 - (id)init
 {
@@ -28,7 +28,7 @@
 	dpdView = [[NSView alloc] init];
 	
 	prevConnName = [[NSMutableString alloc] init];
-		
+	
 	return self;
 }
 
@@ -89,7 +89,9 @@
 }
 
 - (void)awakeFromNib
-{	[X509View setHidden:YES];
+{	
+	[[self selConn] selectItemAtIndex:selItemIndex];
+	[X509View setHidden:YES];
 	[PSKView setHidden:YES];
 }
 

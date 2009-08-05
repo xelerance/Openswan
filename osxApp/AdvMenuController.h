@@ -26,10 +26,13 @@
 	IBOutlet NSWindow *changeNameSheet;
 	
 	NSMutableString* prevConnName;
+	
+	NSInteger selItemIndex;
 }
 
 @property (readwrite, retain) NSPopUpButton* selConn;
 @property (readwrite, copy) NSMutableString* prevConnName;
+@property (readwrite, assign) NSInteger selItemIndex;
 
 - (IBAction)advancedOpt: (id) sender;
 - (IBAction)selectedEndUserOpt: (id)sender;

@@ -22,9 +22,13 @@
 	//Is advMenuController nil?
 	if(!advMenuController){
 		advMenuController = [[AdvMenuController alloc] init];
+		[advMenuController setSelItemIndex:[[self selConn] indexOfSelectedItem]];
 	}
+	else{
+		[[advMenuController selConn] selectItemAtIndex:[[self selConn] indexOfSelectedItem]];
+	}
+	
 	NSLog(@"Showing %@", advMenuController);
-	[[advMenuController selConn] selectItemAtIndex:[[self selConn] indexOfSelectedItem]];
 	[advMenuController showWindow: self];
 }
 
