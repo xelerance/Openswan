@@ -17,24 +17,18 @@
 	if(![super initWithWindowNibName:@"AdvancedMenu"])
 		return nil;
 	
-	rawRSAText = [[NSTextField alloc] init];
-	
-	PSKView = [[NSView alloc] init];
-	X509View = [[NSView alloc] init];
-	rawRSAView = [[NSView alloc] init];
-	
-	natView = [[NSView alloc] init];
-	oeView = [[NSView alloc] init];
-	dpdView = [[NSView alloc] init];
-	
-	prevConnName = [[NSMutableString alloc] init];
-	
 	return self;
 }
 
-- (void)windowDidLoad
-{
-	NSLog(@"Advanced Menu Nib file is loaded");
+- (void)awakeFromNib
+{	
+	[[self selConn] selectItemAtIndex:selItemIndex];
+	[X509View setHidden:YES];
+	[PSKView setHidden:YES];
+}
+
+- (NSMutableArray*)connections{
+	return [[ConnectionsDB sharedInstance] connDB];
 }
 
 - (IBAction)advancedOpt: (id) sender
@@ -88,13 +82,7 @@
 	}
 }
 
-- (void)awakeFromNib
-{	
-	[[self selConn] selectItemAtIndex:selItemIndex];
-	[X509View setHidden:YES];
-	[PSKView setHidden:YES];
-}
-
+#pragma mark editConnection
 - (IBAction)showChangeNameSheet:(id)sender{
 
 	Connection* selectedConn = [[self connections] objectAtIndex:[selConn indexOfSelectedItem]];
@@ -121,10 +109,5 @@
 	
 	[changeNameSheet orderOut:sender];
 }
-
-- (NSMutableArray*)connections{
-	return [[ConnectionsDB sharedInstance] connDB];
-}
-
 
 @end

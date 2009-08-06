@@ -8,8 +8,8 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
+			<integer value="1626"/>
 			<integer value="1686"/>
-			<integer value="1635"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1447,7 +1447,7 @@
 									</object>
 								</object>
 							</object>
-							<string key="NSFrame">{{78, 71}, {237, 67}}</string>
+							<string key="NSFrame">{{146, 41}, {237, 67}}</string>
 							<reference key="NSSuperview" ref="730065647"/>
 							<string key="NSClassName">NSView</string>
 						</object>
@@ -2026,39 +2026,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">contentValues: arrangedObjects</string>
-						<reference key="source" ref="366285975"/>
-						<reference key="destination" ref="568027323"/>
-						<object class="NSNibBindingConnector" key="connector" id="1062439303">
-							<reference key="NSSource" ref="366285975"/>
-							<reference key="NSDestination" ref="568027323"/>
-							<string key="NSLabel">contentValues: arrangedObjects</string>
-							<string key="NSBinding">contentValues</string>
-							<string key="NSKeyPath">arrangedObjects</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">1652</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">selectedIndex: selectionIndex</string>
-						<reference key="source" ref="366285975"/>
-						<reference key="destination" ref="568027323"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="366285975"/>
-							<reference key="NSDestination" ref="568027323"/>
-							<string key="NSLabel">selectedIndex: selectionIndex</string>
-							<string key="NSBinding">selectedIndex</string>
-							<string key="NSKeyPath">selectionIndex</string>
-							<reference key="NSPreviousConnector" ref="1062439303"/>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">1654</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
 						<string key="label">value: selection.connName</string>
 						<reference key="source" ref="121865417"/>
 						<reference key="destination" ref="568027323"/>
@@ -2200,6 +2167,39 @@
 						</object>
 					</object>
 					<int key="connectionID">1723</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">contentValues: arrangedObjects.connName</string>
+						<reference key="source" ref="366285975"/>
+						<reference key="destination" ref="568027323"/>
+						<object class="NSNibBindingConnector" key="connector" id="870570869">
+							<reference key="NSSource" ref="366285975"/>
+							<reference key="NSDestination" ref="568027323"/>
+							<string key="NSLabel">contentValues: arrangedObjects.connName</string>
+							<string key="NSBinding">contentValues</string>
+							<string key="NSKeyPath">arrangedObjects.connName</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">1724</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectedIndex: selectionIndex</string>
+						<reference key="source" ref="366285975"/>
+						<reference key="destination" ref="568027323"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="366285975"/>
+							<reference key="NSDestination" ref="568027323"/>
+							<string key="NSLabel">selectedIndex: selectionIndex</string>
+							<string key="NSBinding">selectedIndex</string>
+							<string key="NSKeyPath">selectionIndex</string>
+							<reference key="NSPreviousConnector" ref="870570869"/>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">1725</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -3921,7 +3921,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">1723</int>
+			<int key="maxID">1725</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">

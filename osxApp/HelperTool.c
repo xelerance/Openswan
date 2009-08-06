@@ -11,11 +11,8 @@
 #include <stdio.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
 #include <CoreServices/CoreServices.h>
-
 #include "BetterAuthorizationSampleLib.h"
-
 #include "Common.h"
 
 /////////////////////////////////////////////////////////////////
@@ -57,14 +54,9 @@ static OSStatus DoConnect(
 	}
 	
     // Clean up.
-    /*
-	if (retval != noErr) {
-		BASCloseDescriptorArray(descArray);
-	}
-	if (descArray != NULL) {
-		CFRelease(descArray);
-	}
-	*/
+	// ...
+	
+	
 	return retval;
 }
 

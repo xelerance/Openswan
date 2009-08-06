@@ -43,12 +43,10 @@ static ConnectionsDB *sharedConnDB = nil;
                 sharedConnDB = self;
                 // custom initialization here
 				NSArray* values = [NSArray arrayWithObjects: [[Connection alloc] init], nil];
-
 				NSMutableArray* tmpArray = [[NSMutableArray alloc] init];
+				
 				[tmpArray retain];
-				
 				[tmpArray addObjectsFromArray:values];
-				
 				[sharedConnDB setConnDB:tmpArray];
             }
         }

@@ -14,7 +14,6 @@
 #import <AppKit/NSCell.h>
 
 @implementation MainMenuController
-
 @synthesize db, connTime, connDuration, timer, connDurationPrint, selConn;
 
 - (IBAction)showAdvMenu: (id)sender
@@ -73,7 +72,6 @@
 }
 
 #pragma mark archiving
-
 - (NSString *) pathForDataFile
 {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -338,7 +336,7 @@ static OSStatus DoConnect()
 }
 
 //Growl
-- (NSDictionary*) registrationDictionaryForGrowl
+- (NSDictionary*)registrationDictionaryForGrowl
 {
 	NSArray *notifications;
 	notifications = [NSArray arrayWithObject:@"Openswan Growl Notification"];
@@ -375,14 +373,11 @@ int main(int argc, char *argv[])
 					   CFBundleGetIdentifier(CFBundleGetMainBundle()), 
 					   CFSTR("AuthorizationPrompts")
 					   );
-    
-    // And now, the miracle that is Cocoa...
-    
+
     return NSApplicationMain(argc,  (const char **) argv);
 }
 
-//writing to file
-
+#pragma mark writeFile
 - (void) saveConnToFile {
 	
 	Connection *conn = [[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]];

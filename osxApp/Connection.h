@@ -192,5 +192,4 @@
 *selRemoteModeCfgClient,
 *selModeCfgPullEnable;
 
-
 @end

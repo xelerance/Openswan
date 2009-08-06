@@ -8,7 +8,6 @@
 
 #import "Connection.h"
 
-
 @implementation Connection
 @synthesize connName;
 //Connection Options
@@ -126,11 +125,7 @@ selUpdownScript;
     return self;
 }
 
-- (NSString*)description
-{
-	return connName;
-}
-
+#pragma mark saveLoadData
 - (void)encodeWithCoder:(NSCoder*)coder
 {
 	[coder encodeObject:[self connName] forKey:@"connName"];

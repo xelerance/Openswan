@@ -20,19 +20,18 @@
 	IBOutlet NSView* natView;
 	IBOutlet NSView* oeView;
 	IBOutlet NSView* dpdView;
-	
 	IBOutlet NSPopUpButton* selConn;
-	
 	IBOutlet NSWindow *changeNameSheet;
 	
 	NSMutableString* prevConnName;
-	
 	NSInteger selItemIndex;
 }
 
 @property (readwrite, retain) NSPopUpButton* selConn;
 @property (readwrite, copy) NSMutableString* prevConnName;
 @property (readwrite, assign) NSInteger selItemIndex;
+
+- (NSMutableArray*)connections;
 
 - (IBAction)advancedOpt: (id) sender;
 - (IBAction)selectedEndUserOpt: (id)sender;
@@ -41,6 +40,5 @@
 - (IBAction)AppliedChangeNameSheet:(id)sender;
 - (IBAction)CanceledChangeNameSheet:(id)sender;
 
-- (NSMutableArray*)connections;
 
 @end
