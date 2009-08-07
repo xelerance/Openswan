@@ -13,6 +13,9 @@
 #import "Connection.h"
 #import <AppKit/NSCell.h>
 
+#import <sysqueue.h>
+#import "ipsecconf/confread.h"
+
 @implementation MainMenuController
 @synthesize db, connTime, connDuration, timer, connDurationPrint, selConn;
 
