@@ -13,8 +13,18 @@
 #import "Connection.h"
 #import <AppKit/NSCell.h>
 
+#define OPENSWAN_COCOA_APP 1
 #import <sysqueue.h>
 #import "ipsecconf/confread.h"
+#import "openswan/passert.h"
+
+#import "oswlog.h"
+#import "programs/pluto/log.h"
+//openswan_passert_fail_t openswan_passert_fail = passert_fail;
+int verbose=0;
+int warningsarefatal = 0;
+#import "ipsecconf/confwrite.h"
+
 
 @implementation MainMenuController
 @synthesize db, connTime, connDuration, timer, connDurationPrint, selConn;
@@ -382,6 +392,23 @@ int main(int argc, char *argv[])
 
 #pragma mark writeFile
 - (void) saveConnToFile {
+	
+	
+	struct starter_config *start_cfg = NULL;
+	
+	start_cfg = (struct starter_config *) malloc(sizeof(struct starter_config));
+	
+	struct starter_conn *start_conn = NULL;
+	
+	start_conn = (struct starter_conn *) malloc(sizeof(struct starter_conn));
+	
+	start_cfg->conn_default = *start_conn;
+	
+	FILE *file; 
+	file = fopen("/Users/ze/Desktop/test.conf","+"); /* apend file (add text to a file or create a file if it does not exist.*/
+	
+	confwrite(start_cfg, file);
+	
 	
 	Connection *conn = [[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]];
 	

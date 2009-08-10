@@ -11,7 +11,8 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		99556AFF102C948700B22188 /* libipsecconf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 99556AFE102C948700B22188 /* libipsecconf.a */; };
+		991D5DC41030543900AE272D /* libipsecconf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 991D5DC31030543900AE272D /* libipsecconf.a */; };
+		991D5DFF10306C5800AE272D /* libopenswan.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 991D5DFE10306C5800AE272D /* libopenswan.a */; };
 		99604D0C0FE15ECD008769D4 /* AdvancedMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 99604D0B0FE15ECD008769D4 /* AdvancedMenu.xib */; };
 		99604D1C0FE16026008769D4 /* AdvMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99604D1B0FE16026008769D4 /* AdvMenuController.m */; };
 		99604D420FE1617B008769D4 /* MainMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99604D410FE1617B008769D4 /* MainMenuController.m */; };
@@ -32,6 +33,7 @@
 		99CF0C1910065F4B001EBC90 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99CF0C1810065F4B001EBC90 /* CoreFoundation.framework */; };
 		99CF0C1D10065F54001EBC90 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99CF0C1C10065F54001EBC90 /* Security.framework */; };
 		99CF0C2E10066112001EBC90 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99CF0C1C10065F54001EBC90 /* Security.framework */; };
+		99DBC9D31030D818002E2DCE /* liboswlog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 99DBC9D21030D818002E2DCE /* liboswlog.a */; };
 		99FBA11B0FE13F540038B2EE /* PreferenceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99FBA11A0FE13F540038B2EE /* PreferenceController.m */; };
 		99FBA11F0FE13F980038B2EE /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 99FBA11E0FE13F980038B2EE /* Preferences.xib */; };
 /* End PBXBuildFile section */
@@ -88,7 +90,8 @@
 		32CA4F630368D1EE00C91783 /* Openswan_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Openswan_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Openswan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Openswan.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		99556AFE102C948700B22188 /* libipsecconf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libipsecconf.a; path = ../OBJ.darwin.i386/lib/libipsecconf/libipsecconf.a; sourceTree = SOURCE_ROOT; };
+		991D5DC31030543900AE272D /* libipsecconf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsecconf.a; sourceTree = SOURCE_ROOT; };
+		991D5DFE10306C5800AE272D /* libopenswan.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopenswan.a; path = Xelerance/openswan.gsoc/osxApp/libopenswan.a; sourceTree = DEVELOPER_DIR; };
 		99604D0B0FE15ECD008769D4 /* AdvancedMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AdvancedMenu.xib; sourceTree = SOURCE_ROOT; };
 		99604D1A0FE16026008769D4 /* AdvMenuController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvMenuController.h; sourceTree = SOURCE_ROOT; };
 		99604D1B0FE16026008769D4 /* AdvMenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvMenuController.m; sourceTree = SOURCE_ROOT; };
@@ -111,6 +114,7 @@
 		99CF0BBF1006530D001EBC90 /* HelperTool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HelperTool.c; sourceTree = SOURCE_ROOT; };
 		99CF0C1810065F4B001EBC90 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		99CF0C1C10065F54001EBC90 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		99DBC9D21030D818002E2DCE /* liboswlog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboswlog.a; path = Xelerance/openswan.gsoc/osxApp/liboswlog.a; sourceTree = DEVELOPER_DIR; };
 		99FBA1190FE13F540038B2EE /* PreferenceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceController.h; sourceTree = SOURCE_ROOT; };
 		99FBA11A0FE13F540038B2EE /* PreferenceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceController.m; sourceTree = SOURCE_ROOT; };
 		99FBA11E0FE13F980038B2EE /* Preferences.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = SOURCE_ROOT; };
@@ -124,7 +128,9 @@
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				99CF0C2E10066112001EBC90 /* Security.framework in Frameworks */,
 				996499B2100799B300C7224D /* Growl-WithInstaller.framework in Frameworks */,
-				99556AFF102C948700B22188 /* libipsecconf.a in Frameworks */,
+				991D5DC41030543900AE272D /* libipsecconf.a in Frameworks */,
+				991D5DFF10306C5800AE272D /* libopenswan.a in Frameworks */,
+				99DBC9D31030D818002E2DCE /* liboswlog.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,7 +201,9 @@
 		29B97314FDCFA39411CA2CEA /* Openswan */ = {
 			isa = PBXGroup;
 			children = (
-				99556AFE102C948700B22188 /* libipsecconf.a */,
+				991D5DFE10306C5800AE272D /* libopenswan.a */,
+				991D5DC31030543900AE272D /* libipsecconf.a */,
+				99DBC9D21030D818002E2DCE /* liboswlog.a */,
 				996499B1100799B300C7224D /* Growl-WithInstaller.framework */,
 				99C2E30B0F95FE9F00AA9274 /* APPL.icns */,
 				99C02D3E10053B4900179127 /* HelperTool */,
@@ -513,6 +521,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(DEVELOPER_DIR)/Xelerance/openswan.gsoc/OBJ.darwin.i386/lib/libipsecconf\"",
+					"\"$(DEVELOPER_DIR)/Xelerance/openswan.gsoc/osxApp\"",
 				);
 				PRODUCT_NAME = Openswan;
 			};
@@ -537,6 +546,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(DEVELOPER_DIR)/Xelerance/openswan.gsoc/OBJ.darwin.i386/lib/libipsecconf\"",
+					"\"$(DEVELOPER_DIR)/Xelerance/openswan.gsoc/osxApp\"",
 				);
 				PRODUCT_NAME = Openswan;
 			};
@@ -554,8 +564,10 @@
 					/Developer/Xelerance/openswan.gsoc/ports/darwin/include,
 					/Developer/Xelerance/openswan.gsoc/linux/include,
 					/Developer/Xelerance/openswan.gsoc/include,
+					/Developer/Xelerance/openswan.gsoc,
 				);
 				ONLY_ACTIVE_ARCH = YES;
+				OPENSWAN_COCOA_APP = 1;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
 			};
