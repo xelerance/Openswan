@@ -157,6 +157,11 @@ struct pluto_crypto_req_cont {
   crypto_req_func               pcrc_free;
   pb_stream			pcrc_reply_stream;
   u_int8_t		       *pcrc_reply_buffer;
+#ifdef IPSEC_PLUTO_PCRC_DEBUG
+  char                         *pcrc_function;
+  char                         *pcrc_file;
+  int                           pcrc_line;
+#endif
 };
 
   
@@ -284,6 +289,16 @@ static inline void pcr_init(struct pluto_crypto_req *r
 	break;
     }
 }
+
+#ifdef IPSEC_PLUTO_PCRC_DEBUG
+#define pcrc_init(pcrc) ({ \
+		(pcrc)->pcrc_file = __FILE__; \
+		(pcrc)->pcrc_function = __FUNCTION__; \
+		(pcrc)->pcrc_line = __LINE__; \
+	})
+#else
+#define pcrc_init(pcrc) do { /* nothing yet */ } while (0)
+#endif
 
 #endif /* _PLUTO_CRYPT_H */
 

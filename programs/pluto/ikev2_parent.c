@@ -201,6 +201,7 @@ ikev2parent_outI1(int whack_sock
 	set_suspended(st, ke->md);
 
 	if (!st->st_sec_in_use) {
+	    pcrc_init(&ke->ke_pcrc);
 	    ke->ke_pcrc.pcrc_func = ikev2_parent_outI1_continue;
 	    e = build_ke(&ke->ke_pcrc, st, st->st_oakley.group, importance);
 	    if( (e != STF_SUSPEND && e != STF_INLINE) || (e == STF_TOOMUCHCRYPTO)) {
@@ -620,6 +621,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	set_suspended(st, ke->md);
 
 	if (!st->st_sec_in_use) {
+	    pcrc_init(&ke->ke_pcrc);
 	    ke->ke_pcrc.pcrc_func = ikev2_parent_inI1outR1_continue;
 	    e = build_ke(&ke->ke_pcrc, st, st->st_oakley.group, pcim_stranger_crypto);
 	    if(e != STF_SUSPEND && e != STF_INLINE) {
@@ -701,6 +703,10 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 		 , pbs_offset(&md->message_pbs), "saved first received packet");
 
     
+    /* make sure HDR is at start of a clean buffer */
+    zero(reply_buffer);
+    init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
+
     /* HDR out */
     {
 	struct isakmp_hdr r_hdr = md->hdr;
@@ -900,6 +906,7 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 	dh->md = md;
 	set_suspended(st, dh->md);
 
+	pcrc_init(&dh->dh_pcrc);
 	dh->dh_pcrc.pcrc_func = ikev2_parent_inR1outI2_continue;
 	e = start_dh_v2(&dh->dh_pcrc, st, st->st_import, INITIATOR, st->st_oakley.groupnum);
 	if(e != STF_SUSPEND && e != STF_INLINE) {
@@ -1250,6 +1257,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     /* beginning of data going out */
     authstart = reply_stream.cur;
 
+    /* make sure HDR is at start of a clean buffer */
+    zero(reply_buffer);
+    init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
+
     /* HDR out */
     {
 	struct isakmp_hdr r_hdr = md->hdr;
@@ -1459,6 +1470,7 @@ stf_status ikev2parent_inI2outR2(struct msg_digest *md)
 	dh->md = md;
 	set_suspended(st, dh->md);
 
+	pcrc_init(&dh->dh_pcrc);
 	dh->dh_pcrc.pcrc_func = ikev2_parent_inI2outR2_continue;
 	e = start_dh_v2(&dh->dh_pcrc, st, st->st_import, RESPONDER, st->st_oakley.groupnum);
 	if(e != STF_SUSPEND && e != STF_INLINE) {
@@ -1648,6 +1660,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	pb_stream      e_pbs, e_pbs_cipher;
 	stf_status     ret;
 	bool send_cert = FALSE;
+
+	/* make sure HDR is at start of a clean buffer */
+	zero(reply_buffer);
+	init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
 
 	/* HDR out */
 	{
