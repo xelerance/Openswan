@@ -114,7 +114,7 @@
 		99CF0BBF1006530D001EBC90 /* HelperTool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HelperTool.c; sourceTree = SOURCE_ROOT; };
 		99CF0C1810065F4B001EBC90 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		99CF0C1C10065F54001EBC90 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		99DBC9D21030D818002E2DCE /* liboswlog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboswlog.a; path = Xelerance/openswan.gsoc/osxApp/liboswlog.a; sourceTree = DEVELOPER_DIR; };
+		99DBC9D21030D818002E2DCE /* liboswlog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = liboswlog.a; sourceTree = SOURCE_ROOT; };
 		99FBA1190FE13F540038B2EE /* PreferenceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceController.h; sourceTree = SOURCE_ROOT; };
 		99FBA11A0FE13F540038B2EE /* PreferenceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceController.m; sourceTree = SOURCE_ROOT; };
 		99FBA11E0FE13F980038B2EE /* Preferences.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = SOURCE_ROOT; };
