@@ -397,20 +397,23 @@ int main(int argc, char *argv[])
 #pragma mark writeFile
 - (void) saveConnToFile {
 	
+	struct starter_config *cfg = NULL;
+	cfg = (struct starter_config *) malloc(sizeof(struct starter_config));
 	
-	struct starter_config *start_cfg = NULL;
-	
-	start_cfg = (struct starter_config *) malloc(sizeof(struct starter_config));
-	
+	/*
 	struct starter_conn *start_conn = NULL;
-	
 	start_conn = (struct starter_conn *) malloc(sizeof(struct starter_conn));
-	
 	start_cfg->conn_default = *start_conn;
+	*/
+	
+	ipsecconf_default_values(cfg);
 	
 	FILE *file;
 	file = fopen("/Users/ze/Desktop/test.conf","w"); /* apend file (add text to a file or create a file if it does not exist.*/
-	//confwrite(start_cfg, file);
+	confwrite(cfg, file);
+	
+	//need to test if it closes correctly
+	fclose(file);
 	
 	
 	Connection *conn = [[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]];
