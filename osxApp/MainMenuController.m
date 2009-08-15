@@ -15,7 +15,7 @@
 
 //Stuff from Openswan
 #define OPENSWAN_COCOA_APP 1
-#import <sysqueue.h>
+#import <sys/queue.h>
 #import "ipsecconf/confread.h"
 #import "openswan/passert.h"
 #import "oswlog.h"
@@ -403,19 +403,25 @@ int main(int argc, char *argv[])
 	ipsecconf_default_values(cfg);
 	
 	err_t *perr;
-	struct starter_conn *new_conn = alloc_add_conn(cfg, "newConnection\0", perr);
+	struct starter_conn *new_conn = alloc_add_conn(cfg, "myNewConnection", perr);
+	
+	cfg->setup.options_set[KBF_NATTRAVERSAL] = 1;
+	cfg->setup.options[KBF_NATTRAVERSAL] = 0;
 	
 	new_conn->desired_state = STARTUP_START;
 	
-	new_conn->options_set[KBF_NATTRAVERSAL] = 1;
-	new_conn->options[KBF_NATTRAVERSAL] = 0;
+	new_conn->right.strings_set[KSCF_SOURCEIP] = 1;
+	new_conn->right.strings[KSCF_SOURCEIP] = strdup("192.168.0.1");
 	
 	new_conn->right.options_set[KNCF_XAUTHSERVER] = 1;
-	new_conn->right.options[KNCF_XAUTHSERVER] = 0; 
+	new_conn->right.options[KNCF_XAUTHSERVER] = 0;
 	
+	struct starter_conn *load_conn = cfg->conns.tqh_first;
 	
-	new_conn->right.strings_set[KSCF_SOURCEIP] = 1;
-	new_conn->right.strings[KSCF_SOURCEIP] = strdup("192.168.0.0\0");
+	if(load_conn != NULL) NSLog(@"something is there!");
+	else NSLog(@"empty");
+	
+	//NSLog(@"cfg->conn: %d . new_conn: %d",load_conn->desired_state, new_conn->desired_state);
 	
 	
 	FILE *file;
