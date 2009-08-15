@@ -400,13 +400,23 @@ int main(int argc, char *argv[])
 	struct starter_config *cfg = NULL;
 	cfg = (struct starter_config *) malloc(sizeof(struct starter_config));
 	
-	/*
-	struct starter_conn *start_conn = NULL;
-	start_conn = (struct starter_conn *) malloc(sizeof(struct starter_conn));
-	start_cfg->conn_default = *start_conn;
-	*/
-	
 	ipsecconf_default_values(cfg);
+	
+	err_t *perr;
+	struct starter_conn *new_conn = alloc_add_conn(cfg, "newConnection\0", perr);
+	
+	new_conn->desired_state = STARTUP_START;
+	
+	new_conn->options_set[KBF_NATTRAVERSAL] = 1;
+	new_conn->options[KBF_NATTRAVERSAL] = 0;
+	
+	new_conn->right.options_set[KNCF_XAUTHSERVER] = 1;
+	new_conn->right.options[KNCF_XAUTHSERVER] = 0; 
+	
+	
+	new_conn->right.strings_set[KSCF_SOURCEIP] = 1;
+	new_conn->right.strings[KSCF_SOURCEIP] = strdup("192.168.0.0\0");
+	
 	
 	FILE *file;
 	file = fopen("/Users/ze/Desktop/test.conf","w"); /* apend file (add text to a file or create a file if it does not exist.*/
