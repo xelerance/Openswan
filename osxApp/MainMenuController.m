@@ -396,30 +396,42 @@ int main(int argc, char *argv[])
 
 #pragma mark writeFile
 - (void) saveConnToFile {
+	Connection *conn = [[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]];
 	
 	struct starter_config *cfg = NULL;
 	cfg = (struct starter_config *) malloc(sizeof(struct starter_config));
 	
 	ipsecconf_default_values(cfg);
 	
+	//NSString to char*
+	char cConnName[20];
+	[[conn connName] getCString:cConnName maxLength:20 encoding:NSMacOSRomanStringEncoding];
+	
 	err_t *perr;
-	struct starter_conn *new_conn = alloc_add_conn(cfg, "myNewConnection", perr);
+	struct starter_conn *new_conn = alloc_add_conn(cfg, cConnName, perr);
 	
 	cfg->setup.options_set[KBF_NATTRAVERSAL] = 1;
 	cfg->setup.options[KBF_NATTRAVERSAL] = 0;
 	
+	cfg->setup.strings_set[KSF_PROTOSTACK] = 1;
+	cfg->setup.strings[KSF_PROTOSTACK] = strdup("netkey");
+	
 	new_conn->desired_state = STARTUP_START;
 	
-	new_conn->right.strings_set[KSCF_SOURCEIP] = 1;
-	new_conn->right.strings[KSCF_SOURCEIP] = strdup("192.168.0.1");
+	new_conn->right.addrtype = KH_IPHOSTNAME;
+	new_conn->right.strings_set[KSCF_IP] = 1;
+	new_conn->right.strings[KSCF_IP] = strdup("thing.com");
 	
 	new_conn->right.options_set[KNCF_XAUTHSERVER] = 1;
 	new_conn->right.options[KNCF_XAUTHSERVER] = 0;
 	
+	new_conn->right.strings_set[KSCF_SOURCEIP] = 1;
+	new_conn->right.strings[KSCF_SOURCEIP] = strdup("192.168.0.1");
+	
 	struct starter_conn *load_conn = cfg->conns.tqh_first;
 	
 	if(load_conn != NULL) NSLog(@"something is there!");
-	else NSLog(@"empty");
+	else NSLog(@"this pointer is null, but it shouldn't be... :(");
 	
 	//NSLog(@"cfg->conn: %d . new_conn: %d",load_conn->desired_state, new_conn->desired_state);
 	
@@ -430,9 +442,6 @@ int main(int argc, char *argv[])
 	
 	//need to test if it closes correctly
 	fclose(file);
-	
-	
-	Connection *conn = [[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]];
 	
 	NSMutableString *wholeOutput = @"//File with ipsec.conf syntax \n\n";
 	
