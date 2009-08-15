@@ -398,6 +398,16 @@ int main(int argc, char *argv[])
 - (void) saveConnToFile {
 	Connection *conn = [[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]];
 	
+	//file pathname
+	NSString *origFileName = [conn connName];
+	NSString *fileName = [origFileName stringByAppendingFormat:@".conf"];
+	NSString *origPath = @"~/Library/Application Support/Openswan";
+	NSString *filePath = [origPath stringByAppendingPathComponent:fileName];
+	NSString *path = [filePath stringByStandardizingPath];
+	char cPath[100];
+	[path getCString:cPath maxLength:100 encoding:NSMacOSRomanStringEncoding];
+	
+	
 	struct starter_config *cfg = NULL;
 	cfg = (struct starter_config *) malloc(sizeof(struct starter_config));
 	
@@ -409,6 +419,7 @@ int main(int argc, char *argv[])
 	
 	err_t *perr;
 	struct starter_conn *new_conn = alloc_add_conn(cfg, cConnName, perr);
+	if(new_conn == NULL) NSLog(@"%s", perr);
 	
 	cfg->setup.options_set[KBF_NATTRAVERSAL] = 1;
 	cfg->setup.options[KBF_NATTRAVERSAL] = 0;
@@ -417,6 +428,9 @@ int main(int argc, char *argv[])
 	cfg->setup.strings[KSF_PROTOSTACK] = strdup("netkey");
 	
 	new_conn->desired_state = STARTUP_START;
+	
+	new_conn->options_set[KBF_AUTO] = 1;
+	new_conn->options[KBF_AUTO] = STARTUP_START;
 	
 	new_conn->right.addrtype = KH_IPHOSTNAME;
 	new_conn->right.strings_set[KSCF_IP] = 1;
@@ -428,50 +442,21 @@ int main(int argc, char *argv[])
 	new_conn->right.strings_set[KSCF_SOURCEIP] = 1;
 	new_conn->right.strings[KSCF_SOURCEIP] = strdup("192.168.0.1");
 	
-	struct starter_conn *load_conn = cfg->conns.tqh_first;
-	
-	if(load_conn != NULL) NSLog(@"something is there!");
-	else NSLog(@"this pointer is null, but it shouldn't be... :(");
-	
-	//NSLog(@"cfg->conn: %d . new_conn: %d",load_conn->desired_state, new_conn->desired_state);
+	new_conn->connalias = strdup("ALIAS");
 	
 	
 	FILE *file;
-	file = fopen("/Users/ze/Desktop/test.conf","w"); /* apend file (add text to a file or create a file if it does not exist.*/
+	file = fopen(cPath,"w"); 
 	confwrite(cfg, file);
-	
-	//need to test if it closes correctly
 	fclose(file);
-	
-	NSMutableString *wholeOutput = @"//File with ipsec.conf syntax \n\n";
-	
-	wholeOutput = (NSMutableString*)[wholeOutput stringByAppendingFormat:@"Local Host: %@ \n", [conn selLocalHost]];
-	wholeOutput = (NSMutableString*)[wholeOutput stringByAppendingFormat:@"Remote Host: %@ \n", [conn selRemoteHost]];
-	wholeOutput = (NSMutableString*)[wholeOutput stringByAppendingFormat:@"Auto: %@ \n", [conn selAuto]];
-	wholeOutput = (NSMutableString*)[wholeOutput stringByAppendingFormat:@"Authby: %@ \n", [conn selAuthBy]];
-	wholeOutput = (NSMutableString*)[wholeOutput stringByAppendingFormat:@"PSK: %@ \n", [conn selPSK]];
-	
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSError *error;
-	NSString *origFileName = [conn connName];
-	NSString *fileName = [origFileName stringByAppendingFormat:@".conf"];
-	
-	NSString *origPath = @"~/Library/Application Support/Openswan";
-	NSString *filePath = [origPath stringByAppendingPathComponent:fileName];
-	NSString *path = [filePath stringByStandardizingPath];
-	
-	if ([fileManager fileExistsAtPath: path] == NO)
-	{
-		[fileManager createFileAtPath:path contents:nil attributes: nil];
-	}
-	
-	BOOL ok = [wholeOutput writeToFile:path atomically:YES
-						 encoding:NSUnicodeStringEncoding error:&error];
-	if (!ok) {
-		// an error occurred
-		NSLog(@"Error writing file at %@\n%@",
-              path, [error localizedFailureReason]);
-	}
+	 
+	/*
+	//to test the new_conn, using this will override what was writen in the previous lines
+	FILE *fileConn;
+	fileConn = fopen(cPath,"w"); 
+	confwrite_conn(fileConn, new_conn);
+	fclose(fileConn);
+	 */
 }
 
 
