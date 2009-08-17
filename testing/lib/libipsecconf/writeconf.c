@@ -126,6 +126,12 @@ main(int argc, char *argv[])
     conn->left.cert = "/my/cert/file";
     ttoaddr("192.168.2.102", 0, AF_INET, &conn->left.sourceip);
 
+    ttoaddr("192.168.1.101", 0, AF_INET, &conn->left.addr);
+    conn->left.addr_family = AF_INET;
+    conn->left.addrtype   = KH_IPADDR;
+
+    conn->right.addrtype  = KH_DEFAULTROUTE;
+
     confwrite(cfg, stdout);
 
     exit(0);
