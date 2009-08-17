@@ -144,7 +144,7 @@ int warningsarefatal = 0;
 
 //Helper Tool
 
-static OSStatus DoConnect()
+static OSStatus DoConnect(CFStringRef reqConnName)
 // This code shows how to do a typical BetterAuthorizationSample privileged operation 
 // in straight C.  In this case, it does the low-numbered ports operation, which 
 // returns three file descriptors that are bound to low-numbered TCP ports.
@@ -179,6 +179,10 @@ static OSStatus DoConnect()
     keyCount = 0;
     keys[keyCount]   = CFSTR(kBASCommandKey);
     values[keyCount] = CFSTR(kConnectCommand);
+    keyCount += 1;
+	
+	keys[keyCount]   = CFSTR("connName");
+    values[keyCount] = CFStringCreateCopy(NULL, reqConnName);
     keyCount += 1;
 	
     request = CFDictionaryCreate(
@@ -248,10 +252,10 @@ static OSStatus DoConnect()
     // Extract the descriptors from the response and copy them out to our caller.
     
     if (err == noErr) {
-		CFStringRef testString;
+		CFStringRef returnString;
 		
-		testString = (CFStringRef) CFDictionaryGetValue(response, CFSTR(kBASTestString));
-		NSLog(@"Test String: %@", testString);
+		returnString = (CFStringRef) CFDictionaryGetValue(response, CFSTR(kBASTestString));
+		NSLog(@"Command ran: %@", returnString);
     }
 		 
     
@@ -292,7 +296,14 @@ static OSStatus DoConnect()
 		
 		// Call the C code to do the real work.
 		
-		err = DoConnect();
+		Connection *conn = [[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]];
+		
+		char connName[100];
+		[[conn connName] getCString:connName maxLength:100 encoding:NSMacOSRomanStringEncoding];
+		
+		CFStringRef reqConnName = CFStringCreateWithCString(NULL, connName, CFStringGetSystemEncoding());
+		
+		err = DoConnect(reqConnName);
 		
 		// Log our results.
 

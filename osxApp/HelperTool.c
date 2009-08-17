@@ -29,10 +29,7 @@ static OSStatus DoConnect(
 // Implements the kSampleLowNumberedPortsCommand.  Opens three low-numbered ports 
 // and adds them to the descriptor array in the response dictionary.
 {	
-	OSStatus					retval = noErr;
-	CFStringRef					testString = CFStringCreateWithCString(NULL, 
-																	   "I am passing a string as response now\n", 
-																	   CFStringGetSystemEncoding());
+	OSStatus		retval = noErr;
 	
 	// Pre-conditions
     
@@ -48,6 +45,19 @@ static OSStatus DoConnect(
 	int ret;
 	retval = system("/usr/local/sbin/ipsec --version");
 	err2 = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, "Run ipsec --version. ret: %d", ret);
+	
+	CFStringRef nameString;
+	nameString = (CFStringRef) CFDictionaryGetValue(request, CFSTR("connName"));
+	char command[100];
+	char thisConnName[50];
+	CFStringGetCString(nameString, thisConnName, 50, CFStringGetSystemEncoding());
+	sprintf(command, "/usr/local/sbin/ipsec auto --up %s", thisConnName);
+	
+	err2 = asl_log(asl, aslMsg, ASL_LEVEL_DEBUG, command);
+	
+	CFStringRef	testString = CFStringCreateWithCString(NULL, 
+														command, 
+														CFStringGetSystemEncoding());
 	
 	if (retval == noErr) {
         CFDictionaryAddValue(response, CFSTR(kBASTestString), testString);
