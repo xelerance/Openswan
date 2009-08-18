@@ -42,6 +42,23 @@
 #include "whack.h"
 #include "id.h"
 
+static void
+update_ports(struct whack_message * m)
+{
+    int port;
+
+    if (m->left.port != 0) {
+        port = htons(m->left.port);
+        setportof(port, &m->left.host_addr);
+        setportof(port, &m->left.client.addr);
+    }
+    if (m->right.port != 0) {
+        port = htons(m->right.port);
+        setportof(port, &m->right.host_addr);
+        setportof(port, &m->right.client.addr);
+    }
+}
+
 static int
 send_reply(int sock, char *buf, ssize_t len)
 {
@@ -504,6 +521,9 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 	set_whack_end(cfg, "left",  &msg.left, &conn->left);
 	set_whack_end(cfg, "right", &msg.right, &conn->right);
 
+	/* for bug #1004 */
+	update_ports(&msg);
+
 	msg.esp = conn->esp;
 	msg.ike = conn->ike;
 	msg.tpmeval = NULL;
@@ -677,6 +697,7 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 	
 	return 0;  /* success. */
 }
+
 
 int starter_whack_add_conn(struct starter_config *cfg
 			   , struct starter_conn *conn)
