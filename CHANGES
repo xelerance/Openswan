@@ -16,8 +16,11 @@ v2.6.23
 * Fix for old style nat-t patch on newstyle 2.6.23+ kernel [Paul]
 * ipsec verify now returns non-zero when an error is encountered [Paul]
 * Fix for ipsec whack --crash <IP> crasher [David]
+* Partial fix for #1004. We no longer drop the port from protoport= [dhr/paul]
+* Fix for size (XXX) differs from size specified in ISAKMP HDR (YYY) [david]
 * Bugtracker bugs fixed:
    #1044: fedora openswan.spec file builds an RPM that is missing lwdnsq [Joe Steele]
+
 
 
 v2.6.22
