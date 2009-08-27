@@ -69,8 +69,22 @@ database without password, and you need not create a "nsspassword" file.
 However, if the NSS db is created with a password, the "nsspassword" file must
 also be provided.
 
-ii) If you create the "nsspassword" file, it must contain only the password
-nothing else.  
+ii) An example of nsspassword file is as follows:
+
+token_1_name:its_password
+token_2_name:its_password  
+
+For example, the name of NSS softtoken (or NSS database) is "NSS Certificate DB" 
+in NonFIPS mode, and assume that its password is xyz. So an entry for this in 
+nsspassword file can be: 
+
+NSS Certificate DB:xyz
+
+Please note that if FIPS mode is set, then the name of NSS softtoken is 
+"NSS FIPS 140-2 Certificate DB". If there are smartcards in the system, there 
+entries for passwords should also be entered in this file. Please note, that 
+there should not be any blank space before the token name, before and after 
+colon and after the password.
 
 
 Generating RSA keys when using NSS
@@ -288,3 +302,17 @@ ipsec.secrets at machine 1:
 ipsec.secrets at machine 1:
 
  : RSA usercert2
+
+Configuring a smartcard with NSS
+---------------------------------
+Required library: libcoolkey
+
+To make smartcard tokens visible through NSS
+
+modutil -add <module_name> -libfile libcoolkeypk11.so -dbdir <nss_database_dir_name> -mechanisms  <mechanisms_separted_by_colons> 
+
+An example of mechanisms can be RC2:RC4:DES:DH:SHA1:MD5:MD2:SSL:TLS:AES:CAMELLIA.
+
+To check whether the token is visible or not, please run
+
+modutil -list -dbdir <nss_database_dir_name>
