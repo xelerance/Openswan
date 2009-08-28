@@ -81,6 +81,7 @@ kernels.
 %if %{buildnss}
   USE_LIBNSS="true" \
   USE_FIPSCHECK="true" \
+  USE_LIBCAP_NG="true" \
 %endif
   USE_DYNAMICDNS="true" \
   USE_LWRES="true" \

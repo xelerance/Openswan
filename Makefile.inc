@@ -338,6 +338,9 @@ ifeq ($(USE_FIPSCHECK),true)
 USE_LIBNSS?=true
 endif
 
+# Support for LIBCAP-NG to drop unneeded capabilities for the pluto daemon
+USE_LIBCAP_NG?=false
+
 # whether to support NAT Traversal (aka NAT-T)
 USE_NAT_TRAVERSAL?=true
 
