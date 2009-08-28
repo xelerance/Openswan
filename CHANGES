@@ -5,6 +5,8 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.23
+* Support for dropping unneeded capabilities usnig libcap-ng [Avesh]
+  (Changed using  USE_LIBCAP_NG= in Makefile.inc)
 * Additional ASN.1 parser checks by David McCullough [David]
   (this is CVE-2009-XXXX)
 * PSK support with USE_LIBNSS [Avesh Agarwal]
@@ -16,12 +18,12 @@ v2.6.23
 * Fix for old style nat-t patch on newstyle 2.6.23+ kernel [Paul]
 * ipsec verify now returns non-zero when an error is encountered [Paul]
 * Fix for ipsec whack --crash <IP> crasher [David]
-* Partial fix for #1004. We no longer drop the port from protoport= [dhr/paul]
-* Fix for size (XXX) differs from size specified in ISAKMP HDR (YYY) [david]
+* Partial fix for #1004. We no longer drop the port from protoport= [dhr/Paul]
+  transport mode L2TP not works again for the non-NAT'ed case
+* Fix for size (XXX) differs from size specified in ISAKMP HDR (YYY) [David]
+* Additional KLIPS debugging can be enabled in /proc/net/ipsec_saraw [David]
 * Bugtracker bugs fixed:
    #1044: fedora openswan.spec file builds an RPM that is missing lwdnsq [Joe Steele]
-
-
 
 v2.6.22
 * Malicious X.509 certificates could crash the asn.1 parser.
