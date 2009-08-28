@@ -33,6 +33,7 @@ static struct osw_conf_options global_oco;
 static bool setup=FALSE;
 
 #ifdef HAVE_LIBNSS
+#define NSSpwdfilesize 4096
 static secuPWData NSSPassword;
 #endif
 
@@ -201,38 +202,87 @@ char *getNSSPassword(PK11SlotInfo *slot, PRBool retry, void *arg)
      secuPWData *pwdInfo = (secuPWData *)arg;
      PRFileDesc *fd;
      PRInt32 nb; /*number of bytes*/
-     char* password;
-     const long maxPwdFileSize = 4096;
+     char* password; 
+     char* strings;
+     char* token=NULL;
+     const long maxPwdFileSize = NSSpwdfilesize;
+     int i, tlen;
+
+     if (slot) {
+     token = PK11_GetTokenName(slot);
+         if (token) {
+         tlen = PORT_Strlen(token);
+	 //openswan_log("authentication needed for token name %s with length %d",token,tlen);
+         }
+     }
+     else {
+     return 0;
+     }
 
      if(retry) return 0;
-     
 
+     strings=PORT_ZAlloc(maxPwdFileSize);
+     if(!strings) {
+     openswan_log("Not able to allocate memory for reading NSS password file");
+     return 0;
+     }
+
+     
      if(pwdInfo->source == PW_FROMFILE) {
      	if(pwdInfo->data !=NULL) {
-        fd = PR_Open(pwdInfo->data, PR_RDONLY, 0);
-			if (!fd) {
-			openswan_log("No password file \"%s\" exists.", pwdInfo->data);
-			return 0;
-		    }
+            fd = PR_Open(pwdInfo->data, PR_RDONLY, 0);
+	    if (!fd) {
+	    PORT_Free(strings);
+	    openswan_log("No password file \"%s\" exists.", pwdInfo->data);
+	    return 0;
+	    }
 
-	    password=PORT_ZAlloc(maxPwdFileSize);
-	    nb = PR_Read(fd, password, maxPwdFileSize);
+	    nb = PR_Read(fd, strings, maxPwdFileSize);
 	    PR_Close(fd);
 
-			if (nb == 0) {
-        	openswan_log("password file contains no data");
-        	PORT_Free(password);
-        	return 0;
-        	}
-	    password[nb-1]='\0'; 
-        openswan_log("Password passed to NSS is %s", password);
-        return password;
-	    }
-	    else {
-	    openswan_log("File with Password to NSS DB is not provided");
+	    if (nb == 0) {
+            openswan_log("password file contains no data");
+            PORT_Free(strings);
+            return 0;
+            }
+
+            i = 0;
+            do
+            {
+               int start = i;
+               int slen;
+
+               while (strings[i] != '\r' && strings[i] != '\n' && i < nb) i++;
+               strings[i++] = '\0';
+
+               while ( (i<nb) && (strings[i] == '\r' || strings[i] == '\n')) {
+               strings[i++] = '\0';
+               }
+
+               password = &strings[start];
+
+               if (PORT_Strncmp(password, token, tlen)) continue;
+               slen = PORT_Strlen(password);
+
+               if (slen < (tlen+1)) continue;
+               if (password[tlen] != ':') continue;
+               password = &password[tlen+1];
+               break;
+
+            } while (i<nb);
+
+            password = PORT_Strdup((char*)password);
+            PORT_Free(strings);
+
+            //openswan_log("Password passed to NSS is %s with length %d", password, PORT_Strlen(password));
+            return password;
+	}
+	else {
+	openswan_log("File with Password to NSS DB is not provided");
         return 0;
-	    }
+	}
      }
+
 openswan_log("nss password source is not specified as file");
 return 0;
 }
