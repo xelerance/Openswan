@@ -231,7 +231,6 @@ help(void)
 	    " [--listcrls]"
             " [--listocsp]"
 
-	    " [--listcards]"
 	    " [--listpsks]"
 	    " [--listall]"
 	    "\n\n"
@@ -604,7 +603,6 @@ static const struct option long_opts[] = {
     { "listgroups", no_argument, NULL, LST_GROUPS + OO },
     { "listcrls", no_argument, NULL, LST_CRLS + OO },
     { "listocsp", no_argument, NULL, LST_OCSP + OO },
-    { "listcards", no_argument, NULL, LST_CARDS + OO },
     { "listpsks", no_argument, NULL, LST_PSKS + OO },
     { "listevents", no_argument, NULL, LST_EVENTS + OO },
     { "listall", no_argument, NULL, LST_ALL + OO },
@@ -1201,7 +1199,6 @@ main(int argc, char **argv)
         case LST_GROUPS:        /* --listgroups */
         case LST_CRLS:          /* --listcrls */
         case LST_OCSP:          /* --listocsp */
-        case LST_CARDS:         /* --listcards */
         case LST_PSKS:          /* --listpsks */
         case LST_EVENTS:         /* --listevents */
             msg.whack_list |= LELEM(c - LST_PUBKEYS);

@@ -41,7 +41,6 @@
 
 #include "defs.h"
 #include "ac.h"
-#include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif

@@ -32,7 +32,6 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif

@@ -11,7 +11,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: foodgroups.c,v 1.22 2005/08/05 19:22:44 mcr Exp $
  */
 
 #include <unistd.h>
@@ -30,7 +29,6 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif

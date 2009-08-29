@@ -69,7 +69,6 @@ connection</replaceable></arg>
     <arg choice='opt'>--rereadsecrets </arg>
     <arg choice='opt'>--listcerts </arg>
     <arg choice='opt'>--listpubkeys </arg>
-    <arg choice='opt'>--listcards </arg>
     <arg choice='opt'>--listcacerts | --rereadcacerts</arg>
     <arg choice='opt'>--listcrls | --rereadcrls </arg>
     <arg choice='opt'>
@@ -291,13 +290,10 @@ but that may change.)</para>
 <para>       The  <option>--purgeocsp</option> operation deletes any cached certificate status infor-
        mation and pending OCSP fetch requests.
 </para>
-<para>       The <option>--listcards</option> operation lists information about  attached  smartcards
-       or crypto tokens.
-</para>
 <para>       The  <option>--listall</option>  operation is equivalent to the execution of 
        --listpubkeys,  --listcerts,  --listcacerts,  --listaacerts,  --listoc-
        spcerts,  --listacerts, --listgroups, --listcainfos, --listcrls, --lis-
-       tocsp, and --listcards.
+       tocsp.
 </para>
 
 <para>The

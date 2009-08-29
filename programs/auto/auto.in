@@ -25,7 +25,7 @@ usage="Usage:
         $me [--showonly] [--utc] --{listpubkeys|listcerts}
         $me [--showonly] [--utc] --{listcacerts|listaacerts|listocspcerts}
         $me [--showonly] [--utc] --{listacerts|listgroups}
-        $me [--showonly] [--utc] --{listcrls|listocsp|listcards|listall}
+        $me [--showonly] [--utc] --{listcrls|listocsp|listall}
         $me [--showonly] --purgeocsp
 
 	other options: [--config ipsecconfigfile] [--verbose] [--show]"
@@ -66,7 +66,7 @@ do
         --listpubkeys|--listcerts|\
         --listcacerts|--listaacerts|--listocspcerts|\
         --listacerts|--listgroups|\
-        --listcrls|--listocsp|--listcards|--listall|\
+        --listcrls|--listocsp|--listall|\
         --purgeocsp)
 			if test " $op" != " "
 			then
@@ -96,7 +96,7 @@ case "$op$#:$1:$2" in
 1:listpubkeys:|1:listcerts:|\
 1:listcacerts:|1:listaacerts:|1:listocspcerts:|\
 1:listacerts:|1:listgroups:|\
-1:listcrls:|1:listocsp:|1:listcards:|1:listall:|1:purgeocsp:)
+1:listcrls:|1:listocsp:|1:listall:|1:purgeocsp:)
 		echo "$me: warning: obsolete command syntax used" >&2
 		op="--$1"
 		;;
@@ -148,7 +148,6 @@ case "$op" in
 --listgroups)     echo "ipsec whack $utc --listgroups"       | runit ; exit ;; 
 --listcrls)       echo "ipsec whack $utc --listcrls"         | runit ; exit ;; 
 --listocsp)       echo "ipsec whack $utc --listocsp"         | runit ; exit ;;
---listcards)      echo "ipsec whack $utc --listcards"        | runit ; exit ;;
 --listall)        echo "ipsec whack $utc --listall"          | runit ; exit ;;
 --purgeocsp)      echo "ipsec whack $utc --purgeocsp"        | runit ; exit ;;
 --up)  echo "ipsec whack $async --name $names --initiate"    | runit ; exit ;;

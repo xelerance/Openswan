@@ -45,7 +45,6 @@
 #include "pgp.h"
 #include "certs.h"
 #include "ac.h"
-#include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
@@ -547,15 +546,6 @@ void whack_process(int whackfd, struct whack_message msg)
     {
        list_ocsp_cache(msg.whack_utc, strict_crl_policy);
        list_ocsp_fetch_requests(msg.whack_utc);
-    }
-#endif
-
-
-
-#ifdef SMARTCARD
-    if (msg.whack_list & LIST_CARDS)
-    {
-	scx_list(msg.whack_utc);
     }
 #endif
 

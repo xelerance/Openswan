@@ -39,9 +39,6 @@ const char compile_time_interop_options[] = ""
 	" LDAP_V3"
 #endif
 #endif
-#ifdef SMARTCARD
-	" SMARTCARD"
-#endif
 #ifdef PLUTO_SENDS_VENDORID
 	" PLUTO_SENDS_VENDORID"
 #endif

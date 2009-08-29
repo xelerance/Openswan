@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: stubs.c,v 1.3 2005/08/31 03:36:27 mcr Exp $
  */
 
 #include <string.h>
@@ -39,7 +38,6 @@
 #include "pgp.h"
 #include "certs.h"
 #include "ac.h"
-#include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif

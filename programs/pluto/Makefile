@@ -111,7 +111,6 @@ DISTSRC = \
 	keys.c keys.h \
 	rnd.c rnd.h \
 	server.c server.h \
-	${SMARTCARD_DIST_SRCS} \
 	spdb.c spdb_struct.c spdb_v1_struct.c spdb_print.c spdb.h \
 	state.c state.h \
 	stubs.c \
@@ -153,7 +152,7 @@ OBJSPLUTO += ${EXTRA_CRYPTO_OBJS}
 OBJSPLUTO += ike_alg.o ike_alg_status.o db_ops.o 
 OBJSPLUTO += ${XAUTH_OBJS}
 OBJSPLUTO += ${AGGRESSIVE_OBJS}
-OBJSPLUTO += ${SMARTCARD_OBJS} ${X509_OBJS} ${HAVE_THREADS_OBJS}
+OBJSPLUTO += ${X509_OBJS} ${HAVE_THREADS_OBJS}
 OBJSPLUTO += ${OBJSLIBPLUTO}
 OBJSPLUTO += ${SYSDEP_OBJ} stubs.o
 

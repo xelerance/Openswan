@@ -45,7 +45,6 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
@@ -426,50 +425,14 @@ RSA_sign_hash(struct connection *c
 	      , const u_char *hash_val, size_t hash_len)
 {
     size_t sz = 0;
-    smartcard_t *sc = c->spd.this.sc;
+    const struct RSA_private_key *k = get_RSA_private_key(c);
 
-    if (sc == NULL)		/* no smartcard */
-    {
-	const struct RSA_private_key *k = get_RSA_private_key(c);
+    if (k == NULL)
+	return 0;	/* failure: no key to use */
 
-	if (k == NULL)
-	    return 0;	/* failure: no key to use */
-
-	sz = k->pub.k;
-	passert(RSA_MIN_OCTETS <= sz && 4 + hash_len < sz && sz <= RSA_MAX_OCTETS);
-	sign_hash(k, hash_val, hash_len, sig_val, sz);
-    }
-    else if (sc->valid) /* if valid pin then sign hash on the smartcard */
-    {
-#ifdef SMARTCARD
- 	lock_certs_and_keys("RSA_sign_hash");
-	if (!scx_establish_context(sc->reader))
-	{
-	    scx_release_context();
-	    unlock_certs_and_keys("RSA_sign_hash");
-	    unlock_certs_and_keys("RSA_sign_hash");
-	    return 0;
-	}
-
-	sz = scx_get_keylength(sc) / BITS_PER_BYTE;
-	if (sz == 0)
-	{
-	    openswan_log("failed to get keylength from smartcard");
-	    scx_release_context();
-	    return 0;
-	}
-
-	DBG(DBG_CONTROL | DBG_CRYPT,
-	    DBG_log("signing hash with RSA key from smartcard (reader: %d, id: %s)"
-		, sc->reader, sc->id)
-	)
-	sz = scx_sign_hash(sc, hash_val, hash_len, sig_val, sz) ? sz : 0;
-	scx_release_context();
-        unlock_certs_and_keys("RSA_sign_hash");
-#else
-	openswan_log("smartcard not configured");
-#endif	
-    }
+    sz = k->pub.k;
+    passert(RSA_MIN_OCTETS <= sz && 4 + hash_len < sz && sz <= RSA_MAX_OCTETS);
+    sign_hash(k, hash_val, hash_len, sig_val, sz);
     return sz;
 }
 

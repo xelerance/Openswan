@@ -11,7 +11,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: id.c,v 1.47 2005/08/05 19:10:43 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -38,7 +37,6 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "smartcard.h"
 
 /*  Note that there may be as many as six IDs that are temporary at
  *  one time before unsharing the two ends of a connection. So we need

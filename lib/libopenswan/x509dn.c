@@ -352,7 +352,6 @@ const x509cert_t empty_x509cert = {
       NULL        , /* *next */
     UNDEFINED_TIME, /* installed */
             0     , /* count */
-      FALSE       , /* smartcard */
      AUTH_NONE    , /* authority_flags */
     { NULL, 0 }   , /* certificate */
     { NULL, 0 }   , /*   tbsCertificate */

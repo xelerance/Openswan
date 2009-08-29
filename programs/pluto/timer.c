@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: timer.c,v 1.101 2005/08/12 16:47:03 mcr Exp $
  */
 
 #include <stdio.h>
@@ -32,7 +31,6 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif

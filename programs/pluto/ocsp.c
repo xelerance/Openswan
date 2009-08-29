@@ -38,7 +38,6 @@
 #include "asn1.h"
 #include "pgp.h"
 #include "certs.h"
-#include "smartcard.h"
 #include "oid.h"
 #include "whack.h"
 #include "keys.h"
@@ -179,8 +178,6 @@ static ocsp_location_t *ocsp_cache = NULL;
 
 /* static temporary storage for ocsp requestor information */
 static x509cert_t *ocsp_requestor_cert = NULL;
-
-static smartcard_t *ocsp_requestor_sc = NULL;
 
 static const struct RSA_private_key *ocsp_requestor_pri = NULL;
 
@@ -736,7 +733,6 @@ get_ocsp_requestor_cert(ocsp_location_t *location)
 
     /* initialize temporary static storage */
     ocsp_requestor_cert = NULL;
-    ocsp_requestor_sc   = NULL;
     ocsp_requestor_pri  = NULL;
 
     for (;;)
@@ -754,28 +750,6 @@ get_ocsp_requestor_cert(ocsp_location_t *location)
 	    DBG_log("candidate: '%s'", buf);
 	)
 
-	if (cert->smartcard)
-	{
-#ifdef SMARTCARD
-	    /* look for a matching private key on a smartcard */
-	    smartcard_t *sc = scx_get(cert);
-	    if (sc != NULL)
-	    {
-		DBG(DBG_CONTROL,
-		    DBG_log("matching smartcard found")
-		)
-		if (sc->valid)
-		{
-		    ocsp_requestor_cert = cert;
-		    ocsp_requestor_sc = sc;
-		    return TRUE;
-		}
-		plog("unable to sign ocsp request without PIN");
-	    }
-#endif
-	}
-	else
-	{
 	    /* look for a matching private key in the chained list */
 	    const struct RSA_private_key *pri = get_x509_private_key(cert);
 
@@ -788,58 +762,22 @@ get_ocsp_requestor_cert(ocsp_location_t *location)
 		ocsp_requestor_pri = pri;
 		return TRUE;
 	    }
-	}
     }
     return FALSE;
 }
 
 static chunk_t
-generate_signature(chunk_t digest, smartcard_t *sc
-    , const struct RSA_private_key *pri)
+generate_signature(chunk_t digest, const struct RSA_private_key *pri)
 {
     chunk_t sigdata;
     u_char *pos;
     size_t siglen = 0;
 
-    if (sc != NULL)
-    {
-	/* RSA signature is done on smartcard */
-
-#ifdef SMARTCARD
-	if (!scx_establish_context(sc->reader))
-	{
-	    scx_release_context();
-	    return empty_chunk;
-	}
-
-	siglen = scx_get_keylength(sc) / BITS_PER_BYTE;
-
-	if (siglen == 0)
-	{
-	    plog("failed to get keylength from smartcard");
-	    scx_release_context();
-	    return empty_chunk;
-	}
-
-	DBG(DBG_CONTROL | DBG_CRYPT,
-	    DBG_log("signing hash with RSA key from smartcard (reader: %d, id: %s)"
-		, sc->reader, sc->id)
-	)
-
-	pos = build_asn1_object(&sigdata, ASN1_BIT_STRING, 1 + siglen);
-	*pos++ = 0x00;
-	scx_sign_hash(sc, digest.ptr, digest.len, pos, siglen);
-	scx_release_context();
-#endif
-    }
-    else
-    {
-	/* RSA signature is done in software */
-	siglen = pri->pub.k;
-	pos = build_asn1_object(&sigdata, ASN1_BIT_STRING, 1 + siglen);
-	*pos++ = 0x00;
-	sign_hash(pri, digest.ptr, digest.len, pos, siglen);
-    }
+    /* RSA signature is done in software */
+    siglen = pri->pub.k;
+    pos = build_asn1_object(&sigdata, ASN1_BIT_STRING, 1 + siglen);
+    *pos++ = 0x00;
+    sign_hash(pri, digest.ptr, digest.len, pos, siglen);
     return sigdata;
 }
 
@@ -875,7 +813,6 @@ build_signature(chunk_t tbsRequest)
 
     /* generate the RSA signature */
     sigdata = generate_signature(digest_info
-	, ocsp_requestor_sc
 	, ocsp_requestor_pri);
     freeanychunk(digest_info);
     

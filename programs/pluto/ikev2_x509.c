@@ -38,7 +38,6 @@
 #include "x509more.h"
 #include "pgp.h"
 #include "certs.h"
-#include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif

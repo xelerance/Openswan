@@ -18,6 +18,9 @@ v2.6.23
 * Fix for ipsec whack --crash <IP> crasher [David]
 * Partial fix for #1004. We no longer drop the port from protoport= [dhr/paul]
 * Fix for size (XXX) differs from size specified in ISAKMP HDR (YYY) [david]
+* Removed old USE_SMARTCARD code. Smartcards are now supported via NSS [Paul]
+  (not all code was properly #ifdef'ed, so a few changes outside #ifdef SMARTCARD
+   were needed)
 * Bugtracker bugs fixed:
    #1044: fedora openswan.spec file builds an RPM that is missing lwdnsq [Joe Steele]
 

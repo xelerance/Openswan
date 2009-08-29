@@ -49,7 +49,6 @@
 #include "x509.h"
 #include "secrets.h"
 #include "certs.h"
-#include "smartcard.h"
 #include "lex.h"
 #include "mpzfuncs.h"
 
@@ -1079,59 +1078,6 @@ osw_get_x509_private_key(struct secret *secrets, x509cert_t *cert)
     return pri;
 }
 
-#ifdef SMARTCARD
-/*
- * process pin read from ipsec.secrets or prompted for it using whack
- */
-static err_t
-process_pin(struct secret *s, int whackfd)
-{
-    smartcard_t *sc;
-    const char *pin_status = "no";
-
-    s->pks.kind = PPK_PIN;
-
-    /* looking for the smartcard keyword */
-    if (!shift() || strncmp(flp->tok, SCX_TOKEN, strlen(SCX_TOKEN)) != 0)
-	 return "PIN keyword must be followed by %smartcard<reader>:<id>";
-
-    sc = scx_add(scx_parse_reader_id(flp->tok + strlen(SCX_TOKEN)));
-    s->pks.u.smartcard = sc;
-    scx_share(sc);
-    scx_free_pin(&sc->pin);
-    sc->valid = FALSE;
-
-    if (!shift())
-	return "PIN statement must be terminated either by <pin code> or %prompt";
-
-    if (flp->tokeqword("%prompt"))
-    {
-	shift();
-
-	/* if whackfd exists, whack will be used to prompt for a pin */
-	if (whackfd != NULL_FD)
-	    pin_status = scx_get_pin(sc, whackfd) ? "valid" : "invalid";
-    }
-    else
-    {
-	/* we read the pin directly from ipsec.secrets */
-	err_t ugh = osk_process_psk_secret(&sc->pin);
-	if (ugh != NULL)
-	    return ugh;
-
-	/* verify the pin */
-	pin_status = scx_verify_pin(sc) ? "valid" : "invalid";
-    }
-#ifdef SMARTCARD
-    openswan_log("  %s PIN for reader: %d, id: %s", pin_status, sc->reader, sc->id);
-#else
-    /* XXX since this is nested in another #ifdef SMARTCARD, we never reach this */
-    openswan_log("  warning: SMARTCARD support is deactivated in pluto/Makefile!");
-#endif
-    return NULL;
-}
-#endif
-
 static void
 process_secret(struct secret **psecrets, int verbose,
 	       struct secret *s, prompt_pass_t *pass)
@@ -1185,11 +1131,7 @@ process_secret(struct secret **psecrets, int verbose,
     }
     else if (tokeqword("pin"))
     {
-#ifdef SMARTCARD
-	ugh = process_pin(s, pass);
-#else
-	ugh = "Smartcard not supported";
-#endif
+	ugh = "Please use NSS for smartcard support";
     }
     else
     {
@@ -1497,11 +1439,6 @@ osw_free_preshared_secrets(struct secret **psecrets)
 		mpz_clear(&s->pks.u.RSA_private_key.dQ);
 		mpz_clear(&s->pks.u.RSA_private_key.qInv);
 		break;
-#ifdef SMARTCARD
-	    case PPK_PIN:
-		scx_release(s->pks.u.smartcard);
-		break;
-#endif
 	    default:
 		bad_case(s->pks.kind);
 	    }

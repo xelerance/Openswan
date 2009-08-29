@@ -16,7 +16,7 @@ psk-v2.o: psk-v2.c ../../../include/sysqueue.h \
   ../../../linux/include/openswan/ipsec_policy.h \
   ../../../include/secrets.h ../../../include/id.h \
   ../../../include/x509.h ../../../include/pgp.h \
-  ../../../include/smartcard.h ../../../include/certs.h \
+  ../../../include/certs.h \
   ../../../programs/pluto/state.h ../../../programs/pluto/quirks.h \
   ../../../programs/pluto/keys.h ../../../include/secrets.h \
   ../../../programs/pluto/crypto.h ../../../include/sha1.h \

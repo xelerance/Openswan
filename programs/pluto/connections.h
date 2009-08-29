@@ -120,7 +120,6 @@ extern void fmt_policy_prio(policy_prio_t pp, char buf[POLICY_PRIO_BUF]);
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "smartcard.h"
 
 struct virtual_t;
 
@@ -165,7 +164,7 @@ struct end {
 
     chunk_t ca;			/* CA distinguished name */
     struct ietfAttrList *groups;/* access control groups */
-    smartcard_t *sc;		/* smartcard reader and key info */
+
     struct virtual_t *virt;
 /*#ifdef XAUTH*/
     bool xauth_server;

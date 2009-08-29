@@ -668,8 +668,6 @@
       <arg choice="opt">--listcrls</arg>
 
       <arg choice="opt">--listocsp</arg>
-
-      <arg choice="opt">--listcards</arg>
     </cmdsynopsis>
 
     <cmdsynopsis>
@@ -981,7 +979,7 @@
 
       <para>The file <filename>/etc/ipsec.secrets</filename> is used to keep
       preshared secret keys, RSA private keys, X.509 encoded keyfiles and
-      smartcard PIN's for authentication with other IKE daemons. For
+      XAUTH passwords. Smartcards are handled via NSS. For
       debugging, there is an argument to the <emphasis
       remap="B">pluto</emphasis> command to use a different file. This file is
       described in <citerefentry>
@@ -2129,13 +2127,6 @@
           </listitem>
         </varlistentry>
 
-        <varlistentry>
-          <term><option>--listcards</option></term>
-
-          <listitem>
-            <para>list all the smartcard and USB token devices.</para>
-          </listitem>
-        </varlistentry>
       </variablelist>
 
       <para>The corresponding options <option>--rereadsecrets</option>,

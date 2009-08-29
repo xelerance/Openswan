@@ -350,10 +350,6 @@ USE_LDAP?=false
 # Include libcurl support (currently used for fetching CRLs)
 USE_LIBCURL?=false
 
-# Include Smartcard support (disabled by default, as most users don't
-# have the required hardware and drivers/software installed)
-USE_SMARTCARD?=false
-
 # should opportunistic encryption be turned on by default?
 # Enabled during testing, but probably turned off in shipping versions.
 USE_OE?=true

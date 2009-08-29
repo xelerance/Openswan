@@ -33,7 +33,7 @@ connections.o: connections.c ../../linux/include/openswan.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
   ../../include/secrets.h defs.h ../../include/ac.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   pending.h foodgroups.h ../../include/packet.h demux.h server.h \
   quirks.h state.h timer.h ipsec_doi.h ikev1_quick.h kernel.h log.h \
   ../../include/oswlog.h keys.h adns.h dnskey.h \
@@ -166,7 +166,7 @@ demux.o: demux.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h ../../include/md5.h \
   ../../include/sha1.h crypto.h \
   ../../lib/libcrypto/libsha2/sha2.h ../../include/mpzfuncs.h \
@@ -189,7 +189,7 @@ dnskey.o: dnskey.c ../../include/arpa/nameser.h \
   ../../include/x509.h ../../include/pgp.h \
   ../../include/certs.h ../../include/secrets.h \
   ../../include/id.h ../../include/x509.h \
-  ../../include/pgp.h ../../include/smartcard.h \
+  ../../include/pgp.h \
   ../../include/certs.h connections.h keys.h \
   ../../include/secrets.h dnskey.h ../../include/packet.h \
   timer.h ../../include/oswtime.h server.h
@@ -207,7 +207,7 @@ dpd.o: dpd.c ../../include/arpa/nameser.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   keys.h ../../include/secrets.h ../../include/packet.h demux.h \
   server.h adns.h dnskey.h kernel.h log.h ../../include/oswlog.h \
   cookie.h spdb.h timer.h rnd.h ipsec_doi.h ikev1_quick.h \
@@ -256,7 +256,7 @@ foodgroups.o: foodgroups.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   foodgroups.h kernel.h ../../include/oswconf.h \
   ../../include/lex.h log.h ../../include/oswlog.h \
   ../../include/whack.h \
@@ -294,7 +294,7 @@ hostpair.o: hostpair.c ../../linux/include/openswan.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
   ../../include/secrets.h defs.h ../../include/ac.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   pending.h foodgroups.h ../../include/packet.h demux.h server.h \
   quirks.h state.h timer.h ipsec_doi.h ikev1_quick.h kernel.h log.h \
   ../../include/oswlog.h keys.h adns.h dnskey.h \
@@ -321,7 +321,7 @@ ike_alg.o: ike_alg.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h kernel.h \
+  ../../include/certs.h kernel.h \
   plutoalg.h
 ike_alg_aes.o: ike_alg_aes.c ../../linux/include/openswan.h \
   ../../include/constants.h ../../include/biglset.h \
@@ -382,7 +382,7 @@ ike_alg_status.o: ike_alg_status.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h kernel.h \
+  ../../include/certs.h kernel.h \
   plutoalg.h
 ike_alg_twofish.o: ike_alg_twofish.c ../../linux/include/openswan.h \
   ../../include/constants.h ../../include/biglset.h \
@@ -419,7 +419,7 @@ ikev1.o: ikev1.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h ../../include/md5.h \
   ../../include/sha1.h crypto.h \
   ../../lib/libcrypto/libsha2/sha2.h ../../include/mpzfuncs.h \
@@ -445,7 +445,7 @@ ikev1_aggr.o: ikev1_aggr.c ../../include/arpa/nameser.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   keys.h ../../include/secrets.h ../../include/packet.h demux.h \
   server.h adns.h dnskey.h kernel.h log.h ../../include/oswlog.h \
   cookie.h spdb.h timer.h ../../include/oswtime.h rnd.h ipsec_doi.h \
@@ -472,7 +472,7 @@ ikev1_quick.o: ikev1_quick.c ../../include/arpa/nameser.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   keys.h ../../include/secrets.h ../../include/packet.h demux.h \
   server.h adns.h dnskey.h kernel.h log.h ../../include/oswlog.h \
   cookie.h spdb.h timer.h ../../include/oswtime.h rnd.h ipsec_doi.h \
@@ -498,7 +498,7 @@ ikev2.o: ikev2.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h ../../include/md5.h \
   ../../include/sha1.h crypto.h \
   ../../lib/libcrypto/libsha2/sha2.h ../../include/mpzfuncs.h \
@@ -521,7 +521,7 @@ ikev2_child.o: ikev2_child.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h ../../include/md5.h \
   ../../include/sha1.h crypto.h \
   ../../lib/libcrypto/libsha2/sha2.h ../../include/mpzfuncs.h \
@@ -544,7 +544,7 @@ ikev2_crypto.o: ikev2_crypto.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h ../../include/md5.h \
   ../../include/sha1.h crypto.h \
   ../../lib/libcrypto/libsha2/sha2.h ../../include/mpzfuncs.h \
@@ -564,7 +564,7 @@ ikev2_parent.o: ikev2_parent.c ../../linux/include/openswan.h \
   ../../include/x509.h ../../include/pgp.h \
   ../../include/certs.h ../../include/secrets.h \
   ../../include/id.h ../../include/x509.h \
-  ../../include/pgp.h ../../include/smartcard.h \
+  ../../include/pgp.h \
   ../../include/certs.h crypto.h ../../include/sha1.h \
   ../../include/md5.h ../../lib/libcrypto/libsha2/sha2.h \
   ../../include/mpzfuncs.h x509more.h ../../include/packet.h \
@@ -606,7 +606,7 @@ ikev2_psk.o: ikev2_psk.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h ../../include/md5.h \
   ../../include/sha1.h crypto.h \
   ../../lib/libcrypto/libsha2/sha2.h ../../include/mpzfuncs.h \
@@ -625,7 +625,7 @@ ikev2_rsa.o: ikev2_rsa.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h ../../include/md5.h \
   ../../include/sha1.h crypto.h \
   ../../lib/libcrypto/libsha2/sha2.h ../../include/mpzfuncs.h \
@@ -646,7 +646,7 @@ ikev2_x509.o: ikev2_x509.c ../../linux/include/openswan.h \
   ../../include/certs.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h ../../include/md5.h ../../include/sha1.h crypto.h \
   ../../lib/libcrypto/libsha2/sha2.h ../../include/mpzfuncs.h \
   ike_alg.h log.h ikev2.h vendor.h dpd.h keys.h ipsec_doi.h ikev1_quick.h
@@ -665,7 +665,7 @@ initiate.o: initiate.c ../../linux/include/openswan.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
   ../../include/secrets.h defs.h ../../include/ac.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   pending.h foodgroups.h ../../include/packet.h demux.h server.h \
   quirks.h state.h timer.h ipsec_doi.h ikev1_quick.h kernel.h log.h \
   ../../include/oswlog.h keys.h adns.h dnskey.h \
@@ -689,7 +689,7 @@ ipsec_doi.o: ipsec_doi.c ../../include/arpa/nameser.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   ../../include/packet.h keys.h ../../include/secrets.h demux.h \
   server.h adns.h dnskey.h kernel.h log.h ../../include/oswlog.h \
   cookie.h spdb.h timer.h ../../include/oswtime.h rnd.h ipsec_doi.h \
@@ -715,7 +715,7 @@ kernel.o: kernel.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h state.h \
+  ../../include/certs.h state.h \
   quirks.h timer.h ../../include/oswtime.h kernel.h kernel_netlink.h \
   kernel_pfkey.h kernel_noklips.h ../../include/packet.h log.h \
   server.h ../../include/whack.h keys.h ../../include/secrets.h \
@@ -737,7 +737,7 @@ kernel_klips.o: kernel_klips.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h state.h \
+  ../../include/certs.h state.h \
   quirks.h kernel.h kernel_pfkey.h timer.h ../../include/oswtime.h \
   log.h ../../include/whack.h \
   ../../linux/include/openswan/ipsec_policy.h \
@@ -763,7 +763,7 @@ kernel_netlink.o: kernel_netlink.c kameipsec.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h kernel.h \
+  ../../include/certs.h kernel.h \
   server.h nat_traversal.h demux.h ../../include/packet.h \
   kernel_netlink.h kernel_pfkey.h log.h ../../include/oswlog.h \
   ../../include/whack.h \
@@ -784,7 +784,7 @@ kernel_noklips.o: kernel_noklips.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h kernel.h \
+  ../../include/certs.h kernel.h \
   kernel_noklips.h log.h ../../include/oswlog.h \
   ../../include/whack.h \
   ../../linux/include/openswan/ipsec_policy.h
@@ -803,7 +803,7 @@ kernel_pfkey.o: kernel_pfkey.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h state.h \
+  ../../include/certs.h state.h \
   quirks.h kernel.h kernel_pfkey.h timer.h ../../include/oswtime.h \
   log.h ../../include/whack.h \
   ../../linux/include/openswan/ipsec_policy.h \
@@ -823,7 +823,7 @@ keys.o: keys.c ../../include/arpa/nameser.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/lex.h keys.h \
   ../../include/secrets.h adns.h dnskey.h log.h \
   ../../include/oswlog.h ../../include/whack.h timer.h \
@@ -845,7 +845,7 @@ log.o: log.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   kernel.h ../../include/whack.h \
   ../../linux/include/openswan/ipsec_policy.h timer.h \
   ../../include/oswtime.h ../../include/kernel_alg.h \
@@ -864,7 +864,7 @@ msgdigest.o: msgdigest.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h ../../include/md5.h \
   ../../include/sha1.h crypto.h \
   ../../lib/libcrypto/libsha2/sha2.h ../../include/mpzfuncs.h \
@@ -882,7 +882,7 @@ myid.o: myid.c ../../linux/include/openswan.h \
   ../../include/x509.h ../../include/pgp.h \
   ../../include/certs.h ../../include/secrets.h \
   ../../include/id.h ../../include/x509.h \
-  ../../include/pgp.h ../../include/smartcard.h \
+  ../../include/pgp.h \
   ../../include/certs.h connections.h ../../include/packet.h \
   ../../include/whack.h
 nat_traversal.o: nat_traversal.c ../../linux/include/openswan.h \
@@ -900,7 +900,7 @@ nat_traversal.o: nat_traversal.c ../../linux/include/openswan.h \
   ../../include/x509.h ../../include/pgp.h \
   ../../include/certs.h ../../include/secrets.h \
   ../../include/id.h ../../include/x509.h \
-  ../../include/pgp.h ../../include/smartcard.h \
+  ../../include/pgp.h \
   ../../include/certs.h connections.h ../../include/packet.h \
   demux.h kernel.h ../../include/whack.h timer.h \
   ../../include/oswtime.h ike_alg.h cookie.h \
@@ -921,7 +921,7 @@ ocsp.o: ocsp.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h \
+  ../../include/certs.h \
   ../../include/oid.h ../../include/whack.h keys.h \
   ../../include/secrets.h fetch.h ocsp.h
 ocsp.o: ocsp.c ../../linux/include/openswan.h \
@@ -938,7 +938,7 @@ ocsp.o: ocsp.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h \
+  ../../include/certs.h \
   ../../include/oid.h ../../include/whack.h keys.h \
   ../../include/secrets.h fetch.h ocsp.h
 pending.o: pending.c ../../include/arpa/nameser.h \
@@ -955,7 +955,7 @@ pending.o: pending.c ../../include/arpa/nameser.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/ac.h ../../include/smartcard.h \
+  ../../include/ac.h \
   ../../include/certs.h connections.h pending.h log.h \
   ../../include/oswlog.h state.h quirks.h \
   ../../include/packet.h demux.h server.h ikev1_quick.h timer.h \
@@ -993,7 +993,7 @@ plutoalg.o: plutoalg.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h state.h \
+  ../../include/certs.h state.h \
   quirks.h ../../include/kernel_alg.h ../../include/alg_info.h \
   ike_alg.h plutoalg.h crypto.h ../../include/sha1.h \
   ../../include/md5.h ../../lib/libcrypto/libsha2/sha2.h \
@@ -1015,7 +1015,7 @@ plutomain.o: plutomain.c ../../include/arpa/nameser.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/ac.h ../../include/smartcard.h \
+  ../../include/ac.h \
   ../../include/certs.h connections.h foodgroups.h \
   ../../include/packet.h demux.h server.h quirks.h kernel.h log.h \
   ../../include/oswlog.h keys.h ../../include/secrets.h adns.h \
@@ -1045,7 +1045,7 @@ rcv_info.o: rcv_info.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h foodgroups.h \
+  ../../include/certs.h foodgroups.h \
   ../../include/whack.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/packet.h demux.h server.h quirks.h state.h \
@@ -1068,7 +1068,7 @@ rcv_whack.o: rcv_whack.c ../../include/arpa/nameser.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/ac.h ../../include/smartcard.h \
+  ../../include/ac.h \
   ../../include/certs.h connections.h foodgroups.h \
   ../../include/whack.h \
   ../../linux/include/openswan/ipsec_policy.h \
@@ -1109,7 +1109,7 @@ smallprime.o: smallprime.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   kernel.h log.h ../../include/oswlog.h server.h timer.h \
   ../../include/oswtime.h ../../include/packet.h demux.h \
   rcv_whack.h rcv_info.h ../../linux/include/openswan/ipsec_policy.h \
@@ -1129,20 +1129,6 @@ smallprime.o: smallprime.c ../../linux/include/openswan.h \
   ../../include/names_constant.h defs.h \
   ../../include/oswalloc.h ../../include/constants.h \
   gcryptfix.h
-smartcard.o: smartcard.c ../../linux/include/openswan.h \
-  ../../linux/include/openswan/ipsec_policy.h \
-  ../../include/constants.h ../../include/biglset.h \
-  ../../linux/include/openswan/passert.h \
-  ../../include/ietf_constants.h \
-  ../../include/pluto_constants.h \
-  ../../include/names_constant.h defs.h \
-  ../../include/oswalloc.h ../../include/constants.h \
-  ../../include/id.h log.h ../../include/oswlog.h \
-  ../../include/x509.h ../../include/pgp.h \
-  ../../include/certs.h ../../include/secrets.h \
-  ../../include/id.h ../../include/x509.h \
-  ../../include/pgp.h ../../include/smartcard.h \
-  ../../include/certs.h ../../include/whack.h fetch.h
 spdb.o: spdb.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../linux/include/openswan/pfkeyv2.h \
@@ -1157,7 +1143,7 @@ spdb.o: spdb.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h keys.h \
   ../../include/secrets.h kernel.h log.h spdb.h \
   ../../include/whack.h ../../include/sha1.h \
@@ -1179,7 +1165,7 @@ spdb_print.o: spdb_print.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h keys.h \
   ../../include/secrets.h kernel.h log.h spdb.h \
   ../../include/whack.h ../../include/sha1.h \
@@ -1201,7 +1187,7 @@ spdb_struct.o: spdb_struct.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h keys.h \
   ../../include/secrets.h kernel.h log.h spdb.h \
   ../../include/whack.h plutoalg.h ../../include/sha1.h \
@@ -1224,7 +1210,7 @@ spdb_v1_struct.o: spdb_v1_struct.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h keys.h \
   ../../include/secrets.h kernel.h log.h spdb.h \
   ../../include/whack.h plutoalg.h ../../include/sha1.h \
@@ -1247,7 +1233,7 @@ spdb_v2_struct.o: spdb_v2_struct.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h keys.h \
   ../../include/secrets.h kernel.h log.h spdb.h \
   ../../include/whack.h plutoalg.h ../../include/sha1.h \
@@ -1269,7 +1255,7 @@ state.o: state.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h kernel.h log.h ../../include/oswlog.h \
   ../../include/packet.h keys.h ../../include/secrets.h rnd.h \
   timer.h ../../include/oswtime.h ../../include/whack.h \
@@ -1293,7 +1279,7 @@ stubs.o: stubs.c ../../include/arpa/nameser.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/ac.h ../../include/smartcard.h \
+  ../../include/ac.h \
   ../../include/certs.h connections.h pending.h foodgroups.h \
   ../../include/packet.h demux.h server.h quirks.h state.h timer.h \
   ../../include/oswtime.h ipsec_doi.h ikev1_quick.h kernel.h log.h \
@@ -1318,7 +1304,7 @@ sysdep_linux.o: sysdep_linux.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h state.h \
+  ../../include/certs.h state.h \
   quirks.h timer.h ../../include/oswtime.h kernel.h kernel_netlink.h \
   kernel_pfkey.h kernel_noklips.h ../../include/packet.h log.h \
   server.h ../../include/whack.h keys.h ../../include/secrets.h
@@ -1337,7 +1323,7 @@ terminate.o: terminate.c ../../linux/include/openswan.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
   ../../include/secrets.h defs.h ../../include/ac.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   pending.h foodgroups.h ../../include/packet.h demux.h server.h \
   quirks.h state.h timer.h ipsec_doi.h ikev1_quick.h kernel.h log.h \
   ../../include/oswlog.h keys.h adns.h dnskey.h \
@@ -1359,7 +1345,7 @@ timer.o: timer.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   state.h quirks.h ../../include/packet.h demux.h server.h \
   ipsec_doi.h ikev1_quick.h kernel.h log.h ../../include/oswlog.h \
   rnd.h timer.h ../../include/oswtime.h ../../include/whack.h \
@@ -1378,7 +1364,7 @@ vendor.o: vendor.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   ../../include/packet.h demux.h server.h quirks.h \
   ../../include/whack.h \
   ../../linux/include/openswan/ipsec_policy.h vendor.h kernel.h \
@@ -1396,7 +1382,7 @@ virtual.o: virtual.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   ../../include/whack.h \
   ../../linux/include/openswan/ipsec_policy.h virtual.h
 whack.o: whack.c ../../linux/include/openswan.h \
@@ -1435,7 +1421,7 @@ x509.o: x509.c ../../linux/include/openswan.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h keys.h \
   ../../include/secrets.h ../../include/packet.h demux.h \
-  server.h quirks.h connections.h ../../include/smartcard.h \
+  server.h quirks.h connections.h \
   ../../include/certs.h state.h ../../include/md2.h \
   ../../include/md5.h ../../include/sha1.h \
   ../../include/whack.h fetch.h ocsp.h ../../include/pkcs.h \
@@ -1455,7 +1441,7 @@ x509keys.o: x509keys.c ../../linux/include/openswan.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h keys.h \
   ../../include/secrets.h ../../include/packet.h demux.h \
-  server.h quirks.h connections.h ../../include/smartcard.h \
+  server.h quirks.h connections.h \
   ../../include/certs.h state.h ../../include/md2.h \
   ../../include/md5.h ../../include/sha1.h \
   ../../include/whack.h fetch.h ocsp.h ../../include/pkcs.h \
@@ -1474,7 +1460,7 @@ xauth.o: xauth.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h connections.h \
+  ../../include/certs.h connections.h \
   ../../include/packet.h demux.h server.h kernel.h log.h cookie.h \
   spdb.h timer.h ../../include/oswtime.h rnd.h keys.h \
   ../../include/secrets.h ipsec_doi.h ikev1_quick.h \

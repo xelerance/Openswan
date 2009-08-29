@@ -69,13 +69,12 @@ extern void free_RSA_public_content(struct RSA_public_key *rsa);
 
 extern err_t unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pubkey);
 
-struct smartcard;
 struct private_key_stuff {
     enum PrivateKeyKind kind;
     union {
 	chunk_t preshared_secret;
 	struct RSA_private_key RSA_private_key;
-	struct smartcard *smartcard;
+	/* struct smartcard *smartcard; */
     } u;
 };
 

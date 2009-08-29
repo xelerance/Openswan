@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: defs.h,v 1.36 2004/05/27 00:39:59 mcr Exp $
  */
 
 #ifndef _DEFS_H
@@ -30,12 +29,6 @@
 # define USED_BY_DEBUG	/* ignore */
 #else
 # define USED_BY_DEBUG	UNUSED
-#endif
-
-#ifdef SMARTCARD
-# define USED_BY_SMARTCARD /* ignore */
-#else
-# define USED_BY_SMARTCARD UNUSED
 #endif
 
 /* type of serial number of a state object

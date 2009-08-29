@@ -45,7 +45,6 @@
 
 #include "defs.h"
 #include "ac.h"
-#include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
@@ -218,9 +217,6 @@ delete_end(struct connection *c UNUSED, struct spd_route *sr UNUSED, struct end 
     free_id_content(&e->id);
     pfreeany(e->updown);
     freeanychunk(e->ca);
-#ifdef SMARTCARD
-    scx_release(e->sc,TRUE);
-#endif
     release_cert(e->cert);
     free_ietfAttrList(e->groups);
     pfreeany(e->host_addr_name);
@@ -736,9 +732,6 @@ unshare_connection_end_strings(struct end *e)
     unshare_id_content(&e->id);
     e->updown = clone_str(e->updown, "updown");
 
-#ifdef SMARTCARD
-    scx_share(e->sc);
-#endif
     share_cert(e->cert);
     if (e->ca.ptr != NULL)
 	clonetochunk(e->ca, e->ca.ptr, e->ca.len, "ca string");
@@ -799,9 +792,6 @@ load_end_certificate(const char *filename, struct end *dst)
     /* initialize end certificate */
     dst->cert.type = CERT_NONE;
 
-    /* initialize smartcard info record */
-    dst->sc = NULL;
-
     if(filename == NULL) {
 	return;
     }
@@ -809,35 +799,6 @@ load_end_certificate(const char *filename, struct end *dst)
     openswan_log("loading certificate from %s\n", filename);
     dst->cert_filename = clone_str(filename, "certificate filename");
     
-#ifdef SMARTCARD
-    if (strncmp(filename, SCX_TOKEN, strlen(SCX_TOKEN)) == 0)
-	{
-	    /* we have a smartcard */
-	    smartcard_t *sc = scx_parse_reader_id(filename + strlen(SCX_TOKEN));
-	    bool valid_cert = FALSE;
-	    
-	    dst->sc = scx_add(sc);
-	    
-	    /* is there a cached smartcard certificate? */
-	    cached_cert = dst->sc->last_cert.type != CERT_NONE
-		&& (time(NULL) - dst->sc->last_load) < SCX_CERT_CACHE_INTERVAL;
-	    
-	    if (cached_cert)
-		{
-		    cert = dst->sc->last_cert;
-		    valid_cert = TRUE;
-		}
-	    else
-	    	valid_cert = scx_load_cert(dst->sc, &cert);
-	    
-	    if(!valid_cert) {
-		whack_log(RC_FATAL, "can not load certificate from smartcard: %s\n",
-			  filename);
-		return;
-	    }
-	}
-    else
-#endif
 	{
 	    bool valid_cert = FALSE;
 	    
@@ -910,17 +871,6 @@ load_end_certificate(const char *filename, struct end *dst)
 	break;
     }
     
-    /* cache the certificate that was last retrieved from the smartcard */
-    if (dst->sc != NULL)
-    {
-	if (!same_cert(&dst->sc->last_cert, &dst->cert))
-	{
-	    release_cert(dst->sc->last_cert);
-	    dst->sc->last_cert = dst->cert;
-	    share_cert(dst->cert);
-	}
-	time(&dst->sc->last_load);
-    }
 }
 
 static bool
@@ -2378,7 +2328,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 		
     case OAKLEY_RSA_SIG:
 	auth_policy = POLICY_RSASIG;
-	if (initiator && c->spd.this.sc == NULL)
+	if (initiator)
 	{
 	    /* at this point, we've committed to our RSA private key:
 	     * we used it in our previous message.
@@ -2474,18 +2424,14 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 		 * If we initiated, it must match the one we
 		 * used in the SIG_I payload that we sent previously.
 		 */
- 		if (d->spd.this.sc == NULL) /* no smartcard */
 		{
 		    const struct RSA_private_key *pri
 			= get_RSA_private_key(d);
 
-		    if (pri == NULL
-		    || (initiator && (c->spd.this.sc != NULL
-			|| !same_RSA_public_key(&my_RSA_pri->pub, &pri->pub))))
+		    if (pri == NULL || (initiator && (
+			!same_RSA_public_key(&my_RSA_pri->pub, &pri->pub))))
 			    continue;
 		}
-		else if (initiator && c->spd.this.sc != d->spd.this.sc)
-		    continue;
 		break;
 
 	    default:

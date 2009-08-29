@@ -50,7 +50,6 @@
 #include "pgp.h"
 #include "certs.h"
 #include "ac.h"
-#include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif

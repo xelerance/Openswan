@@ -14,8 +14,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: xauth.c,v 1.44 2005/08/05 19:18:47 mcr Exp $
- *
  * This code originally written by Colubris Networks, Inc.
  * Extraction of patch and porting to 1.99 codebases by Xelerance Corporation
  * Porting to 2.x by Sean Mathews
@@ -52,7 +50,6 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif

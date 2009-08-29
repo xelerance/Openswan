@@ -741,8 +741,7 @@ list_x509cert_chain(const char *caption, x509cert_t* cert, u_char auth_flags
 	    form_keyid(cert->publicExponent, cert->modulus, keyid, &keysize);
 	    whack_log(RC_COMMENT, "       pubkey:   %4d RSA Key %s%s"
 		, 8*keysize, keyid
-		, cert->smartcard ? ", on smartcard" :
-		(has_private_key(c)? ", has private key" : ""));
+		, has_private_key(c)? ", has private key" : "");
 	    whack_log(RC_COMMENT, "       validity: not before %s %s",
 		timetoa(&cert->notBefore, utc, tbuf, sizeof(tbuf)),
 		(cert->notBefore < tnow)?"ok":"fatal (not valid yet)");

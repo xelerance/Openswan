@@ -39,7 +39,6 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "smartcard.h"
 #include "connections.h"
 #include "packet.h"
 #include "whack.h"

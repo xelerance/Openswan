@@ -38,7 +38,6 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "smartcard.h"
 #include "connections.h"	/* needs id.h */
 #include "state.h"
 #include "packet.h"

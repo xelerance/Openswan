@@ -11,7 +11,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: whack.h,v 1.70 2005/09/26 03:23:18 mcr Exp $
  */
 
 #ifndef _WHACK_H
@@ -266,7 +265,6 @@ struct whack_message {
 #define LIST_GROUPS	0x0040	/* list all access control groups */
 #define LIST_CRLS	0x0080	/* list all crls */
 #define LIST_OCSP	0x0100	/* list all ocsp cache entries */
-#define LIST_CARDS	0x0200	/* list all smartcard records */
 #define LIST_PSKS       0x0400  /* list all preshared keys (by name) */
 #define LIST_EVENTS     0x0800  /* list all queued events */
 

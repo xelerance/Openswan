@@ -163,7 +163,7 @@ id.o: id.c ../../linux/include/openswan.h \
   ../../include/pgp.h ../../include/certs.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h
+  ../../include/certs.h
 initsaid.o: initsaid.c internal.h ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h
@@ -381,7 +381,7 @@ secrets.o: secrets.c ../../include/arpa/nameser.h \
   ../../include/secrets.h ../../include/id.h \
   ../../include/x509.h ../../include/certs.h \
   ../../include/secrets.h ../../include/pgp.h \
-  ../../include/smartcard.h ../../include/certs.h \
+  ../../include/certs.h \
   ../../include/lex.h ../../include/mpzfuncs.h
 subnettot.o: subnettot.c internal.h ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \

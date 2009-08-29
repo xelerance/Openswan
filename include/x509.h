@@ -62,7 +62,6 @@ struct x509cert {
   x509cert_t     *next;
   time_t	 installed;
   int		 count;
-  bool		 smartcard;
   u_char	 authority_flags;
   chunk_t	 certificate;
   chunk_t          tbsCertificate;

@@ -13,7 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ikev1_aggr.c,v 1.4 2005/10/09 20:30:12 mcr Exp $
  */
 
 #include <stdio.h>
@@ -39,7 +38,6 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif

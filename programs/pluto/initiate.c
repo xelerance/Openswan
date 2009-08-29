@@ -41,7 +41,6 @@
 
 #include "defs.h"
 #include "ac.h"
-#include "smartcard.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
@@ -208,17 +207,6 @@ initiate_a_connection(struct connection *c
 	    free_sa(phase2_sa);
 	}
 	
-#ifdef SMARTCARD
-	/* do we have to prompt for a PIN code? */
-	if (c->spd.this.sc != NULL && !c->spd.this.sc->valid && whackfd != NULL_FD)
-	    scx_get_pin(c->spd.this.sc, whackfd);
-	
-	if (c->spd.this.sc != NULL && !c->spd.this.sc->valid)
-	{
-	    loglog(RC_NOVALIDPIN, "cannot initiate connection without valid PIN");
-	}
-	else
-#endif
 	{
 	    whackfd = dup(whackfd);
 	    ipsecdoi_initiate(whackfd, c, c->policy, 1
