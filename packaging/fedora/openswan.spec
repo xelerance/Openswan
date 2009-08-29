@@ -28,7 +28,7 @@ Summary: Openswan - An IPsec and IKE implementation
 Group: System Environment/Daemons
 BuildRequires: gmp-devel bison flex bind-devel redhat-rpm-config xmlto
 %if %{buildnss}
-BuildRequires: nss-devel >= 3.12.3, nspr-devel fipscheck-devel
+BuildRequires: nss-devel >= 3.12.3, nspr-devel fipscheck-devel, libcap-ng-devel
 %endif
 Requires: iproute >= 2.6.8
 Requires(post): coreutils bash
@@ -81,6 +81,7 @@ kernels.
 %if %{buildnss}
   USE_LIBNSS="true" \
   USE_FIPSCHECK="true" \
+  USE_LIBCAP_NG="true" \
 %endif
   USE_DYNAMICDNS="true" \
   USE_LWRES="true" \
