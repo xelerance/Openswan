@@ -105,6 +105,10 @@
 # endif
 #endif
 
+#ifdef HAVE_LIBCAP_NG
+#include <cap-ng.h>
+#endif
+
 const char *ctlbase = "/var/run/pluto";
 
 openswan_passert_fail_t openswan_passert_fail = passert_fail;
@@ -310,6 +314,16 @@ main(int argc, char **argv)
 #else
     leak_detective=0;
 #endif
+
+#ifdef HAVE_LIBCAP_NG
+	/* Drop capabilities */
+	capng_clear(CAPNG_SELECT_BOTH);
+	capng_updatev(CAPNG_ADD, CAPNG_EFFECTIVE|CAPNG_PERMITTED,
+			CAP_NET_BIND_SERVICE, CAP_NET_ADMIN, CAP_NET_RAW,
+			CAP_IPC_LOCK, -1);
+	capng_apply(CAPNG_SELECT_BOTH);
+#endif
+
 
     global_argv = argv;
     global_argc = argc;
