@@ -893,6 +893,54 @@ has_bare_hold(const ip_address *src, const ip_address *dst, int transport_proto)
         && (*bspp)->said.proto == SA_INT && (*bspp)->said.spi == htonl(SPI_HOLD);
 }
 
+/*
+ * clear any bare shunt holds that overlap with the network we have just
+ * routed
+ */
+static void
+clear_narrow_holds(
+    const ip_subnet *ours,
+    const ip_subnet *his,
+    int transport_proto)
+{
+    struct bare_shunt *p, **pp;
+
+    for (pp = &bare_shunts; (p = *pp) != NULL; )
+    {
+	ip_subnet po, ph;
+
+	/* for now we only care about host-host narrow holds specifically */
+	if (p->ours.maskbits != 32 || p->his.maskbits != 32) {
+	    pp = &p->next;
+	    continue;
+	}
+
+	if (p->said.spi != htonl(SPI_HOLD)) {
+	    pp = &p->next;
+	    continue;
+	}
+
+	initsubnet(&p->ours.addr, ours->maskbits, '0', &po);
+	initsubnet(&p->his.addr, his->maskbits, '0', &ph);
+		
+	if (samesubnet(ours, &po) && samesubnet(his, &ph)
+		&& transport_proto == p->transport_proto
+		&& portof(&ours->addr) == portof(&p->ours.addr)
+		&& portof(&his->addr) == portof(&p->his.addr)) {
+
+	    (void) replace_bare_shunt(&p->ours.addr, &p->his.addr
+		    , BOTTOM_PRIO
+		    , SPI_PASS	/* not used */
+		    , FALSE, 0
+		    , "removing clashing narrow holds");
+
+	    /* restart from beginning as we just removed and entry */
+	    pp = &bare_shunts;
+	    continue;
+	}
+	pp = &p->next;
+    }
+}
 
 /* Replace (or delete) a shunt that is in the bare_shunts table.
  * Issues the PF_KEY commands and updates the bare_shunts table.
@@ -2469,6 +2517,8 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
                         , sr->eroute_owner
                         , st->st_connection->newest_ipsec_sa));
             sr->eroute_owner = st->st_serialno;
+            /* clear host shunts that clash with freshly installed route */
+            clear_narrow_holds(&sr->this.client, &sr->that.client, sr->this.protocol);
         }
 
 #ifdef IPSEC_CONNECTION_LIMIT
