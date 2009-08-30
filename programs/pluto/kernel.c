@@ -155,7 +155,7 @@ record_and_initiate_opportunistic(const ip_subnet *ours
         DBG_bare_shunt("add", bs);
     }
 
-    /* actually initiate opportunism */
+    /* actually initiate opportunism / ondemand */
     {
         ip_address src, dst;
 
