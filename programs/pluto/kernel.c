@@ -954,7 +954,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
      * to look for a host<->host shunt, and replace that with the
      * shunt spi, and then we add a %HOLD for what was there before.
      *
-     * this is at ods with repl == 0, which should delete things.
+     * this is at odds with repl == 0, which should delete things.
      * 
      */
 
