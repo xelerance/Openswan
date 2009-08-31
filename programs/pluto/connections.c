@@ -2412,6 +2412,13 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 		    if (dpsk == NULL)
 			continue;	/* no secret */
 
+		    if (aggrmode) {
+			/*
+			 * we can change PSK mid startup in agressive mode
+			 */
+		    	break;
+		    }
+
 		    if (psk != dpsk)
 			if (psk->len != dpsk->len
 			|| memcmp(psk->ptr, dpsk->ptr, psk->len) != 0)
