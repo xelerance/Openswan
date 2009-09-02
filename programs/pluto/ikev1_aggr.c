@@ -990,6 +990,7 @@ aggr_outI1(int whack_sock,
 		     , st->st_serialno, st->st_connection->name);
     }
     else {
+	update_pending(predecessor, st);
 	openswan_log("initiating Aggressive Mode #%lu to replace #%lu, connection \"%s\""
 		     , st->st_serialno, predecessor->st_serialno
 		     , st->st_connection->name);
