@@ -5,11 +5,12 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.23
-* Support for dropping unneeded capabilities usnig libcap-ng [Avesh]
+* Support for dropping unneeded capabilities using libcap-ng [Avesh]
   (Changed using  USE_LIBCAP_NG= in Makefile.inc)
 * Additional ASN.1 parser checks by David McCullough [David]
-  (this is CVE-2009-XXXX)
 * PSK support with USE_LIBNSS [Avesh Agarwal]
+* Allow multiple different PSK road warriors with Aggressive Mode [David]
+* Additional KLIPS debugging can be enabled in /proc/net/ipsec_saraw [David]
 * Extended fipschecks [Avesh Agarwal]
 * auto=route tunnels could fail due to an Opportunstic Encryption bug [David]
 * passthrough routes on NETKEY where missing a a policy [Michael H. Warfield]
@@ -19,14 +20,15 @@ v2.6.23
 * ipsec verify now returns non-zero when an error is encountered [Paul]
 * Fix for ipsec whack --crash <IP> crasher [David]
 * Partial fix for #1004. We no longer drop the port from protoport= [dhr/Paul]
-  transport mode L2TP not works again for the non-NAT'ed case
+  transport mode L2TP now works again for the non-NAT'ed case
 * Fix for size (XXX) differs from size specified in ISAKMP HDR (YYY) [David]
-* Additional KLIPS debugging can be enabled in /proc/net/ipsec_saraw [David]
 * Removed old USE_SMARTCARD code. Smartcards are now supported via NSS [Paul]
-  (not all code was properly #ifdef'ed, so a few changes outside #ifdef SMARTCARD
-   were needed)
+  (not all code was properly #ifdef'ed, so a few changes outside #ifdef
+   SMARTCARD were needed)
+* Prevent aggressive mode tunnels losing phase2 [David]
+* Various fixes to eroutes [David]
 * Bugtracker bugs fixed:
-   #1044: fedora openswan.spec file builds an RPM that is missing lwdnsq [Joe Steele]
+   #1044: openswan.spec file builds an RPM that is missing lwdnsq [Joe Steele]
 
 v2.6.22
 * Malicious X.509 certificates could crash the asn.1 parser.
