@@ -56,7 +56,8 @@
 	
 	if([selected isEqualToString:@"Raw RSA"]){
 		NSLog(@"user selected option Raw RSA");
-		[selectedConn setSelAuthBy:@"RSA Sig Key"];
+		NSMutableString* tmp2 = [NSMutableString stringWithString:@"RSA Sig Key"];
+		[selectedConn setSelAuthBy:tmp2];
 		
 		[rawRSAView setHidden:NO];
 		[X509View setHidden:YES];
@@ -65,7 +66,8 @@
 	else{
 		if([selected isEqualToString:@"X.509"]){
 			NSLog(@"user selected option X.509");
-			[selectedConn setSelAuthBy:@"RSA Sig Key"];
+			NSMutableString* tmp = [NSMutableString stringWithString:@"RSA Sig Key"];
+			[selectedConn setSelAuthBy:tmp];
 			
 			[X509View setHidden:NO];
 			[rawRSAView setHidden:YES];
@@ -73,7 +75,8 @@
 		}
 		else{//PSK
 			NSLog(@"user selected option PSK");
-			[selectedConn setSelAuthBy:@"Secret"];
+			NSMutableString* tmp1 = [NSMutableString stringWithString:@"Secret"];
+			[selectedConn setSelAuthBy:tmp1];
 			
 			[PSKView setHidden:NO];
 			[X509View setHidden:YES];
