@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	err_t perr = NULL;
 	FILE *file = NULL;
 	
-	char *cPath = "/Users/ze/Desktop/test.cfg\0";
+	char *cPath = "./test.cfg";
 	
 	//Connection *conn = [[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]];
 	

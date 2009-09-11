@@ -412,30 +412,34 @@ int main(int argc, char *argv[])
 	err_t perr = NULL;
 	FILE *file = NULL;
 	
-	Connection *conn = [[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]];
+	char *cPath = "../../test/testGUI.cfg";
+	
+	//Connection *conn = [[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]];
 	
 	//file pathname
-	NSString *origFileName = [conn connName];
-	NSString *fileName = [origFileName stringByAppendingFormat:@".conf"];
-	NSString *origPath = @"~/Library/Application Support/Openswan";
-	NSString *filePath = [origPath stringByAppendingPathComponent:fileName];
-	NSString *path = [filePath stringByStandardizingPath];
-	char cPath[100];
-	[path getCString:cPath maxLength:100 encoding:NSMacOSRomanStringEncoding];
+	/*
+	 NSString *origFileName = [conn connName];
+	 NSString *fileName = [origFileName stringByAppendingFormat:@".conf"];
+	 NSString *origPath = @"~/Library/Application Support/Openswan";
+	 NSString *filePath = [origPath stringByAppendingPathComponent:fileName];
+	 NSString *path = [filePath stringByStandardizingPath];
+	 char cPath[100];
+	 [path getCString:cPath maxLength:100 encoding:NSMacOSRomanStringEncoding];
+	 */
 	
 	cfg = (struct starter_config *) malloc(sizeof(struct starter_config));
-	if (!cfg) NSLog(@"can't allocate memory");
+	if (!cfg) printf("can't allocate memory");
 	
 	memset(cfg, 0, sizeof(struct starter_config));
 	
 	ipsecconf_default_values(cfg);
 	
 	//NSString to char*
-	char cConnName[20];
-	[[conn connName] getCString:cConnName maxLength:20 encoding:NSMacOSRomanStringEncoding];
+	//char cConnName[20];
+	//[[conn connName] getCString:cConnName maxLength:20 encoding:NSMacOSRomanStringEncoding];
 	
-	new_conn = alloc_add_conn(cfg, cConnName, &perr);
-	if(new_conn == NULL) NSLog(@"%s", &perr);
+	new_conn = alloc_add_conn(cfg, "test", &perr);
+	if(new_conn == NULL) printf("%s", perr);
 	
 	cfg->setup.options_set[KBF_NATTRAVERSAL] = 1;
 	cfg->setup.options[KBF_NATTRAVERSAL] = 0;
@@ -443,71 +447,21 @@ int main(int argc, char *argv[])
 	cfg->setup.strings_set[KSF_PROTOSTACK] = 1;
 	cfg->setup.strings[KSF_PROTOSTACK] = strdup("netkey");
 	
-	//This stuff is not working...
-	/*
+	new_conn->connalias = strdup("anotheralias");
+	
+	new_conn->left.rsakey2 = (unsigned char *)"0s23489234ba28934243";
+    new_conn->left.rsakey1 = (unsigned char *)"0sabcdabcdabcd";
+	
 	new_conn->desired_state = STARTUP_START;
 	
 	new_conn->options_set[KBF_AUTO] = 1;
 	new_conn->options[KBF_AUTO] = STARTUP_START;
 	
-	new_conn->right.addrtype = KH_IPHOSTNAME;
-	new_conn->right.strings_set[KSCF_IP] = 1;
-	new_conn->right.strings[KSCF_IP] = strdup("thing.com");
+	new_conn->left.cert = "/my/cert/file";
 	
-	new_conn->right.options_set[KNCF_XAUTHSERVER] = 1;
-	new_conn->right.options[KNCF_XAUTHSERVER] = 0;
-	
-	//new_conn->right.strings_set[KSCF_SOURCEIP] = 1;
-	//new_conn->right.strings[KSCF_SOURCEIP] = strdup("192.168.0.1");
-	
-	ttoaddr("192.168.2.102", 0, AF_INET, &new_conn->left.sourceip);
-	
-	ttoaddr("192.168.1.101", 0, AF_INET, &new_conn->left.addr);
-	
-	//this line makes some change in new_conn->alsos...
-    //new_conn->left.addr_family = AF_INET;
-	
-    new_conn->left.addrtype = KH_IPADDR;
-	
-	new_conn->connalias = strdup("ALIAS");
-	
-	new_conn->left.rsakey1 = (unsigned char *)"0sabcdabcdabcd";
-	*/
-	/*
-	new_conn->connalias = strdup("anotheralias");
-	
-    new_conn->strings[KSF_DPDACTION]="hold";
-    new_conn->strings_set[KSF_DPDACTION] = 1;
-	
-    new_conn->options[KBF_DPDDELAY]=60;
-    new_conn->options_set[KBF_DPDDELAY]=1;
-	
-    new_conn->policy = POLICY_ENCRYPT|POLICY_PFS|POLICY_COMPRESS;
-	
-	//new_conn->left.rsakey2 = (unsigned char *)"0s23489234ba28934243";
-    //new_conn->left.rsakey1 = (unsigned char *)"0sabcdabcdabcd";
-    //new_conn->left.cert = "/my/cert/file";
-    //ttoaddr("192.168.2.102", 0, AF_INET, &new_conn->left.sourceip);
-	
-    ttoaddr("192.168.1.101", 0, AF_INET, &new_conn->left.addr);
-    new_conn->left.addr_family = AF_INET;
-    new_conn->left.addrtype   = KH_IPADDR;
-	
-    new_conn->right.addrtype  = KH_DEFAULTROUTE;	
-	
-	*/
-	
-	file = fopen(cPath,"w"); 
+	file = fopen(cPath,"w");
 	confwrite(cfg, file);
-	fclose(file);
-	 
-	/*
-	//to test the new_conn, using this will override what was writen in the previous lines
-	FILE *fileConn;
-	fileConn = fopen(cPath,"w"); 
-	confwrite_conn(fileConn, new_conn);
-	fclose(fileConn);
-	 */
+	fclose(file); 	 
 }
 
 
