@@ -268,6 +268,8 @@ aggr_inI1_outR1_common(struct msg_digest *md
     st->st_connection = c;
     st->st_remoteaddr = md->sender;
     st->st_remoteport = md->sender_port;
+    st->st_localaddr  = md->iface->ip_addr;
+    st->st_localport  = md->iface->port;
     st->st_interface  = md->iface;
     change_state(st, STATE_AGGR_R1);
 
@@ -317,9 +319,14 @@ aggr_inI1_outR1_common(struct msg_digest *md
 	, ip_str(&c->spd.that.host_addr));
 
 #ifdef NAT_TRAVERSAL
+    DBG(DBG_CONTROLMORE, DBG_log("sender checking NAT-t: %d and %d"
+				 , nat_traversal_enabled
+				 , md->quirks.nat_traversal_vid))
     if (md->quirks.nat_traversal_vid && nat_traversal_enabled) {
 	/* reply if NAT-Traversal draft is supported */
 	st->hidden_variables.st_nat_traversal = nat_traversal_vid_to_method(md->quirks.nat_traversal_vid);
+	openswan_log("enabling possible NAT-traversal with method %s"
+	     , bitnamesof(natt_type_bitnames, st->hidden_variables.st_nat_traversal));
     }
 #endif
 
@@ -521,6 +528,10 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
 
 #ifdef NAT_TRAVERSAL
     if (st->hidden_variables.st_nat_traversal) {
+      if (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD) {
+        if (!nat_traversal_add_natd(ISAKMP_NEXT_VID, &md->rbody, md))
+	  return STF_INTERNAL_ERROR;
+      }
       if (!out_vid(ISAKMP_NEXT_NONE
 		   , &md->rbody
 		   , md->quirks.nat_traversal_vid)) {
@@ -601,6 +612,10 @@ aggr_inR1_outI2(struct msg_digest *md)
     insert_state(st);	/* needs cookies, connection, and msgid (0) */
 
 #ifdef NAT_TRAVERSAL
+    DBG(DBG_CONTROLMORE
+	, DBG_log("inR1: checking NAT-t: %d and %d"
+		  , nat_traversal_enabled
+		  , st->hidden_variables.st_nat_traversal));
     if (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD) {
 	nat_traversal_natd_lookup(md);
     }
