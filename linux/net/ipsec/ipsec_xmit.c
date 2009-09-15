@@ -746,8 +746,12 @@ ipsec_xmit_esp(struct ipsec_xmit_state *ixs)
 	ixs->iph->protocol = IPPROTO_ESP;
 	
 #ifdef CONFIG_KLIPS_OCF
-	if (ixs->ipsp->ocf_in_use)
+	if (ixs->ipsp->ocf_in_use) {
+		/* handle the IV code here for now,  near the similar code below */
+		prng_bytes(&ipsec_prng,
+			   (char *)ixs->espp->esp_iv, ixs->ipsp->ips_iv_size);
 		return(ipsec_ocf_xmit(ixs));
+	}
 #endif
 
 #ifdef CONFIG_KLIPS_ALG
