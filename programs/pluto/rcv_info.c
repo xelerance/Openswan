@@ -26,7 +26,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <resolv.h>
-#include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
+//#include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
 
 #include <openswan.h>
 

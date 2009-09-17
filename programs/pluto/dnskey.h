@@ -16,7 +16,7 @@
 
 #ifndef _DNSKEY_H_
 
-#include <arpa/nameser.h>
+//#include <arpa/nameser.h>
 #include "adns.h"
 
 extern int
