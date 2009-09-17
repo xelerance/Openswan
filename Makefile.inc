@@ -180,7 +180,7 @@ BISONOSFLAGS=
 
 # extra compile flags, for userland and kernel stuff, e.g. -g for debug info
 # you can add to this in the defaults file using +=
-USERCOMPILE?=-g ${WERROR} ${PORTDEFINE}
+USERCOMPILE?=-g -m32 ${WERROR} ${PORTDEFINE}
 #USERCOMPILE?=-g -O3 ${WERROR} 
 KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG
 # for AMD64 use 
