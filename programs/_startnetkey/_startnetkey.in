@@ -114,29 +114,34 @@ defaultinterface() {
 	}
 
 	iproutedefault=`ip route list 0.0.0.0/0`
-	if test `echo "$iproutedefault" | wc -l` -gt 1
+	if test -n "$iproutedefault"
 	then
+	  if test `echo "$iproutedefault" | wc -l` -gt 1
+	  then
 	    multidefault=1
 	    iproutedefault=`echo $iproutedefault | head -1`
-	fi
-	eval `getphysdev $iproutedefault`
-	if test -z "$next" -o -z "$addr" -a -n "$phys"
-	then
+	  fi
+	  eval `getphysdev $iproutedefault`
+	  if test -z "$next" -o -z "$addr" -a -n "$phys"
+	  then
 	    ipaddrlist=`ip -o -f inet addr list dev $phys` 
 	    if test `echo "$ipaddrlist" | wc -l` -gt 1
 	    then
-		multiaddr=1
-		ipaddrlist=`echo "$ipaddrlist" | head -1`
+	      multiaddr=1
+	      ipaddrlist=`echo "$ipaddrlist" | head -1`
 	    fi
 	    eval `getifaddr $ipaddrlist`
-	fi
-	if test -n "$multidefault"
-	then
+	  fi
+	  if test -n "$multidefault"
+	  then
 	    echo "multiple default routes, using $next on $phys"
-	fi
-	if test -n "$multiaddr"
-	then
+	  fi
+	  if test -n "$multiaddr"
+	  then
 	    echo "multiple ip addresses, using  $addr on $phys"
+	  fi
+	else
+	  echo "no default routes detected"
 	fi
 	# simulate old silly output
 	echo "defaultroutephys=$phys" >> $info
