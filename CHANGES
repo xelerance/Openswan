@@ -4,6 +4,9 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
+v2.6.24
+* Give clear warning about missing defaultroute [Tuomo]
+
 v2.6.23
 * Support for dropping unneeded capabilities using libcap-ng [Avesh]
   (Changed using  USE_LIBCAP_NG= in Makefile.inc)
