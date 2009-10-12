@@ -479,6 +479,11 @@ parser_machine(struct parser_context *p_ctx)
 		parser_set_state(p_ctx, ST_AA_END);
 		break;
 	    }
+            if (ch==';') {
+                *(p_ctx->aalg_str++)=0;
+                parser_set_state(p_ctx, ST_AK_END);
+                break;
+            }	    
 	    if (isalnum(ch) || ch=='_') {
 		*(p_ctx->aalg_str++)=ch;
 		break;
@@ -500,7 +505,7 @@ parser_machine(struct parser_context *p_ctx)
 	    p_ctx->err="Non initial digit found for auth keylen";
 	    goto err;
 	case ST_AK:
-	    if (ch=='-') {
+	    if (ch=='-'||ch==';') {
 		parser_set_state(p_ctx, ST_AK_END);
 		break;
 	    }
