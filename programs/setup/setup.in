@@ -43,13 +43,20 @@
 # description: IPsec provides encrypted and authenticated communications; \
 # KLIPS is the kernel half of it, Pluto is the user-level management daemon.
 
-me='ipsec setup'		# for messages
+prog='ipsec setup'		# for messages
 
 # where the private directory and the config files are
 IPSEC_EXECDIR="${IPSEC_EXECDIR-@IPSEC_EXECDIR@}"
 IPSEC_LIBDIR="${IPSEC_LIBDIR-@IPSEC_LIBDIR@}"
 IPSEC_SBINDIR="${IPSEC_SBINDIR-@IPSEC_SBINDIR@}"
 IPSEC_CONFS="${IPSEC_CONFS-@IPSEC_CONFS@}"
+
+if [ `id -u` -ne 0 ]
+    then
+        echo "permission denied (must be superuser)" |
+	      logger -s -p daemon.error -t ipsec_setup 2>&1
+        exit 4
+fi
 
 if test " $IPSEC_DIR" = " "	# if we were not called by the ipsec command
 then
@@ -61,71 +68,6 @@ then
     export IPSEC_DIR IPSEC_CONFS IPSEC_LIBDIR IPSEC_EXECDIR
 fi
 
-# Check that the ipsec command is available.
-found=
-for dir in `echo $PATH | tr ':' ' '`
-do
-	if test -f $dir/ipsec -a -x $dir/ipsec
-	then
-		found=yes
-		break			# NOTE BREAK OUT
-	fi
-done
-if ! test "$found"
-then
-	echo "cannot find ipsec command -- \`$1' aborted" |
-		logger -s -p daemon.error -t ipsec_setup
-	exit 1
-fi
-
-# accept a few flags
-
-export IPSEC_setupflags
-IPSEC_setupflags=""
-
-config=""
-
-for dummy
-do
-	case "$1" in
-	--showonly|--show)  IPSEC_setupflags="$1" ;;
-	--config)  config="--config $2" ; shift	;;
-	*) break ;;
-	esac
-	shift
-done
-
-
-# Pick up IPsec configuration (until we have done this, successfully, we
-# do not know where errors should go, hence the explicit "daemon.error"s.)
-# Note the "--export", which exports the variables created.
-variables=`ipsec addconn $config --varprefix IPSEC --configsetup`
-if [ $? != 0 ]
-then
-    echo "Failed to parse config setup portion of ipsec.conf"
-    exit $?
-fi
-eval $variables
-
-if test " $IPSEC_confreadstatus" != " "
-then
-    case $1 in 
-    stop|--stop|_autostop) 
-	echo "$IPSEC_confreadstatus -- \`$1' may not work" |
-		logger -s -p daemon.error -t ipsec_setup;;
-		
-    *) echo "$IPSEC_confreadstatus -- \`$1' aborted" |
-	    logger -s -p daemon.error -t ipsec_setup;
-	exit 1;;
-    esac
-fi
-
-IPSEC_confreadsection=${IPSEC_confreadsection:-setup}
-export IPSEC_confreadsection
-
-IPSECsyslog=${IPSECsyslog-daemon.error}
-export IPSECsyslog
-
 # misc setup
 umask 022
 
@@ -133,81 +75,98 @@ mkdir -p /var/run/pluto
 
 RETVAL=0
 
-start_stop() {
-	# remove for: @cygwin_START@ 
-	# portable way for checking for root
-	if [ ! -w / ]
-	then
-		echo "permission denied (must be superuser)" |
-			logger -s -p $IPSECsyslog -t ipsec_setup 2>&1
-		exit 1
-	fi
-	# remove for: @cygwin_END@
-	(
-	ipsec _realsetup $1
-	RETVAL="$?" 
-	) 2>&1 | logger -s -p $IPSECsyslog -t ipsec_setup 2>&1  
+start() {
 
-	return $RETVAL
+    test -x $IPSEC_SBINDIR/ipsec || exit 5
+    test -f /etc/ipsec.conf || exit 6
+    
+    # Pick up IPsec configuration (until we have done this, successfully, we
+    # do not know where errors should go, hence the explicit "daemon.error"s.)
+    # Note the "--export", which exports the variables created.
+    variables=`ipsec addconn /etc/ipsec.conf --varprefix IPSEC --configsetup`
+    eval $variables
+    if [ $? != 0 ]
+    then
+         echo "Failed to parse config setup portion of ipsec.conf"
+         exit $?
+    fi
+    
+    IPSEC_confreadsection=${IPSEC_confreadsection:-setup}
+    export IPSEC_confreadsection
+
+    IPSECsyslog=${IPSECsyslog-daemon.error}
+    export IPSECsyslog
+
+    # remove for: @cygwin_END@
+    (
+    ipsec _realsetup start
+    RETVAL=$? 
+    ) 2>&1 | logger -s -p $IPSECsyslog -t ipsec_setup 2>&1  
+    return $RETVAL
 }
 
 
-restart_reload() {
-	$0 $IPSEC_setupflags stop
-	$0 $IPSEC_setupflags start
+stop() {
+    IPSECsyslog=${IPSECsyslog-daemon.error}
+    export IPSECsyslog
+    (
+    ipsec _realsetup stop
+    RETVAL=$? 
+    ) 2>&1 | logger -s -p $IPSECsyslog -t ipsec_setup 2>&1  
+    return $RETVAL
 }
 
+restart() {
+    stop
+    start
+}
 
-autorestart() {
-	$0 $IPSEC_setupflags _autostop
-	$0 $IPSEC_setupflags _autostart
+condrestart() {
+    test -x $IPSEC_SBINDIR/ipsec || exit 5
+    ipsec _realsetup status || exit 0
+    restart
+}
+
+status() {
+    test -x $IPSEC_SBINDIR/ipsec || exit 5
+    ipsec _realsetup status
+    RETVAL=$?	
+    return $RETVAL
 }
 
 version() {
-	ipsec version
-	RETVAL=$?
-	return $RETVAL
+    ipsec version
+    RETVAL=$?
+    return $RETVAL
 }
 
-
-show_help() {
-	echo "Usage: $me [ --showonly ] {--start|--stop|--restart}"
-	echo "       $me --status"
-	RETVAL=0
-	return $RETVAL
-}
 
 # do it
 case "$1" in
-  start|--start|stop|--stop|_autostop|_autostart)
-	start_stop $1
-	;;
-
-  restart|--restart|force-reload)
-	restart_reload
-	;;
-
-  _autorestart)			# for internal use only
-	autorestart
-	;;
-
-  status|--status)
-	ipsec _realsetup $1
-	RETVAL=$?
-	;;
-
-  version|--version)
-	version
-	;;
-
-  help|--help)
-	show_help
-	;;
-
-  *)
-	echo "Usage: $me [ --showonly ] {--start|--stop|--restart}"
-	echo "       $me --status"
-	RETVAL=2
+    start)
+         start
+         ;;
+    stop)
+         stop
+         ;;
+    restart)
+         restart
+ 	 ;;
+    reload|force-reload)
+         restart
+ 	 ;;
+    condrestart|try-restart)
+         condrestart
+         ;;
+    status)
+         status
+         ;;
+    version)
+         version
+         ;;
+    *)
+         echo $"Usage: $prog {start|stop|restart|reload|force-reload|condrestart|try-restart|status|version}"
+ 	 RETVAL=2
 esac
-
+ 	
 exit $RETVAL
