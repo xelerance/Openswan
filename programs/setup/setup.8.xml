@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                    "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <!-- lifted from troff+man by doclifter -->
@@ -25,7 +25,7 @@
 <cmdsynopsis>
   <command>ipsec</command>
     <arg choice='plain'><replaceable>setup</replaceable></arg>
-    <arg choice='plain'>{ start | stop | restart | condrestart}</arg>
+    <arg choice='plain'>{ start | stop | restart }</arg>
 </cmdsynopsis>
 <cmdsynopsis>
   <command>ipsec</command>
@@ -165,6 +165,9 @@ Selected additional information is logged only to
 <para>Written for the FreeS/WAN project
 &lt;<ulink url='http://www.freeswan.org'>http://www.freeswan.org</ulink>&gt;
 by Henry Spencer.</para>
+<para>Modified for Openswan
+&lt;<ulink url='http://www.openswan.org'>http://www.openswan.org</ulink>&gt;
+by Tuomo Soini.</para>
 </refsect1>
 
 <refsect1 id='bugs'><title>BUGS</title>
