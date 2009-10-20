@@ -9,6 +9,7 @@ v2.6.24
 * Fix to allow ";" in the ike/esp parameters as per man page. [Avesh]
 * Fix for DPD with NETKEY [Frank Eberle]
 * Make initscript LSB compliant [Avesh]
+* Update ipsec_setup man page to match setup changes [Tuomo]
 
 v2.6.23
 * Support for dropping unneeded capabilities using libcap-ng [Avesh]
