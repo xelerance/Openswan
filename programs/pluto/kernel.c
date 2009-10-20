@@ -164,7 +164,10 @@ record_and_initiate_opportunistic(const ip_subnet *ours
         initiate_ondemand(&src, &dst, transport_proto, TRUE, NULL_FD, "acquire");
     }
 
-    pexpect(kernel_ops->remove_orphaned_holds != NULL);
+    /*
+     * hold state with netkey (XFRM) hit this:
+     * pexpect(kernel_ops->remove_orphaned_holds != NULL);
+     */
     if(kernel_ops->remove_orphaned_holds) {
 	(*kernel_ops->remove_orphaned_holds)(transport_proto, ours, his);
     }

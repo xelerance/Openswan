@@ -8,6 +8,7 @@ v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
 * Fix to allow ";" in the ike/esp parameters as per man page. [Avesh]
 * Fix for DPD with NETKEY [Frank Eberle]
+* Remove warning with hold state and NETKEY [Tuomo]
 * Make initscript LSB compliant [Avesh]
 * Update ipsec_setup man page to match setup changes [Tuomo]
 
