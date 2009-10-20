@@ -1,105 +1,73 @@
-.\"     Title: IPSEC_SETUP
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 11/14/2008
-.\"    Manual: 23 July 2001
-.\"    Source: 23 July 2001
-.\"
-.TH "IPSEC_SETUP" "8" "11/14/2008" "23 July 2001" "23 July 2001"
+.\" ** You probably do not want to edit this file directly **
+.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
+.\" Instead of manually editing it, you probably should edit the DocBook XML
+.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
+.TH "IPSEC_SETUP" "8" "10/20/2009" "20 October 2009" "20 October 2009"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-ipsec setup - control IPsec subsystem
+ipsec setup \- control IPsec subsystem
 .SH "SYNOPSIS"
 .HP 6
-\fBipsec\fR \fIsetup\fR [\-\-show | \-\-showonly] \fIcommand\fR
+\fBipsec\fR \fIsetup\fR \fIcommand\fR
 .SH "EXAMPLES"
 .HP 6
-\fBipsec\fR \fIsetup\fR [[\ \-\-showonly\ ]] {\ \-\-start\ |\ \-\-stop\ |\ \-\-restart\ }
+\fBipsec\fR \fIsetup\fR {\ start\ |\ stop\ |\ restart\ |\ condrestart}
 .HP 6
-\fBipsec\fR \fIsetup\fR \-\-status
+\fBipsec\fR \fIsetup\fR status
 .SH "DESCRIPTION"
 .PP
 \fISetup\fR
-controls the FreeS/WAN IPsec subsystem, including both the Klips kernel code and the Pluto key\-negotiation daemon\. (It is a synonym for the \(lqrc\(rq script for the subsystem; the system runs the equivalent of
-\fBipsec setup start\fR
+controls the Openswan IPsec subsystem, including both the Klips or Netkey (XFRM) kernel code and the Pluto key\-negotiation daemon. (It is a synonym for the \(lqrc\(rq script for the subsystem; the system runs the equivalent of
+\fIipsec setup start\fR
 at boot time, and
-\fBipsec setup stop\fR
-at shutdown time, more or less\.)
+\fIipsec setup stop\fR
+at shutdown time, more or less.)
 .PP
 The action taken depends on the specific
 \fIcommand\fR, and on the contents of the
-\fBconfig\fR
-\fBsetup\fR
-section of the IPsec configuration file (\fI/etc/ipsec\.conf\fR, see
-\fBipsec.conf\fR(5))\. Current
+\fIconfig\fR\fIsetup\fR
+section of the IPsec configuration file (\fI/etc/ipsec.conf\fR, see
+\fBipsec.conf\fR(5)). Current
 \fIcommand\fRs are:
-.PP
-\fBstart\fR
-.RS 4
-start Klips and Pluto, including setting up Klips to do crypto operations on the interface(s) specified in the configuration file, and (if the configuration file so specifies) setting up manually\-keyed connections and/or asking Pluto to negotiate automatically\-keyed connections to other security gateways
-.RE
-.PP
-\fBstop\fR
-.RS 4
-shut down Klips and Pluto, including tearing down all existing crypto connections
-.RE
-.PP
-\fBrestart\fR
-.RS 4
+.TP
+\fIstart\fR
+start Klips and Pluto, including setting up Netkey (XFRM) or Klips to do crypto operations on the interface(s) specified in the configuration file. and (if the configuration file so specifies) asking Pluto to negotiate automatically\-keyed connections to other security gateways
+.TP
+\fIstop\fR
+shut down Klips or Netkey (XFRM) and Pluto, including tearing down all existing crypto connections
+.TP
+\fIrestart\fR
 equivalent to
-\fBstop\fR
+\fIstop\fR
 followed by
-\fBstart\fR
-.RE
-.PP
-\fBstatus\fR
-.RS 4
+\fIstart\fR
+.TP
+\fIstatus\fR
 report the status of the subsystem; normally just reports
-\fBIPsec running\fR
+\fIIPsec running\fR
 and
-\fBpluto pid \fR\fInnn\fR, or
-\fBIPsec stopped\fR, and exits with status 0, but will go into more detail (and exit with status 1) if something strange is found\. (An \(lqillicit\(rq Pluto is one that does not match the process ID in Pluto\'s lock file; an \(lqorphaned\(rq Pluto is one with no lock file\.)
-.RE
+\fIpluto pid \fR\fInnn\fR, or
+\fIIPsec stopped\fR, and exits with status 0, but will go into more detail (and exit with status 1) if something strange is found. (An \(lqillicit\(rq Pluto is one that does not match the process ID in Pluto's lock file; an \(lqorphaned\(rq Pluto is one with no lock file.)
 .PP
 The
-\fBstop\fR
-operation tries to clean up properly even if assorted accidents have occurred, e\.g\. Pluto having died without removing its lock file\. If
-\fBstop\fR
-discovers that the subsystem is (supposedly) not running, it will complain, but will do its cleanup anyway before exiting with status 1\.
+\fIstop\fR
+operation tries to clean up properly even if assorted accidents have occurred, e.g. Pluto having died without removing its lock file. If
+\fIstop\fR
+discovers that the subsystem is (supposedly) not running, it will complain, but will do its cleanup anyway before exiting with status 1.
 .PP
 Although a number of configuration\-file parameters influence
-\fIsetup\fR\'s operations, the key one is the
-\fBinterfaces\fR
-parameter, which must be right or chaos will ensue\.
-.PP
-The
-\fB\-\-show\fR
-and
-\fB\-\-showonly\fR
-options cause
-\fIsetup\fR
-to display the shell commands that it would execute\.
-\fB\-\-showonly\fR
-suppresses their execution\. Only
-\fBstart\fR,
-\fBstop\fR, and
-\fBrestart\fR
-commands recognize these flags\.
+\fIsetup\fR's operations, the key one is the
+\fIinterfaces\fR
+parameter, which must be right or chaos will ensue.
 .SH "FILES"
 .PP
-/etc/rc\.d/init\.d/ipsec the script itself
-/etc/init\.d/ipsec alternate location for the script
-/etc/ipsec\.conf IPsec configuration file
-/proc/sys/net/ipv4/ip_forward forwarding control
-/var/run/pluto/ipsec\.info saved information
-/var/run/pluto/pluto\.pid Pluto lock file
-/var/run/pluto/ipsec_setup\.pid IPsec lock file
+/etc/rc.d/init.d/ipsec the script itself/etc/init.d/ipsec alternate location for the script/etc/ipsec.conf IPsec configuration file/proc/sys/net/ipv4/ip_forward forwarding control/var/run/pluto/ipsec.info saved information/var/run/pluto/pluto.pid Pluto lock file/var/run/pluto/ipsec_setup.pid IPsec lock file
 .SH "SEE ALSO"
 .PP
-ipsec\.\fBconf\fR(5),
+ipsec.\fBconf\fR(5),
 \fBipsec\fR(8),
 \fBipsec_manual\fR(8),
 \fBipsec_auto\fR(8),
@@ -107,18 +75,22 @@ ipsec\.\fBconf\fR(5),
 .SH "DIAGNOSTICS"
 .PP
 All output from the commands
-\fBstart\fR
+\fIstart\fR
 and
-\fBstop\fR
+\fIstop\fR
 goes both to standard output and to
 \fBsyslogd\fR(8), via
-\fBlogger\fR(1)\. Selected additional information is logged only to
-\fBsyslogd\fR(8)\.
+\fBlogger\fR(1). Selected additional information is logged only to
+\fBsyslogd\fR(8).
 .SH "HISTORY"
 .PP
-Written for the FreeS/WAN project <\fIhttp://www\.freeswan\.org\fR> by Henry Spencer\.
+Written for the FreeS/WAN project <[1]\&\fIhttp://www.freeswan.org\fR> by Henry Spencer.
 .SH "BUGS"
 .PP
 Old versions of
 \fBlogger\fR(1)
-inject spurious extra newlines onto standard output\.
+inject spurious extra newlines onto standard output.
+.SH "REFERENCES"
+.TP 3
+1.\ http://www.freeswan.org
+\%http://www.freeswan.org

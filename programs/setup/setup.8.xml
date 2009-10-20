@@ -6,7 +6,7 @@
 <refmeta>
 <refentrytitle>IPSEC_SETUP</refentrytitle>
 <manvolnum>8</manvolnum>
-<refmiscinfo class='date'>23 July 2001</refmiscinfo>
+<refmiscinfo class='date'>20 October 2009</refmiscinfo>
 </refmeta>
 <refnamediv id='name'>
 <refname>ipsec setup</refname>
@@ -17,7 +17,6 @@
 <cmdsynopsis>
   <command>ipsec</command>    
     <arg choice='plain'><replaceable>setup</replaceable></arg>
-    <group choice='opt'><arg choice='plain'>--show </arg><arg choice='plain'>--showonly </arg></group>
     <arg choice='plain'><replaceable>command</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
@@ -26,21 +25,21 @@
 <cmdsynopsis>
   <command>ipsec</command>
     <arg choice='plain'><replaceable>setup</replaceable></arg>
-    <arg choice='opt'>[ --showonly ] </arg>
-    <arg choice='plain'>{ --start | --stop | --restart }</arg>
+    <arg choice='plain'>{ start | stop | restart | condrestart}</arg>
 </cmdsynopsis>
 <cmdsynopsis>
   <command>ipsec</command>
     <arg choice='plain'><replaceable>setup</replaceable></arg>
-    <arg choice='plain'> --status </arg>
+    <arg choice='plain'> status </arg>
 </cmdsynopsis>
 </refsect1>
 
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><emphasis remap='I'>Setup</emphasis>
-controls the FreeS/WAN IPsec subsystem,
-including both the Klips kernel code and the Pluto key-negotiation daemon.
+controls the Openswan IPsec subsystem,
+including both the Klips or Netkey (XFRM) kernel code and the Pluto
+key-negotiation daemon.
 (It is a synonym for the &ldquo;rc&rdquo; script for the subsystem;
 the system runs the equivalent of
 <emphasis remap='B'>ipsec setup start</emphasis>
@@ -66,10 +65,9 @@ are:</para>
   <term><emphasis remap='B'>start</emphasis></term>
   <listitem>
 <para>start Klips and Pluto,
-including setting up Klips to do crypto operations on the 
-interface(s) specified in the configuration file,
+including setting up Netkey (XFRM) or Klips to do crypto operations on the 
+interface(s) specified in the configuration file.
 and (if the configuration file so specifies)
-setting up manually-keyed connections and/or
 asking Pluto to negotiate automatically-keyed connections
 to other security gateways</para>
   </listitem>
@@ -77,7 +75,7 @@ to other security gateways</para>
   <varlistentry>
   <term><emphasis remap='B'>stop</emphasis></term>
   <listitem>
-<para>shut down Klips and Pluto,
+<para>shut down Klips or Netkey (XFRM) and Pluto,
 including tearing down all existing crypto connections</para>
   </listitem>
   </varlistentry>
@@ -126,22 +124,6 @@ but will do its cleanup anyway before exiting with status 1.</para>
 operations, the key one is the
 <emphasis remap='B'>interfaces</emphasis>
 parameter, which must be right or chaos will ensue.</para>
-
-<para>The
-<option>--show</option>
-and
-<option>--showonly</option>
-options cause
-<emphasis remap='I'>setup</emphasis>
-to display the shell commands that it would execute.
-<option>--showonly</option>
-suppresses their execution.
-Only
-<emphasis remap='B'>start</emphasis>,
-<emphasis remap='B'>stop</emphasis>,
-and
-<emphasis remap='B'>restart</emphasis>
-commands recognize these flags.</para>
 </refsect1>
 
 <refsect1 id='files'><title>FILES</title>

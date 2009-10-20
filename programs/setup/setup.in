@@ -143,13 +143,13 @@ version() {
 
 # do it
 case "$1" in
-    start)
+    start|--start)
          start
          ;;
-    stop)
+    stop|--stop)
          stop
          ;;
-    restart)
+    restart|--restart)
          restart
  	 ;;
     reload|force-reload)
@@ -158,7 +158,7 @@ case "$1" in
     condrestart|try-restart)
          condrestart
          ;;
-    status)
+    status|--status)
          status
          ;;
     version)
