@@ -10,6 +10,9 @@ v2.6.24
 * Fix for DPD with NETKEY [Frank Eberle]
 * Make initscript LSB compliant [Avesh]
 * Update ipsec_setup man page to match setup changes [Tuomo]
+* Bugtracker bugs fixed:
+   #1055: init script hangs on startup with semi-broken shells [Michael Smith]
+          (eg busybox and debian's new default /bin/dash shell)
 
 v2.6.23
 * Support for dropping unneeded capabilities using libcap-ng [Avesh]
