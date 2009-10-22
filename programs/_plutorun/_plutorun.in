@@ -222,6 +222,19 @@ then
 	exit 0
 fi
 
+# Work around problem with broken shells (e.g. Busybox sh).
+# We are called with stdout & stderr going to a logger process started
+# by "ipsec setup". For some reason, when the below loop runs with
+# stdout & stderr redirected to a new logger, the pipe to the old logger
+# is leaked through to _plutorun as file descriptor 11, and the old
+# logger (and "ipsec setup") can never exit. By closing fds 1 & 2
+# before they can be dup'd to 11, we somehow avoid the problem.
+# This problem may also apply to Ubuntu's dash shell
+# (http://archives.free.net.ph/message/20090803.221025.1b0ebafd.en.html)
+# but the workaround has not been tested there.
+exec 1>/dev/null
+exec 2>/dev/null
+
 until (
 	if test -s $info
 	then
