@@ -842,9 +842,38 @@ static const char *const notification_dpd_name[] = {
         "R_U_THERE_ACK",
 };
 
+static const char *const notification_cisco_chatter_name[] = {
+	"ISAKMP_N_CISCO_HELLO", /* 30000 */
+	"ISAKMP_N_CISCO_WWTEBR",
+	"ISAKMP_N_CISCO_SHUT_UP",
+    };
+
+static const char *const notification_ios_alives_name[] = {
+	"ISAKMP_N_IOS_KEEP_ALIVE_REQ", /* 32768*/
+	"ISAKMP_N_IOS_KEEP_ALIVE_ACK",
+    };
+
+static const char *const notification_cisco_more_name[] = {
+        "ISAKMP_N_CISCO_LOAD_BALANCE", /* 40501 */
+	"ISAKMP_N_CISCO_UNKNOWN_40502",
+	"ISAKMP_N_CISCO_PRESHARED_KEY_HASH",
+    };
+
+enum_names notification_cisco_more_names = 
+    {  ISAKMP_N_CISCO_LOAD_BALANCE, ISAKMP_N_CISCO_PRESHARED_KEY_HASH,
+      notification_cisco_more_name, NULL };
+
+enum_names notification_ios_alives_names =
+    { ISAKMP_N_IOS_KEEP_ALIVE_REQ, ISAKMP_N_IOS_KEEP_ALIVE_ACK,
+      notification_ios_alives_name, &notification_cisco_more_names };
+
+enum_names notification_cisco_chatter_names =
+    { ISAKMP_N_CISCO_HELLO, ISAKMP_N_CISCO_SHUT_UP,
+      notification_cisco_chatter_name, &notification_ios_alives_names };
+
 enum_names notification_dpd_names =
     { R_U_THERE, R_U_THERE_ACK,
-      notification_dpd_name, NULL };
+      notification_dpd_name, &notification_cisco_chatter_names };
 
 enum_names notification_names =
     { INVALID_PAYLOAD_TYPE, UNEQUAL_PAYLOAD_LENGTHS,

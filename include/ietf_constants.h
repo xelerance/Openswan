@@ -875,12 +875,25 @@ typedef enum {
     /* ISAKMP status type */
     CONNECTED =              16384,
 
+
     /* IPSEC DOI additions; status types (RFC2407 IPSEC DOI 4.6.3)
      * These must be sent under the protection of an ISAKMP SA.
      */
     IPSEC_RESPONDER_LIFETIME = 24576,
     IPSEC_REPLAY_STATUS =      24577,
     IPSEC_INITIAL_CONTACT =    24578,
+
+    /* Cisco specific messages */
+    ISAKMP_N_CISCO_HELLO =	30000,
+    ISAKMP_N_CISCO_WWTEBR =	30001,
+    ISAKMP_N_CISCO_SHUT_UP =	30002,
+
+    ISAKMP_N_IOS_KEEP_ALIVE_REQ = 32768,
+    ISAKMP_N_IOS_KEEP_ALIVE_ACK = 32769,
+
+    ISAKMP_N_CISCO_LOAD_BALANCE = 40501,
+    ISAKMP_N_CISCO_UNKNOWN_40502 = 40502,
+    ISAKMP_N_CISCO_PRESHARED_KEY_HASH = 40503,
 
     /* RFC 3706 DPD */ 
     R_U_THERE =       36136,
