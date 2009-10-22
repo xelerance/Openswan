@@ -12,8 +12,10 @@ v2.6.24
 * Update ipsec_setup man page to match setup changes [Tuomo]
 * Zeroize ISAKMP and IPsec SA's when in FIPS mode [Avesh]
 * Bugtracker bugs fixed:
+   #1004: L2TP broken with NAT'ed clients [dhr/Tuomo/Paul]
    #1055: init script hangs on startup with semi-broken shells [Michael Smith]
           (eg busybox and debian's new default /bin/dash shell)
+   #1067: openswan fails on systems not supporting popen() [Jonathan Miller]
 
 v2.6.23
 * Support for dropping unneeded capabilities using libcap-ng [Avesh]
