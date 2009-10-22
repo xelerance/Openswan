@@ -2265,6 +2265,16 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 #endif
 #endif
 
+#ifdef NAT_TRAVERSAL
+    if ((st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
+        (st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT) &&
+        (c->spd.that.has_client)) {
+        /** Remove client **/
+        addrtosubnet(&c->spd.that.host_addr, &c->spd.that.client);
+        c->spd.that.has_client = FALSE;
+    }
+#endif
+
 #ifdef TPM
     {
 	pb_stream *pbs = &md->rbody;
