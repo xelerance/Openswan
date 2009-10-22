@@ -469,6 +469,17 @@ delete_state(struct state *st)
     freeanychunk(st->st_shared);
     freeanychunk(st->st_ni);
     freeanychunk(st->st_nr);
+#ifdef HAVE_LIBNSS
+    memset(st->st_skeyid.ptr, 0, st->st_skeyid.len); 
+    memset(st->st_skey_d.ptr, 0, st->st_skey_d.len);
+    memset(st->st_skey_ai.ptr, 0, st->st_skey_ai.len);
+    memset(st->st_skey_ar.ptr, 0, st->st_skey_ar.len);
+    memset(st->st_skey_ei.ptr, 0, st->st_skey_ei.len);
+    memset(st->st_skey_er.ptr, 0, st->st_skey_er.len);
+    memset(st->st_skey_pi.ptr, 0, st->st_skey_pi.len);
+    memset(st->st_skey_pr.ptr, 0, st->st_skey_pr.len);
+    memset(st->st_enc_key.ptr, 0, st->st_enc_key.len);
+#endif
     freeanychunk(st->st_skeyid);
     freeanychunk(st->st_skey_d);
     freeanychunk(st->st_skey_ai);

@@ -1698,8 +1698,19 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	    outgoing_ref_set  = TRUE;
 	}
 
+#ifdef HAVE_LIBNSS
+       if (!kernel_ops->add_sa(said_next, replace)) {
+            memset(said_next->enckey, 0, said_next->enckeylen);
+            memset(said_next->authkey, 0, said_next->authkeylen);
+#else
         if (!kernel_ops->add_sa(said_next, replace))
+#endif
             goto fail;
+#ifdef HAVE_LIBNSS
+       }
+            memset(said_next->enckey, 0, said_next->enckeylen);
+            memset(said_next->authkey, 0, said_next->authkeylen);
+#endif
 
 	/*
 	 * SA refs will have been allocated for this SA.
@@ -1790,8 +1801,18 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	    outgoing_ref_set  = TRUE;
 	}
 
+#ifdef HAVE_LIBNSS
+       if (!kernel_ops->add_sa(said_next, replace)) {
+            memset(said_next->authkey, 0, said_next->authkeylen);
+#else
         if (!kernel_ops->add_sa(said_next, replace))
+#endif
             goto fail;
+#ifdef HAVE_LIBNSS
+       }
+            memset(said_next->authkey, 0, said_next->authkeylen);
+#endif
+
 
 	/*
 	 * SA refs will have been allocated for this SA.
