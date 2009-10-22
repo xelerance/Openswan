@@ -128,6 +128,14 @@ bool invoke_command(const char *verb, const char *verb_suffix, char *cmd)
 	savesig = signal(SIGCHLD, SIG_DFL);
         f = popen(cmd, "r");
 
+	/* Magic provided by Jonathan Miner - See bug #1067 */
+	if (errno == 38) {
+		/* Try system(), though it will not give us output */
+		system(cmd);
+		loglog(LOG_DEBUG, "unable to popen(), falling back to system()");
+		return TRUE;
+	}
+
         if (f == NULL)
         {
             loglog(RC_LOG_SERIOUS, "unable to popen %s%s command", verb, verb_suffix);
