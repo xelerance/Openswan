@@ -1600,10 +1600,33 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 {
 	struct sk_buff *skb;
 	struct iphdr *ipp;
-	struct ipsec_sa *ipsp = NULL;
 
 	KLIPS_PRINT(debug_rcv, "klips_debug: %s(st=%d,nxt=%d)\n", __FUNCTION__,
 			irs->state, irs->next_state);
+
+	/* set up for decap loop */
+	ipp = irs->ipp;
+	skb = irs->skb;
+
+#ifdef NAT_TRAVERSAL
+	if ((irs->natt_type) && (ipp->protocol != IPPROTO_IPIP)) {
+	       /*
+		* NAT-Traversal and Transport Mode:
+		*   we need to correct TCP/UDP checksum
+		* If we've got NAT-OA, we can fix checksum without recalculation.
+		*/
+		__u32 natt_oa = (irs->ipsp && irs->ipsp->ips_natt_oa) ?
+			((struct sockaddr_in*)(irs->ipsp->ips_natt_oa))->sin_addr.s_addr : 0;
+
+		if (natt_oa != 0) {
+			/* reset source address to what it was before NAT */
+			ipp->saddr = natt_oa;
+			ipp->check = 0;
+			ipp->check = ip_fast_csum((unsigned char *)ipp, ipp->ihl);
+			KLIPS_PRINT(debug_rcv, "csum: %04x\n", ipp->check);
+		}
+	}
+#endif
 
 	/* okay, acted on all SA's, so free the last SA, and move to the next */
 	if(irs->ipsp) {
@@ -1618,11 +1641,6 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 		irs->lastipsp = irs->ipsp;
 		irs->ipsp=newipsp;
 	}
-
-	/* set up for decap loop */
-	ipp  = irs->ipp;
-	ipsp = irs->ipsp;
-	skb = irs->skb;
 
 #ifdef CONFIG_KLIPS_IPCOMP
 	/* if there is an IPCOMP, but we don't have an IPPROTO_COMP,
@@ -1642,27 +1660,6 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 		irs->sa_len = 0;
 	}
 #endif /* CONFIG_KLIPS_IPCOMP */
-
-#ifdef NAT_TRAVERSAL
-	if ((irs->natt_type) && (ipp->protocol != IPPROTO_IPIP)) {
-	  /**
-	   * NAT-Traversal and Transport Mode:
-	   *   we need to correct TCP/UDP checksum
-	   *
-	   * If we've got NAT-OA, we can fix checksum without recalculation.
-	   */
-		__u32 natt_oa = ipsp->ips_natt_oa ?
-			((struct sockaddr_in*)(ipsp->ips_natt_oa))->sin_addr.s_addr : 0;
-
-		if(natt_oa != 0) {
-			/* reset source address to what it was before NAT */
-			ipp->saddr = natt_oa;
-			ipp->check = 0;
-			ipp->check = ip_fast_csum((unsigned char *)ipp, ipp->ihl);
-			KLIPS_PRINT(debug_rcv, "csum: %04x\n", ipp->check);
-		}
-	}
-#endif
 
 	/*
 	 * the SA is still locked from the loop
