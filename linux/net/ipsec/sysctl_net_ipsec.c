@@ -14,11 +14,13 @@
  *
  */
 
+#include "openswan/ipsec_kversion.h"
+#include "openswan/ipsec_param.h"
+#include <net/net_namespace.h>
+
 #include <linux/version.h>
 #include <linux/mm.h>
 #include <linux/sysctl.h>
-
-#include "openswan/ipsec_param.h"
 
 #ifdef CONFIG_SYSCTL
 
@@ -355,6 +357,7 @@ int ipsec_sysctl_register(void)
 #else
         ipsec_table_header = register_sysctl_table(ipsec_root_table, 0);
 #endif
+	printk("registered KLIPS /proc/sys/net");
         if (!ipsec_table_header) {
                 return -ENOMEM;
 	}
