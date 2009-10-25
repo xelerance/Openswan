@@ -29,7 +29,6 @@
 
 #include "openswan/ipsec_param.h"
 
-
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
 #else /* MALLOC_SLAB */
@@ -49,6 +48,9 @@
 
 #include <asm/uaccess.h>
 #include <asm/checksum.h>
+
+#include "openswan/ipsec_param2.h"
+
 #include <openswan.h>
 #ifdef NET_21
 # define MSS_HACK_		/* experimental */

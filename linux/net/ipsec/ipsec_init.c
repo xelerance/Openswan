@@ -44,6 +44,8 @@
 #include <linux/random.h>       /* get_random_bytes() */
 #include <net/protocol.h>
 
+#include "openswan/ipsec_param2.h"
+
 #include <openswan.h>
 
 #ifdef SPINLOCK
