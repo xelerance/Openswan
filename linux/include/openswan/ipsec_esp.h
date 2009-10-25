@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_esp.h,v 1.28 2004/09/13 02:22:10 mcr Exp $
  */
 
 #include "openswan/ipsec_md5h.h"
