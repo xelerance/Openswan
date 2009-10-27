@@ -340,6 +340,14 @@
 # endif
 #endif
 
+/* nicely, latest netdevice.h includes this define */
+#ifndef HAVE_NETDEV_PRIV
+#define netdev_priv(dev) (dev->priv)
+#endif
+
+#if !defined(HAVE_CURRENT_UID)
+#define current_uid() (current->uid)
+#endif
 
 #ifdef NET_21
 # define ipsec_kfree_skb(a) kfree_skb(a)
