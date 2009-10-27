@@ -64,8 +64,6 @@
 
 #include "openswan/ipsec_proto.h"
 
-#include "openswan/ipsec_param2.h"
-
 enum ipsec_xmit_value
 ipsec_xmit_ipip_setup(struct ipsec_xmit_state *ixs)
 {
