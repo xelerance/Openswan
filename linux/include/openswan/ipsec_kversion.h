@@ -328,6 +328,15 @@
 #define l_inet_addr_type	inet_addr_type
 #endif
 
+/* not sure when network name spaces got introduced, but it is in 2.6.26 */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,26)
+# define HAVE_NETWORK_NAMESPACE 1
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,27)
+# define HAVE_CURRENT_UID
+#endif
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,31)
 # define HAVE_SKB_DST 1
 #endif
