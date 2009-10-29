@@ -130,19 +130,20 @@ bool invoke_command(const char *verb, const char *verb_suffix, char *cmd)
 	savesig = signal(SIGCHLD, SIG_DFL);
         f = popen(cmd, "r");
 
-	/* See bug #1067  Angstrom Linux on a arm7 has no popen() */
-	if (errno == ENOSYS) {
+        if (f == NULL)
+        {
+#ifdef HAVE_BROKEN_POPEN
+	   /* See bug #1067  Angstrom Linux on a arm7 has no popen() */
+	   if (errno == ENOSYS) {
 		/* Try system(), though it will not give us output */
 		system(cmd);
 		DBG_log("unable to popen(), falling back to system()");
 		return TRUE;
-	}
-
-        if (f == NULL)
-        {
-            loglog(RC_LOG_SERIOUS, "unable to popen %s%s command", verb, verb_suffix);
-	    signal(SIGCHLD, savesig);
-            return FALSE;
+	   }
+#endif
+	   loglog(RC_LOG_SERIOUS, "unable to popen %s%s command", verb, verb_suffix);
+	   signal(SIGCHLD, savesig);
+	   return FALSE;
         }
 
         /* log any output */

@@ -3,7 +3,8 @@
  * header file for Openswan library functions
  * Copyright (C) 1998, 1999, 2000  Henry Spencer.
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs
- * Copyright (C) 2003 - 2008  Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2003 - 2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 - 2009 David McCullough <david_mccullough@securecomputing.com>
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
@@ -322,14 +323,23 @@
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,25)
 # define ip_chk_addr(a) inet_addr_type(&init_net, a)
-
 # define l_inet_addr_type(a)	inet_addr_type(&init_net, a)
-
 #else
 # define ip_chk_addr inet_addr_type
-
 #define l_inet_addr_type	inet_addr_type
+#endif
 
+/* not sure when network name spaces got introduced, but it is in 2.6.26 */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,26)
+# define HAVE_NETWORK_NAMESPACE 1
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,27)
+# define HAVE_CURRENT_UID
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,31)
+# define HAVE_SKB_DST 1
 #endif
 
 #ifndef NETDEV_TX_BUSY
@@ -340,6 +350,16 @@
 # endif
 #endif
 
+#if 0
+/* nicely, latest netdevice.h includes this define */
+#ifndef HAVE_NETDEV_PRIV
+#define netdev_priv(dev) (dev->priv)
+#endif
+#endif
+
+#if !defined(HAVE_CURRENT_UID)
+#define current_uid() (current->uid)
+#endif
 
 #ifdef NET_21
 # define ipsec_kfree_skb(a) kfree_skb(a)

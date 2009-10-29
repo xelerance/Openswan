@@ -29,7 +29,6 @@
 
 #include "openswan/ipsec_param.h"
 
-
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
 #else /* MALLOC_SLAB */
