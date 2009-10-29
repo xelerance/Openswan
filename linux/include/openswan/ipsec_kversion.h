@@ -3,7 +3,8 @@
  * header file for Openswan library functions
  * Copyright (C) 1998, 1999, 2000  Henry Spencer.
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs
- * Copyright (C) 2003 - 2008  Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2003 - 2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 - 2009 David McCullough <david_mccullough@securecomputing.com>
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
@@ -349,9 +350,11 @@
 # endif
 #endif
 
+#if 0
 /* nicely, latest netdevice.h includes this define */
 #ifndef HAVE_NETDEV_PRIV
 #define netdev_priv(dev) (dev->priv)
+#endif
 #endif
 
 #if !defined(HAVE_CURRENT_UID)
