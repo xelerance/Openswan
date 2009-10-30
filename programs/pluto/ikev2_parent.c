@@ -368,7 +368,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	{
 		chunk_t child_spi;
 		memset(&child_spi, 0, sizeof(child_spi));
-		ship_v2N (ISAKMP_NEXT_v2SA, ISAKMP_PAYLOAD_CRITICAL, PROTO_ISAKMP,
+		ship_v2N (ISAKMP_NEXT_v2SA, ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
 				    &child_spi, 
 					COOKIE, &st->st_dcookie, &md->rbody);
     }
@@ -414,7 +414,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	
 	memset(&in, 0, sizeof(in));
 	in.isag_np = np;
-	in.isag_critical = ISAKMP_PAYLOAD_CRITICAL;
+	in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
 	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
 	   !out_raw(st->st_ni.ptr, st->st_ni.len, &pb, "IKEv2 nonce"))
@@ -757,7 +757,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	
 	memset(&in, 0, sizeof(in));
 	in.isag_np = np;
-	in.isag_critical = ISAKMP_PAYLOAD_CRITICAL;
+	in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
 	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
 	   !out_raw(st->st_nr.ptr, st->st_nr.len, &pb, "IKEv2 nonce"))
@@ -1180,7 +1180,7 @@ static stf_status ikev2_send_auth(struct connection *c
     }
 
     
-    a.isaa_critical = ISAKMP_PAYLOAD_CRITICAL;
+    a.isaa_critical = ISAKMP_PAYLOAD_NONCRITICAL;
     a.isaa_np = np;
     
     if(c->policy & POLICY_RSASIG) {
@@ -1277,7 +1277,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* insert an Encryption payload header */
     e.isag_np = ISAKMP_NEXT_v2IDi;
-    e.isag_critical = ISAKMP_PAYLOAD_CRITICAL;
+    e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
     if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
 	return STF_INTERNAL_ERROR;
@@ -1309,7 +1309,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 	hmac_init_chunk(&id_ctx, pst->st_oakley.prf_hasher, pst->st_skey_pi);
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
-	r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
+	r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 	{  /* decide to send CERT payload */
 	    send_cert = doi_send_ikev2_cert_thinking(st);
 	    
@@ -1680,7 +1680,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	
 	/* insert an Encryption payload header */
 	e.isag_np = ISAKMP_NEXT_v2IDr;
-	e.isag_critical = ISAKMP_PAYLOAD_CRITICAL;
+	e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
 	if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
 	    return STF_INTERNAL_ERROR;
@@ -1717,7 +1717,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 			    , st->st_skey_pr);
 	    build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b,
 			     &c->spd.this);
-	    r_id.isai_critical = ISAKMP_PAYLOAD_CRITICAL;
+	    r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
 	    if(send_cert) 
 		r_id.isai_np = ISAKMP_NEXT_v2CERT;
@@ -2095,7 +2095,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	child_spi.len = 0;
 
 	/* build and add v2N payload to the packet */
-	ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_CRITICAL, PROTO_ISAKMP,
+	ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
 				    &child_spi, 
 					type, n_data, &rbody);
 
