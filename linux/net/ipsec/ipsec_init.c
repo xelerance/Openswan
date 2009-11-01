@@ -43,7 +43,6 @@
 #include <linux/skbuff.h>
 #include <linux/random.h>       /* get_random_bytes() */
 #include <net/protocol.h>
-
 #include <openswan.h>
 
 #ifdef SPINLOCK

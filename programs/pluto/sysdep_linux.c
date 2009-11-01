@@ -58,6 +58,8 @@
 #include "whack.h"      /* for RC_LOG_SERIOUS */
 #include "keys.h"
 
+#include <asm-generic/errno.h>
+
 /* invoke the updown script to do the routing and firewall commands required
  *
  * The user-specified updown script is run.  Parameters are fed to it in
@@ -128,19 +130,20 @@ bool invoke_command(const char *verb, const char *verb_suffix, char *cmd)
 	savesig = signal(SIGCHLD, SIG_DFL);
         f = popen(cmd, "r");
 
-	/* Magic provided by Jonathan Miner - See bug #1067 */
-	if (errno == 38) {
-		/* Try system(), though it will not give us output */
-		system(cmd);
-		loglog(LOG_DEBUG, "unable to popen(), falling back to system()");
-		return TRUE;
-	}
-
         if (f == NULL)
         {
-            loglog(RC_LOG_SERIOUS, "unable to popen %s%s command", verb, verb_suffix);
-	    signal(SIGCHLD, savesig);
-            return FALSE;
+#ifdef HAVE_BROKEN_POPEN
+	   /* See bug #1067  Angstrom Linux on a arm7 has no popen() */
+	   if (errno == ENOSYS) {
+		/* Try system(), though it will not give us output */
+		system(cmd);
+		DBG_log("unable to popen(), falling back to system()");
+		return TRUE;
+	   }
+#endif
+	   loglog(RC_LOG_SERIOUS, "unable to popen %s%s command", verb, verb_suffix);
+	   signal(SIGCHLD, savesig);
+	   return FALSE;
         }
 
         /* log any output */

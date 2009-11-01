@@ -74,9 +74,9 @@ ii) An example of nsspassword file is as follows:
 token_1_name:its_password
 token_2_name:its_password  
 
-For example, the name of NSS softtoken (or NSS database) is "NSS Certificate DB" 
-in NonFIPS mode, and assume that its password is xyz. So an entry for this in 
-nsspassword file can be: 
+For example, the name of NSS softtoken (or NSS database) is
+"NSS Certificate DB" in NonFIPS mode, and assume that its password is xyz.
+So an entry for this in nsspassword file can be: 
 
 NSS Certificate DB:xyz
 
@@ -309,9 +309,11 @@ Required library: libcoolkey
 
 To make smartcard tokens visible through NSS
 
-modutil -add <module_name> -libfile libcoolkeypk11.so -dbdir <nss_database_dir_name> -mechanisms  <mechanisms_separted_by_colons> 
+modutil -add <module_name> -libfile libcoolkeypk11.so -dbdir \
+ <nss_database_dir_name> -mechanisms  <mechanisms_separted_by_colons> 
 
-An example of mechanisms can be RC2:RC4:DES:DH:SHA1:MD5:MD2:SSL:TLS:AES:CAMELLIA.
+An example of mechanisms can be
+RC2:RC4:DES:DH:SHA1:MD5:MD2:SSL:TLS:AES:CAMELLIA.
 
 To check whether the token is visible or not, please run
 

@@ -9,6 +9,7 @@ v2.6.24
 * Fix to allow ";" in the ike/esp parameters as per man page. [Avesh]
 * Fix for DPD with NETKEY [Frank Eberle]
 * Make initscript LSB compliant [Avesh]
+* Do not set the IKEv2 Critical flag for payloads defined in RFC 4306 [Avesh]
 * Update ipsec_setup man page to match setup changes [Tuomo]
 * Zeroize ISAKMP and IPsec SA's when in FIPS mode [Avesh]
 * Bugtracker bugs fixed:

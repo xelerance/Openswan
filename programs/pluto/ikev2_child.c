@@ -110,7 +110,7 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
     pb_stream ts_pbs2;
 
     its.isat_np = np;
-    its.isat_critical = ISAKMP_PAYLOAD_CRITICAL;
+    its.isat_critical = ISAKMP_PAYLOAD_NONCRITICAL;
     its.isat_num = 1;
 
     if(!out_struct(&its, &ikev2_ts_desc, outpbs, &ts_pbs))

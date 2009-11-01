@@ -350,7 +350,7 @@ _capi_new_key (struct ipsec_alg_enc *alg, const __u8 *key, size_t keylen)
 	}
 	if (debug_crypto > 0)
 		printk(KERN_DEBUG "klips_debug:_capi_new_key:"
-				"name=%s cptr=%p key=%p keysize=%d\n",
+				"name=%s cptr=%p key=%p keysize=%zd\n",
 				alg->ixt_common.ixt_name, cptr, key, keylen);
 	
 	/*	
@@ -365,7 +365,7 @@ _capi_new_key (struct ipsec_alg_enc *alg, const __u8 *key, size_t keylen)
 	}
 	if (crypto_blkcipher_setkey(crypto_blkcipher_cast(tfm), key, keylen) < 0) {
 		printk(KERN_ERR "_capi_new_key(): "
-				"failed new_key() for \"%s\" cryptoapi algo (keylen=%d)\n" 
+				"failed new_key() for \"%s\" cryptoapi algo (keylen=%zd)\n" 
 			, alg->ixt_common.ixt_name, keylen);
 		crypto_free_tfm(tfm);
 		tfm=NULL;
@@ -373,7 +373,7 @@ _capi_new_key (struct ipsec_alg_enc *alg, const __u8 *key, size_t keylen)
 err:
 	if (debug_crypto > 0)
 		printk(KERN_DEBUG "klips_debug:_capi_new_key:"
-				"name=%s key=%p keylen=%d tfm=%p\n",
+				"name=%s key=%p keylen=%zd tfm=%p\n",
 				alg->ixt_common.ixt_name, key, keylen, tfm);
 	return (__u8 *) tfm;
 }

@@ -408,6 +408,9 @@ USE_TAPROOM?=false
 # Use dmalloc. Requires -DLEAK_DETECTIVE to be set in programs/pluto/Makefile
 USE_DMALLOC?=false
 
+# for Angstrom linux with broken popen() set to true. See bug #1067
+HAVE_BROKEN_POPEN?=false
+
 NONINTCONFIG=oldconfig
 
 # Should we build with object directories?
