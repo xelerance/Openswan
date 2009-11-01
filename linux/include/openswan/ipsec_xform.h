@@ -120,6 +120,7 @@ static inline const char *auth_name_id (unsigned id) {
 		((x)->ips_encalg == SADB_X_CALG_DEFLATE ? \
 		 "_DEFLATE" : "_UNKNOWN_comp") : \
 	(x)->ips_encalg == ESP_NONE ? "" : \
+	(x)->ips_encalg == ESP_NULL ? "_NULL" : \
 	(x)->ips_encalg == ESP_3DES ? "_3DES" : \
 	(x)->ips_encalg == ESP_AES ? "_AES" : \
 	(x)->ips_encalg == ESP_SERPENT ? "_SERPENT" : \

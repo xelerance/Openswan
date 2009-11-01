@@ -153,6 +153,9 @@ IPSEC_ALG_MODULE_INIT_STATIC( ipsec_cryptoapi_init )
 	#define hmac(X)	"hmac(" #X ")"
 #endif /* if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,19) */
 
+#ifdef CONFIG_KLIPS_ENC_NULL
+# define CIPHERNAME_NULL		cbc(null)
+#endif
 #define CIPHERNAME_AES		cbc(aes)
 #define CIPHERNAME_1DES		cbc(des)
 #define CIPHERNAME_3DES		cbc(des3_ede)
@@ -164,6 +167,7 @@ IPSEC_ALG_MODULE_INIT_STATIC( ipsec_cryptoapi_init )
 #define DIGESTNAME_MD5		"md5"
 #define DIGESTNAME_SHA1		"sha1"
 
+#define ESP_NULL		11
 #define ESP_SERPENT		252	/* from ipsec drafts */
 #define ESP_TWOFISH		253	/* from ipsec drafts */
 
@@ -179,6 +183,9 @@ module_param(noauto,int,0644);
 
 MODULE_PARM_DESC(noauto, "Dont try all known algos, just setup enabled ones");
 
+#ifdef CONFIG_KLIPS_ENC_NULL
+static int cipher_null[] = {-1, -1};
+#endif
 #ifdef CONFIG_KLIPS_ENC_1DES
 static int des_ede1[] = {-1, -1};
 #endif
@@ -189,6 +196,9 @@ static int cast[] = {-1, -1};
 static int serpent[] = {-1, -1};
 static int twofish[] = {-1, -1};
 
+#ifdef CONFIG_KLIPS_ENC_NULL
+module_param_array(cipher_null,int,NULL,0444);
+#endif
 #ifdef CONFIG_KLIPS_ENC_1DES
 module_param_array(des_ede1,int,NULL,0444);
 #endif
@@ -199,7 +209,12 @@ module_param_array(cast,int,NULL,0444);
 module_param_array(serpent,int,NULL,0444);
 module_param_array(twofish,int,NULL,0444);
 
+#ifdef CONFIG_KLIPS_ENC_NULL
+MODULE_PARM_DESC(cipher_null, "0: disable | 1: force_enable | min,max: dontuse");
+#endif
+#ifdef CONFIG_KLIPS_ENC_1DES
 MODULE_PARM_DESC(des_ede1, "0: disable | 1: force_enable | min,max: dontuse");
+#endif
 MODULE_PARM_DESC(des_ede3, "0: disable | 1: force_enable | min,max: dontuse");
 MODULE_PARM_DESC(aes, "0: disable | 1: force_enable | min,max: keybitlens");
 MODULE_PARM_DESC(blowfish, "0: disable | 1: force_enable | min,max: keybitlens");
@@ -225,6 +240,9 @@ static struct ipsec_alg_capi_cipher alg_capi_carray[] = {
   { CIPHERNAME_3DES,     8, 192, 192, des_ede3, { ixt_common:{ ixt_support:{ ias_id: ESP_3DES,}}}},
 #ifdef CONFIG_KLIPS_ENC_1DES
   { CIPHERNAME_1DES,     8,  64,  64, des_ede1, { ixt_common:{ ixt_support:{ ias_id: ESP_DES,}}}},
+#endif
+#ifdef CONFIG_KLIPS_ENC_NULL
+  { CIPHERNAME_NULL,     1,  0,  0, cipher_null, { ias_id: ESP_NULL,}},
 #endif
   { NULL, 0, 0, 0, NULL, {} }
 };
@@ -332,7 +350,7 @@ _capi_new_key (struct ipsec_alg_enc *alg, const __u8 *key, size_t keylen)
 	}
 	if (debug_crypto > 0)
 		printk(KERN_DEBUG "klips_debug:_capi_new_key:"
-				"name=%s cptr=%p key=%p keysize=%d\n",
+				"name=%s cptr=%p key=%p keysize=%zd\n",
 				alg->ixt_common.ixt_name, cptr, key, keylen);
 	
 	/*	
@@ -347,7 +365,7 @@ _capi_new_key (struct ipsec_alg_enc *alg, const __u8 *key, size_t keylen)
 	}
 	if (crypto_blkcipher_setkey(crypto_blkcipher_cast(tfm), key, keylen) < 0) {
 		printk(KERN_ERR "_capi_new_key(): "
-				"failed new_key() for \"%s\" cryptoapi algo (keylen=%d)\n" 
+				"failed new_key() for \"%s\" cryptoapi algo (keylen=%zd)\n" 
 			, alg->ixt_common.ixt_name, keylen);
 		crypto_free_tfm(tfm);
 		tfm=NULL;
@@ -355,7 +373,7 @@ _capi_new_key (struct ipsec_alg_enc *alg, const __u8 *key, size_t keylen)
 err:
 	if (debug_crypto > 0)
 		printk(KERN_DEBUG "klips_debug:_capi_new_key:"
-				"name=%s key=%p keylen=%d tfm=%p\n",
+				"name=%s key=%p keylen=%zd tfm=%p\n",
 				alg->ixt_common.ixt_name, key, keylen, tfm);
 	return (__u8 *) tfm;
 }
