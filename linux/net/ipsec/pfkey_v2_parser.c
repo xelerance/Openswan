@@ -44,6 +44,8 @@
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
 
+#include "openswan/ipsec_param2.h"
+
 #include <openswan.h>
 
 #include <klips-crypto/des.h>

@@ -196,35 +196,6 @@ extern int sysctl_ipsec_regress_pfkey_lossage;
 	#define KLIPS_SATOT(flag, sa, format, dst, dstlen) (0)
 #endif /* CONFIG_KLIPS_DEBUG */
 
-
-/* 
- * Stupid kernel API differences in APIs. Not only do some
- * kernels not have ip_select_ident, but some have differing APIs,
- * and SuSE has one with one parameter, but no way of checking to
- * see what is really what.
- */
-
-#ifdef SUSE_LINUX_2_4_19_IS_STUPID
-#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph)
-#else
-
-/* simplest case, nothing */
-#if !defined(IP_SELECT_IDENT)
-#define KLIPS_IP_SELECT_IDENT(iph, skb)  do { iph->id = htons(ip_id_count++); } while(0)
-#endif
-
-/* kernels > 2.3.37-ish */
-#if defined(IP_SELECT_IDENT) && !defined(IP_SELECT_IDENT_NEW)
-#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb->dst)
-#endif
-
-/* kernels > 2.4.2 */
-#if defined(IP_SELECT_IDENT) && defined(IP_SELECT_IDENT_NEW)
-#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb->dst, NULL)
-#endif
-
-#endif /* SUSE_LINUX_2_4_19_IS_STUPID */
-
 /*
  * make klips fail test:east-espiv-01.
  * exploit is at testing/attacks/espiv
@@ -241,6 +212,15 @@ extern int sysctl_ipsec_regress_pfkey_lossage;
 
 #ifdef NEED_INET_PROTOCOL
 #define inet_protocol net_protocol
+#endif
+
+#if defined(CONFIG_IPSEC_NAT_TRAVERSAL) && CONFIG_IPSEC_NAT_TRAVERSAL
+#define NAT_TRAVERSAL 1
+#else
+/* let people either #undef, or #define = 0 it */
+#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
+#undef CONFIG_IPSEC_NAT_TRAVERSAL
+#endif
 #endif
 
 #ifndef IPSEC_DEFAULT_TTL
