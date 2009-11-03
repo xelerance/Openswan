@@ -49,6 +49,7 @@
 #endif
 
 #endif /* SUSE_LINUX_2_4_19_IS_STUPID */
+
 #if !defined(HAVE_CURRENT_UID)
 #define current_uid() (current->uid)
 #endif

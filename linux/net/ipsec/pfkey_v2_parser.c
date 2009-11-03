@@ -1449,7 +1449,7 @@ pfkey_register_reply(int satype, struct sadb_msg *sadb_msg)
 							  satype,
 							  0,
 							  sadb_msg? sadb_msg->sadb_msg_seq : ++pfkey_msg_seq,
-							  sadb_msg? sadb_msg->sadb_msg_pid: current->pid),
+							  sadb_msg? sadb_msg->sadb_msg_pid: current_uid()),
 			      extensions_reply) &&
 	     (alg_num_a ? pfkey_safe_build(error = pfkey_supported_build(&extensions_reply[K_SADB_EXT_SUPPORTED_AUTH],
 									K_SADB_EXT_SUPPORTED_AUTH,

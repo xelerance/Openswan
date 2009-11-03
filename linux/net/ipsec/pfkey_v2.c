@@ -66,6 +66,8 @@
 #endif
 
 #include <linux/types.h>
+
+#include "openswan/ipsec_param2.h"
  
 #include <openswan.h>
 
@@ -675,7 +677,7 @@ pfkey_create(struct socket *sock, int protocol)
 	if(!capable(CAP_NET_ADMIN)) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_create: "
-			    "must be root to open pfkey sockets.\n");
+			    "must be root (or have net_admin capability) to open pfkey sockets.\n");
 		return -EACCES;
 	}
 
@@ -716,7 +718,7 @@ pfkey_create(struct socket *sock, int protocol)
 	sk->sk_family = PF_KEY;
 /*	sk->num = protocol; */
 	sk->sk_protocol = protocol;
-	key_pid(sk) = current->pid;
+	key_pid(sk) = current_uid();
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_create: "
 		    "sock->fasync_list=0p%p sk->sleep=0p%p.\n",
@@ -875,7 +877,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 	if(!capable(CAP_NET_ADMIN)) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
-			    "must be root to send messages to pfkey sockets.\n");
+			    "must be root (or have net_admin capability) to send messages to pfkey sockets.\n");
 		SENDERR(EACCES);
 	}
 
