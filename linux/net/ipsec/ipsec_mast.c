@@ -651,9 +651,10 @@ int
 ipsec_mast_probe(struct net_device *dev)
 {
 	int i;
+	struct ipsecpriv *ipriv;
 
 	KLIPS_PRINT(debug_mast,
-		    "klips_debug:ipsec_mast_init: "
+		    "klips_debug:ipsec_mast_probe: "
 		    "allocating %lu bytes initialising device: %s\n",
 		    (unsigned long) sizeof(struct mastpriv),
 		    dev->name ? dev->name : "NULL");
@@ -672,6 +673,7 @@ ipsec_mast_probe(struct net_device *dev)
 	if (dev->priv == NULL)
 		return -ENOMEM;
 #endif
+	ipriv = netdev_priv(dev);
 	memset(netdev_priv(dev), 0, sizeof(struct mastpriv));
 
 	for(i = 0; i < sizeof(zeroes); i++) {

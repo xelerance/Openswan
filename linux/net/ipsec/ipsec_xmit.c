@@ -48,6 +48,9 @@
 
 #include <asm/uaccess.h>
 #include <asm/checksum.h>
+
+#include "openswan/ipsec_param2.h"
+
 #include <openswan.h>
 #ifdef NET_21
 # define MSS_HACK_		/* experimental */
@@ -2040,8 +2043,8 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 		return IPSEC_XMIT_RECURSDETECT;
 	}
 
-	dst_release(ixs->skb->dst);
-	ixs->skb->dst = &ixs->route->u.dst;
+	dst_release((skb_dst(ixs->skb);
+	skb_dst_set(ixs->skb, &ixs->route->u.dst);
 	if(ixs->stats) {
 		ixs->stats->tx_bytes += ixs->skb->len;
 	}

@@ -492,7 +492,7 @@ pfkey_destroy_socket(struct sock *sk)
 			printk(" h:0p%p", skb_transport_header(skb));
 			printk(" nh:0p%p", skb_network_header(skb));
 			printk(" mac:0p%p", skb_mac_header(skb));
-			printk(" dst:0p%p", skb->dst);
+			printk(" dst:0p%p", skb_dst(skb));
 			if(sysctl_ipsec_debug_verbose) {
 				int i;
 				
