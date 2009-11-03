@@ -1801,12 +1801,6 @@ ipsec_tunnel_init(struct net_device *dev)
 		((__u8*)(zeroes))[i] = 0;
 	}
 	
-#ifndef NET_21
-	/* Initialize the tunnel device structure */
-	for (i = 0; i < DEV_NUMBUFFS; i++)
-		skb_queue_head_init(&dev->buffs[i]);
-#endif /* !NET_21 */
-
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
 	dev->header_ops		= NULL;
 #else
@@ -1817,7 +1811,17 @@ ipsec_tunnel_init(struct net_device *dev)
 #endif /* !NET_21 */
 	dev->header_cache_update= NULL;
 #endif
+#ifdef HAVE_NET_DEVICE_OPS
 	dev->netdev_ops         = &klips_device_ops;
+#else
+        dev->open               = ipsec_tunnel_open;
+        dev->stop               = ipsec_tunnel_close;
+        dev->hard_start_xmit    = ipsec_tunnel_start_xmit;
+        dev->get_stats          = ipsec_tunnel_get_stats;
+        dev->set_mac_address    = NULL;
+        dev->do_ioctl           = ipsec_tunnel_ioctl;
+        dev->neigh_setup        = ipsec_tunnel_neigh_setup_dev;
+#endif
 
 #ifdef NET_21
 /*	prv->neigh_setup        = NULL; */
@@ -2183,6 +2187,7 @@ ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs)
         spin_unlock_bh (&ixs_cache_lock);
 }
 
+#ifdef HAVE_NET_DEVICE_OPS
 const struct net_device_ops klips_device_ops = {
 	/* Add our tunnel functions to the device */
 	.ndo_open               = ipsec_tunnel_open,
@@ -2196,6 +2201,7 @@ const struct net_device_ops klips_device_ops = {
 	.ndo_set_mac_address = ipsec_tunnel_set_mac_address,
 #endif
 };
+#endif
 
 /*
  * We call the attach routine to attach another device.
