@@ -32,6 +32,7 @@
 #include <stdint.h>
 #include <linux/pfkeyv2.h>
 #include <unistd.h>
+#include <linux/xfrm.h>
 
 #include "kameipsec.h"
 #include <rtnetlink.h>
@@ -671,6 +672,15 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
     req.p.id.proto = satype2proto(sa->satype);
     req.p.family = sa->src->u.v4.sin_family;
     req.p.mode = (sa->encapsulation == ENCAPSULATION_MODE_TUNNEL);
+       if (sa->encapsulation == ENCAPSULATION_MODE_TUNNEL)
+       {
+               req.p.mode = XFRM_MODE_TUNNEL;
+               req.p.flags |= XFRM_STATE_AF_UNSPEC;
+       }
+       else
+       {
+               req.p.mode = XFRM_MODE_TRANSPORT;
+       }
     req.p.replay_window = sa->replay_window > 32 ? 32 : sa->replay_window; 
     req.p.reqid = sa->reqid;
     req.p.lft.soft_byte_limit = XFRM_INF;
