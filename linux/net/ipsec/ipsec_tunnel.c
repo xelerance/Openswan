@@ -2230,12 +2230,11 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 
 #ifdef HAVE_NET_DEVICE_OPS
 	dev->netdev_ops = &klips_device_ops;
-
-#endif /* HAVE_NET_DEVICE_OPS */
-
-#ifndef HAVE_SET_MAC_ADDR
+#else
+# ifndef HAVE_SET_MAC_ADDR
 	dev->set_mac_address = ipsec_tunnel_set_mac_address;
-#endif
+# endif
+#endif /* HAVE_NET_DEVICE_OPS */
 	prv->dev = physdev;
 
 #ifdef HAVE_NET_DEVICE_OPS
