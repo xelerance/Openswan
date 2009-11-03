@@ -584,6 +584,7 @@ netlink_raw_eroute(const ip_address *this_host
 	    tmpl[i].optional =
 		proto_info[i].proto == IPPROTO_COMP && dir != XFRM_POLICY_OUT;
 	    tmpl[i].aalgos = tmpl[i].ealgos = tmpl[i].calgos = ~0;
+	    tmpl[i].family = that_host->u.v4.sin_family;
 	    tmpl[i].mode =
 		proto_info[i].encapsulation == ENCAPSULATION_MODE_TUNNEL;
 
