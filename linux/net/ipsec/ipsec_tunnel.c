@@ -99,6 +99,15 @@
 
 static __u32 zeroes[64];
 
+/* forward references */
+DEBUG_NO_STATIC int ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev);
+DEBUG_NO_STATIC int ipsec_tunnel_detach(struct net_device *dev);
+extern const struct net_device_ops klips_device_ops;
+
+#ifdef CONFIG_KLIPS_DEBUG
+int debug_tunnel = 0;
+#endif /* CONFIG_KLIPS_DEBUG */
+
 DEBUG_NO_STATIC int
 ipsec_tunnel_open(struct net_device *dev)
 {
@@ -136,6 +145,266 @@ static inline int ipsec_tunnel_xmit2(struct sk_buff *skb)
 	return ip_send(skb);
 #endif
 }
+
+int klips_header(struct sk_buff *skb, struct net_device *dev,
+		 unsigned short type,
+		 const void *daddr, const void *saddr, unsigned len)
+{
+	struct ipsecpriv *prv = netdev_priv(dev);
+	struct net_device *tmp;
+	int ret;
+	struct net_device_stats *stats;	/* This device's statistics */
+	
+	if(skb == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_hard_header: "
+			    "no skb...\n");
+		return -ENODATA;
+	}
+
+	if(dev == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_hard_header: "
+			    "no device...\n");
+		return -ENODEV;
+	}
+
+	KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+		    "klips_debug:ipsec_tunnel_hard_header: "
+		    "skb->dev=%s dev=%s.\n",
+		    skb->dev ? skb->dev->name : "NULL",
+		    dev->name);
+	
+	if(prv == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_hard_header: "
+			    "no private space associated with dev=%s\n",
+			    dev->name ? dev->name : "NULL");
+		return -ENODEV;
+	}
+
+	stats = (struct net_device_stats *) &(prv->mystats);
+
+	if(prv->dev == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_hard_header: "
+			    "no physical device associated with dev=%s\n",
+			    dev->name ? dev->name : "NULL");
+		stats->tx_dropped++;
+		return -ENODEV;
+	}
+
+	/* check if we have to send a IPv6 packet. It might be a Router
+	   Solicitation, where the building of the packet happens in
+	   reverse order:
+	   1. ll hdr,
+	   2. IPv6 hdr,
+	   3. ICMPv6 hdr
+	   -> skb->nh.raw is still uninitialized when this function is
+	   called!!  If this is no IPv6 packet, we can print debugging
+	   messages, otherwise we skip all debugging messages and just
+	   build the ll header */
+	if(type != ETH_P_IPV6) {
+		/* execute this only, if we don't have to build the
+		   header for a IPv6 packet */
+		if(!prv->dev) {
+			KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+				    "klips_debug:ipsec_tunnel_hard_header: "
+				    "physical device has been detached, packet dropped 0p%p->0p%p len=%d type=%d dev=%s->NULL ",
+				    saddr,
+				    daddr,
+				    len,
+				    type,
+				    dev->name);
+			KLIPS_PRINTMORE(debug_tunnel & DB_TN_REVEC,
+					"ip=%08x->%08x\n",
+					(__u32)ntohl(ip_hdr(skb)->saddr),
+					(__u32)ntohl(ip_hdr(skb)->daddr) );
+			stats->tx_dropped++;
+			return -ENODEV;
+		}
+		
+#define da ((struct net_device *)(prv->dev))->dev_addr
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_hard_header: "
+			    "Revectored 0p%p->0p%p len=%d type=%d dev=%s->%s dev_addr=%02x:%02x:%02x:%02x:%02x:%02x ",
+			    saddr,
+			    daddr,
+			    len,
+			    type,
+			    dev->name,
+			    prv->dev->name,
+			    da[0], da[1], da[2], da[3], da[4], da[5]);
+		KLIPS_PRINTMORE(debug_tunnel & DB_TN_REVEC,
+			    "ip=%08x->%08x\n",
+			    (__u32)ntohl(ip_hdr(skb)->saddr),
+			    (__u32)ntohl(ip_hdr(skb)->daddr) );
+	} else {
+		KLIPS_PRINT(debug_tunnel,
+			    "klips_debug:ipsec_tunnel_hard_header: "
+			    "is IPv6 packet, skip debugging messages, only revector and build linklocal header.\n");
+	}                                                                       
+	tmp = skb->dev;
+	skb->dev = prv->dev;
+	ret = prv->dev->header_ops->create(skb, prv->dev, type,
+					   (void *)daddr, (void *)saddr, len);
+	skb->dev = tmp;
+	return ret;
+}
+
+int klips_header_parse(const struct sk_buff *skb, unsigned char *haddr)
+{
+	struct ipsecpriv *prv = netdev_priv(skb->dev);
+	struct net_device_stats *stats;	/* This device's statistics */
+	int ret;
+
+	stats = (struct net_device_stats *) &(prv->mystats);
+	if(prv->dev == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:klips_header_parse: "
+			    "no physical device associated with dev=%s",
+			    skb->dev->name ? skb->dev->name : "NULL");
+		stats->tx_dropped++;
+		return -ENODEV;
+	}
+
+	
+	{
+#if 0	
+		struct net_device *tmp;
+		tmp = skb->dev;
+		skb->dev = prv->dev; 
+#endif
+		ret = prv->dev->header_ops->parse(skb, haddr);
+#if 0
+		skb->dev = tmp;
+#endif
+	}
+	return ret;
+}
+
+DEBUG_NO_STATIC int
+klips_rebuild_header(struct sk_buff *skb)
+{
+	struct ipsecpriv *prv = netdev_priv(skb->dev);
+	struct net_device *tmp;
+	int ret;
+	struct net_device_stats *stats;	/* This device's statistics */
+	
+	if(skb->dev == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_rebuild_header: "
+			    "no device...");
+		return -ENODEV;
+	}
+
+	if(prv == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_rebuild_header: "
+			    "no private space associated with dev=%s",
+			    skb->dev->name ? skb->dev->name : "NULL");
+		return -ENODEV;
+	}
+
+	stats = (struct net_device_stats *) &(prv->mystats);
+
+	if(prv->dev == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_rebuild_header: "
+			    "no physical device associated with dev=%s",
+			    skb->dev->name ? skb->dev->name : "NULL");
+		stats->tx_dropped++;
+		return -ENODEV;
+	}
+
+	KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+		    "klips_debug:ipsec_tunnel: "
+		    "Revectored rebuild_header dev=%s->%s ",
+		    skb->dev->name, prv->dev->name);
+	KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+		    "ip=%08x->%08x\n",
+		    (__u32)ntohl(ip_hdr(skb)->saddr),
+		    (__u32)ntohl(ip_hdr(skb)->daddr) );
+	tmp = skb->dev;
+	skb->dev = prv->dev;
+	
+	ret = prv->dev->header_ops->rebuild(skb);
+	skb->dev = tmp;
+	return ret;
+}
+
+int klips_header_cache(const struct neighbour *neigh, struct hh_cache *hh)
+{
+	const struct net_device *dev = neigh->dev;
+	struct ipsecpriv *prv = netdev_priv(dev);
+	struct net_device_stats *stats;
+
+	stats = (struct net_device_stats *) &(prv->mystats);
+	if(prv->dev == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:klips_header_cache: "
+			    "no physical device associated with dev=%s",
+			    dev->name ? dev->name : "NULL");
+		stats->tx_dropped++;
+		return -1;
+	}
+
+	KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+		    "klips_debug:ipsec_tunnel: "
+		    "Revectored cache_update\n");
+	return prv->dev->header_ops->cache(neigh, hh);
+}
+
+DEBUG_NO_STATIC void
+klips_header_cache_update(struct hh_cache *hh,
+			  const struct net_device *dev,
+			  const unsigned char *  haddr)
+{
+	struct ipsecpriv *prv = netdev_priv(dev);
+	
+	struct net_device_stats *stats;	/* This device's statistics */
+	
+	if(dev == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_cache_update: "
+			    "no device...");
+		return;
+	}
+
+	if(prv == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_cache_update: "
+			    "no private space associated with dev=%s",
+			    dev->name ? dev->name : "NULL");
+		return;
+	}
+
+	stats = (struct net_device_stats *) &(prv->mystats);
+
+	if(prv->dev == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_cache_update: "
+			    "no physical device associated with dev=%s",
+			    dev->name ? dev->name : "NULL");
+		stats->tx_dropped++;
+		return;
+	}
+
+	KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+		    "klips_debug:ipsec_tunnel: "
+		    "Revectored cache_update\n");
+	prv->dev->header_ops->cache_update(hh, prv->dev, haddr);
+	return;
+}
+
+
+const struct header_ops klips_header_ops ____cacheline_aligned = {
+	.create		= klips_header,
+	.parse		= klips_header_parse,
+	.rebuild	= klips_rebuild_header,
+	.cache		= klips_header_cache,
+	.cache_update	= klips_header_cache_update,
+};
 
 enum ipsec_xmit_value
 ipsec_tunnel_strip_hard_header(struct ipsec_xmit_state *ixs)
@@ -1090,106 +1359,6 @@ ipsec_tunnel_neigh_setup_dev(struct net_device *dev, struct neigh_parms *p)
 #endif /* NET_21 */
 
 /*
- * We call the attach routine to attach another device.
- */
-
-DEBUG_NO_STATIC int
-ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
-{
-        int i;
-	struct ipsecpriv *prv = netdev_priv(dev);
-
-	if(dev == NULL) {
-		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
-			    "klips_debug:ipsec_tunnel_attach: "
-			    "no device...");
-		return -ENODEV;
-	}
-
-	if(prv == NULL) {
-		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
-			    "klips_debug:ipsec_tunnel_attach: "
-			    "no private space associated with dev=%s",
-			    dev->name ? dev->name : "NULL");
-		return -ENODATA;
-	}
-
-	dev->set_mac_address = ipsec_tunnel_set_mac_address;
-	prv->dev = physdev;
-	prv->hard_start_xmit = physdev->hard_start_xmit;
-	prv->get_stats = physdev->get_stats;
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
-	if (physdev->header_ops) {
-		prv->header_ops = physdev->header_ops;
-		dev->header_ops = &ipsec_tunnel_header_ops;
-	} else
-		dev->header_ops = NULL;
-#else
-	if (physdev->hard_header) {
-		prv->hard_header = physdev->hard_header;
-		dev->hard_header = &ipsec_tunnel_hard_header;
-	} else
-		dev->hard_header = NULL;
-	
-	if (physdev->rebuild_header) {
-		prv->rebuild_header = physdev->rebuild_header;
-		dev->rebuild_header = ipsec_tunnel_rebuild_header;
-	} else
-		dev->rebuild_header = NULL;
-	
-#ifndef NET_21
-	if (physdev->header_cache_bind) {
-		prv->header_cache_bind = physdev->header_cache_bind;
-		dev->header_cache_bind = ipsec_tunnel_cache_bind;
-	} else
-		dev->header_cache_bind = NULL;
-#endif /* !NET_21 */
-
-	if (physdev->header_cache_update) {
-		prv->header_cache_update = physdev->header_cache_update;
-		dev->header_cache_update = ipsec_tunnel_cache_update;
-	} else
-		dev->header_cache_update = NULL;
-#endif
-	
-	if (physdev->set_mac_address) {
-		prv->set_mac_address = physdev->set_mac_address;
-		dev->set_mac_address = ipsec_tunnel_set_mac_address;
-	} else
-		dev->set_mac_address = NULL;
-
-	dev->hard_header_len = physdev->hard_header_len;
-
-#ifdef NET_21
-/*	prv->neigh_setup        = physdev->neigh_setup; */
-	dev->neigh_setup        = ipsec_tunnel_neigh_setup_dev;
-#endif /* NET_21 */
-	dev->mtu = 16260; /* 0xfff0; */ /* dev->mtu; */
-	prv->mtu = physdev->mtu;
-
-#ifdef PHYSDEV_TYPE
-	dev->type = physdev->type; /* ARPHRD_TUNNEL; */
-#endif /*  PHYSDEV_TYPE */
-
-	dev->addr_len = physdev->addr_len;
-	for (i=0; i<dev->addr_len; i++) {
-		dev->dev_addr[i] = physdev->dev_addr[i];
-	}
-	if(debug_tunnel & DB_TN_INIT) {
-		printk(KERN_INFO "klips_debug:ipsec_tunnel_attach: "
-		       "physical device %s being attached has HW address: %2x",
-		       physdev->name, physdev->dev_addr[0]);
-		for (i=1; i < physdev->addr_len; i++) {
-			printk(":%02x", physdev->dev_addr[i]);
-		}
-		printk("\n");
-	}
-
-	return 0;
-}
-
-/*
  * We call the detach routine to detach the ipsec tunnel from another device.
  */
 
@@ -1614,18 +1783,19 @@ ipsec_tunnel_init(struct net_device *dev)
 		    (unsigned long) sizeof(struct ipsecpriv),
 		    dev->name ? dev->name : "NULL");
 
-	/* Add our tunnel functions to the device */
-	dev->open		= ipsec_tunnel_open;
-	dev->stop		= ipsec_tunnel_close;
-	dev->hard_start_xmit	= ipsec_tunnel_start_xmit;
 	dev->get_stats		= ipsec_tunnel_get_stats;
+	dev->destructor         = free_netdev;
 
-#ifndef alloc_netdev
-	dev->priv = kmalloc(sizeof(struct ipsecpriv), GFP_KERNEL);
-	if (dev->priv == NULL)
-		return -ENOMEM;
+#ifndef HAVE_NETDEV_PRIV
+	{
+		struct ipsecpriv *priv_dev;
+		priv_dev = kmalloc(sizeof(struct ipsecpriv), GFP_KERNEL);
+		if (priv_dev == NULL)
+			return;
+		dev->priv = priv_net;
+	}
 #endif
-	memset(netdev_priv(dev), 0, sizeof(struct ipsecpriv));
+	memset((caddr_t)netdev_priv(dev), 0, sizeof(struct ipsecpriv));
 
 	for(i = 0; i < sizeof(zeroes); i++) {
 		((__u8*)(zeroes))[i] = 0;
@@ -1637,23 +1807,20 @@ ipsec_tunnel_init(struct net_device *dev)
 		skb_queue_head_init(&dev->buffs[i]);
 #endif /* !NET_21 */
 
-	dev->set_multicast_list = NULL;
-	dev->do_ioctl		= ipsec_tunnel_ioctl;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
 	dev->header_ops		= NULL;
 #else
 	dev->hard_header	= NULL;
 	dev->rebuild_header 	= NULL;
-	dev->set_mac_address 	= NULL;
 #ifndef NET_21
 	dev->header_cache_bind 	= NULL;
 #endif /* !NET_21 */
 	dev->header_cache_update= NULL;
 #endif
+	dev->netdev_ops         = &klips_device_ops;
 
 #ifdef NET_21
 /*	prv->neigh_setup        = NULL; */
-	dev->neigh_setup        = ipsec_tunnel_neigh_setup_dev;
 #endif /* NET_21 */
 	dev->hard_header_len 	= 0;
 	dev->mtu		= 0;
@@ -2015,6 +2182,92 @@ ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs)
 
         spin_unlock_bh (&ixs_cache_lock);
 }
+
+const struct net_device_ops klips_device_ops = {
+	/* Add our tunnel functions to the device */
+	.ndo_open               = ipsec_tunnel_open,
+	.ndo_stop		= ipsec_tunnel_close,
+	.ndo_start_xmit 	= ipsec_tunnel_start_xmit,
+	.ndo_get_stats  	= ipsec_tunnel_get_stats,
+	.ndo_neigh_setup        = ipsec_tunnel_neigh_setup_dev,
+	.ndo_do_ioctl		= ipsec_tunnel_ioctl,
+
+#ifdef HAVE_SET_MAC_ADDR
+	.ndo_set_mac_address = ipsec_tunnel_set_mac_address,
+#endif
+};
+
+/*
+ * We call the attach routine to attach another device.
+ */
+
+DEBUG_NO_STATIC int
+ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
+{
+        int i;
+	struct ipsecpriv *prv = netdev_priv(dev);
+
+	if(dev == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_attach: "
+			    "no device...");
+		return -ENODEV;
+	}
+
+	if(prv == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_attach: "
+			    "no private space associated with dev=%s",
+			    dev->name ? dev->name : "NULL");
+		return -ENODATA;
+	}
+
+#ifdef HAVE_NET_DEVICE_OPS
+	dev->netdev_ops = &klips_device_ops;
+
+#endif /* HAVE_NET_DEVICE_OPS */
+
+#ifndef HAVE_SET_MAC_ADDR
+	dev->set_mac_address = ipsec_tunnel_set_mac_address;
+#endif
+	prv->dev = physdev;
+
+#ifdef HAVE_NET_DEVICE_OPS
+	prv->hard_start_xmit = physdev->netdev_ops->ndo_start_xmit;
+	prv->get_stats       = physdev->netdev_ops->ndo_get_stats;
+#else
+	prv->hard_start_xmit = physdev->hard_start_xmit;
+	prv->get_stats       = physdev->get_stats;
+#endif
+	dev->hard_header_len = physdev->hard_header_len;
+
+/*	prv->neigh_setup        = physdev->neigh_setup; */
+	dev->mtu = 16260; /* 0xfff0; */ /* dev->mtu; */
+	prv->mtu = physdev->mtu;
+
+#ifdef PHYSDEV_TYPE
+	dev->type = physdev->type; /* ARPHRD_TUNNEL; */
+#endif /*  PHYSDEV_TYPE */
+
+	dev->addr_len = physdev->addr_len;
+	for (i=0; i<dev->addr_len; i++) {
+		dev->dev_addr[i] = physdev->dev_addr[i];
+	}
+#ifdef CONFIG_KLIPS_DEBUG
+	if(debug_tunnel & DB_TN_INIT) {
+		printk(KERN_INFO "klips_debug:ipsec_tunnel_attach: "
+		       "physical device %s being attached has HW address: %2x",
+		       physdev->name, physdev->dev_addr[0]);
+		for (i=1; i < physdev->addr_len; i++) {
+			printk(":%02x", physdev->dev_addr[i]);
+		}
+		printk("\n");
+	}
+#endif /* CONFIG_KLIPS_DEBUG */
+
+	return 0;
+}
+
 
 /*
  * Local Variables:

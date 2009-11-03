@@ -112,7 +112,6 @@ struct ipsec_birth_reply ipsec_ipv6_birth_packet;
 int debug_esp = 0;
 int debug_ah = 0;
 int sysctl_ipsec_inbound_policy_check = 1;
-int debug_tunnel = 0;
 int debug_xmit = 0;
 int debug_xform = 0;
 int debug_eroute = 0;
