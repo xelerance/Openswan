@@ -2043,7 +2043,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 		return IPSEC_XMIT_RECURSDETECT;
 	}
 
-	dst_release((skb_dst(ixs->skb);
+	dst_release(skb_dst(ixs->skb));
 	skb_dst_set(ixs->skb, &ixs->route->u.dst);
 	if(ixs->stats) {
 		ixs->stats->tx_bytes += ixs->skb->len;
