@@ -153,6 +153,23 @@ IPSEC_ALG_MODULE_INIT_STATIC( ipsec_cryptoapi_init )
 	#define hmac(X)	"hmac(" #X ")"
 #endif /* if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,19) */
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24)
+
+static inline void sg_set_page(struct scatterlist *sg,  struct page *page,
+			       unsigned int len, unsigned int offset)
+{
+	sg->page = page;
+	sg->offset = offset;
+	sg->length = len;
+}
+
+static inline void *sg_virt(struct scatterlist *sg)
+{
+	return page_address(sg->page) + sg->offset;
+}
+
+#endif
+
 #ifdef CONFIG_KLIPS_ENC_NULL
 # define CIPHERNAME_NULL		cbc(null)
 #endif
