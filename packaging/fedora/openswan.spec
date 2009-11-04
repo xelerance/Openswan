@@ -27,6 +27,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: Openswan - An IPsec and IKE implementation
 Group: System Environment/Daemons
 BuildRequires: gmp-devel bison flex bind-devel redhat-rpm-config xmlto
+BuildRequires: kernel-headers
 %if %{buildnss}
 BuildRequires: nss-devel >= 3.12.3, nspr-devel fipscheck-devel, libcap-ng-devel
 %endif
