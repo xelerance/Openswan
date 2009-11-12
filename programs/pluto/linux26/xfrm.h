@@ -111,6 +111,9 @@ enum
 	XFRM_SHARE_UNIQUE	/* Use once */
 };
 
+#define XFRM_MODE_TRANSPORT 0
+#define XFRM_MODE_TUNNEL 1
+
 /* Netlink configuration messages.  */
 #define XFRM_MSG_BASE		0x10
 
@@ -193,6 +196,7 @@ struct xfrm_usersa_info {
 	uint8_t				replay_window;
 	uint8_t				flags;
 #define XFRM_STATE_NOECN	1
+#define XFRM_STATE_AF_UNSPEC	32
 };
 
 struct xfrm_usersa_id {

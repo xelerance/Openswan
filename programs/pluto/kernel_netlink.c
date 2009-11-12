@@ -32,7 +32,6 @@
 #include <stdint.h>
 #include <linux/pfkeyv2.h>
 #include <unistd.h>
-#include <linux/xfrm.h>
 
 #include "kameipsec.h"
 #include <rtnetlink.h>
@@ -60,6 +59,11 @@
 #include "kernel_alg.h"
 #include "klips-crypto/aes_cbc.h"
 #include "ike_alg.h"
+
+/* required for Linux 2.6.26 kernel and later */
+#ifndef XFRM_STATE_AF_UNSPEC
+#define XFRM_STATE_AF_UNSPEC	32
+#endif
 
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
@@ -671,23 +675,19 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
     req.p.id.spi = sa->spi;
     req.p.id.proto = satype2proto(sa->satype);
     req.p.family = sa->src->u.v4.sin_family;
-    req.p.mode = (sa->encapsulation == ENCAPSULATION_MODE_TUNNEL);
-
-/*
- * This requires ipv6 modules. It is required to support 6in4 and 4in6
- * tunnels in linux 2.6.25+
- */
-#ifdef NOT_YET
-       if (sa->encapsulation == ENCAPSULATION_MODE_TUNNEL)
-       {
-               req.p.mode = XFRM_MODE_TUNNEL;
-               req.p.flags |= XFRM_STATE_AF_UNSPEC;
-       }
-       else
-       {
-               req.p.mode = XFRM_MODE_TRANSPORT;
-       }
-#endif
+    /*
+     * This requires ipv6 modules. It is required to support 6in4 and 4in6
+     * tunnels in linux 2.6.25+
+     */
+    if (sa->encapsulation == ENCAPSULATION_MODE_TUNNEL)
+    {
+	req.p.mode = XFRM_MODE_TUNNEL;
+	req.p.flags |= XFRM_STATE_AF_UNSPEC;
+    }
+    else
+    {
+	req.p.mode = XFRM_MODE_TRANSPORT;
+    }
 
     req.p.replay_window = sa->replay_window > 32 ? 32 : sa->replay_window; 
     req.p.reqid = sa->reqid;

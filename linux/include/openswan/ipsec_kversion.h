@@ -332,9 +332,6 @@
 /* not sure when network name spaces got introduced, but it is in 2.6.26 */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,26)
 # define HAVE_NETWORK_NAMESPACE 1
-#ifndef XFRM_STATE_AF_UNSPEC
-# define XFRM_STATE_AF_UNSPEC   32
-#endif
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,27)
