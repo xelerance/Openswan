@@ -282,7 +282,7 @@ sub installstartcheck {
         if(<cat> == "1")
             {
                 errchk "";
-                print "\n  SElinux is running in 'enforced' mode. Since no working SElinux\n  policies exist for Openswan, SElinux should be disabled.\n";
+                print "\n  SElinux is running in 'enforced' mode.\n  If you encounter network related SElinux errors, especially when using KLIPS,\n  try disabling SElinux using:\n";
 		print "\n  echo \"0\" > /selinux/enforce (or edit /etc/sysconfig/selinux)\n\n";
 	        $reterr = 1;
             }
