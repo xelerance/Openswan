@@ -39,7 +39,7 @@
 # times of NFS filesystem startup/shutdown).  Startup is after startup of
 # syslog and pcmcia support; shutdown is just before shutdown of syslog.
 #
-# chkconfig: 2345 47 76
+# chkconfig: - 47 76
 # description: IPsec provides encrypted and authenticated communications; \
 # KLIPS is the kernel half of it, Pluto is the user-level management daemon.
 
