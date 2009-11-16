@@ -79,8 +79,6 @@ static unsigned int _kap = 0;
 static unsigned int _ka_evt = 0;
 static bool _force_ka = 0;
 
-static const char *natt_version = "0.6c";
-
 void init_nat_traversal (bool activate, unsigned int keep_alive_period,
 	bool fka, bool spf)
 {
@@ -110,8 +108,8 @@ void init_nat_traversal (bool activate, unsigned int keep_alive_period,
 
 	_force_ka = fka;
 	_kap = keep_alive_period ? keep_alive_period : DEFAULT_KEEP_ALIVE_PERIOD;
-	plog("   including NAT-Traversal patch (Version %s)%s%s%s",
-	     natt_version, activate ? "" : " [disabled]",
+	plog("   NAT-Traversal support %s%s%s",
+	     activate ? " [enabled]" : " [disabled]",
 	     activate & fka ? " [Force KeepAlive]" : "",
 	     activate & !spf ? " [Port Floating disabled]" : "");
 
