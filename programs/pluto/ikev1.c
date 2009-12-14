@@ -152,6 +152,7 @@
 #include "dpd.h"
 #include "udpfromto.h"
 #include "tpm/tpm.h"
+#include "hostpair.h"
 
 /* state_microcode is a tuple of information parameterizing certain
  * centralized processing of a packet.  For example, it roughly
@@ -687,6 +688,64 @@ informational(struct msg_digest *md)
 		}
 	    }
 	    return STF_IGNORE;
+
+       case ISAKMP_N_CISCO_LOAD_BALANCE:
+           if(st && IS_ISAKMP_SA_ESTABLISHED(st->st_state)) {
+		char *tmp_name;
+		int tmp_whack_sock;
+		struct connection *tmp_c;
+
+                /* Saving connection name and whack sock id*/
+		tmp_name = st->st_connection->name;
+		tmp_whack_sock = dup_any(st->st_whack_sock);
+		
+		/* deleting ISAKMP SA with the current remote peer*/
+		delete_state(st);
+
+                /* to find and store the connection associated with tmp_name*/
+		tmp_c = con_by_name(tmp_name, FALSE);
+
+		DBG_cond_dump(DBG_PARSING, "redirected remote end info:", n_pbs->cur + pbs_left(n_pbs)-4, 4);
+
+		/*Current remote peer info*/
+		{
+
+		char buftest[ADDRTOT_BUF];
+		DBG_log("Current host_addr: %s", (addrtot(&tmp_c->spd.that.host_addr, 0, buftest, sizeof(buftest)), buftest) );
+		DBG_log("Current nexthop: %s", (addrtot(&tmp_c->spd.that.host_nexthop, 0, buftest, sizeof(buftest)), buftest) );
+		DBG_log("Current srcip: %s", (addrtot(&tmp_c->spd.that.host_srcip, 0, buftest, sizeof(buftest)), buftest) );
+		DBG_log("Current client_addr: %s", (addrtot(&tmp_c->spd.that.client.addr, 0, buftest, sizeof(buftest)), buftest) );
+
+		//if(test_c->spd.that.virt!=NULL){
+		///DBG_log("current virt_addr: %s", (addrtot(&test_c->spd.that.virt->net[0].addr, 0, buftest, sizeof(buftest)), buftest) );
+		//}
+
+		if(tmp_c->interface!=NULL){
+		DBG_log("Current interface_addr: %s", (addrtot(&tmp_c->interface->ip_addr, 0, buftest, sizeof(buftest)), buftest) );
+		}
+
+		if(tmp_c->gw_info!=NULL){
+		DBG_log("Current gw_client_addr: %s", (addrtot(&tmp_c->gw_info->client_id.ip_addr, 0, buftest, sizeof(buftest)), buftest) );
+		DBG_log("Current gw_gw_addr: %s", (addrtot(&tmp_c->gw_info->gw_id.ip_addr, 0, buftest, sizeof(buftest)), buftest) );
+		}
+
+		}
+
+		/*Decoding remote peer address info where connection has to be redirected*/
+		memcpy(&tmp_c->spd.that.host_addr.u.v4.sin_addr.s_addr, 
+				(u_int32_t *)(n_pbs->cur + pbs_left(n_pbs)-4), sizeof(tmp_c->spd.that.host_addr.u.v4.sin_addr.s_addr));
+		//DBG_log("host_addr_name : %s", tmp_c->spd.that.host_addr_name);
+
+		/*Modifying connection info to store the redirected remote peer info*/
+		tmp_c->spd.that.host_addr_name = NULL;
+		tmp_c->spd.that.id.ip_addr= tmp_c->spd.that.host_addr;
+		tmp_c->spd.this.host_nexthop = tmp_c->spd.that.host_addr;
+		tmp_c->host_pair->him.addr = tmp_c->spd.that.host_addr;
+
+		/*Initiating connection with the redirected peer*/
+		initiate_connection(tmp_name, tmp_whack_sock, 0, pcim_local_crypto);
+		return STF_IGNORE;
+           }
 
         default:
 #ifdef DEBUG
@@ -1666,6 +1725,7 @@ void process_packet_tail(struct msg_digest **mdp)
 	while(p != NULL) {
 	    if(p->payload.notification.isan_type != R_U_THERE
 	       && p->payload.notification.isan_type != R_U_THERE_ACK
+		&& p->payload.notification.isan_type != ISAKMP_N_CISCO_LOAD_BALANCE
 	       && p->payload.notification.isan_type != PAYLOAD_MALFORMED) {
 		
 		switch(p->payload.notification.isan_type) {
