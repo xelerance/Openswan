@@ -78,4 +78,17 @@ extern void set_exit_log_func(exit_log_func_t func);
 # include <dmalloc.h>
 #endif
 
+#ifdef HAVE_LIBNSS
+#define free_osw_nss_symkey(ch)  \
+               { PK11SymKey *ptr=0; \
+                 if((ch).ptr!=NULL) { memcpy(&ptr, (ch).ptr, (ch).len); memset((ch).ptr,0,(ch).len );} \
+                 if(ptr!=NULL) { PK11_FreeSymKey(ptr);} }  
+
+#define dup_osw_nss_symkey(ch)  \
+               { PK11SymKey *ptr=0; \
+                  if((ch).ptr!=NULL) { memcpy(&ptr, (ch).ptr, (ch).len);} \
+                  if(ptr!=NULL) { PK11_ReferenceSymKey(ptr);} }
+
+#endif
+
 #endif /* _OSW_ALLOC_H_ */

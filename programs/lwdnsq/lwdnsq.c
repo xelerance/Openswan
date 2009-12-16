@@ -298,7 +298,7 @@ main(int argc, char *argv[])
 		switch(c) {
 		case 'd':
 			gs.debug+=2;
-			logfilename="/var/tmp/lwdns.req.log";
+			logfilename="/var/run/pluto/lwdns.req.log";
 			break;
 
 		case 'g':

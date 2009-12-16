@@ -470,15 +470,27 @@ delete_state(struct state *st)
     freeanychunk(st->st_ni);
     freeanychunk(st->st_nr);
 #ifdef HAVE_LIBNSS
-    memset(st->st_skeyid.ptr, 0, st->st_skeyid.len); 
-    memset(st->st_skey_d.ptr, 0, st->st_skey_d.len);
-    memset(st->st_skey_ai.ptr, 0, st->st_skey_ai.len);
-    memset(st->st_skey_ar.ptr, 0, st->st_skey_ar.len);
-    memset(st->st_skey_ei.ptr, 0, st->st_skey_ei.len);
-    memset(st->st_skey_er.ptr, 0, st->st_skey_er.len);
-    memset(st->st_skey_pi.ptr, 0, st->st_skey_pi.len);
-    memset(st->st_skey_pr.ptr, 0, st->st_skey_pr.len);
-    memset(st->st_enc_key.ptr, 0, st->st_enc_key.len);
+    free_osw_nss_symkey(st->st_skeyid);
+    free_osw_nss_symkey(st->st_skey_d);
+    free_osw_nss_symkey(st->st_skey_ai);
+    free_osw_nss_symkey(st->st_skey_ar);
+    free_osw_nss_symkey(st->st_skey_ei);
+    free_osw_nss_symkey(st->st_skey_er);
+    free_osw_nss_symkey(st->st_skey_pi);
+    free_osw_nss_symkey(st->st_skey_pr);
+    free_osw_nss_symkey(st->st_enc_key);
+
+    if(st->st_ah.our_keymat!=NULL)
+    memset(st->st_ah.our_keymat, 0, st->st_ah.keymat_len);
+
+    if(st->st_ah.peer_keymat!=NULL)
+    memset(st->st_ah.peer_keymat, 0, st->st_ah.keymat_len);
+
+    if(st->st_esp.our_keymat!=NULL)
+    memset(st->st_esp.our_keymat, 0, st->st_esp.keymat_len);
+
+    if(st->st_esp.peer_keymat!=NULL)
+    memset(st->st_esp.peer_keymat, 0, st->st_esp.keymat_len);
 #endif
     freeanychunk(st->st_skeyid);
     freeanychunk(st->st_skey_d);
@@ -875,6 +887,19 @@ duplicate_state(struct state *st)
     clone_chunk(st_skeyid_a, "st_skeyid_a in duplicate_state");
     clone_chunk(st_skeyid_e, "st_skeyid_e in duplicate_state");
 #endif
+
+#ifdef HAVE_LIBNSS
+    dup_osw_nss_symkey(st->st_skeyseed);
+    dup_osw_nss_symkey(st->st_skey_d);
+    dup_osw_nss_symkey(st->st_skey_ai);
+    dup_osw_nss_symkey(st->st_skey_ar);
+    dup_osw_nss_symkey(st->st_skey_ei);
+    dup_osw_nss_symkey(st->st_skey_er);
+    dup_osw_nss_symkey(st->st_skey_pi);
+    dup_osw_nss_symkey(st->st_skey_pr);
+    dup_osw_nss_symkey(st->st_enc_key);
+#endif
+
     clone_chunk(st_enc_key,  "st_enc_key in duplicate_state");
 
     /* v2 duplication of state */
