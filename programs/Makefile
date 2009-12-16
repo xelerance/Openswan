@@ -11,8 +11,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.22 2005/07/29 21:52:52 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ..; pwd)
 srcdir?=${OPENSWANSRCDIR}/programs/
@@ -39,7 +37,7 @@ endif
 
 SUBDIRS+=proc pluto addconn 
 SUBDIRS+=_confread _copyright _include _keycensor _plutoload _plutorun
-SUBDIRS+=_realsetup _secretcensor _startklips _updown _updown.klips _updown.mast
+SUBDIRS+=_realsetup _secretcensor _updown 
 SUBDIRS+=auto barf verify ipsec look newhostkey ranbits secrets
 SUBDIRS+=rsasigkey setup showdefaults showhostkey 
 SUBDIRS+=ikeping examples 
