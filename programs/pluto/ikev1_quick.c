@@ -2251,8 +2251,8 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
     }
 
 #ifdef NAT_TRAVERSAL
-    DBG_log("NAT-OA: %d tunnel: %d \n"
-	    ,(st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA)
+    DBG_log("NAT-OA: %u tunnel: %d \n"
+	    ,(unsigned)(st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA)
 	    ,(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT));
     if (st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT) {
 	if (kern_interface == USE_KLIPS
