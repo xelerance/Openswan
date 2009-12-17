@@ -13,7 +13,7 @@
  * for more details.
  */
 
-char ipsec_mast_c_version[] = "RCSID $Id: $";
+char ipsec_mast_c_version[] = "Please use ipsec --version instead";
 
 #define __NO_VERSION__
 #include <linux/module.h>
@@ -495,7 +495,9 @@ ipsec_mast_neigh_setup_dev(struct net_device *dev, struct neigh_parms *p)
 DEBUG_NO_STATIC int
 ipsec_mast_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
-	struct ipsecmastconf *cf = (struct ipsecmastconf *)&ifr->ifr_data;
+	/* struct ipsecmastconf *cf = (struct ipsecmastconf *)&ifr->ifr_data;*/
+	/* overlay our struct ipsecmast onto ifr.ifr_ifru union (hope it fits!) */
+	struct ipsecmastconf *cf=(struct ipsecmastconf *)ifr.ifr_ifru.ifru_newname;       
 	struct ipsecpriv *prv = netdev_priv(dev);
 
 	cf = cf;

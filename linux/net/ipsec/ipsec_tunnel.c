@@ -1483,7 +1483,9 @@ ipsec_tunnel_clear(void)
 DEBUG_NO_STATIC int
 ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
-	struct ipsectunnelconf *cf = (struct ipsectunnelconf *)&ifr->ifr_data;
+	/* struct ipsectunnelconf *cf = (struct ipsectunnelconf *)&ifr->ifr_data;*/
+	/* overlay our struct ipsectunnel onto ifr.ifr_ifru union (hope it fits!) */
+	struct ipsectunnelconf *cf=(struct ipsectunnelconf *)ifr.ifr_irfu.ifru_newname;   
 	struct ipsecpriv *prv = netdev_priv(dev);
 	struct net_device *them; /* physical device */
 #ifdef CONFIG_IP_ALIAS
@@ -1576,7 +1578,9 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 	 */
 	case IPSEC_UDP_ENCAP_CONVERT:
 	{
-		unsigned int *ifp =(unsigned int *)&ifr->ifr_data;
+		/*unsigned int *ifp =(unsigned int *)&ifr->ifr_data;*/
+		/* overlay our struct ipsectunnel onto ifr.ifr_ifru union (hope it fits!) */
+		unsigned int *ifp =(unsigned int *)ifr.ifr_irfu.ifru_newname;
 		const struct socket *sock;
 		int err = 0;
 
@@ -1783,7 +1787,9 @@ ipsec_tunnel_init(struct net_device *dev)
 		    (unsigned long) sizeof(struct ipsecpriv),
 		    dev->name ? dev->name : "NULL");
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,31)
 	dev->get_stats		= ipsec_tunnel_get_stats;
+#endif
 	dev->destructor         = free_netdev;
 
 #ifndef HAVE_NETDEV_PRIV

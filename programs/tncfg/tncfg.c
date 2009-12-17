@@ -15,7 +15,7 @@
  * for more details.
  */
 
-char tncfg_c_version[] = "RCSID $Id: tncfg.c,v 1.33 2005/07/08 02:56:38 paul Exp $";
+char tncfg_c_version[] = "use ipsec --version instead";
 
 
 #include <stdio.h>
@@ -178,7 +178,7 @@ main(int argc, char *argv[])
 	struct ifreq ifr;
 	//struct ipsectunnelconf *shc=(struct ipsectunnelconf *)&ifr.ifr_data;
 	/* overlay our struct ipsectunnel onto ifr.ifr_ifru union (hope it fits!) */
-	struct ipsectunnelconf *shc=(struct ipsectunnelconf *)ifr.ifr_irfu.ifru_newname;
+	struct ipsectunnelconf *shc=(struct ipsectunnelconf *)ifr.ifr_ifru.ifru_newname;
 	int s;
 	int c, previous = -1;
 	int argcount = argc;

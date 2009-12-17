@@ -11,8 +11,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.205 2005/10/02 21:42:03 mcr Exp $
 
 # All of the USE_ and HAVE_ variables are controlled from openswan/Makefile.inc
 
