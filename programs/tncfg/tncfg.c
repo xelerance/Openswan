@@ -91,9 +91,9 @@ static struct option const longopts[] =
 	{0, 0, 0, 0}
 };
 
-void check_conflict(struct ipsectunnelconf *shc, int createdelete)
+void check_conflict(uint32_t cf_cmd, int createdelete)
 {
-	if(shc->cf_cmd || createdelete) {
+	if(cf_cmd || createdelete) {
 		fprintf(stderr, "%s: exactly one of \n\t'--attach', '--detach', '--create', '--delete' or '--clear'\noptions must be specified.\n",
 			progname);
 		exit(1);
@@ -176,9 +176,7 @@ int
 main(int argc, char *argv[])
 {
 	struct ifreq ifr;
-	//struct ipsectunnelconf *shc=(struct ipsectunnelconf *)&ifr.ifr_data;
-	/* overlay our struct ipsectunnel onto ifr.ifr_ifru union (hope it fits!) */
-	struct ipsectunnelconf *shc=(struct ipsectunnelconf *)ifr.ifr_ifru.ifru_newname;
+	struct ipsectunnelconf shc;
 	int s;
 	int c, previous = -1;
 	int argcount = argc;
@@ -186,6 +184,7 @@ main(int argc, char *argv[])
 	char virtname[64];
      
 	memset(&ifr, 0, sizeof(ifr));
+	memset(&shc, 0, sizeof(shc));
 	virtname[0]='\0';
 	progname = argv[0];
 
@@ -198,16 +197,16 @@ main(int argc, char *argv[])
 			argcount--;
 			break;
 		case 'a':
-			check_conflict(shc, createdelete);
-			shc->cf_cmd = IPSEC_SET_DEV;
+			check_conflict(shc.cf_cmd, createdelete);
+			shc.cf_cmd = IPSEC_SET_DEV;
 			break;
 		case 'd':
-			check_conflict(shc, createdelete);
-			shc->cf_cmd = IPSEC_DEL_DEV;
+			check_conflict(shc.cf_cmd, createdelete);
+			shc.cf_cmd = IPSEC_DEL_DEV;
 			break;
 		case 'c':
-			check_conflict(shc, createdelete);
-			shc->cf_cmd = IPSEC_CLR_DEV;
+			check_conflict(shc.cf_cmd, createdelete);
+			shc.cf_cmd = IPSEC_CLR_DEV;
 			break;
 		case 'h':
 			usage(progname);
@@ -222,21 +221,21 @@ main(int argc, char *argv[])
 			break;
 
 		case 'C':
-			check_conflict(shc, createdelete);
+			check_conflict(shc.cf_cmd, createdelete);
 			createdelete = SADB_X_PLUMBIF;
 			strncat(virtname, optarg, sizeof(virtname)-1);
 			break;
 		case 'D':
-			check_conflict(shc, createdelete);
+			check_conflict(shc.cf_cmd, createdelete);
 			createdelete = SADB_X_UNPLUMBIF;
 			strncat(virtname, optarg, sizeof(virtname)-1);
 			break;
 
 		case 'V':
-			strcpy(ifr.ifr_name, optarg);
+			strncpy(ifr.ifr_name, optarg, sizeof(ifr.ifr_name));
 			break;
 		case 'P':
-			strcpy(shc->cf_name, optarg);
+			strncpy(shc.cf_name, optarg, sizeof(shc.cf_name));
 			break;
 		case 'l':
 			progname = malloc(strlen(argv[0])
@@ -262,27 +261,30 @@ main(int argc, char *argv[])
 		exit(system("cat /proc/net/ipsec_tncfg"));
 	}
 
+	/* overlay our struct ipsectunnel onto ifr.ifr_ifru union (hope it fits!) */
+	memcpy(&ifr.ifr_ifru.ifru_newname, &shc, sizeof(shc));
+
 	/* are we creating/deleting a virtual (mastXXX/ipsecXXX) interface? */
 	if(createdelete) {
 		exit(createdelete_virtual(createdelete, virtname));
 	}
 
-	switch(shc->cf_cmd) {
+	switch(shc.cf_cmd) {
 	case IPSEC_SET_DEV:
-		if(!shc->cf_name) {
+		if(!shc.cf_name[0]) {
 			fprintf(stderr, "%s: physical I/F parameter missing.\n",
 				progname);
 			exit(1);
 		}
 	case IPSEC_DEL_DEV:
-		if(!ifr.ifr_name) {
+		if(!ifr.ifr_name[0]) {
 			fprintf(stderr, "%s: virtual I/F parameter missing.\n",
 				progname);
 			exit(1);
 		}
 		break;
 	case IPSEC_CLR_DEV:
-		strcpy(ifr.ifr_name, "ipsec0");
+		strncpy(ifr.ifr_name, "ipsec0", sizeof(ifr.ifr_name));
 		break;
 	default:
 		fprintf(stderr, "%s: exactly one of '--attach', '--detach' or '--clear' options must be specified.\n"
@@ -319,9 +321,11 @@ main(int argc, char *argv[])
 		}
 		exit(1);
 	}
-	if(ioctl(s, shc->cf_cmd, &ifr)==-1)
+	if(ioctl(s, shc.cf_cmd, &ifr)==-1)
 	{
-		if(shc->cf_cmd == IPSEC_SET_DEV) {
+		switch (shc.cf_cmd)
+		{
+		case IPSEC_SET_DEV:
 			fprintf(stderr, "%s: Socket ioctl failed on attach -- ", progname);
 			switch(errno)
 			{
@@ -342,8 +346,8 @@ main(int argc, char *argv[])
 				fprintf(stderr, "Unknown socket error %d.\n", errno);
 			}
 			exit(1);
-		}
-		if(shc->cf_cmd == IPSEC_DEL_DEV) {
+
+		case IPSEC_DEL_DEV:
 			fprintf(stderr, "%s: Socket ioctl failed on detach -- ", progname);
 			switch(errno)
 			{
@@ -360,8 +364,8 @@ main(int argc, char *argv[])
 				fprintf(stderr, "Unknown socket error %d.\n", errno);
 			}
 			exit(1);
-		}
-		if(shc->cf_cmd == IPSEC_CLR_DEV) {
+
+		case IPSEC_CLR_DEV:
 			fprintf(stderr, "%s: Socket ioctl failed on clear -- ", progname);
 			switch(errno)
 			{
@@ -374,6 +378,9 @@ main(int argc, char *argv[])
 			default:
 				fprintf(stderr, "Unknown socket error %d.\n", errno);
 			}
+			exit(1);
+		default:
+			fprintf(stderr, "%s: Socket ioctl failed on unknown operation %u -- %s", progname, (unsigned) shc.cf_cmd, strerror(errno));
 			exit(1);
 		}
 	}
