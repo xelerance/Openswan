@@ -118,7 +118,7 @@
 #endif
 
 /* kernels > 2.4.2 */
-#if defined(IP_SELECT_IDENT) && defined(IP_SELECT_IDENT_NEW)
+#if defined(IP_SELECT_IDENT) && defined(IP_SELECT_IDENT_NEW) && !defined(HAVE_SKB_DST)
 #define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb->dst, NULL)
 #endif
 
