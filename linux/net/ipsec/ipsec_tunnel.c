@@ -1485,7 +1485,7 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
 	/* struct ipsectunnelconf *cf = (struct ipsectunnelconf *)&ifr->ifr_data;*/
 	/* overlay our struct ipsectunnel onto ifr.ifr_ifru union (hope it fits!) */
-	struct ipsectunnelconf *cf=(struct ipsectunnelconf *)ifr.ifr_irfu.ifru_newname;   
+	struct ipsectunnelconf *cf=(struct ipsectunnelconf *)ifr.ifr_ifru.ifru_newname;
 	struct ipsecpriv *prv = netdev_priv(dev);
 	struct net_device *them; /* physical device */
 #ifdef CONFIG_IP_ALIAS
@@ -1580,7 +1580,7 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 	{
 		/*unsigned int *ifp =(unsigned int *)&ifr->ifr_data;*/
 		/* overlay our struct ipsectunnel onto ifr.ifr_ifru union (hope it fits!) */
-		unsigned int *ifp =(unsigned int *)ifr.ifr_irfu.ifru_newname;
+		unsigned int *ifp =(unsigned int *)ifr.ifr_ifru.ifru_newname;
 		const struct socket *sock;
 		int err = 0;
 
