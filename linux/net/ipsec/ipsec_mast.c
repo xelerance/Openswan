@@ -497,7 +497,7 @@ ipsec_mast_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
 	/* struct ipsecmastconf *cf = (struct ipsecmastconf *)&ifr->ifr_data;*/
 	/* overlay our struct ipsecmast onto ifr.ifr_ifru union (hope it fits!) */
-	struct ipsecmastconf *cf=(struct ipsecmastconf *)ifr.ifr_ifru.ifru_newname;       
+	struct ipsecmastconf *cf=(struct ipsecmastconf *)ifr->ifr_ifru.ifru_newname;       
 	struct ipsecpriv *prv = netdev_priv(dev);
 
 	cf = cf;
