@@ -96,35 +96,6 @@
 #include "ipsec_ocf.h"
 
 
-/* 
- * Stupid kernel API differences in APIs. Not only do some
- * kernels not have ip_select_ident, but some have differing APIs,
- * and SuSE has one with one parameter, but no way of checking to
- * see what is really what.
- */
-
-#ifdef SUSE_LINUX_2_4_19_IS_STUPID
-#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph)
-#else
-
-/* simplest case, nothing */
-#if !defined(IP_SELECT_IDENT)
-#define KLIPS_IP_SELECT_IDENT(iph, skb)  do { iph->id = htons(ip_id_count++); } while(0)
-#endif
-
-/* kernels > 2.3.37-ish */
-#if defined(IP_SELECT_IDENT) && !defined(IP_SELECT_IDENT_NEW)
-#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb->dst)
-#endif
-
-/* kernels > 2.4.2 */
-#if defined(IP_SELECT_IDENT) && defined(IP_SELECT_IDENT_NEW) && !defined(HAVE_SKB_DST)
-#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb->dst, NULL)
-#endif
-
-#endif /* SUSE_LINUX_2_4_19_IS_STUPID */
-
-
 
 #if defined(CONFIG_KLIPS_AH)
 #if defined(CONFIG_KLIPS_AUTH_HMAC_MD5) || defined(CONFIG_KLIPS_AUTH_HMAC_SHA1)
