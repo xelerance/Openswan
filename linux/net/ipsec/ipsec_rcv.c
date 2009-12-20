@@ -482,9 +482,13 @@ void ipsec_rcv_setoutif(struct ipsec_rcv_state *irs)
 				    irs->ipsp->ips_out->name);
 		}
 		skb->dev = irs->ipsp->ips_out;
-		
+#ifndef HAVE_NET_DEVICE_OPS
 		if(skb->dev && skb->dev->get_stats) {
 			struct net_device_stats *stats = skb->dev->get_stats(skb->dev);
+#else
+		if(skb->dev && skb->dev->netdev_ops->ndo_get_stats) {
+		   struct net_device_stats *stats = skb->dev->netdev_ops->ndo_get_stats(skb->dev);
+#endif
 			irs->stats = stats;
 		}
 	} 

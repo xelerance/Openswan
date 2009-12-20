@@ -87,7 +87,7 @@ static __u32 zeroes[64];
 DEBUG_NO_STATIC int
 ipsec_mast_open(struct net_device *dev)
 {
-        struct mastpriv *prv = netdev_priv(dev); 
+        struct mastpriv *prv = netdev_priv(dev);
 
 	prv = prv;
 
@@ -645,6 +645,17 @@ ipsec_mast_device_event(struct notifier_block *unused, unsigned long event, void
 	return NOTIFY_DONE;
 }
 
+#ifdef HAVE_NET_DEVICE_OPS
+static const struct net_device_ops ipsec_mast_ops = {
+	.ndo_open               = ipsec_mast_open,
+	.ndo_stop               = ipsec_mast_close,
+	.ndo_start_xmit         = ipsec_mast_start_xmit,
+	.ndo_get_stats          = ipsec_mast_get_stats,
+	.ndo_do_ioctl           = ipsec_mast_ioctl,
+	.ndo_neigh_setup        = ipsec_mast_neigh_setup_dev,
+};
+#endif
+
 /*
  *	Called when an ipsec mast device is initialized.
  *	The ipsec mast device structure is passed to us.
@@ -662,12 +673,16 @@ ipsec_mast_probe(struct net_device *dev)
 		    dev->name ? dev->name : "NULL");
 
 	/* Add our mast functions to the device */
+#ifndef HAVE_NET_DEVICE_OPS
 	dev->open		= ipsec_mast_open;
 	dev->stop		= ipsec_mast_close;
 	dev->hard_start_xmit	= ipsec_mast_start_xmit;
 	dev->get_stats		= ipsec_mast_get_stats;
-#ifdef alloc_netdev
+# ifdef alloc_netdev
 	dev->destructor         = free_netdev;
+# endif
+#else
+	dev->netdev_ops         = &ipsec_mast_ops;
 #endif
 
 #ifndef alloc_netdev
@@ -681,9 +696,11 @@ ipsec_mast_probe(struct net_device *dev)
 	for(i = 0; i < sizeof(zeroes); i++) {
 		((__u8*)(zeroes))[i] = 0;
 	}
-	
+
+#ifndef HAVE_NET_DEVICE_OPS
 	dev->set_multicast_list = NULL;
 	dev->do_ioctl		= ipsec_mast_ioctl;
+#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
 	dev->header_ops = NULL;
 #else
@@ -691,8 +708,10 @@ ipsec_mast_probe(struct net_device *dev)
 	dev->rebuild_header 	= NULL;
 	dev->header_cache_update= NULL;
 #endif
+#ifdef HAVE_SET_MAC_ADDR
 	dev->set_mac_address 	= NULL;
 	dev->neigh_setup        = ipsec_mast_neigh_setup_dev;
+#endif
 	dev->hard_header_len 	= 8+20+20+8;
 	dev->mtu		= 0;
 	dev->addr_len		= 0;
@@ -723,6 +742,9 @@ int ipsec_mast_createnum(int vifnum)
 	struct net_device *im;
 	int vifentry;
 	char name[IFNAMSIZ];
+#ifdef HAVE_NET_DEVICE_OPS
+	struct net_device_ops *im_ops;
+#endif
 
 	if(vifnum > IPSEC_NUM_IFMAX) {
 		return -ENOENT;
@@ -754,9 +776,12 @@ int ipsec_mast_createnum(int vifnum)
 	memset((caddr_t)im, 0, sizeof(struct net_device));
 	memcpy(im->name, name, IFNAMSIZ);
 #endif
-		
+#ifndef HAVE_NET_DEVICE_OPS
 	im->init = ipsec_mast_probe;
-
+#else
+	im_ops = (struct net_device_ops *)im->netdev_ops;
+	im_ops->ndo_init = ipsec_mast_probe;
+#endif
 	if(register_netdev(im) != 0) {
 		printk(KERN_ERR "ipsec_mast: failed to register %s\n",
 		       im->name);

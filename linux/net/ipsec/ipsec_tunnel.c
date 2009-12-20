@@ -1872,7 +1872,9 @@ ipsec_tunnel_createnum(int ifnum)
 	char name[IFNAMSIZ];
 	struct net_device *dev_ipsec;
 	int vifentry;
-
+#ifdef HAVE_NET_DEVICE_OPS
+	struct net_device_ops *dev_ops;
+#endif
 	if(ifnum > IPSEC_NUM_IFMAX) {
 		return -ENOENT;
 	}
@@ -1924,7 +1926,12 @@ ipsec_tunnel_createnum(int ifnum)
 	dev_ipsec->next = NULL;
 #endif
 #endif /* alloc_netdev */
+#ifdef HAVE_NET_DEVICE_OPS
+	dev_ops = (struct net_device_ops *)dev_ipsec->netdev_ops;
+	dev_ops->ndo_init = &ipsec_tunnel_probe;
+#else
 	dev_ipsec->init = &ipsec_tunnel_probe;
+#endif
 	KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
 		    "klips_debug:ipsec_tunnel_init_devices: "
 		    "registering device %s\n",
