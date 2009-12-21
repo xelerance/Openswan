@@ -262,6 +262,11 @@ main(int argc, char *argv[])
 	}
 
 	/* overlay our struct ipsectunnel onto ifr.ifr_ifru union (hope it fits!) */
+	if (sizeof(ifr.ifr_ifru) < sizeof(shc)) {
+	    fprintf(stderr, "%s: Internal error: struct ipsectunnelconf won't fit inside struct ifreq\n",
+		progname);
+	    exit(1);
+	}
 	memcpy(&ifr.ifr_ifru.ifru_newname, &shc, sizeof(shc));
 
 	/* are we creating/deleting a virtual (mastXXX/ipsecXXX) interface? */
