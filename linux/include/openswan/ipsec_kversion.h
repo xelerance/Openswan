@@ -342,12 +342,14 @@
 # define HAVE_SKB_DST 1
 #endif
 
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,31)
 #ifndef NETDEV_TX_BUSY
 # ifdef NETDEV_XMIT_CN
 #  define NETDEV_TX_BUSY NETDEV_XMIT_CN
 # else
 #  define NETDEV_TX_BUSY 1
 # endif
+#endif
 #endif
 
 #if 0
@@ -461,6 +463,19 @@
 
 #ifndef NF_INET_LOCAL_OUT
 # define NF_INET_LOCAL_OUT NF_IP_LOCAL_OUT
+#endif
+
+/* TODO: Fedora kernels (eg 2.6.31.6-166.fc12) also need this */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
+# define USE_NETDEV_OPS
+#else
+# define skb_dst_drop(s)	({ \
+					if ((s)->dst) \
+						dst_release((s)->dst); \
+					(s)->dst = NULL; \
+				})
+# define skb_dst_set(s,p)	(s)->dst = (p)
+# define skb_dst(s)		(s)->dst
 #endif
 
 #if __KERNEL__

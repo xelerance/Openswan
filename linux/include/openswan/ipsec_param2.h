@@ -40,12 +40,12 @@
 
 /* kernels > 2.3.37-ish */
 #if defined(IP_SELECT_IDENT) && !defined(IP_SELECT_IDENT_NEW)
-#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb->dst)
+#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb_dst(skb))
 #endif
 
 /* kernels > 2.4.2 */
 #if defined(IP_SELECT_IDENT) && defined(IP_SELECT_IDENT_NEW)
-#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb->dst, NULL)
+#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb_dst(skb), NULL)
 #endif
 
 #endif /* SUSE_LINUX_2_4_19_IS_STUPID */

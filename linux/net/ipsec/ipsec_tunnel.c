@@ -1159,6 +1159,7 @@ ipsec_tunnel_rebuild_header(void *buff, struct net_device *dev,
 	return ret;
 }
 
+#ifdef HAVE_SET_MAC_ADDR
 DEBUG_NO_STATIC int
 ipsec_tunnel_set_mac_address(struct net_device *dev, void *addr)
 {
@@ -1207,6 +1208,7 @@ ipsec_tunnel_set_mac_address(struct net_device *dev, void *addr)
 	return prv->set_mac_address(prv->dev, addr);
 
 }
+#endif /* HAVE_SET_MAC_ADDR */
 
 #ifndef NET_21
 DEBUG_NO_STATIC void
@@ -1422,7 +1424,9 @@ ipsec_tunnel_detach(struct net_device *dev)
 	dev->neigh_setup        = NULL;
 #endif
 #endif
+#ifdef HAVE_SET_MAC_ADDR
 	dev->set_mac_address = NULL;
+#endif
 	dev->mtu = 0;
 #endif /* DETACH_AND_DOWN */
 	
@@ -1787,9 +1791,6 @@ ipsec_tunnel_init(struct net_device *dev)
 		    (unsigned long) sizeof(struct ipsecpriv),
 		    dev->name ? dev->name : "NULL");
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,31)
-	dev->get_stats		= ipsec_tunnel_get_stats;
-#endif
 	dev->destructor         = free_netdev;
 
 #ifndef HAVE_NETDEV_PRIV
@@ -1824,7 +1825,9 @@ ipsec_tunnel_init(struct net_device *dev)
         dev->stop               = ipsec_tunnel_close;
         dev->hard_start_xmit    = ipsec_tunnel_start_xmit;
         dev->get_stats          = ipsec_tunnel_get_stats;
+#ifdef HAVE_SET_MAC_ADDR
         dev->set_mac_address    = NULL;
+#endif
         dev->do_ioctl           = ipsec_tunnel_ioctl;
         dev->neigh_setup        = ipsec_tunnel_neigh_setup_dev;
 #endif
@@ -1924,7 +1927,11 @@ ipsec_tunnel_createnum(int ifnum)
 	dev_ipsec->next = NULL;
 #endif
 #endif /* alloc_netdev */
+#ifndef USE_NETDEV_OPS
 	dev_ipsec->init = &ipsec_tunnel_probe;
+#else
+	dev_ipsec->netdev_ops = &klips_device_ops;
+#endif
 	KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
 		    "klips_debug:ipsec_tunnel_init_devices: "
 		    "registering device %s\n",
@@ -2196,6 +2203,7 @@ ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs)
 #ifdef HAVE_NET_DEVICE_OPS
 const struct net_device_ops klips_device_ops = {
 	/* Add our tunnel functions to the device */
+	.ndo_init               = ipsec_tunnel_probe,
 	.ndo_open               = ipsec_tunnel_open,
 	.ndo_stop		= ipsec_tunnel_close,
 	.ndo_start_xmit 	= ipsec_tunnel_start_xmit,
@@ -2237,7 +2245,7 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 #ifdef HAVE_NET_DEVICE_OPS
 	dev->netdev_ops = &klips_device_ops;
 #else
-# ifndef HAVE_SET_MAC_ADDR
+# ifdef HAVE_SET_MAC_ADDR
 	dev->set_mac_address = ipsec_tunnel_set_mac_address;
 # endif
 #endif /* HAVE_NET_DEVICE_OPS */

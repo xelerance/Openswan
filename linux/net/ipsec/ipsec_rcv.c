@@ -483,10 +483,17 @@ void ipsec_rcv_setoutif(struct ipsec_rcv_state *irs)
 		}
 		skb->dev = irs->ipsp->ips_out;
 		
+#ifdef USE_NETDEV_OPS
+		if(skb->dev && skb->dev->netdev_ops->ndo_get_stats) {
+			struct net_device_stats *stats = skb->dev->netdev_ops->ndo_get_stats(skb->dev);
+			irs->stats = stats;
+		}
+#else
 		if(skb->dev && skb->dev->get_stats) {
 			struct net_device_stats *stats = skb->dev->get_stats(skb->dev);
 			irs->stats = stats;
 		}
+#endif
 	} 
 }
 
@@ -1701,10 +1708,8 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 	/* release the dst that was attached, since we have likely
 	 * changed the actual destination of the packet.
 	 */
-	if(skb_dst(skb)) {
-		dst_release(skb_dst(skb));
-		skb->dst = NULL;
-	}
+	if(skb_dst(skb))
+		skb_dst_drop(skb);
 	skb->pkt_type = PACKET_HOST;
 	if(irs->hard_header_len &&
 	   (skb_mac_header(skb) != (skb_network_header(skb) - irs->hard_header_len)) &&

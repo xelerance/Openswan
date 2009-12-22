@@ -86,6 +86,10 @@ struct ipsecpriv
 #endif /* !NET_21 */
 	void (*header_cache_update)(struct hh_cache *hh, struct net_device *dev, unsigned char *  haddr);
 #endif
+#ifdef USE_NETDEV_OPS
+	const struct net_device_ops *saved_netdev_ops;
+	struct net_device_ops netdev_ops;
+#endif
 	int  (*set_mac_address)(struct net_device *dev, void *addr);
 	struct net_device_stats *(*get_stats)(struct net_device *dev);
 	struct net_device_stats mystats;

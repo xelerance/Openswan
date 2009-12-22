@@ -661,11 +661,17 @@ ipsec_mast_probe(struct net_device *dev)
 		    (unsigned long) sizeof(struct mastpriv),
 		    dev->name ? dev->name : "NULL");
 
+#ifndef USE_NETDEV_OPS
 	/* Add our mast functions to the device */
 	dev->open		= ipsec_mast_open;
 	dev->stop		= ipsec_mast_close;
 	dev->hard_start_xmit	= ipsec_mast_start_xmit;
 	dev->get_stats		= ipsec_mast_get_stats;
+	dev->set_multicast_list = NULL;
+	dev->do_ioctl		= ipsec_mast_ioctl;
+	dev->set_mac_address 	= NULL;
+	dev->neigh_setup        = ipsec_mast_neigh_setup_dev;
+#endif
 #ifdef alloc_netdev
 	dev->destructor         = free_netdev;
 #endif
@@ -682,8 +688,6 @@ ipsec_mast_probe(struct net_device *dev)
 		((__u8*)(zeroes))[i] = 0;
 	}
 	
-	dev->set_multicast_list = NULL;
-	dev->do_ioctl		= ipsec_mast_ioctl;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
 	dev->header_ops = NULL;
 #else
@@ -691,8 +695,6 @@ ipsec_mast_probe(struct net_device *dev)
 	dev->rebuild_header 	= NULL;
 	dev->header_cache_update= NULL;
 #endif
-	dev->set_mac_address 	= NULL;
-	dev->neigh_setup        = ipsec_mast_neigh_setup_dev;
 	dev->hard_header_len 	= 8+20+20+8;
 	dev->mtu		= 0;
 	dev->addr_len		= 0;
@@ -717,6 +719,18 @@ static void ipsec_mast_netdev_setup(struct net_device *dev)
 #endif
 struct net_device *mastdevices[IPSEC_NUM_IFMAX];
 int mastdevices_max=-1;
+
+#ifdef USE_NETDEV_OPS
+static const struct net_device_ops ipsec_mast_ops = {
+	.ndo_init		= ipsec_mast_probe,
+	.ndo_open		= ipsec_mast_open,
+	.ndo_stop		= ipsec_mast_close,
+	.ndo_start_xmit		= ipsec_mast_start_xmit,
+	.ndo_get_stats		= ipsec_mast_get_stats,
+	.ndo_do_ioctl		= ipsec_mast_ioctl,
+	.ndo_neigh_setup	= ipsec_mast_neigh_setup_dev,
+};
+#endif
 
 int ipsec_mast_createnum(int vifnum) 
 {
@@ -755,7 +769,11 @@ int ipsec_mast_createnum(int vifnum)
 	memcpy(im->name, name, IFNAMSIZ);
 #endif
 		
+#ifdef USE_NETDEV_OPS
+	im->netdev_ops = &ipsec_mast_ops;
+#else
 	im->init = ipsec_mast_probe;
+#endif
 
 	if(register_netdev(im) != 0) {
 		printk(KERN_ERR "ipsec_mast: failed to register %s\n",

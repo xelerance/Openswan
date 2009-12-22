@@ -118,8 +118,8 @@
 #endif
 
 /* kernels > 2.4.2 */
-#if defined(IP_SELECT_IDENT) && defined(IP_SELECT_IDENT_NEW) && !defined(HAVE_SKB_DST)
-#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb->dst, NULL)
+#if defined(IP_SELECT_IDENT) && defined(IP_SELECT_IDENT_NEW)
+#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb_dst(skb), NULL)
 #endif
 
 #endif /* SUSE_LINUX_2_4_19_IS_STUPID */
@@ -2043,7 +2043,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 		return IPSEC_XMIT_RECURSDETECT;
 	}
 
-	dst_release(skb_dst(ixs->skb));
+	skb_dst_drop(ixs->skb);
 	skb_dst_set(ixs->skb, &ixs->route->u.dst);
 	if(ixs->stats) {
 		ixs->stats->tx_bytes += ixs->skb->len;
