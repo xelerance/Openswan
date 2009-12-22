@@ -14,6 +14,7 @@ v2.6.24
 * Zeroize ISAKMP and IPsec SA's when in FIPS mode [Avesh]
 * Initial contact from Windows/l2tp would fail once before succeeding [David]
 * KLIPS should compile on all recent (upto 2.6.31) kernels [mcr]
+* KLIPS fixes for 2.6.32 [david/paul]
 * Fix for mixed IPv6 in IPv4 and vice versa tunnels [Heiko Hund]
 * Fix for NETKEY on kernels 2.6.26+ [Andreas Steffan]
 * NAT-OA fixes [David]
