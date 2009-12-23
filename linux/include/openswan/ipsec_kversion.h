@@ -310,6 +310,7 @@
  */
 # define HAVE_PROC_DIR_ENTRY
 # define        PROC_NET        init_net.proc_net
+# define	PROC_EOF_DATA
 
 # define __ipsec_dev_get(x) __dev_get_by_name(&init_net, x)
 # define ipsec_dev_get(x) dev_get_by_name(&init_net, x)
@@ -350,6 +351,18 @@
 #  define NETDEV_TX_BUSY 1
 # endif
 #endif
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,31)
+# define USE_NETDEV_OPS
+#else
+# define skb_dst_drop(s)	({ \
+					if ((s)->dst) \
+						dst_release((s)->dst); \
+					(s)->dst = NULL; \
+				})
+# define skb_dst_set(s,p)	(s)->dst = (p)
+# define skb_dst(s)		(s)->dst
 #endif
 
 #if 0
@@ -426,13 +439,6 @@
 	printk(sevlevel "%s: " format , netdev->name , ## arg)
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
-#define	PROC_NET	init_net.proc_net
-#define	PROC_EOF_DATA
-#else
-#define	PROC_NET	proc_net
-#endif
-
 #ifndef late_initcall
 # include <linux/init.h>
 # ifndef late_initcall
@@ -465,18 +471,6 @@
 # define NF_INET_LOCAL_OUT NF_IP_LOCAL_OUT
 #endif
 
-/* TODO: Fedora kernels (eg 2.6.31.6-166.fc12) also need this */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
-# define USE_NETDEV_OPS
-#else
-# define skb_dst_drop(s)	({ \
-					if ((s)->dst) \
-						dst_release((s)->dst); \
-					(s)->dst = NULL; \
-				})
-# define skb_dst_set(s,p)	(s)->dst = (p)
-# define skb_dst(s)		(s)->dst
-#endif
 
 #if __KERNEL__
 # if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,0)
