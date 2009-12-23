@@ -74,6 +74,9 @@ static void default_values (struct starter_config *cfg)
 #endif
 	cfg->conn_default.options[KBF_TYPE] = KS_TUNNEL;
 
+	/*Cisco interop: remote peer type*/
+	cfg->conn_default.options[KBF_REMOTEPEERTYPE] = NON_CISCO;
+
 	cfg->conn_default.policy = POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
 	cfg->conn_default.policy |= POLICY_IKEV2_ALLOW;
 

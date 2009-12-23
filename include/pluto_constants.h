@@ -44,6 +44,11 @@ enum dpd_action {
   DPD_ACTION_RESTART_BY_PEER = 3
 };
 
+/* Cisco interop: values remote_peer_type= */
+enum keyword_remotepeertype {
+    NON_CISCO = 0,
+    CISCO  = 1,
+};
 
 /* Timer events */
 

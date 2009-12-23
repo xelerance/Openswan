@@ -497,7 +497,7 @@ could_route(struct connection *c)
 {
     struct spd_route *esr, *rosr;
     struct connection *ero      /* who, if anyone, owns our eroute? */
-        , *ro = route_owner(c, &rosr, &ero, &esr); /* who owns our route? */
+        , *ro = route_owner(c, &c->spd, &rosr, &ero, &esr); /* who owns our route? */
 
     DBG(DBG_CONTROL,
         DBG_log("could_route called for %s (kind=%s)"
@@ -740,7 +740,7 @@ unroute_connection(struct connection *c)
         sr->routing = RT_UNROUTED;  /* do now so route_owner won't find us */
 
         /* only unroute if no other connection shares it */
-        if (routed(cr) && route_owner(c, NULL, NULL, NULL) == NULL)
+        if (routed(cr) && route_owner(c, sr, NULL, NULL, NULL) == NULL)
             (void) do_command(c, sr, "unroute", NULL);
     }
 }
@@ -2250,7 +2250,7 @@ install_inbound_ipsec_sa(struct state *st)
         for (;;)
         {
             struct spd_route *esr;
-            struct connection *o = route_owner(c, &esr, NULL, NULL);
+            struct connection *o = route_owner(c, &c->spd, &esr, NULL, NULL);
 
             if (o == NULL || c==o)
                 break;  /* nobody interesting has a route */
@@ -2331,7 +2331,7 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
     struct spd_route *esr;
     struct spd_route *rosr;
     struct connection *ero      /* who, if anyone, owns our eroute? */
-        , *ro = route_owner(c, &rosr, &ero, &esr);
+        , *ro = route_owner(c, sr, &rosr, &ero, &esr);
     bool eroute_installed = FALSE
         , firewall_notified = FALSE
         , route_installed = FALSE;
@@ -2486,7 +2486,7 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
                 rosr->routing = RT_UNROUTED;
 
                 /* no need to keep old value */
-                ro = route_owner(c, &rosr, NULL, NULL);
+                ro = route_owner(c, sr, &rosr, NULL, NULL);
             } while (ro != NULL);
         }
     }

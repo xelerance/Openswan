@@ -518,6 +518,11 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 	}
 #endif
 
+	/*Cisco interop : remote peer type*/
+	if(conn->options_set[KBF_REMOTEPEERTYPE]) {
+	msg.remotepeertype=conn->options[KBF_REMOTEPEERTYPE];
+	}
+
 	set_whack_end(cfg, "left",  &msg.left, &conn->left);
 	set_whack_end(cfg, "right", &msg.right, &conn->right);
 

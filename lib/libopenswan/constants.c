@@ -574,6 +574,27 @@ enum_names
     auth_alg_names =
 	{ AUTH_ALGORITHM_NONE, AUTH_ALGORITHM_AES_CBC , auth_alg_name, NULL };
 
+const char *const modecfg_cisco_attr_name[] = {
+        "CISCO_BANNER",
+        "CISCO_SAVE_PW",
+        "CISCO_DEF_DOMAIN",
+        "CISCO_SPLIT_DNS",
+        "CISCO_SPLIT_INC",
+        "CISCO_UDP_ENCAP_PORT",
+        "CISCO_UNKNOWN",
+        "CISCO_DO_PFS",
+        "CISCO_FW_TYPE",
+        "CISCO_BACKUP_SERVER",
+        "CISCO_DDNS_HOSTNAME",
+        NULL
+    };
+
+enum_names modecfg_cisco_attr_names_tv =
+    { CISCO_BANNER + ISAKMP_ATTR_AF_TV , CISCO_DDNS_HOSTNAME + ISAKMP_ATTR_AF_TV, modecfg_cisco_attr_name , NULL };
+
+enum_names modecfg_cisco_attr_names =
+    { CISCO_BANNER, CISCO_DDNS_HOSTNAME, modecfg_cisco_attr_name , &modecfg_cisco_attr_names_tv };
+
 /* From draft-beaulieu-ike-xauth */
 const char *const xauth_attr_name[] = {
 	"XAUTH-TYPE",
@@ -590,7 +611,7 @@ const char *const xauth_attr_name[] = {
     };
 
 enum_names xauth_attr_names_tv =
-    { XAUTH_TYPE + ISAKMP_ATTR_AF_TV , XAUTH_ANSWER + ISAKMP_ATTR_AF_TV, xauth_attr_name , NULL };
+    { XAUTH_TYPE + ISAKMP_ATTR_AF_TV , XAUTH_ANSWER + ISAKMP_ATTR_AF_TV, xauth_attr_name , &modecfg_cisco_attr_names };
 
 enum_names xauth_attr_names =
     { XAUTH_TYPE , XAUTH_ANSWER, xauth_attr_name , &xauth_attr_names_tv };

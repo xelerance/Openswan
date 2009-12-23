@@ -201,6 +201,9 @@ struct connection {
     time_t          dpd_delay;              /* time between checks */
     time_t          dpd_timeout;            /* time after which we are dead */
     enum dpd_action dpd_action;             /* what to do when we die */
+
+    /*Cisco interop: remote peer type*/
+    enum keyword_remotepeertype remotepeertype;
     
     bool               forceencaps;         /* always use NAT-T encap */
     
@@ -300,6 +303,7 @@ extern void remove_group_instance(const struct connection *group, const char *na
 extern void release_dead_interfaces(void);
 extern void check_orientations(void);
 extern struct connection *route_owner(struct connection *c
+				      , struct spd_route *cur_spd
 				      , struct spd_route **srp
 				      , struct connection **erop
 				      , struct spd_route **esrp);

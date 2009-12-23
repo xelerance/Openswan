@@ -1287,6 +1287,9 @@ add_connection(const struct whack_message *wm)
         c->dpd_timeout = wm->dpd_timeout;
         c->dpd_action = wm->dpd_action;
 
+	/*Cisco interop: remote peer type*/
+	c->remotepeertype=wm->remotepeertype;
+
 	c->metric = wm->metric;
 
 	c->forceencaps = wm->forceencaps;
@@ -2023,6 +2026,7 @@ build_outgoing_opportunistic_connection(struct gw_info *gw
  */
 struct connection *
 route_owner(struct connection *c
+	    , struct spd_route *cur_spd
 	    , struct spd_route **srp
 	    , struct connection **erop
 	    , struct spd_route **esrp)
@@ -2037,7 +2041,7 @@ route_owner(struct connection *c
     passert(oriented(*c));
     best_sr  = NULL;
     best_esr = NULL;
-    best_routing = c->spd.routing;
+    best_routing = cur_spd->routing;
     best_erouting = best_routing;
 
     for (d = connections; d != NULL; d = d->ac_next)
@@ -2049,6 +2053,9 @@ route_owner(struct connection *c
 
 	    for (src = &c->spd; src; src=src->next)
 	    {
+		if (src==srd)
+		    continue;
+
 		if (!samesubnet(&src->that.client, &srd->that.client))
 		    continue;
 		if (src->that.protocol != srd->that.protocol)
@@ -2093,9 +2100,9 @@ route_owner(struct connection *c
 	    err_t m = builddiag("route owner of \"%s\"%s %s:"
 		, c->name
 		, (fmt_conn_instance(c, cib), cib)
-		, enum_name(&routing_story, c->spd.routing));
+		, enum_name(&routing_story, cur_spd->routing));
 
-	    if (!routed(best_ro->spd.routing))
+	    if (!routed(best_routing))
 		m = builddiag("%s NULL", m);
 	    else if (best_ro == c)
 		m = builddiag("%s self", m);
@@ -2103,7 +2110,7 @@ route_owner(struct connection *c
 		m = builddiag("%s \"%s\"%s %s", m
 		    , best_ro->name
 		    , (fmt_conn_instance(best_ro, cib), cib)
-		    , enum_name(&routing_story, best_ro->spd.routing));
+		    , enum_name(&routing_story, best_routing));
 
 	    if (erop != NULL)
 	    {

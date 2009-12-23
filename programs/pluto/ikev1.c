@@ -711,14 +711,17 @@ informational(struct msg_digest *md)
 		{
 
 		char buftest[ADDRTOT_BUF];
-		DBG_log("Current host_addr: %s", (addrtot(&tmp_c->spd.that.host_addr, 0, buftest, sizeof(buftest)), buftest) );
-		DBG_log("Current nexthop: %s", (addrtot(&tmp_c->spd.that.host_nexthop, 0, buftest, sizeof(buftest)), buftest) );
-		DBG_log("Current srcip: %s", (addrtot(&tmp_c->spd.that.host_srcip, 0, buftest, sizeof(buftest)), buftest) );
-		DBG_log("Current client_addr: %s", (addrtot(&tmp_c->spd.that.client.addr, 0, buftest, sizeof(buftest)), buftest) );
+                struct spd_route *tmp_spd = &tmp_c->spd;
+                int count_spd=0;
+                do {
+                DBG_log("spd route number: %d", ++count_spd);
+                DBG_log("host_addr: %s", (addrtot(&tmp_spd->that.host_addr, 0, buftest, sizeof(buftest)), buftest) );
+                DBG_log("nexthop: %s", (addrtot(&tmp_spd->that.host_nexthop, 0, buftest, sizeof(buftest)), buftest) );
+                DBG_log("srcip: %s", (addrtot(&tmp_spd->that.host_srcip, 0, buftest, sizeof(buftest)), buftest) );
+                DBG_log("client_addr: %s", (addrtot(&tmp_spd->that.client.addr, 0, buftest, sizeof(buftest)), buftest) );
+                tmp_spd = tmp_spd->next;
+                } while(tmp_spd!=NULL);
 
-		//if(test_c->spd.that.virt!=NULL){
-		///DBG_log("current virt_addr: %s", (addrtot(&test_c->spd.that.virt->net[0].addr, 0, buftest, sizeof(buftest)), buftest) );
-		//}
 
 		if(tmp_c->interface!=NULL){
 		DBG_log("Current interface_addr: %s", (addrtot(&tmp_c->interface->ip_addr, 0, buftest, sizeof(buftest)), buftest) );
@@ -731,15 +734,42 @@ informational(struct msg_digest *md)
 
 		}
 
+                ip_address old_addr;
+                /*storing old address for comparison purposes*/
+                old_addr = tmp_c->spd.that.host_addr;
+
 		/*Decoding remote peer address info where connection has to be redirected*/
 		memcpy(&tmp_c->spd.that.host_addr.u.v4.sin_addr.s_addr, 
 				(u_int32_t *)(n_pbs->cur + pbs_left(n_pbs)-4), sizeof(tmp_c->spd.that.host_addr.u.v4.sin_addr.s_addr));
 		//DBG_log("host_addr_name : %s", tmp_c->spd.that.host_addr_name);
 
 		/*Modifying connection info to store the redirected remote peer info*/
+                DBG_log("Old host_addr_name : %s", tmp_c->spd.that.host_addr_name);
 		tmp_c->spd.that.host_addr_name = NULL;
 		tmp_c->spd.that.id.ip_addr= tmp_c->spd.that.host_addr;
+
+		if(sameaddr(&tmp_c->spd.this.host_nexthop, &old_addr)) {
+		char buftest[ADDRTOT_BUF];
+		DBG_log("Old remote addr %s", (addrtot(&old_addr, 0, buftest, sizeof(buftest)), buftest) );
+		DBG_log("Old this host next hop %s", (addrtot(&tmp_c->spd.this.host_nexthop, 0, buftest, sizeof(buftest)), buftest) );
 		tmp_c->spd.this.host_nexthop = tmp_c->spd.that.host_addr;
+                DBG_log("New this host next hop %s", (addrtot(&tmp_c->spd.this.host_nexthop, 0, buftest, sizeof(buftest)), buftest) );
+		}
+
+		if(sameaddr(&tmp_c->spd.that.host_srcip, &old_addr)) {
+                char buftest[ADDRTOT_BUF];
+                DBG_log("Old that host srcip %s", (addrtot(&tmp_c->spd.that.host_srcip, 0, buftest, sizeof(buftest)), buftest) );
+		tmp_c->spd.that.host_srcip = tmp_c->spd.that.host_addr;
+		DBG_log("New that host srcip %s", (addrtot(&tmp_c->spd.that.host_srcip, 0, buftest, sizeof(buftest)), buftest) );
+		}
+
+		if(sameaddr(&tmp_c->spd.that.client.addr, &old_addr)) {
+                char buftest[ADDRTOT_BUF];
+		DBG_log("Old that client ip %s", (addrtot(&tmp_c->spd.that.client.addr, 0, buftest, sizeof(buftest)), buftest) );
+		tmp_c->spd.that.client.addr = tmp_c->spd.that.host_addr;
+		DBG_log("New that client ip %s", (addrtot(&tmp_c->spd.that.client.addr, 0, buftest, sizeof(buftest)), buftest) );
+		}
+
 		tmp_c->host_pair->him.addr = tmp_c->spd.that.host_addr;
 
 		/*Initiating connection with the redirected peer*/

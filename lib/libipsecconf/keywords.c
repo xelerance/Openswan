@@ -179,6 +179,18 @@ struct keyword_enum_values kw_proto_stack=
 
 
 /*
+ *  Cisco interop: remote peer type
+ */
+
+struct keyword_enum_value kw_remote_peer_type_list[]={
+    { "cisco",         CISCO },
+};
+
+struct keyword_enum_values kw_remote_peer_type=
+    { kw_remote_peer_type_list, sizeof(kw_remote_peer_type_list)/sizeof(struct keyword_enum_value)};
+
+
+/*
  * Values for right= and left=
  */
 extern struct keyword_enum_values kw_host_list;
@@ -341,6 +353,10 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"keylife",        kv_conn|kv_auto|kv_alias, kt_time,   KBF_SALIFETIME,NOT_ENUM},
     {"lifetime",       kv_conn|kv_auto|kv_alias, kt_time,   KBF_SALIFETIME,NOT_ENUM},
     {"salifetime",     kv_conn|kv_auto, kt_time,   KBF_SALIFETIME,NOT_ENUM},
+
+    /* Cisco interop: remote peer type*/
+    {"remote_peer_type", kv_conn|kv_auto, kt_enum, KBF_REMOTEPEERTYPE, &kw_remote_peer_type},
+
 #ifdef NAT_TRAVERSAL
     {"forceencaps",    kv_conn|kv_auto, kt_bool,   KBF_FORCEENCAP, NOT_ENUM},
 #endif

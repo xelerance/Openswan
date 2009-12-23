@@ -716,6 +716,28 @@ stf_status modecfg_send_request(struct state *st)
 	attr.isaat_lv = 0;
 	out_struct(&attr, &isakmp_xauth_attribute_desc, &strattr, NULL);
 
+	if(st->st_connection->remotepeertype == CISCO) {
+	/* ISAKMP attr out (INTERNAL_IP4_DNS) */
+	attr.isaat_af_type = INTERNAL_IP4_DNS;
+	attr.isaat_lv = 0;
+	out_struct(&attr, &isakmp_xauth_attribute_desc, &strattr, NULL);
+
+	/* ISAKMP attr out (INTERNAL_IP4_NBNS) */
+	attr.isaat_af_type = INTERNAL_IP4_NBNS;
+	attr.isaat_lv = 0;
+	out_struct(&attr, &isakmp_xauth_attribute_desc, &strattr, NULL);
+
+	/* ISAKMP attr out (CISCO_BANNER) */
+	attr.isaat_af_type = CISCO_BANNER;
+	attr.isaat_lv = 0;
+	out_struct(&attr, &isakmp_xauth_attribute_desc, &strattr, NULL);
+
+	/* ISAKMP attr out (CISCO_SPLIT_INC) */
+	attr.isaat_af_type = CISCO_SPLIT_INC;
+	attr.isaat_lv = 0;
+	out_struct(&attr, &isakmp_xauth_attribute_desc, &strattr, NULL);
+	}
+
 	close_message(&strattr);
     }
 
@@ -1733,11 +1755,99 @@ modecfg_inR1(struct msg_digest *md)
 		break;
 		
 		case INTERNAL_IP4_NETMASK:
+		{
+		    ip_address a;
+		    char caddr[SUBNETTOT_BUF];
+
+		    u_int32_t *ap = (u_int32_t *)(strattr.cur);
+		    a.u.v4.sin_family = AF_INET;
+		    memcpy(&a.u.v4.sin_addr.s_addr, ap
+			, sizeof(a.u.v4.sin_addr.s_addr));
+
+		    addrtot(&a, 0, caddr, sizeof(caddr));
+		    openswan_log("Received IP4 NETMASK %s", caddr);
+		}
+		resp |= LELEM(attr.isaat_af_type);
+		break;
+
 		case INTERNAL_IP4_DNS:
+                {
+                    ip_address a;
+                    char caddr[SUBNETTOT_BUF];
+                
+                    u_int32_t *ap = (u_int32_t *)(strattr.cur);
+                    a.u.v4.sin_family = AF_INET;
+                    memcpy(&a.u.v4.sin_addr.s_addr, ap
+                        , sizeof(a.u.v4.sin_addr.s_addr));
+                    
+                    addrtot(&a, 0, caddr, sizeof(caddr));
+                    openswan_log("Received DNS %s", caddr);
+                }
+                resp |= LELEM(attr.isaat_af_type);
+                break;
+
+
 		case INTERNAL_IP4_SUBNET:
 		case INTERNAL_IP4_NBNS:
 		    resp |= LELEM(attr.isaat_af_type);
 		    break;
+
+                case CISCO_BANNER:
+                DBG_dump("Received cisco banner: ", strattr.cur, pbs_left(&strattr));
+                resp |= LELEM(attr.isaat_af_type);
+                break;
+
+                case CISCO_SPLIT_INC:
+                {
+                    struct spd_route *tmp_spd;
+                    ip_address a;
+                    char caddr[SUBNETTOT_BUF];
+                    size_t len = pbs_left(&strattr);
+                    struct connection *c = st->st_connection;
+                    struct spd_route *tmp_spd2 = &c->spd;
+
+                    while (len > 0) {
+                    tmp_spd = clone_thing(c->spd, "remote subnets policies");
+
+                    u_int32_t *ap = (u_int32_t *)(strattr.cur);
+                    a.u.v4.sin_family = AF_INET;
+                    memcpy(&a.u.v4.sin_addr.s_addr, ap
+                           , sizeof(a.u.v4.sin_addr.s_addr));
+
+                    addrtosubnet(&a, &tmp_spd->that.client);
+
+                    len -= sizeof(a.u.v4.sin_addr.s_addr);
+                    strattr.cur += sizeof(a.u.v4.sin_addr.s_addr);
+
+                    ap = (u_int32_t *)(strattr.cur);
+                    a.u.v4.sin_family = AF_INET;
+                    memcpy(&a.u.v4.sin_addr.s_addr, ap
+                           , sizeof(a.u.v4.sin_addr.s_addr));
+
+                    tmp_spd->that.client.maskbits = masktocount(&a);
+                    len -= sizeof(a.u.v4.sin_addr.s_addr);
+                    strattr.cur += sizeof(a.u.v4.sin_addr.s_addr);
+
+                    setportof(0, &tmp_spd->that.client.addr);
+
+                    len -= 6;
+                    strattr.cur += 6;
+
+                    tmp_spd->that.has_client = TRUE;
+
+                    subnettot(&tmp_spd->that.client, 0
+                              , caddr, sizeof(caddr));
+                    openswan_log("Received subnet %s, maskbits %d", caddr, tmp_spd->that.client.maskbits);
+
+                    tmp_spd->next = NULL;
+                    tmp_spd2->next = tmp_spd;
+                    tmp_spd2 = tmp_spd;
+                    }
+
+                }
+                resp |= LELEM(attr.isaat_af_type);
+                break;
+
 		default:
 		    openswan_log("unsupported mode cfg attribute %s received."
 				 , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )));

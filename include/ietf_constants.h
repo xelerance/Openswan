@@ -342,6 +342,19 @@ enum next_payload_types {
 #define XAUTH_TYPE_OTP     2
 #define XAUTH_TYPE_SKEY    3
 
+/* Mode Config attribute values: Cisco interop */
+#define   CISCO_BANNER               28672
+#define   CISCO_SAVE_PW              28673
+#define   CISCO_DEF_DOMAIN           28674
+#define   CISCO_SPLIT_DNS            28675
+#define   CISCO_SPLIT_INC            28676
+#define   CISCO_UDP_ENCAP_PORT       28677
+#define   CISCO_UNKNOWN              28678
+#define   CISCO_DO_PFS               28679
+#define   CISCO_FW_TYPE              28680
+#define   CISCO_BACKUP_SERVER        28681
+#define   CISCO_DDNS_HOSTNAME        28682
+
 /*
   extern enum_names modecfg_attr_names;
   extern enum_names xauth_type_names;
