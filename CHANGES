@@ -11,6 +11,7 @@ v2.6.24
 * Make initscript LSB compliant [Avesh]
 * Do not set the IKEv2 Critical flag for payloads defined in RFC 4306 [Avesh]
 * Client side support for Cisco load balance directives in IKEv1 [Avesh]
+  - new keyword: remote_peer_type=cisco
 * Update ipsec_setup man page to match setup changes [Tuomo]
 * Zeroize ISAKMP and IPsec SA's when in FIPS mode [Avesh]
 * Initial contact from Windows/l2tp would fail once before succeeding [David]
