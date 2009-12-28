@@ -842,24 +842,19 @@ main(int argc, char **argv)
      * ipsec barf was one, but it no longer does.
      */
     {
-#ifdef PLUTO_SENDS_VENDORID
-# ifdef HAVE_LIBNSS
-	if(Pluto_IsFIPS()) {
-	openswan_log("Starting Pluto (Openswan Version %s%s) pid:%u"
-		, ipsec_version_code() , compile_time_interop_options, getpid());
-	} else {
-# endif
-        const char *v = init_pluto_vendorid();
 	const char *vc = ipsec_version_code();
-
-        openswan_log("Starting Pluto (Openswan Version %s%s; Vendor ID %s) pid:%u"
-		     , vc
-		     , compile_time_interop_options
-		     , v, getpid());
+#ifdef PLUTO_SENDS_VENDORID
+	const char *v = init_pluto_vendorid();
+	openswan_log("Starting Pluto (Openswan Version %s%s; Vendor ID %s) pid:%u"
+		     , vc, compile_time_interop_options, v, getpid());
 #else
-        openswan_log("Starting Pluto (Openswan Version %s%s) pid:%u"
-		     , ipsec_version_code()
-		     , compile_time_interop_options, getpid());
+	openswan_log("Starting Pluto (Openswan Version %s%s) pid:%u"
+		     , vc, compile_time_interop_options, getpid());
+#endif
+#ifdef HAVE_LIBNSS
+	if(Pluto_IsFIPS()) {
+		openswan_log("Pluto is running in FIPS mode");
+	}
 #endif
 
 	if((vc[0]=='c' && vc[1]=='v' && vc[2]=='s') ||
@@ -873,12 +868,6 @@ main(int argc, char **argv)
 	     */
 	    openswan_log("@(#) built on "__DATE__":" __TIME__ " by " BUILDER);
 	}
-#ifdef HAVE_LIBNSS
-#ifdef PLUTO_SENDS_VENDORID
-	}
-#endif
-#endif
-
 #if defined(USE_1DES)
 	openswan_log("WARNING: 1DES is enabled");
 #endif
