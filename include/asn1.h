@@ -11,8 +11,18 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: asn1.h,v 1.5 2005/08/05 17:39:56 mcr Exp $
  */
+
+/* asn1_init() takes a debug argument which does not work when -DNO_DEBUG
+ * is specified. It does this to prevent logging private key info using
+ * DBG_RAW. We define the two use cases here, it should not cause any
+ * logging when -DNO_DEBUG is defined.
+ */
+#ifdef NO_DEBUG
+# define DBG_RAW         LELEM(0) 
+# define DBG_PRIVATE       LELEM(20)
+#endif
+
 
 /* Defines some primitive ASN1 types */
 
