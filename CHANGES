@@ -28,6 +28,7 @@ v2.6.24
 * lwdns.req.log moved from /var/tmp/ to /var/run/pluto/ [Avesh]
   - This is to avoid an SElinux AVC Denial
 * Fix compilation so it does not require xmlto [paul]
+* Fix NSS by removing extra sql: from NSS db directory name [Tuomo]
 * Bugtracker bugs fixed:
    # 428:  KLIPS NULL encryption patch (through cryptoapi)
    #1004: L2TP broken with NAT'ed clients [dhr/Tuomo/Paul]
