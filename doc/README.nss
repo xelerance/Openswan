@@ -233,7 +233,7 @@ Import the "cacert1" as follows:
 
 cd /etc/ipsec.d
 pk12util -i cacert1.p12 -d /etc/ipsec.d
-certutil -M -n cacert1 -t "C, C, C" -d /etc/ipsec.d
+certutil -M -n cacert1 -t "C,C,C" -d /etc/ipsec.d
 
 Now machine 2 also has the CA certificates "cacert1" in its NSS database.
 
