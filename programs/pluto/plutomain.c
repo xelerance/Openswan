@@ -778,7 +778,7 @@ main(int argc, char **argv)
 
 #ifdef HAVE_LIBNSS
 	char buf[100];
-	snprintf(buf, sizeof(buf), "sql:%s",oco->confddir);
+	snprintf(buf, sizeof(buf), "%s",oco->confddir);
 	loglog(RC_LOG_SERIOUS,"nss directory plutomain: %s",buf);
 	SECStatus nss_init_status= NSS_InitReadWrite(buf);
 	if (nss_init_status != SECSuccess) {
