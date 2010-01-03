@@ -9,6 +9,7 @@ v2.6.24
 * Fix to allow ";" in the ike/esp parameters as per man page. [Avesh]
 * Fix for DPD with NETKEY [Frank Eberle]
 * Make initscript LSB compliant [Avesh]
+* Fix for compiling with nss and broken nspr header [Elio Maldonado Batiz]
 * Do not set the IKEv2 Critical flag for payloads defined in RFC 4306 [Avesh]
 * Client side support for Cisco load balance directives in IKEv1 [Avesh]
   - new keyword: remote_peer_type=cisco
