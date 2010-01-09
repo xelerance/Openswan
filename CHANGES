@@ -31,6 +31,7 @@ v2.6.24
 * Fix compilation so it does not require xmlto [paul]
 * Fix NSS by removing extra sql: from NSS db directory name [Tuomo]
   (sql: syntax not supported on RHEL/CentOS nss version)
+* Move NSS debug logging to DBG_PARSING [Tuomo]
 * Bugtracker bugs fixed:
    # 428:  KLIPS NULL encryption patch (through cryptoapi)
    #1004: L2TP broken with NAT'ed clients [dhr/Tuomo/Paul]

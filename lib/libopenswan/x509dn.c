@@ -1393,9 +1393,9 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 	    if(PK11_VerifyRecover(publicKey,&signature,&dsig,osw_return_nss_password_file_info()) == SECSuccess )
 	    {
             DBG(DBG_PARSING,
-                DBG_dump("NSS decrypted sig: ", dsig.data, dsig.len)
-            )
-            DBG_log("NSS: length of decrypted sig = %d", dsig.len);
+                DBG_dump("NSS decrypted sig: ", dsig.data, dsig.len);
+                DBG_log("NSS: length of decrypted sig = %d", dsig.len);
+	    );
 	    }
 
             pfree(nc.ptr);
@@ -1406,12 +1406,14 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 	   if(memcmp(dsig.data+dsig.len-digest->len,digest->ptr, digest->len)==0)
 	   {
             pfree(dsigc.ptr);
-            DBG_log("NSS : RSA Signature verified, hash values matched");
+	    DBG(DBG_PARSING,
+		DBG_log("NSS: RSA Signature verified, hash values matched")
+	    );
 	    return TRUE;
 	   }
 
            pfree(dsigc.ptr);
-	   DBG_log("NSS : RSA Signature NOT verified");
+	   DBG(DBG_PARSING, DBG_log("NSS: RSA Signature NOT verified"));
 	   return FALSE;
 	}
 	default:
