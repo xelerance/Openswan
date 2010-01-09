@@ -16,7 +16,7 @@ v2.6.24
 * Update ipsec_setup man page to match setup changes [Tuomo]
 * Zeroize ISAKMP and IPsec SA's when in FIPS mode [Avesh]
 * Initial contact from Windows/l2tp would fail once before succeeding [David]
-* KLIPS should compile on all recent (upto 2.6.31) kernels [mcr]
+* KLIPS compiles on all recent (upto 2.6.31) kernels [mcr]
 * KLIPS fixes for 2.6.32 [david/paul]
 * Fix for mixed IPv6 in IPv4 and vice versa tunnels [Heiko Hund]
 * Fix for NETKEY on kernels 2.6.26+ [Andreas Steffan]
@@ -30,6 +30,7 @@ v2.6.24
   - This is to avoid an SElinux AVC Denial
 * Fix compilation so it does not require xmlto [paul]
 * Fix NSS by removing extra sql: from NSS db directory name [Tuomo]
+  (sql: syntax not supported on RHEL/CentOS nss version)
 * Bugtracker bugs fixed:
    # 428:  KLIPS NULL encryption patch (through cryptoapi)
    #1004: L2TP broken with NAT'ed clients [dhr/Tuomo/Paul]
