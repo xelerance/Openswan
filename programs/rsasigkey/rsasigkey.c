@@ -32,6 +32,10 @@
 #include <gmp.h>
 
 #ifdef HAVE_LIBNSS
+/* temp work around for bug in nspr */
+#include <nspr4/prlink.h>
+#pragma GCC diagnostic warning "-Wstrict-prototypes"
+
   /* nspr */
 # include <prerror.h>
 # include <prinit.h>
