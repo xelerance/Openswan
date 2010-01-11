@@ -568,7 +568,7 @@ rsasigkey(int nbits, char *configdir, char *password)
 	}
 
 	PR_Init(PR_USER_THREAD, PR_PRIORITY_NORMAL, 1);
-	snprintf(buf, sizeof(buf), "sql:%s",configdir);
+	snprintf(buf, sizeof(buf), "%s",configdir);
 	if ((rv = NSS_InitReadWrite(buf)) != SECSuccess) {
 		fprintf(stderr, "%s: NSS_InitReadWrite returned %d\n", me, PR_GetError());
 		break;
