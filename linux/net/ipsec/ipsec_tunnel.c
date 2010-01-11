@@ -146,6 +146,8 @@ static inline int ipsec_tunnel_xmit2(struct sk_buff *skb)
 #endif
 }
 
+#ifdef HAVE_NET_DEVICE_OPS /* this may need further restricting */
+
 int klips_header(struct sk_buff *skb, struct net_device *dev,
 		 unsigned short type,
 		 const void *daddr, const void *saddr, unsigned len)
@@ -405,6 +407,8 @@ const struct header_ops klips_header_ops ____cacheline_aligned = {
 	.cache		= klips_header_cache,
 	.cache_update	= klips_header_cache_update,
 };
+
+#endif /* HAVE_NET_DEVICE_OPS */
 
 enum ipsec_xmit_value
 ipsec_tunnel_strip_hard_header(struct ipsec_xmit_state *ixs)

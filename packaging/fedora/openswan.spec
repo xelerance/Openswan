@@ -5,7 +5,7 @@ Version: IPSECBASEVERSION
 %{!?buildklips: %{expand: %%define buildklips 0}}
 %{!?buildxen: %{expand: %%define buildxen 0}}
 
-# nss build. too unstable right now to enable
+# nss build
 %{!?buildnss: %{expand: %%define buildnss 0}}
 
 # The default kernel version to build for is the latest of
@@ -59,9 +59,7 @@ Summary: Openswan kernel module
 Group:  System Environment/Kernel
 Release: %{krelver}_%{ourrelease}
 Requires: kernel = %{kversion}, %{name}-%{version}
-%endif
 
-%if %{buildklips}
 %description klips
 This package contains only the ipsec module for the RedHat/Fedora series of
 kernels.
