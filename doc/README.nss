@@ -1,6 +1,5 @@
 Title: Using NSS crypto library with Pluto (Openswan)
 Author: Avesh Agarwal email: avagarwa@redhat.com
-Version:0.0
 
 About NSS crypto library
 --------------------------
