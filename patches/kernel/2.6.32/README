@@ -1,0 +1,2 @@
+For this to work, klips needs to be patched in from the latest openswan
+using "make kpatch", and klips has to be buid inline, not as a module.
