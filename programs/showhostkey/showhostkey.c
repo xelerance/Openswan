@@ -498,7 +498,7 @@ int main(int argc, char *argv[])
     PRBool nss_initialized = PR_FALSE;
     SECStatus rv;
     char buf[100];
-    snprintf(buf, sizeof(buf), "sql:%s",oco->confddir);
+    snprintf(buf, sizeof(buf), "%s",oco->confddir);
     loglog(RC_LOG_SERIOUS,"nss directory showhostkey: %s",buf);
     PR_Init(PR_USER_THREAD, PR_PRIORITY_NORMAL, 1);
     if ((rv = NSS_InitReadWrite(buf)) != SECSuccess) {

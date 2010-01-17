@@ -1,0 +1,282 @@
+diff -Naur linux-2.6.32/include/linux/in.h linux-2.6.32-saref/include/linux/in.h
+--- linux-2.6.32/include/linux/in.h	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32-saref/include/linux/in.h	2009-12-29 17:26:26.072351512 -0500
+@@ -76,6 +76,7 @@
+ #define IP_XFRM_POLICY	17
+ #define IP_PASSSEC	18
+ #define IP_TRANSPARENT	19
++#define IP_IPSEC_REFINFO 22
+ 
+ /* BSD compatibility */
+ #define IP_RECVRETOPTS	IP_RETOPTS
+diff -Naur linux-2.6.32/include/net/ip.h linux-2.6.32-saref/include/net/ip.h
+--- linux-2.6.32/include/net/ip.h	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32-saref/include/net/ip.h	2009-12-29 17:31:15.286230681 -0500
+@@ -56,6 +56,7 @@
+ 	int			oif;
+ 	struct ip_options	*opt;
+ 	union skb_shared_tx	shtx;
++	struct sec_path         *sp;
+ };
+ 
+ #define IPCB(skb) ((struct inet_skb_parm*)((skb)->cb))
+diff -Naur linux-2.6.32/include/net/xfrm.h linux-2.6.32-saref/include/net/xfrm.h
+--- linux-2.6.32/include/net/xfrm.h	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32-saref/include/net/xfrm.h	2009-12-29 17:33:09.266485554 -0500
+@@ -907,13 +907,19 @@
+ 
+ extern void xfrm_dst_ifdown(struct dst_entry *dst, struct net_device *dev);
+ 
++typedef unsigned int xfrm_sec_unique_t;
++
+ struct sec_path
+ {
+ 	atomic_t		refcnt;
++	xfrm_sec_unique_t       ref;       /*reference to high-level policy*/
+ 	int			len;
+ 	struct xfrm_state	*xvec[XFRM_MAX_DEPTH];
+ };
+ 
++struct ipcm_cookie;
++extern int ip_cmsg_send_ipsec(struct cmsghdr *cmsg, struct ipcm_cookie *ipc);
++
+ static inline struct sec_path *
+ secpath_get(struct sec_path *sp)
+ {
+diff -Naur linux-2.6.32/net/ipv4/af_inet.c linux-2.6.32-saref/net/ipv4/af_inet.c
+--- linux-2.6.32/net/ipv4/af_inet.c	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32-saref/net/ipv4/af_inet.c	2009-12-29 18:28:17.412494556 -0500
+@@ -1629,6 +1629,18 @@
+ 	if (ip_mr_init())
+ 		printk(KERN_CRIT "inet_init: Cannot init ipv4 mroute\n");
+ #endif
++
++#if defined(CONFIG_KLIPS)
++	{
++               extern int ipsec_klips_init(void);
++		/*
++		 *  Initialise AF_INET ESP and AH protocol support including 
++		 *  e-routing and SA tables
++		 */
++		ipsec_klips_init();
++	}
++#endif /* CONFIG_IPSEC */
++
+ 	/*
+ 	 *	Initialise per-cpu ipv4 mibs
+ 	 */
+diff -Naur linux-2.6.32/net/ipv4/icmp.c linux-2.6.32-saref/net/ipv4/icmp.c
+--- linux-2.6.32/net/ipv4/icmp.c	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32-saref/net/ipv4/icmp.c	2009-12-29 17:34:26.545236330 -0500
+@@ -423,6 +423,8 @@
+ 	struct net *net;
+ 	struct sock *sk;
+ 
++	memset(&ipc, 0, sizeof(ipc));
++
+ 	if (!rt)
+ 		goto out;
+ 	net = dev_net(rt->u.dst.dev);
+diff -Naur linux-2.6.32/net/ipv4/ip_output.c linux-2.6.32-saref/net/ipv4/ip_output.c
+--- linux-2.6.32/net/ipv4/ip_output.c	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32-saref/net/ipv4/ip_output.c	2009-12-29 17:35:58.437258611 -0500
+@@ -72,6 +72,7 @@
+ #include <net/arp.h>
+ #include <net/icmp.h>
+ #include <net/checksum.h>
++#include <net/xfrm.h>
+ #include <net/inetpeer.h>
+ #include <linux/igmp.h>
+ #include <linux/netfilter_ipv4.h>
+@@ -410,6 +411,8 @@
+ 	/* Copy the flags to each fragment. */
+ 	IPCB(to)->flags = IPCB(from)->flags;
+ 
++	to->sp = secpath_get(from->sp);
++
+ #ifdef CONFIG_NET_SCHED
+ 	to->tc_index = from->tc_index;
+ #endif
+@@ -950,6 +953,7 @@
+ 			 */
+ 			skb->ip_summed = csummode;
+ 			skb->csum = 0;
++			skb->sp = secpath_get(ipc->sp);
+ 			skb_reserve(skb, hh_len);
+ 			*skb_tx(skb) = ipc->shtx;
+ 
+@@ -1365,6 +1369,8 @@
+ 	__be32 daddr;
+ 	struct rtable *rt = skb_rtable(skb);
+ 
++	memset(&ipc, 0, sizeof(ipc));
++
+ 	if (ip_options_echo(&replyopts.opt, skb))
+ 		return;
+ 
+diff -Naur linux-2.6.32/net/ipv4/ip_sockglue.c linux-2.6.32-saref/net/ipv4/ip_sockglue.c
+--- linux-2.6.32/net/ipv4/ip_sockglue.c	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32-saref/net/ipv4/ip_sockglue.c	2009-12-29 19:50:04.281508094 -0500
+@@ -49,6 +49,7 @@
+ #define IP_CMSG_RETOPTS		16
+ #define IP_CMSG_PASSSEC		32
+ #define IP_CMSG_ORIGDSTADDR     64
++#define IP_CMSG_IPSEC_REFINFO   128
+ 
+ /*
+  *	SOL_IP control messages.
+@@ -151,6 +152,7 @@
+ 
+ void ip_cmsg_recv(struct msghdr *msg, struct sk_buff *skb)
+ {
++	extern void ip_cmsg_recv_ipsec(struct msghdr *msg, struct sk_buff *skb);
+ 	struct inet_sock *inet = inet_sk(skb->sk);
+ 	unsigned flags = inet->cmsg_flags;
+ 
+@@ -185,8 +187,14 @@
+ 
+ 	if ((flags >>= 1) == 0)
+ 		return;
++
+ 	if (flags & 1)
+ 		ip_cmsg_recv_dstaddr(msg, skb);
++	if ((flags >>= 1) == 0)
++		return;
++
++	if (flags & 1)
++		ip_cmsg_recv_ipsec(msg, skb);
+ 
+ }
+ EXPORT_SYMBOL(ip_cmsg_recv);
+@@ -219,12 +227,23 @@
+ 			ipc->addr = info->ipi_spec_dst.s_addr;
+ 			break;
+ 		}
++
++		case IP_IPSEC_REFINFO:
++		{
++			err = ip_cmsg_send_ipsec(cmsg, ipc);
++			if(err)
++				return err;
++
++			break;
++		}
++
+ 		default:
+ 			return -EINVAL;
+ 		}
+ 	}
+ 	return 0;
+ }
++EXPORT_SYMBOL(ip_cmsg_send);
+ 
+ 
+ /* Special input handler for packets caught by router alert option.
+@@ -455,7 +474,8 @@
+ 	    optname == IP_MULTICAST_TTL ||
+ 	    optname == IP_MULTICAST_ALL ||
+ 	    optname == IP_MULTICAST_LOOP ||
+-	    optname == IP_RECVORIGDSTADDR) {
++	    optname == IP_RECVORIGDSTADDR ||
++	    optname == IP_IPSEC_REFINFO) {
+ 		if (optlen >= sizeof(int)) {
+ 			if (get_user(val, (int __user *) optval))
+ 				return -EFAULT;
+@@ -549,6 +569,13 @@
+ 		else
+ 			inet->cmsg_flags &= ~IP_CMSG_ORIGDSTADDR;
+ 		break;
++                        break;
++	case IP_IPSEC_REFINFO:
++		if (val)
++			inet->cmsg_flags |= IP_CMSG_IPSEC_REFINFO;
++		else
++			inet->cmsg_flags &= ~IP_CMSG_IPSEC_REFINFO;
++		break;
+ 	case IP_TOS:	/* This sets both TOS and Precedence */
+ 		if (sk->sk_type == SOCK_STREAM) {
+ 			val &= ~3;
+@@ -962,6 +989,7 @@
+ 	if (err == -ENOPROTOOPT && optname != IP_HDRINCL &&
+ 			optname != IP_IPSEC_POLICY &&
+ 			optname != IP_XFRM_POLICY &&
++			optname != IP_IPSEC_REFINFO &&
+ 			!ip_mroute_opt(optname)) {
+ 		lock_sock(sk);
+ 		err = nf_setsockopt(sk, PF_INET, optname, optval, optlen);
+@@ -991,6 +1019,7 @@
+ 	if (err == -ENOPROTOOPT && optname != IP_HDRINCL &&
+ 			optname != IP_IPSEC_POLICY &&
+ 			optname != IP_XFRM_POLICY &&
++			optname != IP_IPSEC_REFINFO &&
+ 			!ip_mroute_opt(optname)) {
+ 		lock_sock(sk);
+ 		err = compat_nf_setsockopt(sk, PF_INET, optname,
+@@ -1070,6 +1099,9 @@
+ 	case IP_PASSSEC:
+ 		val = (inet->cmsg_flags & IP_CMSG_PASSSEC) != 0;
+ 		break;
++	case IP_IPSEC_REFINFO:
++		val = (inet->cmsg_flags & IP_CMSG_IPSEC_REFINFO) != 0;
++		break;
+ 	case IP_RECVORIGDSTADDR:
+ 		val = (inet->cmsg_flags & IP_CMSG_ORIGDSTADDR) != 0;
+ 		break;
+diff -Naur linux-2.6.32/net/ipv4/raw.c linux-2.6.32-saref/net/ipv4/raw.c
+--- linux-2.6.32/net/ipv4/raw.c	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32-saref/net/ipv4/raw.c	2009-12-29 18:14:54.353282679 -0500
+@@ -460,6 +460,8 @@
+ 	u8  tos;
+ 	int err;
+ 
++	memset(&ipc, 0, sizeof(ipc));
++
+ 	err = -EMSGSIZE;
+ 	if (len > 0xFFFF)
+ 		goto out;
+diff -Naur linux-2.6.32/net/ipv4/udp.c linux-2.6.32-saref/net/ipv4/udp.c
+--- linux-2.6.32/net/ipv4/udp.c	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32-saref/net/ipv4/udp.c	2009-12-29 18:20:22.290518133 -0500
+@@ -593,6 +593,8 @@
+ 	int corkreq = up->corkflag || msg->msg_flags&MSG_MORE;
+ 	int (*getfrag)(void *, char *, int, int, int, struct sk_buff *);
+ 
++	memset(&ipc, 0, sizeof(ipc));
++
+ 	if (len > 0xFFFF)
+ 		return -EMSGSIZE;
+ 
+@@ -769,6 +771,10 @@
+ 	ip_rt_put(rt);
+ 	if (free)
+ 		kfree(ipc.opt);
++	if(ipc.sp) {
++		secpath_put(ipc.sp);
++		ipc.sp=NULL;
++	}
+ 	if (!err)
+ 		return len;
+ 	/*
+diff -Naur linux-2.6.32/net/Kconfig linux-2.6.32-saref/net/Kconfig
+--- linux-2.6.32/net/Kconfig	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32-saref/net/Kconfig	2009-12-29 18:28:17.351492144 -0500
+@@ -276,4 +276,8 @@
+ source "net/rfkill/Kconfig"
+ source "net/9p/Kconfig"
+ 
++if INET
++source "net/ipsec/Kconfig"
++endif # if INET
++
+ endif   # if NET
+diff -Naur linux-2.6.32/net/Makefile linux-2.6.32-saref/net/Makefile
+--- linux-2.6.32/net/Makefile	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32-saref/net/Makefile	2009-12-29 18:31:19.902230915 -0500
+@@ -64,4 +64,7 @@
+ ifeq ($(CONFIG_NET),y)
+ obj-$(CONFIG_SYSCTL)		+= sysctl_net.o
+ endif
++
++obj-$(CONFIG_KLIPS)             += ipsec/
++
+ obj-$(CONFIG_WIMAX)		+= wimax/

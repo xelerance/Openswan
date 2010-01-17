@@ -39,6 +39,14 @@
 # error "KLIPS is no longer supported on Linux 2.0. Sorry"
 #endif
 
+/*
+ * We use a lot of config defines,  on older kernels that means we
+ * need to include config.h
+ */
+#ifndef AUTOCONF_INCLUDED
+#include <linux/config.h>
+#endif
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,1,0)
 # define SPINLOCK
 # define PROC_FS_21

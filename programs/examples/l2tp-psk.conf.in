@@ -36,7 +36,8 @@ conn L2TP-PSK-noNAT
 	right=%any
 	# Using the magic port of "0" means "any one single port". This is
 	# a work around required for Apple OSX clients that use a randomly
-	# high port, but propose "0" instead of their port.
+	# high port, but propose "0" instead of their port. If this does
+	# not work, use 17/%any instead.
 	rightprotoport=17/0
 
 # Normally, KLIPS drops all plaintext traffic from IP's it has a crypted

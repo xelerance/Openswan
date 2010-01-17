@@ -1,6 +1,11 @@
 Summary: Openswan IPsec implementation
 Name: openswan
 Version: IPSECBASEVERSION
+%{!?buildklips: %{expand: %%define buildklips 0}}
+%{!?buildxen: %{expand: %%define buildxen 0}}
+
+# nss build
+%{!?buildnss: %{expand: %%define buildnss 0}}
 
 # The default kernel version to build for is the latest of
 # the installed binary kernel
@@ -49,6 +54,7 @@ default Linux kernel.
 
 Openswan 2.6.x also supports IKEv2 (RFC4309)
 
+%if %{buildklips}
 %package klips
 Summary: Openswan kernel module
 Group:  System Environment/Kernel
@@ -58,6 +64,7 @@ Requires: kernel = %{kversion}, %{name}-%{version}
 %description klips
 This package contains only the ipsec module for the RedHat/Fedora series of
 kernels.
+%endif
 
 %prep
 %setup -q -n openswan-%{srcpkgver}
@@ -66,6 +73,14 @@ kernels.
 %{__make} \
   USERCOMPILE="-g %{optflags} -fPIE -pie" \
   USERLINK="-g -pie" \
+  HAVE_THREADS="true" \
+%if %{buildnss}
+  USE_LIBNSS="true" \
+  USE_FIPSCHECK="true" \
+  USE_LIBCAP_NG="true" \
+%endif
+  USE_DYNAMICDNS="true" \
+  USE_LWRES="true" \
   INC_USRLOCAL=%{_prefix} \
   FINALLIBDIR=%{_libdir}/ipsec \
   MANTREE=%{_mandir} \
@@ -82,7 +97,11 @@ cd packaging/fedora
     OPENSWANSRCDIR=$FS \
     KLIPSCOMPILE="%{optflags}" \
     KERNELSRC=/lib/modules/%{kversion}/build \
+%if %{buildxen}
+    ARCH=xen \
+%else
     ARCH=%{_arch} \
+%endif
     MODULE_DEF_INCLUDE=$FS/packaging/centos5/config-%{_target_cpu}.h \
     MODULE_EXTRA_INCLUDE=$FS/packaging/centos5/extra_%{krelver}.h \
     include module
@@ -96,7 +115,7 @@ rm -rf ${RPM_BUILD_ROOT}
   FINALLIBDIR=%{_libdir}/ipsec \
   MANTREE=%{buildroot}%{_mandir} \
   INC_RCDEFAULT=%{_initrddir} \
-  RPMBUILD=true \
+  USE_LWRES="true" \
   install
 FS=$(pwd)
 rm -rf %{buildroot}/usr/share/doc/openswan

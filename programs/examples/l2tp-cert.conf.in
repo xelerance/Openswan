@@ -33,8 +33,7 @@ conn l2tp-X.509
 	# Using the magic port of "0" means "any one single port". This is
 	# a work around required for Apple OSX clients that use a randomly
 	# high port, but propose "0" instead of their port. If that does
-	# not work, try 17/%any (or fall back to 17/1701 for just Windows
-	# clients.
+	# not work, try 17/%any
 	rightprotoport=17/0
 	rightsubnet=vhost:%priv,%no
 
