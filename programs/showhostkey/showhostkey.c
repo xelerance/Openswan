@@ -3,7 +3,7 @@
  * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 1999, 2000, 2001  Henry Spencer.
  * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
- * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com> 
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -65,7 +65,6 @@ char usage[] = "Usage: ipsec showhostkey [--ipseckey {gateway}] [--left ] [--rig
 
 struct option opts[] = {
   {"help",	no_argument,	NULL,	'?',},
-  {"key",	no_argument,	NULL,	'k',},
   {"left",	no_argument,	NULL,	'l',},
   {"right",	no_argument,	NULL,	'r',},
   {"dump",	no_argument,	NULL,	'D',},
@@ -289,11 +288,11 @@ void show_dnskey(struct secret *s
 
     switch(rr_type) {
     case ns_t_key:
-	printf("key not yet implemented\n");
+	printf("key record type has been obsoleted\n");
 	break;
 
     case ns_t_ipseckey:
-	printf("ipseckey not yet implemented\n");
+	printf("ipseckey record type not yet implemented\n");
 	break;
 
     case ns_t_txt:
@@ -365,7 +364,6 @@ int main(int argc, char *argv[])
     char secrets_file[PATH_MAX];
     int opt;
     int errflg = 0;
-    bool key_flg=FALSE;
     bool left_flg=FALSE;
     bool right_flg=FALSE;
     bool dump_flg=FALSE;
@@ -397,10 +395,6 @@ int main(int argc, char *argv[])
 	switch (opt) {
 	case '?':
 	    goto usage;
-	    break;
-
-	case 'k':
-	    key_flg=TRUE;
 	    break;
 
 	case 'l':
@@ -472,14 +466,14 @@ int main(int argc, char *argv[])
 	exit(1);
     }
     
-    if(!key_flg && !left_flg && !right_flg && !dump_flg && !list_flg
+    if(!left_flg && !right_flg && !dump_flg && !list_flg
        && !x509self_flg && !x509req_flg && !x509cert_flg && !txt_flg
        && !ipseckey_flg && !dhclient_flg) {
 	fprintf(stderr, "You must specify some operation\n");
 	goto usage;
     }
     
-    if((key_flg + left_flg + right_flg + dump_flg + list_flg
+    if((left_flg + right_flg + dump_flg + list_flg
 	+ x509self_flg + x509req_flg + x509cert_flg + txt_flg
 	+ ipseckey_flg + dhclient_flg) > 1) {
 	fprintf(stderr, "You must specify only one operation\n");
@@ -563,11 +557,9 @@ int main(int argc, char *argv[])
 	exit(0);
     }
 
-    if(key_flg || ipseckey_flg || txt_flg) {
+    if(ipseckey_flg || txt_flg) {
 	int rr_type = ns_t_invalid;
-	if(key_flg) {
-	    rr_type = ns_t_key;
-	} else if(ipseckey_flg) {
+	if(ipseckey_flg) {
 	    rr_type = ns_t_ipseckey;
 	} else if(txt_flg) {
 	    rr_type = ns_t_txt;

@@ -20,7 +20,6 @@
 
     <arg choice='plain'><replaceable>showhostkey</replaceable></arg>
     <arg choice='opt'><arg choice='plain'>--ipseckey </arg><arg choice='opt'><replaceable>gateway</replaceable></arg></arg>
-    <arg choice='opt'>--key </arg>
     <arg choice='opt'>--left </arg>
     <arg choice='opt'>--right </arg>
     <arg choice='opt'>--dump </arg>
@@ -117,16 +116,6 @@ For example (with the key data trimmed down for clarity):</para>
   ; RSA 2048 bits   xy.example.com   Sat Apr 15 13:53:22 2000
   xy.example.com.   IN   IPSECKEYKEY   floyd albert
 </literallayout> <!-- .fi -->
-
-<para>If <option>--key</option>
-is specified, the output format is the text form of a DNS KEY record;
-the host name is the one included in the key information
-(or, if that is not available, the output of
-<userinput>hostname&nbsp;--fqdn</userinput>),
-with a <emphasis remap='B'>.</emphasis> appended.
-The IPSEC usage of the DNS KEY is deprecated (see RFC3445), use IPSECKEY. 
-Again, generation information is included if available.
-For example (with the key data trimmed down for clarity):</para>
 
 <literallayout remap='.nf'>
   ; RSA 2048 bits   xy.example.com   Sat Apr 15 13:53:22 2000
