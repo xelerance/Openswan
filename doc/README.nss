@@ -192,8 +192,8 @@ pk12util -i certkey.p12 -d /etc/ipsec.d
 # Remember the name of the imported certificate pk12utils picked, if you
 # specified it before it should be the same, if not the util picked one.
 
-create file /etc/ipsec.d/nss.certs with the following:
-@fqdn: RSA "name of certificate in nss db" ""
+Add following to /etc/ipsec.secrets file:
+: RSA "name of certificate in nss db" ""
 
 Edit your connection and replace the leftcert/rightcert with the certifiate
 name with the same name of certificate in nss db.
