@@ -9,6 +9,7 @@ v2.6.25
 * Remove version from README.nss [Tuomo]
 * Fixed obvious errors on fedora and centos5 rpm specs [Tuomo]
 * Remove --key option from showhostkey [Paul]
+* Fix reference to unused file in README.nss [Tuomo]
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
