@@ -321,6 +321,10 @@ main(int argc, char **argv)
 	capng_updatev(CAPNG_ADD, CAPNG_EFFECTIVE|CAPNG_PERMITTED,
 			CAP_NET_BIND_SERVICE, CAP_NET_ADMIN, CAP_NET_RAW,
 			CAP_IPC_LOCK, -1);
+	/* our children must be able to CAP_NET_ADMIN to change routes.
+	 */
+	capng_updatev(CAPNG_ADD, CAPNG_BOUNDING_SET,
+			CAP_NET_ADMIN, -1);
 	capng_apply(CAPNG_SELECT_BOTH);
 #endif
 
