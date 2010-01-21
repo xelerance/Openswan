@@ -26,7 +26,7 @@ conn clear-or-private
 	failureshunt=passthrough
 	keyingtries=3
 	ikelifetime=1h
-	keylife=1h
+	salifetime=1h
 	rekey=no
 	auto=route
 
@@ -38,7 +38,7 @@ conn private-or-clear
 	failureshunt=passthrough
 	keyingtries=3
 	ikelifetime=1h
-	keylife=1h
+	salifetime=1h
 	rekey=no
 	auto=route
 
@@ -50,7 +50,7 @@ conn private
 	failureshunt=drop
 	keyingtries=3
 	ikelifetime=1h
-	keylife=1h
+	salifetime=1h
 	rekey=no
 	auto=route
 
@@ -71,7 +71,7 @@ conn packetdefault
 	failureshunt=passthrough
 	keyingtries=3
 	ikelifetime=1h
-	keylife=1h
+	salifetime=1h
 	rekey=no
 	auto=route
 </emphasis>
