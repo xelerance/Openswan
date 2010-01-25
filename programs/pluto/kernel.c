@@ -360,12 +360,12 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	char *p;
 	int   l;
 	strncat(srcip_str, "PLUTO_MY_SOURCEIP=", sizeof(srcip_str));
-	strncat(srcip_str, "'", sizeof(srcip_str));
+	strncat(srcip_str, "'", sizeof(srcip_str)-strlen(srcip_str)-1);
 	l = strlen(srcip_str);
 	p = srcip_str + l;
         
 	addrtot(&sr->this.host_srcip, 0, p, sizeof(srcip_str));
-	strncat(srcip_str, "'", sizeof(srcip_str));
+	strncat(srcip_str, "'", sizeof(srcip_str)-strlen(srcip_str)-1);
     }
     
     {

@@ -206,7 +206,7 @@ char *getNSSPassword(PK11SlotInfo *slot, PRBool retry, void *arg)
      char* strings;
      char* token=NULL;
      const long maxPwdFileSize = NSSpwdfilesize;
-     int i, tlen;
+     int i, tlen=0;
 
      if (slot) {
      token = PK11_GetTokenName(slot);
@@ -214,9 +214,12 @@ char *getNSSPassword(PK11SlotInfo *slot, PRBool retry, void *arg)
          tlen = PORT_Strlen(token);
 	 //openswan_log("authentication needed for token name %s with length %d",token,tlen);
          }
+	 else {
+		return 0;
+	 }
      }
      else {
-     return 0;
+	return 0;
      }
 
      if(retry) return 0;

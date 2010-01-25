@@ -313,7 +313,9 @@ info_handle(int infoctlfd)
 	{
 	case IPSEC_CMD_QUERY_HOSTPAIR:
 	    info_lookuphostpair(&ipcq);
-	    write(infofd, &ipcq, ipcq.head.ipm_msg_len);
+	    if(write(infofd, &ipcq, ipcq.head.ipm_msg_len) == -1 ) {
+            plog("info_handle: write error");
+	    }
 	    break;
 	    
 	default:
