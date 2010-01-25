@@ -12,6 +12,7 @@ v2.6.25
 * Fix for NAT-T vendorid payload on some ARM processors [dhr]
 * Fix reference to unused file in README.nss [Tuomo]
 * Fix 'ip' failure when built against libcap-ng [Kyle McMartin]
+* Fixup for compiling with broken version of nspr [Avesh]
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
