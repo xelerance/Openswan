@@ -1,6 +1,8 @@
 /* IPsec IKE Dead Peer Detection code.
  * Copyright (C) 2003 Ken Bantoft        <ken@xelerance.com>
- * Copyright (C) 2004 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2006 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2010 FURUSO Shinichi <Shinichi.Furuso@jp.sony.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,8 +13,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: dpd.c,v 1.32 2005/08/26 13:41:16 ken Exp $
  */
 
 #include <stdio.h>
@@ -269,6 +269,17 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
 	    /* update phase 2 time stamp only */
 	    st->st_last_dpd = tm;
 	    
+	    /*
+	     * Since there was activity, kill any EVENT_DPD_TIMEOUT that might
+	     * be waiting. This can happen when a R_U_THERE_ACK is lost, and
+	     * subsequently traffic started flowing over the SA again, and no
+	     * more DPD packets are sent to cancel the outstanding DPD timer.
+	     */
+	    if(p1st->st_dpd_event != NULL
+	       && p1st->st_dpd_event->ev_type == EVENT_DPD_TIMEOUT) {
+		delete_dpd_event(p1st);
+	    }
+
 	    event_schedule(EVENT_DPD, nextdelay, st);
 	    return;
 	}
