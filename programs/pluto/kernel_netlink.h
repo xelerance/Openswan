@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: kernel_netlink.h,v 1.2 2005/08/14 21:58:09 mcr Exp $
  */
 
 #if defined(linux) && defined(NETKEY_SUPPORT)

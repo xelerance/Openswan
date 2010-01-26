@@ -148,6 +148,7 @@ const struct kernel_ops noklips_kernel_ops = {
     get_spi: NULL,
     inbound_eroute: FALSE,
     policy_lifetime: FALSE,
+    exceptsocket: NULL,
     docommand: NULL,
     kern_name: "noklips",
 };

@@ -1931,6 +1931,7 @@ const struct kernel_ops netkey_kernel_ops = {
     process_queue: NULL,
     grp_sa: NULL,
     get_spi: netlink_get_spi,
+    exceptsocket: NULL,
     docommand: netkey_do_command,
     process_ifaces: netlink_process_raw_ifaces,
 

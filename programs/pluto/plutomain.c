@@ -139,7 +139,7 @@ usage(const char *mess)
 	    " [--use-auto]"
 	    " [--use-klips]"
 	    " [--use-netkey]"
-	    " [--use-mastklips]"
+	    " [--use-mast]"
 	    " [--use-bsdkame]"
 	    " [--use-nostack]"         /* old --no_klips */
 	    " \\\n\t"
