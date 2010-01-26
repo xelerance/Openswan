@@ -20,18 +20,18 @@
 #ifndef USE_LWRES	/* whole file! */
 
 /* even though we aren't using LWRES, we can still use the header files */
-#include "arpa/nameser.h"
+//#include "arpa/nameser.h"
 
 /* The interface in RHL6.x and BIND distribution 8.2.2 are different,
  * so we build some of our own :-(
  */
 
 # ifndef NS_MAXDNAME
-#   define NS_MAXDNAME MAXDNAME /* I hope this is long enough for IPv6 */
+#   define NS_MAXDNAME 1025
 # endif
 
 # ifndef NS_PACKETSZ
-#   define NS_PACKETSZ PACKETSZ
+#   define NS_PACKETSZ 512
 # endif
 
 /* protocol version */

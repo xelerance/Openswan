@@ -41,14 +41,13 @@ then configures a connection using a random ID, using a a custom HTTP-based prot
 </refsect1>
 
 <refsect1 id='history'><title>HISTORY</title>
-<para>Written by Xelerance Corporation for the Openswan project
+<para>Written for the Openswan project
 &lt;<ulink url='http://www.openswan.org'>http://www.openswan.org</ulink>&gt;
-by Paul Wouters.</para>
+by Daniel Snider as part of the Google Summer of Code 2009</para>
 </refsect1>
 
 <refsect1 id='bugs'><title>BUGS</title>
-<para>This functionality is a work in process, and not yet functional.
-</para>
+<para>This functionality is still experimental</para>
 
 </refsect1>
 </refentry>

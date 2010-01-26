@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: kernel_win2k.c,v 1.1 2005/08/05 17:26:06 mcr Exp $
  */
 
 #if defined(WIN32) && defined(WIN32_NATIVE_IPSEC)
@@ -159,6 +157,7 @@ const struct kernel_ops win2k_kernel_ops = {
     process_queue: NULL,
     grp_sa: NULL,
     get_spi: win2k_get_spi,
+    exceptsocket: NULL,
     docommand: do_command_win2k,
     opname: "win2k",
 };

@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: kernel_pfkey.h,v 1.1 2003/07/31 18:14:23 mcr Exp $
  */
 
 #ifdef KLIPS

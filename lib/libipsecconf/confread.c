@@ -56,7 +56,7 @@ char **new_list(char *value);
  * @param cfg starter_config struct
  * @return void
  */
-static void default_values (struct starter_config *cfg)
+void ipsecconf_default_values(struct starter_config *cfg)
 {
 	if (!cfg) return;
 	memset(cfg, 0, sizeof(struct starter_config));
@@ -1187,7 +1187,7 @@ struct starter_config *confread_load(const char *file
 	/**
 	 * Set default values
 	 */
-	default_values(cfg);
+	ipsecconf_default_values(cfg);
 
 	if(ctlbase) {
 	    pfree(cfg->ctlbase);

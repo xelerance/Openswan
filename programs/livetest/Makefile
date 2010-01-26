@@ -10,8 +10,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.2 2004/12/18 18:13:40 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
@@ -19,15 +17,4 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 PROGRAM=livetest
 
 include ${srcdir}../Makefile.program
-
-#
-# $Log: Makefile,v $
-# Revision 1.2  2004/12/18 18:13:40  mcr
-# 	adjusted Makefiles so that ${OBJDIR} builds work.
-#
-# Revision 1.1  2004/07/13 22:31:38  mcr
-#    live test template
-#
-#
-#
 

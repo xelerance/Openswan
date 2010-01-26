@@ -162,6 +162,8 @@ extern bool translate_conn (struct starter_conn *conn
 
 void confread_free(struct starter_config *cfg);
 
+void ipsecconf_default_values (struct starter_config *cfg);
+
 #endif /* _IPSEC_CONFREAD_H_ */
 
 /*

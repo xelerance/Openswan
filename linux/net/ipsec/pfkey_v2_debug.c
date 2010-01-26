@@ -14,8 +14,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_debug.c,v 1.11 2005/04/06 17:45:16 mcr Exp $
- *
  */
 
 #ifdef __KERNEL__
@@ -38,10 +36,9 @@ extern int debug_pfkey;
 
 #else /* __KERNEL__ */
 
-#if defined(macintosh) || (defined(__MACH__) && defined(__APPLE__))
 # include <sys/types.h>
-#else
-# include <sys/types.h>
+
+#if defined(linux)
 # include <linux/types.h>
 # include <linux/errno.h>
 #endif

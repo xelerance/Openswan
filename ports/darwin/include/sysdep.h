@@ -15,3 +15,4 @@
 # define s6_addr32 __u6_addr.__u6_addr32
 #endif
 
+#define NEED_SIN_LEN

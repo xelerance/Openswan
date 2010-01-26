@@ -12,8 +12,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: kernel_pfkey.c,v 1.25 2005/08/24 22:50:50 mcr Exp $
  */
 
 #ifdef KLIPS
@@ -366,6 +364,7 @@ const struct kernel_ops klips_kernel_ops = {
     inbound_eroute: FALSE,
     policy_lifetime: FALSE,
     init: init_pfkey,
+    exceptsocket: NULL,
     docommand: klips_do_command,
     set_debug: pfkey_set_debug,
     remove_orphaned_holds: pfkey_remove_orphaned_holds,

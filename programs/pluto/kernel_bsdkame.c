@@ -13,8 +13,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: kernel_pfkey.c,v 1.25 2005/08/24 22:50:50 mcr Exp $
  */
 
 #include <errno.h>
@@ -260,8 +258,8 @@ static bool
 bsdkame_do_command(struct connection *c, struct spd_route *sr
 		 , const char *verb, struct state *st)
 {
-    char cmd[2048];     /* arbitrary limit on shell command length */
-    char common_shell_out_str[2048];
+    char cmd[1536];     /* arbitrary limit on shell command length */
+    char common_shell_out_str[1024];
     const char *verb_suffix;
 
     /* figure out which verb suffix applies */
@@ -1103,7 +1101,6 @@ const struct kernel_ops bsdkame_kernel_ops = {
     add_sa: bsdkame_add_sa,
     grp_sa: NULL,
     del_sa: bsdkame_del_sa,
-    get_sa: NULL,
     get_spi: NULL,
     eroute_idle: bsdkame_was_eroute_idle,
     inbound_eroute: FALSE,
