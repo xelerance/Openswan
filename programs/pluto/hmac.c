@@ -61,31 +61,27 @@ hmac_init(struct hmac_ctx *ctx,
     ctx->hmac_digest_len = h->hash_digest_len;
 
 #ifdef HAVE_LIBNSS
-    DBG(DBG_CRYPT, DBG_log("NSS: hmac init"));
+    //DBG(DBG_CRYPT, DBG_log("NSS: hmac init"));
     SECStatus status;
-    PK11SymKey *symkey=NULL; 
-    PK11SymKey *tkey1=NULL;
+    PK11SymKey *symkey=NULL, *tkey1=NULL; 
+    //PK11SymKey *tkey1=NULL;
     unsigned int klen;
     chunk_t hmac_opad, hmac_ipad, hmac_pad;
-    /* empty parameters for the cryptographic context */
 
     memcpy(&symkey, key, key_len);
-
     klen =  PK11_GetKeyLength(symkey);
 
     hmac_opad = hmac_pads(HMAC_OPAD,HMAC_BUFSIZE);
     hmac_ipad = hmac_pads(HMAC_IPAD,HMAC_BUFSIZE);
-    //hmac_pad  = hmac_pads(0x00,HMAC_BUFSIZE-h->hash_digest_len);
     hmac_pad  = hmac_pads(0x00,HMAC_BUFSIZE-klen);
 
     if(klen > HMAC_BUFSIZE) 
     {
-	//tkey1 = PK11_Derive(symkey, nss_key_derivation_mech(h), NULL, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
-	tkey1 = PK11_Derive_osw(symkey, nss_key_derivation_mech(h), NULL, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
+	tkey1 = PK11_Derive_osw(symkey, nss_key_derivation_mech(h)
+				, NULL, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
     }
     else
     {
-	DBG(DBG_CRYPT, DBG_log("NSS: key len is smaller than block size"));
 	tkey1 = symkey; 
     }
 
@@ -93,12 +89,10 @@ hmac_init(struct hmac_ctx *ctx,
 				, hmac_pad,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, HMAC_BUFSIZE);
 
     PR_ASSERT(tkey2!=NULL);
-
     ctx->ikey = pk11_derive_wrapper_osw(tkey2, CKM_XOR_BASE_AND_DATA
 					, hmac_ipad,nss_hash_mech(h), CKA_DIGEST, 0);
 
     PR_ASSERT(ctx->ikey !=NULL);
-
     ctx->okey = pk11_derive_wrapper_osw(tkey2, CKM_XOR_BASE_AND_DATA
 					, hmac_opad,nss_hash_mech(h), CKA_DIGEST, 0);
 
@@ -210,9 +204,13 @@ hmac_final(u_char *output, struct hmac_ctx *ctx)
     PR_ASSERT(outlen == ctx->hmac_digest_len);
     PK11_DestroyContext(ctx->ctx_nss, PR_TRUE);
 
+    if(ctx->ikey !=NULL) {
     PK11_FreeSymKey(ctx->ikey);
+    }
+    if(ctx->okey != NULL) {
     PK11_FreeSymKey(ctx->okey);
-    DBG(DBG_CRYPT, DBG_log("NSS: hmac final end"));
+    }
+    //DBG(DBG_CRYPT, DBG_log("NSS: hmac final end"));
 #endif
 }
 
@@ -222,8 +220,8 @@ static SECOidTag nss_hash_oid(const struct hash_desc *hasher)
     SECOidTag mechanism=0;
 
     switch(hasher->common.algo_id) {
-	case OAKLEY_MD5:   mechanism = SEC_OID_MD5; break;
-	case OAKLEY_SHA1:  mechanism = SEC_OID_SHA1; break;
+	case OAKLEY_MD5:       mechanism = SEC_OID_MD5;    break;
+	case OAKLEY_SHA1:      mechanism = SEC_OID_SHA1;   break;
 	case OAKLEY_SHA2_256:  mechanism = SEC_OID_SHA256; break;
 	case OAKLEY_SHA2_384:  mechanism = SEC_OID_SHA384; break;
 	case OAKLEY_SHA2_512:  mechanism = SEC_OID_SHA512; break;
@@ -237,8 +235,8 @@ static CK_MECHANISM_TYPE nss_hash_mech(const struct hash_desc *hasher)
     CK_MECHANISM_TYPE mechanism=0x80000000;
 
     switch(hasher->common.algo_id) {
-	case OAKLEY_MD5:   mechanism = CKM_MD5; break;
-	case OAKLEY_SHA1:  mechanism = CKM_SHA_1; break;
+	case OAKLEY_MD5:       mechanism = CKM_MD5;    break;
+	case OAKLEY_SHA1:      mechanism = CKM_SHA_1;  break;
 	case OAKLEY_SHA2_256:  mechanism = CKM_SHA256; break;
 	case OAKLEY_SHA2_384:  mechanism = CKM_SHA384; break;
 	case OAKLEY_SHA2_512:  mechanism = CKM_SHA512; break;
@@ -306,8 +304,10 @@ PK11SymKey * PK11_Derive_osw(PK11SymKey *base, CK_MECHANISM_TYPE mechanism
         dkey_param.len = sizeof (bs);
         PK11SymKey *tkey2 = PK11_Derive(tkey1, CKM_EXTRACT_KEY_FROM_KEY, &dkey_param, target, operation, len);
         PR_ASSERT(tkey2!=NULL);
-
+	
+	if(tkey1!=NULL) {
         PK11_FreeSymKey(tkey1);
+	}
 	
 	return tkey2;
 
@@ -324,8 +324,8 @@ CK_MECHANISM_TYPE nss_key_derivation_mech(const struct hash_desc *hasher)
     CK_MECHANISM_TYPE mechanism=0x80000000;
 
     switch(hasher->common.algo_id) {
-	case OAKLEY_MD5:   mechanism = CKM_MD5_KEY_DERIVATION; break;
-	case OAKLEY_SHA1:  mechanism = CKM_SHA1_KEY_DERIVATION; break;
+	case OAKLEY_MD5:       mechanism = CKM_MD5_KEY_DERIVATION; break;
+	case OAKLEY_SHA1:      mechanism = CKM_SHA1_KEY_DERIVATION; break;
 	case OAKLEY_SHA2_256:  mechanism = CKM_SHA256_KEY_DERIVATION; break;
 	case OAKLEY_SHA2_384:  mechanism = CKM_SHA384_KEY_DERIVATION; break;
 	case OAKLEY_SHA2_512:  mechanism = CKM_SHA512_KEY_DERIVATION; break;

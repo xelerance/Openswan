@@ -1806,8 +1806,23 @@ modecfg_inR1(struct msg_digest *md)
                     struct connection *c = st->st_connection;
                     struct spd_route *tmp_spd2 = &c->spd;
 
+                    /*a.u.v4.sin_family = AF_INET;
+                    a.u.v4.sin_addr.s_addr = 0;
+                    addrtosubnet(&a, &tmp_spd2->that.client);
+		    //tmp_spd2->that.client.addr = 0;
+                    tmp_spd2->that.client.maskbits = 0;
+                    tmp_spd2->that.has_client = TRUE;*/ 
+
                     while (len > 0) {
                     tmp_spd = clone_thing(c->spd, "remote subnets policies");
+
+                    tmp_spd->this.id.name.ptr = NULL;
+                    tmp_spd->this.id.name.len = 0;
+                    tmp_spd->that.id.name.ptr = NULL;
+                    tmp_spd->that.id.name.len = 0; 
+
+                    tmp_spd->this.host_addr_name = NULL;
+		    tmp_spd->that.host_addr_name = NULL;
 
                     u_int32_t *ap = (u_int32_t *)(strattr.cur);
                     a.u.v4.sin_family = AF_INET;
@@ -1833,11 +1848,28 @@ modecfg_inR1(struct msg_digest *md)
                     len -= 6;
                     strattr.cur += 6;
 
-                    tmp_spd->that.has_client = TRUE;
-
                     subnettot(&tmp_spd->that.client, 0
                               , caddr, sizeof(caddr));
+
                     openswan_log("Received subnet %s, maskbits %d", caddr, tmp_spd->that.client.maskbits);
+
+                    tmp_spd->this.updown = clone_str(tmp_spd->this.updown, "updown");
+                    tmp_spd->that.updown = clone_str(tmp_spd->that.updown, "updown");
+
+                    tmp_spd->this.cert_filename = NULL;
+                    tmp_spd->that.cert_filename = NULL;
+
+                    tmp_spd->this.cert.type = 0;
+                    tmp_spd->that.cert.type = 0;
+
+                    tmp_spd->this.ca.ptr = NULL;
+                    tmp_spd->this.ca.ptr = NULL;
+
+                    tmp_spd->this.groups = NULL;
+                    tmp_spd->this.groups = NULL;
+
+                    tmp_spd->this.virt = NULL;
+                    tmp_spd->this.virt = NULL;
 
                     tmp_spd->next = NULL;
                     tmp_spd2->next = tmp_spd;

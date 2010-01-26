@@ -773,7 +773,7 @@ informational(struct msg_digest *md)
 		tmp_c->host_pair->him.addr = tmp_c->spd.that.host_addr;
 
 		/*Initiating connection with the redirected peer*/
-		initiate_connection(tmp_name, tmp_whack_sock, 0, pcim_local_crypto);
+		initiate_connection(tmp_name, tmp_whack_sock, 0, pcim_demand_crypto);
 		return STF_IGNORE;
            }
 
