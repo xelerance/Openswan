@@ -19,6 +19,7 @@ v2.6.25
 * Fix 'ip' failure when built against libcap-ng [Kyle McMartin]
 * Fixup for compiling with broken version of nspr [Avesh]
 * Update ipsec.conf man page [Tuomo]
+* In rare circumstances, DPD could kill an active tunnel [Shinichi Furuso]
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
