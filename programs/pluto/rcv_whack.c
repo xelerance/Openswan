@@ -156,8 +156,13 @@ static bool writewhackrecord(char *buf, int buflen)
 
     //DBG_log("buflen: %u abuflen: %u\n", header[0], abuflen);
     
-    fwrite(header, sizeof(u_int32_t)*3, 1, whackrecordfile);
-    fwrite(buf, abuflen, 1, whackrecordfile);
+    if(fwrite(header, sizeof(u_int32_t)*3, 1, whackrecordfile) < 1) {
+	DBG_log("writewhackrecord: fwrite error when writing header");
+    }
+
+    if(fwrite(buf, abuflen, 1, whackrecordfile) < 1) {
+	DBG_log("writewhackrecord: fwrite error when writing buf");
+    }
     
     return TRUE;
 }

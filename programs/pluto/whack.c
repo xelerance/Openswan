@@ -1957,7 +1957,10 @@ main(int argc, char **argv)
 		    }
 
 		    le++;	/* include NL in line */
-		    write(1, ls, le - ls);
+		    if(write(1, ls, le - ls) != (le-ls)) {
+			int e = errno;
+			fprintf(stderr, "whack: write() failed to stdout(%d %s)\n", e, strerror(e));
+		    }
 		    fsync(1);
 
 		    /* figure out prefix number

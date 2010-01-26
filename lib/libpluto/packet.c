@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: packet.c,v 1.49 2005/01/23 18:53:56 mcr Exp $
  */
 
 #include <stdio.h>
@@ -1685,7 +1683,6 @@ out_modify_previous_np(u_int8_t np, pb_stream *outs)
 		passert(left >= pllen);
 		if (left == pllen) {
 			/* found last top-level payload */
-			passert(pl[NOFFSETOF_isag_np] == ISAKMP_NEXT_NONE);
 			pl[NOFFSETOF_isag_np] = np;
 			break;  /* done */
 		} else {

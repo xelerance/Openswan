@@ -17,11 +17,13 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 ifeq ($(USE_LIBNSS),true)
 CFLAGS+=-DHAVE_LIBNSS
 INCLUDES+=-I/usr/include/nspr4 -I/usr/include/nss3
-# temp workaround for bug in nspr 4.8.2 
-CFLAGS+=-Wno-strict-prototypes
 endif
 
 PROGRAM=showhostkey
 
 include ${srcdir}../Makefile.program
 
+# temp workaround for bug in nspr 4.8.2 
+ifeq ($(USE_LIBNSS),true)
+CFLAGS+=-Wno-strict-prototypes
+endif

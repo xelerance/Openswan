@@ -2,16 +2,7 @@
   <term><emphasis remap='B'>esp</emphasis></term>
   <listitem>
 <para>This option is obsolete. Please use <emphasis remap='B'>phase2alg</emphasis>
-instead.
-ESP encryption/authentication algorithm to be used for the connection (phase2 aka IPsec SA).
-The format is identical to the <emphasis remap='B'>ike</emphasis> option listed above.
-The options must be suitable as a value of
-<citerefentry><refentrytitle>ipsec_spi</refentrytitle><manvolnum>8</manvolnum></citerefentry>'s
-<option>--esp</option> option. The default is to use ESP. The default values are the same as for ike=
-Note also that not all ciphers available to the kernel (eg through CryptoAPI) are necessarilly supported here.</para>
-<para>Example use: "3des-md5" or "aes256-sha1;modp2048" or "aes-sha1,aes-md5".
-</para>
-<para>A special case is AES CCM, which uses the syntax of "esp=aes_ccm_a-152-null"</para>
+instead.</para>
   </listitem>
   </varlistentry>
 

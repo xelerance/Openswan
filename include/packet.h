@@ -166,7 +166,7 @@ extern void DBG_print_struct(const char *label, const void *struct_ptr,
  * require them to be zero).
  */
 
-#define NSIZEOF_isakmp_hdr      20      /* on-the-wire sizeof struct isakmpg_hdr */
+#define NSIZEOF_isakmp_hdr      28      /* on-the-wire sizeof struct isakmpg_hdr */
 #define NOFFSETOF_isa_np        8       /* on-the-wire offset of isa_np (one octet) */
 #define NOFFSETOF_isag_length   2       /* on-the-wire offset of isag_length (two octets, network order */
 #define NOFFSETOF_isag_np       0       /* on-the-wire offset of isag_np (one octet) */

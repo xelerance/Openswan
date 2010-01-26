@@ -16,7 +16,7 @@ The value of
 <emphasis remap='B'>rekeymargin</emphasis>,
 after this random increase,
 must not exceed
-<emphasis remap='B'>keylife</emphasis>.
+<emphasis remap='B'>salifetime</emphasis>.
 The value
 <emphasis remap='B'>0%</emphasis>
 will suppress time randomization.

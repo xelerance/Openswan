@@ -17,8 +17,6 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 ifeq ($(USE_LIBNSS),true)
 CFLAGS+=-DHAVE_LIBNSS
-# temp workaround for bug in nspr 4.8.2 
-CFLAGS+=-Wno-strict-prototypes
 ifeq ($(USE_FIPSCHECK),true)
 FIPS_CHECK=1
 CFLAGS+=-DFIPS_CHECK
@@ -38,3 +36,7 @@ endif
 
 include ${srcdir}../Makefile.program
 
+# temp workaround for bug in nspr 4.8.2 
+ifeq ($(USE_LIBNSS),true)
+CFLAGS+=-Wno-strict-prototypes
+endif

@@ -5,7 +5,7 @@
 should attempts to
 negotiate a replacement
 begin; acceptable values as for
-<emphasis remap='B'>keylife</emphasis>
+<emphasis remap='B'>salifetime</emphasis>
 (default
 <emphasis remap='B'>9m</emphasis>).
 Relevant only locally, other end need not agree on it.</para>
