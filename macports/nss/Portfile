@@ -1,0 +1,89 @@
+# $Id$
+
+PortSystem	1.0
+
+name		nss
+version		3.12.3
+set NSS_VMAJOR 3
+set NSS_VMINOR 12
+set NSS_VPATCH 3
+categories	net
+maintainers	jeremyhu openmaintainer
+description	Network Security Service libraries.
+depends_lib	port:nspr
+
+long_description ${description}
+use_configure	no
+homepage	http://www.mozilla.org/projects/security/pki/nss/
+platforms       darwin
+
+set my_release 	NSS_[strsed ${version} {g/\./_/}]_RTM
+
+use_bzip2       yes
+master_sites	ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${my_release}/src/ \
+		http://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${my_release}/src/
+checksums           md5     ecb7079ba4ebcf29b7716775384f1f18 \
+                    sha1    eeca14a37629287baa10eb7562a5fb927e9dd171 \
+                    rmd160  b5339eda9dfc87385b2c11e2ca53be249b75ed69
+
+depends_lib \
+	port:nspr \
+	port:sqlite3
+
+patchfiles	patch-UNIX.mk.diff \
+		patch-Darwin.mk.diff
+
+post-patch {
+        reinplace "s|@executable_path|${prefix}/lib/nss|g" \
+		${worksrcpath}/mozilla/security/coreconf/Darwin.mk \
+		${worksrcpath}/mozilla/security/nss/cmd/platlibs.mk \
+		${worksrcpath}/mozilla/security/nss/lib/smime/config.mk \
+		${worksrcpath}/mozilla/security/nss/lib/ssl/config.mk
+        reinplace "s|@@PREFIX@@|${prefix}|g" \
+		${worksrcpath}/mozilla/security/coreconf/Darwin.mk \
+		${worksrcpath}/mozilla/security/coreconf/UNIX.mk
+        reinplace "s|= cc\$|= ${configure.cc}|" \
+		${worksrcpath}/mozilla/security/coreconf/Darwin.mk
+        reinplace "s|= c++\$|= ${configure.cxx}|" \
+		${worksrcpath}/mozilla/security/coreconf/Darwin.mk
+        reinplace "s|= ranlib\$|= /usr/bin/ranlib|" \
+		${worksrcpath}/mozilla/security/coreconf/Darwin.mk
+}
+
+build {system "cd ${worksrcpath} && make -C mozilla/security/coreconf/nsinstall && make -C mozilla/security/dbm && make -C mozilla/security/nss NSPR_LIB_DIR=${prefix}/lib/nspr NSS_USE_SYSTEM_SQLITE=1"}
+
+destroot {
+	xinstall -m 755 -d ${destroot}${prefix}/include/nss
+	eval xinstall -m 755 [glob ${worksrcpath}/mozilla/dist/public/nss/*] ${destroot}${prefix}/include/nss
+	eval xinstall -m 755 [glob ${worksrcpath}/mozilla/dist/public/dbm/*] ${destroot}${prefix}/include/nss
+	xinstall -m 755 -d ${destroot}${prefix}/bin
+	foreach f [glob ${worksrcpath}/mozilla/dist/Darwin*/bin/*] {
+		xinstall -m 755 $f ${destroot}${prefix}/bin/nss-[file tail $f]
+	}
+	xinstall -m 755 -d ${destroot}${prefix}/lib/nss
+	eval xinstall -m 755 [glob ${worksrcpath}/mozilla/dist/Darwin*/lib/*.dylib] ${destroot}${prefix}/lib/nss
+	eval xinstall -m 644 [glob ${worksrcpath}/mozilla/dist/Darwin*/lib/libcrmf.a] ${destroot}${prefix}/lib/nss
+
+	xinstall -m 755 -d ${destroot}${prefix}/lib/pkgconfig
+
+	xinstall ${filespath}/nss.pc.in ${destroot}${prefix}/lib/pkgconfig/nss.pc
+	xinstall -m 755 ${filespath}/nss-config.in ${destroot}${prefix}/bin/nss-config
+
+	reinplace "s,@libdir@,${prefix}/lib/nss,g" ${destroot}${prefix}/bin/nss-config
+	reinplace "s,@prefix@,${prefix},g" ${destroot}${prefix}/bin/nss-config
+	reinplace "s,@exec_prefix@,${prefix},g" ${destroot}${prefix}/bin/nss-config
+	reinplace "s,@includedir@,${prefix}/include/nss,g" ${destroot}${prefix}/bin/nss-config
+	reinplace "s,@MOD_MAJOR_VERSION@,${NSS_VMAJOR},g" ${destroot}${prefix}/bin/nss-config
+	reinplace "s,@MOD_MINOR_VERSION@,${NSS_VMINOR},g" ${destroot}${prefix}/bin/nss-config
+	reinplace "s,@MOD_PATCH_VERSION@,${NSS_VPATCH},g" ${destroot}${prefix}/bin/nss-config
+
+	set nspr_version [exec ${prefix}/bin/nspr-config --version]
+	set nss_version [exec ${destroot}${prefix}/bin/nss-config --version]
+
+	reinplace "s,@libdir@,${prefix}/lib/nss,g" ${destroot}${prefix}/lib/pkgconfig/nss.pc
+	reinplace "s,@prefix@,${prefix},g" ${destroot}${prefix}/lib/pkgconfig/nss.pc
+	reinplace "s,@exec_prefix@,${prefix},g" ${destroot}${prefix}/lib/pkgconfig/nss.pc
+	reinplace "s,@includedir@,${prefix}/include/nss," ${destroot}${prefix}/lib/pkgconfig/nss.pc
+	reinplace "s,@NSPR_VERSION@,${nspr_version},g"  ${destroot}${prefix}/lib/pkgconfig/nss.pc
+	reinplace "s,@NSS_VERSION@,${nss_version},g" ${destroot}${prefix}/lib/pkgconfig/nss.pc
+}

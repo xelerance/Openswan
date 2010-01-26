@@ -5,7 +5,7 @@
 
 #ifndef _LINUX_PFKEY2_H
 #define _LINUX_PFKEY2_H
-#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
+#if defined(linux)
 # include <linux/types.h>
 #endif
 

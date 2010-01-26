@@ -44,6 +44,7 @@
 
 #include "constants.h"
 #include "oswalloc.h"
+#include "oswcrypto.h"
 #include "oswlog.h"
 #include "oswconf.h"
 #include "secrets.h"

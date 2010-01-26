@@ -1,6 +1,7 @@
 /* IKEv2 - CHILD SA - calculations
  *
  * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008-2009 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -205,11 +206,19 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 	    switch(ts1.isat1_type) {
 	    case ID_IPV4_ADDR_RANGE:
 		array[i].sin_family = AF_INET;
+
 		array[i].low.u.v4.sin_family  = AF_INET;
+#ifdef NEED_SIN_LEN
+		array[i].low.u.v4.sin_len = sizeof( struct sockaddr_in);
+#endif
 		if(!in_raw(&array[i].low.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
 		    return -1;
 		
 		array[i].high.u.v4.sin_family = AF_INET;
+#ifdef NEED_SIN_LEN
+		array[i].high.u.v4.sin_len = sizeof( struct sockaddr_in);
+#endif
+
 		if(!in_raw(&array[i].high.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
 		    return -1;
 		break;
@@ -217,10 +226,18 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 	    case ID_IPV6_ADDR_RANGE:
 		array[i].sin_family = AF_INET;
 		array[i].low.u.v6.sin6_family  = AF_INET6;
+#ifdef NEED_SIN_LEN
+		array[i].low.u.v6.sin6_len = sizeof( struct sockaddr_in6);
+#endif
+
 		if(!in_raw(&array[i].low.u.v6.sin6_addr.s6_addr, 16, &addr, "ipv6 ts"))
 		    return -1;
 		
 		array[i].high.u.v6.sin6_family = AF_INET6;
+#ifdef NEED_SIN_LEN
+                array[i].high.u.v6.sin6_len = sizeof( struct sockaddr_in6);
+#endif
+
 		if(!in_raw(&array[i].high.u.v6.sin6_addr.s6_addr,16, &addr, "ipv6 ts"))
 		    return -1;
 		break;

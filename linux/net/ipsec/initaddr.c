@@ -1,6 +1,7 @@
 /*
  * initialize address structure
  * Copyright (C) 2000  Henry Spencer.
+ * Copyroght (C) 2009 Paul Wouters <paul@xelerance.com>
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
@@ -12,7 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: initaddr.c,v 1.6 2004/07/10 07:43:47 mcr Exp $
  */
 #include "openswan.h"
 
@@ -64,6 +64,9 @@ ip_address *dst;
 #endif
 		dst->u.v4.sin_family = af;
 		dst->u.v4.sin_port = 0;
+#ifdef NEED_SIN_LEN
+		dst->u.v4.sin_len = sizeof(struct sockaddr_in);
+#endif
 		memcpy((char *)&dst->u.v4.sin_addr.s_addr, src, srclen);
 		break;
 	case AF_INET6:
@@ -75,6 +78,9 @@ ip_address *dst;
 		dst->u.v6.sin6_family = af;
 		dst->u.v6.sin6_flowinfo = 0;		/* unused */
 		dst->u.v6.sin6_port = 0;
+#ifdef NEED_SIN_LEN
+		dst->u.v6.sin6_len = sizeof(struct sockaddr_in6);
+#endif
 		memcpy((char *)&dst->u.v6.sin6_addr, src, srclen);
 		break;
 	default:
