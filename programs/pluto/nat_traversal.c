@@ -24,6 +24,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>     /* used only if MSG_NOSIGNAL not defined */
+#include <sys/socket.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
 
