@@ -2673,7 +2673,14 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
 	return TRUE;
     }
 
-    for (sr = &st->st_connection->spd; sr != NULL; sr = sr->next)
+
+    sr = &st->st_connection->spd;
+    if (st->st_connection->remotepeertype == CISCO) {
+    sr = sr->next;
+    }
+
+    //for (sr = &st->st_connection->spd; sr != NULL; sr = sr->next)
+    for (; sr != NULL; sr = sr->next)
     {
         DBG(DBG_CONTROL, DBG_log("sr for #%ld: %s"
                                  , st->st_serialno
