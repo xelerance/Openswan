@@ -291,6 +291,8 @@ USE_KEYRR?=true
 USE_KLIPS?=true
 
 # KLIPS needs PFKEYv2, but sometimes we want PFKEY without KLIPS
+# Note: NETLINK does not use PFKEY, but it does share some code,
+# so it is required for NETKEY as well.
 USE_PFKEYv2?=true
 
 # Build support for 2.6 KLIPS/MAST variation in pluto

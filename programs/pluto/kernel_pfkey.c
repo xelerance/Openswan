@@ -806,6 +806,7 @@ static int kernelop2klips(enum pluto_sadb_operations op)
     return klips_op;
 }
 
+#ifdef KLIPS
 void klips_pfkey_register(void)
 {
     klips_register_proto(K_SADB_SATYPE_AH, "AH");
@@ -814,6 +815,7 @@ void klips_pfkey_register(void)
     klips_register_proto(K_SADB_X_SATYPE_COMP, "IPCOMP");
     klips_register_proto(K_SADB_X_SATYPE_IPIP, "IPIP");
 }
+#endif
 
 bool
 pfkey_raw_eroute(const ip_address *this_host
