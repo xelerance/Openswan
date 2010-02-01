@@ -47,8 +47,10 @@ struct ipsectunnelconf
 #define IPSEC_SET_DEV	(SIOCDEVPRIVATE)
 #define IPSEC_DEL_DEV	(SIOCDEVPRIVATE + 1)
 #define IPSEC_CLR_DEV	(SIOCDEVPRIVATE + 2)
-#define IPSEC_UDP_ENCAP_CONVERT	(SIOCDEVPRIVATE + 3)
 #endif
+
+/* This is used for KLIPS as well as NETKEY */
+#define IPSEC_UDP_ENCAP_CONVERT	(SIOCDEVPRIVATE + 3)
 
 #ifdef __KERNEL__
 #include <linux/version.h>
