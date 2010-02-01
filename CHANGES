@@ -20,6 +20,7 @@ v2.6.25
 * Fixup for compiling with broken version of nspr [Avesh]
 * Update ipsec.conf man page [Tuomo]
 * In rare circumstances, DPD could kill an active tunnel [Shinichi Furuso]
+* Compile fixes for NETKEY without KLIPS [Ajay.V.Sarraju]
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
