@@ -7,7 +7,7 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.25
 * Google Summer of Code 2009 project for osxApp merged in [Paul]
   code contributed by student Jose Quaresma and mentor Stefan Arentz
-* Google Summer of Code 2009 project for livetest merged in Paul]
+* Google Summer of Code 2009 project for livetest merged in [Paul]
   code contributed by student Daniel Snider and mentor Paul Wouters
 * Added exceptsocket NULL kernel_ops for non-bsd stacks [Paul]
 * Remove hardcoded sql: from nss db path (showhostkey, rsasigkey) [Tuomo]
