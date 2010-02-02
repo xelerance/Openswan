@@ -115,18 +115,26 @@ ifeq ($(USE_KEYRR),true)
 KEYRR_DEFINES=-DUSE_KEYRR
 endif
 
-NETKEY_DIST_SRCS=kernel_netlink.c kernel_netlink.h kernel_pfkey.c kernel_pfkey.h
+ifeq ($(USE_PFKEYv2),true)
+PFKEYv2_DIST_SRC=kernel_pfkey.c kernel_pfkey.h
+PFKEYv2_OBJS=kernel_pfkey.o
+else
+PFKEYv2_DIST_SRC=
+PFKEYv2_OBJS=
+endif
+
+NETKEY_DIST_SRCS=kernel_netlink.c kernel_netlink.h 
 ifeq ($(USE_NETKEY),true)
 NETKEY_DEFS=-DNETKEY_SUPPORT -DKERNEL26_HAS_KAME_DUPLICATES -DPFKEY
 NETKEY_SRCS=${NETKEY_DIST_SRCS}
-NETKEY_OBJS=kernel_netlink.o kernel_pfkey.o
+NETKEY_OBJS=kernel_netlink.o 
 endif
 
-KLIPS_DIST_SRCS=kernel_pfkey.c kernel_klips.c kernel_pfkey.h 
+KLIPS_DIST_SRCS=kernel_klips.c
 ifeq ($(USE_KLIPS),true)
 KLIPS_SRCS=${KLIPS_DIST_SRCS}
 KLIPS_DEFS=-DKLIPS -DHAVE_UDPFROMTO -DPFKEY
-KLIPS_OBJS=kernel_pfkey.o kernel_klips.o 
+KLIPS_OBJS=kernel_klips.o 
 endif
 
 MAST_DIST_SRCS=kernel_mast.c 

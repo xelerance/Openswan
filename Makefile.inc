@@ -290,11 +290,6 @@ USE_KEYRR?=true
 # for pluto
 USE_KLIPS?=true
 
-# KLIPS needs PFKEYv2, but sometimes we want PFKEY without KLIPS
-# Note: NETLINK does not use PFKEY, but it does share some code,
-# so it is required for NETKEY as well.
-USE_PFKEYv2?=true
-
 # Build support for 2.6 KLIPS/MAST variation in pluto
 USE_MAST?=true
 
@@ -304,6 +299,15 @@ USE_SAREF_KERNEL=false
 # Build support for Linux NETKEY (XFRM) kernel level IPsec support for
 # pluto (aka "native", "kame")
 USE_NETKEY?=true
+
+# KLIPS needs PFKEYv2, but sometimes we want PFKEY without KLIPS
+# Note: NETLINK does not use PFKEY, but it does share some code,
+# so it is required for NETKEY as well.
+ifeq ($(USE_KLIPS),true)
+USE_PFKEYv2=true
+else ifeq ($(USE_NETKEY),true)
+USE_PFKEYv2=true
+endif
 
 # Whether or not to use iproute2 based commands.
 # On Kernel 2.0, and early 2.2 systems you may need to either install the
