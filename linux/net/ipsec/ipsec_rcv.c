@@ -1712,8 +1712,7 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 	/* release the dst that was attached, since we have likely
 	 * changed the actual destination of the packet.
 	 */
-	if(skb_dst(skb))
-		skb_dst_drop(skb);
+	skb_dst_drop(skb);
 	skb->pkt_type = PACKET_HOST;
 	if(irs->hard_header_len &&
 	   (skb_mac_header(skb) != (skb_network_header(skb) - irs->hard_header_len)) &&
