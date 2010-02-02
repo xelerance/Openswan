@@ -146,7 +146,7 @@ static inline int ipsec_tunnel_xmit2(struct sk_buff *skb)
 #endif
 }
 
-#ifdef HAVE_NET_DEVICE_OPS /* this may need further restricting */
+#ifdef HAVE_NETDEV_HEADER_OPS
 
 int klips_header(struct sk_buff *skb, struct net_device *dev,
 		 unsigned short type,
@@ -408,7 +408,7 @@ const struct header_ops klips_header_ops ____cacheline_aligned = {
 	.cache_update	= klips_header_cache_update,
 };
 
-#endif /* HAVE_NET_DEVICE_OPS */
+#endif /* HAVE_NETDEV_HEADER_OPS */
 
 enum ipsec_xmit_value
 ipsec_tunnel_strip_hard_header(struct ipsec_xmit_state *ixs)
@@ -1001,7 +1001,7 @@ ipsec_tunnel_hard_header(struct sk_buff *skb, struct net_device *dev,
 	if(type != ETH_P_IPV6) {
 		/* execute this only, if we don't have to build the
 		   header for a IPv6 packet */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#ifdef HAVE_NETDEV_HEADER_OPS
 		if(!prv->header_ops->create)
 #else
 		if(!prv->hard_header)
@@ -1059,7 +1059,7 @@ ipsec_tunnel_hard_header(struct sk_buff *skb, struct net_device *dev,
 	}                                                                       
 	tmp = skb->dev;
 	skb->dev = prv->dev;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#ifdef HAVE_NETDEV_HEADER_OPS
 	ret = prv->header_ops->create(skb, prv->dev, type, (void *)daddr, (void *)saddr, len);
 #else
 	ret = prv->hard_header(skb, prv->dev, type, (void *)daddr, (void *)saddr, len);
@@ -1107,7 +1107,7 @@ ipsec_tunnel_rebuild_header(void *buff, struct net_device *dev,
 		return -ENODEV;
 	}
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#ifdef HAVE_NETDEV_HEADER_OPS
 	if(!prv->header_ops->rebuild)
 #else
 	if(!prv->rebuild_header)
@@ -1150,7 +1150,7 @@ ipsec_tunnel_rebuild_header(void *buff, struct net_device *dev,
 	tmp = skb->dev;
 	skb->dev = prv->dev;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#ifdef HAVE_NETDEV_HEADER_OPS
 	ret = prv->header_ops->rebuild(skb);
 #else
 #ifdef NET_21
@@ -1301,7 +1301,7 @@ ipsec_tunnel_cache_update(struct hh_cache *hh, const struct net_device *dev,
 		return;
 	}
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#ifdef HAVE_NETDEV_HEADER_OPS
 	if(!prv->header_ops->cache_update)
 #else
 	if(!prv->header_cache_update)
@@ -1317,7 +1317,7 @@ ipsec_tunnel_cache_update(struct hh_cache *hh, const struct net_device *dev,
 	KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
 		    "klips_debug:ipsec_tunnel: "
 		    "Revectored cache_update\n");
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#ifdef HAVE_NETDEV_HEADER_OPS
 	prv->header_ops->cache_update(hh, prv->dev, haddr);
 #else
 	prv->header_cache_update(hh, prv->dev, haddr);
@@ -1325,7 +1325,7 @@ ipsec_tunnel_cache_update(struct hh_cache *hh, const struct net_device *dev,
 	return;
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#ifdef HAVE_NETDEV_HEADER_OPS
 const struct header_ops ipsec_tunnel_header_ops = {
 	.create		= ipsec_tunnel_hard_header,
 	.rebuild	= ipsec_tunnel_rebuild_header,
@@ -1400,7 +1400,7 @@ ipsec_tunnel_detach(struct net_device *dev)
 	prv->hard_start_xmit = NULL;
 	prv->get_stats = NULL;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#ifdef HAVE_NETDEV_HEADER_OPS
 	prv->header_ops = NULL;
 #else
 	prv->hard_header = NULL;
@@ -1416,7 +1416,7 @@ ipsec_tunnel_detach(struct net_device *dev)
 	dev->hard_header_len = 0;
 
 #ifdef DETACH_AND_DOWN
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#ifdef HAVE_NETDEV_HEADER_OPS
 	dev->header_ops = NULL;
 #else
 	dev->hard_header = NULL;
@@ -1812,7 +1812,7 @@ ipsec_tunnel_init(struct net_device *dev)
 		((__u8*)(zeroes))[i] = 0;
 	}
 	
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#ifdef HAVE_NETDEV_HEADER_OPS
 	dev->header_ops		= NULL;
 #else
 	dev->hard_header	= NULL;
@@ -2246,6 +2246,9 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 		return -ENODATA;
 	}
 
+#ifdef HAVE_NETDEV_HEADER_OPS
+	dev->header_ops = &klips_header_ops;                                    
+#endif                                                                         
 #ifdef HAVE_NET_DEVICE_OPS
 	dev->netdev_ops = &klips_device_ops;
 #else

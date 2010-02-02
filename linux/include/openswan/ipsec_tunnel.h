@@ -66,7 +66,7 @@ struct ipsecpriv
 	char locked;
 	int  (*hard_start_xmit) (struct sk_buff *skb,
 		struct net_device *dev);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#ifdef HAVE_NETDEV_HEADER_OPS
 	const struct header_ops *header_ops;
 #else
 

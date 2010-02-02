@@ -688,7 +688,7 @@ ipsec_mast_probe(struct net_device *dev)
 		((__u8*)(zeroes))[i] = 0;
 	}
 	
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+#ifdef HAVE_NETDEV_HEADER_OPS
 	dev->header_ops = NULL;
 #else
 	dev->hard_header	= NULL;
