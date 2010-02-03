@@ -92,8 +92,6 @@ ipsec_xmit_ipip_setup(struct ipsec_xmit_state *ixs)
   ixs->iph->protocol = IPPROTO_IPIP;
   ixs->iph->ihl      = sizeof(struct iphdr) >> 2;
   
-  KLIPS_IP_SELECT_IDENT(ixs->iph, ixs->skb);
-  
   ixs->newdst = (__u32)ixs->iph->daddr;
   ixs->newsrc = (__u32)ixs->iph->saddr;
   

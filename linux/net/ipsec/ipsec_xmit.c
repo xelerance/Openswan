@@ -95,37 +95,6 @@
 #include "openswan/ipsec_alg.h"
 #include "ipsec_ocf.h"
 
-
-/* 
- * Stupid kernel API differences in APIs. Not only do some
- * kernels not have ip_select_ident, but some have differing APIs,
- * and SuSE has one with one parameter, but no way of checking to
- * see what is really what.
- */
-
-#ifdef SUSE_LINUX_2_4_19_IS_STUPID
-#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph)
-#else
-
-/* simplest case, nothing */
-#if !defined(IP_SELECT_IDENT)
-#define KLIPS_IP_SELECT_IDENT(iph, skb)  do { iph->id = htons(ip_id_count++); } while(0)
-#endif
-
-/* kernels > 2.3.37-ish */
-#if defined(IP_SELECT_IDENT) && !defined(IP_SELECT_IDENT_NEW)
-#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb->dst)
-#endif
-
-/* kernels > 2.4.2 */
-#if defined(IP_SELECT_IDENT) && defined(IP_SELECT_IDENT_NEW)
-#define KLIPS_IP_SELECT_IDENT(iph, skb) ip_select_ident(iph, skb_dst(skb), NULL)
-#endif
-
-#endif /* SUSE_LINUX_2_4_19_IS_STUPID */
-
-
-
 #if defined(CONFIG_KLIPS_AH)
 #if defined(CONFIG_KLIPS_AUTH_HMAC_MD5) || defined(CONFIG_KLIPS_AUTH_HMAC_SHA1)
 static __u32 zeroes[64];
@@ -1004,8 +973,6 @@ ipsec_xmit_ipip(struct ipsec_xmit_state *ixs)
 	ixs->iph->protocol = IPPROTO_IPIP;
 	ixs->iph->ihl      = sizeof(struct iphdr) >> 2;
 
-	KLIPS_IP_SELECT_IDENT(ixs->iph, ixs->skb);
-
 	ixs->newdst = (__u32)ixs->iph->daddr;
 	ixs->newsrc = (__u32)ixs->iph->saddr;
 	
@@ -1079,8 +1046,16 @@ ipsec_xmit_cont(struct ipsec_xmit_state *ixs)
 #else /* NET_21 */
 	ixs->skb->ip_hdr = ixs->skb->h.iph = (struct iphdr *) ixs->skb->data;
 #endif /* NET_21 */
-	ixs->iph->check = 0;
-	ixs->iph->check = ip_fast_csum((unsigned char *)ixs->iph, ixs->iph->ihl);
+
+	/*
+	 * if we have more work to do,  it's likely this checksum is getting
+	 * encapsulated,  and we must do it.  Otherwise,  we do a final one
+	 * just before the ip_send/nf hook in ipsec_xmit_send.
+	 */
+	if (ixs->ipsp->ips_next) {
+		ixs->iph->check = 0;
+		ixs->iph->check = ip_fast_csum((unsigned char *)ixs->iph, ixs->iph->ihl);
+	}
 			
 	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 		    "klips_debug:ipsec_xmit_encap_once: "
@@ -2064,6 +2039,14 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	if(!ixs->pass) {
 		ipsec_nf_reset(ixs->skb);
 	}
+
+	/* newer kernels require skb->dst to be set in KLIPS_IP_SELECT_IDENT */
+	KLIPS_IP_SELECT_IDENT(ip_hdr(ixs->skb), ixs->skb);
+
+	/* fix up the checksum after changes to the header */
+	ip_hdr(ixs->skb)->check = 0;
+	ip_hdr(ixs->skb)->check =
+		ip_fast_csum((unsigned char *)ip_hdr(ixs->skb), ip_hdr(ixs->skb)->ihl);
 
 	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 		    "klips_debug:ipsec_xmit_send: "

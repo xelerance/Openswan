@@ -23,6 +23,8 @@ v2.6.25
 * In rare circumstances, DPD could kill an active tunnel [Shinichi Furuso]
 * Compile fixes for NETKEY without KLIPS [Ajay.V.Sarraju]
 * Fix tcpdump operation on KLIPS/ipsecX interfaces [David]
+* Report NETDEV_TX_BUSY when klips is overloaded with requests [David]
+* Fix usage of KLIPS_IP_SELECT_IDENT to prevent kernel trace/warnings [David]
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
