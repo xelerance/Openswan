@@ -41,9 +41,9 @@
 #include <fcntl.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
-#include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
 #include <sys/resource.h>
 #include <sys/wait.h>
+#include <resolv.h>
 
 #if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
 #  include <asm/types.h>	/* for __u8, __u32 */

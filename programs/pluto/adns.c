@@ -56,7 +56,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <netinet/in.h>
-//#include <arpa/nameser.h>
 #include <resolv.h>
 #include <netdb.h>	/* ??? for h_errno */
 

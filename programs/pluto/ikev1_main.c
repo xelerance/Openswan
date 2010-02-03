@@ -29,9 +29,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
 #include <sys/time.h>		/* for gettimeofday */
 #include <gmp.h>
+#include <resolv.h>
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>

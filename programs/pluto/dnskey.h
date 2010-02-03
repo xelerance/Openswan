@@ -16,8 +16,8 @@
 
 #ifndef _DNSKEY_H_
 
-//#include <arpa/nameser.h>
-#include "adns.h"
+#include <resolv.h>
+#include "adns.h"	/* needs <resolv.h> */
 
 extern int
     adns_qfd,	/* file descriptor for sending queries to adns */

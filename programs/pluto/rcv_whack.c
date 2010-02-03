@@ -30,7 +30,7 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
+#include <resolv.h>
 #include <fcntl.h>
 
 #include <openswan.h>

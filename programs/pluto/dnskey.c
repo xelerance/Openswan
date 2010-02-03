@@ -24,8 +24,8 @@
 #include <sys/wait.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <arpa/nameser.h>
 #include <netdb.h>	/* ??? for h_errno */
+#include <resolv.h>
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
