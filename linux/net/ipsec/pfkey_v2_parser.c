@@ -2014,14 +2014,14 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 				    "klips_debug:pfkey_x_addflow_parse: "
 				    "first=0p%p HOLD packet re-injected.\n",
 				    first);
-			dst_output(first);
+			dev_queue_xmit(first);
 		}
 		if(last != NULL) {
 			KLIPS_PRINT(debug_eroute,
 				    "klips_debug:pfkey_x_addflow_parse: "
 				    "last=0p%p HOLD packet re-injected.\n",
 				    last);
-			dst_output(last);
+			dev_queue_xmit(last);
 		}
 	}
 
