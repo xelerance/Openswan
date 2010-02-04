@@ -1461,6 +1461,12 @@ stf_status ikev2parent_inI2outR2(struct msg_digest *md)
 	return STF_FATAL;
     }
 
+    /* process AUTH payload */
+    if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
+	openswan_log("no authentication payload found");
+	return STF_FATAL;
+    }
+
     /* now. we need to go calculate the g^xy */
     {
 	struct dh_continuation *dh = alloc_thing(struct dh_continuation
@@ -1598,12 +1604,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    DBG(DBG_CONTROLMORE
 		,DBG_log("has a v2CERTREQ payload going to decode it"));
 	    ikev2_decode_cr(md, &st->st_connection->requested_ca);
-    }
-
-    /* process AUTH payload */
-    if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
-	openswan_log("no authentication payload found");
-	return STF_FAIL;
     }
 
     /* now check signature from RSA key */
