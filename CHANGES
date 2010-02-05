@@ -29,6 +29,7 @@ v2.6.25
 * Correct locking for SA tables in pfkey interface [Shinichi Furuso/David]
 * Add locking to PRNG to prevent possible corruption [Shinichi Furuso/David]
 * Fix oops on held packets [David]
+* Implement remove_orphaned_holds for NETKEY [Tuomo]
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
