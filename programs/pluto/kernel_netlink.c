@@ -1900,18 +1900,6 @@ netkey_do_command(struct connection *c, struct spd_route *sr
     return invoke_command(verb, verb_suffix, cmd);
 }
 
-static void
-netlink_remove_orphaned_holds(int transport_proto UNUSED
-				 , const ip_subnet *ours UNUSED
-				 , const ip_subnet *his UNUSED)
-{
-    /* stub - this is not implemented for NETLEY */
-    /*
-     * if present, remove from orphaned_holds list.
-     * NOTE: we do this last in case ours or his is a pointer into a member.
-     */
-}
-
 const struct kernel_ops netkey_kernel_ops = {
     kern_name: "netkey",
     type: USE_NETKEY,
@@ -1934,12 +1922,13 @@ const struct kernel_ops netkey_kernel_ops = {
     exceptsocket: NULL,
     docommand: netkey_do_command,
     process_ifaces: netlink_process_raw_ifaces,
-
-    /* XXX these needed to be added */
     shunt_eroute: netlink_shunt_eroute,
-    sag_eroute: netlink_sag_eroute,   /* pfkey_sag_eroute, */
-    eroute_idle: netlink_eroute_idle,  /* pfkey_was_eroute_idle,*/
+    sag_eroute: netlink_sag_eroute,
+    eroute_idle: netlink_eroute_idle,
     set_debug: NULL,    /* pfkey_set_debug, */
-    remove_orphaned_holds: netlink_remove_orphaned_holds, /* pfkey_remove_orphaned_holds,*/
+    /* We should implement netlink_remove_orphaned_holds
+     * if netlink  specific changes are needed.
+     */
+    remove_orphaned_holds: pfkey_remove_orphaned_holds,
 };
 #endif /* linux && NETKEY_SUPPORT */
