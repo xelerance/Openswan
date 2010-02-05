@@ -27,6 +27,8 @@ v2.6.25
 * Fix usage of KLIPS_IP_SELECT_IDENT to prevent kernel trace/warnings [David]
 * Auth corruption due to unprotected data in sha1 (work_space) [Shinichi Furuso]
 * Correct locking for SA tables in pfkey interface [Shinichi Furuso/David]
+* Add locking to PRNG to prevent possible corruption [Shinichi Furuso/David]
+* Fix oops on held packets [David]
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
