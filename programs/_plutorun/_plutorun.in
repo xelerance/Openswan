@@ -279,12 +279,9 @@ do
 		echo "restarting IPsec after pause..."
 		(
 			sleep 10
-			ipsec setup _autorestart
+			ipsec setup restart
 		) </dev/null >/dev/null 2>&1 &
 		exit 1
-		###sleep 10
-		###rm -rf $pidfile
-		#### and go around the loop again
 		;;
 	esac
 done </dev/null 2>&1 |

@@ -149,7 +149,7 @@ case "$1" in
     stop|--stop)
          stop
          ;;
-    restart|--restart|_autorestart)
+    restart|--restart)
          restart
  	 ;;
     reload|force-reload)
