@@ -30,7 +30,7 @@ v2.6.25
 * Add locking to PRNG to prevent possible corruption [Shinichi Furuso/David]
 * Fix oops on held packets [David]
 * Implement remove_orphaned_holds for NETKEY [Tuomo]
-* Get back ipsec setup option _autorestart used by _plutorun [Tuomo]
+* Fix_plutorun to use standard restart option for ipsec setup [Tuomo]
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
