@@ -950,9 +950,9 @@ bsdkame_add_sa(const struct kernel_sa *sa, bool replace)
     case ET_IPCOMP:
 	satype=SADB_X_SATYPE_IPCOMP;
 	break;
-	
     case ET_IPIP:
-	return TRUE;
+	satype = K_SADB_X_SATYPE_IPIP;
+	break;
 
     case ET_INT:
     case ET_UNSPEC:
