@@ -497,6 +497,10 @@ netlink_raw_eroute(const ip_address *this_host
 	    satype = SADB_X_SATYPE_IPCOMP;
 	    break;
 
+    case ET_IPIP:
+	    satype = K_SADB_X_SATYPE_IPIP;
+	    break;
+
     case ET_INT:
 	/* shunt route */
 	    switch (ntohl(spi))
@@ -518,9 +522,6 @@ netlink_raw_eroute(const ip_address *this_host
 		    }
 		    break;
 	    }
-	    break;
-    case ET_IPIP:
-	    bad_case(ET_IPIP);
 	    break;
     }
 
