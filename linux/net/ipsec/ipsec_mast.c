@@ -700,6 +700,9 @@ ipsec_mast_probe(struct net_device *dev)
 	dev->addr_len		= 0;
 	dev->type		= ARPHRD_NONE;
 	dev->tx_queue_len	= 10;		
+#ifdef IFF_XMIT_DST_RELEASE
+	dev->priv_flags	       &= ~IFF_XMIT_DST_RELEASE;
+#endif
 	memset((caddr_t)(dev->broadcast),0xFF, ETH_ALEN);	/* what if this is not attached to ethernet? */
 
 	/* New-style flags. */
