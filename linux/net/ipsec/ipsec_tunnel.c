@@ -1788,7 +1788,9 @@ ipsec_tunnel_init(struct net_device *dev)
 		    (unsigned long) sizeof(struct ipsecpriv),
 		    dev->name ? dev->name : "NULL");
 
+#ifdef alloc_netdev
 	dev->destructor         = free_netdev;
+#endif
 
 #ifndef HAVE_NETDEV_PRIV
 	{
@@ -2001,13 +2003,11 @@ ipsec_tunnel_deletenum(int vifnum)
 		    atomic_read(&dev_ipsec->refcnt));
 	unregister_netdev(dev_ipsec);
 	KLIPS_PRINT(debug_tunnel, "Unregisted %s\n", dev_ipsec->name);
-#ifdef alloc_netdev
-	free_netdev(dev_ipsec);
-#else
 #ifndef NETDEV_23
 	kfree(dev_ipsec->name);
 	dev_ipsec->name=NULL;
 #endif /* !NETDEV_23 */
+#ifndef alloc_netdev
 	kfree(dev_ipsec->priv);
 	dev_ipsec->priv=NULL;
 #endif /* alloc_netdev */
@@ -2054,13 +2054,11 @@ ipsec_tunnel_cleanup_devices(void)
 			    atomic_read(&dev_ipsec->refcnt));
 		unregister_netdev(dev_ipsec);
 		KLIPS_PRINT(debug_tunnel, "Unregisted %s\n", dev_ipsec->name);
-#ifdef alloc_netdev
-		free_netdev(dev_ipsec);
-#else
 #ifndef NETDEV_23
 		kfree(dev_ipsec->name);
 		dev_ipsec->name=NULL;
 #endif /* !NETDEV_23 */
+#ifndef alloc_netdev
 		kfree(dev_ipsec->priv);
 		dev_ipsec->priv=NULL;
 #endif /* alloc_netdev */
