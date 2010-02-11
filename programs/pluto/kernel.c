@@ -1977,6 +1977,10 @@ teardown_half_ipsec_sa(struct state *st, bool inbound)
      * But if there is more than one, they have been grouped
      * so deleting any one will do.  So we just delete the
      * first one found.  It may or may not be the only one.
+     *
+     * Paul: I think this is not true for NETKEY, since we are
+     * leaving the output eroute installed - try to delete that
+     * one seperately
      */
     struct connection *c = st->st_connection;
     struct {
@@ -1998,6 +2002,17 @@ teardown_half_ipsec_sa(struct state *st, bool inbound)
                           , ET_UNSPEC
                           , null_proto_info, 0
                           , ERO_DEL_INBOUND, "delete inbound");
+
+	/* This should move into kernel_netlink.c */
+	if (kernel_ops->type == USE_NETKEY)
+	    (void) raw_eroute(&c->spd.this.host_addr, &c->spd.this.client
+			  , &c->spd.that.host_addr, &c->spd.that.client
+			  , 256
+			  , IPSEC_PROTO_ANY
+			  , c->spd.that.protocol
+			  , SADB_SATYPE_UNSPEC
+			  , null_proto_info, 0
+			  , ERO_DELETE, "delete outbound");
     }
 
     if (!kernel_ops->grp_sa)
