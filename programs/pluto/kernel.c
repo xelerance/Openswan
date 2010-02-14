@@ -2010,7 +2010,7 @@ teardown_half_ipsec_sa(struct state *st, bool inbound)
 			  , 256
 			  , IPSEC_PROTO_ANY
 			  , c->spd.that.protocol
-			  , ET_UNSPEC
+			  , SADB_SATYPE_UNSPEC
 			  , null_proto_info, 0
 			  , ERO_DELETE, "delete outbound");
     }
