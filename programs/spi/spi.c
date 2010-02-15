@@ -1090,9 +1090,21 @@ main(int argc, char *argv[])
 				progname);
 	}
 
+        struct stat sts;
+        if ( ((stat ("/proc/net/pfkey", &sts)) == 0) )  {
+                fprintf(stderr, "%s: NETKEY does not use the ipsec spi command. Use 'ip xfrm' instead.\n",progname);
+                exit(1);
+        }
+
 	if(argcount == 1) {
-		int ret = system("cat /proc/net/ipsec_spi");
-		exit(ret != -1 && WIFEXITED(ret) ? WEXITSTATUS(ret) : 1);
+		int ret = 1;
+		if ((stat ("/proc/net/ipsec_spi", &sts)) != 0)  {
+			fprintf(stderr, "%s: No spi - no IPsec support in kernel (are the modules loaded?)\n", progname);
+		} else {
+			ret = system("cat /proc/net/ipsec_spi");
+			ret = ret != -1 && WIFEXITED(ret) ? WEXITSTATUS(ret) : 1;
+		}
+		exit(ret);
 	}
 
 	switch(alg) {

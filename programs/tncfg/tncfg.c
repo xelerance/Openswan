@@ -37,6 +37,8 @@ char tncfg_c_version[] = "use ipsec --version instead";
 #include <net/if.h>
 #endif
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
 #include <errno.h>
 #include <getopt.h>
 #include "socketwrapper.h"
@@ -257,9 +259,22 @@ main(int argc, char *argv[])
 		previous = c;
 	}
 
-	if(argcount == 1) {
-		exit(system("cat /proc/net/ipsec_tncfg"));
-	}
+        struct stat sts;
+        if ( ((stat ("/proc/net/pfkey", &sts)) == 0) )  {
+                fprintf(stderr, "%s: NETKEY does not support virtual interfaces.\n",progname);
+                exit(1);
+        }
+
+        if(argcount == 1) {
+                int ret = 1;
+                if ((stat ("/proc/net/ipsec_tncfg", &sts)) != 0)  {
+                        fprintf(stderr, "%s: No tncfg - no IPsec support in kernel (are the modules loaded?)\n", progname);
+                } else {
+                        ret = system("cat /proc/net/ipsec_tncfg");
+                        ret = ret != -1 && WIFEXITED(ret) ? WEXITSTATUS(ret) : 1;
+                }
+                exit(ret);
+        }
 
 	/* overlay our struct ipsectunnel onto ifr.ifr_ifru union (hope it fits!) */
 	if (sizeof(ifr.ifr_ifru) < sizeof(shc)) {
