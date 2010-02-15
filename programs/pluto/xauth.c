@@ -1961,6 +1961,7 @@ stf_status xauth_client_resp(struct state *st
 	    dont_advance = FALSE;
 	    if(xauth_resp & 1)
 	    {
+		bool password_read_from_prompt = FALSE;
 		/* ISAKMP attr out */
 		switch(attr_type)
 		{
@@ -2053,14 +2054,26 @@ stf_status xauth_client_resp(struct state *st
 			clonereplacechunk(st->st_xauth_password
 					  , xauth_password, strlen(xauth_password)
 					  , "XAUTH password");
+			password_read_from_prompt = TRUE;
 		    }
 		    
 		    out_raw(st->st_xauth_password.ptr
 			    , st->st_xauth_password.len
 			    , &attrval, "XAUTH password");
+
+		    /*
+		     * Do not store the password read from the prompt. The password
+		     * could have be read from a one-time token device (like SecureID)
+		     * or the password could have been entereted wrong,
+		     */
+		    if (password_read_from_prompt) {
+			freeanychunk (st->st_xauth_password);
+			st->st_xauth_password.len = 0;
+			password_read_from_prompt = FALSE;
+		    }
 		    close_output_pbs(&attrval);
 		    break;
-		    
+
 		default:
 		    openswan_log("trying to send XAUTH reply, sending %s instead."
 			 , enum_show(&modecfg_attr_names, attr_type));
