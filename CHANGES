@@ -34,6 +34,8 @@ v2.6.25
 * Disable auto skb_dst_release so that icmp_send works [Ronen Shitrit/David]
 * Fix for unloading KLIPS module on latish kernels [Ronen Shitrit]
 * Fix init script default not to start up on boot by default [Tuomo]
+* Do not store XAUTH password in a variable if read from the prompt [Avesh]
+* spi/spigrp/tncfg blindly assumed KLIPS. Give nicer error output [Avesh]
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
