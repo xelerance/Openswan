@@ -147,10 +147,23 @@ main(int argc, char **argv)
 		fprintf(stdout, "...After check for --label option.\n");
 	}
 
-	if(argc == 1) {
-		int ret = system("cat /proc/net/ipsec_spigrp");
-		exit(ret != -1 && WIFEXITED(ret) ? WEXITSTATUS(ret) : 1);
-	}
+
+        struct stat sts;
+        if ( ((stat ("/proc/net/pfkey", &sts)) == 0) )  {
+                fprintf(stderr, "%s: NETKEY does not use the ipsec spigrp command. Use 'ip xfrm' instead.\n",progname);
+                exit(1);
+        }
+
+        if(argc == 1) {
+                int ret = 1;
+                if ((stat ("/proc/net/ipsec_spigrp", &sts)) != 0)  {
+                        fprintf(stderr, "%s: No spigrp - no IPsec support in kernel (are the modules loaded?)\n", progname);
+                } else {
+                        ret = system("cat /proc/net/ipsec_spigrp");
+                        ret = ret != -1 && WIFEXITED(ret) ? WEXITSTATUS(ret) : 1;
+                }
+                exit(ret);
+        }
 
 	if(debug) {
 		fprintf(stdout, "...After check for no option to print /proc/net/ipsec_spigrp.\n");
