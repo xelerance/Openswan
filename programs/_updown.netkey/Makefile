@@ -10,20 +10,17 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.10 2005/07/27 20:32:19 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=_updown.netkey
 PROGRAMDIR=${LIBDIR}
-UPDOWN_PROGRAM=_updown.ip2
 
 include ${srcdir}../Makefile.program
 
 cleanall::
-	rm -f ${UPDOWN_PROGRAM} ${PROGRAM}
+	rm -f ${PROGRAM}
 
 ifeq ($(USE_IPROUTE2),false)
 programs: ${PROGRAM}
@@ -32,9 +29,6 @@ programs: ${PROGRAM}
 else
 
 programs: ${PROGRAM}
-
-${PROGRAM}: ${UPDOWN_PROGRAM}
-	cp ${UPDOWN_PROGRAM} ${PROGRAM}
 
 endif
 
