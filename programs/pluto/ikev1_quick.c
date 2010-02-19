@@ -2255,7 +2255,7 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 	    ,(unsigned)(st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA)
 	    ,(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT));
     if (st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT) {
-	if (kern_interface == USE_KLIPS
+	if ( (kern_interface == USE_KLIPS) || (kern_interface == USE_MASTKLIPS)
 		&& st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA) {
 #if 0
 	    /** Send NAT-OA if our address is NATed and if we use Transport Mode */
