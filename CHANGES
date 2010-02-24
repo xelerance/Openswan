@@ -38,6 +38,7 @@ v2.6.25
 * spi/spigrp/tncfg blindly assumed KLIPS. Give nicer error output [Avesh]
 * Fix for _updown.netkey not being able to delete route [Tuomo]
 * Fix bad bare_shunt entry that break tunnel routing [David]
+* Fix oops when network driver doesn't support all header_ops [David]
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]

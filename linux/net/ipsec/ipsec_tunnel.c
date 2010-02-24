@@ -196,6 +196,18 @@ int klips_header(struct sk_buff *skb, struct net_device *dev,
 		return -ENODEV;
 	}
 
+	if(prv->dev->header_ops == NULL ||
+			prv->dev->header_ops->create == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_hard_header: "
+			    "cannot revector dev=%s op=%p func=%p",
+			    dev->name ? dev->name : "NULL",
+				prv->dev->header_ops, prv->dev->header_ops ?
+				prv->dev->header_ops->create : 0);
+		stats->tx_dropped++;
+		return -ENODEV;
+	}
+
 	/* check if we have to send a IPv6 packet. It might be a Router
 	   Solicitation, where the building of the packet happens in
 	   reverse order:
@@ -270,6 +282,18 @@ int klips_header_parse(const struct sk_buff *skb, unsigned char *haddr)
 		return -ENODEV;
 	}
 
+	if(prv->dev->header_ops == NULL ||
+			prv->dev->header_ops->parse == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:klips_header_parse: "
+			    "cannot revector dev=%s op=%p func=%p",
+			    skb->dev->name ? skb->dev->name : "NULL",
+				prv->dev->header_ops, prv->dev->header_ops ?
+				prv->dev->header_ops->parse : 0);
+		stats->tx_dropped++;
+		return -ENODEV;
+	}
+
 	
 	{
 #if 0	
@@ -319,6 +343,18 @@ klips_rebuild_header(struct sk_buff *skb)
 		return -ENODEV;
 	}
 
+	if(prv->dev->header_ops == NULL ||
+			prv->dev->header_ops->rebuild == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_rebuild_header: "
+			    "cannot revector dev=%s op=%p func=%p",
+			    skb->dev->name ? skb->dev->name : "NULL",
+				prv->dev->header_ops, prv->dev->header_ops ?
+				prv->dev->header_ops->rebuild : 0);
+		stats->tx_dropped++;
+		return -ENODEV;
+	}
+
 	KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
 		    "klips_debug:ipsec_tunnel: "
 		    "Revectored rebuild_header dev=%s->%s ",
@@ -347,6 +383,18 @@ int klips_header_cache(const struct neighbour *neigh, struct hh_cache *hh)
 			    "klips_debug:klips_header_cache: "
 			    "no physical device associated with dev=%s",
 			    dev->name ? dev->name : "NULL");
+		stats->tx_dropped++;
+		return -1;
+	}
+
+	if(prv->dev->header_ops == NULL ||
+			prv->dev->header_ops->cache == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:klips_header_cache: "
+			    "cannot revector dev=%s op=%p func=%p",
+			    dev->name ? dev->name : "NULL",
+				prv->dev->header_ops, prv->dev->header_ops ?
+				prv->dev->header_ops->cache : 0);
 		stats->tx_dropped++;
 		return -1;
 	}
@@ -388,6 +436,18 @@ klips_header_cache_update(struct hh_cache *hh,
 			    "klips_debug:ipsec_tunnel_cache_update: "
 			    "no physical device associated with dev=%s",
 			    dev->name ? dev->name : "NULL");
+		stats->tx_dropped++;
+		return;
+	}
+
+	if(prv->dev->header_ops == NULL ||
+			prv->dev->header_ops->cache_update == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
+			    "klips_debug:ipsec_tunnel_cache_update: "
+			    "cannot revector dev=%s op=%p func=%p",
+			    dev->name ? dev->name : "NULL",
+				prv->dev->header_ops, prv->dev->header_ops ?
+				prv->dev->header_ops->cache_update : 0);
 		stats->tx_dropped++;
 		return;
 	}
