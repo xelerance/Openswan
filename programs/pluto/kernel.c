@@ -99,6 +99,8 @@ static struct bare_shunt *bare_shunts = NULL;
 static int num_ipsec_eroute = 0;
 #endif
 
+static void free_bare_shunt(struct bare_shunt **pp);
+
 #ifdef DEBUG
 void
 DBG_bare_shunt_log(const char *op, const struct bare_shunt *bs)
@@ -162,7 +164,15 @@ record_and_initiate_opportunistic(const ip_subnet *ours
 
         networkof(ours, &src);
         networkof(his, &dst);
-        initiate_ondemand(&src, &dst, transport_proto, TRUE, NULL_FD, "acquire");
+        if (initiate_ondemand(&src, &dst, transport_proto
+				, TRUE, NULL_FD, "acquire") == 0) {
+			/* if we didn't do any ondemand stuff the shunt is not needed */
+			struct bare_shunt **bspp = bare_shunt_ptr(ours,his,transport_proto);
+			if (bspp) {
+				passert(*bspp == bare_shunts);
+				free_bare_shunt(bspp);
+			}
+		}
     }
 
     pexpect(kernel_ops->remove_orphaned_holds != NULL);

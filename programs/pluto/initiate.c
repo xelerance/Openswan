@@ -489,10 +489,10 @@ cannot_oppo(struct connection *c
 #endif
 }
 
-static void initiate_ondemand_body(struct find_oppo_bundle *b
+static int initiate_ondemand_body(struct find_oppo_bundle *b
     , struct adns_continuation *ac, err_t ac_ugh);	/* forward */
 
-void
+int
 initiate_ondemand(const ip_address *our_client
 , const ip_address *peer_client
 , int transport_proto
@@ -512,7 +512,7 @@ initiate_ondemand(const ip_address *our_client
     b.failure_shunt = 0;
     b.whackfd = whackfd;
     b.step = fos_start;
-    initiate_ondemand_body(&b, NULL, NULL);
+    return initiate_ondemand_body(&b, NULL, NULL);
 }
 
 static void
@@ -581,7 +581,7 @@ continue_oppo(struct adns_continuation *acr, err_t ugh)
     }
     else
     {
-	initiate_ondemand_body(&cr->b, &cr->ac, ugh);
+	(void)initiate_ondemand_body(&cr->b, &cr->ac, ugh);
 	whackfd = NULL_FD;	/* was handed off */
     }
 
@@ -703,7 +703,8 @@ check_txt_recs(enum myid_state try_state
 
 
 /* note: gateways_from_dns must be NULL iff this is the first call */
-static void
+/* return true if we did something */
+static int
 initiate_ondemand_body(struct find_oppo_bundle *b
 , struct adns_continuation *ac
 , err_t ac_ugh)
@@ -716,7 +717,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
     int hisport;
     char demandbuf[256];
     bool loggedit = FALSE;
-
+    int work = 1; /* assume we did some */
     
     /* What connection shall we use?
      * First try for one that explicitly handles the clients.
@@ -742,6 +743,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
     if (isanyaddr(&b->our_client) || isanyaddr(&b->peer_client))
     {
 	cannot_oppo(NULL, b, "impossible IP address");
+	work = 0;
     }
     else if ((c = find_connection_for_clients(&sr
 					      , &b->our_client
@@ -754,12 +756,14 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	 */
 	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
 	cannot_oppo(NULL, b, "no routed template covers this pair");
+	work = 0;
     }
     else if (c->kind == CK_TEMPLATE && (c->policy & POLICY_OPPO)==0)
     {
 	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
 	loglog(RC_NOPEERIP, "cannot initiate connection for packet %s:%d -> %s:%d proto=%d - template conn"
 	       , ours, ourport, his, hisport, b->transport_proto);
+	work = 0;
     }
     else if (c->kind != CK_TEMPLATE)
     {
@@ -1436,6 +1440,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	}
     }
     close_any(b->whackfd);
+    return work;
 }
 
 /* check nexthop safety
