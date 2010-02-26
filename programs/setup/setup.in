@@ -5,6 +5,8 @@
 # Provides:          openswan
 # Required-Start:    $network $syslog $named
 # Required-Stop:     $syslog
+# Default-Start:
+# Default-Stop:
 # Short-Description: Start Openswan IPsec at boot time
 # Description:       Enable automatic key management for IPsec (KLIPS and NETKEY)
 ### END INIT INFO
