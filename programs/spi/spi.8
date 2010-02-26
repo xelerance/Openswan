@@ -1,21 +1,29 @@
+'\" t
 .\"     Title: IPSEC_SPI
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
 .\"      Date: 23 Oct 2001
-.\"    Manual: 23 Oct 2001
-.\"    Source: 23 Oct 2001
+.\"    Manual: [FIXME: manual]
+.\"    Source: [FIXME: source]
+.\"  Language: English
 .\"
-.TH "IPSEC_SPI" "8" "23 Oct 2001" "23 Oct 2001" "23 Oct 2001"
+.TH "IPSEC_SPI" "8" "23 Oct 2001" "[FIXME: source]" "[FIXME: manual]"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-ipsec spi - manage IPSEC Security Associations
+ipsec_spi \- manage IPSEC Security Associations
 .SH "SYNOPSIS"
 .PP
 Note: In the following,
-.HP 5
+.HP \w'\fB<SA>\fR\fB<life>\fR\fB<SA>\fR\ 'u
 \fB<SA>\fR \fImeans:\fR \-\-af \fI(inet\ |\ inet6)\fR \-\-edst \fIdaddr\fR \-\-spi \fIspi\fR \-\-proto \fIproto\fR \fIOR\fR \-\-said \fIsaid,\fR
 .br
 \fB<life>\fR \fImeans:\fR \-\-life \fI(soft\ |\ hard)\fR allocations | \fIbytes\fR | \fIaddtime\fR | \fIusetime\fR | \fIpackets\fR | [value...] \fB<SA>\fR \-\-src \fIsrc\fR \-\-ah \fI(hmac\-md5\-96\ |\ hmac\-sha1\-96)\fR [\-\-replay_window\ \fIreplayw\fR] [\fI<life>\fR] \-\-authkey \fIakey\fR
@@ -42,12 +50,12 @@ Note: In the following,
 .SH "DESCRIPTION"
 .PP
 \fISpi\fR
-creates and deletes IPSEC Security Associations\. A Security Association (SA) is a transform through which packet contents are to be processed before being forwarded\. A transform can be an IPv4\-in\-IPv4 or an IPv6\-in\-IPv6 encapsulation, an IPSEC Authentication Header (authentication with no encryption), or an IPSEC Encapsulation Security Payload (encryption, possibly including authentication)\.
+creates and deletes IPSEC Security Associations\&. A Security Association (SA) is a transform through which packet contents are to be processed before being forwarded\&. A transform can be an IPv4\-in\-IPv4 or an IPv6\-in\-IPv6 encapsulation, an IPSEC Authentication Header (authentication with no encryption), or an IPSEC Encapsulation Security Payload (encryption, possibly including authentication)\&.
 .PP
 When a packet is passed from a higher networking layer through an IPSEC virtual interface, a search in the extended routing table (see
-\fBipsec_eroute\fR(8)) yields an effective destination address, a Security Parameters Index (SPI) and a IP protocol number\. When an IPSEC packet arrives from the network, its ostensible destination, an SPI and an IP protocol specified by its outermost IPSEC header are used\. The destination/SPI/protocol combination is used to select a relevant SA\. (See
+\fBipsec_eroute\fR(8)) yields an effective destination address, a Security Parameters Index (SPI) and a IP protocol number\&. When an IPSEC packet arrives from the network, its ostensible destination, an SPI and an IP protocol specified by its outermost IPSEC header are used\&. The destination/SPI/protocol combination is used to select a relevant SA\&. (See
 \fBipsec_spigrp\fR(8)
-for discussion of how multiple transforms are combined\.)
+for discussion of how multiple transforms are combined\&.)
 .PP
 The
 \fIaf\fR,
@@ -55,11 +63,11 @@ The
 \fIspi\fR
 and
 \fIproto\fR
-arguments specify the SA to be created or deleted\.
+arguments specify the SA to be created or deleted\&.
 \fIaf\fR
-is the address family (inet for IPv4, inet6 for IPv6)\.
+is the address family (inet for IPv4, inet6 for IPv6)\&.
 \fIDaddr\fR
-is a destination address in dotted\-decimal notation for IPv4 or in a coloned hex notation for IPv6\.
+is a destination address in dotted\-decimal notation for IPv4 or in a coloned hex notation for IPv6\&.
 \fISpi\fR
 is a number, preceded by \'0x\' for hexadecimal, between
 \fB0x100\fR
@@ -68,42 +76,42 @@ and
 \fB0x0\fR
 to
 \fB0xff\fR
-are reserved\.
+are reserved\&.
 \fIProto\fR
-is an ASCII string, "ah", "esp", "comp" or "tun", specifying the IP protocol\. The protocol must agree with the algorithm selected\.
+is an ASCII string, "ah", "esp", "comp" or "tun", specifying the IP protocol\&. The protocol must agree with the algorithm selected\&.
 .PP
 Alternatively, the
 \fIsaid\fR
-argument can also specify an SA to be created or deleted\.
+argument can also specify an SA to be created or deleted\&.
 \fISaid\fR
-combines the three parameters above, such as: "tun\.101@1\.2\.3\.4" or "tun:101@1:2::3:4", where the address family is specified by "\." for IPv4 and ":" for IPv6\. The address family indicators substitute the "0x" for hexadecimal\.
+combines the three parameters above, such as: "tun\&.101@1\&.2\&.3\&.4" or "tun:101@1:2::3:4", where the address family is specified by "\&." for IPv4 and ":" for IPv6\&. The address family indicators substitute the "0x" for hexadecimal\&.
 .PP
 The source address,
-\fIsrc\fR, must also be provided for the inbound policy check to function\. The source address does not need to be included if inbound policy checking has been disabled\.
+\fIsrc\fR, must also be provided for the inbound policy check to function\&. The source address does not need to be included if inbound policy checking has been disabled\&.
 .PP
-Keys vectors must be entered as hexadecimal or base64 numbers\. They should be cryptographically strong random numbers\.
+Keys vectors must be entered as hexadecimal or base64 numbers\&. They should be cryptographically strong random numbers\&.
 .PP
-All hexadecimal numbers are entered as strings of hexadecimal digits (0\-9 and a\-f), without spaces, preceded by \'0x\', where each hexadecimal digit represents 4 bits\. All base64 numbers are entered as strings of base64 digits (0\-9, A\-Z, a\-z, \'+\' and \'/\'), without spaces, preceded by \'0s\', where each hexadecimal digit represents 6 bits and \'=\' is used for padding\.
+All hexadecimal numbers are entered as strings of hexadecimal digits (0\-9 and a\-f), without spaces, preceded by \'0x\', where each hexadecimal digit represents 4 bits\&. All base64 numbers are entered as strings of base64 digits (0\-9, A\-Z, a\-z, \'+\' and \'/\'), without spaces, preceded by \'0s\', where each hexadecimal digit represents 6 bits and \'=\' is used for padding\&.
 .PP
-The deletion of an SA which has been grouped will result in the entire chain being deleted\.
+The deletion of an SA which has been grouped will result in the entire chain being deleted\&.
 .PP
-The form with no additional arguments lists the contents of /proc/net/ipsec_spi\. The format of /proc/net/ipsec_spi is discussed in ipsec_spi(5)\.
+The form with no additional arguments lists the contents of /proc/net/ipsec_spi\&. The format of /proc/net/ipsec_spi is discussed in ipsec_spi(5)\&.
 .PP
 The lifetime severity of
 \fBsoft\fR
-sets a limit when the key management daemons are asked to rekey the SA\. The lifetime severity of
+sets a limit when the key management daemons are asked to rekey the SA\&. The lifetime severity of
 \fBhard\fR
-sets a limit when the SA must expire\. The lifetime type
+sets a limit when the SA must expire\&. The lifetime type
 \fBallocations\fR
-tells the system when to expire the SA because it is being shared by too many eroutes (not currently used)\. The lifetime type of
+tells the system when to expire the SA because it is being shared by too many eroutes (not currently used)\&. The lifetime type of
 \fBbytes\fR
-tells the system to expire the SA after a certain number of bytes have been processed with that SA\. The lifetime type of
+tells the system to expire the SA after a certain number of bytes have been processed with that SA\&. The lifetime type of
 \fBaddtime\fR
-tells the system to expire the SA a certain number of seconds after the SA was installed\. The lifetime type of
+tells the system to expire the SA a certain number of seconds after the SA was installed\&. The lifetime type of
 \fBusetime\fR
-tells the system to expire the SA a certain number of seconds after that SA has processed its first packet\. The lifetime type of
+tells the system to expire the SA a certain number of seconds after that SA has processed its first packet\&. The lifetime type of
 \fBpackets\fR
-tells the system to expire the SA after a certain number of packets have been processed with that SA\.
+tells the system to expire the SA after a certain number of packets have been processed with that SA\&.
 .SH "OPTIONS"
 .PP
 \fB\-\-af\fR
@@ -287,7 +295,7 @@ display version information
 .RE
 .SH "EXAMPLES"
 .PP
-To keep line lengths down and reduce clutter, some of the long keys in these examples have been abbreviated by replacing part of their text with ``\.\.\.\'\'\. Keys used when the programs are actually run must, of course, be the full length required for the particular algorithm\.
+To keep line lengths down and reduce clutter, some of the long keys in these examples have been abbreviated by replacing part of their text with ``\&.\&.\&.\'\'\&. Keys used when the programs are actually run must, of course, be the full length required for the particular algorithm\&.
 .PP
 \fBipsec spi \-\-af inet \-\-edst gw2 \-\-spi 0x125 \-\-proto esp \e\fR
 
@@ -295,9 +303,9 @@ To keep line lengths down and reduce clutter, some of the long keys in these exa
 
 \fB \-\-esp 3des\-md5\-96 \e\fR
 
-\fB\ \ \ \-\-enckey\ 0x6630\fR\.\.\.\fB97ce\ \e\fR
+\fB\ \&\ \&\ \&\-\-enckey\ \&0x6630\fR\&.\&.\&.\fB97ce\ \&\e\fR
 
-\fB \-\-authkey 0x9941\fR\.\.\.\fB71df\fR
+\fB \-\-authkey 0x9941\fR\&.\&.\&.\fB71df\fR
 .PP
 sets up an SA from
 \fBgw1\fR
@@ -312,10 +320,10 @@ and protocol
 encryption with integral
 \fBMD5\-96\fR
 authentication transform, using an encryption key of
-\fB0x6630\fR\.\.\.\fB97ce\fR
+\fB0x6630\fR\&.\&.\&.\fB97ce\fR
 and an authentication key of
-\fB0x9941\fR\.\.\.\fB71df\fR
-(see note above about abbreviated keys)\.
+\fB0x9941\fR\&.\&.\&.\fB71df\fR
+(see note above about abbreviated keys)\&.
 .PP
 \fBipsec spi \-\-af inet6 \-\-edst 3049:9::9000:3100 \-\-spi 0x150 \-\-proto ah \e\fR
 
@@ -323,7 +331,7 @@ and an authentication key of
 
 \fB \-\-ah hmac\-md5\-96 \e\fR
 
-\fB\ \ \ \-\-authkey\ 0x1234\fR\.\.\.\fB2eda\ \e\fR
+\fB\ \&\ \&\ \&\-\-authkey\ \&0x1234\fR\&.\&.\&.\fB2eda\ \&\e\fR
 .PP
 sets up an SA from
 \fB3049:9::9000:3101\fR
@@ -336,18 +344,18 @@ and protocol
 (50) using
 \fBMD5\-96\fR
 authentication transform, using an authentication key of
-\fB0x1234\fR\.\.\.\fB2eda\fR
-(see note above about abbreviated keys)\.
+\fB0x1234\fR\&.\&.\&.\fB2eda\fR
+(see note above about abbreviated keys)\&.
 .PP
-\fBipsec spi \-\-said tun\.987@192\.168\.100\.100 \-\-del \fR
+\fBipsec spi \-\-said tun\&.987@192\&.168\&.100\&.100 \-\-del \fR
 .PP
 deletes an SA to
-192\.168\.100\.100
+192\&.168\&.100\&.100
 with an SPI of
 \fB0x987\fR
 and protocol
 \fBIPv4\-in\-IPv4\fR
-(4)\.
+(4)\&.
 .PP
 \fBipsec spi \-\-said tun:500@3049:9::1000:1 \-\-del \fR
 .PP
@@ -357,7 +365,7 @@ with an SPI of
 \fB0x500\fR
 and protocol
 \fBIPv6\-in\-IPv6\fR
-(4)\.
+(4)\&.
 .SH "FILES"
 .PP
 /proc/net/ipsec_spi, /usr/local/bin/ipsec
@@ -366,7 +374,7 @@ and protocol
 ipsec(8), ipsec_manual(8), ipsec_tncfg(8), ipsec_eroute(8), ipsec_spigrp(8), ipsec_klipsdebug(8), ipsec_spi(5)
 .SH "HISTORY"
 .PP
-Written for the Linux FreeS/WAN project <\fIhttp://www\.freeswan\.org/\fR> by Richard Guy Briggs\.
+Written for the Linux FreeS/WAN project <\m[blue]\fBhttp://www\&.freeswan\&.org/\fR\m[]> by Richard Guy Briggs\&.
 .SH "BUGS"
 .PP
-The syntax is messy and the transform naming needs work\.
+The syntax is messy and the transform naming needs work\&.

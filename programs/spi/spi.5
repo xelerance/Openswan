@@ -1,19 +1,27 @@
+'\" t
 .\"     Title: IPSEC_SPI
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 11/14/2008
-.\"    Manual: 26 Jun 2000
-.\"    Source: 26 Jun 2000
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 02/25/2010
+.\"    Manual: [FIXME: manual]
+.\"    Source: [FIXME: source]
+.\"  Language: English
 .\"
-.TH "IPSEC_SPI" "5" "11/14/2008" "26 Jun 2000" "26 Jun 2000"
+.TH "IPSEC_SPI" "5" "02/25/2010" "[FIXME: source]" "[FIXME: manual]"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-ipsec_spi - list IPSEC Security Associations
+ipsec_spi \- list IPSEC Security Associations
 .SH "SYNOPSIS"
-.HP 6
+.HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIspi\fR
 .br
 \fIcat/proc/net/ipsec_spi\fR
@@ -21,16 +29,16 @@ ipsec_spi - list IPSEC Security Associations
 
 .SH "OBSOLETE"
 .PP
-Note that eroute is only supported on the classic KLIPS stack\. It is not supported on any other stack and will be completely removed in future versions\. A replacement command still needs to be designed
+Note that eroute is only supported on the classic KLIPS stack\&. It is not supported on any other stack and will be completely removed in future versions\&. A replacement command still needs to be designed
 .SH "DESCRIPTION"
 .PP
-\fI/proc/net/ipsec_spi\fR
-is a read\-only file that lists the current IPSEC Security Associations\. A Security Association (SA) is a transform through which packet contents are to be processed before being forwarded\. A transform can be an IPv4\-in\-IPv4 or IPv6\-in\-IPv6 encapsulation, an IPSEC Authentication Header (authentication with no encryption), or an IPSEC Encapsulation Security Payload (encryption, possibly including authentication)\.
+/proc/net/ipsec_spi
+is a read\-only file that lists the current IPSEC Security Associations\&. A Security Association (SA) is a transform through which packet contents are to be processed before being forwarded\&. A transform can be an IPv4\-in\-IPv4 or IPv6\-in\-IPv6 encapsulation, an IPSEC Authentication Header (authentication with no encryption), or an IPSEC Encapsulation Security Payload (encryption, possibly including authentication)\&.
 .PP
 When a packet is passed from a higher networking layer through an IPSEC virtual interface, a search in the extended routing table (see
-\fBipsec_eroute\fR(5)) yields a IP protocol number , a Security Parameters Index (SPI) and an effective destination address When an IPSEC packet arrives from the network, its ostensible destination, an SPI and an IP protocol specified by its outermost IPSEC header are used\. The destination/SPI/protocol combination is used to select a relevant SA\. (See
+\fBipsec_eroute\fR(5)) yields a IP protocol number , a Security Parameters Index (SPI) and an effective destination address When an IPSEC packet arrives from the network, its ostensible destination, an SPI and an IP protocol specified by its outermost IPSEC header are used\&. The destination/SPI/protocol combination is used to select a relevant SA\&. (See
 \fBipsec_spigrp\fR(5)
-for discussion of how multiple transforms are combined\.)
+for discussion of how multiple transforms are combined\&.)
 .PP
 An
 \fIspi ,\fR
@@ -38,24 +46,24 @@ An
 \fIdaddr\fR
 and
 \fIaddress_family\fR
-arguments specify an SAID\.
+arguments specify an SAID\&.
 \fIProto\fR
-is an ASCII string, "ah", "esp", "comp" or "tun", specifying the IP protocol\.
+is an ASCII string, "ah", "esp", "comp" or "tun", specifying the IP protocol\&.
 \fISpi\fR
-is a number, preceded by \'\.\' indicating hexadecimal and IPv4 or by \':\' indicating hexadecimal and IPv6, where each hexadecimal digit represents 4 bits, between
+is a number, preceded by \'\&.\' indicating hexadecimal and IPv4 or by \':\' indicating hexadecimal and IPv6, where each hexadecimal digit represents 4 bits, between
 \fB0x100\fR
 and
 \fB0xffffffff\fR; values from
 \fB0x0\fR
 to
 \fB0xff\fR
-are reserved\.
+are reserved\&.
 \fIDaddr\fR
-is a dotted\-decimal IPv4 destination address or a coloned hex IPv6 destination address\.
+is a dotted\-decimal IPv4 destination address or a coloned hex IPv6 destination address\&.
 .PP
 An
 \fISAID\fR
-combines the three parameters above, such as: "tun\.101@1\.2\.3\.4" for IPv4 or "tun:101@3049:1::1" for IPv6
+combines the three parameters above, such as: "tun\&.101@1\&.2\&.3\&.4" for IPv4 or "tun:101@3049:1::1" for IPv6
 .PP
 A table entry consists of:
 .PP
@@ -167,7 +175,7 @@ average compression ratio (ratio=)
 .RE
 .SH "EXAMPLES"
 .PP
-\fBtun\.12a@192\.168\.43\.1 IPIP: dir=out src=192\.168\.43\.2\fR
+\fBtun\&.12a@192\&.168\&.43\&.1 IPIP: dir=out src=192\&.168\&.43\&.2\fR
 
 \fB life(c,s,h)=bytes(14073,0,0)add(269,0,0)\fR
 
@@ -175,7 +183,7 @@ average compression ratio (ratio=)
 
 \fB idle=23\fR
 .PP
-is an outbound IPv4\-in\-IPv4 (protocol 4) tunnel\-mode SA set up between machines 192\.168\.43\.2 and 192\.168\.43\.1 with an SPI of 12a in hexadecimal that has passed about 14 kilobytes of traffic in 14 packets since it was created, 269 seconds ago, first used 149 seconds ago and has been idle for 23 seconds\.
+is an outbound IPv4\-in\-IPv4 (protocol 4) tunnel\-mode SA set up between machines 192\&.168\&.43\&.2 and 192\&.168\&.43\&.1 with an SPI of 12a in hexadecimal that has passed about 14 kilobytes of traffic in 14 packets since it was created, 269 seconds ago, first used 149 seconds ago and has been idle for 23 seconds\&.
 .PP
 \fBesp:9a35fc02@3049:1::1 ESP_3DES_HMAC_MD5:\fR
 
@@ -191,7 +199,7 @@ is an outbound IPv4\-in\-IPv4 (protocol 4) tunnel\-mode SA set up between machin
 
 \fB idle=23\fR
 .PP
-is an inbound Encapsulating Security Payload (protocol 50) SA on machine 3049:1::1 with an SPI of 9a35fc02 that uses 3DES as the encryption cipher, HMAC MD5 as the authentication algorithm, an out\-of\-order window of 32 packets, a present sequence number of 7149, every one of the last 32 sequence numbers was received, the authenticator length and keys is 128 bits, the encryption key is 192 bits (actually 168 for 3DES since 1 of 8 bits is a parity bit), has passed 1\.2 Mbytes of data in 7149 packets, was added 4593 seconds ago, first used 3858 seconds ago and has been idle for 23 seconds\.
+is an inbound Encapsulating Security Payload (protocol 50) SA on machine 3049:1::1 with an SPI of 9a35fc02 that uses 3DES as the encryption cipher, HMAC MD5 as the authentication algorithm, an out\-of\-order window of 32 packets, a present sequence number of 7149, every one of the last 32 sequence numbers was received, the authenticator length and keys is 128 bits, the encryption key is 192 bits (actually 168 for 3DES since 1 of 8 bits is a parity bit), has passed 1\&.2 Mbytes of data in 7149 packets, was added 4593 seconds ago, first used 3858 seconds ago and has been idle for 23 seconds\&.
 .SH "FILES"
 .PP
 /proc/net/ipsec_spi, /usr/local/bin/ipsec
@@ -200,7 +208,7 @@ is an inbound Encapsulating Security Payload (protocol 50) SA on machine 3049:1:
 ipsec(8), ipsec_manual(8), ipsec_tncfg(5), ipsec_eroute(5), ipsec_spigrp(5), ipsec_klipsdebug(5), ipsec_spi(8), ipsec_version(5), ipsec_pf_key(5)
 .SH "HISTORY"
 .PP
-Written for the Linux FreeS/WAN project <\fIhttp://www\.freeswan\.org/\fR> by Richard Guy Briggs\.
+Written for the Linux FreeS/WAN project <\m[blue]\fBhttp://www\&.freeswan\&.org/\fR\m[]> by Richard Guy Briggs\&.
 .SH "BUGS"
 .PP
-The add and use times are awkward, displayed in seconds since machine start\. It would be better to display them in seconds before now for human readability\.
+The add and use times are awkward, displayed in seconds since machine start\&. It would be better to display them in seconds before now for human readability\&.
