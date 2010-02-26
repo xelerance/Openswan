@@ -1,26 +1,34 @@
+'\" t
 .\"     Title: IPSEC_KLIPSDEBUG
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 11/14/2008
-.\"    Manual: 26 Jun 2000
-.\"    Source: 26 Jun 2000
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 02/25/2010
+.\"    Manual: [FIXME: manual]
+.\"    Source: [FIXME: source]
+.\"  Language: English
 .\"
-.TH "IPSEC_KLIPSDEBUG" "5" "11/14/2008" "26 Jun 2000" "26 Jun 2000"
+.TH "IPSEC_KLIPSDEBUG" "5" "02/25/2010" "[FIXME: source]" "[FIXME: manual]"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-ipsec_klipsdebug - list KLIPS (kernel IPSEC support) debug features and level
+ipsec_klipsdebug \- list KLIPS (kernel IPSEC support) debug features and level
 .SH "SYNOPSIS"
-.HP 6
+.HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIklipsdebug\fR
 .br
 \fIcat/proc/net/ipsec_klipsdebug\fR
 .SH "DESCRIPTION"
 .PP
-\fI/proc/net/ipsec_klipsdebug\fR
-lists flags that control various parts of the debugging output of KLIPS and MAST, two of the IPsec stacks supported by Openswan\. At this point it is a read\-only file\.
+/proc/net/ipsec_klipsdebug
+lists flags that control various parts of the debugging output of KLIPS and MAST, two of the IPsec stacks supported by Openswan\&. At this point it is a read\-only file\&.
 .PP
 A table entry consists of:
 .PP
@@ -36,10 +44,10 @@ a \'=\' separator for visual and automated parsing between the variable name and
 .PP
 +
 .RS 4
-hexadecimal bitmap of variable\'s flags\.
+hexadecimal bitmap of variable\'s flags\&.
 .RE
 .PP
-The variable names roughly describe the scope of the debugging variable\. Currently, no flags are documented or individually accessible yet except tunnel\-xmit\.
+The variable names roughly describe the scope of the debugging variable\&. Currently, no flags are documented or individually accessible yet except tunnel\-xmit\&.
 .PP
 The variable names are:
 .PP
@@ -99,37 +107,37 @@ give even more information, beware this will probably trample the 4k kernel prin
 .RE
 .PP
 All KLIPS debug output appears as
-\fBkernel\.info\fR
+\fBkernel\&.info\fR
 messages to
-\fBsyslogd\fR(8)\. Most systems are set up to log these messages to
-\fI/var/log/messages\fR\.
+\fBsyslogd\fR(8)\&. Most systems are set up to log these messages to
+/var/log/messages\&.
 .SH "EXAMPLES"
 .PP
-\fBdebug_tunnel=00000010\.\fR
+\fBdebug_tunnel=00000010\&.\fR
 
-\fBdebug_netlink=00000000\.\fR
+\fBdebug_netlink=00000000\&.\fR
 
-\fBdebug_xform=00000000\.\fR
+\fBdebug_xform=00000000\&.\fR
 
-\fBdebug_eroute=00000000\.\fR
+\fBdebug_eroute=00000000\&.\fR
 
-\fBdebug_spi=00000000\.\fR
+\fBdebug_spi=00000000\&.\fR
 
-\fBdebug_radij=00000000\.\fR
+\fBdebug_radij=00000000\&.\fR
 
-\fBdebug_esp=00000000\.\fR
+\fBdebug_esp=00000000\&.\fR
 
-\fBdebug_ah=00000000\.\fR
+\fBdebug_ah=00000000\&.\fR
 
-\fBdebug_rcv=00000000\.\fR
+\fBdebug_rcv=00000000\&.\fR
 
-\fBdebug_pfkey=ffffffff\.\fR
+\fBdebug_pfkey=ffffffff\&.\fR
 .PP
 means that one
 \fBtunnel\fR
 flag has been set (tunnel\-xmit), full
 \fBpfkey\fR
-sockets debugging has been set and everything else is not set\.
+sockets debugging has been set and everything else is not set\&.
 .SH "FILES"
 .PP
 /proc/net/ipsec_klipsdebug, /usr/local/bin/ipsec
@@ -138,4 +146,4 @@ sockets debugging has been set and everything else is not set\.
 ipsec(8), ipsec_manual(8), ipsec_tncfg(8), ipsec_eroute(8), ipsec_spi(8), ipsec_spigrp(8), ipsec_klipsdebug(5), ipsec_version(5), ipsec_pf_key(5)
 .SH "HISTORY"
 .PP
-Written for the Linux FreeS/WAN project <\fIhttp://www\.freeswan\.org/\fR> by Richard Guy Briggs\.
+Written for the Linux FreeS/WAN project <\m[blue]\fBhttp://www\&.freeswan\&.org/\fR\m[]> by Richard Guy Briggs\&.

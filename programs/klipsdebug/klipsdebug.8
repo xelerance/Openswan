@@ -1,19 +1,27 @@
+'\" t
 .\"     Title: IPSEC_KLIPSDEBUG
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 11/14/2008
-.\"    Manual: 21 Jun 2000
-.\"    Source: 21 Jun 2000
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 02/25/2010
+.\"    Manual: [FIXME: manual]
+.\"    Source: [FIXME: source]
+.\"  Language: English
 .\"
-.TH "IPSEC_KLIPSDEBUG" "8" "11/14/2008" "21 Jun 2000" "21 Jun 2000"
+.TH "IPSEC_KLIPSDEBUG" "8" "02/25/2010" "[FIXME: source]" "[FIXME: manual]"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-ipsec klipsdebug - set KLIPS and MAST debug features and level. Other stacks are not supported.
+ipsec_klipsdebug \- set KLIPS and MAST debug features and level\&. Other stacks are not supported\&.
 .SH "SYNOPSIS"
-.HP 6
+.HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIklipsdebug\fR
 .br
 \fIipsec\ klipsdebug\fR \-\-set \fIflagname\fR
@@ -30,15 +38,15 @@ ipsec klipsdebug - set KLIPS and MAST debug features and level. Other stacks are
 .SH "DESCRIPTION"
 .PP
 \fIKlipsdebug\fR
-sets and clears flags that control various parts of the debugging output of Klips (the kernel portion of FreeS/WAN IPSEC)\. The form with no additional arguments lists the present contents of /proc/net/ipsec_klipsdebug\. The
+sets and clears flags that control various parts of the debugging output of Klips (the kernel portion of FreeS/WAN IPSEC)\&. The form with no additional arguments lists the present contents of /proc/net/ipsec_klipsdebug\&. The
 \fB\-\-set\fR
 form turns the specified flag on, while the
 \fB\-\-clear\fR
-form turns the specified flag off\. The
+form turns the specified flag off\&. The
 \fB\-\-all\fR
 form turns all flags on except verbose, while the
 \fB\-\-none\fR
-form turns all flags off\.
+form turns all flags off\&.
 .PP
 The current flag names are:
 .PP
@@ -100,27 +108,27 @@ give even more information, BEWARE: a)this will print authentication and encrypt
 .RE
 .PP
 All Klips debug output appears as
-\fBkernel\.info\fR
+\fBkernel\&.info\fR
 messages to
-\fBsyslogd\fR(8)\. Most systems are set up to log these messages to
-\fI/var/log/messages\fR\. Beware that
+\fBsyslogd\fR(8)\&. Most systems are set up to log these messages to
+/var/log/messages\&. Beware that
 \fBklipsdebug\fR
 \fB\-\-all\fR
-produces a lot of output and the log file will grow quickly\.
+produces a lot of output and the log file will grow quickly\&.
 .PP
-The file format for /proc/net/ipsec_klipsdebug is discussed in ipsec_klipsdebug(5)\.
+The file format for /proc/net/ipsec_klipsdebug is discussed in ipsec_klipsdebug(5)\&.
 .SH "EXAMPLES"
 .PP
 \fBklipsdebug \-\-all\fR
 .RS 4
-turns on all KLIPS debugging except verbose\.
+turns on all KLIPS debugging except verbose\&.
 .RE
 .PP
 \fBklipsdebug \-\-clear tunnel\fR
 .RS 4
 turns off only the
 \fBtunnel\fR
-debugging messages\.
+debugging messages\&.
 .RE
 .SH "FILES"
 .PP
@@ -130,7 +138,7 @@ debugging messages\.
 ipsec(8), ipsec_manual(8), ipsec_tncfg(8), ipsec_eroute(8), ipsec_spi(8), ipsec_spigrp(8), ipsec_klipsdebug(5)
 .SH "HISTORY"
 .PP
-Written for the Linux FreeS/WAN project <\fIhttp://www\.freeswan\.org/\fR> by Richard Guy Briggs\.
+Written for the Linux FreeS/WAN project <\m[blue]\fBhttp://www\&.freeswan\&.org/\fR\m[]> by Richard Guy Briggs\&.
 .SH "BUGS"
 .PP
-It really ought to be possible to set or unset selective combinations of flags\.
+It really ought to be possible to set or unset selective combinations of flags\&.

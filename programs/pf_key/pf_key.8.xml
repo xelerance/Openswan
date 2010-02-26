@@ -9,7 +9,7 @@
 <refmiscinfo class='date'>17 Oct 2001</refmiscinfo>
 </refmeta>
 <refnamediv id='name'>
-<refname>pf_key</refname>
+<refname>ipsec_pf_key</refname>
 <refpurpose>shows pfkey messages emitted by the kernel when using the KLIPS or MAST stack.</refpurpose>
 </refnamediv>
 <!-- body begins here -->

@@ -1,37 +1,45 @@
+'\" t
 .\"     Title: IPSEC_VERSION
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 11/14/2008
-.\"    Manual: 29 Jun 2000
-.\"    Source: 29 Jun 2000
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 02/25/2010
+.\"    Manual: [FIXME: manual]
+.\"    Source: [FIXME: source]
+.\"  Language: English
 .\"
-.TH "IPSEC_VERSION" "5" "11/14/2008" "29 Jun 2000" "29 Jun 2000"
+.TH "IPSEC_VERSION" "5" "02/25/2010" "[FIXME: source]" "[FIXME: manual]"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-ipsec_version - lists KLIPS version information
+ipsec_version \- lists KLIPS version information
 .SH "SYNOPSIS"
-.HP 4
+.HP \w'\fBcat\fR\ 'u
 \fBcat\fR \fI/proc/net/ipsec_version\fR
 .SH "OBSOLETE"
 .PP
-Note that ipsec_version is only supported on the classic KLIPS stack\. It is not supported on any other stack\.
+Note that ipsec_version is only supported on the classic KLIPS stack\&. It is not supported on any other stack\&.
 .SH "DESCRIPTION"
 .PP
-\fI/proc/net/ipsec_version\fR
-is a read\-only file which lists the currently running KLIPS version information\.
+/proc/net/ipsec_version
+is a read\-only file which lists the currently running KLIPS version information\&.
 .SH "EXAMPLES"
 .PP
-\fBFreeS/WAN version: 1\.4\fR
+\fBFreeS/WAN version: 1\&.4\fR
 .RS 4
 .RE
 .PP
 shows that the currently loaded
 \fBKLIPS\fR
 is from
-\fBFreeS/WAN 1\.4\.\fR
+\fBFreeS/WAN 1\&.4\&.\fR
 .SH "FILES"
 .PP
 /proc/net/ipsec_version
@@ -40,4 +48,4 @@ is from
 ipsec(8), ipsec_manual(8), ipsec_eroute(5), ipsec_spi(5), ipsec_spigrp(5), ipsec_klipsdebug(5), ipsec_tncfg(8), ipsec_pf_key(5)
 .SH "HISTORY"
 .PP
-Written for the Linux FreeS/WAN project <\fIhttp://www\.freeswan\.org/\fR> by Richard Guy Briggs\.
+Written for the Linux FreeS/WAN project <\m[blue]\fBhttp://www\&.freeswan\&.org/\fR\m[]> by Richard Guy Briggs\&.
