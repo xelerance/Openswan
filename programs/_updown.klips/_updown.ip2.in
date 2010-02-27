@@ -15,10 +15,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: _updown.ip2.in,v 1.19 2005/08/25 21:52:53 paul Exp $
-
-
 
 # CAUTION:  Installing a new version of Openswan will install a new
 # copy of this script, wiping out any custom changes you make.  If
@@ -119,7 +115,7 @@ LC_ALL=C export LC_ALL
 #	PLUTO_STACK
 #		the kernel stack being used (eg protostack= value)
 
-# Import default _updown configs from the /etc/sysconfig/pluto_updown file
+# Import default _updown configs from the /etc/[sysconfig|default]/pluto_updown file
 #
 # Two variables can be set in this file:
 #
@@ -134,10 +130,15 @@ LC_ALL=C export LC_ALL
 #
 #       IPRULEARGS
 #              is the extra argument list for ip rule command
-#
+
+# rpm based systems
 if [ -f /etc/sysconfig/pluto_updown ]
 then
     . /etc/sysconfig/pluto_updown
+# deb based systems
+elif [ -f /etc/default/pluto_updown ]
+then
+    . /etc/default/pluto_updown
 fi
 
 # check interface version

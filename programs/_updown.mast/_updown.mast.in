@@ -16,8 +16,6 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-
-
 # CAUTION:  Installing a new version of Openswan will install a new
 # copy of this script, wiping out any custom changes you make.  If
 # you need changes, make a copy of this under another name, and customize
@@ -122,7 +120,7 @@ LC_ALL=C export LC_ALL
 #exec 2>&1
 #set -x
 
-# Import default _updown configs from the /etc/sysconfig/pluto_updown file
+# Import default _updown configs from the /etc/[sysconfig|default]pluto_updown file
 #
 # Two variables can be set in this file:
 #
@@ -135,9 +133,15 @@ LC_ALL=C export LC_ALL
 #       IPRULEARGS
 #              is the extra argument list for ip rule command
 #
+
+# rpm based systems
 if [ -f /etc/sysconfig/pluto_updown ]
 then
     . /etc/sysconfig/pluto_updown
+# deb based systems
+elif [ -f /etc/default/pluto_updown ]
+then
+    . /etc/default/pluto_updown
 fi
 
 # check interface version

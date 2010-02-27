@@ -16,7 +16,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
 
 # CAUTION:  Installing a new version of Openswan will install a new
 # copy of this script, wiping out any custom changes you make.  If
@@ -119,9 +118,15 @@ export LC_ALL
 #	PLUTO_PROTO_STACK
 #		is the local IPsec kernel stack used, eg KLIPS, NETKEY,
 #		NOSTACK
+
+# rpm based systems
 if [ -f /etc/sysconfig/pluto_updown ]
 then
     . /etc/sysconfig/pluto_updown
+# deb based systems
+elif [ -f /etc/default/pluto_updown ]
+then
+    . /etc/default/pluto_updown
 fi
 
 # Ignore parameter custom
