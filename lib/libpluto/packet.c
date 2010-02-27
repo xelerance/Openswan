@@ -1669,7 +1669,8 @@ out_modify_previous_np(u_int8_t np, pb_stream *outs)
     passert(left >= NSIZEOF_isakmp_hdr);    /* not even room for isakmp_hdr! */
     if (left == NSIZEOF_isakmp_hdr) {
 	/* no payloads, just the isakmp_hdr: insert np here */
-	passert(pl[NOFFSETOF_isa_np] == ISAKMP_NEXT_NONE);
+	passert(pl[NOFFSETOF_isa_np] == ISAKMP_NEXT_NONE ||
+		pl[NOFFSETOF_isa_np] == ISAKMP_NEXT_HASH);
 	pl[NOFFSETOF_isa_np] = np;
     } else {
 	pl += NSIZEOF_isakmp_hdr;       /* skip over isakmp_hdr */
