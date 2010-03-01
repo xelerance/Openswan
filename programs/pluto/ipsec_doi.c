@@ -870,6 +870,7 @@ void fmt_isakmp_sa_established(struct state *st, char *sadetails, int sad_len)
     char *b = sadetails;
     const char *authname;
     const char *integstr, *integname;
+    char integname_tmp[20];
     
     passert(st->st_oakley.encrypter != NULL);
     passert(st->st_oakley.prf_hasher != NULL);
@@ -878,7 +879,9 @@ void fmt_isakmp_sa_established(struct state *st, char *sadetails, int sad_len)
     if(st->st_ikev2) {
 	authname="IKEv2";
 	integstr=" integ=";
-	integname=st->st_oakley.integ_hasher->common.officname;
+	sprintf(integname_tmp,"%s_%d",st->st_oakley.integ_hasher->common.officname
+		, st->st_oakley.integ_hasher->hash_integ_len*BITS_PER_BYTE);
+	integname=(const char*)integname_tmp;
     } else {
 	authname = enum_show(&oakley_auth_names, st->st_oakley.auth);
 	integstr="";

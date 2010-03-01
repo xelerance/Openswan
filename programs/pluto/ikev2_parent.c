@@ -989,13 +989,22 @@ static void ikev2_padup_pre_encrypt(struct msg_digest *md
     }
 }
 
-static unsigned char *ikev2_authloc(struct msg_digest *md UNUSED
+static unsigned char *ikev2_authloc(struct msg_digest *md
 				    , pb_stream *e_pbs)
 {
     unsigned char *b12;
+    struct state *st = md->st;
+    struct state *pst = st;
+
+    if(st->st_clonedfrom != 0) {
+	pst = state_with_serialno(st->st_clonedfrom);
+	if( pst == NULL) {
+		return NULL;
+	}
+    }
 	
     b12 = e_pbs->cur;
-    if(!out_zero(12, e_pbs, "96-bits of truncated HMAC"))
+    if(!out_zero(pst->st_oakley.integ_hasher->hash_integ_len, e_pbs, "length of truncated HMAC"))
 	return NULL;
 
     return b12;
@@ -1058,7 +1067,7 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
 	
 	if(DBGP(DBG_PARSING)) {
 	    DBG_dump("data being hmac:", authstart, authloc-authstart);
-	    DBG_dump("out calculated auth:", authloc, 12); 
+	    DBG_dump("out calculated auth:", authloc, pst->st_oakley.integ_hasher->hash_integ_len); 
 	}
     }
     
@@ -1108,12 +1117,12 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 	
 	if(DBGP(DBG_PARSING)) {
 	    DBG_dump("data being hmac:", authstart, encend-authstart);
-	    DBG_dump("R2 calculated auth:", b12, 12); 
-	    DBG_dump("R2  provided  auth:", encend, 12);
+	    DBG_dump("R2 calculated auth:", b12, pst->st_oakley.integ_hasher->hash_integ_len); 
+	    DBG_dump("R2  provided  auth:", encend, pst->st_oakley.integ_hasher->hash_integ_len);
 	}
 	
 	/* compare first 96 bits == 12 bytes */
-	if(memcmp(b12, encend, 12)!=0) {
+	if(memcmp(b12, encend, pst->st_oakley.integ_hasher->hash_integ_len)!=0) {
 	    openswan_log("R2 failed to match authenticator");
 	    return STF_FAIL;
 	}

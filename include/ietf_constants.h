@@ -190,7 +190,9 @@
 
 #define MD2_DIGEST_SIZE         BYTES_FOR_BITS(128)     /* ought to be supplied by md2.h */
 #define MD5_DIGEST_SIZE		BYTES_FOR_BITS(128)	/* ought to be supplied by md5.h */
+#define MD5_DIGEST_SIZE_96     BYTES_FOR_BITS(96)      /* IKEV2 integrity algorithms */
 #define SHA1_DIGEST_SIZE	BYTES_FOR_BITS(160)	/* ought to be supplied by sha1.h */
+#define SHA1_DIGEST_SIZE_96	BYTES_FOR_BITS(96)	/* IKEV2 integrity algorithms */
 
 #define SHA2_256_DIGEST_SIZE	BYTES_FOR_BITS(256)	/* sha2.h */
 #define SHA2_384_DIGEST_SIZE	BYTES_FOR_BITS(384)

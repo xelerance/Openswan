@@ -37,6 +37,7 @@ struct hash_desc {
     size_t hash_key_size;          /* in bits */
     size_t hash_ctx_size;
     size_t hash_digest_len;
+    size_t hash_integ_len;        /*truncated output len when used as an integrity algorithm in IKEV2*/
     void (*hash_init)(void *ctx);
     hash_update_t hash_update;
     void (*hash_final)(u_int8_t *out, void *ctx);

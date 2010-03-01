@@ -113,13 +113,14 @@ static struct hash_desc crypto_hasher_md5 =
     hash_ctx_size: sizeof(MD5_CTX),
     hash_key_size:   MD5_DIGEST_SIZE,
     hash_digest_len: MD5_DIGEST_SIZE,
+    hash_integ_len: 0,				/*Not applicable*/
     hash_init: (void (*)(void *)) osMD5Init,
     hash_update: (void (*)(void *, const u_int8_t *, size_t)) osMD5Update,
     hash_final: (void (*)(u_char *, void *)) osMD5Final,
 };
 
 static struct hash_desc crypto_integ_md5 =
-{ 	
+{ 
     common: {name: "oakley_md5",
 	     officname: "md5",
 	     algo_type: IKE_ALG_INTEG,
@@ -129,13 +130,14 @@ static struct hash_desc crypto_integ_md5 =
     hash_ctx_size: sizeof(MD5_CTX),
     hash_key_size:   MD5_DIGEST_SIZE,
     hash_digest_len: MD5_DIGEST_SIZE,
+    hash_integ_len: MD5_DIGEST_SIZE_96,	
     hash_init: (void (*)(void *)) osMD5Init,
     hash_update: (void (*)(void *, const u_int8_t *, size_t)) osMD5Update,
     hash_final: (void (*)(u_char *, void *)) osMD5Final,
 };
 
 static struct hash_desc crypto_hasher_sha1 =
-{ 	
+{ 
     common: {name: "oakley_sha",
 	     officname: "sha1",
 	     algo_type: IKE_ALG_HASH,
@@ -145,6 +147,7 @@ static struct hash_desc crypto_hasher_sha1 =
     hash_ctx_size: sizeof(SHA1_CTX),
     hash_key_size:   SHA1_DIGEST_SIZE,
     hash_digest_len: SHA1_DIGEST_SIZE,
+    hash_integ_len: 0,                          /*Not applicable*/
     hash_init: (void (*)(void *)) SHA1Init,
     hash_update: (void (*)(void *, const u_int8_t *, size_t)) SHA1Update,
     hash_final: (void (*)(u_char *, void *)) SHA1Final,
@@ -161,6 +164,7 @@ static struct hash_desc crypto_integ_sha1 =
     hash_ctx_size: sizeof(SHA1_CTX),
     hash_key_size:   SHA1_DIGEST_SIZE,
     hash_digest_len: SHA1_DIGEST_SIZE,
+    hash_integ_len: SHA1_DIGEST_SIZE_96,
     hash_init: (void (*)(void *)) SHA1Init,
     hash_update: (void (*)(void *, const u_int8_t *, size_t)) SHA1Update,
     hash_final: (void (*)(u_char *, void *)) SHA1Final,

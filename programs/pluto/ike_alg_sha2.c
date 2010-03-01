@@ -54,7 +54,8 @@ struct hash_desc hash_desc_sha2_256 = {
 	hash_ctx_size: sizeof(sha256_context),
 	hash_key_size: 0,
 	hash_digest_len: SHA2_256_DIGEST_SIZE,
-        hash_init: (void (*)(void *))sha256_init,
+	hash_integ_len: 0,	/*Not applicable*/
+	hash_init: (void (*)(void *))sha256_init,
 	hash_update: (void (*)(void *, const u_char *, size_t ))sha256_write,
 	hash_final:(void (*)(u_char *, void *))sha256_hash_final,
 };
@@ -66,7 +67,8 @@ struct hash_desc hash_desc_sha2_512 = {
 	hash_ctx_size: sizeof(sha512_context),
 	hash_key_size: 0,
 	hash_digest_len: SHA2_512_DIGEST_SIZE,
-        hash_init: (void (*)(void *))sha512_init,
+	hash_integ_len: 0,      /*Not applicable*/
+	hash_init: (void (*)(void *))sha512_init,
 	hash_update: (void (*)(void *, const u_char *, size_t ))sha512_write,
 	hash_final:(void (*)(u_char *, void *))sha512_hash_final,
 };
