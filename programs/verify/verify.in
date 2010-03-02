@@ -294,13 +294,18 @@ sub installstartcheck {
         run "pidof rngd";
         ($processid) = @out;
         chomp($processid);
-        if( $processid ne ""  ) { errchk "1"; }
-        else {
-                errchk "";
-                print "\n  Hardware RNG is present but 'rngd' is not running.\n  No harware random used!\n\n";
-	        $reterr = 1;
-             }
-        }
+        if( $processid eq ""  ) {
+		run "pidof clrngd";
+		($processid2) = @out;
+		if( $processid2 eq ""  ) {
+			errchk "";
+			print "\n  Hardware RNG is present but 'rngd' or 'clrngd' is not running.\n  No harware random used!\n\n";
+			$reterr = 1;
+			}
+		else { errchk "1"; }
+	}
+	else { errchk "1"; }
+	}
 
         if ( -e "/proc/net/pfkey") {
         printfun "NETKEY detected, testing for disabled ICMP send_redirects";
