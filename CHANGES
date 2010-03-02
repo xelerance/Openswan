@@ -40,6 +40,7 @@ v2.6.25
 * Fix bad bare_shunt entry that break tunnel routing [David]
 * Fix oops when network driver doesn't support all header_ops [David]
 * Fix for hardcoded hmac 96 bits length [Avesh]
+* Check for clrngd as well as rngd in ipsec verify [Paul]
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
