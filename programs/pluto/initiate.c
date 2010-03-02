@@ -782,7 +782,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	{
 	    char cib[CONN_INST_BUF];
 	    /* there is already an instance being negotiated, do nothing */
-	    openswan_log("rekeing existing instance \"%s\"%s, due to acquire"
+	    openswan_log("rekeying existing instance \"%s\"%s, due to acquire"
 			 , c->name
 			 , (fmt_conn_instance(c, cib), cib));
 
