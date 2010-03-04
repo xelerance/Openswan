@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "IPSEC.CONF" "5" "01/21/2010" "30 May 2008" "30 May 2008"
+.TH "IPSEC.CONF" "5" "03/04/2010" "30 May 2008" "30 May 2008"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -410,11 +410,11 @@ option. The default is not to use AH. If for some (invalid) reason you still thi
 .TP
 \fIikev2\fR
 IKEv2 (RFC4309) settings to be used. Currently the accepted values are
+\fIpermit\fR, (the default) signifying no IKEv2 should be transmitted, but will be accepted if the other ends initiates to us with IKEv2;
 \fInever\fR
 or
 \fIno\fR
-(the default) signifying no IKEv2 negotiation should be transmitted or accepted;
-\fIpermit\fR, signifying no IKEv2 should be transmitted, but will be accepted if the other ends initiates to us with IKEv2;
+signifying no IKEv2 negotiation should be transmitted or accepted;
 \fIpropose\fR
 or
 \fIyes\fR
