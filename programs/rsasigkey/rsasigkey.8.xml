@@ -199,7 +199,7 @@ by Henry Spencer.</para>
 currently 20000.</para>
 <para><emphasis remap='I'>rsasigkey</emphasis>'s run time is difficult
 to predict, since <filename>/dev/random</filename> outputcan
-be arbitrarily delayed if the system’s entropy pool is low on
+be arbitrarily delayed if the system's entropy pool is low on
 randomness, and  the time taken by the search for primes is also somewhat
 unpredictable.  A reasonably typical time for a 1024-bit key on a quiet
 00MHz  Pentium  MMX with plenty of randomness available is 20 seconds,
