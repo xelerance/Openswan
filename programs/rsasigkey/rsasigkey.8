@@ -1,74 +1,90 @@
+'\" t
 .\"     Title: IPSEC_RSASIGKEY
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 11/14/2008
-.\"    Manual: 28 Oct 2006
-.\"    Source: 28 Oct 2006
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 03/09/2010
+.\"    Manual: [FIXME: manual]
+.\"    Source: [FIXME: source]
+.\"  Language: English
 .\"
-.TH "IPSEC_RSASIGKEY" "8" "11/14/2008" "28 Oct 2006" "28 Oct 2006"
+.TH "IPSEC_RSASIGKEY" "8" "03/09/2010" "[FIXME: source]" "[FIXME: manual]"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-ipsec rsasigkey - generate RSA signature key
+ipsec_rsasigkey \- generate RSA signature key
 .SH "SYNOPSIS"
-.HP 6
-\fBipsec\fR \fIrsasigkey\fR [\-\-verbose] [\-\-random\ \fIfilename\fR] [\-\-rounds\ \fInr\fR] [\-\-hostname\ \fIhostname\fR] [\-\-noopt] nbits
-.HP 6
-\fBipsec\fR \fIrsasigkey\fR [\-\-verbose] [\-\-hostname\ \fIhostname\fR] [\-\-noopt] [\-\-oldkey\ \fIfilename\fR]
+.HP \w'\fBipsec\fR\ 'u
+\fBipsec\fR \fIrsasigkey\fR [\-\-verbose] [\-\-random\ \fIfilename\fR] [\-\-rounds\ \fInr\fR] [\-\-configdir\ \fInssdbdir\fR] [\-\-password\ \fInsspassword\fR] [\-\-hostname\ \fIhostname\fR] [\-\-noopt] nbits
+.HP \w'\fBipsec\fR\ 'u
+\fBipsec\fR \fIrsasigkey\fR [\-\-verbose] [\-\-configdir\ \fInssdbdir\fR] [\-\-password\ \fInsspassword\fR] [\-\-hostname\ \fIhostname\fR] [\-\-noopt] [\-\-oldkey\ \fIfilename\fR]
 .SH "DESCRIPTION"
 .PP
 \fIRsasigkey\fR
 generates an RSA public/private key pair, suitable for digital signatures, of (exactly)
 \fInbits\fR
 bits (that is, two primes each of exactly
-\fInbits\fR/2 bits, and related numbers) and emits it on standard output as ASCII (mostly hex) data\.
+\fInbits\fR/2 bits, and related numbers) and emits it on standard output as ASCII (mostly hex) data\&.
 \fInbits\fR
-must be a multiple of 16\.
+must be a multiple of 16\&.
 .PP
 The public exponent is forced to the value
-\fB3\fR, which has important speed advantages for signature checking\. Beware that the resulting keys have known weaknesses as encryption keys
-\fBand should not be used for that purpose\fR\.
+\fB3\fR, which has important speed advantages for signature checking\&. Beware that the resulting keys have known weaknesses as encryption keys
+\fBand should not be used for that purpose\fR\&.
 .PP
 The
 \fB\-\-verbose\fR
 option makes\fIrsasigkey\fR
-give a running commentary on standard error\. By default, it works in silence until it is ready to generate output\.
+give a running commentary on standard error\&. By default, it works in silence until it is ready to generate output\&.
 .PP
 The
 \fB\-\-random\fR
-option specifies a source for random bits\. The default is
-\fI/dev/random\fR
+option specifies a source for random bits\&. The default is
+/dev/random
 (see
-\fBrandom\fR(4))\. Normally,
+\fBrandom\fR(4))\&. Normally,
 \fIrsasigkey\fR
 reads exactly
 \fInbits\fR
-random bits from the source; in extremely\-rare circumstances it may need more\. Under Linux with hardware random support, the special device
-\fI/dev/hw_random\fR
-is created\. However, the driver does not guarantee FIPS compliant random, and some hardware is so broken that it return extremely non\-random data\. Therefor
-\fI/dev/hw_random\fR
+random bits from the source; in extremely\-rare circumstances it may need more\&. Under Linux with hardware random support, the special device
+/dev/hw_random
+is created\&. However, the driver does not guarantee FIPS compliant random, and some hardware is so broken that it return extremely non\-random data\&. Therefor
+/dev/hw_random
 should
 \fBnever\fR
 be used with the
 \fB\-\-random\fR
-option\. Instead, one should run the
+option\&. Instead, one should run the
 \fBrngd\fR(8)
 daemon to funnel randomness from
-\fI/dev/hw_random\fR
+/dev/hw_random
 into
-\fI/dev/random\fR\.
+/dev/random\&.
 .PP
 The
 \fB\-\-rounds\fR
-option specifies the number of rounds to be done by the pz_probab_prime_p probabilistic primality checker\. The default, 30, is fairly rigorous and should not normally have to be overridden\.
+option specifies the number of rounds to be done by the pz_probab_prime_p probabilistic primality checker\&. The default, 30, is fairly rigorous and should not normally have to be overridden\&.
+.PP
+The
+\fB\-\-Configdir\fR
+option specifies the nss configuration directory to use\&. This is the directory where the NSS certificate, key and security modules databases reside\&.
+.PP
+The
+\fB\-\-password\fR
+option specifies the nss cryptographic module authentication password if the NSS module has been configured to require it\&. A password is required by hardware tokens and also by the internal softotken module when configured to run in FIPS mode\&.
 .PP
 The
 \fB\-\-hostname\fR
 option specifies what host name to use in the first line of the output (see below); the default is what
 \fBgethostname\fR(2)
-returns\.
+returns\&.
 .PP
 The
 \fB\-\-hostname\fR
@@ -83,51 +99,55 @@ which speeds up operations on it slightly but can cause it to flunk a validity c
 option specifies that rather than generate a new key,
 \fIrsasigkey\fR
 should read an old key from the
-\fIfile\fR
-(the name \'\-\' means \'standard input\') and use that to generate its output\. Input lines which do not look like
+file
+(the name \'\-\' means \'standard input\') and use that to generate its output\&. Input lines which do not look like
 \fIrsasigkey\fR
-output are silently ignored\. This permits updating old keys to the current format\.
+output are silently ignored\&. This permits updating old keys to the current format\&.
 .PP
 The output format looks like this (with long numbers trimmed down for clarity):
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
-	# RSA 2048 bits   xy\.example\.com   Sat Apr 15 13:53:22 2000
+	# RSA 2048 bits   xy\&.example\&.com   Sat Apr 15 13:53:22 2000
 	# for signatures only, UNSAFE FOR ENCRYPTION
-	#pubkey=0sAQOF8tZ2NZt\.\.\.Y1P+buFuFn/
-	Modulus: 0xcc2a86fcf440\.\.\.cf1011abb82d1
+	#pubkey=0sAQOF8tZ2NZt\&.\&.\&.Y1P+buFuFn/
+	Modulus: 0xcc2a86fcf440\&.\&.\&.cf1011abb82d1
 	PublicExponent: 0x03
 	# everything after this point is secret
-	PrivateExponent: 0x881c59fdf8\.\.\.ab05c8c77d23
-	Prime1: 0xf49fd1f779\.\.\.46504c7bf3
-	Prime2: 0xd5a9108453\.\.\.321d43cb2b
-	Exponent1: 0xa31536a4fb\.\.\.536d98adda7f7
-	Exponent2: 0x8e70b5ad8d\.\.\.9142168d7dcc7
-	Coefficient: 0xafb761d001\.\.\.0c13e98d98
+	PrivateExponent: 0x881c59fdf8\&.\&.\&.ab05c8c77d23
+	Prime1: 0xf49fd1f779\&.\&.\&.46504c7bf3
+	Prime2: 0xd5a9108453\&.\&.\&.321d43cb2b
+	Exponent1: 0xa31536a4fb\&.\&.\&.536d98adda7f7
+	Exponent2: 0x8e70b5ad8d\&.\&.\&.9142168d7dcc7
+	Coefficient: 0xafb761d001\&.\&.\&.0c13e98d98
 
 .fi
+.if n \{\
 .RE
+.\}
 .sp
 
 The first (comment) line, indicating the nature and date of the key, and giving a host name, is used by
 \fBipsec_showhostkey\fR(8)
-when generating some forms of key output\.
+when generating some forms of key output\&.
 .PP
 The commented\-out
 \fBpubkey=\fR
 line contains the public key, the public exponent and the modulus combined in approximately RFC 2537 format (the one deviation is that the combined value is given with a
 \fI0s\fR
 prefix, rather than in unadorned base\-64), suitable for use in the
-\fIipsec\.conf\fR
-file\.
+ipsec\&.conf
+file\&.
 .PP
 The
 \fBModulus\fR,
 \fBPublicExponent\fR
 and
 \fBPrivateExponent\fR
-lines give the basic signing and verification data\.
+lines give the basic signing and verification data\&.
 .PP
 The
 \fBPrime1\fR
@@ -136,7 +156,7 @@ and
 lines give the primes themselves (aka
 \fIp\fR
 and
-\fIq\fR), largest first\. The
+\fIq\fR), largest first\&. The
 \fBExponent1\fR
 and
 \fBExponent2\fR
@@ -144,35 +164,35 @@ lines give the private exponent mod
 \fIp\-1\fR
 and
 \fIq\-1\fR
-respectively\. The
+respectively\&. The
 \fBCoefficient\fR
 line gives the Chinese Remainder Theorem coefficient, which is the inverse of
 \fIq\fR, mod
-\fIp\fR\. These additional numbers (which must all be kept as secret as the private exponent) are precomputed aids to rapid signature generation\.
+\fIp\fR\&. These additional numbers (which must all be kept as secret as the private exponent) are precomputed aids to rapid signature generation\&.
 .PP
-No attempt is made to break long lines\.
+No attempt is made to break long lines\&.
 .PP
-The US patent on the RSA algorithm expired 20 Sept 2000\.
+The US patent on the RSA algorithm expired 20 Sept 2000\&.
 .SH "EXAMPLES"
 .PP
-\fBipsec rsasigkey \-\-verbose 2192 >mykey\.txt\fR
+\fBipsec rsasigkey \-\-verbose 2192 >mykey\&.txt\fR
 .RS 4
 generates a 2192\-bit signature key and puts it in the file
-\fImykey\.txt\fR, with running commentary on standard error\. The file contents can be inserted verbatim into a suitable entry in the
-\fIipsec\.secrets\fR
+mykey\&.txt, with running commentary on standard error\&. The file contents can be inserted verbatim into a suitable entry in the
+ipsec\&.secrets
 file (see
 \fBipsec_secrets\fR(5)), and the public key can then be extracted and edited into the
-\fIipsec\.conf\fR
+ipsec\&.conf
 (see
-\fBipsec_showhostkey\fR(8))\.
+\fBipsec_showhostkey\fR(8))\&.
 .RE
 .PP
-\fBipsec rsasigkey \-\-verbose \-\-oldkey oldie >latest\.txt\fR
+\fBipsec rsasigkey \-\-verbose \-\-oldkey oldie >latest\&.txt\fR
 .RS 4
 takes the old signature key from file
-\fIoldie\fR
+oldie
 and puts a version in the current format into the file
-\fIlatest\fR, with running commentary on standard error\.
+latest, with running commentary on standard error\&.
 .RE
 .SH "FILES"
 .PP
@@ -183,23 +203,23 @@ and puts a version in the current format into the file
 \fBrandom\fR(4),
 \fBrngd\fR(8),
 \fBipsec_showhostkey\fR(8),
-\fIApplied Cryptography, 2nd\. ed\., by Bruce Schneier, Wiley 1996\fR,
+\fIApplied Cryptography, 2nd\&. ed\&., by Bruce Schneier, Wiley 1996\fR,
 \fIRFCs 2537, 2313\fR,
-\fIGNU MP, the GNU multiple precision arithmetic library, edition 2\.0\.2, by Torbj Granlund\fR
+\fIGNU MP, the GNU multiple precision arithmetic library, edition 2\&.0\&.2, by Torbj Granlund\fR
 .SH "HISTORY"
 .PP
-Written for the Linux FreeS/WAN project <\fIhttp://www\.freeswan\.org\fR> by Henry Spencer\.
+Written for the Linux FreeS/WAN project <\m[blue]\fBhttp://www\&.freeswan\&.org\fR\m[]> by Henry Spencer\&.
 .SH "BUGS"
 .PP
 There is an internal limit on
-\fInbits\fR, currently 20000\.
+\fInbits\fR, currently 20000\&.
 .PP
 \fIrsasigkey\fR\'s run time is difficult to predict, since
-\fI/dev/random\fR
-outputcan be arbitrarily delayed if the system\(^as entropy pool is low on randomness, and the time taken by the search for primes is also somewhat unpredictable\. A reasonably typical time for a 1024\-bit key on a quiet 00MHz Pentium MMX with plenty of randomness available is 20 seconds, almost all of it in the prime searches\. Generating a 2192\-bit key on the same system usually takes several minutes\. A 4096\-bit key took an hour and a half of CPU time\.
+/dev/random
+outputcan be arbitrarily delayed if the system\(^as entropy pool is low on randomness, and the time taken by the search for primes is also somewhat unpredictable\&. A reasonably typical time for a 1024\-bit key on a quiet 00MHz Pentium MMX with plenty of randomness available is 20 seconds, almost all of it in the prime searches\&. Generating a 2192\-bit key on the same system usually takes several minutes\&. A 4096\-bit key took an hour and a half of CPU time\&.
 .PP
 The
 \fB\-\-oldkey\fR
-option does not check its input format as rigorously as it might\. Corrupted
+option does not check its input format as rigorously as it might\&. Corrupted
 \fIrsasigkey\fR
-output may confuse it\.
+output may confuse it\&.
