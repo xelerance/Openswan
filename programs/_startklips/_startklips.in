@@ -49,7 +49,8 @@ then
                 echo
 	if test -f $netkey
 	then
-		echo "\nFAILURE to unload NETKEY modules. Use protostack=netkey or recompile kernel without builtin NETKEY support"
+		echo
+		echo "FAILURE to unload NETKEY modules. Use protostack=netkey or recompile kernel without builtin NETKEY support"
 		exit 1
 	fi
 fi
