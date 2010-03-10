@@ -1,3 +1,4 @@
+#!/bin/sh
 # routines to help build patch files.
 
 fakeallpatch() {
