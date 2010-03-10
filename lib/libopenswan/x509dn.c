@@ -1872,10 +1872,10 @@ parse_authorityInfoAccess(chunk_t blob, int level0, chunk_t *accessLocation)
 			    return;
 			}
 		    }
-		    openswan_log("warning: ignoring OCSP InfoAccessLocation with unkown protocol");
+		    openswan_log("warning: ignoring OCSP InfoAccessLocation with unknown protocol");
 		    break;
 		default:
-		    /* unkown accessMethod, ignoring */
+		    /* unknown accessMethod, ignoring */
 		    break;
 		}
 	    }
