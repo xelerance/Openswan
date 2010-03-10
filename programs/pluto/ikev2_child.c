@@ -179,8 +179,23 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
 	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2TSr
 			    , ts_i, INITIATOR);
 	if(ret!=STF_OK) return ret;
-	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_NONE
+
+	if(role == INITIATOR) {
+	ret = ikev2_emit_ts(md, outpbs, st->st_connection->policy & POLICY_TUNNEL ? ISAKMP_NEXT_NONE : ISAKMP_NEXT_v2N
 			    , ts_r, RESPONDER);
+	}
+	else {
+		if ( md->chain[ISAKMP_NEXT_v2N] && (md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == USE_TRANSPORT_MODE) ) {
+			DBG_log("Received USE_TRANSPORT_MODE from the other end, next payload is USE_TRANSPORT_MODE notification");
+			ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2N
+						, ts_r, RESPONDER);
+		}
+		else {
+                        ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_NONE
+                                                , ts_r, RESPONDER);
+		}
+	}
+
 	if(ret!=STF_OK) return ret;
     }
 
@@ -481,6 +496,32 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     ret = ikev2_calc_emit_ts(md, outpbs, role
 			     , c, c->policy);
     if(ret != STF_OK) return ret;
+
+    if( role == RESPONDER ) {
+	if ( md->chain[ISAKMP_NEXT_v2N] && (md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == USE_TRANSPORT_MODE) ) {
+
+	if(st1->st_connection->policy & POLICY_TUNNEL) {
+		DBG_log("Although local policy is tunnel, received USE_TRANSPORT_MODE");
+		DBG_log("So switching to transport mode, and responding with USE_TRANSPORT_MODE notify");
+	}
+	else {
+                DBG_log("Local policy is transport, received USE_TRANSPORT_MODE");
+		DBG_log("Now responding with USE_TRANSPORT_MODE notify");
+	}
+
+	chunk_t child_spi, notifiy_data;
+	memset(&child_spi, 0, sizeof(child_spi));
+	memset(&notifiy_data, 0, sizeof(notifiy_data));
+	ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, /*PROTO_ISAKMP*/ 0,
+			&child_spi,
+			USE_TRANSPORT_MODE, &notifiy_data, outpbs);
+
+		if (st1->st_esp.present == TRUE) {
+		/*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
+		st1->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
+                }
+	}
+    }
 
     ikev2_derive_child_keys(st1, role);
     /* install inbound and outbound SPI info */
