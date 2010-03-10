@@ -381,7 +381,7 @@ main(int argc, char **argv)
 		case 'P':
 			if (transport_proto_opt) {
 				fprintf(stderr, "%s: Error, --transport-proto"
-					" paramter redefined:%s, "
+					" parameter redefined:%s, "
 					"already defined as:%s\n",
 					progname, optarg,
 					transport_proto_opt);

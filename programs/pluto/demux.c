@@ -344,7 +344,7 @@ read_packet(struct msg_digest *md)
     }
     else if (from_ugh != NULL)
     {
-	openswan_log("recvfrom on %s returned misformed source sockaddr: %s"
+	openswan_log("recvfrom on %s returned malformed source sockaddr: %s"
 	    , ifp->ip_dev->id_rname, from_ugh);
 	return FALSE;
     }
