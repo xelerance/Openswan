@@ -1375,16 +1375,27 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 	/*
 	 * now, find an eligible child SA from the pending list, and emit
-	 * SA2i, TSi and TSr for it.
+	 * SA2i, TSi and TSr and (USE_TRANSPORT_MODE notification in transport mode) for it .
 	 */
 	if(c0) {
 	    st->st_connection = c0;
+
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
 	    
 	    st->st_ts_this = ikev2_subnettots(&c0->spd.this);
 	    st->st_ts_that = ikev2_subnettots(&c0->spd.that);
 	    
 	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, c0, policy);
+
+	    if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
+		DBG_log("Initiator child policy is transport mode, sending USE_TRANSPORT_MODE");
+		chunk_t child_spi, notifiy_data;
+		memset(&child_spi, 0, sizeof(child_spi));
+		memset(&notifiy_data, 0, sizeof(notifiy_data));
+		ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, 0,
+				&child_spi,
+				USE_TRANSPORT_MODE, &notifiy_data, &e_pbs_cipher);
+	    }
 	} else {
 	    openswan_log("no pending SAs found, PARENT SA keyed only");
 	}
@@ -1979,6 +1990,37 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	if(rn != NOTHING_WRONG)
 	    return STF_FAIL + rn;
     }
+
+    {
+	if ( md->chain[ISAKMP_NEXT_v2N] ) {
+	    if ( (md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == USE_TRANSPORT_MODE )) {
+		if ( st->st_connection->policy & POLICY_TUNNEL) {
+		/*This means we did not send USE_TRANSPORT, however responder is sending it in now (inR2), seems incorrect*/
+			DBG(DBG_CONTROLMORE,
+			DBG_log("Initiator policy is tunnel, responder sends USE_TRANSPORT_MODE notification in inR2, ignoring it"));
+		}
+		else {
+			DBG(DBG_CONTROLMORE,
+			DBG_log("Initiator policy is transport, responder sends USE_TRANSPORT_MODE, setting CHILD SA to transport mode"));
+			if (st->st_esp.present == TRUE) { 
+			/*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
+			st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
+			}
+		}
+	    }
+	}
+
+        if ( md->chain[ISAKMP_NEXT_v2N] == NULL ||
+               !(md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == USE_TRANSPORT_MODE ) ) {
+                if ( !(st->st_connection->policy & POLICY_TUNNEL) ) {
+                /*This means we sent USE_TRANSPORT, however responder did not send it or did not agree with that*/
+                        DBG(DBG_CONTROLMORE,
+			DBG_log("Initiator policy is transport, responder did not send USE_TRANSPORT_MODE, so falling back to tunnel mode (rfc 4306)"));
+                }
+        }
+
+    }
+
 	
     ikev2_derive_child_keys(st, md->role);
 

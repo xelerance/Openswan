@@ -337,7 +337,8 @@ USE_XAUTHPAM?=false
 # Support for integrity check for binaries (requires USE_LIBNSS and fipscheck-devel)
 USE_FIPSCHECK?=false
 
-# Support for NSS crypto library (requires HAVE_THREADS)
+# Support for NSS crypto library (does not requires HAVE_THREADS)
+# USE_LIBNSS uses pthreads by default.
 USE_LIBNSS?=false
 
 ifeq ($(USE_FIPSCHECK),true)
@@ -389,7 +390,8 @@ IPSEC_CONNECTION_LIMIT?=250
 
 # Do we have pthreads available?  Only yes if you need it for XAUTH+PAM,
 # or if you need it for CRL fetching or if you need it for USE_LIBNSS
-# 
+# Note: USE_LIBNSS by default uses pthreads, enabling it here will only 
+# affect it for XAUTH+PAM, and CRL. 
 HAVE_THREADS?=false
 
 # Do we have an external stats daemon we can push state changes to?
