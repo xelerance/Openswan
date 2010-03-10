@@ -317,6 +317,8 @@ HAVE_LIBNSS=1
 DEFINES+=-DHAVE_LIBNSS
 LIBSPLUTO+= -lnspr4
 LIBSPLUTO+= -lnss3
+# For avoiding implicit DSO linking
+LIBSPLUTO+= -lpthread
 ifeq ($(USE_FIPSCHECK),true)
 FIPS_CHECK=1
 DEFINES+=-DFIPS_CHECK
