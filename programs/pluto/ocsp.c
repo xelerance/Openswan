@@ -456,7 +456,7 @@ verify_by_ocsp(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	remove_x509_public_key(cert);
 	return FALSE;
     case CERT_UNKNOWN:
-	plog("certificate status unkown");
+	plog("certificate status unknown");
 	if (strict)
 	{
 	    remove_x509_public_key(cert);
@@ -534,7 +534,7 @@ ocsp_set_default_uri(char *uri)
     
     if (strncasecmp(uri, "http", 4) != 0)
     {
-	plog("warning: ignoring default ocsp uri with unkown protocol");
+	plog("warning: ignoring default ocsp uri with unknown protocol");
 	return;
     }
     
