@@ -44,7 +44,7 @@ v2.6.25
 * Fix default value for ikev2 in ipsec.conf man page [Tuomo]
 * Support for USE_TRANSPORT_MODE in IKEv2 [Avesh]
 * Fix fox implicit DSO linking with NSS [Avesh]
-
+  - redhat bz#565140
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
