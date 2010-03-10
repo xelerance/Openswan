@@ -12,6 +12,14 @@ negotation. Therefor it is mandatory for Aggressive Mode connections that both
 specified with exactly one fully specified proposal.
 Acceptable values are <emphasis remap='B'>yes</emphasis> or <emphasis remap='B'>no</emphasis>
 (the default).</para>
+<para>
+The ISAKMP SA is created in exchange 1 in aggressive mode. Openswan has to send the exponent
+during that exchange, so it has to know what DH group to use before starting. This is why you
+can not have multiple DH groups in aggressive mode. It also has to pick which has to use
+since it needs to know which PRF to use to generate keys - in IKEv1 the hash negotiated
+is really the PRF. In concept, Openswan could perhaps propose 3DES and AES128 in aggressive mode,
+but this needs to be verified and is currently not supported.
+</para>
   </listitem>
   </varlistentry>
 
