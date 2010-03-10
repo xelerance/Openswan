@@ -45,6 +45,7 @@ v2.6.25
 * Support for USE_TRANSPORT_MODE in IKEv2 [Avesh]
 * Fix fox implicit DSO linking with NSS [Avesh]
   - redhat bz#565140
+* Fix various spelling errors [Harald]
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
