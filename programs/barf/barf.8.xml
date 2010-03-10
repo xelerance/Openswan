@@ -43,7 +43,7 @@ if debug logging is turned on.</para>
 
 <para><option>--maxlines &lt;100&gt;</option>
 option sets the length of some bits of information, 
-currently netstat -rn.  Usefull on boxes where the routing
+currently netstat -rn.  Useful on boxes where the routing
 table is thousands of lines long.  Default is 100.</para>
 
 <para><emphasis remap='I'>Barf</emphasis>

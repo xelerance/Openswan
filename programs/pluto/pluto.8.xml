@@ -1003,7 +1003,7 @@
       <para>Pluto supports different IPstacks on different operating systems.
       The option <option>--use-auto</option>, which is also the default, lets
       pluto find a stack automatically. This behaviour can be changed by
-      explicitely setting the stack using <option>--use-klips</option>,
+      explicitly setting the stack using <option>--use-klips</option>,
       <option>--use-netkey</option> or <option>--use-nostack</option>. The
       latter is meant for testing only - no actual IPsec connections will be
       loaded into the kernel.</para>
@@ -1931,7 +1931,7 @@
             be taken. <emphasis remap="B">hold</emphasis>(default) means the
             eroute will be put into <emphasis remap="I">%hold</emphasis>
             status, while <emphasis remap="B">clear</emphasis>means the eroute
-            and SA with both be cleared. Clear is really only usefull on the
+            and SA with both be cleared. Clear is really only useful on the
             server of a Road Warrior config. The action <emphasis
             remap="B">restart</emphasis> is used on tunnels that need to be
             permanently up, and have static IP addresses.</para>

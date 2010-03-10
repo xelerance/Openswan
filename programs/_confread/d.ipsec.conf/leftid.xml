@@ -22,7 +22,7 @@ The magic value
 <emphasis remap='B'>%none</emphasis>
 sets the ID to no ID. This is included for completeness, as the ID may
 have been set in the default conn, and one wishes for it to default instead
-of being explicitely set.
+of being explicitly set.
 
 The magic value
 <emphasis remap='B'>%myid</emphasis>
