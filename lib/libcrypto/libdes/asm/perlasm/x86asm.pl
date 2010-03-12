@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 
 # require 'x86asm.pl';
 # &asm_init("cpp","des-586.pl");

@@ -60,6 +60,7 @@
 /* IPsec ESP transform values */
 
 #define ESP_NONE		0
+#define ESP_DES_IV64		1
 #define ESP_DES			2
 #define ESP_3DES		3
 #define ESP_RC5			4
@@ -67,6 +68,7 @@
 #define ESP_CAST		6
 #define ESP_BLOWFISH		7
 #define ESP_3IDEA		8
+#define ESP_DES_IV32		9
 #define ESP_RC4			10
 #define ESP_NULL		11
 #define ESP_AES			12
@@ -80,6 +82,7 @@
 #define ESP_AES_GCM_C		20
 #define ESP_SEED_CBC		21
 #define ESP_CAMELLIA		22
+#define ESP_NULL_AUTH_AES_GMAC  23 /* [RFC4543][Errata1821] */
 
 /* as draft-ietf-ipsec-ciph-aes-cbc-02.txt */
 #define ESP_MARS		249
