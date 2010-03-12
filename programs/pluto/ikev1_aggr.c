@@ -991,7 +991,14 @@ aggr_outI1(int whack_sock,
     insert_state(st);	/* needs cookies, connection, and msgid (0) */
 
     if(init_am_st_oakley(st, policy) == FALSE) {
-	loglog(RC_AGGRALGO, "can not initiate aggressive mode, at most one algorithm may be provided");
+	/*
+	* This is only the case if NO IKE proposal was specified in the
+	* configuration file.  It's not the case if there were multiple
+	* configurations, even conflicting multiple DH groups.  So this
+	* should tell the user to add a proper proposal policy
+	*/
+	loglog(RC_AGGRALGO, "no IKE proposal policy specified in config!  Can not initiate aggressive mode.  A policy must be specified in the
+configuration and should containe at most one DH group (mod1024, mod1536, mod2048).  Only the first DH group will be honored.");
 	reset_globals();
 	return STF_FAIL;
     }
