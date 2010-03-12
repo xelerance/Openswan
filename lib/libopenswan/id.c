@@ -144,9 +144,13 @@ atoid(char *src, struct id *id, bool myid_ok)
 		id->kind = ID_KEY_ID;
 		id->name.ptr = (unsigned char *)src+2;
 
-		if(src[len+2]==']')
+                /* Start of name.ptr is srv+2 so len is 2 smaller than the
+                 * length of src and the terminator character is at
+                 * src[len+2].  Therefore, the last character is src[len+1]
+                 */
+		if(src[len+1]==']')
 		{
-		    src[len+2-1]='\0';
+		    src[len+1]='\0';
 		    len--;
 		}
 		id->name.len = len;
