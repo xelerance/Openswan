@@ -116,7 +116,7 @@ enum ipsec_cipher_algo {
   ESP_AES_GCM_16=20,
   ESP_SEED_CBC=21,
   ESP_CAMELLIA=22,
-  ESP_NULL_AUTH_AES-GMAC=23 /* [RFC4543][Errata1821] */
+  ESP_NULL_AUTH_AES_GMAC=23 /* [RFC4543][Errata1821] */
   /* 249-255 reserved for private use */
 };
 
