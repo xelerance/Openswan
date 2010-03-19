@@ -1190,7 +1190,9 @@ xauth_inR0(struct msg_digest *md)
         struct isakmp_attribute attr;
         pb_stream strattr;
 
-	if (md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type != ISAKMP_CFG_REPLY)
+	/* XXX This needs checking with the proper RFC's - ISAKMP_CFG_ACK got added for Cisco interop */
+	if ( (md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type != ISAKMP_CFG_REPLY) &&
+	     (md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type != ISAKMP_CFG_ACK) )
 	{
 	    openswan_log("Expecting MODE_CFG_REPLY, got %s instead."
 		 , enum_name(&attr_msg_type_names, md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type));
