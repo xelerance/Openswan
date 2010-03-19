@@ -997,8 +997,7 @@ aggr_outI1(int whack_sock,
 	* configurations, even conflicting multiple DH groups.  So this
 	* should tell the user to add a proper proposal policy
 	*/
-	loglog(RC_AGGRALGO, "no IKE proposal policy specified in config!  Can not initiate aggressive mode.  A policy must be specified in the
-configuration and should contain at most one DH group (mod1024, mod1536, mod2048).  Only the first DH group will be honored.");
+	loglog(RC_AGGRALGO, "no IKE proposal policy specified in config!  Can not initiate aggressive mode.  A policy must be specified in the configuration and should contain at most one DH group (mod1024, mod1536, mod2048).  Only the first DH group will be honored.");
 	reset_globals();
 	return STF_FAIL;
     }

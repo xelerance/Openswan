@@ -732,6 +732,11 @@ stf_status modecfg_send_request(struct state *st)
 	attr.isaat_lv = 0;
 	out_struct(&attr, &isakmp_xauth_attribute_desc, &strattr, NULL);
 
+        /* ISAKMP attr out (CISCO_DEF_DOMAIN) */
+        attr.isaat_af_type = CISCO_DEF_DOMAIN;
+        attr.isaat_lv = 0;
+        out_struct(&attr, &isakmp_xauth_attribute_desc, &strattr, NULL);
+
 	/* ISAKMP attr out (CISCO_SPLIT_INC) */
 	attr.isaat_af_type = CISCO_SPLIT_INC;
 	attr.isaat_lv = 0;
@@ -1634,6 +1639,7 @@ modecfg_inR1(struct msg_digest *md)
     pb_stream *attrs = &md->chain[ISAKMP_NEXT_ATTR]->pbs;
     int resp = LEMPTY;
     struct payload_digest *p;
+    bool first_dns_flag = TRUE;
 
     DBG(DBG_CONTROL, DBG_log("modecfg_inR1"));
     openswan_log("received mode cfg reply");
@@ -1783,7 +1789,18 @@ modecfg_inR1(struct msg_digest *md)
                         , sizeof(a.u.v4.sin_addr.s_addr));
                     
                     addrtot(&a, 0, caddr, sizeof(caddr));
-                    openswan_log("Received DNS %s", caddr);
+                    openswan_log("Received DNS %s, len=%d", caddr, strlen(caddr));
+
+                    if (first_dns_flag) {
+                    strcpy(st->st_connection->cisco_dns_info, caddr);
+                    first_dns_flag = 0;
+                    }
+                    else {
+                    strcat(st->st_connection->cisco_dns_info, " ");
+                    strcat(st->st_connection->cisco_dns_info, caddr);
+                    }
+
+                    DBG_log("Cisco DNS info: %s, len=%d", st->st_connection->cisco_dns_info, strlen(st->st_connection->cisco_dns_info));
                 }
                 resp |= LELEM(attr.isaat_af_type);
                 break;
@@ -1794,12 +1811,32 @@ modecfg_inR1(struct msg_digest *md)
 		    resp |= LELEM(attr.isaat_af_type);
 		    break;
 
-                case CISCO_BANNER:
+		case CISCO_BANNER:
+                {
+                char test[500];
                 DBG_dump("Received cisco banner: ", strattr.cur, pbs_left(&strattr));
+                strncpy(test,strattr.cur, pbs_left(&strattr));
+                test[pbs_left(&strattr)]='\0';
+                DBG_log("Cisco banner: %s", test);
                 resp |= LELEM(attr.isaat_af_type);
+                }
                 break;
 
-                case CISCO_SPLIT_INC:
+
+		case CISCO_DEF_DOMAIN:
+                {
+                char tmp[50];
+                DBG_dump("Received cisco def domain: ", strattr.cur, pbs_left(&strattr));
+                strncpy(tmp, strattr.cur, pbs_left(&strattr));
+                tmp[pbs_left(&strattr)]='\0';
+                DBG_log("Cisco defined domain: %s", tmp);
+                strcpy(st->st_connection->cisco_domain_info, tmp);
+                DBG_log("Cisco defined domain: %s", st->st_connection->cisco_domain_info);
+                resp |= LELEM(attr.isaat_af_type);
+                }
+                break;
+
+		case CISCO_SPLIT_INC:
                 {
                     struct spd_route *tmp_spd;
                     ip_address a;
@@ -1807,13 +1844,12 @@ modecfg_inR1(struct msg_digest *md)
                     size_t len = pbs_left(&strattr);
                     struct connection *c = st->st_connection;
                     struct spd_route *tmp_spd2 = &c->spd;
-
-                    /*a.u.v4.sin_family = AF_INET;
-                    a.u.v4.sin_addr.s_addr = 0;
-                    addrtosubnet(&a, &tmp_spd2->that.client);
-		    //tmp_spd2->that.client.addr = 0;
-                    tmp_spd2->that.client.maskbits = 0;
-                    tmp_spd2->that.has_client = TRUE;*/ 
+                    
+                    if ( FALSE == tmp_spd2->that.has_client ) {
+                    ttosubnet("0.0.0.0/0.0.0.0", 0, AF_INET, &tmp_spd2->that.client);
+                    tmp_spd2->that.has_client = TRUE;
+                    tmp_spd2->that.has_client_wildcard = FALSE;
+                    }
 
                     while (len > 0) {
                     tmp_spd = clone_thing(c->spd, "remote subnets policies");
@@ -1824,7 +1860,7 @@ modecfg_inR1(struct msg_digest *md)
                     tmp_spd->that.id.name.len = 0; 
 
                     tmp_spd->this.host_addr_name = NULL;
-		    tmp_spd->that.host_addr_name = NULL;
+                    tmp_spd->that.host_addr_name = NULL;
 
                     u_int32_t *ap = (u_int32_t *)(strattr.cur);
                     a.u.v4.sin_family = AF_INET;

@@ -705,74 +705,95 @@ informational(struct msg_digest *md)
                 /* to find and store the connection associated with tmp_name*/
 		tmp_c = con_by_name(tmp_name, FALSE);
 
-		DBG_cond_dump(DBG_PARSING, "redirected remote end info:", n_pbs->cur + pbs_left(n_pbs)-4, 4);
+                DBG_cond_dump(DBG_PARSING, "redirected remote end info:", n_pbs->cur + pbs_left(n_pbs)-4, 4);
 
-		/*Current remote peer info*/
-		{
+                /*Current remote peer info*/
+                {
 
-		char buftest[ADDRTOT_BUF];
+                char buftest[ADDRTOT_BUF];
                 struct spd_route *tmp_spd = &tmp_c->spd;
                 int count_spd=0;
                 do {
-                DBG_log("spd route number: %d", ++count_spd);
-                DBG_log("host_addr: %s", (addrtot(&tmp_spd->that.host_addr, 0, buftest, sizeof(buftest)), buftest) );
-                DBG_log("nexthop: %s", (addrtot(&tmp_spd->that.host_nexthop, 0, buftest, sizeof(buftest)), buftest) );
-                DBG_log("srcip: %s", (addrtot(&tmp_spd->that.host_srcip, 0, buftest, sizeof(buftest)), buftest) );
-                DBG_log("client_addr: %s", (addrtot(&tmp_spd->that.client.addr, 0, buftest, sizeof(buftest)), buftest) );
+                DBG(DBG_CONTROLMORE, DBG_log("spd route number: %d", ++count_spd));
+
+                /**that info**/
+                DBG(DBG_CONTROLMORE, DBG_log("that id kind: %d",tmp_spd->that.id.kind));
+                DBG(DBG_CONTROLMORE, DBG_log("that id ipaddr: %s", (addrtot(&tmp_spd->that.id.ip_addr, 0, buftest, sizeof(buftest)), buftest)));
+                if (tmp_spd->that.id.name.ptr != NULL) {
+                DBG(DBG_CONTROLMORE, DBG_dump_chunk("that id name",tmp_spd->that.id.name));
+                }
+                DBG(DBG_CONTROLMORE, DBG_log("that host_addr: %s", (addrtot(&tmp_spd->that.host_addr, 0, buftest, sizeof(buftest)), buftest)));
+                DBG(DBG_CONTROLMORE, DBG_log("that nexthop: %s", (addrtot(&tmp_spd->that.host_nexthop, 0, buftest, sizeof(buftest)), buftest)));
+                DBG(DBG_CONTROLMORE, DBG_log("that srcip: %s", (addrtot(&tmp_spd->that.host_srcip, 0, buftest, sizeof(buftest)), buftest)));
+                DBG(DBG_CONTROLMORE, DBG_log("that client_addr: %s, maskbits:%d"
+                    , (addrtot(&tmp_spd->that.client.addr, 0, buftest, sizeof(buftest)), buftest),tmp_spd->that.client.maskbits));
+                DBG(DBG_CONTROLMORE, DBG_log("that has_client: %d", tmp_spd->that.has_client));
+                DBG(DBG_CONTROLMORE, DBG_log("that has_client_wildcard: %d", tmp_spd->that.has_client_wildcard));
+                DBG(DBG_CONTROLMORE, DBG_log("that has_port_wildcard: %d", tmp_spd->that.has_port_wildcard));
+                DBG(DBG_CONTROLMORE, DBG_log("that has_id_wildcards: %d", tmp_spd->that.has_id_wildcards));
+
                 tmp_spd = tmp_spd->next;
                 } while(tmp_spd!=NULL);
 
 
-		if(tmp_c->interface!=NULL){
-		DBG_log("Current interface_addr: %s", (addrtot(&tmp_c->interface->ip_addr, 0, buftest, sizeof(buftest)), buftest) );
-		}
+                if(tmp_c->interface!=NULL){
+                DBG(DBG_CONTROLMORE, 
+                DBG_log("Current interface_addr: %s", (addrtot(&tmp_c->interface->ip_addr, 0, buftest, sizeof(buftest)), buftest)));
+                }
 
-		if(tmp_c->gw_info!=NULL){
-		DBG_log("Current gw_client_addr: %s", (addrtot(&tmp_c->gw_info->client_id.ip_addr, 0, buftest, sizeof(buftest)), buftest) );
-		DBG_log("Current gw_gw_addr: %s", (addrtot(&tmp_c->gw_info->gw_id.ip_addr, 0, buftest, sizeof(buftest)), buftest) );
-		}
+                if(tmp_c->gw_info!=NULL){
+                DBG(DBG_CONTROLMORE,
+                DBG_log("Current gw_client_addr: %s", (addrtot(&tmp_c->gw_info->client_id.ip_addr, 0, buftest, sizeof(buftest)), buftest)));
+                DBG(DBG_CONTROLMORE, 
+                DBG_log("Current gw_gw_addr: %s", (addrtot(&tmp_c->gw_info->gw_id.ip_addr, 0, buftest, sizeof(buftest)), buftest)));
+                }
 
-		}
+                }
 
                 ip_address old_addr;
                 /*storing old address for comparison purposes*/
                 old_addr = tmp_c->spd.that.host_addr;
 
-		/*Decoding remote peer address info where connection has to be redirected*/
-		memcpy(&tmp_c->spd.that.host_addr.u.v4.sin_addr.s_addr, 
+                /*Decoding remote peer address info where connection has to be redirected to*/
+                memcpy(&tmp_c->spd.that.host_addr.u.v4.sin_addr.s_addr, 
 				(u_int32_t *)(n_pbs->cur + pbs_left(n_pbs)-4), sizeof(tmp_c->spd.that.host_addr.u.v4.sin_addr.s_addr));
-		//DBG_log("host_addr_name : %s", tmp_c->spd.that.host_addr_name);
 
-		/*Modifying connection info to store the redirected remote peer info*/
-                DBG_log("Old host_addr_name : %s", tmp_c->spd.that.host_addr_name);
-		tmp_c->spd.that.host_addr_name = NULL;
-		tmp_c->spd.that.id.ip_addr= tmp_c->spd.that.host_addr;
+                /*Modifying connection info to store the redirected remote peer info*/
+                DBG(DBG_CONTROLMORE, DBG_log("Old host_addr_name : %s", tmp_c->spd.that.host_addr_name));
+                tmp_c->spd.that.host_addr_name = NULL;
+                tmp_c->spd.that.id.ip_addr= tmp_c->spd.that.host_addr;
 
-		if(sameaddr(&tmp_c->spd.this.host_nexthop, &old_addr)) {
-		char buftest[ADDRTOT_BUF];
-		DBG_log("Old remote addr %s", (addrtot(&old_addr, 0, buftest, sizeof(buftest)), buftest) );
-		DBG_log("Old this host next hop %s", (addrtot(&tmp_c->spd.this.host_nexthop, 0, buftest, sizeof(buftest)), buftest) );
-		tmp_c->spd.this.host_nexthop = tmp_c->spd.that.host_addr;
-                DBG_log("New this host next hop %s", (addrtot(&tmp_c->spd.this.host_nexthop, 0, buftest, sizeof(buftest)), buftest) );
-		}
-
-		if(sameaddr(&tmp_c->spd.that.host_srcip, &old_addr)) {
+                if(sameaddr(&tmp_c->spd.this.host_nexthop, &old_addr)) {
                 char buftest[ADDRTOT_BUF];
-                DBG_log("Old that host srcip %s", (addrtot(&tmp_c->spd.that.host_srcip, 0, buftest, sizeof(buftest)), buftest) );
-		tmp_c->spd.that.host_srcip = tmp_c->spd.that.host_addr;
-		DBG_log("New that host srcip %s", (addrtot(&tmp_c->spd.that.host_srcip, 0, buftest, sizeof(buftest)), buftest) );
-		}
+                DBG(DBG_CONTROLMORE, DBG_log("Old remote addr %s", (addrtot(&old_addr, 0, buftest, sizeof(buftest)), buftest)));
+                DBG(DBG_CONTROLMORE,
+                DBG_log("Old this host next hop %s", (addrtot(&tmp_c->spd.this.host_nexthop, 0, buftest, sizeof(buftest)), buftest)));
+                tmp_c->spd.this.host_nexthop = tmp_c->spd.that.host_addr;
+                DBG(DBG_CONTROLMORE,
+                DBG_log("New this host next hop %s", (addrtot(&tmp_c->spd.this.host_nexthop, 0, buftest, sizeof(buftest)), buftest)));
+                }
 
-		if(sameaddr(&tmp_c->spd.that.client.addr, &old_addr)) {
+                if(sameaddr(&tmp_c->spd.that.host_srcip, &old_addr)) {
                 char buftest[ADDRTOT_BUF];
-		DBG_log("Old that client ip %s", (addrtot(&tmp_c->spd.that.client.addr, 0, buftest, sizeof(buftest)), buftest) );
-		tmp_c->spd.that.client.addr = tmp_c->spd.that.host_addr;
-		DBG_log("New that client ip %s", (addrtot(&tmp_c->spd.that.client.addr, 0, buftest, sizeof(buftest)), buftest) );
-		}
+                DBG(DBG_CONTROLMORE, 
+                DBG_log("Old that host srcip %s", (addrtot(&tmp_c->spd.that.host_srcip, 0, buftest, sizeof(buftest)), buftest)));
+                tmp_c->spd.that.host_srcip = tmp_c->spd.that.host_addr;
+                DBG(DBG_CONTROLMORE, 
+                DBG_log("New that host srcip %s", (addrtot(&tmp_c->spd.that.host_srcip, 0, buftest, sizeof(buftest)), buftest)));
+                }
+
+                if(sameaddr(&tmp_c->spd.that.client.addr, &old_addr)) {
+                char buftest[ADDRTOT_BUF];
+                DBG(DBG_CONTROLMORE, 
+                DBG_log("Old that client ip %s", (addrtot(&tmp_c->spd.that.client.addr, 0, buftest, sizeof(buftest)), buftest)));
+                tmp_c->spd.that.client.addr = tmp_c->spd.that.host_addr;
+                DBG(DBG_CONTROLMORE, 
+                DBG_log("New that client ip %s", (addrtot(&tmp_c->spd.that.client.addr, 0, buftest, sizeof(buftest)), buftest)));
+                }
 
 		tmp_c->host_pair->him.addr = tmp_c->spd.that.host_addr;
 
-		/*Initiating connection with the redirected peer*/
+		/*Initiating connection to the redirected peer*/
 		initiate_connection(tmp_name, tmp_whack_sock, 0, pcim_demand_crypto);
 		return STF_IGNORE;
            }

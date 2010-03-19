@@ -423,6 +423,8 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    "PLUTO_CONN_POLICY='%s' "
 		    "%s "           /* XAUTH username */
 		    "%s "           /* PLUTO_MY_SRCIP */
+		    "PLUTO_CISCO_DNS_INFO='%s' "
+		    "PLUTO_CISCO_DOMAIN_INFO='%s' "
 		    , c->name
 		    , c->interface->ip_dev->id_vname
 		    , nexthop_str
@@ -445,7 +447,9 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    , metric_str
 		    , prettypolicy(c->policy)
 		    , secure_xauth_username_str
-		    , srcip_str);
+		    , srcip_str
+		    , c->cisco_dns_info
+		    , c->cisco_domain_info);
 	/* 
 	 * works for both old and new way of snprintf() returning
 	 * eiter -1 or the output length  -- by Carsten Schlote
@@ -2717,6 +2721,12 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
         }
     }
 
+   if (st->st_connection->remotepeertype == CISCO) {
+	if(!do_command(st->st_connection, &st->st_connection->spd, "updateresolvconf", st)) {
+	DBG(DBG_CONTROL, DBG_log("Updating resolv.conf failed, you may need to update it manually"));
+	}
+   }
+
     return TRUE;
 }
 
@@ -2778,6 +2788,13 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 	    (void) teardown_half_ipsec_sa(st, FALSE);
 	}
 	(void) teardown_half_ipsec_sa(st, TRUE);
+
+	if (st->st_connection->remotepeertype == CISCO) {
+		if(!do_command(st->st_connection, &st->st_connection->spd, "restoreresolvconf", st)) {
+		DBG(DBG_CONTROL, DBG_log("Restoring resolv.conf failed, you may need to do it manually"));
+		}
+	}
+
 	break;
 #if defined(WIN32) && defined(WIN32_NATIVE)
     case USE_WIN32_NATIVE:
