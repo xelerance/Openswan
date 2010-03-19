@@ -1288,8 +1288,13 @@ add_connection(const struct whack_message *wm)
         c->dpd_timeout = wm->dpd_timeout;
         c->dpd_action = wm->dpd_action;
 
-	/*Cisco interop: remote peer type*/
-	c->remotepeertype=wm->remotepeertype;
+        /* Cisco interop: remote peer type */
+        c->remotepeertype=wm->remotepeertype;
+        /* Initializing Cisco dns and domain info */
+        if (c->remotepeertype == CISCO) {
+        c->cisco_dns_info[0] ='\0'; 
+        c->cisco_domain_info[0] ='\0';
+        }
 
 	c->metric = wm->metric;
 

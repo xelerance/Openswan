@@ -259,6 +259,8 @@ struct connection {
     ip_address modecfg_dns2;
     ip_address modecfg_wins1;
     ip_address modecfg_wins2;
+    char cisco_dns_info[50];
+    char cisco_domain_info[50];
 #endif
     u_int8_t metric;              /* metric for tunnel routes */
 #ifdef HAVE_STATSD
