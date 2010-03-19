@@ -47,6 +47,10 @@ v2.6.25
   - redhat bz#565140
 * Fix various spelling errors [Harald]
 * Fix for leftid=@[foo] notation [Michael H. Warfield]
+* Interop issue with Cisco where with XAUTH and ModeConfig we expected
+  ISAKMP_CFG_REPLY but we got ISAKMP_CFG_ACK [Paul]
+* Support for receiving Cisco dns and domain settings and updating
+  /etc/resolv.conf. Requires remote_peer_type=cisco [Avesh]
 
 v2.6.24
 * Give clear warning about missing defaultroute [Tuomo]
