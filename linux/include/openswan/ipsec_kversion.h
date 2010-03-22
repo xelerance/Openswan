@@ -351,10 +351,6 @@
 # define HAVE_CURRENT_UID
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,31)
-# define HAVE_SKB_DST 1
-#endif
-
 #if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,31)
 #ifndef NETDEV_TX_BUSY
 # ifdef NETDEV_XMIT_CN
@@ -483,6 +479,13 @@
 # define NF_INET_LOCAL_OUT NF_IP_LOCAL_OUT
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
+#define	inet_sport	sport
+#define	inet_dport	dport
+#define	CTL_NAME(n)
+#else
+#define	CTL_NAME(n)	.ctl_name = n,
+#endif
 
 #if __KERNEL__
 # if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,0)
