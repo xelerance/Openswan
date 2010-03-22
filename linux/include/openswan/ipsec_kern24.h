@@ -75,7 +75,9 @@
 #define KLIPS_DEC_USE MOD_DEC_USE_COUNT
 #endif
 
+#ifndef printk_ratelimit
 extern int printk_ratelimit(void);
+#endif
 
 
 #define _IPSEC_KERN24_H 1

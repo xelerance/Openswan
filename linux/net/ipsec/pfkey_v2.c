@@ -84,11 +84,12 @@
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
-#if 0
 #ifndef SOCKOPS_WRAPPED
 #define SOCKOPS_WRAPPED(name) name
 #endif /* SOCKOPS_WRAPPED */
-#endif
+#ifndef SOCKOPS_WRAP
+#define	SOCKOPS_WRAP(name, fam)
+#endif /* SOCKOPS_WRAP */
 
 extern struct proto_ops SOCKOPS_WRAPPED(pfkey_ops);
 

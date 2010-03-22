@@ -98,7 +98,7 @@ enum {
 static ctl_table ipsec_table[] = {
 
 #ifdef CTL_TABLE_PARENT
-       { .ctl_name = NET_IPSEC_DEBUG_AH,
+       { CTL_NAME(NET_IPSEC_DEBUG_AH)
          .procname = "debug_ah",
          .data     = &debug_ah,
           .maxlen   = sizeof(int),
@@ -107,7 +107,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-        { .ctl_name = NET_IPSEC_DEBUG_ESP,
+        { CTL_NAME(NET_IPSEC_DEBUG_ESP)
          .procname = "debug_esp",
          .data     = &debug_esp,
           .maxlen   = sizeof(int),
@@ -116,7 +116,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-        { .ctl_name = NET_IPSEC_DEBUG_MAST,
+        { CTL_NAME(NET_IPSEC_DEBUG_MAST)
          .procname = "debug_mast",
          .data     = &debug_mast,
           .maxlen   = sizeof(int),
@@ -125,7 +125,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-        { .ctl_name = NET_IPSEC_DEBUG_TUNNEL,
+        { CTL_NAME(NET_IPSEC_DEBUG_TUNNEL)
          .procname = "debug_tunnel",
          .data     = &debug_tunnel,
           .maxlen   = sizeof(int),
@@ -134,7 +134,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-        { .ctl_name = NET_IPSEC_DEBUG_XMIT,
+        { CTL_NAME(NET_IPSEC_DEBUG_XMIT)
          .procname = "debug_xmit",
          .data     = &debug_xmit,
           .maxlen   = sizeof(int),
@@ -143,7 +143,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-        { .ctl_name = NET_IPSEC_DEBUG_EROUTE,
+        { CTL_NAME(NET_IPSEC_DEBUG_EROUTE)
          .procname = "debug_eroute",
          .data     = &debug_eroute,
           .maxlen   = sizeof(int),
@@ -152,7 +152,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-        { .ctl_name = NET_IPSEC_DEBUG_SPI,
+        { CTL_NAME(NET_IPSEC_DEBUG_SPI)
          .procname = "debug_spi",
          .data     = &debug_spi,
           .maxlen   = sizeof(int),
@@ -161,7 +161,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-        { .ctl_name = NET_IPSEC_DEBUG_RADIJ,
+        { CTL_NAME(NET_IPSEC_DEBUG_RADIJ)
          .procname = "debug_radij",
          .data     = &debug_radij,
           .maxlen   = sizeof(int),
@@ -170,7 +170,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-        { .ctl_name = NET_IPSEC_DEBUG_NETLINK,
+        { CTL_NAME(NET_IPSEC_DEBUG_NETLINK)
          .procname = "debug_netlink",
          .data     = &debug_netlink,
           .maxlen   = sizeof(int),
@@ -179,7 +179,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-        { .ctl_name = NET_IPSEC_DEBUG_XFORM,
+        { CTL_NAME(NET_IPSEC_DEBUG_XFORM)
          .procname = "debug_xform",
          .data     = &debug_xform,
           .maxlen   = sizeof(int),
@@ -188,7 +188,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-        { .ctl_name = NET_IPSEC_DEBUG_RCV,
+        { CTL_NAME(NET_IPSEC_DEBUG_RCV)
          .procname = "debug_rcv",
          .data     = &debug_rcv,
           .maxlen   = sizeof(int),
@@ -197,7 +197,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-        { .ctl_name = NET_IPSEC_DEBUG_PFKEY,
+        { CTL_NAME(NET_IPSEC_DEBUG_PFKEY)
          .procname = "debug_pfkey",
          .data     = &debug_pfkey,
           .maxlen   = sizeof(int),
@@ -206,7 +206,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-        { .ctl_name = NET_IPSEC_DEBUG_VERBOSE,
+        { CTL_NAME(NET_IPSEC_DEBUG_VERBOSE)
          .procname = "debug_verbose",
          .data     = &sysctl_ipsec_debug_verbose,
          .maxlen   = sizeof(int),
@@ -245,7 +245,7 @@ static ctl_table ipsec_table[] = {
 
 #ifdef CONFIG_KLIPS_IPCOMP
 #ifdef CTL_TABLE_PARENT
-        { .ctl_name = NET_IPSEC_DEBUG_IPCOMP,
+        { CTL_NAME(NET_IPSEC_DEBUG_IPCOMP)
          .procname = "debug_ipcomp",
          .data     = &sysctl_ipsec_debug_ipcomp,
          .maxlen   = sizeof(int),
@@ -262,7 +262,7 @@ static ctl_table ipsec_table[] = {
 #ifdef CONFIG_KLIPS_REGRESS
 #ifdef CTL_TABLE_PARENT
        {
-         .ctl_name = NET_IPSEC_REGRESS_PFKEY_LOSSAGE,
+         CTL_NAME(NET_IPSEC_REGRESS_PFKEY_LOSSAGE)
          .procname = "pfkey_lossage",
          .data     = &sysctl_ipsec_regress_pfkey_lossage,
          .maxlen   = sizeof(int),
@@ -278,7 +278,7 @@ static ctl_table ipsec_table[] = {
 #endif /* CONFIG_KLIPS_REGRESS */
 
 #ifdef CTL_TABLE_PARENT
-       { .ctl_name = NET_IPSEC_ICMP,
+       { CTL_NAME(NET_IPSEC_ICMP)
          .procname = "icmp",
          .data     = &sysctl_ipsec_icmp,
          .maxlen   = sizeof(int),
@@ -287,7 +287,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-       { .ctl_name = NET_IPSEC_INBOUND_POLICY_CHECK,
+       { CTL_NAME(NET_IPSEC_INBOUND_POLICY_CHECK)
          .procname = "inbound_policy_check",
          .data     = &sysctl_ipsec_inbound_policy_check,
           .maxlen   = sizeof(int),
@@ -296,7 +296,7 @@ static ctl_table ipsec_table[] = {
          .proc_handler = &proc_dointvec,
        },
 
-       { .ctl_name = NET_IPSEC_TOS,
+       { CTL_NAME(NET_IPSEC_TOS)
           .procname = "tos",
           .data     = &sysctl_ipsec_tos,
           .maxlen   = sizeof(int),
@@ -318,7 +318,7 @@ static ctl_table ipsec_table[] = {
 
 static ctl_table ipsec_net_table[] = {
 #ifdef CTL_TABLE_PARENT
-       { .ctl_name = NET_IPSEC,
+       { CTL_NAME(NET_IPSEC)
           .procname = "ipsec",
           .data     = NULL,
           .maxlen   = 0,
@@ -335,7 +335,7 @@ static ctl_table ipsec_net_table[] = {
  
 static ctl_table ipsec_root_table[] = {
 #ifdef CTL_TABLE_PARENT
-       { .ctl_name = CTL_NET,
+       { CTL_NAME(CTL_NET)
           .procname = "net",
           .data     = NULL,
           .maxlen   = 0,
