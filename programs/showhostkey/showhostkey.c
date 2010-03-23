@@ -36,12 +36,6 @@
 
 #include <arpa/nameser.h>
 
-#ifdef HAVE_LIBNSS
-/* temp work around for bug in nspr */
-#include <nspr4/prlink.h>
-#pragma GCC diagnostic warning "-Wstrict-prototypes"
-#endif
-
 #include "constants.h"
 #include "oswalloc.h"
 #include "oswcrypto.h"
