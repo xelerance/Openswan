@@ -348,7 +348,7 @@ endif
 # Support for LIBCAP-NG to drop unneeded capabilities for the pluto daemon
 USE_LIBCAP_NG?=false
 
-# Support for MODP groups described in RFC 51114
+# Support for MODP groups described in RFC 5114
 USE_MODP_RFC5114?=false
 
 # whether to support NAT Traversal (aka NAT-T)
