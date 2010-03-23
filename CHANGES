@@ -6,7 +6,7 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.26
 * KLIPS fixes for 2.6.33 kernel [David]
-* Revert broken work-around for nspr4 warning breaking compile [Tuomo]
+* Revert broken work-around for nspr4 warning [Tuomo]
 
 v2.6.25
 * Google Summer of Code 2009 project for osxApp merged in [Paul]
