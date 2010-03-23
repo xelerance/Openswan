@@ -89,7 +89,12 @@ void calc_ke(struct pluto_crypto_req *r)
     n_to_mpz(&secret, wire_chunk_ptr(kn, &(kn->secret)), LOCALSECRETSIZE);
     
     mpz_init(&mp_g);
+
+#ifdef USE_MODP_RFC5114
+    oswcrypto.mod_exp(&mp_g, group->generator, &secret, group->modulus);
+#else
     oswcrypto.mod_exp(&mp_g, &groupgenerator, &secret, group->modulus);
+#endif
     
     gi = mpz_to_n(&mp_g, group->bytes);
     
@@ -112,7 +117,12 @@ void calc_ke(struct pluto_crypto_req *r)
     mpz_clear(&secret);
     freeanychunk(gi);
 #else
+
+#ifdef USE_MODP_RFC5114
+    base  = mpz_to_n2(group->generator);
+#else
     base  = mpz_to_n2(&groupgenerator);
+#endif
     prime = mpz_to_n2(group->modulus);
 
     dhp.prime.data=prime.ptr;

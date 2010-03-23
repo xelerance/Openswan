@@ -15,6 +15,7 @@ Some examples are
 <emphasis remap='B'>ike=3des-sha1,aes-sha1</emphasis>,
 <emphasis remap='B'>ike=aes</emphasis>,
 <emphasis remap='B'>ike=aes128-md5;modp2048</emphasis>,
+<emphasis remap='B'>ike=aes128-sha1-dh22</emphasis>,
 <emphasis remap='B'>ike=3des-md5;modp1024,phase2alg=aes-sha1;modp1536</emphasis> or
 <emphasis remap='B'>ike=modp1536</emphasis>.
 The options must be suitable as a value of
@@ -28,6 +29,10 @@ The options must be suitable as a value of
 <para>
 If Openswan was compiled with extra INSECURE and BROKEN options, then the des (1des) and null cipher, as
 well as modp768 are available. This turns your VPN into a joke. Do not enable these options.</para>
+<para>If openswan was compiled with USE_MODP_RFC5114 support, then Diffie-Hellman
+groups 22, 23 and 24 are also implemented as per RFC-5114. Instead of the modp
+key syntax, use the "dh" keyword, for example <emphasis>ike=3des-sha1-dh23</emphasis>
+</para>
   </listitem>
   </varlistentry>
 
