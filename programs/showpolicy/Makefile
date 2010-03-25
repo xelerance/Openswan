@@ -17,7 +17,6 @@ OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=showpolicy
-EXTRA5PROC=${PROGRAM}.8
 
 LIBS=${POLICYLIB} ${OPENSWANLIB} 
 
