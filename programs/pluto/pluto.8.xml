@@ -1059,7 +1059,7 @@
       remap="I">adns</emphasis> interface if there is no BIND9 running with
       <emphasis remap="I">lwres {}</emphasis> on the host, but then pluto
       cannot do any DNSSEC processing. Pluto forks and starts these DNS
-      helpers in seperate children. The options <option>--lwdnsq</option> and
+      helpers in separate children. The options <option>--lwdnsq</option> and
       <option>--adns</option> invoke these resolvers.</para>
 
       <para>Pluto can also use helper children to off-load cryptographic
