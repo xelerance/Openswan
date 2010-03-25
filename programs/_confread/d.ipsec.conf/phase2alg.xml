@@ -3,7 +3,7 @@
   <listitem>
 <para> Specifies the algorithms that will be offered/accepted for a phase2
 negotiation. If not specified, a secure set of defaults will be used. Sets
-are seperated using comma's.
+are separated using comma's.
 </para>
 <para>The default values are the same as for ike=
 Note also that not all ciphers available to the kernel (eg through CryptoAPI)

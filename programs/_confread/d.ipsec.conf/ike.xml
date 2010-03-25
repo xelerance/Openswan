@@ -5,7 +5,7 @@
 for the connection (phase 1 aka ISAKMP SA).  The format is
 <emphasis remap='I'>"cipher-hash;modpgroup, cipher-hash;modpgroup, ..."</emphasis>
 Any left out option will be filled in with all allowed default
-options. Multiple proposals are seperated by a comma. If an
+options. Multiple proposals are separated by a comma. If an
 <emphasis remap='B'>ike=</emphasis>
 line is specified, no other received proposals will be accepted.
 Formerly there was a distinction (by using a <emphasis remap='B'>"!"</emphasis> symbol) between
