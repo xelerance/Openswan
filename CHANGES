@@ -8,6 +8,10 @@ v2.6.26
 * KLIPS fixes for 2.6.33 kernel [Greg Ungerger/David]
 * RFC-5114 Diffie-Hellman group 22, 23 and 24 support [Avesh]
 * Revert broken work-around for nspr4 warning [Tuomo]
+* Bugtracker bugs fixed:
+   # 428: Fix for representation of [...] used algorithms
+          in ipsec auto --status [Martin Schiller]
+
 
 v2.6.25
 * Google Summer of Code 2009 project for osxApp merged in [Paul]
