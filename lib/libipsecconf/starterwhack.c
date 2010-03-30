@@ -283,6 +283,7 @@ static void set_whack_end(struct starter_config *cfg
 		break;
 		
 	case KH_IPADDR:
+	case KH_IFACE:
 		w->host_addr = l->addr;
 		break;
 

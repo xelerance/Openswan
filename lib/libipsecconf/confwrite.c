@@ -269,7 +269,9 @@ void confwrite_side(FILE *out,
 	break;
 	
     case KH_IFACE:
-	fprintf(out, "\t%s=%%iface\n",side);   /* MCR: what does this do? XXX */
+	if(end->strings_set[KSCF_IP]) {
+	    fprintf(out, "\t%s=%s\n",side, end->strings[KSCF_IP]);
+	}
 	break;
 	
     case KH_OPPO:

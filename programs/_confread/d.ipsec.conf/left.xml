@@ -40,6 +40,10 @@ and
 are to be filled in (by automatic keying) from DNS data for
 <emphasis remap='B'>left</emphasis>'s
 client.
+The value can also contain the interface name, which will then later be
+used to obtain the IP address from to fill in. For example
+<emphasis remap='B'>%ppp0</emphasis>
+
 The values
 <emphasis remap='B'>%group</emphasis>
 and

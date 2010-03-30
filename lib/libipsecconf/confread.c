@@ -359,18 +359,23 @@ static int validate_end(struct starter_conn *conn_st
 	break;
 
     case KH_IFACE:
-	assert(end->strings[KSCF_IP] != NULL);
-
-	if (end->iface) free(end->iface);
-	end->iface = xstrdup(end->strings[KNCF_IP]);
-	if (starter_iface_find(end->iface, family, &(end->addr),
-			       &(end->nexthop)) == -1) {
-	    conn_st->state = STATE_INVALID;
-	}
+	/* generally, this doesn't show up at this stage */
 	break;
 	
     case KH_IPADDR:
 	assert(end->strings[KSCF_IP] != NULL);
+
+	if (end->strings[KSCF_IP][0]=='%') {
+	    if (end->iface) free(end->iface);
+	    end->iface = xstrdup(end->strings[KSCF_IP]+1);
+	    if (starter_iface_find(end->iface, family, &(end->addr),
+				   &(end->nexthop)) == -1) {
+	        conn_st->state = STATE_INVALID;
+	    }
+	    /* not numeric, so set the type to the iface type */
+	    end->addrtype = KH_IFACE;
+	    break;
+	}
 
 	er = ttoaddr_num(end->strings[KNCF_IP], 0, family, &(end->addr));
 	if(er) {
