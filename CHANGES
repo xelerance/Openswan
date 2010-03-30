@@ -11,8 +11,10 @@ v2.6.26
 * Bugtracker bugs fixed:
    # 428: Fix for representation of [...] used algorithms
           in ipsec auto --status [Martin Schiller]
-   #1093 enc alg=0 not found in constants.c:oakley_enc_names [Henry N.]
-   #1035 - Allow specifying interface name, eg left=%ppp0 [Martin Schiller]
+   #1093: enc alg=0 not found in constants.c:oakley_enc_names [Henry N.]
+   #1035: Allow specifying interface name, eg left=%ppp0 [Martin Schiller]
+   #1032: ipsec_xmit_send ignored mark of skb. causing ignoring of ip rules
+          and only main routing table was used. [Wolfgang Nothdurft]
 
 v2.6.25
 * Google Summer of Code 2009 project for osxApp merged in [Paul]
