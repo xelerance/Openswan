@@ -296,12 +296,13 @@ char *alg_info_snprint_ike1(struct ike_info *ike_info
 			    , char *buf
 			    , int buflen)
 {
-    snprintf(buf, buflen-1, "%d_%03d-%d_%03d-%d",
-	     ike_info->ike_ealg,
-	     eklen,
-	     ike_info->ike_halg,
-	     aklen,
-	     ike_info->ike_modp);
+    snprintf(buf, buflen-1, "%s(%d)_%03d-%s(%d)_%03d-%s(%d)"
+	     , enum_name(&oakley_enc_names, ike_info->ike_ealg)+ sizeof("OAKLEY") 
+	     , ike_info->ike_ealg, eklen
+	     , enum_name(&oakley_hash_names, ike_info->ike_halg)+ sizeof("OAKLEY")
+	     , ike_info->ike_halg, aklen
+	     , enum_name(&oakley_group_names, ike_info->ike_modp)+ sizeof("OAKLEY_GROUP")
+	     , ike_info->ike_modp);
     return buf;
 }
 
@@ -313,6 +314,7 @@ alg_info_snprint_ike(char *buf, int buflen, struct alg_info_ike *alg_info)
 	struct ike_info *ike_info;
 	int cnt;
 	int eklen, aklen;
+	const char *sep="";
 	struct encrypt_desc *enc_desc;
 	struct hash_desc *hash_desc;
 
@@ -332,15 +334,19 @@ alg_info_snprint_ike(char *buf, int buflen, struct alg_info_ike *alg_info)
 		aklen=ike_info->ike_hklen;
 		if (!aklen) 
 		    aklen=hash_desc->hash_digest_len * BITS_PER_BYTE;
-		ret=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)_%03d-%d, "
+		ret=snprintf(ptr, buflen, "%s%s(%d)_%03d-%s(%d)_%03d-%s(%d)"
+			     , sep
 			     , enum_name(&oakley_enc_names, ike_info->ike_ealg)+sizeof("OAKLEY")
 			     , ike_info->ike_ealg, eklen
-			     , enum_name(&auth_alg_names, ike_info->ike_halg)+sizeof("AUTH_ALGORITHM_HMAC")
+			     , enum_name(&oakley_hash_names, ike_info->ike_halg)+sizeof("OAKLEY")
 			     , ike_info->ike_halg, aklen
+			     , enum_name(&oakley_group_names, ike_info->ike_modp)+sizeof("OAKLEY_GROUP")
 			     , ike_info->ike_modp);
 		ptr+=ret;
 		buflen-=ret;
 		if (buflen<0) break;
+
+		sep = ", ";
 	    }
 	}
 	return ptr-buf;
@@ -697,7 +703,7 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
 	st = state_with_serialno(c->newest_ipsec_sa);
 	if (st && st->st_esp.present)
 		whack_log(RC_COMMENT
-		, "\"%s\"%s:   %s algorithm newest: %s_%d-%s; pfsgroup=%s"
+		, "\"%s\"%s:   %s algorithm newest: %s_%03d-%s; pfsgroup=%s"
 		, c->name
 			  , instance, satype
 		, enum_show(&esp_transformid_names

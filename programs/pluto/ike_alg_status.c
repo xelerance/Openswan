@@ -114,7 +114,7 @@ ike_alg_show_connection(struct connection *c, const char *instance)
 	st = state_with_serialno(c->newest_isakmp_sa);
 	if (st)
 		whack_log(RC_COMMENT
-		, "\"%s\"%s:   IKE algorithm newest: %s_%d-%s-%s"
+		, "\"%s\"%s:   IKE algorithm newest: %s_%03d-%s-%s"
 		, c->name
 		, instance
 		, enum_show(&oakley_enc_names, st->st_oakley.encrypt)

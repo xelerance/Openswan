@@ -931,12 +931,13 @@ alg_info_snprint(char *buf, int buflen
 	{
 	    struct alg_info_esp *alg_info_esp=(struct alg_info_esp *)alg_info;
 	    ALG_INFO_ESP_FOREACH(alg_info_esp, esp_info, cnt) {
-		np=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)"
+		np=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)_%03d"
 			    , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP")
 			    , esp_info->esp_ealg_id
 			    , (int)esp_info->esp_ealg_keylen
 			    , enum_name(&auth_alg_names, esp_info->esp_aalg_id) + (esp_info->esp_aalg_id ? sizeof("AUTH_ALGORITHM_HMAC") : sizeof("AUTH_ALGORITHM"))
-			    , esp_info->esp_aalg_id);
+			    , esp_info->esp_aalg_id
+			    , (int)esp_info->esp_aalg_keylen);
 		if(np < buflen) {
 			ptr+=np;
 			buflen-=np;
@@ -976,24 +977,33 @@ alg_info_snprint(char *buf, int buflen
         {
 	    struct alg_info_esp *alg_info_esp=(struct alg_info_esp *)alg_info;
 	    ALG_INFO_ESP_FOREACH(alg_info_esp, esp_info, cnt) {
-		np=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d), "
-			    , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP")
-			    , esp_info->esp_ealg_id
-			    , (int)esp_info->esp_ealg_keylen
+		np=snprintf(ptr, buflen, "%s(%d)_%03d"
 			    , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
-			    , esp_info->esp_aalg_id);
+			    , esp_info->esp_aalg_id
+			    , (int)esp_info->esp_aalg_keylen);
 		if(np < buflen) {
 			ptr+=np;
 			buflen-=np;
 		} else {
 			ptr+=buflen;
 			buflen=0;
+               }
+		if ( cnt > 0) {
+			np=snprintf(ptr, buflen, ", ");
+			if(np < buflen) {
+				ptr+=np;
+				buflen-=np;
+			} else {
+				ptr+=buflen;
+				buflen=0;
+			}
 		}
 		if(buflen <= 0) goto out;
 	    }
 	    if (alg_info_esp->esp_pfsgroup) {
-		np=snprintf(ptr, buflen, "; pfsgroup=%d; "
-			    , alg_info_esp->esp_pfsgroup);
+		np=snprintf(ptr, buflen, "; pfsgroup=%s(%d)"
+			, enum_name(&oakley_group_names, alg_info_esp->esp_pfsgroup)+ sizeof("OAKLEY_GROUP")
+		        , alg_info_esp->esp_pfsgroup);
 		if(np < buflen) {
 			ptr+=np;
 			buflen-=np;
@@ -1009,12 +1019,13 @@ alg_info_snprint(char *buf, int buflen
     case PROTO_ISAKMP:
 	if(permitike) {
 	    ALG_INFO_IKE_FOREACH((struct alg_info_ike *)alg_info, ike_info, cnt) {
-		np=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)-%s(%d)"
+		np=snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)_%03d-%s(%d)"
 			    , enum_name(&oakley_enc_names, ike_info->ike_ealg)+sizeof("OAKLEY")
 			    , ike_info->ike_ealg
 			    , (int)ike_info->ike_eklen
 			    , enum_name(&oakley_hash_names, ike_info->ike_halg)+ sizeof("OAKLEY")
 			    , ike_info->ike_halg
+			    , (int)ike_info->ike_hklen
 			    , enum_name(&oakley_group_names, ike_info->ike_modp)+ sizeof("OAKLEY_GROUP")
 			    , ike_info->ike_modp);
 		if(np < buflen) {
