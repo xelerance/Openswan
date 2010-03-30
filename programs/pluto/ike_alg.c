@@ -283,12 +283,20 @@ ike_alg_register_enc(struct encrypt_desc *enc_desc)
 	}
 #endif
 
+	/* XXX struct algo_aes_ccm_8 up to algo_aes_gcm_16, where
+	 * "commin.algo_id" is not defined need this officename fallback.
+	 * These are defined in kernel_netlink.c and need to move to
+	 * the proper place - even if klips does not support these
+	 */
 	alg_name=enum_name(&oakley_enc_names, enc_desc->common.algo_id);
 	if (!alg_name) {
-		plog ("ike_alg_register_enc(): WARNING: enc alg=%d not found in "
+		alg_name = enc_desc->common.officname;
+		if (!alg_name) {
+			plog ("ike_alg_register_enc(): WARNING: enc alg=%d not found in "
 				"constants.c:oakley_enc_names  ",
 				enc_desc->common.algo_id);
-		alg_name="<NULL>";
+			alg_name="<NULL>";
+		}
 	}
 #if OAKLEY_ENCRYPT_MAX < 255
 return_out:
