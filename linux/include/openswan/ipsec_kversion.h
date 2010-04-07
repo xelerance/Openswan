@@ -269,10 +269,12 @@
 /* type of sock.sk_stamp changed from timeval to ktime  */
 #else
 /* internals of struct skbuff changed */
-/* but RedHat ported some of this back to their RHEL kernel, so check for that */
+/* but RedHat/SUSE ported some of this back to their RHEL kernel, so check for that */
 # if !defined(RHEL_MAJOR) || !defined(RHEL_MINOR) || !(RHEL_MAJOR == 5 && RHEL_MINOR >= 2)
 #  define        HAVE_DEV_NEXT
-#  define ip_hdr(skb)  ((skb)->nh.iph)
+#  if defined(CONFIG_SLE_VERSION) && defined(CONFIG_SLE_SP) && (CONFIG_SLE_VERSION == 10 && CONFIG_SLE_SP <= 2)
+#   define ip_hdr(skb)  ((skb)->nh.iph)
+#  endif
 #  define skb_tail_pointer(skb)  ((skb)->tail)
 #  define skb_end_pointer(skb)  ((skb)->end)
 #  define skb_network_header(skb)  ((skb)->nh.raw)
@@ -285,7 +287,7 @@
 #  define skb_mac_header(skb)  ((skb)->mac.raw)
 #  define skb_set_mac_header(skb,off)  ((skb)->mac.raw = (skb)->data + (off))
 # endif
-# if defined(CONFIG_SLE_VERSION) && defined(CONFIG_SLE_SP) && (CONFIG_SLE_VERSION == 10 && CONFIG_SLE_SP >= 2)
+# if defined(CONFIG_SLE_VERSION) && defined(CONFIG_SLE_SP) && (CONFIG_SLE_VERSION == 10 && CONFIG_SLE_SP == 2)
 # define ip_hdr(skb) ((skb)->nh.iph)
 # endif
 #endif
