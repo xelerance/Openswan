@@ -149,6 +149,28 @@ static sparse_names pfkey_ext_names = {
 
 #undef NE
 
+/* convert ET_* enums to K_SADB_SATYPE_* numbers */
+static inline unsigned eroute_type_to_pfkey_satype(enum eroute_type esatype)
+{
+	switch(esatype) {
+	default:
+		bad_case(esatype);
+		return -1;
+	case ET_UNSPEC:
+		return K_SADB_SATYPE_UNSPEC;
+	case ET_AH:
+		return K_SADB_SATYPE_AH;
+	case ET_ESP:
+		return K_SADB_SATYPE_ESP;
+	case ET_IPCOMP:
+		return K_SADB_X_SATYPE_COMP;
+	case ET_INT:
+		return K_SADB_X_SATYPE_INT;
+	case ET_IPIP:
+		return K_SADB_X_SATYPE_IPIP;
+	}
+}
+
 void
 init_pfkey(void)
 {
@@ -851,30 +873,10 @@ pfkey_raw_eroute(const ip_address *this_host
     maskof(that_client, &dmask_ska);
     setportof(dport ? ~0:0, &dmask_ska);
 
-    switch(esatype) {
-    case ET_UNSPEC:
-	    satype = K_SADB_SATYPE_UNSPEC;
-	    break;
-
-    case ET_AH:
-	    satype = K_SADB_SATYPE_AH;
-	    break;
-
-    case ET_ESP:
-	    satype = K_SADB_SATYPE_ESP;
-	    break;
-
-    case ET_IPCOMP:
-	    satype = K_SADB_X_SATYPE_COMP;
-	    break;
-
-    case ET_INT:
-	    satype = K_SADB_X_SATYPE_INT;
-	    break;
-
-    case ET_IPIP:
-	    satype = K_SADB_X_SATYPE_IPIP;
-	    break;
+    satype = eroute_type_to_pfkey_satype(esatype);
+    if (satype < 0 || satype > K_SADB_SATYPE_MAX) {
+	impossible();
+	return FALSE;
     }
 
     if (!pfkey_msg_start(klips_op & KLIPS_OP_MASK, satype
@@ -941,11 +943,16 @@ pfkey_raw_eroute(const ip_address *this_host
 
 bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 {
+    unsigned klips_satype;
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
     pfkey_buf pfb;
     bool success = FALSE;
 
-    int klips_satype = proto2satype(sa->esatype);
+    klips_satype = eroute_type_to_pfkey_satype(sa->esatype);
+    if (klips_satype > K_SADB_SATYPE_MAX) {
+	impossible();
+	return FALSE;
+    }
 
     success = pfkey_msg_start(replace ? K_SADB_UPDATE : K_SADB_ADD, klips_satype
 			      , "pfkey_msg_hdr Add SA"
@@ -1081,9 +1088,19 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 bool pfkey_grp_sa(const struct kernel_sa *sa0, const struct kernel_sa *sa1)
 {
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
-    int klips_satype0 = proto2satype(sa0->esatype);
-    int klips_satype1 = proto2satype(sa1->esatype);
+    unsigned klips_satype0, klips_satype1;
 
+    klips_satype0 = eroute_type_to_pfkey_satype(sa0->esatype);
+    if (klips_satype0 > K_SADB_SATYPE_MAX) {
+	impossible();
+	return FALSE;
+    }
+
+    klips_satype1 = eroute_type_to_pfkey_satype(sa1->esatype);
+    if (klips_satype1 > K_SADB_SATYPE_MAX) {
+	impossible();
+	return FALSE;
+    }
 
     return pfkey_msg_start(K_SADB_X_GRPSA, klips_satype1
 	, "pfkey_msg_hdr group", sa1->text_said, extensions)
