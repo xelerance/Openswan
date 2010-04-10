@@ -706,12 +706,12 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 
 	/* free previously transmitted packet */
 	freeanychunk(st->st_tpacket);
-
+#ifdef NAT_TRAVERSAL
 	if(nat_traversal_enabled) {
 	    /* adjust our destination port if necessary */
 	    nat_traversal_change_port_lookup(md, st);
 	}
-	
+#endif
 	DBG(DBG_CONTROL
 	    , DBG_log("sending reply packet to %s:%u (from port %u)"
 		      , (addrtot(&st->st_remoteaddr

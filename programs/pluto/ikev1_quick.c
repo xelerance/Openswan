@@ -1858,10 +1858,12 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
      */
 
     hv = p1st->hidden_variables;
+#ifdef NAT_TRAVERSAL
     if ((p1st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
 	(p1st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA)) {
 	nat_traversal_natoa_lookup(md, &hv);
     }
+#endif
 
     /* now that we are sure of our connection, create our new state */
     {
