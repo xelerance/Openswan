@@ -1981,12 +1981,14 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	    /* free previous transmit packet */
 	    freeanychunk(st->st_tpacket);
 
+#ifdef NAT_TRAVERSAL
 	/* in aggressive mode, there will be no reply packet in transition
 	 * from STATE_AGGR_R1 to STATE_AGGR_R2 */
 	if(nat_traversal_enabled) {
 	    /* adjust our destination port if necessary */
 	    nat_traversal_change_port_lookup(md, st);
 	}
+#endif
 
 	    /* if requested, send the new reply packet */
 	    if (smc->flags & SMF_REPLY)
