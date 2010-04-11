@@ -305,8 +305,10 @@ USE_NETKEY?=true
 # so it is required for NETKEY as well.
 ifeq ($(USE_KLIPS),true)
 USE_PFKEYv2=true
-else ifeq ($(USE_NETKEY),true)
+else
+ifeq ($(USE_NETKEY),true)
 USE_PFKEYv2=true
+endif
 endif
 
 # Whether or not to use iproute2 based commands.
