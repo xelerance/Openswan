@@ -150,7 +150,12 @@ main(int argc, char **argv)
 			em_db_tn=em_db_nl=em_db_xf=em_db_er=em_db_sp=0;
 			em_db_rj=em_db_es=em_db_ah=em_db_rx=em_db_ky=0;
 			em_db_gz=em_db_vb=0;
-			if(strcmp(optarg, "tunnel") == 0) {
+			if(strcmp(optarg, "all") == 0) {
+				em_db_tn=em_db_nl=em_db_xf=em_db_er=em_db_sp=-1;
+				em_db_rj=em_db_es=em_db_ah=em_db_rx=em_db_ky=-1;
+				em_db_gz=-1;
+				em_db_vb= 0;
+			} else if(strcmp(optarg, "tunnel") == 0) {
 				em_db_tn = -1L;
 			} else if(strcmp(optarg, "tncfg") == 0) {
 			        em_db_tn = DB_TN_REVEC;
@@ -194,7 +199,11 @@ main(int argc, char **argv)
 			em_db_gz=em_db_vb=-1;
 
 			action = 'c';
-			if(strcmp(optarg, "tunnel") == 0) {
+			if(strcmp(optarg, "all") == 0) {
+				em_db_tn=em_db_nl=em_db_xf=em_db_er=em_db_sp=0;
+				em_db_rj=em_db_es=em_db_ah=em_db_rx=em_db_ky=0;
+				em_db_gz=em_db_vb=0;
+			} else if(strcmp(optarg, "tunnel") == 0) {
 				em_db_tn = 0;
 			} else if(strcmp(optarg, "tunnel-xmit") == 0
 				  || strcmp(optarg, "xmit") == 0) {
