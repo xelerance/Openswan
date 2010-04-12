@@ -229,7 +229,7 @@ get_secret(char *buf, size_t bufsize)
 
     fflush(stdout);
     usleep(20000); /* give fflush time for flushing */
-    secret = getpass("Enter secret: ");
+    secret = getpass("Enter passphrase: ");
     secret = (secret == NULL) ? "" : secret;
 
     strncpy(buf, secret, bufsize);
@@ -252,7 +252,7 @@ get_value(char *buf, size_t bufsize)
     len = 0;
     while(try > 0 && len==0)
     {
-	fprintf(stderr, "Name enter:   ");
+	fprintf(stderr, "Enter username:   ");
 	
 	memset(buf, 0, bufsize);
 	

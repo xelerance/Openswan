@@ -87,9 +87,9 @@ uml2:/etc# ipsec auto --up jacen--ipsecgroup-xauth
 004 "jacen--ipsecgroup-xauth" #1: STATE_MAIN_I4: ISAKMP SA established
 003 "jacen--ipsecgroup-xauth" #1: XAUTH-Message: Enter Username and Password.
 041 "jacen--ipsecgroup-xauth" #1: jacen--ipsecgroup-xauth prompt for Username:
-Name enter:   testuser
+Enter username:   testuser
 040 "jacen--ipsecgroup-xauth" #1: jacen--ipsecgroup-xauth prompt for Password:
-Secret enter: 
+Enter passphrase: 
 
 
   Alternately, one may avoid the prompt, by calling whack directly,
