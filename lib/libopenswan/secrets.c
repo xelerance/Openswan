@@ -790,11 +790,15 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 		return "enter a passphrase using ipsec auto --rereadsecrets";
 	}
 	else if (*flp->tok == '"' || *flp->tok == '\'') /* quoted passphrase */
+	{
 	    memcpy(pass->secret, flp->tok+1, flp->cur - flp->tok - 2);
+	    pass->prompt=NULL;
+	}
 	else
+	{
 	    memcpy(pass->secret, flp->tok, flp->cur - flp->tok);
-
-	pass->prompt=NULL;
+	    pass->prompt=NULL;
+	}
 
 	if (shift())
 	    ugh = "RSA private key file -- unexpected token after passphrase";
