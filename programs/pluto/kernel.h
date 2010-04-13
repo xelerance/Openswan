@@ -349,7 +349,7 @@ extern bool update_ipsec_sa(struct state *st);
 
 extern bool eroute_connection(struct spd_route *sr
 			      , ipsec_spi_t spi, unsigned int proto
-			      , unsigned int satype
+			      , enum eroute_type esatype
 			      , const struct pfkey_proto_info *proto_info
 			      , unsigned int op, const char *opname);
 
