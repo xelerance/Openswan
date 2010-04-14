@@ -1253,7 +1253,7 @@ pfkey_shunt_eroute(struct connection *c
 			      , htonl(spi)
 			      , SA_INT
 			      , 0 /* transport_proto is not relevant */
-			      , SADB_X_SATYPE_INT, null_proto_info
+			      , ET_INT, null_proto_info
 			      , 0      /* use lifetime */
 			      , inop
 			      , opname);
@@ -1279,7 +1279,7 @@ pfkey_shunt_eroute(struct connection *c
 			      , htonl(spi)
 			      , SA_INT
 			      , sr->this.protocol
-			      , K_SADB_X_SATYPE_INT
+			      , ET_INT
 			      , null_proto_info, 0, op, buf2);
     }
 }

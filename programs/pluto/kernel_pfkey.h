@@ -42,7 +42,7 @@ extern bool pfkey_raw_eroute(const ip_address *this_host
 			     , ipsec_spi_t spi
 			     , unsigned int proto UNUSED
 			     , unsigned int transport_proto
-			     , unsigned int satype
+			     , enum eroute_type esatype
 			     , const struct pfkey_proto_info *proto_info UNUSED
 			     , time_t use_lifetime UNUSED
 			     , enum pluto_sadb_operations op
