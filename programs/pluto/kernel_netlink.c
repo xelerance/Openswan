@@ -1350,9 +1350,8 @@ static bool
 netlink_sag_eroute(struct state *st, struct spd_route *sr
 		  , unsigned op, const char *opname)
 {
-    unsigned int
-        inner_proto,
-        inner_satype;
+    unsigned int inner_proto;
+    enum eroute_type inner_esatype;
     ipsec_spi_t inner_spi;
     struct pfkey_proto_info proto_info[4];
     int i;
@@ -1367,14 +1366,14 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
     tunnel = FALSE;
 
     inner_proto = 0;
-    inner_satype= 0;
+    inner_esatype = ET_UNSPEC;
     inner_spi = 0;
 
     if (st->st_ah.present)
     {
         inner_spi = st->st_ah.attrs.spi;
         inner_proto = SA_AH;
-        inner_satype = SADB_SATYPE_AH;
+        inner_esatype = ET_AH;
 
         i--;
         proto_info[i].proto = IPPROTO_AH;
@@ -1387,7 +1386,7 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
     {
         inner_spi = st->st_esp.attrs.spi;
         inner_proto = SA_ESP;
-        inner_satype = SADB_SATYPE_ESP;
+        inner_esatype = ET_ESP;
 
         i--;
         proto_info[i].proto = IPPROTO_ESP;
@@ -1400,7 +1399,7 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
     {
         inner_spi = st->st_ipcomp.attrs.spi;
         inner_proto = SA_COMP;
-        inner_satype = K_SADB_X_SATYPE_COMP;
+        inner_esatype = ET_IPCOMP;
 
         i--;
         proto_info[i].proto = IPPROTO_COMP;
@@ -1420,7 +1419,7 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
 
         inner_spi = st->st_tunnel_out_spi;
         inner_proto = SA_IPIP;
-        inner_satype = K_SADB_X_SATYPE_IPIP;
+        inner_esatype = ET_IPIP;
 
         proto_info[i].encapsulation = ENCAPSULATION_MODE_TUNNEL;
         for (j = i + 1; proto_info[j].proto; j++)
@@ -1430,7 +1429,8 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
     }
 
     return eroute_connection(sr
-        , inner_spi, inner_proto, inner_satype, proto_info + i
+        , inner_spi, inner_proto
+	, inner_esatype, proto_info + i
         , op, opname);
 }
 
@@ -1530,7 +1530,8 @@ netlink_shunt_eroute(struct connection *c
         {
             esr->routing = RT_ROUTED_PROSPECTIVE;
             return netlink_shunt_eroute(ue, esr
-                                , RT_ROUTED_PROSPECTIVE, ERO_REPLACE, "restoring eclipsed");
+                                , RT_ROUTED_PROSPECTIVE, ERO_REPLACE
+                                , "restoring eclipsed");
         }
     }
 
@@ -1552,7 +1553,7 @@ netlink_shunt_eroute(struct connection *c
 			      , htonl(spi)
 			      , SA_INT
 			      , sr->this.protocol
-			      , K_SADB_X_SATYPE_INT
+			      , ET_INT
 			      , null_proto_info, 0, op, buf2) )
       { return FALSE; }
 
@@ -1577,7 +1578,7 @@ netlink_shunt_eroute(struct connection *c
 			      , htonl(spi)
 			      , SA_INT
 			      , sr->this.protocol
-			      , K_SADB_X_SATYPE_INT
+			      , ET_INT
 			      , null_proto_info, 0, op, buf2);
     }
 }
