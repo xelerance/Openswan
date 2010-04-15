@@ -31,12 +31,12 @@ endif
 # the assembly version expects frame pointers, which are
 # optional in many kernel builds. If you want speed, you should
 # probably use cryptoapi code instead.
-USEASSEMBLY=${SUBARCH}${CONFIG_FRAME_POINTER}
-ifeq (${USEASSEMBLY},i386y)
-obj-$(CONFIG_KLIPS_ENC_AES) += aes-i586.o
-else
+#USEASSEMBLY=${SUBARCH}${CONFIG_FRAME_POINTER}
+#ifeq (${USEASSEMBLY},i386y)
+#obj-$(CONFIG_KLIPS_ENC_AES) += aes-i586.o
+#else
 obj-$(CONFIG_KLIPS_ENC_AES) += aes.o
-endif
+#endif
 
 
 #

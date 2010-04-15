@@ -85,12 +85,12 @@ endif
 # the assembly version expects frame pointers, which are
 # optional in many kernel builds. If you want speed, you should
 # probably use cryptoapi code instead.
-USEASSEMBLY=${SUBARCH}${CONFIG_FRAME_POINTER}
-ifeq (${USEASSEMBLY},i386y)
-crypto-$(CONFIG_KLIPS_ENC_3DES) += des/dx86unix.o
-else
+#USEASSEMBLY=${SUBARCH}${CONFIG_FRAME_POINTER}
+#ifeq (${USEASSEMBLY},i386y)
+#crypto-$(CONFIG_KLIPS_ENC_3DES) += des/dx86unix.o
+#else
 crypto-$(CONFIG_KLIPS_ENC_3DES) += des/des_enc.o
-endif
+#endif
 
 # include code from AES subdir
 crypto-$(CONFIG_KLIPS_ENC_AES) += aes/ipsec_alg_aes.o
@@ -101,12 +101,12 @@ ifeq ($(strip ${SUBARCH}),)
 SUBARCH:=${ARCH}
 endif
 
-USEASSEMBLY=${SUBARCH}${CONFIG_FRAME_POINTER}
-ifeq (${USEASSEMBLY},i386y)
-crypto-$(CONFIG_KLIPS_ENC_AES) += aes/aes-i586.o
-else
+#USEASSEMBLY=${SUBARCH}${CONFIG_FRAME_POINTER}
+#ifeq (${USEASSEMBLY},i386y)
+#crypto-$(CONFIG_KLIPS_ENC_AES) += aes/aes-i586.o
+#else
 crypto-$(CONFIG_KLIPS_ENC_AES) += aes/aes.o
-endif
+#endif
 
 ipsec-y += ${crypto-y}
 
