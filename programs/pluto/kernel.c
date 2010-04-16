@@ -1316,7 +1316,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     {
         inner_spi = 256;
         proto = SA_IPIP;
-        esatype = ET_IPIP;
+        esatype = ET_IPIP; // XXX bart: used to be "UNSPEC"
     }
     else if (encapsulation == ENCAPSULATION_MODE_TUNNEL)
     {

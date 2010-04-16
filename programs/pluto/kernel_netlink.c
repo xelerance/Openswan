@@ -89,7 +89,6 @@ static const struct pfkey_proto_info broad_proto_info[2] = {
         }
 };
 
-
 /* Minimum priority number in SPD used by pluto. */
 #define MIN_SPD_PRIORITY 1024
 

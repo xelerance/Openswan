@@ -61,11 +61,11 @@ struct sadb_msg;
 /* replaces SADB_X_SATYPE_* for non-KLIPS code. Assumes normal SADB_SATYPE values */
 enum eroute_type {
 	ET_UNSPEC = 0,
-	ET_AH    = SA_AH,
-	ET_ESP   = SA_ESP,
-	ET_IPCOMP= SA_COMP,
-	ET_INT   = SA_INT,    /* internal type */
-	ET_IPIP  = SA_IPIP,   /* turn on tunnel type */
+	ET_AH    = SA_AH,     /* (51)  authentication */
+	ET_ESP   = SA_ESP,    /* (50)  encryption/auth */
+	ET_IPCOMP= SA_COMP,   /* (108) compression */
+	ET_INT   = SA_INT,    /* (61)  internal type */
+	ET_IPIP  = SA_IPIP,   /* (4)   turn on tunnel type */
 };
 #define esatype2proto(X) (int)X
 #define proto2esatype(X) (enum eroute_type)X

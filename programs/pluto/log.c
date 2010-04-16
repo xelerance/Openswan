@@ -630,7 +630,8 @@ passert_fail(const char *pred_str, const char *file_str, unsigned long line_no)
 	dying_breath = TRUE;
 	show_status();
     }
-    osw_abort();	/* exiting correctly doesn't always work */
+    /* exiting correctly doesn't always work */
+    openswan_log_abort(file_str, line_no);
 }
 
 void
