@@ -780,9 +780,8 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 
 	if(c->kind == CK_INSTANCE)
 	{
-	    char cib[CONN_INST_BUF];
 	    /* there is already an instance being negotiated, do nothing */
-	    return;
+	    work = 0;
 	}
 
 	/* otherwise, there is some kind of static conn that can handle
