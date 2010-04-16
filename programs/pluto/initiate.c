@@ -781,9 +781,14 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	if(c->kind == CK_INSTANCE)
 	{
 	    /* there is already an instance being negotiated, do nothing */
-	    work = 0;
+	    return 0;
 	}
 
+	if(c->kind == CK_PERMANENT)
+	{
+	    /* there is already a tunnel, do nothing */
+	    return 0;
+	}
 	/* otherwise, there is some kind of static conn that can handle
 	 * this connection, so we initiate it */
 
