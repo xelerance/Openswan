@@ -16,6 +16,8 @@ v2.6.26
    #1032: ipsec_xmit_send ignored mark of skb. causing ignoring of ip rules
           and only main routing table was used. [Wolfgang Nothdurft]
 * Copy David's klips fixes to netlink where they are needed too [Tuomo]
+* Fix for protostack=auto when KLIPS or NETKEY is not compiled in [Paul]
+
 
 v2.6.25
 * Google Summer of Code 2009 project for osxApp merged in [Paul]
