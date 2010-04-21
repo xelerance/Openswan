@@ -8,6 +8,15 @@ v2.6.26
 * KLIPS fixes for 2.6.33 kernel [Greg Ungerger/David]
 * RFC-5114 Diffie-Hellman group 22, 23 and 24 support [Avesh]
 * Revert broken work-around for nspr4 warning [Tuomo]
+* Copy David's klips fixes to netlink where they are needed too [Tuomo]
+* Fixes for bogus initiations of existing tunnels from spurious
+  NETKEY acquires [Tuomo]
+* Compile fixes for compiling without NAT_TRAVERSAL [Paul]
+* Fix pfkey error on tunnel deletion [David]
+* Fix up eroute_connection for klips [David]
+* When we ASSERT, show where we asserted [Bart]
+* Merge in #osx branch [Paul]
+* Fix eroute_type to satype conversion for pfkey [Bart]
 * Bugtracker bugs fixed:
    # 428: Fix for representation of [...] used algorithms
           in ipsec auto --status [Martin Schiller]
