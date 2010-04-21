@@ -293,6 +293,11 @@ USE_KLIPS?=true
 # Build support for 2.6 KLIPS/MAST variation in pluto
 USE_MAST?=true
 
+# MAST requires KLIPS
+ifeq ($(USE_MAST),true)
+USE_KLIPS=true
+endif
+
 # MAST is generally a prerequisite for SAREF support in applications
 USE_SAREF_KERNEL=false
 

@@ -2100,7 +2100,6 @@ init_kernel(void)
         return;
     }
 
-#if defined(KLIPS) && defined(NETKEY_SUPPORT)
     if(kern_interface == AUTO_PICK)
     {
         struct stat buf;
@@ -2111,7 +2110,7 @@ init_kernel(void)
 	    /* we don't die, we just log and go to sleep */
 	    openswan_log("Can not run with both NETKEY and KLIPS in the kernel");
 	    openswan_log("Please check your kernel configuration, or specify a stack");
-	    openswan_log("using protostack={klips,netkey}");
+	    openswan_log("using protostack={klips,netkey,mast}");
 	    exit_pluto(0);
 	}
 	
@@ -2123,20 +2122,22 @@ init_kernel(void)
 	}
         else
 #endif
+#if defined(NETKEY_SUPPORT)
 	    if (stat("/proc/net/pfkey", &buf) == 0)
 	{
 	    kern_interface = USE_NETKEY;
 	}
-	else
+# elif defined(KLIPS)
+	    if (stat("/proc/net/pf_key", &buf) == 0)
 	{
 	    kern_interface = USE_KLIPS;
 	}
-    }
 #endif
+    }
 
     switch(kern_interface) {
     case AUTO_PICK:
-	openswan_log("Kernel interface auto-pick fall-through");
+	openswan_log("Kernel interface auto-pick failed - neither KLIPS or NETKEY support detected");
 	/* FALL THROUGH */
 
 #if defined(KLIPS) 
