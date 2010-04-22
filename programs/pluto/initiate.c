@@ -717,7 +717,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
     int hisport;
     char demandbuf[256];
     bool loggedit = FALSE;
-    int work = 1; /* assume we did some */
+    int work = 0; /* This is ugly fix, we just always return 0 - Tuomo */
     
     /* What connection shall we use?
      * First try for one that explicitly handles the clients.
@@ -780,15 +780,19 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 
 	if(c->kind == CK_INSTANCE)
 	{
+	    char cib[CONN_INST_BUF];
 	    /* there is already an instance being negotiated, do nothing */
-	    return 0;
+	    openswan_log("rekeying existing instance \"%s\"%s, due to acquire"
+			 , c->name
+			 , (fmt_conn_instance(c, cib), cib));
+
+	    /*
+	     * we used to return here, but rekeying is a better choice. If we
+	     * got the acquire, it is because something turned stuff into a
+	     * %trap, or something got deleted, perhaps due to an expiry.
+	     */
 	}
 
-	if(c->kind == CK_PERMANENT)
-	{
-	    /* there is already a tunnel, do nothing */
-	    return 0;
-	}
 	/* otherwise, there is some kind of static conn that can handle
 	 * this connection, so we initiate it */
 
