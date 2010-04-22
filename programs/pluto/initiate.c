@@ -717,8 +717,11 @@ initiate_ondemand_body(struct find_oppo_bundle *b
     int hisport;
     char demandbuf[256];
     bool loggedit = FALSE;
-    int work = 0; /* This is ugly fix, we just always return 0 - Tuomo */
-    
+    int work = 0;
+
+    /* on klips/mast assume we will do something something */
+    work = (kern_interface == USE_KLIPS || kern_interface == USE_MASTKLIPS);
+
     /* What connection shall we use?
      * First try for one that explicitly handles the clients.
      */
@@ -785,6 +788,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	    openswan_log("rekeying existing instance \"%s\"%s, due to acquire"
 			 , c->name
 			 , (fmt_conn_instance(c, cib), cib));
+	    work = 0;	/* klips/mast need to know we are doing nothing */
 
 	    /*
 	     * we used to return here, but rekeying is a better choice. If we
@@ -795,6 +799,11 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 
 	/* otherwise, there is some kind of static conn that can handle
 	 * this connection, so we initiate it */
+	if(c->kind == CK_PERMANENT)
+	{
+	    /* there is already a tunnel */
+	    work = 0;	/* klips/mast need to know we are doing nothing */
+	}
 
 #ifdef KLIPS
 	if (b->held)
