@@ -719,7 +719,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
     bool loggedit = FALSE;
     int work = 0;
 
-    /* on klips/mast assume we will do something something */
+    /* on klips/mast assume we will do something */
     work = (kern_interface == USE_KLIPS || kern_interface == USE_MASTKLIPS);
 
     /* What connection shall we use?
@@ -798,7 +798,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 
 	/* otherwise, there is some kind of static conn that can handle
 	 * this connection, so we initiate it */
-	if(c->kind == CK_PERMANENT && work == 0)
+	if(c->kind == CK_PERMANENT && USE_NETKEY)
 	{
 	    /* there is already a tunnel and with netkey we need to ignore */
 	    return 0;
