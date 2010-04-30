@@ -2142,6 +2142,7 @@ init_kernel(void)
 
 #if defined(KLIPS) 
     case USE_KLIPS:
+	kern_interface = USE_KLIPS;
 	openswan_log("Using KLIPS IPsec interface code on %s"
 		     , kversion);
 	kernel_ops = &klips_kernel_ops;
@@ -2150,6 +2151,7 @@ init_kernel(void)
 
 #if defined(BSD_KAME) 
     case USE_BSDKAME:
+	kern_interface = USE_BSDKAME;
 	openswan_log("Using BSD/KAME IPsec interface code on %s"
 			, kversion);
 	kernel_ops = &bsdkame_kernel_ops;
@@ -2158,6 +2160,7 @@ init_kernel(void)
 
 #if defined(KLIPS_MAST) 
     case USE_MASTKLIPS:
+    kern_interface = USE_MASTKLIPS;
 	openswan_log("Using KLIPSng (mast) IPsec interface code on %s"
 		     , kversion);
 	kernel_ops = &mast_kernel_ops;
@@ -2166,6 +2169,7 @@ init_kernel(void)
 
 #if defined(NETKEY_SUPPORT)
     case USE_NETKEY:
+    kern_interface = USE_NETKEY;
 	openswan_log("Using Linux 2.6 IPsec interface code on %s (experimental code)"
 		     , kversion);
 	kernel_ops = &netkey_kernel_ops;
@@ -2175,6 +2179,7 @@ init_kernel(void)
 
 #if defined(WIN32) && defined(WIN32_NATIVE) 
     case USE_WIN32_NATIVE:
+    kern_interface = USE_WIN32_NATIVE;
 	openswan_log("Using Win2K native IPsec interface code on %s"
 		     , kversion);
 	kernel_ops = &win2k_kernel_ops;
@@ -2183,6 +2188,7 @@ init_kernel(void)
 
 #if defined(__CYGWIN32__) || defined(linux) || (defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
     case NO_KERNEL:
+    kern_interface = NO_KERNEL;
 	openswan_log("Using 'no_kernel' interface code on %s"
 		     , kversion);
 	kernel_ops = &noklips_kernel_ops;
