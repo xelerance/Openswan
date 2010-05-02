@@ -27,6 +27,7 @@ v2.6.26
 * Fix for protostack=auto when KLIPS or NETKEY is not compiled in [Paul]
 * Fix for compiling without XAUTH (introduced with remote_peer=cisco support)
   [Thomas Geulig]
+* Fix %prompt for encrypted X.509 private keys [Harald]
 
 v2.6.25
 * Google Summer of Code 2009 project for osxApp merged in [Paul]
