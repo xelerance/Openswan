@@ -29,6 +29,7 @@ Group: System Environment/Daemons
 BuildRequires: gmp-devel bison flex bind-devel redhat-rpm-config xmlto
 %if %{buildnss}
 BuildRequires: nss-devel >= 3.12.3, nspr-devel fipscheck-devel, libcap-ng-devel
+Requires: nss-tools
 %endif
 Requires: iproute >= 2.6.8
 Requires(post): coreutils bash
@@ -150,6 +151,9 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 %doc BUGS CHANGES COPYING CREDITS README LICENSE
 %doc OBJ.linux.*/programs/examples/*.conf
+%if %{buildnss}
+%doc doc/README.nss
+%endif
 #%doc doc/manpage.d/*
 # /usr/share/doc/openswan/*
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.conf
