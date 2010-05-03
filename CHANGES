@@ -17,6 +17,7 @@ v2.6.26
 * When we ASSERT, show where we asserted [Bart]
 * Merge in #osx branch [Paul]
 * Fix eroute_type to satype conversion for pfkey [Bart]
+* Fix for certificates expiring after 2038 on 32bit machines [Andreas Steffen]
 * Bugtracker bugs fixed:
    # 428: Fix for representation of [...] used algorithms
           in ipsec auto --status [Martin Schiller]
