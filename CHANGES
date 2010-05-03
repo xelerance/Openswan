@@ -9,8 +9,6 @@ v2.6.26
 * RFC-5114 Diffie-Hellman group 22, 23 and 24 support [Avesh]
 * Revert broken work-around for nspr4 warning [Tuomo]
 * Copy David's klips fixes to netlink where they are needed too [Tuomo]
-* Fix for bogus initiations of existing tunnels on netkey
-  introduced in 2.6.25 [Tuomo]
 * Compile fixes for compiling without NAT_TRAVERSAL [Paul]
 * Fix pfkey error on tunnel deletion [David]
 * Fix up eroute_connection for klips [David]
@@ -20,6 +18,8 @@ v2.6.26
 * Bugtracker bugs fixed:
    # 414: Y2K38 bug in X.509 Digital Certificate handling [Andreas Steffen]
           (happened only on 32bit machines for certs expiring after 2038)
+   #1076: bogus initiations of existing tunnels on netkey introduced
+          in 2.6.25 [Tuomo]
    # 428: Fix for representation of [...] used algorithms
           in ipsec auto --status [Martin Schiller]
    #1093: enc alg=0 not found in constants.c:oakley_enc_names [Henry N.]
@@ -28,7 +28,7 @@ v2.6.26
           and only main routing table was used. [Wolfgang Nothdurft]
 * Fix for protostack=auto when KLIPS or NETKEY is not compiled in [Paul]
 * Fix for compiling without XAUTH (introduced with remote_peer=cisco support)
-  [Thomas Geulig]
+          [Thomas Geulig]
 * Fix %prompt for encrypted X.509 private keys [Harald]
 
 v2.6.25
