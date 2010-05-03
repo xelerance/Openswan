@@ -27,6 +27,8 @@
 #include "asn1.h"
 #include "oid.h"
 
+#define TIME_MAX       0x7fffffff
+
 /*  If the oid is listed in the oid_names table then the corresponding
  *  position in the oid_names table is returned otherwise -1 is returned
  */
@@ -239,7 +241,7 @@ time_t
 asn1totime(const chunk_t *utctime, asn1_t type)
 {
     struct tm t;
-    time_t tz_offset;
+    time_t tc, tz_offset;
     char *eot = NULL;
 
     if ((eot = memchr(utctime->ptr, 'Z', utctime->len)) != NULL)
@@ -272,6 +274,7 @@ asn1totime(const chunk_t *utctime, asn1_t type)
 	return 0; /* error in time format */
     }
 
+    /* parse ASN.1 time string */
     {
 	const char* format = (type == ASN1_UTCTIME)? "%2d%2d%2d%2d%2d":
 						     "%4d%2d%2d%2d%2d";
@@ -322,8 +325,9 @@ asn1totime(const chunk_t *utctime, asn1_t type)
     /* set daylight saving time to off */
     t.tm_isdst = 0;
 
-    /* compensate timezone */
-    return timegm(&t);
+    tc = mktime(&t);
+    /* if no conversion overflow occurred, compensate timezone */
+    return (tc == -1) ? TIME_MAX : tc - timezone - tz_offset;
 }
 
 /*
