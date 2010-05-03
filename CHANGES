@@ -17,8 +17,9 @@ v2.6.26
 * When we ASSERT, show where we asserted [Bart]
 * Merge in #osx branch [Paul]
 * Fix eroute_type to satype conversion for pfkey [Bart]
-* Fix for certificates expiring after 2038 on 32bit machines [Andreas Steffen]
 * Bugtracker bugs fixed:
+   # 414: Y2K38 bug in X.509 Digital Certificate handling [Andreas Steffen]
+          (happened only on 32bit machines for certs expiring after 2038)
    # 428: Fix for representation of [...] used algorithms
           in ipsec auto --status [Martin Schiller]
    #1093: enc alg=0 not found in constants.c:oakley_enc_names [Henry N.]
