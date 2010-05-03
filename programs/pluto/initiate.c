@@ -798,11 +798,6 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 
 	/* otherwise, there is some kind of static conn that can handle
 	 * this connection, so we initiate it */
-	if(c->kind == CK_PERMANENT && kern_interface == USE_NETKEY)
-	{
-	    /* there is already a tunnel and with netkey we need to ignore */
-	    return 0;
-	}
 
 #ifdef KLIPS
 	if (b->held)

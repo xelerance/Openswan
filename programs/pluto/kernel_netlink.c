@@ -515,12 +515,14 @@ netlink_raw_eroute(const ip_address *this_host
 		    break;
 	    case SPI_TRAP:
 	    case SPI_TRAPSUBNET:
-	    case SPI_HOLD:
 		    if (sadb_op == ERO_ADD_INBOUND || sadb_op == ERO_DEL_INBOUND)
 		    {
 			    return TRUE;
 		    }
 		    break;
+	    /* Do we really need %hold under NETKEY? Seems not so we just ignore. */
+	    case SPI_HOLD:
+	            return TRUE;
 	    }
 	    break;
     }
