@@ -33,6 +33,7 @@ v2.6.26
 * Fix for compiling without XAUTH (introduced with remote_peer=cisco support)
           [Thomas Geulig]
 * Fix %prompt for encrypted X.509 private keys [Harald]
+* Fix plutodebug=natt being accepted just like whack --debug-natt [Tuomo]
 
 v2.6.25
 * Google Summer of Code 2009 project for osxApp merged in [Paul]
