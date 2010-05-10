@@ -215,7 +215,7 @@ struct keyword_enum_value kw_plutodebug_values[]={
     { "x509",     DBG_X509 },
     { "dpd",      DBG_DPD }, 
     { "pfkey",    DBG_PFKEY }, 
-    { "nattraversal", DBG_NATT },
+    { "natt",     DBG_NATT },
 
     { "impair-delay-adns-key-answer", IMPAIR_DELAY_ADNS_KEY_ANSWER },
     { "impair-delay-adns-txt-answer", IMPAIR_DELAY_ADNS_TXT_ANSWER },
