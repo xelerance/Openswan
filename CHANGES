@@ -29,6 +29,7 @@ v2.6.26
    #1087: acquires cause invalid policies being inserted into xfrm policy
           introduced in 2.6.25 [Tuomo]
    #1093: enc alg=0 not found in constants.c:oakley_enc_names [Henry N.]
+   #1104: Compile for NETKEY without KLIPS fails with missing symbols [Henry N.]
    #1107: buildfix for showpolicy.c when using gcc 4.5 by Paweł Zuzelski
    #1108: gcc-4.5.0 enum warning fix [Paweł Zuzelski]
 * Fix for protostack=auto when KLIPS or NETKEY is not compiled in [Paul]
