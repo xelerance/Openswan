@@ -2190,7 +2190,7 @@ find_host_connection2(const char *func
     for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->hp_next);
 
     DBG(DBG_CONTROLMORE,
-	DBG_log("find_host_connection returns %s", c ? c->name : "empty"));
+	DBG_log("find_host_connection2 returns %s", c ? c->name : "empty"));
     return c;
 }
 
