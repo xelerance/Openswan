@@ -353,8 +353,12 @@ extern bool eroute_connection(struct spd_route *sr
 			      , const struct pfkey_proto_info *proto_info
 			      , unsigned int op, const char *opname);
 
+#ifdef KLIPS
 extern const struct kernel_ops klips_kernel_ops;
+#endif
+#ifdef KLIPS_MAST
 extern const struct kernel_ops mast_kernel_ops;
+#endif
 
 extern bool kernel_overlap_supported(void);
 extern const char *kernel_if_name(void);
