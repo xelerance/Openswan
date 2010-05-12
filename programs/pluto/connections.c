@@ -2705,15 +2705,14 @@ fc_try(const struct connection *c
 				       , d3, d1));
 			continue;
 		    }
-
-		    virtualwhy=is_virtual_net_allowed(d, peer_net, &sr->that.host_addr);
-		    
-		    if ((is_virtual_sr(sr)) &&
-			( (virtualwhy != NULL) ||
-			  (is_virtual_net_used(d, peer_net, peer_id?peer_id:&sr->that.id)) )) {
-			DBG(DBG_CONTROLMORE
-			     , DBG_log("   virtual net not allowed"));
-			continue;
+		    if (is_virtual_sr(sr)) {
+			virtualwhy=is_virtual_net_allowed(d, peer_net, &sr->that.host_addr);
+		    	if ( (virtualwhy != NULL) ||
+			     (is_virtual_net_used(d, peer_net, peer_id?peer_id:&sr->that.id)) ) {
+			    DBG(DBG_CONTROLMORE
+				, DBG_log("   virtual net not allowed"));
+			    continue;
+			}
 		    }
 		}
 	    }
