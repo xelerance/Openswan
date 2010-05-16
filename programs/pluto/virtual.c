@@ -379,7 +379,7 @@ is_virtual_net_allowed(const struct connection *c, const ip_subnet *peer_net,
     if (c->spd.that.virt->n_net) {
 	if (net_in_list(peer_net, c->spd.that.virt->net, c->spd.that.virt->n_net))
 	    return NULL;
-	why = "a specific netweork IP was required, but the proposed IP did not match our list (subnet=vhost:list)";
+	why = "a specific network IP was required, but the proposed IP did not match our list (subnet=vhost:list)";
     }
 
     if (c->spd.that.virt->flags & F_VIRTUAL_ALL) {
