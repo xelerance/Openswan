@@ -441,7 +441,7 @@ netlink_policy(struct nlmsghdr *hdr, bool enoent_ok, const char *text_said)
  * @param spi
  * @param proto int (Currently unused) 0=tunnel, 1=transport
  * @param transport_proto int (Currently unused) Contains protocol (u=tcp, 17=udp, etc...)
- * @param satype int
+ * @param esatype int
  * @param pfkey_proto_info proto_info 
  * @param use_lifetime time_t (Currently unused)
  * @param pluto_sadb_opterations sadb_op (operation - ie: ERO_DELETE)

@@ -1914,7 +1914,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
                               , inner_spi              /* spi */
 			      , proto                  /* proto */
                               , c->spd.this.protocol   /* transport_proto */
-                              , esatype                 /* satype */
+                              , esatype                /* esatype */
                               , proto_info             /* " */
 			      , 0                      /* lifetime */
                               , ERO_ADD_INBOUND        /* op */

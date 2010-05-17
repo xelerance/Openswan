@@ -57,7 +57,7 @@ static void win2k_init(void)
  * @param spi
  * @param proto int (Currently unused) 0=tunnel, 1=transport
  * @param transport_proto int (Currently unused) Contains protocol (u=tcp, 17=udp, etc...)
- * @param satype int
+ * @param esatype int
  * @param proto_info 
  * @param lifetime (Currently unused)
  * @param op int 
@@ -71,7 +71,7 @@ win2k_raw_eroute(const ip_address *this_host UNUSED
 		   , ipsec_spi_t spi    UNUSED
 		   , unsigned int proto UNUSED
 		   , unsigned int transport_proto UNUSED
-		   , unsigned int satype UNUSED
+		   , unsigned int esatype UNUSED
 		   , const struct pfkey_proto_info *proto_info UNUSED
 		   , time_t use_lifetime UNUSED 
 		   , unsigned int op UNUSED
