@@ -570,7 +570,7 @@ bsdkame_raw_eroute(const ip_address *this_host
 	ir->sadb_x_ipsecrequest_len = sizeof(struct sadb_x_ipsecrequest)+me.u.v4.sin_len+him.u.v4.sin_len;
 	ir->sadb_x_ipsecrequest_proto = proto;
 
-	if(transport_proto == 0) {
+	if(proto == 0) {
 	    ir->sadb_x_ipsecrequest_mode=IPSEC_MODE_TUNNEL;
 	} else {
 	    ir->sadb_x_ipsecrequest_mode=IPSEC_MODE_TRANSPORT;
