@@ -17,6 +17,7 @@ v2.6.26
 * When we ASSERT, show where we asserted [Bart]
 * Merge in #osx branch [Paul]
 * Fix eroute_type to satype conversion for pfkey [Bart]
+* Fix confusion about transport_proto and proto in comments and bsdkame [Tuomo]
 * Bugtracker bugs fixed:
    # 414: Y2K38 bug in X.509 Digital Certificate handling [Andreas Steffen]
           (happened only on 32bit machines for certs expiring after 2038)
