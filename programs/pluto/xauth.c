@@ -1813,11 +1813,10 @@ modecfg_inR1(struct msg_digest *md)
 
 		case CISCO_BANNER:
                 {
-                char test[500];
                 DBG_dump("Received cisco banner: ", strattr.cur, pbs_left(&strattr));
-                strncpy(test,strattr.cur, pbs_left(&strattr));
-                test[pbs_left(&strattr)]='\0';
-                DBG_log("Cisco banner: %s", test);
+		strncpy(st->st_connection->server_banner, strattr.cur, pbs_left(&strattr));
+		st->st_connection->server_banner[pbs_left(&strattr)]='\0';
+		DBG_log("Cisco banner: %s", st->st_connection->server_banner);
                 resp |= LELEM(attr.isaat_af_type);
                 }
                 break;

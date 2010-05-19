@@ -262,6 +262,7 @@ struct connection {
 #endif
     char cisco_dns_info[50];
     char cisco_domain_info[50];
+    char server_banner[500];
     u_int8_t metric;              /* metric for tunnel routes */
 #ifdef HAVE_STATSD
     u_int32_t statsval;			/* track what we have told statsd */

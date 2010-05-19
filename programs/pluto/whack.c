@@ -121,6 +121,8 @@ help(void)
 	    " \\\n   "
 	    " [--esp <esp-algos>]"
 	    " \\\n   "
+	    " [--remote_peer_type <cisco>]"
+	    " \\\n   "
 	    " [--dontrekey]"
 	    " [--aggrmode]"
 	    " [--forceencaps]"
@@ -485,6 +487,7 @@ enum option_enums {
     CD_FORCEENCAPS,
     CD_IKE,
     CD_PFSGROUP,
+    CD_REMOTEPEERTYPE,
     CD_ESP	
 #   define CD_LAST CD_ESP	/* last connection description */
 
@@ -698,6 +701,7 @@ static const struct option long_opts[] = {
     { "ikealg", required_argument, NULL, CD_IKE + OO },
     { "pfsgroup", required_argument, NULL, CD_PFSGROUP + OO },
     { "esp", required_argument, NULL, CD_ESP + OO },
+    { "remote_peer_type", required_argument, NULL, CD_REMOTEPEERTYPE + OO},
 #ifdef DEBUG
     { "debug-none", no_argument, NULL, DBGOPT_NONE + OO },
     { "debug-all]", no_argument, NULL, DBGOPT_ALL + OO },
@@ -903,6 +907,8 @@ main(int argc, char **argv)
     msg.esp = NULL;
     msg.ike = NULL;
     msg.pfsgroup = NULL;
+
+    msg.remotepeertype = NON_CISCO;
 
     msg.sa_ike_life_seconds = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
     msg.sa_ipsec_life_seconds = PLUTO_SA_LIFE_DURATION_DEFAULT;
@@ -1505,6 +1511,15 @@ main(int argc, char **argv)
 	    msg.esp = optarg;
 	    continue;
 
+	case CD_REMOTEPEERTYPE: /* --remote_peer_type  <cisco> */
+	    if ( strcmp(optarg, "cisco" ) == 0) {
+		msg.remotepeertype = CISCO;
+	    }
+	    else {
+		msg.remotepeertype = NON_CISCO;
+	    }
+	    continue;
+
 	case CD_CONNIPV4:
 	    if (LHAS(cd_seen, CD_CONNIPV6 - CD_FIRST))
 		diag("--ipv4 conflicts with --ipv6");
@@ -1841,6 +1856,10 @@ main(int argc, char **argv)
             msg.dpd_action = DPD_ACTION_HOLD;
     }
 
+    if (msg.remotepeertype != CISCO && msg.remotepeertype != NON_CISCO) {
+            diag("remote_peer_type can only be \"CISCO\" or \"NON_CISCO\" - defaulting to non-cisco mode");
+            msg.remotepeertype = NON_CISCO; /*NON_CISCO=0*/
+    }
 
     /* pack strings for inclusion in message */
     wp.msg = &msg;
