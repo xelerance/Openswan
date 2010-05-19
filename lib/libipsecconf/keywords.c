@@ -186,9 +186,21 @@ struct keyword_enum_value kw_remote_peer_type_list[]={
     { "cisco",         CISCO },
 };
 
+
 struct keyword_enum_values kw_remote_peer_type=
     { kw_remote_peer_type_list, sizeof(kw_remote_peer_type_list)/sizeof(struct keyword_enum_value)};
 
+ /*
+  *  Network Manager support
+  */ 
+#ifdef HAVE_NM
+struct keyword_enum_value kw_nm_configured_list[]={
+    { "yes",         YES },
+};
+
+struct keyword_enum_values kw_nm_configured=
+    { kw_nm_configured_list, sizeof(kw_nm_configured_list)/sizeof(struct keyword_enum_value)};
+#endif
 
 /*
  * Values for right= and left=
@@ -357,6 +369,12 @@ struct keyword_def ipsec_conf_keywords_v2[]={
 
     /* Cisco interop: remote peer type*/
     {"remote_peer_type", kv_conn|kv_auto, kt_enum, KBF_REMOTEPEERTYPE, &kw_remote_peer_type},
+
+    /* Network Manager support*/
+#ifdef HAVE_NM
+    {"nm_configured", kv_conn|kv_auto, kt_enum, KBF_NMCONFIGURED, &kw_nm_configured},
+#endif
+
 
 #ifdef NAT_TRAVERSAL
     {"forceencaps",    kv_conn|kv_auto, kt_bool,   KBF_FORCEENCAP, NOT_ENUM},

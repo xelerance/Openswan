@@ -123,6 +123,8 @@ help(void)
 	    " \\\n   "
 	    " [--remote_peer_type <cisco>]"
 	    " \\\n   "
+	    "[--nm_configured]"
+	    " \\\n   "
 	    " [--dontrekey]"
 	    " [--aggrmode]"
 	    " [--forceencaps]"
@@ -488,6 +490,7 @@ enum option_enums {
     CD_IKE,
     CD_PFSGROUP,
     CD_REMOTEPEERTYPE,
+    CD_NMCONFIGURED,
     CD_ESP	
 #   define CD_LAST CD_ESP	/* last connection description */
 
@@ -702,6 +705,9 @@ static const struct option long_opts[] = {
     { "pfsgroup", required_argument, NULL, CD_PFSGROUP + OO },
     { "esp", required_argument, NULL, CD_ESP + OO },
     { "remote_peer_type", required_argument, NULL, CD_REMOTEPEERTYPE + OO},
+#ifdef HAVE_NM
+    { "nm_configured", no_argument, NULL, CD_NMCONFIGURED + OO},
+#endif
 #ifdef DEBUG
     { "debug-none", no_argument, NULL, DBGOPT_NONE + OO },
     { "debug-all]", no_argument, NULL, DBGOPT_ALL + OO },
@@ -909,6 +915,11 @@ main(int argc, char **argv)
     msg.pfsgroup = NULL;
 
     msg.remotepeertype = NON_CISCO;
+
+    /*Network Manager support*/
+#ifdef HAVE_NM
+    msg.nmconfigured = NO;
+#endif
 
     msg.sa_ike_life_seconds = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
     msg.sa_ipsec_life_seconds = PLUTO_SA_LIFE_DURATION_DEFAULT;
@@ -1519,6 +1530,17 @@ main(int argc, char **argv)
 		msg.remotepeertype = NON_CISCO;
 	    }
 	    continue;
+
+#ifdef HAVE_NM
+	case CD_NMCONFIGURED: /* --nm_configured */
+	    if ( strcmp(optarg, "yes" ) == 0) {
+		msg.nmconfigured = YES;
+	    }
+	    else {
+		msg.nmconfigured = NO;
+	    }
+		continue;
+#endif
 
 	case CD_CONNIPV4:
 	    if (LHAS(cd_seen, CD_CONNIPV6 - CD_FIRST))

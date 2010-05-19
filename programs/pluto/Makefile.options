@@ -340,3 +340,7 @@ DEFINES+=-DHAVE_LIBCAP_NG
 LIBSPLUTO+= -lcap-ng
 endif
 
+# NetworkManager support
+ifeq ($(USE_NM),true)
+DEFINES+=-DHAVE_NM
+endif

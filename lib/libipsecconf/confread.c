@@ -77,6 +77,11 @@ void ipsecconf_default_values(struct starter_config *cfg)
 	/*Cisco interop: remote peer type*/
 	cfg->conn_default.options[KBF_REMOTEPEERTYPE] = NON_CISCO;
 
+	/*Network Manager support*/
+#ifdef HAVE_NM
+	cfg->conn_default.options[KBF_NMCONFIGURED] = NO;
+#endif
+
 	cfg->conn_default.policy = POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
 	cfg->conn_default.policy |= POLICY_IKEV2_ALLOW;
 

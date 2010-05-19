@@ -204,6 +204,11 @@ struct connection {
 
     /*Cisco interop: remote peer type*/
     enum keyword_remotepeertype remotepeertype;
+
+    /*Network Manager support*/
+#ifdef HAVE_NM
+    enum keyword_nmconfigured nmconfigured;
+#endif
     
     bool               forceencaps;         /* always use NAT-T encap */
     
