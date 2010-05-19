@@ -21,6 +21,9 @@ v2.6.26
 * Updated SecureClient patch for hybrid mode in contrib [Yair Elharrar] 
 * remote_peer_type= support for whack [Avesh Agarwal]
 * Cisco banner support in _updown via PLUTO_PEER_BANNER [Avesh Agarwal]
+* New option nm_configured=yes will skip reconfiguring resolv.conf, so
+  that NetworkManager can handle this. Can be directory whack'ed using
+  the --nm_controlled option. [Avesh Agarwal]
 * Bugtracker bugs fixed:
    # 414: Y2K38 bug in X.509 Digital Certificate handling [Andreas Steffen]
           (happened only on 32bit machines for certs expiring after 2038)
