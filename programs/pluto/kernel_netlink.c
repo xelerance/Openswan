@@ -477,6 +477,7 @@ netlink_raw_eroute(const ip_address *this_host
     int satype;
     bool ok;
     bool enoent_ok;
+    ip_subnet local_that_client;
 
     policy = IPSEC_POLICY_IPSEC;
 
@@ -525,6 +526,14 @@ netlink_raw_eroute(const ip_address *this_host
 	            return TRUE;
 	    }
 	    break;
+    }
+
+    /* new #1004 fix */
+    if((proto == ET_ESP || proto == ET_IPCOMP) && !addrinsubnet(that_host, that_client)) {
+      DBG(DBG_CONTROL, DBG_log("netlink_raw_eroute: proto = %u --> (proto == ET_ESP || proto == ET_IPCOMP) && !addrinsubnet(that_host, that_client) matched, replacing that_client with local_that_client", proto));
+      memcpy(&local_that_client, that_client, sizeof(ip_subnet));
+      addrtosubnet(that_host, &local_that_client);
+      that_client = &local_that_client;
     }
 
     memset(&req, 0, sizeof(req));
