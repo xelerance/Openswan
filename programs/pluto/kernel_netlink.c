@@ -439,7 +439,7 @@ netlink_policy(struct nlmsghdr *hdr, bool enoent_ok, const char *text_said)
  * @param that_host ip_address
  * @param that_client ip_subnet
  * @param spi
- * @param proto int (Currently unused) 0=tunnel, 1=transport
+ * @param proto int (4=tunnel, 50=esp, 108=ipcomp, etc ...)
  * @param transport_proto int (Currently unused) Contains protocol (u=tcp, 17=udp, etc...)
  * @param esatype int
  * @param pfkey_proto_info proto_info 
@@ -454,7 +454,7 @@ netlink_raw_eroute(const ip_address *this_host
 		   , const ip_address *that_host
 		   , const ip_subnet *that_client
 		   , ipsec_spi_t spi
-		   , unsigned int proto UNUSED
+		   , unsigned int proto
 		   , unsigned int transport_proto UNUSED
 		   , enum eroute_type esatype
 		   , const struct pfkey_proto_info *proto_info

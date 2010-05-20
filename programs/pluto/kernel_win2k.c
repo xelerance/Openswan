@@ -55,7 +55,7 @@ static void win2k_init(void)
  * @param that_host ip_address
  * @param that_client ip_subnet
  * @param spi
- * @param proto int (Currently unused) 0=tunnel, 1=transport
+ * @param proto int (Currently unused) 4=tunnel, 50=esp, 108=ipcomp, etc ...
  * @param transport_proto int (Currently unused) Contains protocol (u=tcp, 17=udp, etc...)
  * @param esatype int
  * @param proto_info 
