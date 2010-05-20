@@ -32,9 +32,12 @@ v2.6.26
           introduced in 2.6.25 [Tuomo]
    #1093: enc alg=0 not found in constants.c:oakley_enc_names [Henry N.]
    #1094: IPSEC_RCV_DECAPFAIL with auth=ah [Wolfgang Nothdurft] 
-   #1104: Compile for NETKEY without KLIPS fails with missing symbols [Henry N.]
+   #1104: Compile for NETKEY without KLIPS fails with missing symbols
+          [Henry N.]
    #1107: buildfix for showpolicy.c when using gcc 4.5 by Paweł Zuzelski
    #1108: gcc-4.5.0 enum warning fix [Paweł Zuzelski]
+   #1004: Better fix for bug #1004 [Mika Ilmaranta/Tuomo]
+   #1085: Random disconnects of (ipsec+l2tpd) tunnels [Mika Ilmaranta/Tuomo]
 * Fix for protostack=auto when KLIPS or NETKEY is not compiled in [Paul]
 * Fix for compiling without XAUTH (introduced with remote_peer=cisco support)
           [Thomas Geulig]
