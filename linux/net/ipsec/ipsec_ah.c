@@ -218,7 +218,7 @@ ipsec_rcv_ah_decap(struct ipsec_rcv_state *irs)
 	}
 	skb_pull(skb, ahhlen);
 
-	skb_set_network_header(skb, ahhlen);
+	skb_set_network_header(skb, -irs->iphlen);
 	irs->ipp = ip_hdr(skb);
 
 	ipsec_rcv_dmp("ah postpull", (void *)ip_hdr(skb), skb->len);

@@ -3,4 +3,5 @@ This patch is unsupported nor maintained by Xelerance.
 Since we are not allowed to implement server and client side, we cannot include
 it in openswan.
 
-It also won't work with openswan 2.5.xx
+The 2.4.x patch was written by Mariusz Woloszyn
+The 2.6.x patch was written by Yair Elharrar
