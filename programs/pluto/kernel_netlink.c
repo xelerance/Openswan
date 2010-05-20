@@ -549,7 +549,7 @@ netlink_raw_eroute(const ip_address *this_host
 		    , sizeof(local_that_client_t));
 		DBG_log(
 		    "netlink_raw_eroute: proto = %u,"
-		    " replacing %s with %s"
+		    " substituting %s with %s"
 		    , proto, that_client_t, local_that_client_t)
 	    });
  	that_client = &local_that_client;
