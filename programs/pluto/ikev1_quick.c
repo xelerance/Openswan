@@ -2252,28 +2252,6 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 	p->isaiid_np = ISAKMP_NEXT_NONE;
     }
 
-#ifdef NAT_TRAVERSAL
-    DBG_log("NAT-OA: %u tunnel: %d \n"
-	    ,(unsigned)(st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA)
-	    ,(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT));
-    if (st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT) {
-	if ( (kern_interface == USE_KLIPS) || (kern_interface == USE_MASTKLIPS)
-		&& st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA) {
-#if 0
-	    /** Send NAT-OA if our address is NATed and if we use Transport Mode */
-	    if (!nat_traversal_add_natoa(ISAKMP_NEXT_NONE, &md->rbody, md->st, FALSE)) {
-		return STF_INTERNAL_ERROR;
-	    }
-#endif
-	} else if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED &&
-		c->spd.that.has_client) {
-	    /** Remove client - bug #1004 **/
-	    addrtosubnet(&c->spd.that.host_addr, &c->spd.that.client);
-	    c->spd.that.has_client = FALSE;
-	}
-    }
-#endif
-
 #ifdef TPM
     {
 	pb_stream *pbs = &md->rbody;
