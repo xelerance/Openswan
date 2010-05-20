@@ -151,13 +151,6 @@ WIN2K_DEFS=-DWIN2K_NATIVE_IPSEC
 WIN2K_OBJS=kernel_win2k.o
 endif
 
-FUNK_DIST_SRCS=kernel_funk.c
-ifeq ($(USE_WIN2K_FUNK),true)
-FUNK_SRCS=${FUNK_DIST_SRCS}
-FUNK_DEFS=-DWIN2K_FUNK_IPSEC
-FUNK_OBJS=kernel_funk.o
-endif
-
 BSDKAME_DIST_SRCS=kernel_bsdkame.c
 ifeq ($(USE_BSDKAME),true)
 BSDKAME_SRCS=${BSDKAME_DIST_SRCS}

@@ -30,9 +30,8 @@ enum kernel_interface {
   USE_KLIPS = 3,
   USE_NETKEY= 4,
   USE_WIN2K = 5,
-  USE_FUNK  = 6,
-  USE_MASTKLIPS = 7,
-  USE_BSDKAME = 8,
+  USE_MASTKLIPS = 6,
+  USE_BSDKAME = 7,
 };
 
 /* RFC 3706 Dead Peer Detection */

@@ -171,7 +171,6 @@ struct keyword_enum_value kw_proto_stack_list[]={
     { "kame",         USE_BSDKAME },
     { "bsdkame",      USE_BSDKAME },
     { "win2k",        USE_WIN2K },
-    { "funk",         USE_FUNK },
 };
 
 struct keyword_enum_values kw_proto_stack=

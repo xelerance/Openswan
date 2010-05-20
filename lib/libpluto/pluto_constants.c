@@ -53,7 +53,6 @@ static const char *const kern_interface_name[] = {
   "klips",
   "netkey",
   "win2k",
-  "funk",
   "mastklips",
   "bsdkame"
 };
