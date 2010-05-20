@@ -528,17 +528,30 @@ netlink_raw_eroute(const ip_address *this_host
 	    break;
     }
 
-    /* new #1004 fix */
+    /* Bug #1004 fix.
+     * There really isn't "client" with NETKEY and transport mode
+     * so eroute must be done to natted, visible ip. If we don't hide
+     * internal IP, communication doesn't work.
+     */
     if((proto == ET_ESP || proto == ET_IPCOMP)
 	&& !addrinsubnet(that_host, that_client)
 	&& !isanyaddr(that_host))
     {
-	DBG(DBG_NETKEY,
-	    DBG_log(
-		"netlink_raw_eroute: proto = %u,"
-		" replacing that_client with local_that_client"
-		, proto));
 	addrtosubnet(that_host, &local_that_client);
+	DBG(DBG_NETKEY,
+	    {
+		char that_client_t[SUBNETTOT_BUF];
+		char local_that_client_t[SUBNETTOT_BUF];
+
+		subnettot(that_client, 0, that_client_t
+		    , sizeof(that_client_t));
+		subnettot(&local_that_client, 0, local_that_client_t
+		    , sizeof(local_that_client_t));
+		DBG_log(
+		    "netlink_raw_eroute: proto = %u,"
+		    " replacing %s with %s"
+		    , proto, that_client_t, local_that_client_t)
+	    });
  	that_client = &local_that_client;
     }
 
