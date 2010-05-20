@@ -177,7 +177,7 @@ downroute() {
 updateresolvconf() {
     echo "updating resolvconf"
 
-if [ "$PLUTO_NMCONFIGURED" -eq 0 ]; then
+if [ "$PLUTO_NM_CONFIGURED" -eq 0 ]; then
     if [ -e "$OPENSWAN_RESOLV_CONF" ]; then
         echo "Backup resolv.conf already exists, so doing nothing"
         return 1
@@ -217,7 +217,7 @@ fi
 }
 
 restoreresolvconf() {
-if [ "$PLUTO_NMCONFIGURED" -eq 0 ]; then
+if [ "$PLUTO_NM_CONFIGURED" -eq 0 ]; then
     echo "restoring resolvconf"
 
     if [ ! -e "$OPENSWAN_RESOLV_CONF" ]; then

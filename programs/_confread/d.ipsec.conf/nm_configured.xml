@@ -4,7 +4,7 @@
 <para>Mark this connection as controlled by Network Manager.
 Acceptable values are <emphasis remap='B'>yes</emphasis> or <emphasis remap='B'>no</emphasis>
 (the default). Currently, setting this to yes will cause openswan to skip
-reconfiguring resolv.conf when used with XAUTH and ModeConfig.
+reconfiguring resolv.conf when used with XAUTH and ModeConfig.</para>
   </listitem>
   </varlistentry>
 
