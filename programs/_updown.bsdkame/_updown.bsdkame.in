@@ -15,9 +15,6 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _updown.ip2.in,v 1.19 2005/08/25 21:52:53 paul Exp $
-
-
 
 # CAUTION:  Installing a new version of FreeS/WAN will install a new
 # copy of this script, wiping out any custom changes you make.  If
