@@ -425,6 +425,11 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    "%s "           /* PLUTO_MY_SRCIP */
 		    "PLUTO_CISCO_DNS_INFO='%s' "
 		    "PLUTO_CISCO_DOMAIN_INFO='%s' "
+		    "PLUTO_PEER_BANNER='%s' "
+#ifdef HAVE_NM
+		    "PLUTO_NM_CONFIGURED='%u' "
+#endif
+
 		    , c->name
 		    , c->interface->ip_dev->id_vname
 		    , nexthop_str
@@ -449,7 +454,12 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    , secure_xauth_username_str
 		    , srcip_str
 		    , c->cisco_dns_info
-		    , c->cisco_domain_info);
+		    , c->cisco_domain_info
+		    , c->server_banner
+#ifdef HAVE_NM
+		    , c->nmconfigured
+#endif
+		);
 	/* 
 	 * works for both old and new way of snprintf() returning
 	 * eiter -1 or the output length  -- by Carsten Schlote

@@ -1,9 +1,9 @@
 /* information about connections between hosts and clients
  *
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
- * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2003-2008 Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2009-2010 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1295,6 +1295,11 @@ add_connection(const struct whack_message *wm)
         c->cisco_dns_info[0] ='\0'; 
         c->cisco_domain_info[0] ='\0';
         }
+
+        /* Network Manager support */
+#ifdef HAVE_NM
+	c->nmconfigured=wm->nmconfigured;
+#endif
 
 	c->metric = wm->metric;
 

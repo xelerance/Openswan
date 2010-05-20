@@ -102,6 +102,7 @@ enum keyword_numeric_config_field {
     KBF_FORCEBUSY, /* 40 */
     KBF_OVERLAPIP,
     KBF_REMOTEPEERTYPE, /*Cisco interop: remote peer type*/
+    KBF_NMCONFIGURED, /*Network Manager support*/
     KBF_WARNIGNORE, /* to ignore obsoleted keywords */
     KBF_MAX         
 };

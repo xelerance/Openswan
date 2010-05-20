@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: starterwhack.c,v 1.8 2004/12/01 07:33:14 ken Exp $
  */
 
 #include <sys/types.h>
@@ -521,8 +520,15 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 
 	/*Cisco interop : remote peer type*/
 	if(conn->options_set[KBF_REMOTEPEERTYPE]) {
-	msg.remotepeertype=conn->options[KBF_REMOTEPEERTYPE];
+		msg.remotepeertype=conn->options[KBF_REMOTEPEERTYPE];
 	}
+
+#ifdef HAVE_NM
+	/*Network Manager support*/
+	if(conn->options_set[KBF_NMCONFIGURED]) {
+		msg.nmconfigured=conn->options[KBF_NMCONFIGURED];
+	}
+#endif
 
 	set_whack_end(cfg, "left",  &msg.left, &conn->left);
 	set_whack_end(cfg, "right", &msg.right, &conn->right);

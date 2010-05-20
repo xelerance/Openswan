@@ -207,6 +207,7 @@ downrule() {
 updateresolvconf() {
     echo "updating resolvconf"
 
+if [ "$PLUTO_NMCONFIGURED" -eq 0 ]; then
     if [ -e "$OPENSWAN_RESOLV_CONF" ]; then
         echo "Backup resolv.conf already exists, so doing nothing"
         return 1
@@ -239,9 +240,14 @@ updateresolvconf() {
    rm -f -- $ORIG_RESOLV_CONF
    echo -e $RESOLVE_CONF > $ORIG_RESOLV_CONF
    return $?
+else
+   echo "Updating resolv.conf is controlled by Network Manager"
+   return 0
+fi
 }
 
 restoreresolvconf() {
+if [ "$PLUTO_NMCONFIGURED" -eq 0 ]; then
     echo "restoring resolvconf"
 
     if [ ! -e "$OPENSWAN_RESOLV_CONF" ]; then
@@ -258,6 +264,10 @@ restoreresolvconf() {
 
     rm -f -- "$OPENSWAN_RESOLV_CONF"
     return 0
+else
+    echo "Restoring resolv.conf is controlled by Network Manager"
+    return 0
+fi
 }
 
 addsource() {

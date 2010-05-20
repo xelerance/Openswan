@@ -1,6 +1,5 @@
 # Openswan library for parsing configuration files
-# Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
-#                               Xelerance Corporation
+# Copyright (C) 2005 Michael Richardson <mcr@xelerance.com> Xelerance Corporation
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -11,8 +10,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.20 2005/09/17 21:57:45 mcr Exp $
 
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
@@ -37,6 +34,10 @@ SRCS+=interfaces.c
 ifeq ($(USE_LIBNSS),true)
 CFLAGS+=-DHAVE_LIBNSS
 CFLAGS+=-I/usr/include/nspr4 -I/usr/include/nss3
+endif
+
+ifeq ($(USE_NM),true)
+CFLAGS+=-DHAVE_NM
 endif
 
 ifeq ($(USE_KLIPS),true)

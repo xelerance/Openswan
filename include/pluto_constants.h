@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pluto_constants.h,v 1.39 2005/10/03 19:58:12 mcr Exp $
  */
 
 /* Control and lock pathnames */
@@ -48,6 +47,12 @@ enum dpd_action {
 enum keyword_remotepeertype {
     NON_CISCO = 0,
     CISCO  = 1,
+};
+
+/* Network Manager support */
+enum keyword_nmconfigured {
+    NO = 0,
+    YES = 1,
 };
 
 /* Timer events */
