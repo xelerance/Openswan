@@ -212,8 +212,8 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
 
     DBG(DBG_DPD,
 	DBG_log("DPD: processing for state #%lu (\"%s\")"
-	    , st->st_serialno
-	    , st->st_connection->name));
+		, st->st_serialno
+		, st->st_connection->name));
 
     /* If no DPD, then get out of here */
     if (!st->hidden_variables.st_dpd)
@@ -246,8 +246,8 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
     if(nextdelay > 0) {
 	/* Yes, just reschedule "phase 2" */
 	DBG(DBG_DPD, DBG_log("DPD: not yet time for dpd event: %lu < %lu"
-	    , (unsigned long)tm
-	    , (unsigned long)(p1st->st_last_dpd + delay)));
+			     , (unsigned long)tm
+			     , (unsigned long)(p1st->st_last_dpd + delay)));
 	event_schedule(EVENT_DPD, nextdelay, st);
 	return;
     }
@@ -320,7 +320,7 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
     if (send_isakmp_notification(p1st, R_U_THERE
 				 , &seqno, sizeof(seqno)) != STF_IGNORE)
     {   
-        loglog(RC_LOG_SERIOUS, "DPD Error: could not send R_U_THERE");
+        loglog(RC_LOG_SERIOUS, "DPD: could not send R_U_THERE");
         return;
     }
         
@@ -351,7 +351,7 @@ p2_dpd_outI1(struct state *p2st)
 
     if (st == NULL)
     {
-        loglog(RC_LOG_SERIOUS, "DPD Error: could not find newest phase 1 state");
+        loglog(RC_LOG_SERIOUS, "DPD: could not find newest phase 1 state");
         return;
     }
 
@@ -389,12 +389,12 @@ dpd_inI_outR(struct state *p1st
         
     if (!IS_ISAKMP_SA_ESTABLISHED(p1st->st_state))
     {   
-        loglog(RC_LOG_SERIOUS, "DPD Error: received R_U_THERE for unestablished ISKAMP SA");
+        loglog(RC_LOG_SERIOUS, "DPD: received R_U_THERE for unestablished ISKAMP SA");
         return STF_IGNORE;
     }
     if (n->isan_spisize != COOKIE_SIZE * 2 || pbs_left(pbs) < COOKIE_SIZE * 2)
     {
-        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE has invalid SPI length (%d)", n->isan_spisize);
+        loglog(RC_LOG_SERIOUS, "DPD: R_U_THERE has invalid SPI length (%d)", n->isan_spisize);
         return STF_FAIL + PAYLOAD_MALFORMED;
     }
         
@@ -403,20 +403,20 @@ dpd_inI_outR(struct state *p1st
         /* RFC states we *SHOULD* check cookies, not MUST.  So invalid
            cookies are technically valid, as per Geoffrey Huang */
 	DBG(DBG_DPD,
-	    DBG_log("DPD Warning: R_U_THERE has invalid icookie"));
+	    DBG_log("DPD: R_U_THERE has invalid icookie (tolerated)"));
     }
     pbs->cur += COOKIE_SIZE;
     
     if (memcmp(pbs->cur, p1st->st_rcookie, COOKIE_SIZE) != 0)
     {
 	DBG(DBG_DPD,
-	    DBG_log("DPD Warning: R_U_THERE has invalid rcookie"));
+	    DBG_log("DPD: R_U_THERE has invalid rcookie (tolerated)"));
     }
     pbs->cur += COOKIE_SIZE;
 
     if (pbs_left(pbs) != sizeof(seqno))
     {
-        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE has invalid data length (%d)", (int) pbs_left(pbs));
+        loglog(RC_LOG_SERIOUS, "DPD: R_U_THERE has invalid data length (%d)", (int) pbs_left(pbs));
         return STF_FAIL + PAYLOAD_MALFORMED;
     }
 
@@ -474,13 +474,13 @@ dpd_inR(struct state *p1st
      
     if (!IS_ISAKMP_SA_ESTABLISHED(p1st->st_state))
     {
-        loglog(RC_LOG_SERIOUS, "DPD Error: recevied R_U_THERE_ACK for unestablished ISKAMP SA");
+        loglog(RC_LOG_SERIOUS, "DPD: recevied R_U_THERE_ACK for unestablished ISKAMP SA");
         return STF_FAIL;
     }
 
    if (n->isan_spisize != COOKIE_SIZE * 2 || pbs_left(pbs) < COOKIE_SIZE * 2)
     {
-        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE_ACK has invalid SPI length (%d)", n->isan_spisize);
+        loglog(RC_LOG_SERIOUS, "DPD: R_U_THERE_ACK has invalid SPI length (%d)", n->isan_spisize);
         return STF_FAIL + PAYLOAD_MALFORMED;
     }
      
@@ -489,7 +489,7 @@ dpd_inR(struct state *p1st
         /* RFC states we *SHOULD* check cookies, not MUST.  So invalid
            cookies are technically valid, as per Geoffrey Huang */
 	DBG(DBG_DPD,
-	    DBG_log("DPD Warning: R_U_THERE_ACK has invalid icookie"));
+	    DBG_log("DPD: R_U_THERE_ACK has invalid icookie"));
     }
     pbs->cur += COOKIE_SIZE;
     
@@ -498,22 +498,24 @@ dpd_inR(struct state *p1st
         /* RFC states we *SHOULD* check cookies, not MUST.  So invalid
            cookies are technically valid, as per Geoffrey Huang */
 	DBG(DBG_DPD,
-	    DBG_log("DPD Warning: R_U_THERE_ACK has invalid rcookie"));
+	    DBG_log("DPD: R_U_THERE_ACK has invalid rcookie"));
     }
     pbs->cur += COOKIE_SIZE;
     
     if (pbs_left(pbs) != sizeof(seqno))
     {
-        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE_ACK has invalid data length (%d)", (int) pbs_left(pbs));
+        loglog(RC_LOG_SERIOUS, "DPD: R_U_THERE_ACK has invalid data length (%d)", (int) pbs_left(pbs));
         return STF_FAIL + PAYLOAD_MALFORMED;
     }
         
     seqno = ntohl(*(u_int32_t *)pbs->cur);
-    DBG(DBG_DPD, DBG_log("DPD Warning: R_U_THERE_ACK, seqno received: %u expected: %u (state=#%lu)",
-			 seqno, p1st->st_dpd_expectseqno, p1st->st_serialno));
+    DBG(DBG_DPD,
+	DBG_log("DPD: R_U_THERE_ACK, seqno received: %u expected: %u (state=#%lu)",
+		seqno, p1st->st_dpd_expectseqno, p1st->st_serialno));
 
     if (!p1st->st_dpd_expectseqno && seqno != p1st->st_dpd_expectseqno) {
-        loglog(RC_LOG_SERIOUS, "DPD Error: R_U_THERE_ACK has unexpected sequence number (expected: %u got: %u", seqno, p1st->st_dpd_expectseqno);
+        loglog(RC_LOG_SERIOUS, "DPD: R_U_THERE_ACK has unexpected sequence number (expected: %u got: %u"
+	       , seqno, p1st->st_dpd_expectseqno);
 	p1st->st_dpd_expectseqno = 0;
 	/* do not update time stamp, so we'll send a new one sooner */
     } else {
