@@ -117,7 +117,11 @@ export LC_ALL
 #
 #	PLUTO_PROTO_STACK
 #		is the local IPsec kernel stack used, eg KLIPS, NETKEY,
-#		NOSTACK
+#		MAST, NOSTACK
+#
+#	PLUTO_NM_CONFIGURED
+#		is NetworkManager used for resolv.conf update
+#
 
 # rpm based systems
 if [ -f /etc/sysconfig/pluto_updown ]
@@ -177,7 +181,7 @@ downroute() {
 updateresolvconf() {
     echo "updating resolvconf"
 
-if [ ! -n "$PLUTO_NM_CONFIGURED" ] || [ "$PLUTO_NM_CONFIGURED" -eq 0 ]; then
+if [ -z "$PLUTO_NM_CONFIGURED" -o "$PLUTO_NM_CONFIGURED" -eq 0 ]; then
     if [ -e "$OPENSWAN_RESOLV_CONF" ]; then
         echo "Backup resolv.conf already exists, so doing nothing"
         return 1
@@ -217,7 +221,7 @@ fi
 }
 
 restoreresolvconf() {
-if [ ! -n "$PLUTO_NM_CONFIGURED" ] || [ "$PLUTO_NM_CONFIGURED" -eq 0 ]; then
+if [ -z "$PLUTO_NM_CONFIGURED" -o "$PLUTO_NM_CONFIGURED" -eq 0 ]; then
     echo "restoring resolvconf"
 
     if [ ! -e "$OPENSWAN_RESOLV_CONF" ]; then

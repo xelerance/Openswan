@@ -3,7 +3,7 @@
 #
 # Copyright (C) 2003-2004 Nigel Metheringham
 # Copyright (C) 2002-2007 Michael Richardson <mcr@xelerance.com>
-# Copyright (C) 2003-2007 Tuomo Soini <tis@foobar.fi>
+# Copyright (C) 2003-2010 Tuomo Soini <tis@foobar.fi>
 # Copyright (C) 2003-2007 Paul Wouters <paul@xelerance.com>
 # 
 # This program is free software; you can redistribute it and/or modify it
@@ -114,6 +114,10 @@ LC_ALL=C export LC_ALL
 #
 #	PLUTO_STACK
 #		the kernel stack being used (eg protostack= value)
+#
+#	PLUTO_NM_CONFIGURED
+#		is NetworkManager used for resolv.conf update
+#
 
 # Import default _updown configs from the /etc/[sysconfig|default]/pluto_updown file
 #
@@ -207,7 +211,7 @@ downrule() {
 updateresolvconf() {
     echo "updating resolvconf"
 
-if [ ! -n "$PLUTO_NM_CONFIGURED" ] || [ "$PLUTO_NM_CONFIGURED" -eq 0 ]; then
+if [ -z "$PLUTO_NM_CONFIGURED" -o "$PLUTO_NM_CONFIGURED" -eq 0 ]; then
     if [ -e "$OPENSWAN_RESOLV_CONF" ]; then
         echo "Backup resolv.conf already exists, so doing nothing"
         return 1
@@ -247,7 +251,7 @@ fi
 }
 
 restoreresolvconf() {
-if [ ! -n "$PLUTO_NM_CONFIGURED" ] || [ "$PLUTO_NM_CONFIGURED" -eq 0 ]; then
+if [ -z "$PLUTO_NM_CONFIGURED" -o "$PLUTO_NM_CONFIGURED" -eq 0 ]; then
     echo "restoring resolvconf"
 
     if [ ! -e "$OPENSWAN_RESOLV_CONF" ]; then
