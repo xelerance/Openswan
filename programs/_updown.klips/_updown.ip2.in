@@ -211,7 +211,7 @@ downrule() {
 updateresolvconf() {
     echo "updating resolvconf"
 
-if [ -z "$PLUTO_NM_CONFIGURED" -o "$PLUTO_NM_CONFIGURED" -eq 0 ]; then
+if [ -z "$PLUTO_NM_CONFIGURED" -o "$PLUTO_NM_CONFIGURED" = 0 ]; then
     if [ -e "$OPENSWAN_RESOLV_CONF" ]; then
         echo "Backup resolv.conf already exists, so doing nothing"
         return 1
@@ -251,7 +251,7 @@ fi
 }
 
 restoreresolvconf() {
-if [ -z "$PLUTO_NM_CONFIGURED" -o "$PLUTO_NM_CONFIGURED" -eq 0 ]; then
+if [ -z "$PLUTO_NM_CONFIGURED" -o "$PLUTO_NM_CONFIGURED" = 0 ]; then
     echo "restoring resolvconf"
 
     if [ ! -e "$OPENSWAN_RESOLV_CONF" ]; then
