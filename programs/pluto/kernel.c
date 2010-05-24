@@ -2136,7 +2136,6 @@ init_kernel(void)
 	/* FALL THROUGH */
 #endif
 
-#if 0
 #if defined(KLIPS_MAST) 
     case USE_MASTKLIPS:
         if (stat("/proc/sys/net/ipsec/debug_mast", &buf) == 0) {
@@ -2148,7 +2147,6 @@ init_kernel(void)
 	} else
 	    openswan_log("No Kernel MASTKLIPS interface detected");
 	/* FALL THROUGH */
-#endif
 #endif
 
 #if defined(KLIPS) 
