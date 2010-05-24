@@ -187,6 +187,17 @@ klipsinterface() {
 		# attach the interface and bring it up
 		ipsec tncfg --attach --virtual $virt --physical $phys
 		ifconfig $virt inet $addr $type $otheraddr netmask $mask $mtu
+
+                # do we have to fix the route metric for this device?
+                maxmetric=$(ip route show $otheraddr/$mask | sed -n -e 's/.*metric \([0-9]\+\)/\1/p' | sort -n | tail -n1)
+                if [ -n "$maxmetric" ] ; then
+                        # If there are other none-zero-metric routes that match this spec
+                        # (the case on Ubuntu 10.04, Lucid) then move the route to the end.
+                        newmetric=$(( $maxmetric + 1))
+                        oldroute=$(ip route show $otheraddr/$mask dev $virt)
+                        ip route del $oldroute dev $virt
+                        ip route add $oldroute dev $virt metric $newmetric
+                fi
 	fi
 
 	# if %defaultroute, note the facts
