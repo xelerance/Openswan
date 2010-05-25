@@ -159,7 +159,8 @@ main(int argc, char **argv)
 				em_db_tn = -1L;
 			} else if(strcmp(optarg, "tncfg") == 0) {
 			        em_db_tn = DB_TN_REVEC;
-			} else if(strcmp(optarg, "tunnel-xmit") == 0) {
+			} else if(strcmp(optarg, "xmit") == 0
+					|| strcmp(optarg, "tunnel-xmit") == 0) {
 				em_db_tn = DB_TN_XMIT;
 			} else if(strcmp(optarg, "netlink") == 0) {
 				em_db_nl = -1L;
@@ -184,6 +185,8 @@ main(int argc, char **argv)
 			} else if(strcmp(optarg, "verbose") == 0) {
 				em_db_vb = -1L;
 			} else {
+				fprintf(stdout, "%s: unknown set argument '%s'\n",
+						program_name, optarg);
 				usage(program_name);
 			}
 			em_db_nl |= 1 << (sizeof(em_db_nl) * 8 -1);
@@ -231,6 +234,8 @@ main(int argc, char **argv)
 			} else if(strcmp(optarg, "verbose") == 0) {
 				em_db_vb = 0;
 			} else {
+				fprintf(stdout, "%s: unknown clear argument '%s'\n",
+						program_name, optarg);
 				usage(program_name);
 			}
 			em_db_nl &= ~(1 << (sizeof(em_db_nl) * 8 -1));
@@ -281,6 +286,8 @@ main(int argc, char **argv)
 			/* no return on error */
 			break;
 		default:
+			fprintf(stdout, "%s: unknown option '%s'\n",
+					program_name, argv[optind]);
 			break;
 		}
 		previous = c;
