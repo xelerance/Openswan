@@ -1,7 +1,8 @@
-diff -Naur linux-2.6.32/include/linux/in.h linux-2.6.32-saref/include/linux/in.h
---- linux-2.6.32/include/linux/in.h	2009-12-02 22:51:21.000000000 -0500
-+++ linux-2.6.32-saref/include/linux/in.h	2009-12-29 17:26:26.072351512 -0500
-@@ -76,6 +76,7 @@
+diff --git a/include/linux/in.h b/include/linux/in.h
+index cf196da..1bafa65 100644
+--- a/include/linux/in.h
++++ b/include/linux/in.h
+@@ -76,6 +76,7 @@ struct in_addr {
  #define IP_XFRM_POLICY	17
  #define IP_PASSSEC	18
  #define IP_TRANSPARENT	19
@@ -9,10 +10,11 @@ diff -Naur linux-2.6.32/include/linux/in.h linux-2.6.32-saref/include/linux/in.h
  
  /* BSD compatibility */
  #define IP_RECVRETOPTS	IP_RETOPTS
-diff -Naur linux-2.6.32/include/net/ip.h linux-2.6.32-saref/include/net/ip.h
---- linux-2.6.32/include/net/ip.h	2009-12-02 22:51:21.000000000 -0500
-+++ linux-2.6.32-saref/include/net/ip.h	2009-12-29 17:31:15.286230681 -0500
-@@ -56,6 +56,7 @@
+diff --git a/include/net/ip.h b/include/net/ip.h
+index 69db943..4c17c13 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -56,6 +56,7 @@ struct ipcm_cookie
  	int			oif;
  	struct ip_options	*opt;
  	union skb_shared_tx	shtx;
@@ -20,10 +22,11 @@ diff -Naur linux-2.6.32/include/net/ip.h linux-2.6.32-saref/include/net/ip.h
  };
  
  #define IPCB(skb) ((struct inet_skb_parm*)((skb)->cb))
-diff -Naur linux-2.6.32/include/net/xfrm.h linux-2.6.32-saref/include/net/xfrm.h
---- linux-2.6.32/include/net/xfrm.h	2009-12-02 22:51:21.000000000 -0500
-+++ linux-2.6.32-saref/include/net/xfrm.h	2009-12-29 17:33:09.266485554 -0500
-@@ -907,13 +907,19 @@
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index 223e90a..3300be1 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -907,13 +907,19 @@ static inline void xfrm_dst_destroy(struct xfrm_dst *xdst)
  
  extern void xfrm_dst_ifdown(struct dst_entry *dst, struct net_device *dev);
  
@@ -43,10 +46,11 @@ diff -Naur linux-2.6.32/include/net/xfrm.h linux-2.6.32-saref/include/net/xfrm.h
  static inline struct sec_path *
  secpath_get(struct sec_path *sp)
  {
-diff -Naur linux-2.6.32/net/ipv4/af_inet.c linux-2.6.32-saref/net/ipv4/af_inet.c
---- linux-2.6.32/net/ipv4/af_inet.c	2009-12-02 22:51:21.000000000 -0500
-+++ linux-2.6.32-saref/net/ipv4/af_inet.c	2009-12-29 18:28:17.412494556 -0500
-@@ -1629,6 +1629,18 @@
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 57737b8..da2149e 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1629,6 +1629,18 @@ static int __init inet_init(void)
  	if (ip_mr_init())
  		printk(KERN_CRIT "inet_init: Cannot init ipv4 mroute\n");
  #endif
@@ -65,10 +69,20 @@ diff -Naur linux-2.6.32/net/ipv4/af_inet.c linux-2.6.32-saref/net/ipv4/af_inet.c
  	/*
  	 *	Initialise per-cpu ipv4 mibs
  	 */
-diff -Naur linux-2.6.32/net/ipv4/icmp.c linux-2.6.32-saref/net/ipv4/icmp.c
---- linux-2.6.32/net/ipv4/icmp.c	2009-12-02 22:51:21.000000000 -0500
-+++ linux-2.6.32-saref/net/ipv4/icmp.c	2009-12-29 17:34:26.545236330 -0500
-@@ -423,6 +423,8 @@
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 188c9c8..f86a4fa 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -362,6 +362,8 @@ static void icmp_reply(struct icmp_bxm *icmp_param, struct sk_buff *skb)
+ 	struct inet_sock *inet;
+ 	__be32 daddr;
+ 
++	memset(&ipc, 0, sizeof(ipc));
++
+ 	if (ip_options_echo(&icmp_param->replyopts, skb))
+ 		return;
+ 
+@@ -423,6 +423,8 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
  	struct net *net;
  	struct sock *sk;
  
@@ -77,9 +91,10 @@ diff -Naur linux-2.6.32/net/ipv4/icmp.c linux-2.6.32-saref/net/ipv4/icmp.c
  	if (!rt)
  		goto out;
  	net = dev_net(rt->u.dst.dev);
-diff -Naur linux-2.6.32/net/ipv4/ip_output.c linux-2.6.32-saref/net/ipv4/ip_output.c
---- linux-2.6.32/net/ipv4/ip_output.c	2009-12-02 22:51:21.000000000 -0500
-+++ linux-2.6.32-saref/net/ipv4/ip_output.c	2009-12-29 17:35:58.437258611 -0500
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 4d50daa..39ffb75 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
 @@ -72,6 +72,7 @@
  #include <net/arp.h>
  #include <net/icmp.h>
@@ -88,7 +103,7 @@ diff -Naur linux-2.6.32/net/ipv4/ip_output.c linux-2.6.32-saref/net/ipv4/ip_outp
  #include <net/inetpeer.h>
  #include <linux/igmp.h>
  #include <linux/netfilter_ipv4.h>
-@@ -410,6 +411,8 @@
+@@ -410,6 +411,8 @@ static void ip_copy_metadata(struct sk_buff *to, struct sk_buff *from)
  	/* Copy the flags to each fragment. */
  	IPCB(to)->flags = IPCB(from)->flags;
  
@@ -97,7 +112,7 @@ diff -Naur linux-2.6.32/net/ipv4/ip_output.c linux-2.6.32-saref/net/ipv4/ip_outp
  #ifdef CONFIG_NET_SCHED
  	to->tc_index = from->tc_index;
  #endif
-@@ -950,6 +953,7 @@
+@@ -950,6 +953,7 @@ alloc_new_skb:
  			 */
  			skb->ip_summed = csummode;
  			skb->csum = 0;
@@ -105,7 +120,7 @@ diff -Naur linux-2.6.32/net/ipv4/ip_output.c linux-2.6.32-saref/net/ipv4/ip_outp
  			skb_reserve(skb, hh_len);
  			*skb_tx(skb) = ipc->shtx;
  
-@@ -1365,6 +1369,8 @@
+@@ -1365,6 +1369,8 @@ void ip_send_reply(struct sock *sk, struct sk_buff *skb, struct ip_reply_arg *ar
  	__be32 daddr;
  	struct rtable *rt = skb_rtable(skb);
  
@@ -114,9 +129,10 @@ diff -Naur linux-2.6.32/net/ipv4/ip_output.c linux-2.6.32-saref/net/ipv4/ip_outp
  	if (ip_options_echo(&replyopts.opt, skb))
  		return;
  
-diff -Naur linux-2.6.32/net/ipv4/ip_sockglue.c linux-2.6.32-saref/net/ipv4/ip_sockglue.c
---- linux-2.6.32/net/ipv4/ip_sockglue.c	2009-12-02 22:51:21.000000000 -0500
-+++ linux-2.6.32-saref/net/ipv4/ip_sockglue.c	2009-12-29 19:50:04.281508094 -0500
+diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+index e982b5c..79d6a65 100644
+--- a/net/ipv4/ip_sockglue.c
++++ b/net/ipv4/ip_sockglue.c
 @@ -49,6 +49,7 @@
  #define IP_CMSG_RETOPTS		16
  #define IP_CMSG_PASSSEC		32
@@ -125,7 +141,7 @@ diff -Naur linux-2.6.32/net/ipv4/ip_sockglue.c linux-2.6.32-saref/net/ipv4/ip_so
  
  /*
   *	SOL_IP control messages.
-@@ -151,6 +152,7 @@
+@@ -151,6 +152,7 @@ static void ip_cmsg_recv_dstaddr(struct msghdr *msg, struct sk_buff *skb)
  
  void ip_cmsg_recv(struct msghdr *msg, struct sk_buff *skb)
  {
@@ -133,7 +149,7 @@ diff -Naur linux-2.6.32/net/ipv4/ip_sockglue.c linux-2.6.32-saref/net/ipv4/ip_so
  	struct inet_sock *inet = inet_sk(skb->sk);
  	unsigned flags = inet->cmsg_flags;
  
-@@ -185,8 +187,14 @@
+@@ -185,8 +187,14 @@ void ip_cmsg_recv(struct msghdr *msg, struct sk_buff *skb)
  
  	if ((flags >>= 1) == 0)
  		return;
@@ -148,7 +164,7 @@ diff -Naur linux-2.6.32/net/ipv4/ip_sockglue.c linux-2.6.32-saref/net/ipv4/ip_so
  
  }
  EXPORT_SYMBOL(ip_cmsg_recv);
-@@ -219,12 +227,23 @@
+@@ -219,12 +227,23 @@ int ip_cmsg_send(struct net *net, struct msghdr *msg, struct ipcm_cookie *ipc)
  			ipc->addr = info->ipi_spec_dst.s_addr;
  			break;
  		}
@@ -172,7 +188,7 @@ diff -Naur linux-2.6.32/net/ipv4/ip_sockglue.c linux-2.6.32-saref/net/ipv4/ip_so
  
  
  /* Special input handler for packets caught by router alert option.
-@@ -455,7 +474,8 @@
+@@ -455,7 +474,8 @@ static int do_ip_setsockopt(struct sock *sk, int level,
  	    optname == IP_MULTICAST_TTL ||
  	    optname == IP_MULTICAST_ALL ||
  	    optname == IP_MULTICAST_LOOP ||
@@ -182,7 +198,7 @@ diff -Naur linux-2.6.32/net/ipv4/ip_sockglue.c linux-2.6.32-saref/net/ipv4/ip_so
  		if (optlen >= sizeof(int)) {
  			if (get_user(val, (int __user *) optval))
  				return -EFAULT;
-@@ -549,6 +569,13 @@
+@@ -549,6 +569,13 @@ static int do_ip_setsockopt(struct sock *sk, int level,
  		else
  			inet->cmsg_flags &= ~IP_CMSG_ORIGDSTADDR;
  		break;
@@ -196,7 +212,7 @@ diff -Naur linux-2.6.32/net/ipv4/ip_sockglue.c linux-2.6.32-saref/net/ipv4/ip_so
  	case IP_TOS:	/* This sets both TOS and Precedence */
  		if (sk->sk_type == SOCK_STREAM) {
  			val &= ~3;
-@@ -962,6 +989,7 @@
+@@ -962,6 +989,7 @@ int ip_setsockopt(struct sock *sk, int level,
  	if (err == -ENOPROTOOPT && optname != IP_HDRINCL &&
  			optname != IP_IPSEC_POLICY &&
  			optname != IP_XFRM_POLICY &&
@@ -204,7 +220,7 @@ diff -Naur linux-2.6.32/net/ipv4/ip_sockglue.c linux-2.6.32-saref/net/ipv4/ip_so
  			!ip_mroute_opt(optname)) {
  		lock_sock(sk);
  		err = nf_setsockopt(sk, PF_INET, optname, optval, optlen);
-@@ -991,6 +1019,7 @@
+@@ -991,6 +1019,7 @@ int compat_ip_setsockopt(struct sock *sk, int level, int optname,
  	if (err == -ENOPROTOOPT && optname != IP_HDRINCL &&
  			optname != IP_IPSEC_POLICY &&
  			optname != IP_XFRM_POLICY &&
@@ -212,7 +228,7 @@ diff -Naur linux-2.6.32/net/ipv4/ip_sockglue.c linux-2.6.32-saref/net/ipv4/ip_so
  			!ip_mroute_opt(optname)) {
  		lock_sock(sk);
  		err = compat_nf_setsockopt(sk, PF_INET, optname,
-@@ -1070,6 +1099,9 @@
+@@ -1070,6 +1099,9 @@ static int do_ip_getsockopt(struct sock *sk, int level, int optname,
  	case IP_PASSSEC:
  		val = (inet->cmsg_flags & IP_CMSG_PASSSEC) != 0;
  		break;
@@ -222,10 +238,11 @@ diff -Naur linux-2.6.32/net/ipv4/ip_sockglue.c linux-2.6.32-saref/net/ipv4/ip_so
  	case IP_RECVORIGDSTADDR:
  		val = (inet->cmsg_flags & IP_CMSG_ORIGDSTADDR) != 0;
  		break;
-diff -Naur linux-2.6.32/net/ipv4/raw.c linux-2.6.32-saref/net/ipv4/raw.c
---- linux-2.6.32/net/ipv4/raw.c	2009-12-02 22:51:21.000000000 -0500
-+++ linux-2.6.32-saref/net/ipv4/raw.c	2009-12-29 18:14:54.353282679 -0500
-@@ -460,6 +460,8 @@
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index ab996f9..9698885 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -460,6 +460,8 @@ static int raw_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
  	u8  tos;
  	int err;
  
@@ -234,10 +251,11 @@ diff -Naur linux-2.6.32/net/ipv4/raw.c linux-2.6.32-saref/net/ipv4/raw.c
  	err = -EMSGSIZE;
  	if (len > 0xFFFF)
  		goto out;
-diff -Naur linux-2.6.32/net/ipv4/udp.c linux-2.6.32-saref/net/ipv4/udp.c
---- linux-2.6.32/net/ipv4/udp.c	2009-12-02 22:51:21.000000000 -0500
-+++ linux-2.6.32-saref/net/ipv4/udp.c	2009-12-29 18:20:22.290518133 -0500
-@@ -593,6 +593,8 @@
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 0fa9f70..d5732c3 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -593,6 +593,8 @@ int udp_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
  	int corkreq = up->corkflag || msg->msg_flags&MSG_MORE;
  	int (*getfrag)(void *, char *, int, int, int, struct sk_buff *);
  
@@ -246,7 +264,7 @@ diff -Naur linux-2.6.32/net/ipv4/udp.c linux-2.6.32-saref/net/ipv4/udp.c
  	if (len > 0xFFFF)
  		return -EMSGSIZE;
  
-@@ -769,6 +771,10 @@
+@@ -769,6 +771,10 @@ out:
  	ip_rt_put(rt);
  	if (free)
  		kfree(ipc.opt);
@@ -257,26 +275,17 @@ diff -Naur linux-2.6.32/net/ipv4/udp.c linux-2.6.32-saref/net/ipv4/udp.c
  	if (!err)
  		return len;
  	/*
-diff -Naur linux-2.6.32/net/Kconfig linux-2.6.32-saref/net/Kconfig
---- linux-2.6.32/net/Kconfig	2009-12-02 22:51:21.000000000 -0500
-+++ linux-2.6.32-saref/net/Kconfig	2009-12-29 18:28:17.351492144 -0500
-@@ -276,4 +276,8 @@
- source "net/rfkill/Kconfig"
- source "net/9p/Kconfig"
+diff --git a/include/linux/in.h b/include/linux/in.h
+index 1bafa65..5964f73 100644
+--- a/include/linux/in.h
++++ b/include/linux/in.h
+@@ -78,6 +78,9 @@ struct in_addr {
+ #define IP_TRANSPARENT	19
+ #define IP_IPSEC_REFINFO 22
  
-+if INET
-+source "net/ipsec/Kconfig"
-+endif # if INET
++/* indicate this tree has been patched with the SAREF code */
++#define HAVE_IPSEC_SAREF 1
 +
- endif   # if NET
-diff -Naur linux-2.6.32/net/Makefile linux-2.6.32-saref/net/Makefile
---- linux-2.6.32/net/Makefile	2009-12-02 22:51:21.000000000 -0500
-+++ linux-2.6.32-saref/net/Makefile	2009-12-29 18:31:19.902230915 -0500
-@@ -64,4 +64,7 @@
- ifeq ($(CONFIG_NET),y)
- obj-$(CONFIG_SYSCTL)		+= sysctl_net.o
- endif
-+
-+obj-$(CONFIG_KLIPS)             += ipsec/
-+
- obj-$(CONFIG_WIMAX)		+= wimax/
+ /* BSD compatibility */
+ #define IP_RECVRETOPTS	IP_RETOPTS
+ 
