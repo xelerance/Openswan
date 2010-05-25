@@ -25,6 +25,7 @@ v2.6.26
   that NetworkManager can handle this. Can be directory whack'ed using
   the --nm_controlled option. [Avesh Agarwal]
 * Clean up DPD logging. [Tuomo]
+* SAref updated to 2.6.32 kernel [Bart/Paul]
 * Bugtracker bugs fixed:
    # 414: Y2K38 bug in X.509 Digital Certificate handling [Andreas Steffen]
           (happened only on 32bit machines for certs expiring after 2038)
