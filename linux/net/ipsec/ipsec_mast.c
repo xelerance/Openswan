@@ -315,6 +315,18 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		return 0;
 	}
 
+	/* prevent recursion through the saref route */
+	if(skb->nfmark & 0x80000000) {
+		skb->nfmark = 0;
+	}
+#if 0
+	/* TODO: do we have to also have to do this? */
+	if(skb->sp && skb->sp->ref != IPSEC_SAREF_NULL) {
+		secpath_put(skb->sp);
+		skb->sp = NULL;
+	}
+#endif
+
 	/*
 	 * we should be calculating the MTU by looking up a route
 	 * based upon the destination in the SA, and then cache
@@ -852,6 +864,16 @@ ipsec_mast_get_device(int vifnum)
 			return NULL;
 		}
 	}
+}
+
+int
+ipsec_is_mast_device(const struct net_device *dev)
+{
+#ifndef USE_NETDEV_OPS
+	return dev && (dev->hard_start_xmit == ipsec_mast_start_xmit);
+#else
+	return dev && (dev->netdev_ops == &ipsec_mast_ops);
+#endif
 }
 
 unsigned int

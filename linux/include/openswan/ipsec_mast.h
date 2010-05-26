@@ -1,6 +1,8 @@
 #ifndef _IPSEC_MAST_H
 #define _IPSEC_MAST_H
 
+struct net_device;
+
 #define DB_MAST_INIT	0x0001
 #define DB_MAST_PROCFS	0x0002
 #define DB_MAST_XMIT	0x0010
@@ -52,6 +54,7 @@ extern int ipsec_mast_deletenum(int vifnum);
 extern int ipsec_mast_createnum(int vifnum);
 extern struct net_device *ipsec_mast_get_device(int vifnum);
 extern unsigned int ipsec_mast_is_transport(int vifnum);
+extern int ipsec_is_mast_device(const struct net_device *dev);
 
 
 

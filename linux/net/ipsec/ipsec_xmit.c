@@ -83,6 +83,7 @@
 #include "openswan/ipsec_ipe4.h"
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_esp.h"
+#include "openswan/ipsec_mast.h"
 
 #ifdef CONFIG_KLIPS_IPCOMP
 #include "openswan/ipcomp.h"
@@ -1902,6 +1903,10 @@ ipsec_xmit_cleanup(struct ipsec_xmit_state*ixs)
 #ifdef NETDEV_23
 static inline int ipsec_xmit_send2(struct sk_buff *skb)
 {
+	/* prevent recursion through the saref route */
+	if(skb->nfmark & 0x80000000 && ipsec_is_mast_device(skb->dev))
+		skb->nfmark = 0;
+
 #ifdef NETDEV_25	/* 2.6 kernels */
 	return dst_output(skb);
 #else
