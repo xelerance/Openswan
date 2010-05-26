@@ -329,10 +329,6 @@ sub installstartcheck {
 	else { errchk "1"; } 
 	}
 
-	printfun "Checking for RSA private key ($conf/ipsec.secrets)";
-	run "ipsec showhostkey --txt 1.1.1.1";
-	errchk "@out" , "DISABLED";
-	
 	# Wouldn't this test fail if your mucked up your interface definition?
 	printfun "Checking that pluto is running";
 	run "ipsec whack --status";
