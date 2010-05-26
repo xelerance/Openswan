@@ -4,6 +4,9 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
+v2.6.27
+* Fix virtual_private checks to give correct warnings [Tuomo]
+
 v2.6.26
 * KLIPS fixes for 2.6.33 kernel [Greg Ungerger/David]
 * RFC-5114 Diffie-Hellman group 22, 23 and 24 support [Avesh]
