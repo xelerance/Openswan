@@ -2186,10 +2186,13 @@ ipsec_xsm(struct ipsec_xmit_state *ixs)
 
 	/*
 	 * if we have a valid said,  then we must check it here to ensure it
-	 * hasn't gone away while we were waiting for a task to complete
+	 * hasn't gone away while we were waiting for a task to complete.
+	 *
+	 * but if the said was found via saref in the mast code, skip it since
+	 * the outgoing_said was never set.
 	 */
 
-	if (ixs->ipsp) {
+	if (ixs->ipsp && ixs->outgoing_said.proto) {
 		struct ipsec_sa *ipsp;
 		ipsp = ipsec_sa_getbyid(&ixs->outgoing_said, IPSEC_REFTX);
 		if (unlikely(ipsp == NULL)) {
