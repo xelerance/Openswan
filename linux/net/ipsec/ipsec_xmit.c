@@ -2069,10 +2069,15 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 #ifdef NETDEV_23	/* 2.4 kernels */
 	{
 		int err;
-
-		err = NF_HOOK(PF_INET, NF_INET_LOCAL_OUT, ixs->skb, NULL,
-			      ixs->route->u.dst.dev,
-			      ipsec_xmit_send2);
+		if (ipsec_is_mast_device(ixs->skb->dev)) {
+			// skip filtering on mast devices, since it
+			// causes nasty reentrancy.
+			err = ipsec_xmit_send2(ixs->skb);
+		} else {
+			err = NF_HOOK(PF_INET, NF_INET_LOCAL_OUT, ixs->skb, NULL,
+					ixs->route->u.dst.dev,
+					ipsec_xmit_send2);
+		}
 		if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {
 			if(net_ratelimit())
 				printk(KERN_ERR
