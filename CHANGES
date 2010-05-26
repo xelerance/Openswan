@@ -36,8 +36,10 @@ v2.6.26
           (happened only on 32bit machines for certs expiring after 2038)
    # 428: Fix for representation of [...] used algorithms
           in ipsec auto --status [Martin Schiller]
+   #1004: Better fix for bug #1004 [Mika Ilmaranta/Tuomo]
    #1035: Allow specifying interface name, eg left=%ppp0 [Martin Schiller]
    #1080: duplicate of #414
+   #1085: Random disconnects of (ipsec+l2tpd) tunnels [Mika Ilmaranta/Tuomo]
    #1087: acquires cause invalid policies being inserted into xfrm policy
           introduced in 2.6.25 [Tuomo]
    #1093: enc alg=0 not found in constants.c:oakley_enc_names [Henry N.]
@@ -48,8 +50,6 @@ v2.6.26
           [Henry N.]
    #1107: buildfix for showpolicy.c when using gcc 4.5 by Paweł Zuzelski
    #1108: gcc-4.5.0 enum warning fix [Paweł Zuzelski]
-   #1004: Better fix for bug #1004 [Mika Ilmaranta/Tuomo]
-   #1085: Random disconnects of (ipsec+l2tpd) tunnels [Mika Ilmaranta/Tuomo]
 * Fix for protostack=auto when KLIPS or NETKEY is not compiled in [Paul]
 * Fix for compiling without XAUTH (introduced with remote_peer=cisco support)
           [Thomas Geulig]
