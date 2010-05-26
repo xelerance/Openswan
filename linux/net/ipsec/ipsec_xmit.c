@@ -2160,6 +2160,7 @@ void
 ipsec_xsm(struct ipsec_xmit_state *ixs)
 {
 	enum ipsec_xmit_value stat = IPSEC_XMIT_ENCAPFAIL;
+	unsigned more_allowed;
 
 	if (ixs == NULL) {
 		KLIPS_PRINT(debug_tunnel, "klips_debug:ipsec_xsm: ixs == NULL.\n");
@@ -2197,7 +2198,8 @@ ipsec_xsm(struct ipsec_xmit_state *ixs)
 		}
 	}
 
-	while (ixs->state != IPSEC_XSM_DONE) {
+	more_allowed = 1000;
+	while (ixs->state != IPSEC_XSM_DONE && --more_allowed) {
 
 		ixs->next_state = xmit_state_table[ixs->state].next_state;
 
