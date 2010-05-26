@@ -2019,6 +2019,13 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 		return IPSEC_XMIT_RECURSDETECT;
 	}
 
+	// the device associated with the skb needs to be set to the route->dev
+	if (ixs->skb->dev != ixs->route->u.dst.dev) {
+		dev_put(ixs->skb->dev);
+		dev_hold(ixs->route->u.dst.dev);
+		ixs->skb->dev = ixs->route->u.dst.dev;
+	}
+
 	skb_dst_drop(ixs->skb);
 	skb_dst_set(ixs->skb, &ixs->route->u.dst);
 	if(ixs->stats) {

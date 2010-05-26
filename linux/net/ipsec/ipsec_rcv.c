@@ -481,6 +481,10 @@ void ipsec_rcv_setoutif(struct ipsec_rcv_state *irs)
 				    skb->dev->name,
 				    irs->ipsp->ips_out->name);
 		}
+		if (skb->dev)
+			dev_put(skb->dev);
+
+		dev_hold(irs->ipsp->ips_out);
 		skb->dev = irs->ipsp->ips_out;
 		
 #ifdef USE_NETDEV_OPS
@@ -856,30 +860,33 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 
 		if(ipsecdev) {
 			KLIPS_PRINT(debug_rcv && prvdev,
-					"klips_debug:klips26_rcv_encap: "
+					"klips_debug:ipsec_rcv_init: "
 					"assigning packet ownership to "
 					"virtual device %s from "
 					"physical device %s.\n",
 				ipsecdev->name, skb->dev->name);
+			dev_hold(ipsecdev);
+			dev_put(skb->dev);
 			skb->dev = ipsecdev;
 		} else {
 			KLIPS_PRINT(debug_rcv,
-					"klips_debug:klips26_rcv_encap: "
+					"klips_debug:ipsec_rcv_init: "
 					"assigning packet ownership to "
 					"virtual device mast0 from "
 					"physical device %s.\n",
 				skb->dev->name);
-			skb->dev = ipsec_mast_get_device(0);
-			
+
+			dev_put(skb->dev);
+
 			/* ipsec_mast_get takes the device */
-			if(skb->dev) dev_put(skb->dev);
+			skb->dev = ipsec_mast_get_device(0);
 		}
 
 		if(prvdev) {
 			stats = (struct net_device_stats *) &(prvdev->mystats);
 		}
 	} else {
-		KLIPS_PRINT(debug_rcv, "klips_debug:klips26_rcv_encap: "
+		KLIPS_PRINT(debug_rcv, "klips_debug:ipsec_rcv_init: "
 				"device supplied with skb is NULL\n");
 	}
 
