@@ -6,7 +6,7 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.27
 * Bugtracker bugs fixed:
-   #  76: ipsec verify warns about no RSA key when using X509 pem files [paul]
+   #  76: ipsec verify warns about no RSA key when using X509 pem files [Paul]
    #1074: virtual_private broken on U2.6.19/K2.6.27.25-78.2.56.fc9.i686?
           Fix virtual_private checks to give correct warnings [Tuomo]
 
