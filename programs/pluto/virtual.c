@@ -1,6 +1,7 @@
 /* Openswan Virtual IP Management
  * Copyright (C) 2002 Mathieu Lafon - Arkoon Network Security
  * Copyright (C) 2004 Xelerance Corporation
+ * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -383,7 +384,7 @@ is_virtual_net_allowed(const struct connection *c, const ip_subnet *peer_net,
     }
 
     if (c->spd.that.virt->flags & F_VIRTUAL_ALL) {
-	/** %all must only be used for testing - log it **/
+	/* %all must only be used for testing - log it */
 	loglog(RC_LOG_SERIOUS, "Warning - "
 	    "v%s:%%all must only be used for testing",
 	    (c->spd.that.virt->flags & F_VIRTUAL_HOST) ? "host" : "net");
@@ -396,51 +397,56 @@ is_virtual_net_allowed(const struct connection *c, const ip_subnet *peer_net,
 void
 show_virtual_private() 
 {
-	char allowed[SUBNETTOT_BUF];
-	char disallowed[SUBNETTOT_BUF];
-	char all_ok[256] = ""; // arbitrary limit
-	char all_ko[256] = ""; // arbitrary limit
-	int i,truncok=0,truncko=0;
+    char allowed[SUBNETTOT_BUF];
+    char disallowed[SUBNETTOT_BUF];
+    char all_ok[256] = ""; /* arbitrary limit */
+    char all_ko[256] = ""; /* arbitrary limit */
+    int i,truncok=0,truncko=0;
 
-	if (private_net_ok!=NULL) {
-	   for (i=0;i<private_net_ok_len;i++) {
-		subnettot(&private_net_ok[i], 0, allowed, sizeof(allowed));
-		if(i!=0)
-			strcat(all_ok, ", ");
-		if( (strlen(all_ok) + strlen(allowed)) <= 255)
-			strcat(all_ok, allowed);
-		else {
-			truncok = 1;
-			i = private_net_ok_len;
-		}
-	   };
-        } else all_ok[0] = '\0';
+    if (private_net_ok!=NULL) {
+	for (i=0;i<private_net_ok_len;i++) {
+	    subnettot(&private_net_ok[i], 0, allowed, sizeof(allowed));
+	    if(i!=0)
+		strcat(all_ok, ", ");
+	    if( (strlen(all_ok) + strlen(allowed)) <= 255)
+		strcat(all_ok, allowed);
+	    else {
+		truncok = 1;
+		i = private_net_ok_len;
+	    }
+	};
+    } else all_ok[0] = '\0';
 
-	if (private_net_ko!=NULL) {
-	   for (i=0;i<private_net_ko_len;i++) {
-		subnettot(&private_net_ko[i], 0, disallowed, sizeof(disallowed));
-		if(i!=0)
-			strcat(all_ko, ", ");
-		if( (strlen(all_ko) + strlen(disallowed)) <= 255)
-			strcat(all_ko, disallowed);
-		else {
-			truncko = 1;
-			i = private_net_ko_len;
-		};
-	   };
-        } else all_ko[0] = '\0';
+    if (private_net_ko!=NULL) {
+	for (i=0;i<private_net_ko_len;i++) {
+	    subnettot(&private_net_ko[i], 0, disallowed, sizeof(disallowed));
+	    if(i!=0)
+		strcat(all_ko, ", ");
+	    if( (strlen(all_ko) + strlen(disallowed)) <= 255)
+		strcat(all_ko, disallowed);
+	    else {
+		truncko = 1;
+		i = private_net_ko_len;
+	    };
+	};
+    } else all_ko[0] = '\0';
 
-	whack_log(RC_COMMENT, "virtual_private (%%priv):");
-	whack_log(RC_COMMENT, "- allowed %d subnet%s: %s",
-		private_net_ok_len,
-		(private_net_ok_len == 1) ? "" : "s", all_ok );
+    whack_log(RC_COMMENT, "virtual_private (%%priv):");
+    whack_log(RC_COMMENT, "- allowed %d subnet%s: %s",
+	      private_net_ok_len,
+	      (private_net_ok_len == 1) ? "" : "s", all_ok );
 	
-	whack_log(RC_COMMENT, "- disallowed %d subnet%s: %s",
-		private_net_ko_len,
-		(private_net_ko_len == 1) ? "" : "s", all_ko );
-	if (truncok || truncko)
-		whack_log(RC_COMMENT, "WARNING: some virtual_private entries were not shown, do you really need that many?");
-	if (!truncok && !truncko)
-		whack_log(RC_COMMENT, "WARNING: Either virtual_private= was not specified, or there was a syntax\n");
-		whack_log(RC_COMMENT, "         error in that line. 'left/rightsubnet=%%priv' will not work!");
+    whack_log(RC_COMMENT, "- disallowed %d subnet%s: %s",
+	      private_net_ko_len,
+	      (private_net_ko_len == 1) ? "" : "s", all_ko );
+    if (truncok || truncko)
+	whack_log(RC_COMMENT, "WARNING: some virtual_private entries were not shown, do you really need that many?");
+    if (!truncok && !truncko && !strlen(all_ok)) {
+	whack_log(RC_COMMENT, "WARNING: Either virtual_private= is not specified, or there is a syntax\n");
+	whack_log(RC_COMMENT, "         error in that line. 'left/rightsubnet=vhost:%%priv' will not work!");
+    }
+    if (!truncok && !truncko && !strlen(all_ko)) {
+	whack_log(RC_COMMENT, "WARNING: Disallowed subnets in virtual_private= is empty. If you have\n");
+	whack_log(RC_COMMENT, "         private address space in internal use, it should be excluded!");
+    }
 }
