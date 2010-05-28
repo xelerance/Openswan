@@ -309,7 +309,6 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	if(ixs->ipsp == NULL) {
 		KLIPS_ERROR(debug_mast, "%s: no SA for saref=%d\n",
 			    dev->name, SAref);
-		ipsec_kfree_skb(skb);
 		ipsec_xmit_cleanup(ixs);
 		ipsec_xmit_state_delete(ixs);
 		return 0;
