@@ -46,29 +46,6 @@ index 223e90a..3300be1 100644
  static inline struct sec_path *
  secpath_get(struct sec_path *sp)
  {
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 57737b8..da2149e 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1629,6 +1629,18 @@ static int __init inet_init(void)
- 	if (ip_mr_init())
- 		printk(KERN_CRIT "inet_init: Cannot init ipv4 mroute\n");
- #endif
-+
-+#if defined(CONFIG_KLIPS)
-+	{
-+               extern int ipsec_klips_init(void);
-+		/*
-+		 *  Initialise AF_INET ESP and AH protocol support including 
-+		 *  e-routing and SA tables
-+		 */
-+		ipsec_klips_init();
-+	}
-+#endif /* CONFIG_IPSEC */
-+
- 	/*
- 	 *	Initialise per-cpu ipv4 mibs
- 	 */
 diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
 index 188c9c8..f86a4fa 100644
 --- a/net/ipv4/icmp.c
