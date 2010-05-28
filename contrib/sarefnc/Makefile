@@ -20,6 +20,8 @@ o = o		# object extension
 
 ALL = nc
 
+-include Makefile.local
+
 ### BOGON-CATCHERS
 
 bogus:

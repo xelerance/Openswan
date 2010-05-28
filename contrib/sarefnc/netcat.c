@@ -177,6 +177,8 @@ USHORT o_listen = 0;
 USHORT o_nflag = 0;
 USHORT o_wfile = 0;
 USHORT o_random = 0;
+#define INVALID_SAREF 0
+unsigned int o_saref = INVALID_SAREF;
 USHORT o_udpmode = 0;
 USHORT o_verbose = 0;
 unsigned int o_wait = 0;
@@ -701,7 +703,16 @@ newskt:
   rr = setsockopt(nnetfd, SOL_SOCKET, SO_RCVBUF, &o_rcvbuf, sizeof o_rcvbuf);
   rr = setsockopt(nnetfd, SOL_SOCKET, SO_SNDBUF, &o_sndbuf, sizeof o_sndbuf);
 #endif
-  
+
+#ifdef HAVE_IPSEC_SAREF
+  if (o_saref != INVALID_SAREF) {
+    long arg = o_saref;
+    rr = setsockopt (nnetfd, IPPROTO_IP, IP_IPSEC_REFINFO, &arg, sizeof (arg));
+    if (rr == -1)
+      bail ("failed setting IPsec SAref");
+  }
+#endif
+
   /* fill in all the right sockaddr crud */
     lclend->sin_family = AF_INET;
 
@@ -833,6 +844,61 @@ Linux is also still a loss at 1.3.x it looks like; the lsrr code is { }...
   close (nnetfd);			/* clean up junked socket FD!! */
   return (-1);
 } /* doconnect */
+
+int saref_recvfrom (fd, buf, len, flags, src_addr, addrlen)
+  int fd;
+  char *buf;
+  size_t len;
+  int flags;
+  SA *src_addr;
+  socklen_t *addrlen;
+{
+#ifdef HAVE_IPSEC_SAREF
+  int rc;
+  struct msghdr msgh;
+  struct iovec iov;
+  char cbuf[256];
+  struct cmsghdr *cmsg;
+
+  memset(&msgh, 0, sizeof(struct msghdr));
+  iov.iov_base = buf;
+  iov.iov_len  = len;
+  msgh.msg_control = cbuf;
+  msgh.msg_controllen = sizeof(cbuf);
+  msgh.msg_name = src_addr;
+  msgh.msg_namelen = *addrlen;
+  msgh.msg_iov  = &iov;
+  msgh.msg_iovlen = 1;
+  msgh.msg_flags = 0;
+
+  rc = recvmsg(fd, &msgh, flags);
+  if (rc < 0)
+    return rc;
+
+  *addrlen = msgh.msg_namelen;
+
+  /* Process auxiliary received data in msgh */
+  for (cmsg = CMSG_FIRSTHDR(&msgh);
+      cmsg != NULL;
+      cmsg = CMSG_NXTHDR(&msgh,cmsg)) {
+    if (cmsg->cmsg_level == IPPROTO_IP
+	&& cmsg->cmsg_type == IP_IPSEC_REFINFO) {
+      unsigned int *refp;
+
+      refp = (unsigned int *)CMSG_DATA(cmsg);
+
+      holler("UDP saref me=%04x him=%04x",
+	  refp[0], refp[1]);
+
+      //refme =refp[0];
+      o_saref = refp[1];
+    }
+  }
+
+#else
+  return recvfrom (fd, buf, len, flags, src_addr, addrlen);
+#endif
+  }
 
 /* dolisten :
    just like doconnect, and in fact calls a hunk of doconnect, but listens for
@@ -1512,7 +1578,7 @@ main (argc, argv)
 
 /* If your shitbox doesn't have getopt, step into the nineties already. */
 /* optarg, optind = next-argv-component [i.e. flag arg]; optopt = last-char */
-  while ((x = getopt (argc, argv, "abc:e:g:G:hi:klno:p:q:rs:T:tuvw:z")) != EOF) {
+  while ((x = getopt (argc, argv, "abc:e:g:G:hi:klno:p:q:rs:S:T:tuvw:z")) != EOF) {
 /* Debug (("in go: x now %c, optarg %x optind %d", x, optarg, optind)) */
     switch (x) {
       case 'a':
@@ -1583,6 +1649,14 @@ main (argc, argv)
    be useful, so we'll still pass o_nflag here instead of forcing numeric.  */
 	wherefrom = gethostpoop (optarg, o_nflag);
 	ouraddr = &wherefrom->iaddrs[0];
+	break;
+      case 'S':				/* IPsec SAref for socket */
+#ifndef HAVE_IPSEC_SAREF
+	bail ("built without IPsec SAref");
+#endif
+	o_saref = atoi (optarg);
+	if (! o_saref)
+	  bail ("invalid IPsec SAref %s", optarg);
 	break;
 #ifdef TELNET
       case 't':				/* do telnet fakeout */
@@ -1820,7 +1894,8 @@ options:");
 	-p port			local port number\n\
 	-r			randomize local and remote ports\n\
 	-q secs			quit after EOF on stdin and delay of secs\n\
-	-s addr			local source address");
+	-s addr			local source address\n\
+	-S saref                IPsec SAref of remote (openswan)");
 #ifdef IP_TOS
   holler("\
 	-T tos			set Type Of Service");
