@@ -1982,7 +1982,11 @@ enum ipsec_xmit_value
 ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 {
 	int error;
-  
+	int is_mast_packet;
+
+	/* check if this packet is sent from the mast, before we route */
+	is_mast_packet = ipsec_is_mast_device(ixs->skb->dev);
+
 #ifdef NETDEV_25
 	fl->nl_u.ip4_u.daddr = ip_hdr(ixs->skb)->daddr;
 	fl->nl_u.ip4_u.saddr = ixs->pass ? 0 : ip_hdr(ixs->skb)->saddr;
@@ -2069,7 +2073,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 #ifdef NETDEV_23	/* 2.4 kernels */
 	{
 		int err;
-		if (ipsec_is_mast_device(ixs->skb->dev)) {
+		if (is_mast_packet) {
 			// skip filtering on mast devices, since it
 			// causes nasty reentrancy.
 			err = ipsec_xmit_send2(ixs->skb);
