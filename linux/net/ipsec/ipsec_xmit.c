@@ -1903,15 +1903,21 @@ ipsec_xmit_cleanup(struct ipsec_xmit_state*ixs)
 #ifdef NETDEV_23
 static inline int ipsec_xmit_send2(struct sk_buff *skb)
 {
-	/* prevent recursion through the saref route */
-	if(skb->nfmark & 0x80000000 && ipsec_is_mast_device(skb->dev))
-		skb->nfmark = 0;
-
 #ifdef NETDEV_25	/* 2.6 kernels */
 	return dst_output(skb);
 #else
 	return ip_send(skb);
 #endif
+}
+
+static inline int ipsec_xmit_send2_mast(struct sk_buff *skb)
+{
+	/* prevent recursion through the saref route */
+	if(skb->nfmark & 0x80000000)
+		skb->nfmark = 0;
+
+	return ipsec_xmit_send2(skb);
+
 }
 #endif /* NETDEV_23 */
 
@@ -2073,15 +2079,16 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 #ifdef NETDEV_23	/* 2.4 kernels */
 	{
 		int err;
-		if (is_mast_packet) {
-			// skip filtering on mast devices, since it
-			// causes nasty reentrancy.
-			err = ipsec_xmit_send2(ixs->skb);
-		} else {
+		if (is_mast_packet)
+			// skip filtering on mast devices, since it resets our
+			// route, nfmark, and causes nasty reentrancy.
+			err = ipsec_xmit_send2_mast(ixs->skb);
+
+		else
 			err = NF_HOOK(PF_INET, NF_INET_LOCAL_OUT, ixs->skb, NULL,
 					ixs->route->u.dst.dev,
 					ipsec_xmit_send2);
-		}
+
 		if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {
 			if(net_ratelimit())
 				printk(KERN_ERR
