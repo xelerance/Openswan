@@ -683,60 +683,6 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 		bypass = TRUE;
 	}
 
-#ifdef KLIPS_EXCEPT_DNS53
-	/*
-	 *
-	 * if we are udp/53 or tcp/53, also let it through a %trap or %hold,
-	 * since it is DNS, but *also* follow the %trap.
-	 * 
-	 * we do not do this for tunnels, only %trap's and %hold's.
-	 *
-	 */
-
-	if (ip_chk_addr((unsigned long)ixs->iph->saddr) == IS_MYADDR
-	    && (ixs->eroute==NULL
-		|| ixs->iph->daddr == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr
-		|| INADDR_ANY == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr)
-	    && ((ixs->iph->protocol == IPPROTO_UDP
-		 || ixs->iph->protocol == IPPROTO_TCP)
-		&& ixs->dport == 53)) {
-		
-		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_xmit_SAlookup: "
-			    "possible DNS packet\n");
-
-		if(ixs->eroute)
-		{
-			if(ixs->eroute->er_said.spi == htonl(SPI_TRAP)
-			   || ixs->eroute->er_said.spi == htonl(SPI_HOLD))
-			{
-				ixs->outgoing_said.spi = htonl(SPI_PASSTRAP);
-				bypass = TRUE;
-			}
-		}
-		else
-		{
-			ixs->outgoing_said.spi = htonl(SPI_PASSTRAP);
-			bypass = TRUE;
-		}
-				
-		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_xmit_SAlookup: "
-			    "bypass = %d\n", bypass);
-
-		if(bypass
-		   && !(ixs->skb->sk)
-		   && ((ntohs(ixs->iph->frag_off) & IP_MF) != 0))
-		{
-			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-				    "klips_debug:ipsec_xmit_SAlookup: "
-				    "local port 53 (probably DNS) passthrough:"
-				    "base fragment, rest of fragments will "
-				    "probably get filtered.\n");
-		}
-	}
-#endif
-
 	if (bypass==FALSE && ixs->eroute) {
 		ixs->eroute->er_count++;
 		ixs->eroute->er_lasttime = jiffies/HZ;
