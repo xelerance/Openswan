@@ -54,6 +54,8 @@ v2.6.26
           [Henry N.]
    #1107: buildfix for showpolicy.c when using gcc 4.5 by Paweł Zuzelski
    #1108: gcc-4.5.0 enum warning fix [Paweł Zuzelski]
+   #1110: rightsubnet=vhost:%priv,%no not working as expected for non-natted
+          case fixed by new #1004 fix [Mika Ilmaranta/Tuomo]
 * Fix for protostack=auto when KLIPS or NETKEY is not compiled in [Paul]
 * Fix for compiling without XAUTH (introduced with remote_peer=cisco support)
           [Thomas Geulig]
