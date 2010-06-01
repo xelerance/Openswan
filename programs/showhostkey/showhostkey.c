@@ -498,6 +498,7 @@ int main(int argc, char *argv[])
    PK11_SetPasswordFunc(getNSSPassword); 
 #endif
 
+    load_oswcrypto();
     osw_load_preshared_secrets(&host_secrets, verbose>0?TRUE:FALSE,
 			       secrets_file, &pass);
 
