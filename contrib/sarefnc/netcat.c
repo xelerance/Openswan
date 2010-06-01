@@ -67,6 +67,10 @@
 #define POSIX_SETJMP
 #endif
 
+#ifdef HAVE_IPSEC_SAREF
+#include <ipsec_saref.h>
+#endif
+
 /* includes: */
 #include <sys/time.h>		/* timeval, time_t */
 #include <setjmp.h>		/* jmp_buf et al */
@@ -168,6 +172,7 @@ fd_set * ding1;			/* for select loop */
 fd_set * ding2;
 PINF * portpoop = NULL;		/* for getportpoop / getservby* */
 unsigned char * stage = NULL;	/* hexdump line buffer */
+int requested_refinfo = 0;	/* IPsec SAref sockopt set */
 
 /* global cmd flags: */
 USHORT o_alla = 0;
@@ -706,8 +711,8 @@ newskt:
 
 #ifdef HAVE_IPSEC_SAREF
   if (o_saref != INVALID_SAREF) {
-    long arg = o_saref;
-    rr = setsockopt (nnetfd, IPPROTO_IP, IP_IPSEC_REFINFO, &arg, sizeof (arg));
+    unsigned int arg = o_saref;
+    rr = setsockopt (nnetfd, IPPROTO_IP, IP_IPSEC_BINDREF, &arg, sizeof (arg));
     if (rr == -1)
       bail ("failed setting IPsec SAref");
   }
@@ -842,6 +847,7 @@ Linux is also still a loss at 1.3.x it looks like; the lsrr code is { }...
   if (rr == 0)
     return (nnetfd);
   close (nnetfd);			/* clean up junked socket FD!! */
+  requested_refinfo = 0;
   return (-1);
 } /* doconnect */
 
@@ -859,6 +865,15 @@ int saref_recvfrom (fd, buf, len, flags, src_addr, addrlen)
   struct iovec iov;
   char cbuf[256];
   struct cmsghdr *cmsg;
+
+  if (!requested_refinfo) {
+    int val = 1;
+
+    rc = setsockopt (fd, IPPROTO_IP, IP_IPSEC_REFINFO, &val, sizeof (val));
+    if (rc == -1)
+      bail ("failed setting IPsec SAref cmsg info flag");
+    requested_refinfo = 1;
+  }
 
   memset(&msgh, 0, sizeof(struct msghdr));
   iov.iov_base = buf;
@@ -890,12 +905,11 @@ int saref_recvfrom (fd, buf, len, flags, src_addr, addrlen)
       holler("UDP saref me=%04x him=%04x",
 	  refp[0], refp[1]);
 
-      //refme =refp[0];
+      /* refme =refp[0]; */
       o_saref = refp[1];
     }
   }
-
-#else
+#else /* ! HAVE_IPSEC_SAREF */
   return recvfrom (fd, buf, len, flags, src_addr, addrlen);
 #endif
   }
@@ -969,12 +983,24 @@ int dolisten (rad, rp, lad, lp)
 #else
     if (setjmp (jbuf) == 0) {	/* do timeout for initial connect */
 #endif
-      rr = recvfrom		/* and here we block... */
+      rr = saref_recvfrom		/* and here we block... */
 	(nnetfd, bigbuf_net, BIGSIZ, MSG_PEEK, (SA *) remend, &x);
 Debug (("dolisten/recvfrom ding, rr = %d, netbuf %s ", rr, bigbuf_net))
     } else
       goto dol_tmo;		/* timeout */
     arm_timer (0, 0);
+
+/* If a request was made to bind this connection to a SAref, do so now before
+   we connect and exchange any more packets. */
+#ifdef HAVE_IPSEC_SAREF
+  if (o_saref != INVALID_SAREF) {
+    long arg = o_saref;
+    rr = setsockopt (nnetfd, IPPROTO_IP, IP_IPSEC_BINDREF, &arg, sizeof (arg));
+    if (rr == -1)
+      bail ("failed setting IPsec SAref");
+  }
+#endif
+
 /* I'm not completely clear on how this works -- BSD seems to make UDP
    just magically work in a connect()ed context, but we'll undoubtedly run
    into systems this deal doesn't work on.  For now, we apparently have to
@@ -989,6 +1015,7 @@ Debug (("dolisten/recvfrom ding, rr = %d, netbuf %s ", rr, bigbuf_net))
     rr = connect (nnetfd, (SA *)remend, sizeof (SA));
     goto whoisit;
   } /* o_udpmode */
+
 
 /* fall here for TCP */
   x = sizeof (SA);		/* retval for accept */
@@ -1007,6 +1034,7 @@ Debug (("dolisten/recvfrom ding, rr = %d, netbuf %s ", rr, bigbuf_net))
   arm_timer (0, 0);
   close (nnetfd);		/* dump the old socket */
   nnetfd = rr;			/* here's our new one */
+  requested_refinfo = 0;
 
 whoisit:
   if (rr < 0)
@@ -1085,6 +1113,7 @@ dol_tmo:
   errno = ETIMEDOUT;			/* fake it */
 dol_err:
   close (nnetfd);
+  requested_refinfo = 0;
   return (-1);
 } /* dolisten */
 
@@ -1118,8 +1147,10 @@ udptest (fd, where)
    us to hang forever, and hit it */
     o_wait = 5;				/* enough that we'll notice?? */
     rr = doconnect (where, SLEAZE_PORT, 0, 0);
-    if (rr > 0)
+    if (rr > 0) {
       close (rr);			/* in case it *did* open */
+      requested_refinfo = 0;
+    }
     o_wait = 0;				/* reset it */
     o_udpmode++;			/* we *are* still doing UDP, right? */
   } /* if o_wait */
@@ -1128,6 +1159,7 @@ udptest (fd, where)
   if (rr == 1)				/* if write error, no UDP listener */
     return (fd);
   close (fd);				/* use it or lose it! */
+  requested_refinfo = 0;
   return (-1);
 } /* udptest */
 
@@ -1844,6 +1876,7 @@ Debug (("netfd %d from port %d to port %d", netfd, ourport, curport))
 	}
       } /* if netfd */
       close (netfd);			/* just in case we didn't already */
+      requested_refinfo = 0;
       if (o_interval)
 	sleep (o_interval);		/* if -i, delay between ports too */
       if (o_random)
