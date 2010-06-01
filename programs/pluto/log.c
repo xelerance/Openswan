@@ -2,9 +2,9 @@
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
  * Copyright (C) 2005-2007 Michael Richardson
- * Copyright (C) 2006 Bart Trojanowski
- * Copyright (C) 2008 Paul Wouters
- * Copyright (C) 2008 David McCullough.
+ * Copyright (C) 2006-2010 Bart Trojanowski
+ * Copyright (C) 2008-2010 Paul Wouters
+ * Copyright (C) 2008-2010 David McCullough.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1003,7 +1003,7 @@ log_state(struct state *st, enum state_kind new_state)
 	}
 
 
-	snprintf(buf, sizeof(buf), "/bin/statsd "
+	snprintf(buf, sizeof(buf), "/bin/openswan-statsd "
 			"%s ipsec-tunnel-%s if_stats /proc/net/dev/%s \\; "
 			"%s ipsec-tunnel-%s tunnel %s \\; "
 			"%s ipsec-tunnel-%s phase1 %s \\; "
