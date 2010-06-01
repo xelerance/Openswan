@@ -408,7 +408,7 @@ IPSEC_CONNECTION_LIMIT?=250
 HAVE_THREADS?=false
 
 # Do we have an external stats daemon we can push state changes to?
-# Currently hardcoded to /bin/statsd
+# Currently hardcoded to /bin/openswan-statsd
 HAVE_STATSD?=false
 
 # Do we have Openssl libraries available for BIGNUM support?
