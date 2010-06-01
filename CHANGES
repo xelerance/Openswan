@@ -11,6 +11,8 @@ v2.6.27
 * Log the saref him/me with HAVE_STATSD=true [Paul]
 * saref-bind kernel patch that allows setsockopt() to an saref [Bart]
 * contrib/sarefnc is netcat (nc) with saref settable option [Bart]
+* Allow multiple proposals in Aggressive Mode, as long as the DH group is
+  the same for all of them [Michael H. Warfield]
 * Bugtracker bugs fixed:
    #  76: ipsec verify warns about no RSA key when using X509 pem files [Paul]
    #1074: virtual_private broken on U2.6.19/K2.6.27.25-78.2.56.fc9.i686?
