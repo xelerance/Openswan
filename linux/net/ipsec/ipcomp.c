@@ -51,7 +51,7 @@
 
 #include <net/ip.h>
 
-#include "openswan/ipsec_kern24.h"
+#include "openswan/ipsec_kversion.h"
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
 #include "openswan/ipsec_sa.h"

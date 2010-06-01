@@ -67,7 +67,7 @@ CONFIG_KLIPS_IPIP:=y
 
 O_TARGET := ipsec.o
 obj-y := ipsec_init.o ipsec_sa.o ipsec_radij.o radij.o
-obj-y += ipsec_life.o ipsec_proc.o
+obj-y += ipsec_life.o ipsec_proc.o ipsec_mast.o
 obj-y += ipsec_tunnel.o ipsec_xmit.o ipsec_rcv.o ipsec_ipip.o
 obj-y += sysctl_net_ipsec.o 
 obj-y += ipsec_snprintf.o ipsec_kern24.o
@@ -192,6 +192,7 @@ EXTRA_CFLAGS += -DIPCOMP_PREFIX
 ifneq ($(wildcard ${TOPDIR}/crypto/ocf),)
 EXTRA_CFLAGS += -I${TOPDIR}/crypto/ocf
 endif
+EXTRA_CFLAGS += -DKLIPS=1
 
 ifneq ($(strip $(KLIPSMODULE)),)
 # for when we aren't building in the kernel tree

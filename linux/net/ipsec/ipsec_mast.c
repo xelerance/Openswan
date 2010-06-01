@@ -43,7 +43,9 @@ char ipsec_mast_c_version[] = "Please use ipsec --version instead";
 #include <linux/etherdevice.h> /* eth_type_trans */
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
+#ifdef NETDEV_25	/* 2.6 kernels */
 #include <net/xfrm.h>
+#endif
 
 #include <openswan.h>
 
@@ -69,7 +71,6 @@ char ipsec_mast_c_version[] = "Please use ipsec --version instead";
 #include "openswan/ipsec_ipe4.h"
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_esp.h"
-#include "openswan/ipsec_kern24.h"
 
 #include <openswan/pfkeyv2.h>
 #include <openswan/pfkey.h>
@@ -111,7 +112,11 @@ ipsec_mast_close(struct net_device *dev)
 
 static inline int ipsec_mast_xmit2(struct sk_buff *skb)
 {
+#ifdef NETDEV_25	/* 2.6 kernels */
 	return dst_output(skb);
+#else
+	return ip_send(skb);
+#endif
 }
 
 #ifdef HAVE_IPSEC_SAREF
@@ -243,6 +248,7 @@ ipsec_mast_xsm_complete(
 	}
 #endif
 
+#ifdef NETDEV_25	/* 2.6 kernels */
 	/* now send the packet again */
 	{
 		struct flowi fl;
@@ -250,6 +256,9 @@ ipsec_mast_xsm_complete(
 		memset(&fl, 0, sizeof(fl));
 		ipsec_xmit_send(ixs, &fl);
 	}
+#else
+	ipsec_xmit_send(ixs, NULL);
+#endif
 
 cleanup:
 	ipsec_xmit_cleanup(ixs);
@@ -288,11 +297,13 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	ixs->skb = skb;
 	SAref = 0;
+#ifdef NETDEV_25
 	if(skb->nfmark & 0x80000000) {
 		SAref = NFmark2IPsecSAref(skb->nfmark);
 		KLIPS_PRINT(debug_mast, "getting SAref=%d from nfmark\n",
 			    SAref);
 	}
+#endif
 
 #ifdef HAVE_IPSEC_SAREF
 	if(skb->sp && skb->sp->ref != IPSEC_SAREF_NULL) {
@@ -314,10 +325,12 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		return 0;
 	}
 
+#ifdef NETDEV_25
 	/* prevent recursion through the saref route */
 	if(skb->nfmark & 0x80000000) {
 		skb->nfmark = 0;
 	}
+#endif
 #if 0
 	/* TODO: do we have to also have to do this? */
 	if(skb->sp && skb->sp->ref != IPSEC_SAREF_NULL) {

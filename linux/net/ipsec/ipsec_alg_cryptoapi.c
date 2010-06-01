@@ -99,6 +99,26 @@ IPSEC_ALG_MODULE_INIT_STATIC( ipsec_cryptoapi_init )
 #define	CRYPTO_TFM_MODE_ECB	0
 #endif
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24)
+
+static inline void sg_set_page(struct scatterlist *sg,  struct page *page,
+			       unsigned int len, unsigned int offset)
+{
+	sg->page = page;
+	sg->offset = offset;
+	sg->length = len;
+}
+
+static inline void *sg_virt(struct scatterlist *sg)
+{
+	return page_address(sg->page) + sg->offset;
+}
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,5,0)
+#define	offset_in_page(p) ((unsigned long)(p) & ~PAGE_MASK)
+#endif
+#endif
+
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,19)
 	/*
 	 * Linux 2.6.19 introduced a new Crypto API, setup macro's to convert new
@@ -152,23 +172,6 @@ IPSEC_ALG_MODULE_INIT_STATIC( ipsec_cryptoapi_init )
 	#define cbc(X)	"cbc(" #X ")"
 	#define hmac(X)	"hmac(" #X ")"
 #endif /* if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,19) */
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24)
-
-static inline void sg_set_page(struct scatterlist *sg,  struct page *page,
-			       unsigned int len, unsigned int offset)
-{
-	sg->page = page;
-	sg->offset = offset;
-	sg->length = len;
-}
-
-static inline void *sg_virt(struct scatterlist *sg)
-{
-	return page_address(sg->page) + sg->offset;
-}
-
-#endif
 
 #ifdef CONFIG_KLIPS_ENC_NULL
 # define CIPHERNAME_NULL		cbc(null)

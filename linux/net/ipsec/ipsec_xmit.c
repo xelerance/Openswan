@@ -70,7 +70,7 @@
 # include <net/tcp.h>		/* TCP options */
 #endif	/* MSS_HACK */
 
-#include "openswan/ipsec_kern24.h"
+#include "openswan/ipsec_kversion.h"
 #include "openswan/radij.h"
 #include "openswan/ipsec_life.h"
 #include "openswan/ipsec_xform.h"
@@ -1912,10 +1912,11 @@ static inline int ipsec_xmit_send2(struct sk_buff *skb)
 
 static inline int ipsec_xmit_send2_mast(struct sk_buff *skb)
 {
+#ifdef NETDEV_25	/* 2.6 kernels */
 	/* prevent recursion through the saref route */
 	if(skb->nfmark & 0x80000000)
 		skb->nfmark = 0;
-
+#endif
 	return ipsec_xmit_send2(skb);
 
 }

@@ -87,7 +87,6 @@
 #include "openswan/ipsec_ipe4.h"
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_esp.h"
-#include "openswan/ipsec_kern24.h"
 
 #include <openswan/pfkeyv2.h>
 #include <openswan/pfkey.h>
@@ -915,8 +914,6 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		goto cleanup;
 	}
 	
-	ixs->innersrc = ixs->iph->saddr;
-
 	ixs->xsm_complete = ipsec_tunnel_xsm_complete;
 
 	ipsec_xsm(ixs);
