@@ -85,6 +85,14 @@ struct db_sa oakley_empty = { AD_SAp(oakley_props_empty) };
 
 /*
  * 	Create an OAKLEY proposal based on alg_info and policy
+ *
+ * Note: maxtrans is an enum, not a count
+ * 	Should probably be declared an enum at some point.
+ * 	-1 - ???
+ * 	 0 - No limit
+ * 	 1 - One proposal - period
+ * 	 2 - One DH group, take first DH group and ignore any that don't match
+ *
  */
 struct db_sa *
 oakley_alg_makedb(struct alg_info_ike *ai
@@ -96,6 +104,8 @@ oakley_alg_makedb(struct alg_info_ike *ai
     struct db_sa *emp_sp = NULL;
     struct ike_info *ike_info;
     unsigned ealg, halg, modp, eklen=0;
+    /* Next two are for multiple proposals in agressive mode... */
+    unsigned last_modp=0, wrong_modp=0;
     struct encrypt_desc *enc_desc;
     int transcnt = 0;
     int i;
@@ -229,6 +239,11 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	}
 
 	if(maxtrans == 1) {
+            /*
+             *  We're going to leave maxtrans == 1 alone in case there
+             * really really is a case where we only want 1.
+             */
+
 	    if(transcnt == 0) {
 		DBG(DBG_CONTROL, DBG_log("using transform (%d,%d,%d,%ld)"
 					 , ike_info->ike_ealg
@@ -259,10 +274,33 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	    } 
 
 	} else {
+            /*
+             * Now...  We're allowing multiple proposals...  Are we allowing
+             * multiple DH groups?
+             */
+
 	    struct db_sa *new;
 
+            if(maxtrans == 2 && transcnt > 0 && ike_info->ike_modp != last_modp ) {
+                /* Not good.
+                 * Already got a DH group and this one doesn't match */
+		if(wrong_modp == 0) {
+		    loglog(RC_LOG_SERIOUS
+			   , "multiple DH groups were set in aggressive mode. Only first one used.");
+		}
+
+		loglog(RC_LOG_SERIOUS
+		           , "transform (%d,%d,%d,%ld) ignored."
+		           , ike_info->ike_ealg
+		           , ike_info->ike_halg
+		           , ike_info->ike_modp
+		           , (long)ike_info->ike_eklen);
+
+                wrong_modp++;
+
+		free_sa(emp_sp);
+	    } else if(gsp) {
 	    /* now merge emp_sa and gsp */
-	    if(gsp) {
 		new = sa_merge_proposals(gsp, emp_sp);
 		free_sa(gsp);
 		free_sa(emp_sp);
@@ -271,6 +309,7 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	    } else {
 		gsp = emp_sp;
 	    }
+            last_modp = ike_info->ike_modp;
 	}
 	transcnt++;
     }
