@@ -233,7 +233,7 @@ typedef uint32_t IPsecSAref_t;
  */
 #define IPSEC_SA_REF_TABLE_IDX_WIDTH 15
 #define IPSEC_SA_REF_TABLE_OFFSET    16
-#define IPSEC_SA_REF_MAASK           ((1<<IPSEC_SA_REF_TABLE_IDX_WIDTH)-1)
+#define IPSEC_SA_REF_MASK           ((1<<IPSEC_SA_REF_TABLE_IDX_WIDTH)-1)
 
 #define IPsecSAref2NFmark(x) (((x)&IPSEC_SA_REF_MASK) << IPSEC_SA_REF_TABLE_OFFSET)
 #define NFmark2IPsecSAref(x) (((x) >> IPSEC_SA_REF_TABLE_OFFSET)&IPSEC_SA_REF_MASK)
