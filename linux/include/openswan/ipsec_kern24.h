@@ -18,30 +18,22 @@
 
 #ifndef _IPSEC_KERN24_H
 
+#include <linux/if_ether.h>
+#include <linux/random.h>
 
-#ifdef NETDEV_23
-#if 0
-#ifndef NETDEV_25
-#define device net_device
-#endif
-#endif
+static inline void random_ether_addr(u8 *addr)
+{
+	get_random_bytes(addr, ETH_ALEN);
+	addr[0] &= 0xfe;
+	addr[0] |= 0x02;
+}
 
-# define ipsec_dev_put(x) dev_put(x)
-# define __ipsec_dev_put(x) __dev_put(x)
-# define ipsec_dev_hold(x) dev_hold(x)
-#else /* NETDEV_23 */
-# define ipsec_dev_get dev_get
-# define __ipsec_dev_put(x) 
-# define ipsec_dev_put(x)
-# define ipsec_dev_hold(x) 
-#endif /* NETDEV_23 */
+#define ip_hdr(skb)	((skb)->nh.iph)
 
-#ifndef HAVE_NETDEV_PRINTK
-#define netdev_printk(sevlevel, netdev, msglevel, format, arg...) \
-	printk(sevlevel "%s: " format , netdev->name , ## arg)
+#ifdef NET_26
+#error "ipsec_kern24.h should not be included directly or at all on 2.6 kernels"
 #endif
 
-#ifndef NET_26
 #define sk_receive_queue  receive_queue
 #define sk_destruct       destruct
 #define sk_reuse          reuse
@@ -58,7 +50,6 @@
 #define sk_sndbuf         sndbuf
 #define sock_flag(sk, flag)  sk->dead
 #define sk_for_each(sk, node, plist) for(sk=*plist; sk!=NULL; sk = sk->next)
-#endif
 
 /* deal with 2.4 vs 2.6 issues with module counts */
 
@@ -66,14 +57,8 @@
  * module to deal with race conditions.
  */
 
-#ifdef NET_26
-#define KLIPS_INC_USE /* nothing */
-#define KLIPS_DEC_USE /* nothing */
-
-#else
 #define KLIPS_INC_USE MOD_INC_USE_COUNT
 #define KLIPS_DEC_USE MOD_DEC_USE_COUNT
-#endif
 
 #ifndef printk_ratelimit
 extern int printk_ratelimit(void);

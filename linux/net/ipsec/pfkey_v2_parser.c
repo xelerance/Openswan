@@ -90,8 +90,7 @@
 
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
-
-#include "openswan/ipsec_kern24.h"
+#include "openswan/ipsec_kversion.h"
 
 #include "ipsec_ocf.h"
 

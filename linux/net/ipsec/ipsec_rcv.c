@@ -68,7 +68,7 @@
 
 #include <net/ip.h>
 
-#include "openswan/ipsec_kern24.h"
+#include "openswan/ipsec_kversion.h"
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
 #include "openswan/ipsec_sa.h"
@@ -96,7 +96,6 @@
 
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
-#include "openswan/ipsec_kern24.h"
 
 #ifdef CONFIG_KLIPS_OCF
 #include "ipsec_ocf.h"

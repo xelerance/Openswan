@@ -449,6 +449,17 @@
 	printk(sevlevel "%s: " format , netdev->name , ## arg)
 #endif
 
+#ifdef NETDEV_23
+# define ipsec_dev_put(x) dev_put(x)
+# define __ipsec_dev_put(x) __dev_put(x)
+# define ipsec_dev_hold(x) dev_hold(x)
+#else /* NETDEV_23 */
+# define ipsec_dev_get dev_get
+# define __ipsec_dev_put(x) 
+# define ipsec_dev_put(x)
+# define ipsec_dev_hold(x) 
+#endif /* NETDEV_23 */
+
 #ifndef late_initcall
 # include <linux/init.h>
 # ifndef late_initcall
@@ -496,6 +507,9 @@
 #  else
 #   error "kernels before 2.4 are not supported at this time"
 #  endif
+# else
+#   define KLIPS_INC_USE /* nothing */
+#   define KLIPS_DEC_USE /* nothing */
 # endif
 #endif
 

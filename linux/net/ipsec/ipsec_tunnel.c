@@ -87,7 +87,6 @@
 #include "openswan/ipsec_ipe4.h"
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_esp.h"
-#include "openswan/ipsec_kern24.h"
 
 #include <openswan/pfkeyv2.h>
 #include <openswan/pfkey.h>

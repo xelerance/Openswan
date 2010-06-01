@@ -46,7 +46,6 @@
 #include "openswan/ipsec_rcv.h"
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_esp.h"
-#include "openswan/ipsec_kern24.h"
 
 #ifdef CONFIG_KLIPS_IPCOMP
 #include "openswan/ipcomp.h"
