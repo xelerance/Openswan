@@ -1008,15 +1008,15 @@ log_state(struct state *st, enum state_kind new_state)
 			"%s ipsec-tunnel-%s tunnel %s \\; "
 			"%s ipsec-tunnel-%s phase1 %s \\; "
 			"%s ipsec-tunnel-%s phase2 %s "
-			"saref-me/him %u/%u",
+			"nfmark-me/him %u/%u",
 
 			conn->interface ? "push" : "drop", conn->name,
 		   			conn->interface ? conn->interface->ip_dev->id_vname : "",
 			tun ? "push" : "drop", conn->name, tun ? tun : "",
 			p1  ? "push" : "drop", conn->name, p1  ? p1  : "",
 			p2  ? "push" : "drop", conn->name, p2  ? p2  : "",
-			st->st_ref ? st->st_ref : "none",
-			st->st_refhim ? st->st_refhim : "none"
+			st->st_ref ? IPsecSAref2NFmark(st->st_ref) : "none",
+			st->st_refhim ? IPsecSAref2NFmark(st->st_refhim) : "none"
 		);
 	system(buf);
 }

@@ -130,9 +130,10 @@ out_sa(pb_stream *outs
 
 
     if(oakley_mode) {
+        /* Aggr-Mode - Max transforms == 2 - Multiple transforms, 1 DH group */
 	revised_sadb=oakley_alg_makedb(st->st_connection->alg_info_ike
 				       , sadb
-				       , aggressive_mode ? 1 : -1);
+				       , aggressive_mode ? 2 : -1);
     } else {
 	revised_sadb=kernel_alg_makedb(st->st_connection->policy
 				       , st->st_connection->alg_info_esp
@@ -1327,8 +1328,9 @@ init_am_st_oakley(struct state *st, lset_t policy)
     passert(policy_index < elemsof(oakley_am_sadb));
     sa = &oakley_am_sadb[policy_index];
     
+    /* Max transforms == 2 - Multiple transforms, 1 DH group */
     revised_sadb=oakley_alg_makedb(st->st_connection->alg_info_ike
-				   , sa, 1);
+				   , sa, 2);
 
     
     if(revised_sadb == NULL) {
@@ -1340,7 +1342,6 @@ init_am_st_oakley(struct state *st, lset_t policy)
     passert(cprop->prop_cnt == 1);
     prop = &cprop->props[0];
 
-    passert(prop->trans_cnt == 1);
     trans = &prop->trans[0];
 
     passert(trans->attr_cnt == 4 || trans->attr_cnt == 5); 
