@@ -6,19 +6,18 @@ and vulnerable to Denial Of Service attacks. It is also vulnerable to brute forc
 attacks with software such as <emphasis remap='B'>ikecrack</emphasis>. It should
 not be used, and it should especially not be used with XAUTH and group secrets (PSK).
 If the remote system administrator insists on staying irresponsible, enable this option.</para>
-<para>Aggressive Mode is further limited to only one proposal - there is no room for
-negotiation. Therefor it is mandatory for Aggressive Mode connections that both
+<para>Aggressive Mode is further limited to only proposals with one DH group as there is no room to
+negotiate the DH group. Therefor it is mandatory for Aggressive Mode connections that both
 <emphasis remap='B'>ike=</emphasis> and <emphasis remap='B'>phase2alg=</emphasis> options are
-specified with exactly one fully specified proposal.
+specified with only fully specified proposal using one DH group.
 Acceptable values are <emphasis remap='B'>yes</emphasis> or <emphasis remap='B'>no</emphasis>
 (the default).</para>
 <para>
 The ISAKMP SA is created in exchange 1 in aggressive mode. Openswan has to send the exponent
 during that exchange, so it has to know what DH group to use before starting. This is why you
-can not have multiple DH groups in aggressive mode. It also has to pick which has to use
-since it needs to know which PRF to use to generate keys - in IKEv1 the hash negotiated
-is really the PRF. In concept, Openswan could perhaps propose 3DES and AES128 in aggressive mode,
-but this needs to be verified and is currently not supported.
+can not have multiple DH groups in aggressive mode.  In IKEv2, which uses a similar method to
+IKEv1 Aggressive Mode, there is a message to convey the DH group is wrong, and so an IKEv2
+connection can actually recover from picking the wrong DH group by restarting its negotiation.
 </para>
   </listitem>
   </varlistentry>
