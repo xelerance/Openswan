@@ -88,7 +88,6 @@ struct ipsec_xmit_state
 	__u32	orgedst;		/* 1st SG's IP address */
 	__u32   newsrc;			/* The new source SG's IP address */
 	__u32	orgsrc;			/* Original IP source address */
-	__u32	innersrc;		/* Innermost IP source address */
 	int	iphlen;			/* IP header length */
 	int	pyldsz;			/* upper protocol payload size */
 	int	headroom;

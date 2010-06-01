@@ -915,8 +915,6 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		goto cleanup;
 	}
 	
-	ixs->innersrc = ixs->iph->saddr;
-
 	ixs->xsm_complete = ipsec_tunnel_xsm_complete;
 
 	ipsec_xsm(ixs);

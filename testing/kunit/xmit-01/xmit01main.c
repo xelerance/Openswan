@@ -285,8 +285,6 @@ int main(char *argv[], int argc)
     assert(stat == IPSEC_XMIT_OK);
 #endif
     
-    ixs->innersrc = ixs->iph->saddr;
-    
     stat = ipsec_xmit_encap_bundle(ixs);
     assert(stat == IPSEC_XMIT_OK);
 
