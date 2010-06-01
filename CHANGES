@@ -8,7 +8,9 @@ v2.6.27
 * Fixes to the SAREF / MAST code to avoid recursion loops [Bart]
 * Missing load_oswcrypto() call 'ipsec showhostkey' [Kevin Locke]
   (this is http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=575757?)
-* Log the saref him/me with HAVE_STATSD=true [paul]
+* Log the saref him/me with HAVE_STATSD=true [Paul]
+* saref-bind kernel patch that allows setsockopt() to an saref [Bart]
+* contrib/sarefnc is netcat (nc) with saref settable option [Bart]
 * Bugtracker bugs fixed:
    #  76: ipsec verify warns about no RSA key when using X509 pem files [Paul]
    #1074: virtual_private broken on U2.6.19/K2.6.27.25-78.2.56.fc9.i686?
