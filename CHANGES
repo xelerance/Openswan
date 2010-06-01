@@ -14,6 +14,7 @@ v2.6.27
 * contrib/sarefnc is netcat (nc) with saref settable option [Bart]
 * Allow multiple proposals in Aggressive Mode, as long as the DH group is
   the same for all of them [Michael H. Warfield]
+* KLIPS compile fixes for 2.4 kernels [David]
 * Bugtracker bugs fixed:
    #  76: ipsec verify warns about no RSA key when using X509 pem files [Paul]
    #1074: virtual_private broken on U2.6.19/K2.6.27.25-78.2.56.fc9.i686?
