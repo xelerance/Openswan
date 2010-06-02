@@ -5,6 +5,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.27
+* Cleanup source code to use C-style comments [Tuomo]
 * Fixes to the SAREF / MAST code to avoid recursion loops [Bart]
 * Missing load_oswcrypto() call 'ipsec showhostkey' [Kevin Locke]
   (this is http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=575757?)
