@@ -301,7 +301,7 @@ ensure_writeable_parent_directory(char *path)
 static void
 open_peerlog(struct connection *c)
 {
-    //syslog(LOG_INFO, "opening log file for conn %s", c->name);
+    /* syslog(LOG_INFO, "opening log file for conn %s", c->name); */
 
     if (c->log_file_name == NULL)
     {
@@ -331,12 +331,14 @@ open_peerlog(struct connection *c)
 	    + 1;
 	c->log_file_name = alloc_bytes(lf_len, "per-peer log file name");
 
-	//fprintf(stderr, "base dir |%s| dname |%s| peername |%s|"
-	//	, base_perpeer_logdir, dname, peername);
+#if 0
+	fprintf(stderr, "base dir |%s| dname |%s| peername |%s|"
+		, base_perpeer_logdir, dname, peername);
+#endif
 	snprintf(c->log_file_name, lf_len, "%s/%s/%s.log"
 		 , base_perpeer_logdir, dname, peername);
 
-	//syslog(LOG_DEBUG, "conn %s logfile is %s", c->name, c->log_file_name);
+	/* syslog(LOG_DEBUG, "conn %s logfile is %s", c->name, c->log_file_name); */
     }
 
     /* now open the file, creating directories if necessary */

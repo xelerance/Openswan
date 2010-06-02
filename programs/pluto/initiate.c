@@ -1452,43 +1452,44 @@ initiate_ondemand_body(struct find_oppo_bundle *b
  * not process a packet output by an eroute.
  */
 #ifdef NEVER
-//bool
-//check_nexthop(const struct connection *c)
-//{
-//    struct connection *d;
-//
-//    if (addrinsubnet(&c->spd.this.host_nexthop, &c->spd.that.client))
-//    {
-//	loglog(RC_LOG_SERIOUS, "cannot perform routing for connection \"%s\""
-//	    " because nexthop is within peer's client network",
-//	    c->name);
-//	return FALSE;
-//    }
-//
-//    for (d = connections; d != NULL; d = d->next)
-//    {
-//	if (d->routing != RT_UNROUTED)
-//	{
-//	    if (addrinsubnet(&c->spd.this.host_nexthop, &d->spd.that.client))
-//	    {
-//		loglog(RC_LOG_SERIOUS, "cannot do routing for connection \"%s\"
-//		    " because nexthop is contained in"
-//		    " existing routing for connection \"%s\"",
-//		    c->name, d->name);
-//		return FALSE;
-//	    }
-//	    if (addrinsubnet(&d->spd.this.host_nexthop, &c->spd.that.client))
-//	    {
-//		loglog(RC_LOG_SERIOUS, "cannot do routing for connection \"%s\"
-//		    " because it contains nexthop of"
-//		    " existing routing for connection \"%s\"",
-//		    c->name, d->name);
-//		return FALSE;
-//	    }
-//	}
-//    }
-//    return TRUE;
-//}
+/* bool
+ * check_nexthop(const struct connection *c)
+ * {
+ *     struct connection *d;
+ * 
+ *     if (addrinsubnet(&c->spd.this.host_nexthop, &c->spd.that.client))
+ *     {
+ * 	loglog(RC_LOG_SERIOUS, "cannot perform routing for connection \"%s\""
+ * 	    " because nexthop is within peer's client network",
+ * 	    c->name);
+ * 	return FALSE;
+ *     }
+ * 
+ *     for (d = connections; d != NULL; d = d->next)
+ *     {
+ * 	if (d->routing != RT_UNROUTED)
+ * 	{
+ * 	    if (addrinsubnet(&c->spd.this.host_nexthop, &d->spd.that.client))
+ * 	    {
+ * 		loglog(RC_LOG_SERIOUS, "cannot do routing for connection \"%s\"
+ * 		    " because nexthop is contained in"
+ * 		    " existing routing for connection \"%s\"",
+ * 		    c->name, d->name);
+ * 		return FALSE;
+ * 	    }
+ * 	    if (addrinsubnet(&d->spd.this.host_nexthop, &c->spd.that.client))
+ * 	    {
+ * 		loglog(RC_LOG_SERIOUS, "cannot do routing for connection \"%s\"
+ * 		    " because it contains nexthop of"
+ * 		    " existing routing for connection \"%s\"",
+ * 		    c->name, d->name);
+ * 		return FALSE;
+ * 	    }
+ * 	}
+ *     }
+ *     return TRUE;
+ * }
+ */
 #endif /* NEVER */
 
 /* an ISAKMP SA has been established.

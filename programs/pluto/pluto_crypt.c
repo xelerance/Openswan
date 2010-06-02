@@ -71,7 +71,7 @@ TAILQ_HEAD(req_queue, pluto_crypto_req_cont);
 struct pluto_crypto_worker {
     int   pcw_helpernum;
 #ifdef HAVE_LIBNSS
-   //pthread_t pcw_pid;
+    /* pthread_t pcw_pid; */
    long int pcw_pid;
 #else
     pid_t pcw_pid;
@@ -212,7 +212,7 @@ void pluto_crypto_helper(int fd, int helpernum)
     long reqbuf[PCR_REQ_SIZE/sizeof(long)];
     struct pluto_crypto_req *r;
 
-    // OS X does not have pthread_setschedprio
+    /* OS X does not have pthread_setschedprio */
 #if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
     int status=pthread_setschedprio(pthread_self(), 10);
     DBG(DBG_CONTROL, DBG_log("status value returned by setting the priority of this thread (id=%d) %d",helpernum,status));

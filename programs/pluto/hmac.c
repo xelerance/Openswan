@@ -61,10 +61,10 @@ hmac_init(struct hmac_ctx *ctx,
     ctx->hmac_digest_len = h->hash_digest_len;
 
 #ifdef HAVE_LIBNSS
-    //DBG(DBG_CRYPT, DBG_log("NSS: hmac init"));
+    /* DBG(DBG_CRYPT, DBG_log("NSS: hmac init")); */
     SECStatus status;
     PK11SymKey *symkey=NULL, *tkey1=NULL; 
-    //PK11SymKey *tkey1=NULL;
+    /* PK11SymKey *tkey1=NULL; */
     unsigned int klen;
     chunk_t hmac_opad, hmac_ipad, hmac_pad;
 
@@ -210,7 +210,7 @@ hmac_final(u_char *output, struct hmac_ctx *ctx)
     if(ctx->okey != NULL) {
     PK11_FreeSymKey(ctx->okey);
     }
-    //DBG(DBG_CRYPT, DBG_log("NSS: hmac final end"));
+    /* DBG(DBG_CRYPT, DBG_log("NSS: hmac final end")); */
 #endif
 }
 
@@ -368,7 +368,7 @@ void nss_symkey_log(PK11SymKey *key, const char *msg)
 	   DBG(DBG_CRYPT, DBG_dump("value: ", keydata->data
 					, keydata->len));
 
-	//SECITEM_FreeItem(keydata, PR_TRUE);
+	   /* SECITEM_FreeItem(keydata, PR_TRUE); */
 	}
      }
 }

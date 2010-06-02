@@ -730,12 +730,12 @@ ikev2_process_transforms(struct ikev2_prop *prop
     while(prop->isap_numtrans-- > 0) {
 	pb_stream trans_pbs;
 	pb_stream attr_pbs;
-	//u_char *attr_start;
-	//size_t attr_len;
+	/* u_char *attr_start; */
+	/* size_t attr_len; */
 	struct ikev2_trans trans;
 	struct ikev2_trans_attr attr;
 	int keylen = -1;
-	//err_t ugh = NULL;	/* set to diagnostic when problem detected */
+	/* err_t ugh = NULL; */	/* set to diagnostic when problem detected */
 	
 	if (!in_struct(&trans, &ikev2_trans_desc
 		       , prop_pbs, &trans_pbs))

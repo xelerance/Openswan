@@ -58,8 +58,9 @@
 # include <keyhi.h>
 # include "oswconf.h"
 
-//#define PK11_Derive(base, mechanism, param, target, operation, keysize)  \
-	PK11_Derive_osw(base, mechanism, param, target, operation, keysize)
+/* #define PK11_Derive(base, mechanism, param, target, operation, keysize) \
+ *	PK11_Derive_osw(base, mechanism, param, target, operation, keysize)
+ */
 
 static PK11SymKey *pk11_extract_derive_wrapper_osw(PK11SymKey *base, CK_EXTRACT_PARAMS bs
 		, CK_MECHANISM_TYPE target , CK_ATTRIBUTE_TYPE operation, int keySize)
@@ -308,7 +309,7 @@ skeyid_preshared(const chunk_t pss
         buf2[k] ^= HMAC_OPAD;
     }
 
-    //pfree(nir.ptr);
+    /* pfree(nir.ptr); */
 
     mechanism=nss_key_derivation_mech(hasher);
     buf1_chunk.ptr=buf1;
@@ -318,23 +319,23 @@ skeyid_preshared(const chunk_t pss
     buf2_chunk.len=HMAC_BUFSIZE;
 
     PK11SymKey *tkey4 = pk11_derive_wrapper_osw(shared, CKM_CONCATENATE_DATA_AND_BASE, buf1_chunk, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);
-    //nss_symkey_log(tkey4, "pss+ipad+shared");
+    /* nss_symkey_log(tkey4, "pss+ipad+shared"); */
 
     CK_EXTRACT_PARAMS bs=0;
     PK11SymKey *tkey5 = pk11_extract_derive_wrapper_osw(tkey4, bs, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, HMAC_BUFSIZE);
-    //nss_symkey_log(tkey5, "pss+ipad");
+    /* nss_symkey_log(tkey5, "pss+ipad"); */
 
     PK11SymKey *tkey6 = pk11_derive_wrapper_osw(tkey5, CKM_CONCATENATE_BASE_AND_DATA, nir, mechanism, CKA_DERIVE, 0);
     pfree(nir.ptr);
-    //nss_symkey_log(tkey6, "pss+ipad+nir");
+    /* nss_symkey_log(tkey6, "pss+ipad+nir"); */
 
-    //PK11SymKey *tkey1 = pk11_derive_wrapper_osw(shared, CKM_CONCATENATE_DATA_AND_BASE, buf1_chunk, mechanism, CKA_DERIVE, 0);
+    /* PK11SymKey *tkey1 = pk11_derive_wrapper_osw(shared, CKM_CONCATENATE_DATA_AND_BASE, buf1_chunk, mechanism, CKA_DERIVE, 0); */
     PK11SymKey *tkey2 = PK11_Derive_osw(tkey6, mechanism, NULL, CKM_CONCATENATE_DATA_AND_BASE, CKA_DERIVE, 0);
-    //nss_symkey_log(tkey2, "pss : tkey2");
+    /* nss_symkey_log(tkey2, "pss : tkey2"); */
 
     PK11SymKey *tkey3 = pk11_derive_wrapper_osw(tkey2, CKM_CONCATENATE_DATA_AND_BASE, buf2_chunk, mechanism, CKA_DERIVE, 0);
     skeyid = PK11_Derive_osw(tkey3, mechanism, NULL, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
-    //nss_symkey_log(tkey2, "pss : tkey3");
+    /* nss_symkey_log(tkey2, "pss : tkey3"); */
 
     skeyid_chunk->len = sizeof(PK11SymKey *);
     skeyid_chunk->ptr = alloc_bytes(skeyid_chunk->len, "calculated skeyid(pss)");
@@ -1235,11 +1236,15 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	unsigned int keybytes;
 	unsigned char *kb;
 
-	//if(vpss.prf_hasher->hash_key_size == 0) {
+#if 0
+	if(vpss.prf_hasher->hash_key_size == 0) {
+#endif
 	keybytes = vpss.ni.len + vpss.nr.len;
-	//} else {
-	//keybytes = vpss.prf_hasher->hash_key_size;
-	//}
+#if 0
+	} else {
+	    keybytes = vpss.prf_hasher->hash_key_size;
+	}
+#endif
 
 	kb = alloc_bytes(keybytes, "skeyseed prf key");
 	memset(kb, 0, keybytes);

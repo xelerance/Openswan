@@ -1326,7 +1326,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     {
         inner_spi = 256;
         proto = SA_IPIP;
-        esatype = ET_IPIP; // XXX bart: used to be "UNSPEC"
+        esatype = ET_IPIP; /* XXX bart: used to be "UNSPEC" */
     }
     else if (encapsulation == ENCAPSULATION_MODE_TUNNEL)
     {
@@ -1552,8 +1552,8 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
                 AES_CBC_BLOCK_SIZE, HMAC_SHA1_KEY_LEN,
                 SADB_X_EALG_AESCBC, SADB_AALG_SHA1HMAC },
         };
-	//static const int esp_max = elemsof(esp_info);
-	//int esp_count;
+	/* static const int esp_max = elemsof(esp_info); */
+	/* int esp_count; */
 
 #ifdef NAT_TRAVERSAL
         u_int8_t natt_type = 0;
@@ -2698,7 +2698,7 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
     sr = sr->next;
     }
 
-    //for (sr = &st->st_connection->spd; sr != NULL; sr = sr->next)
+    /* for (sr = &st->st_connection->spd; sr != NULL; sr = sr->next) */
     for (; sr != NULL; sr = sr->next)
     {
         DBG(DBG_CONTROL, DBG_log("sr for #%ld: %s"

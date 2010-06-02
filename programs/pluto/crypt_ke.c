@@ -174,8 +174,8 @@ void calc_ke(struct pluto_crypto_req *r)
     if (slot) {
 	PK11_FreeSlot(slot);
     }
-    //if (privk){SECKEY_DestroyPrivateKey(privk);}
-    //if (pubk){SECKEY_DestroyPublicKey(pubk);}
+    /* if (privk){SECKEY_DestroyPrivateKey(privk);} */
+    /* if (pubk){SECKEY_DestroyPublicKey(pubk);} */
     freeanychunk(prime);
     freeanychunk(base);
 #endif

@@ -154,7 +154,7 @@ static bool writewhackrecord(char *buf, int buflen)
     time(&n);
     header[2]=n;
 
-    //DBG_log("buflen: %u abuflen: %u\n", header[0], abuflen);
+    /* DBG_log("buflen: %u abuflen: %u\n", header[0], abuflen); */
     
     if(fwrite(header, sizeof(u_int32_t)*3, 1, whackrecordfile) < 1) {
 	DBG_log("writewhackrecord: fwrite error when writing header");
@@ -664,7 +664,7 @@ whack_handle(int whackctlfd)
     int whackfd = accept(whackctlfd, (struct sockaddr *)&whackaddr, &whackaddrlen);
     /* Note: actual value in n should fit in int.  To print, cast to int. */
     ssize_t n;
-    //static int msgnum=0;
+    /* static int msgnum=0; */
 
     if (whackfd < 0)
     {
@@ -690,7 +690,7 @@ whack_handle(int whackctlfd)
 
     msg_saved = msg;
 
-    //DBG_log("msg %d size=%u\n", ++msgnum, n);
+    /* DBG_log("msg %d size=%u\n", ++msgnum, n); */
 
     /* sanity check message */
     {

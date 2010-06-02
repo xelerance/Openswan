@@ -372,7 +372,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     struct state      *st = md->st;
     struct state      *st1;
     struct connection *c  = st->st_connection;
-    //struct connection *cb;
+    /* struct connection *cb; */
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
     stf_status ret;
     struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];

@@ -19,7 +19,7 @@
  * Porting to 2.x by Sean Mathews
  */
 
-//#ifdef XAUTH
+/* #ifdef XAUTH */
 
 #include <stdio.h>
 #include <string.h>

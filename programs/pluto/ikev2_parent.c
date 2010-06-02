@@ -514,7 +514,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	 * are under DOS
 	 */
 	DBG_log("no connection found\n");
-	//SEND_NOTIFICATION(NO_PROPOSAL_CHOSEN);
+	/* SEND_NOTIFICATION(NO_PROPOSAL_CHOSEN); */
 	return STF_FAIL + NO_PROPOSAL_CHOSEN;
     }
 	
@@ -816,7 +816,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 {
     struct state *st = md->st;
-    //struct connection *c = st->st_connection;
+    /* struct connection *c = st->st_connection; */
     pb_stream *keyex_pbs;
 	
     /* check if the responder replied with v2N with DOS COOKIE */
@@ -840,7 +840,7 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 
 		change_state(st, STATE_PARENT_I1);
     	st->st_msgid_lastack = INVALID_MSGID;
-	 	md->msgid_received = INVALID_MSGID;  //AAA hack 
+	md->msgid_received = INVALID_MSGID;  /* AAA hack  */
     	st->st_msgid_nextuse = 0;
 
 		return ikev2_parent_outI1_common(md, st);  
@@ -1465,7 +1465,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 stf_status ikev2parent_inI2outR2(struct msg_digest *md)
 {
     struct state *st = md->st;
-    //struct connection *c = st->st_connection;
+    /* struct connection *c = st->st_connection; */
 
     /*
      * the initiator sent us an encrypted payload. We need to calculate

@@ -518,7 +518,7 @@ extract_peer_id(struct id *peer, const pb_stream const* id_pbs)
 	    memcpy(idbuf, id_pbs->cur, len-1);
 	    idbuf[len]='\0';
 	    loglog(RC_LOG_SERIOUS, "peer's ID_USER_FQDN contains no @: %s", idbuf);
-	    //return FALSE;
+	    /* return FALSE; */
 	}
 	/* FALLTHROUGH */
     case ID_FQDN:

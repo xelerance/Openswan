@@ -189,7 +189,7 @@ ikev2_process_payloads(struct msg_digest *md,
     struct state *st = md->st;
     err_t excuse = "not sure";
     
-    //lset_t needed = smc->req_payloads;
+    /* lset_t needed = smc->req_payloads; */
 
     /* zero out the digest descriptors -- might nuke [v2E] digest! */
 
@@ -468,11 +468,12 @@ process_v2_packet(struct msg_digest **mdp)
 bool
 ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
 {
-    //struct state *const st = md->st;
+    /* struct state *const st = md->st; */
     unsigned int hisID = (init==INITIATOR) ?
 	ISAKMP_NEXT_v2IDr : ISAKMP_NEXT_v2IDi;
-    //unsigned int myID  = initiator ? ISAKMP_NEXT_v2IDi: ISAKMP_NEXT_v2IDr;
-    //struct payload_digest *const id_me  = md->chain[myID];
+    /* unsigned int myID  = initiator ? ISAKMP_NEXT_v2IDi: ISAKMP_NEXT_v2IDr;
+     * struct payload_digest *const id_me  = md->chain[myID];
+     */
     struct payload_digest *const id_him = md->chain[hisID];
     const pb_stream * id_pbs;
     struct ikev2_id * id;
@@ -851,7 +852,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
 				  , stf_status result)
 {
     struct msg_digest *md = *mdp;
-    //const struct state_v2_microcode *svm=md->svm;
+    /* const struct state_v2_microcode *svm=md->svm; */
     struct state *st;
     enum state_kind from_state;
     const char *from_state_name;

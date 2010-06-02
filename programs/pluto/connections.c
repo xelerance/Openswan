@@ -665,7 +665,7 @@ format_end(char *buf
 	    const char *send_cert = "";
 	    char s[32];
 
-	    send_cert=""; // Length 3 because cert.type is 1-11
+	    send_cert=""; /* Length 3 because cert.type is 1-11 */
 	    
 	    switch(this->sendcert) {
 	    case cert_neversend:
