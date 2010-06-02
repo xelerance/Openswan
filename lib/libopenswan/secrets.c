@@ -1192,7 +1192,7 @@ static void
 osw_process_secret_records(struct secret **psecrets, int verbose,
 			   prompt_pass_t *pass)
 {
-    //const struct secret *secret = *psecrets;
+    /* const struct secret *secret = *psecrets; */
 
     /* read records from ipsec.secrets and load them into our table */
     for (;;)

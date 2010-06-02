@@ -129,7 +129,7 @@ void osw_conf_setdefault(void)
     NSSPassword.data = clone_str(buf, "nss password file path");
     NSSPassword.source =  PW_FROMFILE;
 #endif
-    //DBG_log("default setting of ipsec.d to %s", global_oco.confddir);
+    /* DBG_log("default setting of ipsec.d to %s", global_oco.confddir); */
 }
 
 const struct osw_conf_options *osw_init_options(void)
@@ -212,7 +212,7 @@ char *getNSSPassword(PK11SlotInfo *slot, PRBool retry, void *arg)
      token = PK11_GetTokenName(slot);
          if (token) {
          tlen = PORT_Strlen(token);
-	 //openswan_log("authentication needed for token name %s with length %d",token,tlen);
+	 /* openswan_log("authentication needed for token name %s with length %d",token,tlen); */
          }
 	 else {
 		return 0;
@@ -277,7 +277,7 @@ char *getNSSPassword(PK11SlotInfo *slot, PRBool retry, void *arg)
             password = PORT_Strdup((char*)password);
             PORT_Free(strings);
 
-            //openswan_log("Password passed to NSS is %s with length %d", password, PORT_Strlen(password));
+            /* openswan_log("Password passed to NSS is %s with length %d", password, PORT_Strlen(password)); */
             return password;
 	}
 	else {

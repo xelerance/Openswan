@@ -33,16 +33,16 @@
 #include "ipsecconf/oeconns.h"
 
 #ifdef HAVE_LIBNSS
-//#ifdef FIPS_CHECK
+/* #ifdef FIPS_CHECK */
 #include "oswconf.h"
 #endif
 
 static char _tmp_err[512];
 
-/** 
- * A policy only conn means that we load it, and do the appropriate firewalling to make
- * sure that no packets get out that this conn would apply to, but we refuse to negotiate
- * it in any way, either incoming or outgoing.
+/*
+ * A policy only conn means that we load it, and do the appropriate firewalling
+ * to make sure that no packets get out that this conn would apply to, but we
+ * refuse to negotiate it in any way, either incoming or outgoing.
  */
 #define POLICY_ONLY_CONN(conn) if(conn->options[KBF_AUTO] > STARTUP_ROUTE) { conn->options[KBF_AUTO]=STARTUP_POLICY; }
 
@@ -989,7 +989,7 @@ static int load_conn (struct starter_config *cfg
 	conn->policy &= ~(POLICY_ID_AUTH_MASK);
 
 #ifdef HAVE_LIBNSS
-//#ifdef FIPS_CHECK
+/* #ifdef FIPS_CHECK */
         if(Pluto_IsFIPS()) {
 		if((conn->options[KBF_AUTHBY] & POLICY_PSK) == POLICY_PSK){
 		starter_log(LOG_LEVEL_INFO
