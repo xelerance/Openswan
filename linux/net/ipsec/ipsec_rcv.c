@@ -438,37 +438,6 @@ struct sk_buff *ipsec_rcv_natt_decap(struct sk_buff *skb
 }
 #endif
 
-#ifdef HAVE_IPSEC_SAREF
-void ip_cmsg_recv_ipsec(struct msghdr *msg, struct sk_buff *skb)
-{
-	struct ipsec_sa *sa1;
-	struct sec_path *sp;
-	xfrm_sec_unique_t refs[2];
-
-	sp = skb->sp;
-
-	if(sp==NULL) return;
-
-	KLIPS_PRINT(debug_rcv, "retrieving saref=%u from skb=%p\n",
-		    sp->ref, skb);
-
-	sa1 = ipsec_sa_getbyref(sp->ref, IPSEC_REFOTHER);
-	if(sa1) {
-		refs[1]= sa1->ips_refhim;
-	} else {
-		refs[1]= 0;
-	}
-	refs[0]=sp->ref;
-
-	put_cmsg(msg, SOL_IP, IP_IPSEC_REFINFO,
-		 sizeof(xfrm_sec_unique_t)*2, &refs);
-	if(sa1) {
-		ipsec_sa_put(sa1, IPSEC_REFOTHER);
-	}
-}
-#endif
-
-
 void ipsec_rcv_setoutif(struct ipsec_rcv_state *irs)
 {
 	struct sk_buff *skb = irs->skb;
@@ -1707,7 +1676,7 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 		/* STUFF */
 	}
 
-#ifdef HAVE_IPSEC_SAREF	
+#ifdef CONFIG_INET_IPSEC_SAREF
 	if(skb->sp) {
 		secpath_put(skb->sp);
 	}

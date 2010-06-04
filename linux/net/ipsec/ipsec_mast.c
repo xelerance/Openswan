@@ -119,8 +119,9 @@ static inline int ipsec_mast_xmit2(struct sk_buff *skb)
 #endif
 }
 
-#ifdef HAVE_IPSEC_SAREF
-int ip_cmsg_send_ipsec(struct cmsghdr *cmsg, struct ipcm_cookie *ipc)
+#ifdef CONFIG_INET_IPSEC_SAREF
+static int klips_ip_cmsg_send_ipsec_refinfo(struct cmsghdr *cmsg,
+		struct ipcm_cookie *ipc)
 {
 	struct ipsec_sa *sa1;
 	xfrm_sec_unique_t *ref;
@@ -150,6 +151,49 @@ int ip_cmsg_send_ipsec(struct cmsghdr *cmsg, struct ipcm_cookie *ipc)
 	ipc->sp  = sp;
 
 	return 0;
+}
+
+static void klips_ip_cmsg_recv_ipsec_refinfo(struct msghdr *msg,
+		struct sk_buff *skb)
+{
+	struct ipsec_sa *sa1;
+	struct sec_path *sp;
+	xfrm_sec_unique_t refs[2];
+
+	sp = skb->sp;
+
+	if(sp==NULL) return;
+
+	KLIPS_PRINT(debug_rcv, "retrieving saref=%u from skb=%p\n",
+		    sp->ref, skb);
+
+	sa1 = ipsec_sa_getbyref(sp->ref, IPSEC_REFOTHER);
+	if(sa1) {
+		refs[1]= sa1->ips_refhim;
+	} else {
+		refs[1]= 0;
+	}
+	refs[0]=sp->ref;
+
+	put_cmsg(msg, SOL_IP, IP_IPSEC_REFINFO,
+		 sizeof(xfrm_sec_unique_t)*2, &refs);
+	if(sa1) {
+		ipsec_sa_put(sa1, IPSEC_REFOTHER);
+	}
+}
+
+static struct ipsec_saref_ip_cmsg_ops klips_saref_ops = {
+	.send_refinfo = klips_ip_cmsg_send_ipsec_refinfo,
+	.recv_refinfo = klips_ip_cmsg_recv_ipsec_refinfo,
+};
+
+int ipsec_mast_init_saref(void)
+{
+	return register_ipsec_saref_ip_cmsg_refinfo(&klips_saref_ops);
+}
+void ipsec_mast_cleanup_saref(void)
+{
+	unregister_ipsec_saref_ip_cmsg_refinfo(&klips_saref_ops);
 }
 #endif
 
@@ -305,7 +349,7 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 #endif
 
-#ifdef HAVE_IPSEC_SAREF
+#ifdef CONFIG_INET_IPSEC_SAREF
 	if(skb->sp && skb->sp->ref != IPSEC_SAREF_NULL) {
 		SAref = skb->sp->ref;
 		KLIPS_PRINT(debug_mast, "getting SAref=%d from sec_path\n",
