@@ -20,6 +20,7 @@ fakeallpatch() {
     set -- `wc -l $content `
     lines=$1
 
+    echo "diff -ruN a/${target#*/} b/${target#*/}"
     echo '--- /dev/null   Tue Mar 11 13:02:56 2003'
     echo "+++ $target     Mon Feb  9 13:51:03 2004"
     echo "@@ -0,0 +1,$lines @@"
@@ -37,6 +38,7 @@ doversion() {
     # get IPSECVERSION
     eval $(cd ${OPENSWANSRCDIR} && make env | grep IPSECVERSION)
 
+    echo "diff -ruN a/${target#*/} b/${target#*/}"
     echo '--- /dev/null   Tue Mar 11 13:02:56 2003'
     echo "+++ $target     Mon Feb  9 13:51:03 2004"
     echo "@@ -0,0 +1,$lines @@"
