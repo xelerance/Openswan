@@ -1,9 +1,9 @@
 --- /distros/kernel/linux-2.6.3-rc4/net/Makefile	Mon Feb 16 21:22:12 2004
 +++ ref26/net/Makefile	Thu Feb 19 21:02:25 2004
-@@ -42,3 +42,6 @@
+@@ -42,4 +42,6 @@
+ 
++obj-$(CONFIG_KLIPS)             += ipsec/
++
  ifeq ($(CONFIG_NET),y)
  obj-$(CONFIG_SYSCTL)		+= sysctl_net.o
  endif
-+
-+obj-$(CONFIG_KLIPS)             += ipsec/
-+
