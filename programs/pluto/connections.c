@@ -771,11 +771,15 @@ unshare_connection_strings(struct connection *c)
 	
     /* increment references to algo's, if any */
     if(c->alg_info_ike) {
+#ifdef KERNEL_ALG
 	alg_info_addref(IKETOINFO(c->alg_info_ike));
+#endif
     }
 
     if(c->alg_info_esp) {
+#ifdef KERNEL_ALG
 	alg_info_addref(ESPTOINFO(c->alg_info_esp));
+#endif
     }
 }
 
