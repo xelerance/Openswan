@@ -13,7 +13,8 @@ connection, which will force packets out a specific klips SA.
  net/core/sock.c        |    3 +++
  net/ipv4/ip_sockglue.c |    9 +++++++++
  net/ipv4/tcp.c         |    3 +++
- 6 files changed, 32 insertions(+), 1 deletions(-)
+ net/ipv4/tcp_output.c  |    4 ++++
+ 7 files changed, 36 insertions(+), 1 deletions(-)
 
 diff --git a/include/linux/in.h b/include/linux/in.h
 index b29c2fc..39da2c5 100644
@@ -142,6 +143,28 @@ index f1813bc..73b3ce1 100644
  			/*
  			 * Make sure that we have exactly size bytes
  			 * available to the caller, no more, no less.
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index fcd278a..b97583a 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -35,6 +35,7 @@
+  */
+ 
+ #include <net/tcp.h>
++#include <net/xfrm.h>
+ 
+ #include <linux/compiler.h>
+ #include <linux/module.h>
+@@ -2375,6 +2376,9 @@ int tcp_connect(struct sock *sk)
+ 	if (unlikely(buff == NULL))
+ 		return -ENOBUFS;
+ 
++	/* associate the skb with the socket's SAref */
++	skb_sec_assign_sk_saref(buff, sk);
++
+ 	/* Reserve space for headers. */
+ 	skb_reserve(buff, MAX_TCP_HEADER);
+ 
 -- 
 1.7.0.2.g2b0b7e7
 
